@@ -6,6 +6,8 @@ import flixel.FlxState;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.system.FlxSound;
 import flixel.text.FlxText;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxTimer;
 import haxe.Json;
 import lime.utils.Assets;
 
@@ -26,6 +28,9 @@ class PlayState extends FlxState
 	private var notes:FlxTypedGroup<Note>;
 
 	private var strumLine:FlxSprite;
+	private var curSection:Int = 0;
+
+	private var sectionScores:Array<Dynamic> = [[], []];
 
 	override public function create()
 	{
@@ -41,6 +46,8 @@ class PlayState extends FlxState
 
 		strumLine = new FlxSprite(0, 50).makeGraphic(FlxG.width, 10);
 		add(strumLine);
+
+		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
 
 		super.create();
 	}
@@ -70,6 +77,9 @@ class PlayState extends FlxState
 
 				for (songNotes in dumbassSection)
 				{
+					sectionScores[0].push(0);
+					sectionScores[1].push(0);
+
 					if (songNotes != 0)
 					{
 						var daStrumTime:Float = (((daStep * Conductor.stepCrochet) + (Conductor.crochet * 8 * daBeats))
@@ -83,13 +93,15 @@ class PlayState extends FlxState
 						{
 							swagNote.mustPress = true;
 						}
+						else
+						{
+							sectionScores[0][daBeats] += swagNote.noteScore;
+						}
 
 						if (notes.members.length > 0)
 							swagNote.prevNote = notes.members[notes.members.length - 1];
 						else
 							swagNote.prevNote = swagNote;
-
-						trace(notes.members.length - 1);
 
 						notes.add(swagNote);
 					}
@@ -106,6 +118,8 @@ class PlayState extends FlxState
 
 	var bouncingSprite:FlxSprite;
 
+	var sectionScored:Bool = false;
+
 	override public function update(elapsed:Float)
 	{
 		super.update(elapsed);
@@ -113,8 +127,17 @@ class PlayState extends FlxState
 		Conductor.songPosition = FlxG.sound.music.time;
 		var playerTurn:Int = totalBeats % 8;
 
+		if (playerTurn == 7 && !sectionScored)
+		{
+			popUpScore();
+			sectionScored = true;
+		}
+
 		if (playerTurn < 4)
+		{
 			bouncingSprite = dad;
+			sectionScored = false;
+		}
 		else
 			bouncingSprite = boyfriend;
 
@@ -137,6 +160,25 @@ class PlayState extends FlxState
 		});
 
 		keyShit();
+	}
+
+	private function popUpScore():Void
+	{
+		var placement:String = sectionScores[1][curSection] + '/' + sectionScores[0][curSection];
+		var coolText:FlxText = new FlxText(0, 0, 0, placement, 32);
+		coolText.screenCenter();
+		coolText.x = FlxG.width * 0.75;
+		add(coolText);
+
+		FlxTween.tween(coolText, {alpha: 0}, 0.2, {
+			onComplete: function(tween:FlxTween)
+			{
+				coolText.kill();
+			},
+			startDelay: Conductor.crochet * 0.001
+		});
+
+		curSection += 1;
 	}
 
 	function keyShit():Void
@@ -162,19 +204,15 @@ class PlayState extends FlxState
 					{
 						// NOTES YOU ARE HOLDING
 						case -1:
-							trace(daNote.prevNote.wasGoodHit);
 							if (up && daNote.prevNote.wasGoodHit)
 								goodNoteHit(daNote);
 						case -2:
-							trace(daNote.prevNote.wasGoodHit);
 							if (right && daNote.prevNote.wasGoodHit)
 								goodNoteHit(daNote);
 						case -3:
-							trace(daNote.prevNote.wasGoodHit);
 							if (down && daNote.prevNote.wasGoodHit)
 								goodNoteHit(daNote);
 						case -4:
-							trace(daNote.prevNote.wasGoodHit);
 							if (left && daNote.prevNote.wasGoodHit)
 								goodNoteHit(daNote);
 						case 1: // NOTES YOU JUST PRESSED
@@ -202,7 +240,11 @@ class PlayState extends FlxState
 
 	function goodNoteHit(note:Note):Void
 	{
-		note.wasGoodHit = true;
+		if (!note.wasGoodHit)
+		{
+			sectionScores[1][curSection] += note.noteScore;
+			note.wasGoodHit = true;
+		}
 	}
 
 	function everyBeat():Void

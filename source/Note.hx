@@ -14,6 +14,8 @@ class Note extends FlxSprite
 	public var wasGoodHit:Bool = false;
 	public var prevNote:Note;
 
+	public var noteScore:Float = 1;
+
 	public function new(strumTime:Float, noteData:Int)
 	{
 		super();
@@ -43,7 +45,10 @@ class Note extends FlxSprite
 		}
 
 		if (noteData < 0)
+		{
+			noteScore * 0.2;
 			alpha = 0.6;
+		}
 	}
 
 	override function update(elapsed:Float)
