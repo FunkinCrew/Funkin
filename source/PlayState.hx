@@ -13,9 +13,10 @@ class PlayState extends FlxState
 {
 	private var lastBeat:Float = 0;
 	private var lastStep:Float = 0;
-	private var safeFrames:Int = 5;
-	private var safeZoneOffset:Float = 0; // is calculated in create(), is safeFrames in milliseconds
+
 	private var canHit:Bool = false;
+
+	private var totalBeats:Int = 0;
 
 	private var canHitText:FlxText;
 
@@ -35,8 +36,6 @@ class PlayState extends FlxState
 		add(boyfriend);
 
 		generateSong('assets/data/bopeebo.json');
-
-		safeZoneOffset = (safeFrames / 60) * 1000;
 
 		canHitText = new FlxText(10, 10, 0, "weed");
 
@@ -73,18 +72,24 @@ class PlayState extends FlxState
 				{
 					if (songNotes != 0)
 					{
-						var daStrumTime:Float = (daStep * Conductor.stepCrochet) + ((Conductor.crochet * 4) * playerCounter);
+						var daStrumTime:Float = (((daStep * Conductor.stepCrochet) + (Conductor.crochet * 8 * daBeats))
+							+ ((Conductor.crochet * 4) * playerCounter));
 
 						var swagNote:Note = new Note(daStrumTime, songNotes);
 
-						var swagWidth:Float = 40;
+						swagNote.x += ((FlxG.width / 2) * playerCounter); // general offset
 
-						swagNote.x += (swagWidth * (Math.abs(songNotes))) + ((FlxG.width / 2) * playerCounter);
-
-						if (playerCounter == 2) // is the player
+						if (playerCounter == 1) // is the player
 						{
 							swagNote.mustPress = true;
 						}
+
+						if (notes.members.length > 0)
+							swagNote.prevNote = notes.members[notes.members.length - 1];
+						else
+							swagNote.prevNote = swagNote;
+
+						trace(notes.members.length - 1);
 
 						notes.add(swagNote);
 					}
@@ -99,26 +104,29 @@ class PlayState extends FlxState
 		}
 	}
 
+	var bouncingSprite:FlxSprite;
+
 	override public function update(elapsed:Float)
 	{
 		super.update(elapsed);
 
 		Conductor.songPosition = FlxG.sound.music.time;
+		var playerTurn:Int = totalBeats % 8;
 
-		if (dad.scale.x > 1)
+		if (playerTurn < 4)
+			bouncingSprite = dad;
+		else
+			bouncingSprite = boyfriend;
+
+		if (bouncingSprite.scale.x < 1)
 		{
-			dad.setGraphicSize(Std.int(dad.width - (FlxG.elapsed * 2)));
+			bouncingSprite.setGraphicSize(Std.int(bouncingSprite.width + (FlxG.elapsed * 2)));
 		}
 
 		canHitText.visible = canHit;
 		canHitText.text = 'WWEED' + debugNum;
 
-		if (canHit)
-		{
-			debugNum += 1;
-		}
-		else
-			debugNum = 0;
+		FlxG.watch.addQuick("beatShit", playerTurn);
 
 		everyBeat();
 		everyStep();
@@ -127,26 +135,97 @@ class PlayState extends FlxState
 		{
 			daNote.y = (strumLine.y + 5 - (daNote.height / 2)) - ((Conductor.songPosition - daNote.strumTime) * 0.4);
 		});
+
+		keyShit();
+	}
+
+	function keyShit():Void
+	{
+		// HOLDING
+		var up = FlxG.keys.anyPressed([W, UP]);
+		var right = FlxG.keys.anyPressed([D, RIGHT]);
+		var down = FlxG.keys.anyPressed([S, DOWN]);
+		var left = FlxG.keys.anyPressed([A, LEFT]);
+
+		var upP = FlxG.keys.anyJustPressed([W, UP]);
+		var rightP = FlxG.keys.anyJustPressed([D, RIGHT]);
+		var downP = FlxG.keys.anyJustPressed([S, DOWN]);
+		var leftP = FlxG.keys.anyJustPressed([A, LEFT]);
+
+		if (up || right || down || left)
+		{
+			notes.forEach(function(daNote:Note)
+			{
+				if (daNote.canBeHit)
+				{
+					switch (daNote.noteData)
+					{
+						// NOTES YOU ARE HOLDING
+						case -1:
+							trace(daNote.prevNote.wasGoodHit);
+							if (up && daNote.prevNote.wasGoodHit)
+								goodNoteHit(daNote);
+						case -2:
+							trace(daNote.prevNote.wasGoodHit);
+							if (right && daNote.prevNote.wasGoodHit)
+								goodNoteHit(daNote);
+						case -3:
+							trace(daNote.prevNote.wasGoodHit);
+							if (down && daNote.prevNote.wasGoodHit)
+								goodNoteHit(daNote);
+						case -4:
+							trace(daNote.prevNote.wasGoodHit);
+							if (left && daNote.prevNote.wasGoodHit)
+								goodNoteHit(daNote);
+						case 1: // NOTES YOU JUST PRESSED
+							if (upP)
+								goodNoteHit(daNote);
+						case 2:
+							if (rightP)
+								goodNoteHit(daNote);
+						case 3:
+							if (downP)
+								goodNoteHit(daNote);
+						case 4:
+							if (leftP)
+								goodNoteHit(daNote);
+					}
+
+					if (daNote.wasGoodHit)
+					{
+						daNote.kill();
+					}
+				}
+			});
+		}
+	}
+
+	function goodNoteHit(note:Note):Void
+	{
+		note.wasGoodHit = true;
 	}
 
 	function everyBeat():Void
 	{
-		if (Conductor.songPosition > lastBeat + Conductor.crochet - safeZoneOffset || Conductor.songPosition < lastBeat + safeZoneOffset)
+		if (Conductor.songPosition > lastBeat + Conductor.crochet - Conductor.safeZoneOffset
+			|| Conductor.songPosition < lastBeat + Conductor.safeZoneOffset)
 		{
 			if (Conductor.songPosition > lastBeat + Conductor.crochet)
 			{
 				lastBeat += Conductor.crochet;
 				canHitText.text += "\nWEED\nWEED";
 
-				dad.setGraphicSize(Std.int(dad.width * 1.1));
+				totalBeats += 1;
+
+				bouncingSprite.setGraphicSize(Std.int(bouncingSprite.width * 0.9));
 			}
 		}
 	}
 
 	function everyStep()
 	{
-		if (Conductor.songPosition > lastStep + Conductor.stepCrochet - safeZoneOffset
-			|| Conductor.songPosition < lastStep + safeZoneOffset)
+		if (Conductor.songPosition > lastStep + Conductor.stepCrochet - Conductor.safeZoneOffset
+			|| Conductor.songPosition < lastStep + Conductor.safeZoneOffset)
 		{
 			canHit = true;
 
