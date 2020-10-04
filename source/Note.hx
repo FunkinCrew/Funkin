@@ -1,6 +1,7 @@
 package;
 
 import flixel.FlxSprite;
+import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.util.FlxColor;
 
 class Note extends FlxSprite
@@ -25,7 +26,9 @@ class Note extends FlxSprite
 
 		this.noteData = noteData;
 
-		makeGraphic(50, 50);
+		var tex = FlxAtlasFrames.fromSparrow(AssetPaths.NOTE_assets__png, AssetPaths.NOTE_assets__xml);
+		frames = tex;
+
 		var swagWidth:Float = 55;
 
 		switch (Math.abs(noteData))
@@ -69,9 +72,19 @@ class Note extends FlxSprite
 				tooLate = true;
 		}
 		else
+		{
 			canBeHit = false;
 
-		if (tooLate && alpha > 0.3)
-			alpha *= 0.3;
+			if (strumTime <= Conductor.songPosition)
+			{
+				wasGoodHit = true;
+			}
+		}
+
+		if (tooLate)
+		{
+			if (alpha > 0.3)
+				alpha = 0.3;
+		}
 	}
 }
