@@ -6,7 +6,9 @@ import flixel.graphics.frames.FlxAtlasFrames;
 
 class Boyfriend extends FlxSprite
 {
-	private var animOffsets:Map<String, Array<Dynamic>>;
+	public var animOffsets:Map<String, Array<Dynamic>>;
+
+	public var debugMode:Bool = false;
 
 	public function new(x:Float, y:Float)
 	{
@@ -21,27 +23,30 @@ class Boyfriend extends FlxSprite
 		animation.addByPrefix('singRIGHT', 'BF NOTE RIGHT', 24, false);
 		animation.addByPrefix('singDOWN', 'BF NOTE DOWN', 24, false);
 		animation.addByPrefix('hey', 'BF HEY', 24, false);
-		animation.play('idle');
+		playAnim('idle');
 
-		addOffset("singUP", -25, 35);
-		addOffset("singRIGHT", -40, -8);
-		addOffset("singLEFT", 0, 0);
-		addOffset("singDOWN", 0, -45);
-		addOffset("hey", 0, -0);
+		addOffset('idle');
+		addOffset("singUP", -28, 27);
+		addOffset("singRIGHT", -38, -7);
+		addOffset("singLEFT", 12, -6);
+		addOffset("singDOWN", -14, -50);
+		addOffset("hey", 1, 6);
 	}
 
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+	}
+
+	public function playAnim(AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0):Void
+	{
+		animation.play(AnimName, Force, Reversed, Frame);
 
 		var daOffset = animOffsets.get(animation.curAnim.name);
-
 		if (animOffsets.exists(animation.curAnim.name))
 		{
 			offset.set(daOffset[0], daOffset[1]);
 		}
-		else
-			centerOffsets();
 	}
 
 	public function addOffset(name:String, x:Float = 0, y:Float = 0)

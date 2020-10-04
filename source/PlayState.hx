@@ -4,6 +4,7 @@ import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.addons.display.FlxGridOverlay;
 import flixel.graphics.atlas.FlxAtlas;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxGroup.FlxTypedGroup;
@@ -48,6 +49,10 @@ class PlayState extends FlxState
 
 	override public function create()
 	{
+		var bg:FlxSprite = FlxGridOverlay.create(50, 50);
+		bg.scrollFactor.set(0.5, 0.5);
+		add(bg);
+
 		dad = new FlxSprite(100, 100).loadGraphic(AssetPaths.DADDY_DEAREST__png);
 		var dadTex = FlxAtlasFrames.fromSparrow(AssetPaths.DADDY_DEAREST__png, AssetPaths.DADDY_DEAREST__xml);
 		dad.frames = dadTex;
@@ -113,7 +118,6 @@ class PlayState extends FlxState
 
 		for (i in 1...songData.sections + 1)
 		{
-			trace(i);
 			noteData.push(ChartParser.parse(songData.song.toLowerCase(), i));
 		}
 
@@ -230,6 +234,8 @@ class PlayState extends FlxState
 
 	override public function update(elapsed:Float)
 	{
+		keyShit();
+
 		super.update(elapsed);
 
 		if (FlxG.keys.justPressed.NINE)
@@ -305,13 +311,11 @@ class PlayState extends FlxState
 
 			daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * 0.45);
 		});
-
-		keyShit();
 	}
 
 	private function popUpScore():Void
 	{
-		boyfriend.animation.play('hey');
+		boyfriend.playAnim('hey');
 		vocals.volume = 1;
 
 		var placement:String = sectionScores[1][curSection] + '/' + sectionScores[0][curSection];
@@ -348,42 +352,6 @@ class PlayState extends FlxState
 		var rightR = FlxG.keys.anyJustReleased([D, RIGHT]);
 		var downR = FlxG.keys.anyJustReleased([S, DOWN]);
 		var leftR = FlxG.keys.anyJustReleased([A, LEFT]);
-
-		playerStrums.forEach(function(spr:FlxSprite)
-		{
-			switch (spr.ID)
-			{
-				case 1:
-					if (upP)
-						spr.animation.play('pressed');
-					if (upR)
-						spr.animation.play('static');
-				case 2:
-					if (rightP)
-						spr.animation.play('pressed');
-					if (rightR)
-						spr.animation.play('static');
-				case 3:
-					if (downP)
-						spr.animation.play('pressed');
-					if (downR)
-						spr.animation.play('static');
-				case 4:
-					if (leftP)
-						spr.animation.play('pressed');
-					if (leftR)
-						spr.animation.play('static');
-			}
-
-			if (spr.animation.curAnim.name == 'confirm')
-			{
-				spr.centerOffsets();
-				spr.offset.x -= 13;
-				spr.offset.y -= 13;
-			}
-			else
-				spr.centerOffsets();
-		});
 
 		if (up || right || down || left)
 		{
@@ -427,6 +395,41 @@ class PlayState extends FlxState
 				}
 			});
 		}
+
+		playerStrums.forEach(function(spr:FlxSprite)
+		{
+			switch (spr.ID)
+			{
+				case 1:
+					if (upP && spr.animation.curAnim.name != 'confirm')
+						spr.animation.play('pressed');
+					if (upR)
+						spr.animation.play('static');
+				case 2:
+					if (rightP && spr.animation.curAnim.name != 'confirm')
+						spr.animation.play('pressed');
+					if (rightR)
+						spr.animation.play('static');
+				case 3:
+					if (downP && spr.animation.curAnim.name != 'confirm')
+						spr.animation.play('pressed');
+					if (downR)
+						spr.animation.play('static');
+				case 4:
+					if (leftP && spr.animation.curAnim.name != 'confirm')
+						spr.animation.play('pressed');
+					if (leftR)
+						spr.animation.play('static');
+			}
+			if (spr.animation.curAnim.name == 'confirm')
+			{
+				spr.centerOffsets();
+				spr.offset.x -= 13;
+				spr.offset.y -= 13;
+			}
+			else
+				spr.centerOffsets();
+		});
 	}
 
 	function goodNoteHit(note:Note):Void
@@ -436,13 +439,13 @@ class PlayState extends FlxState
 			switch (Math.abs(note.noteData))
 			{
 				case 1:
-					boyfriend.animation.play('singUP');
+					boyfriend.playAnim('singUP');
 				case 2:
-					boyfriend.animation.play('singRIGHT');
+					boyfriend.playAnim('singRIGHT');
 				case 3:
-					boyfriend.animation.play('singDOWN');
+					boyfriend.playAnim('singDOWN');
 				case 4:
-					boyfriend.animation.play('singLEFT');
+					boyfriend.playAnim('singLEFT');
 			}
 
 			playerStrums.forEach(function(spr:FlxSprite)
@@ -474,7 +477,7 @@ class PlayState extends FlxState
 				dad.animation.play('idle');
 
 				if (!boyfriend.animation.curAnim.name.startsWith("sing"))
-					boyfriend.animation.play('idle');
+					boyfriend.playAnim('idle');
 			}
 		}
 	}
