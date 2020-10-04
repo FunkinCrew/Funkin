@@ -1,24 +1,33 @@
 package;
 
 import flixel.FlxG;
+import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.system.FlxSound;
 import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
+import flixel.util.FlxCollision;
+import flixel.util.FlxColor;
+import flixel.util.FlxStringUtil;
 import flixel.util.FlxTimer;
 import haxe.Json;
 import lime.utils.Assets;
+
+using StringTools;
 
 class PlayState extends FlxState
 {
 	private var lastBeat:Float = 0;
 	private var lastStep:Float = 0;
+	private var vocals:FlxSound;
 
 	private var canHit:Bool = false;
 
 	private var totalBeats:Int = 0;
+	private var totalSteps:Int = 0;
 
 	private var canHitText:FlxText;
 
@@ -32,20 +41,47 @@ class PlayState extends FlxState
 
 	private var sectionScores:Array<Dynamic> = [[], []];
 
+	private var camFollow:FlxObject;
+
 	override public function create()
 	{
 		dad = new FlxSprite(100, 100).loadGraphic(AssetPaths.DADDY_DEAREST__png);
+		var dadTex = FlxAtlasFrames.fromSparrow(AssetPaths.DADDY_DEAREST__png, AssetPaths.DADDY_DEAREST__xml);
+		dad.frames = dadTex;
+		dad.animation.addByPrefix('idle', 'Dad idle dance', 24);
+		dad.animation.addByPrefix('singUP', 'Dad Sing note UP', 24);
+		dad.animation.addByPrefix('singRIGHT', 'Dad Sing note UP', 24);
+		dad.animation.addByPrefix('singDOWN', 'Dad Sing Note DOWN', 24);
+		dad.animation.addByPrefix('singLEFT', 'dad sing note right', 24);
+		dad.animation.play('idle');
 		add(dad);
 
-		boyfriend = new FlxSprite(470, 100).loadGraphic(AssetPaths.BOYFRIEND__png);
+		boyfriend = new FlxSprite(770, 450);
+		var tex = FlxAtlasFrames.fromSparrow(AssetPaths.BOYFRIEND__png, AssetPaths.BOYFRIEND__xml);
+		boyfriend.frames = tex;
+		boyfriend.animation.addByPrefix('idle', 'BF idle dance', 24, false);
+		boyfriend.animation.addByPrefix('singUP', 'BF NOTE UP', 24, false);
+		boyfriend.animation.addByPrefix('singLEFT', 'BF NOTE LEFT', 24, false);
+		boyfriend.animation.addByPrefix('singRIGHT', 'BF NOTE RIGHT', 24, false);
+		boyfriend.animation.addByPrefix('singDOWN', 'BF NOTE DOWN', 24, false);
+		boyfriend.animation.addByPrefix('hey', 'BF HEY', 24, false);
+		boyfriend.animation.play('idle');
 		add(boyfriend);
 
-		generateSong('assets/data/bopeebo.json');
+		generateSong('assets/data/bopeebo/bopeebo.json');
 
 		canHitText = new FlxText(10, 10, 0, "weed");
 
 		strumLine = new FlxSprite(0, 50).makeGraphic(FlxG.width, 10);
+		strumLine.scrollFactor.set();
 		add(strumLine);
+
+		camFollow = new FlxObject(0, 0, 1, 1);
+		add(camFollow);
+
+		FlxG.camera.follow(camFollow, LOCKON, 0.04);
+		// FlxG.camera.setScrollBounds(0, FlxG.width, 0, FlxG.height);
+		FlxG.camera.zoom = 1.05;
 
 		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
 
@@ -56,13 +92,25 @@ class PlayState extends FlxState
 
 	private function generateSong(dataPath:String):Void
 	{
+		// FlxG.log.add(ChartParser.parse());
+
 		var songData = Json.parse(Assets.getText(dataPath));
-		FlxG.sound.playMusic("assets/music/" + songData.song + ".mp3");
+		FlxG.sound.playMusic("assets/music/" + songData.song + "_Inst.mp3");
+
+		vocals = new FlxSound().loadEmbedded("assets/music/" + songData.song + "_Voices.mp3");
+		FlxG.sound.list.add(vocals);
+		vocals.play();
 
 		notes = new FlxTypedGroup<Note>();
 		add(notes);
 
-		var noteData:Array<Dynamic> = songData.data;
+		var noteData:Array<Dynamic> = [];
+
+		for (i in 1...songData.sections + 1)
+		{
+			trace(i);
+			noteData.push(ChartParser.parse(songData.song.toLowerCase(), i));
+		}
 
 		var playerCounter:Int = 0;
 
@@ -86,6 +134,7 @@ class PlayState extends FlxState
 							+ ((Conductor.crochet * 4) * playerCounter));
 
 						var swagNote:Note = new Note(daStrumTime, songNotes);
+						swagNote.scrollFactor.set(0, 0);
 
 						swagNote.x += ((FlxG.width / 2) * playerCounter); // general offset
 
@@ -116,13 +165,14 @@ class PlayState extends FlxState
 		}
 	}
 
-	var bouncingSprite:FlxSprite;
-
 	var sectionScored:Bool = false;
 
 	override public function update(elapsed:Float)
 	{
 		super.update(elapsed);
+
+		if (FlxG.keys.justPressed.NINE)
+			FlxG.switchState(new Charting());
 
 		Conductor.songPosition = FlxG.sound.music.time;
 		var playerTurn:Int = totalBeats % 8;
@@ -133,29 +183,65 @@ class PlayState extends FlxState
 			sectionScored = true;
 		}
 
+		if (playerTurn == 0)
+		{
+			camFollow.setPosition(dad.getGraphicMidpoint().x + 150, dad.getGraphicMidpoint().y - 100);
+			vocals.volume = 1;
+		}
+
+		if (playerTurn == 4)
+		{
+			camFollow.setPosition(boyfriend.getGraphicMidpoint().x - 100, boyfriend.getGraphicMidpoint().y - 100);
+		}
+
 		if (playerTurn < 4)
 		{
-			bouncingSprite = dad;
 			sectionScored = false;
 		}
-		else
-			bouncingSprite = boyfriend;
-
-		if (bouncingSprite.scale.x < 1)
-		{
-			bouncingSprite.setGraphicSize(Std.int(bouncingSprite.width + (FlxG.elapsed * 2)));
-		}
-
-		canHitText.visible = canHit;
-		canHitText.text = 'WWEED' + debugNum;
 
 		FlxG.watch.addQuick("beatShit", playerTurn);
 
 		everyBeat();
 		everyStep();
 
-		notes.forEach(function(daNote:Note)
+		notes.forEachAlive(function(daNote:Note)
 		{
+			if (daNote.y > FlxG.height)
+			{
+				daNote.active = false;
+				daNote.visible = false;
+			}
+			else
+			{
+				daNote.visible = true;
+				daNote.active = true;
+			}
+
+			if (daNote.y < -daNote.height)
+			{
+				if (daNote.tooLate)
+					vocals.volume = 0;
+
+				daNote.kill();
+			}
+
+			if (!daNote.mustPress && daNote.wasGoodHit)
+			{
+				switch (Math.abs(daNote.noteData))
+				{
+					case 1:
+						dad.animation.play('singUP');
+					case 2:
+						dad.animation.play('singRIGHT');
+					case 3:
+						dad.animation.play('singDOWN');
+					case 4:
+						dad.animation.play('singLEFT');
+				}
+
+				daNote.kill();
+			}
+
 			daNote.y = (strumLine.y + 5 - (daNote.height / 2)) - ((Conductor.songPosition - daNote.strumTime) * 0.4);
 		});
 
@@ -164,6 +250,9 @@ class PlayState extends FlxState
 
 	private function popUpScore():Void
 	{
+		boyfriend.animation.play('hey');
+		vocals.volume = 1;
+
 		var placement:String = sectionScores[1][curSection] + '/' + sectionScores[0][curSection];
 		var coolText:FlxText = new FlxText(0, 0, 0, placement, 32);
 		coolText.screenCenter();
@@ -242,8 +331,21 @@ class PlayState extends FlxState
 	{
 		if (!note.wasGoodHit)
 		{
+			switch (Math.abs(note.noteData))
+			{
+				case 1:
+					boyfriend.animation.play('singUP');
+				case 2:
+					boyfriend.animation.play('singRIGHT');
+				case 3:
+					boyfriend.animation.play('singDOWN');
+				case 4:
+					boyfriend.animation.play('singLEFT');
+			}
+
 			sectionScores[1][curSection] += note.noteScore;
 			note.wasGoodHit = true;
+			vocals.volume = 1;
 		}
 	}
 
@@ -259,7 +361,10 @@ class PlayState extends FlxState
 
 				totalBeats += 1;
 
-				bouncingSprite.setGraphicSize(Std.int(bouncingSprite.width * 0.9));
+				dad.animation.play('idle');
+
+				if (!boyfriend.animation.curAnim.name.startsWith("sing"))
+					boyfriend.animation.play('idle');
 			}
 		}
 	}
@@ -273,6 +378,7 @@ class PlayState extends FlxState
 
 			if (Conductor.songPosition > lastStep + Conductor.stepCrochet)
 			{
+				totalSteps += 1;
 				lastStep += Conductor.stepCrochet;
 				canHitText.text += "\nWEED\nWEED";
 			}
