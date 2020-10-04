@@ -4,6 +4,7 @@ import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.graphics.atlas.FlxAtlas;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.system.FlxSound;
@@ -42,6 +43,8 @@ class PlayState extends FlxState
 	private var sectionScores:Array<Dynamic> = [[], []];
 
 	private var camFollow:FlxObject;
+	private var strumLineNotes:FlxTypedGroup<FlxSprite>;
+	private var playerStrums:FlxTypedGroup<FlxSprite>;
 
 	override public function create()
 	{
@@ -68,13 +71,19 @@ class PlayState extends FlxState
 		boyfriend.animation.play('idle');
 		add(boyfriend);
 
+		strumLine = new FlxSprite(0, 50).makeGraphic(FlxG.width, 10);
+		strumLine.scrollFactor.set();
+
+		strumLineNotes = new FlxTypedGroup<FlxSprite>();
+		add(strumLineNotes);
+
+		playerStrums = new FlxTypedGroup<FlxSprite>();
+
 		generateSong('assets/data/bopeebo/bopeebo.json');
 
 		canHitText = new FlxText(10, 10, 0, "weed");
 
-		strumLine = new FlxSprite(0, 50).makeGraphic(FlxG.width, 10);
-		strumLine.scrollFactor.set();
-		add(strumLine);
+		// add(strumLine);
 
 		camFollow = new FlxObject(0, 0, 1, 1);
 		add(camFollow);
@@ -85,6 +94,8 @@ class PlayState extends FlxState
 
 		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
 
+		FlxG.fixedTimestep = false;
+
 		super.create();
 	}
 
@@ -93,6 +104,9 @@ class PlayState extends FlxState
 	private function generateSong(dataPath:String):Void
 	{
 		// FlxG.log.add(ChartParser.parse());
+
+		generateStaticArrows(0);
+		generateStaticArrows(1);
 
 		var songData = Json.parse(Assets.getText(dataPath));
 		FlxG.sound.playMusic("assets/music/" + songData.song + "_Inst.mp3");
@@ -162,6 +176,58 @@ class PlayState extends FlxState
 			}
 
 			playerCounter += 1;
+		}
+	}
+
+	private function generateStaticArrows(player:Int):Void
+	{
+		for (i in 0...4)
+		{
+			FlxG.log.add(i);
+			var babyArrow:FlxSprite = new FlxSprite(0, strumLine.y);
+			var arrTex = FlxAtlasFrames.fromSparrow(AssetPaths.NOTE_assets__png, AssetPaths.NOTE_assets__xml);
+			babyArrow.frames = arrTex;
+			babyArrow.animation.addByPrefix('green', 'arrowUP');
+			babyArrow.animation.addByPrefix('blue', 'arrowDOWN');
+			babyArrow.animation.addByPrefix('purple', 'arrowLEFT');
+			babyArrow.animation.addByPrefix('red', 'arrowRIGHT');
+
+			babyArrow.scrollFactor.set();
+			babyArrow.setGraphicSize(Std.int(babyArrow.width * 0.7));
+			babyArrow.updateHitbox();
+
+			babyArrow.ID = i + 1;
+
+			if (player == 1)
+			{
+				playerStrums.add(babyArrow);
+			}
+
+			switch (Math.abs(i + 1))
+			{
+				case 1:
+					babyArrow.x += Note.swagWidth * 2;
+					babyArrow.animation.addByPrefix('static', 'arrowUP');
+					babyArrow.animation.addByPrefix('pressed', 'up press', 24, false);
+				case 2:
+					babyArrow.x += Note.swagWidth * 3;
+					babyArrow.animation.addByPrefix('static', 'arrowRIGHT');
+					babyArrow.animation.addByPrefix('pressed', 'right press', 24, false);
+				case 3:
+					babyArrow.x += Note.swagWidth * 1;
+					babyArrow.animation.addByPrefix('static', 'arrowDOWN');
+					babyArrow.animation.addByPrefix('pressed', 'down press', 24, false);
+				case 4:
+					babyArrow.x += Note.swagWidth * 0;
+					babyArrow.animation.addByPrefix('static', 'arrowLEFT');
+					babyArrow.animation.addByPrefix('pressed', 'left press', 24, false);
+			}
+
+			babyArrow.animation.play('static');
+			babyArrow.x += 50;
+			babyArrow.x += ((FlxG.width / 2) * player);
+
+			strumLineNotes.add(babyArrow);
 		}
 	}
 
@@ -242,7 +308,7 @@ class PlayState extends FlxState
 				daNote.kill();
 			}
 
-			daNote.y = (strumLine.y + 5 - (daNote.height / 2)) - ((Conductor.songPosition - daNote.strumTime) * 0.4);
+			daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * 0.45);
 		});
 
 		keyShit();
@@ -282,6 +348,38 @@ class PlayState extends FlxState
 		var rightP = FlxG.keys.anyJustPressed([D, RIGHT]);
 		var downP = FlxG.keys.anyJustPressed([S, DOWN]);
 		var leftP = FlxG.keys.anyJustPressed([A, LEFT]);
+
+		var upR = FlxG.keys.anyJustReleased([W, UP]);
+		var rightR = FlxG.keys.anyJustReleased([D, RIGHT]);
+		var downR = FlxG.keys.anyJustReleased([S, DOWN]);
+		var leftR = FlxG.keys.anyJustReleased([A, LEFT]);
+
+		playerStrums.forEach(function(spr:FlxSprite)
+		{
+			switch (spr.ID)
+			{
+				case 1:
+					if (upP)
+						spr.animation.play('pressed');
+					if (upR)
+						spr.animation.play('static');
+				case 2:
+					if (rightP)
+						spr.animation.play('pressed');
+					if (rightR)
+						spr.animation.play('static');
+				case 3:
+					if (downP)
+						spr.animation.play('pressed');
+					if (downR)
+						spr.animation.play('static');
+				case 4:
+					if (leftP)
+						spr.animation.play('pressed');
+					if (leftR)
+						spr.animation.play('static');
+			}
+		});
 
 		if (up || right || down || left)
 		{
