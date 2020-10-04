@@ -17,34 +17,41 @@ class Note extends FlxSprite
 
 	public var noteScore:Float = 1;
 
+	public static var swagWidth:Float = 160 * 0.7;
+
 	public function new(strumTime:Float, noteData:Int)
 	{
 		super();
 
-		x += 100;
+		x += 50;
 		this.strumTime = strumTime;
 
 		this.noteData = noteData;
 
 		var tex = FlxAtlasFrames.fromSparrow(AssetPaths.NOTE_assets__png, AssetPaths.NOTE_assets__xml);
 		frames = tex;
+		animation.addByPrefix('greenScroll', 'green0');
+		animation.addByPrefix('redScroll', 'red0');
+		animation.addByPrefix('blueScroll', 'blue0');
+		animation.addByPrefix('purpleScroll', 'purple0');
 
-		var swagWidth:Float = 55;
+		setGraphicSize(Std.int(width * 0.7));
+		updateHitbox();
 
 		switch (Math.abs(noteData))
 		{
 			case 1:
 				x += swagWidth * 2;
-				color = FlxColor.GREEN;
+				animation.play('greenScroll');
 			case 2:
 				x += swagWidth * 3;
-				color = FlxColor.RED;
+				animation.play('redScroll');
 			case 3:
 				x += swagWidth * 1;
-				color = FlxColor.BLUE;
+				animation.play('blueScroll');
 			case 4:
 				x += swagWidth * 0;
-				color = FlxColor.PURPLE;
+				animation.play('purpleScroll');
 		}
 
 		if (noteData < 0)
