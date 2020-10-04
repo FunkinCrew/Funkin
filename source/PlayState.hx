@@ -33,7 +33,7 @@ class PlayState extends FlxState
 
 	private var canHitText:FlxText;
 
-	private var dad:FlxSprite;
+	private var dad:Dad;
 	private var boyfriend:Boyfriend;
 
 	private var notes:FlxTypedGroup<Note>;
@@ -53,15 +53,8 @@ class PlayState extends FlxState
 		bg.scrollFactor.set(0.5, 0.5);
 		add(bg);
 
-		dad = new FlxSprite(100, 100).loadGraphic(AssetPaths.DADDY_DEAREST__png);
-		var dadTex = FlxAtlasFrames.fromSparrow(AssetPaths.DADDY_DEAREST__png, AssetPaths.DADDY_DEAREST__xml);
-		dad.frames = dadTex;
-		dad.animation.addByPrefix('idle', 'Dad idle dance', 24);
-		dad.animation.addByPrefix('singUP', 'Dad Sing note UP', 24);
-		dad.animation.addByPrefix('singRIGHT', 'Dad Sing note UP', 24);
-		dad.animation.addByPrefix('singDOWN', 'Dad Sing Note DOWN', 24);
-		dad.animation.addByPrefix('singLEFT', 'dad sing note right', 24);
-		dad.animation.play('idle');
+		dad = new Dad(100, 100);
+
 		add(dad);
 
 		boyfriend = new Boyfriend(770, 450);
@@ -240,6 +233,8 @@ class PlayState extends FlxState
 
 		if (FlxG.keys.justPressed.NINE)
 			FlxG.switchState(new Charting());
+		if (FlxG.keys.justPressed.EIGHT)
+			FlxG.switchState(new Charting(true));
 
 		Conductor.songPosition = FlxG.sound.music.time;
 		var playerTurn:Int = totalBeats % 8;
@@ -297,13 +292,13 @@ class PlayState extends FlxState
 				switch (Math.abs(daNote.noteData))
 				{
 					case 1:
-						dad.animation.play('singUP');
+						dad.playAnim('singUP');
 					case 2:
-						dad.animation.play('singRIGHT');
+						dad.playAnim('singRIGHT');
 					case 3:
-						dad.animation.play('singDOWN');
+						dad.playAnim('singDOWN');
 					case 4:
-						dad.animation.play('singLEFT');
+						dad.playAnim('singLEFT');
 				}
 
 				daNote.kill();
