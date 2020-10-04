@@ -33,7 +33,7 @@ class PlayState extends FlxState
 	private var canHitText:FlxText;
 
 	private var dad:FlxSprite;
-	private var boyfriend:FlxSprite;
+	private var boyfriend:Boyfriend;
 
 	private var notes:FlxTypedGroup<Note>;
 
@@ -59,16 +59,7 @@ class PlayState extends FlxState
 		dad.animation.play('idle');
 		add(dad);
 
-		boyfriend = new FlxSprite(770, 450);
-		var tex = FlxAtlasFrames.fromSparrow(AssetPaths.BOYFRIEND__png, AssetPaths.BOYFRIEND__xml);
-		boyfriend.frames = tex;
-		boyfriend.animation.addByPrefix('idle', 'BF idle dance', 24, false);
-		boyfriend.animation.addByPrefix('singUP', 'BF NOTE UP', 24, false);
-		boyfriend.animation.addByPrefix('singLEFT', 'BF NOTE LEFT', 24, false);
-		boyfriend.animation.addByPrefix('singRIGHT', 'BF NOTE RIGHT', 24, false);
-		boyfriend.animation.addByPrefix('singDOWN', 'BF NOTE DOWN', 24, false);
-		boyfriend.animation.addByPrefix('hey', 'BF HEY', 24, false);
-		boyfriend.animation.play('idle');
+		boyfriend = new Boyfriend(770, 450);
 		add(boyfriend);
 
 		strumLine = new FlxSprite(0, 50).makeGraphic(FlxG.width, 10);
@@ -209,18 +200,22 @@ class PlayState extends FlxState
 					babyArrow.x += Note.swagWidth * 2;
 					babyArrow.animation.addByPrefix('static', 'arrowUP');
 					babyArrow.animation.addByPrefix('pressed', 'up press', 24, false);
+					babyArrow.animation.addByPrefix('confirm', 'up confirm', 24, false);
 				case 2:
 					babyArrow.x += Note.swagWidth * 3;
 					babyArrow.animation.addByPrefix('static', 'arrowRIGHT');
 					babyArrow.animation.addByPrefix('pressed', 'right press', 24, false);
+					babyArrow.animation.addByPrefix('confirm', 'right confirm', 24, false);
 				case 3:
 					babyArrow.x += Note.swagWidth * 1;
 					babyArrow.animation.addByPrefix('static', 'arrowDOWN');
 					babyArrow.animation.addByPrefix('pressed', 'down press', 24, false);
+					babyArrow.animation.addByPrefix('confirm', 'down confirm', 24, false);
 				case 4:
 					babyArrow.x += Note.swagWidth * 0;
 					babyArrow.animation.addByPrefix('static', 'arrowLEFT');
 					babyArrow.animation.addByPrefix('pressed', 'left press', 24, false);
+					babyArrow.animation.addByPrefix('confirm', 'left confirm', 24, false);
 			}
 
 			babyArrow.animation.play('static');
@@ -379,6 +374,15 @@ class PlayState extends FlxState
 					if (leftR)
 						spr.animation.play('static');
 			}
+
+			if (spr.animation.curAnim.name == 'confirm')
+			{
+				spr.centerOffsets();
+				spr.offset.x -= 13;
+				spr.offset.y -= 13;
+			}
+			else
+				spr.centerOffsets();
 		});
 
 		if (up || right || down || left)
@@ -440,6 +444,14 @@ class PlayState extends FlxState
 				case 4:
 					boyfriend.animation.play('singLEFT');
 			}
+
+			playerStrums.forEach(function(spr:FlxSprite)
+			{
+				if (Math.abs(note.noteData) == spr.ID)
+				{
+					spr.animation.play('confirm', true);
+				}
+			});
 
 			sectionScores[1][curSection] += note.noteScore;
 			note.wasGoodHit = true;
