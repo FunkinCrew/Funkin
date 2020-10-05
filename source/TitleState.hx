@@ -45,7 +45,10 @@ class TitleState extends FlxTransitionableState
 
 		persistentUpdate = true;
 
-		var bg:FlxSprite = FlxGridOverlay.create(20, 20);
+		var bg:FlxSprite = new FlxSprite().loadGraphic(AssetPaths.stageback__png);
+		bg.antialiasing = true;
+		bg.setGraphicSize(Std.int(bg.width * 0.6));
+		bg.updateHitbox();
 		add(bg);
 
 		var logoBl:FlxSprite = new FlxSprite().loadGraphic(AssetPaths.logo__png);
@@ -55,6 +58,7 @@ class TitleState extends FlxTransitionableState
 
 		var logo:FlxSprite = new FlxSprite().loadGraphic(AssetPaths.logo__png);
 		logo.screenCenter();
+		logo.antialiasing = true;
 		add(logo);
 
 		FlxTween.tween(logoBl, {y: logoBl.y + 50}, 0.6, {ease: FlxEase.quadInOut, type: PINGPONG});
