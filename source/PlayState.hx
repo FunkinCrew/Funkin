@@ -32,6 +32,7 @@ class PlayState extends FlxState
 	private var totalSteps:Int = 0;
 
 	private var dad:Dad;
+	private var gf:Girlfriend;
 	private var boyfriend:Boyfriend;
 
 	private var notes:FlxTypedGroup<Note>;
@@ -59,6 +60,10 @@ class PlayState extends FlxState
 		bg.scrollFactor.set(0.9, 0.9);
 		bg.active = false;
 		add(bg);
+
+		gf = new Girlfriend(400, 130);
+		gf.scrollFactor.set(0.95, 0.95);
+		add(gf);
 
 		dad = new Dad(100, 100);
 
@@ -632,7 +637,8 @@ class PlayState extends FlxState
 
 				totalBeats += 1;
 
-				dad.animation.play('idle');
+				dad.playAnim('idle');
+				gf.dance();
 
 				if (!boyfriend.animation.curAnim.name.startsWith("sing"))
 					boyfriend.playAnim('idle');
