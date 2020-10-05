@@ -71,13 +71,28 @@ class PlayState extends FlxTransitionableState
 		persistentUpdate = true;
 		persistentDraw = true;
 
-		var bg:FlxSprite = new FlxSprite(-600, -200).loadGraphic(AssetPaths.bg__png);
-		bg.setGraphicSize(Std.int(bg.width * 2.5));
-		bg.updateHitbox();
+		var bg:FlxSprite = new FlxSprite(-600, -200).loadGraphic(AssetPaths.stageback__png);
+		// bg.setGraphicSize(Std.int(bg.width * 2.5));
+		// bg.updateHitbox();
 		bg.antialiasing = true;
 		bg.scrollFactor.set(0.9, 0.9);
 		bg.active = false;
 		add(bg);
+
+		var stageFront:FlxSprite = new FlxSprite(-650, 600).loadGraphic(AssetPaths.stagefront__png);
+		stageFront.setGraphicSize(Std.int(stageFront.width * 1.1));
+		stageFront.updateHitbox();
+		stageFront.antialiasing = true;
+		stageFront.scrollFactor.set(0.9, 0.9);
+		stageFront.active = false;
+		add(stageFront);
+
+		var stageCurtains:FlxSprite = new FlxSprite(-500, -300).loadGraphic(AssetPaths.stagecurtains__png);
+		stageCurtains.setGraphicSize(Std.int(stageCurtains.width * 0.9));
+		stageCurtains.updateHitbox();
+		stageCurtains.antialiasing = true;
+		stageCurtains.scrollFactor.set(1.3, 1.3);
+		stageCurtains.active = false;
 
 		gf = new Girlfriend(400, 130);
 		gf.scrollFactor.set(0.95, 0.95);
@@ -85,11 +100,12 @@ class PlayState extends FlxTransitionableState
 		add(gf);
 
 		dad = new Dad(100, 100);
-
 		add(dad);
 
 		boyfriend = new Boyfriend(770, 450);
 		add(boyfriend);
+
+		add(stageCurtains);
 
 		strumLine = new FlxSprite(0, 50).makeGraphic(FlxG.width, 10);
 		strumLine.scrollFactor.set();
@@ -373,7 +389,7 @@ class PlayState extends FlxTransitionableState
 	{
 		super.update(elapsed);
 
-		healthHeads.setGraphicSize(Std.int(FlxMath.lerp(healthHeads.width, 80, 0.02)));
+		healthHeads.setGraphicSize(Std.int(FlxMath.lerp(100, healthHeads.width, 0.98)));
 		healthHeads.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (healthHeads.width / 2);
 
 		if (FlxG.keys.justPressed.NINE)
