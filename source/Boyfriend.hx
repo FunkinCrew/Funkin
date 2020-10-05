@@ -20,6 +20,8 @@ class Boyfriend extends Character
 		animation.addByPrefix('hey', 'BF HEY', 24, false);
 		playAnim('idle');
 
+		antialiasing = true;
+
 		addOffset('idle', -5);
 		addOffset("singUP", -29, 27);
 		addOffset("singRIGHT", -38, -7);

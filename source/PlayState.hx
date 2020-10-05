@@ -201,6 +201,7 @@ class PlayState extends FlxState
 			babyArrow.scrollFactor.set();
 			babyArrow.setGraphicSize(Std.int(babyArrow.width * 0.7));
 			babyArrow.updateHitbox();
+			babyArrow.antialiasing = true;
 
 			babyArrow.ID = i + 1;
 
