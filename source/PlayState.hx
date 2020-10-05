@@ -53,6 +53,7 @@ class PlayState extends FlxState
 
 	private var gfSpeed:Int = 1;
 	private var health:Float = 1;
+	private var combo:Int = 0;
 
 	override public function create()
 	{
@@ -404,16 +405,96 @@ class PlayState extends FlxState
 		boyfriend.playAnim('hey');
 		vocals.volume = 1;
 
-		var placement:String = sectionScores[1][curSection] + '/' + sectionScores[0][curSection];
+		var placement:String = Std.string(combo);
+		// var placement:String = sectionScores[1][curSection] + '/' + sectionScores[0][curSection];
+
 		var coolText:FlxText = new FlxText(0, 0, 0, placement, 32);
 		coolText.screenCenter();
 		coolText.x = FlxG.width * 0.75;
-		add(coolText);
+		//
 
-		FlxTween.tween(coolText, {alpha: 0}, 0.2, {
+		var rating:FlxSprite = new FlxSprite();
+
+		var daRating:String = "shit";
+
+		if (combo > 60)
+			daRating = 'sick';
+		else if (combo > 12)
+			daRating = 'good'
+		else if (combo > 4)
+			daRating = 'bad';
+		rating.loadGraphic('assets/images/' + daRating + ".png");
+		rating.screenCenter();
+		rating.x = coolText.x - 40;
+		rating.y -= 60;
+		rating.acceleration.y = 550;
+		rating.velocity.y -= FlxG.random.int(140, 175);
+		rating.setGraphicSize(Std.int(rating.width * 0.7));
+		rating.updateHitbox();
+		rating.antialiasing = true;
+		rating.velocity.x -= FlxG.random.int(0, 10);
+
+		var comboSpr:FlxSprite = new FlxSprite().loadGraphic(AssetPaths.combo__png);
+		comboSpr.screenCenter();
+		comboSpr.x = coolText.x;
+		comboSpr.acceleration.y = 600;
+		comboSpr.antialiasing = true;
+		comboSpr.velocity.y -= 150;
+		comboSpr.setGraphicSize(Std.int(comboSpr.width * 0.7));
+		comboSpr.updateHitbox();
+		comboSpr.velocity.x += FlxG.random.int(1, 10);
+		add(comboSpr);
+		add(rating);
+
+		var seperatedScore:Array<Int> = [];
+
+		seperatedScore.push(Math.floor(combo / 100));
+		seperatedScore.push(Math.floor((combo - (seperatedScore[0] * 100)) / 10));
+		seperatedScore.push(combo % 10);
+
+		var daLoop:Int = 0;
+		for (i in seperatedScore)
+		{
+			var numScore:FlxSprite = new FlxSprite().loadGraphic('assets/images/num' + Std.int(i) + '.png');
+			numScore.screenCenter();
+			numScore.x = coolText.x + (37 * daLoop) - 90;
+			numScore.y += 80;
+			numScore.antialiasing = true;
+			numScore.setGraphicSize(Std.int(numScore.width * 0.5));
+			numScore.updateHitbox();
+			numScore.acceleration.y = FlxG.random.int(200, 300);
+			numScore.velocity.y -= FlxG.random.int(140, 160);
+			numScore.velocity.x = FlxG.random.float(-5, 5);
+			add(numScore);
+
+			FlxTween.tween(numScore, {alpha: 0}, 0.2, {
+				onComplete: function(tween:FlxTween)
+				{
+					numScore.destroy();
+				},
+				startDelay: Conductor.crochet * 0.002
+			});
+
+			daLoop++;
+		}
+
+		trace(combo);
+		trace(seperatedScore);
+
+		coolText.text = Std.string(seperatedScore);
+		// add(coolText);
+
+		FlxTween.tween(rating, {alpha: 0}, 0.2, {
+			startDelay: Conductor.crochet * 0.001
+		});
+
+		FlxTween.tween(comboSpr, {alpha: 0}, 0.2, {
 			onComplete: function(tween:FlxTween)
 			{
 				coolText.destroy();
+				comboSpr.destroy();
+
+				rating.destroy();
 			},
 			startDelay: Conductor.crochet * 0.001
 		});
@@ -485,10 +566,8 @@ class PlayState extends FlxState
 			}
 		}
 
-		if ((up || right || down || left) && boyfriend.stunned)
+		if ((up || right || down || left) && !boyfriend.stunned)
 		{
-			var possibleNotes:Array<Note> = [];
-
 			notes.forEach(function(daNote:Note)
 			{
 				if (daNote.canBeHit && daNote.mustPress)
@@ -555,7 +634,12 @@ class PlayState extends FlxState
 		if (!boyfriend.stunned)
 		{
 			health -= 0.075;
-			trace('badNote');
+			if (combo > 10)
+			{
+				gf.playAnim('sad');
+			}
+			combo = 0;
+
 			FlxG.sound.play('assets/sounds/missnote' + FlxG.random.int(1, 3) + ".mp3", FlxG.random.float(0.05, 0.2));
 
 			boyfriend.stunned = true;
@@ -611,7 +695,7 @@ class PlayState extends FlxState
 	{
 		if (!note.wasGoodHit)
 		{
-			trace('goodhit');
+			combo += 1;
 
 			switch (Math.abs(note.noteData))
 			{
