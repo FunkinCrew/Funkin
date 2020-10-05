@@ -106,10 +106,43 @@ class PlayState extends FlxTransitionableState
 				case 0:
 					FlxG.sound.play('assets/sounds/freshIntro.mp3', 0.6);
 				case 1:
+					var ready:FlxSprite = new FlxSprite().loadGraphic('assets/images/ready.png');
+					ready.scrollFactor.set();
+					ready.screenCenter();
+					add(ready);
+					FlxTween.tween(ready, {y: ready.y += 100, alpha: 0}, Conductor.crochet / 1000, {
+						ease: FlxEase.cubeInOut,
+						onComplete: function(twn:FlxTween)
+						{
+							ready.destroy();
+						}
+					});
 					FlxG.sound.play('assets/sounds/freshIntro.mp3', 0.6);
 				case 2:
+					var set:FlxSprite = new FlxSprite().loadGraphic('assets/images/set.png');
+					set.scrollFactor.set();
+					set.screenCenter();
+					add(set);
+					FlxTween.tween(set, {y: set.y += 100, alpha: 0}, Conductor.crochet / 1000, {
+						ease: FlxEase.cubeInOut,
+						onComplete: function(twn:FlxTween)
+						{
+							set.destroy();
+						}
+					});
 					FlxG.sound.play('assets/sounds/freshIntro.mp3', 0.6);
 				case 3:
+					var go:FlxSprite = new FlxSprite().loadGraphic('assets/images/go.png');
+					go.scrollFactor.set();
+					go.screenCenter();
+					add(go);
+					FlxTween.tween(go, {y: go.y += 100, alpha: 0}, Conductor.crochet / 1000, {
+						ease: FlxEase.cubeInOut,
+						onComplete: function(twn:FlxTween)
+						{
+							go.destroy();
+						}
+					});
 					FlxG.sound.play('assets/sounds/freshIntro.mp3', 0.6);
 				case 4:
 			}

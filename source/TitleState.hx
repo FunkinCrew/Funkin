@@ -71,6 +71,8 @@ class TitleState extends FlxTransitionableState
 	{
 		if (FlxG.keys.justPressed.ENTER && !transitioning)
 		{
+			FlxG.camera.flash(FlxColor.WHITE, 1);
+
 			transitioning = true;
 			FlxG.sound.music.stop();
 
