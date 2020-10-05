@@ -27,6 +27,8 @@ using StringTools;
 
 class PlayState extends FlxTransitionableState
 {
+	public static var curLevel:String = 'Bopeebo';
+
 	private var lastBeat:Float = 0;
 	private var lastStep:Float = 0;
 	private var vocals:FlxSound;
@@ -117,8 +119,9 @@ class PlayState extends FlxTransitionableState
 
 		var swagCounter:Int = 0;
 
-		generateSong('fresh');
+		generateSong(curLevel.toLowerCase());
 		countingDown = true;
+		Conductor.songPosition = 0;
 		Conductor.songPosition -= Conductor.crochet * 5;
 
 		new FlxTimer().start(Conductor.crochet / 1000, function(tmr:FlxTimer)
@@ -214,7 +217,7 @@ class PlayState extends FlxTransitionableState
 	function startSong():Void
 	{
 		countingDown = false;
-		FlxG.sound.playMusic("assets/music/" + "Fresh" + "_Inst.mp3");
+		FlxG.sound.playMusic("assets/music/" + curLevel + "_Inst.mp3");
 		vocals.play();
 	}
 
@@ -392,10 +395,16 @@ class PlayState extends FlxTransitionableState
 		healthHeads.setGraphicSize(Std.int(FlxMath.lerp(100, healthHeads.width, 0.98)));
 		healthHeads.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (healthHeads.width / 2);
 
-		if (FlxG.keys.justPressed.NINE)
-			FlxG.switchState(new Charting());
-		if (FlxG.keys.justPressed.EIGHT)
-			FlxG.switchState(new Charting(true));
+		if (healthBar.percent < 10)
+			healthHeads.animation.play('unhealthy');
+		else
+			healthHeads.animation.play('healthy');
+		/* 
+			if (FlxG.keys.justPressed.NINE)
+				FlxG.switchState(new Charting());
+			if (FlxG.keys.justPressed.EIGHT)
+				FlxG.switchState(new Charting(true));
+		 */
 
 		if (countingDown)
 		{
@@ -451,11 +460,32 @@ class PlayState extends FlxTransitionableState
 					gfSpeed = 2;
 				case 112:
 					gfSpeed = 1;
+				case 163:
+					FlxG.sound.music.stop();
+					curLevel = 'Bopeebo';
+					FlxG.switchState(new TitleState());
+			}
+		}
+
+		if (curSong == 'Bopeebo')
+		{
+			switch (totalBeats)
+			{
+				case 127:
+					FlxG.sound.music.stop();
+					curLevel = 'Fresh';
+					FlxG.switchState(new PlayState());
 			}
 		}
 		everyBeat();
 		everyStep();
 		// better streaming of shit
+
+		if (health <= 0)
+		{
+			boyfriend.stunned = true;
+			FlxG.switchState(new GameOverState());
+		}
 
 		if (unspawnNotes[0] != null)
 		{
@@ -511,7 +541,10 @@ class PlayState extends FlxTransitionableState
 				if (daNote.y < -daNote.height)
 				{
 					if (daNote.tooLate)
+					{
+						health -= 0.05;
 						vocals.volume = 0;
+					}
 
 					daNote.active = false;
 					daNote.visible = false;
@@ -687,6 +720,8 @@ class PlayState extends FlxTransitionableState
 					if (daNote.wasGoodHit)
 					{
 						daNote.kill();
+						notes.remove(daNote, true);
+						daNote.destroy();
 					}
 				}
 			}
@@ -763,7 +798,7 @@ class PlayState extends FlxTransitionableState
 	{
 		if (!boyfriend.stunned)
 		{
-			health -= 0.075;
+			health -= 0.08;
 			if (combo > 5)
 			{
 				gf.playAnim('sad');
@@ -827,6 +862,11 @@ class PlayState extends FlxTransitionableState
 		{
 			combo += 1;
 
+			if (note.noteData > 0)
+				health += 0.03;
+			else
+				health += 0.007;
+
 			switch (Math.abs(note.noteData))
 			{
 				case 1:
@@ -850,6 +890,10 @@ class PlayState extends FlxTransitionableState
 			sectionScores[1][curSection] += note.noteScore;
 			note.wasGoodHit = true;
 			vocals.volume = 1;
+
+			note.kill();
+			notes.remove(note, true);
+			note.destroy();
 		}
 	}
 
