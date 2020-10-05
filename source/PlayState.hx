@@ -73,7 +73,7 @@ class PlayState extends FlxState
 
 		playerStrums = new FlxTypedGroup<FlxSprite>();
 
-		generateSong('bopeebo');
+		generateSong('fresh');
 
 		canHitText = new FlxText(10, 10, 0, "weed");
 
@@ -248,8 +248,6 @@ class PlayState extends FlxState
 
 	override public function update(elapsed:Float)
 	{
-		keyShit();
-
 		super.update(elapsed);
 
 		if (FlxG.keys.justPressed.NINE)
@@ -331,6 +329,8 @@ class PlayState extends FlxState
 			if (!sortedNotes)
 				notes.sort(FlxSort.byY, FlxSort.DESCENDING);
 		});
+
+		keyShit();
 	}
 
 	private function popUpScore():Void
@@ -373,21 +373,59 @@ class PlayState extends FlxState
 		var downR = FlxG.keys.anyJustReleased([S, DOWN]);
 		var leftR = FlxG.keys.anyJustReleased([A, LEFT]);
 
-		if ((up || right || down || left) && !boyfriend.stunned)
+		FlxG.watch.addQuick('asdfa', upP);
+		if ((upP || rightP || downP || leftP) && !boyfriend.stunned)
 		{
 			var possibleNotes:Array<Note> = [];
 
-			notes.forEach(function(daNote:Note)
+			notes.forEachAlive(function(daNote:Note)
 			{
-				if (daNote.canBeHit && daNote.mustPress)
+				if (daNote.canBeHit && daNote.mustPress && !daNote.tooLate)
 				{
 					possibleNotes.push(daNote);
+					trace('NOTE-' + daNote.strumTime + ' ADDED');
 				}
 			});
 
 			if (possibleNotes.length > 0)
 			{
 				for (daNote in possibleNotes)
+				{
+					switch (daNote.noteData)
+					{
+						case 1: // NOTES YOU JUST PRESSED
+							if (upP || rightP || downP || leftP)
+								noteCheck(upP, daNote);
+						case 2:
+							if (upP || rightP || downP || leftP)
+								noteCheck(rightP, daNote);
+						case 3:
+							if (upP || rightP || downP || leftP)
+								noteCheck(downP, daNote);
+						case 4:
+							if (upP || rightP || downP || leftP)
+								noteCheck(leftP, daNote);
+					}
+
+					if (daNote.wasGoodHit)
+					{
+						daNote.kill();
+					}
+				}
+			}
+			else
+			{
+				badNoteCheck();
+			}
+		}
+
+		if ((up || right || down || left) && boyfriend.stunned)
+		{
+			var possibleNotes:Array<Note> = [];
+
+			notes.forEach(function(daNote:Note)
+			{
+				if (daNote.canBeHit && daNote.mustPress)
 				{
 					switch (daNote.noteData)
 					{
@@ -404,26 +442,9 @@ class PlayState extends FlxState
 						case -4:
 							if (left && daNote.prevNote.wasGoodHit)
 								goodNoteHit(daNote);
-						case 1: // NOTES YOU JUST PRESSED
-							noteCheck(upP, daNote);
-						case 2:
-							noteCheck(rightP, daNote);
-						case 3:
-							noteCheck(downP, daNote);
-						case 4:
-							noteCheck(leftP, daNote);
-					}
-
-					if (daNote.wasGoodHit)
-					{
-						daNote.kill();
 					}
 				}
-			}
-			else
-			{
-				badNoteCheck();
-			}
+			});
 		}
 
 		playerStrums.forEach(function(spr:FlxSprite)
@@ -466,6 +487,9 @@ class PlayState extends FlxState
 	{
 		if (!boyfriend.stunned)
 		{
+			trace('badNote');
+			FlxG.sound.play('assets/sounds/missnote' + FlxG.random.int(1, 3) + ".mp3", 0.2);
+
 			boyfriend.stunned = true;
 
 			// get stunned for 5 seconds
@@ -508,6 +532,7 @@ class PlayState extends FlxState
 
 	function noteCheck(keyP:Bool, note:Note):Void
 	{
+		trace(note.noteData + ' note check here ' + keyP);
 		if (keyP)
 			goodNoteHit(note);
 		else
@@ -518,6 +543,8 @@ class PlayState extends FlxState
 	{
 		if (!note.wasGoodHit)
 		{
+			trace('goodhit');
+
 			switch (Math.abs(note.noteData))
 			{
 				case 1:
