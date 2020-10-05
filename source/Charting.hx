@@ -7,6 +7,7 @@ import flixel.FlxState;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
+import flixel.util.FlxColor;
 
 /**
 	*DEBUG MODE
@@ -83,6 +84,7 @@ class Charting extends FlxState
 		{
 			var text:FlxText = new FlxText(10, 20 + (18 * daLoop), 0, anim + ": " + offsets, 15);
 			text.scrollFactor.set();
+			text.color = FlxColor.BLUE;
 			dumbTexts.add(text);
 
 			if (pushList)

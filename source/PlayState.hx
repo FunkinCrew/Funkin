@@ -42,6 +42,7 @@ class PlayState extends FlxState
 	private var curSection:Int = 0;
 
 	private var sectionScores:Array<Dynamic> = [[], []];
+	private var sectionLengths:Array<Int> = [];
 
 	private var camFollow:FlxObject;
 	private var strumLineNotes:FlxTypedGroup<FlxSprite>;
@@ -68,7 +69,7 @@ class PlayState extends FlxState
 
 		playerStrums = new FlxTypedGroup<FlxSprite>();
 
-		generateSong('assets/data/bopeebo/bopeebo.json');
+		generateSong('assets/data/fresh/fresh.json');
 
 		canHitText = new FlxText(10, 10, 0, "weed");
 
@@ -98,6 +99,7 @@ class PlayState extends FlxState
 		generateStaticArrows(1);
 
 		var songData = Json.parse(Assets.getText(dataPath));
+		Conductor.changeBPM(songData.bpm);
 		FlxG.sound.playMusic("assets/music/" + songData.song + "_Inst.mp3");
 
 		vocals = new FlxSound().loadEmbedded("assets/music/" + songData.song + "_Voices.mp3");
@@ -119,21 +121,32 @@ class PlayState extends FlxState
 		while (playerCounter < 2)
 		{
 			var daBeats:Int = 0; // Not exactly representative of 'daBeats' lol, just how much it has looped
+			var totalLength:Int = 0; // Total length of the song, in beats;
 			for (section in noteData)
 			{
 				var dumbassSection:Array<Dynamic> = section;
 
 				var daStep:Int = 0;
+				var coolSection:Int = Std.int(section.length / 4);
+
+				if (coolSection <= 4) // FIX SINCE MOST THE SHIT I MADE WERE ONLY 3 HTINGS LONG LOl
+					coolSection = 4;
+				else if (coolSection <= 8)
+					coolSection = 8;
 
 				for (songNotes in dumbassSection)
 				{
 					sectionScores[0].push(0);
 					sectionScores[1].push(0);
 
+					trace('SECTON');
+					trace(daBeats);
+					trace(totalLength);
+
 					if (songNotes != 0)
 					{
-						var daStrumTime:Float = (((daStep * Conductor.stepCrochet) + (Conductor.crochet * 8 * daBeats))
-							+ ((Conductor.crochet * 4) * playerCounter));
+						var daStrumTime:Float = ((daStep * Conductor.stepCrochet) + (Conductor.crochet * 8 * totalLength))
+							+ ((Conductor.crochet * coolSection) * playerCounter);
 
 						var swagNote:Note = new Note(daStrumTime, songNotes);
 						swagNote.scrollFactor.set(0, 0);
@@ -160,11 +173,16 @@ class PlayState extends FlxState
 					daStep += 1;
 				}
 
+				// only need to do it once
+				if (playerCounter == 0)
+					sectionLengths.push(Math.round(coolSection / 4));
+				totalLength += Math.round(coolSection / 4);
 				daBeats += 1;
 			}
 
 			playerCounter += 1;
 		}
+		trace(sectionLengths);
 	}
 
 	private function generateStaticArrows(player:Int):Void
@@ -237,9 +255,9 @@ class PlayState extends FlxState
 			FlxG.switchState(new Charting(true));
 
 		Conductor.songPosition = FlxG.sound.music.time;
-		var playerTurn:Int = totalBeats % 8;
+		var playerTurn:Int = totalBeats % (sectionLengths[curSection] * 8);
 
-		if (playerTurn == 7 && !sectionScored)
+		if (playerTurn == (sectionLengths[curSection] * 8) - 1 && !sectionScored)
 		{
 			popUpScore();
 			sectionScored = true;
@@ -251,7 +269,7 @@ class PlayState extends FlxState
 			vocals.volume = 1;
 		}
 
-		if (playerTurn == 4)
+		if (playerTurn == Std.int((sectionLengths[curSection] * 8) / 2))
 		{
 			camFollow.setPosition(boyfriend.getGraphicMidpoint().x - 100, boyfriend.getGraphicMidpoint().y - 100);
 		}
