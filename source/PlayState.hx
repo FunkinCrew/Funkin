@@ -8,6 +8,7 @@ import flixel.addons.display.FlxGridOverlay;
 import flixel.graphics.atlas.FlxAtlas;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.math.FlxMath;
 import flixel.system.FlxSound;
 import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
@@ -38,6 +39,7 @@ class PlayState extends FlxState
 	private var boyfriend:Boyfriend;
 
 	private var notes:FlxTypedGroup<Note>;
+	private var unspawnNotes:Array<Note> = [];
 
 	private var strumLine:FlxSprite;
 	private var curSection:Int = 0;
@@ -48,6 +50,9 @@ class PlayState extends FlxState
 	private var camFollow:FlxObject;
 	private var strumLineNotes:FlxTypedGroup<FlxSprite>;
 	private var playerStrums:FlxTypedGroup<FlxSprite>;
+
+	private var camZooming:Bool = false;
+	private var curSong:String = "";
 
 	override public function create()
 	{
@@ -106,6 +111,8 @@ class PlayState extends FlxState
 		Conductor.changeBPM(songData.bpm);
 		FlxG.sound.playMusic("assets/music/" + songData.song + "_Inst.mp3");
 
+		curSong = songData.song;
+
 		vocals = new FlxSound().loadEmbedded("assets/music/" + songData.song + "_Voices.mp3");
 		FlxG.sound.list.add(vocals);
 		vocals.play();
@@ -149,13 +156,15 @@ class PlayState extends FlxState
 							+ ((Conductor.crochet * coolSection) * playerCounter);
 
 						var oldNote:Note;
-						if (notes.members.length > 0)
-							oldNote = notes.members[notes.members.length - 1];
+						if (unspawnNotes.length > 0)
+							oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
 						else
 							oldNote = null;
 
 						var swagNote:Note = new Note(daStrumTime, songNotes, oldNote);
 						swagNote.scrollFactor.set(0, 0);
+
+						unspawnNotes.push(swagNote);
 
 						swagNote.x += ((FlxG.width / 2) * playerCounter); // general offset
 
@@ -167,8 +176,6 @@ class PlayState extends FlxState
 						{
 							sectionScores[0][daBeats] += swagNote.noteScore;
 						}
-
-						notes.add(swagNote);
 					}
 
 					daStep += 1;
@@ -181,8 +188,17 @@ class PlayState extends FlxState
 				daBeats += 1;
 			}
 
+			trace(unspawnNotes.length);
 			playerCounter += 1;
 		}
+
+		unspawnNotes.sort(sortByShit);
+		trace('FIRST NOTE ' + unspawnNotes[0]);
+	}
+
+	function sortByShit(Obj1:Note, Obj2:Note):Int
+	{
+		return FlxSort.byValues(FlxSort.ASCENDING, Obj1.strumTime, Obj2.strumTime);
 	}
 
 	var sortedNotes:Bool = false;
@@ -275,15 +291,37 @@ class PlayState extends FlxState
 			camFollow.setPosition(boyfriend.getGraphicMidpoint().x - 100, boyfriend.getGraphicMidpoint().y - 100);
 		}
 
+		if (camZooming)
+		{
+			FlxG.camera.zoom = FlxMath.lerp(1.05, FlxG.camera.zoom, 0.96);
+		}
+
 		if (playerTurn < 4)
 		{
 			sectionScored = false;
 		}
 
-		FlxG.watch.addQuick("beatShit", playerTurn);
+		FlxG.watch.addQuick("beatShit", totalBeats);
 
+		if (curSong == 'Fresh' && totalBeats == 16)
+		{
+			camZooming = true;
+		}
 		everyBeat();
 		everyStep();
+		// better streaming of shit
+
+		FlxG.watch.addQuick('spsa', unspawnNotes[0].strumTime);
+		FlxG.watch.addQuick('weed', Conductor.songPosition);
+
+		if (unspawnNotes[0].strumTime - Conductor.songPosition < 5 * 1000)
+		{
+			var dunceNote:Note = unspawnNotes[0];
+			notes.add(dunceNote);
+
+			var index:Int = unspawnNotes.indexOf(dunceNote);
+			unspawnNotes.splice(index, 1);
+		}
 
 		notes.forEachAlive(function(daNote:Note)
 		{
@@ -488,7 +526,7 @@ class PlayState extends FlxState
 		if (!boyfriend.stunned)
 		{
 			trace('badNote');
-			FlxG.sound.play('assets/sounds/missnote' + FlxG.random.int(1, 3) + ".mp3", 0.2);
+			FlxG.sound.play('assets/sounds/missnote' + FlxG.random.int(1, 3) + ".mp3", FlxG.random.float(0.05, 0.2));
 
 			boyfriend.stunned = true;
 
@@ -580,6 +618,9 @@ class PlayState extends FlxState
 			{
 				lastBeat += Conductor.crochet;
 				canHitText.text += "\nWEED\nWEED";
+
+				if (camZooming && FlxG.camera.zoom < 1.35 && totalBeats % 4 == 0)
+					FlxG.camera.zoom += 0.025;
 
 				totalBeats += 1;
 
