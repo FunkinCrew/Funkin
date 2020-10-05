@@ -20,16 +20,11 @@ class Boyfriend extends Character
 		animation.addByPrefix('hey', 'BF HEY', 24, false);
 		playAnim('idle');
 
-		addOffset('idle');
-		addOffset("singUP", -28, 27);
+		addOffset('idle', -5);
+		addOffset("singUP", -29, 27);
 		addOffset("singRIGHT", -38, -7);
 		addOffset("singLEFT", 12, -6);
-		addOffset("singDOWN", -14, -50);
-		addOffset("hey", 1, 6);
-	}
-
-	override function update(elapsed:Float)
-	{
-		super.update(elapsed);
+		addOffset("singDOWN", -10, -50);
+		addOffset("hey", 7, 4);
 	}
 }

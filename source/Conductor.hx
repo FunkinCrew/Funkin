@@ -16,4 +16,12 @@ class Conductor
 	public static var safeZoneOffset:Float = (safeFrames / 60) * 1000; // is calculated in create(), is safeFrames in milliseconds
 
 	public function new() {}
+
+	public static function changeBPM(newBpm:Int)
+	{
+		bpm = newBpm;
+
+		crochet = ((60 / bpm) * 1000);
+		stepCrochet = crochet / 4;
+	}
 }
