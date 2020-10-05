@@ -28,8 +28,6 @@ class PlayState extends FlxState
 	private var lastStep:Float = 0;
 	private var vocals:FlxSound;
 
-	private var canHit:Bool = false;
-
 	private var totalBeats:Int = 0;
 	private var totalSteps:Int = 0;
 
@@ -314,7 +312,7 @@ class PlayState extends FlxState
 			FlxG.watch.addQuick('spsa', unspawnNotes[0].strumTime);
 			FlxG.watch.addQuick('weed', Conductor.songPosition);
 
-			if (unspawnNotes[0].strumTime - Conductor.songPosition < 5 * 1000)
+			if (unspawnNotes[0].strumTime - Conductor.songPosition < 1500)
 			{
 				var dunceNote:Note = unspawnNotes[0];
 				notes.add(dunceNote);
@@ -352,6 +350,8 @@ class PlayState extends FlxState
 				}
 
 				daNote.kill();
+				notes.remove(daNote, true);
+				daNote.destroy();
 			}
 
 			daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * 0.45);
@@ -401,7 +401,7 @@ class PlayState extends FlxState
 		curSection += 1;
 	}
 
-	function keyShit():Void
+	private function keyShit():Void
 	{
 		// HOLDING
 		var up = FlxG.keys.anyPressed([W, UP]);
@@ -518,6 +518,7 @@ class PlayState extends FlxState
 					if (leftR)
 						spr.animation.play('static');
 			}
+
 			if (spr.animation.curAnim.name == 'confirm')
 			{
 				spr.centerOffsets();
@@ -644,15 +645,11 @@ class PlayState extends FlxState
 		if (Conductor.songPosition > lastStep + Conductor.stepCrochet - Conductor.safeZoneOffset
 			|| Conductor.songPosition < lastStep + Conductor.safeZoneOffset)
 		{
-			canHit = true;
-
 			if (Conductor.songPosition > lastStep + Conductor.stepCrochet)
 			{
 				totalSteps += 1;
 				lastStep += Conductor.stepCrochet;
 			}
 		}
-		else
-			canHit = false;
 	}
 }
