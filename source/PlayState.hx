@@ -14,6 +14,7 @@ import flixel.system.FlxSound;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
+import flixel.ui.FlxBar;
 import flixel.util.FlxCollision;
 import flixel.util.FlxColor;
 import flixel.util.FlxSort;
@@ -57,8 +58,13 @@ class PlayState extends FlxTransitionableState
 	private var health:Float = 1;
 	private var combo:Int = 0;
 
+	private var healthBarBG:FlxSprite;
+	private var healthBar:FlxBar;
+
 	private var generatedMusic:Bool = false;
 	private var countingDown:Bool = false;
+
+	private var healthHeads:FlxSprite;
 
 	override public function create()
 	{
@@ -97,14 +103,14 @@ class PlayState extends FlxTransitionableState
 
 		generateSong('fresh');
 		countingDown = true;
-		Conductor.songPosition -= Conductor.crochet * 4;
+		Conductor.songPosition -= Conductor.crochet * 5;
 
 		new FlxTimer().start(Conductor.crochet / 1000, function(tmr:FlxTimer)
 		{
 			switch (swagCounter)
 			{
 				case 0:
-					FlxG.sound.play('assets/sounds/freshIntro.mp3', 0.6);
+					FlxG.sound.play('assets/sounds/intro3.mp3', 0.6);
 				case 1:
 					var ready:FlxSprite = new FlxSprite().loadGraphic('assets/images/ready.png');
 					ready.scrollFactor.set();
@@ -117,7 +123,7 @@ class PlayState extends FlxTransitionableState
 							ready.destroy();
 						}
 					});
-					FlxG.sound.play('assets/sounds/freshIntro.mp3', 0.6);
+					FlxG.sound.play('assets/sounds/intro2.mp3', 0.6);
 				case 2:
 					var set:FlxSprite = new FlxSprite().loadGraphic('assets/images/set.png');
 					set.scrollFactor.set();
@@ -130,7 +136,7 @@ class PlayState extends FlxTransitionableState
 							set.destroy();
 						}
 					});
-					FlxG.sound.play('assets/sounds/freshIntro.mp3', 0.6);
+					FlxG.sound.play('assets/sounds/intro1.mp3', 0.6);
 				case 3:
 					var go:FlxSprite = new FlxSprite().loadGraphic('assets/images/go.png');
 					go.scrollFactor.set();
@@ -143,7 +149,7 @@ class PlayState extends FlxTransitionableState
 							go.destroy();
 						}
 					});
-					FlxG.sound.play('assets/sounds/freshIntro.mp3', 0.6);
+					FlxG.sound.play('assets/sounds/introGo.mp3', 0.6);
 				case 4:
 			}
 
@@ -164,6 +170,27 @@ class PlayState extends FlxTransitionableState
 		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
 
 		FlxG.fixedTimestep = false;
+
+		healthBarBG = new FlxSprite(0, FlxG.height * 0.9).loadGraphic(AssetPaths.healthBar__png);
+		healthBarBG.screenCenter(X);
+		healthBarBG.scrollFactor.set();
+		add(healthBarBG);
+
+		healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
+			'health', 0, 2);
+		healthBar.scrollFactor.set();
+		healthBar.createFilledBar(0xFFFF0000, 0xFF66FF33);
+		// healthBar
+		add(healthBar);
+
+		healthHeads = new FlxSprite();
+		var headTex = FlxAtlasFrames.fromSparrow(AssetPaths.healthHeads__png, AssetPaths.healthHeads__xml);
+		healthHeads.frames = headTex;
+		healthHeads.animation.add('healthy', [0]);
+		healthHeads.animation.add('unhealthy', [1]);
+		healthHeads.y = healthBar.y - (healthHeads.height / 2);
+		healthHeads.scrollFactor.set();
+		add(healthHeads);
 
 		super.create();
 	}
@@ -345,6 +372,9 @@ class PlayState extends FlxTransitionableState
 	override public function update(elapsed:Float)
 	{
 		super.update(elapsed);
+
+		healthHeads.setGraphicSize(Std.int(FlxMath.lerp(healthHeads.width, 80, 0.02)));
+		healthHeads.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (healthHeads.width / 2);
 
 		if (FlxG.keys.justPressed.NINE)
 			FlxG.switchState(new Charting());
@@ -541,7 +571,7 @@ class PlayState extends FlxTransitionableState
 		{
 			var numScore:FlxSprite = new FlxSprite().loadGraphic('assets/images/num' + Std.int(i) + '.png');
 			numScore.screenCenter();
-			numScore.x = coolText.x + (37 * daLoop) - 90;
+			numScore.x = coolText.x + (43 * daLoop) - 90;
 			numScore.y += 80;
 			numScore.antialiasing = true;
 			numScore.setGraphicSize(Std.int(numScore.width * 0.5));
@@ -822,6 +852,7 @@ class PlayState extends FlxTransitionableState
 				totalBeats += 1;
 
 				dad.playAnim('idle');
+				healthHeads.setGraphicSize(Std.int(healthHeads.width + 20));
 
 				if (totalBeats % gfSpeed == 0)
 					gf.dance();
