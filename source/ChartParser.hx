@@ -75,9 +75,6 @@ class ChartParser
 
 			row++;
 		}
-
-		trace(dopeArray.length);
-		trace(dopeArray);
 		return dopeArray;
 	}
 }

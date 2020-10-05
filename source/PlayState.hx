@@ -139,10 +139,6 @@ class PlayState extends FlxState
 					sectionScores[0].push(0);
 					sectionScores[1].push(0);
 
-					trace('SECTON');
-					trace(daBeats);
-					trace(totalLength);
-
 					if (songNotes != 0)
 					{
 						var daStrumTime:Float = ((daStep * Conductor.stepCrochet) + (Conductor.crochet * 8 * totalLength))
@@ -182,7 +178,6 @@ class PlayState extends FlxState
 
 			playerCounter += 1;
 		}
-		trace(sectionLengths);
 	}
 
 	private function generateStaticArrows(player:Int):Void
@@ -367,11 +362,21 @@ class PlayState extends FlxState
 		var downR = FlxG.keys.anyJustReleased([S, DOWN]);
 		var leftR = FlxG.keys.anyJustReleased([A, LEFT]);
 
-		if (up || right || down || left)
+		if ((up || right || down || left) && !boyfriend.stunned)
 		{
+			var possibleNotes:Array<Note> = [];
+
 			notes.forEach(function(daNote:Note)
 			{
-				if (daNote.canBeHit)
+				if (daNote.canBeHit && daNote.mustPress)
+				{
+					possibleNotes.push(daNote);
+				}
+			});
+
+			if (possibleNotes.length > 0)
+			{
+				for (daNote in possibleNotes)
 				{
 					switch (daNote.noteData)
 					{
@@ -389,17 +394,13 @@ class PlayState extends FlxState
 							if (left && daNote.prevNote.wasGoodHit)
 								goodNoteHit(daNote);
 						case 1: // NOTES YOU JUST PRESSED
-							if (upP)
-								goodNoteHit(daNote);
+							noteCheck(upP, daNote);
 						case 2:
-							if (rightP)
-								goodNoteHit(daNote);
+							noteCheck(rightP, daNote);
 						case 3:
-							if (downP)
-								goodNoteHit(daNote);
+							noteCheck(downP, daNote);
 						case 4:
-							if (leftP)
-								goodNoteHit(daNote);
+							noteCheck(leftP, daNote);
 					}
 
 					if (daNote.wasGoodHit)
@@ -407,7 +408,11 @@ class PlayState extends FlxState
 						daNote.kill();
 					}
 				}
-			});
+			}
+			else
+			{
+				badNoteCheck();
+			}
 		}
 
 		playerStrums.forEach(function(spr:FlxSprite)
@@ -415,22 +420,22 @@ class PlayState extends FlxState
 			switch (spr.ID)
 			{
 				case 1:
-					if (upP && spr.animation.curAnim.name != 'confirm')
+					if (upP && spr.animation.curAnim.name != 'confirm' && !boyfriend.stunned)
 						spr.animation.play('pressed');
 					if (upR)
 						spr.animation.play('static');
 				case 2:
-					if (rightP && spr.animation.curAnim.name != 'confirm')
+					if (rightP && spr.animation.curAnim.name != 'confirm' && !boyfriend.stunned)
 						spr.animation.play('pressed');
 					if (rightR)
 						spr.animation.play('static');
 				case 3:
-					if (downP && spr.animation.curAnim.name != 'confirm')
+					if (downP && spr.animation.curAnim.name != 'confirm' && !boyfriend.stunned)
 						spr.animation.play('pressed');
 					if (downR)
 						spr.animation.play('static');
 				case 4:
-					if (leftP && spr.animation.curAnim.name != 'confirm')
+					if (leftP && spr.animation.curAnim.name != 'confirm' && !boyfriend.stunned)
 						spr.animation.play('pressed');
 					if (leftR)
 						spr.animation.play('static');
@@ -444,6 +449,58 @@ class PlayState extends FlxState
 			else
 				spr.centerOffsets();
 		});
+	}
+
+	function noteMiss(direction:Int = 1):Void
+	{
+		if (!boyfriend.stunned)
+		{
+			boyfriend.stunned = true;
+
+			// get stunned for 5 seconds
+			new FlxTimer().start(5 / 60, function(tmr:FlxTimer)
+			{
+				boyfriend.stunned = false;
+			});
+
+			switch (direction)
+			{
+				case 1:
+					boyfriend.playAnim('singUPmiss', true);
+				case 2:
+					boyfriend.playAnim('singRIGHTmiss', true);
+				case 3:
+					boyfriend.playAnim('singDOWNmiss', true);
+				case 4:
+					boyfriend.playAnim('singLEFTmiss', true);
+			}
+		}
+	}
+
+	function badNoteCheck()
+	{
+		// just double pasting this shit cuz fuk u
+		var upP = FlxG.keys.anyJustPressed([W, UP]);
+		var rightP = FlxG.keys.anyJustPressed([D, RIGHT]);
+		var downP = FlxG.keys.anyJustPressed([S, DOWN]);
+		var leftP = FlxG.keys.anyJustPressed([A, LEFT]);
+
+		if (leftP)
+			noteMiss(4);
+		if (upP)
+			noteMiss(1);
+		if (rightP)
+			noteMiss(2);
+		if (downP)
+			noteMiss(3);
+	}
+
+	function noteCheck(keyP:Bool, note:Note):Void
+	{
+		if (keyP)
+			goodNoteHit(note);
+		else
+			badNoteCheck();
 	}
 
 	function goodNoteHit(note:Note):Void
