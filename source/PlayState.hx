@@ -51,6 +51,9 @@ class PlayState extends FlxState
 	private var camZooming:Bool = false;
 	private var curSong:String = "";
 
+	private var gfSpeed:Int = 1;
+	private var health:Float = 1;
+
 	override public function create()
 	{
 		var bg:FlxSprite = new FlxSprite(-600, -200).loadGraphic(AssetPaths.bg__png);
@@ -63,6 +66,7 @@ class PlayState extends FlxState
 
 		gf = new Girlfriend(400, 130);
 		gf.scrollFactor.set(0.95, 0.95);
+		gf.antialiasing = true;
 		add(gf);
 
 		dad = new Dad(100, 100);
@@ -304,9 +308,20 @@ class PlayState extends FlxState
 
 		FlxG.watch.addQuick("beatShit", totalBeats);
 
-		if (curSong == 'Fresh' && totalBeats == 16)
+		if (curSong == 'Fresh')
 		{
-			camZooming = true;
+			switch (totalBeats)
+			{
+				case 16:
+					camZooming = true;
+					gfSpeed = 2;
+				case 48:
+					gfSpeed = 1;
+				case 80:
+					gfSpeed = 2;
+				case 112:
+					gfSpeed = 1;
+			}
 		}
 		everyBeat();
 		everyStep();
@@ -539,6 +554,7 @@ class PlayState extends FlxState
 	{
 		if (!boyfriend.stunned)
 		{
+			health -= 0.075;
 			trace('badNote');
 			FlxG.sound.play('assets/sounds/missnote' + FlxG.random.int(1, 3) + ".mp3", FlxG.random.float(0.05, 0.2));
 
@@ -638,7 +654,9 @@ class PlayState extends FlxState
 				totalBeats += 1;
 
 				dad.playAnim('idle');
-				gf.dance();
+
+				if (totalBeats % gfSpeed == 0)
+					gf.dance();
 
 				if (!boyfriend.animation.curAnim.name.startsWith("sing"))
 					boyfriend.playAnim('idle');
