@@ -13,6 +13,7 @@ import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxCollision;
 import flixel.util.FlxColor;
+import flixel.util.FlxSort;
 import flixel.util.FlxStringUtil;
 import flixel.util.FlxTimer;
 import haxe.Json;
@@ -50,8 +51,11 @@ class PlayState extends FlxState
 
 	override public function create()
 	{
-		var bg:FlxSprite = FlxGridOverlay.create(50, 50);
-		bg.scrollFactor.set(0.5, 0.5);
+		var bg:FlxSprite = new FlxSprite(-600, -200).loadGraphic(AssetPaths.bg__png);
+		bg.setGraphicSize(Std.int(bg.width * 2.5));
+		bg.updateHitbox();
+		bg.antialiasing = true;
+		bg.scrollFactor.set(0.9, 0.9);
 		add(bg);
 
 		dad = new Dad(100, 100);
@@ -69,7 +73,7 @@ class PlayState extends FlxState
 
 		playerStrums = new FlxTypedGroup<FlxSprite>();
 
-		generateSong('assets/data/fresh/fresh.json');
+		generateSong('bopeebo');
 
 		canHitText = new FlxText(10, 10, 0, "weed");
 
@@ -98,7 +102,7 @@ class PlayState extends FlxState
 		generateStaticArrows(0);
 		generateStaticArrows(1);
 
-		var songData = Json.parse(Assets.getText(dataPath));
+		var songData = Json.parse(Assets.getText('assets/data/' + dataPath + '/' + dataPath + '.json'));
 		Conductor.changeBPM(songData.bpm);
 		FlxG.sound.playMusic("assets/music/" + songData.song + "_Inst.mp3");
 
@@ -144,7 +148,13 @@ class PlayState extends FlxState
 						var daStrumTime:Float = ((daStep * Conductor.stepCrochet) + (Conductor.crochet * 8 * totalLength))
 							+ ((Conductor.crochet * coolSection) * playerCounter);
 
-						var swagNote:Note = new Note(daStrumTime, songNotes);
+						var oldNote:Note;
+						if (notes.members.length > 0)
+							oldNote = notes.members[notes.members.length - 1];
+						else
+							oldNote = null;
+
+						var swagNote:Note = new Note(daStrumTime, songNotes, oldNote);
 						swagNote.scrollFactor.set(0, 0);
 
 						swagNote.x += ((FlxG.width / 2) * playerCounter); // general offset
@@ -157,11 +167,6 @@ class PlayState extends FlxState
 						{
 							sectionScores[0][daBeats] += swagNote.noteScore;
 						}
-
-						if (notes.members.length > 0)
-							swagNote.prevNote = notes.members[notes.members.length - 1];
-						else
-							swagNote.prevNote = swagNote;
 
 						notes.add(swagNote);
 					}
@@ -179,6 +184,8 @@ class PlayState extends FlxState
 			playerCounter += 1;
 		}
 	}
+
+	var sortedNotes:Bool = false;
 
 	private function generateStaticArrows(player:Int):Void
 	{
@@ -319,6 +326,10 @@ class PlayState extends FlxState
 			}
 
 			daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * 0.45);
+
+			// one time sort
+			if (!sortedNotes)
+				notes.sort(FlxSort.byY, FlxSort.DESCENDING);
 		});
 	}
 
@@ -420,22 +431,22 @@ class PlayState extends FlxState
 			switch (spr.ID)
 			{
 				case 1:
-					if (upP && spr.animation.curAnim.name != 'confirm' && !boyfriend.stunned)
+					if (upP && spr.animation.curAnim.name != 'confirm')
 						spr.animation.play('pressed');
 					if (upR)
 						spr.animation.play('static');
 				case 2:
-					if (rightP && spr.animation.curAnim.name != 'confirm' && !boyfriend.stunned)
+					if (rightP && spr.animation.curAnim.name != 'confirm')
 						spr.animation.play('pressed');
 					if (rightR)
 						spr.animation.play('static');
 				case 3:
-					if (downP && spr.animation.curAnim.name != 'confirm' && !boyfriend.stunned)
+					if (downP && spr.animation.curAnim.name != 'confirm')
 						spr.animation.play('pressed');
 					if (downR)
 						spr.animation.play('static');
 				case 4:
-					if (leftP && spr.animation.curAnim.name != 'confirm' && !boyfriend.stunned)
+					if (leftP && spr.animation.curAnim.name != 'confirm')
 						spr.animation.play('pressed');
 					if (leftR)
 						spr.animation.play('static');
