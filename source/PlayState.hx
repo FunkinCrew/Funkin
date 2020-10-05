@@ -33,8 +33,6 @@ class PlayState extends FlxState
 	private var totalBeats:Int = 0;
 	private var totalSteps:Int = 0;
 
-	private var canHitText:FlxText;
-
 	private var dad:Dad;
 	private var boyfriend:Boyfriend;
 
@@ -61,6 +59,7 @@ class PlayState extends FlxState
 		bg.updateHitbox();
 		bg.antialiasing = true;
 		bg.scrollFactor.set(0.9, 0.9);
+		bg.active = false;
 		add(bg);
 
 		dad = new Dad(100, 100);
@@ -79,8 +78,6 @@ class PlayState extends FlxState
 		playerStrums = new FlxTypedGroup<FlxSprite>();
 
 		generateSong('fresh');
-
-		canHitText = new FlxText(10, 10, 0, "weed");
 
 		// add(strumLine);
 
@@ -282,11 +279,12 @@ class PlayState extends FlxState
 
 		if (playerTurn == 0)
 		{
-			camFollow.setPosition(dad.getGraphicMidpoint().x + 150, dad.getGraphicMidpoint().y - 100);
+			if (camFollow.x != dad.getGraphicMidpoint().x + 150)
+				camFollow.setPosition(dad.getGraphicMidpoint().x + 150, dad.getGraphicMidpoint().y - 100);
 			vocals.volume = 1;
 		}
 
-		if (playerTurn == Std.int((sectionLengths[curSection] * 8) / 2))
+		if (playerTurn == Std.int((sectionLengths[curSection] * 8) / 2) && camFollow.x != boyfriend.getGraphicMidpoint().x - 100)
 		{
 			camFollow.setPosition(boyfriend.getGraphicMidpoint().x - 100, boyfriend.getGraphicMidpoint().y - 100);
 		}
@@ -311,16 +309,19 @@ class PlayState extends FlxState
 		everyStep();
 		// better streaming of shit
 
-		FlxG.watch.addQuick('spsa', unspawnNotes[0].strumTime);
-		FlxG.watch.addQuick('weed', Conductor.songPosition);
-
-		if (unspawnNotes[0].strumTime - Conductor.songPosition < 5 * 1000)
+		if (unspawnNotes[0] != null)
 		{
-			var dunceNote:Note = unspawnNotes[0];
-			notes.add(dunceNote);
+			FlxG.watch.addQuick('spsa', unspawnNotes[0].strumTime);
+			FlxG.watch.addQuick('weed', Conductor.songPosition);
 
-			var index:Int = unspawnNotes.indexOf(dunceNote);
-			unspawnNotes.splice(index, 1);
+			if (unspawnNotes[0].strumTime - Conductor.songPosition < 5 * 1000)
+			{
+				var dunceNote:Note = unspawnNotes[0];
+				notes.add(dunceNote);
+
+				var index:Int = unspawnNotes.indexOf(dunceNote);
+				unspawnNotes.splice(index, 1);
+			}
 		}
 
 		notes.forEachAlive(function(daNote:Note)
@@ -334,14 +335,6 @@ class PlayState extends FlxState
 			{
 				daNote.visible = true;
 				daNote.active = true;
-			}
-
-			if (daNote.y < -daNote.height)
-			{
-				if (daNote.tooLate)
-					vocals.volume = 0;
-
-				daNote.kill();
 			}
 
 			if (!daNote.mustPress && daNote.wasGoodHit)
@@ -363,10 +356,25 @@ class PlayState extends FlxState
 
 			daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * 0.45);
 
+			if (daNote.y < -daNote.height)
+			{
+				if (daNote.tooLate)
+					vocals.volume = 0;
+
+				daNote.active = false;
+				daNote.visible = false;
+
+				daNote.kill();
+				notes.remove(daNote, true);
+				daNote.destroy();
+			}
+
 			// one time sort
 			if (!sortedNotes)
 				notes.sort(FlxSort.byY, FlxSort.DESCENDING);
 		});
+
+		FlxG.watch.addQuick('length', notes.length);
 
 		keyShit();
 	}
@@ -385,7 +393,7 @@ class PlayState extends FlxState
 		FlxTween.tween(coolText, {alpha: 0}, 0.2, {
 			onComplete: function(tween:FlxTween)
 			{
-				coolText.kill();
+				coolText.destroy();
 			},
 			startDelay: Conductor.crochet * 0.001
 		});
@@ -609,7 +617,7 @@ class PlayState extends FlxState
 		}
 	}
 
-	function everyBeat():Void
+	private function everyBeat():Void
 	{
 		if (Conductor.songPosition > lastBeat + Conductor.crochet - Conductor.safeZoneOffset
 			|| Conductor.songPosition < lastBeat + Conductor.safeZoneOffset)
@@ -617,7 +625,6 @@ class PlayState extends FlxState
 			if (Conductor.songPosition > lastBeat + Conductor.crochet)
 			{
 				lastBeat += Conductor.crochet;
-				canHitText.text += "\nWEED\nWEED";
 
 				if (camZooming && FlxG.camera.zoom < 1.35 && totalBeats % 4 == 0)
 					FlxG.camera.zoom += 0.025;
@@ -632,7 +639,7 @@ class PlayState extends FlxState
 		}
 	}
 
-	function everyStep()
+	private function everyStep():Void
 	{
 		if (Conductor.songPosition > lastStep + Conductor.stepCrochet - Conductor.safeZoneOffset
 			|| Conductor.songPosition < lastStep + Conductor.safeZoneOffset)
@@ -643,7 +650,6 @@ class PlayState extends FlxState
 			{
 				totalSteps += 1;
 				lastStep += Conductor.stepCrochet;
-				canHitText.text += "\nWEED\nWEED";
 			}
 		}
 		else
