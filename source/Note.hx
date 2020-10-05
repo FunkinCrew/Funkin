@@ -37,6 +37,7 @@ class Note extends FlxSprite
 
 		setGraphicSize(Std.int(width * 0.7));
 		updateHitbox();
+		antialiasing = true;
 
 		switch (Math.abs(noteData))
 		{
