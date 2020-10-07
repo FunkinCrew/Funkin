@@ -31,7 +31,13 @@
 	<set name="BUILD_DIR" value="export/release" unless="debug" />
 
 	<classpath name="source" />
-	<assets path="assets" />
+	
+	<assets path="assets/images"/>
+	<assets path="assets/data"/>
+	
+	<assets path="assets/music" include="*.mp3" if="web" />
+	<assets path="assets/music" include="*.ogg" unless="web" />
+	<assets path="assets/sounds" include="*.mp3" if="web" />
 
 	<!-- _______________________________ Libraries ______________________________ -->
 
@@ -81,4 +87,5 @@
 	<!-- _________________________________ Custom _______________________________ -->
 
 	<!--Place custom nodes like icons here (higher priority to override the HaxeFlixel icon)-->
+	<icon path="art/icon.png"/>
 </project>

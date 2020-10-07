@@ -129,7 +129,7 @@ class PlayState extends FlxTransitionableState
 			switch (swagCounter)
 			{
 				case 0:
-					FlxG.sound.play('assets/sounds/intro3.mp3', 0.6);
+					FlxG.sound.play('assets/sounds/intro3' + TitleState.soundExt, 0.6);
 				case 1:
 					var ready:FlxSprite = new FlxSprite().loadGraphic('assets/images/ready.png');
 					ready.scrollFactor.set();
@@ -142,7 +142,7 @@ class PlayState extends FlxTransitionableState
 							ready.destroy();
 						}
 					});
-					FlxG.sound.play('assets/sounds/intro2.mp3', 0.6);
+					FlxG.sound.play('assets/sounds/intro2' + TitleState.soundExt, 0.6);
 				case 2:
 					var set:FlxSprite = new FlxSprite().loadGraphic('assets/images/set.png');
 					set.scrollFactor.set();
@@ -155,7 +155,7 @@ class PlayState extends FlxTransitionableState
 							set.destroy();
 						}
 					});
-					FlxG.sound.play('assets/sounds/intro1.mp3', 0.6);
+					FlxG.sound.play('assets/sounds/intro1' + TitleState.soundExt, 0.6);
 				case 3:
 					var go:FlxSprite = new FlxSprite().loadGraphic('assets/images/go.png');
 					go.scrollFactor.set();
@@ -168,7 +168,7 @@ class PlayState extends FlxTransitionableState
 							go.destroy();
 						}
 					});
-					FlxG.sound.play('assets/sounds/introGo.mp3', 0.6);
+					FlxG.sound.play('assets/sounds/introGo' + TitleState.soundExt, 0.6);
 				case 4:
 			}
 
@@ -217,7 +217,7 @@ class PlayState extends FlxTransitionableState
 	function startSong():Void
 	{
 		countingDown = false;
-		FlxG.sound.playMusic("assets/music/" + curLevel + "_Inst.mp3");
+		FlxG.sound.playMusic("assets/music/" + curLevel + "_Inst" + TitleState.soundExt);
 		vocals.play();
 	}
 
@@ -236,7 +236,7 @@ class PlayState extends FlxTransitionableState
 
 		curSong = songData.song;
 
-		vocals = new FlxSound().loadEmbedded("assets/music/" + curSong + "_Voices.mp3");
+		vocals = new FlxSound().loadEmbedded("assets/music/" + curSong + "_Voices" + TitleState.soundExt);
 		FlxG.sound.list.add(vocals);
 
 		notes = new FlxTypedGroup<Note>();
@@ -315,7 +315,6 @@ class PlayState extends FlxTransitionableState
 		}
 
 		unspawnNotes.sort(sortByShit);
-		trace('FIRST NOTE ' + unspawnNotes[0]);
 	}
 
 	function sortByShit(Obj1:Note, Obj2:Note):Int
@@ -805,7 +804,7 @@ class PlayState extends FlxTransitionableState
 			}
 			combo = 0;
 
-			FlxG.sound.play('assets/sounds/missnote' + FlxG.random.int(1, 3) + ".mp3", FlxG.random.float(0.05, 0.2));
+			FlxG.sound.play('assets/sounds/missnote' + FlxG.random.int(1, 3) + TitleState.soundExt, FlxG.random.float(0.05, 0.2));
 
 			boyfriend.stunned = true;
 
