@@ -18,9 +18,14 @@ import flixel.util.FlxTimer;
 class TitleState extends FlxTransitionableState
 {
 	static var initialized:Bool = false;
+	static public var soundExt:String = ".mp3";
 
 	override public function create():Void
 	{
+		#if (!web)
+		TitleState.soundExt = '.ogg';
+		#end
+
 		super.create();
 
 		if (!initialized)
@@ -64,7 +69,7 @@ class TitleState extends FlxTransitionableState
 		FlxTween.tween(logoBl, {y: logoBl.y + 50}, 0.6, {ease: FlxEase.quadInOut, type: PINGPONG});
 		FlxTween.tween(logo, {y: logoBl.y + 50}, 0.6, {ease: FlxEase.quadInOut, type: PINGPONG, startDelay: 0.1});
 
-		FlxG.sound.playMusic('assets/music/title.mp3', 0, false);
+		FlxG.sound.playMusic('assets/music/title' + TitleState.soundExt, 0, false);
 
 		FlxG.sound.music.fadeIn(4, 0, 0.7);
 	}
@@ -84,7 +89,7 @@ class TitleState extends FlxTransitionableState
 			{
 				FlxG.switchState(new PlayState());
 			});
-			FlxG.sound.play('assets/music/titleShoot.mp3', 0.7);
+			FlxG.sound.play('assets/music/titleShoot' + TitleState.soundExt, 0.7);
 		}
 
 		super.update(elapsed);

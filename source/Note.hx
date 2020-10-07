@@ -19,9 +19,12 @@ class Note extends FlxSprite
 
 	public static var swagWidth:Float = 160 * 0.7;
 
-	public function new(strumTime:Float, noteData:Int, prevNote:Note)
+	public function new(strumTime:Float, noteData:Int, ?prevNote:Note)
 	{
 		super();
+
+		if (prevNote == null)
+			prevNote = this;
 
 		this.prevNote = prevNote;
 
