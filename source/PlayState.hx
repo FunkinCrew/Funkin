@@ -209,6 +209,7 @@ class PlayState extends FlxTransitionableState
 		healthHeads.animation.add('unhealthy', [1]);
 		healthHeads.y = healthBar.y - (healthHeads.height / 2);
 		healthHeads.scrollFactor.set();
+		healthHeads.antialiasing = true;
 		add(healthHeads);
 
 		super.create();

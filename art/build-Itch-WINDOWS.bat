@@ -5,7 +5,7 @@ cd ..
 echo BUILDING GAME
 lime build windows -final
 echo UPLOADING TO ITCH
-butler push ./export/release/html5/bin ninja-muffin24/ld47:windows
+butler push ./export/release/windows/bin ninja-muffin24/friday-night-funkin:windows
 butler status ninja-muffin24/ld47:windows
 echo ITCH SHIT UPDATED LMAOOOOO
 pause
