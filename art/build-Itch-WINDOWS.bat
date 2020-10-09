@@ -4,8 +4,12 @@ cd ..
 @echo on
 echo BUILDING GAME
 lime build windows -final
-echo UPLOADING TO ITCH
-butler push ./export/release/windows/bin ninja-muffin24/friday-night-funkin:windows
-butler status ninja-muffin24/friday-night-funkin:windows
+echo UPLOADING 64 BIT VERSION TO ITCH
+butler push ./export/release/windows/bin ninja-muffin24/friday-night-funkin:windows-64bit
+lime build windows -final -32
+echo UPLOADING 32 BIT VERSION TO ITCH
+butler push ./export/release/windows/bin ninja-muffin24/friday-night-funkin:windows-32bit
+butler status ninja-muffin24/friday-night-funkin:windows-32bit
+butler status ninja-muffin24/friday-night-funkin:windows-64bit
 echo ITCH SHIT UPDATED LMAOOOOO
 pause
