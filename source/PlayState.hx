@@ -415,7 +415,10 @@ class PlayState extends FlxTransitionableState
 		}
 		else
 			Conductor.songPosition = FlxG.sound.music.time;
-		var playerTurn:Int = totalBeats % (sectionLengths[curSection] * 8);
+
+		var playerTurn:Int = 0;
+		if (sectionLengths.length > curSection)
+			playerTurn = totalBeats % (sectionLengths[curSection] * 8);
 
 		if (playerTurn == (sectionLengths[curSection] * 8) - 1 && !sectionScored)
 		{
