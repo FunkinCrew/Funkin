@@ -4,6 +4,7 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.graphics.frames.FlxAtlasFrames;
+import flixel.input.gamepad.FlxGamepad;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 
@@ -37,7 +38,17 @@ class GameOverState extends FlxTransitionableState
 
 	override function update(elapsed:Float)
 	{
-		if (FlxG.keys.justPressed.ANY && !fading)
+		var pressed:Bool = FlxG.keys.justPressed.ANY;
+
+		var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
+
+		if (gamepad != null)
+		{
+			if (gamepad.justPressed.ANY)
+				pressed = true;
+		}
+
+		if (pressed && !fading)
 		{
 			fading = true;
 			FlxG.sound.music.fadeOut(0.5, 0, function(twn:FlxTween)

@@ -686,6 +686,70 @@ class PlayState extends FlxTransitionableState
 		var downR = FlxG.keys.anyJustReleased([S, DOWN]);
 		var leftR = FlxG.keys.anyJustReleased([A, LEFT]);
 
+		var gamepad = FlxG.gamepads.lastActive;
+		if (gamepad != null)
+		{
+			if (gamepad.anyPressed(["DPAD_LEFT", "LEFT_STICK_DIGITAL_LEFT", X]))
+			{
+				left = true;
+			}
+
+			if (gamepad.anyPressed(["DPAD_RIGHT", "LEFT_STICK_DIGITAL_RIGHT", B]))
+			{
+				right = true;
+			}
+
+			if (gamepad.anyPressed(['DPAD_UP', "LEFT_STICK_DIGITAL_UP", Y]))
+			{
+				up = true;
+			}
+
+			if (gamepad.anyPressed(["DPAD_DOWN", "LEFT_STICK_DIGITAL_DOWN", A]))
+			{
+				down = true;
+			}
+
+			if (gamepad.anyJustPressed(["DPAD_LEFT", "LEFT_STICK_DIGITAL_LEFT", X]))
+			{
+				leftP = true;
+			}
+
+			if (gamepad.anyJustPressed(["DPAD_RIGHT", "LEFT_STICK_DIGITAL_RIGHT", B]))
+			{
+				rightP = true;
+			}
+
+			if (gamepad.anyJustPressed(['DPAD_UP', "LEFT_STICK_DIGITAL_UP", Y]))
+			{
+				upP = true;
+			}
+
+			if (gamepad.anyJustPressed(["DPAD_DOWN", "LEFT_STICK_DIGITAL_DOWN", A]))
+			{
+				downP = true;
+			}
+
+			if (gamepad.anyJustReleased(["DPAD_LEFT", "LEFT_STICK_DIGITAL_LEFT", X]))
+			{
+				leftR = true;
+			}
+
+			if (gamepad.anyJustReleased(["DPAD_RIGHT", "LEFT_STICK_DIGITAL_RIGHT", B]))
+			{
+				rightR = true;
+			}
+
+			if (gamepad.anyJustReleased(['DPAD_UP', "LEFT_STICK_DIGITAL_UP", Y]))
+			{
+				upR = true;
+			}
+
+			if (gamepad.anyJustReleased(["DPAD_DOWN", "LEFT_STICK_DIGITAL_DOWN", A]))
+			{
+				downR = true;
+			}
+		}
+
 		FlxG.watch.addQuick('asdfa', upP);
 		if ((upP || rightP || downP || leftP) && !boyfriend.stunned && generatedMusic)
 		{
@@ -835,10 +899,35 @@ class PlayState extends FlxTransitionableState
 	function badNoteCheck()
 	{
 		// just double pasting this shit cuz fuk u
+		// REDO THIS SYSTEM!
 		var upP = FlxG.keys.anyJustPressed([W, UP]);
 		var rightP = FlxG.keys.anyJustPressed([D, RIGHT]);
 		var downP = FlxG.keys.anyJustPressed([S, DOWN]);
 		var leftP = FlxG.keys.anyJustPressed([A, LEFT]);
+
+		var gamepad = FlxG.gamepads.lastActive;
+		if (gamepad != null)
+		{
+			if (gamepad.anyJustPressed(["DPAD_LEFT", "LEFT_STICK_DIGITAL_LEFT", X]))
+			{
+				leftP = true;
+			}
+
+			if (gamepad.anyJustPressed(["DPAD_RIGHT", "LEFT_STICK_DIGITAL_RIGHT", B]))
+			{
+				rightP = true;
+			}
+
+			if (gamepad.anyJustPressed(['DPAD_UP', "LEFT_STICK_DIGITAL_UP", Y]))
+			{
+				upP = true;
+			}
+
+			if (gamepad.anyJustPressed(["DPAD_DOWN", "LEFT_STICK_DIGITAL_DOWN", A]))
+			{
+				downP = true;
+			}
+		}
 
 		if (leftP)
 			noteMiss(4);

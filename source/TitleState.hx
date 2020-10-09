@@ -8,6 +8,7 @@ import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileDiamond;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.transition.TransitionData;
 import flixel.graphics.FlxGraphic;
+import flixel.input.gamepad.FlxGamepad;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import flixel.tweens.FlxEase;
@@ -78,7 +79,17 @@ class TitleState extends FlxTransitionableState
 
 	override function update(elapsed:Float)
 	{
-		if (FlxG.keys.justPressed.ENTER && !transitioning)
+		var pressedEnter:Bool = FlxG.keys.justPressed.ENTER;
+
+		var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
+
+		if (gamepad != null)
+		{
+			if (gamepad.justPressed.START)
+				pressedEnter = true;
+		}
+
+		if (pressedEnter && !transitioning)
 		{
 			FlxG.camera.flash(FlxColor.WHITE, 1);
 
