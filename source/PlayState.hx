@@ -4,6 +4,7 @@ import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.FlxSubState;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.graphics.atlas.FlxAtlas;
@@ -388,9 +389,45 @@ class PlayState extends FlxTransitionableState
 
 	var sectionScored:Bool = false;
 
+	override function openSubState(SubState:FlxSubState)
+	{
+		if (paused)
+		{
+			FlxG.sound.music.pause();
+			vocals.pause();
+		}
+
+		super.openSubState(SubState);
+	}
+
+	override function closeSubState()
+	{
+		if (paused)
+		{
+			vocals.time = FlxG.sound.music.time;
+
+			FlxG.sound.music.play();
+			vocals.play();
+			paused = false;
+		}
+
+		super.closeSubState();
+	}
+
+	private var paused:Bool = false;
+
 	override public function update(elapsed:Float)
 	{
 		super.update(elapsed);
+
+		if (FlxG.keys.justPressed.ENTER)
+		{
+			persistentUpdate = false;
+			persistentDraw = true;
+			paused = true;
+
+			openSubState(new PauseSubState());
+		}
 
 		healthHeads.setGraphicSize(Std.int(FlxMath.lerp(100, healthHeads.width, 0.98)));
 		healthHeads.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (healthHeads.width / 2);
