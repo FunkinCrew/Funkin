@@ -26,16 +26,11 @@ import lime.utils.Assets;
 
 using StringTools;
 
-class PlayState extends FlxTransitionableState
+class PlayState extends MusicBeatState
 {
 	public static var curLevel:String = 'Bopeebo';
 
-	private var lastBeat:Float = 0;
-	private var lastStep:Float = 0;
 	private var vocals:FlxSound;
-
-	private var totalBeats:Int = 0;
-	private var totalSteps:Int = 0;
 
 	private var dad:Dad;
 	private var gf:Girlfriend;
@@ -1026,42 +1021,20 @@ class PlayState extends FlxTransitionableState
 		}
 	}
 
-	private function everyBeat():Void
+	override function beatHit()
 	{
-		if (Conductor.songPosition > lastBeat + Conductor.crochet - Conductor.safeZoneOffset
-			|| Conductor.songPosition < lastBeat + Conductor.safeZoneOffset)
-		{
-			if (Conductor.songPosition > lastBeat + Conductor.crochet)
-			{
-				lastBeat += Conductor.crochet;
+		super.beatHit();
 
-				if (camZooming && FlxG.camera.zoom < 1.35 && totalBeats % 4 == 0)
-					FlxG.camera.zoom += 0.025;
+		if (camZooming && FlxG.camera.zoom < 1.35 && totalBeats % 4 == 0)
+			FlxG.camera.zoom += 0.025;
 
-				totalBeats += 1;
+		dad.playAnim('idle');
+		healthHeads.setGraphicSize(Std.int(healthHeads.width + 20));
 
-				dad.playAnim('idle');
-				healthHeads.setGraphicSize(Std.int(healthHeads.width + 20));
+		if (totalBeats % gfSpeed == 0)
+			gf.dance();
 
-				if (totalBeats % gfSpeed == 0)
-					gf.dance();
-
-				if (!boyfriend.animation.curAnim.name.startsWith("sing"))
-					boyfriend.playAnim('idle');
-			}
-		}
-	}
-
-	private function everyStep():Void
-	{
-		if (Conductor.songPosition > lastStep + Conductor.stepCrochet - Conductor.safeZoneOffset
-			|| Conductor.songPosition < lastStep + Conductor.safeZoneOffset)
-		{
-			if (Conductor.songPosition > lastStep + Conductor.stepCrochet)
-			{
-				totalSteps += 1;
-				lastStep += Conductor.stepCrochet;
-			}
-		}
+		if (!boyfriend.animation.curAnim.name.startsWith("sing"))
+			boyfriend.playAnim('idle');
 	}
 }
