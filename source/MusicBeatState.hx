@@ -15,18 +15,16 @@ class MusicBeatState extends FlxTransitionableState
 		super.create();
 	}
 
-	private function everyBeat():Void
+	override function update(elapsed:Float)
 	{
-		if (Conductor.songPosition > lastBeat + Conductor.crochet - Conductor.safeZoneOffset
-			|| Conductor.songPosition < lastBeat + Conductor.safeZoneOffset)
-		{
-			if (Conductor.songPosition > lastBeat + Conductor.crochet)
-			{
-				beatHit();
-			}
-		}
+		everyStep();
+
+		super.update(elapsed);
 	}
 
+	/**
+	 * CHECKS EVERY FRAME
+	 */
 	private function everyStep():Void
 	{
 		if (Conductor.songPosition > lastStep + Conductor.stepCrochet - Conductor.safeZoneOffset
@@ -43,6 +41,9 @@ class MusicBeatState extends FlxTransitionableState
 	{
 		totalSteps += 1;
 		lastStep += Conductor.stepCrochet;
+
+		if (totalSteps % 4 == 0)
+			beatHit();
 	}
 
 	public function beatHit():Void

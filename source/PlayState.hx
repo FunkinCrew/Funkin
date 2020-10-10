@@ -424,6 +424,9 @@ class PlayState extends MusicBeatState
 			openSubState(new PauseSubState());
 		}
 
+		FlxG.watch.addQuick('VOL', vocals.amplitudeLeft);
+		FlxG.watch.addQuick('VOLRight', vocals.amplitudeRight);
+
 		healthHeads.setGraphicSize(Std.int(FlxMath.lerp(100, healthHeads.width, 0.98)));
 		healthHeads.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (healthHeads.width / 2);
 
@@ -512,8 +515,6 @@ class PlayState extends MusicBeatState
 					FlxG.switchState(new PlayState());
 			}
 		}
-		everyBeat();
-		everyStep();
 		// better streaming of shit
 
 		if (health <= 0)
@@ -1019,6 +1020,17 @@ class PlayState extends MusicBeatState
 			notes.remove(note, true);
 			note.destroy();
 		}
+	}
+
+	override function stepHit()
+	{
+		if (vocals.time > Conductor.songPosition + Conductor.stepCrochet || vocals.time < Conductor.songPosition - Conductor.stepCrochet)
+		{
+			vocals.pause();
+			vocals.time = Conductor.songPosition;
+			vocals.play();
+		}
+		super.stepHit();
 	}
 
 	override function beatHit()
