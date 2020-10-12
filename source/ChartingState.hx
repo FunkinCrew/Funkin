@@ -19,12 +19,14 @@ class ChartingState extends MusicBeatState
 {
 	var _file:FileReference;
 	var sequencer:FlxTypedGroup<DisplayNote>;
+	var sectionShit:FlxTypedGroup<DisplayNote>;
 	var notes:Array<Dynamic> = [];
 
 	/**
-	 * Array of notes showing when each section STARTS
+	 * Array of notes showing when each section STARTS in STEPS
+	 * Usually rounded up??
 	 */
-	var sectionData:Array<Int> = [0];
+	var sectionData:Map<Int, Int>;
 
 	var section:Int = 0;
 	var bpmTxt:FlxText;
@@ -57,9 +59,39 @@ class ChartingState extends MusicBeatState
 		strumLine = new FlxSprite(0, 50).makeGraphic(Std.int(FlxG.width / 2), 4);
 		add(strumLine);
 
+		sectionShit = new FlxTypedGroup<DisplayNote>();
+
 		createStepChart();
+		sectionData = new Map<Int, Int>();
+		sectionData.set(0, 0);
+		updateSectionColors();
 
 		super.create();
+	}
+
+	function updateSectionColors():Void
+	{
+		sectionShit.forEach(function(note:DisplayNote)
+		{
+			sequencer.remove(note, true);
+			sectionShit.remove(note, true);
+			note.destroy();
+		});
+
+		for (i in sectionData.keys())
+		{
+			var sec:FlxText = new FlxText(strumLine.width, 0, 0, "Section " + i);
+			var sectionTex:DisplayNote = createDisplayNote(5, i - 1, sec);
+			sectionTex.strumTime = sectionData.get(i) * Conductor.stepCrochet;
+			sequencer.add(sectionTex);
+			sectionShit.add(sectionTex);
+			trace(i);
+		}
+	}
+
+	function createDisplayNote(row:Float, column:Float, ?spr:FlxSprite, ?func:Void->Void):DisplayNote
+	{
+		return new DisplayNote((35 * row) + 10, (35 * column) + 50, spr, func);
 	}
 
 	function createStepChart()
@@ -75,7 +107,7 @@ class ChartingState extends MusicBeatState
 			for (i in 0...amountSteps)
 			{
 				notes[r].push(false);
-				var seqBtn:DisplayNote = new DisplayNote((35 * r) + 10, (35 * i) + 50, null, function()
+				var seqBtn:DisplayNote = createDisplayNote(r, i, null, function()
 				{
 					if (notes[r][i] == 0)
 						notes[r][i] = 1;
@@ -97,14 +129,11 @@ class ChartingState extends MusicBeatState
 
 		if (FlxG.mouse.justPressedMiddle && section > 0)
 		{
-			var pushSection:Int = Math.round(FlxG.sound.music.time / Conductor.crochet) * 4;
+			var pushSection:Int = Math.round(Conductor.songPosition / Conductor.crochet) * 4;
 
-			if (sectionData[section] == null)
-			{
-				sectionData.push(pushSection);
-			}
-			else
-				sectionData[section] == pushSection;
+			sectionData.set(section, pushSection);
+
+			updateSectionColors();
 		}
 
 		if (FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.RIGHT)
@@ -113,7 +142,7 @@ class ChartingState extends MusicBeatState
 
 			if (FlxG.keys.justPressed.RIGHT)
 			{
-				if (section + 1 <= sectionData.length)
+				if (section + 1 <= Lambda.count(sectionData))
 					section += 1;
 				else
 					section = 0;
@@ -124,15 +153,15 @@ class ChartingState extends MusicBeatState
 				if (section > 0)
 					section -= 1;
 				else
-					section = sectionData.length;
+					section = Lambda.count(sectionData);
 			}
 
-			if (sectionData[section] != null)
-				FlxG.sound.music.time = sectionData[section] * Conductor.stepCrochet;
+			if (sectionData.exists(section))
+				FlxG.sound.music.time = sectionData.get(section) * Conductor.stepCrochet;
 		}
 
-		if (FlxG.keys.justPressed.R && sectionData[section] != null)
-			FlxG.sound.music.time = sectionData[section] * Conductor.stepCrochet;
+		if (FlxG.keys.justPressed.R && sectionData.exists(section))
+			FlxG.sound.music.time = sectionData.get(section) * Conductor.stepCrochet;
 
 		if (FlxG.sound.music.playing)
 		{
