@@ -20,14 +20,28 @@ class ChartingState extends MusicBeatState
 	var _file:FileReference;
 	var sequencer:FlxTypedGroup<DisplayNote>;
 	var notes:Array<Dynamic> = [];
+
+	/**
+	 * Array of notes showing when each section STARTS
+	 */
+	var sectionData:Array<Int> = [0];
+
+	var section:Int = 0;
 	var bpmTxt:FlxText;
 
 	var strumLine:FlxSprite;
+	var curSong:String = 'Fresh';
+	var amountSteps:Int = 0;
 
 	override function create()
 	{
-		FlxG.sound.playMusic('assets/music/Fresh.mp3', 0.6);
+		FlxG.sound.playMusic('assets/music/' + curSong + '.mp3', 0.6);
 		FlxG.sound.music.pause();
+		FlxG.sound.music.onComplete = function()
+		{
+			FlxG.sound.music.pause();
+			FlxG.sound.music.time = 0;
+		};
 		Conductor.changeBPM(120);
 
 		var saveButton:FlxButton = new FlxButton(0, 0, "Save", function()
@@ -53,10 +67,12 @@ class ChartingState extends MusicBeatState
 		sequencer = new FlxTypedGroup<DisplayNote>();
 		add(sequencer);
 
+		amountSteps = Math.floor(FlxG.sound.music.length / Conductor.stepCrochet);
+
 		for (r in 0...4)
 		{
 			notes.push([]);
-			for (i in 0...16)
+			for (i in 0...amountSteps)
 			{
 				notes[r].push(false);
 				var seqBtn:DisplayNote = new DisplayNote((35 * r) + 10, (35 * i) + 50, null, function()
@@ -69,7 +85,7 @@ class ChartingState extends MusicBeatState
 
 				seqBtn.strumTime = Conductor.stepCrochet * i;
 				seqBtn.makeGraphic(30, 30, FlxColor.WHITE);
-				seqBtn.ID = i + (16 * r);
+				seqBtn.ID = i + (amountSteps * r);
 				sequencer.add(seqBtn);
 			}
 		}
@@ -78,6 +94,45 @@ class ChartingState extends MusicBeatState
 	override function update(elapsed:Float)
 	{
 		Conductor.songPosition = FlxG.sound.music.time;
+
+		if (FlxG.mouse.justPressedMiddle && section > 0)
+		{
+			var pushSection:Int = Math.round(FlxG.sound.music.time / Conductor.crochet) * 4;
+
+			if (sectionData[section] == null)
+			{
+				sectionData.push(pushSection);
+			}
+			else
+				sectionData[section] == pushSection;
+		}
+
+		if (FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.RIGHT)
+		{
+			FlxG.sound.music.pause();
+
+			if (FlxG.keys.justPressed.RIGHT)
+			{
+				if (section + 1 <= sectionData.length)
+					section += 1;
+				else
+					section = 0;
+			}
+
+			if (FlxG.keys.justPressed.LEFT)
+			{
+				if (section > 0)
+					section -= 1;
+				else
+					section = sectionData.length;
+			}
+
+			if (sectionData[section] != null)
+				FlxG.sound.music.time = sectionData[section] * Conductor.stepCrochet;
+		}
+
+		if (FlxG.keys.justPressed.R && sectionData[section] != null)
+			FlxG.sound.music.time = sectionData[section] * Conductor.stepCrochet;
 
 		if (FlxG.sound.music.playing)
 		{
@@ -105,11 +160,11 @@ class ChartingState extends MusicBeatState
 		if (FlxG.keys.justPressed.DOWN)
 			Conductor.changeBPM(Conductor.bpm - 1);
 
-		bpmTxt.text = "BPM: " + Conductor.bpm;
+		bpmTxt.text = "BPM: " + Conductor.bpm + "\nSection: " + section;
 
 		sequencer.forEach(function(spr:DisplayNote)
 		{
-			if (notes[Std.int(spr.ID / 16)][spr.ID % 16] != 0)
+			if (notes[Std.int(spr.ID / amountSteps)][spr.ID % amountSteps] != 0)
 				spr.alpha = 1;
 			else
 				spr.alpha = 0.5;
