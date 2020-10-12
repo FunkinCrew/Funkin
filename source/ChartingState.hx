@@ -3,7 +3,10 @@ package;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.addons.ui.FlxUI9SliceSprite;
+import flixel.addons.ui.FlxUICheckBox;
 import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.group.FlxGroup;
 import flixel.text.FlxText;
 import flixel.ui.FlxButton;
 import flixel.ui.FlxSpriteButton;
@@ -13,6 +16,7 @@ import openfl.events.Event;
 import openfl.events.IOErrorEvent;
 import openfl.events.IOErrorEvent;
 import openfl.events.IOErrorEvent;
+import openfl.geom.Rectangle;
 import openfl.net.FileReference;
 
 class ChartingState extends MusicBeatState
@@ -21,6 +25,8 @@ class ChartingState extends MusicBeatState
 	var sequencer:FlxTypedGroup<DisplayNote>;
 	var sectionShit:FlxTypedGroup<DisplayNote>;
 	var notes:Array<Dynamic> = [];
+
+	var UI_box:FlxUI9SliceSprite;
 
 	/**
 	 * Array of notes showing when each section STARTS in STEPS
@@ -34,6 +40,10 @@ class ChartingState extends MusicBeatState
 	var strumLine:FlxSprite;
 	var curSong:String = 'Fresh';
 	var amountSteps:Int = 0;
+	private var curNoteSelected:DisplayNote;
+	var bullshitUI:FlxGroup;
+
+	var highlight:FlxSprite;
 
 	override function create()
 	{
@@ -66,7 +76,57 @@ class ChartingState extends MusicBeatState
 		sectionData.set(0, 0);
 		updateSectionColors();
 
+		highlight = new FlxSprite().makeGraphic(10, 10, FlxColor.BLUE);
+		add(highlight);
+
+		UI_box = new FlxUI9SliceSprite(FlxG.width / 2, 20, null, new Rectangle(0, 0, FlxG.width * 0.46, 400));
+		add(UI_box);
+
+		bullshitUI = new FlxGroup();
+		add(bullshitUI);
+
 		super.create();
+	}
+
+	function generateUI():Void
+	{
+		while (bullshitUI.members.length > 0)
+		{
+			bullshitUI.remove(bullshitUI.members[0], true);
+		}
+
+		// general shit
+		var title:FlxText = new FlxText(UI_box.x + 20, UI_box.y + 20, 0);
+		bullshitUI.add(title);
+
+		var loopCheck = new FlxUICheckBox(UI_box.x + 10, UI_box.y + 50, null, null, "Loops", 100, ['loop check']);
+		bullshitUI.add(loopCheck);
+
+		switch (curNoteSelected.type)
+		{
+			case DisplayNote.SECTION:
+				title.text = 'Section note';
+			case DisplayNote.PLAY_NOTE:
+				title.text = 'Play note';
+		}
+	}
+
+	override function getEvent(id:String, sender:Dynamic, data:Dynamic, ?params:Array<Dynamic>)
+	{
+		if (id == FlxUICheckBox.CLICK_EVENT)
+		{
+			var check:FlxUICheckBox = cast sender;
+			var label = check.getLabel().text;
+			switch (label)
+			{
+				case 'Loops':
+					curNoteSelected.doesLoop = check.checked;
+					trace(curNoteSelected.doesLoop);
+			}
+			FlxG.log.add(label);
+		}
+
+		// FlxG.log.add(id + " WEED " + sender + " WEED " + data + " WEED " + params);
 	}
 
 	function updateSectionColors():Void
@@ -82,6 +142,14 @@ class ChartingState extends MusicBeatState
 		{
 			var sec:FlxText = new FlxText(strumLine.width, 0, 0, "Section " + i);
 			var sectionTex:DisplayNote = createDisplayNote(5, i - 1, sec);
+			sectionTex.type = DisplayNote.SECTION;
+
+			sectionTex.onDown.callback = function()
+			{
+				curNoteSelected = sectionTex;
+				generateUI();
+			};
+
 			sectionTex.strumTime = sectionData.get(i) * Conductor.stepCrochet;
 			sequencer.add(sectionTex);
 			sectionShit.add(sectionTex);
@@ -107,14 +175,39 @@ class ChartingState extends MusicBeatState
 			for (i in 0...amountSteps)
 			{
 				notes[r].push(false);
-				var seqBtn:DisplayNote = createDisplayNote(r, i, null, function()
-				{
-					if (notes[r][i] == 0)
-						notes[r][i] = 1;
-					else
-						notes[r][i] = 0;
-				});
+				var seqBtn:DisplayNote = createDisplayNote(r, i, null);
 
+				/* seqBtn.onUp.callback = function()
+					{
+						if (seqBtn == curNoteSelected)
+						{
+							if (notes[r][i] == 0)
+								notes[r][i] = 1;
+							else
+								notes[r][i] = 0;
+						}
+						else
+							curNoteSelected = seqBtn;
+					}
+				 */
+
+				seqBtn.onDown.callback = function()
+				{
+					if (FlxG.keys.pressed.SHIFT)
+					{
+						curNoteSelected = seqBtn;
+						generateUI();
+					}
+					else
+					{
+						if (notes[r][i] == 0)
+							notes[r][i] = 1;
+						else
+							notes[r][i] = 0;
+					}
+				};
+
+				seqBtn.type = DisplayNote.PLAY_NOTE;
 				seqBtn.strumTime = Conductor.stepCrochet * i;
 				seqBtn.makeGraphic(30, 30, FlxColor.WHITE);
 				seqBtn.ID = i + (amountSteps * r);
@@ -126,6 +219,9 @@ class ChartingState extends MusicBeatState
 	override function update(elapsed:Float)
 	{
 		Conductor.songPosition = FlxG.sound.music.time;
+
+		if (curNoteSelected != null)
+			highlight.setPosition(curNoteSelected.getGraphicMidpoint().x, curNoteSelected.getGraphicMidpoint().y);
 
 		if (FlxG.mouse.justPressedMiddle && section > 0)
 		{
