@@ -257,7 +257,7 @@ class ChartingState extends MusicBeatState
 	private function addNote():Void
 	{
 		sections[curSection].notes.push([
-			getStrumTime(dummyArrow.y) + (curSection * (Conductor.stepCrochet * 16)),
+			getStrumTime(dummyArrow.y) + (curSection * (Conductor.stepCrochet * 32)),
 			Math.floor(FlxG.mouse.x / GRID_SIZE)
 		]);
 
