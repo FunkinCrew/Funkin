@@ -5,8 +5,10 @@ import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.addons.ui.FlxUI9SliceSprite;
 import flixel.addons.ui.FlxUICheckBox;
+import flixel.addons.ui.FlxUITooltip.FlxUITooltipStyle;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxGroup;
+import flixel.math.FlxPoint;
 import flixel.text.FlxText;
 import flixel.ui.FlxButton;
 import flixel.ui.FlxSpriteButton;
@@ -32,7 +34,7 @@ class ChartingState extends MusicBeatState
 	 * Array of notes showing when each section STARTS in STEPS
 	 * Usually rounded up??
 	 */
-	var sectionData:Map<Int, Int>;
+	var sectionData:Map<Int, DisplayNote>;
 
 	var section:Int = 0;
 	var bpmTxt:FlxText;
@@ -69,24 +71,13 @@ class ChartingState extends MusicBeatState
 		strumLine = new FlxSprite(0, 50).makeGraphic(Std.int(FlxG.width / 2), 4);
 		add(strumLine);
 
-		sectionShit = new FlxTypedGroup<DisplayNote>();
-
-		createStepChart();
-		sectionData = new Map<Int, Int>();
-		sectionData.set(0, 0);
-		updateSectionColors();
-
-		highlight = new FlxSprite().makeGraphic(10, 10, FlxColor.BLUE);
-		add(highlight);
-
 		UI_box = new FlxUI9SliceSprite(FlxG.width / 2, 20, null, new Rectangle(0, 0, FlxG.width * 0.46, 400));
 		add(UI_box);
 
-		bullshitUI = new FlxGroup();
-		add(bullshitUI);
-
 		super.create();
 	}
+
+	var tooltipType:FlxUITooltipStyle = {titleWidth: 120, bodyWidth: 120, bodyOffset: new FlxPoint(5, 5)};
 
 	function generateUI():Void
 	{
@@ -100,6 +91,8 @@ class ChartingState extends MusicBeatState
 		bullshitUI.add(title);
 
 		var loopCheck = new FlxUICheckBox(UI_box.x + 10, UI_box.y + 50, null, null, "Loops", 100, ['loop check']);
+		loopCheck.checked = curNoteSelected.doesLoop;
+		tooltips.add(loopCheck, {title: 'Section looping', body: "Whether or not it's a simon says style section", style: tooltipType});
 		bullshitUI.add(loopCheck);
 
 		switch (curNoteSelected.type)
@@ -121,154 +114,15 @@ class ChartingState extends MusicBeatState
 			{
 				case 'Loops':
 					curNoteSelected.doesLoop = check.checked;
-					trace(curNoteSelected.doesLoop);
 			}
-			FlxG.log.add(label);
 		}
 
 		// FlxG.log.add(id + " WEED " + sender + " WEED " + data + " WEED " + params);
 	}
 
-	function updateSectionColors():Void
-	{
-		sectionShit.forEach(function(note:DisplayNote)
-		{
-			sequencer.remove(note, true);
-			sectionShit.remove(note, true);
-			note.destroy();
-		});
-
-		for (i in sectionData.keys())
-		{
-			var sec:FlxText = new FlxText(strumLine.width, 0, 0, "Section " + i);
-			var sectionTex:DisplayNote = createDisplayNote(5, i - 1, sec);
-			sectionTex.type = DisplayNote.SECTION;
-
-			sectionTex.onDown.callback = function()
-			{
-				curNoteSelected = sectionTex;
-				generateUI();
-			};
-
-			sectionTex.strumTime = sectionData.get(i) * Conductor.stepCrochet;
-			sequencer.add(sectionTex);
-			sectionShit.add(sectionTex);
-			trace(i);
-		}
-	}
-
-	function createDisplayNote(row:Float, column:Float, ?spr:FlxSprite, ?func:Void->Void):DisplayNote
-	{
-		return new DisplayNote((35 * row) + 10, (35 * column) + 50, spr, func);
-	}
-
-	function createStepChart()
-	{
-		sequencer = new FlxTypedGroup<DisplayNote>();
-		add(sequencer);
-
-		amountSteps = Math.floor(FlxG.sound.music.length / Conductor.stepCrochet);
-
-		for (r in 0...4)
-		{
-			notes.push([]);
-			for (i in 0...amountSteps)
-			{
-				notes[r].push(false);
-				var seqBtn:DisplayNote = createDisplayNote(r, i, null);
-
-				/* seqBtn.onUp.callback = function()
-					{
-						if (seqBtn == curNoteSelected)
-						{
-							if (notes[r][i] == 0)
-								notes[r][i] = 1;
-							else
-								notes[r][i] = 0;
-						}
-						else
-							curNoteSelected = seqBtn;
-					}
-				 */
-
-				seqBtn.onDown.callback = function()
-				{
-					if (FlxG.keys.pressed.SHIFT)
-					{
-						curNoteSelected = seqBtn;
-						generateUI();
-					}
-					else
-					{
-						if (notes[r][i] == 0)
-							notes[r][i] = 1;
-						else
-							notes[r][i] = 0;
-					}
-				};
-
-				seqBtn.type = DisplayNote.PLAY_NOTE;
-				seqBtn.strumTime = Conductor.stepCrochet * i;
-				seqBtn.makeGraphic(30, 30, FlxColor.WHITE);
-				seqBtn.ID = i + (amountSteps * r);
-				sequencer.add(seqBtn);
-			}
-		}
-	}
-
 	override function update(elapsed:Float)
 	{
 		Conductor.songPosition = FlxG.sound.music.time;
-
-		if (curNoteSelected != null)
-			highlight.setPosition(curNoteSelected.getGraphicMidpoint().x, curNoteSelected.getGraphicMidpoint().y);
-
-		if (FlxG.mouse.justPressedMiddle && section > 0)
-		{
-			var pushSection:Int = Math.round(Conductor.songPosition / Conductor.crochet) * 4;
-
-			sectionData.set(section, pushSection);
-
-			updateSectionColors();
-		}
-
-		if (FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.RIGHT)
-		{
-			FlxG.sound.music.pause();
-
-			if (FlxG.keys.justPressed.RIGHT)
-			{
-				if (section + 1 <= Lambda.count(sectionData))
-					section += 1;
-				else
-					section = 0;
-			}
-
-			if (FlxG.keys.justPressed.LEFT)
-			{
-				if (section > 0)
-					section -= 1;
-				else
-					section = Lambda.count(sectionData);
-			}
-
-			if (sectionData.exists(section))
-				FlxG.sound.music.time = sectionData.get(section) * Conductor.stepCrochet;
-		}
-
-		if (FlxG.keys.justPressed.R && sectionData.exists(section))
-			FlxG.sound.music.time = sectionData.get(section) * Conductor.stepCrochet;
-
-		if (FlxG.sound.music.playing)
-		{
-		}
-		else
-		{
-			if (FlxG.keys.pressed.W)
-				FlxG.sound.music.time -= 900 * FlxG.elapsed;
-			if (FlxG.keys.pressed.S)
-				FlxG.sound.music.time += 900 * FlxG.elapsed;
-		}
 
 		if (FlxG.keys.justPressed.SPACE)
 		{
@@ -286,17 +140,6 @@ class ChartingState extends MusicBeatState
 			Conductor.changeBPM(Conductor.bpm - 1);
 
 		bpmTxt.text = "BPM: " + Conductor.bpm + "\nSection: " + section;
-
-		sequencer.forEach(function(spr:DisplayNote)
-		{
-			if (notes[Std.int(spr.ID / amountSteps)][spr.ID % amountSteps] != 0)
-				spr.alpha = 1;
-			else
-				spr.alpha = 0.5;
-
-			spr.y = (strumLine.y - (Conductor.songPosition - spr.strumTime) * daSpacing);
-		});
-
 		super.update(elapsed);
 	}
 
