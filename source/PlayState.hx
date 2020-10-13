@@ -29,7 +29,7 @@ using StringTools;
 class PlayState extends MusicBeatState
 {
 	public static var curLevel:String = 'Bopeebo';
-	public static var SONG:Song = Song.loadFromJson('bopeebo');
+	public static var SONG:Song;
 
 	private var vocals:FlxSound;
 
@@ -69,6 +69,9 @@ class PlayState extends MusicBeatState
 	{
 		persistentUpdate = true;
 		persistentDraw = true;
+
+		if (SONG == null)
+			SONG = Song.loadFromJson('tutorial');
 
 		var bg:FlxSprite = new FlxSprite(-600, -200).loadGraphic(AssetPaths.stageback__png);
 		// bg.setGraphicSize(Std.int(bg.width * 2.5));
@@ -116,7 +119,7 @@ class PlayState extends MusicBeatState
 
 		var swagCounter:Int = 0;
 
-		generateSong(curLevel.toLowerCase());
+		generateSong(SONG.song);
 		countingDown = true;
 		Conductor.songPosition = 0;
 		Conductor.songPosition -= Conductor.crochet * 5;
@@ -215,7 +218,7 @@ class PlayState extends MusicBeatState
 	function startSong():Void
 	{
 		countingDown = false;
-		FlxG.sound.playMusic("assets/music/" + curLevel + "_Inst" + TitleState.soundExt);
+		FlxG.sound.playMusic("assets/music/" + SONG.song + "_Inst" + TitleState.soundExt);
 		vocals.play();
 	}
 
@@ -229,7 +232,7 @@ class PlayState extends MusicBeatState
 		generateStaticArrows(0);
 		generateStaticArrows(1);
 
-		var songData = Json.parse(Assets.getText('assets/data/' + dataPath + '/' + dataPath + '.json'));
+		var songData = SONG;
 		Conductor.changeBPM(songData.bpm);
 
 		curSong = songData.song;
@@ -242,9 +245,12 @@ class PlayState extends MusicBeatState
 
 		var noteData:Array<Dynamic> = [];
 
+		// NEW SHIT
+		noteData = songData.notes;
+
 		for (i in 1...songData.sections + 1)
 		{
-			noteData.push(ChartParser.parse(songData.song.toLowerCase(), i));
+			// noteData.push(ChartParser.parse(songData.song.toLowerCase(), i));
 		}
 
 		var playerCounter:Int = 0;
@@ -256,8 +262,6 @@ class PlayState extends MusicBeatState
 			for (section in noteData)
 			{
 				var dumbassSection:Array<Dynamic> = section;
-
-				var daStep:Int = 0;
 				var coolSection:Int = Std.int(section.length / 4);
 
 				if (coolSection <= 4) // FIX SINCE MOST THE SHIT I MADE WERE ONLY 3 HTINGS LONG LOl
@@ -270,10 +274,12 @@ class PlayState extends MusicBeatState
 					sectionScores[0].push(0);
 					sectionScores[1].push(0);
 
-					if (songNotes != 0)
+					var daStrumTime:Float = songNotes[0];
+					var daNoteData:Int = songNotes[1];
+
+					if (daNoteData != 0)
 					{
-						var daStrumTime:Float = ((daStep * Conductor.stepCrochet) + (Conductor.crochet * 8 * totalLength))
-							+ ((Conductor.crochet * coolSection) * playerCounter);
+						var daStrumTime:Float = daStrumTime;
 
 						var oldNote:Note;
 						if (unspawnNotes.length > 0)
@@ -281,7 +287,7 @@ class PlayState extends MusicBeatState
 						else
 							oldNote = null;
 
-						var swagNote:Note = new Note(daStrumTime, songNotes, oldNote);
+						var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote);
 						swagNote.scrollFactor.set(0, 0);
 
 						unspawnNotes.push(swagNote);
@@ -297,8 +303,6 @@ class PlayState extends MusicBeatState
 							sectionScores[0][daBeats] += swagNote.noteScore;
 						}
 					}
-
-					daStep += 1;
 				}
 
 				// only need to do it once
