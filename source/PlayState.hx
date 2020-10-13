@@ -29,6 +29,7 @@ using StringTools;
 class PlayState extends MusicBeatState
 {
 	public static var curLevel:String = 'Bopeebo';
+	public static var SONG:Song = Song.loadFromJson('bopeebo');
 
 	private var vocals:FlxSound;
 

@@ -23,6 +23,8 @@ import openfl.events.IOErrorEvent;
 import openfl.geom.Rectangle;
 import openfl.net.FileReference;
 
+using StringTools;
+
 class ChartingState extends MusicBeatState
 {
 	var _file:FileReference;
@@ -34,29 +36,36 @@ class ChartingState extends MusicBeatState
 	 * Array of notes showing when each section STARTS in STEPS
 	 * Usually rounded up??
 	 */
-	var section:Int = 0;
+	var curSection:Int = 0;
+
+	var sectionInfo:Array<Dynamic>;
 
 	var bpmTxt:FlxText;
 
 	var strumLine:FlxSprite;
-	var curSong:String = 'Fresh';
+	var curSong:String = 'Tutorial';
 	var amountSteps:Int = 0;
 	var bullshitUI:FlxGroup;
 
 	var highlight:FlxSprite;
-	var tooltipType:FlxUITooltipStyle = {titleWidth: 120, bodyWidth: 120, bodyOffset: new FlxPoint(5, 5)};
 
-	var GRID_SIZE:Int = 50;
+	var GRID_SIZE:Int = 40;
 
 	var dummyArrow:FlxSprite;
 
-	var sections:Array<Dynamic> = [[]];
+	var curRenderedNotes:FlxTypedGroup<Note>;
+
+	var sections:Array<Section> = [];
 	var gridBG:FlxSprite;
 
 	override function create()
 	{
 		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * 8, GRID_SIZE * 16);
 		add(gridBG);
+
+		curRenderedNotes = new FlxTypedGroup<Note>();
+
+		addSection();
 
 		FlxG.sound.playMusic('assets/music/' + curSong + '.mp3', 0.6);
 		FlxG.sound.music.pause();
@@ -85,6 +94,8 @@ class ChartingState extends MusicBeatState
 
 		dummyArrow = new FlxSprite().makeGraphic(GRID_SIZE, GRID_SIZE);
 		add(dummyArrow);
+
+		add(curRenderedNotes);
 
 		super.create();
 	}
@@ -128,15 +139,33 @@ class ChartingState extends MusicBeatState
 	{
 		Conductor.songPosition = FlxG.sound.music.time;
 
-		dummyArrow.x = Math.floor(FlxG.mouse.x / GRID_SIZE) * GRID_SIZE;
-		if (FlxG.keys.pressed.SHIFT)
-			dummyArrow.y = FlxG.mouse.y;
-		else
-			dummyArrow.y = Math.floor(FlxG.mouse.y / GRID_SIZE) * GRID_SIZE;
+		strumLine.y = getYfromStrum(Conductor.songPosition % (Conductor.stepCrochet * 16));
 
-		if (FlxG.mouse.justPressed)
+		if (curBeat % 4 == 0)
 		{
-			addNote();
+			if (curStep > (sections[curSection].lengthInSteps * 2) * (curSection + 1))
+			{
+				if (sections[curSection + 1] == null)
+				{
+					addSection();
+				}
+
+				changeSection(curSection + 1, false);
+			}
+		}
+
+		if (FlxG.mouse.overlaps(gridBG))
+		{
+			dummyArrow.x = Math.floor(FlxG.mouse.x / GRID_SIZE) * GRID_SIZE;
+			if (FlxG.keys.pressed.SHIFT)
+				dummyArrow.y = FlxG.mouse.y;
+			else
+				dummyArrow.y = Math.floor(FlxG.mouse.y / GRID_SIZE) * GRID_SIZE;
+
+			if (FlxG.mouse.justPressed)
+			{
+				addNote();
+			}
 		}
 
 		if (FlxG.keys.justPressed.SPACE)
@@ -149,35 +178,121 @@ class ChartingState extends MusicBeatState
 				FlxG.sound.music.play();
 		}
 
+		if (FlxG.keys.justPressed.R)
+		{
+			changeSection();
+		}
+
 		if (FlxG.keys.justPressed.UP)
 			Conductor.changeBPM(Conductor.bpm + 1);
 		if (FlxG.keys.justPressed.DOWN)
 			Conductor.changeBPM(Conductor.bpm - 1);
 
-		bpmTxt.text = "BPM: " + Conductor.bpm + "\nSection: " + section;
+		if (FlxG.keys.justPressed.RIGHT)
+			changeSection(curSection + 1);
+		if (FlxG.keys.justPressed.LEFT)
+			changeSection(curSection - 1);
+
+		bpmTxt.text = "BPM: " + Conductor.bpm + "\nSection: " + curSection;
 		super.update(elapsed);
+	}
+
+	function changeSection(sec:Int = 0, ?updateMusic:Bool = true):Void
+	{
+		if (sections[sec] != null)
+		{
+			curSection = sec;
+			updateGrid();
+
+			if (updateMusic)
+			{
+				FlxG.sound.music.pause();
+
+				var daNum:Int = 0;
+				var daLength:Int = 0;
+				while (daNum <= sec)
+				{
+					daLength += sections[daNum].lengthInSteps * 2;
+					daNum++;
+				}
+
+				FlxG.sound.music.time = (daLength - (sections[sec].lengthInSteps * 2)) * Conductor.stepCrochet;
+			}
+		}
+	}
+
+	function updateGrid():Void
+	{
+		while (curRenderedNotes.members.length > 0)
+		{
+			curRenderedNotes.remove(curRenderedNotes.members[0], true);
+		}
+
+		var sectionInfo:Array<Dynamic> = sections[curSection].notes;
+
+		for (i in sectionInfo)
+		{
+			var daNoteInfo = i[1];
+
+			switch (daNoteInfo)
+			{
+				case 0:
+					daNoteInfo = 4;
+				case 1:
+					daNoteInfo = 3;
+				case 2:
+					daNoteInfo = 1;
+				case 3:
+					daNoteInfo = 2;
+			}
+
+			var note:Note = new Note(i[0], daNoteInfo);
+			note.setGraphicSize(GRID_SIZE, GRID_SIZE);
+			note.updateHitbox();
+			note.x = Math.floor(i[1] * GRID_SIZE);
+			note.y = getYfromStrum(note.strumTime);
+
+			curRenderedNotes.add(note);
+		}
+	}
+
+	private function addSection(lengthInSteps:Int = 16):Void
+	{
+		sections.push(new Section(lengthInSteps));
 	}
 
 	private function addNote():Void
 	{
-		sections[0].push(getStrumTime(dummyArrow.y));
-		trace(getStrumTime(dummyArrow.y) + "ms");
-		trace(Conductor.stepCrochet);
+		sections[curSection].notes.push([getStrumTime(dummyArrow.y), Math.floor(FlxG.mouse.x / GRID_SIZE)]);
+		updateGrid();
 	}
 
 	function getStrumTime(yPos:Float):Float
 	{
-		return FlxMath.remapToRange(yPos, 0, gridBG.height, 0, 16 * Conductor.stepCrochet);
+		return FlxMath.remapToRange(yPos, gridBG.y, gridBG.y + gridBG.height, 0, 16 * Conductor.stepCrochet);
+	}
+
+	function getYfromStrum(strumTime:Float):Float
+	{
+		return FlxMath.remapToRange(strumTime, 0, Conductor.stepCrochet * 16, gridBG.y, gridBG.y + gridBG.height);
 	}
 
 	private var daSpacing:Float = 0.3;
 
 	private function saveLevel()
 	{
+		var noteData:Array<Dynamic> = [];
+
+		for (i in sections)
+		{
+			noteData.push(i.notes);
+		}
+
 		var json = {
-			"song": "Bopeebo",
-			"bpm": 100,
-			"sections": 15
+			"song": curSong,
+			"bpm": Conductor.bpm,
+			"sections": sections.length,
+			'notes': noteData
 		};
 
 		var data:String = Json.stringify(json);
@@ -188,7 +303,8 @@ class ChartingState extends MusicBeatState
 			_file.addEventListener(Event.COMPLETE, onSaveComplete);
 			_file.addEventListener(Event.CANCEL, onSaveCancel);
 			_file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
-			_file.save(data, json.song + ".json");
+			// _file.save(data.trim(), json.song + ".json");
+			_file.browse();
 		}
 	}
 
