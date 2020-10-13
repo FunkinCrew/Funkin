@@ -28,7 +28,6 @@ using StringTools;
 class ChartingState extends MusicBeatState
 {
 	var _file:FileReference;
-	var notes:Array<Dynamic> = [];
 
 	var UI_box:FlxUI9SliceSprite;
 
@@ -168,6 +167,12 @@ class ChartingState extends MusicBeatState
 			}
 		}
 
+		if (FlxG.keys.justPressed.ENTER)
+		{
+			PlayState.SONG = new Song(curSong, getNotes(), Conductor.bpm, sections.length);
+			FlxG.switchState(new PlayState());
+		}
+
 		if (FlxG.keys.justPressed.SPACE)
 		{
 			if (FlxG.sound.music.playing)
@@ -269,17 +274,17 @@ class ChartingState extends MusicBeatState
 
 	function getStrumTime(yPos:Float):Float
 	{
-		return FlxMath.remapToRange(yPos, gridBG.y, gridBG.y + gridBG.height, 0, 16 * Conductor.stepCrochet);
+		return FlxMath.remapToRange(yPos, gridBG.y, gridBG.y + gridBG.height, 0, (16 * Conductor.stepCrochet) * FlxMath.maxInt(curSection, 1));
 	}
 
 	function getYfromStrum(strumTime:Float):Float
 	{
-		return FlxMath.remapToRange(strumTime, 0, Conductor.stepCrochet * 16, gridBG.y, gridBG.y + gridBG.height);
+		return FlxMath.remapToRange(strumTime, 0, (16 * Conductor.stepCrochet) * FlxMath.maxInt(curSection, 1), gridBG.y, gridBG.y + gridBG.height);
 	}
 
 	private var daSpacing:Float = 0.3;
 
-	private function saveLevel()
+	function getNotes():Array<Dynamic>
 	{
 		var noteData:Array<Dynamic> = [];
 
@@ -288,11 +293,16 @@ class ChartingState extends MusicBeatState
 			noteData.push(i.notes);
 		}
 
+		return noteData;
+	}
+
+	private function saveLevel()
+	{
 		var json = {
 			"song": curSong,
 			"bpm": Conductor.bpm,
 			"sections": sections.length,
-			'notes': noteData
+			'notes': getNotes
 		};
 
 		var data:String = Json.stringify(json);
@@ -303,7 +313,7 @@ class ChartingState extends MusicBeatState
 			_file.addEventListener(Event.COMPLETE, onSaveComplete);
 			_file.addEventListener(Event.CANCEL, onSaveCancel);
 			_file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
-			// _file.save(data.trim(), json.song + ".json");
+			_file.save(data.trim(), json.song.toLowerCase() + ".json");
 			_file.browse();
 		}
 	}
