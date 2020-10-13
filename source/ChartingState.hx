@@ -73,7 +73,7 @@ class ChartingState extends MusicBeatState
 			FlxG.sound.music.pause();
 			FlxG.sound.music.time = 0;
 		};
-		Conductor.changeBPM(120);
+		Conductor.changeBPM(100);
 
 		var saveButton:FlxButton = new FlxButton(0, 0, "Save", function()
 		{
@@ -239,23 +239,11 @@ class ChartingState extends MusicBeatState
 		{
 			var daNoteInfo = i[1];
 
-			switch (daNoteInfo)
-			{
-				case 0:
-					daNoteInfo = 4;
-				case 1:
-					daNoteInfo = 3;
-				case 2:
-					daNoteInfo = 1;
-				case 3:
-					daNoteInfo = 2;
-			}
-
 			var note:Note = new Note(i[0], daNoteInfo);
 			note.setGraphicSize(GRID_SIZE, GRID_SIZE);
 			note.updateHitbox();
 			note.x = Math.floor(i[1] * GRID_SIZE);
-			note.y = getYfromStrum(note.strumTime);
+			note.y = getYfromStrum(note.strumTime) % (Conductor.stepCrochet * sections[curSection].lengthInSteps);
 
 			curRenderedNotes.add(note);
 		}
@@ -268,13 +256,16 @@ class ChartingState extends MusicBeatState
 
 	private function addNote():Void
 	{
-		sections[curSection].notes.push([getStrumTime(dummyArrow.y), Math.floor(FlxG.mouse.x / GRID_SIZE)]);
+		sections[curSection].notes.push([
+			getStrumTime(dummyArrow.y) * FlxMath.maxInt(curSection, 1),
+			Math.floor(FlxG.mouse.x / GRID_SIZE)
+		]);
 		updateGrid();
 	}
 
 	function getStrumTime(yPos:Float):Float
 	{
-		return FlxMath.remapToRange(yPos, gridBG.y, gridBG.y + gridBG.height, 0, (16 * Conductor.stepCrochet) * FlxMath.maxInt(curSection, 1));
+		return FlxMath.remapToRange(yPos, gridBG.y, gridBG.y + gridBG.height, 0, 16 * Conductor.stepCrochet);
 	}
 
 	function getYfromStrum(strumTime:Float, ?isNote:Bool = true):Float

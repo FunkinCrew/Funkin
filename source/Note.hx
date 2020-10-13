@@ -54,20 +54,20 @@ class Note extends FlxSprite
 		updateHitbox();
 		antialiasing = true;
 
-		switch (Math.abs(noteData))
+		switch (noteData)
 		{
-			case 1:
-				x += swagWidth * 2;
-				animation.play('greenScroll');
-			case 2:
-				x += swagWidth * 3;
-				animation.play('redScroll');
-			case 3:
-				x += swagWidth * 1;
-				animation.play('blueScroll');
-			case 4:
+			case 0:
 				x += swagWidth * 0;
 				animation.play('purpleScroll');
+			case 1:
+				x += swagWidth * 1;
+				animation.play('blueScroll');
+			case 2:
+				x += swagWidth * 2;
+				animation.play('greenScroll');
+			case 3:
+				x += swagWidth * 3;
+				animation.play('redScroll');
 		}
 
 		trace(prevNote);
