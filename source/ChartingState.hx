@@ -3,11 +3,13 @@ package;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.ui.FlxUI9SliceSprite;
 import flixel.addons.ui.FlxUICheckBox;
 import flixel.addons.ui.FlxUITooltip.FlxUITooltipStyle;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxGroup;
+import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.text.FlxText;
 import flixel.ui.FlxButton;
@@ -24,8 +26,6 @@ import openfl.net.FileReference;
 class ChartingState extends MusicBeatState
 {
 	var _file:FileReference;
-	var sequencer:FlxTypedGroup<DisplayNote>;
-	var sectionShit:FlxTypedGroup<DisplayNote>;
 	var notes:Array<Dynamic> = [];
 
 	var UI_box:FlxUI9SliceSprite;
@@ -34,21 +34,30 @@ class ChartingState extends MusicBeatState
 	 * Array of notes showing when each section STARTS in STEPS
 	 * Usually rounded up??
 	 */
-	var sectionData:Map<Int, DisplayNote>;
-
 	var section:Int = 0;
+
 	var bpmTxt:FlxText;
 
 	var strumLine:FlxSprite;
 	var curSong:String = 'Fresh';
 	var amountSteps:Int = 0;
-	private var curNoteSelected:DisplayNote;
 	var bullshitUI:FlxGroup;
 
 	var highlight:FlxSprite;
+	var tooltipType:FlxUITooltipStyle = {titleWidth: 120, bodyWidth: 120, bodyOffset: new FlxPoint(5, 5)};
+
+	var GRID_SIZE:Int = 50;
+
+	var dummyArrow:FlxSprite;
+
+	var sections:Array<Dynamic> = [[]];
+	var gridBG:FlxSprite;
 
 	override function create()
 	{
+		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * 8, GRID_SIZE * 16);
+		add(gridBG);
+
 		FlxG.sound.playMusic('assets/music/' + curSong + '.mp3', 0.6);
 		FlxG.sound.music.pause();
 		FlxG.sound.music.onComplete = function()
@@ -74,10 +83,11 @@ class ChartingState extends MusicBeatState
 		UI_box = new FlxUI9SliceSprite(FlxG.width / 2, 20, null, new Rectangle(0, 0, FlxG.width * 0.46, 400));
 		add(UI_box);
 
+		dummyArrow = new FlxSprite().makeGraphic(GRID_SIZE, GRID_SIZE);
+		add(dummyArrow);
+
 		super.create();
 	}
-
-	var tooltipType:FlxUITooltipStyle = {titleWidth: 120, bodyWidth: 120, bodyOffset: new FlxPoint(5, 5)};
 
 	function generateUI():Void
 	{
@@ -89,19 +99,13 @@ class ChartingState extends MusicBeatState
 		// general shit
 		var title:FlxText = new FlxText(UI_box.x + 20, UI_box.y + 20, 0);
 		bullshitUI.add(title);
+		/* 
+			var loopCheck = new FlxUICheckBox(UI_box.x + 10, UI_box.y + 50, null, null, "Loops", 100, ['loop check']);
+			loopCheck.checked = curNoteSelected.doesLoop;
+			tooltips.add(loopCheck, {title: 'Section looping', body: "Whether or not it's a simon says style section", style: tooltipType});
+			bullshitUI.add(loopCheck);
 
-		var loopCheck = new FlxUICheckBox(UI_box.x + 10, UI_box.y + 50, null, null, "Loops", 100, ['loop check']);
-		loopCheck.checked = curNoteSelected.doesLoop;
-		tooltips.add(loopCheck, {title: 'Section looping', body: "Whether or not it's a simon says style section", style: tooltipType});
-		bullshitUI.add(loopCheck);
-
-		switch (curNoteSelected.type)
-		{
-			case DisplayNote.SECTION:
-				title.text = 'Section note';
-			case DisplayNote.PLAY_NOTE:
-				title.text = 'Play note';
-		}
+		 */
 	}
 
 	override function getEvent(id:String, sender:Dynamic, data:Dynamic, ?params:Array<Dynamic>)
@@ -113,7 +117,7 @@ class ChartingState extends MusicBeatState
 			switch (label)
 			{
 				case 'Loops':
-					curNoteSelected.doesLoop = check.checked;
+					// curNoteSelected.doesLoop = check.checked;
 			}
 		}
 
@@ -123,6 +127,17 @@ class ChartingState extends MusicBeatState
 	override function update(elapsed:Float)
 	{
 		Conductor.songPosition = FlxG.sound.music.time;
+
+		dummyArrow.x = Math.floor(FlxG.mouse.x / GRID_SIZE) * GRID_SIZE;
+		if (FlxG.keys.pressed.SHIFT)
+			dummyArrow.y = FlxG.mouse.y;
+		else
+			dummyArrow.y = Math.floor(FlxG.mouse.y / GRID_SIZE) * GRID_SIZE;
+
+		if (FlxG.mouse.justPressed)
+		{
+			addNote();
+		}
 
 		if (FlxG.keys.justPressed.SPACE)
 		{
@@ -141,6 +156,18 @@ class ChartingState extends MusicBeatState
 
 		bpmTxt.text = "BPM: " + Conductor.bpm + "\nSection: " + section;
 		super.update(elapsed);
+	}
+
+	private function addNote():Void
+	{
+		sections[0].push(getStrumTime(dummyArrow.y));
+		trace(getStrumTime(dummyArrow.y) + "ms");
+		trace(Conductor.stepCrochet);
+	}
+
+	function getStrumTime(yPos:Float):Float
+	{
+		return FlxMath.remapToRange(yPos, 0, gridBG.height, 0, 16 * Conductor.stepCrochet);
 	}
 
 	private var daSpacing:Float = 0.3;
