@@ -138,7 +138,7 @@ class ChartingState extends MusicBeatState
 	{
 		Conductor.songPosition = FlxG.sound.music.time;
 
-		strumLine.y = getYfromStrum(Conductor.songPosition % (Conductor.stepCrochet * 16));
+		strumLine.y = getYfromStrum(Conductor.songPosition % (Conductor.stepCrochet * 16), false);
 
 		if (curBeat % 4 == 0)
 		{
@@ -277,9 +277,15 @@ class ChartingState extends MusicBeatState
 		return FlxMath.remapToRange(yPos, gridBG.y, gridBG.y + gridBG.height, 0, (16 * Conductor.stepCrochet) * FlxMath.maxInt(curSection, 1));
 	}
 
-	function getYfromStrum(strumTime:Float):Float
+	function getYfromStrum(strumTime:Float, ?isNote:Bool = true):Float
 	{
-		return FlxMath.remapToRange(strumTime, 0, (16 * Conductor.stepCrochet) * FlxMath.maxInt(curSection, 1), gridBG.y, gridBG.y + gridBG.height);
+		var strumShit:Float = 0;
+		if (isNote)
+			strumShit = FlxMath.remapToRange(strumTime, 0, (16 * Conductor.stepCrochet) * FlxMath.maxInt(curSection, 1), gridBG.y, gridBG.y + gridBG.height);
+		else
+			strumShit = FlxMath.remapToRange(strumTime, 0, 16 * Conductor.stepCrochet, gridBG.y, gridBG.y + gridBG.height);
+
+		return strumShit;
 	}
 
 	private var daSpacing:Float = 0.3;
