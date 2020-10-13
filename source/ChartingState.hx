@@ -42,7 +42,7 @@ class ChartingState extends MusicBeatState
 	var bpmTxt:FlxText;
 
 	var strumLine:FlxSprite;
-	var curSong:String = 'Tutorial';
+	var curSong:String = 'Smash';
 	var amountSteps:Int = 0;
 	var bullshitUI:FlxGroup;
 
@@ -73,7 +73,7 @@ class ChartingState extends MusicBeatState
 			FlxG.sound.music.pause();
 			FlxG.sound.music.time = 0;
 		};
-		Conductor.changeBPM(100);
+		Conductor.changeBPM(144);
 
 		var saveButton:FlxButton = new FlxButton(0, 0, "Save", function()
 		{
