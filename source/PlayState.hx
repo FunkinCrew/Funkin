@@ -274,34 +274,32 @@ class PlayState extends MusicBeatState
 					sectionScores[0].push(0);
 					sectionScores[1].push(0);
 
-					var daStrumTime:Float = songNotes[0];
+					var daStrumTime:Float = songNotes[0] + ((Conductor.stepCrochet * 16) * playerCounter);
+					trace(daStrumTime);
 					var daNoteData:Int = songNotes[1];
 
-					if (daNoteData != 0)
+					var daStrumTime:Float = daStrumTime;
+
+					var oldNote:Note;
+					if (unspawnNotes.length > 0)
+						oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
+					else
+						oldNote = null;
+
+					var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote);
+					swagNote.scrollFactor.set(0, 0);
+
+					unspawnNotes.push(swagNote);
+
+					swagNote.x += ((FlxG.width / 2) * playerCounter); // general offset
+
+					if (playerCounter == 1) // is the player
 					{
-						var daStrumTime:Float = daStrumTime;
-
-						var oldNote:Note;
-						if (unspawnNotes.length > 0)
-							oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
-						else
-							oldNote = null;
-
-						var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote);
-						swagNote.scrollFactor.set(0, 0);
-
-						unspawnNotes.push(swagNote);
-
-						swagNote.x += ((FlxG.width / 2) * playerCounter); // general offset
-
-						if (playerCounter == 1) // is the player
-						{
-							swagNote.mustPress = true;
-						}
-						else
-						{
-							sectionScores[0][daBeats] += swagNote.noteScore;
-						}
+						swagNote.mustPress = true;
+					}
+					else
+					{
+						sectionScores[0][daBeats] += swagNote.noteScore;
 					}
 				}
 
