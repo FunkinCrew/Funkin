@@ -214,7 +214,24 @@ class ChartingState extends MusicBeatState
 
 		if (FlxG.keys.justPressed.R)
 		{
-			changeSection();
+			if (FlxG.keys.pressed.SHIFT)
+				changeSection();
+			else
+				changeSection(curSection);
+		}
+
+		if (FlxG.keys.pressed.W || FlxG.keys.pressed.S)
+		{
+			FlxG.sound.music.pause();
+
+			var daTime:Float = 700 * FlxG.elapsed;
+
+			if (FlxG.keys.pressed.W)
+			{
+				FlxG.sound.music.time -= daTime;
+			}
+			else
+				FlxG.sound.music.time += daTime;
 		}
 
 		if (FlxG.keys.justPressed.UP)
