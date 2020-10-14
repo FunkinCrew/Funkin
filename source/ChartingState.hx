@@ -163,13 +163,28 @@ class ChartingState extends MusicBeatState
 
 			if (FlxG.mouse.justPressed)
 			{
-				addNote();
+				if (FlxG.mouse.overlaps(curRenderedNotes))
+				{
+					curRenderedNotes.forEach(function(note:Note)
+					{
+						if (FlxG.mouse.overlaps(note))
+						{
+							deleteNote(note);
+						}
+					});
+				}
+				else
+				{
+					FlxG.log.add('added note');
+					addNote();
+				}
 			}
 		}
 
 		if (FlxG.keys.justPressed.ENTER)
 		{
 			PlayState.SONG = new Song(curSong, getNotes(), Conductor.bpm, sections.length);
+			FlxG.sound.music.stop();
 			FlxG.switchState(new PlayState());
 		}
 
@@ -254,10 +269,24 @@ class ChartingState extends MusicBeatState
 		sections.push(new Section(lengthInSteps));
 	}
 
+	function deleteNote(note:Note):Void
+	{
+		for (i in sections[curSection].notes)
+		{
+			if (i[0] == note.strumTime && i[1] == note.noteData)
+			{
+				FlxG.log.add('FOUND EVIL NUMBER');
+				sections[curSection].notes.remove(i);
+			}
+		}
+
+		updateGrid();
+	}
+
 	private function addNote():Void
 	{
 		sections[curSection].notes.push([
-			getStrumTime(dummyArrow.y) + (curSection * (Conductor.stepCrochet * 32)),
+			Math.round(getStrumTime(dummyArrow.y) + (curSection * (Conductor.stepCrochet * 32))),
 			Math.floor(FlxG.mouse.x / GRID_SIZE)
 		]);
 
