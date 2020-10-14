@@ -12,6 +12,7 @@ class Song
 	public var bpm:Int;
 	public var sections:Int;
 	public var sectionLengths:Array<Dynamic> = [];
+	public var needsVoices:Bool = true;
 
 	public function new(song, notes, bpm, sections)
 	{
