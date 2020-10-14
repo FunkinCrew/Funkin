@@ -243,7 +243,7 @@ class PlayState extends MusicBeatState
 		notes = new FlxTypedGroup<Note>();
 		add(notes);
 
-		var noteData:Array<Dynamic> = [];
+		var noteData:Array<Section> = [];
 
 		// NEW SHIT
 		noteData = songData.notes;
@@ -261,8 +261,9 @@ class PlayState extends MusicBeatState
 			var totalLength:Int = 0; // Total length of the song, in beats;
 			for (section in noteData)
 			{
-				var dumbassSection:Array<Dynamic> = section;
-				var coolSection:Int = Std.int(section.length / 4);
+				var dumbassSection:Array<Dynamic> = section.notes;
+
+				var coolSection:Int = Std.int(section.lengthInSteps / 4);
 
 				if (coolSection <= 4) // FIX SINCE MOST THE SHIT I MADE WERE ONLY 3 HTINGS LONG LOl
 					coolSection = 4;
