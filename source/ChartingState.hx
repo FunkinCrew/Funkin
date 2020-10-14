@@ -362,7 +362,7 @@ class ChartingState extends MusicBeatState
 			"song": curSong,
 			"bpm": Conductor.bpm,
 			"sections": sections.length,
-			'notes': getNotes
+			'notes': sections
 		};
 
 		var data:String = Json.stringify(json);

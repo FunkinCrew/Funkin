@@ -3,6 +3,8 @@ package;
 import haxe.Json;
 import lime.utils.Assets;
 
+using StringTools;
+
 class Song
 {
 	public var song:String;
@@ -32,7 +34,17 @@ class Song
 		var daSong:String = '';
 		var daSectionLengths:Array<Int> = [];
 
-		var songData = Json.parse(Assets.getText('assets/data/' + jsonInput + '/' + jsonInput + '.json'));
+		var rawJson = Assets.getText('assets/data/' + jsonInput + '/' + jsonInput + '.json').trim();
+
+		while (!rawJson.endsWith("}"))
+		{
+			rawJson = rawJson.substr(0, rawJson.length - 1);
+			// LOL GOING THROUGH THE BULLSHIT TO CLEAN IDK WHATS STRANGE
+		}
+
+		trace(rawJson);
+
+		var songData = Json.parse(rawJson);
 
 		daNotes = songData.notes;
 		daSong = songData.song;
