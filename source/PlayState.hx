@@ -347,31 +347,31 @@ class PlayState extends MusicBeatState
 			babyArrow.alpha = 0;
 			FlxTween.tween(babyArrow, {y: babyArrow.y + 10, alpha: 1}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
 
-			babyArrow.ID = i + 1;
+			babyArrow.ID = i;
 
 			if (player == 1)
 			{
 				playerStrums.add(babyArrow);
 			}
 
-			switch (Math.abs(i + 1))
+			switch (Math.abs(i))
 			{
-				case 1:
+				case 2:
 					babyArrow.x += Note.swagWidth * 2;
 					babyArrow.animation.addByPrefix('static', 'arrowUP');
 					babyArrow.animation.addByPrefix('pressed', 'up press', 24, false);
 					babyArrow.animation.addByPrefix('confirm', 'up confirm', 24, false);
-				case 2:
+				case 3:
 					babyArrow.x += Note.swagWidth * 3;
 					babyArrow.animation.addByPrefix('static', 'arrowRIGHT');
 					babyArrow.animation.addByPrefix('pressed', 'right press', 24, false);
 					babyArrow.animation.addByPrefix('confirm', 'right confirm', 24, false);
-				case 3:
+				case 1:
 					babyArrow.x += Note.swagWidth * 1;
 					babyArrow.animation.addByPrefix('static', 'arrowDOWN');
 					babyArrow.animation.addByPrefix('pressed', 'down press', 24, false);
 					babyArrow.animation.addByPrefix('confirm', 'down confirm', 24, false);
-				case 4:
+				case 0:
 					babyArrow.x += Note.swagWidth * 0;
 					babyArrow.animation.addByPrefix('static', 'arrowLEFT');
 					babyArrow.animation.addByPrefix('pressed', 'left press', 24, false);
@@ -810,18 +810,23 @@ class PlayState extends MusicBeatState
 			{
 				for (daNote in possibleNotes)
 				{
+					var purp:Int = Note.PURP_NOTE;
+					var green:Int = Note.GREEN_NOTE;
+					var red:Int = Note.RED_NOTE;
+					var blue:Int = Note.BLUE_NOTE;
+
 					switch (daNote.noteData)
 					{
-						case 1: // NOTES YOU JUST PRESSED
+						case 2: // NOTES YOU JUST PRESSED
 							if (upP || rightP || downP || leftP)
 								noteCheck(upP, daNote);
-						case 2:
-							if (upP || rightP || downP || leftP)
-								noteCheck(rightP, daNote);
 						case 3:
 							if (upP || rightP || downP || leftP)
+								noteCheck(rightP, daNote);
+						case 1:
+							if (upP || rightP || downP || leftP)
 								noteCheck(downP, daNote);
-						case 4:
+						case 0:
 							if (upP || rightP || downP || leftP)
 								noteCheck(leftP, daNote);
 					}
@@ -870,22 +875,22 @@ class PlayState extends MusicBeatState
 		{
 			switch (spr.ID)
 			{
-				case 1:
+				case 2:
 					if (upP && spr.animation.curAnim.name != 'confirm')
 						spr.animation.play('pressed');
 					if (upR)
 						spr.animation.play('static');
-				case 2:
+				case 3:
 					if (rightP && spr.animation.curAnim.name != 'confirm')
 						spr.animation.play('pressed');
 					if (rightR)
 						spr.animation.play('static');
-				case 3:
+				case 1:
 					if (downP && spr.animation.curAnim.name != 'confirm')
 						spr.animation.play('pressed');
 					if (downR)
 						spr.animation.play('static');
-				case 4:
+				case 0:
 					if (leftP && spr.animation.curAnim.name != 'confirm')
 						spr.animation.play('pressed');
 					if (leftR)
@@ -972,13 +977,13 @@ class PlayState extends MusicBeatState
 		}
 
 		if (leftP)
-			noteMiss(4);
+			noteMiss(0);
 		if (upP)
-			noteMiss(1);
-		if (rightP)
 			noteMiss(2);
-		if (downP)
+		if (rightP)
 			noteMiss(3);
+		if (downP)
+			noteMiss(2);
 	}
 
 	function noteCheck(keyP:Bool, note:Note):Void
@@ -996,20 +1001,20 @@ class PlayState extends MusicBeatState
 		{
 			combo += 1;
 
-			if (note.noteData > 0)
+			if (note.noteData >= 0)
 				health += 0.03;
 			else
 				health += 0.007;
 
-			switch (Math.abs(note.noteData))
+			switch (note.noteData)
 			{
-				case 1:
-					boyfriend.playAnim('singUP');
 				case 2:
-					boyfriend.playAnim('singRIGHT');
+					boyfriend.playAnim('singUP');
 				case 3:
+					boyfriend.playAnim('singRIGHT');
+				case 1:
 					boyfriend.playAnim('singDOWN');
-				case 4:
+				case 0:
 					boyfriend.playAnim('singLEFT');
 			}
 
