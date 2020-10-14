@@ -57,6 +57,8 @@ class ChartingState extends MusicBeatState
 	var sections:Array<Section> = [];
 	var gridBG:FlxSprite;
 
+	var oldSongData:Song;
+
 	override function create()
 	{
 		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * 8, GRID_SIZE * 16);
@@ -65,6 +67,18 @@ class ChartingState extends MusicBeatState
 		curRenderedNotes = new FlxTypedGroup<Note>();
 
 		addSection();
+
+		if (PlayState.SONG != null)
+			oldSongData = PlayState.SONG;
+		else
+		{
+			oldSongData = new Song(curSong, sections, Conductor.bpm, sections.length);
+		}
+
+		curSong = oldSongData.song;
+		sections = oldSongData.notes;
+
+		updateGrid();
 
 		FlxG.sound.playMusic('assets/music/' + curSong + '.mp3', 0.6);
 		FlxG.sound.music.pause();
@@ -183,7 +197,7 @@ class ChartingState extends MusicBeatState
 
 		if (FlxG.keys.justPressed.ENTER)
 		{
-			PlayState.SONG = new Song(curSong, getNotes(), Conductor.bpm, sections.length);
+			PlayState.SONG = new Song(curSong, sections, Conductor.bpm, sections.length);
 			FlxG.sound.music.stop();
 			FlxG.switchState(new PlayState());
 		}
@@ -307,6 +321,11 @@ class ChartingState extends MusicBeatState
 	}
 
 	private var daSpacing:Float = 0.3;
+
+	function loadLevel():Void
+	{
+		trace(oldSongData.notes);
+	}
 
 	function getNotes():Array<Dynamic>
 	{
