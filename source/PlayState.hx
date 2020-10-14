@@ -237,7 +237,11 @@ class PlayState extends MusicBeatState
 
 		curSong = songData.song;
 
-		vocals = new FlxSound().loadEmbedded("assets/music/" + curSong + "_Voices" + TitleState.soundExt);
+		if (SONG.needsVoices)
+			vocals = new FlxSound().loadEmbedded("assets/music/" + curSong + "_Voices" + TitleState.soundExt);
+		else
+			vocals = new FlxSound();
+
 		FlxG.sound.list.add(vocals);
 
 		notes = new FlxTypedGroup<Note>();
@@ -433,8 +437,8 @@ class PlayState extends MusicBeatState
 			FlxG.switchState(new ChartingState());
 		}
 
-		FlxG.watch.addQuick('VOL', vocals.amplitudeLeft);
-		FlxG.watch.addQuick('VOLRight', vocals.amplitudeRight);
+		// FlxG.watch.addQuick('VOL', vocals.amplitudeLeft);
+		// FlxG.watch.addQuick('VOLRight', vocals.amplitudeRight);
 
 		healthHeads.setGraphicSize(Std.int(FlxMath.lerp(100, healthHeads.width, 0.98)));
 		healthHeads.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (healthHeads.width / 2);
