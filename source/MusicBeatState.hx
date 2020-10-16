@@ -1,5 +1,6 @@
 package;
 
+import flixel.FlxG;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.ui.FlxUIState;
 
@@ -23,7 +24,7 @@ class MusicBeatState extends FlxUIState
 	{
 		everyStep();
 
-		curStep = Math.floor(Conductor.songPosition / Conductor.stepCrochet);
+		updateCurStep();
 		curBeat = Math.floor(curStep / 4);
 
 		super.update(elapsed);
@@ -42,6 +43,12 @@ class MusicBeatState extends FlxUIState
 				stepHit();
 			}
 		}
+	}
+
+	private function updateCurStep():Void
+	{
+		Conductor.songPosition = FlxG.sound.music.time;
+		curStep = Math.floor(Conductor.songPosition / Conductor.stepCrochet);
 	}
 
 	public function stepHit():Void
