@@ -260,28 +260,20 @@ class PlayState extends MusicBeatState
 		var playerCounter:Int = 0;
 
 		var daBeats:Int = 0; // Not exactly representative of 'daBeats' lol, just how much it has looped
-		var totalLength:Int = 0; // Total length of the song, in beats;
 		for (section in noteData)
 		{
-			var dumbassSection:Array<Dynamic> = section.notes;
-
 			var coolSection:Int = Std.int(section.lengthInSteps / 4);
 
-			if (coolSection <= 4) // FIX SINCE MOST THE SHIT I MADE WERE ONLY 3 HTINGS LONG LOl
-				coolSection = 4;
-			else if (coolSection <= 8)
-				coolSection = 8;
-
-			for (songNotes in dumbassSection)
+			for (songNotes in section.notes)
 			{
 				sectionScores[0].push(0);
 				sectionScores[1].push(0);
 
-				var daStrumTime:Float = songNotes[0] + (Conductor.stepCrochet * section.lengthInSteps);
+				var daStrumTime:Float = songNotes[0];
 				trace(daStrumTime);
 				var daNoteData:Int = songNotes[1];
 
-				var daStrumTime:Float = daStrumTime;
+				// var daStrumTime:Float = daStrumTime;
 
 				var oldNote:Note;
 				if (unspawnNotes.length > 0)
@@ -298,7 +290,7 @@ class PlayState extends MusicBeatState
 
 				if (swagNote.mustPress)
 				{
-					swagNote.x += (FlxG.width / 2); // general offset
+					swagNote.x += FlxG.width / 2; // general offset
 				}
 				else
 				{
@@ -323,7 +315,6 @@ class PlayState extends MusicBeatState
 				if (section.mustHitSection)
 					sectionLengths.push(Math.round(coolSection / 4));
 			 */
-			totalLength += Math.round(coolSection / 4);
 			daBeats += 1;
 		}
 
