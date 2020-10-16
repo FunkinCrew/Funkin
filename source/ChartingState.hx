@@ -8,6 +8,7 @@ import flixel.addons.ui.FlxUI9SliceSprite;
 import flixel.addons.ui.FlxUI;
 import flixel.addons.ui.FlxUICheckBox;
 import flixel.addons.ui.FlxUIInputText;
+import flixel.addons.ui.FlxUINumericStepper;
 import flixel.addons.ui.FlxUITabMenu;
 import flixel.addons.ui.FlxUITooltip.FlxUITooltipStyle;
 import flixel.group.FlxGroup.FlxTypedGroup;
@@ -44,7 +45,7 @@ class ChartingState extends MusicBeatState
 	var bpmTxt:FlxText;
 
 	var strumLine:FlxSprite;
-	var curSong:String = 'Smash';
+	var curSong:String = 'Tutorial';
 	var amountSteps:Int = 0;
 	var bullshitUI:FlxGroup;
 
@@ -61,6 +62,7 @@ class ChartingState extends MusicBeatState
 	var _song:Song;
 
 	var typingShit:FlxInputText;
+	var gridSectionOffset:Int = 1;
 
 	override function create()
 	{
@@ -85,7 +87,7 @@ class ChartingState extends MusicBeatState
 		loadSong(_song.song);
 		Conductor.changeBPM(_song.bpm);
 
-		bpmTxt = new FlxText(20, 20);
+		bpmTxt = new FlxText(450, 20, 0, "", 16);
 		add(bpmTxt);
 
 		strumLine = new FlxSprite(0, 50).makeGraphic(Std.int(FlxG.width / 2), 4);
@@ -107,6 +109,16 @@ class ChartingState extends MusicBeatState
 		UI_box.y = 20;
 		add(UI_box);
 
+		addSongUI();
+		addSectionUI();
+
+		add(curRenderedNotes);
+
+		super.create();
+	}
+
+	function addSongUI():Void
+	{
 		var UI_songTitle = new FlxUIInputText(10, 10, 70, _song.song, 8);
 		typingShit = UI_songTitle;
 
@@ -138,10 +150,34 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(reloadSong);
 
 		UI_box.addGroup(tab_group_song);
+	}
 
-		add(curRenderedNotes);
+	var stepperLength:FlxUINumericStepper;
+	var check_mustHitSection:FlxUICheckBox;
 
-		super.create();
+	function addSectionUI():Void
+	{
+		var tab_group_section = new FlxUI(null, UI_box);
+		tab_group_section.name = 'Section';
+
+		stepperLength = new FlxUINumericStepper(10, 10, 4, 0, 0, 999, 0);
+		stepperLength.value = _song.notes[curSection].lengthInSteps;
+		stepperLength.name = "section_length";
+
+		check_mustHitSection = new FlxUICheckBox(10, 30, null, null, "Must hit section", 100);
+		check_mustHitSection.name = 'check_mustHit';
+		check_mustHitSection.checked = true;
+		// _song.needsVoices = check_mustHit.checked;
+		check_mustHitSection.callback = function()
+		{
+			// _song.needsVoices = check_mustHit.checked;
+			trace('CHECKED!');
+		};
+
+		tab_group_section.add(stepperLength);
+		tab_group_section.add(check_mustHitSection);
+
+		UI_box.addGroup(tab_group_section);
 	}
 
 	function loadSong(daSong:String):Void
@@ -185,8 +221,18 @@ class ChartingState extends MusicBeatState
 			var label = check.getLabel().text;
 			switch (label)
 			{
-				case 'Loops':
-					// curNoteSelected.doesLoop = check.checked;
+				case 'Must hit section':
+					_song.notes[curSection].mustHitSection = check.checked;
+			}
+		}
+		else if (id == FlxUINumericStepper.CHANGE_EVENT && (sender is FlxUINumericStepper))
+		{
+			var nums:FlxUINumericStepper = cast sender;
+			var wname = nums.name;
+			FlxG.log.add(wname);
+			if (wname == 'section_length')
+			{
+				_song.notes[curSection].lengthInSteps = Std.int(nums.value);
 			}
 		}
 
@@ -320,7 +366,17 @@ class ChartingState extends MusicBeatState
 
 				FlxG.sound.music.time = (daLength - (_song.notes[sec].lengthInSteps * 2)) * Conductor.stepCrochet;
 			}
+
+			updateSectionUI();
 		}
+	}
+
+	function updateSectionUI():Void
+	{
+		var sec = _song.notes[curSection];
+
+		stepperLength.value = sec.lengthInSteps;
+		check_mustHitSection.checked = sec.mustHitSection;
 	}
 
 	function updateGrid():Void
