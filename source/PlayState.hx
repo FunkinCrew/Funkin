@@ -259,65 +259,76 @@ class PlayState extends MusicBeatState
 
 		var playerCounter:Int = 0;
 
-		while (playerCounter < 2)
+		var daBeats:Int = 0; // Not exactly representative of 'daBeats' lol, just how much it has looped
+		var totalLength:Int = 0; // Total length of the song, in beats;
+		for (section in noteData)
 		{
-			var daBeats:Int = 0; // Not exactly representative of 'daBeats' lol, just how much it has looped
-			var totalLength:Int = 0; // Total length of the song, in beats;
-			for (section in noteData)
+			var dumbassSection:Array<Dynamic> = section.notes;
+
+			var coolSection:Int = Std.int(section.lengthInSteps / 4);
+
+			if (coolSection <= 4) // FIX SINCE MOST THE SHIT I MADE WERE ONLY 3 HTINGS LONG LOl
+				coolSection = 4;
+			else if (coolSection <= 8)
+				coolSection = 8;
+
+			for (songNotes in dumbassSection)
 			{
-				var dumbassSection:Array<Dynamic> = section.notes;
+				sectionScores[0].push(0);
+				sectionScores[1].push(0);
 
-				var coolSection:Int = Std.int(section.lengthInSteps / 4);
+				var daStrumTime:Float = songNotes[0] + (Conductor.stepCrochet * section.lengthInSteps);
+				trace(daStrumTime);
+				var daNoteData:Int = songNotes[1];
 
-				if (coolSection <= 4) // FIX SINCE MOST THE SHIT I MADE WERE ONLY 3 HTINGS LONG LOl
-					coolSection = 4;
-				else if (coolSection <= 8)
-					coolSection = 8;
+				var daStrumTime:Float = daStrumTime;
 
-				for (songNotes in dumbassSection)
+				var oldNote:Note;
+				if (unspawnNotes.length > 0)
+					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
+				else
+					oldNote = null;
+
+				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote);
+				swagNote.scrollFactor.set(0, 0);
+
+				unspawnNotes.push(swagNote);
+
+				swagNote.mustPress = section.mustHitSection;
+
+				if (swagNote.mustPress)
 				{
-					sectionScores[0].push(0);
-					sectionScores[1].push(0);
-
-					var daStrumTime:Float = songNotes[0] + ((Conductor.stepCrochet * 16) * playerCounter);
-					trace(daStrumTime);
-					var daNoteData:Int = songNotes[1];
-
-					var daStrumTime:Float = daStrumTime;
-
-					var oldNote:Note;
-					if (unspawnNotes.length > 0)
-						oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
-					else
-						oldNote = null;
-
-					var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote);
-					swagNote.scrollFactor.set(0, 0);
-
-					unspawnNotes.push(swagNote);
-
-					swagNote.x += ((FlxG.width / 2) * playerCounter); // general offset
-
-					if (playerCounter == 1) // is the player
-					{
-						swagNote.mustPress = true;
-					}
-					else
-					{
-						sectionScores[0][daBeats] += swagNote.noteScore;
-					}
+					swagNote.x += (FlxG.width / 2); // general offset
+				}
+				else
+				{
 				}
 
-				// only need to do it once
-				if (playerCounter == 0)
-					sectionLengths.push(Math.round(coolSection / 4));
-				totalLength += Math.round(coolSection / 4);
-				daBeats += 1;
+				// WILL HAVE TO REDO SCORE SYSTEM
+				/* if (section.mustHitSection)
+					{
+						if (playerCounter == 1) // is the player
+						{
+							swagNote.mustPress = true;
+						}
+						else
+						{
+							//sectionScores[0][daBeats] += swagNote.noteScore;
+						}
+					}
+				 */
 			}
 
-			trace(unspawnNotes.length);
-			playerCounter += 1;
+			/* // only need to do it once
+				if (section.mustHitSection)
+					sectionLengths.push(Math.round(coolSection / 4));
+			 */
+			totalLength += Math.round(coolSection / 4);
+			daBeats += 1;
 		}
+
+		trace(unspawnNotes.length);
+		// playerCounter += 1;
 
 		unspawnNotes.sort(sortByShit);
 	}
