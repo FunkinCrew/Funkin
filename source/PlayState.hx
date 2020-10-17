@@ -270,10 +270,7 @@ class PlayState extends MusicBeatState
 				sectionScores[1].push(0);
 
 				var daStrumTime:Float = songNotes[0];
-				trace(daStrumTime);
 				var daNoteData:Int = songNotes[1];
-
-				// var daStrumTime:Float = daStrumTime;
 
 				var oldNote:Note;
 				if (unspawnNotes.length > 0)
@@ -572,13 +569,13 @@ class PlayState extends MusicBeatState
 				{
 					switch (Math.abs(daNote.noteData))
 					{
-						case 1:
-							dad.playAnim('singUP');
 						case 2:
-							dad.playAnim('singRIGHT');
+							dad.playAnim('singUP');
 						case 3:
+							dad.playAnim('singRIGHT');
+						case 1:
 							dad.playAnim('singDOWN');
-						case 4:
+						case 0:
 							dad.playAnim('singLEFT');
 					}
 
