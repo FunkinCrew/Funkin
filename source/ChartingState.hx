@@ -172,6 +172,11 @@ class ChartingState extends MusicBeatState
 		stepperLength.value = _song.notes[curSection].lengthInSteps;
 		stepperLength.name = "section_length";
 
+		var copyButton:FlxButton = new FlxButton(110, 8, "Copy last section", function()
+		{
+			copySection();
+		});
+
 		check_mustHitSection = new FlxUICheckBox(10, 30, null, null, "Must hit section", 100);
 		check_mustHitSection.name = 'check_mustHit';
 		check_mustHitSection.checked = true;
@@ -184,6 +189,7 @@ class ChartingState extends MusicBeatState
 
 		tab_group_section.add(stepperLength);
 		tab_group_section.add(check_mustHitSection);
+		tab_group_section.add(copyButton);
 
 		UI_box.addGroup(tab_group_section);
 	}
@@ -392,6 +398,18 @@ class ChartingState extends MusicBeatState
 		}
 	}
 
+	function copySection()
+	{
+		var daSec = FlxMath.maxInt(curSection, 1);
+
+		for (note in _song.notes[daSec - 1].notes)
+		{
+			_song.notes[daSec].notes.push([note[0] + Conductor.stepCrochet * _song.notes[daSec].lengthInSteps, note[1]]);
+		}
+
+		updateGrid();
+	}
+
 	function updateSectionUI():Void
 	{
 		var sec = _song.notes[curSection];
@@ -445,7 +463,7 @@ class ChartingState extends MusicBeatState
 	private function addNote():Void
 	{
 		_song.notes[curSection].notes.push([
-			Math.round(getStrumTime(dummyArrow.y) + (curSection * (Conductor.stepCrochet * 32))),
+			Math.round(getStrumTime(dummyArrow.y) + (curSection * (Conductor.stepCrochet * 16))),
 			Math.floor(FlxG.mouse.x / GRID_SIZE)
 		]);
 
