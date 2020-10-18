@@ -9,6 +9,7 @@ class Dad extends Character
 		super(x, y);
 		var dadTex = FlxAtlasFrames.fromSparrow(AssetPaths.DADDY_DEAREST__png, AssetPaths.DADDY_DEAREST__xml);
 		frames = dadTex;
+		antialiasing = true;
 		animation.addByPrefix('idle', 'Dad idle dance', 24);
 		animation.addByPrefix('singUP', 'Dad Sing Note UP', 24);
 		animation.addByPrefix('singRIGHT', 'Dad Sing Note RIGHT', 24);

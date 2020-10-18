@@ -227,7 +227,6 @@ class PlayState extends MusicBeatState
 	private function generateSong(dataPath:String):Void
 	{
 		// FlxG.log.add(ChartParser.parse());
-		generatedMusic = true;
 
 		generateStaticArrows(0);
 		generateStaticArrows(1);
@@ -326,6 +325,8 @@ class PlayState extends MusicBeatState
 		// playerCounter += 1;
 
 		unspawnNotes.sort(sortByShit);
+
+		generatedMusic = true;
 	}
 
 	function sortByShit(Obj1:Note, Obj2:Note):Int
@@ -480,15 +481,20 @@ class PlayState extends MusicBeatState
 			sectionScored = true;
 		}
 
-		if (generatedMusic && PlayState.SONG.notes[curBeat % 4] != null)
+		if (generatedMusic && PlayState.SONG.notes[Std.int(curStep / 16)] != null)
 		{
-			if (camFollow.x != dad.getGraphicMidpoint().x + 150 && PlayState.SONG.notes[curBeat % 4].mustHitSection)
+			if (curBeat % 4 == 0)
+			{
+				trace(PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection);
+			}
+
+			if (camFollow.x != dad.getGraphicMidpoint().x + 150 && !PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection)
 			{
 				camFollow.setPosition(dad.getGraphicMidpoint().x + 150, dad.getGraphicMidpoint().y - 100);
 				vocals.volume = 1;
 			}
 
-			if (PlayState.SONG.notes[curBeat % 4].mustHitSection && camFollow.x != boyfriend.getGraphicMidpoint().x - 100)
+			if (PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection && camFollow.x != boyfriend.getGraphicMidpoint().x - 100)
 			{
 				camFollow.setPosition(boyfriend.getGraphicMidpoint().x - 100, boyfriend.getGraphicMidpoint().y - 100);
 			}
