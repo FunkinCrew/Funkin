@@ -71,7 +71,7 @@ class PlayState extends MusicBeatState
 		persistentDraw = true;
 
 		if (SONG == null)
-			SONG = Song.loadFromJson('smash');
+			SONG = Song.loadFromJson('tutorial');
 
 		var bg:FlxSprite = new FlxSprite(-600, -200).loadGraphic(AssetPaths.stageback__png);
 		// bg.setGraphicSize(Std.int(bg.width * 2.5));
@@ -270,7 +270,14 @@ class PlayState extends MusicBeatState
 				sectionScores[1].push(0);
 
 				var daStrumTime:Float = songNotes[0];
-				var daNoteData:Int = songNotes[1];
+				var daNoteData:Int = Std.int(songNotes[1] % 4);
+
+				var gottaHitNote:Bool = section.mustHitSection;
+
+				if (songNotes[1] > 3)
+				{
+					gottaHitNote = !section.mustHitSection;
+				}
 
 				var oldNote:Note;
 				if (unspawnNotes.length > 0)
@@ -283,7 +290,7 @@ class PlayState extends MusicBeatState
 
 				unspawnNotes.push(swagNote);
 
-				swagNote.mustPress = section.mustHitSection;
+				swagNote.mustPress = gottaHitNote;
 
 				if (swagNote.mustPress)
 				{
@@ -473,16 +480,18 @@ class PlayState extends MusicBeatState
 			sectionScored = true;
 		}
 
-		if (playerTurn == 0 && generatedMusic)
+		if (generatedMusic && PlayState.SONG.notes[curBeat % 4] != null)
 		{
-			if (camFollow.x != dad.getGraphicMidpoint().x + 150)
+			if (camFollow.x != dad.getGraphicMidpoint().x + 150 && PlayState.SONG.notes[curBeat % 4].mustHitSection)
+			{
 				camFollow.setPosition(dad.getGraphicMidpoint().x + 150, dad.getGraphicMidpoint().y - 100);
-			vocals.volume = 1;
-		}
+				vocals.volume = 1;
+			}
 
-		if (playerTurn == Std.int((sectionLengths[curSection] * 8) / 2) && camFollow.x != boyfriend.getGraphicMidpoint().x - 100)
-		{
-			camFollow.setPosition(boyfriend.getGraphicMidpoint().x - 100, boyfriend.getGraphicMidpoint().y - 100);
+			if (PlayState.SONG.notes[curBeat % 4].mustHitSection && camFollow.x != boyfriend.getGraphicMidpoint().x - 100)
+			{
+				camFollow.setPosition(boyfriend.getGraphicMidpoint().x - 100, boyfriend.getGraphicMidpoint().y - 100);
+			}
 		}
 
 		if (camZooming)
@@ -584,7 +593,7 @@ class PlayState extends MusicBeatState
 					daNote.destroy();
 				}
 
-				daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * 0.45);
+				daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
 
 				if (daNote.y < -daNote.height)
 				{

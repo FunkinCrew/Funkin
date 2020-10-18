@@ -13,6 +13,7 @@ class Song
 	public var sections:Int;
 	public var sectionLengths:Array<Dynamic> = [];
 	public var needsVoices:Bool = true;
+	public var speed:Float = 1;
 
 	public function new(song, notes, bpm, sections)
 	{
@@ -45,14 +46,16 @@ class Song
 
 		trace(rawJson);
 
-		var songData = Json.parse(rawJson);
+		var songData:Song = Json.parse(rawJson).song;
 
-		daNotes = songData.notes;
-		daSong = songData.song;
-		daSections = songData.sections;
-		daBpm = songData.bpm;
-		daSectionLengths = songData.sectionLengths;
+		trace('LOADED FROM JSON: ' + songData.song);
+		/* 
+			daNotes = songData.notes;
+			daSong = songData.song;
+			daSections = songData.sections;
+			daBpm = songData.bpm;
+			daSectionLengths = songData.sectionLengths; */
 
-		return new Song(daSong, daNotes, daBpm, daSections);
+		return songData;
 	}
 }

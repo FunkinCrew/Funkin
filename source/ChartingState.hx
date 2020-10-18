@@ -40,8 +40,6 @@ class ChartingState extends MusicBeatState
 	 */
 	var curSection:Int = 0;
 
-	var sectionInfo:Array<Dynamic>;
-
 	var bpmTxt:FlxText;
 
 	var strumLine:FlxSprite;
@@ -62,11 +60,6 @@ class ChartingState extends MusicBeatState
 	var _song:Song;
 
 	var typingShit:FlxInputText;
-
-	/**
-	 * What part of the SECTION it's on, relative to the grid.
-	 */
-	var page:Int = 1;
 
 	override function create()
 	{
@@ -146,6 +139,19 @@ class ChartingState extends MusicBeatState
 			loadSong(_song.song);
 		});
 
+		var reloadSongJson:FlxButton = new FlxButton(reloadSong.x, saveButton.y + 30, "Reload JSON", function()
+		{
+			loadJson(_song.song.toLowerCase());
+		});
+
+		var stepperSpeed:FlxUINumericStepper = new FlxUINumericStepper(10, 80, 0.1, 1, 0.1, 10, 1, null);
+		stepperSpeed.value = _song.speed;
+		stepperSpeed.name = 'song_speed';
+
+		var stepperBPM:FlxUINumericStepper = new FlxUINumericStepper(10, 65, 1, 1, 1, 250, 0, null);
+		stepperBPM.value = Conductor.bpm;
+		stepperBPM.name = 'song_bpm';
+
 		var tab_group_song = new FlxUI(null, UI_box);
 		tab_group_song.name = "Song";
 		tab_group_song.add(UI_songTitle);
@@ -153,6 +159,9 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(check_voices);
 		tab_group_song.add(saveButton);
 		tab_group_song.add(reloadSong);
+		tab_group_song.add(reloadSongJson);
+		tab_group_song.add(stepperBPM);
+		tab_group_song.add(stepperSpeed);
 
 		UI_box.addGroup(tab_group_song);
 		UI_box.scrollFactor.set();
@@ -172,9 +181,11 @@ class ChartingState extends MusicBeatState
 		stepperLength.value = _song.notes[curSection].lengthInSteps;
 		stepperLength.name = "section_length";
 
+		var stepperCopy:FlxUINumericStepper = new FlxUINumericStepper(110, 30, 1, 1, 1, 999, 0);
+
 		var copyButton:FlxButton = new FlxButton(110, 8, "Copy last section", function()
 		{
-			copySection();
+			copySection(Std.int(stepperCopy.value));
 		});
 
 		check_mustHitSection = new FlxUICheckBox(10, 30, null, null, "Must hit section", 100);
@@ -188,6 +199,7 @@ class ChartingState extends MusicBeatState
 		};
 
 		tab_group_section.add(stepperLength);
+		tab_group_section.add(stepperCopy);
 		tab_group_section.add(check_mustHitSection);
 		tab_group_section.add(copyButton);
 
@@ -248,6 +260,14 @@ class ChartingState extends MusicBeatState
 			{
 				_song.notes[curSection].lengthInSteps = Std.int(nums.value);
 				updateGrid();
+			}
+			else if (wname == 'song_speed')
+			{
+				_song.speed = nums.value;
+			}
+			else if (wname == 'song_bpm')
+			{
+				Conductor.changeBPM(Std.int(nums.value));
 			}
 		}
 
@@ -398,13 +418,16 @@ class ChartingState extends MusicBeatState
 		}
 	}
 
-	function copySection()
+	function copySection(?sectionNum:Int = 1)
 	{
-		var daSec = FlxMath.maxInt(curSection, 1);
+		var daSec = FlxMath.maxInt(curSection, sectionNum);
 
-		for (note in _song.notes[daSec - 1].notes)
+		for (note in _song.notes[daSec - sectionNum].notes)
 		{
-			_song.notes[daSec].notes.push([note[0] + Conductor.stepCrochet * _song.notes[daSec].lengthInSteps, note[1]]);
+			_song.notes[daSec].notes.push([
+				note[0] + Conductor.stepCrochet * (_song.notes[daSec].lengthInSteps * sectionNum),
+				note[1]
+			]);
 		}
 
 		updateGrid();
@@ -431,7 +454,7 @@ class ChartingState extends MusicBeatState
 		{
 			var daNoteInfo = i[1];
 
-			var note:Note = new Note(i[0], daNoteInfo);
+			var note:Note = new Note(i[0], daNoteInfo % 4);
 			note.setGraphicSize(GRID_SIZE, GRID_SIZE);
 			note.updateHitbox();
 			note.x = Math.floor(i[1] * GRID_SIZE);
@@ -450,7 +473,7 @@ class ChartingState extends MusicBeatState
 	{
 		for (i in _song.notes[curSection].notes)
 		{
-			if (i[0] == note.strumTime && i[1] == note.noteData)
+			if (i[0] == note.strumTime && i[1] % 4 == note.noteData)
 			{
 				FlxG.log.add('FOUND EVIL NUMBER');
 				_song.notes[curSection].notes.remove(i);
@@ -525,10 +548,16 @@ class ChartingState extends MusicBeatState
 		return noteData;
 	}
 
+	function loadJson(song:String):Void
+	{
+		PlayState.SONG = Song.loadFromJson(song);
+		FlxG.resetState();
+	}
+
 	private function saveLevel()
 	{
 		var json = {
-			"song": _song.song,
+			"song": _song,
 			"bpm": Conductor.bpm,
 			"sections": _song.notes.length,
 			'notes': _song.notes
@@ -542,8 +571,7 @@ class ChartingState extends MusicBeatState
 			_file.addEventListener(Event.COMPLETE, onSaveComplete);
 			_file.addEventListener(Event.CANCEL, onSaveCancel);
 			_file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
-			_file.save(data.trim(), json.song.toLowerCase() + ".json");
-			_file.browse();
+			_file.save(data.trim(), json.song.song.toLowerCase() + ".json");
 		}
 	}
 
