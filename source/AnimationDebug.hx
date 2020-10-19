@@ -12,10 +12,10 @@ import flixel.util.FlxColor;
 /**
 	*DEBUG MODE
  */
-class Charting extends FlxState
+class AnimationDebug extends FlxState
 {
 	var bf:Boyfriend;
-	var dad:Dad;
+	var dad:Character;
 	var char:Character;
 	var textAnim:FlxText;
 	var dumbTexts:FlxTypedGroup<FlxText>;
@@ -40,7 +40,7 @@ class Charting extends FlxState
 
 		if (isDad)
 		{
-			dad = new Dad(0, 0);
+			dad = new Character(0, 0);
 			dad.screenCenter();
 			dad.debugMode = true;
 			add(dad);

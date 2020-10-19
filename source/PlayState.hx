@@ -33,8 +33,8 @@ class PlayState extends MusicBeatState
 
 	private var vocals:FlxSound;
 
-	private var dad:Dad;
-	private var gf:Girlfriend;
+	private var dad:Character;
+	private var gf:Character;
 	private var boyfriend:Boyfriend;
 
 	private var notes:FlxTypedGroup<Note>;
@@ -96,13 +96,19 @@ class PlayState extends MusicBeatState
 		stageCurtains.scrollFactor.set(1.3, 1.3);
 		stageCurtains.active = false;
 
-		gf = new Girlfriend(400, 130);
+		gf = new Character(400, 130, 'gf');
 		gf.scrollFactor.set(0.95, 0.95);
 		gf.antialiasing = true;
 		add(gf);
 
-		dad = new Dad(100, 100);
+		dad = new Character(100, 100, SONG.player2);
 		add(dad);
+
+		if (SONG.player2 == 'gf')
+		{
+			dad.setPosition(gf.x, gf.y);
+			gf.visible = false;
+		}
 
 		boyfriend = new Boyfriend(770, 450);
 		add(boyfriend);
@@ -263,7 +269,7 @@ class PlayState extends MusicBeatState
 		{
 			var coolSection:Int = Std.int(section.lengthInSteps / 4);
 
-			for (songNotes in section.notes)
+			for (songNotes in section.sectionNotes)
 			{
 				sectionScores[0].push(0);
 				sectionScores[1].push(0);
@@ -454,12 +460,11 @@ class PlayState extends MusicBeatState
 			healthHeads.animation.play('unhealthy');
 		else
 			healthHeads.animation.play('healthy');
-		/* 
-			if (FlxG.keys.justPressed.NINE)
-				FlxG.switchState(new Charting());
-			if (FlxG.keys.justPressed.EIGHT)
-				FlxG.switchState(new Charting(true));
-		 */
+
+		/* if (FlxG.keys.justPressed.NINE)
+			FlxG.switchState(new Charting()); */
+		if (FlxG.keys.justPressed.EIGHT)
+			FlxG.switchState(new AnimationDebug(true));
 
 		if (countingDown)
 		{
@@ -477,7 +482,7 @@ class PlayState extends MusicBeatState
 
 		if (playerTurn == (sectionLengths[curSection] * 8) - 1 && !sectionScored)
 		{
-			popUpScore();
+			// popUpScore();
 			sectionScored = true;
 		}
 
@@ -488,15 +493,15 @@ class PlayState extends MusicBeatState
 				trace(PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection);
 			}
 
-			if (camFollow.x != dad.getGraphicMidpoint().x + 150 && !PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection)
+			if (camFollow.x != dad.getMidpoint().x + 150 && !PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection)
 			{
-				camFollow.setPosition(dad.getGraphicMidpoint().x + 150, dad.getGraphicMidpoint().y - 100);
+				camFollow.setPosition(dad.getMidpoint().x + 150, dad.getMidpoint().y - 100);
 				vocals.volume = 1;
 			}
 
-			if (PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection && camFollow.x != boyfriend.getGraphicMidpoint().x - 100)
+			if (PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection && camFollow.x != boyfriend.getMidpoint().x - 100)
 			{
-				camFollow.setPosition(boyfriend.getGraphicMidpoint().x - 100, boyfriend.getGraphicMidpoint().y - 100);
+				camFollow.setPosition(boyfriend.getMidpoint().x - 100, boyfriend.getMidpoint().y - 100);
 			}
 		}
 
@@ -626,29 +631,47 @@ class PlayState extends MusicBeatState
 		keyShit();
 	}
 
-	private function popUpScore():Void
+	private function popUpScore(strumtime:Float):Void
 	{
-		boyfriend.playAnim('hey');
-		vocals.volume = 1;
+		var noteDiff:Float = Math.abs(strumtime - Conductor.songPosition);
+
+		trace(noteDiff);
+
+		// boyfriend.playAnim('hey');
+		// vocals.volume = 1;
 
 		var placement:String = Std.string(combo);
 		// var placement:String = sectionScores[1][curSection] + '/' + sectionScores[0][curSection];
 
 		var coolText:FlxText = new FlxText(0, 0, 0, placement, 32);
 		coolText.screenCenter();
-		coolText.x = FlxG.width * 0.75;
+		coolText.x = FlxG.width * 0.55;
 		//
 
 		var rating:FlxSprite = new FlxSprite();
 
-		var daRating:String = "shit";
+		var daRating:String = "sick";
 
-		if (combo > 60)
-			daRating = 'sick';
-		else if (combo > 12)
-			daRating = 'good'
-		else if (combo > 4)
+		if (noteDiff > Conductor.safeZoneOffset * 0.9)
+		{
+			daRating = 'shit';
+		}
+		else if (noteDiff > Conductor.safeZoneOffset * 0.75)
+		{
 			daRating = 'bad';
+		}
+		else if (noteDiff > Conductor.safeZoneOffset * 0.2)
+		{
+			daRating = 'good';
+		}
+
+		/* if (combo > 60)
+				daRating = 'sick';
+			else if (combo > 12)
+				daRating = 'good'
+			else if (combo > 4)
+				daRating = 'bad';
+		 */
 		rating.loadGraphic('assets/images/' + daRating + ".png");
 		rating.screenCenter();
 		rating.x = coolText.x - 40;
@@ -669,7 +692,7 @@ class PlayState extends MusicBeatState
 		comboSpr.setGraphicSize(Std.int(comboSpr.width * 0.7));
 		comboSpr.updateHitbox();
 		comboSpr.velocity.x += FlxG.random.int(1, 10);
-		add(comboSpr);
+		// add(comboSpr);
 		add(rating);
 
 		var seperatedScore:Array<Int> = [];
@@ -1017,6 +1040,7 @@ class PlayState extends MusicBeatState
 	{
 		if (!note.wasGoodHit)
 		{
+			popUpScore(note.strumTime);
 			combo += 1;
 
 			if (note.noteData >= 0)
@@ -1072,7 +1096,7 @@ class PlayState extends MusicBeatState
 		if (camZooming && FlxG.camera.zoom < 1.35 && totalBeats % 4 == 0)
 			FlxG.camera.zoom += 0.025;
 
-		dad.playAnim('idle');
+		dad.dance();
 		healthHeads.setGraphicSize(Std.int(healthHeads.width + 20));
 
 		if (totalBeats % gfSpeed == 0)

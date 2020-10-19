@@ -7,6 +7,7 @@ import flixel.addons.ui.FlxInputText;
 import flixel.addons.ui.FlxUI9SliceSprite;
 import flixel.addons.ui.FlxUI;
 import flixel.addons.ui.FlxUICheckBox;
+import flixel.addons.ui.FlxUIDropDownMenu;
 import flixel.addons.ui.FlxUIInputText;
 import flixel.addons.ui.FlxUINumericStepper;
 import flixel.addons.ui.FlxUITabMenu;
@@ -60,6 +61,7 @@ class ChartingState extends MusicBeatState
 	var _song:Song;
 
 	var typingShit:FlxInputText;
+	var curSelectedNote:Note = new Note(0, 0, null);
 
 	override function create()
 	{
@@ -152,6 +154,21 @@ class ChartingState extends MusicBeatState
 		stepperBPM.value = Conductor.bpm;
 		stepperBPM.name = 'song_bpm';
 
+		var characters:Array<String> = ["bf", 'dad', 'gf'];
+
+		var player1DropDown = new FlxUIDropDownMenu(10, 100, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
+		{
+			_song.player1 = characters[Std.parseInt(character)];
+		});
+		player1DropDown.selectedLabel = _song.player1;
+
+		var player2DropDown = new FlxUIDropDownMenu(140, 100, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
+		{
+			_song.player2 = characters[Std.parseInt(character)];
+		});
+
+		player2DropDown.selectedLabel = _song.player2;
+
 		var tab_group_song = new FlxUI(null, UI_box);
 		tab_group_song.name = "Song";
 		tab_group_song.add(UI_songTitle);
@@ -162,6 +179,8 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(reloadSongJson);
 		tab_group_song.add(stepperBPM);
 		tab_group_song.add(stepperSpeed);
+		tab_group_song.add(player1DropDown);
+		tab_group_song.add(player2DropDown);
 
 		UI_box.addGroup(tab_group_song);
 		UI_box.scrollFactor.set();
@@ -422,12 +441,9 @@ class ChartingState extends MusicBeatState
 	{
 		var daSec = FlxMath.maxInt(curSection, sectionNum);
 
-		for (note in _song.notes[daSec - sectionNum].notes)
+		for (note in _song.notes[daSec - sectionNum].sectionNotes)
 		{
-			_song.notes[daSec].notes.push([
-				note[0] + Conductor.stepCrochet * (_song.notes[daSec].lengthInSteps * sectionNum),
-				note[1]
-			]);
+			_song.notes[daSec].sectionNotes.push(note);
 		}
 
 		updateGrid();
@@ -448,7 +464,7 @@ class ChartingState extends MusicBeatState
 			curRenderedNotes.remove(curRenderedNotes.members[0], true);
 		}
 
-		var sectionInfo:Array<Dynamic> = _song.notes[curSection].notes;
+		var sectionInfo:Array<Dynamic> = _song.notes[curSection].sectionNotes;
 
 		for (i in sectionInfo)
 		{
@@ -471,12 +487,12 @@ class ChartingState extends MusicBeatState
 
 	function deleteNote(note:Note):Void
 	{
-		for (i in _song.notes[curSection].notes)
+		for (i in _song.notes[curSection].sectionNotes)
 		{
-			if (i[0] == note.strumTime && i[1] % 4 == note.noteData)
+			if (i.strumTime == note.strumTime && i.noteData % 4 == note.noteData)
 			{
 				FlxG.log.add('FOUND EVIL NUMBER');
-				_song.notes[curSection].notes.remove(i);
+				_song.notes[curSection].sectionNotes.remove(i);
 			}
 		}
 
@@ -485,10 +501,10 @@ class ChartingState extends MusicBeatState
 
 	private function addNote():Void
 	{
-		_song.notes[curSection].notes.push([
-			Math.round(getStrumTime(dummyArrow.y) + (curSection * (Conductor.stepCrochet * 16))),
-			Math.floor(FlxG.mouse.x / GRID_SIZE)
-		]);
+		var swagNote:Note = new Note(Math.round(getStrumTime(dummyArrow.y) + (curSection * (Conductor.stepCrochet * 16))),
+			Math.floor(FlxG.mouse.x / GRID_SIZE));
+
+		_song.notes[curSection].sectionNotes.push(swagNote);
 
 		trace(getStrumTime(dummyArrow.y) + (curSection * (Conductor.stepCrochet * 16)));
 		trace(curSection);
@@ -542,7 +558,7 @@ class ChartingState extends MusicBeatState
 
 		for (i in _song.notes)
 		{
-			noteData.push(i.notes);
+			noteData.push(i.sectionNotes);
 		}
 
 		return noteData;
