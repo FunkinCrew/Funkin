@@ -116,6 +116,7 @@ class ChartingState extends MusicBeatState
 
 		addSongUI();
 		addSectionUI();
+		addNoteUI();
 
 		add(curRenderedNotes);
 		add(curRenderedSustains);
@@ -231,6 +232,25 @@ class ChartingState extends MusicBeatState
 		UI_box.addGroup(tab_group_section);
 	}
 
+	var stepperSusLength:FlxUINumericStepper;
+
+	function addNoteUI():Void
+	{
+		var tab_group_note = new FlxUI(null, UI_box);
+		tab_group_note.name = 'Note';
+
+		stepperSusLength = new FlxUINumericStepper(10, 10, Conductor.stepCrochet / 2, 0, 0, Conductor.stepCrochet * 16);
+		stepperSusLength.value = 0;
+		stepperSusLength.name = 'note_susLength';
+
+		var applyLength:FlxButton = new FlxButton(100, 10, 'Apply');
+
+		tab_group_note.add(stepperSusLength);
+		tab_group_note.add(applyLength);
+
+		UI_box.addGroup(tab_group_note);
+	}
+
 	function loadSong(daSong:String):Void
 	{
 		if (FlxG.sound.music != null)
@@ -294,6 +314,11 @@ class ChartingState extends MusicBeatState
 			{
 				Conductor.changeBPM(Std.int(nums.value));
 			}
+			else if (wname == 'note_susLength')
+			{
+				curSelectedNote[2] = nums.value;
+				updateGrid();
+			}
 		}
 
 		// FlxG.log.add(id + " WEED " + sender + " WEED " + data + " WEED " + params);
@@ -333,8 +358,15 @@ class ChartingState extends MusicBeatState
 				{
 					if (FlxG.mouse.overlaps(note))
 					{
-						trace('tryin to delete note...');
-						deleteNote(note);
+						if (FlxG.keys.pressed.CONTROL)
+						{
+							selectNote(note);
+						}
+						else
+						{
+							trace('tryin to delete note...');
+							deleteNote(note);
+						}
 					}
 				});
 			}
@@ -471,6 +503,11 @@ class ChartingState extends MusicBeatState
 		check_mustHitSection.checked = sec.mustHitSection;
 	}
 
+	function updateNoteUI():Void
+	{
+		stepperSusLength.value = curSelectedNote[2];
+	}
+
 	function updateGrid():Void
 	{
 		while (curRenderedNotes.members.length > 0)
@@ -528,6 +565,24 @@ class ChartingState extends MusicBeatState
 		_song.notes.push(new Section(lengthInSteps));
 	}
 
+	function selectNote(note:Note):Void
+	{
+		var swagNum:Int = 0;
+
+		for (i in _song.notes[curSection].sectionNotes)
+		{
+			if (i.strumTime == note.strumTime && i.noteData % 4 == note.noteData)
+			{
+				curSelectedNote = _song.notes[curSection].sectionNotes[swagNum];
+			}
+
+			swagNum += 1;
+		}
+
+		updateGrid();
+		updateNoteUI();
+	}
+
 	function deleteNote(note:Note):Void
 	{
 		for (i in _song.notes[curSection].sectionNotes)
@@ -556,6 +611,7 @@ class ChartingState extends MusicBeatState
 		trace(curSection);
 
 		updateGrid();
+		updateNoteUI();
 	}
 
 	function getStrumTime(yPos:Float):Float
