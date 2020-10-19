@@ -51,7 +51,13 @@ class Song
 
 		var songData:Song = Json.parse(rawJson).song;
 
-		trace('LOADED FROM JSON: ' + songData.song);
+		// trace('LOADED FROM JSON: ' + songData.notes);
+
+		for (i in 0...songData.notes.length)
+		{
+			trace('LOADED FROM JSON: ' + songData.notes[i].sectionNotes);
+			// songData.notes[i].sectionNotes = songData.notes[i].sectionNotes
+		}
 		/* 
 			daNotes = songData.notes;
 			daSong = songData.song;

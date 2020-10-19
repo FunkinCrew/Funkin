@@ -443,7 +443,10 @@ class ChartingState extends MusicBeatState
 
 		for (note in _song.notes[daSec - sectionNum].sectionNotes)
 		{
-			_song.notes[daSec].sectionNotes.push(note);
+			var strum = note.strumTime + Conductor.stepCrochet * (_song.notes[daSec].lengthInSteps * sectionNum);
+
+			var copiedNote:NoteMeta = new NoteMeta(strum, note.noteData, note.sustainLength);
+			_song.notes[daSec].sectionNotes.push(copiedNote);
 		}
 
 		updateGrid();
@@ -469,12 +472,15 @@ class ChartingState extends MusicBeatState
 		for (i in sectionInfo)
 		{
 			var daNoteInfo = i[1];
+			var daStrumTime = i[0];
+			var daSus = i[2];
 
-			var note:Note = new Note(i[0], daNoteInfo % 4);
+			var note:Note = new Note(daStrumTime, daNoteInfo % 4);
+			note.sustainLength = daSus;
 			note.setGraphicSize(GRID_SIZE, GRID_SIZE);
 			note.updateHitbox();
-			note.x = Math.floor(i[1] * GRID_SIZE);
-			note.y = getYfromStrum(note.strumTime) % gridBG.height;
+			note.x = Math.floor(daNoteInfo * GRID_SIZE);
+			note.y = getYfromStrum(daStrumTime) % gridBG.height;
 
 			curRenderedNotes.add(note);
 		}
@@ -501,8 +507,8 @@ class ChartingState extends MusicBeatState
 
 	private function addNote():Void
 	{
-		var swagNote:Note = new Note(Math.round(getStrumTime(dummyArrow.y) + (curSection * (Conductor.stepCrochet * 16))),
-			Math.floor(FlxG.mouse.x / GRID_SIZE));
+		var swagNote:NoteMeta = new NoteMeta(Math.round(getStrumTime(dummyArrow.y) + (curSection * (Conductor.stepCrochet * 16))),
+			Math.floor(FlxG.mouse.x / GRID_SIZE), 0);
 
 		_song.notes[curSection].sectionNotes.push(swagNote);
 
@@ -587,7 +593,7 @@ class ChartingState extends MusicBeatState
 			_file.addEventListener(Event.COMPLETE, onSaveComplete);
 			_file.addEventListener(Event.CANCEL, onSaveCancel);
 			_file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
-			_file.save(data.trim(), json.song.song.toLowerCase() + ".json");
+			_file.save(data.trim(), _song.song.toLowerCase() + ".json");
 		}
 	}
 
