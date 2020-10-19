@@ -55,6 +55,7 @@ class ChartingState extends MusicBeatState
 	var dummyArrow:FlxSprite;
 
 	var curRenderedNotes:FlxTypedGroup<Note>;
+	var curRenderedSustains:FlxTypedGroup<FlxSprite>;
 
 	var gridBG:FlxSprite;
 
@@ -69,6 +70,7 @@ class ChartingState extends MusicBeatState
 		add(gridBG);
 
 		curRenderedNotes = new FlxTypedGroup<Note>();
+		curRenderedSustains = new FlxTypedGroup<FlxSprite>();
 
 		if (PlayState.SONG != null)
 			_song = PlayState.SONG;
@@ -113,6 +115,7 @@ class ChartingState extends MusicBeatState
 		addSectionUI();
 
 		add(curRenderedNotes);
+		add(curRenderedSustains);
 
 		super.create();
 	}
@@ -319,6 +322,20 @@ class ChartingState extends MusicBeatState
 			}
 		}
 
+		if (FlxG.mouse.justPressed)
+		{
+			if (FlxG.mouse.overlaps(curRenderedNotes))
+			{
+				curRenderedNotes.forEach(function(note:Note)
+				{
+					if (FlxG.mouse.overlaps(note))
+					{
+						deleteNote(note);
+					}
+				});
+			}
+		}
+
 		if (FlxG.mouse.x > gridBG.x
 			&& FlxG.mouse.x < gridBG.x + gridBG.width
 			&& FlxG.mouse.y > gridBG.y
@@ -332,17 +349,7 @@ class ChartingState extends MusicBeatState
 
 			if (FlxG.mouse.justPressed)
 			{
-				if (FlxG.mouse.overlaps(curRenderedNotes))
-				{
-					curRenderedNotes.forEach(function(note:Note)
-					{
-						if (FlxG.mouse.overlaps(note))
-						{
-							deleteNote(note);
-						}
-					});
-				}
-				else
+				if (!FlxG.mouse.overlaps(curRenderedNotes))
 				{
 					FlxG.log.add('added note');
 					addNote();
@@ -467,13 +474,35 @@ class ChartingState extends MusicBeatState
 			curRenderedNotes.remove(curRenderedNotes.members[0], true);
 		}
 
+		while (curRenderedSustains.members.length > 0)
+		{
+			curRenderedSustains.remove(curRenderedSustains.members[0], true);
+		}
+
 		var sectionInfo:Array<Dynamic> = _song.notes[curSection].sectionNotes;
+
+		/* // PORT BULLSHIT, INCASE THERE'S NO SUSTAIN DATA FOR A NOTE
+			for (sec in 0..._song.notes.length)
+			{
+				for (notesse in 0..._song.notes[sec].sectionNotes.length)
+				{
+					if (_song.notes[sec].sectionNotes[notesse][2] == null)
+					{
+						trace('SUS NULL');
+						_song.notes[sec].sectionNotes[notesse][2] = 0;
+					}
+				}
+			}
+		 */
 
 		for (i in sectionInfo)
 		{
 			var daNoteInfo = i[1];
 			var daStrumTime = i[0];
 			var daSus = i[2];
+
+			if (daSus == null)
+				i[2] == 0;
 
 			var note:Note = new Note(daStrumTime, daNoteInfo % 4);
 			note.sustainLength = daSus;
