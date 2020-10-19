@@ -2,7 +2,7 @@ package;
 
 class Section
 {
-	public var sectionNotes:Array<Note> = [];
+	public var sectionNotes:Array<Dynamic> = [];
 
 	public var lengthInSteps:Int = 16;
 	public var typeOfSection:Int = 0;
