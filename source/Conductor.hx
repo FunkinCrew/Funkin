@@ -12,10 +12,12 @@ class Conductor
 	public static var songPosition:Float;
 	public static var offset:Float = 0;
 
-	public static var safeFrames:Int = 5;
+	public static var safeFrames:Int = 10;
 	public static var safeZoneOffset:Float = (safeFrames / 60) * 1000; // is calculated in create(), is safeFrames in milliseconds
 
-	public function new() {}
+	public function new()
+	{
+	}
 
 	public static function changeBPM(newBpm:Int)
 	{

@@ -2,10 +2,7 @@ package;
 
 class Section
 {
-	/**
-	 * NOT ACTUAL NOTE DATA! Just holds strum time and which part of the chart it is!
-	 */
-	public var notes:Array<Dynamic> = [];
+	public var sectionNotes:Array<Note> = [];
 
 	public var lengthInSteps:Int = 16;
 	public var typeOfSection:Int = 0;
