@@ -16,6 +16,7 @@ class Note extends FlxSprite
 	public var prevNote:Note;
 
 	public var sustainLength:Float = 0;
+	public var isSustainNote:Bool = false;
 
 	public var noteScore:Float = 1;
 
@@ -25,7 +26,7 @@ class Note extends FlxSprite
 	public static var BLUE_NOTE:Int = 1;
 	public static var RED_NOTE:Int = 3;
 
-	public function new(strumTime:Float, noteData:Int, ?prevNote:Note)
+	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false)
 	{
 		super();
 
@@ -33,6 +34,7 @@ class Note extends FlxSprite
 			prevNote = this;
 
 		this.prevNote = prevNote;
+		isSustainNote = sustainNote;
 
 		x += 50;
 		this.strumTime = strumTime;
@@ -78,7 +80,7 @@ class Note extends FlxSprite
 
 		trace(prevNote);
 
-		if (noteData < 0 && prevNote != null)
+		if (isSustainNote && prevNote != null)
 		{
 			noteScore * 0.2;
 			alpha = 0.6;
@@ -87,13 +89,13 @@ class Note extends FlxSprite
 
 			switch (noteData)
 			{
-				case -1:
+				case 2:
 					animation.play('greenholdend');
-				case -2:
+				case 3:
 					animation.play('redholdend');
-				case -3:
+				case 1:
 					animation.play('blueholdend');
-				case -4:
+				case 0:
 					animation.play('purpleholdend');
 			}
 
@@ -101,22 +103,22 @@ class Note extends FlxSprite
 
 			x -= width / 2;
 
-			if (prevNote.noteData < 0)
+			if (prevNote.isSustainNote)
 			{
 				switch (prevNote.noteData)
 				{
-					case -1:
+					case 2:
 						prevNote.animation.play('greenhold');
-					case -2:
+					case 3:
 						prevNote.animation.play('redhold');
-					case -3:
+					case 1:
 						prevNote.animation.play('bluehold');
-					case -4:
+					case 0:
 						prevNote.animation.play('purplehold');
 				}
 
 				prevNote.offset.y = -19;
-				prevNote.scale.y *= 2.25;
+				prevNote.scale.y *= (2.25 * PlayState.SONG.speed);
 				// prevNote.setGraphicSize();
 			}
 		}

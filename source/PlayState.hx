@@ -274,8 +274,8 @@ class PlayState extends MusicBeatState
 				sectionScores[0].push(0);
 				sectionScores[1].push(0);
 
-				var daStrumTime:Float = songNotes.strumTime;
-				var daNoteData:Int = Std.int(songNotes.noteData % 4);
+				var daStrumTime:Float = songNotes[0];
+				var daNoteData:Int = Std.int(songNotes[1] % 4);
 
 				var gottaHitNote:Bool = section.mustHitSection;
 
@@ -291,10 +291,29 @@ class PlayState extends MusicBeatState
 					oldNote = null;
 
 				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote);
-				swagNote.sustainLength = songNotes.sustainLength;
+				swagNote.sustainLength = songNotes[2];
 				swagNote.scrollFactor.set(0, 0);
 
+				var susLength:Float = swagNote.sustainLength;
+
+				susLength = susLength / Conductor.stepCrochet;
 				unspawnNotes.push(swagNote);
+
+				for (susNote in 0...Math.floor(susLength))
+				{
+					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
+
+					var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote), daNoteData, oldNote, true);
+					sustainNote.scrollFactor.set();
+					unspawnNotes.push(sustainNote);
+
+					sustainNote.mustPress = gottaHitNote;
+
+					if (sustainNote.mustPress)
+					{
+						sustainNote.x += FlxG.width / 2; // general offset
+					}
+				}
 
 				swagNote.mustPress = gottaHitNote;
 
@@ -891,21 +910,21 @@ class PlayState extends MusicBeatState
 		{
 			notes.forEach(function(daNote:Note)
 			{
-				if (daNote.canBeHit && daNote.mustPress)
+				if (daNote.canBeHit && daNote.mustPress && daNote.isSustainNote)
 				{
 					switch (daNote.noteData)
 					{
 						// NOTES YOU ARE HOLDING
-						case -1:
+						case 2:
 							if (up && daNote.prevNote.wasGoodHit)
 								goodNoteHit(daNote);
-						case -2:
+						case 3:
 							if (right && daNote.prevNote.wasGoodHit)
 								goodNoteHit(daNote);
-						case -3:
+						case 1:
 							if (down && daNote.prevNote.wasGoodHit)
 								goodNoteHit(daNote);
-						case -4:
+						case 0:
 							if (left && daNote.prevNote.wasGoodHit)
 								goodNoteHit(daNote);
 					}
