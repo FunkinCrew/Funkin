@@ -370,6 +370,17 @@ class ChartingState extends MusicBeatState
 					}
 				});
 			}
+			else
+			{
+				if (FlxG.mouse.x > gridBG.x
+					&& FlxG.mouse.x < gridBG.x + gridBG.width
+					&& FlxG.mouse.y > gridBG.y
+					&& FlxG.mouse.y < gridBG.y + (GRID_SIZE * _song.notes[curSection].lengthInSteps))
+				{
+					FlxG.log.add('added note');
+					addNote();
+				}
+			}
 		}
 
 		if (FlxG.mouse.x > gridBG.x
@@ -382,15 +393,6 @@ class ChartingState extends MusicBeatState
 				dummyArrow.y = FlxG.mouse.y;
 			else
 				dummyArrow.y = Math.floor(FlxG.mouse.y / GRID_SIZE) * GRID_SIZE;
-
-			if (FlxG.mouse.justPressed)
-			{
-				if (!FlxG.mouse.overlaps(curRenderedNotes))
-				{
-					FlxG.log.add('added note');
-					addNote();
-				}
-			}
 		}
 
 		if (FlxG.keys.justPressed.ENTER)
@@ -587,7 +589,7 @@ class ChartingState extends MusicBeatState
 	{
 		for (i in _song.notes[curSection].sectionNotes)
 		{
-			if (i.strumTime == note.strumTime && i.noteData % 4 == note.noteData)
+			if (i[0] == note.strumTime && i[1] % 4 == note.noteData)
 			{
 				FlxG.log.add('FOUND EVIL NUMBER');
 				_song.notes[curSection].sectionNotes.remove(i);
