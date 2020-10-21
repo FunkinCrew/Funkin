@@ -113,7 +113,12 @@ class TitleState extends MusicBeatState
 				pressedEnter = true;
 		}
 
-		if (pressedEnter && !transitioning)
+		if (pressedEnter && !skippedIntro)
+		{
+			skipIntro();
+		}
+
+		if (pressedEnter && !transitioning && skippedIntro)
 		{
 			FlxG.camera.flash(FlxColor.WHITE, 1);
 
@@ -170,8 +175,18 @@ class TitleState extends MusicBeatState
 				credTextShit.text += '\nFunkin';
 
 			case 16:
-				FlxG.camera.flash(FlxColor.WHITE, 4);
-				remove(credGroup);
+				skipIntro();
+		}
+	}
+
+	var skippedIntro:Bool = false;
+
+	function skipIntro():Void
+	{
+		if (!skippedIntro)
+		{
+			FlxG.camera.flash(FlxColor.WHITE, 4);
+			remove(credGroup);
 		}
 	}
 }
