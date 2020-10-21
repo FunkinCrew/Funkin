@@ -49,6 +49,12 @@ class FreeplayState extends MusicBeatState
 
 		selector.y = (26 * curSelected) + 30;
 
+		if (FlxG.keys.justPressed.ENTER)
+		{
+			PlayState.SONG = Song.loadFromJson(songs[curSelected].toLowerCase());
+			FlxG.switchState(new PlayState());
+		}
+
 		super.update(elapsed);
 	}
 }
