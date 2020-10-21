@@ -8,18 +8,24 @@ import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileDiamond;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.transition.TransitionData;
 import flixel.graphics.FlxGraphic;
+import flixel.group.FlxGroup;
 import flixel.input.gamepad.FlxGamepad;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
+import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 
-class TitleState extends FlxTransitionableState
+class TitleState extends MusicBeatState
 {
 	static var initialized:Bool = false;
 	static public var soundExt:String = ".mp3";
+
+	var blackScreen:FlxSprite;
+	var credGroup:FlxGroup;
+	var credTextShit:FlxText;
 
 	override public function create():Void
 	{
@@ -70,7 +76,23 @@ class TitleState extends FlxTransitionableState
 		FlxTween.tween(logoBl, {y: logoBl.y + 50}, 0.6, {ease: FlxEase.quadInOut, type: PINGPONG});
 		FlxTween.tween(logo, {y: logoBl.y + 50}, 0.6, {ease: FlxEase.quadInOut, type: PINGPONG, startDelay: 0.1});
 
-		FlxG.sound.playMusic('assets/music/title' + TitleState.soundExt, 0, false);
+		credGroup = new FlxGroup();
+		add(credGroup);
+
+		blackScreen = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+		credGroup.add(blackScreen);
+
+		credTextShit = new FlxText(0, 0, 0, "ninjamuffin99\nPhantomArcade\nEvilsk8er\nAnd Kawaisprite", 24);
+		credTextShit.screenCenter();
+		credTextShit.alignment = CENTER;
+
+		credTextShit.visible = false;
+
+		FlxTween.tween(credTextShit, {y: credTextShit.y + 20}, 2.9, {ease: FlxEase.quadInOut, type: PINGPONG});
+
+		credGroup.add(credTextShit);
+
+		FlxG.sound.playMusic('assets/music/freakyMenu' + TitleState.soundExt, 0, false);
 
 		FlxG.sound.music.fadeIn(4, 0, 0.7);
 	}
@@ -79,6 +101,8 @@ class TitleState extends FlxTransitionableState
 
 	override function update(elapsed:Float)
 	{
+		Conductor.songPosition = FlxG.sound.music.time;
+
 		var pressedEnter:Bool = FlxG.keys.justPressed.ENTER;
 
 		var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
@@ -104,5 +128,50 @@ class TitleState extends FlxTransitionableState
 		}
 
 		super.update(elapsed);
+	}
+
+	override function beatHit()
+	{
+		super.beatHit();
+
+		FlxG.log.add(curBeat);
+
+		switch (curBeat)
+		{
+			case 1:
+				credTextShit.visible = true;
+			case 3:
+				credTextShit.text += '\npresent...';
+			case 4:
+				credTextShit.visible = false;
+				credTextShit.text = 'In association \nwith';
+				credTextShit.screenCenter();
+			case 5:
+				credTextShit.visible = true;
+			case 7:
+				credTextShit.text += '\nNewgrounds';
+			case 8:
+				credTextShit.visible = false;
+				credTextShit.text = 'Shoutouts Tom Fulp';
+				credTextShit.screenCenter();
+			case 9:
+				credTextShit.visible = true;
+			case 11:
+				credTextShit.text += '\nlmao';
+			case 12:
+				credTextShit.visible = false;
+				credTextShit.text = "Friday";
+				credTextShit.screenCenter();
+			case 13:
+				credTextShit.visible = true;
+			case 14:
+				credTextShit.text += '\nNight';
+			case 15:
+				credTextShit.text += '\nFunkin';
+
+			case 16:
+				FlxG.camera.flash(FlxColor.WHITE, 4);
+				remove(credGroup);
+		}
 	}
 }
