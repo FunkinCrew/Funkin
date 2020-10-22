@@ -1053,7 +1053,7 @@ class PlayState extends MusicBeatState
 		if (rightP)
 			noteMiss(3);
 		if (downP)
-			noteMiss(2);
+			noteMiss(1);
 	}
 
 	function noteCheck(keyP:Bool, note:Note):Void

@@ -25,9 +25,6 @@ enum abstract Action(String) to String from String
 	var LEFT_R = "left-release";
 	var RIGHT_R = "right-release";
 	var DOWN_R = "down-release";
-	var JUMP = "jump";
-	var JUMP_P = "jump-press";
-	var JUMP_R = "jump-release";
 	var ACCEPT = "accept";
 	var BACK = "back";
 	var PAUSE = "pause";
@@ -51,7 +48,6 @@ enum Control
 	LEFT;
 	RIGHT;
 	DOWN;
-	JUMP;
 	RESET;
 	ACCEPT;
 	BACK;
@@ -84,9 +80,6 @@ class Controls extends FlxActionSet
 	var _leftR = new FlxActionDigital(Action.LEFT_R);
 	var _rightR = new FlxActionDigital(Action.RIGHT_R);
 	var _downR = new FlxActionDigital(Action.DOWN_R);
-	var _jump = new FlxActionDigital(Action.JUMP);
-	var _jumpP = new FlxActionDigital(Action.JUMP_P);
-	var _jumpR = new FlxActionDigital(Action.JUMP_R);
 	var _accept = new FlxActionDigital(Action.ACCEPT);
 	var _back = new FlxActionDigital(Action.BACK);
 	var _pause = new FlxActionDigital(Action.PAUSE);
@@ -140,7 +133,7 @@ class Controls extends FlxActionSet
 	public var UP_R(get, never):Bool;
 
 	inline function get_UP_R()
-		return _upP.check();
+		return _upR.check();
 
 	public var LEFT_R(get, never):Bool;
 
@@ -156,21 +149,6 @@ class Controls extends FlxActionSet
 
 	inline function get_DOWN_R()
 		return _downR.check();
-
-	public var JUMP(get, never):Bool;
-
-	inline function get_JUMP()
-		return _jump.check();
-
-	public var JUMP_P(get, never):Bool;
-
-	inline function get_JUMP_P()
-		return _jumpP.check();
-
-	public var JUMP_R(get, never):Bool;
-
-	inline function get_JUMP_R()
-		return _jumpR.check();
 
 	public var ACCEPT(get, never):Bool;
 
@@ -208,9 +186,6 @@ class Controls extends FlxActionSet
 		add(_leftR);
 		add(_rightR);
 		add(_downR);
-		add(_jump);
-		add(_jumpP);
-		add(_jumpR);
 		add(_accept);
 		add(_back);
 		add(_pause);
@@ -261,7 +236,6 @@ class Controls extends FlxActionSet
 			case DOWN: _down;
 			case LEFT: _left;
 			case RIGHT: _right;
-			case JUMP: _jump;
 			case ACCEPT: _accept;
 			case BACK: _back;
 			case PAUSE: _pause;
@@ -301,10 +275,6 @@ class Controls extends FlxActionSet
 				func(_down, PRESSED);
 				func(_downP, JUST_PRESSED);
 				func(_downR, JUST_RELEASED);
-			case JUMP:
-				func(_jump, PRESSED);
-				func(_jumpP, JUST_PRESSED);
-				func(_jumpR, JUST_RELEASED);
 			case ACCEPT:
 				func(_accept, JUST_PRESSED);
 			case BACK:
@@ -432,7 +402,6 @@ class Controls extends FlxActionSet
 				inline bindKeys(Control.DOWN, [S, FlxKey.DOWN]);
 				inline bindKeys(Control.LEFT, [A, FlxKey.LEFT]);
 				inline bindKeys(Control.RIGHT, [D, FlxKey.RIGHT]);
-				inline bindKeys(Control.JUMP, [Z, Y, FlxKey.UP]);
 				inline bindKeys(Control.ACCEPT, [Z, SPACE]);
 				inline bindKeys(Control.BACK, [X]);
 				inline bindKeys(Control.PAUSE, [P, ENTER]);
@@ -442,7 +411,6 @@ class Controls extends FlxActionSet
 				inline bindKeys(Control.DOWN, [S]);
 				inline bindKeys(Control.LEFT, [A]);
 				inline bindKeys(Control.RIGHT, [D]);
-				inline bindKeys(Control.JUMP, [G, W, Z]);
 				inline bindKeys(Control.ACCEPT, [G, Z]);
 				inline bindKeys(Control.BACK, [H, X]);
 				inline bindKeys(Control.PAUSE, [ONE]);
@@ -452,7 +420,6 @@ class Controls extends FlxActionSet
 				inline bindKeys(Control.DOWN, [FlxKey.DOWN]);
 				inline bindKeys(Control.LEFT, [FlxKey.LEFT]);
 				inline bindKeys(Control.RIGHT, [FlxKey.RIGHT]);
-				inline bindKeys(Control.JUMP, [O, FlxKey.UP]);
 				inline bindKeys(Control.ACCEPT, [O]);
 				inline bindKeys(Control.BACK, [P]);
 				inline bindKeys(Control.PAUSE, [ENTER]);
@@ -515,7 +482,6 @@ class Controls extends FlxActionSet
 			Control.DOWN => [DPAD_DOWN, LEFT_STICK_DIGITAL_DOWN],
 			Control.LEFT => [DPAD_LEFT, LEFT_STICK_DIGITAL_LEFT],
 			Control.RIGHT => [DPAD_RIGHT, LEFT_STICK_DIGITAL_RIGHT],
-			Control.JUMP => [A],
 			Control.PAUSE => [START],
 			Control.RESET => [Y]
 		]);
