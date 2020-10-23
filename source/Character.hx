@@ -39,14 +39,14 @@ class Character extends FlxSprite
 				animation.addByIndices('danceRight', 'GF Dancing Beat', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
 
 				addOffset('cheer');
-				addOffset('sad');
-				addOffset('danceLeft');
-				addOffset('danceRight');
+				addOffset('sad', -2, -2);
+				addOffset('danceLeft', 0, -9);
+				addOffset('danceRight', 0, -9);
 
-				addOffset("singUP");
-				addOffset("singRIGHT");
-				addOffset("singLEFT");
-				addOffset("singDOWN");
+				addOffset("singUP", 0, 4);
+				addOffset("singRIGHT", 0, -20);
+				addOffset("singLEFT", 0, -19);
+				addOffset("singDOWN", 0, -20);
 
 				playAnim('danceRight');
 
@@ -66,6 +66,25 @@ class Character extends FlxSprite
 				addOffset("singRIGHT", 0, 27);
 				addOffset("singLEFT", -10, 10);
 				addOffset("singDOWN", 0, -30);
+			case 'spooky':
+				tex = FlxAtlasFrames.fromSparrow(AssetPaths.spooky_kids_assets__png, AssetPaths.spooky_kids_assets__xml);
+				frames = tex;
+				animation.addByPrefix('singUP', 'spooky UP NOTE', 24, false);
+				animation.addByPrefix('singDOWN', 'spooky DOWN note', 24, false);
+				animation.addByPrefix('singLEFT', 'note sing left', 24, false);
+				animation.addByPrefix('singRIGHT', 'spooky sing right', 24, false);
+				animation.addByIndices('danceLeft', 'spooky dance idle', [16, 0, 2, 6], "", 12, false);
+				animation.addByIndices('danceRight', 'spooky dance idle', [8, 10, 12, 14], "", 12, false);
+
+				addOffset('danceLeft');
+				addOffset('danceRight');
+
+				addOffset("singUP", -20, 26);
+				addOffset("singRIGHT", -130, -14);
+				addOffset("singLEFT", 130, -10);
+				addOffset("singDOWN", -50, -130);
+
+				playAnim('danceRight');
 		}
 	}
 
@@ -79,6 +98,13 @@ class Character extends FlxSprite
 		switch (curCharacter)
 		{
 			case 'gf':
+				danced = !danced;
+
+				if (danced)
+					playAnim('danceRight');
+				else
+					playAnim('danceLeft');
+			case 'spooky':
 				danced = !danced;
 
 				if (danced)

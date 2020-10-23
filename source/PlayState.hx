@@ -61,7 +61,7 @@ class PlayState extends MusicBeatState
 	private var healthBar:FlxBar;
 
 	private var generatedMusic:Bool = false;
-	private var countingDown:Bool = false;
+	private var startingSong:Bool = false;
 
 	private var healthHeads:FlxSprite;
 
@@ -111,10 +111,13 @@ class PlayState extends MusicBeatState
 		dad = new Character(100, 100, SONG.player2);
 		add(dad);
 
-		if (SONG.player2 == 'gf')
+		switch (SONG.player2)
 		{
-			dad.setPosition(gf.x, gf.y);
-			gf.visible = false;
+			case 'gf':
+				dad.setPosition(gf.x, gf.y);
+				gf.visible = false;
+			case "spooky":
+				dad.y += 200;
 		}
 
 		boyfriend = new Boyfriend(770, 450);
@@ -130,12 +133,58 @@ class PlayState extends MusicBeatState
 
 		playerStrums = new FlxTypedGroup<FlxSprite>();
 
-		var swagCounter:Int = 0;
+		startingSong = true;
+
+		startCountdown();
 
 		generateSong(SONG.song);
-		countingDown = true;
+
+		// add(strumLine);
+
+		camFollow = new FlxObject(0, 0, 1, 1);
+		camFollow.setPosition(dad.getGraphicMidpoint().x, dad.getGraphicMidpoint().y);
+		add(camFollow);
+
+		FlxG.camera.follow(camFollow, LOCKON, 0.04);
+		// FlxG.camera.setScrollBounds(0, FlxG.width, 0, FlxG.height);
+		FlxG.camera.zoom = 1.05;
+
+		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
+
+		FlxG.fixedTimestep = false;
+
+		healthBarBG = new FlxSprite(0, FlxG.height * 0.9).loadGraphic(AssetPaths.healthBar__png);
+		healthBarBG.screenCenter(X);
+		healthBarBG.scrollFactor.set();
+		add(healthBarBG);
+
+		healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
+			'health', 0, 2);
+		healthBar.scrollFactor.set();
+		healthBar.createFilledBar(0xFFFF0000, 0xFF66FF33);
+		// healthBar
+		add(healthBar);
+
+		healthHeads = new FlxSprite();
+		var headTex = FlxAtlasFrames.fromSparrow(AssetPaths.healthHeads__png, AssetPaths.healthHeads__xml);
+		healthHeads.frames = headTex;
+		healthHeads.animation.add('healthy', [0]);
+		healthHeads.animation.add('unhealthy', [1]);
+		healthHeads.y = healthBar.y - (healthHeads.height / 2);
+		healthHeads.scrollFactor.set();
+		healthHeads.antialiasing = true;
+		add(healthHeads);
+
+		super.create();
+	}
+
+	function startCountdown():Void
+	{
+		startedCountdown = true;
 		Conductor.songPosition = 0;
 		Conductor.songPosition -= Conductor.crochet * 5;
+
+		var swagCounter:Int = 0;
 
 		new FlxTimer().start(Conductor.crochet / 1000, function(tmr:FlxTimer)
 		{
@@ -188,49 +237,11 @@ class PlayState extends MusicBeatState
 			swagCounter += 1;
 			// generateSong('fresh');
 		}, 5);
-
-		// add(strumLine);
-
-		camFollow = new FlxObject(0, 0, 1, 1);
-		camFollow.setPosition(dad.getGraphicMidpoint().x, dad.getGraphicMidpoint().y);
-		add(camFollow);
-
-		FlxG.camera.follow(camFollow, LOCKON, 0.04);
-		// FlxG.camera.setScrollBounds(0, FlxG.width, 0, FlxG.height);
-		FlxG.camera.zoom = 1.05;
-
-		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
-
-		FlxG.fixedTimestep = false;
-
-		healthBarBG = new FlxSprite(0, FlxG.height * 0.9).loadGraphic(AssetPaths.healthBar__png);
-		healthBarBG.screenCenter(X);
-		healthBarBG.scrollFactor.set();
-		add(healthBarBG);
-
-		healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
-			'health', 0, 2);
-		healthBar.scrollFactor.set();
-		healthBar.createFilledBar(0xFFFF0000, 0xFF66FF33);
-		// healthBar
-		add(healthBar);
-
-		healthHeads = new FlxSprite();
-		var headTex = FlxAtlasFrames.fromSparrow(AssetPaths.healthHeads__png, AssetPaths.healthHeads__xml);
-		healthHeads.frames = headTex;
-		healthHeads.animation.add('healthy', [0]);
-		healthHeads.animation.add('unhealthy', [1]);
-		healthHeads.y = healthBar.y - (healthHeads.height / 2);
-		healthHeads.scrollFactor.set();
-		healthHeads.antialiasing = true;
-		add(healthHeads);
-
-		super.create();
 	}
 
 	function startSong():Void
 	{
-		countingDown = false;
+		startingSong = false;
 		FlxG.sound.playMusic("assets/music/" + SONG.song + "_Inst" + TitleState.soundExt);
 		vocals.play();
 	}
@@ -458,6 +469,7 @@ class PlayState extends MusicBeatState
 	}
 
 	private var paused:Bool = false;
+	var startedCountdown:Bool = false;
 
 	override public function update(elapsed:Float)
 	{
@@ -491,14 +503,16 @@ class PlayState extends MusicBeatState
 		/* if (FlxG.keys.justPressed.NINE)
 			FlxG.switchState(new Charting()); */
 		if (FlxG.keys.justPressed.EIGHT)
-			FlxG.switchState(new AnimationDebug(true));
+			FlxG.switchState(new AnimationDebug(SONG.player2));
 
-		if (countingDown)
+		if (startingSong)
 		{
-			Conductor.songPosition += FlxG.elapsed * 1000;
-
-			if (Conductor.songPosition >= 0)
-				startSong();
+			if (startedCountdown)
+			{
+				Conductor.songPosition += FlxG.elapsed * 1000;
+				if (Conductor.songPosition >= 0)
+					startSong();
+			}
 		}
 		else
 			Conductor.songPosition = FlxG.sound.music.time;
@@ -939,6 +953,14 @@ class PlayState extends MusicBeatState
 					}
 				}
 			});
+		}
+
+		if (upR || leftR || rightR || downR)
+		{
+			if (boyfriend.animation.curAnim.name.startsWith('sing'))
+			{
+				boyfriend.playAnim('idle');
+			}
 		}
 
 		playerStrums.forEach(function(spr:FlxSprite)

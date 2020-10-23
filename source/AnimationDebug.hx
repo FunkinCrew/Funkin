@@ -21,13 +21,14 @@ class AnimationDebug extends FlxState
 	var dumbTexts:FlxTypedGroup<FlxText>;
 	var animList:Array<String> = [];
 	var curAnim:Int = 0;
-	var isDad:Bool = false;
+	var isDad:Bool = true;
+	var daAnim:String = 'spooky';
 	var camFollow:FlxObject;
 
-	public function new(isDad:Bool = false)
+	public function new(daAnim:String = 'spooky')
 	{
 		super();
-		this.isDad = isDad;
+		this.daAnim = daAnim;
 	}
 
 	override function create()
@@ -40,7 +41,7 @@ class AnimationDebug extends FlxState
 
 		if (isDad)
 		{
-			dad = new Character(0, 0);
+			dad = new Character(0, 0, daAnim);
 			dad.screenCenter();
 			dad.debugMode = true;
 			add(dad);
