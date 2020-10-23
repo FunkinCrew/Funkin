@@ -39,7 +39,7 @@ class Song
 		var daSong:String = '';
 		var daSectionLengths:Array<Int> = [];
 
-		var rawJson = Assets.getText('assets/data/' + jsonInput + '/' + jsonInput + '.json').trim();
+		var rawJson = Assets.getText('assets/data/' + jsonInput.toLowerCase() + '/' + jsonInput.toLowerCase() + '.json').trim();
 
 		while (!rawJson.endsWith("}"))
 		{
@@ -47,23 +47,23 @@ class Song
 			// LOL GOING THROUGH THE BULLSHIT TO CLEAN IDK WHATS STRANGE
 		}
 
-		trace(rawJson);
-
-		var songData:Song = Json.parse(rawJson).song;
+		// FIX THE CASTING ON WINDOWS/NATIVE
+		var songData:Song = Json.parse(rawJson).song; // Windows???
+		trace(songData);
 
 		// trace('LOADED FROM JSON: ' + songData.notes);
-
-		for (i in 0...songData.notes.length)
-		{
-			trace('LOADED FROM JSON: ' + songData.notes[i].sectionNotes);
-			// songData.notes[i].sectionNotes = songData.notes[i].sectionNotes
-		}
 		/* 
-			daNotes = songData.notes;
-			daSong = songData.song;
-			daSections = songData.sections;
-			daBpm = songData.bpm;
-			daSectionLengths = songData.sectionLengths; */
+			for (i in 0...songData.notes.length)
+			{
+				trace('LOADED FROM JSON: ' + songData.notes[i].sectionNotes);
+				// songData.notes[i].sectionNotes = songData.notes[i].sectionNotes
+			}
+
+				daNotes = songData.notes;
+				daSong = songData.song;
+				daSections = songData.sections;
+				daBpm = songData.bpm;
+				daSectionLengths = songData.sectionLengths; */
 
 		return songData;
 	}
