@@ -78,7 +78,7 @@ class Note extends FlxSprite
 				animation.play('redScroll');
 		}
 
-		trace(prevNote);
+		// trace(prevNote);
 
 		if (isSustainNote && prevNote != null)
 		{

@@ -1037,13 +1037,13 @@ class PlayState extends MusicBeatState
 
 			switch (direction)
 			{
-				case 1:
-					boyfriend.playAnim('singUPmiss', true);
 				case 2:
-					boyfriend.playAnim('singRIGHTmiss', true);
+					boyfriend.playAnim('singUPmiss', true);
 				case 3:
+					boyfriend.playAnim('singRIGHTmiss', true);
+				case 1:
 					boyfriend.playAnim('singDOWNmiss', true);
-				case 4:
+				case 0:
 					boyfriend.playAnim('singLEFTmiss', true);
 			}
 		}
@@ -1160,10 +1160,7 @@ class PlayState extends MusicBeatState
 
 		if (generatedMusic)
 		{
-			notes.forEachAlive(function(daNote:Note)
-			{
-				notes.sort(FlxSort.byY, FlxSort.DESCENDING);
-			});
+			notes.sort(FlxSort.byY, FlxSort.DESCENDING);
 		}
 
 		if (camZooming && FlxG.camera.zoom < 1.35 && totalBeats % 4 == 0)
