@@ -1,14 +1,30 @@
 package;
 
+import Section.SwagSection;
 import haxe.Json;
+import haxe.format.JsonParser;
 import lime.utils.Assets;
 
 using StringTools;
 
+typedef SwagSong =
+{
+	var song:String;
+	var notes:Array<SwagSection>;
+	var bpm:Int;
+	var sections:Int;
+	var sectionLengths:Array<Dynamic>;
+	var needsVoices:Bool;
+	var speed:Float;
+
+	var player1:String;
+	var player2:String;
+}
+
 class Song
 {
 	public var song:String;
-	public var notes:Array<Section>;
+	public var notes:Array<SwagSection>;
 	public var bpm:Int;
 	public var sections:Int;
 	public var sectionLengths:Array<Dynamic> = [];
@@ -31,14 +47,8 @@ class Song
 		}
 	}
 
-	public static function loadFromJson(jsonInput:String):Song
+	public static function loadFromJson(jsonInput:String):SwagSong
 	{
-		var daNotes:Array<Section> = [];
-		var daBpm:Int = 0;
-		var daSections:Int = 0;
-		var daSong:String = '';
-		var daSectionLengths:Array<Int> = [];
-
 		var rawJson = Assets.getText('assets/data/' + jsonInput.toLowerCase() + '/' + jsonInput.toLowerCase() + '.json').trim();
 
 		while (!rawJson.endsWith("}"))
@@ -47,9 +57,12 @@ class Song
 			// LOL GOING THROUGH THE BULLSHIT TO CLEAN IDK WHATS STRANGE
 		}
 
+		var swagShit:SwagSong = cast Json.parse(rawJson).song;
+		trace(swagShit.notes[0]);
+
 		// FIX THE CASTING ON WINDOWS/NATIVE
-		var songData:Song = Json.parse(rawJson).song; // Windows???
-		trace(songData);
+		// Windows???
+		// trace(songData);
 
 		// trace('LOADED FROM JSON: ' + songData.notes);
 		/* 
@@ -65,6 +78,6 @@ class Song
 				daBpm = songData.bpm;
 				daSectionLengths = songData.sectionLengths; */
 
-		return songData;
+		return swagShit;
 	}
 }

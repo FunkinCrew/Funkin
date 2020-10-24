@@ -3,6 +3,7 @@ package;
 import flixel.FlxG;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.ui.FlxUIState;
+import flixel.util.FlxTimer;
 
 class MusicBeatState extends FlxUIState
 {
@@ -17,6 +18,10 @@ class MusicBeatState extends FlxUIState
 
 	override function create()
 	{
+		#if (!web)
+		TitleState.soundExt = '.ogg';
+		#end
+
 		super.create();
 	}
 
