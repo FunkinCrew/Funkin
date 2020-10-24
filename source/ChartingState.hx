@@ -1,5 +1,6 @@
 package;
 
+import Song.SwagSong;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.addons.display.FlxGridOverlay;
@@ -59,7 +60,7 @@ class ChartingState extends MusicBeatState
 
 	var gridBG:FlxSprite;
 
-	var _song:Song;
+	var _song:SwagSong;
 
 	var typingShit:FlxInputText;
 	/*
@@ -79,7 +80,7 @@ class ChartingState extends MusicBeatState
 			_song = PlayState.SONG;
 		else
 		{
-			_song = new Song(curSong, [], Conductor.bpm, 0);
+			_song = Song.loadFromJson('tutorial');
 		}
 
 		addSection();
