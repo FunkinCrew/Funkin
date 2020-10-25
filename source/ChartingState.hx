@@ -80,7 +80,17 @@ class ChartingState extends MusicBeatState
 			_song = PlayState.SONG;
 		else
 		{
-			_song = Song.loadFromJson('tutorial');
+			_song = {
+				song: 'tutorial',
+				notes: [],
+				bpm: 100,
+				sections: 0,
+				needsVoices: false,
+				player1: 'bf',
+				player2: 'dad',
+				sectionLengths: [],
+				speed: 1
+			};
 		}
 
 		addSection();

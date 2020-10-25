@@ -2,6 +2,7 @@ package;
 
 import flixel.FlxG;
 import flixel.FlxSprite;
+import flixel.addons.display.FlxGridOverlay;
 import flixel.text.FlxText;
 
 class FreeplayState extends MusicBeatState
@@ -17,16 +18,21 @@ class FreeplayState extends MusicBeatState
 
 		// LOAD CHARACTERS
 
+		var bg:FlxSprite = FlxGridOverlay.create(20, 20);
+		add(bg);
+
 		for (i in 0...songs.length)
 		{
-			var songText:FlxText = new FlxText(10, (26 * i) + 30, 0, songs[i], 24);
+			var songText:Alphabet = new Alphabet(40, (70 * i) + 30, songs[i]);
 			add(songText);
 		}
 
 		selector = new FlxText();
-		selector.size = 24;
+		selector.size = 40;
 		selector.text = ">";
 		add(selector);
+
+		var swag:Alphabet = new Alphabet(1, 0, "swag");
 
 		super.create();
 	}
@@ -47,7 +53,7 @@ class FreeplayState extends MusicBeatState
 		if (curSelected >= songs.length)
 			curSelected = 0;
 
-		selector.y = (26 * curSelected) + 30;
+		selector.y = (70 * curSelected) + 30;
 
 		if (FlxG.keys.justPressed.ENTER)
 		{

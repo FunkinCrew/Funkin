@@ -2,6 +2,8 @@ package;
 
 import Section.SwagSection;
 import Song.SwagSong;
+import flixel.FlxBasic;
+import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxGame;
 import flixel.FlxObject;
@@ -67,6 +69,7 @@ class PlayState extends MusicBeatState
 	private var startingSong:Bool = false;
 
 	private var healthHeads:FlxSprite;
+	private var UI_camera:FlxCamera;
 
 	var controls(get, never):Controls;
 
@@ -131,6 +134,10 @@ class PlayState extends MusicBeatState
 		strumLine = new FlxSprite(0, 50).makeGraphic(FlxG.width, 10);
 		strumLine.scrollFactor.set();
 
+		var gameCam:FlxCamera = FlxG.camera;
+
+		UI_camera = new FlxCamera(0, 0, FlxG.width, FlxG.height, 1);
+
 		strumLineNotes = new FlxTypedGroup<FlxSprite>();
 		add(strumLineNotes);
 
@@ -177,6 +184,10 @@ class PlayState extends MusicBeatState
 		healthHeads.scrollFactor.set();
 		healthHeads.antialiasing = true;
 		add(healthHeads);
+
+		// strumLineNotes.camera = UI_camera;
+		// camera = FlxG.camera;
+		// FlxG.cameras.add(UI_camera);
 
 		super.create();
 	}
