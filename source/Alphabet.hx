@@ -6,8 +6,17 @@ import flixel.group.FlxSpriteGroup;
 
 using StringTools;
 
+/**
+ * Loosley based on FlxTypeText lolol
+ */
 class Alphabet extends FlxSpriteGroup
 {
+	public var delay:Float = 0.05;
+	public var paused:Bool = false;
+
+	var _finalText:String = "";
+	var _curText:String = "";
+
 	// custom shit
 	// amp, backslash, question mark, apostrophy, comma, angry faic, period
 	var lastSprite:AlphaCharacter;
@@ -15,6 +24,8 @@ class Alphabet extends FlxSpriteGroup
 	public function new(x:Float, y:Float, text:String = "", ?bold:Bool = false)
 	{
 		super(x, y);
+
+		_finalText = text;
 
 		var arrayShit:Array<String> = text.split("");
 		trace(arrayShit);
@@ -45,6 +56,11 @@ class Alphabet extends FlxSpriteGroup
 
 			loopNum += 1;
 		}
+	}
+
+	override function update(elapsed:Float)
+	{
+		super.update(elapsed);
 	}
 }
 
