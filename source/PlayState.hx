@@ -69,7 +69,8 @@ class PlayState extends MusicBeatState
 	private var startingSong:Bool = false;
 
 	private var healthHeads:FlxSprite;
-	private var UI_camera:FlxCamera;
+	private var camHUD:FlxCamera;
+	private var camGame:FlxCamera;
 
 	var controls(get, never):Controls;
 
@@ -78,6 +79,16 @@ class PlayState extends MusicBeatState
 
 	override public function create()
 	{
+		// var gameCam:FlxCamera = FlxG.camera;
+		camGame = new FlxCamera();
+		camHUD = new FlxCamera();
+		camHUD.bgColor.alpha = 0;
+
+		FlxG.cameras.reset(camGame);
+		FlxG.cameras.add(camHUD);
+
+		FlxCamera.defaultCameras = [camGame];
+
 		PlayerSettings.init();
 
 		persistentUpdate = true;
@@ -134,10 +145,6 @@ class PlayState extends MusicBeatState
 		strumLine = new FlxSprite(0, 50).makeGraphic(FlxG.width, 10);
 		strumLine.scrollFactor.set();
 
-		var gameCam:FlxCamera = FlxG.camera;
-
-		UI_camera = new FlxCamera(0, 0, FlxG.width, FlxG.height, 1);
-
 		strumLineNotes = new FlxTypedGroup<FlxSprite>();
 		add(strumLineNotes);
 
@@ -185,12 +192,16 @@ class PlayState extends MusicBeatState
 		healthHeads.antialiasing = true;
 		add(healthHeads);
 
-		// strumLineNotes.camera = UI_camera;
-		// camera = FlxG.camera;
-		// FlxG.cameras.add(UI_camera);
+		strumLineNotes.cameras = [camHUD];
+		notes.cameras = [camHUD];
+		// UI_camera.zoom = 1;
+
+		// cameras = [FlxG.cameras.list[1]];
 
 		super.create();
 	}
+
+	var startTimer:FlxTimer;
 
 	function startCountdown():Void
 	{
@@ -200,7 +211,7 @@ class PlayState extends MusicBeatState
 
 		var swagCounter:Int = 0;
 
-		new FlxTimer().start(Conductor.crochet / 1000, function(tmr:FlxTimer)
+		startTimer = new FlxTimer().start(Conductor.crochet / 1000, function(tmr:FlxTimer)
 		{
 			switch (swagCounter)
 			{
@@ -466,8 +477,14 @@ class PlayState extends MusicBeatState
 	{
 		if (paused)
 		{
-			FlxG.sound.music.pause();
-			vocals.pause();
+			if (FlxG.sound.music != null)
+			{
+				FlxG.sound.music.pause();
+				vocals.pause();
+			}
+
+			if (!startTimer.finished)
+				startTimer.active = false;
 		}
 
 		super.openSubState(SubState);
@@ -477,10 +494,16 @@ class PlayState extends MusicBeatState
 	{
 		if (paused)
 		{
-			vocals.time = FlxG.sound.music.time;
+			if (FlxG.sound.music != null)
+			{
+				vocals.time = FlxG.sound.music.time;
 
-			FlxG.sound.music.play();
-			vocals.play();
+				FlxG.sound.music.play();
+				vocals.play();
+			}
+
+			if (!startTimer.finished)
+				startTimer.active = true;
 			paused = false;
 		}
 
@@ -540,16 +563,19 @@ class PlayState extends MusicBeatState
 		{
 			Conductor.songPosition = FlxG.sound.music.time;
 
-			songTime += FlxG.game.ticks - previousFrameTime;
-			previousFrameTime = FlxG.game.ticks;
-
-			// Interpolation type beat
-			if (Conductor.lastSongPos != Conductor.songPosition)
+			if (!paused)
 			{
-				songTime = (songTime + Conductor.songPosition) / 2;
-				Conductor.lastSongPos = Conductor.songPosition;
-				// Conductor.songPosition += FlxG.elapsed * 1000;
-				// trace('MISSED FRAME');
+				songTime += FlxG.game.ticks - previousFrameTime;
+				previousFrameTime = FlxG.game.ticks;
+
+				// Interpolation type beat
+				if (Conductor.lastSongPos != Conductor.songPosition)
+				{
+					songTime = (songTime + Conductor.songPosition) / 2;
+					Conductor.lastSongPos = Conductor.songPosition;
+					// Conductor.songPosition += FlxG.elapsed * 1000;
+					// trace('MISSED FRAME');
+				}
 			}
 
 			// Conductor.lastSongPos = FlxG.sound.music.time;
@@ -576,11 +602,21 @@ class PlayState extends MusicBeatState
 			{
 				camFollow.setPosition(dad.getMidpoint().x + 150, dad.getMidpoint().y - 100);
 				vocals.volume = 1;
+
+				if (SONG.song.toLowerCase() == 'tutorial')
+				{
+					FlxTween.tween(FlxG.camera, {zoom: 1.3}, (Conductor.stepCrochet * 4 / 1000), {ease: FlxEase.elasticInOut});
+				}
 			}
 
 			if (PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection && camFollow.x != boyfriend.getMidpoint().x - 100)
 			{
 				camFollow.setPosition(boyfriend.getMidpoint().x - 100, boyfriend.getMidpoint().y - 100);
+
+				if (SONG.song.toLowerCase() == 'tutorial')
+				{
+					FlxTween.tween(FlxG.camera, {zoom: 1}, (Conductor.stepCrochet * 4 / 1000), {ease: FlxEase.elasticInOut});
+				}
 			}
 		}
 
@@ -680,7 +716,9 @@ class PlayState extends MusicBeatState
 					daNote.destroy();
 				}
 
-				daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
+				daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
+				// WIP interpolation shit? Need to fix the pause issue
+				// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
 
 				if (daNote.y < -daNote.height)
 				{

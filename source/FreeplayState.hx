@@ -7,7 +7,7 @@ import flixel.text.FlxText;
 
 class FreeplayState extends MusicBeatState
 {
-	var songs:Array<String> = ["Bopeebo", "Dadbattle", "Fresh", "Tutorial"];
+	var songs:Array<String> = ["Bopeebo", "Dadbattle", "Fresh", "Tutorial\nlol"];
 
 	var selector:FlxText;
 	var curSelected:Int = 0;
