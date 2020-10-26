@@ -5,6 +5,13 @@ import flixel.FlxSprite;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.text.FlxText;
 
+#if switch
+	import openfl.events.GameInputEvent;
+	import openfl.ui.GameInput;
+	import openfl.ui.GameInputDevice;
+	import openfl.ui.GameInputControl;
+#end
+
 class FreeplayState extends MusicBeatState
 {
 	var songs:Array<String> = ["Bopeebo", "Dadbattle", "Fresh", "Tutorial\nlol"];
@@ -48,6 +55,17 @@ class FreeplayState extends MusicBeatState
 			curSelected += 1;
 		}
 
+		#if switch
+			if (gamepad.anyJustPressed(["UP", "DPAD_UP", "LEFT_STICK_DIGITAL_UP"]))
+			{
+				curSelected -= 1;
+			}
+			if (gamepad.anyJustPressed(["DOWN", "DPAD_DOWN", "LEFT_STICK_DIGITAL_DOWN"]))
+			{
+				curSelected += 1;
+			}
+		#end
+
 		if (curSelected < 0)
 			curSelected = songs.length - 1;
 		if (curSelected >= songs.length)
@@ -60,6 +78,14 @@ class FreeplayState extends MusicBeatState
 			PlayState.SONG = Song.loadFromJson(songs[curSelected].toLowerCase());
 			FlxG.switchState(new PlayState());
 		}
+
+		#if switch
+			if (gamepad.anyJustPressed(["B"])) //"B" is swapped with "A" on Switch 
+			{
+				PlayState.SONG = Song.loadFromJson(songs[curSelected].toLowerCase());
+				FlxG.switchState(new PlayState());
+			}
+		#end
 
 		super.update(elapsed);
 	}
