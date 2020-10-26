@@ -16,6 +16,8 @@ class PauseSubState extends FlxSubState
 		bg.alpha = 0.6;
 		bg.scrollFactor.set();
 		add(bg);
+
+		bg.cameras = [FlxG.cameras.list[1]];
 	}
 
 	override function update(elapsed:Float)

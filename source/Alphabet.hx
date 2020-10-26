@@ -1,8 +1,11 @@
 package;
 
+import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxSpriteGroup;
+import flixel.math.FlxMath;
+import flixel.util.FlxTimer;
 
 using StringTools;
 
@@ -17,9 +20,14 @@ class Alphabet extends FlxSpriteGroup
 	var _finalText:String = "";
 	var _curText:String = "";
 
+	public var widthOfWords:Float = FlxG.width;
+
+	var yMulti:Float = 1;
+
 	// custom shit
 	// amp, backslash, question mark, apostrophy, comma, angry faic, period
 	var lastSprite:AlphaCharacter;
+	var xPosResetted:Bool = false;
 
 	public function new(x:Float, y:Float, text:String = "", ?bold:Bool = false)
 	{
@@ -32,29 +40,67 @@ class Alphabet extends FlxSpriteGroup
 
 		var loopNum:Int = 0;
 
-		for (character in arrayShit)
+		new FlxTimer().start(0.05, function(tmr:FlxTimer)
 		{
-			if (character == " ")
+			var xPos:Float = 0;
+
+			// trace(_finalText.fastCodeAt(loopNum) + " " + _finalText.charAt(loopNum));
+			if (_finalText.fastCodeAt(loopNum) == "\n".code)
 			{
+				yMulti += 1;
+				xPosResetted = true;
+				// xPos = 0;
 			}
 
-			if (AlphaCharacter.alphabet.contains(character.toLowerCase()))
+			if (AlphaCharacter.alphabet.contains(arrayShit[loopNum].toLowerCase()))
 			{
-				var xPos:Float = 0;
-				if (lastSprite != null)
+				if (lastSprite != null && !xPosResetted)
 				{
 					xPos = lastSprite.x + lastSprite.frameWidth - 40;
 				}
+				else
+				{
+					xPosResetted = false;
+				}
+
+				// trace(_finalText.fastCodeAt(loopNum) + " " + _finalText.charAt(loopNum));
 
 				// var letter:AlphaCharacter = new AlphaCharacter(30 * loopNum, 0);
-				var letter:AlphaCharacter = new AlphaCharacter(xPos, 0);
-				letter.createBold(character);
+				var letter:AlphaCharacter = new AlphaCharacter(xPos, 55 * yMulti);
+				letter.createBold(arrayShit[loopNum]);
 				add(letter);
 
 				lastSprite = letter;
 			}
 
 			loopNum += 1;
+
+			tmr.time = FlxG.random.float(0.03, 0.09);
+		}, arrayShit.length);
+
+		for (character in arrayShit)
+		{
+			// if (character.fastCodeAt() == " ")
+			// {
+			// }
+
+			if (AlphaCharacter.alphabet.contains(character.toLowerCase()))
+			{
+				/* var xPos:Float = 0;
+					if (lastSprite != null)
+					{
+						xPos = lastSprite.x + lastSprite.frameWidth - 40;
+					}
+
+					// var letter:AlphaCharacter = new AlphaCharacter(30 * loopNum, 0);
+					var letter:AlphaCharacter = new AlphaCharacter(xPos, 0);
+					letter.createBold(character);
+					add(letter);
+
+					lastSprite = letter; */
+			}
+
+			// loopNum += 1;
 		}
 	}
 
