@@ -81,7 +81,7 @@ class ChartingState extends MusicBeatState
 		else
 		{
 			_song = {
-				song: 'tutorial',
+				song: 'Spookeez',
 				notes: [],
 				bpm: 100,
 				sections: 0,
