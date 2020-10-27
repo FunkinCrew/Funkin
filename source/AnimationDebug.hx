@@ -21,7 +21,7 @@ class AnimationDebug extends FlxState
 	var dumbTexts:FlxTypedGroup<FlxText>;
 	var animList:Array<String> = [];
 	var curAnim:Int = 0;
-	var isDad:Bool = true;
+	var isDad:Bool = false;
 	var daAnim:String = 'spooky';
 	var camFollow:FlxObject;
 

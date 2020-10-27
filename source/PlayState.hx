@@ -526,7 +526,7 @@ class PlayState extends MusicBeatState
 			persistentDraw = true;
 			paused = true;
 
-			openSubState(new PauseSubState());
+			openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 		}
 
 		if (FlxG.keys.justPressed.ESCAPE)
@@ -548,7 +548,7 @@ class PlayState extends MusicBeatState
 		/* if (FlxG.keys.justPressed.NINE)
 			FlxG.switchState(new Charting()); */
 		if (FlxG.keys.justPressed.EIGHT)
-			FlxG.switchState(new AnimationDebug(SONG.player2));
+			FlxG.switchState(new AnimationDebug(SONG.player1));
 
 		if (startingSong)
 		{
@@ -667,7 +667,17 @@ class PlayState extends MusicBeatState
 		if (health <= 0)
 		{
 			boyfriend.stunned = true;
-			FlxG.switchState(new GameOverState());
+
+			persistentUpdate = false;
+			persistentDraw = false;
+			paused = true;
+
+			vocals.stop();
+			FlxG.sound.music.stop();
+
+			openSubState(new GameOverSubstate(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
+
+			// FlxG.switchState(new GameOverState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 		}
 
 		if (unspawnNotes[0] != null)
@@ -744,9 +754,8 @@ class PlayState extends MusicBeatState
 	private function popUpScore(strumtime:Float):Void
 	{
 		var noteDiff:Float = Math.abs(strumtime - Conductor.songPosition);
-
 		// boyfriend.playAnim('hey');
-		// vocals.volume = 1;
+		vocals.volume = 1;
 
 		var placement:String = Std.string(combo);
 		// var placement:String = sectionScores[1][curSection] + '/' + sectionScores[0][curSection];
