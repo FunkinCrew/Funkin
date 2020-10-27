@@ -130,7 +130,7 @@ class TitleState extends MusicBeatState
 
 			new FlxTimer().start(2, function(tmr:FlxTimer)
 			{
-				FlxG.switchState(new PlayState());
+				FlxG.switchState(new FreeplayState());
 			});
 			FlxG.sound.play('assets/music/titleShoot' + TitleState.soundExt, 0.7);
 		}
@@ -232,6 +232,7 @@ class TitleState extends MusicBeatState
 		{
 			FlxG.camera.flash(FlxColor.WHITE, 4);
 			remove(credGroup);
+			skippedIntro = true;
 		}
 	}
 }

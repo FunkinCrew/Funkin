@@ -9,13 +9,19 @@ import flixel.util.FlxColor;
 
 class PauseSubState extends FlxSubState
 {
-	public function new()
+	public function new(x:Float, y:Float)
 	{
 		super();
 		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 		bg.alpha = 0.6;
 		bg.scrollFactor.set();
 		add(bg);
+
+		var bf:Boyfriend = new Boyfriend(x, y);
+		bf.scrollFactor.set();
+		// add(bf);
+
+		bf.playAnim('firstDeath');
 
 		bg.cameras = [FlxG.cameras.list[1]];
 	}
