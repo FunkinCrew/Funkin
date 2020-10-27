@@ -1200,6 +1200,12 @@ class PlayState extends MusicBeatState
 			vocals.time = Conductor.songPosition;
 			vocals.play();
 		}
+
+		if (dad.curCharacter == 'spooky' && totalSteps % 4 == 2)
+		{
+			// dad.dance();
+		}
+
 		super.stepHit();
 	}
 
@@ -1219,7 +1225,9 @@ class PlayState extends MusicBeatState
 		healthHeads.setGraphicSize(Std.int(healthHeads.width + 20));
 
 		if (totalBeats % gfSpeed == 0)
+		{
 			gf.dance();
+		}
 
 		if (!boyfriend.animation.curAnim.name.startsWith("sing"))
 			boyfriend.playAnim('idle');
