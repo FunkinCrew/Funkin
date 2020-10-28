@@ -34,8 +34,21 @@ class TitleState extends MusicBeatState
 		TitleState.soundExt = '.ogg';
 		#end
 
+		PlayerSettings.init();
+
+		// DEBUG BULLSHIT
+
 		super.create();
 
+		#if SKIP_TO_PLAYSTATE
+		FlxG.switchState(new FreeplayState());
+		#else
+		startIntro();
+		#end
+	}
+
+	function startIntro()
+	{
 		if (!initialized)
 		{
 			var diamond:FlxGraphic = FlxGraphic.fromClass(GraphicTransTileDiamond);
