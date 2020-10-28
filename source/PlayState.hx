@@ -213,6 +213,10 @@ class PlayState extends MusicBeatState
 
 		startTimer = new FlxTimer().start(Conductor.crochet / 1000, function(tmr:FlxTimer)
 		{
+			dad.dance();
+			gf.dance();
+			boyfriend.playAnim('idle');
+
 			switch (swagCounter)
 			{
 				case 0:
@@ -471,8 +475,6 @@ class PlayState extends MusicBeatState
 		}
 	}
 
-	var sectionScored:Bool = false;
-
 	override function openSubState(SubState:FlxSubState)
 	{
 		if (paused)
@@ -581,16 +583,6 @@ class PlayState extends MusicBeatState
 			// Conductor.lastSongPos = FlxG.sound.music.time;
 		}
 
-		var playerTurn:Int = 0;
-		if (sectionLengths.length > curSection)
-			playerTurn = totalBeats % (sectionLengths[curSection] * 8);
-
-		if (playerTurn == (sectionLengths[curSection] * 8) - 1 && !sectionScored)
-		{
-			// popUpScore();
-			sectionScored = true;
-		}
-
 		if (generatedMusic && PlayState.SONG.notes[Std.int(curStep / 16)] != null)
 		{
 			if (curBeat % 4 == 0)
@@ -623,11 +615,6 @@ class PlayState extends MusicBeatState
 		if (camZooming)
 		{
 			FlxG.camera.zoom = FlxMath.lerp(1.05, FlxG.camera.zoom, 0.96);
-		}
-
-		if (playerTurn < 4)
-		{
-			sectionScored = false;
 		}
 
 		FlxG.watch.addQuick("beatShit", totalBeats);
@@ -887,72 +874,6 @@ class PlayState extends MusicBeatState
 		var downR = controls.DOWN_R;
 		var leftR = controls.LEFT_R;
 
-		/* 
-			var gamepad = FlxG.gamepads.lastActive;
-			if (gamepad != null)
-			{
-				if (gamepad.anyPressed(["DPAD_LEFT", "LEFT_STICK_DIGITAL_LEFT", X]))
-				{
-					left = true;
-				}
-
-				if (gamepad.anyPressed(["DPAD_RIGHT", "LEFT_STICK_DIGITAL_RIGHT", B]))
-				{
-					right = true;
-				}
-
-				if (gamepad.anyPressed(['DPAD_UP', "LEFT_STICK_DIGITAL_UP", Y]))
-				{
-					up = true;
-				}
-
-				if (gamepad.anyPressed(["DPAD_DOWN", "LEFT_STICK_DIGITAL_DOWN", A]))
-				{
-					down = true;
-				}
-
-				if (gamepad.anyJustPressed(["DPAD_LEFT", "LEFT_STICK_DIGITAL_LEFT", X]))
-				{
-					leftP = true;
-				}
-
-				if (gamepad.anyJustPressed(["DPAD_RIGHT", "LEFT_STICK_DIGITAL_RIGHT", B]))
-				{
-					rightP = true;
-				}
-
-				if (gamepad.anyJustPressed(['DPAD_UP', "LEFT_STICK_DIGITAL_UP", Y]))
-				{
-					upP = true;
-				}
-
-				if (gamepad.anyJustPressed(["DPAD_DOWN", "LEFT_STICK_DIGITAL_DOWN", A]))
-				{
-					downP = true;
-				}
-
-				if (gamepad.anyJustReleased(["DPAD_LEFT", "LEFT_STICK_DIGITAL_LEFT", X]))
-				{
-					leftR = true;
-				}
-
-				if (gamepad.anyJustReleased(["DPAD_RIGHT", "LEFT_STICK_DIGITAL_RIGHT", B]))
-				{
-					rightR = true;
-				}
-
-				if (gamepad.anyJustReleased(['DPAD_UP', "LEFT_STICK_DIGITAL_UP", Y]))
-				{
-					upR = true;
-				}
-
-				if (gamepad.anyJustReleased(["DPAD_DOWN", "LEFT_STICK_DIGITAL_DOWN", A]))
-				{
-					downR = true;
-				}
-			}
-		 */
-
 		// FlxG.watch.addQuick('asdfa', upP);
 		if ((upP || rightP || downP || leftP) && !boyfriend.stunned && generatedMusic)
 		{
@@ -1163,8 +1084,11 @@ class PlayState extends MusicBeatState
 	{
 		if (!note.wasGoodHit)
 		{
-			popUpScore(note.strumTime);
-			combo += 1;
+			if (!note.isSustainNote)
+			{
+				popUpScore(note.strumTime);
+				combo += 1;
+			}
 
 			if (note.noteData >= 0)
 				health += 0.03;
@@ -1240,5 +1164,15 @@ class PlayState extends MusicBeatState
 
 		if (!boyfriend.animation.curAnim.name.startsWith("sing"))
 			boyfriend.playAnim('idle');
+
+		if (totalBeats % 8 == 6)
+		{
+			boyfriend.playAnim('hey', true);
+
+			if (SONG.song == 'Tutorial' && dad.curCharacter == 'gf')
+			{
+				dad.playAnim('cheer', true);
+			}
+		}
 	}
 }

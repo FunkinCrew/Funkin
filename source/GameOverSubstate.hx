@@ -4,6 +4,8 @@ import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSubState;
 import flixel.math.FlxPoint;
+import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
 
 class GameOverSubstate extends FlxSubState
 {
@@ -34,6 +36,11 @@ class GameOverSubstate extends FlxSubState
 	{
 		super.update(elapsed);
 
+		if (FlxG.keys.justPressed.ENTER)
+		{
+			endBullshit();
+		}
+
 		if (bf.animation.curAnim.name == 'firstDeath' && bf.animation.curAnim.curFrame == 12)
 		{
 			FlxG.camera.follow(camFollow, LOCKON, 0.01);
@@ -42,6 +49,26 @@ class GameOverSubstate extends FlxSubState
 		if (bf.animation.curAnim.name == 'firstDeath' && bf.animation.curAnim.finished)
 		{
 			FlxG.sound.playMusic('assets/music/gameOver' + TitleState.soundExt);
+		}
+	}
+
+	var isEnding:Bool = false;
+
+	function endBullshit():Void
+	{
+		if (!isEnding)
+		{
+			isEnding = true;
+			bf.playAnim('deathConfirm', true);
+			FlxG.sound.music.stop();
+			FlxG.sound.play('assets/music/gameOverEnd' + TitleState.soundExt);
+			new FlxTimer().start(0.7, function(tmr:FlxTimer)
+			{
+				FlxG.camera.fade(FlxColor.BLACK, 2, false, function()
+				{
+					FlxG.switchState(new PlayState());
+				});
+			});
 		}
 	}
 }
