@@ -7,7 +7,7 @@ import flixel.math.FlxPoint;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 
-class GameOverSubstate extends FlxSubState
+class GameOverSubstate extends MusicBeatSubstate
 {
 	var bf:Boyfriend;
 	var camFollow:FlxObject;
@@ -16,6 +16,8 @@ class GameOverSubstate extends FlxSubState
 	{
 		super();
 
+		Conductor.songPosition = 0;
+
 		bf = new Boyfriend(x, y);
 		add(bf);
 
@@ -23,6 +25,7 @@ class GameOverSubstate extends FlxSubState
 		add(camFollow);
 
 		FlxG.sound.play('assets/sounds/fnf_loss_sfx' + TitleState.soundExt);
+		Conductor.changeBPM(100);
 
 		// FlxG.camera.followLerp = 1;
 		// FlxG.camera.focusOn(FlxPoint.get(FlxG.width / 2, FlxG.height / 2));
@@ -50,6 +53,18 @@ class GameOverSubstate extends FlxSubState
 		{
 			FlxG.sound.playMusic('assets/music/gameOver' + TitleState.soundExt);
 		}
+
+		if (FlxG.sound.music.playing)
+		{
+			Conductor.songPosition = FlxG.sound.music.time;
+		}
+	}
+
+	override function beatHit()
+	{
+		super.beatHit();
+
+		FlxG.log.add('beat');
 	}
 
 	var isEnding:Bool = false;
