@@ -267,7 +267,7 @@ class ChartingState extends MusicBeatState
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
 
-		FlxG.sound.playMusic('assets/music/' + daSong + '.mp3', 0.6);
+		FlxG.sound.playMusic('assets/music/' + daSong + TitleState.soundExt, 0.6);
 		FlxG.sound.music.pause();
 		FlxG.sound.music.onComplete = function()
 		{
