@@ -23,12 +23,17 @@ class FreeplayState extends MusicBeatState
 
 		for (i in 0...songs.length)
 		{
-			var songText:Alphabet = new Alphabet(40, (70 * i) + 30, songs[i], true, false);
+			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, songs[i], true, false);
 			add(songText);
+			songText.x += 40;
+			// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
 			// songText.screenCenter(X);
 		}
 
+		FlxG.sound.playMusic('assets/music/title' + TitleState.soundExt, 0);
+		FlxG.sound.music.fadeIn(2, 0, 0.8);
 		selector = new FlxText();
+
 		selector.size = 40;
 		selector.text = ">";
 		add(selector);
