@@ -69,11 +69,6 @@ class PlayState extends MusicBeatState
 	private var camHUD:FlxCamera;
 	private var camGame:FlxCamera;
 
-	var controls(get, never):Controls;
-
-	inline function get_controls():Controls
-		return PlayerSettings.player1.controls;
-
 	override public function create()
 	{
 		// var gameCam:FlxCamera = FlxG.camera;
@@ -85,8 +80,6 @@ class PlayState extends MusicBeatState
 		FlxG.cameras.add(camHUD);
 
 		FlxCamera.defaultCameras = [camGame];
-
-		PlayerSettings.init();
 
 		persistentUpdate = true;
 		persistentDraw = true;
@@ -1000,6 +993,7 @@ class PlayState extends MusicBeatState
 			combo = 0;
 
 			FlxG.sound.play('assets/sounds/missnote' + FlxG.random.int(1, 3) + TitleState.soundExt, FlxG.random.float(0.1, 0.2));
+			// FlxG.sound.play('assets/sounds/missnote1' + TitleState.soundExt, 1, false);
 			// FlxG.log.add('played imss note');
 
 			boyfriend.stunned = true;
@@ -1122,11 +1116,15 @@ class PlayState extends MusicBeatState
 
 	override function stepHit()
 	{
-		if (vocals.time > Conductor.songPosition + Conductor.stepCrochet || vocals.time < Conductor.songPosition - Conductor.stepCrochet)
+		if (SONG.needsVoices)
 		{
-			vocals.pause();
-			vocals.time = Conductor.songPosition;
-			vocals.play();
+			if (vocals.time > Conductor.songPosition + Conductor.stepCrochet
+				|| vocals.time < Conductor.songPosition - Conductor.stepCrochet)
+			{
+				vocals.pause();
+				vocals.time = Conductor.songPosition;
+				vocals.play();
+			}
 		}
 
 		if (dad.curCharacter == 'spooky' && totalSteps % 4 == 2)
