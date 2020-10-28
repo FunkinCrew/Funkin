@@ -48,9 +48,6 @@ class PlayState extends MusicBeatState
 	private var strumLine:FlxSprite;
 	private var curSection:Int = 0;
 
-	private var sectionScores:Array<Dynamic> = [[], []];
-	private var sectionLengths:Array<Int> = [];
-
 	private var camFollow:FlxObject;
 	private var strumLineNotes:FlxTypedGroup<FlxSprite>;
 	private var playerStrums:FlxTypedGroup<FlxSprite>;
@@ -194,6 +191,9 @@ class PlayState extends MusicBeatState
 
 		strumLineNotes.cameras = [camHUD];
 		notes.cameras = [camHUD];
+		healthBar.cameras = [camHUD];
+		healthBarBG.cameras = [camHUD];
+		healthHeads.cameras = [camHUD];
 		// UI_camera.zoom = 1;
 
 		// cameras = [FlxG.cameras.list[1]];
@@ -325,9 +325,6 @@ class PlayState extends MusicBeatState
 
 			for (songNotes in section.sectionNotes)
 			{
-				sectionScores[0].push(0);
-				sectionScores[1].push(0);
-
 				var daStrumTime:Float = songNotes[0];
 				var daNoteData:Int = Std.int(songNotes[1] % 4);
 
@@ -388,7 +385,6 @@ class PlayState extends MusicBeatState
 						}
 						else
 						{
-							//sectionScores[0][daBeats] += swagNote.noteScore;
 						}
 					}
 				 */
@@ -745,7 +741,6 @@ class PlayState extends MusicBeatState
 		vocals.volume = 1;
 
 		var placement:String = Std.string(combo);
-		// var placement:String = sectionScores[1][curSection] + '/' + sectionScores[0][curSection];
 
 		var coolText:FlxText = new FlxText(0, 0, 0, placement, 32);
 		coolText.screenCenter();
@@ -1004,12 +999,13 @@ class PlayState extends MusicBeatState
 			}
 			combo = 0;
 
-			FlxG.sound.play('assets/sounds/missnote' + FlxG.random.int(1, 3) + TitleState.soundExt, FlxG.random.float(0.05, 0.2));
+			FlxG.sound.play('assets/sounds/missnote' + FlxG.random.int(1, 3) + TitleState.soundExt, FlxG.random.float(0.1, 0.2));
+			// FlxG.log.add('played imss note');
 
 			boyfriend.stunned = true;
 
 			// get stunned for 5 seconds
-			new FlxTimer().start(5 / 60, function(tmr:FlxTimer)
+			new FlxTimer().start(15 / 60, function(tmr:FlxTimer)
 			{
 				boyfriend.stunned = false;
 			});
@@ -1115,7 +1111,6 @@ class PlayState extends MusicBeatState
 				}
 			});
 
-			sectionScores[1][curSection] += note.noteScore;
 			note.wasGoodHit = true;
 			vocals.volume = 1;
 
