@@ -40,11 +40,16 @@ class FreeplayState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
-		if (FlxG.keys.justPressed.UP)
+		super.update(elapsed);
+		var upP = controls.UP_P;
+		var downP = controls.DOWN_P;
+		var accepted = controls.ACCEPT;
+
+		if (upP)
 		{
 			curSelected -= 1;
 		}
-		if (FlxG.keys.justPressed.DOWN)
+		if (downP)
 		{
 			curSelected += 1;
 		}
@@ -56,12 +61,10 @@ class FreeplayState extends MusicBeatState
 
 		selector.y = (70 * curSelected) + 30;
 
-		if (FlxG.keys.justPressed.ENTER)
+		if (accepted)
 		{
 			PlayState.SONG = Song.loadFromJson(songs[curSelected].toLowerCase());
 			FlxG.switchState(new PlayState());
 		}
-
-		super.update(elapsed);
 	}
 }
