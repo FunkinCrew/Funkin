@@ -7,7 +7,7 @@ import flixel.text.FlxText;
 
 class FreeplayState extends MusicBeatState
 {
-	var songs:Array<String> = ["Bopeebo", "Dadbattle", "Fresh", "Tutorial", "Spookeez"];
+	var songs:Array<String> = ["Bopeebo", "Dadbattle", "Fresh", "Tutorial", "Spookeez", "South"];
 
 	var selector:FlxText;
 	var curSelected:Int = 0;
@@ -70,6 +70,7 @@ class FreeplayState extends MusicBeatState
 		{
 			PlayState.SONG = Song.loadFromJson(songs[curSelected].toLowerCase());
 			FlxG.switchState(new PlayState());
+			FlxG.sound.music.stop();
 		}
 	}
 }
