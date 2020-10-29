@@ -218,7 +218,7 @@ class ChartingState extends MusicBeatState
 		stepperLength.value = _song.notes[curSection].lengthInSteps;
 		stepperLength.name = "section_length";
 
-		var stepperCopy:FlxUINumericStepper = new FlxUINumericStepper(110, 30, 1, 1, 1, 999, 0);
+		var stepperCopy:FlxUINumericStepper = new FlxUINumericStepper(110, 30, 1, 1, -999, 999, 0);
 
 		var copyButton:FlxButton = new FlxButton(110, 8, "Copy last section", function()
 		{
@@ -606,6 +606,16 @@ class ChartingState extends MusicBeatState
 				FlxG.log.add('FOUND EVIL NUMBER');
 				_song.notes[curSection].sectionNotes.remove(i);
 			}
+		}
+
+		updateGrid();
+	}
+
+	function clearSong():Void
+	{
+		for (daSection in 0..._song.notes.length)
+		{
+			_song.notes[daSection].sectionNotes = [];
 		}
 
 		updateGrid();
