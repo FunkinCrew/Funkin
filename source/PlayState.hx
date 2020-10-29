@@ -187,6 +187,9 @@ class PlayState extends MusicBeatState
 		healthBar.cameras = [camHUD];
 		healthBarBG.cameras = [camHUD];
 		healthHeads.cameras = [camHUD];
+
+		if (SONG.song == 'South')
+			FlxG.camera.alpha = 0.7;
 		// UI_camera.zoom = 1;
 
 		// cameras = [FlxG.cameras.list[1]];
@@ -710,7 +713,7 @@ class PlayState extends MusicBeatState
 				{
 					if (daNote.tooLate)
 					{
-						health -= 0.05;
+						health -= 0.03;
 						vocals.volume = 0;
 					}
 
@@ -985,7 +988,7 @@ class PlayState extends MusicBeatState
 	{
 		if (!boyfriend.stunned)
 		{
-			health -= 0.08;
+			health -= 0.055;
 			if (combo > 5)
 			{
 				gf.playAnim('sad');
@@ -999,7 +1002,7 @@ class PlayState extends MusicBeatState
 			boyfriend.stunned = true;
 
 			// get stunned for 5 seconds
-			new FlxTimer().start(15 / 60, function(tmr:FlxTimer)
+			new FlxTimer().start(5 / 60, function(tmr:FlxTimer)
 			{
 				boyfriend.stunned = false;
 			});
