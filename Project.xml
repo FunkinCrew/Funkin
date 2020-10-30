@@ -44,6 +44,8 @@
 	<assets path="assets/sounds" include="*.mp3" if="web" />
 	<assets path="assets/sounds" include="*.ogg" unless="web" />
 
+	<assets path="assets/fonts/vcr.ttf" embed="true" />
+
 
 	<!-- _______________________________ Libraries ______________________________ -->
 
@@ -96,4 +98,5 @@
 	<!--Place custom nodes like icons here (higher priority to override the HaxeFlixel icon)-->
 	<icon path="art/icon.png" unless="switch" />
 	<icon path="art/iconSwitch.png" if="switch" />
+	<haxedef name="SKIP_TO_PLAYSTATE" if="debug" />
 </project>

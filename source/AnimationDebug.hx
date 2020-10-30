@@ -39,6 +39,9 @@ class AnimationDebug extends FlxState
 		gridBG.scrollFactor.set(0.5, 0.5);
 		add(gridBG);
 
+		if (daAnim == 'bf')
+			isDad = false;
+
 		if (isDad)
 		{
 			dad = new Character(0, 0, daAnim);
