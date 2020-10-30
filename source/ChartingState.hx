@@ -84,9 +84,9 @@ class ChartingState extends MusicBeatState
 		else
 		{
 			_song = {
-				song: 'Spookeez',
+				song: 'Monster',
 				notes: [],
-				bpm: 100,
+				bpm: 95,
 				sections: 0,
 				needsVoices: false,
 				player1: 'bf',
@@ -318,6 +318,7 @@ class ChartingState extends MusicBeatState
 					_song.notes[curSection].mustHitSection = check.checked;
 				case 'Change BPM':
 					_song.notes[curSection].changeBPM = check.checked;
+					FlxG.log.add('changed bpm shit');
 			}
 		}
 		else if (id == FlxUINumericStepper.CHANGE_EVENT && (sender is FlxUINumericStepper))
@@ -490,6 +491,8 @@ class ChartingState extends MusicBeatState
 		if (_song.notes[sec] != null)
 		{
 			curSection = sec;
+
+			updateGrid();
 
 			if (updateMusic)
 			{
