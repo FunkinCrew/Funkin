@@ -3,6 +3,7 @@ package;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
+import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 
 using StringTools;
@@ -16,6 +17,8 @@ class StoryMenuState extends MusicBeatState
 	var curWeek:Int = 0;
 
 	var txtTracklist:FlxText;
+
+	var grpWeekText:FlxTypedGroup<MenuItem>;
 
 	override function create()
 	{
@@ -33,6 +36,9 @@ class StoryMenuState extends MusicBeatState
 		var ui_tex = FlxAtlasFrames.fromSparrow(AssetPaths.campaign_menu_UI_assets__png, AssetPaths.campaign_menu_UI_assets__xml);
 		var yellowBG:FlxSprite = new FlxSprite(0, 56).makeGraphic(FlxG.width, 400, 0xFFF9CF51);
 
+		grpWeekText = new FlxTypedGroup<MenuItem>();
+		add(grpWeekText);
+
 		for (i in 0...weekData.length)
 		{
 			var unlocked:Bool = true;
@@ -41,7 +47,11 @@ class StoryMenuState extends MusicBeatState
 				unlocked = false;
 
 			var weekThing:MenuItem = new MenuItem(0, yellowBG.y + yellowBG.height + 10, i, unlocked);
-			add(weekThing);
+			weekThing.y += ((weekThing.height + 20) * i);
+			weekThing.targetY = i;
+			grpWeekText.add(weekThing);
+
+			weekThing.screenCenter(X);
 		}
 
 		add(yellowBG);
@@ -80,6 +90,14 @@ class StoryMenuState extends MusicBeatState
 		if (curWeek < 0)
 			curWeek = weekData.length - 1;
 
+		var bullShit:Int = 0;
+
+		for (item in grpWeekText.members)
+		{
+			item.targetY = bullShit - curWeek;
+			bullShit++;
+		}
+
 		updateText();
 	}
 
@@ -94,7 +112,7 @@ class StoryMenuState extends MusicBeatState
 			txtTracklist.text += "\n" + i;
 		}
 
-		txtTracklist.text.toUpperCase();
+		txtTracklist.text = txtTracklist.text.toUpperCase();
 
 		txtTracklist.screenCenter(X);
 		txtTracklist.x -= FlxG.width * 0.35;
