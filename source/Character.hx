@@ -85,6 +85,21 @@ class Character extends FlxSprite
 				addOffset("singDOWN", -50, -130);
 
 				playAnim('danceRight');
+			case 'monster':
+				tex = FlxAtlasFrames.fromSparrow(AssetPaths.Monster_Assets__png, AssetPaths.Monster_Assets__xml);
+				frames = tex;
+				animation.addByPrefix('idle', 'monster idle', 24);
+				animation.addByPrefix('singUP', 'monster up note', 24, false);
+				animation.addByPrefix('singDOWN', 'monster down', 24, false);
+				animation.addByPrefix('singLEFT', 'Monster left note', 24, false);
+				animation.addByPrefix('singRIGHT', 'Monster Right note', 24, false);
+
+				addOffset('idle');
+				addOffset("singUP", -20, 50);
+				addOffset("singRIGHT", -51);
+				addOffset("singLEFT", -30);
+				addOffset("singDOWN", -30, -40);
+				playAnim('idle');
 		}
 	}
 
@@ -112,6 +127,8 @@ class Character extends FlxSprite
 				else
 					playAnim('danceLeft');
 			case 'dad':
+				playAnim('idle');
+			case 'monster':
 				playAnim('idle');
 		}
 	}

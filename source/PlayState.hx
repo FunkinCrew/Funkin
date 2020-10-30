@@ -125,6 +125,8 @@ class PlayState extends MusicBeatState
 				gf.visible = false;
 			case "spooky":
 				dad.y += 200;
+			case "monster":
+				dad.y += 100;
 		}
 
 		boyfriend = new Boyfriend(770, 450);
@@ -188,8 +190,8 @@ class PlayState extends MusicBeatState
 		healthBarBG.cameras = [camHUD];
 		healthHeads.cameras = [camHUD];
 
-		if (SONG.song == 'South')
-			FlxG.camera.alpha = 0.7;
+		// if (SONG.song == 'South')
+		// FlxG.camera.alpha = 0.7;
 		// UI_camera.zoom = 1;
 
 		// cameras = [FlxG.cameras.list[1]];
@@ -542,7 +544,7 @@ class PlayState extends MusicBeatState
 		/* if (FlxG.keys.justPressed.NINE)
 			FlxG.switchState(new Charting()); */
 		if (FlxG.keys.justPressed.EIGHT)
-			FlxG.switchState(new AnimationDebug(SONG.player1));
+			FlxG.switchState(new AnimationDebug(SONG.player2));
 
 		if (startingSong)
 		{
@@ -699,6 +701,9 @@ class PlayState extends MusicBeatState
 						case 0:
 							dad.playAnim('singLEFT');
 					}
+
+					if (SONG.needsVoices)
+						vocals.volume = 1;
 
 					daNote.kill();
 					notes.remove(daNote, true);
@@ -1145,6 +1150,14 @@ class PlayState extends MusicBeatState
 		if (generatedMusic)
 		{
 			notes.sort(FlxSort.byY, FlxSort.DESCENDING);
+
+			if (SONG.notes[curSection].changeBPM != null)
+			{
+				if (SONG.notes[curSection].changeBPM)
+				{
+					Conductor.changeBPM(SONG.notes[curSection].bpm);
+				}
+			}
 		}
 
 		if (camZooming && FlxG.camera.zoom < 1.35 && totalBeats % 4 == 0)
