@@ -80,7 +80,7 @@ class FreeplayState extends MusicBeatState
 		}
 
 		#if switch
-			if (gamepad.anyJustPressed(["B"])) //"B" is swapped with "A" on Switch 
+			if (gamepad.anyJustPressed(["B"])) //"B" is swapped with "A" on Switch
 			{
 				PlayState.SONG = Song.loadFromJson(songs[curSelected].toLowerCase());
 				FlxG.switchState(new PlayState());
