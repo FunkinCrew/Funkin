@@ -73,7 +73,7 @@ class Character extends FlxSprite
 				animation.addByPrefix('singDOWN', 'spooky DOWN note', 24, false);
 				animation.addByPrefix('singLEFT', 'note sing left', 24, false);
 				animation.addByPrefix('singRIGHT', 'spooky sing right', 24, false);
-				animation.addByIndices('danceLeft', 'spooky dance idle', [16, 0, 2, 6], "", 12, false);
+				animation.addByIndices('danceLeft', 'spooky dance idle', [0, 2, 6], "", 12, false);
 				animation.addByIndices('danceRight', 'spooky dance idle', [8, 10, 12, 14], "", 12, false);
 
 				addOffset('danceLeft');
@@ -85,6 +85,21 @@ class Character extends FlxSprite
 				addOffset("singDOWN", -50, -130);
 
 				playAnim('danceRight');
+			case 'monster':
+				tex = FlxAtlasFrames.fromSparrow(AssetPaths.Monster_Assets__png, AssetPaths.Monster_Assets__xml);
+				frames = tex;
+				animation.addByPrefix('idle', 'monster idle', 24);
+				animation.addByPrefix('singUP', 'monster up note', 24, false);
+				animation.addByPrefix('singDOWN', 'monster down', 24, false);
+				animation.addByPrefix('singLEFT', 'Monster left note', 24, false);
+				animation.addByPrefix('singRIGHT', 'Monster Right note', 24, false);
+
+				addOffset('idle');
+				addOffset("singUP", -20, 50);
+				addOffset("singRIGHT", -51);
+				addOffset("singLEFT", -30);
+				addOffset("singDOWN", -30, -40);
+				playAnim('idle');
 		}
 	}
 
@@ -113,6 +128,8 @@ class Character extends FlxSprite
 					playAnim('danceLeft');
 			case 'dad':
 				playAnim('idle');
+			case 'monster':
+				playAnim('idle');
 		}
 	}
 
@@ -124,6 +141,23 @@ class Character extends FlxSprite
 		if (animOffsets.exists(animation.curAnim.name))
 		{
 			offset.set(daOffset[0], daOffset[1]);
+		}
+
+		if (curCharacter == 'gf')
+		{
+			if (AnimName == 'singLEFT')
+			{
+				danced = true;
+			}
+			else if (AnimName == 'singRIGHT')
+			{
+				danced = false;
+			}
+
+			if (AnimName == 'singUP' || AnimName == 'singDOWN')
+			{
+				danced = !danced;
+			}
 		}
 	}
 

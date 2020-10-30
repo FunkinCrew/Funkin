@@ -17,6 +17,8 @@ class Alphabet extends FlxSpriteGroup
 	public var delay:Float = 0.05;
 	public var paused:Bool = false;
 
+	public var text:String = "";
+
 	var _finalText:String = "";
 	var _curText:String = "";
 
@@ -28,15 +30,79 @@ class Alphabet extends FlxSpriteGroup
 	// amp, backslash, question mark, apostrophy, comma, angry faic, period
 	var lastSprite:AlphaCharacter;
 	var xPosResetted:Bool = false;
+	var lastWasSpace:Bool = false;
 
-	public function new(x:Float, y:Float, text:String = "", ?bold:Bool = false)
+	var splitWords:Array<String> = [];
+
+	public function new(x:Float, y:Float, text:String = "", ?bold:Bool = false, typed:Bool = false)
 	{
 		super(x, y);
 
 		_finalText = text;
+		this.text = text;
 
-		var arrayShit:Array<String> = text.split("");
-		trace(arrayShit);
+		if (typed)
+		{
+			startTypedText();
+		}
+		else
+		{
+			addText();
+		}
+	}
+
+	public function addText()
+	{
+		doSplitWords();
+
+		for (character in splitWords)
+		{
+			// if (character.fastCodeAt() == " ")
+			// {
+			// }
+
+			if (character == " ")
+			{
+				lastWasSpace = true;
+			}
+
+			if (AlphaCharacter.alphabet.contains(character.toLowerCase()))
+			{
+				var xPos:Float = 0;
+				if (lastSprite != null)
+				{
+					xPos = lastSprite.x + lastSprite.frameWidth;
+				}
+
+				if (lastWasSpace)
+				{
+					xPos += 40;
+					lastWasSpace = false;
+				}
+
+				// var letter:AlphaCharacter = new AlphaCharacter(30 * loopNum, 0);
+				var letter:AlphaCharacter = new AlphaCharacter(xPos, 0);
+				letter.createBold(character);
+				add(letter);
+
+				lastSprite = letter;
+			}
+
+			// loopNum += 1;
+		}
+	}
+
+	function doSplitWords():Void
+	{
+		splitWords = _finalText.split("");
+	}
+
+	public function startTypedText():Void
+	{
+		_finalText = text;
+		doSplitWords();
+
+		// trace(arrayShit);
 
 		var loopNum:Int = 0;
 
@@ -52,7 +118,7 @@ class Alphabet extends FlxSpriteGroup
 				// xPos = 0;
 			}
 
-			if (AlphaCharacter.alphabet.contains(arrayShit[loopNum].toLowerCase()))
+			if (AlphaCharacter.alphabet.contains(splitWords[loopNum].toLowerCase()))
 			{
 				if (lastSprite != null && !xPosResetted)
 				{
@@ -67,7 +133,7 @@ class Alphabet extends FlxSpriteGroup
 
 				// var letter:AlphaCharacter = new AlphaCharacter(30 * loopNum, 0);
 				var letter:AlphaCharacter = new AlphaCharacter(xPos, 55 * yMulti);
-				letter.createBold(arrayShit[loopNum]);
+				letter.createBold(splitWords[loopNum]);
 				add(letter);
 
 				lastSprite = letter;
@@ -76,32 +142,7 @@ class Alphabet extends FlxSpriteGroup
 			loopNum += 1;
 
 			tmr.time = FlxG.random.float(0.03, 0.09);
-		}, arrayShit.length);
-
-		for (character in arrayShit)
-		{
-			// if (character.fastCodeAt() == " ")
-			// {
-			// }
-
-			if (AlphaCharacter.alphabet.contains(character.toLowerCase()))
-			{
-				/* var xPos:Float = 0;
-					if (lastSprite != null)
-					{
-						xPos = lastSprite.x + lastSprite.frameWidth - 40;
-					}
-
-					// var letter:AlphaCharacter = new AlphaCharacter(30 * loopNum, 0);
-					var letter:AlphaCharacter = new AlphaCharacter(xPos, 0);
-					letter.createBold(character);
-					add(letter);
-
-					lastSprite = letter; */
-			}
-
-			// loopNum += 1;
-		}
+		}, splitWords.length);
 	}
 
 	override function update(elapsed:Float)
