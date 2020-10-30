@@ -3,10 +3,13 @@ package;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxSpriteGroup;
+import flixel.math.FlxMath;
 
 class MenuItem extends FlxSpriteGroup
 {
-	public function new(x:Float, y:Float, week:Int = 0, unlocked:Bool = false)
+	public var targetY:Float = 0;
+
+	public function new(x:Float, y:Float, weekNum:Int = 0, unlocked:Bool = false)
 	{
 		super(x, y);
 
@@ -18,7 +21,7 @@ class MenuItem extends FlxSpriteGroup
 		week.animation.addByPrefix('week1', "week2 select", 24);
 		add(week);
 
-		week.animation.play('week' + week);
+		week.animation.play('week' + weekNum);
 		week.updateHitbox();
 
 		if (!unlocked)
@@ -29,7 +32,13 @@ class MenuItem extends FlxSpriteGroup
 			lock.frames = tex;
 			lock.animation.addByPrefix('lock', 'lock');
 			lock.animation.play('lock');
-			add(lock);
+			// add(lock);
 		}
+	}
+
+	override function update(elapsed:Float)
+	{
+		super.update(elapsed);
+		y = FlxMath.lerp(y, (targetY * 120) + 480, 0.17);
 	}
 }
