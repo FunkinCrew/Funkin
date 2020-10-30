@@ -27,12 +27,6 @@ class MenuItem extends FlxSpriteGroup
 		if (!unlocked)
 		{
 			week.alpha = 0.6;
-
-			var lock:FlxSprite = new FlxSprite(week.frameWidth + 5);
-			lock.frames = tex;
-			lock.animation.addByPrefix('lock', 'lock');
-			lock.animation.play('lock');
-			// add(lock);
 		}
 	}
 

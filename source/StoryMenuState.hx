@@ -4,6 +4,7 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.group.FlxGroup;
 import flixel.text.FlxText;
 
 using StringTools;
@@ -13,12 +14,17 @@ class StoryMenuState extends MusicBeatState
 	var scoreText:FlxText;
 
 	var weekData:Array<Dynamic> = [['Tutorial', 'Bopeebo', 'Fresh', 'Dad Battle'], ['Spookeez', 'South', 'Monster']];
+	var weekUnlocked:Array<Bool> = [true, false];
 
 	var curWeek:Int = 0;
 
 	var txtTracklist:FlxText;
 
 	var grpWeekText:FlxTypedGroup<MenuItem>;
+
+	var grpLocks:FlxTypedGroup<FlxSprite>;
+
+	var difficultySelectors:FlxGroup;
 
 	override function create()
 	{
@@ -39,6 +45,9 @@ class StoryMenuState extends MusicBeatState
 		grpWeekText = new FlxTypedGroup<MenuItem>();
 		add(grpWeekText);
 
+		grpLocks = new FlxTypedGroup<FlxSprite>();
+		add(grpLocks);
+
 		for (i in 0...weekData.length)
 		{
 			var unlocked:Bool = true;
@@ -52,7 +61,43 @@ class StoryMenuState extends MusicBeatState
 			grpWeekText.add(weekThing);
 
 			weekThing.screenCenter(X);
+			weekThing.antialiasing = true;
+			// weekThing.updateHitbox();
+
+			if (!weekUnlocked[i])
+			{
+				var lock:FlxSprite = new FlxSprite(weekThing.width + 10 + weekThing.x);
+				lock.frames = ui_tex;
+				lock.animation.addByPrefix('lock', 'lock');
+				lock.animation.play('lock');
+				lock.ID = i;
+				lock.antialiasing = true;
+				grpLocks.add(lock);
+			}
 		}
+
+		difficultySelectors = new FlxGroup();
+		add(difficultySelectors);
+
+		var leftArrow:FlxSprite = new FlxSprite(grpWeekText.members[0].x + 400, grpWeekText.members[0].y + 10);
+		leftArrow.frames = ui_tex;
+		leftArrow.animation.addByPrefix('idle', "arrow left");
+		leftArrow.animation.play('idle');
+		difficultySelectors.add(leftArrow);
+
+		var sprDifficulty:FlxSprite = new FlxSprite(leftArrow.x + 70, leftArrow.y);
+		sprDifficulty.frames = ui_tex;
+		sprDifficulty.animation.addByPrefix('easy', 'EASY');
+		sprDifficulty.animation.addByPrefix('normal', 'NORMAL');
+		sprDifficulty.animation.addByPrefix('hard', 'HARD');
+		sprDifficulty.animation.play('easy');
+		difficultySelectors.add(sprDifficulty);
+
+		var rightArrow:FlxSprite = new FlxSprite(sprDifficulty.x + sprDifficulty.width + 20, sprDifficulty.y);
+		rightArrow.frames = ui_tex;
+		rightArrow.animation.addByPrefix('idle', 'arrow right');
+		rightArrow.animation.play('idle');
+		difficultySelectors.add(rightArrow);
 
 		add(yellowBG);
 
@@ -72,6 +117,13 @@ class StoryMenuState extends MusicBeatState
 		// scoreText.setFormat('VCR OSD Mono', 32);
 		// scoreText.text = "Score SHIT";
 		// FlxG.watch.addQuick('font', scoreText.font);
+
+		difficultySelectors.visible = weekUnlocked[curWeek];
+
+		grpLocks.forEach(function(lock:FlxSprite)
+		{
+			lock.y = grpWeekText.members[lock.ID].y;
+		});
 
 		if (controls.UP_P)
 			changeWeek(-1);
