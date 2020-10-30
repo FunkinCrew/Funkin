@@ -311,11 +311,6 @@ class PlayState extends MusicBeatState
 		// NEW SHIT
 		noteData = songData.notes;
 
-		for (i in 1...songData.sections + 1)
-		{
-			// noteData.push(ChartParser.parse(songData.song.toLowerCase(), i));
-		}
-
 		var playerCounter:Int = 0;
 
 		var daBeats:Int = 0; // Not exactly representative of 'daBeats' lol, just how much it has looped
@@ -330,7 +325,7 @@ class PlayState extends MusicBeatState
 
 				var gottaHitNote:Bool = section.mustHitSection;
 
-				if (songNotes.noteData > 3)
+				if (songNotes[1] > 3)
 				{
 					gottaHitNote = !section.mustHitSection;
 				}
@@ -375,25 +370,7 @@ class PlayState extends MusicBeatState
 				else
 				{
 				}
-
-				// WILL HAVE TO REDO SCORE SYSTEM
-				/* if (section.mustHitSection)
-					{
-						if (playerCounter == 1) // is the player
-						{
-							swagNote.mustPress = true;
-						}
-						else
-						{
-						}
-					}
-				 */
 			}
-
-			/* // only need to do it once
-				if (section.mustHitSection)
-					sectionLengths.push(Math.round(coolSection / 4));
-			 */
 			daBeats += 1;
 		}
 
