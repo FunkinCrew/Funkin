@@ -41,6 +41,8 @@
 	<assets path="assets/sounds" include="*.mp3" if="web" />
 	<assets path="assets/sounds" include="*.ogg" unless="web" />
 
+	<assets path="assets/fonts/vcr.ttf" embed="true" />
+
 
 	<!-- _______________________________ Libraries ______________________________ -->
 
