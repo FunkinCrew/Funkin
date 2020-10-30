@@ -26,6 +26,10 @@ class Boyfriend extends Character
 		animation.addByPrefix('singRIGHTmiss', 'BF NOTE RIGHT MISS', 24, false);
 		animation.addByPrefix('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
 		animation.addByPrefix('hey', 'BF HEY', 24, false);
+
+		animation.addByPrefix('firstDeath', "BF dies", 24, false);
+		animation.addByPrefix('deathLoop', "BF Dead Loop", 24, true);
+		animation.addByPrefix('deathConfirm', "BF Dead confirm", 24, false);
 		playAnim('idle');
 
 		antialiasing = true;
@@ -40,6 +44,9 @@ class Boyfriend extends Character
 		addOffset("singLEFTmiss", 12, 24);
 		addOffset("singDOWNmiss", -11, -19);
 		addOffset("hey", 7, 4);
+		addOffset('firstDeath', 37, 11);
+		addOffset('deathLoop', 37, 5);
+		addOffset('deathConfirm', 37, 69);
 	}
 
 	override function update(elapsed:Float)
@@ -48,6 +55,12 @@ class Boyfriend extends Character
 		{
 			playAnim('idle', true, false, 10);
 		}
+
+		if (animation.curAnim.name == 'firstDeath' && animation.curAnim.finished)
+		{
+			playAnim('deathLoop');
+		}
+
 		super.update(elapsed);
 	}
 }

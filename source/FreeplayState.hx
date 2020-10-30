@@ -14,7 +14,7 @@ import flixel.text.FlxText;
 
 class FreeplayState extends MusicBeatState
 {
-	var songs:Array<String> = ["Bopeebo", "Dadbattle", "Fresh", "Tutorial\nlol"];
+	var songs:Array<String> = ["Bopeebo", "Dadbattle", "Fresh", "Tutorial", "Spookeez", "South", "Monster"];
 
 	var selector:FlxText;
 	var curSelected:Int = 0;
@@ -30,11 +30,17 @@ class FreeplayState extends MusicBeatState
 
 		for (i in 0...songs.length)
 		{
-			var songText:Alphabet = new Alphabet(40, (70 * i) + 30, songs[i]);
+			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, songs[i], true, false);
 			add(songText);
+			songText.x += 40;
+			// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
+			// songText.screenCenter(X);
 		}
 
+		FlxG.sound.playMusic('assets/music/title' + TitleState.soundExt, 0);
+		FlxG.sound.music.fadeIn(2, 0, 0.8);
 		selector = new FlxText();
+
 		selector.size = 40;
 		selector.text = ">";
 		add(selector);
@@ -46,11 +52,16 @@ class FreeplayState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
-		if (FlxG.keys.justPressed.UP)
+		super.update(elapsed);
+		var upP = controls.UP_P;
+		var downP = controls.DOWN_P;
+		var accepted = controls.ACCEPT;
+
+		if (upP)
 		{
 			curSelected -= 1;
 		}
-		if (FlxG.keys.justPressed.DOWN)
+		if (downP)
 		{
 			curSelected += 1;
 		}
@@ -73,10 +84,11 @@ class FreeplayState extends MusicBeatState
 
 		selector.y = (70 * curSelected) + 30;
 
-		if (FlxG.keys.justPressed.ENTER)
+		if (accepted)
 		{
 			PlayState.SONG = Song.loadFromJson(songs[curSelected].toLowerCase());
 			FlxG.switchState(new PlayState());
+			FlxG.sound.music.stop();
 		}
 
 		#if switch
@@ -84,9 +96,8 @@ class FreeplayState extends MusicBeatState
 			{
 				PlayState.SONG = Song.loadFromJson(songs[curSelected].toLowerCase());
 				FlxG.switchState(new PlayState());
+				FlxG.sound.music.stop();
 			}
 		#end
-
-		super.update(elapsed);
 	}
 }

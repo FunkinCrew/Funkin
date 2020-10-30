@@ -1,12 +1,14 @@
 package;
 
-import flixel.FlxG;
-import flixel.addons.transition.FlxTransitionableState;
-import flixel.addons.ui.FlxUIState;
-import flixel.util.FlxTimer;
+import flixel.FlxSubState;
 
-class MusicBeatState extends FlxUIState
+class MusicBeatSubstate extends FlxSubState
 {
+	public function new()
+	{
+		super();
+	}
+
 	private var lastBeat:Float = 0;
 	private var lastStep:Float = 0;
 
