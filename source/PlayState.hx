@@ -87,6 +87,8 @@ class PlayState extends MusicBeatState
 		if (SONG == null)
 			SONG = Song.loadFromJson(curLevel);
 
+		Conductor.changeBPM(SONG.bpm);
+
 		var bg:FlxSprite = new FlxSprite(-600, -200).loadGraphic(AssetPaths.stageback__png);
 		// bg.setGraphicSize(Std.int(bg.width * 2.5));
 		// bg.updateHitbox();
@@ -693,13 +695,13 @@ class PlayState extends MusicBeatState
 					switch (Math.abs(daNote.noteData))
 					{
 						case 2:
-							dad.playAnim('singUP');
+							dad.playAnim('singUP', true);
 						case 3:
-							dad.playAnim('singRIGHT');
+							dad.playAnim('singRIGHT', true);
 						case 1:
-							dad.playAnim('singDOWN');
+							dad.playAnim('singDOWN', true);
 						case 0:
-							dad.playAnim('singLEFT');
+							dad.playAnim('singLEFT', true);
 					}
 
 					if (SONG.needsVoices)
@@ -1150,20 +1152,24 @@ class PlayState extends MusicBeatState
 		if (generatedMusic)
 		{
 			notes.sort(FlxSort.byY, FlxSort.DESCENDING);
-
-			if (SONG.notes[curSection].changeBPM != null)
-			{
-				if (SONG.notes[curSection].changeBPM)
-				{
-					Conductor.changeBPM(SONG.notes[curSection].bpm);
-				}
-			}
 		}
+
+		FlxG.log.add('change bpm' + SONG.notes[Std.int(curStep / 16)].changeBPM);
+		if (SONG.notes[Std.int(curStep / 16)].changeBPM)
+		{
+			Conductor.changeBPM(SONG.notes[Std.int(curStep / 16)].bpm);
+			FlxG.log.add('CHANGED BPM!');
+		}
+		else
+			Conductor.changeBPM(SONG.bpm);
 
 		if (camZooming && FlxG.camera.zoom < 1.35 && totalBeats % 4 == 0)
 			FlxG.camera.zoom += 0.025;
 
-		dad.dance();
+		// Dad doesnt interupt his own notes
+		if (SONG.notes[Std.int(curStep / 16)].mustHitSection)
+			dad.dance();
+
 		healthHeads.setGraphicSize(Std.int(healthHeads.width + 20));
 
 		if (totalBeats % gfSpeed == 0)
