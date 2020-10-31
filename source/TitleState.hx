@@ -54,7 +54,7 @@ class TitleState extends MusicBeatState
 		super.create();
 
 		#if SKIP_TO_PLAYSTATE
-		FlxG.switchState(new PlayState());
+		FlxG.switchState(new StoryMenuState());
 		#else
 		startIntro();
 		#end
