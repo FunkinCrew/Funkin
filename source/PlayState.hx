@@ -16,6 +16,7 @@ import flixel.graphics.atlas.FlxAtlas;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
+import flixel.math.FlxPoint;
 import flixel.system.FlxSound;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
@@ -33,7 +34,7 @@ using StringTools;
 
 class PlayState extends MusicBeatState
 {
-	public static var curLevel:String = 'Bopeebo';
+	public static var curLevel:String = 'Tutorial';
 	public static var SONG:SwagSong;
 	public static var isStoryMode:Bool = false;
 	public static var storyPlaylist:Array<String> = [];
@@ -77,6 +78,8 @@ class PlayState extends MusicBeatState
 
 	var halloweenBG:FlxSprite;
 
+	var talking:Bool = true;
+
 	override public function create()
 	{
 		// var gameCam:FlxCamera = FlxG.camera;
@@ -96,6 +99,19 @@ class PlayState extends MusicBeatState
 			SONG = Song.loadFromJson(curLevel);
 
 		Conductor.changeBPM(SONG.bpm);
+
+		switch (SONG.song.toLowerCase())
+		{
+			case 'tutorial':
+				dialogue = ["Hey you're pretty cute.", 'Use the arrow keys to keep up \nwith me singing.'];
+			case 'bopeebo':
+				dialogue = [
+					'HEY!',
+					"You think you can just sing\nwith my daughter like that?",
+					"If you want to date her...",
+					"You're going to have to go \nthrough ME first!"
+				];
+		}
 
 		if (SONG.song.toLowerCase() == 'spookeez' || SONG.song.toLowerCase() == 'monster' || SONG.song.toLowerCase() == 'south')
 		{
@@ -147,15 +163,25 @@ class PlayState extends MusicBeatState
 		dad = new Character(100, 100, SONG.player2);
 		add(dad);
 
+		var camPos:FlxPoint = new FlxPoint(dad.getGraphicMidpoint().x, dad.getGraphicMidpoint().y);
+
 		switch (SONG.player2)
 		{
 			case 'gf':
 				dad.setPosition(gf.x, gf.y);
 				gf.visible = false;
+				if (isStoryMode)
+				{
+					camPos.x += 600;
+					tweenCamIn();
+				}
+
 			case "spooky":
 				dad.y += 200;
 			case "monster":
 				dad.y += 100;
+			case 'dad':
+				camPos.x += 400;
 		}
 
 		boyfriend = new Boyfriend(770, 450);
@@ -166,7 +192,6 @@ class PlayState extends MusicBeatState
 		doof.y = FlxG.height * 0.5;
 		doof.scrollFactor.set();
 		doof.finishThing = startCountdown;
-		add(doof);
 
 		Conductor.songPosition = -5000;
 
@@ -187,7 +212,8 @@ class PlayState extends MusicBeatState
 		// add(strumLine);
 
 		camFollow = new FlxObject(0, 0, 1, 1);
-		camFollow.setPosition(dad.getGraphicMidpoint().x, dad.getGraphicMidpoint().y);
+
+		camFollow.setPosition(camPos.x, camPos.y);
 		add(camFollow);
 
 		FlxG.camera.follow(camFollow, LOCKON, 0.04);
@@ -220,11 +246,20 @@ class PlayState extends MusicBeatState
 		healthHeads.antialiasing = true;
 		add(healthHeads);
 
+		// healthBar.visible = healthHeads.visible = healthBarBG.visible = false;
+		if (isStoryMode)
+		{
+			add(doof);
+		}
+		else
+			startCountdown();
+
 		strumLineNotes.cameras = [camHUD];
 		notes.cameras = [camHUD];
 		healthBar.cameras = [camHUD];
 		healthBarBG.cameras = [camHUD];
 		healthHeads.cameras = [camHUD];
+		doof.cameras = [camHUD];
 
 		// if (SONG.song == 'South')
 		// FlxG.camera.alpha = 0.7;
@@ -239,6 +274,10 @@ class PlayState extends MusicBeatState
 
 	function startCountdown():Void
 	{
+		generateStaticArrows(0);
+		generateStaticArrows(1);
+
+		talking = false;
 		startedCountdown = true;
 		Conductor.songPosition = 0;
 		Conductor.songPosition -= Conductor.crochet * 5;
@@ -322,9 +361,6 @@ class PlayState extends MusicBeatState
 	private function generateSong(dataPath:String):Void
 	{
 		// FlxG.log.add(ChartParser.parse());
-
-		generateStaticArrows(0);
-		generateStaticArrows(1);
 
 		var songData = SONG;
 		Conductor.changeBPM(songData.bpm);
@@ -483,6 +519,11 @@ class PlayState extends MusicBeatState
 		}
 	}
 
+	function tweenCamIn():Void
+	{
+		FlxTween.tween(FlxG.camera, {zoom: 1.3}, (Conductor.stepCrochet * 4 / 1000), {ease: FlxEase.elasticInOut});
+	}
+
 	override function openSubState(SubState:FlxSubState)
 	{
 		if (paused)
@@ -530,7 +571,7 @@ class PlayState extends MusicBeatState
 		// trace("SONG POS: " + Conductor.songPosition);
 		// FlxG.sound.music.pitch = 2;
 
-		if (FlxG.keys.justPressed.ENTER)
+		if (FlxG.keys.justPressed.ENTER && startedCountdown)
 		{
 			persistentUpdate = false;
 			persistentDraw = true;
@@ -605,7 +646,7 @@ class PlayState extends MusicBeatState
 
 				if (SONG.song.toLowerCase() == 'tutorial')
 				{
-					FlxTween.tween(FlxG.camera, {zoom: 1.3}, (Conductor.stepCrochet * 4 / 1000), {ease: FlxEase.elasticInOut});
+					tweenCamIn();
 				}
 			}
 

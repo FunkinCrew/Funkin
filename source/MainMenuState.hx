@@ -84,7 +84,7 @@ class MainMenuState extends MusicBeatState
 			}
 			else
 			{
-				FlxFlicker.flicker(magenta, 0, 0.40);
+				FlxFlicker.flicker(magenta, 0, 0.30);
 
 				menuItems.forEach(function(spr:FlxSprite)
 				{
