@@ -27,13 +27,15 @@ class TitleState extends MusicBeatState
 	var credGroup:FlxGroup;
 	var credTextShit:Alphabet;
 	var textGroup:FlxGroup;
+	var ngSpr:FlxSprite;
 
 	var wackyIntros:Array<Array<String>> = [
 		['Shoutouts to tom fulp', 'lmao'], ["Ludum dare", "extraordinaire"], ['Cyberzone', 'coming soon'], ['love to thriftman', 'swag'],
 		['ULTIMATE RHYTHM GAMING', 'probably'], ['DOPE ASS GAME', 'playstation magazine'], ['in loving memory of', 'henryeyes'], ['dancin', 'forever'],
-		['Ritz dx', 'rest in peace'], ['rate five', 'do not blam'], ['rhythm gaming', 'ultimate'], ['game of the year', 'forever'],
+		['Ritz dx', 'rest in peace'], ['rate five', 'pls no blam'], ['rhythm gaming', 'ultimate'], ['game of the year', 'forever'],
 		['you already know', 'we really out here'], ['rise and grind', 'love to luis'], ['like parappa', 'but cooler'],
-		['album of the year', 'chuckie finster']];
+		['album of the year', 'chuckie finster'], ["free gitaroo man", "with love to wandaboy"], ['better than geometry dash', 'fight me robtop'],
+		['kiddbrute for president', 'vote now']];
 
 	var curWacky:Array<String> = [];
 
@@ -114,6 +116,13 @@ class TitleState extends MusicBeatState
 		// credTextShit.alignment = CENTER;
 
 		credTextShit.visible = false;
+
+		ngSpr = new FlxSprite(0, FlxG.height * 0.52).loadGraphic(AssetPaths.newgrounds_logo__png);
+		add(ngSpr);
+		ngSpr.visible = false;
+		ngSpr.setGraphicSize(Std.int(ngSpr.width * 0.8));
+		ngSpr.updateHitbox();
+		ngSpr.screenCenter(X);
 
 		FlxTween.tween(credTextShit, {y: credTextShit.y + 20}, 2.9, {ease: FlxEase.quadInOut, type: PINGPONG});
 
@@ -216,9 +225,11 @@ class TitleState extends MusicBeatState
 				createCoolText(['In association', 'with']);
 			case 7:
 				addMoreText('newgrounds');
+				ngSpr.visible = true;
 			// credTextShit.text += '\nNewgrounds';
 			case 8:
 				deleteCoolText();
+				ngSpr.visible = false;
 			// credTextShit.visible = false;
 
 			// credTextShit.text = 'Shoutouts Tom Fulp';

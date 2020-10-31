@@ -111,6 +111,14 @@ class PlayState extends MusicBeatState
 					"If you want to date her...",
 					"You're going to have to go \nthrough ME first!"
 				];
+			case 'fresh':
+				dialogue = ["Not too shabby boy.", ""];
+			case 'dadbattle':
+				dialogue = [
+					"gah you think you're hot stuff?",
+					"If you can beat me here...",
+					"Only then I will even CONSIDER letting you\ndate my daughter!"
+				];
 		}
 
 		if (SONG.song.toLowerCase() == 'spookeez' || SONG.song.toLowerCase() == 'monster' || SONG.song.toLowerCase() == 'south')
