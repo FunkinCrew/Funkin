@@ -32,7 +32,8 @@ class TitleState extends MusicBeatState
 		['Shoutouts to tom fulp', 'lmao'], ["Ludum dare", "extraordinaire"], ['Cyberzone', 'coming soon'], ['love to thriftman', 'swag'],
 		['ULTIMATE RHYTHM GAMING', 'probably'], ['DOPE ASS GAME', 'playstation magazine'], ['in loving memory of', 'henryeyes'], ['dancin', 'forever'],
 		['Ritz dx', 'rest in peace'], ['rate five', 'do not blam'], ['rhythm gaming', 'ultimate'], ['game of the year', 'forever'],
-		['you already know', 'we really out here'], ['rise and grind', 'love to luis'], ['like parappa', 'but cooler']];
+		['you already know', 'we really out here'], ['rise and grind', 'love to luis'], ['like parappa', 'but cooler'],
+		['album of the year', 'chuckie finster']];
 
 	var curWacky:Array<String> = [];
 

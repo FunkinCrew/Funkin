@@ -185,6 +185,7 @@ class StoryMenuState extends MusicBeatState
 			PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase());
 			new FlxTimer().start(1, function(tmr:FlxTimer)
 			{
+				FlxG.sound.music.stop();
 				FlxG.switchState(new PlayState());
 			});
 		}

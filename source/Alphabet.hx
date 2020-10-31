@@ -61,6 +61,7 @@ class Alphabet extends FlxSpriteGroup
 	{
 		doSplitWords();
 
+		var xPos:Float = 0;
 		for (character in splitWords)
 		{
 			// if (character.fastCodeAt() == " ")
@@ -74,10 +75,9 @@ class Alphabet extends FlxSpriteGroup
 
 			if (AlphaCharacter.alphabet.contains(character.toLowerCase()))
 			{
-				var xPos:Float = 0;
 				if (lastSprite != null)
 				{
-					xPos = lastSprite.x + lastSprite.width - 40;
+					xPos = lastSprite.x + lastSprite.width;
 				}
 
 				if (lastWasSpace)
@@ -92,7 +92,9 @@ class Alphabet extends FlxSpriteGroup
 				if (isBold)
 					letter.createBold(character);
 				else
+				{
 					letter.createLetter(character);
+				}
 
 				add(letter);
 
@@ -108,6 +110,8 @@ class Alphabet extends FlxSpriteGroup
 		splitWords = _finalText.split("");
 	}
 
+	public var personTalking:String = 'gf';
+
 	public function startTypedText():Void
 	{
 		_finalText = text;
@@ -118,6 +122,7 @@ class Alphabet extends FlxSpriteGroup
 		var loopNum:Int = 0;
 
 		var xPos:Float = 0;
+		var curRow:Int = 0;
 
 		new FlxTimer().start(0.05, function(tmr:FlxTimer)
 		{
@@ -126,7 +131,8 @@ class Alphabet extends FlxSpriteGroup
 			{
 				yMulti += 1;
 				xPosResetted = true;
-				// xPos = 0;
+				xPos = 0;
+				curRow += 1;
 			}
 
 			if (splitWords[loopNum] == " ")
@@ -134,7 +140,9 @@ class Alphabet extends FlxSpriteGroup
 				lastWasSpace = true;
 			}
 
-			if (AlphaCharacter.alphabet.contains(splitWords[loopNum].toLowerCase()))
+			var isNumber:Bool = AlphaCharacter.numbers.contains(splitWords[loopNum]);
+			var isSymbol:Bool = AlphaCharacter.symbols.contains(splitWords[loopNum]);
+			if (AlphaCharacter.alphabet.contains(splitWords[loopNum].toLowerCase()) || isNumber || isSymbol)
 			{
 				if (lastSprite != null && !xPosResetted)
 				{
@@ -157,14 +165,33 @@ class Alphabet extends FlxSpriteGroup
 
 				// var letter:AlphaCharacter = new AlphaCharacter(30 * loopNum, 0);
 				var letter:AlphaCharacter = new AlphaCharacter(xPos, 55 * yMulti);
+				letter.row = curRow;
 				if (isBold)
 				{
 					letter.createBold(splitWords[loopNum]);
 				}
 				else
 				{
-					letter.createLetter(splitWords[loopNum]);
+					if (isNumber)
+					{
+						letter.createNumber(splitWords[loopNum]);
+					}
+					else if (isSymbol)
+					{
+						letter.createSymbol(splitWords[loopNum]);
+					}
+					else
+					{
+						letter.createLetter(splitWords[loopNum]);
+					}
+
 					letter.x += 90;
+				}
+
+				if (FlxG.random.bool(40))
+				{
+					var daSound:String = "GF_";
+					FlxG.sound.play('assets/sounds/' + daSound + FlxG.random.int(1, 4) + TitleState.soundExt, 0.4);
 				}
 
 				add(letter);
@@ -174,7 +201,7 @@ class Alphabet extends FlxSpriteGroup
 
 			loopNum += 1;
 
-			tmr.time = FlxG.random.float(0.05, 0.12);
+			tmr.time = FlxG.random.float(0.04, 0.09);
 		}, splitWords.length);
 	}
 
@@ -188,8 +215,11 @@ class AlphaCharacter extends FlxSprite
 {
 	public static var alphabet:String = "abcdefghijklmnopqrstuvwxyz";
 
-	var numbers:String = "1234567890";
-	var symbols:String = "|~#$%()*+-:;<=>@[]^_";
+	public static var numbers:String = "1234567890";
+
+	public static var symbols:String = "|~#$%()*+-:;<=>@[]^_.,'!?";
+
+	public var row:Int = 0;
 
 	public function new(x:Float, y:Float)
 	{
@@ -217,6 +247,42 @@ class AlphaCharacter extends FlxSprite
 
 		animation.addByPrefix(letter, letter + " " + letterCase, 24);
 		animation.play(letter);
+		updateHitbox();
+
+		FlxG.log.add('the row' + row);
+
+		y = (110 - height);
+		y += row * 60;
+	}
+
+	public function createNumber(letter:String):Void
+	{
+		animation.addByPrefix(letter, letter, 24);
+		animation.play(letter);
+
+		updateHitbox();
+	}
+
+	public function createSymbol(letter:String)
+	{
+		switch (letter)
+		{
+			case '.':
+				animation.addByPrefix(letter, 'period', 24);
+				animation.play(letter);
+				y += 50;
+			case "'":
+				animation.addByPrefix(letter, 'apostraphie', 24);
+				animation.play(letter);
+				y -= 0;
+			case "?":
+				animation.addByPrefix(letter, 'question mark', 24);
+				animation.play(letter);
+			case "!":
+				animation.addByPrefix(letter, 'exclamation point', 24);
+				animation.play(letter);
+		}
+
 		updateHitbox();
 	}
 }
