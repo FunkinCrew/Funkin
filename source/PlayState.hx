@@ -728,6 +728,8 @@ class PlayState extends MusicBeatState
 			if (storyPlaylist.length <= 0)
 			{
 				FlxG.switchState(new TitleState());
+
+				StoryMenuState.weekUnlocked[1] = true;
 			}
 			else
 			{

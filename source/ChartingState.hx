@@ -18,6 +18,7 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxGroup;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
+import flixel.system.FlxSound;
 import flixel.text.FlxText;
 import flixel.ui.FlxButton;
 import flixel.ui.FlxSpriteButton;
@@ -70,6 +71,8 @@ class ChartingState extends MusicBeatState
 	var curSelectedNote:Array<Dynamic>;
 
 	var tempBpm:Int = 0;
+
+	var vocals:FlxSound;
 
 	override function create()
 	{
@@ -276,12 +279,24 @@ class ChartingState extends MusicBeatState
 	function loadSong(daSong:String):Void
 	{
 		if (FlxG.sound.music != null)
+		{
 			FlxG.sound.music.stop();
+			// vocals.stop();
+		}
 
-		FlxG.sound.playMusic('assets/music/' + daSong + TitleState.soundExt, 0.6);
+		FlxG.sound.playMusic('assets/music/' + daSong + "_Inst" + TitleState.soundExt, 0.6);
+
+		// WONT WORK FOR TUTORIAL! REDO LATER
+		vocals = new FlxSound().loadEmbedded("assets/music/" + daSong + "_Voices" + TitleState.soundExt);
+		FlxG.sound.list.add(vocals);
+
 		FlxG.sound.music.pause();
+		vocals.pause();
+
 		FlxG.sound.music.onComplete = function()
 		{
+			vocals.pause();
+			vocals.time = 0;
 			FlxG.sound.music.pause();
 			FlxG.sound.music.time = 0;
 		};
@@ -430,6 +445,7 @@ class ChartingState extends MusicBeatState
 		{
 			PlayState.SONG = _song;
 			FlxG.sound.music.stop();
+			vocals.stop();
 			FlxG.switchState(new PlayState());
 		}
 
@@ -440,9 +456,13 @@ class ChartingState extends MusicBeatState
 				if (FlxG.sound.music.playing)
 				{
 					FlxG.sound.music.pause();
+					vocals.pause();
 				}
 				else
+				{
+					vocals.play();
 					FlxG.sound.music.play();
+				}
 			}
 
 			if (FlxG.keys.justPressed.R)
@@ -456,6 +476,7 @@ class ChartingState extends MusicBeatState
 			if (FlxG.keys.pressed.W || FlxG.keys.pressed.S)
 			{
 				FlxG.sound.music.pause();
+				vocals.pause();
 
 				var daTime:Float = 700 * FlxG.elapsed;
 
@@ -465,6 +486,8 @@ class ChartingState extends MusicBeatState
 				}
 				else
 					FlxG.sound.music.time += daTime;
+
+				vocals.time = FlxG.sound.music.time;
 			}
 		}
 
@@ -497,6 +520,7 @@ class ChartingState extends MusicBeatState
 			if (updateMusic)
 			{
 				FlxG.sound.music.pause();
+				vocals.pause();
 
 				var daNum:Int = 0;
 				var daLength:Int = 0;
@@ -507,6 +531,7 @@ class ChartingState extends MusicBeatState
 				}
 
 				FlxG.sound.music.time = (daLength - (_song.notes[sec].lengthInSteps)) * Conductor.stepCrochet;
+				vocals.time = FlxG.sound.music.time;
 				updateCurStep();
 			}
 
