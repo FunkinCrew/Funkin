@@ -73,13 +73,15 @@ class TitleState extends MusicBeatState
 			FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.7, new FlxPoint(0, 1),
 				{asset: diamond, width: 32, height: 32}, new FlxRect(0, 0, FlxG.width, FlxG.height));
 
-			initialized = true;
-
 			FlxTransitionableState.defaultTransIn.tileData = {asset: diamond, width: 32, height: 32};
 			FlxTransitionableState.defaultTransOut.tileData = {asset: diamond, width: 32, height: 32};
 
 			transIn = FlxTransitionableState.defaultTransIn;
 			transOut = FlxTransitionableState.defaultTransOut;
+
+			FlxG.sound.playMusic('assets/music/freakyMenu' + TitleState.soundExt, 0);
+
+			FlxG.sound.music.fadeIn(4, 0, 0.7);
 		}
 
 		persistentUpdate = true;
@@ -126,11 +128,12 @@ class TitleState extends MusicBeatState
 
 		FlxTween.tween(credTextShit, {y: credTextShit.y + 20}, 2.9, {ease: FlxEase.quadInOut, type: PINGPONG});
 
+		if (initialized)
+			skipIntro();
+		else
+			initialized = true;
+
 		// credGroup.add(credTextShit);
-
-		FlxG.sound.playMusic('assets/music/freakyMenu' + TitleState.soundExt, 0);
-
-		FlxG.sound.music.fadeIn(4, 0, 0.7);
 	}
 
 	var transitioning:Bool = false;
@@ -149,14 +152,10 @@ class TitleState extends MusicBeatState
 				pressedEnter = true;
 		}
 
-		if (pressedEnter && !skippedIntro)
-		{
-			skipIntro();
-		}
-
 		if (pressedEnter && !transitioning && skippedIntro)
 		{
 			FlxG.camera.flash(FlxColor.WHITE, 1);
+			FlxG.sound.play('assets/sounds/confirmMenu' + TitleState.soundExt, 0.7);
 
 			transitioning = true;
 			// FlxG.sound.music.stop();
@@ -166,6 +165,11 @@ class TitleState extends MusicBeatState
 				FlxG.switchState(new MainMenuState());
 			});
 			// FlxG.sound.play('assets/music/titleShoot' + TitleState.soundExt, 0.7);
+		}
+
+		if (pressedEnter && !skippedIntro)
+		{
+			skipIntro();
 		}
 
 		super.update(elapsed);
@@ -265,6 +269,8 @@ class TitleState extends MusicBeatState
 	{
 		if (!skippedIntro)
 		{
+			remove(ngSpr);
+
 			FlxG.camera.flash(FlxColor.WHITE, 4);
 			remove(credGroup);
 			skippedIntro = true;
