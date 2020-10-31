@@ -34,20 +34,26 @@ class Alphabet extends FlxSpriteGroup
 
 	var splitWords:Array<String> = [];
 
+	var isBold:Bool = false;
+
 	public function new(x:Float, y:Float, text:String = "", ?bold:Bool = false, typed:Bool = false)
 	{
 		super(x, y);
 
 		_finalText = text;
 		this.text = text;
+		isBold = bold;
 
-		if (typed)
+		if (text != "")
 		{
-			startTypedText();
-		}
-		else
-		{
-			addText();
+			if (typed)
+			{
+				startTypedText();
+			}
+			else
+			{
+				addText();
+			}
 		}
 	}
 
@@ -71,7 +77,7 @@ class Alphabet extends FlxSpriteGroup
 				var xPos:Float = 0;
 				if (lastSprite != null)
 				{
-					xPos = lastSprite.x + lastSprite.frameWidth;
+					xPos = lastSprite.x + lastSprite.width - 40;
 				}
 
 				if (lastWasSpace)
@@ -82,7 +88,12 @@ class Alphabet extends FlxSpriteGroup
 
 				// var letter:AlphaCharacter = new AlphaCharacter(30 * loopNum, 0);
 				var letter:AlphaCharacter = new AlphaCharacter(xPos, 0);
-				letter.createBold(character);
+
+				if (isBold)
+					letter.createBold(character);
+				else
+					letter.createLetter(character);
+
 				add(letter);
 
 				lastSprite = letter;
@@ -106,10 +117,10 @@ class Alphabet extends FlxSpriteGroup
 
 		var loopNum:Int = 0;
 
+		var xPos:Float = 0;
+
 		new FlxTimer().start(0.05, function(tmr:FlxTimer)
 		{
-			var xPos:Float = 0;
-
 			// trace(_finalText.fastCodeAt(loopNum) + " " + _finalText.charAt(loopNum));
 			if (_finalText.fastCodeAt(loopNum) == "\n".code)
 			{
@@ -118,22 +129,44 @@ class Alphabet extends FlxSpriteGroup
 				// xPos = 0;
 			}
 
+			if (splitWords[loopNum] == " ")
+			{
+				lastWasSpace = true;
+			}
+
 			if (AlphaCharacter.alphabet.contains(splitWords[loopNum].toLowerCase()))
 			{
 				if (lastSprite != null && !xPosResetted)
 				{
-					xPos = lastSprite.x + lastSprite.frameWidth - 40;
+					lastSprite.updateHitbox();
+					xPos += lastSprite.width + 3;
+					// if (isBold)
+					// xPos -= 80;
 				}
 				else
 				{
 					xPosResetted = false;
 				}
 
+				if (lastWasSpace)
+				{
+					xPos += 20;
+					lastWasSpace = false;
+				}
 				// trace(_finalText.fastCodeAt(loopNum) + " " + _finalText.charAt(loopNum));
 
 				// var letter:AlphaCharacter = new AlphaCharacter(30 * loopNum, 0);
 				var letter:AlphaCharacter = new AlphaCharacter(xPos, 55 * yMulti);
-				letter.createBold(splitWords[loopNum]);
+				if (isBold)
+				{
+					letter.createBold(splitWords[loopNum]);
+				}
+				else
+				{
+					letter.createLetter(splitWords[loopNum]);
+					letter.x += 90;
+				}
+
 				add(letter);
 
 				lastSprite = letter;
@@ -141,7 +174,7 @@ class Alphabet extends FlxSpriteGroup
 
 			loopNum += 1;
 
-			tmr.time = FlxG.random.float(0.03, 0.09);
+			tmr.time = FlxG.random.float(0.05, 0.12);
 		}, splitWords.length);
 	}
 
@@ -184,5 +217,6 @@ class AlphaCharacter extends FlxSprite
 
 		animation.addByPrefix(letter, letter + " " + letterCase, 24);
 		animation.play(letter);
+		updateHitbox();
 	}
 }
