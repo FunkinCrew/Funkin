@@ -735,6 +735,10 @@ class PlayState extends MusicBeatState
 				FlxG.switchState(new PlayState());
 			}
 		}
+		else
+		{
+			FlxG.switchState(new FreeplayState());
+		}
 	}
 
 	var endingSong:Bool = false;
