@@ -781,7 +781,7 @@ class PlayState extends MusicBeatState
 				{
 					if (daNote.tooLate)
 					{
-						health -= 0.03;
+						health -= 0.04;
 						vocals.volume = 0;
 					}
 
@@ -1084,7 +1084,7 @@ class PlayState extends MusicBeatState
 	{
 		if (!boyfriend.stunned)
 		{
-			health -= 0.055;
+			health -= 0.06;
 			if (combo > 5)
 			{
 				gf.playAnim('sad');
@@ -1180,9 +1180,9 @@ class PlayState extends MusicBeatState
 			}
 
 			if (note.noteData >= 0)
-				health += 0.03;
+				health += 0.023;
 			else
-				health += 0.007;
+				health += 0.004;
 
 			switch (note.noteData)
 			{
