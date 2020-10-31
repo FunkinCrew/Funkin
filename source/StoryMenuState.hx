@@ -6,6 +6,7 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxGroup;
 import flixel.text.FlxText;
+import flixel.util.FlxTimer;
 
 using StringTools;
 
@@ -13,7 +14,7 @@ class StoryMenuState extends MusicBeatState
 {
 	var scoreText:FlxText;
 
-	var weekData:Array<Dynamic> = [['Tutorial', 'Bopeebo', 'Fresh', 'Dad Battle'], ['Spookeez', 'South', 'Monster']];
+	var weekData:Array<Dynamic> = [['Tutorial', 'Bopeebo', 'Fresh', 'Dadbattle'], ['Spookeez', 'South', 'Monster']];
 	var weekUnlocked:Array<Bool> = [true, false];
 	var weekCharacters:Array<Dynamic> = [['dad', 'bf', 'gf'], ['spooky', 'bf', 'gf']];
 	var curWeek:Int = 0;
@@ -151,12 +152,38 @@ class StoryMenuState extends MusicBeatState
 			lock.y = grpWeekText.members[lock.ID].y;
 		});
 
-		if (controls.UP_P)
-			changeWeek(-1);
-		if (controls.DOWN_P)
-			changeWeek(1);
+		if (!selectedWeek)
+		{
+			if (controls.UP_P)
+				changeWeek(-1);
+			if (controls.DOWN_P)
+				changeWeek(1);
+		}
+
+		if (controls.ACCEPT)
+			selectWeek();
 
 		super.update(elapsed);
+	}
+
+	var selectedWeek:Bool = false;
+
+	function selectWeek()
+	{
+		if (weekUnlocked[curWeek])
+		{
+			grpWeekText.members[curWeek].week.animation.resume();
+			grpWeekCharacters.members[1].animation.play('bfConfirm');
+
+			PlayState.storyPlaylist = weekData[curWeek];
+			PlayState.isStoryMode = true;
+			selectedWeek = true;
+			PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase());
+			new FlxTimer().start(1, function(tmr:FlxTimer)
+			{
+				FlxG.switchState(new PlayState());
+			});
+		}
 	}
 
 	function changeWeek(change:Int = 0):Void
@@ -181,6 +208,9 @@ class StoryMenuState extends MusicBeatState
 
 	function updateText()
 	{
+		grpWeekCharacters.members[0].animation.play(weekCharacters[curWeek][0]);
+		grpWeekCharacters.members[1].animation.play(weekCharacters[curWeek][1]);
+		grpWeekCharacters.members[2].animation.play(weekCharacters[curWeek][2]);
 		txtTracklist.text = "Tracks\n";
 
 		var stringThing:Array<String> = weekData[curWeek];
