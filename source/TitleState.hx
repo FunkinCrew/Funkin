@@ -28,6 +28,14 @@ class TitleState extends MusicBeatState
 	var credTextShit:Alphabet;
 	var textGroup:FlxGroup;
 
+	var wackyIntros:Array<Array<String>> = [
+		['Shoutouts to tom fulp', 'lmao'], ["Ludum dare", "extraordinaire"], ['Cyberzone', 'coming soon'], ['love to thriftman', 'swag'],
+		['ULTIMATE RHYTHM GAMING', 'probably'], ['DOPE ASS GAME', 'playstation magazine'], ['in loving memory of', 'henryeyes'], ['dancin', 'forever'],
+		['Ritz dx', 'rest in peace'], ['rate five', 'do not blam'], ['rhythm gaming', 'ultimate'], ['game of the year', 'forever'],
+		['you already know', 'we really out here'], ['rise and grind', 'love to luis'], ['like parappa', 'but cooler']];
+
+	var curWacky:Array<String> = [];
+
 	override public function create():Void
 	{
 		#if (!web)
@@ -36,12 +44,14 @@ class TitleState extends MusicBeatState
 
 		PlayerSettings.init();
 
+		curWacky = FlxG.random.getObject(wackyIntros);
+
 		// DEBUG BULLSHIT
 
 		super.create();
 
 		#if SKIP_TO_PLAYSTATE
-		FlxG.switchState(new FreeplayState());
+		FlxG.switchState(new MainMenuState());
 		#else
 		startIntro();
 		#end
@@ -55,9 +65,9 @@ class TitleState extends MusicBeatState
 			diamond.persist = true;
 			diamond.destroyOnNoUse = false;
 
-			FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 2, new FlxPoint(0, -1), {asset: diamond, width: 32, height: 32},
+			FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 1, new FlxPoint(0, -1), {asset: diamond, width: 32, height: 32},
 				new FlxRect(0, 0, FlxG.width, FlxG.height));
-			FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 1.3, new FlxPoint(0, 1),
+			FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.7, new FlxPoint(0, 1),
 				{asset: diamond, width: 32, height: 32}, new FlxRect(0, 0, FlxG.width, FlxG.height));
 
 			initialized = true;
@@ -108,7 +118,7 @@ class TitleState extends MusicBeatState
 
 		// credGroup.add(credTextShit);
 
-		FlxG.sound.playMusic('assets/music/freakyMenu' + TitleState.soundExt, 0, false);
+		FlxG.sound.playMusic('assets/music/freakyMenu' + TitleState.soundExt, 0);
 
 		FlxG.sound.music.fadeIn(4, 0, 0.7);
 	}
@@ -139,13 +149,13 @@ class TitleState extends MusicBeatState
 			FlxG.camera.flash(FlxColor.WHITE, 1);
 
 			transitioning = true;
-			FlxG.sound.music.stop();
+			// FlxG.sound.music.stop();
 
 			new FlxTimer().start(2, function(tmr:FlxTimer)
 			{
-				FlxG.switchState(new StoryMenuState());
+				FlxG.switchState(new MainMenuState());
 			});
-			FlxG.sound.play('assets/music/titleShoot' + TitleState.soundExt, 0.7);
+			// FlxG.sound.play('assets/music/titleShoot' + TitleState.soundExt, 0.7);
 		}
 
 		super.update(elapsed);
@@ -213,10 +223,10 @@ class TitleState extends MusicBeatState
 			// credTextShit.text = 'Shoutouts Tom Fulp';
 			// credTextShit.screenCenter();
 			case 9:
-				createCoolText(['Shoutouts Tom Fulp']);
+				createCoolText([curWacky[0]]);
 			// credTextShit.visible = true;
 			case 11:
-				addMoreText('lmao');
+				addMoreText(curWacky[1]);
 			// credTextShit.text += '\nlmao';
 			case 12:
 				deleteCoolText();
