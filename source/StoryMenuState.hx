@@ -156,20 +156,30 @@ class StoryMenuState extends MusicBeatState
 			lock.y = grpWeekText.members[lock.ID].y;
 		});
 
-		if (!selectedWeek)
+		if (!movedBack)
 		{
-			if (controls.UP_P)
-				changeWeek(-1);
-			if (controls.DOWN_P)
-				changeWeek(1);
+			if (!selectedWeek)
+			{
+				if (controls.UP_P)
+					changeWeek(-1);
+				if (controls.DOWN_P)
+					changeWeek(1);
+			}
+
+			if (controls.ACCEPT)
+				selectWeek();
 		}
 
-		if (controls.ACCEPT)
-			selectWeek();
+		if (controls.BACK && !movedBack && !selectedWeek)
+		{
+			movedBack = true;
+			FlxG.switchState(new MainMenuState());
+		}
 
 		super.update(elapsed);
 	}
 
+	var movedBack:Bool = false;
 	var selectedWeek:Bool = false;
 
 	function selectWeek()
