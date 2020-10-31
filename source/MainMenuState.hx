@@ -76,9 +76,21 @@ class MainMenuState extends MusicBeatState
 	override function update(elapsed:Float)
 	{
 		if (controls.UP_P)
+		{
+			FlxG.sound.play('assets/sounds/scrollMenu' + TitleState.soundExt);
 			changeItem(-1);
+		}
+
 		if (controls.DOWN_P)
+		{
+			FlxG.sound.play('assets/sounds/scrollMenu' + TitleState.soundExt);
 			changeItem(1);
+		}
+
+		if (controls.BACK)
+		{
+			FlxG.switchState(new TitleState());
+		}
 
 		super.update(elapsed);
 
@@ -90,6 +102,8 @@ class MainMenuState extends MusicBeatState
 			}
 			else
 			{
+				FlxG.sound.play('assets/sounds/confirmMenu' + TitleState.soundExt);
+
 				FlxFlicker.flicker(magenta, 1.1, 0.15, false);
 
 				menuItems.forEach(function(spr:FlxSprite)
