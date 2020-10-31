@@ -41,7 +41,7 @@ class TitleState extends MusicBeatState
 		super.create();
 
 		#if SKIP_TO_PLAYSTATE
-		FlxG.switchState(new StoryMenuState());
+		FlxG.switchState(new FreeplayState());
 		#else
 		startIntro();
 		#end
@@ -143,7 +143,7 @@ class TitleState extends MusicBeatState
 
 			new FlxTimer().start(2, function(tmr:FlxTimer)
 			{
-				FlxG.switchState(new FreeplayState());
+				FlxG.switchState(new StoryMenuState());
 			});
 			FlxG.sound.play('assets/music/titleShoot' + TitleState.soundExt, 0.7);
 		}
