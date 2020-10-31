@@ -16,7 +16,7 @@
 	<SubTexture name="BF idle dance white0011" x="1669" y="0" width="408" height="412" frameX="-2" frameY="0" frameWidth="411" frameHeight="412"/>
 	<SubTexture name="BF idle dance white0012" x="1669" y="0" width="408" height="412" frameX="-2" frameY="0" frameWidth="411" frameHeight="412"/>
 	<SubTexture name="BF idle dance white0013" x="1669" y="0" width="408" height="412" frameX="-2" frameY="0" frameWidth="411" frameHeight="412"/>
-	<SubTexture name="Dad idle dance BLACK LINE0000" x="2087" y="0" width="429" height="759" frameX="0" frameY="-8" frameWidth="429" frameHeight="767"/>
+	<SubTexture name="c0000" x="2087" y="0" width="429" height="759" frameX="0" frameY="-8" frameWidth="429" frameHeight="767"/>
 	<SubTexture name="Dad idle dance BLACK LINE0001" x="2087" y="0" width="429" height="759" frameX="0" frameY="-8" frameWidth="429" frameHeight="767"/>
 	<SubTexture name="Dad idle dance BLACK LINE0002" x="2526" y="0" width="424" height="757" frameX="-2" frameY="-10" frameWidth="429" frameHeight="767"/>
 	<SubTexture name="Dad idle dance BLACK LINE0003" x="2526" y="0" width="424" height="757" frameX="-2" frameY="-10" frameWidth="429" frameHeight="767"/>

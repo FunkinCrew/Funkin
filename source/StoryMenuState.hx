@@ -15,12 +15,13 @@ class StoryMenuState extends MusicBeatState
 
 	var weekData:Array<Dynamic> = [['Tutorial', 'Bopeebo', 'Fresh', 'Dad Battle'], ['Spookeez', 'South', 'Monster']];
 	var weekUnlocked:Array<Bool> = [true, false];
-
+	var weekCharacters:Array<Dynamic> = [['dad', 'bf', 'gf'], ['spooky', 'bf', 'gf']];
 	var curWeek:Int = 0;
 
 	var txtTracklist:FlxText;
 
 	var grpWeekText:FlxTypedGroup<MenuItem>;
+	var grpWeekCharacters:FlxTypedGroup<MenuCharacter>;
 
 	var grpLocks:FlxTypedGroup<FlxSprite>;
 
@@ -30,20 +31,20 @@ class StoryMenuState extends MusicBeatState
 	{
 		scoreText = new FlxText(10, 10, 0, "SCORE: 49324858", 36);
 		scoreText.setFormat("VCR OSD Mono", 32);
-		add(scoreText);
 
 		var rankText:FlxText = new FlxText(0, 10);
 		rankText.text = 'RANK: GREAT';
 		rankText.setFormat("assets/fonts/vcr.ttf", 32);
 		rankText.size = scoreText.size;
 		rankText.screenCenter(X);
-		add(rankText);
 
 		var ui_tex = FlxAtlasFrames.fromSparrow(AssetPaths.campaign_menu_UI_assets__png, AssetPaths.campaign_menu_UI_assets__xml);
 		var yellowBG:FlxSprite = new FlxSprite(0, 56).makeGraphic(FlxG.width, 400, 0xFFF9CF51);
 
 		grpWeekText = new FlxTypedGroup<MenuItem>();
 		add(grpWeekText);
+
+		grpWeekCharacters = new FlxTypedGroup<MenuCharacter>();
 
 		grpLocks = new FlxTypedGroup<FlxSprite>();
 		add(grpLocks);
@@ -76,6 +77,28 @@ class StoryMenuState extends MusicBeatState
 			}
 		}
 
+		for (char in 0...3)
+		{
+			var weekCharacterThing:MenuCharacter = new MenuCharacter((FlxG.width * 0.25) * (1 + char) - 150, weekCharacters[curWeek][char]);
+			weekCharacterThing.y += 70;
+			weekCharacterThing.antialiasing = true;
+			switch (weekCharacterThing.character)
+			{
+				case 'dad':
+					weekCharacterThing.setGraphicSize(Std.int(weekCharacterThing.width * 0.5));
+					weekCharacterThing.updateHitbox();
+
+				case 'bf':
+					weekCharacterThing.setGraphicSize(Std.int(weekCharacterThing.width * 0.9));
+					weekCharacterThing.updateHitbox();
+				case 'gf':
+					weekCharacterThing.setGraphicSize(Std.int(weekCharacterThing.width * 0.5));
+					weekCharacterThing.updateHitbox();
+			}
+
+			grpWeekCharacters.add(weekCharacterThing);
+		}
+
 		difficultySelectors = new FlxGroup();
 		add(difficultySelectors);
 
@@ -100,12 +123,15 @@ class StoryMenuState extends MusicBeatState
 		difficultySelectors.add(rightArrow);
 
 		add(yellowBG);
+		add(grpWeekCharacters);
 
 		txtTracklist = new FlxText(FlxG.width * 0.05, yellowBG.x + yellowBG.height + 100, 0, "Tracks", 32);
 		txtTracklist.alignment = CENTER;
 		txtTracklist.font = rankText.font;
 		txtTracklist.color = 0xFFe55777;
 		add(txtTracklist);
+		add(rankText);
+		add(scoreText);
 
 		updateText();
 
