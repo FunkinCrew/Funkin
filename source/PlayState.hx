@@ -38,6 +38,7 @@ class PlayState extends MusicBeatState
 	public static var SONG:SwagSong;
 	public static var isStoryMode:Bool = false;
 	public static var storyPlaylist:Array<String> = [];
+	public static var storyDifficulty:Int = 1;
 
 	var halloweenLevel:Bool = false;
 
@@ -257,7 +258,9 @@ class PlayState extends MusicBeatState
 		// healthBar.visible = healthHeads.visible = healthBarBG.visible = false;
 		if (isStoryMode)
 		{
-			add(doof);
+			// TEMP for now, later get rid of startCountdown()
+			// add(doof);
+			startCountdown();
 		}
 		else
 			startCountdown();
@@ -814,7 +817,15 @@ class PlayState extends MusicBeatState
 			}
 			else
 			{
-				PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase());
+				var difficulty:String = "";
+
+				if (storyDifficulty == 0)
+					difficulty = '-easy';
+
+				if (storyDifficulty == 2)
+					difficulty == '-hard';
+
+				PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + difficulty, PlayState.storyPlaylist[0]);
 				FlxG.switchState(new PlayState());
 			}
 		}
