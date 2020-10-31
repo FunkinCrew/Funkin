@@ -35,6 +35,8 @@ class PlayState extends MusicBeatState
 {
 	public static var curLevel:String = 'Bopeebo';
 	public static var SONG:SwagSong;
+	public static var isStoryMode:Bool = false;
+	public static var storyPlaylist:Array<String> = [];
 
 	private var vocals:FlxSound;
 
@@ -278,7 +280,8 @@ class PlayState extends MusicBeatState
 		lastReportedPlayheadPosition = 0;
 
 		startingSong = false;
-		FlxG.sound.playMusic("assets/music/" + SONG.song + "_Inst" + TitleState.soundExt);
+		FlxG.sound.playMusic("assets/music/" + SONG.song + "_Inst" + TitleState.soundExt, 1, false);
+		FlxG.sound.music.onComplete = endSong;
 		vocals.play();
 	}
 
@@ -606,9 +609,9 @@ class PlayState extends MusicBeatState
 				case 112:
 					gfSpeed = 1;
 				case 163:
-					FlxG.sound.music.stop();
-					curLevel = 'Bopeebo';
-					FlxG.switchState(new TitleState());
+					// FlxG.sound.music.stop();
+					// curLevel = 'Bopeebo';
+					// FlxG.switchState(new TitleState());
 			}
 		}
 
@@ -617,9 +620,9 @@ class PlayState extends MusicBeatState
 			switch (totalBeats)
 			{
 				case 127:
-					FlxG.sound.music.stop();
-					curLevel = 'Fresh';
-					FlxG.switchState(new PlayState());
+					// FlxG.sound.music.stop();
+					// curLevel = 'Fresh';
+					// FlxG.switchState(new PlayState());
 			}
 		}
 		// better streaming of shit
@@ -713,6 +716,28 @@ class PlayState extends MusicBeatState
 
 		keyShit();
 	}
+
+	function endSong():Void
+	{
+		trace('SONG DONE' + isStoryMode);
+
+		if (isStoryMode)
+		{
+			storyPlaylist.remove(storyPlaylist[0]);
+
+			if (storyPlaylist.length <= 0)
+			{
+				FlxG.switchState(new TitleState());
+			}
+			else
+			{
+				PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase());
+				FlxG.switchState(new PlayState());
+			}
+		}
+	}
+
+	var endingSong:Bool = false;
 
 	private function popUpScore(strumtime:Float):Void
 	{
@@ -1131,21 +1156,24 @@ class PlayState extends MusicBeatState
 			notes.sort(FlxSort.byY, FlxSort.DESCENDING);
 		}
 
-		FlxG.log.add('change bpm' + SONG.notes[Std.int(curStep / 16)].changeBPM);
-		if (SONG.notes[Std.int(curStep / 16)].changeBPM)
+		if (SONG.notes[Math.floor(curStep / 16)] != null)
 		{
-			Conductor.changeBPM(SONG.notes[Std.int(curStep / 16)].bpm);
-			FlxG.log.add('CHANGED BPM!');
+			if (SONG.notes[Math.floor(curStep / 16)].changeBPM)
+			{
+				Conductor.changeBPM(SONG.notes[Math.floor(curStep / 16)].bpm);
+				FlxG.log.add('CHANGED BPM!');
+			}
+			else
+				Conductor.changeBPM(SONG.bpm);
+
+			// Dad doesnt interupt his own notes
+			if (SONG.notes[Math.floor(curStep / 16)].mustHitSection)
+				dad.dance();
 		}
-		else
-			Conductor.changeBPM(SONG.bpm);
+		// FlxG.log.add('change bpm' + SONG.notes[Std.int(curStep / 16)].changeBPM);
 
 		if (camZooming && FlxG.camera.zoom < 1.35 && totalBeats % 4 == 0)
 			FlxG.camera.zoom += 0.025;
-
-		// Dad doesnt interupt his own notes
-		if (SONG.notes[Std.int(curStep / 16)].mustHitSection)
-			dad.dance();
 
 		healthHeads.setGraphicSize(Std.int(healthHeads.width + 20));
 
