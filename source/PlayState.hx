@@ -602,6 +602,9 @@ class PlayState extends MusicBeatState
 		healthHeads.setGraphicSize(Std.int(FlxMath.lerp(100, healthHeads.width, 0.98)));
 		healthHeads.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (healthHeads.width / 2);
 
+		if (health > 2)
+			health = 2;
+
 		if (healthBar.percent < 20)
 			healthHeads.animation.play('unhealthy');
 		else
@@ -811,7 +814,9 @@ class PlayState extends MusicBeatState
 
 			if (storyPlaylist.length <= 0)
 			{
-				FlxG.switchState(new TitleState());
+				FlxG.sound.playMusic('assets/music/freakyMenu' + TitleState.soundExt);
+
+				FlxG.switchState(new StoryMenuState());
 
 				StoryMenuState.weekUnlocked[1] = true;
 			}
