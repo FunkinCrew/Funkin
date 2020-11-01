@@ -278,7 +278,7 @@ class Controls extends FlxActionSet
 	 * @param func
 	 * @return ->Void)
 	 */
-	function forEachBound(control:Control, func:(FlxActionDigital, FlxInputState) -> Void)
+	 function forEachBound(control:Control, func:FlxActionDigital -> Void, func:FlxInputState -> Void)
 	{
 		switch (control)
 		{
