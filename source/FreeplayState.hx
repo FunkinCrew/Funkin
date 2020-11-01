@@ -77,7 +77,7 @@ class FreeplayState extends MusicBeatState
 
 		if (controls.BACK)
 		{
-			FlxG.switchState(new StoryMenuState());
+			FlxG.switchState(new MainMenuState());
 		}
 
 		if (accepted)

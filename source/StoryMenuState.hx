@@ -275,9 +275,11 @@ class StoryMenuState extends MusicBeatState
 		}
 
 		sprDifficulty.alpha = 0;
-		sprDifficulty.y -= 15;
 
-		FlxTween.tween(sprDifficulty, {y: sprDifficulty.y + 15, alpha: 1}, 0.07);
+		// USING THESE WEIRD VALUES SO THAT IT DOESNT FLOAT UP
+		sprDifficulty.y = leftArrow.y - 15;
+
+		FlxTween.tween(sprDifficulty, {y: leftArrow.y + 15, alpha: 1}, 0.07);
 	}
 
 	function changeWeek(change:Int = 0):Void
