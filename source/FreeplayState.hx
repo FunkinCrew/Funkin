@@ -3,47 +3,59 @@ package;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.addons.display.FlxGridOverlay;
+import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
-
-#if switch
-	import openfl.events.GameInputEvent;
-	import openfl.ui.GameInput;
-	import openfl.ui.GameInputDevice;
-	import openfl.ui.GameInputControl;
-#end
 
 class FreeplayState extends MusicBeatState
 {
-	var songs:Array<String> = ["Bopeebo", "Dadbattle", "Fresh", "Tutorial", "Spookeez", "South", "Monster"];
+	var songs:Array<String> = ["Bopeebo", "Dadbattle", "Fresh", "Tutorial"];
 
 	var selector:FlxText;
 	var curSelected:Int = 0;
 
+	private var grpSongs:FlxTypedGroup<Alphabet>;
+
 	override function create()
 	{
+		if (!FlxG.sound.music.playing)
+			FlxG.sound.playMusic('assets/music/freakyMenu' + TitleState.soundExt);
+
+		if (StoryMenuState.weekUnlocked[1])
+		{
+			songs.push('Spookeez');
+			songs.push('South');
+		}
+
 		// LOAD MUSIC
 
 		// LOAD CHARACTERS
 
-		var bg:FlxSprite = FlxGridOverlay.create(20, 20);
+		var bg:FlxSprite = new FlxSprite().loadGraphic(AssetPaths.menuBGBlue__png);
 		add(bg);
+
+		grpSongs = new FlxTypedGroup<Alphabet>();
+		add(grpSongs);
 
 		for (i in 0...songs.length)
 		{
 			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, songs[i], true, false);
-			add(songText);
-			songText.x += 40;
+			songText.isMenuItem = true;
+			songText.targetY = i;
+			grpSongs.add(songText);
+			// songText.x += 40;
 			// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
 			// songText.screenCenter(X);
 		}
 
-		FlxG.sound.playMusic('assets/music/title' + TitleState.soundExt, 0);
-		FlxG.sound.music.fadeIn(2, 0, 0.8);
+		changeSelection();
+
+		// FlxG.sound.playMusic('assets/music/title' + TitleState.soundExt, 0);
+		// FlxG.sound.music.fadeIn(2, 0, 0.8);
 		selector = new FlxText();
 
 		selector.size = 40;
 		selector.text = ">";
-		add(selector);
+		// add(selector);
 
 		var swag:Alphabet = new Alphabet(1, 0, "swag");
 
@@ -59,47 +71,53 @@ class FreeplayState extends MusicBeatState
 
 		if (upP)
 		{
-			curSelected -= 1;
+			changeSelection(-1);
 		}
 		if (downP)
 		{
-			curSelected += 1;
+			changeSelection(1);
 		}
 
-		#if switch
-			if (gamepad.anyJustPressed(["UP", "DPAD_UP", "LEFT_STICK_DIGITAL_UP"]))
-			{
-				curSelected -= 1;
-			}
-			if (gamepad.anyJustPressed(["DOWN", "DPAD_DOWN", "LEFT_STICK_DIGITAL_DOWN"]))
-			{
-				curSelected += 1;
-			}
-		#end
+		if (controls.BACK)
+		{
+			FlxG.switchState(new MainMenuState());
+		}
+
+		if (accepted)
+		{
+			PlayState.SONG = Song.loadFromJson(songs[curSelected].toLowerCase(), songs[curSelected].toLowerCase());
+			PlayState.isStoryMode = false;
+			FlxG.switchState(new PlayState());
+			FlxG.sound.music.stop();
+		}
+	}
+
+	function changeSelection(change:Int = 0)
+	{
+		curSelected += change;
 
 		if (curSelected < 0)
 			curSelected = songs.length - 1;
 		if (curSelected >= songs.length)
 			curSelected = 0;
 
-		selector.y = (70 * curSelected) + 30;
+		// selector.y = (70 * curSelected) + 30;
 
-		if (accepted)
+		var bullShit:Int = 0;
+
+		for (item in grpSongs.members)
 		{
-			PlayState.SONG = Song.loadFromJson(songs[curSelected].toLowerCase());
-			PlayState.isStoryMode = false;
-			FlxG.switchState(new PlayState());
-			FlxG.sound.music.stop();
-		}
+			item.targetY = bullShit - curSelected;
+			bullShit++;
 
-		#if switch
-			if (gamepad.anyJustPressed(["B"])) //"B" is swapped with "A" on Switch
+			item.alpha = 0.6;
+			// item.setGraphicSize(Std.int(item.width * 0.8));
+
+			if (item.targetY == 0)
 			{
-				PlayState.SONG = Song.loadFromJson(songs[curSelected].toLowerCase());
-				PlayState.isStoryMode = false;
-				FlxG.switchState(new PlayState());
-				FlxG.sound.music.stop();
+				item.alpha = 1;
+				// item.setGraphicSize(Std.int(item.width));
 			}
-		#end
+		}
 	}
 }
