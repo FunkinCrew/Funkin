@@ -78,6 +78,7 @@ class PlayState extends MusicBeatState
 	var dialogue:Array<String> = ['blah blah blah', 'coolswag'];
 
 	var halloweenBG:FlxSprite;
+	var isHalloween:Bool = false;
 
 	var talking:Bool = true;
 	var songScore:Int = 0;
@@ -136,6 +137,8 @@ class PlayState extends MusicBeatState
 			halloweenBG.animation.play('idle');
 			halloweenBG.antialiasing = true;
 			add(halloweenBG);
+
+			isHalloween = true;
 		}
 		else
 		{
@@ -600,7 +603,8 @@ class PlayState extends MusicBeatState
 		// FlxG.watch.addQuick('VOL', vocals.amplitudeLeft);
 		// FlxG.watch.addQuick('VOLRight', vocals.amplitudeRight);
 
-		healthHeads.setGraphicSize(Std.int(FlxMath.lerp(100, healthHeads.width, 0.98)));
+		healthHeads.setGraphicSize(Std.int(FlxMath.lerp(150, healthHeads.width, 0.50)));
+		healthHeads.updateHitbox();
 		healthHeads.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (healthHeads.width / 2);
 
 		if (health > 2)
@@ -613,8 +617,11 @@ class PlayState extends MusicBeatState
 
 		/* if (FlxG.keys.justPressed.NINE)
 			FlxG.switchState(new Charting()); */
-		// if (FlxG.keys.justPressed.EIGHT)
-		// FlxG.switchState(new AnimationDebug(SONG.player2));
+
+		#if debug
+		if (FlxG.keys.justPressed.EIGHT)
+			FlxG.switchState(new AnimationDebug(SONG.player1));
+		#end
 
 		if (startingSong)
 		{
@@ -678,7 +685,8 @@ class PlayState extends MusicBeatState
 
 		if (camZooming)
 		{
-			FlxG.camera.zoom = FlxMath.lerp(1.05, FlxG.camera.zoom, 0.96);
+			FlxG.camera.zoom = FlxMath.lerp(1.05, FlxG.camera.zoom, 0.95);
+			camHUD.zoom = FlxMath.lerp(1, camHUD.zoom, 0.95);
 		}
 
 		FlxG.watch.addQuick("beatShit", totalBeats);
@@ -760,6 +768,9 @@ class PlayState extends MusicBeatState
 
 				if (!daNote.mustPress && daNote.wasGoodHit)
 				{
+					if (SONG.song != 'Tutorial')
+						camZooming = true;
+
 					switch (Math.abs(daNote.noteData))
 					{
 						case 2:
@@ -1247,6 +1258,18 @@ class PlayState extends MusicBeatState
 		}
 	}
 
+	function lightningStrikeShit():Void
+	{
+		FlxG.sound.play('assets/sounds/thunder_' + FlxG.random.int(1, 2) + TitleState.soundExt);
+		halloweenBG.animation.play('lightning');
+
+		lightningStrikeBeat = curBeat;
+		lightningOffset = FlxG.random.int(8, 24);
+
+		boyfriend.playAnim('scared', true);
+		gf.playAnim('scared', true);
+	}
+
 	override function stepHit()
 	{
 		if (SONG.needsVoices)
@@ -1267,6 +1290,9 @@ class PlayState extends MusicBeatState
 
 		super.stepHit();
 	}
+
+	var lightningStrikeBeat:Int = 0;
+	var lightningOffset:Int = 8;
 
 	override function beatHit()
 	{
@@ -1294,9 +1320,13 @@ class PlayState extends MusicBeatState
 		// FlxG.log.add('change bpm' + SONG.notes[Std.int(curStep / 16)].changeBPM);
 
 		if (camZooming && FlxG.camera.zoom < 1.35 && totalBeats % 4 == 0)
-			FlxG.camera.zoom += 0.025;
+		{
+			FlxG.camera.zoom += 0.015;
+			camHUD.zoom += 0.03;
+		}
 
-		healthHeads.setGraphicSize(Std.int(healthHeads.width + 20));
+		healthHeads.setGraphicSize(Std.int(healthHeads.width + 30));
+		healthHeads.updateHitbox();
 
 		if (totalBeats % gfSpeed == 0)
 		{
@@ -1314,6 +1344,11 @@ class PlayState extends MusicBeatState
 			{
 				dad.playAnim('cheer', true);
 			}
+		}
+
+		if (isHalloween && FlxG.random.bool(10) && curBeat > lightningStrikeBeat + lightningOffset)
+		{
+			lightningStrikeShit();
 		}
 	}
 }
