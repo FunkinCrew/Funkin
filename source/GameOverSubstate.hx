@@ -12,6 +12,8 @@ class GameOverSubstate extends MusicBeatSubstate
 	var bf:Boyfriend;
 	var camFollow:FlxObject;
 
+	// var
+
 	public function new(x:Float, y:Float)
 	{
 		super();
@@ -39,9 +41,19 @@ class GameOverSubstate extends MusicBeatSubstate
 	{
 		super.update(elapsed);
 
-		if (FlxG.keys.justPressed.ENTER)
+		if (controls.ACCEPT)
 		{
 			endBullshit();
+		}
+
+		if (controls.BACK)
+		{
+			FlxG.sound.music.stop();
+
+			if (PlayState.isStoryMode)
+				FlxG.switchState(new StoryMenuState());
+			else
+				FlxG.switchState(new FreeplayState());
 		}
 
 		if (bf.animation.curAnim.name == 'firstDeath' && bf.animation.curAnim.curFrame == 12)

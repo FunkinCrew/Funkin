@@ -80,6 +80,7 @@ class PlayState extends MusicBeatState
 	var halloweenBG:FlxSprite;
 
 	var talking:Bool = true;
+	var songScore:Int = 0;
 
 	override public function create()
 	{
@@ -593,7 +594,7 @@ class PlayState extends MusicBeatState
 
 		if (FlxG.keys.justPressed.ESCAPE)
 		{
-			FlxG.switchState(new ChartingState());
+			// FlxG.switchState(new ChartingState());
 		}
 
 		// FlxG.watch.addQuick('VOL', vocals.amplitudeLeft);
@@ -602,6 +603,9 @@ class PlayState extends MusicBeatState
 		healthHeads.setGraphicSize(Std.int(FlxMath.lerp(100, healthHeads.width, 0.98)));
 		healthHeads.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (healthHeads.width / 2);
 
+		if (health > 2)
+			health = 2;
+
 		if (healthBar.percent < 20)
 			healthHeads.animation.play('unhealthy');
 		else
@@ -609,8 +613,8 @@ class PlayState extends MusicBeatState
 
 		/* if (FlxG.keys.justPressed.NINE)
 			FlxG.switchState(new Charting()); */
-		if (FlxG.keys.justPressed.EIGHT)
-			FlxG.switchState(new AnimationDebug(SONG.player2));
+		// if (FlxG.keys.justPressed.EIGHT)
+		// FlxG.switchState(new AnimationDebug(SONG.player2));
 
 		if (startingSong)
 		{
@@ -805,15 +809,24 @@ class PlayState extends MusicBeatState
 	{
 		trace('SONG DONE' + isStoryMode);
 
+		NGio.postScore(songScore, SONG.song);
+
 		if (isStoryMode)
 		{
 			storyPlaylist.remove(storyPlaylist[0]);
 
 			if (storyPlaylist.length <= 0)
 			{
-				FlxG.switchState(new TitleState());
+				FlxG.sound.playMusic('assets/music/freakyMenu' + TitleState.soundExt);
+
+				FlxG.switchState(new StoryMenuState());
 
 				StoryMenuState.weekUnlocked[1] = true;
+
+				NGio.unlockMedal(60961);
+
+				FlxG.save.data.weekUnlocked = StoryMenuState.weekUnlocked;
+				FlxG.save.flush();
 			}
 			else
 			{
@@ -851,21 +864,27 @@ class PlayState extends MusicBeatState
 		//
 
 		var rating:FlxSprite = new FlxSprite();
+		var score:Int = 350;
 
 		var daRating:String = "sick";
 
 		if (noteDiff > Conductor.safeZoneOffset * 0.9)
 		{
 			daRating = 'shit';
+			score = 50;
 		}
 		else if (noteDiff > Conductor.safeZoneOffset * 0.75)
 		{
 			daRating = 'bad';
+			score = 100;
 		}
 		else if (noteDiff > Conductor.safeZoneOffset * 0.2)
 		{
 			daRating = 'good';
+			score = 200;
 		}
+
+		songScore += score;
 
 		/* if (combo > 60)
 				daRating = 'sick';
@@ -916,7 +935,9 @@ class PlayState extends MusicBeatState
 			numScore.acceleration.y = FlxG.random.int(200, 300);
 			numScore.velocity.y -= FlxG.random.int(140, 160);
 			numScore.velocity.x = FlxG.random.float(-5, 5);
-			add(numScore);
+
+			if (combo >= 10 || combo == 0)
+				add(numScore);
 
 			FlxTween.tween(numScore, {alpha: 0}, 0.2, {
 				onComplete: function(tween:FlxTween)
@@ -1102,6 +1123,8 @@ class PlayState extends MusicBeatState
 			}
 			combo = 0;
 
+			songScore -= 10;
+
 			FlxG.sound.play('assets/sounds/missnote' + FlxG.random.int(1, 3) + TitleState.soundExt, FlxG.random.float(0.1, 0.2));
 			// FlxG.sound.play('assets/sounds/missnote1' + TitleState.soundExt, 1, false);
 			// FlxG.log.add('played imss note');
@@ -1283,7 +1306,7 @@ class PlayState extends MusicBeatState
 		if (!boyfriend.animation.curAnim.name.startsWith("sing"))
 			boyfriend.playAnim('idle');
 
-		if (totalBeats % 8 == 6)
+		if (totalBeats % 8 == 7 && curSong == 'Bopeebo')
 		{
 			boyfriend.playAnim('hey', true);
 
