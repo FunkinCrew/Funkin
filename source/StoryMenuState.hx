@@ -102,6 +102,7 @@ class StoryMenuState extends MusicBeatState
 				case 'bf':
 					weekCharacterThing.setGraphicSize(Std.int(weekCharacterThing.width * 0.9));
 					weekCharacterThing.updateHitbox();
+					weekCharacterThing.x -= 80;
 				case 'gf':
 					weekCharacterThing.setGraphicSize(Std.int(weekCharacterThing.width * 0.5));
 					weekCharacterThing.updateHitbox();
@@ -145,8 +146,8 @@ class StoryMenuState extends MusicBeatState
 		txtTracklist.font = rankText.font;
 		txtTracklist.color = 0xFFe55777;
 		add(txtTracklist);
-		add(rankText);
-		add(scoreText);
+		// add(rankText);
+		// add(scoreText);
 
 		updateText();
 
