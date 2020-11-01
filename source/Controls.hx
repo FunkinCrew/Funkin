@@ -11,7 +11,8 @@ import flixel.input.gamepad.FlxGamepadButton;
 import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.input.keyboard.FlxKey;
 
-@:enum abstract Action(String) to String from String
+#if (haxe >= "4.0.0")
+enum abstract Action(String) to String from String
 {
 	var UP = "up";
 	var LEFT = "left";
@@ -30,6 +31,28 @@ import flixel.input.keyboard.FlxKey;
 	var PAUSE = "pause";
 	var RESET = "reset";
 }
+#else
+@:enum
+abstract Action(String) to String from String
+{
+	var UP = "up";
+	var LEFT = "left";
+	var RIGHT = "right";
+	var DOWN = "down";
+	var UP_P = "up-press";
+	var LEFT_P = "left-press";
+	var RIGHT_P = "right-press";
+	var DOWN_P = "down-press";
+	var UP_R = "up-release";
+	var LEFT_R = "left-release";
+	var RIGHT_R = "right-release";
+	var DOWN_R = "down-release";
+	var ACCEPT = "accept";
+	var BACK = "back";
+	var PAUSE = "pause";
+	var RESET = "reset";
+}
+#end
 
 enum Device
 {
@@ -402,9 +425,9 @@ class Controls extends FlxActionSet
 				inline bindKeys(Control.DOWN, [S, FlxKey.DOWN]);
 				inline bindKeys(Control.LEFT, [A, FlxKey.LEFT]);
 				inline bindKeys(Control.RIGHT, [D, FlxKey.RIGHT]);
-				inline bindKeys(Control.ACCEPT, [Z, SPACE]);
-				inline bindKeys(Control.BACK, [X]);
-				inline bindKeys(Control.PAUSE, [P, ENTER]);
+				inline bindKeys(Control.ACCEPT, [Z, SPACE, ENTER]);
+				inline bindKeys(Control.BACK, [BACKSPACE, ESCAPE]);
+				inline bindKeys(Control.PAUSE, [P, ENTER, ESCAPE]);
 				inline bindKeys(Control.RESET, [R]);
 			case Duo(true):
 				inline bindKeys(Control.UP, [W]);

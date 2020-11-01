@@ -87,6 +87,7 @@ class FreeplayState extends MusicBeatState
 		if (accepted)
 		{
 			PlayState.SONG = Song.loadFromJson(songs[curSelected].toLowerCase());
+			PlayState.isStoryMode = false;
 			FlxG.switchState(new PlayState());
 			FlxG.sound.music.stop();
 		}
@@ -95,6 +96,7 @@ class FreeplayState extends MusicBeatState
 			if (gamepad.anyJustPressed(["B"])) //"B" is swapped with "A" on Switch
 			{
 				PlayState.SONG = Song.loadFromJson(songs[curSelected].toLowerCase());
+				PlayState.isStoryMode = false;
 				FlxG.switchState(new PlayState());
 				FlxG.sound.music.stop();
 			}
