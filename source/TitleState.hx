@@ -92,6 +92,13 @@ class TitleState extends MusicBeatState
 			FlxG.sound.playMusic('assets/music/freakyMenu' + TitleState.soundExt, 0);
 
 			FlxG.sound.music.fadeIn(4, 0, 0.7);
+
+			FlxG.save.bind('funkin', 'ninjamuffin99');
+
+			if (FlxG.save.data.weekUnlocked != null)
+			{
+				StoryMenuState.weekUnlocked = FlxG.save.data.weekUnlocked;
+			}
 		}
 
 		Conductor.changeBPM(102);

@@ -73,69 +73,75 @@ class MainMenuState extends MusicBeatState
 		super.create();
 	}
 
+	var selectedSomethin:Bool = false;
+
 	override function update(elapsed:Float)
 	{
-		if (controls.UP_P)
+		if (!selectedSomethin)
 		{
-			FlxG.sound.play('assets/sounds/scrollMenu' + TitleState.soundExt);
-			changeItem(-1);
-		}
+			if (controls.UP_P)
+			{
+				FlxG.sound.play('assets/sounds/scrollMenu' + TitleState.soundExt);
+				changeItem(-1);
+			}
 
-		if (controls.DOWN_P)
-		{
-			FlxG.sound.play('assets/sounds/scrollMenu' + TitleState.soundExt);
-			changeItem(1);
-		}
+			if (controls.DOWN_P)
+			{
+				FlxG.sound.play('assets/sounds/scrollMenu' + TitleState.soundExt);
+				changeItem(1);
+			}
 
-		if (controls.BACK)
-		{
-			FlxG.switchState(new TitleState());
+			if (controls.BACK)
+			{
+				FlxG.switchState(new TitleState());
+			}
+
+			if (controls.ACCEPT)
+			{
+				if (optionShit[curSelected] == 'donate')
+				{
+					FlxG.openURL('https://ninja-muffin24.itch.io/funkin');
+				}
+				else
+				{
+					selectedSomethin = true;
+					FlxG.sound.play('assets/sounds/confirmMenu' + TitleState.soundExt);
+
+					FlxFlicker.flicker(magenta, 1.1, 0.15, false);
+
+					menuItems.forEach(function(spr:FlxSprite)
+					{
+						if (curSelected != spr.ID)
+						{
+							FlxTween.tween(spr, {alpha: 0}, 0.4, {
+								ease: FlxEase.quadOut,
+								onComplete: function(twn:FlxTween)
+								{
+									spr.kill();
+								}
+							});
+						}
+						else
+						{
+							FlxFlicker.flicker(spr, 1, 0.06, false, false, function(flick:FlxFlicker)
+							{
+								var daChoice:String = optionShit[curSelected];
+
+								switch (daChoice)
+								{
+									case 'story mode':
+										FlxG.switchState(new StoryMenuState());
+									case 'freeplay':
+										FlxG.switchState(new FreeplayState());
+								}
+							});
+						}
+					});
+				}
+			}
 		}
 
 		super.update(elapsed);
-
-		if (controls.ACCEPT)
-		{
-			if (optionShit[curSelected] == 'donate')
-			{
-				FlxG.openURL('https://ninja-muffin24.itch.io/funkin');
-			}
-			else
-			{
-				FlxG.sound.play('assets/sounds/confirmMenu' + TitleState.soundExt);
-
-				FlxFlicker.flicker(magenta, 1.1, 0.15, false);
-
-				menuItems.forEach(function(spr:FlxSprite)
-				{
-					if (curSelected != spr.ID)
-					{
-						FlxTween.tween(spr, {alpha: 0}, 0.4, {
-							ease: FlxEase.quadOut,
-							onComplete: function(twn:FlxTween)
-							{
-								spr.kill();
-							}
-						});
-					}
-					else
-					{
-						FlxFlicker.flicker(spr, 1, 0.06, false, false, function(flick:FlxFlicker)
-						{
-							var daChoice:String = optionShit[curSelected];
-
-							switch (daChoice)
-							{
-								case 'story mode':
-									FlxG.switchState(new StoryMenuState());
-								case 'freeplay':
-									FlxG.switchState(new FreeplayState());
-							}
-						});
-					}
-				});
-			}
-		}
 
 		menuItems.forEach(function(spr:FlxSprite)
 		{
