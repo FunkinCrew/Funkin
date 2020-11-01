@@ -593,7 +593,7 @@ class PlayState extends MusicBeatState
 
 		if (FlxG.keys.justPressed.ESCAPE)
 		{
-			FlxG.switchState(new ChartingState());
+			// FlxG.switchState(new ChartingState());
 		}
 
 		// FlxG.watch.addQuick('VOL', vocals.amplitudeLeft);
@@ -609,8 +609,8 @@ class PlayState extends MusicBeatState
 
 		/* if (FlxG.keys.justPressed.NINE)
 			FlxG.switchState(new Charting()); */
-		if (FlxG.keys.justPressed.EIGHT)
-			FlxG.switchState(new AnimationDebug(SONG.player2));
+		// if (FlxG.keys.justPressed.EIGHT)
+		// FlxG.switchState(new AnimationDebug(SONG.player2));
 
 		if (startingSong)
 		{

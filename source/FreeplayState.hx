@@ -75,6 +75,11 @@ class FreeplayState extends MusicBeatState
 			changeSelection(1);
 		}
 
+		if (controls.BACK)
+		{
+			FlxG.switchState(new StoryMenuState());
+		}
+
 		if (accepted)
 		{
 			PlayState.SONG = Song.loadFromJson(songs[curSelected].toLowerCase(), songs[curSelected].toLowerCase());
