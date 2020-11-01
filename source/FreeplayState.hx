@@ -8,7 +8,7 @@ import flixel.text.FlxText;
 
 class FreeplayState extends MusicBeatState
 {
-	var songs:Array<String> = ["Bopeebo", "Dadbattle", "Fresh", "Tutorial", "Spookeez", "South", "Monster"];
+	var songs:Array<String> = ["Bopeebo", "Dadbattle", "Fresh", "Tutorial"];
 
 	var selector:FlxText;
 	var curSelected:Int = 0;
@@ -17,6 +17,12 @@ class FreeplayState extends MusicBeatState
 
 	override function create()
 	{
+		if (StoryMenuState.weekUnlocked[1])
+		{
+			songs.push('Spookeez');
+			songs.push('South');
+		}
+
 		// LOAD MUSIC
 
 		// LOAD CHARACTERS
