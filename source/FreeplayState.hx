@@ -17,6 +17,9 @@ class FreeplayState extends MusicBeatState
 
 	override function create()
 	{
+		if (!FlxG.sound.music.playing)
+			FlxG.sound.playMusic('assets/music/freakyMenu' + TitleState.soundExt);
+
 		if (StoryMenuState.weekUnlocked[1])
 		{
 			songs.push('Spookeez');
