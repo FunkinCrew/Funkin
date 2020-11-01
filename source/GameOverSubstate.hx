@@ -12,6 +12,8 @@ class GameOverSubstate extends MusicBeatSubstate
 	var bf:Boyfriend;
 	var camFollow:FlxObject;
 
+	// var
+
 	public function new(x:Float, y:Float)
 	{
 		super();
