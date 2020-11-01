@@ -109,6 +109,24 @@ class NGio
 		// more info on scores --- http://www.newgrounds.io/help/components/#scoreboard-getscores
 	}
 
+	inline static public function postScore(score:Int = 0, song:String)
+	{
+		if (isLoggedIn)
+		{
+			for (id in NG.core.scoreBoards.keys())
+			{
+				var board = NG.core.scoreBoards.get(id);
+
+				if (song == board.name)
+				{
+					board.postScore(score, "Uhh meow?");
+				}
+
+				// trace('loaded scoreboard id:$id, name:${board.name}');
+			}
+		}
+	}
+
 	function onNGScoresFetch():Void
 	{
 		scoreboardsLoaded = true;

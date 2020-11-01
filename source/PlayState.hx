@@ -80,6 +80,7 @@ class PlayState extends MusicBeatState
 	var halloweenBG:FlxSprite;
 
 	var talking:Bool = true;
+	var songScore:Int = 0;
 
 	override public function create()
 	{
@@ -808,6 +809,8 @@ class PlayState extends MusicBeatState
 	{
 		trace('SONG DONE' + isStoryMode);
 
+		NGio.postScore(songScore, SONG.song);
+
 		if (isStoryMode)
 		{
 			storyPlaylist.remove(storyPlaylist[0]);
@@ -819,6 +822,11 @@ class PlayState extends MusicBeatState
 				FlxG.switchState(new StoryMenuState());
 
 				StoryMenuState.weekUnlocked[1] = true;
+
+				NGio.unlockMedal(60961);
+
+				FlxG.save.data.weekUnlocked = StoryMenuState.weekUnlocked;
+				FlxG.save.flush();
 			}
 			else
 			{
@@ -856,21 +864,27 @@ class PlayState extends MusicBeatState
 		//
 
 		var rating:FlxSprite = new FlxSprite();
+		var score:Int = 350;
 
 		var daRating:String = "sick";
 
 		if (noteDiff > Conductor.safeZoneOffset * 0.9)
 		{
 			daRating = 'shit';
+			score = 50;
 		}
 		else if (noteDiff > Conductor.safeZoneOffset * 0.75)
 		{
 			daRating = 'bad';
+			score = 100;
 		}
 		else if (noteDiff > Conductor.safeZoneOffset * 0.2)
 		{
 			daRating = 'good';
+			score = 200;
 		}
+
+		songScore += score;
 
 		/* if (combo > 60)
 				daRating = 'sick';
@@ -921,7 +935,9 @@ class PlayState extends MusicBeatState
 			numScore.acceleration.y = FlxG.random.int(200, 300);
 			numScore.velocity.y -= FlxG.random.int(140, 160);
 			numScore.velocity.x = FlxG.random.float(-5, 5);
-			add(numScore);
+
+			if (combo >= 10 || combo == 0)
+				add(numScore);
 
 			FlxTween.tween(numScore, {alpha: 0}, 0.2, {
 				onComplete: function(tween:FlxTween)
@@ -1106,6 +1122,8 @@ class PlayState extends MusicBeatState
 				gf.playAnim('sad');
 			}
 			combo = 0;
+
+			songScore -= 10;
 
 			FlxG.sound.play('assets/sounds/missnote' + FlxG.random.int(1, 3) + TitleState.soundExt, FlxG.random.float(0.1, 0.2));
 			// FlxG.sound.play('assets/sounds/missnote1' + TitleState.soundExt, 1, false);
