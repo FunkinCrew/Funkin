@@ -16,7 +16,7 @@ class StoryMenuState extends MusicBeatState
 {
 	var scoreText:FlxText;
 
-	var weekData:Array<Dynamic> = [['Tutorial', 'Bopeebo', 'Fresh', 'Dadbattle'], ['Spookeez', 'South', 'Monster']];
+	var weekData:Array<Dynamic> = [['Tutorial', 'Bopeebo', 'Fresh', 'Dadbattle'], ['Spookeez', 'South']];
 	var curDifficulty:Int = 1;
 
 	public static var weekUnlocked:Array<Bool> = [true, false];
@@ -38,6 +38,9 @@ class StoryMenuState extends MusicBeatState
 
 	override function create()
 	{
+		if (!FlxG.sound.music.playing)
+			FlxG.sound.playMusic('assets/music/freakyMenu' + TitleState.soundExt);
+
 		persistentUpdate = persistentDraw = true;
 
 		scoreText = new FlxText(10, 10, 0, "SCORE: 49324858", 36);
@@ -102,6 +105,7 @@ class StoryMenuState extends MusicBeatState
 				case 'bf':
 					weekCharacterThing.setGraphicSize(Std.int(weekCharacterThing.width * 0.9));
 					weekCharacterThing.updateHitbox();
+					weekCharacterThing.x -= 80;
 				case 'gf':
 					weekCharacterThing.setGraphicSize(Std.int(weekCharacterThing.width * 0.5));
 					weekCharacterThing.updateHitbox();
@@ -145,8 +149,8 @@ class StoryMenuState extends MusicBeatState
 		txtTracklist.font = rankText.font;
 		txtTracklist.color = 0xFFe55777;
 		add(txtTracklist);
-		add(rankText);
-		add(scoreText);
+		// add(rankText);
+		// add(scoreText);
 
 		updateText();
 
@@ -243,7 +247,8 @@ class StoryMenuState extends MusicBeatState
 			PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + diffic, PlayState.storyPlaylist[0].toLowerCase());
 			new FlxTimer().start(1, function(tmr:FlxTimer)
 			{
-				FlxG.sound.music.stop();
+				if (FlxG.sound.music != null)
+					FlxG.sound.music.stop();
 				FlxG.switchState(new PlayState());
 			});
 		}
@@ -274,9 +279,11 @@ class StoryMenuState extends MusicBeatState
 		}
 
 		sprDifficulty.alpha = 0;
-		sprDifficulty.y -= 15;
 
-		FlxTween.tween(sprDifficulty, {y: sprDifficulty.y + 15, alpha: 1}, 0.07);
+		// USING THESE WEIRD VALUES SO THAT IT DOESNT FLOAT UP
+		sprDifficulty.y = leftArrow.y - 15;
+
+		FlxTween.tween(sprDifficulty, {y: leftArrow.y + 15, alpha: 1}, 0.07);
 	}
 
 	function changeWeek(change:Int = 0):Void
