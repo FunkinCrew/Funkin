@@ -54,7 +54,7 @@ class TitleState extends MusicBeatState
 
 		super.create();
 
-		#if (!debug && NG_LOGIN)
+		#if (!switch && !debug && NG_LOGIN)
 		var ng:NGio = new NGio(APIStuff.API, APIStuff.EncKey);
 		#end
 
@@ -197,7 +197,9 @@ class TitleState extends MusicBeatState
 
 		if (pressedEnter && !transitioning && skippedIntro)
 		{
+			#if !switch
 			NGio.unlockMedal(60960);
+			#end
 			titleText.animation.play('press');
 
 			FlxG.camera.flash(FlxColor.WHITE, 1);
