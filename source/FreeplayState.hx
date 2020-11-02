@@ -20,7 +20,13 @@ class FreeplayState extends MusicBeatState
 		if (!FlxG.sound.music.playing)
 			FlxG.sound.playMusic('assets/music/freakyMenu' + TitleState.soundExt);
 
-		if (StoryMenuState.weekUnlocked[1])
+		var isDebug:Bool = false;
+
+		#if debug
+		isDebug = true;
+		#end
+
+		if (StoryMenuState.weekUnlocked[1] || isDebug)
 		{
 			songs.push('Spookeez');
 			songs.push('South');
