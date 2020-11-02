@@ -94,6 +94,6 @@
 
 	<!--Place custom nodes like icons here (higher priority to override the HaxeFlixel icon)-->
 	<icon path="art/icon.png"/>
-	<!-- <haxedef name="SKIP_TO_PLAYSTATE" if="debug" /> -->
-	<haxedef name="NG_LOGIN" />
+	<haxedef name="SKIP_TO_PLAYSTATE" if="debug" />
+	<!-- <haxedef name="NG_LOGIN" /> -->
 </project>

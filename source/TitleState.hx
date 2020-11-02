@@ -40,6 +40,8 @@ class TitleState extends MusicBeatState
 
 	var curWacky:Array<String> = [];
 
+	var wackyImage:FlxSprite;
+
 	override public function create():Void
 	{
 		#if (!web)
@@ -59,7 +61,7 @@ class TitleState extends MusicBeatState
 		#end
 
 		#if SKIP_TO_PLAYSTATE
-		FlxG.switchState(new StoryMenuState());
+		FlxG.switchState(new ChartingState());
 		#else
 		startIntro();
 		#end
