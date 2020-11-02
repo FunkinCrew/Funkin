@@ -197,6 +197,7 @@ class Controls extends FlxActionSet
 	inline function get_RESET()
 		return _reset.check();
 
+	#if (haxe >= "4.0.0")
 	public function new(name, scheme = None)
 	{
 		super(name);
@@ -223,6 +224,36 @@ class Controls extends FlxActionSet
 
 		setKeyboardScheme(scheme, false);
 	}
+	#else
+	public function new(name, scheme:KeyboardScheme = null)
+	{
+		super(name);
+
+		add(_up);
+		add(_left);
+		add(_right);
+		add(_down);
+		add(_upP);
+		add(_leftP);
+		add(_rightP);
+		add(_downP);
+		add(_upR);
+		add(_leftR);
+		add(_rightR);
+		add(_downR);
+		add(_accept);
+		add(_back);
+		add(_pause);
+		add(_reset);
+
+		for (action in digitalActions)
+			byName[action.name] = action;
+			
+		if (scheme == null)
+			scheme = None;
+		setKeyboardScheme(scheme, false);
+	}
+	#end
 
 	override function update()
 	{
