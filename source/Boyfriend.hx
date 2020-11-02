@@ -30,6 +30,8 @@ class Boyfriend extends Character
 		animation.addByPrefix('firstDeath', "BF dies", 24, false);
 		animation.addByPrefix('deathLoop', "BF Dead Loop", 24, true);
 		animation.addByPrefix('deathConfirm', "BF Dead confirm", 24, false);
+
+		animation.addByPrefix('scared', 'BF idle shaking', 24);
 		playAnim('idle');
 
 		antialiasing = true;
@@ -47,6 +49,7 @@ class Boyfriend extends Character
 		addOffset('firstDeath', 37, 11);
 		addOffset('deathLoop', 37, 5);
 		addOffset('deathConfirm', 37, 69);
+		addOffset('scared', -4);
 	}
 
 	override function update(elapsed:Float)
