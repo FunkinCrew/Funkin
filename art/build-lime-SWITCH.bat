@@ -23,7 +23,7 @@ lime build switch -release -final -v
 @echo off
 color 0e
 @echo on
-lime deploy switch -v
+lime deploy switch -final -v
 @echo off
 color 0b
 @echo on
