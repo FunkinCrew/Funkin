@@ -820,9 +820,11 @@ class PlayState extends MusicBeatState
 	{
 		trace('SONG DONE' + isStoryMode);
 
+
 		#if !switch
 		NGio.postScore(songScore, SONG.song);
 		#end
+
 
 		if (isStoryMode)
 		{
@@ -839,6 +841,7 @@ class PlayState extends MusicBeatState
 				#if !switch
 				NGio.unlockMedal(60961);
 				#end
+
 
 				FlxG.save.data.weekUnlocked = StoryMenuState.weekUnlocked;
 				FlxG.save.flush();
