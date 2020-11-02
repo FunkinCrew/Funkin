@@ -48,6 +48,7 @@ class Alphabet extends FlxSpriteGroup
 		this.text = text;
 		isBold = bold;
 
+
 		if (text != "")
 		{
 			if (typed)
@@ -122,6 +123,7 @@ class Alphabet extends FlxSpriteGroup
 		_finalText = text;
 		doSplitWords();
 
+
 		// trace(arrayShit);
 
 		var loopNum:Int = 0;
@@ -138,6 +140,7 @@ class Alphabet extends FlxSpriteGroup
 				xPosResetted = true;
 				xPos = 0;
 				curRow += 1;
+
 			}
 
 			if (splitWords[loopNum] == " ")
@@ -155,6 +158,7 @@ class Alphabet extends FlxSpriteGroup
 
 			if (AlphaCharacter.alphabet.indexOf(splitWords[loopNum].toLowerCase()) != -1 || isNumber || isSymbol)
 			//if (AlphaCharacter.alphabet.contains(splitWords[loopNum].toLowerCase()) || isNumber || isSymbol)
+
 			{
 				if (lastSprite != null && !xPosResetted)
 				{
