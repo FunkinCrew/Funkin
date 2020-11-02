@@ -1,5 +1,4 @@
 @echo off
-color 0a
 cd ..
 @echo on
 echo REBUILDING LIME FOR EXPORT (VERBOSE)
@@ -20,7 +19,13 @@ echo HOPE AND PRAY...
 color 0a
 @echo on
 echo BUILDING GAME
-lime build switch -release
-lime deploy switch
+lime build switch -release -final -v
+@echo off
+color 0e
+@echo on
+lime deploy switch -v
+@echo off
+color 0b
+@echo on
 echo NSP FILE CREATED
 pause
