@@ -278,7 +278,7 @@ class Controls extends FlxActionSet
 	 * @param func
 	 * @return ->Void)
 	 */
-	 function forEachBound(control:Control, func:FlxActionDigital -> Void, func:FlxInputState -> Void)
+	function forEachBound(control:Control, func:FlxActionDigital -> Void, func:FlxInputState -> Void)
 	{
 		switch (control)
 		{
@@ -383,7 +383,11 @@ class Controls extends FlxActionSet
 	 */
 	public function bindKeys(control:Control, keys:Array<FlxKey>)
 	{
-		inline forEachBound(control, (action, state) -> addKeys(action, keys, state));
+		#if (haxe >= "4.0.0")
+			inline forEachBound(control, (action, state) -> addKeys(action, keys, state));
+		#else
+			forEachBound(control, (action, state) -> addKeys(action, keys, state));
+		#end
 	}
 
 	/**
@@ -392,7 +396,11 @@ class Controls extends FlxActionSet
 	 */
 	public function unbindKeys(control:Control, keys:Array<FlxKey>)
 	{
-		inline forEachBound(control, (action, _) -> removeKeys(action, keys));
+		#if (haxe >= "4.0.0")
+			inline forEachBound(control, (action, _) -> removeKeys(action, keys));
+		#else
+			forEachBound(control, (action, _) -> removeKeys(action, keys));
+		#end
 	}
 
 	inline static function addKeys(action:FlxActionDigital, keys:Array<FlxKey>, state:FlxInputState)
@@ -516,7 +524,11 @@ class Controls extends FlxActionSet
 	 */
 	public function bindButtons(control:Control, id, buttons)
 	{
-		inline forEachBound(control, (action, state) -> addButtons(action, buttons, state, id));
+		#if (haxe >= "4.0.0")
+			inline forEachBound(control, (action, state) -> addButtons(action, buttons, state, id));
+		#else
+			forEachBound(control, (action, state) -> addButtons(action, buttons, state, id));
+		#end
 	}
 
 	/**
@@ -525,7 +537,11 @@ class Controls extends FlxActionSet
 	 */
 	public function unbindButtons(control:Control, gamepadID:Int, buttons)
 	{
-		inline forEachBound(control, (action, _) -> removeButtons(action, gamepadID, buttons));
+		#if (haxe >= "4.0.0")
+			inline forEachBound(control, (action, _) -> removeButtons(action, gamepadID, buttons));
+		#else
+			forEachBound(control, (action, _) -> removeButtons(action, gamepadID, buttons));
+		#end
 	}
 
 	inline static function addButtons(action:FlxActionDigital, buttons:Array<FlxGamepadInputID>, state, id)
