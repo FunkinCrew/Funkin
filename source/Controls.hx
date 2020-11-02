@@ -108,7 +108,11 @@ class Controls extends FlxActionSet
 	var _pause = new FlxActionDigital(Action.PAUSE);
 	var _reset = new FlxActionDigital(Action.RESET);
 
+	#if (haxe >= "4.0.0")
 	var byName:Map<String, FlxActionDigital> = [];
+	#else
+	var byName:Map<String, FlxActionDigital> = new Map<String, FlxActionDigital>();
+	#end
 
 	public var gamepadsAdded:Array<Int> = [];
 	public var keyboardScheme = KeyboardScheme.None;
@@ -384,9 +388,9 @@ class Controls extends FlxActionSet
 	public function bindKeys(control:Control, keys:Array<FlxKey>)
 	{
 		#if (haxe >= "4.0.0")
-			inline forEachBound(control, (action, state) -> addKeys(action, keys, state));
+		inline forEachBound(control, (action, state) -> addKeys(action, keys, state));
 		#else
-			forEachBound(control, (action, state) -> addKeys(action, keys, state));
+		forEachBound(control, action => addKeys(action, keys, state), state => addKeys(action, keys, state));
 		#end
 	}
 
@@ -397,9 +401,9 @@ class Controls extends FlxActionSet
 	public function unbindKeys(control:Control, keys:Array<FlxKey>)
 	{
 		#if (haxe >= "4.0.0")
-			inline forEachBound(control, (action, _) -> removeKeys(action, keys));
+		inline forEachBound(control, (action, _) -> removeKeys(action, keys));
 		#else
-			forEachBound(control, (action, _) -> removeKeys(action, keys));
+		forEachBound(control, action => removeKeys(action, keys), _ => removeKeys(action, keys));
 		#end
 	}
 
@@ -426,6 +430,8 @@ class Controls extends FlxActionSet
 			removeKeyboard();
 
 		keyboardScheme = scheme;
+		
+		#if (haxe >= "4.0.0")
 		switch (scheme)
 		{
 			case Solo:
@@ -458,6 +464,40 @@ class Controls extends FlxActionSet
 			case None: // nothing
 			case Custom: // nothing
 		}
+		#else
+		switch (scheme)
+		{
+			case Solo:
+				bindKeys(Control.UP, [W, FlxKey.UP]);
+				bindKeys(Control.DOWN, [S, FlxKey.DOWN]);
+				bindKeys(Control.LEFT, [A, FlxKey.LEFT]);
+				bindKeys(Control.RIGHT, [D, FlxKey.RIGHT]);
+				bindKeys(Control.ACCEPT, [Z, SPACE, ENTER]);
+				bindKeys(Control.BACK, [BACKSPACE, ESCAPE]);
+				bindKeys(Control.PAUSE, [P, ENTER, ESCAPE]);
+				bindKeys(Control.RESET, [R]);
+			case Duo(true):
+				bindKeys(Control.UP, [W]);
+				bindKeys(Control.DOWN, [S]);
+				bindKeys(Control.LEFT, [A]);
+				bindKeys(Control.RIGHT, [D]);
+				bindKeys(Control.ACCEPT, [G, Z]);
+				bindKeys(Control.BACK, [H, X]);
+				bindKeys(Control.PAUSE, [ONE]);
+				bindKeys(Control.RESET, [R]);
+			case Duo(false):
+				bindKeys(Control.UP, [FlxKey.UP]);
+				bindKeys(Control.DOWN, [FlxKey.DOWN]);
+				bindKeys(Control.LEFT, [FlxKey.LEFT]);
+				bindKeys(Control.RIGHT, [FlxKey.RIGHT]);
+				bindKeys(Control.ACCEPT, [O]);
+				bindKeys(Control.BACK, [P]);
+				bindKeys(Control.PAUSE, [ENTER]);
+				bindKeys(Control.RESET, [BACKSPACE]);
+			case None: // nothing
+			case Custom: // nothing
+		}
+		#end
 	}
 
 	function removeKeyboard()
@@ -485,7 +525,11 @@ class Controls extends FlxActionSet
 	{
 		gamepadsAdded.push(id);
 		for (control => buttons in buttonMap)
+			#if (haxe >= "4.0.0")
 			inline bindButtons(control, id, buttons);
+			#else
+			bindButtons(control, id, buttons);
+			#end
 	}
 
 	public function removeGamepad(deviceID:Int = FlxInputDeviceID.ALL):Void
@@ -525,9 +569,9 @@ class Controls extends FlxActionSet
 	public function bindButtons(control:Control, id, buttons)
 	{
 		#if (haxe >= "4.0.0")
-			inline forEachBound(control, (action, state) -> addButtons(action, buttons, state, id));
+		inline forEachBound(control, (action, state) -> addButtons(action, buttons, state, id));
 		#else
-			forEachBound(control, (action, state) -> addButtons(action, buttons, state, id));
+		forEachBound(control, action => addButtons(action, buttons, state, id), state => addButtons(action, buttons, state, id));
 		#end
 	}
 
@@ -538,9 +582,9 @@ class Controls extends FlxActionSet
 	public function unbindButtons(control:Control, gamepadID:Int, buttons)
 	{
 		#if (haxe >= "4.0.0")
-			inline forEachBound(control, (action, _) -> removeButtons(action, gamepadID, buttons));
+		inline forEachBound(control, (action, _) -> removeButtons(action, gamepadID, buttons));
 		#else
-			forEachBound(control, (action, _) -> removeButtons(action, gamepadID, buttons));
+		forEachBound(control, action => removeButtons(action, gamepadID, buttons), _ => removeButtons(action, gamepadID, buttons));
 		#end
 	}
 
