@@ -40,6 +40,9 @@ class TitleState extends MusicBeatState
 
 	var curWacky:Array<String> = [];
 
+	var wackyImage:FlxSprite;
+
+
 	override public function create():Void
 	{
 		#if (!web)
@@ -54,12 +57,16 @@ class TitleState extends MusicBeatState
 
 		super.create();
 
+
 		#if (!switch && !debug && NG_LOGIN)
+
 		var ng:NGio = new NGio(APIStuff.API, APIStuff.EncKey);
 		#end
 
 		#if SKIP_TO_PLAYSTATE
+
 		FlxG.switchState(new StoryMenuState());
+
 		#else
 		startIntro();
 		#end
@@ -197,9 +204,11 @@ class TitleState extends MusicBeatState
 
 		if (pressedEnter && !transitioning && skippedIntro)
 		{
+
 			#if !switch
 			NGio.unlockMedal(60960);
 			#end
+
 			titleText.animation.play('press');
 
 			FlxG.camera.flash(FlxColor.WHITE, 1);
