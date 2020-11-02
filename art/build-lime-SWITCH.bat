@@ -19,11 +19,7 @@ echo HOPE AND PRAY...
 color 0a
 @echo on
 echo BUILDING GAME
-lime build switch -release -final -v
-@echo off
-color 0e
-@echo on
-lime deploy switch -final -v
+lime build switch -final -v
 @echo off
 color 0b
 @echo on
