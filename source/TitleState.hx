@@ -59,14 +59,11 @@ class TitleState extends MusicBeatState
 
 
 		#if (!switch && !debug && NG_LOGIN)
-
 		var ng:NGio = new NGio(APIStuff.API, APIStuff.EncKey);
 		#end
 
 		#if SKIP_TO_PLAYSTATE
-
 		FlxG.switchState(new StoryMenuState());
-
 		#else
 		startIntro();
 		#end
@@ -200,11 +197,15 @@ class TitleState extends MusicBeatState
 		{
 			if (gamepad.justPressed.START)
 				pressedEnter = true;
+
+			#if switch
+			if (gamepad.justPressed.B)
+				pressedEnter = true;
+			#end
 		}
 
 		if (pressedEnter && !transitioning && skippedIntro)
 		{
-
 			#if !switch
 			NGio.unlockMedal(60960);
 			#end
