@@ -99,7 +99,7 @@
 
 	<icon path="art/icon.png" />
 	<!-- <haxedef name="SKIP_TO_PLAYSTATE" if="debug" /> -->
-	<haxedef name="NG_LOGIN" />
+	<haxedef name="NG_LOGIN" if="js"/>
 
 
 </project>

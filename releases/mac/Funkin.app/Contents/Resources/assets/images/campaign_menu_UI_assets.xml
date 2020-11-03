@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="campaign_menu_UI_assets.png">
+	<!-- Created with Adobe Animate version 20.0.0.17400 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="EASY0000" x="0" y="0" width="196" height="65"/>
+	<SubTexture name="HARD0000" x="206" y="0" width="211" height="67"/>
+	<SubTexture name="NORMAL0000" x="427" y="0" width="308" height="67"/>
+	<SubTexture name="WEEK1 select0000" x="0" y="77" width="360" height="89"/>
+	<SubTexture name="WEEK1 select0001" x="370" y="77" width="360" height="89"/>
+	<SubTexture name="arrow left0000" x="740" y="77" width="48" height="85"/>
+	<SubTexture name="arrow push left0000" x="798" y="77" width="42" height="75"/>
+	<SubTexture name="arrow push right0000" x="850" y="77" width="41" height="74"/>
+	<SubTexture name="arrow right0000" x="901" y="77" width="47" height="85"/>
+	<SubTexture name="lock0000" x="0" y="176" width="67" height="93"/>
+	<SubTexture name="week 2 CANNOT select0000" x="77" y="176" width="361" height="87" frameX="-10" frameY="0" frameWidth="383" frameHeight="87"/>
+	<SubTexture name="week 2 CANNOT select0001" x="448" y="176" width="361" height="87" frameX="0" frameY="0" frameWidth="383" frameHeight="87"/>
+	<SubTexture name="week 2 CANNOT select0002" x="0" y="279" width="362" height="87" frameX="-21" frameY="0" frameWidth="383" frameHeight="87"/>
+	<SubTexture name="week 2 CANNOT select0003" x="448" y="176" width="361" height="87" frameX="-7" frameY="0" frameWidth="383" frameHeight="87"/>
+	<SubTexture name="week 2 CANNOT select0004" x="77" y="176" width="361" height="87" frameX="-11" frameY="0" frameWidth="383" frameHeight="87"/>
+	<SubTexture name="week 2 CANNOT select0005" x="77" y="176" width="361" height="87" frameX="-11" frameY="0" frameWidth="383" frameHeight="87"/>
+	<SubTexture name="week2 select0000" x="77" y="176" width="361" height="87" frameX="0" frameY="0" frameWidth="383" frameHeight="87"/>
+	<SubTexture name="week2 select0001" x="372" y="279" width="361" height="87"/>
+</TextureAtlas>
