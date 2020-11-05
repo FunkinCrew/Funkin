@@ -583,7 +583,10 @@ class PlayState extends MusicBeatState
 	{
 		super.update(elapsed);
 
-		// trace("SONG POS: " + Conductor.songPosition);
+		trace("FlxG.elapsed: " + FlxG.elapsed);
+		trace("FlxG.sound.music.time: " + FlxG.sound.music.time);
+		trace("FlxG.sound.music.playing: " + FlxG.sound.music.playing);
+		//trace("SONG POS: " + Conductor.songPosition);
 		// FlxG.sound.music.pitch = 2;
 
 		if (FlxG.keys.justPressed.ENTER && startedCountdown)
@@ -634,7 +637,8 @@ class PlayState extends MusicBeatState
 		}
 		else
 		{
-			Conductor.songPosition = FlxG.sound.music.time;
+			//Conductor.songPosition = FlxG.sound.music.time;
+			Conductor.songPosition += FlxG.elapsed * 1000;
 
 			if (!paused)
 			{
