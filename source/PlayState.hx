@@ -583,9 +583,13 @@ class PlayState extends MusicBeatState
 	{
 		super.update(elapsed);
 
-		trace("FlxG.elapsed: " + FlxG.elapsed);
+		#if lime
+		trace("IT'S LIME");
+		#end
+
+		//trace("FlxG.elapsed: " + FlxG.elapsed);
 		trace("FlxG.sound.music.time: " + FlxG.sound.music.time);
-		trace("FlxG.sound.music.playing: " + FlxG.sound.music.playing);
+		//trace("FlxG.sound.music.playing: " + FlxG.sound.music.playing);
 		//trace("SONG POS: " + Conductor.songPosition);
 		// FlxG.sound.music.pitch = 2;
 
@@ -726,6 +730,18 @@ class PlayState extends MusicBeatState
 			}
 		}
 		// better streaming of shit
+
+		//RESET = Quick Game Over Screen
+		if (controls.RESET){
+			health = 0;
+			trace("RESET = True");
+		}
+
+		//CHEAT = brandon's a pussy
+		if (controls.CHEAT){
+			health += 1;
+			trace("User is cheating!");
+		}
 
 		if (health <= 0)
 		{
@@ -1288,9 +1304,9 @@ class PlayState extends MusicBeatState
 			if (vocals.time > Conductor.songPosition + Conductor.stepCrochet
 				|| vocals.time < Conductor.songPosition - Conductor.stepCrochet)
 			{
-				vocals.pause();
+				//vocals.pause();
 				vocals.time = Conductor.songPosition;
-				vocals.play();
+				//vocals.play();
 			}
 		}
 

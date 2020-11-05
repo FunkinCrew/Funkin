@@ -76,6 +76,10 @@ class TitleState extends MusicBeatState
 
 	function startIntro()
 	{
+		#if switch
+		initialized = true;
+		#end
+
 		if (!initialized)
 		{
 			var diamond:FlxGraphic = FlxGraphic.fromClass(GraphicTransTileDiamond);
