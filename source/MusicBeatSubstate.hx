@@ -1,5 +1,6 @@
 package;
 
+import flixel.FlxG;
 import flixel.FlxSubState;
 
 class MusicBeatSubstate extends FlxSubState

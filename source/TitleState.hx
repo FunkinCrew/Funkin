@@ -36,12 +36,12 @@ class TitleState extends MusicBeatState
 		['Ritz dx', 'rest in peace'], ['rate five', 'pls no blam'], ['rhythm gaming', 'ultimate'], ['game of the year', 'forever'],
 		['you already know', 'we really out here'], ['rise and grind', 'love to luis'], ['like parappa', 'but cooler'],
 		['album of the year', 'chuckie finster'], ["free gitaroo man", "with love to wandaboy"], ['better than geometry dash', 'fight me robtop'],
-		['kiddbrute for president', 'vote now']];
+		['kiddbrute for president', 'vote now'], ['play dead estate', 'on newgrounds'], ['this is a god damn prototype', 'we workin on it okay'],
+		['WOMEN ARE real', 'this is official']];
 
 	var curWacky:Array<String> = [];
 
 	var wackyImage:FlxSprite;
-
 
 	override public function create():Void
 	{
@@ -57,16 +57,21 @@ class TitleState extends MusicBeatState
 
 		super.create();
 
-
 		#if (!switch && !debug && NG_LOGIN)
-
 		var ng:NGio = new NGio(APIStuff.API, APIStuff.EncKey);
 		#end
 
+		FlxG.save.bind('funkin', 'ninjamuffin99');
+
+		Highscore.load();
+
+		if (FlxG.save.data.weekUnlocked != null)
+		{
+			StoryMenuState.weekUnlocked = FlxG.save.data.weekUnlocked;
+		}
+
 		#if SKIP_TO_PLAYSTATE
-
-		FlxG.switchState(new StoryMenuState());
-
+		FlxG.switchState(new FreeplayState());
 		#else
 		startIntro();
 		#end
@@ -99,13 +104,6 @@ class TitleState extends MusicBeatState
 			FlxG.sound.playMusic('assets/music/freakyMenu' + TitleState.soundExt, 0);
 
 			FlxG.sound.music.fadeIn(4, 0, 0.7);
-
-			FlxG.save.bind('funkin', 'ninjamuffin99');
-
-			if (FlxG.save.data.weekUnlocked != null)
-			{
-				StoryMenuState.weekUnlocked = FlxG.save.data.weekUnlocked;
-			}
 		}
 
 		Conductor.changeBPM(102);
@@ -191,6 +189,12 @@ class TitleState extends MusicBeatState
 	override function update(elapsed:Float)
 	{
 		Conductor.songPosition = FlxG.sound.music.time;
+		// FlxG.watch.addQuick('amp', FlxG.sound.music.amplitude);
+
+		if (FlxG.keys.justPressed.F)
+		{
+			FlxG.fullscreen = !FlxG.fullscreen;
+		}
 
 		var pressedEnter:Bool = FlxG.keys.justPressed.ENTER;
 
@@ -204,9 +208,12 @@ class TitleState extends MusicBeatState
 
 		if (pressedEnter && !transitioning && skippedIntro)
 		{
-
 			#if !switch
 			NGio.unlockMedal(60960);
+
+			// If it's Friday according to da clock
+			if (Date.now().getDay() == 5)
+				NGio.unlockMedal(61034);
 			#end
 
 			titleText.animation.play('press');

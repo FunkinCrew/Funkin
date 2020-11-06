@@ -38,8 +38,11 @@ class StoryMenuState extends MusicBeatState
 
 	override function create()
 	{
-		if (!FlxG.sound.music.playing)
-			FlxG.sound.playMusic('assets/music/freakyMenu' + TitleState.soundExt);
+		if (FlxG.sound.music != null)
+		{
+			if (!FlxG.sound.music.playing)
+				FlxG.sound.playMusic('assets/music/freakyMenu' + TitleState.soundExt);
+		}
 
 		persistentUpdate = persistentDraw = true;
 
@@ -300,6 +303,10 @@ class StoryMenuState extends MusicBeatState
 		for (item in grpWeekText.members)
 		{
 			item.targetY = bullShit - curWeek;
+			if (item.targetY == Std.int(0))
+				item.alpha = 1;
+			else
+				item.alpha = 0.6;
 			bullShit++;
 		}
 

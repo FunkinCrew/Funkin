@@ -6,8 +6,11 @@ import flixel.FlxSprite;
 import flixel.effects.FlxFlicker;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
+import flixel.util.FlxColor;
+import lime.app.Application;
 
 class MainMenuState extends MusicBeatState
 {
@@ -15,7 +18,7 @@ class MainMenuState extends MusicBeatState
 
 	var menuItems:FlxTypedGroup<FlxSprite>;
 
-	var optionShit:Array<String> = ['story mode', 'freeplay', 'donate'];
+	var optionShit:Array<String> = ['story mode', 'freeplay', 'options', 'donate'];
 
 	var magenta:FlxSprite;
 	var camFollow:FlxObject;
@@ -36,7 +39,7 @@ class MainMenuState extends MusicBeatState
 		camFollow = new FlxObject(0, 0, 1, 1);
 		add(camFollow);
 
-		magenta = new FlxSprite(-80).loadGraphic(AssetPaths.menuBGMagenta__png);
+		magenta = new FlxSprite(-80).loadGraphic(AssetPaths.menuDesat__png);
 		magenta.scrollFactor.x = 0;
 		magenta.scrollFactor.y = 0.18;
 		magenta.setGraphicSize(Std.int(magenta.width * 1.1));
@@ -44,6 +47,7 @@ class MainMenuState extends MusicBeatState
 		magenta.screenCenter();
 		magenta.visible = false;
 		magenta.antialiasing = true;
+		magenta.color = 0xFFfd719b;
 		add(magenta);
 		// magenta.scrollFactor.set();
 
@@ -67,6 +71,11 @@ class MainMenuState extends MusicBeatState
 		}
 
 		FlxG.camera.follow(camFollow, null, 0.06);
+
+		var versionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, "v" + Application.current.meta.get('version'));
+		versionShit.scrollFactor.set();
+		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		add(versionShit);
 
 		changeItem();
 
@@ -133,6 +142,8 @@ class MainMenuState extends MusicBeatState
 										FlxG.switchState(new StoryMenuState());
 									case 'freeplay':
 										FlxG.switchState(new FreeplayState());
+									case 'options':
+										FlxG.switchState(new OptionsMenu());
 								}
 							});
 						}
