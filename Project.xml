@@ -2,7 +2,7 @@
 <project>
 	<!-- _________________________ Application Settings _________________________ -->
 
-	<app title="Friday Night Funkin" file="Funkin" packageName="com.ninjamuffin99.fridaynightfunkin" main="Main" version="0.0.1" company="ninjamuffin99" />
+	<app title="Friday Night Funkin" file="Funkin" packageName="com.ninjamuffin99.funkin" main="Main" version="0.2.1" company="ninjamuffin99" />
 
 	<!--The flixel preloader is not accurate in Chrome. You can use it regularly if you embed the swf into a html file
 		or you can set the actual size of your file manually at "FlxPreloaderBase-onUpdate-bytesTotal"-->
@@ -44,6 +44,8 @@
 	<assets path="assets/sounds" include="*.mp3" if="web" />
 	<assets path="assets/sounds" include="*.ogg" unless="web" />
 
+	<assets path="CHANGELOG.md"/>
+
 	<assets path="assets/fonts/vcr.ttf" embed="true" />
 
 
@@ -57,6 +59,9 @@
 
 	<!--In case you want to use the ui package-->
 	<haxelib name="flixel-ui" />
+	<haxelib name="newgrounds" />
+	<haxelib name="markdown" />
+	<haxelib name="HtmlParser" />
 
 	<!--In case you want to use nape with flixel-->
 	<!--<haxelib name="nape-haxe4" />-->
@@ -98,8 +103,8 @@
 	<!--Place custom nodes like icons here (higher priority to override the HaxeFlixel icon)-->
 
 	<icon path="art/icon.png" />
-	<!-- <haxedef name="SKIP_TO_PLAYSTATE" if="debug" /> -->
-	<haxedef name="NG_LOGIN" />
+	<haxedef name="SKIP_TO_PLAYSTATE" if="debug" />
+	<!-- <haxedef name="NG_LOGIN" /> -->
 
 
 </project>
