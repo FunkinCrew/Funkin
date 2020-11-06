@@ -463,7 +463,7 @@ class PlayState extends MusicBeatState
 			daBeats += 1;
 		}
 
-		trace(unspawnNotes.length);
+		// trace(unspawnNotes.length);
 		// playerCounter += 1;
 
 		unspawnNotes.sort(sortByShit);
@@ -585,9 +585,6 @@ class PlayState extends MusicBeatState
 	override public function update(elapsed:Float)
 	{
 		super.update(elapsed);
-
-		// trace("SONG POS: " + Conductor.songPosition);
-		// FlxG.sound.music.pitch = 2;
 
 		if (FlxG.keys.justPressed.ENTER && startedCountdown)
 		{
@@ -822,8 +819,6 @@ class PlayState extends MusicBeatState
 
 	function endSong():Void
 	{
-		trace('SONG DONE' + isStoryMode);
-
 		Highscore.saveScore(SONG.song, songScore, storyDifficulty);
 
 		if (isStoryMode)
@@ -1021,7 +1016,6 @@ class PlayState extends MusicBeatState
 				if (daNote.canBeHit && daNote.mustPress && !daNote.tooLate)
 				{
 					possibleNotes.push(daNote);
-					trace('NOTE-' + daNote.strumTime + ' ADDED');
 				}
 			});
 
@@ -1214,7 +1208,6 @@ class PlayState extends MusicBeatState
 
 	function noteCheck(keyP:Bool, note:Note):Void
 	{
-		trace(note.noteData + ' note check here ' + keyP);
 		if (keyP)
 			goodNoteHit(note);
 		else
