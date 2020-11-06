@@ -562,7 +562,7 @@ class PlayState extends MusicBeatState
 		{
 			if (FlxG.sound.music != null)
 			{
-				vocals.time = FlxG.sound.music.time;
+				vocals.time = Conductor.songPosition;
 
 				FlxG.sound.music.play();
 				vocals.play();
@@ -595,9 +595,9 @@ class PlayState extends MusicBeatState
 			openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 		}
 
-		if (FlxG.keys.justPressed.ESCAPE)
+		if (FlxG.keys.justPressed.SEVEN)
 		{
-			// FlxG.switchState(new ChartingState());
+			FlxG.switchState(new ChartingState());
 		}
 
 		// FlxG.watch.addQuick('VOL', vocals.amplitudeLeft);
@@ -792,6 +792,7 @@ class PlayState extends MusicBeatState
 				}
 
 				daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
+
 				// WIP interpolation shit? Need to fix the pause issue
 				// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
 
@@ -820,11 +821,7 @@ class PlayState extends MusicBeatState
 	{
 		trace('SONG DONE' + isStoryMode);
 
-
-		#if !switch
-		NGio.postScore(songScore, SONG.song);
-		#end
-
+		Highscore.saveScore(SONG.song, songScore, storyDifficulty);
 
 		if (isStoryMode)
 		{
@@ -838,10 +835,7 @@ class PlayState extends MusicBeatState
 
 				StoryMenuState.weekUnlocked[1] = true;
 
-				#if !switch
 				NGio.unlockMedal(60961);
-				#end
-
 
 				FlxG.save.data.weekUnlocked = StoryMenuState.weekUnlocked;
 				FlxG.save.flush();
