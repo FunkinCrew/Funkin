@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Can now change difficulties in Freeplay mode
 
 ### Changed
-- Balanced out Normal mode for the harder songs. Should be much easier all around.
+- Balanced out Normal mode for the harder songs(Dadbattle and Spookeez, not South yet). Should be much easier all around.
 - Put tutorial in it's own 'week', so that if you want to play week 1, you don't have to play the tutorial.
 
 ### Fixed
