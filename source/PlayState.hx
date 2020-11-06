@@ -37,6 +37,7 @@ class PlayState extends MusicBeatState
 	public static var curLevel:String = 'Tutorial';
 	public static var SONG:SwagSong;
 	public static var isStoryMode:Bool = false;
+	public static var storyWeek:Int = 0;
 	public static var storyPlaylist:Array<String> = [];
 	public static var storyDifficulty:Int = 1;
 
@@ -82,6 +83,8 @@ class PlayState extends MusicBeatState
 
 	var talking:Bool = true;
 	var songScore:Int = 0;
+
+	public static var campaignScore:Int = 0;
 
 	override public function create()
 	{
@@ -825,6 +828,8 @@ class PlayState extends MusicBeatState
 
 		if (isStoryMode)
 		{
+			campaignScore += songScore;
+
 			storyPlaylist.remove(storyPlaylist[0]);
 
 			if (storyPlaylist.length <= 0)
@@ -836,6 +841,7 @@ class PlayState extends MusicBeatState
 				StoryMenuState.weekUnlocked[1] = true;
 
 				NGio.unlockMedal(60961);
+				Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficulty);
 
 				FlxG.save.data.weekUnlocked = StoryMenuState.weekUnlocked;
 				FlxG.save.flush();
