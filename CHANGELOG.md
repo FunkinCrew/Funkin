@@ -7,10 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.2.1.2] - 2020-11-06
 ### Fixed
 - Story mode scores not properly resetting, leading to VERY inflated highscores on the leaderboards. This also requires me to clear the scores that are on the leaderboard right now, sorry!
-
+- Difficulty on storymode and in freeplay scores
 ## [0.2.1.1] - 2020-11-06
 ### Fixed
-- Difficulty on storymode and in freeplay scores
 - Week 2 not unlocking properly
 
 ## [0.2.1] - 2020-11-06
