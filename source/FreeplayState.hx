@@ -17,6 +17,7 @@ class FreeplayState extends MusicBeatState
 
 	var selector:FlxText;
 	var curSelected:Int = 0;
+	var curDifficulty:Int = 1;
 
 	var scoreText:FlxText;
 	var lerpScore:Int = 0;
@@ -77,6 +78,7 @@ class FreeplayState extends MusicBeatState
 		add(scoreText);
 
 		changeSelection();
+		changeDiff();
 
 		// FlxG.sound.playMusic('assets/music/title' + TitleState.soundExt, 0);
 		// FlxG.sound.music.fadeIn(2, 0, 0.8);
@@ -141,6 +143,16 @@ class FreeplayState extends MusicBeatState
 			if (FlxG.sound.music != null)
 				FlxG.sound.music.stop();
 		}
+	}
+
+	function changeDiff(change:Int = 0)
+	{
+		curDifficulty += change;
+
+		if (curDifficulty < 0)
+			curDifficulty = 2;
+		if (curDifficulty > 2)
+			curDifficulty = 0;
 	}
 
 	function changeSelection(change:Int = 0)
