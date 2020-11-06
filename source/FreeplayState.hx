@@ -20,6 +20,7 @@ class FreeplayState extends MusicBeatState
 	var curDifficulty:Int = 1;
 
 	var scoreText:FlxText;
+	var diffText:FlxText;
 	var lerpScore:Int = 0;
 	var intendedScore:Int = 0;
 
@@ -71,9 +72,13 @@ class FreeplayState extends MusicBeatState
 		scoreText.setFormat("assets/fonts/vcr.ttf", 32, FlxColor.WHITE, RIGHT);
 		// scoreText.alignment = RIGHT;
 
-		var scoreBG:FlxSprite = new FlxSprite(scoreText.x - 6, 0).makeGraphic(Std.int(FlxG.width * 0.35), 40, 0xFF000000);
+		var scoreBG:FlxSprite = new FlxSprite(scoreText.x - 6, 0).makeGraphic(Std.int(FlxG.width * 0.35), 66, 0xFF000000);
 		scoreBG.alpha = 0.6;
 		add(scoreBG);
+
+		diffText = new FlxText(scoreText.x, scoreText.y + 36, 0, "", 24);
+		diffText.font = scoreText.font;
+		add(diffText);
 
 		add(scoreText);
 
@@ -130,6 +135,11 @@ class FreeplayState extends MusicBeatState
 			changeSelection(1);
 		}
 
+		if (controls.LEFT_P)
+			changeDiff(-1);
+		if (controls.RIGHT_P)
+			changeDiff(1);
+
 		if (controls.BACK)
 		{
 			FlxG.switchState(new MainMenuState());
@@ -137,7 +147,9 @@ class FreeplayState extends MusicBeatState
 
 		if (accepted)
 		{
-			PlayState.SONG = Song.loadFromJson(songs[curSelected].toLowerCase(), songs[curSelected].toLowerCase());
+			var poop:String = Highscore.formatSong(songs[curSelected].toLowerCase(), curDifficulty);
+
+			PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].toLowerCase());
 			PlayState.isStoryMode = false;
 			FlxG.switchState(new PlayState());
 			if (FlxG.sound.music != null)
@@ -153,6 +165,18 @@ class FreeplayState extends MusicBeatState
 			curDifficulty = 2;
 		if (curDifficulty > 2)
 			curDifficulty = 0;
+
+		intendedScore = Highscore.getScore(songs[curSelected], curDifficulty);
+
+		switch (curDifficulty)
+		{
+			case 0:
+				diffText.text = "EASY";
+			case 1:
+				diffText.text = 'NORMAL';
+			case 2:
+				diffText.text = "HARD";
+		}
 	}
 
 	function changeSelection(change:Int = 0)
@@ -168,7 +192,7 @@ class FreeplayState extends MusicBeatState
 
 		// selector.y = (70 * curSelected) + 30;
 
-		intendedScore = Highscore.getScore(songs[curSelected], 1);
+		intendedScore = Highscore.getScore(songs[curSelected], curDifficulty);
 		// lerpScore = 0;
 
 		var bullShit:Int = 0;
