@@ -29,7 +29,7 @@ class Preloader extends FlxBasePreloader
         this._width = Lib.current.stage.stageWidth;
         this._height = Lib.current.stage.stageHeight;
          
-        var ratio:Float = this._width / 1920; //This allows us to scale assets depending on the size of the screen.
+        var ratio:Float = this._width / 2560; //This allows us to scale assets depending on the size of the screen.
          
         logo = new Sprite();
         logo.addChild(new Bitmap(new LogoImage(0,0))); //Sets the graphic of the sprite to a Bitmap object, which uses our embedded BitmapData class.
@@ -43,27 +43,19 @@ class Preloader extends FlxBasePreloader
      
     override function update(Percent:Float):Void 
     {
-        if (Percent < 0.1)
+        if(Percent < 75)
         {
-            logo.alpha = 0;
+            logo.scaleX += Percent / 1280;
+            logo.scaleY += Percent / 1280;
+            logo.x -= Percent * 0.9;
+            logo.y -= Percent / 1.6;
+        }else{
+            logo.scaleX = this._width / 1280;
+            logo.scaleY = this._width / 1280;
+            logo.x = ((this._width) / 2) - ((logo.width) / 2);
+            logo.y = (this._height / 2) - ((logo.height) / 2);
         }
-        else if (Percent < 0.25)
-        {
-            logo.alpha = 0;
-        }
-        else if (Percent < 0.5)
-        {
-            logo.alpha = 1;
-         }
-        else if ((Percent > 0.75) && (Percent < 0.9))
-        {
-            logo.alpha = 0;
-        }
-        else if (Percent > 0.9)
-        {
-            logo.alpha = 1;
-        }
-
+        
         super.update(Percent);
     }
     #end
