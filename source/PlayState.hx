@@ -882,6 +882,9 @@ class PlayState extends MusicBeatState
 				if (storyDifficulty == 2)
 					difficulty == '-hard';
 
+				trace('LOADING NEXT SONG');
+				trace(PlayState.storyPlaylist[0].toLowerCase() + difficulty);
+
 				PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + difficulty, PlayState.storyPlaylist[0]);
 				FlxG.switchState(new PlayState());
 			}
