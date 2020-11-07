@@ -37,8 +37,8 @@
 
 	<classpath name="source" />
 
-	<assets path="assets/images"/>
-	<assets path="assets/data"/>
+	<assets path="assets/images" />
+	<assets path="assets/data" />
 	
 	<assets path="assets/music" include="*.mp3" if="web" />
 	<assets path="assets/music" include="*.ogg" unless="web" />
@@ -59,7 +59,8 @@
 
 	<!--In case you want to use the ui package-->
 	<haxelib name="flixel-ui" />
-	<haxelib name="newgrounds" unless="switch" />
+	<haxelib name="newgrounds" />
+	<haxelib name="faxe" />
 	<!-- <haxelib name="markdown" /> -->
 	<!-- <haxelib name="HtmlParser" /> -->
 

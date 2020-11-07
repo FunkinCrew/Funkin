@@ -30,6 +30,9 @@ import flixel.util.FlxTimer;
 import haxe.Json;
 import lime.utils.Assets;
 
+//New Audio BS
+//import faxe.Faxe;
+
 using StringTools;
 
 class PlayState extends MusicBeatState
@@ -841,9 +844,7 @@ class PlayState extends MusicBeatState
 
 	function endSong():Void
 	{
-		#if !switch
 		Highscore.saveScore(SONG.song, songScore, storyDifficulty);
-		#end
 
 		if (isStoryMode)
 		{
@@ -861,9 +862,10 @@ class PlayState extends MusicBeatState
 
 				#if !switch
 				NGio.unlockMedal(60961);
-				Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficulty);
 				#end
 
+				Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficulty);
+				
 				FlxG.save.data.weekUnlocked = StoryMenuState.weekUnlocked;
 				FlxG.save.flush();
 			}
