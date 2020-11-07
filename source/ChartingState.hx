@@ -28,7 +28,9 @@ import openfl.events.Event;
 import openfl.events.IOErrorEvent;
 import openfl.events.IOErrorEvent;
 import openfl.events.IOErrorEvent;
+import openfl.media.Sound;
 import openfl.net.FileReference;
+import openfl.utils.ByteArray;
 
 using StringTools;
 
@@ -760,6 +762,13 @@ class ChartingState extends MusicBeatState
 	{
 		PlayState.SONG = Song.loadFromJson(song.toLowerCase(), song.toLowerCase());
 		FlxG.resetState();
+	}
+
+	var mp3File:Sound;
+	var waveForm:FlxSprite;
+
+	function drawWave():Void
+	{
 	}
 
 	private function saveLevel()
