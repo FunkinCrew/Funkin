@@ -841,7 +841,9 @@ class PlayState extends MusicBeatState
 
 	function endSong():Void
 	{
+		#if !switch
 		Highscore.saveScore(SONG.song, songScore, storyDifficulty);
+		#end
 
 		if (isStoryMode)
 		{
@@ -859,8 +861,8 @@ class PlayState extends MusicBeatState
 
 				#if !switch
 				NGio.unlockMedal(60961);
-				#end
 				Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficulty);
+				#end
 
 				FlxG.save.data.weekUnlocked = StoryMenuState.weekUnlocked;
 				FlxG.save.flush();
