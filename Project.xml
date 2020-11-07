@@ -4,10 +4,12 @@
 
 	<app title="Friday Night Funkin" file="Funkin" packageName="com.ninjamuffin99.funkin" main="Main" version="0.2.1.2" company="ninjamuffin99" />
 
+	<!--Switch Export with Unique ApplicationID-->
+	<set name="APP_ID" value="0x0100f6c013bbc000" />
+
 	<!--The flixel preloader is not accurate in Chrome. You can use it regularly if you embed the swf into a html file
 		or you can set the actual size of your file manually at "FlxPreloaderBase-onUpdate-bytesTotal"-->
-	<app preloader="flixel.system.FlxPreloader" unless="switch" />
-	<app preloader="Preloader" resizable="true" if="switch" />
+	<app preloader="Preloader" resizable="true" />
 
 	<!--Minimum without FLX_NO_GAMEPAD: 11.8, without FLX_NO_NATIVE_CURSOR: 11.2-->
 	<set name="SWF_VERSION" value="11.8" />
