@@ -37,7 +37,7 @@ class TitleState extends MusicBeatState
 		['you already know', 'we really out here'], ['rise and grind', 'love to luis'], ['like parappa', 'but cooler'],
 		['album of the year', 'chuckie finster'], ["free gitaroo man", "with love to wandaboy"], ['better than geometry dash', 'fight me robtop'],
 		['kiddbrute for president', 'vote now'], ['play dead estate', 'on newgrounds'], ['this is a god damn prototype', 'we workin on it okay'],
-		['WOMEN ARE real', 'this is official']];
+		['WOMEN ARE real', 'this is official'], ['Nintendo Switch', 'Pre-orders now available']];
 
 	var curWacky:Array<String> = [];
 
