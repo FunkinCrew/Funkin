@@ -146,6 +146,15 @@ class NGio
 		// NGio.scoreboardArray = NG.core.scoreBoards.get(8004).scores;
 	}
 
+	inline static public function logEvent(event:String)
+	{
+		if (isLoggedIn)
+		{
+			NG.core.calls.event.logEvent(event);
+			trace('should have logged: ' + event);
+		}
+	}
+
 	inline static public function unlockMedal(id:Int)
 	{
 		if (isLoggedIn)

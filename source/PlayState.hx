@@ -37,6 +37,7 @@ class PlayState extends MusicBeatState
 	public static var curLevel:String = 'Tutorial';
 	public static var SONG:SwagSong;
 	public static var isStoryMode:Bool = false;
+	public static var storyWeek:Int = 0;
 	public static var storyPlaylist:Array<String> = [];
 	public static var storyDifficulty:Int = 1;
 
@@ -82,6 +83,8 @@ class PlayState extends MusicBeatState
 
 	var talking:Bool = true;
 	var songScore:Int = 0;
+
+	public static var campaignScore:Int = 0;
 
 	override public function create()
 	{
@@ -460,7 +463,7 @@ class PlayState extends MusicBeatState
 			daBeats += 1;
 		}
 
-		trace(unspawnNotes.length);
+		// trace(unspawnNotes.length);
 		// playerCounter += 1;
 
 		unspawnNotes.sort(sortByShit);
@@ -562,7 +565,7 @@ class PlayState extends MusicBeatState
 		{
 			if (FlxG.sound.music != null)
 			{
-				vocals.time = FlxG.sound.music.time;
+				vocals.time = Conductor.songPosition;
 
 				FlxG.sound.music.play();
 				vocals.play();
@@ -602,9 +605,9 @@ class PlayState extends MusicBeatState
 			openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 		}
 
-		if (FlxG.keys.justPressed.ESCAPE)
+		if (FlxG.keys.justPressed.SEVEN)
 		{
-			// FlxG.switchState(new ChartingState());
+			FlxG.switchState(new ChartingState());
 		}
 
 		// FlxG.watch.addQuick('VOL', vocals.amplitudeLeft);
@@ -641,8 +644,7 @@ class PlayState extends MusicBeatState
 		}
 		else
 		{
-			//Conductor.songPosition = FlxG.sound.music.time;
-			Conductor.songPosition += FlxG.elapsed * 1000;
+			Conductor.songPosition = FlxG.sound.music.time;
 
 			if (!paused)
 			{
@@ -812,6 +814,7 @@ class PlayState extends MusicBeatState
 				}
 
 				daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
+
 				// WIP interpolation shit? Need to fix the pause issue
 				// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
 
@@ -838,16 +841,12 @@ class PlayState extends MusicBeatState
 
 	function endSong():Void
 	{
-		trace('SONG DONE' + isStoryMode);
-
-
-		#if !switch
-		NGio.postScore(songScore, SONG.song);
-		#end
-
+		Highscore.saveScore(SONG.song, songScore, storyDifficulty);
 
 		if (isStoryMode)
 		{
+			campaignScore += songScore;
+
 			storyPlaylist.remove(storyPlaylist[0]);
 
 			if (storyPlaylist.length <= 0)
@@ -856,12 +855,12 @@ class PlayState extends MusicBeatState
 
 				FlxG.switchState(new StoryMenuState());
 
-				StoryMenuState.weekUnlocked[1] = true;
+				StoryMenuState.weekUnlocked[2] = true;
 
 				#if !switch
 				NGio.unlockMedal(60961);
 				#end
-
+				Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficulty);
 
 				FlxG.save.data.weekUnlocked = StoryMenuState.weekUnlocked;
 				FlxG.save.flush();
@@ -1041,7 +1040,6 @@ class PlayState extends MusicBeatState
 				if (daNote.canBeHit && daNote.mustPress && !daNote.tooLate)
 				{
 					possibleNotes.push(daNote);
-					trace('NOTE-' + daNote.strumTime + ' ADDED');
 				}
 			});
 
@@ -1234,7 +1232,6 @@ class PlayState extends MusicBeatState
 
 	function noteCheck(keyP:Bool, note:Note):Void
 	{
-		trace(note.noteData + ' note check here ' + keyP);
 		if (keyP)
 			goodNoteHit(note);
 		else
@@ -1304,9 +1301,9 @@ class PlayState extends MusicBeatState
 			if (vocals.time > Conductor.songPosition + Conductor.stepCrochet
 				|| vocals.time < Conductor.songPosition - Conductor.stepCrochet)
 			{
-				//vocals.pause();
+				vocals.pause();
 				vocals.time = Conductor.songPosition;
-				//vocals.play();
+				vocals.play();
 			}
 		}
 
