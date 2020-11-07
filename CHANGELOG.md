@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Story mode scores not properly resetting, leading to VERY inflated highscores on the leaderboards. This also requires me to clear the scores that are on the leaderboard right now, sorry!
 - Difficulty on storymode and in freeplay scores
+- Hard mode difficulty on campaign levels have been fixed
 
 ## [0.2.1.1] - 2020-11-06
 ### Fixed
