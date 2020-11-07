@@ -288,6 +288,10 @@ class PlayState extends MusicBeatState
 
 		// cameras = [FlxG.cameras.list[1]];
 
+		#if lime
+		trace("IT'S LIME");
+		#end
+
 		super.create();
 	}
 
@@ -589,12 +593,9 @@ class PlayState extends MusicBeatState
 	{
 		super.update(elapsed);
 
-		#if lime
-		trace("IT'S LIME");
-		#end
-
 		//trace("FlxG.elapsed: " + FlxG.elapsed);
 		trace("FlxG.sound.music.time: " + FlxG.sound.music.time);
+		trace("Conductor.songPosition: " + Conductor.songPosition);
 		//trace("FlxG.sound.music.playing: " + FlxG.sound.music.playing);
 		//trace("SONG POS: " + Conductor.songPosition);
 		// FlxG.sound.music.pitch = 2;
@@ -647,7 +648,8 @@ class PlayState extends MusicBeatState
 		}
 		else
 		{
-			Conductor.songPosition = FlxG.sound.music.time;
+			//Conductor.songPosition = FlxG.sound.music.time;
+			Conductor.songPosition += FlxG.elapsed * 1000;
 
 			if (!paused)
 			{

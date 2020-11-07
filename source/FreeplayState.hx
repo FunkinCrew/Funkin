@@ -119,8 +119,6 @@ class FreeplayState extends MusicBeatState
 	{
 		super.update(elapsed);
 
-		trace("Freeplay Menu Updating");
-
 		lerpScore = Math.floor(FlxMath.lerp(lerpScore, intendedScore, 0.4));
 		scoreText.text = "PERSONAL BEST:" + lerpScore;
 
