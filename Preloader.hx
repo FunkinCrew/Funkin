@@ -43,7 +43,7 @@ class Preloader extends FlxBasePreloader
      
     override function update(Percent:Float):Void 
     {
-        if(Percent < 75)
+        if(Percent < 69)
         {
             logo.scaleX += Percent / 1280;
             logo.scaleY += Percent / 1280;
