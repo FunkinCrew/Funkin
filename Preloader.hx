@@ -29,7 +29,7 @@ class Preloader extends FlxBasePreloader
         this._width = Lib.current.stage.stageWidth;
         this._height = Lib.current.stage.stageHeight;
          
-        var ratio:Float = this._width / 800; //This allows us to scale assets depending on the size of the screen.
+        var ratio:Float = this._width / 1920; //This allows us to scale assets depending on the size of the screen.
          
         logo = new Sprite();
         logo.addChild(new Bitmap(new LogoImage(0,0))); //Sets the graphic of the sprite to a Bitmap object, which uses our embedded BitmapData class.
