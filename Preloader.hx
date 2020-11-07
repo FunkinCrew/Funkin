@@ -2,9 +2,6 @@ package ;
  
 import flixel.system.FlxBasePreloader;
 import openfl.display.Sprite;
-import flash.text.Font;
-import flash.text.TextField;
-import flash.text.TextFormat;
 import flash.display.Bitmap;
 import flash.display.BitmapData;
 import flash.display.BlendMode;
@@ -16,8 +13,7 @@ import flixel.FlxG;
  
 class Preloader extends FlxBasePreloader
 {
-    #if !js
-    public function new(MinDisplayTime:Float=5, ?AllowedURLs:Array<String>) 
+    public function new(MinDisplayTime:Float=4, ?AllowedURLs:Array<String>) 
     {
         super(MinDisplayTime, AllowedURLs);
     }
@@ -58,5 +54,4 @@ class Preloader extends FlxBasePreloader
         
         super.update(Percent);
     }
-    #end
 }
