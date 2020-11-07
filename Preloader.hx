@@ -12,7 +12,7 @@ import flash.display.Sprite;
 import flash.Lib;
 import flixel.FlxG;
  
-@:bitmap("assets/images/preloaderArt.png") class LogoImage extends BitmapData { }
+@:bitmap("art/preloaderArt.png") class LogoImage extends BitmapData { }
  
 class Preloader extends FlxBasePreloader
 {
