@@ -82,21 +82,6 @@
 	<SubTexture name="lucky guitar idle0033" x="1964" y="1148" width="730" height="573" frameX="0" frameY="0" frameWidth="751" frameHeight="575"/>
 	<SubTexture name="lucky guitar idle0034" x="2694" y="1148" width="617" height="486" frameX="-113" frameY="-87" frameWidth="751" frameHeight="575"/>
 	<SubTexture name="lucky guitar idle0035" x="2694" y="1148" width="617" height="486" frameX="-113" frameY="-87" frameWidth="751" frameHeight="575"/>
-	<SubTexture name="lucky guitar idle sketch0000" x="3311" y="1148" width="405" height="291" frameX="-164" frameY="-3" frameWidth="870" frameHeight="655"/>
-	<SubTexture name="lucky guitar idle sketch0001" x="3311" y="1148" width="405" height="291" frameX="-164" frameY="-3" frameWidth="870" frameHeight="655"/>
-	<SubTexture name="lucky guitar idle sketch0002" x="0" y="1721" width="579" height="586" frameX="-42" frameY="-69" frameWidth="870" frameHeight="655"/>
-	<SubTexture name="lucky guitar idle sketch0003" x="0" y="1721" width="579" height="586" frameX="-42" frameY="-69" frameWidth="870" frameHeight="655"/>
-	<SubTexture name="lucky guitar idle sketch0004" x="579" y="1721" width="665" height="288" frameX="0" frameY="-364" frameWidth="870" frameHeight="655"/>
-	<SubTexture name="lucky guitar idle sketch0005" x="579" y="1721" width="665" height="288" frameX="0" frameY="-364" frameWidth="870" frameHeight="655"/>
-	<SubTexture name="lucky guitar idle sketch0006" x="1244" y="1721" width="330" height="271" frameX="-146" frameY="-376" frameWidth="870" frameHeight="655"/>
-	<SubTexture name="lucky guitar idle sketch0007" x="1244" y="1721" width="330" height="271" frameX="-146" frameY="-376" frameWidth="870" frameHeight="655"/>
-	<SubTexture name="lucky guitar idle sketch0008" x="1574" y="1721" width="260" height="259" frameX="-279" frameY="-381" frameWidth="870" frameHeight="655"/>
-	<SubTexture name="lucky guitar idle sketch0009" x="1574" y="1721" width="260" height="259" frameX="-279" frameY="-381" frameWidth="870" frameHeight="655"/>
-	<SubTexture name="lucky guitar idle sketch0010" x="1834" y="1721" width="373" height="163" frameX="-317" frameY="-477" frameWidth="870" frameHeight="655"/>
-	<SubTexture name="lucky guitar idle sketch0011" x="1834" y="1721" width="373" height="163" frameX="-317" frameY="-477" frameWidth="870" frameHeight="655"/>
-	<SubTexture name="lucky guitar idle sketch0012" x="2207" y="1721" width="378" height="334" frameX="-492" frameY="-104" frameWidth="870" frameHeight="655"/>
-	<SubTexture name="lucky guitar idle sketch0013" x="2207" y="1721" width="378" height="334" frameX="-492" frameY="-104" frameWidth="870" frameHeight="655"/>
-	<SubTexture name="lucky guitar idle sketch0014" x="2585" y="1721" width="464" height="236" frameX="-269" frameY="0" frameWidth="870" frameHeight="655"/>
 	<SubTexture name="lucky sing left0000" x="3049" y="1721" width="767" height="575" frameX="-173" frameY="-9" frameWidth="953" frameHeight="625"/>
 	<SubTexture name="lucky sing left0001" x="3049" y="1721" width="767" height="575" frameX="-173" frameY="-9" frameWidth="953" frameHeight="625"/>
 	<SubTexture name="lucky sing left0002" x="0" y="2307" width="654" height="489" frameX="-286" frameY="-95" frameWidth="953" frameHeight="625"/>
