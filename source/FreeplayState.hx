@@ -8,7 +8,6 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
-//import htmlparser.HtmlDocument;
 import lime.utils.Assets;
 
 class FreeplayState extends MusicBeatState
@@ -120,6 +119,10 @@ class FreeplayState extends MusicBeatState
 		super.update(elapsed);
 
 		lerpScore = Math.floor(FlxMath.lerp(lerpScore, intendedScore, 0.4));
+
+		if (Math.abs(lerpScore - intendedScore) <= 10)
+			lerpScore = intendedScore;
+
 		scoreText.text = "PERSONAL BEST:" + lerpScore;
 
 		var upP = controls.UP_P;
@@ -169,9 +172,7 @@ class FreeplayState extends MusicBeatState
 		if (curDifficulty > 2)
 			curDifficulty = 0;
 
-		#if !switch
 		intendedScore = Highscore.getScore(songs[curSelected], curDifficulty);
-		#end
 
 		switch (curDifficulty)
 		{
@@ -199,9 +200,7 @@ class FreeplayState extends MusicBeatState
 
 		// selector.y = (70 * curSelected) + 30;
 
-		#if !switch
 		intendedScore = Highscore.getScore(songs[curSelected], curDifficulty);
-		#end
 		// lerpScore = 0;
 
 		var bullShit:Int = 0;

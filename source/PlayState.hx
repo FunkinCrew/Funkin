@@ -880,7 +880,7 @@ class PlayState extends MusicBeatState
 					difficulty = '-easy';
 
 				if (storyDifficulty == 2)
-					difficulty == '-hard';
+					difficulty = '-hard';
 
 				trace('LOADING NEXT SONG');
 				trace(PlayState.storyPlaylist[0].toLowerCase() + difficulty);
