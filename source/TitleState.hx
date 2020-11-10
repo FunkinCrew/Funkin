@@ -59,7 +59,7 @@ class TitleState extends MusicBeatState
 
 		super.create();
 
-		#if (!switch && !debug && NG_LOGIN)
+		#if (web && !debug && NG_LOGIN)
 		var ng:NGio = new NGio(APIStuff.API, APIStuff.EncKey);
 		#end
 
