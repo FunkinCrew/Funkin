@@ -679,6 +679,7 @@ class PlayState extends MusicBeatState
 			if (camFollow.x != dad.getMidpoint().x + 150 && !PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection)
 			{
 				camFollow.setPosition(dad.getMidpoint().x + 150, dad.getMidpoint().y - 100);
+				//camFollow.setPosition(lucky.getMidpoint().x - 120, lucky.getMidpoint().y + 210);
 				vocals.volume = 1;
 
 				if (SONG.song.toLowerCase() == 'tutorial')
