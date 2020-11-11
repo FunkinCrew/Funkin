@@ -3,6 +3,8 @@ package;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 
+using StringTools;
+
 class Character extends FlxSprite
 {
 	public var animOffsets:Map<String, Array<Dynamic>>;
@@ -10,6 +12,8 @@ class Character extends FlxSprite
 
 	public var isPlayer:Bool = false;
 	public var curCharacter:String = 'bf';
+
+	public var holdTimer:Float = 0;
 
 	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false)
 	{
@@ -104,6 +108,29 @@ class Character extends FlxSprite
 				addOffset("singDOWN", -30, -40);
 				playAnim('idle');
 		}
+	}
+
+	override function update(elapsed:Float)
+	{
+		if (curCharacter != 'bf')
+		{
+			if (animation.curAnim.name.startsWith('sing'))
+			{
+				holdTimer += elapsed;
+			}
+
+			var dadVar:Float = 4;
+
+			if (curCharacter == 'dad')
+				dadVar = 6.1;
+			if (holdTimer >= Conductor.stepCrochet * dadVar * 0.001)
+			{
+				dance();
+				holdTimer = 0;
+			}
+		}
+
+		super.update(elapsed);
 	}
 
 	private var danced:Bool = false;
