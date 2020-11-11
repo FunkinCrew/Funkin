@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Fixed
 - Cleaned up some charting on South on hard mode
+- Fixed some animation timings, should feel both better to play, and watch.
 
 ## [0.2.1.2] - 2020-11-06
 ### Fixed
