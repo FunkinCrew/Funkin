@@ -3,6 +3,7 @@ package;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
+import flixel.util.FlxTimer;
 
 using StringTools;
 
@@ -54,6 +55,13 @@ class Boyfriend extends Character
 
 	override function update(elapsed:Float)
 	{
+		if (animation.curAnim.name.startsWith('sing'))
+		{
+			holdTimer += elapsed;
+		}
+		else
+			holdTimer = 0;
+
 		if (animation.curAnim.name.endsWith('miss') && animation.curAnim.finished && !debugMode)
 		{
 			playAnim('idle', true, false, 10);
