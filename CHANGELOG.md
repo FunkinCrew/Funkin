@@ -4,6 +4,11 @@ All notable changes will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Fixed
+- Cleaned up some charting on South on hard mode
+- Fixed some animation timings, should feel both better to play, and watch.
+
 ## [0.2.1.2] - 2020-11-06
 ### Fixed
 - Story mode scores not properly resetting, leading to VERY inflated highscores on the leaderboards. This also requires me to clear the scores that are on the leaderboard right now, sorry!
