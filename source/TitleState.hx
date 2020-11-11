@@ -38,7 +38,7 @@ class TitleState extends MusicBeatState
 		['Ritz dx', 'rest in peace'], ['rate five', 'pls no blam'], ['rhythm gaming', 'ultimate'], ['game of the year', 'forever'],
 		['you already know', 'we really out here'], ['rise and grind', 'love to luis'], ['like parappa', 'but cooler'],
 		['album of the year', 'chuckie finster'], ["free gitaroo man", "with love to wandaboy"], ['better than geometry dash', 'fight me robtop'],
-		['kiddbrute for president', 'vote now'], ['play dead estate', 'on newgrounds'], ['this is a god damn prototype', 'we workin on it okay'],
+		['kiddbrute for president', 'vote now'], ['play dead estate', 'on newgrounds'], ['this a god damn prototype', 'we workin on it okay'],
 		['WOMEN ARE real', 'this is official'], ['Nintendo Switch', 'Pre-orders now available']];
 
 	var curWacky:Array<String> = [];
@@ -106,6 +106,10 @@ class TitleState extends MusicBeatState
 			transIn = FlxTransitionableState.defaultTransIn;
 			transOut = FlxTransitionableState.defaultTransOut;
 
+			// var music:FlxSound = new FlxSound();
+			// music.loadStream('assets/music/freakyMenu' + TitleState.soundExt);
+			// FlxG.sound.list.add(music);
+			// music.play();
 			FlxG.sound.playMusic('assets/music/freakyMenu' + TitleState.soundExt, 0);
 
 			FlxG.sound.music.fadeIn(4, 0, 0.7);

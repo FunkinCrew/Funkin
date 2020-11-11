@@ -30,9 +30,6 @@ import flixel.util.FlxTimer;
 import haxe.Json;
 import lime.utils.Assets;
 
-//New Audio BS
-//import faxe.Faxe;
-
 using StringTools;
 
 class PlayState extends MusicBeatState
@@ -811,6 +808,8 @@ class PlayState extends MusicBeatState
 							dad.playAnim('singLEFT', true);
 					}
 
+					dad.holdTimer = 0;
+
 					if (SONG.needsVoices)
 						vocals.volume = 1;
 
@@ -869,7 +868,7 @@ class PlayState extends MusicBeatState
 				NGio.unlockMedal(60961);
 				Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficulty);
 				#end
-				
+
 				FlxG.save.data.weekUnlocked = StoryMenuState.weekUnlocked;
 				FlxG.save.flush();
 			}
@@ -1044,6 +1043,8 @@ class PlayState extends MusicBeatState
 		// FlxG.watch.addQuick('asdfa', upP);
 		if ((upP || rightP || downP || leftP) && !boyfriend.stunned && generatedMusic)
 		{
+			boyfriend.holdTimer = 0;
+
 			var possibleNotes:Array<Note> = [];
 
 			notes.forEachAlive(function(daNote:Note)
@@ -1114,9 +1115,9 @@ class PlayState extends MusicBeatState
 			});
 		}
 
-		if (upR || leftR || rightR || downR)
+		if (boyfriend.holdTimer > Conductor.stepCrochet * 4 * 0.001 && !up && !down && !right && !left)
 		{
-			if (boyfriend.animation.curAnim.name.startsWith('sing'))
+			if (boyfriend.animation.curAnim.name.startsWith('sing') && !boyfriend.animation.curAnim.name.endsWith('miss'))
 			{
 				boyfriend.playAnim('idle');
 			}
