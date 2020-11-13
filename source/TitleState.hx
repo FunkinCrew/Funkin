@@ -20,6 +20,7 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import lime.utils.Assets;
 
 class TitleState extends MusicBeatState
 {
@@ -31,15 +32,6 @@ class TitleState extends MusicBeatState
 	var credTextShit:Alphabet;
 	var textGroup:FlxGroup;
 	var ngSpr:FlxSprite;
-
-	var wackyIntros:Array<Array<String>> = [
-		['Shoutouts to tom fulp', 'lmao'], ["Ludum dare", "extraordinaire"], ['Cyberzone', 'coming soon'], ['love to thriftman', 'swag'],
-		['ULTIMATE RHYTHM GAMING', 'probably'], ['DOPE ASS GAME', 'playstation magazine'], ['in loving memory of', 'henryeyes'], ['dancin', 'forever'],
-		['Ritz dx', 'rest in peace'], ['rate five', 'pls no blam'], ['rhythm gaming', 'ultimate'], ['game of the year', 'forever'],
-		['you already know', 'we really out here'], ['rise and grind', 'love to luis'], ['like parappa', 'but cooler'],
-		['album of the year', 'chuckie finster'], ["free gitaroo man", "with love to wandaboy"], ['better than geometry dash', 'fight me robtop'],
-		['kiddbrute for president', 'vote now'], ['play dead estate', 'on newgrounds'], ['this a god damn prototype', 'we workin on it okay'],
-		['WOMEN ARE real', 'this is official']];
 
 	var curWacky:Array<String> = [];
 
@@ -53,7 +45,7 @@ class TitleState extends MusicBeatState
 
 		PlayerSettings.init();
 
-		curWacky = FlxG.random.getObject(wackyIntros);
+		curWacky = FlxG.random.getObject(getIntroTextShit());
 
 		// DEBUG BULLSHIT
 
@@ -191,6 +183,21 @@ class TitleState extends MusicBeatState
 			initialized = true;
 
 		// credGroup.add(credTextShit);
+	}
+
+	function getIntroTextShit():Array<Array<String>>
+	{
+		var fullText:String = Assets.getText('assets/data/introText.txt');
+
+		var firstArray:Array<String> = fullText.split('\n');
+		var swagGoodArray:Array<Array<String>> = [];
+
+		for (i in firstArray)
+		{
+			swagGoodArray.push(i.split('--'));
+		}
+
+		return swagGoodArray;
 	}
 
 	var transitioning:Bool = false;
