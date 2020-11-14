@@ -707,7 +707,7 @@ class ChartingState extends MusicBeatState
 
 		curSelectedNote = _song.notes[curSection].sectionNotes[_song.notes[curSection].sectionNotes.length - 1];
 
-		trace(getStrumTime(dummyArrow.y) + (curSection * (Conductor.stepCrochet * lengthBpmBullshit()))));
+		trace(getStrumTime(dummyArrow.y) + (curSection * (Conductor.stepCrochet * lengthBpmBullshit())));
 		trace(curSection);
 
 		updateGrid();
