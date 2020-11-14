@@ -374,16 +374,24 @@ class ChartingState extends MusicBeatState
 
 	var updatedSection:Bool = false;
 
+	function lengthBpmBullshit():Float
+	{
+		if (_song.notes[curSection].changeBPM)
+			return _song.notes[curSection].lengthInSteps * (_song.notes[curSection].bpm / _song.bpm);
+		else
+			return _song.notes[curSection].lengthInSteps;
+	}
+
 	override function update(elapsed:Float)
 	{
 		Conductor.songPosition = FlxG.sound.music.time;
 		_song.song = typingShit.text;
 
-		strumLine.y = getYfromStrum(Conductor.songPosition % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps));
+		strumLine.y = getYfromStrum(Conductor.songPosition % (Conductor.stepCrochet * lengthBpmBullshit()));
 
 		if (curBeat % 4 == 0)
 		{
-			if (curStep > (_song.notes[curSection].lengthInSteps) * (curSection + 1))
+			if (curStep > lengthBpmBullshit() * (curSection + 1))
 			{
 				trace(curStep);
 				trace((_song.notes[curSection].lengthInSteps) * (curSection + 1));
@@ -525,14 +533,14 @@ class ChartingState extends MusicBeatState
 				vocals.pause();
 
 				var daNum:Int = 0;
-				var daLength:Int = 0;
+				var daLength:Float = 0;
 				while (daNum <= sec)
 				{
-					daLength += _song.notes[daNum].lengthInSteps;
+					daLength += lengthBpmBullshit();
 					daNum++;
 				}
 
-				FlxG.sound.music.time = (daLength - (_song.notes[sec].lengthInSteps)) * Conductor.stepCrochet;
+				FlxG.sound.music.time = (daLength - lengthBpmBullshit()) * Conductor.stepCrochet;
 				vocals.time = FlxG.sound.music.time;
 				updateCurStep();
 			}
@@ -620,7 +628,7 @@ class ChartingState extends MusicBeatState
 			note.setGraphicSize(GRID_SIZE, GRID_SIZE);
 			note.updateHitbox();
 			note.x = Math.floor(daNoteInfo * GRID_SIZE);
-			note.y = getYfromStrum(daStrumTime) % gridBG.height;
+			note.y = Math.floor(getYfromStrum(daStrumTime)) % gridBG.height;
 
 			curRenderedNotes.add(note);
 
@@ -691,7 +699,7 @@ class ChartingState extends MusicBeatState
 
 	private function addNote():Void
 	{
-		var noteStrum = Math.round(getStrumTime(dummyArrow.y) + (curSection * (Conductor.stepCrochet * 16)));
+		var noteStrum = getStrumTime(dummyArrow.y) + (curSection * (Conductor.stepCrochet * lengthBpmBullshit()));
 		var noteData = Math.floor(FlxG.mouse.x / GRID_SIZE);
 		var noteSus = 0;
 
@@ -699,7 +707,7 @@ class ChartingState extends MusicBeatState
 
 		curSelectedNote = _song.notes[curSection].sectionNotes[_song.notes[curSection].sectionNotes.length - 1];
 
-		trace(getStrumTime(dummyArrow.y) + (curSection * (Conductor.stepCrochet * 16)));
+		trace(getStrumTime(dummyArrow.y) + (curSection * (Conductor.stepCrochet * lengthBpmBullshit()))));
 		trace(curSection);
 
 		updateGrid();
