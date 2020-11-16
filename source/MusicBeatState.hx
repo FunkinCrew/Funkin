@@ -34,7 +34,7 @@ class MusicBeatState extends FlxUIState
 		everyStep();
 
 		updateCurStep();
-		curBeat = Math.round(curStep / 4);
+		curBeat = Math.floor(curStep / 4);
 
 		super.update(elapsed);
 	}
