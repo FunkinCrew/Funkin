@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Music playing on the freeplay menu.
 - UI sounds on freeplay menu
+- Score now shows mid-song.
+
 ### Changed
 - Moved all the intro texts to its own txt file instead of being hardcoded, this allows for much easier customization. File is in the data folder, called "introText.txt", follow the format in there and you're probably good to go!
 ### Fixed
