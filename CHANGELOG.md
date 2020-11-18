@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Cleaned up some charting on South on hard mode
 - Fixed some animation timings, should feel both better to play, and watch.
 - Maaaybe fixed notes popping up randomly at the top of the screen for a frame or two? If this isn't fixed, uhh yall shout at me lolol
+- Animation issue where GF would freak out on the title screen if you returned to it.
 
 ## [0.2.1.2] - 2020-11-06
 ### Fixed
