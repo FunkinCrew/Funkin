@@ -39,7 +39,7 @@ a { color:inherit;
     text-align: center;
     display:block;
     font-size: 130%;
-    
+    padding-bottom: 10px;
 }
 
 .linktext a {
