@@ -68,7 +68,7 @@ class TitleState extends MusicBeatState
 		}
 
 		#if SKIP_TO_PLAYSTATE
-		FlxG.switchState(new ChartingState());
+		FlxG.switchState(new FreeplayState());
 		#else
 		startIntro();
 		#end
