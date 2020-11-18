@@ -391,7 +391,7 @@ class ChartingState extends MusicBeatState
 
 		if (curBeat % 4 == 0)
 		{
-			if (curStep > lengthBpmBullshit() * (curSection + 1))
+			if (curStep > 16 * (curSection + 1))
 			{
 				trace(curStep);
 				trace((_song.notes[curSection].lengthInSteps) * (curSection + 1));
@@ -405,6 +405,9 @@ class ChartingState extends MusicBeatState
 				changeSection(curSection + 1, false);
 			}
 		}
+
+		FlxG.watch.addQuick('daBeat', curBeat);
+		FlxG.watch.addQuick('daStep', curStep);
 
 		if (FlxG.mouse.justPressed)
 		{
@@ -699,7 +702,7 @@ class ChartingState extends MusicBeatState
 
 	private function addNote():Void
 	{
-		var noteStrum = getStrumTime(dummyArrow.y) + (curSection * (Conductor.stepCrochet * lengthBpmBullshit()));
+		var noteStrum = getStrumTime(dummyArrow.y) + (curSection * (Conductor.stepCrochet * 16));
 		var noteData = Math.floor(FlxG.mouse.x / GRID_SIZE);
 		var noteSus = 0;
 
