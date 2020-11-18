@@ -1,5 +1,5 @@
 .coolBox {
-    background: #1a1a1a;
+    background: #1a1a1aCC;
     margin: 40px 4vw;
     padding: 25px;
     font-size: 120%;
@@ -23,7 +23,6 @@ h1 {
 
 iframe {
     margin: auto;
-    width: 40%;
     display:block;
 }
 
@@ -35,4 +34,36 @@ body {
     background-size: 100% 130%;
     color:white;
     background-color: #000;
+    font-family: Arial, Helvetica, sans-serif;
+    
+}
+
+a { color:inherit;
+  text-decoration: none;}
+
+.linktext {
+    text-align: center;
+    display:block;
+    font-size: 130%;
+    
+}
+
+.linktext a {
+    font-weight: bold;
+    color:white;
+    text-shadow: 0px 0px #00000077;
+    transition: color 1s, text-shadow 1s;
+    
+}
+
+.linktext a:hover {
+  
+  border-radius: 5px;
+  text-shadow: 2px 2px #00000077;
+  color: #ffb50e;
+}
+
+#itch a:hover
+{
+    color: #fa5c5c;
 }
