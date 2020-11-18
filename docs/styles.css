@@ -8,7 +8,7 @@
 
 #wrapper
 {
-    padding: 25px;
+    padding: 20px;
     margin: auto;
 }
 
@@ -21,17 +21,11 @@ h1 {
     text-align: center;
 }
 
-iframe {
-    margin: auto;
-    display:block;
-}
-
 body {
     background-image: url('img/skin-funkin-cardbordtoast.jpg');
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-size: cover;
-    background-size: 100% 130%;
     color:white;
     background-color: #000;
     font-family: Arial, Helvetica, sans-serif;
@@ -66,4 +60,26 @@ a { color:inherit;
 #itch a:hover
 {
     color: #fa5c5c;
+}
+
+#coolervidwrapper {
+    padding-left: min(12em, 75%);
+    padding-right: min(12em, 75%);
+    min-width: 30%;
+}
+
+.videoWrapper {
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 */
+  height: 0;
+
+  max-block-size: 1400px;
+}
+.videoWrapper iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
 }
