@@ -64,6 +64,13 @@ class MusicBeatState extends FlxUIState
 		totalSteps += 1;
 		lastStep += Conductor.stepCrochet;
 
+		// If the song is at least 3 steps behind
+		if (Conductor.songPosition > lastStep + (Conductor.stepCrochet * 3))
+		{
+			lastStep = Conductor.songPosition;
+			totalSteps = Math.round(lastStep / Conductor.stepCrochet);
+		}
+
 		if (totalSteps % 4 == 0)
 			beatHit();
 	}
