@@ -15,6 +15,7 @@
 marquee {
     margin: auto;
     text-align: center;
+    display: inline-block;
 }
 
 h1 {
@@ -35,6 +36,19 @@ body {
 a { color:inherit;
   text-decoration: none;}
 
+
+.hovertext a{
+    color:white;
+    text-shadow: 0px 0px #00000077;
+    transition: color 1s, text-shadow 1s;
+}
+
+.hovertext a:hover
+{
+    text-shadow: 2px 2px #00000077;
+    color: #ffb50e;
+}
+
 .linktext {
     text-align: center;
     display:block;
@@ -43,24 +57,22 @@ a { color:inherit;
 }
 
 .linktext a {
-    font-weight: bold;
-    color:white;
-    text-shadow: 0px 0px #00000077;
-    transition: color 1s, text-shadow 1s;
-    
+    font-weight: bold;  
 }
 
 .linktext a:hover {
-  
   border-radius: 5px;
-  text-shadow: 2px 2px #00000077;
-  color: #ffb50e;
 }
 
 #itch a:hover
 {
     color: #fa5c5c;
 }
+#twitter a:hover
+{
+    color: #00acee;
+}
+
 
 #coolervidwrapper {
     padding-left: min(12em, 75%);
