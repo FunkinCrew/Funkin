@@ -1,0 +1,38 @@
+.coolBox {
+    background: #1a1a1a;
+    margin: 40px 4vw;
+    padding: 25px;
+    font-size: 120%;
+    border-radius: 10px;
+}
+
+#wrapper
+{
+    padding: 25px;
+    margin: auto;
+}
+
+marquee {
+    margin: auto;
+    text-align: center;
+}
+
+h1 {
+    text-align: center;
+}
+
+iframe {
+    margin: auto;
+    width: 40%;
+    display:block;
+}
+
+body {
+    background-image: url('http://img.ngfiles.com/themes/000/skin-funkin-cardbordtoast.jpg?1605135609');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    background-size: 100% 130%;
+    color:white;
+    background-color: #000;
+}
