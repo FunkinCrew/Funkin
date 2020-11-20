@@ -6,6 +6,7 @@ import flixel.FlxSprite;
 import flixel.FlxSubState;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.input.keyboard.FlxKey;
+import flixel.system.FlxSound;
 import flixel.util.FlxColor;
 
 class PauseSubState extends MusicBeatSubstate
@@ -15,9 +16,18 @@ class PauseSubState extends MusicBeatSubstate
 	var menuItems:Array<String> = ['Resume', 'Restart Song', 'Exit to menu'];
 	var curSelected:Int = 0;
 
+	var pauseMusic:FlxSound;
+
 	public function new(x:Float, y:Float)
 	{
 		super();
+
+		pauseMusic = new FlxSound().loadEmbedded('assets/music/breakfast' + TitleState.soundExt, true, true);
+		pauseMusic.volume = 0;
+		pauseMusic.play(false, FlxG.random.int(0, Std.int(pauseMusic.length / 2)));
+
+		FlxG.sound.list.add(pauseMusic);
+
 		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 		bg.alpha = 0.6;
 		bg.scrollFactor.set();
@@ -41,6 +51,9 @@ class PauseSubState extends MusicBeatSubstate
 
 	override function update(elapsed:Float)
 	{
+		if (pauseMusic.volume < 0.5)
+			pauseMusic.volume += 0.01 * elapsed;
+
 		super.update(elapsed);
 
 		var upP = controls.UP_P;
@@ -76,6 +89,13 @@ class PauseSubState extends MusicBeatSubstate
 			// for reference later!
 			// PlayerSettings.player1.controls.replaceBinding(Control.LEFT, Keys, FlxKey.J, null);
 		}
+	}
+
+	override function destroy()
+	{
+		pauseMusic.destroy();
+
+		super.destroy();
 	}
 
 	function changeSelection(change:Int = 0):Void

@@ -588,6 +588,7 @@ class PlayState extends MusicBeatState
 
 	private var paused:Bool = false;
 	var startedCountdown:Bool = false;
+	var canPause:Bool = true;
 
 	override public function update(elapsed:Float)
 	{
@@ -595,7 +596,7 @@ class PlayState extends MusicBeatState
 
 		scoreTxt.text = "Score:" + songScore;
 
-		if (FlxG.keys.justPressed.ENTER && startedCountdown)
+		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause)
 		{
 			persistentUpdate = false;
 			persistentDraw = true;
@@ -830,6 +831,8 @@ class PlayState extends MusicBeatState
 
 	function endSong():Void
 	{
+		canPause = false;
+
 		Highscore.saveScore(SONG.song, songScore, storyDifficulty);
 
 		if (isStoryMode)
