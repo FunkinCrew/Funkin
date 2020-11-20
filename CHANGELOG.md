@@ -4,7 +4,7 @@ All notable changes will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.2.2] - 2020-11-20
 ### Added
 - Music playing on the freeplay menu.
 - UI sounds on freeplay menu
@@ -15,10 +15,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Moved all the intro texts to its own txt file instead of being hardcoded, this allows for much easier customization. File is in the data folder, called "introText.txt", follow the format in there and you're probably good to go!
 ### Fixed
+- Fixed soft lock when pausing on song finish ([shoutouts gedehari](https://github.com/ninjamuffin99/Funkin/issues/15))
+- Think I fixed issue that led to in-game scores being off by 2 ([shoutouts Mike](https://github.com/ninjamuffin99/Funkin/issues/4))
+- Should have fixed the 1 frame note appearance thing. ([shoutouts Mike](https://github.com/ninjamuffin99/Funkin/issues/6))
 - Cleaned up some charting on South on hard mode
-- Fixed some animation timings, should feel both better to play, and watch.
-- Maaaybe fixed notes popping up randomly at the top of the screen for a frame or two? If this isn't fixed, uhh yall shout at me lolol
-- Animation issue where GF would freak out on the title screen if you returned to it.
+- Fixed some animation timings, should feel both better to play, and watch. (shoutouts Dave/Ivan lol)
+- Animation issue where GF would freak out on the title screen if you returned to it([shoutouts MultiXIII](https://github.com/ninjamuffin99/Funkin/issues/12)).
 
 ## [0.2.1.2] - 2020-11-06
 ### Fixed
