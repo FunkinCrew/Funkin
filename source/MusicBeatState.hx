@@ -35,9 +35,14 @@ class MusicBeatState extends FlxUIState
 
 		updateCurStep();
 		// Needs to be ROUNED, rather than ceil or floor
-		curBeat = Math.round(curStep / 4);
+		updateBeat();
 
 		super.update(elapsed);
+	}
+
+	private function updateBeat():Void
+	{
+		curBeat = Math.round(curStep / 4);
 	}
 
 	/**
