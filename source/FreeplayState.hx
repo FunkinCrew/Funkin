@@ -180,9 +180,11 @@ class FreeplayState extends MusicBeatState
 		if (curDifficulty > 2)
 			curDifficulty = 0;
 
+
 		#if !switch
 		intendedScore = Highscore.getScore(songs[curSelected], curDifficulty);
 		#end
+
 
 		switch (curDifficulty)
 		{
@@ -197,6 +199,7 @@ class FreeplayState extends MusicBeatState
 
 	function changeSelection(change:Int = 0)
 	{
+
 		#if !switch
 		NGio.logEvent('Fresh');
 		#end
@@ -213,10 +216,12 @@ class FreeplayState extends MusicBeatState
 
 		// selector.y = (70 * curSelected) + 30;
 
+
 		#if !switch
 		intendedScore = Highscore.getScore(songs[curSelected], curDifficulty);
 		// lerpScore = 0;
 		#end
+
 
 		FlxG.sound.playMusic('assets/music/' + songs[curSelected] + "_Inst" + TitleState.soundExt, 0);
 
