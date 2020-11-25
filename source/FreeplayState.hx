@@ -24,14 +24,17 @@ class FreeplayState extends MusicBeatState
 	var intendedScore:Int = 0;
 
 	private var grpSongs:FlxTypedGroup<Alphabet>;
+	private var curPlaying:Bool = false;
 
 	override function create()
 	{
-		if (FlxG.sound.music != null)
-		{
-			if (!FlxG.sound.music.playing)
-				FlxG.sound.playMusic('assets/music/freakyMenu' + TitleState.soundExt);
-		}
+		/* 
+			if (FlxG.sound.music != null)
+			{
+				if (!FlxG.sound.music.playing)
+					FlxG.sound.playMusic('assets/music/freakyMenu' + TitleState.soundExt);
+			}
+		 */
 
 		var isDebug:Bool = false;
 
@@ -118,6 +121,11 @@ class FreeplayState extends MusicBeatState
 	{
 		super.update(elapsed);
 
+		if (FlxG.sound.music.volume < 0.7)
+		{
+			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
+		}
+
 		lerpScore = Math.floor(FlxMath.lerp(lerpScore, intendedScore, 0.4));
 
 		if (Math.abs(lerpScore - intendedScore) <= 10)
@@ -151,6 +159,7 @@ class FreeplayState extends MusicBeatState
 		if (accepted)
 		{
 			var poop:String = Highscore.formatSong(songs[curSelected].toLowerCase(), curDifficulty);
+
 			trace(poop);
 
 			PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].toLowerCase());
@@ -192,6 +201,9 @@ class FreeplayState extends MusicBeatState
 		NGio.logEvent('Fresh');
 		#end
 
+		// NGio.logEvent('Fresh');
+		FlxG.sound.play('assets/sounds/scrollMenu' + TitleState.soundExt, 0.4);
+
 		curSelected += change;
 
 		if (curSelected < 0)
@@ -205,6 +217,8 @@ class FreeplayState extends MusicBeatState
 		intendedScore = Highscore.getScore(songs[curSelected], curDifficulty);
 		// lerpScore = 0;
 		#end
+
+		FlxG.sound.playMusic('assets/music/' + songs[curSelected] + "_Inst" + TitleState.soundExt, 0);
 
 		var bullShit:Int = 0;
 

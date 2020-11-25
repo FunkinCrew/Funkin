@@ -83,6 +83,7 @@ class PlayState extends MusicBeatState
 
 	var talking:Bool = true;
 	var songScore:Int = 0;
+	var scoreTxt:FlxText;
 
 	public static var campaignScore:Int = 0;
 
@@ -252,6 +253,11 @@ class PlayState extends MusicBeatState
 		// healthBar
 		add(healthBar);
 
+		scoreTxt = new FlxText(healthBarBG.x + healthBarBG.width - 190, healthBarBG.y + 30, 0, "", 20);
+		scoreTxt.setFormat("assets/fonts/vcr.ttf", 16, FlxColor.WHITE, RIGHT);
+		scoreTxt.scrollFactor.set();
+		add(scoreTxt);
+
 		healthHeads = new FlxSprite();
 		var headTex = FlxAtlasFrames.fromSparrow(AssetPaths.healthHeads__png, AssetPaths.healthHeads__xml);
 		healthHeads.frames = headTex;
@@ -277,6 +283,7 @@ class PlayState extends MusicBeatState
 		healthBar.cameras = [camHUD];
 		healthBarBG.cameras = [camHUD];
 		healthHeads.cameras = [camHUD];
+		scoreTxt.cameras = [camHUD];
 		doof.cameras = [camHUD];
 
 		// if (SONG.song == 'South')
@@ -585,19 +592,18 @@ class PlayState extends MusicBeatState
 
 	private var paused:Bool = false;
 	var startedCountdown:Bool = false;
+	var canPause:Bool = true;
 
 	override public function update(elapsed:Float)
 	{
 		super.update(elapsed);
 
-		//trace("FlxG.elapsed: " + FlxG.elapsed);
 		trace("FlxG.sound.music.time: " + FlxG.sound.music.time);
 		trace("Conductor.songPosition: " + Conductor.songPosition);
-		//trace("FlxG.sound.music.playing: " + FlxG.sound.music.playing);
-		//trace("SONG POS: " + Conductor.songPosition);
-		// FlxG.sound.music.pitch = 2;
 
-		if (FlxG.keys.justPressed.ENTER && startedCountdown)
+		scoreTxt.text = "Score:" + songScore;
+
+		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause)
 		{
 			persistentUpdate = false;
 			persistentDraw = true;
@@ -846,6 +852,8 @@ class PlayState extends MusicBeatState
 
 	function endSong():Void
 	{
+		canPause = false;
+
 		#if !switch
 		Highscore.saveScore(SONG.song, songScore, storyDifficulty);
 		#end
