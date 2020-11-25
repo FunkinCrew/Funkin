@@ -30,6 +30,7 @@ enum abstract Action(String) to String from String
 	var BACK = "back";
 	var PAUSE = "pause";
 	var RESET = "reset";
+	var CHEAT = "cheat";
 }
 #else
 @:enum
@@ -51,6 +52,7 @@ abstract Action(String) to String from String
 	var BACK = "back";
 	var PAUSE = "pause";
 	var RESET = "reset";
+	var CHEAT = "cheat";
 }
 #end
 
@@ -75,6 +77,7 @@ enum Control
 	ACCEPT;
 	BACK;
 	PAUSE;
+	CHEAT;
 }
 
 enum KeyboardScheme
@@ -107,6 +110,7 @@ class Controls extends FlxActionSet
 	var _back = new FlxActionDigital(Action.BACK);
 	var _pause = new FlxActionDigital(Action.PAUSE);
 	var _reset = new FlxActionDigital(Action.RESET);
+	var _cheat = new FlxActionDigital(Action.CHEAT);
 
 	#if (haxe >= "4.0.0")
 	var byName:Map<String, FlxActionDigital> = [];
@@ -197,6 +201,11 @@ class Controls extends FlxActionSet
 	inline function get_RESET()
 		return _reset.check();
 
+	public var CHEAT(get, never):Bool;
+
+	inline function get_CHEAT()
+		return _cheat.check();
+
 	#if (haxe >= "4.0.0")
 	public function new(name, scheme = None)
 	{
@@ -218,6 +227,7 @@ class Controls extends FlxActionSet
 		add(_back);
 		add(_pause);
 		add(_reset);
+		add(_cheat);
 
 		for (action in digitalActions)
 			byName[action.name] = action;
@@ -245,6 +255,7 @@ class Controls extends FlxActionSet
 		add(_back);
 		add(_pause);
 		add(_reset);
+		add(_cheat);
 
 		for (action in digitalActions)
 			byName[action.name] = action;
@@ -298,6 +309,7 @@ class Controls extends FlxActionSet
 			case BACK: _back;
 			case PAUSE: _pause;
 			case RESET: _reset;
+			case CHEAT: _cheat;
 		}
 	}
 
@@ -341,6 +353,8 @@ class Controls extends FlxActionSet
 				func(_pause, JUST_PRESSED);
 			case RESET:
 				func(_reset, JUST_PRESSED);
+			case CHEAT:
+				func(_cheat, JUST_PRESSED);
 		}
 	}
 
@@ -623,12 +637,14 @@ class Controls extends FlxActionSet
 			//Swap A and B for switch
 			Control.ACCEPT => [B],
 			Control.BACK => [A],
-			Control.UP => [DPAD_UP, LEFT_STICK_DIGITAL_UP],
-			Control.DOWN => [DPAD_DOWN, LEFT_STICK_DIGITAL_DOWN],
-			Control.LEFT => [DPAD_LEFT, LEFT_STICK_DIGITAL_LEFT],
-			Control.RIGHT => [DPAD_RIGHT, LEFT_STICK_DIGITAL_RIGHT],
+			Control.UP => [DPAD_UP, LEFT_STICK_DIGITAL_UP, RIGHT_STICK_DIGITAL_UP],
+			Control.DOWN => [DPAD_DOWN, LEFT_STICK_DIGITAL_DOWN, RIGHT_STICK_DIGITAL_DOWN],
+			Control.LEFT => [DPAD_LEFT, LEFT_STICK_DIGITAL_LEFT, RIGHT_STICK_DIGITAL_LEFT],
+			Control.RIGHT => [DPAD_RIGHT, LEFT_STICK_DIGITAL_RIGHT, RIGHT_STICK_DIGITAL_RIGHT],
 			Control.PAUSE => [START],
-			Control.RESET => [Y]
+			//Swap Y and X for switch
+			Control.RESET => [Y],
+			Control.CHEAT => [X]
 		]);
 		#end
 	}
