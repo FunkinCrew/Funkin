@@ -107,6 +107,21 @@ class Character extends FlxSprite
 				addOffset("singLEFT", -30);
 				addOffset("singDOWN", -30, -40);
 				playAnim('idle');
+			case 'lucky':
+				tex = FlxAtlasFrames.fromSparrow(AssetPaths.lucky_guitar_assets__png, AssetPaths.lucky_guitar_assets__xml);
+				frames = tex;
+				animation.addByPrefix('idle', 'lucky guitar idle', 24, false);
+				animation.addByPrefix('singUP', 'lucky UP NOTE', 24, false);
+				animation.addByPrefix('singRIGHT', 'lucky sing right', 24, false);
+				animation.addByPrefix('singDOWN', 'lucky DOWN note', 24, false);
+				animation.addByPrefix('singLEFT', 'lucky sing left', 24, false);
+
+				addOffset('idle', 0, -180);
+				addOffset("singUP", 200, -180);
+				addOffset("singRIGHT", 200, -180);
+				addOffset("singLEFT", 200, -180);
+				addOffset("singDOWN", 200, -180);
+				playAnim('idle');
 		}
 	}
 
@@ -161,6 +176,8 @@ class Character extends FlxSprite
 			case 'dad':
 				playAnim('idle');
 			case 'monster':
+				playAnim('idle');
+			case 'lucky':
 				playAnim('idle');
 		}
 	}
