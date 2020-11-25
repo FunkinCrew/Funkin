@@ -116,8 +116,10 @@ class MainMenuState extends MusicBeatState
 					#if linux
 						Sys.command('/usr/bin/xdg-open', ["https://ninja-muffin24.itch.io/funkin", "&"]);
 					#else
+
 					FlxG.openURL('https://ninja-muffin24.itch.io/funkin');
 					#end
+
 				}
 				else
 				{
@@ -151,7 +153,9 @@ class MainMenuState extends MusicBeatState
 										trace("Story Menu Selected");
 									case 'freeplay':
 										FlxG.switchState(new FreeplayState());
+
 										trace("Freeplay Menu Selected");
+
 									case 'options':
 										FlxG.switchState(new OptionsMenu());
 								}
