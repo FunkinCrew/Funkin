@@ -384,6 +384,8 @@ class ChartingState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
+		curStep = recalculateSteps();
+
 		Conductor.songPosition = FlxG.sound.music.time;
 		_song.song = typingShit.text;
 
@@ -391,7 +393,7 @@ class ChartingState extends MusicBeatState
 
 		if (curBeat % 4 == 0)
 		{
-			if (curStep > lengthBpmBullshit() * (curSection + 1))
+			if (curStep > 16 * (curSection + 1))
 			{
 				trace(curStep);
 				trace((_song.notes[curSection].lengthInSteps) * (curSection + 1));
@@ -405,6 +407,9 @@ class ChartingState extends MusicBeatState
 				changeSection(curSection + 1, false);
 			}
 		}
+
+		FlxG.watch.addQuick('daBeat', curBeat);
+		FlxG.watch.addQuick('daStep', curStep);
 
 		if (FlxG.mouse.justPressed)
 		{
@@ -515,6 +520,28 @@ class ChartingState extends MusicBeatState
 
 		bpmTxt.text = "BPM: " + Conductor.bpm + "\nSection: " + curSection;
 		super.update(elapsed);
+	}
+
+	function recalculateSteps():Int
+	{
+		var steps:Int = 0;
+		var timeShit:Float = 0;
+
+		for (i in 0...curSection)
+		{
+			steps += 16;
+
+			if (_song.notes[i].changeBPM)
+				timeShit += (((60 / _song.notes[i].bpm) * 1000) / 4) * 16;
+			else
+				timeShit += (((60 / _song.bpm) * 1000) / 4) * 16;
+		}
+
+		steps += Math.floor((FlxG.sound.music.time - timeShit) / Conductor.stepCrochet);
+		curStep = steps;
+		updateBeat();
+
+		return curStep;
 	}
 
 	function changeSection(sec:Int = 0, ?updateMusic:Bool = true):Void
@@ -699,7 +726,7 @@ class ChartingState extends MusicBeatState
 
 	private function addNote():Void
 	{
-		var noteStrum = getStrumTime(dummyArrow.y) + (curSection * (Conductor.stepCrochet * lengthBpmBullshit()));
+		var noteStrum = getStrumTime(dummyArrow.y) + (curSection * (Conductor.stepCrochet * 16));
 		var noteData = Math.floor(FlxG.mouse.x / GRID_SIZE);
 		var noteSus = 0;
 
