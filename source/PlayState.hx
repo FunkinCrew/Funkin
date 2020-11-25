@@ -598,6 +598,9 @@ class PlayState extends MusicBeatState
 	{
 		super.update(elapsed);
 
+		trace("FlxG.sound.music.time: " + FlxG.sound.music.time);
+		trace("Conductor.songPosition: " + Conductor.songPosition);
+
 		scoreTxt.text = "Score:" + songScore;
 
 		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause)
@@ -870,8 +873,11 @@ class PlayState extends MusicBeatState
 
 				StoryMenuState.weekUnlocked[2] = true;
 
+
+				#if !switch
 				NGio.unlockMedal(60961);
 				Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficulty);
+				#end
 
 
 				FlxG.save.data.weekUnlocked = StoryMenuState.weekUnlocked;
