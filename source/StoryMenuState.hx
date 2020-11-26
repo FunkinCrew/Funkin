@@ -230,15 +230,23 @@ class StoryMenuState extends MusicBeatState
 
 	var movedBack:Bool = false;
 	var selectedWeek:Bool = false;
-
+	var stopspamming = false;
 	function selectWeek()
 	{
 		if (weekUnlocked[curWeek])
 		{
-			FlxG.sound.play('assets/sounds/confirmMenu' + TitleState.soundExt);
+			if (stopspamming == true) 
+			{
+				// no more spamming for u hahaha
+			}
+			if (stopspamming == false) 
+			{
+				FlxG.sound.play('assets/sounds/confirmMenu' + TitleState.soundExt);
 
-			grpWeekText.members[curWeek].week.animation.resume();
-			grpWeekCharacters.members[1].animation.play('bfConfirm');
+				grpWeekText.members[curWeek].week.animation.resume();
+				grpWeekCharacters.members[1].animation.play('bfConfirm');
+				stopspamming = true;
+			}
 
 			PlayState.storyPlaylist = weekData[curWeek];
 			PlayState.isStoryMode = true;
