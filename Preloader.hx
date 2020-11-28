@@ -1,19 +1,16 @@
 package ;
- 
-import flixel.system.FlxBasePreloader;
+
+import openfl.Lib;
 import openfl.display.Sprite;
-import flash.display.Bitmap;
-import flash.display.BitmapData;
-import flash.display.BlendMode;
-import flash.display.Sprite;
-import flash.Lib;
-import flixel.FlxG;
+import openfl.events.Event;
+import openfl.display.Bitmap;
+import openfl.display.BitmapData;
  
 @:bitmap("art/preloaderArt.png") class LogoImage extends BitmapData { }
  
-class Preloader extends FlxBasePreloader
+class Preloader extends flixel.system.FlxBasePreloader
 {
-    public function new(MinDisplayTime:Float=3, ?AllowedURLs:Array<String>) 
+    override public function new(MinDisplayTime:Float = 2, ?AllowedURLs:Array<String>) 
     {
         super(MinDisplayTime, AllowedURLs);
     }
@@ -37,21 +34,24 @@ class Preloader extends FlxBasePreloader
         super.create();
     }
      
-    override function update(Percent:Float):Void 
+    override public function update(percent:Float):Void 
     {
-        if(Percent < 69)
-        {
-            logo.scaleX += Percent / 1920;
-            logo.scaleY += Percent / 1920;
-            logo.x -= Percent * 0.6;
-            logo.y -= Percent / 2;
-        }else{
-            logo.scaleX = this._width / 1280;
-            logo.scaleY = this._width / 1280;
-            logo.x = ((this._width) / 2) - ((logo.width) / 2);
-            logo.y = (this._height / 2) - ((logo.height) / 2);
-        }
-        
-        super.update(Percent);
+        super.update(percent);
+
+        var currentTime = haxe.Timer.stamp(); //hmm, ez timer?
+
+        //lil bitch scaling
+        logo.scaleX += percent / 1920;
+        logo.scaleY += percent / 1920;
+        logo.x -= percent * 0.6;
+        logo.y -= percent / 3;
+
+        /*
+        //haxe timer scaling
+        logo.scaleX += currentTime / 1920;
+        logo.scaleY += currentTime / 1920;
+        logo.x -= currentTime * 0.6;
+        logo.y -= currentTime / 3;
+        */
     }
 }

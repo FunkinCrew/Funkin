@@ -51,7 +51,6 @@
 
 	<assets path="CHANGELOG.md"/>
 
-
 	<assets path="assets/fonts/vcr.ttf" embed="true" />
 
 	<!-- _______________________________ Libraries ______________________________ -->
