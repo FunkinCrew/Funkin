@@ -235,10 +235,6 @@ class StoryMenuState extends MusicBeatState
 	{
 		if (weekUnlocked[curWeek])
 		{
-			if (stopspamming == true) 
-			{
-				// no more spamming for u hahaha
-			}
 			if (stopspamming == false) 
 			{
 				FlxG.sound.play('assets/sounds/confirmMenu' + TitleState.soundExt);
