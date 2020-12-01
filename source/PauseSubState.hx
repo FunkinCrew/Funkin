@@ -8,9 +8,7 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.input.keyboard.FlxKey;
 import flixel.system.FlxSound;
 import flixel.util.FlxColor;
-import PlayState.SONG;
 import PlayState.swagCounter;
-import Conductor.offset;
 import Conductor.songPosition;
 
 class PauseSubState extends MusicBeatSubstate
