@@ -64,7 +64,7 @@
 
 	<!--In case you want to use the ui package-->
 	<haxelib name="flixel-ui" />
-	<haxelib name="newgrounds" />
+	<haxelib name="newgrounds"/>
 	<haxelib name="faxe" if='switch'/>
 
 	<!-- <haxelib name="markdown" /> -->
