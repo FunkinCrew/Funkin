@@ -292,6 +292,10 @@ class PlayState extends MusicBeatState
 
 		// cameras = [FlxG.cameras.list[1]];
 
+		#if lime
+		trace("IT'S LIME");
+		#end
+
 		super.create();
 	}
 
@@ -644,7 +648,8 @@ class PlayState extends MusicBeatState
 		}
 		else
 		{
-			Conductor.songPosition = FlxG.sound.music.time;
+			//Conductor.songPosition = FlxG.sound.music.time;
+			Conductor.songPosition += FlxG.elapsed * 1000;
 
 			if (!paused)
 			{
@@ -674,6 +679,7 @@ class PlayState extends MusicBeatState
 			if (camFollow.x != dad.getMidpoint().x + 150 && !PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection)
 			{
 				camFollow.setPosition(dad.getMidpoint().x + 150, dad.getMidpoint().y - 100);
+				//camFollow.setPosition(lucky.getMidpoint().x - 120, lucky.getMidpoint().y + 210);
 				vocals.volume = 1;
 
 				if (SONG.song.toLowerCase() == 'tutorial')
@@ -732,6 +738,18 @@ class PlayState extends MusicBeatState
 			}
 		}
 		// better streaming of shit
+
+		//RESET = Quick Game Over Screen
+		if (controls.RESET){
+			health = 0;
+			trace("RESET = True");
+		}
+
+		//CHEAT = brandon's a pussy
+		if (controls.CHEAT){
+			health += 1;
+			trace("User is cheating!");
+		}
 
 		if (health <= 0)
 		{
@@ -833,7 +851,10 @@ class PlayState extends MusicBeatState
 	{
 		canPause = false;
 
+
+		#if !switch
 		Highscore.saveScore(SONG.song, songScore, storyDifficulty);
+		#end
 
 		if (isStoryMode)
 		{
@@ -851,6 +872,7 @@ class PlayState extends MusicBeatState
 
 				NGio.unlockMedal(60961);
 				Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficulty);
+
 
 				FlxG.save.data.weekUnlocked = StoryMenuState.weekUnlocked;
 				FlxG.save.flush();
