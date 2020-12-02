@@ -4,5 +4,4 @@ This is the repository for Friday Night Funkin, a game originally made for Ludum
 
 Play the Ludum Dare prototype here: https://ninja-muffin24.itch.io/friday-night-funkin
 Play the Newgrounds one here: https://www.newgrounds.com/portal/view/770371
-
-## BrandyBuizel porting this shit like a G to Nintendo Switch 
+Support the project on the itch.io page: https://itch.io/ninja-muffin24/funkin
