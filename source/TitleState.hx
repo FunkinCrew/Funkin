@@ -52,6 +52,7 @@ class TitleState extends MusicBeatState
 		super.create();
 
 		#if (!switch && !debug && NG_LOGIN)
+
 		var ng:NGio = new NGio(APIStuff.API, APIStuff.EncKey);
 		#end
 
@@ -220,6 +221,11 @@ class TitleState extends MusicBeatState
 		{
 			if (gamepad.justPressed.START)
 				pressedEnter = true;
+
+			#if switch
+			if (gamepad.justPressed.B)
+				pressedEnter = true;
+			#end
 		}
 
 		if (pressedEnter && !transitioning && skippedIntro)

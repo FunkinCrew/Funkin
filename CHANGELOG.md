@@ -4,6 +4,10 @@ All notable changes will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [UNRELEASED]
+### Fixed
+- Issue/bug where you could spam the confirm button on the story menu ([shoutouts lotusotho for the CODE contribution/pull request!](https://github.com/ninjamuffin99/Funkin/pull/19))
+
 ## [0.2.2] - 2020-11-20
 ### Added
 - Music playing on the freeplay menu.
@@ -27,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Story mode scores not properly resetting, leading to VERY inflated highscores on the leaderboards. This also requires me to clear the scores that are on the leaderboard right now, sorry!
 - Difficulty on storymode and in freeplay scores
 - Hard mode difficulty on campaign levels have been fixed
+
 ## [0.2.1.1] - 2020-11-06
 ### Fixed
 - Week 2 not unlocking properly
