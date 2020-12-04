@@ -853,9 +853,12 @@ class PlayState extends MusicBeatState
 	{
 		canPause = false;
 
-		#if !switch
-		Highscore.saveScore(SONG.song, songScore, storyDifficulty);
-		#end
+		if (SONG.validScore)
+		{
+			#if !switch
+			Highscore.saveScore(SONG.song, songScore, storyDifficulty);
+			#end
+		}
 
 		if (isStoryMode)
 		{
