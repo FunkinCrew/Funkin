@@ -19,6 +19,7 @@ typedef SwagSong =
 
 	var player1:String;
 	var player2:String;
+	var validScore:Bool;
 }
 
 class Song
@@ -49,7 +50,6 @@ class Song
 
 	public static function loadFromJson(jsonInput:String, ?folder:String):SwagSong
 	{
-
 		var rawJson = Assets.getText('assets/data/' + folder.toLowerCase() + '/' + jsonInput.toLowerCase() + '.json').trim();
 
 		while (!rawJson.endsWith("}"))
@@ -59,6 +59,7 @@ class Song
 		}
 
 		var swagShit:SwagSong = cast Json.parse(rawJson).song;
+		swagShit.validScore = true;
 		trace(swagShit.notes[0]);
 
 		// FIX THE CASTING ON WINDOWS/NATIVE
