@@ -250,11 +250,11 @@ class StoryMenuState extends MusicBeatState
 				stopspamming = true;
 			}
 
-			weekData = SongLoader.instance.weeks[curWeek];
+			PlayState.storyPlaylist = SongLoader.instance.weeks[curWeek].songs;
 			PlayState.isStoryMode = true;
 			selectedWeek = true;
 
-			var songToPlay:SongMetadata = weekData.songs[0];
+			var songToPlay:SongMetadata = PlayState.storyPlaylist[0];
 
 			PlayState.storyDifficulty = curDifficulty;
 
