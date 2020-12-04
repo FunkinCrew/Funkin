@@ -14,6 +14,5 @@ typedef SongMetadata =
 	var name:String;
 	var instrumental:String;
 	var voices:String;
-	var format:String;
 	var difficulties:Array<String>;
 }

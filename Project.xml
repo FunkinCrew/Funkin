@@ -41,6 +41,7 @@
 
 	<assets path="assets/images" />
 	<assets path="assets/data" />
+	<assets path="songs" />
 	
 	<!-- <library name="noPreload" preload='false'/> -->
 	<!-- <library name="noPreload"/> -->

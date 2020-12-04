@@ -6,6 +6,7 @@ import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxGroup;
+import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
@@ -27,7 +28,8 @@ class StoryMenuState extends MusicBeatState
 
 	var txtTracklist:FlxText;
 
-	var grpWeekText:FlxTypedGroup<MenuItem>;
+	// var grpWeekText:FlxTypedGroup<MenuItem>;
+	var grpWeekText:FlxTypedGroup<Alphabet>;
 	var grpWeekCharacters:FlxTypedGroup<MenuCharacter>;
 
 	var grpLocks:FlxTypedGroup<FlxSprite>;
@@ -59,7 +61,7 @@ class StoryMenuState extends MusicBeatState
 		var ui_tex = FlxAtlasFrames.fromSparrow(AssetPaths.campaign_menu_UI_assets__png, AssetPaths.campaign_menu_UI_assets__xml);
 		var yellowBG:FlxSprite = new FlxSprite(0, 56).makeGraphic(FlxG.width, 400, 0xFFF9CF51);
 
-		grpWeekText = new FlxTypedGroup<MenuItem>();
+		grpWeekText = new FlxTypedGroup<Alphabet>();
 		add(grpWeekText);
 
 		grpWeekCharacters = new FlxTypedGroup<MenuCharacter>();
@@ -71,17 +73,19 @@ class StoryMenuState extends MusicBeatState
 
 		for (i in 0...SongLoader.instance.weeks.length)
 		{
-			var weekThing:MenuItem = new MenuItem(0, yellowBG.y + yellowBG.height + 10, i);
-			weekThing.y += ((weekThing.height + 20) * i);
+			var weekThing:Alphabet;
+			weekThing = new Alphabet(0, yellowBG.y + yellowBG.height / 2, SongLoader.instance.weeks[i].name, true, false);
+			weekThing.y += weekThing.frameHeight + 20;
 			weekThing.targetY = i;
+			weekThing.isMenuItem = true;
+			weekThing.overrideX = false;
 			grpWeekText.add(weekThing);
 
 			weekThing.screenCenter(X);
 			weekThing.antialiasing = true;
-			// weekThing.updateHitbox();
 
 			// Needs an offset thingie
-			if (!weekUnlocked[i])
+			if (i < weekUnlocked.length && !weekUnlocked[i])
 			{
 				var lock:FlxSprite = new FlxSprite(weekThing.width + 10 + weekThing.x);
 				lock.frames = ui_tex;
@@ -241,7 +245,7 @@ class StoryMenuState extends MusicBeatState
 			{
 				FlxG.sound.play('assets/sounds/confirmMenu' + TitleState.soundExt);
 
-				grpWeekText.members[curWeek].week.animation.resume();
+				// grpWeekText.members[curWeek].week.animation.resume();
 				grpWeekCharacters.members[1].animation.play('bfConfirm');
 				stopspamming = true;
 			}
@@ -251,8 +255,6 @@ class StoryMenuState extends MusicBeatState
 			selectedWeek = true;
 
 			var songToPlay:SongMetadata = weekData.songs[0];
-
-			var difficultyJson:String = songToPlay.difficulties[curDifficulty];
 
 			PlayState.storyDifficulty = curDifficulty;
 

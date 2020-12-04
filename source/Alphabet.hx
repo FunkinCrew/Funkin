@@ -19,7 +19,9 @@ class Alphabet extends FlxSpriteGroup
 
 	// for menu shit
 	public var targetY:Float = 0;
+	public var offsetY:Float = 0;
 	public var isMenuItem:Bool = false;
+	public var overrideX:Bool = true;
 
 	public var text:String = "";
 
@@ -47,7 +49,6 @@ class Alphabet extends FlxSpriteGroup
 		_finalText = text;
 		this.text = text;
 		isBold = bold;
-
 
 		if (text != "")
 		{
@@ -79,7 +80,7 @@ class Alphabet extends FlxSpriteGroup
 			}
 
 			if (AlphaCharacter.alphabet.indexOf(character.toLowerCase()) != -1)
-			//if (AlphaCharacter.alphabet.contains(character.toLowerCase()))
+				// if (AlphaCharacter.alphabet.contains(character.toLowerCase()))
 			{
 				if (lastSprite != null)
 				{
@@ -123,7 +124,6 @@ class Alphabet extends FlxSpriteGroup
 		_finalText = text;
 		doSplitWords();
 
-
 		// trace(arrayShit);
 
 		var loopNum:Int = 0;
@@ -140,7 +140,6 @@ class Alphabet extends FlxSpriteGroup
 				xPosResetted = true;
 				xPos = 0;
 				curRow += 1;
-
 			}
 
 			if (splitWords[loopNum] == " ")
@@ -157,7 +156,7 @@ class Alphabet extends FlxSpriteGroup
 			#end
 
 			if (AlphaCharacter.alphabet.indexOf(splitWords[loopNum].toLowerCase()) != -1 || isNumber || isSymbol)
-			//if (AlphaCharacter.alphabet.contains(splitWords[loopNum].toLowerCase()) || isNumber || isSymbol)
+				// if (AlphaCharacter.alphabet.contains(splitWords[loopNum].toLowerCase()) || isNumber || isSymbol)
 
 			{
 				if (lastSprite != null && !xPosResetted)
@@ -227,8 +226,9 @@ class Alphabet extends FlxSpriteGroup
 		{
 			var scaledY = FlxMath.remapToRange(targetY, 0, 1, 0, 1.3);
 
-			y = FlxMath.lerp(y, (scaledY * 120) + (FlxG.height * 0.48), 0.16);
-			x = FlxMath.lerp(x, (targetY * 20) + 90, 0.16);
+			y = offsetY + FlxMath.lerp(y, (scaledY * 120) + (FlxG.height * 0.48), 0.16);
+			if (overrideX)
+				x = FlxMath.lerp(x, (targetY * 20) + 90, 0.16);
 		}
 
 		super.update(elapsed);

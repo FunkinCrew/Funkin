@@ -21,7 +21,7 @@ class SongLoader
 	{
 		songs = [];
 
-		var path = "assets/data/songs/";
+		var path = "./songs/";
 		var folders = FileSystem.readDirectory(path);
 
 		for (i in 0...folders.length)
@@ -37,7 +37,6 @@ class SongLoader
 					name: songDynamic.Name,
 					instrumental: songDynamic.Instrumental,
 					voices: songDynamic.Voices,
-					format: songDynamic.SongFormat,
 					difficulties: songDynamic.Difficulties
 				}
 
@@ -83,7 +82,7 @@ class SongLoader
 
 	public function LoadSongData(song:SongMetadata, difficulty:Int):SwagSong
 	{
-		var path = "assets/data/songs/" + song.folder + "/" + song.difficulties[difficulty];
+		var path = "songs/" + song.folder + "/" + song.difficulties[difficulty];
 
 		return SwagSong.loadFromJson(path, song);
 	}

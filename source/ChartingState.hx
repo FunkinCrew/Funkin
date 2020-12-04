@@ -284,10 +284,12 @@ class ChartingState extends MusicBeatState
 			// vocals.stop();
 		}
 
-		FlxG.sound.playMusic('assets/music/' + daSong + "_Inst" + TitleState.soundExt, 0.6);
+		var song = SongLoader.instance.GetSongByName(daSong);
+
+		FlxG.sound.playMusic('songs/' + song.folder + "/" + song.instrumental + TitleState.soundExt, 0.6);
 
 		// WONT WORK FOR TUTORIAL! REDO LATER
-		vocals = new FlxSound().loadEmbedded("assets/music/" + daSong + "_Voices" + TitleState.soundExt);
+		vocals = new FlxSound().loadEmbedded('songs/' + song.folder + "/" + song.voices + TitleState.soundExt);
 		FlxG.sound.list.add(vocals);
 
 		FlxG.sound.music.pause();
@@ -818,7 +820,7 @@ class ChartingState extends MusicBeatState
 			_file.addEventListener(Event.COMPLETE, onSaveComplete);
 			_file.addEventListener(Event.CANCEL, onSaveCancel);
 			_file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
-			_file.save(data.trim(), _song.song.toLowerCase() + ".json");
+			_file.save(data.trim(), _song.file);
 		}
 	}
 

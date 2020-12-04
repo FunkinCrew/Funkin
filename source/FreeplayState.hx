@@ -51,10 +51,16 @@ class FreeplayState extends MusicBeatState
 		for (i in 0...SongLoader.instance.weeks.length)
 			if (StoryMenuState.weekUnlocked[i] || isDebug)
 				for (song in SongLoader.instance.weeks[i].songs)
-					songs.push(song);
+				{
+					if (!songs.contains(song))
+					{
+						songs.push(song);
+					}
+				}
 			else
 				for (song in SongLoader.instance.weeks[i].songs)
-					lockedMusic.push(song);
+					if (!lockedMusic.contains(song))
+						lockedMusic.push(song);
 
 		for (song in SongLoader.instance.songs)
 			if (!lockedMusic.contains(song) && !songs.contains(song))
@@ -228,8 +234,7 @@ class FreeplayState extends MusicBeatState
 		// lerpScore = 0;
 		#end
 
-		var folder:String = custom ? 'assets/music/' + songs[curSelected] + "_Inst" + TitleState.soundExt : 'assets/data/custom_songs/';
-		FlxG.sound.playMusic('assets/music/' + songs[curSelected] + "_Inst" + TitleState.soundExt, 0);
+		FlxG.sound.playMusic('songs/' + songs[curSelected].folder + "/" + songs[curSelected].instrumental + TitleState.soundExt, 0);
 
 		var bullShit:Int = 0;
 

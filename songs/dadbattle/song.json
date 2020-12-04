@@ -1,0 +1,10 @@
+{
+    "Name": "Dadbattle",
+    "Instrumental": "Dadbattle_Inst",
+    "Voices": "Dadbattle_Voices",
+    "Difficulties": [
+        "dadbattle-easy.json",
+        "dadbattle.json",
+        "dadbattle-hard.json"
+    ]
+}
