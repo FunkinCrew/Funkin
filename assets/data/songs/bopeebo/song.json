@@ -1,0 +1,11 @@
+{
+    "Name": "Bopeebo",
+    "Instrumental": "Bopeebo_Inst",
+    "Voices": "Bopeebo_Voices",
+    "SongFormat": ".mp3",
+    "Difficulties": [
+        "bopeebo-easy.json",
+        "bopeebo.json",
+        "bopeebo-hard.json"
+    ]
+}

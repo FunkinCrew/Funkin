@@ -1,5 +1,6 @@
 package;
 
+import Song;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
@@ -17,13 +18,12 @@ class StoryMenuState extends MusicBeatState
 {
 	var scoreText:FlxText;
 
-	var weekData:Array<Dynamic> = [['Tutorial'], ['Bopeebo', 'Fresh', 'Dadbattle'], ['Spookeez', 'South']];
 	var curDifficulty:Int = 1;
 
 	public static var weekUnlocked:Array<Bool> = [true, true, false];
 
-	var weekCharacters:Array<Dynamic> = [['dad', 'bf', 'gf'], ['dad', 'bf', 'gf'], ['spooky', 'bf', 'gf']];
 	var curWeek:Int = 0;
+	var weekData:WeekMetadata;
 
 	var txtTracklist:FlxText;
 
@@ -69,7 +69,7 @@ class StoryMenuState extends MusicBeatState
 
 		trace("Line 70");
 
-		for (i in 0...weekData.length)
+		for (i in 0...SongLoader.instance.weeks.length)
 		{
 			var weekThing:MenuItem = new MenuItem(0, yellowBG.y + yellowBG.height + 10, i);
 			weekThing.y += ((weekThing.height + 20) * i);
@@ -97,7 +97,8 @@ class StoryMenuState extends MusicBeatState
 
 		for (char in 0...3)
 		{
-			var weekCharacterThing:MenuCharacter = new MenuCharacter((FlxG.width * 0.25) * (1 + char) - 150, weekCharacters[curWeek][char]);
+			var weekCharacterThing:MenuCharacter = new MenuCharacter((FlxG.width * 0.25) * (1 + char) - 150,
+				SongLoader.instance.weeks[curWeek].characters[char]);
 			weekCharacterThing.y += 70;
 			weekCharacterThing.antialiasing = true;
 			switch (weekCharacterThing.character)
@@ -231,11 +232,12 @@ class StoryMenuState extends MusicBeatState
 	var movedBack:Bool = false;
 	var selectedWeek:Bool = false;
 	var stopspamming:Bool = false;
+
 	function selectWeek()
 	{
 		if (weekUnlocked[curWeek])
 		{
-			if (stopspamming == false) 
+			if (stopspamming == false)
 			{
 				FlxG.sound.play('assets/sounds/confirmMenu' + TitleState.soundExt);
 
@@ -244,23 +246,17 @@ class StoryMenuState extends MusicBeatState
 				stopspamming = true;
 			}
 
-			PlayState.storyPlaylist = weekData[curWeek];
+			weekData = SongLoader.instance.weeks[curWeek];
 			PlayState.isStoryMode = true;
 			selectedWeek = true;
 
-			var diffic = "";
+			var songToPlay:SongMetadata = weekData.songs[0];
 
-			switch (curDifficulty)
-			{
-				case 0:
-					diffic = '-easy';
-				case 2:
-					diffic = '-hard';
-			}
+			var difficultyJson:String = songToPlay.difficulties[curDifficulty];
 
 			PlayState.storyDifficulty = curDifficulty;
 
-			PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + diffic, PlayState.storyPlaylist[0].toLowerCase());
+			PlayState.SONG = SwagSong.loadFromJson(songToPlay.folder + "/" + difficultyJson);
 			PlayState.storyWeek = curWeek;
 			PlayState.campaignScore = 0;
 			new FlxTimer().start(1, function(tmr:FlxTimer)
@@ -316,10 +312,11 @@ class StoryMenuState extends MusicBeatState
 	{
 		curWeek += change;
 
-		if (curWeek >= weekData.length)
+		var weeksArr = SongLoader.instance.weeks;
+		if (curWeek >= weeksArr.length)
 			curWeek = 0;
 		if (curWeek < 0)
-			curWeek = weekData.length - 1;
+			curWeek = weeksArr.length - 1;
 
 		var bullShit:Int = 0;
 
@@ -340,26 +337,24 @@ class StoryMenuState extends MusicBeatState
 
 	function updateText()
 	{
-		grpWeekCharacters.members[0].animation.play(weekCharacters[curWeek][0]);
-		grpWeekCharacters.members[1].animation.play(weekCharacters[curWeek][1]);
-		grpWeekCharacters.members[2].animation.play(weekCharacters[curWeek][2]);
+		var weekCharacters = SongLoader.instance.weeks[curWeek].characters;
+		grpWeekCharacters.members[0].animation.play(weekCharacters[0]);
+		grpWeekCharacters.members[1].animation.play(weekCharacters[1]);
+		grpWeekCharacters.members[2].animation.play(weekCharacters[2]);
 		txtTracklist.text = "Tracks\n";
 
-		var stringThing:Array<String> = weekData[curWeek];
-
-		for (i in stringThing)
+		for (song in SongLoader.instance.weeks[curWeek].songs)
 		{
-			txtTracklist.text += "\n" + i;
+			txtTracklist.text += "\n" + song.name;
 		}
 
 		txtTracklist.text = txtTracklist.text.toUpperCase();
 
 		txtTracklist.screenCenter(X);
 		txtTracklist.x -= FlxG.width * 0.35;
-    
+
 		#if !switch
 		intendedScore = Highscore.getWeekScore(curWeek, curDifficulty);
 		#end
-
 	}
 }

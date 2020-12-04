@@ -88,17 +88,16 @@ class ChartingState extends MusicBeatState
 			_song = PlayState.SONG;
 		else
 		{
-			_song = {
-				song: 'Monster',
-				notes: [],
-				bpm: 95,
-				sections: 0,
-				needsVoices: false,
-				player1: 'bf',
-				player2: 'dad',
-				sectionLengths: [],
-				speed: 1
-			};
+			_song = new SwagSong();
+			_song.song = 'Monster';
+			_song.notes = [];
+			_song.bpm = 95;
+			_song.sections = 0;
+			_song.needsVoices = false;
+			_song.player1 = 'bf';
+			_song.player2 = 'dad';
+			_song.sectionLengths = [];
+			_song.speed = 1;
 		}
 
 		tempBpm = _song.bpm;
@@ -171,7 +170,7 @@ class ChartingState extends MusicBeatState
 
 		var reloadSongJson:FlxButton = new FlxButton(reloadSong.x, saveButton.y + 30, "Reload JSON", function()
 		{
-			loadJson(_song.song.toLowerCase());
+			loadJson(_song);
 		});
 
 		var stepperSpeed:FlxUINumericStepper = new FlxUINumericStepper(10, 80, 0.1, 1, 0.1, 10, 1);
@@ -793,9 +792,9 @@ class ChartingState extends MusicBeatState
 		return noteData;
 	}
 
-	function loadJson(song:String):Void
+	function loadJson(song:SwagSong):Void
 	{
-		PlayState.SONG = Song.loadFromJson(song.toLowerCase(), song.toLowerCase());
+		PlayState.SONG = SwagSong.loadFromJson(song.file);
 		FlxG.resetState();
 	}
 

@@ -7,22 +7,9 @@ import lime.utils.Assets;
 
 using StringTools;
 
-typedef SwagSong =
+class SwagSong
 {
-	var song:String;
-	var notes:Array<SwagSection>;
-	var bpm:Int;
-	var sections:Int;
-	var sectionLengths:Array<Dynamic>;
-	var needsVoices:Bool;
-	var speed:Float;
-
-	var player1:String;
-	var player2:String;
-}
-
-class Song
-{
+	public var file:String;
 	public var song:String;
 	public var notes:Array<SwagSection>;
 	public var bpm:Int;
@@ -34,23 +21,13 @@ class Song
 	public var player1:String = 'bf';
 	public var player2:String = 'dad';
 
-	public function new(song, notes, bpm, sections)
+	public function new()
 	{
-		this.song = song;
-		this.notes = notes;
-		this.bpm = bpm;
-		this.sections = sections;
-
-		for (i in 0...notes.length)
-		{
-			this.sectionLengths.push(notes[i]);
-		}
 	}
 
-	public static function loadFromJson(jsonInput:String, ?folder:String):SwagSong
+	public static function loadFromJson(path:String):SwagSong
 	{
-
-		var rawJson = Assets.getText('assets/data/' + folder.toLowerCase() + '/' + jsonInput.toLowerCase() + '.json').trim();
+		var rawJson = Assets.getText(path).trim();
 
 		while (!rawJson.endsWith("}"))
 		{
@@ -59,6 +36,7 @@ class Song
 		}
 
 		var swagShit:SwagSong = cast Json.parse(rawJson).song;
+		swagShit.file = path;
 		trace(swagShit.notes[0]);
 
 		// FIX THE CASTING ON WINDOWS/NATIVE

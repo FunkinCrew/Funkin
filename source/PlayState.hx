@@ -38,7 +38,7 @@ class PlayState extends MusicBeatState
 	public static var SONG:SwagSong;
 	public static var isStoryMode:Bool = false;
 	public static var storyWeek:Int = 0;
-	public static var storyPlaylist:Array<String> = [];
+	public static var storyPlaylist:Array<SongMetadata> = [];
 	public static var storyDifficulty:Int = 1;
 
 	var halloweenLevel:Bool = false;
@@ -103,7 +103,7 @@ class PlayState extends MusicBeatState
 		persistentDraw = true;
 
 		if (SONG == null)
-			SONG = Song.loadFromJson(curLevel);
+			SONG = SwagSong.loadFromJson(curLevel);
 
 		Conductor.changeBPM(SONG.bpm);
 
@@ -879,18 +879,10 @@ class PlayState extends MusicBeatState
 			}
 			else
 			{
-				var difficulty:String = "";
-
-				if (storyDifficulty == 0)
-					difficulty = '-easy';
-
-				if (storyDifficulty == 2)
-					difficulty = '-hard';
-
 				trace('LOADING NEXT SONG');
-				trace(PlayState.storyPlaylist[0].toLowerCase() + difficulty);
+				trace(PlayState.storyPlaylist[0].name + storyDifficulty);
 
-				PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + difficulty, PlayState.storyPlaylist[0]);
+				PlayState.SONG = SongLoader.instance.LoadSongData(PlayState.storyPlaylist[0], storyDifficulty);
 				FlxG.switchState(new PlayState());
 			}
 		}

@@ -1,5 +1,6 @@
 package;
 
+import Song;
 import flash.text.TextField;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -8,11 +9,15 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
+import haxe.Json;
 import lime.utils.Assets;
+import sys.FileSystem;
+import sys.io.File;
 
 class FreeplayState extends MusicBeatState
 {
-	var songs:Array<String> = ["Bopeebo", "Dadbattle", "Fresh", "Tutorial"];
+	var songFolders:Array<String> = [];
+	var songs:Array<SongMetadata> = [];
 
 	var selector:FlxText;
 	var curSelected:Int = 0;
@@ -42,13 +47,11 @@ class FreeplayState extends MusicBeatState
 		isDebug = true;
 		#end
 
-		if (StoryMenuState.weekUnlocked[1] || isDebug)
-		{
-			songs.push('Spookeez');
-			songs.push('South');
-		}
-
 		// LOAD MUSIC
+		for (i in 0...SongLoader.instance.weeks.length)
+			if (StoryMenuState.weekUnlocked[i] || isDebug)
+				for (song in SongLoader.instance.weeks[i].songs)
+					songs.push(song);
 
 		// LOAD CHARACTERS
 
@@ -60,7 +63,7 @@ class FreeplayState extends MusicBeatState
 
 		for (i in 0...songs.length)
 		{
-			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, songs[i], true, false);
+			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, songs[i].name, true, false);
 			songText.isMenuItem = true;
 			songText.targetY = i;
 			grpSongs.add(songText);
@@ -68,6 +71,10 @@ class FreeplayState extends MusicBeatState
 			// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
 			// songText.screenCenter(X);
 		}
+
+		var seperator:Alphabet = new Alphabet(0, 30, "--- CUSTOM SONGS ---", true, false);
+		seperator.isMenuItem = true;
+		grpSongs.add(seperator);
 
 		scoreText = new FlxText(FlxG.width * 0.7, 5, 0, "", 32);
 		// scoreText.autoSize = false;
@@ -158,11 +165,7 @@ class FreeplayState extends MusicBeatState
 
 		if (accepted)
 		{
-			var poop:String = Highscore.formatSong(songs[curSelected].toLowerCase(), curDifficulty);
-
-			trace(poop);
-
-			PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].toLowerCase());
+			PlayState.SONG = SongLoader.instance.LoadSongData(songs[curSelected], curDifficulty);
 			PlayState.isStoryMode = false;
 			PlayState.storyDifficulty = curDifficulty;
 			FlxG.switchState(new PlayState());
@@ -180,11 +183,9 @@ class FreeplayState extends MusicBeatState
 		if (curDifficulty > 2)
 			curDifficulty = 0;
 
-
 		#if !switch
-		intendedScore = Highscore.getScore(songs[curSelected], curDifficulty);
+		intendedScore = Highscore.getScore(songs[curSelected].name, curDifficulty);
 		#end
-
 
 		switch (curDifficulty)
 		{
@@ -199,7 +200,6 @@ class FreeplayState extends MusicBeatState
 
 	function changeSelection(change:Int = 0)
 	{
-
 		#if !switch
 		NGio.logEvent('Fresh');
 		#end
@@ -210,19 +210,22 @@ class FreeplayState extends MusicBeatState
 		curSelected += change;
 
 		if (curSelected < 0)
-			curSelected = songs.length - 1;
-		if (curSelected >= songs.length)
+			curSelected = grpSongs.length - 1;
+		if (curSelected >= grpSongs.length)
 			curSelected = 0;
+
+		var custom:Bool = false;
+		if (curSelected > songs.length)
+			custom = true;
 
 		// selector.y = (70 * curSelected) + 30;
 
-
 		#if !switch
-		intendedScore = Highscore.getScore(songs[curSelected], curDifficulty);
+		intendedScore = Highscore.getScore(songs[curSelected].name, curDifficulty);
 		// lerpScore = 0;
 		#end
 
-
+		var folder:String = custom ? 'assets/music/' + songs[curSelected] + "_Inst" + TitleState.soundExt : 'assets/data/custom_songs/';
 		FlxG.sound.playMusic('assets/music/' + songs[curSelected] + "_Inst" + TitleState.soundExt, 0);
 
 		var bullShit:Int = 0;
