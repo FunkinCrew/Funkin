@@ -3,6 +3,9 @@
         "Name": "Tutorial",
         "Songs": [
             "Tutorial"
+        ],
+        "Characters": [
+            "dad", "bf", "gf"
         ]
     },
     {
@@ -11,6 +14,9 @@
             "Bopeebo",
             "Fresh",
             "Dadbattle"
+        ],
+        "Characters": [
+            "dad", "bf", "gf"
         ]
     },
     {
@@ -18,6 +24,9 @@
         "Songs": [
             "Spookeez",
             "South"
+        ],
+        "Characters":[
+            "spooky", "bf", "gf"
         ]
     }
 ]

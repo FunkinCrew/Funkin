@@ -10,11 +10,11 @@ using StringTools;
 class SwagSong
 {
 	public var file:String;
+	public var metadata:SongMetadata;
 	public var song:String;
 	public var notes:Array<SwagSection>;
 	public var bpm:Int;
 	public var sections:Int;
-	public var sectionLengths:Array<Dynamic> = [];
 	public var needsVoices:Bool = true;
 	public var speed:Float = 1;
 
@@ -25,7 +25,7 @@ class SwagSong
 	{
 	}
 
-	public static function loadFromJson(path:String):SwagSong
+	public static function loadFromJson(path:String, meta:SongMetadata):SwagSong
 	{
 		var rawJson = Assets.getText(path).trim();
 
@@ -35,9 +35,17 @@ class SwagSong
 			// LOL GOING THROUGH THE BULLSHIT TO CLEAN IDK WHATS STRANGE
 		}
 
-		var swagShit:SwagSong = cast Json.parse(rawJson).song;
-		swagShit.file = path;
-		trace(swagShit.notes[0]);
+		var swagJson = Json.parse(rawJson).song;
+		var swag = new SwagSong();
+		swag.file = path;
+		swag.metadata = meta;
+		swag.song = swagJson.song;
+		swag.notes = swagJson.notes;
+		swag.bpm = swagJson.bpm;
+		swag.sections = swagJson.sections;
+		swag.speed = swagJson.speed;
+		swag.player1 = swagJson.player1;
+		swag.player2 = swagJson.player2;
 
 		// FIX THE CASTING ON WINDOWS/NATIVE
 		// Windows???
@@ -57,6 +65,6 @@ class SwagSong
 				daBpm = songData.bpm;
 				daSectionLengths = songData.sectionLengths; */
 
-		return swagShit;
+		return swag;
 	}
 }

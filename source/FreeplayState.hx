@@ -16,7 +16,6 @@ import sys.io.File;
 
 class FreeplayState extends MusicBeatState
 {
-	var songFolders:Array<String> = [];
 	var songs:Array<SongMetadata> = [];
 
 	var selector:FlxText;
@@ -47,11 +46,19 @@ class FreeplayState extends MusicBeatState
 		isDebug = true;
 		#end
 
-		// LOAD MUSIC
+		var lockedMusic:Array<SongMetadata> = [];
+		// LOAD UNLOCKED MUSIC
 		for (i in 0...SongLoader.instance.weeks.length)
 			if (StoryMenuState.weekUnlocked[i] || isDebug)
 				for (song in SongLoader.instance.weeks[i].songs)
 					songs.push(song);
+			else
+				for (song in SongLoader.instance.weeks[i].songs)
+					lockedMusic.push(song);
+
+		for (song in SongLoader.instance.songs)
+			if (!lockedMusic.contains(song) && !songs.contains(song))
+				songs.push(song);
 
 		// LOAD CHARACTERS
 
@@ -71,10 +78,6 @@ class FreeplayState extends MusicBeatState
 			// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
 			// songText.screenCenter(X);
 		}
-
-		var seperator:Alphabet = new Alphabet(0, 30, "--- CUSTOM SONGS ---", true, false);
-		seperator.isMenuItem = true;
-		grpSongs.add(seperator);
 
 		scoreText = new FlxText(FlxG.width * 0.7, 5, 0, "", 32);
 		// scoreText.autoSize = false;

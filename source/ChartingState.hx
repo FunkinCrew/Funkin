@@ -96,7 +96,6 @@ class ChartingState extends MusicBeatState
 			_song.needsVoices = false;
 			_song.player1 = 'bf';
 			_song.player2 = 'dad';
-			_song.sectionLengths = [];
 			_song.speed = 1;
 		}
 
@@ -794,7 +793,7 @@ class ChartingState extends MusicBeatState
 
 	function loadJson(song:SwagSong):Void
 	{
-		PlayState.SONG = SwagSong.loadFromJson(song.file);
+		PlayState.SONG = SwagSong.loadFromJson(song.file, song.metadata);
 		FlxG.resetState();
 	}
 
@@ -808,10 +807,7 @@ class ChartingState extends MusicBeatState
 	private function saveLevel()
 	{
 		var json = {
-			"song": _song,
-			"bpm": Conductor.bpm,
-			"sections": _song.notes.length,
-			'notes': _song.notes
+			"song": _song
 		};
 
 		var data:String = Json.stringify(json);

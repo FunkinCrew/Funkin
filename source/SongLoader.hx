@@ -30,8 +30,17 @@ class SongLoader
 
 			if (FileSystem.exists(jsonPath))
 			{
-				var toAdd:SongMetadata = cast Json.parse(File.getContent(jsonPath));
-				toAdd.folder = folders[i];
+				var songDynamic:Dynamic = Json.parse(File.getContent(jsonPath));
+				// Shut up i like nicely named Json fields
+				var toAdd:SongMetadata = {
+					folder: folders[i],
+					name: songDynamic.Name,
+					instrumental: songDynamic.Instrumental,
+					voices: songDynamic.Voices,
+					format: songDynamic.SongFormat,
+					difficulties: songDynamic.Difficulties
+				}
+
 				songs.push(toAdd);
 			}
 			else
@@ -50,16 +59,33 @@ class SongLoader
 		// belongs to in the song json itself
 		var path:String = "assets/data/campaign.json";
 
-		var weekJson:Array<Dynamic> = cast Json.parse(File.getContent(path));
+		var weekJson:Dynamic = Json.parse(File.getContent(path));
+		var weekIterator:Array<Dynamic> = cast weekJson;
 
-		trace(weekJson);
+		for (weekData in weekIterator)
+		{
+			var songList:Array<SongMetadata> = [];
+			var songIterator:Array<String> = cast weekData.Songs;
+			for (song in songIterator)
+			{
+				var toAdd:SongMetadata = GetSongByName(song);
+				if (toAdd != null)
+					songList.push(toAdd);
+			}
+			var week:WeekMetadata = {
+				name: weekData.Name,
+				characters: weekData.Characters,
+				songs: songList
+			}
+			weeks.push(week);
+		}
 	}
 
 	public function LoadSongData(song:SongMetadata, difficulty:Int):SwagSong
 	{
 		var path = "assets/data/songs/" + song.folder + "/" + song.difficulties[difficulty];
 
-		return SwagSong.loadFromJson(path);
+		return SwagSong.loadFromJson(path, song);
 	}
 
 	public function GetSongByName(name:String):SongMetadata

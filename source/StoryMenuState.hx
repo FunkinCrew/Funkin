@@ -256,7 +256,7 @@ class StoryMenuState extends MusicBeatState
 
 			PlayState.storyDifficulty = curDifficulty;
 
-			PlayState.SONG = SwagSong.loadFromJson(songToPlay.folder + "/" + difficultyJson);
+			PlayState.SONG = SongLoader.instance.LoadSongData(songToPlay, curDifficulty);
 			PlayState.storyWeek = curWeek;
 			PlayState.campaignScore = 0;
 			new FlxTimer().start(1, function(tmr:FlxTimer)
