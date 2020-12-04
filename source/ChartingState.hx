@@ -98,7 +98,7 @@ class ChartingState extends MusicBeatState
 				player2: 'dad',
 				sectionLengths: [],
 				speed: 1,
-				validScore: false;
+				validScore: false
 			};
 		}
 
