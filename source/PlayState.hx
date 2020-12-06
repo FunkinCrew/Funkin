@@ -731,7 +731,8 @@ class PlayState extends MusicBeatState
 		{
 			switch (totalBeats)
 			{
-				case 127:
+				case 128, 129, 130:
+				vocals.volume = 0;
 					// FlxG.sound.music.stop();
 					// curLevel = 'Fresh';
 					// FlxG.switchState(new PlayState());
