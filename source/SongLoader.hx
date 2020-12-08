@@ -112,4 +112,13 @@ class SongLoader
 
 		return null;
 	}
+
+	public function GetSongByFolder(folder:String):SongMetadata
+	{
+		for (i in 0...songs.length)
+			if (songs[i].folder == folder)
+				return songs[i];
+
+		return null;
+	}
 }

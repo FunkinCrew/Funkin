@@ -71,10 +71,6 @@ class FreeplayState extends MusicBeatState
 			if (!lockedMusic.contains(song) && !songs.contains(song))
 				songs.push(song);
 
-		// LOAD MUSIC TO PLAY IN THE BACKGROUND
-		for (song in songs)
-			musicDemos.push(FlxG.sound.load('songs/${song.folder}/${song.instrumental}${TitleState.soundExt}'));
-
 		// LOAD CHARACTERS
 
 		var bg:FlxSprite = new FlxSprite().loadGraphic(AssetPaths.menuBGBlue__png);
@@ -109,33 +105,13 @@ class FreeplayState extends MusicBeatState
 
 		add(scoreText);
 
-		changeSelection();
-		changeDiff();
+		// LOAD MUSIC TO PLAY IN THE BACKGROUND
+		for (song in songs)
+			musicDemos.push(new FlxSound().loadStream('songs/${song.folder}/${song.instrumental}${TitleState.soundExt}'));
 
-		// FlxG.sound.playMusic('assets/music/title' + TitleState.soundExt, 0);
-		// FlxG.sound.music.fadeIn(2, 0, 0.8);
-		selector = new FlxText();
-
-		selector.size = 40;
-		selector.text = ">";
-		// add(selector);
-
-		// JUST DOIN THIS SHIT FOR TESTING!!!
-		/* 
-			var md:String = Markdown.markdownToHtml(Assets.getText('CHANGELOG.md'));
-
-			var texFel:TextField = new TextField();
-			texFel.width = FlxG.width;
-			texFel.height = FlxG.height;
-			// texFel.
-			texFel.htmlText = md;
-
-			FlxG.stage.addChild(texFel);
-
-			// scoreText.textField.htmlText = md;
-
-			trace(md);
-		 */
+		// PLAY FIRST SONG
+		changeDiff(0);
+		changeSelection(0);
 
 		super.create();
 	}
@@ -144,11 +120,7 @@ class FreeplayState extends MusicBeatState
 	{
 		super.update(elapsed);
 		FlxG.watch.addQuick("musicDemoState", musicDemos);
-
-		if (FlxG.sound.music.volume < 0.7)
-		{
-			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
-		}
+		FlxG.watch.addQuick("demoPlaying", currentlyPlayingDemo);
 
 		lerpScore = Math.floor(FlxMath.lerp(lerpScore, intendedScore, 0.4));
 
@@ -263,9 +235,6 @@ class FreeplayState extends MusicBeatState
 			FlxG.sound.music.fadeIn(2.5);
 		}
 		currentlyPlayingDemo = musicDemos[curSelected];
-
-		// FlxG.sound.playMusic('songs/' + songs[curSelected].folder + "/" + songs[curSelected].instrumental + TitleState.soundExt, 0);
-		// FlxG.sound.music.fadeIn(4, 0, 1);
 
 		var bullShit:Int = 0;
 

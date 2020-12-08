@@ -83,10 +83,6 @@ class MainMenuState extends MusicBeatState
 
 		changeItem();
 
-		new SongLoader();
-		SongLoader.instance.LoadSongs();
-		SongLoader.instance.LoadWeeks();
-
 		super.create();
 	}
 

@@ -71,26 +71,42 @@ class TitleState extends MusicBeatState
 				StoryMenuState.weekUnlocked.insert(0, true);
 		}
 
+		// GOTTA LOAD SONGS BEFORE WE POSSIBLY BOOT EM UP
+
+		new SongLoader();
+		SongLoader.instance.LoadSongs();
+		SongLoader.instance.LoadWeeks();
+
 		var args = Sys.args();
+
+		var songToPlay:SongMetadata = null;
+		var difficultyToPlay:Null<Int> = null;
+
 		for (i in 0...args.length)
 		{
 			var arg = args[i];
-			if (arg == "--open-song" && i + 1 < args.length)
+			if ((arg == "--open-song" || arg == "-s") && i + 1 < args.length)
 			{
-				var path = args[i + 1];
-				if (FileSystem.exists(path))
-				{
-					var dir = Path.directory(path);
-					var metaPath = Path.join([dir, "song.json"]);
-					if (dir != "" && FileSystem.exists(metaPath))
-					{
-						var meta = SongLoader.LoadMetadata(metaPath);
-						PlayState.SONG = SwagSong.loadFromJson(path, meta);
-
-						FlxG.switchState(new PlayState());
-					}
-				}
+				var songName = args[i + 1];
+				songToPlay = SongLoader.instance.GetSongByFolder(songName);
+				if (songToPlay == null)
+					throw("Song not found.");
 			}
+			if ((arg == "--open-difficulty" || arg == "-d") && i + 1 < args.length)
+			{
+				var difficulty = args[i + 1];
+				var parsed = Std.parseInt(difficulty);
+				trace(parsed);
+				if (parsed != null)
+					difficultyToPlay = parsed;
+			}
+		}
+
+		if (songToPlay != null && difficultyToPlay != null)
+		{
+			PlayState.SONG = SongLoader.instance.LoadSongData(songToPlay, difficultyToPlay);
+			FlxG.switchState(new PlayState());
+			return;
 		}
 
 		#if SKIP_TO_PLAYSTATE
