@@ -32,7 +32,8 @@ class FreeplayState extends MusicBeatState
 	private var grpSongs:FlxTypedGroup<Alphabet>;
 	private var curPlaying:Bool = false;
 
-	private var musicDemos:FlxTypedGroup<FlxSound>;
+	private var musicDemos:Array<FlxSound>;
+	private var currentlyPlayingDemo:FlxSound;
 
 	override function create()
 	{
@@ -50,6 +51,8 @@ class FreeplayState extends MusicBeatState
 		isDebug = true;
 		#end
 
+		musicDemos = new Array<FlxSound>();
+
 		var lockedMusic:Array<SongMetadata> = [];
 		// LOAD UNLOCKED MUSIC
 		for (i in 0...SongLoader.instance.weeks.length)
@@ -57,9 +60,7 @@ class FreeplayState extends MusicBeatState
 				for (song in SongLoader.instance.weeks[i].songs)
 				{
 					if (!songs.contains(song))
-					{
 						songs.push(song);
-					}
 				}
 			else
 				for (song in SongLoader.instance.weeks[i].songs)
@@ -70,7 +71,9 @@ class FreeplayState extends MusicBeatState
 			if (!lockedMusic.contains(song) && !songs.contains(song))
 				songs.push(song);
 
-		musicDemos = new FlxTypedGroup<FlxSound>();
+		// LOAD MUSIC TO PLAY IN THE BACKGROUND
+		for (song in songs)
+			musicDemos.push(FlxG.sound.load('songs/${song.folder}/${song.instrumental}${TitleState.soundExt}'));
 
 		// LOAD CHARACTERS
 
@@ -140,7 +143,7 @@ class FreeplayState extends MusicBeatState
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
-		FlxG.watch.addQuick("musicDemoState", musicDemos.members);
+		FlxG.watch.addQuick("musicDemoState", musicDemos);
 
 		if (FlxG.sound.music.volume < 0.7)
 		{
@@ -242,39 +245,25 @@ class FreeplayState extends MusicBeatState
 		// lerpScore = 0;
 		#end
 
+		var previous:FlxSound = null;
+
 		if (FlxG.sound.music.playing)
-			FlxG.sound.music.fadeOut(1.5, 0, function(tween) FlxG.sound.music.pause());
+			previous = FlxG.sound.music;
 		else
-		{
-			if (musicDemos.length > 2)
-			{
-				for (i in 0...musicDemos.length - 3)
-				{
-					var song = musicDemos.members[i];
-					song.onComplete = null;
-					song.stop();
-					musicDemos.members.remove(song);
-				};
-			}
+			previous = currentlyPlayingDemo;
 
-			var first = musicDemos.getFirstExisting();
-			first.fadeOut(1.5, 0, function(tween)
-			{
-				first.onComplete = null;
-				first.stop();
-				musicDemos.members.remove(first);
-			});
-		}
+		if (previous != null)
+			previous.fadeOut(1, 0, function(tween) previous.pause());
 
-		var song = FlxG.sound.play('songs/' + songs[curSelected].folder + "/" + songs[curSelected].instrumental + TitleState.soundExt, 0);
-		song.onComplete = function()
+		musicDemos[curSelected].play();
+		musicDemos[curSelected].fadeIn();
+		musicDemos[curSelected].onComplete = function()
 		{
-			musicDemos.members.remove(song);
 			FlxG.sound.music.play();
-			FlxG.sound.music.fadeIn(2);
-		};
-		musicDemos.add(song);
-		song.fadeIn(1.5, 0, 0.7);
+			FlxG.sound.music.fadeIn(2.5);
+		}
+		currentlyPlayingDemo = musicDemos[curSelected];
+
 		// FlxG.sound.playMusic('songs/' + songs[curSelected].folder + "/" + songs[curSelected].instrumental + TitleState.soundExt, 0);
 		// FlxG.sound.music.fadeIn(4, 0, 1);
 
