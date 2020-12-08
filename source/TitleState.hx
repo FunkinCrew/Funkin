@@ -1,5 +1,6 @@
 package;
 
+import Song.SwagSong;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -20,7 +21,10 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import haxe.io.Path;
 import lime.utils.Assets;
+import sys.FileSystem;
+import sys.io.File;
 
 class TitleState extends MusicBeatState
 {
@@ -65,6 +69,28 @@ class TitleState extends MusicBeatState
 
 			if (StoryMenuState.weekUnlocked.length < 3)
 				StoryMenuState.weekUnlocked.insert(0, true);
+		}
+
+		var args = Sys.args();
+		for (i in 0...args.length)
+		{
+			var arg = args[i];
+			if (arg == "--open-song" && i + 1 < args.length)
+			{
+				var path = args[i + 1];
+				if (FileSystem.exists(path))
+				{
+					var dir = Path.directory(path);
+					var metaPath = Path.join([dir, "song.json"]);
+					if (dir != "" && FileSystem.exists(metaPath))
+					{
+						var meta = SongLoader.LoadMetadata(metaPath);
+						PlayState.SONG = SwagSong.loadFromJson(path, meta);
+
+						FlxG.switchState(new PlayState());
+					}
+				}
+			}
 		}
 
 		#if SKIP_TO_PLAYSTATE

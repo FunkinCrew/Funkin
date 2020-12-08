@@ -2,6 +2,7 @@ package;
 
 import Song.SwagSong;
 import haxe.Json;
+import haxe.io.Path;
 import sys.FileSystem;
 import sys.io.File;
 
@@ -30,15 +31,7 @@ class SongLoader
 
 			if (FileSystem.exists(jsonPath))
 			{
-				var songDynamic:Dynamic = Json.parse(File.getContent(jsonPath));
-				// Shut up i like nicely named Json fields
-				var toAdd:SongMetadata = {
-					folder: folders[i],
-					name: songDynamic.Name,
-					instrumental: songDynamic.Instrumental,
-					voices: songDynamic.Voices,
-					difficulties: songDynamic.Difficulties
-				}
+				var toAdd = LoadMetadata(jsonPath, folders[i]);
 
 				songs.push(toAdd);
 			}
@@ -47,6 +40,24 @@ class SongLoader
 				trace("No song found in " + folders[i] + ", skipping...");
 			}
 		}
+	}
+
+	public static function LoadMetadata(path:String, ?rootFolder:String):SongMetadata
+	{
+		var songDynamic:Dynamic = Json.parse(File.getContent(path));
+		var songDir = Path.withoutDirectory(new Path(path).dir);
+		if (!FileSystem.exists(Path.join([songDir, "song.json"])))
+			songDir = rootFolder;
+		// Shut up i like nicely named Json fields
+		var toReturn:SongMetadata = {
+			folder: songDir,
+			name: songDynamic.Name,
+			instrumental: songDynamic.Instrumental,
+			voices: songDynamic.Voices,
+			difficulties: songDynamic.Difficulties
+		}
+
+		return toReturn;
 	}
 
 	public function LoadWeeks()
