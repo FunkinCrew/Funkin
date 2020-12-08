@@ -175,7 +175,9 @@ class TitleState extends MusicBeatState
 
 		FlxTween.tween(credTextShit, {y: credTextShit.y + 20}, 2.9, {ease: FlxEase.quadInOut, type: PINGPONG});
 
+		#if !mobile
 		FlxG.mouse.visible = false;
+		#end
 
 		if (initialized)
 			skipIntro();
@@ -207,12 +209,16 @@ class TitleState extends MusicBeatState
 		Conductor.songPosition = FlxG.sound.music.time;
 		// FlxG.watch.addQuick('amp', FlxG.sound.music.amplitude);
 
+		#if !(switch || mobile)
 		if (FlxG.keys.justPressed.F)
 		{
 			FlxG.fullscreen = !FlxG.fullscreen;
 		}
+		#else
+		FlxG.fullscreen = true;
+		#end
 
-		var pressedEnter:Bool = FlxG.keys.justPressed.ENTER;
+		var pressedEnter:Bool = false;
 
 		var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
 
@@ -226,10 +232,16 @@ class TitleState extends MusicBeatState
 				pressedEnter = true;
 			#end
 		}
+		else
+		{
+			#if !(switch || mobile)
+			pressedEnter = FlxG.keys.justPressed.ENTER;
+			#end
+		}
 
 		if (pressedEnter && !transitioning && skippedIntro)
 		{
-			#if !switch
+			#if (!switch && !mobile)
 			NGio.unlockMedal(60960);
 
 			// If it's Friday according to da clock

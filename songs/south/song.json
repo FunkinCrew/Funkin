@@ -1,0 +1,10 @@
+{
+    "Name": "South",
+    "Instrumental": "South_Inst",
+    "Voices": "South_Voices",
+    "Difficulties": [
+        "south-easy.json",
+        "south.json",
+        "south-hard.json"
+    ]
+}

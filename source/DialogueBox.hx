@@ -58,7 +58,11 @@ class DialogueBox extends FlxSpriteGroup
 			dialogueStarted = true;
 		}
 
+		#if !(switch || mobile)
 		if (FlxG.keys.justPressed.SPACE)
+		#else
+		if (FlxG.touches.getFirst().justPressed)
+		#end
 		{
 			remove(dialogue);
 

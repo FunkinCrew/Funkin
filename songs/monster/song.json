@@ -1,0 +1,10 @@
+{
+    "Name": "Monster",
+    "Instrumental": "Monster_Inst",
+    "Voices": "Monster_Voices",
+    "Difficulties": [
+        "",
+        "monster.json",
+        ""
+    ]
+}

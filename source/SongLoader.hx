@@ -82,7 +82,13 @@ class SongLoader
 
 	public function LoadSongData(song:SongMetadata, difficulty:Int):SwagSong
 	{
+		if (difficulty > song.difficulties.length || difficulty < 0)
+			return null;
+
 		var path = "songs/" + song.folder + "/" + song.difficulties[difficulty];
+
+		if (!FileSystem.exists(path) || song.difficulties[difficulty] == "")
+			return null;
 
 		return SwagSong.loadFromJson(path, song);
 	}

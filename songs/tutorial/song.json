@@ -1,0 +1,9 @@
+{
+    "Name": "Tutorial",
+    "Instrumental": "Tutorial_Inst",
+    "Difficulties": [
+        "tutorial-easy.json",
+        "tutorial.json",
+        "tutorial-hard.json"
+    ]
+}

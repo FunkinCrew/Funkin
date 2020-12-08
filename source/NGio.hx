@@ -2,18 +2,21 @@ package;
 
 import flixel.FlxG;
 import flixel.util.FlxSignal;
+import openfl.display.Stage;
+#if NG_LOGIN
 import io.newgrounds.NG;
 import io.newgrounds.components.ScoreBoardComponent.Period;
 import io.newgrounds.objects.Medal;
 import io.newgrounds.objects.Score;
 import io.newgrounds.objects.ScoreBoard;
-import openfl.display.Stage;
+#end
 
 /**
  * MADE BY GEOKURELI THE LEGENED GOD HERO MVP
  */
 class NGio
 {
+	#if NG_LOGIN
 	public static var isLoggedIn:Bool = false;
 	public static var scoreboardsLoaded:Bool = false;
 
@@ -164,4 +167,33 @@ class NGio
 				medal.sendUnlock();
 		}
 	}
+	#else
+	public function new(api:String, encKey:String, ?sessionId:String)
+	{
+	}
+
+	inline static public function logEvent(event:String)
+	{
+	}
+
+	inline static public function unlockMedal(id:Int)
+	{
+	}
+
+	function onNGScoresFetch():Void
+	{
+	}
+
+	function onNGMedalFetch():Void
+	{
+	}
+
+	inline static public function postScore(score:Int = 0, song:String)
+	{
+	}
+
+	function onNGLogin():Void
+	{
+	}
+	#end
 }

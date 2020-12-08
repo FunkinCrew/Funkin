@@ -16,6 +16,9 @@ import flixel.addons.ui.FlxUITabMenu;
 import flixel.addons.ui.FlxUITooltip.FlxUITooltipStyle;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxGroup;
+import flixel.input.FlxPointer;
+import flixel.input.mouse.FlxMouse;
+import flixel.input.touch.FlxTouch;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.system.FlxSound;
@@ -384,6 +387,7 @@ class ChartingState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
+		#if !(switch || mobile)
 		curStep = recalculateSteps();
 
 		Conductor.songPosition = FlxG.sound.music.time;
@@ -411,13 +415,15 @@ class ChartingState extends MusicBeatState
 		FlxG.watch.addQuick('daBeat', curBeat);
 		FlxG.watch.addQuick('daStep', curStep);
 
-		if (FlxG.mouse.justPressed)
+		var pointer:FlxMouse = FlxG.mouse;
+
+		if (pointer.justPressed)
 		{
-			if (FlxG.mouse.overlaps(curRenderedNotes))
+			if (pointer.overlaps(curRenderedNotes))
 			{
 				curRenderedNotes.forEach(function(note:Note)
 				{
-					if (FlxG.mouse.overlaps(note))
+					if (pointer.overlaps(note))
 					{
 						if (FlxG.keys.pressed.CONTROL)
 						{
@@ -520,6 +526,7 @@ class ChartingState extends MusicBeatState
 
 		bpmTxt.text = "BPM: " + Conductor.bpm + "\nSection: " + curSection;
 		super.update(elapsed);
+		#end
 	}
 
 	function recalculateSteps():Int
@@ -726,6 +733,7 @@ class ChartingState extends MusicBeatState
 
 	private function addNote():Void
 	{
+		#if !(switch || mobile)
 		var noteStrum = getStrumTime(dummyArrow.y) + (curSection * (Conductor.stepCrochet * 16));
 		var noteData = Math.floor(FlxG.mouse.x / GRID_SIZE);
 		var noteSus = 0;
@@ -739,6 +747,7 @@ class ChartingState extends MusicBeatState
 
 		updateGrid();
 		updateNoteUI();
+		#end
 	}
 
 	function getStrumTime(yPos:Float):Float

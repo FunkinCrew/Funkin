@@ -1,0 +1,10 @@
+{
+    "Name": "Spookeez",
+    "Instrumental": "Spookeez_Inst",
+    "Voices": "Spookeez_Voices",
+    "Difficulties": [
+        "spookeez-easy.json",
+        "spookeez.json",
+        "spookeez-hard.json"
+    ]
+}

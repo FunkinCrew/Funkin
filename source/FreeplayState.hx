@@ -7,6 +7,8 @@ import flixel.FlxSprite;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
+import flixel.system.FlxAssets.FlxSoundAsset;
+import flixel.system.FlxSound;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import haxe.Json;
@@ -29,6 +31,8 @@ class FreeplayState extends MusicBeatState
 
 	private var grpSongs:FlxTypedGroup<Alphabet>;
 	private var curPlaying:Bool = false;
+
+	private var musicDemos:FlxTypedGroup<FlxSound>;
 
 	override function create()
 	{
@@ -65,6 +69,8 @@ class FreeplayState extends MusicBeatState
 		for (song in SongLoader.instance.songs)
 			if (!lockedMusic.contains(song) && !songs.contains(song))
 				songs.push(song);
+
+		musicDemos = new FlxTypedGroup<FlxSound>();
 
 		// LOAD CHARACTERS
 
@@ -111,8 +117,6 @@ class FreeplayState extends MusicBeatState
 		selector.text = ">";
 		// add(selector);
 
-		var swag:Alphabet = new Alphabet(1, 0, "swag");
-
 		// JUST DOIN THIS SHIT FOR TESTING!!!
 		/* 
 			var md:String = Markdown.markdownToHtml(Assets.getText('CHANGELOG.md'));
@@ -136,6 +140,7 @@ class FreeplayState extends MusicBeatState
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+		FlxG.watch.addQuick("musicDemoState", musicDemos.members);
 
 		if (FlxG.sound.music.volume < 0.7)
 		{
@@ -174,7 +179,14 @@ class FreeplayState extends MusicBeatState
 
 		if (accepted)
 		{
-			PlayState.SONG = SongLoader.instance.LoadSongData(songs[curSelected], curDifficulty);
+			var song = SongLoader.instance.LoadSongData(songs[curSelected], curDifficulty);
+			if (song == null)
+			{
+				accepted = false;
+				trace("No difficulty " + curDifficulty + " for song " + songs[curSelected].name + ".");
+				return;
+			}
+			PlayState.SONG = song;
 			PlayState.isStoryMode = false;
 			PlayState.storyDifficulty = curDifficulty;
 			FlxG.switchState(new PlayState());
@@ -223,10 +235,6 @@ class FreeplayState extends MusicBeatState
 		if (curSelected >= grpSongs.length)
 			curSelected = 0;
 
-		var custom:Bool = false;
-		if (curSelected > songs.length)
-			custom = true;
-
 		// selector.y = (70 * curSelected) + 30;
 
 		#if !switch
@@ -234,7 +242,41 @@ class FreeplayState extends MusicBeatState
 		// lerpScore = 0;
 		#end
 
-		FlxG.sound.playMusic('songs/' + songs[curSelected].folder + "/" + songs[curSelected].instrumental + TitleState.soundExt, 0);
+		if (FlxG.sound.music.playing)
+			FlxG.sound.music.fadeOut(1.5, 0, function(tween) FlxG.sound.music.pause());
+		else
+		{
+			if (musicDemos.length > 2)
+			{
+				for (i in 0...musicDemos.length - 3)
+				{
+					var song = musicDemos.members[i];
+					song.onComplete = null;
+					song.stop();
+					musicDemos.members.remove(song);
+				};
+			}
+
+			var first = musicDemos.getFirstExisting();
+			first.fadeOut(1.5, 0, function(tween)
+			{
+				first.onComplete = null;
+				first.stop();
+				musicDemos.members.remove(first);
+			});
+		}
+
+		var song = FlxG.sound.play('songs/' + songs[curSelected].folder + "/" + songs[curSelected].instrumental + TitleState.soundExt, 0);
+		song.onComplete = function()
+		{
+			musicDemos.members.remove(song);
+			FlxG.sound.music.play();
+			FlxG.sound.music.fadeIn(2);
+		};
+		musicDemos.add(song);
+		song.fadeIn(1.5, 0, 0.7);
+		// FlxG.sound.playMusic('songs/' + songs[curSelected].folder + "/" + songs[curSelected].instrumental + TitleState.soundExt, 0);
+		// FlxG.sound.music.fadeIn(4, 0, 1);
 
 		var bullShit:Int = 0;
 
@@ -252,5 +294,11 @@ class FreeplayState extends MusicBeatState
 				// item.setGraphicSize(Std.int(item.width));
 			}
 		}
+	}
+
+	private function stopAndPop(song:FlxSound)
+	{
+		song.stop();
+		musicDemos.remove(song);
 	}
 }

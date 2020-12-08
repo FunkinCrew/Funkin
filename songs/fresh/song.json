@@ -1,0 +1,10 @@
+{
+    "Name": "Fresh",
+    "Instrumental": "Fresh_Inst",
+    "Voices": "Fresh_Voices",
+    "Difficulties": [
+        "fresh-easy.json",
+        "fresh.json",
+        "fresh-hard.json"
+    ]
+}

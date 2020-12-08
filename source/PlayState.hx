@@ -292,10 +292,6 @@ class PlayState extends MusicBeatState
 
 		// cameras = [FlxG.cameras.list[1]];
 
-		#if lime
-		trace("IT'S LIME");
-		#end
-
 		super.create();
 	}
 
@@ -395,6 +391,9 @@ class PlayState extends MusicBeatState
 		Conductor.changeBPM(songData.bpm);
 
 		curSong = songData.song;
+
+		if (SONG.metadata.voices == null)
+			SONG.needsVoices = false;
 
 		if (SONG.needsVoices)
 			vocals = new FlxSound().loadEmbedded("songs/" + SONG.metadata.folder + "/" + SONG.metadata.voices + TitleState.soundExt);
@@ -600,6 +599,7 @@ class PlayState extends MusicBeatState
 
 		scoreTxt.text = "Score:" + songScore;
 
+		#if !(switch || mobile)
 		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause)
 		{
 			persistentUpdate = false;
@@ -608,11 +608,14 @@ class PlayState extends MusicBeatState
 
 			openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 		}
+		#end
 
+		#if !(switch || mobile)
 		if (FlxG.keys.justPressed.SEVEN)
 		{
 			FlxG.switchState(new ChartingState());
 		}
+		#end
 
 		// FlxG.watch.addQuick('VOL', vocals.amplitudeLeft);
 		// FlxG.watch.addQuick('VOLRight', vocals.amplitudeRight);
