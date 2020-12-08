@@ -72,7 +72,6 @@ class FreeplayState extends MusicBeatState
 				songs.push(song);
 
 		// LOAD CHARACTERS
-
 		var bg:FlxSprite = new FlxSprite().loadGraphic(AssetPaths.menuBGBlue__png);
 		add(bg);
 
@@ -217,15 +216,11 @@ class FreeplayState extends MusicBeatState
 		// lerpScore = 0;
 		#end
 
-		var previous:FlxSound = null;
-
 		if (FlxG.sound.music.playing)
-			previous = FlxG.sound.music;
-		else
-			previous = currentlyPlayingDemo;
+			FlxG.sound.music.fadeOut(1, 0, function(tween) FlxG.sound.music.pause());
 
-		if (previous != null)
-			previous.fadeOut(1, 0, function(tween) previous.pause());
+		if (currentlyPlayingDemo != null)
+			currentlyPlayingDemo.fadeOut(1, 0, function(tween) currentlyPlayingDemo.pause());
 
 		musicDemos[curSelected].play();
 		musicDemos[curSelected].fadeIn();
@@ -236,12 +231,11 @@ class FreeplayState extends MusicBeatState
 		}
 		currentlyPlayingDemo = musicDemos[curSelected];
 
-		var bullShit:Int = 0;
-
+		var i:Int = 0;
 		for (item in grpSongs.members)
 		{
-			item.targetY = bullShit - curSelected;
-			bullShit++;
+			item.targetY = i - curSelected;
+			i++;
 
 			item.alpha = 0.6;
 			// item.setGraphicSize(Std.int(item.width * 0.8));
@@ -252,11 +246,5 @@ class FreeplayState extends MusicBeatState
 				// item.setGraphicSize(Std.int(item.width));
 			}
 		}
-	}
-
-	private function stopAndPop(song:FlxSound)
-	{
-		song.stop();
-		musicDemos.remove(song);
 	}
 }
