@@ -1,6 +1,7 @@
 package;
 
 import flixel.FlxSprite;
+import flixel.animation.FlxBaseAnimation;
 import flixel.graphics.frames.FlxAtlasFrames;
 
 using StringTools;
@@ -107,21 +108,82 @@ class Character extends FlxSprite
 				addOffset("singLEFT", -30);
 				addOffset("singDOWN", -30, -40);
 				playAnim('idle');
-			case 'lucky':
-				tex = FlxAtlasFrames.fromSparrow(AssetPaths.lucky_guitar_assets__png, AssetPaths.lucky_guitar_assets__xml);
+			case 'pico':
+				tex = FlxAtlasFrames.fromSparrow(AssetPaths.Pico_FNF_assetss__png, AssetPaths.Pico_FNF_assetss__xml);
 				frames = tex;
-				animation.addByPrefix('idle', 'lucky guitar idle', 24, false);
-				animation.addByPrefix('singUP', 'lucky UP NOTE', 24, false);
-				animation.addByPrefix('singRIGHT', 'lucky sing right', 24, false);
-				animation.addByPrefix('singDOWN', 'lucky DOWN note', 24, false);
-				animation.addByPrefix('singLEFT', 'lucky sing left', 24, false);
+				animation.addByPrefix('idle', "Pico Idle Dance", 24);
+				animation.addByPrefix('singUP', 'pico Up note0', 24, false);
+				animation.addByPrefix('singDOWN', 'Pico Down Note0', 24, false);
+				if (isPlayer)
+				{
+					animation.addByPrefix('singLEFT', 'Pico NOTE LEFT0', 24, false);
+					animation.addByPrefix('singRIGHT', 'Pico Note Right0', 24, false);
+					animation.addByPrefix('singRIGHTmiss', 'Pico Note Right Miss', 24, false);
+					animation.addByPrefix('singLEFTmiss', 'Pico NOTE LEFT miss', 24, false);
+				}
+				else
+				{
+					// Need to be flipped! REDO THIS LATER!
+					animation.addByPrefix('singLEFT', 'Pico Note Right0', 24, false);
+					animation.addByPrefix('singRIGHT', 'Pico NOTE LEFT0', 24, false);
+					animation.addByPrefix('singRIGHTmiss', 'Pico NOTE LEFT miss', 24, false);
+					animation.addByPrefix('singLEFTmiss', 'Pico Note Right Miss', 24, false);
+				}
 
-				addOffset('idle', 0, -180);
-				addOffset("singUP", 200, -180);
-				addOffset("singRIGHT", 200, -180);
-				addOffset("singLEFT", 200, -180);
-				addOffset("singDOWN", 200, -180);
+				animation.addByPrefix('singUPmiss', 'pico Up note miss', 24);
+				animation.addByPrefix('singDOWNmiss', 'Pico Down Note MISS', 24);
+
 				playAnim('idle');
+				addOffset('idle');
+				addOffset("singUP", -29, 27);
+				addOffset("singRIGHT", -68, -7);
+				addOffset("singLEFT", 65, 9);
+				addOffset("singDOWN", 200, 70);
+				addOffset("singUPmiss", -19, 67);
+				addOffset("singRIGHTmiss", -60, 41);
+				addOffset("singLEFTmiss", 62, 64);
+				addOffset("singDOWNmiss", 210, -28);
+
+				if (!isPlayer)
+					flipX = true;
+
+			case 'bf':
+				var tex = FlxAtlasFrames.fromSparrow(AssetPaths.BOYFRIEND__png, AssetPaths.BOYFRIEND__xml);
+				frames = tex;
+				animation.addByPrefix('idle', 'BF idle dance', 24, false);
+				animation.addByPrefix('singUP', 'BF NOTE UP0', 24, false);
+				animation.addByPrefix('singLEFT', 'BF NOTE LEFT0', 24, false);
+				animation.addByPrefix('singRIGHT', 'BF NOTE RIGHT0', 24, false);
+				animation.addByPrefix('singDOWN', 'BF NOTE DOWN0', 24, false);
+				animation.addByPrefix('singUPmiss', 'BF NOTE UP MISS', 24, false);
+				animation.addByPrefix('singLEFTmiss', 'BF NOTE LEFT MISS', 24, false);
+				animation.addByPrefix('singRIGHTmiss', 'BF NOTE RIGHT MISS', 24, false);
+				animation.addByPrefix('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
+				animation.addByPrefix('hey', 'BF HEY', 24, false);
+
+				animation.addByPrefix('firstDeath', "BF dies", 24, false);
+				animation.addByPrefix('deathLoop', "BF Dead Loop", 24, true);
+				animation.addByPrefix('deathConfirm', "BF Dead confirm", 24, false);
+
+				animation.addByPrefix('scared', 'BF idle shaking', 24);
+				playAnim('idle');
+
+				antialiasing = true;
+
+				addOffset('idle', -5);
+				addOffset("singUP", -29, 27);
+				addOffset("singRIGHT", -38, -7);
+				addOffset("singLEFT", 12, -6);
+				addOffset("singDOWN", -10, -50);
+				addOffset("singUPmiss", -29, 27);
+				addOffset("singRIGHTmiss", -30, 21);
+				addOffset("singLEFTmiss", 12, 24);
+				addOffset("singDOWNmiss", -11, -19);
+				addOffset("hey", 7, 4);
+				addOffset('firstDeath', 37, 11);
+				addOffset('deathLoop', 37, 5);
+				addOffset('deathConfirm', 37, 69);
+				addOffset('scared', -4);
 		}
 	}
 
