@@ -578,9 +578,9 @@ class PlayState extends MusicBeatState
 		{
 			if (FlxG.sound.music != null)
 			{
-				vocals.time = Conductor.songPosition;
-
 				FlxG.sound.music.play();
+				Conductor.songPosition = FlxG.sound.music.time;
+				vocals.time = Conductor.songPosition;
 				vocals.play();
 			}
 
