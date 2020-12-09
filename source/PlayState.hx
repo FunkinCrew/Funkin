@@ -561,6 +561,7 @@ class PlayState extends MusicBeatState
 			{
 				FlxG.sound.music.pause();
 				vocals.pause();
+				recovervoiceoffset = true;
 			}
 
 			if (!startTimer.finished)
@@ -593,7 +594,7 @@ class PlayState extends MusicBeatState
 	private var paused:Bool = false;
 	var startedCountdown:Bool = false;
 	var canPause:Bool = true;
-
+	var recovervoiceoffset:Bool;
 	override public function update(elapsed:Float)
 	{
 		super.update(elapsed);
@@ -653,6 +654,12 @@ class PlayState extends MusicBeatState
 
 			if (!paused)
 			{
+				if (vocals.time != Conductor.songPosition && recovervoiceoffset  == true) 
+				{
+					vocals.time = Conductor.songPosition;
+					FlxG.sound.music.time = Conductor.songPosition;
+					recovervoiceoffset = false;
+				}
 				songTime += FlxG.game.ticks - previousFrameTime;
 				previousFrameTime = FlxG.game.ticks;
 
