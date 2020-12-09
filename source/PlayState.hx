@@ -199,6 +199,8 @@ class PlayState extends MusicBeatState
 				dad.y += 100;
 			case 'dad':
 				camPos.x += 400;
+			case 'pico':
+				dad.y += 300;
 		}
 
 		boyfriend = new Boyfriend(770, 450);
