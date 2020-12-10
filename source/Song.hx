@@ -4,10 +4,13 @@ import Section.SwagSection;
 import haxe.Json;
 import haxe.format.JsonParser;
 import lime.utils.Assets;
-import sys.FileSystem;
-import sys.io.File;
 
 using StringTools;
+
+#if sys
+import sys.FileSystem;
+import sys.io.File;
+#end
 
 class SwagSong
 {
@@ -29,7 +32,11 @@ class SwagSong
 
 	public static function loadFromJson(path:String, meta:SongMetadata):SwagSong
 	{
+		#if sys
 		var rawJson = File.getContent(path).trim();
+		#else
+		var rawJson = Assets.getText(path).trim();
+		#end
 
 		while (!rawJson.endsWith("}"))
 		{

@@ -13,8 +13,10 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import haxe.Json;
 import lime.utils.Assets;
+#if sys
 import sys.FileSystem;
 import sys.io.File;
+#end
 
 class FreeplayState extends MusicBeatState
 {
@@ -106,7 +108,7 @@ class FreeplayState extends MusicBeatState
 
 		// LOAD MUSIC TO PLAY IN THE BACKGROUND
 		for (song in songs)
-			musicDemos.push(new FlxSound().loadStream('songs/${song.folder}/${song.instrumental}${TitleState.soundExt}'));
+			musicDemos.push(FlxG.sound.load(null, 1, false, null, false, false, 'songs/${song.folder}/${song.instrumental}${TitleState.soundExt}'));
 
 		// PLAY FIRST SONG
 		changeDiff(0);
@@ -160,6 +162,8 @@ class FreeplayState extends MusicBeatState
 				trace("No difficulty " + curDifficulty + " for song " + songs[curSelected].name + ".");
 				return;
 			}
+			if (currentlyPlayingDemo != null)
+				currentlyPlayingDemo.fadeOut(0.5, 0, function(tween) currentlyPlayingDemo.stop());
 			PlayState.SONG = song;
 			PlayState.isStoryMode = false;
 			PlayState.storyDifficulty = curDifficulty;
@@ -220,15 +224,17 @@ class FreeplayState extends MusicBeatState
 			FlxG.sound.music.fadeOut(1, 0, function(tween) FlxG.sound.music.pause());
 
 		if (currentlyPlayingDemo != null)
-			currentlyPlayingDemo.fadeOut(1, 0, function(tween) currentlyPlayingDemo.pause());
-
-		musicDemos[curSelected].play();
-		musicDemos[curSelected].fadeIn();
-		musicDemos[curSelected].onComplete = function()
 		{
-			FlxG.sound.music.play();
+			var prevSong = currentlyPlayingDemo;
+			currentlyPlayingDemo.fadeOut(1, 0, function(tween) prevSong.pause());
+		}
+
+		musicDemos[curSelected].fadeIn().onComplete = function()
+		{
 			FlxG.sound.music.fadeIn(2.5);
 		}
+		if (currentlyPlayingDemo == null)
+			FlxG.sound.list.add(musicDemos[curSelected]);
 		currentlyPlayingDemo = musicDemos[curSelected];
 
 		var i:Int = 0;

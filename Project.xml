@@ -41,6 +41,7 @@
 
 	<assets path="assets/images" />
 	<assets path="assets/data" />
+	<assets path="songs" if="web"/>
 	
 	<!-- <library name="noPreload" preload='false'/> -->
 	<!-- <library name="noPreload"/> -->
@@ -64,7 +65,7 @@
 
 	<!--In case you want to use the ui package-->
 	<haxelib name="flixel-ui" />
-	<haxelib name="newgrounds" if='html5'/>
+	<haxelib name="newgrounds" if='web'/>
 	<haxelib name="faxe" if='switch'/>
 
 	<!-- <haxelib name="markdown" /> -->

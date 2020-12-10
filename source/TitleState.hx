@@ -23,8 +23,10 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import haxe.io.Path;
 import lime.utils.Assets;
+#if sys
 import sys.FileSystem;
 import sys.io.File;
+#end
 
 class TitleState extends MusicBeatState
 {
@@ -61,22 +63,26 @@ class TitleState extends MusicBeatState
 
 		FlxG.save.bind('funkin', 'ninjamuffin99');
 
-		Highscore.load();
-
-		if (FlxG.save.data.weekUnlocked != null)
-		{
-			StoryMenuState.weekUnlocked = FlxG.save.data.weekUnlocked;
-
-			if (StoryMenuState.weekUnlocked.length < 3)
-				StoryMenuState.weekUnlocked.insert(0, true);
-		}
-
 		// GOTTA LOAD SONGS BEFORE WE POSSIBLY BOOT EM UP
 
 		new SongLoader();
 		SongLoader.instance.LoadSongs();
 		SongLoader.instance.LoadWeeks();
 
+		Highscore.load();
+
+		if (FlxG.save.data.weekUnlocked != null)
+		{
+			StoryMenuState.weekUnlocked = FlxG.save.data.weekUnlocked;
+
+			if (StoryMenuState.weekUnlocked.length < SongLoader.instance.weeks.length)
+				for (i in 0...SongLoader.instance.weeks.length)
+					StoryMenuState.weekUnlocked.insert(i, false);
+
+			StoryMenuState.weekUnlocked[0] = true;
+		}
+
+		#if sys
 		var args = Sys.args();
 
 		var songToPlay:SongMetadata = null;
@@ -108,6 +114,7 @@ class TitleState extends MusicBeatState
 			FlxG.switchState(new PlayState());
 			return;
 		}
+		#end
 
 		#if SKIP_TO_PLAYSTATE
 		FlxG.switchState(new ChartingState());

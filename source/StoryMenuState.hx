@@ -21,7 +21,7 @@ class StoryMenuState extends MusicBeatState
 
 	var curDifficulty:Int = 1;
 
-	public static var weekUnlocked:Array<Bool> = [true, true, false];
+	public static var weekUnlocked:Array<Bool> = [];
 
 	var curWeek:Int = 0;
 	var weekData:WeekMetadata;
@@ -74,9 +74,9 @@ class StoryMenuState extends MusicBeatState
 		for (i in 0...SongLoader.instance.weeks.length)
 		{
 			var weekThing:Alphabet;
-			weekThing = new Alphabet(0, yellowBG.y + yellowBG.height / 2, SongLoader.instance.weeks[i].name, true, false);
+			weekThing = new Alphabet(0, yellowBG.y + yellowBG.height, SongLoader.instance.weeks[i].name, true, false);
 			weekThing.y += weekThing.frameHeight + 20;
-			weekThing.targetY = i;
+			weekThing.targetY = i + 1;
 			weekThing.isMenuItem = true;
 			weekThing.overrideX = false;
 			grpWeekText.add(weekThing);
@@ -324,9 +324,11 @@ class StoryMenuState extends MusicBeatState
 
 		for (item in grpWeekText.members)
 		{
-			item.targetY = bullShit - curWeek;
-			if (item.targetY == Std.int(0) && weekUnlocked[curWeek])
+			item.targetY = bullShit - curWeek + 1; // Offset by 1 to fit menu
+			if (bullShit - curWeek == Std.int(0) && weekUnlocked[curWeek])
 				item.alpha = 1;
+			else if (item.targetY <= -1)
+				item.alpha = 0;
 			else
 				item.alpha = 0.6;
 			bullShit++;

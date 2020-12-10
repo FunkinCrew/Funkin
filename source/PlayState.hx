@@ -43,6 +43,7 @@ class PlayState extends MusicBeatState
 
 	var halloweenLevel:Bool = false;
 
+	private var instrumental:FlxSound;
 	private var vocals:FlxSound;
 
 	private var dad:Character;
@@ -377,9 +378,17 @@ class PlayState extends MusicBeatState
 		lastReportedPlayheadPosition = 0;
 
 		startingSong = false;
-		FlxG.sound.playMusic("songs/" + SONG.metadata.folder + "/" + SONG.metadata.instrumental + TitleState.soundExt, 1, false);
+		// instrumental = FlxG.sound.load(null, 1, false, null, true, false,
+		FlxG.sound.music = FlxG.sound.load(null, 1, false, null, true, false,
+			"songs/"
+			+ SONG.metadata.folder
+			+ "/"
+			+ SONG.metadata.instrumental
+			+ TitleState.soundExt);
+		FlxG.sound.music.play(true, 0);
 		FlxG.sound.music.onComplete = endSong;
 		vocals.play();
+		vocals.onComplete = function() vocals.stop();
 	}
 
 	var debugNum:Int = 0;
@@ -397,7 +406,7 @@ class PlayState extends MusicBeatState
 			SONG.needsVoices = false;
 
 		if (SONG.needsVoices)
-			vocals = new FlxSound().loadEmbedded("songs/" + SONG.metadata.folder + "/" + SONG.metadata.voices + TitleState.soundExt);
+			vocals = new FlxSound().loadStream("songs/" + SONG.metadata.folder + "/" + SONG.metadata.voices + TitleState.soundExt);
 		else
 			vocals = new FlxSound();
 
@@ -873,7 +882,8 @@ class PlayState extends MusicBeatState
 
 				FlxG.switchState(new StoryMenuState());
 
-				StoryMenuState.weekUnlocked[2] = true;
+				if (storyWeek + 1 < StoryMenuState.weekUnlocked.length)
+					StoryMenuState.weekUnlocked[storyWeek + 1] = true;
 
 				NGio.unlockMedal(60961);
 				Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficulty);
