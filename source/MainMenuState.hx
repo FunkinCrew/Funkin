@@ -95,6 +95,11 @@ class MainMenuState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
+		if (FlxG.sound.music.volume < 1)
+		{
+			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
+		}
+
 		if (!selectedSomethin)
 		{
 			if (controls.UP_P)
