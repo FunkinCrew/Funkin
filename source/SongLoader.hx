@@ -64,6 +64,7 @@ class SongLoader
 
 			if (FileSystem.exists(jsonPath))
 			{
+				trace(folders[i]);
 				var toAdd = LoadMetadata(jsonPath, folders[i]);
 
 				songs.push(toAdd);
