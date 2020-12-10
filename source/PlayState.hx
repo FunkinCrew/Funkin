@@ -380,13 +380,6 @@ class PlayState extends MusicBeatState
 		lastReportedPlayheadPosition = 0;
 
 		startingSong = false;
-		// instrumental = FlxG.sound.load(null, 1, false, null, true, false,
-		FlxG.sound.music = FlxG.sound.load(null, 1, false, null, true, false,
-			"songs/"
-			+ SONG.metadata.folder
-			+ "/"
-			+ SONG.metadata.instrumental
-			+ TitleState.soundExt);
 		FlxG.sound.music.play(true, 0);
 		FlxG.sound.music.onComplete = endSong;
 		vocals.play();
@@ -404,6 +397,8 @@ class PlayState extends MusicBeatState
 
 		curSong = songData.song;
 
+		instrumental = new FlxSound().loadStream('songs/${SONG.metadata.folder}/${SONG.metadata.instrumental}${TitleState.soundExt}');
+
 		if (SONG.metadata.voices == null)
 			SONG.needsVoices = false;
 
@@ -412,6 +407,7 @@ class PlayState extends MusicBeatState
 		else
 			vocals = new FlxSound();
 
+		FlxG.sound.music = instrumental;
 		FlxG.sound.list.add(vocals);
 
 		notes = new FlxTypedGroup<Note>();

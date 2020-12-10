@@ -12,6 +12,7 @@ import flixel.system.FlxSound;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import haxe.Json;
+import haxe.Timer;
 import lime.utils.Assets;
 #if sys
 import sys.FileSystem;
@@ -39,13 +40,9 @@ class FreeplayState extends MusicBeatState
 
 	override function create()
 	{
-		/* 
-			if (FlxG.sound.music != null)
-			{
-				if (!FlxG.sound.music.playing)
-					FlxG.sound.playMusic('assets/music/freakyMenu' + TitleState.soundExt);
-			}
-		 */
+		if (FlxG.sound.music != null)
+			if (!FlxG.sound.music.playing)
+				FlxG.sound.playMusic('assets/music/freakyMenu' + TitleState.soundExt);
 
 		var isDebug:Bool = false;
 
@@ -108,11 +105,14 @@ class FreeplayState extends MusicBeatState
 
 		// LOAD MUSIC TO PLAY IN THE BACKGROUND
 		for (song in songs)
-			musicDemos.push(FlxG.sound.load(null, 1, false, null, false, false, 'songs/${song.folder}/${song.instrumental}${TitleState.soundExt}'));
+			musicDemos.push(new FlxSound().loadStream('songs/${song.folder}/${song.instrumental}${TitleState.soundExt}'));
 
-		// PLAY FIRST SONG
+		for (demo in musicDemos)
+			FlxG.sound.list.add(demo);
+
 		changeDiff(0);
-		changeSelection(0);
+		// Playing the first song here makes it not play for some reason, I have no fucking clue
+		Timer.delay(function() changeSelection(0), 1000);
 
 		super.create();
 	}
@@ -120,6 +120,7 @@ class FreeplayState extends MusicBeatState
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+
 		FlxG.watch.addQuick("musicDemoState", musicDemos);
 		FlxG.watch.addQuick("demoPlaying", currentlyPlayingDemo);
 
@@ -150,6 +151,8 @@ class FreeplayState extends MusicBeatState
 
 		if (controls.BACK)
 		{
+			currentlyPlayingDemo.fadeOut();
+			FlxG.sound.music.fadeIn();
 			FlxG.switchState(new MainMenuState());
 		}
 
@@ -209,8 +212,8 @@ class FreeplayState extends MusicBeatState
 		curSelected += change;
 
 		if (curSelected < 0)
-			curSelected = grpSongs.length - 1;
-		if (curSelected >= grpSongs.length)
+			curSelected = songs.length - 1;
+		if (curSelected >= songs.length)
 			curSelected = 0;
 
 		// selector.y = (70 * curSelected) + 30;
@@ -220,8 +223,10 @@ class FreeplayState extends MusicBeatState
 		// lerpScore = 0;
 		#end
 
+		var toPlay = musicDemos[curSelected];
+
 		if (FlxG.sound.music.playing)
-			FlxG.sound.music.fadeOut(1, 0, function(tween) FlxG.sound.music.pause());
+			FlxG.sound.music.fadeOut();
 
 		if (currentlyPlayingDemo != null)
 		{
@@ -229,13 +234,12 @@ class FreeplayState extends MusicBeatState
 			currentlyPlayingDemo.fadeOut(1, 0, function(tween) prevSong.pause());
 		}
 
-		musicDemos[curSelected].fadeIn().onComplete = function()
+		toPlay.play(true, 0);
+		toPlay.fadeIn().onComplete = function()
 		{
 			FlxG.sound.music.fadeIn(2.5);
 		}
-		if (currentlyPlayingDemo == null)
-			FlxG.sound.list.add(musicDemos[curSelected]);
-		currentlyPlayingDemo = musicDemos[curSelected];
+		currentlyPlayingDemo = toPlay;
 
 		var i:Int = 0;
 		for (item in grpSongs.members)

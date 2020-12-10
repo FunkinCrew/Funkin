@@ -34,7 +34,7 @@ class MusicBeatState extends FlxUIState
 		everyStep();
 
 		updateCurStep();
-		// Needs to be ROUNED, rather than ceil or floor
+		// Needs to be ROUNDED, rather than ceil or floor
 		updateBeat();
 
 		super.update(elapsed);
