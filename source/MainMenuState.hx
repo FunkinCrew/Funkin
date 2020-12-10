@@ -29,6 +29,11 @@ class MainMenuState extends MusicBeatState
 
 	override function create()
 	{
+		if (!FlxG.sound.music.playing)
+		{
+			FlxG.sound.playMusic('assets/music/freakyMenu' + TitleState.soundExt);
+		}
+
 		persistentUpdate = persistentDraw = true;
 
 		var bg:FlxSprite = new FlxSprite(-80).loadGraphic(AssetPaths.menuBG__png);
@@ -114,12 +119,10 @@ class MainMenuState extends MusicBeatState
 				if (optionShit[curSelected] == 'donate')
 				{
 					#if linux
-						Sys.command('/usr/bin/xdg-open', ["https://ninja-muffin24.itch.io/funkin", "&"]);
+					Sys.command('/usr/bin/xdg-open', ["https://ninja-muffin24.itch.io/funkin", "&"]);
 					#else
-
 					FlxG.openURL('https://ninja-muffin24.itch.io/funkin');
 					#end
-
 				}
 				else
 				{
