@@ -73,8 +73,7 @@ class StoryMenuState extends MusicBeatState
 
 		for (i in 0...SongLoader.instance.weeks.length)
 		{
-			var weekThing:Alphabet;
-			weekThing = new Alphabet(0, yellowBG.y + yellowBG.height, SongLoader.instance.weeks[i].name, true, false);
+			var weekThing = new Alphabet(0, yellowBG.y + yellowBG.height, SongLoader.instance.weeks[i].name, true, false);
 			weekThing.y += weekThing.frameHeight + 20;
 			weekThing.targetY = i + 1;
 			weekThing.isMenuItem = true;
