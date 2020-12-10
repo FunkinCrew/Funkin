@@ -292,6 +292,9 @@ class ChartingState extends MusicBeatState
 
 		var song = SongLoader.instance.GetSongByName(daSong);
 
+		if (song == null)
+			return;
+
 		FlxG.sound.music = new FlxSound().loadStream('songs/' + song.folder + "/" + song.instrumental + TitleState.soundExt);
 
 		// WONT WORK FOR TUTORIAL! REDO LATER
@@ -519,9 +522,9 @@ class ChartingState extends MusicBeatState
 			if (FlxG.keys.justPressed.DOWN)
 				Conductor.changeBPM(Conductor.bpm - 1); */
 
-		if (FlxG.keys.justPressed.RIGHT)
+		if (FlxG.keys.justPressed.D)
 			changeSection(curSection + 1);
-		if (FlxG.keys.justPressed.LEFT)
+		if (FlxG.keys.justPressed.A)
 			changeSection(curSection - 1);
 
 		bpmTxt.text = "BPM: " + Conductor.bpm + "\nSection: " + curSection;

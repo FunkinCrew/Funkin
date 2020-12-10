@@ -66,9 +66,10 @@ class FreeplayState extends MusicBeatState
 					if (!lockedMusic.contains(song))
 						lockedMusic.push(song);
 
-		for (song in SongLoader.instance.songs)
-			if (!lockedMusic.contains(song) && !songs.contains(song))
-				songs.push(song);
+		if (isDebug)
+			for (song in SongLoader.instance.songs)
+				if (!lockedMusic.contains(song) && !songs.contains(song))
+					songs.push(song);
 
 		// LOAD CHARACTERS
 		var bg:FlxSprite = new FlxSprite().loadGraphic(AssetPaths.menuBGBlue__png);
@@ -151,8 +152,10 @@ class FreeplayState extends MusicBeatState
 
 		if (controls.BACK)
 		{
-			currentlyPlayingDemo.fadeOut();
-			FlxG.sound.music.fadeIn();
+			if(currentlyPlayingDemo != null)
+				currentlyPlayingDemo.fadeOut();
+			if(FlxG.sound.music != null)
+				FlxG.sound.music.fadeIn();
 			FlxG.switchState(new MainMenuState());
 		}
 
