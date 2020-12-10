@@ -22,6 +22,7 @@ class SwagSong
 	public var sections:Int;
 	public var needsVoices:Bool = true;
 	public var speed:Float = 1;
+	public var validScore:Bool = false;
 
 	public var player1:String = 'bf';
 	public var player2:String = 'dad';
@@ -53,6 +54,7 @@ class SwagSong
 		swag.bpm = swagJson.bpm;
 		swag.sections = swagJson.sections;
 		swag.speed = swagJson.speed;
+		swag.validScore = true;
 		swag.player1 = swagJson.player1;
 		swag.player2 = swagJson.player2;
 

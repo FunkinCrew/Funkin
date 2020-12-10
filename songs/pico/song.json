@@ -1,0 +1,10 @@
+{
+    "Name": "Pico",
+    "Instrumental": "Pico_Inst",
+    "Voices": "Pico_Voices",
+    "Difficulties": [
+        "",
+        "pico.json",
+        ""
+    ]
+} 

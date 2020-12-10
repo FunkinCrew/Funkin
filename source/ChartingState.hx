@@ -100,6 +100,7 @@ class ChartingState extends MusicBeatState
 			_song.player1 = 'bf';
 			_song.player2 = 'dad';
 			_song.speed = 1;
+			_song.validScore = false;
 		}
 
 		tempBpm = _song.bpm;
