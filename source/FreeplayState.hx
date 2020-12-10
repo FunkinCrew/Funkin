@@ -225,8 +225,9 @@ class FreeplayState extends MusicBeatState
 
 		var toPlay = musicDemos[curSelected];
 
-		if (FlxG.sound.music.playing)
-			FlxG.sound.music.fadeOut();
+		if (FlxG.sound.music != null)
+			if (FlxG.sound.music.playing)
+				FlxG.sound.music.fadeOut();
 
 		if (currentlyPlayingDemo != null)
 		{
