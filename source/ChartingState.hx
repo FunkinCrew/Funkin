@@ -144,6 +144,8 @@ class ChartingState extends MusicBeatState
 		add(curRenderedNotes);
 		add(curRenderedSustains);
 
+		FlxG.mouse.visible = true;
+
 		super.create();
 	}
 
@@ -290,14 +292,11 @@ class ChartingState extends MusicBeatState
 
 		var song = SongLoader.instance.GetSongByName(daSong);
 
-		FlxG.sound.playMusic('songs/' + song.folder + "/" + song.instrumental + TitleState.soundExt, 0.6);
+		FlxG.sound.music = new FlxSound().loadStream('songs/' + song.folder + "/" + song.instrumental + TitleState.soundExt);
 
 		// WONT WORK FOR TUTORIAL! REDO LATER
-		vocals = new FlxSound().loadEmbedded('songs/' + song.folder + "/" + song.voices + TitleState.soundExt);
+		vocals = new FlxSound().loadStream('songs/' + song.folder + "/" + song.voices + TitleState.soundExt);
 		FlxG.sound.list.add(vocals);
-
-		FlxG.sound.music.pause();
-		vocals.pause();
 
 		FlxG.sound.music.onComplete = function()
 		{
