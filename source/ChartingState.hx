@@ -163,6 +163,16 @@ class ChartingState extends MusicBeatState
 			trace('CHECKED!');
 		};
 
+		var mute_instrumental = new FlxUICheckBox(10, 45, null, null, "Mute instrumental", 100);
+		mute_instrumental.checked = false;
+		mute_instrumental.callback = function()
+		{
+			if (mute_instrumental.checked)
+				FlxG.sound.music.volume = 0;
+			else
+				FlxG.sound.music.volume = 1;
+		};
+
 		var saveButton:FlxButton = new FlxButton(110, 8, "Save", function()
 		{
 			saveLevel();
@@ -206,6 +216,7 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(UI_songTitle);
 
 		tab_group_song.add(check_voices);
+		tab_group_song.add(mute_instrumental);
 		tab_group_song.add(saveButton);
 		tab_group_song.add(reloadSong);
 		tab_group_song.add(reloadSongJson);
@@ -230,7 +241,7 @@ class ChartingState extends MusicBeatState
 		var tab_group_section = new FlxUI(null, UI_box);
 		tab_group_section.name = 'Section';
 
-		stepperLength = new FlxUINumericStepper(10, 10, 4, 0, 0, 999, 0);
+		stepperLength = new FlxUINumericStepper(10, 10, 4, 0, 1, 999, 0);
 		stepperLength.value = _song.notes[curSection].lengthInSteps;
 		stepperLength.name = "section_length";
 
