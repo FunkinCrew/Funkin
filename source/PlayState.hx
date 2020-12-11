@@ -149,7 +149,7 @@ class PlayState extends MusicBeatState
 
 			isHalloween = true;
 		}
-		else if (SONG.song.toLowerCase() == 'pico' || SONG.song.toLowerCase() == 'blammed')
+		else if (SONG.song.toLowerCase() == 'pico' || SONG.song.toLowerCase() == 'blammed' || SONG.song.toLowerCase() == 'philly')
 		{
 			curStage = 'philly';
 
@@ -898,7 +898,7 @@ class PlayState extends MusicBeatState
 				{
 					if (daNote.tooLate || !daNote.wasGoodHit)
 					{
-						health -= 0.04;
+						health -= 0.045;
 						vocals.volume = 0;
 					}
 
@@ -939,7 +939,7 @@ class PlayState extends MusicBeatState
 				FlxG.switchState(new StoryMenuState());
 
 				// if ()
-				StoryMenuState.weekUnlocked[2] = true;
+				StoryMenuState.weekUnlocked[Std.int(Math.min(storyWeek, StoryMenuState.weekUnlocked.length - 1))] = true;
 
 				if (SONG.validScore)
 				{
@@ -1242,7 +1242,7 @@ class PlayState extends MusicBeatState
 	{
 		if (!boyfriend.stunned)
 		{
-			health -= 0.025;
+			health -= 0.035;
 			if (combo > 5)
 			{
 				gf.playAnim('sad');
@@ -1407,7 +1407,7 @@ class PlayState extends MusicBeatState
 					trainFinishing = true;
 			}
 
-			if (phillyTrain.x < 0 && trainFinishing)
+			if (phillyTrain.x < -4000 && trainFinishing)
 				trainReset();
 		}
 	}
