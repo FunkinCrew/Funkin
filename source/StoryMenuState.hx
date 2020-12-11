@@ -124,7 +124,9 @@ class StoryMenuState extends MusicBeatState
 					weekCharacterThing.setGraphicSize(Std.int(weekCharacterThing.width * 0.5));
 					weekCharacterThing.updateHitbox();
 				case 'pico':
-					weekCharacterThing.y += 60;
+					weekCharacterThing.y += 170;
+					weekCharacterThing.flipX = true;
+					weekCharacterThing.x -= 40;
 			}
 
 			grpWeekCharacters.add(weekCharacterThing);
