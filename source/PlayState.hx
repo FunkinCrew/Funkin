@@ -1392,6 +1392,7 @@ class PlayState extends MusicBeatState
 		if (trainSound.time >= 4700)
 		{
 			startedMoving = true;
+			gf.playAnim('hairBlow');
 		}
 
 		if (startedMoving)
@@ -1414,6 +1415,7 @@ class PlayState extends MusicBeatState
 
 	function trainReset():Void
 	{
+		gf.playAnim('hairFall');
 		phillyTrain.x = FlxG.width + 200;
 		trainMoving = false;
 		// trainSound.stop();
