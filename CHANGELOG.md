@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Made it less punishing to ATTEMPT to hit a note and miss, rather than let it pass you
 ### Fixed
 - Song desync of you paused and unpaused frequently ([shoutouts SonicBlam](https://github.com/ninjamuffin99/Funkin/issues/37))
+- Animation offsets when GF is scared
 
 ## [0.2.3] - 2020-12-04
 ### Added
