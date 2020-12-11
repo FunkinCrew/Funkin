@@ -210,6 +210,13 @@ class Character extends FlxSprite
 			}
 		}
 
+		switch (curCharacter)
+		{
+			case 'gf':
+				if (animation.curAnim.name == 'hairFall' && animation.curAnim.finished)
+					playAnim('danceRight');
+		}
+
 		super.update(elapsed);
 	}
 
@@ -225,12 +232,16 @@ class Character extends FlxSprite
 			case 'bf':
 
 			case 'gf':
-				danced = !danced;
+				if (!animation.curAnim.name.startsWith('hair'))
+				{
+					danced = !danced;
 
-				if (danced)
-					playAnim('danceRight');
-				else
-					playAnim('danceLeft');
+					if (danced)
+						playAnim('danceRight');
+					else
+						playAnim('danceLeft');
+				}
+
 			case 'spooky':
 				danced = !danced;
 
