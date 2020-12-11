@@ -17,12 +17,22 @@ class StoryMenuState extends MusicBeatState
 {
 	var scoreText:FlxText;
 
-	var weekData:Array<Dynamic> = [['Tutorial'], ['Bopeebo', 'Fresh', 'Dadbattle'], ['Spookeez', 'South']];
+	var weekData:Array<Dynamic> = [
+		['Tutorial'],
+		['Bopeebo', 'Fresh', 'Dadbattle'],
+		['Spookeez', 'South'],
+		['Pico', 'Philly', "Blammed"]
+	];
 	var curDifficulty:Int = 1;
 
-	public static var weekUnlocked:Array<Bool> = [true, true, false];
+	public static var weekUnlocked:Array<Bool> = [true, true, false, false];
 
-	var weekCharacters:Array<Dynamic> = [['dad', 'bf', 'gf'], ['dad', 'bf', 'gf'], ['spooky', 'bf', 'gf']];
+	var weekCharacters:Array<Dynamic> = [
+		['dad', 'bf', 'gf'],
+		['dad', 'bf', 'gf'],
+		['spooky', 'bf', 'gf'],
+		['pico', 'bf', 'gf']
+	];
 	var curWeek:Int = 0;
 
 	var txtTracklist:FlxText;
@@ -113,6 +123,8 @@ class StoryMenuState extends MusicBeatState
 				case 'gf':
 					weekCharacterThing.setGraphicSize(Std.int(weekCharacterThing.width * 0.5));
 					weekCharacterThing.updateHitbox();
+				case 'pico':
+					weekCharacterThing.y += 60;
 			}
 
 			grpWeekCharacters.add(weekCharacterThing);
@@ -231,11 +243,12 @@ class StoryMenuState extends MusicBeatState
 	var movedBack:Bool = false;
 	var selectedWeek:Bool = false;
 	var stopspamming:Bool = false;
+
 	function selectWeek()
 	{
 		if (weekUnlocked[curWeek])
 		{
-			if (stopspamming == false) 
+			if (stopspamming == false)
 			{
 				FlxG.sound.play('assets/sounds/confirmMenu' + TitleState.soundExt);
 
@@ -356,10 +369,9 @@ class StoryMenuState extends MusicBeatState
 
 		txtTracklist.screenCenter(X);
 		txtTracklist.x -= FlxG.width * 0.35;
-    
+
 		#if !switch
 		intendedScore = Highscore.getWeekScore(curWeek, curDifficulty);
 		#end
-
 	}
 }
