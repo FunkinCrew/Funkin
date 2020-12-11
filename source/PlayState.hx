@@ -1377,6 +1377,7 @@ class PlayState extends MusicBeatState
 
 	var trainCars:Int = 8;
 	var trainFinishing:Bool = false;
+	var trainCooldown:Int = 0;
 
 	function trainStart():Void
 	{
@@ -1516,6 +1517,9 @@ class PlayState extends MusicBeatState
 		switch (curStage)
 		{
 			case "philly":
+				if (!trainMoving)
+					trainCooldown += 1;
+
 				if (totalBeats % 4 == 0)
 				{
 					phillyCityLights.forEach(function(light:FlxSprite)
@@ -1529,8 +1533,9 @@ class PlayState extends MusicBeatState
 					phillyCityLights.members[curLight].alpha = 1;
 				}
 
-				if (totalBeats % 8 == 4 && FlxG.random.bool(30) && !trainMoving)
+				if (totalBeats % 8 == 4 && FlxG.random.bool(30) && !trainMoving && trainCooldown > 8)
 				{
+					trainCooldown = FlxG.random.int(-4, 0);
 					trainStart();
 				}
 		}

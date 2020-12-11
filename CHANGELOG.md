@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [UNRELEASED]
+### Added
+- 3 NEW SONGS BY KAWAISPRITE. Pico, Philly, and Blammed.
+- NEW CHARACTER, PICO. Based off the classic Flash game "Pico's School" by Tom Fulp
+- NEW LEVEL WOW! PHILLY BABEEEE
 ### Changed
 - Made it less punishing to ATTEMPT to hit a note and miss, rather than let it pass you
 ### Fixed
