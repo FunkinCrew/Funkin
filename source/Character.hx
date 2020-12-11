@@ -239,7 +239,7 @@ class Character extends FlxSprite
 				playAnim('idle');
 			case 'monster':
 				playAnim('idle');
-			case 'lucky':
+			case 'pico':
 				playAnim('idle');
 		}
 	}

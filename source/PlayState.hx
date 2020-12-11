@@ -179,7 +179,7 @@ class PlayState extends MusicBeatState
 			var streetBehind:FlxSprite = new FlxSprite(-40, 50).loadGraphic(AssetPaths.behindTrain__png);
 			add(streetBehind);
 
-			phillyTrain = new FlxSprite(2000, 300).loadGraphic(AssetPaths.train__png);
+			phillyTrain = new FlxSprite(2000, 360).loadGraphic(AssetPaths.train__png);
 			add(phillyTrain);
 
 			trainSound = new FlxSound().loadEmbedded('assets/sounds/train_passes' + TitleState.soundExt);
@@ -1242,7 +1242,7 @@ class PlayState extends MusicBeatState
 	{
 		if (!boyfriend.stunned)
 		{
-			health -= 0.06;
+			health -= 0.025;
 			if (combo > 5)
 			{
 				gf.playAnim('sad');
@@ -1419,6 +1419,7 @@ class PlayState extends MusicBeatState
 		// trainSound.stop();
 		// trainSound.time = 0;
 		trainCars = 8;
+		trainFinishing = false;
 		startedMoving = false;
 	}
 
@@ -1526,7 +1527,7 @@ class PlayState extends MusicBeatState
 					phillyCityLights.members[curLight].alpha = 1;
 				}
 
-				if (totalBeats % 8 == 4 && FlxG.random.bool(40) && !trainMoving)
+				if (totalBeats % 8 == 4 && FlxG.random.bool(30) && !trainMoving)
 				{
 					trainStart();
 				}
