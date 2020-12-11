@@ -939,7 +939,7 @@ class PlayState extends MusicBeatState
 				FlxG.switchState(new StoryMenuState());
 
 				// if ()
-				StoryMenuState.weekUnlocked[Std.int(Math.min(storyWeek, StoryMenuState.weekUnlocked.length - 1))] = true;
+				StoryMenuState.weekUnlocked[Std.int(Math.min(storyWeek + 1, StoryMenuState.weekUnlocked.length - 1))] = true;
 
 				if (SONG.validScore)
 				{
