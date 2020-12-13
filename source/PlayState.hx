@@ -627,10 +627,7 @@ class PlayState extends MusicBeatState
 		{
 			if (FlxG.sound.music != null && !startingSong)
 			{
-				FlxG.sound.music.play();
-				Conductor.songPosition = FlxG.sound.music.time;
-				vocals.time = Conductor.songPosition;
-				vocals.play();
+				resyncVocals();
 			}
 
 			if (!startTimer.finished)
@@ -639,6 +636,16 @@ class PlayState extends MusicBeatState
 		}
 
 		super.closeSubState();
+	}
+
+	function resyncVocals():Void
+	{
+		vocals.pause();
+
+		FlxG.sound.music.play();
+		Conductor.songPosition = FlxG.sound.music.time;
+		vocals.time = Conductor.songPosition;
+		vocals.play();
 	}
 
 	private var paused:Bool = false;
@@ -800,7 +807,7 @@ class PlayState extends MusicBeatState
 			switch (totalBeats)
 			{
 				case 128, 129, 130:
-				vocals.volume = 0;
+					vocals.volume = 0;
 					// FlxG.sound.music.stop();
 					// curLevel = 'Fresh';
 					// FlxG.switchState(new PlayState());
@@ -1445,12 +1452,9 @@ class PlayState extends MusicBeatState
 	{
 		if (SONG.needsVoices)
 		{
-			if (vocals.time > Conductor.songPosition + Conductor.stepCrochet
-				|| vocals.time < Conductor.songPosition - Conductor.stepCrochet)
+			if (vocals.time > Conductor.songPosition + 20 || vocals.time < Conductor.songPosition - 20)
 			{
-				vocals.pause();
-				vocals.time = Conductor.songPosition;
-				vocals.play();
+				resyncVocals();
 			}
 		}
 
