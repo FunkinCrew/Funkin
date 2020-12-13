@@ -425,11 +425,13 @@ class PlayState extends MusicBeatState
 
 	function startSong():Void
 	{
+		startingSong = false;
+
 		previousFrameTime = FlxG.game.ticks;
 		lastReportedPlayheadPosition = 0;
 
-		startingSong = false;
-		FlxG.sound.playMusic("assets/music/" + SONG.song + "_Inst" + TitleState.soundExt, 1, false);
+		if (!paused)
+			FlxG.sound.playMusic("assets/music/" + SONG.song + "_Inst" + TitleState.soundExt, 1, false);
 		FlxG.sound.music.onComplete = endSong;
 		vocals.play();
 	}
@@ -623,7 +625,7 @@ class PlayState extends MusicBeatState
 	{
 		if (paused)
 		{
-			if (FlxG.sound.music != null)
+			if (FlxG.sound.music != null && !startingSong)
 			{
 				FlxG.sound.music.play();
 				Conductor.songPosition = FlxG.sound.music.time;
@@ -797,7 +799,8 @@ class PlayState extends MusicBeatState
 		{
 			switch (totalBeats)
 			{
-				case 127:
+				case 128, 129, 130:
+				vocals.volume = 0;
 					// FlxG.sound.music.stop();
 					// curLevel = 'Fresh';
 					// FlxG.switchState(new PlayState());
