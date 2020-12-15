@@ -35,6 +35,7 @@ using StringTools;
 class PlayState extends MusicBeatState
 {
 	public static var curLevel:String = 'Tutorial';
+	public static var curStage:String = '';
 	public static var SONG:SwagSong;
 	public static var isStoryMode:Bool = false;
 	public static var storyWeek:Int = 0;
@@ -80,6 +81,10 @@ class PlayState extends MusicBeatState
 
 	var halloweenBG:FlxSprite;
 	var isHalloween:Bool = false;
+
+	var phillyCityLights:FlxTypedGroup<FlxSprite>;
+	var phillyTrain:FlxSprite;
+	var trainSound:FlxSound;
 
 	var talking:Bool = true;
 	var songScore:Int = 0;
@@ -144,6 +149,47 @@ class PlayState extends MusicBeatState
 
 			isHalloween = true;
 		}
+		else if (SONG.song.toLowerCase() == 'pico' || SONG.song.toLowerCase() == 'blammed' || SONG.song.toLowerCase() == 'philly')
+		{
+			curStage = 'philly';
+
+			var bg:FlxSprite = new FlxSprite(-100).loadGraphic(AssetPaths.sky__png);
+			bg.scrollFactor.set(0.1, 0.1);
+			add(bg);
+
+			var city:FlxSprite = new FlxSprite(-10).loadGraphic(AssetPaths.city__png);
+			city.scrollFactor.set(0.3, 0.3);
+			city.setGraphicSize(Std.int(city.width * 0.85));
+			city.updateHitbox();
+			add(city);
+
+			phillyCityLights = new FlxTypedGroup<FlxSprite>();
+			add(phillyCityLights);
+
+			for (i in 0...5)
+			{
+				var light:FlxSprite = new FlxSprite(city.x).loadGraphic('assets/images/philly/win' + i + '.png');
+				light.scrollFactor.set(0.3, 0.3);
+				light.visible = false;
+				light.setGraphicSize(Std.int(light.width * 0.85));
+				light.updateHitbox();
+				phillyCityLights.add(light);
+			}
+
+			var streetBehind:FlxSprite = new FlxSprite(-40, 50).loadGraphic(AssetPaths.behindTrain__png);
+			add(streetBehind);
+
+			phillyTrain = new FlxSprite(2000, 360).loadGraphic(AssetPaths.train__png);
+			add(phillyTrain);
+
+			trainSound = new FlxSound().loadEmbedded('assets/sounds/train_passes' + TitleState.soundExt);
+			FlxG.sound.list.add(trainSound);
+
+			// var cityLights:FlxSprite = new FlxSprite().loadGraphic(AssetPaths.win0__png);
+
+			var street:FlxSprite = new FlxSprite(-40, streetBehind.y).loadGraphic(AssetPaths.street__png);
+			add(street);
+		}
 		else
 		{
 			var bg:FlxSprite = new FlxSprite(-600, -200).loadGraphic(AssetPaths.stageback__png);
@@ -199,6 +245,9 @@ class PlayState extends MusicBeatState
 				dad.y += 100;
 			case 'dad':
 				camPos.x += 400;
+			case 'pico':
+				camPos.x += 600;
+				dad.y += 300;
 		}
 
 		boyfriend = new Boyfriend(770, 450);
@@ -376,11 +425,13 @@ class PlayState extends MusicBeatState
 
 	function startSong():Void
 	{
+		startingSong = false;
+
 		previousFrameTime = FlxG.game.ticks;
 		lastReportedPlayheadPosition = 0;
 
-		startingSong = false;
-		FlxG.sound.playMusic("assets/music/" + SONG.song + "_Inst" + TitleState.soundExt, 1, false);
+		if (!paused)
+			FlxG.sound.playMusic("assets/music/" + SONG.song + "_Inst" + TitleState.soundExt, 1, false);
 		FlxG.sound.music.onComplete = endSong;
 		vocals.play();
 	}
@@ -574,12 +625,9 @@ class PlayState extends MusicBeatState
 	{
 		if (paused)
 		{
-			if (FlxG.sound.music != null)
+			if (FlxG.sound.music != null && !startingSong)
 			{
-				vocals.time = Conductor.songPosition;
-
-				FlxG.sound.music.play();
-				vocals.play();
+				resyncVocals();
 			}
 
 			if (!startTimer.finished)
@@ -590,12 +638,39 @@ class PlayState extends MusicBeatState
 		super.closeSubState();
 	}
 
+	function resyncVocals():Void
+	{
+		vocals.pause();
+
+		FlxG.sound.music.play();
+		Conductor.songPosition = FlxG.sound.music.time;
+		vocals.time = Conductor.songPosition;
+		vocals.play();
+	}
+
 	private var paused:Bool = false;
 	var startedCountdown:Bool = false;
 	var canPause:Bool = true;
 
 	override public function update(elapsed:Float)
 	{
+		switch (curStage)
+		{
+			case 'philly':
+				if (trainMoving)
+				{
+					trainFrameTiming += elapsed;
+
+					if (trainFrameTiming >= 1 / 24)
+					{
+						updateTrainPos();
+						trainFrameTiming = 0;
+					}
+				}
+
+				// phillyCityLights.members[curLight].alpha -= (Conductor.crochet / 1000) * FlxG.elapsed;
+		}
+
 		super.update(elapsed);
 
 		scoreTxt.text = "Score:" + songScore;
@@ -634,7 +709,7 @@ class PlayState extends MusicBeatState
 
 		#if debug
 		if (FlxG.keys.justPressed.EIGHT)
-			FlxG.switchState(new AnimationDebug(SONG.player1));
+			FlxG.switchState(new AnimationDebug(SONG.player2));
 		#end
 
 		if (startingSong)
@@ -731,7 +806,8 @@ class PlayState extends MusicBeatState
 		{
 			switch (totalBeats)
 			{
-				case 127:
+				case 128, 129, 130:
+					vocals.volume = 0;
 					// FlxG.sound.music.stop();
 					// curLevel = 'Fresh';
 					// FlxG.switchState(new PlayState());
@@ -832,7 +908,7 @@ class PlayState extends MusicBeatState
 				{
 					if (daNote.tooLate || !daNote.wasGoodHit)
 					{
-						health -= 0.04;
+						health -= 0.045;
 						vocals.volume = 0;
 					}
 
@@ -873,7 +949,7 @@ class PlayState extends MusicBeatState
 				FlxG.switchState(new StoryMenuState());
 
 				// if ()
-				StoryMenuState.weekUnlocked[2] = true;
+				StoryMenuState.weekUnlocked[Std.int(Math.min(storyWeek + 1, StoryMenuState.weekUnlocked.length - 1))] = true;
 
 				if (SONG.validScore)
 				{
@@ -1176,7 +1252,7 @@ class PlayState extends MusicBeatState
 	{
 		if (!boyfriend.stunned)
 		{
-			health -= 0.06;
+			health -= 0.035;
 			if (combo > 5)
 			{
 				gf.playAnim('sad');
@@ -1306,6 +1382,60 @@ class PlayState extends MusicBeatState
 		}
 	}
 
+	var trainMoving:Bool = false;
+	var trainFrameTiming:Float = 0;
+
+	var trainCars:Int = 8;
+	var trainFinishing:Bool = false;
+	var trainCooldown:Int = 0;
+
+	function trainStart():Void
+	{
+		trainMoving = true;
+		if (!trainSound.playing)
+			trainSound.play(true);
+	}
+
+	var startedMoving:Bool = false;
+
+	function updateTrainPos():Void
+	{
+		if (trainSound.time >= 4700)
+		{
+			startedMoving = true;
+			gf.playAnim('hairBlow');
+		}
+
+		if (startedMoving)
+		{
+			phillyTrain.x -= 400;
+
+			if (phillyTrain.x < -2000 && !trainFinishing)
+			{
+				phillyTrain.x = -1150;
+				trainCars -= 1;
+
+				if (trainCars <= 0)
+					trainFinishing = true;
+			}
+
+			if (phillyTrain.x < -4000 && trainFinishing)
+				trainReset();
+		}
+	}
+
+	function trainReset():Void
+	{
+		gf.playAnim('hairFall');
+		phillyTrain.x = FlxG.width + 200;
+		trainMoving = false;
+		// trainSound.stop();
+		// trainSound.time = 0;
+		trainCars = 8;
+		trainFinishing = false;
+		startedMoving = false;
+	}
+
 	function lightningStrikeShit():Void
 	{
 		FlxG.sound.play('assets/sounds/thunder_' + FlxG.random.int(1, 2) + TitleState.soundExt);
@@ -1322,12 +1452,9 @@ class PlayState extends MusicBeatState
 	{
 		if (SONG.needsVoices)
 		{
-			if (vocals.time > Conductor.songPosition + Conductor.stepCrochet
-				|| vocals.time < Conductor.songPosition - Conductor.stepCrochet)
+			if (vocals.time > Conductor.songPosition + 20 || vocals.time < Conductor.songPosition - 20)
 			{
-				vocals.pause();
-				vocals.time = Conductor.songPosition;
-				vocals.play();
+				resyncVocals();
 			}
 		}
 
@@ -1394,9 +1521,37 @@ class PlayState extends MusicBeatState
 			}
 		}
 
+		switch (curStage)
+		{
+			case "philly":
+				if (!trainMoving)
+					trainCooldown += 1;
+
+				if (totalBeats % 4 == 0)
+				{
+					phillyCityLights.forEach(function(light:FlxSprite)
+					{
+						light.visible = false;
+					});
+
+					curLight = FlxG.random.int(0, phillyCityLights.length - 1);
+
+					phillyCityLights.members[curLight].visible = true;
+					// phillyCityLights.members[curLight].alpha = 1;
+				}
+
+				if (totalBeats % 8 == 4 && FlxG.random.bool(30) && !trainMoving && trainCooldown > 8)
+				{
+					trainCooldown = FlxG.random.int(-4, 0);
+					trainStart();
+				}
+		}
+
 		if (isHalloween && FlxG.random.bool(10) && curBeat > lightningStrikeBeat + lightningOffset)
 		{
 			lightningStrikeShit();
 		}
 	}
+
+	var curLight:Int = 0;
 }
