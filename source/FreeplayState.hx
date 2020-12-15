@@ -48,6 +48,13 @@ class FreeplayState extends MusicBeatState
 			songs.push('South');
 		}
 
+		if (StoryMenuState.weekUnlocked[3] || isDebug)
+		{
+			songs.push('Pico');
+			songs.push('Philly');
+			songs.push('Blammed');
+		}
+
 		// LOAD MUSIC
 
 		// LOAD CHARACTERS
