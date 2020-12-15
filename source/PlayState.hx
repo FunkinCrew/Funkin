@@ -219,7 +219,7 @@ class PlayState extends MusicBeatState
 
 		gf = new Character(400, 130, 'gf');
 		gf.scrollFactor.set(0.95, 0.95);
-		gf.antialiasing = false;
+		gf.antialiasing = true;
 		add(gf);
 
 		dad = new Character(100, 100, SONG.player2);
