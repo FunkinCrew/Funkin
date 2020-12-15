@@ -85,7 +85,6 @@ class PlayState extends MusicBeatState
 	var phillyCityLights:FlxTypedGroup<FlxSprite>;
 	var phillyTrain:FlxSprite;
 	var trainSound:FlxSound;
-
 	var talking:Bool = true;
 	var songScore:Int = 0;
 	var scoreTxt:FlxText;
@@ -220,7 +219,7 @@ class PlayState extends MusicBeatState
 
 		gf = new Character(400, 130, 'gf');
 		gf.scrollFactor.set(0.95, 0.95);
-		gf.antialiasing = true;
+		gf.antialiasing = false;
 		add(gf);
 
 		dad = new Character(100, 100, SONG.player2);
@@ -1131,8 +1130,14 @@ class PlayState extends MusicBeatState
 		// FlxG.watch.addQuick('asdfa', upP);
 		if ((upP || rightP || downP || leftP) && !boyfriend.stunned && generatedMusic)
 		{
-			boyfriend.holdTimer = 0;
-
+			if (curSong != 'Bopeebo')
+			{
+				new FlxTimer().start(1.5, function(tmr:FlxTimer)
+				{
+					boyfriend.playAnim('idle');
+					boyfriend.stunned = false;
+				});
+			}
 			var possibleNotes:Array<Note> = [];
 
 			notes.forEachAlive(function(daNote:Note)
