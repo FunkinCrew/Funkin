@@ -94,6 +94,8 @@ class PlayState extends MusicBeatState
 
 	override public function create()
 	{
+		//Reset curStage or level specific events (like the window lights in philly) will cause a crash when loading other levels
+		curStage = '';
 		// var gameCam:FlxCamera = FlxG.camera;
 		camGame = new FlxCamera();
 		camHUD = new FlxCamera();
