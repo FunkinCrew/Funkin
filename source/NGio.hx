@@ -22,6 +22,11 @@ class NGio
 	public static var ngDataLoaded(default, null):FlxSignal = new FlxSignal();
 	public static var ngScoresLoaded(default, null):FlxSignal = new FlxSignal();
 
+	public static function noLogin(api:String)
+	{
+		NG.create(api);
+	}
+
 	public function new(api:String, encKey:String, ?sessionId:String)
 	{
 		trace("connecting to newgrounds");
