@@ -6,6 +6,14 @@ Play the Ludum Dare prototype here: https://ninja-muffin24.itch.io/friday-night-
 Play the Newgrounds one here: https://www.newgrounds.com/portal/view/770371
 Support the project on the itch.io page: https://ninja-muffin24.itch.io/funkin
 
+## Credits / shoutouts
+
+- [ninjamuffin99 (me!)](twitter.com/ninja_muffin99) - Programmer
+- [PhantomArcade3K](twitter.com/phantomarcade3k) and [Evilsk8r](twitter.com/evilsk8r) - Art
+- [Kawaisprite](twitter.com/kawaisprite) - Musician
+
+This game was made with love to Newgrounds and it's community. Extra love to Tom Fulp.
+
 ## Build instructions
 
 ### Installing shit
