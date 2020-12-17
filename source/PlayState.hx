@@ -135,6 +135,7 @@ class PlayState extends MusicBeatState
 
 		if (SONG.song.toLowerCase() == 'spookeez' || SONG.song.toLowerCase() == 'monster' || SONG.song.toLowerCase() == 'south')
 		{
+			curState = "spooky";
 			halloweenLevel = true;
 
 			var hallowTex = FlxAtlasFrames.fromSparrow(AssetPaths.halloween_bg__png, AssetPaths.halloween_bg__xml);
@@ -192,6 +193,7 @@ class PlayState extends MusicBeatState
 		}
 		else
 		{
+			curStage = 'stage';
 			var bg:FlxSprite = new FlxSprite(-600, -200).loadGraphic(AssetPaths.stageback__png);
 			// bg.setGraphicSize(Std.int(bg.width * 2.5));
 			// bg.updateHitbox();
@@ -974,6 +976,7 @@ class PlayState extends MusicBeatState
 				trace(PlayState.storyPlaylist[0].toLowerCase() + difficulty);
 
 				PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + difficulty, PlayState.storyPlaylist[0]);
+				FlxG.sound.music.stop();
 				FlxG.switchState(new PlayState());
 			}
 		}
