@@ -135,7 +135,7 @@ class PlayState extends MusicBeatState
 
 		if (SONG.song.toLowerCase() == 'spookeez' || SONG.song.toLowerCase() == 'monster' || SONG.song.toLowerCase() == 'south')
 		{
-			curState = "spooky";
+			curStage = "spooky";
 			halloweenLevel = true;
 
 			var hallowTex = FlxAtlasFrames.fromSparrow(AssetPaths.halloween_bg__png, AssetPaths.halloween_bg__xml);
