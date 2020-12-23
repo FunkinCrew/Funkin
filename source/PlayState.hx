@@ -351,6 +351,7 @@ class PlayState extends MusicBeatState
 	}
 
 	var startTimer:FlxTimer;
+	var perfectMode:Bool = false;
 
 	function startCountdown():Void
 	{
@@ -656,6 +657,16 @@ class PlayState extends MusicBeatState
 
 	override public function update(elapsed:Float)
 	{
+		#if !debug
+		perfectMode = false;
+		#end
+
+		if (FlxG.keys.justPressed.NINE)
+		{
+			perfectMode = !perfectMode;
+			trace('PERFECT MODE! ' + perfectMode);
+		}
+
 		switch (curStage)
 		{
 			case 'philly':
@@ -757,6 +768,8 @@ class PlayState extends MusicBeatState
 			{
 				camFollow.setPosition(dad.getMidpoint().x + 150, dad.getMidpoint().y - 100);
 				// camFollow.setPosition(lucky.getMidpoint().x - 120, lucky.getMidpoint().y + 210);
+				if (dad.curCharacter == 'mom')
+					camFollow.y = dad.getMidpoint().y;
 				vocals.volume = 1;
 
 				if (SONG.song.toLowerCase() == 'tutorial')
@@ -1150,6 +1163,9 @@ class PlayState extends MusicBeatState
 			{
 				for (daNote in possibleNotes)
 				{
+					if (perfectMode)
+						noteCheck(true, daNote);
+
 					switch (daNote.noteData)
 					{
 						case 2: // NOTES YOU JUST PRESSED
@@ -1496,6 +1512,13 @@ class PlayState extends MusicBeatState
 				dad.dance();
 		}
 		// FlxG.log.add('change bpm' + SONG.notes[Std.int(curStep / 16)].changeBPM);
+
+		// HARDCODING FOR MILF ZOOMS!
+		if (curSong.toLowerCase() == 'milf' && curBeat >= 168 && curBeat <= 200 && camZooming && FlxG.camera.zoom < 1.35)
+		{
+			FlxG.camera.zoom += 0.015;
+			camHUD.zoom += 0.03;
+		}
 
 		if (camZooming && FlxG.camera.zoom < 1.35 && totalBeats % 4 == 0)
 		{
