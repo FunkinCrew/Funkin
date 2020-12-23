@@ -7,6 +7,10 @@ import io.newgrounds.components.ScoreBoardComponent.Period;
 import io.newgrounds.objects.Medal;
 import io.newgrounds.objects.Score;
 import io.newgrounds.objects.ScoreBoard;
+import io.newgrounds.objects.events.Response;
+import io.newgrounds.objects.events.Result.GetCurrentVersionResult;
+import io.newgrounds.objects.events.Result.GetVersionResult;
+import lime.app.Application;
 import openfl.display.Stage;
 
 /**
@@ -22,9 +26,26 @@ class NGio
 	public static var ngDataLoaded(default, null):FlxSignal = new FlxSignal();
 	public static var ngScoresLoaded(default, null):FlxSignal = new FlxSignal();
 
+	public static var GAME_VER:String = "";
+
 	public static function noLogin(api:String)
 	{
+		trace('INIT NOLOGIN');
+		GAME_VER = "v" + Application.current.meta.get('version');
+
 		NG.create(api);
+
+		NG.onCoreReady.add(function()
+		{
+			trace('READY SHIT??');
+			var call = NG.core.calls.gateway.getVersion().addDataHandler(function(response:Response<GetVersionResult>)
+			{
+				GAME_VER = response.result.data.version;
+				trace('CURRENT NG VERSION: ' + GAME_VER);
+			});
+
+			call.send();
+		});
 	}
 
 	public function new(api:String, encKey:String, ?sessionId:String)
@@ -153,11 +174,8 @@ class NGio
 
 	inline static public function logEvent(event:String)
 	{
-		if (isLoggedIn)
-		{
-			NG.core.calls.event.logEvent(event);
-			trace('should have logged: ' + event);
-		}
+		NG.core.calls.event.logEvent(event).send();
+		trace('should have logged: ' + event);
 	}
 
 	inline static public function unlockMedal(id:Int)
