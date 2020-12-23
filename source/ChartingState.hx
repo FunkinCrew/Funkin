@@ -183,7 +183,7 @@ class ChartingState extends MusicBeatState
 		stepperBPM.value = Conductor.bpm;
 		stepperBPM.name = 'song_bpm';
 
-		var characters:Array<String> = ["bf", 'dad', 'gf', 'spooky', 'monster', 'pico'];
+		var characters:Array<String> = ["bf", 'dad', 'gf', 'spooky', 'monster', 'pico', 'mom'];
 
 		var player1DropDown = new FlxUIDropDownMenu(10, 100, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
 		{
