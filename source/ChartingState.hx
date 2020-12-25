@@ -242,6 +242,19 @@ class ChartingState extends MusicBeatState
 			copySection(Std.int(stepperCopy.value));
 		});
 
+		var clearSectionButton:FlxButton = new FlxButton(10, 150, "Clear", clearSection);
+
+		var swapSection:FlxButton = new FlxButton(10, 170, "Swap section", function()
+		{
+			for (i in 0..._song.notes[curSection].sectionNotes.length)
+			{
+				var note = _song.notes[curSection].sectionNotes[i];
+				note[1] = (note[1] + 4) % 8;
+				_song.notes[curSection].sectionNotes[i] = note;
+				updateGrid();
+			}
+		});
+
 		check_mustHitSection = new FlxUICheckBox(10, 30, null, null, "Must hit section", 100);
 		check_mustHitSection.name = 'check_mustHit';
 		check_mustHitSection.checked = true;
@@ -256,6 +269,8 @@ class ChartingState extends MusicBeatState
 		tab_group_section.add(check_mustHitSection);
 		tab_group_section.add(check_changeBPM);
 		tab_group_section.add(copyButton);
+		tab_group_section.add(clearSectionButton);
+		tab_group_section.add(swapSection);
 
 		UI_box.addGroup(tab_group_section);
 	}
@@ -718,6 +733,13 @@ class ChartingState extends MusicBeatState
 				_song.notes[curSection].sectionNotes.remove(i);
 			}
 		}
+
+		updateGrid();
+	}
+
+	function clearSection():Void
+	{
+		_song.notes[curSection].sectionNotes = [];
 
 		updateGrid();
 	}
