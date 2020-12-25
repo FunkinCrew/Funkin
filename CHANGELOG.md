@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Clear section button to note editor
 - Swap button in note editor
 ### Changed
+- Made Spookeez on Normal easier.
 - Mouse is now visible in note editor
 ### Fixed
 - Crash when playing Week 3 and then playing a non-week 3 song
