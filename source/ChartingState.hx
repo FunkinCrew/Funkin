@@ -102,6 +102,9 @@ class ChartingState extends MusicBeatState
 			};
 		}
 
+		FlxG.mouse.visible = true;
+		FlxG.save.bind('funkin', 'ninjamuffin99');
+
 		tempBpm = _song.bpm;
 
 		addSection();
@@ -175,6 +178,8 @@ class ChartingState extends MusicBeatState
 			loadJson(_song.song.toLowerCase());
 		});
 
+		var loadAutosaveBtn:FlxButton = new FlxButton(reloadSongJson.x, reloadSongJson.y + 60, 'load autosave', loadAutosave);
+
 		var stepperSpeed:FlxUINumericStepper = new FlxUINumericStepper(10, 80, 0.1, 1, 0.1, 10, 1);
 		stepperSpeed.value = _song.speed;
 		stepperSpeed.name = 'song_speed';
@@ -206,6 +211,7 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(saveButton);
 		tab_group_song.add(reloadSong);
 		tab_group_song.add(reloadSongJson);
+		tab_group_song.add(loadAutosaveBtn);
 		tab_group_song.add(stepperBPM);
 		tab_group_song.add(stepperSpeed);
 		tab_group_song.add(player1DropDown);
@@ -769,6 +775,8 @@ class ChartingState extends MusicBeatState
 
 		updateGrid();
 		updateNoteUI();
+
+		autosaveSong();
 	}
 
 	function getStrumTime(yPos:Float):Float
@@ -829,11 +837,21 @@ class ChartingState extends MusicBeatState
 		FlxG.resetState();
 	}
 
-	var mp3File:Sound;
-	var waveForm:FlxSprite;
-
-	function drawWave():Void
+	function loadAutosave():Void
 	{
+		PlayState.SONG = Song.parseJSONshit(FlxG.save.data.autosave);
+		FlxG.resetState();
+	}
+
+	function autosaveSong():Void
+	{
+		FlxG.save.data.autosave = Json.stringify({
+			"song": _song,
+			"bpm": Conductor.bpm,
+			"sections": _song.notes.length,
+			'notes': _song.notes
+		});
+		FlxG.save.flush();
 	}
 
 	private function saveLevel()
