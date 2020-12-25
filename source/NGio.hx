@@ -2,6 +2,7 @@ package;
 
 import flixel.FlxG;
 import flixel.util.FlxSignal;
+import flixel.util.FlxTimer;
 import io.newgrounds.NG;
 import io.newgrounds.components.ScoreBoardComponent.Period;
 import io.newgrounds.objects.Medal;
@@ -27,6 +28,7 @@ class NGio
 	public static var ngScoresLoaded(default, null):FlxSignal = new FlxSignal();
 
 	public static var GAME_VER:String = "";
+	public static var gotOnlineVer:Bool = false;
 
 	public static function noLogin(api:String)
 	{
@@ -35,13 +37,13 @@ class NGio
 
 		NG.create(api);
 
-		NG.onCoreReady.add(function()
+		new FlxTimer().start(2, function(tmr:FlxTimer)
 		{
-			trace('READY SHIT??');
-			var call = NG.core.calls.gateway.getVersion().addDataHandler(function(response:Response<GetVersionResult>)
+			var call = NG.core.calls.app.getCurrentVersion(GAME_VER).addDataHandler(function(response:Response<GetCurrentVersionResult>)
 			{
-				GAME_VER = response.result.data.version;
+				GAME_VER = response.result.data.current_version;
 				trace('CURRENT NG VERSION: ' + GAME_VER);
+				gotOnlineVer = true;
 			});
 
 			call.send();
