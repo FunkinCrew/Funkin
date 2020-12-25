@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [UNRELEASED]
 ### Added
 - Different icons depending on which character you are against
+- Autosave to chart editor
+- Clear section button to note editor
+- Swap button in note editor
+### Changed
+- Mouse is now visible in note editor
 ### Fixed
 - Crash when playing Week 3 and then playing a non-week 3 song
 - When pausing music at the start, it doesn't continue the song anyways. ([shoutouts gedehari for the Pull Request!](https://github.com/ninjamuffin99/Funkin/pull/48))
