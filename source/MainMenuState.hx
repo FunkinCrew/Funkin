@@ -13,6 +13,8 @@ import flixel.util.FlxColor;
 import io.newgrounds.NG;
 import lime.app.Application;
 
+using StringTools;
+
 class MainMenuState extends MusicBeatState
 {
 	var curSelected:Int = 0;
@@ -87,7 +89,7 @@ class MainMenuState extends MusicBeatState
 		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(versionShit);
 
-		if (versionShit.text != NGio.GAME_VER && !OutdatedSubState.leftState)
+		if (versionShit.text.trim() != NGio.GAME_VER.trim() && !OutdatedSubState.leftState)
 		{
 			trace('OLD VERSION!');
 
