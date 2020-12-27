@@ -64,7 +64,9 @@ class TitleState extends MusicBeatState
 
 		if (FlxG.save.data.weekUnlocked != null)
 		{
-			StoryMenuState.weekUnlocked = FlxG.save.data.weekUnlocked;
+			// FIX LATER!!!
+			// WEEK UNLOCK PROGRESSION!!
+			// StoryMenuState.weekUnlocked = FlxG.save.data.weekUnlocked;
 
 			if (StoryMenuState.weekUnlocked.length < 4)
 				StoryMenuState.weekUnlocked.insert(0, true);

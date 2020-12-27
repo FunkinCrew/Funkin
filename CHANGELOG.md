@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Clear section button to note editor
 - Swap button in note editor
 - a new boot text or two
-- automatic check for when you're on an old version of the game!
+- automatic check for when you're on an old version of the game! 
 ### Changed
 - Made Spookeez on Normal easier.
 - Mouse is now visible in note editor
