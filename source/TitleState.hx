@@ -74,7 +74,9 @@ class TitleState extends MusicBeatState
 				StoryMenuState.weekUnlocked[0] = true;
 		}
 
-		#if SKIP_TO_PLAYSTATE
+		#if FREEPLAY
+		FlxG.switchState(new FreeplayState());
+		#elseif CHARTING
 		FlxG.switchState(new ChartingState());
 		#else
 		startIntro();
