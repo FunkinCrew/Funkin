@@ -12,7 +12,7 @@ import lime.utils.Assets;
 
 class FreeplayState extends MusicBeatState
 {
-	var songs:Array<String> = ["Satin-Panties", "High", "Milf", "Bopeebo", "Dadbattle", "Fresh", "Tutorial"];
+	var songs:Array<String> = ["Bopeebo", "Dadbattle", "Fresh", "Tutorial"];
 
 	var selector:FlxText;
 	var curSelected:Int = 0;
@@ -53,6 +53,13 @@ class FreeplayState extends MusicBeatState
 			songs.push('Pico');
 			songs.push('Philly');
 			songs.push('Blammed');
+		}
+
+		if (StoryMenuState.weekUnlocked[4] || isDebug)
+		{
+			songs.push('Satin-Panties');
+			songs.push('High');
+			songs.push('Milf');
 		}
 
 		// LOAD MUSIC
