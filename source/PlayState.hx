@@ -29,6 +29,8 @@ import flixel.util.FlxStringUtil;
 import flixel.util.FlxTimer;
 import haxe.Json;
 import lime.utils.Assets;
+import openfl.display.BlendMode;
+import openfl.filters.ShaderFilter;
 
 using StringTools;
 
@@ -87,11 +89,15 @@ class PlayState extends MusicBeatState
 	var phillyTrain:FlxSprite;
 	var trainSound:FlxSound;
 
+	var limo:FlxSprite;
+
 	var talking:Bool = true;
 	var songScore:Int = 0;
 	var scoreTxt:FlxText;
 
 	public static var campaignScore:Int = 0;
+
+	var defaultCamZoom:Float = 1.05;
 
 	override public function create()
 	{
@@ -192,6 +198,41 @@ class PlayState extends MusicBeatState
 			var street:FlxSprite = new FlxSprite(-40, streetBehind.y).loadGraphic(AssetPaths.street__png);
 			add(street);
 		}
+		else if (SONG.song.toLowerCase() == 'milf' || SONG.song.toLowerCase() == 'satin-panties' || SONG.song.toLowerCase() == 'high')
+		{
+			curStage = 'limo';
+			defaultCamZoom = 0.90;
+
+			var skyBG:FlxSprite = new FlxSprite(-120, -50).loadGraphic(AssetPaths.limoSunset__png);
+			skyBG.scrollFactor.set(0.1, 0.1);
+			add(skyBG);
+
+			var bgLimo:FlxSprite = new FlxSprite(-200, 400);
+			bgLimo.frames = FlxAtlasFrames.fromSparrow(AssetPaths.bgLimo__png, AssetPaths.bgLimo__xml);
+			bgLimo.animation.addByPrefix('drive', "BG limo", 24);
+			bgLimo.animation.play('drive');
+			bgLimo.scrollFactor.set(0.4, 0.4);
+			add(bgLimo);
+
+			var overlayShit:FlxSprite = new FlxSprite(-500, -600).loadGraphic(AssetPaths.limoOverlay__png);
+			overlayShit.alpha = 0.5;
+			// add(overlayShit);
+
+			// var shaderBullshit = new BlendModeEffect(new OverlayShader(), FlxColor.RED);
+
+			// FlxG.camera.setFilters([new ShaderFilter(cast shaderBullshit.shader)]);
+
+			// overlayShit.shader = shaderBullshit;
+
+			var limoTex = FlxAtlasFrames.fromSparrow(AssetPaths.limoDrive__png, AssetPaths.limoDrive__xml);
+
+			limo = new FlxSprite(-120, 550);
+			limo.frames = limoTex;
+			limo.animation.addByPrefix('drive', "Limo stage", 24);
+			limo.animation.play('drive');
+			limo.antialiasing = true;
+			// add(limo);
+		}
 		else
 		{
 			curStage = 'stage';
@@ -226,6 +267,10 @@ class PlayState extends MusicBeatState
 		gf.antialiasing = true;
 		add(gf);
 
+		// Shitty layering but whatev it works LOL
+		if (curStage == 'limo')
+			add(limo);
+
 		dad = new Character(100, 100, SONG.player2);
 		add(dad);
 
@@ -255,6 +300,16 @@ class PlayState extends MusicBeatState
 
 		boyfriend = new Boyfriend(770, 450);
 		add(boyfriend);
+
+		// REPOSITIONING PER STAGE
+		switch (curStage)
+		{
+			case 'limo':
+				{
+					boyfriend.y -= 220;
+					boyfriend.x += 260;
+				}
+		}
 
 		var doof:DialogueBox = new DialogueBox(false, dialogue);
 		// doof.x += 70;
@@ -287,7 +342,7 @@ class PlayState extends MusicBeatState
 
 		FlxG.camera.follow(camFollow, LOCKON, 0.04);
 		// FlxG.camera.setScrollBounds(0, FlxG.width, 0, FlxG.height);
-		FlxG.camera.zoom = 1.05;
+		FlxG.camera.zoom = defaultCamZoom;
 
 		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
 
@@ -790,6 +845,11 @@ class PlayState extends MusicBeatState
 			{
 				camFollow.setPosition(boyfriend.getMidpoint().x - 100, boyfriend.getMidpoint().y - 100);
 
+				if (curStage == 'limo')
+				{
+					camFollow.x = boyfriend.getMidpoint().x - 300;
+				}
+
 				if (SONG.song.toLowerCase() == 'tutorial')
 				{
 					FlxTween.tween(FlxG.camera, {zoom: 1}, (Conductor.stepCrochet * 4 / 1000), {ease: FlxEase.elasticInOut});
@@ -799,7 +859,7 @@ class PlayState extends MusicBeatState
 
 		if (camZooming)
 		{
-			FlxG.camera.zoom = FlxMath.lerp(1.05, FlxG.camera.zoom, 0.95);
+			FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, 0.95);
 			camHUD.zoom = FlxMath.lerp(1, camHUD.zoom, 0.95);
 		}
 
@@ -1003,6 +1063,7 @@ class PlayState extends MusicBeatState
 		}
 		else
 		{
+			trace('WENT BACK TO FREEPLAY??');
 			FlxG.switchState(new FreeplayState());
 		}
 	}
