@@ -6,10 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [UNRELEASED]
 ### Added
-- Different icons depending on which character you are against
+- MOMMY GF, 3 NEW ASS SONGS BY KAWAISPRITE, NEW ART BY PHANTOMARCADE,WOOOOOOAH!!!!
+- Different icons depending on which character you are against, art by EVILSK8R!!
 - Autosave to chart editor
 - Clear section button to note editor
 - Swap button in note editor
+- a new boot text or two
+- automatic check for when you're on an old version of the game!
 ### Changed
 - Made Spookeez on Normal easier.
 - Mouse is now visible in note editor
