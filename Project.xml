@@ -58,6 +58,7 @@
 	<!-- _______________________________ Libraries ______________________________ -->
 
 	<haxelib name="flixel" />
+	<haxedev set='webgl' />
 
 	<!--In case you want to use the addons package-->
 	<haxelib name="flixel-addons" />
