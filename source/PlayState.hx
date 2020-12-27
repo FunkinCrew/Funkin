@@ -90,6 +90,7 @@ class PlayState extends MusicBeatState
 	var trainSound:FlxSound;
 
 	var limo:FlxSprite;
+	var grpLimoDancers:FlxTypedGroup<BackgroundDancer>;
 
 	var talking:Bool = true;
 	var songScore:Int = 0;
@@ -209,10 +210,20 @@ class PlayState extends MusicBeatState
 
 			var bgLimo:FlxSprite = new FlxSprite(-200, 400);
 			bgLimo.frames = FlxAtlasFrames.fromSparrow(AssetPaths.bgLimo__png, AssetPaths.bgLimo__xml);
-			bgLimo.animation.addByPrefix('drive', "BG limo", 24);
+			bgLimo.animation.addByPrefix('drive', "background limo pink", 24);
 			bgLimo.animation.play('drive');
 			bgLimo.scrollFactor.set(0.4, 0.4);
 			add(bgLimo);
+
+			grpLimoDancers = new FlxTypedGroup<BackgroundDancer>();
+			add(grpLimoDancers);
+
+			for (i in 0...5)
+			{
+				var dancer:BackgroundDancer = new BackgroundDancer((370 * i) + 130, 20);
+				dancer.scrollFactor.set(0.4, 0.4);
+				grpLimoDancers.add(dancer);
+			}
 
 			var overlayShit:FlxSprite = new FlxSprite(-500, -600).loadGraphic(AssetPaths.limoOverlay__png);
 			overlayShit.alpha = 0.5;
@@ -1621,6 +1632,11 @@ class PlayState extends MusicBeatState
 
 		switch (curStage)
 		{
+			case 'limo':
+				grpLimoDancers.forEach(function(dancer:BackgroundDancer)
+				{
+					dancer.dance();
+				});
 			case "philly":
 				if (!trainMoving)
 					trainCooldown += 1;
