@@ -21,17 +21,19 @@ class StoryMenuState extends MusicBeatState
 		['Tutorial'],
 		['Bopeebo', 'Fresh', 'Dadbattle'],
 		['Spookeez', 'South'],
-		['Pico', 'Philly', "Blammed"]
+		['Pico', 'Philly', "Blammed"],
+		['Satin-Panties', "High", "Milf"]
 	];
 	var curDifficulty:Int = 1;
 
-	public static var weekUnlocked:Array<Bool> = [true, true, false, false];
+	public static var weekUnlocked:Array<Bool> = [true, true, true, true, true];
 
 	var weekCharacters:Array<Dynamic> = [
 		['dad', 'bf', 'gf'],
 		['dad', 'bf', 'gf'],
 		['spooky', 'bf', 'gf'],
-		['pico', 'bf', 'gf']
+		['pico', 'bf', 'gf'],
+		['mom', 'bf', 'gf']
 	];
 	var curWeek:Int = 0;
 
