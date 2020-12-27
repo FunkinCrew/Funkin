@@ -91,6 +91,7 @@ class PlayState extends MusicBeatState
 
 	var limo:FlxSprite;
 	var grpLimoDancers:FlxTypedGroup<BackgroundDancer>;
+	var fastCar:FlxSprite;
 
 	var talking:Bool = true;
 	var songScore:Int = 0;
@@ -208,7 +209,7 @@ class PlayState extends MusicBeatState
 			skyBG.scrollFactor.set(0.1, 0.1);
 			add(skyBG);
 
-			var bgLimo:FlxSprite = new FlxSprite(-200, 400);
+			var bgLimo:FlxSprite = new FlxSprite(-200, 480);
 			bgLimo.frames = FlxAtlasFrames.fromSparrow(AssetPaths.bgLimo__png, AssetPaths.bgLimo__xml);
 			bgLimo.animation.addByPrefix('drive', "background limo pink", 24);
 			bgLimo.animation.play('drive');
@@ -220,7 +221,7 @@ class PlayState extends MusicBeatState
 
 			for (i in 0...5)
 			{
-				var dancer:BackgroundDancer = new BackgroundDancer((370 * i) + 130, 20);
+				var dancer:BackgroundDancer = new BackgroundDancer((370 * i) + 130, bgLimo.y - 400);
 				dancer.scrollFactor.set(0.4, 0.4);
 				grpLimoDancers.add(dancer);
 			}
@@ -242,6 +243,8 @@ class PlayState extends MusicBeatState
 			limo.animation.addByPrefix('drive', "Limo stage", 24);
 			limo.animation.play('drive');
 			limo.antialiasing = true;
+
+			fastCar = new FlxSprite(-300, 160).loadGraphic(AssetPaths.fastCarLol__png);
 			// add(limo);
 		}
 		else
@@ -319,6 +322,9 @@ class PlayState extends MusicBeatState
 				{
 					boyfriend.y -= 220;
 					boyfriend.x += 260;
+
+					resetFastCar();
+					add(fastCar);
 				}
 		}
 
@@ -1481,6 +1487,28 @@ class PlayState extends MusicBeatState
 		}
 	}
 
+	var fastCarCanDrive:Bool = true;
+
+	function resetFastCar():Void
+	{
+		fastCar.x = -12600;
+		fastCar.y = FlxG.random.int(140, 250);
+		fastCar.velocity.x = 0;
+		fastCarCanDrive = true;
+	}
+
+	function fastCarDrive()
+	{
+		FlxG.sound.play('assets/sounds/carPass' + FlxG.random.int(0, 1) + TitleState.soundExt, 0.7);
+
+		fastCar.velocity.x = (FlxG.random.int(170, 220) / FlxG.elapsed) * 3;
+		fastCarCanDrive = false;
+		new FlxTimer().start(2, function(tmr:FlxTimer)
+		{
+			resetFastCar();
+		});
+	}
+
 	var trainMoving:Bool = false;
 	var trainFrameTiming:Float = 0;
 
@@ -1637,6 +1665,9 @@ class PlayState extends MusicBeatState
 				{
 					dancer.dance();
 				});
+
+				if (FlxG.random.bool(10) && fastCarCanDrive)
+					fastCarDrive();
 			case "philly":
 				if (!trainMoving)
 					trainCooldown += 1;
