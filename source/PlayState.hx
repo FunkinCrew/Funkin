@@ -725,6 +725,8 @@ class PlayState extends MusicBeatState
 	private var paused:Bool = false;
 	var startedCountdown:Bool = false;
 	var canPause:Bool = true;
+	
+	
 
 	override public function update(elapsed:Float)
 	{
@@ -783,7 +785,7 @@ class PlayState extends MusicBeatState
 
 		iconP1.updateHitbox();
 		iconP2.updateHitbox();
-
+		
 		var iconOffset:Int = 26;
 
 		iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset);
@@ -791,12 +793,19 @@ class PlayState extends MusicBeatState
 
 		if (health > 2)
 			health = 2;
+			
+		
 
 		if (healthBar.percent < 20)
 			iconP1.animation.curAnim.curFrame = 1;
 		else
 			iconP1.animation.curAnim.curFrame = 0;
-
+			
+		if (healthBar.percent > 80)
+			iconP2.animation.curAnim.curFrame = Std.parseInt(curStage) + 1;
+		else
+			iconP2.animation.curAnim.curFrame = Std.parseInt(curStage);
+		
 		/* if (FlxG.keys.justPressed.NINE)
 			FlxG.switchState(new Charting()); */
 

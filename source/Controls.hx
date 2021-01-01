@@ -405,7 +405,7 @@ class Controls extends FlxActionSet
 		switch (device)
 		{
 			case null:
-				// add all
+                // add all
 				#if (haxe >= "4.0.0")
 				for (gamepad in controls.gamepadsAdded)
 					if (!gamepadsAdded.contains(gamepad))
@@ -415,6 +415,7 @@ class Controls extends FlxActionSet
 					if (gamepadsAdded.indexOf(gamepad) == -1)
 					  gamepadsAdded.push(gamepad);
 				#end
+				
 
 				mergeKeyboardScheme(controls.keyboardScheme);
 
