@@ -1028,7 +1028,7 @@ class PlayState extends MusicBeatState
 	function endSong():Void
 	{
 		canPause = false;
-
+		FlxG.sound.music = new FlxSound();
 		if (SONG.validScore)
 		{
 			#if !switch
