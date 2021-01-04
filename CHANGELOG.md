@@ -5,6 +5,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [UNRELEASED]
+### Fixed
+- Song no longer loops when finishing the song. ([Thanks Injourn for the Pull Request!](https://github.com/ninjamuffin99/Funkin/pull/132))
+
+## [0.2.5] - 2020-12-27
+### Added
+- MOMMY GF, 3 NEW ASS SONGS BY KAWAISPRITE, NEW ART BY PHANTOMARCADE,WOOOOOOAH!!!!
+- Different icons depending on which character you are against, art by EVILSK8R!!
+- Autosave to chart editor
+- Clear section button to note editor
+- Swap button in note editor
+- a new boot text or two
+- automatic check for when you're on an old version of the game! 
+### Changed
+- Made Spookeez on Normal easier.
+- Mouse is now visible in note editor
+### Fixed
+- Crash when playing Week 3 and then playing a non-week 3 song
+- When pausing music at the start, it doesn't continue the song anyways. ([shoutouts gedehari for the Pull Request!](https://github.com/ninjamuffin99/Funkin/pull/48))
+- IDK i think backing out of song menu should play main menu songs again hehe ([shoutouts gedehari for the Pull Request!](https://github.com/ninjamuffin99/Funkin/pull/48))
+
+## [0.2.4] - 2020-12-11
 ### Added
 - 3 NEW SONGS BY KAWAISPRITE. Pico, Philly, and Blammed.
 - NEW CHARACTER, PICO. Based off the classic Flash game "Pico's School" by Tom Fulp

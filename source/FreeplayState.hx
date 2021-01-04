@@ -55,6 +55,13 @@ class FreeplayState extends MusicBeatState
 			songs.push('Blammed');
 		}
 
+		if (StoryMenuState.weekUnlocked[4] || isDebug)
+		{
+			songs.push('Satin-Panties');
+			songs.push('High');
+			songs.push('Milf');
+		}
+
 		// LOAD MUSIC
 
 		// LOAD CHARACTERS

@@ -96,6 +96,25 @@ class Character extends FlxSprite
 				addOffset("singDOWN", -50, -130);
 
 				playAnim('danceRight');
+			case 'mom':
+				tex = FlxAtlasFrames.fromSparrow(AssetPaths.Mom_Assets__png, AssetPaths.Mom_Assets__xml);
+				frames = tex;
+
+				animation.addByPrefix('idle', "Mom Idle", 24, false);
+				animation.addByPrefix('singUP', "Mom Up Pose", 24, false);
+				animation.addByPrefix('singDOWN', "MOM DOWN POSE", 24, false);
+				animation.addByPrefix('singLEFT', 'Mom Left Pose', 24, false);
+				// ANIMATION IS CALLED MOM LEFT POSE BUT ITS FOR THE RIGHT
+				// CUZ DAVE IS DUMB!
+				animation.addByPrefix('singRIGHT', 'Mom Pose Left', 24, false);
+
+				playAnim('idle');
+
+				addOffset('idle');
+				addOffset("singUP", 14, 71);
+				addOffset("singRIGHT", 10, -60);
+				addOffset("singLEFT", 250, -23);
+				addOffset("singDOWN", 20, -160);
 			case 'monster':
 				tex = FlxAtlasFrames.fromSparrow(AssetPaths.Monster_Assets__png, AssetPaths.Monster_Assets__xml);
 				frames = tex;
@@ -111,20 +130,6 @@ class Character extends FlxSprite
 				addOffset("singLEFT", -30);
 				addOffset("singDOWN", -30, -40);
 				playAnim('idle');
-			case 'lucky':
-				tex = FlxAtlasFrames.fromSparrow(AssetPaths.lucky_guitar_assets__png, AssetPaths.lucky_guitar_assets__xml);
-				frames = tex;
-				animation.addByPrefix('idle', 'lucky guitar idle', 24, false);
-				animation.addByPrefix('singUP', 'lucky UP NOTE', 24, false);
-				animation.addByPrefix('singRIGHT', 'lucky sing right', 24, false);
-				animation.addByPrefix('singDOWN', 'lucky DOWN note', 24, false);
-				animation.addByPrefix('singLEFT', 'lucky sing left', 24, false);
-
-				addOffset('idle', 0, -180);
-				addOffset("singUP", 200, -180);
-				addOffset("singRIGHT", 200, -180);
-				addOffset("singLEFT", 200, -180);
-				addOffset("singDOWN", 200, -180);
 			case 'pico':
 				tex = FlxAtlasFrames.fromSparrow(AssetPaths.Pico_FNF_assetss__png, AssetPaths.Pico_FNF_assetss__xml);
 				frames = tex;
@@ -163,7 +168,7 @@ class Character extends FlxSprite
 
 				if (!isPlayer)
 					flipX = true;
-			
+
 			case 'bf':
 				var tex = FlxAtlasFrames.fromSparrow(AssetPaths.BOYFRIEND__png, AssetPaths.BOYFRIEND__xml);
 				frames = tex;
@@ -243,6 +248,8 @@ class Character extends FlxSprite
 	{
 		switch (curCharacter)
 		{
+			case 'mom':
+				playAnim('idle');
 			case 'bf':
 
 			case 'gf':
@@ -268,8 +275,6 @@ class Character extends FlxSprite
 			case 'monster':
 				playAnim('idle');
 			case 'pico':
-				playAnim('idle');
-			case 'lucky':
 				playAnim('idle');
 		}
 	}

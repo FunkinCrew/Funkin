@@ -51,6 +51,8 @@ class TitleState extends MusicBeatState
 
 		super.create();
 
+		NGio.noLogin(APIStuff.API);
+
 		#if ng
 		var ng:NGio = new NGio(APIStuff.API, APIStuff.EncKey);
 		trace('NEWGROUNDS LOL');
@@ -62,7 +64,9 @@ class TitleState extends MusicBeatState
 
 		if (FlxG.save.data.weekUnlocked != null)
 		{
-			StoryMenuState.weekUnlocked = FlxG.save.data.weekUnlocked;
+			// FIX LATER!!!
+			// WEEK UNLOCK PROGRESSION!!
+			// StoryMenuState.weekUnlocked = FlxG.save.data.weekUnlocked;
 
 			if (StoryMenuState.weekUnlocked.length < 4)
 				StoryMenuState.weekUnlocked.insert(0, true);
@@ -72,8 +76,10 @@ class TitleState extends MusicBeatState
 				StoryMenuState.weekUnlocked[0] = true;
 		}
 
-		#if SKIP_TO_PLAYSTATE
-		FlxG.switchState(new StoryMenuState());
+		#if FREEPLAY
+		FlxG.switchState(new FreeplayState());
+		#elseif CHARTING
+		FlxG.switchState(new ChartingState());
 		#else
 		startIntro();
 		#end

@@ -8,6 +8,7 @@ import flixel.group.FlxGroup;
 import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
+import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import lime.net.curl.CURLCode;
 
@@ -21,17 +22,19 @@ class StoryMenuState extends MusicBeatState
 		['Tutorial'],
 		['Bopeebo', 'Fresh', 'Dadbattle'],
 		['Spookeez', 'South'],
-		['Pico', 'Philly', "Blammed"]
+		['Pico', 'Philly', "Blammed"],
+		['Satin-Panties', "High", "Milf"]
 	];
 	var curDifficulty:Int = 1;
 
-	public static var weekUnlocked:Array<Bool> = [true, true, false, false];
+	public static var weekUnlocked:Array<Bool> = [true, true, true, true, true];
 
 	var weekCharacters:Array<Dynamic> = [
 		['dad', 'bf', 'gf'],
 		['dad', 'bf', 'gf'],
 		['spooky', 'bf', 'gf'],
-		['pico', 'bf', 'gf']
+		['pico', 'bf', 'gf'],
+		['mom', 'bf', 'gf']
 	];
 	var curWeek:Int = 0;
 
@@ -71,6 +74,9 @@ class StoryMenuState extends MusicBeatState
 
 		grpWeekText = new FlxTypedGroup<MenuItem>();
 		add(grpWeekText);
+
+		var blackBarThingie:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, 56, FlxColor.BLACK);
+		add(blackBarThingie);
 
 		grpWeekCharacters = new FlxTypedGroup<MenuCharacter>();
 
