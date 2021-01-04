@@ -147,7 +147,7 @@ class PlayState extends MusicBeatState
 			curStage = "spooky";
 			halloweenLevel = true;
 
-			var hallowTex = FlxAtlasFrames.fromSparrow(AssetPaths.halloween_bg__png, AssetPaths.halloween_bg__xml);
+			var hallowTex = FlxAtlasFrames.fromSparrow('assets/images/halloween_bg.png', 'assets/images/halloween_bg.xml');
 
 			halloweenBG = new FlxSprite(-200, -100);
 			halloweenBG.frames = hallowTex;
@@ -163,11 +163,11 @@ class PlayState extends MusicBeatState
 		{
 			curStage = 'philly';
 
-			var bg:FlxSprite = new FlxSprite(-100).loadGraphic(AssetPaths.sky__png);
+			var bg:FlxSprite = new FlxSprite(-100).loadGraphic('assets/images/sky.png');
 			bg.scrollFactor.set(0.1, 0.1);
 			add(bg);
 
-			var city:FlxSprite = new FlxSprite(-10).loadGraphic(AssetPaths.city__png);
+			var city:FlxSprite = new FlxSprite(-10).loadGraphic('assets/images/city.png');
 			city.scrollFactor.set(0.3, 0.3);
 			city.setGraphicSize(Std.int(city.width * 0.85));
 			city.updateHitbox();
@@ -186,18 +186,18 @@ class PlayState extends MusicBeatState
 				phillyCityLights.add(light);
 			}
 
-			var streetBehind:FlxSprite = new FlxSprite(-40, 50).loadGraphic(AssetPaths.behindTrain__png);
+			var streetBehind:FlxSprite = new FlxSprite(-40, 50).loadGraphic('assets/images/behindTrain.png');
 			add(streetBehind);
 
-			phillyTrain = new FlxSprite(2000, 360).loadGraphic(AssetPaths.train__png);
+			phillyTrain = new FlxSprite(2000, 360).loadGraphic('assets/images/train.png');
 			add(phillyTrain);
 
 			trainSound = new FlxSound().loadEmbedded('assets/sounds/train_passes' + TitleState.soundExt);
 			FlxG.sound.list.add(trainSound);
 
-			// var cityLights:FlxSprite = new FlxSprite().loadGraphic(AssetPaths.win0__png);
+			// var cityLights:FlxSprite = new FlxSprite().loadGraphic(AssetPaths.win0.png);
 
-			var street:FlxSprite = new FlxSprite(-40, streetBehind.y).loadGraphic(AssetPaths.street__png);
+			var street:FlxSprite = new FlxSprite(-40, streetBehind.y).loadGraphic('assets/images/street.png');
 			add(street);
 		}
 		else if (SONG.song.toLowerCase() == 'milf' || SONG.song.toLowerCase() == 'satin-panties' || SONG.song.toLowerCase() == 'high')
@@ -205,12 +205,12 @@ class PlayState extends MusicBeatState
 			curStage = 'limo';
 			defaultCamZoom = 0.90;
 
-			var skyBG:FlxSprite = new FlxSprite(-120, -50).loadGraphic(AssetPaths.limoSunset__png);
+			var skyBG:FlxSprite = new FlxSprite(-120, -50).loadGraphic('assets/images/limo/limoSunset.png');
 			skyBG.scrollFactor.set(0.1, 0.1);
 			add(skyBG);
 
 			var bgLimo:FlxSprite = new FlxSprite(-200, 480);
-			bgLimo.frames = FlxAtlasFrames.fromSparrow(AssetPaths.bgLimo__png, AssetPaths.bgLimo__xml);
+			bgLimo.frames = FlxAtlasFrames.fromSparrow('assets/images/limo/bgLimo.png', 'assets/images/limo/bgLimo.xml');
 			bgLimo.animation.addByPrefix('drive', "background limo pink", 24);
 			bgLimo.animation.play('drive');
 			bgLimo.scrollFactor.set(0.4, 0.4);
@@ -226,7 +226,7 @@ class PlayState extends MusicBeatState
 				grpLimoDancers.add(dancer);
 			}
 
-			var overlayShit:FlxSprite = new FlxSprite(-500, -600).loadGraphic(AssetPaths.limoOverlay__png);
+			var overlayShit:FlxSprite = new FlxSprite(-500, -600).loadGraphic('assets/images/limo/limoOverlay.png');
 			overlayShit.alpha = 0.5;
 			// add(overlayShit);
 
@@ -236,7 +236,7 @@ class PlayState extends MusicBeatState
 
 			// overlayShit.shader = shaderBullshit;
 
-			var limoTex = FlxAtlasFrames.fromSparrow(AssetPaths.limoDrive__png, AssetPaths.limoDrive__xml);
+			var limoTex = FlxAtlasFrames.fromSparrow('assets/images/limo/limoDrive.png', 'assets/images/limo/limoDrive.xml');
 
 			limo = new FlxSprite(-120, 550);
 			limo.frames = limoTex;
@@ -244,13 +244,13 @@ class PlayState extends MusicBeatState
 			limo.animation.play('drive');
 			limo.antialiasing = true;
 
-			fastCar = new FlxSprite(-300, 160).loadGraphic(AssetPaths.fastCarLol__png);
+			fastCar = new FlxSprite(-300, 160).loadGraphic('assets/images/limo/fastCarLol.png');
 			// add(limo);
 		}
 		else
 		{
 			curStage = 'stage';
-			var bg:FlxSprite = new FlxSprite(-600, -200).loadGraphic(AssetPaths.stageback__png);
+			var bg:FlxSprite = new FlxSprite(-600, -200).loadGraphic('assets/images/stageback.png');
 			// bg.setGraphicSize(Std.int(bg.width * 2.5));
 			// bg.updateHitbox();
 			bg.antialiasing = true;
@@ -258,7 +258,7 @@ class PlayState extends MusicBeatState
 			bg.active = false;
 			add(bg);
 
-			var stageFront:FlxSprite = new FlxSprite(-650, 600).loadGraphic(AssetPaths.stagefront__png);
+			var stageFront:FlxSprite = new FlxSprite(-650, 600).loadGraphic('assets/images/stagefront.png');
 			stageFront.setGraphicSize(Std.int(stageFront.width * 1.1));
 			stageFront.updateHitbox();
 			stageFront.antialiasing = true;
@@ -266,7 +266,7 @@ class PlayState extends MusicBeatState
 			stageFront.active = false;
 			add(stageFront);
 
-			var stageCurtains:FlxSprite = new FlxSprite(-500, -300).loadGraphic(AssetPaths.stagecurtains__png);
+			var stageCurtains:FlxSprite = new FlxSprite(-500, -300).loadGraphic('assets/images/stagecurtains.png');
 			stageCurtains.setGraphicSize(Std.int(stageCurtains.width * 0.9));
 			stageCurtains.updateHitbox();
 			stageCurtains.antialiasing = true;
@@ -365,7 +365,7 @@ class PlayState extends MusicBeatState
 
 		FlxG.fixedTimestep = false;
 
-		healthBarBG = new FlxSprite(0, FlxG.height * 0.9).loadGraphic(AssetPaths.healthBar__png);
+		healthBarBG = new FlxSprite(0, FlxG.height * 0.9).loadGraphic('assets/images/healthBar.png');
 		healthBarBG.screenCenter(X);
 		healthBarBG.scrollFactor.set();
 		add(healthBarBG);
@@ -618,7 +618,7 @@ class PlayState extends MusicBeatState
 		{
 			FlxG.log.add(i);
 			var babyArrow:FlxSprite = new FlxSprite(0, strumLine.y);
-			var arrTex = FlxAtlasFrames.fromSparrow(AssetPaths.NOTE_assets__png, AssetPaths.NOTE_assets__xml);
+			var arrTex = FlxAtlasFrames.fromSparrow('assets/images/NOTE_assets.png', 'assets/images/NOTE_assets.xml');
 			babyArrow.frames = arrTex;
 			babyArrow.animation.addByPrefix('green', 'arrowUP');
 			babyArrow.animation.addByPrefix('blue', 'arrowDOWN');
@@ -1141,7 +1141,7 @@ class PlayState extends MusicBeatState
 		rating.antialiasing = true;
 		rating.velocity.x -= FlxG.random.int(0, 10);
 
-		var comboSpr:FlxSprite = new FlxSprite().loadGraphic(AssetPaths.combo__png);
+		var comboSpr:FlxSprite = new FlxSprite().loadGraphic('assets/images/combo.png');
 		comboSpr.screenCenter();
 		comboSpr.x = coolText.x;
 		comboSpr.acceleration.y = 600;

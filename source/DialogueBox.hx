@@ -20,7 +20,7 @@ class DialogueBox extends FlxSpriteGroup
 		super();
 
 		box = new FlxSprite(40);
-		box.frames = FlxAtlasFrames.fromSparrow(AssetPaths.speech_bubble_talking__png, AssetPaths.speech_bubble_talking__xml);
+		box.frames = FlxAtlasFrames.fromSparrow('assets/images/speech_bubble_talking.png', 'assets/images/speech_bubble_talking.xml');
 		box.animation.addByPrefix('normalOpen', 'Speech Bubble Normal Open', 24, false);
 		box.animation.addByPrefix('normal', 'speech bubble normal', 24);
 		box.animation.play('normalOpen');
