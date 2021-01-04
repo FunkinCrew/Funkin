@@ -1029,6 +1029,7 @@ class PlayState extends MusicBeatState
 	{
 		canPause = false;
 		FlxG.sound.music = new FlxSound();
+		vocals = new FlxSound();
 		if (SONG.validScore)
 		{
 			#if !switch
