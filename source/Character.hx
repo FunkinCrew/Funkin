@@ -31,7 +31,7 @@ class Character extends FlxSprite
 		{
 			case 'gf':
 				// GIRLFRIEND CODE
-				tex = FlxAtlasFrames.fromSparrow(AssetPaths.GF_assets__png, AssetPaths.GF_assets__xml);
+				tex = FlxAtlasFrames.fromSparrow('assets/images/GF_assets.png', 'assets/images/GF_assets.xml');
 				frames = tex;
 				animation.addByPrefix('cheer', 'GF Cheer', 24, false);
 				animation.addByPrefix('singLEFT', 'GF left note', 24, false);
@@ -63,7 +63,7 @@ class Character extends FlxSprite
 
 			case 'dad':
 				// DAD ANIMATION LOADING CODE
-				tex = FlxAtlasFrames.fromSparrow(AssetPaths.DADDY_DEAREST__png, AssetPaths.DADDY_DEAREST__xml);
+				tex = FlxAtlasFrames.fromSparrow('assets/images/DADDY_DEAREST.png', 'assets/images/DADDY_DEAREST.xml');
 				frames = tex;
 				animation.addByPrefix('idle', 'Dad idle dance', 24);
 				animation.addByPrefix('singUP', 'Dad Sing Note UP', 24);
@@ -78,7 +78,7 @@ class Character extends FlxSprite
 				addOffset("singLEFT", -10, 10);
 				addOffset("singDOWN", 0, -30);
 			case 'spooky':
-				tex = FlxAtlasFrames.fromSparrow(AssetPaths.spooky_kids_assets__png, AssetPaths.spooky_kids_assets__xml);
+				tex = FlxAtlasFrames.fromSparrow('assets/images/spooky_kids_assets.png', 'assets/images/spooky_kids_assets.xml');
 				frames = tex;
 				animation.addByPrefix('singUP', 'spooky UP NOTE', 24, false);
 				animation.addByPrefix('singDOWN', 'spooky DOWN note', 24, false);
@@ -97,7 +97,7 @@ class Character extends FlxSprite
 
 				playAnim('danceRight');
 			case 'mom':
-				tex = FlxAtlasFrames.fromSparrow(AssetPaths.Mom_Assets__png, AssetPaths.Mom_Assets__xml);
+				tex = FlxAtlasFrames.fromSparrow('assets/images/Mom_Assets.png', 'assets/images/Mom_Assets.xml');
 				frames = tex;
 
 				animation.addByPrefix('idle', "Mom Idle", 24, false);
@@ -116,7 +116,7 @@ class Character extends FlxSprite
 				addOffset("singLEFT", 250, -23);
 				addOffset("singDOWN", 20, -160);
 			case 'monster':
-				tex = FlxAtlasFrames.fromSparrow(AssetPaths.Monster_Assets__png, AssetPaths.Monster_Assets__xml);
+				tex = FlxAtlasFrames.fromSparrow('assets/images/Monster_Assets.png', 'assets/images/Monster_Assets.xml');
 				frames = tex;
 				animation.addByPrefix('idle', 'monster idle', 24);
 				animation.addByPrefix('singUP', 'monster up note', 24, false);
@@ -131,7 +131,7 @@ class Character extends FlxSprite
 				addOffset("singDOWN", -30, -40);
 				playAnim('idle');
 			case 'pico':
-				tex = FlxAtlasFrames.fromSparrow(AssetPaths.Pico_FNF_assetss__png, AssetPaths.Pico_FNF_assetss__xml);
+				tex = FlxAtlasFrames.fromSparrow('assets/images/.Pico_FNF_assetss.png', 'assets/images/Pico_FNF_assetss.xml');
 				frames = tex;
 				animation.addByPrefix('idle', "Pico Idle Dance", 24);
 				animation.addByPrefix('singUP', 'pico Up note0', 24, false);
@@ -170,7 +170,7 @@ class Character extends FlxSprite
 					flipX = true;
 
 			case 'bf':
-				var tex = FlxAtlasFrames.fromSparrow(AssetPaths.BOYFRIEND__png, AssetPaths.BOYFRIEND__xml);
+				var tex = FlxAtlasFrames.fromSparrow('assets/images/BOYFRIEND.png', 'assets/images/BOYFRIEND.xml');
 				frames = tex;
 				animation.addByPrefix('idle', 'BF idle dance', 24, false);
 				animation.addByPrefix('singUP', 'BF NOTE UP0', 24, false);
