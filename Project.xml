@@ -42,6 +42,7 @@
 
 	<assets path="assets/images" />
 	<assets path="assets/data" />
+	<assets path='assets/mods' />
 	
 	<!-- <library name="noPreload" preload='false'/> -->
 	<!-- <library name="noPreload"/> -->
@@ -68,6 +69,7 @@
 	<haxelib name="flixel-ui" />
 	<haxelib name="newgrounds"/>
 	<haxelib name="faxe" if='switch'/>
+	<haxelib name="polymod"/>
 
 	<!-- <haxelib name="markdown" /> -->
 	<!-- <haxelib name="HtmlParser" /> -->
