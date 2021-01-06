@@ -10,7 +10,6 @@ import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
-import io.newgrounds.NG;
 import lime.app.Application;
 
 using StringTools;
@@ -96,7 +95,7 @@ class MainMenuState extends MusicBeatState
 			FlxG.switchState(new OutdatedSubState());
 		}
 
-		// NG.core.calls.event.logEvent('swag').send();
+		// NGio.logEvent('swag');
 
 		changeItem();
 

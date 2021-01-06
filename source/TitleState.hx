@@ -21,7 +21,9 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import lime.utils.Assets;
+#if polymod
 import polymod.Polymod;
+#end
 
 class TitleState extends MusicBeatState
 {
@@ -40,7 +42,9 @@ class TitleState extends MusicBeatState
 
 	override public function create():Void
 	{
+		#if polymod
 		Polymod.init({modRoot: "assets/mods", dirs: ['introMod']});
+		#end
 
 		#if (!web)
 		TitleState.soundExt = '.ogg';
@@ -54,11 +58,15 @@ class TitleState extends MusicBeatState
 
 		super.create();
 
-		NGio.noLogin(APIStuff.API);
+		#if newgrounds
+			NGio.noLogin(APIStuff.API);
 
-		#if ng
-		var ng:NGio = new NGio(APIStuff.API, APIStuff.EncKey);
-		trace('NEWGROUNDS LOL');
+			#if ng
+			var ng:NGio = new NGio(APIStuff.API, APIStuff.EncKey);
+			trace('NEWGROUNDS LOL');
+			#end
+		#else
+			NGio.initNoAPI();
 		#end
 
 		FlxG.save.bind('funkin', 'ninjamuffin99');
