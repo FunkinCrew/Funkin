@@ -796,6 +796,11 @@ class PlayState extends MusicBeatState
 			iconP1.animation.curAnim.curFrame = 1;
 		else
 			iconP1.animation.curAnim.curFrame = 0;
+			
+        if (healthBar.percent > 80)
+			iconP2.animation.curAnim.curFrame = Std.parseInt(curStage) + 1;
+		else
+			iconP2.animation.curAnim.curFrame = Std.parseInt(curStage);
 
 		/* if (FlxG.keys.justPressed.NINE)
 			FlxG.switchState(new Charting()); */
