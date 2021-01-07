@@ -514,9 +514,18 @@ class ChartingState extends MusicBeatState
 			if (FlxG.keys.justPressed.R)
 			{
 				if (FlxG.keys.pressed.SHIFT)
-					changeSection();
+					resetSection();
 				else
-					changeSection(curSection);
+					resetSection(true);
+			}
+
+			if (FlxG.mouse.wheel != 0)
+			{
+				FlxG.sound.music.pause();
+				vocals.pause();
+
+				FlxG.sound.music.time -= (FlxG.mouse.wheel * Conductor.stepCrochet * 1);
+				vocals.time = FlxG.sound.music.time;
 			}
 
 			if (!FlxG.keys.pressed.SHIFT)
@@ -569,9 +578,9 @@ class ChartingState extends MusicBeatState
 		var shiftThing:Int = 1;
 		if (FlxG.keys.pressed.SHIFT)
 			shiftThing = 4;
-		if (FlxG.keys.justPressed.RIGHT)
+		if (FlxG.keys.justPressed.RIGHT || FlxG.keys.justPressed.D)
 			changeSection(curSection + shiftThing);
-		if (FlxG.keys.justPressed.LEFT)
+		if (FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.A)
 			changeSection(curSection - shiftThing);
 
 		bpmTxt.text = bpmTxt.text = Std.string(FlxMath.roundDecimal(Conductor.songPosition / 1000, 2))
@@ -604,6 +613,26 @@ class ChartingState extends MusicBeatState
 		return curStep;
 	}
 
+	function resetSection(songBeginning:Bool = false):Void
+	{
+		updateGrid();
+
+		FlxG.sound.music.pause();
+		vocals.pause();
+
+		// Basically old shit from changeSection???
+		FlxG.sound.music.time = lengthBpmBullshit() * Conductor.stepCrochet * curSection;
+
+		if (songBeginning)
+			FlxG.sound.music.time = 0;
+
+		vocals.time = FlxG.sound.music.time;
+		updateCurStep();
+
+		updateGrid();
+		updateSectionUI();
+	}
+
 	function changeSection(sec:Int = 0, ?updateMusic:Bool = true):Void
 	{
 		trace('changing section' + sec);
@@ -627,7 +656,15 @@ class ChartingState extends MusicBeatState
 					daNum++;
 				}
 
-				FlxG.sound.music.time = (daLength - lengthBpmBullshit()) * Conductor.stepCrochet;
+				if (FlxG.keys.pressed.CONTROL)
+				{
+					FlxG.sound.music.time = (daLength - lengthBpmBullshit()) * Conductor.stepCrochet;
+				}
+				else
+				{
+					FlxG.sound.music.time += (lengthBpmBullshit() * Conductor.stepCrochet) * sec;
+				}
+
 				vocals.time = FlxG.sound.music.time;
 				updateCurStep();
 			}
