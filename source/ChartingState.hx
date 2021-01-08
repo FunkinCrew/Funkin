@@ -495,6 +495,22 @@ class ChartingState extends MusicBeatState
 			FlxG.switchState(new PlayState());
 		}
 
+		if (FlxG.keys.justPressed.TAB)
+		{
+			if (FlxG.keys.pressed.SHIFT)
+			{
+				UI_box.selected_tab -= 1;
+				if (UI_box.selected_tab < 0)
+					UI_box.selected_tab = 2;
+			}
+			else
+			{
+				UI_box.selected_tab += 1;
+				if (UI_box.selected_tab >= 3)
+					UI_box.selected_tab = 0;
+			}
+		}
+
 		if (!typingShit.hasFocus)
 		{
 			if (FlxG.keys.justPressed.SPACE)
@@ -514,9 +530,9 @@ class ChartingState extends MusicBeatState
 			if (FlxG.keys.justPressed.R)
 			{
 				if (FlxG.keys.pressed.SHIFT)
-					resetSection();
-				else
 					resetSection(true);
+				else
+					resetSection();
 			}
 
 			if (FlxG.mouse.wheel != 0)
@@ -524,7 +540,7 @@ class ChartingState extends MusicBeatState
 				FlxG.sound.music.pause();
 				vocals.pause();
 
-				FlxG.sound.music.time -= (FlxG.mouse.wheel * Conductor.stepCrochet * 1);
+				FlxG.sound.music.time -= (FlxG.mouse.wheel * Conductor.stepCrochet * 0.4);
 				vocals.time = FlxG.sound.music.time;
 			}
 
@@ -624,7 +640,10 @@ class ChartingState extends MusicBeatState
 		FlxG.sound.music.time = lengthBpmBullshit() * Conductor.stepCrochet * curSection;
 
 		if (songBeginning)
+		{
 			FlxG.sound.music.time = 0;
+			curSection = 0;
+		}
 
 		vocals.time = FlxG.sound.music.time;
 		updateCurStep();
