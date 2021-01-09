@@ -11,6 +11,7 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import lime.net.curl.CURLCode;
+import flixel.ui.FlxVirtualPad;
 
 using StringTools;
 
@@ -42,14 +43,14 @@ class StoryMenuState extends MusicBeatState
 
 	var grpWeekText:FlxTypedGroup<MenuItem>;
 	var grpWeekCharacters:FlxTypedGroup<MenuCharacter>;
-
+	//var virtualPad:FlxVirtualPad;
 	var grpLocks:FlxTypedGroup<FlxSprite>;
 
 	var difficultySelectors:FlxGroup;
 	var sprDifficulty:FlxSprite;
 	var leftArrow:FlxSprite;
 	var rightArrow:FlxSprite;
-
+	var _pad:FlxVirtualPad;
 	override function create()
 	{
 		if (FlxG.sound.music != null)
@@ -69,7 +70,7 @@ class StoryMenuState extends MusicBeatState
 		rankText.size = scoreText.size;
 		rankText.screenCenter(X);
 
-		var ui_tex = FlxAtlasFrames.fromSparrow('assets/images/campaign_menu_UI_assets.png', 'assets/images/campaign_menu_UI_assets.xml');
+		var ui_tex = FlxAtlasFrames.fromSparrow(AssetPaths.campaign_menu_UI_assets__png, AssetPaths.campaign_menu_UI_assets__xml);
 		var yellowBG:FlxSprite = new FlxSprite(0, 56).makeGraphic(FlxG.width, 400, 0xFFF9CF51);
 
 		grpWeekText = new FlxTypedGroup<MenuItem>();
@@ -185,6 +186,10 @@ class StoryMenuState extends MusicBeatState
 		trace("Line 165");
 
 		super.create();
+		_pad = new FlxVirtualPad(FULL, A_B);
+    	_pad.alpha = 0.75;
+    	this.add(_pad);
+
 	}
 
 	override function update(elapsed:Float)
@@ -206,22 +211,22 @@ class StoryMenuState extends MusicBeatState
 		{
 			if (!selectedWeek)
 			{
-				if (controls.UP_P)
+				if (_pad.buttonUp.justPressed)
 				{
 					changeWeek(-1);
 				}
 
-				if (controls.DOWN_P)
+				if (_pad.buttonDown.justPressed)
 				{
 					changeWeek(1);
 				}
 
-				if (controls.RIGHT)
+				if (_pad.buttonRight.justPressed)
 					rightArrow.animation.play('press')
 				else
 					rightArrow.animation.play('idle');
 
-				if (controls.LEFT)
+				if (_pad.buttonLeft.justPressed)
 					leftArrow.animation.play('press');
 				else
 					leftArrow.animation.play('idle');
@@ -232,13 +237,13 @@ class StoryMenuState extends MusicBeatState
 					changeDifficulty(-1);
 			}
 
-			if (controls.ACCEPT)
+			if (_pad.buttonA.justPressed)
 			{
 				selectWeek();
 			}
 		}
 
-		if (controls.BACK && !movedBack && !selectedWeek)
+		if (_pad.buttonB.justPressed && !movedBack && !selectedWeek)
 		{
 			FlxG.sound.play('assets/sounds/cancelMenu' + TitleState.soundExt);
 			movedBack = true;
