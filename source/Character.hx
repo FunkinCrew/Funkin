@@ -131,7 +131,7 @@ class Character extends FlxSprite
 				addOffset("singDOWN", -30, -40);
 				playAnim('idle');
 			case 'pico':
-				tex = FlxAtlasFrames.fromSparrow('assets/images/.Pico_FNF_assetss.png', 'assets/images/Pico_FNF_assetss.xml');
+				tex = FlxAtlasFrames.fromSparrow('assets/images/Pico_FNF_assetss.png', 'assets/images/Pico_FNF_assetss.xml');
 				frames = tex;
 				animation.addByPrefix('idle', "Pico Idle Dance", 24);
 				animation.addByPrefix('singUP', 'pico Up note0', 24, false);
