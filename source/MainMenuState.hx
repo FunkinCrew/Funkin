@@ -136,7 +136,7 @@ class MainMenuState extends MusicBeatState
 				if (optionShit[curSelected] == 'donate')
 				{
 					#if linux
-					Sys.command('/usr/bin/xdg-open', ["https://ninja-muffin24.itch.io/funkin", "&"]);
+					Sys.command('/usr/bin/xdg-open', ["https://ninja-muffin24.itch.io/funkin"]);
 					#else
 					FlxG.openURL('https://ninja-muffin24.itch.io/funkin');
 					#end
