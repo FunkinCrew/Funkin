@@ -1,12 +1,13 @@
 # Friday Night Funkin on android
 
-(Everything will be here soon)
 check releases to download apk
 
 ![Screenshot_20210109-194743_06d0f9554a0a05ce054ef8d232e87828](https://user-images.githubusercontent.com/59097731/104103630-31eae280-52b4-11eb-90a4-5bdb1b39fc53.jpg)
 ![Screenshot_20210109-194749_06d0f9554a0a05ce054ef8d232e87828](https://user-images.githubusercontent.com/59097731/104103635-34e5d300-52b4-11eb-96f8-13910580fbc8.jpg)
 ![Screenshot_20210109-194759_06d0f9554a0a05ce054ef8d232e87828](https://user-images.githubusercontent.com/59097731/104103636-36af9680-52b4-11eb-8740-f7be0c098265.jpg)
 ![Screenshot_20210109-194848_06d0f9554a0a05ce054ef8d232e87828](https://user-images.githubusercontent.com/59097731/104103637-37e0c380-52b4-11eb-8f84-87892f3e5d85.jpg)
+
+(Everything will be here soon)
 
 This is the repository for Friday Night Funkin, a game originally made for Ludum Dare 47 "Stuck In a Loop".
 
