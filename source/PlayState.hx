@@ -425,6 +425,7 @@ class PlayState extends MusicBeatState
 		_pad.alpha = 0.75;
 		_pad.scrollFactor.set();
 		this.add(_pad);
+		_pad.cameras = [camHUD];
 
 	}
 
@@ -1403,11 +1404,10 @@ class PlayState extends MusicBeatState
 	{
 		// just double pasting this shit cuz fuk u
 		// REDO THIS SYSTEM!
-		var upP = controls.UP_P;
-		var rightP = controls.RIGHT_P;
-		var downP = controls.DOWN_P;
-		var leftP = controls.LEFT_P;
-
+		var upP = _pad.buttonUp.justPressed;
+		var rightP = _pad.buttonRight.justPressed;
+		var downP = _pad.buttonDown.justPressed;
+		var leftP = _pad.buttonLeft.justPressed;
 		var gamepad = FlxG.gamepads.lastActive;
 		if (gamepad != null)
 		{
