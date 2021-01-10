@@ -1015,6 +1015,11 @@ class PlayState extends MusicBeatState
 					{
 						health -= 0.045;
 						vocals.volume = 0;
+						if (combo > 5)
+						{
+							gf.playAnim('sad');
+						}
+						combo = 0;
 					}
 
 					daNote.active = false;
