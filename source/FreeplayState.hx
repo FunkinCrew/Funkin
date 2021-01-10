@@ -9,11 +9,11 @@ import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import lime.utils.Assets;
+import flixel.ui.FlxVirtualPad;
 
 class FreeplayState extends MusicBeatState
 {
 	var songs:Array<String> = ["Bopeebo", "Dadbattle", "Fresh", "Tutorial"];
-
 	var selector:FlxText;
 	var curSelected:Int = 0;
 	var curDifficulty:Int = 1;
@@ -25,6 +25,7 @@ class FreeplayState extends MusicBeatState
 
 	private var grpSongs:FlxTypedGroup<Alphabet>;
 	private var curPlaying:Bool = false;
+	var _pad:FlxVirtualPad;
 
 	override function create()
 	{
@@ -61,12 +62,12 @@ class FreeplayState extends MusicBeatState
 			songs.push('High');
 			songs.push('Milf');
 		}
-
+		songs.push('monster');
 		// LOAD MUSIC
 
 		// LOAD CHARACTERS
 
-		var bg:FlxSprite = new FlxSprite().loadGraphic('assets/images/menuBGBlue.png');
+		var bg:FlxSprite = new FlxSprite().loadGraphic(AssetPaths.menuBGBlue__png);
 		add(bg);
 
 		grpSongs = new FlxTypedGroup<Alphabet>();
@@ -129,12 +130,16 @@ class FreeplayState extends MusicBeatState
 		 */
 
 		super.create();
+
+		_pad = new FlxVirtualPad(FULL, A_B);
+    	_pad.alpha = 0.65;
+    	this.add(_pad);
+
 	}
 
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
-
 		if (FlxG.sound.music.volume < 0.7)
 		{
 			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
@@ -147,9 +152,9 @@ class FreeplayState extends MusicBeatState
 
 		scoreText.text = "PERSONAL BEST:" + lerpScore;
 
-		var upP = controls.UP_P;
-		var downP = controls.DOWN_P;
-		var accepted = controls.ACCEPT;
+		var upP = _pad.buttonUp.justPressed;
+		var downP = _pad.buttonDown.justPressed;
+		var accepted = _pad.buttonA.justPressed;
 
 		if (upP)
 		{
@@ -160,12 +165,12 @@ class FreeplayState extends MusicBeatState
 			changeSelection(1);
 		}
 
-		if (controls.LEFT_P)
+		if (_pad.buttonLeft.justPressed)
 			changeDiff(-1);
-		if (controls.RIGHT_P)
+		if (_pad.buttonRight.justPressed)
 			changeDiff(1);
 
-		if (controls.BACK)
+		if (_pad.buttonB.justPressed)
 		{
 			FlxG.switchState(new MainMenuState());
 		}
@@ -211,9 +216,9 @@ class FreeplayState extends MusicBeatState
 
 	function changeSelection(change:Int = 0)
 	{
-		#if !switch
-		NGio.logEvent('Fresh');
-		#end
+		//#if !switch
+		//NGio.logEvent('Fresh');
+		//#end
 
 		// NGio.logEvent('Fresh');
 		FlxG.sound.play('assets/sounds/scrollMenu' + TitleState.soundExt, 0.4);
