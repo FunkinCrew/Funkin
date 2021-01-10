@@ -1283,7 +1283,8 @@ class PlayState extends MusicBeatState
 			}
 			else
 			{
-				badNoteCheck();
+				//badNoteCheck();
+				trace("Keyshit badnotecheck");
 			}
 		}
 
@@ -1445,7 +1446,9 @@ class PlayState extends MusicBeatState
 		if (keyP)
 			goodNoteHit(note);
 		else
-			badNoteCheck();
+			//badNoteCheck();
+			trace("BadNoteCheck");
+
 	}
 
 	function goodNoteHit(note:Note):Void
