@@ -172,4 +172,3 @@ class DialogueBox extends FlxSpriteGroup
 		add(theDialog);
 	}
 }
->>>>>>> 62febd7ad6964e608ca494f18a8cbaa38ad5cf0d
