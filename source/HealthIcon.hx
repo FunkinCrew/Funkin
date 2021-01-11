@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 package;
 
 import flixel.FlxSprite;
