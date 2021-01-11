@@ -61,7 +61,7 @@ class FreeplayState extends MusicBeatState
 			songs.push('High');
 			songs.push('Milf');
 		}
-
+		songs.push('Monster');
 		// LOAD MUSIC
 
 		// LOAD CHARACTERS
