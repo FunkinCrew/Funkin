@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 package;
 
 import Section.SwagSection;
@@ -3417,4 +3416,3 @@ class PlayState extends MusicBeatState
 
 	var curLight:Int = 0;
 }
->>>>>>> 62febd7ad6964e608ca494f18a8cbaa38ad5cf0d
