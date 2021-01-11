@@ -1,4 +1,13 @@
-# Friday Night Funkin
+# Friday Night Funkin on android
+
+check releases to download apk
+
+![Screenshot_20210109-194743_06d0f9554a0a05ce054ef8d232e87828](https://user-images.githubusercontent.com/59097731/104103630-31eae280-52b4-11eb-90a4-5bdb1b39fc53.jpg)
+![Screenshot_20210109-194749_06d0f9554a0a05ce054ef8d232e87828](https://user-images.githubusercontent.com/59097731/104103635-34e5d300-52b4-11eb-96f8-13910580fbc8.jpg)
+![Screenshot_20210109-194759_06d0f9554a0a05ce054ef8d232e87828](https://user-images.githubusercontent.com/59097731/104103636-36af9680-52b4-11eb-8740-f7be0c098265.jpg)
+![Screenshot_20210109-194848_06d0f9554a0a05ce054ef8d232e87828](https://user-images.githubusercontent.com/59097731/104103637-37e0c380-52b4-11eb-8f84-87892f3e5d85.jpg)
+
+(Everything will be here soon)
 
 This is the repository for Friday Night Funkin, a game originally made for Ludum Dare 47 "Stuck In a Loop".
 
@@ -14,52 +23,3 @@ Support the project on the itch.io page: https://ninja-muffin24.itch.io/funkin
 
 This game was made with love to Newgrounds and it's community. Extra love to Tom Fulp.
 
-## Build instructions
-
-### Installing shit
-
-First you need to install Haxe and HaxeFlixel. I'm too lazy to write and keep updated with that setup (which is pretty simple). 
-The link to that is on the [HaxeFlixel website](https://haxeflixel.com/documentation/getting-started/)
-
-That should give you HaxeFlixel and all of it's setup and shit. If you run into issues, ask them in the #flixel channel in the Haxe discord server: https://discord.gg/5ybrNNWx9S
-
-Other installations you'd need is the additional libraries, a fully updated list will be in `Project.xml`, but here are the one's I'm using as of writing.
-
-```
-hscript
-flixel-ui
-newgrounds
-```
-
-so for each of those type `haxelib install [library]` so shit like `haxelib install newgrounds`
-
-### Ignored files
-
-I gitignore the API keys for the game, so that no one can nab them and post fake highscores on the leaderboards. But because of that the game
-doesn't compile without it.
-
-Just make a file in `/source` and call it `APIStuff.hx`, and copy paste this into it
-
-```haxe
-package;
-
-class APIStuff
-{
-	public static var API:String = "";
-	public static var EncKey:String = "";
-}
-
-```
-
-and you should be good to go there.
-
-### Compiling game
-
-Once you have all those installed, it's pretty easy to compile game! One that you can compile right off the bat is for HTML5, 
-you just need to run `lime test html5 -debug` in your command prompt in the project root. (command prompt navigation guide can be found here: [https://ninjamuffin99.newgrounds.com/news/post/1090480](https://ninjamuffin99.newgrounds.com/news/post/1090480))
-
-To run it for your desktop (Windows, Mac, Linux) it's a bit more complicated. I know for Windows you need to download Visual Studio Community 2017 or 2019 or something, and in the libraries download in that download somethin that says build tools LOL homie im too dumb idk how to do that shit most of the time.
-
-### Additional guides
-
-- [Command line basics](https://ninjamuffin99.newgrounds.com/news/post/1090480)
