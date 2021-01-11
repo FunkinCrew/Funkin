@@ -36,7 +36,7 @@ class GameOverSubstate extends MusicBeatSubstate
 
 		bf.playAnim('firstDeath');
 
-		_pad = new FlxVirtualPad(RIGHT_FULL, NONE);
+		_pad = new FlxVirtualPad(NONE, A_B);
     	_pad.alpha = 0.75;
     	this.add(_pad);
 	}
