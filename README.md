@@ -17,7 +17,7 @@ Support the project on the itch.io page: https://ninja-muffin24.itch.io/funkin
 
 Build instructions
 
-0.the first need to install using the guide Creator
+0.first need to install using this guide
 https://github.com/ninjamuffin99/Funkin
 
 1.we need to install android studio, jdk, ndk Revision 15c
