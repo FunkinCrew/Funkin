@@ -166,8 +166,7 @@ class Character extends FlxSprite
 				addOffset("singLEFTmiss", 62, 64);
 				addOffset("singDOWNmiss", 210, -28);
 
-				if (!isPlayer)
-					flipX = true;
+				flipX = true;
 
 			case 'bf':
 				var tex = FlxAtlasFrames.fromSparrow('assets/images/BOYFRIEND.png', 'assets/images/BOYFRIEND.xml');
@@ -188,7 +187,6 @@ class Character extends FlxSprite
 				animation.addByPrefix('deathConfirm', "BF Dead confirm", 24, false);
 
 				animation.addByPrefix('scared', 'BF idle shaking', 24);
-				playAnim('idle');
 
 				antialiasing = true;
 
@@ -206,6 +204,28 @@ class Character extends FlxSprite
 				addOffset('deathLoop', 37, 5);
 				addOffset('deathConfirm', 37, 69);
 				addOffset('scared', -4);
+
+				flipX = true;
+		}
+
+		playAnim('singUP');
+
+		if (isPlayer)
+		{
+			flipX = !flipX;
+
+			// var animArray
+			var oldRight = animation.getByName('singRIGHT').frames;
+			animation.getByName('singRIGHT').frames = animation.getByName('singLEFT').frames;
+			animation.getByName('singLEFT').frames = oldRight;
+
+			// IF THEY HAVE MISS ANIMATIONS??
+			if (animation.getByName('singRIGHTmiss') != null)
+			{
+				var oldMiss = animation.getByName('singRIGHTmiss').frames;
+				animation.getByName('singRIGHTmiss').frames = animation.getByName('singLEFTmiss').frames;
+				animation.getByName('singLEFTmiss').frames = oldMiss;
+			}
 		}
 	}
 

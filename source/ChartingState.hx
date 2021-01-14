@@ -47,6 +47,8 @@ class ChartingState extends MusicBeatState
 	 */
 	var curSection:Int = 0;
 
+	public static var lastSection:Int = 0;
+
 	var bpmTxt:FlxText;
 
 	var strumLine:FlxSprite;
@@ -79,6 +81,8 @@ class ChartingState extends MusicBeatState
 
 	override function create()
 	{
+		curSection = lastSection;
+
 		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * 8, GRID_SIZE * 16);
 		add(gridBG);
 
@@ -167,6 +171,18 @@ class ChartingState extends MusicBeatState
 			trace('CHECKED!');
 		};
 
+		var check_mute_inst = new FlxUICheckBox(10, 200, null, null, "Mute Instrumental (in editor)", 100);
+		check_mute_inst.checked = false;
+		check_mute_inst.callback = function()
+		{
+			var vol:Float = 1;
+
+			if (check_mute_inst.checked)
+				vol = 0;
+
+			FlxG.sound.music.volume = vol;
+		};
+
 		var saveButton:FlxButton = new FlxButton(110, 8, "Save", function()
 		{
 			saveLevel();
@@ -217,6 +233,7 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(UI_songTitle);
 
 		tab_group_song.add(check_voices);
+		tab_group_song.add(check_mute_inst);
 		tab_group_song.add(saveButton);
 		tab_group_song.add(reloadSong);
 		tab_group_song.add(reloadSongJson);
@@ -489,10 +506,21 @@ class ChartingState extends MusicBeatState
 
 		if (FlxG.keys.justPressed.ENTER)
 		{
+			lastSection = curSection;
+
 			PlayState.SONG = _song;
 			FlxG.sound.music.stop();
 			vocals.stop();
 			FlxG.switchState(new PlayState());
+		}
+
+		if (FlxG.keys.justPressed.E)
+		{
+			changeNoteSustain(Conductor.stepCrochet);
+		}
+		if (FlxG.keys.justPressed.Q)
+		{
+			changeNoteSustain(-Conductor.stepCrochet);
 		}
 
 		if (FlxG.keys.justPressed.TAB)
@@ -607,6 +635,18 @@ class ChartingState extends MusicBeatState
 		super.update(elapsed);
 	}
 
+	function changeNoteSustain(value:Float):Void
+	{
+		if (curSelectedNote[2] != null)
+		{
+			curSelectedNote[2] += value;
+			curSelectedNote[2] = Math.max(curSelectedNote[2], 0);
+		}
+
+		updateNoteUI();
+		updateGrid();
+	}
+
 	function recalculateSteps():Int
 	{
 		var steps:Int = 0;
@@ -675,15 +715,7 @@ class ChartingState extends MusicBeatState
 					daNum++;
 				}
 
-				if (FlxG.keys.pressed.CONTROL)
-				{
-					FlxG.sound.music.time = (daLength - lengthBpmBullshit()) * Conductor.stepCrochet;
-				}
-				else
-				{
-					FlxG.sound.music.time += (lengthBpmBullshit() * Conductor.stepCrochet) * sec;
-				}
-
+				FlxG.sound.music.time = (daLength - lengthBpmBullshit()) * Conductor.stepCrochet;
 				vocals.time = FlxG.sound.music.time;
 				updateCurStep();
 			}
