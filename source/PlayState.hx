@@ -312,7 +312,7 @@ class PlayState extends MusicBeatState
 				dad.y += 300;
 		}
 
-		boyfriend = new Boyfriend(770, 450);
+		boyfriend = new Boyfriend(770, 450, SONG.player1);
 		add(boyfriend);
 
 		// REPOSITIONING PER STAGE
@@ -796,8 +796,8 @@ class PlayState extends MusicBeatState
 			iconP1.animation.curAnim.curFrame = 1;
 		else
 			iconP1.animation.curAnim.curFrame = 0;
-			
-        if (healthBar.percent > 80)
+
+		if (healthBar.percent > 80)
 			iconP2.animation.curAnim.curFrame = Std.parseInt(curStage) + 1;
 		else
 			iconP2.animation.curAnim.curFrame = Std.parseInt(curStage);
