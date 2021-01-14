@@ -1234,6 +1234,7 @@ class PlayState extends MusicBeatState
 		var downR = controls.DOWN_R;
 		var leftR = controls.LEFT_R;
 
+		
 		// FlxG.watch.addQuick('asdfa', upP);
 		if ((upP || rightP || downP || leftP) && !boyfriend.stunned && generatedMusic)
 		{
@@ -1253,22 +1254,23 @@ class PlayState extends MusicBeatState
 			{
 				for (daNote in possibleNotes)
 				{
-					if (perfectMode)
-						noteCheck(true, daNote);
+					sys.thread.Thread.create(() -> {
 
+					if (!daNote.isSustainNote)
+					{
 					switch (daNote.noteData)
 					{
 						case 2: // NOTES YOU JUST PRESSED
-							if (upP || rightP || downP || leftP)
+							if (upP)
 								noteCheck(upP, daNote);
 						case 3:
-							if (upP || rightP || downP || leftP)
+							if (rightP)
 								noteCheck(rightP, daNote);
 						case 1:
-							if (upP || rightP || downP || leftP)
+							if (downP)
 								noteCheck(downP, daNote);
 						case 0:
-							if (upP || rightP || downP || leftP)
+							if (leftP)
 								noteCheck(leftP, daNote);
 					}
 
@@ -1278,6 +1280,8 @@ class PlayState extends MusicBeatState
 						notes.remove(daNote, true);
 						daNote.destroy();
 					}
+					}
+					});
 				}
 			}
 			else
@@ -1285,32 +1289,32 @@ class PlayState extends MusicBeatState
 				badNoteCheck();
 			}
 		}
-
+	
 		if ((up || right || down || left) && !boyfriend.stunned && generatedMusic)
-		{
-			notes.forEachAlive(function(daNote:Note)
 			{
-				if (daNote.canBeHit && daNote.mustPress && daNote.isSustainNote)
+				notes.forEachAlive(function(daNote:Note)
 				{
-					switch (daNote.noteData)
+					if (daNote.canBeHit && daNote.mustPress && daNote.isSustainNote)
 					{
-						// NOTES YOU ARE HOLDING
-						case 2:
-							if (up && daNote.prevNote.wasGoodHit)
-								goodNoteHit(daNote);
-						case 3:
-							if (right && daNote.prevNote.wasGoodHit)
-								goodNoteHit(daNote);
-						case 1:
-							if (down && daNote.prevNote.wasGoodHit)
-								goodNoteHit(daNote);
-						case 0:
-							if (left && daNote.prevNote.wasGoodHit)
-								goodNoteHit(daNote);
+						switch (daNote.noteData)
+						{
+							// NOTES YOU ARE HOLDING
+							case 2:
+								if (up && daNote.prevNote.wasGoodHit)
+									goodNoteHit(daNote);
+							case 3:
+								if (right && daNote.prevNote.wasGoodHit)
+									goodNoteHit(daNote);
+							case 1:
+								if (down && daNote.prevNote.wasGoodHit)
+									goodNoteHit(daNote);
+							case 0:
+								if (left && daNote.prevNote.wasGoodHit)
+									goodNoteHit(daNote);
+						}
 					}
-				}
-			});
-		}
+				});
+			}
 
 		if (boyfriend.holdTimer > Conductor.stepCrochet * 4 * 0.001 && !up && !down && !right && !left)
 		{
