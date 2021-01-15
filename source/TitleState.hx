@@ -40,7 +40,7 @@ class TitleState extends MusicBeatState
 
 	override public function create():Void
 	{
-		Polymod.init({modRoot: "assets/mods", dirs: ['introMod']});
+		Polymod.init({modRoot: "assets/mods", dirs: CoolUtil.coolTextFile('assets/mods/modList.txt')});
 
 		#if (!web)
 		TitleState.soundExt = '.ogg';

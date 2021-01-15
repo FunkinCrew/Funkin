@@ -10,9 +10,11 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import lime.utils.Assets;
 
+using StringTools;
+
 class FreeplayState extends MusicBeatState
 {
-	var songs:Array<String> = ["Bopeebo", "Dadbattle", "Fresh", "Tutorial"];
+	var songs:Array<String> = [];
 
 	var selector:FlxText;
 	var curSelected:Int = 0;
@@ -28,6 +30,8 @@ class FreeplayState extends MusicBeatState
 
 	override function create()
 	{
+		songs = CoolUtil.coolTextFile('assets/data/freeplaySonglist.txt');
+
 		/* 
 			if (FlxG.sound.music != null)
 			{

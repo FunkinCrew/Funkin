@@ -208,7 +208,7 @@ class ChartingState extends MusicBeatState
 		stepperBPM.value = Conductor.bpm;
 		stepperBPM.name = 'song_bpm';
 
-		var characters:Array<String> = ["bf", 'dad', 'gf', 'spooky', 'monster', 'pico', 'mom'];
+		var characters:Array<String> = ["bf", 'dad', 'gf', 'spooky', 'monster', 'pico', 'mom', 'mom-car', 'bf-car'];
 
 		for (i in Assets.getText('assets/images/custom_chars/charlist.txt').split('\n'))
 		{
