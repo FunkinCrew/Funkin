@@ -10,9 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Holding CTRL in charting editor places notes on both sides
 - Q and E changes sustain lengths in note editor
 - Other charting editor workflow improvements
+- More hair physics
 ### Removed
 - Removed APE
 ### Fixed
+- Old Verison popup screen weirdness ([Thanks to gedehari for the Pull Request!](https://github.com/ninjamuffin99/Funkin/pull/155))
 - Song no longer loops when finishing the song. ([Thanks Injourn for the Pull Request!](https://github.com/ninjamuffin99/Funkin/pull/132))
 
 ## [0.2.5] - 2020-12-27
