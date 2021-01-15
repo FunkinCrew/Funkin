@@ -11,7 +11,6 @@ import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.FlxSubState;
 import flixel.addons.display.FlxGridOverlay;
-import flixel.addons.transition.FlxTransitionableState;
 import flixel.graphics.atlas.FlxAtlas;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxGroup.FlxTypedGroup;
@@ -163,11 +162,11 @@ class PlayState extends MusicBeatState
 		{
 			curStage = 'philly';
 
-			var bg:FlxSprite = new FlxSprite(-100).loadGraphic('assets/images/sky.png');
+			var bg:FlxSprite = new FlxSprite(-100).loadGraphic('assets/images/philly/sky.png');
 			bg.scrollFactor.set(0.1, 0.1);
 			add(bg);
 
-			var city:FlxSprite = new FlxSprite(-10).loadGraphic('assets/images/city.png');
+			var city:FlxSprite = new FlxSprite(-10).loadGraphic('assets/images/philly/city.png');
 			city.scrollFactor.set(0.3, 0.3);
 			city.setGraphicSize(Std.int(city.width * 0.85));
 			city.updateHitbox();
@@ -186,10 +185,10 @@ class PlayState extends MusicBeatState
 				phillyCityLights.add(light);
 			}
 
-			var streetBehind:FlxSprite = new FlxSprite(-40, 50).loadGraphic('assets/images/behindTrain.png');
+			var streetBehind:FlxSprite = new FlxSprite(-40, 50).loadGraphic('assets/images/philly/behindTrain.png');
 			add(streetBehind);
 
-			phillyTrain = new FlxSprite(2000, 360).loadGraphic('assets/images/train.png');
+			phillyTrain = new FlxSprite(2000, 360).loadGraphic('assets/images/philly/train.png');
 			add(phillyTrain);
 
 			trainSound = new FlxSound().loadEmbedded('assets/sounds/train_passes' + TitleState.soundExt);
@@ -197,7 +196,7 @@ class PlayState extends MusicBeatState
 
 			// var cityLights:FlxSprite = new FlxSprite().loadGraphic(AssetPaths.win0.png);
 
-			var street:FlxSprite = new FlxSprite(-40, streetBehind.y).loadGraphic('assets/images/street.png');
+			var street:FlxSprite = new FlxSprite(-40, streetBehind.y).loadGraphic('assets/images/philly/street.png');
 			add(street);
 		}
 		else if (SONG.song.toLowerCase() == 'milf' || SONG.song.toLowerCase() == 'satin-panties' || SONG.song.toLowerCase() == 'high')
