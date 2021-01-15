@@ -89,13 +89,6 @@ class MainMenuState extends MusicBeatState
 		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(versionShit);
 
-		if (versionShit.text.trim() != NGio.GAME_VER.trim() && !OutdatedSubState.leftState)
-		{
-			trace('OLD VERSION!');
-
-			FlxG.switchState(new OutdatedSubState());
-		}
-
 		// NG.core.calls.event.logEvent('swag').send();
 
 		changeItem();
