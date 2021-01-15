@@ -33,6 +33,12 @@ newgrounds
 
 So for each of those type `haxelib install [library]` so shit like `haxelib install newgrounds`
 
+You'll also need to install polymod. Do this with 
+
+```
+haxelib git polymod https://github.com/larsiusprime/polymod.git
+```
+
 ### Ignored files
 
 I gitignore the API keys for the game, so that no one can nab them and post fake highscores on the leaderboards. But because of that the game
