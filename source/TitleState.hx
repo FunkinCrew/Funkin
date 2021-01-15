@@ -20,8 +20,12 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import io.newgrounds.NG;
+import lime.app.Application;
 import lime.utils.Assets;
 import polymod.Polymod;
+
+using StringTools;
 
 class TitleState extends MusicBeatState
 {
@@ -261,7 +265,19 @@ class TitleState extends MusicBeatState
 
 			new FlxTimer().start(2, function(tmr:FlxTimer)
 			{
-				FlxG.switchState(new MainMenuState());
+				// Check if version is outdated
+
+				var version:String = "v" + Application.current.meta.get('version');
+
+				if (version.trim() != NGio.GAME_VER.trim() && !OutdatedSubState.leftState)
+				{
+					trace('OLD VERSION!');
+					FlxG.switchState(new OutdatedSubState());
+				}
+				else
+				{
+					FlxG.switchState(new MainMenuState());
+				}
 			});
 			// FlxG.sound.play('assets/music/titleShoot' + TitleState.soundExt, 0.7);
 		}
