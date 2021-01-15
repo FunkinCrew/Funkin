@@ -276,7 +276,12 @@ class PlayState extends MusicBeatState
 			add(stageCurtains);
 		}
 
-		gf = new Character(400, 130, 'gf');
+		var gfVersion:String = 'gf';
+
+		if (curStage == 'limo')
+			gfVersion = 'gf-car';
+
+		gf = new Character(400, 130, gfVersion);
 		gf.scrollFactor.set(0.95, 0.95);
 		gf.antialiasing = true;
 		add(gf);
@@ -798,9 +803,9 @@ class PlayState extends MusicBeatState
 			iconP1.animation.curAnim.curFrame = 0;
 
 		if (healthBar.percent > 80)
-			iconP2.animation.curAnim.curFrame = Std.parseInt(curStage) + 1;
+			iconP2.animation.curAnim.curFrame = 1;
 		else
-			iconP2.animation.curAnim.curFrame = Std.parseInt(curStage);
+			iconP2.animation.curAnim.curFrame = 0;
 
 		/* if (FlxG.keys.justPressed.NINE)
 			FlxG.switchState(new Charting()); */
