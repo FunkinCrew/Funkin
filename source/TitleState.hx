@@ -106,12 +106,9 @@ class TitleState extends MusicBeatState
 			diamond.destroyOnNoUse = false;
 
 			FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 1, new FlxPoint(0, -1), {asset: diamond, width: 32, height: 32},
-				new FlxRect(0, 0, FlxG.width, FlxG.height));
+				new FlxRect(-200, 0, FlxG.width * 1.4, FlxG.height));
 			FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.7, new FlxPoint(0, 1),
-				{asset: diamond, width: 32, height: 32}, new FlxRect(0, 0, FlxG.width, FlxG.height));
-
-			FlxTransitionableState.defaultTransIn.tileData = {asset: diamond, width: 32, height: 32};
-			FlxTransitionableState.defaultTransOut.tileData = {asset: diamond, width: 32, height: 32};
+				{asset: diamond, width: 32, height: 32}, new FlxRect(-200, 0, FlxG.width * 1.4, FlxG.height));
 
 			transIn = FlxTransitionableState.defaultTransIn;
 			transOut = FlxTransitionableState.defaultTransOut;
