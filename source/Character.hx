@@ -269,6 +269,20 @@ class Character extends FlxSprite
 				addOffset("singDOWNmiss", -11, -19);
 
 				flipX = true;
+			case 'parents-christmas':
+				frames = FlxAtlasFrames.fromSparrow('assets/images/christmas/mom_dad_christmas_assets.png',
+					'assets/images/christmas/mom_dad_christmas_assets.xml');
+				animation.addByPrefix('idle', 'Parent Christmas Idle', 24, false);
+				animation.addByPrefix('singUP', 'Parent Up Note Dad', 24, false);
+				animation.addByPrefix('singDOWN', 'Parent Down Note Dad', 24, false);
+				animation.addByPrefix('singLEFT', 'Parent Left Note Dad', 24, false);
+				animation.addByPrefix('singRIGHT', 'Parent Right Note Dad', 24, false);
+
+				animation.addByPrefix('singUP-alt', 'Parent Up Note Mom', 24, false);
+
+				animation.addByPrefix('singDOWN-alt', 'Parent Down Note Mom', 24, false);
+				animation.addByPrefix('singLEFT-alt', 'Parent Left Note Mom', 24, false);
+				animation.addByPrefix('singRIGHT-alt', 'Parent Right Note Mom', 24, false);
 		}
 
 		playAnim('singUP');
