@@ -291,17 +291,21 @@ class Character extends FlxSprite
 		{
 			flipX = !flipX;
 
-			// var animArray
-			var oldRight = animation.getByName('singRIGHT').frames;
-			animation.getByName('singRIGHT').frames = animation.getByName('singLEFT').frames;
-			animation.getByName('singLEFT').frames = oldRight;
-
-			// IF THEY HAVE MISS ANIMATIONS??
-			if (animation.getByName('singRIGHTmiss') != null)
+			// Doesn't flip for BF, since his are already in the right place???
+			if (character != 'bf' && character != 'bf-car')
 			{
-				var oldMiss = animation.getByName('singRIGHTmiss').frames;
-				animation.getByName('singRIGHTmiss').frames = animation.getByName('singLEFTmiss').frames;
-				animation.getByName('singLEFTmiss').frames = oldMiss;
+				// var animArray
+				var oldRight = animation.getByName('singRIGHT').frames;
+				animation.getByName('singRIGHT').frames = animation.getByName('singLEFT').frames;
+				animation.getByName('singLEFT').frames = oldRight;
+
+				// IF THEY HAVE MISS ANIMATIONS??
+				if (animation.getByName('singRIGHTmiss') != null)
+				{
+					var oldMiss = animation.getByName('singRIGHTmiss').frames;
+					animation.getByName('singRIGHTmiss').frames = animation.getByName('singLEFTmiss').frames;
+					animation.getByName('singLEFTmiss').frames = oldMiss;
+				}
 			}
 		}
 	}
@@ -395,13 +399,10 @@ class Character extends FlxSprite
 	{
 		animation.play(AnimName, Force, Reversed, Frame);
 
-		if (animation.curAnim != null)
+		var daOffset = animOffsets.get(animation.curAnim.name);
+		if (animOffsets.exists(animation.curAnim.name))
 		{
-			var daOffset = animOffsets.get(animation.curAnim.name);
-			if (animOffsets.exists(animation.curAnim.name))
-			{
-				offset.set(daOffset[0], daOffset[1]);
-			}
+			offset.set(daOffset[0], daOffset[1]);
 		}
 
 		if (curCharacter == 'gf')
