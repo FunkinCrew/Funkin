@@ -79,12 +79,29 @@ class ChartingState extends MusicBeatState
 
 	var vocals:FlxSound;
 
+	var leftIcon:HealthIcon;
+	var rightIcon:HealthIcon;
+
 	override function create()
 	{
 		curSection = lastSection;
 
 		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * 8, GRID_SIZE * 16);
 		add(gridBG);
+
+		leftIcon = new HealthIcon('bf');
+		rightIcon = new HealthIcon('dad');
+		leftIcon.scrollFactor.set(1, 1);
+		rightIcon.scrollFactor.set(1, 1);
+
+		leftIcon.setGraphicSize(0, 45);
+		rightIcon.setGraphicSize(0, 45);
+
+		add(leftIcon);
+		add(rightIcon);
+
+		leftIcon.setPosition(0, -100);
+		rightIcon.setPosition(gridBG.width / 2, -100);
 
 		var gridBlackLine:FlxSprite = new FlxSprite(gridBG.x + gridBG.width / 2).makeGraphic(2, Std.int(gridBG.height), FlxColor.BLACK);
 		add(gridBlackLine);
@@ -388,6 +405,9 @@ class ChartingState extends MusicBeatState
 			{
 				case 'Must hit section':
 					_song.notes[curSection].mustHitSection = check.checked;
+
+					updateHeads();
+
 				case 'Change BPM':
 					_song.notes[curSection].changeBPM = check.checked;
 					FlxG.log.add('changed bpm shit');
@@ -758,6 +778,22 @@ class ChartingState extends MusicBeatState
 		check_altAnim.checked = sec.altAnim;
 		check_changeBPM.checked = sec.changeBPM;
 		stepperSectionBPM.value = sec.bpm;
+
+		updateHeads();
+	}
+
+	function updateHeads():Void
+	{
+		if (check_mustHitSection.checked)
+		{
+			leftIcon.animation.play('bf');
+			rightIcon.animation.play('dad');
+		}
+		else
+		{
+			leftIcon.animation.play('dad');
+			rightIcon.animation.play('bf');
+		}
 	}
 
 	function updateNoteUI():Void
