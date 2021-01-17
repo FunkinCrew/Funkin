@@ -281,14 +281,14 @@ class Character extends FlxSprite
 				animation.addByPrefix('singRIGHT-alt', 'Parent Right Note Mom', 24, false);
 
 				addOffset('idle');
-				addOffset("singUP", -20, 50);
-				addOffset("singRIGHT", -51);
-				addOffset("singLEFT", -30);
-				addOffset("singDOWN", -30, -40);
-				addOffset("singUP-alt", -20, 50);
-				addOffset("singRIGHT-alt", -51);
-				addOffset("singLEFT-alt", -30);
-				addOffset("singDOWN-alt", -30, -40);
+				addOffset("singUP", -47, 24);
+				addOffset("singRIGHT", -1, -23);
+				addOffset("singLEFT", -30, 16);
+				addOffset("singDOWN", -31, -29);
+				addOffset("singUP-alt", -47, 24);
+				addOffset("singRIGHT-alt", -1, -24);
+				addOffset("singLEFT-alt", -30, 15);
+				addOffset("singDOWN-alt", -30, -27);
 			case 'monster-christmas':
 				frames = FlxAtlasFrames.fromSparrow('assets/images/christmas/Monster_Assets_Christmas.png',
 					'assets/images/christmas/Monster_Assets_Christmas.xml');
@@ -369,51 +369,56 @@ class Character extends FlxSprite
 	 */
 	public function dance()
 	{
-		switch (curCharacter)
+		if (!debugMode)
 		{
-			case 'mom':
-				playAnim('idle');
-			case 'mom-car':
-				playAnim('idle');
-			case 'bf':
-				playAnim('idle');
-			case 'bf-car':
-				playAnim('idle');
-			case 'gf':
-				if (!animation.curAnim.name.startsWith('hair'))
-				{
+			switch (curCharacter)
+			{
+				case 'mom':
+					playAnim('idle');
+				case 'mom-car':
+					playAnim('idle');
+				case 'bf':
+					playAnim('idle');
+				case 'bf-car':
+					playAnim('idle');
+				case 'gf':
+					if (!animation.curAnim.name.startsWith('hair'))
+					{
+						danced = !danced;
+
+						if (danced)
+							playAnim('danceRight');
+						else
+							playAnim('danceLeft');
+					}
+
+				case 'gf-car':
+					if (!animation.curAnim.name.startsWith('hair'))
+					{
+						danced = !danced;
+
+						if (danced)
+							playAnim('danceRight');
+						else
+							playAnim('danceLeft');
+					}
+
+				case 'spooky':
 					danced = !danced;
 
 					if (danced)
 						playAnim('danceRight');
 					else
 						playAnim('danceLeft');
-				}
-
-			case 'gf-car':
-				if (!animation.curAnim.name.startsWith('hair'))
-				{
-					danced = !danced;
-
-					if (danced)
-						playAnim('danceRight');
-					else
-						playAnim('danceLeft');
-				}
-
-			case 'spooky':
-				danced = !danced;
-
-				if (danced)
-					playAnim('danceRight');
-				else
-					playAnim('danceLeft');
-			case 'dad':
-				playAnim('idle');
-			case 'monster':
-				playAnim('idle');
-			case 'pico':
-				playAnim('idle');
+				case 'dad':
+					playAnim('idle');
+				case 'parents-christmas':
+					playAnim('idle');
+				case 'monster':
+					playAnim('idle');
+				case 'pico':
+					playAnim('idle');
+			}
 		}
 	}
 
