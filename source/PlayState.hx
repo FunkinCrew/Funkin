@@ -987,16 +987,26 @@ class PlayState extends MusicBeatState
 					if (SONG.song != 'Tutorial')
 						camZooming = true;
 
+					var altAnim:String = "";
+
+					if (SONG.notes[Math.floor(curStep / 16)] != null)
+					{
+						if (SONG.notes[Math.floor(curStep / 16)].altAnim)
+							altAnim = '-alt';
+					}
+
+					trace("DA ALT THO?: " + SONG.notes[Math.floor(curStep / 16)].altAnim);
+
 					switch (Math.abs(daNote.noteData))
 					{
 						case 2:
-							dad.playAnim('singUP', true);
+							dad.playAnim('singUP' + altAnim, true);
 						case 3:
-							dad.playAnim('singRIGHT', true);
+							dad.playAnim('singRIGHT' + altAnim, true);
 						case 1:
-							dad.playAnim('singDOWN', true);
+							dad.playAnim('singDOWN' + altAnim, true);
 						case 0:
-							dad.playAnim('singLEFT', true);
+							dad.playAnim('singLEFT' + altAnim, true);
 					}
 
 					dad.holdTimer = 0;
