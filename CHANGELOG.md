@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Q and E changes sustain lengths in note editor
 - Other charting editor workflow improvements
 - More hair physics
+- Heads appear at top of chart editor to help show which side ur charting for
 ### Removed
 - Removed APE
 ### Fixed
