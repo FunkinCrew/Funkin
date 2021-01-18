@@ -1262,38 +1262,40 @@ class PlayState extends MusicBeatState
 				if (daNote.canBeHit && daNote.mustPress && !daNote.tooLate)
 				{
 					possibleNotes.push(daNote);
+					trace(possibleNotes[0].strumTime);
+					possibleNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
+					trace(possibleNotes[0].strumTime);
 				}
 			});
 
 			if (possibleNotes.length > 0)
 			{
-				for (daNote in possibleNotes)
+				var daNote = possibleNotes[0];
+
+				if (perfectMode)
+					noteCheck(true, daNote);
+
+				switch (daNote.noteData)
 				{
-					if (perfectMode)
-						noteCheck(true, daNote);
+					case 2: // NOTES YOU JUST PRESSED
+						if (upP || rightP || downP || leftP)
+							noteCheck(upP, daNote);
+					case 3:
+						if (upP || rightP || downP || leftP)
+							noteCheck(rightP, daNote);
+					case 1:
+						if (upP || rightP || downP || leftP)
+							noteCheck(downP, daNote);
+					case 0:
+						if (upP || rightP || downP || leftP)
+							noteCheck(leftP, daNote);
+				}
 
-					switch (daNote.noteData)
-					{
-						case 2: // NOTES YOU JUST PRESSED
-							if (upP || rightP || downP || leftP)
-								noteCheck(upP, daNote);
-						case 3:
-							if (upP || rightP || downP || leftP)
-								noteCheck(rightP, daNote);
-						case 1:
-							if (upP || rightP || downP || leftP)
-								noteCheck(downP, daNote);
-						case 0:
-							if (upP || rightP || downP || leftP)
-								noteCheck(leftP, daNote);
-					}
-
-					if (daNote.wasGoodHit)
-					{
-						daNote.kill();
-						notes.remove(daNote, true);
-						daNote.destroy();
-					}
+				if (daNote.wasGoodHit)
+				{
+					daNote.kill();
+					notes.remove(daNote, true);
+					daNote.destroy();
 				}
 			}
 			else
@@ -1312,16 +1314,16 @@ class PlayState extends MusicBeatState
 					{
 						// NOTES YOU ARE HOLDING
 						case 2:
-							if (up && daNote.prevNote.wasGoodHit)
+							if (up)
 								goodNoteHit(daNote);
 						case 3:
-							if (right && daNote.prevNote.wasGoodHit)
+							if (right)
 								goodNoteHit(daNote);
 						case 1:
-							if (down && daNote.prevNote.wasGoodHit)
+							if (down)
 								goodNoteHit(daNote);
 						case 0:
-							if (left && daNote.prevNote.wasGoodHit)
+							if (left)
 								goodNoteHit(daNote);
 					}
 				}
@@ -1460,7 +1462,9 @@ class PlayState extends MusicBeatState
 		if (keyP)
 			goodNoteHit(note);
 		else
+		{
 			badNoteCheck();
+		}
 	}
 
 	function goodNoteHit(note:Note):Void
