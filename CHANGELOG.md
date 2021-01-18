@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - Removed APE
 ### Fixed
+- Maybe fixed double notes / jump notes. Need to tweak it for balance, but should open things up for cooler charts in the future.
 - Old Verison popup screen weirdness ([Thanks to gedehari for the Pull Request!](https://github.com/ninjamuffin99/Funkin/pull/155))
 - Song no longer loops when finishing the song. ([Thanks Injourn for the Pull Request!](https://github.com/ninjamuffin99/Funkin/pull/132))
 - Screen wipe being cut off in the limo/mom stage. Should fill the whole screen now.
