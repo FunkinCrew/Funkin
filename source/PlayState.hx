@@ -1280,21 +1280,34 @@ class PlayState extends MusicBeatState
 				if (perfectMode)
 					noteCheck(true, daNote);
 
-				for (coolNote in possibleNotes)
+				// Jump notes
+				if (possibleNotes.length >= 2)
 				{
-					if (controlArray[coolNote.noteData])
-						goodNoteHit(coolNote);
-					else
+					if (possibleNotes[0].strumTime == possibleNotes[1].strumTime)
 					{
-						var inIgnoreList:Bool = false;
-						for (shit in 0...ignoreList.length)
+						for (coolNote in possibleNotes)
 						{
-							if (controlArray[ignoreList[shit]])
-								inIgnoreList = true;
+							if (controlArray[coolNote.noteData])
+								goodNoteHit(coolNote);
+							else
+							{
+								var inIgnoreList:Bool = false;
+								for (shit in 0...ignoreList.length)
+								{
+									if (controlArray[ignoreList[shit]])
+										inIgnoreList = true;
+								}
+								if (!inIgnoreList)
+									badNoteCheck();
+							}
 						}
-						if (!inIgnoreList)
-							badNoteCheck();
 					}
+					else
+						noteCheck(controlArray[daNote.noteData], daNote);
+				}
+				else // regular notes?
+				{
+					noteCheck(controlArray[daNote.noteData], daNote);
 				}
 				/* 
 					if (controlArray[daNote.noteData])
