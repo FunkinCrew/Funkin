@@ -1250,6 +1250,8 @@ class PlayState extends MusicBeatState
 		var downR = controls.DOWN_R;
 		var leftR = controls.LEFT_R;
 
+		var controlArray:Array<Bool> = [leftP, downP, upP, rightP];
+
 		// FlxG.watch.addQuick('asdfa', upP);
 		if ((upP || rightP || downP || leftP) && !boyfriend.stunned && generatedMusic)
 		{
@@ -1257,14 +1259,17 @@ class PlayState extends MusicBeatState
 
 			var possibleNotes:Array<Note> = [];
 
+			var ignoreList:Array<Int> = [];
+
 			notes.forEachAlive(function(daNote:Note)
 			{
 				if (daNote.canBeHit && daNote.mustPress && !daNote.tooLate)
 				{
+					// the sorting probably doesn't need to be in here? who cares lol
 					possibleNotes.push(daNote);
-					trace(possibleNotes[0].strumTime);
 					possibleNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
-					trace(possibleNotes[0].strumTime);
+
+					ignoreList.push(daNote.noteData);
 				}
 			});
 
@@ -1275,22 +1280,44 @@ class PlayState extends MusicBeatState
 				if (perfectMode)
 					noteCheck(true, daNote);
 
-				switch (daNote.noteData)
+				for (coolNote in possibleNotes)
 				{
-					case 2: // NOTES YOU JUST PRESSED
-						if (upP || rightP || downP || leftP)
-							noteCheck(upP, daNote);
-					case 3:
-						if (upP || rightP || downP || leftP)
-							noteCheck(rightP, daNote);
-					case 1:
-						if (upP || rightP || downP || leftP)
-							noteCheck(downP, daNote);
-					case 0:
-						if (upP || rightP || downP || leftP)
-							noteCheck(leftP, daNote);
+					if (controlArray[coolNote.noteData])
+						goodNoteHit(coolNote);
+					else
+					{
+						var inIgnoreList:Bool = false;
+						for (shit in 0...ignoreList.length)
+						{
+							if (controlArray[ignoreList[shit]])
+								inIgnoreList = true;
+						}
+						if (!inIgnoreList)
+							badNoteCheck();
+					}
 				}
-
+				/* 
+					if (controlArray[daNote.noteData])
+						goodNoteHit(daNote);
+				 */
+				// trace(daNote.noteData);
+				/* 
+					switch (daNote.noteData)
+					{
+						case 2: // NOTES YOU JUST PRESSED
+							if (upP || rightP || downP || leftP)
+								noteCheck(upP, daNote);
+						case 3:
+							if (upP || rightP || downP || leftP)
+								noteCheck(rightP, daNote);
+						case 1:
+							if (upP || rightP || downP || leftP)
+								noteCheck(downP, daNote);
+						case 0:
+							if (upP || rightP || downP || leftP)
+								noteCheck(leftP, daNote);
+					}
+				 */
 				if (daNote.wasGoodHit)
 				{
 					daNote.kill();
@@ -1422,30 +1449,6 @@ class PlayState extends MusicBeatState
 		var rightP = controls.RIGHT_P;
 		var downP = controls.DOWN_P;
 		var leftP = controls.LEFT_P;
-
-		var gamepad = FlxG.gamepads.lastActive;
-		if (gamepad != null)
-		{
-			if (gamepad.anyJustPressed(["DPAD_LEFT", "LEFT_STICK_DIGITAL_LEFT", X]))
-			{
-				leftP = true;
-			}
-
-			if (gamepad.anyJustPressed(["DPAD_RIGHT", "LEFT_STICK_DIGITAL_RIGHT", B]))
-			{
-				rightP = true;
-			}
-
-			if (gamepad.anyJustPressed(['DPAD_UP', "LEFT_STICK_DIGITAL_UP", Y]))
-			{
-				upP = true;
-			}
-
-			if (gamepad.anyJustPressed(["DPAD_DOWN", "LEFT_STICK_DIGITAL_DOWN", A]))
-			{
-				downP = true;
-			}
-		}
 
 		if (leftP)
 			noteMiss(0);
