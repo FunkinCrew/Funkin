@@ -56,3 +56,4 @@ and run command "lime test android"
 
 This game was made with love to Newgrounds and it's community. Extra love to Tom Fulp.
 
+Пиздец я ленивый
