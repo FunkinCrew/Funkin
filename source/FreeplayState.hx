@@ -70,7 +70,7 @@ class FreeplayState extends MusicBeatState
 		{
 			songs.push('Cocoa');
 			songs.push('Eggnog');
-			// songs.push('Milf');
+			songs.push('Winter-Horrorland');
 		}
 
 		// LOAD MUSIC

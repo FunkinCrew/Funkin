@@ -114,11 +114,11 @@ class ChartingState extends MusicBeatState
 		else
 		{
 			_song = {
-				song: 'Monster',
+				song: 'Test',
 				notes: [],
-				bpm: 95,
+				bpm: 150,
 				sections: 0,
-				needsVoices: false,
+				needsVoices: true,
 				player1: 'bf',
 				player2: 'dad',
 				sectionLengths: [],
@@ -180,8 +180,8 @@ class ChartingState extends MusicBeatState
 		typingShit = UI_songTitle;
 
 		var check_voices = new FlxUICheckBox(10, 25, null, null, "Has voice track", 100);
-		check_voices.checked = true;
-		_song.needsVoices = check_voices.checked;
+		check_voices.checked = _song.needsVoices;
+		// _song.needsVoices = check_voices.checked;
 		check_voices.callback = function()
 		{
 			_song.needsVoices = check_voices.checked;
@@ -360,7 +360,7 @@ class ChartingState extends MusicBeatState
 
 		FlxG.sound.playMusic('assets/music/' + daSong + "_Inst" + TitleState.soundExt, 0.6);
 
-		// WONT WORK FOR TUTORIAL! REDO LATER
+		// WONT WORK FOR TUTORIAL OR TEST SONG!!! REDO LATER
 		vocals = new FlxSound().loadEmbedded("assets/music/" + daSong + "_Voices" + TitleState.soundExt);
 		FlxG.sound.list.add(vocals);
 
