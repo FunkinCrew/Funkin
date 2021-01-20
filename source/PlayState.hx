@@ -307,6 +307,25 @@ class PlayState extends MusicBeatState
 			santa.antialiasing = true;
 			add(santa);
 		}
+		else if (SONG.song.toLowerCase() == 'winter-horrorland')
+		{
+			var bg:FlxSprite = new FlxSprite(-600, -400).loadGraphic('assets/images/christmas/evilBG.png');
+			bg.antialiasing = true;
+			bg.scrollFactor.set(0.2, 0.2);
+			bg.active = false;
+			bg.setGraphicSize(Std.int(bg.width * 0.8));
+			bg.updateHitbox();
+			add(bg);
+
+			var evilTree:FlxSprite = new FlxSprite(300, -500).loadGraphic('assets/images/christmas/evilTree.png');
+			evilTree.antialiasing = true;
+			evilTree.scrollFactor.set(0.4, 0.4);
+			add(evilTree);
+
+			var evilSnow:FlxSprite = new FlxSprite(-200, 700).loadGraphic("assets/images/christmas/evilSnow.png");
+			evilSnow.antialiasing = true;
+			add(evilSnow);
+		}
 		else
 		{
 			curStage = 'stage';
@@ -378,6 +397,8 @@ class PlayState extends MusicBeatState
 				dad.y += 200;
 			case "monster":
 				dad.y += 100;
+			case 'monster-christmas':
+				dad.y += 130;
 			case 'dad':
 				camPos.x += 400;
 			case 'pico':
@@ -1587,13 +1608,13 @@ class PlayState extends MusicBeatState
 			switch (note.noteData)
 			{
 				case 2:
-					boyfriend.playAnim('singUP');
+					boyfriend.playAnim('singUP', true);
 				case 3:
-					boyfriend.playAnim('singRIGHT');
+					boyfriend.playAnim('singRIGHT', true);
 				case 1:
-					boyfriend.playAnim('singDOWN');
+					boyfriend.playAnim('singDOWN', true);
 				case 0:
-					boyfriend.playAnim('singLEFT');
+					boyfriend.playAnim('singLEFT', true);
 			}
 
 			playerStrums.forEach(function(spr:FlxSprite)
@@ -1772,7 +1793,9 @@ class PlayState extends MusicBeatState
 		}
 
 		if (!boyfriend.animation.curAnim.name.startsWith("sing"))
+		{
 			boyfriend.playAnim('idle');
+		}
 
 		if (totalBeats % 8 == 7 && curSong == 'Bopeebo')
 		{
