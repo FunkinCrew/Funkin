@@ -95,6 +95,7 @@ class PlayState extends MusicBeatState
 
 	var upperBoppers:FlxSprite;
 	var bottomBoppers:FlxSprite;
+	var santa:FlxSprite;
 
 	var talking:Bool = true;
 	var songScore:Int = 0;
@@ -299,6 +300,12 @@ class PlayState extends MusicBeatState
 			fgSnow.active = false;
 			fgSnow.antialiasing = true;
 			add(fgSnow);
+
+			santa = new FlxSprite(-840, 150);
+			santa.frames = FlxAtlasFrames.fromSparrow('assets/images/christmas/santa.png', 'assets/images/christmas/santa.xml');
+			santa.animation.addByPrefix('idle', 'santa idle in fear', 24, false);
+			santa.antialiasing = true;
+			add(santa);
 		}
 		else
 		{
@@ -1782,6 +1789,7 @@ class PlayState extends MusicBeatState
 			case 'mall':
 				upperBoppers.animation.play('bop', true);
 				bottomBoppers.animation.play('bop', true);
+				santa.animation.play('idle', true);
 
 			case 'limo':
 				grpLimoDancers.forEach(function(dancer:BackgroundDancer)
