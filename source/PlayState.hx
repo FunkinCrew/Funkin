@@ -329,6 +329,7 @@ class PlayState extends MusicBeatState
 		}
 		else
 		{
+			defaultCamZoom = 0.9;
 			curStage = 'stage';
 			var bg:FlxSprite = new FlxSprite(-600, -200).loadGraphic('assets/images/stageback.png');
 			// bg.setGraphicSize(Std.int(bg.width * 2.5));
@@ -418,17 +419,18 @@ class PlayState extends MusicBeatState
 		switch (curStage)
 		{
 			case 'limo':
-				{
-					boyfriend.y -= 220;
-					boyfriend.x += 260;
+				boyfriend.y -= 220;
+				boyfriend.x += 260;
 
-					resetFastCar();
-					add(fastCar);
-				}
+				resetFastCar();
+				add(fastCar);
+
 			case 'mall':
-				{
-					boyfriend.x += 200;
-				}
+				boyfriend.x += 200;
+
+			case 'mallEvil':
+				boyfriend.x += 320;
+				dad.y -= 80;
 		}
 
 		var doof:DialogueBox = new DialogueBox(false, dialogue);
@@ -515,8 +517,9 @@ class PlayState extends MusicBeatState
 					var blackScreen:FlxSprite = new FlxSprite(0, 0).makeGraphic(Std.int(FlxG.width * 2), Std.int(FlxG.height * 2), FlxColor.BLACK);
 					add(blackScreen);
 					blackScreen.scrollFactor.set();
+					camHUD.visible = false;
 
-					new FlxTimer().start(1, function(tmr:FlxTimer)
+					new FlxTimer().start(0.1, function(tmr:FlxTimer)
 					{
 						remove(blackScreen);
 						FlxG.sound.play('assets/sounds/Lights_Turn_On' + TitleState.soundExt);
@@ -527,6 +530,7 @@ class PlayState extends MusicBeatState
 
 						new FlxTimer().start(0.8, function(tmr:FlxTimer)
 						{
+							camHUD.visible = true;
 							remove(blackScreen);
 							FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, 2.5, {
 								ease: FlxEase.quadInOut,
@@ -1174,8 +1178,8 @@ class PlayState extends MusicBeatState
 
 		keyShit();
 
-		if (FlxG.keys.justPressed.ONE)
-			endSong();
+		// if (FlxG.keys.justPressed.ONE)
+		// endSong();
 	}
 
 	function endSong():Void
