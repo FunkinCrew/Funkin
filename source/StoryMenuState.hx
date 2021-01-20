@@ -135,6 +135,10 @@ class StoryMenuState extends MusicBeatState
 					weekCharacterThing.y += 170;
 					weekCharacterThing.flipX = true;
 					weekCharacterThing.x -= 40;
+				case 'parents-christmas':
+					weekCharacterThing.x -= 600;
+					weekCharacterThing.setGraphicSize(Std.int(weekCharacterThing.width * 0.9));
+					weekCharacterThing.updateHitbox();
 			}
 
 			grpWeekCharacters.add(weekCharacterThing);
@@ -367,6 +371,14 @@ class StoryMenuState extends MusicBeatState
 		grpWeekCharacters.members[1].animation.play(weekCharacters[curWeek][1]);
 		grpWeekCharacters.members[2].animation.play(weekCharacters[curWeek][2]);
 		txtTracklist.text = "Tracks\n";
+
+		switch (grpWeekCharacters.members[0].animation.curAnim.name)
+		{
+			case 'parents-christmas':
+				grpWeekCharacters.members[0].offset.x = 400;
+			default:
+				grpWeekCharacters.members[0].offset.x = 100;
+		}
 
 		var stringThing:Array<String> = weekData[curWeek];
 
