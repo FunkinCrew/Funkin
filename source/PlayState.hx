@@ -93,6 +93,9 @@ class PlayState extends MusicBeatState
 	var grpLimoDancers:FlxTypedGroup<BackgroundDancer>;
 	var fastCar:FlxSprite;
 
+	var upperBoppers:FlxSprite;
+	var bottomBoppers:FlxSprite;
+
 	var talking:Bool = true;
 	var songScore:Int = 0;
 	var scoreTxt:FlxText;
@@ -247,6 +250,54 @@ class PlayState extends MusicBeatState
 			fastCar = new FlxSprite(-300, 160).loadGraphic('assets/images/limo/fastCarLol.png');
 			// add(limo);
 		}
+		else if (SONG.song.toLowerCase() == 'cocoa' || SONG.song.toLowerCase() == 'eggnog')
+		{
+			curStage = 'mall';
+
+			var bg:FlxSprite = new FlxSprite(-1000, -400).loadGraphic('assets/images/christmas/bgWalls.png');
+			bg.antialiasing = true;
+			bg.scrollFactor.set(0.2, 0.2);
+			bg.active = false;
+			bg.setGraphicSize(Std.int(bg.width * 0.8));
+			bg.updateHitbox();
+			add(bg);
+
+			upperBoppers = new FlxSprite(-130, 40);
+			upperBoppers.frames = FlxAtlasFrames.fromSparrow('assets/images/christmas/upperBop.png', 'assets/images/christmas/upperBop.xml');
+			upperBoppers.animation.addByPrefix('bop', "Upper Crowd Bob", 24, false);
+			upperBoppers.antialiasing = true;
+			upperBoppers.scrollFactor.set(0.33, 0.33);
+			upperBoppers.setGraphicSize(Std.int(upperBoppers.width * 0.7));
+			upperBoppers.updateHitbox();
+			add(upperBoppers);
+
+			var bgEscalator:FlxSprite = new FlxSprite(-1000, -430).loadGraphic('assets/images/christmas/bgEscalator.png');
+			bgEscalator.antialiasing = true;
+			bgEscalator.scrollFactor.set(0.3, 0.3);
+			bgEscalator.active = false;
+			bgEscalator.setGraphicSize(Std.int(bgEscalator.width * 0.8));
+			bgEscalator.updateHitbox();
+			add(bgEscalator);
+
+			var fgSnow:FlxSprite = new FlxSprite(-400, 700).loadGraphic('assets/images/christmas/fgSnow.png');
+			fgSnow.active = false;
+			fgSnow.antialiasing = true;
+			add(fgSnow);
+
+			var tree:FlxSprite = new FlxSprite(300, -250).loadGraphic('assets/images/christmas/christmasTree.png');
+			tree.antialiasing = true;
+			tree.scrollFactor.set(0.85, 0.85);
+			add(tree);
+
+			bottomBoppers = new FlxSprite(-280, 220);
+			bottomBoppers.frames = FlxAtlasFrames.fromSparrow('assets/images/christmas/bottomBop.png', 'assets/images/christmas/bottomBop.xml');
+			bottomBoppers.animation.addByPrefix('bop', 'Bottom Level Boppers', 24, false);
+			bottomBoppers.antialiasing = true;
+			bottomBoppers.scrollFactor.set(0.9, 0.9);
+			bottomBoppers.setGraphicSize(Std.int(bottomBoppers.width * 0.9));
+			bottomBoppers.updateHitbox();
+			add(bottomBoppers);
+		}
 		else
 		{
 			curStage = 'stage';
@@ -277,6 +328,14 @@ class PlayState extends MusicBeatState
 		}
 
 		var gfVersion:String = 'gf';
+
+		switch (curStage)
+		{
+			case 'limo':
+				gfVersion = 'gf-car';
+			case 'mall':
+				gfVersion = 'gf-christmas';
+		}
 
 		if (curStage == 'limo')
 			gfVersion = 'gf-car';
@@ -315,6 +374,8 @@ class PlayState extends MusicBeatState
 			case 'pico':
 				camPos.x += 600;
 				dad.y += 300;
+			case 'parents-christmas':
+				dad.x -= 500;
 		}
 
 		boyfriend = new Boyfriend(770, 450, SONG.player1);
@@ -1302,8 +1363,17 @@ class PlayState extends MusicBeatState
 							}
 						}
 					}
-					else
+					else if (possibleNotes[0].noteData == possibleNotes[1].noteData)
+					{
 						noteCheck(controlArray[daNote.noteData], daNote);
+					}
+					else
+					{
+						for (coolNote in possibleNotes)
+						{
+							noteCheck(controlArray[coolNote.noteData], coolNote);
+						}
+					}
 				}
 				else // regular notes?
 				{
@@ -1700,6 +1770,10 @@ class PlayState extends MusicBeatState
 
 		switch (curStage)
 		{
+			case 'mall':
+				upperBoppers.animation.play('bop', true);
+				bottomBoppers.animation.play('bop', true);
+
 			case 'limo':
 				grpLimoDancers.forEach(function(dancer:BackgroundDancer)
 				{
