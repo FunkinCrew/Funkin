@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Old Verison popup screen weirdness ([Thanks to gedehari for the Pull Request!](https://github.com/ninjamuffin99/Funkin/pull/155))
 - Song no longer loops when finishing the song. ([Thanks Injourn for the Pull Request!](https://github.com/ninjamuffin99/Funkin/pull/132))
 - Screen wipe being cut off in the limo/mom stage. Should fill the whole screen now.
+- Boyfriend animations on hold notes, and pressing on repeating notes should behave differently
 
 ## [0.2.5] - 2020-12-27
 ### Added
