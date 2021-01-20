@@ -286,6 +286,8 @@ class Character extends FlxSprite
 				addOffset('deathConfirm', 37, 69);
 				addOffset('scared', -4);
 
+				playAnim('idle');
+
 				flipX = true;
 
 			case 'bf-christmas':
@@ -313,6 +315,8 @@ class Character extends FlxSprite
 				addOffset("singDOWNmiss", -11, -19);
 				addOffset("hey", 7, 4);
 
+				playAnim('idle');
+
 				flipX = true;
 			case 'bf-car':
 				var tex = FlxAtlasFrames.fromSparrow('assets/images/bfCar.png', 'assets/images/bfCar.xml');
@@ -336,6 +340,8 @@ class Character extends FlxSprite
 				addOffset("singRIGHTmiss", -30, 21);
 				addOffset("singLEFTmiss", 12, 24);
 				addOffset("singDOWNmiss", -11, -19);
+
+				playAnim('idle');
 
 				flipX = true;
 			case 'parents-christmas':
@@ -362,11 +368,13 @@ class Character extends FlxSprite
 				addOffset("singRIGHT-alt", -1, -24);
 				addOffset("singLEFT-alt", -30, 15);
 				addOffset("singDOWN-alt", -30, -27);
+
+				playAnim('idle');
 		}
 
 		antialiasing = true;
 
-		playAnim('singUP');
+		
 
 		if (isPlayer)
 		{
