@@ -375,9 +375,13 @@ class StoryMenuState extends MusicBeatState
 		switch (grpWeekCharacters.members[0].animation.curAnim.name)
 		{
 			case 'parents-christmas':
-				grpWeekCharacters.members[0].offset.x = 400;
+				grpWeekCharacters.members[0].offset.x = 250;
+				grpWeekCharacters.members[0].setGraphicSize(Std.int(grpWeekCharacters.members[0].width * 0.97));
+
 			default:
 				grpWeekCharacters.members[0].offset.x = 100;
+				grpWeekCharacters.members[0].setGraphicSize(Std.int(grpWeekCharacters.members[0].width * 1));
+				// grpWeekCharacters.members[0].updateHitbox();
 		}
 
 		var stringThing:Array<String> = weekData[curWeek];
