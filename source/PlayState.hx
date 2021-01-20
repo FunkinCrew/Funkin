@@ -289,7 +289,7 @@ class PlayState extends MusicBeatState
 			tree.scrollFactor.set(0.85, 0.85);
 			add(tree);
 
-			bottomBoppers = new FlxSprite(-280, 220);
+			bottomBoppers = new FlxSprite(-300, 220);
 			bottomBoppers.frames = FlxAtlasFrames.fromSparrow('assets/images/christmas/bottomBop.png', 'assets/images/christmas/bottomBop.xml');
 			bottomBoppers.animation.addByPrefix('bop', 'Bottom Level Boppers', 24, false);
 			bottomBoppers.antialiasing = true;
