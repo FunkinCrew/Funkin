@@ -309,7 +309,8 @@ class PlayState extends MusicBeatState
 		}
 		else if (SONG.song.toLowerCase() == 'winter-horrorland')
 		{
-			var bg:FlxSprite = new FlxSprite(-600, -400).loadGraphic('assets/images/christmas/evilBG.png');
+			curStage = 'mallEvil';
+			var bg:FlxSprite = new FlxSprite(-400, -500).loadGraphic('assets/images/christmas/evilBG.png');
 			bg.antialiasing = true;
 			bg.scrollFactor.set(0.2, 0.2);
 			bg.active = false;
@@ -317,9 +318,9 @@ class PlayState extends MusicBeatState
 			bg.updateHitbox();
 			add(bg);
 
-			var evilTree:FlxSprite = new FlxSprite(300, -500).loadGraphic('assets/images/christmas/evilTree.png');
+			var evilTree:FlxSprite = new FlxSprite(300, -300).loadGraphic('assets/images/christmas/evilTree.png');
 			evilTree.antialiasing = true;
-			evilTree.scrollFactor.set(0.4, 0.4);
+			evilTree.scrollFactor.set(0.2, 0.2);
 			add(evilTree);
 
 			var evilSnow:FlxSprite = new FlxSprite(-200, 700).loadGraphic("assets/images/christmas/evilSnow.png");
@@ -362,6 +363,8 @@ class PlayState extends MusicBeatState
 			case 'limo':
 				gfVersion = 'gf-car';
 			case 'mall':
+				gfVersion = 'gf-christmas';
+			case 'mallEvil':
 				gfVersion = 'gf-christmas';
 		}
 
@@ -444,8 +447,6 @@ class PlayState extends MusicBeatState
 
 		playerStrums = new FlxTypedGroup<FlxSprite>();
 
-		startingSong = true;
-
 		// startCountdown();
 
 		generateSong(SONG.song);
@@ -490,15 +491,6 @@ class PlayState extends MusicBeatState
 		iconP2.y = healthBar.y - (iconP2.height / 2);
 		add(iconP2);
 
-		if (isStoryMode)
-		{
-			// TEMP for now, later get rid of startCountdown()
-			// add(doof);
-			startCountdown();
-		}
-		else
-			startCountdown();
-
 		strumLineNotes.cameras = [camHUD];
 		notes.cameras = [camHUD];
 		healthBar.cameras = [camHUD];
@@ -513,6 +505,46 @@ class PlayState extends MusicBeatState
 		// UI_camera.zoom = 1;
 
 		// cameras = [FlxG.cameras.list[1]];
+		startingSong = true;
+
+		if (isStoryMode)
+		{
+			switch (curSong.toLowerCase())
+			{
+				case "winter-horrorland":
+					var blackScreen:FlxSprite = new FlxSprite(0, 0).makeGraphic(Std.int(FlxG.width * 2), Std.int(FlxG.height * 2), FlxColor.BLACK);
+					add(blackScreen);
+					blackScreen.scrollFactor.set();
+
+					new FlxTimer().start(1, function(tmr:FlxTimer)
+					{
+						remove(blackScreen);
+						FlxG.sound.play('assets/sounds/Lights_Turn_On' + TitleState.soundExt);
+						camFollow.y = -2050;
+						camFollow.x += 200;
+						FlxG.camera.focusOn(camFollow.getPosition());
+						FlxG.camera.zoom = 1.5;
+
+						new FlxTimer().start(0.8, function(tmr:FlxTimer)
+						{
+							remove(blackScreen);
+							FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, 2.5, {
+								ease: FlxEase.quadInOut,
+								onComplete: function(twn:FlxTween)
+								{
+									startCountdown();
+								}
+							});
+						});
+					});
+				default:
+					startCountdown();
+			}
+		}
+		else
+		{
+			startCountdown();
+		}
 
 		#if lime
 		trace("IT'S LIME");
@@ -1141,12 +1173,16 @@ class PlayState extends MusicBeatState
 		}
 
 		keyShit();
+
+		if (FlxG.keys.justPressed.ONE)
+			endSong();
 	}
 
 	function endSong():Void
 	{
 		canPause = false;
-		FlxG.sound.music = new FlxSound();
+		FlxG.sound.music.volume = 0;
+		vocals.volume = 0;
 		if (SONG.validScore)
 		{
 			#if !switch
@@ -1191,8 +1227,20 @@ class PlayState extends MusicBeatState
 				trace('LOADING NEXT SONG');
 				trace(PlayState.storyPlaylist[0].toLowerCase() + difficulty);
 
+				if (SONG.song.toLowerCase() == 'eggnog')
+				{
+					var blackShit:FlxSprite = new FlxSprite(-FlxG.width * FlxG.camera.zoom,
+						-FlxG.height * FlxG.camera.zoom).makeGraphic(FlxG.width * 3, FlxG.height * 3, FlxColor.BLACK);
+					blackShit.scrollFactor.set();
+					add(blackShit);
+					camHUD.visible = false;
+
+					FlxG.sound.play('assets/sounds/Lights_Shut_off' + TitleState.soundExt);
+				}
+
 				PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + difficulty, PlayState.storyPlaylist[0]);
 				FlxG.sound.music.stop();
+
 				FlxG.switchState(new PlayState());
 			}
 		}
