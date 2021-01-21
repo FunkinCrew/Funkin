@@ -576,7 +576,10 @@ class PlayState extends MusicBeatState
 		{
 			dad.dance();
 			gf.dance();
-			boyfriend.playAnim('idle');
+			if(boyfriend.curCharacter == 'bf-car')
+				boyfriend.dance();
+			else
+				boyfriend.playAnim('idle');
 
 			switch (swagCounter)
 			{
@@ -1846,7 +1849,7 @@ class PlayState extends MusicBeatState
 
 		if (!boyfriend.animation.curAnim.name.startsWith("sing"))
 		{
-			boyfriend.playAnim('idle');
+			boyfriend.dance();
 		}
 
 		if (totalBeats % 8 == 7 && curSong == 'Bopeebo')
