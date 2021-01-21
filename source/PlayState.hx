@@ -43,6 +43,7 @@ class PlayState extends MusicBeatState
 	public static var storyWeek:Int = 0;
 	public static var storyPlaylist:Array<String> = [];
 	public static var storyDifficulty:Int = 1;
+	
 
 	var halloweenLevel:Bool = false;
 
@@ -68,6 +69,10 @@ class PlayState extends MusicBeatState
 	private var gfSpeed:Int = 1;
 	private var health:Float = 1;
 	private var combo:Int = 0;
+	private var misses:Int = 0;
+	private var accuracy:Float = 0.00;
+	private var totalNotesHit:Float = 0;
+	private var totalPlayed:Int = 0;
 
 	private var healthBarBG:FlxSprite;
 	private var healthBar:FlxBar;
@@ -480,7 +485,7 @@ class PlayState extends MusicBeatState
 		// healthBar
 		add(healthBar);
 
-		scoreTxt = new FlxText(healthBarBG.x + healthBarBG.width - 190, healthBarBG.y + 30, 0, "", 20);
+		scoreTxt = new FlxText(healthBarBG.x + healthBarBG.width - 325, healthBarBG.y + 30, 0, "", 20);
 		scoreTxt.setFormat("assets/fonts/vcr.ttf", 16, FlxColor.WHITE, RIGHT);
 		scoreTxt.scrollFactor.set();
 		add(scoreTxt);
@@ -862,6 +867,13 @@ class PlayState extends MusicBeatState
 	var startedCountdown:Bool = false;
 	var canPause:Bool = true;
 
+	function truncateFloat( number : Float, precision : Int): Float {
+		var num = number;
+		num = num * Math.pow(10, precision);
+		num = Math.round( num ) / Math.pow(10, precision);
+		return num;
+		}
+
 	override public function update(elapsed:Float)
 	{
 		#if !debug
@@ -895,7 +907,7 @@ class PlayState extends MusicBeatState
 
 		super.update(elapsed);
 
-		scoreTxt.text = "Score:" + songScore;
+		scoreTxt.text = "Score:" + songScore + " | Misses:" + misses + " | Accuracy:" + truncateFloat(accuracy, 2);
 
 		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause)
 		{
@@ -1172,6 +1184,9 @@ class PlayState extends MusicBeatState
 					daNote.kill();
 					notes.remove(daNote, true);
 					daNote.destroy();
+					misses += 1;
+					totalPlayed += 1;
+					accuracy = totalNotesHit / totalPlayed * 100;
 				}
 			});
 		}
@@ -1278,17 +1293,24 @@ class PlayState extends MusicBeatState
 		if (noteDiff > Conductor.safeZoneOffset * 0.9)
 		{
 			daRating = 'shit';
+			totalNotesHit += 0.10;
 			score = 50;
 		}
 		else if (noteDiff > Conductor.safeZoneOffset * 0.75)
 		{
 			daRating = 'bad';
 			score = 100;
+			totalNotesHit += 0.35;
 		}
 		else if (noteDiff > Conductor.safeZoneOffset * 0.2)
 		{
 			daRating = 'good';
+			totalNotesHit += 0.85;
 			score = 200;
+		}
+		else
+		{
+			totalNotesHit += 1;
 		}
 
 		songScore += score;
@@ -1418,7 +1440,7 @@ class PlayState extends MusicBeatState
 					// the sorting probably doesn't need to be in here? who cares lol
 					possibleNotes.push(daNote);
 					possibleNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
-
+					
 					ignoreList.push(daNote.noteData);
 				}
 			});
@@ -1584,7 +1606,7 @@ class PlayState extends MusicBeatState
 				gf.playAnim('sad');
 			}
 			combo = 0;
-
+			misses += 1;
 			songScore -= 10;
 
 			FlxG.sound.play('assets/sounds/missnote' + FlxG.random.int(1, 3) + TitleState.soundExt, FlxG.random.float(0.1, 0.2));
@@ -1634,12 +1656,18 @@ class PlayState extends MusicBeatState
 
 	function noteCheck(keyP:Bool, note:Note):Void
 	{
+		totalPlayed += 1;
+
 		if (keyP)
+		{
 			goodNoteHit(note);
+		}
 		else
 		{
 			badNoteCheck();
 		}
+
+		accuracy = totalNotesHit / totalPlayed * 100;
 	}
 
 	function goodNoteHit(note:Note):Void
@@ -1656,6 +1684,8 @@ class PlayState extends MusicBeatState
 				health += 0.023;
 			else
 				health += 0.004;
+
+			
 
 			switch (note.noteData)
 			{
