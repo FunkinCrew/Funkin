@@ -486,7 +486,7 @@ class PlayState extends MusicBeatState
 		add(healthBar);
 
 		scoreTxt = new FlxText(healthBarBG.x + healthBarBG.width - 325, healthBarBG.y + 30, 0, "", 20);
-		scoreTxt.setFormat("assets/fonts/vcr.ttf", 16, FlxColor.WHITE, RIGHT);
+		scoreTxt.setFormat("assets/fonts/vcr.ttf", 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 		scoreTxt.scrollFactor.set();
 		add(scoreTxt);
 
@@ -746,6 +746,16 @@ class PlayState extends MusicBeatState
 		unspawnNotes.sort(sortByShit);
 
 		generatedMusic = true;
+	}
+
+	function updateAccuracy(miss:Bool)
+	{
+		if (miss)
+			misses += 1;
+		totalPlayed += 1;
+		accuracy = totalNotesHit / totalPlayed * 100;
+		if (accuracy > 100.00)
+			accuracy = 100.00;
 	}
 
 	function sortByShit(Obj1:Note, Obj2:Note):Int
@@ -1184,9 +1194,7 @@ class PlayState extends MusicBeatState
 					daNote.kill();
 					notes.remove(daNote, true);
 					daNote.destroy();
-					misses += 1;
-					totalPlayed += 1;
-					accuracy = totalNotesHit / totalPlayed * 100;
+					updateAccuracy(true);
 				}
 			});
 		}
@@ -1606,7 +1614,6 @@ class PlayState extends MusicBeatState
 				gf.playAnim('sad');
 			}
 			combo = 0;
-			misses += 1;
 			songScore -= 10;
 
 			FlxG.sound.play('assets/sounds/missnote' + FlxG.random.int(1, 3) + TitleState.soundExt, FlxG.random.float(0.1, 0.2));
@@ -1656,18 +1663,18 @@ class PlayState extends MusicBeatState
 
 	function noteCheck(keyP:Bool, note:Note):Void
 	{
-		totalPlayed += 1;
 
 		if (keyP)
 		{
 			goodNoteHit(note);
+			updateAccuracy(false);
 		}
 		else
 		{
 			badNoteCheck();
+			updateAccuracy(true);
 		}
 
-		accuracy = totalNotesHit / totalPlayed * 100;
 	}
 
 	function goodNoteHit(note:Note):Void
