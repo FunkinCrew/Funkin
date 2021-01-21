@@ -73,6 +73,7 @@ class PlayState extends MusicBeatState
 	private var accuracy:Float = 0.00;
 	private var totalNotesHit:Float = 0;
 	private var totalPlayed:Int = 0;
+	private var ss:Bool = true;
 
 	private var healthBarBG:FlxSprite;
 	private var healthBar:FlxBar;
@@ -754,8 +755,13 @@ class PlayState extends MusicBeatState
 			misses += 1;
 		totalPlayed += 1;
 		accuracy = totalNotesHit / totalPlayed * 100;
-		if (accuracy > 100.00)
-			accuracy = 100.00;
+		if (accuracy >= 100.00)
+		{
+			if (ss)
+				accuracy = 100.00;
+			else
+				accuracy = 99.98;
+		}
 	}
 
 	function sortByShit(Obj1:Note, Obj2:Note):Int
