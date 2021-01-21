@@ -1301,19 +1301,19 @@ class PlayState extends MusicBeatState
 		if (noteDiff > Conductor.safeZoneOffset * 0.9)
 		{
 			daRating = 'shit';
-			totalNotesHit += 0.10;
+			totalNotesHit += 0.05;
 			score = 50;
 		}
 		else if (noteDiff > Conductor.safeZoneOffset * 0.75)
 		{
 			daRating = 'bad';
 			score = 100;
-			totalNotesHit += 0.35;
+			totalNotesHit += 0.10;
 		}
 		else if (noteDiff > Conductor.safeZoneOffset * 0.2)
 		{
 			daRating = 'good';
-			totalNotesHit += 0.85;
+			totalNotesHit += 0.65;
 			score = 200;
 		}
 		else
@@ -1639,6 +1639,8 @@ class PlayState extends MusicBeatState
 				case 0:
 					boyfriend.playAnim('singLEFTmiss', true);
 			}
+
+			updateAccuracy(true);
 		}
 	}
 
