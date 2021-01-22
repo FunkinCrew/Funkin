@@ -20,6 +20,7 @@ typedef SwagSong =
 	var player1:String;
 	var player2:String;
 	var validScore:Bool;
+	var stage:String;
 }
 
 class Song
@@ -34,7 +35,7 @@ class Song
 
 	public var player1:String = 'bf';
 	public var player2:String = 'dad';
-
+	public var stage:String = 'stage';
 	public function new(song, notes, bpm, sections)
 	{
 		this.song = song;
@@ -57,13 +58,28 @@ class Song
 			rawJson = rawJson.substr(0, rawJson.length - 1);
 			// LOL GOING THROUGH THE BULLSHIT TO CLEAN IDK WHATS STRANGE
 		}
-
+		var parsedJson = parseJSONshit(rawJson);
+		if (parsedJson.stage == null) {
+			if (parsedJson.song.toLowerCase() == 'spookeez'|| parsedJson.song.toLowerCase() == 'monster' || parsedJson.song.toLowerCase() == 'south') {
+				parsedJson.stage = 'spooky';
+			} else if (parsedJson.song.toLowerCase() == 'pico' || parsedJson.song.toLowerCase() == 'philly' || parsedJson.song.toLowerCase() == 'blammed') {
+				parsedJson.stage = 'philly';
+			} else if (parsedJson.song.toLowerCase() == 'milf' || parsedJson.song.toLowerCase() == 'high' || parsedJson.song.toLowerCase() == 'satin-panties') {
+				parsedJson.stage = 'limo';
+			} else if (parsedJson.song.toLowerCase() == 'cocoa' || parsedJson.song.toLowerCase() == 'eggnog') {
+				parsedJson.stage = 'mall';
+			} else if (parsedJson.song.toLowerCase() == 'winter-horrorland') {
+				parsedJson.stage = 'mallEvil';
+			} else {
+				parsedJson.stage = 'stage';
+			}
+		}
 		// FIX THE CASTING ON WINDOWS/NATIVE
 		// Windows???
 		// trace(songData);
 
 		// trace('LOADED FROM JSON: ' + songData.notes);
-		/* 
+		/*
 			for (i in 0...songData.notes.length)
 			{
 				trace('LOADED FROM JSON: ' + songData.notes[i].sectionNotes);
@@ -76,7 +92,7 @@ class Song
 				daBpm = songData.bpm;
 				daSectionLengths = songData.sectionLengths; */
 
-		return parseJSONshit(rawJson);
+		return parsedJson;
 	}
 
 	public static function parseJSONshit(rawJson:String):SwagSong

@@ -1,0 +1,64 @@
+{
+  "animation": {
+    "idle": {
+      "name": "Imposter Idle Dance",
+      "loop": true
+    },
+    "singUP": {
+      "name": "Imposter Up note0",
+      "loop": false
+    },
+    "singDOWN": {
+      "name": "Imposter Down Note0",
+      "loop": false
+    },
+    "singLEFT": {
+      "name": "Imposter NOTE LEFT0",
+      "loop": false,
+      "flipplayer2": true,
+      "flippedname": "Imposter Note Right0"
+    },
+    "singRIGHT": {
+      "name": "Imposter Note Right0",
+      "loop": false,
+      "flipplayer2": true,
+      "flippedname": "Imposter NOTE LEFT0"
+    },
+    "singLEFTmiss": {
+      "name": "Imposter NOTE LEFT miss",
+      "loop": false,
+      "flipplayer2": true,
+      "flippedname": "Imposter Note Right Miss"
+    },
+    "singRIGHTmiss": {
+      "name": "Imposter Note Right Miss",
+      "loop": false,
+      "flipplayer2": true,
+      "flippedname": "Imposter NOTE LEFT miss"
+    },
+    "singUPmiss": {
+      "name": "Imposter Up note miss",
+      "loop": false
+    },
+    "singDOWNmiss": {
+      "name": "Imposter Down Note MISS",
+      "loop": false
+    }
+  },
+  "offset": {
+    "idle": [0,0],
+    "singUP": [-29,200],
+    "singRIGHT": [-68,30],
+    "singLEFT": [65, 80],
+    "singDOWN": [60, -70],
+    "singUPmiss": [-19, 67],
+    "singRIGHTmiss": [-60, 41],
+    "singLEFTmiss": [62,64],
+    "singDOWNmiss": [210, -28]
+  },
+  "flipx": true,
+  "camOffsetX": 300,
+  "camOffsetY": 0,
+  "enemyOffsetX": 0,
+  "enemyOffsetY": 370
+}

@@ -146,7 +146,7 @@ class PlayState extends MusicBeatState
 				];
 		}
 
-		if (SONG.song.toLowerCase() == 'spookeez' || SONG.song.toLowerCase() == 'monster' || SONG.song.toLowerCase() == 'south')
+		if (SONG.song.toLowerCase() == 'spookeez' || SONG.song.toLowerCase() == 'monster' || SONG.song.toLowerCase() == 'south' || SONG.stage == 'spooky')
 		{
 			curStage = "spooky";
 			halloweenLevel = true;
@@ -163,7 +163,7 @@ class PlayState extends MusicBeatState
 
 			isHalloween = true;
 		}
-		else if (SONG.song.toLowerCase() == 'pico' || SONG.song.toLowerCase() == 'blammed' || SONG.song.toLowerCase() == 'philly')
+		else if (SONG.song.toLowerCase() == 'pico' || SONG.song.toLowerCase() == 'blammed' || SONG.song.toLowerCase() == 'philly' ||  SONG.stage == 'philly')
 		{
 			curStage = 'philly';
 
@@ -204,7 +204,7 @@ class PlayState extends MusicBeatState
 			var street:FlxSprite = new FlxSprite(-40, streetBehind.y).loadGraphic('assets/images/philly/street.png');
 			add(street);
 		}
-		else if (SONG.song.toLowerCase() == 'milf' || SONG.song.toLowerCase() == 'satin-panties' || SONG.song.toLowerCase() == 'high')
+		else if (SONG.song.toLowerCase() == 'milf' || SONG.song.toLowerCase() == 'satin-panties' || SONG.song.toLowerCase() == 'high' ||  SONG.stage == 'limo')
 		{
 			curStage = 'limo';
 			defaultCamZoom = 0.90;
@@ -251,7 +251,7 @@ class PlayState extends MusicBeatState
 			fastCar = new FlxSprite(-300, 160).loadGraphic('assets/images/limo/fastCarLol.png');
 			// add(limo);
 		}
-		else if (SONG.song.toLowerCase() == 'cocoa' || SONG.song.toLowerCase() == 'eggnog')
+		else if (SONG.song.toLowerCase() == 'cocoa' || SONG.song.toLowerCase() == 'eggnog' ||  SONG.stage == 'mall')
 		{
 			curStage = 'mall';
 
@@ -307,7 +307,7 @@ class PlayState extends MusicBeatState
 			santa.antialiasing = true;
 			add(santa);
 		}
-		else if (SONG.song.toLowerCase() == 'winter-horrorland')
+		else if (SONG.song.toLowerCase() == 'winter-horrorland' ||  SONG.stage == 'mallEvil')
 		{
 			curStage = 'mallEvil';
 			var bg:FlxSprite = new FlxSprite(-400, -500).loadGraphic('assets/images/christmas/evilBG.png');
@@ -410,6 +410,11 @@ class PlayState extends MusicBeatState
 				dad.y += 300;
 			case 'parents-christmas':
 				dad.x -= 500;
+			default:
+				dad.x += dad.enemyOffsetX;
+				dad.y += dad.enemyOffsetY;
+				camPos.x += dad.camOffsetX;
+				camPos.y += dad.camOffsetY;
 		}
 
 		boyfriend = new Boyfriend(770, 450, SONG.player1);
@@ -1356,7 +1361,7 @@ class PlayState extends MusicBeatState
 
 			daLoop++;
 		}
-		/* 
+		/*
 			trace(combo);
 			trace(seperatedScore);
 		 */
@@ -1468,12 +1473,12 @@ class PlayState extends MusicBeatState
 				{
 					noteCheck(controlArray[daNote.noteData], daNote);
 				}
-				/* 
+				/*
 					if (controlArray[daNote.noteData])
 						goodNoteHit(daNote);
 				 */
 				// trace(daNote.noteData);
-				/* 
+				/*
 					switch (daNote.noteData)
 					{
 						case 2: // NOTES YOU JUST PRESSED

@@ -121,6 +121,7 @@ class ChartingState extends MusicBeatState
 				needsVoices: true,
 				player1: 'bf',
 				player2: 'dad',
+				stage: 'stage',
 				sectionLengths: [],
 				speed: 1,
 				validScore: false
@@ -226,7 +227,7 @@ class ChartingState extends MusicBeatState
 		stepperBPM.name = 'song_bpm';
 
 		var characters:Array<String> = CoolUtil.coolTextFile('assets/data/characterList.txt');
-
+		var stages:Array<String> = CoolUtil.coolTextFile('assets/data/stages.txt');
 		for (i in Assets.getText('assets/images/custom_chars/charlist.txt').split('\n'))
 		{
 			characters.push(i);
@@ -242,9 +243,12 @@ class ChartingState extends MusicBeatState
 		{
 			_song.player2 = characters[Std.parseInt(character)];
 		});
-
+		var stageDropDown = new FlxUIDropDownMenu(140, 160, FlxUIDropDownMenu.makeStrIdLabelArray(stages, true), function(stage:String)
+		{
+			_song.stage = stages[Std.parseInt(stage)];
+		});
 		player2DropDown.selectedLabel = _song.player2;
-
+		stageDropDown.selectedLabel = _song.stage;
 		var tab_group_song = new FlxUI(null, UI_box);
 		tab_group_song.name = "Song";
 		tab_group_song.add(UI_songTitle);
@@ -259,6 +263,7 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(stepperSpeed);
 		tab_group_song.add(player1DropDown);
 		tab_group_song.add(player2DropDown);
+		tab_group_song.add(stageDropDown);
 
 		UI_box.addGroup(tab_group_song);
 		UI_box.scrollFactor.set();
@@ -384,7 +389,7 @@ class ChartingState extends MusicBeatState
 		// general shit
 		var title:FlxText = new FlxText(UI_box.x + 20, UI_box.y + 20, 0);
 		bullshitUI.add(title);
-		/* 
+		/*
 			var loopCheck = new FlxUICheckBox(UI_box.x + 10, UI_box.y + 50, null, null, "Loops", 100, ['loop check']);
 			loopCheck.checked = curNoteSelected.doesLoop;
 			tooltips.add(loopCheck, {title: 'Section looping', body: "Whether or not it's a simon says style section", style: tooltipType});

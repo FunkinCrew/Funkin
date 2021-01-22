@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="imposter.png">
+	<!-- Created with Adobe Animate version 20.0.0.17400 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="Imposter Down Note0000" x="0" y="0" width="389" height="337" frameX="0" frameY="0" frameWidth="390" frameHeight="337"/>
+	<SubTexture name="Imposter Down Note0001" x="0" y="0" width="389" height="337" frameX="0" frameY="0" frameWidth="390" frameHeight="337"/>
+	<SubTexture name="Imposter Down Note0002" x="389" y="0" width="375" height="337" frameX="-15" frameY="0" frameWidth="390" frameHeight="337"/>
+	<SubTexture name="Imposter Down Note0003" x="389" y="0" width="375" height="337" frameX="-15" frameY="0" frameWidth="390" frameHeight="337"/>
+	<SubTexture name="Imposter Down Note0004" x="389" y="0" width="375" height="337" frameX="-15" frameY="0" frameWidth="390" frameHeight="337"/>
+	<SubTexture name="Imposter Down Note0005" x="389" y="0" width="375" height="337" frameX="-15" frameY="0" frameWidth="390" frameHeight="337"/>
+	<SubTexture name="Imposter Down Note0006" x="389" y="0" width="375" height="337" frameX="-15" frameY="0" frameWidth="390" frameHeight="337"/>
+	<SubTexture name="Imposter Down Note0007" x="389" y="0" width="375" height="337" frameX="-15" frameY="0" frameWidth="390" frameHeight="337"/>
+	<SubTexture name="Imposter Down Note0008" x="389" y="0" width="375" height="337" frameX="-15" frameY="0" frameWidth="390" frameHeight="337"/>
+	<SubTexture name="Imposter Down Note0009" x="389" y="0" width="375" height="337" frameX="-15" frameY="0" frameWidth="390" frameHeight="337"/>
+	<SubTexture name="Imposter Down Note0010" x="389" y="0" width="375" height="337" frameX="-15" frameY="0" frameWidth="390" frameHeight="337"/>
+	<SubTexture name="Imposter Idle Dance0000" x="764" y="0" width="429" height="357" frameX="0" frameY="-15" frameWidth="429" frameHeight="374"/>
+	<SubTexture name="Imposter Idle Dance0001" x="764" y="0" width="429" height="357" frameX="0" frameY="-15" frameWidth="429" frameHeight="374"/>
+	<SubTexture name="Imposter Idle Dance0002" x="1193" y="0" width="415" height="361" frameX="-7" frameY="-13" frameWidth="429" frameHeight="374"/>
+	<SubTexture name="Imposter Idle Dance0003" x="1193" y="0" width="415" height="361" frameX="-7" frameY="-13" frameWidth="429" frameHeight="374"/>
+	<SubTexture name="Imposter Idle Dance0004" x="1608" y="0" width="413" height="362" frameX="-7" frameY="-12" frameWidth="429" frameHeight="374"/>
+	<SubTexture name="Imposter Idle Dance0005" x="2021" y="0" width="416" height="362" frameX="-7" frameY="-12" frameWidth="429" frameHeight="374"/>
+	<SubTexture name="Imposter Idle Dance0006" x="2437" y="0" width="416" height="374" frameX="-7" frameY="0" frameWidth="429" frameHeight="374"/>
+	<SubTexture name="Imposter Idle Dance0007" x="2853" y="0" width="418" height="374" frameX="-7" frameY="0" frameWidth="429" frameHeight="374"/>
+	<SubTexture name="Imposter Idle Dance0008" x="3271" y="0" width="418" height="374" frameX="-7" frameY="0" frameWidth="429" frameHeight="374"/>
+	<SubTexture name="Imposter Idle Dance0009" x="3271" y="0" width="418" height="374" frameX="-7" frameY="0" frameWidth="429" frameHeight="374"/>
+	<SubTexture name="Imposter Idle Dance0010" x="3271" y="0" width="418" height="374" frameX="-7" frameY="0" frameWidth="429" frameHeight="374"/>
+	<SubTexture name="Imposter Idle Dance0011" x="3271" y="0" width="418" height="374" frameX="-7" frameY="0" frameWidth="429" frameHeight="374"/>
+	<SubTexture name="Imposter Idle Dance0012" x="3271" y="0" width="418" height="374" frameX="-7" frameY="0" frameWidth="429" frameHeight="374"/>
+	<SubTexture name="Imposter Idle Dance0013" x="3271" y="0" width="418" height="374" frameX="-7" frameY="0" frameWidth="429" frameHeight="374"/>
+	<SubTexture name="Imposter NOTE LEFT0000" x="0" y="374" width="560" height="410" frameX="-17" frameY="0" frameWidth="577" frameHeight="410"/>
+	<SubTexture name="Imposter NOTE LEFT0001" x="0" y="374" width="560" height="410" frameX="-17" frameY="0" frameWidth="577" frameHeight="410"/>
+	<SubTexture name="Imposter NOTE LEFT0002" x="560" y="374" width="574" height="410" frameX="0" frameY="0" frameWidth="577" frameHeight="410"/>
+	<SubTexture name="Imposter NOTE LEFT0003" x="560" y="374" width="574" height="410" frameX="0" frameY="0" frameWidth="577" frameHeight="410"/>
+	<SubTexture name="Imposter NOTE LEFT0004" x="560" y="374" width="574" height="410" frameX="0" frameY="0" frameWidth="577" frameHeight="410"/>
+	<SubTexture name="Imposter NOTE LEFT0005" x="560" y="374" width="574" height="410" frameX="0" frameY="0" frameWidth="577" frameHeight="410"/>
+	<SubTexture name="Imposter NOTE LEFT0006" x="560" y="374" width="574" height="410" frameX="0" frameY="0" frameWidth="577" frameHeight="410"/>
+	<SubTexture name="Imposter NOTE LEFT0007" x="560" y="374" width="574" height="410" frameX="0" frameY="0" frameWidth="577" frameHeight="410"/>
+	<SubTexture name="Imposter NOTE LEFT0008" x="560" y="374" width="574" height="410" frameX="0" frameY="0" frameWidth="577" frameHeight="410"/>
+	<SubTexture name="Imposter NOTE LEFT0009" x="560" y="374" width="574" height="410" frameX="0" frameY="0" frameWidth="577" frameHeight="410"/>
+	<SubTexture name="Imposter NOTE LEFT0010" x="560" y="374" width="574" height="410" frameX="0" frameY="0" frameWidth="577" frameHeight="410"/>
+	<SubTexture name="Imposter NOTE LEFT0011" x="560" y="374" width="574" height="410" frameX="0" frameY="0" frameWidth="577" frameHeight="410"/>
+	<SubTexture name="Imposter NOTE LEFT0012" x="560" y="374" width="574" height="410" frameX="0" frameY="0" frameWidth="577" frameHeight="410"/>
+	<SubTexture name="Imposter NOTE LEFT0013" x="560" y="374" width="574" height="410" frameX="0" frameY="0" frameWidth="577" frameHeight="410"/>
+	<SubTexture name="Imposter NOTE LEFT0014" x="560" y="374" width="574" height="410" frameX="0" frameY="0" frameWidth="577" frameHeight="410"/>
+	<SubTexture name="Imposter NOTE LEFT0015" x="560" y="374" width="574" height="410" frameX="0" frameY="0" frameWidth="577" frameHeight="410"/>
+	<SubTexture name="Imposter NOTE LEFT0016" x="560" y="374" width="574" height="410" frameX="0" frameY="0" frameWidth="577" frameHeight="410"/>
+	<SubTexture name="Imposter Note Right0000" x="1134" y="374" width="338" height="442"/>
+	<SubTexture name="Imposter Note Right0001" x="1134" y="374" width="338" height="442"/>
+	<SubTexture name="Imposter Note Right0002" x="1472" y="374" width="334" height="442" frameX="-3" frameY="0" frameWidth="338" frameHeight="442"/>
+	<SubTexture name="Imposter Note Right0003" x="1472" y="374" width="334" height="442" frameX="-3" frameY="0" frameWidth="338" frameHeight="442"/>
+	<SubTexture name="Imposter Note Right0004" x="1472" y="374" width="334" height="442" frameX="-3" frameY="0" frameWidth="338" frameHeight="442"/>
+	<SubTexture name="Imposter Note Right0005" x="1472" y="374" width="334" height="442" frameX="-3" frameY="0" frameWidth="338" frameHeight="442"/>
+	<SubTexture name="Imposter Note Right0006" x="1472" y="374" width="334" height="442" frameX="-3" frameY="0" frameWidth="338" frameHeight="442"/>
+	<SubTexture name="Imposter Note Right0007" x="1472" y="374" width="334" height="442" frameX="-3" frameY="0" frameWidth="338" frameHeight="442"/>
+	<SubTexture name="Imposter Note Right0008" x="1472" y="374" width="334" height="442" frameX="-3" frameY="0" frameWidth="338" frameHeight="442"/>
+	<SubTexture name="Imposter Note Right0009" x="1472" y="374" width="334" height="442" frameX="-3" frameY="0" frameWidth="338" frameHeight="442"/>
+	<SubTexture name="Imposter Note Right0010" x="1472" y="374" width="334" height="442" frameX="-3" frameY="0" frameWidth="338" frameHeight="442"/>
+	<SubTexture name="Imposter Note Right0011" x="1472" y="374" width="334" height="442" frameX="-3" frameY="0" frameWidth="338" frameHeight="442"/>
+	<SubTexture name="Imposter Note Right0012" x="1472" y="374" width="334" height="442" frameX="-3" frameY="0" frameWidth="338" frameHeight="442"/>
+	<SubTexture name="Imposter Note Right0013" x="1472" y="374" width="334" height="442" frameX="-3" frameY="0" frameWidth="338" frameHeight="442"/>
+	<SubTexture name="Imposter Note Right0014" x="1472" y="374" width="334" height="442" frameX="-3" frameY="0" frameWidth="338" frameHeight="442"/>
+	<SubTexture name="Imposter Note Right0015" x="1472" y="374" width="334" height="442" frameX="-3" frameY="0" frameWidth="338" frameHeight="442"/>
+	<SubTexture name="Imposter Note Right0016" x="1472" y="374" width="334" height="442" frameX="-3" frameY="0" frameWidth="338" frameHeight="442"/>
+	<SubTexture name="Imposter Up note0000" x="1806" y="374" width="537" height="579" frameX="0" frameY="0" frameWidth="567" frameHeight="583"/>
+	<SubTexture name="Imposter Up note0001" x="1806" y="374" width="537" height="579" frameX="0" frameY="0" frameWidth="567" frameHeight="583"/>
+	<SubTexture name="Imposter Up note0002" x="2343" y="374" width="551" height="517" frameX="-16" frameY="-66" frameWidth="567" frameHeight="583"/>
+	<SubTexture name="Imposter Up note0003" x="2343" y="374" width="551" height="517" frameX="-16" frameY="-66" frameWidth="567" frameHeight="583"/>
+	<SubTexture name="Imposter Up note0004" x="2343" y="374" width="551" height="517" frameX="-16" frameY="-66" frameWidth="567" frameHeight="583"/>
+	<SubTexture name="Imposter Up note0005" x="2343" y="374" width="551" height="517" frameX="-16" frameY="-66" frameWidth="567" frameHeight="583"/>
+	<SubTexture name="Imposter Up note0006" x="2343" y="374" width="551" height="517" frameX="-16" frameY="-66" frameWidth="567" frameHeight="583"/>
+	<SubTexture name="Imposter Up note0007" x="2343" y="374" width="551" height="517" frameX="-16" frameY="-66" frameWidth="567" frameHeight="583"/>
+	<SubTexture name="Imposter Up note0008" x="2343" y="374" width="551" height="517" frameX="-16" frameY="-66" frameWidth="567" frameHeight="583"/>
+	<SubTexture name="Imposter Up note0009" x="2343" y="374" width="551" height="517" frameX="-16" frameY="-66" frameWidth="567" frameHeight="583"/>
+	<SubTexture name="Imposter Up note0010" x="2343" y="374" width="551" height="517" frameX="-16" frameY="-66" frameWidth="567" frameHeight="583"/>
+	<SubTexture name="Imposter Up note0011" x="2343" y="374" width="551" height="517" frameX="-16" frameY="-66" frameWidth="567" frameHeight="583"/>
+	<SubTexture name="Imposter Up note0012" x="2343" y="374" width="551" height="517" frameX="-16" frameY="-66" frameWidth="567" frameHeight="583"/>
+	<SubTexture name="Imposter Up note0013" x="2343" y="374" width="551" height="517" frameX="-16" frameY="-66" frameWidth="567" frameHeight="583"/>
+</TextureAtlas>
