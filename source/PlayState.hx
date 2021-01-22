@@ -74,6 +74,7 @@ class PlayState extends MusicBeatState
 	private var totalNotesHit:Float = 0;
 	private var totalPlayed:Int = 0;
 	private var ss:Bool = true;
+	private var rank:String = "None";
 
 	private var healthBarBG:FlxSprite;
 	private var healthBar:FlxBar;
@@ -374,9 +375,6 @@ class PlayState extends MusicBeatState
 				gfVersion = 'gf-christmas';
 		}
 
-		if (curStage == 'limo')
-			gfVersion = 'gf-car';
-
 		gf = new Character(400, 130, gfVersion);
 		gf.scrollFactor.set(0.95, 0.95);
 		gf.antialiasing = true;
@@ -485,7 +483,7 @@ class PlayState extends MusicBeatState
 		// healthBar
 		add(healthBar);
 
-		scoreTxt = new FlxText(healthBarBG.x + healthBarBG.width - 325, healthBarBG.y + 30, 0, "", 20);
+		scoreTxt = new FlxText(healthBarBG.x + healthBarBG.width / 2 - 175, healthBarBG.y + 50, 0, "", 20);
 		scoreTxt.setFormat("assets/fonts/vcr.ttf", 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 		scoreTxt.scrollFactor.set();
 		add(scoreTxt);
@@ -748,19 +746,37 @@ class PlayState extends MusicBeatState
 		generatedMusic = true;
 	}
 
-	function updateAccuracy(miss:Bool)
+	function updateAccuracy()
 	{
-		if (miss)
-			misses += 1;
+
 		totalPlayed += 1;
 		accuracy = totalNotesHit / totalPlayed * 100;
 		if (accuracy >= 100.00)
 		{
-			if (ss)
+			if (ss && misses == 0)
 				accuracy = 100.00;
 			else
 				accuracy = 99.98;
 		}
+		
+		// this is aids, I know it is aids. Please make this better, I hate looking at it.
+		// I don't know what else I can do in this situation, maybe someone is smarter then me.
+		// I want to use a switch case, but thats effor. I'm sorry for this mess.
+
+		if (ss)
+			rank = "SS";
+		else if (accuracy >= 95)
+			rank = "S";
+		else if (accuracy >= 92)
+			rank = "A";
+		else if (accuracy >= 82)
+			rank = "B";
+		else if (accuracy >= 70)
+			rank = "C";
+		else if (accuracy >= 50)
+			rank = "D";
+		else if (accuracy < 49)
+			rank = "F";
 	}
 
 	function sortByShit(Obj1:Note, Obj2:Note):Int
@@ -922,7 +938,7 @@ class PlayState extends MusicBeatState
 
 		super.update(elapsed);
 
-		scoreTxt.text = "Score:" + songScore + " | Misses:" + misses + " | Accuracy:" + truncateFloat(accuracy, 2) + "%";
+		scoreTxt.text = "Score:" + songScore + " | Misses:" + misses + " | Accuracy:" + truncateFloat(accuracy, 2) + "% | Rank:" + rank;
 
 		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause)
 		{
@@ -1192,7 +1208,8 @@ class PlayState extends MusicBeatState
 						health -= 0.045;
 						vocals.volume = 0;
 						combo = 0;
-						updateAccuracy(true);
+						misses += 1;
+						updateAccuracy();
 					}
 
 					daNote.active = false;
@@ -1309,18 +1326,21 @@ class PlayState extends MusicBeatState
 			daRating = 'shit';
 			totalNotesHit += 0.05;
 			score = 50;
+			ss = false;
 		}
 		else if (noteDiff > Conductor.safeZoneOffset * 0.75)
 		{
 			daRating = 'bad';
 			score = 100;
 			totalNotesHit += 0.10;
+			ss = false;
 		}
 		else if (noteDiff > Conductor.safeZoneOffset * 0.2)
 		{
 			daRating = 'good';
 			totalNotesHit += 0.65;
 			score = 200;
+			ss = false;
 		}
 		else
 		{
@@ -1610,6 +1630,8 @@ class PlayState extends MusicBeatState
 		});
 	}
 
+
+
 	function noteMiss(direction:Int = 1):Void
 	{
 		if (!boyfriend.stunned)
@@ -1619,6 +1641,7 @@ class PlayState extends MusicBeatState
 			{
 				gf.playAnim('sad');
 			}
+			misses += 1;
 			combo = 0;
 			songScore -= 10;
 
@@ -1645,8 +1668,6 @@ class PlayState extends MusicBeatState
 				case 0:
 					boyfriend.playAnim('singLEFTmiss', true);
 			}
-
-			updateAccuracy(true);
 		}
 	}
 
@@ -1667,6 +1688,7 @@ class PlayState extends MusicBeatState
 			noteMiss(3);
 		if (downP)
 			noteMiss(1);
+		updateAccuracy();
 	}
 
 	function noteCheck(keyP:Bool, note:Note):Void
@@ -1675,12 +1697,11 @@ class PlayState extends MusicBeatState
 		if (keyP)
 		{
 			goodNoteHit(note);
-			updateAccuracy(false);
+			updateAccuracy();
 		}
 		else
 		{
 			badNoteCheck();
-			updateAccuracy(true);
 		}
 
 	}
