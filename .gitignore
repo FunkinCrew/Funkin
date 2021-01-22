@@ -2,8 +2,3 @@
 export/
 .vscode/
 APIStuff.hx
-
-# Jekyll
-docs/_site/
-docs/*.log
-docs/Gemfile.lock
