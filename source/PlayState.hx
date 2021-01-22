@@ -1192,6 +1192,8 @@ class PlayState extends MusicBeatState
 					{
 						health -= 0.045;
 						vocals.volume = 0;
+						combo = 0;
+						updateAccuracy(true);
 					}
 
 					daNote.active = false;
@@ -1200,7 +1202,6 @@ class PlayState extends MusicBeatState
 					daNote.kill();
 					notes.remove(daNote, true);
 					daNote.destroy();
-					updateAccuracy(true);
 				}
 			});
 		}
