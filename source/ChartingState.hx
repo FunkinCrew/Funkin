@@ -669,10 +669,13 @@ class ChartingState extends MusicBeatState
 
 	function changeNoteSustain(value:Float):Void
 	{
-		if (curSelectedNote[2] != null)
+		if (curSelectedNote != null)
 		{
-			curSelectedNote[2] += value;
-			curSelectedNote[2] = Math.max(curSelectedNote[2], 0);
+			if (curSelectedNote[2] != null)
+			{
+				curSelectedNote[2] += value;
+				curSelectedNote[2] = Math.max(curSelectedNote[2], 0);
+			}
 		}
 
 		updateNoteUI();
@@ -801,7 +804,8 @@ class ChartingState extends MusicBeatState
 
 	function updateNoteUI():Void
 	{
-		stepperSusLength.value = curSelectedNote[2];
+		if (curSelectedNote != null)
+			stepperSusLength.value = curSelectedNote[2];
 	}
 
 	function updateGrid():Void
