@@ -1207,9 +1207,6 @@ class PlayState extends MusicBeatState
 					{
 						health -= 0.045;
 						vocals.volume = 0;
-						combo = 0;
-						misses += 1;
-						updateAccuracy();
 					}
 
 					daNote.active = false;
