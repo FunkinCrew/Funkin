@@ -370,7 +370,6 @@ class PlayState extends MusicBeatState
 			case 'limo':
 				gfVersion = 'gf-car';
 			case 'mall':
-				gfVersion = 'gf-christmas';
 			case 'mallEvil':
 				gfVersion = 'gf-christmas';
 		}
