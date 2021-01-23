@@ -1,3 +1,9 @@
+# Funkin
 export/
 .vscode/
 APIStuff.hx
+
+# Github-Pages (Jekyll)
+docs/_site/
+docs/*.log
+docs/Gemfile.lock

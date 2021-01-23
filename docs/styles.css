@@ -23,7 +23,7 @@ h1 {
 }
 
 body {
-    background-image: url('img/skin-funkin-cardbordtoast.jpg');
+    background-image: url('/assets/images/skin-funkin-cardbordtoast.jpg');
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-size: cover;
@@ -68,11 +68,16 @@ a { color:inherit;
 {
     color: #fa5c5c;
 }
+
 #twitter a:hover
 {
     color: #00acee;
 }
 
+#github a:hover
+{
+    color: #24292e;
+}
 
 #coolervidwrapper {
     padding-left: min(12em, 75%);
@@ -87,6 +92,7 @@ a { color:inherit;
 
   max-block-size: 1400px;
 }
+
 .videoWrapper iframe {
   position: absolute;
   top: 0;
