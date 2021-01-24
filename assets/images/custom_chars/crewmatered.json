@@ -77,6 +77,6 @@
   "camOffsetX": 0,
   "camOffsetY": 0,
   "enemyOffsetX": 0,
-  "enemyOffsetY": -300,
+  "enemyOffsetY": 400,
   "icons": [21, 22]
 }

@@ -85,7 +85,9 @@ As for Mac, 'lime test mac -debug' should work, if not the internet surely has a
 	* Crewmate by [Kodomodachi](https://gamebanana.com/members/1755729)
 	* DK Rap by [OstrichNotFlamingo](https://gamebanana.com/members/1770709)
 	* Your Reality by [AjTheYandere](https://gamebanana.com/members/1766216)
-	* 
+	* Toasty Buns by [LazyyLimp](https://gamebanana.com/members/1771354)
+	* Among Us Trap Remix by [the shankrom](https://gamebanana.com/members/1764863)
+	* New Monster over Monster by [Cval](https://gamebanana.com/members/1744375)
 ### Additional guides
 
 - [Command line basics](https://ninjamuffin99.newgrounds.com/news/post/1090480)
