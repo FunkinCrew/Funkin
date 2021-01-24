@@ -8,7 +8,7 @@ Support the project on the itch.io page: https://ninja-muffin24.itch.io/funkin
 
 ## Credits / shoutouts
 
-- [ninjamuffin99 (me!)](https://twitter.com/ninja_muffin99) - Programmer
+- [ninjamuffin99](https://twitter.com/ninja_muffin99) - Programmer
 - [PhantomArcade3K](https://twitter.com/phantomarcade3k) and [Evilsk8r](https://twitter.com/evilsk8r) - Art
 - [Kawaisprite](https://twitter.com/kawaisprite) - Musician
 
@@ -18,7 +18,7 @@ This game was made with love to Newgrounds and it's community. Extra love to Tom
 
 ### Installing shit
 
-First you need to install Haxe and HaxeFlixel. I'm too lazy to write and keep updated with that setup (which is pretty simple). 
+First you need to install Haxe and HaxeFlixel. I'm too lazy to write and keep updated with that setup (which is pretty simple).
 The link to that is on the [HaxeFlixel website](https://haxeflixel.com/documentation/getting-started/)
 
 That should give you HaxeFlixel and all of it's setup and shit. If you run into issues, ask them in the #flixel channel in the Haxe Discord server: https://discord.gg/5ybrNNWx9S
@@ -33,7 +33,7 @@ newgrounds
 
 So for each of those type `haxelib install [library]` so shit like `haxelib install newgrounds`
 
-You'll also need to install polymod. Do this with 
+You'll also need to install polymod. Do this with
 
 ```
 haxelib git polymod https://github.com/larsiusprime/polymod.git
@@ -81,6 +81,11 @@ To run it from your desktop (Windows, Mac, Linux) it can be a bit more involved.
 This will install about 22GB of crap, but once that is done you can open up a command line in the project's directory and run `lime test windows -debug`. Once that command finishes (it takes forever even on a higher end PC), you can run FNF from the .exe file under export\release\windows\bin
 As for Mac, 'lime test mac -debug' should work, if not the internet surely has a guide on how to compile Haxe stuff for Mac.
 
+### Mods Used
+	* Crewmate by [Kodomodachi](https://gamebanana.com/members/1755729)
+	* DK Rap by [OstrichNotFlamingo](https://gamebanana.com/members/1770709)
+	* Your Reality by [AjTheYandere](https://gamebanana.com/members/1766216)
+	* 
 ### Additional guides
 
 - [Command line basics](https://ninjamuffin99.newgrounds.com/news/post/1090480)
