@@ -12,3 +12,4 @@ bf-christmas
 gf-christmas
 monster
 bf-pixel
+senpai
