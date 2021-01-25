@@ -26,6 +26,7 @@ class HealthIcon extends FlxSprite
 		animation.add('monster', [19, 20], 0, false, isPlayer);
 		animation.add('monster-christmas', [19, 20], 0, false, isPlayer);
 		animation.add('crewmatered', [21, 22], 0, false, isPlayer);
+		animation.add('parapa', [25, 26], 0, false, isPlayer);
 		animation.add('crewmate', [23, 24], 0, false, isPlayer);
 		animation.play(char);
 		scrollFactor.set();
