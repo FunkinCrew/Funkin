@@ -96,7 +96,7 @@ class PlayState extends MusicBeatState
 	var bottomBoppers:FlxSprite;
 	var santa:FlxSprite;
 
-	var bgGirls:FlxSprite;
+	var bgGirls:BackgroundGirls;
 
 	var talking:Bool = true;
 	var songScore:Int = 0;
@@ -335,27 +335,50 @@ class PlayState extends MusicBeatState
 		{
 			curStage = 'school';
 
+			// defaultCamZoom = 0.9;
+
 			var bgSky = new FlxSprite().loadGraphic('assets/images/weeb/weebSky.png');
 			bgSky.scrollFactor.set(0.1, 0.1);
 			add(bgSky);
 
-			var bgSchool:FlxSprite = new FlxSprite(-200).loadGraphic('assets/images/weeb/weebSchool.png');
+			var repositionShit = -200;
+
+			var bgSchool:FlxSprite = new FlxSprite(repositionShit).loadGraphic('assets/images/weeb/weebSchool.png');
 			bgSchool.scrollFactor.set(0.6, 0.6);
 			add(bgSchool);
 
-			var bgStreet:FlxSprite = new FlxSprite(-200).loadGraphic('assets/images/weeb/weebStreet.png');
+			var bgStreet:FlxSprite = new FlxSprite(repositionShit).loadGraphic('assets/images/weeb/weebStreet.png');
 			bgStreet.scrollFactor.set(0.95, 0.95);
 			add(bgStreet);
+
+			var bgTrees:FlxSprite = new FlxSprite(repositionShit).loadGraphic('assets/images/weeb/weebTreesBack.png');
+			bgTrees.scrollFactor.set(0.85, 0.85);
+			add(bgTrees);
+
+			var fgTrees:FlxSprite = new FlxSprite(repositionShit).loadGraphic('assets/images/weeb/weebTrees.png');
+			fgTrees.scrollFactor.set(0.9, 0.9);
+			add(fgTrees);
 
 			var widShit = Std.int(bgSky.width * 6);
 
 			bgSky.setGraphicSize(widShit);
 			bgSchool.setGraphicSize(widShit);
 			bgStreet.setGraphicSize(widShit);
+			bgTrees.setGraphicSize(widShit);
+			fgTrees.setGraphicSize(widShit);
 
+			fgTrees.updateHitbox();
 			bgSky.updateHitbox();
 			bgSchool.updateHitbox();
 			bgStreet.updateHitbox();
+			bgTrees.updateHitbox();
+
+			bgGirls = new BackgroundGirls(-100, 120);
+			bgGirls.scrollFactor.set(0.9, 0.9);
+
+			bgGirls.setGraphicSize(Std.int(bgGirls.width * daPixelZoom));
+			bgGirls.updateHitbox();
+			add(bgGirls);
 		}
 		else
 		{
@@ -463,8 +486,8 @@ class PlayState extends MusicBeatState
 				boyfriend.x += 320;
 				dad.y -= 80;
 			case 'school':
-				boyfriend.x += 100;
-				boyfriend.y += 100;
+				boyfriend.x += 170;
+				boyfriend.y += 120;
 				gf.x += 100;
 				gf.y += 200;
 		}
@@ -1433,28 +1456,48 @@ class PlayState extends MusicBeatState
 			else if (combo > 4)
 				daRating = 'bad';
 		 */
-		rating.loadGraphic('assets/images/' + daRating + ".png");
+
+		var pixelShitPart1:String = "";
+		var pixelShitPart2:String = '';
+
+		if (curStage == 'school')
+		{
+			pixelShitPart1 = 'weeb/pixelUI/';
+			pixelShitPart2 = '-pixel';
+		}
+
+		rating.loadGraphic('assets/images/' + pixelShitPart1 + daRating + pixelShitPart2 + ".png");
 		rating.screenCenter();
 		rating.x = coolText.x - 40;
 		rating.y -= 60;
 		rating.acceleration.y = 550;
 		rating.velocity.y -= FlxG.random.int(140, 175);
-		rating.setGraphicSize(Std.int(rating.width * 0.7));
-		rating.updateHitbox();
-		rating.antialiasing = true;
 		rating.velocity.x -= FlxG.random.int(0, 10);
 
-		var comboSpr:FlxSprite = new FlxSprite().loadGraphic('assets/images/combo.png');
+		var comboSpr:FlxSprite = new FlxSprite().loadGraphic('assets/images/' + pixelShitPart1 + 'combo' + pixelShitPart2 + '.png');
 		comboSpr.screenCenter();
 		comboSpr.x = coolText.x;
 		comboSpr.acceleration.y = 600;
-		comboSpr.antialiasing = true;
 		comboSpr.velocity.y -= 150;
-		comboSpr.setGraphicSize(Std.int(comboSpr.width * 0.7));
-		comboSpr.updateHitbox();
+
 		comboSpr.velocity.x += FlxG.random.int(1, 10);
-		// add(comboSpr);
 		add(rating);
+
+		if (curStage != 'school')
+		{
+			rating.setGraphicSize(Std.int(rating.width * 0.7));
+			rating.antialiasing = true;
+			comboSpr.setGraphicSize(Std.int(comboSpr.width * 0.7));
+			comboSpr.antialiasing = true;
+		}
+		else
+		{
+			rating.setGraphicSize(Std.int(rating.width * daPixelZoom * 0.7));
+			comboSpr.setGraphicSize(Std.int(comboSpr.width * daPixelZoom * 0.7));
+		}
+
+		comboSpr.updateHitbox();
+		rating.updateHitbox();
 
 		var seperatedScore:Array<Int> = [];
 
@@ -1465,13 +1508,22 @@ class PlayState extends MusicBeatState
 		var daLoop:Int = 0;
 		for (i in seperatedScore)
 		{
-			var numScore:FlxSprite = new FlxSprite().loadGraphic('assets/images/num' + Std.int(i) + '.png');
+			var numScore:FlxSprite = new FlxSprite().loadGraphic('assets/images/' + pixelShitPart1 + 'num' + Std.int(i) + pixelShitPart2 + '.png');
 			numScore.screenCenter();
 			numScore.x = coolText.x + (43 * daLoop) - 90;
 			numScore.y += 80;
-			numScore.antialiasing = true;
-			numScore.setGraphicSize(Std.int(numScore.width * 0.5));
+
+			if (curStage != 'school')
+			{
+				numScore.antialiasing = true;
+				numScore.setGraphicSize(Std.int(numScore.width * 0.5));
+			}
+			else
+			{
+				numScore.setGraphicSize(Std.int(numScore.width * daPixelZoom));
+			}
 			numScore.updateHitbox();
+
 			numScore.acceleration.y = FlxG.random.int(200, 300);
 			numScore.velocity.y -= FlxG.random.int(140, 160);
 			numScore.velocity.x = FlxG.random.float(-5, 5);
@@ -1994,6 +2046,9 @@ class PlayState extends MusicBeatState
 
 		switch (curStage)
 		{
+			case 'school':
+				bgGirls.dance();
+
 			case 'mall':
 				upperBoppers.animation.play('bop', true);
 				bottomBoppers.animation.play('bop', true);
