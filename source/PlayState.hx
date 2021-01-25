@@ -590,7 +590,7 @@ class PlayState extends MusicBeatState
 			dad.dance();
 			gf.dance();
 			boyfriend.playAnim('idle');
-
+			trace("if you are reading this and  it is still not working ksaffjak;l");
 			switch (swagCounter)
 			{
 				case 0:
@@ -1556,6 +1556,7 @@ class PlayState extends MusicBeatState
 			if (boyfriend.animation.curAnim.name.startsWith('sing') && !boyfriend.animation.curAnim.name.endsWith('miss'))
 			{
 				boyfriend.playAnim('idle');
+				trace("idle from non miss sing");
 			}
 		}
 
@@ -1869,6 +1870,7 @@ class PlayState extends MusicBeatState
 		if (!boyfriend.animation.curAnim.name.startsWith("sing"))
 		{
 			boyfriend.playAnim('idle');
+			trace("don't idle from sing anim");
 		}
 
 		if (totalBeats % 8 == 7 && curSong == 'Bopeebo')
