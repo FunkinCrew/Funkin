@@ -22,7 +22,7 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import io.newgrounds.NG;
 import lime.app.Application;
-import lime.utils.Assets;
+import openfl.Assets;
 import polymod.Polymod;
 
 using StringTools;
@@ -44,7 +44,7 @@ class TitleState extends MusicBeatState
 
 	override public function create():Void
 	{
-		Polymod.init({modRoot: "assets/mods", dirs: CoolUtil.coolTextFile('assets/mods/modList.txt')});
+		Polymod.init({modRoot: "mods", dirs: ['introMod']});
 
 		#if (!web)
 		TitleState.soundExt = '.ogg';
@@ -398,6 +398,10 @@ class TitleState extends MusicBeatState
 			FlxG.camera.flash(FlxColor.WHITE, 4);
 			remove(credGroup);
 			skippedIntro = true;
+
+			var image = Assets.getBitmapData('assets/images/alphabet.png');
+			var money = new FlxSprite(0, 0, image);
+			add(money);
 		}
 	}
 }

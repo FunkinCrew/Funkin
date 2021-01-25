@@ -327,6 +327,31 @@ class PlayState extends MusicBeatState
 			evilSnow.antialiasing = true;
 			add(evilSnow);
 		}
+		else if (SONG.song.toLowerCase() == 'senpai')
+		{
+			curStage = 'school';
+
+			var bgSky = new FlxSprite().loadGraphic('assets/images/weeb/weebSky.png');
+			bgSky.scrollFactor.set(0.1, 0.1);
+			add(bgSky);
+
+			var bgSchool:FlxSprite = new FlxSprite(-200).loadGraphic('assets/images/weeb/weebSchool.png');
+			bgSchool.scrollFactor.set(0.6, 0.6);
+			add(bgSchool);
+
+			var bgStreet:FlxSprite = new FlxSprite(-200).loadGraphic('assets/images/weeb/weebStreet.png');
+			add(bgStreet);
+
+			var widShit = Std.int(bgSky.width * 6);
+
+			bgSky.setGraphicSize(widShit);
+			bgSchool.setGraphicSize(widShit);
+			bgStreet.setGraphicSize(widShit);
+
+			bgSky.updateHitbox();
+			bgSchool.updateHitbox();
+			bgStreet.updateHitbox();
+		}
 		else
 		{
 			defaultCamZoom = 0.9;
@@ -431,6 +456,9 @@ class PlayState extends MusicBeatState
 			case 'mallEvil':
 				boyfriend.x += 320;
 				dad.y -= 80;
+			case 'school':
+				boyfriend.x += 100;
+				boyfriend.y += 100;
 		}
 
 		var doof:DialogueBox = new DialogueBox(false, dialogue);
