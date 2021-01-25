@@ -1,14 +1,23 @@
 package;
 
 import flixel.FlxSprite;
-
+import lime.utils.Assets;
+import haxe.Json;
+#if sys
+import sys.io.File;
+import haxe.io.Path;
+import lime.system.System;
+#end
+import haxe.format.JsonParser;
+using StringTools;
 class HealthIcon extends FlxSprite
 {
 	public function new(char:String = 'bf', isPlayer:Bool = false)
 	{
 		super();
 		loadGraphic('assets/images/iconGrid.png', true, 150, 150);
-
+		var rawCharList = Assets.getText('assets/images/custom_chars/charlist.txt').trim();
+		var splitCharList = rawCharList.split("\n");
 		antialiasing = true;
 		animation.add('bf', [0, 1], 0, false, isPlayer);
 		animation.add('bf-car', [0, 1], 0, false, isPlayer);
@@ -25,9 +34,22 @@ class HealthIcon extends FlxSprite
 		animation.add('parents-christmas', [17], 0, false, isPlayer);
 		animation.add('monster', [19, 20], 0, false, isPlayer);
 		animation.add('monster-christmas', [19, 20], 0, false, isPlayer);
-		animation.add('crewmatered', [21, 22], 0, false, isPlayer);
-		animation.add('parapa', [25, 26], 0, false, isPlayer);
-		animation.add('crewmate', [23, 24], 0, false, isPlayer);
+		for (charList in splitCharList) {
+			charList = charList.trim();
+			var rawJson = '';
+			try {
+				#if sys
+				rawJson = File.getContent(Path.normalize(System.applicationDirectory+"/assets/images/custom_chars/"+charList+".json"));
+				#else
+				rawJson = Assets.getText('assets/images/custom_chars/'+charList+'.json');
+				#end
+			} catch (e) {
+				trace(e);
+				rawJson = '{"icons":[0,1]}';
+			}
+			var parsedJson = Json.parse(rawJson);
+			animation.add(charList, parsedJson.icons, 0, false, isPlayer);
+		}
 		animation.play(char);
 		scrollFactor.set();
 	}

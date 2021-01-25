@@ -3,7 +3,14 @@ package;
 import flixel.FlxSprite;
 import flixel.animation.FlxBaseAnimation;
 import flixel.graphics.frames.FlxAtlasFrames;
+import flash.display.BitmapData;
 import lime.utils.Assets;
+import lime.system.System;
+#if sys
+import sys.io.File;
+import haxe.io.Path;
+import openfl.utils.ByteArray;
+#end
 import haxe.Json;
 import haxe.format.JsonParser;
 using StringTools;
@@ -20,7 +27,7 @@ class Character extends FlxSprite
 	public var camOffsetX:Int = 0;
 	public var camOffsetY:Int = 0;
 	public var holdTimer:Float = 0;
-
+	public var likeBF:Bool = false;
 	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false)
 	{
 		animOffsets = new Map<String, Array<Dynamic>>();
@@ -292,7 +299,7 @@ class Character extends FlxSprite
 				addOffset('scared', -4);
 
 				flipX = true;
-
+				likeBF = true;
 			case 'bf-christmas':
 				var tex = FlxAtlasFrames.fromSparrow('assets/images/christmas/bfChristmas.png', 'assets/images/christmas/bfChristmas.xml');
 				frames = tex;
@@ -319,6 +326,7 @@ class Character extends FlxSprite
 				addOffset("hey", 7, 4);
 
 				flipX = true;
+				likeBF = true;
 			case 'bf-car':
 				var tex = FlxAtlasFrames.fromSparrow('assets/images/bfCar.png', 'assets/images/bfCar.xml');
 				frames = tex;
@@ -343,6 +351,7 @@ class Character extends FlxSprite
 				addOffset("singDOWNmiss", -11, -19);
 
 				flipX = true;
+				likeBF = true;
 			case 'parents-christmas':
 				frames = FlxAtlasFrames.fromSparrow('assets/images/christmas/mom_dad_christmas_assets.png',
 					'assets/images/christmas/mom_dad_christmas_assets.xml');
@@ -369,9 +378,23 @@ class Character extends FlxSprite
 				addOffset("singDOWN-alt", -30, -27);
 			default:
 				// assume it is a custom character. if not: oh well
+				// protective ritual to protect against new lines
+				curCharacter = curCharacter.trim();
+				trace(curCharacter);
+				#if sys
+				var rawPic = File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_chars/'+curCharacter+".png"));
+				var rawXml = File.getContent(Path.normalize(System.applicationDirectory+'/assets/images/custom_chars/'+curCharacter+".xml"));
+				var tex = FlxAtlasFrames.fromSparrow(BitmapData.fromBytes(ByteArray.fromBytes(rawPic)),rawXml);
+				#else
+				// sorry html5 people no custom characters for you
 				var tex = FlxAtlasFrames.fromSparrow("assets/images/custom_chars/"+curCharacter+".png","assets/images/custom_chars/"+curCharacter+".xml");
+				#end
 				frames = tex;
+				#if sys
+				var animJson = File.getContent(Path.normalize(System.applicationDirectory+"/assets/images/custom_chars/"+curCharacter+".json"));
+				#else
 				var animJson = Assets.getText("assets/images/custom_chars/"+curCharacter+".json").trim();
+				#end
 				while (!animJson.endsWith("}"))
 				{
 					animJson = animJson.substr(0, animJson.length - 1);
@@ -395,6 +418,7 @@ class Character extends FlxSprite
 				enemyOffsetX = parsedAnimJson.enemyOffsetX;
 				enemyOffsetY = parsedAnimJson.enemyOffsetY;
 				flipX = parsedAnimJson.flipx;
+				likeBF = parsedAnimJson.likebf;
 		}
 
 		antialiasing = true;
@@ -404,9 +428,8 @@ class Character extends FlxSprite
 		if (isPlayer)
 		{
 			flipX = !flipX;
-
 			// Doesn't flip for BF, since his are already in the right place???
-			if (character != 'bf' && character != 'bf-car' && character != 'bf-christmas')
+			if (!likeBF)
 			{
 				// var animArray
 				var oldRight = animation.getByName('singRIGHT').frames;
@@ -426,7 +449,7 @@ class Character extends FlxSprite
 
 	override function update(elapsed:Float)
 	{
-		if (!curCharacter.startsWith('bf'))
+		if (!likeBF)
 		{
 			if (animation.curAnim.name.startsWith('sing'))
 			{
@@ -525,9 +548,7 @@ class Character extends FlxSprite
 					playAnim('idle');
 				case 'pico':
 					playAnim('idle');
-				case 'imposter':
-					playAnim('idle');
-				case 'crewmate':
+				default:
 					playAnim('idle');
 			}
 		}
