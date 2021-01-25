@@ -31,6 +31,14 @@ import haxe.Json;
 import lime.utils.Assets;
 import openfl.display.BlendMode;
 import openfl.filters.ShaderFilter;
+import lime.system.System;
+#if sys
+import sys.io.File;
+import haxe.io.Path;
+import openfl.utils.ByteArray;
+import lime.media.AudioBuffer;
+import flash.media.Sound;
+#end
 
 using StringTools;
 
@@ -646,7 +654,11 @@ class PlayState extends MusicBeatState
 		lastReportedPlayheadPosition = 0;
 
 		if (!paused)
+			#if sys
+			FlxG.sound.playMusic(Sound.fromAudioBuffer(AudioBuffer.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+"/assets/music/"+SONG.song+"_Inst"+TitleState.soundExt)))), 1, false);
+			#else
 			FlxG.sound.playMusic("assets/music/" + SONG.song + "_Inst" + TitleState.soundExt, 1, false);
+			#end
 		FlxG.sound.music.onComplete = endSong;
 		vocals.play();
 	}
@@ -662,9 +674,14 @@ class PlayState extends MusicBeatState
 
 		curSong = songData.song;
 
-		if (SONG.needsVoices)
+		if (SONG.needsVoices) {
+			#if sys
+			var vocalSound = Sound.fromAudioBuffer(AudioBuffer.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+"/assets/music/"+SONG.song+"_Voices"+TitleState.soundExt))));
+			vocals = new FlxSound().loadEmbedded(vocalSound);
+			#else
 			vocals = new FlxSound().loadEmbedded("assets/music/" + curSong + "_Voices" + TitleState.soundExt);
-		else
+			#end
+		}	else
 			vocals = new FlxSound();
 
 		FlxG.sound.list.add(vocals);
