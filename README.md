@@ -80,15 +80,6 @@ To run it from your desktop (Windows, Mac, Linux) it can be a bit more involved.
 
 This will install about 22GB of crap, but once that is done you can open up a command line in the project's directory and run `lime test windows -debug`. Once that command finishes (it takes forever even on a higher end PC), you can run FNF from the .exe file under export\release\windows\bin
 As for Mac, 'lime test mac -debug' should work, if not the internet surely has a guide on how to compile Haxe stuff for Mac.
-
-### Mods Used
-	* Crewmate by [Kodomodachi](https://gamebanana.com/members/1755729)
-	* DK Rap by [OstrichNotFlamingo](https://gamebanana.com/members/1770709)
-	* Your Reality by [AjTheYandere](https://gamebanana.com/members/1766216)
-	* Toasty Buns by [LazyyLimp](https://gamebanana.com/members/1771354)
-	* Among Us Trap Remix by [the shankrom](https://gamebanana.com/members/1764863)
-	* New Monster over Monster by [Cval](https://gamebanana.com/members/1744375)
-	* Parappa the Rappa by [DrMintyFresh](https://gamebanana.com/members/1769313)
 ### Additional guides
 
 - [Command line basics](https://ninjamuffin99.newgrounds.com/news/post/1090480)
