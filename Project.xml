@@ -42,7 +42,8 @@
 
 	<assets path="assets/images" />
 	<assets path="assets/data" />
-	<assets path='assets/mods' />
+	<assets path='example_mods' rename='mods' embed='false'/>
+	<!-- <template path='mods' /> -->
 	
 	<!-- <library name="noPreload" preload='false'/> -->
 	<!-- <library name="noPreload"/> -->

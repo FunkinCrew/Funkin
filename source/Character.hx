@@ -338,6 +338,37 @@ class Character extends FlxSprite
 				addOffset("singDOWNmiss", -11, -19);
 
 				flipX = true;
+			case 'bf-pixel':
+				frames = FlxAtlasFrames.fromSparrow('assets/images/weeb/bfPixel.png', 'assets/images/weeb/bfPixel.xml');
+				animation.addByPrefix('idle', 'BF IDLE', 24, false);
+				animation.addByPrefix('singUP', 'BF UP NOTE', 24, false);
+				animation.addByPrefix('singLEFT', 'BF LEFT NOTE', 24, false);
+				animation.addByPrefix('singRIGHT', 'BF RIGHT NOTE', 24, false);
+				animation.addByPrefix('singDOWN', 'BF DOWN NOTE', 24, false);
+				animation.addByPrefix('singUPmiss', 'BF UP MISS', 24, false);
+				animation.addByPrefix('singLEFTmiss', 'BF LEFT MISS', 24, false);
+				animation.addByPrefix('singRIGHTmiss', 'BF RIGHT MISS', 24, false);
+				animation.addByPrefix('singDOWNmiss', 'BF DOWN MISS', 24, false);
+
+				addOffset('idle');
+				addOffset("singUP");
+				addOffset("singRIGHT");
+				addOffset("singLEFT");
+				addOffset("singDOWN");
+				addOffset("singUPmiss");
+				addOffset("singRIGHTmiss");
+				addOffset("singLEFTmiss");
+				addOffset("singDOWNmiss");
+
+				setGraphicSize(Std.int(width * 6));
+				updateHitbox();
+
+				width -= 100;
+				height -= 100;
+
+				antialiasing = false;
+
+				flipX = true;
 			case 'parents-christmas':
 				frames = FlxAtlasFrames.fromSparrow('assets/images/christmas/mom_dad_christmas_assets.png',
 					'assets/images/christmas/mom_dad_christmas_assets.xml');
@@ -364,8 +395,6 @@ class Character extends FlxSprite
 				addOffset("singDOWN-alt", -30, -27);
 		}
 
-		antialiasing = true;
-
 		playAnim('singUP');
 
 		if (isPlayer)
@@ -373,7 +402,7 @@ class Character extends FlxSprite
 			flipX = !flipX;
 
 			// Doesn't flip for BF, since his are already in the right place???
-			if (character != 'bf' && character != 'bf-car' && character != 'bf-christmas')
+			if (!curCharacter.startsWith('bf'))
 			{
 				// var animArray
 				var oldRight = animation.getByName('singRIGHT').frames;
@@ -432,16 +461,6 @@ class Character extends FlxSprite
 		{
 			switch (curCharacter)
 			{
-				case 'mom':
-					playAnim('idle');
-				case 'mom-car':
-					playAnim('idle');
-				case 'bf':
-					playAnim('idle');
-				case 'bf-christmas':
-					playAnim('idle');
-				case 'bf-car':
-					playAnim('idle');
 				case 'gf':
 					if (!animation.curAnim.name.startsWith('hair'))
 					{
@@ -482,15 +501,7 @@ class Character extends FlxSprite
 						playAnim('danceRight');
 					else
 						playAnim('danceLeft');
-				case 'dad':
-					playAnim('idle');
-				case 'parents-christmas':
-					playAnim('idle');
-				case 'monster':
-					playAnim('idle');
-				case 'monster-christmas':
-					playAnim('idle');
-				case 'pico':
+				default:
 					playAnim('idle');
 			}
 		}
