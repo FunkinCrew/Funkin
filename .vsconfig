@@ -1,0 +1,25 @@
+{
+  "version": "1.0",
+  "components": [
+    "Microsoft.VisualStudio.Component.CoreEditor",
+    "Microsoft.VisualStudio.Workload.CoreEditor",
+    "Microsoft.Net.Component.4.6.1.TargetingPack",
+    "Microsoft.Net.Component.4.8.SDK",
+    "Microsoft.VisualStudio.Component.VC.CoreIde",
+    "Microsoft.VisualStudio.Component.VC.Tools.x86.x64",
+    "Microsoft.VisualStudio.Component.Graphics.Tools",
+    "Microsoft.VisualStudio.Component.VC.DiagnosticTools",
+    "Microsoft.VisualStudio.Component.VC.CMake.Project",
+    "Microsoft.VisualStudio.Component.VC.ATL",
+    "Microsoft.VisualStudio.Component.VC.ATLMFC",
+    "Microsoft.VisualStudio.Component.VC.Modules.x86.x64",
+    "Microsoft.VisualStudio.Component.VC.Llvm.Clang",
+    "Microsoft.VisualStudio.Component.Windows10SDK.17763",
+    "Microsoft.VisualStudio.Component.Windows10SDK.17134",
+    "Microsoft.VisualStudio.Component.Windows10SDK.16299",
+    "Microsoft.VisualStudio.Component.VC.v141.x86.x64",
+    "Microsoft.Component.VC.Runtime.UCRTSDK",
+    "Microsoft.VisualStudio.Component.VC.140",
+    "Microsoft.VisualStudio.Component.VC.14.21.CLI.Support"
+  ]
+}
