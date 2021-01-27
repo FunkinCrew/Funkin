@@ -756,7 +756,10 @@ class PlayState extends MusicBeatState
 			if (ss && misses == 0)
 				accuracy = 100.00;
 			else
+			{
 				accuracy = 99.98;
+				ss = false;
+			}
 		}
 		
 		// this is aids, I know it is aids. Please make this better, I hate looking at it.
