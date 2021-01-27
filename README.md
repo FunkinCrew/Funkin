@@ -22,11 +22,9 @@ That should give you HaxeFlixel and all of it's setup and shit. If you run into 
 
 Other installations you'd need is the additional libraries, a fully updated list will be in `Project.xml` in the project root, but here are the one's I'm using as of writing.
 
-Run each command to install the libary.
+Run each command to install the libary. (Most will be installed when you setup HaxeFlixel)
 
 ```
-haxelib install hscript
-haxelib install flixel-ui
 haxelib install newgrounds
 haxelib git polymod https://github.com/larsiusprime/polymod.git
 ```
@@ -99,13 +97,25 @@ After installing the required components, but once that is done you can open up 
 lime test windows -debug
 ```
 
-Once that command finishes (it takes forever even on a higher end PC), you can run FNF from the `.exe` file under `export\release\windows\bin`. FNF also needs it's assets to run, so don't delete those.
+Once that command finishes (it takes forever even on a higher end PC), you can run FNF from the `.exe` file under `export\debug\windows\bin`. FNF also needs it's assets to run, so don't delete those.
 
 #### Linux
-For Linux, you only need to open a terminal in the project directory and run ```lime test linux -debug``` and then run the executible file in export/release/linux/bin. For Windows, 
+For Linux, you only need to open a terminal in the project directory and run the command below.
 
-#### Mac
-// TODO: build it on a mac
+```
+lime test linux -debug
+```
+
+After that, run the executible file in `export/debug/linux/bin`. FNF also needs it's assets to run, so don't delete those.
+
+#### macOS
+For macOS, you only need to open a terminal in the project directory and run the command below.
+
+```
+lime test mac -debug
+```
+
+After that, run the executible file in `export/debug/macos/bin`. FNF also needs it's assets to run, so don't delete those.
 
 ### Additional guides
 * New to the command line? Read [this short guide on command line basics](https://ninjamuffin99.newgrounds.com/news/post/1090480).
