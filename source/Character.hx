@@ -116,7 +116,7 @@ class Character extends FlxSprite
 				addOffset('danceRight', 0);
 
 				playAnim('danceRight');
-				like = "gf";
+				like = "gf-car";
 			case 'dad':
 				// DAD ANIMATION LOADING CODE
 				tex = FlxAtlasFrames.fromSparrow('assets/images/DADDY_DEAREST.png', 'assets/images/DADDY_DEAREST.xml');
@@ -208,9 +208,10 @@ class Character extends FlxSprite
 				addOffset("singUP", -20, 50);
 				addOffset("singRIGHT", -51);
 				addOffset("singLEFT", -30);
-				addOffset("singDOWN", -30, -40);
+				addOffset("singDOWN", -40, -94);
 				playAnim('idle');
-				like = "monster";
+				// like new monster due to new assets
+				like = "newmonster";
 			case 'monster-christmas':
 				tex = FlxAtlasFrames.fromSparrow('assets/images/christmas/monsterChristmas.png', 'assets/images/christmas/monsterChristmas.xml');
 				frames = tex;
@@ -470,6 +471,7 @@ class Character extends FlxSprite
 					enemyOffsetY = parsedAnimJson.enemyOffsetY;
 					flipX = parsedAnimJson.flipx;
 					like = parsedAnimJson.like;
+					playAnim(parsedAnimJson.playAnim);
 				}
 				#else
 				// pretend its boyfriend, screw html5

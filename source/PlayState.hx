@@ -408,7 +408,7 @@ class PlayState extends MusicBeatState
 			case "spooky":
 				dad.y += 200;
 			case "monster":
-				dad.y += 100;
+				dad.y += 130;
 			case 'monster-christmas':
 				dad.y += 130;
 			case 'dad':
@@ -423,6 +423,15 @@ class PlayState extends MusicBeatState
 				dad.y += dad.enemyOffsetY;
 				camPos.x += dad.camOffsetX;
 				camPos.y += dad.camOffsetY;
+				if (dad.like == "gf") {
+					dad.setPosition(gf.x, gf.y);
+					gf.visible = false;
+					if (isStoryMode)
+					{
+						camPos.x += 600;
+						tweenCamIn();
+					}
+				}
 		}
 
 		boyfriend = new Boyfriend(770, 450, SONG.player1);
@@ -1877,7 +1886,7 @@ class PlayState extends MusicBeatState
 		{
 			boyfriend.playAnim('hey', true);
 
-			if (SONG.song == 'Tutorial' && dad.curCharacter == 'gf')
+			if (SONG.song == 'Tutorial' && dad.like == 'gf')
 			{
 				dad.playAnim('cheer', true);
 			}
