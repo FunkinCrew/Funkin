@@ -1,7 +1,7 @@
 {
   "animation": {
     "idle": {
-      "name": "BF idle Dance",
+      "name": "BF idle dance",
       "loop": false
     },
     "singUP": {
