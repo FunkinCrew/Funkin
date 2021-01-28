@@ -228,7 +228,7 @@ class ChartingState extends MusicBeatState
 
 		var characters:Array<String> = CoolUtil.coolTextFile('assets/data/characterList.txt');
 		var stages:Array<String> = CoolUtil.coolTextFile('assets/data/stages.txt');
-		for (i in Assets.getText('assets/images/custom_chars/charlist.txt').split('\n'))
+		for (i in Reflect.fields(Json.parse(Assets.getText('assets/images/custom_chars/custom_chars.json'))))
 		{
 			characters.push(i);
 		}
@@ -248,7 +248,34 @@ class ChartingState extends MusicBeatState
 			_song.stage = stages[Std.parseInt(stage)];
 		});
 		player2DropDown.selectedLabel = _song.player2;
-		stageDropDown.selectedLabel = _song.stage;
+		var curStage = "stage";
+		switch (_song.song) {
+			case "spookeez":
+				curStage = "spooky";
+			case "south":
+				curStage = "spooky";
+			case "monster":
+				curStage = "spooky";
+			case "pico":
+				curStage = "philly";
+			case "blammed":
+				curStage = "philly";
+			case "philly":
+				curStage = "philly";
+			case "milf":
+				curStage = "limo";
+			case "high":
+				curStage = "limo";
+			case "satin-panties":
+				curStage = "limo";
+			case "cocoa":
+				curStage = "mall";
+			case "eggnog":
+				curStage = "mall";
+			case "winter-horrorland":
+				curStage = "mallEvil";
+		}
+		stageDropDown.selectedLabel = if (_song.stage != null) _song.stage else curStage;
 		var tab_group_song = new FlxUI(null, UI_box);
 		tab_group_song.name = "Song";
 		tab_group_song.add(UI_songTitle);

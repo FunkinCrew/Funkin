@@ -1011,7 +1011,7 @@ class PlayState extends MusicBeatState
 			{
 				camFollow.setPosition(dad.getMidpoint().x + 150, dad.getMidpoint().y - 100);
 				// camFollow.setPosition(lucky.getMidpoint().x - 120, lucky.getMidpoint().y + 210);
-				if (dad.curCharacter == 'mom')
+				if (dad.like == 'mom')
 					camFollow.y = dad.getMidpoint().y;
 				vocals.volume = 1;
 

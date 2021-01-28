@@ -16,6 +16,9 @@ class HealthIcon extends FlxSprite
 	{
 		super();
 		loadGraphic('assets/images/iconGrid.png', true, 150, 150);
+		#if sys
+		var charJson:Dynamic = Json.parse(File.getContent(Path.normalize(System.applicationDirectory+"assets/images/custom_chars/custom_chars.json")));
+		#end
 		var rawCharList = Assets.getText('assets/images/custom_chars/charlist.txt').trim();
 		var splitCharList = rawCharList.split("\n");
 		antialiasing = true;
@@ -34,23 +37,13 @@ class HealthIcon extends FlxSprite
 		animation.add('parents-christmas', [17], 0, false, isPlayer);
 		animation.add('monster', [19, 20], 0, false, isPlayer);
 		animation.add('monster-christmas', [19, 20], 0, false, isPlayer);
-		for (charList in splitCharList) {
-			charList = charList.trim();
-			var rawJson = '';
-			try {
-				#if sys
-				rawJson = File.getContent(Path.normalize(System.applicationDirectory+"/assets/images/custom_chars/"+charList+".json"));
-				#else
-				rawJson = Assets.getText('assets/images/custom_chars/'+charList+'.json');
-				#end
-			} catch (e) {
-				trace(e);
-				rawJson = '{"icons":[0,1]}';
-			}
-			var parsedJson = Json.parse(rawJson);
-			animation.add(charList, parsedJson.icons, 0, false, isPlayer);
+		#if sys
+		for (field in Reflect.fields(charJson)) {
+			animation.add(field, Reflect.field(charJson,field).icons, 0, false, isPlayer);
 		}
+		#end
 		animation.play(char);
 		scrollFactor.set();
+
 	}
 }

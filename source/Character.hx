@@ -27,7 +27,7 @@ class Character extends FlxSprite
 	public var camOffsetX:Int = 0;
 	public var camOffsetY:Int = 0;
 	public var holdTimer:Float = 0;
-	public var likeBF:Bool = false;
+	public var like:String = "bf";
 	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false)
 	{
 		animOffsets = new Map<String, Array<Dynamic>>();
@@ -72,7 +72,7 @@ class Character extends FlxSprite
 				addOffset('scared', -2, -17);
 
 				playAnim('danceRight');
-
+				like = "gf";
 			case 'gf-christmas':
 				tex = FlxAtlasFrames.fromSparrow('assets/images/christmas/gfChristmas.png', 'assets/images/christmas/gfChristmas.xml');
 				frames = tex;
@@ -103,7 +103,7 @@ class Character extends FlxSprite
 				addOffset('scared', -2, -17);
 
 				playAnim('danceRight');
-
+				like ="gf";
 			case 'gf-car':
 				tex = FlxAtlasFrames.fromSparrow('assets/images/gfCar.png', 'assets/images/gfCar.xml');
 				frames = tex;
@@ -116,7 +116,7 @@ class Character extends FlxSprite
 				addOffset('danceRight', 0);
 
 				playAnim('danceRight');
-
+				like = "gf";
 			case 'dad':
 				// DAD ANIMATION LOADING CODE
 				tex = FlxAtlasFrames.fromSparrow('assets/images/DADDY_DEAREST.png', 'assets/images/DADDY_DEAREST.xml');
@@ -134,6 +134,7 @@ class Character extends FlxSprite
 				addOffset("singDOWN", 0, -30);
 
 				playAnim('idle');
+				like = "dad";
 			case 'spooky':
 				tex = FlxAtlasFrames.fromSparrow('assets/images/spooky_kids_assets.png', 'assets/images/spooky_kids_assets.xml');
 				frames = tex;
@@ -153,6 +154,7 @@ class Character extends FlxSprite
 				addOffset("singDOWN", -50, -130);
 
 				playAnim('danceRight');
+				like = "spooky";
 			case 'mom':
 				tex = FlxAtlasFrames.fromSparrow('assets/images/Mom_Assets.png', 'assets/images/Mom_Assets.xml');
 				frames = tex;
@@ -172,7 +174,7 @@ class Character extends FlxSprite
 				addOffset("singDOWN", 20, -160);
 
 				playAnim('idle');
-
+				like = "mom";
 			case 'mom-car':
 				tex = FlxAtlasFrames.fromSparrow('assets/images/momCar.png', 'assets/images/momCar.xml');
 				frames = tex;
@@ -192,6 +194,7 @@ class Character extends FlxSprite
 				addOffset("singDOWN", 20, -160);
 
 				playAnim('idle');
+				like = "mom";
 			case 'monster':
 				tex = FlxAtlasFrames.fromSparrow('assets/images/Monster_Assets.png', 'assets/images/Monster_Assets.xml');
 				frames = tex;
@@ -207,6 +210,7 @@ class Character extends FlxSprite
 				addOffset("singLEFT", -30);
 				addOffset("singDOWN", -30, -40);
 				playAnim('idle');
+				like = "monster";
 			case 'monster-christmas':
 				tex = FlxAtlasFrames.fromSparrow('assets/images/christmas/monsterChristmas.png', 'assets/images/christmas/monsterChristmas.xml');
 				frames = tex;
@@ -222,6 +226,7 @@ class Character extends FlxSprite
 				addOffset("singLEFT", -30);
 				addOffset("singDOWN", -40, -94);
 				playAnim('idle');
+				like = "newmonster";
 			case 'pico':
 				tex = FlxAtlasFrames.fromSparrow('assets/images/Pico_FNF_assetss.png', 'assets/images/Pico_FNF_assetss.xml');
 				frames = tex;
@@ -262,7 +267,7 @@ class Character extends FlxSprite
 				playAnim('idle');
 
 				flipX = true;
-
+				like = "pico";
 			case 'bf':
 				var tex = FlxAtlasFrames.fromSparrow('assets/images/BOYFRIEND.png', 'assets/images/BOYFRIEND.xml');
 				frames = tex;
@@ -299,7 +304,7 @@ class Character extends FlxSprite
 				addOffset('scared', -4);
 
 				flipX = true;
-				likeBF = true;
+				like = "bf";
 			case 'bf-christmas':
 				var tex = FlxAtlasFrames.fromSparrow('assets/images/christmas/bfChristmas.png', 'assets/images/christmas/bfChristmas.xml');
 				frames = tex;
@@ -326,7 +331,7 @@ class Character extends FlxSprite
 				addOffset("hey", 7, 4);
 
 				flipX = true;
-				likeBF = true;
+				like = "bf";
 			case 'bf-car':
 				var tex = FlxAtlasFrames.fromSparrow('assets/images/bfCar.png', 'assets/images/bfCar.xml');
 				frames = tex;
@@ -351,7 +356,7 @@ class Character extends FlxSprite
 				addOffset("singDOWNmiss", -11, -19);
 
 				flipX = true;
-				likeBF = true;
+				like = "bf";
 			case 'parents-christmas':
 				frames = FlxAtlasFrames.fromSparrow('assets/images/christmas/mom_dad_christmas_assets.png',
 					'assets/images/christmas/mom_dad_christmas_assets.xml');
@@ -376,49 +381,135 @@ class Character extends FlxSprite
 				addOffset("singRIGHT-alt", -1, -24);
 				addOffset("singLEFT-alt", -30, 15);
 				addOffset("singDOWN-alt", -30, -27);
+				like = "parents";
 			default:
+				#if sys
 				// assume it is a custom character. if not: oh well
 				// protective ritual to protect against new lines
 				curCharacter = curCharacter.trim();
 				trace(curCharacter);
-				#if sys
-				var rawPic = File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_chars/'+curCharacter+".png"));
-				var rawXml = File.getContent(Path.normalize(System.applicationDirectory+'/assets/images/custom_chars/'+curCharacter+".xml"));
-				var tex = FlxAtlasFrames.fromSparrow(BitmapData.fromBytes(ByteArray.fromBytes(rawPic)),rawXml);
-				#else
-				// sorry html5 people no custom characters for you
-				var tex = FlxAtlasFrames.fromSparrow("assets/images/custom_chars/"+curCharacter+".png","assets/images/custom_chars/"+curCharacter+".xml");
-				#end
-				frames = tex;
-				#if sys
-				var animJson = File.getContent(Path.normalize(System.applicationDirectory+"/assets/images/custom_chars/"+curCharacter+".json"));
-				#else
-				var animJson = Assets.getText("assets/images/custom_chars/"+curCharacter+".json").trim();
-				#end
-				while (!animJson.endsWith("}"))
-				{
-					animJson = animJson.substr(0, animJson.length - 1);
-					// LOL GOING THROUGH THE BULLSHIT TO CLEAN IDK WHATS STRANGE
-					// this is a protective ritual to ward off code demons idk what it does
-				}
-				var parsedAnimJson:Dynamic = Json.parse(animJson);
-				for( field in Reflect.fields(parsedAnimJson.animation) ) {
-					if (!!Reflect.field(parsedAnimJson.animation,field).flipplayer2 && !isPlayer) {
-						// the double not is to turn a null into a false
-						animation.addByPrefix(field,Reflect.field(parsedAnimJson.animation,field).flippedname, 24, !!Reflect.field(parsedAnimJson.animation,field).loop);
-					} else {
-						animation.addByPrefix(field,Reflect.field(parsedAnimJson.animation,field).name, 24, !!Reflect.field(parsedAnimJson.animation,field).loop);
+				var charJson:Dynamic = Json.parse(File.getContent(Path.normalize(System.applicationDirectory+"assets/images/custom_chars/custom_chars.json")));
+				if (!(Reflect.hasField(charJson,curCharacter))) {
+					// to avoid a crash, pretend it's bf
+					var tex = FlxAtlasFrames.fromSparrow('assets/images/BOYFRIEND.png', 'assets/images/BOYFRIEND.xml');
+					frames = tex;
+					animation.addByPrefix('idle', 'BF idle dance', 24, false);
+					animation.addByPrefix('singUP', 'BF NOTE UP0', 24, false);
+					animation.addByPrefix('singLEFT', 'BF NOTE LEFT0', 24, false);
+					animation.addByPrefix('singRIGHT', 'BF NOTE RIGHT0', 24, false);
+					animation.addByPrefix('singDOWN', 'BF NOTE DOWN0', 24, false);
+					animation.addByPrefix('singUPmiss', 'BF NOTE UP MISS', 24, false);
+					animation.addByPrefix('singLEFTmiss', 'BF NOTE LEFT MISS', 24, false);
+					animation.addByPrefix('singRIGHTmiss', 'BF NOTE RIGHT MISS', 24, false);
+					animation.addByPrefix('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
+					animation.addByPrefix('hey', 'BF HEY', 24, false);
+
+					animation.addByPrefix('firstDeath', "BF dies", 24, false);
+					animation.addByPrefix('deathLoop', "BF Dead Loop", 24, true);
+					animation.addByPrefix('deathConfirm', "BF Dead confirm", 24, false);
+
+					animation.addByPrefix('scared', 'BF idle shaking', 24);
+
+					addOffset('idle', -5);
+					addOffset("singUP", -29, 27);
+					addOffset("singRIGHT", -38, -7);
+					addOffset("singLEFT", 12, -6);
+					addOffset("singDOWN", -10, -50);
+					addOffset("singUPmiss", -29, 27);
+					addOffset("singRIGHTmiss", -30, 21);
+					addOffset("singLEFTmiss", 12, 24);
+					addOffset("singDOWNmiss", -11, -19);
+					addOffset("hey", 7, 4);
+					addOffset('firstDeath', 37, 11);
+					addOffset('deathLoop', 37, 5);
+					addOffset('deathConfirm', 37, 69);
+					addOffset('scared', -4);
+
+					flipX = true;
+					like = "bf";
+				} else {
+					var rawPic = File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_chars/'+curCharacter+".png"));
+					var rawXml = File.getContent(Path.normalize(System.applicationDirectory+'/assets/images/custom_chars/'+curCharacter+".xml"));
+					var tex = FlxAtlasFrames.fromSparrow(BitmapData.fromBytes(ByteArray.fromBytes(rawPic)),rawXml);
+					frames = tex;
+					var animJson = File.getContent(Path.normalize(System.applicationDirectory+"/assets/images/custom_chars/"+Reflect.field(charJson,curCharacter).like+".json"));
+					while (!animJson.endsWith("}"))
+					{
+						animJson = animJson.substr(0, animJson.length - 1);
+						// LOL GOING THROUGH THE BULLSHIT TO CLEAN IDK WHATS STRANGE
+						// this is a protective ritual to ward off code demons idk what it does
 					}
+					var parsedAnimJson:Dynamic = Json.parse(animJson);
+					for( field in Reflect.fields(parsedAnimJson.animation) ) {
+						var fps = 24;
+						if (Reflect.hasField(Reflect.field(parsedAnimJson.animation,field), "fps")) {
+							fps = Reflect.field(parsedAnimJson.animation,field).fps;
+						}
+						if (!!Reflect.field(parsedAnimJson.animation,field).flipplayer2 && !isPlayer) {
+							// the double not is to turn a null into a false
+							if (!!Reflect.field(parsedAnimJson.animation,field).byIndices) {
+								animation.addByIndices(field, Reflect.field(parsedAnimJson.animation,field).flippedname, Reflect.field(parsedAnimJson.animation,field).indices, "", fps, !!Reflect.field(parsedAnimJson.animation,field).loop);
+							} else {
+								animation.addByPrefix(field,Reflect.field(parsedAnimJson.animation,field).flippedname, fps, !!Reflect.field(parsedAnimJson.animation,field).loop);
+							}
+
+						} else {
+							if (!!Reflect.field(parsedAnimJson.animation,field).byIndices) {
+								animation.addByIndices(field, Reflect.field(parsedAnimJson.animation,field).name, Reflect.field(parsedAnimJson.animation,field).indices, "", fps, !!Reflect.field(parsedAnimJson.animation,field).loop);
+							} else {
+								animation.addByPrefix(field,Reflect.field(parsedAnimJson.animation,field).name, fps, !!Reflect.field(parsedAnimJson.animation,field).loop);
+							}
+						}
+					}
+					for( field in Reflect.fields(parsedAnimJson.offset)) {
+						addOffset(field, Reflect.field(parsedAnimJson.offset,field)[0],  Reflect.field(parsedAnimJson.offset,field)[1]);
+					}
+					camOffsetX = parsedAnimJson.camOffsetX;
+					camOffsetY = parsedAnimJson.camOffsetY;
+					enemyOffsetX = parsedAnimJson.enemyOffsetX;
+					enemyOffsetY = parsedAnimJson.enemyOffsetY;
+					flipX = parsedAnimJson.flipx;
+					like = parsedAnimJson.like;
 				}
-				for( field in Reflect.fields(parsedAnimJson.offset)) {
-					addOffset(field, Reflect.field(parsedAnimJson.offset,field)[0],  Reflect.field(parsedAnimJson.offset,field)[1]);
-				}
-				camOffsetX = parsedAnimJson.camOffsetX;
-				camOffsetY = parsedAnimJson.camOffsetY;
-				enemyOffsetX = parsedAnimJson.enemyOffsetX;
-				enemyOffsetY = parsedAnimJson.enemyOffsetY;
-				flipX = parsedAnimJson.flipx;
-				likeBF = parsedAnimJson.likebf;
+				#else
+				// pretend its boyfriend, screw html5
+				var tex = FlxAtlasFrames.fromSparrow('assets/images/BOYFRIEND.png', 'assets/images/BOYFRIEND.xml');
+				frames = tex;
+				animation.addByPrefix('idle', 'BF idle dance', 24, false);
+				animation.addByPrefix('singUP', 'BF NOTE UP0', 24, false);
+				animation.addByPrefix('singLEFT', 'BF NOTE LEFT0', 24, false);
+				animation.addByPrefix('singRIGHT', 'BF NOTE RIGHT0', 24, false);
+				animation.addByPrefix('singDOWN', 'BF NOTE DOWN0', 24, false);
+				animation.addByPrefix('singUPmiss', 'BF NOTE UP MISS', 24, false);
+				animation.addByPrefix('singLEFTmiss', 'BF NOTE LEFT MISS', 24, false);
+				animation.addByPrefix('singRIGHTmiss', 'BF NOTE RIGHT MISS', 24, false);
+				animation.addByPrefix('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
+				animation.addByPrefix('hey', 'BF HEY', 24, false);
+
+				animation.addByPrefix('firstDeath', "BF dies", 24, false);
+				animation.addByPrefix('deathLoop', "BF Dead Loop", 24, true);
+				animation.addByPrefix('deathConfirm', "BF Dead confirm", 24, false);
+
+				animation.addByPrefix('scared', 'BF idle shaking', 24);
+
+				addOffset('idle', -5);
+				addOffset("singUP", -29, 27);
+				addOffset("singRIGHT", -38, -7);
+				addOffset("singLEFT", 12, -6);
+				addOffset("singDOWN", -10, -50);
+				addOffset("singUPmiss", -29, 27);
+				addOffset("singRIGHTmiss", -30, 21);
+				addOffset("singLEFTmiss", 12, 24);
+				addOffset("singDOWNmiss", -11, -19);
+				addOffset("hey", 7, 4);
+				addOffset('firstDeath', 37, 11);
+				addOffset('deathLoop', 37, 5);
+				addOffset('deathConfirm', 37, 69);
+				addOffset('scared', -4);
+
+				flipX = true;
+				like = "bf";
+				#end
 		}
 
 		antialiasing = true;
@@ -429,7 +520,7 @@ class Character extends FlxSprite
 		{
 			flipX = !flipX;
 			// Doesn't flip for BF, since his are already in the right place???
-			if (!likeBF)
+			if (like != "bf")
 			{
 				// var animArray
 				var oldRight = animation.getByName('singRIGHT').frames;
@@ -449,7 +540,7 @@ class Character extends FlxSprite
 
 	override function update(elapsed:Float)
 	{
-		if (!likeBF)
+		if (like != "bf")
 		{
 			if (animation.curAnim.name.startsWith('sing'))
 			{
@@ -557,14 +648,14 @@ class Character extends FlxSprite
 	public function playAnim(AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0):Void
 	{
 		animation.play(AnimName, Force, Reversed, Frame);
-
+		trace("played anim:"+AnimName);
 		var daOffset = animOffsets.get(animation.curAnim.name);
 		if (animOffsets.exists(animation.curAnim.name))
 		{
 			offset.set(daOffset[0], daOffset[1]);
 		}
 
-		if (curCharacter == 'gf')
+		if (like == 'gf')
 		{
 			if (AnimName == 'singLEFT')
 			{
