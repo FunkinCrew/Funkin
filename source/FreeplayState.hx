@@ -76,6 +76,7 @@ class FreeplayState extends MusicBeatState
 		if (StoryMenuState.weekUnlocked[6] || isDebug)
 		{
 			songs.push('Senpai');
+			songs.push('Roses');
 			songs.push('Thorns');
 			// songs.push('Winter-Horrorland');
 		}
