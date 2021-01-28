@@ -22,6 +22,7 @@ IF YOU WANT TO JUST DOWNLOAD AND INSTALL AND PLAY THE GAME NORMALLY, GO TO ITCH.
 
 https://ninja-muffin24.itch.io/friday-night-funkin
 
+IF YOU WANT TO COMPILE THE GAME YOURSELF, CONTINUE READING!!!
 
 ### Installing shit
 
