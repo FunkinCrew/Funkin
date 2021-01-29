@@ -52,7 +52,7 @@ Once you have all those installed, it's pretty easy to compile the game.
 #### HTML5
 For `HTML5`, You just need to run the command in the root of the project to build and run the `HTML5` version.
 
-```sh
+```
 lime test html5 -debug
 ```
 
@@ -93,7 +93,7 @@ It's going to take a while to install 23GB of applications. Hope you like waitin
 
 After installing the required components, but once that is done you can open up a command line in the project's directory and run the command below.
 
-```sh
+```
 lime test windows -debug
 ```
 
