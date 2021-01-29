@@ -29,7 +29,9 @@ class Alphabet extends FlxSpriteGroup
 	public var widthOfWords:Float = FlxG.width;
 
 	var yMulti:Float = 1;
-
+	var isStepped:Bool = true;
+	var groupX:Float = 90;
+	var groupY:Float = 0.48;
 	// custom shit
 	// amp, backslash, question mark, apostrophy, comma, angry faic, period
 	var lastSprite:AlphaCharacter;
@@ -40,14 +42,16 @@ class Alphabet extends FlxSpriteGroup
 
 	var isBold:Bool = false;
 
-	public function new(x:Float, y:Float, text:String = "", ?bold:Bool = false, typed:Bool = false)
+	public function new(x:Float, y:Float, text:String = "", ?bold:Bool = false, typed:Bool = false, stepped:Bool = true, alignX:Float = 90, alignY:Float = 0.48)
 	{
 		super(x, y);
 
 		_finalText = text;
 		this.text = text;
 		isBold = bold;
-
+		isStepped = stepped;
+		groupX = alignX;
+		groupY = alignY;
 		if (text != "")
 		{
 			if (typed)
@@ -224,8 +228,13 @@ class Alphabet extends FlxSpriteGroup
 		{
 			var scaledY = FlxMath.remapToRange(targetY, 0, 1, 0, 1.3);
 
-			y = FlxMath.lerp(y, (scaledY * 120) + (FlxG.height * 0.48), 0.16);
-			x = FlxMath.lerp(x, (targetY * 20) + 90, 0.16);
+			y = FlxMath.lerp(y, (scaledY * 120) + (FlxG.height * groupY), 0.16);
+			if (isStepped) {
+				x = FlxMath.lerp(x, (targetY * 20) + groupX, 0.16);
+			} else {
+				x = FlxMath.lerp(x, groupX, 0.16);
+			}
+
 		}
 
 		super.update(elapsed);
@@ -260,20 +269,26 @@ class AlphaCharacter extends FlxSprite
 
 	public function createLetter(letter:String):Void
 	{
-		var letterCase:String = "lowercase";
-		if (letter.toLowerCase() != letter)
-		{
-			letterCase = 'capital';
+		if (StringTools.contains(alphabet, letter)) {
+			var letterCase:String = "lowercase";
+			if (letter.toLowerCase() != letter)
+			{
+				letterCase = 'capital';
+			}
+
+			animation.addByPrefix(letter, letter + " " + letterCase, 24);
+			animation.play(letter);
+			updateHitbox();
+
+			FlxG.log.add('the row' + row);
+
+			y = (110 - height);
+			y += row * 60;
+	  } else if (StringTools.contains(numbers,letter)) {
+			createNumber(letter);
+		} else if (StringTools.contains(symbols,letter)) {
+			createSymbol(letter);
 		}
-
-		animation.addByPrefix(letter, letter + " " + letterCase, 24);
-		animation.play(letter);
-		updateHitbox();
-
-		FlxG.log.add('the row' + row);
-
-		y = (110 - height);
-		y += row * 60;
 	}
 
 	public function createNumber(letter:String):Void

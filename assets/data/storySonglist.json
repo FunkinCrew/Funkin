@@ -1,11 +1,11 @@
 {
   "songs": [
-    ["Tutorial"],
-    ["Bopeebo", "Fresh","Dadbattle"],
-    ["Spookeez", "South"],
-    ["Pico", "Philly", "Blammed"],
-    ["Satin-Panties", "High", "Milf"],
-    ["Cocoa", "Eggnog", "Winter-Horrorland"]
+    ["tutorial","Tutorial"],
+    ["dad", "Bopeebo", "Fresh","Dadbattle"],
+    ["skid n pump", "Spookeez", "South"],
+    ["pico", "Pico", "Philly", "Blammed"],
+    ["mom", "Satin-Panties", "High", "Milf"],
+    ["christmas", "Cocoa", "Eggnog", "Winter-Horrorland"]
   ],
   "characters": [
     ["dad", "bf", "gf"],

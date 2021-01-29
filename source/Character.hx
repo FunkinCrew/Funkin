@@ -449,14 +449,16 @@ class Character extends FlxSprite
 						if (!!Reflect.field(parsedAnimJson.animation,field).flipplayer2 && !isPlayer) {
 							// the double not is to turn a null into a false
 							if (!!Reflect.field(parsedAnimJson.animation,field).byIndices) {
-								animation.addByIndices(field, Reflect.field(parsedAnimJson.animation,field).flippedname, Reflect.field(parsedAnimJson.animation,field).indices, "", fps, !!Reflect.field(parsedAnimJson.animation,field).loop);
+								var indicesAnim:Array<Int> = Reflect.field(parsedAnimJson.animation,field).indices;
+								animation.addByIndices(field, Reflect.field(parsedAnimJson.animation,field).flippedname, indicesAnim, "", fps, !!Reflect.field(parsedAnimJson.animation,field).loop);
 							} else {
 								animation.addByPrefix(field,Reflect.field(parsedAnimJson.animation,field).flippedname, fps, !!Reflect.field(parsedAnimJson.animation,field).loop);
 							}
 
 						} else {
 							if (!!Reflect.field(parsedAnimJson.animation,field).byIndices) {
-								animation.addByIndices(field, Reflect.field(parsedAnimJson.animation,field).name, Reflect.field(parsedAnimJson.animation,field).indices, "", fps, !!Reflect.field(parsedAnimJson.animation,field).loop);
+								var indicesAnim:Array<Int> = Reflect.field(parsedAnimJson.animation,field).indices;
+								animation.addByIndices(field, Reflect.field(parsedAnimJson.animation,field).name, indicesAnim, "", fps, !!Reflect.field(parsedAnimJson.animation,field).loop);
 							} else {
 								animation.addByPrefix(field,Reflect.field(parsedAnimJson.animation,field).name, fps, !!Reflect.field(parsedAnimJson.animation,field).loop);
 							}
@@ -642,7 +644,19 @@ class Character extends FlxSprite
 				case 'pico':
 					playAnim('idle');
 				default:
-					playAnim('idle');
+					if (like == "gf" || like == "spooky") {
+						if (!animation.curAnim.name.startsWith('hair'))
+						{
+							danced = !danced;
+
+							if (danced)
+								playAnim('danceRight');
+							else
+								playAnim('danceLeft');
+						}
+					} else {
+						playAnim('idle');
+					}
 			}
 		}
 	}

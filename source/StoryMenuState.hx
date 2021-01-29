@@ -31,6 +31,7 @@ class StoryMenuState extends MusicBeatState
 	var scoreText:FlxText;
 
 	var weekData:Array<Dynamic> = [];
+	var weekNames:Array<String> = [];
 	var curDifficulty:Int = 1;
 
 	public static var weekUnlocked:Array<Bool> = [true, true, true, true, true, true];
@@ -47,7 +48,7 @@ class StoryMenuState extends MusicBeatState
 
 	var txtTracklist:FlxText;
 
-	var grpWeekText:FlxTypedGroup<MenuItem>;
+	var grpWeekText:FlxTypedGroup<Alphabet>;
 	var grpWeekCharacters:FlxTypedGroup<MenuCharacter>;
 
 	var grpLocks:FlxTypedGroup<FlxSprite>;
@@ -69,7 +70,11 @@ class StoryMenuState extends MusicBeatState
 		for (storySongList in storySongJson.songs) {
 			var weekSongs = [];
 			for (song in storySongList) {
-				weekSongs.push(song);
+				if (storySongList[0] == song) {
+					weekNames.push(song);
+				} else {
+					weekSongs.push(song);
+				}
 			}
 			weekData.push(weekSongs);
 		}
@@ -85,7 +90,7 @@ class StoryMenuState extends MusicBeatState
 		var ui_tex = FlxAtlasFrames.fromSparrow('assets/images/campaign_menu_UI_assets.png', 'assets/images/campaign_menu_UI_assets.xml');
 		var yellowBG:FlxSprite = new FlxSprite(0, 56).makeGraphic(FlxG.width, 400, 0xFFF9CF51);
 
-		grpWeekText = new FlxTypedGroup<MenuItem>();
+		grpWeekText = new FlxTypedGroup<Alphabet>();
 		add(grpWeekText);
 
 		var blackBarThingie:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, 56, FlxColor.BLACK);
@@ -100,13 +105,13 @@ class StoryMenuState extends MusicBeatState
 
 		for (i in 0...weekData.length)
 		{
-			var weekThing:MenuItem = new MenuItem(0, yellowBG.y + yellowBG.height + 10, i);
-			weekThing.y += ((weekThing.height + 20) * i);
+			var weekThing:Alphabet = new Alphabet(0, yellowBG.y + yellowBG.height + 70, weekNames[i], true, false, false, 450, 0.8);
+			weekThing.isMenuItem = true;
 			weekThing.targetY = i;
-			grpWeekText.add(weekThing);
 
+
+			grpWeekText.add(weekThing);
 			weekThing.screenCenter(X);
-			weekThing.antialiasing = true;
 			// weekThing.updateHitbox();
 
 			// Needs an offset thingie
@@ -122,6 +127,7 @@ class StoryMenuState extends MusicBeatState
 				lock.antialiasing = true;
 				grpLocks.add(lock);
 			}
+			*/
 		}
 
 		trace("Line 96");
@@ -279,7 +285,6 @@ class StoryMenuState extends MusicBeatState
 			{
 				FlxG.sound.play('assets/sounds/confirmMenu' + TitleState.soundExt);
 
-				grpWeekText.members[curWeek].week.animation.resume();
 				grpWeekCharacters.members[1].animation.play('bfConfirm');
 				stopspamming = true;
 			}
