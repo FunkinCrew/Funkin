@@ -32,6 +32,14 @@ import openfl.events.IOErrorEvent;
 import openfl.media.Sound;
 import openfl.net.FileReference;
 import openfl.utils.ByteArray;
+import lime.system.System;
+#if sys
+import sys.io.File;
+import haxe.io.Path;
+import openfl.utils.ByteArray;
+import lime.media.AudioBuffer;
+import flash.media.Sound;
+#end
 
 using StringTools;
 
@@ -122,6 +130,7 @@ class ChartingState extends MusicBeatState
 				player1: 'bf',
 				player2: 'dad',
 				stage: 'stage',
+				gf: 'gf',
 				sectionLengths: [],
 				speed: 1,
 				validScore: false
@@ -387,11 +396,18 @@ class ChartingState extends MusicBeatState
 			FlxG.sound.music.stop();
 			// vocals.stop();
 		}
-
+		#if sys
+		FlxG.sound.playMusic(Sound.fromAudioBuffer(AudioBuffer.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+"/assets/music/"+daSong+"_Inst"+TitleState.soundExt)))), 0.6);
+		#else
 		FlxG.sound.playMusic('assets/music/' + daSong + "_Inst" + TitleState.soundExt, 0.6);
-
+		#end
 		// WONT WORK FOR TUTORIAL OR TEST SONG!!! REDO LATER
+		#if sys
+		var vocalSound = Sound.fromAudioBuffer(AudioBuffer.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+"/assets/music/"+daSong+"_Voices"+TitleState.soundExt))));
+		vocals = new FlxSound().loadEmbedded(vocalSound);
+		#else
 		vocals = new FlxSound().loadEmbedded("assets/music/" + daSong + "_Voices" + TitleState.soundExt);
+		#end
 		FlxG.sound.list.add(vocals);
 
 		FlxG.sound.music.pause();

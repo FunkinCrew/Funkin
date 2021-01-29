@@ -25,6 +25,7 @@ typedef SwagSong =
 	var player2:String;
 	var validScore:Bool;
 	var stage:String;
+	var gf:String;
 }
 
 class Song
@@ -40,6 +41,7 @@ class Song
 	public var player1:String = 'bf';
 	public var player2:String = 'dad';
 	public var stage:String = 'stage';
+	public var gf:String = 'gf';
 	public function new(song, notes, bpm, sections)
 	{
 		this.song = song;
@@ -79,6 +81,18 @@ class Song
 				parsedJson.stage = 'mallEvil';
 			} else {
 				parsedJson.stage = 'stage';
+			}
+		}
+		if (parsedJson.gf == null) {
+			switch (parsedJson.song.toLowerCase()) {
+				case 'limo':
+					parsedJson.gf = 'gf-car';
+				case 'mall':
+					parsedJson.gf = 'gf-christmas';
+				case 'mallEvil':
+					parsedJson.gf = 'gf-christmas';
+				default:
+					parsedJson.gf = 'gf';
 			}
 		}
 		// FIX THE CASTING ON WINDOWS/NATIVE

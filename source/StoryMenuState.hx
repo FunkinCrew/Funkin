@@ -11,21 +11,26 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import lime.net.curl.CURLCode;
-
+import haxe.Json;
+import lime.utils.Assets;
+import lime.system.System;
+#if sys
+import sys.io.File;
+import haxe.io.Path;
+import openfl.utils.ByteArray;
+import lime.media.AudioBuffer;
+import flash.media.Sound;
+#end
 using StringTools;
-
+typedef StorySongsJson = {
+	var songs: Array<Array<String>>;
+	var chars: Array<Array<String>>;
+}
 class StoryMenuState extends MusicBeatState
 {
 	var scoreText:FlxText;
 
-	var weekData:Array<Dynamic> = [
-		['Tutorial'],
-		['Bopeebo', 'Fresh', 'Dadbattle'],
-		['Spookeez', 'South'],
-		['Pico', 'Philly', "Blammed"],
-		['Satin-Panties', "High", "Milf"],
-		['Cocoa', 'Eggnog', 'Winter-Horrorland']
-	];
+	var weekData:Array<Dynamic> = [];
 	var curDifficulty:Int = 1;
 
 	public static var weekUnlocked:Array<Bool> = [true, true, true, true, true, true];
@@ -59,9 +64,15 @@ class StoryMenuState extends MusicBeatState
 			if (!FlxG.sound.music.playing)
 				FlxG.sound.playMusic('assets/music/freakyMenu' + TitleState.soundExt);
 		}
-
+		var storySongJson:StorySongsJson = Json.parse(Assets.getText('assets/data/storySonglist.json'));
 		persistentUpdate = persistentDraw = true;
-
+		for (storySongList in storySongJson.songs) {
+			var weekSongs = [];
+			for (song in storySongList) {
+				weekSongs.push(song);
+			}
+			weekData.push(weekSongs);
+		}
 		scoreText = new FlxText(10, 10, 0, "SCORE: 49324858", 36);
 		scoreText.setFormat("VCR OSD Mono", 32);
 
@@ -99,6 +110,8 @@ class StoryMenuState extends MusicBeatState
 			// weekThing.updateHitbox();
 
 			// Needs an offset thingie
+			// ignore locked weeks
+			/*
 			if (!weekUnlocked[i])
 			{
 				var lock:FlxSprite = new FlxSprite(weekThing.width + 10 + weekThing.x);
@@ -260,7 +273,7 @@ class StoryMenuState extends MusicBeatState
 
 	function selectWeek()
 	{
-		if (weekUnlocked[curWeek])
+	if (/*weekUnlocked[curWeek]*/true)
 		{
 			if (stopspamming == false)
 			{
