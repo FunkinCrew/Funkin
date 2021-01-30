@@ -36,12 +36,13 @@ class OptionsMenu extends MusicBeatState
 		
 		for (i in 0...controlsStrings.length)
 		{
-			if(controlsStrings[i].indexOf('set') != -1){
-				var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, controlsStrings[i].substring(3)+': '+controlsStrings[i+1], true, false);
-				controlLabel.isMenuItem = true;
-				controlLabel.targetY = i;
-				grpControls.add(controlLabel);
-			}
+			
+			var elements:Array<String> = controlsStrings[i].split(',');
+			var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, elements[0] + ': ' + elements[1], true, false);
+			controlLabel.isMenuItem = true;
+			controlLabel.targetY = i;
+			grpControls.add(controlLabel);
+			
 			// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
 		}
 
@@ -72,8 +73,8 @@ class OptionsMenu extends MusicBeatState
 			curSelected += change;
 	
 			if (curSelected < 0)
-				curSelected = controlsStrings.length - 1;
-			if (curSelected >= controlsStrings.length)
+				curSelected = grpControls.length - 1;
+			if (curSelected >= grpControls.length)
 				curSelected = 0;
 	
 			// selector.y = (70 * curSelected) + 30;
