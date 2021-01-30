@@ -1,6 +1,7 @@
 {
   "template": {
     "like": "bf",
-    "icons": [0,1]
+    "icons": [0,1],
+    "uniqueicons": true
   }
 }

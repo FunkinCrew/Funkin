@@ -2,31 +2,37 @@ package;
 
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
+import lime.system.System;
+#if sys
+import sys.io.File;
+import haxe.io.Path;
+import openfl.utils.ByteArray;
+import flash.display.BitmapData;
+#end
+import haxe.Json;
+import haxe.format.JsonParser;
 
 class MenuCharacter extends FlxSprite
 {
 	public var character:String;
-
+	public var like:String;
 	public function new(x:Float, character:String = 'bf')
 	{
 		super(x);
 
 		this.character = character;
 
-		var tex = FlxAtlasFrames.fromSparrow('assets/images/campaign_menu_UI_characters.png', 'assets/images/campaign_menu_UI_characters.xml');
+		var parsedCharJson = Json.parse(File.getContent(Path.normalize(System.applicationDirectory+"assets/images/campaign-ui-char/custom_ui_chars.json")));
+		var rawPic:BitmapData = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/campaign-ui-char/black-line-'+character+".png"))));
+		var rawXml:String = File.getContent(Path.normalize(System.applicationDirectory+'/assets/images/campaign-ui-char/black-line-'+character+".xml"));
+		var tex = FlxAtlasFrames.fromSparrow(rawPic, rawXml);
 		frames = tex;
-
-		animation.addByPrefix('bf', "BF idle dance white", 24);
-		animation.addByPrefix('bfConfirm', 'BF HEY!!', 24, false);
-		animation.addByPrefix('gf', "GF Dancing Beat WHITE", 24);
-		animation.addByPrefix('dad', "Dad idle dance BLACK LINE", 24);
-		animation.addByPrefix('spooky', "spooky dance idle BLACK LINES", 24);
-		animation.addByPrefix('pico', "Pico Idle Dance", 24);
-		animation.addByPrefix('mom', "Mom Idle BLACK LINES", 24);
-		animation.addByPrefix('parents-christmas', "Parent Christmas Idle", 24);
-		// Parent Christmas Idle
-
-		animation.play(character);
+		var animJson = Json.parse(File.getContent(Path.normalize(System.applicationDirectory+"assets/images/campaign-ui-char/"+Reflect.field(parsedCharJson,character)+".json")));
+		for (field in Reflect.fields(animJson)) {
+			animation.addByPrefix(field, Reflect.field(animJson, field), 24, (field == "idle"));
+		}
+		this.like = Reflect.field(parsedCharJson,character);
+		animation.play('idle');
 		updateHitbox();
 	}
 }

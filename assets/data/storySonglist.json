@@ -1,11 +1,11 @@
 {
   "songs": [
-    ["tutorial","Tutorial"],
-    ["dad", "Bopeebo", "Fresh","Dadbattle"],
-    ["skid n pump", "Spookeez", "South"],
-    ["pico", "Pico", "Philly", "Blammed"],
-    ["mom", "Satin-Panties", "High", "Milf"],
-    ["christmas", "Cocoa", "Eggnog", "Winter-Horrorland"]
+    ["tutorial selected","Tutorial"],
+    ["WEEK1 select", "Bopeebo", "Fresh","Dadbattle"],
+    ["week2 select", "Spookeez", "South"],
+    ["Week 3 press", "Pico", "Philly", "Blammed"],
+    ["Week 4 press", "Satin-Panties", "High", "Milf"],
+    ["week 5", "Cocoa", "Eggnog", "Winter-Horrorland"]
   ],
   "characters": [
     ["dad", "bf", "gf"],

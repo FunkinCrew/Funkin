@@ -41,7 +41,7 @@ class StoryMenuState extends MusicBeatState
 
 	var txtTracklist:FlxText;
 
-	var grpWeekText:FlxTypedGroup<Alphabet>;
+	var grpWeekText:FlxTypedGroup<MenuItem>;
 	var grpWeekCharacters:FlxTypedGroup<MenuCharacter>;
 
 	var grpLocks:FlxTypedGroup<FlxSprite>;
@@ -90,7 +90,7 @@ class StoryMenuState extends MusicBeatState
 		var ui_tex = FlxAtlasFrames.fromSparrow('assets/images/campaign_menu_UI_assets.png', 'assets/images/campaign_menu_UI_assets.xml');
 		var yellowBG:FlxSprite = new FlxSprite(0, 56).makeGraphic(FlxG.width, 400, 0xFFF9CF51);
 
-		grpWeekText = new FlxTypedGroup<Alphabet>();
+		grpWeekText = new FlxTypedGroup<MenuItem>();
 		add(grpWeekText);
 
 		var blackBarThingie:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, 56, FlxColor.BLACK);
@@ -105,13 +105,13 @@ class StoryMenuState extends MusicBeatState
 
 		for (i in 0...weekData.length)
 		{
-			var weekThing:Alphabet = new Alphabet(0, yellowBG.y + yellowBG.height + 70, weekNames[i], true, false, false, 450, 0.8);
-			weekThing.isMenuItem = true;
+			var weekThing:MenuItem = new MenuItem(0, yellowBG.y + yellowBG.height + 10, i);
+			weekThing.y += ((weekThing.height + 20) * i);
 			weekThing.targetY = i;
-
-
 			grpWeekText.add(weekThing);
+
 			weekThing.screenCenter(X);
+			weekThing.antialiasing = true;
 			// weekThing.updateHitbox();
 
 			// Needs an offset thingie
@@ -380,12 +380,60 @@ class StoryMenuState extends MusicBeatState
 
 	function updateText()
 	{
-		grpWeekCharacters.members[0].animation.play(weekCharacters[curWeek][0]);
-		grpWeekCharacters.members[1].animation.play(weekCharacters[curWeek][1]);
-		grpWeekCharacters.members[2].animation.play(weekCharacters[curWeek][2]);
+		// this is to make the game laggier
+		grpWeekCharacters.forEach(function (menuCharacter) {
+				menuCharacter.kill();
+		});
+		grpWeekCharacters.clear();
+		for (char in 0...3)
+		{
+			var weekCharacterThing:MenuCharacter = new MenuCharacter((FlxG.width * 0.25) * (1 + char) - 150, weekCharacters[curWeek][char]);
+			weekCharacterThing.y += 70;
+			weekCharacterThing.antialiasing = true;
+			switch (weekCharacterThing.like)
+			{
+				case 'dad':
+					weekCharacterThing.setGraphicSize(Std.int(weekCharacterThing.width * 0.5));
+					weekCharacterThing.updateHitbox();
+					trace("like dad?");
+				case 'bf':
+					weekCharacterThing.setGraphicSize(Std.int(weekCharacterThing.width * 0.9));
+					weekCharacterThing.updateHitbox();
+					weekCharacterThing.x -= 80;
+					trace("like bf?");
+				case 'gf':
+					weekCharacterThing.setGraphicSize(Std.int(weekCharacterThing.width * 0.5));
+					weekCharacterThing.updateHitbox();
+					trace("like gf?");
+				case 'pico':
+					weekCharacterThing.y += 40;
+					weekCharacterThing.flipX = true;
+					weekCharacterThing.x -= 40;
+					weekCharacterThing.setGraphicSize(Std.int(weekCharacterThing.width * 0.6));
+					weekCharacterThing.updateHitbox();
+					trace("like pico?");
+				case 'parents-christmas':
+					weekCharacterThing.x -= 150;
+					weekCharacterThing.setGraphicSize(Std.int(weekCharacterThing.width * 0.4));
+					weekCharacterThing.updateHitbox();
+					trace("like parents?");
+				case 'mom':
+					weekCharacterThing.setGraphicSize(Std.int(weekCharacterThing.width * 0.45));
+					weekCharacterThing.updateHitbox();
+					trace("like mom?");
+				case 'spooky':
+					weekCharacterThing.y += 30;
+					weekCharacterThing.x -= 30;
+					weekCharacterThing.setGraphicSize(Std.int(weekCharacterThing.width * 0.5));
+					weekCharacterThing.updateHitbox();
+					trace("like spooky kids?");
+			}
+
+			grpWeekCharacters.add(weekCharacterThing);
+		}
 		txtTracklist.text = "Tracks\n";
 
-		switch (grpWeekCharacters.members[0].animation.curAnim.name)
+		switch (grpWeekCharacters.members[0].like)
 		{
 			case 'parents-christmas':
 				grpWeekCharacters.members[0].offset.x = 250;
@@ -404,7 +452,7 @@ class StoryMenuState extends MusicBeatState
 			txtTracklist.text += "\n" + i;
 		}
 
-		txtTracklist.text = txtTracklist.text.toUpperCase();
+		txtTracklist.text = StringTools.replace(txtTracklist.text.toUpperCase(), "-", " ");
 
 		txtTracklist.screenCenter(X);
 		txtTracklist.x -= FlxG.width * 0.35;
