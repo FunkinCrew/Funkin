@@ -10,6 +10,7 @@ import flixel.math.FlxMath;
 import flixel.system.macros.FlxMacroUtil;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
+import flixel.effects.FlxFlicker;
 import lime.utils.Assets;
 
 
@@ -113,6 +114,7 @@ class OptionsMenu extends MusicBeatState
 	function ChangeInput()
 	{
 		changingInput = true;
+		FlxFlicker.flicker(grpControls.members[curSelected],0);
 	}
 
 	function ChangingInput()
@@ -124,21 +126,20 @@ class OptionsMenu extends MusicBeatState
 			{
 				if(FlxG.keys.checkStatus(key,2) && key != "ANY")
 				{
-					FlxG.log.add("KeyPressed" + key);
+					FlxFlicker.stopFlickering(grpControls.members[curSelected]);
 					var elements:Array<String> = controlsStrings[curSelected].split(',');
 					elements[1] = key;
 					controlsStrings[curSelected] = elements[0] + ',' + elements[1];
 
-					var controlLabel:Alphabet = new Alphabet(0, (70 * curSelected) + 30, elements[0] + ': ' + elements[1], true, false);
+					var controlLabel:Alphabet = new Alphabet(0, 0, elements[0] + ': ' + elements[1], true, false);
 					controlLabel.isMenuItem = true;
-					controlLabel.targetY = curSelected;
+					controlLabel.targetY = 0;
 
 					grpControls.replace(grpControls.members[curSelected],controlLabel);
-
+					changingInput = false;
 					break;
 				}
-			}
-			changingInput = false;
+			}			
 
 		}
 	}
