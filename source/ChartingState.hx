@@ -241,7 +241,10 @@ class ChartingState extends MusicBeatState
 		{
 			characters.push(i);
 		}
-
+		for (i in Reflect.fields(Json.parse(Assets.getText('assets/images/custom_stages/custom_stages.json'))))
+		{
+			stages.push(i);
+		}
 		var player1DropDown = new FlxUIDropDownMenu(10, 100, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
 		{
 			_song.player1 = characters[Std.parseInt(character)];

@@ -20,8 +20,6 @@ class HealthIcon extends FlxSprite
 		#if sys
 		var charJson:Dynamic = Json.parse(File.getContent(Path.normalize(System.applicationDirectory+"assets/images/custom_chars/custom_chars.json")));
 		#end
-		var rawCharList = Assets.getText('assets/images/custom_chars/charlist.txt').trim();
-		var splitCharList = rawCharList.split("\n");
 		antialiasing = true;
 		switch (char) {
 			case 'bf':

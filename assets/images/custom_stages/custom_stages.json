@@ -1,0 +1,8 @@
+{
+  "template": "stage",
+  "templateLimo": "limo",
+  "templatePhilly": "philly",
+  "templateSpooky": "spooky",
+  "templateMall": "mall",
+  "templateEvilMall": "mallEvil"
+}
