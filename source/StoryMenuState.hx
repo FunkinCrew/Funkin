@@ -24,7 +24,7 @@ import flash.media.Sound;
 using StringTools;
 typedef StorySongsJson = {
 	var songs: Array<Array<String>>;
-	var chars: Array<Array<String>>;
+	var characters: Array<Array<String>>;
 }
 class StoryMenuState extends MusicBeatState
 {
@@ -36,14 +36,7 @@ class StoryMenuState extends MusicBeatState
 
 	public static var weekUnlocked:Array<Bool> = [true, true, true, true, true, true];
 
-	var weekCharacters:Array<Dynamic> = [
-		['dad', 'bf', 'gf'],
-		['dad', 'bf', 'gf'],
-		['spooky', 'bf', 'gf'],
-		['pico', 'bf', 'gf'],
-		['mom', 'bf', 'gf'],
-		['parents-christmas', 'bf', 'gf']
-	];
+	var weekCharacters:Array<Dynamic> = [];
 	var curWeek:Int = 0;
 
 	var txtTracklist:FlxText;
@@ -77,6 +70,13 @@ class StoryMenuState extends MusicBeatState
 				}
 			}
 			weekData.push(weekSongs);
+		}
+		for (storyCharList in storySongJson.characters) {
+			var weekChars = [];
+			for (char in storyCharList) {
+				weekChars.push(char);
+			}
+			weekCharacters.push(weekChars);
 		}
 		scoreText = new FlxText(10, 10, 0, "SCORE: 49324858", 36);
 		scoreText.setFormat("VCR OSD Mono", 32);
@@ -371,15 +371,10 @@ class StoryMenuState extends MusicBeatState
 		for (item in grpWeekText.members)
 		{
 			item.targetY = bullShit - curWeek;
-			if (item.targetY == Std.int(0) && weekUnlocked[curWeek])
-				item.alpha = 1;
-			else
-				item.alpha = 0.6;
 			bullShit++;
 		}
 
 		FlxG.sound.play('assets/sounds/scrollMenu' + TitleState.soundExt);
-
 		updateText();
 	}
 
