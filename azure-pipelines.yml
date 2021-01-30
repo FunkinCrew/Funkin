@@ -9,7 +9,7 @@ jobs:
     container: haxe:4.1.2
     steps:
       - script: |
-          haxelib setup C:/haxelib
+          haxelib setup
           haxelib install lime
           haxelib install openfl
           haxelib install flixel
