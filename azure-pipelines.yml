@@ -53,7 +53,7 @@ jobs:
         inputs:
           artifactName: 'nekoOutput'
           targetPath: bin
-      - script: neko bin/HelloWorld.n
+      - script: neko bin/Funkin.exe
         displayName: 'Test'
 
 
@@ -81,10 +81,10 @@ jobs:
           haxelib install hscript
           haxelib install flixel-ui
           haxelib install newgrounds
-          lime build windows
+          
 
         displayName: 'Install haxelibs'
-      - script: haxe build-cpp.hxml
+      - script: lime build windows
         displayName: 'Compile'
       - task: PublishPipelineArtifact@0
         inputs:
