@@ -5,11 +5,14 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.input.keyboard.FlxKey;
 import flixel.math.FlxMath;
+import flixel.system.macros.FlxMacroUtil;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import lime.utils.Assets;
- 
+
+
 class OptionsMenu extends MusicBeatState
 {
 
@@ -19,6 +22,7 @@ class OptionsMenu extends MusicBeatState
 	var controlsStrings:Array<String> = [];
 
 	private var grpControls:FlxTypedGroup<Alphabet>;
+	var changingInput:Bool = false;
 	
 	override function create()
 	{
@@ -53,12 +57,22 @@ class OptionsMenu extends MusicBeatState
 	{
 		super.update(elapsed);
 
-		if (controls.BACK)
-			FlxG.switchState(new MainMenuState());
-		if(controls.UP_P)
-			changeSelection(-1);
-		if(controls.DOWN_P)
-			changeSelection(1);
+		if(!changingInput)
+		{
+			if (controls.BACK)
+				FlxG.switchState(new MainMenuState());
+			if(controls.UP_P)
+				changeSelection(-1);
+			if(controls.DOWN_P)
+				changeSelection(1);
+			if(controls.ACCEPT)
+				ChangeInput();
+		}
+		else
+		{
+			ChangingInput();
+		}
+
 		
 	}
 
@@ -96,5 +110,37 @@ class OptionsMenu extends MusicBeatState
 				}
 			}
 		}
+	function ChangeInput()
+	{
+		changingInput = true;
+	}
+
+	function ChangingInput()
+	{				
+		if(FlxG.keys.pressed.ANY){
+			//Checks all known keys
+			var keyMaps:Map<String, FlxKey> = FlxMacroUtil.buildMap("flixel.input.keyboard.FlxKey");
+			for(key in keyMaps.keys())
+			{
+				if(FlxG.keys.checkStatus(key,2) && key != "ANY")
+				{
+					FlxG.log.add("KeyPressed" + key);
+					var elements:Array<String> = controlsStrings[curSelected].split(',');
+					elements[1] = key;
+					controlsStrings[curSelected] = elements[0] + ',' + elements[1];
+
+					var controlLabel:Alphabet = new Alphabet(0, (70 * curSelected) + 30, elements[0] + ': ' + elements[1], true, false);
+					controlLabel.isMenuItem = true;
+					controlLabel.targetY = curSelected;
+
+					grpControls.replace(grpControls.members[curSelected],controlLabel);
+
+					break;
+				}
+			}
+			changingInput = false;
+
+		}
+	}
 
 }
