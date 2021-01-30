@@ -2,9 +2,8 @@
 
 check releases to download apk
 
-спасибо за такую активность
-![изображение](https://user-images.githubusercontent.com/59097731/104740090-91d00600-5758-11eb-9a7c-30d756df3740.png)
-
+source code of fnf 0.2.6 build 1:
+https://www.mediafire.com/file/hzk296f5x89qo1n/Funkin-0.2.6.7z/file
 
 ![Screenshot_20210109-194743_06d0f9554a0a05ce054ef8d232e87828](https://user-images.githubusercontent.com/59097731/104103630-31eae280-52b4-11eb-90a4-5bdb1b39fc53.jpg)
 ![Screenshot_20210109-194749_06d0f9554a0a05ce054ef8d232e87828](https://user-images.githubusercontent.com/59097731/104103635-34e5d300-52b4-11eb-96f8-13910580fbc8.jpg)
@@ -56,4 +55,11 @@ and run command "lime test android"
 
 This game was made with love to Newgrounds and it's community. Extra love to Tom Fulp.
 
+спасибо за такую активность
+![изображение](https://user-images.githubusercontent.com/59097731/104740090-91d00600-5758-11eb-9a7c-30d756df3740.png)
+
+
+
+
 Пиздец я ленивый
+
