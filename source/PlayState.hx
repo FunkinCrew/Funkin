@@ -10,6 +10,7 @@ import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.FlxSubState;
+import flash.display.BitmapData;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.graphics.atlas.FlxAtlas;
 import flixel.graphics.frames.FlxAtlasFrames;
@@ -335,7 +336,7 @@ class PlayState extends MusicBeatState
 			evilSnow.antialiasing = true;
 			add(evilSnow);
 		}
-		else
+		else if (SONG.stage == "stage")
 		{
 			defaultCamZoom = 0.9;
 			curStage = 'stage';
@@ -356,6 +357,36 @@ class PlayState extends MusicBeatState
 			add(stageFront);
 
 			var stageCurtains:FlxSprite = new FlxSprite(-500, -300).loadGraphic('assets/images/stagecurtains.png');
+			stageCurtains.setGraphicSize(Std.int(stageCurtains.width * 0.9));
+			stageCurtains.updateHitbox();
+			stageCurtains.antialiasing = true;
+			stageCurtains.scrollFactor.set(1.3, 1.3);
+			stageCurtains.active = false;
+
+			add(stageCurtains);
+		} else {
+			defaultCamZoom = 0.9;
+			// pretend it's stage, it doesn't check for correct images
+			curStage = 'stage';
+			// peck it no one is gonna build this for html5 so who cares if it doesn't compile
+			var bgPic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"_back.png"))));
+			var bg:FlxSprite = new FlxSprite(-600, -200).loadGraphic(bgPic);
+			// bg.setGraphicSize(Std.int(bg.width * 2.5));
+			// bg.updateHitbox();
+			bg.antialiasing = true;
+			bg.scrollFactor.set(0.9, 0.9);
+			bg.active = false;
+			add(bg);
+			var frontPic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"_front.png"))));
+			var stageFront:FlxSprite = new FlxSprite(-650, 600).loadGraphic(frontPic);
+			stageFront.setGraphicSize(Std.int(stageFront.width * 1.1));
+			stageFront.updateHitbox();
+			stageFront.antialiasing = true;
+			stageFront.scrollFactor.set(0.9, 0.9);
+			stageFront.active = false;
+			add(stageFront);
+			var curtainPic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"_curtains.png"))));
+			var stageCurtains:FlxSprite = new FlxSprite(-500, -300).loadGraphic(curtainPic);
 			stageCurtains.setGraphicSize(Std.int(stageCurtains.width * 0.9));
 			stageCurtains.updateHitbox();
 			stageCurtains.antialiasing = true;

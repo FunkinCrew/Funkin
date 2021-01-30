@@ -256,35 +256,14 @@ class ChartingState extends MusicBeatState
 		{
 			_song.stage = stages[Std.parseInt(stage)];
 		});
+		var gfDropDown = new FlxUIDropDownMenu(10, 160, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
+		{
+			_song.gf = characters[Std.parseInt(character)];
+		});
 		player2DropDown.selectedLabel = _song.player2;
-		var curStage = "stage";
-		switch (_song.song) {
-			case "spookeez":
-				curStage = "spooky";
-			case "south":
-				curStage = "spooky";
-			case "monster":
-				curStage = "spooky";
-			case "pico":
-				curStage = "philly";
-			case "blammed":
-				curStage = "philly";
-			case "philly":
-				curStage = "philly";
-			case "milf":
-				curStage = "limo";
-			case "high":
-				curStage = "limo";
-			case "satin-panties":
-				curStage = "limo";
-			case "cocoa":
-				curStage = "mall";
-			case "eggnog":
-				curStage = "mall";
-			case "winter-horrorland":
-				curStage = "mallEvil";
-		}
-		stageDropDown.selectedLabel = if (_song.stage != null) _song.stage else curStage;
+		var curStage = _song.stage;
+		stageDropDown.selectedLabel = _song.stage;
+		gfDropDown.selectedLabel = _song.gf;
 		var tab_group_song = new FlxUI(null, UI_box);
 		tab_group_song.name = "Song";
 		tab_group_song.add(UI_songTitle);
@@ -300,7 +279,7 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(player1DropDown);
 		tab_group_song.add(player2DropDown);
 		tab_group_song.add(stageDropDown);
-
+		tab_group_song.add(gfDropDown);
 		UI_box.addGroup(tab_group_song);
 		UI_box.scrollFactor.set();
 
