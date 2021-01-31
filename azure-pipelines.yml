@@ -1,9 +1,9 @@
-  
+
 jobs:
 
   # Neko
 
-  - job: BuildNeko
+  - job: BuildLinux
     pool:
       vmImage: 'ubuntu-16.04'
     container: haxe:4.1.2
@@ -21,15 +21,38 @@ jobs:
           haxelib install flixel-ui
           haxelib install newgrounds
           haxelib git polymod https://github.com/larsiusprime/polymod.git
-          haxelib run lime build neko
+          haxelib run lime build linux
         displayName: 'Compile'
       - task: PublishPipelineArtifact@0
         inputs:
-          artifactName: 'nekoOutput'
+          artifactName: 'linuxOutput'
           targetPath: bin/Funkin.exe
-
+  - job: BuildMac
+    pool:
+      vmImage: 'macOS-10.14'
+    container: haxe:4.1.2
+    steps:
+      - script: |
+          haxelib setup ~/haxelib
+          haxelib install lime
+          haxelib install openfl
+          haxelib install flixel
+          haxelib run lime setup flixel
+          haxelib run lime setup
+          haxelib install flixel-tools
+          haxelib run flixel-tools setup
+          haxelib install hscript
+          haxelib install flixel-ui
+          haxelib install newgrounds
+          haxelib git polymod https://github.com/larsiusprime/polymod.git
+          haxelib run lime build mac
+        displayName: 'Compile'
+      - task: PublishPipelineArtifact@0
+        inputs:
+          artifactName: 'macOutput'
+          targetPath: bin/Funkin.exe
   - job: TestNekoLinux
-    dependsOn: BuildNeko
+    dependsOn: BuildLinux
     pool:
       vmImage: 'ubuntu-16.04'
     container: haxe:4.1.2
@@ -37,13 +60,13 @@ jobs:
       - checkout: none
       - task: DownloadPipelineArtifact@0
         inputs:
-          artifactName: 'nekoOutput'
+          artifactName: 'linuxOutput'
           targetPath: bin
-      - script: neko bin/Funkin.exe
+      - script: bin/Funkin
         displayName: 'Test'
 
   - job: TestNekoMac
-    dependsOn: BuildNeko
+    dependsOn: BuildMac
     pool:
       vmImage: 'macOS-10.14'
     steps:
@@ -52,14 +75,14 @@ jobs:
         displayName: 'Install Neko'
       - task: DownloadPipelineArtifact@0
         inputs:
-          artifactName: 'nekoOutput'
+          artifactName: 'macOutput'
           targetPath: bin
-      - script: neko bin/Funkin.exe
+      - script: bin/Funkin.app
         displayName: 'Test'
 
 
 
-  
+
 
   - job: BuildCppWindows
     pool:
@@ -105,5 +128,3 @@ jobs:
           targetPath: bin
       - script: bin\Funkin.exe
         displayName: 'Test'
-
- 
