@@ -398,10 +398,6 @@ class TitleState extends MusicBeatState
 			FlxG.camera.flash(FlxColor.WHITE, 4);
 			remove(credGroup);
 			skippedIntro = true;
-
-			var image = Assets.getBitmapData('assets/images/alphabet.png');
-			var money = new FlxSprite(0, 0, image);
-			add(money);
 		}
 	}
 }
