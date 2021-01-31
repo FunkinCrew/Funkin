@@ -43,7 +43,7 @@ class OptionsMenu extends MusicBeatState
 		{
 			
 			var elements:Array<String> = controlsStrings[i].split(',');
-			var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, elements[0] + ': ' + elements[1], true, false);
+			var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30,'set ' + elements[0] + ': ' + elements[1], true, false);
 			controlLabel.isMenuItem = true;
 			controlLabel.targetY = i;
 			grpControls.add(controlLabel);
@@ -132,7 +132,7 @@ class OptionsMenu extends MusicBeatState
 					elements[1] = key;
 					controlsStrings[curSelected] = elements[0] + ',' + elements[1];
 
-					var controlLabel:Alphabet = new Alphabet(0, 0, elements[0] + ': ' + elements[1], true, false);
+					var controlLabel:Alphabet = new Alphabet(0, 0,'set ' + elements[0] + ': ' + elements[1], true, false);
 					controlLabel.isMenuItem = true;
 					controlLabel.targetY = 0;
 

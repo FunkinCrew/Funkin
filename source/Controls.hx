@@ -10,6 +10,7 @@ import flixel.input.actions.FlxActionSet;
 import flixel.input.gamepad.FlxGamepadButton;
 import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.input.keyboard.FlxKey;
+import flixel.system.macros.FlxMacroUtil;
 
 #if (haxe >= "4.0.0")
 enum abstract Action(String) to String from String
@@ -493,19 +494,22 @@ class Controls extends FlxActionSet
 			removeKeyboard();
 
 		keyboardScheme = scheme;
-		
+		var keyMaps:Map<String, FlxKey> = FlxMacroUtil.buildMap("flixel.input.keyboard.FlxKey");
+		var i = 0;
+		var controlsString = CoolUtil.coolTextFile('assets/data/controls.txt');
 		#if (haxe >= "4.0.0")
 		switch (scheme)
 		{
 			case Solo:
-				inline bindKeys(Control.UP, [W, FlxKey.UP]);
-				inline bindKeys(Control.DOWN, [S, FlxKey.DOWN]);
-				inline bindKeys(Control.LEFT, [A, FlxKey.LEFT]);
-				inline bindKeys(Control.RIGHT, [D, FlxKey.RIGHT]);
-				inline bindKeys(Control.ACCEPT, [Z, SPACE, ENTER]);
-				inline bindKeys(Control.BACK, [BACKSPACE, ESCAPE]);
-				inline bindKeys(Control.PAUSE, [P, ENTER, ESCAPE]);
-				inline bindKeys(Control.RESET, [R]);
+				for(cont in Type.allEnums(Controls.Control))
+				{
+					//The first bool is for if there's more enums than controls in txt the second bool checks which key it belongs to
+					while(i < controlsString.length && controlsString[i].split(',')[0].split(' ')[0] == Std.string(cont)){							
+						if(controlsString[i].split(',')[1] != 'null')
+							inline bindKeys(cont, [keyMaps[controlsString[i].split(',')[1]]]);							
+						i++;						
+					}						
+				}				
 			case Duo(true):
 				inline bindKeys(Control.UP, [W]);
 				inline bindKeys(Control.DOWN, [S]);
