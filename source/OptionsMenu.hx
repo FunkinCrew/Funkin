@@ -9,7 +9,7 @@ import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import lime.utils.Assets;
- 
+
 class OptionsMenu extends MusicBeatState
 {
 
@@ -19,7 +19,7 @@ class OptionsMenu extends MusicBeatState
 	var controlsStrings:Array<String> = [];
 
 	private var grpControls:FlxTypedGroup<Alphabet>;
-	
+
 	override function create()
 	{
 		var menuBG:FlxSprite = new FlxSprite().loadGraphic('assets/images/menuDesat.png');
@@ -33,7 +33,7 @@ class OptionsMenu extends MusicBeatState
 
 		grpControls = new FlxTypedGroup<Alphabet>();
 		add(grpControls);
-		
+
 		for (i in 0...controlsStrings.length)
 		{
 			if(controlsStrings[i].indexOf('set') != -1){
@@ -58,36 +58,33 @@ class OptionsMenu extends MusicBeatState
 			changeSelection(-1);
 		if(controls.DOWN_P)
 			changeSelection(1);
-		
+
 	}
 
 	function changeSelection(change:Int = 0)
 		{
-			#if !switch
-			NGio.logEvent('Fresh');
-			#end
 	
 			FlxG.sound.play('assets/sounds/scrollMenu' + TitleState.soundExt, 0.4);
-	
+
 			curSelected += change;
-	
+
 			if (curSelected < 0)
 				curSelected = controlsStrings.length - 1;
 			if (curSelected >= controlsStrings.length)
 				curSelected = 0;
-	
+
 			// selector.y = (70 * curSelected) + 30;
-	
+
 			var bullShit:Int = 0;
-	
+
 			for (item in grpControls.members)
 			{
 				item.targetY = bullShit - curSelected;
 				bullShit++;
-	
+
 				item.alpha = 0.6;
 				// item.setGraphicSize(Std.int(item.width * 0.8));
-	
+
 				if (item.targetY == 0)
 				{
 					item.alpha = 1;
