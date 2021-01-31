@@ -20,7 +20,7 @@ jobs:
           haxelib install hscript
           haxelib install flixel-ui
           haxelib install newgrounds
-          haxelib install polymod
+          haxelib git polymod https://github.com/larsiusprime/polymod.git
           haxelib run lime build neko
         displayName: 'Compile'
       - task: PublishPipelineArtifact@0
@@ -82,7 +82,7 @@ jobs:
           haxelib install hscript
           haxelib install flixel-ui
           haxelib install newgrounds
-          haxelib install polymod
+          haxelib git polymod https://github.com/larsiusprime/polymod.git
 
         displayName: 'Install haxelibs'
       - script: haxelib run lime build windows
