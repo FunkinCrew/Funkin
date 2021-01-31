@@ -9,6 +9,7 @@ jobs:
     container: haxe:4.1.2
     steps:
       - script: |
+          mkdir ~/artifacts
           haxelib setup ~/haxelib
           haxelib install lime
           haxelib install openfl
@@ -26,13 +27,14 @@ jobs:
       - task: PublishPipelineArtifact@0
         inputs:
           artifactName: 'linuxOutput'
-          targetPath: bin/Funkin.exe
+          targetPath: artifacts
   - job: BuildMac
     pool:
       vmImage: 'macOS-10.14'
     container: haxe:4.1.2
     steps:
       - script: |
+          mkdir ~/artifacts
           haxelib setup ~/haxelib
           haxelib install lime
           haxelib install openfl
@@ -50,7 +52,7 @@ jobs:
       - task: PublishPipelineArtifact@0
         inputs:
           artifactName: 'macOutput'
-          targetPath: bin/Funkin.exe
+          targetPath: artifacts
   - job: TestNekoLinux
     dependsOn: BuildLinux
     pool:
