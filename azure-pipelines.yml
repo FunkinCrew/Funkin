@@ -20,7 +20,7 @@ jobs:
           haxelib install hscript
           haxelib install flixel-ui
           haxelib install newgrounds
-          lime build neko
+          haxelib run lime build neko
         displayName: 'Compile'
       - task: PublishPipelineArtifact@0
         inputs:
@@ -84,7 +84,7 @@ jobs:
           
 
         displayName: 'Install haxelibs'
-      - script: lime build windows
+      - script: haxelib run lime build windows
         displayName: 'Compile'
       - task: PublishPipelineArtifact@0
         inputs:
