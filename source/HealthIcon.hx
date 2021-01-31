@@ -72,6 +72,9 @@ class HealthIcon extends FlxSprite
 					var rawPic:BitmapData = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_chars/'+char+"_icons.png"))));
 					loadGraphic(rawPic, true, 150, 150);
 					animation.add('icon', Reflect.field(charJson,char).icons, false, isPlayer);
+				} else {
+					loadGraphic('assets/images/iconGrid.png', true, 150, 150);
+					animation.add('icon', Reflect.field(charJson,char).icons, false, isPlayer);
 				}
 		}
 		animation.play('icon');
