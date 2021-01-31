@@ -138,6 +138,14 @@ class OptionsMenu extends MusicBeatState
 
 					grpControls.replace(grpControls.members[curSelected],controlLabel);
 					changingInput = false;
+					
+					for(cont in Type.allEnums(Controls.Control)){
+						if(Std.string(cont) == key){
+							//"cont" is the Control to be altered...
+						}
+					}
+
+					
 
 					//No clue how to write yet....
 
@@ -147,6 +155,6 @@ class OptionsMenu extends MusicBeatState
 			}			
 
 		}
-	}	
+	}
 
 }
