@@ -384,21 +384,30 @@ class ChartingState extends MusicBeatState
 		FlxG.sound.playMusic('assets/music/' + daSong + "_Inst" + TitleState.soundExt, 0.6);
 		#end
 		// WONT WORK FOR TUTORIAL OR TEST SONG!!! REDO LATER
-		#if sys
-		var vocalSound = Sound.fromAudioBuffer(AudioBuffer.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+"/assets/music/"+daSong+"_Voices"+TitleState.soundExt))));
-		vocals = new FlxSound().loadEmbedded(vocalSound);
-		#else
-		vocals = new FlxSound().loadEmbedded("assets/music/" + daSong + "_Voices" + TitleState.soundExt);
-		#end
-		FlxG.sound.list.add(vocals);
+		if (_song.needsVoices) {
+			#if sys
+			var vocalSound = Sound.fromAudioBuffer(AudioBuffer.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+"/assets/music/"+daSong+"_Voices"+TitleState.soundExt))));
+			vocals = new FlxSound().loadEmbedded(vocalSound);
+			#else
+			vocals = new FlxSound().loadEmbedded("assets/music/" + daSong + "_Voices" + TitleState.soundExt);
+			#end
+			FlxG.sound.list.add(vocals);
+
+		}
 
 		FlxG.sound.music.pause();
-		vocals.pause();
+		if (_song.needsVoices) {
+			vocals.pause();
+		}
+
 
 		FlxG.sound.music.onComplete = function()
 		{
-			vocals.pause();
-			vocals.time = 0;
+			if (_song.needsVoices) {
+				vocals.pause();
+				vocals.time = 0;
+			}
+
 			FlxG.sound.music.pause();
 			FlxG.sound.music.time = 0;
 		};
@@ -567,7 +576,10 @@ class ChartingState extends MusicBeatState
 
 			PlayState.SONG = _song;
 			FlxG.sound.music.stop();
-			vocals.stop();
+			if (_song.needsVoices) {
+				vocals.stop();
+			}
+
 			FlxG.switchState(new PlayState());
 		}
 
@@ -603,11 +615,16 @@ class ChartingState extends MusicBeatState
 				if (FlxG.sound.music.playing)
 				{
 					FlxG.sound.music.pause();
-					vocals.pause();
+					if (_song.needsVoices) {
+						vocals.pause();
+					}
+
 				}
 				else
 				{
-					vocals.play();
+					if (_song.needsVoices) {
+						vocals.play();
+					}
 					FlxG.sound.music.play();
 				}
 			}
@@ -623,10 +640,16 @@ class ChartingState extends MusicBeatState
 			if (FlxG.mouse.wheel != 0)
 			{
 				FlxG.sound.music.pause();
-				vocals.pause();
+				if (_song.needsVoices) {
+					vocals.pause();
+				}
+
 
 				FlxG.sound.music.time -= (FlxG.mouse.wheel * Conductor.stepCrochet * 0.4);
-				vocals.time = FlxG.sound.music.time;
+				if (_song.needsVoices) {
+					vocals.time = FlxG.sound.music.time;
+				}
+
 			}
 
 			if (!FlxG.keys.pressed.SHIFT)
@@ -634,7 +657,10 @@ class ChartingState extends MusicBeatState
 				if (FlxG.keys.pressed.W || FlxG.keys.pressed.S)
 				{
 					FlxG.sound.music.pause();
-					vocals.pause();
+					if (_song.needsVoices) {
+						vocals.pause();
+					}
+
 
 					var daTime:Float = 700 * FlxG.elapsed;
 
@@ -644,8 +670,10 @@ class ChartingState extends MusicBeatState
 					}
 					else
 						FlxG.sound.music.time += daTime;
+					if (_song.needsVoices) {
+						vocals.time = FlxG.sound.music.time;
+					}
 
-					vocals.time = FlxG.sound.music.time;
 				}
 			}
 			else
@@ -653,7 +681,10 @@ class ChartingState extends MusicBeatState
 				if (FlxG.keys.justPressed.W || FlxG.keys.justPressed.S)
 				{
 					FlxG.sound.music.pause();
-					vocals.pause();
+					if (_song.needsVoices) {
+						vocals.pause();
+					}
+
 
 					var daTime:Float = Conductor.stepCrochet * 2;
 
@@ -663,8 +694,10 @@ class ChartingState extends MusicBeatState
 					}
 					else
 						FlxG.sound.music.time += daTime;
+					if (_song.needsVoices) {
+						vocals.time = FlxG.sound.music.time;
+					}
 
-					vocals.time = FlxG.sound.music.time;
 				}
 			}
 		}
@@ -734,7 +767,10 @@ class ChartingState extends MusicBeatState
 		updateGrid();
 
 		FlxG.sound.music.pause();
-		vocals.pause();
+		if (_song.needsVoices) {
+			vocals.pause();
+		}
+
 
 		// Basically old shit from changeSection???
 		FlxG.sound.music.time = lengthBpmBullshit() * Conductor.stepCrochet * curSection;
@@ -744,8 +780,10 @@ class ChartingState extends MusicBeatState
 			FlxG.sound.music.time = 0;
 			curSection = 0;
 		}
+		if (_song.needsVoices) {
+			vocals.time = FlxG.sound.music.time;
+		}
 
-		vocals.time = FlxG.sound.music.time;
 		updateCurStep();
 
 		updateGrid();
@@ -765,7 +803,10 @@ class ChartingState extends MusicBeatState
 			if (updateMusic)
 			{
 				FlxG.sound.music.pause();
-				vocals.pause();
+				if (_song.needsVoices) {
+					vocals.pause();
+				}
+
 
 				var daNum:Int = 0;
 				var daLength:Float = 0;
@@ -776,7 +817,10 @@ class ChartingState extends MusicBeatState
 				}
 
 				FlxG.sound.music.time = (daLength - lengthBpmBullshit()) * Conductor.stepCrochet;
-				vocals.time = FlxG.sound.music.time;
+				if (_song.needsVoices) {
+					vocals.time = FlxG.sound.music.time;
+				}
+
 				updateCurStep();
 			}
 
@@ -817,13 +861,13 @@ class ChartingState extends MusicBeatState
 	{
 		if (check_mustHitSection.checked)
 		{
-			leftIcon.animation.play('bf');
-			rightIcon.animation.play('dad');
+			leftIcon.setPosition(0, 100);
+			rightIcon.setPosition(gridBG.width / 2, -100);
 		}
 		else
 		{
-			leftIcon.animation.play('dad');
-			rightIcon.animation.play('bf');
+			rightIcon.setPosition(0, 100);
+			leftIcon.setPosition(gridBG.width / 2, -100);
 		}
 	}
 
