@@ -43,7 +43,7 @@
 	<assets path="assets/images" />
 	<assets path="assets/data" />
 	<assets path='assets/mods' />
-	
+
 	<!-- <library name="noPreload" preload='false'/> -->
 	<!-- <library name="noPreload"/> -->
 	<assets path="assets/music" include="*.mp3" if="web"/>
@@ -67,7 +67,6 @@
 
 	<!--In case you want to use the ui package-->
 	<haxelib name="flixel-ui" />
-	<haxelib name="newgrounds"/>
 	<haxelib name="faxe" if='switch'/>
 	<haxelib name="polymod"/>
 
@@ -115,7 +114,5 @@
 	<icon path="art/icon.png" />
 
 
-	<!-- <haxedef name="SKIP_TO_PLAYSTATE" if="debug" /> -->
-	<haxedef name="NG_LOGIN" if="newgrounds" />
-	
+
 </project>
