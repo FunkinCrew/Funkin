@@ -10,6 +10,7 @@ jobs:
     steps:
       - script: |
           mkdir ~/artifacts
+
           haxelib setup ~/haxelib
           haxelib install lime
           haxelib install openfl
@@ -22,7 +23,8 @@ jobs:
           haxelib install flixel-ui
           haxelib install newgrounds
           haxelib git polymod https://github.com/larsiusprime/polymod.git
-          haxelib run lime build linux
+        displayName: 'Install haxelib'
+      - script: haxelib run lime build linux
         displayName: 'Compile'
       - task: PublishPipelineArtifact@0
         inputs:
@@ -49,44 +51,13 @@ jobs:
           haxelib install flixel-ui
           haxelib install newgrounds
           haxelib git polymod https://github.com/larsiusprime/polymod.git
-          haxelib run lime build mac
+        displayName: 'Install haxelib'
+      - script: haxelib run lime build mac
         displayName: 'Compile'
       - task: PublishPipelineArtifact@0
         inputs:
           artifactName: 'macOutput'
           targetPath: artifacts
-  - job: TestNekoLinux
-    dependsOn: BuildLinux
-    pool:
-      vmImage: 'ubuntu-16.04'
-    container: haxe:4.1.2
-    steps:
-      - checkout: none
-      - task: DownloadPipelineArtifact@0
-        inputs:
-          artifactName: 'linuxOutput'
-          targetPath: bin
-      - script: bin/Funkin
-        displayName: 'Test'
-
-  - job: TestNekoMac
-    dependsOn: BuildMac
-    pool:
-      vmImage: 'macOS-10.14'
-    steps:
-      - checkout: none
-      - script: brew install neko
-        displayName: 'Install Neko'
-      - task: DownloadPipelineArtifact@0
-        inputs:
-          artifactName: 'macOutput'
-          targetPath: bin
-      - script: bin/Funkin.app
-        displayName: 'Test'
-
-
-
-
 
   - job: BuildCppWindows
     pool:
@@ -120,17 +91,3 @@ jobs:
         inputs:
           artifactName: 'cppWindowsOutput'
           targetPath: C:/artifacts
-
-
-  - job: TestCppWindows
-    dependsOn: BuildCppWindows
-    pool:
-      vmImage: 'windows-2019'
-    steps:
-      - checkout: none
-      - task: DownloadPipelineArtifact@0
-        inputs:
-          artifactName: 'cppWindowsOutput'
-          targetPath: bin
-      - script: bin\Funkin.exe
-        displayName: 'Test'
