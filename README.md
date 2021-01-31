@@ -26,10 +26,9 @@ Other installations you'd need is the additional libraries, a fully updated list
 ```
 hscript
 flixel-ui
-newgrounds
 ```
 
-So for each of those type `haxelib install [library]` so shit like `haxelib install newgrounds`
+So for each of those type `haxelib install [library]` so shit like `haxelib install hscript`
 
 You'll also need to install polymod. Do this with
 

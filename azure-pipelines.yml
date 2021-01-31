@@ -21,7 +21,6 @@ jobs:
           haxelib run flixel-tools setup
           haxelib install hscript
           haxelib install flixel-ui
-          haxelib install newgrounds
           haxelib git polymod https://github.com/larsiusprime/polymod.git
         displayName: 'Install haxelib'
       - script: haxelib run lime build linux
@@ -49,7 +48,6 @@ jobs:
           haxelib run flixel-tools setup
           haxelib install hscript
           haxelib install flixel-ui
-          haxelib install newgrounds
           haxelib git polymod https://github.com/larsiusprime/polymod.git
         displayName: 'Install haxelib'
       - script: haxelib run lime build mac
@@ -81,7 +79,6 @@ jobs:
           haxelib run flixel-tools setup
           haxelib install hscript
           haxelib install flixel-ui
-          haxelib install newgrounds
           haxelib git polymod https://github.com/larsiusprime/polymod.git
 
         displayName: 'Install haxelibs'
