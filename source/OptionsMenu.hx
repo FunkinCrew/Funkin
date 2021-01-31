@@ -125,9 +125,10 @@ class OptionsMenu extends MusicBeatState
 			for(key in keyMaps.keys())
 			{
 				if(FlxG.keys.checkStatus(key,2) && key != "ANY")
-				{
+				{					
 					FlxFlicker.stopFlickering(grpControls.members[curSelected]);
 					var elements:Array<String> = controlsStrings[curSelected].split(',');
+					var unbindKey:FlxKey = keyMaps[elements[1]];
 					elements[1] = key;
 					controlsStrings[curSelected] = elements[0] + ',' + elements[1];
 
@@ -137,11 +138,15 @@ class OptionsMenu extends MusicBeatState
 
 					grpControls.replace(grpControls.members[curSelected],controlLabel);
 					changingInput = false;
+
+					//No clue how to write yet....
+
+
 					break;
 				}
 			}			
 
 		}
-	}
+	}	
 
 }
