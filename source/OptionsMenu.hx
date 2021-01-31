@@ -38,18 +38,28 @@ class OptionsMenu extends MusicBeatState
 
 		grpControls = new FlxTypedGroup<Alphabet>();
 		add(grpControls);
-		
-		for (i in 0...controlsStrings.length)
-		{
-			
+		var i = 0;
+
+		for(key => value in Controls.keyboardMap){
 			var elements:Array<String> = controlsStrings[i].split(',');
-			var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30,'set ' + elements[0] + ': ' + elements[1], true, false);
+			var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30,'set ' + key + ': ' + value, true, false);
 			controlLabel.isMenuItem = true;
 			controlLabel.targetY = i;
 			grpControls.add(controlLabel);
-			
-			// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
+			i++;
 		}
+		
+		//for (i in 0...controlsStrings.length)
+		//{
+		//	
+		//	var elements:Array<String> = controlsStrings[i].split(',');
+		//	var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30,'set ' + elements[0] + ': ' + elements[1], true, false);
+		//	controlLabel.isMenuItem = true;
+		//	controlLabel.targetY = i;
+		//	grpControls.add(controlLabel);
+		//	
+		//	// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
+		//}
 
 		super.create();
 	}
@@ -60,8 +70,11 @@ class OptionsMenu extends MusicBeatState
 
 		if(!changingInput)
 		{
-			if (controls.BACK)
+			if (controls.BACK){
 				FlxG.switchState(new MainMenuState());
+				Controls.saveControls();
+				controls.setKeyboardScheme(Solo,true);
+			}
 			if(controls.UP_P)
 				changeSelection(-1);
 			if(controls.DOWN_P)
@@ -127,28 +140,19 @@ class OptionsMenu extends MusicBeatState
 				if(FlxG.keys.checkStatus(key,2) && key != "ANY")
 				{					
 					FlxFlicker.stopFlickering(grpControls.members[curSelected]);
-					var elements:Array<String> = controlsStrings[curSelected].split(',');
-					var unbindKey:FlxKey = keyMaps[elements[1]];
-					elements[1] = key;
-					controlsStrings[curSelected] = elements[0] + ',' + elements[1];
-
-					var controlLabel:Alphabet = new Alphabet(0, 0,'set ' + elements[0] + ': ' + elements[1], true, false);
+					
+					var elements:Array<String> = grpControls.members[curSelected].text.split(':');
+					var name:String = StringTools.replace(elements[0],'set ','');
+					var controlLabel:Alphabet = new Alphabet(0, 0,'set ' + name + ': ' + key, true, false);
 					controlLabel.isMenuItem = true;
 					controlLabel.targetY = 0;
 
 					grpControls.replace(grpControls.members[curSelected],controlLabel);
 					changingInput = false;
 					
-					for(cont in Type.allEnums(Controls.Control)){
-						if(Std.string(cont) == key){
-							//"cont" is the Control to be altered...
-						}
-					}
-
+					Controls.keyboardMap.set(name,keyMaps[key]);
+					FlxG.log.add(name + " is bound to " + keyMaps[key]);
 					
-
-					//No clue how to write yet....
-
 
 					break;
 				}

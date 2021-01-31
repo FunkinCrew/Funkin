@@ -207,6 +207,8 @@ class Controls extends FlxActionSet
 	inline function get_CHEAT()
 		return _cheat.check();
 
+	public static var keyboardMap:Map<String, FlxKey>;
+	
 	#if (haxe >= "4.0.0")
 	public function new(name, scheme = None)
 	{
@@ -493,7 +495,9 @@ class Controls extends FlxActionSet
 		if (reset)
 			removeKeyboard();
 
+		loadControls();
 		keyboardScheme = scheme;
+
 		var keyMaps:Map<String, FlxKey> = FlxMacroUtil.buildMap("flixel.input.keyboard.FlxKey");
 		var i = 0;
 		var controlsString = CoolUtil.coolTextFile('assets/data/controls.txt');
@@ -503,12 +507,10 @@ class Controls extends FlxActionSet
 			case Solo:
 				for(cont in Type.allEnums(Controls.Control))
 				{
-					//The first bool is for if there's more enums than controls in txt the second bool checks which key it belongs to
-					while(i < controlsString.length && controlsString[i].split(',')[0].split(' ')[0] == Std.string(cont)){							
-						if(controlsString[i].split(',')[1] != 'null')
-							inline bindKeys(cont, [keyMaps[controlsString[i].split(',')[1]]]);							
-						i++;						
-					}						
+					if(cont != Control.CHEAT){
+						inline bindKeys(cont,[keyboardMap[Std.string(cont)]]);
+						inline bindKeys(cont,[keyboardMap[Std.string(cont) + ' (ALTERNATE)']]);
+					}															
 				}				
 			case Duo(true):
 				inline bindKeys(Control.UP, [W]);
@@ -565,6 +567,32 @@ class Controls extends FlxActionSet
 			case Custom: // nothing
 		}
 		#end
+	}
+
+	static function loadControls(){
+		if (FlxG.save.data.keyboardMap != null)
+		{
+			FlxG.log.add("First");
+			keyboardMap = FlxG.save.data.keyboardMap;
+		}
+		else
+		{
+			FlxG.log.add("Second");
+			var keyMaps:Map<String, FlxKey> = FlxMacroUtil.buildMap("flixel.input.keyboard.FlxKey");
+
+			var controlsStrings = CoolUtil.coolTextFile('assets/data/controls.txt');
+
+			keyboardMap = new Map();
+			for (i in 0...controlsStrings.length){
+				var elements:Array<String> = controlsStrings[i].split(',');
+				keyboardMap.set(elements[0],keyMaps[elements[1]]);
+			}			
+		}
+	}
+
+	public static function saveControls(){
+		FlxG.save.data.keyboardMap = keyboardMap;
+		FlxG.save.flush();
 	}
 
 	function removeKeyboard()
