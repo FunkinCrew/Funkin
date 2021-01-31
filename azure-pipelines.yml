@@ -31,10 +31,12 @@ jobs:
   - job: BuildMac
     pool:
       vmImage: 'macOS-10.14'
-    container: haxe:4.1.2
     steps:
+      - script: brew install haxe
+        displayName: 'Install Haxe'
       - script: |
           mkdir ~/artifacts
+
           haxelib setup ~/haxelib
           haxelib install lime
           haxelib install openfl
