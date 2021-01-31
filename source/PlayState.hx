@@ -73,9 +73,8 @@ class PlayState extends MusicBeatState
 	private var accuracy:Float = 0.00;
 	private var totalNotesHit:Float = 0;
 	private var totalPlayed:Int = 0;
-	private var ss:Bool = true;
-	private var rank:String = "None";
-
+	private var ss:Bool = false;
+	
 	private var healthBarBG:FlxSprite;
 	private var healthBar:FlxBar;
 
@@ -765,21 +764,6 @@ class PlayState extends MusicBeatState
 		// this is aids, I know it is aids. Please make this better, I hate looking at it.
 		// I don't know what else I can do in this situation, maybe someone is smarter then me.
 		// I want to use a switch case, but thats effor. I'm sorry for this mess.
-
-		if (ss)
-			rank = "SS";
-		else if (accuracy >= 95)
-			rank = "S";
-		else if (accuracy >= 92)
-			rank = "A";
-		else if (accuracy >= 82)
-			rank = "B";
-		else if (accuracy >= 70)
-			rank = "C";
-		else if (accuracy >= 50)
-			rank = "D";
-		else if (accuracy < 49)
-			rank = "F";
 	}
 
 	function sortByShit(Obj1:Note, Obj2:Note):Int
@@ -941,7 +925,7 @@ class PlayState extends MusicBeatState
 
 		super.update(elapsed);
 
-		scoreTxt.text = "Score:" + songScore + " | Misses:" + misses + " | Accuracy:" + truncateFloat(accuracy, 2) + "% | Rank:" + rank;
+		scoreTxt.text = "Score:" + songScore + " | Misses:" + misses + " | Accuracy:" + truncateFloat(accuracy, 2) + "%";
 
 		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause)
 		{
