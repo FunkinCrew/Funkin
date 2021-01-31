@@ -18,8 +18,6 @@ First you need to install Haxe and HaxeFlixel. I'm too lazy to write and keep up
 
 The link to that is on the [HaxeFlixel website](https://haxeflixel.com/documentation/getting-started/).
 
-That should give you HaxeFlixel and all of it's setup and shit. If you run into issues, ask them in the #flixel channel in the [Haxe Discord server](https://discord.gg/5ybrNNWx9S).
-
 Other installations you'd need is the additional libraries, a fully updated list will be in `Project.xml` in the project root, but here are the one's I'm using as of writing.
 
 Run each command to install the libary. (Most will be installed when you setup HaxeFlixel)
