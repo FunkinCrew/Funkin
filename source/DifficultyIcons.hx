@@ -107,8 +107,9 @@ class DifficultyIcons {
     var difficultiesFP:Array<Dynamic> = diffJson.difficulties;
     var ending = "";
     if (fpDiff != diffJson.defaultDiff) {
-      ending = "-"+difficultiesFP[fpDiff];
+      ending = "-"+difficultiesFP[fpDiff].name;
     }
+    trace(ending);
     return ending;
   }
 }

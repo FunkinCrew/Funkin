@@ -27,6 +27,10 @@ typedef StorySongsJson = {
 	var songs: Array<Array<String>>;
 	var characters: Array<Array<String>>;
 }
+typedef DifficultysJson = {
+	var difficulties:Array<Dynamic>;
+	var defaultDiff:Int;
+}
 class StoryMenuState extends MusicBeatState
 {
 	var scoreText:FlxText;
@@ -175,7 +179,7 @@ class StoryMenuState extends MusicBeatState
 		add(difficultySelectors);
 
 		trace("Line 124");
-		var diffJson = Json.parse(Assets.getText("assets/images/custom_difficulties/difficulties.json"));
+		var diffJson:DifficultysJson = Json.parse(Assets.getText("assets/images/custom_difficulties/difficulties.json"));
 		leftArrow = new FlxSprite(grpWeekText.members[0].x + grpWeekText.members[0].width + 10, grpWeekText.members[0].y + 10);
 		leftArrow.frames = ui_tex;
 		leftArrow.animation.addByPrefix('idle', "arrow left");
@@ -183,7 +187,11 @@ class StoryMenuState extends MusicBeatState
 		leftArrow.animation.play('idle');
 		difficultySelectors.add(leftArrow);
 		trace("line 186");
-		grpDifficulty = new DifficultyIcons(diffJson.difficulties, diffJson.defaultDiff, leftArrow.x + 130, leftArrow.y);
+		var difficultyLevels:Array<String> = [];
+		for (i in diffJson.difficulties) {
+			difficultyLevels.push(i.name);
+		}
+		grpDifficulty = new DifficultyIcons(difficultyLevels, diffJson.defaultDiff, leftArrow.x + 130, leftArrow.y);
 		trace("line 188");
 
 		difficultySelectors.add(grpDifficulty.group);
