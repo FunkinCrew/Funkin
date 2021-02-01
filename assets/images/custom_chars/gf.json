@@ -66,7 +66,7 @@
     "hairBlow": [45, -8],
     "hairFall": [0, -9]
   },
-  "flipx": true,
+  "flipx": false,
   "camOffsetX": 0,
   "camOffsetY": 0,
   "enemyOffsetX": 0,
