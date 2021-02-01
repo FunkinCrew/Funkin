@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Rebindable controls ([Thanks to PKPenguin321 for the menu backbone work](https://github.com/ninjamuffin99/Funkin/pull/288))
 ### Changed
+- Made it so you lose sliiiightly more health when you miss a note.
 - Removed the default HaxeFlixel pause screen when the game window loses focus, can get screenshots of the game easier hehehe
 ### Fixed
 - Idle animation bug with BF christmas and BF hair blow sprites ([Thanks to Injourn for the Pull Request!](https://github.com/ninjamuffin99/Funkin/pull/237))
