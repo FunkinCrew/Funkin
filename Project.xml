@@ -52,7 +52,7 @@
 	<assets path="assets/sounds" include="*.ogg" unless="web" />
 
 	<assets path="CHANGELOG.md"/>
-
+	<assets path="USER-README.md"/>
 
 	<assets path="assets/fonts/vcr.ttf" embed="true" />
 
