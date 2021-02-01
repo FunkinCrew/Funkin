@@ -102,4 +102,13 @@ class DifficultyIcons {
     }
     return ending;
   }
+  public static function getEndingFP(fpDiff:Int):String {
+    var diffJson = Json.parse(Assets.getText("assets/images/custom_difficulties/difficulties.json"));
+    var difficultiesFP:Array<Dynamic> = diffJson.difficulties;
+    var ending = "";
+    if (fpDiff != diffJson.defaultDiff) {
+      ending = "-"+difficultiesFP[fpDiff];
+    }
+    return ending;
+  }
 }
