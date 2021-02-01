@@ -1,5 +1,6 @@
 package;
 
+import DifficultyIcons;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
@@ -47,7 +48,7 @@ class StoryMenuState extends MusicBeatState
 	var grpLocks:FlxTypedGroup<FlxSprite>;
 
 	var difficultySelectors:FlxGroup;
-	var sprDifficulty:FlxSprite;
+	var grpDifficulty:DifficultyIcons;
 	var leftArrow:FlxSprite;
 	var rightArrow:FlxSprite;
 
@@ -174,25 +175,24 @@ class StoryMenuState extends MusicBeatState
 		add(difficultySelectors);
 
 		trace("Line 124");
-
+		var diffJson = Json.parse(Assets.getText("assets/images/custom_difficulties/difficulties.json"));
 		leftArrow = new FlxSprite(grpWeekText.members[0].x + grpWeekText.members[0].width + 10, grpWeekText.members[0].y + 10);
 		leftArrow.frames = ui_tex;
 		leftArrow.animation.addByPrefix('idle', "arrow left");
 		leftArrow.animation.addByPrefix('press', "arrow push left");
 		leftArrow.animation.play('idle');
 		difficultySelectors.add(leftArrow);
+		trace("line 186");
+		grpDifficulty = new DifficultyIcons(diffJson.difficulties, diffJson.defaultDiff, leftArrow.x + 130, leftArrow.y);
+		trace("line 188");
 
-		sprDifficulty = new FlxSprite(leftArrow.x + 130, leftArrow.y);
-		sprDifficulty.frames = ui_tex;
-		sprDifficulty.animation.addByPrefix('easy', 'EASY');
-		sprDifficulty.animation.addByPrefix('normal', 'NORMAL');
-		sprDifficulty.animation.addByPrefix('hard', 'HARD');
-		sprDifficulty.animation.play('easy');
-		changeDifficulty();
-
-		difficultySelectors.add(sprDifficulty);
-
-		rightArrow = new FlxSprite(sprDifficulty.x + sprDifficulty.width + 50, leftArrow.y);
+		difficultySelectors.add(grpDifficulty.group);
+		trace("line 190");
+		trace(grpDifficulty.activeDiff);
+		trace(grpDifficulty.activeDiff.width);
+		trace(leftArrow.y);
+		rightArrow = new FlxSprite(grpDifficulty.activeDiff.x + grpDifficulty.activeDiff.width + 50, leftArrow.y);
+		trace("line 192");
 		rightArrow.frames = ui_tex;
 		rightArrow.animation.addByPrefix('idle', 'arrow right');
 		rightArrow.animation.addByPrefix('press', "arrow push right", 24, false);
@@ -303,13 +303,7 @@ class StoryMenuState extends MusicBeatState
 
 			var diffic = "";
 
-			switch (curDifficulty)
-			{
-				case 0:
-					diffic = '-easy';
-				case 2:
-					diffic = '-hard';
-			}
+			diffic = grpDifficulty.getDiffEnding();
 
 			PlayState.storyDifficulty = curDifficulty;
 
@@ -327,39 +321,21 @@ class StoryMenuState extends MusicBeatState
 
 	function changeDifficulty(change:Int = 0):Void
 	{
-		curDifficulty += change;
+		grpDifficulty.changeDifficulty(change);
+		curDifficulty = grpDifficulty.difficulty;
 
-		if (curDifficulty < 0)
-			curDifficulty = 2;
-		if (curDifficulty > 2)
-			curDifficulty = 0;
 
-		sprDifficulty.offset.x = 0;
 
-		switch (curDifficulty)
-		{
-			case 0:
-				sprDifficulty.animation.play('easy');
-				sprDifficulty.offset.x = 20;
-			case 1:
-				sprDifficulty.animation.play('normal');
-				sprDifficulty.offset.x = 70;
-			case 2:
-				sprDifficulty.animation.play('hard');
-				sprDifficulty.offset.x = 20;
-		}
-
-		sprDifficulty.alpha = 0;
-
-		// USING THESE WEIRD VALUES SO THAT IT DOESNT FLOAT UP
-		sprDifficulty.y = leftArrow.y - 15;
+		grpDifficulty.activeDiff.alpha = 0;
+		grpDifficulty.activeDiff.y = leftArrow.y - 15;
+		rightArrow.setPosition(grpDifficulty.activeDiff.x + grpDifficulty.activeDiff.width + 50, leftArrow.y);
 		intendedScore = Highscore.getWeekScore(curWeek, curDifficulty);
 
 		#if !switch
 		intendedScore = Highscore.getWeekScore(curWeek, curDifficulty);
 		#end
 
-		FlxTween.tween(sprDifficulty, {y: leftArrow.y + 15, alpha: 1}, 0.07);
+		FlxTween.tween(grpDifficulty.activeDiff, {y: leftArrow.y + 15, alpha: 1}, 0.07);
 	}
 
 	var lerpScore:Int = 0;

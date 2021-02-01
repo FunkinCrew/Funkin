@@ -1,0 +1,20 @@
+{
+  "difficulties": [
+    {
+      "offset": 20,
+      "anim": "EASY",
+      "name": "easy"
+    },
+    {
+      "offset": 70,
+      "anim": "NORMAL",
+      "name": "normal"
+    },
+    {
+      "offset": 20,
+      "anim": "HARD",
+      "name": "hard"
+    }
+  ],
+  "defaultDiff": 1
+}

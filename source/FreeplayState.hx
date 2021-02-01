@@ -9,6 +9,7 @@ import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import lime.utils.Assets;
+import DifficultyIcons;
 import lime.system.System;
 #if sys
 import sys.io.File;
@@ -178,26 +179,15 @@ class FreeplayState extends MusicBeatState
 
 	function changeDiff(change:Int = 0)
 	{
-		curDifficulty += change;
-
-		if (curDifficulty < 0)
-			curDifficulty = 2;
-		if (curDifficulty > 2)
-			curDifficulty = 0;
+		trace("line 182 fp");
+		var difficultyObject:Dynamic = DifficultyIcons.changeDifficultyFreeplay(curDifficulty,change);
+		curDifficulty = difficultyObject.difficulty;
 
 		#if !switch
 		intendedScore = Highscore.getScore(songs[curSelected], curDifficulty);
 		#end
 
-		switch (curDifficulty)
-		{
-			case 0:
-				diffText.text = "EASY";
-			case 1:
-				diffText.text = 'NORMAL';
-			case 2:
-				diffText.text = "HARD";
-		}
+		diffText.text = difficultyObject.text;
 	}
 
 	function changeSelection(change:Int = 0)
