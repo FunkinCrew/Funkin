@@ -148,6 +148,12 @@ class PlayState extends MusicBeatState
 					"If you can beat me here...",
 					"Only then I will even CONSIDER letting you\ndate my daughter!"
 				];
+			case 'senpai':
+				dialogue = [
+					':dad:Ah, a new fair maiden has come in search of true love!',
+					":dad:A serenade between gentlemen shall decide where her beautiful heart shall reside.",
+					":bf:Beep bo bop"
+				];
 		}
 
 		if (SONG.song.toLowerCase() == 'spookeez' || SONG.song.toLowerCase() == 'monster' || SONG.song.toLowerCase() == 'south')
@@ -511,7 +517,7 @@ class PlayState extends MusicBeatState
 
 		var doof:DialogueBox = new DialogueBox(false, dialogue);
 		// doof.x += 70;
-		doof.y = FlxG.height * 0.5;
+		// doof.y = FlxG.height * 0.5;
 		doof.scrollFactor.set();
 		doof.finishThing = startCountdown;
 
@@ -619,7 +625,9 @@ class PlayState extends MusicBeatState
 						});
 					});
 				case 'senpai':
-					schoolIntro();
+					schoolIntro(doof);
+				case 'roses':
+					schoolIntro(doof);
 				default:
 					startCountdown();
 			}
@@ -629,7 +637,7 @@ class PlayState extends MusicBeatState
 			switch (curSong.toLowerCase())
 			{
 				case 'senpai':
-					schoolIntro();
+					schoolIntro(doof);
 				default:
 					startCountdown();
 			}
@@ -638,7 +646,7 @@ class PlayState extends MusicBeatState
 		super.create();
 	}
 
-	function schoolIntro():Void
+	function schoolIntro(?dialogueBox:DialogueBox):Void
 	{
 		var black:FlxSprite = new FlxSprite(-100, -100).makeGraphic(FlxG.width * 2, FlxG.height * 2, FlxColor.BLACK);
 		black.scrollFactor.set();
@@ -647,8 +655,6 @@ class PlayState extends MusicBeatState
 		new FlxTimer().start(0.3, function(tmr:FlxTimer)
 		{
 			black.alpha -= 0.15;
-			if (!startedCountdown)
-				startCountdown();
 
 			if (black.alpha > 0)
 			{
@@ -656,6 +662,13 @@ class PlayState extends MusicBeatState
 			}
 			else
 			{
+				if (dialogueBox != null)
+				{
+					add(dialogueBox);
+				}
+				else
+					startCountdown();
+
 				remove(black);
 			}
 		});
