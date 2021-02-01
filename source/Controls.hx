@@ -207,7 +207,7 @@ class Controls extends FlxActionSet
 	inline function get_CHEAT()
 		return _cheat.check();
 
-	public static var keyboardMap:Map<String, FlxKey>;
+	public static var keyboardMap:Map<String, FlxKey> = new Map();
 	
 	#if (haxe >= "4.0.0")
 	public function new(name, scheme = None)
@@ -495,12 +495,10 @@ class Controls extends FlxActionSet
 		if (reset)
 			removeKeyboard();
 
+		FlxG.save.bind('funkin', 'ninjamuffin99');
 		loadControls();
 		keyboardScheme = scheme;
-
-		var keyMaps:Map<String, FlxKey> = FlxMacroUtil.buildMap("flixel.input.keyboard.FlxKey");
-		var i = 0;
-		var controlsString = CoolUtil.coolTextFile('assets/data/controls.txt');
+		
 		#if (haxe >= "4.0.0")
 		switch (scheme)
 		{
@@ -572,12 +570,10 @@ class Controls extends FlxActionSet
 	static function loadControls(){
 		if (FlxG.save.data.keyboardMap != null)
 		{
-			FlxG.log.add("First");
 			keyboardMap = FlxG.save.data.keyboardMap;
 		}
 		else
-		{
-			FlxG.log.add("Second");
+		{			
 			var keyMaps:Map<String, FlxKey> = FlxMacroUtil.buildMap("flixel.input.keyboard.FlxKey");
 
 			var controlsStrings = CoolUtil.coolTextFile('assets/data/controls.txt');
