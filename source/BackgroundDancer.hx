@@ -7,6 +7,7 @@ import lime.utils.Assets;
 import lime.system.System;
 #if sys
 import sys.io.File;
+import sys.FileSystem;
 import haxe.io.Path;
 import openfl.utils.ByteArray;
 #end
@@ -20,8 +21,20 @@ class BackgroundDancer extends FlxSprite
 		if (type == "normal") {
 			frames = FlxAtlasFrames.fromSparrow("assets/images/limo/limoDancer.png", "assets/images/limo/limoDancer.xml");
 		} else {
-			var rawPic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+type+"_dancer.png"))));
-			var rawXml = File.getContent(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+type+"_dancer.xml"));
+			var rawPic:BitmapData;
+			var rawXml:String;
+			if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+type+"/limoDancer.png"))) {
+				rawPic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+type+"/limoDancer.png"))));
+			} else {
+				// fall back on base game file to avoid crashes
+				rawPic = BitmapData.fromImage(Assets.getImage("assets/images/limo/limoDancer.png"));
+			}
+			if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+type+"/limoDancer.xml"))) {
+			   rawXml = File.getContent(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+type+"/limoDancer.xml"));
+			} else {
+			   // fall back on base game file to avoid crashes
+				 rawXml = Assets.getText("assets/images/limo/limoDancer.xml");
+			}
 			frames = FlxAtlasFrames.fromSparrow(rawPic, rawXml);
 		}
 

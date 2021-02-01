@@ -22,15 +22,11 @@ class MenuCharacter extends FlxSprite
 
 		this.character = character;
 		// use assets it is less laggy
-		trace("before assets");
 		var parsedCharJson:Dynamic = Json.parse(Assets.getText("assets/images/campaign-ui-char/custom_ui_chars.json"));
-		trace("after assets");
 		if (!!Reflect.field(parsedCharJson,character).defaultGraphics) {
 			// use assets, it is less laggy
-			trace("before sparrow");
 			var tex = FlxAtlasFrames.fromSparrow('assets/images/campaign-ui-char/default.png', 'assets/images/campaign-ui-char/default.xml');
 			frames = tex;
-			trace("after sparrow");
 		} else {
 			var rawPic:BitmapData = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/campaign-ui-char/'+character+".png"))));
 			var rawXml:String = File.getContent(Path.normalize(System.applicationDirectory+'/assets/images/campaign-ui-char/'+character+".xml"));
