@@ -139,6 +139,9 @@ class Note extends FlxSprite
 
 			x -= width / 2;
 
+			if (PlayState.curStage == 'school')
+				x += 30;
+
 			if (prevNote.isSustainNote)
 			{
 				switch (prevNote.noteData)
