@@ -149,11 +149,9 @@ class PlayState extends MusicBeatState
 					"Only then I will even CONSIDER letting you\ndate my daughter!"
 				];
 			case 'senpai':
-				dialogue = [
-					':dad:Ah, a new fair maiden has come in search of true love!',
-					":dad:A serenade between gentlemen shall decide where her beautiful heart shall reside.",
-					":bf:Beep bo bop"
-				];
+				dialogue = CoolUtil.coolTextFile('assets/data/senpai/senpaiDialogue.txt');
+			case 'roses':
+				dialogue = CoolUtil.coolTextFile('assets/data/roses/rosesDialogue.txt');
 		}
 
 		if (SONG.song.toLowerCase() == 'spookeez' || SONG.song.toLowerCase() == 'monster' || SONG.song.toLowerCase() == 'south')
@@ -637,6 +635,8 @@ class PlayState extends MusicBeatState
 			switch (curSong.toLowerCase())
 			{
 				case 'senpai':
+					schoolIntro(doof);
+				case 'roses':
 					schoolIntro(doof);
 				default:
 					startCountdown();
