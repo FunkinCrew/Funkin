@@ -389,92 +389,55 @@ class Character extends FlxSprite
 				// protective ritual to protect against new lines
 				curCharacter = curCharacter.trim();
 				trace(curCharacter);
-				var charJson:Dynamic = Json.parse(File.getContent(Path.normalize(System.applicationDirectory+"assets/images/custom_chars/custom_chars.json")));
-				if (!(Reflect.hasField(charJson,curCharacter))) {
-					// to avoid a crash, pretend it's bf
-					var tex = FlxAtlasFrames.fromSparrow('assets/images/BOYFRIEND.png', 'assets/images/BOYFRIEND.xml');
-					frames = tex;
-					animation.addByPrefix('idle', 'BF idle dance', 24, false);
-					animation.addByPrefix('singUP', 'BF NOTE UP0', 24, false);
-					animation.addByPrefix('singLEFT', 'BF NOTE LEFT0', 24, false);
-					animation.addByPrefix('singRIGHT', 'BF NOTE RIGHT0', 24, false);
-					animation.addByPrefix('singDOWN', 'BF NOTE DOWN0', 24, false);
-					animation.addByPrefix('singUPmiss', 'BF NOTE UP MISS', 24, false);
-					animation.addByPrefix('singLEFTmiss', 'BF NOTE LEFT MISS', 24, false);
-					animation.addByPrefix('singRIGHTmiss', 'BF NOTE RIGHT MISS', 24, false);
-					animation.addByPrefix('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
-					animation.addByPrefix('hey', 'BF HEY', 24, false);
 
-					animation.addByPrefix('firstDeath', "BF dies", 24, false);
-					animation.addByPrefix('deathLoop', "BF Dead Loop", 24, true);
-					animation.addByPrefix('deathConfirm', "BF Dead confirm", 24, false);
+				// use assets, as it is less laggy
+				var charJson:Dynamic = Assets.getText('assets/images/custom_chars/custom_chars.json');
 
-					animation.addByPrefix('scared', 'BF idle shaking', 24);
-
-					addOffset('idle', -5);
-					addOffset("singUP", -29, 27);
-					addOffset("singRIGHT", -38, -7);
-					addOffset("singLEFT", 12, -6);
-					addOffset("singDOWN", -10, -50);
-					addOffset("singUPmiss", -29, 27);
-					addOffset("singRIGHTmiss", -30, 21);
-					addOffset("singLEFTmiss", 12, 24);
-					addOffset("singDOWNmiss", -11, -19);
-					addOffset("hey", 7, 4);
-					addOffset('firstDeath', 37, 11);
-					addOffset('deathLoop', 37, 5);
-					addOffset('deathConfirm', 37, 69);
-					addOffset('scared', -4);
-
-					flipX = true;
-					like = "bf";
-				} else {
-					var rawPic = File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_chars/'+curCharacter+".png"));
-					var rawXml = File.getContent(Path.normalize(System.applicationDirectory+'/assets/images/custom_chars/'+curCharacter+".xml"));
-					var tex = FlxAtlasFrames.fromSparrow(BitmapData.fromBytes(ByteArray.fromBytes(rawPic)),rawXml);
-					frames = tex;
-					var animJson = File.getContent(Path.normalize(System.applicationDirectory+"/assets/images/custom_chars/"+Reflect.field(charJson,curCharacter).like+".json"));
-					while (!animJson.endsWith("}"))
-					{
-						animJson = animJson.substr(0, animJson.length - 1);
-						// LOL GOING THROUGH THE BULLSHIT TO CLEAN IDK WHATS STRANGE
-						// this is a protective ritual to ward off code demons idk what it does
-					}
-					var parsedAnimJson:Dynamic = Json.parse(animJson);
-					for( field in Reflect.fields(parsedAnimJson.animation) ) {
-						var fps = 24;
-						if (Reflect.hasField(Reflect.field(parsedAnimJson.animation,field), "fps")) {
-							fps = Reflect.field(parsedAnimJson.animation,field).fps;
-						}
-						if (!!Reflect.field(parsedAnimJson.animation,field).flipplayer2 && !isPlayer) {
-							// the double not is to turn a null into a false
-							if (!!Reflect.field(parsedAnimJson.animation,field).byIndices) {
-								var indicesAnim:Array<Int> = Reflect.field(parsedAnimJson.animation,field).indices;
-								animation.addByIndices(field, Reflect.field(parsedAnimJson.animation,field).flippedname, indicesAnim, "", fps, !!Reflect.field(parsedAnimJson.animation,field).loop);
-							} else {
-								animation.addByPrefix(field,Reflect.field(parsedAnimJson.animation,field).flippedname, fps, !!Reflect.field(parsedAnimJson.animation,field).loop);
-							}
-
-						} else {
-							if (!!Reflect.field(parsedAnimJson.animation,field).byIndices) {
-								var indicesAnim:Array<Int> = Reflect.field(parsedAnimJson.animation,field).indices;
-								animation.addByIndices(field, Reflect.field(parsedAnimJson.animation,field).name, indicesAnim, "", fps, !!Reflect.field(parsedAnimJson.animation,field).loop);
-							} else {
-								animation.addByPrefix(field,Reflect.field(parsedAnimJson.animation,field).name, fps, !!Reflect.field(parsedAnimJson.animation,field).loop);
-							}
-						}
-					}
-					for( field in Reflect.fields(parsedAnimJson.offset)) {
-						addOffset(field, Reflect.field(parsedAnimJson.offset,field)[0],  Reflect.field(parsedAnimJson.offset,field)[1]);
-					}
-					camOffsetX = parsedAnimJson.camOffsetX;
-					camOffsetY = parsedAnimJson.camOffsetY;
-					enemyOffsetX = parsedAnimJson.enemyOffsetX;
-					enemyOffsetY = parsedAnimJson.enemyOffsetY;
-					flipX = parsedAnimJson.flipx;
-					like = parsedAnimJson.like;
-					playAnim(parsedAnimJson.playAnim);
+				var rawPic = File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_chars/'+curCharacter+".png"));
+				var rawXml = File.getContent(Path.normalize(System.applicationDirectory+'/assets/images/custom_chars/'+curCharacter+".xml"));
+				var tex = FlxAtlasFrames.fromSparrow(BitmapData.fromBytes(ByteArray.fromBytes(rawPic)),rawXml);
+				frames = tex;
+				var animJson = File.getContent(Path.normalize(System.applicationDirectory+"/assets/images/custom_chars/"+Reflect.field(charJson,curCharacter).like+".json"));
+				while (!animJson.endsWith("}"))
+				{
+					animJson = animJson.substr(0, animJson.length - 1);
+					// LOL GOING THROUGH THE BULLSHIT TO CLEAN IDK WHATS STRANGE
+					// this is a protective ritual to ward off code demons idk what it does
 				}
+				var parsedAnimJson:Dynamic = Json.parse(animJson);
+				for( field in Reflect.fields(parsedAnimJson.animation) ) {
+					var fps = 24;
+					if (Reflect.hasField(Reflect.field(parsedAnimJson.animation,field), "fps")) {
+						fps = Reflect.field(parsedAnimJson.animation,field).fps;
+					}
+					if (!!Reflect.field(parsedAnimJson.animation,field).flipplayer2 && !isPlayer) {
+						// the double not is to turn a null into a false
+						if (!!Reflect.field(parsedAnimJson.animation,field).byIndices) {
+							var indicesAnim:Array<Int> = Reflect.field(parsedAnimJson.animation,field).indices;
+							animation.addByIndices(field, Reflect.field(parsedAnimJson.animation,field).flippedname, indicesAnim, "", fps, !!Reflect.field(parsedAnimJson.animation,field).loop);
+						} else {
+							animation.addByPrefix(field,Reflect.field(parsedAnimJson.animation,field).flippedname, fps, !!Reflect.field(parsedAnimJson.animation,field).loop);
+						}
+
+					} else {
+						if (!!Reflect.field(parsedAnimJson.animation,field).byIndices) {
+							var indicesAnim:Array<Int> = Reflect.field(parsedAnimJson.animation,field).indices;
+							animation.addByIndices(field, Reflect.field(parsedAnimJson.animation,field).name, indicesAnim, "", fps, !!Reflect.field(parsedAnimJson.animation,field).loop);
+						} else {
+							animation.addByPrefix(field,Reflect.field(parsedAnimJson.animation,field).name, fps, !!Reflect.field(parsedAnimJson.animation,field).loop);
+						}
+					}
+				}
+				for( field in Reflect.fields(parsedAnimJson.offset)) {
+					addOffset(field, Reflect.field(parsedAnimJson.offset,field)[0],  Reflect.field(parsedAnimJson.offset,field)[1]);
+				}
+				camOffsetX = parsedAnimJson.camOffsetX;
+				camOffsetY = parsedAnimJson.camOffsetY;
+				enemyOffsetX = parsedAnimJson.enemyOffsetX;
+				enemyOffsetY = parsedAnimJson.enemyOffsetY;
+				flipX = parsedAnimJson.flipx;
+				like = parsedAnimJson.like;
+				playAnim(parsedAnimJson.playAnim);
 				#else
 				// pretend its boyfriend, screw html5
 				var tex = FlxAtlasFrames.fromSparrow('assets/images/BOYFRIEND.png', 'assets/images/BOYFRIEND.xml');
