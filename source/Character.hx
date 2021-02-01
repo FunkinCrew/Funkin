@@ -391,7 +391,7 @@ class Character extends FlxSprite
 				trace(curCharacter);
 
 				// use assets, as it is less laggy
-				var charJson:Dynamic = Assets.getText('assets/images/custom_chars/custom_chars.json');
+				var charJson:Dynamic = Json.parse(Assets.getText('assets/images/custom_chars/custom_chars.json'));
 
 				var rawPic = File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_chars/'+curCharacter+".png"));
 				var rawXml = File.getContent(Path.normalize(System.applicationDirectory+'/assets/images/custom_chars/'+curCharacter+".xml"));
