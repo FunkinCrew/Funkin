@@ -9,7 +9,7 @@ labels: bug
 
 ## Where are you playing the game?
 
-### Web
+### Web (Only check if playing online)
 - [ ] [Newgrounds](https://www.newgrounds.com/portal/view/770371)
 - [ ] [Itch.io](https://ninja-muffin24.itch.io/funkin)
 
@@ -19,7 +19,7 @@ labels: bug
 - [ ] Safari
 - [ ] Other, please specify:
 
-### Local
+### Local (Only check if you've downloaded the game.)
 - [ ] Windows x86
 - [ ] Windows x86_64
 - [ ] Linux
