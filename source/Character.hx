@@ -251,8 +251,6 @@ class Character extends FlxSprite
 				animation.addByPrefix('singUPmiss', 'pico Up note miss', 24);
 				animation.addByPrefix('singDOWNmiss', 'Pico Down Note MISS', 24);
 
-				playAnim('idle');
-
 				addOffset('idle');
 				addOffset("singUP", -29, 27);
 				addOffset("singRIGHT", -68, -7);
@@ -302,6 +300,8 @@ class Character extends FlxSprite
 				addOffset('deathConfirm', 37, 69);
 				addOffset('scared', -4);
 
+				playAnim('idle');
+
 				flipX = true;
 
 			case 'bf-christmas':
@@ -329,6 +329,8 @@ class Character extends FlxSprite
 				addOffset("singDOWNmiss", -11, -19);
 				addOffset("hey", 7, 4);
 
+				playAnim('idle');
+
 				flipX = true;
 			case 'bf-car':
 				var tex = FlxAtlasFrames.fromSparrow('assets/images/bfCar.png', 'assets/images/bfCar.xml');
@@ -352,6 +354,7 @@ class Character extends FlxSprite
 				addOffset("singRIGHTmiss", -30, 21);
 				addOffset("singLEFTmiss", 12, 24);
 				addOffset("singDOWNmiss", -11, -19);
+				playAnim('idle');
 
 				flipX = true;
 			case 'bf-pixel':
@@ -378,6 +381,8 @@ class Character extends FlxSprite
 
 				setGraphicSize(Std.int(width * 6));
 				updateHitbox();
+
+				playAnim('idle');
 
 				width -= 100;
 				height -= 100;
@@ -417,6 +422,8 @@ class Character extends FlxSprite
 				addOffset("singLEFT", 40);
 				addOffset("singDOWN", 14);
 
+				playAnim('idle');
+
 				setGraphicSize(Std.int(width * 6));
 				updateHitbox();
 
@@ -434,6 +441,7 @@ class Character extends FlxSprite
 				addOffset("singRIGHT");
 				addOffset("singLEFT", 40);
 				addOffset("singDOWN", 14);
+				playAnim('idle');
 
 				setGraphicSize(Std.int(width * 6));
 				updateHitbox();
@@ -485,9 +493,11 @@ class Character extends FlxSprite
 				addOffset("singRIGHT-alt", -1, -24);
 				addOffset("singLEFT-alt", -30, 15);
 				addOffset("singDOWN-alt", -30, -27);
+
+				playAnim('idle');
 		}
 
-		playAnim('singUP');
+		dance();
 
 		if (isPlayer)
 		{
@@ -618,6 +628,8 @@ class Character extends FlxSprite
 		{
 			offset.set(daOffset[0], daOffset[1]);
 		}
+		else
+			offset.set(0, 0);
 
 		if (curCharacter == 'gf')
 		{
