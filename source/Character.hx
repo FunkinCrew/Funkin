@@ -611,7 +611,7 @@ class Character extends FlxSprite
 		}
 
 				playAnim('idle');
-		}
+
 
 		dance();
 
@@ -728,8 +728,6 @@ class Character extends FlxSprite
 						playAnim('danceRight');
 					else
 						playAnim('danceLeft');
-				default:
-					playAnim('idle');
 				default:
 					if (like == "gf" || like == "spooky") {
 						if (!animation.curAnim.name.startsWith('hair'))
