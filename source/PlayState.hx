@@ -165,6 +165,8 @@ class PlayState extends MusicBeatState
 				dialogue = CoolUtil.coolTextFile('assets/data/senpai/senpaiDialogue.txt');
 			case 'roses':
 				dialogue = CoolUtil.coolTextFile('assets/data/roses/rosesDialogue.txt');
+			case 'thorns':
+				dialogue = CoolUtil.coolTextFile('assets/data/thorns/thornsDialogue.txt');
 		}
 
 		if (SONG.song.toLowerCase() == 'spookeez' || SONG.song.toLowerCase() == 'monster' || SONG.song.toLowerCase() == 'south')
@@ -736,6 +738,9 @@ class PlayState extends MusicBeatState
 				case 'senpai':
 					schoolIntro(doof);
 				case 'roses':
+					FlxG.sound.play('assets/sounds/ANGRY' + TitleState.soundExt);
+					schoolIntro(doof);
+				case 'thorns':
 					schoolIntro(doof);
 				default:
 					startCountdown();
@@ -748,6 +753,8 @@ class PlayState extends MusicBeatState
 				case 'senpai':
 					schoolIntro(doof);
 				case 'roses':
+					schoolIntro(doof);
+				case 'thorns':
 					schoolIntro(doof);
 				default:
 					startCountdown();
