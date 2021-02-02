@@ -16,6 +16,7 @@ import flixel.addons.effects.FlxTrail;
 import flixel.addons.effects.FlxTrailArea;
 import flixel.addons.effects.chainable.FlxEffectSprite;
 import flixel.addons.effects.chainable.FlxWaveEffect;
+import flixel.addons.transition.FlxTransitionableState;
 import flixel.graphics.atlas.FlxAtlas;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxGroup.FlxTypedGroup;
@@ -64,6 +65,9 @@ class PlayState extends MusicBeatState
 	private var curSection:Int = 0;
 
 	private var camFollow:FlxObject;
+
+	private static var prevCamFollow:FlxObject;
+
 	private var strumLineNotes:FlxTypedGroup<FlxSprite>;
 	private var playerStrums:FlxTypedGroup<FlxSprite>;
 
@@ -403,7 +407,9 @@ class PlayState extends MusicBeatState
 			bgGirls.scrollFactor.set(0.9, 0.9);
 
 			if (SONG.song.toLowerCase() == 'roses')
+			{
 				bgGirls.getScared();
+			}
 
 			bgGirls.setGraphicSize(Std.int(bgGirls.width * daPixelZoom));
 			bgGirls.updateHitbox();
@@ -636,6 +642,13 @@ class PlayState extends MusicBeatState
 		camFollow = new FlxObject(0, 0, 1, 1);
 
 		camFollow.setPosition(camPos.x, camPos.y);
+
+		if (prevCamFollow != null)
+		{
+			camFollow = prevCamFollow;
+			prevCamFollow = null;
+		}
+
 		add(camFollow);
 
 		FlxG.camera.follow(camFollow, LOCKON, 0.04);
@@ -749,6 +762,9 @@ class PlayState extends MusicBeatState
 		var black:FlxSprite = new FlxSprite(-100, -100).makeGraphic(FlxG.width * 2, FlxG.height * 2, FlxColor.BLACK);
 		black.scrollFactor.set();
 		add(black);
+
+		if (isStoryMode && SONG.song.toLowerCase() == 'roses')
+			remove(black);
 
 		new FlxTimer().start(0.3, function(tmr:FlxTimer)
 		{
@@ -1530,8 +1546,10 @@ class PlayState extends MusicBeatState
 		if (!inCutscene)
 			keyShit();
 
-		// if (FlxG.keys.justPressed.ONE)
-		// endSong();
+		#if debug
+		if (FlxG.keys.justPressed.ONE)
+			endSong();
+		#end
 	}
 
 	function endSong():Void
@@ -1594,10 +1612,20 @@ class PlayState extends MusicBeatState
 					FlxG.sound.play('assets/sounds/Lights_Shut_off' + TitleState.soundExt);
 				}
 
+				if (SONG.song.toLowerCase() == 'senpai')
+				{
+					transIn = null;
+					transOut = null;
+					prevCamFollow = camFollow;
+				}
+
 				PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + difficulty, PlayState.storyPlaylist[0]);
 				FlxG.sound.music.stop();
 
 				FlxG.switchState(new PlayState());
+
+				transIn = FlxTransitionableState.defaultTransIn;
+				transOut = FlxTransitionableState.defaultTransOut;
 			}
 		}
 		else
