@@ -24,11 +24,12 @@ class StoryMenuState extends MusicBeatState
 		['Spookeez', 'South'],
 		['Pico', 'Philly', "Blammed"],
 		['Satin-Panties', "High", "Milf"],
-		['Cocoa', 'Eggnog', 'Winter-Horrorland']
+		['Cocoa', 'Eggnog', 'Winter-Horrorland'],
+		['Senpai', 'Roses', 'Thorns']
 	];
 	var curDifficulty:Int = 1;
 
-	public static var weekUnlocked:Array<Bool> = [true, true, true, true, true, true];
+	public static var weekUnlocked:Array<Bool> = [true, true, true, true, true, true, true];
 
 	var weekCharacters:Array<Dynamic> = [
 		['dad', 'bf', 'gf'],
@@ -36,8 +37,22 @@ class StoryMenuState extends MusicBeatState
 		['spooky', 'bf', 'gf'],
 		['pico', 'bf', 'gf'],
 		['mom', 'bf', 'gf'],
-		['parents-christmas', 'bf', 'gf']
+		['parents-christmas', 'bf', 'gf'],
+		['senpai', 'bf', 'gf']
 	];
+
+	var weekNames:Array<String> = [
+		"",
+		"Daddy Dearest",
+		"Spooky Month",
+		"PICO",
+		"MOMMY MUST MURDER",
+		"RED SNOW",
+		"hating simulator ft. moawling"
+	];
+
+	var txtWeekTitle:FlxText;
+
 	var curWeek:Int = 0;
 
 	var txtTracklist:FlxText;
@@ -64,6 +79,10 @@ class StoryMenuState extends MusicBeatState
 
 		scoreText = new FlxText(10, 10, 0, "SCORE: 49324858", 36);
 		scoreText.setFormat("VCR OSD Mono", 32);
+
+		txtWeekTitle = new FlxText(FlxG.width * 0.7, 10, 0, "", 32);
+		txtWeekTitle.setFormat("VCR OSD Mono", 32, FlxColor.WHITE, RIGHT);
+		txtWeekTitle.alpha = 0.7;
 
 		var rankText:FlxText = new FlxText(0, 10);
 		rankText.text = 'RANK: GREAT';
@@ -132,11 +151,8 @@ class StoryMenuState extends MusicBeatState
 					weekCharacterThing.setGraphicSize(Std.int(weekCharacterThing.width * 0.5));
 					weekCharacterThing.updateHitbox();
 				case 'pico':
-					weekCharacterThing.y += 170;
 					weekCharacterThing.flipX = true;
-					weekCharacterThing.x -= 40;
 				case 'parents-christmas':
-					weekCharacterThing.x -= 600;
 					weekCharacterThing.setGraphicSize(Std.int(weekCharacterThing.width * 0.9));
 					weekCharacterThing.updateHitbox();
 			}
@@ -185,6 +201,7 @@ class StoryMenuState extends MusicBeatState
 		add(txtTracklist);
 		// add(rankText);
 		add(scoreText);
+		add(txtWeekTitle);
 
 		updateText();
 
@@ -199,6 +216,10 @@ class StoryMenuState extends MusicBeatState
 		lerpScore = Math.floor(FlxMath.lerp(lerpScore, intendedScore, 0.5));
 
 		scoreText.text = "WEEK SCORE:" + lerpScore;
+
+		txtWeekTitle.text = weekNames[curWeek].toUpperCase();
+		txtWeekTitle.x = FlxG.width - (txtWeekTitle.width + 10);
+
 		// FlxG.watch.addQuick('font', scoreText.font);
 
 		difficultySelectors.visible = weekUnlocked[curWeek];
@@ -375,11 +396,23 @@ class StoryMenuState extends MusicBeatState
 		switch (grpWeekCharacters.members[0].animation.curAnim.name)
 		{
 			case 'parents-christmas':
-				grpWeekCharacters.members[0].offset.x = 250;
-				grpWeekCharacters.members[0].setGraphicSize(Std.int(grpWeekCharacters.members[0].width * 0.97));
+				grpWeekCharacters.members[0].offset.set(200, 200);
+				grpWeekCharacters.members[0].setGraphicSize(Std.int(grpWeekCharacters.members[0].width * 0.99));
+
+			case 'senpai':
+				grpWeekCharacters.members[0].offset.set(130, 0);
+				grpWeekCharacters.members[0].setGraphicSize(Std.int(grpWeekCharacters.members[0].width * 1.4));
+
+			case 'mom':
+				grpWeekCharacters.members[0].offset.set(100, 200);
+				grpWeekCharacters.members[0].setGraphicSize(Std.int(grpWeekCharacters.members[0].width * 1));
+
+			case 'dad':
+				grpWeekCharacters.members[0].offset.set(120, 200);
+				grpWeekCharacters.members[0].setGraphicSize(Std.int(grpWeekCharacters.members[0].width * 1));
 
 			default:
-				grpWeekCharacters.members[0].offset.x = 100;
+				grpWeekCharacters.members[0].offset.set(100, 100);
 				grpWeekCharacters.members[0].setGraphicSize(Std.int(grpWeekCharacters.members[0].width * 1));
 				// grpWeekCharacters.members[0].updateHitbox();
 		}
