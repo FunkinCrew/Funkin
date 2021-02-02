@@ -67,6 +67,15 @@ class HealthIcon extends FlxSprite
 			case 'monster-christmas':
 				loadGraphic('assets/images/iconGrid.png', true, 150, 150);
 				animation.add('icon', [19, 20], 0, false, isPlayer);
+			case 'senpai':
+				loadGraphic('assets/images/iconGrid.png', true, 150, 150);
+				animation.add('icon', [22, 22], 0, false, isPlayer);
+			case 'senpai-angry':
+				loadGraphic('assets/images/iconGrid.png', true, 150, 150);
+				animation.add('icon', [22, 22], 0, false, isPlayer);
+			case 'bf-pixel':
+				loadGraphic('assets/images/iconGrid.png', true, 150, 150);
+				animation.add('icon', [21, 21], 0, false, isPlayer);
 			default:
 				if (!!Reflect.field(charJson,char).uniqueicons) {
 					var rawPic:BitmapData = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_chars/'+char+"_icons.png"))));

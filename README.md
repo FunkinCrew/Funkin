@@ -16,6 +16,14 @@ This game was made with love to Newgrounds and it's community. Extra love to Tom
 
 ## Build instructions
 
+THESE INSTRUCTIONS ARE FOR COMPILING THE GAME'S SOURCE CODE!!!
+
+IF YOU WANT TO JUST DOWNLOAD AND INSTALL AND PLAY THE GAME NORMALLY, GO TO ITCH.IO TO DOWNLOAD THE GAME FOR PC, MAC, AND LINUX!!
+
+https://ninja-muffin24.itch.io/friday-night-funkin
+
+IF YOU WANT TO COMPILE THE GAME YOURSELF, CONTINUE READING!!!
+
 ### Installing shit
 
 First you need to install Haxe and HaxeFlixel. I'm too lazy to write and keep updated with that setup (which is pretty simple).

@@ -21,7 +21,7 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import lime.app.Application;
-import lime.utils.Assets;
+import openfl.Assets;
 import polymod.Polymod;
 
 using StringTools;
@@ -43,7 +43,7 @@ class TitleState extends MusicBeatState
 
 	override public function create():Void
 	{
-		Polymod.init({modRoot: "assets/mods", dirs: CoolUtil.coolTextFile('assets/mods/modList.txt')});
+		Polymod.init({modRoot: "mods", dirs: ['introMod']});
 
 		#if (!web)
 		TitleState.soundExt = '.ogg';
