@@ -4,9 +4,13 @@ All notable changes will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [UNRELEASED]
+## [0.2.7] - 2021-02-02
 ### Added
-- Rebindable controls ([Thanks to PKPenguin321 for the menu backbone work](https://github.com/ninjamuffin99/Funkin/pull/288))
+- PIXEL DAY UPDATE LOL 1 WEEK LATER
+- 3 New songs by Kawaisprite!
+- COOL CUTSCENES
+- WEEK 6 YOYOYOYOY
+- Swaggy pixel art by Moawling!
 ### Changed
 - Made it so you lose sliiiightly more health when you miss a note.
 - Removed the default HaxeFlixel pause screen when the game window loses focus, can get screenshots of the game easier hehehe
