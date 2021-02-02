@@ -77,6 +77,11 @@ class PlayState extends MusicBeatState
 	private var gfSpeed:Int = 1;
 	private var health:Float = 1;
 	private var combo:Int = 0;
+	private var misses:Int = 0;
+	private var accuracy:Float = 0.00;
+	private var totalNotesHit:Float = 0;
+	private var totalPlayed:Int = 0;
+	private var ss:Bool = false;
 
 	private var healthBarBG:FlxSprite;
 	private var healthBar:FlxBar;
@@ -758,6 +763,24 @@ class PlayState extends MusicBeatState
 		super.create();
 	}
 
+	function updateAccuracy()
+		{
+	
+			totalPlayed += 1;
+			accuracy = totalNotesHit / totalPlayed * 100;
+			if (accuracy >= 100.00)
+			{
+				if (ss && misses == 0)
+					accuracy = 100.00;
+				else
+				{
+					accuracy = 99.98;
+					ss = false;
+				}
+			}
+		
+		}
+
 	function schoolIntro(?dialogueBox:DialogueBox):Void
 	{
 		var black:FlxSprite = new FlxSprite(-100, -100).makeGraphic(FlxG.width * 2, FlxG.height * 2, FlxColor.BLACK);
@@ -1266,6 +1289,14 @@ class PlayState extends MusicBeatState
 	var startedCountdown:Bool = false;
 	var canPause:Bool = true;
 
+	function truncateFloat( number : Float, precision : Int): Float {
+		var num = number;
+		num = num * Math.pow(10, precision);
+		num = Math.round( num ) / Math.pow(10, precision);
+		return num;
+		}
+
+
 	override public function update(elapsed:Float)
 	{
 		#if !debug
@@ -1298,7 +1329,7 @@ class PlayState extends MusicBeatState
 
 		super.update(elapsed);
 
-		scoreTxt.text = "Score:" + songScore;
+		scoreTxt.text = "Score:" + songScore + " | Misses:" + misses + " | Accuracy:" + truncateFloat(accuracy, 2) + "%";
 
 		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause)
 		{
@@ -1581,7 +1612,7 @@ class PlayState extends MusicBeatState
 				{
 					if (daNote.tooLate || !daNote.wasGoodHit)
 					{
-						health -= 0.0475;
+						health -= 0.075;
 						vocals.volume = 0;
 					}
 
@@ -2091,12 +2122,16 @@ class PlayState extends MusicBeatState
 			noteMiss(3);
 		if (downP)
 			noteMiss(1);
+		updateAccuracy();
 	}
 
 	function noteCheck(keyP:Bool, note:Note):Void
 	{
 		if (keyP)
+			{
 			goodNoteHit(note);
+			updateAccuracy();
+			}
 		else
 		{
 			badNoteCheck();
