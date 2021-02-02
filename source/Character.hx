@@ -105,6 +105,22 @@ class Character extends FlxSprite
 
 				playAnim('danceRight');
 
+			case 'gf-pixel':
+				tex = FlxAtlasFrames.fromSparrow('assets/images/weeb/gfPixel.png', 'assets/images/weeb/gfPixel.xml');
+				frames = tex;
+				animation.addByIndices('singUP', 'GF IDLE', [2], "", 24, false);
+				animation.addByIndices('danceLeft', 'GF IDLE', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
+				animation.addByIndices('danceRight', 'GF IDLE', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
+
+				addOffset('danceLeft', 0);
+				addOffset('danceRight', 0);
+
+				playAnim('danceRight');
+
+				setGraphicSize(Std.int(width * PlayState.daPixelZoom));
+				updateHitbox();
+				antialiasing = false;
+
 			case 'dad':
 				// DAD ANIMATION LOADING CODE
 				tex = FlxAtlasFrames.fromSparrow('assets/images/DADDY_DEAREST.png', 'assets/images/DADDY_DEAREST.xml');
@@ -235,8 +251,6 @@ class Character extends FlxSprite
 				animation.addByPrefix('singUPmiss', 'pico Up note miss', 24);
 				animation.addByPrefix('singDOWNmiss', 'Pico Down Note MISS', 24);
 
-				playAnim('idle');
-
 				addOffset('idle');
 				addOffset("singUP", -29, 27);
 				addOffset("singRIGHT", -68, -7);
@@ -286,6 +300,8 @@ class Character extends FlxSprite
 				addOffset('deathConfirm', 37, 69);
 				addOffset('scared', -4);
 
+				playAnim('idle');
+
 				flipX = true;
 
 			case 'bf-christmas':
@@ -313,6 +329,8 @@ class Character extends FlxSprite
 				addOffset("singDOWNmiss", -11, -19);
 				addOffset("hey", 7, 4);
 
+				playAnim('idle');
+
 				flipX = true;
 			case 'bf-car':
 				var tex = FlxAtlasFrames.fromSparrow('assets/images/bfCar.png', 'assets/images/bfCar.xml');
@@ -336,8 +354,121 @@ class Character extends FlxSprite
 				addOffset("singRIGHTmiss", -30, 21);
 				addOffset("singLEFTmiss", 12, 24);
 				addOffset("singDOWNmiss", -11, -19);
+				playAnim('idle');
 
 				flipX = true;
+			case 'bf-pixel':
+				frames = FlxAtlasFrames.fromSparrow('assets/images/weeb/bfPixel.png', 'assets/images/weeb/bfPixel.xml');
+				animation.addByPrefix('idle', 'BF IDLE', 24, false);
+				animation.addByPrefix('singUP', 'BF UP NOTE', 24, false);
+				animation.addByPrefix('singLEFT', 'BF LEFT NOTE', 24, false);
+				animation.addByPrefix('singRIGHT', 'BF RIGHT NOTE', 24, false);
+				animation.addByPrefix('singDOWN', 'BF DOWN NOTE', 24, false);
+				animation.addByPrefix('singUPmiss', 'BF UP MISS', 24, false);
+				animation.addByPrefix('singLEFTmiss', 'BF LEFT MISS', 24, false);
+				animation.addByPrefix('singRIGHTmiss', 'BF RIGHT MISS', 24, false);
+				animation.addByPrefix('singDOWNmiss', 'BF DOWN MISS', 24, false);
+
+				addOffset('idle');
+				addOffset("singUP");
+				addOffset("singRIGHT");
+				addOffset("singLEFT");
+				addOffset("singDOWN");
+				addOffset("singUPmiss");
+				addOffset("singRIGHTmiss");
+				addOffset("singLEFTmiss");
+				addOffset("singDOWNmiss");
+
+				setGraphicSize(Std.int(width * 6));
+				updateHitbox();
+
+				playAnim('idle');
+
+				width -= 100;
+				height -= 100;
+
+				antialiasing = false;
+
+				flipX = true;
+			case 'bf-pixel-dead':
+				frames = FlxAtlasFrames.fromSparrow('assets/images/weeb/bfPixelsDEAD.png', 'assets/images/weeb/bfPixelsDEAD.xml');
+				animation.addByPrefix('singUP', "BF Dies pixel", 24, false);
+				animation.addByPrefix('firstDeath', "BF Dies pixel", 24, false);
+				animation.addByPrefix('deathLoop', "Retry Loop", 24, true);
+				animation.addByPrefix('deathConfirm', "RETRY CONFIRM", 24, false);
+				animation.play('firstDeath');
+
+				addOffset('firstDeath');
+				addOffset('deathLoop', -37);
+				addOffset('deathConfirm', -37);
+				playAnim('firstDeath');
+				// pixel bullshit
+				setGraphicSize(Std.int(width * 6));
+				updateHitbox();
+				antialiasing = false;
+				flipX = true;
+
+			case 'senpai':
+				frames = FlxAtlasFrames.fromSparrow('assets/images/weeb/senpai.png', 'assets/images/weeb/senpai.xml');
+				animation.addByPrefix('idle', 'Senpai Idle', 24, false);
+				animation.addByPrefix('singUP', 'SENPAI UP NOTE', 24, false);
+				animation.addByPrefix('singLEFT', 'SENPAI LEFT NOTE', 24, false);
+				animation.addByPrefix('singRIGHT', 'SENPAI RIGHT NOTE', 24, false);
+				animation.addByPrefix('singDOWN', 'SENPAI DOWN NOTE', 24, false);
+
+				addOffset('idle');
+				addOffset("singUP", 5, 37);
+				addOffset("singRIGHT");
+				addOffset("singLEFT", 40);
+				addOffset("singDOWN", 14);
+
+				playAnim('idle');
+
+				setGraphicSize(Std.int(width * 6));
+				updateHitbox();
+
+				antialiasing = false;
+			case 'senpai-angry':
+				frames = FlxAtlasFrames.fromSparrow('assets/images/weeb/senpai.png', 'assets/images/weeb/senpai.xml');
+				animation.addByPrefix('idle', 'Angry Senpai Idle', 24, false);
+				animation.addByPrefix('singUP', 'Angry Senpai UP NOTE', 24, false);
+				animation.addByPrefix('singLEFT', 'Angry Senpai LEFT NOTE', 24, false);
+				animation.addByPrefix('singRIGHT', 'Angry Senpai RIGHT NOTE', 24, false);
+				animation.addByPrefix('singDOWN', 'Angry Senpai DOWN NOTE', 24, false);
+
+				addOffset('idle');
+				addOffset("singUP", 5, 37);
+				addOffset("singRIGHT");
+				addOffset("singLEFT", 40);
+				addOffset("singDOWN", 14);
+				playAnim('idle');
+
+				setGraphicSize(Std.int(width * 6));
+				updateHitbox();
+
+				antialiasing = false;
+
+			case 'spirit':
+				frames = FlxAtlasFrames.fromSpriteSheetPacker('assets/images/weeb/spirit.png', 'assets/images/weeb/spirit.txt');
+				animation.addByPrefix('idle', "idle spirit_", 24, false);
+				animation.addByPrefix('singUP', "up_", 24, false);
+				animation.addByPrefix('singRIGHT', "right_", 24, false);
+				animation.addByPrefix('singLEFT', "left_", 24, false);
+				animation.addByPrefix('singDOWN', "spirit down_", 24, false);
+
+				addOffset('idle', -220, -280);
+				addOffset('singUP', -220, -240);
+				addOffset("singRIGHT", -220, -280);
+				addOffset("singLEFT", -200, -280);
+				addOffset("singDOWN", 170, 110);
+
+				setGraphicSize(Std.int(width * 6));
+				updateHitbox();
+
+				playAnim('idle');
+
+				antialiasing = false;
+
 			case 'parents-christmas':
 				frames = FlxAtlasFrames.fromSparrow('assets/images/christmas/mom_dad_christmas_assets.png',
 					'assets/images/christmas/mom_dad_christmas_assets.xml');
@@ -362,18 +493,18 @@ class Character extends FlxSprite
 				addOffset("singRIGHT-alt", -1, -24);
 				addOffset("singLEFT-alt", -30, 15);
 				addOffset("singDOWN-alt", -30, -27);
+
+				playAnim('idle');
 		}
 
-		antialiasing = true;
-
-		playAnim('singUP');
+		dance();
 
 		if (isPlayer)
 		{
 			flipX = !flipX;
 
 			// Doesn't flip for BF, since his are already in the right place???
-			if (character != 'bf' && character != 'bf-car' && character != 'bf-christmas')
+			if (!curCharacter.startsWith('bf'))
 			{
 				// var animArray
 				var oldRight = animation.getByName('singRIGHT').frames;
@@ -432,16 +563,6 @@ class Character extends FlxSprite
 		{
 			switch (curCharacter)
 			{
-				case 'mom':
-					playAnim('idle');
-				case 'mom-car':
-					playAnim('idle');
-				case 'bf':
-					playAnim('idle');
-				case 'bf-christmas':
-					playAnim('idle');
-				case 'bf-car':
-					playAnim('idle');
 				case 'gf':
 					if (!animation.curAnim.name.startsWith('hair'))
 					{
@@ -474,6 +595,16 @@ class Character extends FlxSprite
 						else
 							playAnim('danceLeft');
 					}
+				case 'gf-pixel':
+					if (!animation.curAnim.name.startsWith('hair'))
+					{
+						danced = !danced;
+
+						if (danced)
+							playAnim('danceRight');
+						else
+							playAnim('danceLeft');
+					}
 
 				case 'spooky':
 					danced = !danced;
@@ -482,15 +613,7 @@ class Character extends FlxSprite
 						playAnim('danceRight');
 					else
 						playAnim('danceLeft');
-				case 'dad':
-					playAnim('idle');
-				case 'parents-christmas':
-					playAnim('idle');
-				case 'monster':
-					playAnim('idle');
-				case 'monster-christmas':
-					playAnim('idle');
-				case 'pico':
+				default:
 					playAnim('idle');
 			}
 		}
@@ -505,6 +628,8 @@ class Character extends FlxSprite
 		{
 			offset.set(daOffset[0], daOffset[1]);
 		}
+		else
+			offset.set(0, 0);
 
 		if (curCharacter == 'gf')
 		{
