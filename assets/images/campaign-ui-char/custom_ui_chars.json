@@ -26,5 +26,9 @@
   "parents-christmas": {
     "like": "parents-christmas",
     "defaultGraphics": true
+  },
+  "senpai":{
+    "like": "senpai",
+    "defaultGraphics": true
   }
 }
