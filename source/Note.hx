@@ -6,6 +6,8 @@ import flixel.math.FlxMath;
 import flixel.util.FlxColor;
 import polymod.format.ParseRules.TargetSignatureElement;
 
+using StringTools;
+
 class Note extends FlxSprite
 {
 	public var strumTime:Float = 0;
@@ -50,6 +52,32 @@ class Note extends FlxSprite
 		switch (daStage)
 		{
 			case 'school':
+				loadGraphic('assets/images/weeb/pixelUI/arrows-pixels.png', true, 17, 17);
+
+				animation.add('greenScroll', [6]);
+				animation.add('redScroll', [7]);
+				animation.add('blueScroll', [5]);
+				animation.add('purpleScroll', [4]);
+
+				if (isSustainNote)
+				{
+					loadGraphic('assets/images/weeb/pixelUI/arrowEnds.png', true, 7, 6);
+
+					animation.add('purpleholdend', [4]);
+					animation.add('greenholdend', [6]);
+					animation.add('redholdend', [7]);
+					animation.add('blueholdend', [5]);
+
+					animation.add('purplehold', [0]);
+					animation.add('greenhold', [2]);
+					animation.add('redhold', [3]);
+					animation.add('bluehold', [1]);
+				}
+
+				setGraphicSize(Std.int(width * PlayState.daPixelZoom));
+				updateHitbox();
+
+			case 'schoolEvil': // COPY PASTED CUZ I AM LAZY
 				loadGraphic('assets/images/weeb/pixelUI/arrows-pixels.png', true, 17, 17);
 
 				animation.add('greenScroll', [6]);
@@ -139,7 +167,7 @@ class Note extends FlxSprite
 
 			x -= width / 2;
 
-			if (PlayState.curStage == 'school')
+			if (PlayState.curStage.startsWith('school'))
 				x += 30;
 
 			if (prevNote.isSustainNote)

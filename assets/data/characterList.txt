@@ -13,3 +13,4 @@ gf-christmas
 monster
 bf-pixel
 senpai
+spirit
