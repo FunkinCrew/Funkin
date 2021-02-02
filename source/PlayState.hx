@@ -116,6 +116,8 @@ class PlayState extends MusicBeatState
 	// how big to stretch the pixel art assets
 	public static var daPixelZoom:Float = 6;
 
+	var inCutscene:Bool = false;
+
 	override public function create()
 	{
 		// var gameCam:FlxCamera = FlxG.camera;
@@ -753,6 +755,7 @@ class PlayState extends MusicBeatState
 			{
 				if (dialogueBox != null)
 				{
+					inCutscene = true;
 					add(dialogueBox);
 				}
 				else
@@ -768,6 +771,8 @@ class PlayState extends MusicBeatState
 
 	function startCountdown():Void
 	{
+		inCutscene = false;
+
 		generateStaticArrows(0);
 		generateStaticArrows(1);
 
@@ -1512,7 +1517,8 @@ class PlayState extends MusicBeatState
 			});
 		}
 
-		keyShit();
+		if (!inCutscene)
+			keyShit();
 
 		// if (FlxG.keys.justPressed.ONE)
 		// endSong();
