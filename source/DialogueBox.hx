@@ -31,12 +31,16 @@ class DialogueBox extends FlxSpriteGroup
 	var portraitRight:FlxSprite;
 
 	var handSelect:FlxSprite;
+	var bgFade:FlxSprite;
 
 	public function new(talkingRight:Bool = true, ?dialogueList:Array<String>)
 	{
 		super();
 
-		var bgFade:FlxSprite = new FlxSprite(-200, -200).makeGraphic(Std.int(FlxG.width * 1.3), Std.int(FlxG.height * 1.3), 0xFFB3DFd8);
+		FlxG.sound.playMusic('assets/music/Lunchbox' + TitleState.soundExt, 0);
+		FlxG.sound.music.fadeIn(1, 0, 0.8);
+
+		bgFade = new FlxSprite(-200, -200).makeGraphic(Std.int(FlxG.width * 1.3), Std.int(FlxG.height * 1.3), 0xFFB3DFd8);
 		bgFade.scrollFactor.set();
 		bgFade.alpha = 0;
 		add(bgFade);
@@ -130,10 +134,31 @@ class DialogueBox extends FlxSpriteGroup
 		{
 			remove(dialogue);
 
+			FlxG.sound.play('assets/sounds/clickText' + TitleState.soundExt, 0.8);
+
 			if (dialogueList[1] == null)
 			{
-				finishThing();
-				kill();
+				if (!isEnding)
+				{
+					isEnding = true;
+					FlxG.sound.music.fadeOut(2.2, 0);
+
+					new FlxTimer().start(0.2, function(tmr:FlxTimer)
+					{
+						box.alpha -= 1 / 5;
+						bgFade.alpha -= 1 / 5 * 0.7;
+						portraitLeft.visible = false;
+						portraitRight.visible = false;
+						swagDialogue.alpha -= 1 / 5;
+						dropText.alpha = swagDialogue.alpha;
+					}, 5);
+
+					new FlxTimer().start(1.2, function(tmr:FlxTimer)
+					{
+						finishThing();
+						kill();
+					});
+				}
 			}
 			else
 			{
@@ -145,6 +170,8 @@ class DialogueBox extends FlxSpriteGroup
 		super.update(elapsed);
 	}
 
+	var isEnding:Bool = false;
+
 	function startDialogue():Void
 	{
 		cleanDialog();
@@ -155,7 +182,7 @@ class DialogueBox extends FlxSpriteGroup
 
 		// swagDialogue.text = ;
 		swagDialogue.resetText(dialogueList[0]);
-		swagDialogue.start(0.02, true);
+		swagDialogue.start(0.04, true);
 
 		switch (curCharacter)
 		{

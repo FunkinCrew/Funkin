@@ -22,6 +22,7 @@ class HealthIcon extends FlxSprite
 		animation.add('face', [10, 11], 0, false, isPlayer);
 		animation.add('dad', [12, 13], 0, false, isPlayer);
 		animation.add('senpai', [22, 22], 0, false, isPlayer);
+		animation.add('spirit', [23, 23], 0, false, isPlayer);
 		animation.add('bf-old', [14, 15], 0, false, isPlayer);
 		animation.add('gf', [16], 0, false, isPlayer);
 		animation.add('parents-christmas', [17], 0, false, isPlayer);
