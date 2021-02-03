@@ -848,7 +848,12 @@ class PlayState extends MusicBeatState
 	{
 		#if desktop
 		var songName:String = SONG.song;
-		DiscordManager.updateState('Playing $songName');
+
+		if (isStoryMode) {
+			DiscordManager.updateState('Story Mode - $songName');
+		} else {
+			DiscordManager.updateState('Freeplay - $songName');
+		}
 		#end
 
 		inCutscene = false;
