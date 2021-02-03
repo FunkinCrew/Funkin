@@ -1,0 +1,60 @@
+{
+  "animation": {
+    "idle": {
+      "name": "BF idle dance",
+      "loop": false
+    },
+    "singUP": {
+      "name": "BF NOTE UP0",
+      "loop": false
+    },
+    "singDOWN": {
+      "name": "BF NOTE DOWN0",
+      "loop": false
+    },
+    "singLEFT": {
+      "name": "BF NOTE LEFT0",
+      "loop": false
+    },
+    "singRIGHT": {
+      "name": "BF NOTE RIGHT0",
+      "loop": false
+    },
+    "singLEFTmiss": {
+      "name": "BF NOTE LEFT MISS",
+      "loop": false
+    },
+    "singRIGHTmiss": {
+      "name": "BF NOTE RIGHT MISS",
+      "loop": false
+    },
+    "singUPmiss": {
+      "name": "BF NOTE UP MISS",
+      "loop": false
+    },
+    "singDOWNmiss": {
+      "name": "BF NOTE DOWN MISS",
+      "loop": false
+    },
+    "hey": {
+      "name": "BF HEY",
+      "loop": false
+    }
+  },
+  "offset": {
+    "idle": [-5,0],
+    "singUP": [-29,27],
+    "singRIGHT": [-38,-7],
+    "singLEFT": [12, -6],
+    "singDOWN": [-11, -19],
+    "singUPmiss": [-29, 27],
+    "singRIGHTmiss": [-30, 21],
+    "singLEFTmiss": [12,24],
+    "singDOWNmiss": [-11, -19],
+    "hey": [7,4]
+  },
+  "flipx": true,
+  "enemyOffset": [0,350],
+  "like": "bf-car",
+  "playAnim": "idle"
+}

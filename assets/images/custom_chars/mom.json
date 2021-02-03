@@ -30,5 +30,6 @@
   },
   "flipx": false,
   "like": "mom",
+  "followCam": [150,0],
   "playAnim": "idle"
 }

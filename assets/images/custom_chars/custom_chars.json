@@ -3,5 +3,9 @@
     "like": "bf",
     "icons": [0,1],
     "uniqueicons": true
+  },
+  "templateMom": {
+    "like": "mom",
+    "icons": [6,7]
   }
 }

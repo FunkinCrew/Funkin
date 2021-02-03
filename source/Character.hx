@@ -26,8 +26,12 @@ class Character extends FlxSprite
 	public var enemyOffsetY:Int = 0;
 	public var camOffsetX:Int = 0;
 	public var camOffsetY:Int = 0;
+	public var followCamX:Int = 0;
+	public var followCamY:Int = 0;
+	public var isCustom:Bool = false;
 	public var holdTimer:Float = 0;
 	public var like:String = "bf";
+	public var isDie:Bool = false;
 	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false)
 	{
 		animOffsets = new Map<String, Array<Dynamic>>();
@@ -411,6 +415,7 @@ class Character extends FlxSprite
 				antialiasing = false;
 
 				flipX = true;
+				like = "bf-pixel";
 			case 'bf-pixel-dead':
 				frames = FlxAtlasFrames.fromSparrow('assets/images/weeb/bfPixelsDEAD.png', 'assets/images/weeb/bfPixelsDEAD.xml');
 				animation.addByPrefix('singUP', "BF Dies pixel", 24, false);
@@ -428,7 +433,7 @@ class Character extends FlxSprite
 				updateHitbox();
 				antialiasing = false;
 				flipX = true;
-
+				like = "bf-pixel";
 			case 'senpai':
 				frames = FlxAtlasFrames.fromSparrow('assets/images/weeb/senpai.png', 'assets/images/weeb/senpai.xml');
 				animation.addByPrefix('idle', 'Senpai Idle', 24, false);
@@ -522,14 +527,13 @@ class Character extends FlxSprite
 				// protective ritual to protect against new lines
 				curCharacter = curCharacter.trim();
 				trace(curCharacter);
-
-				// use assets, as it is less laggy
+				isCustom = true;
+				if (StringTools.endsWith(curCharacter, "-dead")) {
+					isDie = true;
+					curCharacter = curCharacter.substr(-5);
+				}
 				var charJson:Dynamic = Json.parse(Assets.getText('assets/images/custom_chars/custom_chars.json'));
-
-				var rawPic = File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_chars/'+curCharacter+".png"));
-				var rawXml = File.getContent(Path.normalize(System.applicationDirectory+'/assets/images/custom_chars/'+curCharacter+".xml"));
-				var tex = FlxAtlasFrames.fromSparrow(BitmapData.fromBytes(ByteArray.fromBytes(rawPic)),rawXml);
-				frames = tex;
+				// use assets, as it is less laggy
 				var animJson = File.getContent(Path.normalize(System.applicationDirectory+"/assets/images/custom_chars/"+Reflect.field(charJson,curCharacter).like+".json"));
 				while (!animJson.endsWith("}"))
 				{
@@ -538,6 +542,29 @@ class Character extends FlxSprite
 					// this is a protective ritual to ward off code demons idk what it does
 				}
 				var parsedAnimJson:Dynamic = Json.parse(animJson);
+
+
+				var playerSuffix = '';
+				if (isDie) {
+					// poor programming but whatev
+					playerSuffix = '-dead';
+					parsedAnimJson.animation = parsedAnimJson.deadAnimation;
+					parsedAnimJson.offset = parsedAnimJson.deadOffset;
+				}
+				var rawPic = File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_chars/'+curCharacter+playerSuffix+".png"));
+				var tex:FlxAtlasFrames;
+				var rawXml:String;
+				if (!!parsedAnimJson.usesSpritesheetPacker){
+					rawXml = File.getContent(Path.normalize(System.applicationDirectory+'/assets/images/custom_chars/'+curCharacter+playerSuffix+".txt"));
+					tex = FlxAtlasFrames.fromSpriteSheetPacker(BitmapData.fromBytes(ByteArray.fromBytes(rawPic)),rawXml);
+				} else {
+					rawXml = File.getContent(Path.normalize(System.applicationDirectory+'/assets/images/custom_chars/'+curCharacter+playerSuffix+".xml"));
+					tex = FlxAtlasFrames.fromSparrow(BitmapData.fromBytes(ByteArray.fromBytes(rawPic)),rawXml);
+				}
+
+
+				frames = tex;
+
 				for( field in Reflect.fields(parsedAnimJson.animation) ) {
 					var fps = 24;
 					if (Reflect.hasField(Reflect.field(parsedAnimJson.animation,field), "fps")) {
@@ -545,7 +572,7 @@ class Character extends FlxSprite
 					}
 					var loop = false;
 					if (Reflect.hasField(Reflect.field(parsedAnimJson.animation,field), "loop")) {
-						loop = parsedAnimJson.animation,field).loop;
+						loop = Reflect.field(parsedAnimJson.animation,field).loop;
 					}
 					if (Reflect.hasField(Reflect.field(parsedAnimJson.animation,field),"flippedname") && !isPlayer) {
 						// the double not is to turn a null into a false
@@ -572,8 +599,23 @@ class Character extends FlxSprite
 				camOffsetY = if (parsedAnimJson.camOffset != null) parsedAnimJson.camOffset[1] else 0;
 				enemyOffsetX = if (parsedAnimJson.enemyOffset != null) parsedAnimJson.enemyOffset[0] else 0;
 				enemyOffsetY = if (parsedAnimJson.enemyOffset != null) parsedAnimJson.enemyOffset[1] else 0;
+				followCamX = if (parsedAnimJson.followCam != null) parsedAnimJson.followCam[0] else 150;
+				followCamY = if (parsedAnimJson.followCam != null) parsedAnimJson.followCam[1] else -100;
 				flipX = if (parsedAnimJson.flipx != null) parsedAnimJson.flipx else false;
+				if (!isDie) {
+					width += if (parsedAnimJson.size != null) parsedAnimJson.size[0] else 0;
+					height += if (parsedAnimJson.size != null) parsedAnimJson.size[1] else 0;
+				}
+
 				like = parsedAnimJson.like;
+				if (like == "bf-car") {
+					// ignore it, this is used for gameover state
+					like = "bf";
+				}
+				if (parsedAnimJson.isPixel) {
+					antialiasing = false;
+					setGraphicSize(Std.int(width * 6));
+				}
 				playAnim(parsedAnimJson.playAnim);
 				#else
 				// pretend its boyfriend, screw html5
@@ -613,10 +655,11 @@ class Character extends FlxSprite
 
 				flipX = true;
 				like = "bf";
+				playAnim('idle');
 				#end
 		}
 
-				playAnim('idle');
+
 
 
 		dance();

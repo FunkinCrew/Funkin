@@ -133,7 +133,8 @@ class ChartingState extends MusicBeatState
 				gf: 'gf',
 				sectionLengths: [],
 				speed: 1,
-				validScore: false
+				validScore: false,
+				isMoody: false
 			};
 		}
 

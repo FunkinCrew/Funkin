@@ -41,7 +41,7 @@
               "fps": {"type": "number"},
               "flippedname": {"type": "string"}
             },
-            "required": ["name"]
+            "required": ["name", "loop"]
           }
       }},
       "offset": {
@@ -128,7 +128,21 @@
       "like": {"type": "string"},
       "playAnim": {"type": "string"},
       "isPixel": {"type": "boolean"},
-      "usesSpritesheetPacker": {"type": "boolean"}
+      "usesSpritesheetPacker": {"type": "boolean"},
+      "size": {
+        "type": "array",
+        "items": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "number"
+          }
+        ],
+        "$comment": "make sure only x and y are given",
+        "additionalItems": false,
+        "minLength": 2
+      }
   },
   "required": ["animation", "offset", "like", "playAnim"],
   "$comment": "dead things must have an offset AND an animation",

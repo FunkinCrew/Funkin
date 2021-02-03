@@ -363,10 +363,10 @@ class PlayState extends MusicBeatState
 			evilSnow.antialiasing = true;
 			add(evilSnow);
 		}
-		else if (SONG.stage == 'school')
+		else if (SONG.stage == 'school' || SONG.stage == 'schoolMoody')
 		{
 			curStage = 'school';
-
+			// school moody is just the girls are upset
 			// defaultCamZoom = 0.9;
 
 			var bgSky = new FlxSprite().loadGraphic('assets/images/weeb/weebSky.png');
@@ -421,7 +421,7 @@ class PlayState extends MusicBeatState
 			bgGirls = new BackgroundGirls(-100, 190);
 			bgGirls.scrollFactor.set(0.9, 0.9);
 
-			if (SONG.song.toLowerCase() == 'roses')
+			if (SONG.isMoody)
 			{
 				bgGirls.getScared();
 			}
@@ -916,17 +916,171 @@ class PlayState extends MusicBeatState
 					var evilSnow:FlxSprite = new FlxSprite(-200, 700).loadGraphic(evilSnowPic);
 					evilSnow.antialiasing = true;
 					add(evilSnow);
+				case 'school':
+					curStage = 'school';
+					// school moody is just the girls are upset
+					// defaultCamZoom = 0.9;
+					var bgPic:BitmapData;
+					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/weebSky.png"))) {
+					   bgPic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/weebSky.png"))));
+					} else {
+					   // fall back on base game file to avoid crashes
+						 bgPic = BitmapData.fromImage(Assets.getImage("assets/images/weeb/weebSky.png"));
+					}
+					var bgSky = new FlxSprite().loadGraphic(bgPic);
+					bgSky.scrollFactor.set(0.1, 0.1);
+					add(bgSky);
+
+					var repositionShit = -200;
+					var schoolPic:BitmapData;
+					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/weebSchool.png"))) {
+					   schoolPic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/weebSchool.png"))));
+					} else {
+					   // fall back on base game file to avoid crashes
+						 schoolPic = BitmapData.fromImage(Assets.getImage("assets/images/weeb/weebSchool.png"));
+					}
+					var bgSchool:FlxSprite = new FlxSprite(repositionShit, 0).loadGraphic(schoolPic);
+					bgSchool.scrollFactor.set(0.6, 0.90);
+					add(bgSchool);
+					var streetPic:BitmapData;
+					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/weebStreet.png"))) {
+					   streetPic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/weebStreet.png"))));
+					} else {
+					   // fall back on base game file to avoid crashes
+						 streetPic = BitmapData.fromImage(Assets.getImage("assets/images/weeb/weebStreet.png"));
+					}
+					var bgStreet:FlxSprite = new FlxSprite(repositionShit).loadGraphic(streetPic);
+					bgStreet.scrollFactor.set(0.95, 0.95);
+					add(bgStreet);
+					var fgTreePic:BitmapData;
+					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/weebTreesBack.png"))) {
+					   fgTreePic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/weebTreesBack.png"))));
+					} else {
+					   // fall back on base game file to avoid crashes
+						 fgTreePic = BitmapData.fromImage(Assets.getImage("assets/images/weeb/weebTreesBack.png"));
+					}
+					var fgTrees:FlxSprite = new FlxSprite(repositionShit + 170, 130).loadGraphic(fgTreePic);
+					fgTrees.scrollFactor.set(0.9, 0.9);
+					add(fgTrees);
+					var treesPic:BitmapData;
+					var treesTxt:String;
+					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/weebTrees.png"))) {
+					   treesPic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/weebTrees.png"))));
+					} else {
+					   // fall back on base game file to avoid crashes
+						 treesPic = BitmapData.fromImage(Assets.getImage("assets/images/weeb/weebTrees.png"));
+					}
+					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/weebTrees.txt"))) {
+					   treesTxt = File.getContent(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/weebTrees.txt"));
+					} else {
+					   // fall back on base game file to avoid crashes
+						 treesTxt = Assets.getText("assets/images/weeb/weebTrees.txt");
+					}
+					var bgTrees:FlxSprite = new FlxSprite(repositionShit - 380, -800);
+					var treetex = FlxAtlasFrames.fromSpriteSheetPacker(treesPic, treesTxt);
+					bgTrees.frames = treetex;
+					bgTrees.animation.add('treeLoop', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18], 12);
+					bgTrees.animation.play('treeLoop');
+					bgTrees.scrollFactor.set(0.85, 0.85);
+					add(bgTrees);
+					var petalsPic:BitmapData;
+					var petalsXml:String;
+					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/petals.png"))) {
+					   petalsPic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/petals.png"))));
+					} else {
+					   // fall back on base game file to avoid crashes
+						 petalsPic = BitmapData.fromImage(Assets.getImage("assets/images/weeb/petals.png"));
+					}
+					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/petals.xml"))) {
+					   petalsXml = File.getContent(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/petals.xml"));
+					} else {
+					   // fall back on base game file to avoid crashes
+						 petalsXml = Assets.getText("assets/images/weeb/petals.xml");
+					}
+					var treeLeaves:FlxSprite = new FlxSprite(repositionShit, -40);
+					treeLeaves.frames = FlxAtlasFrames.fromSparrow(petalsPic, petalsXml);
+					treeLeaves.animation.addByPrefix('leaves', 'PETALS ALL', 24, true);
+					treeLeaves.animation.play('leaves');
+					treeLeaves.scrollFactor.set(0.85, 0.85);
+					add(treeLeaves);
+
+					var widShit = Std.int(bgSky.width * 6);
+
+					bgSky.setGraphicSize(widShit);
+					bgSchool.setGraphicSize(widShit);
+					bgStreet.setGraphicSize(widShit);
+					bgTrees.setGraphicSize(Std.int(widShit * 1.4));
+					fgTrees.setGraphicSize(Std.int(widShit * 0.8));
+					treeLeaves.setGraphicSize(widShit);
+
+					fgTrees.updateHitbox();
+					bgSky.updateHitbox();
+					bgSchool.updateHitbox();
+					bgStreet.updateHitbox();
+					bgTrees.updateHitbox();
+					treeLeaves.updateHitbox();
+					var gorlsPic:BitmapData;
+					var gorlsXml:String;
+					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/bgFreaks.png"))) {
+					   gorlsPic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/bgFreaks.png"))));
+					} else {
+					   // fall back on base game file to avoid crashes
+						 gorlsPic = BitmapData.fromImage(Assets.getImage("assets/images/weeb/bgFreaks.png"));
+					}
+					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/bgFreaks.xml"))) {
+					   gorlsXml = File.getContent(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/bgFreaks.xml"));
+					} else {
+					   // fall back on base game file to avoid crashes
+						 gorlsXml = Assets.getText("assets/images/weeb/bgFreaks.xml");
+					}
+					bgGirls = new BackgroundGirls(-100, 190, gorlsPic, gorlsXml);
+					bgGirls.scrollFactor.set(0.9, 0.9);
+
+					if (SONG.isMoody)
+					{
+						bgGirls.getScared();
+					}
+
+					bgGirls.setGraphicSize(Std.int(bgGirls.width * daPixelZoom));
+					bgGirls.updateHitbox();
+					add(bgGirls);
+				case 'schoolEvil':
+					curStage = 'schoolEvil';
+
+					var waveEffectBG = new FlxWaveEffect(FlxWaveMode.ALL, 2, -1, 3, 2);
+					var waveEffectFG = new FlxWaveEffect(FlxWaveMode.ALL, 2, -1, 5, 2);
+
+					var posX = 400;
+					var posY = 200;
+
+					var bg:FlxSprite = new FlxSprite(posX, posY);
+					var evilSchoolPic:BitmapData;
+					var evilSchoolXml:String;
+					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/animatedEvilSchool.png"))) {
+					   evilSchoolPic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/animatedEvilSchool.png"))));
+					} else {
+					   // fall back on base game file to avoid crashes
+						 evilSchoolPic = BitmapData.fromImage(Assets.getImage("assets/images/weeb/animatedEvilSchool.png"));
+					}
+					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/animatedEvilSchool.xml"))) {
+					   evilSchoolXml = File.getContent(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/animatedEvilSchool.xml"));
+					} else {
+					   // fall back on base game file to avoid crashes
+						 evilSchoolXml = Assets.getText("assets/images/weeb/animatedEvilSchool.xml");
+					}
+					bg.frames = FlxAtlasFrames.fromSparrow(evilSchoolPic, evilSchoolXml);
+					bg.animation.addByPrefix('idle', 'background 2', 24);
+					bg.animation.play('idle');
+					bg.scrollFactor.set(0.8, 0.9);
+					bg.scale.set(6, 6);
+					add(bg);
 			}
 		}
 
 		var gfVersion:String = 'gf';
 
 		gfVersion = SONG.gf;
-
-		if (curStage == "school" || curStage == "schoolEvil") {
-			// ffs gf just be pixels
-			gfVersion = "gf-pixel";
-		}
+		trace(SONG.gf);
 		gf = new Character(400, 130, gfVersion);
 		gf.scrollFactor.set(0.95, 0.95);
 
@@ -1818,6 +1972,10 @@ class PlayState extends MusicBeatState
 				if (dad.like == 'senpai' || dad.like == 'senpai-angry') {
 					camFollow.y = dad.getMidpoint().y - 430;
 					camFollow.x = dad.getMidpoint().x - 100;
+				}
+				if (dad.isCustom) {
+					camFollow.y = dad.getMidpoint().y + dad.followCamY;
+					camFollow.x = dad.getMidpoint().x + dad.followCamX;
 				}
 				vocals.volume = 1;
 

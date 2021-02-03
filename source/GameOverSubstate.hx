@@ -6,7 +6,18 @@ import flixel.FlxSubState;
 import flixel.math.FlxPoint;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
-
+import lime.system.System;
+import lime.utils.Assets;
+#if sys
+import sys.io.File;
+import sys.FileSystem;
+import haxe.io.Path;
+import openfl.utils.ByteArray;
+import lime.media.AudioBuffer;
+import flash.media.Sound;
+#end
+import haxe.Json;
+using StringTools;
 class GameOverSubstate extends MusicBeatSubstate
 {
 	var bf:Boyfriend;
@@ -17,19 +28,26 @@ class GameOverSubstate extends MusicBeatSubstate
 	public function new(x:Float, y:Float)
 	{
 		var daStage = PlayState.curStage;
-		var daBf:String = '';
-		switch (daStage)
-		{
-			case 'school':
-				stageSuffix = '-pixel';
-				daBf = 'bf-pixel-dead';
-			case 'schoolEvil':
-				stageSuffix = '-pixel';
-				daBf = 'bf-pixel-dead';
-			default:
-				daBf = 'bf';
+		var p1 = PlayState.SONG.player1;
+		var daBf:String = 'bf';
+		var stageSuffix = '';
+		if (p1 == "bf-pixel") {
+			stageSuffix = '-pixel';
 		}
-
+		var characterList = Assets.getText('assets/data/characterList.txt');
+		if (!StringTools.contains(characterList, p1)) {
+			var parsedCharJson:Dynamic = Json.parse(Assets.getText('assets/images/custom_chars/custom_chars.json'));
+			var parsedAnimJson = Json.parse(File.getContent(Path.normalize(System.applicationDirectory+"/assets/images/custom_chars/"+Reflect.field(parsedCharJson,p1).like+".json")));
+			switch (parsedAnimJson.like) {
+				case "bf":
+					// bf has a death animation
+					daBf = p1;
+				case "bf-pixel":
+					// gotta deal with this dude
+					daBf = p1 + '-dead';
+					stageSuffix = '-pixel';
+			}
+		}
 		super();
 
 		Conductor.songPosition = 0;

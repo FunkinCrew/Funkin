@@ -8,6 +8,7 @@ import sys.io.File;
 import haxe.io.Path;
 import openfl.utils.ByteArray;
 import flash.display.BitmapData;
+import sys.FileSystem;
 #end
 import haxe.Json;
 import haxe.format.JsonParser;
@@ -80,7 +81,8 @@ class HealthIcon extends FlxSprite
 				loadGraphic('assets/images/iconGrid.png', true, 150, 150);
 				animation.add('icon', [21, 21], 0, false, isPlayer);
 			default:
-				if (!!Reflect.field(charJson,char).uniqueicons) {
+				// check if there is an icon file
+				if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_chars/'+char+"_icons.png"))) {
 					var rawPic:BitmapData = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_chars/'+char+"_icons.png"))));
 					loadGraphic(rawPic, true, 150, 150);
 					animation.add('icon', Reflect.field(charJson,char).icons, false, isPlayer);

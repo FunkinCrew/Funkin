@@ -26,6 +26,7 @@ typedef SwagSong =
 	var validScore:Bool;
 	var stage:String;
 	var gf:String;
+	var isMoody:Bool;
 }
 
 class Song
@@ -42,6 +43,7 @@ class Song
 	public var player2:String = 'dad';
 	public var stage:String = 'stage';
 	public var gf:String = 'gf';
+	public var isMoody:Bool = false;
 	public function new(song, notes, bpm, sections)
 	{
 		this.song = song;
@@ -89,7 +91,9 @@ class Song
 		}
 		trace(parsedJson.stage);
 		if (parsedJson.gf == null) {
-			switch (parsedJson.song.toLowerCase()) {
+			// are you kidding me did i really do song to lowercase
+			trace(parsedJson.stage);
+			switch (parsedJson.stage) {
 				case 'limo':
 					parsedJson.gf = 'gf-car';
 				case 'mall':
@@ -102,6 +106,10 @@ class Song
 					parsedJson.gf = 'gf-pixel';
 				default:
 					parsedJson.gf = 'gf';
+			}
+			parsedJson.isMoody = !!parsedJson.isMoody;
+			if (parsedJson.song.toLowerCase() == 'roses') {
+				parsedJson.isMoody = true;
 			}
 		}
 		// FIX THE CASTING ON WINDOWS/NATIVE
