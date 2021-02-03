@@ -79,6 +79,10 @@ class Song
 				parsedJson.stage = 'mall';
 			} else if (parsedJson.song.toLowerCase() == 'winter-horrorland') {
 				parsedJson.stage = 'mallEvil';
+			} else if (parsedJson.song.toLowerCase() == 'senpai' || parsedJson.song.toLowerCase() == 'roses'){
+				parsedJson.stage = 'school';
+			} else if (parsedJson.song.toLowerCase() == 'thorns'){
+				parsedJson.stage = 'schoolEvil';
 			} else {
 				parsedJson.stage = 'stage';
 			}
@@ -91,6 +95,10 @@ class Song
 					parsedJson.gf = 'gf-christmas';
 				case 'mallEvil':
 					parsedJson.gf = 'gf-christmas';
+				case 'school':
+					parsedJson.gf = 'gf-pixel';
+				case 'schoolEvil':
+					parsedJson.gf = 'gf-pixel';
 				default:
 					parsedJson.gf = 'gf';
 			}
