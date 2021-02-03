@@ -3,14 +3,12 @@
     "danceLeft": {
       "name": "spooky dance idle",
       "loop": false,
-      "byIndices": true,
       "indices":[0,2,6],
       "fps": 12
     },
     "danceRight": {
       "name": "spooky dance idle",
       "loop": false,
-      "byIndices": true,
       "indices":[8,10,12,14],
       "fps": 12
     },
@@ -40,10 +38,7 @@
     "singDOWN": [-50, -130]
   },
   "flipx": false,
-  "camOffsetX": 0,
-  "camOffsetY": 0,
-  "enemyOffsetX": 0,
-  "enemyOffsetY": 200,
+  "enemyOffset": [0,200],
   "like": "spooky",
   "playAnim": "danceRight"
 }

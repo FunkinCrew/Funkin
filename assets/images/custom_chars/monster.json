@@ -29,10 +29,7 @@
     "singDOWN": [-30, -40]
   },
   "flipx": false,
-  "camOffsetX": 0,
-  "camOffsetY": 0,
-  "enemyOffsetX": 0,
-  "enemyOffsetY": 100,
+  "enemyOffset": [0,100],
   "like": "monster",
   "playAnim": "idle"
 }

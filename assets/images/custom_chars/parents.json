@@ -49,10 +49,7 @@
     "singDOWN-alt": [-30, -27]
   },
   "flipx": true,
-  "camOffsetX": 0,
-  "camOffsetY": 0,
-  "enemyOffsetX": -500,
-  "enemyOffsetY": 0,
+  "enemyOffset": [-500,0],
   "like": "parents",
   "playAnim": "idle"
 }

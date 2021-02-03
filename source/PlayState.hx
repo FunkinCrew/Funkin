@@ -965,16 +965,15 @@ class PlayState extends MusicBeatState
 			case 'senpai':
 				dad.x += 150;
 				dad.y += 360;
-				camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
+				camPos.x += 300;
 			case 'senpai-angry':
 				dad.x += 150;
 				dad.y += 360;
-				camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
+				camPos.x += 300;
 			case 'spirit':
 				dad.x -= 150;
 				dad.y += 100;
-				// isn't this a little overkill?
-				camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
+				camPos.x += 300;
 			default:
 				dad.x += dad.enemyOffsetX;
 				dad.y += dad.enemyOffsetY;

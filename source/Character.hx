@@ -543,9 +543,13 @@ class Character extends FlxSprite
 					if (Reflect.hasField(Reflect.field(parsedAnimJson.animation,field), "fps")) {
 						fps = Reflect.field(parsedAnimJson.animation,field).fps;
 					}
-					if (!!Reflect.field(parsedAnimJson.animation,field).flipplayer2 && !isPlayer) {
+					var loop = false;
+					if (Reflect.hasField(Reflect.field(parsedAnimJson.animation,field), "loop")) {
+						loop = parsedAnimJson.animation,field).loop;
+					}
+					if (Reflect.hasField(Reflect.field(parsedAnimJson.animation,field),"flippedname") && !isPlayer) {
 						// the double not is to turn a null into a false
-						if (!!Reflect.field(parsedAnimJson.animation,field).byIndices) {
+						if (Reflect.hasField(Reflect.field(parsedAnimJson.animation,field),"byIndices")) {
 							var indicesAnim:Array<Int> = Reflect.field(parsedAnimJson.animation,field).indices;
 							animation.addByIndices(field, Reflect.field(parsedAnimJson.animation,field).flippedname, indicesAnim, "", fps, !!Reflect.field(parsedAnimJson.animation,field).loop);
 						} else {
@@ -553,7 +557,7 @@ class Character extends FlxSprite
 						}
 
 					} else {
-						if (!!Reflect.field(parsedAnimJson.animation,field).byIndices) {
+						if (Reflect.hasField(Reflect.field(parsedAnimJson.animation,field),"byIndices")) {
 							var indicesAnim:Array<Int> = Reflect.field(parsedAnimJson.animation,field).indices;
 							animation.addByIndices(field, Reflect.field(parsedAnimJson.animation,field).name, indicesAnim, "", fps, !!Reflect.field(parsedAnimJson.animation,field).loop);
 						} else {
@@ -564,11 +568,11 @@ class Character extends FlxSprite
 				for( field in Reflect.fields(parsedAnimJson.offset)) {
 					addOffset(field, Reflect.field(parsedAnimJson.offset,field)[0],  Reflect.field(parsedAnimJson.offset,field)[1]);
 				}
-				camOffsetX = parsedAnimJson.camOffsetX;
-				camOffsetY = parsedAnimJson.camOffsetY;
-				enemyOffsetX = parsedAnimJson.enemyOffsetX;
-				enemyOffsetY = parsedAnimJson.enemyOffsetY;
-				flipX = parsedAnimJson.flipx;
+				camOffsetX = if (parsedAnimJson.camOffset != null) parsedAnimJson.camOffset[0] else 0;
+				camOffsetY = if (parsedAnimJson.camOffset != null) parsedAnimJson.camOffset[1] else 0;
+				enemyOffsetX = if (parsedAnimJson.enemyOffset != null) parsedAnimJson.enemyOffset[0] else 0;
+				enemyOffsetY = if (parsedAnimJson.enemyOffset != null) parsedAnimJson.enemyOffset[1] else 0;
+				flipX = if (parsedAnimJson.flipx != null) parsedAnimJson.flipx else false;
 				like = parsedAnimJson.like;
 				playAnim(parsedAnimJson.playAnim);
 				#else
@@ -621,7 +625,7 @@ class Character extends FlxSprite
 		{
 			flipX = !flipX;
 			// Doesn't flip for BF, since his are already in the right place???
-			if (like != "bf")
+			if (like != "bf" && like != "bf-pixel")
 			{
 				// var animArray
 				var oldRight = animation.getByName('singRIGHT').frames;
@@ -759,7 +763,7 @@ class Character extends FlxSprite
 		}
 		else
 			offset.set(0, 0);
-
+		// should spooky be on this?
 		if (like == 'gf'  || like == 'gf-pixel')
 		{
 			if (AnimName == 'singLEFT')

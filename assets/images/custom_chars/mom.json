@@ -29,10 +29,6 @@
     "singDOWN": [20, -160]
   },
   "flipx": false,
-  "camOffsetX": 0,
-  "camOffsetY": 0,
-  "enemyOffsetX": 0,
-  "enemyOffsetY": 0,
   "like": "mom",
   "playAnim": "idle"
 }

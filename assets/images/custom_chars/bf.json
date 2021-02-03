@@ -74,10 +74,7 @@
     "scared": [-4, 0]
   },
   "flipx": true,
-  "camOffsetX": 0,
-  "camOffsetY": 0,
-  "enemyOffsetX": 0,
-  "enemyOffsetY": 350,
+  "enemyOffset": [0,350],
   "like": "bf",
   "playAnim": "idle"
 }

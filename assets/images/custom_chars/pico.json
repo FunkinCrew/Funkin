@@ -57,10 +57,8 @@
     "singDOWNmiss": [210, -28]
   },
   "flipx": true,
-  "camOffsetX": 600,
-  "camOffsetY": 0,
-  "enemyOffsetX": 0,
-  "enemyOffsetY": 300,
+  "camOffset": [600,0],
+  "enemyOffset": [0,300],
   "like": "pico",
   "playAnim": "idle"
 }
