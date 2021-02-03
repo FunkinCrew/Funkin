@@ -1,0 +1,24 @@
+name: First Interaction
+
+on:
+  issues:
+    types:
+      - opened
+      - edited
+      - reopened
+  pull_request_target:
+    types:
+      - opened
+      - edited
+      - reopened
+      - synchronize
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/first-interaction@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          issue-message: 'Hi! It looks like this is your first time contributing to [Friday Night Funkin](https://github.com/ninjamuffin99/funkin), or maybe even your first time using GitHub!\nPlease make sure that this issue is properly organized and uses the proper template. Invalid issues may be removed or ignored.'
+          pr-message: Hi! It looks like this is your first time contributing to [Friday Night Funkin](https://github.com/ninjamuffin99/funkin), or maybe even your first time using GitHub!\nPlease make sure that this PR is properly organized and uses the proper template. Invalid PRs may be removed or ignored.'
