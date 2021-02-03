@@ -36,6 +36,8 @@ class DiscordManager
     public static function updateState(_state : String) {
         DiscordRpc.presence({
             state : _state,
+            largeImageKey : "icon",
+            largeImageText : "Friday Night Funkin'"
         });
 
         trace("Discord RPC State Updated!");
