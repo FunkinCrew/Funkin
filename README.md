@@ -5,6 +5,9 @@ check releases to download apk
 source code of fnf 0.2.6 build 1:
 https://www.mediafire.com/file/hzk296f5x89qo1n/Funkin-0.2.6.7z/file
 
+Неофициальная фан группа по fnf
+https://t.me/fridaynightfunkin_official
+
 ![Screenshot_20210109-194743_06d0f9554a0a05ce054ef8d232e87828](https://user-images.githubusercontent.com/59097731/104103630-31eae280-52b4-11eb-90a4-5bdb1b39fc53.jpg)
 ![Screenshot_20210109-194749_06d0f9554a0a05ce054ef8d232e87828](https://user-images.githubusercontent.com/59097731/104103635-34e5d300-52b4-11eb-96f8-13910580fbc8.jpg)
 ![Screenshot_20210109-194759_06d0f9554a0a05ce054ef8d232e87828](https://user-images.githubusercontent.com/59097731/104103636-36af9680-52b4-11eb-8740-f7be0c098265.jpg)
