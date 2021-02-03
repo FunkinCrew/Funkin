@@ -26,8 +26,8 @@ class DiscordManager
     static function _onReady() {
         DiscordRpc.presence({
             state : "Title Screen",
-            largeImageKey : "aaa",
-            largeImageText : "bbb"
+            largeImageKey : "icon",
+            largeImageText : "Friday Night Funkin'"
         });
 
         trace("Discord RPC Ready!");
