@@ -177,6 +177,8 @@ class PlayState extends MusicBeatState
 			case 'roses':
 				dialogue = CoolUtil.coolTextFile('assets/data/roses/rosesDialogue.txt');
 			case 'thorns':
+				// maybe dialog is problem?
+				trace("thornsDialogue");
 				dialogue = CoolUtil.coolTextFile('assets/data/thorns/thornsDialogue.txt');
 		}
 
@@ -361,7 +363,7 @@ class PlayState extends MusicBeatState
 			evilSnow.antialiasing = true;
 			add(evilSnow);
 		}
-		else if (SONG.song.toLowerCase() == 'senpai' || SONG.song.toLowerCase() == 'roses')
+		else if (SONG.stage == 'school')
 		{
 			curStage = 'school';
 
@@ -428,7 +430,7 @@ class PlayState extends MusicBeatState
 			bgGirls.updateHitbox();
 			add(bgGirls);
 		}
-		else if (SONG.song.toLowerCase() == 'thorns')
+		else if (SONG.stage == 'schoolEvil')
 		{
 			curStage = 'schoolEvil';
 
@@ -445,7 +447,7 @@ class PlayState extends MusicBeatState
 			bg.scrollFactor.set(0.8, 0.9);
 			bg.scale.set(6, 6);
 			add(bg);
-
+			trace("schoolEvilComplete");
 			/*
 				var bg:FlxSprite = new FlxSprite(posX, posY).loadGraphic('assets/images/weeb/evilSchoolBG.png');
 				bg.scale.set(6, 6);
@@ -921,7 +923,10 @@ class PlayState extends MusicBeatState
 
 		gfVersion = SONG.gf;
 
-
+		if (curStage == "school" || curStage == "schoolEvil") {
+			// ffs gf just be pixels
+			gfVersion = "gf-pixel";
+		}
 		gf = new Character(400, 130, gfVersion);
 		gf.scrollFactor.set(0.95, 0.95);
 
@@ -968,6 +973,7 @@ class PlayState extends MusicBeatState
 			case 'spirit':
 				dad.x -= 150;
 				dad.y += 100;
+				// isn't this a little overkill?
 				camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
 			default:
 				dad.x += dad.enemyOffsetX;
@@ -986,7 +992,7 @@ class PlayState extends MusicBeatState
 		}
 
 		boyfriend = new Boyfriend(770, 450, SONG.player1);
-
+		trace("newBF");
 		// REPOSITIONING PER STAGE
 		switch (curStage)
 		{
@@ -1022,17 +1028,17 @@ class PlayState extends MusicBeatState
 				gf.x += 180;
 				gf.y += 300;
 		}
-
+		trace("repositionByStage");
 		add(gf);
 		add(dad);
 		add(boyfriend);
-
+		trace("addCharacters");
 		var doof:DialogueBox = new DialogueBox(false, dialogue);
 		// doof.x += 70;
 		// doof.y = FlxG.height * 0.5;
 		doof.scrollFactor.set();
 		doof.finishThing = startCountdown;
-
+		trace("doofensmirz");
 		Conductor.songPosition = -5000;
 
 		strumLine = new FlxSprite(0, 50).makeGraphic(FlxG.width, 10);
@@ -1044,11 +1050,10 @@ class PlayState extends MusicBeatState
 		playerStrums = new FlxTypedGroup<FlxSprite>();
 
 		// startCountdown();
-
+		trace("before song generation");
 		generateSong(SONG.song);
-
+		trace("after song generation");
 		// add(strumLine);
-
 		camFollow = new FlxObject(0, 0, 1, 1);
 
 		camFollow.setPosition(camPos.x, camPos.y);
@@ -1090,11 +1095,11 @@ class PlayState extends MusicBeatState
 		iconP1 = new HealthIcon(SONG.player1, true);
 		iconP1.y = healthBar.y - (iconP1.height / 2);
 		add(iconP1);
-
+		trace("before icons p2");
 		iconP2 = new HealthIcon(SONG.player2, false);
 		iconP2.y = healthBar.y - (iconP2.height / 2);
 		add(iconP2);
-
+		trace("finishIcons");
 		strumLineNotes.cameras = [camHUD];
 		notes.cameras = [camHUD];
 		healthBar.cameras = [camHUD];
@@ -1103,7 +1108,7 @@ class PlayState extends MusicBeatState
 		iconP2.cameras = [camHUD];
 		scoreTxt.cameras = [camHUD];
 		doof.cameras = [camHUD];
-
+		trace("finishCameras");
 		// if (SONG.song == 'South')
 		// FlxG.camera.alpha = 0.7;
 		// UI_camera.zoom = 1;

@@ -87,6 +87,7 @@ class Song
 				parsedJson.stage = 'stage';
 			}
 		}
+		trace(parsedJson.stage);
 		if (parsedJson.gf == null) {
 			switch (parsedJson.song.toLowerCase()) {
 				case 'limo':

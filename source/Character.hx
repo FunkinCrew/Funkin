@@ -133,7 +133,7 @@ class Character extends FlxSprite
 				setGraphicSize(Std.int(width * PlayState.daPixelZoom));
 				updateHitbox();
 				antialiasing = false;
-
+				like = "gf-pixel";
 			case 'dad':
 				// DAD ANIMATION LOADING CODE
 				tex = FlxAtlasFrames.fromSparrow('assets/images/DADDY_DEAREST.png', 'assets/images/DADDY_DEAREST.xml');
@@ -449,6 +449,7 @@ class Character extends FlxSprite
 				updateHitbox();
 
 				antialiasing = false;
+				like = "senpai";
 			case 'senpai-angry':
 				frames = FlxAtlasFrames.fromSparrow('assets/images/weeb/senpai.png', 'assets/images/weeb/senpai.xml');
 				animation.addByPrefix('idle', 'Angry Senpai Idle', 24, false);
@@ -468,7 +469,7 @@ class Character extends FlxSprite
 				updateHitbox();
 
 				antialiasing = false;
-
+				like = "senpai";
 			case 'spirit':
 				frames = FlxAtlasFrames.fromSpriteSheetPacker('assets/images/weeb/spirit.png', 'assets/images/weeb/spirit.txt');
 				animation.addByPrefix('idle', "idle spirit_", 24, false);
@@ -489,6 +490,7 @@ class Character extends FlxSprite
 				playAnim('idle');
 
 				antialiasing = false;
+				like = "spirit";
 			case 'parents-christmas':
 				frames = FlxAtlasFrames.fromSparrow('assets/images/christmas/mom_dad_christmas_assets.png',
 					'assets/images/christmas/mom_dad_christmas_assets.xml');
@@ -758,7 +760,7 @@ class Character extends FlxSprite
 		else
 			offset.set(0, 0);
 
-		if (like == 'gf')
+		if (like == 'gf'  || like == 'gf-pixel')
 		{
 			if (AnimName == 'singLEFT')
 			{

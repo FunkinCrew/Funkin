@@ -73,6 +73,9 @@ class HealthIcon extends FlxSprite
 			case 'senpai-angry':
 				loadGraphic('assets/images/iconGrid.png', true, 150, 150);
 				animation.add('icon', [22, 22], 0, false, isPlayer);
+			case 'spirit':
+				loadGraphic('assets/images/iconGrid.png', true, 150, 150);
+				animation.add('icon', [23, 23], 0, false, isPlayer);
 			case 'bf-pixel':
 				loadGraphic('assets/images/iconGrid.png', true, 150, 150);
 				animation.add('icon', [21, 21], 0, false, isPlayer);
