@@ -32,6 +32,10 @@ class MainMenuState extends MusicBeatState
 
 	override function create()
 	{
+		#if desktop
+		DiscordManager.updateState("Main Menu");
+		#end
+
 		if (!FlxG.sound.music.playing)
 		{
 			FlxG.sound.playMusic('assets/music/freakyMenu' + TitleState.soundExt);

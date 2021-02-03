@@ -846,6 +846,11 @@ class PlayState extends MusicBeatState
 
 	function startCountdown():Void
 	{
+		#if desktop
+		var songName:String = SONG.song;
+		DiscordManager.updateState('Playing $songName');
+		#end
+
 		inCutscene = false;
 
 		generateStaticArrows(0);
