@@ -132,7 +132,7 @@ class PlayState extends MusicBeatState
 	public static var daPixelZoom:Float = 6;
 
 	var inCutscene:Bool = false;
-
+	var alwaysDoCutscenes = false;
 	override public function create()
 	{
 		// var gameCam:FlxCamera = FlxG.camera;
@@ -147,7 +147,7 @@ class PlayState extends MusicBeatState
 
 		persistentUpdate = true;
 		persistentDraw = true;
-
+		alwaysDoCutscenes = StringTools.contains(CoolUtil.coolTextFile('assets/data/options.txt')[0],'true');
 		if (SONG == null)
 			SONG = Song.loadFromJson('tutorial');
 
@@ -1271,7 +1271,7 @@ class PlayState extends MusicBeatState
 		// cameras = [FlxG.cameras.list[1]];
 		startingSong = true;
 		// temp force enable
-	if (UIOptions.alwaysDoCutscenes || isStoryMode )
+	if (alwaysDoCutscenes || isStoryMode )
 		{
 			switch (SONG.cutsceneType)
 			{

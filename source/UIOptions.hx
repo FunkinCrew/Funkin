@@ -26,7 +26,7 @@ class UIOptions extends MusicBeatState
 {
 
 
-	public static var alwaysDoCutscenes:Bool = false;
+	public var alwaysDoCutscenes:Bool = false;
 	var alwaysCutsceneCheckBox:FlxUICheckBox;
 
 	override function create()
@@ -53,6 +53,7 @@ class UIOptions extends MusicBeatState
 	override function update(elapsed:Float) {
 		super.update(elapsed);
 		if (controls.BACK) {
+			FlxG.mouse.visible = false;
 			File.saveContent('assets/data/options.txt', 'alwaysDoCutscenes: '+alwaysCutsceneCheckBox.checked);
 			FlxG.switchState(new MainMenuState());
 		}
