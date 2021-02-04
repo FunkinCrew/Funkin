@@ -32,7 +32,7 @@ class Note extends FlxSprite
 	public var isSustainNote:Bool = false;
 
 	public var noteScore:Float = 1;
-
+	private var isPixel:Bool = false;
 	public static var swagWidth:Float = 160 * 0.7;
 	public static var PURP_NOTE:Int = 0;
 	public static var GREEN_NOTE:Int = 2;
@@ -62,7 +62,7 @@ class Note extends FlxSprite
 		{
 			case 'pixel':
 				loadGraphic('assets/images/weeb/pixelUI/arrows-pixels.png', true, 17, 17);
-
+				isPixel = true;
 				animation.add('greenScroll', [6]);
 				animation.add('redScroll', [7]);
 				animation.add('blueScroll', [5]);
@@ -107,42 +107,41 @@ class Note extends FlxSprite
 				updateHitbox();
 				antialiasing = true;
 			default:
-				// look for an xml
-				// if there is none, that means we are working with a pixel overlay.
-				if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_ui/notes/'+PlayState.SONG.uiType+".xml"))) {
-				   var noteXml = File.getContent(Path.normalize(System.applicationDirectory+'/assets/images/custom_ui/notes/'+PlayState.SONG.uiType+".xml"));
-					 var notePic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_ui/notes/'+PlayState.SONG.uiType+".png"))));
-					 frames = FlxAtlasFrames.fromSparrow(notePic, noteXml);
-					 animation.addByPrefix('greenScroll', 'green0');
-	 				 animation.addByPrefix('redScroll', 'red0');
-	 				 animation.addByPrefix('blueScroll', 'blue0');
-	 				 animation.addByPrefix('purpleScroll', 'purple0');
+				if (FileSystem.exists('assets/images/custom_ui/ui_packs/'+PlayState.SONG.uiType+"/NOTE_assets.xml") && FileSystem.exists('assets/images/custom_ui/ui_packs/'+PlayState.SONG.uiType+"/NOTE_assets.png")) {
 
-	 				 animation.addByPrefix('purpleholdend', 'pruple end hold');
-	 				 animation.addByPrefix('greenholdend', 'green hold end');
-	 				 animation.addByPrefix('redholdend', 'red hold end');
-	 				 animation.addByPrefix('blueholdend', 'blue hold end');
+				  var noteXml = File.getContent('assets/images/custom_ui/ui_packs/'+PlayState.SONG.uiType+"/NOTE_assets.xml");
+					var notePic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_ui/ui_packs/'+PlayState.SONG.uiType+"/NOTE_assets.png"))));
+					frames = FlxAtlasFrames.fromSparrow(notePic, noteXml);
+					animation.addByPrefix('greenScroll', 'green0');
+	 				animation.addByPrefix('redScroll', 'red0');
+	 				animation.addByPrefix('blueScroll', 'blue0');
+	 				animation.addByPrefix('purpleScroll', 'purple0');
 
-	 				 animation.addByPrefix('purplehold', 'purple hold piece');
-	 				 animation.addByPrefix('greenhold', 'green hold piece');
-	 				 animation.addByPrefix('redhold', 'red hold piece');
-	 				 animation.addByPrefix('bluehold', 'blue hold piece');
+	 				animation.addByPrefix('purpleholdend', 'pruple end hold');
+	 				animation.addByPrefix('greenholdend', 'green hold end');
+	 				animation.addByPrefix('redholdend', 'red hold end');
+	 				animation.addByPrefix('blueholdend', 'blue hold end');
 
-	 				 setGraphicSize(Std.int(width * 0.7));
-	 				 updateHitbox();
-	 				 antialiasing = true;
+	 				animation.addByPrefix('purplehold', 'purple hold piece');
+	 				animation.addByPrefix('greenhold', 'green hold piece');
+	 				animation.addByPrefix('redhold', 'red hold piece');
+	 				animation.addByPrefix('bluehold', 'blue hold piece');
 
-				} else {
-					var notePic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_ui/notes/'+PlayState.SONG.uiType+".png"))));
+	 				setGraphicSize(Std.int(width * 0.7));
+	 				updateHitbox();
+	 				antialiasing = true;
+					// when arrowsEnds != arrowEnds :laughing_crying:
+				} else if (FileSystem.exists('assets/images/custom_ui/ui_packs/'+PlayState.SONG.uiType+"/arrows-pixels.png") && FileSystem.exists('assets/images/custom_ui/ui_packs/'+PlayState.SONG.uiType+"/arrowEnds.png")){
+					var notePic = BitmapData.fromFile('assets/images/custom_ui/ui_packs/'+PlayState.SONG.uiType+"/arrows-pixels.png");
 					loadGraphic(notePic, true, 17, 17);
 					animation.add('greenScroll', [6]);
 					animation.add('redScroll', [7]);
 					animation.add('blueScroll', [5]);
 					animation.add('purpleScroll', [4]);
-
+					isPixel = true;
 					if (isSustainNote)
 					{
-						var noteEndPic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_ui/notes/'+PlayState.SONG.uiType+"-ends.png"))));
+						var noteEndPic = BitmapData.fromFile('assets/images/custom_ui/ui_packs/'+PlayState.SONG.uiType+"/arrowEnds.png");
 						loadGraphic(noteEndPic, true, 7, 6);
 
 						animation.add('purpleholdend', [4]);
@@ -158,6 +157,29 @@ class Note extends FlxSprite
 
 					setGraphicSize(Std.int(width * PlayState.daPixelZoom));
 					updateHitbox();
+				} else {
+					// no crashing today :)
+					trace(PlayState.SONG.uiType);
+					frames = FlxAtlasFrames.fromSparrow('assets/images/NOTE_assets.png', 'assets/images/NOTE_assets.xml');
+
+					animation.addByPrefix('greenScroll', 'green0');
+					animation.addByPrefix('redScroll', 'red0');
+					animation.addByPrefix('blueScroll', 'blue0');
+					animation.addByPrefix('purpleScroll', 'purple0');
+
+					animation.addByPrefix('purpleholdend', 'pruple end hold');
+					animation.addByPrefix('greenholdend', 'green hold end');
+					animation.addByPrefix('redholdend', 'red hold end');
+					animation.addByPrefix('blueholdend', 'blue hold end');
+
+					animation.addByPrefix('purplehold', 'purple hold piece');
+					animation.addByPrefix('greenhold', 'green hold piece');
+					animation.addByPrefix('redhold', 'red hold piece');
+					animation.addByPrefix('bluehold', 'blue hold piece');
+
+					setGraphicSize(Std.int(width * 0.7));
+					updateHitbox();
+					antialiasing = true;
 				}
 		}
 
@@ -202,7 +224,7 @@ class Note extends FlxSprite
 
 			x -= width / 2;
 
-			if (PlayState.curStage.startsWith('school'))
+			if (isPixel)
 				x += 30;
 
 			if (prevNote.isSustainNote)

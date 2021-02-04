@@ -1098,7 +1098,7 @@ class PlayState extends MusicBeatState
 			case 'gf':
 				dad.setPosition(gf.x, gf.y);
 				gf.visible = false;
-				if (isStoryMode)
+				if (isStoryMode )
 				{
 					camPos.x += 600;
 					tweenCamIn();
@@ -1271,7 +1271,7 @@ class PlayState extends MusicBeatState
 		// cameras = [FlxG.cameras.list[1]];
 		startingSong = true;
 		// temp force enable
-	if (/*isStoryMode*/ true )
+	if (UIOptions.alwaysDoCutscenes || isStoryMode )
 		{
 			switch (SONG.cutsceneType)
 			{
@@ -1338,17 +1338,24 @@ class PlayState extends MusicBeatState
 		red.scrollFactor.set();
 
 		var senpaiEvil:FlxSprite = new FlxSprite();
-		senpaiEvil.frames = FlxAtlasFrames.fromSparrow('assets/images/weeb/senpaiCrazy.png', 'assets/images/weeb/senpaiCrazy.xml');
+		if (FileSystem.exists('assets/images/custom_ui/dialog_boxes/'+SONG.cutsceneType+'-crazy.png')) {
+			var evilImage = BitmapData.fromFile('assets/images/custom_ui/dialog_boxes/'+SONG.cutsceneType+'-crazy.png');
+			var evilXml = File.getContent('assets/images/custom_ui/dialog_boxes/'+SONG.cutsceneType+'-crazy.xml');
+			senpaiEvil.frames = FlxAtlasFrames.fromSparrow(evilImage, evilXml);
+		} else {
+			senpaiEvil.frames = FlxAtlasFrames.fromSparrow('assets/images/weeb/senpaiCrazy.png', 'assets/images/weeb/senpaiCrazy.xml');
+		}
+
 		senpaiEvil.animation.addByPrefix('idle', 'Senpai Pre Explosion', 24, false);
 		senpaiEvil.setGraphicSize(Std.int(senpaiEvil.width * 6));
 		senpaiEvil.updateHitbox();
 		senpaiEvil.screenCenter();
 
-		if (SONG.cutsceneType == 'angry-senpai' || SONG.cutsceneType == "spirit")
+		if (dialogueBox != null && dialogueBox.like != 'senpai')
 		{
 			remove(black);
 
-			if (SONG.cutsceneType == 'spirit')
+			if (dialogueBox.like == 'spirit')
 			{
 				add(red);
 			}
@@ -1368,7 +1375,7 @@ class PlayState extends MusicBeatState
 				{
 					inCutscene = true;
 
-					if (SONG.cutsceneType == "spirit")
+					if (dialogueBox.like == 'spirit')
 					{
 						add(senpaiEvil);
 						senpaiEvil.alpha = 0;
@@ -1435,41 +1442,73 @@ class PlayState extends MusicBeatState
 			boyfriend.playAnim('idle');
 
 			var introAssets:Map<String, Array<String>> = new Map<String, Array<String>>();
-			introAssets.set('default', ['ready.png', "set.png", "go.png"]);
-			introAssets.set('school', [
+			introAssets.set('normal', ['ready.png', "set.png", "go.png"]);
+			introAssets.set('pixel', [
 				'weeb/pixelUI/ready-pixel.png',
 				'weeb/pixelUI/set-pixel.png',
 				'weeb/pixelUI/date-pixel.png'
 			]);
-			introAssets.set('schoolEvil', [
-				'weeb/pixelUI/ready-pixel.png',
-				'weeb/pixelUI/set-pixel.png',
-				'weeb/pixelUI/date-pixel.png'
-			]);
+			for (field in CoolUtil.coolTextFile('assets/data/uitypes.txt')) {
+				if (field != 'pixel' && field != 'normal') {
+					if (FileSystem.exists(System.applicationDirectory + ('/assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png")))
+						introAssets.set(field, ['custom_ui/ui_packs/'+field+'/ready-pixel.png','custom_ui/ui_packs/'+field+'/set-pixel.png','custom_ui/ui_packs/'+field+'/date-pixel.png']);
+					else
+						introAssets.set(field, ['custom_ui/ui_packs/'+field+'/ready.png','custom_ui/ui_packs/'+field+'/set.png','custom_ui/ui_packs/'+field+'/go.png']);
+				}
+			}
 
 			var introAlts:Array<String> = introAssets.get('default');
 			var altSuffix:String = "";
-
+			var intro3Sound:Sound;
+			var intro2Sound:Sound;
+			var intro1Sound:Sound;
+			var introGoSound:Sound;
 			for (value in introAssets.keys())
 			{
-				if (value == curStage)
+				if (value == SONG.uiType)
 				{
 					introAlts = introAssets.get(value);
-					altSuffix = '-pixel';
+					// ok so apparently a leading slash means absolute soooooo
+					trace(FileSystem.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png"));
+					trace(FileSystem.exists(System.applicationDirectory + ('/assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png")));
+					if (SONG.uiType == 'pixel' || FileSystem.exists(System.applicationDirectory + ('/assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png")))
+						altSuffix = '-pixel';
 				}
 			}
+			if (SONG.uiType == 'normal') {
+				intro3Sound = Sound.fromAudioBuffer(AudioBuffer.fromBytes(Assets.getBytes('assets/sounds/intro3.ogg')));
+				intro2Sound = Sound.fromAudioBuffer(AudioBuffer.fromBytes(Assets.getBytes('assets/sounds/intro2.ogg')));
+				intro1Sound = Sound.fromAudioBuffer(AudioBuffer.fromBytes(Assets.getBytes('assets/sounds/intro1.ogg')));
+				introGoSound = Sound.fromAudioBuffer(AudioBuffer.fromBytes(Assets.getBytes('assets/sounds/introGo.ogg')));
+			} else if (SONG.uiType == 'pixel') {
+				intro3Sound = Sound.fromAudioBuffer(AudioBuffer.fromBytes(Assets.getBytes('assets/sounds/intro3-pixel.ogg')));
+				intro2Sound = Sound.fromAudioBuffer(AudioBuffer.fromBytes(Assets.getBytes('assets/sounds/intro2-pixel.ogg')));
+				intro1Sound = Sound.fromAudioBuffer(AudioBuffer.fromBytes(Assets.getBytes('assets/sounds/intro1-pixel.ogg')));
+				introGoSound = Sound.fromAudioBuffer(AudioBuffer.fromBytes(Assets.getBytes('assets/sounds/introGo-pixel.ogg')));
+			} else {
+				// god is dead for we have killed him
+				intro3Sound = Sound.fromFile("assets/images/custom_ui/ui_packs/"+SONG.uiType+'/intro3'+altSuffix+'.ogg');
+				intro2Sound = Sound.fromFile("assets/images/custom_ui/ui_packs/"+SONG.uiType+'/intro2'+altSuffix+'.ogg');
+				intro1Sound = Sound.fromFile("assets/images/custom_ui/ui_packs/"+SONG.uiType+'/intro1'+altSuffix+'.ogg');
+				// apparently this crashes if we do it from audio buffer?
+				// no it just understands 'hey that file doesn't exist better do an error'
+				introGoSound = Sound.fromFile("assets/images/custom_ui/ui_packs/"+SONG.uiType+'/introGo'+altSuffix+'.ogg');
+			}
+
 
 			switch (swagCounter)
 
 			{
 				case 0:
-					FlxG.sound.play('assets/sounds/intro3' + altSuffix + TitleState.soundExt, 0.6);
+					FlxG.sound.play(intro3Sound, 0.6);
 				case 1:
-					var ready:FlxSprite = new FlxSprite().loadGraphic('assets/images/' + introAlts[0]);
+					// my life is a lie, it was always this simple
+					var readyImage = BitmapData.fromFile('assets/images/'+introAlts[0]);
+					var ready:FlxSprite = new FlxSprite().loadGraphic(readyImage);
 					ready.scrollFactor.set();
 					ready.updateHitbox();
 
-					if (curStage.startsWith('school'))
+					if (SONG.uiType == 'pixel' || FileSystem.exists(System.applicationDirectory + ('/assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png")))
 						ready.setGraphicSize(Std.int(ready.width * daPixelZoom));
 
 					ready.screenCenter();
@@ -1481,12 +1520,14 @@ class PlayState extends MusicBeatState
 							ready.destroy();
 						}
 					});
-					FlxG.sound.play('assets/sounds/intro2' + altSuffix + TitleState.soundExt, 0.6);
+					FlxG.sound.play(intro2Sound, 0.6);
 				case 2:
-					var set:FlxSprite = new FlxSprite().loadGraphic('assets/images/' + introAlts[1]);
+					var setImage = BitmapData.fromFile('assets/images/'+introAlts[1]);
+					// can't believe you can actually use this as a variable name
+					var set:FlxSprite = new FlxSprite().loadGraphic(setImage);
 					set.scrollFactor.set();
 
-					if (curStage.startsWith('school'))
+					if (SONG.uiType == 'pixel' || FileSystem.exists(System.applicationDirectory + ('/assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png")))
 						set.setGraphicSize(Std.int(set.width * daPixelZoom));
 
 					set.screenCenter();
@@ -1498,12 +1539,13 @@ class PlayState extends MusicBeatState
 							set.destroy();
 						}
 					});
-					FlxG.sound.play('assets/sounds/intro1' + altSuffix + TitleState.soundExt, 0.6);
+					FlxG.sound.play(intro1Sound, 0.6);
 				case 3:
-					var go:FlxSprite = new FlxSprite().loadGraphic('assets/images/' + introAlts[2]);
+					var goImage = BitmapData.fromFile('assets/images/'+introAlts[2]);
+					var go:FlxSprite = new FlxSprite().loadGraphic(goImage);
 					go.scrollFactor.set();
 
-					if (curStage.startsWith('school'))
+					if (SONG.uiType == 'pixel' || FileSystem.exists(System.applicationDirectory + ('/assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png")))
 						go.setGraphicSize(Std.int(go.width * daPixelZoom));
 
 					go.updateHitbox();
@@ -1517,8 +1559,9 @@ class PlayState extends MusicBeatState
 							go.destroy();
 						}
 					});
-					FlxG.sound.play('assets/sounds/introGo' + altSuffix + TitleState.soundExt, 0.6);
+					FlxG.sound.play(introGoSound, 0.6);
 				case 4:
+					// what is this here for?
 			}
 
 			swagCounter += 1;
@@ -1661,9 +1704,9 @@ class PlayState extends MusicBeatState
 			// FlxG.log.add(i);
 			var babyArrow:FlxSprite = new FlxSprite(0, strumLine.y);
 
-			switch (curStage)
+			switch (SONG.uiType)
 			{
-				case 'school':
+				case 'pixel':
 					babyArrow.loadGraphic('assets/images/weeb/pixelUI/arrows-pixels.png', true, 17, 17);
 					babyArrow.animation.add('green', [6]);
 					babyArrow.animation.add('red', [7]);
@@ -1698,44 +1741,7 @@ class PlayState extends MusicBeatState
 							babyArrow.animation.add('confirm', [12, 16], 24, false);
 					}
 
-				case 'schoolEvil':
-					// ALL THIS IS COPY PASTED CUZ IM LAZY
-
-					babyArrow.loadGraphic('assets/images/weeb/pixelUI/arrows-pixels.png', true, 17, 17);
-					babyArrow.animation.add('green', [6]);
-					babyArrow.animation.add('red', [7]);
-					babyArrow.animation.add('blue', [5]);
-					babyArrow.animation.add('purplel', [4]);
-
-					babyArrow.setGraphicSize(Std.int(babyArrow.width * daPixelZoom));
-					babyArrow.updateHitbox();
-					babyArrow.antialiasing = false;
-
-					switch (Math.abs(i))
-					{
-						case 2:
-							babyArrow.x += Note.swagWidth * 2;
-							babyArrow.animation.add('static', [2]);
-							babyArrow.animation.add('pressed', [6, 10], 12, false);
-							babyArrow.animation.add('confirm', [14, 18], 12, false);
-						case 3:
-							babyArrow.x += Note.swagWidth * 3;
-							babyArrow.animation.add('static', [3]);
-							babyArrow.animation.add('pressed', [7, 11], 12, false);
-							babyArrow.animation.add('confirm', [15, 19], 24, false);
-						case 1:
-							babyArrow.x += Note.swagWidth * 1;
-							babyArrow.animation.add('static', [1]);
-							babyArrow.animation.add('pressed', [5, 9], 12, false);
-							babyArrow.animation.add('confirm', [13, 17], 24, false);
-						case 0:
-							babyArrow.x += Note.swagWidth * 0;
-							babyArrow.animation.add('static', [0]);
-							babyArrow.animation.add('pressed', [4, 8], 12, false);
-							babyArrow.animation.add('confirm', [12, 16], 24, false);
-					}
-
-				default:
+				case 'normal':
 					babyArrow.frames = FlxAtlasFrames.fromSparrow('assets/images/NOTE_assets.png', 'assets/images/NOTE_assets.xml');
 					babyArrow.animation.addByPrefix('green', 'arrowUP');
 					babyArrow.animation.addByPrefix('blue', 'arrowDOWN');
@@ -1767,6 +1773,114 @@ class PlayState extends MusicBeatState
 							babyArrow.animation.addByPrefix('static', 'arrowLEFT');
 							babyArrow.animation.addByPrefix('pressed', 'left press', 24, false);
 							babyArrow.animation.addByPrefix('confirm', 'left confirm', 24, false);
+					}
+				default:
+					if (FileSystem.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/NOTE_assets.xml") && FileSystem.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/NOTE_assets.png")) {
+
+					  var noteXml = File.getContent('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/NOTE_assets.xml");
+						var notePic = BitmapData.fromFile('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/NOTE_assets.png");
+						babyArrow.frames = FlxAtlasFrames.fromSparrow(notePic, noteXml);
+						babyArrow.animation.addByPrefix('green', 'arrowUP');
+						babyArrow.animation.addByPrefix('blue', 'arrowDOWN');
+						babyArrow.animation.addByPrefix('purple', 'arrowLEFT');
+						babyArrow.animation.addByPrefix('red', 'arrowRIGHT');
+
+						babyArrow.antialiasing = true;
+						babyArrow.setGraphicSize(Std.int(babyArrow.width * 0.7));
+
+						switch (Math.abs(i))
+						{
+							case 2:
+								babyArrow.x += Note.swagWidth * 2;
+								babyArrow.animation.addByPrefix('static', 'arrowUP');
+								babyArrow.animation.addByPrefix('pressed', 'up press', 24, false);
+								babyArrow.animation.addByPrefix('confirm', 'up confirm', 24, false);
+							case 3:
+								babyArrow.x += Note.swagWidth * 3;
+								babyArrow.animation.addByPrefix('static', 'arrowRIGHT');
+								babyArrow.animation.addByPrefix('pressed', 'right press', 24, false);
+								babyArrow.animation.addByPrefix('confirm', 'right confirm', 24, false);
+							case 1:
+								babyArrow.x += Note.swagWidth * 1;
+								babyArrow.animation.addByPrefix('static', 'arrowDOWN');
+								babyArrow.animation.addByPrefix('pressed', 'down press', 24, false);
+								babyArrow.animation.addByPrefix('confirm', 'down confirm', 24, false);
+							case 0:
+								babyArrow.x += Note.swagWidth * 0;
+								babyArrow.animation.addByPrefix('static', 'arrowLEFT');
+								babyArrow.animation.addByPrefix('pressed', 'left press', 24, false);
+								babyArrow.animation.addByPrefix('confirm', 'left confirm', 24, false);
+						}
+
+					} else if (FileSystem.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png")){
+						var notePic = BitmapData.fromFile('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png");
+						babyArrow.loadGraphic(notePic, true, 17, 17);
+						babyArrow.animation.add('green', [6]);
+						babyArrow.animation.add('red', [7]);
+						babyArrow.animation.add('blue', [5]);
+						babyArrow.animation.add('purplel', [4]);
+
+						babyArrow.setGraphicSize(Std.int(babyArrow.width * daPixelZoom));
+						babyArrow.updateHitbox();
+						babyArrow.antialiasing = false;
+
+						switch (Math.abs(i))
+						{
+							case 2:
+								babyArrow.x += Note.swagWidth * 2;
+								babyArrow.animation.add('static', [2]);
+								babyArrow.animation.add('pressed', [6, 10], 12, false);
+								babyArrow.animation.add('confirm', [14, 18], 12, false);
+							case 3:
+								babyArrow.x += Note.swagWidth * 3;
+								babyArrow.animation.add('static', [3]);
+								babyArrow.animation.add('pressed', [7, 11], 12, false);
+								babyArrow.animation.add('confirm', [15, 19], 24, false);
+							case 1:
+								babyArrow.x += Note.swagWidth * 1;
+								babyArrow.animation.add('static', [1]);
+								babyArrow.animation.add('pressed', [5, 9], 12, false);
+								babyArrow.animation.add('confirm', [13, 17], 24, false);
+							case 0:
+								babyArrow.x += Note.swagWidth * 0;
+								babyArrow.animation.add('static', [0]);
+								babyArrow.animation.add('pressed', [4, 8], 12, false);
+								babyArrow.animation.add('confirm', [12, 16], 24, false);
+						}
+					} else {
+						// no crashing today :)
+						babyArrow.frames = FlxAtlasFrames.fromSparrow('assets/images/NOTE_assets.png', 'assets/images/NOTE_assets.xml');
+						babyArrow.animation.addByPrefix('green', 'arrowUP');
+						babyArrow.animation.addByPrefix('blue', 'arrowDOWN');
+						babyArrow.animation.addByPrefix('purple', 'arrowLEFT');
+						babyArrow.animation.addByPrefix('red', 'arrowRIGHT');
+
+						babyArrow.antialiasing = true;
+						babyArrow.setGraphicSize(Std.int(babyArrow.width * 0.7));
+
+						switch (Math.abs(i))
+						{
+							case 2:
+								babyArrow.x += Note.swagWidth * 2;
+								babyArrow.animation.addByPrefix('static', 'arrowUP');
+								babyArrow.animation.addByPrefix('pressed', 'up press', 24, false);
+								babyArrow.animation.addByPrefix('confirm', 'up confirm', 24, false);
+							case 3:
+								babyArrow.x += Note.swagWidth * 3;
+								babyArrow.animation.addByPrefix('static', 'arrowRIGHT');
+								babyArrow.animation.addByPrefix('pressed', 'right press', 24, false);
+								babyArrow.animation.addByPrefix('confirm', 'right confirm', 24, false);
+							case 1:
+								babyArrow.x += Note.swagWidth * 1;
+								babyArrow.animation.addByPrefix('static', 'arrowDOWN');
+								babyArrow.animation.addByPrefix('pressed', 'down press', 24, false);
+								babyArrow.animation.addByPrefix('confirm', 'down confirm', 24, false);
+							case 0:
+								babyArrow.x += Note.swagWidth * 0;
+								babyArrow.animation.addByPrefix('static', 'arrowLEFT');
+								babyArrow.animation.addByPrefix('pressed', 'left press', 24, false);
+								babyArrow.animation.addByPrefix('confirm', 'left confirm', 24, false);
+						}
 					}
 			}
 
@@ -2300,6 +2414,9 @@ class PlayState extends MusicBeatState
 
 		var pixelShitPart1:String = "";
 		var pixelShitPart2:String = '';
+		if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png"))) {
+			pixelShitPart2 = '-pixel';
+		}
 		var ratingImage:BitmapData;
 		switch (SONG.uiType) {
 			case 'pixel':
@@ -2307,10 +2424,10 @@ class PlayState extends MusicBeatState
 			case 'normal':
 				ratingImage = BitmapData.fromBytes(ByteArray.fromBytes(Assets.getBytes('assets/images/'+daRating+'.png')));
 			default:
-				ratingImage = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_ui/ratings/'+daRating+'-'+PlayState.SONG.uiType+".png"))));
+				ratingImage = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_ui/ui_packs/'+PlayState.SONG.uiType+'/'+daRating+pixelShitPart2+".png"))));
 		}
 
-		rating.loadGraphic('assets/images/' + pixelShitPart1 + daRating + pixelShitPart2 + ".png");
+		rating.loadGraphic(ratingImage);
 		rating.screenCenter();
 		rating.x = coolText.x - 40;
 		rating.y -= 60;
@@ -2327,7 +2444,7 @@ class PlayState extends MusicBeatState
 		comboSpr.velocity.x += FlxG.random.int(1, 10);
 		add(rating);
 		// gonna be fun explaining this
-		if (!SONG.uiType.endsWith('pixel'))
+		if (SONG.uiType != 'pixel' && !FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png")))
 		{
 			rating.setGraphicSize(Std.int(rating.width * 0.7));
 			rating.antialiasing = true;
@@ -2355,18 +2472,18 @@ class PlayState extends MusicBeatState
 			var numImage:BitmapData;
 			switch (SONG.uiType) {
 				case 'pixel':
-					ratingImage = BitmapData.fromBytes(ByteArray.fromBytes(Assets.getBytes('assets/images/weeb/pixelUI/num'+Std.int(i)+'-pixel.png')));
+					numImage = BitmapData.fromBytes(ByteArray.fromBytes(Assets.getBytes('assets/images/weeb/pixelUI/num'+Std.int(i)+'-pixel.png')));
 				case 'normal':
-					ratingImage = BitmapData.fromBytes(ByteArray.fromBytes(Assets.getBytes('assets/images/num'+Std.int(i)+'.png')));
+					numImage = BitmapData.fromBytes(ByteArray.fromBytes(Assets.getBytes('assets/images/num'+Std.int(i)+'.png')));
 				default:
-					ratingImage = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_ui/ratings/'+'num'+Std.int(i)+'-'+PlayState.SONG.uiType+".png"))));
+					numImage = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_ui/ui_packs/'+SONG.uiType+'/num'+Std.int(i)+pixelShitPart2+".png"))));
 			}
-			var numScore:FlxSprite = new FlxSprite().loadGraphic('assets/images/' + pixelShitPart1 + 'num' + Std.int(i) + pixelShitPart2 + '.png');
+			var numScore:FlxSprite = new FlxSprite().loadGraphic(numImage);
 			numScore.screenCenter();
 			numScore.x = coolText.x + (43 * daLoop) - 90;
 			numScore.y += 80;
 
-			if (!SONG.uiType.endsWith('pixel'))
+			if (SONG.uiType != 'pixel' && !FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png")))
 			{
 				numScore.antialiasing = true;
 				numScore.setGraphicSize(Std.int(numScore.width * 0.5));
@@ -2602,7 +2719,7 @@ class PlayState extends MusicBeatState
 						spr.animation.play('static');
 			}
 
-			if (spr.animation.curAnim.name == 'confirm' && !curStage.startsWith('school'))
+			if (spr.animation.curAnim.name == 'confirm' && SONG.uiType != 'pixel' && !FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png")))
 			{
 				spr.centerOffsets();
 				spr.offset.x -= 13;

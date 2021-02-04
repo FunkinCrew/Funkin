@@ -36,8 +36,7 @@ How to use:
     Add a new property:
       "(character name)": {
         "like": "(character this is based on)",
-        "icons": [(alive icon number),(dead icon number)],
-        "uniqueicons": (true if custom icons false if not)
+        "icons": [(alive icon number),(dead icon number)]
       }
     Remember your commas!
     To apply these characters:
@@ -93,4 +92,3 @@ How to use:
       Don't forget your commas!
       To use these just replace the character in the character array with the
       name of your character
-  

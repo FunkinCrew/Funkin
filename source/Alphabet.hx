@@ -64,11 +64,24 @@ class Alphabet extends FlxSpriteGroup
 			}
 		}
 	}
+	public function clearText() {
+		var kidsToMurder:Array<FlxSprite> = [];
+		forEach(function (sprite:FlxSprite) {
+			kidsToMurder.push(sprite);
+		});
+		clear();
+		for( kid in kidsToMurder ) {
+			kid.destroy();
+		}
 
+	}
 	public function addText()
 	{
+		_finalText = text;
+		clearText();
+		lastSprite = null;
+		lastWasSpace = false;
 		doSplitWords();
-
 		var xPos:Float = 0;
 		for (character in splitWords)
 		{

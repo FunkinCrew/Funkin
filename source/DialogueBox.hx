@@ -39,7 +39,7 @@ class DialogueBox extends FlxSpriteGroup
 	var dropText:FlxText;
 
 	public var finishThing:Void->Void;
-	private var like:String = "senpai";
+	public var like:String = "senpai";
 	var portraitLeft:FlxSprite;
 	var portraitRight:FlxSprite;
 
@@ -169,7 +169,7 @@ class DialogueBox extends FlxSpriteGroup
 						box.animation.addByIndices('normal', 'Spirit Textbox spawn', [11], "", 24);
 						if (FileSystem.exists('assets/images/custom_ui/dialog_boxes/'+PlayState.SONG.cutsceneType+'-face.png')) {
 							var facePic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'assets/images/custom_ui/dialog_boxes/'+PlayState.SONG.cutsceneType+'-face.png'))));
-							var face:FlxSprite = new FlxSprite(320, 170).loadGraphic('assets/images/weeb/spiritFaceForward.png');
+							var face:FlxSprite = new FlxSprite(320, 170).loadGraphic(facePic);
 							face.setGraphicSize(Std.int(face.width * 6));
 							add(face);
 						} else {

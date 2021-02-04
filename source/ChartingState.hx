@@ -273,7 +273,7 @@ class ChartingState extends MusicBeatState
 		{
 			_song.cutsceneType = cutscenes[Std.parseInt(cutscene)];
 		});
-		var uiDropdown = new FlxUIDropDownMenu(140, 280, FlxUIDropDownMenu.makeStrIdLabelArray(cutscenes, true), function(uiType:String)
+		var uiDropdown = new FlxUIDropDownMenu(140, 280, FlxUIDropDownMenu.makeStrIdLabelArray(uiTypes, true), function(uiType:String)
 		{
 			_song.uiType = uiTypes[Std.parseInt(uiType)];
 		});
