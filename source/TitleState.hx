@@ -22,7 +22,7 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import io.newgrounds.NG;
 import lime.app.Application;
-import openfl.Assets;
+import lime.utils.Assets;
 import polymod.Polymod;
 
 using StringTools;
@@ -44,9 +44,9 @@ class TitleState extends MusicBeatState
 
 	override public function create():Void
 	{
-		Polymod.init({modRoot: "mods", dirs: ['introMod']});
-
 		#if (!web)
+		Polymod.init({modRoot: "mods", dirs: CoolUtil.coolTextFile('mods/modList.txt')});
+
 		TitleState.soundExt = '.ogg';
 		#end
 
