@@ -85,7 +85,7 @@ class DialogueBox extends FlxSpriteGroup
 		if (FileSystem.exists('assets/images/custom_chars/'+PlayState.SONG.player2+'-portrait.png')) {
 			// if a  custom character portrait exists, use that
 			var rawPic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_chars/'+PlayState.SONG.player2+"-portrait.png"))));
-			var rawXml = File.getContent(Path.normalize(System.applicationDirectory+'/assets/images/custom_chars/'+PlayState.SONG.player2+".xml"));
+			var rawXml = File.getContent(Path.normalize(System.applicationDirectory+'/assets/images/custom_chars/'+PlayState.SONG.player2+"-portrait.xml"));
 			portraitLeft.frames = FlxAtlasFrames.fromSparrow(rawPic, rawXml);
 		} else {
 			// otherwise, use senpai
@@ -103,7 +103,7 @@ class DialogueBox extends FlxSpriteGroup
 		portraitRight = new FlxSprite(0, 40);
 		if (FileSystem.exists('assets/images/custom_chars/'+PlayState.SONG.player1+'-portrait.png')) {
 			var rawPic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_chars/'+PlayState.SONG.player1+"-portrait.png"))));
-			var rawXml = File.getContent(Path.normalize(System.applicationDirectory+'/assets/images/custom_chars/'+PlayState.SONG.player1+".xml"));
+			var rawXml = File.getContent(Path.normalize(System.applicationDirectory+'/assets/images/custom_chars/'+PlayState.SONG.player1+"-portrait.xml"));
 			portraitRight.frames = FlxAtlasFrames.fromSparrow(rawPic, rawXml);
 		} else {
 			portraitRight.frames = FlxAtlasFrames.fromSparrow('assets/images/weeb/bfPortrait.png', 'assets/images/weeb/bfPortrait.xml');

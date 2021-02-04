@@ -39,6 +39,9 @@ How to use:
         "icons": [(alive icon number),(dead icon number)]
       }
     Remember your commas!
+    Characters also now support portraits.
+    If your character has a portrait drag it in and rename it to your character
+    name + '-portrait'
     To apply these characters:
     Open a song
     Hit the '7' key
@@ -48,16 +51,15 @@ How to use:
     Hit save and save the json. Remember difficulty prefixes!
     Custom GF:
       Follow above instructions but instead of choosing one of the top two
-      dropdowns choose the one on the bottom left.
+      dropdowns choose the one that says gf.
       Choose custom gf
       Hit save and save the json. Remember difficulty prefixes!
   Custom Stages:
     Goto assets/images/custom_stages
+    Make a new folder with the name of your stage
     Drag in any custom stage assets
     If there are missing assets:
       You can just copy the templates unless it is stage
-    Rename all these assets like the templates,
-    replacing template with your stage name
     Add a new property to custom_stages.json:
       "(stage name)": "(stage it is like)"
     Don't forget your commas!
@@ -65,7 +67,7 @@ How to use:
     Open a song
     Hit the '7' key
     go to the song tab
-    Click on the drop down on the bottom right.
+    Click on the drop down that says something like 'stage'.
     Select your custom stage.
     Hit save and save the json. Remember difficulty prefixes!
   Custom Weeks:
@@ -75,7 +77,7 @@ How to use:
       rename them to what the week position is (week6, week7, week8)
     Else:
       Copy one of the weeks png + xml and rename them to the week position
-      (week6,week7,week8)
+      (week7,week8,week9)
     Open assets/data/storySonglist.json
     Add a new week:
       ["(animation name of the week, look at default weeks)", "(trackname)", "(trackname)", ...]
@@ -85,10 +87,48 @@ How to use:
     Custom UI Characters
       Add the mod png and xml to assets/images/campaign-ui-char
       (if no xml just copy another one)
-      Rename files to "black-line-(character name)"
+      Rename files to "(character name)"
       Open custom characters json
       Add new property:
       "(character name)": "(character it goes over)"
       Don't forget your commas!
       To use these just replace the character in the character array with the
       name of your character
+  Custom Cutscenes:
+    You can now make your own cutscenes!
+    To add them: Go to assets/images/custom_ui/dialog_boxes
+    drag in the dialog box png + xml
+    rename them to what you want the cutscene to be named
+    If there is a senpai crazy png + xml, drag those in and rename them
+    to the cutscene name +  '-crazy'
+    Go to assets/data
+    Open up "cutscenes.txt"
+    add your cutscene name on a newline!
+    To apply these cutscenes:
+    Open a song
+    Hit the '7' key
+    go to the song tab
+    Click on the drop down that says something like 'senpai'.
+    Select your custom stage.
+    Hit save and save the json. Remember difficulty prefixes!
+  Custom UI:
+    You can now add custom ui!
+    Go to assets/images/custom_ui/ui_packs
+    make a new folder with the name of your ui
+    Add the following files:
+    The arrow files
+    The rating files (good, bad, shit, sick)
+    The number files
+    The intro files (ready, set, go)
+    The Ogg files for the intro (intro1, intro2, intro3, introGo)
+    (Remember, all of these files are required or the game will crash!)
+    Go to assets/data
+    Open uitypes.txt
+    Add your ui type name on a new line!
+    To apply these uis:
+    Open a song
+    Hit the '7' key
+    go to the song tab
+    Click on the drop down that says something like 'normal'.
+    Select your custom stage.
+    Hit save and save the json. Remember difficulty prefixes!
