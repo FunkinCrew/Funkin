@@ -58,10 +58,6 @@ class Song
 			// LOL GOING THROUGH THE BULLSHIT TO CLEAN IDK WHATS STRANGE
 		}
 
-		var swagShit:SwagSong = cast Json.parse(rawJson).song;
-		swagShit.validScore = true;
-		trace(swagShit.notes[0]);
-
 		// FIX THE CASTING ON WINDOWS/NATIVE
 		// Windows???
 		// trace(songData);
@@ -80,6 +76,13 @@ class Song
 				daBpm = songData.bpm;
 				daSectionLengths = songData.sectionLengths; */
 
+		return parseJSONshit(rawJson);
+	}
+
+	public static function parseJSONshit(rawJson:String):SwagSong
+	{
+		var swagShit:SwagSong = cast Json.parse(rawJson).song;
+		swagShit.validScore = true;
 		return swagShit;
 	}
 }
