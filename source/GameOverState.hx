@@ -24,7 +24,7 @@ class GameOverState extends FlxTransitionableState
 	override function create()
 	{
 		/* var loser:FlxSprite = new FlxSprite(100, 100);
-			var loseTex = FlxAtlasFrames.fromSparrow(AssetPaths.lose__png, AssetPaths.lose__xml);
+			var loseTex = FlxAtlasFrames.fromSparrow(AssetPaths.lose.png, AssetPaths.lose.xml);
 			loser.frames = loseTex;
 			loser.animation.addByPrefix('lose', 'lose', 24, false);
 			loser.animation.play('lose');
@@ -37,7 +37,7 @@ class GameOverState extends FlxTransitionableState
 
 		FlxG.camera.follow(bf, LOCKON, 0.001);
 		/* 
-			var restart:FlxSprite = new FlxSprite(500, 50).loadGraphic(AssetPaths.restart__png);
+			var restart:FlxSprite = new FlxSprite(500, 50).loadGraphic(AssetPaths.restart.png);
 			restart.setGraphicSize(Std.int(restart.width * 0.6));
 			restart.updateHitbox();
 			restart.alpha = 0;

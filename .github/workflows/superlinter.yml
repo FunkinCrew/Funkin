@@ -1,10 +1,10 @@
-name: learn-github-actions
-on: [push]
 jobs:
-  check-bats-version:
-    runs-on: ubuntu-latest
+  build:
+    runs-on: [ubuntu-latest, macos-latest]
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-      - run: npm install -g bats
-      - run: bats -v
+      - uses: krdlab/setup-haxe@v1
+        with:
+          haxe-version: 4.0.5
+      - run: |
+          haxe -version
+          haxelib install hxnodejs

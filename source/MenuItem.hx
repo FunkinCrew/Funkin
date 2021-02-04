@@ -14,7 +14,7 @@ class MenuItem extends FlxSpriteGroup
 	{
 		super(x, y);
 
-		var tex = FlxAtlasFrames.fromSparrow(AssetPaths.campaign_menu_UI_assets__png, AssetPaths.campaign_menu_UI_assets__xml);
+		var tex = FlxAtlasFrames.fromSparrow('assets/images/campaign_menu_UI_assets.png', 'assets/images/campaign_menu_UI_assets.xml');
 
 		week = new FlxSprite();
 		week.frames = tex;
@@ -23,6 +23,9 @@ class MenuItem extends FlxSpriteGroup
 		week.animation.addByPrefix('week1', "WEEK1 select", 24);
 		week.animation.addByPrefix('week2', "week2 select", 24);
 		week.animation.addByPrefix('week3', "Week 3 press", 24);
+		week.animation.addByPrefix('week4', "Week 4 press", 24);
+		week.animation.addByPrefix('week5', "week 5", 24);
+		week.animation.addByPrefix('week6', "Week 6", 24);
 		add(week);
 
 		week.animation.play('week' + weekNum);

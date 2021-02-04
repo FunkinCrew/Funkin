@@ -4,8 +4,53 @@ All notable changes will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [UNRELEASED]
+## [0.2.7] - 2021-02-02
+### Added
+- PIXEL DAY UPDATE LOL 1 WEEK LATER
+- 3 New songs by Kawaisprite!
+- COOL CUTSCENES
+- WEEK 6 YOYOYOYOY
+- Swaggy pixel art by Moawling!
+### Changed
+- Made it so you lose sliiiightly more health when you miss a note.
+- Removed the default HaxeFlixel pause screen when the game window loses focus, can get screenshots of the game easier hehehe
 ### Fixed
+- Idle animation bug with BF christmas and BF hair blow sprites ([Thanks to Injourn for the Pull Request!](https://github.com/ninjamuffin99/Funkin/pull/237))
+
+## [0.2.6] - 2021-01-20
+### Added
+- 3 NEW CHRISTMAS SONGS. 2 BY KAWAISPRITE, 1 BY BASSETFILMS!!!!! BF WITH DRIP! SANTA HANGIN OUT!
+- Enemy icons change when they you are winning a lot ([Thanks to pahaze for the Pull Request!](https://github.com/ninjamuffin99/Funkin/pull/138))
+- Holding CTRL in charting editor places notes on both sides
+- Q and E changes sustain lengths in note editor
+- Other charting editor workflow improvements
+- More hair physics
+- Heads appear at top of chart editor to help show which side ur charting for
+### Changed
+- Tweaked code relating to inputs, hopefully making notes that are close together more fair to hit
+### Removed
+- Removed APE
+### Fixed
+- Maybe fixed double notes / jump notes. Need to tweak it for balance, but should open things up for cooler charts in the future.
+- Old Verison popup screen weirdness ([Thanks to gedehari for the Pull Request!](https://github.com/ninjamuffin99/Funkin/pull/155))
+- Song no longer loops when finishing the song. ([Thanks Injourn for the Pull Request!](https://github.com/ninjamuffin99/Funkin/pull/132))
+- Screen wipe being cut off in the limo/mom stage. Should fill the whole screen now.
+- Boyfriend animations on hold notes, and pressing on repeating notes should behave differently
+
+## [0.2.5] - 2020-12-27
+### Added
+- MOMMY GF, 3 NEW ASS SONGS BY KAWAISPRITE, NEW ART BY PHANTOMARCADE,WOOOOOOAH!!!!
+- Different icons depending on which character you are against, art by EVILSK8R!!
+- Autosave to chart editor
+- Clear section button to note editor
+- Swap button in note editor
+- a new boot text or two
+- automatic check for when you're on an old version of the game! 
+### Changed
+- Made Spookeez on Normal easier.
+- Mouse is now visible in note editor
+### Fixed
+- Crash when playing Week 3 and then playing a non-week 3 song
 - When pausing music at the start, it doesn't continue the song anyways. ([shoutouts gedehari for the Pull Request!](https://github.com/ninjamuffin99/Funkin/pull/48))
 - IDK i think backing out of song menu should play main menu songs again hehe ([shoutouts gedehari for the Pull Request!](https://github.com/ninjamuffin99/Funkin/pull/48))
 
