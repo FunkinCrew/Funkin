@@ -90,7 +90,6 @@ class OptionsMenu extends MusicBeatState
 			isSettingControl = true;
 		}
 	}
-
 	function changeSelection(change:Int = 0)
 	{
 

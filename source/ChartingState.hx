@@ -134,7 +134,9 @@ class ChartingState extends MusicBeatState
 				sectionLengths: [],
 				speed: 1,
 				validScore: false,
-				isMoody: false
+				isMoody: false,
+				cutsceneType: "none",
+				uiType: 'normal'
 			};
 		}
 
@@ -238,6 +240,8 @@ class ChartingState extends MusicBeatState
 
 		var characters:Array<String> = CoolUtil.coolTextFile('assets/data/characterList.txt');
 		var stages:Array<String> = CoolUtil.coolTextFile('assets/data/stages.txt');
+		var cutscenes:Array<String> = CoolUtil.coolTextFile('assets/data/cutscenes.txt');
+		var uiTypes:Array<String> = CoolUtil.coolTextFile('assets/data/uitypes.txt');
 		for (i in Reflect.fields(Json.parse(Assets.getText('assets/images/custom_chars/custom_chars.json'))))
 		{
 			characters.push(i);
@@ -264,6 +268,15 @@ class ChartingState extends MusicBeatState
 		{
 			_song.gf = characters[Std.parseInt(character)];
 		});
+		var isMoodyCheck = new FlxUICheckBox(10, 220, null, null, "Is Moody", 100);
+		var cutsceneDropdown = new FlxUIDropDownMenu(140, 220, FlxUIDropDownMenu.makeStrIdLabelArray(cutscenes, true), function(cutscene:String)
+		{
+			_song.cutsceneType = cutscenes[Std.parseInt(cutscene)];
+		});
+		var uiDropdown = new FlxUIDropDownMenu(140, 280, FlxUIDropDownMenu.makeStrIdLabelArray(cutscenes, true), function(uiType:String)
+		{
+			_song.uiType = uiTypes[Std.parseInt(uiType)];
+		});
 		player2DropDown.selectedLabel = _song.player2;
 		var curStage = _song.stage;
 		stageDropDown.selectedLabel = _song.stage;
@@ -274,12 +287,15 @@ class ChartingState extends MusicBeatState
 
 		tab_group_song.add(check_voices);
 		tab_group_song.add(check_mute_inst);
+		tab_group_song.add(isMoodyCheck);
+		tab_group_song.add(uiDropdown);
 		tab_group_song.add(saveButton);
 		tab_group_song.add(reloadSong);
 		tab_group_song.add(reloadSongJson);
 		tab_group_song.add(loadAutosaveBtn);
 		tab_group_song.add(stepperBPM);
 		tab_group_song.add(stepperSpeed);
+		tab_group_song.add(cutsceneDropdown);
 		tab_group_song.add(stageDropDown);
 		tab_group_song.add(gfDropDown);
 		tab_group_song.add(player1DropDown);

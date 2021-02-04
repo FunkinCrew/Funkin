@@ -156,30 +156,32 @@ class PlayState extends MusicBeatState
 		switch (SONG.song.toLowerCase())
 		{
 			case 'tutorial':
-				dialogue = ["Hey you're pretty cute.", 'Use the arrow keys to keep up \nwith me singing.'];
+				dialogue = [":dad:Hey you're pretty cute.", ':dad:Use the arrow keys to keep up \nwith me singing.'];
 			case 'bopeebo':
 				dialogue = [
-					'HEY!',
-					"You think you can just sing\nwith my daughter like that?",
-					"If you want to date her...",
-					"You're going to have to go \nthrough ME first!"
+					':dad:HEY!',
+					":dad:You think you can just sing\nwith my daughter like that?",
+					":dad:If you want to date her...",
+					":dad:You're going to have to go \nthrough ME first!"
 				];
 			case 'fresh':
-				dialogue = ["Not too shabby boy.", ""];
+				dialogue = [":dad:Not too shabby boy.", ""];
 			case 'dadbattle':
 				dialogue = [
-					"gah you think you're hot stuff?",
-					"If you can beat me here...",
-					"Only then I will even CONSIDER letting you\ndate my daughter!"
+					":dad: gah you think you're hot stuff?",
+					":dad: If you can beat me here...",
+					":dad: Only then I will even CONSIDER letting you\ndate my daughter!"
 				];
 			case 'senpai':
 				dialogue = CoolUtil.coolTextFile('assets/data/senpai/senpaiDialogue.txt');
 			case 'roses':
 				dialogue = CoolUtil.coolTextFile('assets/data/roses/rosesDialogue.txt');
 			case 'thorns':
-				// maybe dialog is problem?
-				trace("thornsDialogue");
 				dialogue = CoolUtil.coolTextFile('assets/data/thorns/thornsDialogue.txt');
+			default:
+				if (FileSystem.exists(Path.normalize(System.applicationDirectory+'assets/data/'+SONG.song.toLowerCase()+'/dialog.txt'))) {
+					dialogue = CoolUtil.coolDynamicTextFile('assets/data/'+SONG.song.toLowerCase()+'/dialog.txt');
+				}
 		}
 
 		if (SONG.stage == 'spooky')
@@ -363,10 +365,9 @@ class PlayState extends MusicBeatState
 			evilSnow.antialiasing = true;
 			add(evilSnow);
 		}
-		else if (SONG.stage == 'school' || SONG.stage == 'schoolMoody')
+		else if (SONG.stage == 'school')
 		{
 			curStage = 'school';
-			// school moody is just the girls are upset
 			// defaultCamZoom = 0.9;
 
 			var bgSky = new FlxSprite().loadGraphic('assets/images/weeb/weebSky.png');
@@ -1120,6 +1121,7 @@ class PlayState extends MusicBeatState
 				dad.x += 150;
 				dad.y += 360;
 				camPos.x += 300;
+				camPos.y += 300;
 			case 'senpai-angry':
 				dad.x += 150;
 				dad.y += 360;
@@ -1268,12 +1270,12 @@ class PlayState extends MusicBeatState
 
 		// cameras = [FlxG.cameras.list[1]];
 		startingSong = true;
-
-		if (isStoryMode)
+		// temp force enable
+	if (/*isStoryMode*/ true )
 		{
-			switch (curSong.toLowerCase())
+			switch (SONG.cutsceneType)
 			{
-				case "winter-horrorland":
+				case "monster":
 					var blackScreen:FlxSprite = new FlxSprite(0, 0).makeGraphic(Std.int(FlxG.width * 2), Std.int(FlxG.height * 2), FlxColor.BLACK);
 					add(blackScreen);
 					blackScreen.scrollFactor.set();
@@ -1303,13 +1305,15 @@ class PlayState extends MusicBeatState
 					});
 				case 'senpai':
 					schoolIntro(doof);
-				case 'roses':
+				case 'angry-senpai':
 					FlxG.sound.play('assets/sounds/ANGRY' + TitleState.soundExt);
 					schoolIntro(doof);
-				case 'thorns':
+				case 'spirits':
 					schoolIntro(doof);
-				default:
+				case 'none':
 					startCountdown();
+				default:
+					schoolIntro(doof);
 			}
 		}
 		else
@@ -1340,11 +1344,11 @@ class PlayState extends MusicBeatState
 		senpaiEvil.updateHitbox();
 		senpaiEvil.screenCenter();
 
-		if (SONG.song.toLowerCase() == 'roses' || SONG.song.toLowerCase() == 'thorns')
+		if (SONG.cutsceneType == 'angry-senpai' || SONG.cutsceneType == "spirit")
 		{
 			remove(black);
 
-			if (SONG.song.toLowerCase() == 'thorns')
+			if (SONG.cutsceneType == 'spirit')
 			{
 				add(red);
 			}
@@ -1364,7 +1368,7 @@ class PlayState extends MusicBeatState
 				{
 					inCutscene = true;
 
-					if (SONG.song.toLowerCase() == 'thorns')
+					if (SONG.cutsceneType == "spirit")
 					{
 						add(senpaiEvil);
 						senpaiEvil.alpha = 0;

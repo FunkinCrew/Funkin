@@ -27,6 +27,8 @@ typedef SwagSong =
 	var stage:String;
 	var gf:String;
 	var isMoody:Bool;
+	var cutsceneType:String;
+	var uiType:String;
 }
 
 class Song
@@ -44,6 +46,8 @@ class Song
 	public var stage:String = 'stage';
 	public var gf:String = 'gf';
 	public var isMoody:Bool = false;
+	public var cutsceneType:String = "none";
+	public var uiType:String = 'normal';
 	public function new(song, notes, bpm, sections)
 	{
 		this.song = song;
@@ -92,7 +96,6 @@ class Song
 		trace(parsedJson.stage);
 		if (parsedJson.gf == null) {
 			// are you kidding me did i really do song to lowercase
-			trace(parsedJson.stage);
 			switch (parsedJson.stage) {
 				case 'limo':
 					parsedJson.gf = 'gf-car';
@@ -107,9 +110,34 @@ class Song
 				default:
 					parsedJson.gf = 'gf';
 			}
-			parsedJson.isMoody = !!parsedJson.isMoody;
-			if (parsedJson.song.toLowerCase() == 'roses') {
-				parsedJson.isMoody = true;
+
+		}
+		parsedJson.isMoody = !!parsedJson.isMoody;
+		if (parsedJson.song.toLowerCase() == 'roses') {
+			parsedJson.isMoody = true;
+		}
+		if (parsedJson.song.toLowerCase() == 'winter-horrorland') {
+			parsedJson.cutsceneType = "monster";
+		}
+		if (parsedJson.cutsceneType == null) {
+			switch (parsedJson.song.toLowerCase()) {
+				case 'roses':
+					parsedJson.cutsceneType = "angry-senpai";
+				case 'senpai':
+					parsedJson.cutsceneType = "senpai";
+				case 'thorns':
+					parsedJson.cutsceneType = 'spirit';
+				case 'winter-horrorland':
+					parsedJson.cutsceneType = 'monster';
+				default:
+					parsedJson.cutsceneType = 'none';
+			}
+		}
+		if (parsedJson.uiType == null) {
+			if (parsedJson.song.toLowerCase() == 'roses' || parsedJson.song.toLowerCase() == 'senpai' || parsedJson.song.toLowerCase() == 'thorns') {
+				parsedJson.uiType = 'pixel';
+			} else {
+				parsedJson.uiType = 'normal';
 			}
 		}
 		// FIX THE CASTING ON WINDOWS/NATIVE

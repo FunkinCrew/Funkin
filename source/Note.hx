@@ -5,7 +5,16 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.math.FlxMath;
 import flixel.util.FlxColor;
 import polymod.format.ParseRules.TargetSignatureElement;
-
+import lime.system.System;
+import flash.display.BitmapData;
+#if sys
+import sys.io.File;
+import sys.FileSystem;
+import haxe.io.Path;
+import openfl.utils.ByteArray;
+import lime.media.AudioBuffer;
+import flash.media.Sound;
+#end
 using StringTools;
 
 class Note extends FlxSprite
@@ -49,9 +58,9 @@ class Note extends FlxSprite
 
 		var daStage:String = PlayState.curStage;
 
-		switch (daStage)
+		switch (PlayState.SONG.uiType)
 		{
-			case 'school':
+			case 'pixel':
 				loadGraphic('assets/images/weeb/pixelUI/arrows-pixels.png', true, 17, 17);
 
 				animation.add('greenScroll', [6]);
@@ -76,34 +85,7 @@ class Note extends FlxSprite
 
 				setGraphicSize(Std.int(width * PlayState.daPixelZoom));
 				updateHitbox();
-
-			case 'schoolEvil': // COPY PASTED CUZ I AM LAZY
-				loadGraphic('assets/images/weeb/pixelUI/arrows-pixels.png', true, 17, 17);
-
-				animation.add('greenScroll', [6]);
-				animation.add('redScroll', [7]);
-				animation.add('blueScroll', [5]);
-				animation.add('purpleScroll', [4]);
-
-				if (isSustainNote)
-				{
-					loadGraphic('assets/images/weeb/pixelUI/arrowEnds.png', true, 7, 6);
-
-					animation.add('purpleholdend', [4]);
-					animation.add('greenholdend', [6]);
-					animation.add('redholdend', [7]);
-					animation.add('blueholdend', [5]);
-
-					animation.add('purplehold', [0]);
-					animation.add('greenhold', [2]);
-					animation.add('redhold', [3]);
-					animation.add('bluehold', [1]);
-				}
-
-				setGraphicSize(Std.int(width * PlayState.daPixelZoom));
-				updateHitbox();
-
-			default:
+			case 'normal':
 				frames = FlxAtlasFrames.fromSparrow('assets/images/NOTE_assets.png', 'assets/images/NOTE_assets.xml');
 
 				animation.addByPrefix('greenScroll', 'green0');
@@ -124,6 +106,59 @@ class Note extends FlxSprite
 				setGraphicSize(Std.int(width * 0.7));
 				updateHitbox();
 				antialiasing = true;
+			default:
+				// look for an xml
+				// if there is none, that means we are working with a pixel overlay.
+				if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_ui/notes/'+PlayState.SONG.uiType+".xml"))) {
+				   var noteXml = File.getContent(Path.normalize(System.applicationDirectory+'/assets/images/custom_ui/notes/'+PlayState.SONG.uiType+".xml"));
+					 var notePic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_ui/notes/'+PlayState.SONG.uiType+".png"))));
+					 frames = FlxAtlasFrames.fromSparrow(notePic, noteXml);
+					 animation.addByPrefix('greenScroll', 'green0');
+	 				 animation.addByPrefix('redScroll', 'red0');
+	 				 animation.addByPrefix('blueScroll', 'blue0');
+	 				 animation.addByPrefix('purpleScroll', 'purple0');
+
+	 				 animation.addByPrefix('purpleholdend', 'pruple end hold');
+	 				 animation.addByPrefix('greenholdend', 'green hold end');
+	 				 animation.addByPrefix('redholdend', 'red hold end');
+	 				 animation.addByPrefix('blueholdend', 'blue hold end');
+
+	 				 animation.addByPrefix('purplehold', 'purple hold piece');
+	 				 animation.addByPrefix('greenhold', 'green hold piece');
+	 				 animation.addByPrefix('redhold', 'red hold piece');
+	 				 animation.addByPrefix('bluehold', 'blue hold piece');
+
+	 				 setGraphicSize(Std.int(width * 0.7));
+	 				 updateHitbox();
+	 				 antialiasing = true;
+
+				} else {
+					var notePic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_ui/notes/'+PlayState.SONG.uiType+".png"))));
+					loadGraphic(notePic, true, 17, 17);
+					animation.add('greenScroll', [6]);
+					animation.add('redScroll', [7]);
+					animation.add('blueScroll', [5]);
+					animation.add('purpleScroll', [4]);
+
+					if (isSustainNote)
+					{
+						var noteEndPic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_ui/notes/'+PlayState.SONG.uiType+"-ends.png"))));
+						loadGraphic(noteEndPic, true, 7, 6);
+
+						animation.add('purpleholdend', [4]);
+						animation.add('greenholdend', [6]);
+						animation.add('redholdend', [7]);
+						animation.add('blueholdend', [5]);
+
+						animation.add('purplehold', [0]);
+						animation.add('greenhold', [2]);
+						animation.add('redhold', [3]);
+						animation.add('bluehold', [1]);
+					}
+
+					setGraphicSize(Std.int(width * PlayState.daPixelZoom));
+					updateHitbox();
+				}
 		}
 
 		switch (noteData)
