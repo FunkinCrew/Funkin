@@ -42,6 +42,11 @@ How to use:
     Characters also now support portraits.
     If your character has a portrait drag it in and rename it to your character
     name + '-portrait'
+    They also support custom death sprites.
+    If your character is based on pixel bf:
+    drag in the death png + xml
+    rename to '(character name)-dead'
+    If it is based on bf: Great! Everything is already done for custom death!
     To apply these characters:
     Open a song
     Hit the '7' key
