@@ -2,7 +2,7 @@
 <project>
 	<!-- _________________________ Application Settings _________________________ -->
 
-	<app title="Friday Night Funkin" file="Funkin" packageName="com.ninjamuffin99.funkin" main="Main" version="0.2.4.1" company="ninjamuffin99" />
+	<app title="Friday Night Funkin'" file="Funkin" packageName="com.ninjamuffin99.funkin" main="Main" version="0.2.7" company="ninjamuffin99" />
 
 	<!--Switch Export with Unique ApplicationID and Icon-->
 	<set name="APP_ID" value="0x0100f6c013bbc000" />
@@ -24,7 +24,7 @@
 	<window if="html5" resizable="true" />
 
 	<!--Desktop-specific-->
-	<window if="desktop" orientation="landscape" fullscreen="false" resizable="true" />
+	<window if="desktop" orientation="landscape" fullscreen="false" resizable="true" vsync="false"/>
 
 	<!--Mobile-specific-->
 	<window if="mobile" orientation="landscape" fullscreen="true" width="0" height="0" />
@@ -42,6 +42,8 @@
 
 	<assets path="assets/images" />
 	<assets path="assets/data" />
+	<assets path='example_mods' rename='mods' embed='false'/>
+	<!-- <template path='mods' /> -->
 	
 	<!-- <library name="noPreload" preload='false'/> -->
 	<!-- <library name="noPreload"/> -->
@@ -52,12 +54,16 @@
 
 	<assets path="CHANGELOG.md"/>
 
-
-	<assets path="assets/fonts/vcr.ttf" embed="true" />
-
+	<!-- NOTE FOR FUTURE SELF SINCE FONTS ARE ALWAYS FUCKY 
+		TO FIX ONE OF THEM, I CONVERTED IT TO OTF. DUNNO IF YOU NEED TO
+		THEN UHHH I USED THE NAME OF THE FONT WITH SETFORMAT() ON THE TEXT!!!
+		NOT USING A DIRECT THING TO THE ASSET!!!
+	-->
+	<assets path="assets/fonts" embed='true'/>
 	<!-- _______________________________ Libraries ______________________________ -->
 
 	<haxelib name="flixel" />
+	<haxedev set='webgl' />
 
 	<!--In case you want to use the addons package-->
 	<haxelib name="flixel-addons" />
@@ -67,6 +73,7 @@
 	<haxelib name="flixel-ui" />
 	<haxelib name="newgrounds"/>
 	<haxelib name="faxe" if='switch'/>
+	<haxelib name="polymod"/>
 
 	<!-- <haxelib name="markdown" /> -->
 	<!-- <haxelib name="HtmlParser" /> -->
@@ -98,7 +105,7 @@
 	<!--<haxedef name="FLX_NO_SOUND_SYSTEM" />-->
 
 	<!--Disable the Flixel core focus lost screen-->
-	<!--<haxedef name="FLX_NO_FOCUS_LOST_SCREEN" />-->
+	<haxedef name="FLX_NO_FOCUS_LOST_SCREEN" />
 
 	<!--Disable the Flixel core debugger. Automatically gets set whenever you compile in release mode!-->
 	<haxedef name="FLX_NO_DEBUG" unless="debug" />

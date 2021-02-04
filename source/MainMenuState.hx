@@ -10,7 +10,10 @@ import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
+import io.newgrounds.NG;
 import lime.app.Application;
+
+using StringTools;
 
 class MainMenuState extends MusicBeatState
 {
@@ -36,7 +39,7 @@ class MainMenuState extends MusicBeatState
 
 		persistentUpdate = persistentDraw = true;
 
-		var bg:FlxSprite = new FlxSprite(-80).loadGraphic(AssetPaths.menuBG__png);
+		var bg:FlxSprite = new FlxSprite(-80).loadGraphic('assets/images/menuBG.png');
 		bg.scrollFactor.x = 0;
 		bg.scrollFactor.y = 0.18;
 		bg.setGraphicSize(Std.int(bg.width * 1.1));
@@ -48,7 +51,7 @@ class MainMenuState extends MusicBeatState
 		camFollow = new FlxObject(0, 0, 1, 1);
 		add(camFollow);
 
-		magenta = new FlxSprite(-80).loadGraphic(AssetPaths.menuDesat__png);
+		magenta = new FlxSprite(-80).loadGraphic('assets/images/menuDesat.png');
 		magenta.scrollFactor.x = 0;
 		magenta.scrollFactor.y = 0.18;
 		magenta.setGraphicSize(Std.int(magenta.width * 1.1));
@@ -63,7 +66,7 @@ class MainMenuState extends MusicBeatState
 		menuItems = new FlxTypedGroup<FlxSprite>();
 		add(menuItems);
 
-		var tex = FlxAtlasFrames.fromSparrow(AssetPaths.FNF_main_menu_assets__png, AssetPaths.FNF_main_menu_assets__xml);
+		var tex = FlxAtlasFrames.fromSparrow('assets/images/FNF_main_menu_assets.png', 'assets/images/FNF_main_menu_assets.xml');
 
 		for (i in 0...optionShit.length)
 		{
@@ -85,6 +88,8 @@ class MainMenuState extends MusicBeatState
 		versionShit.scrollFactor.set();
 		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(versionShit);
+
+		// NG.core.calls.event.logEvent('swag').send();
 
 		changeItem();
 
