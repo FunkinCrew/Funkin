@@ -155,23 +155,6 @@ class PlayState extends MusicBeatState
 
 		switch (SONG.song.toLowerCase())
 		{
-			case 'tutorial':
-				dialogue = [":dad:Hey you're pretty cute.", ':dad:Use the arrow keys to keep up \nwith me singing.'];
-			case 'bopeebo':
-				dialogue = [
-					':dad:HEY!',
-					":dad:You think you can just sing\nwith my daughter like that?",
-					":dad:If you want to date her...",
-					":dad:You're going to have to go \nthrough ME first!"
-				];
-			case 'fresh':
-				dialogue = [":dad:Not too shabby boy.", ""];
-			case 'dadbattle':
-				dialogue = [
-					":dad: gah you think you're hot stuff?",
-					":dad: If you can beat me here...",
-					":dad: Only then I will even CONSIDER letting you\ndate my daughter!"
-				];
 			case 'senpai':
 				dialogue = CoolUtil.coolTextFile('assets/data/senpai/senpaiDialogue.txt');
 			case 'roses':
@@ -181,6 +164,8 @@ class PlayState extends MusicBeatState
 			default:
 				if (FileSystem.exists(Path.normalize(System.applicationDirectory+'assets/data/'+SONG.song.toLowerCase()+'/dialog.txt'))) {
 					dialogue = CoolUtil.coolDynamicTextFile('assets/data/'+SONG.song.toLowerCase()+'/dialog.txt');
+				} else {
+					dialogue = [':dad: The game tried to get a dialog file but couldn\'t find it. Please make sure there is a dialog file.'];
 				}
 		}
 
@@ -1120,16 +1105,18 @@ class PlayState extends MusicBeatState
 			case 'senpai':
 				dad.x += 150;
 				dad.y += 360;
-				camPos.x += 300;
+				camPos.x += 370;
 				camPos.y += 300;
 			case 'senpai-angry':
 				dad.x += 150;
 				dad.y += 360;
-				camPos.x += 300;
+				camPos.x += 370;
+				camPos.y += 300;
 			case 'spirit':
 				dad.x -= 150;
 				dad.y += 100;
-				camPos.x += 300;
+				camPos.y += 70;
+				camPos.x += 150;
 			default:
 				dad.x += dad.enemyOffsetX;
 				dad.y += dad.enemyOffsetY;
@@ -1270,7 +1257,6 @@ class PlayState extends MusicBeatState
 
 		// cameras = [FlxG.cameras.list[1]];
 		startingSong = true;
-		// temp force enable
 	if (alwaysDoCutscenes || isStoryMode )
 		{
 			switch (SONG.cutsceneType)
