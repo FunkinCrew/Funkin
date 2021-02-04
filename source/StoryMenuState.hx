@@ -69,6 +69,10 @@ class StoryMenuState extends MusicBeatState
 
 	override function create()
 	{
+		#if desktop
+		DiscordManager.updateState("Main Menu");
+		#end
+
 		if (FlxG.sound.music != null)
 		{
 			if (!FlxG.sound.music.playing)
