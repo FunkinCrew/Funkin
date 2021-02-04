@@ -39,10 +39,11 @@ newgrounds
 
 So for each of those type `haxelib install [library]` so shit like `haxelib install newgrounds`
 
-You'll also need to install polymod. Do this with 
+You'll also need to install polymod and discord_rpc. Do this with 
 
 ```
 haxelib git polymod https://github.com/larsiusprime/polymod.git
+haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
 ```
 
 ### Ignored files
