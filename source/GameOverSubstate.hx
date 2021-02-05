@@ -31,6 +31,7 @@ class GameOverSubstate extends MusicBeatSubstate
 		var p1 = PlayState.SONG.player1;
 		var daBf:String = 'bf';
 		var stageSuffix = '';
+		trace(p1);
 		if (p1 == "bf-pixel") {
 			stageSuffix = '-pixel';
 		}
@@ -48,6 +49,15 @@ class GameOverSubstate extends MusicBeatSubstate
 					stageSuffix = '-pixel';
 				default:
 					// just use bf, avoid pain
+					daBf = 'bf';
+			}
+		} else {
+			switch (PlayState.SONG.player1) {
+				case 'bf':
+					daBf = 'bf';
+				case 'bf-pixel':
+					daBf = 'bf-pixel-dead';
+				default:
 					daBf = 'bf';
 			}
 		}
