@@ -136,6 +136,8 @@ class PlayState extends MusicBeatState
 	var fullComboMode:Bool = false;
 	var perfectMode:Bool = false;
 	var practiceMode:Bool = false;
+	var healthGainModifier:Float = 0;
+	var healthLossModifier:Float = 0;
 	override public function create()
 	{
 		// var gameCam:FlxCamera = FlxG.camera;
@@ -152,9 +154,26 @@ class PlayState extends MusicBeatState
 		persistentDraw = true;
 		var optionsJson = Json.parse(Assets.getText('assets/data/options.json'));
 		alwaysDoCutscenes = optionsJson.alwaysDoCutscenes;
-		fullComboMode = optionsJson.fullComboMode;
-		perfectMode = optionsJson.perfectMode;
-		practiceMode = optionsJson.practiceMode;
+		if (optionsJson.useModifierMenu) {
+			fullComboMode = ModifierState.modifiers[1].value;
+			perfectMode = ModifierState.modifiers[0].value;
+			practiceMode = ModifierState.modifiers[2].value;
+			if (ModifierState.modifiers[3].value) {
+				healthGainModifier += 0.02;
+			} else if (ModifierState.modifiers[4].value) {
+				healthGainModifier -= 0.01;
+			}
+			if (ModifierState.modifiers[5].value) {
+				healthLossModifier += 0.02;
+			} else if (ModifierState.modifiers[6].value) {
+				healthLossModifier -= 0.02;
+			}
+		} else {
+			fullComboMode = optionsJson.fullComboMode;
+			perfectMode = optionsJson.perfectMode;
+			practiceMode = optionsJson.practiceMode;
+		}
+
 		if (SONG == null)
 			SONG = Song.loadFromJson('tutorial');
 
@@ -2261,7 +2280,7 @@ class PlayState extends MusicBeatState
 				{
 					if (daNote.tooLate || !daNote.wasGoodHit)
 					{
-						health -= 0.0475;
+						health -= 0.0475 + healthLossModifier;
 						vocals.volume = 0;
 					}
 
@@ -2734,7 +2753,7 @@ class PlayState extends MusicBeatState
 		}
 		if (!boyfriend.stunned)
 		{
-			health -= 0.04;
+			health -= 0.04 + healthLossModifier;
 			if (combo > 5)
 			{
 				gf.playAnim('sad');
@@ -2809,9 +2828,9 @@ class PlayState extends MusicBeatState
 			}
 
 			if (note.noteData >= 0)
-				health += 0.023;
+				health += 0.023 + healthGainModifier;
 			else
-				health += 0.004;
+				health += 0.004 + healthGainModifier;
 
 			switch (note.noteData)
 			{

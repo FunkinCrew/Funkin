@@ -18,6 +18,7 @@ import openfl.utils.ByteArray;
 import lime.media.AudioBuffer;
 import flash.media.Sound;
 #end
+import haxe.Json;
 using StringTools;
 
 class FreeplayState extends MusicBeatState
@@ -32,12 +33,14 @@ class FreeplayState extends MusicBeatState
 	var diffText:FlxText;
 	var lerpScore:Int = 0;
 	var intendedScore:Int = 0;
-
+	var useModifierMenu:Bool = false;
 	private var grpSongs:FlxTypedGroup<Alphabet>;
 	private var curPlaying:Bool = false;
 
 	override function create()
 	{
+		var optionsJson = Json.parse(Assets.getText('assets/data/options.json'));
+		useModifierMenu = optionsJson.useModifierMenu;
 		songs = CoolUtil.coolTextFile('assets/data/freeplaySonglist.txt');
 
 		/*
@@ -171,7 +174,10 @@ class FreeplayState extends MusicBeatState
 			PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].toLowerCase());
 			PlayState.isStoryMode = false;
 			PlayState.storyDifficulty = curDifficulty;
-			FlxG.switchState(new PlayState());
+			if (useModifierMenu)
+				FlxG.switchState(new ModifierState());
+			else
+				FlxG.switchState(new PlayState());
 			if (FlxG.sound.music != null)
 				FlxG.sound.music.stop();
 		}

@@ -64,9 +64,11 @@ class StoryMenuState extends MusicBeatState
 	var grpDifficulty:DifficultyIcons;
 	var leftArrow:FlxSprite;
 	var rightArrow:FlxSprite;
-
+	var useModifierMenu:Bool = false;
 	override function create()
 	{
+		var optionsJson = Json.parse(Assets.getText('assets/data/options.json'));
+		useModifierMenu = optionsJson.useModifierMenu;
 		if (FlxG.sound.music != null)
 		{
 			if (!FlxG.sound.music.playing)
@@ -340,7 +342,10 @@ class StoryMenuState extends MusicBeatState
 			{
 				if (FlxG.sound.music != null)
 					FlxG.sound.music.stop();
-				FlxG.switchState(new PlayState());
+				if (!useModifierMenu)
+					FlxG.switchState(new PlayState());
+				else
+					FlxG.switchState(new ModifierState());
 			});
 		}
 	}

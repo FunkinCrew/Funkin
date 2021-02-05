@@ -63,8 +63,6 @@ How to use:
     Goto assets/images/custom_stages
     Make a new folder with the name of your stage
     Drag in any custom stage assets
-    If there are missing assets:
-      You can just copy the templates unless it is stage
     Add a new property to custom_stages.json:
       "(stage name)": "(stage it is like)"
     Don't forget your commas!

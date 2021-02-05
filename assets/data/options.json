@@ -2,5 +2,6 @@
   "alwaysDoCutscenes": false,
   "perfectMode": false,
   "fullComboMode": false,
-  "practiceMode": false
+  "practiceMode": false,
+  "useModifierMenu": false
 }
