@@ -137,3 +137,15 @@ How to use:
     Click on the drop down that says something like 'normal'.
     Select your custom stage.
     Hit save and save the json. Remember difficulty prefixes!
+  Custom Difficulties:
+    To add custom difficulties:
+    go to assets/images/custom_difficulties
+    add your difficulty png + xml
+    add a new entry to difficulties.json inside of the array
+    {
+      "offset": (how far it should be offset from the arrow(?)),
+      "anim": "(the animation name)",
+      "name": "(the name used in freeplay mode)"
+    }
+    if you want to change the default difficulty change
+    default to the position in the list - 1
