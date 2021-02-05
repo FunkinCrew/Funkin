@@ -133,6 +133,8 @@ class PlayState extends MusicBeatState
 
 	var inCutscene:Bool = false;
 	var alwaysDoCutscenes = false;
+	var fullComboMode:Bool = false;
+	var perfectMode:Bool = false;
 	override public function create()
 	{
 		// var gameCam:FlxCamera = FlxG.camera;
@@ -147,7 +149,10 @@ class PlayState extends MusicBeatState
 
 		persistentUpdate = true;
 		persistentDraw = true;
-		alwaysDoCutscenes = StringTools.contains(CoolUtil.coolTextFile('assets/data/options.txt')[0],'true');
+		var optionsArray = CoolUtil.coolTextFile('assets/data/options.txt');
+		alwaysDoCutscenes = StringTools.contains(optionsArray[0],'true');
+		fullComboMode = StringTools.contains(optionsArray[2], 'true');
+		perfectMode = StringTools.contains(optionsArray[1], 'true');
 		if (SONG == null)
 			SONG = Song.loadFromJson('tutorial');
 
@@ -1405,7 +1410,7 @@ class PlayState extends MusicBeatState
 	}
 
 	var startTimer:FlxTimer;
-	var perfectMode:Bool = false;
+	var perfectModeOld:Bool = false;
 
 	function startCountdown():Void
 	{
@@ -1948,7 +1953,7 @@ class PlayState extends MusicBeatState
 	override public function update(elapsed:Float)
 	{
 		#if !debug
-		perfectMode = false;
+		perfectModeOld = false;
 		#end
 
 		if (FlxG.keys.justPressed.NINE)
@@ -2376,16 +2381,26 @@ class PlayState extends MusicBeatState
 		{
 			daRating = 'shit';
 			score = 50;
+			if (perfectMode) {
+				// perfect mode means sick only
+				health = 0;
+			}
 		}
 		else if (noteDiff > Conductor.safeZoneOffset * 0.75)
 		{
 			daRating = 'bad';
 			score = 100;
+			if (perfectMode) {
+				health = 0;
+			}
 		}
 		else if (noteDiff > Conductor.safeZoneOffset * 0.2)
 		{
 			daRating = 'good';
 			score = 200;
+			if (perfectMode) {
+				health = 0;
+			}
 		}
 
 		songScore += score;
@@ -2568,7 +2583,7 @@ class PlayState extends MusicBeatState
 			{
 				var daNote = possibleNotes[0];
 
-				if (perfectMode)
+				if (perfectModeOld)
 					noteCheck(true, daNote);
 
 				// Jump notes
@@ -2718,6 +2733,10 @@ class PlayState extends MusicBeatState
 
 	function noteMiss(direction:Int = 1):Void
 	{
+		if (fullComboMode || perfectMode) {
+			// you signed up for this your fault
+			health = 0;
+		}
 		if (!boyfriend.stunned)
 		{
 			health -= 0.04;
