@@ -38,7 +38,7 @@ class GameOverSubstate extends MusicBeatSubstate
 		var characterList = Assets.getText('assets/data/characterList.txt');
 		if (!StringTools.contains(characterList, p1)) {
 			var parsedCharJson:Dynamic = Json.parse(Assets.getText('assets/images/custom_chars/custom_chars.json'));
-			var parsedAnimJson = Json.parse(File.getContent(Path.normalize(System.applicationDirectory+"/assets/images/custom_chars/"+Reflect.field(parsedCharJson,p1).like+".json")));
+			var parsedAnimJson = Json.parse(File.getContent("assets/images/custom_chars/"+Reflect.field(parsedCharJson,p1).like+".json"));
 			switch (parsedAnimJson.like) {
 				case "bf":
 					// bf has a death animation

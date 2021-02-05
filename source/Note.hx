@@ -110,7 +110,7 @@ class Note extends FlxSprite
 				if (FileSystem.exists('assets/images/custom_ui/ui_packs/'+PlayState.SONG.uiType+"/NOTE_assets.xml") && FileSystem.exists('assets/images/custom_ui/ui_packs/'+PlayState.SONG.uiType+"/NOTE_assets.png")) {
 
 				  var noteXml = File.getContent('assets/images/custom_ui/ui_packs/'+PlayState.SONG.uiType+"/NOTE_assets.xml");
-					var notePic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_ui/ui_packs/'+PlayState.SONG.uiType+"/NOTE_assets.png"))));
+					var notePic = BitmapData.fromFile('assets/images/custom_ui/ui_packs/'+PlayState.SONG.uiType+"/NOTE_assets.png");
 					frames = FlxAtlasFrames.fromSparrow(notePic, noteXml);
 					animation.addByPrefix('greenScroll', 'green0');
 	 				animation.addByPrefix('redScroll', 'red0');

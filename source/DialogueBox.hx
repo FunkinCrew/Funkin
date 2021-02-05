@@ -62,7 +62,7 @@ class DialogueBox extends FlxSpriteGroup
 				// do nothing
 			default:
 				if (FileSystem.exists('assets/data/'+PlayState.SONG.song.toLowerCase()+'/Lunchbox.ogg')) {
-					var lunchboxSound = Sound.fromAudioBuffer(AudioBuffer.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/data/'+PlayState.SONG.song.toLowerCase()+'/Lunchbox.ogg'))));
+					var lunchboxSound = Sound.fromFile('assets/data/'+PlayState.SONG.song.toLowerCase()+'/Lunchbox.ogg');
 					FlxG.sound.playMusic(lunchboxSound, 0);
 					FlxG.sound.music.fadeIn(1,0,0.8);
 				}
@@ -84,8 +84,8 @@ class DialogueBox extends FlxSpriteGroup
 		portraitLeft = new FlxSprite(-20, 40);
 		if (FileSystem.exists('assets/images/custom_chars/'+PlayState.SONG.player2+'-portrait.png')) {
 			// if a  custom character portrait exists, use that
-			var rawPic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_chars/'+PlayState.SONG.player2+"-portrait.png"))));
-			var rawXml = File.getContent(Path.normalize(System.applicationDirectory+'/assets/images/custom_chars/'+PlayState.SONG.player2+"-portrait.xml"));
+			var rawPic = BitmapData.fromFile('assets/images/custom_chars/'+PlayState.SONG.player2+"-portrait.png");
+			var rawXml = File.getContent('assets/images/custom_chars/'+PlayState.SONG.player2+"-portrait.xml");
 			portraitLeft.frames = FlxAtlasFrames.fromSparrow(rawPic, rawXml);
 		} else {
 			// otherwise, use senpai
@@ -102,8 +102,8 @@ class DialogueBox extends FlxSpriteGroup
 
 		portraitRight = new FlxSprite(0, 40);
 		if (FileSystem.exists('assets/images/custom_chars/'+PlayState.SONG.player1+'-portrait.png')) {
-			var rawPic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_chars/'+PlayState.SONG.player1+"-portrait.png"))));
-			var rawXml = File.getContent(Path.normalize(System.applicationDirectory+'/assets/images/custom_chars/'+PlayState.SONG.player1+"-portrait.xml"));
+			var rawPic = BitmapData.fromFile('assets/images/custom_chars/'+PlayState.SONG.player1+"-portrait.png");
+			var rawXml = File.getContent('assets/images/custom_chars/'+PlayState.SONG.player1+"-portrait.xml");
 			portraitRight.frames = FlxAtlasFrames.fromSparrow(rawPic, rawXml);
 		} else {
 			portraitRight.frames = FlxAtlasFrames.fromSparrow('assets/images/weeb/bfPortrait.png', 'assets/images/weeb/bfPortrait.xml');
@@ -149,8 +149,8 @@ class DialogueBox extends FlxSpriteGroup
 				// do nothing
 			default:
 				if (FileSystem.exists('assets/images/custom_ui/dialog_boxes/'+PlayState.SONG.cutsceneType+'.png')) {
-					var rawPic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'assets/images/custom_ui/dialog_boxes/'+PlayState.SONG.cutsceneType+'.png'))));
-					var rawXml = File.getContent(Path.normalize(System.applicationDirectory+'assets/images/custom_ui/dialog_boxes/'+PlayState.SONG.cutsceneType+'.xml'));
+					var rawPic = BitmapData.fromFile('assets/images/custom_ui/dialog_boxes/'+PlayState.SONG.cutsceneType+'.png');
+					var rawXml = File.getContent('assets/images/custom_ui/dialog_boxes/'+PlayState.SONG.cutsceneType+'.xml');
 					box.frames = FlxAtlasFrames.fromSparrow(rawPic,rawXml);
 					var xmlLine2 = rawXml.split("\n")[1];
 					// using xml reference line to find out what kind it is. SIMPLIFY SIMPLIFY SIMPLIFY
@@ -168,7 +168,7 @@ class DialogueBox extends FlxSpriteGroup
 						box.animation.addByPrefix('normalOpen', 'Spirit Textbox spawn', 24, false);
 						box.animation.addByIndices('normal', 'Spirit Textbox spawn', [11], "", 24);
 						if (FileSystem.exists('assets/images/custom_ui/dialog_boxes/'+PlayState.SONG.cutsceneType+'-face.png')) {
-							var facePic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'assets/images/custom_ui/dialog_boxes/'+PlayState.SONG.cutsceneType+'-face.png'))));
+							var facePic = BitmapData.fromFile('assets/images/custom_ui/dialog_boxes/'+PlayState.SONG.cutsceneType+'-face.png');
 							var face:FlxSprite = new FlxSprite(320, 170).loadGraphic(facePic);
 							face.setGraphicSize(Std.int(face.width * 6));
 							add(face);

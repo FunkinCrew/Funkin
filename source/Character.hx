@@ -534,7 +534,7 @@ class Character extends FlxSprite
 				}
 				var charJson:Dynamic = Json.parse(Assets.getText('assets/images/custom_chars/custom_chars.json'));
 				// use assets, as it is less laggy
-				var animJson = File.getContent(Path.normalize(System.applicationDirectory+"/assets/images/custom_chars/"+Reflect.field(charJson,curCharacter).like+".json"));
+				var animJson = File.getContent("assets/images/custom_chars/"+Reflect.field(charJson,curCharacter).like+".json");
 				while (!animJson.endsWith("}"))
 				{
 					animJson = animJson.substr(0, animJson.length - 1);
@@ -551,15 +551,15 @@ class Character extends FlxSprite
 					parsedAnimJson.animation = parsedAnimJson.deadAnimation;
 					parsedAnimJson.offset = parsedAnimJson.deadOffset;
 				}
-				var rawPic = File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_chars/'+curCharacter+playerSuffix+".png"));
+				var rawPic = BitmapData.fromFile('assets/images/custom_chars/'+curCharacter+playerSuffix+".png");
 				var tex:FlxAtlasFrames;
 				var rawXml:String;
 				if (!!parsedAnimJson.usesSpritesheetPacker){
-					rawXml = File.getContent(Path.normalize(System.applicationDirectory+'/assets/images/custom_chars/'+curCharacter+playerSuffix+".txt"));
-					tex = FlxAtlasFrames.fromSpriteSheetPacker(BitmapData.fromBytes(ByteArray.fromBytes(rawPic)),rawXml);
+					rawXml = File.getContent('assets/images/custom_chars/'+curCharacter+playerSuffix+".txt");
+					tex = FlxAtlasFrames.fromSpriteSheetPacker(rawPic,rawXml);
 				} else {
-					rawXml = File.getContent(Path.normalize(System.applicationDirectory+'/assets/images/custom_chars/'+curCharacter+playerSuffix+".xml"));
-					tex = FlxAtlasFrames.fromSparrow(BitmapData.fromBytes(ByteArray.fromBytes(rawPic)),rawXml);
+					rawXml = File.getContent('assets/images/custom_chars/'+curCharacter+playerSuffix+".xml");
+					tex = FlxAtlasFrames.fromSparrow(rawPic,rawXml);
 				}
 
 

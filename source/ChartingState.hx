@@ -410,14 +410,14 @@ class ChartingState extends MusicBeatState
 			// vocals.stop();
 		}
 		#if sys
-		FlxG.sound.playMusic(Sound.fromAudioBuffer(AudioBuffer.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+"/assets/music/"+daSong+"_Inst"+TitleState.soundExt)))), 0.6);
+		FlxG.sound.playMusic(Sound.fromFile("assets/music/"+daSong+"_Inst"+TitleState.soundExt), 0.6);
 		#else
 		FlxG.sound.playMusic('assets/music/' + daSong + "_Inst" + TitleState.soundExt, 0.6);
 		#end
 		// WONT WORK FOR TUTORIAL OR TEST SONG!!! REDO LATER
 		if (_song.needsVoices) {
 			#if sys
-			var vocalSound = Sound.fromAudioBuffer(AudioBuffer.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+"/assets/music/"+daSong+"_Voices"+TitleState.soundExt))));
+			var vocalSound = Sound.fromFile("assets/music/"+daSong+"_Voices"+TitleState.soundExt);
 			vocals = new FlxSound().loadEmbedded(vocalSound);
 			#else
 			vocals = new FlxSound().loadEmbedded("assets/music/" + daSong + "_Voices" + TitleState.soundExt);

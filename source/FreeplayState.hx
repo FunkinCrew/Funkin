@@ -209,7 +209,7 @@ class FreeplayState extends MusicBeatState
 		// lerpScore = 0;
 		#end
 		#if sys
-			FlxG.sound.playMusic(Sound.fromAudioBuffer(AudioBuffer.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+"/assets/music/"+songs[curSelected]+"_Inst"+TitleState.soundExt)))), 0);
+			FlxG.sound.playMusic(Sound.fromFile("assets/music/"+songs[curSelected]+"_Inst"+TitleState.soundExt), 0);
 		#else
 		FlxG.sound.playMusic('assets/music/' + songs[curSelected] + "_Inst" + TitleState.soundExt, 0);
 		#end

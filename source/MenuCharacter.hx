@@ -28,14 +28,14 @@ class MenuCharacter extends FlxSprite
 			var tex = FlxAtlasFrames.fromSparrow('assets/images/campaign_menu_UI_characters.png', 'assets/images/campaign_menu_UI_characters.xml');
 			frames = tex;
 		} else {
-			var rawPic:BitmapData = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/campaign-ui-char/'+character+".png"))));
-			var rawXml:String = File.getContent(Path.normalize(System.applicationDirectory+'/assets/images/campaign-ui-char/'+character+".xml"));
+			var rawPic:BitmapData = BitmapData.fromFile('assets/images/campaign-ui-char/'+character+".png");
+			var rawXml:String = File.getContent('assets/images/campaign-ui-char/'+character+".xml");
 			var tex = FlxAtlasFrames.fromSparrow(rawPic, rawXml);
 			frames = tex;
 		}
 
 		// don't use assets because you can use custom like folders
-		var animJson = Json.parse(File.getContent(Path.normalize(System.applicationDirectory+"assets/images/campaign-ui-char/"+Reflect.field(parsedCharJson,character).like+".json")));
+		var animJson = Json.parse(File.getContent("assets/images/campaign-ui-char/"+Reflect.field(parsedCharJson,character).like+".json"));
 		for (field in Reflect.fields(animJson)) {
 			animation.addByPrefix(field, Reflect.field(animJson, field), 24, (field == "idle"));
 		}

@@ -21,9 +21,9 @@ class MenuItem extends FlxSpriteGroup
 	public function new(x:Float, y:Float, weekNum:Int = 0)
 	{
 		super(x, y);
-		var parsedWeekJson:Array<Array<String>> = Json.parse(File.getContent(Path.normalize(System.applicationDirectory+"assets/data/storySongList.json"))).songs;
-		var rawPic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/campaign-ui-week/week'+weekNum+".png"))));
-		var rawXml = File.getContent(Path.normalize(System.applicationDirectory+'/assets/images/campaign-ui-week/week'+weekNum+".xml"));
+		var parsedWeekJson:Array<Array<String>> = Json.parse(File.getContent("assets/data/storySongList.json")).songs;
+		var rawPic = BitmapData.fromFile('assets/images/campaign-ui-week/week'+weekNum+".png");
+		var rawXml = File.getContent('assets/images/campaign-ui-week/week'+weekNum+".xml");
 		var tex = FlxAtlasFrames.fromSparrow(rawPic, rawXml);
 
 		week = new FlxSprite();

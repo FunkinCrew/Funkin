@@ -109,6 +109,14 @@ How to use:
     Go to assets/data
     Open up "cutscenes.txt"
     add your cutscene name on a newline!
+    Go to the song folder,
+    Add a "dialog.txt" file
+    Do this format
+    "
+    :dad: Senpai speaking
+    :bf: Bf speaking
+    "
+    Also add a Lunchbox.ogg if you want dialog sound
     To apply these cutscenes:
     Open a song
     Hit the '7' key
@@ -149,3 +157,5 @@ How to use:
     }
     if you want to change the default difficulty change
     default to the position in the list - 1
+    For songs you have to make a new json using the chart editor and rename
+    the file with "-(difficulty name)" at the end.

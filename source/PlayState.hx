@@ -169,7 +169,7 @@ class PlayState extends MusicBeatState
 			case 'thorns':
 				dialogue = CoolUtil.coolTextFile('assets/data/thorns/thornsDialogue.txt');
 			default:
-				if (FileSystem.exists(Path.normalize(System.applicationDirectory+'assets/data/'+SONG.song.toLowerCase()+'/dialog.txt'))) {
+				if (FileSystem.exists('assets/data/'+SONG.song.toLowerCase()+'/dialog.txt')) {
 					dialogue = CoolUtil.coolDynamicTextFile('assets/data/'+SONG.song.toLowerCase()+'/dialog.txt');
 				} else {
 					dialogue = [':dad: The game tried to get a dialog file but couldn\'t find it. Please make sure there is a dialog file.'];
@@ -523,8 +523,8 @@ class PlayState extends MusicBeatState
 					curStage = 'stage';
 					// peck it no one is gonna build this for html5 so who cares if it doesn't compile
 					var bgPic:BitmapData;
-					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/stageback.png"))) {
-						bgPic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/stageback.png"))));
+					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/stageback.png")) {
+						bgPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/stageback.png");
 					} else {
 						// fall back on base game file to avoid crashes
 						bgPic = BitmapData.fromImage(Assets.getImage("assets/images/stageback.png"));
@@ -538,8 +538,8 @@ class PlayState extends MusicBeatState
 					bg.active = false;
 					add(bg);
 					var frontPic:BitmapData;
-					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/stagefront.png"))) {
-						frontPic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/stagefront.png"))));
+					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/stagefront.png")) {
+						frontPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/stagefront.png");
 					} else {
 						// fall back on base game file to avoid crashes
 						frontPic = BitmapData.fromImage(Assets.getImage("assets/images/stagefront.png"));
@@ -553,8 +553,8 @@ class PlayState extends MusicBeatState
 					stageFront.active = false;
 					add(stageFront);
 					var curtainPic:BitmapData;
-					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/stagecurtains.png"))) {
-						curtainPic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/stagecurtains.png"))));
+					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/stagecurtains.png")) {
+						curtainPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/stagecurtains.png");
 					} else {
 						// fall back on base game file to avoid crashes
 						curtainPic = BitmapData.fromImage(Assets.getImage("assets/images/stagecurtains.png"));
@@ -572,14 +572,14 @@ class PlayState extends MusicBeatState
 					halloweenLevel = true;
 					var bgPic:BitmapData;
 					var bgXml:String;
-					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/halloween_bg.png"))) {
-						bgPic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/halloween_bg.png"))));
+					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/halloween_bg.png")) {
+						bgPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/halloween_bg.png");
 					} else {
 						// fall back on base game file to avoid crashes
 						bgPic = BitmapData.fromImage(Assets.getImage("assets/images/halloween_bg.png"));
 					}
-					    if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/halloween_bg.xml"))) {
-					   bgXml = File.getContent(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/halloween_bg.xml"));
+					    if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/halloween_bg.xml")) {
+					   bgXml = File.getContent('assets/images/custom_stages/'+SONG.stage+"/halloween_bg.xml");
 					} else {
 					   // fall back on base game file to avoid crashes
 						 bgXml = Assets.getText("assets/images/halloween_bg.xml");
@@ -598,8 +598,8 @@ class PlayState extends MusicBeatState
 				case 'philly':
 					curStage = 'philly';
 					var bgPic:BitmapData;
-					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/sky.png"))) {
-						bgPic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/sky.png"))));
+					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/sky.png")) {
+						bgPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/sky.png");
 					} else {
 						// fall back on base game file to avoid crashes
 						bgPic = BitmapData.fromImage(Assets.getImage("assets/images/philly/sky.png"));
@@ -608,8 +608,8 @@ class PlayState extends MusicBeatState
 					bg.scrollFactor.set(0.1, 0.1);
 					add(bg);
 					var cityPic:BitmapData;
-					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/city.png"))) {
-						cityPic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/city.png"))));
+					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/city.png")) {
+						cityPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/city.png");
 					} else {
 						// fall back on base game file to avoid crashes
 						cityPic = BitmapData.fromImage(Assets.getImage("assets/images/philly/city.png"));
@@ -626,8 +626,8 @@ class PlayState extends MusicBeatState
 					for (i in 0...5)
 					{
 						var lightPic:BitmapData;
-						if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/win"+i+".png"))) {
-							lightPic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/win"+i+".png"))));
+						if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/win"+i+".png")) {
+							lightPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/win"+i+".png");
 						} else {
 							// fall back on base game file to avoid crashes
 							lightPic = BitmapData.fromImage(Assets.getImage("assets/images/philly/win"+i+".png"));
@@ -640,8 +640,8 @@ class PlayState extends MusicBeatState
 						phillyCityLights.add(light);
 					}
 					var backstreetPic:BitmapData;
-					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/behindTrain.png"))) {
-						backstreetPic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/behindTrain.png"))));
+					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/behindTrain.png")) {
+						backstreetPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/behindTrain.png");
 					} else {
 						// fall back on base game file to avoid crashes
 						backstreetPic = BitmapData.fromImage(Assets.getImage("assets/images/philly/behindTrain.png"));
@@ -649,8 +649,8 @@ class PlayState extends MusicBeatState
 					var streetBehind:FlxSprite = new FlxSprite(-40, 50).loadGraphic(backstreetPic);
 					add(streetBehind);
 					var trainPic:BitmapData;
-					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/train.png"))) {
-						trainPic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/train.png"))));
+					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/train.png")) {
+						trainPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/train.png");
 					} else {
 						// fall back on base game file to avoid crashes
 						trainPic = BitmapData.fromImage(Assets.getImage("assets/images/philly/train.png"));
@@ -663,8 +663,8 @@ class PlayState extends MusicBeatState
 
 
 					var streetPic:BitmapData;
-					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/street.png"))) {
-						streetPic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/street.png"))));
+					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/street.png")) {
+						streetPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/street.png");
 					} else {
 						// fall back on base game file to avoid crashes
 						streetPic = BitmapData.fromImage(Assets.getImage("assets/images/philly/street.png"));
@@ -675,8 +675,8 @@ class PlayState extends MusicBeatState
 					curStage = 'limo';
 					defaultCamZoom = 0.90;
 					var bgPic:BitmapData;
-					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/limoSunset.png"))) {
-						bgPic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/limoSunset.png"))));
+					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/limoSunset.png")) {
+						bgPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/limoSunset.png");
 					} else {
 						// fall back on base game file to avoid crashes
 						bgPic = BitmapData.fromImage(Assets.getImage("assets/images/limo/limoSunset.png"));
@@ -686,14 +686,14 @@ class PlayState extends MusicBeatState
 					add(skyBG);
 					var bgLimoPic:BitmapData;
 					var bgLimoXml:String;
-					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/bgLimo.png"))) {
-						bgLimoPic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/bgLimo.png"))));
+					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/bgLimo.png")) {
+						bgLimoPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/bgLimo.png");
 					} else {
 						// fall back on base game file to avoid crashes
 						bgLimoPic = BitmapData.fromImage(Assets.getImage("assets/images/limo/bgLimo.png"));
 					}
-					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/bgLimo.xml"))) {
-					   bgLimoXml = File.getContent(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/bgLimo.xml"));
+					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/bgLimo.xml")) {
+					   bgLimoXml = File.getContent('assets/images/custom_stages/'+SONG.stage+"/bgLimo.xml");
 					} else {
 					   // fall back on base game file to avoid crashes
 						 bgLimoXml = Assets.getText("assets/images/limo/bgLimo.xml");
@@ -715,8 +715,8 @@ class PlayState extends MusicBeatState
 						grpLimoDancers.add(dancer);
 					}
 					var limoOverlayPic:BitmapData;
-					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/limoOverlay.png"))) {
-						limoOverlayPic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/limoOverlay.png"))));
+					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/limoOverlay.png")) {
+						limoOverlayPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/limoOverlay.png");
 					} else {
 						// fall back on base game file to avoid crashes
 						limoOverlayPic = BitmapData.fromImage(Assets.getImage("assets/images/limo/limoOverlay.png"));
@@ -732,14 +732,14 @@ class PlayState extends MusicBeatState
 					// overlayShit.shader = shaderBullshit;
 					var limoPic:BitmapData;
 					var limoXml:String;
-					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/limoDrive.png"))) {
-						limoPic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/limoDrive.png"))));
+					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/limoDrive.png")) {
+						limoPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/limoDrive.png");
 					} else {
 						// fall back on base game file to avoid crashes
 						limoPic = BitmapData.fromImage(Assets.getImage("assets/images/limo/limoDrive.png"));
 					}
-					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/limoDrive.xml"))) {
-					   limoXml = File.getContent(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/limoDrive.xml"));
+					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/limoDrive.xml")) {
+					   limoXml = File.getContent('assets/images/custom_stages/'+SONG.stage+"/limoDrive.xml");
 					} else {
 					   // fall back on base game file to avoid crashes
 						 limoXml = Assets.getText("assets/images/limo/limoDrive.xml");
@@ -751,7 +751,7 @@ class PlayState extends MusicBeatState
 					limo.animation.addByPrefix('drive', "Limo stage", 24);
 					limo.animation.play('drive');
 					limo.antialiasing = true;
-					var fastCarPic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"_fastcar.png"))));
+					var fastCarPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"_fastcar.png");
 					fastCar = new FlxSprite(-300, 160).loadGraphic(fastCarPic);
 					// add(limo);
 				case 'mall':
@@ -759,8 +759,8 @@ class PlayState extends MusicBeatState
 
 					defaultCamZoom = 0.80;
 					var bgPic:BitmapData;
-					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/bgWalls.png"))) {
-					   bgPic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/bgWalls.png"))));
+					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/bgWalls.png")) {
+					   bgPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/bgWalls.png");
 					} else {
 					   // fall back on base game file to avoid crashes
 						 bgPic = BitmapData.fromImage(Assets.getImage("assets/images/christmas/bgWalls.png"));
@@ -774,14 +774,14 @@ class PlayState extends MusicBeatState
 					add(bg);
 					var standsPic:BitmapData;
 					var standsXml:String;
-					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/upperBop.png"))) {
-					   standsPic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/upperBop.png"))));
+					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/upperBop.png")) {
+					   standsPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/upperBop.png");
 					} else {
 					   // fall back on base game file to avoid crashes
 						 standsPic = BitmapData.fromImage(Assets.getImage("assets/images/christmas/upperBop.png"));
 					}
-					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/upperBop.xml"))) {
-					   standsXml = File.getContent(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/upperBop.xml"));
+					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/upperBop.xml")) {
+					   standsXml = File.getContent('assets/images/custom_stages/'+SONG.stage+"/upperBop.xml");
 					} else {
 					   // fall back on base game file to avoid crashes
 						 standsXml = Assets.getText("assets/images/christmas/upperBop.xml");
@@ -795,8 +795,8 @@ class PlayState extends MusicBeatState
 					upperBoppers.updateHitbox();
 					add(upperBoppers);
 					var escalatorPic:BitmapData;
-					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/bgEscalator.png"))) {
-					   escalatorPic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/bgEscalator.png"))));
+					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/bgEscalator.png")) {
+					   escalatorPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/bgEscalator.png");
 					} else {
 					   // fall back on base game file to avoid crashes
 						 escalatorPic = BitmapData.fromImage(Assets.getImage("assets/images/christmas/bgEscalator.png"));
@@ -809,8 +809,8 @@ class PlayState extends MusicBeatState
 					bgEscalator.updateHitbox();
 					add(bgEscalator);
 					var treePic:BitmapData;
-					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/christmasTree.png"))) {
-					   treePic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/christmasTree.png"))));
+					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/christmasTree.png")) {
+					   treePic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/christmasTree.png");
 					} else {
 					   // fall back on base game file to avoid crashes
 						 treePic = BitmapData.fromImage(Assets.getImage("assets/images/christmas/christmasTree.png"));
@@ -821,14 +821,14 @@ class PlayState extends MusicBeatState
 					add(tree);
 					var crowdPic:BitmapData;
 					var crowdXml:String;
-					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/bottomBop.png"))) {
-					   crowdPic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/bottomBop.png"))));
+					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/bottomBop.png")) {
+					   crowdPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/bottomBop.png");
 					} else {
 					   // fall back on base game file to avoid crashes
 						 crowdPic = BitmapData.fromImage(Assets.getImage("assets/images/christmas/bottomBop.png"));
 					}
-					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/bottomBop.xml"))) {
-					   crowdXml = File.getContent(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/bottomBop.xml"));
+					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/bottomBop.xml")) {
+					   crowdXml = File.getContent('assets/images/custom_stages/'+SONG.stage+"/bottomBop.xml");
 					} else {
 					   // fall back on base game file to avoid crashes
 						 crowdXml = Assets.getText("assets/images/christmas/bottomBop.xml");
@@ -842,8 +842,8 @@ class PlayState extends MusicBeatState
 					bottomBoppers.updateHitbox();
 					add(bottomBoppers);
 					var snowPic:BitmapData;
-					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/fgSnow.png"))) {
-					   snowPic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/fgSnow.png"))));
+					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/fgSnow.png")) {
+					   snowPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/fgSnow.png");
 					} else {
 					   // fall back on base game file to avoid crashes
 						 snowPic = BitmapData.fromImage(Assets.getImage("assets/images/christmas/fgSnow.png"));
@@ -854,14 +854,14 @@ class PlayState extends MusicBeatState
 					add(fgSnow);
 					var santaPic:BitmapData;
 					var santaXml:String;
-					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/santa.png"))) {
-					   santaPic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/santa.png"))));
+					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/santa.png")) {
+					   santaPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/santa.png");
 					} else {
 					   // fall back on base game file to avoid crashes
 						 santaPic = BitmapData.fromImage(Assets.getImage("assets/images/christmas/santa.png"));
 					}
-					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/santa.xml"))) {
-					   santaXml = File.getContent(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/santa.xml"));
+					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/santa.xml")) {
+					   santaXml = File.getContent('assets/images/custom_stages/'+SONG.stage+"/santa.xml");
 					} else {
 					   // fall back on base game file to avoid crashes
 						 santaXml = Assets.getText("assets/images/christmas/santa.xml");
@@ -874,8 +874,8 @@ class PlayState extends MusicBeatState
 				case 'mallEvil':
 					curStage = 'mallEvil';
 					var bgPic:BitmapData;
-					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/evilBG.png"))) {
-					   bgPic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/evilBG.png"))));
+					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/evilBG.png")) {
+					   bgPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/evilBG.png");
 					} else {
 					   // fall back on base game file to avoid crashes
 						 bgPic = BitmapData.fromImage(Assets.getImage("assets/images/christmas/evilBG.png"));
@@ -889,8 +889,8 @@ class PlayState extends MusicBeatState
 					bg.updateHitbox();
 					add(bg);
 					var evilTreePic:BitmapData;
-					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/evilTree.png"))) {
-					   evilTreePic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/evilTree.png"))));
+					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/evilTree.png")) {
+					   evilTreePic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/evilTree.png");
 					} else {
 					   // fall back on base game file to avoid crashes
 						 evilTreePic = BitmapData.fromImage(Assets.getImage("assets/images/christmas/evilTree.png"));
@@ -900,8 +900,8 @@ class PlayState extends MusicBeatState
 					evilTree.scrollFactor.set(0.2, 0.2);
 					add(evilTree);
 					var evilSnowPic:BitmapData;
-					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/evilSnow.png"))) {
-					   evilSnowPic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/evilSnow.png"))));
+					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/evilSnow.png")) {
+					   evilSnowPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/evilSnow.png");
 					} else {
 					   // fall back on base game file to avoid crashes
 						 evilSnowPic = BitmapData.fromImage(Assets.getImage("assets/images/christmas/evilSnow.png"));
@@ -914,8 +914,8 @@ class PlayState extends MusicBeatState
 					// school moody is just the girls are upset
 					// defaultCamZoom = 0.9;
 					var bgPic:BitmapData;
-					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/weebSky.png"))) {
-					   bgPic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/weebSky.png"))));
+					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/weebSky.png")) {
+					   bgPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/weebSky.png");
 					} else {
 					   // fall back on base game file to avoid crashes
 						 bgPic = BitmapData.fromImage(Assets.getImage("assets/images/weeb/weebSky.png"));
@@ -926,8 +926,8 @@ class PlayState extends MusicBeatState
 
 					var repositionShit = -200;
 					var schoolPic:BitmapData;
-					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/weebSchool.png"))) {
-					   schoolPic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/weebSchool.png"))));
+					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/weebSchool.png")) {
+					   schoolPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/weebSchool.png");
 					} else {
 					   // fall back on base game file to avoid crashes
 						 schoolPic = BitmapData.fromImage(Assets.getImage("assets/images/weeb/weebSchool.png"));
@@ -936,8 +936,8 @@ class PlayState extends MusicBeatState
 					bgSchool.scrollFactor.set(0.6, 0.90);
 					add(bgSchool);
 					var streetPic:BitmapData;
-					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/weebStreet.png"))) {
-					   streetPic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/weebStreet.png"))));
+					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/weebStreet.png")) {
+					   streetPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/weebStreet.png");
 					} else {
 					   // fall back on base game file to avoid crashes
 						 streetPic = BitmapData.fromImage(Assets.getImage("assets/images/weeb/weebStreet.png"));
@@ -946,8 +946,8 @@ class PlayState extends MusicBeatState
 					bgStreet.scrollFactor.set(0.95, 0.95);
 					add(bgStreet);
 					var fgTreePic:BitmapData;
-					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/weebTreesBack.png"))) {
-					   fgTreePic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/weebTreesBack.png"))));
+					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/weebTreesBack.png")) {
+					   fgTreePic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/weebTreesBack.png");
 					} else {
 					   // fall back on base game file to avoid crashes
 						 fgTreePic = BitmapData.fromImage(Assets.getImage("assets/images/weeb/weebTreesBack.png"));
@@ -957,14 +957,14 @@ class PlayState extends MusicBeatState
 					add(fgTrees);
 					var treesPic:BitmapData;
 					var treesTxt:String;
-					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/weebTrees.png"))) {
-					   treesPic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/weebTrees.png"))));
+					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/weebTrees.png")) {
+					   treesPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/weebTrees.png");
 					} else {
 					   // fall back on base game file to avoid crashes
 						 treesPic = BitmapData.fromImage(Assets.getImage("assets/images/weeb/weebTrees.png"));
 					}
-					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/weebTrees.txt"))) {
-					   treesTxt = File.getContent(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/weebTrees.txt"));
+					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/weebTrees.txt")) {
+					   treesTxt = File.getContent('assets/images/custom_stages/'+SONG.stage+"/weebTrees.txt");
 					} else {
 					   // fall back on base game file to avoid crashes
 						 treesTxt = Assets.getText("assets/images/weeb/weebTrees.txt");
@@ -978,14 +978,14 @@ class PlayState extends MusicBeatState
 					add(bgTrees);
 					var petalsPic:BitmapData;
 					var petalsXml:String;
-					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/petals.png"))) {
-					   petalsPic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/petals.png"))));
+					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/petals.png")) {
+					   petalsPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/petals.png");
 					} else {
 					   // fall back on base game file to avoid crashes
 						 petalsPic = BitmapData.fromImage(Assets.getImage("assets/images/weeb/petals.png"));
 					}
-					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/petals.xml"))) {
-					   petalsXml = File.getContent(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/petals.xml"));
+					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/petals.xml")) {
+					   petalsXml = File.getContent('assets/images/custom_stages/'+SONG.stage+"/petals.xml");
 					} else {
 					   // fall back on base game file to avoid crashes
 						 petalsXml = Assets.getText("assets/images/weeb/petals.xml");
@@ -1014,14 +1014,14 @@ class PlayState extends MusicBeatState
 					treeLeaves.updateHitbox();
 					var gorlsPic:BitmapData;
 					var gorlsXml:String;
-					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/bgFreaks.png"))) {
-					   gorlsPic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/bgFreaks.png"))));
+					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/bgFreaks.png")) {
+					   gorlsPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/bgFreaks.png");
 					} else {
 					   // fall back on base game file to avoid crashes
 						 gorlsPic = BitmapData.fromImage(Assets.getImage("assets/images/weeb/bgFreaks.png"));
 					}
-					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/bgFreaks.xml"))) {
-					   gorlsXml = File.getContent(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/bgFreaks.xml"));
+					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/bgFreaks.xml")) {
+					   gorlsXml = File.getContent('assets/images/custom_stages/'+SONG.stage+"/bgFreaks.xml");
 					} else {
 					   // fall back on base game file to avoid crashes
 						 gorlsXml = Assets.getText("assets/images/weeb/bgFreaks.xml");
@@ -1049,14 +1049,14 @@ class PlayState extends MusicBeatState
 					var bg:FlxSprite = new FlxSprite(posX, posY);
 					var evilSchoolPic:BitmapData;
 					var evilSchoolXml:String;
-					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/animatedEvilSchool.png"))) {
-					   evilSchoolPic = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/animatedEvilSchool.png"))));
+					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/animatedEvilSchool.png")) {
+					   evilSchoolPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/animatedEvilSchool.png");
 					} else {
 					   // fall back on base game file to avoid crashes
 						 evilSchoolPic = BitmapData.fromImage(Assets.getImage("assets/images/weeb/animatedEvilSchool.png"));
 					}
-					if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/animatedEvilSchool.xml"))) {
-					   evilSchoolXml = File.getContent(Path.normalize(System.applicationDirectory+'/assets/images/custom_stages/'+SONG.stage+"/animatedEvilSchool.xml"));
+					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/animatedEvilSchool.xml")) {
+					   evilSchoolXml = File.getContent('assets/images/custom_stages/'+SONG.stage+"/animatedEvilSchool.xml");
 					} else {
 					   // fall back on base game file to avoid crashes
 						 evilSchoolXml = Assets.getText("assets/images/weeb/animatedEvilSchool.xml");
@@ -1443,7 +1443,7 @@ class PlayState extends MusicBeatState
 			]);
 			for (field in CoolUtil.coolTextFile('assets/data/uitypes.txt')) {
 				if (field != 'pixel' && field != 'normal') {
-					if (FileSystem.exists(System.applicationDirectory + ('/assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png")))
+					if (FileSystem.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png"))
 						introAssets.set(field, ['custom_ui/ui_packs/'+field+'/ready-pixel.png','custom_ui/ui_packs/'+field+'/set-pixel.png','custom_ui/ui_packs/'+field+'/date-pixel.png']);
 					else
 						introAssets.set(field, ['custom_ui/ui_packs/'+field+'/ready.png','custom_ui/ui_packs/'+field+'/set.png','custom_ui/ui_packs/'+field+'/go.png']);
@@ -1462,9 +1462,7 @@ class PlayState extends MusicBeatState
 				{
 					introAlts = introAssets.get(value);
 					// ok so apparently a leading slash means absolute soooooo
-					trace(FileSystem.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png"));
-					trace(FileSystem.exists(System.applicationDirectory + ('/assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png")));
-					if (SONG.uiType == 'pixel' || FileSystem.exists(System.applicationDirectory + ('/assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png")))
+					if (SONG.uiType == 'pixel' || FileSystem.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png"))
 						altSuffix = '-pixel';
 				}
 			}
@@ -1501,7 +1499,7 @@ class PlayState extends MusicBeatState
 					ready.scrollFactor.set();
 					ready.updateHitbox();
 
-					if (SONG.uiType == 'pixel' || FileSystem.exists(System.applicationDirectory + ('/assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png")))
+					if (SONG.uiType == 'pixel' || FileSystem.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png"))
 						ready.setGraphicSize(Std.int(ready.width * daPixelZoom));
 
 					ready.screenCenter();
@@ -1520,7 +1518,7 @@ class PlayState extends MusicBeatState
 					var set:FlxSprite = new FlxSprite().loadGraphic(setImage);
 					set.scrollFactor.set();
 
-					if (SONG.uiType == 'pixel' || FileSystem.exists(System.applicationDirectory + ('/assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png")))
+					if (SONG.uiType == 'pixel' || FileSystem.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png"))
 						set.setGraphicSize(Std.int(set.width * daPixelZoom));
 
 					set.screenCenter();
@@ -1538,7 +1536,7 @@ class PlayState extends MusicBeatState
 					var go:FlxSprite = new FlxSprite().loadGraphic(goImage);
 					go.scrollFactor.set();
 
-					if (SONG.uiType == 'pixel' || FileSystem.exists(System.applicationDirectory + ('/assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png")))
+					if (SONG.uiType == 'pixel' || FileSystem.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png"))
 						go.setGraphicSize(Std.int(go.width * daPixelZoom));
 
 					go.updateHitbox();
@@ -1575,7 +1573,7 @@ class PlayState extends MusicBeatState
 
 		if (!paused)
 			#if sys
-			FlxG.sound.playMusic(Sound.fromAudioBuffer(AudioBuffer.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+"/assets/music/"+SONG.song+"_Inst"+TitleState.soundExt)))), 1, false);
+			FlxG.sound.playMusic(Sound.fromFile("assets/music/"+SONG.song+"_Inst"+TitleState.soundExt), 1, false);
 			#else
 			FlxG.sound.playMusic("assets/music/" + SONG.song + "_Inst" + TitleState.soundExt, 1, false);
 			#end
@@ -1596,7 +1594,7 @@ class PlayState extends MusicBeatState
 
 		if (SONG.needsVoices) {
 			#if sys
-			var vocalSound = Sound.fromAudioBuffer(AudioBuffer.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+"/assets/music/"+SONG.song+"_Voices"+TitleState.soundExt))));
+			var vocalSound = Sound.fromFile("assets/music/"+SONG.song+"_Voices"+TitleState.soundExt);
 			vocals = new FlxSound().loadEmbedded(vocalSound);
 			#else
 			vocals = new FlxSound().loadEmbedded("assets/music/" + curSong + "_Voices" + TitleState.soundExt);
@@ -2412,7 +2410,7 @@ class PlayState extends MusicBeatState
 
 		var pixelShitPart1:String = "";
 		var pixelShitPart2:String = '';
-		if (FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png"))) {
+		if (FileSystem.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png")) {
 			pixelShitPart2 = '-pixel';
 		}
 		var ratingImage:BitmapData;
@@ -2422,7 +2420,7 @@ class PlayState extends MusicBeatState
 			case 'normal':
 				ratingImage = BitmapData.fromBytes(ByteArray.fromBytes(Assets.getBytes('assets/images/'+daRating+'.png')));
 			default:
-				ratingImage = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_ui/ui_packs/'+PlayState.SONG.uiType+'/'+daRating+pixelShitPart2+".png"))));
+				ratingImage = BitmapData.fromFile('assets/images/custom_ui/ui_packs/'+PlayState.SONG.uiType+'/'+daRating+pixelShitPart2+".png");
 		}
 
 		rating.loadGraphic(ratingImage);
@@ -2442,7 +2440,7 @@ class PlayState extends MusicBeatState
 		comboSpr.velocity.x += FlxG.random.int(1, 10);
 		add(rating);
 		// gonna be fun explaining this
-		if (SONG.uiType != 'pixel' && !FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png")))
+		if (SONG.uiType != 'pixel' && !FileSystem.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png"))
 		{
 			rating.setGraphicSize(Std.int(rating.width * 0.7));
 			rating.antialiasing = true;
@@ -2474,14 +2472,14 @@ class PlayState extends MusicBeatState
 				case 'normal':
 					numImage = BitmapData.fromBytes(ByteArray.fromBytes(Assets.getBytes('assets/images/num'+Std.int(i)+'.png')));
 				default:
-					numImage = BitmapData.fromBytes(ByteArray.fromBytes(File.getBytes(Path.normalize(System.applicationDirectory+'/assets/images/custom_ui/ui_packs/'+SONG.uiType+'/num'+Std.int(i)+pixelShitPart2+".png"))));
+					numImage = BitmapData.fromFile('assets/images/custom_ui/ui_packs/'+SONG.uiType+'/num'+Std.int(i)+pixelShitPart2+".png");
 			}
 			var numScore:FlxSprite = new FlxSprite().loadGraphic(numImage);
 			numScore.screenCenter();
 			numScore.x = coolText.x + (43 * daLoop) - 90;
 			numScore.y += 80;
 
-			if (SONG.uiType != 'pixel' && !FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png")))
+			if (SONG.uiType != 'pixel' && !FileSystem.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png"))
 			{
 				numScore.antialiasing = true;
 				numScore.setGraphicSize(Std.int(numScore.width * 0.5));
@@ -2717,7 +2715,7 @@ class PlayState extends MusicBeatState
 						spr.animation.play('static');
 			}
 
-			if (spr.animation.curAnim.name == 'confirm' && SONG.uiType != 'pixel' && !FileSystem.exists(Path.normalize(System.applicationDirectory+'/assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png")))
+			if (spr.animation.curAnim.name == 'confirm' && SONG.uiType != 'pixel' && !FileSystem.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png"))
 			{
 				spr.centerOffsets();
 				spr.offset.x -= 13;
