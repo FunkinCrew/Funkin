@@ -78,6 +78,12 @@ class ChartingState extends MusicBeatState
 	var _song:SwagSong;
 
 	var typingShit:FlxInputText;
+	var player1TextField:FlxInputText;
+	var player2TextField:FlxInputText;
+	var gfTextField:FlxInputText;
+	var cutsceneTextField:FlxInputText;
+	var uiTextField:FlxInputText;
+	var stageTextField:FlxInputText;
 	/*
 	 * WILL BE THE CURRENT / LAST PLACED NOTE
 	**/
@@ -254,8 +260,13 @@ class ChartingState extends MusicBeatState
 		{
 			_song.player1 = characters[Std.parseInt(character)];
 		});
+		player1TextField = new FlxUIInputText(10, 100, 70, _song.player1, 8);
+		player2TextField = new FlxUIInputText(80, 100, 70, _song.player2, 8);
+		gfTextField = new FlxUIInputText(10, 120, 70, _song.gf, 8);
+		stageTextField = new FlxUIInputText(80, 120, 70, _song.stage, 8);
+		cutsceneTextField = new FlxUIInputText(80, 140, 70, _song.cutsceneType, 8);
+		uiTextField = new FlxUIInputText(10, 140, 70, _song.uiType, 8);
 		player1DropDown.selectedLabel = _song.player1;
-
 		var player2DropDown = new FlxUIDropDownMenu(140, 100, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
 		{
 			_song.player2 = characters[Std.parseInt(character)];
@@ -269,6 +280,8 @@ class ChartingState extends MusicBeatState
 			_song.gf = characters[Std.parseInt(character)];
 		});
 		var isMoodyCheck = new FlxUICheckBox(10, 220, null, null, "Is Moody", 100);
+		isMoodyCheck.name = "isMoody";
+		isMoodyCheck.checked = _song.isMoody;
 		var cutsceneDropdown = new FlxUIDropDownMenu(140, 220, FlxUIDropDownMenu.makeStrIdLabelArray(cutscenes, true), function(cutscene:String)
 		{
 			_song.cutsceneType = cutscenes[Std.parseInt(cutscene)];
@@ -288,18 +301,18 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(check_voices);
 		tab_group_song.add(check_mute_inst);
 		tab_group_song.add(isMoodyCheck);
-		tab_group_song.add(uiDropdown);
+		tab_group_song.add(uiTextField);
 		tab_group_song.add(saveButton);
 		tab_group_song.add(reloadSong);
 		tab_group_song.add(reloadSongJson);
 		tab_group_song.add(loadAutosaveBtn);
 		tab_group_song.add(stepperBPM);
 		tab_group_song.add(stepperSpeed);
-		tab_group_song.add(cutsceneDropdown);
-		tab_group_song.add(stageDropDown);
-		tab_group_song.add(gfDropDown);
-		tab_group_song.add(player1DropDown);
-		tab_group_song.add(player2DropDown);
+		tab_group_song.add(cutsceneTextField);
+		tab_group_song.add(stageTextField);
+		tab_group_song.add(gfTextField);
+		tab_group_song.add(player1TextField);
+		tab_group_song.add(player2TextField);
 
 		UI_box.addGroup(tab_group_song);
 		UI_box.scrollFactor.set();
@@ -468,6 +481,8 @@ class ChartingState extends MusicBeatState
 					FlxG.log.add('changed bpm shit');
 				case "Alt Animation":
 					_song.notes[curSection].altAnim = check.checked;
+				case "isMoody":
+					_song.isMoody = check.checked;
 			}
 		}
 		else if (id == FlxUINumericStepper.CHANGE_EVENT && (sender is FlxUINumericStepper))
@@ -520,7 +535,12 @@ class ChartingState extends MusicBeatState
 
 		Conductor.songPosition = FlxG.sound.music.time;
 		_song.song = typingShit.text;
-
+		_song.player1 = player1TextField.text;
+		_song.player2 = player2TextField.text;
+		_song.gf = gfTextField.text;
+		_song.stage = stageTextField.text;
+		_song.cutsceneType = cutsceneTextField.text;
+		_song.uiType = uiTextField.text;
 		strumLine.y = getYfromStrum(Conductor.songPosition % (Conductor.stepCrochet * lengthBpmBullshit()));
 
 		if (curBeat % 4 == 0)
@@ -626,7 +646,7 @@ class ChartingState extends MusicBeatState
 			}
 		}
 
-		if (!typingShit.hasFocus)
+		if (!typingShit.hasFocus && !player1TextField.hasFocus && !player2TextField.hasFocus && !gfTextField.hasFocus && !stageTextField.hasFocus && !cutsceneTextField.hasFocus && !uiTextField.hasFocus)
 		{
 			if (FlxG.keys.justPressed.SPACE)
 			{

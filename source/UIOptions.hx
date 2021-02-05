@@ -28,7 +28,7 @@ class UIOptions extends MusicBeatState
 
 	public var alwaysDoCutscenes:Bool = false;
 	var alwaysCutsceneCheckBox:FlxUICheckBox;
-
+	var perfectModeCheckBox:FlxUICheckBox;
 	override function create()
 	{
 		var menuBG:FlxSprite = new FlxSprite().loadGraphic('assets/images/menuDesat.png');

@@ -26,7 +26,7 @@ typedef SwagSong =
 	var validScore:Bool;
 	var stage:String;
 	var gf:String;
-	var isMoody:Bool;
+	var isMoody:Null<Bool>;
 	var cutsceneType:String;
 	var uiType:String;
 }
@@ -45,7 +45,7 @@ class Song
 	public var player2:String = 'dad';
 	public var stage:String = 'stage';
 	public var gf:String = 'gf';
-	public var isMoody:Bool = false;
+	public var isMoody:Null<Bool> = false;
 	public var cutsceneType:String = "none";
 	public var uiType:String = 'normal';
 	public function new(song, notes, bpm, sections)
@@ -112,10 +112,14 @@ class Song
 			}
 
 		}
-		parsedJson.isMoody = !!parsedJson.isMoody;
-		if (parsedJson.song.toLowerCase() == 'roses') {
-			parsedJson.isMoody = true;
+		if (parsedJson.isMoody == null) {
+			if (parsedJson.song.toLowerCase() == 'roses') {
+				parsedJson.isMoody = true;
+			} else {
+				parsedJson.isMoody = false;
+			}
 		}
+
 		if (parsedJson.song.toLowerCase() == 'winter-horrorland') {
 			parsedJson.cutsceneType = "monster";
 		}
