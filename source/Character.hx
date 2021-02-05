@@ -576,7 +576,7 @@ class Character extends FlxSprite
 					}
 					if (Reflect.hasField(Reflect.field(parsedAnimJson.animation,field),"flippedname") && !isPlayer) {
 						// the double not is to turn a null into a false
-						if (Reflect.hasField(Reflect.field(parsedAnimJson.animation,field),"byIndices")) {
+						if (Reflect.hasField(Reflect.field(parsedAnimJson.animation,field),"indices")) {
 							var indicesAnim:Array<Int> = Reflect.field(parsedAnimJson.animation,field).indices;
 							animation.addByIndices(field, Reflect.field(parsedAnimJson.animation,field).flippedname, indicesAnim, "", fps, !!Reflect.field(parsedAnimJson.animation,field).loop);
 						} else {
@@ -584,7 +584,7 @@ class Character extends FlxSprite
 						}
 
 					} else {
-						if (Reflect.hasField(Reflect.field(parsedAnimJson.animation,field),"byIndices")) {
+						if (Reflect.hasField(Reflect.field(parsedAnimJson.animation,field),"indices")) {
 							var indicesAnim:Array<Int> = Reflect.field(parsedAnimJson.animation,field).indices;
 							animation.addByIndices(field, Reflect.field(parsedAnimJson.animation,field).name, indicesAnim, "", fps, !!Reflect.field(parsedAnimJson.animation,field).loop);
 						} else {
@@ -782,7 +782,7 @@ class Character extends FlxSprite
 						if (!animation.curAnim.name.startsWith('hair'))
 						{
 							danced = !danced;
-
+							trace(danced);
 							if (danced)
 								playAnim('danceRight');
 							else
