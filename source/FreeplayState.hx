@@ -164,7 +164,7 @@ class FreeplayState extends MusicBeatState
 
 		if (accepted)
 		{
-			var poop:String = Highscore.formatSong(songs[curSelected].toLowerCase(), curDifficulty);
+			var poop:String = songs[curSelected] + DifficultyIcons.getEndingFP(curDifficulty);
 
 			trace(poop);
 
