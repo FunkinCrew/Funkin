@@ -150,7 +150,7 @@ class PlayState extends MusicBeatState
 
 		persistentUpdate = true;
 		persistentDraw = true;
-		var optionsJson = Json.parse(Assets.getContent('assets/data/options.json'));
+		var optionsJson = Json.parse(Assets.getText('assets/data/options.json'));
 		alwaysDoCutscenes = optionsJson.alwaysDoCutscenes;
 		fullComboMode = optionsJson.fullComboMode;
 		perfectMode = optionsJson.perfectMode;
@@ -2342,7 +2342,7 @@ class PlayState extends MusicBeatState
 					transOut = null;
 					prevCamFollow = camFollow;
 				}
-				if (FileSystem.exists('assets/data/'+PlayState.storyPlaylist[0].toLowerCase()+'/'PlayState.storyPlaylist[0].toLowerCase()+difficulty+'.json'))
+				if (FileSystem.exists('assets/data/'+PlayState.storyPlaylist[0].toLowerCase()+'/'+PlayState.storyPlaylist[0].toLowerCase()+difficulty+'.json'))
 				  // do this to make custom difficulties not as unstable
 					PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + difficulty, PlayState.storyPlaylist[0]);
 				else

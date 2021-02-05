@@ -30,7 +30,7 @@ class UIOptions extends MusicBeatState
 	var alwaysCutsceneCheckBox:FlxUICheckBox;
 	var perfectModeCheckBox:FlxUICheckBox;
 	var fullComboCheckBox:FlxUICheckBox;
-	var praticeCheckBox:FlxUICheckBox;
+	var practiceCheckBox:FlxUICheckBox;
 	var _options:Dynamic;
 	override function create()
 	{
@@ -43,15 +43,15 @@ class UIOptions extends MusicBeatState
 		menuBG.antialiasing = true;
 		FlxG.mouse.visible = true;
 		add(menuBG);
-		_options = Json.parse(Assets.getContent('assets/data/options.json'));
+		_options = Json.parse(Assets.getText('assets/data/options.json'));
 		alwaysCutsceneCheckBox = new FlxUICheckBox(100, 100, null, null,"Always Show Cutscenes", 100);
 		alwaysCutsceneCheckBox.checked = _options.alwaysDoCutscenes;
 		perfectModeCheckBox = new FlxUICheckBox(100,160, null, null,"Perfect Mode", 100);
 		perfectModeCheckBox.checked = _options.perfectMode;
 		fullComboCheckBox = new FlxUICheckBox(100,220, null, null,"Full Combo Mode", 100);
 		fullComboCheckBox.checked = _options.fullComboMode;
-		praticeCheckBox = new FlxUICheckBox(100,280, null, null,"Practice Mode", 100);
-		praticeCheckBox.checked = _options.practiceMode;
+		practiceCheckBox = new FlxUICheckBox(100,280, null, null,"Practice Mode", 100);
+		practiceCheckBox.checked = _options.practiceMode;
 		optionUI.add(alwaysCutsceneCheckBox);
 		optionUI.add(perfectModeCheckBox);
 		optionUI.add(fullComboCheckBox);
