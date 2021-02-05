@@ -21,17 +21,17 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import lime.utils.Assets;
 import sys.io.File;
+import haxe.Json;
 using StringTools;
 class UIOptions extends MusicBeatState
 {
 
 
-	public var alwaysDoCutscenes:Bool = false;
-	public var fullComboMode:Bool = false;
-	public var perfectMode:Bool = false;
 	var alwaysCutsceneCheckBox:FlxUICheckBox;
 	var perfectModeCheckBox:FlxUICheckBox;
 	var fullComboCheckBox:FlxUICheckBox;
+	var praticeCheckBox:FlxUICheckBox;
+	var _options:Dynamic;
 	override function create()
 	{
 		var menuBG:FlxSprite = new FlxSprite().loadGraphic('assets/images/menuDesat.png');
@@ -43,25 +43,19 @@ class UIOptions extends MusicBeatState
 		menuBG.antialiasing = true;
 		FlxG.mouse.visible = true;
 		add(menuBG);
-		alwaysDoCutscenes = false;
-		var file = CoolUtil.coolTextFile('assets/data/options.txt');
-		if (StringTools.contains(file[0],'true'))
-			alwaysDoCutscenes = true;
-		if (StringTools.contains(file[1], 'true')) {
-			perfectMode = true;
-		}
-		if (StringTools.contains(file[2], 'true')) {
-			fullComboMode = true;
-		}
+		_options = Json.parse(Assets.getContent('assets/data/options.json'));
 		alwaysCutsceneCheckBox = new FlxUICheckBox(100, 100, null, null,"Always Show Cutscenes", 100);
-		alwaysCutsceneCheckBox.checked = alwaysDoCutscenes;
+		alwaysCutsceneCheckBox.checked = _options.alwaysDoCutscenes;
 		perfectModeCheckBox = new FlxUICheckBox(100,160, null, null,"Perfect Mode", 100);
-		perfectModeCheckBox.checked = perfectMode;
+		perfectModeCheckBox.checked = _options.perfectMode;
 		fullComboCheckBox = new FlxUICheckBox(100,220, null, null,"Full Combo Mode", 100);
-		fullComboCheckBox.checked = fullComboMode;
+		fullComboCheckBox.checked = _options.fullComboMode;
+		praticeCheckBox = new FlxUICheckBox(100,280, null, null,"Practice Mode", 100);
+		praticeCheckBox.checked = _options.practiceMode;
 		optionUI.add(alwaysCutsceneCheckBox);
 		optionUI.add(perfectModeCheckBox);
 		optionUI.add(fullComboCheckBox);
+		optionUI.add(practiceCheckBox);
 		add(optionUI);
 		super.create();
 	}
@@ -69,9 +63,28 @@ class UIOptions extends MusicBeatState
 		super.update(elapsed);
 		if (controls.BACK) {
 			FlxG.mouse.visible = false;
-			File.saveContent('assets/data/options.txt', 'alwaysDoCutscenes: '+alwaysCutsceneCheckBox.checked + '\nperfectMode: '+perfectModeCheckBox.checked+'\nfullComboMode: '+fullComboCheckBox.checked);
+			File.saveContent('assets/data/options.json', Json.stringify(_options));
 			FlxG.switchState(new MainMenuState());
 		}
 
+	}
+	override function getEvent(id:String, sender:Dynamic, data:Dynamic, ?params:Array<Dynamic>) {
+		if (id == FlxUICheckBox.CLICK_EVENT)
+		{
+			var check:FlxUICheckBox = cast sender;
+			var label = check.getLabel().text;
+			switch (label)
+			{
+				case 'Always Show Cutscenes':
+					_options.alwaysDoCutscenes = check.checked;
+
+				case 'Perfect Mode':
+					_options.perfectMode = check.checked;
+				case "Full Combo Mode":
+					_options.fullComboMode = check.checked;
+				case "Practice Mode":
+					_options.practiceMode = check.checked;
+			}
+		}
 	}
 }

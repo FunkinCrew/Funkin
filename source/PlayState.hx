@@ -135,6 +135,7 @@ class PlayState extends MusicBeatState
 	var alwaysDoCutscenes = false;
 	var fullComboMode:Bool = false;
 	var perfectMode:Bool = false;
+	var practiceMode:Bool = false;
 	override public function create()
 	{
 		// var gameCam:FlxCamera = FlxG.camera;
@@ -149,10 +150,11 @@ class PlayState extends MusicBeatState
 
 		persistentUpdate = true;
 		persistentDraw = true;
-		var optionsArray = CoolUtil.coolTextFile('assets/data/options.txt');
-		alwaysDoCutscenes = StringTools.contains(optionsArray[0],'true');
-		fullComboMode = StringTools.contains(optionsArray[2], 'true');
-		perfectMode = StringTools.contains(optionsArray[1], 'true');
+		var optionsJson = Json.parse(Assets.getContent('assets/data/options.json'));
+		alwaysDoCutscenes = optionsJson.alwaysDoCutscenes;
+		fullComboMode = optionsJson.fullComboMode;
+		perfectMode = optionsJson.perfectMode;
+		practiceMode = optionsJson.practiceMode;
 		if (SONG == null)
 			SONG = Song.loadFromJson('tutorial');
 
@@ -2172,7 +2174,7 @@ class PlayState extends MusicBeatState
 			trace("User is cheating!");
 		}
 
-		if (health <= 0)
+		if (health <= 0 && !practiceMode)
 		{
 			boyfriend.stunned = true;
 
@@ -2340,8 +2342,11 @@ class PlayState extends MusicBeatState
 					transOut = null;
 					prevCamFollow = camFollow;
 				}
-
-				PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + difficulty, PlayState.storyPlaylist[0]);
+				if (FileSystem.exists('assets/data/'+PlayState.storyPlaylist[0].toLowerCase()+'/'PlayState.storyPlaylist[0].toLowerCase()+difficulty+'.json'))
+				  // do this to make custom difficulties not as unstable
+					PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + difficulty, PlayState.storyPlaylist[0]);
+				else
+					PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase(), PlayState.storyPlaylist[0]);
 				FlxG.sound.music.stop();
 
 				FlxG.switchState(new PlayState());
@@ -2381,28 +2386,20 @@ class PlayState extends MusicBeatState
 		{
 			daRating = 'shit';
 			score = 50;
-			if (perfectMode) {
-				// perfect mode means sick only
-				health = 0;
-			}
 		}
 		else if (noteDiff > Conductor.safeZoneOffset * 0.75)
 		{
 			daRating = 'bad';
 			score = 100;
-			if (perfectMode) {
-				health = 0;
-			}
 		}
 		else if (noteDiff > Conductor.safeZoneOffset * 0.2)
 		{
 			daRating = 'good';
 			score = 200;
-			if (perfectMode) {
-				health = 0;
-			}
 		}
-
+		if (daRating != "sick" && perfectMode) {
+			health = -50;
+		}
 		songScore += score;
 
 		/* if (combo > 60)
