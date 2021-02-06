@@ -2,6 +2,10 @@
 
 check releases to download apk
 
+Download:
+https://github.com/luckydog7/Funkin-android/releases
+
+
 If you just want to play,"source code" is no needed
 
 source code of fnf 0.2.6 build 1:
