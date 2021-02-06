@@ -142,6 +142,7 @@ class PlayState extends MusicBeatState
 	var poisonExr:Bool = false;
 	var poisonPlus:Bool = false;
 	var beingPoisioned:Bool = false;
+	var poisonTimes:Int = 0;
 	private var regenTimer:FlxTimer;
 	override public function create()
 	{
@@ -2034,7 +2035,7 @@ class PlayState extends MusicBeatState
 
 		if (health > 2)
 			health = 2;
-		if (!beingPoisioned) {
+		if (poisonTimes == 0) {
 			if (healthBar.percent < 20)
 				iconP1.animation.curAnim.curFrame = 1;
 			else
@@ -2287,16 +2288,15 @@ class PlayState extends MusicBeatState
 					{
 						health -= 0.0475 + healthLossModifier;
 						vocals.volume = 0;
-						if (poisonPlus && !beingPoisioned) {
-								var poisonMs = 0;
-								beingPoisioned = true;
+						if (poisonPlus && poisonTimes < 5) {
+							poisonTimes += 1;
 								var poisonPlusTimer = new FlxTimer().start(0.5, function (tmr:FlxTimer) {
 									health -= 0.05;
 								}, 0);
 								// stop timer after 3 seconds
 								new FlxTimer().start(3, function (tmr:FlxTimer) {
 									poisonPlusTimer.cancel();
-									beingPoisioned = false;
+									poisonTimes -= 1;
 								});
 						}
 						if (fullComboMode || perfectMode) {
