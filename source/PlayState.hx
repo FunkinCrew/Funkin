@@ -147,7 +147,7 @@ class PlayState extends MusicBeatState
 	var practiceDied:Bool = false;
 	var practiceDieIcon:HealthIcon;
 	private var regenTimer:FlxTimer;
-	var notesHit:Int = 0;
+	var notesHit:Float = 0;
 	var notesPassing:Int = 0;
 	override public function create()
 	{
@@ -1268,7 +1268,7 @@ class PlayState extends MusicBeatState
 		scoreTxt.setFormat("assets/fonts/vcr.ttf", 20, FlxColor.WHITE, RIGHT);
 		scoreTxt.scrollFactor.set();
 
-		healthTxt = new FlxText(healthBarBG.x + healthBarBG.width - 200, healthBarBG.y + 30, 0, "", 200);
+		healthTxt = new FlxText(healthBarBG.x + healthBarBG.width - 300, healthBarBG.y + 30, 0, "", 200);
 		healthTxt.setFormat("assets/fonts/vcr.ttf", 20, FlxColor.WHITE, RIGHT);
 		healthTxt.scrollFactor.set();
 
@@ -2029,7 +2029,7 @@ class PlayState extends MusicBeatState
 		healthTxt.text = "Health:" + Math.round(health * 50) + "%";
 		scoreTxt.text = "Score:" + songScore;
 		if (notesPassing != 0) {
-			accuracyTxt.text = "Accuracy:" + (Math.round(notesHit/notesPassing) * 100) + "%";
+			accuracyTxt.text = "Accuracy:" + Math.round((notesHit/notesPassing) * 100) + "%";
 		} else {
 			accuracyTxt.text = "Accuracy:100%";
 		}
@@ -2461,17 +2461,22 @@ class PlayState extends MusicBeatState
 		{
 			daRating = 'shit';
 			score = 50;
+			notesHit += 0.25;
 		}
 		else if (noteDiff > Conductor.safeZoneOffset * 0.75)
 		{
 			daRating = 'bad';
 			score = 100;
+			notesHit += 0.5;
 		}
 		else if (noteDiff > Conductor.safeZoneOffset * 0.2)
 		{
 			daRating = 'good';
 			score = 200;
+			notesHit += 0.75;
 		}
+		if (daRating == 'sick')
+			notesHit += 1;
 		if (daRating != "sick" && perfectMode) {
 			health = -50;
 		}
@@ -2879,10 +2884,9 @@ class PlayState extends MusicBeatState
 	{
 		if (!note.wasGoodHit)
 		{
-			notesHit += 1;
-			notesPassing += 1;
 			if (!note.isSustainNote)
 			{
+				notesPassing += 1;
 				popUpScore(note.strumTime);
 				combo += 1;
 			}
