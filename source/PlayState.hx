@@ -138,6 +138,9 @@ class PlayState extends MusicBeatState
 	var practiceMode:Bool = false;
 	var healthGainModifier:Float = 0;
 	var healthLossModifier:Float = 0;
+	var supLove:Bool = false;
+	var poisonExr:Bool = false;
+	private var regenTimer:FlxTimer;
 	override public function create()
 	{
 		// var gameCam:FlxCamera = FlxG.camera;
@@ -168,6 +171,8 @@ class PlayState extends MusicBeatState
 			} else if (ModifierState.modifiers[6].value) {
 				healthLossModifier -= 0.02;
 			}
+			supLove = ModifierState.modifiers[7].value;
+			poisonExr = ModifierState.modifiers[8].value;
 		} else {
 			fullComboMode = optionsJson.fullComboMode;
 			perfectMode = optionsJson.perfectMode;
@@ -1577,6 +1582,12 @@ class PlayState extends MusicBeatState
 			swagCounter += 1;
 			// generateSong('fresh');
 		}, 5);
+		regenTimer = new FlxTimer().start(2, function (tmr:FlxTimer) {
+			if (poisonExr)
+				health -= 0.005;
+			if (supLove)
+				health +=  0.005;
+		}, 0);
 	}
 
 	var previousFrameTime:Int = 0;
@@ -1975,13 +1986,6 @@ class PlayState extends MusicBeatState
 		perfectModeOld = false;
 		#end
 
-		if (FlxG.keys.justPressed.NINE)
-		{
-			if (iconP1.animation.curAnim.name == 'bf-old')
-				iconP1.animation.play(SONG.player1);
-			else
-				iconP1.animation.play('bf-old');
-		}
 
 		switch (curStage)
 		{
@@ -2001,7 +2005,7 @@ class PlayState extends MusicBeatState
 
 		super.update(elapsed);
 
-		scoreTxt.text = "Score:" + songScore;
+		scoreTxt.text = "Health:" + Math.round(health * 50) + "% Score:" + songScore;
 
 		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause)
 		{
