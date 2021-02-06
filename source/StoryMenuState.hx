@@ -340,12 +340,7 @@ class StoryMenuState extends MusicBeatState
 			PlayState.campaignScore = 0;
 			new FlxTimer().start(1, function(tmr:FlxTimer)
 			{
-				if (FlxG.sound.music != null)
-					FlxG.sound.music.stop();
-				if (!useModifierMenu)
-					FlxG.switchState(new PlayState());
-				else
-					FlxG.switchState(new ModifierState());
+				FlxG.switchState(new ModifierState());
 			});
 		}
 	}

@@ -96,6 +96,8 @@ class ModifierState extends MusicBeatState
 			checkmarks[curSelected].visible = !checkmarks[curSelected].visible;
 			modifiers[curSelected].value = checkmarks[curSelected].visible;
 		} else {
+			if (FlxG.sound.music != null)
+				FlxG.sound.music.stop();
 			FlxG.switchState(new PlayState());
 		}
 

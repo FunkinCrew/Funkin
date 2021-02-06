@@ -1,4 +1,0 @@
-alwaysDoCutscenes: false
-perfectMode: false
-fullComboMode: false
-praticeMode: false
