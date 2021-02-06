@@ -602,10 +602,7 @@ class Character extends FlxSprite
 				followCamX = if (parsedAnimJson.followCam != null) parsedAnimJson.followCam[0] else 150;
 				followCamY = if (parsedAnimJson.followCam != null) parsedAnimJson.followCam[1] else -100;
 				flipX = if (parsedAnimJson.flipx != null) parsedAnimJson.flipx else false;
-				if (!isDie) {
-					width += if (parsedAnimJson.size != null) parsedAnimJson.size[0] else 0;
-					height += if (parsedAnimJson.size != null) parsedAnimJson.size[1] else 0;
-				}
+
 
 				like = parsedAnimJson.like;
 				if (like == "bf-car") {
@@ -615,6 +612,11 @@ class Character extends FlxSprite
 				if (parsedAnimJson.isPixel) {
 					antialiasing = false;
 					setGraphicSize(Std.int(width * 6));
+					updateHitbox();
+				}
+				if (!isDie) {
+					width += if (parsedAnimJson.size != null) parsedAnimJson.size[0] else 0;
+					height += if (parsedAnimJson.size != null) parsedAnimJson.size[1] else 0;
 				}
 				playAnim(parsedAnimJson.playAnim);
 				#else
