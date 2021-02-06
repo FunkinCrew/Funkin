@@ -159,28 +159,22 @@ class PlayState extends MusicBeatState
 		persistentDraw = true;
 		var optionsJson = Json.parse(Assets.getText('assets/data/options.json'));
 		alwaysDoCutscenes = optionsJson.alwaysDoCutscenes;
-		if (optionsJson.useModifierMenu) {
-			fullComboMode = ModifierState.modifiers[1].value;
-			perfectMode = ModifierState.modifiers[0].value;
-			practiceMode = ModifierState.modifiers[2].value;
-			if (ModifierState.modifiers[3].value) {
-				healthGainModifier += 0.02;
-			} else if (ModifierState.modifiers[4].value) {
-				healthGainModifier -= 0.01;
-			}
-			if (ModifierState.modifiers[5].value) {
-				healthLossModifier += 0.02;
-			} else if (ModifierState.modifiers[6].value) {
-				healthLossModifier -= 0.02;
-			}
-			supLove = ModifierState.modifiers[7].value;
-			poisonExr = ModifierState.modifiers[8].value;
-			poisonPlus = ModifierState.modifiers[9].value;
-		} else {
-			fullComboMode = optionsJson.fullComboMode;
-			perfectMode = optionsJson.perfectMode;
-			practiceMode = optionsJson.practiceMode;
+		fullComboMode = ModifierState.modifiers[1].value;
+		perfectMode = ModifierState.modifiers[0].value;
+		practiceMode = ModifierState.modifiers[2].value;
+		if (ModifierState.modifiers[3].value) {
+			healthGainModifier += 0.02;
+		} else if (ModifierState.modifiers[4].value) {
+			healthGainModifier -= 0.01;
 		}
+		if (ModifierState.modifiers[5].value) {
+			healthLossModifier += 0.02;
+		} else if (ModifierState.modifiers[6].value) {
+			healthLossModifier -= 0.02;
+		}
+		supLove = ModifierState.modifiers[7].value;
+		poisonExr = ModifierState.modifiers[8].value;
+		poisonPlus = ModifierState.modifiers[9].value;
 
 		if (SONG == null)
 			SONG = Song.loadFromJson('tutorial');
