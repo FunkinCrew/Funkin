@@ -45,4 +45,7 @@ class CoolUtil
 		}
 		return dumbArray;
 	}
+	public static function clamp(mini:Float, maxi:Float, value:Float):Float {
+		return Math.min(Math.max(mini,value), maxi);
+	}
 }

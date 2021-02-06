@@ -123,7 +123,8 @@ class PlayState extends MusicBeatState
 	var talking:Bool = true;
 	var songScore:Int = 0;
 	var scoreTxt:FlxText;
-
+	var healthTxt:FlxText;
+	var accuracyTxt:FlxText;
 	public static var campaignScore:Int = 0;
 
 	var defaultCamZoom:Float = 1.05;
@@ -143,7 +144,11 @@ class PlayState extends MusicBeatState
 	var poisonPlus:Bool = false;
 	var beingPoisioned:Bool = false;
 	var poisonTimes:Int = 0;
+	var practiceDied:Bool = false;
+	var practiceDieIcon:HealthIcon;
 	private var regenTimer:FlxTimer;
+	var notesHit:Int = 0;
+	var notesPassing:Int = 0;
 	override public function create()
 	{
 		// var gameCam:FlxCamera = FlxG.camera;
@@ -163,6 +168,7 @@ class PlayState extends MusicBeatState
 		fullComboMode = ModifierState.modifiers[1].value;
 		perfectMode = ModifierState.modifiers[0].value;
 		practiceMode = ModifierState.modifiers[2].value;
+
 		if (ModifierState.modifiers[3].value) {
 			healthGainModifier += 0.02;
 		} else if (ModifierState.modifiers[4].value) {
@@ -1258,11 +1264,17 @@ class PlayState extends MusicBeatState
 		// healthBar
 		add(healthBar);
 
-		scoreTxt = new FlxText(healthBarBG.x + healthBarBG.width - 190, healthBarBG.y + 30, 0, "", 20);
-		scoreTxt.setFormat("assets/fonts/vcr.ttf", 16, FlxColor.WHITE, RIGHT);
+		scoreTxt = new FlxText(healthBarBG.x + healthBarBG.width - 90, healthBarBG.y + 30, 0, "", 200);
+		scoreTxt.setFormat("assets/fonts/vcr.ttf", 20, FlxColor.WHITE, RIGHT);
 		scoreTxt.scrollFactor.set();
-		add(scoreTxt);
 
+		healthTxt = new FlxText(healthBarBG.x + healthBarBG.width - 200, healthBarBG.y + 30, 0, "", 200);
+		healthTxt.setFormat("assets/fonts/vcr.ttf", 20, FlxColor.WHITE, RIGHT);
+		healthTxt.scrollFactor.set();
+
+		accuracyTxt = new FlxText(healthBarBG.x, healthBarBG.y + 30, 0, "", 200);
+		accuracyTxt.setFormat("assets/fonts/vcr.ttf", 20, FlxColor.WHITE, RIGHT);
+		accuracyTxt.scrollFactor.set();
 		iconP1 = new HealthIcon(SONG.player1, true);
 		iconP1.y = healthBar.y - (iconP1.height / 2);
 		add(iconP1);
@@ -1270,6 +1282,11 @@ class PlayState extends MusicBeatState
 		iconP2 = new HealthIcon(SONG.player2, false);
 		iconP2.y = healthBar.y - (iconP2.height / 2);
 		add(iconP2);
+		practiceDieIcon = new HealthIcon('bf-old', false);
+		practiceDieIcon.y = healthBar.y - (practiceDieIcon.height / 2);
+		practiceDieIcon.x = healthBar.x - 130;
+		practiceDieIcon.animation.curAnim.curFrame = 1;
+		add(practiceDieIcon);
 		trace("finishIcons");
 		strumLineNotes.cameras = [camHUD];
 		notes.cameras = [camHUD];
@@ -1277,9 +1294,16 @@ class PlayState extends MusicBeatState
 		healthBarBG.cameras = [camHUD];
 		iconP1.cameras = [camHUD];
 		iconP2.cameras = [camHUD];
+		practiceDieIcon.cameras = [camHUD];
 		scoreTxt.cameras = [camHUD];
+		healthTxt.cameras = [camHUD];
 		doof.cameras = [camHUD];
+		accuracyTxt.cameras = [camHUD];
+		practiceDieIcon.visible = false;
 		trace("finishCameras");
+		add(scoreTxt);
+		add(healthTxt);
+		add(accuracyTxt);
 		// if (SONG.song == 'South')
 		// FlxG.camera.alpha = 0.7;
 		// UI_camera.zoom = 1;
@@ -2002,9 +2026,13 @@ class PlayState extends MusicBeatState
 		}
 
 		super.update(elapsed);
-
-		scoreTxt.text = "Health:" + Math.round(health * 50) + "% Score:" + songScore;
-
+		healthTxt.text = "Health:" + Math.round(health * 50) + "%";
+		scoreTxt.text = "Score:" + songScore;
+		if (notesPassing != 0) {
+			accuracyTxt.text = "Accuracy:" + (Math.round(notesHit/notesPassing) * 100) + "%";
+		} else {
+			accuracyTxt.text = "Accuracy:100%";
+		}
 		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause)
 		{
 			persistentUpdate = false;
@@ -2024,10 +2052,10 @@ class PlayState extends MusicBeatState
 
 		iconP1.setGraphicSize(Std.int(FlxMath.lerp(150, iconP1.width, 0.50)));
 		iconP2.setGraphicSize(Std.int(FlxMath.lerp(150, iconP2.width, 0.50)));
-
+		practiceDieIcon.setGraphicSize(Std.int(FlxMath.lerp(150, practiceDieIcon.width, 0.50)));
 		iconP1.updateHitbox();
 		iconP2.updateHitbox();
-
+		practiceDieIcon.updateHitbox();
 		var iconOffset:Int = 26;
 
 		iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset);
@@ -2036,10 +2064,15 @@ class PlayState extends MusicBeatState
 		if (health > 2)
 			health = 2;
 		if (poisonTimes == 0) {
-			if (healthBar.percent < 20)
+			if (healthBar.percent < 20) {
 				iconP1.animation.curAnim.curFrame = 1;
-			else
+				healthTxt.setFormat("assets/fonts/vcr.ttf", 20, FlxColor.RED, RIGHT);
+			}
+			else {
 				iconP1.animation.curAnim.curFrame = 0;
+				healthTxt.setFormat("assets/fonts/vcr.ttf", 20, FlxColor.WHITE, RIGHT);
+			}
+
 		} else {
 			iconP1.animation.curAnim.curFrame = 2;
 		}
@@ -2211,8 +2244,11 @@ class PlayState extends MusicBeatState
 			openSubState(new GameOverSubstate(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 
 			// FlxG.switchState(new GameOverState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
+		} else if (health <= 0 && !practiceDied) {
+			practiceDied = true;
+			practiceDieIcon.visible = true;
 		}
-
+		health = CoolUtil.clamp(0,2,health);
 		if (unspawnNotes[0] != null)
 		{
 			if (unspawnNotes[0].strumTime - Conductor.songPosition < 1500)
@@ -2288,6 +2324,7 @@ class PlayState extends MusicBeatState
 					{
 						health -= 0.0475 + healthLossModifier;
 						vocals.volume = 0;
+						notesPassing += 1;
 						if (poisonPlus && poisonTimes < 5) {
 							poisonTimes += 1;
 								var poisonPlusTimer = new FlxTimer().start(0.5, function (tmr:FlxTimer) {
@@ -2842,6 +2879,8 @@ class PlayState extends MusicBeatState
 	{
 		if (!note.wasGoodHit)
 		{
+			notesHit += 1;
+			notesPassing += 1;
 			if (!note.isSustainNote)
 			{
 				popUpScore(note.strumTime);
@@ -3032,10 +3071,10 @@ class PlayState extends MusicBeatState
 
 		iconP1.setGraphicSize(Std.int(iconP1.width + 30));
 		iconP2.setGraphicSize(Std.int(iconP2.width + 30));
-
+		practiceDieIcon.setGraphicSize(Std.int(practiceDieIcon.width + 30));
 		iconP1.updateHitbox();
 		iconP2.updateHitbox();
-
+		practiceDieIcon.updateHitbox();
 		if (totalBeats % gfSpeed == 0)
 		{
 			gf.dance();
