@@ -140,6 +140,8 @@ class PlayState extends MusicBeatState
 	var healthLossModifier:Float = 0;
 	var supLove:Bool = false;
 	var poisonExr:Bool = false;
+	var poisonPlus:Bool = false;
+	var beingPoisioned:Bool = false;
 	private var regenTimer:FlxTimer;
 	override public function create()
 	{
@@ -173,6 +175,7 @@ class PlayState extends MusicBeatState
 			}
 			supLove = ModifierState.modifiers[7].value;
 			poisonExr = ModifierState.modifiers[8].value;
+			poisonPlus = ModifierState.modifiers[9].value;
 		} else {
 			fullComboMode = optionsJson.fullComboMode;
 			perfectMode = optionsJson.perfectMode;
@@ -2037,11 +2040,15 @@ class PlayState extends MusicBeatState
 
 		if (health > 2)
 			health = 2;
+		if (!beingPoisioned) {
+			if (healthBar.percent < 20)
+				iconP1.animation.curAnim.curFrame = 1;
+			else
+				iconP1.animation.curAnim.curFrame = 0;
+		} else {
+			iconP1.animation.curAnim.curFrame = 2;
+		}
 
-		if (healthBar.percent < 20)
-			iconP1.animation.curAnim.curFrame = 1;
-		else
-			iconP1.animation.curAnim.curFrame = 0;
 
 		if (healthBar.percent > 80)
 			iconP2.animation.curAnim.curFrame = 1;
@@ -2286,6 +2293,22 @@ class PlayState extends MusicBeatState
 					{
 						health -= 0.0475 + healthLossModifier;
 						vocals.volume = 0;
+						if (poisonPlus && !beingPoisioned) {
+								var poisonMs = 0;
+								beingPoisioned = true;
+								var poisonPlusTimer = new FlxTimer().start(0.5, function (tmr:FlxTimer) {
+									health -= 0.05;
+								}, 0);
+								// stop timer after 3 seconds
+								new FlxTimer().start(3, function (tmr:FlxTimer) {
+									poisonPlusTimer.cancel();
+									beingPoisioned = false;
+								});
+						}
+						if (fullComboMode || perfectMode) {
+							// you signed up for this your fault
+							health = 0;
+						}
 					}
 
 					daNote.active = false;

@@ -5,15 +5,15 @@
   },
   "templateBfCar": {
     "like": "bf-car",
-    "icons": [0,1]
+    "icons": [0,1,24]
   },
   "templateBfChristmas": {
     "like": "bf-christmas",
-    "icons": [0,1]
+    "icons": [0,1,24]
   },
   "templateBfPixel": {
     "like": "bf-pixel",
-    "icons": [0,1]
+    "icons": [0,1,25]
   },
   "templateDad": {
     "like": "dad",

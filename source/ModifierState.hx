@@ -29,7 +29,7 @@ class ModifierState extends MusicBeatState
 		menuBG.updateHitbox();
 		menuBG.screenCenter();
 		menuBG.antialiasing = true;
-		modifiers = [{name: "Perfect Mode", value: false}, {name:"FC Mode", value: false}, {name: "Practice Mode", value: false}, {name: "Health Gain Up", value: false}, {name: "Health Gain Down", value: false}, {name: "Health Loss Up", value: false}, {name: "Health Loss Down", value: false},{name: "Sup Love", value: false},{name: "Poison EXR", value: false},{name: "Play", value: false}];
+		modifiers = [{name: "Perfect Mode", value: false}, {name:"FC Mode", value: false}, {name: "Practice Mode", value: false}, {name: "Health Gain Up", value: false}, {name: "Health Gain Down", value: false}, {name: "Health Loss Up", value: false}, {name: "Health Loss Down", value: false},{name: "Sup Love", value: false},{name: "Poison EXR", value: false},{name: "Poison Plus", value: false},{name: "Play", value: false}];
 		for (modifier in 0...modifiers.length) {
 			var swagModifier = new Alphabet(0, 10, "   "+modifiers[modifier].name, true, false, false);
 			swagModifier.isMenuItem = true;

@@ -25,13 +25,13 @@ class HealthIcon extends FlxSprite
 		switch (char) {
 			case 'bf':
 				loadGraphic('assets/images/iconGrid.png', true, 150, 150);
-				animation.add('icon', [0, 1], 0, false, isPlayer);
+				animation.add('icon', [0, 1, 24], 0, false, isPlayer);
 			case 'bf-car':
 				loadGraphic('assets/images/iconGrid.png', true, 150, 150);
-				animation.add('icon', [0, 1], 0, false, isPlayer);
+				animation.add('icon', [0, 1,24], 0, false, isPlayer);
 			case 'bf-christmas':
 				loadGraphic('assets/images/iconGrid.png', true, 150, 150);
-				animation.add('icon', [0, 1], 0, false, isPlayer);
+				animation.add('icon', [0, 1,24], 0, false, isPlayer);
 			case 'spooky':
 				loadGraphic('assets/images/iconGrid.png', true, 150, 150);
 				animation.add('icon', [2, 3], 0, false, isPlayer);
@@ -79,7 +79,7 @@ class HealthIcon extends FlxSprite
 				animation.add('icon', [23, 23], 0, false, isPlayer);
 			case 'bf-pixel':
 				loadGraphic('assets/images/iconGrid.png', true, 150, 150);
-				animation.add('icon', [21, 21], 0, false, isPlayer);
+				animation.add('icon', [21, 21, 25], 0, false, isPlayer);
 			default:
 				// check if there is an icon file
 				if (FileSystem.exists('assets/images/custom_chars/'+char+"_icons.png")) {
