@@ -2055,7 +2055,7 @@ class PlayState extends MusicBeatState
 
 		#if debug
 		if (FlxG.keys.justPressed.EIGHT)
-			FlxG.switchState(new AnimationDebug(SONG.player2));
+			FlxG.switchState(new AnimationDebug(SONG.player2, SONG.player1));
 		#end
 
 		if (startingSong)

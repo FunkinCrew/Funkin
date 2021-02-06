@@ -23,12 +23,14 @@ class AnimationDebug extends FlxState
 	var curAnim:Int = 0;
 	var isDad:Bool = true;
 	var daAnim:String = 'spooky';
+	var daOtherAnim:String = 'bf';
 	var camFollow:FlxObject;
 
-	public function new(daAnim:String = 'spooky')
+	public function new(daAnim:String = 'spooky', daOtherAnim:String = 'bf')
 	{
 		super();
 		this.daAnim = daAnim;
+		this.daOtherAnim = daOtherAnim;
 	}
 
 	override function create()
@@ -39,29 +41,19 @@ class AnimationDebug extends FlxState
 		gridBG.scrollFactor.set(0.5, 0.5);
 		add(gridBG);
 
-		if (daAnim == 'bf')
-			isDad = false;
-
-		if (isDad)
-		{
-			dad = new Character(0, 0, daAnim);
-			dad.screenCenter();
+			dad = new Character(100, 100, daAnim);
 			dad.debugMode = true;
 			add(dad);
 
 			char = dad;
 			dad.flipX = false;
-		}
-		else
-		{
-			bf = new Boyfriend(0, 0);
-			bf.screenCenter();
+
+			bf = new Boyfriend(770, 450, daOtherAnim);
 			bf.debugMode = true;
 			add(bf);
 
 			char = bf;
 			bf.flipX = false;
-		}
 
 		dumbTexts = new FlxTypedGroup<FlxText>();
 		add(dumbTexts);
@@ -163,15 +155,28 @@ class AnimationDebug extends FlxState
 			genBoyOffsets(false);
 		}
 
+		if (FlxG.keys.justPressed.G)
+		{
+			bf.flipX = !bf.flipX;
+		}
+
+		if (FlxG.keys.justPressed.ENTER)
+		{
+			FlxG.switchState(new FreeplayState());
+		}
+
 		var upP = FlxG.keys.anyJustPressed([UP]);
 		var rightP = FlxG.keys.anyJustPressed([RIGHT]);
 		var downP = FlxG.keys.anyJustPressed([DOWN]);
 		var leftP = FlxG.keys.anyJustPressed([LEFT]);
 
 		var holdShift = FlxG.keys.pressed.SHIFT;
+		var holdCtrl = FlxG.keys.pressed.CONTROL;
 		var multiplier = 1;
 		if (holdShift)
 			multiplier = 10;
+		if (holdCtrl)
+			multiplier = 100;
 
 		if (upP || rightP || downP || leftP)
 		{

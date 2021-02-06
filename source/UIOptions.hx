@@ -28,6 +28,10 @@ class UIOptions extends MusicBeatState
 
 
 	var alwaysCutsceneCheckBox:FlxUICheckBox;
+	var perfectModeCheckBox:FlxUICheckBox;
+	var fullComboCheckBox:FlxUICheckBox;
+	var practiceCheckBox:FlxUICheckBox;
+	var useModifierMenuCheck:FlxUICheckBox;
 	var _options:Dynamic;
 	override function create()
 	{
@@ -43,7 +47,19 @@ class UIOptions extends MusicBeatState
 		_options = Json.parse(Assets.getText('assets/data/options.json'));
 		alwaysCutsceneCheckBox = new FlxUICheckBox(100, 100, null, null,"Always Show Cutscenes", 100);
 		alwaysCutsceneCheckBox.checked = _options.alwaysDoCutscenes;
+		perfectModeCheckBox = new FlxUICheckBox(100,160, null, null,"Perfect Mode", 100);
+		perfectModeCheckBox.checked = _options.perfectMode;
+		fullComboCheckBox = new FlxUICheckBox(100,220, null, null,"Full Combo Mode", 100);
+		fullComboCheckBox.checked = _options.fullComboMode;
+		practiceCheckBox = new FlxUICheckBox(100,280, null, null,"Practice Mode", 100);
+		practiceCheckBox.checked = _options.practiceMode;
+		useModifierMenuCheck = new FlxUICheckBox(100,340, null, null,"Use Modifier Menu", 100);
+		useModifierMenuCheck.checked = _options.useModifierMenu;
 		optionUI.add(alwaysCutsceneCheckBox);
+		optionUI.add(perfectModeCheckBox);
+		optionUI.add(fullComboCheckBox);
+		optionUI.add(practiceCheckBox);
+		optionUI.add(useModifierMenuCheck);
 		add(optionUI);
 		super.create();
 	}
@@ -65,6 +81,14 @@ class UIOptions extends MusicBeatState
 			{
 				case 'Always Show Cutscenes':
 					_options.alwaysDoCutscenes = check.checked;
+				case 'Perfect Mode':
+					_options.perfectMode = check.checked;
+				case "Full Combo Mode":
+					_options.fullComboMode = check.checked;
+				case "Practice Mode":
+					_options.practiceMode = check.checked;
+				case "Use Modifier Menu":
+					_options.useModifierMenu = check.checked;
 
 			}
 		}
