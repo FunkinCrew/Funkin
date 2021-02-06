@@ -30,6 +30,10 @@ class FreeplayState extends MusicBeatState
 
 	override function create()
 	{
+		#if desktop
+		DiscordManager.updateState("Freeplay Menu");
+		#end
+
 		songs = CoolUtil.coolTextFile('assets/data/freeplaySonglist.txt');
 
 		/* 
