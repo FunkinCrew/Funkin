@@ -8,15 +8,21 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.input.keyboard.FlxKey;
 import flixel.system.FlxSound;
 import flixel.util.FlxColor;
+import flixel.ui.FlxVirtualPad;
+import flixel.util.FlxSave;
+import flixel.math.FlxPoint;
 
 class PauseSubState extends MusicBeatSubstate
 {
 	var grpMenuShit:FlxTypedGroup<Alphabet>;
 
-	var menuItems:Array<String> = ['Resume', 'Restart Song', 'Exit to menu'];
+	var menuItems:Array<String> = ['Resume', 'Restart Song', 'Exit to menu','charting mode','default control','alternative control','left hand control'];
 	var curSelected:Int = 0;
 
 	var pauseMusic:FlxSound;
+
+	var _pad:FlxVirtualPad;
+	var _saveconrtol:FlxSave;
 
 	public function new(x:Float, y:Float)
 	{
@@ -47,6 +53,14 @@ class PauseSubState extends MusicBeatSubstate
 		changeSelection();
 
 		cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
+
+		_saveconrtol = new FlxSave();
+    	_saveconrtol.bind("saveconrtol");
+		_saveconrtol.data.boxPositions = new Array<FlxPoint>();
+		
+		_pad = new FlxVirtualPad(UP_DOWN, A);
+    	_pad.alpha = 0.75;
+    	this.add(_pad);
 	}
 
 	override function update(elapsed:Float)
@@ -56,9 +70,13 @@ class PauseSubState extends MusicBeatSubstate
 
 		super.update(elapsed);
 
-		var upP = controls.UP_P;
-		var downP = controls.DOWN_P;
-		var accepted = controls.ACCEPT;
+		if(FlxG.android.justReleased.BACK == true){
+			close();
+		}
+		
+		var upP = _pad.buttonUp.justPressed;
+		var downP = _pad.buttonDown.justPressed;
+		var accepted = _pad.buttonA.justPressed;
 
 		if (upP)
 		{
@@ -76,19 +94,44 @@ class PauseSubState extends MusicBeatSubstate
 			switch (daSelected)
 			{
 				case "Resume":
+					trace(_saveconrtol.data.boxPositions[0]);
+					this.remove(_pad);
+					_pad = null;
 					close();
 				case "Restart Song":
 					FlxG.resetState();
 				case "Exit to menu":
 					FlxG.switchState(new MainMenuState());
+				case "charting mode":
+					close();
+					FlxG.switchState(new ChartingState());
+				case "default control":
+					this.remove(_pad);
+					_pad = null;
+					_saveconrtol.data.boxPositions.push(3);
+					_saveconrtol.flush();
+					close();
+				case "alternative control":
+					this.remove(_pad);
+					_pad = null;
+					_saveconrtol.data.boxPositions.push(2);
+					_saveconrtol.flush();
+					close();
+				case "left hand control":
+					this.remove(_pad);
+					_pad = null;
+					_saveconrtol.data.boxPositions.push(1);
+					_saveconrtol.flush();
+					close();
 			}
 		}
-		//FlxG.keys.justPressed.J
-		if (false)
+		/*
+		if (FlxG.keys.justPressed.J)
 		{
 			// for reference later!
 			// PlayerSettings.player1.controls.replaceBinding(Control.LEFT, Keys, FlxKey.J, null);
 		}
+		*/
 	}
 
 	override function destroy()

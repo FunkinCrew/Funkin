@@ -11,8 +11,9 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 //import io.newgrounds.NG;
-import lime.app.Application;
 import flixel.ui.FlxVirtualPad;
+import lime.app.Application;
+
 using StringTools;
 
 class MainMenuState extends MusicBeatState
@@ -20,7 +21,7 @@ class MainMenuState extends MusicBeatState
 	var curSelected:Int = 0;
 
 	var menuItems:FlxTypedGroup<FlxSprite>;
-	var _pad:FlxVirtualPad;
+
 	#if !switch
 	var optionShit:Array<String> = ['story mode', 'freeplay', 'donate'];
 	#else
@@ -29,6 +30,8 @@ class MainMenuState extends MusicBeatState
 
 	var magenta:FlxSprite;
 	var camFollow:FlxObject;
+
+	var _pad:FlxVirtualPad;
 
 	override function create()
 	{
@@ -39,7 +42,7 @@ class MainMenuState extends MusicBeatState
 
 		persistentUpdate = persistentDraw = true;
 
-		var bg:FlxSprite = new FlxSprite(-80).loadGraphic(AssetPaths.menuBG__png);
+		var bg:FlxSprite = new FlxSprite(-80).loadGraphic('assets/images/menuBG.png');
 		bg.scrollFactor.x = 0;
 		bg.scrollFactor.y = 0.18;
 		bg.setGraphicSize(Std.int(bg.width * 1.1));
@@ -51,7 +54,7 @@ class MainMenuState extends MusicBeatState
 		camFollow = new FlxObject(0, 0, 1, 1);
 		add(camFollow);
 
-		magenta = new FlxSprite(-80).loadGraphic(AssetPaths.menuDesat__png);
+		magenta = new FlxSprite(-80).loadGraphic('assets/images/menuDesat.png');
 		magenta.scrollFactor.x = 0;
 		magenta.scrollFactor.y = 0.18;
 		magenta.setGraphicSize(Std.int(magenta.width * 1.1));
@@ -66,7 +69,7 @@ class MainMenuState extends MusicBeatState
 		menuItems = new FlxTypedGroup<FlxSprite>();
 		add(menuItems);
 
-		var tex = FlxAtlasFrames.fromSparrow(AssetPaths.FNF_main_menu_assets__png, AssetPaths.FNF_main_menu_assets__xml);
+		var tex = FlxAtlasFrames.fromSparrow('assets/images/FNF_main_menu_assets.png', 'assets/images/FNF_main_menu_assets.xml');
 
 		for (i in 0...optionShit.length)
 		{
@@ -84,18 +87,11 @@ class MainMenuState extends MusicBeatState
 
 		FlxG.camera.follow(camFollow, null, 0.06);
 
-		var versionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, "v" + Application.current.meta.get('version'), 12);
+		var versionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, "v" + Application.current.meta.get('version') + " ported by luckydog7", 12);
 		versionShit.scrollFactor.set();
 		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(versionShit);
-		/*
-		if (versionShit.text.trim() != NGio.GAME_VER.trim() && !OutdatedSubState.leftState)
-		{
-			trace('OLD VERSION!');
 
-			FlxG.switchState(new OutdatedSubState());
-		}
-		*/
 		// NG.core.calls.event.logEvent('swag').send();
 
 		changeItem();
@@ -115,12 +111,20 @@ class MainMenuState extends MusicBeatState
 		{
 			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
 		}
-		var UP_P = _pad.buttonUp.justPressed;
-		var DOWN_P = _pad.buttonDown.justPressed;
-		var BACK = _pad.buttonB.justPressed;
-		var ACCEPT = _pad.buttonA.justPressed;
+
 		if (!selectedSomethin)
 		{
+			var UP_P = _pad.buttonUp.justPressed;
+			var DOWN_P = _pad.buttonDown.justPressed;
+			var BACK = _pad.buttonB.justPressed;
+			var ACCEPT = _pad.buttonA.justPressed;
+
+
+			if (BACK || FlxG.android.justReleased.BACK)
+			{
+				FlxG.switchState(new TitleState());
+			}
+
 			if (UP_P)
 			{
 				FlxG.sound.play('assets/sounds/scrollMenu' + TitleState.soundExt);
@@ -133,7 +137,7 @@ class MainMenuState extends MusicBeatState
 				changeItem(1);
 			}
 
-			if (BACK)
+			if (BACK || FlxG.android.justReleased.BACK)
 			{
 				FlxG.switchState(new TitleState());
 			}

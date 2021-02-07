@@ -10,9 +10,12 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import lime.utils.Assets;
 import flixel.ui.FlxVirtualPad;
+
+using StringTools;
+
 class FreeplayState extends MusicBeatState
 {
-	var songs:Array<String> = ["Bopeebo", "Dadbattle", "Fresh", "Tutorial"];
+	var songs:Array<String> = [];
 
 	var selector:FlxText;
 	var curSelected:Int = 0;
@@ -25,9 +28,13 @@ class FreeplayState extends MusicBeatState
 
 	private var grpSongs:FlxTypedGroup<Alphabet>;
 	private var curPlaying:Bool = false;
+
 	var _pad:FlxVirtualPad;
+
 	override function create()
 	{
+		songs = CoolUtil.coolTextFile('assets/data/freeplaySonglist.txt');
+
 		/* 
 			if (FlxG.sound.music != null)
 			{
@@ -61,12 +68,27 @@ class FreeplayState extends MusicBeatState
 			songs.push('High');
 			songs.push('Milf');
 		}
-		songs.push('Monster');
+
+		if (StoryMenuState.weekUnlocked[5] || isDebug)
+		{
+			songs.push('Cocoa');
+			songs.push('Eggnog');
+			songs.push('Winter-Horrorland');
+		}
+
+		if (StoryMenuState.weekUnlocked[6] || isDebug)
+		{
+			songs.push('Senpai');
+			songs.push('Roses');
+			songs.push('Thorns');
+			// songs.push('Winter-Horrorland');
+		}
+		songs.push('monster');
 		// LOAD MUSIC
 
 		// LOAD CHARACTERS
 
-		var bg:FlxSprite = new FlxSprite().loadGraphic(AssetPaths.menuBGBlue__png);
+		var bg:FlxSprite = new FlxSprite().loadGraphic('assets/images/menuBGBlue.png');
 		add(bg);
 
 		grpSongs = new FlxTypedGroup<Alphabet>();
@@ -172,7 +194,7 @@ class FreeplayState extends MusicBeatState
 		if (RIGHT_P)
 			changeDiff(1);
 
-		if (BACK)
+		if (BACK || FlxG.android.justReleased.BACK)
 		{
 			FlxG.switchState(new MainMenuState());
 		}
@@ -218,7 +240,7 @@ class FreeplayState extends MusicBeatState
 
 	function changeSelection(change:Int = 0)
 	{
-		/*#if !switch
+		/* #if !switch
 		NGio.logEvent('Fresh');
 		#end
 		*/
