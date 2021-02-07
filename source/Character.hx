@@ -800,7 +800,6 @@ class Character extends FlxSprite
 	public function playAnim(AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0):Void
 	{
 		animation.play(AnimName, Force, Reversed, Frame);
-		trace("played anim:"+AnimName);
 		var daOffset = animOffsets.get(animation.curAnim.name);
 		if (animOffsets.exists(animation.curAnim.name))
 		{
