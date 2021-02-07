@@ -154,6 +154,10 @@ class PlayState extends MusicBeatState
 	var accelNotes:Bool = false;
 	var notesHit:Float = 0;
 	var notesPassing:Int = 0;
+	var vnshNotes:Bool = false;
+	var invsNotes:Bool = false;
+	var snakeNotes:Bool = false;
+	var snekNumber:Float = 0;
 	override public function create()
 	{
 		// var gameCam:FlxCamera = FlxG.camera;
@@ -174,6 +178,9 @@ class PlayState extends MusicBeatState
 		practiceMode = ModifierState.modifiers[2].value;
 		flippedNotes = ModifierState.modifiers[10].value;
 		accelNotes= ModifierState.modifiers[13].value;
+		vnshNotes = ModifierState.modifiers[14].value;
+		invsNotes = ModifierState.modifiers[15].value;
+		snakeNotes = ModifierState.modifiers[16].value;
 		if (ModifierState.modifiers[3].value) {
 			healthGainModifier += 0.02;
 		} else if (ModifierState.modifiers[4].value) {
@@ -1632,6 +1639,14 @@ class PlayState extends MusicBeatState
 			}
 
 		}, 0);
+		var snekBase:Float = 0;
+		var snekTimer = new FlxTimer().start(0.01, function (tmr:FlxTimer) {
+			if (snakeNotes && !paused) {
+				snekNumber = Math.sin(snekBase) * 100;
+				snekBase += Math.PI/100;
+			}
+
+		}, 0);
 	}
 
 	var previousFrameTime:Int = 0;
@@ -2299,7 +2314,7 @@ class PlayState extends MusicBeatState
 				}
 				else
 				{
-					daNote.visible = true;
+					daNote.visible = !invsNotes;
 					daNote.active = true;
 				}
 
@@ -2341,7 +2356,15 @@ class PlayState extends MusicBeatState
 				}
 
 				daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (noteSpeed * FlxMath.roundDecimal(PlayState.SONG.speed, 2)));
-
+				if (vnshNotes)
+					daNote.alpha = FlxMath.remapToRange(daNote.y, strumLine.y, FlxG.height, 0, 1);
+				if (snakeNotes) {
+					if (daNote.mustPress) {
+						daNote.x = (FlxG.width/2)+snekNumber+(Note.swagWidth*daNote.noteData)+50;
+					} else {
+						daNote.x = snekNumber+(Note.swagWidth*daNote.noteData)+50;
+					}
+				}
 				// WIP interpolation shit? Need to fix the pause issue
 				// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
 

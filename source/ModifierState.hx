@@ -55,12 +55,13 @@ class ModifierState extends MusicBeatState
 				{name: "Sup Love", value: false, conflicts: [0,1,8], multi: -0.4},
 				{name: "Poison Fright", value: false, conflicts: [0,1,7], multi: 0.4},
 				{name: "Fragile Rappin", value: false, conflicts: [0,1], multi: 1},
-				{name: "Flipped Notes", value: false, conflicts: [14,15], multi: 0.5},
+				{name: "Flipped Notes", value: false, conflicts: [15], multi: 0.5},
 				{name: "Slow Notes", value: false, conflicts: [12,13], multi: -0.3},
 				{name: "Fast Notes", value: false, conflicts: [11,13], multi: 0.8},
 				{name : "Accel Notes", value: false, conflicts: [11,12], multi: 0.4},
-				{name: "Vnsh Notes", value: false, conflicts: [10,15], multi: 0.5},
-				{name: "Invs Notes", value: false, conflicts: [10,14], multi: 1.5},
+				{name: "Vnsh Notes", value: false, conflicts: [15], multi: 0.5},
+				{name: "Invs Notes", value: false, conflicts: [10,14,16], multi: 1.5},
+				{name: "Snake Notes", value: false, conflicts: [15], multi: 0.5},
 				{name: "Play", value: false, conflicts: [], multi: 1, times:true}
 			];
 		}
