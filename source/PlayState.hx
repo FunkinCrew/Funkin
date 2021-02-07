@@ -165,7 +165,6 @@ class PlayState extends MusicBeatState
 		FlxG.cameras.add(camHUD);
 
 		FlxCamera.defaultCameras = [camGame];
-
 		persistentUpdate = true;
 		persistentDraw = true;
 		var optionsJson = Json.parse(Assets.getText('assets/data/options.json'));
@@ -188,7 +187,7 @@ class PlayState extends MusicBeatState
 		if (ModifierState.modifiers[11].value)
 			noteSpeed = 0.3;
 		if (accelNotes) {
-			noteSpeed = 0.2;
+			noteSpeed = 0.45;
 			trace("accel arrows");
 		}
 
@@ -1621,13 +1620,13 @@ class PlayState extends MusicBeatState
 			// generateSong('fresh');
 		}, 5);
 		regenTimer = new FlxTimer().start(2, function (tmr:FlxTimer) {
-			if (poisonExr)
+			if (poisonExr && !paused)
 				health -= 0.005;
-			if (supLove)
+			if (supLove && !paused)
 				health +=  0.005;
 		}, 0);
 		sickFastTimer = new FlxTimer().start(2, function (tmr:FlxTimer) {
-			if (accelNotes) {
+			if (accelNotes && !paused) {
 				trace("tick:" + noteSpeed);
 				noteSpeed += 0.01;
 			}
@@ -2341,7 +2340,7 @@ class PlayState extends MusicBeatState
 					daNote.destroy();
 				}
 
-				daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (0.9 * FlxMath.roundDecimal(PlayState.SONG.speed, 2)));
+				daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (noteSpeed * FlxMath.roundDecimal(PlayState.SONG.speed, 2)));
 
 				// WIP interpolation shit? Need to fix the pause issue
 				// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
