@@ -122,8 +122,10 @@ class PlayState extends MusicBeatState
 
 	var talking:Bool = true;
 	var songScore:Int = 0;
+	var trueScore:Int = 0;
 	var scoreTxt:FlxText;
-
+	var healthTxt:FlxText;
+	var accuracyTxt:FlxText;
 	public static var campaignScore:Int = 0;
 
 	var defaultCamZoom:Float = 1.05;
@@ -143,7 +145,22 @@ class PlayState extends MusicBeatState
 	var poisonPlus:Bool = false;
 	var beingPoisioned:Bool = false;
 	var poisonTimes:Int = 0;
+	var flippedNotes:Bool = false;
+	var noteSpeed:Float = 0.45;
+	var practiceDied:Bool = false;
+	var practiceDieIcon:HealthIcon;
 	private var regenTimer:FlxTimer;
+	var sickFastTimer:FlxTimer;
+	var accelNotes:Bool = false;
+	var notesHit:Float = 0;
+	var notesPassing:Int = 0;
+	var vnshNotes:Bool = false;
+	var invsNotes:Bool = false;
+	var snakeNotes:Bool = false;
+	var snekNumber:Float = 0;
+	var drunkNotes:Bool = false;
+	var alcholTimer:FlxTimer;
+	var alcholNumber:Float = 0;
 	override public function create()
 	{
 		// var gameCam:FlxCamera = FlxG.camera;
@@ -155,7 +172,6 @@ class PlayState extends MusicBeatState
 		FlxG.cameras.add(camHUD);
 
 		FlxCamera.defaultCameras = [camGame];
-
 		persistentUpdate = true;
 		persistentDraw = true;
 		var optionsJson = Json.parse(Assets.getText('assets/data/options.json'));
@@ -163,6 +179,12 @@ class PlayState extends MusicBeatState
 		fullComboMode = ModifierState.modifiers[1].value;
 		perfectMode = ModifierState.modifiers[0].value;
 		practiceMode = ModifierState.modifiers[2].value;
+		flippedNotes = ModifierState.modifiers[10].value;
+		accelNotes= ModifierState.modifiers[13].value;
+		vnshNotes = ModifierState.modifiers[14].value;
+		invsNotes = ModifierState.modifiers[15].value;
+		snakeNotes = ModifierState.modifiers[16].value;
+		drunkNotes = ModifierState.modifiers[17].value;
 		if (ModifierState.modifiers[3].value) {
 			healthGainModifier += 0.02;
 		} else if (ModifierState.modifiers[4].value) {
@@ -173,6 +195,16 @@ class PlayState extends MusicBeatState
 		} else if (ModifierState.modifiers[6].value) {
 			healthLossModifier -= 0.02;
 		}
+		if (ModifierState.modifiers[11].value)
+			noteSpeed = 0.3;
+		if (accelNotes) {
+			noteSpeed = 0.45;
+			trace("accel arrows");
+		}
+
+
+		if (ModifierState.modifiers[12].value)
+			noteSpeed = 0.9;
 		supLove = ModifierState.modifiers[7].value;
 		poisonExr = ModifierState.modifiers[8].value;
 		poisonPlus = ModifierState.modifiers[9].value;
@@ -1258,11 +1290,17 @@ class PlayState extends MusicBeatState
 		// healthBar
 		add(healthBar);
 
-		scoreTxt = new FlxText(healthBarBG.x + healthBarBG.width - 190, healthBarBG.y + 30, 0, "", 20);
-		scoreTxt.setFormat("assets/fonts/vcr.ttf", 16, FlxColor.WHITE, RIGHT);
+		scoreTxt = new FlxText(healthBarBG.x + healthBarBG.width - 90, healthBarBG.y + 30, 0, "", 200);
+		scoreTxt.setFormat("assets/fonts/vcr.ttf", 20, FlxColor.WHITE, RIGHT);
 		scoreTxt.scrollFactor.set();
-		add(scoreTxt);
 
+		healthTxt = new FlxText(healthBarBG.x + healthBarBG.width - 300, healthBarBG.y + 30, 0, "", 200);
+		healthTxt.setFormat("assets/fonts/vcr.ttf", 20, FlxColor.WHITE, RIGHT);
+		healthTxt.scrollFactor.set();
+
+		accuracyTxt = new FlxText(healthBarBG.x, healthBarBG.y + 30, 0, "", 200);
+		accuracyTxt.setFormat("assets/fonts/vcr.ttf", 20, FlxColor.WHITE, RIGHT);
+		accuracyTxt.scrollFactor.set();
 		iconP1 = new HealthIcon(SONG.player1, true);
 		iconP1.y = healthBar.y - (iconP1.height / 2);
 		add(iconP1);
@@ -1270,6 +1308,11 @@ class PlayState extends MusicBeatState
 		iconP2 = new HealthIcon(SONG.player2, false);
 		iconP2.y = healthBar.y - (iconP2.height / 2);
 		add(iconP2);
+		practiceDieIcon = new HealthIcon('bf-old', false);
+		practiceDieIcon.y = healthBar.y - (practiceDieIcon.height / 2);
+		practiceDieIcon.x = healthBar.x - 130;
+		practiceDieIcon.animation.curAnim.curFrame = 1;
+		add(practiceDieIcon);
 		trace("finishIcons");
 		strumLineNotes.cameras = [camHUD];
 		notes.cameras = [camHUD];
@@ -1277,9 +1320,16 @@ class PlayState extends MusicBeatState
 		healthBarBG.cameras = [camHUD];
 		iconP1.cameras = [camHUD];
 		iconP2.cameras = [camHUD];
+		practiceDieIcon.cameras = [camHUD];
 		scoreTxt.cameras = [camHUD];
+		healthTxt.cameras = [camHUD];
 		doof.cameras = [camHUD];
+		accuracyTxt.cameras = [camHUD];
+		practiceDieIcon.visible = false;
 		trace("finishCameras");
+		add(scoreTxt);
+		add(healthTxt);
+		add(accuracyTxt);
 		// if (SONG.song == 'South')
 		// FlxG.camera.alpha = 0.7;
 		// UI_camera.zoom = 1;
@@ -1581,10 +1631,25 @@ class PlayState extends MusicBeatState
 			// generateSong('fresh');
 		}, 5);
 		regenTimer = new FlxTimer().start(2, function (tmr:FlxTimer) {
-			if (poisonExr)
+			if (poisonExr && !paused)
 				health -= 0.005;
-			if (supLove)
+			if (supLove && !paused)
 				health +=  0.005;
+		}, 0);
+		sickFastTimer = new FlxTimer().start(2, function (tmr:FlxTimer) {
+			if (accelNotes && !paused) {
+				trace("tick:" + noteSpeed);
+				noteSpeed += 0.01;
+			}
+
+		}, 0);
+		var snekBase:Float = 0;
+		var snekTimer = new FlxTimer().start(0.01, function (tmr:FlxTimer) {
+			if (snakeNotes && !paused) {
+				snekNumber = Math.sin(snekBase) * 100;
+				snekBase += Math.PI/100;
+			}
+
 		}, 0);
 	}
 
@@ -1666,6 +1731,10 @@ class PlayState extends MusicBeatState
 					oldNote = null;
 
 				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote);
+				if (!swagNote.isSustainNote) {
+					swagNote.flipX = flippedNotes;
+					swagNote.flipY = flippedNotes;
+				}
 				swagNote.sustainLength = songNotes[2];
 				swagNote.scrollFactor.set(0, 0);
 
@@ -1722,7 +1791,8 @@ class PlayState extends MusicBeatState
 		{
 			// FlxG.log.add(i);
 			var babyArrow:FlxSprite = new FlxSprite(0, strumLine.y);
-
+			babyArrow.flipX = flippedNotes;
+			babyArrow.flipY = flippedNotes;
 			switch (SONG.uiType)
 			{
 				case 'pixel':
@@ -2002,9 +2072,13 @@ class PlayState extends MusicBeatState
 		}
 
 		super.update(elapsed);
-
-		scoreTxt.text = "Health:" + Math.round(health * 50) + "% Score:" + songScore;
-
+		healthTxt.text = "Health:" + Math.round(health * 50) + "%";
+		scoreTxt.text = "Score:" + songScore + "(" + trueScore + ")";
+		if (notesPassing != 0) {
+			accuracyTxt.text = "Accuracy:" + Math.round((notesHit/notesPassing) * 100) + "%";
+		} else {
+			accuracyTxt.text = "Accuracy:100%";
+		}
 		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause)
 		{
 			persistentUpdate = false;
@@ -2024,10 +2098,10 @@ class PlayState extends MusicBeatState
 
 		iconP1.setGraphicSize(Std.int(FlxMath.lerp(150, iconP1.width, 0.50)));
 		iconP2.setGraphicSize(Std.int(FlxMath.lerp(150, iconP2.width, 0.50)));
-
+		practiceDieIcon.setGraphicSize(Std.int(FlxMath.lerp(150, practiceDieIcon.width, 0.50)));
 		iconP1.updateHitbox();
 		iconP2.updateHitbox();
-
+		practiceDieIcon.updateHitbox();
 		var iconOffset:Int = 26;
 
 		iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset);
@@ -2036,10 +2110,15 @@ class PlayState extends MusicBeatState
 		if (health > 2)
 			health = 2;
 		if (poisonTimes == 0) {
-			if (healthBar.percent < 20)
+			if (healthBar.percent < 20) {
 				iconP1.animation.curAnim.curFrame = 1;
-			else
+				healthTxt.setFormat("assets/fonts/vcr.ttf", 20, FlxColor.RED, RIGHT);
+			}
+			else {
 				iconP1.animation.curAnim.curFrame = 0;
+				healthTxt.setFormat("assets/fonts/vcr.ttf", 20, FlxColor.WHITE, RIGHT);
+			}
+
 		} else {
 			iconP1.animation.curAnim.curFrame = 2;
 		}
@@ -2211,8 +2290,11 @@ class PlayState extends MusicBeatState
 			openSubState(new GameOverSubstate(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 
 			// FlxG.switchState(new GameOverState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
+		} else if (health <= 0 && !practiceDied) {
+			practiceDied = true;
+			practiceDieIcon.visible = true;
 		}
-
+		health = FlxMath.bound(health,0,2);
 		if (unspawnNotes[0] != null)
 		{
 			if (unspawnNotes[0].strumTime - Conductor.songPosition < 1500)
@@ -2236,7 +2318,7 @@ class PlayState extends MusicBeatState
 				}
 				else
 				{
-					daNote.visible = true;
+					daNote.visible = !invsNotes;
 					daNote.active = true;
 				}
 
@@ -2277,8 +2359,22 @@ class PlayState extends MusicBeatState
 					daNote.destroy();
 				}
 
-				daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(PlayState.SONG.speed, 2)));
 
+
+				if (drunkNotes) {
+					daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * ((Math.sin(songTime/400)/6)+0.5) * noteSpeed * FlxMath.roundDecimal(PlayState.SONG.speed, 2));
+				} else {
+					daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (noteSpeed * FlxMath.roundDecimal(PlayState.SONG.speed, 2)));
+				}
+				if (vnshNotes)
+					daNote.alpha = FlxMath.remapToRange(daNote.y, strumLine.y, FlxG.height, 0, 1);
+				if (snakeNotes) {
+					if (daNote.mustPress) {
+						daNote.x = (FlxG.width/2)+snekNumber+(Note.swagWidth*daNote.noteData)+50;
+					} else {
+						daNote.x = snekNumber+(Note.swagWidth*daNote.noteData)+50;
+					}
+				}
 				// WIP interpolation shit? Need to fix the pause issue
 				// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
 
@@ -2288,6 +2384,7 @@ class PlayState extends MusicBeatState
 					{
 						health -= 0.0475 + healthLossModifier;
 						vocals.volume = 0;
+						notesPassing += 1;
 						if (poisonPlus && poisonTimes < 5) {
 							poisonTimes += 1;
 								var poisonPlusTimer = new FlxTimer().start(0.5, function (tmr:FlxTimer) {
@@ -2424,22 +2521,27 @@ class PlayState extends MusicBeatState
 		{
 			daRating = 'shit';
 			score = 50;
+			notesHit += 0.25;
 		}
 		else if (noteDiff > Conductor.safeZoneOffset * 0.75)
 		{
 			daRating = 'bad';
 			score = 100;
+			notesHit += 0.5;
 		}
 		else if (noteDiff > Conductor.safeZoneOffset * 0.2)
 		{
 			daRating = 'good';
 			score = 200;
+			notesHit += 0.75;
 		}
+		if (daRating == 'sick')
+			notesHit += 1;
 		if (daRating != "sick" && perfectMode) {
 			health = -50;
 		}
-		songScore += score;
-
+		songScore += Math.round(score * ModifierState.scoreMultiplier);
+		trueScore += score;
 		/* if (combo > 60)
 				daRating = 'sick';
 			else if (combo > 12)
@@ -2780,9 +2882,11 @@ class PlayState extends MusicBeatState
 				gf.playAnim('sad');
 			}
 			combo = 0;
+			if (!practiceMode) {
+				songScore -= 10;
 
-			songScore -= 10;
-
+			}
+			trueScore -= 10;
 			FlxG.sound.play('assets/sounds/missnote' + FlxG.random.int(1, 3) + TitleState.soundExt, FlxG.random.float(0.1, 0.2));
 			// FlxG.sound.play('assets/sounds/missnote1' + TitleState.soundExt, 1, false);
 			// FlxG.log.add('played imss note');
@@ -2844,6 +2948,7 @@ class PlayState extends MusicBeatState
 		{
 			if (!note.isSustainNote)
 			{
+				notesPassing += 1;
 				popUpScore(note.strumTime);
 				combo += 1;
 			}
@@ -3032,10 +3137,10 @@ class PlayState extends MusicBeatState
 
 		iconP1.setGraphicSize(Std.int(iconP1.width + 30));
 		iconP2.setGraphicSize(Std.int(iconP2.width + 30));
-
+		practiceDieIcon.setGraphicSize(Std.int(practiceDieIcon.width + 30));
 		iconP1.updateHitbox();
 		iconP2.updateHitbox();
-
+		practiceDieIcon.updateHitbox();
 		if (totalBeats % gfSpeed == 0)
 		{
 			gf.dance();

@@ -12,14 +12,23 @@ import lime.utils.Assets;
 import sys.io.File;
 import haxe.Json;
 using StringTools;
+typedef TModifier = {
+	var name:String;
+	var value:Bool;
+	var conflicts: Array<Int>;
+	var multi: Float;
+	var ?times:Null<Bool>;
+}
 class ModifierState extends MusicBeatState
 {
 
 
-	public static var modifiers:Array<Dynamic>;
+	public static var modifiers:Array<TModifier>;
 	var grpAlphabet:FlxTypedGroup<Alphabet>;
 	var curSelected:Int = 0;
 	var checkmarks:Array<FlxSprite> = [];
+	var multiTxt:FlxText;
+	public static var scoreMultiplier:Float = 1;
 	override function create()
 	{
 		var menuBG:FlxSprite = new FlxSprite().loadGraphic('assets/images/menuDesat.png');
@@ -29,7 +38,34 @@ class ModifierState extends MusicBeatState
 		menuBG.updateHitbox();
 		menuBG.screenCenter();
 		menuBG.antialiasing = true;
-		modifiers = [{name: "Perfect Mode", value: false}, {name:"FC Mode", value: false}, {name: "Practice Mode", value: false}, {name: "Health Gain Up", value: false}, {name: "Health Gain Down", value: false}, {name: "Health Loss Up", value: false}, {name: "Health Loss Down", value: false},{name: "Sup Love", value: false},{name: "Poison EXR", value: false},{name: "Poison Plus", value: false},{name: "Play", value: false},{name: "Chart", value: false}];
+		multiTxt = new FlxText(800, 60, 0, "", 200);
+		multiTxt.setFormat("assets/fonts/vcr.ttf", 40, FlxColor.WHITE, RIGHT);
+		multiTxt.text = "Multiplier: 1";
+		multiTxt.scrollFactor.set();
+		// save between files
+		if (modifiers == null) {
+			modifiers = [
+				{name: "Sick Mode", value: false, conflicts: [1,2,3,4,5,6,7,8,9], multi: 3, times: true},
+				{name:"FC Mode", value: false, conflicts: [0,2,3,4,5,6,7,8,9], multi: 2, times: true},
+				{name: "Practice Mode", value: false, conflicts: [0,1], multi: 0, times:true},
+				{name: "Health Gain Up", value: false, conflicts: [0,1,4], multi: -0.5},
+				{name: "Health Gain Down", value: false, conflicts: [0,1,3], multi: 0.5},
+			 	{name: "Health Loss Up", value: false, conflicts: [0,1,6], multi: 0.5},
+			 	{name: "Health Loss Down", value: false, conflicts: [0,1,5], multi: -0.5},
+				{name: "Sup Love", value: false, conflicts: [0,1,8], multi: -0.4},
+				{name: "Poison Fright", value: false, conflicts: [0,1,7], multi: 0.4},
+				{name: "Fragile Rappin", value: false, conflicts: [0,1], multi: 1},
+				{name: "Flipped Notes", value: false, conflicts: [15], multi: 0.5},
+				{name: "Slow Notes", value: false, conflicts: [12,13], multi: -0.3},
+				{name: "Fast Notes", value: false, conflicts: [11,13], multi: 0.8},
+				{name : "Accel Notes", value: false, conflicts: [11,12], multi: 0.4},
+				{name: "Vnsh Notes", value: false, conflicts: [15], multi: 0.5},
+				{name: "Invs Notes", value: false, conflicts: [10,14,16], multi: 1.5},
+				{name: "Snake Notes", value: false, conflicts: [15], multi: 0.5},
+				{name: "Drunk Notes", value: false, conflicts: [15], multi: 0.5},
+				{name: "Play", value: false, conflicts: [], multi: 1, times:true}
+			];
+		}
 		for (modifier in 0...modifiers.length) {
 			var swagModifier = new Alphabet(0, 10, "   "+modifiers[modifier].name, true, false, false);
 			swagModifier.isMenuItem = true;
@@ -42,6 +78,9 @@ class ModifierState extends MusicBeatState
 		}
 		add(menuBG);
 		add(grpAlphabet);
+		add(multiTxt);
+		calculateMultiplier();
+		multiTxt.text = "Multiplier: "+scoreMultiplier;
 		super.create();
 	}
 	override function update(elapsed:Float) {
@@ -91,9 +130,31 @@ class ModifierState extends MusicBeatState
 			}
 		}
 	}
+	function calculateMultiplier() {
+		scoreMultiplier = 1;
+		var timesThings:Array<Float> = [];
+		for (modifier in modifiers) {
+			if (modifier.value) {
+				if (modifier.times)
+					timesThings.push(modifier.multi);
+				else {
+					scoreMultiplier += modifier.multi;
+				}
+			}
+		}
+		for (timesThing in timesThings) {
+			scoreMultiplier *= timesThing;
+		}
+	}
 	function toggleSelection() {
 		if (modifiers[curSelected].name != 'Play' && modifiers[curSelected].name != 'Chart'){
 			checkmarks[curSelected].visible = !checkmarks[curSelected].visible;
+			for (conflicting in modifiers[curSelected].conflicts) {
+				checkmarks[conflicting].visible = false;
+				modifiers[conflicting].value = false;
+			}
+			calculateMultiplier();
+			multiTxt.text = "Multiplier: "+scoreMultiplier;
 			modifiers[curSelected].value = checkmarks[curSelected].visible;
 		} else if (modifiers[curSelected].name == 'Play') {
 			if (FlxG.sound.music != null)
