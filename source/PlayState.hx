@@ -122,6 +122,7 @@ class PlayState extends MusicBeatState
 
 	var talking:Bool = true;
 	var songScore:Int = 0;
+	var trueScore:Int = 0;
 	var scoreTxt:FlxText;
 	var healthTxt:FlxText;
 	var accuracyTxt:FlxText;
@@ -144,9 +145,13 @@ class PlayState extends MusicBeatState
 	var poisonPlus:Bool = false;
 	var beingPoisioned:Bool = false;
 	var poisonTimes:Int = 0;
+	var flippedNotes:Bool = false;
+	var noteSpeed:Float = 0.45;
 	var practiceDied:Bool = false;
 	var practiceDieIcon:HealthIcon;
 	private var regenTimer:FlxTimer;
+	var sickFastTimer:FlxTimer;
+	var accelNotes:Bool = false;
 	var notesHit:Float = 0;
 	var notesPassing:Int = 0;
 	override public function create()
@@ -168,7 +173,8 @@ class PlayState extends MusicBeatState
 		fullComboMode = ModifierState.modifiers[1].value;
 		perfectMode = ModifierState.modifiers[0].value;
 		practiceMode = ModifierState.modifiers[2].value;
-
+		flippedNotes = ModifierState.modifiers[10].value;
+		accelNotes= ModifierState.modifiers[13].value;
 		if (ModifierState.modifiers[3].value) {
 			healthGainModifier += 0.02;
 		} else if (ModifierState.modifiers[4].value) {
@@ -179,6 +185,16 @@ class PlayState extends MusicBeatState
 		} else if (ModifierState.modifiers[6].value) {
 			healthLossModifier -= 0.02;
 		}
+		if (ModifierState.modifiers[11].value)
+			noteSpeed = 0.3;
+		if (accelNotes) {
+			noteSpeed = 0.2;
+			trace("accel arrows");
+		}
+
+
+		if (ModifierState.modifiers[12].value)
+			noteSpeed = 0.9;
 		supLove = ModifierState.modifiers[7].value;
 		poisonExr = ModifierState.modifiers[8].value;
 		poisonPlus = ModifierState.modifiers[9].value;
@@ -1610,6 +1626,13 @@ class PlayState extends MusicBeatState
 			if (supLove)
 				health +=  0.005;
 		}, 0);
+		sickFastTimer = new FlxTimer().start(2, function (tmr:FlxTimer) {
+			if (accelNotes) {
+				trace("tick:" + noteSpeed);
+				noteSpeed += 0.01;
+			}
+
+		}, 0);
 	}
 
 	var previousFrameTime:Int = 0;
@@ -1690,6 +1713,10 @@ class PlayState extends MusicBeatState
 					oldNote = null;
 
 				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote);
+				if (!swagNote.isSustainNote) {
+					swagNote.flipX = flippedNotes;
+					swagNote.flipY = flippedNotes;
+				}
 				swagNote.sustainLength = songNotes[2];
 				swagNote.scrollFactor.set(0, 0);
 
@@ -1746,7 +1773,8 @@ class PlayState extends MusicBeatState
 		{
 			// FlxG.log.add(i);
 			var babyArrow:FlxSprite = new FlxSprite(0, strumLine.y);
-
+			babyArrow.flipX = flippedNotes;
+			babyArrow.flipY = flippedNotes;
 			switch (SONG.uiType)
 			{
 				case 'pixel':
@@ -2027,7 +2055,7 @@ class PlayState extends MusicBeatState
 
 		super.update(elapsed);
 		healthTxt.text = "Health:" + Math.round(health * 50) + "%";
-		scoreTxt.text = "Score:" + songScore;
+		scoreTxt.text = "Score:" + songScore + "(" + trueScore + ")";
 		if (notesPassing != 0) {
 			accuracyTxt.text = "Accuracy:" + Math.round((notesHit/notesPassing) * 100) + "%";
 		} else {
@@ -2313,7 +2341,7 @@ class PlayState extends MusicBeatState
 					daNote.destroy();
 				}
 
-				daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(PlayState.SONG.speed, 2)));
+				daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (0.9 * FlxMath.roundDecimal(PlayState.SONG.speed, 2)));
 
 				// WIP interpolation shit? Need to fix the pause issue
 				// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
@@ -2480,8 +2508,8 @@ class PlayState extends MusicBeatState
 		if (daRating != "sick" && perfectMode) {
 			health = -50;
 		}
-		songScore += score;
-
+		songScore += Math.round(score * ModifierState.scoreMultiplier);
+		trueScore += score;
 		/* if (combo > 60)
 				daRating = 'sick';
 			else if (combo > 12)
@@ -2822,9 +2850,11 @@ class PlayState extends MusicBeatState
 				gf.playAnim('sad');
 			}
 			combo = 0;
+			if (!practiceMode) {
+				songScore -= 10;
 
-			songScore -= 10;
-
+			}
+			trueScore -= 10;
 			FlxG.sound.play('assets/sounds/missnote' + FlxG.random.int(1, 3) + TitleState.soundExt, FlxG.random.float(0.1, 0.2));
 			// FlxG.sound.play('assets/sounds/missnote1' + TitleState.soundExt, 1, false);
 			// FlxG.log.add('played imss note');
