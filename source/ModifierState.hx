@@ -62,6 +62,7 @@ class ModifierState extends MusicBeatState
 				{name: "Vnsh Notes", value: false, conflicts: [15], multi: 0.5},
 				{name: "Invs Notes", value: false, conflicts: [10,14,16], multi: 1.5},
 				{name: "Snake Notes", value: false, conflicts: [15], multi: 0.5},
+				{name: "Drunk Notes", value: false, conflicts: [15], multi: 0.5},
 				{name: "Play", value: false, conflicts: [], multi: 1, times:true}
 			];
 		}
@@ -79,6 +80,8 @@ class ModifierState extends MusicBeatState
 		add(menuBG);
 		add(grpAlphabet);
 		add(multiTxt);
+		calculateMultiplier();
+		multiTxt.text = "Multiplier: "+scoreMultiplier;
 		super.create();
 	}
 	override function update(elapsed:Float) {

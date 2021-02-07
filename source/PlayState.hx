@@ -158,6 +158,9 @@ class PlayState extends MusicBeatState
 	var invsNotes:Bool = false;
 	var snakeNotes:Bool = false;
 	var snekNumber:Float = 0;
+	var drunkNotes:Bool = false;
+	var alcholTimer:FlxTimer;
+	var alcholNumber:Float = 0;
 	override public function create()
 	{
 		// var gameCam:FlxCamera = FlxG.camera;
@@ -181,6 +184,7 @@ class PlayState extends MusicBeatState
 		vnshNotes = ModifierState.modifiers[14].value;
 		invsNotes = ModifierState.modifiers[15].value;
 		snakeNotes = ModifierState.modifiers[16].value;
+		drunkNotes = ModifierState.modifiers[17].value;
 		if (ModifierState.modifiers[3].value) {
 			healthGainModifier += 0.02;
 		} else if (ModifierState.modifiers[4].value) {
@@ -2290,7 +2294,7 @@ class PlayState extends MusicBeatState
 			practiceDied = true;
 			practiceDieIcon.visible = true;
 		}
-		health = CoolUtil.clamp(0,2,health);
+		health = FlxMath.bound(health,0,2);
 		if (unspawnNotes[0] != null)
 		{
 			if (unspawnNotes[0].strumTime - Conductor.songPosition < 1500)
@@ -2355,7 +2359,13 @@ class PlayState extends MusicBeatState
 					daNote.destroy();
 				}
 
-				daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (noteSpeed * FlxMath.roundDecimal(PlayState.SONG.speed, 2)));
+
+
+				if (drunkNotes) {
+					daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * ((Math.sin(songTime/400)/6)+0.5) * noteSpeed * FlxMath.roundDecimal(PlayState.SONG.speed, 2));
+				} else {
+					daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (noteSpeed * FlxMath.roundDecimal(PlayState.SONG.speed, 2)));
+				}
 				if (vnshNotes)
 					daNote.alpha = FlxMath.remapToRange(daNote.y, strumLine.y, FlxG.height, 0, 1);
 				if (snakeNotes) {
