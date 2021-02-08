@@ -52,7 +52,6 @@ class AnimationDebug extends FlxState
 			bf.debugMode = true;
 			add(bf);
 
-			char = bf;
 			bf.flipX = false;
 
 		dumbTexts = new FlxTypedGroup<FlxText>();
@@ -110,21 +109,33 @@ class AnimationDebug extends FlxState
 		if (FlxG.keys.justPressed.Q)
 			FlxG.camera.zoom -= 0.25;
 
+		var holdShift = FlxG.keys.pressed.SHIFT;
+		var holdCtrl = FlxG.keys.pressed.CONTROL;
+		var multiplier = 1;
+		if (holdShift)
+			multiplier = 10;
+		if (holdCtrl)
+			multiplier = 100;
+
 		if (FlxG.keys.pressed.I || FlxG.keys.pressed.J || FlxG.keys.pressed.K || FlxG.keys.pressed.L)
 		{
 			if (FlxG.keys.pressed.I)
-				camFollow.velocity.y = -90;
+				camFollow.velocity.y = -90 * multiplier;
 			else if (FlxG.keys.pressed.K)
-				camFollow.velocity.y = 90;
+				camFollow.velocity.y = 90 * multiplier;
 			else
 				camFollow.velocity.y = 0;
 
 			if (FlxG.keys.pressed.J)
-				camFollow.velocity.x = -90;
+				camFollow.velocity.x = -90 * multiplier;
 			else if (FlxG.keys.pressed.L)
-				camFollow.velocity.x = 90;
+				camFollow.velocity.x = 90 * multiplier;
 			else
 				camFollow.velocity.x = 0;
+		}
+		else if (FlxG.keys.pressed.F)
+		{
+			camFollow.setPosition(bf.getMidpoint().x - 100, bf.getMidpoint().y - 100);
 		}
 		else
 		{
@@ -160,6 +171,21 @@ class AnimationDebug extends FlxState
 			bf.flipX = !bf.flipX;
 		}
 
+
+		if (FlxG.keys.justPressed.T)
+		{
+			updateTexts();
+
+			if (char == bf)
+				char == dad;
+			else
+				char == bf;
+
+			updateTexts();
+			genBoyOffsets(false);
+			char.playAnim(animList[curAnim]);
+		}
+
 		if (FlxG.keys.justPressed.ENTER)
 		{
 			FlxG.switchState(new FreeplayState());
@@ -170,13 +196,7 @@ class AnimationDebug extends FlxState
 		var downP = FlxG.keys.anyJustPressed([DOWN]);
 		var leftP = FlxG.keys.anyJustPressed([LEFT]);
 
-		var holdShift = FlxG.keys.pressed.SHIFT;
-		var holdCtrl = FlxG.keys.pressed.CONTROL;
-		var multiplier = 1;
-		if (holdShift)
-			multiplier = 10;
-		if (holdCtrl)
-			multiplier = 100;
+
 
 		if (upP || rightP || downP || leftP)
 		{

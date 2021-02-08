@@ -2200,20 +2200,20 @@ class PlayState extends MusicBeatState
 
 			if (PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection && camFollow.x != boyfriend.getMidpoint().x - 100)
 			{
-				camFollow.setPosition(boyfriend.getMidpoint().x - 100, boyfriend.getMidpoint().y - 100);
+				camFollow.setPosition((boyfriend.getMidpoint().x - 100) + boyfriend.midpointX, (boyfriend.getMidpoint().y - 100) + boyfriend.midpointY);
 
 				switch (curStage)
 				{
 					case 'limo':
-						camFollow.x = boyfriend.getMidpoint().x - 300;
+						(camFollow.x = boyfriend.getMidpoint().x - 300) + boyfriend.midpointX;
 					case 'mall':
-						camFollow.y = boyfriend.getMidpoint().y - 200;
+						(camFollow.y = boyfriend.getMidpoint().y - 200) + boyfriend.midpointY;
 					case 'school':
-						camFollow.x = boyfriend.getMidpoint().x - 200;
-						camFollow.y = boyfriend.getMidpoint().y - 200;
+						(camFollow.x = boyfriend.getMidpoint().x - 200) + boyfriend.midpointX;
+						(camFollow.y = boyfriend.getMidpoint().y - 200) + boyfriend.midpointY;
 					case 'schoolEvil':
-						camFollow.x = boyfriend.getMidpoint().x - 200;
-						camFollow.y = boyfriend.getMidpoint().y - 200;
+						(camFollow.x = boyfriend.getMidpoint().x - 200) + boyfriend.midpointX;
+						(camFollow.y = boyfriend.getMidpoint().y - 200) + boyfriend.midpointY;
 				}
 
 				if (SONG.song.toLowerCase() == 'tutorial')

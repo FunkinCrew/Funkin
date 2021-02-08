@@ -28,6 +28,8 @@ class Character extends FlxSprite
 	public var camOffsetY:Int = 0;
 	public var followCamX:Int = 0;
 	public var followCamY:Int = 0;
+	public var midpointX:Int = 0;
+	public var midpointY:Int = 0;
 	public var isCustom:Bool = false;
 	public var holdTimer:Float = 0;
 	public var like:String = "bf";
@@ -601,6 +603,8 @@ class Character extends FlxSprite
 				enemyOffsetY = if (parsedAnimJson.enemyOffset != null) parsedAnimJson.enemyOffset[1] else 0;
 				followCamX = if (parsedAnimJson.followCam != null) parsedAnimJson.followCam[0] else 150;
 				followCamY = if (parsedAnimJson.followCam != null) parsedAnimJson.followCam[1] else -100;
+				midpointX = if (parsedAnimJson.midpoint != null) parsedAnimJson.midpoint[0] else 0;
+				midpointY = if (parsedAnimJson.midpoint != null) parsedAnimJson.midpoint[1] else 0;
 				flipX = if (parsedAnimJson.flipx != null) parsedAnimJson.flipx else false;
 
 
@@ -612,7 +616,7 @@ class Character extends FlxSprite
 				if (parsedAnimJson.isPixel) {
 					antialiasing = false;
 					setGraphicSize(Std.int(width * 6));
-					updateHitbox();
+					//updateHitbox(); // when the hitbox is sus!
 				}
 				if (!isDie) {
 					width += if (parsedAnimJson.size != null) parsedAnimJson.size[0] else 0;
@@ -690,6 +694,12 @@ class Character extends FlxSprite
 
 	override function update(elapsed:Float)
 	{
+
+		//curCharacter = curCharacter.trim();
+		//var charJson:Dynamic = Json.parse(Assets.getText('assets/images/custom_chars/custom_chars.json'));
+		//var animJson = File.getContent("assets/images/custom_chars/"+Reflect.field(charJson,curCharacter).like+".json");
+
+		//if (!StringTools.contains(animJson, "firstDeath") && like != "bf-pixel") //supposed to fix note anim shit for bfs with unique jsons, currently broken
 		if (like != "bf" && like != "bf-pixel")
 		{
 			if (animation.curAnim.name.startsWith('sing'))
