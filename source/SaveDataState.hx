@@ -67,7 +67,7 @@ class SaveDataState extends MusicBeatState
 					var saveName = "save" + curSelected;
 					trace(saveName);
 					var optionsJson = Json.parse(Assets.getText('assets/data/options.json'));
-					optionsJson.prefferedSave = curSelected;
+					optionsJson.preferredSave = curSelected;
 					File.saveContent('assets/data/options.json', Json.stringify(optionsJson));
 					FlxG.save.close();
 					FlxG.save.bind(saveName, "bulbyVR");
