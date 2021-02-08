@@ -780,7 +780,7 @@ class Character extends FlxSprite
 					else
 						playAnim('danceLeft');
 				default:
-					if (like == "gf" || like == "spooky" || like == "gf-pixel") {
+					if (like == "gf" || like == "spooky" || like == "gf-pixel" || like == "gf-car") {
 						if (!animation.curAnim.name.startsWith('hair'))
 						{
 							danced = !danced;

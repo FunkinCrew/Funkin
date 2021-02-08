@@ -27,8 +27,8 @@ class SaveDataState extends MusicBeatState
 		menuBG.screenCenter();
 		menuBG.antialiasing = true;
 		trace("before");
-		for (i in 0...3) {
-			var saveFile = new SaveFile(500, 0, i);
+		for (i in 0...10) {
+			var saveFile = new SaveFile(420, 0, i);
 
 			saves.add(saveFile);
 		}

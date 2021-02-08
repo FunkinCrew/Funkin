@@ -33,14 +33,14 @@ class SaveFile extends FlxSpriteGroup
 		targetY = saveNum;
 		save = new FlxSprite();
 		save.frames = tex;
-		save.setGraphicSize(Std.int(save.width * 2));
-		leftArrow = new FlxSprite(250, 180);
+		save.setGraphicSize(Std.int(save.width * 3));
+		leftArrow = new FlxSprite(350, 280);
 		leftArrow.frames = tex;
 		leftArrow.setGraphicSize(Std.int(leftArrow.width * 2));
 		rightArrow = new FlxSprite(60, leftArrow.y);
 		rightArrow.frames = tex;
 		rightArrow.setGraphicSize(Std.int(rightArrow.width * 2));
-		deleteConfirm = new FlxSprite(230, 100);
+		deleteConfirm = new FlxSprite(350, 100);
 		loadSprite = new FlxSprite(leftArrow.x + leftArrow.width, leftArrow.y);
 		loadSprite.frames = tex;
 
@@ -64,11 +64,25 @@ class SaveFile extends FlxSpriteGroup
 				iconType = 'bf-old';
 			case 2:
 				iconType = 'bf-pixel';
+			case 3:
+				iconType = 'spooky';
+			case 4:
+				iconType = 'dad';
+			case 5:
+				iconType = 'pico';
+			case 6:
+				iconType = 'mom';
+			case 7:
+				iconType = 'gf';
+			case 8:
+				iconType = 'monster';
+			case 9:
+				iconType = 'senpai';
 		}
 		playerIcon = new HealthIcon(iconType, false);
-		playerIcon.setGraphicSize(Std.int(playerIcon.width * 1.3));
+		playerIcon.setGraphicSize(Std.int(playerIcon.width * 2));
 		playerIcon.updateHitbox();
-		playerIcon.y += 20;
+		playerIcon.y += 70;
 		playerIcon.x += 20;
 		add(save);
 		save.antialiasing = true;
@@ -111,7 +125,7 @@ class SaveFile extends FlxSpriteGroup
 	{
 		super.update(elapsed);
 
-		y = FlxMath.lerp(y, 120 + (targetY * 420), 0.17);
+		y = FlxMath.lerp(y, 150 + (targetY * 420), 0.17);
 	}
 	public function askToConfirm(?turnOn:Bool = true) {
 		deleteConfirm.visible = turnOn;
@@ -128,14 +142,14 @@ class SaveFile extends FlxSpriteGroup
 			loadSprite.animation.play('delete');
 			selectingLoad = false;
 			loadSprite.updateHitbox();
-			leftArrow.x = 690;
+			leftArrow.x = 350 + 400;
 			loadSprite.x = leftArrow.x + leftArrow.width;
 			rightArrow.x = loadSprite.x + loadSprite.width;
 		}	else {
 			loadSprite.animation.play('load');
 			selectingLoad = true;
 			loadSprite.updateHitbox();
-			leftArrow.x = 750;
+			leftArrow.x = 300+ 450;
 			loadSprite.x = leftArrow.x + leftArrow.width;
 			rightArrow.x = loadSprite.x + loadSprite.width;
 		}

@@ -25,6 +25,7 @@ import flash.media.Sound;
 using StringTools;
 typedef StorySongsJson = {
 	var songs: Array<Array<String>>;
+	var weekNames: Array<String>;
 	var characters: Array<Array<String>>;
 }
 typedef DifficultysJson = {
@@ -52,8 +53,9 @@ class StoryMenuState extends MusicBeatState
 		"RED SNOW",
 		"hating simulator ft. moawling"
 	];*/
+	var weekTitles:Array<String> = [];
 	var curWeek:Int = 0;
-
+	var txtWeekTitle:FlxText;
 	var txtTracklist:FlxText;
 	var weekCharactersArray:FlxTypedGroup<FlxTypedGroup<MenuCharacter>>;
 	var grpWeekText:FlxTypedGroup<MenuItem>;
@@ -87,6 +89,9 @@ class StoryMenuState extends MusicBeatState
 			}
 			weekData.push(weekSongs);
 		}
+		for (weekTitle in storySongJson.weekNames) {
+			weekTitles.push(weekTitle);
+		}
 		for (storyCharList in storySongJson.characters) {
 			var weekChars = [];
 			for (char in storyCharList) {
@@ -97,9 +102,9 @@ class StoryMenuState extends MusicBeatState
 		scoreText = new FlxText(10, 10, 0, "SCORE: 49324858", 36);
 		scoreText.setFormat("VCR OSD Mono", 32);
 
-		//txtWeekTitle = new FlxText(FlxG.width * 0.7, 10, 0, "", 32);
-		//txtWeekTitle.setFormat("VCR OSD Mono", 32, FlxColor.WHITE, RIGHT);
-		//txtWeekTitle.alpha = 0.7;
+		txtWeekTitle = new FlxText(FlxG.width * 0.7, 10, 0, "", 32);
+		txtWeekTitle.setFormat("VCR OSD Mono", 32, FlxColor.WHITE, RIGHT);
+		txtWeekTitle.alpha = 0.7;
 
 		var rankText:FlxText = new FlxText(0, 10);
 		rankText.text = 'RANK: GREAT';
@@ -235,7 +240,7 @@ class StoryMenuState extends MusicBeatState
 		add(txtTracklist);
 		// add(rankText);
 		add(scoreText);
-		//add(txtWeekTitle);
+		add(txtWeekTitle);
 
 		updateText();
 
@@ -251,8 +256,8 @@ class StoryMenuState extends MusicBeatState
 
 		scoreText.text = "WEEK SCORE:" + lerpScore;
 
-		//txtWeekTitle.text = weekNames[curWeek].toUpperCase();
-		//txtWeekTitle.x = FlxG.width - (txtWeekTitle.width + 10);
+		txtWeekTitle.text = weekTitles[curWeek].toUpperCase();
+		txtWeekTitle.x = FlxG.width - (txtWeekTitle.width + 10);
 
 		// FlxG.watch.addQuick('font', scoreText.font);
 		// damn you!!!!!!!
