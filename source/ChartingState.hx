@@ -147,7 +147,7 @@ class ChartingState extends MusicBeatState
 		}
 
 		FlxG.mouse.visible = true;
-		FlxG.save.bind('funkinModdingPlus', 'bulbyVR');
+		FlxG.save.bind('save1', 'bulbyVR');
 
 		tempBpm = _song.bpm;
 

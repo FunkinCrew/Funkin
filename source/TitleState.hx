@@ -23,7 +23,7 @@ import flixel.util.FlxTimer;
 import lime.app.Application;
 import openfl.Assets;
 import polymod.Polymod;
-
+import haxe.Json;
 using StringTools;
 
 class TitleState extends MusicBeatState
@@ -58,8 +58,8 @@ class TitleState extends MusicBeatState
 		super.create();
 
 
-
-		FlxG.save.bind('funkin', 'ninjamuffin99');
+		var optionsJson = Json.parse(Assets.getText('assets/data/options.json'));
+		FlxG.save.bind("save"+optionsJson.preferredSave, 'bulbyVR');
 
 		Highscore.load();
 

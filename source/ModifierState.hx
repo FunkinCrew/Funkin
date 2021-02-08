@@ -28,6 +28,7 @@ class ModifierState extends MusicBeatState
 	var curSelected:Int = 0;
 	var checkmarks:Array<FlxSprite> = [];
 	var multiTxt:FlxText;
+	public static var isStoryMode:Bool = false;
 	public static var scoreMultiplier:Float = 1;
 	override function create()
 	{
@@ -87,7 +88,10 @@ class ModifierState extends MusicBeatState
 	override function update(elapsed:Float) {
 		super.update(elapsed);
 		if (controls.BACK) {
-			FlxG.switchState(new FreeplayState());
+			if (isStoryMode)
+				FlxG.switchState(new StoryMenuState());
+			else
+				FlxG.switchState(new FreeplayState());
 		}
 		if (controls.UP_P)
 		{

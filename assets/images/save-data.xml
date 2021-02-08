@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="save-data.png">
+	<!-- Created with Adobe Animate version 20.5.0.29329 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="deletea0000" x="0" y="0" width="93" height="24"/>
+	<SubTexture name="delete confirm0000" x="93" y="0" width="106" height="26"/>
+	<SubTexture name="deleted0000" x="0" y="26" width="106" height="24"/>
+	<SubTexture name="left arrow0000" x="106" y="26" width="12" height="21"/>
+	<SubTexture name="load0000" x="118" y="26" width="46" height="25"/>
+	<SubTexture name="right arrow0000" x="164" y="26" width="12" height="21"/>
+	<SubTexture name="save file0000" x="0" y="51" width="229" height="136"/>
+</TextureAtlas>
