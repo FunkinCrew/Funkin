@@ -113,12 +113,12 @@ class SaveDataState extends MusicBeatState
 			item.targetY = bullShit - curSelected;
 			bullShit++;
 
-			item.alpha = 0.6;
+			item.color = 0xFF828282;
 			// item.setGraphicSize(Std.int(item.width * 0.8));
 
 			if (item.targetY == 0)
 			{
-				item.alpha = 1;
+				item.color = 0xFFFFFFFF;
 				// item.setGraphicSize(Std.int(item.width));
 			}
 		}
