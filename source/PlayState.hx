@@ -1660,7 +1660,10 @@ class PlayState extends MusicBeatState
 	function startSong():Void
 	{
 		startingSong = false;
-
+		if (FlxG.sound.music != null) {
+			// cuck lunchbox
+			FlxG.sound.music.stop();
+		}
 		previousFrameTime = FlxG.game.ticks;
 		lastReportedPlayheadPosition = 0;
 
