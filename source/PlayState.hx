@@ -1742,22 +1742,6 @@ class PlayState extends MusicBeatState
 						swagNote.animation.play('purpleScroll');
 					} else if (swagNote.animation.curAnim.name == 'purpleScroll') {
 						swagNote.animation.play('redScroll');
-					} else if (swagNote.animation.curAnim.name == 'greenhold') {
-						swagNote.animation.play('bluehold');
-					} else if (swagNote.animation.curAnim.name == 'bluehold') {
-						swagNote.animation.play('greenhold');
-					} else if (swagNote.animation.curAnim.name == 'redhold') {
-						swagNote.animation.play('purplehold');
-					} else if (swagNote.animation.curAnim.name == 'purplehold') {
-						swagNote.animation.play('redhold');
-					} else if (swagNote.animation.curAnim.name == 'greenholdend') {
-						swagNote.animation.play('blueholdend');
-					} else if (swagNote.animation.curAnim.name == 'blueholdend') {
-						swagNote.animation.play('greenholdend');
-					} else if (swagNote.animation.curAnim.name == 'redholdend') {
-						swagNote.animation.play('purpleholdend');
-					} else if (swagNote.animation.curAnim.name == 'purpleholdend') {
-						swagNote.animation.play('redholdend');
 					}
 				}
 				swagNote.sustainLength = songNotes[2];
@@ -1767,7 +1751,7 @@ class PlayState extends MusicBeatState
 
 				susLength = susLength / Conductor.stepCrochet;
 				unspawnNotes.push(swagNote);
-
+				// when the imposter is sus XD
 				for (susNote in 0...Math.floor(susLength))
 				{
 					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
@@ -1782,6 +1766,8 @@ class PlayState extends MusicBeatState
 					{
 						sustainNote.x += FlxG.width / 2; // general offset
 					}
+
+
 				}
 
 				swagNote.mustPress = gottaHitNote;
@@ -1799,7 +1785,30 @@ class PlayState extends MusicBeatState
 
 		// trace(unspawnNotes.length);
 		// playerCounter += 1;
-
+		// to get around how pecked up the note system is
+		for (epicNote in unspawnNotes) {
+			if (epicNote.isSustainNote) {
+				if (flippedNotes) {
+					if (epicNote.animation.curAnim.name == 'greenhold') {
+						epicNote.animation.play('bluehold');
+					} else if (epicNote.animation.curAnim.name == 'bluehold') {
+						epicNote.animation.play('greenhold');
+					} else if (epicNote.animation.curAnim.name == 'redhold') {
+						epicNote.animation.play('purplehold');
+					} else if (epicNote.animation.curAnim.name == 'purplehold') {
+						epicNote.animation.play('redhold');
+					} else if (epicNote.animation.curAnim.name == 'greenholdend') {
+						epicNote.animation.play('blueholdend');
+					} else if (epicNote.animation.curAnim.name == 'blueholdend') {
+						epicNote.animation.play('greenholdend');
+					} else if (epicNote.animation.curAnim.name == 'redholdend') {
+						epicNote.animation.play('purpleholdend');
+					} else if (epicNote.animation.curAnim.name == 'purpleholdend') {
+						epicNote.animation.play('redholdend');
+					}
+				}
+			}
+		}
 		unspawnNotes.sort(sortByShit);
 
 		generatedMusic = true;
