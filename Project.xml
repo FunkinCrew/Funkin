@@ -43,86 +43,40 @@
 	<assets path="assets/preload" rename="assets" exclude="*.ogg" if="web"/>
 	<assets path="assets/preload" rename="assets" exclude="*.mp3" unless="web"/>
 
-	<library name="shared" preload="true" />
+	<library name="songs" preload="false" />
+	<assets path="assets/songs" exclude="*.ogg" if="web"/>
+	<assets path="assets/songs" exclude="*.mp3" unless="web"/>
+
+	<library name="shared" preload="false" />
 	<assets path="assets/shared" library="shared" exclude="*.ogg" if="web"/>
 	<assets path="assets/shared" library="shared" exclude="*.mp3" unless="web"/>
 
-	<library name="blammed" preload="true" />
-	<assets path="assets/blammed" library="blammed" exclude="*.ogg" if="web"/>
-	<assets path="assets/blammed" library="blammed" exclude="*.mp3" unless="web"/>
+	<library name="week1" preload="false" />
+	<assets path="assets/week1" library="week1" exclude="*.ogg" if="web"/>
+	<assets path="assets/week1" library="week1" exclude="*.mp3" unless="web"/>
 
-	<library name="bopeebo" preload="true" />
-	<assets path="assets/bopeebo" library="bopeebo" exclude="*.ogg" if="web"/>
-	<assets path="assets/bopeebo" library="bopeebo" exclude="*.mp3" unless="web"/>
+	<!-- <library name="week2" preload="false" />
+	<assets path="assets/week2" library="week2" exclude="*.ogg" if="web"/>
+	<assets path="assets/week2" library="week2" exclude="*.mp3" unless="web"/> -->
 
-	<library name="cocoa" preload="true" />
-	<assets path="assets/cocoa" library="cocoa" exclude="*.ogg" if="web"/>
-	<assets path="assets/cocoa" library="cocoa" exclude="*.mp3" unless="web"/>
+	<!-- <library name="week3" preload="false" />
+	<assets path="assets/week3" library="week3" exclude="*.ogg" if="web"/>
+	<assets path="assets/week3" library="week3" exclude="*.mp3" unless="web"/> -->
 
-	<library name="dadbattle" preload="true" />
-	<assets path="assets/dadbattle" library="dadbattle" exclude="*.ogg" if="web"/>
-	<assets path="assets/dadbattle" library="dadbattle" exclude="*.mp3" unless="web"/>
+	<!-- <library name="week4" preload="false" />
+	<assets path="assets/week4" library="week4" exclude="*.ogg" if="web"/>
+	<assets path="assets/week4" library="week4" exclude="*.mp3" unless="web"/> -->
 
-	<library name="eggnog" preload="true" />
-	<assets path="assets/eggnog" library="eggnog" exclude="*.ogg" if="web"/>
-	<assets path="assets/eggnog" library="eggnog" exclude="*.mp3" unless="web"/>
+	<!-- <library name="week5" preload="false" />
+	<assets path="assets/week5" library="week5" exclude="*.ogg" if="web"/>
+	<assets path="assets/week5" library="week5" exclude="*.mp3" unless="web"/> -->
 
-	<library name="fresh" preload="true" />
-	<assets path="assets/fresh" library="fresh" exclude="*.ogg" if="web"/>
-	<assets path="assets/fresh" library="fresh" exclude="*.mp3" unless="web"/>
-
-	<library name="high" preload="true" />
-	<assets path="assets/high" library="high" exclude="*.ogg" if="web"/>
-	<assets path="assets/high" library="high" exclude="*.mp3" unless="web"/>
-
-	<library name="milf" preload="true" />
-	<assets path="assets/milf" library="milf" exclude="*.ogg" if="web"/>
-	<assets path="assets/milf" library="milf" exclude="*.mp3" unless="web"/>
-
-	<library name="monster" preload="true" />
-	<assets path="assets/monster" library="monster" exclude="*.ogg" if="web"/>
-	<assets path="assets/monster" library="monster" exclude="*.mp3" unless="web"/>
-
-	<library name="pico" preload="true" />
-	<assets path="assets/pico" library="pico" exclude="*.ogg" if="web"/>
-	<assets path="assets/pico" library="pico" exclude="*.mp3" unless="web"/>
-
-	<library name="roses" preload="true" />
-	<assets path="assets/roses" library="roses" exclude="*.ogg" if="web"/>
-	<assets path="assets/roses" library="roses" exclude="*.mp3" unless="web"/>
-
-	<library name="satin-panties" preload="true" />
-	<assets path="assets/satin-panties" library="satin-panties" exclude="*.ogg" if="web"/>
-	<assets path="assets/satin-panties" library="satin-panties" exclude="*.mp3" unless="web"/>
-
-	<library name="senpai" preload="true" />
-	<assets path="assets/senpai" library="senpai" exclude="*.ogg" if="web"/>
-	<assets path="assets/senpai" library="senpai" exclude="*.mp3" unless="web"/>
-
-	<library name="south" preload="true" />
-	<assets path="assets/south" library="south" exclude="*.ogg" if="web"/>
-	<assets path="assets/south" library="south" exclude="*.mp3" unless="web"/>
-
-	<library name="spookeez" preload="true" />
-	<assets path="assets/spookeez" library="spookeez" exclude="*.ogg" if="web"/>
-	<assets path="assets/spookeez" library="spookeez" exclude="*.mp3" unless="web"/>
-
-	<library name="test" preload="true" />
-	<assets path="assets/test" library="test" exclude="*.ogg" if="web"/>
-	<assets path="assets/test" library="test" exclude="*.mp3" unless="web"/>
-
-	<library name="thorns" preload="true" />
-	<assets path="assets/thorns" library="thorns" exclude="*.ogg" if="web"/>
-	<assets path="assets/thorns" library="thorns" exclude="*.mp3" unless="web"/>
-
-	<library name="tutorial" preload="true" />
-	<assets path="assets/tutorial" library="tutorial" exclude="*.ogg" if="web"/>
-	<assets path="assets/tutorial" library="tutorial" exclude="*.mp3" unless="web"/>
-
-	<library name="winter-horrorland" preload="true" />
-	<assets path="assets/winter-horrorland" library="winter-horrorland" exclude="*.ogg" if="web"/>
-	<assets path="assets/winter-horrorland" library="winter-horrorland" exclude="*.mp3" unless="web"/>
-
+	<!-- <library name="week6" preload="false" />
+	<assets path="assets/week6" library="week6" exclude="*.ogg" if="web"/>
+	<assets path="assets/week6" library="week6" exclude="*.mp3" unless="web"/> -->
+	
+	
+	
 	<assets path='example_mods' rename='mods' embed='false'/>
 	<!-- <template path='mods' /> -->
 	
