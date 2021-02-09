@@ -66,11 +66,9 @@ class StoryMenuState extends MusicBeatState
 	var grpDifficulty:DifficultyIcons;
 	var leftArrow:FlxSprite;
 	var rightArrow:FlxSprite;
-	var useModifierMenu:Bool = false;
 	override function create()
 	{
-		var optionsJson = Json.parse(Assets.getText('assets/data/options.json'));
-		useModifierMenu = optionsJson.useModifierMenu;
+		curDifficulty = DifficultyIcons.getDefaultDiffFP();
 		if (FlxG.sound.music != null)
 		{
 			if (!FlxG.sound.music.playing)
