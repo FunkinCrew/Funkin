@@ -1734,34 +1734,29 @@ class PlayState extends MusicBeatState
 				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote);
 				// so much more complicated but makes playstation like shit work
 				if (flippedNotes) {
-					if (swagNote.animation.curAnim == 'greenScroll') {
+					if (swagNote.animation.curAnim.name == 'greenScroll') {
 						swagNote.animation.play('blueScroll');
-					} else if (swagNote.animation.curAnim == 'blueScroll') {
+					} else if (swagNote.animation.curAnim.name == 'blueScroll') {
 						swagNote.animation.play('greenScroll');
-					}
-					if (swagNote.animation.curAnim == 'redScroll') {
+					} else if (swagNote.animation.curAnim.name == 'redScroll') {
 						swagNote.animation.play('purpleScroll');
-					} else if (swagNote.animation.curAnim == 'purpleScroll') {
+					} else if (swagNote.animation.curAnim.name == 'purpleScroll') {
 						swagNote.animation.play('redScroll');
-					}
-					if (swagNote.animation.curAnim == 'greenhold') {
+					} else if (swagNote.animation.curAnim.name == 'greenhold') {
 						swagNote.animation.play('bluehold');
-					} else if (swagNote.animation.curAnim == 'bluehold') {
+					} else if (swagNote.animation.curAnim.name == 'bluehold') {
 						swagNote.animation.play('greenhold');
-					}
-					if (swagNote.animation.curAnim == 'redhold') {
+					} else if (swagNote.animation.curAnim.name == 'redhold') {
 						swagNote.animation.play('purplehold');
-					} else if (swagNote.animation.curAnim == 'purplehold') {
+					} else if (swagNote.animation.curAnim.name == 'purplehold') {
 						swagNote.animation.play('redhold');
-					}
-					if (swagNote.animation.curAnim == 'greenholdend') {
+					} else if (swagNote.animation.curAnim.name == 'greenholdend') {
 						swagNote.animation.play('blueholdend');
-					} else if (swagNote.animation.curAnim == 'blueholdend') {
+					} else if (swagNote.animation.curAnim.name == 'blueholdend') {
 						swagNote.animation.play('greenholdend');
-					}
-					if (swagNote.animation.curAnim == 'redholdend') {
+					} else if (swagNote.animation.curAnim.name == 'redholdend') {
 						swagNote.animation.play('purpleholdend');
-					} else if (swagNote.animation.curAnim == 'purpleholdend') {
+					} else if (swagNote.animation.curAnim.name == 'purpleholdend') {
 						swagNote.animation.play('redholdend');
 					}
 				}
@@ -1821,8 +1816,6 @@ class PlayState extends MusicBeatState
 		{
 			// FlxG.log.add(i);
 			var babyArrow:FlxSprite = new FlxSprite(0, strumLine.y);
-			babyArrow.flipX = flippedNotes;
-			babyArrow.flipY = flippedNotes;
 			switch (SONG.uiType)
 			{
 				case 'pixel':
@@ -1831,7 +1824,12 @@ class PlayState extends MusicBeatState
 					babyArrow.animation.add('red', [7]);
 					babyArrow.animation.add('blue', [5]);
 					babyArrow.animation.add('purplel', [4]);
-
+					if (flippedNotes) {
+						babyArrow.animation.add('blue', [6]);
+						babyArrow.animation.add('purplel', [7]);
+						babyArrow.animation.add('green', [5]);
+						babyArrow.animation.add('red', [4]);
+					}
 					babyArrow.setGraphicSize(Std.int(babyArrow.width * daPixelZoom));
 					babyArrow.updateHitbox();
 					babyArrow.antialiasing = false;
@@ -1843,21 +1841,41 @@ class PlayState extends MusicBeatState
 							babyArrow.animation.add('static', [2]);
 							babyArrow.animation.add('pressed', [6, 10], 12, false);
 							babyArrow.animation.add('confirm', [14, 18], 12, false);
+							if (flippedNotes) {
+								babyArrow.animation.add('static', [1]);
+								babyArrow.animation.add('pressed', [5, 9], 12, false);
+								babyArrow.animation.add('confirm', [13, 17], 12, false);
+							}
 						case 3:
 							babyArrow.x += Note.swagWidth * 3;
 							babyArrow.animation.add('static', [3]);
 							babyArrow.animation.add('pressed', [7, 11], 12, false);
 							babyArrow.animation.add('confirm', [15, 19], 24, false);
+							if (flippedNotes) {
+								babyArrow.animation.add('static', [0]);
+								babyArrow.animation.add('pressed', [4, 8], 12, false);
+								babyArrow.animation.add('confirm', [12, 16], 24, false);
+							}
 						case 1:
 							babyArrow.x += Note.swagWidth * 1;
 							babyArrow.animation.add('static', [1]);
 							babyArrow.animation.add('pressed', [5, 9], 12, false);
 							babyArrow.animation.add('confirm', [13, 17], 24, false);
+							if (flippedNotes) {
+								babyArrow.animation.add('static', [2]);
+								babyArrow.animation.add('pressed', [6, 10], 12, false);
+								babyArrow.animation.add('confirm', [14, 18], 12, false);
+							}
 						case 0:
 							babyArrow.x += Note.swagWidth * 0;
 							babyArrow.animation.add('static', [0]);
 							babyArrow.animation.add('pressed', [4, 8], 12, false);
 							babyArrow.animation.add('confirm', [12, 16], 24, false);
+							if (flippedNotes) {
+								babyArrow.animation.add('static', [3]);
+								babyArrow.animation.add('pressed', [7, 11], 12, false);
+								babyArrow.animation.add('confirm', [15, 19], 24, false);
+							}
 					}
 
 				case 'normal':
@@ -1866,7 +1884,12 @@ class PlayState extends MusicBeatState
 					babyArrow.animation.addByPrefix('blue', 'arrowDOWN');
 					babyArrow.animation.addByPrefix('purple', 'arrowLEFT');
 					babyArrow.animation.addByPrefix('red', 'arrowRIGHT');
-
+					if (flippedNotes) {
+						babyArrow.animation.addByPrefix('blue', 'arrowUP');
+						babyArrow.animation.addByPrefix('green', 'arrowDOWN');
+						babyArrow.animation.addByPrefix('red', 'arrowLEFT');
+						babyArrow.animation.addByPrefix('purple', 'arrowRIGHT');
+					}
 					babyArrow.antialiasing = true;
 					babyArrow.setGraphicSize(Std.int(babyArrow.width * 0.7));
 
@@ -1877,21 +1900,41 @@ class PlayState extends MusicBeatState
 							babyArrow.animation.addByPrefix('static', 'arrowUP');
 							babyArrow.animation.addByPrefix('pressed', 'up press', 24, false);
 							babyArrow.animation.addByPrefix('confirm', 'up confirm', 24, false);
+							if (flippedNotes) {
+								babyArrow.animation.addByPrefix('static', 'arrowDOWN');
+								babyArrow.animation.addByPrefix('pressed', 'down press', 24, false);
+								babyArrow.animation.addByPrefix('confirm', 'down confirm', 24, false);
+							}
 						case 3:
 							babyArrow.x += Note.swagWidth * 3;
 							babyArrow.animation.addByPrefix('static', 'arrowRIGHT');
 							babyArrow.animation.addByPrefix('pressed', 'right press', 24, false);
 							babyArrow.animation.addByPrefix('confirm', 'right confirm', 24, false);
+							if (flippedNotes) {
+								babyArrow.animation.addByPrefix('static', 'arrowLEFT');
+								babyArrow.animation.addByPrefix('pressed', 'left press', 24, false);
+								babyArrow.animation.addByPrefix('confirm', 'left confirm', 24, false);
+							}
 						case 1:
 							babyArrow.x += Note.swagWidth * 1;
 							babyArrow.animation.addByPrefix('static', 'arrowDOWN');
 							babyArrow.animation.addByPrefix('pressed', 'down press', 24, false);
 							babyArrow.animation.addByPrefix('confirm', 'down confirm', 24, false);
+							if (flippedNotes) {
+								babyArrow.animation.addByPrefix('static', 'arrowUP');
+								babyArrow.animation.addByPrefix('pressed', 'up press', 24, false);
+								babyArrow.animation.addByPrefix('confirm', 'up confirm', 24, false);
+							}
 						case 0:
 							babyArrow.x += Note.swagWidth * 0;
 							babyArrow.animation.addByPrefix('static', 'arrowLEFT');
 							babyArrow.animation.addByPrefix('pressed', 'left press', 24, false);
 							babyArrow.animation.addByPrefix('confirm', 'left confirm', 24, false);
+							if (flippedNotes) {
+								babyArrow.animation.addByPrefix('static', 'arrowRIGHT');
+								babyArrow.animation.addByPrefix('pressed', 'right press', 24, false);
+								babyArrow.animation.addByPrefix('confirm', 'right confirm', 24, false);
+							}
 					}
 				default:
 					if (FileSystem.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/NOTE_assets.xml") && FileSystem.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/NOTE_assets.png")) {
@@ -1903,7 +1946,12 @@ class PlayState extends MusicBeatState
 						babyArrow.animation.addByPrefix('blue', 'arrowDOWN');
 						babyArrow.animation.addByPrefix('purple', 'arrowLEFT');
 						babyArrow.animation.addByPrefix('red', 'arrowRIGHT');
-
+						if (flippedNotes) {
+							babyArrow.animation.addByPrefix('blue', 'arrowUP');
+							babyArrow.animation.addByPrefix('green', 'arrowDOWN');
+							babyArrow.animation.addByPrefix('red', 'arrowLEFT');
+							babyArrow.animation.addByPrefix('purple', 'arrowRIGHT');
+						}
 						babyArrow.antialiasing = true;
 						babyArrow.setGraphicSize(Std.int(babyArrow.width * 0.7));
 
@@ -1914,21 +1962,41 @@ class PlayState extends MusicBeatState
 								babyArrow.animation.addByPrefix('static', 'arrowUP');
 								babyArrow.animation.addByPrefix('pressed', 'up press', 24, false);
 								babyArrow.animation.addByPrefix('confirm', 'up confirm', 24, false);
+								if (flippedNotes) {
+									babyArrow.animation.addByPrefix('static', 'arrowDOWN');
+									babyArrow.animation.addByPrefix('pressed', 'down press', 24, false);
+									babyArrow.animation.addByPrefix('confirm', 'down confirm', 24, false);
+								}
 							case 3:
 								babyArrow.x += Note.swagWidth * 3;
 								babyArrow.animation.addByPrefix('static', 'arrowRIGHT');
 								babyArrow.animation.addByPrefix('pressed', 'right press', 24, false);
 								babyArrow.animation.addByPrefix('confirm', 'right confirm', 24, false);
+								if (flippedNotes) {
+									babyArrow.animation.addByPrefix('static', 'arrowLEFT');
+									babyArrow.animation.addByPrefix('pressed', 'left press', 24, false);
+									babyArrow.animation.addByPrefix('confirm', 'left confirm', 24, false);
+								}
 							case 1:
 								babyArrow.x += Note.swagWidth * 1;
 								babyArrow.animation.addByPrefix('static', 'arrowDOWN');
 								babyArrow.animation.addByPrefix('pressed', 'down press', 24, false);
 								babyArrow.animation.addByPrefix('confirm', 'down confirm', 24, false);
+								if (flippedNotes) {
+									babyArrow.animation.addByPrefix('static', 'arrowUP');
+									babyArrow.animation.addByPrefix('pressed', 'up press', 24, false);
+									babyArrow.animation.addByPrefix('confirm', 'up confirm', 24, false);
+								}
 							case 0:
 								babyArrow.x += Note.swagWidth * 0;
 								babyArrow.animation.addByPrefix('static', 'arrowLEFT');
 								babyArrow.animation.addByPrefix('pressed', 'left press', 24, false);
 								babyArrow.animation.addByPrefix('confirm', 'left confirm', 24, false);
+								if (flippedNotes) {
+									babyArrow.animation.addByPrefix('static', 'arrowRIGHT');
+									babyArrow.animation.addByPrefix('pressed', 'right press', 24, false);
+									babyArrow.animation.addByPrefix('confirm', 'right confirm', 24, false);
+								}
 						}
 
 					} else if (FileSystem.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png")){
@@ -1938,7 +2006,12 @@ class PlayState extends MusicBeatState
 						babyArrow.animation.add('red', [7]);
 						babyArrow.animation.add('blue', [5]);
 						babyArrow.animation.add('purplel', [4]);
-
+						if (flippedNotes) {
+							babyArrow.animation.add('blue', [6]);
+							babyArrow.animation.add('purplel', [7]);
+							babyArrow.animation.add('green', [5]);
+							babyArrow.animation.add('red', [4]);
+						}
 						babyArrow.setGraphicSize(Std.int(babyArrow.width * daPixelZoom));
 						babyArrow.updateHitbox();
 						babyArrow.antialiasing = false;
@@ -1950,21 +2023,41 @@ class PlayState extends MusicBeatState
 								babyArrow.animation.add('static', [2]);
 								babyArrow.animation.add('pressed', [6, 10], 12, false);
 								babyArrow.animation.add('confirm', [14, 18], 12, false);
+								if (flippedNotes) {
+									babyArrow.animation.add('static', [1]);
+									babyArrow.animation.add('pressed', [5, 9], 12, false);
+									babyArrow.animation.add('confirm', [13, 17], 12, false);
+								}
 							case 3:
 								babyArrow.x += Note.swagWidth * 3;
 								babyArrow.animation.add('static', [3]);
 								babyArrow.animation.add('pressed', [7, 11], 12, false);
 								babyArrow.animation.add('confirm', [15, 19], 24, false);
+								if (flippedNotes) {
+									babyArrow.animation.add('static', [0]);
+									babyArrow.animation.add('pressed', [4, 8], 12, false);
+									babyArrow.animation.add('confirm', [12, 16], 24, false);
+								}
 							case 1:
 								babyArrow.x += Note.swagWidth * 1;
 								babyArrow.animation.add('static', [1]);
 								babyArrow.animation.add('pressed', [5, 9], 12, false);
 								babyArrow.animation.add('confirm', [13, 17], 24, false);
+								if (flippedNotes) {
+									babyArrow.animation.add('static', [2]);
+									babyArrow.animation.add('pressed', [6, 10], 12, false);
+									babyArrow.animation.add('confirm', [14, 18], 12, false);
+								}
 							case 0:
 								babyArrow.x += Note.swagWidth * 0;
 								babyArrow.animation.add('static', [0]);
 								babyArrow.animation.add('pressed', [4, 8], 12, false);
 								babyArrow.animation.add('confirm', [12, 16], 24, false);
+								if (flippedNotes) {
+									babyArrow.animation.add('static', [3]);
+									babyArrow.animation.add('pressed', [7, 11], 12, false);
+									babyArrow.animation.add('confirm', [15, 19], 24, false);
+								}
 						}
 					} else {
 						// no crashing today :)
@@ -1973,7 +2066,12 @@ class PlayState extends MusicBeatState
 						babyArrow.animation.addByPrefix('blue', 'arrowDOWN');
 						babyArrow.animation.addByPrefix('purple', 'arrowLEFT');
 						babyArrow.animation.addByPrefix('red', 'arrowRIGHT');
-
+						if (flippedNotes) {
+							babyArrow.animation.addByPrefix('blue', 'arrowUP');
+							babyArrow.animation.addByPrefix('green', 'arrowDOWN');
+							babyArrow.animation.addByPrefix('red', 'arrowLEFT');
+							babyArrow.animation.addByPrefix('purple', 'arrowRIGHT');
+						}
 						babyArrow.antialiasing = true;
 						babyArrow.setGraphicSize(Std.int(babyArrow.width * 0.7));
 
@@ -1984,21 +2082,41 @@ class PlayState extends MusicBeatState
 								babyArrow.animation.addByPrefix('static', 'arrowUP');
 								babyArrow.animation.addByPrefix('pressed', 'up press', 24, false);
 								babyArrow.animation.addByPrefix('confirm', 'up confirm', 24, false);
+								if (flippedNotes) {
+									babyArrow.animation.addByPrefix('static', 'arrowDOWN');
+									babyArrow.animation.addByPrefix('pressed', 'down press', 24, false);
+									babyArrow.animation.addByPrefix('confirm', 'down confirm', 24, false);
+								}
 							case 3:
 								babyArrow.x += Note.swagWidth * 3;
 								babyArrow.animation.addByPrefix('static', 'arrowRIGHT');
 								babyArrow.animation.addByPrefix('pressed', 'right press', 24, false);
 								babyArrow.animation.addByPrefix('confirm', 'right confirm', 24, false);
+								if (flippedNotes) {
+									babyArrow.animation.addByPrefix('static', 'arrowLEFT');
+									babyArrow.animation.addByPrefix('pressed', 'left press', 24, false);
+									babyArrow.animation.addByPrefix('confirm', 'left confirm', 24, false);
+								}
 							case 1:
 								babyArrow.x += Note.swagWidth * 1;
 								babyArrow.animation.addByPrefix('static', 'arrowDOWN');
 								babyArrow.animation.addByPrefix('pressed', 'down press', 24, false);
 								babyArrow.animation.addByPrefix('confirm', 'down confirm', 24, false);
+								if (flippedNotes) {
+									babyArrow.animation.addByPrefix('static', 'arrowUP');
+									babyArrow.animation.addByPrefix('pressed', 'up press', 24, false);
+									babyArrow.animation.addByPrefix('confirm', 'up confirm', 24, false);
+								}
 							case 0:
 								babyArrow.x += Note.swagWidth * 0;
 								babyArrow.animation.addByPrefix('static', 'arrowLEFT');
 								babyArrow.animation.addByPrefix('pressed', 'left press', 24, false);
 								babyArrow.animation.addByPrefix('confirm', 'left confirm', 24, false);
+								if (flippedNotes) {
+									babyArrow.animation.addByPrefix('static', 'arrowRIGHT');
+									babyArrow.animation.addByPrefix('pressed', 'right press', 24, false);
+									babyArrow.animation.addByPrefix('confirm', 'right confirm', 24, false);
+								}
 						}
 					}
 			}

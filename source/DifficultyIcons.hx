@@ -112,4 +112,8 @@ class DifficultyIcons {
     trace(ending);
     return ending;
   }
+  public static function getDefaultDiffFP():Int {
+    var diffJson = Json.parse(Assets.getText("assets/images/custom_difficulties/difficulties.json"));
+    return diffJson.defaultDiff;
+  }
 }

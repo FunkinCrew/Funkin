@@ -42,7 +42,7 @@ class FreeplayState extends MusicBeatState
 		var optionsJson = Json.parse(Assets.getText('assets/data/options.json'));
 		useModifierMenu = optionsJson.useModifierMenu;
 		songs = CoolUtil.coolTextFile('assets/data/freeplaySonglist.txt');
-
+		curDifficulty = DifficultyIcons.getDefaultDiffFP();
 		/*
 			if (FlxG.sound.music != null)
 			{
