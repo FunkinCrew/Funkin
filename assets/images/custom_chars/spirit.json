@@ -30,10 +30,9 @@
     "singDOWN": [170, 110]
   },
   "flipx": false,
-  "like": "senpai",
+  "like": "spirit",
   "enemyOffset": [-150,100],
-  "followCam": [300, 300],
-  "camOffset": [-100,-430],
+  "camOffset": [300,0],
   "playAnim": "idle",
   "isPixel": true,
   "usesSpritesheetPacker": true

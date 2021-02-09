@@ -8,6 +8,7 @@ import lime.utils.Assets;
 import lime.system.System;
 #if sys
 import sys.io.File;
+import sys.FileSystem;
 import haxe.io.Path;
 import openfl.utils.ByteArray;
 #end
@@ -535,12 +536,6 @@ class Character extends FlxSprite
 				var charJson:Dynamic = Json.parse(Assets.getText('assets/images/custom_chars/custom_chars.json'));
 				// use assets, as it is less laggy
 				var animJson = File.getContent("assets/images/custom_chars/"+Reflect.field(charJson,curCharacter).like+".json");
-				while (!animJson.endsWith("}"))
-				{
-					animJson = animJson.substr(0, animJson.length - 1);
-					// LOL GOING THROUGH THE BULLSHIT TO CLEAN IDK WHATS STRANGE
-					// this is a protective ritual to ward off code demons idk what it does
-				}
 				var parsedAnimJson:Dynamic = Json.parse(animJson);
 
 
@@ -554,7 +549,9 @@ class Character extends FlxSprite
 				var rawPic = BitmapData.fromFile('assets/images/custom_chars/'+curCharacter+playerSuffix+".png");
 				var tex:FlxAtlasFrames;
 				var rawXml:String;
-				if (!!parsedAnimJson.usesSpritesheetPacker){
+				// GOD IS DEAD WHY DOES THIS NOT WORK
+				trace(parsedAnimJson.usesSpritesheetPacker);
+				if (FileSystem.exists('assets/images/custom_chars/'+curCharacter+playerSuffix+".txt")){
 					rawXml = File.getContent('assets/images/custom_chars/'+curCharacter+playerSuffix+".txt");
 					tex = FlxAtlasFrames.fromSpriteSheetPacker(rawPic,rawXml);
 				} else {

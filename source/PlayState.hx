@@ -174,8 +174,7 @@ class PlayState extends MusicBeatState
 		FlxCamera.defaultCameras = [camGame];
 		persistentUpdate = true;
 		persistentDraw = true;
-		var optionsJson = Json.parse(Assets.getText('assets/data/options.json'));
-		alwaysDoCutscenes = optionsJson.alwaysDoCutscenes;
+		alwaysDoCutscenes = ModifierState.modifiers[18].value;
 		fullComboMode = ModifierState.modifiers[1].value;
 		perfectMode = ModifierState.modifiers[0].value;
 		practiceMode = ModifierState.modifiers[2].value;
@@ -1132,6 +1131,7 @@ class PlayState extends MusicBeatState
 		gf.scrollFactor.set(0.95, 0.95);
 
 		// Shitty layering but whatev it works LOL
+		add(gf);
 		if (curStage == 'limo')
 			add(limo);
 
@@ -1176,8 +1176,7 @@ class PlayState extends MusicBeatState
 			case 'spirit':
 				dad.x -= 150;
 				dad.y += 100;
-				camPos.y += 70;
-				camPos.x += 150;
+				camPos.x += 300;
 			default:
 				dad.x += dad.enemyOffsetX;
 				dad.y += dad.enemyOffsetY;
@@ -1232,7 +1231,6 @@ class PlayState extends MusicBeatState
 				gf.y += 300;
 		}
 		trace("repositionByStage");
-		add(gf);
 		add(dad);
 		add(boyfriend);
 		trace("addCharacters");
@@ -1373,7 +1371,7 @@ class PlayState extends MusicBeatState
 				case 'angry-senpai':
 					FlxG.sound.play('assets/sounds/ANGRY' + TitleState.soundExt);
 					schoolIntro(doof);
-				case 'spirits':
+				case 'spirit':
 					schoolIntro(doof);
 				case 'none':
 					startCountdown();
@@ -1734,9 +1732,38 @@ class PlayState extends MusicBeatState
 					oldNote = null;
 
 				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote);
-				if (!swagNote.isSustainNote) {
-					swagNote.flipX = flippedNotes;
-					swagNote.flipY = flippedNotes;
+				// so much more complicated but makes playstation like shit work
+				if (flippedNotes) {
+					if (swagNote.animation.curAnim == 'greenScroll') {
+						swagNote.animation.play('blueScroll');
+					} else if (swagNote.animation.curAnim == 'blueScroll') {
+						swagNote.animation.play('greenScroll');
+					}
+					if (swagNote.animation.curAnim == 'redScroll') {
+						swagNote.animation.play('purpleScroll');
+					} else if (swagNote.animation.curAnim == 'purpleScroll') {
+						swagNote.animation.play('redScroll');
+					}
+					if (swagNote.animation.curAnim == 'greenhold') {
+						swagNote.animation.play('bluehold');
+					} else if (swagNote.animation.curAnim == 'bluehold') {
+						swagNote.animation.play('greenhold');
+					}
+					if (swagNote.animation.curAnim == 'redhold') {
+						swagNote.animation.play('purplehold');
+					} else if (swagNote.animation.curAnim == 'purplehold') {
+						swagNote.animation.play('redhold');
+					}
+					if (swagNote.animation.curAnim == 'greenholdend') {
+						swagNote.animation.play('blueholdend');
+					} else if (swagNote.animation.curAnim == 'blueholdend') {
+						swagNote.animation.play('greenholdend');
+					}
+					if (swagNote.animation.curAnim == 'redholdend') {
+						swagNote.animation.play('purpleholdend');
+					} else if (swagNote.animation.curAnim == 'purpleholdend') {
+						swagNote.animation.play('redholdend');
+					}
 				}
 				swagNote.sustainLength = songNotes[2];
 				swagNote.scrollFactor.set(0, 0);

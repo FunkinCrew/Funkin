@@ -55,7 +55,7 @@ class ModifierState extends MusicBeatState
 			 	{name: "Health Loss Down", value: false, conflicts: [0,1,5], multi: -0.5},
 				{name: "Sup Love", value: false, conflicts: [0,1,8], multi: -0.4},
 				{name: "Poison Fright", value: false, conflicts: [0,1,7], multi: 0.4},
-				{name: "Fragile Rappin", value: false, conflicts: [0,1], multi: 1},
+				{name: "Fragile Funkin", value: false, conflicts: [0,1], multi: 1},
 				{name: "Flipped Notes", value: false, conflicts: [15], multi: 0.5},
 				{name: "Slow Notes", value: false, conflicts: [12,13], multi: -0.3},
 				{name: "Fast Notes", value: false, conflicts: [11,13], multi: 0.8},
@@ -64,6 +64,7 @@ class ModifierState extends MusicBeatState
 				{name: "Invs Notes", value: false, conflicts: [10,14,16], multi: 1.5},
 				{name: "Snake Notes", value: false, conflicts: [15], multi: 0.5},
 				{name: "Drunk Notes", value: false, conflicts: [15], multi: 0.5},
+				{name: "Always Show Cutscenes", value: false, conflicts: [], multi: 0},
 				{name: "Play", value: false, conflicts: [], multi: 1, times:true}
 			];
 		}
