@@ -91,6 +91,28 @@ class MainMenuState extends MusicBeatState
 		add(versionShit);
 		add(usingSave);
 		// NG.core.calls.event.logEvent('swag').send();
+		switch (FlxG.save.name) {
+			case "save0":
+				usingSave.text = "bf";
+			case "save1":
+				usingSave.text = "classic";
+			case "save2":
+				usingSave.text = "bf-pixel";
+			case "save3":
+				usingSave.text = "spooky";
+			case "save4":
+				usingSave.text = "dad";
+			case "save5":
+				usingSave.text = "pico";
+			case "save6":
+				usingSave.text = "mom";
+			case "save7":
+				usingSave.text = "gf";
+			case "save8":
+				usingSave.text = "lemon";
+			case "save9":
+				usingSave.text = "senpai";
+		}
 
 		changeItem();
 
