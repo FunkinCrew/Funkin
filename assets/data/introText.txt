@@ -37,3 +37,9 @@ fashionably late--but here it is
 yooooooooooo--yooooooooo
 pico funny--pico funny
 updates each friday--on time every time
+optimisation--whats that
+crashed--oh well
+invalid char 0--at position 121
+dialog txt missing--oh well
+missing image--oh well
+json is hard--no punchline
