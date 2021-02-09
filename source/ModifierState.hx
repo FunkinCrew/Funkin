@@ -151,7 +151,7 @@ class ModifierState extends MusicBeatState
 		for (timesThing in timesThings) {
 			scoreMultiplier *= timesThing;
 		}
-		if (scoreMultipler < 0) {
+		if (scoreMultiplier < 0) {
 			scoreMultiplier = 0;
 		}
 	}
