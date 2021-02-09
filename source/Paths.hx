@@ -58,6 +58,16 @@ class Paths
 		return getPath('music/$key.$SOUND_EXT', MUSIC);
 	}
 	
+	inline static public function voices(song:String)
+	{
+		return "songs:" + getPath('songs/${song.toLowerCase()}/Voices.$SOUND_EXT', MUSIC);
+	}
+	
+	inline static public function inst(song:String)
+	{
+		return "songs:" + getPath('songs/${song.toLowerCase()}/Inst.$SOUND_EXT', MUSIC);
+	}
+	
 	inline static public function image(key:String)
 	{
 		return getPath('images/$key.png', IMAGE);
