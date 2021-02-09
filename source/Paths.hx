@@ -1,6 +1,7 @@
 package;
 
 import openfl.utils.Assets as OpenFlAssets;
+import openfl.utils.AssetType;
 
 import flixel.FlxG;
 import flixel.graphics.frames.FlxAtlasFrames;
@@ -11,33 +12,55 @@ class Paths
 	
 	static var currentLevel:String;
 	
-	static public function file(file:String)
+	static public function setCurrentLevel(name:String)
 	{
-		var path = 'assets/$file';
-		if (currentLevel != null && OpenFlAssets.exists('$currentLevel:$path'))
-			return '$currentLevel:$path';
+		currentLevel = name.toLowerCase();
+	}
+	
+	static function getPath(file:String, type:AssetType)
+	{
+		if (currentLevel != null)
+		{
+			var levelPath = getLibraryPath(currentLevel, file);
+			if (OpenFlAssets.exists(levelPath, type))
+				return levelPath;
+			
+			levelPath = getLibraryPath("shared", file);
+			if (OpenFlAssets.exists(levelPath, type))
+				return levelPath;
+		}
 		
-		return path;
+		return 'assets/$file';
+	}
+	
+	inline static function getLibraryPath(library:String, file:String)
+	{
+		return '$library:assets/$library/$file';
+	}
+	
+	inline static public function file(file:String, type:AssetType = TEXT)
+	{
+		return getPath(file, type);
 	}
 	
 	inline static public function sound(key:String)
 	{
-		return file('sounds/$key.$SOUND_EXT');
+		return getPath('sounds/$key.$SOUND_EXT', SOUND);
 	}
 	
 	inline static public function soundRandom(key:String, min:Int, max:Int)
 	{
-		return file('sounds/$key${FlxG.random.int(min, max)}.$SOUND_EXT');
+		return getPath('sounds/$key${FlxG.random.int(min, max)}.$SOUND_EXT', SOUND);
 	}
 	
 	inline static public function music(key:String)
 	{
-		return file('music/$key.$SOUND_EXT');
+		return getPath('music/$key.$SOUND_EXT', MUSIC);
 	}
 	
 	inline static public function image(key:String)
 	{
-		return file('images/$key.png');
+		return getPath('images/$key.png', IMAGE);
 	}
 	
 	inline static public function getSparrowAtlas(key:String)

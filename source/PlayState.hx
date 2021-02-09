@@ -139,6 +139,7 @@ class PlayState extends MusicBeatState
 
 		if (SONG == null)
 			SONG = Song.loadFromJson('tutorial');
+		Paths.setCurrentLevel(SONG.song);
 
 		Conductor.changeBPM(SONG.bpm);
 
@@ -968,7 +969,7 @@ class PlayState extends MusicBeatState
 		lastReportedPlayheadPosition = 0;
 
 		if (!paused)
-			FlxG.sound.playMusic(Paths.music(SONG.song + "_Inst"), 1, false);
+			FlxG.sound.playMusic(Paths.music("Inst"), 1, false);
 		FlxG.sound.music.onComplete = endSong;
 		vocals.play();
 	}
@@ -985,7 +986,7 @@ class PlayState extends MusicBeatState
 		curSong = songData.song;
 
 		if (SONG.needsVoices)
-			vocals = new FlxSound().loadEmbedded(Paths.music(curSong + "_Voices"));
+			vocals = new FlxSound().loadEmbedded(Paths.music("Voices"));
 		else
 			vocals = new FlxSound();
 
