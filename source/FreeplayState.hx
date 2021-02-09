@@ -16,6 +16,7 @@ import sys.io.File;
 import haxe.io.Path;
 import openfl.utils.ByteArray;
 import lime.media.AudioBuffer;
+import sys.FileSystem;
 import flash.media.Sound;
 #end
 import haxe.Json;
@@ -33,14 +34,11 @@ class FreeplayState extends MusicBeatState
 	var diffText:FlxText;
 	var lerpScore:Int = 0;
 	var intendedScore:Int = 0;
-	var useModifierMenu:Bool = false;
 	private var grpSongs:FlxTypedGroup<Alphabet>;
 	private var curPlaying:Bool = false;
 
 	override function create()
 	{
-		var optionsJson = Json.parse(Assets.getText('assets/data/options.json'));
-		useModifierMenu = optionsJson.useModifierMenu;
 		songs = CoolUtil.coolTextFile('assets/data/freeplaySonglist.txt');
 		curDifficulty = DifficultyIcons.getDefaultDiffFP();
 		/*
@@ -167,8 +165,15 @@ class FreeplayState extends MusicBeatState
 
 		if (accepted)
 		{
-			var poop:String = songs[curSelected] + DifficultyIcons.getEndingFP(curDifficulty);
+			var poop:String = songs[curSelected].toLowerCase() + DifficultyIcons.getEndingFP(curDifficulty);
+			trace(poop);
+			if (!FileSystem.exists('assets/data/'+songs[curSelected].toLowerCase()+'/'+poop.toLowerCase()+'.json')) {
+				// assume we pecked up the difficulty, return to default difficulty
+				trace("UH OH SONG IN SPECIFIED DIFFICULTY DOESN'T EXIST\nUSING DEFAULT DIFFICULTY");
+				poop = songs[curSelected];
+				curDifficulty = DifficultyIcons.getDefaultDiffFP();
 
+			}
 			trace(poop);
 
 			PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].toLowerCase());

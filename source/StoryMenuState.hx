@@ -21,6 +21,7 @@ import haxe.io.Path;
 import openfl.utils.ByteArray;
 import lime.media.AudioBuffer;
 import flash.media.Sound;
+import sys.FileSystem;
 #end
 using StringTools;
 typedef StorySongsJson = {
@@ -68,6 +69,7 @@ class StoryMenuState extends MusicBeatState
 	var rightArrow:FlxSprite;
 	override function create()
 	{
+		trace(DifficultyIcons.getDefaultDiffFP());
 		curDifficulty = DifficultyIcons.getDefaultDiffFP();
 		if (FlxG.sound.music != null)
 		{
@@ -209,7 +211,7 @@ class StoryMenuState extends MusicBeatState
 		for (i in diffJson.difficulties) {
 			difficultyLevels.push(i.name);
 		}
-		grpDifficulty = new DifficultyIcons(difficultyLevels, diffJson.defaultDiff, leftArrow.x + 130, leftArrow.y);
+		grpDifficulty = new DifficultyIcons(difficultyLevels, curDifficulty, leftArrow.x + 130, leftArrow.y);
 		trace("line 188");
 
 		difficultySelectors.add(grpDifficulty.group);
@@ -338,7 +340,15 @@ class StoryMenuState extends MusicBeatState
 			diffic = grpDifficulty.getDiffEnding();
 
 			PlayState.storyDifficulty = curDifficulty;
-
+			for (peckUpAblePath in PlayState.storyPlaylist) {
+				if (!FileSystem.exists('assets/data/'+peckUpAblePath.toLowerCase()+'/'+peckUpAblePath.toLowerCase() + diffic+'.json')) {
+					// probably messed up difficulty
+					trace("UH OH DIFFICULTY DOESN'T EXIST FOR A SONG");
+					trace("CHANGING TO DEFAULT DIFFICULTY");
+					diffic = "";
+					PlayState.storyDifficulty = DifficultyIcons.getDefaultDiffFP();
+				}
+			}
 			PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + diffic, PlayState.storyPlaylist[0].toLowerCase());
 			PlayState.storyWeek = curWeek;
 			PlayState.campaignScore = 0;

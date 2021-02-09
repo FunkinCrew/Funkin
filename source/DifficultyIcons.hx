@@ -55,6 +55,7 @@ class DifficultyIcons {
       trace(sprDiff);
       group.add(sprDiff);
     }
+    difficulty = defaultDiff;
     changeDifficulty();
   }
   public function changeDifficulty(?change:Int = 0):Void {

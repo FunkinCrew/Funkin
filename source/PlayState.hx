@@ -126,6 +126,7 @@ class PlayState extends MusicBeatState
 	var scoreTxt:FlxText;
 	var healthTxt:FlxText;
 	var accuracyTxt:FlxText;
+	var difficTxt:FlxText;
 	public static var campaignScore:Int = 0;
 
 	var defaultCamZoom:Float = 1.05;
@@ -1299,6 +1300,13 @@ class PlayState extends MusicBeatState
 		accuracyTxt = new FlxText(healthBarBG.x, healthBarBG.y + 30, 0, "", 200);
 		accuracyTxt.setFormat("assets/fonts/vcr.ttf", 20, FlxColor.WHITE, RIGHT);
 		accuracyTxt.scrollFactor.set();
+		difficTxt = new FlxText(10, FlxG.height, 0, "", 200);
+
+		difficTxt.setFormat("assets/fonts/vcr.ttf", 20, FlxColor.WHITE, RIGHT);
+		difficTxt.scrollFactor.set();
+		difficTxt.y -= difficTxt.height;
+		// screwy way of getting text
+		difficTxt.text = DifficultyIcons.changeDifficultyFreeplay(storyDifficulty, 0).text;
 		iconP1 = new HealthIcon(SONG.player1, true);
 		iconP1.y = healthBar.y - (iconP1.height / 2);
 		add(iconP1);
@@ -1323,11 +1331,13 @@ class PlayState extends MusicBeatState
 		healthTxt.cameras = [camHUD];
 		doof.cameras = [camHUD];
 		accuracyTxt.cameras = [camHUD];
+		difficTxt.cameras = [camHUD];
 		practiceDieIcon.visible = false;
 		trace("finishCameras");
 		add(scoreTxt);
 		add(healthTxt);
 		add(accuracyTxt);
+		add(difficTxt);
 		// if (SONG.song == 'South')
 		// FlxG.camera.alpha = 0.7;
 		// UI_camera.zoom = 1;
