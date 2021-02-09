@@ -151,6 +151,9 @@ class ModifierState extends MusicBeatState
 		for (timesThing in timesThings) {
 			scoreMultiplier *= timesThing;
 		}
+		if (scoreMultipler < 0) {
+			scoreMultiplier = 0;
+		}
 	}
 	function toggleSelection() {
 		if (modifiers[curSelected].name != 'Play'){
