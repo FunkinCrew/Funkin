@@ -381,6 +381,7 @@ class TitleState extends MusicBeatState
 					wackyEndBeat = curBeat;
 				} else if (curBeat % 2 == 1 && shownWacky + 1 != curWacky.length) {
 					addMoreText(curWacky[shownWacky + 1]);
+					shownWacky += 1;
 					wackyEndBeat = curBeat;
 				} else {
 					switch (curBeat - wackyEndBeat) {
