@@ -41,7 +41,7 @@ class NGio
 		{
 			var call = NG.core.calls.app.getCurrentVersion(GAME_VER).addDataHandler(function(response:Response<GetCurrentVersionResult>)
 			{
-				GAME_VER = response.result.data.current_version;
+				GAME_VER = response.result.data.currentVersion;
 				trace('CURRENT NG VERSION: ' + GAME_VER);
 				gotOnlineVer = true;
 			});
