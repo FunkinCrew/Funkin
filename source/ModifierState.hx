@@ -48,7 +48,7 @@ class ModifierState extends MusicBeatState
 			modifiers = [
 				{name: "Sick Mode", value: false, conflicts: [1,2,3,4,5,6,7,8,9], multi: 3, times: true},
 				{name:"FC Mode", value: false, conflicts: [0,2,3,4,5,6,7,8,9], multi: 2, times: true},
-				{name: "Practice Mode", value: false, conflicts: [0,1], multi: 0, times:true},
+				{name: "Practice Mode", value: false, conflicts: [0,1,19], multi: 0, times:true},
 				{name: "Health Gain Up", value: false, conflicts: [0,1,4], multi: -0.5},
 				{name: "Health Gain Down", value: false, conflicts: [0,1,3], multi: 0.5},
 			 	{name: "Health Loss Up", value: false, conflicts: [0,1,6], multi: 0.5},
@@ -65,6 +65,8 @@ class ModifierState extends MusicBeatState
 				{name: "Snake Notes", value: false, conflicts: [15], multi: 0.5},
 				{name: "Drunk Notes", value: false, conflicts: [15], multi: 0.5},
 				{name: "Always Show Cutscenes", value: false, conflicts: [], multi: 0},
+				// just causes the game to instant restart, doesn't really do much to help
+				{name: "Stuck in a loop", value: false, conflicts: [2], multi: 0},
 				{name: "Play", value: false, conflicts: [], multi: 1, times:true}
 			];
 		}

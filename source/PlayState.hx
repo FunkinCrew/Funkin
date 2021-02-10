@@ -162,6 +162,7 @@ class PlayState extends MusicBeatState
 	var drunkNotes:Bool = false;
 	var alcholTimer:FlxTimer;
 	var alcholNumber:Float = 0;
+	var inALoop:Bool = false;
 	override public function create()
 	{
 		// var gameCam:FlxCamera = FlxG.camera;
@@ -185,6 +186,7 @@ class PlayState extends MusicBeatState
 		invsNotes = ModifierState.modifiers[15].value;
 		snakeNotes = ModifierState.modifiers[16].value;
 		drunkNotes = ModifierState.modifiers[17].value;
+		inALoop = ModifierState.modifiers[19].value;
 		if (ModifierState.modifiers[3].value) {
 			healthGainModifier += 0.02;
 		} else if (ModifierState.modifiers[4].value) {
@@ -2453,8 +2455,12 @@ class PlayState extends MusicBeatState
 
 			vocals.stop();
 			FlxG.sound.music.stop();
+			if (inALoop) {
+				FlxG.switchState(new PlayState());
+			} else {
+				openSubState(new GameOverSubstate(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
+			}
 
-			openSubState(new GameOverSubstate(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 
 			// FlxG.switchState(new GameOverState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 		} else if (health <= 0 && !practiceDied) {
@@ -2660,7 +2666,10 @@ class PlayState extends MusicBeatState
 		else
 		{
 			trace('WENT BACK TO FREEPLAY??');
-			FlxG.switchState(new FreeplayState());
+			if (inALoop) {
+				FlxG.switchState(new VictoryLoopState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
+			} else
+				FlxG.switchState(new FreeplayState());
 		}
 	}
 
