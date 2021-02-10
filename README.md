@@ -1,10 +1,9 @@
 # Friday Night Funkin
 
-This is the repository for Friday Night Funkin, a game originally made for Ludum Dare 47 "Stuck In a Loop".
+This is the repository for Friday Night Funkin Modding Plus, a mod for FNF to add more features for modders and players alike.
 
-Play the Ludum Dare prototype here: https://ninja-muffin24.itch.io/friday-night-funkin
-Play the Newgrounds one here: https://www.newgrounds.com/portal/view/770371
-Support the project on the itch.io page: https://ninja-muffin24.itch.io/funkin
+Download on gamebanana: https://gamebanana.com/gamefiles/14264
+Play the original game: https://github.com/ninjamuffin99/Funkin
 
 ## Credits / shoutouts
 
@@ -18,9 +17,9 @@ This game was made with love to Newgrounds and it's community. Extra love to Tom
 
 THESE INSTRUCTIONS ARE FOR COMPILING THE GAME'S SOURCE CODE!!!
 
-IF YOU WANT TO JUST DOWNLOAD AND INSTALL AND PLAY THE GAME NORMALLY, GO TO ITCH.IO TO DOWNLOAD THE GAME FOR PC, MAC, AND LINUX!!
+IF YOU WANT TO JUST DOWNLOAD AND INSTALL AND PLAY THE GAME NORMALLY, GO TO GAMEBANANA TO DOWNLOAD THE GAME FOR PC, MAC, AND LINUX!!
 
-https://ninja-muffin24.itch.io/friday-night-funkin
+https://gamebanana.com/gamefiles/14264
 
 IF YOU WANT TO COMPILE THE GAME YOURSELF, CONTINUE READING!!!
 
