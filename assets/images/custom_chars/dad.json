@@ -29,7 +29,7 @@
     "singDOWN": [0, -30]
   },
   "flipx": false,
-  "camOffsetX": [400,0],
+  "camOffset": [400,0],
   "like": "dad",
   "playAnim": "idle"
 }

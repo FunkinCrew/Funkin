@@ -1,2 +1,4 @@
 export/
 .vscode/
+*.fla
+.idea/

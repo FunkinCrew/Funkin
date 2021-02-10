@@ -37,7 +37,9 @@ class GameOverSubstate extends MusicBeatSubstate
 		var characterList = Assets.getText('assets/data/characterList.txt');
 		if (!StringTools.contains(characterList, p1)) {
 			var parsedCharJson:Dynamic = Json.parse(Assets.getText('assets/images/custom_chars/custom_chars.json'));
-			var parsedAnimJson = Json.parse(File.getContent("assets/images/custom_chars/"+Reflect.field(parsedCharJson,p1).like+".json"));
+			//another CTRL+C CTRL+V ritual
+			var unparsedAnimJson = File.getContent("assets/images/custom_chars/"+Reflect.field(parsedCharJson,p1).like+".json"); //it might keep throwing an error if i dont do this
+			var parsedAnimJson = Json.parse(unparsedAnimJson); //fuck
 			switch (parsedAnimJson.like) {
 				case "bf":
 					// bf has a death animation
@@ -47,6 +49,12 @@ class GameOverSubstate extends MusicBeatSubstate
 					daBf = p1 + '-dead';
 					stageSuffix = '-pixel';
 				default:
+					if (StringTools.contains(unparsedAnimJson, "firstDeath")){ //if i had to build this for any longer i would lose my mind
+						daBf = p1; //this should be less shitty
+						if (StringTools.endsWith(p1, "-pixel"))
+							stageSuffix = '-pixel'; //pixel check!
+					}
+					else
 					// just use bf, avoid pain
 					daBf = 'bf';
 			}

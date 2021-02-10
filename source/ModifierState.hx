@@ -66,10 +66,11 @@ class ModifierState extends MusicBeatState
 				{name: "Drunk Notes", value: false, conflicts: [15], multi: 0.5},
 				// just causes the game to instant restart, doesn't really do much to help
 				{name: "Stuck in a loop", value: false, conflicts: [2], multi: 0},
+				{name: "Chart", value: false, conflicts: [], multi: 1, times:true},
 				{name: "Play", value: false, conflicts: [], multi: 1, times:true}
+
 			];
 		}
-
 		for (modifier in 0...modifiers.length) {
 			var swagModifier = new Alphabet(0, 10, "   "+modifiers[modifier].name, true, false, false);
 			swagModifier.isMenuItem = true;
@@ -157,19 +158,23 @@ class ModifierState extends MusicBeatState
 		}
 	}
 	function toggleSelection() {
-		if (modifiers[curSelected].name != 'Play'){
+		if (modifiers[curSelected].name != 'Play' && modifiers[curSelected].name != 'Chart'){
 			checkmarks[curSelected].visible = !checkmarks[curSelected].visible;
-			modifiers[curSelected].value = checkmarks[curSelected].visible;
 			for (conflicting in modifiers[curSelected].conflicts) {
 				checkmarks[conflicting].visible = false;
 				modifiers[conflicting].value = false;
 			}
 			calculateMultiplier();
 			multiTxt.text = "Multiplier: "+scoreMultiplier;
-		} else {
+			modifiers[curSelected].value = checkmarks[curSelected].visible;
+			calculateMultiplier();
+		} else if (modifiers[curSelected].name == 'Play') {
 			if (FlxG.sound.music != null)
-				FlxG.sound.music.stop();
+			FlxG.sound.music.stop();
 			FlxG.switchState(new PlayState());
+		}
+		else if (modifiers[curSelected].name == 'Chart') {
+			FlxG.switchState(new ChartingState());
 		}
 
 	}

@@ -74,6 +74,7 @@
   "flipx": true,
   "enemyOffset": [0,350],
   "size": [-100,-100],
+  "followCam": [-100,-100],
   "like": "bf-pixel",
   "isPixel": true,
   "playAnim": "idle"
