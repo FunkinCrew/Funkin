@@ -147,8 +147,8 @@ class ChartingState extends MusicBeatState
 		}
 
 		FlxG.mouse.visible = true;
-		FlxG.save.bind('save1', 'bulbyVR');
-
+		//FlxG.save.bind('save1', 'bulbyVR');
+		// i don't know why we need to rebind our save
 		tempBpm = _song.bpm;
 
 		addSection();
@@ -617,7 +617,7 @@ class ChartingState extends MusicBeatState
 			if (_song.needsVoices) {
 				vocals.stop();
 			}
-
+			FlxG.mouse.visible = false;
 			FlxG.switchState(new PlayState());
 		}
 
