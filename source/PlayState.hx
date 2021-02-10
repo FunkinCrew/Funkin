@@ -2391,6 +2391,7 @@ class PlayState extends MusicBeatState
 
 				switch (curStage)
 				{
+					// not sure that's how variable assignment works
 					case 'limo':
 						((camFollow.x = boyfriend.getMidpoint().x - 300) + boyfriend.followCamX); // why are you hard coded
 					case 'mall':
