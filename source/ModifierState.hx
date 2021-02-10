@@ -67,8 +67,9 @@ class ModifierState extends MusicBeatState
 				{name: "Always Show Cutscenes", value: false, conflicts: [], multi: 0},
 				// just causes the game to instant restart, doesn't really do much to help
 				{name: "Stuck in a loop", value: false, conflicts: [2], multi: 0},
-				{name: "Play", value: false, conflicts: [], multi: 1, times:true},
-				{name: "Chart", value: false, conflicts: [], multi: 1, times:true}
+				{name: "Chart", value: false, conflicts: [], multi: 1, times:true},
+				{name: "Play", value: false, conflicts: [], multi: 1, times:true}
+
 			];
 		}
 		for (modifier in 0...modifiers.length) {
