@@ -7,6 +7,7 @@ import flixel.math.FlxPoint;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import lime.system.System;
+import flixel.FlxSprite;
 import lime.utils.Assets;
 #if sys
 import sys.io.File;
@@ -22,13 +23,16 @@ class VictoryLoopState extends MusicBeatSubstate
 {
 	var bf:Boyfriend;
 	var camFollow:FlxObject;
-
+	var gf:Character;
 	var stageSuffix:String = "";
 
 	public function new(x:Float, y:Float)
 	{
+		//var background:FlxSprite = new FlxSprite(0,0).makeGraphic(FlxG.width, FlxG.height, FlxColor.PINK);
+		//add(background);
 		var daStage = PlayState.curStage;
 		var p1 = PlayState.SONG.player1;
+		gf = new Character(400,130,PlayState.SONG.gf);
 		var daBf:String = 'bf';
 		trace(p1);
 		if (p1 == "bf-pixel") {
@@ -39,16 +43,9 @@ class VictoryLoopState extends MusicBeatSubstate
 			var parsedCharJson:Dynamic = Json.parse(Assets.getText('assets/images/custom_chars/custom_chars.json'));
 			var parsedAnimJson = Json.parse(File.getContent("assets/images/custom_chars/"+Reflect.field(parsedCharJson,p1).like+".json"));
 			switch (parsedAnimJson.like) {
-				case "bf":
-					// bf has a death animation
-					daBf = p1;
 				case "bf-pixel":
 					// gotta deal with this dude
-					daBf = p1 + '-dead';
 					stageSuffix = '-pixel';
-				default:
-					// just use bf, avoid pain
-					daBf = 'bf';
 			}
 		}
 		super();
@@ -56,13 +53,14 @@ class VictoryLoopState extends MusicBeatSubstate
 		Conductor.songPosition = 0;
 
 		bf = new Boyfriend(x, y, PlayState.SONG.player1);
+		add(gf);
 		add(bf);
 
 		camFollow = new FlxObject(bf.getGraphicMidpoint().x, bf.getGraphicMidpoint().y, 1, 1);
 		add(camFollow);
 
 		Conductor.changeBPM(100);
-		FlxG.sound.playMusic('assets/music/Test_Inst' + TitleState.soundExt);
+		FlxG.sound.playMusic('assets/music/title' + TitleState.soundExt);
 		// FlxG.camera.followLerp = 1;
 		// FlxG.camera.focusOn(FlxPoint.get(FlxG.width / 2, FlxG.height / 2));
 		FlxG.camera.scroll.set();
@@ -101,7 +99,7 @@ class VictoryLoopState extends MusicBeatSubstate
 	override function beatHit()
 	{
 		super.beatHit();
-
+		gf.dance();
 		FlxG.log.add('beat');
 	}
 
