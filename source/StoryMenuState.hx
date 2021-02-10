@@ -354,7 +354,14 @@ class StoryMenuState extends MusicBeatState
 			PlayState.campaignScore = 0;
 			new FlxTimer().start(1, function(tmr:FlxTimer)
 			{
-				FlxG.switchState(new ModifierState());
+				var optionsJson = Json.parse(Assets.getText('assets/data/options.json'));
+				if (!optionsJson.skipModifierMenu)
+				 	FlxG.switchState(new ModifierState());
+				else {
+					if (FlxG.sound.music != null)
+						FlxG.sound.music.stop();
+					FlxG.switchState(new PlayState());
+				}
 			});
 		}
 	}

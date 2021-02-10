@@ -1,8 +1,5 @@
 {
   "alwaysDoCutscenes": false,
-  "perfectMode": false,
-  "fullComboMode": false,
-  "practiceMode": false,
-  "useModifierMenu": false,
+  "skipModifierMenu": false,
   "preferredSave": 0
 }

@@ -180,8 +180,15 @@ class FreeplayState extends MusicBeatState
 			PlayState.isStoryMode = false;
 			ModifierState.isStoryMode = false;
 			PlayState.storyDifficulty = curDifficulty;
+			var optionsJson = Json.parse(Assets.getText('assets/data/options.json'));
+			if (!optionsJson.skipModifierMenu)
+			 	FlxG.switchState(new ModifierState());
+			else {
+				if (FlxG.sound.music != null)
+					FlxG.sound.music.stop();
+				FlxG.switchState(new PlayState());
+			}
 
-			FlxG.switchState(new ModifierState());
 		}
 	}
 

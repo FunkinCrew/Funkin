@@ -64,7 +64,6 @@ class ModifierState extends MusicBeatState
 				{name: "Invs Notes", value: false, conflicts: [10,14,16], multi: 1.5},
 				{name: "Snake Notes", value: false, conflicts: [15], multi: 0.5},
 				{name: "Drunk Notes", value: false, conflicts: [15], multi: 0.5},
-				{name: "Always Show Cutscenes", value: false, conflicts: [], multi: 0},
 				// just causes the game to instant restart, doesn't really do much to help
 				{name: "Stuck in a loop", value: false, conflicts: [2], multi: 0},
 				{name: "Play", value: false, conflicts: [], multi: 1, times:true}

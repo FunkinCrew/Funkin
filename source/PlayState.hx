@@ -169,47 +169,50 @@ class PlayState extends MusicBeatState
 		camGame = new FlxCamera();
 		camHUD = new FlxCamera();
 		camHUD.bgColor.alpha = 0;
-
+		var optionsJson = Json.parse(Assets.getText('assets/data/options.json'));
 		FlxG.cameras.reset(camGame);
 		FlxG.cameras.add(camHUD);
 
 		FlxCamera.defaultCameras = [camGame];
 		persistentUpdate = true;
 		persistentDraw = true;
-		alwaysDoCutscenes = ModifierState.modifiers[18].value;
-		fullComboMode = ModifierState.modifiers[1].value;
-		perfectMode = ModifierState.modifiers[0].value;
-		practiceMode = ModifierState.modifiers[2].value;
-		flippedNotes = ModifierState.modifiers[10].value;
-		accelNotes= ModifierState.modifiers[13].value;
-		vnshNotes = ModifierState.modifiers[14].value;
-		invsNotes = ModifierState.modifiers[15].value;
-		snakeNotes = ModifierState.modifiers[16].value;
-		drunkNotes = ModifierState.modifiers[17].value;
-		inALoop = ModifierState.modifiers[19].value;
-		if (ModifierState.modifiers[3].value) {
-			healthGainModifier += 0.02;
-		} else if (ModifierState.modifiers[4].value) {
-			healthGainModifier -= 0.01;
-		}
-		if (ModifierState.modifiers[5].value) {
-			healthLossModifier += 0.02;
-		} else if (ModifierState.modifiers[6].value) {
-			healthLossModifier -= 0.02;
-		}
-		if (ModifierState.modifiers[11].value)
-			noteSpeed = 0.3;
-		if (accelNotes) {
-			noteSpeed = 0.45;
-			trace("accel arrows");
-		}
+		alwaysDoCutscenes = optionsJson.alwaysDoCutscenes;
+		if (!optionsJson.skipModifierMenu) {
+			fullComboMode = ModifierState.modifiers[1].value;
+			perfectMode = ModifierState.modifiers[0].value;
+			practiceMode = ModifierState.modifiers[2].value;
+			flippedNotes = ModifierState.modifiers[10].value;
+			accelNotes= ModifierState.modifiers[13].value;
+			vnshNotes = ModifierState.modifiers[14].value;
+			invsNotes = ModifierState.modifiers[15].value;
+			snakeNotes = ModifierState.modifiers[16].value;
+			drunkNotes = ModifierState.modifiers[17].value;
+			inALoop = ModifierState.modifiers[18].value;
+			if (ModifierState.modifiers[3].value) {
+				healthGainModifier += 0.02;
+			} else if (ModifierState.modifiers[4].value) {
+				healthGainModifier -= 0.01;
+			}
+			if (ModifierState.modifiers[5].value) {
+				healthLossModifier += 0.02;
+			} else if (ModifierState.modifiers[6].value) {
+				healthLossModifier -= 0.02;
+			}
+			if (ModifierState.modifiers[11].value)
+				noteSpeed = 0.3;
+			if (accelNotes) {
+				noteSpeed = 0.45;
+				trace("accel arrows");
+			}
 
 
-		if (ModifierState.modifiers[12].value)
-			noteSpeed = 0.9;
-		supLove = ModifierState.modifiers[7].value;
-		poisonExr = ModifierState.modifiers[8].value;
-		poisonPlus = ModifierState.modifiers[9].value;
+			if (ModifierState.modifiers[12].value)
+				noteSpeed = 0.9;
+			supLove = ModifierState.modifiers[7].value;
+			poisonExr = ModifierState.modifiers[8].value;
+			poisonPlus = ModifierState.modifiers[9].value;
+		}
+
 
 		if (SONG == null)
 			SONG = Song.loadFromJson('tutorial');

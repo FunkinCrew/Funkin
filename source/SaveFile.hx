@@ -22,6 +22,7 @@ class SaveFile extends FlxSpriteGroup
 	public var rightArrow:FlxSprite;
 	public var deleteConfirm:FlxSprite;
 	public var erasedSprite:FlxSprite;
+	public var beingSelected:Bool = false;
 	public var askingToConfirm:Bool = false;
 	public var selectingLoad:Bool = true;
 	public var playerIcon:HealthIcon;
@@ -119,6 +120,9 @@ class SaveFile extends FlxSpriteGroup
 		deleteConfirm.visible = false;
 		loadSprite.x = leftArrow.x + leftArrow.width;
 		rightArrow.x = loadSprite.x + loadSprite.width;
+		loadSprite.alpha = 0.5;
+		rightArrow.alpha = 0.5;
+		leftArrow.alpha = 0.5;
 	}
 
 	override function update(elapsed:Float)
@@ -136,6 +140,20 @@ class SaveFile extends FlxSpriteGroup
 		} else {
 			playerIcon.animation.curAnim.curFrame = 0;
 		}
+	}
+	public function beSelected(?selected:Bool = true) {
+		if (selected) {
+			beingSelected = true;
+			loadSprite.alpha = 1;
+			rightArrow.alpha = 1;
+			leftArrow.alpha = 1;
+		}	else {
+			beingSelected = false;
+			loadSprite.alpha = 0.5;
+			rightArrow.alpha = 0.5;
+			leftArrow.alpha = 0.5;
+		}
+
 	}
 	public function changeSelection() {
 		if (selectingLoad) {

@@ -245,7 +245,8 @@ class Alphabet extends FlxSpriteGroup
 			if (isStepped) {
 				x = FlxMath.lerp(x, (targetY * 20) + groupX, 0.16);
 			} else {
-				x = FlxMath.lerp(x, groupX, 0.16);
+				// bad no
+				//	x = FlxMath.lerp(x, groupX, 0.16);
 			}
 
 		}
