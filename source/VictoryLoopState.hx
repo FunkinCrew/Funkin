@@ -26,13 +26,13 @@ class VictoryLoopState extends MusicBeatSubstate
 	var gf:Character;
 	var stageSuffix:String = "";
 
-	public function new(x:Float, y:Float)
+	public function new(x:Float, y:Float, gfX:Float, gfY:Float)
 	{
 		//var background:FlxSprite = new FlxSprite(0,0).makeGraphic(FlxG.width, FlxG.height, FlxColor.PINK);
 		//add(background);
 		var daStage = PlayState.curStage;
 		var p1 = PlayState.SONG.player1;
-		gf = new Character(400,130,PlayState.SONG.gf);
+		gf = new Character(gfX,gfY,PlayState.SONG.gf);
 		var daBf:String = 'bf';
 		trace(p1);
 		if (p1 == "bf-pixel") {
@@ -65,7 +65,7 @@ class VictoryLoopState extends MusicBeatSubstate
 		// FlxG.camera.focusOn(FlxPoint.get(FlxG.width / 2, FlxG.height / 2));
 		FlxG.camera.scroll.set();
 		FlxG.camera.target = null;
-		bf.playAnim('singUP');
+		bf.playAnim('idle');
 		// do this because this makes it so if there is no hey anim he sings up
 		bf.playAnim('hey');
 	}

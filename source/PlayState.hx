@@ -2685,7 +2685,7 @@ class PlayState extends MusicBeatState
 		{
 			trace('WENT BACK TO FREEPLAY??');
 			if (inALoop) {
-				FlxG.switchState(new VictoryLoopState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
+				FlxG.switchState(new VictoryLoopState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y, gf.getScreenPosition().x,gf.getScreenPosition().y));
 			} else
 				FlxG.switchState(new FreeplayState());
 		}
