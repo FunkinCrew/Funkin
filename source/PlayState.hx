@@ -1196,8 +1196,28 @@ class PlayState extends MusicBeatState
 				}
 		}
 
+
+
 		boyfriend = new Boyfriend(770, 450, SONG.player1);
 		trace("newBF");
+		switch (SONG.player1) // no clue why i didnt think of this before lol
+		{
+			default:
+				//boyfriend.x += boyfriend.bfOffsetX; //just use sprite offsets
+				//boyfriend.y += boyfriend.bfOffsetY;
+				camPos.x += boyfriend.camOffsetX;
+				camPos.y += boyfriend.camOffsetY;
+				if (boyfriend.like == "gf") {
+					boyfriend.setPosition(gf.x, gf.y);
+					gf.visible = false;
+					if (isStoryMode)
+					{
+						camPos.x += 600;
+						tweenCamIn();
+					}
+				}
+		}
+
 		// REPOSITIONING PER STAGE
 		switch (curStage)
 		{
@@ -2301,10 +2321,8 @@ class PlayState extends MusicBeatState
 		/* if (FlxG.keys.justPressed.NINE)
 			FlxG.switchState(new Charting()); */
 
-		#if debug
-		if (FlxG.keys.justPressed.EIGHT)
+		if (FlxG.keys.justPressed.EIGHT) // stop checking for debug so i can fix my offsets!
 			FlxG.switchState(new AnimationDebug(SONG.player2, SONG.player1));
-		#end
 
 		if (startingSong)
 		{
@@ -2369,20 +2387,26 @@ class PlayState extends MusicBeatState
 
 			if (PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection && camFollow.x != boyfriend.getMidpoint().x - 100)
 			{
-				camFollow.setPosition((boyfriend.getMidpoint().x - 100) + boyfriend.midpointX, (boyfriend.getMidpoint().y - 100) + boyfriend.midpointY);
+				camFollow.setPosition((boyfriend.getMidpoint().x - 100), (boyfriend.getMidpoint().y - 100));
 
 				switch (curStage)
 				{
 					case 'limo':
-						(camFollow.x = boyfriend.getMidpoint().x - 300) + boyfriend.midpointX;
+						((camFollow.x = boyfriend.getMidpoint().x - 300) + boyfriend.followCamX); // why are you hard coded
 					case 'mall':
-						(camFollow.y = boyfriend.getMidpoint().y - 200) + boyfriend.midpointY;
+						((camFollow.y = boyfriend.getMidpoint().y - 200) + boyfriend.followCamY);
 					case 'school':
-						(camFollow.x = boyfriend.getMidpoint().x - 200) + boyfriend.midpointX;
-						(camFollow.y = boyfriend.getMidpoint().y - 200) + boyfriend.midpointY;
+						((camFollow.x = boyfriend.getMidpoint().x - 200) + boyfriend.followCamX);
+						((camFollow.y = boyfriend.getMidpoint().y - 200) + boyfriend.followCamY);
 					case 'schoolEvil':
-						(camFollow.x = boyfriend.getMidpoint().x - 200) + boyfriend.midpointX;
-						(camFollow.y = boyfriend.getMidpoint().y - 200) + boyfriend.midpointY;
+						((camFollow.x = boyfriend.getMidpoint().x - 200) + boyfriend.followCamX);
+						((camFollow.y = boyfriend.getMidpoint().y - 200) + boyfriend.followCamY);
+				}
+
+				if (boyfriend.isCustom) {
+					camFollow.y = boyfriend.getMidpoint().y + boyfriend.followCamY;
+					camFollow.x = boyfriend.getMidpoint().x + boyfriend.followCamX;
+
 				}
 
 				if (SONG.song.toLowerCase() == 'tutorial')

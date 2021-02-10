@@ -613,7 +613,7 @@ class Character extends FlxSprite
 				if (parsedAnimJson.isPixel) {
 					antialiasing = false;
 					setGraphicSize(Std.int(width * 6));
-					//updateHitbox(); // when the hitbox is sus!
+					updateHitbox(); // when the hitbox is sus!
 				}
 				if (!isDie) {
 					width += if (parsedAnimJson.size != null) parsedAnimJson.size[0] else 0;

@@ -18,6 +18,8 @@ class AnimationDebug extends FlxState
 	var dad:Character;
 	var char:Character;
 	var textAnim:FlxText;
+	var textCam:FlxText;
+	var camOffsetText:FlxText;
 	var dumbTexts:FlxTypedGroup<FlxText>;
 	var animList:Array<String> = [];
 	var curAnim:Int = 0;
@@ -52,6 +54,7 @@ class AnimationDebug extends FlxState
 			bf.debugMode = true;
 			add(bf);
 
+			char = dad;
 			bf.flipX = false;
 
 		dumbTexts = new FlxTypedGroup<FlxText>();
@@ -67,6 +70,16 @@ class AnimationDebug extends FlxState
 		camFollow = new FlxObject(0, 0, 2, 2);
 		camFollow.screenCenter();
 		add(camFollow);
+
+		textCam = new FlxText(500, 16);
+		textCam.size = 14;
+		textCam.scrollFactor.set();
+		add(textCam);
+
+		camOffsetText = new FlxText(500, 46);
+		camOffsetText.size = 14;
+		camOffsetText.scrollFactor.set();
+		add(camOffsetText);
 
 		FlxG.camera.follow(camFollow);
 
@@ -102,12 +115,23 @@ class AnimationDebug extends FlxState
 
 	override function update(elapsed:Float)
 	{
+		/*
+		TODO
+
+		make cam offset editing better
+
+		 */
 		textAnim.text = char.animation.curAnim.name;
 
+		textCam.text = camFollow.x + ", " + camFollow.y;
+
+		camOffsetText.text = ((bf.followCamX - camFollow.x) + ", " + (bf.followCamY - camFollow.y));
+		// you're gonna need some math to fix these camera offsets!
+
 		if (FlxG.keys.justPressed.E)
-			FlxG.camera.zoom += 0.25;
+			FlxG.camera.zoom += (0.25 * 0.25); // this could either make zooming better or break it entirely
 		if (FlxG.keys.justPressed.Q)
-			FlxG.camera.zoom -= 0.25;
+			FlxG.camera.zoom -= (0.25 * 0.25);
 
 		var holdShift = FlxG.keys.pressed.SHIFT;
 		var holdCtrl = FlxG.keys.pressed.CONTROL;
@@ -135,7 +159,10 @@ class AnimationDebug extends FlxState
 		}
 		else if (FlxG.keys.pressed.F)
 		{
-			camFollow.setPosition(bf.getMidpoint().x - 100, bf.getMidpoint().y - 100);
+			if (holdShift)
+				camFollow.setPosition(bf.getMidpoint().x + bf.followCamX, bf.getMidpoint().y + bf.followCamY);
+			else
+				camFollow.setPosition(bf.getMidpoint().x, bf.getMidpoint().y);
 		}
 		else
 		{
@@ -171,20 +198,25 @@ class AnimationDebug extends FlxState
 			bf.flipX = !bf.flipX;
 		}
 
-
-		if (FlxG.keys.justPressed.T)
+		if (FlxG.keys.justPressed.Y) //camera origin
 		{
-			updateTexts();
-
-			if (char == bf)
-				char == dad;
-			else
-				char == bf;
-
-			updateTexts();
-			genBoyOffsets(false);
-			char.playAnim(animList[curAnim]);
+			camFollow.x = 0;
+			camFollow.y = 0;
 		}
+
+		//if (FlxG.keys.justPressed.T) // this is supposed to swap the character whose anims ur editing, i dont know why its not working
+		//{
+		//	updateTexts();
+		//
+		//	if (char == bf)
+		//		char == dad;
+		//	if (char == dad)
+		//		char == bf;
+		//
+		//	updateTexts();
+		//	genBoyOffsets(false);
+		//	char.playAnim(animList[curAnim]);
+		//}
 
 		if (FlxG.keys.justPressed.ENTER)
 		{
