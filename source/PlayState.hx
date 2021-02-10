@@ -60,7 +60,7 @@ class PlayState extends MusicBeatState
 	public static var storyWeek:Int = 0;
 	public static var storyPlaylist:Array<String> = [];
 	public static var storyDifficulty:Int = 1;
-
+	public static var defaultPlaylistLength = 0;
 	var halloweenLevel:Bool = false;
 
 	private var vocals:FlxSound;
@@ -128,7 +128,7 @@ class PlayState extends MusicBeatState
 	var accuracyTxt:FlxText;
 	var difficTxt:FlxText;
 	public static var campaignScore:Int = 0;
-
+	public static var campaignAccuracy:Float = 0;
 	var defaultCamZoom:Float = 1.05;
 
 	// how big to stretch the pixel art assets
@@ -163,6 +163,7 @@ class PlayState extends MusicBeatState
 	var alcholTimer:FlxTimer;
 	var alcholNumber:Float = 0;
 	var inALoop:Bool = false;
+	var useVictoryScreen:Bool = true;
 	override public function create()
 	{
 		// var gameCam:FlxCamera = FlxG.camera;
@@ -177,6 +178,7 @@ class PlayState extends MusicBeatState
 		persistentUpdate = true;
 		persistentDraw = true;
 		alwaysDoCutscenes = optionsJson.alwaysDoCutscenes;
+		useVictoryScreen = !optionsJson.skipVictoryScreen;
 		if (!optionsJson.skipModifierMenu) {
 			fullComboMode = ModifierState.modifiers[1].value;
 			perfectMode = ModifierState.modifiers[0].value;
@@ -2627,20 +2629,24 @@ class PlayState extends MusicBeatState
 		if (isStoryMode)
 		{
 			campaignScore += songScore;
-
+			campaignAccuracy += notesHit/notesPassing;
 			storyPlaylist.remove(storyPlaylist[0]);
 
 			if (storyPlaylist.length <= 0)
 			{
 				FlxG.sound.playMusic('assets/music/freakyMenu' + TitleState.soundExt);
 
-				FlxG.switchState(new StoryMenuState());
 
 				if (SONG.validScore)
 				{
 					Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficulty);
 				}
-
+				campaignAccuracy /= defaultPlaylistLength;
+				if (useVictoryScreen) {
+					FlxG.switchState(new VictoryLoopState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y, gf.getScreenPosition().x, gf.getScreenPosition().y, campaignAccuracy, campaignScore));
+				} else {
+					FlxG.switchState(new StoryMenuState());
+				}
 				FlxG.save.flush();
 			}
 			else
@@ -2684,8 +2690,8 @@ class PlayState extends MusicBeatState
 		else
 		{
 			trace('WENT BACK TO FREEPLAY??');
-			if (inALoop) {
-				FlxG.switchState(new VictoryLoopState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y, gf.getScreenPosition().x,gf.getScreenPosition().y));
+			if (useVictoryScreen) {
+				FlxG.switchState(new VictoryLoopState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y, gf.getScreenPosition().x,gf.getScreenPosition().y, notesHit/notesPassing, songScore));
 			} else
 				FlxG.switchState(new FreeplayState());
 		}

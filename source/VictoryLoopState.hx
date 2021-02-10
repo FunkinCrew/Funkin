@@ -25,8 +25,13 @@ class VictoryLoopState extends MusicBeatSubstate
 	var camFollow:FlxObject;
 	var gf:Character;
 	var stageSuffix:String = "";
-
-	public function new(x:Float, y:Float, gfX:Float, gfY:Float)
+	var victoryTxt:Alphabet;
+	var retryTxt:Alphabet;
+	var continueTxt:Alphabet;
+	var scoreTxt:Alphabet;
+	var rating:Alphabet;
+	var selectingRetry:Bool = false;
+	public function new(x:Float, y:Float, gfX:Float, gfY:Float, accuracy:Float, score:Int)
 	{
 		//var background:FlxSprite = new FlxSprite(0,0).makeGraphic(FlxG.width, FlxG.height, FlxColor.PINK);
 		//add(background);
@@ -38,6 +43,51 @@ class VictoryLoopState extends MusicBeatSubstate
 		if (p1 == "bf-pixel") {
 			stageSuffix = '-pixel';
 		}
+		victoryTxt = new Alphabet(10, 10, "Victory",true);
+		retryTxt = new Alphabet(10, FlxG.height, "Replay", true);
+		retryTxt.y -= retryTxt.height;
+		continueTxt = new Alphabet(10, FlxG.height - retryTxt.height, "Continue", true);
+		scoreTxt = new Alphabet(10, victoryTxt.y + victoryTxt.height, Std.string(score),true);
+		continueTxt.y -= scoreTxt.height;
+		rating = new Alphabet(10, FlxG.height/2, "", true);
+		rating.setGraphicSize(3);
+		rating.updateHitbox();
+		retryTxt.alpha = 0.6;
+		// if you do this you are epic gamer
+		if (accuracy == 1) {
+			rating.text = "S+";
+		} else if (accuracy >= 0.95) {
+			rating.text = "S";
+		} else if ( accuracy >= 0.93) {
+			rating.text = "S-";
+		} else if (accuracy >= 0.90) {
+			rating.text = "A+";
+		} else if (accuracy >= 0.85) {
+			rating.text = "A";
+		} else if (accuracy >= 0.82) {
+			rating.text = "A-";
+		} else if (accuracy >= 0.8) {
+			rating.text = "B+";
+		} else if (accuracy >= 0.78) {
+			rating.text = "B";
+		} else if (accuracy >= 0.75) {
+			rating.text = "B-";
+		} else if (accuracy >= 0.72) {
+			rating.text = "C+";
+		} else if (accuracy >= 0.69) {
+			rating.text = "C";
+		} else if (accuracy >= 0.65){
+			rating.text = "C-";
+		} else if (accuracy >= 0.60) {
+			rating.text = "D+";
+		} else if (accuracy >= 0.55) {
+			rating.text = "D";
+		} else if (accuracy >= 0.50) {
+			rating.text = "D-";
+		} else {
+			rating.text = "F";
+		}
+		rating.addText();
 		var characterList = Assets.getText('assets/data/characterList.txt');
 		if (!StringTools.contains(characterList, p1)) {
 			var parsedCharJson:Dynamic = Json.parse(Assets.getText('assets/images/custom_chars/custom_chars.json'));
@@ -58,8 +108,15 @@ class VictoryLoopState extends MusicBeatSubstate
 
 		camFollow = new FlxObject(bf.getGraphicMidpoint().x, bf.getGraphicMidpoint().y, 1, 1);
 		add(camFollow);
-
-		Conductor.changeBPM(200);
+		add(victoryTxt);
+		add(retryTxt);
+		add(scoreTxt);
+		add(continueTxt);
+		add(rating);
+		retryTxt.visible = false;
+		continueTxt.visible = false;
+		rating.visible = false;
+		Conductor.changeBPM(150);
 		FlxG.sound.playMusic('assets/music/title' + TitleState.soundExt);
 		// FlxG.camera.followLerp = 1;
 		// FlxG.camera.focusOn(FlxPoint.get(FlxG.width / 2, FlxG.height / 2));
@@ -76,20 +133,28 @@ class VictoryLoopState extends MusicBeatSubstate
 
 		if (controls.ACCEPT)
 		{
-			endBullshit();
+			if (selectingRetry) {
+				endBullshit();
+			} else {
+				FlxG.sound.music.stop();
+
+				if (PlayState.isStoryMode)
+					FlxG.switchState(new StoryMenuState());
+				else
+					FlxG.switchState(new FreeplayState());
+			}
 		}
 
-		if (controls.BACK)
-		{
-			FlxG.sound.music.stop();
-
-			if (PlayState.isStoryMode)
-				FlxG.switchState(new StoryMenuState());
-			else
-				FlxG.switchState(new FreeplayState());
+		if (controls.UP_P || controls.DOWN_P) {
+			selectingRetry = !selectingRetry;
+			if (selectingRetry) {
+				retryTxt.alpha = 1;
+				continueTxt.alpha = 0.6;
+			} else {
+				retryTxt.alpha = 0.6;
+				continueTxt.alpha = 1;
+			}
 		}
-
-
 		if (FlxG.sound.music.playing)
 		{
 			Conductor.songPosition = FlxG.sound.music.time;
@@ -99,6 +164,13 @@ class VictoryLoopState extends MusicBeatSubstate
 	override function beatHit()
 	{
 		super.beatHit();
+		if (curBeat == 5) {
+			rating.visible = true;
+		}
+		if (curBeat == 8) {
+			retryTxt.visible = true;
+			continueTxt.visible = true;
+		}
 		gf.dance();
 		FlxG.log.add('beat');
 	}

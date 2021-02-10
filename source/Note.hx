@@ -56,7 +56,6 @@ class Note extends FlxSprite
 
 		this.noteData = noteData;
 		var daStage:String = PlayState.curStage;
-		trace("customImage null = "+(customImage == null));
 		switch (PlayState.SONG.uiType)
 		{
 			case 'pixel':

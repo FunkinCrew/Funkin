@@ -34,7 +34,7 @@ class SaveDataState extends MusicBeatState
 	{
 		var optionsJson = Json.parse(Assets.getText('assets/data/options.json'));
 		var menuBG:FlxSprite = new FlxSprite().loadGraphic('assets/images/menuDesat.png');
-		optionList = [{name: "Always Show Cutscenes", value: false}, {name: "Skip Modifier Menu", value: false}];
+		optionList = [{name: "Always Show Cutscenes", value: false}, {name: "Skip Modifier Menu", value: false}, {name: "Skip Victory Screen", value: false}];
 		optionList[0].value = optionsJson.alwaysDoCutscenes;
 		optionList[1].value = optionsJson.skipModifierMenu;
 		saves = new FlxTypedSpriteGroup<SaveFile>();
@@ -81,6 +81,7 @@ class SaveDataState extends MusicBeatState
 				var optionsJson = Json.parse(Assets.getText('assets/data/options.json'));
 				optionsJson.skipModifierMenu = optionList[1].value;
 				optionsJson.alwaysDoCutscenes = optionList[0].value;
+				optionsJson.skipVictoryScreen = optionList[2].value;
 				File.saveContent('assets/data/options.json', Json.stringify(optionsJson));
 				FlxG.switchState(new MainMenuState());
 			} else {

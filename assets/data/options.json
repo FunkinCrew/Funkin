@@ -1,5 +1,6 @@
 {
   "alwaysDoCutscenes": false,
   "skipModifierMenu": false,
+  "skipVictoryScreen": false,
   "preferredSave": 0
 }
