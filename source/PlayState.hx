@@ -139,7 +139,6 @@ class PlayState extends MusicBeatState
 
 		if (SONG == null)
 			SONG = Song.loadFromJson('tutorial');
-		Paths.setCurrentLevel(SONG.song);
 
 		Conductor.changeBPM(SONG.bpm);
 
@@ -163,11 +162,11 @@ class PlayState extends MusicBeatState
 					"Only then I will even CONSIDER letting you\ndate my daughter!"
 				];
 			case 'senpai':
-				dialogue = CoolUtil.coolTextFile('assets/data/senpai/senpaiDialogue.txt');
+				dialogue = CoolUtil.coolTextFile(Paths.txt('senpai/senpaiDialogue'));
 			case 'roses':
-				dialogue = CoolUtil.coolTextFile('assets/data/roses/rosesDialogue.txt');
+				dialogue = CoolUtil.coolTextFile(Paths.txt('roses/rosesDialogue'));
 			case 'thorns':
-				dialogue = CoolUtil.coolTextFile('assets/data/thorns/thornsDialogue.txt');
+				dialogue = CoolUtil.coolTextFile(Paths.txt('thorns/thornsDialogue'));
 		}
 
 		if (SONG.song.toLowerCase() == 'spookeez' || SONG.song.toLowerCase() == 'monster' || SONG.song.toLowerCase() == 'south')
@@ -676,7 +675,7 @@ class PlayState extends MusicBeatState
 		add(healthBar);
 
 		scoreTxt = new FlxText(healthBarBG.x + healthBarBG.width - 190, healthBarBG.y + 30, 0, "", 20);
-		scoreTxt.setFormat("assets/fonts/vcr.ttf", 16, FlxColor.WHITE, RIGHT);
+		scoreTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT);
 		scoreTxt.scrollFactor.set();
 		add(scoreTxt);
 
@@ -866,16 +865,16 @@ class PlayState extends MusicBeatState
 			boyfriend.playAnim('idle');
 
 			var introAssets:Map<String, Array<String>> = new Map<String, Array<String>>();
-			introAssets.set('default', ['ready.png', "set.png", "go.png"]);
+			introAssets.set('default', ['ready', "set", "go"]);
 			introAssets.set('school', [
-				'weeb/pixelUI/ready-pixel.png',
-				'weeb/pixelUI/set-pixel.png',
-				'weeb/pixelUI/date-pixel.png'
+				'weeb/pixelUI/ready-pixel',
+				'weeb/pixelUI/set-pixel',
+				'weeb/pixelUI/date-pixel'
 			]);
 			introAssets.set('schoolEvil', [
-				'weeb/pixelUI/ready-pixel.png',
-				'weeb/pixelUI/set-pixel.png',
-				'weeb/pixelUI/date-pixel.png'
+				'weeb/pixelUI/ready-pixel',
+				'weeb/pixelUI/set-pixel',
+				'weeb/pixelUI/date-pixel'
 			]);
 
 			var introAlts:Array<String> = introAssets.get('default');
@@ -896,7 +895,7 @@ class PlayState extends MusicBeatState
 				case 0:
 					FlxG.sound.play(Paths.sound('intro3'), 0.6);
 				case 1:
-					var ready:FlxSprite = new FlxSprite().loadGraphic('assets/images/' + introAlts[0]);
+					var ready:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[0]));
 					ready.scrollFactor.set();
 					ready.updateHitbox();
 
@@ -914,7 +913,7 @@ class PlayState extends MusicBeatState
 					});
 					FlxG.sound.play(Paths.sound('intro2'), 0.6);
 				case 2:
-					var set:FlxSprite = new FlxSprite().loadGraphic('assets/images/' + introAlts[1]);
+					var set:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[1]));
 					set.scrollFactor.set();
 
 					if (curStage.startsWith('school'))
@@ -931,7 +930,7 @@ class PlayState extends MusicBeatState
 					});
 					FlxG.sound.play(Paths.sound('intro1'), 0.6);
 				case 3:
-					var go:FlxSprite = new FlxSprite().loadGraphic('assets/images/' + introAlts[2]);
+					var go:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[2]));
 					go.scrollFactor.set();
 
 					if (curStage.startsWith('school'))
@@ -1743,7 +1742,7 @@ class PlayState extends MusicBeatState
 			pixelShitPart2 = '-pixel';
 		}
 
-		rating.loadGraphic('assets/images/' + pixelShitPart1 + daRating + pixelShitPart2 + ".png");
+		rating.loadGraphic(Paths.image(pixelShitPart1 + daRating + pixelShitPart2));
 		rating.screenCenter();
 		rating.x = coolText.x - 40;
 		rating.y -= 60;
@@ -2041,7 +2040,7 @@ class PlayState extends MusicBeatState
 		if (!boyfriend.stunned)
 		{
 			health -= 0.04;
-			if (combo > 5)
+			if (combo > 5 && gf.animOffsets.exists('sad'))
 			{
 				gf.playAnim('sad');
 			}

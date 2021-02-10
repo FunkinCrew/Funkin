@@ -40,42 +40,56 @@
 
 	<classpath name="source" />
 
-	<assets path="assets/preload" rename="assets" exclude="*.ogg" if="web"/>
-	<assets path="assets/preload" rename="assets" exclude="*.mp3" unless="web"/>
+	<assets path="assets/preload" exclude="*.ogg" if="web"/>
+	<assets path="assets/preload" exclude="*.mp3" unless="web"/>
+	
+	<define name="PRELOAD_ALL" unless="web" />
+	
+	<library name="songs" preload="false" unless="PRELOAD_ALL"/>
+	<library name="songs" preload="true" if="PRELOAD_ALL"/>
+	<assets path="assets/songs" library="songs" exclude="*.ogg" if="web"/>
+	<assets path="assets/songs" library="songs" exclude="*.mp3" unless="web"/>
 
-	<library name="songs" preload="false" />
-	<assets path="assets/songs" exclude="*.ogg" if="web"/>
-	<assets path="assets/songs" exclude="*.mp3" unless="web"/>
-
-	<library name="shared" preload="false" />
+	<library name="shared" preload="true"/>
+	<!-- <library name="shared" preload="false" unless="PRELOAD_ALL"/>
+	<library name="shared" preload="true" if="PRELOAD_ALL"/> -->
 	<assets path="assets/shared" library="shared" exclude="*.ogg" if="web"/>
 	<assets path="assets/shared" library="shared" exclude="*.mp3" unless="web"/>
 
-	<library name="week1" preload="false" />
+	<library name="tutorial" preload="false" unless="PRELOAD_ALL"/>
+	<library name="tutorial" preload="true" if="PRELOAD_ALL"/>
+	<assets path="assets/tutorial" library="tutorial" exclude="*.ogg" if="web"/>
+	<assets path="assets/tutorial" library="tutorial" exclude="*.mp3" unless="web"/>
+
+	<library name="week1" preload="false" unless="PRELOAD_ALL"/>
+	<library name="week1" preload="true" if="PRELOAD_ALL"/>
 	<assets path="assets/week1" library="week1" exclude="*.ogg" if="web"/>
 	<assets path="assets/week1" library="week1" exclude="*.mp3" unless="web"/>
 
-	<!-- <library name="week2" preload="false" />
+	<library name="week2" preload="false" unless="PRELOAD_ALL"/>
+	<library name="week2" preload="true" if="PRELOAD_ALL"/>
 	<assets path="assets/week2" library="week2" exclude="*.ogg" if="web"/>
-	<assets path="assets/week2" library="week2" exclude="*.mp3" unless="web"/> -->
+	<assets path="assets/week2" library="week2" exclude="*.mp3" unless="web"/>
 
-	<!-- <library name="week3" preload="false" />
+	<library name="week3" preload="false" unless="PRELOAD_ALL"/>
+	<library name="week3" preload="true" if="PRELOAD_ALL"/>
 	<assets path="assets/week3" library="week3" exclude="*.ogg" if="web"/>
-	<assets path="assets/week3" library="week3" exclude="*.mp3" unless="web"/> -->
+	<assets path="assets/week3" library="week3" exclude="*.mp3" unless="web"/>
 
-	<!-- <library name="week4" preload="false" />
+	<library name="week4" preload="false" unless="PRELOAD_ALL"/>
+	<library name="week4" preload="true" if="PRELOAD_ALL"/>
 	<assets path="assets/week4" library="week4" exclude="*.ogg" if="web"/>
-	<assets path="assets/week4" library="week4" exclude="*.mp3" unless="web"/> -->
+	<assets path="assets/week4" library="week4" exclude="*.mp3" unless="web"/>
 
-	<!-- <library name="week5" preload="false" />
+	<library name="week5" preload="false" unless="PRELOAD_ALL"/>
+	<library name="week5" preload="true" if="PRELOAD_ALL"/>
 	<assets path="assets/week5" library="week5" exclude="*.ogg" if="web"/>
-	<assets path="assets/week5" library="week5" exclude="*.mp3" unless="web"/> -->
+	<assets path="assets/week5" library="week5" exclude="*.mp3" unless="web"/>
 
-	<!-- <library name="week6" preload="false" />
+	<library name="week6" preload="false" unless="PRELOAD_ALL"/>
+	<library name="week6" preload="true" if="PRELOAD_ALL"/>
 	<assets path="assets/week6" library="week6" exclude="*.ogg" if="web"/>
-	<assets path="assets/week6" library="week6" exclude="*.mp3" unless="web"/> -->
-	
-	
+	<assets path="assets/week6" library="week6" exclude="*.mp3" unless="web"/>
 	
 	<assets path='example_mods' rename='mods' embed='false'/>
 	<!-- <template path='mods' /> -->
@@ -101,7 +115,7 @@
 	<haxelib name="flixel-ui" />
 	<haxelib name="newgrounds"/>
 	<haxelib name="faxe" if='switch'/>
-	<haxelib name="polymod"/>
+	<haxelib name="polymod" unless="web"/>
 
 	<!-- <haxelib name="markdown" /> -->
 	<!-- <haxelib name="HtmlParser" /> -->
