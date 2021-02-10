@@ -1,5 +1,7 @@
 package;
 
+import lime.app.Promise;
+import lime.app.Future;
 import flixel.FlxG;
 import flixel.FlxState;
 import flixel.FlxSprite;
@@ -8,11 +10,8 @@ import flixel.util.FlxTimer;
 
 import openfl.utils.Assets;
 import lime.utils.Assets as LimeAssets;
-import lime.utils.AssetBundle;
 import lime.utils.AssetLibrary;
 import lime.utils.AssetManifest;
-import lime.app.Future;
-import lime.app.Promise;
 
 import haxe.io.Path;
 
@@ -38,7 +37,7 @@ class LoadingState extends MusicBeatState
 	override function create()
 	{
 		logo = new FlxSprite(-150, -100);
-		logo.frames = FlxAtlasFrames.fromSparrow('assets/images/logoBumpin.png', 'assets/images/logoBumpin.xml');
+		logo.frames = Paths.getSparrowAtlas('logoBumpin');
 		logo.antialiasing = true;
 		logo.animation.addByPrefix('bump', 'logo bumpin', 24);
 		logo.animation.play('bump');
@@ -47,31 +46,33 @@ class LoadingState extends MusicBeatState
 		// logoBl.color = FlxColor.BLACK;
 
 		gfDance = new FlxSprite(FlxG.width * 0.4, FlxG.height * 0.07);
-		gfDance.frames = FlxAtlasFrames.fromSparrow('assets/images/gfDanceTitle.png', 'assets/images/gfDanceTitle.xml');
+		gfDance.frames = Paths.getSparrowAtlas('gfDanceTitle');
 		gfDance.animation.addByIndices('danceLeft', 'gfDance', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
 		gfDance.animation.addByIndices('danceRight', 'gfDance', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
 		gfDance.antialiasing = true;
 		add(gfDance);
 		add(logo);
 		
-		// function onSongsManifestInit()
-		// {
-			callbacks = new MultiCallback(onLoad);
-			var introComplete = callbacks.add("introComplete");
-			checkLoadSong(getSongPath());
-			checkLoadSong(getVocalPath());
-			checkLibrary("shared");
-			if (PlayState.storyWeek > 0)
-				checkLibrary("week" + PlayState.storyWeek);
-			else
-				checkLibrary("tutorial");
-			
-			var fadeTime = 0.5;
-			FlxG.camera.fade(FlxG.camera.bgColor, fadeTime, true);
-			new FlxTimer().start(fadeTime + MIN_TIME, function(_) introComplete());
-		// }
-		
-		// initSongsManifest(onSongsManifestInit);
+		initSongsManifest().onComplete
+		(
+			function (lib)
+			{
+				callbacks = new MultiCallback(onLoad);
+				var introComplete = callbacks.add("introComplete");
+				checkLoadSong(getSongPath());
+				if (PlayState.SONG.needsVoices)
+					checkLoadSong(getVocalPath());
+				checkLibrary("shared");
+				if (PlayState.storyWeek > 0)
+					checkLibrary("week" + PlayState.storyWeek);
+				else
+					checkLibrary("tutorial");
+				
+				var fadeTime = 0.5;
+				FlxG.camera.fade(FlxG.camera.bgColor, fadeTime, true);
+				new FlxTimer().start(fadeTime + MIN_TIME, function(_) introComplete());
+			}
+		);
 	}
 	
 	function checkLoadSong(path:String)
@@ -80,10 +81,10 @@ class LoadingState extends MusicBeatState
 		{
 			var library = Assets.getLibrary("songs");
 			final symbolPath = path.split(":").pop();
-			@:privateAccess
-			library.types.set(symbolPath, SOUND);
-			@:privateAccess
-			library.pathGroups.set(symbolPath, [library.__cacheBreak(symbolPath)]);
+			// @:privateAccess
+			// library.types.set(symbolPath, SOUND);
+			// @:privateAccess
+			// library.pathGroups.set(symbolPath, [library.__cacheBreak(symbolPath)]);
 			var callback = callbacks.add("song:" + path);
 			Assets.loadSound(path).onComplete(function (_) { callback(); });
 		}
@@ -91,8 +92,13 @@ class LoadingState extends MusicBeatState
 	
 	function checkLibrary(library:String)
 	{
+		trace(Assets.hasLibrary(library));
 		if (Assets.getLibrary(library) == null)
 		{
+			@:privateAccess
+			if (!LimeAssets.libraryPaths.exists(library))
+				throw "Missing library: " + library;
+			
 			var callback = callbacks.add("library:" + library);
 			Assets.loadLibrary(library).onComplete(function (_) { callback(); });
 		}
@@ -114,6 +120,10 @@ class LoadingState extends MusicBeatState
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+		#if debug
+		if (FlxG.keys.justPressed.SPACE)
+			trace('fired: ' + callbacks.getFired() + " unfired:" + callbacks.getUnfired());
+		#end
 	}
 	
 	function onLoad()
@@ -141,6 +151,7 @@ class LoadingState extends MusicBeatState
 	
 	static function getNextState(target:FlxState, stopMusic = false):FlxState
 	{
+		Paths.setCurrentLevel("week" + PlayState.storyWeek);
 		#if js
 		var loaded = isSoundLoaded(getSongPath())
 			&& (!PlayState.SONG.needsVoices || isSoundLoaded(getVocalPath()))
@@ -174,110 +185,68 @@ class LoadingState extends MusicBeatState
 		callbacks = null;
 	}
 	
-	
-	/**
-	 * creates the song manifest without loading all the songs so we can load them individually
-	 * @param onComplete called on load
-	 * @return Future<AssetLibrary>
-	 */
-	static function initSongsManifest(onComplete:Void->Void):Future<AssetLibrary>
+	static function initSongsManifest()
 	{
-		final id = "songs";
+		var id = "songs";
 		var promise = new Promise<AssetLibrary>();
 
-		// #if (tools && !display && !macro)
 		var library = LimeAssets.getLibrary(id);
 
 		if (library != null)
 		{
-			onComplete();
 			return Future.withValue(library);
 		}
-		
+
 		var path = id;
 		var rootPath = null;
-		
-		// @:privateAccess
-		// if (LimeAssets.bundlePaths.exists(id))
-		// {
-		// 	AssetBundle.loadFromFile(bundlePaths.get(id)).onComplete(function(bundle)
-		// 	{
-		// 		if (bundle == null)
-		// 		{
-		// 			promise.error("Cannot load bundle for library \"" + id + "\"");
-		// 			return;
-		// 		}
 
-		// 		var library = AssetLibrary.fromBundle(bundle);
-
-		// 		if (library == null)
-		// 		{
-		// 			promise.error("Cannot open library \"" + id + "\"");
-		// 		}
-		// 		else
-		// 		{
-		// 			libraries.set(id, library);
-		// 			library.onChange.add(LimeAssets.onChange.dispatch);
-		// 			promise.completeWith(Future.withValue(library));
-		// 			onComplete();
-		// 		}
-		// 	}).onError(function(_)
-		// 	{
-		// 		promise.error("There is no asset library with an ID of \"" + id + "\"");
-		// 	});
-		// }
-		// else
-		// {
-			@:privateAccess
-			final libraryPaths = LimeAssets.libraryPaths;
-			if (libraryPaths.exists(id))
+		@:privateAccess
+		var libraryPaths = LimeAssets.libraryPaths;
+		if (libraryPaths.exists(id))
+		{
+			path = libraryPaths[id];
+			rootPath = Path.directory(path);
+		}
+		else
+		{
+			if (StringTools.endsWith(path, ".bundle"))
 			{
-				path = libraryPaths[id];
-				rootPath = Path.directory(path);
+				rootPath = path;
+				path += "/library.json";
 			}
 			else
 			{
-				if (StringTools.endsWith(path, ".bundle"))
-				{
-					rootPath = path;
-					path += "/library.json";
-				}
-				else
-				{
-					rootPath = Path.directory(path);
-				}
-				@:privateAccess
-				path = LimeAssets.__cacheBreak(path);
+				rootPath = Path.directory(path);
+			}
+			@:privateAccess
+			path = LimeAssets.__cacheBreak(path);
+		}
+
+		AssetManifest.loadFromFile(path, rootPath).onComplete(function(manifest)
+		{
+			if (manifest == null)
+			{
+				promise.error("Cannot parse asset manifest for library \"" + id + "\"");
+				return;
 			}
 
-			AssetManifest.loadFromFile(path, rootPath).onComplete(function(manifest)
-			{
-				if (manifest == null)
-				{
-					promise.error("Cannot parse asset manifest for library \"" + id + "\"");
-					return;
-				}
+			var library = AssetLibrary.fromManifest(manifest);
 
-				var library = AssetLibrary.fromManifest(manifest);
-
-				if (library == null)
-				{
-					promise.error("Cannot open library \"" + id + "\"");
-				}
-				else
-				{
-					@:privateAccess
-					LimeAssets.libraries.set(id, library);
-					library.onChange.add(LimeAssets.onChange.dispatch);
-					promise.completeWith(Future.withValue(library));
-					onComplete();
-				}
-			}).onError(function(_)
+			if (library == null)
 			{
-				promise.error("There is no asset library with an ID of \"" + id + "\"");
-			});
-		// }
-		// #end
+				promise.error("Cannot open library \"" + id + "\"");
+			}
+			else
+			{
+				@:privateAccess
+				LimeAssets.libraries.set(id, library);
+				library.onChange.add(LimeAssets.onChange.dispatch);
+				promise.completeWith(Future.withValue(library));
+			}
+		}).onError(function(_)
+		{
+			promise.error("There is no asset library with an ID of \"" + id + "\"");
+		});
 
 		return promise.future;
 	}
@@ -337,5 +306,5 @@ class MultiCallback
 	}
 	
 	public function getFired() return fired.copy();
-	public function getUnfired() return [for (id in unfired) id];
+	public function getUnfired() return [for (id in unfired.keys()) id];
 }
