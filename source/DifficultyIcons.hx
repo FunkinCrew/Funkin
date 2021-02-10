@@ -55,6 +55,7 @@ class DifficultyIcons {
       trace(sprDiff);
       group.add(sprDiff);
     }
+    difficulty = defaultDiff;
     changeDifficulty();
   }
   public function changeDifficulty(?change:Int = 0):Void {
@@ -111,5 +112,9 @@ class DifficultyIcons {
     }
     trace(ending);
     return ending;
+  }
+  public static function getDefaultDiffFP():Int {
+    var diffJson = Json.parse(Assets.getText("assets/images/custom_difficulties/difficulties.json"));
+    return diffJson.defaultDiff;
   }
 }

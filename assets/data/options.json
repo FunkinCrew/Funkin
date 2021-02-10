@@ -3,5 +3,6 @@
   "perfectMode": false,
   "fullComboMode": false,
   "practiceMode": false,
-  "useModifierMenu": false
+  "useModifierMenu": false,
+  "preferredSave": 0
 }

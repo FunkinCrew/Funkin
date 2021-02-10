@@ -23,31 +23,28 @@ import flixel.util.FlxTimer;
 import lime.app.Application;
 import openfl.Assets;
 import polymod.Polymod;
-
+import haxe.Json;
 using StringTools;
 
 class TitleState extends MusicBeatState
 {
 	static var initialized:Bool = false;
-	static public var soundExt:String = ".mp3";
+	static public var soundExt:String = ".ogg";
 
 	var blackScreen:FlxSprite;
 	var credGroup:FlxGroup;
 	var credTextShit:Alphabet;
 	var textGroup:FlxGroup;
 	var ngSpr:FlxSprite;
-
+	var shownWacky:Int = -1;
 	var curWacky:Array<String> = [];
-
+	var wackyEndBeat:Int = 0;
 	var wackyImage:FlxSprite;
 
 	override public function create():Void
 	{
 		Polymod.init({modRoot: "mods", dirs: ['introMod']});
 
-		#if (!web)
-		TitleState.soundExt = '.ogg';
-		#end
 
 		PlayerSettings.init();
 
@@ -58,8 +55,8 @@ class TitleState extends MusicBeatState
 		super.create();
 
 
-
-		FlxG.save.bind('funkin', 'ninjamuffin99');
+		var optionsJson = Json.parse(Assets.getText('assets/data/options.json'));
+		FlxG.save.bind("save"+optionsJson.preferredSave, 'bulbyVR');
 
 		Highscore.load();
 
@@ -297,56 +294,83 @@ class TitleState extends MusicBeatState
 
 		FlxG.log.add(curBeat);
 
-		switch (curBeat)
-		{
-			case 1:
-				createCoolText(['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er']);
-			// credTextShit.visible = true;
-			case 3:
-				addMoreText('present');
-			// credTextShit.text += '\npresent...';
-			// credTextShit.addText();
-			case 4:
-				deleteCoolText();
-			// credTextShit.visible = false;
-			// credTextShit.text = 'In association \nwith';
-			// credTextShit.screenCenter();
-			case 5:
-				createCoolText(['In association', 'with']);
-			case 7:
-				addMoreText('newgrounds');
-				ngSpr.visible = true;
-			// credTextShit.text += '\nNewgrounds';
-			case 8:
-				deleteCoolText();
-				ngSpr.visible = false;
-			// credTextShit.visible = false;
+		if (curBeat < 9) {
+			switch (curBeat)
+			{
+				case 1:
+					createCoolText(['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er']);
+				// credTextShit.visible = true;
+				case 3:
+					addMoreText('present');
+				// credTextShit.text += '\npresent...';
+				// credTextShit.addText();
+				case 4:
+					deleteCoolText();
+				// credTextShit.visible = false;
+				// credTextShit.text = 'In association \nwith';
+				// credTextShit.screenCenter();
+				case 5:
+					createCoolText(['In association', 'with']);
+				case 7:
+					addMoreText('newgrounds');
+					ngSpr.visible = true;
+				// credTextShit.text += '\nNewgrounds';
+				case 8:
+					deleteCoolText();
+					ngSpr.visible = false;
+				// credTextShit.visible = false;
 
-			// credTextShit.text = 'Shoutouts Tom Fulp';
-			// credTextShit.screenCenter();
-			case 9:
+				// credTextShit.text = 'Shoutouts Tom Fulp';
+				// credTextShit.screenCenter();
+				case 9:
+					createCoolText([curWacky[0]]);
+				// credTextShit.visible = true;
+				case 11:
+					addMoreText(curWacky[1]);
+				// credTextShit.text += '\nlmao';
+				case 12:
+					deleteCoolText();
+				// credTextShit.visible = false;
+				// credTextShit.text = "Friday";
+				// credTextShit.screenCenter();
+				case 13:
+					addMoreText('Friday');
+				// credTextShit.visible = true;
+				case 14:
+					addMoreText('Night');
+				// credTextShit.text += '\nNight';
+				case 15:
+					addMoreText('Funkin'); // credTextShit.text += '\nFunkin';
+
+				case 16:
+					skipIntro();
+			}
+		} else {
+			if (curBeat == 9) {
 				createCoolText([curWacky[0]]);
-			// credTextShit.visible = true;
-			case 11:
-				addMoreText(curWacky[1]);
-			// credTextShit.text += '\nlmao';
-			case 12:
-				deleteCoolText();
-			// credTextShit.visible = false;
-			// credTextShit.text = "Friday";
-			// credTextShit.screenCenter();
-			case 13:
-				addMoreText('Friday');
-			// credTextShit.visible = true;
-			case 14:
-				addMoreText('Night');
-			// credTextShit.text += '\nNight';
-			case 15:
-				addMoreText('Funkin'); // credTextShit.text += '\nFunkin';
-
-			case 16:
-				skipIntro();
+				shownWacky = 0;
+				wackyEndBeat = curBeat;
+			} else if (curBeat % 2 == 1 && shownWacky + 1 < curWacky.length) {
+				shownWacky += 1;
+				addMoreText(curWacky[shownWacky]);
+				wackyEndBeat = curBeat;
+			} else if (shownWacky == curWacky.length - 1){
+				trace(wackyEndBeat + " " + curBeat);
+				switch (curBeat - wackyEndBeat) {
+					case 1:
+						deleteCoolText();
+					case 2:
+						addMoreText('Friday');
+					case 3:
+						addMoreText('Night');
+					case 4:
+						addMoreText('Funkin');
+					case 5:
+						skipIntro();
+				}
+			}
 		}
+
 	}
 
 	var skippedIntro:Bool = false;

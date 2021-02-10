@@ -28,6 +28,7 @@ class ModifierState extends MusicBeatState
 	var curSelected:Int = 0;
 	var checkmarks:Array<FlxSprite> = [];
 	var multiTxt:FlxText;
+	public static var isStoryMode:Bool = false;
 	public static var scoreMultiplier:Float = 1;
 	override function create()
 	{
@@ -47,14 +48,14 @@ class ModifierState extends MusicBeatState
 			modifiers = [
 				{name: "Sick Mode", value: false, conflicts: [1,2,3,4,5,6,7,8,9], multi: 3, times: true},
 				{name:"FC Mode", value: false, conflicts: [0,2,3,4,5,6,7,8,9], multi: 2, times: true},
-				{name: "Practice Mode", value: false, conflicts: [0,1], multi: 0, times:true},
+				{name: "Practice Mode", value: false, conflicts: [0,1,19], multi: 0, times:true},
 				{name: "Health Gain Up", value: false, conflicts: [0,1,4], multi: -0.5},
 				{name: "Health Gain Down", value: false, conflicts: [0,1,3], multi: 0.5},
 			 	{name: "Health Loss Up", value: false, conflicts: [0,1,6], multi: 0.5},
 			 	{name: "Health Loss Down", value: false, conflicts: [0,1,5], multi: -0.5},
 				{name: "Sup Love", value: false, conflicts: [0,1,8], multi: -0.4},
 				{name: "Poison Fright", value: false, conflicts: [0,1,7], multi: 0.4},
-				{name: "Fragile Rappin", value: false, conflicts: [0,1], multi: 1},
+				{name: "Fragile Funkin", value: false, conflicts: [0,1], multi: 1},
 				{name: "Flipped Notes", value: false, conflicts: [15], multi: 0.5},
 				{name: "Slow Notes", value: false, conflicts: [12,13], multi: -0.3},
 				{name: "Fast Notes", value: false, conflicts: [11,13], multi: 0.8},
@@ -63,6 +64,9 @@ class ModifierState extends MusicBeatState
 				{name: "Invs Notes", value: false, conflicts: [10,14,16], multi: 1.5},
 				{name: "Snake Notes", value: false, conflicts: [15], multi: 0.5},
 				{name: "Drunk Notes", value: false, conflicts: [15], multi: 0.5},
+				{name: "Always Show Cutscenes", value: false, conflicts: [], multi: 0},
+				// just causes the game to instant restart, doesn't really do much to help
+				{name: "Stuck in a loop", value: false, conflicts: [2], multi: 0},
 				{name: "Play", value: false, conflicts: [], multi: 1, times:true}
 			];
 		}
@@ -86,7 +90,10 @@ class ModifierState extends MusicBeatState
 	override function update(elapsed:Float) {
 		super.update(elapsed);
 		if (controls.BACK) {
-			FlxG.switchState(new FreeplayState());
+			if (isStoryMode)
+				FlxG.switchState(new StoryMenuState());
+			else
+				FlxG.switchState(new FreeplayState());
 		}
 		if (controls.UP_P)
 		{
@@ -144,6 +151,9 @@ class ModifierState extends MusicBeatState
 		}
 		for (timesThing in timesThings) {
 			scoreMultiplier *= timesThing;
+		}
+		if (scoreMultiplier < 0) {
+			scoreMultiplier = 0;
 		}
 	}
 	function toggleSelection() {

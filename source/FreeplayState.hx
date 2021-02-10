@@ -16,6 +16,7 @@ import sys.io.File;
 import haxe.io.Path;
 import openfl.utils.ByteArray;
 import lime.media.AudioBuffer;
+import sys.FileSystem;
 import flash.media.Sound;
 #end
 import haxe.Json;
@@ -33,16 +34,13 @@ class FreeplayState extends MusicBeatState
 	var diffText:FlxText;
 	var lerpScore:Int = 0;
 	var intendedScore:Int = 0;
-	var useModifierMenu:Bool = false;
 	private var grpSongs:FlxTypedGroup<Alphabet>;
 	private var curPlaying:Bool = false;
 
 	override function create()
 	{
-		var optionsJson = Json.parse(Assets.getText('assets/data/options.json'));
-		useModifierMenu = optionsJson.useModifierMenu;
 		songs = CoolUtil.coolTextFile('assets/data/freeplaySonglist.txt');
-
+		curDifficulty = DifficultyIcons.getDefaultDiffFP();
 		/*
 			if (FlxG.sound.music != null)
 			{
@@ -78,12 +76,12 @@ class FreeplayState extends MusicBeatState
 			// songText.screenCenter(X);
 		}
 
-		scoreText = new FlxText(FlxG.width * 0.7, 5, 0, "", 32);
+		scoreText = new FlxText(FlxG.width * 0.62, 5, 0, "", 32);
 		// scoreText.autoSize = false;
 		scoreText.setFormat("assets/fonts/vcr.ttf", 32, FlxColor.WHITE, RIGHT);
 		// scoreText.alignment = RIGHT;
 
-		var scoreBG:FlxSprite = new FlxSprite(scoreText.x - 6, 0).makeGraphic(Std.int(FlxG.width * 0.35), 66, 0xFF000000);
+		var scoreBG:FlxSprite = new FlxSprite(scoreText.x - 6, 0).makeGraphic(Std.int(FlxG.width * 0.4), 66, 0xFF000000);
 		scoreBG.alpha = 0.6;
 		add(scoreBG);
 
@@ -167,12 +165,20 @@ class FreeplayState extends MusicBeatState
 
 		if (accepted)
 		{
-			var poop:String = songs[curSelected] + DifficultyIcons.getEndingFP(curDifficulty);
+			var poop:String = songs[curSelected].toLowerCase() + DifficultyIcons.getEndingFP(curDifficulty);
+			trace(poop);
+			if (!FileSystem.exists('assets/data/'+songs[curSelected].toLowerCase()+'/'+poop.toLowerCase()+'.json')) {
+				// assume we pecked up the difficulty, return to default difficulty
+				trace("UH OH SONG IN SPECIFIED DIFFICULTY DOESN'T EXIST\nUSING DEFAULT DIFFICULTY");
+				poop = songs[curSelected];
+				curDifficulty = DifficultyIcons.getDefaultDiffFP();
 
+			}
 			trace(poop);
 
 			PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].toLowerCase());
 			PlayState.isStoryMode = false;
+			ModifierState.isStoryMode = false;
 			PlayState.storyDifficulty = curDifficulty;
 
 			FlxG.switchState(new ModifierState());

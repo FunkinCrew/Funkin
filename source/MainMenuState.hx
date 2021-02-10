@@ -37,11 +37,10 @@ class MainMenuState extends MusicBeatState
 		}
 
 		persistentUpdate = persistentDraw = true;
-
 		var bg:FlxSprite = new FlxSprite(-80).loadGraphic('assets/images/menuBG.png');
 		bg.scrollFactor.x = 0;
 		bg.scrollFactor.y = 0.18;
-		bg.setGraphicSize(Std.int(bg.width * 1.1));
+		bg.setGraphicSize(Std.int(bg.width * 1.2));
 		bg.updateHitbox();
 		bg.screenCenter();
 		bg.antialiasing = true;
@@ -53,7 +52,7 @@ class MainMenuState extends MusicBeatState
 		magenta = new FlxSprite(-80).loadGraphic('assets/images/menuDesat.png');
 		magenta.scrollFactor.x = 0;
 		magenta.scrollFactor.y = 0.18;
-		magenta.setGraphicSize(Std.int(magenta.width * 1.1));
+		magenta.setGraphicSize(Std.int(magenta.width * 1.2));
 		magenta.updateHitbox();
 		magenta.screenCenter();
 		magenta.visible = false;
@@ -84,11 +83,36 @@ class MainMenuState extends MusicBeatState
 		FlxG.camera.follow(camFollow, null, 0.06);
 
 		var versionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, "v" + Application.current.meta.get('version'), 12);
+		var usingSave:FlxText = new FlxText(5, FlxG.height - 36, 0, FlxG.save.name, 12);
 		versionShit.scrollFactor.set();
 		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		usingSave.scrollFactor.set();
+		usingSave.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(versionShit);
-
+		add(usingSave);
 		// NG.core.calls.event.logEvent('swag').send();
+		switch (FlxG.save.name) {
+			case "save0":
+				usingSave.text = "bf";
+			case "save1":
+				usingSave.text = "classic";
+			case "save2":
+				usingSave.text = "bf-pixel";
+			case "save3":
+				usingSave.text = "spooky";
+			case "save4":
+				usingSave.text = "dad";
+			case "save5":
+				usingSave.text = "pico";
+			case "save6":
+				usingSave.text = "mom";
+			case "save7":
+				usingSave.text = "gf";
+			case "save8":
+				usingSave.text = "lemon";
+			case "save9":
+				usingSave.text = "senpai";
+		}
 
 		changeItem();
 
@@ -169,7 +193,7 @@ class MainMenuState extends MusicBeatState
 										trace("Freeplay Menu Selected");
 
 									case 'options':
-										FlxG.switchState(new UIOptions());
+										FlxG.switchState(new SaveDataState());
 								}
 							});
 						}

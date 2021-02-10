@@ -70,7 +70,13 @@ class Highscore
 
 		return songScores.get(formatSong(song, diff));
 	}
-
+	public static function getTotalScore():Int {
+		var totalScore:Int = 0;
+		for (key in songScores.keys()) {
+			totalScore += songScores.get(key);
+		}
+		return totalScore;
+	}
 	public static function getWeekScore(week:Int, diff:Int):Int
 	{
 		if (!songScores.exists(formatSong('week' + week, diff)))
