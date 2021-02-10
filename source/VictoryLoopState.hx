@@ -59,7 +59,7 @@ class VictoryLoopState extends MusicBeatSubstate
 		camFollow = new FlxObject(bf.getGraphicMidpoint().x, bf.getGraphicMidpoint().y, 1, 1);
 		add(camFollow);
 
-		Conductor.changeBPM(100);
+		Conductor.changeBPM(200);
 		FlxG.sound.playMusic('assets/music/title' + TitleState.soundExt);
 		// FlxG.camera.followLerp = 1;
 		// FlxG.camera.focusOn(FlxPoint.get(FlxG.width / 2, FlxG.height / 2));

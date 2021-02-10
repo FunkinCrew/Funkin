@@ -39,7 +39,7 @@ class Note extends FlxSprite
 	public static var BLUE_NOTE:Int = 1;
 	public static var RED_NOTE:Int = 3;
 
-	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false)
+	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?customImage:Null<BitmapData>, ?customXml:Null<String>, ?customEnds:Null<BitmapData>)
 	{
 		super();
 
@@ -55,9 +55,8 @@ class Note extends FlxSprite
 		this.strumTime = strumTime;
 
 		this.noteData = noteData;
-
 		var daStage:String = PlayState.curStage;
-
+		trace("customImage null = "+(customImage == null));
 		switch (PlayState.SONG.uiType)
 		{
 			case 'pixel':
@@ -109,9 +108,8 @@ class Note extends FlxSprite
 			default:
 				if (FileSystem.exists('assets/images/custom_ui/ui_packs/'+PlayState.SONG.uiType+"/NOTE_assets.xml") && FileSystem.exists('assets/images/custom_ui/ui_packs/'+PlayState.SONG.uiType+"/NOTE_assets.png")) {
 
-				  var noteXml = File.getContent('assets/images/custom_ui/ui_packs/'+PlayState.SONG.uiType+"/NOTE_assets.xml");
-					var notePic = BitmapData.fromFile('assets/images/custom_ui/ui_packs/'+PlayState.SONG.uiType+"/NOTE_assets.png");
-					frames = FlxAtlasFrames.fromSparrow(notePic, noteXml);
+
+					frames = FlxAtlasFrames.fromSparrow(customImage, customXml);
 					animation.addByPrefix('greenScroll', 'green0');
 	 				animation.addByPrefix('redScroll', 'red0');
 	 				animation.addByPrefix('blueScroll', 'blue0');
@@ -132,8 +130,7 @@ class Note extends FlxSprite
 	 				antialiasing = true;
 					// when arrowsEnds != arrowEnds :laughing_crying:
 				} else if (FileSystem.exists('assets/images/custom_ui/ui_packs/'+PlayState.SONG.uiType+"/arrows-pixels.png") && FileSystem.exists('assets/images/custom_ui/ui_packs/'+PlayState.SONG.uiType+"/arrowEnds.png")){
-					var notePic = BitmapData.fromFile('assets/images/custom_ui/ui_packs/'+PlayState.SONG.uiType+"/arrows-pixels.png");
-					loadGraphic(notePic, true, 17, 17);
+					loadGraphic(customImage, true, 17, 17);
 					animation.add('greenScroll', [6]);
 					animation.add('redScroll', [7]);
 					animation.add('blueScroll', [5]);
