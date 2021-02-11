@@ -40,7 +40,7 @@ class TitleState extends MusicBeatState
 	var curWacky:Array<String> = [];
 	var wackyEndBeat:Int = 0;
 	var wackyImage:FlxSprite;
-
+	var coolDudes:Array<String> = [];
 	override public function create():Void
 	{
 		Polymod.init({modRoot: "mods", dirs: ['introMod']});
@@ -154,8 +154,11 @@ class TitleState extends MusicBeatState
 
 		blackScreen = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 		credGroup.add(blackScreen);
-
-		credTextShit = new Alphabet(0, 0, "ninjamuffin99\nPhantomArcade\nkawaisprite\nevilsk8er", true);
+		// THIS SHIT DOESN'T WORK ON NEKO!
+		// IDK WHY I AM TESTING IT ON NEKO!
+		coolDudes = Assets.getText('assets/data/creators.txt').split("\n");
+		trace(coolDudes);
+		credTextShit = new Alphabet(0, 0, "akofhafsk", true);
 		credTextShit.screenCenter();
 
 		// credTextShit.alignment = CENTER;
@@ -298,7 +301,7 @@ class TitleState extends MusicBeatState
 			switch (curBeat)
 			{
 				case 1:
-					createCoolText(['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er']);
+					createCoolText(coolDudes);
 				// credTextShit.visible = true;
 				case 3:
 					addMoreText('present');

@@ -115,7 +115,7 @@ class Alphabet extends FlxSpriteGroup
 					case "h":
 						dummyCharacter = "heart";
 				}
-
+				lastWasEscape = false;
 			}
 			if ((AlphaCharacter.alphabet.indexOf(dummyCharacter.toLowerCase()) != -1 || AlphaCharacter.numbers.indexOf(dummyCharacter) != -1 || StringTools.contains(AlphaCharacter.symbols,dummyCharacter)) && (dummyCharacter != "-" || drawHypens))
 				// if (AlphaCharacter.alphabet.contains(character.toLowerCase()))
@@ -333,17 +333,15 @@ class AlphaCharacter extends FlxSprite
 					animName = "heart bold";
 				case "ra":
 					animName = "right arrow bold";
+				case "\"":
+					animName = "quote";
 				default:
 					animName = letter + " bold";
 					switch (letter) {
-						case "-":
+						case "-" | "~" | "+":
 							y += 25;
 						case "_":
 							y += 50;
-						case "~":
-							y += 25;
-						case "+":
-							y += 25;
 					}
 
 			}
