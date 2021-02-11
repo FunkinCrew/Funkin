@@ -15,6 +15,7 @@ import lime.utils.Assets;
 import sys.io.File;
 import sys.FileSystem;
 import haxe.io.Path;
+import Song.SwagSong;
 import openfl.utils.ByteArray;
 import lime.media.AudioBuffer;
 import flash.media.Sound;
@@ -156,7 +157,7 @@ class VictoryLoopState extends MusicBeatSubstate
 
 		if (controls.ACCEPT)
 		{
-			if (selectingRetry) {
+			if (selectingRetry && !PlayState.isStoryMode) {
 				endBullshit();
 			} else {
 				FlxG.sound.music.stop();
@@ -168,7 +169,7 @@ class VictoryLoopState extends MusicBeatSubstate
 			}
 		}
 
-		if (controls.UP_P || controls.DOWN_P) {
+		if ((controls.UP_P || controls.DOWN_P)) {
 			selectingRetry = !selectingRetry;
 			if (selectingRetry) {
 				retryTxt.alpha = 1;
@@ -248,6 +249,24 @@ class VictoryLoopState extends MusicBeatSubstate
 			isEnding = true;
 			FlxG.sound.music.stop();
 			FlxG.sound.play('assets/music/gameOverEnd' + stageSuffix + TitleState.soundExt);
+			if (PlayState.isStoryMode) {
+				// most variables should already be set?
+				PlayState.storyPlaylist = StoryMenuState.storySongPlaylist;
+				trace(PlayState.storyPlaylist);
+				var diffic = DifficultyIcons.getEndingFP(PlayState.storyDifficulty);
+				for (peckUpAblePath in PlayState.storyPlaylist) {
+					if (!FileSystem.exists('assets/data/'+peckUpAblePath.toLowerCase()+'/'+peckUpAblePath.toLowerCase() + diffic+'.json')) {
+						// probably messed up difficulty
+						trace("UH OH DIFFICULTY DOESN'T EXIST FOR A SONG");
+						trace("CHANGING TO DEFAULT DIFFICULTY");
+						diffic = "";
+						PlayState.storyDifficulty = DifficultyIcons.getDefaultDiffFP();
+					}
+				}
+				PlayState.SONG = Song.loadFromJson(StoryMenuState.storySongPlaylist[0].toLowerCase() + diffic, StoryMenuState.storySongPlaylist[0].toLowerCase());
+				PlayState.campaignScore = 0;
+				PlayState.campaignAccuracy = 0;
+			}
 			new FlxTimer().start(0.7, function(tmr:FlxTimer)
 			{
 				FlxG.camera.fade(FlxColor.BLACK, 2, false, function()

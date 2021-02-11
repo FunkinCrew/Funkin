@@ -22,6 +22,7 @@ import openfl.utils.ByteArray;
 import lime.media.AudioBuffer;
 import flash.media.Sound;
 import sys.FileSystem;
+import Song.SwagSong;
 #end
 using StringTools;
 typedef StorySongsJson = {
@@ -42,7 +43,7 @@ class StoryMenuState extends MusicBeatState
 	var curDifficulty:Int = 1;
 
 	public static var weekUnlocked:Array<Bool> = [true, true, true, true, true, true, true];
-
+	public static var storySongPlaylist:Array<String>;
 	var weekCharacters:Array<Dynamic> = [];
 	var lastWeek:Int = 0;
 	/*var weekNames:Array<String> = [
@@ -320,8 +321,6 @@ class StoryMenuState extends MusicBeatState
 
 	function selectWeek()
 	{
-	if (true)
-		{
 			if (stopspamming == false)
 			{
 				FlxG.sound.play('assets/sounds/confirmMenu' + TitleState.soundExt);
@@ -329,8 +328,8 @@ class StoryMenuState extends MusicBeatState
 				weekCharactersArray.members[curWeek].members[1].animation.play('bfConfirm');
 				stopspamming = true;
 			}
-
-			PlayState.storyPlaylist = weekData[curWeek];
+			StoryMenuState.storySongPlaylist = weekData[curWeek];
+			PlayState.storyPlaylist = StoryMenuState.storySongPlaylist;
 			PlayState.defaultPlaylistLength = weekData[curWeek].length;
 			PlayState.isStoryMode = true;
 			ModifierState.isStoryMode = true;
@@ -353,6 +352,7 @@ class StoryMenuState extends MusicBeatState
 			PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + diffic, PlayState.storyPlaylist[0].toLowerCase());
 			PlayState.storyWeek = curWeek;
 			PlayState.campaignScore = 0;
+			PlayState.campaignAccuracy = 0;
 			new FlxTimer().start(1, function(tmr:FlxTimer)
 			{
 				var optionsJson = Json.parse(Assets.getText('assets/data/options.json'));
@@ -364,7 +364,6 @@ class StoryMenuState extends MusicBeatState
 					FlxG.switchState(new PlayState());
 				}
 			});
-		}
 	}
 
 	function changeDifficulty(change:Int = 0):Void
