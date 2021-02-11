@@ -9,6 +9,7 @@ import flixel.util.FlxTimer;
 import flixel.text.FlxText;
 import lime.system.System;
 import flixel.FlxSprite;
+import flixel.FlxCamera;
 import lime.utils.Assets;
 #if sys
 import sys.io.File;
@@ -35,6 +36,7 @@ class VictoryLoopState extends MusicBeatSubstate
 	var canPlayHey:Bool = true;
 	var accuracy:Float;
 	var accuracyTxt:FlxText;
+	var camHUD:FlxCamera;
 	public function new(x:Float, y:Float, gfX:Float, gfY:Float, accuracy:Float, score:Int)
 	{
 		//var background:FlxSprite = new FlxSprite(0,0).makeGraphic(FlxG.width, FlxG.height, FlxColor.PINK);
@@ -110,6 +112,8 @@ class VictoryLoopState extends MusicBeatSubstate
 		Conductor.songPosition = 0;
 
 		bf = new Boyfriend(x, y, PlayState.SONG.player1);
+		// now listen here bf I take care of the animation
+		bf.beNormal = false;
 		add(gf);
 		add(bf);
 
@@ -126,9 +130,10 @@ class VictoryLoopState extends MusicBeatSubstate
 		rating.visible = false;
 		scoreTxt.visible = false;
 		accuracyTxt.visible = false;
+		// make files seperate to allow modding
 		if (accuracy >= 0.65) {
 			Conductor.changeBPM(150);
-			FlxG.sound.playMusic('assets/music/title' + TitleState.soundExt);
+			FlxG.sound.playMusic('assets/music/goodScore' + TitleState.soundExt);
 		} else if (accuracy >= 0.5) {
 			Conductor.changeBPM(100);
 			FlxG.sound.playMusic('assets/music/mehScore' + TitleState.soundExt);
@@ -141,6 +146,7 @@ class VictoryLoopState extends MusicBeatSubstate
 		// FlxG.camera.focusOn(FlxPoint.get(FlxG.width / 2, FlxG.height / 2));
 		FlxG.camera.scroll.set();
 		FlxG.camera.target = null;
+		FlxG.camera.follow(camFollow, LOCKON, 0.01);
 		bf.playAnim('idle');
 	}
 
@@ -197,7 +203,7 @@ class VictoryLoopState extends MusicBeatSubstate
 		} else {
 			gf.playAnim('sad');
 			if (gf.animation.curAnim.name != 'sad') {
-				// boogie
+				// boogie if no sad anim, looks kinda silly
 				gf.dance();
 			}
 		}
@@ -216,7 +222,7 @@ class VictoryLoopState extends MusicBeatSubstate
 				case "singDOWN":
 					bf.playAnim('singLEFT');
 			}
-		} else {
+		} else if (curBeat % 2 == 0){
 			// funny look he misses now
 			switch(bf.animation.curAnim.name) {
 				case "idle":
