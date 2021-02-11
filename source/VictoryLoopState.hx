@@ -6,6 +6,7 @@ import flixel.FlxSubState;
 import flixel.math.FlxPoint;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import flixel.text.FlxText;
 import lime.system.System;
 import flixel.FlxSprite;
 import lime.utils.Assets;
@@ -32,11 +33,14 @@ class VictoryLoopState extends MusicBeatSubstate
 	var rating:Alphabet;
 	var selectingRetry:Bool = false;
 	var canPlayHey:Bool = true;
+	var accuracy:Float;
+	var accuracyTxt:FlxText;
 	public function new(x:Float, y:Float, gfX:Float, gfY:Float, accuracy:Float, score:Int)
 	{
 		//var background:FlxSprite = new FlxSprite(0,0).makeGraphic(FlxG.width, FlxG.height, FlxColor.PINK);
 		//add(background);
 		var daStage = PlayState.curStage;
+		this.accuracy = accuracy;
 		var p1 = PlayState.SONG.player1;
 		gf = new Character(gfX,gfY,PlayState.SONG.gf);
 		var daBf:String = 'bf';
@@ -89,6 +93,8 @@ class VictoryLoopState extends MusicBeatSubstate
 			rating.text = "F";
 		}
 		rating.addText();
+		accuracyTxt = new FlxText(10, rating.y + rating.height,0 , "ACCURACY: "+Math.round(accuracy * 100) + "%");
+		accuracyTxt.setFormat("assets/fonts/vcr.ttf", 26, FlxColor.WHITE, RIGHT);
 		var characterList = Assets.getText('assets/data/characterList.txt');
 		if (!StringTools.contains(characterList, p1)) {
 			var parsedCharJson:Dynamic = Json.parse(Assets.getText('assets/images/custom_chars/custom_chars.json'));
@@ -114,21 +120,28 @@ class VictoryLoopState extends MusicBeatSubstate
 		add(scoreTxt);
 		add(continueTxt);
 		add(rating);
+		add(accuracyTxt);
 		retryTxt.visible = false;
 		continueTxt.visible = false;
 		rating.visible = false;
-		Conductor.changeBPM(150);
-		FlxG.sound.playMusic('assets/music/title' + TitleState.soundExt);
+		scoreTxt.visible = false;
+		accuracyTxt.visible = false;
+		if (accuracy >= 0.65) {
+			Conductor.changeBPM(150);
+			FlxG.sound.playMusic('assets/music/title' + TitleState.soundExt);
+		} else if (accuracy >= 0.5) {
+			Conductor.changeBPM(100);
+			FlxG.sound.playMusic('assets/music/mehScore' + TitleState.soundExt);
+		} else {
+			Conductor.changeBPM(100);
+			FlxG.sound.playMusic('assets/music/badScore' + TitleState.soundExt);
+		}
+
 		// FlxG.camera.followLerp = 1;
 		// FlxG.camera.focusOn(FlxPoint.get(FlxG.width / 2, FlxG.height / 2));
 		FlxG.camera.scroll.set();
 		FlxG.camera.target = null;
 		bf.playAnim('idle');
-		// do this because this makes it so if there is no hey anim he sings up
-		bf.playAnim('hey');
-		if (bf.animation.curAnim.name != "hey") {
-			canPlayHey = false;
-		}
 	}
 
 	override function update(elapsed:Float)
@@ -168,16 +181,29 @@ class VictoryLoopState extends MusicBeatSubstate
 	override function beatHit()
 	{
 		super.beatHit();
+		if (curBeat == 3) {
+			scoreTxt.visible = true;
+		}
 		if (curBeat == 5) {
 			rating.visible = true;
+			accuracyTxt.visible = true;
 		}
 		if (curBeat == 8) {
 			retryTxt.visible = true;
 			continueTxt.visible = true;
 		}
-		gf.dance();
+		if (accuracy >= 0.65) {
+			gf.dance();
+		} else {
+			gf.playAnim('sad');
+			if (gf.animation.curAnim.name != 'sad') {
+				// boogie
+				gf.dance();
+			}
+		}
+
 		FlxG.log.add('beat');
-		if (curBeat % 2 == 0) {
+		if (curBeat % 2 == 0 && accuracy >= 0.65) {
 			switch(bf.animation.curAnim.name) {
 				case "idle":
 					bf.playAnim('singUP');
@@ -189,6 +215,20 @@ class VictoryLoopState extends MusicBeatSubstate
 					bf.playAnim('singDOWN');
 				case "singDOWN":
 					bf.playAnim('singLEFT');
+			}
+		} else {
+			// funny look he misses now
+			switch(bf.animation.curAnim.name) {
+				case "idle":
+					bf.playAnim('singUPmiss');
+				case "singLEFTmiss":
+					bf.playAnim('singUPmiss');
+				case "singUPmiss":
+					bf.playAnim('singRIGHTmiss');
+				case "singRIGHTmiss":
+					bf.playAnim('singDOWNmiss');
+				case "singDOWNmiss":
+					bf.playAnim('singLEFTmiss');
 			}
 		}
 	}

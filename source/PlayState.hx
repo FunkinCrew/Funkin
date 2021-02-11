@@ -2603,6 +2603,7 @@ class PlayState extends MusicBeatState
 						health -= 0.0475 + healthLossModifier;
 						vocals.volume = 0;
 						notesPassing += 1;
+						trace("passed note");
 						if (poisonPlus && poisonTimes < 5) {
 							poisonTimes += 1;
 								var poisonPlusTimer = new FlxTimer().start(0.5, function (tmr:FlxTimer) {
@@ -3101,6 +3102,7 @@ class PlayState extends MusicBeatState
 		}
 		if (!boyfriend.stunned)
 		{
+			notesPassing += 1;
 			health -= 0.04 + healthLossModifier;
 			if (combo > 5)
 			{
