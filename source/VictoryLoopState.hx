@@ -50,7 +50,7 @@ class VictoryLoopState extends MusicBeatSubstate
 		continueTxt = new Alphabet(10, FlxG.height - retryTxt.height, "Continue", true);
 		scoreTxt = new Alphabet(10, victoryTxt.y + victoryTxt.height, Std.string(score),true);
 		continueTxt.y -= scoreTxt.height;
-		rating = new Alphabet(10, FlxG.height/2, "", true);
+		rating = new Alphabet(10, FlxG.height/2, "", true, 90, 0.48, true);
 		rating.setGraphicSize(3);
 		rating.updateHitbox();
 		retryTxt.alpha = 0.6;

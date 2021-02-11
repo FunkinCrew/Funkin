@@ -37,12 +37,12 @@ class Alphabet extends FlxSpriteGroup
 	var lastSprite:AlphaCharacter;
 	var xPosResetted:Bool = false;
 	var lastWasSpace:Bool = false;
-
+	var drawHypens:Bool = false;
 	var splitWords:Array<String> = [];
 
 	var isBold:Bool = false;
 
-	public function new(x:Float, y:Float, text:String = "", ?bold:Bool = false, typed:Bool = false, stepped:Bool = true, alignX:Float = 90, alignY:Float = 0.48)
+	public function new(x:Float, y:Float, text:String = "", ?bold:Bool = false, typed:Bool = false, stepped:Bool = true, alignX:Float = 90, alignY:Float = 0.48, ?drawHypens:Bool = false)
 	{
 		super(x, y);
 
@@ -52,6 +52,7 @@ class Alphabet extends FlxSpriteGroup
 		isStepped = stepped;
 		groupX = alignX;
 		groupY = alignY;
+		this.drawHypens = drawHypens;
 		if (text != "")
 		{
 			if (typed)
@@ -89,12 +90,11 @@ class Alphabet extends FlxSpriteGroup
 			// {
 			// }
 
-			if (character == " " || character == "-")
+			if (character == " " || (character == "-" && !drawHypens))
 			{
 				lastWasSpace = true;
 			}
-
-			if (AlphaCharacter.alphabet.indexOf(character.toLowerCase()) != -1 || AlphaCharacter.numbers.indexOf(character) != -1)
+			if ((AlphaCharacter.alphabet.indexOf(character.toLowerCase()) != -1 || AlphaCharacter.numbers.indexOf(character) != -1) && (character != "-" || drawHypens))
 				// if (AlphaCharacter.alphabet.contains(character.toLowerCase()))
 			{
 				if (lastSprite != null)
