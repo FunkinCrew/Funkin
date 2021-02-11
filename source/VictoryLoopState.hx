@@ -31,6 +31,7 @@ class VictoryLoopState extends MusicBeatSubstate
 	var scoreTxt:Alphabet;
 	var rating:Alphabet;
 	var selectingRetry:Bool = false;
+	var canPlayHey:Bool = true;
 	public function new(x:Float, y:Float, gfX:Float, gfY:Float, accuracy:Float, score:Int)
 	{
 		//var background:FlxSprite = new FlxSprite(0,0).makeGraphic(FlxG.width, FlxG.height, FlxColor.PINK);
@@ -125,6 +126,9 @@ class VictoryLoopState extends MusicBeatSubstate
 		bf.playAnim('idle');
 		// do this because this makes it so if there is no hey anim he sings up
 		bf.playAnim('hey');
+		if (bf.animation.curAnim.name != "hey") {
+			canPlayHey = false;
+		}
 	}
 
 	override function update(elapsed:Float)
@@ -173,6 +177,20 @@ class VictoryLoopState extends MusicBeatSubstate
 		}
 		gf.dance();
 		FlxG.log.add('beat');
+		if (curBeat % 2 == 0) {
+			switch(bf.animation.curAnim.name) {
+				case "idle":
+					bf.playAnim('singUP');
+				case "singLEFT":
+					bf.playAnim('singUP');
+				case "singUP":
+					bf.playAnim('singRIGHT');
+				case "singRIGHT":
+					bf.playAnim('singDOWN');
+				case "singDOWN":
+					bf.playAnim('singLEFT');
+			}
+		}
 	}
 
 	var isEnding:Bool = false;

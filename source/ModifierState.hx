@@ -165,9 +165,10 @@ class ModifierState extends MusicBeatState
 				modifiers[conflicting].value = false;
 			}
 			calculateMultiplier();
-			multiTxt.text = "Multiplier: "+scoreMultiplier;
+
 			modifiers[curSelected].value = checkmarks[curSelected].visible;
 			calculateMultiplier();
+			multiTxt.text = "Multiplier: "+scoreMultiplier;
 		} else if (modifiers[curSelected].name == 'Play') {
 			if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
