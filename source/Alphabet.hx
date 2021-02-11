@@ -37,6 +37,7 @@ class Alphabet extends FlxSpriteGroup
 	var lastSprite:AlphaCharacter;
 	var xPosResetted:Bool = false;
 	var lastWasSpace:Bool = false;
+	var lastWasEscape:Bool = false;
 	var drawHypens:Bool = false;
 	var splitWords:Array<String> = [];
 
@@ -89,12 +90,34 @@ class Alphabet extends FlxSpriteGroup
 			// if (character.fastCodeAt() == " ")
 			// {
 			// }
-
-			if (character == " " || (character == "-" && !drawHypens))
+			// doing dummy character bs because idk how for loops in haxe work
+			var dummyCharacter = character;
+			if (dummyCharacter == " " || (dummyCharacter == "-" && !drawHypens))
 			{
 				lastWasSpace = true;
 			}
-			if ((AlphaCharacter.alphabet.indexOf(character.toLowerCase()) != -1 || AlphaCharacter.numbers.indexOf(character) != -1) && (character != "-" || drawHypens))
+			if (dummyCharacter == "\\" && !lastWasEscape) {
+				lastWasEscape = true;
+				continue;
+			}
+			if (lastWasEscape) {
+				switch (dummyCharacter) {
+					case "\\":
+						// do nothing
+					case "v":
+						dummyCharacter = "da";
+					case ">":
+						dummyCharacter = "ra";
+					case "<":
+						dummyCharacter = "la";
+					case "^":
+						dummyCharacter = "ua";
+					case "h":
+						dummyCharacter = "heart";
+				}
+
+			}
+			if ((AlphaCharacter.alphabet.indexOf(dummyCharacter.toLowerCase()) != -1 || AlphaCharacter.numbers.indexOf(dummyCharacter) != -1 || StringTools.contains(AlphaCharacter.symbols,dummyCharacter)) && (dummyCharacter != "-" || drawHypens))
 				// if (AlphaCharacter.alphabet.contains(character.toLowerCase()))
 			{
 				if (lastSprite != null)
@@ -112,10 +135,10 @@ class Alphabet extends FlxSpriteGroup
 				var letter:AlphaCharacter = new AlphaCharacter(xPos, 0);
 
 				if (isBold)
-					letter.createBold(character);
+					letter.createBold(dummyCharacter);
 				else
 				{
-					letter.createLetter(character);
+					letter.createLetter(dummyCharacter);
 				}
 
 				add(letter);
@@ -259,9 +282,9 @@ class AlphaCharacter extends FlxSprite
 {
 	public static var alphabet:String = "abcdefghijklmnopqrstuvwxyz";
 
-	public static var numbers:String = "1234567890-+";
+	public static var numbers:String = "1234567890";
 
-	public static var symbols:String = "|~#$%()*+-:;<=>@[]^_.,'!?";
+	public static var symbols:String = ".,'!/?\\-+_#$%&()*:;<=>@[]^|~\"daralauaheart";
 
 	public var row:Int = 0;
 
@@ -276,9 +299,59 @@ class AlphaCharacter extends FlxSprite
 
 	public function createBold(letter:String)
 	{
-		animation.addByPrefix(letter, letter.toUpperCase() + " bold", 24);
-		animation.play(letter);
-		updateHitbox();
+		if (StringTools.contains(alphabet, letter) || StringTools.contains(numbers, letter)) {
+			animation.addByPrefix(letter, letter.toUpperCase() + " bold", 24);
+			animation.play(letter);
+			updateHitbox();
+		} else {
+			var animName = "";
+			switch (letter)
+			{
+				case '.':
+					animName = "period bold";
+					y += 50;
+				case "'":
+					animName = "apostraphie bold";
+					y -= 0;
+				case "?":
+					animName = "question mark bold";
+				case "!":
+					animName = "exclamation point bold";
+				case ",":
+					animName = "comma bold";
+				case "\\":
+					animName = "bs bold";
+				case "/":
+					animName = "fs bold";
+				case "da":
+					animName = "down arrow bold";
+				case "ua":
+					animName = "up arrow bold";
+				case "la":
+					animName = "left arrow bold";
+				case "heart":
+					animName = "heart bold";
+				case "ra":
+					animName = "right arrow bold";
+				default:
+					animName = letter + " bold";
+					switch (letter) {
+						case "-":
+							y += 25;
+						case "_":
+							y += 50;
+						case "~":
+							y += 25;
+						case "+":
+							y += 25;
+					}
+
+			}
+			animation.addByPrefix(letter, animName, 24);
+			animation.play(letter);
+			updateHitbox();
+		}
+
 	}
 
 	public function createLetter(letter:String):Void
@@ -331,6 +404,43 @@ class AlphaCharacter extends FlxSprite
 			case "!":
 				animation.addByPrefix(letter, 'exclamation point', 24);
 				animation.play(letter);
+			case ",":
+				animation.addByPrefix(letter, 'comma', 24);
+				animation.play(letter);
+			case "\\":
+				animation.addByPrefix(letter, 'bs', 24);
+				animation.play(letter);
+			case "/":
+				animation.addByPrefix(letter, 'fs', 24);
+				animation.play(letter);
+			case "da":
+				animation.addByPrefix(letter, 'down arrow', 24);
+				animation.play(letter);
+			case "ua":
+				animation.addByPrefix(letter, 'up arrow', 24);
+				animation.play(letter);
+			case "la":
+				animation.addByPrefix(letter, 'left arrow', 24);
+				animation.play(letter);
+			case "heart":
+				animation.addByPrefix(letter, 'heart', 24);
+				animation.play(letter);
+			case "ra":
+				animation.addByPrefix(letter, 'right arrow', 24);
+				animation.play(letter);
+			default:
+				animation.addByPrefix(letter, letter.toLowerCase(), 24);
+				animation.play(letter);
+				switch (letter) {
+					case "-":
+						y += 25;
+					case "_":
+						y += 50;
+					case "~":
+						y += 25;
+					case "+":
+						y += 25;
+				}
 		}
 
 		updateHitbox();
