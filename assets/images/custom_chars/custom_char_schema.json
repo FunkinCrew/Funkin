@@ -125,6 +125,20 @@
         "additionalItems": false,
         "minLength": 2
       },
+      "midpoint": {
+        "type": "array",
+        "items": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "number"
+          }
+        ],
+        "$comment": "make sure only x and y are given",
+        "additionalItems": false,
+        "minLength": 2
+      },
       "like": {"type": "string"},
       "playAnim": {"type": "string"},
       "isPixel": {"type": "boolean"},
