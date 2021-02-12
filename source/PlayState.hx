@@ -1432,9 +1432,16 @@ class PlayState extends MusicBeatState
 		red.scrollFactor.set();
 
 		var senpaiEvil:FlxSprite = new FlxSprite();
+		// dialog box overwrites character
 		if (FileSystem.exists('assets/images/custom_ui/dialog_boxes/'+SONG.cutsceneType+'-crazy.png')) {
 			var evilImage = BitmapData.fromFile('assets/images/custom_ui/dialog_boxes/'+SONG.cutsceneType+'-crazy.png');
 			var evilXml = File.getContent('assets/images/custom_ui/dialog_boxes/'+SONG.cutsceneType+'-crazy.xml');
+			senpaiEvil.frames = FlxAtlasFrames.fromSparrow(evilImage, evilXml);
+		// character then takes precendence over default
+		// will make things like monika way way easier
+	} else if (FileSystem.exists('assets/images/custom_chars/'+SONG.player2+'/crazy.png')) {
+			var evilImage = BitmapData.fromFile('assets/images/custom_ui/dialog_boxes/'+SONG.player2+'/crazy.png');
+			var evilXml = File.getContent('assets/images/custom_ui/dialog_boxes/'+SONG.player2+'/crazy.xml');
 			senpaiEvil.frames = FlxAtlasFrames.fromSparrow(evilImage, evilXml);
 		} else {
 			senpaiEvil.frames = FlxAtlasFrames.fromSparrow('assets/images/weeb/senpaiCrazy.png', 'assets/images/weeb/senpaiCrazy.xml');
