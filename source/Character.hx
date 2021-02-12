@@ -548,16 +548,16 @@ class Character extends FlxSprite
 					parsedAnimJson.animation = parsedAnimJson.deadAnimation;
 					parsedAnimJson.offset = parsedAnimJson.deadOffset;
 				}
-				var rawPic = BitmapData.fromFile('assets/images/custom_chars/'+curCharacter+playerSuffix+".png");
+				var rawPic = BitmapData.fromFile('assets/images/custom_chars/'+curCharacter+playerSuffix+"/char.png");
 				var tex:FlxAtlasFrames;
 				var rawXml:String;
 				// GOD IS DEAD WHY DOES THIS NOT WORK
 				trace(parsedAnimJson.usesSpritesheetPacker);
-				if (FileSystem.exists('assets/images/custom_chars/'+curCharacter+playerSuffix+".txt")){
-					rawXml = File.getContent('assets/images/custom_chars/'+curCharacter+playerSuffix+".txt");
+				if (FileSystem.exists('assets/images/custom_chars/'+curCharacter+playerSuffix+"/char.txt")){
+					rawXml = File.getContent('assets/images/custom_chars/'+curCharacter+playerSuffix+"/char.txt");
 					tex = FlxAtlasFrames.fromSpriteSheetPacker(rawPic,rawXml);
 				} else {
-					rawXml = File.getContent('assets/images/custom_chars/'+curCharacter+playerSuffix+".xml");
+					rawXml = File.getContent('assets/images/custom_chars/'+curCharacter+playerSuffix+"/char.xml");
 					tex = FlxAtlasFrames.fromSparrow(rawPic,rawXml);
 				}
 

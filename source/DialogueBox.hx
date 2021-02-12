@@ -82,10 +82,10 @@ class DialogueBox extends FlxSpriteGroup
 		}, 5);
 
 		portraitLeft = new FlxSprite(-20, 40);
-		if (FileSystem.exists('assets/images/custom_chars/'+PlayState.SONG.player2+'-portrait.png')) {
+		if (FileSystem.exists('assets/images/custom_chars/'+PlayState.SONG.player2+'/portrait.png')) {
 			// if a  custom character portrait exists, use that
-			var rawPic = BitmapData.fromFile('assets/images/custom_chars/'+PlayState.SONG.player2+"-portrait.png");
-			var rawXml = File.getContent('assets/images/custom_chars/'+PlayState.SONG.player2+"-portrait.xml");
+			var rawPic = BitmapData.fromFile('assets/images/custom_chars/'+PlayState.SONG.player2+"/portrait.png");
+			var rawXml = File.getContent('assets/images/custom_chars/'+PlayState.SONG.player2+"/portrait.xml");
 			portraitLeft.frames = FlxAtlasFrames.fromSparrow(rawPic, rawXml);
 		} else {
 			// otherwise, use senpai
@@ -101,9 +101,9 @@ class DialogueBox extends FlxSpriteGroup
 		portraitLeft.visible = false;
 
 		portraitRight = new FlxSprite(0, 40);
-		if (FileSystem.exists('assets/images/custom_chars/'+PlayState.SONG.player1+'-portrait.png')) {
-			var rawPic = BitmapData.fromFile('assets/images/custom_chars/'+PlayState.SONG.player1+"-portrait.png");
-			var rawXml = File.getContent('assets/images/custom_chars/'+PlayState.SONG.player1+"-portrait.xml");
+		if (FileSystem.exists('assets/images/custom_chars/'+PlayState.SONG.player1+'/portrait.png')) {
+			var rawPic = BitmapData.fromFile('assets/images/custom_chars/'+PlayState.SONG.player1+"/portrait.png");
+			var rawXml = File.getContent('assets/images/custom_chars/'+PlayState.SONG.player1+"/portrait.xml");
 			portraitRight.frames = FlxAtlasFrames.fromSparrow(rawPic, rawXml);
 		} else {
 			portraitRight.frames = FlxAtlasFrames.fromSparrow('assets/images/weeb/bfPortrait.png', 'assets/images/weeb/bfPortrait.xml');

@@ -82,8 +82,8 @@ class HealthIcon extends FlxSprite
 				animation.add('icon', [21, 21, 25], 0, false, isPlayer);
 			default:
 				// check if there is an icon file
-				if (FileSystem.exists('assets/images/custom_chars/'+char+"_icons.png")) {
-					var rawPic:BitmapData = BitmapData.fromFile('assets/images/custom_chars/'+char+"_icons.png");
+				if (FileSystem.exists('assets/images/custom_chars/'+char+"/icons.png")) {
+					var rawPic:BitmapData = BitmapData.fromFile('assets/images/custom_chars/'+char+"/icons.png");
 					loadGraphic(rawPic, true, 150, 150);
 					animation.add('icon', Reflect.field(charJson,char).icons, false, isPlayer);
 				} else {
