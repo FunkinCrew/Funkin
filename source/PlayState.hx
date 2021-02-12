@@ -1438,7 +1438,17 @@ class PlayState extends MusicBeatState
 
 		var red:FlxSprite = new FlxSprite(-100, -100).makeGraphic(FlxG.width * 2, FlxG.height * 2, 0xFFff1b31);
 		red.scrollFactor.set();
-
+		var senpaiSound:Sound;
+		// try and find a player2 sound first
+		if (FileSystem.exists('assets/images/custom_chars/'+SONG.player2+'/Senpai_Dies.ogg')) {
+			senpaiSound = Sound.fromFile('assets/images/custom_chars/'+SONG.player2+'/Senpai_Dies.ogg');
+		// otherwise, try and find a song one
+		} else if (FileSystem.exists('assets/data/'+SONG.song.toLowerCase()+'/Senpai_Dies.ogg')) {
+			senpaiSound = Sound.fromFile('assets/data/'+SONG.song.toLowerCase()+'Senpai_Dies.ogg');
+		// otherwise, use the default sound
+		} else {
+			senpaiSound = Sound.fromFile('assets/sounds/Senpai_Dies.ogg');
+		}
 		var senpaiEvil:FlxSprite = new FlxSprite();
 		// dialog box overwrites character
 		if (FileSystem.exists('assets/images/custom_ui/dialog_boxes/'+SONG.cutsceneType+'-crazy.png')) {
@@ -1498,7 +1508,7 @@ class PlayState extends MusicBeatState
 							else
 							{
 								senpaiEvil.animation.play('idle');
-								FlxG.sound.play('assets/sounds/Senpai_Dies' + TitleState.soundExt, 1, false, null, true, function()
+								FlxG.sound.play(senpaiSound, 1, false, null, true, function()
 								{
 									remove(senpaiEvil);
 									remove(red);
