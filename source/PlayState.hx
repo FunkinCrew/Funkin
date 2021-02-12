@@ -1451,9 +1451,9 @@ class PlayState extends MusicBeatState
 		}
 		var senpaiEvil:FlxSprite = new FlxSprite();
 		// dialog box overwrites character
-		if (FileSystem.exists('assets/images/custom_ui/dialog_boxes/'+SONG.cutsceneType+'-crazy.png')) {
-			var evilImage = BitmapData.fromFile('assets/images/custom_ui/dialog_boxes/'+SONG.cutsceneType+'-crazy.png');
-			var evilXml = File.getContent('assets/images/custom_ui/dialog_boxes/'+SONG.cutsceneType+'-crazy.xml');
+		if (FileSystem.exists('assets/images/custom_ui/dialog_boxes/'+SONG.cutsceneType+'/crazy.png')) {
+			var evilImage = BitmapData.fromFile('assets/images/custom_ui/dialog_boxes/'+SONG.cutsceneType+'/crazy.png');
+			var evilXml = File.getContent('assets/images/custom_ui/dialog_boxes/'+SONG.cutsceneType+'/crazy.xml');
 			senpaiEvil.frames = FlxAtlasFrames.fromSparrow(evilImage, evilXml);
 		// character then takes precendence over default
 		// will make things like monika way way easier
@@ -1466,7 +1466,10 @@ class PlayState extends MusicBeatState
 		}
 
 		senpaiEvil.animation.addByPrefix('idle', 'Senpai Pre Explosion', 24, false);
-		senpaiEvil.setGraphicSize(Std.int(senpaiEvil.width * 6));
+		if (dad.isPixel) {
+			senpaiEvil.setGraphicSize(Std.int(senpaiEvil.width * 6));
+		}
+
 		senpaiEvil.updateHitbox();
 		senpaiEvil.screenCenter();
 

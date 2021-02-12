@@ -66,5 +66,13 @@
   "templateMom": {
     "like": "mom",
     "icons": [6,7]
+  },
+  "templateSenpai-hd": {
+    "like": "senpai-hd",
+    "icons": [22,22]
+  },
+  "templateSenpaiAngry-hd": {
+    "like": "senpai-angry-hd",
+    "icons": [22,22]
   }
 }

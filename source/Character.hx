@@ -35,6 +35,7 @@ class Character extends FlxSprite
 	public var holdTimer:Float = 0;
 	public var like:String = "bf";
 	public var isDie:Bool = false;
+	public var isPixel:Bool = false;
 	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false)
 	{
 		animOffsets = new Map<String, Array<Dynamic>>();
@@ -140,6 +141,7 @@ class Character extends FlxSprite
 				setGraphicSize(Std.int(width * PlayState.daPixelZoom));
 				updateHitbox();
 				antialiasing = false;
+				isPixel = true;
 				like = "gf-pixel";
 			case 'dad':
 				// DAD ANIMATION LOADING CODE
@@ -416,7 +418,7 @@ class Character extends FlxSprite
 				height -= 100;
 
 				antialiasing = false;
-
+				isPixel = true;
 				flipX = true;
 				like = "bf-pixel";
 			case 'bf-pixel-dead':
@@ -436,6 +438,7 @@ class Character extends FlxSprite
 				updateHitbox();
 				antialiasing = false;
 				flipX = true;
+				isPixel = true;
 				like = "bf-pixel";
 			case 'senpai':
 				frames = FlxAtlasFrames.fromSparrow('assets/images/weeb/senpai.png', 'assets/images/weeb/senpai.xml');
@@ -457,6 +460,7 @@ class Character extends FlxSprite
 				updateHitbox();
 
 				antialiasing = false;
+				isPixel = true;
 				like = "senpai";
 			case 'senpai-angry':
 				frames = FlxAtlasFrames.fromSparrow('assets/images/weeb/senpai.png', 'assets/images/weeb/senpai.xml');
@@ -475,7 +479,7 @@ class Character extends FlxSprite
 
 				setGraphicSize(Std.int(width * 6));
 				updateHitbox();
-
+				isPixel = true;
 				antialiasing = false;
 				like = "senpai";
 			case 'spirit':
@@ -496,7 +500,7 @@ class Character extends FlxSprite
 				updateHitbox();
 
 				playAnim('idle');
-
+				isPixel = true;
 				antialiasing = false;
 				like = "spirit";
 			case 'parents-christmas':
@@ -610,6 +614,7 @@ class Character extends FlxSprite
 					// ignore it, this is used for gameover state
 					like = "bf";
 				}
+				isPixel = parsedAnimJson.isPixel;
 				if (parsedAnimJson.isPixel) {
 					antialiasing = false;
 					setGraphicSize(Std.int(width * 6));
@@ -836,5 +841,10 @@ class Character extends FlxSprite
 	public function addOffset(name:String, x:Float = 0, y:Float = 0)
 	{
 		animOffsets[name] = [x, y];
+	}
+	public static function getAnimJson(char:String) {
+		var charJson = Json.parse(Assets.getText('assets/images/custom_chars/custom_chars.json'));
+		var animJson = Json.parse(File.getContent('assets/images/custom_chars/'+Reflect.field(charJson, char).like + '.json'));
+		return animJson;
 	}
 }
