@@ -1313,7 +1313,6 @@ class PlayState extends MusicBeatState
 
 		if (FlxG.keys.justPressed.SEVEN)
 		{
-			//CHANGING STATE
 			canDie = false;
 			FlxG.switchState(new ChartingState());
 		}
@@ -1499,7 +1498,6 @@ class PlayState extends MusicBeatState
 		if (health <= 0 && canDie)
 		{
 
-			//Death Spot
 			boyfriend.stunned = true;
 
 			persistentUpdate = false;
@@ -1613,7 +1611,6 @@ class PlayState extends MusicBeatState
 	function endSong():Void
 	{
 
-		//Changing state
 		canDie = false;
 		canPause = false;
 		FlxG.sound.music.volume = 0;
