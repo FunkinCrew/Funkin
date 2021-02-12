@@ -1446,13 +1446,13 @@ class PlayState extends MusicBeatState
 			camHUD.zoom = FlxMath.lerp(1, camHUD.zoom, 0.95);
 		}
 
-		FlxG.watch.addQuick("beatShit", totalBeats);
-		FlxG.watch.addQuick("stepShit", totalSteps);
+		FlxG.watch.addQuick("beatShit", curBeat);
+		FlxG.watch.addQuick("stepShit", curStep);
 
 
 		if (curSong == 'Fresh')
 		{
-			switch (totalBeats)
+			switch (curBeat)
 			{
 				case 16:
 					camZooming = true;
@@ -1471,7 +1471,7 @@ class PlayState extends MusicBeatState
 
 		if (curSong == 'Bopeebo')
 		{
-			switch (totalBeats)
+			switch (curBeat)
 			{
 				case 128, 129, 130:
 					vocals.volume = 0;
@@ -2240,6 +2240,7 @@ class PlayState extends MusicBeatState
 
 	override function stepHit()
 	{
+		super.stepHit();
 		if (SONG.needsVoices)
 		{
 			if (vocals.time > Conductor.songPosition + 20 || vocals.time < Conductor.songPosition - 20)
@@ -2248,12 +2249,10 @@ class PlayState extends MusicBeatState
 			}
 		}
 
-		if (dad.curCharacter == 'spooky' && totalSteps % 4 == 2)
+		if (dad.curCharacter == 'spooky' && curStep % 4 == 2)
 		{
 			// dad.dance();
 		}
-
-		super.stepHit();
 	}
 
 	var lightningStrikeBeat:Int = 0;
@@ -2292,7 +2291,7 @@ class PlayState extends MusicBeatState
 			camHUD.zoom += 0.03;
 		}
 
-		if (camZooming && FlxG.camera.zoom < 1.35 && totalBeats % 4 == 0)
+		if (camZooming && FlxG.camera.zoom < 1.35 && curBeat % 4 == 0)
 		{
 			FlxG.camera.zoom += 0.015;
 			camHUD.zoom += 0.03;
@@ -2304,7 +2303,7 @@ class PlayState extends MusicBeatState
 		iconP1.updateHitbox();
 		iconP2.updateHitbox();
 
-		if (totalBeats % gfSpeed == 0)
+		if (curBeat % gfSpeed == 0)
 		{
 			gf.dance();
 		}
@@ -2314,7 +2313,7 @@ class PlayState extends MusicBeatState
 			boyfriend.playAnim('idle');
 		}
 
-		if (totalBeats % 8 == 7 && curSong == 'Bopeebo')
+		if (curBeat % 8 == 7 && curSong == 'Bopeebo')
 		{
 			boyfriend.playAnim('hey', true);
 
@@ -2346,7 +2345,7 @@ class PlayState extends MusicBeatState
 				if (!trainMoving)
 					trainCooldown += 1;
 
-				if (totalBeats % 4 == 0)
+				if (curBeat % 4 == 0)
 				{
 					phillyCityLights.forEach(function(light:FlxSprite)
 					{
@@ -2359,7 +2358,7 @@ class PlayState extends MusicBeatState
 					// phillyCityLights.members[curLight].alpha = 1;
 				}
 
-				if (totalBeats % 8 == 4 && FlxG.random.bool(30) && !trainMoving && trainCooldown > 8)
+				if (curBeat % 8 == 4 && FlxG.random.bool(30) && !trainMoving && trainCooldown > 8)
 				{
 					trainCooldown = FlxG.random.int(-4, 0);
 					trainStart();
