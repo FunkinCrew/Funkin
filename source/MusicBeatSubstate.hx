@@ -35,27 +35,17 @@ class MusicBeatSubstate extends FlxSubState
 
 	override function update(elapsed:Float)
 	{
-		everyStep();
+		//everyStep();
+		var oldStep:Int = curStep;
 
 		updateCurStep();
+
+		if (oldStep != curStep && curStep > 0)
+			stepHit();
+
 		curBeat = Math.floor(curStep / 4);
 
 		super.update(elapsed);
-	}
-
-	/**
-	 * CHECKS EVERY FRAME
-	 */
-	private function everyStep():Void
-	{
-		if (Conductor.songPosition > lastStep + Conductor.stepCrochet - Conductor.safeZoneOffset
-			|| Conductor.songPosition < lastStep + Conductor.safeZoneOffset)
-		{
-			if (Conductor.songPosition > lastStep + Conductor.stepCrochet)
-			{
-				stepHit();
-			}
-		}
 	}
 
 	private function updateCurStep():Void

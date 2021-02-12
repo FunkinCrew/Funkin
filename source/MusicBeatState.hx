@@ -36,10 +36,14 @@ class MusicBeatState extends FlxUIState
 
 	override function update(elapsed:Float)
 	{
-		everyStep();
+		//everyStep();
+		var oldStep:Int = curStep;
 
 		updateCurStep();
-		// Needs to be FLOOR idk why it was rounded but that dont make sense
+
+		if (oldStep != curStep && curStep > 0)
+			stepHit();
+
 		updateBeat();
 
 		super.update(elapsed);
@@ -48,21 +52,6 @@ class MusicBeatState extends FlxUIState
 	private function updateBeat():Void
 	{
 		curBeat = Math.floor(curStep / 4);
-	}
-
-	/**
-	 * CHECKS EVERY FRAME
-	 */
-	private function everyStep():Void
-	{
-		if (Conductor.songPosition > lastStep + Conductor.stepCrochet - Conductor.safeZoneOffset
-			|| Conductor.songPosition < lastStep + Conductor.safeZoneOffset)
-		{
-			if (Conductor.songPosition > lastStep + Conductor.stepCrochet)
-			{
-				stepHit();
-			}
-		}
 	}
 
 	private function updateCurStep():Void
