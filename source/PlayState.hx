@@ -224,10 +224,18 @@ class PlayState extends MusicBeatState
 		switch (SONG.song.toLowerCase())
 		{
 			default:
-				if (FileSystem.exists('assets/data/'+SONG.song.toLowerCase()+'/dialog.txt')) {
+				// prefer player 1
+				if (FileSystem.exists('assets/images/custom_chars/'+SONG.player1+'/'+SONG.song.toLowerCase()+'Dialog.txt')) {
+					dialogue = CoolUtil.coolDynamicTextFile('assets/images/custom_chars/'+SONG.player2+'/'+SONG.song.toLowerCase()+'Dialog.txt');
+				// if no player 1 unique dialog, use player 2
+				} else if (FileSystem.exists('assets/images/custom_chars/'+SONG.player2+'/'+SONG.song.toLowerCase()+'Dialog.txt')) {
+					dialogue = CoolUtil.coolDynamicTextFile('assets/images/custom_chars/'+SONG.player1+'/'+SONG.song.toLowerCase()+'Dialog.txt');
+				// if no player dialog, use default
+				}	else if (FileSystem.exists('assets/data/'+SONG.song.toLowerCase()+'/dialog.txt')) {
 					dialogue = CoolUtil.coolDynamicTextFile('assets/data/'+SONG.song.toLowerCase()+'/dialog.txt');
+				// otherwise, make the dialog an error message
 				} else {
-					dialogue = [':dad: The game tried to get a dialog file but couldn\'t find it. Please make sure there is a dialog file.'];
+					dialogue = [':dad: The game tried to get a dialog file but couldn\'t find it. Please make sure there is a dialog file named "dialog.txt".'];
 				}
 		}
 
@@ -1439,7 +1447,7 @@ class PlayState extends MusicBeatState
 			senpaiEvil.frames = FlxAtlasFrames.fromSparrow(evilImage, evilXml);
 		// character then takes precendence over default
 		// will make things like monika way way easier
-	} else if (FileSystem.exists('assets/images/custom_chars/'+SONG.player2+'/crazy.png')) {
+		} else if (FileSystem.exists('assets/images/custom_chars/'+SONG.player2+'/crazy.png')) {
 			var evilImage = BitmapData.fromFile('assets/images/custom_ui/dialog_boxes/'+SONG.player2+'/crazy.png');
 			var evilXml = File.getContent('assets/images/custom_ui/dialog_boxes/'+SONG.player2+'/crazy.xml');
 			senpaiEvil.frames = FlxAtlasFrames.fromSparrow(evilImage, evilXml);
