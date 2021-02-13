@@ -23,17 +23,17 @@
     }
   },
   "offset": {
-    "idle": [0,0],
-    "singUP": [5,37],
-    "singRIGHT": [0,0],
-    "singLEFT": [40, 0],
-    "singDOWN": [14, 0]
+    "idle": [-200,-100],
+    "singUP": [-180,-69],
+    "singRIGHT": [-170,-140],
+    "singLEFT": [-170, -119],
+    "singDOWN": [-150, -148]
   },
   "flipx": false,
   "like": "senpai",
-  "enemyOffset": [-50,-50],
-  "camOffset": [0, 0],
-  "followCam": [0,0],
+  "enemyOffset": [-150,0],
+  "camOffset": [250, 0],
+  "followCam": [450,50],
   "playAnim": "idle",
   "isPixel": false
 }
