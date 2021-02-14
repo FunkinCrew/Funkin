@@ -4,10 +4,12 @@ All notable changes will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [unreleased] 
+## [unreleased]
 ### Changed
+- New icons, old one was placeholder since October woops!
 - Made the transitions between the story mode levels more seamless.
 ### Fixed
+- Layering on Week 4 songs with GF and the LIMO LOL HOW TF I MISS THIS
 - Chart's and chart editor now support changeBPM, GOD BLESS MTH FOR THIS ONE I BEEN STRUGGLIN WIT THAT SINCE OCTOBER LMAO ([GOD BLESS MTH](https://github.com/ninjamuffin99/Funkin/pull/382))
 - Antialiasing on the skyscraper lights
 
