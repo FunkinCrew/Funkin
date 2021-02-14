@@ -148,18 +148,18 @@ class Note extends FlxSprite
 			{
 				switch (prevNote.noteData)
 				{
+					case 0:
+						prevNote.animation.play('purplehold');
+					case 1:
+						prevNote.animation.play('bluehold');
 					case 2:
 						prevNote.animation.play('greenhold');
 					case 3:
 						prevNote.animation.play('redhold');
-					case 1:
-						prevNote.animation.play('bluehold');
-					case 0:
-						prevNote.animation.play('purplehold');
 				}
 
-				prevNote.offset.y = -19;
-				prevNote.scale.y *= (2.25 * FlxMath.roundDecimal(PlayState.SONG.speed, 1));
+				prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.5 * PlayState.SONG.speed;
+				prevNote.updateHitbox();
 				// prevNote.setGraphicSize();
 			}
 		}
