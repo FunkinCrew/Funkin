@@ -1097,6 +1097,16 @@ class PlayState extends MusicBeatState
 
 					switch (Math.abs(i))
 					{
+						case 0:
+							babyArrow.x += Note.swagWidth * 0;
+							babyArrow.animation.add('static', [0]);
+							babyArrow.animation.add('pressed', [4, 8], 12, false);
+							babyArrow.animation.add('confirm', [12, 16], 24, false);
+						case 1:
+							babyArrow.x += Note.swagWidth * 1;
+							babyArrow.animation.add('static', [1]);
+							babyArrow.animation.add('pressed', [5, 9], 12, false);
+							babyArrow.animation.add('confirm', [13, 17], 24, false);
 						case 2:
 							babyArrow.x += Note.swagWidth * 2;
 							babyArrow.animation.add('static', [2]);
@@ -1107,16 +1117,6 @@ class PlayState extends MusicBeatState
 							babyArrow.animation.add('static', [3]);
 							babyArrow.animation.add('pressed', [7, 11], 12, false);
 							babyArrow.animation.add('confirm', [15, 19], 24, false);
-						case 1:
-							babyArrow.x += Note.swagWidth * 1;
-							babyArrow.animation.add('static', [1]);
-							babyArrow.animation.add('pressed', [5, 9], 12, false);
-							babyArrow.animation.add('confirm', [13, 17], 24, false);
-						case 0:
-							babyArrow.x += Note.swagWidth * 0;
-							babyArrow.animation.add('static', [0]);
-							babyArrow.animation.add('pressed', [4, 8], 12, false);
-							babyArrow.animation.add('confirm', [12, 16], 24, false);
 					}
 
 				default:
@@ -1131,6 +1131,16 @@ class PlayState extends MusicBeatState
 
 					switch (Math.abs(i))
 					{
+						case 0:
+							babyArrow.x += Note.swagWidth * 0;
+							babyArrow.animation.addByPrefix('static', 'arrowLEFT');
+							babyArrow.animation.addByPrefix('pressed', 'left press', 24, false);
+							babyArrow.animation.addByPrefix('confirm', 'left confirm', 24, false);
+						case 1:
+							babyArrow.x += Note.swagWidth * 1;
+							babyArrow.animation.addByPrefix('static', 'arrowDOWN');
+							babyArrow.animation.addByPrefix('pressed', 'down press', 24, false);
+							babyArrow.animation.addByPrefix('confirm', 'down confirm', 24, false);
 						case 2:
 							babyArrow.x += Note.swagWidth * 2;
 							babyArrow.animation.addByPrefix('static', 'arrowUP');
@@ -1141,16 +1151,6 @@ class PlayState extends MusicBeatState
 							babyArrow.animation.addByPrefix('static', 'arrowRIGHT');
 							babyArrow.animation.addByPrefix('pressed', 'right press', 24, false);
 							babyArrow.animation.addByPrefix('confirm', 'right confirm', 24, false);
-						case 1:
-							babyArrow.x += Note.swagWidth * 1;
-							babyArrow.animation.addByPrefix('static', 'arrowDOWN');
-							babyArrow.animation.addByPrefix('pressed', 'down press', 24, false);
-							babyArrow.animation.addByPrefix('confirm', 'down confirm', 24, false);
-						case 0:
-							babyArrow.x += Note.swagWidth * 0;
-							babyArrow.animation.addByPrefix('static', 'arrowLEFT');
-							babyArrow.animation.addByPrefix('pressed', 'left press', 24, false);
-							babyArrow.animation.addByPrefix('confirm', 'left confirm', 24, false);
 					}
 			}
 
@@ -1502,6 +1502,20 @@ class PlayState extends MusicBeatState
 					daNote.active = true;
 				}
 
+				daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(SONG.speed, 2)));
+
+				// i am so fucking sorry for this if condition
+				if (daNote.isSustainNote && daNote.y + daNote.offset.y <= strumLine.y + Note.swagWidth/2
+					&& (!daNote.mustPress || (daNote.wasGoodHit || 
+						(daNote.prevNote.wasGoodHit && !daNote.canBeHit))))
+				{
+					var swagRect = new FlxRect(0, strumLine.y + Note.swagWidth/2 - daNote.y, daNote.width * 2, daNote.height * 2);
+					swagRect.y /= daNote.scale.y;
+					swagRect.height -= swagRect.y;
+
+					daNote.clipRect = swagRect;
+				}
+
 				if (!daNote.mustPress && daNote.wasGoodHit)
 				{
 					if (SONG.song != 'Tutorial')
@@ -1517,14 +1531,14 @@ class PlayState extends MusicBeatState
 
 					switch (Math.abs(daNote.noteData))
 					{
+						case 0:
+							dad.playAnim('singLEFT' + altAnim, true);
+						case 1:
+							dad.playAnim('singDOWN' + altAnim, true);
 						case 2:
 							dad.playAnim('singUP' + altAnim, true);
 						case 3:
 							dad.playAnim('singRIGHT' + altAnim, true);
-						case 1:
-							dad.playAnim('singDOWN' + altAnim, true);
-						case 0:
-							dad.playAnim('singLEFT' + altAnim, true);
 					}
 
 					dad.holdTimer = 0;
@@ -1537,25 +1551,32 @@ class PlayState extends MusicBeatState
 					daNote.destroy();
 				}
 
-				daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(PlayState.SONG.speed, 2)));
-
 				// WIP interpolation shit? Need to fix the pause issue
 				// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
 
 				if (daNote.y < -daNote.height)
 				{
-					if (daNote.tooLate || !daNote.wasGoodHit)
+					if (daNote.isSustainNote && daNote.wasGoodHit)
 					{
-						health -= 0.0475;
-						vocals.volume = 0;
+						daNote.kill();
+						notes.remove(daNote, true);
+						daNote.destroy();
 					}
+					else
+					{
+						if (daNote.tooLate || !daNote.wasGoodHit)
+						{
+							health -= 0.0475;
+							vocals.volume = 0;
+						}
 
-					daNote.active = false;
-					daNote.visible = false;
+						daNote.active = false;
+						daNote.visible = false;
 
-					daNote.kill();
-					notes.remove(daNote, true);
-					daNote.destroy();
+						daNote.kill();
+						notes.remove(daNote, true);
+						daNote.destroy();
+					}
 				}
 			});
 		}
@@ -1935,17 +1956,17 @@ class PlayState extends MusicBeatState
 					switch (daNote.noteData)
 					{
 						// NOTES YOU ARE HOLDING
+						case 0:
+							if (left)
+								goodNoteHit(daNote);
+						case 1:
+							if (down)
+								goodNoteHit(daNote);
 						case 2:
 							if (up)
 								goodNoteHit(daNote);
 						case 3:
 							if (right)
-								goodNoteHit(daNote);
-						case 1:
-							if (down)
-								goodNoteHit(daNote);
-						case 0:
-							if (left)
 								goodNoteHit(daNote);
 					}
 				}
@@ -1964,6 +1985,16 @@ class PlayState extends MusicBeatState
 		{
 			switch (spr.ID)
 			{
+				case 0:
+					if (leftP && spr.animation.curAnim.name != 'confirm')
+						spr.animation.play('pressed');
+					if (leftR)
+						spr.animation.play('static');
+				case 1:
+					if (downP && spr.animation.curAnim.name != 'confirm')
+						spr.animation.play('pressed');
+					if (downR)
+						spr.animation.play('static');
 				case 2:
 					if (upP && spr.animation.curAnim.name != 'confirm')
 						spr.animation.play('pressed');
@@ -1973,16 +2004,6 @@ class PlayState extends MusicBeatState
 					if (rightP && spr.animation.curAnim.name != 'confirm')
 						spr.animation.play('pressed');
 					if (rightR)
-						spr.animation.play('static');
-				case 1:
-					if (downP && spr.animation.curAnim.name != 'confirm')
-						spr.animation.play('pressed');
-					if (downR)
-						spr.animation.play('static');
-				case 0:
-					if (leftP && spr.animation.curAnim.name != 'confirm')
-						spr.animation.play('pressed');
-					if (leftR)
 						spr.animation.play('static');
 			}
 
@@ -2024,14 +2045,14 @@ class PlayState extends MusicBeatState
 
 			switch (direction)
 			{
+				case 0:
+					boyfriend.playAnim('singLEFTmiss', true);
+				case 1:
+					boyfriend.playAnim('singDOWNmiss', true);
 				case 2:
 					boyfriend.playAnim('singUPmiss', true);
 				case 3:
 					boyfriend.playAnim('singRIGHTmiss', true);
-				case 1:
-					boyfriend.playAnim('singDOWNmiss', true);
-				case 0:
-					boyfriend.playAnim('singLEFTmiss', true);
 			}
 		}
 	}
@@ -2047,12 +2068,12 @@ class PlayState extends MusicBeatState
 
 		if (leftP)
 			noteMiss(0);
+		if (downP)
+			noteMiss(1);
 		if (upP)
 			noteMiss(2);
 		if (rightP)
 			noteMiss(3);
-		if (downP)
-			noteMiss(1);
 	}
 
 	function noteCheck(keyP:Bool, note:Note):Void
@@ -2082,14 +2103,14 @@ class PlayState extends MusicBeatState
 
 			switch (note.noteData)
 			{
+				case 0:
+					boyfriend.playAnim('singLEFT', true);
+				case 1:
+					boyfriend.playAnim('singDOWN', true);
 				case 2:
 					boyfriend.playAnim('singUP', true);
 				case 3:
 					boyfriend.playAnim('singRIGHT', true);
-				case 1:
-					boyfriend.playAnim('singDOWN', true);
-				case 0:
-					boyfriend.playAnim('singLEFT', true);
 			}
 
 			playerStrums.forEach(function(spr:FlxSprite)
@@ -2103,9 +2124,12 @@ class PlayState extends MusicBeatState
 			note.wasGoodHit = true;
 			vocals.volume = 1;
 
-			note.kill();
-			notes.remove(note, true);
-			note.destroy();
+			if (!note.isSustainNote)
+			{
+				note.kill();
+				notes.remove(note, true);
+				note.destroy();
+			}
 		}
 	}
 
