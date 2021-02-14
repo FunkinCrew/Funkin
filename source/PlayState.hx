@@ -529,10 +529,6 @@ class PlayState extends MusicBeatState
 		gf = new Character(400, 130, gfVersion);
 		gf.scrollFactor.set(0.95, 0.95);
 
-		// Shitty layering but whatev it works LOL
-		if (curStage == 'limo')
-			add(limo);
-
 		dad = new Character(100, 100, SONG.player2);
 
 		var camPos:FlxPoint = new FlxPoint(dad.getGraphicMidpoint().x, dad.getGraphicMidpoint().y);
@@ -614,6 +610,11 @@ class PlayState extends MusicBeatState
 		}
 
 		add(gf);
+
+		// Shitty layering but whatev it works LOL
+		if (curStage == 'limo')
+			add(limo);
+
 		add(dad);
 		add(boyfriend);
 
