@@ -48,7 +48,7 @@
     "singLEFT-alt": [-30,15],
     "singDOWN-alt": [-30, -27]
   },
-  "flipx": true,
+  "flipx": false,
   "enemyOffset": [-500,0],
   "like": "parents",
   "playAnim": "idle"
