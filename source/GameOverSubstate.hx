@@ -17,6 +17,7 @@ import lime.media.AudioBuffer;
 import flash.media.Sound;
 #end
 import haxe.Json;
+import tjson.TJSON;
 using StringTools;
 class GameOverSubstate extends MusicBeatSubstate
 {
@@ -36,10 +37,10 @@ class GameOverSubstate extends MusicBeatSubstate
 		}
 		var characterList = Assets.getText('assets/data/characterList.txt');
 		if (!StringTools.contains(characterList, p1)) {
-			var parsedCharJson:Dynamic = Json.parse(Assets.getText('assets/images/custom_chars/custom_chars.json'));
+			var parsedCharJson:Dynamic = TJSON.parse(Assets.getText('assets/images/custom_chars/custom_chars.json'));
 			//another CTRL+C CTRL+V ritual
 			var unparsedAnimJson = File.getContent("assets/images/custom_chars/"+Reflect.field(parsedCharJson,p1).like+".json"); //it might keep throwing an error if i dont do this
-			var parsedAnimJson = Json.parse(unparsedAnimJson); //fuck
+			var parsedAnimJson = TJSON.parse(unparsedAnimJson);
 			switch (parsedAnimJson.like) {
 				case "bf":
 					// bf has a death animation

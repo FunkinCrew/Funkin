@@ -24,6 +24,7 @@ import lime.app.Application;
 import openfl.Assets;
 import polymod.Polymod;
 import haxe.Json;
+import tjson.TJSON;
 using StringTools;
 
 class TitleState extends MusicBeatState
@@ -55,7 +56,7 @@ class TitleState extends MusicBeatState
 		super.create();
 
 
-		var optionsJson = Json.parse(Assets.getText('assets/data/options.json'));
+		var optionsJson = TJSON.parse(Assets.getText('assets/data/options.json'));
 		FlxG.save.bind("save"+optionsJson.preferredSave, 'bulbyVR');
 
 		Highscore.load();

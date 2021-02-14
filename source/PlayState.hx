@@ -49,7 +49,7 @@ import openfl.utils.ByteArray;
 import lime.media.AudioBuffer;
 import flash.media.Sound;
 #end
-
+import tjson.TJSON;
 using StringTools;
 
 class PlayState extends MusicBeatState
@@ -170,7 +170,7 @@ class PlayState extends MusicBeatState
 		camGame = new FlxCamera();
 		camHUD = new FlxCamera();
 		camHUD.bgColor.alpha = 0;
-		var optionsJson = Json.parse(Assets.getText('assets/data/options.json'));
+		var optionsJson = TJSON.parse(Assets.getText('assets/data/options.json'));
 		FlxG.cameras.reset(camGame);
 		FlxG.cameras.add(camHUD);
 
@@ -578,7 +578,7 @@ class PlayState extends MusicBeatState
 			add(stageCurtains);
 		} else {
 			// use assets
-			var parsedStageJson = Json.parse(Assets.getText("assets/images/custom_stages/custom_stages.json"));
+			var parsedStageJson = TJSON.parse(Assets.getText("assets/images/custom_stages/custom_stages.json"));
 			switch (Reflect.field(parsedStageJson, SONG.stage)) {
 				case 'stage':
 					defaultCamZoom = 0.9;

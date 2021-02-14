@@ -33,6 +33,8 @@ Other installations you'd need is the additional libraries, a fully updated list
 ```
 hscript
 flixel-ui
+tjson
+json2object
 ```
 
 So for each of those type `haxelib install [library]` so shit like `haxelib install hscript`

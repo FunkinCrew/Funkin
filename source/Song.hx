@@ -4,6 +4,7 @@ import Section.SwagSection;
 import haxe.Json;
 import haxe.format.JsonParser;
 import lime.utils.Assets;
+import tjson.TJSON;
 #if sys
 import sys.io.File;
 import lime.system.System;
@@ -167,7 +168,7 @@ class Song
 
 	public static function parseJSONshit(rawJson:String):SwagSong
 	{
-		var swagShit:SwagSong = cast Json.parse(rawJson).song;
+		var swagShit:SwagSong = cast TJSON.parse(rawJson).song;
 		swagShit.validScore = true;
 		return swagShit;
 	}

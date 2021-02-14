@@ -12,6 +12,7 @@ import flash.display.BitmapData;
 #end
 import haxe.Json;
 import haxe.format.JsonParser;
+import tjson.TJSON;
 class MenuCharacter extends FlxSprite
 {
 	public var character:String;
@@ -22,7 +23,7 @@ class MenuCharacter extends FlxSprite
 
 		this.character = character;
 		// use assets it is less laggy
-		var parsedCharJson:Dynamic = Json.parse(Assets.getText("assets/images/campaign-ui-char/custom_ui_chars.json"));
+		var parsedCharJson:Dynamic = TJSON.parse(Assets.getText("assets/images/campaign-ui-char/custom_ui_chars.json"));
 		if (!!Reflect.field(parsedCharJson,character).defaultGraphics) {
 			// use assets, it is less laggy
 			var tex = FlxAtlasFrames.fromSparrow('assets/images/campaign_menu_UI_characters.png', 'assets/images/campaign_menu_UI_characters.xml');
@@ -35,7 +36,7 @@ class MenuCharacter extends FlxSprite
 		}
 
 		// don't use assets because you can use custom like folders
-		var animJson = Json.parse(File.getContent("assets/images/campaign-ui-char/"+Reflect.field(parsedCharJson,character).like+".json"));
+		var animJson = TJSON.parse(File.getContent("assets/images/campaign-ui-char/"+Reflect.field(parsedCharJson,character).like+".json"));
 		for (field in Reflect.fields(animJson)) {
 			animation.addByPrefix(field, Reflect.field(animJson, field), 24, (field == "idle"));
 		}

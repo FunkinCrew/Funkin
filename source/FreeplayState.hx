@@ -20,6 +20,7 @@ import sys.FileSystem;
 import flash.media.Sound;
 #end
 import haxe.Json;
+import tjson.TJSON;
 using StringTools;
 
 class FreeplayState extends MusicBeatState
@@ -180,7 +181,7 @@ class FreeplayState extends MusicBeatState
 			PlayState.isStoryMode = false;
 			ModifierState.isStoryMode = false;
 			PlayState.storyDifficulty = curDifficulty;
-			var optionsJson = Json.parse(Assets.getText('assets/data/options.json'));
+			var optionsJson = TJSON.parse(Assets.getText('assets/data/options.json'));
 			if (!optionsJson.skipModifierMenu)
 			 	FlxG.switchState(new ModifierState());
 			else {

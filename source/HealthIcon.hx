@@ -12,6 +12,7 @@ import sys.FileSystem;
 #end
 import haxe.Json;
 import haxe.format.JsonParser;
+import tjson.TJSON;
 using StringTools;
 class HealthIcon extends FlxSprite
 {
@@ -19,7 +20,7 @@ class HealthIcon extends FlxSprite
 	{
 		super();
 		#if sys
-		var charJson:Dynamic = Json.parse(File.getContent("assets/images/custom_chars/custom_chars.json"));
+		var charJson:Dynamic = TJSON.parse(File.getContent("assets/images/custom_chars/custom_chars.json"));
 		#end
 		antialiasing = true;
 		switch (char) {

@@ -6,6 +6,7 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import flash.display.BitmapData;
 import lime.utils.Assets;
 import lime.system.System;
+import lime.app.Application;
 #if sys
 import sys.io.File;
 import sys.FileSystem;
@@ -13,6 +14,7 @@ import haxe.io.Path;
 import openfl.utils.ByteArray;
 #end
 import haxe.Json;
+import tjson.TJSON;
 import haxe.format.JsonParser;
 using StringTools;
 
@@ -540,92 +542,144 @@ class Character extends FlxSprite
 					curCharacter = curCharacter.substr(0, curCharacter.length - 5);
 				}
 				trace(curCharacter);
-				var charJson:Dynamic = Json.parse(Assets.getText('assets/images/custom_chars/custom_chars.json'));
-				// use assets, as it is less laggy
-				var animJson = File.getContent("assets/images/custom_chars/"+Reflect.field(charJson,curCharacter).like+".json");
-				var parsedAnimJson:Dynamic = Json.parse(animJson);
-
-
-				var playerSuffix = 'char';
-				if (isDie) {
-					// poor programming but whatev
-					playerSuffix = 'dead';
-					parsedAnimJson.animation = parsedAnimJson.deadAnimation;
-					parsedAnimJson.offset = parsedAnimJson.deadOffset;
+				var charJson:Dynamic = null;
+				var isError:Bool = false;
+				try {
+					charJson = TJSON.parse(Assets.getText('assets/images/custom_chars/custom_chars.json'));
+				} catch (exception) {
+					// uh oh someone messed up their json
+					Application.current.window.alert("Hey! You messed up your custom_chars.json. Your game won't crash but it will load bf. "+exception, "Alert");
+					isError = true;
 				}
-				var rawPic = BitmapData.fromFile('assets/images/custom_chars/'+curCharacter+"/"+playerSuffix+".png");
-				var tex:FlxAtlasFrames;
-				var rawXml:String;
-				// GOD IS DEAD WHY DOES THIS NOT WORK
-				trace(parsedAnimJson.usesSpritesheetPacker);
-				if (FileSystem.exists('assets/images/custom_chars/'+curCharacter+"/"+playerSuffix+".txt")){
-					rawXml = File.getContent('assets/images/custom_chars/'+curCharacter+"/"+playerSuffix+".txt");
-					tex = FlxAtlasFrames.fromSpriteSheetPacker(rawPic,rawXml);
-				} else {
-					rawXml = File.getContent('assets/images/custom_chars/'+curCharacter+"/"+playerSuffix+".xml");
-					tex = FlxAtlasFrames.fromSparrow(rawPic,rawXml);
-				}
+				if (!isError) {
+					// use assets, as it is less laggy
+					var animJson = File.getContent("assets/images/custom_chars/"+Reflect.field(charJson,curCharacter).like+".json");
+
+					var parsedAnimJson:Dynamic = TJSON.parse(animJson);
 
 
-				frames = tex;
-
-				for( field in Reflect.fields(parsedAnimJson.animation) ) {
-					var fps = 24;
-					if (Reflect.hasField(Reflect.field(parsedAnimJson.animation,field), "fps")) {
-						fps = Reflect.field(parsedAnimJson.animation,field).fps;
+					var playerSuffix = 'char';
+					if (isDie) {
+						// poor programming but whatev
+						playerSuffix = 'dead';
+						parsedAnimJson.animation = parsedAnimJson.deadAnimation;
+						parsedAnimJson.offset = parsedAnimJson.deadOffset;
 					}
-					var loop = false;
-					if (Reflect.hasField(Reflect.field(parsedAnimJson.animation,field), "loop")) {
-						loop = Reflect.field(parsedAnimJson.animation,field).loop;
-					}
-					if (Reflect.hasField(Reflect.field(parsedAnimJson.animation,field),"flippedname") && !isPlayer) {
-						// the double not is to turn a null into a false
-						if (Reflect.hasField(Reflect.field(parsedAnimJson.animation,field),"indices")) {
-							var indicesAnim:Array<Int> = Reflect.field(parsedAnimJson.animation,field).indices;
-							animation.addByIndices(field, Reflect.field(parsedAnimJson.animation,field).flippedname, indicesAnim, "", fps, !!Reflect.field(parsedAnimJson.animation,field).loop);
-						} else {
-							animation.addByPrefix(field,Reflect.field(parsedAnimJson.animation,field).flippedname, fps, !!Reflect.field(parsedAnimJson.animation,field).loop);
-						}
-
+					var rawPic = BitmapData.fromFile('assets/images/custom_chars/'+curCharacter+"/"+playerSuffix+".png");
+					var tex:FlxAtlasFrames;
+					var rawXml:String;
+					// GOD IS DEAD WHY DOES THIS NOT WORK
+					trace(parsedAnimJson.usesSpritesheetPacker);
+					if (FileSystem.exists('assets/images/custom_chars/'+curCharacter+"/"+playerSuffix+".txt")){
+						rawXml = File.getContent('assets/images/custom_chars/'+curCharacter+"/"+playerSuffix+".txt");
+						tex = FlxAtlasFrames.fromSpriteSheetPacker(rawPic,rawXml);
 					} else {
-						if (Reflect.hasField(Reflect.field(parsedAnimJson.animation,field),"indices")) {
-							var indicesAnim:Array<Int> = Reflect.field(parsedAnimJson.animation,field).indices;
-							animation.addByIndices(field, Reflect.field(parsedAnimJson.animation,field).name, indicesAnim, "", fps, !!Reflect.field(parsedAnimJson.animation,field).loop);
+						rawXml = File.getContent('assets/images/custom_chars/'+curCharacter+"/"+playerSuffix+".xml");
+						tex = FlxAtlasFrames.fromSparrow(rawPic,rawXml);
+					}
+
+
+					frames = tex;
+
+					for( field in Reflect.fields(parsedAnimJson.animation) ) {
+						var fps = 24;
+						if (Reflect.hasField(Reflect.field(parsedAnimJson.animation,field), "fps")) {
+							fps = Reflect.field(parsedAnimJson.animation,field).fps;
+						}
+						var loop = false;
+						if (Reflect.hasField(Reflect.field(parsedAnimJson.animation,field), "loop")) {
+							loop = Reflect.field(parsedAnimJson.animation,field).loop;
+						}
+						if (Reflect.hasField(Reflect.field(parsedAnimJson.animation,field),"flippedname") && !isPlayer) {
+							// the double not is to turn a null into a false
+							if (Reflect.hasField(Reflect.field(parsedAnimJson.animation,field),"indices")) {
+								var indicesAnim:Array<Int> = Reflect.field(parsedAnimJson.animation,field).indices;
+								animation.addByIndices(field, Reflect.field(parsedAnimJson.animation,field).flippedname, indicesAnim, "", fps, !!Reflect.field(parsedAnimJson.animation,field).loop);
+							} else {
+								animation.addByPrefix(field,Reflect.field(parsedAnimJson.animation,field).flippedname, fps, !!Reflect.field(parsedAnimJson.animation,field).loop);
+							}
+
 						} else {
-							animation.addByPrefix(field,Reflect.field(parsedAnimJson.animation,field).name, fps, !!Reflect.field(parsedAnimJson.animation,field).loop);
+							if (Reflect.hasField(Reflect.field(parsedAnimJson.animation,field),"indices")) {
+								var indicesAnim:Array<Int> = Reflect.field(parsedAnimJson.animation,field).indices;
+								animation.addByIndices(field, Reflect.field(parsedAnimJson.animation,field).name, indicesAnim, "", fps, !!Reflect.field(parsedAnimJson.animation,field).loop);
+							} else {
+								animation.addByPrefix(field,Reflect.field(parsedAnimJson.animation,field).name, fps, !!Reflect.field(parsedAnimJson.animation,field).loop);
+							}
 						}
 					}
-				}
-				for( field in Reflect.fields(parsedAnimJson.offset)) {
-					addOffset(field, Reflect.field(parsedAnimJson.offset,field)[0],  Reflect.field(parsedAnimJson.offset,field)[1]);
-				}
-				camOffsetX = if (parsedAnimJson.camOffset != null) parsedAnimJson.camOffset[0] else 0;
-				camOffsetY = if (parsedAnimJson.camOffset != null) parsedAnimJson.camOffset[1] else 0;
-				enemyOffsetX = if (parsedAnimJson.enemyOffset != null) parsedAnimJson.enemyOffset[0] else 0;
-				enemyOffsetY = if (parsedAnimJson.enemyOffset != null) parsedAnimJson.enemyOffset[1] else 0;
-				followCamX = if (parsedAnimJson.followCam != null) parsedAnimJson.followCam[0] else 150;
-				followCamY = if (parsedAnimJson.followCam != null) parsedAnimJson.followCam[1] else -100;
-				midpointX = if (parsedAnimJson.midpoint != null) parsedAnimJson.midpoint[0] else 0;
-				midpointY = if (parsedAnimJson.midpoint != null) parsedAnimJson.midpoint[1] else 0;
-				flipX = if (parsedAnimJson.flipx != null) parsedAnimJson.flipx else false;
+					for( field in Reflect.fields(parsedAnimJson.offset)) {
+						addOffset(field, Reflect.field(parsedAnimJson.offset,field)[0],  Reflect.field(parsedAnimJson.offset,field)[1]);
+					}
+					camOffsetX = if (parsedAnimJson.camOffset != null) parsedAnimJson.camOffset[0] else 0;
+					camOffsetY = if (parsedAnimJson.camOffset != null) parsedAnimJson.camOffset[1] else 0;
+					enemyOffsetX = if (parsedAnimJson.enemyOffset != null) parsedAnimJson.enemyOffset[0] else 0;
+					enemyOffsetY = if (parsedAnimJson.enemyOffset != null) parsedAnimJson.enemyOffset[1] else 0;
+					followCamX = if (parsedAnimJson.followCam != null) parsedAnimJson.followCam[0] else 150;
+					followCamY = if (parsedAnimJson.followCam != null) parsedAnimJson.followCam[1] else -100;
+					midpointX = if (parsedAnimJson.midpoint != null) parsedAnimJson.midpoint[0] else 0;
+					midpointY = if (parsedAnimJson.midpoint != null) parsedAnimJson.midpoint[1] else 0;
+					flipX = if (parsedAnimJson.flipx != null) parsedAnimJson.flipx else false;
 
 
-				like = parsedAnimJson.like;
-				if (like == "bf-car") {
-					// ignore it, this is used for gameover state
+					like = parsedAnimJson.like;
+					if (like == "bf-car") {
+						// ignore it, this is used for gameover state
+						like = "bf";
+					}
+					isPixel = parsedAnimJson.isPixel;
+					if (parsedAnimJson.isPixel) {
+						antialiasing = false;
+						setGraphicSize(Std.int(width * 6));
+						updateHitbox(); // when the hitbox is sus!
+					}
+					if (!isDie) {
+						width += if (parsedAnimJson.size != null) parsedAnimJson.size[0] else 0;
+						height += if (parsedAnimJson.size != null) parsedAnimJson.size[1] else 0;
+					}
+					playAnim(parsedAnimJson.playAnim);
+				} else {
+					// uh oh we got an error
+					// pretend its boyfriend to prevent crashes
+					var tex = FlxAtlasFrames.fromSparrow('assets/images/BOYFRIEND.png', 'assets/images/BOYFRIEND.xml');
+					frames = tex;
+					animation.addByPrefix('idle', 'BF idle dance', 24, false);
+					animation.addByPrefix('singUP', 'BF NOTE UP0', 24, false);
+					animation.addByPrefix('singLEFT', 'BF NOTE LEFT0', 24, false);
+					animation.addByPrefix('singRIGHT', 'BF NOTE RIGHT0', 24, false);
+					animation.addByPrefix('singDOWN', 'BF NOTE DOWN0', 24, false);
+					animation.addByPrefix('singUPmiss', 'BF NOTE UP MISS', 24, false);
+					animation.addByPrefix('singLEFTmiss', 'BF NOTE LEFT MISS', 24, false);
+					animation.addByPrefix('singRIGHTmiss', 'BF NOTE RIGHT MISS', 24, false);
+					animation.addByPrefix('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
+					animation.addByPrefix('hey', 'BF HEY', 24, false);
+
+					animation.addByPrefix('firstDeath', "BF dies", 24, false);
+					animation.addByPrefix('deathLoop', "BF Dead Loop", 24, true);
+					animation.addByPrefix('deathConfirm', "BF Dead confirm", 24, false);
+
+					animation.addByPrefix('scared', 'BF idle shaking', 24);
+
+					addOffset('idle', -5);
+					addOffset("singUP", -29, 27);
+					addOffset("singRIGHT", -38, -7);
+					addOffset("singLEFT", 12, -6);
+					addOffset("singDOWN", -10, -50);
+					addOffset("singUPmiss", -29, 27);
+					addOffset("singRIGHTmiss", -30, 21);
+					addOffset("singLEFTmiss", 12, 24);
+					addOffset("singDOWNmiss", -11, -19);
+					addOffset("hey", 7, 4);
+					addOffset('firstDeath', 37, 11);
+					addOffset('deathLoop', 37, 5);
+					addOffset('deathConfirm', 37, 69);
+					addOffset('scared', -4);
+
+					flipX = true;
 					like = "bf";
+					playAnim('idle');
 				}
-				isPixel = parsedAnimJson.isPixel;
-				if (parsedAnimJson.isPixel) {
-					antialiasing = false;
-					setGraphicSize(Std.int(width * 6));
-					updateHitbox(); // when the hitbox is sus!
-				}
-				if (!isDie) {
-					width += if (parsedAnimJson.size != null) parsedAnimJson.size[0] else 0;
-					height += if (parsedAnimJson.size != null) parsedAnimJson.size[1] else 0;
-				}
-				playAnim(parsedAnimJson.playAnim);
+
 				#else
 				// pretend its boyfriend, screw html5
 				var tex = FlxAtlasFrames.fromSparrow('assets/images/BOYFRIEND.png', 'assets/images/BOYFRIEND.xml');
@@ -844,8 +898,8 @@ class Character extends FlxSprite
 		animOffsets[name] = [x, y];
 	}
 	public static function getAnimJson(char:String) {
-		var charJson = Json.parse(Assets.getText('assets/images/custom_chars/custom_chars.json'));
-		var animJson = Json.parse(File.getContent('assets/images/custom_chars/'+Reflect.field(charJson, char).like + '.json'));
+		var charJson = TJSON.parse(Assets.getText('assets/images/custom_chars/custom_chars.json'));
+		var animJson = TJSON.parse(File.getContent('assets/images/custom_chars/'+Reflect.field(charJson, char).like + '.json'));
 		return animJson;
 	}
 }

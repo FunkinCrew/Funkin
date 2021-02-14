@@ -22,6 +22,7 @@ import flash.media.Sound;
 #end
 import haxe.Json;
 import haxe.format.JsonParser;
+import tjson.TJSON;
 using StringTools;
 
 class DialogueBox extends FlxSpriteGroup
@@ -180,8 +181,8 @@ class DialogueBox extends FlxSpriteGroup
 					var rawPic = BitmapData.fromFile('assets/images/custom_ui/dialog_boxes/'+PlayState.SONG.cutsceneType+'/box.png');
 					var rawXml = File.getContent('assets/images/custom_ui/dialog_boxes/'+PlayState.SONG.cutsceneType+'/box.xml');
 					box.frames = FlxAtlasFrames.fromSparrow(rawPic,rawXml);
-					var coolJsonFile:Dynamic = Json.parse(Assets.getText('assets/images/custom_ui/dialog_boxes/dialog_boxes.json'));
-					var coolAnimFile = Json.parse(File.getContent('assets/images/custom_ui/dialog_boxes/'+Reflect.field(coolJsonFile,PlayState.SONG.cutsceneType).like+'.json'));
+					var coolJsonFile:Dynamic = TJSON.parse(Assets.getText('assets/images/custom_ui/dialog_boxes/dialog_boxes.json'));
+					var coolAnimFile = TJSON.parse(File.getContent('assets/images/custom_ui/dialog_boxes/'+Reflect.field(coolJsonFile,PlayState.SONG.cutsceneType).like+'.json'));
 					isPixel[2] = coolAnimFile.isPixel;
 					senpaiVisible = coolAnimFile.senpaiVisible;
 					senpaiColor = FlxColor.fromString(coolAnimFile.senpaiColor);

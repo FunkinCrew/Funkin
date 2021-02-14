@@ -21,6 +21,7 @@ import lime.media.AudioBuffer;
 import flash.media.Sound;
 #end
 import haxe.Json;
+import tjson.TJSON;
 using StringTools;
 class VictoryLoopState extends MusicBeatSubstate
 {
@@ -100,8 +101,8 @@ class VictoryLoopState extends MusicBeatSubstate
 		accuracyTxt.setFormat("assets/fonts/vcr.ttf", 26, FlxColor.WHITE, RIGHT);
 		var characterList = Assets.getText('assets/data/characterList.txt');
 		if (!StringTools.contains(characterList, p1)) {
-			var parsedCharJson:Dynamic = Json.parse(Assets.getText('assets/images/custom_chars/custom_chars.json'));
-			var parsedAnimJson = Json.parse(File.getContent("assets/images/custom_chars/"+Reflect.field(parsedCharJson,p1).like+".json"));
+			var parsedCharJson:Dynamic = TJSON.parse(Assets.getText('assets/images/custom_chars/custom_chars.json'));
+			var parsedAnimJson = TJSON.parse(File.getContent("assets/images/custom_chars/"+Reflect.field(parsedCharJson,p1).like+".json"));
 			switch (parsedAnimJson.like) {
 				case "bf-pixel":
 					// gotta deal with this dude

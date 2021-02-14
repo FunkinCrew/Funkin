@@ -13,6 +13,7 @@ import flash.display.BitmapData;
 #end
 import haxe.Json;
 import haxe.format.JsonParser;
+import tjson.TJSON;
 class MenuItem extends FlxSpriteGroup
 {
 	public var targetY:Float = 0;
@@ -21,7 +22,7 @@ class MenuItem extends FlxSpriteGroup
 	public function new(x:Float, y:Float, weekNum:Int = 0)
 	{
 		super(x, y);
-		var parsedWeekJson:Array<Array<String>> = Json.parse(File.getContent("assets/data/storySongList.json")).songs;
+		var parsedWeekJson:Array<Array<String>> = TJSON.parse(File.getContent("assets/data/storySongList.json")).songs;
 		var rawPic = BitmapData.fromFile('assets/images/campaign-ui-week/week'+weekNum+".png");
 		var rawXml = File.getContent('assets/images/campaign-ui-week/week'+weekNum+".xml");
 		var tex = FlxAtlasFrames.fromSparrow(rawPic, rawXml);

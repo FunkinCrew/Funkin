@@ -36,6 +36,7 @@ import lime.system.System;
 #if sys
 import sys.io.File;
 import haxe.io.Path;
+import tjson.TJSON;
 import openfl.utils.ByteArray;
 import lime.media.AudioBuffer;
 import flash.media.Sound;
@@ -250,52 +251,17 @@ class ChartingState extends MusicBeatState
 		var stages:Array<String> = CoolUtil.coolTextFile('assets/data/stages.txt');
 		var cutscenes:Array<String> = CoolUtil.coolTextFile('assets/data/cutscenes.txt');
 		var uiTypes:Array<String> = CoolUtil.coolTextFile('assets/data/uitypes.txt');
-		for (i in Reflect.fields(Json.parse(Assets.getText('assets/images/custom_chars/custom_chars.json'))))
-		{
-			characters.push(i);
-		}
-		for (i in Reflect.fields(Json.parse(Assets.getText('assets/images/custom_stages/custom_stages.json'))))
-		{
-			stages.push(i);
-		}
-		var player1DropDown = new FlxUIDropDownMenu(10, 100, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
-		{
-			_song.player1 = characters[Std.parseInt(character)];
-		});
+
 		player1TextField = new FlxUIInputText(10, 100, 70, _song.player1, 8);
 		player2TextField = new FlxUIInputText(80, 100, 70, _song.player2, 8);
 		gfTextField = new FlxUIInputText(10, 120, 70, _song.gf, 8);
 		stageTextField = new FlxUIInputText(80, 120, 70, _song.stage, 8);
 		cutsceneTextField = new FlxUIInputText(80, 140, 70, _song.cutsceneType, 8);
 		uiTextField = new FlxUIInputText(10, 140, 70, _song.uiType, 8);
-		player1DropDown.selectedLabel = _song.player1;
-		var player2DropDown = new FlxUIDropDownMenu(140, 100, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
-		{
-			_song.player2 = characters[Std.parseInt(character)];
-		});
-		var stageDropDown = new FlxUIDropDownMenu(140, 160, FlxUIDropDownMenu.makeStrIdLabelArray(stages, true), function(stage:String)
-		{
-			_song.stage = stages[Std.parseInt(stage)];
-		});
-		var gfDropDown = new FlxUIDropDownMenu(10, 160, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
-		{
-			_song.gf = characters[Std.parseInt(character)];
-		});
 		var isMoodyCheck = new FlxUICheckBox(10, 220, null, null, "Is Moody", 100);
 		isMoodyCheck.name = "isMoody";
 		isMoodyCheck.checked = _song.isMoody;
-		var cutsceneDropdown = new FlxUIDropDownMenu(140, 220, FlxUIDropDownMenu.makeStrIdLabelArray(cutscenes, true), function(cutscene:String)
-		{
-			_song.cutsceneType = cutscenes[Std.parseInt(cutscene)];
-		});
-		var uiDropdown = new FlxUIDropDownMenu(140, 280, FlxUIDropDownMenu.makeStrIdLabelArray(uiTypes, true), function(uiType:String)
-		{
-			_song.uiType = uiTypes[Std.parseInt(uiType)];
-		});
-		player2DropDown.selectedLabel = _song.player2;
 		var curStage = _song.stage;
-		stageDropDown.selectedLabel = _song.stage;
-		gfDropDown.selectedLabel = _song.gf;
 		var tab_group_song = new FlxUI(null, UI_box);
 		tab_group_song.name = "Song";
 		tab_group_song.add(UI_songTitle);
@@ -318,45 +284,13 @@ class ChartingState extends MusicBeatState
 
 	function addCharsUI():Void
 	{
-		var characters:Array<String> = CoolUtil.coolTextFile('assets/data/characterList.txt');
-		var stages:Array<String> = CoolUtil.coolTextFile('assets/data/stages.txt');
-		var cutscenes:Array<String> = CoolUtil.coolTextFile('assets/data/cutscenes.txt');
-		var uiTypes:Array<String> = CoolUtil.coolTextFile('assets/data/uitypes.txt');
-		for (i in Reflect.fields(Json.parse(Assets.getText('assets/images/custom_chars/custom_chars.json'))))
-		{
-			characters.push(i);
-		}
-		for (i in Reflect.fields(Json.parse(Assets.getText('assets/images/custom_stages/custom_stages.json'))))
-		{
-			stages.push(i);
-		}
-		var player1DropDown = new FlxUIDropDownMenu(10, 100, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
-		{
-			_song.player1 = characters[Std.parseInt(character)];
-		});
 		player1TextField = new FlxUIInputText(10, 100, 70, _song.player1, 8);
 		player2TextField = new FlxUIInputText(80, 100, 70, _song.player2, 8);
 		gfTextField = new FlxUIInputText(10, 120, 70, _song.gf, 8);
 		stageTextField = new FlxUIInputText(80, 120, 70, _song.stage, 8);
 		cutsceneTextField = new FlxUIInputText(80, 140, 70, _song.cutsceneType, 8);
 		uiTextField = new FlxUIInputText(10, 140, 70, _song.uiType, 8);
-		player1DropDown.selectedLabel = _song.player1;
-		var player2DropDown = new FlxUIDropDownMenu(140, 100, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
-		{
-			_song.player2 = characters[Std.parseInt(character)];
-		});
-		var stageDropDown = new FlxUIDropDownMenu(140, 160, FlxUIDropDownMenu.makeStrIdLabelArray(stages, true), function(stage:String)
-		{
-			_song.stage = stages[Std.parseInt(stage)];
-		});
-		var gfDropDown = new FlxUIDropDownMenu(10, 160, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
-		{
-			_song.gf = characters[Std.parseInt(character)];
-		});
-		player2DropDown.selectedLabel = _song.player2;
 		var curStage = _song.stage;
-		stageDropDown.selectedLabel = _song.stage;
-		gfDropDown.selectedLabel = _song.gf;
 
 		var tab_group_char = new FlxUI(null, UI_box);
 		tab_group_char.name = "Char";

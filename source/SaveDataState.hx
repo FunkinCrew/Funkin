@@ -14,6 +14,8 @@ import flixel.util.FlxColor;
 import lime.utils.Assets;
 import sys.io.File;
 import haxe.Json;
+import tjson.TJSON;
+
 using StringTools;
 typedef TOption = {
 	var name:String;
@@ -32,7 +34,7 @@ class SaveDataState extends MusicBeatState
 	var checkmarks:FlxTypedSpriteGroup<FlxSprite>;
 	override function create()
 	{
-		var optionsJson = Json.parse(Assets.getText('assets/data/options.json'));
+		var optionsJson = TJSON.parse(Assets.getText('assets/data/options.json'));
 		var menuBG:FlxSprite = new FlxSprite().loadGraphic('assets/images/menuDesat.png');
 		optionList = [{name: "Always Show Cutscenes", value: false}, {name: "Skip Modifier Menu", value: false}, {name: "Skip Victory Screen", value: false}];
 		optionList[0].value = optionsJson.alwaysDoCutscenes;
@@ -78,7 +80,7 @@ class SaveDataState extends MusicBeatState
 		super.update(elapsed);
 		if (controls.BACK) {
 			if (!saves.members[curSelected].beingSelected) {
-				var optionsJson = Json.parse(Assets.getText('assets/data/options.json'));
+				var optionsJson = TJSON.parse(Assets.getText('assets/data/options.json'));
 				optionsJson.skipModifierMenu = optionList[1].value;
 				optionsJson.alwaysDoCutscenes = optionList[0].value;
 				optionsJson.skipVictoryScreen = optionList[2].value;
@@ -117,7 +119,7 @@ class SaveDataState extends MusicBeatState
 					if (saves.members[curSelected].selectingLoad) {
 						var saveName = "save" + curSelected;
 						trace(saveName);
-						var optionsJson = Json.parse(Assets.getText('assets/data/options.json'));
+						var optionsJson = TJSON.parse(Assets.getText('assets/data/options.json'));
 						optionsJson.preferredSave = curSelected;
 						File.saveContent('assets/data/options.json', Json.stringify(optionsJson));
 						FlxG.save.close();
