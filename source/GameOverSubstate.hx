@@ -51,7 +51,7 @@ class GameOverSubstate extends MusicBeatSubstate
 				default:
 					if (StringTools.contains(unparsedAnimJson, "firstDeath")){ //if i had to build this for any longer i would lose my mind
 						daBf = p1; //this should be less shitty
-						if (StringTools.endsWith(p1, "-pixel"))
+						if (parsedAnimJson.isPixel)
 							stageSuffix = '-pixel'; //pixel check!
 					}
 					else

@@ -2,32 +2,32 @@
   "$ref": "custom_char_schema.json",
   "animation": {
     "idle": {
-      "name": "Angry Senpai Idle",
+      "name": "Senpai Idle",
       "loop": false
     },
     "singUP": {
-      "name": "Angry Senpai UP NOTE",
+      "name": "SENPAI UP NOTE",
       "loop": false
     },
     "singDOWN": {
-      "name": "Angry Senpai DOWN NOTE",
+      "name": "SENPAI DOWN NOTE",
       "loop": false
     },
     "singLEFT": {
-      "name": "Angry Senpai LEFT NOTE",
+      "name": "SENPAI LEFT NOTE",
       "loop": false
     },
     "singRIGHT": {
-      "name": "Angry Senpai RIGHT NOTE",
+      "name": "SENPAI RIGHT NOTE",
       "loop": false
     }
   },
   "offset": {
-    "idle": [-200,-100],
-    "singUP": [-190,-29],
-    "singRIGHT": [-250,-120],
-    "singLEFT": [-200, -99],
-    "singDOWN": [-210, -138]
+    "idle": [0,0],
+    "singUP": [-180,-69],
+    "singRIGHT": [-170,-140],
+    "singLEFT": [-170, -119],
+    "singDOWN": [-150, -148]
   },
   "flipx": false,
   "like": "senpai",

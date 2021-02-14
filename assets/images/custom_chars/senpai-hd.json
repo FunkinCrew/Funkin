@@ -31,7 +31,7 @@
   },
   "flipx": false,
   "like": "senpai",
-  "enemyOffset": [-150,0],
+  "enemyOffset": [-150,-50],
   "camOffset": [250, 0],
   "followCam": [450,50],
   "playAnim": "idle",
