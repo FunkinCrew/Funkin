@@ -15,6 +15,8 @@ import io.newgrounds.objects.events.Result.GetVersionResult;
 import lime.app.Application;
 import openfl.display.Stage;
 
+using StringTools;
+
 /**
  * MADE BY GEOKURELI THE LEGENED GOD HERO MVP
  */
@@ -29,6 +31,7 @@ class NGio
 	public static var ngScoresLoaded(default, null):FlxSignal = new FlxSignal();
 
 	public static var GAME_VER:String = "";
+	public static var GAME_VER_NUMS:String = '';
 	public static var gotOnlineVer:Bool = false;
 
 	public static function noLogin(api:String)
@@ -45,6 +48,7 @@ class NGio
 				var call = NG.core.calls.app.getCurrentVersion(GAME_VER).addDataHandler(function(response:Response<GetCurrentVersionResult>)
 				{
 					GAME_VER = response.result.data.currentVersion;
+					GAME_VER_NUMS = GAME_VER.split(" ")[0].trim();
 					trace('CURRENT NG VERSION: ' + GAME_VER);
 					gotOnlineVer = true;
 				});
