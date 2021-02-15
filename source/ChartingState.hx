@@ -354,7 +354,7 @@ class ChartingState extends MusicBeatState
 		FlxG.sound.playMusic(Paths.inst(daSong), 0.6);
 
 		// WONT WORK FOR TUTORIAL OR TEST SONG!!! REDO LATER
-		vocals = new FlxSound().loadEmbedded(Paths.music(daSong + "_Voices"));
+		vocals = new FlxSound().loadEmbedded(Paths.voices(daSong));
 		FlxG.sound.list.add(vocals);
 
 		FlxG.sound.music.pause();
