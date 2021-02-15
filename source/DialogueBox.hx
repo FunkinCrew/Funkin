@@ -171,13 +171,13 @@ class DialogueBox extends FlxSpriteGroup
 			dialogueStarted = true;
 		}
 
-		if (FlxG.keys.justPressed.ANY)
+		if (FlxG.keys.justPressed.ANY  && dialogueStarted == true)
 		{
 			remove(dialogue);
-
+				
 			FlxG.sound.play('assets/sounds/clickText' + TitleState.soundExt, 0.8);
 
-			if (dialogueList[1] == null)
+			if (dialogueList[1] == null && dialogueList[0] != null)
 			{
 				if (!isEnding)
 				{
@@ -209,7 +209,7 @@ class DialogueBox extends FlxSpriteGroup
 				startDialogue();
 			}
 		}
-
+		
 		super.update(elapsed);
 	}
 
@@ -218,7 +218,6 @@ class DialogueBox extends FlxSpriteGroup
 	function startDialogue():Void
 	{
 		cleanDialog();
-
 		// var theDialog:Alphabet = new Alphabet(0, 70, dialogueList[0], false, true);
 		// dialogue = theDialog;
 		// add(theDialog);
