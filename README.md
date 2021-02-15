@@ -48,7 +48,7 @@ haxelib git polymod https://github.com/larsiusprime/polymod.git
 ### Ignored files
 
 I gitignore the API keys for the game, so that no one can nab them and post fake highscores on the leaderboards. But because of that the game
-doesn't compile without it.
+doesn't compile without it. Below is a version of APIStuff that points at a debug NG project for the game.
 
 Just make a file in `/source` and call it `APIStuff.hx`, and copy paste this into it
 
@@ -57,8 +57,9 @@ package;
 
 class APIStuff
 {
-	public static var API:String = "";
-	public static var EncKey:String = "";
+	inline public static var API:String = "51348:TtzK0rZ8";
+	inline public static var EncKey:String = "5NqKsSVSNKHbF9fPgZPqPg==";
+	inline public static var SESSION:String = null;
 }
 
 ```
