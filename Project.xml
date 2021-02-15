@@ -43,6 +43,7 @@
 	<assets path="assets/images" />
 	<assets path="assets/data" />
 	<assets path='example_mods' rename='mods' embed='false'/>
+	<assets path='art/readme.txt' rename='do NOT readme.txt' />
 	<!-- <template path='mods' /> -->
 	
 	<!-- <library name="noPreload" preload='false'/> -->
