@@ -22,6 +22,7 @@ import flash.media.Sound;
 #end
 import haxe.Json;
 import tjson.TJSON;
+import yaml.Yaml;
 using StringTools;
 class VictoryLoopState extends MusicBeatSubstate
 {
@@ -101,8 +102,8 @@ class VictoryLoopState extends MusicBeatSubstate
 		accuracyTxt.setFormat("assets/fonts/vcr.ttf", 26, FlxColor.WHITE, RIGHT);
 		var characterList = Assets.getText('assets/data/characterList.txt');
 		if (!StringTools.contains(characterList, p1)) {
-			var parsedCharJson:Dynamic = CoolUtil.parseJson(Assets.getText('assets/images/custom_chars/custom_chars.json'));
-			var parsedAnimJson = CoolUtil.parseJson(File.getContent("assets/images/custom_chars/"+Reflect.field(parsedCharJson,p1).like+".json"));
+			var parsedCharJson:Dynamic = CoolUtil.parseJson(Assets.getText('assets/images/custom_chars/custom_chars.yaml'));
+			var parsedAnimJson = CoolUtil.parseJson(File.getContent("assets/images/custom_chars/"+parsedCharJson.get(p1).get("like")+".json"));
 			switch (parsedAnimJson.like) {
 				case "bf-pixel":
 					// gotta deal with this dude

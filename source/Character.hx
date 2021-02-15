@@ -16,6 +16,7 @@ import openfl.utils.ByteArray;
 import haxe.Json;
 import tjson.TJSON;
 import haxe.format.JsonParser;
+import yaml.Yaml;
 using StringTools;
 
 class Character extends FlxSprite
@@ -545,15 +546,15 @@ class Character extends FlxSprite
 				var charJson:Dynamic = null;
 				var isError:Bool = false;
 				try {
-					charJson = CoolUtil.parseJson(Assets.getText('assets/images/custom_chars/custom_chars.json'));
+					charJson = CoolUtil.parseJson(Assets.getText('assets/images/custom_chars/custom_chars.yaml'));
 				} catch (exception) {
 					// uh oh someone messed up their json
-					Application.current.window.alert("Hey! You messed up your custom_chars.json. Your game won't crash but it will load bf. "+exception, "Alert");
+					Application.current.window.alert("Hey! You messed up your custom_chars.yaml. Your game won't crash but it will load bf. "+exception, "Alert");
 					isError = true;
 				}
 				if (!isError) {
 					// use assets, as it is less laggy
-					var animJson = File.getContent("assets/images/custom_chars/"+Reflect.field(charJson,curCharacter).like+".json");
+					var animJson = File.getContent("assets/images/custom_chars/"+charJson.get(curCharacter).get("like")+".json");
 
 					var parsedAnimJson:Dynamic = CoolUtil.parseJson(animJson);
 
@@ -898,8 +899,8 @@ class Character extends FlxSprite
 		animOffsets[name] = [x, y];
 	}
 	public static function getAnimJson(char:String) {
-		var charJson = CoolUtil.parseJson(Assets.getText('assets/images/custom_chars/custom_chars.json'));
-		var animJson = CoolUtil.parseJson(File.getContent('assets/images/custom_chars/'+Reflect.field(charJson, char).like + '.json'));
+		var charJson = Yaml.parse(Assets.getText('assets/images/custom_chars/custom_chars.yaml'));
+		var animJson = CoolUtil.parseJson(File.getContent('assets/images/custom_chars/'+charJson.get(char).get("like") + '.json'));
 		return animJson;
 	}
 }

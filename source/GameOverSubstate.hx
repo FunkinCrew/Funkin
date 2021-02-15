@@ -18,6 +18,7 @@ import flash.media.Sound;
 #end
 import haxe.Json;
 import tjson.TJSON;
+import yaml.Yaml;
 using StringTools;
 class GameOverSubstate extends MusicBeatSubstate
 {
@@ -37,9 +38,9 @@ class GameOverSubstate extends MusicBeatSubstate
 		}
 		var characterList = Assets.getText('assets/data/characterList.txt');
 		if (!StringTools.contains(characterList, p1)) {
-			var parsedCharJson:Dynamic = CoolUtil.parseJson(Assets.getText('assets/images/custom_chars/custom_chars.json'));
+			var parsedCharJson:Dynamic = Yaml.parse(Assets.getText('assets/images/custom_chars/custom_chars.yaml'));
 			//another CTRL+C CTRL+V ritual
-			var unparsedAnimJson = File.getContent("assets/images/custom_chars/"+Reflect.field(parsedCharJson,p1).like+".json"); //it might keep throwing an error if i dont do this
+			var unparsedAnimJson = File.getContent("assets/images/custom_chars/"+parsedCharJson.get(p1).get("like")+".json"); //it might keep throwing an error if i dont do this
 			var parsedAnimJson = CoolUtil.parseJson(unparsedAnimJson);
 			switch (parsedAnimJson.like) {
 				case "bf":

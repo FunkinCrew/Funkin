@@ -11,6 +11,7 @@ import flash.display.BitmapData;
 import sys.FileSystem;
 #end
 import haxe.Json;
+import yaml.Yaml;
 import haxe.format.JsonParser;
 import tjson.TJSON;
 using StringTools;
@@ -20,7 +21,7 @@ class HealthIcon extends FlxSprite
 	{
 		super();
 		#if sys
-		var charJson:Dynamic = CoolUtil.parseJson(File.getContent("assets/images/custom_chars/custom_chars.json"));
+		var charJson:Dynamic = Yaml.parse(File.getContent("assets/images/custom_chars/custom_chars.yaml"));
 		#end
 		antialiasing = true;
 		switch (char) {
@@ -86,7 +87,7 @@ class HealthIcon extends FlxSprite
 				if (FileSystem.exists('assets/images/custom_chars/'+char+"/icons.png")) {
 					var rawPic:BitmapData = BitmapData.fromFile('assets/images/custom_chars/'+char+"/icons.png");
 					loadGraphic(rawPic, true, 150, 150);
-					animation.add('icon', Reflect.field(charJson,char).icons, false, isPlayer);
+					animation.add('icon', charJson.get(char).get("icons"), false, isPlayer);
 				} else {
 					loadGraphic('assets/images/iconGrid.png', true, 150, 150);
 					animation.add('icon', Reflect.field(charJson,char).icons, false, isPlayer);

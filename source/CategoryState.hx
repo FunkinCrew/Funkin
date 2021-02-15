@@ -21,6 +21,7 @@ import flash.media.Sound;
 #end
 import haxe.Json;
 import tjson.TJSON;
+import yaml.Yaml;
 using StringTools;
 
 class CategoryState extends MusicBeatState
@@ -36,15 +37,16 @@ class CategoryState extends MusicBeatState
 	override function create()
 	{
 		// it's a js file to make syntax highlighting acceptable
-		var epicCategoryJs:Array<Dynamic> = CoolUtil.parseJson(Assets.getText('assets/data/freeplaySongJson.js'));
+		var epicCategoryJs:Array<Dynamic> = Yaml.parse(Assets.getText('assets/data/freeplaySongJson.yaml'));
 		if (epicCategoryJs.length > 1) {
 			for (category in epicCategoryJs) {
-				categories.push(category.name);
-				categorySongs.push(category.songs);
+				categories.push(category.get("name"));
+				categorySongs.push(category.get("songs"));
 			}
 		} else {
 			// just set freeplay states songs to the only category
-			FreeplayState.currentSongList = epicCategoryJs[0].songs;
+			trace(epicCategoryJs[0].get("songs"));
+			FreeplayState.currentSongList = epicCategoryJs[0].get("songs");
 			FlxG.switchState(new FreeplayState());
 		}
 
