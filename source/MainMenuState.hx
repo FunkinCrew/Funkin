@@ -1,5 +1,8 @@
 package;
 
+import flixel.util.FlxTimer;
+import flixel.FlxState;
+import cpp.abi.Abi;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
@@ -14,19 +17,13 @@ import flixel.util.FlxColor;
 import io.newgrounds.NG;
 import lime.app.Application;
 
+import ui.MenuItemList;
+
 using StringTools;
 
 class MainMenuState extends MusicBeatState
 {
-	var curSelected:Int = 0;
-
-	var menuItems:FlxTypedGroup<FlxSprite>;
-
-	#if !switch
-	var optionShit:Array<String> = ['story mode', 'freeplay', 'donate'];
-	#else
-	var optionShit:Array<String> = ['story mode', 'freeplay'];
-	#end
+	var menuItems:MenuItemList;
 
 	var magenta:FlxSprite;
 	var camFollow:FlxObject;
@@ -67,23 +64,38 @@ class MainMenuState extends MusicBeatState
 		add(magenta);
 		// magenta.scrollFactor.set();
 
-		menuItems = new FlxTypedGroup<FlxSprite>();
+		menuItems = new MenuItemList('FNF_main_menu_assets');
 		add(menuItems);
-
-		var tex = Paths.getSparrowAtlas('FNF_main_menu_assets');
-
-		for (i in 0...optionShit.length)
+		menuItems.onChange.add(onMenuItemChange);
+		menuItems.onAcceptPress.add(function(_)
 		{
-			var menuItem:FlxSprite = new FlxSprite(0, 60 + (i * 160));
-			menuItem.frames = tex;
-			menuItem.animation.addByPrefix('idle', optionShit[i] + " basic", 24);
-			menuItem.animation.addByPrefix('selected', optionShit[i] + " white", 24);
-			menuItem.animation.play('idle');
-			menuItem.ID = i;
-			menuItem.screenCenter(X);
-			menuItems.add(menuItem);
-			menuItem.scrollFactor.set();
-			menuItem.antialiasing = true;
+			FlxFlicker.flicker(magenta, 1.1, 0.15, false, true);
+		});
+		
+		
+		var hasPopupBlocker = #if web true #else false #end;
+		
+		menuItems.addItem('story mode', function () startExitState(new StoryMenuState()));
+		menuItems.addItem('freeplay', function () startExitState(new FreeplayState()));
+		// addMenuItem('options', function () startExitState(new OptionMenu()));
+		#if (!switch)
+			menuItems.addItem('donate', selectDonate, hasPopupBlocker);
+		#end
+		#if newgrounds
+			if (NG.core.loggedIn)
+				menuItems.addItem("logout", selectLogout);
+			else
+				menuItems.addItem("login", selectLogin, hasPopupBlocker);
+		#end
+		
+		// center vertically
+		var spacing = 160;
+		var top = (FlxG.height - (spacing * (menuItems.length - 1))) / 2;
+		for (i in 0...menuItems.length)
+		{
+			var menuItem = menuItems.members[i];
+			menuItem.x = FlxG.width / 2;
+			menuItem.y = top + spacing * i;
 		}
 
 		FlxG.camera.follow(camFollow, null, 0.06);
@@ -95,12 +107,48 @@ class MainMenuState extends MusicBeatState
 
 		// NG.core.calls.event.logEvent('swag').send();
 
-		changeItem();
-
 		super.create();
 	}
-
-	var selectedSomethin:Bool = false;
+	
+	function onMenuItemChange(selected:MenuItem)
+	{
+		camFollow.setPosition(selected.getGraphicMidpoint().x, selected.getGraphicMidpoint().y);
+	}
+	
+	function selectDonate()
+	{
+		#if linux
+		Sys.command('/usr/bin/xdg-open', ["https://ninja-muffin24.itch.io/funkin", "&"]);
+		#else
+		FlxG.openURL('https://ninja-muffin24.itch.io/funkin');
+		#end
+	}
+	
+	function selectLogin()
+	{
+	}
+	
+	function selectLogout()
+	{
+	}
+	
+	function startExitState(state:FlxState)
+	{
+		var duration = 0.4;
+		menuItems.forEach(function(item)
+		{
+			if (menuItems.selectedIndex != item.ID)
+			{
+				FlxTween.tween(item, {alpha: 0}, duration, { ease: FlxEase.quadOut });
+			}
+			else
+			{
+				item.visible = false;
+			}
+		});
+		
+		new FlxTimer().start(duration, function(_) FlxG.switchState(state));
+	}
 
 	override function update(elapsed:Float)
 	{
@@ -109,108 +157,9 @@ class MainMenuState extends MusicBeatState
 			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
 		}
 
-		if (!selectedSomethin)
-		{
-			if (controls.UP_P)
-			{
-				FlxG.sound.play(Paths.sound('scrollMenu'));
-				changeItem(-1);
-			}
-
-			if (controls.DOWN_P)
-			{
-				FlxG.sound.play(Paths.sound('scrollMenu'));
-				changeItem(1);
-			}
-
-			if (controls.BACK)
-			{
-				FlxG.switchState(new TitleState());
-			}
-
-			if (controls.ACCEPT)
-			{
-				if (optionShit[curSelected] == 'donate')
-				{
-					#if linux
-					Sys.command('/usr/bin/xdg-open', ["https://ninja-muffin24.itch.io/funkin", "&"]);
-					#else
-					FlxG.openURL('https://ninja-muffin24.itch.io/funkin');
-					#end
-				}
-				else
-				{
-					selectedSomethin = true;
-					FlxG.sound.play(Paths.sound('confirmMenu'));
-
-					FlxFlicker.flicker(magenta, 1.1, 0.15, false);
-
-					menuItems.forEach(function(spr:FlxSprite)
-					{
-						if (curSelected != spr.ID)
-						{
-							FlxTween.tween(spr, {alpha: 0}, 0.4, {
-								ease: FlxEase.quadOut,
-								onComplete: function(twn:FlxTween)
-								{
-									spr.kill();
-								}
-							});
-						}
-						else
-						{
-							FlxFlicker.flicker(spr, 1, 0.06, false, false, function(flick:FlxFlicker)
-							{
-								var daChoice:String = optionShit[curSelected];
-
-								switch (daChoice)
-								{
-									case 'story mode':
-										FlxG.switchState(new StoryMenuState());
-										trace("Story Menu Selected");
-									case 'freeplay':
-										FlxG.switchState(new FreeplayState());
-
-										trace("Freeplay Menu Selected");
-
-									case 'options':
-										FlxG.switchState(new OptionsMenu());
-								}
-							});
-						}
-					});
-				}
-			}
-		}
+		if (menuItems.active && controls.BACK)
+			FlxG.switchState(new TitleState());
 
 		super.update(elapsed);
-
-		menuItems.forEach(function(spr:FlxSprite)
-		{
-			spr.screenCenter(X);
-		});
-	}
-
-	function changeItem(huh:Int = 0)
-	{
-		curSelected += huh;
-
-		if (curSelected >= menuItems.length)
-			curSelected = 0;
-		if (curSelected < 0)
-			curSelected = menuItems.length - 1;
-
-		menuItems.forEach(function(spr:FlxSprite)
-		{
-			spr.animation.play('idle');
-
-			if (spr.ID == curSelected)
-			{
-				spr.animation.play('selected');
-				camFollow.setPosition(spr.getGraphicMidpoint().x, spr.getGraphicMidpoint().y);
-			}
-
-			spr.updateHitbox();
-		});
 	}
 }

@@ -4,6 +4,7 @@ import flixel.FlxG;
 import flixel.util.FlxSignal;
 import flixel.util.FlxTimer;
 import io.newgrounds.NG;
+import io.newgrounds.NGLite;
 import io.newgrounds.components.ScoreBoardComponent.Period;
 import io.newgrounds.objects.Medal;
 import io.newgrounds.objects.Score;
@@ -43,7 +44,7 @@ class NGio
 			{
 				var call = NG.core.calls.app.getCurrentVersion(GAME_VER).addDataHandler(function(response:Response<GetCurrentVersionResult>)
 				{
-					GAME_VER = response.result.data.current_version;
+					GAME_VER = response.result.data.currentVersion;
 					trace('CURRENT NG VERSION: ' + GAME_VER);
 					gotOnlineVer = true;
 				});
@@ -53,17 +54,27 @@ class NGio
 		}
 	}
 
-	public function new(api:String, encKey:String, ?sessionId:String)
+	public function new(api:String, encKey:String)
 	{
 		trace("connecting to newgrounds");
-
-		NG.createAndCheckSession(api, sessionId);
-
+		
+		var sessionId:String = NGLite.getSessionId();
+		if (sessionId != null)
+			trace("found web session id");
+		
+		#if (debug)
+		if (sessionId == null && APIStuff.SESSION != null)
+		{
+			sessionId = APIStuff.SESSION;
+			trace("using debug session id");
+		}
+		#end
+		
+		
+		NG.create(api, sessionId);
 		NG.core.verbose = true;
 		// Set the encryption cipher/format to RC4/Base64. AES128 and Hex are not implemented yet
 		NG.core.initEncryption(encKey); // Found in you NG project view
-
-		trace(NG.core.attemptingLogin);
 
 		if (NG.core.attemptingLogin)
 		{
@@ -73,6 +84,7 @@ class NGio
 			trace("attempting login");
 			NG.core.onLogin.add(onNGLogin);
 		}
+		//GK: taking out auto login, adding a login button to the main menu
 		else
 		{
 			/* They are NOT playing on newgrounds.com, no session id was found. We must start one manually, if we want to.
