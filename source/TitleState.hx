@@ -68,7 +68,6 @@ class TitleState extends MusicBeatState
 		if (!Reflect.hasField(FlxG.save.data,"options")) {
 			FlxG.save.data.options = {
 				"skipVictoryScreen": false,
-				"useCategoryScreen": false,
 				"skipModifierMenu": false,
 				"alwaysDoCutscenes": false
 			};

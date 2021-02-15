@@ -35,11 +35,10 @@ class SaveDataState extends MusicBeatState
 	override function create()
 	{
 		var menuBG:FlxSprite = new FlxSprite().loadGraphic('assets/images/menuDesat.png');
-		optionList = [{name: "Always Show Cutscenes", value: false}, {name: "Skip Modifier Menu", value: false}, {name: "Skip Victory Screen", value: false},{name:"Use Category Screen", value: false}];
+		optionList = [{name: "Always Show Cutscenes", value: false}, {name: "Skip Modifier Menu", value: false}, {name: "Skip Victory Screen", value: false}];
 		optionList[0].value = FlxG.save.data.options.alwaysDoCutscenes;
 		optionList[1].value = FlxG.save.data.options.skipModifierMenu;
 		optionList[2].value = FlxG.save.data.options.skipVictoryScreen;
-		optionList[3].value = FlxG.save.data.options.useCategoryScreen;
 		saves = new FlxTypedSpriteGroup<SaveFile>();
 		menuBG.color = 0xFF7194fc;
 		menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
@@ -86,7 +85,6 @@ class SaveDataState extends MusicBeatState
 
 				FlxG.save.data.options = {
 					"skipVictoryScreen": optionList[2].value,
-					"useCategoryScreen": optionList[3].value,
 					"skipModifierMenu": optionList[1].value,
 					"alwaysDoCutscenes": optionList[0].value
 				};

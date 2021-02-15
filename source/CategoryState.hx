@@ -37,10 +37,17 @@ class CategoryState extends MusicBeatState
 	{
 		// it's a js file to make syntax highlighting acceptable
 		var epicCategoryJs:Array<Dynamic> = CoolUtil.parseJson(Assets.getText('assets/data/freeplaySongJson.js'));
-		for (category in epicCategoryJs) {
-			categories.push(category.name);
-			categorySongs.push(category.songs);
+		if (epicCategoryJs.length > 1) {
+			for (category in epicCategoryJs) {
+				categories.push(category.name);
+				categorySongs.push(category.songs);
+			}
+		} else {
+			// just set freeplay states songs to the only category
+			FreeplayState.currentSongList = epicCategoryJs[0].songs;
+			FlxG.switchState(new FreeplayState());
 		}
+
 		/*
 			if (FlxG.sound.music != null)
 			{

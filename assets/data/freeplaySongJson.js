@@ -5,6 +5,7 @@
       // we use tjson so we can do comments and do some incorrect things
       // just treat this like a javascript object
       // the reason we use tjson is because json is hard
+      // The category screen won't show up unless there are more than 1 categories
       "Tutorial",
       "Bopbeebo",
       "Fresh",

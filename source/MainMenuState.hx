@@ -21,7 +21,6 @@ class MainMenuState extends MusicBeatState
 	var curSelected:Int = 0;
 
 	var menuItems:FlxTypedGroup<FlxSprite>;
-	var useCategoryScreen:Bool = false;
 	#if !switch
 	var optionShit:Array<String> = ['story mode', 'freeplay', 'donate', 'options'];
 	#else
@@ -37,7 +36,6 @@ class MainMenuState extends MusicBeatState
 		{
 			FlxG.sound.playMusic('assets/music/freakyMenu' + TitleState.soundExt);
 		}
-		useCategoryScreen = FlxG.save.data.options.useCategoryScreen;
 		persistentUpdate = persistentDraw = true;
 		var bg:FlxSprite = new FlxSprite(-80).loadGraphic('assets/images/menuBG.png');
 		bg.scrollFactor.x = 0;
@@ -190,10 +188,8 @@ class MainMenuState extends MusicBeatState
 										FlxG.switchState(new StoryMenuState());
 										trace("Story Menu Selected");
 									case 'freeplay':
-										if (useCategoryScreen)
-											FlxG.switchState(new CategoryState());
-										else
-											FlxG.switchState(new FreeplayState());
+										FlxG.switchState(new CategoryState());
+
 										trace("Freeplay Menu Selected");
 
 									case 'options':

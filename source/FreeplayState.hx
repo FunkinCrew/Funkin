@@ -42,12 +42,8 @@ class FreeplayState extends MusicBeatState
 
 	override function create()
 	{
-		// if we should use category screen, just use what the category screen provided
-		usingCategoryScreen = FlxG.save.data.options.useCategoryScreen;
-		if (usingCategoryScreen)
-			songs = currentSongList;
-		else
-			songs = CoolUtil.coolTextFile('assets/data/freeplaySonglist.txt');
+		songs = currentSongList;
+
 		curDifficulty = DifficultyIcons.getDefaultDiffFP();
 		/*
 			if (FlxG.sound.music != null)
