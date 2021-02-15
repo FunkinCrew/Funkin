@@ -78,7 +78,7 @@ class StoryMenuState extends MusicBeatState
 			if (!FlxG.sound.music.playing)
 				FlxG.sound.playMusic('assets/music/freakyMenu' + TitleState.soundExt);
 		}
-		var storySongJson:StorySongsJson = TJSON.parse(Assets.getText('assets/data/storySonglist.json'));
+		var storySongJson:StorySongsJson = CoolUtil.parseJson(Assets.getText('assets/data/storySonglist.json'));
 		persistentUpdate = persistentDraw = true;
 		for (storySongList in storySongJson.songs) {
 			var weekSongs = [];
@@ -201,7 +201,7 @@ class StoryMenuState extends MusicBeatState
 		add(difficultySelectors);
 
 		trace("Line 124");
-		var diffJson:DifficultysJson = TJSON.parse(Assets.getText("assets/images/custom_difficulties/difficulties.json"));
+		var diffJson:DifficultysJson = CoolUtil.parseJson(Assets.getText("assets/images/custom_difficulties/difficulties.json"));
 		leftArrow = new FlxSprite(grpWeekText.members[0].x + grpWeekText.members[0].width + 10, grpWeekText.members[0].y + 10);
 		leftArrow.frames = ui_tex;
 		leftArrow.animation.addByPrefix('idle', "arrow left");
@@ -356,8 +356,7 @@ class StoryMenuState extends MusicBeatState
 			PlayState.campaignAccuracy = 0;
 			new FlxTimer().start(1, function(tmr:FlxTimer)
 			{
-				var optionsJson = TJSON.parse(Assets.getText('assets/data/options.json'));
-				if (!optionsJson.skipModifierMenu)
+				if (!FlxG.save.data.options.skipModifierMenu)
 				 	FlxG.switchState(new ModifierState());
 				else {
 					if (FlxG.sound.music != null)

@@ -34,11 +34,12 @@ class SaveDataState extends MusicBeatState
 	var checkmarks:FlxTypedSpriteGroup<FlxSprite>;
 	override function create()
 	{
-		var optionsJson = TJSON.parse(Assets.getText('assets/data/options.json'));
 		var menuBG:FlxSprite = new FlxSprite().loadGraphic('assets/images/menuDesat.png');
-		optionList = [{name: "Always Show Cutscenes", value: false}, {name: "Skip Modifier Menu", value: false}, {name: "Skip Victory Screen", value: false}];
-		optionList[0].value = optionsJson.alwaysDoCutscenes;
-		optionList[1].value = optionsJson.skipModifierMenu;
+		optionList = [{name: "Always Show Cutscenes", value: false}, {name: "Skip Modifier Menu", value: false}, {name: "Skip Victory Screen", value: false},{name:"Use Category Screen", value: false}];
+		optionList[0].value = FlxG.save.data.options.alwaysDoCutscenes;
+		optionList[1].value = FlxG.save.data.options.skipModifierMenu;
+		optionList[2].value = FlxG.save.data.options.skipVictoryScreen;
+		optionList[3].value = FlxG.save.data.options.useCategoryScreen;
 		saves = new FlxTypedSpriteGroup<SaveFile>();
 		menuBG.color = 0xFF7194fc;
 		menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
@@ -80,11 +81,16 @@ class SaveDataState extends MusicBeatState
 		super.update(elapsed);
 		if (controls.BACK) {
 			if (!saves.members[curSelected].beingSelected) {
-				var optionsJson = TJSON.parse(Assets.getText('assets/data/options.json'));
-				optionsJson.skipModifierMenu = optionList[1].value;
-				optionsJson.alwaysDoCutscenes = optionList[0].value;
-				optionsJson.skipVictoryScreen = optionList[2].value;
-				File.saveContent('assets/data/options.json', Json.stringify(optionsJson));
+				// our current save saves this
+				// we are gonna have to do some shenanagins to save our preffered save
+
+				FlxG.save.data.options = {
+					"skipVictoryScreen": optionList[2].value,
+					"useCategoryScreen": optionList[3].value,
+					"skipModifierMenu": optionList[1].value,
+					"alwaysDoCutscenes": optionList[0].value
+				};
+				trace(FlxG.save.data.options);
 				FlxG.switchState(new MainMenuState());
 			} else {
 				if (saves.members[curSelected].askingToConfirm)
@@ -118,10 +124,9 @@ class SaveDataState extends MusicBeatState
 				if (!saves.members[curSelected].askingToConfirm) {
 					if (saves.members[curSelected].selectingLoad) {
 						var saveName = "save" + curSelected;
-						trace(saveName);
-						var optionsJson = TJSON.parse(Assets.getText('assets/data/options.json'));
-						optionsJson.preferredSave = curSelected;
-						File.saveContent('assets/data/options.json', Json.stringify(optionsJson));
+						FlxG.save.close();
+						FlxG.save.bind("preferredSave", "bulbyVR");
+						FlxG.save.data.preferredSave = curSelected;
 						FlxG.save.close();
 						FlxG.save.bind(saveName, "bulbyVR");
 						FlxG.sound.play('assets/sounds/confirmMenu.ogg');

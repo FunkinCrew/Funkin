@@ -10,7 +10,9 @@ import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
+import lime.utils.Assets;
 import lime.app.Application;
+import tjson.TJSON;
 
 using StringTools;
 
@@ -19,7 +21,7 @@ class MainMenuState extends MusicBeatState
 	var curSelected:Int = 0;
 
 	var menuItems:FlxTypedGroup<FlxSprite>;
-
+	var useCategoryScreen:Bool = false;
 	#if !switch
 	var optionShit:Array<String> = ['story mode', 'freeplay', 'donate', 'options'];
 	#else
@@ -35,7 +37,7 @@ class MainMenuState extends MusicBeatState
 		{
 			FlxG.sound.playMusic('assets/music/freakyMenu' + TitleState.soundExt);
 		}
-
+		useCategoryScreen = FlxG.save.data.options.useCategoryScreen;
 		persistentUpdate = persistentDraw = true;
 		var bg:FlxSprite = new FlxSprite(-80).loadGraphic('assets/images/menuBG.png');
 		bg.scrollFactor.x = 0;
@@ -188,8 +190,10 @@ class MainMenuState extends MusicBeatState
 										FlxG.switchState(new StoryMenuState());
 										trace("Story Menu Selected");
 									case 'freeplay':
-										FlxG.switchState(new FreeplayState());
-
+										if (useCategoryScreen)
+											FlxG.switchState(new CategoryState());
+										else
+											FlxG.switchState(new FreeplayState());
 										trace("Freeplay Menu Selected");
 
 									case 'options':

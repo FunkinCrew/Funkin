@@ -170,16 +170,15 @@ class PlayState extends MusicBeatState
 		camGame = new FlxCamera();
 		camHUD = new FlxCamera();
 		camHUD.bgColor.alpha = 0;
-		var optionsJson = TJSON.parse(Assets.getText('assets/data/options.json'));
 		FlxG.cameras.reset(camGame);
 		FlxG.cameras.add(camHUD);
 
 		FlxCamera.defaultCameras = [camGame];
 		persistentUpdate = true;
 		persistentDraw = true;
-		alwaysDoCutscenes = optionsJson.alwaysDoCutscenes;
-		useVictoryScreen = !optionsJson.skipVictoryScreen;
-		if (!optionsJson.skipModifierMenu) {
+		alwaysDoCutscenes = FlxG.save.data.options.alwaysDoCutscenes;
+		useVictoryScreen = !FlxG.save.data.options.skipVictoryScreen;
+		if (!FlxG.save.data.options.skipModifierMenu) {
 			fullComboMode = ModifierState.modifiers[1].value;
 			perfectMode = ModifierState.modifiers[0].value;
 			practiceMode = ModifierState.modifiers[2].value;
@@ -578,7 +577,7 @@ class PlayState extends MusicBeatState
 			add(stageCurtains);
 		} else {
 			// use assets
-			var parsedStageJson = TJSON.parse(Assets.getText("assets/images/custom_stages/custom_stages.json"));
+			var parsedStageJson = CoolUtil.parseJson(Assets.getText("assets/images/custom_stages/custom_stages.json"));
 			switch (Reflect.field(parsedStageJson, SONG.stage)) {
 				case 'stage':
 					defaultCamZoom = 0.9;

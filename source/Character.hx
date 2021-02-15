@@ -545,7 +545,7 @@ class Character extends FlxSprite
 				var charJson:Dynamic = null;
 				var isError:Bool = false;
 				try {
-					charJson = TJSON.parse(Assets.getText('assets/images/custom_chars/custom_chars.json'));
+					charJson = CoolUtil.parseJson(Assets.getText('assets/images/custom_chars/custom_chars.json'));
 				} catch (exception) {
 					// uh oh someone messed up their json
 					Application.current.window.alert("Hey! You messed up your custom_chars.json. Your game won't crash but it will load bf. "+exception, "Alert");
@@ -555,7 +555,7 @@ class Character extends FlxSprite
 					// use assets, as it is less laggy
 					var animJson = File.getContent("assets/images/custom_chars/"+Reflect.field(charJson,curCharacter).like+".json");
 
-					var parsedAnimJson:Dynamic = TJSON.parse(animJson);
+					var parsedAnimJson:Dynamic = CoolUtil.parseJson(animJson);
 
 
 					var playerSuffix = 'char';
@@ -898,8 +898,8 @@ class Character extends FlxSprite
 		animOffsets[name] = [x, y];
 	}
 	public static function getAnimJson(char:String) {
-		var charJson = TJSON.parse(Assets.getText('assets/images/custom_chars/custom_chars.json'));
-		var animJson = TJSON.parse(File.getContent('assets/images/custom_chars/'+Reflect.field(charJson, char).like + '.json'));
+		var charJson = CoolUtil.parseJson(Assets.getText('assets/images/custom_chars/custom_chars.json'));
+		var animJson = CoolUtil.parseJson(File.getContent('assets/images/custom_chars/'+Reflect.field(charJson, char).like + '.json'));
 		return animJson;
 	}
 }

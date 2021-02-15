@@ -55,10 +55,24 @@ class TitleState extends MusicBeatState
 
 		super.create();
 
+		FlxG.save.bind("preferredSave", "bulbyVR");
+		var preferredSave:Int = 0;
+		if (Reflect.hasField(FlxG.save.data, "preferredSave")) {
+			preferredSave = FlxG.save.data.preferredSave;
+		} else {
+			FlxG.save.data.preferredSave = 0;
+		}
 
-		var optionsJson = TJSON.parse(Assets.getText('assets/data/options.json'));
-		FlxG.save.bind("save"+optionsJson.preferredSave, 'bulbyVR');
-
+		FlxG.save.close();
+		FlxG.save.bind("save"+preferredSave, 'bulbyVR');
+		if (!Reflect.hasField(FlxG.save.data,"options")) {
+			FlxG.save.data.options = {
+				"skipVictoryScreen": false,
+				"useCategoryScreen": false,
+				"skipModifierMenu": false,
+				"alwaysDoCutscenes": false
+			};
+		}
 		Highscore.load();
 
 

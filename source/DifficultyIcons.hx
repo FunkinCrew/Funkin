@@ -28,7 +28,7 @@ class DifficultyIcons {
     group = new FlxTypedGroup<FlxSprite>();
     difficulties = diff;
     defaultDiff = defaultDifficulty;
-    var diffJson = TJSON.parse(Assets.getText("assets/images/custom_difficulties/difficulties.json"));
+    var diffJson = CoolUtil.parseJson(Assets.getText("assets/images/custom_difficulties/difficulties.json"));
     trace(diff.length);
     for( level in 0...difficulties.length ) {
       var sprDiff = new FlxSprite(x,y);
@@ -78,7 +78,7 @@ class DifficultyIcons {
   }
   public static function changeDifficultyFreeplay(difficultyFP:Int, ?change:Int = 0):Dynamic {
     trace("line 73");
-    var diffJson = TJSON.parse(Assets.getText("assets/images/custom_difficulties/difficulties.json"));
+    var diffJson = CoolUtil.parseJson(Assets.getText("assets/images/custom_difficulties/difficulties.json"));
     var difficultiesFP:Array<Dynamic> = diffJson.difficulties;
     var freeplayDiff = difficultyFP;
     freeplayDiff += change;
@@ -105,7 +105,7 @@ class DifficultyIcons {
     return ending;
   }
   public static function getEndingFP(fpDiff:Int):String {
-    var diffJson = TJSON.parse(Assets.getText("assets/images/custom_difficulties/difficulties.json"));
+    var diffJson = CoolUtil.parseJson(Assets.getText("assets/images/custom_difficulties/difficulties.json"));
     var difficultiesFP:Array<Dynamic> = diffJson.difficulties;
     var ending = "";
     if (fpDiff != diffJson.defaultDiff) {
@@ -115,7 +115,7 @@ class DifficultyIcons {
     return ending;
   }
   public static function getDefaultDiffFP():Int {
-    var diffJson = TJSON.parse(Assets.getText("assets/images/custom_difficulties/difficulties.json"));
+    var diffJson = CoolUtil.parseJson(Assets.getText("assets/images/custom_difficulties/difficulties.json"));
     return diffJson.defaultDiff;
   }
 }

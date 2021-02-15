@@ -168,7 +168,7 @@ class Song
 
 	public static function parseJSONshit(rawJson:String):SwagSong
 	{
-		var swagShit:SwagSong = cast TJSON.parse(rawJson).song;
+		var swagShit:SwagSong = cast CoolUtil.parseJson(rawJson).song;
 		swagShit.validScore = true;
 		return swagShit;
 	}

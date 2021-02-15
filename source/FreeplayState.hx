@@ -25,6 +25,7 @@ using StringTools;
 
 class FreeplayState extends MusicBeatState
 {
+	public static var currentSongList:Array<String> = [];
 	var songs:Array<String> = [];
 
 	var selector:FlxText;
@@ -35,12 +36,18 @@ class FreeplayState extends MusicBeatState
 	var diffText:FlxText;
 	var lerpScore:Int = 0;
 	var intendedScore:Int = 0;
+	var usingCategoryScreen:Bool = false;
 	private var grpSongs:FlxTypedGroup<Alphabet>;
 	private var curPlaying:Bool = false;
 
 	override function create()
 	{
-		songs = CoolUtil.coolTextFile('assets/data/freeplaySonglist.txt');
+		// if we should use category screen, just use what the category screen provided
+		usingCategoryScreen = FlxG.save.data.options.useCategoryScreen;
+		if (usingCategoryScreen)
+			songs = currentSongList;
+		else
+			songs = CoolUtil.coolTextFile('assets/data/freeplaySonglist.txt');
 		curDifficulty = DifficultyIcons.getDefaultDiffFP();
 		/*
 			if (FlxG.sound.music != null)
@@ -161,7 +168,10 @@ class FreeplayState extends MusicBeatState
 
 		if (controls.BACK)
 		{
-			FlxG.switchState(new MainMenuState());
+			if (usingCategoryScreen)
+				FlxG.switchState(new CategoryState());
+			else
+				FlxG.switchState(new MainMenuState());
 		}
 
 		if (accepted)
@@ -181,8 +191,7 @@ class FreeplayState extends MusicBeatState
 			PlayState.isStoryMode = false;
 			ModifierState.isStoryMode = false;
 			PlayState.storyDifficulty = curDifficulty;
-			var optionsJson = TJSON.parse(Assets.getText('assets/data/options.json'));
-			if (!optionsJson.skipModifierMenu)
+			if (!FlxG.save.data.options.skipModifierMenu)
 			 	FlxG.switchState(new ModifierState());
 			else {
 				if (FlxG.sound.music != null)

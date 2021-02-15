@@ -10,7 +10,10 @@ import openfl.utils.ByteArray;
 import lime.media.AudioBuffer;
 import flash.media.Sound;
 #end
+import tjson.TJSON;
+import haxe.Json;
 using StringTools;
+
 
 class CoolUtil
 {
@@ -47,5 +50,15 @@ class CoolUtil
 	}
 	public static function clamp(mini:Float, maxi:Float, value:Float):Float {
 		return Math.min(Math.max(mini,value), maxi);
+	}
+	// can either return an array or a dynamic
+	public static function parseJson(json:String):Dynamic {
+		// the reason we do this is to make it easy to swap out json parsers
+		return TJSON.parse(json);
+	}
+	public static function stringifyJson(json:Dynamic):String {
+		// we can just use regular json because we don't need to correct for errors
+		// yeah this means we throw comments away
+		return Json.stringify(json);
 	}
 }

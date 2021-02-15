@@ -20,7 +20,7 @@ class HealthIcon extends FlxSprite
 	{
 		super();
 		#if sys
-		var charJson:Dynamic = TJSON.parse(File.getContent("assets/images/custom_chars/custom_chars.json"));
+		var charJson:Dynamic = CoolUtil.parseJson(File.getContent("assets/images/custom_chars/custom_chars.json"));
 		#end
 		antialiasing = true;
 		switch (char) {

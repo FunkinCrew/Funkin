@@ -1118,7 +1118,7 @@ class ChartingState extends MusicBeatState
 
 	function autosaveSong():Void
 	{
-		FlxG.save.data.autosave = Json.stringify({
+		FlxG.save.data.autosave = CoolUtil.stringifyJson({
 			"song": _song,
 			"bpm": Conductor.bpm,
 			"sections": _song.notes.length,
@@ -1136,7 +1136,7 @@ class ChartingState extends MusicBeatState
 			'notes': _song.notes
 		};
 
-		var data:String = Json.stringify(json);
+		var data:String = CoolUtil.stringifyJson(json);
 
 		if ((data != null) && (data.length > 0))
 		{
