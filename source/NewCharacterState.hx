@@ -38,6 +38,7 @@ import yaml.Yaml;
 import yaml.util.ObjectMap;
 import openfl.net.FileReference;
 import openfl.utils.ByteArray;
+import lime.ui.FileDialogType;
 using StringTools;
 
 class NewCharacterState extends MusicBeatState
@@ -77,7 +78,7 @@ class NewCharacterState extends MusicBeatState
 		add(bg);
 		mainPngButton = new FlxButton(10,10,"char.png",function ():Void {
 			var coolDialog = new FileDialog();
-			coolDialog.browse();
+			coolDialog.browse(FileDialogType.OPEN);
 			coolDialog.onSelect.add(function (path:String):Void {
 				epicFiles.charpng = path;
 			});
@@ -101,7 +102,7 @@ class NewCharacterState extends MusicBeatState
 		add(mainPngButton);
 		mainXmlButton = new FlxButton(10,60,"char.xml/txt",function ():Void {
 			var coolDialog = new FileDialog();
-			coolDialog.browse();
+			coolDialog.browse(FileDialogType.OPEN);
 			coolDialog.onSelect.add(function (path:String):Void {
 				epicFiles.charxml = path;
 			});
@@ -109,28 +110,28 @@ class NewCharacterState extends MusicBeatState
 		add(mainXmlButton);
 		deadPngButton = new FlxButton(10,110,"dead.png",function ():Void {
 			var coolDialog = new FileDialog();
-			coolDialog.browse();
+			coolDialog.browse(FileDialogType.OPEN);
 			coolDialog.onSelect.add(function (path:String):Void {
 				epicFiles.deadpng = path;
 			});
 		});
 		crazyPngButton = new FlxButton(10,170,"crazy.png",function ():Void {
 			var coolDialog = new FileDialog();
-			coolDialog.browse();
+			coolDialog.browse(FileDialogType.OPEN);
 			coolDialog.onSelect.add(function (path:String):Void {
 				epicFiles.crazypng = path;
 			});
 		});
 		deadXmlButton = new FlxButton(10,220,"dead.xml",function ():Void {
 			var coolDialog = new FileDialog();
-			coolDialog.browse();
+			coolDialog.browse(FileDialogType.OPEN);
 			coolDialog.onSelect.add(function (path:String):Void {
 				epicFiles.deadxml = path;
 			});
 		});
 		crazyXmlButton = new FlxButton(10,260,"crazy.xml",function ():Void {
 			var coolDialog = new FileDialog();
-			coolDialog.browse();
+			coolDialog.browse(FileDialogType.OPEN);
 			coolDialog.onSelect.add(function (path:String):Void {
 				epicFiles.crazyxml = path;
 			});
