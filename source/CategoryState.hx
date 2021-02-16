@@ -37,16 +37,16 @@ class CategoryState extends MusicBeatState
 	override function create()
 	{
 		// it's a js file to make syntax highlighting acceptable
-		var epicCategoryJs:Array<Dynamic> = Yaml.parse(Assets.getText('assets/data/freeplaySongJson.yaml'));
+		var epicCategoryJs:Array<Dynamic> = CoolUtil.parseJson(Assets.getText('assets/data/freeplaySongJson.jsonc'));
 		if (epicCategoryJs.length > 1) {
 			for (category in epicCategoryJs) {
-				categories.push(category.get("name"));
-				categorySongs.push(category.get("songs"));
+				categories.push(category.name);
+				categorySongs.push(category.songs);
 			}
 		} else {
 			// just set freeplay states songs to the only category
-			trace(epicCategoryJs[0].get("songs"));
-			FreeplayState.currentSongList = epicCategoryJs[0].get("songs");
+			trace(epicCategoryJs[0].songs);
+			FreeplayState.currentSongList = epicCategoryJs[0].songs;
 			FlxG.switchState(new FreeplayState());
 		}
 

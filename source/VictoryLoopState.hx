@@ -102,8 +102,8 @@ class VictoryLoopState extends MusicBeatSubstate
 		accuracyTxt.setFormat("assets/fonts/vcr.ttf", 26, FlxColor.WHITE, RIGHT);
 		var characterList = Assets.getText('assets/data/characterList.txt');
 		if (!StringTools.contains(characterList, p1)) {
-			var parsedCharJson:Dynamic = CoolUtil.parseJson(Assets.getText('assets/images/custom_chars/custom_chars.yaml'));
-			var parsedAnimJson = CoolUtil.parseJson(File.getContent("assets/images/custom_chars/"+parsedCharJson.get(p1).get("like")+".json"));
+			var parsedCharJson:Dynamic = CoolUtil.parseJson(Assets.getText('assets/images/custom_chars/custom_chars.jsonc'));
+			var parsedAnimJson = CoolUtil.parseJson(File.getContent("assets/images/custom_chars/"+Reflect.field(parsedCharJson,p1).like+".json"));
 			switch (parsedAnimJson.like) {
 				case "bf-pixel":
 					// gotta deal with this dude

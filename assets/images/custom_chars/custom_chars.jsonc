@@ -1,5 +1,4 @@
 {
-  # valid json is valid yaml so you can just rename your file
   "template": {
     "like": "bf",
     "icons": [0,1]

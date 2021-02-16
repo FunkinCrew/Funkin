@@ -21,7 +21,7 @@ class HealthIcon extends FlxSprite
 	{
 		super();
 		#if sys
-		var charJson:Dynamic = Yaml.parse(File.getContent("assets/images/custom_chars/custom_chars.yaml"));
+		var charJson:Dynamic = CoolUtil.parseJson(File.getContent("assets/images/custom_chars/custom_chars.jsonc"));
 		#end
 		antialiasing = true;
 		switch (char) {
@@ -87,10 +87,10 @@ class HealthIcon extends FlxSprite
 				if (FileSystem.exists('assets/images/custom_chars/'+char+"/icons.png")) {
 					var rawPic:BitmapData = BitmapData.fromFile('assets/images/custom_chars/'+char+"/icons.png");
 					loadGraphic(rawPic, true, 150, 150);
-					animation.add('icon', charJson.get(char).get("icons"), false, isPlayer);
+					animation.add('icon', Reflect.field(charJson,char).icons, false, isPlayer);
 				} else {
 					loadGraphic('assets/images/iconGrid.png', true, 150, 150);
-					animation.add('icon', charJson.get(char).get("icons"), false, isPlayer);
+					animation.add('icon', Reflect.field(charJson,char).icons, false, isPlayer);
 				}
 		}
 		animation.play('icon');
