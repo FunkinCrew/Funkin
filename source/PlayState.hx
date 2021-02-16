@@ -1364,6 +1364,7 @@ class PlayState extends MusicBeatState
 		trace("finishCameras");
 		add(scoreTxt);
 		add(healthTxt);
+		trace("before Accuracy");
 		add(accuracyTxt);
 		add(difficTxt);
 		// if (SONG.song == 'South')
@@ -1372,8 +1373,10 @@ class PlayState extends MusicBeatState
 
 		// cameras = [FlxG.cameras.list[1]];
 		startingSong = true;
+		trace("oisfje");
 	if (alwaysDoCutscenes || isStoryMode )
 		{
+			trace("hmms");
 			switch (SONG.cutsceneType)
 			{
 				case "monster":
@@ -1410,6 +1413,7 @@ class PlayState extends MusicBeatState
 					FlxG.sound.play('assets/sounds/ANGRY' + TitleState.soundExt);
 					schoolIntro(doof);
 				case 'spirit':
+					trace("spirit");
 					schoolIntro(doof);
 				case 'none':
 					startCountdown();
@@ -1419,14 +1423,12 @@ class PlayState extends MusicBeatState
 		}
 		else
 		{
-			switch (curSong.toLowerCase())
-			{
-				default:
-					startCountdown();
-			}
+			trace("gameing");
+			startCountdown();
 		}
 
 		super.create();
+		trace(';');
 	}
 
 	function schoolIntro(?dialogueBox:DialogueBox):Void
@@ -1545,7 +1547,7 @@ class PlayState extends MusicBeatState
 	function startCountdown():Void
 	{
 		inCutscene = false;
-
+		trace("start countdown");
 		generateStaticArrows(0);
 		generateStaticArrows(1);
 
@@ -1555,13 +1557,14 @@ class PlayState extends MusicBeatState
 		Conductor.songPosition -= Conductor.crochet * 5;
 
 		var swagCounter:Int = 0;
-
+		trace("start timer");
 		startTimer = new FlxTimer().start(Conductor.crochet / 1000, function(tmr:FlxTimer)
 		{
+			trace("henol");
 			dad.dance();
 			gf.dance();
 			boyfriend.playAnim('idle');
-
+			trace("hmmstafj");
 			var introAssets:Map<String, Array<String>> = new Map<String, Array<String>>();
 			introAssets.set('normal', ['ready.png', "set.png", "go.png"]);
 			introAssets.set('pixel', [

@@ -75,5 +75,9 @@
   "templateSenpaiAngry-hd": {
     "like": "senpai-angry-hd",
     "icons": [22,22]
+  },
+  "templateSpirit-hd": {
+    "like": "spirithd",
+    "icons": [23,23]
   }
 }

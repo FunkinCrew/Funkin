@@ -1,0 +1,38 @@
+{
+  "$ref": "custom_char_schema.json",
+  "animation": {
+    "idle": {
+      "name": "spirit IDLE",
+      "loop": false
+    },
+    "singUP": {
+      "name": "spirit UP",
+      "loop": false
+    },
+    "singDOWN": {
+      "name": "spirit DOWN",
+      "loop": false
+    },
+    "singLEFT": {
+      "name": "spirit LEFT",
+      "loop": false
+    },
+    "singRIGHT": {
+      "name": "spirit RIGHT",
+      "loop": false
+    }
+  },
+  "offset": {
+    "idle": [-220,-280],
+    "singUP": [-220,-240],
+    "singRIGHT": [-220,-280],
+    "singLEFT": [-200, -280],
+    "singDOWN": [170, 110]
+  },
+  "flipx": false,
+  "like": "spirit",
+  "enemyOffset": [-150,100],
+  "camOffset": [300,0],
+  "playAnim": "idle",
+  "isPixel": false
+}

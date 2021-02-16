@@ -546,7 +546,7 @@ class Character extends FlxSprite
 				var charJson:Dynamic = null;
 				var isError:Bool = false;
 				try {
-					charJson = CoolUtil.parseJson(Assets.getText('assets/images/custom_chars/custom_chars.yaml'));
+					charJson = Yaml.parse(Assets.getText('assets/images/custom_chars/custom_chars.yaml'));
 				} catch (exception) {
 					// uh oh someone messed up their json
 					Application.current.window.alert("Hey! You messed up your custom_chars.yaml. Your game won't crash but it will load bf. "+exception, "Alert");
@@ -555,7 +555,6 @@ class Character extends FlxSprite
 				if (!isError) {
 					// use assets, as it is less laggy
 					var animJson = File.getContent("assets/images/custom_chars/"+charJson.get(curCharacter).get("like")+".json");
-
 					var parsedAnimJson:Dynamic = CoolUtil.parseJson(animJson);
 
 
@@ -570,7 +569,7 @@ class Character extends FlxSprite
 					var tex:FlxAtlasFrames;
 					var rawXml:String;
 					// GOD IS DEAD WHY DOES THIS NOT WORK
-					trace(parsedAnimJson.usesSpritesheetPacker);
+					trace("line 572");
 					if (FileSystem.exists('assets/images/custom_chars/'+curCharacter+"/"+playerSuffix+".txt")){
 						rawXml = File.getContent('assets/images/custom_chars/'+curCharacter+"/"+playerSuffix+".txt");
 						tex = FlxAtlasFrames.fromSpriteSheetPacker(rawPic,rawXml);
@@ -579,7 +578,7 @@ class Character extends FlxSprite
 						tex = FlxAtlasFrames.fromSparrow(rawPic,rawXml);
 					}
 
-
+					trace("line 581");
 					frames = tex;
 
 					for( field in Reflect.fields(parsedAnimJson.animation) ) {
@@ -609,6 +608,7 @@ class Character extends FlxSprite
 							}
 						}
 					}
+					trace("before offset");
 					for( field in Reflect.fields(parsedAnimJson.offset)) {
 						addOffset(field, Reflect.field(parsedAnimJson.offset,field)[0],  Reflect.field(parsedAnimJson.offset,field)[1]);
 					}
@@ -621,7 +621,7 @@ class Character extends FlxSprite
 					midpointX = if (parsedAnimJson.midpoint != null) parsedAnimJson.midpoint[0] else 0;
 					midpointY = if (parsedAnimJson.midpoint != null) parsedAnimJson.midpoint[1] else 0;
 					flipX = if (parsedAnimJson.flipx != null) parsedAnimJson.flipx else false;
-
+					trace("before like");
 
 					like = parsedAnimJson.like;
 					if (like == "bf-car") {
@@ -634,11 +634,15 @@ class Character extends FlxSprite
 						setGraphicSize(Std.int(width * 6));
 						updateHitbox(); // when the hitbox is sus!
 					}
+					trace("tgiu");
 					if (!isDie) {
 						width += if (parsedAnimJson.size != null) parsedAnimJson.size[0] else 0;
 						height += if (parsedAnimJson.size != null) parsedAnimJson.size[1] else 0;
 					}
+					trace("heblo");
+					trace(parsedAnimJson.playAnim);
 					playAnim(parsedAnimJson.playAnim);
+					trace("hmmb");
 				} else {
 					// uh oh we got an error
 					// pretend its boyfriend to prevent crashes
@@ -722,7 +726,7 @@ class Character extends FlxSprite
 				playAnim('idle');
 				#end
 		}
-
+		trace("727");
 
 
 
@@ -795,6 +799,7 @@ class Character extends FlxSprite
 	{
 		if (!debugMode)
 		{
+			trace("boogie'n");
 			switch (curCharacter)
 			{
 				case 'gf':
@@ -859,6 +864,7 @@ class Character extends FlxSprite
 								playAnim('danceLeft');
 						}
 					} else {
+						trace('jg');
 						playAnim('idle');
 					}
 			}
@@ -867,14 +873,27 @@ class Character extends FlxSprite
 
 	public function playAnim(AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0):Void
 	{
+		trace("hmmst've");
+		trace(AnimName);
 		animation.play(AnimName, Force, Reversed, Frame);
-		var daOffset = animOffsets.get(animation.curAnim.name);
-		if (animOffsets.exists(animation.curAnim.name))
+		trace("played anim");
+		trace(animation.curAnim);
+		var animName = "";
+		if (animation.curAnim == null) {
+			// P A N I K
+			animName = "idle";
+		} else {
+			// kalm
+			animName = animation.curAnim.name;
+		}
+		var daOffset = animOffsets.get(animName);
+		if (animOffsets.exists(animName))
 		{
 			offset.set(daOffset[0], daOffset[1]);
 		}
 		else
 			offset.set(0, 0);
+		trace("hmmbxsze");
 		// should spooky be on this?
 		if (like == 'gf'  || like == 'gf-pixel')
 		{

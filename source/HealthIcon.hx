@@ -90,7 +90,7 @@ class HealthIcon extends FlxSprite
 					animation.add('icon', charJson.get(char).get("icons"), false, isPlayer);
 				} else {
 					loadGraphic('assets/images/iconGrid.png', true, 150, 150);
-					animation.add('icon', Reflect.field(charJson,char).icons, false, isPlayer);
+					animation.add('icon', charJson.get(char).get("icons"), false, isPlayer);
 				}
 		}
 		animation.play('icon');
