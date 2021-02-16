@@ -49,6 +49,7 @@ class NGio
 					GAME_VER = response.result.data.currentVersion;
 					GAME_VER_NUMS = GAME_VER.split(" ")[0].trim();
 					trace('CURRENT NG VERSION: ' + GAME_VER);
+					trace('CURRENT NG VERSION: ' + GAME_VER_NUMS);
 					gotOnlineVer = true;
 				});
 
