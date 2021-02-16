@@ -2,7 +2,7 @@ package;
 
 class OptionsSubState extends MusicBeatSubstate
 {
-	var textMenuItems:Array<String> = ['Master Volume', 'Sound Volume', 'Ingame Volume Setting Keys'];
+	var textMenuItems:Array<String> = ['Master Volume', 'Sound Volume'];
 
 	public function new()
 	{
