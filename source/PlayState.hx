@@ -113,6 +113,8 @@ class PlayState extends MusicBeatState
 	var songScore:Int = 0;
 	var scoreTxt:FlxText;
 
+	var curSongText:FlxText;
+
 	public static var campaignScore:Int = 0;
 
 	var defaultCamZoom:Float = 1.05;
@@ -678,6 +680,11 @@ class PlayState extends MusicBeatState
 		scoreTxt.scrollFactor.set();
 		add(scoreTxt);
 
+		curSongText = new FlxText(healthBarBG.x + healthBarBG.width - 490, healthBarBG.y + 30, 0, "", 20);
+		curSongText.setFormat("assets/fonts/vcr.ttf", 16, FlxColor.WHITE, LEFT);
+		curSongText.scrollFactor.set();
+		add(curSongText);
+
 		iconP1 = new HealthIcon(SONG.player1, true);
 		iconP1.y = healthBar.y - (iconP1.height / 2);
 		add(iconP1);
@@ -693,6 +700,7 @@ class PlayState extends MusicBeatState
 		iconP1.cameras = [camHUD];
 		iconP2.cameras = [camHUD];
 		scoreTxt.cameras = [camHUD];
+		curSongText.cameras = [camHUD];
 		doof.cameras = [camHUD];
 
 		// if (SONG.song == 'South')
@@ -1264,7 +1272,72 @@ class PlayState extends MusicBeatState
 
 		super.update(elapsed);
 
-		scoreTxt.text = "Score:" + songScore;
+		scoreTxt.text = "Score: " + songScore;
+
+		//im so sorry for this - i know that there might a better way to do this, but it works lol
+		switch(curStage) {
+			case 'stage':
+				switch(SONG.song.toLowerCase()) {
+					case 'tutorial':
+						curSongText.text = "Song: " + SONG.song.toLowerCase();
+					case 'bopeebo':
+						curSongText.text = "Song: " + SONG.song.toLowerCase();
+					case 'fresh':
+						curSongText.text = "Song: " + SONG.song.toLowerCase();
+					case 'dadbattle':
+						curSongText.text = "Song: " + SONG.song.toLowerCase();
+
+				}
+			case 'spooky':
+				switch(SONG.song.toLowerCase()) {
+					case 'spookeez':
+						curSongText.text = "Song: " + SONG.song.toLowerCase();
+					case 'south':
+						curSongText.text = "Song: " + SONG.song.toLowerCase();
+				}
+			case 'philly':
+				switch(SONG.song.toLowerCase()) {
+					case 'pico': 
+						curSongText.text = "Song: " + SONG.song.toLowerCase();
+					case 'blammed':
+						curSongText.text = "Song: " + SONG.song.toLowerCase();
+					case 'philly': 
+						curSongText.text = "Song: " + SONG.song.toLowerCase();
+				}
+			case 'limo':
+				switch(SONG.song.toLowerCase()) {
+					case 'satin-panties':
+						curSongText.text = "Song: " + SONG.song.toLowerCase();
+					case 'high':
+						curSongText.text = "Song: " + SONG.song.toLowerCase();
+					case 'milf':
+						curSongText.text = "Song: " + SONG.song.toLowerCase();
+				}
+			case 'mall':
+				switch(SONG.song.toLowerCase()){
+					case 'cocoa':
+						curSongText.text = "Song: " + SONG.song.toLowerCase();
+					case 'eggnog':
+						curSongText.text = "Song: " + SONG.song.toLowerCase();
+				}
+			case 'mallEvil':
+				switch(SONG.song.toLowerCase()) {
+					case 'winter-horrorland':
+						curSongText.text = "Song: " + SONG.song.toLowerCase();
+				}
+			case 'school':
+				switch(SONG.song.toLowerCase()) {
+					case 'senpai':
+						curSongText.text = "Song: " + SONG.song.toLowerCase();
+					case 'roses':
+						curSongText.text = "Song: " + SONG.song.toLowerCase();
+				}
+			case 'schoolEvil':
+				switch(SONG.song.toLowerCase()){
+					case 'thorns':
+						curSongText.text = "Song: " + SONG.song.toLowerCase();
+				}
+		}
 
 		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause)
 		{
