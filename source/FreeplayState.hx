@@ -159,7 +159,11 @@ class FreeplayState extends MusicBeatState
 			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
 		}
 
-		lerpScore = Math.floor(FlxMath.lerp(lerpScore, intendedScore, 0.4));
+		if ( lerpScore != intendedScore )
+			if ( lerpScore == intendedScore - 1 )
+				lerpScore = intendedScore;
+			else
+				lerpScore = Math.floor(FlxMath.lerp(lerpScore, intendedScore, 0.5));
 
 		if (Math.abs(lerpScore - intendedScore) <= 10)
 			lerpScore = intendedScore;
