@@ -167,7 +167,7 @@ class NewSongState extends MusicBeatState
 				coolSongSong.cutsceneType = cutsceneText.text;
 				coolSongSong.isMoody = isMoody.checked;
 				coolSong.song = coolSongSong;
-				trace(coolSong);
+
 				File.saveContent('assets/data/'+nameText.text.toLowerCase()+'/'+nameText.text.toLowerCase()+DifficultyIcons.getEndingFP(i)+'.json',CoolUtil.stringifyJson(coolSong));
 			}
 		}

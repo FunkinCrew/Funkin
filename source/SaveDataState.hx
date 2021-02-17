@@ -38,7 +38,15 @@ class SaveDataState extends MusicBeatState
 	override function create()
 	{
 		var menuBG:FlxSprite = new FlxSprite().loadGraphic('assets/images/menuDesat.png');
-		optionList = [{name: "Always Show Cutscenes", value: false}, {name: "Skip Modifier Menu", value: false}, {name: "Skip Victory Screen", value: false},{name:"New Character...", value: false},{name:"New Stage...", value:false},{name: "New Song...", value: false}];
+		optionList = [
+						{name: "Always Show Cutscenes", value: false}, 
+						{name: "Skip Modifier Menu", value: false}, 
+						{name: "Skip Victory Screen", value: false},
+						{name:"New Character...", value: false},
+						{name:"New Stage...", value:false},
+						{name: "New Song...", value: false},
+						{name: "New Week...", value: false}
+					];
 		optionList[0].value = FlxG.save.data.options.alwaysDoCutscenes;
 		optionList[1].value = FlxG.save.data.options.skipModifierMenu;
 		optionList[2].value = FlxG.save.data.options.skipVictoryScreen;
@@ -156,44 +164,48 @@ class SaveDataState extends MusicBeatState
 				FlxG.sound.play('assets/sounds/scrollMenu.ogg');
 				saves.members[curSelected].beSelected(true);
 			} else {
-				if (optionList[optionsSelected].name != "New Character..." && optionList[optionsSelected].name != "New Stage..." && optionList[optionsSelected].name != "New Song...") {
-					checkmarks.members[optionsSelected].visible = !checkmarks.members[optionsSelected].visible;
-					optionList[optionsSelected].value = checkmarks.members[optionsSelected].visible;
-				} else {
-					// doing this to make later stuff earlier
-					switch (optionList[optionsSelected].name) {
-						case "New Character...":
-							// our current save saves this
-							// we are gonna have to do some shenanagins to save our preffered save
+				switch (optionList[optionsSelected].name) {
+					case "New Character...":
+						// our current save saves this
+						// we are gonna have to do some shenanagins to save our preffered save
 
-							FlxG.save.data.options = {
-								"skipVictoryScreen": optionList[2].value,
-								"skipModifierMenu": optionList[1].value,
-								"alwaysDoCutscenes": optionList[0].value
-							};
-							trace(FlxG.save.data.options);
-							FlxG.switchState(new NewCharacterState());
-						case "New Stage...":
-							// our current save saves this
-							// we are gonna have to do some shenanagins to save our preffered save
+						FlxG.save.data.options = {
+							"skipVictoryScreen": optionList[2].value,
+							"skipModifierMenu": optionList[1].value,
+							"alwaysDoCutscenes": optionList[0].value
+						};
+						trace(FlxG.save.data.options);
+						FlxG.switchState(new NewCharacterState());
+					case "New Stage...":
+						// our current save saves this
+						// we are gonna have to do some shenanagins to save our preffered save
 
-							FlxG.save.data.options = {
-								"skipVictoryScreen": optionList[2].value,
-								"skipModifierMenu": optionList[1].value,
-								"alwaysDoCutscenes": optionList[0].value
-							};
-							trace(FlxG.save.data.options);
-							FlxG.switchState(new NewStageState());
-						case "New Song...":
-							FlxG.save.data.options = {
-								"skipVictoryScreen": optionList[2].value,
-								"skipModifierMenu": optionList[1].value,
-								"alwaysDoCutscenes": optionList[0].value
-							};
-							trace(FlxG.save.data.options);
-							FlxG.switchState(new NewSongState());
-					}
-
+						FlxG.save.data.options = {
+							"skipVictoryScreen": optionList[2].value,
+							"skipModifierMenu": optionList[1].value,
+							"alwaysDoCutscenes": optionList[0].value
+						};
+						trace(FlxG.save.data.options);
+						FlxG.switchState(new NewStageState());
+					case "New Song...":
+						FlxG.save.data.options = {
+							"skipVictoryScreen": optionList[2].value,
+							"skipModifierMenu": optionList[1].value,
+							"alwaysDoCutscenes": optionList[0].value
+						};
+						trace(FlxG.save.data.options);
+						FlxG.switchState(new NewSongState());
+					case "New Week...":
+						FlxG.save.data.options = {
+							"skipVictoryScreen": optionList[2].value,
+							"skipModifierMenu": optionList[1].value,
+							"alwaysDoCutscenes": optionList[0].value
+						};
+						trace(FlxG.save.data.options);
+						FlxG.switchState(new NewWeekState());
+					default:
+						checkmarks.members[optionsSelected].visible = !checkmarks.members[optionsSelected].visible;
+						optionList[optionsSelected].value = checkmarks.members[optionsSelected].visible;
 				}
 
 				FlxG.sound.play('assets/sounds/scrollMenu.ogg');
