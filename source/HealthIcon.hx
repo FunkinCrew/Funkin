@@ -11,7 +11,6 @@ import flash.display.BitmapData;
 import sys.FileSystem;
 #end
 import haxe.Json;
-import yaml.Yaml;
 import haxe.format.JsonParser;
 import tjson.TJSON;
 using StringTools;

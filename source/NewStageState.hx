@@ -34,8 +34,6 @@ import lime.ui.FileDialog;
 import lime.app.Event;
 import haxe.Json;
 import tjson.TJSON;
-import yaml.Yaml;
-import yaml.util.ObjectMap;
 import openfl.net.FileReference;
 import openfl.utils.ByteArray;
 import lime.ui.FileDialogType;
@@ -110,7 +108,6 @@ class NewStageState extends MusicBeatState
 
 		var epicStageFile:Dynamic =CoolUtil.parseJson(Assets.getText('assets/images/custom_stages/custom_stages.json'));
 		trace("parsed");
-		var coolReplacementMap:ObjectMap<String, Dynamic> = new ObjectMap<String, Dynamic>();
 		Reflect.setField(epicStageFile,nameText.text,likeText.text);
 
 		File.saveContent('assets/images/custom_stages/custom_stages.json', CoolUtil.stringifyJson(epicStageFile));

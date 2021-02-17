@@ -16,7 +16,6 @@ import openfl.utils.ByteArray;
 import haxe.Json;
 import tjson.TJSON;
 import haxe.format.JsonParser;
-import yaml.Yaml;
 using StringTools;
 
 class Character extends FlxSprite

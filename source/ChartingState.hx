@@ -140,7 +140,6 @@ class ChartingState extends MusicBeatState
 				gf: 'gf',
 				sectionLengths: [],
 				speed: 1,
-				validScore: false,
 				isMoody: false,
 				cutsceneType: "none",
 				uiType: 'normal'

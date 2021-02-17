@@ -21,7 +21,6 @@ import flash.media.Sound;
 #end
 import haxe.Json;
 import tjson.TJSON;
-import yaml.Yaml;
 using StringTools;
 
 class CategoryState extends MusicBeatState
@@ -143,10 +142,10 @@ class CategoryState extends MusicBeatState
 		{
 			FlxG.switchState(new MainMenuState());
 		}
-
-		if (accepted)
+		// make sure it isn't a header
+		
+		if (accepted && categorySongs[curSelected].length > 0)
 		{
-
 			FreeplayState.currentSongList = categorySongs[curSelected];
 			FlxG.switchState(new FreeplayState());
 

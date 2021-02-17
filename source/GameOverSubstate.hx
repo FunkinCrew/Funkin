@@ -18,7 +18,6 @@ import flash.media.Sound;
 #end
 import haxe.Json;
 import tjson.TJSON;
-import yaml.Yaml;
 using StringTools;
 class GameOverSubstate extends MusicBeatSubstate
 {

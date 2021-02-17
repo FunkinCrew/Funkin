@@ -57,8 +57,7 @@ class CoolUtil
 		return TJSON.parse(json);
 	}
 	public static function stringifyJson(json:Dynamic):String {
-		// we can just use regular json because we don't need to correct for errors
-		// yeah this means we throw comments away
-		return Json.stringify(json);
+		// use tjson to prettify it
+		return TJSON.encode(json,'fancy');
 	}
 }

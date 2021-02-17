@@ -34,8 +34,6 @@ import lime.ui.FileDialog;
 import lime.app.Event;
 import haxe.Json;
 import tjson.TJSON;
-import yaml.Yaml;
-import yaml.util.ObjectMap;
 import openfl.net.FileReference;
 import openfl.utils.ByteArray;
 import lime.ui.FileDialogType;
@@ -179,7 +177,6 @@ class NewCharacterState extends MusicBeatState
 		trace("hello");
 		var epicCharFile:Dynamic =CoolUtil.parseJson(Assets.getText('assets/images/custom_chars/custom_chars.jsonc'));
 		trace("parsed");
-		var coolReplacementMap:ObjectMap<String, Dynamic> = new ObjectMap<String, Dynamic>();
 		Reflect.setField(epicCharFile,nameText.text,{like:likeText.text,icons: [Std.int(iconAlive.value),Std.int(iconDead.value),Std.int(iconPoison.value)]});
 
 		File.saveContent('assets/images/custom_chars/custom_chars.jsonc', CoolUtil.stringifyJson(epicCharFile));
