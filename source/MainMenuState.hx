@@ -1,5 +1,7 @@
 package;
 
+import NGio;
+import flixel.ui.FlxButton;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
@@ -17,12 +19,13 @@ import io.newgrounds.NG;
 import lime.app.Application;
 
 import ui.MenuItemList;
+import ui.Prompt;
 
 using StringTools;
 
 class MainMenuState extends MusicBeatState
 {
-	var menuItems:MenuItemList;
+	var menuItems:MainMenuItemList;
 
 	var magenta:FlxSprite;
 	var camFollow:FlxObject;
@@ -63,7 +66,7 @@ class MainMenuState extends MusicBeatState
 		add(magenta);
 		// magenta.scrollFactor.set();
 
-		menuItems = new MenuItemList('FNF_main_menu_assets');
+		menuItems = new MainMenuItemList('FNF_main_menu_assets');
 		add(menuItems);
 		menuItems.onChange.add(onMenuItemChange);
 		menuItems.onAcceptPress.add(function(_)
@@ -74,17 +77,18 @@ class MainMenuState extends MusicBeatState
 		
 		var hasPopupBlocker = #if web true #else false #end;
 		
-		menuItems.addItem('story mode', function () startExitState(new StoryMenuState()));
-		menuItems.addItem('freeplay', function () startExitState(new FreeplayState()));
+		menuItems.enabled = false;// disable for intro
+		menuItems.createItem('story mode', function () startExitState(new StoryMenuState()));
+		menuItems.createItem('freeplay', function () startExitState(new FreeplayState()));
 		// addMenuItem('options', function () startExitState(new OptionMenu()));
 		#if (!switch)
-			menuItems.addItem('donate', selectDonate, hasPopupBlocker);
+			menuItems.createItem('donate', selectDonate, hasPopupBlocker);
 		#end
 		#if newgrounds
 			if (NG.core.loggedIn)
-				menuItems.addItem("logout", selectLogout);
+				menuItems.createItem("logout", selectLogout);
 			else
-				menuItems.addItem("login", selectLogin, hasPopupBlocker);
+				menuItems.createItem("login", selectLogin);
 		#end
 		
 		// center vertically
@@ -109,6 +113,16 @@ class MainMenuState extends MusicBeatState
 		super.create();
 	}
 	
+	override function finishTransIn()
+	{
+		super.finishTransIn();
+		
+		menuItems.enabled = true;
+		
+		if (NGio.savedSessionFailed)
+			showSavedSessionFailed();
+	}
+	
 	function onMenuItemChange(selected:MenuItem)
 	{
 		camFollow.setPosition(selected.getGraphicMidpoint().x, selected.getGraphicMidpoint().y);
@@ -123,13 +137,101 @@ class MainMenuState extends MusicBeatState
 		#end
 	}
 	
+	#if newgrounds
 	function selectLogin()
 	{
+		showNgPrompt(true);
+	}
+	
+	function showSavedSessionFailed()
+	{
+		showNgPrompt(false);
+	}
+	
+	function showNgPrompt(fromUi:Bool)
+	{
+		menuItems.enabled = false;
+		
+		var prompt = new Prompt("prompt-ng_login", "Talking to server...", None);
+		prompt.closeCallback = function() menuItems.enabled = true;
+		openSubState(prompt);
+		function onLoginComplete(result:ConnectionResult)
+		{
+			switch (result)
+			{
+				case Success:
+					menuItems.resetItem("login", "logout", selectLogout);
+					prompt.setText("Login Successful");
+					prompt.setButtons(Ok);
+					prompt.onYes = prompt.close;
+				case Fail(msg):
+					trace("Login Error:" + msg);
+					prompt.setText("Login failed");
+					prompt.setButtons(Ok);
+					prompt.onYes = prompt.close;
+				case Cancelled:
+					if (prompt != null)
+					{
+						prompt.setText("Login cancelled by user");
+						prompt.setButtons(Ok);
+						prompt.onYes = prompt.close;
+					}
+			}
+		}
+		
+		NGio.login
+		(
+			function popupLauncher(openPassportUrl)
+			{
+				var choiceMsg = fromUi
+					? #if web "Log in to Newgrounds?" #else null #end // User-input needed to allow popups
+					: "Your session has expired.\n Please login again.";
+				
+				if (choiceMsg != null)
+				{
+					prompt.setText(choiceMsg);
+					prompt.setButtons(Yes_No);
+					#if web
+					prompt.buttons.getItem("yes").fireInstantly = true;
+					#end
+					prompt.onYes = function()
+					{
+						prompt.setText("Connecting...");
+						prompt.setButtons(None);
+						openPassportUrl();
+					};
+					prompt.onNo = function()
+					{
+						prompt.close();
+						prompt = null;
+						NG.core.cancelLoginRequest();
+					};
+				}
+				else
+				{
+					prompt.setText("Connecting...");
+					openPassportUrl();
+				}
+			},
+			onLoginComplete
+		);
 	}
 	
 	function selectLogout()
 	{
+		menuItems.enabled = false;
+		var prompt = new Prompt("prompt-ng_login", "Log out of " + NG.core.user.name + "?", Yes_No);
+		prompt.closeCallback = function () menuItems.enabled = true;
+		prompt.onYes = function()
+		{
+			NGio.logout();
+			prompt.close();
+			menuItems.resetItem("logout", "login", selectLogin);
+		};
+		prompt.onNo = prompt.close;
+		openSubState(prompt);
 	}
+	#end
 	
 	function startExitState(state:FlxState)
 	{
@@ -156,9 +258,57 @@ class MainMenuState extends MusicBeatState
 			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
 		}
 
-		if (menuItems.active && controls.BACK)
+		if (menuItems.enabled && controls.BACK)
 			FlxG.switchState(new TitleState());
 
 		super.update(elapsed);
+	}
+}
+
+
+private class MainMenuItemList extends MenuTypedItemList<MainMenuItem>
+{
+	public var atlas:FlxAtlasFrames;
+	
+	public function new (atlas)
+	{
+		super(Vertical);
+		
+		if (Std.is(atlas, String))
+			this.atlas = Paths.getSparrowAtlas(cast atlas);
+		else
+			this.atlas = cast atlas;
+	}
+	
+	public function createItem(x = 0.0, y = 0.0, name:String, callback, fireInstantly = false)
+	{
+		var i = length;
+		var item = new MainMenuItem(x, y, name, atlas, callback);
+		item.fireInstantly = fireInstantly;
+		item.ID = i;
+		
+		return addItem(name, item);
+	}
+	
+	override function destroy()
+	{
+		super.destroy();
+		atlas = null;
+	}
+}
+private class MainMenuItem extends MenuItem
+{
+	public function new(x = 0.0, y = 0.0, name, atlas, callback)
+	{
+		super(x, y, name, atlas, callback);
+		scrollFactor.set();
+	}
+	
+	override function changeAnim(anim:String)
+	{
+		super.changeAnim(anim);
+		// position by center
+		centerOrigin();
+		offset.copyFrom(origin);
 	}
 }

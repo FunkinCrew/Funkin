@@ -166,6 +166,12 @@
 
 
 	<!-- <haxedef name="SKIP_TO_PLAYSTATE" if="debug" /> -->
-	<haxedef name="NG_LOGIN" if="newgrounds" />
+	
+	<!-- Enables Ng.core.verbose -->
+	<!-- <haxedef name="NG_VERBOSE" /> -->
+	<!-- Enables a NG debug session, so medals don't permently unlock -->
+	<!-- <haxedef name="NG_DEBUG" /> -->
+	<!-- pretends that the saved session Id was expired, forcing the reconnect prompt -->
+	<!-- <haxedef name="NG_FORCE_EXPIRED_SESSION" if="debug" /> -->
 	
 </project>

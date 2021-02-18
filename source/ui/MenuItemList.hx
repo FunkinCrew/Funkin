@@ -10,53 +10,110 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxSignal;
 
-typedef ItemAsset = OneOfTwo<String, FlxAtlasFrames>
+typedef AtlasAsset = OneOfTwo<String, FlxAtlasFrames>;
 
 class MenuItemList extends MenuTypedItemList<MenuItem>
 {
-	public function addItem(x = 0.0, y = 0.0, name, callback, fireInstantly = false)
+	public var atlas:FlxAtlasFrames;
+	
+	public function new (atlas, navControls:NavControls = Vertical)
 	{
-		var i = length;
-		var menuItem = new MenuItem(name, tex, callback, x, y);
-		menuItem.fireInstantly = fireInstantly;
-		menuItem.ID = i;
-		add(menuItem);
+		super(navControls);
 		
-		if (i == selectedIndex)
-			menuItem.select();
-		
-		return menuItem;
+		if (Std.is(atlas, String))
+			this.atlas = Paths.getSparrowAtlas(cast atlas);
+		else
+			this.atlas = cast atlas;
+	}
+	
+	public function createItem(x = 0.0, y = 0.0, name, callback, fireInstantly = false)
+	{
+		var item = new MenuItem(x, y, name, atlas, callback);
+		item.fireInstantly = fireInstantly;
+		return addItem(name, item);
+	}
+	
+	override function destroy()
+	{
+		super.destroy();
+		atlas = null;
 	}
 }
 
 class MenuTypedItemList<T:MenuItem> extends FlxTypedGroup<T>
 {
-	public var tex:FlxAtlasFrames;
-	public var selectedIndex = 0;
+	public var selectedIndex(default, null) = 0;
+	/** Called when a new item is highlighted */
 	public var onChange(default, null) = new FlxTypedSignal<T->Void>();
+	/** Called when an item is accepted */
 	public var onAcceptPress(default, null) = new FlxTypedSignal<T->Void>();
+	/** The navigation control scheme to use */
+	public var navControls:NavControls;
+	/** Set to false to disable nav control */
+	public var enabled:Bool = true;
 	
-	public function new (asset:ItemAsset)
+	var byName = new Map<String, T>();
+	/** Set to true, internally to disable controls, without affecting vars like `enabled` */
+	var busy:Bool = false;
+	
+	public function new (navControls:NavControls = Vertical)
 	{
+		this.navControls = navControls;
 		super();
+	}
+	
+	function addItem(name:String, item:T):T
+	{
+		if (length == selectedIndex)
+			item.select();
 		
-		if (Std.is(asset, String))
-			tex = Paths.getSparrowAtlas(cast asset);
-		else
-			tex = cast asset;
+		byName[name] = item;
+		return add(item);
+	}
+	
+	public function resetItem(oldName:String, newName:String, ?callback:Void->Void):T
+	{
+		if (!byName.exists(oldName))
+			throw "No item named:" + oldName;
+		
+		var item = byName[oldName];
+		byName.remove(oldName);
+		byName[newName] = item;
+		item.setItem(newName, callback);
+		
+		return item;
 	}
 	
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
 		
+		if (enabled && !busy)
+			updateControls();
+	}
+	
+	inline function updateControls()
+	{
 		var controls = PlayerSettings.player1.controls;
 		
-		if (controls.UP_P)
-			prev();
-
-		if (controls.DOWN_P)
-			next();
+		switch(navControls)
+		{
+			case Vertical:
+			{
+				if (controls.UP_P  ) prev();
+				if (controls.DOWN_P) next();
+			}
+			case Horizontal:
+			{
+				if (controls.LEFT_P ) prev();
+				if (controls.RIGHT_P) next();
+			}
+			case Both:
+			{
+				if (controls.LEFT_P  || controls.UP_P  ) prev();
+				if (controls.RIGHT_P || controls.DOWN_P) next();
+			}
+		}
 
 		if (controls.ACCEPT)
 			accept();
@@ -71,12 +128,12 @@ class MenuTypedItemList<T:MenuItem> extends FlxTypedGroup<T>
 			selected.callback();
 		else
 		{
-			active = false;
+			busy = true;
 			FlxG.sound.play(Paths.sound('confirmMenu'));
 			FlxFlicker.flicker(selected, 1, 0.06, true, false, function(_)
 			{
+				busy = false;
 				selected.callback();
-				active = true;
 			});
 		}
 	}
@@ -87,24 +144,35 @@ class MenuTypedItemList<T:MenuItem> extends FlxTypedGroup<T>
 	function changeItem(amount:Int)
 	{
 		FlxG.sound.play(Paths.sound('scrollMenu'));
+		var index = selectedIndex + amount;
+		if (index >= length)
+			index = 0;
+		else if (index < 0)
+			index = length - 1;
+		
+		selectItem(index);
+	}
+	
+	public function selectItem(index:Int)
+	{
 		members[selectedIndex].idle();
 		
-		selectedIndex += amount;
-
-		if (selectedIndex >= length)
-			selectedIndex = 0;
-		else if (selectedIndex < 0)
-			selectedIndex = length - 1;
+		selectedIndex = index;
 		
 		var selected = members[selectedIndex];
 		selected.select();
 		onChange.dispatch(selected);
 	}
 	
+	public function getItem(name:String)
+	{
+		return byName[name];
+	}
+	
 	override function destroy()
 	{
 		super.destroy();
-		tex = null;
+		byName.clear();
 	}
 }
 
@@ -116,41 +184,49 @@ class MenuItem extends flixel.FlxSprite
 	 */
 	public var fireInstantly = false;
 	
-	public function new (name, tex, callback, x = 0.0, y = 0.0)
+	public function new (x = 0.0, y = 0.0, name, tex, callback)
 	{
 		super(x, y);
 		
 		frames = tex;
 		setItem(name, callback);
+		antialiasing = true;
 	}
 	
-	public function setItem(name:String, callback:Void->Void)
+	public function setItem(name:String, ?callback:Void->Void)
 	{
-		this.callback = callback;
+		if (callback != null)
+			this.callback = callback;
+		
+		var selected = animation.curAnim != null && animation.curAnim.name == "selected";
 		
 		animation.addByPrefix('idle', '$name basic', 24);
 		animation.addByPrefix('selected', '$name white', 24);
 		idle();
-		scrollFactor.set();
-		antialiasing = true;
+		if (selected)
+			select();
 	}
 	
-	function updateSize()
+	function changeAnim(anim:String)
 	{
+		animation.play(anim);
 		updateHitbox();
-		centerOrigin();
-		offset.copyFrom(origin);
 	}
 	
 	public function idle()
 	{
-		animation.play('idle');
-		updateSize();
+		changeAnim('idle');
 	}
 	
 	public function select()
 	{
-		animation.play('selected');
-		updateSize();
+		changeAnim('selected');
 	}
+}
+
+enum NavControls
+{
+	Horizontal;
+	Vertical;
+	Both;
 }

@@ -6,6 +6,7 @@ import flixel.util.FlxTimer;
 import io.newgrounds.NG;
 import io.newgrounds.NGLite;
 import io.newgrounds.components.ScoreBoardComponent.Period;
+import io.newgrounds.objects.Error;
 import io.newgrounds.objects.Medal;
 import io.newgrounds.objects.Score;
 import io.newgrounds.objects.ScoreBoard;
@@ -22,6 +23,11 @@ using StringTools;
  */
 class NGio
 {
+	/**
+	 * True, if the saved sessionId was used in the initial login, and failed to connect.
+	 * Used in MainMenuState to show a popup to establish a new connection
+	 */
+	public static var savedSessionFailed(default, null):Bool = false;
 	public static var isLoggedIn:Bool = false;
 	public static var scoreboardsLoaded:Bool = false;
 
@@ -31,54 +37,68 @@ class NGio
 	public static var ngScoresLoaded(default, null):FlxSignal = new FlxSignal();
 
 	public static var GAME_VER:String = "";
-	public static var GAME_VER_NUMS:String = '';
-	public static var gotOnlineVer:Bool = false;
+	
 
-	public static function noLogin(api:String)
+	static public function checkVersion(callback:String->Void)
 	{
-		trace('INIT NOLOGIN');
+		trace('checking NG.io version');
 		GAME_VER = "v" + Application.current.meta.get('version');
 
-		if (api.length != 0)
-		{
-			NG.create(api);
-
-			new FlxTimer().start(2, function(tmr:FlxTimer)
+		NG.core.calls.app.getCurrentVersion(GAME_VER)
+			.addDataHandler(function(response)
 			{
-				var call = NG.core.calls.app.getCurrentVersion(GAME_VER).addDataHandler(function(response:Response<GetCurrentVersionResult>)
-				{
-					GAME_VER = response.result.data.currentVersion;
-					GAME_VER_NUMS = GAME_VER.split(" ")[0].trim();
-					trace('CURRENT NG VERSION: ' + GAME_VER);
-					gotOnlineVer = true;
-				});
-
-				call.send();
-			});
-		}
+				GAME_VER = response.result.data.currentVersion;
+				trace('CURRENT NG VERSION: ' + GAME_VER);
+				callback(GAME_VER);
+			})
+			.send();
 	}
 
-	public function new(api:String, encKey:String)
+	static public function init(api:String, encKey:String)
 	{
+		var api = APIStuff.API;
+		if (api == null || api.length == 0)
+		{
+			trace("Missing Newgrounds API key, aborting connection");
+			return;
+		}
 		trace("connecting to newgrounds");
 		
-		var sessionId:String = NGLite.getSessionId();
-		if (sessionId != null)
-			trace("found web session id");
+		#if NG_FORCE_EXPIRED_SESSION
+			var sessionId:String = "fake_session_id";
+			function onSessionFail(error:Error)
+			{
+				trace("Forcing an expired saved session. "
+					+ "To disable, comment out NG_FORCE_EXPIRED_SESSION in Project.xml");
+				savedSessionFailed = true;
+			}
+		#else
+			var sessionId:String = NGLite.getSessionId();
+			if (sessionId != null)
+				trace("found web session id");
+			
+			#if (debug)
+			if (sessionId == null && APIStuff.SESSION != null)
+			{
+				trace("using debug session id");
+				sessionId = APIStuff.SESSION;
+			}
+			#end
 		
-		#if (debug)
-		if (sessionId == null && APIStuff.SESSION != null)
-		{
-			sessionId = APIStuff.SESSION;
-			trace("using debug session id");
-		}
+			var onSessionFail:Error->Void = null;
+			if (sessionId == null && FlxG.save.data.sessionId != null)
+			{
+				trace("using stored session id");
+				sessionId = FlxG.save.data.sessionId;
+				onSessionFail = function (error) savedSessionFailed = true;
+			}
 		#end
 		
+		NG.create(api, sessionId, #if NG_DEBUG true #else false #end, onSessionFail);
 		
-		NG.create(api, sessionId);
-		NG.core.verbose = true;
+		#if NG_VERBOSE NG.core.verbose = true; #end
 		// Set the encryption cipher/format to RC4/Base64. AES128 and Hex are not implemented yet
-		NG.core.initEncryption(encKey); // Found in you NG project view
+		NG.core.initEncryption(APIStuff.EncKey); // Found in you NG project view
 
 		if (NG.core.attemptingLogin)
 		{
@@ -89,21 +109,53 @@ class NGio
 			NG.core.onLogin.add(onNGLogin);
 		}
 		//GK: taking out auto login, adding a login button to the main menu
-		else
+		// else
+		// {
+		// 	/* They are NOT playing on newgrounds.com, no session id was found. We must start one manually, if we want to.
+		// 	 * Note: This will cause a new browser window to pop up where they can log in to newgrounds
+		// 	 */
+		// 	NG.core.requestLogin(onNGLogin);
+		// }
+	}
+	
+	/**
+	 * Attempts to log in to newgrounds by requesting a new session ID, only call if no session ID was found automatically
+	 * @param popupLauncher The function to call to open the login url, must be inside
+	 * a user input event or the popup blocker will block it.
+	 * @param onComplete A callback with the result of the connection.
+	 */
+	static public function login(?popupLauncher:(Void->Void)->Void, onComplete:ConnectionResult->Void)
+	{
+		trace("Logging in manually");
+		var onPending:Void->Void = null;
+		if (popupLauncher != null)
 		{
-			/* They are NOT playing on newgrounds.com, no session id was found. We must start one manually, if we want to.
-			 * Note: This will cause a new browser window to pop up where they can log in to newgrounds
-			 */
-			NG.core.requestLogin(onNGLogin);
+			onPending = function () popupLauncher(NG.core.openPassportUrl);
 		}
+		
+		var onSuccess:Void->Void = onNGLogin;
+		var onFail:Error->Void = null;
+		var onCancel:Void->Void = null;
+		if (onComplete != null)
+		{
+			onSuccess = function ()
+			{
+				onNGLogin();
+				onComplete(Success);
+			}
+			onFail = function (e) onComplete(Fail(e.message));
+			onCancel = function() onComplete(Cancelled);
+		}
+		
+		NG.core.requestLogin(onSuccess, onPending, onFail, onCancel);
 	}
 
-	function onNGLogin():Void
+	static function onNGLogin():Void
 	{
 		trace('logged in! user:${NG.core.user.name}');
 		isLoggedIn = true;
 		FlxG.save.data.sessionId = NG.core.sessionId;
-		// FlxG.save.flush();
+		FlxG.save.flush();
 		// Load medals then call onNGMedalFetch()
 		NG.core.requestMedals(onNGMedalFetch);
 
@@ -112,9 +164,17 @@ class NGio
 
 		ngDataLoaded.dispatch();
 	}
+	
+	static public function logout()
+	{
+		NG.core.logOut();
+		
+		FlxG.save.data.sessionId = null;
+		FlxG.save.flush();
+	}
 
 	// --- MEDALS
-	function onNGMedalFetch():Void
+	static function onNGMedalFetch():Void
 	{
 		/*
 			// Reading medal info
@@ -132,7 +192,7 @@ class NGio
 	}
 
 	// --- SCOREBOARDS
-	function onNGBoardsFetch():Void
+	static function onNGBoardsFetch():Void
 	{
 		/*
 			// Reading medal info
@@ -174,7 +234,7 @@ class NGio
 		}
 	}
 
-	function onNGScoresFetch():Void
+	static function onNGScoresFetch():Void
 	{
 		scoreboardsLoaded = true;
 
@@ -208,4 +268,14 @@ class NGio
 				medal.sendUnlock();
 		}
 	}
+}
+
+enum ConnectionResult
+{
+	/** Log in successful */
+	Success;
+	/** Could not login */
+	Fail(msg:String);
+	/** User cancelled the login */
+	Cancelled;
 }
