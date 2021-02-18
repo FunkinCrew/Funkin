@@ -63,6 +63,7 @@ class NewSongState extends MusicBeatState
 	var p1Text:FlxUIInputText;
 	var p2Text:FlxUIInputText;
 	var gfText:FlxUIInputText;
+	var isSpooky:FlxUICheckBox;
 	var stageText:FlxUIInputText;
 	var cutsceneText:FlxUIInputText;
 	var uiText:FlxUIInputText;
@@ -95,6 +96,7 @@ class NewSongState extends MusicBeatState
 		nameText = new FlxUIInputText(100,10,70,"bopeebo");
 		trace("scloomb");
 		isMoody = new FlxUICheckBox(100,290,null,null, "Girls Scared");
+		isSpooky = new FlxUICheckBox(100,340,null,null,"Background Trail");
 		trace("beemb");
 		categoryText = new FlxUIInputText(100,260,70,"Base Game");
 		trace("mood");

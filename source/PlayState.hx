@@ -1259,16 +1259,22 @@ class PlayState extends MusicBeatState
 				gf.x += 180;
 				gf.y += 300;
 		}
-		trace("repositionByStage");
+		if (SONG.isSpooky) {
+			trace("WOAH SPOOPY");
+			var evilTrail = new FlxTrail(dad, null, 4, 24, 0.3, 0.069);
+			// evilTrail.changeValuesEnabled(false, false, false, false);
+			// evilTrail.changeGraphic()
+			add(evilTrail);
+		}
+
 		add(dad);
 		add(boyfriend);
-		trace("addCharacters");
+
 		var doof:DialogueBox = new DialogueBox(false, dialogue);
 		// doof.x += 70;
 		// doof.y = FlxG.height * 0.5;
 		doof.scrollFactor.set();
 		doof.finishThing = startCountdown;
-		trace("doofensmirz");
 		Conductor.songPosition = -5000;
 
 		strumLine = new FlxSprite(0, 50).makeGraphic(FlxG.width, 10);
@@ -1280,9 +1286,9 @@ class PlayState extends MusicBeatState
 		playerStrums = new FlxTypedGroup<FlxSprite>();
 
 		// startCountdown();
-		trace("before song generation");
+
 		generateSong(SONG.song);
-		trace("after song generation");
+
 		// add(strumLine);
 		camFollow = new FlxObject(0, 0, 1, 1);
 
@@ -1338,7 +1344,7 @@ class PlayState extends MusicBeatState
 		iconP1 = new HealthIcon(SONG.player1, true);
 		iconP1.y = healthBar.y - (iconP1.height / 2);
 		add(iconP1);
-		trace("before icons p2");
+
 		iconP2 = new HealthIcon(SONG.player2, false);
 		iconP2.y = healthBar.y - (iconP2.height / 2);
 		add(iconP2);
@@ -1347,7 +1353,7 @@ class PlayState extends MusicBeatState
 		practiceDieIcon.x = healthBar.x - 130;
 		practiceDieIcon.animation.curAnim.curFrame = 1;
 		add(practiceDieIcon);
-		trace("finishIcons");
+
 		strumLineNotes.cameras = [camHUD];
 		notes.cameras = [camHUD];
 		healthBar.cameras = [camHUD];
@@ -1361,10 +1367,10 @@ class PlayState extends MusicBeatState
 		accuracyTxt.cameras = [camHUD];
 		difficTxt.cameras = [camHUD];
 		practiceDieIcon.visible = false;
-		trace("finishCameras");
+
 		add(scoreTxt);
 		add(healthTxt);
-		trace("before Accuracy");
+
 		add(accuracyTxt);
 		add(difficTxt);
 		// if (SONG.song == 'South')
@@ -1373,10 +1379,10 @@ class PlayState extends MusicBeatState
 
 		// cameras = [FlxG.cameras.list[1]];
 		startingSong = true;
-		trace("oisfje");
+
 	if (alwaysDoCutscenes || isStoryMode )
 		{
-			trace("hmms");
+
 			switch (SONG.cutsceneType)
 			{
 				case "monster":
@@ -1413,7 +1419,6 @@ class PlayState extends MusicBeatState
 					FlxG.sound.play('assets/sounds/ANGRY' + TitleState.soundExt);
 					schoolIntro(doof);
 				case 'spirit':
-					trace("spirit");
 					schoolIntro(doof);
 				case 'none':
 					startCountdown();
@@ -1423,12 +1428,12 @@ class PlayState extends MusicBeatState
 		}
 		else
 		{
-			trace("gameing");
+
 			startCountdown();
 		}
 
 		super.create();
-		trace(';');
+
 	}
 
 	function schoolIntro(?dialogueBox:DialogueBox):Void
@@ -1547,7 +1552,7 @@ class PlayState extends MusicBeatState
 	function startCountdown():Void
 	{
 		inCutscene = false;
-		trace("start countdown");
+
 		generateStaticArrows(0);
 		generateStaticArrows(1);
 
@@ -1557,14 +1562,13 @@ class PlayState extends MusicBeatState
 		Conductor.songPosition -= Conductor.crochet * 5;
 
 		var swagCounter:Int = 0;
-		trace("start timer");
+
 		startTimer = new FlxTimer().start(Conductor.crochet / 1000, function(tmr:FlxTimer)
 		{
-			trace("henol");
 			dad.dance();
 			gf.dance();
-			boyfriend.playAnim('idle');
-			trace("hmmstafj");
+
+
 			var introAssets:Map<String, Array<String>> = new Map<String, Array<String>>();
 			introAssets.set('normal', ['ready.png', "set.png", "go.png"]);
 			introAssets.set('pixel', [
@@ -1783,8 +1787,7 @@ class PlayState extends MusicBeatState
 				arrowEndsImage = BitmapData.fromFile('assets/images/custom_ui/ui_packs/'+SONG.uiType+'/arrowEnds.png');
 			}
 		}
-		trace(customImage);
-		trace(customXml);
+
 		for (section in noteData)
 		{
 			var coolSection:Int = Std.int(section.lengthInSteps / 4);

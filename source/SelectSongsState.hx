@@ -88,8 +88,6 @@ class SelectSongsState extends MusicBeatState
 		selector.text = ">";
 		// add(selector);
 
-		var swag:Alphabet = new Alphabet(1, 0, "swag");
-
 		// JUST DOIN THIS SHIT FOR TESTING!!!
 		/*
 			var md:String = Markdown.markdownToHtml(Assets.getText('CHANGELOG.md'));

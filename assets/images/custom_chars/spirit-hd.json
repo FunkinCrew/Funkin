@@ -23,16 +23,17 @@
     }
   },
   "offset": {
-    "idle": [-220,-280],
-    "singUP": [-220,-240],
-    "singRIGHT": [-220,-280],
-    "singLEFT": [-200, -280],
-    "singDOWN": [170, 110]
+    "idle": [-260,-120],
+    "singUP": [-220,-100],
+    "singRIGHT": [-180,-70],
+    "singLEFT": [-200, -113],
+    "singDOWN": [-231, -5]
   },
   "flipx": false,
   "like": "spirit",
-  "enemyOffset": [-150,100],
+  "enemyOffset": [-150,70],
   "camOffset": [300,0],
+  "followCam": [300,0],
   "playAnim": "idle",
   "isPixel": false
 }

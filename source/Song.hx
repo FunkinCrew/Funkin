@@ -29,6 +29,7 @@ typedef SwagSong =
 	var isMoody:Null<Bool>;
 	var cutsceneType:String;
 	var uiType:String;
+	var isSpooky:Null<Bool>;
 }
 
 class Song
@@ -46,6 +47,7 @@ class Song
 	public var stage:String = 'stage';
 	public var gf:String = 'gf';
 	public var isMoody:Null<Bool> = false;
+	public var isSpooky:Null<Bool> = false;
 	public var cutsceneType:String = "none";
 	public var uiType:String = 'normal';
 	public function new(song, notes, bpm, sections)
@@ -119,7 +121,14 @@ class Song
 				parsedJson.isMoody = false;
 			}
 		}
-
+		// is spooky means trails on spirit
+		if (parsedJson.isSpooky == null) {
+			if (parsedJson.stage.toLowerCase() == 'mallEvil') {
+				parsedJson.isSpooky = true;
+			} else {
+				parsedJson.isSpooky = false;
+			}
+		}
 		if (parsedJson.song.toLowerCase() == 'winter-horrorland') {
 			parsedJson.cutsceneType = "monster";
 		}

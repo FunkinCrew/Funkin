@@ -140,6 +140,7 @@ class ChartingState extends MusicBeatState
 				gf: 'gf',
 				sectionLengths: [],
 				speed: 1,
+				isSpooky: false,
 				isMoody: false,
 				cutsceneType: "none",
 				uiType: 'normal'
@@ -235,7 +236,7 @@ class ChartingState extends MusicBeatState
 		{
 			loadJson(_song.song.toLowerCase());
 		});
-
+		var isSpookyCheck = new FlxUICheckBox(10, 280,null,null,"Is Spooky", 100);
 		var loadAutosaveBtn:FlxButton = new FlxButton(reloadSongJson.x, reloadSongJson.y + 30, 'load autosave', loadAutosave);
 
 		var stepperSpeed:FlxUINumericStepper = new FlxUINumericStepper(10, 80, 0.1, 1, 0.1, 10, 1);
@@ -246,10 +247,6 @@ class ChartingState extends MusicBeatState
 		stepperBPM.value = Conductor.bpm;
 		stepperBPM.name = 'song_bpm';
 
-		var characters:Array<String> = CoolUtil.coolTextFile('assets/data/characterList.txt');
-		var stages:Array<String> = CoolUtil.coolTextFile('assets/data/stages.txt');
-		var cutscenes:Array<String> = CoolUtil.coolTextFile('assets/data/cutscenes.txt');
-		var uiTypes:Array<String> = CoolUtil.coolTextFile('assets/data/uitypes.txt');
 
 		player1TextField = new FlxUIInputText(10, 100, 70, _song.player1, 8);
 		player2TextField = new FlxUIInputText(80, 100, 70, _song.player2, 8);
@@ -260,6 +257,7 @@ class ChartingState extends MusicBeatState
 		var isMoodyCheck = new FlxUICheckBox(10, 220, null, null, "Is Moody", 100);
 		isMoodyCheck.name = "isMoody";
 		isMoodyCheck.checked = _song.isMoody;
+		isSpookyCheck.checked = _song.isSpooky;
 		var curStage = _song.stage;
 		var tab_group_song = new FlxUI(null, UI_box);
 		tab_group_song.name = "Song";
@@ -268,6 +266,7 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(check_voices);
 		tab_group_song.add(check_mute_inst);
 		tab_group_song.add(isMoodyCheck);
+		tab_group_song.add(isSpookyCheck);
 		tab_group_song.add(saveButton);
 		tab_group_song.add(reloadSong);
 		tab_group_song.add(reloadSongJson);
@@ -470,6 +469,8 @@ class ChartingState extends MusicBeatState
 					_song.notes[curSection].altAnim = check.checked;
 				case "Is Moody":
 					_song.isMoody = check.checked;
+				case "Is Spooky":
+					_song.isSpooky = check.checked;
 			}
 		}
 		else if (id == FlxUINumericStepper.CHANGE_EVENT && (sender is FlxUINumericStepper))
