@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="FNF_main_menu_assets-2019.png">
+	<!-- Created with Adobe Animate version 19.2.1.408 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="back0000" x="0" y="0" width="1157" height="645"/>
+	<SubTexture name="no basic0000" x="1157" y="0" width="210" height="197"/>
+	<SubTexture name="no white0000" x="1367" y="0" width="210" height="197" frameX="-1" frameY="-14" frameWidth="212" frameHeight="215"/>
+	<SubTexture name="no white0001" x="1577" y="0" width="212" height="194" frameX="0" frameY="-10" frameWidth="212" frameHeight="215"/>
+	<SubTexture name="no white0002" x="1789" y="0" width="210" height="215" frameX="0" frameY="0" frameWidth="212" frameHeight="215"/>
+	<SubTexture name="ok basic0000" x="0" y="645" width="256" height="185"/>
+	<SubTexture name="ok white0000" x="256" y="645" width="256" height="185" frameX="0" frameY="-11" frameWidth="263" frameHeight="202"/>
+	<SubTexture name="ok white0001" x="512" y="645" width="230" height="183" frameX="-22" frameY="-11" frameWidth="263" frameHeight="202"/>
+	<SubTexture name="ok white0002" x="742" y="645" width="245" height="202" frameX="-18" frameY="0" frameWidth="263" frameHeight="202"/>
+	<SubTexture name="yes basic0000" x="987" y="645" width="303" height="205"/>
+	<SubTexture name="yes white0000" x="1290" y="645" width="303" height="205" frameX="-13" frameY="-19" frameWidth="340" frameHeight="230"/>
+	<SubTexture name="yes white0001" x="1593" y="645" width="330" height="230" frameX="-8" frameY="0" frameWidth="340" frameHeight="230"/>
+	<SubTexture name="yes white0002" x="0" y="875" width="340" height="214" frameX="0" frameY="-12" frameWidth="340" frameHeight="230"/>
+</TextureAtlas>

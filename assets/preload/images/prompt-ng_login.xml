@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="prompt-ng_login.png">
+	<!-- Created with Adobe Animate version 19.2.1.408 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="back0000" x="0" y="0" width="1157" height="645"/>
+	<SubTexture name="no basic0000" x="1159" y="0" width="210" height="197"/>
+	<SubTexture name="no white0000" x="1371" y="0" width="210" height="197" frameX="-1" frameY="-14" frameWidth="212" frameHeight="215"/>
+	<SubTexture name="no white0001" x="1583" y="0" width="212" height="194" frameX="0" frameY="-10" frameWidth="212" frameHeight="215"/>
+	<SubTexture name="no white0002" x="1797" y="0" width="210" height="215" frameX="0" frameY="0" frameWidth="212" frameHeight="215"/>
+	<SubTexture name="ok basic0000" x="0" y="647" width="231" height="167"/>
+	<SubTexture name="ok white0000" x="233" y="647" width="231" height="167" frameX="0" frameY="-9" frameWidth="238" frameHeight="181"/>
+	<SubTexture name="ok white0001" x="466" y="647" width="206" height="165" frameX="-21" frameY="-9" frameWidth="238" frameHeight="181"/>
+	<SubTexture name="ok white0002" x="674" y="647" width="220" height="181" frameX="-18" frameY="0" frameWidth="238" frameHeight="181"/>
+	<SubTexture name="yes basic0000" x="896" y="647" width="303" height="205"/>
+	<SubTexture name="yes white0000" x="1201" y="647" width="303" height="205" frameX="-13" frameY="-19" frameWidth="340" frameHeight="230"/>
+	<SubTexture name="yes white0001" x="1506" y="647" width="330" height="230" frameX="-8" frameY="0" frameWidth="340" frameHeight="230"/>
+	<SubTexture name="yes white0002" x="0" y="879" width="340" height="214" frameX="0" frameY="-12" frameWidth="340" frameHeight="230"/>
+</TextureAtlas>
