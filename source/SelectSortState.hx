@@ -1,5 +1,6 @@
 package;
 
+import haxe.macro.Expr.Case;
 import flash.text.TextField;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -23,40 +24,26 @@ import haxe.Json;
 import tjson.TJSON;
 using StringTools;
 
-class CategoryState extends MusicBeatState
+class SelectSortState extends MusicBeatState
 {
-	var categories:Array<String> = [];
-	public static var choosingFor:String = "freeplay";
-	var categorySongs:Array<Array<String>> =[];
+
+	var songs:Array<String> = [];
+
 	var selector:FlxText;
 	var curSelected:Int = 0;
+	var curDifficulty:Int = 1;
 
+	var scoreText:FlxText;
+	var diffText:FlxText;
+	var lerpScore:Int = 0;
+	var intendedScore:Int = 0;
+	var usingCategoryScreen:Bool = false;
 	private var grpSongs:FlxTypedGroup<Alphabet>;
 	private var curPlaying:Bool = false;
 
 	override function create()
 	{
-		// it's a js file to make syntax highlighting acceptable
-		var epicCategoryJs:Array<Dynamic> = CoolUtil.parseJson(Assets.getText('assets/data/freeplaySongJson.jsonc'));
-		if (epicCategoryJs.length > 1 || choosingFor != "freeplay") {
-			for (category in epicCategoryJs) {
-				categories.push(category.name);
-				categorySongs.push(category.songs);
-			}
-		} else {
-			// just set freeplay states songs to the only category
-			trace(epicCategoryJs[0].songs);
-			FreeplayState.currentSongList = epicCategoryJs[0].songs;
-			FlxG.switchState(new FreeplayState());
-		}
-
-		/*
-			if (FlxG.sound.music != null)
-			{
-				if (!FlxG.sound.music.playing)
-					FlxG.sound.playMusic('assets/music/freakyMenu' + TitleState.soundExt);
-			}
-		 */
+		songs = ["songs", "categories", "weeks"];
 
 
 		// LOAD MUSIC
@@ -69,9 +56,9 @@ class CategoryState extends MusicBeatState
 		grpSongs = new FlxTypedGroup<Alphabet>();
 		add(grpSongs);
 
-		for (i in 0...categories.length)
+		for (i in 0...songs.length)
 		{
-			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, categories[i], true, false);
+			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, songs[i], true, false);
 			songText.isMenuItem = true;
 			songText.targetY = i;
 			grpSongs.add(songText);
@@ -81,19 +68,10 @@ class CategoryState extends MusicBeatState
 		}
 
 
-
-
-
 		changeSelection();
+
 		// FlxG.sound.playMusic('assets/music/title' + TitleState.soundExt, 0);
 		// FlxG.sound.music.fadeIn(2, 0, 0.8);
-		selector = new FlxText();
-
-		selector.size = 40;
-		selector.text = ">";
-		// add(selector);
-
-		var swag:Alphabet = new Alphabet(1, 0, "swag");
 
 		// JUST DOIN THIS SHIT FOR TESTING!!!
 		/*
@@ -138,25 +116,43 @@ class CategoryState extends MusicBeatState
 			changeSelection(1);
 		}
 
-
 		if (controls.BACK)
 		{
-			FlxG.switchState(new MainMenuState());
+			FlxG.switchState(new SaveDataState());
 		}
-		// make sure it isn't a header
-		
-		if (accepted && categorySongs[curSelected].length > 0 && choosingFor == "freeplay")
+
+		if (accepted)
 		{
-			FreeplayState.currentSongList = categorySongs[curSelected];
-			FlxG.switchState(new FreeplayState());
+			trace(songs[curSelected]);
+			switch (songs[curSelected]) {
+				case "songs":
+					CategoryState.choosingFor = "sorting";
+					FlxG.switchState(new CategoryState());
+				case "categories":
+					var coolCategoryJson:Array<SelectSongsState.TCategory> = CoolUtil.parseJson(Assets.getText('assets/data/freeplaySongJson.jsonc'));
+					var coolCategories:Array<String> = [];
+					for (coolCategory in coolCategoryJson)
+					{
+						coolCategories.push(coolCategory.name);
+					}
+					SortState.stuffToSort = coolCategories;
+					SortState.sorting = "categories";
+					FlxG.switchState(new SortState());
+				case "weeks":
+					// gonna be reallllllllll fucky renaming files
+					SortState.sorting = "weeks";
+					// gonna do weeks ourselves?
+					var coolWeekJson:StoryMenuState.StorySongsJson = CoolUtil.parseJson(Assets.getText('assets/data/storySonglist.json'));
+					var coolWeeks:Array<String> = [];
+					for (i in 0...coolWeekJson.songs.length) {
+						coolWeeks.push("week"+i);
+					}
+					SortState.stuffToSort = coolWeeks;
+					FlxG.switchState(new SortState());
+			}
 
-		} else if (accepted && categorySongs[curSelected].length > 0) {
-			SortState.stuffToSort = categorySongs[curSelected];
-			SortState.category = categories[curSelected];
-			FlxG.switchState(new SortState());
-		} 
+		}
 	}
-
 
 	function changeSelection(change:Int = 0)
 	{
@@ -166,11 +162,9 @@ class CategoryState extends MusicBeatState
 		curSelected += change;
 
 		if (curSelected < 0)
-			curSelected = categories.length - 1;
-		if (curSelected >= categories.length)
+			curSelected = songs.length - 1;
+		if (curSelected >= songs.length)
 			curSelected = 0;
-
-		// selector.y = (70 * curSelected) + 30;
 		var bullShit:Int = 0;
 
 		for (item in grpSongs.members)

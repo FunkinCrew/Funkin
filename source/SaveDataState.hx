@@ -45,7 +45,8 @@ class SaveDataState extends MusicBeatState
 						{name:"New Character...", value: false},
 						{name:"New Stage...", value:false},
 						{name: "New Song...", value: false},
-						{name: "New Week...", value: false}
+						{name: "New Week...", value: false},
+						{name: "Sort...", value: false}
 					];
 		optionList[0].value = FlxG.save.data.options.alwaysDoCutscenes;
 		optionList[1].value = FlxG.save.data.options.skipModifierMenu;
@@ -203,6 +204,14 @@ class SaveDataState extends MusicBeatState
 						};
 						trace(FlxG.save.data.options);
 						FlxG.switchState(new NewWeekState());
+					case "Sort...":
+						FlxG.save.data.options = {
+							"skipVictoryScreen": optionList[2].value,
+							"skipModifierMenu": optionList[1].value,
+							"alwaysDoCutscenes": optionList[0].value
+						};
+						trace(FlxG.save.data.options);
+						FlxG.switchState(new SelectSortState());
 					default:
 						checkmarks.members[optionsSelected].visible = !checkmarks.members[optionsSelected].visible;
 						optionList[optionsSelected].value = checkmarks.members[optionsSelected].visible;
