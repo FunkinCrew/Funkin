@@ -54,16 +54,10 @@ class TitleState extends MusicBeatState
 
 		super.create();
 
-		NGio.noLogin(APIStuff.API);
-
-		#if ng
-		var ng:NGio = new NGio(APIStuff.API, APIStuff.EncKey);
-		trace('NEWGROUNDS LOL');
-		#end
-
 		FlxG.save.bind('funkin', 'ninjamuffin99');
-
 		Highscore.load();
+
+		NGio.init(APIStuff.API, APIStuff.EncKey);
 
 		if (FlxG.save.data.weekUnlocked != null)
 		{
@@ -264,22 +258,26 @@ class TitleState extends MusicBeatState
 			transitioning = true;
 			// FlxG.sound.music.stop();
 
-			new FlxTimer().start(2, function(tmr:FlxTimer)
+			if (!OutdatedSubState.leftState)
 			{
-				// Check if version is outdated
-
-				var version:String = "v" + Application.current.meta.get('version');
-
-				if (version.trim() != NGio.GAME_VER_NUMS && !OutdatedSubState.leftState)
+				NGio.checkVersion(function(version)
 				{
-					trace('OLD VERSION!');
-					FlxG.switchState(new OutdatedSubState());
-				}
-				else
-				{
-					FlxG.switchState(new MainMenuState());
-				}
-			});
+					// Check if version is outdated
+
+					var localVersion:String = "v" + Application.current.meta.get('version');
+					var onlineVersion = version.split(" ")[0].trim();
+
+					if (version.trim() != onlineVersion)
+					{
+						trace('OLD VERSION!');
+						FlxG.switchState(new OutdatedSubState());
+					}
+					else
+					{
+						FlxG.switchState(new MainMenuState());
+					}
+				});
+			}
 			// FlxG.sound.play(Paths.music('titleShoot'), 0.7);
 		}
 
