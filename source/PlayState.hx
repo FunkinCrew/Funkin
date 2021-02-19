@@ -2782,10 +2782,11 @@ class PlayState extends MusicBeatState
 		{
 			daRating = 'good';
 			score = 200;
-			notesHit += 1;
+			// good needs to be punished somewhat
+			notesHit += 0.95;
 		}
 		if (daRating == 'sick')
-			notesHit += 1.5;
+			notesHit += 1;
 		if (daRating != "sick" && perfectMode) {
 			health = -50;
 		}
