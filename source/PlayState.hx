@@ -1733,9 +1733,7 @@ class PlayState extends MusicBeatState
 		}
 
 		rating.loadGraphic('assets/images/' + pixelShitPart1 + daRating + pixelShitPart2 + ".png");
-		rating.screenCenter();
-		rating.x = coolText.x - 40;
-		rating.y -= 60;
+		rating.setPosition(camFollow.x - 220, camFollow.y - 40);
 		rating.acceleration.y = 550;
 		rating.velocity.y -= FlxG.random.int(140, 175);
 		rating.velocity.x -= FlxG.random.int(0, 10);
@@ -1775,24 +1773,23 @@ class PlayState extends MusicBeatState
 		for (i in seperatedScore)
 		{
 			var numScore:FlxSprite = new FlxSprite().loadGraphic('assets/images/' + pixelShitPart1 + 'num' + Std.int(i) + pixelShitPart2 + '.png');
-			numScore.screenCenter();
-			numScore.x = coolText.x + (43 * daLoop) - 90;
-			numScore.y += 80;
 
 			if (!curStage.startsWith('school'))
 			{
+				numScore.setPosition(rating.x + (43 * daLoop) + 60, rating.y + 120);
 				numScore.antialiasing = true;
 				numScore.setGraphicSize(Std.int(numScore.width * 0.5));
 			}
 			else
 			{
+				numScore.setPosition(camFollow.x - 110 + (43 * daLoop) - 90, camFollow.y + 80);
 				numScore.setGraphicSize(Std.int(numScore.width * daPixelZoom));
 			}
 			numScore.updateHitbox();
 
-			numScore.acceleration.y = FlxG.random.int(200, 300);
-			numScore.velocity.y -= FlxG.random.int(140, 160);
-			numScore.velocity.x = FlxG.random.float(-5, 5);
+			numScore.acceleration.y = 550;
+			numScore.velocity.y -= FlxG.random.int(140, 175);
+			numScore.velocity.x -= FlxG.random.int(0, 10);
 
 			if (combo >= 10 || combo == 0)
 				add(numScore);
