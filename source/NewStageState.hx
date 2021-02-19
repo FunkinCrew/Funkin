@@ -82,6 +82,13 @@ class NewStageState extends MusicBeatState
 			writeCharacters();
 			FlxG.switchState(new SaveDataState());
 		});
+		var cancelButton = new FlxButton(FlxG.width - 300, FlxG.height - 50, "Cancel", function():Void
+		{
+			// go back
+			FlxG.switchState(new SaveDataState());
+		});
+		add(cancelButton);
+		add(finishButton);
 		add(nameText);
 		add(likeText);
 		super.create();

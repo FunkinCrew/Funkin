@@ -70,6 +70,7 @@ class NewSongState extends MusicBeatState
 	var isMoody:FlxUICheckBox;
 	var categoryText:FlxUIInputText;
 	var finishButton:FlxButton;
+	var cancelButton:FlxUIButton;
 	var coolFile:FileReference;
 	var coolData:ByteArray;
 	var epicFiles:Dynamic;
@@ -97,6 +98,7 @@ class NewSongState extends MusicBeatState
 		trace("scloomb");
 		isMoody = new FlxUICheckBox(100,290,null,null, "Girls Scared");
 		isSpooky = new FlxUICheckBox(100,340,null,null,"Background Trail");
+		add(isSpooky);
 		trace("beemb");
 		categoryText = new FlxUIInputText(100,260,70,"Base Game");
 		trace("mood");
@@ -118,6 +120,7 @@ class NewSongState extends MusicBeatState
 		add(gfText);
 		add(stageText);
 		add(cutsceneText);
+		add(categoryText);
 		add(uiText);
 		add(isMoody);
 		add(diffButtons);
@@ -139,9 +142,14 @@ class NewSongState extends MusicBeatState
 				voicePath = path;
 			});
 		});
+		cancelButton = new FlxUIButton(FlxG.width - 300, FlxG.height - 50, "Cancel", function():Void {
+			// go back
+			FlxG.switchState(new SaveDataState());
+		});
 		add(instButton);
 		add(voiceButton);
 		add(finishButton);
+		add(cancelButton);
 		super.create();
 	}
 

@@ -105,6 +105,12 @@ class NewWeekState extends MusicBeatState
 		add(bfText);
 		add(gfText);
 		add(finishButton);
+		var cancelButton = new FlxButton(FlxG.width - 300, FlxG.height - 50, "Cancel", function():Void
+		{
+			// go back
+			FlxG.switchState(new SaveDataState());
+		});
+		add(cancelButton);
 		super.create();
 	}
 

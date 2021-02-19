@@ -138,10 +138,16 @@ class NewCharacterState extends MusicBeatState
 			writeCharacters();
 			FlxG.switchState(new SaveDataState());
 		});
+		var cancelButton = new FlxButton(FlxG.width - 300, FlxG.height - 50, "Cancel", function():Void
+		{
+			// go back
+			FlxG.switchState(new SaveDataState());
+		});
 		add(crazyXmlButton);
 		add(deadXmlButton);
 		add(deadPngButton);
 		add(finishButton);
+		add(cancelButton);
 		add(crazyPngButton);
 		super.create();
 	}
