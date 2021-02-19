@@ -1787,7 +1787,7 @@ class PlayState extends MusicBeatState
 			}
 			numScore.updateHitbox();
 
-			numScore.acceleration.y = 550;
+			numScore.acceleration.y = FlxG.random.int(200, 300);
 			numScore.velocity.y -= FlxG.random.int(140, 175);
 			numScore.velocity.x -= FlxG.random.int(0, 10);
 
