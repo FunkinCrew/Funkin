@@ -143,6 +143,7 @@ class SortState extends MusicBeatState
 								// if this isn't found something is very very wrong
 							}
 						}
+						trace(sortedSongs);
 						File.saveContent('assets/data/freeplaySongJson.jsonc',CoolUtil.stringifyJson(coolCategoryJson));
 						FlxG.switchState(new SaveDataState());
 					case "categories": 
@@ -196,6 +197,7 @@ class SortState extends MusicBeatState
 				var numToRemove:Int = referenceArray[curSelected];
 				var spriteToPutDown:Alphabet = grpSongs.members[curSelected];
 				grpSongs.remove(spriteToPutDown, true).visible = false;
+				songs.remove(songs[numToRemove]);
 				referenceArray.remove(numToRemove);
 				// hope this works
 				var coolArray = [];

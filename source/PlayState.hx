@@ -2776,18 +2776,21 @@ class PlayState extends MusicBeatState
 		{
 			daRating = 'bad';
 			score = 100;
-			notesHit += 0.5;
+			notesHit += 0.75;
 		}
 		else if (noteDiff > Conductor.safeZoneOffset * 0.2)
 		{
 			daRating = 'good';
 			score = 200;
-			notesHit += 0.75;
+			notesHit += 1;
 		}
 		if (daRating == 'sick')
-			notesHit += 1;
+			notesHit += 1.5;
 		if (daRating != "sick" && perfectMode) {
 			health = -50;
+		}
+		if (notesHit > notesPassing) {
+			notesHit = notesPassing;
 		}
 		songScore += Math.round(score * ModifierState.scoreMultiplier);
 		trueScore += score;
