@@ -702,6 +702,10 @@ class PlayState extends MusicBeatState
 		// cameras = [FlxG.cameras.list[1]];
 		startingSong = true;
 
+		FlxG.sound.cache("assets/music/" + SONG.song + "_Inst" + TitleState.soundExt);
+		if (SONG.needsVoices)
+			FlxG.sound.cache("assets/music/" + SONG.song + "_Vocals" + TitleState.soundExt);
+
 		if (isStoryMode)
 		{
 			switch (curSong.toLowerCase())
