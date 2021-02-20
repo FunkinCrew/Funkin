@@ -1,4 +1,5 @@
 package;
+#if newgrounds
 
 import flixel.FlxG;
 import flixel.util.FlxSignal;
@@ -17,19 +18,24 @@ import lime.app.Application;
 import openfl.display.Stage;
 
 using StringTools;
-
+#end
 /**
  * MADE BY GEOKURELI THE LEGENED GOD HERO MVP
  */
 class NGio
 {
+	#if newgrounds
 	/**
 	 * True, if the saved sessionId was used in the initial login, and failed to connect.
 	 * Used in MainMenuState to show a popup to establish a new connection
 	 */
 	public static var savedSessionFailed(default, null):Bool = false;
-	public static var isLoggedIn:Bool = false;
 	public static var scoreboardsLoaded:Bool = false;
+	public static var isLoggedIn(get, never):Bool;
+	inline static function get_isLoggedIn()
+	{
+		return NG.core != null && NG.core.loggedIn;
+	}
 
 	public static var scoreboardArray:Array<Score> = [];
 
@@ -38,7 +44,6 @@ class NGio
 
 	public static var GAME_VER:String = "";
 	
-
 	static public function checkVersion(callback:String->Void)
 	{
 		trace('checking NG.io version');
@@ -54,7 +59,7 @@ class NGio
 			.send();
 	}
 
-	static public function init(api:String, encKey:String)
+	static public function init()
 	{
 		var api = APIStuff.API;
 		if (api == null || api.length == 0)
@@ -149,11 +154,15 @@ class NGio
 		
 		NG.core.requestLogin(onSuccess, onPending, onFail, onCancel);
 	}
+	
+	inline static public function cancelLogin():Void
+	{
+		NG.core.cancelLoginRequest();
+	}
 
 	static function onNGLogin():Void
 	{
 		trace('logged in! user:${NG.core.user.name}');
-		isLoggedIn = true;
 		FlxG.save.data.sessionId = NG.core.sessionId;
 		FlxG.save.flush();
 		// Load medals then call onNGMedalFetch()
@@ -216,24 +225,6 @@ class NGio
 		// more info on scores --- http://www.newgrounds.io/help/components/#scoreboard-getscores
 	}
 
-	inline static public function postScore(score:Int = 0, song:String)
-	{
-		if (isLoggedIn)
-		{
-			for (id in NG.core.scoreBoards.keys())
-			{
-				var board = NG.core.scoreBoards.get(id);
-
-				if (song == board.name)
-				{
-					board.postScore(score, "Uhh meow?");
-				}
-
-				// trace('loaded scoreboard id:$id, name:${board.name}');
-			}
-		}
-	}
-
 	static function onNGScoresFetch():Void
 	{
 		scoreboardsLoaded = true;
@@ -252,21 +243,52 @@ class NGio
 
 		// NGio.scoreboardArray = NG.core.scoreBoards.get(8004).scores;
 	}
+	#end
 
-	inline static public function logEvent(event:String)
+	static public function logEvent(event:String)
 	{
+		#if newgrounds
 		NG.core.calls.event.logEvent(event).send();
 		trace('should have logged: ' + event);
+		#else
+			#if debug trace('event:$event - not logged, missing NG.io lib'); #end
+		#end
 	}
 
-	inline static public function unlockMedal(id:Int)
+	static public function unlockMedal(id:Int)
 	{
+		#if newgrounds
 		if (isLoggedIn)
 		{
 			var medal = NG.core.medals.get(id);
 			if (!medal.unlocked)
 				medal.sendUnlock();
 		}
+		#else
+			#if debug trace('medal:$id - not unlocked, missing NG.io lib'); #end
+		#end
+	}
+
+	static public function postScore(score:Int = 0, song:String)
+	{
+		#if newgrounds
+		if (isLoggedIn)
+		{
+			for (id in NG.core.scoreBoards.keys())
+			{
+				var board = NG.core.scoreBoards.get(id);
+
+				if (song == board.name)
+				{
+					board.postScore(score, "Uhh meow?");
+				}
+
+				// trace('loaded scoreboard id:$id, name:${board.name}');
+			}
+		}
+		#else
+			#if debug trace('Song:$song, Score:$score - not posted, missing NG.io lib'); #end
+		#end
 	}
 }
 
