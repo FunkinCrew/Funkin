@@ -15,7 +15,6 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
-import io.newgrounds.NG;
 import lime.app.Application;
 
 import ui.MenuItemList;
@@ -81,11 +80,11 @@ class MainMenuState extends MusicBeatState
 		menuItems.createItem('story mode', function () startExitState(new StoryMenuState()));
 		menuItems.createItem('freeplay', function () startExitState(new FreeplayState()));
 		// addMenuItem('options', function () startExitState(new OptionMenu()));
-		#if (!switch)
+		#if CAN_OPEN_LINKS
 			menuItems.createItem('donate', selectDonate, hasPopupBlocker);
 		#end
 		#if newgrounds
-			if (NG.core.loggedIn)
+			if (NGio.isLoggedIn)
 				menuItems.createItem("logout", selectLogout);
 			else
 				menuItems.createItem("login", selectLogin);
@@ -119,8 +118,10 @@ class MainMenuState extends MusicBeatState
 		
 		menuItems.enabled = true;
 		
+		#if newgrounds
 		if (NGio.savedSessionFailed)
 			showSavedSessionFailed();
+		#end
 	}
 	
 	function onMenuItemChange(selected:MenuItem)
@@ -150,32 +151,37 @@ class MainMenuState extends MusicBeatState
 	
 	function showNgPrompt(fromUi:Bool)
 	{
-		menuItems.enabled = false;
-		
-		var prompt = new Prompt("prompt-ng_login", "Talking to server...", None);
-		prompt.closeCallback = function() menuItems.enabled = true;
+		var prompt = createNGPrompt("Talking to server...", None);
 		openSubState(prompt);
 		function onLoginComplete(result:ConnectionResult)
 		{
 			switch (result)
 			{
 				case Success:
+				{
 					menuItems.resetItem("login", "logout", selectLogout);
 					prompt.setText("Login Successful");
 					prompt.setButtons(Ok);
 					prompt.onYes = prompt.close;
+				}
 				case Fail(msg):
+				{
 					trace("Login Error:" + msg);
 					prompt.setText("Login failed");
 					prompt.setButtons(Ok);
 					prompt.onYes = prompt.close;
+				}
 				case Cancelled:
+				{
 					if (prompt != null)
 					{
 						prompt.setText("Login cancelled by user");
 						prompt.setButtons(Ok);
 						prompt.onYes = prompt.close;
 					}
+					else
+						trace("Login cancelled via prompt");
+				}
 			}
 		}
 		
@@ -196,7 +202,7 @@ class MainMenuState extends MusicBeatState
 					#end
 					prompt.onYes = function()
 					{
-						prompt.setText("Connecting...");
+						prompt.setText("Connecting..." #if web + "\n(check your popup blocker)" #end);
 						prompt.setButtons(None);
 						openPassportUrl();
 					};
@@ -204,7 +210,7 @@ class MainMenuState extends MusicBeatState
 					{
 						prompt.close();
 						prompt = null;
-						NG.core.cancelLoginRequest();
+						NGio.cancelLogin();
 					};
 				}
 				else
@@ -219,9 +225,8 @@ class MainMenuState extends MusicBeatState
 	
 	function selectLogout()
 	{
-		menuItems.enabled = false;
-		var prompt = new Prompt("prompt-ng_login", "Log out of " + NG.core.user.name + "?", Yes_No);
-		prompt.closeCallback = function () menuItems.enabled = true;
+		var user = io.newgrounds.NG.core.user.name;
+		var prompt = createNGPrompt('Log out of $user?', Yes_No);
 		prompt.onYes = function()
 		{
 			NGio.logout();
@@ -230,6 +235,22 @@ class MainMenuState extends MusicBeatState
 		};
 		prompt.onNo = prompt.close;
 		openSubState(prompt);
+	}
+	
+	public function createNGPrompt(text:String, style:ButtonStyle = Yes_No)
+	{
+		var oldAutoPause = FlxG.autoPause;
+		FlxG.autoPause = false;
+		menuItems.enabled = false;
+		
+		var prompt = new Prompt("prompt-ng_login", text, style);
+		prompt.closeCallback = function ()
+		{
+			menuItems.enabled = true;
+			FlxG.autoPause = oldAutoPause;
+		}
+		
+		return prompt;
 	}
 	#end
 	
