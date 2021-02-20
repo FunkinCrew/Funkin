@@ -17,8 +17,13 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import lime.app.Application;
 
+#if newgrounds
+import io.newgrounds.NG;
+#end
+
 import ui.MenuItemList;
 import ui.Prompt;
+import ui.NgPrompt;
 
 using StringTools;
 
@@ -141,118 +146,38 @@ class MainMenuState extends MusicBeatState
 	#if newgrounds
 	function selectLogin()
 	{
-		showNgPrompt(true);
-	}
-	
-	function showSavedSessionFailed()
-	{
-		showNgPrompt(false);
-	}
-	
-	function showNgPrompt(fromUi:Bool)
-	{
-		var prompt = createNGPrompt("Talking to server...", None);
-		openSubState(prompt);
-		function onLoginComplete(result:ConnectionResult)
-		{
-			switch (result)
-			{
-				case Success:
-				{
-					menuItems.resetItem("login", "logout", selectLogout);
-					prompt.setText("Login Successful");
-					prompt.setButtons(Ok);
-					prompt.onYes = prompt.close;
-				}
-				case Fail(msg):
-				{
-					trace("Login Error:" + msg);
-					prompt.setText("Login failed");
-					prompt.setButtons(Ok);
-					prompt.onYes = prompt.close;
-				}
-				case Cancelled:
-				{
-					if (prompt != null)
-					{
-						prompt.setText("Login cancelled by user");
-						prompt.setButtons(Ok);
-						prompt.onYes = prompt.close;
-					}
-					else
-						trace("Login cancelled via prompt");
-				}
-			}
-		}
-		
-		NGio.login
-		(
-			function popupLauncher(openPassportUrl)
-			{
-				var choiceMsg = fromUi
-					? #if web "Log in to Newgrounds?" #else null #end // User-input needed to allow popups
-					: "Your session has expired.\n Please login again.";
-				
-				if (choiceMsg != null)
-				{
-					prompt.setText(choiceMsg);
-					prompt.setButtons(Yes_No);
-					#if web
-					prompt.buttons.getItem("yes").fireInstantly = true;
-					#end
-					prompt.onYes = function()
-					{
-						prompt.setText("Connecting..." #if web + "\n(check your popup blocker)" #end);
-						prompt.setButtons(None);
-						openPassportUrl();
-					};
-					prompt.onNo = function()
-					{
-						prompt.close();
-						prompt = null;
-						NGio.cancelLogin();
-					};
-				}
-				else
-				{
-					prompt.setText("Connecting...");
-					openPassportUrl();
-				}
-			},
-			onLoginComplete
+		openPrompt(NgPrompt.showLogin(),
+			function onPromptClose() menuItems.resetItem("login", "logout", selectLogout)
 		);
 	}
 	
 	function selectLogout()
 	{
-		var user = io.newgrounds.NG.core.user.name;
-		var prompt = createNGPrompt('Log out of $user?', Yes_No);
-		prompt.onYes = function()
-		{
-			NGio.logout();
-			prompt.close();
-			menuItems.resetItem("logout", "login", selectLogin);
-		};
-		prompt.onNo = prompt.close;
-		openSubState(prompt);
+		openPrompt(NgPrompt.showLogout(),
+			function onPromptClose() menuItems.resetItem("logout", "login", selectLogin)
+		);
 	}
 	
-	public function createNGPrompt(text:String, style:ButtonStyle = Yes_No)
+	function showSavedSessionFailed()
 	{
-		var oldAutoPause = FlxG.autoPause;
-		FlxG.autoPause = false;
+		openPrompt(NgPrompt.showSavedSessionFailed(),
+			function onPromptClose() menuItems.resetItem("login", "logout", selectLogout)
+		);
+	}
+	#end
+	
+	public function openPrompt(prompt:Prompt, onClose:Void->Void)
+	{
 		menuItems.enabled = false;
-		
-		var prompt = new Prompt("prompt-ng_login", text, style);
 		prompt.closeCallback = function ()
 		{
 			menuItems.enabled = true;
-			FlxG.autoPause = oldAutoPause;
+			if (onClose != null)
+				onClose();
 		}
 		
-		return prompt;
+		openSubState(prompt);
 	}
-	#end
 	
 	function startExitState(state:FlxState)
 	{
@@ -285,7 +210,6 @@ class MainMenuState extends MusicBeatState
 		super.update(elapsed);
 	}
 }
-
 
 private class MainMenuItemList extends MenuTypedItemList<MainMenuItem>
 {
