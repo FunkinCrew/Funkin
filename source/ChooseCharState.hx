@@ -46,10 +46,11 @@ class ChooseCharState extends MusicBeatState
     var char:Character;
     var anim:String = PlayState.SONG.player1;
     var grpAlphabet:FlxTypedGroup<Alphabet>;
-    var Alpha2:FlxTypedGroup<Alphabet>;
 
     var curSelected:Int = 0;
     var curChar:String = PlayState.SONG.player1;
+
+    var dadMenu:Bool = false;
 
 
     public function new(anim:String = "bf")
@@ -63,7 +64,6 @@ class ChooseCharState extends MusicBeatState
         var menuBG:FlxSprite = new FlxSprite().loadGraphic('assets/images/menuDesat.png');
         menuBG.color = 0xFFea71fd;
         grpAlphabet = new FlxTypedGroup<Alphabet>();
-        Alpha2 = new FlxTypedGroup<Alphabet>();
         menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
         menuBG.updateHitbox();
         menuBG.screenCenter();
@@ -72,7 +72,7 @@ class ChooseCharState extends MusicBeatState
 
         var charJson:Dynamic = null;
 
-        char = new Character(100, 100, anim);
+        char = new Character(400, 100, anim);
         add(char);
 
         char.flipX = false;
@@ -83,8 +83,9 @@ class ChooseCharState extends MusicBeatState
         charJson = CoolUtil.parseJson(Assets.getText('assets/images/custom_chars/custom_chars.jsonc'));
 
         if (characters == null) {
-            characters = mergeArray(Reflect.fields(charJson), Reflect.fields(regCharacters));
+            characters = mergeArray(Reflect.fields(charJson), Reflect.fields(regCharacters)); // this doesn't work, try to make this work or just ignore it
         }
+
 
         for(character in 0...characters.length){ //add chars
             var awesomeChar = new Alphabet(0, 10, "   "+characters[character], true, false, false);
@@ -94,6 +95,7 @@ class ChooseCharState extends MusicBeatState
         }
 
         add(grpAlphabet);
+        trace("it's 11 pm");
 
         super.create();
 
@@ -117,6 +119,10 @@ class ChooseCharState extends MusicBeatState
         if (controls.DOWN_P)
         {
             changeSelection(1);
+        }
+
+        if (controls.RIGHT_P || controls.LEFT_P) {
+                swapMenus();
         }
 
         if (controls.ACCEPT)
@@ -158,11 +164,34 @@ class ChooseCharState extends MusicBeatState
     function chooseSelection()
     {
         remove(char);
-        char = new Character(100, 100, curChar);
+        char = new Character(400, 100, curChar);
         add(char);
-        PlayState.SONG.player1 = curChar;
+        if (!dadMenu)
+            char.flipX = true;
+        else
+            char.flipX = false;
+        if (!dadMenu)
+            PlayState.SONG.player1 = curChar;
+        else
+            PlayState.SONG.player2 = curChar;
         if (curChar == null)
             curChar = "bf";
         trace("BF is now " + curChar);
+    }
+
+    function swapMenus() {
+        FlxG.sound.play('assets/sounds/scrollMenu' + TitleState.soundExt, 0.4);
+        dadMenu = !dadMenu;
+        remove(char);
+        if (!dadMenu)
+            char = new Character(400, 100, PlayState.SONG.player1);
+        else
+            char = new Character(400, 100, PlayState.SONG.player2);
+        add(char);
+        trace('switchin the swag');
+        if (!dadMenu)
+            char.flipX = true;
+        else
+            char.flipX = false;
     }
 }

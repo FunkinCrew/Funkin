@@ -62,11 +62,6 @@ class PlayState extends MusicBeatState
 	public static var storyDifficulty:Int = 1;
 	public static var defaultPlaylistLength = 0;
 
-	//storing chars for choosing
-	public static var storedP1:String = "bf";
-	public static var storedP2:String = "dad";
-
-
 	var halloweenLevel:Bool = false;
 
 	private var vocals:FlxSound;
