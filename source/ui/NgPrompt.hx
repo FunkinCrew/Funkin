@@ -7,7 +7,7 @@ class NgPrompt extends Prompt
 {
 	public function new (text:String, style:ButtonStyle = Yes_No)
 	{
-		super("prompt-ng_login", text, style);
+		super(text, style);
 	}
 	
 	static public function showLogin()

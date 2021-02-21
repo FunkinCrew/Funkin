@@ -1,5 +1,8 @@
 package ui;
 
+import ui.MenuList;
+
+import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.text.FlxText;
@@ -11,33 +14,19 @@ class Prompt extends flixel.FlxSubState
 	
 	public var onYes:Void->Void;
 	public var onNo:Void->Void;
-	public var buttons:MenuItemList;
-	public var field:FlxText;
-	public var back:FlxSprite;
+	public var buttons:AlphabetMenuList;
+	public var field:Alphabet;
 	
 	var style:ButtonStyle;
 	
-	public function new (atlas, text:String, style:ButtonStyle = Ok)
+	public function new (text:String, style:ButtonStyle = Ok)
 	{
 		this.style = style;
-		super();
+		super(0xA0000000);
 		
-		var texture:FlxAtlasFrames;
-		if (Std.is(atlas, String))
-			texture = Paths.getSparrowAtlas(cast atlas);
-		else
-			texture = cast atlas;
+		buttons = new AlphabetMenuList(Horizontal);
 		
-		back = new FlxSprite();
-		back.frames = texture;
-		back.animation.addByPrefix("idle", "back");
-		back.scrollFactor.set(0, 0);
-		
-		buttons = new MenuItemList(texture, Horizontal);
-		
-		field = new FlxText();
-		field.setFormat(Paths.font("vcr.ttf"), 64, FlxColor.BLACK, CENTER);
-		field.text = text;
+		field = new Alphabet(text, true);
 		field.scrollFactor.set(0, 0);
 	}
 	
@@ -45,12 +34,7 @@ class Prompt extends flixel.FlxSubState
 	{
 		super.create();
 		
-		back.animation.play("idle");
-		back.updateHitbox();
-		back.screenCenter(XY);
-		add(back);
-		
-		field.y = back.y + MARGIN;
+		field.y = MARGIN;
 		field.screenCenter(X);
 		add(field);
 		
@@ -90,16 +74,16 @@ class Prompt extends flixel.FlxSubState
 		// pass anonymous functions rather than the current callbacks, in case they change later
 		var yesButton = buttons.createItem(yes, function() onYes());
 		yesButton.screenCenter(X);
-		yesButton.y = back.y + back.height - yesButton.height - MARGIN;
+		yesButton.y = FlxG.height - yesButton.height - MARGIN;
 		yesButton.scrollFactor.set(0, 0);
 		if (no != null)
 		{
 			// place right
-			yesButton.x = back.x + back.width - yesButton.width - MARGIN;
+			yesButton.x = FlxG.width - yesButton.width - MARGIN;
 			
 			var noButton = buttons.createItem(no, function() onNo());
-			noButton.x = back.x + MARGIN;
-			noButton.y = back.y + back.height - noButton.height - MARGIN;
+			noButton.x = MARGIN;
+			noButton.y = FlxG.height - noButton.height - MARGIN;
 			noButton.scrollFactor.set(0, 0);
 		}
 	}
