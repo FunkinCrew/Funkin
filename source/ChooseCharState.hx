@@ -95,7 +95,7 @@ class ChooseCharState extends MusicBeatState
         }
 
         add(grpAlphabet);
-        trace("it's 11 pm");
+        trace("it's 11 pm"); //it's 12 pm
 
         super.create();
 
@@ -165,33 +165,37 @@ class ChooseCharState extends MusicBeatState
     {
         remove(char);
         char = new Character(400, 100, curChar);
-        add(char);
-        if (!dadMenu)
+        if (!dadMenu) //cleaned up
+        {
             char.flipX = true;
-        else
-            char.flipX = false;
-        if (!dadMenu)
             PlayState.SONG.player1 = curChar;
+            trace("BF is now " + curChar);
+        }
         else
+        {
+            char.flipX = false;
             PlayState.SONG.player2 = curChar;
+            trace("DAD is now " + curChar);
+        }
         if (curChar == null)
             curChar = "bf";
-        trace("BF is now " + curChar);
+        add(char);
+
     }
 
-    function swapMenus() {
+    function swapMenus() { //this lags somewhat on my end so please try to optimize it
         FlxG.sound.play('assets/sounds/scrollMenu' + TitleState.soundExt, 0.4);
         dadMenu = !dadMenu;
         remove(char);
-        if (!dadMenu)
+        if (!dadMenu){ //cleaned this too
             char = new Character(400, 100, PlayState.SONG.player1);
-        else
+            char.flipX = true;
+        }
+        else{
             char = new Character(400, 100, PlayState.SONG.player2);
+            char.flipX = false;
+        }
         add(char);
         trace('switchin the swag');
-        if (!dadMenu)
-            char.flipX = true;
-        else
-            char.flipX = false;
     }
 }
