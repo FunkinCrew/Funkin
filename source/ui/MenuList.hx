@@ -1,46 +1,13 @@
 package ui;
 
-import flixel.util.typeLimit.OneOfTwo;
 import flixel.math.FlxPoint;
 import flixel.FlxG;
+import flixel.FlxSprite;
 import flixel.effects.FlxFlicker;
-import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxGroup;
-import flixel.tweens.FlxEase;
-import flixel.tweens.FlxTween;
 import flixel.util.FlxSignal;
 
-typedef AtlasAsset = OneOfTwo<String, FlxAtlasFrames>;
-
-class MenuItemList extends MenuTypedItemList<MenuItem>
-{
-	public var atlas:FlxAtlasFrames;
-	
-	public function new (atlas, navControls:NavControls = Vertical)
-	{
-		super(navControls);
-		
-		if (Std.is(atlas, String))
-			this.atlas = Paths.getSparrowAtlas(cast atlas);
-		else
-			this.atlas = cast atlas;
-	}
-	
-	public function createItem(x = 0.0, y = 0.0, name, callback, fireInstantly = false)
-	{
-		var item = new MenuItem(x, y, name, atlas, callback);
-		item.fireInstantly = fireInstantly;
-		return addItem(name, item);
-	}
-	
-	override function destroy()
-	{
-		super.destroy();
-		atlas = null;
-	}
-}
-
-class MenuTypedItemList<T:MenuItem> extends FlxTypedGroup<T>
+class MenuTypedList<T:MenuItem> extends FlxTypedGroup<T>
 {
 	public var selectedIndex(default, null) = 0;
 	/** Called when a new item is highlighted */
@@ -165,6 +132,11 @@ class MenuTypedItemList<T:MenuItem> extends FlxTypedGroup<T>
 		onChange.dispatch(selected);
 	}
 	
+	public function has(name:String)
+	{
+		return byName.exists(name);
+	}
+	
 	public function getItem(name:String)
 	{
 		return byName[name];
@@ -177,51 +149,140 @@ class MenuTypedItemList<T:MenuItem> extends FlxTypedGroup<T>
 	}
 }
 
-class MenuItem extends flixel.FlxSprite
-{	
+class MenuItem extends FlxSprite
+{
 	public var callback:Void->Void;
+	public var name:String;
 	/**
 	 * Set to true for things like opening URLs otherwise, it may it get blocked.
 	 */
 	public var fireInstantly = false;
+	public var selected(get, never):Bool;
+	function get_selected() return alpha == 1.0;
 	
-	public function new (x = 0.0, y = 0.0, name, tex, callback)
+	public function new (x = 0.0, y = 0.0, name:String, callback)
 	{
 		super(x, y);
 		
-		frames = tex;
-		setItem(name, callback);
 		antialiasing = true;
+		setData(name, callback);
+		idle();
 	}
 	
-	public function setItem(name:String, ?callback:Void->Void)
+	function setData(name:String, ?callback:Void->Void)
 	{
+		this.name = name;
+		
 		if (callback != null)
 			this.callback = callback;
-		
-		var selected = animation.curAnim != null && animation.curAnim.name == "selected";
-		
-		animation.addByPrefix('idle', '$name basic', 24);
-		animation.addByPrefix('selected', '$name white', 24);
-		idle();
-		if (selected)
-			select();
 	}
 	
-	function changeAnim(anim:String)
+	/**
+	 * Calls setData and resets/redraws the state of the item
+	 * @param name 
+	 * @param callback 
+	 */
+	public function setItem(name:String, ?callback:Void->Void)
 	{
-		animation.play(anim);
-		updateHitbox();
+		setData(name, callback);
+		
+		if (selected)
+			select();
+		else
+			idle();
 	}
 	
 	public function idle()
 	{
-		changeAnim('idle');
+		alpha = 0.6;
 	}
 	
 	public function select()
 	{
-		changeAnim('selected');
+		alpha = 1.0;
+	}
+}
+
+class MenuTypedItem<T:FlxSprite> extends MenuItem
+{
+	public var label(default, set):T;
+	
+	public function new (x = 0.0, y = 0.0, label:T, name:String, callback)
+	{
+		super(x, y, name, callback);
+		// set label after super otherwise setters fuck up
+		this.label = label;
+	}
+	
+	/**
+	 * Use this when you only want to show the label
+	 */
+	function setEmptyBackground()
+	{
+		var oldWidth = width;
+		var oldHeight = height;
+		makeGraphic(1, 1, 0x0);
+		width = oldWidth;
+		height = oldHeight;
+	}
+	
+	function set_label(value:T)
+	{
+		if (value != null)
+		{
+			value.x = x;
+			value.y = y;
+			value.alpha = alpha;
+		}
+		return this.label = value;
+	}
+	
+	override function update(elapsed:Float)
+	{
+		super.update(elapsed);
+		if (label != null)
+			label.update(elapsed);
+	}
+	
+	override function draw()
+	{
+		super.draw();
+		if (label != null)
+		{
+			label.cameras = cameras;
+			label.scrollFactor.copyFrom(scrollFactor);
+			label.draw();
+		}
+	}
+
+	override function set_alpha(value:Float):Float
+	{
+		super.set_alpha(value);
+		
+		if (label != null)
+			label.alpha = alpha;
+		
+		return alpha;
+	}
+
+	override function set_x(value:Float):Float
+	{
+		super.set_x(value);
+		
+		if (label != null)
+			label.x = x;
+		
+		return x;
+	}
+
+	override function set_y(Value:Float):Float
+	{
+		super.set_y(Value);
+		
+		if (label != null)
+			label.y = y;
+		
+		return y;
 	}
 }
 
