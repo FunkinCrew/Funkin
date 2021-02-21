@@ -21,7 +21,8 @@ import lime.app.Application;
 import io.newgrounds.NG;
 #end
 
-import ui.MenuItemList;
+import ui.MenuList;
+import ui.AtlasMenuList;
 import ui.Prompt;
 import ui.NgPrompt;
 
@@ -29,7 +30,7 @@ using StringTools;
 
 class MainMenuState extends MusicBeatState
 {
-	var menuItems:MainMenuItemList;
+	var menuItems:MainMenuList;
 
 	var magenta:FlxSprite;
 	var camFollow:FlxObject;
@@ -70,7 +71,7 @@ class MainMenuState extends MusicBeatState
 		add(magenta);
 		// magenta.scrollFactor.set();
 
-		menuItems = new MainMenuItemList('FNF_main_menu_assets');
+		menuItems = new MainMenuList();
 		add(menuItems);
 		menuItems.onChange.add(onMenuItemChange);
 		menuItems.onAcceptPress.add(function(_)
@@ -88,6 +89,7 @@ class MainMenuState extends MusicBeatState
 		#if CAN_OPEN_LINKS
 			menuItems.createItem('donate', selectDonate, hasPopupBlocker);
 		#end
+		// menuItems.createItem('options', function () startExitState(new OptionsMenu()));
 		#if newgrounds
 			if (NGio.isLoggedIn)
 				menuItems.createItem("logout", selectLogout);
@@ -123,10 +125,10 @@ class MainMenuState extends MusicBeatState
 		
 		menuItems.enabled = true;
 		
-		#if newgrounds
-		if (NGio.savedSessionFailed)
-			showSavedSessionFailed();
-		#end
+		// #if newgrounds
+		// if (NGio.savedSessionFailed)
+		// 	showSavedSessionFailed();
+		// #end
 	}
 	
 	function onMenuItemChange(selected:MenuItem)
@@ -146,23 +148,46 @@ class MainMenuState extends MusicBeatState
 	#if newgrounds
 	function selectLogin()
 	{
-		openPrompt(NgPrompt.showLogin(),
-			function onPromptClose() menuItems.resetItem("login", "logout", selectLogout)
-		);
+		openNgPrompt(NgPrompt.showLogin());
 	}
 	
 	function selectLogout()
 	{
-		openPrompt(NgPrompt.showLogout(),
-			function onPromptClose() menuItems.resetItem("logout", "login", selectLogin)
-		);
+		openNgPrompt(NgPrompt.showLogout());
 	}
 	
 	function showSavedSessionFailed()
 	{
-		openPrompt(NgPrompt.showSavedSessionFailed(),
-			function onPromptClose() menuItems.resetItem("login", "logout", selectLogout)
-		);
+		openNgPrompt(NgPrompt.showSavedSessionFailed());
+	}
+	
+	/**
+	 * Calls openPrompt and redraws the login/logout button
+	 * @param prompt 
+	 * @param onClose 
+	 */
+	public function openNgPrompt(prompt:Prompt, ?onClose:Void->Void)
+	{
+		var onPromptClose = checkLoginStatus;
+		if (onClose != null)
+		{
+			onPromptClose = function ()
+			{
+				checkLoginStatus();
+				onClose();
+			}
+		}
+		
+		openPrompt(prompt, onPromptClose);
+	}
+	
+	function checkLoginStatus()
+	{
+		var prevLoggedIn = menuItems.has("logout");
+		if (prevLoggedIn && !NGio.isLoggedIn)
+			menuItems.resetItem("login", "logout", selectLogout);
+		else if (!prevLoggedIn && NGio.isLoggedIn)
+			menuItems.resetItem("logout", "login", selectLogin);
 	}
 	#end
 	
@@ -211,26 +236,22 @@ class MainMenuState extends MusicBeatState
 	}
 }
 
-private class MainMenuItemList extends MenuTypedItemList<MainMenuItem>
+private class MainMenuList extends MenuTypedList<MainMenuItem>
 {
 	public var atlas:FlxAtlasFrames;
 	
-	public function new (atlas)
+	public function new ()
 	{
+		atlas = Paths.getSparrowAtlas('main_menu');
 		super(Vertical);
 		
-		if (Std.is(atlas, String))
-			this.atlas = Paths.getSparrowAtlas(cast atlas);
-		else
-			this.atlas = cast atlas;
 	}
 	
 	public function createItem(x = 0.0, y = 0.0, name:String, callback, fireInstantly = false)
 	{
-		var i = length;
 		var item = new MainMenuItem(x, y, name, atlas, callback);
 		item.fireInstantly = fireInstantly;
-		item.ID = i;
+		item.ID = length;
 		
 		return addItem(name, item);
 	}
@@ -241,7 +262,7 @@ private class MainMenuItemList extends MenuTypedItemList<MainMenuItem>
 		atlas = null;
 	}
 }
-private class MainMenuItem extends MenuItem
+private class MainMenuItem extends AtlasMenuItem
 {
 	public function new(x = 0.0, y = 0.0, name, atlas, callback)
 	{

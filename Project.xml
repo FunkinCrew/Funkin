@@ -71,24 +71,24 @@
 		<library name="week6"    preload="false" />
 	</section>
 	
-	<assets path="assets/songs"    library="songs"    exclude="*.ogg" if="web"/>
-	<assets path="assets/songs"    library="songs"    exclude="*.mp3" unless="web"/>
-	<assets path="assets/shared"   library="shared"   exclude="*.ogg" if="web"/>
-	<assets path="assets/shared"   library="shared"   exclude="*.mp3" unless="web"/>
-	<assets path="assets/tutorial" library="tutorial" exclude="*.ogg" if="web"/>
-	<assets path="assets/tutorial" library="tutorial" exclude="*.mp3" unless="web"/>
-	<assets path="assets/week1"    library="week1"    exclude="*.ogg" if="web"/>
-	<assets path="assets/week1"    library="week1"    exclude="*.mp3" unless="web"/>
-	<assets path="assets/week2"    library="week2"    exclude="*.ogg" if="web"/>
-	<assets path="assets/week2"    library="week2"    exclude="*.mp3" unless="web"/>
-	<assets path="assets/week3"    library="week3"    exclude="*.ogg" if="web"/>
-	<assets path="assets/week3"    library="week3"    exclude="*.mp3" unless="web"/>
-	<assets path="assets/week4"    library="week4"    exclude="*.ogg" if="web"/>
-	<assets path="assets/week4"    library="week4"    exclude="*.mp3" unless="web"/>
-	<assets path="assets/week5"    library="week5"    exclude="*.ogg" if="web"/>
-	<assets path="assets/week5"    library="week5"    exclude="*.mp3" unless="web"/>
-	<assets path="assets/week6"    library="week6"    exclude="*.ogg" if="web"/>
-	<assets path="assets/week6"    library="week6"    exclude="*.mp3" unless="web"/>
+	<assets path="assets/songs"    library="songs"    exclude="*.fla|*.ogg" if="web"/>
+	<assets path="assets/songs"    library="songs"    exclude="*.fla|*.mp3" unless="web"/>
+	<assets path="assets/shared"   library="shared"   exclude="*.fla|*.ogg" if="web"/>
+	<assets path="assets/shared"   library="shared"   exclude="*.fla|*.mp3" unless="web"/>
+	<assets path="assets/tutorial" library="tutorial" exclude="*.fla|*.ogg" if="web"/>
+	<assets path="assets/tutorial" library="tutorial" exclude="*.fla|*.mp3" unless="web"/>
+	<assets path="assets/week1"    library="week1"    exclude="*.fla|*.ogg" if="web"/>
+	<assets path="assets/week1"    library="week1"    exclude="*.fla|*.mp3" unless="web"/>
+	<assets path="assets/week2"    library="week2"    exclude="*.fla|*.ogg" if="web"/>
+	<assets path="assets/week2"    library="week2"    exclude="*.fla|*.mp3" unless="web"/>
+	<assets path="assets/week3"    library="week3"    exclude="*.fla|*.ogg" if="web"/>
+	<assets path="assets/week3"    library="week3"    exclude="*.fla|*.mp3" unless="web"/>
+	<assets path="assets/week4"    library="week4"    exclude="*.fla|*.ogg" if="web"/>
+	<assets path="assets/week4"    library="week4"    exclude="*.fla|*.mp3" unless="web"/>
+	<assets path="assets/week5"    library="week5"    exclude="*.fla|*.ogg" if="web"/>
+	<assets path="assets/week5"    library="week5"    exclude="*.fla|*.mp3" unless="web"/>
+	<assets path="assets/week6"    library="week6"    exclude="*.fla|*.ogg" if="web"/>
+	<assets path="assets/week6"    library="week6"    exclude="*.fla|*.mp3" unless="web"/>
 	
 	<assets path='example_mods' rename='mods' embed='false'/>
 	<assets path='art/readme.txt' rename='do NOT readme.txt' />
@@ -171,7 +171,7 @@
 	
 	<section if="newgrounds">
 		<!-- Enables Ng.core.verbose -->
-		<haxedef name="NG_VERBOSE" />
+		<!-- <haxedef name="NG_VERBOSE" /> -->
 		
 		<!-- Enables a NG debug session, so medals don't permently unlock -->
 		<!-- <haxedef name="NG_DEBUG" /> -->
