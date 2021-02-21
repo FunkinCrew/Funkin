@@ -1,3 +1,6 @@
+# RIGHT NOW THE MODS FOLDER DOES NOT WORK ENTIRELY JUST YET!!!
+## THIS IS WORK IN PROGRESS!!!
+
 # QUICK AND DIRTY MOD GUIDE
 
 With the 0.2.6 update, I added a bit of a slightly nicer mod support backend.

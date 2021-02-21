@@ -10,3 +10,8 @@ parents-christmas
 monster-christmas
 bf-christmas
 gf-christmas
+monster
+bf-pixel
+senpai
+senpai-angry
+spirit
