@@ -67,6 +67,7 @@ class ModifierState extends MusicBeatState
 				// just causes the game to instant restart, doesn't really do much to help
 				{name: "Stuck in a loop", value: false, conflicts: [2], multi: 0},
 				{name: "Chart", value: false, conflicts: [], multi: 1, times:true},
+				{name: "Char Select", value: false, conflicts: [], multi: 1, times:true},
 				{name: "Play", value: false, conflicts: [], multi: 1, times:true}
 
 			];
@@ -158,7 +159,7 @@ class ModifierState extends MusicBeatState
 		}
 	}
 	function toggleSelection() {
-		if (modifiers[curSelected].name != 'Play' && modifiers[curSelected].name != 'Chart'){
+		if (modifiers[curSelected].name != 'Play' && modifiers[curSelected].name != 'Chart' && modifiers[curSelected].name != 'Char Select'){
 			checkmarks[curSelected].visible = !checkmarks[curSelected].visible;
 			for (conflicting in modifiers[curSelected].conflicts) {
 				checkmarks[conflicting].visible = false;
@@ -177,6 +178,9 @@ class ModifierState extends MusicBeatState
 		else if (modifiers[curSelected].name == 'Chart') {
 			FlxG.switchState(new ChartingState());
 		}
+		else if (modifiers[curSelected].name == 'Char Select') {
+			FlxG.switchState(new ChooseCharState(PlayState.SONG.player1));
+		} //lol elif.
 
 	}
 }
