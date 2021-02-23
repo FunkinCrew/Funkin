@@ -16,22 +16,22 @@
                  /          _/           /             
 
 HEY
-Thanks for downloadin Friday Night FUNKIN'
+Thanks for downloadin Friday Night Funkin'
 If you downloaded this from any other place than ninja-muffin24.itch.io/FUNKIN
-You might be in DANGER!!! 
+You might be in DANGER of MALWARE and other BAD THINGS!!!
 
 The Itch.io release is the only official source for the desktop (PC, Mac, Linux) versions of the game!
-As of right now, the game is FREE! If you paid for it, you got SCAMMED!
+As of right now, the game is FREE! If you paid for it, you got SCAMMED! You'd best DEMAND your MONEY BACK from those DIRTY SCAMMERS!!!
 
 Now that that's out of the way....
 THANKS FOR DOWNLOADIN. 
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
-    PERMISSIONS XDDDD
+    PERMISSIONS
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
 
 Little info, you have FULL PERMISSION to stream, letsplay, meme, shitpost, do WHATEVER you want with the game.
-Use the music in videos you do, use art, ANYTHING. GO CRAZY BRO.
+Use the music in videos you do, use art, ANYTHING. GO CRAZY BROS, BRO-ETTES, AND NON-BRO-INARIES.
 
 If you do make any sort of video, it would be a bro move if you linked the game and spread the word
 
@@ -67,7 +67,8 @@ https://twitter.com/evilsk8r
 
 Pico is created by Tom Fulp
 Skid and Pump are created by SrPelo
-BassetFilms did music for lemon monster songs
+BassetFilms did music for Monster songs
+Maowling did Pixel art
 
 
 Final important thing, this is made with the support and love to and from Newgrounds.com.
@@ -89,4 +90,4 @@ I love Tom Fulp.
                                       /      /                                    
                                                                                   
 ##################################################################################
-i stole this from stamper.
+i stole this from stamper lol
