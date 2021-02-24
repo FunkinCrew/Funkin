@@ -204,7 +204,7 @@ class Alphabet extends FlxSpriteGroup
 				if (FlxG.random.bool(40))
 				{
 					var daSound:String = "GF_";
-					FlxG.sound.play('assets/sounds/' + daSound + FlxG.random.int(1, 4) + TitleState.soundExt, 0.4);
+					FlxG.sound.play(Paths.soundRandom(daSound, 1, 4));
 				}
 
 				add(letter);
@@ -245,7 +245,7 @@ class AlphaCharacter extends FlxSprite
 	public function new(x:Float, y:Float)
 	{
 		super(x, y);
-		var tex = FlxAtlasFrames.fromSparrow('assets/images/alphabet.png', 'assets/images/alphabet.xml');
+		var tex = Paths.getSparrowAtlas('alphabet');
 		frames = tex;
 
 		antialiasing = true;
