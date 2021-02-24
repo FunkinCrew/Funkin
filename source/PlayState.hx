@@ -2228,12 +2228,9 @@ class PlayState extends MusicBeatState
 	override function stepHit()
 	{
 		super.stepHit();
-		if (SONG.needsVoices)
+		if (FlxG.sound.music.time > Conductor.songPosition + 20 || FlxG.sound.music.time < Conductor.songPosition - 20)
 		{
-			if (vocals.time > Conductor.songPosition + 20 || vocals.time < Conductor.songPosition - 20)
-			{
-				resyncVocals();
-			}
+			resyncVocals();
 		}
 
 		if (dad.curCharacter == 'spooky' && curStep % 4 == 2)
