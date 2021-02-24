@@ -124,6 +124,10 @@ class PlayState extends MusicBeatState
 
 	override public function create()
 	{
+
+		if (FlxG.sound.music != null)
+			FlxG.sound.music.stop();
+
 		// var gameCam:FlxCamera = FlxG.camera;
 		camGame = new FlxCamera();
 		camHUD = new FlxCamera();
