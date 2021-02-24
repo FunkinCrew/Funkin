@@ -14,6 +14,14 @@ import lime.utils.Assets;
 
 class OptionsMenu extends MusicBeatState
 {
+	override function create()
+	{
+		add(new ui.ControlsMenu());
+	}
+}
+
+class OptionsMenu_old extends MusicBeatState
+{
 	var selector:FlxText;
 	var curSelected:Int = 0;
 
