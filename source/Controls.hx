@@ -30,7 +30,9 @@ enum abstract Action(String) to String from String
 	var BACK = "back";
 	var PAUSE = "pause";
 	var RESET = "reset";
+	#if CAN_CHEAT
 	var CHEAT = "cheat";
+	#end
 }
 #else
 @:enum
@@ -52,7 +54,9 @@ abstract Action(String) to String from String
 	var BACK = "back";
 	var PAUSE = "pause";
 	var RESET = "reset";
+	#if CAN_CHEAT
 	var CHEAT = "cheat";
+	#end
 }
 #end
 
@@ -77,7 +81,9 @@ enum Control
 	ACCEPT;
 	BACK;
 	PAUSE;
+	#if CAN_CHEAT
 	CHEAT;
+	#end
 }
 
 enum KeyboardScheme
@@ -110,8 +116,10 @@ class Controls extends FlxActionSet
 	var _back = new FlxActionDigital(Action.BACK);
 	var _pause = new FlxActionDigital(Action.PAUSE);
 	var _reset = new FlxActionDigital(Action.RESET);
+	#if CAN_CHEAT
 	var _cheat = new FlxActionDigital(Action.CHEAT);
-
+	#end
+	
 	#if (haxe >= "4.0.0")
 	var byName:Map<String, FlxActionDigital> = [];
 	#else
@@ -201,11 +209,13 @@ class Controls extends FlxActionSet
 	inline function get_RESET()
 		return _reset.check();
 
+	#if CAN_CHEAT
 	public var CHEAT(get, never):Bool;
 
 	inline function get_CHEAT()
 		return _cheat.check();
-
+	#end
+	
 	#if (haxe >= "4.0.0")
 	public function new(name, scheme = None)
 	{
@@ -227,7 +237,9 @@ class Controls extends FlxActionSet
 		add(_back);
 		add(_pause);
 		add(_reset);
+		#if CAN_CHEAT
 		add(_cheat);
+		#end
 
 		for (action in digitalActions)
 			byName[action.name] = action;
@@ -255,7 +267,9 @@ class Controls extends FlxActionSet
 		add(_back);
 		add(_pause);
 		add(_reset);
+		#if CAN_CHEAT
 		add(_cheat);
+		#end
 
 		for (action in digitalActions)
 			byName[action.name] = action;
@@ -309,7 +323,9 @@ class Controls extends FlxActionSet
 			case BACK: _back;
 			case PAUSE: _pause;
 			case RESET: _reset;
+			#if CAN_CHEAT
 			case CHEAT: _cheat;
+			#end
 		}
 	}
 
@@ -353,8 +369,10 @@ class Controls extends FlxActionSet
 				func(_pause, JUST_PRESSED);
 			case RESET:
 				func(_reset, JUST_PRESSED);
+			#if CAN_CHEAT
 			case CHEAT:
 				func(_cheat, JUST_PRESSED);
+			#end
 		}
 	}
 
@@ -644,7 +662,9 @@ class Controls extends FlxActionSet
 			Control.PAUSE => [START],
 			//Swap Y and X for switch
 			Control.RESET => [Y],
+			#if CAN_CHEAT
 			Control.CHEAT => [X]
+			#end
 		]);
 		#end
 	}

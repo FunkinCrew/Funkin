@@ -1452,12 +1452,13 @@ class PlayState extends MusicBeatState
 			trace("RESET = True");
 		}
 
-		// CHEAT = brandon's a pussy
+		#if CAN_CHEAT // brandon's a pussy
 		if (controls.CHEAT)
 		{
 			health += 1;
 			trace("User is cheating!");
 		}
+		#end
 
 		if (health <= 0)
 		{
