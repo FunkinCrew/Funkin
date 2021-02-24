@@ -29,7 +29,7 @@ class MenuTypedList<T:MenuItem> extends FlxTypedGroup<T>
 		super();
 	}
 	
-	function addItem(name:String, item:T):T
+	public function addItem(name:String, item:T):T
 	{
 		if (length == selectedIndex)
 			item.select();
@@ -63,28 +63,83 @@ class MenuTypedList<T:MenuItem> extends FlxTypedGroup<T>
 	{
 		var controls = PlayerSettings.player1.controls;
 		
-		switch(navControls)
+		var newIndex = switch(navControls)
 		{
-			case Vertical:
-			{
-				if (controls.UP_P  ) prev();
-				if (controls.DOWN_P) next();
-			}
-			case Horizontal:
-			{
-				if (controls.LEFT_P ) prev();
-				if (controls.RIGHT_P) next();
-			}
-			case Both:
-			{
-				if (controls.LEFT_P  || controls.UP_P  ) prev();
-				if (controls.RIGHT_P || controls.DOWN_P) next();
-			}
+			case Vertical    : navList(controls.UP_P  , controls.DOWN_P);
+			case Horizontal  : navList(controls.LEFT_P, controls.RIGHT_P);
+			case Both        : navList(controls.LEFT_P || controls.UP_P, controls.RIGHT_P || controls.DOWN_P);
+			
+			case Columns(num): navGrid(num, controls.LEFT_P, controls.RIGHT_P, controls.UP_P, controls.DOWN_P);
+			case Rows   (num): navGrid(num, controls.UP_P, controls.DOWN_P, controls.LEFT_P, controls.RIGHT_P);
+		}
+		
+		if (newIndex != selectedIndex)
+		{
+			FlxG.sound.play(Paths.sound('scrollMenu'));
+			selectItem(newIndex);
 		}
 		
 		//Todo: bypass popup blocker on firefox
 		if (controls.ACCEPT)
 			accept();
+	}
+	
+	function navAxis(index:Int, size:Int, prev:Bool, next:Bool, allowWrap:Bool):Int
+	{
+		if (prev == next)
+			return index;
+		
+		if (prev)
+		{
+			if (index > 0)
+				index--;
+			else if (allowWrap)
+				index = size - 1;
+		}
+		else
+		{
+			if (index < size - 1)
+				index++;
+			else if (allowWrap)
+				index = 0;
+		}
+		
+		return index;
+	}
+	
+	/**
+	 * Controls navigation on a linear list of items such as Vertical.
+	 * @param prev 
+	 * @param next 
+	 * @param allowWrap 
+	 */
+	inline function navList(prev:Bool, next:Bool, allowWrap:Bool = true)
+	{
+		return navAxis(selectedIndex, length, prev, next, allowWrap);
+	}
+	
+	/**
+	 * Controls navigation on a grid
+	 * @param latSize   The size of the fixed axis of the grid, or the "lateral axis"
+	 * @param latPrev   Whether the 'prev' key is pressed along the fixed-lengthed axis. eg: "left" in Column mode
+	 * @param latNext   Whether the 'next' key is pressed along the fixed-lengthed axis. eg: "right" in Column mode
+	 * @param prev      Whether the 'prev' key is pressed along the variable-lengthed axis. eg: "up" in Column mode
+	 * @param next      Whether the 'next' key is pressed along the variable-lengthed axis. eg: "down" in Column mode
+	 * @param allowWrap unused
+	 */
+	function navGrid(latSize:Int, latPrev:Bool, latNext:Bool, prev:Bool, next:Bool, allowWrap:Bool = true):Int
+	{
+		// The grid lenth along the variable-length axis
+		var size = Math.ceil(length / latSize);
+		// The selected position along the variable-length axis
+		var index = Math.floor(selectedIndex / latSize);
+		// The selected position along the fixed axis
+		var latIndex = selectedIndex % latSize;
+		
+		latIndex = navAxis(latIndex, latSize, latPrev, latNext, allowWrap);
+		index = navAxis(index, size, prev, next, allowWrap);
+		
+		return Std.int(Math.min(length - 1, index * latSize + latIndex));
 	}
 	
 	public function accept()
@@ -104,21 +159,6 @@ class MenuTypedList<T:MenuItem> extends FlxTypedGroup<T>
 				selected.callback();
 			});
 		}
-	}
-	
-	inline function prev() changeItem(-1);
-	inline function next() changeItem(1);
-	
-	function changeItem(amount:Int)
-	{
-		FlxG.sound.play(Paths.sound('scrollMenu'));
-		var index = selectedIndex + amount;
-		if (index >= length)
-			index = 0;
-		else if (index < 0)
-			index = length - 1;
-		
-		selectItem(index);
 	}
 	
 	public function selectItem(index:Int)
@@ -146,6 +186,8 @@ class MenuTypedList<T:MenuItem> extends FlxTypedGroup<T>
 	{
 		super.destroy();
 		byName.clear();
+		onChange.removeAll();
+		onAcceptPress.removeAll();
 	}
 }
 
@@ -291,4 +333,6 @@ enum NavControls
 	Horizontal;
 	Vertical;
 	Both;
+	Columns(num:Int);
+	Rows(num:Int);
 }
