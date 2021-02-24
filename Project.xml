@@ -116,7 +116,7 @@
 	<haxelib name="newgrounds" unless="switch"/>
 	<haxelib name="faxe" if='switch'/>
 	<haxelib name="polymod"/>
-	<!-- <haxelib name="hxcpp-debug-server" if="desktop"/> -->
+	<haxelib name="hxcpp-debug-server" if="desktop debug"/>
 
 	<!-- <haxelib name="markdown" /> -->
 	<!-- <haxelib name="HtmlParser" /> -->
@@ -168,6 +168,7 @@
 	<!-- <haxedef name="SKIP_TO_PLAYSTATE" if="debug" /> -->
 	
 	<haxedef name="CAN_OPEN_LINKS" unless="switch"/>
+	<haxedef name="CAN_CHEAT" if="switch debug"/>
 	
 	<section if="newgrounds">
 		<!-- Enables Ng.core.verbose -->
