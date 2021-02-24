@@ -1,31 +1,33 @@
 package ui;
 
+import ui.AtlasText;
 import ui.MenuList;
 
-class AlphabetMenuList extends MenuTypedList<AlphabetMenuItem>
+class TextMenuList extends MenuTypedList<TextMenuItem>
 {
 	public function new (navControls:NavControls = Vertical)
 	{
 		super(navControls);
 	}
 	
-	public function createItem(x = 0.0, y = 0.0, name:String, bold = true, callback, fireInstantly = false)
+	public function createItem(x = 0.0, y = 0.0, name:String, font:AtlasFont = Bold, callback, fireInstantly = false)
 	{
-		var item = new AlphabetMenuItem(x, y, name, bold, callback);
+		var item = new TextMenuItem(x, y, name, font, callback);
 		item.fireInstantly = fireInstantly;
 		return addItem(name, item);
 	}
 }
 
-class AlphabetMenuItem extends AlphabetTypedMenuItem<Alphabet>
+class TextMenuItem extends TextTypedMenuItem<AtlasText>
 {
-	public function new (x = 0.0, y = 0.0, name:String, bold = true, callback)
+	public function new (x = 0.0, y = 0.0, name:String, font:AtlasFont = Bold, callback)
 	{
-		super(x, y, new Alphabet(x, y, name, bold), name, callback);
+		super(x, y, new AtlasText(0, 0, name, font), name, callback);
+		setEmptyBackground();
 	}
 }
 
-class AlphabetTypedMenuItem<T:Alphabet> extends MenuTypedItem<T>
+class TextTypedMenuItem<T:AtlasText> extends MenuTypedItem<T>
 {
 	public function new (x = 0.0, y = 0.0, label:T, name:String, callback)
 	{
