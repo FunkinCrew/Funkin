@@ -1,5 +1,6 @@
 package ui;
 
+import ui.AtlasText;
 import ui.MenuList;
 
 import flixel.FlxG;
@@ -14,8 +15,8 @@ class Prompt extends flixel.FlxSubState
 	
 	public var onYes:Void->Void;
 	public var onNo:Void->Void;
-	public var buttons:AlphabetMenuList;
-	public var field:Alphabet;
+	public var buttons:TextMenuList;
+	public var field:AtlasText;
 	
 	var style:ButtonStyle;
 	
@@ -24,9 +25,9 @@ class Prompt extends flixel.FlxSubState
 		this.style = style;
 		super(0xA0000000);
 		
-		buttons = new AlphabetMenuList(Horizontal);
+		buttons = new TextMenuList(Horizontal);
 		
-		field = new Alphabet(text, true);
+		field = new BoldText(text);
 		field.scrollFactor.set(0, 0);
 	}
 	
