@@ -38,12 +38,12 @@ class MainMenuState extends MusicBeatState
 
 		if (!FlxG.sound.music.playing)
 		{
-			FlxG.sound.playMusic('assets/music/freakyMenu' + TitleState.soundExt);
+			FlxG.sound.playMusic(Paths.music('freakyMenu'));
 		}
 
 		persistentUpdate = persistentDraw = true;
 
-		var bg:FlxSprite = new FlxSprite(-80).loadGraphic('assets/images/menuBG.png');
+		var bg:FlxSprite = new FlxSprite(-80).loadGraphic(Paths.image('menuBG'));
 		bg.scrollFactor.x = 0;
 		bg.scrollFactor.y = 0.18;
 		bg.setGraphicSize(Std.int(bg.width * 1.1));
@@ -55,7 +55,7 @@ class MainMenuState extends MusicBeatState
 		camFollow = new FlxObject(0, 0, 1, 1);
 		add(camFollow);
 
-		magenta = new FlxSprite(-80).loadGraphic('assets/images/menuDesat.png');
+		magenta = new FlxSprite(-80).loadGraphic(Paths.image('menuDesat'));
 		magenta.scrollFactor.x = 0;
 		magenta.scrollFactor.y = 0.18;
 		magenta.setGraphicSize(Std.int(magenta.width * 1.1));
@@ -70,7 +70,7 @@ class MainMenuState extends MusicBeatState
 		menuItems = new FlxTypedGroup<FlxSprite>();
 		add(menuItems);
 
-		var tex = FlxAtlasFrames.fromSparrow('assets/images/FNF_main_menu_assets.png', 'assets/images/FNF_main_menu_assets.xml');
+		var tex = Paths.getSparrowAtlas('FNF_main_menu_assets');
 
 		for (i in 0...optionShit.length)
 		{
@@ -113,13 +113,13 @@ class MainMenuState extends MusicBeatState
 		{
 			if (controls.UP_P)
 			{
-				FlxG.sound.play('assets/sounds/scrollMenu' + TitleState.soundExt);
+				FlxG.sound.play(Paths.sound('scrollMenu'));
 				changeItem(-1);
 			}
 
 			if (controls.DOWN_P)
 			{
-				FlxG.sound.play('assets/sounds/scrollMenu' + TitleState.soundExt);
+				FlxG.sound.play(Paths.sound('scrollMenu'));
 				changeItem(1);
 			}
 
@@ -141,7 +141,7 @@ class MainMenuState extends MusicBeatState
 				else
 				{
 					selectedSomethin = true;
-					FlxG.sound.play('assets/sounds/confirmMenu' + TitleState.soundExt);
+					FlxG.sound.play(Paths.sound('confirmMenu'));
 
 					FlxFlicker.flicker(magenta, 1.1, 0.15, false);
 
