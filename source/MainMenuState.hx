@@ -19,12 +19,12 @@ import lime.app.Application;
 
 #if newgrounds
 import io.newgrounds.NG;
+import ui.NgPrompt;
 #end
 
-import ui.MenuList;
 import ui.AtlasMenuList;
+import ui.MenuList;
 import ui.Prompt;
-import ui.NgPrompt;
 
 using StringTools;
 
@@ -89,13 +89,13 @@ class MainMenuState extends MusicBeatState
 		#if CAN_OPEN_LINKS
 			menuItems.createItem('donate', selectDonate, hasPopupBlocker);
 		#end
-		// menuItems.createItem('options', function () startExitState(new OptionsMenu()));
-		#if newgrounds
-			if (NGio.isLoggedIn)
-				menuItems.createItem("logout", selectLogout);
-			else
-				menuItems.createItem("login", selectLogin);
-		#end
+		menuItems.createItem('options', function () startExitState(new OptionsMenu()));
+		// #if newgrounds
+		// 	if (NGio.isLoggedIn)
+		// 		menuItems.createItem("logout", selectLogout);
+		// 	else
+		// 		menuItems.createItem("login", selectLogin);
+		// #end
 		
 		// center vertically
 		var spacing = 160;
