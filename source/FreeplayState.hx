@@ -50,6 +50,7 @@ class FreeplayState extends MusicBeatState
 		{
 			songs.push('Spookeez');
 			songs.push('South');
+			songs.push('Monster');
 		}
 
 		if (StoryMenuState.weekUnlocked[3] || isDebug)
@@ -198,6 +199,10 @@ class FreeplayState extends MusicBeatState
 			PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].toLowerCase());
 			PlayState.isStoryMode = false;
 			PlayState.storyDifficulty = curDifficulty;
+
+			// QUICK DUMB MATH
+			// gets story week from currently selected, will be fuckie if things are NOT in order!
+			PlayState.storyWeek = Math.ceil((curSelected + 1) / 3);
 			LoadingState.loadAndSwitchState(new PlayState());
 		}
 	}
