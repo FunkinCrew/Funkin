@@ -14,7 +14,7 @@ using StringTools;
 
 class FreeplayState extends MusicBeatState
 {
-	var songs:Array<String> = [];
+	var songs:Array<SongMetadata> = [];
 
 	var selector:FlxText;
 	var curSelected:Int = 0;
@@ -30,7 +30,12 @@ class FreeplayState extends MusicBeatState
 
 	override function create()
 	{
-		songs = CoolUtil.coolTextFile(Paths.txt('freeplaySonglist'));
+		var initSonglist = CoolUtil.coolTextFile(Paths.txt('freeplaySonglist'));
+
+		for (i in 0...initSonglist.length)
+		{
+			songs.push(new SongMetadata(initSonglist[i], 1));
+		}
 
 		/* 
 			if (FlxG.sound.music != null)
@@ -47,40 +52,19 @@ class FreeplayState extends MusicBeatState
 		#end
 
 		if (StoryMenuState.weekUnlocked[2] || isDebug)
-		{
-			songs.push('Spookeez');
-			songs.push('South');
-			songs.push('Monster');
-		}
+			addWeek(['Spookeez', 'South', 'Monster'], 2);
 
 		if (StoryMenuState.weekUnlocked[3] || isDebug)
-		{
-			songs.push('Pico');
-			songs.push('Philly');
-			songs.push('Blammed');
-		}
+			addWeek(['Pico', 'Philly', 'Blammed'], 3);
 
 		if (StoryMenuState.weekUnlocked[4] || isDebug)
-		{
-			songs.push('Satin-Panties');
-			songs.push('High');
-			songs.push('Milf');
-		}
+			addWeek(['Satin-Panties', 'High', 'Milf'], 4);
 
 		if (StoryMenuState.weekUnlocked[5] || isDebug)
-		{
-			songs.push('Cocoa');
-			songs.push('Eggnog');
-			songs.push('Winter-Horrorland');
-		}
+			addWeek(['Cocoa', 'Eggnog', 'Winter-Horrorland'], 5);
 
 		if (StoryMenuState.weekUnlocked[6] || isDebug)
-		{
-			songs.push('Senpai');
-			songs.push('Roses');
-			songs.push('Thorns');
-			// songs.push('Winter-Horrorland');
-		}
+			addWeek(['Senpai', 'Roses', 'Thorns'], 6);
 
 		// LOAD MUSIC
 
@@ -94,7 +78,7 @@ class FreeplayState extends MusicBeatState
 
 		for (i in 0...songs.length)
 		{
-			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, songs[i], true, false);
+			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, songs[i].songName, true, false);
 			songText.isMenuItem = true;
 			songText.targetY = i;
 			grpSongs.add(songText);
@@ -151,6 +135,19 @@ class FreeplayState extends MusicBeatState
 		super.create();
 	}
 
+	public function addSong(songName:String, weekNum:Int)
+	{
+		songs.push(new SongMetadata(songName, weekNum));
+	}
+
+	public function addWeek(songs:Array<String>, weekNum:Int)
+	{
+		for (song in songs)
+		{
+			addSong(song, weekNum);
+		}
+	}
+
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
@@ -192,17 +189,16 @@ class FreeplayState extends MusicBeatState
 
 		if (accepted)
 		{
-			var poop:String = Highscore.formatSong(songs[curSelected].toLowerCase(), curDifficulty);
+			var poop:String = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), curDifficulty);
 
 			trace(poop);
 
-			PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].toLowerCase());
+			PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
 			PlayState.isStoryMode = false;
 			PlayState.storyDifficulty = curDifficulty;
 
-			// QUICK DUMB MATH
-			// gets story week from currently selected, will be fuckie if things are NOT in order!
-			PlayState.storyWeek = Math.ceil((curSelected + 1) / 3);
+			PlayState.storyWeek = songs[curSelected].week;
+			trace('CUR WEEK' + PlayState.storyWeek);
 			LoadingState.loadAndSwitchState(new PlayState());
 		}
 	}
@@ -217,7 +213,7 @@ class FreeplayState extends MusicBeatState
 			curDifficulty = 0;
 
 		#if !switch
-		intendedScore = Highscore.getScore(songs[curSelected], curDifficulty);
+		intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
 		#end
 
 		switch (curDifficulty)
@@ -250,12 +246,12 @@ class FreeplayState extends MusicBeatState
 		// selector.y = (70 * curSelected) + 30;
 
 		#if !switch
-		intendedScore = Highscore.getScore(songs[curSelected], curDifficulty);
+		intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
 		// lerpScore = 0;
 		#end
 
 		#if PRELOAD_ALL
-		FlxG.sound.playMusic(Paths.inst(songs[curSelected]), 0);
+		FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName), 0);
 		#end
 
 		var bullShit:Int = 0;
@@ -274,5 +270,17 @@ class FreeplayState extends MusicBeatState
 				// item.setGraphicSize(Std.int(item.width));
 			}
 		}
+	}
+}
+
+class SongMetadata
+{
+	public var songName:String = "";
+	public var week:Int = 0;
+
+	public function new(song:String, week:Int)
+	{
+		this.songName = song;
+		this.week = week;
 	}
 }
