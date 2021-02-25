@@ -11,7 +11,7 @@ class ChartParser
 		var IMG_WIDTH:Int = 8;
 		var regex:EReg = new EReg("[ \t]*((\r\n)|\r|\n)[ \t]*", "g");
 
-		var csvData = FlxStringUtil.imageToCSV('assets/data/' + songName + '/' + songName + '_section' + section + '.png');
+		var csvData = FlxStringUtil.imageToCSV(Paths.file('data/' + songName + '/' + songName + '_section' + section + '.png'));
 
 		var lines:Array<String> = regex.split(csvData);
 		var rows:Array<String> = lines.filter(function(line) return line != "");
