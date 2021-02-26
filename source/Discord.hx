@@ -1,7 +1,7 @@
 package;
 
+import Sys.sleep;
 import discord_rpc.DiscordRpc;
-import haxe.Timer;
 
 using StringTools;
 
@@ -20,11 +20,9 @@ class DiscordClient
 
 		while (true)
 		{
-			trace("process called");
 			DiscordRpc.process();
-			trace("pre-delay");
-			Timer.delay(continue, 2000);
-			trace("post-delay");
+			sleep(2);
+			trace("Discord Client Update");
 		}
 
 		DiscordRpc.shutdown();
