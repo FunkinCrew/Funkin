@@ -2,6 +2,7 @@ package;
 
 #if !html5
 import Discord.DiscordClient;
+import sys.thread.Thread;
 #end
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -26,7 +27,6 @@ import flixel.util.FlxTimer;
 import io.newgrounds.NG;
 import lime.app.Application;
 import openfl.Assets;
-import sys.thread.Thread;
 
 using StringTools;
 
