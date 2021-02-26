@@ -22,7 +22,7 @@ class DiscordClient
 		{
 			DiscordRpc.process();
 			sleep(2);
-			trace("Discord Client Update");
+			//trace("Discord Client Update");
 		}
 
 		DiscordRpc.shutdown();
