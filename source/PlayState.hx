@@ -125,6 +125,13 @@ class PlayState extends MusicBeatState
 
 	var inCutscene:Bool = false;
 
+	#if !html
+	// Discord RPC variables
+	var storyDifficultyText:String = "";
+	var iconRPC:String = "";
+	var songLength:Float = 0;
+	#end
+
 	override public function create()
 	{
 		if (FlxG.sound.music != null)
@@ -178,7 +185,6 @@ class PlayState extends MusicBeatState
 
 		#if !html
 		// Making difficulty text for Discord Rich Presence.
-		var storyDifficultyText = "";
 		switch (storyDifficulty)
 		{
 			case 0:
@@ -188,14 +194,28 @@ class PlayState extends MusicBeatState
 			case 2:
 				storyDifficultyText = "Hard";
 		}
+
+		iconRPC = SONG.player2;
+
+		// To avoid having duplicate images in Discord assets
+		switch (iconRPC)
+		{
+			case 'senpai-angry':
+				iconRPC = 'senpai';
+			case 'monster-christmas':
+				iconRPC = 'monster';
+			case 'mom-car':
+				iconRPC = 'mom';
+		}
+		
 		// Updating Discord Rich Presence.
 		if (isStoryMode)
 		{
-			DiscordClient.changePresence("Story Mode: Week " + storyWeek, SONG.song + " (" + storyDifficultyText + ")");
+			DiscordClient.changePresence("Story Mode: Week " + storyWeek, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
 		}
 		else
 		{
-			DiscordClient.changePresence("Freeplay", SONG.song + " (" + storyDifficultyText + ")");
+			DiscordClient.changePresence("Freeplay", SONG.song + " (" + storyDifficultyText + ")", iconRPC);
 		}
 		#end
 
@@ -992,6 +1012,21 @@ class PlayState extends MusicBeatState
 			FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 1, false);
 		FlxG.sound.music.onComplete = endSong;
 		vocals.play();
+
+		#if !html
+		// Song duration in a float, useful for the time left feature
+		songLength = FlxG.sound.music.length;
+
+		// Updating Discord Rich Presence (with Time Left)
+		if (isStoryMode)
+		{
+			DiscordClient.changePresence("Story Mode: Week " + storyWeek, SONG.song + " (" + storyDifficultyText + ")", iconRPC, true, songLength);
+		}
+		else
+		{
+			DiscordClient.changePresence("Freeplay", SONG.song + " (" + storyDifficultyText + ")", iconRPC, true, songLength);
+		}
+		#end
 	}
 
 	var debugNum:Int = 0;
