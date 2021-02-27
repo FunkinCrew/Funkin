@@ -1284,6 +1284,37 @@ class PlayState extends MusicBeatState
 		super.closeSubState();
 	}
 
+	override public function onFocus():Void
+	{
+		#if !html
+		if (health > 0 && !paused)
+		{
+			if (Conductor.songPosition > 0.0)
+			{
+				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC, true, songLength - Conductor.songPosition);
+			}
+			else
+			{
+				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
+			}
+		}
+		#end
+
+		super.onFocus();
+	}
+	
+	override public function onFocusLost():Void
+	{
+		#if !html
+		if (health > 0 && !paused)
+		{
+			DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
+		}
+		#end
+
+		super.onFocusLost();
+	}
+
 	function resyncVocals():Void
 	{
 		vocals.pause();
@@ -1550,6 +1581,9 @@ class PlayState extends MusicBeatState
 			openSubState(new GameOverSubstate(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 
 			// FlxG.switchState(new GameOverState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
+			
+			// Game Over doesn't get his own variable because it's only used here
+			DiscordClient.changePresence("Game Over - " + detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
 		}
 
 		if (unspawnNotes[0] != null)
