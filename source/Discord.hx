@@ -57,16 +57,26 @@ class DiscordClient
 		trace("Discord Client initialized");
 	}
 
-	public static function changePresence(details:String, state:Null<String>, ?smallImageKey : String, ?startTimestamp: Int, ?endTimestamp: Int)
+	public static function changePresence(details:String, state:Null<String>, ?smallImageKey : String, ?hasStartTimestamp : Bool, ?endTimestamp: Float)
 	{
+		var startTimestamp:Float = if(hasStartTimestamp) Date.now().getTime() else 0;
+
+		if (endTimestamp > 0)
+		{
+			endTimestamp = startTimestamp + endTimestamp;
+		}
+
 		DiscordRpc.presence({
 			details: details,
 			state: state,
 			largeImageKey: 'icon',
 			largeImageText: "Friday Night Funkin'",
 			smallImageKey : smallImageKey,
-			startTimestamp : startTimestamp,
-            endTimestamp : endTimestamp
+			// Obtained times are in milliseconds so they are divided so Discord can use it
+			startTimestamp : Std.int(startTimestamp / 1000),
+            endTimestamp : Std.int(endTimestamp / 1000)
 		});
+
+		trace('Discord RPC Updated. Argument: $details, $state, $smallImageKey, $hasStartTimestamp, $endTimestamp');
 	}
 }
