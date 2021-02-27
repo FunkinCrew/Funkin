@@ -130,6 +130,8 @@ class PlayState extends MusicBeatState
 	var storyDifficultyText:String = "";
 	var iconRPC:String = "";
 	var songLength:Float = 0;
+	var detailsText:String = "";
+	var detailsPausedText:String = "";
 	#end
 
 	override public function create()
@@ -207,16 +209,22 @@ class PlayState extends MusicBeatState
 			case 'mom-car':
 				iconRPC = 'mom';
 		}
-		
-		// Updating Discord Rich Presence.
+
+		// String that contains the mode defined here so it isn't necessary to call changePresence for each mode
 		if (isStoryMode)
 		{
-			DiscordClient.changePresence("Story Mode: Week " + storyWeek, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
+			detailsText = "Story Mode: Week " + storyWeek;
 		}
 		else
 		{
-			DiscordClient.changePresence("Freeplay", SONG.song + " (" + storyDifficultyText + ")", iconRPC);
+			detailsText = "Freeplay";
 		}
+
+		// String for when the game is paused
+		detailsPausedText = "Paused - " + detailsText;
+		
+		// Updating Discord Rich Presence.
+		DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
 		#end
 
 		if (SONG.song.toLowerCase() == 'spookeez' || SONG.song.toLowerCase() == 'monster' || SONG.song.toLowerCase() == 'south')
@@ -1018,14 +1026,7 @@ class PlayState extends MusicBeatState
 		songLength = FlxG.sound.music.length;
 
 		// Updating Discord Rich Presence (with Time Left)
-		if (isStoryMode)
-		{
-			DiscordClient.changePresence("Story Mode: Week " + storyWeek, SONG.song + " (" + storyDifficultyText + ")", iconRPC, true, songLength);
-		}
-		else
-		{
-			DiscordClient.changePresence("Freeplay", SONG.song + " (" + storyDifficultyText + ")", iconRPC, true, songLength);
-		}
+		DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC, true, songLength);
 		#end
 	}
 
@@ -1267,6 +1268,17 @@ class PlayState extends MusicBeatState
 			if (!startTimer.finished)
 				startTimer.active = true;
 			paused = false;
+
+			#if !html
+			if (startTimer.finished)
+			{
+				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC, true, songLength - Conductor.songPosition);
+			}
+			else
+			{
+				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
+			}
+			#end
 		}
 
 		super.closeSubState();
@@ -1334,6 +1346,10 @@ class PlayState extends MusicBeatState
 			}
 			else
 				openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
+		
+			#if !html
+			DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
+			#end
 		}
 
 		if (FlxG.keys.justPressed.SEVEN)
