@@ -57,13 +57,16 @@ class DiscordClient
 		trace("Discord Client initialized");
 	}
 
-	public static function changePresence(details:String, state:Null<String>)
+	public static function changePresence(details:String, state:Null<String>, ?smallImageKey : String, ?startTimestamp: Int, ?endTimestamp: Int)
 	{
 		DiscordRpc.presence({
 			details: details,
 			state: state,
 			largeImageKey: 'icon',
-			largeImageText: "Friday Night Funkin'"
+			largeImageText: "Friday Night Funkin'",
+			smallImageKey : smallImageKey,
+			startTimestamp : startTimestamp,
+            endTimestamp : endTimestamp
 		});
 	}
 }
