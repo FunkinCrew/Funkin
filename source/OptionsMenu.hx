@@ -62,7 +62,7 @@ class OptionsMenu extends MusicBeatState
 
 		super.create();
 
-		openSubState(new OptionsSubState());
+		//openSubState(new OptionsSubState());
 	}
 
 	override function update(elapsed:Float)
@@ -91,9 +91,9 @@ class OptionsMenu extends MusicBeatState
 
 	function changeSelection(change:Int = 0)
 	{
-		#if !switch
-		NGio.logEvent('Fresh');
-		#end
+		//#if !switch
+		//NGio.logEvent('Fresh');
+		//#end
 
 		FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 
@@ -110,11 +110,11 @@ class OptionsMenu extends MusicBeatState
 
 		for (item in grpControls.members)
 		{
-			#if !switch
-			NGio.logEvent('Fresh');
-			#end
+			//#if !switch
+			//NGio.logEvent('Fresh');
+			//#end
 	
-			FlxG.sound.play('assets/sounds/scrollMenu' + TitleState.soundExt, 0.4);
+			//FlxG.sound.play('assets/sounds/scrollMenu' + TitleState.soundExt, 0.4);
 	
 			curSelected += change;
 	
@@ -123,7 +123,7 @@ class OptionsMenu extends MusicBeatState
 			if (curSelected >= grpControls.length)
 				curSelected = 0;
 	
-			// selector.y = (70 * curSelected) + 30;
+			//selector.y = (70 * curSelected) + 30;
 	
 			var bullShit:Int = 0;
 	
@@ -133,6 +133,7 @@ class OptionsMenu extends MusicBeatState
 				// item.setGraphicSize(Std.int(item.width));
 			}
 		}
+	}
 
 	function ChangeInput()
 	{
