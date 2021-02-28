@@ -21,15 +21,6 @@ class MusicBeatSubstate extends FlxSubState
 	inline function get_controls():Controls
 		return PlayerSettings.player1.controls;
 
-	override function create()
-	{
-		#if (!web)
-		TitleState.soundExt = '.ogg';
-		#end
-
-		super.create();
-	}
-
 	override function update(elapsed:Float)
 	{
 		//everyStep();
