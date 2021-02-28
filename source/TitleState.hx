@@ -1,6 +1,6 @@
 package;
 
-#if !html5
+#if desktop
 import Discord.DiscordClient;
 import sys.thread.Thread;
 #end
@@ -94,7 +94,7 @@ class TitleState extends MusicBeatState
 		});
 		#end
 
-		#if !html
+		#if desktop
 		DiscordClient.initialize();
 		#end
 	}
