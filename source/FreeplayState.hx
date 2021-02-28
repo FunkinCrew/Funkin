@@ -1,6 +1,6 @@
 package;
 
-#if !html
+#if desktop
 import Discord.DiscordClient;
 #end
 import flash.text.TextField;
@@ -48,9 +48,9 @@ class FreeplayState extends MusicBeatState
 			}
 		 */
 
-		#if !html
+		#if desktop
 		// Updating Discord Rich Presence
-		DiscordClient.changePresence("In the menus.", null);
+		DiscordClient.changePresence("In the Menus", null);
 		#end
 
 		var isDebug:Bool = false;
