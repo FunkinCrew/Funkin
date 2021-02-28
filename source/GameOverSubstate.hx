@@ -50,8 +50,8 @@ class GameOverSubstate extends MusicBeatSubstate
 
 		bf.playAnim('firstDeath');
 
-		FlxG.sound.cache('assets/music/gameOver' + stageSuffix + TitleState.soundExt);
-		FlxG.sound.cache('assets/music/gameOverEnd' + stageSuffix + TitleState.soundExt);
+		FlxG.sound.cache(Paths.music('gameOver' + stageSuffix));
+		FlxG.sound.cache(Paths.music('gameOverEnd' + stageSuffix));
 	}
 
 	override function update(elapsed:Float)
@@ -104,13 +104,8 @@ class GameOverSubstate extends MusicBeatSubstate
 		{
 			isEnding = true;
 			bf.playAnim('deathConfirm', true);
-<<<<<<< HEAD
 			FlxG.sound.music.fadeOut(0.1);
- 			FlxG.sound.play(Paths.music('gameOverEnd' + stageSuffix));
-=======
-			FlxG.sound.music.stop();
 			FlxG.sound.play(Paths.music('gameOverEnd' + stageSuffix));
->>>>>>> d92cd631f863f392f9757155cb2d4dfcc064b516
 			new FlxTimer().start(0.7, function(tmr:FlxTimer)
 			{
 				FlxG.camera.fade(FlxColor.BLACK, 2, false, function()
