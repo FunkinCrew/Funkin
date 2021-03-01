@@ -34,7 +34,7 @@ class FreeplayState extends MusicBeatState
 
 		for (i in 0...initSonglist.length)
 		{
-			songs.push(new SongMetadata(initSonglist[i], 1, 'dad'));
+			songs.push(new SongMetadata(initSonglist[i], 1, 'gf'));
 		}
 
 		/* 
@@ -50,6 +50,9 @@ class FreeplayState extends MusicBeatState
 		#if debug
 		isDebug = true;
 		#end
+
+		if (StoryMenuState.weekUnlocked[2] || isDebug)
+			addWeek(['Bopeebo', 'Fresh', 'Dadbattle'], 1, ['dad']);
 
 		if (StoryMenuState.weekUnlocked[2] || isDebug)
 			addWeek(['Spookeez', 'South', 'Monster'], 2, ['spooky']);
@@ -82,6 +85,11 @@ class FreeplayState extends MusicBeatState
 			songText.isMenuItem = true;
 			songText.targetY = i;
 			grpSongs.add(songText);
+
+			var icon:HealthIcon = new HealthIcon(songs[i].songCharacter);
+			icon.sprTracker = songText;
+			add(icon);
+
 			// songText.x += 40;
 			// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
 			// songText.screenCenter(X);
