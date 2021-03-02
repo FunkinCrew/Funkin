@@ -65,11 +65,21 @@ class Song
 
 	public static function loadFromJson(jsonInput:String, ?folder:String):SwagSong
 	{
-		#if sys
-		var rawJson = File.getContent("assets/data/"+folder.toLowerCase()+"/"+jsonInput.toLowerCase()+'.json').trim();
-		#else
-		var rawJson = Assets.getText('assets/data/' + folder.toLowerCase() + '/' + jsonInput.toLowerCase() + '.json').trim();
-		#end
+		var rawJson:String = "";
+		if (jsonInput != folder)
+		{
+			// means this isn't normal difficulty
+			// raw json 
+			// folder is always just the song name
+			rawJson = File.getContent("assets/data/"+folder.toLowerCase()+"/"+folder.toLowerCase()+".json").trim();
+		} else {
+			#if sys
+			rawJson = File.getContent("assets/data/" + folder.toLowerCase() + "/" + jsonInput.toLowerCase() + '.json').trim();
+			#else
+			rawJson = Assets.getText('assets/data/' + folder.toLowerCase() + '/' + jsonInput.toLowerCase() + '.json').trim();
+			#end
+		}
+		
 		while (!rawJson.endsWith("}"))
 		{
 			rawJson = rawJson.substr(0, rawJson.length - 1);
@@ -170,7 +180,18 @@ class Song
 				daSections = songData.sections;
 				daBpm = songData.bpm;
 				daSectionLengths = songData.sectionLengths; */
-
+		if (jsonInput != folder)
+		{
+			// means this isn't normal difficulty
+			// lets finally overwrite notes
+			var realJson = parseJSONshit(File.getContent("assets/data/" + folder.toLowerCase() + "/" + jsonInput.toLowerCase() + '.json').trim());
+			parsedJson.notes = realJson.notes;
+			parsedJson.bpm = realJson.bpm;
+			parsedJson.sections = realJson.sections;
+			parsedJson.sectionLengths = realJson.sectionLengths;
+			parsedJson.needsVoices = realJson.needsVoices;
+			parsedJson.speed = realJson.speed;
+		}
 		return parsedJson;
 	}
 
