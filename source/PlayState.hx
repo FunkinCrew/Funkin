@@ -2576,8 +2576,12 @@ class PlayState extends MusicBeatState
 
 					if (SONG.notes[Math.floor(curStep / 16)] != null)
 					{
-						if (SONG.notes[Math.floor(curStep / 16)].altAnim)
-							altAnim = '-alt';
+						if ((SONG.notes[Math.floor(curStep / 16)].altAnimNum > 0 && SONG.notes[Math.floor(curStep / 16)].altAnimNum != null) || SONG.notes[Math.floor(curStep / 16)].altAnim)
+							// backwards compatibility shit
+							if (SONG.notes[Math.floor(curStep / 16)].altAnimNum == 1 || SONG.notes[Math.floor(curStep / 16)].altAnim)
+								altAnim = '-alt';
+							else if (SONG.notes[Math.floor(curStep / 16)].altAnimNum != 0)
+								altAnim = '-' + SONG.notes[Math.floor(curStep / 16)].altAnimNum+'alt';
 					}
 
 					trace("DA ALT THO?: " + SONG.notes[Math.floor(curStep / 16)].altAnim);
