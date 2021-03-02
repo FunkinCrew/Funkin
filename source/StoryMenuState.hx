@@ -1,6 +1,6 @@
 package;
 
-#if !html
+#if desktop
 import Discord.DiscordClient;
 #end
 import flixel.FlxG;
@@ -112,9 +112,10 @@ class StoryMenuState extends MusicBeatState
 		add(grpLocks);
 
 		trace("Line 70");
-		#if !html
+		
+		#if desktop
 		// Updating Discord Rich Presence
-		DiscordClient.changePresence("In the menus.", null);
+		DiscordClient.changePresence("In the Menus", null);
 		#end
 
 		for (i in 0...weekData.length)
