@@ -47,6 +47,9 @@ You'll also need to install polymod. To do this, you need to do a few things fir
 
 You should have everything ready for compiling the game! Follow the guide below to continue!
 
+At the moment, you can optionally fix the transition bug in songs with zoomed out cameras.
+- Run `haxelib git flixel-addons https://github.com/HaxeFlixel/flixel-addons` in the terminal/command-prompt.
+
 ### Ignored files
 
 I gitignore the API keys for the game, so that no one can nab them and post fake highscores on the leaderboards. But because of that the game
