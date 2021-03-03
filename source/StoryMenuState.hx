@@ -377,17 +377,16 @@ class StoryMenuState extends MusicBeatState
 		grpDifficulty.activeDiff.y = leftArrow.y - 15;
 		rightArrow.setPosition(grpDifficulty.activeDiff.x + grpDifficulty.activeDiff.width + 50, leftArrow.y);
 		intendedScore = Highscore.getWeekScore(curWeek, curDifficulty);
+		intendedAccuracy = Highscore.getWeekAccuracy(curWeek, curDifficulty);
 
-		#if !switch
-		intendedScore = Highscore.getWeekScore(curWeek, curDifficulty);
-		#end
 
 		FlxTween.tween(grpDifficulty.activeDiff, {y: leftArrow.y + 15, alpha: 1}, 0.07);
 	}
 
 	var lerpScore:Int = 0;
 	var intendedScore:Int = 0;
-
+	var intendedAccuracy:Float = 0;
+	var lerpAccuracy:Int = 0;
 	function changeWeek(change:Int = 0):Void
 	{
 		lastWeek = curWeek;
@@ -455,6 +454,7 @@ class StoryMenuState extends MusicBeatState
 
 		#if !switch
 		intendedScore = Highscore.getWeekScore(curWeek, curDifficulty);
+		intendedAccuracy = Highscore.getWeekScore(curWeek, curDifficulty);
 		#end
 	}
 }

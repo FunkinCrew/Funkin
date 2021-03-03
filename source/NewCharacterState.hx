@@ -49,6 +49,7 @@ class NewCharacterState extends MusicBeatState
 	var deadXmlButton:FlxButton;
 	var crazyPngButton:FlxButton;
 	var crazyXmlButton:FlxButton;
+	var iconButton:FlxButton;
 	var likeText:FlxUIInputText;
 	var iconAlive:FlxUINumericStepper;
 	var iconDead:FlxUINumericStepper;
@@ -70,7 +71,8 @@ class NewCharacterState extends MusicBeatState
 			"deadpng":null,
 			"deadxml":null,
 			"crazyxml":null,
-			"crazypng":null
+			"crazypng":null,
+			"icons": null
 		};
 		var bg:FlxSprite = new FlxSprite().loadGraphic('assets/images/menuBGBlue.png');
 		add(bg);
@@ -79,6 +81,14 @@ class NewCharacterState extends MusicBeatState
 			coolDialog.browse(FileDialogType.OPEN);
 			coolDialog.onSelect.add(function (path:String):Void {
 				epicFiles.charpng = path;
+			});
+		});
+		iconButton = new FlxButton(10,300,"icons",function():Void {
+			var coolDialog = new FileDialog();
+			coolDialog.browse(FileDialogType.OPEN);
+			coolDialog.onSelect.add(function(path:String):Void
+			{
+				epicFiles.icons = path;
 			});
 		});
 		likeText = new FlxUIInputText(100, 10, 70,"bf");
@@ -98,6 +108,7 @@ class NewCharacterState extends MusicBeatState
 		add(deadText);
 		add(aliveText);
 		add(mainPngButton);
+		add(iconButton);
 		mainXmlButton = new FlxButton(10,60,"char.xml/txt",function ():Void {
 			var coolDialog = new FileDialog();
 			coolDialog.browse(FileDialogType.OPEN);
@@ -179,6 +190,9 @@ class NewCharacterState extends MusicBeatState
 		if (epicFiles.crazypng != null) {
 			File.copy(epicFiles.crazypng,'assets/images/custom_chars/'+nameText.text+'/crazy.png');
 			File.copy(epicFiles.crazyxml,'assets/images/custom_chars/'+nameText.text+'/crazy.xml');
+		}
+		if (epicFiles.icons != null ) {
+			File.copy(epicFiles.icons, "assets/images/custom_chars/"+nameText.text+'/icons.png');
 		}
 		trace("hello");
 		var epicCharFile:Dynamic =CoolUtil.parseJson(Assets.getText('assets/images/custom_chars/custom_chars.jsonc'));

@@ -1465,8 +1465,8 @@ class PlayState extends MusicBeatState
 		// character then takes precendence over default
 		// will make things like monika way way easier
 		} else if (FileSystem.exists('assets/images/custom_chars/'+SONG.player2+'/crazy.png')) {
-			var evilImage = BitmapData.fromFile('assets/images/custom_ui/dialog_boxes/'+SONG.player2+'/crazy.png');
-			var evilXml = File.getContent('assets/images/custom_ui/dialog_boxes/'+SONG.player2+'/crazy.xml');
+			var evilImage = BitmapData.fromFile('assets/images/custom_chars/'+SONG.player2+'/crazy.png');
+			var evilXml = File.getContent('assets/images/custom_chars/'+SONG.player2+'/crazy.xml');
 			senpaiEvil.frames = FlxAtlasFrames.fromSparrow(evilImage, evilXml);
 		} else {
 			senpaiEvil.frames = FlxAtlasFrames.fromSparrow('assets/images/weeb/senpaiCrazy.png', 'assets/images/weeb/senpaiCrazy.xml');
@@ -2577,8 +2577,12 @@ class PlayState extends MusicBeatState
 
 					if (SONG.notes[Math.floor(curStep / 16)] != null)
 					{
-						if (SONG.notes[Math.floor(curStep / 16)].altAnim)
-							altAnim = '-alt';
+						if ((SONG.notes[Math.floor(curStep / 16)].altAnimNum > 0 && SONG.notes[Math.floor(curStep / 16)].altAnimNum != null) || SONG.notes[Math.floor(curStep / 16)].altAnim)
+							// backwards compatibility shit
+							if (SONG.notes[Math.floor(curStep / 16)].altAnimNum == 1 || SONG.notes[Math.floor(curStep / 16)].altAnim)
+								altAnim = '-alt';
+							else if (SONG.notes[Math.floor(curStep / 16)].altAnimNum != 0)
+								altAnim = '-' + SONG.notes[Math.floor(curStep / 16)].altAnimNum+'alt';
 					}
 
 					trace("DA ALT THO?: " + SONG.notes[Math.floor(curStep / 16)].altAnim);
@@ -2675,7 +2679,7 @@ class PlayState extends MusicBeatState
 		vocals.volume = 0;
 		
 		#if !switch
-		Highscore.saveScore(SONG.song, songScore, storyDifficulty);
+		Highscore.saveScore(SONG.song, songScore, storyDifficulty, (notesHit / notesPassing));
 		#end
 
 		if (isStoryMode)
@@ -2689,7 +2693,7 @@ class PlayState extends MusicBeatState
 				FlxG.sound.playMusic('assets/music/freakyMenu' + TitleState.soundExt);
 
 
-				Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficulty);
+				Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficulty, campaignAccuracy / defaultPlaylistLength);
 
 				campaignAccuracy = campaignAccuracy / defaultPlaylistLength;
 				if (useVictoryScreen) {

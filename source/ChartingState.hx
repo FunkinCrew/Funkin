@@ -307,10 +307,11 @@ class ChartingState extends MusicBeatState
 	}
 
 	var stepperLength:FlxUINumericStepper;
+	var stepperAltAnim:FlxUINumericStepper;
 	var check_mustHitSection:FlxUICheckBox;
 	var check_changeBPM:FlxUICheckBox;
 	var stepperSectionBPM:FlxUINumericStepper;
-	var check_altAnim:FlxUICheckBox;
+	// var check_altAnim:FlxUICheckBox;
 
 	function addSectionUI():Void
 	{
@@ -324,7 +325,9 @@ class ChartingState extends MusicBeatState
 		stepperSectionBPM = new FlxUINumericStepper(10, 80, 1, Conductor.bpm, 0, 999, 0);
 		stepperSectionBPM.value = Conductor.bpm;
 		stepperSectionBPM.name = 'section_bpm';
-
+		stepperAltAnim = new FlxUINumericStepper(10, 200, 1, Conductor.bpm, 0, 999, 0);
+		stepperAltAnim.value = 0;
+		stepperAltAnim.name = 'alt_anim_number';
 		var stepperCopy:FlxUINumericStepper = new FlxUINumericStepper(110, 130, 1, 1, -999, 999, 0);
 
 		var copyButton:FlxButton = new FlxButton(10, 130, "Copy last section", function()
@@ -350,8 +353,8 @@ class ChartingState extends MusicBeatState
 		check_mustHitSection.checked = true;
 		// _song.needsVoices = check_mustHit.checked;
 
-		check_altAnim = new FlxUICheckBox(10, 400, null, null, "Alt Animation", 100);
-		check_altAnim.name = 'check_altAnim';
+		// check_altAnim = new FlxUICheckBox(10, 400, null, null, "Alt Animation", 100);
+		// check_altAnim.name = 'check_altAnim';
 
 		check_changeBPM = new FlxUICheckBox(10, 60, null, null, 'Change BPM', 100);
 		check_changeBPM.name = 'check_changeBPM';
@@ -360,7 +363,8 @@ class ChartingState extends MusicBeatState
 		tab_group_section.add(stepperSectionBPM);
 		tab_group_section.add(stepperCopy);
 		tab_group_section.add(check_mustHitSection);
-		tab_group_section.add(check_altAnim);
+		// tab_group_section.add(check_altAnim);
+		tab_group_section.add(stepperAltAnim);
 		tab_group_section.add(check_changeBPM);
 		tab_group_section.add(copyButton);
 		tab_group_section.add(clearSectionButton);
@@ -466,7 +470,7 @@ class ChartingState extends MusicBeatState
 					_song.notes[curSection].changeBPM = check.checked;
 					FlxG.log.add('changed bpm shit');
 				case "Alt Animation":
-					_song.notes[curSection].altAnim = check.checked;
+					// _song.notes[curSection].altAnim = check.checked;
 				case "Is Moody":
 					_song.isMoody = check.checked;
 				case "Is Spooky":
@@ -501,6 +505,9 @@ class ChartingState extends MusicBeatState
 			{
 				_song.notes[curSection].bpm = Std.int(nums.value);
 				updateGrid();
+			} else if (wname == 'alt_anim_number')
+			{
+				_song.notes[curSection].altAnimNum = Std.int(nums.value);
 			}
 		}
 
@@ -877,8 +884,13 @@ class ChartingState extends MusicBeatState
 
 		stepperLength.value = sec.lengthInSteps;
 		check_mustHitSection.checked = sec.mustHitSection;
-		check_altAnim.checked = sec.altAnim;
+		// check_altAnim.checked = sec.altAnim;
 		check_changeBPM.checked = sec.changeBPM;
+		// note that 0 implies regular anim and 1 implies default alt 
+		if (sec.altAnimNum == null) {
+			sec.altAnimNum == if (sec.altAnim) 1 else 0;
+		}
+		stepperAltAnim.value = sec.altAnimNum;
 		stepperSectionBPM.value = sec.bpm;
 
 		updateHeads();
@@ -973,7 +985,8 @@ class ChartingState extends MusicBeatState
 			mustHitSection: true,
 			sectionNotes: [],
 			typeOfSection: 0,
-			altAnim: false
+			altAnim: false,
+			altAnimNum: 0
 		};
 
 		_song.notes.push(sec);
