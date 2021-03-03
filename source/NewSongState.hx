@@ -96,11 +96,11 @@ class NewSongState extends MusicBeatState
 		uiText = new FlxUIInputText(100,260,70,"normal");
 		nameText = new FlxUIInputText(100,10,70,"bopeebo");
 		trace("scloomb");
-		isMoody = new FlxUICheckBox(100,290,null,null, "Girls Scared");
-		isSpooky = new FlxUICheckBox(100,340,null,null,"Background Trail");
+		isMoody = new FlxUICheckBox(100,340,null,null, "Girls Scared");
+		isSpooky = new FlxUICheckBox(100,390,null,null,"Background Trail");
 		add(isSpooky);
 		trace("beemb");
-		categoryText = new FlxUIInputText(100,260,70,"Base Game");
+		categoryText = new FlxUIInputText(100,290,70,"Base Game");
 		trace("mood");
 		for (i in 0...diffJson.difficulties.length) {
 			var coolDiffButton = new FlxUIButton(10, 10 + (i * 50), diffJson.difficulties[i].name + " json", function():Void {

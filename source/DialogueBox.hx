@@ -194,7 +194,13 @@ class DialogueBox extends FlxSpriteGroup
 						like = "senpai";
 					} else if (coolAnimFile.like == "senpai-angry") {
 						// should i keep this?
-						FlxG.sound.play('assets/sounds/ANGRY_TEXT_BOX' + TitleState.soundExt);
+						if (FileSystem.exists('assets/images/custom_ui/dialog_boxes/'+PlayState.SONG.cutsceneType+'/angry.ogg')) {
+							var coolSound:Sound = Sound.fromFile('assets/images/custom_ui/dialog_boxes/' + PlayState.SONG.cutsceneType + '/angry.ogg');
+							FlxG.sound.play(coolSound);
+						} else {
+							FlxG.sound.play('assets/sounds/ANGRY_TEXT_BOX' + TitleState.soundExt);
+						}
+						
 						box.animation.addByPrefix('normalOpen', 'SENPAI ANGRY IMPACT SPEECH', 24, false);
 						box.animation.addByIndices('normal', 'SENPAI ANGRY IMPACT SPEECH', [4], "", 24);
 						like = "angry-senpai";
