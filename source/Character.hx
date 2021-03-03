@@ -568,7 +568,6 @@ class Character extends FlxSprite
 					var tex:FlxAtlasFrames;
 					var rawXml:String;
 					// GOD IS DEAD WHY DOES THIS NOT WORK
-					trace("line 572");
 					if (FileSystem.exists('assets/images/custom_chars/'+curCharacter+"/"+playerSuffix+".txt")){
 						rawXml = File.getContent('assets/images/custom_chars/'+curCharacter+"/"+playerSuffix+".txt");
 						tex = FlxAtlasFrames.fromSpriteSheetPacker(rawPic,rawXml);
@@ -576,8 +575,6 @@ class Character extends FlxSprite
 						rawXml = File.getContent('assets/images/custom_chars/'+curCharacter+"/"+playerSuffix+".xml");
 						tex = FlxAtlasFrames.fromSparrow(rawPic,rawXml);
 					}
-
-					trace("line 581");
 					frames = tex;
 
 					for( field in Reflect.fields(parsedAnimJson.animation) ) {
@@ -607,7 +604,6 @@ class Character extends FlxSprite
 							}
 						}
 					}
-					trace("before offset");
 					for( field in Reflect.fields(parsedAnimJson.offset)) {
 						addOffset(field, Reflect.field(parsedAnimJson.offset,field)[0],  Reflect.field(parsedAnimJson.offset,field)[1]);
 					}
@@ -620,7 +616,6 @@ class Character extends FlxSprite
 					midpointX = if (parsedAnimJson.midpoint != null) parsedAnimJson.midpoint[0] else 0;
 					midpointY = if (parsedAnimJson.midpoint != null) parsedAnimJson.midpoint[1] else 0;
 					flipX = if (parsedAnimJson.flipx != null) parsedAnimJson.flipx else false;
-					trace("before like");
 
 					like = parsedAnimJson.like;
 					if (like == "bf-car") {
@@ -633,15 +628,11 @@ class Character extends FlxSprite
 						setGraphicSize(Std.int(width * 6));
 						updateHitbox(); // when the hitbox is sus!
 					}
-					trace("tgiu");
 					if (!isDie) {
 						width += if (parsedAnimJson.size != null) parsedAnimJson.size[0] else 0;
 						height += if (parsedAnimJson.size != null) parsedAnimJson.size[1] else 0;
 					}
-					trace("heblo");
-					trace(parsedAnimJson.playAnim);
 					playAnim(parsedAnimJson.playAnim);
-					trace("hmmb");
 				} else {
 					// uh oh we got an error
 					// pretend its boyfriend to prevent crashes
@@ -725,7 +716,6 @@ class Character extends FlxSprite
 				playAnim('idle');
 				#end
 		}
-		trace("727");
 
 
 
@@ -798,7 +788,6 @@ class Character extends FlxSprite
 	{
 		if (!debugMode)
 		{
-			trace("boogie'n");
 			switch (curCharacter)
 			{
 				case 'gf':
@@ -863,7 +852,6 @@ class Character extends FlxSprite
 								playAnim('danceLeft');
 						}
 					} else {
-						trace('jg');
 						playAnim('idle');
 					}
 			}
@@ -872,15 +860,13 @@ class Character extends FlxSprite
 
 	public function playAnim(AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0):Void
 	{
-		trace("hmmst've");
 		trace(AnimName);
 		animation.play(AnimName, Force, Reversed, Frame);
-		trace("played anim");
-		trace(animation.curAnim);
 		var animName = "";
 		if (animation.curAnim == null) {
 			// P A N I K
 			animName = "idle";
+			trace("OH SHIT OH FUCK");
 		} else {
 			// kalm
 			animName = animation.curAnim.name;
@@ -892,7 +878,6 @@ class Character extends FlxSprite
 		}
 		else
 			offset.set(0, 0);
-		trace("hmmbxsze");
 		// should spooky be on this?
 		if (like == 'gf'  || like == 'gf-pixel')
 		{
