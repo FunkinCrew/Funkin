@@ -738,12 +738,10 @@ class PlayState extends MusicBeatState
 							});
 						});
 					});
-				case 'senpai':
+				case 'senpai' | 'thorns':
 					schoolIntro(doof);
 				case 'roses':
 					FlxG.sound.play(Paths.sound('ANGRY'));
-					schoolIntro(doof);
-				case 'thorns':
 					schoolIntro(doof);
 				default:
 					startCountdown();
@@ -784,6 +782,7 @@ class PlayState extends MusicBeatState
 
 			if (SONG.song.toLowerCase() == 'thorns')
 			{
+				camHUD.visible = false;
 				add(red);
 			}
 		}
@@ -820,6 +819,7 @@ class PlayState extends MusicBeatState
 								{
 									remove(senpaiEvil);
 									remove(red);
+									camHUD.visible = true;
 									FlxG.camera.fade(FlxColor.WHITE, 0.01, true, function()
 									{
 										add(dialogueBox);
