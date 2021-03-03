@@ -83,7 +83,10 @@ class ChooseCharState extends MusicBeatState
         charJson = CoolUtil.parseJson(Assets.getText('assets/images/custom_chars/custom_chars.jsonc'));
 
         if (characters == null) {
-            characters = mergeArray(Reflect.fields(charJson), Reflect.fields(regCharacters)); // this doesn't work, try to make this work or just ignore it
+            // that is not how arrays work
+            // characters = mergeArray(Reflect.fields(charJson), Reflect.fields(regCharacters)); // this doesn't work, try to make this work or just ignore it
+            // reg characters should be first
+            characters = regCharacters.concat(Reflect.fields(charJson));
         }
 
 
@@ -100,7 +103,7 @@ class ChooseCharState extends MusicBeatState
         super.create();
 
     }
-
+    // i'd recommend moving smth like this to coolutil but w/e
     function mergeArray(base:Dynamic, ext:Dynamic){ //need this to combine regular chars and customs, CHANGE THIS if you know a better way
         var res = Reflect.copy(base);
         for(f in Reflect.fields(ext)) Reflect.setField(res,f,Reflect.field(res,f));
@@ -182,7 +185,7 @@ class ChooseCharState extends MusicBeatState
         add(char);
 
     }
-
+    // well yeah it lags you are creating a new character
     function swapMenus() { //this lags somewhat on my end so please try to optimize it
         FlxG.sound.play('assets/sounds/scrollMenu' + TitleState.soundExt, 0.4);
         dadMenu = !dadMenu;
