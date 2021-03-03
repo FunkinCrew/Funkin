@@ -2678,7 +2678,7 @@ class PlayState extends MusicBeatState
 		vocals.volume = 0;
 		
 		#if !switch
-		Highscore.saveScore(SONG.song, songScore, storyDifficulty);
+		Highscore.saveScore(SONG.song, songScore, storyDifficulty, (notesHit / notesPassing));
 		#end
 
 		if (isStoryMode)
@@ -2692,7 +2692,7 @@ class PlayState extends MusicBeatState
 				FlxG.sound.playMusic('assets/music/freakyMenu' + TitleState.soundExt);
 
 
-				Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficulty);
+				Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficulty, campaignAccuracy / defaultPlaylistLength);
 
 				campaignAccuracy = campaignAccuracy / defaultPlaylistLength;
 				if (useVictoryScreen) {

@@ -36,6 +36,8 @@ class FreeplayState extends MusicBeatState
 	var diffText:FlxText;
 	var lerpScore:Int = 0;
 	var intendedScore:Int = 0;
+	var intendedAccuracy:Float = 0;
+	var lerpAccuracy:Int = 0;
 	var usingCategoryScreen:Bool = false;
 	private var grpSongs:FlxTypedGroup<Alphabet>;
 	private var curPlaying:Bool = false;
@@ -136,13 +138,13 @@ class FreeplayState extends MusicBeatState
 		{
 			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
 		}
-
+		// why the fuck does this exist
 		lerpScore = Math.floor(FlxMath.lerp(lerpScore, intendedScore, 0.4));
-
+		lerpAccuracy = Std.int(Math.round(intendedAccuracy * 100));
 		if (Math.abs(lerpScore - intendedScore) <= 10)
 			lerpScore = intendedScore;
 
-		scoreText.text = "PERSONAL BEST:" + lerpScore;
+		scoreText.text = "PERSONAL BEST:" + lerpScore + ", " + lerpAccuracy + "%";
 
 		var upP = controls.UP_P;
 		var downP = controls.DOWN_P;
@@ -205,6 +207,7 @@ class FreeplayState extends MusicBeatState
 
 		#if !switch
 		intendedScore = Highscore.getScore(songs[curSelected], curDifficulty);
+		intendedAccuracy = Highscore.getAccuracy(songs[curSelected], curDifficulty);
 		#end
 
 		diffText.text = difficultyObject.text;
@@ -226,6 +229,7 @@ class FreeplayState extends MusicBeatState
 
 		#if !switch
 		intendedScore = Highscore.getScore(songs[curSelected], curDifficulty);
+		intendedAccuracy = Highscore.getAccuracy(songs[curSelected], curDifficulty);
 		// lerpScore = 0;
 		#end
 		#if sys

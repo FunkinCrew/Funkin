@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
 	<!-- _________________________ Application Settings _________________________ -->
-
+	<!-- i think that company and file is where the save data is stored -->
 	<app title="Friday Night Funkin' Modding Plus" file="Funkin" packageName="com.ninjamuffin99.funkin" main="Main" version="0.2.7-mod-2.0.0" company="ninjamuffin99" />
 
 	<!--Switch Export with Unique ApplicationID and Icon-->
