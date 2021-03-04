@@ -190,7 +190,7 @@ class MainMenuState extends MusicBeatState
 									case 'freeplay':
 										CategoryState.choosingFor = "freeplay";
 										FlxG.switchState(new CategoryState());
-
+										FreeplayState.soundTest = false;
 										trace("Freeplay Menu Selected");
 
 									case 'options':

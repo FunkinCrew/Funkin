@@ -16,6 +16,7 @@ import sys.io.File;
 import haxe.io.Path;
 import openfl.utils.ByteArray;
 import lime.media.AudioBuffer;
+import flixel.system.FlxSound;
 import sys.FileSystem;
 import flash.media.Sound;
 #end
@@ -26,6 +27,8 @@ using StringTools;
 class FreeplayState extends MusicBeatState
 {
 	public static var currentSongList:Array<String> = [];
+	public static var soundTest:Bool = false;
+	var vocals:FlxSound;
 	var songs:Array<String> = [];
 
 	var selector:FlxText;
@@ -64,7 +67,10 @@ class FreeplayState extends MusicBeatState
 		// LOAD MUSIC
 
 		// LOAD CHARACTERS
-
+		if (soundTest) {
+			// disable auto pause. I NEED MUSIC
+			FlxG.autoPause = false;
+		}
 		var bg:FlxSprite = new FlxSprite().loadGraphic('assets/images/menuBGBlue.png');
 		add(bg);
 
@@ -93,7 +99,8 @@ class FreeplayState extends MusicBeatState
 
 		diffText = new FlxText(scoreText.x, scoreText.y + 36, 0, "", 24);
 		diffText.font = scoreText.font;
-		add(diffText);
+		if (!soundTest)
+			add(diffText);
 
 		add(scoreText);
 
@@ -143,9 +150,10 @@ class FreeplayState extends MusicBeatState
 		lerpAccuracy = Std.int(Math.round(intendedAccuracy * 100));
 		if (Math.abs(lerpScore - intendedScore) <= 10)
 			lerpScore = intendedScore;
-
-		scoreText.text = "PERSONAL BEST:" + lerpScore + ", " + lerpAccuracy + "%";
-
+		if (!soundTest)
+			scoreText.text = "PERSONAL BEST:" + lerpScore + ", " + lerpAccuracy + "%";
+		else
+			scoreText.text = "Sound Test";
 		var upP = controls.UP_P;
 		var downP = controls.DOWN_P;
 		var accepted = controls.ACCEPT;
@@ -158,43 +166,75 @@ class FreeplayState extends MusicBeatState
 		{
 			changeSelection(1);
 		}
-
-		if (controls.LEFT_P)
-			changeDiff(-1);
-		if (controls.RIGHT_P)
-			changeDiff(1);
+		if (!soundTest) {
+			if (controls.LEFT_P)
+				changeDiff(-1);
+			if (controls.RIGHT_P)
+				changeDiff(1);
+		}
+		
 
 		if (controls.BACK)
 		{
 			// main menu or else we are cursed
-			
-			FlxG.switchState(new MainMenuState());
+			FlxG.autoPause = true;
+			if (soundTest)
+				FlxG.switchState(new SaveDataState());
+			else
+				FlxG.switchState(new MainMenuState());
 		}
 
 		if (accepted)
 		{
-			var poop:String = songs[curSelected].toLowerCase() + DifficultyIcons.getEndingFP(curDifficulty);
-			trace(poop);
-			if (!FileSystem.exists('assets/data/'+songs[curSelected].toLowerCase()+'/'+poop.toLowerCase()+'.json')) {
-				// assume we pecked up the difficulty, return to default difficulty
-				trace("UH OH SONG IN SPECIFIED DIFFICULTY DOESN'T EXIST\nUSING DEFAULT DIFFICULTY");
-				poop = songs[curSelected];
-				curDifficulty = DifficultyIcons.getDefaultDiffFP();
+			if (soundTest) {
+				// play both the vocals and inst
+				// bad music >:(
+				FlxG.sound.music.stop();
+				if (vocals != null && vocals.playing)
+					vocals.stop();
+				var gamingSong:Song.SwagSong = Song.loadFromJson(songs[curSelected].toLowerCase(), songs[curSelected].toLowerCase());
+				if (gamingSong.needsVoices)
+				{
+					var vocalSound = Sound.fromFile("assets/music/" + gamingSong.song + "_Voices" + TitleState.soundExt);
+					vocals = new FlxSound().loadEmbedded(vocalSound);
+					FlxG.sound.list.add(vocals);
+					vocals.play();
+					vocals.pause();
+					vocals.looped = true;
+					FlxG.sound.music.play();
+					Conductor.songPosition = FlxG.sound.music.time;
+					vocals.time = Conductor.songPosition;
+				}
+				FlxG.sound.playMusic(Sound.fromFile("assets/music/" + gamingSong.song + "_Inst" + TitleState.soundExt));
+				if (gamingSong.needsVoices)
+					vocals.play();
+				
+			} else {
+				var poop:String = songs[curSelected].toLowerCase() + DifficultyIcons.getEndingFP(curDifficulty);
+				trace(poop);
+				if (!FileSystem.exists('assets/data/' + songs[curSelected].toLowerCase() + '/' + poop.toLowerCase() + '.json'))
+				{
+					// assume we pecked up the difficulty, return to default difficulty
+					trace("UH OH SONG IN SPECIFIED DIFFICULTY DOESN'T EXIST\nUSING DEFAULT DIFFICULTY");
+					poop = songs[curSelected];
+					curDifficulty = DifficultyIcons.getDefaultDiffFP();
+				}
+				trace(poop);
 
+				PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].toLowerCase());
+				PlayState.isStoryMode = false;
+				ModifierState.isStoryMode = false;
+				PlayState.storyDifficulty = curDifficulty;
+				if (!FlxG.save.data.options.skipModifierMenu)
+					FlxG.switchState(new ModifierState());
+				else
+				{
+					if (FlxG.sound.music != null)
+						FlxG.sound.music.stop();
+					FlxG.switchState(new PlayState());
+				}
 			}
-			trace(poop);
-
-			PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].toLowerCase());
-			PlayState.isStoryMode = false;
-			ModifierState.isStoryMode = false;
-			PlayState.storyDifficulty = curDifficulty;
-			if (!FlxG.save.data.options.skipModifierMenu)
-			 	FlxG.switchState(new ModifierState());
-			else {
-				if (FlxG.sound.music != null)
-					FlxG.sound.music.stop();
-				FlxG.switchState(new PlayState());
-			}
+			
 
 		}
 	}
@@ -232,10 +272,11 @@ class FreeplayState extends MusicBeatState
 		intendedAccuracy = Highscore.getAccuracy(songs[curSelected], curDifficulty);
 		// lerpScore = 0;
 		#end
+		if (!soundTest)
 		#if sys
 			FlxG.sound.playMusic(Sound.fromFile("assets/music/"+songs[curSelected]+"_Inst"+TitleState.soundExt), 0);
 		#else
-		FlxG.sound.playMusic('assets/music/' + songs[curSelected] + "_Inst" + TitleState.soundExt, 0);
+			FlxG.sound.playMusic('assets/music/' + songs[curSelected] + "_Inst" + TitleState.soundExt, 0);
 		#end
 		var bullShit:Int = 0;
 

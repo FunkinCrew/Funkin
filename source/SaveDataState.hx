@@ -42,6 +42,7 @@ class SaveDataState extends MusicBeatState
 						{name: "Always Show Cutscenes", value: false}, 
 						{name: "Skip Modifier Menu", value: false}, 
 						{name: "Skip Victory Screen", value: false},
+						{name: "Sound Test...", value: false},
 						{name:"New Character...", value: false},
 						{name:"New Stage...", value:false},
 						{name: "New Song...", value: false},
@@ -212,6 +213,15 @@ class SaveDataState extends MusicBeatState
 						};
 						trace(FlxG.save.data.options);
 						FlxG.switchState(new SelectSortState());
+					case "Sound Test...":
+						FlxG.save.data.options = {
+							"skipVictoryScreen": optionList[2].value,
+							"skipModifierMenu": optionList[1].value,
+							"alwaysDoCutscenes": optionList[0].value
+						};
+						trace(FlxG.save.data.options);
+						FreeplayState.soundTest = true;
+						FlxG.switchState(new CategoryState());
 					default:
 						checkmarks.members[optionsSelected].visible = !checkmarks.members[optionsSelected].visible;
 						optionList[optionsSelected].value = checkmarks.members[optionsSelected].visible;
