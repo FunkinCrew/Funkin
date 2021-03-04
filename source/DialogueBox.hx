@@ -283,8 +283,36 @@ class DialogueBox extends FlxSpriteGroup
 			startDialogue();
 			dialogueStarted = true;
 		}
+		// suss
 
-		if (FlxG.keys.justPressed.ANY)
+		// when the music state is sus
+		if (PlayerSettings.player1.controls.SECONDARY) 
+		{
+			// skip all this shit
+			if (!isEnding)
+			{
+				isEnding = true;
+
+				if (like == "senpai" || like == "spirit")
+					FlxG.sound.music.fadeOut(2.2, 0);
+
+				new FlxTimer().start(0.2, function(tmr:FlxTimer)
+				{
+					box.alpha -= 1 / 5;
+					bgFade.alpha -= 1 / 5 * 0.7;
+					portraitLeft.visible = false;
+					portraitRight.visible = false;
+					swagDialogue.alpha -= 1 / 5;
+					dropText.alpha = swagDialogue.alpha;
+				}, 5);
+
+				new FlxTimer().start(1.2, function(tmr:FlxTimer)
+				{
+					finishThing();
+					kill();
+				});
+			}
+		} else if (FlxG.keys.justPressed.ANY)
 		{
 			remove(dialogue);
 
