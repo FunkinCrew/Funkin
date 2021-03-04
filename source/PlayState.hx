@@ -2636,10 +2636,11 @@ class PlayState extends MusicBeatState
 						vocals.volume = 0;
 						notesPassing += 1;
 						trace("passed note");
-						if (poisonPlus && poisonTimes < 5) {
+						// this needs nerfed hard
+						if (poisonPlus && poisonTimes < 3) {
 							poisonTimes += 1;
 								var poisonPlusTimer = new FlxTimer().start(0.5, function (tmr:FlxTimer) {
-									health -= 0.05;
+									health -= 0.04;
 								}, 0);
 								// stop timer after 3 seconds
 								new FlxTimer().start(3, function (tmr:FlxTimer) {
