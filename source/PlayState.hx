@@ -2301,9 +2301,15 @@ class PlayState extends MusicBeatState
 		{
 			boyfriend.playAnim('hey', true);
 
-			if (SONG.song == 'Tutorial' && dad.curCharacter == 'gf')
+			// Fuck this code
+			/*if (SONG.song == 'Tutorial' && dad.curCharacter == 'gf')
 			{
 				dad.playAnim('cheer', true);
+			}*/
+			
+			if (gf.curCharacter == 'gf')
+			{
+				gf.playAnim('cheer', true);
 			}
 		}
 
