@@ -497,15 +497,29 @@ class Character extends FlxSprite
 				playAnim('idle');
 			case 'tankman':
 				frames = Paths.getSparrowAtlas('characters/tankmanCaptain');
+
 				animation.addByPrefix('idle', "Tankman Idle Dance", 24, false);
+
+				if (isPlayer)
+				{
+					animation.addByPrefix('singLEFT', 'Tankman Note Left0', 24, false);
+					animation.addByPrefix('singRIGHT', 'Tankman Right Note0', 24, false);
+					animation.addByPrefix('singLEFTmiss', 'Tankman Note Left MISS', 24, false);
+					animation.addByPrefix('singRIGHTmiss', 'Tankman Right Note MISS', 24, false);
+				}
+				else
+				{
+					// Need to be flipped! REDO THIS LATER
+					animation.addByPrefix('singLEFT', 'Tankman Right Note0', 24, false);
+					animation.addByPrefix('singRIGHT', 'Tankman Note Left0', 24, false);
+					animation.addByPrefix('singLEFTmiss', 'Tankman Right Note MISS', 24, false);
+					animation.addByPrefix('singRIGHTmiss', 'Tankman Note Left MISS', 24, false);
+				}
+
 				animation.addByPrefix('singUP', 'Tankman UP note0', 24, false);
 				animation.addByPrefix('singDOWN', 'Tankman DOWN note0', 24, false);
-				animation.addByPrefix('singLEFT', 'Tankman Note Left0', 24, false);
-				animation.addByPrefix('singRIGHT', 'Tankman Right Note0', 24, false);
 				animation.addByPrefix('singUPmiss', 'Tankman UP note MISS', 24, false);
 				animation.addByPrefix('singDOWNmiss', 'Tankman DOWN note MISS', 24, false);
-				animation.addByPrefix('singLEFTmiss', 'Tankman Note Left MISS', 24, false);
-				animation.addByPrefix('singRIGHTmiss', 'Tankman Right Note MISS', 24, false);
 
 				addOffset('idle');
 				addOffset("singUP", 24, 56);
