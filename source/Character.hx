@@ -495,6 +495,31 @@ class Character extends FlxSprite
 				addOffset("singDOWN-alt", -30, -27);
 
 				playAnim('idle');
+			case 'tankman':
+				frames = Paths.getSparrowAtlas('characters/tankmanCaptain');
+				animation.addByPrefix('idle', "Tankman Idle Dance", 24, false);
+				animation.addByPrefix('singUP', 'Tankman UP note0', 24, false);
+				animation.addByPrefix('singDOWN', 'Tankman DOWN note0', 24, false);
+				animation.addByPrefix('singLEFT', 'Tankman Note Left0', 24, false);
+				animation.addByPrefix('singRIGHT', 'Tankman Right Note0', 24, false);
+				animation.addByPrefix('singUPmiss', 'Tankman UP note MISS', 24, false);
+				animation.addByPrefix('singDOWNmiss', 'Tankman DOWN note MISS', 24, false);
+				animation.addByPrefix('singLEFTmiss', 'Tankman Note Left MISS', 24, false);
+				animation.addByPrefix('singRIGHTmiss', 'Tankman Right Note MISS', 24, false);
+
+				addOffset('idle');
+				addOffset("singUP", 24, 56);
+				addOffset("singRIGHT", -1, -7);
+				addOffset("singLEFT", 100, -14);
+				addOffset("singDOWN", 98, -90);
+				addOffset("singUPmiss", 24, 56);
+				addOffset("singRIGHTmiss", -1, -7);
+				addOffset("singLEFTmiss", 100, -14);
+				addOffset("singDOWNmiss", 98, -90);
+
+				playAnim('idle');
+
+				flipX = true;
 		}
 
 		dance();
@@ -520,6 +545,11 @@ class Character extends FlxSprite
 				}
 			}
 		}
+	}
+
+	private function loadOffsetFile(offsetCharacter:String)
+	{
+		var daFile:String = Paths.file("characters/" + offsetCharacter + "Offsets.txt");
 	}
 
 	override function update(elapsed:Float)
