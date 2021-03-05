@@ -27,7 +27,7 @@ typedef TCategory = {
 	var name:String;
 	var songs:Array<String>;
 }
-class SelectSongsState extends MusicBeatState
+class SelectSongsState extends MusicBeatSubstate
 {
 	public static var currentSongList:Array<String> = [];
 	public static var selectedSongs:Array<String> = [];
@@ -138,8 +138,7 @@ class SelectSongsState extends MusicBeatState
 
 		if (controls.BACK)
 		{
-			 
-			FlxG.switchState(new NewWeekState());
+			closeSubState();
 		}
 
 		if (accepted)

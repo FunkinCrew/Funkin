@@ -87,6 +87,7 @@ class SaveDataState extends MusicBeatState
 		trace("hewwo");
 		options.x = FlxG.width + 10;
 		options.y = 10;
+		swapMenus();
 		super.create();
 	}
 	override function update(elapsed:Float) {
@@ -204,6 +205,7 @@ class SaveDataState extends MusicBeatState
 							"alwaysDoCutscenes": optionList[0].value
 						};
 						trace(FlxG.save.data.options);
+						NewWeekState.sorted = false;
 						FlxG.switchState(new NewWeekState());
 					case "Sort...":
 						FlxG.save.data.options = {
