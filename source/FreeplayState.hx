@@ -43,13 +43,11 @@ class FreeplayState extends MusicBeatState
 			songs.push(new SongMetadata(initSonglist[i], 1, 'gf'));
 		}
 
-		/* 
-			if (FlxG.sound.music != null)
-			{
-				if (!FlxG.sound.music.playing)
-					FlxG.sound.playMusic(Paths.music('freakyMenu'));
-			}
-		 */
+		if (FlxG.sound.music != null)
+		{
+			if (!FlxG.sound.music.playing)
+				FlxG.sound.playMusic(Paths.music('freakyMenu'));
+		}
 
 		var isDebug:Bool = false;
 
@@ -179,9 +177,12 @@ class FreeplayState extends MusicBeatState
 	{
 		super.update(elapsed);
 
-		if (FlxG.sound.music.volume < 0.7)
+		if (FlxG.sound.music != null)
 		{
-			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
+			if (FlxG.sound.music.volume < 0.7)
+			{
+				FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
+			}
 		}
 
 		lerpScore = Math.floor(FlxMath.lerp(lerpScore, intendedScore, 0.4));

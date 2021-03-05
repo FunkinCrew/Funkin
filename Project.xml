@@ -40,6 +40,8 @@
 
 	<classpath name="source" />
 
+	<assets path='assets/preload/music' include="*mp4" embed='false' />
+
 	<assets path="assets/preload" rename="assets" exclude="*.ogg" if="web"/>
 	<assets path="assets/preload" rename="assets" exclude="*.mp3" unless="web"/>
 	
@@ -120,6 +122,7 @@
 	<haxelib name="newgrounds"/>
 	<haxelib name="faxe" if='switch'/>
 	<haxelib name="polymod"/>
+	<haxelib name="openfl-webm" />
 	<!-- <haxelib name="hxcpp-debug-server" if="desktop"/> -->
 
 	<!-- <haxelib name="markdown" /> -->
