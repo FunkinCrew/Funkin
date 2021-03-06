@@ -138,7 +138,6 @@ class ChartingState extends MusicBeatState
 				player2: 'dad',
 				stage: 'stage',
 				gf: 'gf',
-				sectionLengths: [],
 				speed: 1,
 				isSpooky: false,
 				isMoody: false,

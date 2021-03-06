@@ -177,8 +177,6 @@ class Song
 			var realJson = parseJSONshit(File.getContent("assets/data/" + folder.toLowerCase() + "/" + jsonInput.toLowerCase() + '.json').trim());
 			parsedJson.notes = realJson.notes;
 			parsedJson.bpm = realJson.bpm;
-			parsedJson.sections = realJson.sections;
-			parsedJson.sectionLengths = realJson.sectionLengths;
 			parsedJson.needsVoices = realJson.needsVoices;
 			parsedJson.speed = realJson.speed;
 		}
