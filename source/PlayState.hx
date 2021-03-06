@@ -2537,17 +2537,18 @@ class PlayState extends MusicBeatState
 				FlxG.switchState(new PlayState());
 			} else {
 				openSubState(new GameOverSubstate(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
+				// 1 / 1000 chance for Gitaroo Man easter egg
+				if (FlxG.random.bool(0.1))
+				{
+					// gitaroo man easter egg
+					FlxG.switchState(new GitarooPause());
+				}
+				else
+					openSubState(new GameOverSubstate(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
+
 			}
 
-			// 1 / 1000 chance for Gitaroo Man easter egg
-			if (FlxG.random.bool(0.1))
-			{
-				// gitaroo man easter egg
-				FlxG.switchState(new GitarooPause());
-			}
-			else
-				openSubState(new GameOverSubstate(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
-
+			
 			// FlxG.switchState(new GameOverState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 		} else if (health <= 0 && !practiceDied) {
 			practiceDied = true;

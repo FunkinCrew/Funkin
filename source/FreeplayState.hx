@@ -1,5 +1,6 @@
 package;
 
+import Section.SwagSection;
 import flash.text.TextField;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -34,7 +35,7 @@ class FreeplayState extends MusicBeatState
 	var selector:FlxText;
 	var curSelected:Int = 0;
 	var curDifficulty:Int = 1;
-
+	var soundTestSong:Song.SwagSong;
 	var scoreText:FlxText;
 	var diffText:FlxText;
 	var lerpScore:Int = 0;
@@ -157,7 +158,9 @@ class FreeplayState extends MusicBeatState
 		var upP = controls.UP_P;
 		var downP = controls.DOWN_P;
 		var accepted = controls.ACCEPT;
-
+		if (soundTest && soundTestSong != null) {
+			Conductor.songPosition += FlxG.elapsed * 1000;
+		}
 		if (upP)
 		{
 			changeSelection(-1);
@@ -192,22 +195,23 @@ class FreeplayState extends MusicBeatState
 				FlxG.sound.music.stop();
 				if (vocals != null && vocals.playing)
 					vocals.stop();
-				var gamingSong:Song.SwagSong = Song.loadFromJson(songs[curSelected].toLowerCase(), songs[curSelected].toLowerCase());
-				if (gamingSong.needsVoices)
+				soundTestSong = Song.loadFromJson(songs[curSelected].toLowerCase(), songs[curSelected].toLowerCase());
+				if (soundTestSong.needsVoices)
 				{
-					var vocalSound = Sound.fromFile("assets/music/" + gamingSong.song + "_Voices" + TitleState.soundExt);
+					var vocalSound = Sound.fromFile("assets/music/" + soundTestSong.song + "_Voices" + TitleState.soundExt);
 					vocals = new FlxSound().loadEmbedded(vocalSound);
 					FlxG.sound.list.add(vocals);
 					vocals.play();
 					vocals.pause();
 					vocals.looped = true;
-					FlxG.sound.music.play();
-					Conductor.songPosition = FlxG.sound.music.time;
-					vocals.time = Conductor.songPosition;
 				}
-				FlxG.sound.playMusic(Sound.fromFile("assets/music/" + gamingSong.song + "_Inst" + TitleState.soundExt));
-				if (gamingSong.needsVoices)
-					vocals.play();
+				FlxG.sound.playMusic(Sound.fromFile("assets/music/" + soundTestSong.song + "_Inst" + TitleState.soundExt));
+				Conductor.mapBPMChanges(soundTestSong);
+				Conductor.changeBPM(soundTestSong.bpm);
+				if (soundTestSong.needsVoices) {
+					resyncVocals();
+				}
+
 				
 			} else {
 				var poop:String = songs[curSelected].toLowerCase() + DifficultyIcons.getEndingFP(curDifficulty);
@@ -252,7 +256,28 @@ class FreeplayState extends MusicBeatState
 
 		diffText.text = difficultyObject.text;
 	}
+	override function stepHit()
+	{
+		super.stepHit();
+		if (soundTest && soundTestSong != null && soundTestSong.needsVoices)
+		{
+			if (vocals.time > Conductor.songPosition + 20 || vocals.time < Conductor.songPosition - 20)
+			{
+				resyncVocals();
+			}
+		}
 
+	}
+
+	function resyncVocals():Void
+	{
+		vocals.pause();
+
+		FlxG.sound.music.play();
+		Conductor.songPosition = FlxG.sound.music.time;
+		vocals.time = Conductor.songPosition;
+		vocals.play();
+	}
 	function changeSelection(change:Int = 0)
 	{
 
