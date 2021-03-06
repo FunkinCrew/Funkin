@@ -2656,38 +2656,30 @@ class PlayState extends MusicBeatState
 
 				if (daNote.y < -daNote.height)
 				{
-					if (daNote.isSustainNote && daNote.wasGoodHit)
-					{
-						health -= 0.0475 + healthLossModifier;
-						vocals.volume = 0;
-						notesPassing += 1;
-						trace("passed note");
-						// this needs nerfed hard
-						if (poisonPlus && poisonTimes < 3) {
-							poisonTimes += 1;
-								var poisonPlusTimer = new FlxTimer().start(0.5, function (tmr:FlxTimer) {
-									health -= 0.04;
-								}, 0);
-								// stop timer after 3 seconds
-								new FlxTimer().start(3, function (tmr:FlxTimer) {
-									poisonPlusTimer.cancel();
-									poisonTimes -= 1;
-								});
-						}
-						if (fullComboMode || perfectMode) {
-							// you signed up for this your fault
-							health = 0;
-						}
-						daNote.kill();
-						notes.remove(daNote, true);
-						daNote.destroy();
-					}
-					else
-					{
+
 						if (daNote.tooLate || !daNote.wasGoodHit)
 						{
 							health -= 0.0475;
 							vocals.volume = 0;
+							if (poisonPlus && poisonTimes < 3)
+							{
+								poisonTimes += 1;
+								var poisonPlusTimer = new FlxTimer().start(0.5, function(tmr:FlxTimer)
+								{
+									health -= 0.04;
+								}, 0);
+								// stop timer after 3 seconds
+								new FlxTimer().start(3, function(tmr:FlxTimer)
+								{
+									poisonPlusTimer.cancel();
+									poisonTimes -= 1;
+								});
+							}
+							if (fullComboMode || perfectMode)
+							{
+								// you signed up for this your fault
+								health = 0;
+							}
 						}
 
 						daNote.active = false;
@@ -2696,8 +2688,8 @@ class PlayState extends MusicBeatState
 						daNote.kill();
 						notes.remove(daNote, true);
 						daNote.destroy();
-					}
 				}
+				
 			});
 		}
 
