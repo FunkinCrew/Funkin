@@ -3,6 +3,7 @@ package;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
+import flixel.addons.transition.FlxTransitionableState;
 import flixel.effects.FlxFlicker;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxGroup.FlxTypedGroup;
@@ -32,6 +33,9 @@ class MainMenuState extends MusicBeatState
 
 	override function create()
 	{
+		transIn = FlxTransitionableState.defaultTransIn;
+		transOut = FlxTransitionableState.defaultTransOut;
+
 		if (!FlxG.sound.music.playing)
 		{
 			FlxG.sound.playMusic('assets/music/freakyMenu' + TitleState.soundExt);
