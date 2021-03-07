@@ -174,7 +174,7 @@ class PlayState extends MusicBeatState
 				dialogue = CoolUtil.coolTextFile(Paths.txt('thorns/thornsDialogue'));
 		}
 
-		switch (Song.song.toLowerCase())
+		switch (SONG.song.toLowerCase())
 		{
 			case 'spookeez' | 'monster' | 'south':
 				curStage = "spooky";
@@ -469,13 +469,36 @@ class PlayState extends MusicBeatState
 				add(waveSpriteFG);
 			 */
 
+			case 'guns' | 'stress' | 'ugh':
+				// defaultCamZoom = 0.9;
+				curStage = 'tank';
+
+				var bg:BGSprite = new BGSprite('tankSky', 0, -200, 0, 0);
+				add(bg);
+
+				var tankSky:BGSprite = new BGSprite('tankClouds', 0, 10, 0.1, 0.1);
+				add(tankSky);
+
+				var tankMountains:BGSprite = new BGSprite('tankMountains', -100, 150, 0.2, 0.2);
+				add(tankMountains);
+
+				var tankBuildings:BGSprite = new BGSprite('tankBuildings', -200, 370, 0.25, 0.25);
+				add(tankBuildings);
+
+				var tankRuins:BGSprite = new BGSprite('tankRuins', -200, 170, 0.35, 0.35);
+				add(tankRuins);
+
+				var tankWatchtower:BGSprite = new BGSprite('tankWatchtower', 300, 50, 0.5, 0.5);
+				add(tankWatchtower);
+
+				var tankGround:BGSprite = new BGSprite('tankGround', -400, -20);
+				add(tankGround);
+
 			default:
 				defaultCamZoom = 0.9;
 				curStage = 'stage';
-				var bg:FlxSprite = new FlxSprite(-600, -200).loadGraphic(Paths.image('stageback'));
-				bg.antialiasing = true;
-				bg.scrollFactor.set(0.9, 0.9);
-				bg.active = false;
+
+				var bg:BGSprite = new BGSprite('stageback', -600, -200, 0.9, 0.9);
 				add(bg);
 
 				var stageFront:FlxSprite = new FlxSprite(-650, 600).loadGraphic(Paths.image('stagefront'));
