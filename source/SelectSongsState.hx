@@ -138,7 +138,7 @@ class SelectSongsState extends MusicBeatSubstate
 
 		if (controls.BACK)
 		{
-			closeSubState();
+			close();
 		}
 
 		if (accepted)

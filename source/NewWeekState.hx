@@ -135,18 +135,19 @@ class NewWeekState extends MusicBeatState
 	function writeCharacters() {
 		#if sys
 		var parsedWeekJson:TWeekJson = CoolUtil.parseJson(File.getContent("assets/data/storySonglist.json"));
-		trace("Pog");
-		trace(epicFiles.png);
-		File.copy(epicFiles.png, 'assets/data/week'+Std.string(parsedWeekJson.songs.length)+'.png');
-		trace("ehh");
-		File.copy(epicFiles.xml, 'assets/data/week'+parsedWeekJson.songs.length+'.xml');
-		trace("parsed");
+		
 		var coolSongArray:Array<String> = [];
 		coolSongArray.push(likeText.text);
 		// probably crashes if no songs selected weeeeeeeeeeeee
 		for (song in SelectSongsState.selectedSongs) {
 			coolSongArray.push(song);
 		}
+		trace("Pog");
+		trace(epicFiles.png);
+		File.copy(epicFiles.png, 'assets/images/campaign-ui-week/week' + parsedWeekJson.songs.length + '.png');
+		trace("ehh");
+		File.copy(epicFiles.xml, 'assets/images/campaign-ui-week/week' + parsedWeekJson.songs.length + '.xml');
+		trace("parsed");
 		parsedWeekJson.songs.push(coolSongArray);
 		parsedWeekJson.weekNames.push(nameText.text);
 		parsedWeekJson.characters.push([dadText.text,bfText.text,gfText.text]);
