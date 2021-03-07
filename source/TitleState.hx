@@ -65,13 +65,6 @@ class TitleState extends MusicBeatState
 
 		FlxG.save.close();
 		FlxG.save.bind("save"+preferredSave, 'bulbyVR');
-		if (!Reflect.hasField(FlxG.save.data,"options")) {
-			FlxG.save.data.options = {
-				"skipVictoryScreen": false,
-				"skipModifierMenu": false,
-				"alwaysDoCutscenes": false
-			};
-		}
 		Highscore.load();
 
 

@@ -360,7 +360,7 @@ class StoryMenuState extends MusicBeatState
 			PlayState.campaignAccuracy = 0;
 			new FlxTimer().start(1, function(tmr:FlxTimer)
 			{
-				if (!FlxG.save.data.options.skipModifierMenu)
+				if (!OptionsHandler.options.skipModifierMenu)
 				 	FlxG.switchState(new ModifierState());
 				else {
 					if (FlxG.sound.music != null)

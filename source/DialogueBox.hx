@@ -50,7 +50,9 @@ class DialogueBox extends FlxSpriteGroup
 	var senpaiColor:FlxColor = FlxColor.WHITE;
 	var textColor:FlxColor = 0xFF3F2021;
 	var dropColor:FlxColor = 0xFFD89494;
+	var font:String = "pixel.otf";
 	var senpaiVisible = true;
+	var sided:Bool = false;
 	public function new(talkingRight:Bool = true, ?dialogueList:Array<String>)
 	{
 		super();
@@ -119,14 +121,23 @@ class DialogueBox extends FlxSpriteGroup
 		portraitLeft.visible = false;
 
 		portraitRight = new FlxSprite(0, 40);
-		if (FileSystem.exists('assets/images/custom_chars/'+PlayState.SONG.player1+'/portrait.png')) {
-			var coolP1Json = Character.getAnimJson(PlayState.SONG.player1);
-			isPixel[0] = if (Reflect.hasField(coolP1Json, "isPixel")) coolP1Json.isPixel else false;
-			var rawPic = BitmapData.fromFile('assets/images/custom_chars/'+PlayState.SONG.player1+"/portrait.png");
-			var rawXml = File.getContent('assets/images/custom_chars/'+PlayState.SONG.player1+"/portrait.xml");
-			portraitRight.frames = FlxAtlasFrames.fromSparrow(rawPic, rawXml);
-		} else {
-			portraitRight.frames = FlxAtlasFrames.fromSparrow('assets/images/weeb/bfPortrait.png', 'assets/images/weeb/bfPortrait.xml');
+		switch (PlayState.SONG.player1) {
+			case 'bf' | 'bf-car':
+				portraitRight.frames = FlxAtlasFrames.fromSparrow('assets/images/bfPortrait.png', 'assets/images/bfPortrait.xml');
+				isPixel[0] = false;
+			default:
+				if (FileSystem.exists('assets/images/custom_chars/' + PlayState.SONG.player1 + '/portrait.png'))
+				{
+					var coolP1Json = Character.getAnimJson(PlayState.SONG.player1);
+					isPixel[0] = if (Reflect.hasField(coolP1Json, "isPixel")) coolP1Json.isPixel else false;
+					var rawPic = BitmapData.fromFile('assets/images/custom_chars/' + PlayState.SONG.player1 + "/portrait.png");
+					var rawXml = File.getContent('assets/images/custom_chars/' + PlayState.SONG.player1 + "/portrait.xml");
+					portraitRight.frames = FlxAtlasFrames.fromSparrow(rawPic, rawXml);
+				}
+				else
+				{
+					portraitRight.frames = FlxAtlasFrames.fromSparrow('assets/images/weeb/bfPortrait.png', 'assets/images/weeb/bfPortrait.xml');
+				}
 		}
 
 		portraitRight.animation.addByPrefix('enter', 'Boyfriend portrait enter', 24, false);
@@ -185,9 +196,17 @@ class DialogueBox extends FlxSpriteGroup
 					var coolAnimFile = CoolUtil.parseJson(File.getContent('assets/images/custom_ui/dialog_boxes/'+Reflect.field(coolJsonFile,PlayState.SONG.cutsceneType).like+'.json'));
 					isPixel[2] = coolAnimFile.isPixel;
 					senpaiVisible = coolAnimFile.senpaiVisible;
+					sided = if (Reflect.hasField(coolAnimFile, 'sided')) coolAnimFile.sided else false;
 					senpaiColor = FlxColor.fromString(coolAnimFile.senpaiColor);
 					textColor = FlxColor.fromString(coolAnimFile.textColor);
 					dropColor = FlxColor.fromString(coolAnimFile.dropColor);
+					font = coolAnimFile.font;
+					if (Reflect.hasField(coolAnimFile, "portraitOffset")) {
+						portraitLeft.x += coolAnimFile.portraitOffset[0];
+						portraitLeft.y += coolAnimFile.portraitOffset[1];
+						portraitRight.x += coolAnimFile.portraitOffset[0];
+						portraitRight.y += coolAnimFile.portraitOffset[1];
+					}
 					if (coolAnimFile.like == "senpai") {
 						box.animation.addByPrefix('normalOpen', 'Text Box Appear', 24, false);
 						box.animation.addByIndices('normal', 'Text Box Appear', [4], "", 24);
@@ -223,6 +242,9 @@ class DialogueBox extends FlxSpriteGroup
 		}
 
 		box.animation.play('normalOpen');
+		if (dialogueList[0].startsWith(':dad:') && sided) {
+			box.flipX = true;
+		}
 		if (isPixel[2]) {
 			box.setGraphicSize(Std.int(box.width * PlayState.daPixelZoom * 0.9));
 		} else {
@@ -240,13 +262,15 @@ class DialogueBox extends FlxSpriteGroup
 
 
 		dropText = new FlxText(242, 502, Std.int(FlxG.width * 0.6), "", 32);
-		dropText.font = 'Pixel Arial 11 Bold';
-		dropText.color = 0xFFD89494;
+		dropText.setFormat('assets/fonts/' + font, 32, dropColor);
+		if (dropColor.alphaFloat != 1) 
+			dropText.alpha = dropColor.alphaFloat;
 		add(dropText);
 
 		swagDialogue = new FlxTypeText(240, 500, Std.int(FlxG.width * 0.6), "", 32);
-		swagDialogue.font = 'Pixel Arial 11 Bold';
-		swagDialogue.color = 0xFF3F2021;
+		swagDialogue.setFormat('assets/fonts/'+font, 32, textColor);
+		if (textColor.alphaFloat != 1)
+			swagDialogue.alpha = textColor.alphaFloat;
 		swagDialogue.sounds = [FlxG.sound.load('assets/sounds/pixelText' + TitleState.soundExt, 0.6)];
 		add(swagDialogue);
 
@@ -264,8 +288,6 @@ class DialogueBox extends FlxSpriteGroup
 	{
 		// NOT HARD CODING CAUSE I BIG BBRAIN
 		portraitLeft.color = senpaiColor;
-		dropText.color = dropColor;
-		swagDialogue.color = textColor;
 
 		dropText.text = swagDialogue.text;
 
@@ -303,7 +325,7 @@ class DialogueBox extends FlxSpriteGroup
 					portraitLeft.visible = false;
 					portraitRight.visible = false;
 					swagDialogue.alpha -= 1 / 5;
-					dropText.alpha = swagDialogue.alpha;
+					dropText.alpha -= 1/5;
 				}, 5);
 
 				new FlxTimer().start(1.2, function(tmr:FlxTimer)
@@ -334,7 +356,7 @@ class DialogueBox extends FlxSpriteGroup
 						portraitLeft.visible = false;
 						portraitRight.visible = false;
 						swagDialogue.alpha -= 1 / 5;
-						dropText.alpha = swagDialogue.alpha;
+						dropText.alpha -= 1 / 5;
 					}, 5);
 
 					new FlxTimer().start(1.2, function(tmr:FlxTimer)
@@ -371,6 +393,9 @@ class DialogueBox extends FlxSpriteGroup
 		{
 			case 'dad':
 				portraitRight.visible = false;
+				if (sided) {
+					box.flipX = true;
+				}
 				if (!portraitLeft.visible && senpaiVisible)
 				{
 					portraitLeft.visible = true;
@@ -378,6 +403,8 @@ class DialogueBox extends FlxSpriteGroup
 				}
 			case 'bf':
 				portraitLeft.visible = false;
+				// don't need to check for sided bc this changes nothing
+				box.flipX = false;
 				if (!portraitRight.visible)
 				{
 					portraitRight.visible = true;

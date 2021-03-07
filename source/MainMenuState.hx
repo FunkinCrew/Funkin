@@ -35,7 +35,8 @@ class MainMenuState extends MusicBeatState
 	{
 		transIn = FlxTransitionableState.defaultTransIn;
 		transOut = FlxTransitionableState.defaultTransOut;
-
+		if (!OptionsHandler.options.useSaveDataMenu) 
+			optionShit = ['story mode', 'freeplay', 'donate'];
 		if (!FlxG.sound.music.playing)
 		{
 			FlxG.sound.playMusic('assets/music/freakyMenu' + TitleState.soundExt);
@@ -93,7 +94,8 @@ class MainMenuState extends MusicBeatState
 		usingSave.scrollFactor.set();
 		usingSave.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(versionShit);
-		add(usingSave);
+		if (OptionsHandler.options.useSaveDataMenu)
+			add(usingSave);
 		// NG.core.calls.event.logEvent('swag').send();
 		switch (FlxG.save.name) {
 			case "save0":

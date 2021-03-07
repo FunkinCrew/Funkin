@@ -177,9 +177,9 @@ class PlayState extends MusicBeatState
 		FlxCamera.defaultCameras = [camGame];
 		persistentUpdate = true;
 		persistentDraw = true;
-		alwaysDoCutscenes = FlxG.save.data.options.alwaysDoCutscenes;
-		useVictoryScreen = !FlxG.save.data.options.skipVictoryScreen;
-		if (!FlxG.save.data.options.skipModifierMenu) {
+		alwaysDoCutscenes = OptionsHandler.options.alwaysDoCutscenes;
+		useVictoryScreen = !OptionsHandler.options.skipVictoryScreen;
+		if (!OptionsHandler.options.skipModifierMenu) {
 			fullComboMode = ModifierState.modifiers[1].value;
 			perfectMode = ModifierState.modifiers[0].value;
 			practiceMode = ModifierState.modifiers[2].value;

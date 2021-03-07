@@ -57,8 +57,9 @@ class CoolUtil
 		// the reason we do this is to make it easy to swap out json parsers
 		return TJSON.parse(json);
 	}
-	public static function stringifyJson(json:Dynamic):String {
+	public static function stringifyJson(json:Dynamic, ?fancy:Bool = true):String {
 		// use tjson to prettify it
-		return TJSON.encode(json,'fancy');
+		var style:String = if (fancy) 'fancy' else null;
+		return TJSON.encode(json,style);
 	}
 }

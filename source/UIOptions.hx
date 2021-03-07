@@ -44,6 +44,7 @@ class UIOptions extends MusicBeatState
 		menuBG.antialiasing = true;
 		FlxG.mouse.visible = true;
 		add(menuBG);
+		// cursed never gonna be used so weee
 		_options = FlxG.save.data.options;
 		alwaysCutsceneCheckBox = new FlxUICheckBox(100, 100, null, null,"Always Show Cutscenes", 100);
 		alwaysCutsceneCheckBox.checked = _options.alwaysDoCutscenes;

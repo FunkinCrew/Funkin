@@ -35,6 +35,7 @@ class SaveDataState extends MusicBeatState
 	var inOptionsMenu:Bool = false;
 	var optionsSelected:Int = 0;
 	var checkmarks:FlxTypedSpriteGroup<FlxSprite>;
+	var preferredSave:Int = 0;
 	override function create()
 	{
 		var menuBG:FlxSprite = new FlxSprite().loadGraphic('assets/images/menuDesat.png');
@@ -49,9 +50,13 @@ class SaveDataState extends MusicBeatState
 						{name: "New Week...", value: false},
 						{name: "Sort...", value: false}
 					];
-		optionList[0].value = FlxG.save.data.options.alwaysDoCutscenes;
-		optionList[1].value = FlxG.save.data.options.skipModifierMenu;
-		optionList[2].value = FlxG.save.data.options.skipVictoryScreen;
+		// we use a var because if we don't it will read the file each time
+		// although it isn't as laggy thanks to assets
+		var curOptions = OptionsHandler.options;
+		preferredSave = curOptions.preferredSave;
+		optionList[0].value = curOptions.alwaysDoCutscenes;
+		optionList[1].value = curOptions.skipModifierMenu;
+		optionList[2].value = curOptions.skipVictoryScreen;
 		saves = new FlxTypedSpriteGroup<SaveFile>();
 		menuBG.color = 0xFF7194fc;
 		menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
@@ -87,7 +92,8 @@ class SaveDataState extends MusicBeatState
 		trace("hewwo");
 		options.x = FlxG.width + 10;
 		options.y = 10;
-		swapMenus();
+		if (curOptions.allowEditOptions)
+			swapMenus();
 		super.create();
 	}
 	override function update(elapsed:Float) {
@@ -97,12 +103,7 @@ class SaveDataState extends MusicBeatState
 				// our current save saves this
 				// we are gonna have to do some shenanagins to save our preffered save
 
-				FlxG.save.data.options = {
-					"skipVictoryScreen": optionList[2].value,
-					"skipModifierMenu": optionList[1].value,
-					"alwaysDoCutscenes": optionList[0].value
-				};
-				trace(FlxG.save.data.options);
+				saveOptions();
 				FlxG.switchState(new MainMenuState());
 			} else {
 				if (saves.members[curSelected].askingToConfirm)
@@ -126,7 +127,8 @@ class SaveDataState extends MusicBeatState
 				if (saves.members[curSelected].beingSelected)
 					saves.members[curSelected].changeSelection();
 				else {
-					swapMenus();
+					if (OptionsHandler.options.allowEditOptions)
+						swapMenus();
 
 				}
 			}
@@ -137,9 +139,7 @@ class SaveDataState extends MusicBeatState
 					if (saves.members[curSelected].selectingLoad) {
 						var saveName = "save" + curSelected;
 						FlxG.save.close();
-						FlxG.save.bind("preferredSave", "bulbyVR");
-						FlxG.save.data.preferredSave = curSelected;
-						FlxG.save.close();
+						preferredSave = curSelected;
 						FlxG.save.bind(saveName, "bulbyVR");
 						FlxG.sound.play('assets/sounds/confirmMenu.ogg');
 						if (FlxG.save.data.songScores == null) {
@@ -172,56 +172,29 @@ class SaveDataState extends MusicBeatState
 						// our current save saves this
 						// we are gonna have to do some shenanagins to save our preffered save
 
-						FlxG.save.data.options = {
-							"skipVictoryScreen": optionList[2].value,
-							"skipModifierMenu": optionList[1].value,
-							"alwaysDoCutscenes": optionList[0].value
-						};
-						trace(FlxG.save.data.options);
+						saveOptions();
 						FlxG.switchState(new NewCharacterState());
 					case "New Stage...":
 						// our current save saves this
 						// we are gonna have to do some shenanagins to save our preffered save
 
-						FlxG.save.data.options = {
-							"skipVictoryScreen": optionList[2].value,
-							"skipModifierMenu": optionList[1].value,
-							"alwaysDoCutscenes": optionList[0].value
-						};
-						trace(FlxG.save.data.options);
+						saveOptions();
+
 						FlxG.switchState(new NewStageState());
 					case "New Song...":
-						FlxG.save.data.options = {
-							"skipVictoryScreen": optionList[2].value,
-							"skipModifierMenu": optionList[1].value,
-							"alwaysDoCutscenes": optionList[0].value
-						};
-						trace(FlxG.save.data.options);
+						saveOptions();
+
 						FlxG.switchState(new NewSongState());
 					case "New Week...":
-						FlxG.save.data.options = {
-							"skipVictoryScreen": optionList[2].value,
-							"skipModifierMenu": optionList[1].value,
-							"alwaysDoCutscenes": optionList[0].value
-						};
-						trace(FlxG.save.data.options);
+						saveOptions();
 						NewWeekState.sorted = false;
 						FlxG.switchState(new NewWeekState());
 					case "Sort...":
-						FlxG.save.data.options = {
-							"skipVictoryScreen": optionList[2].value,
-							"skipModifierMenu": optionList[1].value,
-							"alwaysDoCutscenes": optionList[0].value
-						};
-						trace(FlxG.save.data.options);
+						saveOptions();
+
 						FlxG.switchState(new SelectSortState());
 					case "Sound Test...":
-						FlxG.save.data.options = {
-							"skipVictoryScreen": optionList[2].value,
-							"skipModifierMenu": optionList[1].value,
-							"alwaysDoCutscenes": optionList[0].value
-						};
-						trace(FlxG.save.data.options);
+						saveOptions();
 						FreeplayState.soundTest = true;
 						FlxG.switchState(new CategoryState());
 					default:
@@ -303,5 +276,16 @@ class SaveDataState extends MusicBeatState
 			FlxTween.tween(saves, {x: -FlxG.width }, 0.2, {type: FlxTweenType.ONESHOT, ease: FlxEase.backInOut});
 			inOptionsMenu = true;
 		}
+	}
+	function saveOptions() {
+		OptionsHandler.options = {
+			"skipVictoryScreen": optionList[2].value,
+			"skipModifierMenu": optionList[1].value,
+			"alwaysDoCutscenes": optionList[0].value,
+			"useSaveDataMenu": true,
+			// just use whatever it is 
+			"allowEditOptions": OptionsHandler.options.allowEditOptions,
+			"preferredSave": preferredSave
+		};
 	}
 }

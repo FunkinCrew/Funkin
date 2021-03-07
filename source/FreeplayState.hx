@@ -229,7 +229,7 @@ class FreeplayState extends MusicBeatState
 				PlayState.isStoryMode = false;
 				ModifierState.isStoryMode = false;
 				PlayState.storyDifficulty = curDifficulty;
-				if (!FlxG.save.data.options.skipModifierMenu)
+				if (!OptionsHandler.options.skipModifierMenu)
 					FlxG.switchState(new ModifierState());
 				else
 				{
