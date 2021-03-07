@@ -30,10 +30,11 @@ class MenuItem extends FlxSpriteGroup
 		week = new FlxSprite();
 		week.frames = tex;
 		// TUTORIAL IS WEEK 0
-		week.animation.addByPrefix("week"+weekNum, parsedWeekJson[weekNum][0], 24);
+		trace(parsedWeekJson[weekNum][0]);
+		week.animation.addByPrefix("default", parsedWeekJson[weekNum][0], 24);
 		add(week);
 
-		week.animation.play('week' + weekNum);
+		week.animation.play('default');
 		week.animation.pause();
 		week.updateHitbox();
 	}

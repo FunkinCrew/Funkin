@@ -97,7 +97,7 @@ class NewWeekState extends MusicBeatState
 				openSubState(new SelectSongsState());
 			});
 			nameText = new FlxUIInputText(100, 50, 70, "daddy dearest");
-			likeText = new FlxUIInputText(100, 10, 70, "WEEK 1");
+			likeText = new FlxUIInputText(100, 10, 70, "WEEK1 select");
 			dadText = new FlxUIInputText(100, 90, 70, "dad");
 			bfText = new FlxUIInputText(100, 130, 70, "bf");
 			gfText = new FlxUIInputText(100, 170, 70, "gf");
