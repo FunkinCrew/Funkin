@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="smokeLeft.png">
+	<!-- Created with Adobe Animate version 21.0.0.35450 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="SmokeBlurLeft instance 10000" x="1005" y="812" width="446" height="617" frameX="-43" frameY="-204" frameWidth="511" frameHeight="843"/>
+	<SubTexture name="SmokeBlurLeft instance 10001" x="1005" y="812" width="446" height="617" frameX="-43" frameY="-204" frameWidth="511" frameHeight="843"/>
+	<SubTexture name="SmokeBlurLeft instance 10002" x="1005" y="812" width="446" height="617" frameX="-43" frameY="-204" frameWidth="511" frameHeight="843"/>
+	<SubTexture name="SmokeBlurLeft instance 10003" x="0" y="801" width="467" height="655" frameX="-28" frameY="-177" frameWidth="511" frameHeight="843"/>
+	<SubTexture name="SmokeBlurLeft instance 10004" x="0" y="801" width="467" height="655" frameX="-28" frameY="-177" frameWidth="511" frameHeight="843"/>
+	<SubTexture name="SmokeBlurLeft instance 10005" x="0" y="801" width="467" height="655" frameX="-28" frameY="-177" frameWidth="511" frameHeight="843"/>
+	<SubTexture name="SmokeBlurLeft instance 10006" x="1505" y="786" width="481" height="673" frameX="-15" frameY="-151" frameWidth="511" frameHeight="843"/>
+	<SubTexture name="SmokeBlurLeft instance 10007" x="1505" y="786" width="481" height="673" frameX="-15" frameY="-151" frameWidth="511" frameHeight="843"/>
+	<SubTexture name="SmokeBlurLeft instance 10008" x="1505" y="786" width="481" height="673" frameX="-15" frameY="-151" frameWidth="511" frameHeight="843"/>
+	<SubTexture name="SmokeBlurLeft instance 10009" x="2981" y="752" width="487" height="724" frameX="0" frameY="-119" frameWidth="511" frameHeight="843"/>
+	<SubTexture name="SmokeBlurLeft instance 10010" x="2981" y="752" width="487" height="724" frameX="0" frameY="-119" frameWidth="511" frameHeight="843"/>
+	<SubTexture name="SmokeBlurLeft instance 10011" x="2981" y="752" width="487" height="724" frameX="0" frameY="-119" frameWidth="511" frameHeight="843"/>
+	<SubTexture name="SmokeBlurLeft instance 10012" x="2011" y="779" width="472" height="736" frameX="-11" frameY="-83" frameWidth="511" frameHeight="843"/>
+	<SubTexture name="SmokeBlurLeft instance 10013" x="2011" y="779" width="472" height="736" frameX="-11" frameY="-83" frameWidth="511" frameHeight="843"/>
+	<SubTexture name="SmokeBlurLeft instance 10014" x="2011" y="779" width="472" height="736" frameX="-11" frameY="-83" frameWidth="511" frameHeight="843"/>
+	<SubTexture name="SmokeBlurLeft instance 10015" x="2981" y="0" width="477" height="741" frameX="-7" frameY="-68" frameWidth="511" frameHeight="843"/>
+	<SubTexture name="SmokeBlurLeft instance 10016" x="2981" y="0" width="477" height="741" frameX="-7" frameY="-68" frameWidth="511" frameHeight="843"/>
+	<SubTexture name="SmokeBlurLeft instance 10017" x="2981" y="0" width="477" height="741" frameX="-7" frameY="-68" frameWidth="511" frameHeight="843"/>
+	<SubTexture name="SmokeBlurLeft instance 10018" x="3478" y="752" width="472" height="741" frameX="-19" frameY="-56" frameWidth="511" frameHeight="843"/>
+	<SubTexture name="SmokeBlurLeft instance 10019" x="3478" y="752" width="472" height="741" frameX="-19" frameY="-56" frameWidth="511" frameHeight="843"/>
+	<SubTexture name="SmokeBlurLeft instance 10020" x="3478" y="752" width="472" height="741" frameX="-19" frameY="-56" frameWidth="511" frameHeight="843"/>
+	<SubTexture name="SmokeBlurLeft instance 10021" x="3468" y="0" width="476" height="742" frameX="-22" frameY="-58" frameWidth="511" frameHeight="843"/>
+	<SubTexture name="SmokeBlurLeft instance 10022" x="3468" y="0" width="476" height="742" frameX="-22" frameY="-58" frameWidth="511" frameHeight="843"/>
+	<SubTexture name="SmokeBlurLeft instance 10023" x="3468" y="0" width="476" height="742" frameX="-22" frameY="-58" frameWidth="511" frameHeight="843"/>
+	<SubTexture name="SmokeBlurLeft instance 10024" x="2011" y="0" width="479" height="769" frameX="-21" frameY="-33" frameWidth="511" frameHeight="843"/>
+	<SubTexture name="SmokeBlurLeft instance 10025" x="2011" y="0" width="479" height="769" frameX="-21" frameY="-33" frameWidth="511" frameHeight="843"/>
+	<SubTexture name="SmokeBlurLeft instance 10026" x="2011" y="0" width="479" height="769" frameX="-21" frameY="-33" frameWidth="511" frameHeight="843"/>
+	<SubTexture name="SmokeBlurLeft instance 10027" x="1505" y="0" width="496" height="776" frameX="-9" frameY="-23" frameWidth="511" frameHeight="843"/>
+	<SubTexture name="SmokeBlurLeft instance 10028" x="1505" y="0" width="496" height="776" frameX="-9" frameY="-23" frameWidth="511" frameHeight="843"/>
+	<SubTexture name="SmokeBlurLeft instance 10029" x="1505" y="0" width="496" height="776" frameX="-9" frameY="-23" frameWidth="511" frameHeight="843"/>
+	<SubTexture name="SmokeBlurLeft instance 10030" x="0" y="0" width="498" height="791" frameX="-13" frameY="-11" frameWidth="511" frameHeight="843"/>
+	<SubTexture name="SmokeBlurLeft instance 10031" x="0" y="0" width="498" height="791" frameX="-13" frameY="-11" frameWidth="511" frameHeight="843"/>
+	<SubTexture name="SmokeBlurLeft instance 10032" x="0" y="0" width="498" height="791" frameX="-13" frameY="-11" frameWidth="511" frameHeight="843"/>
+	<SubTexture name="SmokeBlurLeft instance 10033" x="1005" y="0" width="490" height="802" frameX="-17" frameY="-5" frameWidth="511" frameHeight="843"/>
+	<SubTexture name="SmokeBlurLeft instance 10034" x="1005" y="0" width="490" height="802" frameX="-17" frameY="-5" frameWidth="511" frameHeight="843"/>
+	<SubTexture name="SmokeBlurLeft instance 10035" x="1005" y="0" width="490" height="802" frameX="-17" frameY="-5" frameWidth="511" frameHeight="843"/>
+	<SubTexture name="SmokeBlurLeft instance 10036" x="508" y="0" width="487" height="808" frameX="-21" frameY="0" frameWidth="511" frameHeight="843"/>
+	<SubTexture name="SmokeBlurLeft instance 10037" x="508" y="0" width="487" height="808" frameX="-21" frameY="0" frameWidth="511" frameHeight="843"/>
+	<SubTexture name="SmokeBlurLeft instance 10038" x="508" y="0" width="487" height="808" frameX="-21" frameY="0" frameWidth="511" frameHeight="843"/>
+	<SubTexture name="SmokeBlurLeft instance 10039" x="2500" y="0" width="471" height="770" frameX="-25" frameY="-39" frameWidth="511" frameHeight="843"/>
+	<SubTexture name="SmokeBlurLeft instance 10040" x="2500" y="0" width="471" height="770" frameX="-25" frameY="-39" frameWidth="511" frameHeight="843"/>
+	<SubTexture name="SmokeBlurLeft instance 10041" x="2500" y="0" width="471" height="770" frameX="-25" frameY="-39" frameWidth="511" frameHeight="843"/>
+	<SubTexture name="SmokeBlurLeft instance 10042" x="2493" y="780" width="447" height="775" frameX="-30" frameY="-37" frameWidth="511" frameHeight="843"/>
+	<SubTexture name="SmokeBlurLeft instance 10043" x="2493" y="780" width="447" height="775" frameX="-30" frameY="-37" frameWidth="511" frameHeight="843"/>
+	<SubTexture name="SmokeBlurLeft instance 10044" x="2493" y="780" width="447" height="775" frameX="-30" frameY="-37" frameWidth="511" frameHeight="843"/>
+	<SubTexture name="SmokeBlurLeft instance 10045" x="477" y="818" width="452" height="602" frameX="-29" frameY="-217" frameWidth="511" frameHeight="843"/>
+	<SubTexture name="SmokeBlurLeft instance 10046" x="477" y="818" width="452" height="602" frameX="-29" frameY="-217" frameWidth="511" frameHeight="843"/>
+	<SubTexture name="SmokeBlurLeft instance 10047" x="477" y="818" width="452" height="602" frameX="-29" frameY="-217" frameWidth="511" frameHeight="843"/>
+</TextureAtlas>
