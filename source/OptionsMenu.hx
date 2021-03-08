@@ -11,20 +11,25 @@ import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import lime.utils.Assets;
+import flixel.ui.FlxVirtualPad;
 
 class OptionsMenu extends MusicBeatState
 {
 	var selector:FlxText;
 	var curSelected:Int = 0;
 
-	var controlsStrings:Array<String> = [];
+	//var controlsStrings:Array<String> = [];
 
 	private var grpControls:FlxTypedGroup<Alphabet>;
+
+	var menuItems:Array<String> = ['controls','About'];
+
+	var _pad:FlxVirtualPad;
 
 	override function create()
 	{
 		var menuBG:FlxSprite = new FlxSprite().loadGraphic('assets/images/menuDesat.png');
-		controlsStrings = CoolUtil.coolTextFile('assets/data/controls.txt');
+		//controlsStrings = CoolUtil.coolTextFile('assets/data/controls.txt');
 		menuBG.color = 0xFFea71fd;
 		menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
 		menuBG.updateHitbox();
@@ -35,18 +40,19 @@ class OptionsMenu extends MusicBeatState
 		grpControls = new FlxTypedGroup<Alphabet>();
 		add(grpControls);
 
-		for (i in 0...controlsStrings.length)
+		for (i in 0...menuItems.length)
 		{
-			if (controlsStrings[i].indexOf('set') != -1)
-			{
-				var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, controlsStrings[i].substring(3) + ': ' + controlsStrings[i + 1], true, false);
-				controlLabel.isMenuItem = true;
-				controlLabel.targetY = i;
-				grpControls.add(controlLabel);
-			}
+			var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, menuItems[i], true, false);
+			controlLabel.isMenuItem = true;
+			controlLabel.targetY = i;
+			grpControls.add(controlLabel);
 			// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
 		}
 
+		_pad = new FlxVirtualPad(UP_DOWN, A_B);
+		_pad.alpha = 0.75;
+		this.add(_pad);
+		
 		super.create();
 	}
 
@@ -54,20 +60,35 @@ class OptionsMenu extends MusicBeatState
 	{
 		super.update(elapsed);
 
-		if (controls.ACCEPT)
+		var UP_P = _pad.buttonUp.justPressed;
+		var DOWN_P = _pad.buttonDown.justPressed;
+		var BACK = _pad.buttonB.justPressed;
+		var ACCEPT = _pad.buttonA.justPressed;
+		
+		if (ACCEPT)
 		{
-			changeBinding();
+			var daSelected:String = menuItems[curSelected];
+
+			switch (daSelected)
+			{
+				case "controls":
+					FlxG.switchState(new CustomControlsState());
+				case "config":
+					trace("hello");
+				case "About":
+					FlxG.switchState(new AboutState());
+			}
 		}
 
 		if (isSettingControl)
 			waitingInput();
 		else
 		{
-			if (controls.BACK)
+			if (BACK || FlxG.android.justReleased.BACK)
 				FlxG.switchState(new MainMenuState());
-			if (controls.UP_P)
+			if (UP_P)
 				changeSelection(-1);
-			if (controls.DOWN_P)
+			if (DOWN_P)
 				changeSelection(1);
 		}
 	}
@@ -97,7 +118,7 @@ class OptionsMenu extends MusicBeatState
 		NGio.logEvent('Fresh');
 		#end
 		*/
-		FlxG.sound.play('assets/sounds/scrollMenu' + TitleState.soundExt, 0.4);
+		FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 
 		curSelected += change;
 

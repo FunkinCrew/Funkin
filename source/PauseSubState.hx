@@ -4,40 +4,65 @@ import Controls.Control;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxSubState;
+import flixel.addons.transition.FlxTransitionableState;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.input.keyboard.FlxKey;
 import flixel.system.FlxSound;
+import flixel.text.FlxText;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.ui.FlxVirtualPad;
-import flixel.util.FlxSave;
-import flixel.math.FlxPoint;
 
 class PauseSubState extends MusicBeatSubstate
 {
 	var grpMenuShit:FlxTypedGroup<Alphabet>;
 
-	var menuItems:Array<String> = ['Resume', 'Restart Song', 'Exit to menu','charting mode','default control','alternative control','left hand control'];
+	var menuItems:Array<String> = ['Resume', 'Restart Song', 'Exit to menu'];
 	var curSelected:Int = 0;
 
 	var pauseMusic:FlxSound;
 
 	var _pad:FlxVirtualPad;
-	var _saveconrtol:FlxSave;
 
 	public function new(x:Float, y:Float)
 	{
 		super();
 
-		pauseMusic = new FlxSound().loadEmbedded('assets/music/breakfast' + TitleState.soundExt, true, true);
+		pauseMusic = new FlxSound().loadEmbedded(Paths.music('breakfast'), true, true);
 		pauseMusic.volume = 0;
 		pauseMusic.play(false, FlxG.random.int(0, Std.int(pauseMusic.length / 2)));
 
 		FlxG.sound.list.add(pauseMusic);
 
 		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
-		bg.alpha = 0.6;
+		bg.alpha = 0;
 		bg.scrollFactor.set();
 		add(bg);
+
+		var levelInfo:FlxText = new FlxText(20, 15, 0, "", 32);
+		levelInfo.text += PlayState.SONG.song;
+		levelInfo.scrollFactor.set();
+		levelInfo.setFormat(Paths.font("vcr.ttf"), 32);
+		levelInfo.updateHitbox();
+		add(levelInfo);
+
+		var levelDifficulty:FlxText = new FlxText(20, 15 + 32, 0, "", 32);
+		levelDifficulty.text += CoolUtil.difficultyString();
+		levelDifficulty.scrollFactor.set();
+		levelDifficulty.setFormat(Paths.font('vcr.ttf'), 32);
+		levelDifficulty.updateHitbox();
+		add(levelDifficulty);
+
+		levelDifficulty.alpha = 0;
+		levelInfo.alpha = 0;
+
+		levelInfo.x = FlxG.width - (levelInfo.width + 20);
+		levelDifficulty.x = FlxG.width - (levelDifficulty.width + 20);
+
+		FlxTween.tween(bg, {alpha: 0.6}, 0.4, {ease: FlxEase.quartInOut});
+		FlxTween.tween(levelInfo, {alpha: 1, y: 20}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.3});
+		FlxTween.tween(levelDifficulty, {alpha: 1, y: levelDifficulty.y + 5}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.5});
 
 		grpMenuShit = new FlxTypedGroup<Alphabet>();
 		add(grpMenuShit);
@@ -54,10 +79,6 @@ class PauseSubState extends MusicBeatSubstate
 
 		cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
 
-		_saveconrtol = new FlxSave();
-    	_saveconrtol.bind("saveconrtol");
-		_saveconrtol.data.boxPositions = new Array<FlxPoint>();
-		
 		_pad = new FlxVirtualPad(UP_DOWN, A);
     	_pad.alpha = 0.75;
     	this.add(_pad);
@@ -69,11 +90,11 @@ class PauseSubState extends MusicBeatSubstate
 			pauseMusic.volume += 0.01 * elapsed;
 
 		super.update(elapsed);
-
-		if(FlxG.android.justReleased.BACK == true){
-			close();
-		}
-		
+		/*
+		var upP = controls.UP_P;
+		var downP = controls.DOWN_P;
+		var accepted = controls.ACCEPT;
+		*/
 		var upP = _pad.buttonUp.justPressed;
 		var downP = _pad.buttonDown.justPressed;
 		var accepted = _pad.buttonA.justPressed;
@@ -94,44 +115,19 @@ class PauseSubState extends MusicBeatSubstate
 			switch (daSelected)
 			{
 				case "Resume":
-					trace(_saveconrtol.data.boxPositions[0]);
-					this.remove(_pad);
-					_pad = null;
 					close();
 				case "Restart Song":
 					FlxG.resetState();
 				case "Exit to menu":
 					FlxG.switchState(new MainMenuState());
-				case "charting mode":
-					close();
-					FlxG.switchState(new ChartingState());
-				case "default control":
-					this.remove(_pad);
-					_pad = null;
-					_saveconrtol.data.boxPositions.push(3);
-					_saveconrtol.flush();
-					close();
-				case "alternative control":
-					this.remove(_pad);
-					_pad = null;
-					_saveconrtol.data.boxPositions.push(2);
-					_saveconrtol.flush();
-					close();
-				case "left hand control":
-					this.remove(_pad);
-					_pad = null;
-					_saveconrtol.data.boxPositions.push(1);
-					_saveconrtol.flush();
-					close();
 			}
 		}
-		/*
+
 		if (FlxG.keys.justPressed.J)
 		{
 			// for reference later!
 			// PlayerSettings.player1.controls.replaceBinding(Control.LEFT, Keys, FlxKey.J, null);
 		}
-		*/
 	}
 
 	override function destroy()

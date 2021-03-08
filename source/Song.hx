@@ -12,8 +12,6 @@ typedef SwagSong =
 	var song:String;
 	var notes:Array<SwagSection>;
 	var bpm:Int;
-	var sections:Int;
-	var sectionLengths:Array<Dynamic>;
 	var needsVoices:Bool;
 	var speed:Float;
 
@@ -27,30 +25,22 @@ class Song
 	public var song:String;
 	public var notes:Array<SwagSection>;
 	public var bpm:Int;
-	public var sections:Int;
-	public var sectionLengths:Array<Dynamic> = [];
 	public var needsVoices:Bool = true;
 	public var speed:Float = 1;
 
 	public var player1:String = 'bf';
 	public var player2:String = 'dad';
 
-	public function new(song, notes, bpm, sections)
+	public function new(song, notes, bpm)
 	{
 		this.song = song;
 		this.notes = notes;
 		this.bpm = bpm;
-		this.sections = sections;
-
-		for (i in 0...notes.length)
-		{
-			this.sectionLengths.push(notes[i]);
-		}
 	}
 
 	public static function loadFromJson(jsonInput:String, ?folder:String):SwagSong
 	{
-		var rawJson = Assets.getText('assets/data/' + folder.toLowerCase() + '/' + jsonInput.toLowerCase() + '.json').trim();
+		var rawJson = Assets.getText(Paths.json(folder.toLowerCase() + '/' + jsonInput.toLowerCase())).trim();
 
 		while (!rawJson.endsWith("}"))
 		{
@@ -72,9 +62,7 @@ class Song
 
 				daNotes = songData.notes;
 				daSong = songData.song;
-				daSections = songData.sections;
-				daBpm = songData.bpm;
-				daSectionLengths = songData.sectionLengths; */
+				daBpm = songData.bpm; */
 
 		return parseJSONshit(rawJson);
 	}
