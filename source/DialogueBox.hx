@@ -47,6 +47,7 @@ class DialogueBox extends FlxSpriteGroup
 	public var like:String = "senpai";
 	var portraitLeft:FlxSprite;
 	var portraitRight:FlxSprite;
+	var portraitCustom:FlxSprite;
 	var handSelect:FlxSprite;
 	var bgFade:FlxSprite;
 	var isPixel:Array<Bool> = [true,true,true];
@@ -127,10 +128,13 @@ class DialogueBox extends FlxSpriteGroup
 				portraitLeft.frames = FlxAtlasFrames.fromSparrow('assets/images/christmas/parentsPortrait.png',
 					'assets/images/christmas/parentsPortrait.xml');
 				isPixel[1] = false;
-			case 'monster-christmas' | 'monster':
+			case 'monster-christmas':
 				// haha santa hat
 				portraitLeft.frames = FlxAtlasFrames.fromSparrow('assets/images/christmas/monsterXmasPortrait.png',
 					'assets/images/christmas/monsterXmasPortrait.xml');
+				isPixel[1] = false;
+			case 'monster':
+				portraitLeft.frames = FlxAtlasFrames.fromSparrow('assets/images/monsterPortrait.png', 'assets/images/monsterPortrait.xml');
 				isPixel[1] = false;
 			default:
 				if (FileSystem.exists('assets/images/custom_chars/' + PlayState.SONG.player2 + '/portrait.png'))
@@ -260,7 +264,7 @@ class DialogueBox extends FlxSpriteGroup
 		portraitRight.scrollFactor.set();
 		add(portraitRight);
 		portraitRight.visible = false;
-
+		
 		box = new FlxSprite(-20, 45);
 
 		switch (PlayState.SONG.cutsceneType)
@@ -497,14 +501,163 @@ class DialogueBox extends FlxSpriteGroup
 	{
 		cleanDialog();
 		// do it before the text starts
-
+		if (portraitCustom != null) {
+			remove(portraitCustom);
+		}
 		switch (curCharacter) {
 			case 'dad':
 				swagDialogue.sounds = [FlxG.sound.load(clickSounds[1], 0.6)];
 			case 'bf':
 				swagDialogue.sounds = [FlxG.sound.load(clickSounds[0], 0.6)];
+			case 'char-bf':
+				// we have to change the custom portrait
+				portraitCustom = new FlxSprite(0, 40);
+				portraitCustom.setGraphicSize(Std.int(portraitCustom.width * 0.9));
+				portraitCustom.frames = FlxAtlasFrames.fromSparrow('assets/images/bfPortrait.png', 'assets/images/bfPortrait.xml');
+				portraitCustom.animation.addByPrefix('enter', 'Boyfriend portrait enter', 24, false);
+				swagDialogue.sounds = [FlxG.sound.load(clickSounds[2], 0.6)];
+				portraitCustom.visible = false;
+			case 'char-dad':
+				portraitCustom = new FlxSprite(0, 40);
+				portraitCustom.frames = FlxAtlasFrames.fromSparrow('assets/images/dadPortrait.png', 'assets/images/dadPortrait.xml');
+				portraitCustom.setGraphicSize(Std.int(portraitCustom.width * 0.9));
+				portraitCustom.animation.addByPrefix('enter', 'Senpai Portrait Enter', 24, false);
+				swagDialogue.sounds = [FlxG.sound.load(clickSounds[2], 0.6)];
+				portraitCustom.visible = false;
+			case 'char-gf':
+				portraitCustom = new FlxSprite(0, 40);
+				portraitCustom.frames = FlxAtlasFrames.fromSparrow('assets/images/gfPortrait.png', 'assets/images/gfPortrait.xml');
+				portraitCustom.setGraphicSize(Std.int(portraitCustom.width * 0.9));
+				flipX = true;
+				portraitCustom.animation.addByPrefix('enter', 'Boyfriend portrait enter', 24, false);
+				swagDialogue.sounds = [FlxG.sound.load(clickSounds[2], 0.6)];
+				portraitCustom.visible = false;
+			// TODO: Split into skid and pump
+			case 'char-spooky':
+				portraitCustom = new FlxSprite(0, 40);
+				portraitCustom.frames = FlxAtlasFrames.fromSparrow('assets/images/spookyPortrait.png', 'assets/images/spookyPortrait.xml');
+				portraitCustom.setGraphicSize(Std.int(portraitCustom.width * 0.9));
+				portraitCustom.animation.addByPrefix('enter', 'Senpai Portrait Enter', 24, false);
+				swagDialogue.sounds = [FlxG.sound.load(clickSounds[2], 0.6)];
+				portraitCustom.visible = false;
+			case 'char-pico':
+				portraitCustom = new FlxSprite(0, 40);
+				portraitCustom.frames = FlxAtlasFrames.fromSparrow('assets/images/picoPortrait.png', 'assets/images/picoPortrait.xml');
+				portraitCustom.setGraphicSize(Std.int(portraitCustom.width * 0.9));
+				portraitCustom.flipX = true;
+				portraitCustom.animation.addByPrefix('enter', 'Boyfriend portrait enter', 24, false);
+				swagDialogue.sounds = [FlxG.sound.load(clickSounds[2], 0.6)];
+				portraitCustom.visible = false;
+			case 'char-mom':
+				portraitCustom = new FlxSprite(0, 40);
+				portraitCustom.frames = FlxAtlasFrames.fromSparrow('assets/images/momPortrait.png', 'assets/images/momPortrait.xml');
+				portraitCustom.setGraphicSize(Std.int(portraitCustom.width * 0.9));
+				portraitCustom.animation.addByPrefix('enter', 'Senpai Portrait Enter', 24, false);
+				swagDialogue.sounds = [FlxG.sound.load(clickSounds[2], 0.6)];
+				portraitCustom.visible = false;
+			// TODO: Graphics
+			case 'char-mom-xmas':
+				portraitCustom = new FlxSprite(0, 40);
+				portraitCustom.frames = FlxAtlasFrames.fromSparrow('assets/images/momPortrait.png', 'assets/images/momPortrait.xml');
+				portraitCustom.setGraphicSize(Std.int(portraitCustom.width * 0.9));
+				portraitCustom.animation.addByPrefix('enter', 'Senpai Portrait Enter', 24, false);
+				swagDialogue.sounds = [FlxG.sound.load(clickSounds[2], 0.6)];
+				portraitCustom.visible = false;
+			// TODO: Graphics
+			case 'char-dad-xmas':
+				portraitCustom = new FlxSprite(0, 40);
+				portraitCustom.frames = FlxAtlasFrames.fromSparrow('assets/images/dadPortrait.png', 'assets/images/dadPortrait.xml');
+				portraitCustom.setGraphicSize(Std.int(portraitCustom.width * 0.9));
+				portraitCustom.animation.addByPrefix('enter', 'Senpai Portrait Enter', 24, false);
+				swagDialogue.sounds = [FlxG.sound.load(clickSounds[2], 0.6)];
+				portraitCustom.visible = false;
+			case 'char-monster':
+				portraitCustom = new FlxSprite(0, 40);
+				portraitCustom.frames = FlxAtlasFrames.fromSparrow('assets/images/monsterPortrait.png', 'assets/images/monsterPortrait.xml');
+				portraitCustom.setGraphicSize(Std.int(portraitCustom.width * 0.9));
+				portraitCustom.animation.addByPrefix('enter', 'Senpai Portrait Enter', 24, false);
+				swagDialogue.sounds = [FlxG.sound.load(clickSounds[2], 0.6)];
+				portraitCustom.visible = false;
+			case 'char-monster-xmas':
+				portraitCustom = new FlxSprite(0, 40);
+				portraitCustom.frames = FlxAtlasFrames.fromSparrow('assets/images/christmas/monsterXmasPortrait.png', 'assets/images/christmas/monsterXmasPortrait.xml');
+				portraitCustom.setGraphicSize(Std.int(portraitCustom.width * 0.9));
+				portraitCustom.animation.addByPrefix('enter', 'Senpai Portrait Enter', 24, false);
+				swagDialogue.sounds = [FlxG.sound.load(clickSounds[2], 0.6)];
+				portraitCustom.visible = false;
+			case 'char-gf-xmas':
+				portraitCustom = new FlxSprite(0, 40);
+				portraitCustom.frames = FlxAtlasFrames.fromSparrow('assets/images/christmas/gfPortraitXmas.png', 'assets/images/christmas/gfPortrait.xml');
+				portraitCustom.setGraphicSize(Std.int(portraitCustom.width * 0.9));
+				flipX = true;
+				portraitCustom.animation.addByPrefix('enter', 'Boyfriend portrait enter', 24, false);
+				swagDialogue.sounds = [FlxG.sound.load(clickSounds[2], 0.6)];
+				portraitCustom.visible = false;
+			case 'char-bf-xmas':
+				portraitCustom = new FlxSprite(0, 40);
+				portraitCustom.setGraphicSize(Std.int(portraitCustom.width * 0.9));
+				portraitCustom.frames = FlxAtlasFrames.fromSparrow('assets/images/christmas/bfPortraitXmas.png', 'assets/images/christmas/bfPortraitXmas.xml');
+				portraitCustom.animation.addByPrefix('enter', 'Boyfriend portrait enter', 24, false);
+				swagDialogue.sounds = [FlxG.sound.load(clickSounds[2], 0.6)];
+				portraitCustom.visible = false;
+			case 'char-bf-pixel':
+				portraitCustom = new FlxSprite(0, 40);
+				portraitCustom.setGraphicSize(Std.int(portraitCustom.width * 0.9 * PlayState.daPixelZoom));
+				portraitCustom.frames = FlxAtlasFrames.fromSparrow('assets/images/weeb/bfPortrait.png', 'assets/images/weeb/bfPortrait.xml');
+				portraitCustom.animation.addByPrefix('enter', 'Boyfriend portrait enter', 24, false);
+				swagDialogue.sounds = [FlxG.sound.load(clickSounds[2], 0.6)];
+				portraitCustom.visible = false;
+			default:
+				var realChar = curCharacter.substr(5);
+				portraitCustom = new FlxSprite(0, 40);
+				var customPixel = false;
+				if (FileSystem.exists('assets/images/custom_chars/'+realChar+'/portrait.png')) {
+					var coolCustomJson = Character.getAnimJson(realChar);
+					customPixel = if (Reflect.hasField(coolCustomJson, "isPixel"))
+						coolCustomJson.isPixel
+					else
+						false;
+					var rawPic = BitmapData.fromFile('assets/images/custom_chars/' + realChar + "/portrait.png");
+					var rawXml = File.getContent('assets/images/custom_chars/' + realChar + "/portrait.xml");
+					portraitCustom.frames = FlxAtlasFrames.fromSparrow(rawPic, rawXml);
+				} else {
+					portraitCustom.frames = FlxAtlasFrames.fromSparrow('assets/images/weeb/bfPortrait.png', 'assets/images/weeb/bfPortrait.xml');
+					customPixel = true;
+				}
+				var customFrameings:Array<FlxFrame> = [];
+				for (frame in portraitCustom.frames.frames)
+				{
+					if (frame.name != null && StringTools.startsWith(frame.name, 'Boyfriend portrait enter'))
+					{
+						customFrameings.push(frame);
+					}
+				}
+				if (FileSystem.exists('assets/images/custom_chars/' +realChar + '/text.ogg'))
+				{
+					swagDialogue.sounds = [FlxG.sound.load(Sound.fromFile('assets/images/custom_chars/' + realChar + '/text.ogg'))];
+				} else {
+					swagDialogue.sounds = [FlxG.sound.load(clickSounds[2])];
+				}
+				if (customFrameings.length > 0) {
+					portraitCustom.animation.addByPrefix('enter', 'Boyfriend portrait enter', 24, false);
+				} else {
+					portraitCustom.animation.addByPrefix('enter', 'Senpai Portrait Enter', 24, false);
+				}
+				if (customPixel)
+					portraitCustom.setGraphicSize(Std.int(portraitCustom.width * 0.9 * PlayState.daPixelZoom));
+				else 
+					portraitCustom.setGraphicSize(Std.int(portraitCustom.width * 0.9));
+				portraitCustom.visible = false;
 		}
 		// swagDialogue.text = ;
+		if (portraitCustom != null) {
+			portraitCustom.updateHitbox();
+			portraitCustom.scrollFactor.set();
+			portraitCustom.x = portraitLeft.x;
+			portraitCustom.y = portraitLeft.y;
+			// note to self you must add it for it to work
+			add(portraitCustom);
+		}
 		swagDialogue.resetText(dialogueList[0]);
 		swagDialogue.start(0.04, true);
 
@@ -512,7 +665,9 @@ class DialogueBox extends FlxSpriteGroup
 		{
 			case 'dad':
 				portraitRight.visible = false;
-				
+				if (portraitCustom != null) {
+					portraitCustom.visible = false;
+				}
 				if (sided) {
 					box.flipX = true;
 				}
@@ -524,12 +679,27 @@ class DialogueBox extends FlxSpriteGroup
 				}
 			case 'bf':
 				portraitLeft.visible = false;
+				if (portraitCustom != null)
+				{
+					portraitCustom.visible = false;
+				}
 				// don't need to check for sided bc this changes nothing
 				box.flipX = false;
 				if (!portraitRight.visible)
 				{
 					portraitRight.visible = true;
 					portraitRight.animation.play('enter');
+				}
+			default:
+				portraitLeft.visible = false;
+				portraitRight.visible = false;
+				
+
+				if (!portraitCustom.visible) {
+					portraitCustom.visible = true;
+					trace(portraitCustom.animation);
+					trace(portraitCustom);
+					portraitCustom.animation.play('enter');
 				}
 		}
 	}
