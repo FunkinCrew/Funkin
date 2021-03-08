@@ -195,9 +195,16 @@ class MainMenuState extends MusicBeatState
 										trace("Story Menu Selected");
 									case 'freeplay':
 										CategoryState.choosingFor = "freeplay";
-										FlxG.switchState(new CategoryState());
+										var epicCategoryJs:Array<Dynamic> = CoolUtil.parseJson(Assets.getText('assets/data/freeplaySongJson.jsonc'));
 										FreeplayState.soundTest = false;
-										trace("Freeplay Menu Selected");
+										if (epicCategoryJs.length > 1)
+										{
+											FlxG.switchState(new CategoryState());
+										}  else {
+											FreeplayState.currentSongList = epicCategoryJs[0].songs;
+											FlxG.switchState(new FreeplayState());
+										}
+										
 
 									case 'options':
 										FlxG.switchState(new SaveDataState());

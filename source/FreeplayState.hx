@@ -183,8 +183,15 @@ class FreeplayState extends MusicBeatState
 			FlxG.autoPause = true;
 			if (soundTest)
 				FlxG.switchState(new SaveDataState());
-			else
-				FlxG.switchState(new MainMenuState());
+			else {
+				var epicCategoryJs:Array<Dynamic> = CoolUtil.parseJson(Assets.getText('assets/data/freeplaySongJson.jsonc'));
+				if (epicCategoryJs.length > 1)
+				{
+					FlxG.switchState(new CategoryState());
+				} else
+					FlxG.switchState(new MainMenuState());
+			}
+				
 		}
 
 		if (accepted)
