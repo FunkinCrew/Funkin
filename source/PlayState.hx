@@ -234,6 +234,9 @@ class PlayState extends MusicBeatState
 				// if no player dialog, use default
 				}	else if (FileSystem.exists('assets/data/'+SONG.song.toLowerCase()+'/dialog.txt')) {
 					dialogue = CoolUtil.coolDynamicTextFile('assets/data/'+SONG.song.toLowerCase()+'/dialog.txt');
+				} else if (FileSystem.exists('assets/data/'+SONG.song.toLowerCase()+'/dialogue.txt')){
+					// nerds spell dialogue properly gotta make em happy
+					dialogue = CoolUtil.coolDynamicTextFile('assets/data/' + SONG.song.toLowerCase() + '/dialogue.txt');
 				// otherwise, make the dialog an error message
 				} else {
 					dialogue = [':dad: The game tried to get a dialog file but couldn\'t find it. Please make sure there is a dialog file named "dialog.txt".'];
@@ -1243,18 +1246,12 @@ class PlayState extends MusicBeatState
 				gf.y += 300;
 			case 'schoolEvil':
 				// trailArea.scrollFactor.set();
-
-				var evilTrail = new FlxTrail(dad, null, 4, 24, 0.3, 0.069);
-				// evilTrail.changeValuesEnabled(false, false, false, false);
-				// evilTrail.changeGraphic()
-				add(evilTrail);
-				// evilTrail.scrollFactor.set(1.1, 1.1);
-
 				boyfriend.x += 200;
 				boyfriend.y += 220;
 				gf.x += 180;
 				gf.y += 300;
 		}
+		trace('befpre spoop check');
 		if (SONG.isSpooky) {
 			trace("WOAH SPOOPY");
 			var evilTrail = new FlxTrail(dad, null, 4, 24, 0.3, 0.069);
@@ -1262,23 +1259,26 @@ class PlayState extends MusicBeatState
 			// evilTrail.changeGraphic()
 			add(evilTrail);
 		}
-
+		trace('big titted goth gf');
 		add(gf);
-
+		trace('anime thighs she only 5');
 		// Shitty layering but whatev it works LOL
 		if (curStage == 'limo')
 			add(limo);
-
+		trace('dad');
 		add(dad);
+		trace('dy UWU');
 		add(boyfriend);
+		trace('bf cheeks');
 
 		var doof:DialogueBox = new DialogueBox(false, dialogue);
+		trace('doofensmiz');
 		// doof.x += 70;
 		// doof.y = FlxG.height * 0.5;
 		doof.scrollFactor.set();
 		doof.finishThing = startCountdown;
 		Conductor.songPosition = -5000;
-
+		trace('prepare your strumlime');
 		strumLine = new FlxSprite(0, 50).makeGraphic(FlxG.width, 10);
 		strumLine.scrollFactor.set();
 
@@ -1288,7 +1288,7 @@ class PlayState extends MusicBeatState
 		playerStrums = new FlxTypedGroup<FlxSprite>();
 
 		// startCountdown();
-
+		trace('before generate');
 		generateSong(SONG.song);
 
 		// add(strumLine);
@@ -1312,7 +1312,7 @@ class PlayState extends MusicBeatState
 		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
 
 		FlxG.fixedTimestep = false;
-
+		trace('gay');
 		healthBarBG = new FlxSprite(0, FlxG.height * 0.9).loadGraphic('assets/images/healthBar.png');
 		healthBarBG.screenCenter(X);
 		healthBarBG.scrollFactor.set();
@@ -1381,7 +1381,7 @@ class PlayState extends MusicBeatState
 
 		// cameras = [FlxG.cameras.list[1]];
 		startingSong = true;
-
+		trace('finish uo');
 	if (alwaysDoCutscenes || isStoryMode )
 		{
 

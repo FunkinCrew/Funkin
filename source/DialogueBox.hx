@@ -11,6 +11,7 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import flash.display.BitmapData;
 import lime.utils.Assets;
+import flixel.graphics.frames.FlxFrame;
 import lime.system.System;
 #if sys
 import sys.io.File;
@@ -43,20 +44,20 @@ class DialogueBox extends FlxSpriteGroup
 	public var like:String = "senpai";
 	var portraitLeft:FlxSprite;
 	var portraitRight:FlxSprite;
-
 	var handSelect:FlxSprite;
 	var bgFade:FlxSprite;
 	var isPixel:Array<Bool> = [true,true,true];
 	var senpaiColor:FlxColor = FlxColor.WHITE;
 	var textColor:FlxColor = 0xFF3F2021;
 	var dropColor:FlxColor = 0xFFD89494;
+	var rightHanded:Array<Bool> = [true, false];
 	var font:String = "pixel.otf";
 	var senpaiVisible = true;
 	var sided:Bool = false;
 	public function new(talkingRight:Bool = true, ?dialogueList:Array<String>)
 	{
 		super();
-
+		trace('hey guys');
 		switch (PlayState.SONG.cutsceneType)
 		{
 			case 'senpai':
@@ -94,21 +95,53 @@ class DialogueBox extends FlxSpriteGroup
 		}, 5);
 
 		portraitLeft = new FlxSprite(-20, 40);
-		if (FileSystem.exists('assets/images/custom_chars/'+PlayState.SONG.player2+'/portrait.png')) {
-			// if a  custom character portrait exists, use that
-			var coolP2Json = Character.getAnimJson(PlayState.SONG.player2);
-			// do false because it be kinda weird like that tho
-			isPixel[1] = if (Reflect.hasField(coolP2Json, "isPixel")) coolP2Json.isPixel else false;
-			var rawPic = BitmapData.fromFile('assets/images/custom_chars/'+PlayState.SONG.player2+"/portrait.png");
-			var rawXml = File.getContent('assets/images/custom_chars/'+PlayState.SONG.player2+"/portrait.xml");
-			portraitLeft.frames = FlxAtlasFrames.fromSparrow(rawPic, rawXml);
-		} else {
-			// otherwise, use senpai
-			portraitLeft.frames = FlxAtlasFrames.fromSparrow('assets/images/weeb/senpaiPortrait.png', 'assets/images/weeb/senpaiPortrait.xml');
-
+		switch (PlayState.SONG.player2)
+		{
+			case 'bf' | 'bf-car':
+				portraitLeft.frames = FlxAtlasFrames.fromSparrow('assets/images/bfPortrait.png', 'assets/images/bfPortrait.xml');
+				isPixel[1] = false;
+			case 'bf-christmas':
+				portraitLeft.frames = FlxAtlasFrames.fromSparrow('assets/images/christmas/bfPortraitXmas.png', 'assets/images/christmas/bfPortraitXmas.xml');
+				isPixel[1] = false;
+			case 'pico':
+				portraitLeft.frames = FlxAtlasFrames.fromSparrow('assets/images/picoPortrait.png', 'assets/images/picoPortrait.xml');
+				isPixel[1] = false;
+			case 'spooky':
+				portraitLeft.frames = FlxAtlasFrames.fromSparrow('assets/images/spookyPortrait.png', 'assets/images/spookyPortrait.xml');
+				isPixel[1] = false;
+			case 'gf':
+				// cursed
+				portraitLeft.frames = FlxAtlasFrames.fromSparrow('assets/images/gfPortrait.png', 'assets/images/gfPortrait.xml');
+				isPixel[1] = false;
+			case 'dad':
+				portraitLeft.frames = FlxAtlasFrames.fromSparrow('assets/images/dadPortrait.png', 'assets/images/dadPortrait.xml');
+				isPixel[1] = false;
+			case 'mom' | 'mom-car':
+				portraitLeft.frames = FlxAtlasFrames.fromSparrow('assets/images/momPortrait.png', 'assets/images/momPortrait.xml');
+				isPixel[1] = false;
+			case 'parents-christmas':
+				portraitLeft.frames = FlxAtlasFrames.fromSparrow('assets/images/christmas/parentsPortrait.png',
+					'assets/images/christmas/parentsPortrait.xml');
+				isPixel[1] = false;
+			case 'monster-christmas' | 'monster':
+				// haha santa hat
+				portraitLeft.frames = FlxAtlasFrames.fromSparrow('assets/images/christmas/monsterXmasPortrait.png',
+					'assets/images/christmas/monsterXmasPortrait.xml');
+				isPixel[1] = false;
+			default:
+				if (FileSystem.exists('assets/images/custom_chars/' + PlayState.SONG.player2 + '/portrait.png'))
+				{
+					var coolP2Json = Character.getAnimJson(PlayState.SONG.player2);
+					isPixel[1] = if (Reflect.hasField(coolP2Json, "isPixel")) coolP2Json.isPixel else false;
+					var rawPic = BitmapData.fromFile('assets/images/custom_chars/' + PlayState.SONG.player2 + "/portrait.png");
+					var rawXml = File.getContent('assets/images/custom_chars/' + PlayState.SONG.player2 + "/portrait.xml");
+					portraitLeft.frames = FlxAtlasFrames.fromSparrow(rawPic, rawXml);
+				}
+				else
+				{
+					portraitLeft.frames = FlxAtlasFrames.fromSparrow('assets/images/weeb/senpaiPortrait.png', 'assets/images/weeb/senpaiPortrait.xml');
+				}
 		}
-		portraitLeft.animation.addByPrefix('enter', 'Senpai Portrait Enter', 24, false);
-		trace(portraitLeft.animation.getByName('enter').frames);
 		if (isPixel[1]) {
 			portraitLeft.setGraphicSize(Std.int(portraitLeft.width * PlayState.daPixelZoom * 0.9));
 		} else {
@@ -125,6 +158,32 @@ class DialogueBox extends FlxSpriteGroup
 			case 'bf' | 'bf-car':
 				portraitRight.frames = FlxAtlasFrames.fromSparrow('assets/images/bfPortrait.png', 'assets/images/bfPortrait.xml');
 				isPixel[0] = false;
+			case 'bf-christmas':
+				portraitRight.frames = FlxAtlasFrames.fromSparrow('assets/images/christmas/bfPortraitXmas.png','assets/images/christmas/bfPortraitXmas.xml');
+				isPixel[0] = false;
+			case 'pico': 
+				portraitRight.frames = FlxAtlasFrames.fromSparrow('assets/images/picoPortrait.png','assets/images/picoPortrait.xml');
+				isPixel[0] = false;
+			case 'spooky':
+				portraitRight.frames = FlxAtlasFrames.fromSparrow('assets/images/spookyPortrait.png', 'assets/images/spookyPortrait.xml');
+				isPixel[0] = false;
+			case 'gf':
+				// is this even possible? lmao weeeeee
+				portraitRight.frames = FlxAtlasFrames.fromSparrow('assets/images/gfPortrait.png', 'assets/images/gfPortrait.xml');
+				isPixel[0] = false;
+			case 'dad':
+				portraitRight.frames = FlxAtlasFrames.fromSparrow('assets/images/dadPortrait.png', 'assets/images/dadPortrait.xml');
+				isPixel[0] = false;
+			case 'mom' | 'mom-car':
+				portraitRight.frames = FlxAtlasFrames.fromSparrow('assets/images/momPortrait.png', 'assets/images/momPortrait.xml');
+				isPixel[0] = false;
+			case 'parents-christmas':
+				portraitRight.frames = FlxAtlasFrames.fromSparrow('assets/images/christmas/parentsPortrait.png', 'assets/images/christmas/parentsPortrait.xml');
+				isPixel[0] = false;
+			case 'monster-christmas' | 'monster':
+				// haha santa hat 
+				portraitRight.frames = FlxAtlasFrames.fromSparrow('assets/images/christmas/monsterXmasPortrait.png', 'assets/images/christmas/monsterXmasPortrait.xml');
+				isPixel[0] = false;
 			default:
 				if (FileSystem.exists('assets/images/custom_chars/' + PlayState.SONG.player1 + '/portrait.png'))
 				{
@@ -139,8 +198,42 @@ class DialogueBox extends FlxSpriteGroup
 					portraitRight.frames = FlxAtlasFrames.fromSparrow('assets/images/weeb/bfPortrait.png', 'assets/images/weeb/bfPortrait.xml');
 				}
 		}
-
-		portraitRight.animation.addByPrefix('enter', 'Boyfriend portrait enter', 24, false);
+		var gameingFrames:Array<FlxFrame> = [];
+		var leftFrames:Array<FlxFrame> = [];
+		trace('gay');
+		for (frame in portraitRight.frames.frames)
+		{
+			if (frame.name != null && StringTools.startsWith(frame.name, 'Boyfriend portrait enter'))
+			{
+				gameingFrames.push(frame);
+			}
+		}
+		for (frame in portraitLeft.frames.frames)
+		{
+			if (frame.name != null && StringTools.startsWith(frame.name, 'Boyfriend portrait enter'))
+			{
+				leftFrames.push(frame);
+			}
+		}
+		if (gameingFrames.length == 0) {
+			rightHanded[0] = false;
+		}
+		if (leftFrames.length > 0) {
+			rightHanded[1] = true;
+		}
+		trace(rightHanded[0] + ' ' + rightHanded[1]);
+		if (rightHanded[0]) {
+			portraitRight.animation.addByPrefix('enter', 'Boyfriend portrait enter', 24, false);
+		} else {
+			portraitRight.animation.addByPrefix('enter', 'Senpai Portrait Enter', 24, false);
+			portraitRight.flipX = true;
+		}
+		if (!rightHanded[1]) {
+			portraitLeft.animation.addByPrefix('enter', 'Boyfriend portrait enter', 24, false);
+		} else {
+			portraitLeft.animation.addByPrefix('enter', 'Senpai Portrait Enter', 24, false);
+			portraitLeft.flipX = true;
+		}
 		// allow player to use non pixel portraits. this means the image size can be around 6 times the size, based on the pixel zoom
 		if (isPixel[0]) {
 			portraitRight.setGraphicSize(Std.int(portraitRight.width * PlayState.daPixelZoom * 0.9));

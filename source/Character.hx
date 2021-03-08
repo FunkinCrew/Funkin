@@ -786,6 +786,7 @@ class Character extends FlxSprite
 	 */
 	public function dance()
 	{
+		trace('boogie');
 		if (!debugMode)
 		{
 			switch (curCharacter)
