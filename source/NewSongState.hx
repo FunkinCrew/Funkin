@@ -68,6 +68,7 @@ class NewSongState extends MusicBeatState
 	var cutsceneText:FlxUIInputText;
 	var uiText:FlxUIInputText;
 	var isMoody:FlxUICheckBox;
+	var isHey:FlxUICheckBox;
 	var categoryText:FlxUIInputText;
 	var finishButton:FlxButton;
 	var cancelButton:FlxUIButton;
@@ -98,6 +99,7 @@ class NewSongState extends MusicBeatState
 		trace("scloomb");
 		isMoody = new FlxUICheckBox(100,340,null,null, "Girls Scared");
 		isSpooky = new FlxUICheckBox(100,390,null,null,"Background Trail");
+		isHey = new FlxUICheckBox(100,440, null, null, "Do HEY! Poses");
 		add(isSpooky);
 		trace("beemb");
 		categoryText = new FlxUIInputText(100,290,70,"Base Game");
@@ -123,6 +125,7 @@ class NewSongState extends MusicBeatState
 		add(categoryText);
 		add(uiText);
 		add(isMoody);
+		add(isHey);
 		add(diffButtons);
 		finishButton = new FlxButton(FlxG.width - 170, FlxG.height - 50, "Finish", function():Void {
 			writeCharacters();
@@ -176,6 +179,7 @@ class NewSongState extends MusicBeatState
 				coolSongSong.uiType = uiText.text;
 				coolSongSong.cutsceneType = cutsceneText.text;
 				coolSongSong.isMoody = isMoody.checked;
+				coolSongSong.isHey = isHey.checked;
 				coolSong.song = coolSongSong;
 
 				File.saveContent('assets/data/'+nameText.text.toLowerCase()+'/'+nameText.text.toLowerCase()+DifficultyIcons.getEndingFP(i)+'.json',CoolUtil.stringifyJson(coolSong));

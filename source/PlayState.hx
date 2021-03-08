@@ -3442,7 +3442,7 @@ class PlayState extends MusicBeatState
 			boyfriend.playAnim('idle');
 		}
 
-		if (curBeat % 8 == 7 && curSong == 'Bopeebo')
+		if (curBeat % 8 == 7 && SONG.isHey)
 		{
 			boyfriend.playAnim('hey', true);
 

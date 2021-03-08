@@ -1,5 +1,6 @@
 package;
 
+import flixel.system.FlxSound;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.addons.text.FlxTypeText;
@@ -13,6 +14,7 @@ import flash.display.BitmapData;
 import lime.utils.Assets;
 import flixel.graphics.frames.FlxFrame;
 import lime.system.System;
+import flixel.system.FlxAssets.FlxSoundAsset;
 #if sys
 import sys.io.File;
 import sys.FileSystem;
@@ -39,7 +41,8 @@ class DialogueBox extends FlxSpriteGroup
 	var swagDialogue:FlxTypeText;
 
 	var dropText:FlxText;
-
+	var acceptSound:FlxSoundAsset;
+	var clickSounds:Array<Null<FlxSoundAsset>> = [null, null, null];
 	public var finishThing:Void->Void;
 	public var like:String = "senpai";
 	var portraitLeft:FlxSprite;
@@ -58,6 +61,7 @@ class DialogueBox extends FlxSpriteGroup
 	{
 		super();
 		trace('hey guys');
+		clickSounds[2] = 'assets/sounds/pixelText.ogg';
 		switch (PlayState.SONG.cutsceneType)
 		{
 			case 'senpai':
@@ -86,7 +90,7 @@ class DialogueBox extends FlxSpriteGroup
 		bgFade.scrollFactor.set();
 		bgFade.alpha = 0;
 		add(bgFade);
-
+		acceptSound = 'assets/sound/clickText.ogg';
 		new FlxTimer().start(0.83, function(tmr:FlxTimer)
 		{
 			bgFade.alpha += (1 / 5) * 0.7;
@@ -141,6 +145,10 @@ class DialogueBox extends FlxSpriteGroup
 				{
 					portraitLeft.frames = FlxAtlasFrames.fromSparrow('assets/images/weeb/senpaiPortrait.png', 'assets/images/weeb/senpaiPortrait.xml');
 				}
+				if (FileSystem.exists('assets/images/custom_chars/' + PlayState.SONG.player2 + '/text.ogg'))
+				{
+					clickSounds[1] = Sound.fromFile('assets/images/custom_chars/' + PlayState.SONG.player2 + '/text.ogg');
+				}
 		}
 		if (isPixel[1]) {
 			portraitLeft.setGraphicSize(Std.int(portraitLeft.width * PlayState.daPixelZoom * 0.9));
@@ -180,9 +188,13 @@ class DialogueBox extends FlxSpriteGroup
 			case 'parents-christmas':
 				portraitRight.frames = FlxAtlasFrames.fromSparrow('assets/images/christmas/parentsPortrait.png', 'assets/images/christmas/parentsPortrait.xml');
 				isPixel[0] = false;
-			case 'monster-christmas' | 'monster':
+			case 'monster-christmas':
 				// haha santa hat 
 				portraitRight.frames = FlxAtlasFrames.fromSparrow('assets/images/christmas/monsterXmasPortrait.png', 'assets/images/christmas/monsterXmasPortrait.xml');
+				isPixel[0] = false;
+			case 'monster':
+				portraitRight.frames = FlxAtlasFrames.fromSparrow('assets/images/monsterPortrait.png',
+					'assets/images/monsterPortrait.xml');
 				isPixel[0] = false;
 			default:
 				if (FileSystem.exists('assets/images/custom_chars/' + PlayState.SONG.player1 + '/portrait.png'))
@@ -196,6 +208,9 @@ class DialogueBox extends FlxSpriteGroup
 				else
 				{
 					portraitRight.frames = FlxAtlasFrames.fromSparrow('assets/images/weeb/bfPortrait.png', 'assets/images/weeb/bfPortrait.xml');
+				}
+				if (FileSystem.exists('assets/images/custom_chars/'+ PlayState.SONG.player1 + '/text.ogg')) {
+					clickSounds[0] = Sound.fromFile('assets/images/custom_chars/' + PlayState.SONG.player1 + '/text.ogg');
 				}
 		}
 		var gameingFrames:Array<FlxFrame> = [];
@@ -229,9 +244,9 @@ class DialogueBox extends FlxSpriteGroup
 			portraitRight.flipX = true;
 		}
 		if (!rightHanded[1]) {
-			portraitLeft.animation.addByPrefix('enter', 'Boyfriend portrait enter', 24, false);
-		} else {
 			portraitLeft.animation.addByPrefix('enter', 'Senpai Portrait Enter', 24, false);
+		} else {
+			portraitLeft.animation.addByPrefix('enter', 'Boyfriend portrait enter', 24, false);
 			portraitLeft.flipX = true;
 		}
 		// allow player to use non pixel portraits. this means the image size can be around 6 times the size, based on the pixel zoom
@@ -300,6 +315,10 @@ class DialogueBox extends FlxSpriteGroup
 						portraitRight.x += coolAnimFile.portraitOffset[0];
 						portraitRight.y += coolAnimFile.portraitOffset[1];
 					}
+					if (FileSystem.exists('assets/images/custom_ui/dialog_boxes/' + PlayState.SONG.cutsceneType + '/text.ogg'))
+						clickSounds[2] = Sound.fromFile('assets/images/custom_ui/dialog_boxes/' + PlayState.SONG.cutsceneType + '/text.ogg');
+					if (FileSystem.exists('assets/images/custom_ui/dialog_boxes/'+PlayState.SONG.cutsceneType+'/accept.ogg'))
+						acceptSound = Sound.fromFile('assets/images/custom_ui/dialog_boxes/' + PlayState.SONG.cutsceneType + '/accept.ogg');
 					if (coolAnimFile.like == "senpai") {
 						box.animation.addByPrefix('normalOpen', 'Text Box Appear', 24, false);
 						box.animation.addByIndices('normal', 'Text Box Appear', [4], "", 24);
@@ -343,7 +362,10 @@ class DialogueBox extends FlxSpriteGroup
 		} else {
 			box.setGraphicSize(Std.int(box.width * 0.9));
 		}
-
+		if (clickSounds[0] == null)
+			clickSounds[0] = clickSounds[2];
+		if (clickSounds[1] == null)
+			clickSounds[1] = clickSounds[2];
 		box.updateHitbox();
 		add(box);
 
@@ -364,7 +386,7 @@ class DialogueBox extends FlxSpriteGroup
 		swagDialogue.setFormat('assets/fonts/'+font, 32, textColor);
 		if (textColor.alphaFloat != 1)
 			swagDialogue.alpha = textColor.alphaFloat;
-		swagDialogue.sounds = [FlxG.sound.load('assets/sounds/pixelText' + TitleState.soundExt, 0.6)];
+		swagDialogue.sounds = [FlxG.sound.load(clickSounds[2], 0.6)];
 		add(swagDialogue);
 
 		dialogue = new Alphabet(0, 80, "", false, true);
@@ -474,10 +496,14 @@ class DialogueBox extends FlxSpriteGroup
 	function startDialogue():Void
 	{
 		cleanDialog();
-		// var theDialog:Alphabet = new Alphabet(0, 70, dialogueList[0], false, true);
-		// dialogue = theDialog;
-		// add(theDialog);
+		// do it before the text starts
 
+		switch (curCharacter) {
+			case 'dad':
+				swagDialogue.sounds = [FlxG.sound.load(clickSounds[1], 0.6)];
+			case 'bf':
+				swagDialogue.sounds = [FlxG.sound.load(clickSounds[0], 0.6)];
+		}
 		// swagDialogue.text = ;
 		swagDialogue.resetText(dialogueList[0]);
 		swagDialogue.start(0.04, true);
@@ -486,6 +512,7 @@ class DialogueBox extends FlxSpriteGroup
 		{
 			case 'dad':
 				portraitRight.visible = false;
+				
 				if (sided) {
 					box.flipX = true;
 				}
@@ -493,6 +520,7 @@ class DialogueBox extends FlxSpriteGroup
 				{
 					portraitLeft.visible = true;
 					portraitLeft.animation.play('enter');
+					trace(portraitLeft.animation.curAnim);
 				}
 			case 'bf':
 				portraitLeft.visible = false;
