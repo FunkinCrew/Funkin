@@ -17,13 +17,21 @@ class PauseSubState extends MusicBeatSubstate
 {
 	var grpMenuShit:FlxTypedGroup<Alphabet>;
 
-	var pauseOG:Array<String> = ['Resume', 'Restart Song', 'Change Difficulty', 'Exit to menu'];
+	var pauseOG:Array<String> = [
+		'Resume',
+		'Restart Song',
+		'Change Difficulty',
+		'Toggle Practice Mode',
+		'Exit to menu'
+	];
 	var difficultyChoices:Array<String> = ['EASY', 'NORMAL', 'HARD', 'BACK'];
 
 	var menuItems:Array<String> = [];
 	var curSelected:Int = 0;
 
 	var pauseMusic:FlxSound;
+
+	var practiceText:FlxText;
 
 	public function new(x:Float, y:Float)
 	{
@@ -63,6 +71,14 @@ class PauseSubState extends MusicBeatSubstate
 		deathCounter.updateHitbox();
 		add(deathCounter);
 
+		practiceText = new FlxText(20, 15 + 64 + 32, 0, "PRACTICE MODE", 32);
+		practiceText.scrollFactor.set();
+		practiceText.setFormat(Paths.font('vcr.ttf'), 32);
+		practiceText.updateHitbox();
+		practiceText.x = FlxG.width - (practiceText.width + 20);
+		practiceText.visible = PlayState.practiceMode;
+		add(practiceText);
+
 		levelDifficulty.alpha = 0;
 		levelInfo.alpha = 0;
 		deathCounter.alpha = 0;
@@ -86,11 +102,10 @@ class PauseSubState extends MusicBeatSubstate
 
 	private function regenMenu():Void
 	{
-		grpMenuShit.forEachAlive(function(thing:Alphabet)
+		while (grpMenuShit.members.length > 0)
 		{
-			grpMenuShit.remove(thing);
-			thing.destroy();
-		});
+			grpMenuShit.remove(grpMenuShit.members[0], true);
+		}
 
 		for (i in 0...menuItems.length)
 		{
@@ -139,6 +154,10 @@ class PauseSubState extends MusicBeatSubstate
 					PlayState.storyDifficulty = curSelected;
 
 					FlxG.resetState();
+
+				case 'Toggle Practice Mode':
+					PlayState.practiceMode = !PlayState.practiceMode;
+					practiceText.visible = PlayState.practiceMode;
 
 				case 'Change Difficulty':
 					menuItems = difficultyChoices;

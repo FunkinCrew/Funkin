@@ -50,6 +50,7 @@ class PlayState extends MusicBeatState
 	public static var storyPlaylist:Array<String> = [];
 	public static var storyDifficulty:Int = 1;
 	public static var deathCounter:Int = 0;
+	public static var practiceMode:Bool = false;
 
 	var halloweenLevel:Bool = false;
 
@@ -99,6 +100,8 @@ class PlayState extends MusicBeatState
 	var phillyTrain:FlxSprite;
 	var trainSound:FlxSound;
 
+	var foregroundSprites:FlxTypedGroup<BGSprite>;
+
 	var limo:FlxSprite;
 	var grpLimoDancers:FlxTypedGroup<BackgroundDancer>;
 	var fastCar:FlxSprite;
@@ -146,6 +149,8 @@ class PlayState extends MusicBeatState
 
 		Conductor.mapBPMChanges(SONG);
 		Conductor.changeBPM(SONG.bpm);
+
+		foregroundSprites = new FlxTypedGroup<BGSprite>();
 
 		switch (SONG.song.toLowerCase())
 		{
@@ -470,7 +475,7 @@ class PlayState extends MusicBeatState
 			 */
 
 			case 'guns' | 'stress' | 'ugh':
-				// defaultCamZoom = 0.9;
+				// defaultCamZoom = 0.95;
 				curStage = 'tank';
 
 				var bg:BGSprite = new BGSprite('tankSky', 0, -200, 0, 0);
@@ -491,8 +496,27 @@ class PlayState extends MusicBeatState
 				var tankWatchtower:BGSprite = new BGSprite('tankWatchtower', 300, 50, 0.5, 0.5);
 				add(tankWatchtower);
 
-				var tankGround:BGSprite = new BGSprite('tankGround', -400, -20);
+				var tankGround:BGSprite = new BGSprite('tankGround', -200, -20);
 				add(tankGround);
+
+				var fgTank0:BGSprite = new BGSprite('tank0', -290, 400, 1.7, 1.5, ['fg']);
+				foregroundSprites.add(fgTank0);
+
+				var fgTank1:BGSprite = new BGSprite('tank1', -100, 680, 2, 0.2, ['fg']);
+				foregroundSprites.add(fgTank1);
+
+				// just called 'foreground' just cuz small inconsistency no bbiggei
+				var fgTank2:BGSprite = new BGSprite('tank2', 450, 840, 1.5, 1.5, ['foreground']);
+				foregroundSprites.add(fgTank2);
+
+				var fgTank4:BGSprite = new BGSprite('tank4', 1000, 880, 1.5, 1.5, ['fg']);
+				foregroundSprites.add(fgTank4);
+
+				var fgTank5:BGSprite = new BGSprite('tank5', 1400, 600, 1.5, 1.5, ['fg']);
+				foregroundSprites.add(fgTank5);
+
+				var fgTank3:BGSprite = new BGSprite('tank3', 1300, 1130, 3.5, 2.5, ['fg']);
+				foregroundSprites.add(fgTank3);
 
 			default:
 				defaultCamZoom = 0.9;
@@ -629,6 +653,8 @@ class PlayState extends MusicBeatState
 
 		add(dad);
 		add(boyfriend);
+
+		add(foregroundSprites);
 
 		var doof:DialogueBox = new DialogueBox(false, dialogue);
 		// doof.x += 70;
@@ -1470,7 +1496,7 @@ class PlayState extends MusicBeatState
 			trace("User is cheating!");
 		}
 
-		if (health <= 0)
+		if (health <= 0 && !practiceMode)
 		{
 			boyfriend.stunned = true;
 
@@ -2309,6 +2335,11 @@ class PlayState extends MusicBeatState
 				dad.playAnim('cheer', true);
 			}
 		}
+
+		foregroundSprites.forEach(function(spr:BGSprite)
+		{
+			spr.dance();
+		});
 
 		switch (curStage)
 		{
