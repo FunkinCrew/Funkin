@@ -4,9 +4,62 @@ All notable changes will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [UNRELEASED]
+## [Unreleased]
+### Changed
+- ASSET LOADING OVERHAUL, WAY FASTER LOAD TIMES ON WEB!!! (THANKS TO GEOKURELI WOKE KING)
 ### Fixed
+- That one random note on Bopeebo
+
+## [0.2.7.1] - 2021-02-14
+### Added
+- Easter eggs
+- readme's in desktop versions of the game
+### Changed
+
+- New icons, old one was placeholder since October woops!
+- Made the transitions between the story mode levels more seamless.
+- Offset of the Newgrounds logo on boot screen.
+- Made the changelog txt so it can be opened easier by normal people who don't have a markdown reader (most normal people);
+### Fixed
+- Fixed crashes on Week 6 story mode dialogue if spam too fast ([Thanks to Lotusotho for the Pull Request!](https://github.com/ninjamuffin99/Funkin/pull/357))
+- Should show intro credits on desktop versions of the game more consistently
+- Layering on Week 4 songs with GF and the LIMO LOL HOW TF I MISS THIS
+- Chart's and chart editor now support changeBPM, GOD BLESS MTH FOR THIS ONE I BEEN STRUGGLIN WIT THAT SINCE OCTOBER LMAO ([GOD BLESS MTH](https://github.com/ninjamuffin99/Funkin/pull/382))
+- Fixed sustain note trails ALSO THANKS TO MTH U A REAL ONE ([MTH VERY POWERFUL](https://github.com/ninjamuffin99/Funkin/pull/415))
+- Antialiasing on the skyscraper lights
+
+## [0.2.7] - 2021-02-02
+### Added
+- PIXEL DAY UPDATE LOL 1 WEEK LATER
+- 3 New songs by Kawaisprite!
+- COOL CUTSCENES
+- WEEK 6 YOYOYOYOY
+- Swaggy pixel art by Moawling!
+### Changed
+- Made it so you lose sliiiightly more health when you miss a note.
+- Removed the default HaxeFlixel pause screen when the game window loses focus, can get screenshots of the game easier hehehe
+### Fixed
+- Idle animation bug with BF christmas and BF hair blow sprites ([Thanks to Injourn for the Pull Request!](https://github.com/ninjamuffin99/Funkin/pull/237))
+
+## [0.2.6] - 2021-01-20
+### Added
+- 3 NEW CHRISTMAS SONGS. 2 BY KAWAISPRITE, 1 BY BASSETFILMS!!!!! BF WITH DRIP! SANTA HANGIN OUT!
+- Enemy icons change when they you are winning a lot ([Thanks to pahaze for the Pull Request!](https://github.com/ninjamuffin99/Funkin/pull/138))
+- Holding CTRL in charting editor places notes on both sides
+- Q and E changes sustain lengths in note editor
+- Other charting editor workflow improvements
+- More hair physics
+- Heads appear at top of chart editor to help show which side ur charting for
+### Changed
+- Tweaked code relating to inputs, hopefully making notes that are close together more fair to hit
+### Removed
+- Removed APE
+### Fixed
+- Maybe fixed double notes / jump notes. Need to tweak it for balance, but should open things up for cooler charts in the future.
+- Old Verison popup screen weirdness ([Thanks to gedehari for the Pull Request!](https://github.com/ninjamuffin99/Funkin/pull/155))
 - Song no longer loops when finishing the song. ([Thanks Injourn for the Pull Request!](https://github.com/ninjamuffin99/Funkin/pull/132))
+- Screen wipe being cut off in the limo/mom stage. Should fill the whole screen now.
+- Boyfriend animations on hold notes, and pressing on repeating notes should behave differently
 
 ## [0.2.5] - 2020-12-27
 ### Added
