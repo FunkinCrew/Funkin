@@ -158,6 +158,8 @@ class PlayState extends MusicBeatState
 		shits = 0;
 		goods = 0;
 
+		misses++;
+
 		repPresses = 0;
 		repReleases = 0;
 
