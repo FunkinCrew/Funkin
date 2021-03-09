@@ -1,10 +1,51 @@
-# Friday Night Funkin
+![KadeEngineLogo](https://user-images.githubusercontent.com/26305836/110529589-4b4eb600-80ce-11eb-9c44-e899118b0bf0.png)
 
-This is the repository for Friday Night Funkin, a game originally made for Ludum Dare 47 "Stuck In a Loop".
+# Friday Night Funkin Kade Engine
+
+This is the repository for Friday Night Funkin Kade Engine, a game originally made for Ludum Dare 47 "Stuck In a Loop". And a compleltly reworked engine.
 
 Play the Ludum Dare prototype here: https://ninja-muffin24.itch.io/friday-night-funkin
 Play the Newgrounds one here: https://www.newgrounds.com/portal/view/770371
 Support the project on the itch.io page: https://ninja-muffin24.itch.io/funkin
+
+Mod Page: <TBD>
+	
+## What is Kade Engine?
+
+Kade Engine is a engine rework of the OG games engine. Simply put, we give you some great new features while also giving you the latest github features.
+
+## Features
+
+The features that Kade Engine implements are:
+- New Input System
+
+*Hate the old engine because your inputs are delayed? Are inputs being dropped? Well with this input system, thats a lot less now! If you wanna see an example of what it feels like, play any 4k rhythm game like Quaver or Etterna!*
+
+- Accuracy Mod
+
+*We've modified accuracy mod to create a amazing accuracy display, which shows your accuracy and misses. While giving you a basic ranking on how you are currently doing*
+
+- FPS Increase
+
+*We always love more FPS, and this is what you'll get. We've increase the FPS cap to 120.*
+
+- DFJK Support
+
+*As standern 4k practice, the default for many rhythm games keybinds are DFJK. We've allowed you to swap from WASD to DFJK at the options menu now.*
+
+- Replays
+
+*Ever wanted to show your friend a crazy score? Well the replay system lets you do that without recording!*
+
+**please note the replay system is in a beta, and is not 100% accuract YET*
+
+- Latest FNF Github Features
+
+*Have you ever seen a feature shown in the github, and you dont know how to build the game? Well features from there get ported into here, and then we can add them into this mod and build it for you!*
+
+**HUGE NOTICE**
+
+This is a **MOD**. This is not Vanilla and should be treated as a **MODIFICATION**. This will probably never be official, so dont get confused.
 
 ## Credits / shoutouts
 
