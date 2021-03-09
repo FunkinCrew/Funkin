@@ -50,6 +50,10 @@ The features that Kade Engine implements are:
 
 **please note the replay system is in a beta, and is not 100% accuract YET*
 
+- Offset
+
+*Does your headphones have an audio delay? Well you can set a note offset in the options menu!*
+
 - Latest FNF Github Features
 
 *Have you ever seen a feature shown in the github, and you dont know how to build the game? Well features from there get ported into here, and then we can add them into this mod and build it for you!*
