@@ -282,10 +282,11 @@ class TitleState extends MusicBeatState
 				var http = new haxe.Http("https://raw.githubusercontent.com/KadeDev/Kade-Engine/master/version.downloadMe");
 
 				http.onData = function (data:String) {
-				  var result = haxe.Json.parse(data);
-				  if (MainMenuState.kadeEngineVer !=  result && !OutdatedSubState.leftState)
+				  
+				  	if (MainMenuState.kadeEngineVer != data && !OutdatedSubState.leftState)
 					{
-						OutdatedSubState.needVer = result;
+						trace('outdated lmao! ' + data + ' != ' + MainMenuState.kadeEngineVer);
+						OutdatedSubState.needVer = data;
 						FlxG.switchState(new OutdatedSubState());
 					}
 					else
