@@ -283,9 +283,9 @@ class TitleState extends MusicBeatState
 
 				http.onData = function (data:String) {
 				  
-				  	if (MainMenuState.kadeEngineVer != data && !OutdatedSubState.leftState)
+				  	if (!MainMenuState.kadeEngineVer.contains(data.trim()) && !OutdatedSubState.leftState)
 					{
-						trace('outdated lmao! ' + data + ' != ' + MainMenuState.kadeEngineVer);
+						trace('outdated lmao! ' + data.trim() + ' != ' + MainMenuState.kadeEngineVer);
 						OutdatedSubState.needVer = data;
 						FlxG.switchState(new OutdatedSubState());
 					}
