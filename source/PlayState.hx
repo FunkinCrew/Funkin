@@ -158,6 +158,9 @@ class PlayState extends MusicBeatState
 		shits = 0;
 		goods = 0;
 
+		repPresses = 0;
+		repReleases = 0;
+
 		// var gameCam:FlxCamera = FlxG.camera;
 		camGame = new FlxCamera();
 		camHUD = new FlxCamera();
@@ -1487,6 +1490,12 @@ class PlayState extends MusicBeatState
 
 		FlxG.watch.addQuick("beatShit", curBeat);
 		FlxG.watch.addQuick("stepShit", curStep);
+		if (loadRep) // rep debug
+			{
+				FlxG.watch.addQuick('rep rpesses',repPresses);
+				FlxG.watch.addQuick('rep releases',repReleases);
+				// FlxG.watch.addQuick('Queued',inputsQueued);
+			}
 
 		if (curSong == 'Fresh')
 		{
