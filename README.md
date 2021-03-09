@@ -1,5 +1,7 @@
 ![KadeEngineLogo](https://user-images.githubusercontent.com/26305836/110529589-4b4eb600-80ce-11eb-9c44-e899118b0bf0.png)
 
+**Download the latest release [here](https://github.com/KadeDev/Kade-Engine/releases/latest)**
+
 ![image](https://user-images.githubusercontent.com/26305836/110532077-3c1d3780-80d1-11eb-8348-0e63d5c0f4f1.png)
 
 ![image](https://user-images.githubusercontent.com/26305836/110532103-450e0900-80d1-11eb-857e-d8ea1a1b8d7e.png)
