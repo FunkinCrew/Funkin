@@ -1773,7 +1773,6 @@ class PlayState extends MusicBeatState
 				{
 					daRating = 'shit';
 					totalNotesHit -= 2;
-					noteMiss(0);
 					score = -3000;
 					ss = false;
 					shits++;
@@ -1782,7 +1781,6 @@ class PlayState extends MusicBeatState
 				{
 					daRating = 'shit';
 					totalNotesHit -= 2;
-					noteMiss(0);
 					score = -3000;
 					ss = false;
 					shits++;
