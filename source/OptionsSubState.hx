@@ -5,16 +5,21 @@ import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
+import PlayState.*;
 
 class OptionsSubState extends MusicBeatSubstate
 {
-	var textMenuItems:Array<String> = ['Master Volume', 'Sound Volume', 'Controls'];
+	var textMenuItems:Array<String> = ['Master Volume', 'Sound Volume', 'Controls', 'Deuteranopia', 'Protanopia', 'Tritanopia'];
 
 	var selector:FlxSprite;
 	var curSelected:Int = 0;
 
 	var grpOptionsTexts:FlxTypedGroup<FlxText>;
-
+	
+	public static var Deuteranopiabool:Bool = false;
+	public static var Protanopiabool:Bool = false;
+	public static var Tritanopiabool:Bool = false;
+	
 	public function new()
 	{
 		super();
@@ -48,6 +53,11 @@ class OptionsSubState extends MusicBeatSubstate
 
 		if (curSelected >= textMenuItems.length)
 			curSelected = 0;
+		
+		if (controls.BACK)
+			{
+				FlxG.switchState(new MainMenuState());
+			}
 
 		grpOptionsTexts.forEach(function(txt:FlxText)
 		{
@@ -64,6 +74,21 @@ class OptionsSubState extends MusicBeatSubstate
 				case "Controls":
 					FlxG.state.closeSubState();
 					FlxG.state.openSubState(new ControlsSubState());
+				case "Deuteranopia":
+					OptionsSubState.Deuteranopiabool = true;
+					OptionsSubState.Protanopiabool = false;
+					OptionsSubState.Tritanopiabool = false;
+					trace("Deuteranopia");
+				case "Protanopia":
+					OptionsSubState.Protanopiabool = true;
+					OptionsSubState.Deuteranopiabool = false;
+					OptionsSubState.Tritanopiabool = false;
+					trace("Protanopia");
+				case "Tritanopia":
+					OptionsSubState.Tritanopiabool = true;
+					OptionsSubState.Protanopiabool = false;
+					OptionsSubState.Deuteranopiabool = false;
+					trace("Tritanopia");
 			}
 		}
 	}
