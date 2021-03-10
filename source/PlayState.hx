@@ -1528,21 +1528,6 @@ class PlayState extends MusicBeatState
 					// FlxG.switchState(new PlayState());
 			}
 		}
-		// better streaming of shit
-
-		// RESET = Quick Game Over Screen
-		if (controls.RESET)
-		{
-			health = 0;
-			trace("RESET = True");
-		}
-
-		// CHEAT = brandon's a pussy
-		if (controls.CHEAT)
-		{
-			health += 1;
-			trace("User is cheating!");
-		}
 
 		if (health <= 0)
 		{
