@@ -1,7 +1,9 @@
 package;
 
 import flixel.text.FlxText;
+#if desktop
 import sys.FileSystem;
+#end
 
 class ModdingSubstate extends MusicBeatSubstate
 {
@@ -11,6 +13,7 @@ class ModdingSubstate extends MusicBeatSubstate
 
 		// var pathShit
 
+		#if desktop
 		var modList = [];
 
 		for (file in FileSystem.readDirectory('./mods'))
@@ -29,5 +32,6 @@ class ModdingSubstate extends MusicBeatSubstate
 
 			loopNum++;
 		}
+		#end
 	}
 }
