@@ -95,7 +95,7 @@ class OptionsMenu extends MusicBeatState
 
 			if (controls.ACCEPT)
 			{
-				if (curSelected != 3)
+				if (curSelected != 4)
 					grpControls.remove(grpControls.members[curSelected]);
 				switch(curSelected)
 				{
