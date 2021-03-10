@@ -19,6 +19,10 @@ class OptionsSubState extends MusicBeatSubstate
 	{
 		super();
 
+		#if desktop
+		textMenuItems.push('Mods');
+		#end
+
 		grpOptionsTexts = new FlxTypedGroup<FlxText>();
 		add(grpOptionsTexts);
 
@@ -64,6 +68,9 @@ class OptionsSubState extends MusicBeatSubstate
 				case "Controls":
 					FlxG.state.closeSubState();
 					FlxG.state.openSubState(new ControlsSubState());
+				case "Mods":
+					FlxG.state.closeSubState();
+					FlxG.state.openSubState(new ModdingSubstate());
 			}
 		}
 	}
