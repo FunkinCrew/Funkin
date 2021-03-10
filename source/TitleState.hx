@@ -37,7 +37,7 @@ class TitleState extends MusicBeatState
 	override public function create():Void
 	{
 		#if polymod
-		polymod.Polymod.init({modRoot: "mods", dirs: ['introMod']});
+		polymod.Polymod.init({modRoot: "mods", dirs: ['introMod'], framework: OPENFL});
 		#end
 
 		PlayerSettings.init();
@@ -216,6 +216,17 @@ class TitleState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
+		/* 
+			if (FlxG.keys.justPressed.R)
+			{
+				#if polymod
+				polymod.Polymod.init({modRoot: "mods", dirs: ['introMod']});
+				trace('reinitialized');
+				#end
+			}
+
+		 */
+
 		if (FlxG.sound.music != null)
 			Conductor.songPosition = FlxG.sound.music.time;
 		// FlxG.watch.addQuick('amp', FlxG.sound.music.amplitude);
