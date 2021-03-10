@@ -30,11 +30,11 @@ Kade Engine is an engine rework of the OG games engine. Simply put, we give you 
 The features that Kade Engine implements are:
 - New Input System
 
-*Hate the old engine because your inputs are delayed? Are inputs being dropped? Well with this input system, that's a lot less now! If you wanna see an example of what it feels like, play any 4k rhythm game like Quaver or Etterna!*
+*Hate the old engine because your inputs are delayed? Are inputs being dropped? Well with this input system, inputs rarely get dropped! If you wanna see an example of what it feels like, play any 4k rhythm game like Quaver or Etterna!*
 
 - Accuracy Mod
 
-*We've modified accuracy mod to create an amazing accuracy display, which shows your accuracy and misses. While giving you a basic ranking on how you are currently playing.*
+*We've modified the accuracy mod to create an amazing accuracy display, which shows your accuracy and misses. While giving you a basic ranking on how you are currently playing.*
 
 - FPS Increase
 
@@ -46,17 +46,17 @@ The features that Kade Engine implements are:
 
 - Replays
 
-*Ever wanted to show your friend a crazy score? Well the replay system lets you do that without recording!*
+*Ever wanted to show your friend a crazy score? Well, the replay system lets you do that without recording videos!*
 
 **please note the replay system is in beta, and is not 100% accurate YET*
 
 - Offset
 
-*Does your headphones have an audio delay? Well you can set a note offset in the options menu!*
+*Do your headphones have an audio delay? Well, you can set a note offset in the options menu!*
 
 - Latest FNF Github Features
 
-*Have you ever seen a feature shown in the github, and you don't know how to build the game? Well, features from there get ported into here, and then we can add them into this mod and build it for you!*
+*Have you ever seen a feature shown in the GitHub repo, and you don't know how to build the game? Well, features from there get ported into here, and then we can add them into this mod and build it for you!*
 
 **HUGE NOTICE**
 
