@@ -38,6 +38,8 @@ import lime.utils.Assets;
 import openfl.display.BlendMode;
 import openfl.display.StageQuality;
 import openfl.filters.ShaderFilter;
+import openfl.filters.ColorMatrixFilter;
+import openfl.filters.BitmapFilter;
 
 using StringTools;
 
@@ -112,6 +114,9 @@ class PlayState extends MusicBeatState
 	var talking:Bool = true;
 	var songScore:Int = 0;
 	var scoreTxt:FlxText;
+	var filters:Array<BitmapFilter> = [];
+	
+	var optionsubstate:OptionsSubState;
 
 	public static var campaignScore:Int = 0;
 
@@ -854,7 +859,7 @@ class PlayState extends MusicBeatState
 
 		generateStaticArrows(0);
 		generateStaticArrows(1);
-
+		ShaderFilters();
 		talking = false;
 		startedCountdown = true;
 		Conductor.songPosition = 0;
@@ -1241,7 +1246,7 @@ class PlayState extends MusicBeatState
 		#if !debug
 		perfectMode = false;
 		#end
-
+		
 		if (FlxG.keys.justPressed.NINE)
 		{
 			if (iconP1.animation.curAnim.name == 'bf-old')
@@ -2354,6 +2359,47 @@ class PlayState extends MusicBeatState
 			lightningStrikeShit();
 		}
 	}
-
+	
+	function ShaderFilters():Void
+	{
+		//Matrix shaders:
+		if (OptionsSubState.Deuteranopiabool)
+		{
+			var matrix:Array<Float> = [
+						0.43, 0.72, -.15, 0, 0,
+						0.34, 0.57, 0.09, 0, 0,
+						-.02, 0.03,    1, 0, 0,
+						   0,    0,    0, 1, 0,
+					];
+			filters.push(new ColorMatrixFilter(matrix));
+		}
+		
+		if (OptionsSubState.Protanopiabool)
+		{
+			var matrix:Array<Float> = [
+						0.20, 0.99, -.19, 0, 0,
+						0.16, 0.79, 0.04, 0, 0,
+						0.01, -.01,    1, 0, 0,
+						   0,    0,    0, 1, 0,
+					];
+			filters.push(new ColorMatrixFilter(matrix));
+		}
+		
+		if (OptionsSubState.Tritanopiabool)
+		{
+			var matrix:Array<Float> = [
+						0.20, 0.99, -.19, 0, 0,
+						0.16, 0.79, 0.04, 0, 0,
+						0.01, -.01,    1, 0, 0,
+						   0,    0,    0, 1, 0,
+					];
+			filters.push(new ColorMatrixFilter(matrix));
+		}
+			camHUD.setFilters(filters);
+			camGame.setFilters(filters);
+			camHUD.filtersEnabled = true;
+			camGame.filtersEnabled = true;
+	}
+	
 	var curLight:Int = 0;
 }
