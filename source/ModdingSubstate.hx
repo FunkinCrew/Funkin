@@ -6,7 +6,9 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import polymod.Polymod;
+#if desktop
 import sys.FileSystem;
+#end
 
 class ModdingSubstate extends MusicBeatSubstate
 {
@@ -92,6 +94,7 @@ class ModdingSubstate extends MusicBeatSubstate
 		var modList = [];
 		modFolders = [];
 
+		#if desktop
 		for (file in FileSystem.readDirectory('./mods'))
 		{
 			if (FileSystem.isDirectory('./mods/' + file))
@@ -113,6 +116,7 @@ class ModdingSubstate extends MusicBeatSubstate
 
 			loopNum++;
 		}
+		#end
 	}
 
 	private function organizeByY():Void
