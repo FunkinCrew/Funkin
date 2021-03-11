@@ -5,10 +5,11 @@ import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
+import PlayState.*;
 
 class OptionsSubState extends MusicBeatSubstate
 {
-	var textMenuItems:Array<String> = ['Master Volume', 'Sound Volume', 'Controls', 'Deuteranopia', 'Protanopia', 'Tritanopia'];
+	var textMenuItems:Array<String> = ['Master Volume', 'Sound Volume', 'Controls', 'Deuteranopia', 'Protanopia', 'Tritanopia', 'No filter'];
 
 	var selector:FlxSprite;
 	var curSelected:Int = 0;
@@ -88,6 +89,11 @@ class OptionsSubState extends MusicBeatSubstate
 					OptionsSubState.Protanopiabool = false;
 					OptionsSubState.Deuteranopiabool = false;
 					trace("Tritanopia");
+				case "No filter":
+					OptionsSubState.Tritanopiabool = false;
+					OptionsSubState.Protanopiabool = false;
+					OptionsSubState.Deuteranopiabool = false;
+					trace("No Filter");
 			}
 		}
 	}
