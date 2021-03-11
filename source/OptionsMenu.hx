@@ -124,7 +124,7 @@ class OptionsMenu extends MusicBeatState
 						grpControls.add(ctrl);
 					case 3:
 						FlxG.save.data.accuracyDisplay = !FlxG.save.data.accuracyDisplay;
-						var ctrl:Alphabet = new Alphabet(0, (70 * curSelected) + 30, "Toggle accuracy display " + (FlxG.save.data.accuracyDisplay ? "off" : "on"), true, false)
+						var ctrl:Alphabet = new Alphabet(0, (70 * curSelected) + 30, "Toggle accuracy display " + (FlxG.save.data.accuracyDisplay ? "off" : "on"), true, false);
 						ctrl.isMenuItem = true;
 						ctrl.targetY = curSelected - 3;
 						grpControls.add(ctrl);

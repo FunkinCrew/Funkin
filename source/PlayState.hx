@@ -1342,7 +1342,7 @@ class PlayState extends MusicBeatState
 		}
 		else
 		{
-			scoreTxt.text = "Score:" + songScore);
+			scoreTxt.text = "Score:" + songScore;
 		}
 		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause)
 		{
