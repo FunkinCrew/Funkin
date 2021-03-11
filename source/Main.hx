@@ -7,6 +7,8 @@ import openfl.Lib;
 import openfl.display.FPS;
 import openfl.display.Sprite;
 import openfl.events.Event;
+import flixel.util.FlxSave;
+import flixel.math.FlxPoint;
 
 class Main extends Sprite
 {	
@@ -17,6 +19,8 @@ class Main extends Sprite
 	var framerate:Int = 60; // How many frames per second the game should run at.
 	var skipSplash:Bool = true; // Whether to skip the flixel splash screen that appears in release mode.
 	var startFullscreen:Bool = false; // Whether to start the game in fullscreen on desktop targets
+
+	var _gamesave:FlxSave;
 
 	// You can pretty much ignore everything from here on - your code should go in your states.
 
@@ -66,6 +70,15 @@ class Main extends Sprite
 		#if !debug
 		initialState = TitleState;
 		#end
+
+		_gamesave = new FlxSave();
+    	_gamesave.bind("gamesetup");
+
+		if (_gamesave.data.fps != null)
+		{
+			framerate = _gamesave.data.fps[0];
+		}
+
 
 		addChild(new FlxGame(1280, 720, initialState, 1, framerate, framerate, skipSplash, startFullscreen));
 		//addChild(new FlxGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen));

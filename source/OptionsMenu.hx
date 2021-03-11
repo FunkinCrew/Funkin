@@ -18,13 +18,20 @@ class OptionsMenu extends MusicBeatState
 	var selector:FlxText;
 	var curSelected:Int = 0;
 
+	var insubstate:Bool = false;
+
 	//var controlsStrings:Array<String> = [];
 
 	private var grpControls:FlxTypedGroup<Alphabet>;
 
-	var menuItems:Array<String> = ['controls','About'];
+	var menuItems:Array<String> = ['controls', 'set fps','About'];
 
 	var _pad:FlxVirtualPad;
+
+	var UP_P:Bool;
+	var DOWN_P:Bool;
+	var BACK:Bool;
+	var ACCEPT:Bool;
 
 	override function create()
 	{
@@ -60,10 +67,12 @@ class OptionsMenu extends MusicBeatState
 	{
 		super.update(elapsed);
 
-		var UP_P = _pad.buttonUp.justPressed;
-		var DOWN_P = _pad.buttonDown.justPressed;
-		var BACK = _pad.buttonB.justPressed;
-		var ACCEPT = _pad.buttonA.justPressed;
+		if (!insubstate){
+			UP_P = _pad.buttonUp.justReleased;
+			DOWN_P = _pad.buttonDown.justReleased;
+			BACK = _pad.buttonB.justReleased;
+			ACCEPT = _pad.buttonA.justReleased;
+		}
 		
 		if (ACCEPT)
 		{
@@ -75,6 +84,9 @@ class OptionsMenu extends MusicBeatState
 					FlxG.switchState(new CustomControlsState());
 				case "config":
 					trace("hello");
+				case "set fps":
+					insubstate = true;
+					openSubState(new SetFpsSubState());
 				case "About":
 					FlxG.switchState(new AboutState());
 			}
@@ -146,4 +158,9 @@ class OptionsMenu extends MusicBeatState
 			}
 		}
 	}
+	override function closeSubState()
+		{
+			insubstate = false;
+			super.closeSubState();
+		}	
 }

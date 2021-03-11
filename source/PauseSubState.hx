@@ -18,7 +18,7 @@ class PauseSubState extends MusicBeatSubstate
 {
 	var grpMenuShit:FlxTypedGroup<Alphabet>;
 
-	var menuItems:Array<String> = ['Resume', 'Restart Song', 'Exit to menu'];
+	var menuItems:Array<String> = ['Resume', 'Restart Song', 'debug menu', 'Exit to menu'];
 	var curSelected:Int = 0;
 
 	var pauseMusic:FlxSound;
@@ -99,6 +99,10 @@ class PauseSubState extends MusicBeatSubstate
 		var downP = _pad.buttonDown.justPressed;
 		var accepted = _pad.buttonA.justPressed;
 
+		if (FlxG.android.justReleased.BACK == true){
+			close();
+		}
+
 		if (upP)
 		{
 			changeSelection(-1);
@@ -118,6 +122,8 @@ class PauseSubState extends MusicBeatSubstate
 					close();
 				case "Restart Song":
 					FlxG.resetState();
+				case "debug menu":
+					FlxG.switchState(new ChartingState());
 				case "Exit to menu":
 					FlxG.switchState(new MainMenuState());
 			}
