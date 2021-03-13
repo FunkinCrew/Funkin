@@ -1,7 +1,9 @@
 @echo off
+title FNF Setup - Start
 echo Make sure Haxe 4.1.5 and HaxeFlixel is installed (4.1.5 is important)!
 echo Press any key to install required libraries.
 pause >nul
+title FNF Setup - Installing libraries
 echo Installing haxelib libraries...
 haxelib install lime
 haxelib install openfl
@@ -12,18 +14,22 @@ haxelib install hscript
 haxelib install newgrounds
 haxelib run lime setup
 haxelib install flixel-tools
+echo FNF Setup - User action required
+cls
 haxelib run flixel-tools setup
 cls
-echo Make sure you have git installed. If you have GitHub Desktop or Visual Studio, this will 99% be installed for you. You should still download it to check: https://git-scm.com/downloads
-echo Press any key to install final library.
+echo Make sure you have git installed. You can download it here: https://git-scm.com/downloads
+echo Press any key to install polymod.
 pause >nul
-echo Installing polymod...
+title FNF Setup - Installing libraries
 haxelib git polymod https://github.com/larsiusprime/polymod.git
 cls
+echo FNF Setup - User action required
 set /p menu="Would you like to fix the transition bug? [Y/N]"
-       if %menu%==Y haxelib git flixel-addons https://github.com/HaxeFlixel/flixel-addons
+       if %menu%==Y title FNF Setup - Installing libraries && haxelib git flixel-addons https://github.com/HaxeFlixel/flixel-addons
        if %menu%==2 rem Nothing done
        cls
+echo FNF Setup - User action required
 set /p menu2="Would you like to automatically make the APIStuff file? [Y/N]"
        if %menu2%==Y goto APIStuffYes
        if $menu2%==N goto APIStuffNo
@@ -41,11 +47,13 @@ echo         public static var EncKey:String = "";
 echo }
 )>APIStuff.hx
 cd ..
+echo FNF Setup - Success
 echo Setup successful. Press any key to exit.
 pause >nul
 exit
 
 :APIStuffNo
+echo FNF Setup - Success
 echo Setup successful. Press any key to exit.
 pause >nul
 exit
