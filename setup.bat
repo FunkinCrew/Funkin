@@ -13,11 +13,13 @@ haxelib install newgrounds
 haxelib run lime setup
 haxelib install flixel-tools
 haxelib run flixel-tools setup
+cls
 echo Make sure you have git installed. If you have GitHub Desktop or Visual Studio, this will 99% be installed for you. You should still download it to check: https://git-scm.com/downloads
 echo Press any key to install final library.
 pause >nul
 echo Installing polymod...
 haxelib git polymod https://github.com/larsiusprime/polymod.git
+cls
 set /p menu="Would you like to fix the transition bug? [Y/N]"
        if %menu%==Y haxelib git flixel-addons https://github.com/HaxeFlixel/flixel-addons
        if %menu%==2 rem Nothing done
