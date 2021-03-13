@@ -19,7 +19,7 @@ set /p menu="Would you like to fix the transition bug? [Y/N]"
        cls
 set /p menu2="Would you like to automatically make the APIStuff file? [Y/N]"
        if %menu2%==Y goto APIStuffYes
-       if $menu2%==N rem Nothing done
+       if $menu2%==N goto APIStuffNo
        cls
        
 :APIStuffYes
@@ -34,6 +34,11 @@ echo         public static var EncKey:String = "";
 echo }
 )>APIStuff.hx
 cd ..
+echo Setup successful. Press any key to exit.
+pause >nul
+exit
+
+:APIStuffNo
 echo Setup successful. Press any key to exit.
 pause >nul
 exit
