@@ -33,7 +33,7 @@ exit
 
 :BuildWindows
 echo.
-echo These will require dependencies. You can find them in the README.md. It will also take *forever*.
+echo These will require dependencies. You can find them in the README. It will also take *forever*.
 echo Press any key to start building.
 pause >nul
 title FNF Build - Building for Windows
