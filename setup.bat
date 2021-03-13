@@ -57,12 +57,14 @@ echo         public static var EncKey:String = "";
 echo }
 )>APIStuff.hx
 cd ..
+cls
 title FNF Setup - Success
 echo Setup successful. Press any key to exit.
 pause >nul
 exit
 
 :APIStuffNo
+cls
 title FNF Setup - Success
 echo Setup successful. Press any key to exit.
 pause >nul
