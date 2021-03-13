@@ -26,7 +26,7 @@ haxelib git polymod https://github.com/larsiusprime/polymod.git
 cls
 echo FNF Setup - User action required
 set /p menu="Would you like to fix the transition bug? [Y/N]"
-       if %menu%==Y title FNF Setup - Installing libraries && haxelib git flixel-addons https://github.com/HaxeFlixel/flixel-addons
+       if %menu%==Y goto FixTransitionBug
        if %menu%==2 rem Nothing done
        cls
 echo FNF Setup - User action required
@@ -57,3 +57,7 @@ echo FNF Setup - Success
 echo Setup successful. Press any key to exit.
 pause >nul
 exit
+
+:FixTransitionBug
+title FNF Setup - Installing libraries
+haxelib git flixel-addons https://github.com/HaxeFlixel/flixel-addons
