@@ -2289,10 +2289,6 @@ class PlayState extends MusicBeatState
 			}
 			// else
 			// Conductor.changeBPM(SONG.bpm);
-
-			// Dad doesnt interupt his own notes
-			if (SONG.notes[Math.floor(curStep / 16)].mustHitSection)
-				dad.dance();
 		}
 		// FlxG.log.add('change bpm' + SONG.notes[Std.int(curStep / 16)].changeBPM);
 		wiggleShit.update(Conductor.crochet);
@@ -2321,9 +2317,17 @@ class PlayState extends MusicBeatState
 			gf.dance();
 		}
 
-		if (!boyfriend.animation.curAnim.name.startsWith("sing"))
+		if (curBeat % 2 == 0)
 		{
-			boyfriend.playAnim('idle');
+			if (!boyfriend.animation.curAnim.name.startsWith("sing"))
+				boyfriend.playAnim('idle');
+			if (!dad.animation.curAnim.name.startsWith("sing"))
+				dad.dance();
+		}
+		else if (dad.curCharacter == 'spooky')
+		{
+			if (!dad.animation.curAnim.name.startsWith("sing"))
+				dad.dance();
 		}
 
 		if (curBeat % 8 == 7 && curSong == 'Bopeebo')
