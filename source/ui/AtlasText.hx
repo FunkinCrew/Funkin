@@ -18,23 +18,24 @@ abstract BoldText(AtlasText) from AtlasText to AtlasText
  */
 class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
 {
-	static var maxHeights = new Map<AtlasFont, Float>();
-	public var text(default, set):String;
+	static var fonts = new Map<AtlasFont, AtlasFontData>();
+	static var casesAllowed = new Map<AtlasFont, Case>();
+	public var text(default, set):String = "";
 	
-	var atlas:FlxAtlasFrames;
-	var maxHeight = 0.0;
+	var font:AtlasFontData;
 	
-	public function new (x = 0.0, y = 0.0, text:String, font:AtlasFont = Default)
+	public var atlas(get, never):FlxAtlasFrames;
+	inline function get_atlas() return font.atlas;
+	public var caseAllowed(get, never):Case;
+	inline function get_caseAllowed() return font.caseAllowed;
+	public var maxHeight(get, never):Float;
+	inline function get_maxHeight() return font.maxHeight;
+	
+	public function new (x = 0.0, y = 0.0, text:String, fontName:AtlasFont = Default)
 	{
-		atlas = Paths.getSparrowAtlas("fonts/" + font.getName().toLowerCase());
-		if (maxHeights.exists(font))
-		{
-			maxHeight = 0;
-			for (frame in atlas.frames)
-				maxHeight = Math.max(maxHeight, frame.frame.height);
-			maxHeights[font] = maxHeight;
-		}
-		maxHeight = maxHeights[font];
+		if (!fonts.exists(fontName))
+			fonts[fontName] = new AtlasFontData(fontName);
+		font = fonts[fontName];
 		
 		super(x, y);
 		
@@ -43,18 +44,87 @@ class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
 	
 	function set_text(value:String)
 	{
-		if (this.text == value)
+		if (value == null)
+			value = "";
+		
+		var caseValue = restrictCase(value);
+		var caseText = restrictCase(this.text);
+		
+		this.text = value;
+		if (caseText == caseValue)
+			return value; // cancel redraw
+		
+		if (caseValue.indexOf(caseText) == 0)
+		{
+			// new text is just old text with additions at the end, append the difference
+			appendTextCased(caseValue.substr(caseText.length));
 			return this.text;
+		}
+		
+		value = caseValue;
 		
 		group.kill();
 		
+		if (value == "")
+			return this.text;
+		
+		appendTextCased(this.text);
+		return this.text;
+	}
+	
+	/**
+	 * Adds new characters, without needing to redraw the previous characters
+	 * @param text The text to add.
+	 * @throws String if `text` is null.
+	 */
+	public function appendText(text:String)
+	{
+		if (text == null)
+			throw "cannot append null";
+		
+		if (text == "")
+			return;
+		
+		this.text = this.text + text;
+	}
+	
+	/**
+	 * Converts all characters to fit the font's `allowedCase`.
+	 * @param text 
+	 */
+	function restrictCase(text:String)
+	{
+		return switch(caseAllowed)
+		{
+			case Both: text;
+			case Upper: text.toUpperCase();
+			case Lower: text.toLowerCase();
+		}
+	}
+	
+	/**
+	 * Adds new text on top of the existing text. Helper for other methods; DOESN'T CHANGE `this.text`.
+	 * @param text The text to add, assumed to match the font's `caseAllowed`.
+	 */
+	function appendTextCased(text:String)
+	{
+		var charCount = group.countLiving();
 		var xPos:Float = 0;
 		var yPos:Float = 0;
-		
-		var charCount = 0;
-		for (char in value.split(""))
+		// `countLiving` returns -1 if group is empty
+		if (charCount == -1)
+			charCount = 0;
+		else if (charCount > 0)
 		{
-			switch(char)
+			var lastChar = group.members[charCount - 1];
+			xPos = lastChar.x + lastChar.width;
+			yPos = lastChar.y + lastChar.height - maxHeight;
+		}
+		
+		var splitValues = text.split("");
+		for (i in 0...splitValues.length)
+		{
+			switch(splitValues[i])
 			{
 				case " ":
 				{
@@ -63,9 +133,9 @@ class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
 				case "\n":
 				{
 					xPos = 0;
-					yPos += 55;
+					yPos += maxHeight;
 				}
-				default:
+				case char:
 				{
 					var charSprite:AtlasChar;
 					if (group.members.length <= charCount)
@@ -85,8 +155,6 @@ class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
 				}
 			}
 		}
-		// updateHitbox();
-		return this.text = value;
 	}
 }
 
@@ -105,7 +173,8 @@ class AtlasChar extends FlxSprite
 	{
 		if (this.char != value)
 		{
-			animation.addByPrefix("anim", getAnimPrefix(value), 24);
+			var prefix = getAnimPrefix(value);
+			animation.addByPrefix("anim", prefix, 24);
 			animation.play("anim");
 			updateHitbox();
 		}
@@ -131,6 +200,47 @@ class AtlasChar extends FlxSprite
 			default: char;
 		}
 	}
+}
+
+private class AtlasFontData
+{
+	static public var upperChar = ~/^[A-Z]\d+$/;
+	static public var lowerChar = ~/^[a-z]\d+$/;
+	
+	public var atlas:FlxAtlasFrames;
+	public var maxHeight:Float = 0.0;
+	public var caseAllowed:Case = Both;
+	
+	public function new (name:AtlasFont)
+	{
+		atlas = Paths.getSparrowAtlas("fonts/" + name.getName().toLowerCase());
+		atlas.parent.destroyOnNoUse = false;
+		atlas.parent.persist = true;
+		
+		var containsUpper = false;
+		var containsLower = false;
+		
+		for (frame in atlas.frames)
+		{
+			maxHeight = Math.max(maxHeight, frame.frame.height);
+			
+			if (!containsUpper)
+				containsUpper = upperChar.match(frame.name);
+			
+			if (!containsLower)
+				containsLower = lowerChar.match(frame.name);
+		}
+		
+		if (containsUpper != containsLower)
+			caseAllowed = containsUpper ? Upper : Lower;
+	}
+}
+
+enum Case
+{
+	Both;
+	Upper;
+	Lower;
 }
 
 enum AtlasFont
