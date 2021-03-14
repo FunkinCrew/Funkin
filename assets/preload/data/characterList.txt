@@ -16,3 +16,4 @@ senpai
 senpai-angry
 spirit
 tankman
+pico-speaker

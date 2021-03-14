@@ -4,6 +4,7 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.animation.FlxBaseAnimation;
 import flixel.graphics.frames.FlxAtlasFrames;
+import haxe.io.Path;
 
 using StringTools;
 
@@ -32,7 +33,7 @@ class Character extends FlxSprite
 		{
 			case 'gf':
 				// GIRLFRIEND CODE
-				tex = Paths.getSparrowAtlas('GF_assets');
+				tex = Paths.getSparrowAtlas('characters/GF_assets');
 				frames = tex;
 				animation.addByPrefix('cheer', 'GF Cheer', 24, false);
 				animation.addByPrefix('singLEFT', 'GF left note', 24, false);
@@ -46,19 +47,7 @@ class Character extends FlxSprite
 				animation.addByIndices('hairFall', "GF Dancing Beat Hair Landing", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], "", 24, false);
 				animation.addByPrefix('scared', 'GF FEAR', 24);
 
-				addOffset('cheer');
-				addOffset('sad', -2, -21);
-				addOffset('danceLeft', 0, -9);
-				addOffset('danceRight', 0, -9);
-
-				addOffset("singUP", 0, 4);
-				addOffset("singRIGHT", 0, -20);
-				addOffset("singLEFT", 0, -19);
-				addOffset("singDOWN", 0, -20);
-				addOffset('hairBlow', 45, -8);
-				addOffset('hairFall', 0, -9);
-
-				addOffset('scared', -2, -17);
+				loadOffsetFile(curCharacter);
 
 				playAnim('danceRight');
 
@@ -266,8 +255,20 @@ class Character extends FlxSprite
 
 				flipX = true;
 
+			case 'pico-speaker':
+				frames = Paths.getSparrowAtlas('characters/picoSpeaker');
+
+				quickAnimAdd('shoot1', "Pico shoot 1");
+				quickAnimAdd('shoot2', "Pico shoot 2");
+				quickAnimAdd('shoot3', "Pico shoot 3");
+				quickAnimAdd('shoot4', "Pico shoot 4");
+
+				// here for now, will be replaced later for less copypaste
+				loadOffsetFile(curCharacter);
+				playAnim('shoot1');
+
 			case 'bf':
-				var tex = Paths.getSparrowAtlas('BOYFRIEND');
+				var tex = Paths.getSparrowAtlas('characters/BOYFRIEND');
 				frames = tex;
 				animation.addByPrefix('idle', 'BF idle dance', 24, false);
 				animation.addByPrefix('singUP', 'BF NOTE UP0', 24, false);
@@ -286,24 +287,13 @@ class Character extends FlxSprite
 
 				animation.addByPrefix('scared', 'BF idle shaking', 24);
 
-				addOffset('idle', -5);
-				addOffset("singUP", -29, 27);
-				addOffset("singRIGHT", -38, -7);
-				addOffset("singLEFT", 12, -6);
-				addOffset("singDOWN", -10, -50);
-				addOffset("singUPmiss", -29, 27);
-				addOffset("singRIGHTmiss", -30, 21);
-				addOffset("singLEFTmiss", 12, 24);
-				addOffset("singDOWNmiss", -11, -19);
-				addOffset("hey", 7, 4);
-				addOffset('firstDeath', 37, 11);
-				addOffset('deathLoop', 37, 5);
-				addOffset('deathConfirm', 37, 69);
-				addOffset('scared', -4);
+				loadOffsetFile(curCharacter);
 
 				playAnim('idle');
 
 				flipX = true;
+
+				loadOffsetFile(curCharacter);
 
 			case 'bf-christmas':
 				var tex = Paths.getSparrowAtlas('christmas/bfChristmas');
@@ -521,15 +511,7 @@ class Character extends FlxSprite
 				animation.addByPrefix('singUPmiss', 'Tankman UP note MISS', 24, false);
 				animation.addByPrefix('singDOWNmiss', 'Tankman DOWN note MISS', 24, false);
 
-				addOffset('idle');
-				addOffset("singUP", 24, 56);
-				addOffset("singRIGHT", -1, -7);
-				addOffset("singLEFT", 100, -14);
-				addOffset("singDOWN", 98, -90);
-				addOffset("singUPmiss", 24, 56);
-				addOffset("singRIGHTmiss", -1, -7);
-				addOffset("singLEFTmiss", 100, -14);
-				addOffset("singDOWNmiss", 98, -90);
+				loadOffsetFile(curCharacter);
 
 				playAnim('idle');
 
@@ -561,9 +543,20 @@ class Character extends FlxSprite
 		}
 	}
 
+	function quickAnimAdd(name:String, prefix:String)
+	{
+		animation.addByPrefix(name, prefix, 24, false);
+	}
+
 	private function loadOffsetFile(offsetCharacter:String)
 	{
-		var daFile:String = Paths.file("characters/" + offsetCharacter + "Offsets.txt");
+		var daFile:Array<String> = CoolUtil.coolTextFile(Paths.file("images/characters/" + offsetCharacter + "Offsets.txt"));
+
+		for (i in daFile)
+		{
+			var splitWords:Array<String> = i.split(" ");
+			addOffset(splitWords[0], Std.parseInt(splitWords[1]), Std.parseInt(splitWords[2]));
+		}
 	}
 
 	override function update(elapsed:Float)
@@ -649,6 +642,8 @@ class Character extends FlxSprite
 						else
 							playAnim('danceLeft');
 					}
+				case 'pico-speaker':
+					playAnim('shoot' + FlxG.random.int(1, 4), true);
 
 				case 'spooky':
 					danced = !danced;
