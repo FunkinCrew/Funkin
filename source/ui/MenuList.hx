@@ -65,12 +65,12 @@ class MenuTypedList<T:MenuItem> extends FlxTypedGroup<T>
 		
 		var newIndex = switch(navControls)
 		{
-			case Vertical    : navList(controls.UP_P  , controls.DOWN_P);
-			case Horizontal  : navList(controls.LEFT_P, controls.RIGHT_P);
-			case Both        : navList(controls.LEFT_P || controls.UP_P, controls.RIGHT_P || controls.DOWN_P);
+			case Vertical    : navList(controls.UI_UP_P  , controls.UI_DOWN_P);
+			case Horizontal  : navList(controls.UI_LEFT_P, controls.UI_RIGHT_P);
+			case Both        : navList(controls.UI_LEFT_P || controls.UI_UP_P, controls.UI_RIGHT_P || controls.UI_DOWN_P);
 			
-			case Columns(num): navGrid(num, controls.LEFT_P, controls.RIGHT_P, controls.UP_P, controls.DOWN_P);
-			case Rows   (num): navGrid(num, controls.UP_P, controls.DOWN_P, controls.LEFT_P, controls.RIGHT_P);
+			case Columns(num): navGrid(num, controls.UI_LEFT_P, controls.UI_RIGHT_P, controls.UI_UP_P  , controls.UI_DOWN_P );
+			case Rows   (num): navGrid(num, controls.UI_UP_P  , controls.UI_DOWN_P , controls.UI_LEFT_P, controls.UI_RIGHT_P);
 		}
 		
 		if (newIndex != selectedIndex)
