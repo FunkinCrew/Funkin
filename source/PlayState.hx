@@ -728,6 +728,8 @@ class PlayState extends MusicBeatState
 		add(kadeEngineWatermark);
 
 		scoreTxt = new FlxText(healthBarBG.x + healthBarBG.width / 2 - 150, healthBarBG.y + 50, 0, "", 20);
+		if (!FlxG.save.data.accuracyDisplay)
+			scoreTxt.x = healthBarBG.x + healthBarBG.width / 2;
 		scoreTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 		scoreTxt.scrollFactor.set();
 		add(scoreTxt);
