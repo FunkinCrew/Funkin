@@ -34,7 +34,7 @@ class TextTypedMenuItem<T:AtlasText> extends MenuTypedItem<T>
 		super(x, y, label, name, callback);
 	}
 	
-	override function setItem(name:String, ?callback:() -> Void)
+	override function setItem(name:String, ?callback:Void -> Void)
 	{
 		if (label != null)
 		{

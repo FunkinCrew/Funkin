@@ -24,6 +24,7 @@ import ui.NgPrompt;
 
 import ui.AtlasMenuList;
 import ui.MenuList;
+import ui.OptionsState;
 import ui.Prompt;
 
 using StringTools;
@@ -80,16 +81,16 @@ class MainMenuState extends MusicBeatState
 		});
 		
 		
-		var hasPopupBlocker = #if web true #else false #end;
 		
 		menuItems.enabled = false;// disable for intro
 		menuItems.createItem('story mode', function () startExitState(new StoryMenuState()));
 		menuItems.createItem('freeplay', function () startExitState(new FreeplayState()));
 		// addMenuItem('options', function () startExitState(new OptionMenu()));
 		#if CAN_OPEN_LINKS
+			var hasPopupBlocker = #if web true #else false #end;
 			menuItems.createItem('donate', selectDonate, hasPopupBlocker);
 		#end
-		menuItems.createItem('options', function () startExitState(new OptionsMenu()));
+		menuItems.createItem('options', function () startExitState(new OptionsState()));
 		// #if newgrounds
 		// 	if (NGio.isLoggedIn)
 		// 		menuItems.createItem("logout", selectLogout);
@@ -136,6 +137,7 @@ class MainMenuState extends MusicBeatState
 		camFollow.setPosition(selected.getGraphicMidpoint().x, selected.getGraphicMidpoint().y);
 	}
 	
+	#if CAN_OPEN_LINKS
 	function selectDonate()
 	{
 		#if linux
@@ -144,6 +146,7 @@ class MainMenuState extends MusicBeatState
 		FlxG.openURL('https://ninja-muffin24.itch.io/funkin');
 		#end
 	}
+	#end
 	
 	#if newgrounds
 	function selectLogin()
