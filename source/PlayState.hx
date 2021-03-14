@@ -124,6 +124,10 @@ class PlayState extends MusicBeatState
 
 	override public function create()
 	{
+
+		if (FlxG.sound.music != null)
+			FlxG.sound.music.stop();
+
 		// var gameCam:FlxCamera = FlxG.camera;
 		camGame = new FlxCamera();
 		camHUD = new FlxCamera();
@@ -1274,7 +1278,14 @@ class PlayState extends MusicBeatState
 			persistentDraw = true;
 			paused = true;
 
-			openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
+			// 1 / 1000 chance for Gitaroo Man easter egg
+			if (FlxG.random.bool(0.1))
+			{
+				// gitaroo man easter egg
+				FlxG.switchState(new GitarooPause());
+			}
+			else
+				openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 		}
 
 		if (FlxG.keys.justPressed.SEVEN)
@@ -1473,14 +1484,7 @@ class PlayState extends MusicBeatState
 			vocals.stop();
 			FlxG.sound.music.stop();
 
-			// 1 / 1000 chance for Gitaroo Man easter egg
-			if (FlxG.random.bool(0.1))
-			{
-				// gitaroo man easter egg
-				FlxG.switchState(new GitarooPause());
-			}
-			else
-				openSubState(new GameOverSubstate(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
+			openSubState(new GameOverSubstate(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 
 			// FlxG.switchState(new GameOverState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 		}
@@ -1566,27 +1570,18 @@ class PlayState extends MusicBeatState
 
 				if (daNote.y < -daNote.height)
 				{
-					if (daNote.isSustainNote && daNote.wasGoodHit)
+					if (daNote.tooLate || !daNote.wasGoodHit)
 					{
-						daNote.kill();
-						notes.remove(daNote, true);
-						daNote.destroy();
+						health -= 0.0475;
+						vocals.volume = 0;
 					}
-					else
-					{
-						if (daNote.tooLate || !daNote.wasGoodHit)
-						{
-							health -= 0.0475;
-							vocals.volume = 0;
-						}
 
-						daNote.active = false;
-						daNote.visible = false;
+					daNote.active = false;
+					daNote.visible = false;
 
-						daNote.kill();
-						notes.remove(daNote, true);
-						daNote.destroy();
-					}
+					daNote.kill();
+					notes.remove(daNote, true);
+					daNote.destroy();
 				}
 			});
 		}
@@ -1865,7 +1860,7 @@ class PlayState extends MusicBeatState
 
 			notes.forEachAlive(function(daNote:Note)
 			{
-				if (daNote.canBeHit && daNote.mustPress && !daNote.tooLate)
+				if (daNote.canBeHit && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit)
 				{
 					// the sorting probably doesn't need to be in here? who cares lol
 					possibleNotes.push(daNote);
@@ -1941,13 +1936,15 @@ class PlayState extends MusicBeatState
 							if (upP || rightP || downP || leftP)
 								noteCheck(leftP, daNote);
 					}
-				 */
+				
+				//this is already done in noteCheck / goodNoteHit
 				if (daNote.wasGoodHit)
 				{
 					daNote.kill();
 					notes.remove(daNote, true);
 					daNote.destroy();
 				}
+				 */
 			}
 			else
 			{
@@ -2232,12 +2229,9 @@ class PlayState extends MusicBeatState
 	override function stepHit()
 	{
 		super.stepHit();
-		if (SONG.needsVoices)
+		if (FlxG.sound.music.time > Conductor.songPosition + 20 || FlxG.sound.music.time < Conductor.songPosition - 20)
 		{
-			if (vocals.time > Conductor.songPosition + 20 || vocals.time < Conductor.songPosition - 20)
-			{
-				resyncVocals();
-			}
+			resyncVocals();
 		}
 
 		if (dad.curCharacter == 'spooky' && curStep % 4 == 2)
