@@ -4,6 +4,7 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.animation.FlxBaseAnimation;
 import flixel.graphics.frames.FlxAtlasFrames;
+import haxe.io.Path;
 
 using StringTools;
 
@@ -47,7 +48,7 @@ class Character extends FlxSprite
 				animation.addByPrefix('scared', 'GF FEAR', 24);
 
 				addOffset('cheer');
-				addOffset('sad', -2, -2);
+				addOffset('sad', -2, -21);
 				addOffset('danceLeft', 0, -9);
 				addOffset('danceRight', 0, -9);
 
@@ -78,7 +79,7 @@ class Character extends FlxSprite
 				animation.addByPrefix('scared', 'GF FEAR', 24);
 
 				addOffset('cheer');
-				addOffset('sad', -2, -2);
+				addOffset('sad', -2, -21);
 				addOffset('danceLeft', 0, -9);
 				addOffset('danceRight', 0, -9);
 
@@ -207,10 +208,10 @@ class Character extends FlxSprite
 				animation.addByPrefix('singRIGHT', 'Monster Right note', 24, false);
 
 				addOffset('idle');
-				addOffset("singUP", -20, 50);
-				addOffset("singRIGHT", -51);
-				addOffset("singLEFT", -30);
-				addOffset("singDOWN", -30, -40);
+				addOffset("singUP", -20, 94);
+				addOffset("singRIGHT", -51, 30);
+				addOffset("singLEFT", -30, 20);
+				addOffset("singDOWN", -50, -80);
 				playAnim('idle');
 			case 'monster-christmas':
 				tex = Paths.getSparrowAtlas('christmas/monsterChristmas');
@@ -265,6 +266,18 @@ class Character extends FlxSprite
 				playAnim('idle');
 
 				flipX = true;
+
+			case 'pico-speaker':
+				frames = Paths.getSparrowAtlas('characters/picoSpeaker');
+
+				quickAnimAdd('shoot1', "Pico shoot 1");
+				quickAnimAdd('shoot2', "Pico shoot 2");
+				quickAnimAdd('shoot3', "Pico shoot 3");
+				quickAnimAdd('shoot4', "Pico shoot 4");
+
+				// here for now, will be replaced later for less copypaste
+				loadOffsetFile(curCharacter);
+				playAnim('shoot1');
 
 			case 'bf':
 				var tex = Paths.getSparrowAtlas('BOYFRIEND');
@@ -495,6 +508,37 @@ class Character extends FlxSprite
 				addOffset("singDOWN-alt", -30, -27);
 
 				playAnim('idle');
+			case 'tankman':
+				frames = Paths.getSparrowAtlas('characters/tankmanCaptain');
+
+				animation.addByPrefix('idle', "Tankman Idle Dance", 24, false);
+
+				if (isPlayer)
+				{
+					animation.addByPrefix('singLEFT', 'Tankman Note Left0', 24, false);
+					animation.addByPrefix('singRIGHT', 'Tankman Right Note0', 24, false);
+					animation.addByPrefix('singLEFTmiss', 'Tankman Note Left MISS', 24, false);
+					animation.addByPrefix('singRIGHTmiss', 'Tankman Right Note MISS', 24, false);
+				}
+				else
+				{
+					// Need to be flipped! REDO THIS LATER
+					animation.addByPrefix('singLEFT', 'Tankman Right Note0', 24, false);
+					animation.addByPrefix('singRIGHT', 'Tankman Note Left0', 24, false);
+					animation.addByPrefix('singLEFTmiss', 'Tankman Right Note MISS', 24, false);
+					animation.addByPrefix('singRIGHTmiss', 'Tankman Note Left MISS', 24, false);
+				}
+
+				animation.addByPrefix('singUP', 'Tankman UP note0', 24, false);
+				animation.addByPrefix('singDOWN', 'Tankman DOWN note0', 24, false);
+				animation.addByPrefix('singUPmiss', 'Tankman UP note MISS', 24, false);
+				animation.addByPrefix('singDOWNmiss', 'Tankman DOWN note MISS', 24, false);
+
+				loadOffsetFile(curCharacter);
+
+				playAnim('idle');
+
+				flipX = true;
 		}
 
 		dance();
@@ -519,6 +563,22 @@ class Character extends FlxSprite
 					animation.getByName('singLEFTmiss').frames = oldMiss;
 				}
 			}
+		}
+	}
+
+	function quickAnimAdd(name:String, prefix:String)
+	{
+		animation.addByPrefix(name, prefix, 24, false);
+	}
+
+	private function loadOffsetFile(offsetCharacter:String)
+	{
+		var daFile:Array<String> = CoolUtil.coolTextFile(Paths.file("images/characters/" + offsetCharacter + "Offsets.txt"));
+
+		for (i in daFile)
+		{
+			var splitWords:Array<String> = i.split(" ");
+			addOffset(splitWords[0], Std.parseInt(splitWords[1]), Std.parseInt(splitWords[2]));
 		}
 	}
 
@@ -605,6 +665,8 @@ class Character extends FlxSprite
 						else
 							playAnim('danceLeft');
 					}
+				case 'pico-speaker':
+					playAnim('shoot' + FlxG.random.int(1, 4), true);
 
 				case 'spooky':
 					danced = !danced;
