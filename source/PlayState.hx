@@ -1192,7 +1192,6 @@ class PlayState extends MusicBeatState
 	{
 		if (paused)
 		{
-			camHUD.exists = false;
 			if (FlxG.sound.music != null)
 			{
 				FlxG.sound.music.pause();
@@ -1218,7 +1217,6 @@ class PlayState extends MusicBeatState
 			if (!startTimer.finished)
 				startTimer.active = true;
 			paused = false;
-			camHUD.exists = true;
 		}
 
 		super.closeSubState();
@@ -1285,7 +1283,13 @@ class PlayState extends MusicBeatState
 				FlxG.switchState(new GitarooPause());
 			}
 			else
-				openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
+			{
+				var boyfriendPos = boyfriend.getScreenPosition();
+				var pauseSubState = new PauseSubState(boyfriendPos.x, boyfriendPos.y);
+				openSubState(pauseSubState);
+				pauseSubState.camera = camHUD;
+				boyfriendPos.put();
+			}
 		}
 
 		if (FlxG.keys.justPressed.SEVEN)
