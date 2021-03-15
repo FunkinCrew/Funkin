@@ -1,5 +1,6 @@
 package;
 
+import Controls.KeyboardScheme;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
