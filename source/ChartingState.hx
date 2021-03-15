@@ -126,7 +126,9 @@ class ChartingState extends MusicBeatState
 			};
 		}
 
+		#if !mobile || !switch
 		FlxG.mouse.visible = true;
+		#end
 		FlxG.save.bind('funkin', 'ninjamuffin99');
 
 		tempBpm = _song.bpm;
