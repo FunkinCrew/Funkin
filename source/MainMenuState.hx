@@ -11,7 +11,6 @@ import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
-import io.newgrounds.NG;
 import lime.app.Application;
 
 using StringTools;
@@ -92,8 +91,6 @@ class MainMenuState extends MusicBeatState
 		versionShit.scrollFactor.set();
 		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(versionShit);
-
-		// NG.core.calls.event.logEvent('swag').send();
 
 		changeItem();
 
