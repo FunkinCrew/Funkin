@@ -1761,10 +1761,17 @@ class PlayState extends MusicBeatState
 		rating.updateHitbox();
 
 		var seperatedScore:Array<Int> = [];
+		
+		var comboSplit:Array<String> = (combo + "").split('');
 
-		seperatedScore.push(Math.floor(combo / 100));
-		seperatedScore.push(Math.floor((combo - (seperatedScore[0] * 100)) / 10));
-		seperatedScore.push(combo % 10);
+		if (comboSplit.length == 2)
+			seperatedScore.push(0); // make sure theres a 0 in front or it looks weird lol!
+
+		for(i in 0...comboSplit.length)
+		{
+			var str:String = comboSplit[i];
+			seperatedScore.push(Std.parseInt(str));
+		}
 
 		var daLoop:Int = 0;
 		for (i in seperatedScore)
