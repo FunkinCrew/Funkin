@@ -1763,41 +1763,70 @@ class PlayState extends MusicBeatState
 	
 			var daRating:String = "sick";
 	
-			if (noteDiff > Conductor.safeZoneOffset * 2)
+				
+			if (noteDiff > Conductor.safeZoneOffset * 24)
 				{
 					daRating = 'shit';
 					totalNotesHit -= 2;
 					score = -3000;
+					ss = false;
+					noteMiss(0);
+					health -= 0.5;
+					shits++;
+				}
+				else if (noteDiff < Conductor.safeZoneOffset * -24)
+				{
+					daRating = 'shit';
+					totalNotesHit -= 2;
+					score = -3000;
+					noteMiss(0);
+					health -= 0.5;
 					ss = false;
 					shits++;
 				}
-				else if (noteDiff < Conductor.safeZoneOffset * -2)
+				else if (noteDiff < Conductor.safeZoneOffset * -0.45)
 				{
-					daRating = 'shit';
-					totalNotesHit -= 2;
-					score = -3000;
+					daRating = 'bad';
+					score = -1000;
+					totalNotesHit += 0.2;
+					noteMiss(0);
 					ss = false;
-					shits++;
+					health -= 0.2;
+					bads++;
 				}
 				else if (noteDiff > Conductor.safeZoneOffset * 0.45)
 				{
 					daRating = 'bad';
 					score = -1000;
 					totalNotesHit += 0.2;
+					noteMiss(0);
+					health -= 0.2;
 					ss = false;
 					bads++;
+				}
+				else if (noteDiff < Conductor.safeZoneOffset * -0.25)
+				{
+					daRating = 'good';
+					totalNotesHit += 0.65;
+					score = 200;
+					health -= 0.04;
+					ss = false;
+					goods++;
 				}
 				else if (noteDiff > Conductor.safeZoneOffset * 0.25)
 				{
 					daRating = 'good';
 					totalNotesHit += 0.65;
 					score = 200;
+					health -= 0.04;
 					ss = false;
 					goods++;
 				}
 			if (daRating == 'sick')
 			{
 				totalNotesHit += 1;
+				if (health < 2)
+					health += 0.1;
 				sicks++;
 			}
 		
@@ -2346,11 +2375,7 @@ class PlayState extends MusicBeatState
 					}
 					else
 						totalNotesHit += 1;
-		
-					if (note.noteData >= 0)
-						health += 0.023;
-					else
-						health += 0.004;
+	
 
 					switch (note.noteData)
 					{
