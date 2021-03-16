@@ -504,6 +504,7 @@ class DialogueBox extends FlxSpriteGroup
 		if (portraitCustom != null) {
 			remove(portraitCustom);
 		}
+		var customHanded:Bool = false;
 		switch (curCharacter) {
 			case 'dad':
 				swagDialogue.sounds = [FlxG.sound.load(clickSounds[1], 0.6)];
@@ -640,6 +641,7 @@ class DialogueBox extends FlxSpriteGroup
 				}
 				if (customFrameings.length > 0) {
 					portraitCustom.animation.addByPrefix('enter', 'Boyfriend portrait enter', 24, false);
+					customHanded = true;
 				} else {
 					portraitCustom.animation.addByPrefix('enter', 'Senpai Portrait Enter', 24, false);
 				}
@@ -693,7 +695,11 @@ class DialogueBox extends FlxSpriteGroup
 			default:
 				portraitLeft.visible = false;
 				portraitRight.visible = false;
-				
+				if (sided && !customHanded) {
+					box.flipX = true;
+				} else {
+					box.flipX = false;
+				}
 
 				if (!portraitCustom.visible) {
 					portraitCustom.visible = true;
