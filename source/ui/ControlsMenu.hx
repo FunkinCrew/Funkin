@@ -28,7 +28,6 @@ class ControlsMenu extends ui.OptionsState.Page
 	var itemGroups:Array<Array<InputItem>> = [for (i in 0...controlGroups.length) []];
 	
 	var controlGrid:MenuTypedList<InputItem>;
-	var labels:FlxTypedGroup<AtlasText>;
 	var menuCamera:FlxCamera;
 	var prompt:Prompt;
 	
@@ -46,8 +45,13 @@ class ControlsMenu extends ui.OptionsState.Page
 		menuCamera.bgColor = 0x0;
 		camera = menuCamera;
 		
-		add(labels = new FlxTypedGroup<AtlasText>());
+		var labels = new FlxTypedGroup<AtlasText>();
+		var headers = new FlxTypedGroup<AtlasText>();
 		add(controlGrid = new MenuTypedList(Columns(2)));
+		
+		add(labels);
+		add(headers);
+		add(controlGrid);
 		
 		// FlxG.debugger.drawDebug = true;
 		var y = 30;
@@ -61,13 +65,13 @@ class ControlsMenu extends ui.OptionsState.Page
 			if (currentHeader != "UI_" && name.indexOf("UI_") == 0)
 			{
 				currentHeader = "UI_";
-				labels.add(new BoldText(0, y, "UI")).screenCenter(X);
+				headers.add(new BoldText(0, y, "UI")).screenCenter(X);
 				y += spacer;
 			}
 			else if (currentHeader != "NOTE_" && name.indexOf("NOTE_") == 0)
 			{
 				currentHeader = "NOTE_";
-				labels.add(new BoldText(0, y, "NOTES")).screenCenter(X);
+				headers.add(new BoldText(0, y, "NOTES")).screenCenter(X);
 				y += spacer;
 			}
 			
@@ -75,21 +79,27 @@ class ControlsMenu extends ui.OptionsState.Page
 				name = name.substr(currentHeader.length);
 			
 			var label = labels.add(new BoldText(250, y, name));
+			label.alpha = 0.6;
 			createItem(label.x + 400, y, control, 0);
 			createItem(label.x + 600, y, control, 1);
 			y += spacer;
 		}
 		
-		trace(itemGroups.map((group)->group.map((item)->item.label.text)));
-		
+		labels.members[0].alpha = 1.0;
 		var selected = controlGrid.members[0];
 		var camFollow = new FlxObject(FlxG.width / 2, selected.y, 70, 70);
 		menuCamera.follow(camFollow, null, 0.06);
 		var margin = 100;
 		menuCamera.deadzone.set(0, margin, menuCamera.width, menuCamera.height - margin * 2);
-		controlGrid.onChange.add(function (selected) camFollow.y = selected.y);
+		controlGrid.onChange.add(function (selected)
+		{
+			camFollow.y = selected.y;
+			
+			labels.forEach((label)->label.alpha = 0.6);
+			labels.members[Std.int(controlGrid.selectedIndex / 2)].alpha = 1.0;
+		});
 		
-		prompt = new Prompt("Press any key to rebind\n\n\n\n    Escape to cancel", None);
+		prompt = new Prompt("\nPress any key to rebind\n\n\n\n    Escape to cancel", None);
 		prompt.create();
 		prompt.createBgFromMargin();
 		prompt.back.scrollFactor.set(0, 0);
