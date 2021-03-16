@@ -17,13 +17,14 @@ class Prompt extends flixel.FlxSubState
 	public var onNo:Void->Void;
 	public var buttons:TextMenuList;
 	public var field:AtlasText;
+	public var back:FlxSprite;
 	
 	var style:ButtonStyle;
 	
 	public function new (text:String, style:ButtonStyle = Ok)
 	{
 		this.style = style;
-		super(0xA0000000);
+		super(0x80000000);
 		
 		buttons = new TextMenuList(Horizontal);
 		
@@ -41,6 +42,21 @@ class Prompt extends flixel.FlxSubState
 		
 		createButtons();
 		add(buttons);
+	}
+	
+	public function createBg(width:Int, height:Int, color = 0xFF808080)
+	{
+		back = new FlxSprite();
+		back.makeGraphic(width, height, color, false, "prompt-bg");
+		back.screenCenter(XY);
+		add(back);
+		members.unshift(members.pop());// bring to front
+	}
+	
+	
+	public function createBgFromMargin(margin = MARGIN, color = 0xFF808080)
+	{
+		createBg(Std.int(FlxG.width - margin * 2), Std.int(FlxG.height - margin * 2), color);
 	}
 	
 	public function setButtons(style:ButtonStyle)
