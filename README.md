@@ -4,6 +4,7 @@ This is the repository for Friday Night Funkin Modding Plus, a mod for FNF to ad
 
 Download on gamebanana: https://gamebanana.com/gamefiles/14264
 Play the original game: https://github.com/ninjamuffin99/Funkin
+Need Help? FNF Modding Plus discord: https://discord.gg/96nV4Q5HMr
 
 ## Credits / shoutouts
 
