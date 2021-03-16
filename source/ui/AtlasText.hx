@@ -148,6 +148,7 @@ class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
 					}
 					charSprite.x = xPos;
 					charSprite.y = yPos + maxHeight - charSprite.height;
+					charSprite.alpha = 1;//gets multiplied when added
 					add(charSprite);
 					
 					xPos += charSprite.width;

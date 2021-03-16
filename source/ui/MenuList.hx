@@ -10,6 +10,7 @@ import flixel.util.FlxSignal;
 class MenuTypedList<T:MenuItem> extends FlxTypedGroup<T>
 {
 	public var selectedIndex(default, null) = 0;
+	public var selectedItem(get, never):T;
 	/** Called when a new item is highlighted */
 	public var onChange(default, null) = new FlxTypedSignal<T->Void>();
 	/** Called when an item is accepted */
@@ -189,6 +190,11 @@ class MenuTypedList<T:MenuItem> extends FlxTypedGroup<T>
 		onChange.removeAll();
 		onAcceptPress.removeAll();
 	}
+	
+	inline function get_selectedItem():T
+	{
+		return members[selectedIndex];
+	}
 }
 
 class MenuItem extends FlxSprite
@@ -221,8 +227,8 @@ class MenuItem extends FlxSprite
 	
 	/**
 	 * Calls setData and resets/redraws the state of the item
-	 * @param name 
-	 * @param callback 
+	 * @param name      the label.
+	 * @param callback  Unchanged if null.
 	 */
 	public function setItem(name:String, ?callback:Void->Void)
 	{
