@@ -39,6 +39,7 @@ class TextTypedMenuItem<T:AtlasText> extends MenuTypedItem<T>
 		if (label != null)
 		{
 			label.text = name;
+			label.alpha = alpha;
 			width = label.width;
 			height = label.height;
 		}

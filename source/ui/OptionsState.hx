@@ -25,6 +25,7 @@ class OptionsState extends MusicBeatState
 		menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
 		menuBG.updateHitbox();
 		menuBG.screenCenter();
+		menuBG.scrollFactor.set(0, 0);
 		add(menuBG);
 		
 		var options = addPage(Options, new OptionsMenu(false));
@@ -94,6 +95,7 @@ class Page extends FlxGroup
 	public var onExit(default, null) = new FlxSignal();
 	
 	public var enabled(default, set) = true;
+	public var canExit = true;
 	
 	var controls(get, never):Controls;
 	inline function get_controls() return PlayerSettings.player1.controls;
@@ -120,7 +122,7 @@ class Page extends FlxGroup
 	
 	function updateEnabled(elapsed:Float)
 	{
-		if (controls.BACK)
+		if (canExit && controls.BACK)
 			exit();
 	}
 	

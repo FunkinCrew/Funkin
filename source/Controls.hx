@@ -11,6 +11,30 @@ import flixel.input.gamepad.FlxGamepadButton;
 import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.input.keyboard.FlxKey;
 
+/**
+ * Since, in many cases multiple actions should use similar keys, we don't want the
+ * rebinding UI to list every action. ActionBinders are what the user percieves as
+ * an input so, for instance, they can't set jump-press and jump-release to different keys.
+ */
+enum Control
+{
+	NOTE_UP;
+	NOTE_LEFT;
+	NOTE_RIGHT;
+	NOTE_DOWN;
+	UI_UP;
+	UI_LEFT;
+	UI_RIGHT;
+	UI_DOWN;
+	RESET;
+	ACCEPT;
+	BACK;
+	PAUSE;
+	#if CAN_CHEAT
+	CHEAT;
+	#end
+}
+
 @:enum
 abstract Action(String) to String from String
 {
@@ -51,30 +75,6 @@ enum Device
 {
 	Keys;
 	Gamepad(id:Int);
-}
-
-/**
- * Since, in many cases multiple actions should use similar keys, we don't want the
- * rebinding UI to list every action. ActionBinders are what the user percieves as
- * an input so, for instance, they can't set jump-press and jump-release to different keys.
- */
-enum Control
-{
-	UI_UP;
-	UI_LEFT;
-	UI_RIGHT;
-	UI_DOWN;
-	NOTE_UP;
-	NOTE_LEFT;
-	NOTE_RIGHT;
-	NOTE_DOWN;
-	RESET;
-	ACCEPT;
-	BACK;
-	PAUSE;
-	#if CAN_CHEAT
-	CHEAT;
-	#end
 }
 
 enum KeyboardScheme
@@ -450,7 +450,7 @@ class Controls extends FlxActionSet
 				bindKeys(Control.NOTE_LEFT, [A, FlxKey.LEFT]);
 				bindKeys(Control.NOTE_RIGHT, [D, FlxKey.RIGHT]);
 				bindKeys(Control.ACCEPT, [Z, SPACE, ENTER]);
-				bindKeys(Control.BACK, [BACKSPACE, ESCAPE]);
+				bindKeys(Control.BACK, [X, BACKSPACE, ESCAPE]);
 				bindKeys(Control.PAUSE, [P, ENTER, ESCAPE]);
 				bindKeys(Control.RESET, [R]);
 			case Duo(true):
