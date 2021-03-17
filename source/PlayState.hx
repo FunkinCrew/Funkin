@@ -2,6 +2,7 @@ package;
 
 import Section.SwagSection;
 import Song.SwagSong;
+import MissType;
 import WiggleEffect.WiggleEffectType;
 import flixel.FlxBasic;
 import flixel.FlxCamera;
@@ -119,6 +120,8 @@ class PlayState extends MusicBeatState
 
 	// how big to stretch the pixel art assets
 	public static var daPixelZoom:Float = 6;
+	var successThisFrame:Array<Bool> = [false, false, false, false];
+	var missQueue:MissType = new MissType(0, false, null);
 
 	var inCutscene:Bool = false;
 
@@ -1847,108 +1850,60 @@ class PlayState extends MusicBeatState
 		var leftR = controls.LEFT_R;
 
 		var controlArray:Array<Bool> = [leftP, downP, upP, rightP];
+		var controlHoldArray:Array<Bool> = [left, down, up, right];
+		var controlReleaseArray:Array<Bool> = [leftR, downR, upR, rightR];
 
+		var startCount:Int = 0;
+
+		Conductor.safeZoneOffset = (Conductor.safeFrames / ((FlxG.updateFramerate / 60) * 60)) * 1000;
+		successThisFrame = [false, false, false, false];
+
+		missQueue.direction = 0;
+		missQueue.missedNote = null;
+		missQueue.missed = false;
 		// FlxG.watch.addQuick('asdfa', upP);
 		if ((upP || rightP || downP || leftP) && !boyfriend.stunned && generatedMusic)
 		{
 			boyfriend.holdTimer = 0;
-
 			var possibleNotes:Array<Note> = [];
-
-			var ignoreList:Array<Int> = [];
 
 			notes.forEachAlive(function(daNote:Note)
 			{
 				if (daNote.canBeHit && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit)
-				{
-					// the sorting probably doesn't need to be in here? who cares lol
 					possibleNotes.push(daNote);
-					possibleNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
-
-					ignoreList.push(daNote.noteData);
-				}
 			});
+			startCount = possibleNotes.length;
 
 			if (possibleNotes.length > 0)
 			{
-				var daNote = possibleNotes[0];
-
+				// Breaks with new input system
+				// Probably not needed anyway tho
 				if (perfectMode)
-					noteCheck(true, daNote);
+					noteCheck(true, controlArray, possibleNotes[0]);
 
-				// Jump notes
-				if (possibleNotes.length >= 2)
+				for (i in 0...possibleNotes.length)
 				{
-					if (possibleNotes[0].strumTime == possibleNotes[1].strumTime)
-					{
-						for (coolNote in possibleNotes)
-						{
-							if (controlArray[coolNote.noteData])
-								goodNoteHit(coolNote);
-							else
-							{
-								var inIgnoreList:Bool = false;
-								for (shit in 0...ignoreList.length)
-								{
-									if (controlArray[ignoreList[shit]])
-										inIgnoreList = true;
-								}
-								if (!inIgnoreList)
-									badNoteCheck();
-							}
-						}
-					}
-					else if (possibleNotes[0].noteData == possibleNotes[1].noteData)
-					{
-						noteCheck(controlArray[daNote.noteData], daNote);
-					}
-					else
-					{
-						for (coolNote in possibleNotes)
-						{
-							noteCheck(controlArray[coolNote.noteData], coolNote);
-						}
-					}
+					noteCheck(controlArray[possibleNotes[i].noteData], controlArray, possibleNotes[i]);
 				}
-				else // regular notes?
-				{
-					noteCheck(controlArray[daNote.noteData], daNote);
-				}
-				/* 
-					if (controlArray[daNote.noteData])
-						goodNoteHit(daNote);
-				 */
-				// trace(daNote.noteData);
-				/* 
-					switch (daNote.noteData)
-					{
-						case 2: // NOTES YOU JUST PRESSED
-							if (upP || rightP || downP || leftP)
-								noteCheck(upP, daNote);
-						case 3:
-							if (upP || rightP || downP || leftP)
-								noteCheck(rightP, daNote);
-						case 1:
-							if (upP || rightP || downP || leftP)
-								noteCheck(downP, daNote);
-						case 0:
-							if (upP || rightP || downP || leftP)
-								noteCheck(leftP, daNote);
-					}
-				
-				//this is already done in noteCheck / goodNoteHit
-				if (daNote.wasGoodHit)
-				{
-					daNote.kill();
-					notes.remove(daNote, true);
-					daNote.destroy();
-				}
-				 */
 			}
 			else
 			{
-				badNoteCheck();
+				// No possible notes to hit lel
+				var foundDir:Bool = false;
+				missQueue.missed = true;
+				for (i in 0...5)
+				{
+					if (i < 3 && controlArray[i])
+					{
+						missQueue.direction = i;
+						foundDir = true;
+					}
+					if (i > 2 && !foundDir) missQueue.direction = i;
+				}
+				missQueue.missedNote = null;
 			}
+
+			missNoteCheck(startCount, possibleNotes.length);
 		}
 
 		if ((up || right || down || left) && !boyfriend.stunned && generatedMusic)
@@ -1962,16 +1917,16 @@ class PlayState extends MusicBeatState
 						// NOTES YOU ARE HOLDING
 						case 0:
 							if (left)
-								goodNoteHit(daNote);
+								goodNoteHit(daNote, controlHoldArray);
 						case 1:
 							if (down)
-								goodNoteHit(daNote);
+								goodNoteHit(daNote, controlHoldArray);
 						case 2:
 							if (up)
-								goodNoteHit(daNote);
+								goodNoteHit(daNote, controlHoldArray);
 						case 3:
 							if (right)
-								goodNoteHit(daNote);
+								goodNoteHit(daNote, controlHoldArray);
 					}
 				}
 			});
@@ -2022,8 +1977,34 @@ class PlayState extends MusicBeatState
 		});
 	}
 
-	function noteMiss(direction:Int = 1):Void
+	function missNoteCheck(startCount:Int, currentCount:Int):Void
 	{
+		// Read from the missed note queue and decide what to do
+		if (missQueue.missed)
+		{
+			if (!successThisFrame[0] && !successThisFrame[1] && !successThisFrame[2] && !successThisFrame[3])
+				noteMiss(missQueue.direction, missQueue.missedNote);
+			else if (missQueue.missedNote != null)
+			{
+				if (startCount == currentCount)
+				{
+					noteMiss(missQueue.direction, missQueue.missedNote);
+				}
+			} else
+			{
+				noteMiss(missQueue.direction, missQueue.missedNote);
+			}
+		}
+	}
+
+	function noteMiss(direction:Int = 1, note:Note):Void
+	{
+		if (note != null)
+		{
+			if (note.wasGoodHit || successThisFrame[note.noteData])
+				return;
+		}
+
 		if (!boyfriend.stunned)
 		{
 			health -= 0.04;
@@ -2061,36 +2042,82 @@ class PlayState extends MusicBeatState
 		}
 	}
 
-	function badNoteCheck()
+	function badNoteCheck(controlList:Array<Bool>, note:Note)
 	{
-		// just double pasting this shit cuz fuk u
-		// REDO THIS SYSTEM!
-		var upP = controls.UP_P;
-		var rightP = controls.RIGHT_P;
-		var downP = controls.DOWN_P;
-		var leftP = controls.LEFT_P;
-
-		if (leftP)
-			noteMiss(0);
-		if (downP)
-			noteMiss(1);
-		if (upP)
-			noteMiss(2);
-		if (rightP)
-			noteMiss(3);
-	}
-
-	function noteCheck(keyP:Bool, note:Note):Void
-	{
-		if (keyP)
-			goodNoteHit(note);
-		else
+		// i gotchu fam
+		var noMiss:Bool = true;
+		var hitNote:Bool = false;
+		var dupNote:Bool = false;
+		var missDir:Int = 0;
+		for (i in 0...5)
 		{
-			badNoteCheck();
+			if (note != null)
+			{
+				if (!note.wasGoodHit)
+				{
+					if (controlList[i] && !successThisFrame[i] && i != note.noteData)
+					{
+						noMiss = false;
+						missDir = i;
+					} else if (!controlList[i] && i == note.noteData)
+					{
+						if (!successThisFrame[i])
+						{
+							noMiss = false;
+							missDir = i;
+						} else
+						{
+							dupNote = true;
+						}
+					}
+				}
+			} else 
+			{
+				if (controlList[i])
+				{
+					noMiss = false;
+					missDir = i;
+				}
+			}
+		}
+
+		if (noMiss && !dupNote){
+			if (note != null)
+			{
+				goodNoteHit(note, controlList);
+			}
+			hitNote = true;
+		}
+		else if (!hitNote && !dupNote)
+		{
+			if (note != null)
+			{
+				if (!note.wasGoodHit)
+				{
+					missQueue.direction = missDir;
+					missQueue.missedNote = note;
+					missQueue.missed = true;
+				}
+			} else
+			{
+				missQueue.direction = missDir;
+				missQueue.missedNote = note;
+				missQueue.missed = true;
+			}
 		}
 	}
 
-	function goodNoteHit(note:Note):Void
+	function noteCheck(keyP:Bool, controlList:Array<Bool>, note:Note):Void
+	{
+		if (controlList[note.noteData] || successThisFrame[note.noteData])
+			goodNoteHit(note, controlList);
+		else
+		{
+			badNoteCheck(controlList, note);
+		}
+	}
+
+	function goodNoteHit(note:Note, controlList:Array<Bool>):Void
 	{
 		if (!note.wasGoodHit)
 		{
@@ -2127,6 +2154,10 @@ class PlayState extends MusicBeatState
 
 			note.wasGoodHit = true;
 			vocals.volume = 1;
+			successThisFrame[note.noteData] = true;
+			missQueue.direction = 0;
+			missQueue.missedNote = null;
+			missQueue.missed = false;
 
 			if (!note.isSustainNote)
 			{
