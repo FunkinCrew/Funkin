@@ -113,6 +113,8 @@ class PlayState extends MusicBeatState
 	var bgGirls:BackgroundGirls;
 	var wiggleShit:WiggleEffect = new WiggleEffect();
 
+	var tankmanRun:FlxTypedGroup<TankmenBG>;
+
 	var talking:Bool = true;
 	var songScore:Int = 0;
 	var scoreTxt:FlxText;
@@ -498,6 +500,9 @@ class PlayState extends MusicBeatState
 
 				var tankGround:BGSprite = new BGSprite('tankGround', -200, -20);
 				add(tankGround);
+
+				tankmanRun = new FlxTypedGroup<TankmenBG>();
+				add(tankmanRun);
 
 				var fgTank0:BGSprite = new BGSprite('tank0', -290, 400, 1.7, 1.5, ['fg']);
 				foregroundSprites.add(fgTank0);
@@ -2403,6 +2408,17 @@ class PlayState extends MusicBeatState
 				{
 					trainCooldown = FlxG.random.int(-4, 0);
 					trainStart();
+				}
+		}
+
+		switch (curSong.toLowerCase())
+		{
+			case 'stress':
+				if (FlxG.random.bool())
+				{
+					var tank:TankmenBG = new TankmenBG(500, 200);
+					tank.strumTime = Conductor.songPosition + (Conductor.crochet * 4);
+					tankmanRun.add(tank);
 				}
 		}
 
