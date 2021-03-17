@@ -121,6 +121,7 @@ class PlayState extends MusicBeatState
 	// how big to stretch the pixel art assets
 	public static var daPixelZoom:Float = 6;
 	var successThisFrame:Array<Bool> = [false, false, false, false];
+	var foundDirection:Array<Bool> = [false, false, false, false];
 	var missQueue:MissType = new MissType(0, false, null);
 
 	var inCutscene:Bool = false;
@@ -1851,7 +1852,6 @@ class PlayState extends MusicBeatState
 
 		var controlArray:Array<Bool> = [leftP, downP, upP, rightP];
 		var controlHoldArray:Array<Bool> = [left, down, up, right];
-		var foundDirection:Array<Bool> = [false, false, false, false];
 		var foundDirectionStrum:Array<Float> = [0, 0, 0, 0];
 		var foundDirectionNote:Array<Note> = [null, null, null, null];
 
@@ -1859,6 +1859,7 @@ class PlayState extends MusicBeatState
 
 		Conductor.safeZoneOffset = (Conductor.safeFrames / ((FlxG.updateFramerate / 60) * 60)) * 1000;
 		successThisFrame = [false, false, false, false];
+		foundDirection = [false, false, false, false];
 
 		missQueue.direction = 0;
 		missQueue.missedNote = null;
@@ -1991,7 +1992,7 @@ class PlayState extends MusicBeatState
 		// Read from the missed note queue and decide what to do
 		if (missQueue.missed)
 		{
-			if (!successThisFrame[0] && !successThisFrame[1] && !successThisFrame[2] && !successThisFrame[3])
+			if (!foundDirection[0] && !foundDirection[1] && !foundDirection[2] && !foundDirection[3])
 				noteMiss(missQueue.direction, missQueue.missedNote);
 			else if (missQueue.missedNote != null)
 			{
@@ -2064,13 +2065,13 @@ class PlayState extends MusicBeatState
 			{
 				if (!note.wasGoodHit)
 				{
-					if (controlList[i] && !successThisFrame[i] && i != note.noteData)
+					if (controlList[i] && !foundDirection[i] && i != note.noteData)
 					{
 						noMiss = false;
 						missDir = i;
 					} else if (!controlList[i] && i == note.noteData)
 					{
-						if (!successThisFrame[i])
+						if (!foundDirection[i])
 						{
 							noMiss = false;
 							missDir = i;
