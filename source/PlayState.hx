@@ -1543,10 +1543,6 @@ class PlayState extends MusicBeatState
 
 		if (generatedMusic)
 		{
-
-			
-			
-
 			notes.forEachAlive(function(daNote:Note)
 			{
 				if (daNote.y > FlxG.height)
@@ -2399,6 +2395,17 @@ class PlayState extends MusicBeatState
 				{
 					trainCooldown = FlxG.random.int(-4, 0);
 					trainStart();
+				}
+		}
+
+		switch (curSong.toLowerCase())
+		{
+			case 'stress':
+				if (FlxG.random.bool())
+				{
+					var tank:TankmenBG = new TankmenBG(500, 200);
+					tank.strumTime = Conductor.songPosition + (Conductor.crochet * 4);
+					tankmanRun.add(tank);
 				}
 		}
 
