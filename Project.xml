@@ -42,6 +42,8 @@
 
 	<classpath name="source/options" />
 
+	<classpath name="source/modeloader" />
+
 	<assets path="assets/preload" rename="assets" exclude="*.ogg" if="web"/>
 	<assets path="assets/preload" rename="assets" exclude="*.mp3" unless="web"/>
 	
