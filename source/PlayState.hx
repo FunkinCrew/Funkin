@@ -1851,7 +1851,8 @@ class PlayState extends MusicBeatState
 
 		var controlArray:Array<Bool> = [leftP, downP, upP, rightP];
 		var controlHoldArray:Array<Bool> = [left, down, up, right];
-		var controlReleaseArray:Array<Bool> = [leftR, downR, upR, rightR];
+		var foundDirection:Array<Bool> = [false, false, false, false];
+		var foundDirectionStrum:Array<Float> = [0, 0, 0, 0];
 
 		var startCount:Int = 0;
 
@@ -1870,9 +1871,15 @@ class PlayState extends MusicBeatState
 			notes.forEachAlive(function(daNote:Note)
 			{
 				if (daNote.canBeHit && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit)
-					possibleNotes.push(daNote);
+				{
+					if (!foundDirection[daNote.noteData] || (foundDirection[daNote.noteData] && foundDirectionStrum[daNote.noteData] < daNote.strumTime))
+					{
+						possibleNotes.push(daNote);
+						foundDirection[daNote.noteData] = true;
+						foundDirectionStrum[daNote.noteData] = daNote.strumTime;
+					}
+				}
 			});
-			possibleNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
 			startCount = possibleNotes.length;
 
 			if (possibleNotes.length > 0)
@@ -1884,25 +1891,19 @@ class PlayState extends MusicBeatState
 
 				for (i in 0...possibleNotes.length)
 				{
-					if (!successThisFrame[possibleNotes[i].noteData])
-					{
-						noteCheck(controlArray[possibleNotes[i].noteData], controlArray, possibleNotes[i]);
-					}
+					noteCheck(controlArray[possibleNotes[i].noteData], controlArray, possibleNotes[i]);
 				}
 			}
 			else
 			{
 				// No possible notes to hit lel
-				var foundDir:Bool = false;
 				missQueue.missed = true;
 				for (i in 0...5)
 				{
-					if (i < 3 && controlArray[i])
+					if (controlArray[i])
 					{
 						missQueue.direction = i;
-						foundDir = true;
 					}
-					if (i > 2 && !foundDir) missQueue.direction = i;
 				}
 				missQueue.missedNote = null;
 			}
