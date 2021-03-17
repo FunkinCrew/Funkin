@@ -40,6 +40,8 @@
 
 	<classpath name="source" />
 
+	<classpath name="source/options" />
+
 	<assets path="assets/preload" rename="assets" exclude="*.ogg" if="web"/>
 	<assets path="assets/preload" rename="assets" exclude="*.mp3" unless="web"/>
 	

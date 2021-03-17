@@ -1,4 +1,4 @@
-package;
+package options;
 
 import Controls.Control;
 import flash.text.TextField;
@@ -81,14 +81,14 @@ class OptionsMenu extends MusicBeatState
 			switch (daSelected)
 			{
 				case "controls":
-					FlxG.switchState(new CustomControlsState());
+					FlxG.switchState(new options.CustomControlsState());
 				case "config":
 					trace("hello");
 				case "set fps":
 					insubstate = true;
-					openSubState(new SetFpsSubState());
+					openSubState(new options.SetFpsSubState());
 				case "About":
-					FlxG.switchState(new AboutState());
+					FlxG.switchState(new options.AboutState());
 			}
 		}
 

@@ -1,4 +1,4 @@
-package;
+package options;
 
 import lime.utils.Int16Array;
 import lime.utils.Assets;

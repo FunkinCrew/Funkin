@@ -1,4 +1,4 @@
-package;
+package options;
 
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
