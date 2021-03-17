@@ -1771,7 +1771,7 @@ class PlayState extends MusicBeatState
 					score = -3000;
 					ss = false;
 					noteMiss(0);
-					health -= 0.5;
+					health -= 0.1;
 					shits++;
 				}
 				else if (noteDiff < Conductor.safeZoneOffset * -24)
@@ -1780,7 +1780,7 @@ class PlayState extends MusicBeatState
 					totalNotesHit -= 2;
 					score = -3000;
 					noteMiss(0);
-					health -= 0.5;
+					health -= 0.1;
 					ss = false;
 					shits++;
 				}
@@ -1791,7 +1791,7 @@ class PlayState extends MusicBeatState
 					totalNotesHit += 0.2;
 					noteMiss(0);
 					ss = false;
-					health -= 0.2;
+					health -= 0.04;
 					bads++;
 				}
 				else if (noteDiff > Conductor.safeZoneOffset * 0.45)
@@ -1800,7 +1800,7 @@ class PlayState extends MusicBeatState
 					score = -1000;
 					totalNotesHit += 0.2;
 					noteMiss(0);
-					health -= 0.2;
+					health -= 0.04;
 					ss = false;
 					bads++;
 				}
@@ -1809,7 +1809,7 @@ class PlayState extends MusicBeatState
 					daRating = 'good';
 					totalNotesHit += 0.65;
 					score = 200;
-					health -= 0.04;
+					health -= 0.004;
 					ss = false;
 					goods++;
 				}
