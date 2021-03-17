@@ -1762,8 +1762,6 @@ class PlayState extends MusicBeatState
 			var score:Int = 350;
 	
 			var daRating:String = "sick";
-	
-				
 				
 			if (noteDiff > Conductor.safeZoneOffset * 2)
 				{
