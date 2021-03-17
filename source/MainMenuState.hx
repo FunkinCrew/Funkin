@@ -1,5 +1,6 @@
 package;
 
+import lime.utils.Assets;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
@@ -33,8 +34,6 @@ class MainMenuState extends MusicBeatState
 	var camFollow:FlxObject;
 
 	var _pad:FlxVirtualPad;
-
-	var githubcurver:String = "d3cd2e2";
 
 	override function create()
 	{
@@ -93,9 +92,12 @@ class MainMenuState extends MusicBeatState
 
 		FlxG.camera.follow(camFollow, null, 0.06);
 
-		var versionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, "v" + Application.current.meta.get('version') + " " + githubcurver, 12);
+		
+		var githubcurver:String = Assets.getText("assets/aboutmod.txt");
+
+		var versionShit:FlxText = new FlxText(10, FlxG.height - 20, 0, "v" + Application.current.meta.get('version') + " " + githubcurver, 12);
 		versionShit.scrollFactor.set();
-		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		versionShit.setFormat("VCR OSD Mono", 18, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(versionShit);
 
 		// NG.core.calls.event.logEvent('swag').send();
