@@ -1853,6 +1853,7 @@ class PlayState extends MusicBeatState
 		var controlHoldArray:Array<Bool> = [left, down, up, right];
 		var foundDirection:Array<Bool> = [false, false, false, false];
 		var foundDirectionStrum:Array<Float> = [0, 0, 0, 0];
+		var foundDirectionNote:Array<Note> = [null, null, null, null];
 
 		var startCount:Int = 0;
 
@@ -1872,11 +1873,14 @@ class PlayState extends MusicBeatState
 			{
 				if (daNote.canBeHit && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit)
 				{
-					if (!foundDirection[daNote.noteData] || (foundDirection[daNote.noteData] && foundDirectionStrum[daNote.noteData] < daNote.strumTime))
+					if (!foundDirection[daNote.noteData] || foundDirectionStrum[daNote.noteData] > daNote.strumTime)
 					{
 						possibleNotes.push(daNote);
+						if (foundDirectionNote[daNote.noteData] != null)
+							possibleNotes.remove(foundDirectionNote[daNote.noteData]);
 						foundDirection[daNote.noteData] = true;
 						foundDirectionStrum[daNote.noteData] = daNote.strumTime;
+						foundDirectionNote[daNote.noteData] = daNote;
 					}
 				}
 			});
