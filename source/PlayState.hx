@@ -1764,43 +1764,60 @@ class PlayState extends MusicBeatState
 			var daRating:String = "sick";
 	
 				
-			if (noteDiff > Conductor.safeZoneOffset * 24)
+				
+			if (noteDiff > Conductor.safeZoneOffset * 2)
 				{
 					daRating = 'shit';
 					totalNotesHit -= 2;
-					score = -3000;
 					ss = false;
-					noteMiss(0);
-					health -= 0.1;
+					if (theFunne)
+						{
+							score = -3000;
+							combo = 0;
+							misses++;
+							health -= 0.2;
+						}
 					shits++;
 				}
-				else if (noteDiff < Conductor.safeZoneOffset * -24)
+				else if (noteDiff < Conductor.safeZoneOffset * -2)
 				{
 					daRating = 'shit';
 					totalNotesHit -= 2;
-					score = -3000;
-					noteMiss(0);
-					health -= 0.1;
+					if (theFunne)
+					{
+						score = -3000;
+						combo = 0;
+						misses++;
+						health -= 0.2;
+					}
 					ss = false;
 					shits++;
 				}
 				else if (noteDiff < Conductor.safeZoneOffset * -0.45)
 				{
 					daRating = 'bad';
-					score = -1000;
 					totalNotesHit += 0.2;
-					noteMiss(0);
+					if (theFunne)
+					{
+						score = -1000;
+						health -= 0.03;
+					}
+					else
+						score = 100;
 					ss = false;
-					health -= 0.04;
 					bads++;
 				}
 				else if (noteDiff > Conductor.safeZoneOffset * 0.45)
 				{
 					daRating = 'bad';
-					score = -1000;
 					totalNotesHit += 0.2;
-					noteMiss(0);
-					health -= 0.04;
+					if (theFunne)
+						{
+							score = -1000;
+							health -= 0.03;
+						}
+						else
+							score = 100;
 					ss = false;
 					bads++;
 				}
@@ -1808,8 +1825,13 @@ class PlayState extends MusicBeatState
 				{
 					daRating = 'good';
 					totalNotesHit += 0.65;
-					score = 200;
-					health -= 0.004;
+					if (theFunne)
+					{
+						score = 200;
+						//health -= 0.01;
+					}
+					else
+						score = 200;
 					ss = false;
 					goods++;
 				}
@@ -1817,8 +1839,13 @@ class PlayState extends MusicBeatState
 				{
 					daRating = 'good';
 					totalNotesHit += 0.65;
-					score = 200;
-					health -= 0.04;
+					if (theFunne)
+						{
+							score = 200;
+							//health -= 0.01;
+						}
+						else
+							score = 200;
 					ss = false;
 					goods++;
 				}
@@ -1829,7 +1856,6 @@ class PlayState extends MusicBeatState
 					health += 0.1;
 				sicks++;
 			}
-		
 	
 			if (daRating != 'shit' || daRating != 'bad')
 				{
