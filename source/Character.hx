@@ -100,6 +100,8 @@ class Character extends FlxSprite
 
 				playAnim('idle');
 
+				flipX = true;
+
 			case 'gf-car':
 				tex = Paths.getSparrowAtlas('gfCar');
 				frames = tex;
