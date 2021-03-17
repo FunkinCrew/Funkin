@@ -1872,6 +1872,7 @@ class PlayState extends MusicBeatState
 				if (daNote.canBeHit && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit)
 					possibleNotes.push(daNote);
 			});
+			possibleNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
 			startCount = possibleNotes.length;
 
 			if (possibleNotes.length > 0)
@@ -1883,7 +1884,10 @@ class PlayState extends MusicBeatState
 
 				for (i in 0...possibleNotes.length)
 				{
-					noteCheck(controlArray[possibleNotes[i].noteData], controlArray, possibleNotes[i]);
+					if (!successThisFrame[possibleNotes[i].noteData])
+					{
+						noteCheck(controlArray[possibleNotes[i].noteData], controlArray, possibleNotes[i]);
+					}
 				}
 			}
 			else
