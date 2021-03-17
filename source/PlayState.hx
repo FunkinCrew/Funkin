@@ -624,6 +624,12 @@ class PlayState extends MusicBeatState
 
 		boyfriend = new Boyfriend(770, 450, SONG.player1);
 
+		switch (SONG.player1)
+		{
+			case "bf-holding-gf":
+				boyfriend.y -= 140;
+		}
+
 		// REPOSITIONING PER STAGE
 		switch (curStage)
 		{
