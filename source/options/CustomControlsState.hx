@@ -83,7 +83,7 @@ class CustomControlsState extends MusicBeatSubstate
 		//pad
 		_pad = new FlxVirtualPad(RIGHT_FULL, NONE);
 		_pad.alpha = 0;
-		_pad.visible = false;
+		
 
 
 		//text inputvari
@@ -104,7 +104,6 @@ class CustomControlsState extends MusicBeatSubstate
 		rightArrow.animation.addByPrefix('press', "arrow push right", 24, false);
 		rightArrow.animation.play('idle');
 
-		changeSelection();
 
 		//text
 		up_text = new FlxText(200, 200, 0,"Button up x:" + _pad.buttonUp.x +" y:" + _pad.buttonUp.y, 24);
@@ -132,7 +131,9 @@ class CustomControlsState extends MusicBeatSubstate
 		add(down_text);
 		add(left_text);
 		add(right_text);
-			
+
+		// change selection
+		changeSelection();	
 	}
 
 	override function update(elapsed:Float)
@@ -161,60 +162,54 @@ class CustomControlsState extends MusicBeatSubstate
 	}
 
 	function changeSelection(change:Int = 0,?forceChange:Int)
-	{
-		curSelected += change;
-
-		if (curSelected < 0)
-			curSelected = controlitems.length - 1;
-		if (curSelected >= controlitems.length)
-			curSelected = 0;
-		trace(curSelected);
-
-		if (forceChange != null)
 		{
-			if (curSelected != 2){
+			curSelected += change;
+	
+			if (curSelected < 0)
+				curSelected = controlitems.length - 1;
+			if (curSelected >= controlitems.length)
+				curSelected = 0;
+			trace(curSelected);
+	
+			if (forceChange != null)
+			{
 				curSelected = forceChange;
 			}
-		}
+	
+			inputvari.text = controlitems[curSelected];
 
-		inputvari.text = controlitems[curSelected];
-
-		if (forceChange != null)
-		{
-			if (curSelected == 2){
-				_pad.alpha = 0.75;
+			if (forceChange != null)
+				{
+					if (curSelected == 2){
+						_pad.visible = true;
+					}
+					
+					return;
+				}
+	
+			switch curSelected{
+				case 0:
+					this.remove(_pad);
+					_pad = null;
+					_pad = new FlxVirtualPad(RIGHT_FULL, NONE);
+					_pad.alpha = 0.75;
+					this.add(_pad);
+				case 1:
+					this.remove(_pad);
+					_pad = null;
+					_pad = new FlxVirtualPad(FULL, NONE);
+					_pad.alpha = 0.75;
+					this.add(_pad);
+				case 2:
+					trace(2);
+					_pad.alpha = 0;
+				case 3:
+					trace(3);
+					_pad.alpha = 0.75;
+					loadcustom();
 			}
-			
-			return;
+	
 		}
-
-		switch curSelected{
-			case 0:
-				this.remove(_pad);
-				_pad = null;
-				_pad = new FlxVirtualPad(RIGHT_FULL, NONE);
-				_pad.alpha = 0.75;
-				_pad.visible = true;
-				this.add(_pad);
-			case 1:
-				this.remove(_pad);
-				_pad = null;
-				_pad = new FlxVirtualPad(FULL, NONE);
-				_pad.alpha = 0.75;
-				_pad.visible = true;
-				this.add(_pad);
-			case 2:
-				trace(2);
-				_pad.alpha = 0;
-				_pad.visible = false;
-			case 3:
-				trace(3);
-				_pad.alpha = 0.75;
-				_pad.visible = true;
-				loadcustom();
-		}
-
-	}
 
 	function arrowanimate(touch:flixel.input.touch.FlxTouch){
 		if(touch.overlaps(leftArrow) && touch.pressed){
