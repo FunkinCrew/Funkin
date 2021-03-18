@@ -15,6 +15,8 @@ class OptionsSubState extends MusicBeatSubstate
 
 	var grpOptionsTexts:FlxTypedGroup<FlxText>;
 
+	// public static var isDownscroll:Bool = false;
+
 	public function new()
 	{
 		super();
