@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TextureAtlas imagePath="bfPixelsDEAD.png">
-	<!-- Created with Adobe Animate version 20.0.0.17400 -->
-	<!-- http://www.adobe.com/products/animate.html -->
+	<!-- if you read this you're epic. -->
+	<!-- manual tweaks done on BF Dies pixel last 2 frames -->
 	<SubTexture name="BF Dies pixel0000" x="0" y="0" width="90" height="81"/>
 	<SubTexture name="BF Dies pixel0001" x="100" y="0" width="90" height="81"/>
 	<SubTexture name="BF Dies pixel0002" x="200" y="0" width="90" height="81"/>
@@ -58,8 +58,8 @@
 	<SubTexture name="BF Dies pixel0053" x="300" y="273" width="90" height="81"/>
 	<SubTexture name="BF Dies pixel0054" x="400" y="273" width="90" height="81"/>
 	<SubTexture name="BF Dies pixel0055" x="500" y="273" width="90" height="81"/>
-	<SubTexture name="BF Dies pixel0056" x="696" y="450" width="77" height="76"/>
-	<SubTexture name="BF Dies pixel0057" x="696" y="450" width="77" height="76"/>
+	<SubTexture name="BF Dies pixel0056" x="691" y="448" width="90" height="81"/>
+	<SubTexture name="BF Dies pixel0057" x="691" y="448" width="90" height="81"/>
 	<SubTexture name="RETRY CONFIRM0000" x="600" y="273" width="77" height="76"/>
 	<SubTexture name="RETRY CONFIRM0001" x="687" y="273" width="77" height="76"/>
 	<SubTexture name="RETRY CONFIRM0002" x="687" y="273" width="77" height="76"/>
