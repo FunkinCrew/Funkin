@@ -95,7 +95,6 @@ class ModdingSubstate extends MusicBeatSubstate
 		var modList = [];
 		modFolders = [];
 
-		#if desktop
 		for (file in FileSystem.readDirectory('./mods'))
 		{
 			if (FileSystem.isDirectory('./mods/' + file))
@@ -118,32 +117,34 @@ class ModdingSubstate extends MusicBeatSubstate
 			loopNum++;
 		}
 		#end
-		} private function organizeByY():Void
+	}
 
+	private function organizeByY():Void
+	{
+		for (i in 0...grpMods.length)
 		{
-			for (i in 0...grpMods.length)
-			{
-				grpMods.members[i].y = 10 + (40 * i);
-			}
+			grpMods.members[i].y = 10 + (40 * i);
 		}
-		} class ModMenuItem extends FlxText
+	}
+}
 
-		{
-			public var modEnabled:Bool = false;
-			public var daMod:String;
+class ModMenuItem extends FlxText
+{
+	public var modEnabled:Bool = false;
+	public var daMod:String;
 
-			public function new(x:Float, y:Float, w:Float, str:String, size:Int)
-			{
-				super(x, y, w, str, size);
-			}
+	public function new(x:Float, y:Float, w:Float, str:String, size:Int)
+	{
+		super(x, y, w, str, size);
+	}
 
-			override function update(elapsed:Float)
-			{
-				if (modEnabled)
-					alpha = 1;
-				else
-					alpha = 0.5;
+	override function update(elapsed:Float)
+	{
+		if (modEnabled)
+			alpha = 1;
+		else
+			alpha = 0.5;
 
-				super.update(elapsed);
-			}
-		}
+		super.update(elapsed);
+	}
+}
