@@ -13,6 +13,7 @@ class GameOverSubstate extends MusicBeatSubstate
 	var camFollow:FlxObject;
 
 	var stageSuffix:String = "";
+	var randomGameover:Int = 1;
 
 	public function new(x:Float, y:Float)
 	{
@@ -49,7 +50,11 @@ class GameOverSubstate extends MusicBeatSubstate
 		FlxG.camera.target = null;
 
 		bf.playAnim('firstDeath');
+
+		randomGameover = FlxG.random.int(1, 25);
 	}
+
+	var playingDeathSound:Bool = false;
 
 	override function update(elapsed:Float)
 	{
@@ -75,15 +80,35 @@ class GameOverSubstate extends MusicBeatSubstate
 			FlxG.camera.follow(camFollow, LOCKON, 0.01);
 		}
 
-		if (bf.animation.curAnim.name == 'firstDeath' && bf.animation.curAnim.finished)
+		switch (PlayState.storyWeek)
 		{
-			FlxG.sound.playMusic(Paths.music('gameOver' + stageSuffix));
+			case 7:
+				if (bf.animation.curAnim.name == 'firstDeath' && bf.animation.curAnim.finished && !playingDeathSound)
+				{
+					playingDeathSound = true;
+					FlxG.sound.play(Paths.sound('jeffGameover/jeffGameover-' + randomGameover), 1, false, null, true, function()
+					{
+						bf.startedDeath = true;
+						coolStartDeath();
+					});
+				}
+			default:
+				if (bf.animation.curAnim.name == 'firstDeath' && bf.animation.curAnim.finished)
+				{
+					bf.startedDeath = true;
+					coolStartDeath();
+				}
 		}
 
 		if (FlxG.sound.music.playing)
 		{
 			Conductor.songPosition = FlxG.sound.music.time;
 		}
+	}
+
+	private function coolStartDeath():Void
+	{
+		FlxG.sound.playMusic(Paths.music('gameOver' + stageSuffix));
 	}
 
 	override function beatHit()
