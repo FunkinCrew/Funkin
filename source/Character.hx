@@ -410,8 +410,8 @@ class Character extends FlxSprite
 				animation.play('firstDeath');
 
 				addOffset('firstDeath');
-				addOffset('deathLoop', -37);
-				addOffset('deathConfirm', -37);
+				addOffset('deathLoop', -30, -12);
+				addOffset('deathConfirm', -30, -12);
 				playAnim('firstDeath');
 				// pixel bullshit
 				setGraphicSize(Std.int(width * 6));
