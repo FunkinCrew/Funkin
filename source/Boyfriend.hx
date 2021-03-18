@@ -16,6 +16,8 @@ class Boyfriend extends Character
 		super(x, y, char, true);
 	}
 
+	public var startedDeath:Bool = false;
+
 	override function update(elapsed:Float)
 	{
 		if (!debugMode)
@@ -32,7 +34,7 @@ class Boyfriend extends Character
 				playAnim('idle', true, false, 10);
 			}
 
-			if (animation.curAnim.name == 'firstDeath' && animation.curAnim.finished)
+			if (animation.curAnim.name == 'firstDeath' && animation.curAnim.finished && startedDeath)
 			{
 				playAnim('deathLoop');
 			}
