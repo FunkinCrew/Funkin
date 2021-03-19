@@ -1389,12 +1389,7 @@ class PlayState extends MusicBeatState
 		#end
 
 		if (FlxG.keys.justPressed.NINE)
-		{
-			if (iconP1.animation.curAnim.name == 'bf-old')
-				iconP1.animation.play(SONG.player1);
-			else
-				iconP1.animation.play('bf-old');
-		}
+			iconP1.swapOldIcon();
 
 		// do this BEFORE super.update() so songPosition is accurate
 		if (startingSong)
