@@ -44,7 +44,15 @@ class HealthIcon extends FlxSprite
 
 	function loadIcon(char:String):Void
 	{
-		var realChar:String = char.split('-')[0].trim();
+		var realChar:String = "";
+		switch (char)
+		{
+			case 'bf-pixel':
+				realChar = char;
+			default:
+				realChar = char.split('-')[0].trim();
+		}
+
 		loadGraphic(Paths.image('icons/icon-' + realChar), true, 150, 150);
 		animation.add(realChar, [0, 1], 0, false, isPlayer);
 		animation.play(realChar);
