@@ -109,9 +109,11 @@ class Character extends FlxSprite
 				animation.addByIndices('danceLeft', 'GF Dancing Beat Hair blowing CAR', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
 				animation.addByIndices('danceRight', 'GF Dancing Beat Hair blowing CAR', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24,
 					false);
+				animation.addByIndices('idleHair', 'GF Dancing Beat Hair blowing CAR', [10, 11, 12, 25, 26, 27], "", 24, true);
 
 				addOffset('danceLeft', 0);
 				addOffset('danceRight', 0);
+				addOffset('idleHair', 0);
 
 				playAnim('danceRight');
 
@@ -198,12 +200,14 @@ class Character extends FlxSprite
 				// ANIMATION IS CALLED MOM LEFT POSE BUT ITS FOR THE RIGHT
 				// CUZ DAVE IS DUMB!
 				quickAnimAdd('singRIGHT', 'Mom Pose Left');
+				animation.addByIndices('idleHair', "Mom Idle", [10, 11, 12, 13], "", 24, true);
 
 				addOffset('idle');
 				addOffset("singUP", 14, 71);
 				addOffset("singRIGHT", 10, -60);
 				addOffset("singLEFT", 250, -23);
 				addOffset("singDOWN", 20, -160);
+				addOffset('idleHair');
 
 				playAnim('idle');
 			case 'monster':
@@ -355,6 +359,7 @@ class Character extends FlxSprite
 				quickAnimAdd('singLEFTmiss', 'BF NOTE LEFT MISS');
 				quickAnimAdd('singRIGHTmiss', 'BF NOTE RIGHT MISS');
 				quickAnimAdd('singDOWNmiss', 'BF NOTE DOWN MISS');
+				animation.addByIndices('idleHair', 'BF idle dance', [10, 11, 12, 13], "", 24, true);
 
 				addOffset('idle', -5);
 				addOffset("singUP", -29, 27);
@@ -365,6 +370,7 @@ class Character extends FlxSprite
 				addOffset("singRIGHTmiss", -30, 21);
 				addOffset("singLEFTmiss", 12, 24);
 				addOffset("singDOWNmiss", -11, -19);
+				addOffset('idleHair', -5);
 				playAnim('idle');
 
 				flipX = true;
@@ -603,6 +609,13 @@ class Character extends FlxSprite
 				dance();
 				holdTimer = 0;
 			}
+		}
+
+		if (curCharacter.endsWith('-car'))
+		{
+			// looping hair anims after idle finished
+			if (!animation.curAnim.name.startsWith('sing') && animation.curAnim.finished)
+				playAnim('idleHair');
 		}
 
 		switch (curCharacter)
