@@ -1048,12 +1048,11 @@ class PlayState extends MusicBeatState
 						}
 					});
 					FlxG.sound.play(Paths.sound('introGo'), 0.6);
-				case 4:
 			}
 
 			swagCounter += 1;
 			// generateSong('fresh');
-		}, 5);
+		}, 4);
 	}
 
 	var previousFrameTime:Int = 0;
