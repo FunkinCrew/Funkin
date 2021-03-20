@@ -670,7 +670,6 @@ class PlayState extends MusicBeatState
 
 		strumLine = new FlxSprite(0, 50).makeGraphic(FlxG.width, 10);
 		strumLine.scrollFactor.set();
-		strumLine.screenCenter();
 		
 		if (FlxG.save.data.downscroll)
 			strumLine.y = FlxG.height - 165;
@@ -2100,9 +2099,6 @@ class PlayState extends MusicBeatState
 				{
 					var daNote = possibleNotes[0];
 	
-					if (perfectMode)
-						noteCheck(true, daNote);
-	
 					// Jump notes
 					if (possibleNotes.length >= 2)
 					{
@@ -2135,10 +2131,10 @@ class PlayState extends MusicBeatState
 									trace('force note hit');
 								}
 								else
-									noteCheck(controlArray[daNote.noteData], daNote);
+									noteCheck(controlArray, daNote);
 							}
 							else
-								noteCheck(controlArray[daNote.noteData], daNote);
+								noteCheck(controlArray, daNote);
 						}
 						else
 						{
@@ -2152,10 +2148,10 @@ class PlayState extends MusicBeatState
 											trace('force note hit');
 										}
 										else
-											noteCheck(controlArray[daNote.noteData], daNote);
+											noteCheck(controlArray, daNote);
 									}
 								else
-									noteCheck(controlArray[coolNote.noteData], coolNote);
+									noteCheck(controlArray, coolNote);
 							}
 						}
 					}
@@ -2169,10 +2165,10 @@ class PlayState extends MusicBeatState
 								trace('force note hit');
 							}
 							else
-								noteCheck(controlArray[daNote.noteData], daNote);
+								noteCheck(controlArray, daNote);
 						}
 						else
-							noteCheck(controlArray[daNote.noteData], daNote);
+							noteCheck(controlArray, daNote);
 					}
 					/* 
 						if (controlArray[daNote.noteData])
@@ -2360,15 +2356,32 @@ class PlayState extends MusicBeatState
 		}
 
 
-	function noteCheck(keyP:Bool, note:Note):Void // sorry lol
+	function getKeyPresses(note:Note):Int
+	{
+		var possibleNotes:Array<Note> = []; // copypasted but you already know that
+
+		notes.forEachAlive(function(daNote:Note)
+		{
+			if (daNote.canBeHit && daNote.mustPress && !daNote.tooLate)
+			{
+				possibleNotes.push(daNote);
+				possibleNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
+			}
+		});
+		return possibleNotes.length;
+	}
+	
+	var mashing:Int = 0;
+
+	function noteCheck(controlArray:Array<Bool>, note:Note):Void // sorry lol
 		{
 			if (loadRep)
 			{
-				if (keyP)
+				if (controlArray[note.noteData])
 					goodNoteHit(note);
 				else if (!theFunne) 
 					badNoteCheck();
-				else if (rep.replay.keyPresses.length > repPresses && !keyP)
+				else if (rep.replay.keyPresses.length > repPresses && !controlArray[note.noteData])
 				{
 					if (NearlyEquals(note.strumTime,rep.replay.keyPresses[repPresses].time, 4))
 					{
@@ -2378,9 +2391,20 @@ class PlayState extends MusicBeatState
 						badNoteCheck();
 				}
 			}
-			else if (keyP )
+			else if (controlArray[note.noteData])
 				{
-					goodNoteHit(note);
+					for (b in controlArray) {
+						if (b)
+							mashing++;
+					}
+
+					if (mashing <= getKeyPresses(note))
+						goodNoteHit(note);
+					else
+					{
+						playerStrums.members[note.noteData].animation.play('static');
+						trace('mash ' + mashing);
+					}
 				}
 			else if (!theFunne)
 			{
@@ -2390,6 +2414,8 @@ class PlayState extends MusicBeatState
 
 		function goodNoteHit(note:Note):Void
 			{
+				if (mashing != 0)
+					mashing = 0;
 				if (!note.wasGoodHit)
 				{
 					if (!note.isSustainNote)
