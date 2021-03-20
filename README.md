@@ -38,7 +38,7 @@ The features that Kade Engine implements are:
 
 - FPS Increase
 
-*We always love more FPS, and this is what you'll get. We've increase the FPS cap to 120.*
+*We always love more FPS, and this is what you'll get. We've increased the FPS cap to 120.*
 
 - DFJK Support
 
