@@ -1,9 +1,5 @@
 package;
 
-#if desktop
-import Discord.DiscordClient;
-import sys.thread.Thread;
-#end
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileDiamond;
@@ -21,8 +17,14 @@ import flixel.util.FlxTimer;
 import io.newgrounds.NG;
 import lime.app.Application;
 import openfl.Assets;
+import shaderslmfao.ColorSwap;
 
 using StringTools;
+
+#if desktop
+import Discord.DiscordClient;
+import sys.thread.Thread;
+#end
 
 class TitleState extends MusicBeatState
 {
@@ -158,6 +160,9 @@ class TitleState extends MusicBeatState
 		gfDance.animation.addByIndices('danceRight', 'gfDance', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
 		gfDance.antialiasing = true;
 		add(gfDance);
+
+		gfDance.shader = new ColorSwap().shader;
+
 		add(logoBl);
 
 		titleText = new FlxSprite(100, FlxG.height * 0.8);
