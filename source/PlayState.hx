@@ -2401,10 +2401,10 @@ class PlayState extends MusicBeatState
 
 					// ANTI MASH CODE FOR THE BOYS
 
-					if (mashing <= getKeyPresses(note) && mashViolations < 2)
+					if (mashing <= getKeyPresses(note) + 1 && mashViolations < 2)
 					{
 						mashViolations++;
-						goodNoteHit(note, (mashing <= getKeyPresses(note)));
+						goodNoteHit(note, (mashing <= getKeyPresses(note) + 1));
 					}
 					else
 					{
