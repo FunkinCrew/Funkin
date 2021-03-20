@@ -2300,17 +2300,11 @@ class PlayState extends MusicBeatState
 		if (curBeat % 8 == 7 && curSong == 'Bopeebo')
 		{
 			boyfriend.playAnim('hey', true);
-
-			// Fuck this code
-			/*if (SONG.song == 'Tutorial' && dad.curCharacter == 'gf')
-			{
-				dad.playAnim('cheer', true);
-			}*/
-			
-			if (gf.curCharacter == 'gf')
-			{
-				gf.playAnim('cheer', true);
-			}
+		}
+		
+		if (curBeat % 8 == 7)
+		{
+			if (curSong == 'Bopeebo' || curSong == 'Fresh') { gf.playAnim('cheer', true); } // Dadbattle is too buggy. Return to it later when im not fucking lazy.
 		}
 
 		switch (curStage)
