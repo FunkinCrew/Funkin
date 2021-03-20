@@ -2372,6 +2372,7 @@ class PlayState extends MusicBeatState
 	}
 	
 	var mashing:Int = 0;
+	var mashViolations:Int = 0;
 
 	function noteCheck(controlArray:Array<Bool>, note:Note):Void // sorry lol
 		{
@@ -2398,8 +2399,13 @@ class PlayState extends MusicBeatState
 							mashing++;
 					}
 
-					if (mashing <= getKeyPresses(note))
-						goodNoteHit(note);
+					// ANTI MASH CODE FOR THE BOYS
+
+					if (mashing <= getKeyPresses(note) && mashViolations < 3)
+					{
+						mashViolations++;
+						goodNoteHit(note, !(mashing <= getKeyPresses(note)));
+					}
 					else
 					{
 						playerStrums.members[note.noteData].animation.play('static');
@@ -2412,10 +2418,14 @@ class PlayState extends MusicBeatState
 			}
 		}
 
-		function goodNoteHit(note:Note):Void
+		function goodNoteHit(note:Note, resetMashViolation = true):Void
 			{
 				if (mashing != 0)
 					mashing = 0;
+
+				if (resetMashViolation)
+					mashViolations = 0;
+
 				if (!note.wasGoodHit)
 				{
 					if (!note.isSustainNote)
