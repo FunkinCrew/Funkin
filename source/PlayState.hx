@@ -2404,7 +2404,7 @@ class PlayState extends MusicBeatState
 					if (mashing <= getKeyPresses(note) && mashViolations < 3)
 					{
 						mashViolations++;
-						goodNoteHit(note, !(mashing <= getKeyPresses(note)));
+						goodNoteHit(note, (mashing <= getKeyPresses(note)));
 					}
 					else
 					{
