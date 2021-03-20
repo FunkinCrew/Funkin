@@ -2401,7 +2401,7 @@ class PlayState extends MusicBeatState
 
 					// ANTI MASH CODE FOR THE BOYS
 
-					if (mashing <= getKeyPresses(note) && mashViolations < 3)
+					if (mashing <= getKeyPresses(note) && mashViolations < 2)
 					{
 						mashViolations++;
 						goodNoteHit(note, (mashing <= getKeyPresses(note)));
@@ -2411,6 +2411,9 @@ class PlayState extends MusicBeatState
 						playerStrums.members[note.noteData].animation.play('static');
 						trace('mash ' + mashing);
 					}
+
+					if (mashing != 0)
+						mashing = 0;
 				}
 			else if (!theFunne)
 			{
@@ -2420,8 +2423,6 @@ class PlayState extends MusicBeatState
 
 		function goodNoteHit(note:Note, resetMashViolation = true):Void
 			{
-				if (mashing != 0)
-					mashing = 0;
 
 				if (resetMashViolation)
 					mashViolations = 0;
