@@ -11,7 +11,7 @@ class HealthIcon extends FlxSprite
 	 */
 	public var sprTracker:FlxSprite;
 
-	var char:String = 'bf';
+	var char:String = '';
 	var isPlayer:Bool = false;
 
 	public function new(char:String = 'bf', isPlayer:Bool = false)
@@ -19,9 +19,8 @@ class HealthIcon extends FlxSprite
 		super();
 
 		this.isPlayer = isPlayer;
-		this.char = char;
 
-		loadIcon(char);
+		changeIcon(char);
 		antialiasing = true;
 		scrollFactor.set();
 	}
@@ -33,29 +32,26 @@ class HealthIcon extends FlxSprite
 		isOldIcon = !isOldIcon;
 
 		if (isOldIcon)
-		{
-			loadGraphic(Paths.image('icons/icon-bf-old'), true, 150, 150);
-			animation.add('bf-old', [0, 1], 0, false, isPlayer);
-			animation.play('bf-old');
-		}
+			changeIcon('bf-old');
 		else
-			loadIcon(char);
+			changeIcon('bf');
 	}
 
-	function loadIcon(char:String):Void
+	public function changeIcon(newChar:String):Void
 	{
-		var realChar:String = "";
-		switch (char)
-		{
-			case 'bf-pixel':
-				realChar = char;
-			default:
-				realChar = char.split('-')[0].trim();
-		}
+		if (newChar != 'bf-pixel' && newChar != 'bf-old')
+			newChar = newChar.split('-')[0].trim();
 
-		loadGraphic(Paths.image('icons/icon-' + realChar), true, 150, 150);
-		animation.add(realChar, [0, 1], 0, false, isPlayer);
-		animation.play(realChar);
+		if (newChar != char)
+		{
+			if (animation.getByName(newChar) == null)
+			{
+				loadGraphic(Paths.image('icons/icon-' + newChar), true, 150, 150);
+				animation.add(newChar, [0, 1], 0, false, isPlayer);
+			}
+			animation.play(newChar);
+			char = newChar;
+		}
 	}
 
 	override function update(elapsed:Float)
