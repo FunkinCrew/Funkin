@@ -14,6 +14,7 @@ import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
+import openfl.Lib;
 import io.newgrounds.NG;
 import lime.app.Application;
 
@@ -130,7 +131,17 @@ class MainMenuState extends MusicBeatState
 				FlxG.sound.play(Paths.sound('scrollMenu'));
 				changeItem(1);
 			}
-
+			#if desktop
+			if (controls.LEFT_P)
+			{
+				Lib.current.stage.frameRate = 60;
+			}
+			
+			if (controls.RIGHT_P)
+			{
+				Lib.current.stage.frameRate = 120;
+			}
+			#end
 			if (controls.BACK)
 			{
 				FlxG.switchState(new TitleState());
