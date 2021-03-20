@@ -42,11 +42,15 @@ class TitleState extends MusicBeatState
 
 	var lastBeat:Int = 0;
 
+	// var swagShader:ColorSwap;
+
 	override public function create():Void
 	{
 		#if polymod
 		polymod.Polymod.init({modRoot: "mods", dirs: ['introMod'], framework: OPENFL});
 		#end
+
+		// swagShader = new ColorSwap();
 
 		FlxG.sound.muteKeys = [ZERO];
 
@@ -150,6 +154,8 @@ class TitleState extends MusicBeatState
 		logoBl.animation.play('bump');
 		logoBl.updateHitbox();
 
+		// logoBl.shader = swagShader.shader;
+
 		// trace();
 		// logoBl.screenCenter();
 		// logoBl.color = FlxColor.BLACK;
@@ -161,7 +167,7 @@ class TitleState extends MusicBeatState
 		gfDance.antialiasing = true;
 		add(gfDance);
 
-		gfDance.shader = new ColorSwap().shader;
+		// gfDance.shader = swagShader.shader;
 
 		add(logoBl);
 
@@ -363,6 +369,8 @@ class TitleState extends MusicBeatState
 	override function beatHit()
 	{
 		super.beatHit();
+
+		// swagShader.update(FlxG.random.float(0.1, 0.7));
 
 		logoBl.animation.play('bump', true);
 
