@@ -1,5 +1,6 @@
 package;
 
+import flixel.FlxG;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import shaderslmfao.ColorSwap;
 
@@ -29,6 +30,12 @@ class ColorpickSubstate extends MusicBeatSubstate
 
 	override function update(elapsed:Float)
 	{
+		if (controls.BACK)
+		{
+			FlxG.state.closeSubState();
+			FlxG.state.openSubState(new OptionsSubState());
+		}
+
 		if (controls.RIGHT_P)
 			curSelected += 1;
 		if (controls.LEFT_P)
