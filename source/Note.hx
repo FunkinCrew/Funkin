@@ -118,6 +118,7 @@ class Note extends FlxSprite
 
 		colorSwap = new ColorSwap();
 		shader = colorSwap.shader;
+		updateColors();
 
 		switch (noteData)
 		{
@@ -158,7 +159,6 @@ class Note extends FlxSprite
 			}
 
 			updateHitbox();
-			updateColors();
 
 			x -= width / 2;
 

@@ -8,7 +8,7 @@ import flixel.util.FlxColor;
 
 class OptionsSubState extends MusicBeatSubstate
 {
-	var textMenuItems:Array<String> = ['Master Volume', 'Sound Volume', 'Controls', 'Colors'];
+	var textMenuItems:Array<String> = ['Master Volume', 'Sound Volume', 'Controls', 'Colors', 'Back'];
 
 	var selector:FlxSprite;
 	var curSelected:Int = 0;
@@ -63,6 +63,9 @@ class OptionsSubState extends MusicBeatSubstate
 				txt.color = FlxColor.YELLOW;
 		});
 
+		if (controls.BACK)
+			FlxG.switchState(new MainMenuState());
+
 		if (controls.ACCEPT)
 		{
 			switch (textMenuItems[curSelected])
@@ -76,6 +79,8 @@ class OptionsSubState extends MusicBeatSubstate
 				case "Mods":
 					FlxG.state.closeSubState();
 					FlxG.state.openSubState(new ModdingSubstate());
+				case "Back":
+					FlxG.switchState(new MainMenuState());
 			}
 		}
 	}
