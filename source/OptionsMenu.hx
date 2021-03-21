@@ -121,6 +121,7 @@ class OptionsMenu extends MusicBeatState
 						FlxG.switchState(new LoadReplayState());
 				}
 			}
+		FlxG.save.flush();
 	}
 
 	var isSettingControl:Bool = false;
