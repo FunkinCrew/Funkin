@@ -27,6 +27,7 @@ import flixel.util.FlxTimer;
 import io.newgrounds.NG;
 import lime.app.Application;
 import openfl.Assets;
+import openfl.Lib;
 
 using StringTools;
 
@@ -132,6 +133,8 @@ class TitleState extends MusicBeatState
 
 			FlxG.sound.music.fadeIn(4, 0, 0.7);
 		}
+
+		Lib.current.stage.frameRate = Lib.application.window.displayMode.refreshRate;
 
 		Conductor.changeBPM(102);
 		persistentUpdate = true;
