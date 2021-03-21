@@ -42,7 +42,7 @@ class TitleState extends MusicBeatState
 
 	var lastBeat:Int = 0;
 
-	// var swagShader:ColorSwap;
+	var swagShader:ColorSwap;
 
 	override public function create():Void
 	{
@@ -50,7 +50,7 @@ class TitleState extends MusicBeatState
 		polymod.Polymod.init({modRoot: "mods", dirs: ['introMod'], framework: OPENFL});
 		#end
 
-		// swagShader = new ColorSwap();
+		swagShader = new ColorSwap();
 
 		FlxG.sound.muteKeys = [ZERO];
 
@@ -154,7 +154,7 @@ class TitleState extends MusicBeatState
 		logoBl.animation.play('bump');
 		logoBl.updateHitbox();
 
-		// logoBl.shader = swagShader.shader;
+		logoBl.shader = swagShader.shader;
 
 		// trace();
 		// logoBl.screenCenter();
@@ -167,7 +167,7 @@ class TitleState extends MusicBeatState
 		gfDance.antialiasing = true;
 		add(gfDance);
 
-		// gfDance.shader = swagShader.shader;
+		gfDance.shader = swagShader.shader;
 
 		add(logoBl);
 
@@ -333,6 +333,16 @@ class TitleState extends MusicBeatState
 			skipIntro();
 		}
 
+		if (controls.LEFT)
+		{
+			swagShader.update(-elapsed * 0.1);
+		}
+
+		if (controls.RIGHT)
+		{
+			swagShader.update(elapsed * 0.1);
+		}
+
 		super.update(elapsed);
 	}
 
@@ -366,11 +376,11 @@ class TitleState extends MusicBeatState
 		}
 	}
 
+	var isRainbow:Bool = false;
+
 	override function beatHit()
 	{
 		super.beatHit();
-
-		// swagShader.update(FlxG.random.float(0.1, 0.7));
 
 		logoBl.animation.play('bump', true);
 
