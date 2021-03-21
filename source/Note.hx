@@ -28,6 +28,7 @@ class Note extends FlxSprite
 	public var sustainLength:Float = 0;
 	public var isSustainNote:Bool = false;
 
+	public var colorSwap:ColorSwap;
 	public var noteScore:Float = 1;
 
 	public static var swagWidth:Float = 160 * 0.7;
@@ -35,6 +36,8 @@ class Note extends FlxSprite
 	public static var GREEN_NOTE:Int = 2;
 	public static var BLUE_NOTE:Int = 1;
 	public static var RED_NOTE:Int = 3;
+
+	public static var arrowColors:Array<Float> = [1, 1, 1, 1];
 
 	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false)
 	{
@@ -105,10 +108,6 @@ class Note extends FlxSprite
 				updateHitbox();
 				antialiasing = true;
 
-				var colorSwap = new ColorSwap();
-
-				// shader = colorSwap.shader;
-
 				// colorSwap.colorToReplace = 0xFFF9393F;
 				// colorSwap.newColor = 0xFF00FF00;
 
@@ -117,11 +116,15 @@ class Note extends FlxSprite
 				// replaceColor(0xFFC1C1C1, FlxColor.RED);
 		}
 
+		colorSwap = new ColorSwap();
+		shader = colorSwap.shader;
+
 		switch (noteData)
 		{
 			case 0:
 				x += swagWidth * 0;
 				animation.play('purpleScroll');
+
 			case 1:
 				x += swagWidth * 1;
 				animation.play('blueScroll');
@@ -155,6 +158,7 @@ class Note extends FlxSprite
 			}
 
 			updateHitbox();
+			updateColors();
 
 			x -= width / 2;
 
@@ -180,6 +184,11 @@ class Note extends FlxSprite
 				// prevNote.setGraphicSize();
 			}
 		}
+	}
+
+	public function updateColors():Void
+	{
+		colorSwap.update(arrowColors[noteData]);
 	}
 
 	override function update(elapsed:Float)
