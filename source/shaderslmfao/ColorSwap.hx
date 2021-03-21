@@ -9,16 +9,20 @@ class ColorSwap
 	public var colorToReplace(default, set):FlxColor;
 	public var newColor(default, set):FlxColor;
 	public var daTime(default, set):Float;
+	public var hueShit:Float = 0;
 
 	public function new():Void
 	{
 		shader = new ColorSwapShader();
 		shader.uTime.value = [0];
+		shader.money.value = [0];
 	}
 
 	public function update(elapsed:Float):Void
 	{
 		shader.uTime.value[0] += elapsed;
+		hueShit += elapsed;
+		// trace(shader.money.value[0]);
 	}
 
 	function set_colorToReplace(color:FlxColor):FlxColor
@@ -46,8 +50,8 @@ class ColorSwapShader extends FlxShader
 	@:glFragmentSource('
         #pragma header
 
-
         uniform float uTime;
+        uniform float money;
 
         vec3 normalizeColor(vec3 color)
         {
@@ -85,6 +89,8 @@ class ColorSwapShader extends FlxShader
             // [0] is the hue???
             swagColor[0] += uTime;
             // swagColor[1] += uTime;
+
+            // money += swagColor[0];
 
             color = vec4(hsv2rgb(vec3(swagColor[0], swagColor[1], swagColor[2])), swagColor[3]);
 
