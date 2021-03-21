@@ -33,7 +33,11 @@ class OutdatedSubState extends MusicBeatState
 	{
 		if (controls.ACCEPT)
 		{
-			FlxG.openURL("https://ninja-muffin24.itch.io/funkin");
+			#if linux
+				Sys.command('xdg-open', ["https://ninja-muffin24.itch.io/funkin"]);
+			#else
+				FlxG.openURL('https://ninja-muffin24.itch.io/funkin');
+			#end
 		}
 		if (controls.BACK)
 		{
