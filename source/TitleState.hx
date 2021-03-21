@@ -66,6 +66,8 @@ class TitleState extends MusicBeatState
 		trace('NEWGROUNDS LOL');
 		#end
 
+		FlxG.save.bind('funkin', 'ninjamuffin99');
+
 		if (FlxG.save.data.newInput == null)
 			FlxG.save.data.newInput = true;
 
@@ -77,8 +79,12 @@ class TitleState extends MusicBeatState
 		
 		if (FlxG.save.data.accuracyDisplay == null)
 			FlxG.save.data.accuracyDisplay = true;
-			
-		FlxG.save.bind('funkin', 'ninjamuffin99');
+
+		if (FlxG.save.data.accuracyDisplay == null)
+			FlxG.save.data.accuracyDisplay = true;
+
+		if (FlxG.save.data.offset == null)
+			FlxG.save.data.offset = 0;
 
 		Highscore.load();
 
