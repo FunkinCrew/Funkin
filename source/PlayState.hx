@@ -1464,15 +1464,15 @@ class PlayState extends MusicBeatState
 	{
 		var ranking:String = "N/A";
 
-		if (misses == 0 && accuracy >= 100) // Marvelous (SICK) Full Combo
+		if (misses == 0 && bads == 0 && shits == 0 && goods == 0) // Marvelous (SICK) Full Combo
 			ranking = "(MFC)";
 		else if (misses == 0 && bads == 0 && shits == 0 && goods >= 1) // Good Full Combo (Nothing but Goods & Sicks)
 			ranking = "(GFC)";
 		else if ((shits < 10 && shits != 0 || bads < 10 && bads != 0) && misses == 0) // Single Digit Combo Breaks
 			ranking = "(SDCB)";
-		else if (misses == 0) // Regular FC
+		else if (misses == 0 && (shits >= 10 || bads >= 10)) // Regular FC
 			ranking = "(FC)";
-		else // Combo Broken
+		else if (misses >= 1) // Combo Broken
 			ranking = "(CB)";
 
 		// WIFE TIME :)))) (based on Wife3)
@@ -2107,7 +2107,7 @@ class PlayState extends MusicBeatState
 				sicks++;
 			}
 	
-			trace(noteDiff);
+			trace('Wife accuracy loss: ' + wife + ' | Rating: ' + daRating + ' | Score: ' + score + ' | Weight: ' + (1 - wife));
 
 			if (daRating != 'shit' || daRating != 'bad')
 				{
