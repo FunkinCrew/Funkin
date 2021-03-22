@@ -14,21 +14,12 @@ class PlayerSettings
 	static public var player1(default, null):PlayerSettings;
 	static public var player2(default, null):PlayerSettings;
 
-	#if (haxe >= "4.0.0")
-	static public final onAvatarAdd = new FlxTypedSignal<PlayerSettings->Void>();
-	static public final onAvatarRemove = new FlxTypedSignal<PlayerSettings->Void>();
-	#else
-	static public var onAvatarAdd = new FlxTypedSignal<PlayerSettings->Void>();
-	static public var onAvatarRemove = new FlxTypedSignal<PlayerSettings->Void>();
-	#end
+	static public var onAvatarAdd(default, null) = new FlxTypedSignal<PlayerSettings->Void>();
+	static public var onAvatarRemove(default, null) = new FlxTypedSignal<PlayerSettings->Void>();
 
 	public var id(default, null):Int;
 
-	#if (haxe >= "4.0.0")
-	public final controls:Controls;
-	#else
-	public var controls:Controls;
-	#end
+	public var controls(default, null):Controls;
 
 	// public var avatar:Player;
 	// public var camera(get, never):PlayCamera;

@@ -65,7 +65,7 @@ class ControlsMenu extends ui.OptionsState.Page
 		if (FlxG.gamepads.numActiveGamepads > 0)
 		{
 			var devicesBg = new FlxSprite();
-			devicesBg.makeGraphic(FlxG.width, 100, 0xFF808080);
+			devicesBg.makeGraphic(FlxG.width, 100, 0xFFfafd6d);
 			add(devicesBg);
 			deviceList = new TextMenuList(Horizontal, None);
 			add(deviceList);
@@ -120,6 +120,7 @@ class ControlsMenu extends ui.OptionsState.Page
 		{
 			camFollow.y = deviceList.selectedItem.y;
 			controlGrid.selectedItem.idle();
+			controlGrid.enabled = false;
 		}
 		else
 			camFollow.y = controlGrid.selectedItem.y;
@@ -138,7 +139,7 @@ class ControlsMenu extends ui.OptionsState.Page
 		
 		prompt = new Prompt("\nPress any key to rebind\n\n\n\n    Escape to cancel", None);
 		prompt.create();
-		prompt.createBgFromMargin();
+		prompt.createBgFromMargin(100, 0xFFfafd6d);
 		prompt.back.scrollFactor.set(0, 0);
 		prompt.exists = false;
 		add(prompt);
