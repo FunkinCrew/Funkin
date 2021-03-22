@@ -14,6 +14,10 @@ import flixel.util.FlxColor;
 import io.newgrounds.NG;
 import lime.app.Application;
 
+#if desktop
+import Discord.DiscordClient;
+#end
+
 using StringTools;
 
 class MainMenuState extends MusicBeatState
@@ -40,6 +44,11 @@ class MainMenuState extends MusicBeatState
 
 	override function create()
 	{
+		#if desktop
+		// Updating Discord Rich Presence
+		DiscordClient.changePresence("In the Menus", null);
+		#end
+		
 		if (!FlxG.sound.music.playing)
 		{
 			FlxG.sound.playMusic(Paths.music('freakyMenu'));
