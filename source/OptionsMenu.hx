@@ -31,6 +31,7 @@ class OptionsMenu extends MusicBeatState
 			"\n" + (FlxG.save.data.downscroll ? 'Downscroll' : 'Upscroll') + 
 			"\nAccuracy " + (!FlxG.save.data.accuracyDisplay ? "off" : "on") + 
 			"\nSong Position " + (!FlxG.save.data.songPosition ? "off" : "on") +
+			"\nEtterna Mode " + (!FlxG.save.data.etternaMode ? "off" : "on") +
 			"\nLoad replays");
 		
 		trace(controlsStrings);
@@ -89,7 +90,7 @@ class OptionsMenu extends MusicBeatState
 
 			if (controls.ACCEPT)
 			{
-				if (curSelected != 5)
+				if (curSelected != 6)
 					grpControls.remove(grpControls.members[curSelected]);
 				switch(curSelected)
 				{
@@ -129,6 +130,12 @@ class OptionsMenu extends MusicBeatState
 						ctrl.targetY = curSelected - 4;
 						grpControls.add(ctrl);
 					case 5:
+						FlxG.save.data.etternaMode = !FlxG.save.data.etternaMode;
+						var ctrl:Alphabet = new Alphabet(0, (70 * curSelected) + 30, "Etterna Mode " + (!FlxG.save.data.etternaMode ? "off" : "on"), true, false);
+						ctrl.isMenuItem = true;
+						ctrl.targetY = curSelected - 5;
+						grpControls.add(ctrl);
+					case 6:
 						trace('switch');
 						FlxG.switchState(new LoadReplayState());
 				}

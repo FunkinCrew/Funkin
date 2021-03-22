@@ -166,6 +166,12 @@ class PlayState extends MusicBeatState
 	override public function create()
 	{
 
+		if (FlxG.save.data.etternaMode)
+			Conductor.safeFrames = 7; // 116ms hit window (j3-4)
+		else
+			Conductor.safeFrames = 10; // 166ms hit window (j1)
+
+
 		theFunne = FlxG.save.data.newInput;
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
@@ -1472,7 +1478,7 @@ class PlayState extends MusicBeatState
 			ranking = "(SDCB)";
 		else if (misses == 0 && (shits >= 10 || bads >= 10)) // Regular FC
 			ranking = "(FC)";
-		else if (misses >= 1) // Combo Broken
+		else if (misses >= 1 || (shits >= 10 || bads >= 10)) // Combo Breaks
 			ranking = "(CB)";
 
 		// WIFE TIME :)))) (based on Wife3)
@@ -2085,7 +2091,7 @@ class PlayState extends MusicBeatState
 					ss = false;
 					goods++;
 				}
-				else if (noteDiff > Conductor.safeZoneOffset * 0.25)
+				else if (noteDiff > Conductor.safeZoneOffset * 0.35)
 				{
 					daRating = 'good';
 					totalNotesHit += 0.65 - wife;
