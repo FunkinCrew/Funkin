@@ -2030,7 +2030,6 @@ class PlayState extends MusicBeatState
 						{
 							score = -3000;
 							combo = 0;
-							misses++;
 							health -= 0.2;
 						}
 					shits++;
@@ -2043,7 +2042,6 @@ class PlayState extends MusicBeatState
 					{
 						score = -3000;
 						combo = 0;
-						misses++;
 						health -= 0.2;
 					}
 					ss = false;
