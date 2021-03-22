@@ -1478,8 +1478,10 @@ class PlayState extends MusicBeatState
 			ranking = "(SDCB)";
 		else if (misses == 0 && (shits >= 10 || bads >= 10)) // Regular FC
 			ranking = "(FC)";
-		else if (misses >= 1 || (shits >= 10 || bads >= 10)) // Combo Breaks
+		else if (misses >= 10 || (shits >= 10 || bads >= 10)) // Combo Breaks
 			ranking = "(CB)";
+		else
+			ranking = "";
 
 		// WIFE TIME :)))) (based on Wife3)
 
