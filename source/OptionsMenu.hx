@@ -25,7 +25,13 @@ class OptionsMenu extends MusicBeatState
 	override function create()
 	{
 		var menuBG:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
-		controlsStrings = CoolUtil.coolStringFile((FlxG.save.data.dfjk ? 'DFJK' : 'WASD') + "\n" + (FlxG.save.data.newInput ? "New input" : "Old Input") + "\n" + (FlxG.save.data.downscroll ? 'Downscroll' : 'Upscroll') + "\nAccuracy " + (!FlxG.save.data.accuracyDisplay ? "off" : "on") + "\nLoad replays");
+		controlsStrings = CoolUtil.coolStringFile(
+			(FlxG.save.data.dfjk ? 'DFJK' : 'WASD') + 
+			"\n" + (FlxG.save.data.newInput ? "New input" : "Old Input") + 
+			"\n" + (FlxG.save.data.downscroll ? 'Downscroll' : 'Upscroll') + 
+			"\nAccuracy " + (!FlxG.save.data.accuracyDisplay ? "off" : "on") + 
+			"\nSong Position " + (!FlxG.save.data.songPosition ? "off" : "on") +
+			"\nLoad replays");
 		
 		trace(controlsStrings);
 
@@ -83,7 +89,7 @@ class OptionsMenu extends MusicBeatState
 
 			if (controls.ACCEPT)
 			{
-				if (curSelected != 4)
+				if (curSelected != 5)
 					grpControls.remove(grpControls.members[curSelected]);
 				switch(curSelected)
 				{
@@ -117,6 +123,12 @@ class OptionsMenu extends MusicBeatState
 						ctrl.targetY = curSelected - 3;
 						grpControls.add(ctrl);
 					case 4:
+						FlxG.save.data.songPosition = !FlxG.save.data.songPosition;
+						var ctrl:Alphabet = new Alphabet(0, (70 * curSelected) + 30, "Song Position " + (!FlxG.save.data.songPosition ? "off" : "on"), true, false);
+						ctrl.isMenuItem = true;
+						ctrl.targetY = curSelected - 4;
+						grpControls.add(ctrl);
+					case 5:
 						trace('switch');
 						FlxG.switchState(new LoadReplayState());
 				}
