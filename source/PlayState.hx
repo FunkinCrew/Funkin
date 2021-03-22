@@ -1997,6 +1997,7 @@ class PlayState extends MusicBeatState
 	private function popUpScore(strumtime:Float):Void
 		{
 			var noteDiff:Float = Math.abs(strumtime - Conductor.songPosition);
+			var wife:Float = noteDiff / 1000;
 			// boyfriend.playAnim('hey');
 			vocals.volume = 1;
 	
@@ -2015,7 +2016,7 @@ class PlayState extends MusicBeatState
 			if (noteDiff > Conductor.safeZoneOffset * 2)
 				{
 					daRating = 'shit';
-					totalNotesHit -= 2;
+					totalNotesHit -= 2 - wife;
 					ss = false;
 					if (theFunne)
 						{
@@ -2029,7 +2030,7 @@ class PlayState extends MusicBeatState
 				else if (noteDiff < Conductor.safeZoneOffset * -2)
 				{
 					daRating = 'shit';
-					totalNotesHit -= 2;
+					totalNotesHit -= 2 - wife;
 					if (theFunne)
 					{
 						score = -3000;
@@ -2043,7 +2044,7 @@ class PlayState extends MusicBeatState
 				else if (noteDiff < Conductor.safeZoneOffset * -0.45)
 				{
 					daRating = 'bad';
-					totalNotesHit += 0.2;
+					totalNotesHit += 0.2 - wife;
 					if (theFunne)
 					{
 						score = -1000;
@@ -2058,7 +2059,7 @@ class PlayState extends MusicBeatState
 				else if (noteDiff > Conductor.safeZoneOffset * 0.45)
 				{
 					daRating = 'bad';
-					totalNotesHit += 0.2;
+					totalNotesHit += 0.2 - wife;
 					if (theFunne)
 						{
 							score = -1000;
@@ -2073,7 +2074,7 @@ class PlayState extends MusicBeatState
 				else if (noteDiff < Conductor.safeZoneOffset * -0.25)
 				{
 					daRating = 'good';
-					totalNotesHit += 0.65;
+					totalNotesHit += 0.65 - wife;
 					if (theFunne)
 					{
 						score = 200;
@@ -2087,7 +2088,7 @@ class PlayState extends MusicBeatState
 				else if (noteDiff > Conductor.safeZoneOffset * 0.25)
 				{
 					daRating = 'good';
-					totalNotesHit += 0.65;
+					totalNotesHit += 0.65 - wife;
 					if (theFunne)
 						{
 							score = 200;
@@ -2100,12 +2101,14 @@ class PlayState extends MusicBeatState
 				}
 			if (daRating == 'sick')
 			{
-				totalNotesHit += 1;
+				totalNotesHit += 1 - wife;
 				if (health < 2)
 					health += 0.1;
 				sicks++;
 			}
 	
+			trace(noteDiff);
+
 			if (daRating != 'shit' || daRating != 'bad')
 				{
 	
@@ -2622,6 +2625,8 @@ class PlayState extends MusicBeatState
 				possibleNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
 			}
 		});
+		if (possibleNotes.length == 1)
+			return possibleNotes.length + 1;
 		return possibleNotes.length;
 	}
 	
@@ -2655,10 +2660,10 @@ class PlayState extends MusicBeatState
 
 					// ANTI MASH CODE FOR THE BOYS
 
-					if (mashing <= getKeyPresses(note) + 1 && mashViolations < 2)
+					if (mashing <= getKeyPresses(note) && mashViolations < 2)
 					{
 						mashViolations++;
-						goodNoteHit(note, (mashing <= getKeyPresses(note) + 1));
+						goodNoteHit(note, (mashing <= getKeyPresses(note)));
 					}
 					else
 					{
