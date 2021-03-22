@@ -219,7 +219,7 @@ class PlayState extends MusicBeatState
 		detailsPausedText = "Paused - " + detailsText;
 
 		// Updating Discord Rich Presence.
-		DiscordClient.changePresence(detailsText + " " + SONG.song + " (" + storyDifficultyText + ")", "\nAcc: " + truncateFloat(accuracy, 2) + "% | Score: " + songScore + " | Misses: " + misses  , iconRPC);
+		DiscordClient.changePresence(detailsText + " " + SONG.song + " (" + storyDifficultyText + ") " + generateRanking(), "\nAcc: " + truncateFloat(accuracy, 2) + "% | Score: " + songScore + " | Misses: " + misses  , iconRPC);
 		#end
 
 
@@ -777,6 +777,8 @@ class PlayState extends MusicBeatState
 	
 				if (curStage.contains("school") && FlxG.save.data.downscroll)
 					songPosBG.y -= 45;
+				if (!curStage.contains("school") && !FlxG.save.data.downscroll)
+					songPosBG.y -= 45;
 				
 				songPosBar = new FlxBar(songPosBG.x + 4, songPosBG.y + 4, LEFT_TO_RIGHT, Std.int(songPosBG.width - 8), Std.int(songPosBG.height - 8), this,
 					'songPositionBar', 0, 90000);
@@ -809,15 +811,15 @@ class PlayState extends MusicBeatState
 		add(healthBar);
 
 		// Add Kade Engine watermark
-		var kadeEngineWatermark = new FlxText(4,FlxG.height - 4,0,SONG.song + " " + (storyDifficulty == 2 ? "Hard" : storyDifficulty == 1 ? "Normal" : "Easy") + " - KE " + MainMenuState.kadeEngineVer, 16);
+		var kadeEngineWatermark = new FlxText(FlxG.width * 0.03,FlxG.height * 0.94,0,SONG.song + " " + (storyDifficulty == 2 ? "Hard" : storyDifficulty == 1 ? "Normal" : "Easy") + " - KE " + MainMenuState.kadeEngineVer, 16);
 		kadeEngineWatermark.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 		kadeEngineWatermark.scrollFactor.set();
 		add(kadeEngineWatermark);
 
-		scoreTxt = new FlxText(healthBarBG.x + healthBarBG.width / 2 - 150, healthBarBG.y + 50, 0, "", 20);
+		scoreTxt = new FlxText(healthBarBG.x + healthBarBG.width / 2 - 180, healthBarBG.y + 50, 0, "", 20);
 		if (!FlxG.save.data.accuracyDisplay)
 			scoreTxt.x = healthBarBG.x + healthBarBG.width / 2;
-		scoreTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
+		scoreTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 		scoreTxt.scrollFactor.set();
 		add(scoreTxt);
 
@@ -1135,6 +1137,8 @@ class PlayState extends MusicBeatState
 				songPosBG = new FlxSprite(0, strumLine.y - 15).loadGraphic(Paths.image('healthBar'));
 				if (FlxG.save.data.downscroll)
 					songPosBG.y = FlxG.height * 0.9 + 45; 
+				if (!curStage.contains("school") && !FlxG.save.data.downscroll)
+					songPosBG.y -= 45;
 				songPosBG.screenCenter(X);
 				songPosBG.scrollFactor.set();
 				add(songPosBG);
@@ -1166,7 +1170,7 @@ class PlayState extends MusicBeatState
 
 
 
-		DiscordClient.changePresence(detailsText + " " + SONG.song + " (" + storyDifficultyText + ")", "\nAcc: " + truncateFloat(accuracy, 2) + "% | Score: " + songScore + " | Misses: " + misses  , iconRPC);
+		DiscordClient.changePresence(detailsText + " " + SONG.song + " (" + storyDifficultyText + ") " + generateRanking(), "\nAcc: " + truncateFloat(accuracy, 2) + "% | Score: " + songScore + " | Misses: " + misses  , iconRPC);
 		#end
 	}
 
@@ -1392,7 +1396,7 @@ class PlayState extends MusicBeatState
 			}
 
 			#if desktop
-			DiscordClient.changePresence("PAUSED on " + SONG.song + " (" + storyDifficultyText + ")", "Acc: " + truncateFloat(accuracy, 2) + "% | Score: " + songScore + " | Misses: " + misses  , iconRPC);
+			DiscordClient.changePresence("PAUSED on " + SONG.song + " (" + storyDifficultyText + ") " + generateRanking(), "Acc: " + truncateFloat(accuracy, 2) + "% | Score: " + songScore + " | Misses: " + misses  , iconRPC);
 			#end
 			if (!startTimer.finished)
 				startTimer.active = false;
@@ -1417,11 +1421,11 @@ class PlayState extends MusicBeatState
 			#if desktop
 			if (startTimer.finished)
 			{
-				DiscordClient.changePresence(detailsText + " " + SONG.song + " (" + storyDifficultyText + ")", "\nAcc: " + truncateFloat(accuracy, 2) + "% | Score: " + songScore + " | Misses: " + misses, iconRPC, true, songLength - Conductor.songPosition);
+				DiscordClient.changePresence(detailsText + " " + SONG.song + " (" + storyDifficultyText + ") " + generateRanking(), "\nAcc: " + truncateFloat(accuracy, 2) + "% | Score: " + songScore + " | Misses: " + misses, iconRPC, true, songLength - Conductor.songPosition);
 			}
 			else
 			{
-				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
+				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ") " + generateRanking(), iconRPC);
 			}
 			#end
 		}
@@ -1440,7 +1444,7 @@ class PlayState extends MusicBeatState
 		vocals.play();
 
 		#if desktop
-		DiscordClient.changePresence(detailsText + " " + SONG.song + " (" + storyDifficultyText + ")", "\nAcc: " + truncateFloat(accuracy, 2) + "% | Score: " + songScore + " | Misses: " + misses  , iconRPC);
+		DiscordClient.changePresence(detailsText + " " + SONG.song + " (" + storyDifficultyText + ") " + generateRanking(), "\nAcc: " + truncateFloat(accuracy, 2) + "% | Score: " + songScore + " | Misses: " + misses  , iconRPC);
 		#end
 	}
 
@@ -1454,6 +1458,93 @@ class PlayState extends MusicBeatState
 		num = Math.round( num ) / Math.pow(10, precision);
 		return num;
 		}
+
+
+	function generateRanking():String
+	{
+		var ranking:String = "N/A";
+
+		if (misses == 0 && accuracy >= 100) // Marvelous (SICK) Full Combo
+			ranking = "(MFC)";
+		else if (misses == 0 && bads == 0 && shits == 0 && goods >= 1) // Good Full Combo (Nothing but Goods & Sicks)
+			ranking = "(GFC)";
+		else if ((shits < 10 && shits != 0 || bads < 10 && bads != 0) && misses == 0) // Single Digit Combo Breaks
+			ranking = "(SDCB)";
+		else if (misses == 0) // Regular FC
+			ranking = "(FC)";
+		else // Combo Broken
+			ranking = "(CB)";
+
+		// WIFE TIME :)))) (based on Wife3)
+
+		var wifeConditions:Array<Bool> = [
+			accuracy >= 99.9935, // AAAAA
+			accuracy >= 99.980, // AAAA:
+			accuracy >= 99.970, // AAAA.
+			accuracy >= 99.955, // AAAA
+			accuracy >= 99.90, // AAA:
+			accuracy >= 99.80, // AAA.
+			accuracy >= 99.70, // AAA
+			accuracy >= 99, // AA:
+			accuracy >= 96.50, // AA.
+			accuracy >= 93, // AA
+			accuracy >= 90, // A:
+			accuracy >= 85, // A.
+			accuracy >= 80, // A
+			accuracy >= 70, // B
+			accuracy >= 60, // C
+			accuracy < 60 // D
+		];
+
+		for(i in 0...wifeConditions.length)
+		{
+			var b = wifeConditions[i];
+			if (b)
+			{
+				switch(i)
+				{
+					case 0:
+						ranking += " AAAAA";
+					case 1:
+						ranking += " AAAA:";
+					case 2:
+						ranking += " AAAA.";
+					case 3:
+						ranking += " AAAA";
+					case 4:
+						ranking += " AAA:";
+					case 5:
+						ranking += " AAA.";
+					case 6:
+						ranking += " AAA";
+					case 7:
+						ranking += " AA:";
+					case 8:
+						ranking += " AA.";
+					case 9:
+						ranking += " AA";
+					case 10:
+						ranking += " A:";
+					case 11:
+						ranking += " A.";
+					case 12:
+						ranking += " A";
+					case 13:
+						ranking += " B";
+					case 14:
+						ranking += " C";
+					case 15:
+						ranking += " D";
+				}
+				break;
+			}
+		}
+
+		if (accuracy == 0)
+			ranking = "N/A";
+
+		return ranking;
+	}
 
 	override public function update(elapsed:Float)
 	{
@@ -1491,7 +1582,7 @@ class PlayState extends MusicBeatState
 
 		if (FlxG.save.data.accuracyDisplay)
 		{
-			scoreTxt.text = "Score:" + songScore + " | Misses:" + misses + " | Accuracy:" + truncateFloat(accuracy, 2) + "% " + (fc ? "| FC" : misses == 0 ? "| A" : accuracy <= 75 ? "| BAD" : "");
+			scoreTxt.text = "Score:" + songScore + " | Misses:" + misses + " | Accuracy:" + truncateFloat(accuracy, 2) + "% | " + generateRanking();
 		}
 		else
 		{
@@ -1706,7 +1797,7 @@ class PlayState extends MusicBeatState
 
 			#if desktop
 			// Game Over doesn't get his own variable because it's only used here
-			DiscordClient.changePresence(detailsText, "GAME OVER -- " + SONG.song + " (" + storyDifficultyText + ")\nAcc: " + truncateFloat(accuracy, 2) + "% | Score: " + songScore + " | Misses: " + misses  , iconRPC);
+			DiscordClient.changePresence("GAME OVER -- " + SONG.song + " (" + storyDifficultyText + ") " + generateRanking(),"\nAcc: " + truncateFloat(accuracy, 2) + "% | Score: " + songScore + " | Misses: " + misses  , iconRPC);
 			#end
 
 			// FlxG.switchState(new GameOverState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
@@ -1957,6 +2048,7 @@ class PlayState extends MusicBeatState
 					{
 						score = -1000;
 						health -= 0.03;
+						combo = 0;
 					}
 					else
 						score = 100;
@@ -1971,6 +2063,7 @@ class PlayState extends MusicBeatState
 						{
 							score = -1000;
 							health -= 0.03;
+							combo = 0;
 						}
 						else
 							score = 100;
@@ -2741,7 +2834,7 @@ class PlayState extends MusicBeatState
 		songLength = FlxG.sound.music.length;
 
 		// Updating Discord Rich Presence (with Time Left)
-		DiscordClient.changePresence(detailsText + " " + SONG.song + " (" + storyDifficultyText + ")", "Acc: " + truncateFloat(accuracy, 2) + "% | Score: " + songScore + " | Misses: " + misses  , iconRPC,true,  songLength - Conductor.songPosition);
+		DiscordClient.changePresence(detailsText + " " + SONG.song + " (" + storyDifficultyText + ") " + generateRanking(), "Acc: " + truncateFloat(accuracy, 2) + "% | Score: " + songScore + " | Misses: " + misses  , iconRPC,true,  songLength - Conductor.songPosition);
 		#end
 
 	}
