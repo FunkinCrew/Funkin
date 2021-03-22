@@ -10,9 +10,9 @@ class AtlasMenuList extends MenuTypedList<AtlasMenuItem>
 {
 	public var atlas:FlxAtlasFrames;
 	
-	public function new (atlas, navControls:NavControls = Vertical)
+	public function new (atlas, navControls:NavControls = Vertical, ?wrapMode)
 	{
-		super(navControls);
+		super(navControls, wrapMode);
 		
 		if (Std.is(atlas, String))
 			this.atlas = Paths.getSparrowAtlas(cast atlas);

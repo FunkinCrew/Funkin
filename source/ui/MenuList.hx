@@ -19,14 +19,26 @@ class MenuTypedList<T:MenuItem> extends FlxTypedGroup<T>
 	public var navControls:NavControls;
 	/** Set to false to disable nav control */
 	public var enabled:Bool = true;
+	/**  */
+	public var wrapMode:WrapMode = Both;
 	
 	var byName = new Map<String, T>();
 	/** Set to true, internally to disable controls, without affecting vars like `enabled` */
 	var busy:Bool = false;
 	
-	public function new (navControls:NavControls = Vertical)
+	public function new (navControls:NavControls = Vertical, ?wrapMode:WrapMode)
 	{
 		this.navControls = navControls;
+		
+		if (wrapMode != null)
+			this.wrapMode = wrapMode;
+		else
+			this.wrapMode = switch (navControls)
+			{
+				case Horizontal: Horizontal;
+				case Vertical: Vertical;
+				default: Both;
+			}
 		super();
 	}
 	
@@ -64,14 +76,16 @@ class MenuTypedList<T:MenuItem> extends FlxTypedGroup<T>
 	{
 		var controls = PlayerSettings.player1.controls;
 		
+		var wrapX = wrapMode.match(Horizontal | Both);
+		var wrapY = wrapMode.match(Vertical | Both);
 		var newIndex = switch(navControls)
 		{
-			case Vertical    : navList(controls.UI_UP_P  , controls.UI_DOWN_P);
-			case Horizontal  : navList(controls.UI_LEFT_P, controls.UI_RIGHT_P);
-			case Both        : navList(controls.UI_LEFT_P || controls.UI_UP_P, controls.UI_RIGHT_P || controls.UI_DOWN_P);
+			case Vertical    : navList(controls.UI_UP_P  , controls.UI_DOWN_P, wrapY);
+			case Horizontal  : navList(controls.UI_LEFT_P, controls.UI_RIGHT_P, wrapX);
+			case Both        : navList(controls.UI_LEFT_P || controls.UI_UP_P, controls.UI_RIGHT_P || controls.UI_DOWN_P, !wrapMode.match(None));
 			
-			case Columns(num): navGrid(num, controls.UI_LEFT_P, controls.UI_RIGHT_P, controls.UI_UP_P  , controls.UI_DOWN_P );
-			case Rows   (num): navGrid(num, controls.UI_UP_P  , controls.UI_DOWN_P , controls.UI_LEFT_P, controls.UI_RIGHT_P);
+			case Columns(num): navGrid(num, controls.UI_LEFT_P, controls.UI_RIGHT_P, wrapX, controls.UI_UP_P  , controls.UI_DOWN_P , wrapY);
+			case Rows   (num): navGrid(num, controls.UI_UP_P  , controls.UI_DOWN_P , wrapY, controls.UI_LEFT_P, controls.UI_RIGHT_P, wrapX);
 		}
 		
 		if (newIndex != selectedIndex)
@@ -114,7 +128,7 @@ class MenuTypedList<T:MenuItem> extends FlxTypedGroup<T>
 	 * @param next 
 	 * @param allowWrap 
 	 */
-	inline function navList(prev:Bool, next:Bool, allowWrap:Bool = true)
+	inline function navList(prev:Bool, next:Bool, allowWrap:Bool)
 	{
 		return navAxis(selectedIndex, length, prev, next, allowWrap);
 	}
@@ -128,7 +142,7 @@ class MenuTypedList<T:MenuItem> extends FlxTypedGroup<T>
 	 * @param next      Whether the 'next' key is pressed along the variable-lengthed axis. eg: "down" in Column mode
 	 * @param allowWrap unused
 	 */
-	function navGrid(latSize:Int, latPrev:Bool, latNext:Bool, prev:Bool, next:Bool, allowWrap:Bool = true):Int
+	function navGrid(latSize:Int, latPrev:Bool, latNext:Bool, latAllowWrap:Bool, prev:Bool, next:Bool, allowWrap:Bool):Int
 	{
 		// The grid lenth along the variable-length axis
 		var size = Math.ceil(length / latSize);
@@ -137,7 +151,7 @@ class MenuTypedList<T:MenuItem> extends FlxTypedGroup<T>
 		// The selected position along the fixed axis
 		var latIndex = selectedIndex % latSize;
 		
-		latIndex = navAxis(latIndex, latSize, latPrev, latNext, allowWrap);
+		latIndex = navAxis(latIndex, latSize, latPrev, latNext, latAllowWrap);
 		index = navAxis(index, size, prev, next, allowWrap);
 		
 		return Std.int(Math.min(length - 1, index * latSize + latIndex));
@@ -341,4 +355,12 @@ enum NavControls
 	Both;
 	Columns(num:Int);
 	Rows(num:Int);
+}
+
+enum WrapMode
+{
+	Horizontal;
+	Vertical;
+	Both;
+	None;
 }
