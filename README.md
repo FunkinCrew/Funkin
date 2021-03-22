@@ -7,22 +7,25 @@ Play the Newgrounds one here: https://www.newgrounds.com/portal/view/770371
 Support the project on the itch.io page: https://ninja-muffin24.itch.io/funkin
 
 ## Credits / shoutouts
-
-- [ninjamuffin99 (me!)](https://twitter.com/ninja_muffin99) - Programmer
-- [PhantomArcade3K](https://twitter.com/phantomarcade3k) and [Evilsk8r](https://twitter.com/evilsk8r) - Art
-- [Kawaisprite](https://twitter.com/kawaisprite) - Musician
+### Programmers:
+- [ninjamuffin99 (me!)](https://twitter.com/ninja_muffin99) 
+### Artists:
+- [PhantomArcade3K](https://twitter.com/phantomarcade3k)
+- [Evilsk8r](https://twitter.com/evilsk8r)
+### Musician
+- [Kawaisprite](https://twitter.com/kawaisprite)
 
 This game was made with love to Newgrounds and it's community. Extra love to Tom Fulp.
 
-## Build instructions
+## What can I do with compiling the game? Why should I compile the game instead of downloading it from [the Itch.io page of the game](https://ninja-muffin24.itch.io/friday-night-funkin)?
 
-THESE INSTRUCTIONS ARE FOR COMPILING THE GAME'S SOURCE CODE!!!
+Compiling the game gives access to the `/source` folder, allowing you to change the code of the game. You can add a lot of cool things with the open source code!
 
-IF YOU WANT TO JUST DOWNLOAD AND INSTALL AND PLAY THE GAME NORMALLY, GO TO ITCH.IO TO DOWNLOAD THE GAME FOR PC, MAC, AND LINUX!!
+I recommend having a good idea on how to program. Compiling the game isn't for everyone!
 
-https://ninja-muffin24.itch.io/friday-night-funkin
+If you just want to download and play the game normally, you can click [here to go to the Itch.io page of the game](https://ninja-muffin24.itch.io/friday-night-funkin)
 
-IF YOU WANT TO COMPILE THE GAME YOURSELF, CONTINUE READING!!!
+### **If you do want to compile, continue reading!**
 
 ### Installing the Required Programs
 
@@ -45,22 +48,18 @@ You'll also need to install a couple things that involve Gits. To do this, you n
 2. Follow instructions to install the application properly.
 3. Run `haxelib git polymod https://github.com/larsiusprime/polymod.git` to install Polymod.
 4. Run `haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc` to install Discord RPC.
+5. Optional: - Run `haxelib git flixel-addons https://github.com/HaxeFlixel/flixel-addons` to update Flixel-Addons. This fixes the transition bug for zoomed out stage cameras.
 
 You should have everything ready for compiling the game! Follow the guide below to continue!
 
-At the moment, you can optionally fix the transition bug in songs with zoomed out cameras.
-- Run `haxelib git flixel-addons https://github.com/HaxeFlixel/flixel-addons` in the terminal/command-prompt.
+### Adding `APIStuff.hx` into `/source`
 
-### Ignored files
+The creator gitignored the API keys of the game so no one could post fake high scores onto the leaderboards in Newgrounds. Unfortunatly, because this game requires the `API` and `EncKey` values to compile, you will need to add a file called `APIStuff.hx` into `/source`. How do I do that?
 
-I gitignore the API keys for the game, so that no one can nab them and post fake highscores on the leaderboards. But because of that the game
-doesn't compile without it.
-
-Just make a file in `/source` and call it `APIStuff.hx`, and copy paste this into it
-
+1. Create a new text file called `APIStuff.hx` inside of the `/source` folder.
+2. Copy the following text:
 ```haxe
 package;
-
 class APIStuff
 {
 	public static var API:String = "";
@@ -68,14 +67,42 @@ class APIStuff
 }
 
 ```
+3. Paste the text into the APIStuff.hx file and save the game.
 
-and you should be good to go there.
+You should be good from there! Now, onto compiling!
 
-### Compiling game
+# Compiling game
 
-Once you have all those installed, it's pretty easy to compile the game. You just need to run 'lime test html5 -debug' in the root of the project to build and run the HTML5 version. (command prompt navigation guide can be found here: [https://ninjamuffin99.newgrounds.com/news/post/1090480](https://ninjamuffin99.newgrounds.com/news/post/1090480))
+## HTML Building:
 
-To run it from your desktop (Windows, Mac, Linux) it can be a bit more involved. For Linux, you only need to open a terminal in the project directory and run 'lime test linux -debug' and then run the executible file in export/release/linux/bin. For Windows, you need to install Visual Studio Community 2019. While installing VSC, don't click on any of the options to install workloads. Instead, go to the individual components tab and choose the following:
+Compiling the game is rather simple for HTML5 builds.
+1. Open your machine's command prompt/terminal and navigate to your root folder of the game. [An easy guide can be found here!](https://ninjamuffin99.newgrounds.com/news/post/1090480)
+2. Type `lime build html5` to build the HTML5 version of the game.
+3. Type `lime run html5` to run the HTML5 version of the game from the command prompt/terminal. (You can also run the game from `funkin/export/release/html5/bin`)
+
+You should be all good to play the HTML5 version of the game!
+
+## Desktop Building:
+
+Desktop building can be a bit tedious. Each different version requires a different setup.
+
+### Linux Building:
+
+1. Open your machine's command prompt/terminal and navigate to your root folder of the game. [An easy guide can be found here!](https://ninjamuffin99.newgrounds.com/news/post/1090480)
+2. Type `lime build linux` to build the Linux version of the game.
+3. Type `lime run linux` to run the Linux version of the game from the command prompt/terminal. (You can also run the game from `funkin/export/release/linux/bin`)
+
+### Mac Building:
+
+1. Open your machine's command prompt/terminal and navigate to your root folder of the game. [An easy guide can be found here!](https://ninjamuffin99.newgrounds.com/news/post/1090480)
+2. Type `lime build mac` to build the Mac version of the game.
+3. Type `lime run mac` to run the Mac version of the game from the command prompt/terminal. (You can also run the game from `funkin/export/release/mac/bin`)
+
+### Windows Building:
+**THIS METHOD REQUIRES AROUND 22 GIGABYTES OF STORAGE.**
+1. Install [Visual Studio Community 2019](https://visualstudio.microsoft.com/downloads/).
+2. Open the installer and go to the individual workloads tab and download the following:
+```
 * MSVC v142 - VS 2019 C++ x64/x86 build tools
 * Windows SDK (10.0.17763.0)
 * C++ Profiling tools
@@ -89,10 +116,13 @@ To run it from your desktop (Windows, Mac, Linux) it can be a bit more involved.
 * Windows 10 SDK (10.0.16299.0)
 * MSVC v141 - VS 2017 C++ x64/x86 build tools
 * MSVC v140 - VS 2015 C++ build tools (v14.00)
+```
+3. Wait for the install to finish, which might take a while.
+4. Open your machine's command prompt/terminal and navigate to your root folder of the game. [An easy guide can be found here!](https://ninjamuffin99.newgrounds.com/news/post/1090480)
+5. Once everything is installed, type `lime build windows` to build the windows version of the game.
+6. Type `lime run windows` after the game is compiled to run the windows version of the game. (You can also run the game from `funkin/export/release/windows/bin`)
 
-This will install about 22GB of crap, but once that is done you can open up a command line in the project's directory and run `lime test windows -debug`. Once that command finishes (it takes forever even on a higher end PC), you can run FNF from the .exe file under export\release\windows\bin
-As for Mac, 'lime test mac -debug' should work, if not the internet surely has a guide on how to compile Haxe stuff for Mac.
+## All done!
+You should have been able to compile the whole game now! What can you do now? Well, you can mod to your heart's desire! Since this game is open source, the creator loves seeing what other tallented artists and programmers can make!
 
-### Additional guides
-
-- [Command line basics](https://ninjamuffin99.newgrounds.com/news/post/1090480)
+Special thanks to the amazing group of dedicated people that are making this game amazing! Keep funkin! 💖💖
