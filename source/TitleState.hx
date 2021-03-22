@@ -21,8 +21,10 @@ import shaderslmfao.ColorSwap;
 
 using StringTools;
 
-#if desktop
+#if discord_rpc
 import Discord.DiscordClient;
+#end
+#if desktop
 import sys.thread.Thread;
 #end
 
@@ -98,7 +100,7 @@ class TitleState extends MusicBeatState
 		});
 		#end
 
-		#if desktop
+		#if discord_rpc
 		DiscordClient.initialize();
 		#end
 	}
