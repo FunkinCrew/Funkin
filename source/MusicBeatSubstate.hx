@@ -3,6 +3,7 @@ package;
 import Conductor.BPMChangeEvent;
 import flixel.FlxG;
 import flixel.FlxSubState;
+import openfl.Lib;
 
 class MusicBeatSubstate extends FlxSubState
 {
@@ -23,6 +24,8 @@ class MusicBeatSubstate extends FlxSubState
 
 	override function update(elapsed:Float)
 	{
+		Lib.application.window.frameRate = Lib.application.window.displayMode.refreshRate;
+		
 		//everyStep();
 		var oldStep:Int = curStep;
 
