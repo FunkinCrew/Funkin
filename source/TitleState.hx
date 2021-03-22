@@ -1,9 +1,5 @@
 package;
 
-#if desktop
-import Discord.DiscordClient;
-import sys.thread.Thread;
-#end
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileDiamond;
@@ -21,8 +17,14 @@ import flixel.util.FlxTimer;
 import io.newgrounds.NG;
 import lime.app.Application;
 import openfl.Assets;
+import shaderslmfao.ColorSwap;
 
 using StringTools;
+
+#if desktop
+import Discord.DiscordClient;
+import sys.thread.Thread;
+#end
 
 class TitleState extends MusicBeatState
 {
@@ -40,11 +42,15 @@ class TitleState extends MusicBeatState
 
 	var lastBeat:Int = 0;
 
+	var swagShader:ColorSwap;
+
 	override public function create():Void
 	{
 		#if polymod
 		polymod.Polymod.init({modRoot: "mods", dirs: ['introMod'], framework: OPENFL});
 		#end
+
+		swagShader = new ColorSwap();
 
 		FlxG.sound.muteKeys = [ZERO];
 
@@ -148,6 +154,8 @@ class TitleState extends MusicBeatState
 		logoBl.animation.play('bump');
 		logoBl.updateHitbox();
 
+		logoBl.shader = swagShader.shader;
+
 		// trace();
 		// logoBl.screenCenter();
 		// logoBl.color = FlxColor.BLACK;
@@ -158,6 +166,9 @@ class TitleState extends MusicBeatState
 		gfDance.animation.addByIndices('danceRight', 'gfDance', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
 		gfDance.antialiasing = true;
 		add(gfDance);
+
+		gfDance.shader = swagShader.shader;
+
 		add(logoBl);
 
 		titleText = new FlxSprite(100, FlxG.height * 0.8);
@@ -322,6 +333,16 @@ class TitleState extends MusicBeatState
 			skipIntro();
 		}
 
+		if (controls.LEFT)
+		{
+			swagShader.update(-elapsed * 0.1);
+		}
+
+		if (controls.RIGHT)
+		{
+			swagShader.update(elapsed * 0.1);
+		}
+
 		super.update(elapsed);
 	}
 
@@ -354,6 +375,8 @@ class TitleState extends MusicBeatState
 			textGroup.remove(textGroup.members[0], true);
 		}
 	}
+
+	var isRainbow:Bool = false;
 
 	override function beatHit()
 	{

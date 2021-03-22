@@ -1,8 +1,5 @@
 package;
 
-#if desktop
-import Discord.DiscordClient;
-#end
 import Section.SwagSection;
 import Song.SwagSong;
 import WiggleEffect.WiggleEffectType;
@@ -41,8 +38,13 @@ import lime.utils.Assets;
 import openfl.display.BlendMode;
 import openfl.display.StageQuality;
 import openfl.filters.ShaderFilter;
+import shaderslmfao.ColorSwap;
 
 using StringTools;
+
+#if desktop
+import Discord.DiscordClient;
+#end
 
 class PlayState extends MusicBeatState
 {
@@ -1188,6 +1190,9 @@ class PlayState extends MusicBeatState
 		{
 			// FlxG.log.add(i);
 			var babyArrow:FlxSprite = new FlxSprite(0, strumLine.y);
+			var colorswap:ColorSwap = new ColorSwap();
+			babyArrow.shader = colorswap.shader;
+			colorswap.update(Note.arrowColors[i]);
 
 			switch (curStage)
 			{
@@ -2006,8 +2011,11 @@ class PlayState extends MusicBeatState
 		var controlArray:Array<Bool> = [leftP, downP, upP, rightP];
 
 		// FlxG.watch.addQuick('asdfa', upP);
-		if ((upP || rightP || downP || leftP) && !boyfriend.stunned && generatedMusic)
+		if ((upP || rightP || downP || leftP) && generatedMusic)
 		{
+			// note to self, used to have stunned
+			// && !boyfriend.stunned
+
 			boyfriend.holdTimer = 0;
 
 			var possibleNotes:Array<Note> = [];
