@@ -3,6 +3,7 @@ package ui;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
 import flixel.graphics.frames.FlxAtlasFrames;
+import flixel.util.FlxStringUtil;
 
 @:forward
 abstract BoldText(AtlasText) from AtlasText to AtlasText
@@ -68,7 +69,7 @@ class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
 		if (value == "")
 			return this.text;
 		
-		appendTextCased(this.text);
+		appendTextCased(caseValue);
 		return this.text;
 	}
 	
@@ -156,6 +157,16 @@ class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
 				}
 			}
 		}
+	}
+	
+	override function toString()
+	{
+		return "InputItem, " + FlxStringUtil.getDebugString(
+			[ LabelValuePair.weak("x", x)
+			, LabelValuePair.weak("y", y)
+			, LabelValuePair.weak("text", text)
+			]
+		);
 	}
 }
 
