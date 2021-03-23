@@ -167,7 +167,7 @@ class PlayState extends MusicBeatState
 	{
 
 		if (FlxG.save.data.etternaMode)
-			Conductor.safeFrames = 7; // 116ms hit window (j3-4)
+			Conductor.safeFrames = 5; // 116ms hit window (j3-4)
 		else
 			Conductor.safeFrames = 10; // 166ms hit window (j1)
 
@@ -1130,8 +1130,7 @@ class PlayState extends MusicBeatState
 		lastReportedPlayheadPosition = 0;
 
 		if (!paused)
-			FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 1, false);
-		FlxG.sound.music.onComplete = endSong;
+			FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 1, false); 
 		vocals.play();
 
 		if (FlxG.save.data.songPosition)
@@ -1554,13 +1553,13 @@ class PlayState extends MusicBeatState
 		return ranking;
 	}
 
+	public static var songRate = 1.5;
+
 	override public function update(elapsed:Float)
 	{
 		#if !debug
 		perfectMode = false;
 		#end
-
-		songPositionBar = Conductor.songPosition;
 
 		if (FlxG.keys.justPressed.NINE)
 		{
@@ -1668,6 +1667,11 @@ class PlayState extends MusicBeatState
 		{
 			// Conductor.songPosition = FlxG.sound.music.time;
 			Conductor.songPosition += FlxG.elapsed * 1000;
+			/*@:privateAccess
+			{
+				FlxG.sound.music._channel.
+			}*/
+			songPositionBar = Conductor.songPosition;
 
 			if (!paused)
 			{
@@ -1911,6 +1915,7 @@ class PlayState extends MusicBeatState
 		if (!inCutscene)
 			keyShit();
 
+
 		#if debug
 		if (FlxG.keys.justPressed.ONE)
 			endSong();
@@ -2005,7 +2010,7 @@ class PlayState extends MusicBeatState
 	private function popUpScore(strumtime:Float):Void
 		{
 			var noteDiff:Float = Math.abs(strumtime - Conductor.songPosition);
-			var wife:Float = EtternaFunctions.wife3(noteDiff, 1);
+			var wife:Float = EtternaFunctions.wife3(noteDiff, FlxG.save.data.etternaMode ? 1 : 1.7);
 			// boyfriend.playAnim('hey');
 			vocals.volume = 1;
 	
@@ -2296,15 +2301,15 @@ class PlayState extends MusicBeatState
 			
 			if (repPresses < rep.replay.keyPresses.length && repReleases < rep.replay.keyReleases.length)
 			{
-				upP = NearlyEquals(rep.replay.keyPresses[repPresses].time, Conductor.songPosition) && rep.replay.keyPresses[repPresses].key == "up";
-				rightP = NearlyEquals(rep.replay.keyPresses[repPresses].time, Conductor.songPosition) && rep.replay.keyPresses[repPresses].key == "right";
-				downP = NearlyEquals(rep.replay.keyPresses[repPresses].time, Conductor.songPosition) && rep.replay.keyPresses[repPresses].key == "down";
-				leftP = NearlyEquals(rep.replay.keyPresses[repPresses].time, Conductor.songPosition)  && rep.replay.keyPresses[repPresses].key == "left";	
+				upP = rep.replay.keyPresses[repPresses].time + 1 <= Conductor.songPosition  && rep.replay.keyPresses[repPresses].key == "up";
+				rightP = rep.replay.keyPresses[repPresses].time + 1 <= Conductor.songPosition && rep.replay.keyPresses[repPresses].key == "right";
+				downP = rep.replay.keyPresses[repPresses].time + 1 <= Conductor.songPosition && rep.replay.keyPresses[repPresses].key == "down";
+				leftP = rep.replay.keyPresses[repPresses].time + 1 <= Conductor.songPosition  && rep.replay.keyPresses[repPresses].key == "left";	
 
-				upR = NearlyEquals(rep.replay.keyReleases[repReleases].time, Conductor.songPosition) && rep.replay.keyReleases[repReleases].key == "up";
-				rightR = NearlyEquals(rep.replay.keyReleases[repReleases].time, Conductor.songPosition) && rep.replay.keyReleases[repReleases].key == "right";
-				downR = NearlyEquals(rep.replay.keyReleases[repReleases].time, Conductor.songPosition) && rep.replay.keyReleases[repReleases].key == "down";
-				leftR = NearlyEquals(rep.replay.keyReleases[repReleases].time, Conductor.songPosition) && rep.replay.keyReleases[repReleases].key == "left";
+				upR = rep.replay.keyPresses[repReleases].time - 1 <= Conductor.songPosition && rep.replay.keyReleases[repReleases].key == "up";
+				rightR = rep.replay.keyPresses[repReleases].time - 1 <= Conductor.songPosition  && rep.replay.keyReleases[repReleases].key == "right";
+				downR = rep.replay.keyPresses[repReleases].time - 1<= Conductor.songPosition && rep.replay.keyReleases[repReleases].key == "down";
+				leftR = rep.replay.keyPresses[repReleases].time - 1<= Conductor.songPosition && rep.replay.keyReleases[repReleases].key == "left";
 
 				upHold = upP ? true : upR ? false : true;
 				rightHold = rightP ? true : rightR ? false : true;
@@ -2495,56 +2500,116 @@ class PlayState extends MusicBeatState
 				}
 			}
 	
-			playerStrums.forEach(function(spr:FlxSprite)
-			{
-				switch (spr.ID)
+				playerStrums.forEach(function(spr:FlxSprite)
 				{
-					case 2:
-						if (upP && spr.animation.curAnim.name != 'confirm')
-						{
-							spr.animation.play('pressed');
-							trace('play');
-						}
-						if (upR)
-						{
-							spr.animation.play('static');
-							repReleases++;
-						}
-					case 3:
-						if (rightP && spr.animation.curAnim.name != 'confirm')
-							spr.animation.play('pressed');
-						if (rightR)
-						{
-							spr.animation.play('static');
-							repReleases++;
-						}
-					case 1:
-						if (downP && spr.animation.curAnim.name != 'confirm')
-							spr.animation.play('pressed');
-						if (downR)
-						{
-							spr.animation.play('static');
-							repReleases++;
-						}
-					case 0:
-						if (leftP && spr.animation.curAnim.name != 'confirm')
-							spr.animation.play('pressed');
-						if (leftR)
-						{
-							spr.animation.play('static');
-							repReleases++;
-						}
-				}
-				
-				if (spr.animation.curAnim.name == 'confirm' && !curStage.startsWith('school'))
-				{
-					spr.centerOffsets();
-					spr.offset.x -= 13;
-					spr.offset.y -= 13;
-				}
-				else
-					spr.centerOffsets();
-			});
+					switch (spr.ID)
+					{
+						case 2:
+							if (loadRep)
+							{
+								/*if (upP)
+								{
+									spr.animation.play('pressed');
+									new FlxTimer().start(Math.abs(rep.replay.keyPresses[repReleases].time - Conductor.songPosition) + 10, function(tmr:FlxTimer)
+										{
+											spr.animation.play('static');
+											repReleases++;
+										});
+								}*/
+							}
+							else
+							{
+								if (upP && spr.animation.curAnim.name != 'confirm' && !loadRep)
+								{
+									spr.animation.play('pressed');
+									trace('play');
+								}
+								if (upR)
+								{
+									spr.animation.play('static');
+									repReleases++;
+								}
+							}
+						case 3:
+							if (loadRep)
+								{
+								/*if (upP)
+								{
+									spr.animation.play('pressed');
+									new FlxTimer().start(Math.abs(rep.replay.keyPresses[repReleases].time - Conductor.songPosition) + 10, function(tmr:FlxTimer)
+										{
+											spr.animation.play('static');
+											repReleases++;
+										});
+								}*/
+								}
+							else
+							{
+								if (rightP && spr.animation.curAnim.name != 'confirm' && !loadRep)
+									spr.animation.play('pressed');
+								if (rightR)
+								{
+									spr.animation.play('static');
+									repReleases++;
+								}
+							}	
+						case 1:
+							if (loadRep)
+								{
+								/*if (upP)
+								{
+									spr.animation.play('pressed');
+									new FlxTimer().start(Math.abs(rep.replay.keyPresses[repReleases].time - Conductor.songPosition) + 10, function(tmr:FlxTimer)
+										{
+											spr.animation.play('static');
+											repReleases++;
+										});
+								}*/
+								}
+							else
+							{
+								if (downP && spr.animation.curAnim.name != 'confirm' && !loadRep)
+									spr.animation.play('pressed');
+								if (downR)
+								{
+									spr.animation.play('static');
+									repReleases++;
+								}
+							}
+						case 0:
+							if (loadRep)
+								{
+								/*if (upP)
+								{
+									spr.animation.play('pressed');
+									new FlxTimer().start(Math.abs(rep.replay.keyPresses[repReleases].time - Conductor.songPosition) + 10, function(tmr:FlxTimer)
+										{
+											spr.animation.play('static');
+											repReleases++;
+										});
+								}*/
+								}
+							else
+							{
+								if (leftP && spr.animation.curAnim.name != 'confirm' && !loadRep)
+									spr.animation.play('pressed');
+								if (leftR)
+								{
+									spr.animation.play('static');
+									repReleases++;
+								}
+							}
+					}
+					
+					if (spr.animation.curAnim.name == 'confirm' && !curStage.startsWith('school'))
+					{
+						spr.centerOffsets();
+						spr.offset.x -= 13;
+						spr.offset.y -= 13;
+					}
+					else
+						spr.centerOffsets();
+				});
 	}
 
 	function noteMiss(direction:Int = 1, daNote:Note):Void
@@ -2560,7 +2625,7 @@ class PlayState extends MusicBeatState
 			misses++;
 
 			var noteDiff:Float = Math.abs(daNote.strumTime - Conductor.songPosition);
-			var wife:Float = EtternaFunctions.wife3(noteDiff, 1);
+			var wife:Float = EtternaFunctions.wife3(noteDiff, FlxG.save.data.etternaMode ? 1 : 1.7);
 
 			totalNotesHit += wife;
 
@@ -2707,13 +2772,14 @@ class PlayState extends MusicBeatState
 							boyfriend.playAnim('singLEFT', true);
 					}
 		
-					playerStrums.forEach(function(spr:FlxSprite)
-					{
-						if (Math.abs(note.noteData) == spr.ID)
+					if (!loadRep)
+						playerStrums.forEach(function(spr:FlxSprite)
 						{
-							spr.animation.play('confirm', true);
-						}
-					});
+							if (Math.abs(note.noteData) == spr.ID)
+							{
+								spr.animation.play('confirm', true);
+							}
+						});
 		
 					note.wasGoodHit = true;
 					vocals.volume = 1;

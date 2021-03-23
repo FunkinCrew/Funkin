@@ -60,7 +60,7 @@ class EtternaFunctions
         return (getNotes() * 350);
     }
 
-    public static function wife3(maxms:Float, ts)
+    public static function wife3(maxms:Float, ts:Float)
     {
         var max_points = 1.0;
         var miss_weight = -5.5;

@@ -1011,7 +1011,11 @@ class ChartingState extends MusicBeatState
 			var i = _song.notes[curSection].sectionNotes[n];
 			if (i == null)
 				continue;
-			if (i[0] == note.strumTime + (note.strumTime == 0 ? 0 : 1) && i[1] % 4 == note.noteData)
+			if ((i[0] == note.strumTime + (note.strumTime == 0 ? 0 : 1) 
+				? true : i[0] == note.strumTime) 
+				&& i[1] % 4 == note.noteData)
+				// Why does it do this?
+				// I DONT FUCKING KNOW!!!!!!!!!!!!!!
 			{
 				trace('GAMING');
 				_song.notes[curSection].sectionNotes.remove(i);
