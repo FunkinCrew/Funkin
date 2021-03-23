@@ -204,7 +204,7 @@ class ControlsMenu extends ui.OptionsState.Page
 		super.update(elapsed);
 		
 		var controls = PlayerSettings.player1.controls;
-		if (enabled && deviceList != null && deviceListSelected == false && controls.BACK)
+		if (controlGrid.enabled && deviceList != null && deviceListSelected == false && controls.BACK)
 			goToDeviceList();
 		
 		if (prompt.exists)
@@ -213,7 +213,8 @@ class ControlsMenu extends ui.OptionsState.Page
 			{
 				case Keys:
 				{
-					var key = FlxG.keys.firstJustPressed();
+					// check released otherwise bugs can happen when you change the BACK key
+					var key = FlxG.keys.firstJustReleased();
 					if (key != NONE)
 					{
 						if (key != ESCAPE)
@@ -223,7 +224,7 @@ class ControlsMenu extends ui.OptionsState.Page
 				}
 				case Gamepad(id):
 				{
-					var button = FlxG.gamepads.getByID(id).firstJustPressedID();
+					var button = FlxG.gamepads.getByID(id).firstJustReleasedID();
 					if (button != NONE)
 					{
 						if (button != BACK)
