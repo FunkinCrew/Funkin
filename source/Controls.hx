@@ -18,10 +18,11 @@ import flixel.input.keyboard.FlxKey;
  */
 enum Control
 {
-	NOTE_UP;
+	// List notes in order from left to right on gameplay screen.
 	NOTE_LEFT;
-	NOTE_RIGHT;
 	NOTE_DOWN;
+	NOTE_UP;
+	NOTE_RIGHT;
 	UI_UP;
 	UI_LEFT;
 	UI_RIGHT;
@@ -327,7 +328,7 @@ class Controls extends FlxActionSet
 		}
 	}
 
-	public function replaceBinding(control:Control, device:Device, ?toAdd:Int, ?toRemove:Int)
+	public function replaceBinding(control:Control, device:Device, toAdd:Int, toRemove:Int)
 	{
 		if (toAdd == toRemove)
 			return;
@@ -335,16 +336,36 @@ class Controls extends FlxActionSet
 		switch (device)
 		{
 			case Keys:
-				if (toRemove != null)
-					unbindKeys(control, [toRemove]);
-				if (toAdd != null)
-					bindKeys(control, [toAdd]);
+				forEachBound(control, function(action, _) replaceKey(action, toAdd, toRemove));
 
 			case Gamepad(id):
-				if (toRemove != null)
-					unbindButtons(control, id, [toRemove]);
-				if (toAdd != null)
-					bindButtons(control, id, [toAdd]);
+				forEachBound(control, function(action, _) replaceButton(action, id, toAdd, toRemove));
+		}
+	}
+	
+	function replaceKey(action:FlxActionDigital, toAdd:Int, toRemove:Int)
+	{
+		for (i in 0...action.inputs.length)
+		{
+			var input = action.inputs[i];
+			if (input.device == KEYBOARD && input.inputID == toRemove)
+			{
+				@:privateAccess
+				action.inputs[i].inputID = toAdd;
+			}
+		}
+	}
+	
+	function replaceButton(action:FlxActionDigital, deviceID:Int, toAdd:Int, toRemove:Int)
+	{
+		for (i in 0...action.inputs.length)
+		{
+			var input = action.inputs[i];
+			if (isGamepad(input, deviceID) && input.inputID == toRemove)
+			{
+				@:privateAccess
+				action.inputs[i].inputID = toAdd;
+			}
 		}
 	}
 
@@ -498,12 +519,11 @@ class Controls extends FlxActionSet
 		}
 	}
 
-	public function addGamepad(id:Int, ?buttonMap:Map<Control, Array<FlxGamepadInputID>>):Void
+	public function addGamepadWithSaveData(id:Int, ?padData:Dynamic):Void
 	{
 		gamepadsAdded.push(id);
 		
-		for (control in buttonMap.keys())
-			bindButtons(control, id, buttonMap[control]);
+		fromSaveData(padData, Gamepad(id));
 	}
 
 	inline function addGamepadLiteral(id:Int, ?buttonMap:Map<Control, Array<FlxGamepadInputID>>):Void
@@ -522,7 +542,7 @@ class Controls extends FlxActionSet
 			while (i-- > 0)
 			{
 				var input = action.inputs[i];
-				if (input.device == GAMEPAD && (deviceID == FlxInputDeviceID.ALL || input.deviceID == deviceID))
+				if (isGamepad(input, deviceID))
 					action.remove(input);
 			}
 		}
@@ -533,13 +553,9 @@ class Controls extends FlxActionSet
 	public function addDefaultGamepad(id):Void
 	{
 		addGamepadLiteral(id, [
-			#if switch
-			Control.ACCEPT => [B],
-			Control.BACK => [A],
-			#else
-			Control.ACCEPT => [A],
-			Control.BACK => [B],
-			#end
+			
+			Control.ACCEPT => [#if switch B #else A #end],
+			Control.BACK => [#if switch A #else B #end, BACK],
 			Control.UI_UP => [DPAD_UP, LEFT_STICK_DIGITAL_UP],
 			Control.UI_DOWN => [DPAD_DOWN, LEFT_STICK_DIGITAL_DOWN],
 			Control.UI_LEFT => [DPAD_LEFT, LEFT_STICK_DIGITAL_LEFT],
@@ -608,7 +624,7 @@ class Controls extends FlxActionSet
 			case Gamepad(id):
 				for (input in getActionFromControl(control).inputs)
 				{
-					if (input.deviceID == id)
+					if (isGamepad(input, id))
 						list.push(input.inputID);
 				}
 		}
@@ -626,6 +642,37 @@ class Controls extends FlxActionSet
 		}
 	}
 
+	public function fromSaveData(data:Dynamic, device:Device)
+	{
+		for (control in Control.createAll())
+		{
+			var inputs:Array<Int> = Reflect.field(data, control.getName());
+			if (inputs != null)
+			{
+				switch(device)
+				{
+					case Keys: bindKeys(control, inputs.copy()); 
+					case Gamepad(id): bindButtons(control, id, inputs.copy()); 
+				}
+			}
+		}
+	}
+	
+	public function createSaveData(device:Device):Dynamic
+	{
+		var isEmpty = true;
+		var data = {};
+		for (control in Control.createAll())
+		{
+			var inputs = getInputsFor(control, device);
+			isEmpty = isEmpty && inputs.length == 0;
+			
+			Reflect.setField(data, control.getName(), inputs);
+		}
+		
+		return isEmpty ? null : data;
+	}
+
 	static function isDevice(input:FlxActionInput, device:Device)
 	{
 		return switch device
@@ -640,3 +687,6 @@ class Controls extends FlxActionSet
 		return input.device == GAMEPAD && (deviceID == FlxInputDeviceID.ALL || input.deviceID == deviceID);
 	}
 }
+
+
+typedef SaveInputLists = {?keys:Array<Int>, ?pad:Array<Int>};

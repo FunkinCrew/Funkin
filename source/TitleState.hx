@@ -41,8 +41,6 @@ class TitleState extends MusicBeatState
 
 		FlxG.sound.muteKeys = [ZERO];
 
-		PlayerSettings.init();
-
 		curWacky = FlxG.random.getObject(getIntroTextShit());
 
 		// DEBUG BULLSHIT
@@ -50,6 +48,7 @@ class TitleState extends MusicBeatState
 		super.create();
 
 		FlxG.save.bind('funkin', 'ninjamuffin99');
+		PlayerSettings.init();
 		Highscore.load();
 		
 		#if newgrounds
