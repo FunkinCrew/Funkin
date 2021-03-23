@@ -1,21 +1,32 @@
-# Friday Night Funkin
+# Friday Night Funkin!
 
-This is the repository for Friday Night Funkin, a game originally made for Ludum Dare 47 "Stuck In a Loop".
+![FNF_Logo](https://user-images.githubusercontent.com/72235309/112068307-08fe8d80-8b40-11eb-84d0-fc64a10dd845.png "FNF Logo")
 
-Play the Ludum Dare prototype here: https://ninja-muffin24.itch.io/friday-night-funkin
-Play the Newgrounds one here: https://www.newgrounds.com/portal/view/770371
-Support the project on the itch.io page: https://ninja-muffin24.itch.io/funkin
+### This is the repository for Friday Night Funkin, a game originally made for Ludum Dare 47 "Stuck In a Loop".
 
-## Credits / shoutouts
+Play the Ludum Dare prototype [here](https://ninja-muffin24.itch.io/friday-night-funkin)!
+
+Play the Newgrounds one [here](https://www.newgrounds.com/portal/view/770371)!
+
+Support the project on the [Itch.io page](https://ninja-muffin24.itch.io/funkin)!
+
+## Credits / Shoutouts
 ### Programmers:
-- [ninjamuffin99 (me!)](https://twitter.com/ninja_muffin99) 
-### Artists:
-- [PhantomArcade3K](https://twitter.com/phantomarcade3k)
-- [Evilsk8r](https://twitter.com/evilsk8r)
-### Musician
-- [Kawaisprite](https://twitter.com/kawaisprite)
+💻 [ninjamuffin99 (me!)](https://twitter.com/ninja_muffin99) 
 
-This game was made with love to Newgrounds and it's community. Extra love to Tom Fulp.
+### Artists:
+🎨 [PhantomArcade3K](https://twitter.com/phantomarcade3k)
+
+🎨 [Evilsk8r](https://twitter.com/evilsk8r)
+
+### Musicians:
+🎶 [Kawaisprite](https://twitter.com/kawaisprite)
+
+### Special Thanks 💖
+
+This game was made with love to Newgrounds and it's community. Extra love to Tom Fulp. 💖
+
+![newgrounds_logo](https://user-images.githubusercontent.com/72235309/112079926-681bcc80-8b57-11eb-9249-989b37c8fad3.png)
 
 ## What can I do with compiling the game? Why should I compile the game instead of downloading it from [the Itch.io page of the game](https://ninja-muffin24.itch.io/friday-night-funkin)?
 
@@ -27,13 +38,15 @@ If you just want to download and play the game normally, you can click [here to 
 
 ### **If you do want to compile, continue reading!**
 
-### Installing the Required Programs
+# Installing the Required Programs
 
-First you need to install Haxe and HaxeFlixel. I'm too lazy to write and keep updated with that setup (which is pretty simple). 
+![haxe-logo-white-background](https://user-images.githubusercontent.com/72235309/112079978-81247d80-8b57-11eb-8735-bea15b9f4658.png)
+
+First you need to install Haxe and HaxeFlixel.
 1. [Install Haxe 4.1.5](https://haxe.org/download/version/4.1.5/) (Download 4.1.5 instead of 4.2.0 because 4.2.0 is broken and is not working with gits properly...)
 2. [Install HaxeFlixel](https://haxeflixel.com/documentation/install-haxeflixel/) after downloading Haxe
 
-Other installations you'd need is the additional libraries, a fully updated list will be in `Project.xml` in the project root. Currently, these are all of the things you need to install:
+Other installations you'd need is the additional libraries. A fully updated list will be in `Project.xml` in the project root. Currently, these are all of the things you need to install:
 ```
 flixel
 flixel-addons
@@ -52,7 +65,9 @@ You'll also need to install a couple things that involve Gits. To do this, you n
 
 You should have everything ready for compiling the game! Follow the guide below to continue!
 
-### Adding `APIStuff.hx` into `/source`
+# Adding `APIStuff.hx` into `/source`
+
+![APIStuff.hx_picture](https://user-images.githubusercontent.com/72235309/112080256-00b24c80-8b58-11eb-9499-524bf45a00eb.png)
 
 The creator gitignored the API keys of the game so no one could post fake high scores onto the leaderboards in Newgrounds. Unfortunatly, because this game requires the `API` and `EncKey` values to compile, you will need to add a file called `APIStuff.hx` into `/source`. How do I do that?
 
@@ -65,13 +80,12 @@ class APIStuff
 	public static var API:String = "";
 	public static var EncKey:String = "";
 }
-
 ```
-3. Paste the text into the APIStuff.hx file and save the game.
+3. Paste the text into the APIStuff.hx file and save the file.
 
 You should be good from there! Now, onto compiling!
 
-# Compiling game
+# Compiling the Game
 
 ## HTML Building:
 
@@ -122,7 +136,9 @@ Desktop building can be a bit tedious. Each different version requires a differe
 5. Once everything is installed, type `lime build windows` to build the windows version of the game.
 6. Type `lime run windows` after the game is compiled to run the windows version of the game. (You can also run the game from `funkin/export/release/windows/bin`)
 
-## All done!
+# All done!
 You should have been able to compile the whole game now! What can you do now? Well, you can mod to your heart's desire! Since this game is open source, the creator loves seeing what other tallented artists and programmers can make!
 
-Special thanks to the amazing group of dedicated people that are making this game amazing! Keep funkin! 💖💖
+Special thanks to the amazing group of dedicated people that are making this game amazing!
+
+💖💖
