@@ -1590,7 +1590,7 @@ class PlayState extends MusicBeatState
 
 		if (FlxG.save.data.accuracyDisplay)
 		{
-			scoreTxt.text = "Score:" + songScore + " | Misses:" + misses + " | Accuracy:" + truncateFloat(accuracy, 2) + "% | " + generateRanking();
+			scoreTxt.text = "Score:" + (FlxG.save.data.etternaMode ? etternaModeScore + " (" + songScore + ")" : "" + songScore) + " | Misses:" + misses + " | Accuracy:" + truncateFloat(accuracy, 2) + "% | " + generateRanking();
 		}
 		else
 		{
@@ -1894,7 +1894,7 @@ class PlayState extends MusicBeatState
 							health -= 0.075;
 							vocals.volume = 0;
 							if (theFunne)
-								noteMiss(daNote.noteData);
+								noteMiss(daNote.noteData, daNote);
 						}
 	
 						daNote.active = false;
@@ -2107,8 +2107,10 @@ class PlayState extends MusicBeatState
 					health += 0.1;
 				sicks++;
 			}
+			
 
-			trace('Weight: ' + wife);
+			if (FlxG.save.data.etternaMode)
+				etternaModeScore += Math.round(score / wife);
 
 			// trace('Wife accuracy loss: ' + wife + ' | Rating: ' + daRating + ' | Score: ' + score + ' | Weight: ' + (1 - wife));
 
@@ -2376,8 +2378,6 @@ class PlayState extends MusicBeatState
 										if (controlArray[ignoreList[shit]])
 											inIgnoreList = true;
 									}
-									if (!inIgnoreList && !theFunne)
-										badNoteCheck();
 								}
 							}
 						}
@@ -2458,10 +2458,6 @@ class PlayState extends MusicBeatState
 						notes.remove(daNote, true);
 						daNote.destroy();
 					}
-				}
-				else if (!theFunne)
-				{
-					badNoteCheck();
 				}
 			}
 	
@@ -2551,7 +2547,7 @@ class PlayState extends MusicBeatState
 			});
 	}
 
-	function noteMiss(direction:Int = 1):Void
+	function noteMiss(direction:Int = 1, daNote:Note):Void
 	{
 		if (!boyfriend.stunned)
 		{
@@ -2562,6 +2558,11 @@ class PlayState extends MusicBeatState
 			}
 			combo = 0;
 			misses++;
+
+			var noteDiff:Float = Math.abs(daNote.strumTime - Conductor.songPosition);
+			var wife:Float = EtternaFunctions.wife3(noteDiff, 1);
+
+			totalNotesHit += wife;
 
 			songScore -= 10;
 
@@ -2585,7 +2586,7 @@ class PlayState extends MusicBeatState
 		}
 	}
 
-	function badNoteCheck()
+	/*function badNoteCheck()
 		{
 			// just double pasting this shit cuz fuk u
 			// REDO THIS SYSTEM!
@@ -2604,7 +2605,7 @@ class PlayState extends MusicBeatState
 				noteMiss(1);
 			updateAccuracy();
 		}
-
+	*/
 	function updateAccuracy() 
 		{
 			if (misses > 0 || accuracy < 96)
@@ -2612,9 +2613,7 @@ class PlayState extends MusicBeatState
 			else
 				fc = true;
 			totalPlayed += 1;
-			accuracy = totalNotesHit / totalPlayed * 100;
-			trace('Notes Hit: ' + totalNotesHit + ' / ' + totalPlayed + ' = ' + accuracy);
-			trace(accuracy);
+			accuracy = Math.max(0,totalNotesHit / totalPlayed * 100);
 		}
 
 
@@ -2638,22 +2637,20 @@ class PlayState extends MusicBeatState
 	var mashing:Int = 0;
 	var mashViolations:Int = 0;
 
+	var etternaModeScore:Int = 0;
+
 	function noteCheck(controlArray:Array<Bool>, note:Note):Void // sorry lol
 		{
 			if (loadRep)
 			{
 				if (controlArray[note.noteData])
 					goodNoteHit(note);
-				else if (!theFunne) 
-					badNoteCheck();
 				else if (rep.replay.keyPresses.length > repPresses && !controlArray[note.noteData])
 				{
 					if (NearlyEquals(note.strumTime,rep.replay.keyPresses[repPresses].time, 4))
 					{
 						goodNoteHit(note);
 					}
-					else if (!theFunne) 
-						badNoteCheck();
 				}
 			}
 			else if (controlArray[note.noteData])
@@ -2679,10 +2676,6 @@ class PlayState extends MusicBeatState
 					if (mashing != 0)
 						mashing = 0;
 				}
-			else if (!theFunne)
-			{
-				badNoteCheck();
-			}
 		}
 
 		function goodNoteHit(note:Note, resetMashViolation = true):Void
