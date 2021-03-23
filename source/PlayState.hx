@@ -1928,13 +1928,13 @@ class PlayState extends MusicBeatState
 		if (SONG.validScore)
 		{
 			#if !switch
-			Highscore.saveScore(SONG.song, songScore, storyDifficulty);
+			Highscore.saveScore(SONG.song, Math.round(songScore), storyDifficulty);
 			#end
 		}
 
 		if (isStoryMode)
 		{
-			campaignScore += songScore;
+			campaignScore += Math.round(songScore);
 
 			storyPlaylist.remove(storyPlaylist[0]);
 
@@ -2005,7 +2005,7 @@ class PlayState extends MusicBeatState
 	private function popUpScore(strumtime:Float):Void
 		{
 			var noteDiff:Float = Math.abs(strumtime - Conductor.songPosition);
-			var wife:Float = noteDiff / 1000;
+			var wife:Float = EtternaFunctions.wife3(noteDiff, 1);
 			// boyfriend.playAnim('hey');
 			vocals.volume = 1;
 	
@@ -2017,14 +2017,15 @@ class PlayState extends MusicBeatState
 			//
 	
 			var rating:FlxSprite = new FlxSprite();
-			var score:Int = 350;
+			var score:Float = 350;
 	
 			var daRating:String = "sick";
 				
+			totalNotesHit += wife;
+
 			if (noteDiff > Conductor.safeZoneOffset * 2)
 				{
 					daRating = 'shit';
-					totalNotesHit -= 2 - wife;
 					ss = false;
 					if (theFunne)
 						{
@@ -2037,7 +2038,6 @@ class PlayState extends MusicBeatState
 				else if (noteDiff < Conductor.safeZoneOffset * -2)
 				{
 					daRating = 'shit';
-					totalNotesHit -= 2 - wife;
 					if (theFunne)
 					{
 						score = -3000;
@@ -2050,7 +2050,6 @@ class PlayState extends MusicBeatState
 				else if (noteDiff < Conductor.safeZoneOffset * -0.45)
 				{
 					daRating = 'bad';
-					totalNotesHit += 0.2 - wife;
 					if (theFunne)
 					{
 						score = -1000;
@@ -2065,7 +2064,6 @@ class PlayState extends MusicBeatState
 				else if (noteDiff > Conductor.safeZoneOffset * 0.45)
 				{
 					daRating = 'bad';
-					totalNotesHit += 0.2 - wife;
 					if (theFunne)
 						{
 							score = -1000;
@@ -2080,7 +2078,6 @@ class PlayState extends MusicBeatState
 				else if (noteDiff < Conductor.safeZoneOffset * -0.25)
 				{
 					daRating = 'good';
-					totalNotesHit += 0.65 - wife;
 					if (theFunne)
 					{
 						score = 200;
@@ -2094,7 +2091,6 @@ class PlayState extends MusicBeatState
 				else if (noteDiff > Conductor.safeZoneOffset * 0.35)
 				{
 					daRating = 'good';
-					totalNotesHit += 0.65 - wife;
 					if (theFunne)
 						{
 							score = 200;
@@ -2107,19 +2103,20 @@ class PlayState extends MusicBeatState
 				}
 			if (daRating == 'sick')
 			{
-				totalNotesHit += 1 - wife;
 				if (health < 2)
 					health += 0.1;
 				sicks++;
 			}
-	
+
+			trace('Weight: ' + wife);
+
 			// trace('Wife accuracy loss: ' + wife + ' | Rating: ' + daRating + ' | Score: ' + score + ' | Weight: ' + (1 - wife));
 
 			if (daRating != 'shit' || daRating != 'bad')
 				{
 	
 	
-			songScore += score;
+			songScore += Math.round(score);
 	
 			/* if (combo > 60)
 					daRating = 'sick';
@@ -2608,7 +2605,7 @@ class PlayState extends MusicBeatState
 			updateAccuracy();
 		}
 
-	function updateAccuracy()
+	function updateAccuracy() 
 		{
 			if (misses > 0 || accuracy < 96)
 				fc = false;
@@ -2616,6 +2613,8 @@ class PlayState extends MusicBeatState
 				fc = true;
 			totalPlayed += 1;
 			accuracy = totalNotesHit / totalPlayed * 100;
+			trace('Notes Hit: ' + totalNotesHit + ' / ' + totalPlayed + ' = ' + accuracy);
+			trace(accuracy);
 		}
 
 

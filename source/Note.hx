@@ -40,6 +40,9 @@ class Note extends FlxSprite
 		if (prevNote == null)
 			prevNote = this;
 
+		if (FlxG.save.data.downscroll)
+			flipY = true;
+		
 		this.prevNote = prevNote;
 		isSustainNote = sustainNote;
 
