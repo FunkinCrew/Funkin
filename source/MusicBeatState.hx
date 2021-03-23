@@ -29,6 +29,8 @@ class MusicBeatState extends FlxUIState
 
 	override function update(elapsed:Float)
 	{
+		FlxG.stage.frameRate = FlxG.stage.window.displayMode.refreshRate;
+		
 		//everyStep();
 		var oldStep:Int = curStep;
 

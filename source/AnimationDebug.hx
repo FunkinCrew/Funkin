@@ -111,6 +111,8 @@ class AnimationDebug extends FlxState
 
 	override function update(elapsed:Float)
 	{
+		FlxG.stage.frameRate = FlxG.stage.window.displayMode.refreshRate;
+		
 		textAnim.text = char.animation.curAnim.name;
 
 		if (FlxG.keys.justPressed.E)
