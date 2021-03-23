@@ -91,10 +91,10 @@ class ModdingSubstate extends MusicBeatSubstate
 			grpMods.remove(grpMods.members[0], true);
 		}
 
+		#if desktop
 		var modList = [];
 		modFolders = [];
 
-		#if desktop
 		for (file in FileSystem.readDirectory('./mods'))
 		{
 			if (FileSystem.isDirectory('./mods/' + file))

@@ -1,6 +1,7 @@
 package;
 
 import NGio;
+
 import flixel.ui.FlxButton;
 import flixel.FlxG;
 import flixel.FlxObject;
@@ -16,6 +17,10 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import lime.app.Application;
+
+#if desktop
+import Discord.DiscordClient;
+#end
 
 #if newgrounds
 import io.newgrounds.NG;
@@ -38,6 +43,11 @@ class MainMenuState extends MusicBeatState
 
 	override function create()
 	{
+		#if desktop
+		// Updating Discord Rich Presence
+		DiscordClient.changePresence("In the Menus", null);
+		#end
+
 		transIn = FlxTransitionableState.defaultTransIn;
 		transOut = FlxTransitionableState.defaultTransOut;
 
