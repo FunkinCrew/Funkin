@@ -266,7 +266,7 @@ class TitleState extends MusicBeatState
 
 		if (pressedEnter && !transitioning && skippedIntro)
 		{
-			#if !switch
+			#if (!switch && !debug)
 			NGio.unlockMedal(60960);
 
 			// If it's Friday according to da clock
