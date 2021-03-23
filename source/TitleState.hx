@@ -1,5 +1,9 @@
 package;
 
+#if desktop
+import Discord.DiscordClient;
+import sys.thread.Thread;
+#end
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -45,7 +49,7 @@ class TitleState extends MusicBeatState
 		#if polymod
 		polymod.Polymod.init({modRoot: "mods", dirs: ['introMod']});
 		#end
-		
+
 		PlayerSettings.init();
 
 		curWacky = FlxG.random.getObject(getIntroTextShit());
@@ -88,6 +92,10 @@ class TitleState extends MusicBeatState
 		{
 			startIntro();
 		});
+		#end
+
+		#if desktop
+		DiscordClient.initialize();
 		#end
 	}
 
@@ -282,12 +290,12 @@ class TitleState extends MusicBeatState
 
 				if (version.trim() != NGio.GAME_VER_NUMS.trim() && !OutdatedSubState.leftState)
 				{
+					FlxG.switchState(new OutdatedSubState());
 					trace('OLD VERSION!');
 					trace('old ver');
 					trace(version.trim());
 					trace('cur ver');
 					trace(NGio.GAME_VER_NUMS.trim());
-					FlxG.switchState(new OutdatedSubState());
 				}
 				else
 				{
