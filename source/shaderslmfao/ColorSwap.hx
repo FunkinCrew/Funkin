@@ -53,6 +53,9 @@ class ColorSwapShader extends FlxShader
         uniform float uTime;
         uniform float money;
 
+        const float offset = 1.0 / 128.0;
+        
+
         vec3 normalizeColor(vec3 color)
         {
             return vec3(
@@ -93,8 +96,22 @@ class ColorSwapShader extends FlxShader
             // money += swagColor[0];
 
             color = vec4(hsv2rgb(vec3(swagColor[0], swagColor[1], swagColor[2])), swagColor[3]);
-
-            gl_FragColor = color;
+/* 
+            if (color.a > 0.5)
+                gl_FragColor = color;
+            else
+            {
+                float a = flixel_texture2D(bitmap, vec2(openfl_TextureCoordv + offset, openfl_TextureCoordv.y)).a +
+                          flixel_texture2D(bitmap, vec2(openfl_TextureCoordv, openfl_TextureCoordv.y - offset)).a +
+                          flixel_texture2D(bitmap, vec2(openfl_TextureCoordv - offset, openfl_TextureCoordv.y)).a +
+                          flixel_texture2D(bitmap, vec2(openfl_TextureCoordv, openfl_TextureCoordv.y + offset)).a;
+                if (color.a < 1.0 && a > 0.0)
+                    gl_FragColor = vec4(0.0, 0.0, 0.0, 0.8);
+                else
+                    gl_FragColor = color;
+            }
+ */
+           
         }
 
     ')
