@@ -8,6 +8,7 @@ import flixel.addons.display.FlxGridOverlay;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
+import openfl.Lib;
 
 /**
 	*DEBUG MODE
@@ -111,6 +112,8 @@ class AnimationDebug extends FlxState
 
 	override function update(elapsed:Float)
 	{
+		Lib.application.window.frameRate = Lib.application.window.displayMode.refreshRate;
+		
 		textAnim.text = char.animation.curAnim.name;
 
 		if (FlxG.keys.justPressed.E)

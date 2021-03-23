@@ -6,6 +6,7 @@ import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.ui.FlxUIState;
 import flixel.math.FlxRect;
 import flixel.util.FlxTimer;
+import openfl.Lib;
 
 class MusicBeatState extends FlxUIState
 {
@@ -29,6 +30,8 @@ class MusicBeatState extends FlxUIState
 
 	override function update(elapsed:Float)
 	{
+		Lib.application.window.frameRate = Lib.application.window.displayMode.refreshRate;
+		
 		//everyStep();
 		var oldStep:Int = curStep;
 
