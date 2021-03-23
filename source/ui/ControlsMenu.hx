@@ -45,12 +45,7 @@ class ControlsMenu extends ui.OptionsState.Page
 		super();
 		
 		menuCamera = new FlxCamera();
-		FlxG.cameras.add(menuCamera);// false);
-		if (FlxCamera.defaultCameras.indexOf(menuCamera) != -1)
-		{
-			FlxCamera.defaultCameras = FlxCamera.defaultCameras.copy();
-			FlxCamera.defaultCameras.remove(menuCamera);
-		}
+		FlxG.cameras.add(menuCamera, false);
 		menuCamera.bgColor = 0x0;
 		camera = menuCamera;
 		
