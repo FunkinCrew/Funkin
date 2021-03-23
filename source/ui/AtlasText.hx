@@ -118,8 +118,8 @@ class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
 		else if (charCount > 0)
 		{
 			var lastChar = group.members[charCount - 1];
-			xPos = lastChar.x + lastChar.width;
-			yPos = lastChar.y + lastChar.height - maxHeight;
+			xPos = lastChar.x + lastChar.width - x;
+			yPos = lastChar.y + lastChar.height - maxHeight - y;
 		}
 		
 		var splitValues = text.split("");
@@ -146,10 +146,10 @@ class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
 						charSprite = group.members[charCount];
 						charSprite.revive();
 						charSprite.char = char;
+						charSprite.alpha = 1;//gets multiplied when added
 					}
 					charSprite.x = xPos;
 					charSprite.y = yPos + maxHeight - charSprite.height;
-					charSprite.alpha = 1;//gets multiplied when added
 					add(charSprite);
 					
 					xPos += charSprite.width;
