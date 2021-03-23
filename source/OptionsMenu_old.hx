@@ -12,7 +12,7 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import lime.utils.Assets;
 
-class OptionsMenu extends MusicBeatState
+class OptionsMenu_old extends MusicBeatState
 {
 	var selector:FlxText;
 	var curSelected:Int = 0;
@@ -82,7 +82,7 @@ class OptionsMenu extends MusicBeatState
 	{
 		if (FlxG.keys.getIsDown().length > 0)
 		{
-			PlayerSettings.player1.controls.replaceBinding(Control.LEFT, Keys, FlxG.keys.getIsDown()[0].ID, null);
+			// PlayerSettings.player1.controls.replaceBinding(Control.LEFT, Keys, FlxG.keys.getIsDown()[0].ID, null);
 		}
 		// PlayerSettings.player1.controls.replaceBinding(Control)
 	}
@@ -99,9 +99,7 @@ class OptionsMenu extends MusicBeatState
 
 	function changeSelection(change:Int = 0)
 	{
-		#if !switch
 		NGio.logEvent('Fresh');
-		#end
 
 		FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 
