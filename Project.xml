@@ -180,6 +180,8 @@
 	<haxedef name="CAN_OPEN_LINKS" unless="switch"/>
 	<haxedef name="CAN_CHEAT" if="switch debug"/>
 	
+	<!-- <haxedef name="CLEAR_INPUT_SAVE"/> -->
+	
 	<section if="newgrounds">
 		<!-- Enables Ng.core.verbose -->
 		<!-- <haxedef name="NG_VERBOSE" /> -->

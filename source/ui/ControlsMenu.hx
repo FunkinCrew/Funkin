@@ -184,7 +184,12 @@ class ControlsMenu extends ui.OptionsState.Page
 		
 		var inputName = device == Keys ? "key" : "button";
 		var cancel = device == Keys ? "Escape" : "Back";
-		prompt.setText('\nPress any $inputName to rebind\n\n\n\n    $cancel to cancel');
+		//todo: alignment
+		if (device == Keys)
+			prompt.setText('\nPress any key to rebind\n\n\n\n    $cancel to cancel');
+		else
+			prompt.setText('\nPress any button\n   to rebind\n\n\n $cancel to cancel');
+			
 		
 		controlGrid.selectedItem.select();
 		labels.members[Std.int(controlGrid.selectedIndex / COLUMNS)].alpha = 1.0;
@@ -265,13 +270,16 @@ class ControlsMenu extends ui.OptionsState.Page
 		// Don't use resetItem() since items share names/labels
 		item.input = input;
 		item.label.text = item.getLabel(input);
+		
+		PlayerSettings.player1.saveControls();
 	}
 	
 	function closePrompt()
 	{
-		controlGrid.enabled = true;
-		canExit = true;
 		prompt.exists = false;
+		controlGrid.enabled = true;
+		if (deviceList == null)
+			canExit = true;
 	}
 	
 	override function destroy()

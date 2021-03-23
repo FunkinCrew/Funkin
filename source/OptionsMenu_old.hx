@@ -82,7 +82,7 @@ class OptionsMenu_old extends MusicBeatState
 	{
 		if (FlxG.keys.getIsDown().length > 0)
 		{
-			PlayerSettings.player1.controls.replaceBinding(Control.LEFT, Keys, FlxG.keys.getIsDown()[0].ID, null);
+			// PlayerSettings.player1.controls.replaceBinding(Control.LEFT, Keys, FlxG.keys.getIsDown()[0].ID, null);
 		}
 		// PlayerSettings.player1.controls.replaceBinding(Control)
 	}
