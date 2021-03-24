@@ -1,6 +1,4 @@
-# Friday Night Funkin!
-
-![FNF_Logo](https://user-images.githubusercontent.com/72235309/112068307-08fe8d80-8b40-11eb-84d0-fc64a10dd845.png "FNF Logo")
+![Friday_Night_Funkin_Logo](/art/logoREADME.png "FNF Logo")
 
 ### This is the repository for Friday Night Funkin, a game originally made for Ludum Dare 47 "Stuck In a Loop".
 
@@ -26,7 +24,7 @@ Support the project on the [Itch.io page](https://ninja-muffin24.itch.io/funkin)
 
 This game was made with love to Newgrounds and its community. Extra love to Tom Fulp. 💖
 
-![newgrounds_logo](https://user-images.githubusercontent.com/72235309/112079926-681bcc80-8b57-11eb-9249-989b37c8fad3.png)
+![newgrounds_logo](/art/preloaderArt.png)
 
 ## What can I do with compiling the game? Why should I compile the game instead of downloading it from [the Itch.io page of the game](https://ninja-muffin24.itch.io/friday-night-funkin)?
 
@@ -66,8 +64,6 @@ You will also need to install a couple things that involve Gits. To do this, you
 You should have everything ready for compiling the game! Follow the guide below to continue!
 
 # Adding `APIStuff.hx` into `/source`
-
-![APIStuff.hx_picture](https://user-images.githubusercontent.com/72235309/112080256-00b24c80-8b58-11eb-9499-524bf45a00eb.png)
 
 The API keys of the game were gitignored so no one could post fake high scores onto the leaderboards in Newgrounds. Unfortunately, because this game requires the `API` and `EncKey` values to compile, you will need to add a file called `APIStuff.hx` into `/source`.
 
