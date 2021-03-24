@@ -32,11 +32,19 @@ class OptionsState extends MusicBeatState
 		var controls = addPage(Controls, new ControlsMenu());
 		var colors = addPage(Colors, new ColorsMenu());
 
+		#if cpp
+		var mods = addPage(Mods, new ModMenu());
+		#end
+
 		if (options.hasMultipleOptions())
 		{
 			options.onExit.add(exitToMainMenu);
 			controls.onExit.add(switchPage.bind(Options));
 			colors.onExit.add(switchPage.bind(Options));
+
+			#if cpp
+			mods.onExit.add(switchPage.bind(Options));
+			#end
 		}
 		else
 		{
