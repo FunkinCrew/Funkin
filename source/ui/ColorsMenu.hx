@@ -1,13 +1,12 @@
-package;
+package ui;
 
 import flixel.FlxG;
 import flixel.addons.effects.chainable.FlxEffectSprite;
 import flixel.addons.effects.chainable.FlxOutlineEffect;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.util.FlxColor;
-import shaderslmfao.ColorSwap;
 
-class ColorpickSubstate extends MusicBeatSubstate
+class ColorsMenu extends ui.OptionsState.Page
 {
 	var curSelected:Int = 0;
 

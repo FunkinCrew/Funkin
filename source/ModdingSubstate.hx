@@ -35,9 +35,9 @@ class ModdingSubstate extends MusicBeatSubstate
 
 		selections();
 
-		if (controls.UP_P)
+		if (controls.UI_UP_P)
 			selections(-1);
-		if (controls.DOWN_P)
+		if (controls.UI_DOWN_P)
 			selections(1);
 
 		if (FlxG.keys.justPressed.SPACE)
