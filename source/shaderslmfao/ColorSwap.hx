@@ -96,7 +96,10 @@ class ColorSwapShader extends FlxShader
             // money += swagColor[0];
 
             color = vec4(hsv2rgb(vec3(swagColor[0], swagColor[1], swagColor[2])), swagColor[3]);
-/* 
+            gl_FragColor = color;
+            
+            
+            /* 
             if (color.a > 0.5)
                 gl_FragColor = color;
             else
@@ -110,7 +113,7 @@ class ColorSwapShader extends FlxShader
                 else
                     gl_FragColor = color;
             }
- */
+            */
            
         }
 
