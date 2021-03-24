@@ -29,10 +29,14 @@ class ColorsMenu extends ui.OptionsState.Page
 			var _effectSpr:FlxEffectSprite = new FlxEffectSprite(note, [new FlxOutlineEffect(FlxOutlineMode.FAST, FlxColor.WHITE, 4, 1)]);
 			add(_effectSpr);
 			_effectSpr.y = 0;
-			_effectSpr.x = i * 80;
+			_effectSpr.x = i * 130;
 			_effectSpr.antialiasing = true;
-			_effectSpr.setGraphicSize(Std.int(_effectSpr.width * 0.7));
-			_effectSpr.updateHitbox();
+			_effectSpr.scale.x = _effectSpr.scale.y = 0.7;
+			// _effectSpr.setGraphicSize();
+			_effectSpr.height = note.height;
+			_effectSpr.width = note.width;
+
+			// _effectSpr.updateHitbox();
 
 			grpNotes.add(note);
 		}
@@ -40,12 +44,6 @@ class ColorsMenu extends ui.OptionsState.Page
 
 	override function update(elapsed:Float)
 	{
-		if (controls.BACK)
-		{
-			FlxG.state.closeSubState();
-			FlxG.state.openSubState(new OptionsSubState());
-		}
-
 		if (controls.UI_RIGHT_P)
 			curSelected += 1;
 		if (controls.UI_LEFT_P)

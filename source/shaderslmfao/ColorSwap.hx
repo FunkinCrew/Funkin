@@ -9,6 +9,9 @@ class ColorSwap
 	public var colorToReplace(default, set):FlxColor;
 	public var newColor(default, set):FlxColor;
 	public var daTime(default, set):Float;
+
+	public var hasOutline(default, set):Bool = false;
+
 	public var hueShit:Float = 0;
 
 	public function new():Void
@@ -16,6 +19,7 @@ class ColorSwap
 		shader = new ColorSwapShader();
 		shader.uTime.value = [0];
 		shader.money.value = [0];
+		shader.awesomeOutline.value = [hasOutline];
 	}
 
 	public function update(elapsed:Float):Void
@@ -30,6 +34,12 @@ class ColorSwap
 		colorToReplace = color;
 
 		return color;
+	}
+
+	function set_hasOutline(lol:Bool):Bool
+	{
+		shader.awesomeOutline.value = [lol];
+		return lol;
 	}
 
 	function set_daTime(daTime:Float):Float
@@ -52,8 +62,11 @@ class ColorSwapShader extends FlxShader
 
         uniform float uTime;
         uniform float money;
+        uniform bool awesomeOutline;
+
 
         const float offset = 1.0 / 128.0;
+        
         
 
         vec3 normalizeColor(vec3 color)
@@ -96,6 +109,29 @@ class ColorSwapShader extends FlxShader
             // money += swagColor[0];
 
             color = vec4(hsv2rgb(vec3(swagColor[0], swagColor[1], swagColor[2])), swagColor[3]);
+            
+
+            if (awesomeOutline)
+            {
+                 // Outline bullshit?
+                vec2 size = vec2(3, 3);
+
+                if (color.a <= 0.5) {
+                    float w = size.x / openfl_TextureSize.x;
+                    float h = size.y / openfl_TextureSize.y;
+                    
+                    if (flixel_texture2D(bitmap, vec2(openfl_TextureCoordv.x + w, openfl_TextureCoordv.y)).a != 0.
+                    || flixel_texture2D(bitmap, vec2(openfl_TextureCoordv.x - w, openfl_TextureCoordv.y)).a != 0.
+                    || flixel_texture2D(bitmap, vec2(openfl_TextureCoordv.x, openfl_TextureCoordv.y + h)).a != 0.
+                    || flixel_texture2D(bitmap, vec2(openfl_TextureCoordv.x, openfl_TextureCoordv.y - h)).a != 0.)
+                        color = vec4(1.0, 1.0, 1.0, 1.0);
+                }
+
+
+            }
+
+           
+            
             gl_FragColor = color;
             
             
@@ -112,9 +148,7 @@ class ColorSwapShader extends FlxShader
                     gl_FragColor = vec4(0.0, 0.0, 0.0, 0.8);
                 else
                     gl_FragColor = color;
-            }
-            */
-           
+            } */
         }
 
     ')

@@ -1,16 +1,15 @@
-package;
+package ui;
 
-import Controls.Control;
 import flixel.FlxG;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
+#if cpp
 import polymod.Polymod;
-#if desktop
 import sys.FileSystem;
 #end
 
-class ModdingSubstate extends MusicBeatSubstate
+class ModMenu extends ui.OptionsState.Page
 {
 	var grpMods:FlxTypedGroup<ModMenuItem>;
 	var enabledMods:Array<String> = [];
