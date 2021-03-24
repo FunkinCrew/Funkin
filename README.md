@@ -32,7 +32,7 @@ Compiling the game gives access to the `/source` folder, allowing you to change 
 
 I recommend having a good idea on how to program. Compiling the game is not for everyone!
 
-If you just want to download and play the game normally, you can click [here to go to the Itch.io page of the game](https://ninja-muffin24.itch.io/friday-night-funkin)
+If you just want to download and play the game normally, you can click [here to go to the Itch.io page of the game](https://ninja-muffin24.itch.io/friday-night-funkin)!
 
 ### **If you do want to compile, continue reading!**
 
