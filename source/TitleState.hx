@@ -62,11 +62,11 @@ class TitleState extends MusicBeatState
 		FlxG.save.bind('funkin', 'ninjamuffin99');
 		PlayerSettings.init();
 		Highscore.load();
-		
+
 		#if newgrounds
 		NGio.init();
 		#end
-		
+
 		if (FlxG.save.data.weekUnlocked != null)
 		{
 			// FIX LATER!!!
@@ -328,6 +328,9 @@ class TitleState extends MusicBeatState
 		{
 			skipIntro();
 		}
+
+		if (FlxG.keys.justPressed.SPACE)
+			swagShader.hasOutline = !swagShader.hasOutline;
 
 		if (controls.UI_LEFT)
 		{

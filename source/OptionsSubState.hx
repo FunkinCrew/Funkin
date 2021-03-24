@@ -1,10 +1,15 @@
 package;
 
+import Controls.Control;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
+import polymod.Polymod;
+#if desktop
+import sys.FileSystem;
+#end
 
 class OptionsSubState extends MusicBeatSubstate
 {
@@ -72,13 +77,13 @@ class OptionsSubState extends MusicBeatSubstate
 			{
 				case "Colors":
 					FlxG.state.closeSubState();
-					FlxG.state.openSubState(new ColorpickSubstate());
+
 				case "Controls":
 					FlxG.state.closeSubState();
 					FlxG.state.openSubState(new ControlsSubState());
 				case "Mods":
 					FlxG.state.closeSubState();
-					FlxG.state.openSubState(new ModdingSubstate());
+				// FlxG.state.openSubState(new ModdingSubstate());
 				case "Back":
 					FlxG.switchState(new MainMenuState());
 			}
