@@ -1,23 +1,23 @@
 package ui;
 
-import flixel.FlxSubState;
 import flixel.FlxG;
 import flixel.FlxSprite;
+import flixel.FlxSubState;
+import flixel.addons.transition.FlxTransitionableState;
 import flixel.group.FlxGroup;
 import flixel.util.FlxSignal;
 
-import flixel.addons.transition.FlxTransitionableState;
-
 // typedef OptionsState = OptionsMenu_old;
-
 // class OptionsState_new extends MusicBeatState
 class OptionsState extends MusicBeatState
 {
 	var pages = new Map<PageName, Page>();
 	var currentName:PageName = #if newgrounds Options #else Controls #end;
 	var currentPage(get, never):Page;
-	inline function get_currentPage() return pages[currentName];
-	
+
+	inline function get_currentPage()
+		return pages[currentName];
+
 	override function create()
 	{
 		var menuBG = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
@@ -27,14 +27,16 @@ class OptionsState extends MusicBeatState
 		menuBG.screenCenter();
 		menuBG.scrollFactor.set(0, 0);
 		add(menuBG);
-		
+
 		var options = addPage(Options, new OptionsMenu(false));
 		var controls = addPage(Controls, new ControlsMenu());
-		
+		var colors = addPage(Colors, new ColorsMenu());
+
 		if (options.hasMultipleOptions())
 		{
 			options.onExit.add(exitToMainMenu);
 			controls.onExit.add(switchPage.bind(Options));
+			colors.onExit.add(switchPage.bind(Options));
 		}
 		else
 		{
@@ -42,12 +44,12 @@ class OptionsState extends MusicBeatState
 			controls.onExit.add(exitToMainMenu);
 			setPage(Controls);
 		}
-		
+
 		// disable for intro transition
 		currentPage.enabled = false;
 		super.create();
 	}
-	
+
 	function addPage<T:Page>(name:PageName, page:T)
 	{
 		page.onSwitch.add(switchPage);
@@ -56,35 +58,35 @@ class OptionsState extends MusicBeatState
 		page.exists = currentName == name;
 		return page;
 	}
-	
+
 	function setPage(name:PageName)
 	{
 		if (pages.exists(currentName))
 			currentPage.exists = false;
-		
+
 		currentName = name;
-		
+
 		if (pages.exists(currentName))
 			currentPage.exists = true;
 	}
-	
+
 	override function finishTransIn()
 	{
 		super.finishTransIn();
-		
+
 		currentPage.enabled = true;
 	}
-	
+
 	function switchPage(name:PageName)
 	{
-		//Todo animate?
+		// Todo animate?
 		setPage(name);
 	}
-	
+
 	function exitToMainMenu()
 	{
 		currentPage.enabled = false;
-		//Todo animate?
+		// Todo animate?
 		FlxG.switchState(new MainMenuState());
 	}
 }
@@ -93,57 +95,59 @@ class Page extends FlxGroup
 {
 	public var onSwitch(default, null) = new FlxTypedSignal<PageName->Void>();
 	public var onExit(default, null) = new FlxSignal();
-	
+
 	public var enabled(default, set) = true;
 	public var canExit = true;
-	
+
 	var controls(get, never):Controls;
-	inline function get_controls() return PlayerSettings.player1.controls;
-	
+
+	inline function get_controls()
+		return PlayerSettings.player1.controls;
+
 	var subState:FlxSubState;
-	
+
 	inline function switchPage(name:PageName)
 	{
 		onSwitch.dispatch(name);
 	}
-	
+
 	inline function exit()
 	{
 		onExit.dispatch();
 	}
-	
+
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
-		
+
 		if (enabled)
 			updateEnabled(elapsed);
 	}
-	
+
 	function updateEnabled(elapsed:Float)
 	{
 		if (canExit && controls.BACK)
 			exit();
 	}
-	
+
 	function set_enabled(value:Bool)
 	{
 		return this.enabled = value;
 	}
-	
+
 	function openPrompt(prompt:Prompt, onClose:Void->Void)
 	{
 		enabled = false;
-		prompt.closeCallback = function ()
+		prompt.closeCallback = function()
 		{
 			enabled = true;
 			if (onClose != null)
 				onClose();
 		}
-		
+
 		FlxG.state.openSubState(prompt);
 	}
-	
+
 	override function destroy()
 	{
 		super.destroy();
@@ -154,13 +158,14 @@ class Page extends FlxGroup
 class OptionsMenu extends Page
 {
 	var items:TextMenuList;
-	
-	public function new (showDonate:Bool)
+
+	public function new(showDonate:Bool)
 	{
 		super();
-		
+
 		add(items = new TextMenuList());
 		createItem("controls", function() switchPage(Controls));
+		createItem('colors', function() switchPage(Colors));
 		#if CAN_OPEN_LINKS
 		if (showDonate)
 		{
@@ -176,7 +181,7 @@ class OptionsMenu extends Page
 		#end
 		createItem("exit", exit);
 	}
-	
+
 	function createItem(name:String, callback:Void->Void, fireInstantly = false)
 	{
 		var item = items.createItem(0, 100 + items.length * 100, name, Bold, callback);
@@ -184,13 +189,13 @@ class OptionsMenu extends Page
 		item.screenCenter(X);
 		return item;
 	}
-	
+
 	override function set_enabled(value:Bool)
 	{
 		items.enabled = value;
 		return super.set_enabled(value);
 	}
-	
+
 	/**
 	 * True if this page has multiple options, ecluding the exit option.
 	 * If false, there's no reason to ever show this page.
@@ -199,7 +204,7 @@ class OptionsMenu extends Page
 	{
 		return items.length > 2;
 	}
-	
+
 	#if CAN_OPEN_LINKS
 	function selectDonate()
 	{
@@ -210,18 +215,18 @@ class OptionsMenu extends Page
 		#end
 	}
 	#end
-	
+
 	#if newgrounds
 	function selectLogin()
 	{
 		openNgPrompt(NgPrompt.showLogin());
 	}
-	
+
 	function selectLogout()
 	{
 		openNgPrompt(NgPrompt.showLogout());
 	}
-	
+
 	/**
 	 * Calls openPrompt and redraws the login/logout button
 	 * @param prompt 
@@ -232,16 +237,16 @@ class OptionsMenu extends Page
 		var onPromptClose = checkLoginStatus;
 		if (onClose != null)
 		{
-			onPromptClose = function ()
+			onPromptClose = function()
 			{
 				checkLoginStatus();
 				onClose();
 			}
 		}
-		
+
 		openPrompt(prompt, onPromptClose);
 	}
-	
+
 	function checkLoginStatus()
 	{
 		var prevLoggedIn = items.has("logout");
@@ -257,4 +262,5 @@ enum PageName
 {
 	Options;
 	Controls;
+	Colors;
 }
