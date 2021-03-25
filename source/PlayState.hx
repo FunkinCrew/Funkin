@@ -1130,7 +1130,9 @@ class PlayState extends MusicBeatState
 		lastReportedPlayheadPosition = 0;
 
 		if (!paused)
-			FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 1, false); 
+			FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 1, false);
+		
+		FlxG.sound.music.onComplete = endSong;
 		vocals.play();
 
 		if (FlxG.save.data.songPosition)
