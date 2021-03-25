@@ -106,7 +106,7 @@ You should have everything ready for compiling the game! Follow the guide below 
 At the moment, you can optionally fix the transition bug in songs with zoomed out cameras.
 - Run `haxelib git flixel-addons https://github.com/HaxeFlixel/flixel-addons` in the terminal/command-prompt.
 
-As of version 1.3, you also need Discord RPC to compile the game, get it by using the following command:
+**As of version 1.3**, you also need Discord RPC to compile the game, get it by using the following command:
 - Use `haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc` in the terminal/command-prompt.
 
 ### Ignored files
