@@ -38,7 +38,7 @@ If you just want to download and play the game normally, you can click [here to 
 
 # Installing the Required Programs
 
-![haxe-logo-white-background](https://user-images.githubusercontent.com/72235309/112079978-81247d80-8b57-11eb-8735-bea15b9f4658.png)
+![Haxe_Logo](/art/haxeLogo.png)
 
 First you need to install Haxe and HaxeFlixel.
 1. [Install Haxe 4.1.5](https://haxe.org/download/version/4.1.5/) (Download 4.1.5 instead of 4.2.0 because 4.2.0 is broken and is not working with gits properly...)
