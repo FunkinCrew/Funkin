@@ -26,6 +26,8 @@ class NoteSplash extends FlxSprite
 		updateHitbox();
 
 		offset.set(width * 0.3, height * 0.3);
+
+		alpha = 0.75;
 	}
 
 	override function update(elapsed:Float)
