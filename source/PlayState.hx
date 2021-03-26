@@ -1792,7 +1792,7 @@ class PlayState extends MusicBeatState
 
 	var endingSong:Bool = false;
 
-	private function popUpScore(strumtime:Float):Void
+	private function popUpScore(strumtime:Float, daNote:Note):Void
 	{
 		var noteDiff:Float = Math.abs(strumtime - Conductor.songPosition);
 		// boyfriend.playAnim('hey');
@@ -1810,20 +1810,33 @@ class PlayState extends MusicBeatState
 
 		var daRating:String = "sick";
 
+		var isSick:Bool = true;
+
 		if (noteDiff > Conductor.safeZoneOffset * 0.9)
 		{
 			daRating = 'shit';
 			score = 50;
+			isSick = false; // shitty copypaste on this literally just because im lazy and tired lol!
 		}
 		else if (noteDiff > Conductor.safeZoneOffset * 0.75)
 		{
 			daRating = 'bad';
 			score = 100;
+			isSick = false;
 		}
 		else if (noteDiff > Conductor.safeZoneOffset * 0.2)
 		{
 			daRating = 'good';
 			score = 200;
+			isSick = false;
+		}
+
+		if (isSick)
+		{
+			var noteSplash:NoteSplash = new NoteSplash(daNote.x, daNote.y, daNote.noteData);
+			add(noteSplash);
+
+			noteSplash.cameras = [camHUD];
 		}
 
 		songScore += score;
@@ -2272,7 +2285,7 @@ class PlayState extends MusicBeatState
 		{
 			if (!note.isSustainNote)
 			{
-				popUpScore(note.strumTime);
+				popUpScore(note.strumTime, note);
 				combo += 1;
 			}
 
