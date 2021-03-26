@@ -850,8 +850,11 @@ class PlayState extends MusicBeatState
 		iconP2.cameras = [camHUD];
 		scoreTxt.cameras = [camHUD];
 		doof.cameras = [camHUD];
-		songPosBG.cameras = [camHUD];
-		songPosBar.cameras = [camHUD];
+		if (FlxG.save.data.songPosition)
+		{
+			songPosBG.cameras = [camHUD];
+			songPosBar.cameras = [camHUD];
+		}
 		kadeEngineWatermark.cameras = [camHUD];
 		if (loadRep)
 			replayTxt.cameras = [camHUD];
@@ -1885,7 +1888,7 @@ class PlayState extends MusicBeatState
 					// WIP interpolation shit? Need to fix the pause issue
 					// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
 	
-					if (daNote.y < -daNote.height && !FlxG.save.data.downscroll || daNote.y >= strumLine.y + 106 && FlxG.save.data.downscroll)
+					if ((daNote.y < -daNote.height && !FlxG.save.data.downscroll || daNote.y >= strumLine.y + 106 && FlxG.save.data.downscroll) && daNote.mustPress)
 					{
 						if (daNote.isSustainNote && daNote.wasGoodHit)
 						{
@@ -2022,6 +2025,8 @@ class PlayState extends MusicBeatState
 			var coolText:FlxText = new FlxText(0, 0, 0, placement, 32);
 			coolText.screenCenter();
 			coolText.x = FlxG.width * 0.55;
+			coolText.y -= 350;
+			coolText.cameras = [camHUD];
 			//
 	
 			var rating:FlxSprite = new FlxSprite();
@@ -2151,13 +2156,13 @@ class PlayState extends MusicBeatState
 	
 			rating.loadGraphic(Paths.image(pixelShitPart1 + daRating + pixelShitPart2));
 			rating.screenCenter();
-			rating.y += 200;
-			rating.x = coolText.x - 40;
-			rating.y -= 60;
+			rating.y -= 50;
+			rating.x = coolText.x - 125;
 			rating.acceleration.y = 550;
 			rating.velocity.y -= FlxG.random.int(140, 175);
 			rating.velocity.x -= FlxG.random.int(0, 10);
 	
+			
 			var msTiming = truncateFloat(noteDiff, 3);
 
 			if (currentTimingShown != null)
@@ -2187,14 +2192,14 @@ class PlayState extends MusicBeatState
 			
 			var comboSpr:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'combo' + pixelShitPart2));
 			comboSpr.screenCenter();
-			comboSpr.x = coolText.x;
-			comboSpr.y += 200;
+			comboSpr.x = rating.x;
+			comboSpr.y = rating.y + 100;
 			comboSpr.acceleration.y = 600;
 			comboSpr.velocity.y -= 150;
 
 			currentTimingShown.screenCenter();
 			currentTimingShown.x = comboSpr.x + 100;
-			currentTimingShown.y += 245;
+			currentTimingShown.y = rating.y + 100;
 			currentTimingShown.acceleration.y = 600;
 			currentTimingShown.velocity.y -= 150;
 	
@@ -2219,6 +2224,10 @@ class PlayState extends MusicBeatState
 			comboSpr.updateHitbox();
 			rating.updateHitbox();
 	
+			currentTimingShown.cameras = [camHUD];
+			comboSpr.cameras = [camHUD];
+			rating.cameras = [camHUD];
+
 			var seperatedScore:Array<Int> = [];
 	
 			var comboSplit:Array<String> = (combo + "").split('');
@@ -2237,9 +2246,10 @@ class PlayState extends MusicBeatState
 			{
 				var numScore:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'num' + Std.int(i) + pixelShitPart2));
 				numScore.screenCenter();
-				numScore.x = coolText.x + (43 * daLoop) - 90;
-				numScore.y += 80 + 200;
-	
+				numScore.x = rating.x + (43 * daLoop) - 50;
+				numScore.y = rating.y + 100;
+				numScore.cameras = [camHUD];
+
 				if (!curStage.startsWith('school'))
 				{
 					numScore.antialiasing = true;
@@ -2280,6 +2290,8 @@ class PlayState extends MusicBeatState
 				startDelay: Conductor.crochet * 0.001,
 				onUpdate: function(tween:FlxTween)
 				{
+					if (currentTimingShown != null)
+						currentTimingShown.alpha -= 0.02;
 					timeShown++;
 				}
 			});
