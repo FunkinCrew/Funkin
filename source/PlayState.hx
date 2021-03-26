@@ -774,17 +774,12 @@ class PlayState extends MusicBeatState
 
 		if (FlxG.save.data.songPosition) // I dont wanna talk about this code :(
 			{
-				songPosBG = new FlxSprite(0, strumLine.y - 15).loadGraphic(Paths.image('healthBar'));
+				songPosBG = new FlxSprite(0, 10).loadGraphic(Paths.image('healthBar'));
 				if (FlxG.save.data.downscroll)
 					songPosBG.y = FlxG.height * 0.9 + 45; 
 				songPosBG.screenCenter(X);
 				songPosBG.scrollFactor.set();
 				add(songPosBG);
-	
-				if (curStage.contains("school") && FlxG.save.data.downscroll)
-					songPosBG.y -= 45;
-				if (!curStage.contains("school") && !FlxG.save.data.downscroll)
-					songPosBG.y -= 45;
 				
 				songPosBar = new FlxBar(songPosBG.x + 4, songPosBG.y + 4, LEFT_TO_RIGHT, Std.int(songPosBG.width - 8), Std.int(songPosBG.height - 8), this,
 					'songPositionBar', 0, 90000);
@@ -795,8 +790,6 @@ class PlayState extends MusicBeatState
 				var songName = new FlxText(songPosBG.x + (songPosBG.width / 2) - 20,songPosBG.y,0,SONG.song, 16);
 				if (FlxG.save.data.downscroll)
 					songName.y -= 3;
-				if (!curStage.contains("school"))
-					songName.x -= 15;
 				songName.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 				songName.scrollFactor.set();
 				add(songName);
@@ -818,12 +811,15 @@ class PlayState extends MusicBeatState
 		add(healthBar);
 
 		// Add Kade Engine watermark
-		var kadeEngineWatermark = new FlxText(FlxG.width * 0.03,FlxG.height * 0.94,0,SONG.song + " " + (storyDifficulty == 2 ? "Hard" : storyDifficulty == 1 ? "Normal" : "Easy") + " - KE " + MainMenuState.kadeEngineVer + " - " + (FlxG.save.data.etternaMode ? "E.Mode" : "FNF"), 16);
+		var kadeEngineWatermark = new FlxText(4,healthBarBG.y + 50,0,SONG.song + " " + (storyDifficulty == 2 ? "Hard" : storyDifficulty == 1 ? "Normal" : "Easy") + " - KE " + MainMenuState.kadeEngineVer + " - " + (FlxG.save.data.etternaMode ? "E.Mode" : "FNF"), 16);
 		kadeEngineWatermark.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 		kadeEngineWatermark.scrollFactor.set();
 		add(kadeEngineWatermark);
 
-		scoreTxt = new FlxText(healthBarBG.x + healthBarBG.width / 2 - 180, healthBarBG.y + 50, 0, "", 20);
+		if (FlxG.save.data.downscroll)
+			kadeEngineWatermark.y = FlxG.height * 0.9 + 45;
+
+		scoreTxt = new FlxText(FlxG.width / 2 - 235, healthBarBG.y + 50, 0, "", 20);
 		if (!FlxG.save.data.accuracyDisplay)
 			scoreTxt.x = healthBarBG.x + healthBarBG.width / 2;
 		scoreTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
@@ -1146,17 +1142,12 @@ class PlayState extends MusicBeatState
 				remove(songPosBar);
 				remove(songName);
 
-				songPosBG = new FlxSprite(0, strumLine.y - 15).loadGraphic(Paths.image('healthBar'));
+				songPosBG = new FlxSprite(0, 10).loadGraphic(Paths.image('healthBar'));
 				if (FlxG.save.data.downscroll)
 					songPosBG.y = FlxG.height * 0.9 + 45; 
-				if (!curStage.contains("school") && !FlxG.save.data.downscroll)
-					songPosBG.y -= 45;
 				songPosBG.screenCenter(X);
 				songPosBG.scrollFactor.set();
 				add(songPosBG);
-	
-				if (curStage.contains("school") && FlxG.save.data.downscroll)
-					songPosBG.y -= 45;
 
 				songPosBar = new FlxBar(songPosBG.x + 4, songPosBG.y + 4, LEFT_TO_RIGHT, Std.int(songPosBG.width - 8), Std.int(songPosBG.height - 8), this,
 					'songPositionBar', 0, 90000);
@@ -1167,8 +1158,6 @@ class PlayState extends MusicBeatState
 				var songName = new FlxText(songPosBG.x + (songPosBG.width / 2) - 20,songPosBG.y,0,SONG.song, 16);
 				if (FlxG.save.data.downscroll)
 					songName.y -= 3;
-				if (!curStage.contains("school"))
-					songName.x -= 15;
 				songName.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 				songName.scrollFactor.set();
 				add(songName);
@@ -1600,7 +1589,7 @@ class PlayState extends MusicBeatState
 
 		if (FlxG.save.data.accuracyDisplay)
 		{
-			scoreTxt.text = "Score:" + (FlxG.save.data.etternaMode ? etternaModeScore + " (" + songScore + ")" : "" + songScore) + " | Combo Breaks:" + misses + " | Accuracy:" + truncateFloat(accuracy, 2) + "% | " + generateRanking();
+			scoreTxt.text = "Score:" + (FlxG.save.data.etternaMode ? Math.max(0,etternaModeScore) + " (" + songScore + ")" : "" + songScore) + " | Combo Breaks:" + misses + " | Accuracy:" + truncateFloat(accuracy, 2) + "% | " + generateRanking();
 		}
 		else
 		{
@@ -2018,6 +2007,9 @@ class PlayState extends MusicBeatState
 
 	var endingSong:Bool = false;
 
+	var timeShown = 0;
+	var currentTimingShown:FlxText = null;
+
 	private function popUpScore(strumtime:Float):Void
 		{
 			var noteDiff:Float = Math.abs(strumtime - Conductor.songPosition);
@@ -2166,14 +2158,48 @@ class PlayState extends MusicBeatState
 			rating.velocity.y -= FlxG.random.int(140, 175);
 			rating.velocity.x -= FlxG.random.int(0, 10);
 	
+			var msTiming = truncateFloat(noteDiff, 3);
+
+			if (currentTimingShown != null)
+				remove(currentTimingShown);
+
+			currentTimingShown = new FlxText(0,0,0,"0ms");
+			timeShown = 0;
+			switch(daRating)
+			{
+				case 'shit' | 'bad':
+					currentTimingShown.color = FlxColor.RED;
+				case 'good':
+					currentTimingShown.color = FlxColor.GREEN;
+				case 'sick':
+					currentTimingShown.color = FlxColor.CYAN;
+			}
+			currentTimingShown.borderStyle = OUTLINE;
+			currentTimingShown.borderSize = 1;
+			currentTimingShown.borderColor = FlxColor.BLACK;
+			currentTimingShown.text = msTiming + "ms";
+			currentTimingShown.size = 20;
+
+			if (currentTimingShown.alpha != 1)
+				currentTimingShown.alpha = 1;
+
+			add(currentTimingShown);
+			
 			var comboSpr:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'combo' + pixelShitPart2));
 			comboSpr.screenCenter();
 			comboSpr.x = coolText.x;
 			comboSpr.y += 200;
 			comboSpr.acceleration.y = 600;
 			comboSpr.velocity.y -= 150;
+
+			currentTimingShown.screenCenter();
+			currentTimingShown.x = comboSpr.x + 100;
+			currentTimingShown.y += 245;
+			currentTimingShown.acceleration.y = 600;
+			currentTimingShown.velocity.y -= 150;
 	
 			comboSpr.velocity.x += FlxG.random.int(1, 10);
+			currentTimingShown.velocity.x += comboSpr.velocity.x;
 			add(rating);
 	
 			if (!curStage.startsWith('school'))
@@ -2189,6 +2215,7 @@ class PlayState extends MusicBeatState
 				comboSpr.setGraphicSize(Std.int(comboSpr.width * daPixelZoom * 0.7));
 			}
 	
+			currentTimingShown.updateHitbox();
 			comboSpr.updateHitbox();
 			rating.updateHitbox();
 	
@@ -2250,15 +2277,23 @@ class PlayState extends MusicBeatState
 			// add(coolText);
 	
 			FlxTween.tween(rating, {alpha: 0}, 0.2, {
-				startDelay: Conductor.crochet * 0.001
+				startDelay: Conductor.crochet * 0.001,
+				onUpdate: function(tween:FlxTween)
+				{
+					timeShown++;
+				}
 			});
-	
+
 			FlxTween.tween(comboSpr, {alpha: 0}, 0.2, {
 				onComplete: function(tween:FlxTween)
 				{
 					coolText.destroy();
 					comboSpr.destroy();
-	
+					if (currentTimingShown != null && timeShown >= 20)
+					{
+						remove(currentTimingShown);
+						currentTimingShown = null;
+					}
 					rating.destroy();
 				},
 				startDelay: Conductor.crochet * 0.001
