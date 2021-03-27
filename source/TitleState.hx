@@ -66,7 +66,7 @@ class TitleState extends MusicBeatState
 		PlayerSettings.init();
 		Highscore.load();
 
-		#if ng
+		#if newgrounds
 		NGio.init();
 		#end
 
@@ -300,7 +300,7 @@ class TitleState extends MusicBeatState
 			transitioning = true;
 			// FlxG.sound.music.stop();
 
-			#if ng
+			#if newgrounds
 			if (!OutdatedSubState.leftState)
 			{
 				NGio.checkVersion(function(version)
