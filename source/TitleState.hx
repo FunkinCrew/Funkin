@@ -17,6 +17,7 @@ import flixel.util.FlxTimer;
 import lime.app.Application;
 import openfl.Assets;
 import shaderslmfao.ColorSwap;
+import ui.PreferencesMenu;
 
 using StringTools;
 
@@ -58,6 +59,8 @@ class TitleState extends MusicBeatState
 		// DEBUG BULLSHIT
 
 		super.create();
+
+		PreferencesMenu.initPrefs();
 
 		FlxG.save.bind('funkin', 'ninjamuffin99');
 		PlayerSettings.init();
