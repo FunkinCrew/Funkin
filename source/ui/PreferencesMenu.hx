@@ -13,7 +13,7 @@ class PreferencesMenu extends ui.OptionsState.Page
 
 	var items:TextMenuList;
 
-	var checkboxes:Array<Dynamic> = [];
+	var checkboxes:Array<CheckboxThingie> = [];
 
 	public function new()
 	{
@@ -69,7 +69,8 @@ class PreferencesMenu extends ui.OptionsState.Page
 
 	function createCheckbox(prefString:String)
 	{
-		var checkbox:CheckboxThingie = new CheckboxThingie(0, 100 * items.length, preferences.get(prefString));
+		var checkbox:CheckboxThingie = new CheckboxThingie(0, 100 * (items.length - 1), preferences.get(prefString));
+		checkboxes.push(checkbox);
 		add(checkbox);
 	}
 
@@ -81,6 +82,7 @@ class PreferencesMenu extends ui.OptionsState.Page
 		var daSwap:Bool = preferences.get(prefName);
 		daSwap = !daSwap;
 		preferences.set(prefName, daSwap);
+		checkboxes[items.selectedIndex].daValue = daSwap;
 		trace('toggled? ' + preferences.get(prefName));
 	}
 
@@ -113,6 +115,11 @@ class CheckboxThingie extends FlxSprite
 
 		this.daValue = daValue;
 		makeGraphic(50, 50, FlxColor.WHITE);
+	}
+
+	override function update(elapsed:Float)
+	{
+		super.update(elapsed);
 	}
 
 	function set_daValue(value:Bool):Bool
