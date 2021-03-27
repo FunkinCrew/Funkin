@@ -1,8 +1,6 @@
 package;
 
 import NGio;
-
-import flixel.ui.FlxButton;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
@@ -14,25 +12,25 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
+import flixel.ui.FlxButton;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import lime.app.Application;
+import ui.AtlasMenuList;
+import ui.MenuList;
+import ui.OptionsState;
+import ui.PreferencesMenu;
+import ui.Prompt;
+
+using StringTools;
 
 #if desktop
 import Discord.DiscordClient;
 #end
-
 #if newgrounds
 import io.newgrounds.NG;
 import ui.NgPrompt;
 #end
-
-import ui.AtlasMenuList;
-import ui.MenuList;
-import ui.OptionsState;
-import ui.Prompt;
-
-using StringTools;
 
 class MainMenuState extends MusicBeatState
 {
@@ -80,7 +78,8 @@ class MainMenuState extends MusicBeatState
 		magenta.visible = false;
 		magenta.antialiasing = true;
 		magenta.color = 0xFFfd719b;
-		add(magenta);
+		if (PreferencesMenu.preferences.get('flashing-menu'))
+			add(magenta);
 		// magenta.scrollFactor.set();
 
 		menuItems = new MainMenuList();
@@ -90,25 +89,23 @@ class MainMenuState extends MusicBeatState
 		{
 			FlxFlicker.flicker(magenta, 1.1, 0.15, false, true);
 		});
-		
-		
-		
-		menuItems.enabled = false;// disable for intro
-		menuItems.createItem('story mode', function () startExitState(new StoryMenuState()));
-		menuItems.createItem('freeplay', function () startExitState(new FreeplayState()));
+
+		menuItems.enabled = false; // disable for intro
+		menuItems.createItem('story mode', function() startExitState(new StoryMenuState()));
+		menuItems.createItem('freeplay', function() startExitState(new FreeplayState()));
 		// addMenuItem('options', function () startExitState(new OptionMenu()));
 		#if CAN_OPEN_LINKS
-			var hasPopupBlocker = #if web true #else false #end;
-			menuItems.createItem('donate', selectDonate, hasPopupBlocker);
+		var hasPopupBlocker = #if web true #else false #end;
+		menuItems.createItem('donate', selectDonate, hasPopupBlocker);
 		#end
-		menuItems.createItem('options', function () startExitState(new OptionsState()));
+		menuItems.createItem('options', function() startExitState(new OptionsState()));
 		// #if newgrounds
 		// 	if (NGio.isLoggedIn)
 		// 		menuItems.createItem("logout", selectLogout);
 		// 	else
 		// 		menuItems.createItem("login", selectLogin);
 		// #end
-		
+
 		// center vertically
 		var spacing = 160;
 		var top = (FlxG.height - (spacing * (menuItems.length - 1))) / 2;
@@ -131,24 +128,24 @@ class MainMenuState extends MusicBeatState
 
 		super.create();
 	}
-	
+
 	override function finishTransIn()
 	{
 		super.finishTransIn();
-		
+
 		menuItems.enabled = true;
-		
+
 		// #if newgrounds
 		// if (NGio.savedSessionFailed)
 		// 	showSavedSessionFailed();
 		// #end
 	}
-	
+
 	function onMenuItemChange(selected:MenuItem)
 	{
 		camFollow.setPosition(selected.getGraphicMidpoint().x, selected.getGraphicMidpoint().y);
 	}
-	
+
 	#if CAN_OPEN_LINKS
 	function selectDonate()
 	{
@@ -159,23 +156,23 @@ class MainMenuState extends MusicBeatState
 		#end
 	}
 	#end
-	
+
 	#if newgrounds
 	function selectLogin()
 	{
 		openNgPrompt(NgPrompt.showLogin());
 	}
-	
+
 	function selectLogout()
 	{
 		openNgPrompt(NgPrompt.showLogout());
 	}
-	
+
 	function showSavedSessionFailed()
 	{
 		openNgPrompt(NgPrompt.showSavedSessionFailed());
 	}
-	
+
 	/**
 	 * Calls openPrompt and redraws the login/logout button
 	 * @param prompt 
@@ -186,16 +183,16 @@ class MainMenuState extends MusicBeatState
 		var onPromptClose = checkLoginStatus;
 		if (onClose != null)
 		{
-			onPromptClose = function ()
+			onPromptClose = function()
 			{
 				checkLoginStatus();
 				onClose();
 			}
 		}
-		
+
 		openPrompt(prompt, onPromptClose);
 	}
-	
+
 	function checkLoginStatus()
 	{
 		var prevLoggedIn = menuItems.has("logout");
@@ -205,20 +202,20 @@ class MainMenuState extends MusicBeatState
 			menuItems.resetItem("logout", "login", selectLogin);
 	}
 	#end
-	
+
 	public function openPrompt(prompt:Prompt, onClose:Void->Void)
 	{
 		menuItems.enabled = false;
-		prompt.closeCallback = function ()
+		prompt.closeCallback = function()
 		{
 			menuItems.enabled = true;
 			if (onClose != null)
 				onClose();
 		}
-		
+
 		openSubState(prompt);
 	}
-	
+
 	function startExitState(state:FlxState)
 	{
 		var duration = 0.4;
@@ -226,14 +223,14 @@ class MainMenuState extends MusicBeatState
 		{
 			if (menuItems.selectedIndex != item.ID)
 			{
-				FlxTween.tween(item, {alpha: 0}, duration, { ease: FlxEase.quadOut });
+				FlxTween.tween(item, {alpha: 0}, duration, {ease: FlxEase.quadOut});
 			}
 			else
 			{
 				item.visible = false;
 			}
 		});
-		
+
 		new FlxTimer().start(duration, function(_) FlxG.switchState(state));
 	}
 
@@ -254,29 +251,29 @@ class MainMenuState extends MusicBeatState
 private class MainMenuList extends MenuTypedList<MainMenuItem>
 {
 	public var atlas:FlxAtlasFrames;
-	
-	public function new ()
+
+	public function new()
 	{
 		atlas = Paths.getSparrowAtlas('main_menu');
 		super(Vertical);
-		
 	}
-	
+
 	public function createItem(x = 0.0, y = 0.0, name:String, callback, fireInstantly = false)
 	{
 		var item = new MainMenuItem(x, y, name, atlas, callback);
 		item.fireInstantly = fireInstantly;
 		item.ID = length;
-		
+
 		return addItem(name, item);
 	}
-	
+
 	override function destroy()
 	{
 		super.destroy();
 		atlas = null;
 	}
 }
+
 private class MainMenuItem extends AtlasMenuItem
 {
 	public function new(x = 0.0, y = 0.0, name, atlas, callback)
@@ -284,7 +281,7 @@ private class MainMenuItem extends AtlasMenuItem
 		super(x, y, name, atlas, callback);
 		scrollFactor.set();
 	}
-	
+
 	override function changeAnim(anim:String)
 	{
 		super.changeAnim(anim);
