@@ -1163,9 +1163,7 @@ class PlayState extends MusicBeatState
 				{
 					swagNote.x += FlxG.width / 2; // general offset
 				}
-				else
-				{
-				}
+				else {}
 			}
 			daBeats += 1;
 		}
