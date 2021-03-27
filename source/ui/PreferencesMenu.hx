@@ -23,6 +23,12 @@ class PreferencesMenu extends ui.OptionsState.Page
 		createPrefItem('naughtyness', 'censor-naughty', false);
 		createPrefItem('downscroll', 'downscroll', false);
 		createPrefItem('flashing menu', 'flashing-menu', true);
+		createPrefItem('Camera Zooming on Beat', 'camera-zoom', true);
+	}
+
+	public static function getPref(pref:String):Dynamic
+	{
+		return preferences.get(pref);
 	}
 
 	public static function initPrefs():Void
@@ -30,6 +36,7 @@ class PreferencesMenu extends ui.OptionsState.Page
 		preferenceCheck('censor-naughty', false);
 		preferenceCheck('downscroll', false);
 		preferenceCheck('flashing-menu', true);
+		preferenceCheck('camera-zoom', true);
 	}
 
 	private function createPrefItem(prefName:String, prefString:String, prefValue:Dynamic):Void
