@@ -120,7 +120,7 @@ class PlayState extends MusicBeatState
 	var conductorPosTxt:FlxText;
 
 	// small things: debug switch
-	var smallThingsDebug:Bool = true;
+	var smallThingsDebug:Bool = false;
 
 	// small things: do icon check
 	var doIconCheck:Bool = true;
@@ -1593,19 +1593,22 @@ class PlayState extends MusicBeatState
 		// small things: start thorns icon on unknown
 		if (curSong == 'Thorns')
 		{
-			if (doIconCheck == true) {
-				if (Conductor.songPosition <= 0) {
-					iconP2.animation.play('unknown');
-				} else {
-					iconP2.animation.play(SONG.player2);
-					doIconCheck = false;
+			if (isStoryMode == true) {
+				if (doIconCheck == true) {
+					if (Conductor.songPosition <= 0) {
+						iconP2.animation.play('unknown');
+					} else {
+						iconP2.animation.play(SONG.player2);
+						doIconCheck = false;
+					}
 				}
 			}
 		}
 
 		// small things: start winter horrorland icon on unknown
 		if (curSong == 'Winter-Horrorland')
-			{
+		{
+			if (isStoryMode == true) {
 				if (doIconCheck == true) {
 					if (Conductor.songPosition <= 9200) {
 						iconP2.animation.play('unknown');
@@ -1615,6 +1618,7 @@ class PlayState extends MusicBeatState
 					}
 				}
 			}
+		}
 
 		// RESET = Quick Game Over Screen
 		if (controls.RESET)
