@@ -116,6 +116,12 @@ class PlayState extends MusicBeatState
 	var songScore:Int = 0;
 	var scoreTxt:FlxText;
 
+	// small things: debug conductor pos score
+	var conductorPosTxt:FlxText;
+
+	// small things: debug switch
+	var smallThingsDebug:Bool = true;
+
 	public static var campaignScore:Int = 0;
 
 	var defaultCamZoom:Float = 1.05;
@@ -735,6 +741,15 @@ class PlayState extends MusicBeatState
 		scoreTxt.scrollFactor.set();
 		add(scoreTxt);
 
+		// small things: debug conductor pos text
+		conductorPosTxt = new FlxText(10, 10, "", 20);
+		conductorPosTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT);
+		conductorPosTxt.scrollFactor.set();
+
+		if (smallThingsDebug == true) {
+			add(conductorPosTxt);
+		}
+
 		iconP1 = new HealthIcon(SONG.player1, true);
 		iconP1.y = healthBar.y - (iconP1.height / 2);
 		add(iconP1);
@@ -750,6 +765,7 @@ class PlayState extends MusicBeatState
 		iconP1.cameras = [camHUD];
 		iconP2.cameras = [camHUD];
 		scoreTxt.cameras = [camHUD];
+		conductorPosTxt.cameras = [camHUD];
 		doof.cameras = [camHUD];
 
 		// if (SONG.song == 'South')
@@ -1343,6 +1359,15 @@ class PlayState extends MusicBeatState
 				iconP1.animation.play('bf-old');
 		}
 
+		// small things: unknown character debug
+		if (FlxG.keys.justPressed.EIGHT)
+		{
+			if (iconP1.animation.curAnim.name == 'unknown')
+				iconP1.animation.play(SONG.player1);
+			else
+				iconP1.animation.play('unknown');
+		}
+
 		switch (curStage)
 		{
 			case 'philly':
@@ -1362,6 +1387,11 @@ class PlayState extends MusicBeatState
 		super.update(elapsed);
 
 		scoreTxt.text = "Score:" + songScore;
+
+		// small things: conductor pos debug text
+		if (smallThingsDebug == true) {
+			conductorPosTxt.text = "Conductor Pos: " + Conductor.songPosition;
+		}
 
 		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause)
 		{
