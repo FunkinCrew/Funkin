@@ -122,6 +122,9 @@ class PlayState extends MusicBeatState
 	// small things: debug switch
 	var smallThingsDebug:Bool = true;
 
+	// small things: do icon check
+	var doIconCheck:Bool = true;
+
 	public static var campaignScore:Int = 0;
 
 	var defaultCamZoom:Float = 1.05;
@@ -1586,6 +1589,32 @@ class PlayState extends MusicBeatState
 			}
 		}
 		// better streaming of shit
+
+		// small things: start thorns icon on unknown
+		if (curSong == 'Thorns')
+		{
+			if (doIconCheck == true) {
+				if (Conductor.songPosition <= 0) {
+					iconP2.animation.play('unknown');
+				} else {
+					iconP2.animation.play(SONG.player2);
+					doIconCheck = false;
+				}
+			}
+		}
+
+		// small things: start winter horrorland icon on unknown
+		if (curSong == 'Winter-Horrorland')
+			{
+				if (doIconCheck == true) {
+					if (Conductor.songPosition <= 9200) {
+						iconP2.animation.play('unknown');
+					} else {
+						iconP2.animation.play(SONG.player2);
+						doIconCheck = false;
+					}
+				}
+			}
 
 		// RESET = Quick Game Over Screen
 		if (controls.RESET)
