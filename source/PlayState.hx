@@ -43,6 +43,8 @@ import flixel.ui.FlxVirtualPad;
 import flixel.util.FlxSave;
 import flixel.math.FlxPoint;
 
+import ui.Hitbox;
+
 using StringTools;
 
 class PlayState extends MusicBeatState
@@ -131,8 +133,10 @@ class PlayState extends MusicBeatState
 
 	var _saveconrtol:FlxSave;
 
+	var _hb:Hitbox;
 
-	var hixboxisenabled:Bool = false;
+
+	var hitboxisenabled:Bool = false;
 	
 	var keyboardisenabled:Bool = false;
 
@@ -707,7 +711,7 @@ class PlayState extends MusicBeatState
 		}else{
 			controlmode = _saveconrtol.data.buttonsmode[0];
 		}
-
+//controlmode
 		switch controlmode{
 			case 1: //left default
 				_pad = new FlxVirtualPad(FULL, NONE);
@@ -722,6 +726,11 @@ class PlayState extends MusicBeatState
 				this.add(_pad);
 				_pad.cameras = [camHUD];
 				loadcustom();
+			case 4:
+				_hb = new Hitbox(0, 0);
+				_hb.cameras = [camHUD];
+				hitboxisenabled = true;
+				add(_hb);
 			default: //default (0)
 				_pad = new FlxVirtualPad(RIGHT_FULL, NONE);
 				_pad.alpha = 0.75;
@@ -1911,7 +1920,7 @@ class PlayState extends MusicBeatState
 	private function keyShit():Void
 	{
 		// HOLDING
-		if(!keyboardisenabled && !hixboxisenabled){
+		if(!keyboardisenabled && !hitboxisenabled){
 			up = _pad.buttonUp.pressed;
 			right = _pad.buttonRight.pressed;
 			down = _pad.buttonDown.pressed;
@@ -1943,6 +1952,23 @@ class PlayState extends MusicBeatState
 			rightR = controls.RIGHT_R;
 			downR = controls.DOWN_R;
 			leftR = controls.LEFT_R;
+		}
+
+		if (hitboxisenabled){
+			up = _hb.up.pressed;
+			right = _hb.right.pressed;
+			down = _hb.down.pressed;
+			left = _hb.left.pressed;
+
+			upP = _hb.up.justPressed;
+			rightP = _hb.right.justPressed;
+			downP = _hb.down.justPressed;
+			leftP = _hb.left.justPressed;
+
+			upR = _hb.up.justReleased;
+			rightR = _hb.right.justReleased;
+			downR = _hb.down.justReleased;
+			leftR = _hb.left.justReleased;
 		}
 
 		var controlArray:Array<Bool> = [leftP, downP, upP, rightP];
@@ -2164,6 +2190,10 @@ class PlayState extends MusicBeatState
 	{
 		// just double pasting this shit cuz fuk u
 		// REDO THIS SYSTEM!
+
+		// i think there no needed check buttons
+
+
 		if (keyboardisenabled){
 			upP = controls.UP_P;
 			rightP = controls.RIGHT_P;
@@ -2171,7 +2201,14 @@ class PlayState extends MusicBeatState
 			leftP = controls.LEFT_P;
 		}
 
-		if (!keyboardisenabled && !hixboxisenabled){
+		if (hitboxisenabled){
+			upP = _hb.up.justPressed;
+			rightP = _hb.right.justPressed;
+			downP = _hb.down.justPressed;
+			leftP = _hb.left.justPressed;
+		}
+
+		if (!keyboardisenabled && !hitboxisenabled){
 			upP = _pad.buttonUp.justPressed;
 			rightP = _pad.buttonRight.justPressed;
 			downP = _pad.buttonDown.justPressed;
