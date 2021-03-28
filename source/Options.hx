@@ -48,7 +48,7 @@ class DFJKOption extends Option
 
 	private override function updateDisplay():String
 	{
-		return  FlxG.save.data.dfjk ? 'DFJK' : 'WASD';
+		return  FlxG.save.data.dfjk ? "DFJK" : "WASD";
 	}
 }
 
@@ -78,7 +78,7 @@ class DownscrollOption extends Option
 
 	private override function updateDisplay():String
 	{
-		return FlxG.save.data.downscroll ? 'Downscroll' : 'Upscroll';
+		return FlxG.save.data.downscroll ? "Downscroll" : "Upscroll";
 	}
 }
 
@@ -147,7 +147,7 @@ class ReplayOption extends Option
 {
 	public override function press():Bool
 	{
-		trace('switch');
+		trace("switch");
 		FlxG.switchState(new LoadReplayState());
 		return false;
 	}
