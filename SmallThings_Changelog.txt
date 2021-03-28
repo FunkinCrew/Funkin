@@ -1,2 +1,3 @@
 + Added an unknown character icon for use before Winter Horrorland and Thorns
 + Added danger icons for Daddy Dearest and The Parents
++ Added skip song option to Story Mode (Thanks Rozebud!)

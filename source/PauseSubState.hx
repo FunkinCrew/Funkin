@@ -26,6 +26,13 @@ class PauseSubState extends MusicBeatSubstate
 	{
 		super();
 
+		// small things: skip song
+		if (PlayState.isStoryMode) {
+			if (PlayState.storyPlaylist.length != 1) {
+				menuItems = ['Resume', 'Restart Song', 'Skip Song', 'Exit to menu'];
+			}
+		}
+
 		pauseMusic = new FlxSound().loadEmbedded(Paths.music('breakfast'), true, true);
 		pauseMusic.volume = 0;
 		pauseMusic.play(false, FlxG.random.int(0, Std.int(pauseMusic.length / 2)));
@@ -107,6 +114,26 @@ class PauseSubState extends MusicBeatSubstate
 					close();
 				case "Restart Song":
 					FlxG.resetState();
+				case "Skip Song":
+					// small things: skip song
+					PlayState.storyPlaylist.remove(PlayState.storyPlaylist[0]);
+
+					var difficulty:String = "";
+
+					if (PlayState.storyDifficulty == 0) {
+						difficulty = '-easy';
+					}
+
+					if (PlayState.storyDifficulty == 2) {
+						difficulty = '-hard';
+					}
+
+					trace('LOADING NEXT SONG');
+					trace(PlayState.storyPlaylist[0].toLowerCase() + difficulty);
+
+					PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + difficulty, PlayState.storyPlaylist[0]);
+					FlxG.sound.music.stop();
+					FlxG.switchState(new PlayState());
 				case "Exit to menu":
 					FlxG.switchState(new MainMenuState());
 			}
