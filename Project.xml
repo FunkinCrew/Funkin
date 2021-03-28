@@ -75,26 +75,26 @@
 		<library name="week7"    preload="false" />
 	</section>
 	
-	<assets path="assets/songs"    library="songs"    exclude="*.ogg" if="web"/>
-	<assets path="assets/songs"    library="songs"    exclude="*.mp3" unless="web"/>
-	<assets path="assets/shared"   library="shared"   exclude="*.ogg" if="web"/>
-	<assets path="assets/shared"   library="shared"   exclude="*.mp3" unless="web"/>
-	<assets path="assets/tutorial" library="tutorial" exclude="*.ogg" if="web"/>
-	<assets path="assets/tutorial" library="tutorial" exclude="*.mp3" unless="web"/>
-	<assets path="assets/week1"    library="week1"    exclude="*.ogg" if="web"/>
-	<assets path="assets/week1"    library="week1"    exclude="*.mp3" unless="web"/>
-	<assets path="assets/week2"    library="week2"    exclude="*.ogg" if="web"/>
-	<assets path="assets/week2"    library="week2"    exclude="*.mp3" unless="web"/>
-	<assets path="assets/week3"    library="week3"    exclude="*.ogg" if="web"/>
-	<assets path="assets/week3"    library="week3"    exclude="*.mp3" unless="web"/>
-	<assets path="assets/week4"    library="week4"    exclude="*.ogg" if="web"/>
-	<assets path="assets/week4"    library="week4"    exclude="*.mp3" unless="web"/>
-	<assets path="assets/week5"    library="week5"    exclude="*.ogg" if="web"/>
-	<assets path="assets/week5"    library="week5"    exclude="*.mp3" unless="web"/>
-	<assets path="assets/week6"    library="week6"    exclude="*.ogg" if="web"/>
-	<assets path="assets/week6"    library="week6"    exclude="*.mp3" unless="web"/>
-	<assets path="assets/week7"    library="week7"    exclude="*.ogg" if="web"/>
-	<assets path="assets/week7"    library="week7"    exclude="*.mp3" unless="web"/>
+	<assets path="assets/songs"    library="songs"    exclude="*.fla|*.ogg" if="web"/>
+	<assets path="assets/songs"    library="songs"    exclude="*.fla|*.mp3" unless="web"/>
+	<assets path="assets/shared"   library="shared"   exclude="*.fla|*.ogg" if="web"/>
+	<assets path="assets/shared"   library="shared"   exclude="*.fla|*.mp3" unless="web"/>
+	<assets path="assets/tutorial" library="tutorial" exclude="*.fla|*.ogg" if="web"/>
+	<assets path="assets/tutorial" library="tutorial" exclude="*.fla|*.mp3" unless="web"/>
+	<assets path="assets/week1"    library="week1"    exclude="*.fla|*.ogg" if="web"/>
+	<assets path="assets/week1"    library="week1"    exclude="*.fla|*.mp3" unless="web"/>
+	<assets path="assets/week2"    library="week2"    exclude="*.fla|*.ogg" if="web"/>
+	<assets path="assets/week2"    library="week2"    exclude="*.fla|*.mp3" unless="web"/>
+	<assets path="assets/week3"    library="week3"    exclude="*.fla|*.ogg" if="web"/>
+	<assets path="assets/week3"    library="week3"    exclude="*.fla|*.mp3" unless="web"/>
+	<assets path="assets/week4"    library="week4"    exclude="*.fla|*.ogg" if="web"/>
+	<assets path="assets/week4"    library="week4"    exclude="*.fla|*.mp3" unless="web"/>
+	<assets path="assets/week5"    library="week5"    exclude="*.fla|*.ogg" if="web"/>
+	<assets path="assets/week5"    library="week5"    exclude="*.fla|*.mp3" unless="web"/>
+	<assets path="assets/week6"    library="week6"    exclude="*.fla|*.ogg" if="web"/>
+	<assets path="assets/week6"    library="week6"    exclude="*.fla|*.mp3" unless="web"/>
+	<assets path="assets/week7"    library="week7"    exclude="*.fla|*.ogg" if="web"/>
+	<assets path="assets/week7"    library="week7"    exclude="*.fla|*.mp3" unless="web"/>
 	
 	<!-- <assets path='example_mods' rename='mods' embed='false'/> -->
 
@@ -122,9 +122,10 @@
 
 	<!--In case you want to use the ui package-->
 	<haxelib name="flixel-ui" />
-	<haxelib name="newgrounds"/>
+	<haxelib name="newgrounds" unless="switch"/>
 	<haxelib name="faxe" if='switch'/>
 	<haxelib name="polymod"/>
+	<haxelib name="hxcpp-debug-server" if="desktop debug"/>
 	<haxelib name="discord_rpc" if="desktop"/>
 	<!-- <haxelib name="hxcpp-debug-server" if="desktop"/> -->
 
@@ -177,6 +178,21 @@
 
 
 	<!-- <haxedef name="SKIP_TO_PLAYSTATE" if="debug" /> -->
-	<haxedef name="NG_LOGIN" if="newgrounds" />
+	
+	<haxedef name="CAN_OPEN_LINKS" unless="switch"/>
+	<haxedef name="CAN_CHEAT" if="switch debug"/>
+	
+	<!-- <haxedef name="CLEAR_INPUT_SAVE"/> -->
+	
+	<section if="newgrounds">
+		<!-- Enables Ng.core.verbose -->
+		<!-- <haxedef name="NG_VERBOSE" /> -->
+		
+		<!-- Enables a NG debug session, so medals don't permently unlock -->
+		<!-- <haxedef name="NG_DEBUG" /> -->
+		
+		<!-- pretends that the saved session Id was expired, forcing the reconnect prompt -->
+		<!-- <haxedef name="NG_FORCE_EXPIRED_SESSION" if="debug" /> -->
+	</section>
 	
 </project>

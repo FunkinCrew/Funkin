@@ -1,16 +1,15 @@
-package;
+package ui;
 
-import Controls.Control;
 import flixel.FlxG;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
+#if cpp
 import polymod.Polymod;
-#if desktop
 import sys.FileSystem;
 #end
 
-class ModdingSubstate extends MusicBeatSubstate
+class ModMenu extends ui.OptionsState.Page
 {
 	var grpMods:FlxTypedGroup<ModMenuItem>;
 	var enabledMods:Array<String> = [];
@@ -35,9 +34,9 @@ class ModdingSubstate extends MusicBeatSubstate
 
 		selections();
 
-		if (controls.UP_P)
+		if (controls.UI_UP_P)
 			selections(-1);
-		if (controls.DOWN_P)
+		if (controls.UI_DOWN_P)
 			selections(1);
 
 		if (FlxG.keys.justPressed.SPACE)
