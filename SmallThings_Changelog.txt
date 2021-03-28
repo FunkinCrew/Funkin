@@ -1,3 +1,7 @@
+=== 0.0.2 ===
+- Hid the options menu, as it's incomplete as of now
+- Player 2 on Winter Horrorland now starts invisible in Story Mode so not to reveal part of it during the camera pan down.
+
 === 0.0.1 ===
 + Added an unknown character icon for use before Winter Horrorland and Thorns
 + Added danger icons for Daddy Dearest and The Parents

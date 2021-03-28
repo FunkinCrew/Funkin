@@ -22,7 +22,7 @@ using StringTools;
 class MainMenuState extends MusicBeatState
 {
 	// small things: version
-	var smallThingsVersion:String = "0.0.1";
+	var smallThingsVersion:String = "0.0.2";
 
 	var curSelected:Int = 0;
 
@@ -39,6 +39,11 @@ class MainMenuState extends MusicBeatState
 
 	override function create()
 	{
+		// small things: hide options menu
+		if (Options.st_hideOptionsMenu == true) {
+			optionShit = ['story mode', 'freeplay', 'donate'];
+		}
+
 		#if desktop
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("In the Menus", null);

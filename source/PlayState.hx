@@ -125,6 +125,9 @@ class PlayState extends MusicBeatState
 	// small things: do icon check
 	var doIconCheck:Bool = true;
 
+	// small things: do p2 check
+	var doP2Check:Bool = true;
+
 	public static var campaignScore:Int = 0;
 
 	var defaultCamZoom:Float = 1.05;
@@ -1594,27 +1597,42 @@ class PlayState extends MusicBeatState
 		if (curSong == 'Thorns')
 		{
 			if (isStoryMode == true) {
-				if (doIconCheck == true) {
-					if (Conductor.songPosition <= 0) {
-						iconP2.animation.play('unknown');
-					} else {
-						iconP2.animation.play(SONG.player2);
-						doIconCheck = false;
+				if (Options.st_unknownIcons == true) {
+					if (doIconCheck == true) {
+						if (Conductor.songPosition <= 0) {
+							iconP2.animation.play('unknown');
+						} else {
+							iconP2.animation.play(SONG.player2);
+							doIconCheck = false;
+						}
 					}
 				}
 			}
 		}
 
-		// small things: start winter horrorland icon on unknown
+		// small things: do winter horrorland stuff
 		if (curSong == 'Winter-Horrorland')
 		{
 			if (isStoryMode == true) {
-				if (doIconCheck == true) {
-					if (Conductor.songPosition <= 9200) {
-						iconP2.animation.play('unknown');
-					} else {
-						iconP2.animation.play(SONG.player2);
-						doIconCheck = false;
+				if (Options.st_unknownIcons == true) {
+					if (doIconCheck == true) {
+						if (Conductor.songPosition <= 9200) {
+							iconP2.animation.play('unknown');
+						} else {
+							iconP2.animation.play(SONG.player2);
+							doIconCheck = false;
+						}
+					}
+				}
+
+				if (Options.st_startWinterHorrorlandP2Invis == true) {
+					if (doP2Check == true) {
+						if (Conductor.songPosition <= 6000) {
+							dad.visible = false;
+						} else {
+							dad.visible = true;
+							doP2Check = false;
+						}
 					}
 				}
 			}
