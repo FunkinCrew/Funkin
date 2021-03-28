@@ -538,8 +538,17 @@ class PlayState extends MusicBeatState
 				add(waveSpriteFG);
 			 */
 		}
-		else
+		else if(SONG.song.toLowerCase() == 'songone')
 		{
+			defaultCamZoom = 0.9;
+			curStage = 'forest';
+			var bg:FlxSprite = new FlxSprite(0, 0).loadGraphic(Paths.image('forest/bg'));
+			bg.antialiasing = true;
+			bg.scrollFactor.set(0.9, 0.9);
+			bg.active = false;
+			add(bg);
+
+		} else {
 			defaultCamZoom = 0.9;
 			curStage = 'stage';
 			var bg:FlxSprite = new FlxSprite(-600, -200).loadGraphic(Paths.image('stageback'));
@@ -1730,7 +1739,7 @@ class PlayState extends MusicBeatState
 
 				if (SONG.validScore)
 				{
-					NGio.unlockMedal(60961);
+					//NGio.unlockMedal(60961);
 					Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficulty);
 				}
 

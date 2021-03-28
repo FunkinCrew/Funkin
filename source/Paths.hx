@@ -23,6 +23,7 @@ class Paths
 
 		if (currentLevel != null)
 		{
+
 			var levelPath = getLibraryPathForce(file, currentLevel);
 			if (OpenFlAssets.exists(levelPath, type))
 				return levelPath;

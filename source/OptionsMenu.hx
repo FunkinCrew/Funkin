@@ -100,7 +100,7 @@ class OptionsMenu extends MusicBeatState
 	function changeSelection(change:Int = 0)
 	{
 		#if !switch
-		NGio.logEvent('Fresh');
+		//NGio.logEvent('Fresh');
 		#end
 
 		FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
