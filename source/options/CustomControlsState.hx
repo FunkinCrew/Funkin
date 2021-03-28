@@ -16,12 +16,14 @@ import flixel.util.FlxColor;
 import flixel.ui.FlxVirtualPad;
 import flixel.util.FlxSave;
 import flixel.math.FlxPoint;
-
+import ui.Hitbox;
 
 class CustomControlsState extends MusicBeatSubstate
 {
 
 	var _pad:FlxVirtualPad;
+	var _hb:Hitbox;
+
 	var _saveconrtol:FlxSave;
 
 	var exitbutton:FlxUIButton;
@@ -36,7 +38,7 @@ class CustomControlsState extends MusicBeatSubstate
 	var leftArrow:FlxSprite;
 	var rightArrow:FlxSprite;
 							//'hitbox',
-	var controlitems:Array<String> = ['right control', 'left control','keyboard','custom'];
+	var controlitems:Array<String> = ['right control', 'left control','keyboard','custom', 'hitbox'];
 
 	var curSelected:Int = 0;
 
@@ -111,6 +113,11 @@ class CustomControlsState extends MusicBeatSubstate
 		left_text = new FlxText(200, 300, 0,"Button left x:" + _pad.buttonLeft.x +" y:" + _pad.buttonLeft.y, 24);
 		right_text = new FlxText(200, 350, 0,"Button right x:" + _pad.buttonRight.x +" y:" + _pad.buttonRight.y, 24);
 		
+		//hitboxes
+
+		_hb = new Hitbox(0, 0);
+		_hb.visible = false;
+
 		// add bg
 		add(bg);
 
@@ -120,6 +127,10 @@ class CustomControlsState extends MusicBeatSubstate
 
 		// add virtualpad
 		this.add(_pad);
+
+		//add hb
+		add(_hb);
+
 
 		// add arrows and text
 		add(inputvari);
@@ -186,6 +197,8 @@ class CustomControlsState extends MusicBeatSubstate
 					
 					return;
 				}
+			
+			_hb.visible = false;
 	
 			switch curSelected{
 				case 0:
@@ -205,8 +218,14 @@ class CustomControlsState extends MusicBeatSubstate
 					_pad.alpha = 0;
 				case 3:
 					trace(3);
+					this.add(_pad);
 					_pad.alpha = 0.75;
 					loadcustom();
+				case 4:
+					remove(_pad);
+					_pad.alpha = 0;
+					_hb.visible = true;
+
 			}
 	
 		}

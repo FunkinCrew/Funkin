@@ -41,7 +41,7 @@ class Hitbox extends FlxSpriteGroup
 
         var hitbox_hint:FlxSprite = new FlxSprite(0, 0).loadGraphic('assets/shared/images/hitbox/hitbox_hint.png');
 
-        hitbox_hint.alpha = 0.5;
+        hitbox_hint.alpha = 0.3;
 
         add(hitbox_hint);
 
