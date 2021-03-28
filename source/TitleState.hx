@@ -14,10 +14,10 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
-import io.newgrounds.NG;
 import lime.app.Application;
 import openfl.Assets;
 import shaderslmfao.ColorSwap;
+import ui.PreferencesMenu;
 
 using StringTools;
 
@@ -54,24 +54,21 @@ class TitleState extends MusicBeatState
 
 		FlxG.sound.muteKeys = [ZERO];
 
-		PlayerSettings.init();
-
 		curWacky = FlxG.random.getObject(getIntroTextShit());
 
 		// DEBUG BULLSHIT
 
 		super.create();
 
-		NGio.noLogin(APIStuff.API);
-
-		#if ng
-		var ng:NGio = new NGio(APIStuff.API, APIStuff.EncKey);
-		trace('NEWGROUNDS LOL');
-		#end
+		PreferencesMenu.initPrefs();
 
 		FlxG.save.bind('funkin', 'ninjamuffin99');
-
+		PlayerSettings.init();
 		Highscore.load();
+
+		#if newgrounds
+		NGio.init();
+		#end
 
 		if (FlxG.save.data.weekUnlocked != null)
 		{
@@ -289,13 +286,11 @@ class TitleState extends MusicBeatState
 
 		if (pressedEnter && !transitioning && skippedIntro)
 		{
-			#if !switch
 			NGio.unlockMedal(60960);
 
 			// If it's Friday according to da clock
 			if (Date.now().getDay() == 5)
 				NGio.unlockMedal(61034);
-			#end
 
 			titleText.animation.play('press');
 
@@ -305,26 +300,30 @@ class TitleState extends MusicBeatState
 			transitioning = true;
 			// FlxG.sound.music.stop();
 
-			new FlxTimer().start(2, function(tmr:FlxTimer)
+			#if newgrounds
+			if (!OutdatedSubState.leftState)
 			{
-				// Check if version is outdated
-
-				var version:String = "v" + Application.current.meta.get('version');
-
-				if (version.trim() != NGio.GAME_VER_NUMS.trim() && !OutdatedSubState.leftState)
+				NGio.checkVersion(function(version)
 				{
-					FlxG.switchState(new OutdatedSubState());
-					trace('OLD VERSION!');
-					trace('old ver');
-					trace(version.trim());
-					trace('cur ver');
-					trace(NGio.GAME_VER_NUMS.trim());
-				}
-				else
-				{
-					FlxG.switchState(new MainMenuState());
-				}
-			});
+					// Check if version is outdated
+
+					var localVersion:String = "v" + Application.current.meta.get('version');
+					var onlineVersion = version.split(" ")[0].trim();
+
+					if (version.trim() != onlineVersion)
+					{
+						trace('OLD VERSION!');
+						FlxG.switchState(new OutdatedSubState());
+					}
+					else
+					{
+						FlxG.switchState(new MainMenuState());
+					}
+				});
+			}
+			#else
+			FlxG.switchState(new MainMenuState());
+			#end
 			// FlxG.sound.play(Paths.music('titleShoot'), 0.7);
 		}
 
@@ -333,12 +332,15 @@ class TitleState extends MusicBeatState
 			skipIntro();
 		}
 
-		if (controls.LEFT)
+		if (FlxG.keys.justPressed.SPACE)
+			swagShader.hasOutline = !swagShader.hasOutline;
+
+		if (controls.UI_LEFT)
 		{
 			swagShader.update(-elapsed * 0.1);
 		}
 
-		if (controls.RIGHT)
+		if (controls.UI_RIGHT)
 		{
 			swagShader.update(elapsed * 0.1);
 		}
