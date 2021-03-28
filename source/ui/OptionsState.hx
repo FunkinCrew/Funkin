@@ -12,7 +12,7 @@ import flixel.util.FlxSignal;
 class OptionsState extends MusicBeatState
 {
 	var pages = new Map<PageName, Page>();
-	var currentName:PageName = #if newgrounds Options #else Controls #end;
+	var currentName:PageName = Options;
 	var currentPage(get, never):Page;
 
 	inline function get_currentPage()
@@ -29,6 +29,7 @@ class OptionsState extends MusicBeatState
 		add(menuBG);
 
 		var options = addPage(Options, new OptionsMenu(false));
+		var preferences = addPage(Preferences, new PreferencesMenu());
 		var controls = addPage(Controls, new ControlsMenu());
 		var colors = addPage(Colors, new ColorsMenu());
 
@@ -41,6 +42,7 @@ class OptionsState extends MusicBeatState
 			options.onExit.add(exitToMainMenu);
 			controls.onExit.add(switchPage.bind(Options));
 			colors.onExit.add(switchPage.bind(Options));
+			preferences.onExit.add(switchPage.bind(Options));
 
 			#if cpp
 			mods.onExit.add(switchPage.bind(Options));
@@ -172,6 +174,7 @@ class OptionsMenu extends Page
 		super();
 
 		add(items = new TextMenuList());
+		createItem('preferences', function() switchPage(Preferences));
 		createItem("controls", function() switchPage(Controls));
 		createItem('colors', function() switchPage(Colors));
 		#if cpp
@@ -276,4 +279,5 @@ enum PageName
 	Controls;
 	Colors;
 	Mods;
+	Preferences;
 }
