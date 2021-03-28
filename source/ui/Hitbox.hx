@@ -67,11 +67,11 @@ class Hitbox extends FlxSpriteGroup
 
     
         button.onDown.callback = function (){
-            FlxTween.num(0, 0.75, .1, {ease: FlxEase.circInOut}, function (a:Float) { button.alpha = a; });
+            FlxTween.num(0, 0.75, .075, {ease: FlxEase.circInOut}, function (a:Float) { button.alpha = a; });
         };
 
         button.onUp.callback = function (){
-            FlxTween.num(0.75, 0, .2, {ease: FlxEase.circInOut}, function (a:Float) { button.alpha = a; });
+            FlxTween.num(0.75, 0, .1, {ease: FlxEase.circInOut}, function (a:Float) { button.alpha = a; });
         }
 
         //button.onOver.callback = function (){}

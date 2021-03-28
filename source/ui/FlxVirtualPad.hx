@@ -1,4 +1,4 @@
-package flixel.ui;
+package ui;
 
 import flixel.FlxG;
 import flixel.graphics.frames.FlxTileFrames;
@@ -6,6 +6,7 @@ import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxPoint;
 import flixel.system.FlxAssets;
 import flixel.util.FlxDestroyUtil;
+import flixel.ui.FlxButton;
 
 /**
  * A gamepad which contains 4 directional buttons and 4 action buttons.

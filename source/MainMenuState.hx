@@ -14,7 +14,7 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 //import io.newgrounds.NG;
 import lime.app.Application;
-import flixel.ui.FlxVirtualPad;
+import ui.FlxVirtualPad;
 
 using StringTools;
 

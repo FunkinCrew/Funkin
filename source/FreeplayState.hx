@@ -9,7 +9,7 @@ import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import lime.utils.Assets;
-import flixel.ui.FlxVirtualPad;
+import ui.FlxVirtualPad;
 
 using StringTools;
 

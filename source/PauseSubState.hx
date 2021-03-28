@@ -12,7 +12,7 @@ import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
-import flixel.ui.FlxVirtualPad;
+import ui.FlxVirtualPad;
 
 class PauseSubState extends MusicBeatSubstate
 {

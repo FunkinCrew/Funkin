@@ -38,7 +38,7 @@ import lime.utils.Assets;
 import openfl.display.BlendMode;
 import openfl.display.StageQuality;
 import openfl.filters.ShaderFilter;
-import flixel.ui.FlxVirtualPad;
+import ui.FlxVirtualPad;
 
 import flixel.util.FlxSave;
 import flixel.math.FlxPoint;
