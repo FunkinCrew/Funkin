@@ -79,9 +79,6 @@ class FreeplayState extends MusicBeatState
 		if (StoryMenuState.weekUnlocked[6] || isDebug)
 			addWeek(['Senpai', 'Roses', 'Thorns'], 6, ['senpai', 'senpai', 'spirit']);
 
-		if(StoryMenuState.weekUnlocked[7] || isDebug)
-			addWeek(['SongOne'],7,['pico']);
-
 		// LOAD MUSIC
 
 		// LOAD CHARACTERS
@@ -261,7 +258,7 @@ class FreeplayState extends MusicBeatState
 	function changeSelection(change:Int = 0)
 	{
 		#if !switch
-		//NGio.logEvent('Fresh');
+		NGio.logEvent('Fresh');
 		#end
 
 		// NGio.logEvent('Fresh');

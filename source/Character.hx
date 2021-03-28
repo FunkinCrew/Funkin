@@ -227,19 +227,6 @@ class Character extends FlxSprite
 				addOffset("singLEFT", -30);
 				addOffset("singDOWN", -40, -94);
 				playAnim('idle');
-			case 'cye':
-				trace('We are loading cye.');
-				tex = Paths.getSparrowAtlas('cye');
-				trace('We are loading cye sprites.');
-				frames = tex;
-				trace('We are loading cye frames.');
-				animation.addByPrefix('idle','Cye Idle',24, false);
-				trace('We are loading cye idle animation.');
-
-				addOffset('idle');
-				trace('We are loading cye idle offset.');
-				playAnim('idle');
-				trace('We are playing cye idle animation.');
 			case 'pico':
 				tex = Paths.getSparrowAtlas('Pico_FNF_assetss');
 				frames = tex;
@@ -482,8 +469,6 @@ class Character extends FlxSprite
 				playAnim('idle');
 
 				antialiasing = false;
-
-			
 
 			case 'parents-christmas':
 				frames = Paths.getSparrowAtlas('christmas/mom_dad_christmas_assets');
