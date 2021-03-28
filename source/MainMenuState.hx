@@ -1,11 +1,10 @@
 package;
 
-#if desktop
-import Discord.DiscordClient;
-#end
+import NGio;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
+import flixel.FlxState;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.effects.FlxFlicker;
 import flixel.graphics.frames.FlxAtlasFrames;
@@ -13,23 +12,29 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
+import flixel.ui.FlxButton;
 import flixel.util.FlxColor;
-import io.newgrounds.NG;
+import flixel.util.FlxTimer;
 import lime.app.Application;
+import ui.AtlasMenuList;
+import ui.MenuList;
+import ui.OptionsState;
+import ui.PreferencesMenu;
+import ui.Prompt;
 
 using StringTools;
 
+#if desktop
+import Discord.DiscordClient;
+#end
+#if newgrounds
+import io.newgrounds.NG;
+import ui.NgPrompt;
+#end
+
 class MainMenuState extends MusicBeatState
 {
-	var curSelected:Int = 0;
-
-	var menuItems:FlxTypedGroup<FlxSprite>;
-
-	#if !switch
-	var optionShit:Array<String> = ['story mode', 'freeplay', 'donate', 'options'];
-	#else
-	var optionShit:Array<String> = ['story mode', 'freeplay'];
-	#end
+	var menuItems:MainMenuList;
 
 	var magenta:FlxSprite;
 	var camFollow:FlxObject;
@@ -51,10 +56,10 @@ class MainMenuState extends MusicBeatState
 
 		persistentUpdate = persistentDraw = true;
 
-		var bg:FlxSprite = new FlxSprite(-80).loadGraphic(Paths.image('menuBG'));
+		var bg:FlxSprite = new FlxSprite(Paths.image('menuBG'));
 		bg.scrollFactor.x = 0;
 		bg.scrollFactor.y = 0.17;
-		bg.setGraphicSize(Std.int(bg.width * 1.1));
+		bg.setGraphicSize(Std.int(bg.width * 1.2));
 		bg.updateHitbox();
 		bg.screenCenter();
 		bg.antialiasing = true;
@@ -63,38 +68,56 @@ class MainMenuState extends MusicBeatState
 		camFollow = new FlxObject(0, 0, 1, 1);
 		add(camFollow);
 
-		magenta = new FlxSprite(-80).loadGraphic(Paths.image('menuDesat'));
-		magenta.scrollFactor.x = 0;
-		magenta.scrollFactor.y = 0.17;
-		magenta.setGraphicSize(Std.int(magenta.width * 1.1));
+		magenta = new FlxSprite(Paths.image('menuDesat'));
+		magenta.scrollFactor.x = bg.scrollFactor.x;
+		magenta.scrollFactor.y = bg.scrollFactor.y;
+		magenta.setGraphicSize(Std.int(bg.width));
 		magenta.updateHitbox();
-		magenta.screenCenter();
+		magenta.x = bg.x;
+		magenta.y = bg.y;
 		magenta.visible = false;
 		magenta.antialiasing = true;
 		magenta.color = 0xFFfd719b;
-		add(magenta);
+		if (PreferencesMenu.preferences.get('flashing-menu'))
+			add(magenta);
 		// magenta.scrollFactor.set();
 
-		menuItems = new FlxTypedGroup<FlxSprite>();
+		menuItems = new MainMenuList();
 		add(menuItems);
-
-		var tex = Paths.getSparrowAtlas('FNF_main_menu_assets');
-
-		for (i in 0...optionShit.length)
+		menuItems.onChange.add(onMenuItemChange);
+		menuItems.onAcceptPress.add(function(_)
 		{
-			var menuItem:FlxSprite = new FlxSprite(0, 60 + (i * 160));
-			menuItem.frames = tex;
-			menuItem.animation.addByPrefix('idle', optionShit[i] + " basic", 24);
-			menuItem.animation.addByPrefix('selected', optionShit[i] + " white", 24);
-			menuItem.animation.play('idle');
-			menuItem.ID = i;
-			menuItem.screenCenter(X);
-			menuItems.add(menuItem);
-			menuItem.scrollFactor.set();
-			menuItem.antialiasing = true;
+			FlxFlicker.flicker(magenta, 1.1, 0.15, false, true);
+		});
+
+		menuItems.enabled = false; // disable for intro
+		menuItems.createItem('story mode', function() startExitState(new StoryMenuState()));
+		menuItems.createItem('freeplay', function() startExitState(new FreeplayState()));
+		// addMenuItem('options', function () startExitState(new OptionMenu()));
+		#if CAN_OPEN_LINKS
+		var hasPopupBlocker = #if web true #else false #end;
+		menuItems.createItem('donate', selectDonate, hasPopupBlocker);
+		#end
+		menuItems.createItem('options', function() startExitState(new OptionsState()));
+		// #if newgrounds
+		// 	if (NGio.isLoggedIn)
+		// 		menuItems.createItem("logout", selectLogout);
+		// 	else
+		// 		menuItems.createItem("login", selectLogin);
+		// #end
+
+		// center vertically
+		var spacing = 160;
+		var top = (FlxG.height - (spacing * (menuItems.length - 1))) / 2;
+		for (i in 0...menuItems.length)
+		{
+			var menuItem = menuItems.members[i];
+			menuItem.x = FlxG.width / 2;
+			menuItem.y = top + spacing * i;
 		}
 
 		FlxG.camera.follow(camFollow, null, 0.06);
+		// FlxG.camera.setScrollBounds(bg.x, bg.x + bg.width, bg.y, bg.y + bg.height * 1.2);
 
 		var versionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, "v" + Application.current.meta.get('version'), 12);
 		versionShit.scrollFactor.set();
@@ -103,12 +126,113 @@ class MainMenuState extends MusicBeatState
 
 		// NG.core.calls.event.logEvent('swag').send();
 
-		changeItem();
-
 		super.create();
 	}
 
-	var selectedSomethin:Bool = false;
+	override function finishTransIn()
+	{
+		super.finishTransIn();
+
+		menuItems.enabled = true;
+
+		// #if newgrounds
+		// if (NGio.savedSessionFailed)
+		// 	showSavedSessionFailed();
+		// #end
+	}
+
+	function onMenuItemChange(selected:MenuItem)
+	{
+		camFollow.setPosition(selected.getGraphicMidpoint().x, selected.getGraphicMidpoint().y);
+	}
+
+	#if CAN_OPEN_LINKS
+	function selectDonate()
+	{
+		#if linux
+		Sys.command('/usr/bin/xdg-open', ["https://ninja-muffin24.itch.io/funkin", "&"]);
+		#else
+		FlxG.openURL('https://ninja-muffin24.itch.io/funkin');
+		#end
+	}
+	#end
+
+	#if newgrounds
+	function selectLogin()
+	{
+		openNgPrompt(NgPrompt.showLogin());
+	}
+
+	function selectLogout()
+	{
+		openNgPrompt(NgPrompt.showLogout());
+	}
+
+	function showSavedSessionFailed()
+	{
+		openNgPrompt(NgPrompt.showSavedSessionFailed());
+	}
+
+	/**
+	 * Calls openPrompt and redraws the login/logout button
+	 * @param prompt 
+	 * @param onClose 
+	 */
+	public function openNgPrompt(prompt:Prompt, ?onClose:Void->Void)
+	{
+		var onPromptClose = checkLoginStatus;
+		if (onClose != null)
+		{
+			onPromptClose = function()
+			{
+				checkLoginStatus();
+				onClose();
+			}
+		}
+
+		openPrompt(prompt, onPromptClose);
+	}
+
+	function checkLoginStatus()
+	{
+		var prevLoggedIn = menuItems.has("logout");
+		if (prevLoggedIn && !NGio.isLoggedIn)
+			menuItems.resetItem("login", "logout", selectLogout);
+		else if (!prevLoggedIn && NGio.isLoggedIn)
+			menuItems.resetItem("logout", "login", selectLogin);
+	}
+	#end
+
+	public function openPrompt(prompt:Prompt, onClose:Void->Void)
+	{
+		menuItems.enabled = false;
+		prompt.closeCallback = function()
+		{
+			menuItems.enabled = true;
+			if (onClose != null)
+				onClose();
+		}
+
+		openSubState(prompt);
+	}
+
+	function startExitState(state:FlxState)
+	{
+		var duration = 0.4;
+		menuItems.forEach(function(item)
+		{
+			if (menuItems.selectedIndex != item.ID)
+			{
+				FlxTween.tween(item, {alpha: 0}, duration, {ease: FlxEase.quadOut});
+			}
+			else
+			{
+				item.visible = false;
+			}
+		});
+
+		new FlxTimer().start(duration, function(_) FlxG.switchState(state));
+	}
 
 	override function update(elapsed:Float)
 	{
@@ -117,124 +241,52 @@ class MainMenuState extends MusicBeatState
 			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
 		}
 
-		if (!selectedSomethin)
-		{
-			if (controls.UP_P)
-			{
-				FlxG.sound.play(Paths.sound('scrollMenu'));
-				changeItem(-1);
-			}
-
-			if (controls.DOWN_P)
-			{
-				FlxG.sound.play(Paths.sound('scrollMenu'));
-				changeItem(1);
-			}
-
-			if (controls.BACK)
-			{
-				FlxG.switchState(new TitleState());
-			}
-
-			if (controls.ACCEPT)
-			{
-				if (optionShit[curSelected] == 'donate')
-				{
-					#if linux
-					Sys.command('/usr/bin/xdg-open', ["https://ninja-muffin24.itch.io/funkin", "&"]);
-					#else
-					FlxG.openURL('https://ninja-muffin24.itch.io/funkin');
-					#end
-				}
-				else
-				{
-					selectedSomethin = true;
-					FlxG.sound.play(Paths.sound('confirmMenu'));
-
-					FlxFlicker.flicker(magenta, 1.1, 0.15, false);
-
-					menuItems.forEach(function(spr:FlxSprite)
-					{
-						if (curSelected != spr.ID)
-						{
-							FlxTween.tween(spr, {alpha: 0}, 0.4, {
-								ease: FlxEase.quadOut,
-								onComplete: function(twn:FlxTween)
-								{
-									spr.kill();
-								}
-							});
-						}
-						else
-						{
-							FlxFlicker.flicker(spr, 1, 0.06, false, false, function(flick:FlxFlicker)
-							{
-								var daChoice:String = optionShit[curSelected];
-
-								switch (daChoice)
-								{
-									case 'story mode':
-										FlxG.switchState(new StoryMenuState());
-										trace("Story Menu Selected");
-									case 'freeplay':
-										FlxG.switchState(new FreeplayState());
-
-										trace("Freeplay Menu Selected");
-
-									case 'options':
-										FlxTransitionableState.skipNextTransIn = true;
-										FlxTransitionableState.skipNextTransOut = true;
-										FlxG.switchState(new OptionsMenu());
-								}
-							});
-						}
-					});
-				}
-			}
-		}
+		if (menuItems.enabled && controls.BACK)
+			FlxG.switchState(new TitleState());
 
 		super.update(elapsed);
+	}
+}
 
-		menuItems.forEach(function(spr:FlxSprite)
-		{
-			spr.screenCenter(X);
-		});
+private class MainMenuList extends MenuTypedList<MainMenuItem>
+{
+	public var atlas:FlxAtlasFrames;
+
+	public function new()
+	{
+		atlas = Paths.getSparrowAtlas('main_menu');
+		super(Vertical);
 	}
 
-	function changeItem(huh:Int = 0)
+	public function createItem(x = 0.0, y = 0.0, name:String, callback, fireInstantly = false)
 	{
-		curSelected += huh;
+		var item = new MainMenuItem(x, y, name, atlas, callback);
+		item.fireInstantly = fireInstantly;
+		item.ID = length;
 
-		if (curSelected >= menuItems.length)
-			curSelected = 0;
-		if (curSelected < 0)
-			curSelected = menuItems.length - 1;
+		return addItem(name, item);
+	}
 
-		menuItems.forEach(function(spr:FlxSprite)
-		{
-			spr.animation.play('idle');
+	override function destroy()
+	{
+		super.destroy();
+		atlas = null;
+	}
+}
 
-			if (spr.ID == curSelected)
-			{
-				camFollow.setPosition(spr.getGraphicMidpoint().x, spr.getGraphicMidpoint().y);
-				spr.animation.play('selected');
-			}
+private class MainMenuItem extends AtlasMenuItem
+{
+	public function new(x = 0.0, y = 0.0, name, atlas, callback)
+	{
+		super(x, y, name, atlas, callback);
+		scrollFactor.set();
+	}
 
-			spr.updateHitbox();
-			if(spr.animation.curAnim.name == 'selected')
-			{
-				switch(optionShit[curSelected])
-				{
-					case 'story mode':
-						spr.offset.y += 26;
-					case 'freeplay':
-						spr.offset.y += 28;
-					case 'donate':
-						spr.offset.y += 21;
-					case 'options':
-						spr.offset.y += 26;
-				}
-			}
-		});
+	override function changeAnim(anim:String)
+	{
+		super.changeAnim(anim);
+		// position by center
+		centerOrigin();
+		offset.copyFrom(origin);
 	}
 }
