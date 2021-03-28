@@ -107,27 +107,43 @@ class PreferencesMenu extends ui.OptionsState.Page
 
 class CheckboxThingie extends FlxSprite
 {
-	public var daValue(default, set):Bool = false;
+	public var daValue(default, set):Bool;
 
 	public function new(x:Float, y:Float, daValue:Bool = false)
 	{
 		super(x, y);
 
+		frames = Paths.getSparrowAtlas('checkboxThingie');
+		animation.addByPrefix('static', 'Check Box unselected', 24, false);
+		animation.addByPrefix('checked', 'Check Box selecting animation', 24, false);
+
+		antialiasing = true;
+
+		setGraphicSize(Std.int(width * 0.7));
+		updateHitbox();
+
 		this.daValue = daValue;
-		makeGraphic(50, 50, FlxColor.WHITE);
 	}
 
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+
+		switch (animation.curAnim.name)
+		{
+			case 'static':
+				offset.set();
+			case 'checked':
+				offset.set(17, 70);
+		}
 	}
 
 	function set_daValue(value:Bool):Bool
 	{
 		if (value)
-			color = FlxColor.GREEN;
+			animation.play('checked', true);
 		else
-			color = FlxColor.RED;
+			animation.play('static');
 
 		return value;
 	}
