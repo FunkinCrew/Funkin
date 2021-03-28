@@ -1,7 +1,6 @@
-== Additions ==
+=== 0.0.1 ===
 + Added an unknown character icon for use before Winter Horrorland and Thorns
 + Added danger icons for Daddy Dearest and The Parents
 + Added skip song option to Story Mode (Thanks Rozebud!)
-
-== Fixes ==
 - Fixed a layering issue on Thorns' cutscene
+- Tweaked the version info on the bottom left of the main screen
