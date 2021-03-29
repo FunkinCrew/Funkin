@@ -67,11 +67,12 @@ class PlayState extends MusicBeatState
 
 	var halloweenLevel:Bool = false;
 
+	var songLength:Float = 0;
+	
 	#if desktop
 	// Discord RPC variables
 	var storyDifficultyText:String = "";
 	var iconRPC:String = "";
-	var songLength:Float = 0;
 	var detailsText:String = "";
 	var detailsPausedText:String = "";
 	#end
@@ -1139,6 +1140,9 @@ class PlayState extends MusicBeatState
 		FlxG.sound.music.onComplete = endSong;
 		vocals.play();
 
+		// Song duration in a float, useful for the time left feature
+		songLength = FlxG.sound.music.length;
+
 		if (FlxG.save.data.songPosition)
 			{
 				remove(songPosBG);
@@ -1153,7 +1157,8 @@ class PlayState extends MusicBeatState
 				add(songPosBG);
 
 				songPosBar = new FlxBar(songPosBG.x + 4, songPosBG.y + 4, LEFT_TO_RIGHT, Std.int(songPosBG.width - 8), Std.int(songPosBG.height - 8), this,
-					'songPositionBar', 0, 90000);
+					'songPositionBar', 0, songLength - 1000);
+				songPosBar.numDivisions = 1000;
 				songPosBar.scrollFactor.set();
 				songPosBar.createFilledBar(FlxColor.GRAY, FlxColor.LIME);
 				add(songPosBar);
@@ -1171,9 +1176,6 @@ class PlayState extends MusicBeatState
 			}
 
 		#if desktop
-		// Song duration in a float, useful for the time left feature
-		songLength = FlxG.sound.music.length;
-
 		// Updating Discord Rich Presence (with Time Left)
 
 
