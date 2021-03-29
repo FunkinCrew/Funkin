@@ -1,3 +1,8 @@
+=== 0.0.2.1 ==
++ Added an outline around the scoring text
++ Added an outline to the song info text on the pause screen
+- Fixed Monster's icon on the freeplay menu
+
 === 0.0.2 ===
 - Hid the options menu, as it's incomplete as of now
 - Player 2 on Winter Horrorland now starts invisible in Story Mode so not to reveal part of it during the camera pan down.
