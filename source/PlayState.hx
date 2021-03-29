@@ -1392,7 +1392,7 @@ class PlayState extends MusicBeatState
 		scoreTxt.text = "Score:" + songScore;
 
 		// small things: conductor pos debug text
-		if (smallThingsDebug == true) {
+		if (Options.st_conductorPosDebug == true) {
 			conductorPosTxt.text = "Conductor Pos: " + Conductor.songPosition;
 		}
 
