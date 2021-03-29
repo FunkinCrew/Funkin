@@ -119,9 +119,6 @@ class PlayState extends MusicBeatState
 	// small things: debug conductor pos score
 	var conductorPosTxt:FlxText;
 
-	// small things: debug switch
-	var smallThingsDebug:Bool = false;
-
 	// small things: do icon check
 	var doIconCheck:Bool = true;
 
@@ -752,7 +749,7 @@ class PlayState extends MusicBeatState
 		conductorPosTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT);
 		conductorPosTxt.scrollFactor.set();
 
-		if (smallThingsDebug == true) {
+		if (Options.st_conductorPosDebug == true) {
 			add(conductorPosTxt);
 		}
 
