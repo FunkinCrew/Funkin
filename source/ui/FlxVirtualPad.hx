@@ -7,6 +7,10 @@ import flixel.math.FlxPoint;
 import flixel.system.FlxAssets;
 import flixel.util.FlxDestroyUtil;
 import flixel.ui.FlxButton;
+import flixel.graphics.frames.FlxAtlasFrames;
+import flash.display.BitmapData;
+import flixel.graphics.FlxGraphic;
+import openfl.utils.ByteArray;
 
 /**
  * A gamepad which contains 4 directional buttons and 4 action buttons.
@@ -14,6 +18,12 @@ import flixel.ui.FlxButton;
  *
  * @author Ka Wing Chin
  */
+@:keep @:bitmap("assets/preload/images/virtual-input.png")
+class GraphicVirtualInput extends BitmapData {}
+ 
+@:file("assets/preload/images/virtual-input.txt")
+class VirtualInputData extends #if (lime_legacy || nme) ByteArray #else ByteArrayData #end {}
+
 class FlxVirtualPad extends FlxSpriteGroup
 {
 	public var buttonA:FlxButton;
@@ -141,7 +151,7 @@ class FlxVirtualPad extends FlxSpriteGroup
 	public function createButton(X:Float, Y:Float, Width:Int, Height:Int, Graphic:String, ?OnClick:Void->Void):FlxButton
 	{
 		var button = new FlxButton(X, Y);
-		var frame = FlxAssets.getVirtualInputFrames().getByName(Graphic);
+		var frame = getVirtualInputFrames().getByName(Graphic);
 		button.frames = FlxTileFrames.fromFrame(frame, FlxPoint.get(Width, Height));
 		button.resetSizeFromFrame();
 		button.solid = false;
@@ -156,6 +166,17 @@ class FlxVirtualPad extends FlxSpriteGroup
 			button.onDown.callback = OnClick;
 
 		return button;
+	}
+
+	public static function getVirtualInputFrames():FlxAtlasFrames
+	{
+			var bitmapData = new GraphicVirtualInput(0, 0);
+			#if html5 // dirty hack for openfl/openfl#682
+			Reflect.setProperty(bitmapData, "width", 399);
+			Reflect.setProperty(bitmapData, "height", 183);
+			#end
+			var graphic:FlxGraphic = FlxGraphic.fromBitmapData(bitmapData);
+			return FlxAtlasFrames.fromSpriteSheetPacker(graphic, Std.string(new VirtualInputData()));
 	}
 }
 
