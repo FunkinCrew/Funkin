@@ -1,4 +1,9 @@
-=== 0.0.2.1 ==
+=== 0.0.2.2 ===
++ Added an outline to the internal conductor position debugger
++ Added a debug indicator to the versiont text on the main menu
+- Reworked internal debug stuff
+
+=== 0.0.2.1 ===
 + Added an outline around the scoring text
 + Added an outline to the song info text on the pause screen
 - Fixed Monster's icon on the freeplay menu

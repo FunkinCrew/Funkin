@@ -753,10 +753,10 @@ class PlayState extends MusicBeatState
 
 		// small things: debug conductor pos text
 		conductorPosTxt = new FlxText(10, 10, "", 20);
-		conductorPosTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT);
+		conductorPosTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		conductorPosTxt.scrollFactor.set();
 
-		if (Options.st_conductorPosDebug == true) {
+		if (Options.st_debug == true) {
 			add(conductorPosTxt);
 		}
 
@@ -1372,10 +1372,12 @@ class PlayState extends MusicBeatState
 		// small things: unknown character debug
 		if (FlxG.keys.justPressed.EIGHT)
 		{
-			if (iconP1.animation.curAnim.name == 'unknown')
-				iconP1.animation.play(SONG.player1);
-			else
-				iconP1.animation.play('unknown');
+			if (Options.st_debug == true) {
+				if (iconP1.animation.curAnim.name == 'unknown')
+					iconP1.animation.play(SONG.player1);
+				else
+					iconP1.animation.play('unknown');
+			}
 		}
 
 		switch (curStage)
@@ -1399,7 +1401,7 @@ class PlayState extends MusicBeatState
 		scoreTxt.text = "Score:" + songScore;
 
 		// small things: conductor pos debug text
-		if (Options.st_conductorPosDebug == true) {
+		if (Options.st_debug == true) {
 			conductorPosTxt.text = "Conductor Pos: " + Conductor.songPosition;
 		}
 

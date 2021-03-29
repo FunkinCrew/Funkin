@@ -22,7 +22,7 @@ using StringTools;
 class MainMenuState extends MusicBeatState
 {
 	// small things: version
-	var smallThingsVersion:String = "0.0.2.1";
+	var smallThingsVersion:String = "0.0.2.2";
 
 	var curSelected:Int = 0;
 
@@ -113,6 +113,11 @@ class MainMenuState extends MusicBeatState
 		var smallThingsVersionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, "Small Things v" + smallThingsVersion, 12);
 		smallThingsVersionShit.scrollFactor.set();
 		smallThingsVersionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+
+		if (Options.st_debug == true) {
+			smallThingsVersionShit.text = "Small Things v" + smallThingsVersion + " (DEBUG)";
+		}
+
 		add(smallThingsVersionShit);
 
 		// NG.core.calls.event.logEvent('swag').send();
