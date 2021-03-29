@@ -710,7 +710,7 @@ class PlayState extends MusicBeatState
 
 		// startCountdown();
 
-		generateSong(SONG.song);
+		generateSong();
 
 		// add(strumLine);
 
@@ -1084,7 +1084,7 @@ class PlayState extends MusicBeatState
 
 	var debugNum:Int = 0;
 
-	private function generateSong(dataPath:String):Void
+	private function generateSong():Void
 	{
 		// FlxG.log.add(ChartParser.parse());
 
