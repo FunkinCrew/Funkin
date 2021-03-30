@@ -28,6 +28,7 @@ class OptionsMenu extends MusicBeatState
 		new FPSOption(),
 		#end
 		new EtternaModeOption(),
+		new CustomizeGameplay(),
 		new ReplayOption()
 	];
 

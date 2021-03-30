@@ -157,3 +157,19 @@ class ReplayOption extends Option
 		return "Load replays";
 	}
 }
+
+class CustomizeGameplay extends Option
+{
+	public override function press():Bool
+	{
+		trace("switch");
+		FlxG.switchState(new GameplayCustomizeState());
+		return false;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Customize Gameplay";
+	}
+}
+
