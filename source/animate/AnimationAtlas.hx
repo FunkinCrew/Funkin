@@ -1,11 +1,15 @@
 package animate;
 
 import flixel.FlxG;
+import flixel.addons.ui.FlxUIColorSwatchSelecter.SwatchGraphic;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxAtlasFrames;
+import flixel.math.FlxPoint;
+import flixel.math.FlxRect;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import haxe.Json;
 import openfl.Assets;
+import openfl.geom.Rectangle;
 
 class AnimationAtlas
 {
@@ -44,7 +48,14 @@ class AnimationAtlas
 			// probably nicer way to do this? Oh well
 			var swagSprite:AnimateSprite = sprite.SPRITE;
 
-			trace(swagSprite);
+			var rect = FlxRect.get(swagSprite.x, swagSprite.y, swagSprite.w, swagSprite.h);
+
+			var size = new Rectangle(0, 0, rect.width, rect.height);
+
+			var offset = FlxPoint.get(-size.left, -size.top);
+			var sourceSize = FlxPoint.get(size.width, size.height);
+
+			frames.addAtlasFrame(rect, sourceSize, offset, swagSprite.name);
 		}
 
 		return frames;
