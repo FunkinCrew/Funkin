@@ -1,5 +1,6 @@
 package;
 
+import Section.SwagSection;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.animation.FlxBaseAnimation;
@@ -17,6 +18,8 @@ class Character extends FlxSprite
 	public var curCharacter:String = 'bf';
 
 	public var holdTimer:Float = 0;
+
+	public var animationNotes:Array<Dynamic> = [];
 
 	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false)
 	{
@@ -290,6 +293,8 @@ class Character extends FlxSprite
 				// here for now, will be replaced later for less copypaste
 				loadOffsetFile(curCharacter);
 				playAnim('shoot1');
+
+				loadMappedAnims();
 
 			case 'bf':
 				var tex = Paths.getSparrowAtlas('characters/BOYFRIEND');
@@ -575,6 +580,23 @@ class Character extends FlxSprite
 		}
 	}
 
+	public function loadMappedAnims()
+	{
+		var swagshit = Song.loadFromJson('picospeaker', 'stress');
+
+		var notes = swagshit.notes;
+
+		for (section in notes)
+		{
+			for (idk in section.sectionNotes)
+			{
+				animationNotes.push(idk);
+			}
+		}
+
+		trace(animationNotes);
+	}
+
 	function quickAnimAdd(name:String, prefix:String)
 	{
 		animation.addByPrefix(name, prefix, 24, false);
@@ -623,6 +645,25 @@ class Character extends FlxSprite
 			case 'gf':
 				if (animation.curAnim.name == 'hairFall' && animation.curAnim.finished)
 					playAnim('danceRight');
+			case "pico-speaker":
+				// for pico??
+				if (animationNotes.length > 0)
+				{
+					if (Conductor.songPosition > animationNotes[0][0])
+					{
+						trace('played shoot anim' + animationNotes[0][1]);
+
+						var shootAnim:Int = 1;
+
+						if (animationNotes[0][1] >= 2)
+							shootAnim = 3;
+
+						shootAnim += FlxG.random.int(0, 1);
+
+						playAnim('shoot' + shootAnim, true);
+						animationNotes.shift();
+					}
+				}
 		}
 
 		super.update(elapsed);
@@ -651,7 +692,8 @@ class Character extends FlxSprite
 					}
 
 				case 'pico-speaker':
-					playAnim('shoot' + FlxG.random.int(1, 4), true);
+				// lol weed
+				// playAnim('shoot' + FlxG.random.int(1, 4), true);
 
 				case 'spooky':
 					danced = !danced;
