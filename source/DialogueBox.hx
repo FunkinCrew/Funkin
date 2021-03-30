@@ -150,6 +150,7 @@ class DialogueBox extends FlxSpriteGroup
 
 	var dialogueOpened:Bool = false;
 	var dialogueStarted:Bool = false;
+	var dialogueEnded:Bool = false;
 
 	override function update(elapsed:Float)
 	{
@@ -180,7 +181,7 @@ class DialogueBox extends FlxSpriteGroup
 			dialogueStarted = true;
 		}
 
-		if (FlxG.keys.justPressed.ANY  && dialogueStarted == true)
+		if (FlxG.keys.justPressed.ANY && dialogueEnded)
 		{
 			remove(dialogue);
 				
@@ -219,6 +220,8 @@ class DialogueBox extends FlxSpriteGroup
 				startDialogue();
 			}
 		}
+		else if (FlxG.keys.justPressed.ANY && dialogueStarted)
+			swagDialogue.skip();
 		
 		super.update(elapsed);
 	}
@@ -239,8 +242,10 @@ class DialogueBox extends FlxSpriteGroup
 		{
 			trace("dialogue finish");
 			handSelect.visible = true;
+			dialogueEnded = true;
 		};
 		handSelect.visible = false;
+		dialogueEnded = false;
 
 		switch (curCharacter)
 		{
