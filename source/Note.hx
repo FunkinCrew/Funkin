@@ -33,6 +33,8 @@ class Note extends FlxSprite
 	public static var BLUE_NOTE:Int = 1;
 	public static var RED_NOTE:Int = 3;
 
+	public var rating:String = "shit";
+
 	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false)
 	{
 		super();
@@ -178,15 +180,38 @@ class Note extends FlxSprite
 
 		if (mustPress)
 		{
-			// The * 0.5 is so that it's easier to hit them too late, instead of too early
 			if (strumTime > Conductor.songPosition - Conductor.safeZoneOffset
-				&& strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * 0.5))
+				&& strumTime < Conductor.songPosition + Conductor.safeZoneOffset)
 				canBeHit = true;
 			else
 				canBeHit = false;
 
-			if (strumTime < Conductor.songPosition - Conductor.safeZoneOffset && !wasGoodHit)
+			var noteDiff:Float = Math.abs(strumTime - Conductor.songPosition);
+
+			if (canBeHit)
+			{
+				if (noteDiff > Conductor.safeZoneOffset * 0.95)
+					rating = "shit";
+				else if (noteDiff < Conductor.safeZoneOffset * -0.95)
+					rating = "shit";
+				else if (noteDiff > Conductor.safeZoneOffset * 0.70)
+					rating = "bad";
+				else if (noteDiff < Conductor.safeZoneOffset * -0.75)
+					rating = "bad";
+				else if (noteDiff > Conductor.safeZoneOffset * 0.45)
+					rating = "good";
+				else if (noteDiff < Conductor.safeZoneOffset * -0.45)
+					rating = "good";
+				else
+					rating = "sick";
+				FlxG.watch.addQuick("Note " + this.ID,rating);
+			}
+
+			if (strumTime < Conductor.songPosition - (Conductor.safeZoneOffset * 0.80) && !wasGoodHit)
+			{
 				tooLate = true;
+				rating = "shit";
+			}
 		}
 		else
 		{
