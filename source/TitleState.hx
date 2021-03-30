@@ -1,5 +1,6 @@
 package;
 
+import animate.AnimationAtlas;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileDiamond;
@@ -49,6 +50,8 @@ class TitleState extends MusicBeatState
 		#if polymod
 		polymod.Polymod.init({modRoot: "mods", dirs: ['introMod'], framework: OPENFL});
 		#end
+
+		AnimationAtlas.fromAnimate(Paths.image('money'), Paths.file('images/money.json'));
 
 		swagShader = new ColorSwap();
 
