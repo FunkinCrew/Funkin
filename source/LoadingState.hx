@@ -53,26 +53,23 @@ class LoadingState extends MusicBeatState
 		add(gfDance);
 		add(logo);
 		
-		initSongsManifest().onComplete
-		(
-			function (lib)
-			{
-				callbacks = new MultiCallback(onLoad);
-				var introComplete = callbacks.add("introComplete");
-				checkLoadSong(getSongPath());
-				if (PlayState.SONG.needsVoices)
-					checkLoadSong(getVocalPath());
-				checkLibrary("shared");
-				if (PlayState.storyWeek > 0)
-					checkLibrary("week" + PlayState.storyWeek);
-				else
-					checkLibrary("tutorial");
-				
-				var fadeTime = 0.5;
-				FlxG.camera.fade(FlxG.camera.bgColor, fadeTime, true);
-				new FlxTimer().start(fadeTime + MIN_TIME, function(_) introComplete());
-			}
-		);
+		initSongsManifest().onComplete(function (lib)
+		{
+			callbacks = new MultiCallback(onLoad);
+			var introComplete = callbacks.add("introComplete");
+			checkLoadSong(getSongPath());
+			if (PlayState.SONG.needsVoices)
+				checkLoadSong(getVocalPath());
+			checkLibrary("shared");
+			if (PlayState.storyWeek > 0)
+				checkLibrary("week" + PlayState.storyWeek);
+			else
+				checkLibrary("tutorial");
+			
+			var fadeTime = 0.5;
+			FlxG.camera.fade(FlxG.camera.bgColor, fadeTime, true);
+			new FlxTimer().start(fadeTime + MIN_TIME, function(_) introComplete());
+		});
 	}
 	
 	function checkLoadSong(path:String)
@@ -80,7 +77,7 @@ class LoadingState extends MusicBeatState
 		if (!Assets.cache.hasSound(path))
 		{
 			var library = Assets.getLibrary("songs");
-			final symbolPath = path.split(":").pop();
+			final symbolPath = path.substr(path.lastIndexOf(":") + 1);
 			// @:privateAccess
 			// library.types.set(symbolPath, SOUND);
 			// @:privateAccess
@@ -109,12 +106,9 @@ class LoadingState extends MusicBeatState
 		super.beatHit();
 		
 		logo.animation.play('bump');
-		danceLeft = !danceLeft;
 		
-		if (danceLeft)
-			gfDance.animation.play('danceRight');
-		else
-			gfDance.animation.play('danceLeft');
+		gfDance.animation.play(if (danceLeft) 'danceLeft' else 'danceRight');
+		danceLeft = !danceLeft;
 	}
 	
 	override function update(elapsed:Float)

@@ -39,7 +39,7 @@ class LatencyState extends FlxState
 
 	override function update(elapsed:Float)
 	{
-		offsetText.text = "Offset: " + Conductor.offset + "ms";
+		offsetText.text = 'Offset: ${Conductor.offset}ms';
 
 		Conductor.songPosition = FlxG.sound.music.time - Conductor.offset;
 
@@ -49,9 +49,9 @@ class LatencyState extends FlxState
 			multiply = 10;
 
 		if (FlxG.keys.justPressed.RIGHT)
-			Conductor.offset += 1 * multiply;
+			Conductor.offset += multiply;
 		if (FlxG.keys.justPressed.LEFT)
-			Conductor.offset -= 1 * multiply;
+			Conductor.offset -= multiply;
 
 		if (FlxG.keys.justPressed.SPACE)
 		{

@@ -97,9 +97,7 @@ class Alphabet extends FlxSpriteGroup
 				if (isBold)
 					letter.createBold(character);
 				else
-				{
 					letter.createLetter(character);
-				}
 
 				add(letter);
 
@@ -139,22 +137,24 @@ class Alphabet extends FlxSpriteGroup
 				xPos = 0;
 				curRow += 1;
 			}
+			
+			final splitWord:String = splitWords[loopNum];
 
-			if (splitWords[loopNum] == " ")
+			if (splitWord == " ")
 			{
 				lastWasSpace = true;
 			}
 
-			#if (haxe >= "4.0.0")
-			var isNumber:Bool = AlphaCharacter.numbers.contains(splitWords[loopNum]);
-			var isSymbol:Bool = AlphaCharacter.symbols.contains(splitWords[loopNum]);
+			#if haxe4
+			var isNumber:Bool = AlphaCharacter.numbers.contains(splitWord);
+			var isSymbol:Bool = AlphaCharacter.symbols.contains(splitWord);
 			#else
-			var isNumber:Bool = AlphaCharacter.numbers.indexOf(splitWords[loopNum]) != -1;
-			var isSymbol:Bool = AlphaCharacter.symbols.indexOf(splitWords[loopNum]) != -1;
+			var isNumber:Bool = AlphaCharacter.numbers.indexOf(splitWord) != -1;
+			var isSymbol:Bool = AlphaCharacter.symbols.indexOf(splitWord) != -1;
 			#end
 
-			if (AlphaCharacter.alphabet.indexOf(splitWords[loopNum].toLowerCase()) != -1 || isNumber || isSymbol)
-				// if (AlphaCharacter.alphabet.contains(splitWords[loopNum].toLowerCase()) || isNumber || isSymbol)
+			if (AlphaCharacter.alphabet.indexOf(splitWord.toLowerCase()) != -1 || isNumber || isSymbol)
+				// if (AlphaCharacter.alphabet.contains(splitWord.toLowerCase()) || isNumber || isSymbol)
 
 			{
 				if (lastSprite != null && !xPosResetted)
@@ -181,21 +181,21 @@ class Alphabet extends FlxSpriteGroup
 				letter.row = curRow;
 				if (isBold)
 				{
-					letter.createBold(splitWords[loopNum]);
+					letter.createBold(splitWord);
 				}
 				else
 				{
 					if (isNumber)
 					{
-						letter.createNumber(splitWords[loopNum]);
+						letter.createNumber(splitWord);
 					}
 					else if (isSymbol)
 					{
-						letter.createSymbol(splitWords[loopNum]);
+						letter.createSymbol(splitWord);
 					}
 					else
 					{
-						letter.createLetter(splitWords[loopNum]);
+						letter.createLetter(splitWord);
 					}
 
 					letter.x += 90;

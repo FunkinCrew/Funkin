@@ -20,10 +20,7 @@ class GameOverSubstate extends MusicBeatSubstate
 		var daBf:String = '';
 		switch (daStage)
 		{
-			case 'school':
-				stageSuffix = '-pixel';
-				daBf = 'bf-pixel-dead';
-			case 'schoolEvil':
+			case 'school' | 'schoolEvil':
 				stageSuffix = '-pixel';
 				daBf = 'bf-pixel-dead';
 			default:
@@ -64,20 +61,26 @@ class GameOverSubstate extends MusicBeatSubstate
 		{
 			FlxG.sound.music.stop();
 
-			if (PlayState.isStoryMode)
-				FlxG.switchState(new StoryMenuState());
-			else
-				FlxG.switchState(new FreeplayState());
+			FlxG.switchState(
+				if (PlayState.isStoryMode) {
+					new StoryMenuState();
+				} else {
+					new FreeplayState();
+				}
+			);
 		}
-
-		if (bf.animation.curAnim.name == 'firstDeath' && bf.animation.curAnim.curFrame == 12)
+		
+		if (bf.animation.curAnim.name == 'firstDeath')
 		{
-			FlxG.camera.follow(camFollow, LOCKON, 0.01);
-		}
-
-		if (bf.animation.curAnim.name == 'firstDeath' && bf.animation.curAnim.finished)
-		{
-			FlxG.sound.playMusic(Paths.music('gameOver' + stageSuffix));
+			if (bf.animation.curAnim.curFrame == 12)
+			{
+				FlxG.camera.follow(camFollow, LOCKON, 0.01);
+			}
+			
+			if (bf.animation.curAnim.finished)
+			{
+				FlxG.sound.playMusic(Paths.music('gameOver' + stageSuffix));
+			}
 		}
 
 		if (FlxG.sound.music.playing)

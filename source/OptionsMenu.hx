@@ -109,17 +109,14 @@ class OptionsMenu extends MusicBeatState
 
 		if (curSelected < 0)
 			curSelected = grpControls.length - 1;
-		if (curSelected >= grpControls.length)
+		else if (curSelected >= grpControls.length)
 			curSelected = 0;
 
 		// selector.y = (70 * curSelected) + 30;
-
-		var bullShit:Int = 0;
-
-		for (item in grpControls.members)
+		
+		for (i => item in grpControls.members)
 		{
-			item.targetY = bullShit - curSelected;
-			bullShit++;
+			item.targetY = i - curSelected;
 
 			item.alpha = 0.6;
 			// item.setGraphicSize(Std.int(item.width * 0.8));

@@ -132,15 +132,12 @@ class PauseSubState extends MusicBeatSubstate
 
 		if (curSelected < 0)
 			curSelected = menuItems.length - 1;
-		if (curSelected >= menuItems.length)
+		else if (curSelected >= menuItems.length)
 			curSelected = 0;
 
-		var bullShit:Int = 0;
-
-		for (item in grpMenuShit.members)
+		for (i => item in grpMenuShit.members)
 		{
-			item.targetY = bullShit - curSelected;
-			bullShit++;
+			item.targetY = I - curSelected;
 
 			item.alpha = 0.6;
 			// item.setGraphicSize(Std.int(item.width * 0.8));

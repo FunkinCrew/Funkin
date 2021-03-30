@@ -507,16 +507,22 @@ class Character extends FlxSprite
 			if (!curCharacter.startsWith('bf'))
 			{
 				// var animArray
-				var oldRight = animation.getByName('singRIGHT').frames;
-				animation.getByName('singRIGHT').frames = animation.getByName('singLEFT').frames;
-				animation.getByName('singLEFT').frames = oldRight;
+				final left = animation.getByName('singLEFT');
+				final right = animation.getByName('singRIGHT');
+				final oldRight = right.frames;
+				
+				right.frames = left.frames;
+				left.frames = oldRight;
 
 				// IF THEY HAVE MISS ANIMATIONS??
 				if (animation.getByName('singRIGHTmiss') != null)
 				{
-					var oldMiss = animation.getByName('singRIGHTmiss').frames;
-					animation.getByName('singRIGHTmiss').frames = animation.getByName('singLEFTmiss').frames;
-					animation.getByName('singLEFTmiss').frames = oldMiss;
+					final leftMiss = animation.getByName('singLEFTmiss');
+					final rightMiss = animation.getByName('singRIGHTmiss');
+					final oldMiss = rightMiss.frames;
+					
+					rightMiss.frames = leftMiss.frames;
+					leftMiss.frames = oldMiss;
 				}
 			}
 		}
@@ -531,10 +537,12 @@ class Character extends FlxSprite
 				holdTimer += elapsed;
 			}
 
-			var dadVar:Float = 4;
-
-			if (curCharacter == 'dad')
-				dadVar = 6.1;
+			var dadVar:Float = if (curCharacter == 'dad') {
+				6.1;
+			} else {
+				4;
+			};
+			
 			if (holdTimer >= Conductor.stepCrochet * dadVar * 0.001)
 			{
 				dance();
@@ -542,11 +550,9 @@ class Character extends FlxSprite
 			}
 		}
 
-		switch (curCharacter)
+		if (curCharacter == 'gf' && animation.curAnim.name == 'hairFall' && animation.curAnim.finished)
 		{
-			case 'gf':
-				if (animation.curAnim.name == 'hairFall' && animation.curAnim.finished)
-					playAnim('danceRight');
+			playAnim('danceRight');
 		}
 
 		super.update(elapsed);
@@ -563,39 +569,7 @@ class Character extends FlxSprite
 		{
 			switch (curCharacter)
 			{
-				case 'gf':
-					if (!animation.curAnim.name.startsWith('hair'))
-					{
-						danced = !danced;
-
-						if (danced)
-							playAnim('danceRight');
-						else
-							playAnim('danceLeft');
-					}
-
-				case 'gf-christmas':
-					if (!animation.curAnim.name.startsWith('hair'))
-					{
-						danced = !danced;
-
-						if (danced)
-							playAnim('danceRight');
-						else
-							playAnim('danceLeft');
-					}
-
-				case 'gf-car':
-					if (!animation.curAnim.name.startsWith('hair'))
-					{
-						danced = !danced;
-
-						if (danced)
-							playAnim('danceRight');
-						else
-							playAnim('danceLeft');
-					}
-				case 'gf-pixel':
+				case 'gf' | 'gf-christmas' | 'gf-car' | 'gf-pixel':
 					if (!animation.curAnim.name.startsWith('hair'))
 					{
 						danced = !danced;
@@ -613,36 +587,35 @@ class Character extends FlxSprite
 						playAnim('danceRight');
 					else
 						playAnim('danceLeft');
+				
 				default:
 					playAnim('idle');
 			}
 		}
 	}
 
-	public function playAnim(AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0):Void
+	public function playAnim(animName:String, force:Bool = false, reversed:Bool = false, frame:Int = 0):Void
 	{
-		animation.play(AnimName, Force, Reversed, Frame);
+		animation.play(animName, force, reversed, frame);
 
-		var daOffset = animOffsets.get(AnimName);
-		if (animOffsets.exists(AnimName))
-		{
+		final daOffset = animOffsets.get(animName);
+		if (daOffset != null)
 			offset.set(daOffset[0], daOffset[1]);
-		}
 		else
 			offset.set(0, 0);
 
 		if (curCharacter == 'gf')
 		{
-			if (AnimName == 'singLEFT')
+			if (animName == 'singLEFT')
 			{
 				danced = true;
 			}
-			else if (AnimName == 'singRIGHT')
+			else if (animName == 'singRIGHT')
 			{
 				danced = false;
 			}
 
-			if (AnimName == 'singUP' || AnimName == 'singDOWN')
+			if (animName == 'singUP' || animName == 'singDOWN')
 			{
 				danced = !danced;
 			}

@@ -4,11 +4,7 @@ import flixel.FlxG;
 
 class Highscore
 {
-	#if (haxe >= "4.0.0")
-	public static var songScores:Map<String, Int> = new Map();
-	#else
-	public static var songScores:Map<String, Int> = new Map<String, Int>();
-	#end
+	public static var songScores = new Map<String, Int>();
 
 
 	public static function saveScore(song:String, score:Int = 0, ?diff:Int = 0):Void
@@ -23,7 +19,7 @@ class Highscore
 
 		if (songScores.exists(daSong))
 		{
-			if (songScores.get(daSong) < score)
+			if (songScores[daSong] < score)
 				setScore(daSong, score);
 		}
 		else
@@ -42,7 +38,7 @@ class Highscore
 
 		if (songScores.exists(daWeek))
 		{
-			if (songScores.get(daWeek) < score)
+			if (songScores[daWeek] < score)
 				setScore(daWeek, score);
 		}
 		else
@@ -55,37 +51,39 @@ class Highscore
 	static function setScore(song:String, score:Int):Void
 	{
 		// Reminder that I don't need to format this song, it should come formatted!
-		songScores.set(song, score);
+		songScores[song] = score;
 		FlxG.save.data.songScores = songScores;
 		FlxG.save.flush();
 	}
 
 	public static function formatSong(song:String, diff:Int):String
 	{
-		var daSong:String = song;
-
-		if (diff == 0)
-			daSong += '-easy';
-		else if (diff == 2)
-			daSong += '-hard';
-
-		return daSong;
+		return switch (song)
+		{
+			case 0: '$song-easy';
+			case 2: '$song-hard';
+			default: song;
+		};
 	}
 
 	public static function getScore(song:String, diff:Int):Int
 	{
-		if (!songScores.exists(formatSong(song, diff)))
-			setScore(formatSong(song, diff), 0);
+		final daSong = formatSong(song, diff);
+		
+		if (!songScores.exists(daSong))
+			setScore(daSong, 0);
 
-		return songScores.get(formatSong(song, diff));
+		return songScores[daSong];
 	}
 
 	public static function getWeekScore(week:Int, diff:Int):Int
 	{
-		if (!songScores.exists(formatSong('week' + week, diff)))
-			setScore(formatSong('week' + week, diff), 0);
+		final daSong = formatSong('week$week', diff);
+		
+		if (!songScores.exists(daSong))
+			setScore(daSong, 0);
 
-		return songScores.get(formatSong('week' + week, diff));
+		return songScores[daSong];
 	}
 
 	public static function load():Void

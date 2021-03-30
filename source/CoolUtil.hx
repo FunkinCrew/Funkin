@@ -25,13 +25,8 @@ class CoolUtil
 		return daList;
 	}
 
-	public static function numberArray(max:Int, ?min = 0):Array<Int>
+	public static inline function numberArray(max:Int, ?min = 0):Array<Int>
 	{
-		var dumbArray:Array<Int> = [];
-		for (i in min...max)
-		{
-			dumbArray.push(i);
-		}
-		return dumbArray;
+		return [for(i in min...max) i];
 	}
 }
