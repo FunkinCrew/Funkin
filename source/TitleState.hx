@@ -1,6 +1,5 @@
 package;
 
-import animate.AnimationAtlas;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileDiamond;
