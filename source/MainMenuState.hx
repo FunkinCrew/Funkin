@@ -218,6 +218,7 @@ class MainMenuState extends MusicBeatState
 
 	function startExitState(state:FlxState)
 	{
+		menuItems.enabled = false; // disable for exit
 		var duration = 0.4;
 		menuItems.forEach(function(item)
 		{
@@ -241,7 +242,10 @@ class MainMenuState extends MusicBeatState
 			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
 		}
 
-		if (menuItems.enabled && controls.BACK)
+		if (_exiting)
+			menuItems.enabled = false;
+
+		if (controls.BACK && menuItems.enabled && !menuItems.busy)
 			FlxG.switchState(new TitleState());
 
 		super.update(elapsed);
