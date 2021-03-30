@@ -492,7 +492,7 @@ class PlayState extends MusicBeatState
 			 */
 
 			case 'guns' | 'stress' | 'ugh':
-				// defaultCamZoom = 0.95;
+				defaultCamZoom = 0.90;
 				curStage = 'tank';
 
 				var bg:BGSprite = new BGSprite('tankSky', 0, -200, 0, 0);
@@ -591,6 +591,13 @@ class PlayState extends MusicBeatState
 			case 'pico-speaker':
 				gf.x -= 50;
 				gf.y -= 200;
+
+				for (i in 0...TankmenBG.animationNotes.length)
+				{
+					var tankman:TankmenBG = new TankmenBG(500, 200 + FlxG.random.int(0, 150), TankmenBG.animationNotes[i][1] < 2);
+					tankman.strumTime = TankmenBG.animationNotes[i][0];
+					tankmanRun.add(tankman);
+				}
 		}
 
 		dad = new Character(100, 100, SONG.player2);
@@ -2017,8 +2024,18 @@ class PlayState extends MusicBeatState
 	{
 		// control arrays, order L D R U
 		var holdArray:Array<Bool> = [controls.NOTE_LEFT, controls.NOTE_DOWN, controls.NOTE_UP, controls.NOTE_RIGHT];
-		var pressArray:Array<Bool> = [controls.NOTE_LEFT_P, controls.NOTE_DOWN_P, controls.NOTE_UP_P, controls.NOTE_RIGHT_P];
-		var releaseArray:Array<Bool> = [controls.NOTE_LEFT_R, controls.NOTE_DOWN_R, controls.NOTE_UP_R, controls.NOTE_RIGHT_R];
+		var pressArray:Array<Bool> = [
+			controls.NOTE_LEFT_P,
+			controls.NOTE_DOWN_P,
+			controls.NOTE_UP_P,
+			controls.NOTE_RIGHT_P
+		];
+		var releaseArray:Array<Bool> = [
+			controls.NOTE_LEFT_R,
+			controls.NOTE_DOWN_R,
+			controls.NOTE_UP_R,
+			controls.NOTE_RIGHT_R
+		];
 
 		// HOLDS, check for sustain notes
 		if (holdArray.contains(true) && /*!boyfriend.stunned && */ generatedMusic)
@@ -2048,13 +2065,13 @@ class PlayState extends MusicBeatState
 						for (coolNote in possibleNotes)
 						{
 							if (coolNote.noteData == daNote.noteData && Math.abs(daNote.strumTime - coolNote.strumTime) < 10)
-							{	// if it's the same note twice at < 10ms distance, just delete it
+							{ // if it's the same note twice at < 10ms distance, just delete it
 								// EXCEPT u cant delete it in this loop cuz it fucks with the collection lol
 								dumbNotes.push(daNote);
 								break;
 							}
 							else if (coolNote.noteData == daNote.noteData && daNote.strumTime < coolNote.strumTime)
-							{	// if daNote is earlier than existing note (coolNote), replace
+							{ // if daNote is earlier than existing note (coolNote), replace
 								possibleNotes.remove(coolNote);
 								possibleNotes.push(daNote);
 								break;
@@ -2071,7 +2088,7 @@ class PlayState extends MusicBeatState
 
 			for (note in dumbNotes)
 			{
-				FlxG.log.add("killing dumb ass note at "+note.strumTime);
+				FlxG.log.add("killing dumb ass note at " + note.strumTime);
 				note.kill();
 				notes.remove(note, true);
 				note.destroy();
@@ -2084,7 +2101,7 @@ class PlayState extends MusicBeatState
 			else if (possibleNotes.length > 0)
 			{
 				for (shit in 0...pressArray.length)
-				{	// if a direction is hit that shouldn't be
+				{ // if a direction is hit that shouldn't be
 					if (pressArray[shit] && !directionList.contains(shit))
 						badNoteHit();
 				}
@@ -2321,7 +2338,8 @@ class PlayState extends MusicBeatState
 	override function stepHit()
 	{
 		super.stepHit();
-		if (Math.abs(FlxG.sound.music.time - Conductor.songPosition) > 20 || (SONG.needsVoices && Math.abs(vocals.time - Conductor.songPosition) > 20))
+		if (Math.abs(FlxG.sound.music.time - Conductor.songPosition) > 20
+			|| (SONG.needsVoices && Math.abs(vocals.time - Conductor.songPosition) > 20))
 		{
 			resyncVocals();
 		}
@@ -2452,17 +2470,6 @@ class PlayState extends MusicBeatState
 				{
 					trainCooldown = FlxG.random.int(-4, 0);
 					trainStart();
-				}
-		}
-
-		switch (curSong.toLowerCase())
-		{
-			case 'stress':
-				if (FlxG.random.bool())
-				{
-					var tank:TankmenBG = new TankmenBG(500, 200);
-					tank.strumTime = Conductor.songPosition + (Conductor.crochet * 4);
-					tankmanRun.add(tank);
 				}
 		}
 
