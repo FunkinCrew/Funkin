@@ -1,5 +1,6 @@
 package;
 
+import animate.AnimationAtlas;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileDiamond;
@@ -21,8 +22,10 @@ import ui.PreferencesMenu;
 
 using StringTools;
 
-#if desktop
+#if discord_rpc
 import Discord.DiscordClient;
+#end
+#if desktop
 import sys.thread.Thread;
 #end
 
@@ -49,6 +52,8 @@ class TitleState extends MusicBeatState
 		#if polymod
 		polymod.Polymod.init({modRoot: "mods", dirs: ['introMod'], framework: OPENFL});
 		#end
+
+		AnimationAtlas.fromAnimate(Paths.image('money'), Paths.file('images/money.json'));
 
 		swagShader = new ColorSwap();
 
@@ -95,7 +100,7 @@ class TitleState extends MusicBeatState
 		});
 		#end
 
-		#if desktop
+		#if discord_rpc
 		DiscordClient.initialize();
 		#end
 	}
