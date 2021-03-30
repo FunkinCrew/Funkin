@@ -53,8 +53,6 @@ class TitleState extends MusicBeatState
 		polymod.Polymod.init({modRoot: "mods", dirs: ['introMod'], framework: OPENFL});
 		#end
 
-		AnimationAtlas.fromAnimate(Paths.image('money'), Paths.file('images/money.json'));
-
 		swagShader = new ColorSwap();
 
 		FlxG.sound.muteKeys = [ZERO];
@@ -197,6 +195,10 @@ class TitleState extends MusicBeatState
 
 		blackScreen = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 		credGroup.add(blackScreen);
+
+		var atlasBullShit:FlxSprite = new FlxSprite();
+		atlasBullShit.frames = CoolUtil.fromAnimate(Paths.image('money'), Paths.file('images/money.json'));
+		credGroup.add(atlasBullShit);
 
 		credTextShit = new Alphabet(0, 0, "ninjamuffin99\nPhantomArcade\nkawaisprite\nevilsk8er", true);
 		credTextShit.screenCenter();
