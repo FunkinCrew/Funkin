@@ -52,21 +52,6 @@ class DFJKOption extends Option
 	}
 }
 
-class NewInputOption extends Option
-{
-	public override function press():Bool
-	{
-		FlxG.save.data.newInput = !FlxG.save.data.newInput;
-		display = updateDisplay();
-		return true;
-	}
-
-	private override function updateDisplay():String
-	{
-		return FlxG.save.data.newInput ? "New input" : "Old Input";
-	}
-}
-
 class DownscrollOption extends Option
 {
 	public override function press():Bool
@@ -157,3 +142,19 @@ class ReplayOption extends Option
 		return "Load replays";
 	}
 }
+
+class CustomizeGameplay extends Option
+{
+	public override function press():Bool
+	{
+		trace("switch");
+		FlxG.switchState(new GameplayCustomizeState());
+		return false;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Customize Gameplay";
+	}
+}
+

@@ -20,7 +20,6 @@ class OptionsMenu extends MusicBeatState
 
 	var options:Array<Option> = [
 		new DFJKOption(controls),
-		new NewInputOption(),
 		new DownscrollOption(),
 		new AccuracyOption(),
 		new SongPositionOption(),
@@ -28,6 +27,7 @@ class OptionsMenu extends MusicBeatState
 		new FPSOption(),
 		#end
 		new EtternaModeOption(),
+		new CustomizeGameplay(),
 		new ReplayOption()
 	];
 

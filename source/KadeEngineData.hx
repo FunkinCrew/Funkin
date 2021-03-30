@@ -30,5 +30,12 @@ class KadeEngineData
 
 		if (FlxG.save.data.fps == null)
 			FlxG.save.data.fps = false;
+
+		if (FlxG.save.data.changedHit == null)
+		{
+			FlxG.save.data.changedHitX = -1;
+			FlxG.save.data.changedHitY = -1;
+			FlxG.save.data.changedHit = false;
+		}
 	}
 }
