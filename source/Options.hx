@@ -52,21 +52,6 @@ class DFJKOption extends Option
 	}
 }
 
-class NewInputOption extends Option
-{
-	public override function press():Bool
-	{
-		FlxG.save.data.newInput = !FlxG.save.data.newInput;
-		display = updateDisplay();
-		return true;
-	}
-
-	private override function updateDisplay():String
-	{
-		return FlxG.save.data.newInput ? "New input" : "Old Input";
-	}
-}
-
 class DownscrollOption extends Option
 {
 	public override function press():Bool

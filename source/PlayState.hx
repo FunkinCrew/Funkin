@@ -173,7 +173,6 @@ class PlayState extends MusicBeatState
 			Conductor.safeFrames = 10; // 166ms hit window (j1)
 
 
-		theFunne = FlxG.save.data.newInput;
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
 
@@ -1480,12 +1479,12 @@ class PlayState extends MusicBeatState
 			ranking = "(GFC)";
 		else if ((shits < 10 && shits != 0 || bads < 10 && bads != 0) && misses == 0) // Single Digit Combo Breaks
 			ranking = "(SDCB)";
-		else if (misses == 0 && (shits >= 10 || bads >= 10)) // Regular FC
+		else if (misses == 0 && (shits >= 10)) // Regular FC
 			ranking = "(FC)";
-		else if (misses >= 10 || (shits >= 10 || bads >= 10)) // Combo Breaks
+		else if (misses >= 10 || (shits >= 10)) // Combo Breaks
 			ranking = "(CB)";
 		else
-			ranking = "";
+			ranking = "(Clear)";
 
 		// WIFE TIME :)))) (based on Wife3)
 
@@ -2038,85 +2037,53 @@ class PlayState extends MusicBeatState
 				
 			totalNotesHit += wife;
 
-			if (noteDiff > Conductor.safeZoneOffset * 2)
+			if (noteDiff > Conductor.safeZoneOffset * 1.25)
 				{
 					daRating = 'shit';
+					score = -3000;
+					combo = 0;
+					misses++;
+					health -= 0.2;
 					ss = false;
-					if (theFunne)
-						{
-							score = -3000;
-							combo = 0;
-							misses++;
-							health -= 0.2;
-						}
 					shits++;
 				}
-				else if (noteDiff < Conductor.safeZoneOffset * -2)
+				else if (noteDiff < Conductor.safeZoneOffset * -1.25)
 				{
 					daRating = 'shit';
-					if (theFunne)
-					{
-						score = -3000;
-						combo = 0;
-						misses++;
-						health -= 0.2;
-					}
+					score = -3000;
+					combo = 0;
+					misses++;
+					health -= 0.2;
 					ss = false;
 					shits++;
 				}
 				else if (noteDiff < Conductor.safeZoneOffset * -0.45)
 				{
 					daRating = 'bad';
-					if (theFunne)
-					{
-						score = -1000;
-						health -= 0.03;
-						misses++;
-						combo = 0;
-					}
-					else
-						score = 100;
+					score = 0;
+					health -= 0.03;
 					ss = false;
 					bads++;
 				}
 				else if (noteDiff > Conductor.safeZoneOffset * 0.45)
 				{
 					daRating = 'bad';
-					if (theFunne)
-						{
-							score = -1000;
-							health -= 0.03;
-							combo = 0;
-							misses++;
-						}
-						else
-							score = 100;
+					score = 0;
+					health -= 0.03;
 					ss = false;
 					bads++;
 				}
 				else if (noteDiff < Conductor.safeZoneOffset * -0.25)
 				{
 					daRating = 'good';
-					if (theFunne)
-					{
-						score = 200;
-						//health -= 0.01;
-					}
-					else
-						score = 200;
+					score = 200;
 					ss = false;
 					goods++;
 				}
 				else if (noteDiff > Conductor.safeZoneOffset * 0.35)
 				{
 					daRating = 'good';
-					if (theFunne)
-						{
-							score = 200;
-							//health -= 0.01;
-						}
-						else
-							score = 200;
+					score = 200;
 					ss = false;
 					goods++;
 				}
