@@ -501,6 +501,8 @@ class Character extends FlxSprite
 			}
 		}
 
+		TankmenBG.animationNotes = animationNotes;
+
 		trace(animationNotes);
 	}
 
