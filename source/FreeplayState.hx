@@ -44,7 +44,7 @@ class FreeplayState extends MusicBeatState
 		json = Json.parse(Assets.getText('assets/data/freeplayInit.json'));
 		for (i in json.init)
 		{
-			addWeek([''+Std.string(i[0])],i[1],[''+Std.string(i[2])]);
+			songs.push(new SongMetadata(''+Std.string(i[0]),i[1],''+Std.string(i[2])));
 		}
 
 		/* 
