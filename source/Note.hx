@@ -39,9 +39,6 @@ class Note extends FlxSprite
 
 		if (prevNote == null)
 			prevNote = this;
-
-		if (FlxG.save.data.downscroll)
-			flipY = true;
 		
 		this.prevNote = prevNote;
 		isSustainNote = sustainNote;
@@ -74,18 +71,10 @@ class Note extends FlxSprite
 				{
 					loadGraphic(Paths.image('weeb/pixelUI/arrowEnds'), true, 7, 6);
 
-					if(!FlxG.save.data.downscroll)
-					{
 						animation.add('purpleholdend', [4]);
 						animation.add('greenholdend', [6]);
 						animation.add('redholdend', [7]);
 						animation.add('blueholdend', [5]);
-					}else {
-						animation.add('purpleholdend', [4], 0, false, false, true);
-						animation.add('greenholdend', [6], 0, false, false, true);
-						animation.add('redholdend', [7], 0, false, false, true);
-						animation.add('blueholdend', [5], 0, false, false, true);
-					}
 				}
 
 				setGraphicSize(Std.int(width * PlayState.daPixelZoom));
@@ -103,19 +92,11 @@ class Note extends FlxSprite
 				animation.addByPrefix('greenhold', 'green hold piece');
 				animation.addByPrefix('redhold', 'red hold piece');
 				animation.addByPrefix('bluehold', 'blue hold piece');
-				
-				if(!FlxG.save.data.downscroll)
-				{
+
 					animation.addByPrefix('purpleholdend', 'pruple end hold');
 					animation.addByPrefix('greenholdend', 'green hold end');
 					animation.addByPrefix('redholdend', 'red hold end');
 					animation.addByPrefix('blueholdend', 'blue hold end');
-				}else {
-					animation.addByPrefix('purpleholdend', 'pruple end hold', 0, false, false, true);
-					animation.addByPrefix('greenholdend', 'green hold end', 0, false, false, true);
-					animation.addByPrefix('redholdend', 'red hold end', 0, false, false, true);
-					animation.addByPrefix('blueholdend', 'blue hold end', 0, false, false, true);
-				}
 
 				setGraphicSize(Std.int(width * 0.7));
 				updateHitbox();
@@ -138,7 +119,12 @@ class Note extends FlxSprite
 				animation.play('redScroll');
 		}
 
-		
+		// we make sure its downscroll and its a SUSTAIN NOTE (aka a trail, not a note)
+		// and flip it so it doesn't look weird.
+		// THIS DOESN'T FUCKING FLIP THE NOTE, CONTRIBUTERS DON'T JUST COMMENT THIS OUT JESUS
+		if (FlxG.save.data.downscroll && sustainNote) 
+			flipY = true;
+
 		if (isSustainNote && prevNote != null)
 		{
 			noteScore * 0.2;
