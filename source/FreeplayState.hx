@@ -12,8 +12,13 @@ import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import lime.utils.Assets;
+import haxe.Json;
 
 using StringTools;
+
+typedef JsonSongs = {
+	var init:Array<Dynamic>;
+}
 
 class FreeplayState extends MusicBeatState
 {
@@ -32,14 +37,14 @@ class FreeplayState extends MusicBeatState
 	private var curPlaying:Bool = false;
 
 	private var iconArray:Array<HealthIcon> = [];
+	private var json:JsonSongs;
 
 	override function create()
 	{
-		var initSonglist = CoolUtil.coolTextFile(Paths.txt('freeplaySonglist'));
-
-		for (i in 0...initSonglist.length)
+		json = Json.parse(Assets.getText('assets/data/freeplayInit.json'));
+		for (i in json.init)
 		{
-			songs.push(new SongMetadata(initSonglist[i], 1, 'gf'));
+			addWeek([''+Std.string(i[0])],i[1],[''+Std.string(i[2])]);
 		}
 
 		/* 
@@ -61,8 +66,8 @@ class FreeplayState extends MusicBeatState
 		isDebug = true;
 		#end
 
-		if (StoryMenuState.weekUnlocked[2] || isDebug)
-			addWeek(['Bopeebo', 'Fresh', 'Dadbattle'], 1, ['dad']);
+		/*if (StoryMenuState.weekUnlocked[2] || isDebug)
+			addWeek(['Bopeebo', 'Fresh', 'Dadbattle'], 1, ['dad']);*/
 
 		if (StoryMenuState.weekUnlocked[2] || isDebug)
 			addWeek(['Spookeez', 'South', 'Monster'], 2, ['spooky']);
