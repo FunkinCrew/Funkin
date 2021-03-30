@@ -34,7 +34,7 @@ class PreferencesMenu extends ui.OptionsState.Page
 	public static function initPrefs():Void
 	{
 		preferenceCheck('censor-naughty', false);
-		preferenceCheck('downscroll', false);
+		preferenceCheck('downscroll', true);
 		preferenceCheck('flashing-menu', true);
 		preferenceCheck('camera-zoom', true);
 	}
