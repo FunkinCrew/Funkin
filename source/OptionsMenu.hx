@@ -1,5 +1,6 @@
 package;
 
+import openfl.Lib;
 import Options;
 import Controls.Control;
 import flash.text.TextField;
@@ -18,21 +19,34 @@ class OptionsMenu extends MusicBeatState
 	var selector:FlxText;
 	var curSelected:Int = 0;
 
-	var options:Array<Option> = [
-		new DFJKOption(controls),
-		new DownscrollOption(),
-		new AccuracyOption(),
-		new SongPositionOption(),
-		#if !mobile
-		new FPSOption(),
-		#end
-		new EtternaModeOption(),
-		new CustomizeGameplay(),
-		new ReplayOption()
+	var options:Array<OptionCatagory> = [
+		new OptionCatagory("Gameplay", [
+			new DFJKOption(controls),
+			new FPSCapOption("Cap your FPS (Left for -10, Right for -10)"),
+			new CustomizeGameplay("Drag'n'Drop Gameplay Modules around to your preference"),
+			new ScrollSpeedOption("Change your scroll speed (Left for -0.1, right for +0.1. If its at 1, it will be chart dependent)")
+		]),
+		new OptionCatagory("Appearence", [
+			new SongPositionOption("Show the songs current position (as a bar)"),
+			new DownscrollOption("Change the layout of the strumline."),
+			new RainbowFPSOption("Make the FPS Counter Rainbow (Only works with the FPS Counter toggeled on)"),
+			new AccuracyOption("Display accuracy information.")
+		]),
+		new OptionCatagory("Misc", [
+			new EtternaModeOption("Harder Hit Windows and a different scoring system."),
+			#if !mobile
+			new FPSOption("Toggle the FPS Counter"),
+			#end
+			new ReplayOption("View replays")
+		])
 	];
 
+	private var currentDescription:String = "";
 	private var grpControls:FlxTypedGroup<Alphabet>;
 	var versionShit:FlxText;
+
+	var currentSelectedCat:OptionCatagory;
+
 	override function create()
 	{
 		var menuBG:FlxSprite = new FlxSprite().loadGraphic(Paths.image("menuDesat"));
@@ -49,15 +63,16 @@ class OptionsMenu extends MusicBeatState
 
 		for (i in 0...options.length)
 		{
-			var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, options[i].getDisplay(), true, false);
+			var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, options[i].getName(), true, false);
 			controlLabel.isMenuItem = true;
 			controlLabel.targetY = i;
 			grpControls.add(controlLabel);
 			// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
 		}
 
+		currentDescription = "none";
 
-		versionShit = new FlxText(5, FlxG.height - 18, 0, "Offset (Left, Right): " + FlxG.save.data.offset, 12);
+		versionShit = new FlxText(5, FlxG.height - 18, 0, "Offset (Left, Right): " + FlxG.save.data.offset + " - Description - " + currentDescription, 12);
 		versionShit.scrollFactor.set();
 		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(versionShit);
@@ -65,37 +80,118 @@ class OptionsMenu extends MusicBeatState
 		super.create();
 	}
 
+	var isCat:Bool = false;
+	
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
 
-			if (controls.BACK)
+			if (controls.BACK && !isCat)
 				FlxG.switchState(new MainMenuState());
+			else if (controls.BACK)
+			{
+				isCat = false;
+				grpControls.clear();
+				for (i in 0...options.length)
+					{
+						var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, options[i].getName(), true, false);
+						controlLabel.isMenuItem = true;
+						controlLabel.targetY = i;
+						grpControls.add(controlLabel);
+						// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
+					}
+				curSelected = 0;
+			}
 			if (controls.UP_P)
 				changeSelection(-1);
 			if (controls.DOWN_P)
 				changeSelection(1);
 			
-			if (controls.RIGHT_R)
+			if (isCat)
 			{
-				FlxG.save.data.offset++;
-				versionShit.text = "Offset (Left, Right): " + FlxG.save.data.offset;
-			}
-
-			if (controls.LEFT_R)
+				switch(currentSelectedCat.getOptions()[curSelected].getDisplay())
 				{
-					FlxG.save.data.offset--;
-					versionShit.text = "Offset (Left, Right): " + FlxG.save.data.offset;
+					case 'FPS Cap':
+						var fps = (cast (Lib.current.getChildAt(0), Main)).getFPSCap();
+
+						if (FlxG.keys.pressed.RIGHT && fps < 285) // actual cap is 285
+						{
+							(cast (Lib.current.getChildAt(0), Main)).setFPSCap(fps + 10);
+							FlxG.save.data.fpsCap = fps + 10;
+						}
+		
+						if (FlxG.keys.pressed.LEFT && fps > 60)
+						{
+							(cast (Lib.current.getChildAt(0), Main)).setFPSCap(fps - 10);
+							FlxG.save.data.fpsCap = fps - 10;
+						}
+
+						versionShit.text = "Current FPS Cap: " + fps + " - Description - " + currentDescription;
+		
+						
+					case 'Scroll Speed':
+						if (FlxG.keys.justPressed.RIGHT)
+							FlxG.save.data.scrollSpeed+=0.1;
+		
+						if (FlxG.keys.justPressed.LEFT)
+							FlxG.save.data.scrollSpeed-=0.1;
+
+						// caps
+
+						if (FlxG.save.data.scrollSpeed < 0)
+							FlxG.save.data.scrollSpeed = 0.1;
+
+						if (FlxG.save.data.scrollSpeed > 10)
+							FlxG.save.data.scrollSpeed = 10;
+
+						versionShit.text = "Current Scroll Speed: " + FlxG.save.data.scrollSpeed + " - Description - " + currentDescription;
+					default:
+						if (FlxG.keys.pressed.RIGHT)
+							FlxG.save.data.offset++;
+		
+						if (FlxG.keys.pressed.LEFT)
+							FlxG.save.data.offset--;
+						
+						versionShit.text = "Offset (Left, Right): " + FlxG.save.data.offset + " - Description - " + currentDescription;
 				}
-	
+			}
+			else
+			{
+				if (FlxG.keys.pressed.RIGHT)
+					FlxG.save.data.offset++;
+
+				if (FlxG.keys.pressed.LEFT)
+					FlxG.save.data.offset--;
+				
+				versionShit.text = "Offset (Left, Right): " + FlxG.save.data.offset + " - Description - " + currentDescription;
+			}
+		
 
 			if (controls.ACCEPT)
 			{
-				if (options[curSelected].press()) {
-					grpControls.remove(grpControls.members[curSelected]);
-					var ctrl:Alphabet = new Alphabet(0, (70 * curSelected) + 30, options[curSelected].getDisplay(), true, false);
-					ctrl.isMenuItem = true;
-					grpControls.add(ctrl);
+				if (isCat)
+				{
+					if (currentSelectedCat.getOptions()[curSelected].press()) {
+						grpControls.remove(grpControls.members[curSelected]);
+						var ctrl:Alphabet = new Alphabet(0, (70 * curSelected) + 30, currentSelectedCat.getOptions()[curSelected].getDisplay(), true, false);
+						ctrl.isMenuItem = true;
+						grpControls.add(ctrl);
+					}
+				}
+				else
+				{
+					currentSelectedCat = options[curSelected];
+					isCat = true;
+					grpControls.clear();
+					for (i in 0...currentSelectedCat.getOptions().length)
+						{
+							var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, currentSelectedCat.getOptions()[i].getDisplay(), true, false);
+							controlLabel.isMenuItem = true;
+							controlLabel.targetY = i;
+							grpControls.add(controlLabel);
+							// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
+						}
+					curSelected = 0;
 				}
 			}
 		FlxG.save.flush();
@@ -117,6 +213,12 @@ class OptionsMenu extends MusicBeatState
 			curSelected = grpControls.length - 1;
 		if (curSelected >= grpControls.length)
 			curSelected = 0;
+
+		if (isCat)
+			currentDescription = currentSelectedCat.getOptions()[curSelected].getDescription();
+		else
+			currentDescription = "Please select a catagory";
+		versionShit.text = "Offset (Left, Right): " + FlxG.save.data.offset + " - Description - " + currentDescription;
 
 		// selector.y = (70 * curSelected) + 30;
 

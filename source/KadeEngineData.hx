@@ -1,3 +1,4 @@
+import openfl.Lib;
 import flixel.FlxG;
 
 class KadeEngineData
@@ -37,5 +38,19 @@ class KadeEngineData
 			FlxG.save.data.changedHitY = -1;
 			FlxG.save.data.changedHit = false;
 		}
+
+		if (FlxG.save.data.fpsRain == null)
+			FlxG.save.data.fpsRain = false;
+
+		if (FlxG.save.data.fpsCap == null)
+			FlxG.save.data.fpsCap = 120;
+
+		if (FlxG.save.data.fpsCap > 285 || FlxG.save.data.fpsCap < 60)
+			FlxG.save.data.fpsCap = 120; // baby proof so you can't hard lock ur copy of kade engine
+		
+		if (FlxG.save.data.scrollSpeed == null)
+			FlxG.save.data.scrollSpeed = 1;
+
+		(cast (Lib.current.getChildAt(0), Main)).setFPSCap(FlxG.save.data.fpsCap);
 	}
 }

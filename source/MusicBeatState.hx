@@ -1,5 +1,8 @@
 package;
 
+import flixel.tweens.FlxTween;
+import flixel.util.FlxColor;
+import openfl.Lib;
 import Conductor.BPMChangeEvent;
 import flixel.FlxG;
 import flixel.addons.transition.FlxTransitionableState;
@@ -27,6 +30,18 @@ class MusicBeatState extends FlxUIState
 		super.create();
 	}
 
+	var array:Array<FlxColor> = [
+		FlxColor.fromRGB(148, 0, 211),
+		FlxColor.fromRGB(75, 0, 130),
+		FlxColor.fromRGB(0, 0, 255),
+		FlxColor.fromRGB(0, 255, 0),
+		FlxColor.fromRGB(255, 255, 0),
+		FlxColor.fromRGB(255, 127, 0),
+		FlxColor.fromRGB(255, 0 , 0)
+	];
+
+	var skippedFrames = 0;
+
 	override function update(elapsed:Float)
 	{
 		//everyStep();
@@ -38,6 +53,17 @@ class MusicBeatState extends FlxUIState
 		if (oldStep != curStep && curStep > 0)
 			stepHit();
 
+		if (FlxG.save.data.fpsRain && skippedFrames >= 6)
+			{
+				if (currentColor >= array.length)
+					currentColor = 0;
+				(cast (Lib.current.getChildAt(0), Main)).changeFPSColor(array[currentColor]);
+				currentColor++;
+				skippedFrames = 0;
+			}
+			else
+				skippedFrames++;
+
 		super.update(elapsed);
 	}
 
@@ -45,6 +71,8 @@ class MusicBeatState extends FlxUIState
 	{
 		curBeat = Math.floor(curStep / 4);
 	}
+
+	public static var currentColor = 0;
 
 	private function updateCurStep():Void
 	{
@@ -64,6 +92,7 @@ class MusicBeatState extends FlxUIState
 
 	public function stepHit():Void
 	{
+
 		if (curStep % 4 == 0)
 			beatHit();
 	}
