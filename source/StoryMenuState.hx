@@ -227,6 +227,9 @@ class StoryMenuState extends MusicBeatState
 		// scoreText.setFormat('VCR OSD Mono', 32);
 		lerpScore = Math.floor(FlxMath.lerp(lerpScore, intendedScore, 0.5));
 
+		if (Math.abs(lerpScore - intendedScore) <= 10)
+			lerpScore = intendedScore;
+
 		scoreText.text = "WEEK SCORE:" + lerpScore;
 
 		txtWeekTitle.text = weekNames[curWeek].toUpperCase();
