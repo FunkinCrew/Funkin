@@ -1,3 +1,5 @@
+import flixel.math.FlxMath;
+import flixel.FlxCamera;
 import flixel.math.FlxPoint;
 import flixel.FlxObject;
 #if desktop
@@ -28,12 +30,22 @@ class GameplayCustomizeState extends MusicBeatState
     var strumLine:FlxSprite;
     var strumLineNotes:FlxTypedGroup<FlxSprite>;
     var playerStrums:FlxTypedGroup<FlxSprite>;
-
-    override function create() {
+    private var camHUD:FlxCamera;
+    
+    public override function create() {
         #if desktop
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("Customizing Gameplay", null);
 		#end
+
+		Conductor.changeBPM(102);
+		persistentUpdate = true;
+
+        super.create();
+
+		camHUD = new FlxCamera();
+		camHUD.bgColor.alpha = 0;
+        FlxG.cameras.add(camHUD);
 
         background.scrollFactor.set(0.9,0.9);
         curt.scrollFactor.set(0.9,0.9);
@@ -42,11 +54,6 @@ class GameplayCustomizeState extends MusicBeatState
         add(background);
         add(front);
         add(curt);
-
-
-        add(sick);
-
-        bf.playAnim('idle');
 
 		var camFollow = new FlxObject(0, 0, 1, 1);
 
@@ -58,6 +65,8 @@ class GameplayCustomizeState extends MusicBeatState
 
         add(bf);
         add(dad);
+
+        add(sick);
 
 		add(camFollow);
 
@@ -77,9 +86,14 @@ class GameplayCustomizeState extends MusicBeatState
 
 		playerStrums = new FlxTypedGroup<FlxSprite>();
 
+        sick.cameras = [camHUD];
+        strumLine.cameras = [camHUD];
+        playerStrums.cameras = [camHUD];
+        
 		generateStaticArrows(0);
 		generateStaticArrows(1);
 
+        
         if (!FlxG.save.data.changedHit)
         {
             FlxG.save.data.changedHitX = defaultX;
@@ -90,11 +104,17 @@ class GameplayCustomizeState extends MusicBeatState
         sick.y = FlxG.save.data.changedHitY;
 
         FlxG.mouse.visible = true;
+
     }
 
     override function update(elapsed:Float) {
-        bf.playAnim('idle');
-        dad.dance();
+		if (FlxG.sound.music != null)
+			Conductor.songPosition = FlxG.sound.music.time;
+
+        super.update(elapsed);
+
+        FlxG.camera.zoom = FlxMath.lerp(0.9, FlxG.camera.zoom, 0.95);
+        camHUD.zoom = FlxMath.lerp(1, camHUD.zoom, 0.95);
 
         if (FlxG.mouse.overlaps(sick) && FlxG.mouse.pressed)
         {
@@ -115,6 +135,21 @@ class GameplayCustomizeState extends MusicBeatState
             FlxG.sound.play(Paths.sound('cancelMenu'));
 			FlxG.switchState(new OptionsMenu());
         }
+
+    }
+
+    override function beatHit() 
+    {
+        super.beatHit();
+
+        bf.playAnim('idle');
+        dad.dance();
+
+        FlxG.camera.zoom += 0.015;
+        camHUD.zoom += 0.010;
+
+        trace('beat');
+
     }
 
 
