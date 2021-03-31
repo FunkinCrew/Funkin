@@ -1620,16 +1620,13 @@ class PlayState extends MusicBeatState
 			}
 		}
 
-		if (unspawnNotes[0] != null)
+		while (unspawnNotes[0] != null &&unspawnNotes[0].strumTime - Conductor.songPosition < 1500 / SONG.speed)
 		{
-			if (unspawnNotes[0].strumTime - Conductor.songPosition < 1500)
-			{
-				var dunceNote:Note = unspawnNotes[0];
-				notes.add(dunceNote);
+			var dunceNote:Note = unspawnNotes[0];
+			notes.add(dunceNote);
 
-				var index:Int = unspawnNotes.indexOf(dunceNote);
-				unspawnNotes.splice(index, 1);
-			}
+			var index:Int = unspawnNotes.indexOf(dunceNote);
+			unspawnNotes.splice(index, 1);
 		}
 
 		if (generatedMusic)
