@@ -64,6 +64,8 @@ class Main extends Sprite
 	var netStream:NetStream;
 	private var overlay:Sprite;
 
+	public static var fpsCounter:FPS;
+
 	private function setupGame():Void
 	{
 		var stageWidth:Int = Lib.current.stage.stageWidth;
@@ -85,7 +87,8 @@ class Main extends Sprite
 		addChild(new FlxGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen));
 
 		#if !mobile
-		addChild(new FPS(10, 3, 0xFFFFFF));
+		fpsCounter = new FPS(10, 3, 0xFFFFFF);
+		addChild(fpsCounter);
 		#end
 		/* 
 			video = new Video();
