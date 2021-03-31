@@ -1,5 +1,7 @@
 package;
 
+import polymod.Polymod.Framework;
+import polymod.Polymod.PolymodError;
 #if desktop
 import Discord.DiscordClient;
 import sys.thread.Thread;
@@ -46,8 +48,43 @@ class TitleState extends MusicBeatState
 
 	override public function create():Void
 	{
-		#if polymod
-		polymod.Polymod.init({modRoot: "mods", dirs: ['introMod']});
+		// Get all directories in the mod folder
+
+		#if (polymod && sys)
+		var modDirectory:Array<String> = [];
+		var mods = sys.FileSystem.readDirectory("mods");
+
+		for (fileText in mods) {
+			if (sys.FileSystem.isDirectory("mods/"+fileText)) {
+				modDirectory.push(fileText);
+			}
+		}
+		trace(modDirectory);
+		
+		// Handle mod errors
+		var errors:PolymodError->Void = (error:PolymodError) -> {
+			trace(error.severity+": "+error.code+" - "+ error.message + " ORIGIN: "+error.origin);
+		};
+
+		//Initialize polymod
+		var modMetadata = polymod.Polymod.init({
+			modRoot: "mods",
+			dirs: modDirectory,
+			errorCallback: errors,
+			framework: Framework.LIME,
+		});
+
+		//Display active mods
+		for (modData in modMetadata) {
+			trace(modData.title);
+		}
+
+		var content:String = Assets.getText(Paths.txt('introText'));
+		var test = new FlxSprite(0, 0);
+		var text = new FlxText(0, 0, 1000, content, 32);
+		test.pixels = Assets.getBitmapData(Paths.image("iconGrid"));
+		add(test);
+		add(text);
 		#end
 
 		PlayerSettings.init();
