@@ -497,7 +497,7 @@ class PlayState extends MusicBeatState
 				defaultCamZoom = 0.90;
 				curStage = 'tank';
 
-				var bg:BGSprite = new BGSprite('tankSky', 0, -200, 0, 0);
+				var bg:BGSprite = new BGSprite('tankSky', -400, -400, 0, 0);
 				add(bg);
 
 				var tankSky:BGSprite = new BGSprite('tankClouds', 0, 10, 0.1, 0.1);
@@ -512,6 +512,12 @@ class PlayState extends MusicBeatState
 				var tankRuins:BGSprite = new BGSprite('tankRuins', -200, 170, 0.35, 0.35);
 				add(tankRuins);
 
+				var smokeLeft:BGSprite = new BGSprite('smokeLeft', -200, -100, 0.4, 0.4, ['SmokeBlurLeft'], true);
+				add(smokeLeft);
+
+				var smokeRight:BGSprite = new BGSprite('smokeRight', 1100, -100, 0.4, 0.4, ['SmokeRight'], true);
+				add(smokeRight);
+
 				var tankWatchtower:BGSprite = new BGSprite('tankWatchtower', 300, 50, 0.5, 0.5);
 				add(tankWatchtower);
 
@@ -520,6 +526,8 @@ class PlayState extends MusicBeatState
 
 				tankmanRun = new FlxTypedGroup<TankmenBG>();
 				add(tankmanRun);
+
+				// smokeLeft.screenCenter();
 
 				var fgTank0:BGSprite = new BGSprite('tank0', -290, 400, 1.7, 1.5, ['fg']);
 				foregroundSprites.add(fgTank0);
@@ -1660,7 +1668,7 @@ class PlayState extends MusicBeatState
 							daNote.y += daNote.height / daNote.scale.y;
 
 						if ((!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit)))
-						&& daNote.y - daNote.offset.y * daNote.scale.y + daNote.height >= strumLineMid)
+							&& daNote.y - daNote.offset.y * daNote.scale.y + daNote.height >= strumLineMid)
 						{
 							// div by scale because cliprect is affected by scale i THINK
 							var swagRect:FlxRect = new FlxRect(0, 0, daNote.width / daNote.scale.x, daNote.height / daNote.scale.y);
