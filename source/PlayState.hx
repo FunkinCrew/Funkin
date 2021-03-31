@@ -194,7 +194,9 @@ class PlayState extends MusicBeatState
 				dialogue = CoolUtil.coolTextFile(Paths.txt('thorns/thornsDialogue'));
 		}
 
+		#if discord_rpc
 		initDiscord();
+		#end
 
 		switch (SONG.song.toLowerCase())
 		{
