@@ -1474,7 +1474,7 @@ class PlayState extends MusicBeatState
 			ranking = "(MFC)";
 		else if (misses == 0 && bads == 0 && shits == 0 && goods >= 1) // Good Full Combo (Nothing but Goods & Sicks)
 			ranking = "(GFC)";
-		else if ((shits < 10 && shits != 0 || bads < 10 && bads != 0) && misses == 0) // Single Digit Combo Breaks
+		else if ((shits < 10 && shits != 0) && misses == 0) // Single Digit Combo Breaks
 			ranking = "(SDCB)";
 		else if (misses == 0 && (shits >= 10)) // Regular FC
 			ranking = "(FC)";
