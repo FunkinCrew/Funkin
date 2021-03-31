@@ -1,4 +1,6 @@
-![Friday_Night_Funkin_Logo](/art/logoREADME.png "FNF Logo")
+<p align="center">
+	<img src="/art/logoREADME.png">
+</p>
 
 ### This is the repository for Friday Night Funkin, a game originally made for Ludum Dare 47 "Stuck In a Loop".
 
@@ -37,8 +39,9 @@ If you just want to download and play the game normally, you can click [here to 
 ### **If you do want to compile, continue reading!**
 
 # Installing the Required Programs
-
-![Haxe_Logo](/art/haxeLogo.png)
+<p align="center">
+	<img src="/art/haxeLogo.png">
+</p>
 
 First you need to install Haxe and HaxeFlixel.
 1. [Install Haxe 4.1.5](https://haxe.org/download/version/4.1.5/) (Download 4.1.5 instead of 4.2.0 because 4.2.0 is broken and is not working with gits properly...)
