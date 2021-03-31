@@ -102,7 +102,7 @@ class PlayerSettings
 			settings.avatar = null;
 			while (settings.controls.gamepadsAdded.length > 0)
 			{
-				final id = settings.controls.gamepadsAdded.shift();
+				var id = settings.controls.gamepadsAdded.shift();
 				settings.controls.removeGamepad(id);
 				DeviceManager.releaseGamepad(FlxG.gamepads.getByID(id));
 			}

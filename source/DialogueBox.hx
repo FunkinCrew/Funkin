@@ -150,7 +150,7 @@ class DialogueBox extends FlxSpriteGroup
 
 	override function update(elapsed:Float)
 	{
-		final song = PlayState.SONG.song.toLowerCase();
+		var song = PlayState.SONG.song.toLowerCase();
 		
 		switch (song)
 		{

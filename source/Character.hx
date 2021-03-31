@@ -507,9 +507,9 @@ class Character extends FlxSprite
 			if (!curCharacter.startsWith('bf'))
 			{
 				// var animArray
-				final left = animation.getByName('singLEFT');
-				final right = animation.getByName('singRIGHT');
-				final oldRight = right.frames;
+				var left = animation.getByName('singLEFT');
+				var right = animation.getByName('singRIGHT');
+				var oldRight = right.frames;
 				
 				right.frames = left.frames;
 				left.frames = oldRight;
@@ -517,9 +517,9 @@ class Character extends FlxSprite
 				// IF THEY HAVE MISS ANIMATIONS??
 				if (animation.getByName('singRIGHTmiss') != null)
 				{
-					final leftMiss = animation.getByName('singLEFTmiss');
-					final rightMiss = animation.getByName('singRIGHTmiss');
-					final oldMiss = rightMiss.frames;
+					var leftMiss = animation.getByName('singLEFTmiss');
+					var rightMiss = animation.getByName('singRIGHTmiss');
+					var oldMiss = rightMiss.frames;
 					
 					rightMiss.frames = leftMiss.frames;
 					leftMiss.frames = oldMiss;
@@ -574,19 +574,13 @@ class Character extends FlxSprite
 					{
 						danced = !danced;
 
-						if (danced)
-							playAnim('danceRight');
-						else
-							playAnim('danceLeft');
+						playAnim(if (danced) 'danceRight' else 'danceLeft');
 					}
 
 				case 'spooky':
 					danced = !danced;
 
-					if (danced)
-						playAnim('danceRight');
-					else
-						playAnim('danceLeft');
+					playAnim(if (danced) 'danceRight' else 'danceLeft');
 				
 				default:
 					playAnim('idle');
@@ -598,7 +592,7 @@ class Character extends FlxSprite
 	{
 		animation.play(animName, force, reversed, frame);
 
-		final daOffset = animOffsets.get(animName);
+		var daOffset = animOffsets.get(animName);
 		if (daOffset != null)
 			offset.set(daOffset[0], daOffset[1]);
 		else

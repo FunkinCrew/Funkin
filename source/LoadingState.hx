@@ -77,7 +77,7 @@ class LoadingState extends MusicBeatState
 		if (!Assets.cache.hasSound(path))
 		{
 			var library = Assets.getLibrary("songs");
-			final symbolPath = path.substr(path.lastIndexOf(":") + 1);
+			var symbolPath = path.substr(path.lastIndexOf(":") + 1);
 			// @:privateAccess
 			// library.types.set(symbolPath, SOUND);
 			// @:privateAccess

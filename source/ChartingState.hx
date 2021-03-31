@@ -290,7 +290,7 @@ class ChartingState extends MusicBeatState
 
 		var swapSection:FlxButton = new FlxButton(10, 170, "Swap section", function()
 		{
-			final sectionNotes:Array<Dynamic> = _song.notes[curSection].sectionNotes;
+			var sectionNotes:Array<Dynamic> = _song.notes[curSection].sectionNotes;
 			
 			for (i in 0...sectionNotes.length)
 			{
@@ -392,7 +392,7 @@ class ChartingState extends MusicBeatState
 
 	override function getEvent(id:String, sender:Dynamic, data:Dynamic, ?params:Array<Dynamic>)
 	{
-		final note:SwagSection = _song.notes[curSection];
+		var note:SwagSection = _song.notes[curSection];
 		
 		if (id == FlxUICheckBox.CLICK_EVENT)
 		{
@@ -942,7 +942,7 @@ class ChartingState extends MusicBeatState
 		var noteStrum = getStrumTime(dummyArrow.y) + sectionStartTime();
 		var noteData = Math.floor(FlxG.mouse.x / GRID_SIZE);
 		var noteSus = 0;
-		final note = _song.notes[curSection];
+		var note = _song.notes[curSection];
 
 		note.sectionNotes.push([noteStrum, noteData, noteSus]);
 

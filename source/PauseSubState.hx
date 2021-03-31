@@ -135,9 +135,10 @@ class PauseSubState extends MusicBeatSubstate
 		else if (curSelected >= menuItems.length)
 			curSelected = 0;
 
-		for (i => item in grpMenuShit.members)
+		var i = 0;
+		for (item in grpMenuShit.members)
 		{
-			item.targetY = I - curSelected;
+			item.targetY = i - curSelected;
 
 			item.alpha = 0.6;
 			// item.setGraphicSize(Std.int(item.width * 0.8));
@@ -147,6 +148,8 @@ class PauseSubState extends MusicBeatSubstate
 				item.alpha = 1;
 				// item.setGraphicSize(Std.int(item.width));
 			}
+			
+			i++;
 		}
 	}
 }

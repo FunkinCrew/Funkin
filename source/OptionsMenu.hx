@@ -114,7 +114,8 @@ class OptionsMenu extends MusicBeatState
 
 		// selector.y = (70 * curSelected) + 30;
 		
-		for (i => item in grpControls.members)
+		var i = 0;
+		for (item in grpControls.members)
 		{
 			item.targetY = i - curSelected;
 
@@ -126,6 +127,8 @@ class OptionsMenu extends MusicBeatState
 				item.alpha = 1;
 				// item.setGraphicSize(Std.int(item.width));
 			}
+			
+			i++;
 		}
 	}
 }

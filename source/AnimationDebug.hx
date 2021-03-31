@@ -86,8 +86,9 @@ class AnimationDebug extends FlxState
 	{
 		var daLoop:Int = 0;
 
-		for (anim => offsets in char.animOffsets)
+		for (anim in char.animOffsets.keys())
 		{
+			var offsets = char.animOffsets[anim];
 			var text:FlxText = new FlxText(10, 20 + (18 * daLoop), 0, anim + ": " + offsets, 15);
 			text.scrollFactor.set();
 			text.color = FlxColor.BLUE;

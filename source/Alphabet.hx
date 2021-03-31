@@ -138,7 +138,7 @@ class Alphabet extends FlxSpriteGroup
 				curRow += 1;
 			}
 			
-			final splitWord:String = splitWords[loopNum];
+			var splitWord:String = splitWords[loopNum];
 
 			if (splitWord == " ")
 			{

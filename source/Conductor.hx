@@ -41,7 +41,7 @@ class Conductor
 		var totalPos:Float = 0;
 		for (i in 0...song.notes.length)
 		{
-			final note = song.notes[i];
+			var note = song.notes[i];
 			
 			if(note.changeBPM && note.bpm != curBPM)
 			{

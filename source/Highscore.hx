@@ -68,7 +68,7 @@ class Highscore
 
 	public static function getScore(song:String, diff:Int):Int
 	{
-		final daSong = formatSong(song, diff);
+		var daSong = formatSong(song, diff);
 		
 		if (!songScores.exists(daSong))
 			setScore(daSong, 0);
@@ -78,7 +78,7 @@ class Highscore
 
 	public static function getWeekScore(week:Int, diff:Int):Int
 	{
-		final daSong = formatSong('week$week', diff);
+		var daSong = formatSong('week$week', diff);
 		
 		if (!songScores.exists(daSong))
 			setScore(daSong, 0);

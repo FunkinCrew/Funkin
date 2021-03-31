@@ -305,7 +305,7 @@ class StoryMenuState extends MusicBeatState
 
 			PlayState.storyDifficulty = curDifficulty;
 
-			final songName = PlayState.storyPlaylist[0].toLowerCase();
+			var songName = PlayState.storyPlaylist[0].toLowerCase();
 			PlayState.SONG = Song.loadFromJson(songName + diffic, songName);
 			PlayState.storyWeek = curWeek;
 			PlayState.campaignScore = 0;
@@ -365,10 +365,12 @@ class StoryMenuState extends MusicBeatState
 		else if (curWeek < 0)
 			curWeek = weekData.length - 1;
 
-		for (i => item in grpWeekText.members)
+		var i = 0;
+		for (item in grpWeekText.members)
 		{
 			item.targetY = i - curWeek;
 			item.alpha = if (item.targetY == Std.int(0) && weekUnlocked[curWeek]) 1 else 0.6;
+			i++;
 		}
 
 		FlxG.sound.play(Paths.sound('scrollMenu'));
@@ -383,7 +385,7 @@ class StoryMenuState extends MusicBeatState
 		}
 		txtTracklist.text = "Tracks\n";
 		
-		final member0 = grpWeekCharacters.members[0];
+		var member0 = grpWeekCharacters.members[0];
 
 		switch (member0.animation.curAnim.name)
 		{

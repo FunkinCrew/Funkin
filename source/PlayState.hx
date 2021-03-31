@@ -600,12 +600,12 @@ class PlayState extends MusicBeatState
 			case 'senpai' | 'senpai-angry':
 				dad.x += 150;
 				dad.y += 360;
-				final mid = dad.getGraphicMidpoint();
+				var mid = dad.getGraphicMidpoint();
 				camPos.set(mid.x + 300, mid.y);
 			case 'spirit':
 				dad.x -= 150;
 				dad.y += 100;
-				final mid = dad.getGraphicMidpoint();
+				var mid = dad.getGraphicMidpoint();
 				camPos.set(mid.x + 300, mid.y);
 		}
 
@@ -814,7 +814,7 @@ class PlayState extends MusicBeatState
 		senpaiEvil.updateHitbox();
 		senpaiEvil.screenCenter();
 
-		final songName = SONG.song.toLowerCase();
+		var songName = SONG.song.toLowerCase();
 		
 		if (songName == 'roses' || songName == 'thorns')
 		{
@@ -1339,7 +1339,7 @@ class PlayState extends MusicBeatState
 			}
 			else
 			{
-				final pos = boyfriend.getScreenPosition();
+				var pos = boyfriend.getScreenPosition();
 				openSubState(new PauseSubState(pos.x, pos.y));
 			}
 		
@@ -1417,7 +1417,7 @@ class PlayState extends MusicBeatState
 			// Conductor.lastSongPos = FlxG.sound.music.time;
 		}
 
-		final curNote = PlayState.SONG.notes[Std.int(curStep / 16)];
+		var curNote = PlayState.SONG.notes[Std.int(curStep / 16)];
 		
 		if (generatedMusic && curNote != null)
 		{
@@ -1426,7 +1426,7 @@ class PlayState extends MusicBeatState
 				// trace(curNote.mustHitSection);
 			}
 			
-			final dadMidpoint = dad.getMidpoint();
+			var dadMidpoint = dad.getMidpoint();
 
 			if (camFollow.x != dadMidpoint.x + 150 && !curNote.mustHitSection)
 			{
@@ -1452,7 +1452,7 @@ class PlayState extends MusicBeatState
 				}
 			}
 
-			final bfMidpoint = boyfriend.getMidpoint();
+			var bfMidpoint = boyfriend.getMidpoint();
 			
 			if (curNote.mustHitSection && camFollow.x != bfMidpoint.x - 100)
 			{
@@ -1539,7 +1539,7 @@ class PlayState extends MusicBeatState
 			vocals.stop();
 			FlxG.sound.music.stop();
 			
-			final bfMidpoint = boyfriend.getMidpoint();
+			var bfMidpoint = boyfriend.getMidpoint();
 
 			openSubState(new GameOverSubstate(bfMidpoint.x, bfMidpoint.y));
 
@@ -1555,7 +1555,7 @@ class PlayState extends MusicBeatState
 		{
 			if (unspawnNotes[0].strumTime - Conductor.songPosition < 1500)
 			{
-				final dunceNote:Note = unspawnNotes.shift();
+				var dunceNote:Note = unspawnNotes.shift();
 				notes.add(dunceNote);
 			}
 		}
@@ -1588,11 +1588,11 @@ class PlayState extends MusicBeatState
 
 					var altAnim:String = "";
 
-					final note = SONG.notes[Math.floor(curStep / 16)];
+					var note = SONG.notes[Math.floor(curStep / 16)];
 					if (note != null && note.altAnim)
 						altAnim = '-alt';
 
-					final anim = switch (daNote.noteData)
+					var anim = switch (daNote.noteData)
 					{
 						case 0: 'singLEFT';
 						case 1: 'singDOWN';
@@ -1809,13 +1809,14 @@ class PlayState extends MusicBeatState
 		comboSpr.updateHitbox();
 		rating.updateHitbox();
 
-		final seperatedScore = [
+		var seperatedScore = [
 			Math.floor(combo / 100),
 			Math.floor((combo - (seperatedScore[0] * 100)) / 10),
 			combo % 10
 		];
 
-		for (daLoop => i in seperatedScore)
+		var daLoop = 0;
+		for (i in seperatedScore)
 		{
 			var numScore:FlxSprite = new FlxSprite().loadGraphic(Paths.image('${pixelShitPart1}num$i$pixelShitPart2'));
 			numScore.screenCenter();
@@ -1847,6 +1848,8 @@ class PlayState extends MusicBeatState
 				},
 				startDelay: Conductor.crochet * 0.002
 			});
+			
+			daLoop++;
 		}
 		/* 
 			trace(combo);
@@ -2068,7 +2071,7 @@ class PlayState extends MusicBeatState
 				boyfriend.stunned = false;
 			});
 
-			final anim = switch (direction)
+			var anim = switch (direction)
 			{
 				case 0: 'singLEFTmiss';
 				case 1: 'singDOWNmiss';
@@ -2123,7 +2126,7 @@ class PlayState extends MusicBeatState
 			else
 				health += 0.004;
 
-			final anim = switch (note.noteData)
+			var anim = switch (note.noteData)
 			{
 				case 0: 'singLEFT';
 				case 1: 'singDOWN';
@@ -2266,7 +2269,7 @@ class PlayState extends MusicBeatState
 			notes.sort(FlxSort.byY, FlxSort.DESCENDING);
 		}
 
-		final note = SONG.notes[Math.floor(curStep / 16)];
+		var note = SONG.notes[Math.floor(curStep / 16)];
 		if (note != null)
 		{
 			if (note.changeBPM)
