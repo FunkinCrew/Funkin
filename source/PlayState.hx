@@ -1661,6 +1661,7 @@ class PlayState extends MusicBeatState
 						var swagRect:FlxRect = new FlxRect(0, 0, daNote.width / daNote.scale.x, daNote.height / daNote.scale.y);
 
 						swagRect.height = (strumLineMid - daNote.y) / daNote.scale.y;
+						swagRect.y = daNote.height / daNote.scale.y - swagRect.height;
 						daNote.clipRect = swagRect;
 					}
 				}
