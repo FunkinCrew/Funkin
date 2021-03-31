@@ -184,8 +184,6 @@ class Note extends FlxSprite
 				}
 
 				prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.5 * PlayState.SONG.speed;
-				if (PreferencesMenu.getPref('downscroll'))
-					prevNote.angle = 0;
 				prevNote.updateHitbox();
 				// prevNote.setGraphicSize();
 			}
