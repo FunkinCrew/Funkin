@@ -1653,7 +1653,8 @@ class PlayState extends MusicBeatState
 				{
 					daNote.y = (strumLine.y + (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(SONG.speed, 2)));
 
-					if (daNote.isSustainNote && (!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit)))
+					if (daNote.isSustainNote
+						&& (!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit)))
 						&& daNote.y - daNote.offset.y * daNote.scale.y + daNote.height >= strumLineMid)
 					{
 						// div by scale because cliprect is affected by scale i THINK
@@ -1667,7 +1668,8 @@ class PlayState extends MusicBeatState
 				{
 					daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(SONG.speed, 2)));
 
-					if (daNote.isSustainNote && (!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit)))
+					if (daNote.isSustainNote
+						&& (!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit)))
 						&& daNote.y + daNote.offset.y * daNote.scale.y <= strumLineMid)
 					{
 						var swagRect:FlxRect = new FlxRect(0, 0, daNote.width / daNote.scale.x, daNote.height / daNote.scale.y);

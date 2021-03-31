@@ -5,6 +5,7 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.animation.FlxBaseAnimation;
 import flixel.graphics.frames.FlxAtlasFrames;
+import flixel.util.FlxSort;
 import haxe.io.Path;
 
 using StringTools;
@@ -504,6 +505,12 @@ class Character extends FlxSprite
 		TankmenBG.animationNotes = animationNotes;
 
 		trace(animationNotes);
+		animationNotes.sort(sortAnims);
+	}
+
+	function sortAnims(val1:Array<Dynamic>, val2:Array<Dynamic>):Int
+	{
+		return FlxSort.byValues(FlxSort.ASCENDING, val1[0], val2[0]);
 	}
 
 	function quickAnimAdd(name:String, prefix:String)
@@ -572,6 +579,11 @@ class Character extends FlxSprite
 						playAnim('shoot' + shootAnim, true);
 						animationNotes.shift();
 					}
+				}
+
+				if (animation.curAnim.finished)
+				{
+					playAnim(animation.curAnim.name, false, false, animation.curAnim.numFrames - 3);
 				}
 		}
 
