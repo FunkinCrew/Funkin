@@ -2171,12 +2171,21 @@ class PlayState extends MusicBeatState
 
 			if (msTiming >= 0.03 && SONG.song.contains('offsetTest'))
 			{
+				//Remove Outliers
+				hits.shift();
+				hits.shift();
+				hits.shift();
+				hits.pop();
+				hits.pop();
+				hits.pop();
 				hits.push(msTiming);
 
 				var total = 0.0;
 
 				for(i in hits)
 					total += i;
+				
+
 				
 				offsetTest = truncateFloat(total / hits.length,2);
 			}
