@@ -23,14 +23,16 @@ class OptionsMenu extends MusicBeatState
 		new OptionCatagory("Gameplay", [
 			new DFJKOption(controls),
 			new FPSCapOption("Cap your FPS (Left for -10, Right for -10)"),
-			new CustomizeGameplay("Drag'n'Drop Gameplay Modules around to your preference"),
-			new ScrollSpeedOption("Change your scroll speed (Left for -0.1, right for +0.1. If its at 1, it will be chart dependent)")
+			new ScrollSpeedOption("Change your scroll speed (Left for -0.1, right for +0.1. If its at 1, it will be chart dependent)"),
+			new OffsetMenu("Get a note offset based off of your inputs!"),
+			new CustomizeGameplay("Drag'n'Drop Gameplay Modules around to your preference")
 		]),
 		new OptionCatagory("Appearence", [
 			new SongPositionOption("Show the songs current position (as a bar)"),
 			new DownscrollOption("Change the layout of the strumline."),
 			new RainbowFPSOption("Make the FPS Counter Rainbow (Only works with the FPS Counter toggeled on)"),
-			new AccuracyOption("Display accuracy information.")
+			new AccuracyOption("Display accuracy information."),
+			new NPSDisplayOption("Shows your current Notes Per Second.")
 		]),
 		new OptionCatagory("Misc", [
 			new EtternaModeOption("Harder Hit Windows and a different scoring system."),
@@ -147,10 +149,10 @@ class OptionsMenu extends MusicBeatState
 						versionShit.text = "Current Scroll Speed: " + FlxG.save.data.scrollSpeed + " - Description - " + currentDescription;
 					default:
 						if (FlxG.keys.pressed.RIGHT)
-							FlxG.save.data.offset++;
+							FlxG.save.data.offset += 0.1;
 		
 						if (FlxG.keys.pressed.LEFT)
-							FlxG.save.data.offset--;
+							FlxG.save.data.offset -= 0.1;
 						
 						versionShit.text = "Offset (Left, Right): " + FlxG.save.data.offset + " - Description - " + currentDescription;
 				}

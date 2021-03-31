@@ -24,6 +24,8 @@ class MusicBeatState extends FlxUIState
 
 	override function create()
 	{
+		(cast (Lib.current.getChildAt(0), Main)).setFPSCap(FlxG.save.data.fpsCap);
+
 		if (transIn != null)
 			trace('reg ' + transIn.region);
 
@@ -69,6 +71,7 @@ class MusicBeatState extends FlxUIState
 
 	private function updateBeat():Void
 	{
+		lastBeat = curStep;
 		curBeat = Math.floor(curStep / 4);
 	}
 
