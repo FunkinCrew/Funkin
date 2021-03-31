@@ -39,6 +39,7 @@ If you just want to download and play the game normally, you can click [here to 
 ### **If you do want to compile, continue reading!**
 
 # Installing the Required Programs
+
 <p align="center">
 	<img src="/art/haxeLogo.png">
 </p>
@@ -139,4 +140,6 @@ Desktop building can be a bit tedious. Each different version requires a differe
 You should have been able to compile the whole game now! What can you do now? Well, you can mod to your heart's desire! Since this game is open source, the creator loves seeing what other talented artists and programmers can make!
 Special thanks to the amazing group of dedicated people that are making this game amazing!
 
-💖💖
+<p align="center">
+	💖💖
+</p>
