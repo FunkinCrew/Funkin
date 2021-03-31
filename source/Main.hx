@@ -1,5 +1,9 @@
 package;
 
+import openfl.display.BlendMode;
+import openfl.text.TextFormat;
+import openfl.display.Application;
+import flixel.util.FlxColor;
 import flixel.FlxG;
 import flixel.FlxGame;
 import flixel.FlxState;
@@ -68,7 +72,9 @@ class Main extends Sprite
 		initialState = TitleState;
 		#end
 
-		addChild(new FlxGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen));
+		game = new FlxGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen);
+
+		addChild(game);
 
 		#if !mobile
 		fpsCounter = new FPS(10, 3, 0xFFFFFF);
@@ -77,9 +83,31 @@ class Main extends Sprite
 		#end
 	}
 
+	var game:FlxGame;
+
 	var fpsCounter:FPS;
 
 	public function toggleFPS(fpsEnabled:Bool):Void {
 		fpsCounter.visible = fpsEnabled;
+	}
+
+	public function changeFPSColor(color:FlxColor)
+	{
+		fpsCounter.textColor = color;
+	}
+
+	public function setFPSCap(cap:Float)
+	{
+		openfl.Lib.current.stage.frameRate = cap;
+	}
+
+	public function getFPSCap():Float
+	{
+		return openfl.Lib.current.stage.frameRate;
+	}
+
+	public function getFPS():Float
+	{
+		return fpsCounter.currentFPS;
 	}
 }

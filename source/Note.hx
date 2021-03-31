@@ -63,20 +63,20 @@ class Note extends FlxSprite
 				animation.add('redScroll', [7]);
 				animation.add('blueScroll', [5]);
 				animation.add('purpleScroll', [4]);
-				
-				animation.add('purplehold', [0]);
-				animation.add('greenhold', [2]);
-				animation.add('redhold', [3]);
-				animation.add('bluehold', [1]);
-				
+
 				if (isSustainNote)
 				{
 					loadGraphic(Paths.image('weeb/pixelUI/arrowEnds'), true, 7, 6);
 
-						animation.add('purpleholdend', [4]);
-						animation.add('greenholdend', [6]);
-						animation.add('redholdend', [7]);
-						animation.add('blueholdend', [5]);
+					animation.add('purpleholdend', [4]);
+					animation.add('greenholdend', [6]);
+					animation.add('redholdend', [7]);
+					animation.add('blueholdend', [5]);
+
+					animation.add('purplehold', [0]);
+					animation.add('greenhold', [2]);
+					animation.add('redhold', [3]);
+					animation.add('bluehold', [1]);
 				}
 
 				setGraphicSize(Std.int(width * PlayState.daPixelZoom));
@@ -89,16 +89,16 @@ class Note extends FlxSprite
 				animation.addByPrefix('redScroll', 'red0');
 				animation.addByPrefix('blueScroll', 'blue0');
 				animation.addByPrefix('purpleScroll', 'purple0');
-				
+
+				animation.addByPrefix('purpleholdend', 'pruple end hold');
+				animation.addByPrefix('greenholdend', 'green hold end');
+				animation.addByPrefix('redholdend', 'red hold end');
+				animation.addByPrefix('blueholdend', 'blue hold end');
+
 				animation.addByPrefix('purplehold', 'purple hold piece');
 				animation.addByPrefix('greenhold', 'green hold piece');
 				animation.addByPrefix('redhold', 'red hold piece');
 				animation.addByPrefix('bluehold', 'blue hold piece');
-
-					animation.addByPrefix('purpleholdend', 'pruple end hold');
-					animation.addByPrefix('greenholdend', 'green hold end');
-					animation.addByPrefix('redholdend', 'red hold end');
-					animation.addByPrefix('blueholdend', 'blue hold end');
 
 				setGraphicSize(Std.int(width * 0.7));
 				updateHitbox();
@@ -127,52 +127,55 @@ class Note extends FlxSprite
 		if (FlxG.save.data.downscroll && sustainNote) 
 			flipY = true;
 
+		
 		if (isSustainNote && prevNote != null)
-		{
-			noteScore * 0.2;
-			alpha = 0.6;
-
-			x += width / 2;
-
-			switch (noteData)
 			{
-				case 2:
-					animation.play('greenholdend');
-				case 3:
-					animation.play('redholdend');
-				case 1:
-					animation.play('blueholdend');
-				case 0:
-					animation.play('purpleholdend');
-			}
-
-			updateHitbox();
-
-			x -= width / 2;
-
-			if (PlayState.curStage.startsWith('school'))
-				x += 30;
-
-			if (prevNote.isSustainNote)
-			{
-				switch (prevNote.noteData)
+				noteScore * 0.2;
+				alpha = 0.6;
+	
+				x += width / 2;
+	
+				switch (noteData)
 				{
-					case 0:
-						prevNote.animation.play('purplehold');
-					case 1:
-						prevNote.animation.play('bluehold');
 					case 2:
-						prevNote.animation.play('greenhold');
+						animation.play('greenholdend');
 					case 3:
-						prevNote.animation.play('redhold');
+						animation.play('redholdend');
+					case 1:
+						animation.play('blueholdend');
+					case 0:
+						animation.play('purpleholdend');
 				}
-
-				prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.5 * PlayState.SONG.speed;
-				prevNote.updateHitbox();
-				// prevNote.setGraphicSize();
+	
+				updateHitbox();
+	
+				x -= width / 2;
+	
+				if (PlayState.curStage.startsWith('school'))
+					x += 30;
+	
+				if (prevNote.isSustainNote)
+				{
+					switch (prevNote.noteData)
+					{
+						case 0:
+							prevNote.animation.play('purplehold');
+						case 1:
+							prevNote.animation.play('bluehold');
+						case 2:
+							prevNote.animation.play('greenhold');
+						case 3:
+							prevNote.animation.play('redhold');
+					}
+	
+					prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.5 * PlayState.SONG.speed;
+					prevNote.updateHitbox();
+					// prevNote.setGraphicSize();
+				}
 			}
-		}
 	}
+
+	var oneTime:Bool = false;
 
 	override function update(elapsed:Float)
 	{
@@ -180,34 +183,15 @@ class Note extends FlxSprite
 
 		if (mustPress)
 		{
-			if (strumTime > Conductor.songPosition - Conductor.safeZoneOffset
-				&& strumTime < Conductor.songPosition + Conductor.safeZoneOffset)
+			if ((strumTime > Conductor.songPosition - Conductor.safeZoneOffset
+				&& strumTime < Conductor.songPosition + Conductor.safeZoneOffset))
+			{
 				canBeHit = true;
+			}
 			else
 				canBeHit = false;
 
-			var noteDiff:Float = Math.abs(strumTime - Conductor.songPosition);
-
-			if (canBeHit)
-			{
-				if (noteDiff > Conductor.safeZoneOffset * 0.95)
-					rating = "shit";
-				else if (noteDiff < Conductor.safeZoneOffset * -0.95)
-					rating = "shit";
-				else if (noteDiff > Conductor.safeZoneOffset * 0.70)
-					rating = "bad";
-				else if (noteDiff < Conductor.safeZoneOffset * -0.75)
-					rating = "bad";
-				else if (noteDiff > Conductor.safeZoneOffset * 0.45)
-					rating = "good";
-				else if (noteDiff < Conductor.safeZoneOffset * -0.45)
-					rating = "good";
-				else
-					rating = "sick";
-				FlxG.watch.addQuick("Note " + this.ID,rating);
-			}
-
-			if (strumTime < Conductor.songPosition - (Conductor.safeZoneOffset * 0.80) && !wasGoodHit)
+			if (strumTime < Conductor.songPosition - Conductor.safeZoneOffset && !wasGoodHit)
 			{
 				tooLate = true;
 				rating = "shit";
