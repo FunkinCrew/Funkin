@@ -66,6 +66,8 @@ class PlayState extends MusicBeatState
 	public static var rep:Replay;
 	public static var loadRep:Bool = false;
 
+	public static var noteBools:Array<Bool> = [false, false, false, false];
+
 	var halloweenLevel:Bool = false;
 
 	var songLength:Float = 0;
@@ -2378,6 +2380,7 @@ class PlayState extends MusicBeatState
 						{
 							for (coolNote in possibleNotes)
 							{
+
 								if (controlArray[coolNote.noteData])
 									goodNoteHit(coolNote);
 								else
@@ -2395,6 +2398,17 @@ class PlayState extends MusicBeatState
 						{
 							if (loadRep)
 							{
+								var noteDiff:Float = Math.abs(daNote.strumTime - Conductor.songPosition);
+
+								if (noteDiff > Conductor.safeZoneOffset * 0.70 || noteDiff < Conductor.safeZoneOffset * -0.70)
+									daNote.rating = "shit";
+								else if (noteDiff > Conductor.safeZoneOffset * 0.50 || noteDiff < Conductor.safeZoneOffset * -0.50)
+									daNote.rating = "bad";
+								else if (noteDiff > Conductor.safeZoneOffset * 0.45 || noteDiff < Conductor.safeZoneOffset * -0.45)
+									daNote.rating = "good";
+								else if (noteDiff < Conductor.safeZoneOffset * 0.44 && noteDiff > Conductor.safeZoneOffset * -0.44)
+									daNote.rating = "sick";
+
 								if (NearlyEquals(daNote.strumTime,rep.replay.keyPresses[repPresses].time, 30))
 								{
 									goodNoteHit(daNote);
@@ -2414,6 +2428,16 @@ class PlayState extends MusicBeatState
 									{
 										if (NearlyEquals(coolNote.strumTime,rep.replay.keyPresses[repPresses].time, 30))
 										{
+											var noteDiff:Float = Math.abs(coolNote.strumTime - Conductor.songPosition);
+
+											if (noteDiff > Conductor.safeZoneOffset * 0.70 || noteDiff < Conductor.safeZoneOffset * -0.70)
+												coolNote.rating = "shit";
+											else if (noteDiff > Conductor.safeZoneOffset * 0.50 || noteDiff < Conductor.safeZoneOffset * -0.50)
+												coolNote.rating = "bad";
+											else if (noteDiff > Conductor.safeZoneOffset * 0.45 || noteDiff < Conductor.safeZoneOffset * -0.45)
+												coolNote.rating = "good";
+											else if (noteDiff < Conductor.safeZoneOffset * 0.44 && noteDiff > Conductor.safeZoneOffset * -0.44)
+												coolNote.rating = "sick";
 											goodNoteHit(coolNote);
 											trace('force note hit');
 										}
@@ -2431,6 +2455,17 @@ class PlayState extends MusicBeatState
 						{
 							if (NearlyEquals(daNote.strumTime,rep.replay.keyPresses[repPresses].time, 30))
 							{
+								var noteDiff:Float = Math.abs(daNote.strumTime - Conductor.songPosition);
+
+								if (noteDiff > Conductor.safeZoneOffset * 0.70 || noteDiff < Conductor.safeZoneOffset * -0.70)
+									daNote.rating = "shit";
+								else if (noteDiff > Conductor.safeZoneOffset * 0.50 || noteDiff < Conductor.safeZoneOffset * -0.50)
+									daNote.rating = "bad";
+								else if (noteDiff > Conductor.safeZoneOffset * 0.45 || noteDiff < Conductor.safeZoneOffset * -0.45)
+									daNote.rating = "good";
+								else if (noteDiff < Conductor.safeZoneOffset * 0.44 && noteDiff > Conductor.safeZoneOffset * -0.44)
+									daNote.rating = "sick";
+
 								goodNoteHit(daNote);
 								trace('force note hit');
 							}
@@ -2711,6 +2746,17 @@ class PlayState extends MusicBeatState
 
 	function noteCheck(controlArray:Array<Bool>, note:Note):Void // sorry lol
 		{
+			var noteDiff:Float = Math.abs(note.strumTime - Conductor.songPosition);
+
+			if (noteDiff > Conductor.safeZoneOffset * 0.70 || noteDiff < Conductor.safeZoneOffset * -0.70)
+				note.rating = "shit";
+			else if (noteDiff > Conductor.safeZoneOffset * 0.50 || noteDiff < Conductor.safeZoneOffset * -0.50)
+				note.rating = "bad";
+			else if (noteDiff > Conductor.safeZoneOffset * 0.45 || noteDiff < Conductor.safeZoneOffset * -0.45)
+				note.rating = "good";
+			else if (noteDiff < Conductor.safeZoneOffset * 0.44 && noteDiff > Conductor.safeZoneOffset * -0.44)
+				note.rating = "sick";
+
 			if (loadRep)
 			{
 				if (controlArray[note.noteData])
@@ -2735,6 +2781,7 @@ class PlayState extends MusicBeatState
 					if (mashing <= getKeyPresses(note) && mashViolations < 2)
 					{
 						mashViolations++;
+						
 						goodNoteHit(note, (mashing <= getKeyPresses(note)));
 					}
 					else
@@ -2755,6 +2802,17 @@ class PlayState extends MusicBeatState
 
 		function goodNoteHit(note:Note, resetMashViolation = true):Void
 			{
+
+				var noteDiff:Float = Math.abs(note.strumTime - Conductor.songPosition);
+
+				if (noteDiff > Conductor.safeZoneOffset * 0.70 || noteDiff < Conductor.safeZoneOffset * -0.70)
+					note.rating = "shit";
+				else if (noteDiff > Conductor.safeZoneOffset * 0.50 || noteDiff < Conductor.safeZoneOffset * -0.50)
+					note.rating = "bad";
+				else if (noteDiff > Conductor.safeZoneOffset * 0.45 || noteDiff < Conductor.safeZoneOffset * -0.45)
+					note.rating = "good";
+				else if (noteDiff < Conductor.safeZoneOffset * 0.44 && noteDiff > Conductor.safeZoneOffset * -0.44)
+					note.rating = "sick";
 
 				if (resetMashViolation)
 					mashViolations--;

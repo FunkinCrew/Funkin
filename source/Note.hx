@@ -175,40 +175,23 @@ class Note extends FlxSprite
 			}
 	}
 
+	var oneTime:Bool = false;
+
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
 
 		if (mustPress)
 		{
-			if (strumTime > Conductor.songPosition - Conductor.safeZoneOffset
-				&& strumTime < Conductor.songPosition + Conductor.safeZoneOffset)
+			if ((strumTime > Conductor.songPosition - Conductor.safeZoneOffset
+				&& strumTime < Conductor.songPosition + Conductor.safeZoneOffset))
+			{
 				canBeHit = true;
+			}
 			else
 				canBeHit = false;
 
-			var noteDiff:Float = Math.abs(strumTime - Conductor.songPosition);
-
-			if (canBeHit)
-			{
-				if (noteDiff > Conductor.safeZoneOffset * 0.96)
-					rating = "shit";
-				else if (noteDiff < Conductor.safeZoneOffset * -0.96)
-					rating = "shit";
-				else if (noteDiff > Conductor.safeZoneOffset * 0.50)
-					rating = "bad";
-				else if (noteDiff < Conductor.safeZoneOffset * -0.50)
-					rating = "bad";
-				else if (noteDiff > Conductor.safeZoneOffset * 0.45)
-					rating = "good";
-				else if (noteDiff < Conductor.safeZoneOffset * -0.45)
-					rating = "good";
-				else
-					rating = "sick";
-				FlxG.watch.addQuick("Note " + this.ID,rating);
-			}
-
-			if (strumTime < Conductor.songPosition - (Conductor.safeZoneOffset * 0.80) && !wasGoodHit)
+			if (strumTime < Conductor.songPosition - Conductor.safeZoneOffset && !wasGoodHit)
 			{
 				tooLate = true;
 				rating = "shit";

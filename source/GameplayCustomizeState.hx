@@ -103,6 +103,8 @@ class GameplayCustomizeState extends MusicBeatState
         sick.x = FlxG.save.data.changedHitX;
         sick.y = FlxG.save.data.changedHitY;
 
+        sick.updateHitbox();
+
         FlxG.mouse.visible = true;
 
     }
