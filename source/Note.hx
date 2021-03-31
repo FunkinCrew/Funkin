@@ -41,14 +41,14 @@ class Note extends FlxSprite
 
 		if (prevNote == null)
 			prevNote = this;
-		
+
 		this.prevNote = prevNote;
 		isSustainNote = sustainNote;
 
 		x += 50;
 		// MAKE SURE ITS DEFINITELY OFF SCREEN?
 		y -= 2000;
-		this.strumTime = strumTime + FlxG.save.data.offset;
+		this.strumTime = strumTime;
 
 		this.noteData = noteData;
 
@@ -121,61 +121,60 @@ class Note extends FlxSprite
 				animation.play('redScroll');
 		}
 
+		// trace(prevNote);
+
 		// we make sure its downscroll and its a SUSTAIN NOTE (aka a trail, not a note)
 		// and flip it so it doesn't look weird.
 		// THIS DOESN'T FUCKING FLIP THE NOTE, CONTRIBUTERS DON'T JUST COMMENT THIS OUT JESUS
 		if (FlxG.save.data.downscroll && sustainNote) 
 			flipY = true;
 
-		
 		if (isSustainNote && prevNote != null)
-			{
-				noteScore * 0.2;
-				alpha = 0.6;
-	
-				x += width / 2;
-	
-				switch (noteData)
-				{
-					case 2:
-						animation.play('greenholdend');
-					case 3:
-						animation.play('redholdend');
-					case 1:
-						animation.play('blueholdend');
-					case 0:
-						animation.play('purpleholdend');
-				}
-	
-				updateHitbox();
-	
-				x -= width / 2;
-	
-				if (PlayState.curStage.startsWith('school'))
-					x += 30;
-	
-				if (prevNote.isSustainNote)
-				{
-					switch (prevNote.noteData)
-					{
-						case 0:
-							prevNote.animation.play('purplehold');
-						case 1:
-							prevNote.animation.play('bluehold');
-						case 2:
-							prevNote.animation.play('greenhold');
-						case 3:
-							prevNote.animation.play('redhold');
-					}
-	
-					prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.5 * PlayState.SONG.speed;
-					prevNote.updateHitbox();
-					// prevNote.setGraphicSize();
-				}
-			}
-	}
+		{
+			noteScore * 0.2;
+			alpha = 0.6;
 
-	var oneTime:Bool = false;
+			x += width / 2;
+
+			switch (noteData)
+			{
+				case 2:
+					animation.play('greenholdend');
+				case 3:
+					animation.play('redholdend');
+				case 1:
+					animation.play('blueholdend');
+				case 0:
+					animation.play('purpleholdend');
+			}
+
+			updateHitbox();
+
+			x -= width / 2;
+
+			if (PlayState.curStage.startsWith('school'))
+				x += 30;
+
+			if (prevNote.isSustainNote)
+			{
+				switch (prevNote.noteData)
+				{
+					case 0:
+						prevNote.animation.play('purplehold');
+					case 1:
+						prevNote.animation.play('bluehold');
+					case 2:
+						prevNote.animation.play('greenhold');
+					case 3:
+						prevNote.animation.play('redhold');
+				}
+
+				prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.5 * PlayState.SONG.speed;
+				prevNote.updateHitbox();
+				// prevNote.setGraphicSize();
+			}
+		}
+	}
 
 	override function update(elapsed:Float)
 	{
@@ -183,19 +182,15 @@ class Note extends FlxSprite
 
 		if (mustPress)
 		{
-			if ((strumTime > Conductor.songPosition - Conductor.safeZoneOffset
-				&& strumTime < Conductor.songPosition + Conductor.safeZoneOffset))
-			{
+			// The * 0.5 is so that it's easier to hit them too late, instead of too early
+			if (strumTime > Conductor.songPosition - Conductor.safeZoneOffset
+				&& strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * 0.5))
 				canBeHit = true;
-			}
 			else
 				canBeHit = false;
 
 			if (strumTime < Conductor.songPosition - Conductor.safeZoneOffset && !wasGoodHit)
-			{
 				tooLate = true;
-				rating = "shit";
-			}
 		}
 		else
 		{
