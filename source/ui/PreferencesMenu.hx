@@ -24,6 +24,7 @@ class PreferencesMenu extends ui.OptionsState.Page
 		createPrefItem('downscroll', 'downscroll', false);
 		createPrefItem('flashing menu', 'flashing-menu', true);
 		createPrefItem('Camera Zooming on Beat', 'camera-zoom', true);
+		createPrefItem('FPS Counter', 'fps-counter', true);
 	}
 
 	public static function getPref(pref:String):Dynamic
@@ -37,6 +38,10 @@ class PreferencesMenu extends ui.OptionsState.Page
 		preferenceCheck('downscroll', true);
 		preferenceCheck('flashing-menu', true);
 		preferenceCheck('camera-zoom', true);
+		preferenceCheck('fps-counter', true);
+
+		if (!getPref('fps-counter'))
+			FlxG.stage.removeChild(Main.fpsCounter);
 	}
 
 	private function createPrefItem(prefName:String, prefString:String, prefValue:Dynamic):Void
@@ -84,6 +89,14 @@ class PreferencesMenu extends ui.OptionsState.Page
 		preferences.set(prefName, daSwap);
 		checkboxes[items.selectedIndex].daValue = daSwap;
 		trace('toggled? ' + preferences.get(prefName));
+
+		if (prefName == 'fps-counter')
+		{
+			if (getPref('fps-counter'))
+				FlxG.stage.addChild(Main.fpsCounter);
+			else
+				FlxG.stage.removeChild(Main.fpsCounter);
+		}
 	}
 
 	override function update(elapsed:Float)
