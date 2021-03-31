@@ -46,7 +46,7 @@ class PreferencesMenu extends ui.OptionsState.Page
 
 	private function createPrefItem(prefName:String, prefString:String, prefValue:Dynamic):Void
 	{
-		items.createItem(100, 100 * items.length, prefName, AtlasFont.Bold, function()
+		items.createItem(120, (120 * items.length) + 30, prefName, AtlasFont.Bold, function()
 		{
 			preferenceCheck(prefString, prefValue);
 
@@ -74,7 +74,7 @@ class PreferencesMenu extends ui.OptionsState.Page
 
 	function createCheckbox(prefString:String)
 	{
-		var checkbox:CheckboxThingie = new CheckboxThingie(0, 100 * (items.length - 1), preferences.get(prefString));
+		var checkbox:CheckboxThingie = new CheckboxThingie(0, 120 * (items.length - 1), preferences.get(prefString));
 		checkboxes.push(checkbox);
 		add(checkbox);
 	}
@@ -102,6 +102,14 @@ class PreferencesMenu extends ui.OptionsState.Page
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+
+		items.forEach(function(daItem:TextMenuItem)
+		{
+			if (items.selectedItem == daItem)
+				daItem.x = 150;
+			else
+				daItem.x = 120;
+		});
 	}
 
 	private static function preferenceCheck(prefString:String, prefValue:Dynamic):Void
