@@ -1,7 +1,5 @@
-=== TODO ===
-+ Add a transition effect from South to Monster, similiar to Eggnog to Winter Horrorland
-
 === 0.0.2.4 ===
++ Added a transition effect from South to Monster, similiar to Eggnog to Winter Horrorland
 - Fixed Monster's sprites on week 2
 
 === 0.0.2.3 ===

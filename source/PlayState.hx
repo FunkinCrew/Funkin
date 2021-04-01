@@ -789,6 +789,35 @@ class PlayState extends MusicBeatState
 		{
 			switch (curSong.toLowerCase())
 			{
+				case "monster":
+					if (Options.st_monsterIntro == true) {
+						// most of this is copy past code from winter horrorland, but whatever the fuck
+						var blackScreen:FlxSprite = new FlxSprite(0, 0).makeGraphic(Std.int(FlxG.width * 2), Std.int(FlxG.height * 2), FlxColor.BLACK);
+						add(blackScreen);
+						blackScreen.scrollFactor.set();
+						camHUD.visible = false;
+
+						new FlxTimer().start(0.1, function(tmr:FlxTimer)
+						{
+							remove(blackScreen);
+							FlxG.sound.play(Paths.sound('Lights_Turn_On'));
+
+							new FlxTimer().start(0.8, function(tmr:FlxTimer)
+							{
+								camHUD.visible = true;
+								remove(blackScreen);
+								FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, 2.5, {
+									ease: FlxEase.quadInOut,
+									onComplete: function(twn:FlxTween)
+									{
+										startCountdown();
+									}
+								});
+							});
+						});
+					} else {
+						startCountdown();
+					}
 				case "winter-horrorland":
 					var blackScreen:FlxSprite = new FlxSprite(0, 0).makeGraphic(Std.int(FlxG.width * 2), Std.int(FlxG.height * 2), FlxColor.BLACK);
 					add(blackScreen);
