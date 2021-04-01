@@ -290,16 +290,28 @@ class TitleState extends MusicBeatState
 
 				if (version.trim() != NGio.GAME_VER_NUMS.trim() && !OutdatedSubState.leftState)
 				{
-					FlxG.switchState(new OutdatedSubState());
-					trace('OLD VERSION!');
-					trace('old ver');
-					trace(version.trim());
-					trace('cur ver');
-					trace(NGio.GAME_VER_NUMS.trim());
+					if (Options.st_disableFnfVersionCheck == false) {
+						FlxG.switchState(new OutdatedSubState());
+						trace('OLD VERSION!');
+						trace('old ver');
+						trace(version.trim());
+						trace('cur ver');
+						trace(NGio.GAME_VER_NUMS.trim());
+					} else {
+						if (Options.st_noticeEnabled == true) {
+							FlxG.switchState(new NoticeSubState());
+						} else {
+							FlxG.switchState(new MainMenuState());
+						}
+					}
 				}
 				else
 				{
-					FlxG.switchState(new MainMenuState());
+					if (Options.st_noticeEnabled == true) {
+						FlxG.switchState(new NoticeSubState());
+					} else {
+						FlxG.switchState(new MainMenuState());
+					}
 				}
 			});
 			// FlxG.sound.play(Paths.music('titleShoot'), 0.7);

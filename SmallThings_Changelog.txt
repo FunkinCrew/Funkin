@@ -1,3 +1,6 @@
+=== 0.0.2.3 ==
++ Added a title screen notice
+
 === 0.0.2.2 ===
 + Added an outline to the internal conductor position debugger
 + Added a debug indicator to the versiont text on the main menu
