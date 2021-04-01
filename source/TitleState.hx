@@ -299,7 +299,11 @@ class TitleState extends MusicBeatState
 						trace(NGio.GAME_VER_NUMS.trim());
 					} else {
 						if (Options.st_noticeEnabled == true) {
-							FlxG.switchState(new NoticeSubState());
+							if (Options.st_debug == false) {
+								FlxG.switchState(new NoticeSubState());
+							} else {
+								FlxG.switchState(new MainMenuState());
+							}
 						} else {
 							FlxG.switchState(new MainMenuState());
 						}
@@ -308,7 +312,11 @@ class TitleState extends MusicBeatState
 				else
 				{
 					if (Options.st_noticeEnabled == true) {
-						FlxG.switchState(new NoticeSubState());
+						if (Options.st_debug == false) {
+							FlxG.switchState(new NoticeSubState());
+						} else {
+							FlxG.switchState(new MainMenuState());
+						}
 					} else {
 						FlxG.switchState(new MainMenuState());
 					}

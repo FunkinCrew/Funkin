@@ -116,8 +116,11 @@ class PlayState extends MusicBeatState
 	var songScore:Int = 0;
 	var scoreTxt:FlxText;
 
-	// small things: debug conductor pos score
+	// small things: debug texts
 	var conductorPosTxt:FlxText;
+	var hpTxt:FlxText;
+	var iconP1txt:FlxText;
+	var iconP2txt:FlxText;
 
 	// small things: do icon check
 	var doIconCheck:Bool = true;
@@ -751,15 +754,6 @@ class PlayState extends MusicBeatState
 		scoreTxt.scrollFactor.set();
 		add(scoreTxt);
 
-		// small things: debug conductor pos text
-		conductorPosTxt = new FlxText(10, 10, "", 20);
-		conductorPosTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		conductorPosTxt.scrollFactor.set();
-
-		if (Options.st_debug == true) {
-			add(conductorPosTxt);
-		}
-
 		iconP1 = new HealthIcon(SONG.player1, true);
 		iconP1.y = healthBar.y - (iconP1.height / 2);
 		add(iconP1);
@@ -767,6 +761,33 @@ class PlayState extends MusicBeatState
 		iconP2 = new HealthIcon(SONG.player2, false);
 		iconP2.y = healthBar.y - (iconP2.height / 2);
 		add(iconP2);
+
+		// small things: debug text
+		conductorPosTxt = new FlxText(10, 10, "", 20);
+		conductorPosTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		conductorPosTxt.scrollFactor.set();
+		
+		hpTxt = new FlxText(10, 28, "", 20);
+		hpTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		hpTxt.scrollFactor.set();
+		
+		iconP1txt = new FlxText(iconP1.x, iconP1.y + 10, "p1", 20);
+		iconP1txt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		iconP1txt.scrollFactor.set();
+		
+		iconP2txt = new FlxText(iconP2.x, iconP2.y + 10, "p2", 20);
+		iconP2txt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		iconP2txt.scrollFactor.set();
+		
+		iconP1txt.text = SONG.player1;
+		iconP2txt.text = SONG.player2;
+		
+		if (Options.st_debug == true) {
+			add(conductorPosTxt);
+			add(hpTxt);
+			add(iconP1txt);
+			add(iconP2txt);
+		}
 
 		strumLineNotes.cameras = [camHUD];
 		notes.cameras = [camHUD];
@@ -776,6 +797,9 @@ class PlayState extends MusicBeatState
 		iconP2.cameras = [camHUD];
 		scoreTxt.cameras = [camHUD];
 		conductorPosTxt.cameras = [camHUD];
+		hpTxt.cameras = [camHUD];
+		iconP1txt.cameras = [camHUD];
+		iconP2txt.cameras = [camHUD];
 		doof.cameras = [camHUD];
 
 		// if (SONG.song == 'South')
@@ -1393,9 +1417,13 @@ class PlayState extends MusicBeatState
 		if (FlxG.keys.justPressed.NINE)
 		{
 			if (iconP1.animation.curAnim.name == 'bf-old')
+			{
 				iconP1.animation.play(SONG.player1);
-			else
+				iconP1txt.text = SONG.player1;
+			} else {
 				iconP1.animation.play('bf-old');
+				iconP1txt.text = "bf-old";
+			}
 		}
 
 		// small things: unknown character debug
@@ -1403,9 +1431,13 @@ class PlayState extends MusicBeatState
 		{
 			if (Options.st_debug == true) {
 				if (iconP1.animation.curAnim.name == 'unknown')
+				{
 					iconP1.animation.play(SONG.player1);
-				else
+					iconP1txt.text = SONG.player1;
+				} else {
 					iconP1.animation.play('unknown');
+					iconP1txt.text = "unknown";
+				}
 			}
 		}
 
@@ -1432,6 +1464,10 @@ class PlayState extends MusicBeatState
 		// small things: conductor pos debug text
 		if (Options.st_debug == true) {
 			conductorPosTxt.text = "Conductor Pos: " + Conductor.songPosition;
+			hpTxt.text = "HP: " + FlxMath.remapToRange(health, 0, 2, 0, 100) + "%";
+
+			scoreTxt.x = 10;
+			scoreTxt.y = 46;
 		}
 
 		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause)
@@ -1476,6 +1512,9 @@ class PlayState extends MusicBeatState
 
 		iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset);
 		iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset);
+
+		iconP1txt.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset);
+		iconP2txt.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset);
 
 		if (health > 2)
 			health = 2;
@@ -1636,8 +1675,10 @@ class PlayState extends MusicBeatState
 					if (doIconCheck == true) {
 						if (Conductor.songPosition <= 0) {
 							iconP2.animation.play('unknown');
+							iconP2txt.text = "unknown";
 						} else {
 							iconP2.animation.play(SONG.player2);
+							iconP2txt.text = SONG.player2;
 							doIconCheck = false;
 						}
 					}
@@ -1653,8 +1694,10 @@ class PlayState extends MusicBeatState
 					if (doIconCheck == true) {
 						if (Conductor.songPosition <= 9200) {
 							iconP2.animation.play('unknown');
+							iconP2txt.text = "unknown";
 						} else {
 							iconP2.animation.play(SONG.player2);
+							iconP2txt.text = SONG.player2;
 							doIconCheck = false;
 						}
 					}

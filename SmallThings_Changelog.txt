@@ -1,6 +1,8 @@
 === 0.0.2.5 ===
 + Added the cheat key (C) to debug mode
-- Disabled the title screen notice
++ Added an HP counter to debug mode
+- Disabled the title screen notice when in debug mode
+- Moved the score counter to the top left when in debug mode
 
 === 0.0.2.4 ===
 + Added a transition effect from South to Monster, similiar to Eggnog to Winter Horrorland
