@@ -124,6 +124,10 @@ class PlayState extends MusicBeatState
 	private var camHUD:FlxCamera;
 	private var camGame:FlxCamera;
 
+
+	var notesHitArray:Array<Date> = [];
+	var currentFrames:Int = 0;
+
 	var dialogue:Array<String> = ['blah blah blah', 'coolswag'];
 
 	var halloweenBG:FlxSprite;
@@ -823,6 +827,8 @@ class PlayState extends MusicBeatState
 			scoreTxt.x = healthBarBG.x + healthBarBG.width / 2;
 		scoreTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 		scoreTxt.scrollFactor.set();
+		if (SONG.song.contains('offsetTest'))
+			scoreTxt.x += 300;
 		add(scoreTxt);
 
 		replayTxt = new FlxText(healthBarBG.x + healthBarBG.width / 2 - 75, healthBarBG.y + (FlxG.save.data.downscroll ? 100 : -100), 0, "REPLAY", 20);
@@ -1476,12 +1482,10 @@ class PlayState extends MusicBeatState
 			ranking = "(MFC)";
 		else if (misses == 0 && bads == 0 && shits == 0 && goods >= 1) // Good Full Combo (Nothing but Goods & Sicks)
 			ranking = "(GFC)";
-		else if ((shits < 10 && shits != 0) && misses == 0) // Single Digit Combo Breaks
-			ranking = "(SDCB)";
-		else if (misses == 0 && (shits >= 10)) // Regular FC
+		else if (misses == 0) // Regular FC
 			ranking = "(FC)";
-		else if (misses >= 10 || (shits >= 10)) // Combo Breaks
-			ranking = "(CB)";
+		else if (misses < 10) // Single Digit Combo Breaks
+			ranking = "(SDCB)";
 		else
 			ranking = "(Clear)";
 
@@ -1564,6 +1568,21 @@ class PlayState extends MusicBeatState
 		perfectMode = false;
 		#end
 
+		if (currentFrames == FlxG.save.data.fpsCap)
+		{
+			for(i in 0...notesHitArray.length)
+			{
+				var cock:Date = notesHitArray[i];
+				if (cock != null)
+					if (cock.getTime() + 2000 < Date.now().getTime())
+						notesHitArray.remove(cock);
+			}
+			nps = Math.floor(notesHitArray.length / 2);
+			currentFrames = 0;
+		}
+		else
+			currentFrames++;
+
 		if (FlxG.keys.justPressed.NINE)
 		{
 			if (iconP1.animation.curAnim.name == 'bf-old')
@@ -1590,13 +1609,21 @@ class PlayState extends MusicBeatState
 
 		super.update(elapsed);
 
-		if (FlxG.save.data.accuracyDisplay)
+		if (!SONG.song.contains('offsetTest'))
 		{
-			scoreTxt.text = "Score:" + (FlxG.save.data.etternaMode ? Math.max(0,etternaModeScore) + " (" + songScore + ")" : "" + songScore) + " | Combo Breaks:" + misses + " | Accuracy:" + truncateFloat(accuracy, 2) + "% | " + generateRanking();
+			if (FlxG.save.data.accuracyDisplay)
+			{
+				scoreTxt.text = (FlxG.save.data.npsDisplay ? "NPS: " + nps + " | " : "") + "Score:" + (FlxG.save.data.etternaMode ? Math.max(0,etternaModeScore) + " (" + songScore + ")" : "" + songScore) + " | Combo Breaks:" + misses + " | Accuracy:" + truncateFloat(accuracy, 2) + "% | " + generateRanking();
+			}
+			else
+			{
+				scoreTxt.text = (FlxG.save.data.npsDisplay ? "NPS: " + nps + " | " : "") + "Score:" + songScore;
+			}
 		}
 		else
 		{
-			scoreTxt.text = "Score:" + songScore;
+			scoreTxt.text = "Suggested Offset: " + offsetTest;
+
 		}
 		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause)
 		{
@@ -1940,76 +1967,88 @@ class PlayState extends MusicBeatState
 			#end
 		}
 
-		if (isStoryMode)
+		if (SONG.song.contains('offsetTest'))
 		{
-			campaignScore += Math.round(songScore);
-
-			storyPlaylist.remove(storyPlaylist[0]);
-
-			if (storyPlaylist.length <= 0)
-			{
-				FlxG.sound.playMusic(Paths.music('freakyMenu'));
-
-				transIn = FlxTransitionableState.defaultTransIn;
-				transOut = FlxTransitionableState.defaultTransOut;
-
-				FlxG.switchState(new StoryMenuState());
-
-				// if ()
-				StoryMenuState.weekUnlocked[Std.int(Math.min(storyWeek + 1, StoryMenuState.weekUnlocked.length - 1))] = true;
-
-				if (SONG.validScore)
-				{
-					NGio.unlockMedal(60961);
-					Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficulty);
-				}
-
-				FlxG.save.data.weekUnlocked = StoryMenuState.weekUnlocked;
-				FlxG.save.flush();
-			}
-			else
-			{
-				var difficulty:String = "";
-
-				if (storyDifficulty == 0)
-					difficulty = '-easy';
-
-				if (storyDifficulty == 2)
-					difficulty = '-hard';
-
-				trace('LOADING NEXT SONG');
-				trace(PlayState.storyPlaylist[0].toLowerCase() + difficulty);
-
-				if (SONG.song.toLowerCase() == 'eggnog')
-				{
-					var blackShit:FlxSprite = new FlxSprite(-FlxG.width * FlxG.camera.zoom,
-						-FlxG.height * FlxG.camera.zoom).makeGraphic(FlxG.width * 3, FlxG.height * 3, FlxColor.BLACK);
-					blackShit.scrollFactor.set();
-					add(blackShit);
-					camHUD.visible = false;
-
-					FlxG.sound.play(Paths.sound('Lights_Shut_off'));
-				}
-
-				FlxTransitionableState.skipNextTransIn = true;
-				FlxTransitionableState.skipNextTransOut = true;
-				prevCamFollow = camFollow;
-
-				PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + difficulty, PlayState.storyPlaylist[0]);
-				FlxG.sound.music.stop();
-
-				LoadingState.loadAndSwitchState(new PlayState());
-			}
+			FlxG.sound.playMusic(Paths.music('freakyMenu'));
+			LoadingState.loadAndSwitchState(new OptionsMenu());
+			FlxG.save.data.offset = offsetTest;
 		}
 		else
 		{
-			trace('WENT BACK TO FREEPLAY??');
-			FlxG.switchState(new FreeplayState());
+			if (isStoryMode)
+			{
+				campaignScore += Math.round(songScore);
+
+				storyPlaylist.remove(storyPlaylist[0]);
+
+				if (storyPlaylist.length <= 0)
+				{
+					FlxG.sound.playMusic(Paths.music('freakyMenu'));
+
+					transIn = FlxTransitionableState.defaultTransIn;
+					transOut = FlxTransitionableState.defaultTransOut;
+
+					FlxG.switchState(new StoryMenuState());
+
+					// if ()
+					StoryMenuState.weekUnlocked[Std.int(Math.min(storyWeek + 1, StoryMenuState.weekUnlocked.length - 1))] = true;
+
+					if (SONG.validScore)
+					{
+						NGio.unlockMedal(60961);
+						Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficulty);
+					}
+
+					FlxG.save.data.weekUnlocked = StoryMenuState.weekUnlocked;
+					FlxG.save.flush();
+				}
+				else
+				{
+					var difficulty:String = "";
+
+					if (storyDifficulty == 0)
+						difficulty = '-easy';
+
+					if (storyDifficulty == 2)
+						difficulty = '-hard';
+
+					trace('LOADING NEXT SONG');
+					trace(PlayState.storyPlaylist[0].toLowerCase() + difficulty);
+
+					if (SONG.song.toLowerCase() == 'eggnog')
+					{
+						var blackShit:FlxSprite = new FlxSprite(-FlxG.width * FlxG.camera.zoom,
+							-FlxG.height * FlxG.camera.zoom).makeGraphic(FlxG.width * 3, FlxG.height * 3, FlxColor.BLACK);
+						blackShit.scrollFactor.set();
+						add(blackShit);
+						camHUD.visible = false;
+
+						FlxG.sound.play(Paths.sound('Lights_Shut_off'));
+					}
+
+					FlxTransitionableState.skipNextTransIn = true;
+					FlxTransitionableState.skipNextTransOut = true;
+					prevCamFollow = camFollow;
+
+					PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + difficulty, PlayState.storyPlaylist[0]);
+					FlxG.sound.music.stop();
+
+					LoadingState.loadAndSwitchState(new PlayState());
+				}
+			}
+			else
+			{
+				trace('WENT BACK TO FREEPLAY??');
+				FlxG.switchState(new FreeplayState());
+			}
 		}
 	}
 
 
 	var endingSong:Bool = false;
+
+	var hits:Array<Float> = [];
+	var offsetTest:Float = 0;
 
 	var timeShown = 0;
 	var currentTimingShown:FlxText = null;
@@ -2129,6 +2168,27 @@ class PlayState extends MusicBeatState
 			currentTimingShown.borderColor = FlxColor.BLACK;
 			currentTimingShown.text = msTiming + "ms";
 			currentTimingShown.size = 20;
+
+			if (msTiming >= 0.03 && SONG.song.contains('offsetTest'))
+			{
+				//Remove Outliers
+				hits.shift();
+				hits.shift();
+				hits.shift();
+				hits.pop();
+				hits.pop();
+				hits.pop();
+				hits.push(msTiming);
+
+				var total = 0.0;
+
+				for(i in hits)
+					total += i;
+				
+
+				
+				offsetTest = truncateFloat(total / hits.length,2);
+			}
 
 			if (currentTimingShown.alpha != 1)
 				currentTimingShown.alpha = 1;
@@ -2800,6 +2860,8 @@ class PlayState extends MusicBeatState
 				}
 		}
 
+		var nps:Int = 0;
+
 		function goodNoteHit(note:Note, resetMashViolation = true):Void
 			{
 
@@ -2813,6 +2875,9 @@ class PlayState extends MusicBeatState
 					note.rating = "good";
 				else if (noteDiff < Conductor.safeZoneOffset * 0.44 && noteDiff > Conductor.safeZoneOffset * -0.44)
 					note.rating = "sick";
+
+				if (!note.isSustainNote)
+					notesHitArray.push(Date.now());
 
 				if (resetMashViolation)
 					mashViolations--;

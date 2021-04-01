@@ -85,6 +85,9 @@ class ChartingState extends MusicBeatState
 	var leftIcon:HealthIcon;
 	var rightIcon:HealthIcon;
 
+	private var lastNote:Note;
+
+
 	override function create()
 	{
 		curSection = lastSection;
@@ -587,8 +590,6 @@ class ChartingState extends MusicBeatState
 						}
 						else
 						{
-							trace('tryin to delete note');
-							trace(note.noteData);
 							deleteNote(note);
 						}
 					}
@@ -656,6 +657,19 @@ class ChartingState extends MusicBeatState
 
 		if (!typingShit.hasFocus)
 		{
+
+			if (FlxG.keys.pressed.CONTROL)
+			{
+				if (FlxG.keys.justPressed.Z && lastNote != null)
+				{
+					trace(curRenderedNotes.members.contains(lastNote) ? "delete note" : "add note");
+					if (curRenderedNotes.members.contains(lastNote))
+						deleteNote(lastNote);
+					else 
+						addNote(lastNote);
+				}
+			}
+
 			var shiftThing:Int = 1;
 			if (FlxG.keys.pressed.SHIFT)
 				shiftThing = 4;
@@ -959,6 +973,10 @@ class ChartingState extends MusicBeatState
 			note.x = Math.floor(daNoteInfo * GRID_SIZE);
 			note.y = Math.floor(getYfromStrum((daStrumTime - sectionStartTime()) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps)));
 
+			if (curSelectedNote != null)
+				if (curSelectedNote[0] == note.strumTime)
+					lastNote = note;
+
 			curRenderedNotes.add(note);
 
 			if (daSus > 0)
@@ -1003,27 +1021,20 @@ class ChartingState extends MusicBeatState
 		updateNoteUI();
 	}
 
-	function deleteNote(note:Note):Void
-	{
-		trace(_song.notes[curSection].sectionNotes);
-		for (n in 0..._song.notes[curSection].sectionNotes.length)
-		{
-			var i = _song.notes[curSection].sectionNotes[n];
-			if (i == null)
-				continue;
-			if ((i[0] == note.strumTime + (note.strumTime == 0 ? 0 : 1) 
-				? true : i[0] == note.strumTime) 
-				&& i[1] % 4 == note.noteData)
-				// Why does it do this?
-				// I DONT FUCKING KNOW!!!!!!!!!!!!!!
-			{
-				trace('GAMING');
-				_song.notes[curSection].sectionNotes.remove(i);
-			}
-		}
 
-		updateGrid();
-	}
+	function deleteNote(note:Note):Void
+		{
+			lastNote = note;
+			for (i in _song.notes[curSection].sectionNotes)
+			{
+				if (i[0] == note.strumTime && i[1] % 4 == note.noteData)
+				{
+					_song.notes[curSection].sectionNotes.remove(i);
+				}
+			}
+	
+			updateGrid();
+		}
 
 	function clearSection():Void
 	{
@@ -1042,23 +1053,20 @@ class ChartingState extends MusicBeatState
 		updateGrid();
 	}
 
-	private function addNote():Void
+	private function addNote(?n:Note):Void
 	{
 		var noteStrum = getStrumTime(dummyArrow.y) + sectionStartTime();
 		var noteData = Math.floor(FlxG.mouse.x / GRID_SIZE);
 		var noteSus = 0;
 
-		_song.notes[curSection].sectionNotes.push([noteStrum, noteData, noteSus]);
+		if (n != null)
+			_song.notes[curSection].sectionNotes.push([n.strumTime, n.noteData, n.sustainLength]);
+		else
+			_song.notes[curSection].sectionNotes.push([noteStrum, noteData, noteSus]);
 
-		curSelectedNote = _song.notes[curSection].sectionNotes[_song.notes[curSection].sectionNotes.length - 1];
+		var thingy = _song.notes[curSection].sectionNotes[_song.notes[curSection].sectionNotes.length - 1];
 
-		if (FlxG.keys.pressed.CONTROL)
-		{
-			_song.notes[curSection].sectionNotes.push([noteStrum, (noteData + 4) % 8, noteSus]);
-		}
-
-		trace(noteStrum);
-		trace(curSection);
+		curSelectedNote = thingy;
 
 		updateGrid();
 		updateNoteUI();

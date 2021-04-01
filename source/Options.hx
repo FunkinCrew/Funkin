@@ -255,6 +255,27 @@ class RainbowFPSOption extends Option
 	}
 }
 
+class NPSDisplayOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+
+	public override function press():Bool
+	{
+		FlxG.save.data.npsDisplay = !FlxG.save.data.npsDisplay;
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "NPS Display " + (!FlxG.save.data.npsDisplay ? "off" : "on");
+	}
+}
+
 class ReplayOption extends Option
 {
 	public function new(desc:String)
@@ -296,4 +317,34 @@ class CustomizeGameplay extends Option
 		return "Customize Gameplay";
 	}
 }
+
+class OffsetMenu extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+
+	public override function press():Bool
+	{
+		trace("switch");
+		var poop:String = Highscore.formatSong("offsetTest", 1);
+
+		PlayState.SONG = Song.loadFromJson(poop, "offsetTest");
+		PlayState.isStoryMode = false;
+		PlayState.storyDifficulty = 0;
+		PlayState.storyWeek = 0;
+		trace('CUR WEEK' + PlayState.storyWeek);
+		LoadingState.loadAndSwitchState(new PlayState());
+		return false;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Time your offset";
+	}
+}
+
+
 

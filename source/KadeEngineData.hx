@@ -51,6 +51,9 @@ class KadeEngineData
 		if (FlxG.save.data.scrollSpeed == null)
 			FlxG.save.data.scrollSpeed = 1;
 
+		if (FlxG.save.data.npsDisplay == null)
+			FlxG.save.data.npsDisplay = false;
+
 		(cast (Lib.current.getChildAt(0), Main)).setFPSCap(FlxG.save.data.fpsCap);
 	}
 }
