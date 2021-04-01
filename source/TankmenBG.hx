@@ -26,6 +26,7 @@ class TankmenBG extends FlxSprite
 		animation.addByPrefix('shot', 'John', 24, false);
 
 		animation.play('run');
+		animation.curAnim.curFrame = FlxG.random.int(0, animation.curAnim.numFrames - 1);
 
 		goingRight = isGoingRight;
 		endingOffset = FlxG.random.float(50, 200);

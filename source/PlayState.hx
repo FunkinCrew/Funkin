@@ -35,6 +35,7 @@ import flixel.util.FlxStringUtil;
 import flixel.util.FlxTimer;
 import haxe.Json;
 import lime.utils.Assets;
+import openfl.Lib;
 import openfl.display.BlendMode;
 import openfl.display.StageQuality;
 import openfl.filters.ShaderFilter;
@@ -503,13 +504,15 @@ class PlayState extends MusicBeatState
 				var tankSky:BGSprite = new BGSprite('tankClouds', 0, 10, 0.1, 0.1);
 				add(tankSky);
 
-				var tankMountains:BGSprite = new BGSprite('tankMountains', -100, 150, 0.2, 0.2);
+				var tankMountains:BGSprite = new BGSprite('tankMountains', -200, 90, 0.2, 0.2);
+				tankMountains.setGraphicSize(Std.int(tankMountains.width * 1.1));
+				tankMountains.updateHitbox();
 				add(tankMountains);
 
-				var tankBuildings:BGSprite = new BGSprite('tankBuildings', -200, 370, 0.25, 0.25);
+				var tankBuildings:BGSprite = new BGSprite('tankBuildings', -200, 200, 0.25, 0.25);
 				add(tankBuildings);
 
-				var tankRuins:BGSprite = new BGSprite('tankRuins', -200, 170, 0.35, 0.35);
+				var tankRuins:BGSprite = new BGSprite('tankRuins', -200, 0, 0.35, 0.35);
 				add(tankRuins);
 
 				var smokeLeft:BGSprite = new BGSprite('smokeLeft', -200, -100, 0.4, 0.4, ['SmokeBlurLeft'], true);
@@ -518,10 +521,12 @@ class PlayState extends MusicBeatState
 				var smokeRight:BGSprite = new BGSprite('smokeRight', 1100, -100, 0.4, 0.4, ['SmokeRight'], true);
 				add(smokeRight);
 
-				var tankWatchtower:BGSprite = new BGSprite('tankWatchtower', 300, 50, 0.5, 0.5);
+				var tankWatchtower:BGSprite = new BGSprite('tankWatchtower', 100, 50, 0.5, 0.5);
 				add(tankWatchtower);
 
-				var tankGround:BGSprite = new BGSprite('tankGround', -200, -20);
+				var tankGround:BGSprite = new BGSprite('tankGround', -300, -300);
+				tankGround.setGraphicSize(Std.int(tankGround.width * 1.3));
+				tankGround.updateHitbox();
 				add(tankGround);
 
 				tankmanRun = new FlxTypedGroup<TankmenBG>();
@@ -529,23 +534,23 @@ class PlayState extends MusicBeatState
 
 				// smokeLeft.screenCenter();
 
-				var fgTank0:BGSprite = new BGSprite('tank0', -290, 400, 1.7, 1.5, ['fg']);
+				var fgTank0:BGSprite = new BGSprite('tank0', -500, 650, 1.7, 1.5, ['fg']);
 				foregroundSprites.add(fgTank0);
 
-				var fgTank1:BGSprite = new BGSprite('tank1', -100, 680, 2, 0.2, ['fg']);
+				var fgTank1:BGSprite = new BGSprite('tank1', -300, 700, 2, 0.2, ['fg']);
 				foregroundSprites.add(fgTank1);
 
 				// just called 'foreground' just cuz small inconsistency no bbiggei
-				var fgTank2:BGSprite = new BGSprite('tank2', 450, 840, 1.5, 1.5, ['foreground']);
+				var fgTank2:BGSprite = new BGSprite('tank2', 450, 940, 1.5, 1.5, ['foreground']);
 				foregroundSprites.add(fgTank2);
 
-				var fgTank4:BGSprite = new BGSprite('tank4', 1000, 880, 1.5, 1.5, ['fg']);
+				var fgTank4:BGSprite = new BGSprite('tank4', 1200, 1080, 1.5, 1.5, ['fg']);
 				foregroundSprites.add(fgTank4);
 
-				var fgTank5:BGSprite = new BGSprite('tank5', 1400, 600, 1.5, 1.5, ['fg']);
+				var fgTank5:BGSprite = new BGSprite('tank5', 1800, 900, 1.5, 1.5, ['fg']);
 				foregroundSprites.add(fgTank5);
 
-				var fgTank3:BGSprite = new BGSprite('tank3', 1300, 1130, 3.5, 2.5, ['fg']);
+				var fgTank3:BGSprite = new BGSprite('tank3', 1300, 1430, 3.5, 2.5, ['fg']);
 				foregroundSprites.add(fgTank3);
 
 			default:
@@ -659,7 +664,7 @@ class PlayState extends MusicBeatState
 		switch (SONG.player1)
 		{
 			case "bf-holding-gf":
-				boyfriend.y -= 140;
+				// boyfriend.y -= 140;
 		}
 
 		// REPOSITIONING PER STAGE
@@ -696,6 +701,12 @@ class PlayState extends MusicBeatState
 				boyfriend.y += 220;
 				gf.x += 180;
 				gf.y += 300;
+			case "tank":
+				gf.y -= 10;
+				boyfriend.x += 70;
+				boyfriend.y += 60;
+				dad.y += 90;
+				dad.x -= 80;
 		}
 
 		add(gf);
