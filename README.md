@@ -26,7 +26,9 @@ Support the project on the [Itch.io page](https://ninja-muffin24.itch.io/funkin)
 
 This game was made with love to Newgrounds and its community. Extra love to Tom Fulp. 💖
 
-![newgrounds_logo](/art/preloaderArt.png)
+<p align="center">
+	<img src="/art/preloaderArt.png">
+</p>
 
 ## What can I do with compiling the game? Why should I compile the game instead of downloading it from [the Itch.io page of the game](https://ninja-muffin24.itch.io/friday-night-funkin)?
 
