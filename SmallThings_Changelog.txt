@@ -1,9 +1,15 @@
-=== 0.0.2.3 ==
+=== TODO ===
++ Add a transition effect from South to Monster, similiar to Eggnog to Winter Horrorland
+
+=== 0.0.2.4 ===
+- Fixed Monster's sprites on week 2
+
+=== 0.0.2.3 ===
 + Added a title screen notice
 
 === 0.0.2.2 ===
 + Added an outline to the internal conductor position debugger
-+ Added a debug indicator to the versiont text on the main menu
++ Added a debug indicator to the version text on the main menu
 - Reworked internal debug stuff
 
 === 0.0.2.1 ===
