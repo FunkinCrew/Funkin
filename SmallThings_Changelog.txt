@@ -1,6 +1,7 @@
 === 0.0.2.5 ===
 + Added the cheat key (C) to debug mode
 + Added an HP counter to debug mode
++ Added icon description text in debug mode (Thanks angeld23!)
 - Disabled the title screen notice when in debug mode
 - Moved the score counter to the top left when in debug mode
 

@@ -1459,7 +1459,11 @@ class PlayState extends MusicBeatState
 
 		super.update(elapsed);
 
-		scoreTxt.text = "Score:" + songScore;
+		if (Options.st_fixScoreLayout == true) {
+			scoreTxt.text = "Score: " + songScore;
+		} else {
+			scoreTxt.text = "Score:" + songScore;
+		}
 
 		// small things: conductor pos debug text
 		if (Options.st_debug == true) {
@@ -1513,8 +1517,8 @@ class PlayState extends MusicBeatState
 		iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset);
 		iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset);
 
-		iconP1txt.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset);
-		iconP2txt.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset);
+		iconP1txt.x = iconP1.x + iconP1.width - iconP1txt.width - iconOffset;
+		iconP2txt.x = iconP2.x;
 
 		if (health > 2)
 			health = 2;

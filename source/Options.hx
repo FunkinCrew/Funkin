@@ -6,8 +6,9 @@ class Options
 
 	// small things
 	public static var st_disableFnfVersionCheck:Bool = true;		// Small Things: Disable FNF version check
-	public static var st_debug:Bool = true;							// Small Things: Small Things debug
+	public static var st_debug:Bool = false;						// Small Things: Small Things debug
 	public static var st_fixMonsterIconFreeply:Bool = true;			// Small Things: Fix Monster's icon for Monster on Freeplay
+	public static var st_fixScoreLayout:Bool = true;				// Small Things: Fix Score layout
 	public static var st_hideOptionsMenu:Bool = true;				// Small Things: Hide options menu
 	public static var st_monsterIntro:Bool = true;					// Small Things: Monster Intro
 	public static var st_noticeEnabled:Bool = true;					// Small Things: Notice enabled
