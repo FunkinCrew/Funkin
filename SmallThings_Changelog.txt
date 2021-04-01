@@ -1,3 +1,7 @@
+=== 0.0.2.5 ===
++ Added the cheat key (C) to debug mode
+- Disabled the title screen notice
+
 === 0.0.2.4 ===
 + Added a transition effect from South to Monster, similiar to Eggnog to Winter Horrorland
 - Fixed Monster's sprites on week 2
