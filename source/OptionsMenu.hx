@@ -84,6 +84,13 @@ class OptionsMenu extends MusicBeatState
 
 	var isCat:Bool = false;
 	
+	function truncateFloat( number : Float, precision : Int): Float {
+		var num = number;
+		num = num * Math.pow(10, precision);
+		num = Math.round( num ) / Math.pow(10, precision);
+		return num;
+		}
+
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
@@ -149,23 +156,23 @@ class OptionsMenu extends MusicBeatState
 						versionShit.text = "Current Scroll Speed: " + FlxG.save.data.scrollSpeed + " - Description - " + currentDescription;
 					default:
 						if (FlxG.keys.pressed.RIGHT)
-							FlxG.save.data.offset += 0.1;
+							FlxG.save.data.offset += 0.01;
 		
 						if (FlxG.keys.pressed.LEFT)
-							FlxG.save.data.offset -= 0.1;
+							FlxG.save.data.offset -= 0.01;
 						
-						versionShit.text = "Offset (Left, Right): " + FlxG.save.data.offset + " - Description - " + currentDescription;
+						versionShit.text = "Offset (Left, Right): " + truncateFloat(FlxG.save.data.offset,2) + " - Description - " + currentDescription;
 				}
 			}
 			else
 			{
 				if (FlxG.keys.pressed.RIGHT)
-					FlxG.save.data.offset++;
+					FlxG.save.data.offset+= 0.01;
 
 				if (FlxG.keys.pressed.LEFT)
-					FlxG.save.data.offset--;
+					FlxG.save.data.offset-= 0.01;
 				
-				versionShit.text = "Offset (Left, Right): " + FlxG.save.data.offset + " - Description - " + currentDescription;
+				versionShit.text = "Offset (Left, Right): " + truncateFloat(FlxG.save.data.offset,2) + " - Description - " + currentDescription;
 			}
 		
 
