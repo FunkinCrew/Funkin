@@ -22,7 +22,7 @@ class OptionsSubState extends MusicBeatSubstate
 		grpOptionsTexts = new FlxTypedGroup<FlxText>();
 		add(grpOptionsTexts);
 
-		selector = new FlxSprite().makeGraphic(5, 5, FlxColor.RED);
+		selector = new FlxSprite().makeGraphic(4, 4, FlxColor.RED);
 		add(selector);
 
 		for (i in 0...textMenuItems.length)
@@ -63,7 +63,7 @@ class OptionsSubState extends MusicBeatSubstate
 			if (txt.ID == curSelected) {
 				txt.color = FlxColor.YELLOW;
 				selector.x = txt.x - selector.width - 2;
-				selector.y = txt.y + selector.height * 2;
+				selector.y = txt.y + (txt.height / 2) - (selector.height / 2);
 			}
 		});
 
