@@ -1,6 +1,5 @@
 package;
 
-import animate.AnimationAtlas;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileDiamond;
@@ -53,8 +52,6 @@ class TitleState extends MusicBeatState
 		polymod.Polymod.init({modRoot: "mods", dirs: ['introMod'], framework: OPENFL});
 		#end
 
-		AnimationAtlas.fromAnimate(Paths.image('money'), Paths.file('images/money.json'));
-
 		swagShader = new ColorSwap();
 
 		FlxG.sound.muteKeys = [ZERO];
@@ -65,9 +62,8 @@ class TitleState extends MusicBeatState
 
 		super.create();
 
-		PreferencesMenu.initPrefs();
-
 		FlxG.save.bind('funkin', 'ninjamuffin99');
+		PreferencesMenu.initPrefs();
 		PlayerSettings.init();
 		Highscore.load();
 
@@ -197,6 +193,10 @@ class TitleState extends MusicBeatState
 
 		blackScreen = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 		credGroup.add(blackScreen);
+
+		// var atlasBullShit:FlxSprite = new FlxSprite();
+		// atlasBullShit.frames = CoolUtil.fromAnimate(Paths.image('money'), Paths.file('images/money.json'));
+		// credGroup.add(atlasBullShit);
 
 		credTextShit = new Alphabet(0, 0, "ninjamuffin99\nPhantomArcade\nkawaisprite\nevilsk8er", true);
 		credTextShit.screenCenter();

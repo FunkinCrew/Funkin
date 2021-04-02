@@ -6,13 +6,15 @@ import haxe.display.Display.Package;
 
 class TankmenBG extends FlxSprite
 {
+	public static var animationNotes:Array<Dynamic> = [];
+
 	public var strumTime:Float = 0;
 	public var goingRight:Bool = false;
 	public var tankSpeed:Float = 0.7;
 
 	public var endingOffset:Float;
 
-	public function new(x:Float, y:Float)
+	public function new(x:Float, y:Float, isGoingRight:Bool)
 	{
 		super(x, y);
 
@@ -24,13 +26,12 @@ class TankmenBG extends FlxSprite
 		animation.addByPrefix('shot', 'John', 24, false);
 
 		animation.play('run');
+		animation.curAnim.curFrame = FlxG.random.int(0, animation.curAnim.numFrames - 1);
 
-		y += FlxG.random.int(-40, 100);
+		goingRight = isGoingRight;
+		endingOffset = FlxG.random.float(50, 200);
 
-		goingRight = FlxG.random.bool();
-		endingOffset = FlxG.random.float(0, 120);
-
-		tankSpeed = FlxG.random.float(0.65, 0.8);
+		tankSpeed = FlxG.random.float(0.6, 1);
 
 		if (goingRight)
 			flipX = true;

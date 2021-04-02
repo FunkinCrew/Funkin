@@ -24,7 +24,8 @@ class MenuTypedList<T:MenuItem> extends FlxTypedGroup<T>
 	
 	var byName = new Map<String, T>();
 	/** Set to true, internally to disable controls, without affecting vars like `enabled` */
-	var busy:Bool = false;
+	public var busy(default, null):Bool = false;
+	// bit awkward because BACK is also a menu control and this doesn't affect that
 	
 	public function new (navControls:NavControls = Vertical, ?wrapMode:WrapMode)
 	{
