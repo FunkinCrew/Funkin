@@ -16,13 +16,14 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import io.newgrounds.NG;
 import lime.app.Application;
+import Options.STOptions;
 
 using StringTools;
 
 class MainMenuState extends MusicBeatState
 {
 	// small things: version
-	var smallThingsVersion:String = "0.0.2.5";
+	var smallThingsVersion:String = "0.0.3";
 
 	var curSelected:Int = 0;
 
@@ -40,7 +41,7 @@ class MainMenuState extends MusicBeatState
 	override function create()
 	{
 		// small things: hide options menu
-		if (Options.st_hideOptionsMenu == true) {
+		if (STOptions.st_hideOptionsMenu == true) {
 			optionShit = ['story mode', 'freeplay', 'donate'];
 		}
 
@@ -114,7 +115,7 @@ class MainMenuState extends MusicBeatState
 		smallThingsVersionShit.scrollFactor.set();
 		smallThingsVersionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 
-		if (Options.st_debug == true) {
+		if (STOptions.st_debug == true) {
 			smallThingsVersionShit.text = "Small Things v" + smallThingsVersion + " (DEBUG)";
 		}
 

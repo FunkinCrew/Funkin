@@ -27,6 +27,7 @@ import flixel.util.FlxTimer;
 import io.newgrounds.NG;
 import lime.app.Application;
 import openfl.Assets;
+import Options.STOptions;
 
 using StringTools;
 
@@ -290,7 +291,7 @@ class TitleState extends MusicBeatState
 
 				if (version.trim() != NGio.GAME_VER_NUMS.trim() && !OutdatedSubState.leftState)
 				{
-					if (Options.st_disableFnfVersionCheck == false) {
+					if (STOptions.st_disableFnfVersionCheck == false) {
 						FlxG.switchState(new OutdatedSubState());
 						trace('OLD VERSION!');
 						trace('old ver');
@@ -298,8 +299,8 @@ class TitleState extends MusicBeatState
 						trace('cur ver');
 						trace(NGio.GAME_VER_NUMS.trim());
 					} else {
-						if (Options.st_noticeEnabled == true) {
-							if (Options.st_debug == false) {
+						if (STOptions.st_noticeEnabled == true) {
+							if (STOptions.st_debug == false) {
 								FlxG.switchState(new NoticeSubState());
 							} else {
 								FlxG.switchState(new MainMenuState());
@@ -311,8 +312,8 @@ class TitleState extends MusicBeatState
 				}
 				else
 				{
-					if (Options.st_noticeEnabled == true) {
-						if (Options.st_debug == false) {
+					if (STOptions.st_noticeEnabled == true) {
+						if (STOptions.st_debug == false) {
 							FlxG.switchState(new NoticeSubState());
 						} else {
 							FlxG.switchState(new MainMenuState());

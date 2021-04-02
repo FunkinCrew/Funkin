@@ -41,6 +41,7 @@ import lime.utils.Assets;
 import openfl.display.BlendMode;
 import openfl.display.StageQuality;
 import openfl.filters.ShaderFilter;
+import Options.STOptions;
 
 using StringTools;
 
@@ -746,7 +747,7 @@ class PlayState extends MusicBeatState
 		add(healthBar);
 
 		scoreTxt = new FlxText(healthBarBG.x + healthBarBG.width - 190, healthBarBG.y + 30, 0, "", 20);
-		if (Options.st_outlineScore == true) {
+		if (STOptions.st_outlineScore == true) {
 			scoreTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK); // small things: outline this text
 		} else {
 			scoreTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT);
@@ -782,7 +783,7 @@ class PlayState extends MusicBeatState
 		iconP1txt.text = SONG.player1;
 		iconP2txt.text = SONG.player2;
 		
-		if (Options.st_debug == true) {
+		if (STOptions.st_debug == true) {
 			add(conductorPosTxt);
 			add(hpTxt);
 			add(iconP1txt);
@@ -814,7 +815,7 @@ class PlayState extends MusicBeatState
 			switch (curSong.toLowerCase())
 			{
 				case "monster":
-					if (Options.st_monsterIntro == true) {
+					if (STOptions.st_monsterIntro == true) {
 						// most of this is copy past code from winter horrorland, but whatever the fuck
 						var blackScreen:FlxSprite = new FlxSprite(0, 0).makeGraphic(Std.int(FlxG.width * 2), Std.int(FlxG.height * 2), FlxColor.BLACK);
 						add(blackScreen);
@@ -1429,7 +1430,7 @@ class PlayState extends MusicBeatState
 		// small things: unknown character debug
 		if (FlxG.keys.justPressed.EIGHT)
 		{
-			if (Options.st_debug == true) {
+			if (STOptions.st_debug == true) {
 				if (iconP1.animation.curAnim.name == 'unknown')
 				{
 					iconP1.animation.play(SONG.player1);
@@ -1459,14 +1460,14 @@ class PlayState extends MusicBeatState
 
 		super.update(elapsed);
 
-		if (Options.st_fixScoreLayout == true) {
+		if (STOptions.st_fixScoreLayout == true) {
 			scoreTxt.text = "Score: " + songScore;
 		} else {
 			scoreTxt.text = "Score:" + songScore;
 		}
 
 		// small things: conductor pos debug text
-		if (Options.st_debug == true) {
+		if (STOptions.st_debug == true) {
 			conductorPosTxt.text = "Conductor Pos: " + Conductor.songPosition;
 			hpTxt.text = "HP: " + FlxMath.remapToRange(health, 0, 2, 0, 100) + "%";
 
@@ -1675,7 +1676,7 @@ class PlayState extends MusicBeatState
 		if (curSong == 'Thorns')
 		{
 			if (isStoryMode == true) {
-				if (Options.st_unknownIcons == true) {
+				if (STOptions.st_unknownIcons == true) {
 					if (doIconCheck == true) {
 						if (Conductor.songPosition <= 0) {
 							iconP2.animation.play('unknown');
@@ -1694,7 +1695,7 @@ class PlayState extends MusicBeatState
 		if (curSong == 'Winter-Horrorland')
 		{
 			if (isStoryMode == true) {
-				if (Options.st_unknownIcons == true) {
+				if (STOptions.st_unknownIcons == true) {
 					if (doIconCheck == true) {
 						if (Conductor.songPosition <= 9200) {
 							iconP2.animation.play('unknown');
@@ -1707,7 +1708,7 @@ class PlayState extends MusicBeatState
 					}
 				}
 
-				if (Options.st_startWinterHorrorlandP2Invis == true) {
+				if (STOptions.st_startWinterHorrorlandP2Invis == true) {
 					if (doP2Check == true) {
 						if (Conductor.songPosition <= 6000) {
 							dad.visible = false;

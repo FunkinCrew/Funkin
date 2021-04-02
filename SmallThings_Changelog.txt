@@ -1,3 +1,7 @@
+=== 0.0.3 ==
+- Made songs with spaces in their titles more consistent
+- Reworked internal feature toggles
+
 === 0.0.2.5 ===
 + Added the cheat key (C) to debug mode
 + Added an HP counter to debug mode

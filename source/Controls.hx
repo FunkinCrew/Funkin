@@ -10,6 +10,7 @@ import flixel.input.actions.FlxActionSet;
 import flixel.input.gamepad.FlxGamepadButton;
 import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.input.keyboard.FlxKey;
+import Options.STOptions;
 
 #if (haxe >= "4.0.0")
 enum abstract Action(String) to String from String
@@ -507,7 +508,7 @@ class Controls extends FlxActionSet
 				inline bindKeys(Control.PAUSE, [P, ENTER, ESCAPE]);
 				inline bindKeys(Control.RESET, [R]);
 
-				if (Options.st_debug == true) {
+				if (STOptions.st_debug == true) {
 					inline bindKeys(Control.CHEAT, [C]);
 				}
 			case Duo(true):
@@ -520,7 +521,7 @@ class Controls extends FlxActionSet
 				inline bindKeys(Control.PAUSE, [ONE]);
 				inline bindKeys(Control.RESET, [R]);
 
-				if (Options.st_debug == true) {
+				if (STOptions.st_debug == true) {
 					inline bindKeys(Control.CHEAT, [C]);
 				}
 			case Duo(false):
@@ -533,7 +534,7 @@ class Controls extends FlxActionSet
 				inline bindKeys(Control.PAUSE, [ENTER]);
 				inline bindKeys(Control.RESET, [BACKSPACE]);
 
-				if (Options.st_debug == true) {
+				if (STOptions.st_debug == true) {
 					inline bindKeys(Control.CHEAT, [C]);
 				}
 			case None: // nothing
@@ -552,7 +553,7 @@ class Controls extends FlxActionSet
 				bindKeys(Control.PAUSE, [P, ENTER, ESCAPE]);
 				bindKeys(Control.RESET, [R]);
 
-				if (Options.st_debug == true) {
+				if (STOptions.st_debug == true) {
 					inline bindKeys(Control.CHEAT, [C]);
 				}
 			case Duo(true):
@@ -565,7 +566,7 @@ class Controls extends FlxActionSet
 				bindKeys(Control.PAUSE, [ONE]);
 				bindKeys(Control.RESET, [R]);
 
-				if (Options.st_debug == true) {
+				if (STOptions.st_debug == true) {
 					inline bindKeys(Control.CHEAT, [C]);
 				}
 			case Duo(false):
@@ -578,7 +579,7 @@ class Controls extends FlxActionSet
 				bindKeys(Control.PAUSE, [ENTER]);
 				bindKeys(Control.RESET, [BACKSPACE]);
 
-				if (Options.st_debug == true) {
+				if (STOptions.st_debug == true) {
 					inline bindKeys(Control.CHEAT, [C]);
 				}
 			case None: // nothing
