@@ -4,6 +4,8 @@
 + Added icon description text in debug mode (Thanks angeld23!)
 - Disabled the title screen notice when in debug mode
 - Moved the score counter to the top left when in debug mode
+- Changed the window title to report as Small Things
+- Changed the built in DiscordRPC to report as Small Things
 
 === 0.0.2.4 ===
 + Added a transition effect from South to Monster, similiar to Eggnog to Winter Horrorland
