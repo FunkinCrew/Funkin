@@ -37,6 +37,13 @@ class OptionsSubState extends MusicBeatSubstate
 	{
 		super.update(elapsed);
 
+		if (controls.BACK)
+		{
+			FlxG.sound.play(Paths.sound('cancelMenu'));
+			FlxG.switchState(new MainMenuState());
+			return;
+		}
+
 		if (controls.UP_P)
 			curSelected -= 1;
 
@@ -53,8 +60,11 @@ class OptionsSubState extends MusicBeatSubstate
 		{
 			txt.color = FlxColor.WHITE;
 
-			if (txt.ID == curSelected)
+			if (txt.ID == curSelected) {
 				txt.color = FlxColor.YELLOW;
+				selector.x = txt.x - selector.width - 2;
+				selector.y = txt.y + selector.height * 2;
+			}
 		});
 
 		if (controls.ACCEPT)
