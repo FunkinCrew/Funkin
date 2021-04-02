@@ -713,6 +713,12 @@ class PlayState extends MusicBeatState
 				boyfriend.y += 0;
 				dad.y += 60;
 				dad.x -= 80;
+
+				if (gfVersion != 'pico-speaker')
+				{
+					gf.x -= 80;
+					gf.y -= 75;
+				}
 		}
 
 		add(gf);
