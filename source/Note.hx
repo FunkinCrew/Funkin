@@ -7,6 +7,7 @@ import flixel.math.FlxMath;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import shaderslmfao.ColorSwap;
+import ui.PreferencesMenu;
 
 using StringTools;
 
@@ -143,6 +144,9 @@ class Note extends FlxSprite
 		{
 			noteScore * 0.2;
 			alpha = 0.6;
+
+			if (PreferencesMenu.getPref('downscroll'))
+				angle = 180;
 
 			x += width / 2;
 
