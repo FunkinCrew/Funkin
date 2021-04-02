@@ -237,7 +237,11 @@ class PlayState extends MusicBeatState
 		detailsPausedText = "Paused - " + detailsText;
 		
 		// Updating Discord Rich Presence.
-		DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
+		if (STOptions.st_makeSpacesConsistent == true) {
+			DiscordClient.changePresence(detailsText, StringTools.replace(SONG.song, "-", " ") + " (" + storyDifficultyText + ")", iconRPC);
+		} else {
+			DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
+		}
 		#end
 
 		switch (SONG.song.toLowerCase())
@@ -1106,7 +1110,11 @@ class PlayState extends MusicBeatState
 		songLength = FlxG.sound.music.length;
 
 		// Updating Discord Rich Presence (with Time Left)
-		DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC, true, songLength);
+		if (STOptions.st_makeSpacesConsistent == true) {
+			DiscordClient.changePresence(detailsText, StringTools.replace(SONG.song, "-", " ") + " (" + storyDifficultyText + ")", iconRPC, true, songLength);
+		} else {
+			DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC, true, songLength);
+		}
 		#end
 	}
 
@@ -1352,11 +1360,19 @@ class PlayState extends MusicBeatState
 			#if desktop
 			if (startTimer.finished)
 			{
-				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC, true, songLength - Conductor.songPosition);
+				if (STOptions.st_makeSpacesConsistent == true) {
+					DiscordClient.changePresence(detailsText, StringTools.replace(SONG.song, "-", " ") + " (" + storyDifficultyText + ")", iconRPC, true, songLength - Conductor.songPosition);
+				} else {
+					DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC, true, songLength - Conductor.songPosition);
+				}
 			}
 			else
 			{
-				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
+				if (STOptions.st_makeSpacesConsistent == true) {
+					DiscordClient.changePresence(detailsText, StringTools.replace(SONG.song, "-", " ") + " (" + storyDifficultyText + ")", iconRPC);
+				} else {
+					DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
+				}
 			}
 			#end
 		}
@@ -1371,11 +1387,19 @@ class PlayState extends MusicBeatState
 		{
 			if (Conductor.songPosition > 0.0)
 			{
-				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC, true, songLength - Conductor.songPosition);
+				if (STOptions.st_makeSpacesConsistent == true) {
+					DiscordClient.changePresence(detailsText, StringTools.replace(SONG.song, "-", " ") + " (" + storyDifficultyText + ")", iconRPC, true, songLength - Conductor.songPosition);
+				} else {
+					DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC, true, songLength - Conductor.songPosition);
+				}
 			}
 			else
 			{
-				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
+				if (STOptions.st_makeSpacesConsistent == true) {
+					DiscordClient.changePresence(detailsText, StringTools.replace(SONG.song, "-", " ") + " (" + storyDifficultyText + ")", iconRPC);
+				} else {
+					DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
+				}
 			}
 		}
 		#end
@@ -1388,7 +1412,11 @@ class PlayState extends MusicBeatState
 		#if desktop
 		if (health > 0 && !paused)
 		{
-			DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
+			if (STOptions.st_makeSpacesConsistent == true) {
+				DiscordClient.changePresence(detailsPausedText, StringTools.replace(SONG.song, "-", " ") + " (" + storyDifficultyText + ")", iconRPC);
+			} else {
+				DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
+			}
 		}
 		#end
 
@@ -1491,7 +1519,11 @@ class PlayState extends MusicBeatState
 				openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 		
 			#if desktop
-			DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
+			if (STOptions.st_makeSpacesConsistent == true) {
+				DiscordClient.changePresence(detailsPausedText, StringTools.replace(SONG.song, "-", " ") + " (" + storyDifficultyText + ")", iconRPC);
+			} else {
+				DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
+			}
 			#end
 		}
 
@@ -1752,7 +1784,11 @@ class PlayState extends MusicBeatState
 			
 			#if desktop
 			// Game Over doesn't get his own variable because it's only used here
-			DiscordClient.changePresence("Game Over - " + detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
+			if (STOptions.st_makeSpacesConsistent == true) {
+				DiscordClient.changePresence("Game Over - " + detailsText, StringTools.replace(SONG.song, "-", " ") + " (" + storyDifficultyText + ")", iconRPC);
+			} else {
+				DiscordClient.changePresence("Game Over - " + detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
+			}
 			#end
 		}
 
