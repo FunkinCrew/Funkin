@@ -1,4 +1,8 @@
-=== 0.0.3 ==
+=== 0.0.3.1 ====
++ Added the ability to toggle on/off debug mode by changing debug.txt to ``on`` or ``off``
+- Fixed week6's countdown not using the pixel sounds (Thanks ActualMandM!)
+
+=== 0.0.3 ===
 + Added internal Newgrounds API stats
 - Made songs with spaces in their titles not show dashes
 - Removed redundant internal Newgrounds stats

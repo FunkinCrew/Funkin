@@ -12,6 +12,7 @@ class STOptions
 	public static var st_debug:Bool = false;						// Small Things: Small Things debug
 	public static var st_fixMonsterIconFreeplay:Bool = true;		// Small Things: Fix Monster's icon for Monster on Freeplay
 	public static var st_fixScoreLayout:Bool = true;				// Small Things: Fix Score layout
+	public static var st_fixWeek6CountSounds:Bool = true;			// Small Things: Fix Week6 Countdown sounds
 	public static var st_hideOptionsMenu:Bool = true;				// Small Things: Hide options menu
 	public static var st_logNg:Bool = true;							// Small Things: Log Newgrounds
 	public static var st_makeSpacesConsistent:Bool = true;			// Small Things: Make song spaces consistent

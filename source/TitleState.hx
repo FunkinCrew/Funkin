@@ -71,6 +71,16 @@ class TitleState extends MusicBeatState
 			NGio.logEvent("STInit");
 		}
 
+		// Small Things: Read debug state from text file
+		var st_debugState = CoolUtil.coolTextFile(Paths.txt('debug'));
+
+		if (st_debugState[0].contains("on")) {
+			STOptions.st_debug = true;
+		} else {
+			STOptions.st_debug = false;
+		}
+		
+
 		FlxG.save.bind('funkin', 'ninjamuffin99');
 
 		Highscore.load();
