@@ -21,6 +21,8 @@ class ControlsSubState extends MusicBeatSubstate
 		"Cheat" => Controls.Control.CHEAT		// should this be rebindable?
 	];
 	var id2NameMap:Map<Int, String> = [];
+	var extraItems:Array<String> = ["Reset All to Default"];
+	var textMenuItems:Array<String> = [];
 
 	var selector:FlxSprite;
 	var curSelected:Int = 0;
@@ -42,24 +44,40 @@ class ControlsSubState extends MusicBeatSubstate
 
 		var i:Int = 0;
 		for (name in entryMap.keys()) {
-			var control:Controls.Control = entryMap[name];
+			textMenuItems.push(name);
 			id2NameMap[i] = name;
 			var optionText:FlxText = new FlxText(20, 20 + (i * 50), 0, name, 32);
 			optionText.ID = i;
 			grpOptionsTexts.add(optionText);
 			var controlsText:FlxText = new FlxText(240, 20 + (i * 50), 0, "<NOT BOUND>", 32);
-			for (keyID in controls.getInputsFor(control, Controls.Device.Keys)) { // TODO gamepad support??
-				// ugly 2-line cast, ugh
-				var flxKey:FlxKey = keyID;
-				if (controlsText.text == "<NOT BOUND>")
-					controlsText.text = flxKey.toString();
-				else
-					controlsText.text += " or " + flxKey.toString();
-			}
 			controlsText.ID = i;
 			grpControlValues.add(controlsText);
 			i++;
 		}
+		for (item in extraItems) {
+			textMenuItems.push(item);
+			var optionText:FlxText = new FlxText(20, 20 + (i * 50), 0, item, 32);
+			optionText.ID = i;
+			grpOptionsTexts.add(optionText);
+			i++;
+		}
+
+		updateControlValues();
+	}
+
+	function updateControlValues() {
+		grpControlValues.forEach(function(txt:FlxText)
+		{
+			var control:Controls.Control = entryMap[id2NameMap[txt.ID]];
+			txt.text = "<NOT BOUND>";
+			for (keyID in controls.getInputsFor(control, Controls.Device.Keys)) { // TODO gamepad support??
+				var flxKey:FlxKey = keyID;
+				if (txt.text == "<NOT BOUND>")
+					txt.text = flxKey.toString();
+				else
+					txt.text += " or " + flxKey.toString();
+			}
+		});
 	}
 
 	override function update(elapsed:Float) {
@@ -80,9 +98,9 @@ class ControlsSubState extends MusicBeatSubstate
 			curSelected += 1;
 
 		if (curSelected < 0)
-			curSelected = grpOptionsTexts.length - 1;
+			curSelected = textMenuItems.length - 1;
 
-		if (curSelected >= grpOptionsTexts.length)
+		if (curSelected >= textMenuItems.length)
 			curSelected = 0;
 
 		grpOptionsTexts.forEach(function(txt:FlxText)
@@ -102,5 +120,11 @@ class ControlsSubState extends MusicBeatSubstate
 			if (txt.ID == curSelected)
 				txt.color = FlxColor.YELLOW;
 		});
+
+		switch (textMenuItems[curSelected]) {
+			case "Reset All to Default":
+				controls.setKeyboardScheme(Controls.KeyboardScheme.Solo);
+				updateControlValues();
+		}
 	}
 }
