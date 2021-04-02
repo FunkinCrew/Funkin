@@ -501,7 +501,9 @@ class PlayState extends MusicBeatState
 				var bg:BGSprite = new BGSprite('tankSky', -400, -400, 0, 0);
 				add(bg);
 
-				var tankSky:BGSprite = new BGSprite('tankClouds', 0, 10, 0.1, 0.1);
+				var tankSky:BGSprite = new BGSprite('tankClouds', FlxG.random.int(-700, -100), FlxG.random.int(-20, 20), 0.1, 0.1);
+				tankSky.active = true;
+				tankSky.velocity.x = FlxG.random.float(5, 15);
 				add(tankSky);
 
 				var tankMountains:BGSprite = new BGSprite('tankMountains', -200, 90, 0.2, 0.2);
@@ -524,8 +526,8 @@ class PlayState extends MusicBeatState
 				var tankWatchtower:BGSprite = new BGSprite('tankWatchtower', 100, 50, 0.5, 0.5);
 				add(tankWatchtower);
 
-				var tankGround:BGSprite = new BGSprite('tankGround', -300, -300);
-				tankGround.setGraphicSize(Std.int(tankGround.width * 1.3));
+				var tankGround:BGSprite = new BGSprite('tankGround', -420, -150);
+				tankGround.setGraphicSize(Std.int(tankGround.width * 1.15));
 				tankGround.updateHitbox();
 				add(tankGround);
 
@@ -609,9 +611,12 @@ class PlayState extends MusicBeatState
 
 				for (i in 0...TankmenBG.animationNotes.length)
 				{
-					var tankman:TankmenBG = new TankmenBG(500, 200 + FlxG.random.int(0, 150), TankmenBG.animationNotes[i][1] < 2);
-					tankman.strumTime = TankmenBG.animationNotes[i][0];
-					tankmanRun.add(tankman);
+					if (FlxG.random.bool(50))
+					{
+						var tankman:TankmenBG = new TankmenBG(500, 200 + FlxG.random.int(0, 150), TankmenBG.animationNotes[i][1] < 2);
+						tankman.strumTime = TankmenBG.animationNotes[i][0];
+						tankmanRun.add(tankman);
+					}
 				}
 		}
 
@@ -702,10 +707,11 @@ class PlayState extends MusicBeatState
 				gf.x += 180;
 				gf.y += 300;
 			case "tank":
-				gf.y -= 10;
-				boyfriend.x += 70;
-				boyfriend.y += 60;
-				dad.y += 90;
+				gf.y += 10;
+				gf.x -= 30;
+				boyfriend.x += 40;
+				boyfriend.y += 0;
+				dad.y += 60;
 				dad.x -= 80;
 		}
 
