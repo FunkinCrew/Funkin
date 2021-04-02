@@ -66,6 +66,11 @@ class TitleState extends MusicBeatState
 		trace('NEWGROUNDS LOL');
 		#end
 
+		if (STOptions.st_logNg == true)
+		{
+			NGio.logEvent("STInit");
+		}
+
 		FlxG.save.bind('funkin', 'ninjamuffin99');
 
 		Highscore.load();

@@ -1,5 +1,7 @@
 === 0.0.3 ==
-- Made songs with spaces in their titles more consistent
++ Added internal Newgrounds API stats
+- Made songs with spaces in their titles not show dashes
+- Removed redundant internal Newgrounds stats
 - Reworked internal feature toggles
 
 === 0.0.2.5 ===
