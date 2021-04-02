@@ -149,6 +149,9 @@ class PlayState extends MusicBeatState
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
 
+		FlxG.sound.cache(Paths.inst(PlayState.SONG.song));
+		FlxG.sound.cache(Paths.voices(PlayState.SONG.song));
+
 		// var gameCam:FlxCamera = FlxG.camera;
 		camGame = new FlxCamera();
 		camHUD = new FlxCamera();
@@ -156,6 +159,11 @@ class PlayState extends MusicBeatState
 
 		FlxG.cameras.reset(camGame);
 		FlxG.cameras.add(camHUD, false);
+
+		// fake notesplash cache type deal so that it loads in the graphic?
+		var noteSplash:NoteSplash = new NoteSplash(100, 100, 0);
+		add(noteSplash);
+		noteSplash.alpha = 0.1;
 
 		persistentUpdate = true;
 		persistentDraw = true;
@@ -1225,10 +1233,22 @@ class PlayState extends MusicBeatState
 		generatedMusic = true;
 	}
 
+	// Now you are probably wondering why I made 2 of these very similar functions
+	// sortByShit(), and sortNotes(). sortNotes is meant to be used by both sortByShit(), and the notes FlxGroup
+	// sortByShit() is meant to be used only by the unspawnNotes array.
+	// and the array sorting function doesnt need that order variable thingie
+	// this is good enough for now lololol HERE IS COMMENT FOR THIS SORTA DUMB DECISION LOL
 	function sortByShit(Obj1:Note, Obj2:Note):Int
 	{
-		return FlxSort.byValues(FlxSort.ASCENDING, Obj1.strumTime, Obj2.strumTime);
+		return sortNotes(FlxSort.ASCENDING, Obj1, Obj2);
 	}
+
+	function sortNotes(order:Int = FlxSort.ASCENDING, Obj1:Note, Obj2:Note)
+	{
+		return FlxSort.byValues(order, Obj1.strumTime, Obj2.strumTime);
+	}
+
+	// ^ These two sorts also look cute together ^
 
 	private function generateStaticArrows(player:Int):Void
 	{
@@ -1659,7 +1679,7 @@ class PlayState extends MusicBeatState
 			notes.add(dunceNote);
 
 			var index:Int = unspawnNotes.indexOf(dunceNote);
-			unspawnNotes.splice(index, 1);
+			unspawnNotes.shift();
 		}
 
 		if (generatedMusic)
@@ -2430,7 +2450,7 @@ class PlayState extends MusicBeatState
 
 		if (generatedMusic)
 		{
-			notes.sort(FlxSort.byY, FlxSort.DESCENDING);
+			notes.sort(sortNotes, FlxSort.DESCENDING);
 		}
 
 		if (SONG.notes[Math.floor(curStep / 16)] != null)
