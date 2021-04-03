@@ -205,12 +205,7 @@ class MainMenuState extends MusicBeatState
 										FlxTransitionableState.skipNextTransIn = true;
 										FlxTransitionableState.skipNextTransOut = true;
 
-										if (STOptions.st_protoOptionsMenu == true)
-										{
-											FlxG.switchState(new STOptionsState());
-										} else {
-											FlxG.switchState(new OptionsMenu());
-										}
+										FlxG.switchState(new OptionsMenu());
 								}
 							});
 						}
