@@ -1029,6 +1029,8 @@ class PlayState extends MusicBeatState
 			}
 			else if (dad.curCharacter == 'spooky' && !dad.animation.curAnim.name.startsWith("sing"))
 				dad.dance();
+			if (generatedMusic)
+				notes.sort(sortNotes, FlxSort.DESCENDING);
 
 			var introAssets:Map<String, Array<String>> = new Map<String, Array<String>>();
 			introAssets.set('default', ['ready', "set", "go"]);
