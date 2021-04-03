@@ -172,7 +172,7 @@ class PlayState extends MusicBeatState
 	public static var timeCurrently:Float = 0;
 	public static var timeCurrentlyR:Float = 0;
 	
-	// Will fire once every prevent debug spam messages and broken animations
+	// Will fire once to prevent debug spam messages and broken animations
 	private var triggeredAlready:Bool = false;
 	
 	// Will decide if she's even allowed to headbang at all depending on the song
