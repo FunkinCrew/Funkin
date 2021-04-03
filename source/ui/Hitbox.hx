@@ -21,21 +21,23 @@ class Hitbox extends FlxSpriteGroup
 {
     public var hitbox:FlxSpriteGroup;
 
+    var sizex:Int = 320;
+
+    var screensizey:Int = 720;
 
     public var left:FlxButton;
     public var down:FlxButton;
     public var up:FlxButton;
     public var right:FlxButton;
     
-    public function new(X:Int, Y:Int)
+    public function new(?widghtScreen:Int, ?heightScreen:Int)
     {
-        super(X, Y);
-        //add graphic
-        addui();
-    }
+        super(widghtScreen, heightScreen);
 
-    public function addui()
-    {
+        sizex = widghtScreen != null ? Std.int(widghtScreen / 4) : 320;
+
+        
+        //add graphic
         hitbox = new FlxSpriteGroup();
         hitbox.scrollFactor.set();
 
@@ -48,12 +50,11 @@ class Hitbox extends FlxSpriteGroup
 
         hitbox.add(add(left = createhitbox(0, "left")));
 
-        hitbox.add(add(down = createhitbox(320, "down")));
+        hitbox.add(add(down = createhitbox(sizex, "down")));
 
-        hitbox.add(add(up = createhitbox(640, "up")));
+        hitbox.add(add(up = createhitbox(sizex * 2, "up")));
 
-        hitbox.add(add(right = createhitbox(960, "right")));
-
+        hitbox.add(add(right = createhitbox(sizex * 3, "right")));
     }
 
     public function createhitbox(X:Float, framestring:String) {
@@ -73,9 +74,6 @@ class Hitbox extends FlxSpriteGroup
         button.onUp.callback = function (){
             FlxTween.num(0.75, 0, .1, {ease: FlxEase.circInOut}, function (a:Float) { button.alpha = a; });
         }
-
-        //button.onOver.callback = function (){}
-
         
         button.onOut.callback = function (){
             FlxTween.num(button.alpha, 0, .2, {ease: FlxEase.circInOut}, function (a:Float) { button.alpha = a; });

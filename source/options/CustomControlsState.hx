@@ -115,7 +115,7 @@ class CustomControlsState extends MusicBeatSubstate
 		
 		//hitboxes
 
-		_hb = new Hitbox(0, 0);
+		_hb = new Hitbox();
 		_hb.visible = false;
 
 		// add bg

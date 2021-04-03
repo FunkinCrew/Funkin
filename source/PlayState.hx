@@ -727,7 +727,7 @@ class PlayState extends MusicBeatState
 				_pad.cameras = [camHUD];
 				loadcustom();
 			case 4:
-				_hb = new Hitbox(0, 0);
+				_hb = new Hitbox();
 				_hb.cameras = [camHUD];
 				hitboxisenabled = true;
 				add(_hb);
