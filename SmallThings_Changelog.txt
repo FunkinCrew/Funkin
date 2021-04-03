@@ -1,3 +1,6 @@
+=== 0.0.3.2 ===
+- Fixed a bug where not all aspects of debug mode were successfuly loaded with the debug.txt file
+
 === 0.0.3.1 ====
 + Added the ability to toggle on/off debug mode by changing debug.txt to ``on`` or ``off``
 - Fixed week6's countdown not using the pixel sounds (Thanks ActualMandM!)

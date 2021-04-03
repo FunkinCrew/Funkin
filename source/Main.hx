@@ -7,6 +7,8 @@ import openfl.Lib;
 import openfl.display.FPS;
 import openfl.display.Sprite;
 import openfl.events.Event;
+import Options.STOptions;
+import StringTools;
 
 class Main extends Sprite
 {
@@ -51,6 +53,15 @@ class Main extends Sprite
 
 	private function setupGame():Void
 	{
+		// Small Things: Read debug state from text file
+		var st_debugState = CoolUtil.coolTextFile(Paths.txt('debug'));
+
+		if (st_debugState[0] == ("on")) {
+			STOptions.st_debug = true;
+		} else {
+			STOptions.st_debug = false;
+		}
+
 		var stageWidth:Int = Lib.current.stage.stageWidth;
 		var stageHeight:Int = Lib.current.stage.stageHeight;
 

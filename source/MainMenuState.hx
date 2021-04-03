@@ -23,7 +23,7 @@ using StringTools;
 class MainMenuState extends MusicBeatState
 {
 	// small things: version
-	var smallThingsVersion:String = "0.0.3.1";
+	var smallThingsVersion:String = "0.0.3.2";
 
 	var curSelected:Int = 0;
 
@@ -204,7 +204,13 @@ class MainMenuState extends MusicBeatState
 									case 'options':
 										FlxTransitionableState.skipNextTransIn = true;
 										FlxTransitionableState.skipNextTransOut = true;
-										FlxG.switchState(new OptionsMenu());
+
+										if (STOptions.st_protoOptionsMenu == true)
+										{
+											FlxG.switchState(new STOptionsState());
+										} else {
+											FlxG.switchState(new OptionsMenu());
+										}
 								}
 							});
 						}
