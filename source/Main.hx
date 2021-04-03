@@ -79,8 +79,7 @@ class Main extends Sprite
 
 	function setFPS()
 	{
-		if (FlxG.save.data.currentFPS != null)
-			MainMenuState.currentFPS = FlxG.save.data.currentFPS;
+		MainMenuState.currentFPS = FlxG.save.data.currentFPS;
 
 		if (MainMenuState.currentFPS == 1)
 		{
