@@ -24,7 +24,7 @@ import ui.Prompt;
 
 using StringTools;
 
-#if desktop
+#if discord_rpc
 import Discord.DiscordClient;
 #end
 #if newgrounds
