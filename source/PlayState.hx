@@ -124,6 +124,8 @@ class PlayState extends MusicBeatState
 	private var camHUD:FlxCamera;
 	private var camGame:FlxCamera;
 
+	public static var offsetTesting:Bool = false;
+
 
 	var notesHitArray:Array<Date> = [];
 	var currentFrames:Int = 0;
@@ -827,7 +829,7 @@ class PlayState extends MusicBeatState
 			scoreTxt.x = healthBarBG.x + healthBarBG.width / 2;
 		scoreTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 		scoreTxt.scrollFactor.set();
-		if (SONG.song.contains('offsetTest'))
+		if (offsetTesting)
 			scoreTxt.x += 300;
 		add(scoreTxt);
 
@@ -1609,7 +1611,7 @@ class PlayState extends MusicBeatState
 
 		super.update(elapsed);
 
-		if (!SONG.song.contains('offsetTest'))
+		if (!offsetTesting)
 		{
 			if (FlxG.save.data.accuracyDisplay)
 			{
@@ -1967,9 +1969,10 @@ class PlayState extends MusicBeatState
 			#end
 		}
 
-		if (SONG.song.contains('offsetTest'))
+		if (offsetTesting)
 		{
 			FlxG.sound.playMusic(Paths.music('freakyMenu'));
+			offsetTesting = false;
 			LoadingState.loadAndSwitchState(new OptionsMenu());
 			FlxG.save.data.offset = offsetTest;
 		}
@@ -2169,7 +2172,7 @@ class PlayState extends MusicBeatState
 			currentTimingShown.text = msTiming + "ms";
 			currentTimingShown.size = 20;
 
-			if (msTiming >= 0.03 && SONG.song.contains('offsetTest'))
+			if (msTiming >= 0.03 && offsetTesting)
 			{
 				//Remove Outliers
 				hits.shift();
