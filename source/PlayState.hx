@@ -712,7 +712,14 @@ class PlayState extends MusicBeatState
 
 		add(camFollow);
 
-		FlxG.camera.follow(camFollow, LOCKON, 0.04);
+		if (MainMenuState.currentFPS == 1)
+			FlxG.camera.follow(camFollow, LOCKON, 0.16);
+		if (MainMenuState.currentFPS == 2)
+			FlxG.camera.follow(camFollow, LOCKON, 0.04);
+		if (MainMenuState.currentFPS == 3)
+			FlxG.camera.follow(camFollow, LOCKON, 0.01);
+		if (MainMenuState.currentFPS == 4)
+			FlxG.camera.follow(camFollow, LOCKON, 0.0025);
 		// FlxG.camera.setScrollBounds(0, FlxG.width, 0, FlxG.height);
 		FlxG.camera.zoom = defaultCamZoom;
 		FlxG.camera.focusOn(camFollow.getPosition());
@@ -1398,8 +1405,29 @@ class PlayState extends MusicBeatState
 		// FlxG.watch.addQuick('VOL', vocals.amplitudeLeft);
 		// FlxG.watch.addQuick('VOLRight', vocals.amplitudeRight);
 
-		iconP1.setGraphicSize(Std.int(FlxMath.lerp(150, iconP1.width, 0.50)));
-		iconP2.setGraphicSize(Std.int(FlxMath.lerp(150, iconP2.width, 0.50)));
+		if (MainMenuState.currentFPS == 1)
+		{
+			iconP1.setGraphicSize(Std.int(FlxMath.lerp(150, iconP1.width, 0.25)));
+			iconP2.setGraphicSize(Std.int(FlxMath.lerp(150, iconP2.width, 0.25)));
+		}
+
+		if (MainMenuState.currentFPS == 2)
+		{
+			iconP1.setGraphicSize(Std.int(FlxMath.lerp(150, iconP1.width, 0.50)));
+			iconP2.setGraphicSize(Std.int(FlxMath.lerp(150, iconP2.width, 0.50)));
+		}
+
+		if (MainMenuState.currentFPS == 3)
+		{
+			iconP1.setGraphicSize(Std.int(FlxMath.lerp(150, iconP1.width, 0.75)));
+			iconP2.setGraphicSize(Std.int(FlxMath.lerp(150, iconP2.width, 0.75)));
+		}
+
+		if (MainMenuState.currentFPS == 4)
+		{
+			iconP1.setGraphicSize(Std.int(FlxMath.lerp(150, iconP1.width, 0.875)));
+			iconP2.setGraphicSize(Std.int(FlxMath.lerp(150, iconP2.width, 0.875)));
+		}
 
 		iconP1.updateHitbox();
 		iconP2.updateHitbox();

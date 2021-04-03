@@ -25,6 +25,8 @@ class MainMenuState extends MusicBeatState
 
 	var menuItems:FlxTypedGroup<FlxSprite>;
 
+	public static var currentFPS:Int = 2;
+
 	#if !switch
 	var optionShit:Array<String> = ['story mode', 'freeplay', 'donate', 'options'];
 	#else
@@ -94,8 +96,6 @@ class MainMenuState extends MusicBeatState
 			menuItem.antialiasing = true;
 		}
 
-		FlxG.camera.follow(camFollow, null, 0.06);
-
 		var versionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, "v" + Application.current.meta.get('version'), 12);
 		versionShit.scrollFactor.set();
 		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
@@ -112,6 +112,15 @@ class MainMenuState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
+		if (currentFPS == 1)
+			FlxG.camera.follow(camFollow, null, 0.24);
+		if (currentFPS == 2)
+			FlxG.camera.follow(camFollow, null, 0.06);
+		if (currentFPS == 3)
+			FlxG.camera.follow(camFollow, null, 0.015);
+		if (currentFPS == 4)
+			FlxG.camera.follow(camFollow, null, 0.00375);
+
 		if (FlxG.sound.music.volume < 0.8)
 		{
 			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
@@ -193,6 +202,8 @@ class MainMenuState extends MusicBeatState
 			}
 		}
 
+		changeFPS();
+
 		super.update(elapsed);
 
 		menuItems.forEach(function(spr:FlxSprite)
@@ -222,5 +233,38 @@ class MainMenuState extends MusicBeatState
 
 			spr.updateHitbox();
 		});
+	}
+
+	function changeFPS()
+	{
+		FlxG.save.data.currentFPS = currentFPS;
+
+		if (FlxG.keys.justPressed.NUMPADONE)
+		{
+			FlxG.updateFramerate = 30;
+			FlxG.drawFramerate = 30;
+			currentFPS = 1;
+		}
+
+		if (FlxG.keys.justPressed.NUMPADTWO)
+		{
+			FlxG.updateFramerate = 60;
+			FlxG.drawFramerate = 60;
+			currentFPS = 2;
+		}
+
+		if (FlxG.keys.justPressed.NUMPADTHREE)
+		{
+			FlxG.updateFramerate = 120;
+			FlxG.drawFramerate = 120;
+			currentFPS = 3;
+		}
+
+		if (FlxG.keys.justPressed.NUMPADFOUR)
+		{
+			FlxG.updateFramerate = 240;
+			FlxG.drawFramerate = 240;
+			currentFPS = 4;
+		}
 	}
 }

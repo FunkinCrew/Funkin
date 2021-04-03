@@ -1,5 +1,6 @@
 package;
 
+import flixel.FlxG;
 import flixel.FlxGame;
 import flixel.FlxState;
 import openfl.Assets;
@@ -69,8 +70,40 @@ class Main extends Sprite
 
 		addChild(new FlxGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen));
 
+		setFPS();
+
 		#if !mobile
 		addChild(new FPS(10, 3, 0xFFFFFF));
 		#end
+	}
+
+	function setFPS()
+	{
+		if (FlxG.save.data.currentFPS != null)
+			MainMenuState.currentFPS = FlxG.save.data.currentFPS;
+
+		if (MainMenuState.currentFPS == 1)
+		{
+			FlxG.updateFramerate = 30;
+			FlxG.drawFramerate = 30;
+		}
+
+		if (MainMenuState.currentFPS == 2)
+		{
+			FlxG.updateFramerate = 60;
+			FlxG.drawFramerate = 60;
+		}
+
+		if (MainMenuState.currentFPS == 3)
+		{
+			FlxG.updateFramerate = 120;
+			FlxG.drawFramerate = 120;
+		}
+
+		if (MainMenuState.currentFPS == 4)
+		{
+			FlxG.updateFramerate = 240;
+			FlxG.drawFramerate = 240;
+		}
 	}
 }
