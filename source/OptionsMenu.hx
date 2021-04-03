@@ -140,20 +140,21 @@ class OptionsMenu extends MusicBeatState
 						
 					case 'Scroll Speed':
 						if (FlxG.keys.justPressed.RIGHT)
-							FlxG.save.data.scrollSpeed+=0.1;
+							FlxG.save.data.scrollSpeed += 0.1;
 		
 						if (FlxG.keys.justPressed.LEFT)
-							FlxG.save.data.scrollSpeed-=0.1;
+							FlxG.save.data.scrollSpeed -= 0.1;
 
 						// caps
 
-						if (FlxG.save.data.scrollSpeed < 0)
-							FlxG.save.data.scrollSpeed = 0.1;
+						if (FlxG.save.data.scrollSpeed < 1)
+							FlxG.save.data.scrollSpeed = 1;
 
 						if (FlxG.save.data.scrollSpeed > 10)
 							FlxG.save.data.scrollSpeed = 10;
 
-						versionShit.text = "Current Scroll Speed: " + FlxG.save.data.scrollSpeed + " - Description - " + currentDescription;
+
+						versionShit.text = "Current Scroll Speed: " + truncateFloat(FlxG.save.data.scrollSpeed,1) + " - Description - " + currentDescription;
 					default:
 						if (FlxG.keys.pressed.RIGHT)
 							FlxG.save.data.offset += 0.01;
