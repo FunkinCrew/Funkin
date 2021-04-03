@@ -1,7 +1,8 @@
 package;
 
+import flixel.util.FlxColor;
+import flixel.text.FlxText;
 import flixel.group.FlxGroup.FlxTypedGroup;
-import openfl.Assets;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -16,9 +17,6 @@ class DonateScreenState extends MusicBeatState {
 		"give a lil bit back"
 	];
 
-	var textGroup:FlxTypedGroup<Alphabet>;
-	var menuItem:FlxSprite;
-
 	override function create()
 	{
 		transIn = FlxTransitionableState.defaultTransIn;
@@ -29,7 +27,7 @@ class DonateScreenState extends MusicBeatState {
 		persistentUpdate = persistentDraw = true;
 
 		var bg:FlxSprite = new FlxSprite(-80).loadGraphic(Paths.image('menuBG'));
-		bg.color = 0x8F2828; // red, the color of passion
+		bg.color = 0xFF8F8F; // this was supposed to be red but it came out orange. oh well
 		bg.setGraphicSize(Std.int(bg.width * 1.1));
 		bg.updateHitbox();
 		bg.screenCenter();
@@ -38,7 +36,7 @@ class DonateScreenState extends MusicBeatState {
 
 		var tex = Paths.getSparrowAtlas('FNF_main_menu_assets');
 
-		menuItem = new FlxSprite(0, 520);
+		var menuItem:FlxSprite = new FlxSprite(0, 520);
 		menuItem.frames = tex;
 		menuItem.animation.addByPrefix('selected', "donate white", 24);
 		menuItem.animation.play('selected');
@@ -47,7 +45,7 @@ class DonateScreenState extends MusicBeatState {
 		add(menuItem);
 		menuItem.antialiasing = true;
 
-		textGroup = new FlxTypedGroup<Alphabet>();
+		var textGroup:FlxTypedGroup<Alphabet> = new FlxTypedGroup<Alphabet>();
 		add(textGroup);
 		for (i in 0...blurb.length)
 		{
@@ -56,6 +54,16 @@ class DonateScreenState extends MusicBeatState {
 			money.y += (i * 60) + 120;
 			textGroup.add(money);
 		}
+
+		#if html5
+		var someText:FlxText = new FlxText(0, 684, 0, "(opens the itch.io page in a new tab)");
+		#else
+		var someText:FlxText = new FlxText(0, 684, 0, "(opens the itch.io page in a browser window)");
+		#end
+		someText.setFormat("VCR OSD Mono", 24, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		someText.updateHitbox();
+		someText.screenCenter(X);
+		add(someText);
 
 		super.create();
 	}
@@ -77,7 +85,5 @@ class DonateScreenState extends MusicBeatState {
 		}
 
 		super.update(elapsed);
-
-		menuItem.screenCenter(X);
 	}
 }
