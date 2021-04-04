@@ -83,6 +83,7 @@ class ModMenu extends ui.OptionsState.Page
 		organizeByY();
 	}
 
+	inline static var MOD_PATH = "./mods";
 	private function refreshModList():Void
 	{
 		while (grpMods.members.length > 0)
@@ -93,16 +94,23 @@ class ModMenu extends ui.OptionsState.Page
 		#if desktop
 		var modList = [];
 		modFolders = [];
-
-		for (file in FileSystem.readDirectory('./mods'))
+		
+		trace("mods path:" + FileSystem.absolutePath(MOD_PATH));
+		if (!FileSystem.exists(MOD_PATH))
 		{
-			if (FileSystem.isDirectory('./mods/' + file))
+			FlxG.log.warn("missing mods folder, expected: " + FileSystem.absolutePath(MOD_PATH));
+			return;
+		}
+		
+		for (file in FileSystem.readDirectory(MOD_PATH))
+		{
+			if (FileSystem.isDirectory(MOD_PATH + file))
 				modFolders.push(file);
 		}
 
 		enabledMods = [];
 
-		modList = Polymod.scan('./mods');
+		modList = Polymod.scan(MOD_PATH);
 
 		trace(modList);
 
