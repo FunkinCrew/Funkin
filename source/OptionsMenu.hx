@@ -22,7 +22,10 @@ class OptionsMenu extends MusicBeatState
 	var options:Array<OptionCatagory> = [
 		new OptionCatagory("Gameplay", [
 			new DFJKOption(controls),
-			new FPSCapOption("Cap your FPS (Left for -10, Right for -10)"),
+			new Judgement("Customize your Hit Timings (LEFT or RIGHT)"),
+			#if !html
+			new FPSCapOption("Cap your FPS (Left for -10, Right for -10. SHIFT to go faster)"),
+			#end
 			new ScrollSpeedOption("Change your scroll speed (Left for -0.1, right for +0.1. If its at 1, it will be chart dependent)"),
 			new OffsetMenu("Get a note offset based off of your inputs!"),
 			new CustomizeGameplay("Drag'n'Drop Gameplay Modules around to your preference")
@@ -30,22 +33,24 @@ class OptionsMenu extends MusicBeatState
 		new OptionCatagory("Appearence", [
 			new SongPositionOption("Show the songs current position (as a bar)"),
 			new DownscrollOption("Change the layout of the strumline."),
+			#if !html
 			new RainbowFPSOption("Make the FPS Counter Rainbow (Only works with the FPS Counter toggeled on)"),
+			#end
 			new AccuracyOption("Display accuracy information."),
 			new NPSDisplayOption("Shows your current Notes Per Second.")
 		]),
+		#if !mobile
 		new OptionCatagory("Misc", [
-			new EtternaModeOption("Harder Hit Windows and a different scoring system."),
-			#if !mobile
+			
 			new FPSOption("Toggle the FPS Counter"),
-			#end
 			new ReplayOption("View replays")
 		])
+		#end
 	];
 
 	private var currentDescription:String = "";
 	private var grpControls:FlxTypedGroup<Alphabet>;
-	var versionShit:FlxText;
+	public static var versionShit:FlxText;
 
 	var currentSelectedCat:OptionCatagory;
 
@@ -84,7 +89,7 @@ class OptionsMenu extends MusicBeatState
 
 	var isCat:Bool = false;
 	
-	function truncateFloat( number : Float, precision : Int): Float {
+	public static function truncateFloat( number : Float, precision : Int): Float {
 		var num = number;
 		num = num * Math.pow(10, precision);
 		num = Math.round( num ) / Math.pow(10, precision);
@@ -118,51 +123,36 @@ class OptionsMenu extends MusicBeatState
 			
 			if (isCat)
 			{
-				switch(currentSelectedCat.getOptions()[curSelected].getDisplay())
+				if (currentSelectedCat.getOptions()[curSelected].getAccept())
 				{
-					case 'FPS Cap':
-						var fps = (cast (Lib.current.getChildAt(0), Main)).getFPSCap();
-
-						if (FlxG.keys.pressed.RIGHT && fps < 285) // actual cap is 285
+					if (FlxG.keys.pressed.SHIFT)
 						{
-							(cast (Lib.current.getChildAt(0), Main)).setFPSCap(fps + 10);
-							FlxG.save.data.fpsCap = fps + 10;
+							if (FlxG.keys.pressed.RIGHT)
+								currentSelectedCat.getOptions()[curSelected].right();
+							if (FlxG.keys.pressed.LEFT)
+								currentSelectedCat.getOptions()[curSelected].left();
 						}
-		
-						if (FlxG.keys.pressed.LEFT && fps > 60)
-						{
-							(cast (Lib.current.getChildAt(0), Main)).setFPSCap(fps - 10);
-							FlxG.save.data.fpsCap = fps - 10;
-						}
-
-						versionShit.text = "Current FPS Cap: " + fps + " - Description - " + currentDescription;
-		
-						
-					case 'Scroll Speed':
+					else
+					{
 						if (FlxG.keys.justPressed.RIGHT)
-							FlxG.save.data.scrollSpeed += 0.1;
-		
+							currentSelectedCat.getOptions()[curSelected].right();
 						if (FlxG.keys.justPressed.LEFT)
-							FlxG.save.data.scrollSpeed -= 0.1;
-
-						// caps
-
-						if (FlxG.save.data.scrollSpeed < 1)
-							FlxG.save.data.scrollSpeed = 1;
-
-						if (FlxG.save.data.scrollSpeed > 10)
-							FlxG.save.data.scrollSpeed = 10;
-
-
-						versionShit.text = "Current Scroll Speed: " + truncateFloat(FlxG.save.data.scrollSpeed,1) + " - Description - " + currentDescription;
-					default:
+							currentSelectedCat.getOptions()[curSelected].left();
+					}
+				}
+				else
+				{
+					if (FlxG.keys.pressed.SHIFT)
 						if (FlxG.keys.pressed.RIGHT)
-							FlxG.save.data.offset += 0.01;
-		
-						if (FlxG.keys.pressed.LEFT)
-							FlxG.save.data.offset -= 0.01;
-						
-						versionShit.text = "Offset (Left, Right): " + truncateFloat(FlxG.save.data.offset,2) + " - Description - " + currentDescription;
+							FlxG.save.data.offset += 1;
+						else if (FlxG.keys.pressed.LEFT)
+							FlxG.save.data.offset -= 1;
+					else if (controls.RIGHT_P)
+							FlxG.save.data.offset += 0.1;
+					else if (controls.LEFT_P)
+						FlxG.save.data.offset -= 0.1;
+					
+					versionShit.text = "Offset (Left, Right, Shift to go faster): " + truncateFloat(FlxG.save.data.offset,2) + " - Description - " + currentDescription;
 				}
 			}
 			else
@@ -173,7 +163,7 @@ class OptionsMenu extends MusicBeatState
 				if (FlxG.keys.pressed.LEFT)
 					FlxG.save.data.offset-= 0.01;
 				
-				versionShit.text = "Offset (Left, Right): " + truncateFloat(FlxG.save.data.offset,2) + " - Description - " + currentDescription;
+				versionShit.text = "Offset (Left, Right, Shift to go faster): " + truncateFloat(FlxG.save.data.offset,2) + " - Description - " + currentDescription;
 			}
 		
 
