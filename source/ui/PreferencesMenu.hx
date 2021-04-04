@@ -1,6 +1,8 @@
 package ui;
 
+import flixel.FlxCamera;
 import flixel.FlxG;
+import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup;
 import flixel.util.FlxColor;
@@ -14,10 +16,18 @@ class PreferencesMenu extends ui.OptionsState.Page
 	var items:TextMenuList;
 
 	var checkboxes:Array<CheckboxThingie> = [];
+	var menuCamera:FlxCamera;
+	var camFollow:FlxObject;
 
 	public function new()
 	{
 		super();
+
+		menuCamera = new FlxCamera();
+		FlxG.cameras.add(menuCamera, false);
+		menuCamera.bgColor = 0x0;
+		camera = menuCamera;
+
 		add(items = new TextMenuList());
 
 		createPrefItem('naughtyness', 'censor-naughty', false);
@@ -25,6 +35,20 @@ class PreferencesMenu extends ui.OptionsState.Page
 		createPrefItem('flashing menu', 'flashing-menu', true);
 		createPrefItem('Camera Zooming on Beat', 'camera-zoom', true);
 		createPrefItem('FPS Counter', 'fps-counter', true);
+
+		camFollow = new FlxObject(FlxG.width / 2, 0, 140, 70);
+		if (items != null)
+			camFollow.y = items.selectedItem.y;
+
+		menuCamera.follow(camFollow, null, 0.06);
+		var margin = 160;
+		menuCamera.deadzone.set(0, margin, menuCamera.width, 40);
+		menuCamera.minScrollY = 0;
+
+		items.onChange.add(function(selected)
+		{
+			camFollow.y = selected.y;
+		});
 	}
 
 	public static function getPref(pref:String):Dynamic
@@ -102,6 +126,8 @@ class PreferencesMenu extends ui.OptionsState.Page
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+
+		menuCamera.followLerp = CoolUtil.camLerpShit(0.05);
 
 		items.forEach(function(daItem:TextMenuItem)
 		{
