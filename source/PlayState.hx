@@ -1453,7 +1453,7 @@ class PlayState extends MusicBeatState
 	override public function update(elapsed:Float)
 	{
 		// makes the lerp non-dependant on the framerate
-		FlxG.camera.followLerp = 0.04 * (elapsed / (1 / 60));
+		FlxG.camera.followLerp = CoolUtil.camLerpShit(0.04);
 
 		#if !debug
 		perfectMode = false;
