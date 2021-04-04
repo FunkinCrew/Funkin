@@ -176,7 +176,7 @@ class PlayState extends MusicBeatState
 	private var triggeredAlready:Bool = false;
 	
 	// Will decide if she's even allowed to headbang at all depending on the song
-	private var allowToHeadbang:Bool = false;
+	private var allowedToHeadbang:Bool = false;
 
 	override public function create()
 	{
@@ -1187,12 +1187,11 @@ class PlayState extends MusicBeatState
 		}
 		
 		// Song check real quick
-		if(curSong == 'Bopeebo' ||
-		curSong == 'Philly' ||
-		curSong == 'Blammed' ||
-		curSong == 'Cocoa' ||
-		curSong == 'Eggnog') allowToHeadbang = true;
-		else allowToHeadbang = false;
+		switch(curSong)
+		{
+			case 'Bopeebo' | 'Philly' | 'Blammed' | 'Cocoa' | 'Eggnog': allowedToHeadbang = true;
+			default: allowedToHeadbang = false;
+		}
 		
 		#if desktop
 		// Updating Discord Rich Presence (with Time Left)
@@ -1736,98 +1735,101 @@ class PlayState extends MusicBeatState
 		if (generatedMusic && PlayState.SONG.notes[Std.int(curStep / 16)] != null)
 		{
 			// Make sure Girlfriend cheers only for certain songs
-			if(allowToHeadbang)
+			if(allowedToHeadbang)
 			{
 				// Don't animate GF if something else is already animating her (eg. train passing)
 				if(gf.animation.curAnim.name == 'danceLeft' || gf.animation.curAnim.name == 'danceRight' || gf.animation.curAnim.name == 'idle')
 				{
 					// Per song treatment since some songs will only have the 'Hey' at certain times
-					if(curSong == 'Philly')
+					switch(curSong)
 					{
-						// Prevent GF from starting too early or doing this endlessly
-						if(curBeat < 250)
+						case 'Philly':
 						{
-							// Stoppage times
-							if(curBeat != 184 && curBeat != 216)
+							// General duration of the song
+							if(curBeat < 250)
 							{
-								if (curBeat % 16 == 8)
+								// Beats to skip or to stop GF from cheering
+								if(curBeat != 184 && curBeat != 216)
 								{
-									// Just a garantee that it'll trigger just once
-									if(!triggeredAlready)
+									if(curBeat % 16 == 8)
 									{
-										gf.playAnim('cheer');
-										trace('Eyy ' + curBeat);
-										triggeredAlready = true;
-									}
-								}else triggeredAlready = false;
-							}
-						}
-					}else if(curSong == 'Bopeebo')
-					{
-						if(curBeat > 5 && curBeat < 130)
-						{
-							if (curBeat % 8 == 7)
-							{
-								if(!triggeredAlready)
-								{
-									gf.playAnim('cheer');
-									trace('Eyy ' + curBeat);
-									triggeredAlready = true;
+										// Just a garantee that it'll trigger just once
+										if(!triggeredAlready)
+										{
+											gf.playAnim('cheer');
+											triggeredAlready = true;
+										}
+									}else triggeredAlready = false;
 								}
-							}else triggeredAlready = false;
+							}
 						}
-					}else if(curSong == 'Blammed')
-					{
-						if(curBeat > 30 && curBeat < 190)
+						case 'Bopeebo':
 						{
-							if(curBeat < 90 || curBeat > 128)
+							// Where it starts || where it ends
+							if(curBeat > 5 && curBeat < 130)
 							{
-								if (curBeat % 4 == 2)
+								if(curBeat % 8 == 7)
 								{
 									if(!triggeredAlready)
 									{
 										gf.playAnim('cheer');
-										trace('Eyy ' + curBeat);
 										triggeredAlready = true;
 									}
 								}else triggeredAlready = false;
 							}
 						}
-					}else if(curSong == 'Cocoa')
-					{
-						if(curBeat < 170)
+						case 'Blammed':
 						{
-							if(curBeat < 65 || curBeat > 130 && curBeat < 145)
+							if(curBeat > 30 && curBeat < 190)
 							{
-								if (curBeat % 16 == 15)
+								if(curBeat < 90 || curBeat > 128)
 								{
-									if(!triggeredAlready)
+									if(curBeat % 4 == 2)
 									{
-										gf.playAnim('cheer');
-										trace('Eyy ' + curBeat);
-										triggeredAlready = true;
-									}
-								}else triggeredAlready = false;
-							}
-						}
-					}else if(curSong == 'Eggnog')
-					{
-						if(curBeat > 10 && curBeat != 111 && curBeat < 220)
-						{
-							if (curBeat % 8 == 7)
-							{
-								if(!triggeredAlready)
-								{
-									gf.playAnim('cheer');
-									trace('Eyy ' + curBeat);
-									triggeredAlready = true;
+										if(!triggeredAlready)
+										{
+											gf.playAnim('cheer');
+											triggeredAlready = true;
+										}
+									}else triggeredAlready = false;
 								}
-							}else triggeredAlready = false;
+							}
+						}
+						case 'Cocoa':
+						{
+							if(curBeat < 170)
+							{
+								if(curBeat < 65 || curBeat > 130 && curBeat < 145)
+								{
+									if(curBeat % 16 == 15)
+									{
+										if(!triggeredAlready)
+										{
+											gf.playAnim('cheer');
+											triggeredAlready = true;
+										}
+									}else triggeredAlready = false;
+								}
+							}
+						}
+						case 'Eggnog':
+						{
+							if(curBeat > 10 && curBeat != 111 && curBeat < 220)
+							{
+								if(curBeat % 8 == 7)
+								{
+									if(!triggeredAlready)
+									{
+										gf.playAnim('cheer');
+										triggeredAlready = true;
+									}
+								}else triggeredAlready = false;
+							}
 						}
 					}
 				}
 			}
-
+			
 			if (camFollow.x != dad.getMidpoint().x + 150 && !PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection)
 			{
 				camFollow.setPosition(dad.getMidpoint().x + 150, dad.getMidpoint().y - 100);
