@@ -6,6 +6,7 @@ import flixel.FlxSubState;
 import flixel.math.FlxPoint;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import haxe.display.Display.Package;
 
 class GameOverSubstate extends MusicBeatSubstate
 {
@@ -29,6 +30,14 @@ class GameOverSubstate extends MusicBeatSubstate
 				daBf = 'bf-pixel-dead';
 			default:
 				daBf = 'bf';
+		}
+
+		var daSong = PlayState.SONG.song.toLowerCase();
+
+		switch (daSong)
+		{
+			case 'stress':
+				daBf = 'bf-holding-gf-dead';
 		}
 
 		super();
