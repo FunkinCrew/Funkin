@@ -35,6 +35,7 @@ class PreferencesMenu extends ui.OptionsState.Page
 		createPrefItem('flashing menu', 'flashing-menu', true);
 		createPrefItem('Camera Zooming on Beat', 'camera-zoom', true);
 		createPrefItem('FPS Counter', 'fps-counter', true);
+		createPrefItem('Auto Pause', 'auto-pause', false);
 
 		camFollow = new FlxObject(FlxG.width / 2, 0, 140, 70);
 		if (items != null)
@@ -63,9 +64,12 @@ class PreferencesMenu extends ui.OptionsState.Page
 		preferenceCheck('flashing-menu', true);
 		preferenceCheck('camera-zoom', true);
 		preferenceCheck('fps-counter', true);
+		preferenceCheck('auto-pause', false);
 
 		if (!getPref('fps-counter'))
 			FlxG.stage.removeChild(Main.fpsCounter);
+
+		FlxG.autoPause = getPref('auto-pause');
 	}
 
 	private function createPrefItem(prefName:String, prefString:String, prefValue:Dynamic):Void
@@ -114,13 +118,18 @@ class PreferencesMenu extends ui.OptionsState.Page
 		checkboxes[items.selectedIndex].daValue = daSwap;
 		trace('toggled? ' + preferences.get(prefName));
 
-		if (prefName == 'fps-counter')
+		switch (prefName)
 		{
-			if (getPref('fps-counter'))
-				FlxG.stage.addChild(Main.fpsCounter);
-			else
-				FlxG.stage.removeChild(Main.fpsCounter);
+			case 'fps-counter':
+				if (getPref('fps-counter'))
+					FlxG.stage.addChild(Main.fpsCounter);
+				else
+					FlxG.stage.removeChild(Main.fpsCounter);
+			case 'auto-pause':
+				FlxG.autoPause = getPref('auto-pause');
 		}
+
+		if (prefName == 'fps-counter') {}
 	}
 
 	override function update(elapsed:Float)
