@@ -1,5 +1,10 @@
 [
     {
+        "start": 0.00,
+        "lyric": "TEST TEST TEST TEST TEST",
+        "end": 5000.00
+    },
+    {
         "start": 13000.00,
         "lyric": "Guess it's time",
         "end": 14500.00
