@@ -97,6 +97,7 @@ class PlayState extends MusicBeatState
 	var dialogue:Array<String> = ['blah blah blah', 'coolswag'];
 
 	var lyrics:Array<SwagLyricSection>;
+	var hasLyrics:Bool = false;
 
 	var halloweenBG:FlxSprite;
 	var isHalloween:Bool = false;
@@ -208,6 +209,7 @@ class PlayState extends MusicBeatState
 			try
 			{
 				lyrics = cast Json.parse(Assets.getText(Paths.json(SONG.song.toLowerCase() + '/lyrics')));
+				hasLyrics = true;
 				trace("Found lyrics for " + SONG.song.toLowerCase());
 			} catch(e) {
 				trace("No lyrics for " + SONG.song.toLowerCase());
@@ -1605,16 +1607,19 @@ class PlayState extends MusicBeatState
 
 		var lyricFailMargin:Int = 120;
 
-		for (i in lyrics)
+		if (hasLyrics == true)
 		{
-			if (FlxMath.inBounds(Conductor.songPosition, i.start, i.start + lyricFailMargin))
+			for (i in lyrics)
 			{
-				lyricTxt.text = i.lyric;
-			}
+				if (FlxMath.inBounds(Conductor.songPosition, i.start, i.start + lyricFailMargin))
+				{
+					lyricTxt.text = i.lyric;
+				}
 
-			if (FlxMath.inBounds(Conductor.songPosition, i.end, i.end + lyricFailMargin))
-			{
-				lyricTxt.text = "";
+				if (FlxMath.inBounds(Conductor.songPosition, i.end, i.end + lyricFailMargin))
+				{
+					lyricTxt.text = "";
+				}
 			}
 		}
 
