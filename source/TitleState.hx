@@ -10,13 +10,18 @@ import flixel.group.FlxGroup;
 import flixel.input.gamepad.FlxGamepad;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
+import flixel.system.FlxAssets.FlxGraphicAsset;
+import flixel.system.FlxAssets;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import lime.app.Application;
+import lime.ui.Window;
 import openfl.Assets;
 import shaderslmfao.ColorSwap;
+import sys.FileSystem;
+import sys.io.File;
 import ui.PreferencesMenu;
 
 using StringTools;
@@ -46,11 +51,33 @@ class TitleState extends MusicBeatState
 
 	var swagShader:ColorSwap;
 
+	var thingie:FlxSprite;
+
 	override public function create():Void
 	{
 		#if polymod
 		polymod.Polymod.init({modRoot: "mods", dirs: ['introMod'], framework: OPENFL});
+		// FlxG.bitmap.clearCache();
 		#end
+		/* 
+
+			FlxG.stage.window.onDropFile.add(function(path:String)
+			{
+				trace("DROPPED FILE FROM: " + Std.string(path));
+				var newPath = "./" + Paths.image('gfDanceTitle');
+				File.copy(path, newPath);
+
+				var swag = Paths.image('gfDanceTitle');
+
+				if (gfDance != null)
+					remove(gfDance);
+				FlxG.bitmap.removeByKey(Paths.image('gfDanceTitle'));
+				Assets.cache.clear();
+
+				gfDance.loadGraphic(Paths.image('gfDanceTitle'));
+				add(gfDance);
+			});
+		 */
 
 		swagShader = new ColorSwap();
 
