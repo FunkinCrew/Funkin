@@ -785,8 +785,8 @@ class PlayState extends MusicBeatState
 		iconP2.y = healthBar.y - (iconP2.height / 2);
 		add(iconP2);
 
-		lyricTxt = new FlxText(healthBar.x, healthBar.y, 320, "[PLACEHOLDER]", 32);
-		lyricTxt.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		lyricTxt = new FlxText(healthBar.x, healthBar.y, 320, "[PLACEHOLDER]", 28);
+		lyricTxt.setFormat(Paths.font("vcr.ttf"), 28, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		lyricTxt.scrollFactor.set();
 
 		if (STOptions.st_lyrics == true) {
@@ -1599,8 +1599,8 @@ class PlayState extends MusicBeatState
 		iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset);
 		iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset);
 
-		lyricTxt.x = (healthBar.getMidpoint().x - 100) - 100;
-		lyricTxt.y = (healthBar.getMidpoint().y - 125);
+		lyricTxt.x = (healthBar.getMidpoint().x - 100) - 70;
+		lyricTxt.y = (healthBar.getMidpoint().y - 175);
 
 		iconP1txt.x = iconP1.x + iconP1.width - iconP1txt.width - iconOffset;
 		iconP2txt.x = iconP2.x;
