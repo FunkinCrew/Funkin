@@ -1,17 +1,12 @@
 [
     {
-        "start": 0.00,
-        "lyric": "TEST TEST TEST TEST TEST",
-        "end": 5000.00
-    },
-    {
         "start": 13000.00,
         "lyric": "Guess it's time",
         "end": 14500.00
     },
     {
         "start": 14500.00,
-        "lyric": "you better plug in all your nightlights.",
+        "lyric": "you better plug in all your nightlights",
         "end": 17800.00
     },
     {
@@ -21,7 +16,42 @@
     },
     {
         "start": 32800.00,
-        "lyric": "Just the eyes floating up out of the shore.",
+        "lyric": "Just the eyes floating up out of the shore",
         "end": 37000.00
+    },
+    {
+        "start": 44260.00,
+        "lyric": "Hey man, I'm gonna eat your girlfriend",
+        "end": 47760.00
+    },
+    {
+        "start": 53500.00,
+        "lyric": "Or maybe turn her into broth",
+        "end": 56500.00
+    },
+    {
+        "start": 56500.00,
+        "lyric": "la-la-la la la",
+        "end": 57680.00
+    },
+    {
+        "start": 62360.00,
+        "lyric": "Kill a kid, cut em up",
+        "end": 63400.00
+    },
+    {
+        "start": 63400.00,
+        "lyric": "stuff em up inside of my, secret meat box",
+        "end": 66790.00
+    },
+    {
+        "start": 71470.00,
+        "lyric": "Find my, hands across your body so to peel your skin off",
+        "end": 75930.00
+    },
+    {
+        "start": 82080.00,
+        "lyric": "You'll meet your friends",
+        "end": 84300.00
     }
 ]
