@@ -1,10 +1,12 @@
 package;
 
-import polymod.Polymod.Framework;
-import polymod.Polymod.PolymodError;
 #if desktop
 import Discord.DiscordClient;
 import sys.thread.Thread;
+import sys.FileSystem;
+import polymod.Polymod.Framework;
+import polymod.Polymod.PolymodError;
+import openfl.display.BitmapData;
 #end
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -48,9 +50,9 @@ class TitleState extends MusicBeatState
 
 	override public function create():Void
 	{
-		// Get all directories in the mod folder
-
 		#if (polymod && sys)
+
+		// Get all directories in the mod folder
 		var modDirectory:Array<String> = [];
 		var mods = sys.FileSystem.readDirectory("mods");
 
@@ -62,7 +64,7 @@ class TitleState extends MusicBeatState
 		trace(modDirectory);
 		
 		// Handle mod errors
-		var errors:PolymodError->Void = (error:PolymodError) -> {
+		var errors = (error:PolymodError) -> {
 			trace(error.severity+": "+error.code+" - "+ error.message + " ORIGIN: "+error.origin);
 		};
 
@@ -71,20 +73,19 @@ class TitleState extends MusicBeatState
 			modRoot: "mods",
 			dirs: modDirectory,
 			errorCallback: errors,
-			framework: Framework.LIME,
 		});
 
 		//Display active mods
+		var loadedMods = "";
 		for (modData in modMetadata) {
-			trace(modData.title);
+			loadedMods += modData.title+", ";
 		}
 
-		var content:String = Assets.getText(Paths.txt('introText'));
-		var test = new FlxSprite(0, 0);
-		var text = new FlxText(0, 0, 1000, content, 32);
-		test.pixels = Assets.getBitmapData(Paths.image("iconGrid"));
-		add(test);
-		add(text);
+		var flxText = new FlxText(5, 5, 0, "", 16);
+		flxText.text = "Loaded Mods: "+loadedMods;
+		flxText.color = FlxColor.WHITE;
+		add(flxText);
+		
 		#end
 
 		PlayerSettings.init();

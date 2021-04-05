@@ -40,8 +40,9 @@
 
 	<classpath name="source" />
 
-	<assets path="assets/preload" rename="assets" exclude="*.ogg" if="web"/>
-	<assets path="assets/preload" rename="assets" exclude="*.mp3" unless="web"/>
+	<assets path="assets" rename="contents"/>
+	<assets path="assets/preload" rename="contents" exclude="*.ogg" if="web"/>
+	<assets path="assets/preload" rename="contents" exclude="*.mp3" unless="web"/>
 	
 	<!-- <define name="PRELOAD_ALL" /> -->
 	<define name="PRELOAD_ALL" unless="web" />
@@ -71,24 +72,24 @@
 		<library name="week6"    preload="false" />
 	</section>
 	
-	<assets path="assets/songs"    library="songs"    exclude="*.ogg" if="web"/>
-	<assets path="assets/songs"    library="songs"    exclude="*.mp3" unless="web"/>
-	<assets path="assets/shared"   library="shared"   exclude="*.ogg" if="web"/>
-	<assets path="assets/shared"   library="shared"   exclude="*.mp3" unless="web"/>
-	<assets path="assets/tutorial" library="tutorial" exclude="*.ogg" if="web"/>
-	<assets path="assets/tutorial" library="tutorial" exclude="*.mp3" unless="web"/>
-	<assets path="assets/week1"    library="week1"    exclude="*.ogg" if="web"/>
-	<assets path="assets/week1"    library="week1"    exclude="*.mp3" unless="web"/>
-	<assets path="assets/week2"    library="week2"    exclude="*.ogg" if="web"/>
-	<assets path="assets/week2"    library="week2"    exclude="*.mp3" unless="web"/>
-	<assets path="assets/week3"    library="week3"    exclude="*.ogg" if="web"/>
-	<assets path="assets/week3"    library="week3"    exclude="*.mp3" unless="web"/>
-	<assets path="assets/week4"    library="week4"    exclude="*.ogg" if="web"/>
-	<assets path="assets/week4"    library="week4"    exclude="*.mp3" unless="web"/>
-	<assets path="assets/week5"    library="week5"    exclude="*.ogg" if="web"/>
-	<assets path="assets/week5"    library="week5"    exclude="*.mp3" unless="web"/>
-	<assets path="assets/week6"    library="week6"    exclude="*.ogg" if="web"/>
-	<assets path="assets/week6"    library="week6"    exclude="*.mp3" unless="web"/>
+	<assets path="assets/songs"    library="songs"    rename="contents/songs" exclude="*.ogg" if="web"/>
+	<assets path="assets/songs"    library="songs"    rename="contents/songs" exclude="*.mp3" unless="web"/>
+	<assets path="assets/shared"   library="shared"   rename="contents/shared" exclude="*.ogg" if="web"/>
+	<assets path="assets/shared"   library="shared"   rename="contents/shared" exclude="*.mp3" unless="web"/>
+	<assets path="assets/tutorial" library="tutorial" rename="contents/tutorial" exclude="*.ogg" if="web"/>
+	<assets path="assets/tutorial" library="tutorial" rename="contents/tutorial" exclude="*.mp3" unless="web"/>
+	<assets path="assets/week1"    library="week1"    rename="contents/week1" exclude="*.ogg" if="web"/>
+	<assets path="assets/week1"    library="week1"    rename="contents/week1" exclude="*.mp3" unless="web"/>
+	<assets path="assets/week2"    library="week2"    rename="contents/week2" exclude="*.ogg" if="web"/>
+	<assets path="assets/week2"    library="week2"    rename="contents/week2" exclude="*.mp3" unless="web"/>
+	<assets path="assets/week3"    library="week3"    rename="contents/week3" exclude="*.ogg" if="web"/>
+	<assets path="assets/week3"    library="week3"    rename="contents/week3" exclude="*.mp3" unless="web"/>
+	<assets path="assets/week4"    library="week4"    rename="contents/week4" exclude="*.ogg" if="web"/>
+	<assets path="assets/week4"    library="week4"    rename="contents/week4" exclude="*.mp3" unless="web"/>
+	<assets path="assets/week5"    library="week5"    rename="contents/week5" exclude="*.ogg" if="web"/>
+	<assets path="assets/week5"    library="week5"    rename="contents/week5" exclude="*.mp3" unless="web"/>
+	<assets path="assets/week6"    library="week6"    rename="contents/week6" exclude="*.ogg" if="web"/>
+	<assets path="assets/week6"    library="week6"    rename="contents/week6" exclude="*.mp3" unless="web"/>
 	
 	<assets path='example_mods' rename='mods' embed='false'/>
 	<assets path='art/readme.txt' rename='do NOT readme.txt' />
