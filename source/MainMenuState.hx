@@ -36,9 +36,9 @@ class MainMenuState extends MusicBeatState
 	var newGaming2:FlxText;
 	var newInput:Bool = true;
 
-	public static var nightly:String = "";
+	public static var nightly:String = "-Nightly2";
 
-	public static var kadeEngineVer:String = "1.4" + nightly;
+	public static var kadeEngineVer:String = "1.4.1" + nightly;
 	public static var gameVer:String = "0.2.7.1";
 
 	var magenta:FlxSprite;

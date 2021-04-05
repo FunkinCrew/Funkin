@@ -3,27 +3,27 @@ class Ratings
     public static function CalculateRating(noteDiff:Float, ?customSafeZone:Float):String
     {
 
-        if (customSafeZone == null)
-        {
-            Conductor.safeZoneOffset = (Conductor.safeFrames / 60) * 1000;
-            customSafeZone = Conductor.safeZoneOffset;
-        }
+        var customTimeScale = Conductor.timeScale;
 
+        if (customSafeZone != null)
+            customTimeScale = customSafeZone / 166;
+
+        // trace(customTimeScale + ' vs ' + Conductor.timeScale);
 
         // I HATE THIS IF CONDITION
         // IF LEMON SEES THIS I'M SORRY :(
 
-        if (noteDiff > customSafeZone * 0.50) // way early
+        if (noteDiff > 135 * customTimeScale) // way early
             return "shit";
-        else if (noteDiff > customSafeZone * 0.26) // early
+        else if (noteDiff > 90 * customTimeScale) // early
             return "bad";
-        else if (noteDiff > customSafeZone * 0.20) // your kinda there
+        else if (noteDiff > 45 * customTimeScale) // your kinda there
             return "good";
-        else if (noteDiff < customSafeZone * -0.20) // little late
+        else if (noteDiff < -45 * customTimeScale) // little late
             return "good";
-        else if (noteDiff < customSafeZone * -0.26) // late
+        else if (noteDiff < -90 * customTimeScale) // late
             return "bad";
-        else if (noteDiff < customSafeZone * -0.50) // late as fuck
+        else if (noteDiff < -135 * customTimeScale) // late as fuck
             return "shit";
         return "sick";
     }

@@ -181,31 +181,39 @@ class Judgement extends Option
 	}
 
 	override function left():Bool {
+
+		if (Conductor.safeFrames == 1)
+			return false;
+
 		Conductor.safeFrames -= 1;
 		FlxG.save.data.frames = Conductor.safeFrames;
 
-		Conductor.safeZoneOffset = (Conductor.safeFrames / 60) * 1000;
+		Conductor.recalculateTimings();
 
 		OptionsMenu.versionShit.text = "Current Safe Frames: " + Conductor.safeFrames + " - Description - " + description + 
-		" - SIK: " + OptionsMenu.truncateFloat(Conductor.safeZoneOffset * 0.25, 0) +
-		"ms GD: " + OptionsMenu.truncateFloat(Conductor.safeZoneOffset * 0.40, 0) +
-		"ms BD: " + OptionsMenu.truncateFloat(Conductor.safeZoneOffset * 0.50, 0) + 
-		"ms SHT: " + OptionsMenu.truncateFloat(Conductor.safeZoneOffset * 0.70, 0) +
+		" - SIK: " + OptionsMenu.truncateFloat(45 * Conductor.timeScale, 0) +
+		"ms GD: " + OptionsMenu.truncateFloat(90 * Conductor.timeScale, 0) +
+		"ms BD: " + OptionsMenu.truncateFloat(135 * Conductor.timeScale, 0) + 
+		"ms SHT: " + OptionsMenu.truncateFloat(155 * Conductor.timeScale, 0) +
 		"ms TOTAL: " + OptionsMenu.truncateFloat(Conductor.safeZoneOffset,0) + "ms";
 		return true;
 	}
 
 	override function right():Bool {
+
+		if (Conductor.safeFrames == 20)
+			return false;
+
 		Conductor.safeFrames += 1;
 		FlxG.save.data.frames = Conductor.safeFrames;
 
-		Conductor.safeZoneOffset = (Conductor.safeFrames / 60) * 1000;
+		Conductor.recalculateTimings();
 
 		OptionsMenu.versionShit.text = "Current Safe Frames: " + Conductor.safeFrames + " - Description - " + description + 
-		" - SIK: " + OptionsMenu.truncateFloat(Conductor.safeZoneOffset * 0.25, 0) +
-		"ms GD: " + OptionsMenu.truncateFloat(Conductor.safeZoneOffset * 0.40, 0) +
-		"ms BD: " + OptionsMenu.truncateFloat(Conductor.safeZoneOffset * 0.50, 0) + 
-		"ms SHT: " + OptionsMenu.truncateFloat(Conductor.safeZoneOffset * 0.70, 0) +
+		" - SIK: " + OptionsMenu.truncateFloat(45 * Conductor.timeScale, 0) +
+		"ms GD: " + OptionsMenu.truncateFloat(90 * Conductor.timeScale, 0) +
+		"ms BD: " + OptionsMenu.truncateFloat(135 * Conductor.timeScale, 0) + 
+		"ms SHT: " + OptionsMenu.truncateFloat(155 * Conductor.timeScale, 0) +
 		"ms TOTAL: " + OptionsMenu.truncateFloat(Conductor.safeZoneOffset,0) + "ms";
 		return true;
 	}

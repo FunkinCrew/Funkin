@@ -54,8 +54,7 @@ class KadeEngineData
 		if (FlxG.save.data.frames == null)
 			FlxG.save.data.frames = 10;
 
-		Conductor.safeFrames = FlxG.save.data.frames;
-		Conductor.safeZoneOffset = (Conductor.safeFrames / 60) * 1000;
+		Conductor.recalculateTimings();
 
 		(cast (Lib.current.getChildAt(0), Main)).setFPSCap(FlxG.save.data.fpsCap);
 	}
