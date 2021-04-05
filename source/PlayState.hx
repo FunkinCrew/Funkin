@@ -42,6 +42,7 @@ import openfl.display.BlendMode;
 import openfl.display.StageQuality;
 import openfl.filters.ShaderFilter;
 import Options.STOptions;
+import Lyric;
 
 using StringTools;
 
@@ -95,6 +96,8 @@ class PlayState extends MusicBeatState
 
 	var dialogue:Array<String> = ['blah blah blah', 'coolswag'];
 
+	var lyrics:Array<SwagLyricSection>;
+
 	var halloweenBG:FlxSprite;
 	var isHalloween:Bool = false;
 
@@ -128,6 +131,8 @@ class PlayState extends MusicBeatState
 
 	// small things: do p2 check
 	var doP2Check:Bool = true;
+
+	var lyricTxt:FlxText;
 
 	public static var campaignScore:Int = 0;
 
@@ -196,6 +201,17 @@ class PlayState extends MusicBeatState
 				dialogue = CoolUtil.coolTextFile(Paths.txt('roses/rosesDialogue'));
 			case 'thorns':
 				dialogue = CoolUtil.coolTextFile(Paths.txt('thorns/thornsDialogue'));
+		}
+
+		if (STOptions.st_lyrics == true)
+		{
+			try
+			{
+				lyrics = cast Json.parse(Assets.getText(Paths.json(SONG.song.toLowerCase() + '/lyrics')));
+				trace("Found lyrics for " + SONG.song.toLowerCase());
+			} catch(e) {
+				trace("No lyrics for " + SONG.song.toLowerCase());
+			}
 		}
 
 		#if desktop
@@ -767,6 +783,17 @@ class PlayState extends MusicBeatState
 		iconP2.y = healthBar.y - (iconP2.height / 2);
 		add(iconP2);
 
+		lyricTxt = new FlxText(healthBar.x, healthBar.y, 0, "[PLACEHOLDER]", 24);
+		lyricTxt.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		lyricTxt.scrollFactor.set();
+
+		if (STOptions.st_lyrics == true) {
+			add(lyricTxt);
+
+			// by default make this off
+			lyricTxt.text = "";
+		}
+
 		// small things: debug text
 		conductorPosTxt = new FlxText(10, 10, "", 20);
 		conductorPosTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
@@ -805,6 +832,7 @@ class PlayState extends MusicBeatState
 		hpTxt.cameras = [camHUD];
 		iconP1txt.cameras = [camHUD];
 		iconP2txt.cameras = [camHUD];
+		lyricTxt.cameras = [camHUD];
 		doof.cameras = [camHUD];
 
 		// if (SONG.song == 'South')
@@ -1569,8 +1597,40 @@ class PlayState extends MusicBeatState
 		iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset);
 		iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset);
 
+		lyricTxt.x = healthBar.getMidpoint().x - 100;
+		lyricTxt.y = healthBar.getMidpoint().y - 125;
+
 		iconP1txt.x = iconP1.x + iconP1.width - iconP1txt.width - iconOffset;
 		iconP2txt.x = iconP2.x;
+
+		var lyricFailMargin:Int = 120;
+
+		for (i in lyrics)
+		{
+			if (FlxMath.inBounds(Conductor.songPosition, i.start, i.start + lyricFailMargin))
+			{
+				lyricTxt.text = i.lyric;
+			}
+
+			if (FlxMath.inBounds(Conductor.songPosition, i.end, i.end + lyricFailMargin))
+			{
+				lyricTxt.text = "";
+			}
+		}
+
+		/*
+		for (index => i in lyrics)
+		{
+			if (index == index + 1) continue;
+			if (index == index + 2) continue;
+
+			lyric_start_pos = Std.parseFloat(lyrics[index]);
+			lyric_text = lyrics[index + 1];
+			lyric_end_pos = Std.parseFloat(lyrics[index + 2]);
+
+			trace(lyric_text);
+		}
+		*/
 
 		if (health > 2)
 			health = 2;

@@ -15,6 +15,7 @@ class STOptions
 	public static var st_fixWeek6CountSounds:Bool = true;			// Small Things: Fix Week6 Countdown sounds
 	public static var st_hideOptionsMenu:Bool = true;				// Small Things: Hide options menu
 	public static var st_logNg:Bool = true;							// Small Things: Log Newgrounds
+	public static var st_lyrics:Bool = true;						// Small Things: [PROTO] Lyrics
 	public static var st_makeSpacesConsistent:Bool = true;			// Small Things: Make song spaces consistent
 	public static var st_monsterIntro:Bool = true;					// Small Things: Monster Intro
 	public static var st_noticeEnabled:Bool = true;					// Small Things: Notice enabled
