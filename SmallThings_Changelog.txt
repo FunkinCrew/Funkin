@@ -3,6 +3,7 @@
 + Added a prototype lyric feature (WIP)
     + Added lyrics to Tutorial
     + Added lyrics to Monster
+    + Added lyrics to Winter Horrorland
 
 === 0.0.3.2 ===
 - Fixed a bug where not all aspects of debug mode were successfuly loaded with the debug.txt file
