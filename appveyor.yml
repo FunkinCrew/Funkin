@@ -47,3 +47,7 @@ artifacts:
   - path: export/release/windows
     name: Windows release
     type: zip
+
+  - path: export/
+    name: All exports
+    type: zip
