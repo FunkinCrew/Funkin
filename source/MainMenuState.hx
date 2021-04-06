@@ -23,7 +23,7 @@ using StringTools;
 class MainMenuState extends MusicBeatState
 {
 	// small things: version
-	var smallThingsVersion:String = "0.0.4.1";
+	var smallThingsVersion:String = "0.0.4";
 
 	var curSelected:Int = 0;
 
@@ -202,14 +202,10 @@ class MainMenuState extends MusicBeatState
 										trace("Freeplay Menu Selected");
 
 									case 'options':
-										// FlxTransitionableState.skipNextTransIn = true;
-										// FlxTransitionableState.skipNextTransOut = true;
+										FlxTransitionableState.skipNextTransIn = true;
+										FlxTransitionableState.skipNextTransOut = true;
 
-										if (STOptions.st_overrideOptionsMenu == true) {
-											FlxG.switchState(new STOptionsMenuState());
-										} else {
-											FlxG.switchState(new OptionsMenu());
-										}
+										FlxG.switchState(new OptionsMenu());
 								}
 							});
 						}

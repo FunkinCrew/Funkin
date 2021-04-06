@@ -1,6 +1,3 @@
-=== 0.0.4.1 ===
-+ Added an options menu to toggle shit
-
 === 0.0.4 ===
 + Added a few more intro tets
 + Added a prototype lyric feature (WIP)
