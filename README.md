@@ -6,9 +6,9 @@
 
 Play the Newgrounds one [here](https://www.newgrounds.com/portal/view/770371)!
 
-Play the Ludum Dare prototype [here](https://ninja-muffin24.itch.io/friday-night-funkin)!
+Play the game and support the project on the [Itch.io page](https://ninja-muffin24.itch.io/funkin)!
 
-Support the project on the [Itch.io page](https://ninja-muffin24.itch.io/funkin)!
+Play the Ludum Dare prototype [here](https://ninja-muffin24.itch.io/friday-night-funkin)!
 
 ## Credits / Shoutouts
 ### Programmers:
@@ -22,7 +22,7 @@ Support the project on the [Itch.io page](https://ninja-muffin24.itch.io/funkin)
 ### Musicians:
 🎶 [Kawaisprite](https://twitter.com/kawaisprite)
 
-### Special Thanks 💖
+### Special Thanks:
 
 This game was made with love to Newgrounds and its community. Extra love to Tom Fulp. 💖
 
