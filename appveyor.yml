@@ -16,8 +16,6 @@ install:
   # Setup haxelib
   - mkdir "%HAXELIB_ROOT%"
   - haxelib setup "%HAXELIB_ROOT%"
-  # Download and setup a standalone flash player debugger
-  - haxe flash/install.hxml
   # Install project dependencies
   # `> log.txt || type log.txt` is for muting the output unless there is an error
   - haxelib install lime 7.8.0 > log.txt || type log.txt && cmd /C exit 1
