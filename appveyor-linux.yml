@@ -34,9 +34,8 @@ install:
 
 build_script:
   - haxelib run lime build linux
-  # haxelib run lime test linux -debug
 
 artifacts:
-- path: export/
-  name: Export
+- path: export/release/linux
+  name: Linux release
   type: zip
