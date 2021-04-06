@@ -1,5 +1,5 @@
 <p align="center">
-	<img src="/art/logoREADME.png">
+	<a href="https://ninja-muffin24.itch.io/funkin" target="_blank"><img src="/art/logoREADME.png"></a>
 </p>
 
 ### This is the repository for Friday Night Funkin, a game originally made for Ludum Dare 47 "Stuck In a Loop".
@@ -27,7 +27,7 @@ Play the Ludum Dare prototype [here](https://ninja-muffin24.itch.io/friday-night
 This game was made with love to Newgrounds and its community. Extra love to Tom Fulp. 💖
 
 <p align="center">
-	<img src="/art/preloaderArt.png">
+	<a href="https://www.newgrounds.com/" target="_blank"><img src="/art/preloaderArt.png"></a>
 </p>
 
 ## What can I do with compiling the game? Why should I compile the game instead of downloading it from [the Itch.io page of the game](https://ninja-muffin24.itch.io/friday-night-funkin)?
@@ -43,7 +43,7 @@ If you just want to download and play the game normally, you can click [here to 
 # Installing the Required Programs
 
 <p align="center">
-	<img src="/art/haxeLogo.png">
+	<a href="https://haxe.org/documentation/introduction/" target="_blank"><img src="/art/haxeLogo.png"></a>
 </p>
 
 First you need to install Haxe and HaxeFlixel.
@@ -88,6 +88,10 @@ class APIStuff
 You should be good from there! Now, onto compiling!
 
 # Compiling the Game
+
+<p align="center">
+	<a href="https://lime-ml.readthedocs.io/en/latest/" target="_blank"><img src="/art/limeLogo.png"></a>
+</p>
 
 ## HTML Building:
 
