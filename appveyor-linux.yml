@@ -8,7 +8,7 @@ install:
   - sudo add-apt-repository ppa:haxe/releases -y
   - sudo apt-get update
   - sudo apt-get install haxe -y
-  - mkdir %HAXELIB_ROOT% && haxelib setup %HAXELIB_ROOT%
+  - mkdir $HAXELIB_ROOT && haxelib setup $HAXELIB_ROOT
   - haxelib install lime 7.9.0
   - haxelib install openfl
   - haxelib install flixel
