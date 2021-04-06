@@ -44,13 +44,9 @@ class TitleState extends MusicBeatState
 	var ngSpr:FlxSprite;
 
 	var curWacky:Array<String> = [];
-
 	var wackyImage:FlxSprite;
-
 	var lastBeat:Int = 0;
-
 	var swagShader:ColorSwap;
-
 	var thingie:FlxSprite;
 
 	override public function create():Void
@@ -59,6 +55,7 @@ class TitleState extends MusicBeatState
 		polymod.Polymod.init({modRoot: "mods", dirs: ['introMod'], framework: OPENFL});
 		// FlxG.bitmap.clearCache();
 		#end
+
 		/* 
 
 			FlxG.stage.window.onDropFile.add(function(path:String)
@@ -177,6 +174,7 @@ class TitleState extends MusicBeatState
 		logoBl.antialiasing = true;
 		logoBl.animation.addByPrefix('bump', 'logo bumpin', 24);
 		logoBl.animation.play('bump');
+
 		logoBl.updateHitbox();
 
 		logoBl.shader = swagShader.shader;
@@ -271,6 +269,9 @@ class TitleState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
+		if (FlxG.keys.justPressed.EIGHT)
+			FlxG.switchState(new CutsceneAnimTestState());
+
 		/* 
 			if (FlxG.keys.justPressed.R)
 			{
