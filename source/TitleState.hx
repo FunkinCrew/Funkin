@@ -20,8 +20,6 @@ import lime.app.Application;
 import lime.ui.Window;
 import openfl.Assets;
 import shaderslmfao.ColorSwap;
-import sys.FileSystem;
-import sys.io.File;
 import ui.PreferencesMenu;
 
 using StringTools;
@@ -30,6 +28,8 @@ using StringTools;
 import Discord.DiscordClient;
 #end
 #if desktop
+import sys.FileSystem;
+import sys.io.File;
 import sys.thread.Thread;
 #end
 
