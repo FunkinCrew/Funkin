@@ -1,3 +1,5 @@
+The point of this fork of Kade-Engine is to build it with AppVeyor. Nothing else is changed.
+
 ![KadeEngineLogo](https://user-images.githubusercontent.com/26305836/110529589-4b4eb600-80ce-11eb-9c44-e899118b0bf0.png)
 
 **Download the latest release [here](https://github.com/KadeDev/Kade-Engine/releases/latest)**
