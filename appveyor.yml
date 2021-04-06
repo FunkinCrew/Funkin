@@ -1,0 +1,43 @@
+# Taken from https://github.com/andyli/HaxeCI/blob/master/appveyor.yml
+version: "{build}"
+
+environment:
+  global:
+    HAXELIB_ROOT: C:\projects\haxelib
+
+install:
+  # http://help.appveyor.com/discussions/problems/5616-not-able-to-build-due-to-problem-in-chocolateyinstallps1
+  - ps: Set-Service wuauserv -StartupType Manual
+  # Install the neko chocolatey package (https://chocolatey.org/packages/neko)
+  - cinst neko --version 2.3.0 -y
+  # Install the haxe chocolatey package (https://chocolatey.org/packages/haxe)
+  - cinst haxe --version 4.1.5 -y
+  - RefreshEnv
+  # Setup haxelib
+  - mkdir "%HAXELIB_ROOT%"
+  - haxelib setup "%HAXELIB_ROOT%"
+  # Download and setup a standalone flash player debugger
+  - haxe flash/install.hxml
+  # Install project dependencies
+  # `> log.txt || type log.txt` is for muting the output unless there is an error
+  - haxelib install lime 7.8.0 > log.txt || type log.txt && cmd /C exit 1
+  - haxelib install openfl > log.txt || type log.txt && cmd /C exit 1
+  - haxelib install flixel > log.txt || type log.txt && cmd /C exit 1
+  - haxelib run lime setup flixel > log.txt || type log.txt && cmd /C exit 1
+  - haxelib run lime setup > log.txt || type log.txt && cmd /C exit 1
+  - haxelib install flixel-tools > log.txt || type log.txt && cmd /C exit 1
+  - haxelib run flixel-tools setup > log.txt || type log.txt && cmd /C exit 1
+  - haxelib install flixel-addons > log.txt || type log.txt && cmd /C exit 1
+  - haxelib install flixel-ui > log.txt || type log.txt && cmd /C exit 1
+  - haxelib install hscript > log.txt || type log.txt && cmd /C exit 1
+  - haxelib install newgrounds > log.txt || type log.txt && cmd /C exit 1
+  - haxelib install flixel-addons > log.txt || type log.txt && cmd /C exit 1
+  - haxelib install faxe > log.txt || type log.txt && cmd /C exit 1
+  - haxelib git polymod https://github.com/larsiusprime/polymod.git > log.txt || type log.txt && cmd /C exit 1
+  - haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc > log.txt || type log.txt && cmd /C exit 1
+  - haxelib list
+
+# No tests idk lol
+build:
+  - lime build linux
+  - lime build windows
