@@ -15,11 +15,20 @@
 
 This is the repository for Friday Night Funkin' Kade Engine, a game originally made for Ludum Dare 47 "Stuck In a Loop". And a completely reworked engine.
 
+### Links to the original game
 Play the Ludum Dare prototype here: https://ninja-muffin24.itch.io/friday-night-funkin
 Play the Newgrounds one here: https://www.newgrounds.com/portal/view/770371
 Support the project on the itch.io page: https://ninja-muffin24.itch.io/funkin
 
+### Links to Kade Engine
 Mod Page: https://gamebanana.com/gamefiles/16761
+
+Latest GitHub release: https://github.com/KadeDev/Kade-Engine/releases/latest
+
+AppVeyor CI (Automatic builds of the latest commit):
+- Windows: [AppVeyor Project](https://ci.appveyor.com/project/KadeDev/kade-engine-windows) | [Artifacts (downloads)](https://ci.appveyor.com/project/KadeDev/kade-engine-windows/build/artifacts)
+
+- Linux: [AppVeyor Project](https://ci.appveyor.com/project/KadeDev/kade-engine-linux) | [Artifacts (downloads)](https://ci.appveyor.com/project/KadeDev/kade-engine-linux/build/artifacts)
 	
 ## What is Kade Engine?
 

@@ -45,9 +45,15 @@ class Option
 	}
 	private var description:String = "";
 	private var display:String;
+	private var acceptValues:Bool = false;
 	public final function getDisplay():String
 	{
 		return display;
+	}
+
+	public final function getAccept():Bool
+	{
+		return acceptValues;
 	}
 
 	public final function getDescription():String
@@ -55,9 +61,12 @@ class Option
 		return description;
 	}
 
+	
 	// Returns whether the label is to be updated.
 	public function press():Bool { return throw "stub!"; }
 	private function updateDisplay():String { return throw "stub!"; }
+	public function left():Bool { return throw "stub!"; }
+	public function right():Bool { return throw "stub!"; }
 }
 
 class DFJKOption extends Option
@@ -150,24 +159,63 @@ class SongPositionOption extends Option
 	}
 }
 
-class EtternaModeOption extends Option
+class Judgement extends Option
 {
+	
+
 	public function new(desc:String)
 	{
 		super();
 		description = desc;
+		acceptValues = true;
 	}
 	
 	public override function press():Bool
 	{
-		FlxG.save.data.etternaMode = !FlxG.save.data.etternaMode;
-		display = updateDisplay();
 		return true;
 	}
 
 	private override function updateDisplay():String
 	{
-		return "Etterna Mode " + (!FlxG.save.data.etternaMode ? "off" : "on");
+		return "Safe Frames";
+	}
+
+	override function left():Bool {
+
+		if (Conductor.safeFrames == 1)
+			return false;
+
+		Conductor.safeFrames -= 1;
+		FlxG.save.data.frames = Conductor.safeFrames;
+
+		Conductor.recalculateTimings();
+
+		OptionsMenu.versionShit.text = "Current Safe Frames: " + Conductor.safeFrames + " - Description - " + description + 
+		" - SIK: " + OptionsMenu.truncateFloat(45 * Conductor.timeScale, 0) +
+		"ms GD: " + OptionsMenu.truncateFloat(90 * Conductor.timeScale, 0) +
+		"ms BD: " + OptionsMenu.truncateFloat(135 * Conductor.timeScale, 0) + 
+		"ms SHT: " + OptionsMenu.truncateFloat(155 * Conductor.timeScale, 0) +
+		"ms TOTAL: " + OptionsMenu.truncateFloat(Conductor.safeZoneOffset,0) + "ms";
+		return true;
+	}
+
+	override function right():Bool {
+
+		if (Conductor.safeFrames == 20)
+			return false;
+
+		Conductor.safeFrames += 1;
+		FlxG.save.data.frames = Conductor.safeFrames;
+
+		Conductor.recalculateTimings();
+
+		OptionsMenu.versionShit.text = "Current Safe Frames: " + Conductor.safeFrames + " - Description - " + description + 
+		" - SIK: " + OptionsMenu.truncateFloat(45 * Conductor.timeScale, 0) +
+		"ms GD: " + OptionsMenu.truncateFloat(90 * Conductor.timeScale, 0) +
+		"ms BD: " + OptionsMenu.truncateFloat(135 * Conductor.timeScale, 0) + 
+		"ms SHT: " + OptionsMenu.truncateFloat(155 * Conductor.timeScale, 0) +
+		"ms TOTAL: " + OptionsMenu.truncateFloat(Conductor.safeZoneOffset,0) + "ms";
+		return true;
 	}
 }
 
@@ -199,6 +247,7 @@ class FPSCapOption extends Option
 	{
 		super();
 		description = desc;
+		acceptValues = true;
 	}
 
 	public override function press():Bool
@@ -210,6 +259,28 @@ class FPSCapOption extends Option
 	{
 		return "FPS Cap";
 	}
+	
+	override function right():Bool {
+		if (FlxG.save.data.fpsCap > 290)
+			return false;
+		FlxG.save.data.fpsCap = FlxG.save.data.fpsCap + 10;
+		(cast (Lib.current.getChildAt(0), Main)).setFPSCap(FlxG.save.data.fpsCap);
+
+		OptionsMenu.versionShit.text = "Current FPS Cap: " + FlxG.save.data.fpsCap + " - Description - " + description;
+
+		return true;
+	}
+
+	override function left():Bool {
+		if (FlxG.save.data.fpsCap < 60)
+			return false;
+		FlxG.save.data.fpsCap = FlxG.save.data.fpsCap - 10;
+		(cast (Lib.current.getChildAt(0), Main)).setFPSCap(FlxG.save.data.fpsCap);
+
+		OptionsMenu.versionShit.text = "Current FPS Cap: " + FlxG.save.data.fpsCap + " - Description - " + description;
+
+		return true;
+	}
 }
 
 
@@ -219,6 +290,7 @@ class ScrollSpeedOption extends Option
 	{
 		super();
 		description = desc;
+		acceptValues = true;
 	}
 
 	public override function press():Bool
@@ -229,6 +301,33 @@ class ScrollSpeedOption extends Option
 	private override function updateDisplay():String
 	{
 		return "Scroll Speed";
+	}
+
+	override function right():Bool {
+		FlxG.save.data.scrollSpeed += 0.1;
+
+		if (FlxG.save.data.scrollSpeed < 1)
+			FlxG.save.data.scrollSpeed = 1;
+
+		if (FlxG.save.data.scrollSpeed > 10)
+			FlxG.save.data.scrollSpeed = 10;
+
+		OptionsMenu.versionShit.text = "Current Scroll Speed: " + OptionsMenu.truncateFloat(FlxG.save.data.scrollSpeed,1) + " - Description - " + description;
+		return true;
+	}
+
+	override function left():Bool {
+		FlxG.save.data.scrollSpeed -= 0.1;
+
+		if (FlxG.save.data.scrollSpeed < 1)
+			FlxG.save.data.scrollSpeed = 1;
+
+		if (FlxG.save.data.scrollSpeed > 10)
+			FlxG.save.data.scrollSpeed = 10;
+
+
+		OptionsMenu.versionShit.text = "Current Scroll Speed: " + OptionsMenu.truncateFloat(FlxG.save.data.scrollSpeed,1) + " - Description - " + description;
+		return true;
 	}
 }
 
