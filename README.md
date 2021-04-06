@@ -1,4 +1,10 @@
+# daniel11420/Kade-Engine
+
 The point of this fork of Kade-Engine is to build it with AppVeyor. Nothing else is changed.
+
+Windows: [AppVeyor Project](https://ci.appveyor.com/project/daniel11420/kade-engine-windows) | [Artifacts (downloads)](https://ci.appveyor.com/project/daniel11420/kade-engine-windows/build/artifacts)
+
+Linux: [AppVeyor Project](https://ci.appveyor.com/project/daniel11420/kade-engine-linux) | [Artifacts (downloads)](https://ci.appveyor.com/project/daniel11420/kade-engine-linux/build/artifacts)
 
 ![KadeEngineLogo](https://user-images.githubusercontent.com/26305836/110529589-4b4eb600-80ce-11eb-9c44-e899118b0bf0.png)
 

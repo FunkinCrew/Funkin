@@ -2,7 +2,7 @@ version: '{build}'
 image: Ubuntu2004
 environment:
   global:
-    HAXELIB_ROOT: ~/haxelib
+    HAXELIB_ROOT: /home/appveyor/haxelib
 
 install:
   - sudo add-apt-repository ppa:haxe/releases -y
