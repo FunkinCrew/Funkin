@@ -36,18 +36,10 @@ install:
 
 # No tests idk lol
 build_script:
-  - haxelib run lime build linux
   - haxelib run lime build windows
+  # haxelib run lime build linux
 
 artifacts:
-  - path: export/release/linux
-    name: Linux release
-    type: zip
-
   - path: export/release/windows
     name: Windows release
-    type: zip
-
-  - path: export/
-    name: All exports
     type: zip

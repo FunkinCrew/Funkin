@@ -1,0 +1,34 @@
+version: '{build}'
+image: Ubuntu2004
+environment:
+  global:
+    HAXELIB_ROOT: ~/haxelib
+
+install:
+  - sudo add-apt-repository ppa:haxe/releases -y
+  - sudo apt-get update
+  - sudo apt-get install haxe -y
+  - mkdir %HAXELIB_ROOT% && haxelib setup %HAXELIB_ROOT%
+  - haxelib install lime 7.9.0
+  - haxelib install openfl
+  - haxelib install flixel
+  - haxelib run lime setup flixel
+  - haxelib run lime setup
+  - haxelib install flixel-tools
+  - haxelib install flixel-addons
+  - haxelib install flixel-ui
+  - haxelib install hscript
+  - haxelib install newgrounds
+  - haxelib install flixel-addons
+  - haxelib git faxe https://github.com/uhrobots/faxe
+  - haxelib git polymod https://github.com/larsiusprime/polymod.git
+  - haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
+  - haxelib list
+
+build_script:
+  - haxelib run lime build linux
+
+artifacts:
+- path: export/release/linux
+  name: Linux release
+  type: zip
