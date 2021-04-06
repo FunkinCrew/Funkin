@@ -38,6 +38,6 @@ install:
   - haxelib list
 
 # No tests idk lol
-build:
+build_script:
   - lime build linux
   - lime build windows
