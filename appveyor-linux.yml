@@ -33,9 +33,10 @@ install:
   - cd /home/appveyor/projects/kade-engine-linux
 
 build_script:
-  - haxelib run lime build linux
+  # haxelib run lime build linux
+  - haxelib run lime test linux -debug
 
 artifacts:
-- path: export/release/linux
-  name: Linux release
+- path: export/
+  name: Export
   type: zip
