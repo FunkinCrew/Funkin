@@ -57,6 +57,12 @@ class PreferencesMenu extends ui.OptionsState.Page
 		return preferences.get(pref);
 	}
 
+	// easy shorthand?
+	public static function setPref(pref:String, value:Dynamic):Void
+	{
+		preferences.set(pref, value);
+	}
+
 	public static function initPrefs():Void
 	{
 		preferenceCheck('censor-naughty', false);
@@ -65,6 +71,12 @@ class PreferencesMenu extends ui.OptionsState.Page
 		preferenceCheck('camera-zoom', true);
 		preferenceCheck('fps-counter', true);
 		preferenceCheck('auto-pause', false);
+		preferenceCheck('master-volume', 1);
+
+		#if muted
+		setPref('master-volume', 0);
+		FlxG.sound.muted = true;
+		#end
 
 		if (!getPref('fps-counter'))
 			FlxG.stage.removeChild(Main.fpsCounter);
