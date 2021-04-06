@@ -26,9 +26,9 @@ Mod Page: https://gamebanana.com/gamefiles/16761
 Latest GitHub release: https://github.com/KadeDev/Kade-Engine/releases/latest
 
 AppVeyor CI (Automatic builds of the latest commit):
-- Windows: [AppVeyor Project](https://ci.appveyor.com/project/daniel11420/kade-engine-windows) | [Artifacts (downloads)](https://ci.appveyor.com/project/daniel11420/kade-engine-windows/build/artifacts)
+- Windows: [AppVeyor Project](https://ci.appveyor.com/project/KadeDev/kade-engine-windows) | [Artifacts (downloads)](https://ci.appveyor.com/project/KadeDev/kade-engine-windows/build/artifacts)
 
-- Linux: [AppVeyor Project](https://ci.appveyor.com/project/daniel11420/kade-engine-linux) | [Artifacts (downloads)](https://ci.appveyor.com/project/daniel11420/kade-engine-linux/build/artifacts)
+- Linux: [AppVeyor Project](https://ci.appveyor.com/project/KadeDev/kade-engine-linux) | [Artifacts (downloads)](https://ci.appveyor.com/project/KadeDev0/kade-engine-linux/build/artifacts)
 	
 ## What is Kade Engine?
 
