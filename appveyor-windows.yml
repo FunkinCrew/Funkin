@@ -40,6 +40,6 @@ build_script:
   # haxelib run lime build linux
 
 artifacts:
-  - path: export/release/windows
+  - path: export/release/windows/bin
     name: Windows release
     type: zip
