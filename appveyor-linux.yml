@@ -3,12 +3,18 @@ image: Ubuntu2004
 environment:
   global:
     HAXELIB_ROOT: /home/appveyor/haxelib
+    HAXE_INSTALLDIR: /home/appveyor/haxe
 
 install:
+  - cd /home/appveyor
   - sudo add-apt-repository ppa:haxe/releases -y
   - sudo apt update
-  - sudo apt install haxe=4.1.5 -y
+  - sudo apt install neko tar
+  - wget https://github.com/HaxeFoundation/haxe/releases/download/4.1.5/haxe-4.1.5-linux64.tar.gz
+  - mkdir $HAXE_INSTALLDIR
+  - tar -xf haxe-4.1.5-linux64.tar.gz -C $HAXE_INSTALLDIR
   - mkdir $HAXELIB_ROOT && haxelib setup $HAXELIB_ROOT
+  - export PATH=$PATH:$HAXE_INSTALLDIR
   - haxelib install lime 7.9.0
   - haxelib install openfl
   - haxelib install flixel
