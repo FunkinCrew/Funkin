@@ -125,6 +125,8 @@ class PlayState extends MusicBeatState
 
 	var inCutscene:Bool = false;
 
+	var altSuffix:String = "";
+
 	#if desktop
 	// Discord RPC variables
 	var storyDifficultyText:String = "";
@@ -414,6 +416,8 @@ class PlayState extends MusicBeatState
 		          case 'senpai' | 'roses':
 		          {
 		                  curStage = 'school';
+						  
+						  altSuffix = '-pixel';
 
 		                  // defaultCamZoom = 0.9;
 
@@ -481,6 +485,8 @@ class PlayState extends MusicBeatState
 		          case 'thorns':
 		          {
 		                  curStage = 'schoolEvil';
+						  
+						  altSuffix = '-pixel';
 
 		                  var waveEffectBG = new FlxWaveEffect(FlxWaveMode.ALL, 2, -1, 3, 2);
 		                  var waveEffectFG = new FlxWaveEffect(FlxWaveMode.ALL, 2, -1, 5, 2);
@@ -577,14 +583,9 @@ class PlayState extends MusicBeatState
 				gfVersion = 'gf-car';
 			case 'mall' | 'mallEvil':
 				gfVersion = 'gf-christmas';
-			case 'school':
-				gfVersion = 'gf-pixel';
-			case 'schoolEvil':
+			case 'school' | 'schoolEvil':
 				gfVersion = 'gf-pixel';
 		}
-
-		if (curStage == 'limo')
-			gfVersion = 'gf-car';
 
 		gf = new Character(400, 130, gfVersion);
 		gf.scrollFactor.set(0.95, 0.95);
@@ -935,10 +936,7 @@ class PlayState extends MusicBeatState
 			for (value in introAssets.keys())
 			{
 				if (value == curStage)
-				{
 					introAlts = introAssets.get(value);
-					altSuffix = '-pixel';
-				}
 			}
 
 			switch (swagCounter)
@@ -2144,8 +2142,8 @@ class PlayState extends MusicBeatState
 
 			songScore -= 10;
 
-			FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
-			// FlxG.sound.play(Paths.sound('missnote1'), 1, false);
+			FlxG.sound.play(Paths.soundRandom('missnote' + altSuffix, 1, 3), FlxG.random.float(0.1, 0.2));
+			// FlxG.sound.play(Paths.sound('missnote1' + altSuffix), 1, false);
 			// FlxG.log.add('played imss note');
 
 			boyfriend.stunned = true;
