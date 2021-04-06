@@ -38,3 +38,12 @@ install:
 build_script:
   - haxelib run lime build linux
   - haxelib run lime build windows
+
+artifacts:
+  - path: export/release/linux
+    name: Linux release
+    type: zip
+
+  - path: export/release/windows
+    name: Windows release
+    type: zip
