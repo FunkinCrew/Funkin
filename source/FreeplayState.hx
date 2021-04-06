@@ -11,7 +11,7 @@ import flixel.util.FlxColor;
 import lime.utils.Assets;
 
 
-#if desktop
+#if windows
 import Discord.DiscordClient;
 #end
 
@@ -53,7 +53,7 @@ class FreeplayState extends MusicBeatState
 			}
 		 */
 
-		 #if desktop
+		 #if windows
 		 // Updating Discord Rich Presence
 		 DiscordClient.changePresence("In the Menus", null);
 		 #end
