@@ -34,7 +34,9 @@ install:
 build_script:
   - haxelib run lime build linux
 
+after_build:
+  - tar -cvf funkin-ke.tar -C /home/appveyor/projects/kade-engine-linux/export/release/linux/bin .
+
 artifacts:
-- path: export/release/linux
-  name: Linux release
-  type: zip
+- path: funkin-ke.tar
+  name: Linux build
