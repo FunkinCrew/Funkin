@@ -17,22 +17,21 @@ install:
   - mkdir "%HAXELIB_ROOT%"
   - haxelib setup "%HAXELIB_ROOT%"
   # Install project dependencies
-  # `> log.txt || type log.txt` is for muting the output unless there is an error
-  - haxelib install lime 7.8.0 > log.txt || type log.txt && cmd /C exit 1
-  - haxelib install openfl > log.txt || type log.txt && cmd /C exit 1
-  - haxelib install flixel > log.txt || type log.txt && cmd /C exit 1
-  - haxelib run lime setup flixel > log.txt || type log.txt && cmd /C exit 1
-  - haxelib run lime setup > log.txt || type log.txt && cmd /C exit 1
-  - haxelib install flixel-tools > log.txt || type log.txt && cmd /C exit 1
-  - haxelib run flixel-tools setup > log.txt || type log.txt && cmd /C exit 1
-  - haxelib install flixel-addons > log.txt || type log.txt && cmd /C exit 1
-  - haxelib install flixel-ui > log.txt || type log.txt && cmd /C exit 1
-  - haxelib install hscript > log.txt || type log.txt && cmd /C exit 1
-  - haxelib install newgrounds > log.txt || type log.txt && cmd /C exit 1
-  - haxelib install flixel-addons > log.txt || type log.txt && cmd /C exit 1
-  - haxelib install faxe > log.txt || type log.txt && cmd /C exit 1
-  - haxelib git polymod https://github.com/larsiusprime/polymod.git > log.txt || type log.txt && cmd /C exit 1
-  - haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc > log.txt || type log.txt && cmd /C exit 1
+  - haxelib install lime 7.8.0
+  - haxelib install openfl
+  - haxelib install flixel
+  - haxelib run lime setup flixel
+  - haxelib run lime setup
+  - haxelib install flixel-tools
+  - haxelib run flixel-tools setup
+  - haxelib install flixel-addons
+  - haxelib install flixel-ui
+  - haxelib install hscript
+  - haxelib install newgrounds
+  - haxelib install flixel-addons
+  - haxelib install faxe
+  - haxelib git polymod https://github.com/larsiusprime/polymod.git
+  - haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
   - haxelib list
 
 # No tests idk lol
