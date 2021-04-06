@@ -17,7 +17,7 @@ install:
   - mkdir "%HAXELIB_ROOT%"
   - haxelib setup "%HAXELIB_ROOT%"
   # Install project dependencies
-  - haxelib install lime 7.8.0
+  - haxelib install lime 7.9.0
   - haxelib install openfl
   - haxelib install flixel
   - haxelib run lime setup flixel
