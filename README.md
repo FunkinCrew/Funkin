@@ -1,165 +1,56 @@
-![KadeEngineLogo](https://user-images.githubusercontent.com/26305836/110529589-4b4eb600-80ce-11eb-9c44-e899118b0bf0.png)
+![Kade Engine logo](https://user-images.githubusercontent.com/26305836/110529589-4b4eb600-80ce-11eb-9c44-e899118b0bf0.png)
+[![AppVeyor](https://img.shields.io/appveyor/build/KadeDev/Kade-Engine-Windows?label=windows%20build)](https://ci.appveyor.com/project/KadeDev/kade-engine-windows/build/artifacts)   [![AppVeyor](https://img.shields.io/appveyor/build/KadeDev/Kade-Engine-Linux?label=linux%20build)](https://ci.appveyor.com/project/KadeDev/kade-engine-linux/build/artifacts) [![Discord](https://img.shields.io/discord/808039740464300104?label=discord)](https://discord.gg/MG6GQFh52U) [![GitHub issues](https://img.shields.io/github/issues/KadeDev/Kade-Engine)](https://github.com/KadeDev/Kade-Engine/issues) [![GitHub pull requests](https://img.shields.io/github/issues-pr/KadeDev/Kade-Engine)](https://github.com/KadeDev/Kade-Engine/pulls) []() []()
 
-**Download the latest release [here](https://github.com/KadeDev/Kade-Engine/releases/latest)**
+![GitHub commits since latest release (by date)](https://img.shields.io/github/commits-since/KadeDev/Kade-Engine/latest) ![GitHub repo size](https://img.shields.io/github/repo-size/KadeDev/Kade-Engine) ![Lines of code](https://img.shields.io/tokei/lines/github/KadeDev/Kade-Engine) ![Supported platforms](https://img.shields.io/badge/supported%20platforms-windows%2C%20linux%2C%20html5-blue) ![GitHub all releases](https://img.shields.io/github/downloads/KadeDev/Kade-Engine/total) ![GitHub](https://img.shields.io/github/license/KadeDev/Kade-Engine) ![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/KadeDev/Kade-Engine?include_prereleases&label=latest%20version) 
 
-![image](https://user-images.githubusercontent.com/26305836/110532077-3c1d3780-80d1-11eb-8348-0e63d5c0f4f1.png)
+# Friday Night Funkin': Kade Engine
+## Friday Night Funkin'
+**Friday Night Funkin'** is a rhythm game originally made for Ludum Dare 47 "Stuck In a Loop".
 
-![image](https://user-images.githubusercontent.com/26305836/110532103-450e0900-80d1-11eb-857e-d8ea1a1b8d7e.png)
+Links: **[itch.io page](https://ninja-muffin24.itch.io/funkin) ⋅ [Newgrounds](https://www.newgrounds.com/portal/view/770371) ⋅ [source code on GitHub](https://github.com/ninjamuffin99/Funkin)**
+> Uh oh! Your tryin to kiss ur hot girlfriend, but her MEAN and EVIL dad is trying to KILL you! He's an ex-rockstar, the only way to get to his heart? The power of music... 
 
-![image](https://user-images.githubusercontent.com/26305836/110532136-51926180-80d1-11eb-838f-1b4a1e49e1bd.png)
+## Kade Engine
+**Kade Engine** is a mod for Friday Night Funkin', including a full engine rework, replays, and more.
 
-![image](https://user-images.githubusercontent.com/26305836/110532204-63740480-80d1-11eb-9641-bf5a641e6d77.png)
+Links: **[GameBanana mod page](https://gamebanana.com/gamefiles/16761) ⋅ [play in browser](https://funkin.puyo.xyz) ⋅ [latest stable release](https://github.com/KadeDev/Kade-Engine/releases/latest) ⋅ [latest development build (windows)](https://ci.appveyor.com/project/KadeDev/kade-engine-windows/build/artifacts) ⋅ [latest development build (linux)](https://ci.appveyor.com/project/KadeDev/kade-engine-linux/build/artifacts)**
 
+**Please note**: as of right now, linux CI has not been set up yet (the "latest developemnt build (linux)" link does not work). you can download a linux build [here](https://ci.appveyor.com/project/daniel11420/kade-engine-linux/build/artifacts) (temporary link)
 
-# Friday Night Funkin Kade Engine
+**REMEMBER**: This is a **mod**. This is not the vanilla game and should be treated as a **modification**. This is not and probably will never be official, so don't get confused.
 
-This is the repository for Friday Night Funkin' Kade Engine, a game originally made for Ludum Dare 47 "Stuck In a Loop". And a completely reworked engine.
+# Screenshots ([skip](#Features))
 
-### Links to the original game
-Play the Ludum Dare prototype here: https://ninja-muffin24.itch.io/friday-night-funkin
-Play the Newgrounds one here: https://www.newgrounds.com/portal/view/770371
-Support the project on the itch.io page: https://ninja-muffin24.itch.io/funkin
+TODO: Finish this section (add gameplay gif?)
 
-### Links to Kade Engine
-Mod Page: https://gamebanana.com/gamefiles/16761
+![Free Play selection screen](https://i.imgur.com/LR0eWIC.png)
+![enter image description here](https://i.imgur.com/LBXW9C1.png)
 
-Latest GitHub release: https://github.com/KadeDev/Kade-Engine/releases/latest
+# Features
 
-AppVeyor CI (Automatic builds of the latest commit):
-- Windows: [AppVeyor Project](https://ci.appveyor.com/project/KadeDev/kade-engine-windows) | [Artifacts (downloads)](https://ci.appveyor.com/project/KadeDev/kade-engine-windows/build/artifacts)
+ - **New Input System**
+	 - An improved input system, similar to Quaver or Etterna, with less delays, less dropped inputs and other improvements.
+ - **More information during gameplay**
+	 - While you're playing, we show you information about how you're doing, such as your accuracy, combo break count, notes per second, and your grade/rating.
+ - **Better key layouts**
+	 - Instead of being forced to use WASD and the arrow keys, now you can play with DFJK!
+ - **Replays** (in beta)
+	 - Have you ever gotten a crazy score but didn't record? The replay system solves that: it automatically saves a "replay" of your gameplay every time you complete a song, which you can play back inside of the game. 
+	 - Replays just store information about what you're doing, they don't actually record the screen -- so they take up way less space on your disk than videos.
+ - **Audio offset**
+	 - If your headphones are delayed, you can set an offset in the options menu to line the game up with the delay and play with synced audio like intended.
 
-- Linux: [AppVeyor Project](https://ci.appveyor.com/project/KadeDev/kade-engine-linux) | [Artifacts (downloads)](https://ci.appveyor.com/project/KadeDev/kade-engine-linux/build/artifacts)
-	
-## What is Kade Engine?
+# Credits
+### Friday Night Funkin'
+ - [ninjamuffin99](https://twitter.com/ninja_muffin99) - Programming
+ - [PhantomArcade3K](https://twitter.com/phantomarcade3k) and [Evilsk8r](https://twitter.com/evilsk8r) - Art
+ - [Kawai Sprite](https://twitter.com/kawaisprite) - Music
 
-Kade Engine is an engine rework of the OG games engine. Simply put, we give you some great new features while also giving you the latest GitHub features.
+This game was made with love to Newgrounds and its community. Extra love to Tom Fulp.
+### Kade Engine
+- [KadeDeveloper](https://twitter.com/KadeDeveloper) - Maintainer and lead programmer
+- [The contributors](https://github.com/KadeDev/Kade-Engine/graphs/contributors)
 
-## Features
+# Other pages
+ - [BUILDING.md](https://github.com/KadeDev/Kade-Engine/blob/master/BUILDING.md) - How to compile/build the game
 
-The features that Kade Engine implements are:
-- New Input System
-
-*Hate the old engine because your inputs are delayed? Are inputs being dropped? Well with this input system, inputs rarely get dropped! If you wanna see an example of what it feels like, play any 4k rhythm game like Quaver or Etterna!*
-
-- Accuracy Mod
-
-*We've modified the accuracy mod to create an amazing accuracy display, which shows your accuracy and misses. While giving you a basic ranking on how you are currently playing.*
-
-- FPS Increase
-
-*We always love more FPS, and this is what you'll get. We've increased the FPS cap to 120.*
-
-- DFJK Support
-
-*As standard 4k practice, the default keybinds for many rhythm games are DFJK. We've allowed you to swap from WASD to DFJK in the options menu now.*
-
-- Replays
-
-*Ever wanted to show your friend a crazy score? Well, the replay system lets you do that without recording videos!*
-
-**please note the replay system is in beta, and is not 100% accurate YET*
-
-- Offset
-
-*Do your headphones have an audio delay? Well, you can set a note offset in the options menu!*
-
-- Latest FNF Github Features
-
-*Have you ever seen a feature shown in the GitHub repo, and you don't know how to build the game? Well, features from there get ported into here, and then we can add them into this mod and build it for you!*
-
-**HUGE NOTICE**
-
-This is a **MOD**. This is not Vanilla and should be treated as a **MODIFICATION**. This will probably never be official, so don't get confused.
-
-## Credits / shoutouts
-
-- [ninjamuffin99](https://twitter.com/ninja_muffin99) - Programmer
-- [PhantomArcade3K](https://twitter.com/phantomarcade3k) and [Evilsk8r](https://twitter.com/evilsk8r) - Art
-- [Kawaisprite](https://twitter.com/kawaisprite) - Musician
-
-This game was made with love to Newgrounds and it's community. Extra love to Tom Fulp.
-
-## Build instructions
-
-THESE INSTRUCTIONS ARE FOR COMPILING THE GAME'S SOURCE CODE!!!
-
-IF YOU WANT TO JUST DOWNLOAD AND INSTALL AND PLAY THE GAME NORMALLY, GO TO ITCH.IO TO DOWNLOAD THE GAME FOR PC, MAC, AND LINUX!!
-
-https://ninja-muffin24.itch.io/friday-night-funkin
-
-IF YOU WANT TO COMPILE THE GAME YOURSELF, CONTINUE READING!!!
-
-### Installing the Required Programs
-
-First you need to install Haxe and HaxeFlixel. I'm too lazy to write and keep updated with that setup (which is pretty simple). 
-1. [Install Haxe 4.1.5](https://haxe.org/download/version/4.1.5/) (Download 4.1.5 instead of 4.2.0 because 4.2.0 is broken and is not working with gits properly...)
-2. [Install HaxeFlixel](https://haxeflixel.com/documentation/install-haxeflixel/) after downloading Haxe
-
-Other installations you'd need is the additional libraries, a fully updated list will be in `Project.xml` in the project root. Currently, these are all of the things you need to install:
-```
-flixel
-flixel-addons
-flixel-ui
-hscript
-newgrounds
-```
-So for each of those type `haxelib install [library]` so shit like `haxelib install newgrounds`
-
-You'll also need to install polymod. To do this, you need to do a few things first.
-1. Download [git-scm](https://git-scm.com/downloads). Works for Windows, Mac, and Linux, just select your build.
-2. Follow instructions to install the application properly.
-3. Run `haxelib git polymod https://github.com/larsiusprime/polymod.git` in terminal/command-prompt after your git program is installed.
-
-You should have everything ready for compiling the game! Follow the guide below to continue!
-
-At the moment, you can optionally fix the transition bug in songs with zoomed out cameras.
-- Run `haxelib git flixel-addons https://github.com/HaxeFlixel/flixel-addons` in the terminal/command-prompt.
-
-**As of version 1.3**, you also need Discord RPC to compile the game, get it by using the following command:
-- Use `haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc` in the terminal/command-prompt.
-
-### Ignored files
-
-I gitignore the API keys for the game, so that no one can nab them and post fake highscores on the leaderboards. But because of that the game
-doesn't compile without it.
-
-Just make a file in `/source` and call it `APIStuff.hx`, and copy paste this into it
-
-```haxe
-package;
-
-class APIStuff
-{
-	public static var API:String = "";
-	public static var EncKey:String = "";
-}
-
-```
-
-and you should be good to go there.
-
-### Compiling game
-
-Once you have all those installed, it's pretty easy to compile the game. You just need to run 'lime test html5 -debug' in the root of the project to build and run the HTML5 version. (command prompt navigation guide can be found here: [https://ninjamuffin99.newgrounds.com/news/post/1090480](https://ninjamuffin99.newgrounds.com/news/post/1090480))
-
-To run it from your desktop (Windows, Mac, Linux) it can be a bit more involved. For Linux, you only need to open a terminal in the project directory and run 'lime test linux -debug' and then run the executible file in export/release/linux/bin. For Windows, you need to install Visual Studio Community 2019. While installing VSC, don't click on any of the options to install workloads. Instead, go to the individual components tab and choose the following:
-* MSVC v142 - VS 2019 C++ x64/x86 build tools
-* Windows SDK (10.0.17763.0)
-* C++ Profiling tools
-* C++ CMake tools for windows
-* C++ ATL for v142 build tools (x86 & x64)
-* C++ MFC for v142 build tools (x86 & x64)
-* C++/CLI support for v142 build tools (14.21)
-* C++ Modules for v142 build tools (x64/x86)
-* Clang Compiler for Windows
-* Windows 10 SDK (10.0.17134.0)
-* Windows 10 SDK (10.0.16299.0)
-* MSVC v141 - VS 2017 C++ x64/x86 build tools
-* MSVC v140 - VS 2015 C++ build tools (v14.00)
-
-This will install about 22GB of crap, but once that is done you can open up a command line in the project's directory and run `lime test windows -debug`. Once that command finishes (it takes forever even on a higher end PC), you can run FNF from the .exe file under export\release\windows\bin
-As for Mac, 'lime test mac -debug' should work, if not the internet surely has a guide on how to compile Haxe stuff for Mac.
-
-### Additional guides
-
-- [Command line basics](https://ninjamuffin99.newgrounds.com/news/post/1090480)
