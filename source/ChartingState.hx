@@ -566,7 +566,13 @@ class ChartingState extends MusicBeatState
 
 		}
 
-		if (FlxG.keys.justPressed.ENTER || FlxG.android.justReleased.BACK)
+		#if android
+		var androidback = FlxG.android.justReleased.BACK;
+		#else
+		var androidback = false;
+		#end
+
+		if (FlxG.keys.justPressed.ENTER || androidback)
 		{
 			FlxG.mouse.visible = false;
 			lastSection = curSection;

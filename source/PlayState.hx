@@ -1359,7 +1359,13 @@ class PlayState extends MusicBeatState
 
 		scoreTxt.text = "Score:" + songScore;
 
-		if (FlxG.keys.justPressed.ENTER || FlxG.android.justReleased.BACK && startedCountdown && canPause)
+		#if android
+		var androidback = FlxG.android.justReleased.BACK;
+		#else
+		var androidback = false;
+		#end
+
+		if (FlxG.keys.justPressed.ENTER || androidback && startedCountdown && canPause)
 		{
 			persistentUpdate = false;
 			persistentDraw = true;

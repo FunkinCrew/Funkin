@@ -202,7 +202,11 @@ class FreeplayState extends MusicBeatState
 		var LEFT_P = _pad.buttonLeft.justPressed;
 		var RIGHT_P = _pad.buttonRight.justPressed;
 		var accepted = _pad.buttonA.justPressed;
-		var BACK = _pad.buttonB.justPressed;
+		#if android
+			var BACK = _pad.buttonB.justPressed || FlxG.android.justReleased.BACK;
+		#else
+			var BACK = _pad.buttonB.justPressed;
+		#end
 
 		if (upP)
 		{
@@ -218,7 +222,7 @@ class FreeplayState extends MusicBeatState
 		if (RIGHT_P)
 			changeDiff(1);
 
-		if (BACK || FlxG.android.justReleased.BACK)
+		if (BACK)
 		{
 			FlxG.switchState(new MainMenuState());
 		}

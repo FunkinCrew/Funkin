@@ -99,9 +99,11 @@ class PauseSubState extends MusicBeatSubstate
 		var downP = _pad.buttonDown.justPressed;
 		var accepted = _pad.buttonA.justPressed;
 
+		#if android
 		if (FlxG.android.justReleased.BACK == true){
 			close();
 		}
+		#end
 
 		if (upP)
 		{

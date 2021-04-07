@@ -70,7 +70,13 @@ class OptionsMenu extends MusicBeatState
 		if (!insubstate){
 			UP_P = _pad.buttonUp.justReleased;
 			DOWN_P = _pad.buttonDown.justReleased;
-			BACK = _pad.buttonB.justReleased;
+
+			#if android
+			BACK = _pad.buttonB.justPressed || FlxG.android.justReleased.BACK;
+			#else
+			BACK = _pad.buttonB.justPressed;
+			#end
+			
 			ACCEPT = _pad.buttonA.justReleased;
 		}
 		
@@ -96,7 +102,7 @@ class OptionsMenu extends MusicBeatState
 			waitingInput();
 		else
 		{
-			if (BACK || FlxG.android.justReleased.BACK)
+			if (BACK)
 				FlxG.switchState(new MainMenuState());
 			if (UP_P)
 				changeSelection(-1);

@@ -75,6 +75,12 @@ class SetFpsSubState extends MusicBeatSubstate
 		var BACK = _pad.buttonB.justReleased;
 		var ACCEPT = _pad.buttonA.justReleased;
 
+        #if android
+			var BACK = _pad.buttonB.justPressed || FlxG.android.justReleased.BACK;
+		#else
+			var BACK = _pad.buttonB.justPressed;
+		#end
+
         if (UP_P)
         {
             changeSelection(-1);
@@ -89,7 +95,7 @@ class SetFpsSubState extends MusicBeatSubstate
             close();
         } 
         
-        if (ACCEPT || FlxG.android.justReleased.BACK == true)
+        if (ACCEPT)
         {
             if (_gamesave.data.fps == null)
             {

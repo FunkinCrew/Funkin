@@ -123,7 +123,9 @@ class CustomControlsState extends MusicBeatSubstate
 
 		// add buttons
 		add(exitbutton);
+		#if mobile
 		add(savebutton);
+		#end
 
 		// add virtualpad
 		this.add(_pad);
@@ -151,10 +153,11 @@ class CustomControlsState extends MusicBeatSubstate
 	{
 		super.update(elapsed);
 
-		
+		#if android
 		if (exitbutton.justReleased || FlxG.android.justReleased.BACK == true){
 			FlxG.switchState(new options.OptionsMenu());
 		}
+		#end
 		
 		for (touch in FlxG.touches.list){
 			//left arrow animation

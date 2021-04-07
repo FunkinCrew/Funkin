@@ -139,10 +139,12 @@ class MainMenuState extends MusicBeatState
 				changeItem(1);
 			}
 
+			#if android
 			if (BACK || FlxG.android.justReleased.BACK)
 			{
 				FlxG.switchState(new TitleState());
 			}
+			#end
 
 			if (ACCEPT)
 			{

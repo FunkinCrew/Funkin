@@ -248,6 +248,14 @@ class TitleState extends MusicBeatState
 		}
 		#end
 
+		// delete this later
+		#if web
+		if (FlxG.mouse.justPressed)
+		{
+			pressedEnter = true;
+		}
+		#end
+
 		var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
 
 		if (gamepad != null)
