@@ -1,9 +1,14 @@
 package;
 
-#if desktop
+#if windows
 import Discord.DiscordClient;
 import sys.thread.Thread;
 #end
+
+#if newgrounds
+import io.newgrounds.NG;
+#end
+
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -24,7 +29,6 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
-import io.newgrounds.NG;
 import lime.app.Application;
 import openfl.Assets;
 
@@ -58,14 +62,12 @@ class TitleState extends MusicBeatState
 
 		super.create();
 
-		NGio.noLogin(APIStuff.API);
-
 		#if ng
 		var ng:NGio = new NGio(APIStuff.API, APIStuff.EncKey);
 		trace('NEWGROUNDS LOL');
 		#end
 
-		FlxG.save.bind('funkin', 'ninjamuffin99');
+		FlxG.save.bind('funkin', 'comp-bloops');
 
 		Highscore.load();
 
@@ -94,7 +96,7 @@ class TitleState extends MusicBeatState
 		});
 		#end
 
-		#if desktop
+		#if windows
 		DiscordClient.initialize();
 		#end
 	}
@@ -142,11 +144,12 @@ class TitleState extends MusicBeatState
 		// bg.updateHitbox();
 		add(bg);
 
-		logoBl = new FlxSprite(-150, -100);
+		logoBl = new FlxSprite(0, 0);
 		logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
 		logoBl.antialiasing = true;
 		logoBl.animation.addByPrefix('bump', 'logo bumpin', 24);
 		logoBl.animation.play('bump');
+		logoBl.setGraphicSize(Std.int(logoBl.width*0.85));
 		logoBl.updateHitbox();
 		// logoBl.screenCenter();
 		// logoBl.color = FlxColor.BLACK;
@@ -266,7 +269,7 @@ class TitleState extends MusicBeatState
 
 		if (pressedEnter && !transitioning && skippedIntro)
 		{
-			#if !switch
+			#if newgrounds
 			NGio.unlockMedal(60960);
 
 			// If it's Friday according to da clock
@@ -284,13 +287,13 @@ class TitleState extends MusicBeatState
 
 			new FlxTimer().start(2, function(tmr:FlxTimer)
 			{
-				// Check if version is outdated
+				// Check if version is outdated, except not because game dumby
 
-				var version:String = "v" + Application.current.meta.get('version');
+				/*var version:String = "v" + Application.current.meta.get('version');
 
 				if (version.trim() != NGio.GAME_VER_NUMS.trim() && !OutdatedSubState.leftState)
 				{
-					FlxG.switchState(new OutdatedSubState());
+					FlxG.switchState(new MainMenuState());
 					trace('OLD VERSION!');
 					trace('old ver');
 					trace(version.trim());
@@ -299,8 +302,9 @@ class TitleState extends MusicBeatState
 				}
 				else
 				{
-					FlxG.switchState(new MainMenuState());
-				}
+					lmao
+				}*/
+				FlxG.switchState(new MainMenuState());
 			});
 			// FlxG.sound.play(Paths.music('titleShoot'), 0.7);
 		}
@@ -360,7 +364,7 @@ class TitleState extends MusicBeatState
 		switch (curBeat)
 		{
 			case 1:
-				createCoolText(['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er']);
+				createCoolText(['fnf dev team', 'bloops', 'and friends']);
 			// credTextShit.visible = true;
 			case 3:
 				addMoreText('present');
@@ -402,7 +406,7 @@ class TitleState extends MusicBeatState
 				addMoreText('Night');
 			// credTextShit.text += '\nNight';
 			case 15:
-				addMoreText('Funkin'); // credTextShit.text += '\nFunkin';
+				addMoreText('Champtions'); // credTextShit.text += '\nFunkin';
 
 			case 16:
 				skipIntro();

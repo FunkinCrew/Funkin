@@ -80,22 +80,22 @@ class Note extends FlxSprite
 				updateHitbox();
 
 			default:
-				frames = Paths.getSparrowAtlas('NOTE_assets');
+				frames = Paths.getSparrowAtlas('NOTE_assetss');
 
-				animation.addByPrefix('greenScroll', 'green0');
-				animation.addByPrefix('redScroll', 'red0');
-				animation.addByPrefix('blueScroll', 'blue0');
-				animation.addByPrefix('purpleScroll', 'purple0');
+				animation.addByPrefix('greenScroll', 'up0');
+				animation.addByPrefix('redScroll', 'right0');
+				animation.addByPrefix('blueScroll', 'down0');
+				animation.addByPrefix('purpleScroll', 'left0');
 
-				animation.addByPrefix('purpleholdend', 'pruple end hold');
-				animation.addByPrefix('greenholdend', 'green hold end');
-				animation.addByPrefix('redholdend', 'red hold end');
-				animation.addByPrefix('blueholdend', 'blue hold end');
+				animation.addByPrefix('purpleholdend', 'left tail');
+				animation.addByPrefix('greenholdend', 'up tail');
+				animation.addByPrefix('redholdend', 'right tail');
+				animation.addByPrefix('blueholdend', 'down tail');
 
-				animation.addByPrefix('purplehold', 'purple hold piece');
-				animation.addByPrefix('greenhold', 'green hold piece');
-				animation.addByPrefix('redhold', 'red hold piece');
-				animation.addByPrefix('bluehold', 'blue hold piece');
+				animation.addByPrefix('purplehold', 'left trail');
+				animation.addByPrefix('greenhold', 'up trail');
+				animation.addByPrefix('redhold', 'right trail');
+				animation.addByPrefix('bluehold', 'down trail');
 
 				setGraphicSize(Std.int(width * 0.7));
 				updateHitbox();

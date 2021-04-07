@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="milneselectmaybe.png">
+	<!-- Created with Adobe Animate version 21.0.1.37179 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="Milne Select0000" x="2" y="2" width="323" height="218"/>
+	<SubTexture name="Milne Selected0000" x="2" y="225" width="326" height="224"/>
+</TextureAtlas>

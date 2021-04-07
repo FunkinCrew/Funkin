@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="milne.png">
+	<!-- Created with Adobe Animate version 21.0.1.37179 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="Milne Crystals0000" x="2" y="2" width="399" height="550"/>
+	<SubTexture name="Milne Crystals0001" x="2" y="2" width="399" height="550"/>
+	<SubTexture name="Milne Crystals0002" x="406" y="2" width="399" height="532" frameX="0" frameY="-17" frameWidth="399" frameHeight="550"/>
+	<SubTexture name="Milne Crystals0003" x="406" y="2" width="399" height="532" frameX="0" frameY="-17" frameWidth="399" frameHeight="550"/>
+	<SubTexture name="Milne Crystals0004" x="810" y="2" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
+	<SubTexture name="Milne Crystals0005" x="810" y="2" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
+	<SubTexture name="Milne Crystals0006" x="1214" y="2" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
+	<SubTexture name="Milne Crystals0007" x="1214" y="2" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
+	<SubTexture name="Milne Crystals0008" x="1618" y="2" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
+	<SubTexture name="Milne Crystals0009" x="1618" y="2" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
+	<SubTexture name="Milne Crystals0010" x="2022" y="2" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
+	<SubTexture name="Milne Crystals0011" x="2022" y="2" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
+	<SubTexture name="Milne Crystals0012" x="2022" y="2" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
+	<SubTexture name="Milne Crystals0013" x="2022" y="2" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
+	<SubTexture name="Milne Crystals0014" x="2426" y="2" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
+	<SubTexture name="Milne Crystals0015" x="2426" y="2" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
+	<SubTexture name="Milne Crystals0016" x="1618" y="2" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
+	<SubTexture name="Milne Crystals0017" x="1618" y="2" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
+	<SubTexture name="Milne Crystals0018" x="1618" y="2" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
+	<SubTexture name="Milne Crystals0019" x="1618" y="2" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
+	<SubTexture name="Milne Crystals0020" x="1618" y="2" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
+	<SubTexture name="Milne Crystals0021" x="1618" y="2" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
+	<SubTexture name="Milne Crystals0022" x="1618" y="2" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
+	<SubTexture name="Milne Crystals0023" x="1618" y="2" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
+	<SubTexture name="Milne Crystals0024" x="1618" y="2" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
+	<SubTexture name="Milne Crystals0025" x="1618" y="2" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
+	<SubTexture name="Milne Down0000" x="2830" y="2" width="449" height="424" frameX="-7" frameY="0" frameWidth="457" frameHeight="424"/>
+	<SubTexture name="Milne Down0001" x="3284" y="2" width="457" height="412" frameX="0" frameY="-12" frameWidth="457" frameHeight="424"/>
+	<SubTexture name="Milne Down0002" x="2" y="557" width="456" height="419" frameX="-1" frameY="-5" frameWidth="457" frameHeight="424"/>
+	<SubTexture name="Milne Down0003" x="2" y="557" width="456" height="419" frameX="-1" frameY="-5" frameWidth="457" frameHeight="424"/>
+	<SubTexture name="Milne Down0004" x="2" y="557" width="456" height="419" frameX="-1" frameY="-5" frameWidth="457" frameHeight="424"/>
+	<SubTexture name="Milne Down Fail0000" x="2830" y="2" width="449" height="424" frameX="0" frameY="0" frameWidth="457" frameHeight="424"/>
+	<SubTexture name="Milne Down Fail0001" x="463" y="557" width="440" height="429" frameX="-11" frameY="-40" frameWidth="451" frameHeight="471"/>
+	<SubTexture name="Milne Down Fail0002" x="908" y="557" width="438" height="436" frameX="-12" frameY="-35" frameWidth="451" frameHeight="471"/>
+	<SubTexture name="Milne Down Fail0003" x="908" y="557" width="438" height="436" frameX="-12" frameY="-35" frameWidth="451" frameHeight="471"/>
+	<SubTexture name="Milne Down Fail0004" x="908" y="557" width="438" height="436" frameX="-12" frameY="-35" frameWidth="451" frameHeight="471"/>
+	<SubTexture name="Milne Down Fail0005" x="908" y="557" width="438" height="436" frameX="-12" frameY="-35" frameWidth="451" frameHeight="471"/>
+	<SubTexture name="Milne Down Fail0006" x="908" y="557" width="438" height="436" frameX="-12" frameY="-35" frameWidth="451" frameHeight="471"/>
+	<SubTexture name="Milne Down Fail0007" x="908" y="557" width="438" height="436" frameX="-12" frameY="-35" frameWidth="451" frameHeight="471"/>
+	<SubTexture name="Milne Down Fail0008" x="908" y="557" width="438" height="436" frameX="-12" frameY="-35" frameWidth="451" frameHeight="471"/>
+	<SubTexture name="Milne Down Fail0009" x="908" y="557" width="438" height="436" frameX="-12" frameY="-35" frameWidth="451" frameHeight="471"/>
+	<SubTexture name="Milne Idle0000" x="1351" y="557" width="492" height="576" frameX="0" frameY="-1" frameWidth="492" frameHeight="577"/>
+	<SubTexture name="Milne Idle0001" x="1351" y="557" width="492" height="576" frameX="0" frameY="-1" frameWidth="492" frameHeight="577"/>
+	<SubTexture name="Milne Idle0002" x="1848" y="557" width="477" height="571" frameX="-7" frameY="0" frameWidth="492" frameHeight="577"/>
+	<SubTexture name="Milne Idle0003" x="2330" y="557" width="459" height="564" frameX="-13" frameY="-3" frameWidth="492" frameHeight="577"/>
+	<SubTexture name="Milne Idle0004" x="2794" y="557" width="459" height="564" frameX="-13" frameY="-3" frameWidth="492" frameHeight="577"/>
+	<SubTexture name="Milne Idle0005" x="3258" y="557" width="403" height="541" frameX="-37" frameY="-7" frameWidth="492" frameHeight="577"/>
+	<SubTexture name="Milne Idle0006" x="3666" y="557" width="403" height="541" frameX="-37" frameY="-7" frameWidth="492" frameHeight="577"/>
+	<SubTexture name="Milne Idle0007" x="2" y="1138" width="373" height="521" frameX="-49" frameY="-14" frameWidth="492" frameHeight="577"/>
+	<SubTexture name="Milne Idle0008" x="2" y="1138" width="373" height="521" frameX="-49" frameY="-14" frameWidth="492" frameHeight="577"/>
+	<SubTexture name="Milne Idle0009" x="2" y="1138" width="373" height="521" frameX="-49" frameY="-14" frameWidth="492" frameHeight="577"/>
+	<SubTexture name="Milne Idle0010" x="2" y="1138" width="373" height="521" frameX="-49" frameY="-14" frameWidth="492" frameHeight="577"/>
+	<SubTexture name="Milne Idle0011" x="2" y="1138" width="373" height="521" frameX="-49" frameY="-14" frameWidth="492" frameHeight="577"/>
+	<SubTexture name="Milne Idle0012" x="2" y="1138" width="373" height="521" frameX="-49" frameY="-14" frameWidth="492" frameHeight="577"/>
+	<SubTexture name="Milne Idle0013" x="2" y="1138" width="373" height="521" frameX="-49" frameY="-14" frameWidth="492" frameHeight="577"/>
+	<SubTexture name="Milne Idle0014" x="2" y="1138" width="373" height="521" frameX="-49" frameY="-14" frameWidth="492" frameHeight="577"/>
+	<SubTexture name="Milne Left0000" x="380" y="1138" width="374" height="479" frameX="-12" frameY="0" frameWidth="387" frameHeight="479"/>
+	<SubTexture name="Milne Left0001" x="759" y="1138" width="387" height="479"/>
+	<SubTexture name="Milne Left0002" x="1151" y="1138" width="380" height="479" frameX="-7" frameY="0" frameWidth="387" frameHeight="479"/>
+	<SubTexture name="Milne Left0003" x="1151" y="1138" width="380" height="479" frameX="-7" frameY="0" frameWidth="387" frameHeight="479"/>
+	<SubTexture name="Milne Left0004" x="1151" y="1138" width="380" height="479" frameX="-7" frameY="0" frameWidth="387" frameHeight="479"/>
+	<SubTexture name="Milne Left Fail0000" x="380" y="1138" width="374" height="479" frameX="-10" frameY="0" frameWidth="387" frameHeight="479"/>
+	<SubTexture name="Milne Left Fail0001" x="1536" y="1138" width="406" height="458" frameX="0" frameY="-16" frameWidth="406" frameHeight="479"/>
+	<SubTexture name="Milne Left Fail0002" x="1947" y="1138" width="398" height="458" frameX="-7" frameY="-16" frameWidth="406" frameHeight="479"/>
+	<SubTexture name="Milne Left Fail0003" x="1947" y="1138" width="398" height="458" frameX="-7" frameY="-16" frameWidth="406" frameHeight="479"/>
+	<SubTexture name="Milne Left Fail0004" x="1947" y="1138" width="398" height="458" frameX="-7" frameY="-16" frameWidth="406" frameHeight="479"/>
+	<SubTexture name="Milne Left Fail0005" x="1947" y="1138" width="398" height="458" frameX="-7" frameY="-16" frameWidth="406" frameHeight="479"/>
+	<SubTexture name="Milne Left Fail0006" x="1947" y="1138" width="398" height="458" frameX="-7" frameY="-16" frameWidth="406" frameHeight="479"/>
+	<SubTexture name="Milne Left Fail0007" x="1947" y="1138" width="398" height="458" frameX="-7" frameY="-16" frameWidth="406" frameHeight="479"/>
+	<SubTexture name="Milne Left Fail0008" x="1947" y="1138" width="398" height="458" frameX="-7" frameY="-16" frameWidth="406" frameHeight="479"/>
+	<SubTexture name="Milne Left Fail0009" x="1947" y="1138" width="398" height="458" frameX="-7" frameY="-16" frameWidth="406" frameHeight="479"/>
+	<SubTexture name="Milne Right0000" x="2350" y="1138" width="437" height="502" frameX="0" frameY="0" frameWidth="455" frameHeight="502"/>
+	<SubTexture name="Milne Right0001" x="2792" y="1138" width="455" height="502"/>
+	<SubTexture name="Milne Right0002" x="3252" y="1138" width="445" height="502" frameX="0" frameY="0" frameWidth="455" frameHeight="502"/>
+	<SubTexture name="Milne Right0003" x="3252" y="1138" width="445" height="502" frameX="0" frameY="0" frameWidth="455" frameHeight="502"/>
+	<SubTexture name="Milne Right0004" x="3252" y="1138" width="445" height="502" frameX="0" frameY="0" frameWidth="455" frameHeight="502"/>
+	<SubTexture name="Milne Right Fail0000" x="2350" y="1138" width="437" height="502" frameX="0" frameY="0" frameWidth="455" frameHeight="502"/>
+	<SubTexture name="Milne Right Fail0001" x="2" y="1664" width="438" height="486" frameX="-5" frameY="-7" frameWidth="443" frameHeight="502"/>
+	<SubTexture name="Milne Right Fail0002" x="445" y="1664" width="428" height="486" frameX="-6" frameY="-7" frameWidth="443" frameHeight="502"/>
+	<SubTexture name="Milne Right Fail0003" x="445" y="1664" width="428" height="486" frameX="-6" frameY="-7" frameWidth="443" frameHeight="502"/>
+	<SubTexture name="Milne Right Fail0004" x="445" y="1664" width="428" height="486" frameX="-6" frameY="-7" frameWidth="443" frameHeight="502"/>
+	<SubTexture name="Milne Right Fail0005" x="445" y="1664" width="428" height="486" frameX="-6" frameY="-7" frameWidth="443" frameHeight="502"/>
+	<SubTexture name="Milne Right Fail0006" x="445" y="1664" width="428" height="486" frameX="-6" frameY="-7" frameWidth="443" frameHeight="502"/>
+	<SubTexture name="Milne Right Fail0007" x="445" y="1664" width="428" height="486" frameX="-6" frameY="-7" frameWidth="443" frameHeight="502"/>
+	<SubTexture name="Milne Right Fail0008" x="445" y="1664" width="428" height="486" frameX="-6" frameY="-7" frameWidth="443" frameHeight="502"/>
+	<SubTexture name="Milne Right Fail0009" x="445" y="1664" width="428" height="486" frameX="-6" frameY="-7" frameWidth="443" frameHeight="502"/>
+	<SubTexture name="Milne Scared0000" x="878" y="1664" width="442" height="486" frameX="0" frameY="0" frameWidth="444" frameHeight="486"/>
+	<SubTexture name="Milne Scared0001" x="1325" y="1664" width="440" height="486" frameX="-4" frameY="0" frameWidth="444" frameHeight="486"/>
+	<SubTexture name="Milne Scared0002" x="1770" y="1664" width="441" height="486" frameX="-1" frameY="0" frameWidth="444" frameHeight="486"/>
+	<SubTexture name="Milne Scared0003" x="2216" y="1664" width="437" height="486" frameX="-4" frameY="0" frameWidth="444" frameHeight="486"/>
+	<SubTexture name="Milne Up0000" x="2658" y="1664" width="380" height="528" frameX="0" frameY="-11" frameWidth="388" frameHeight="540"/>
+	<SubTexture name="Milne Up0001" x="3043" y="1664" width="386" height="540" frameX="0" frameY="0" frameWidth="388" frameHeight="540"/>
+	<SubTexture name="Milne Up0002" x="3434" y="1664" width="388" height="528" frameX="0" frameY="-11" frameWidth="388" frameHeight="540"/>
+	<SubTexture name="Milne Up0003" x="3434" y="1664" width="388" height="528" frameX="0" frameY="-11" frameWidth="388" frameHeight="540"/>
+	<SubTexture name="Milne Up0004" x="3434" y="1664" width="388" height="528" frameX="0" frameY="-11" frameWidth="388" frameHeight="540"/>
+	<SubTexture name="Milne Up Fail0000" x="2658" y="1664" width="380" height="528" frameX="-20" frameY="-8" frameWidth="388" frameHeight="540"/>
+	<SubTexture name="Milne Up Fail0001" x="2" y="2209" width="406" height="545" frameX="0" frameY="0" frameWidth="408" frameHeight="545"/>
+	<SubTexture name="Milne Up Fail0002" x="413" y="2209" width="408" height="534" frameX="0" frameY="-11" frameWidth="408" frameHeight="545"/>
+	<SubTexture name="Milne Up Fail0003" x="413" y="2209" width="408" height="534" frameX="0" frameY="-11" frameWidth="408" frameHeight="545"/>
+	<SubTexture name="Milne Up Fail0004" x="413" y="2209" width="408" height="534" frameX="0" frameY="-11" frameWidth="408" frameHeight="545"/>
+	<SubTexture name="Milne Up Fail0005" x="413" y="2209" width="408" height="534" frameX="0" frameY="-11" frameWidth="408" frameHeight="545"/>
+	<SubTexture name="Milne Up Fail0006" x="413" y="2209" width="408" height="534" frameX="0" frameY="-11" frameWidth="408" frameHeight="545"/>
+	<SubTexture name="Milne Up Fail0007" x="413" y="2209" width="408" height="534" frameX="0" frameY="-11" frameWidth="408" frameHeight="545"/>
+	<SubTexture name="Milne Up Fail0008" x="413" y="2209" width="408" height="534" frameX="0" frameY="-11" frameWidth="408" frameHeight="545"/>
+	<SubTexture name="Milne Up Fail0009" x="413" y="2209" width="408" height="534" frameX="0" frameY="-11" frameWidth="408" frameHeight="545"/>
+</TextureAtlas>

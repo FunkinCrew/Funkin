@@ -1,6 +1,6 @@
 package;
 
-#if desktop
+#if windows
 import Discord.DiscordClient;
 #end
 import flixel.FlxG;
@@ -29,11 +29,18 @@ class StoryMenuState extends MusicBeatState
 		['Pico', 'Philly', "Blammed"],
 		['Satin-Panties', "High", "Milf"],
 		['Cocoa', 'Eggnog', 'Winter-Horrorland'],
-		['Senpai', 'Roses', 'Thorns']
+		['Senpai', 'Roses', 'Thorns'],
+		['B-Tutorial'],
+		['B-Bopeebo', 'B-Fresh', 'B-Dadbattle'],
+		['B-Spookeez', 'B-South'],
+		['B-Pico', 'B-Philly', "B-Blammed"],
+		['B-Satin-Panties', "B-High", "B-Milf"],
+		['B-Cocoa', 'B-Eggnog', 'B-Winter-Horrorland'],
+		['B-Senpai', 'B-Roses', 'B-Thorns']
 	];
 	var curDifficulty:Int = 1;
 
-	public static var weekUnlocked:Array<Bool> = [true, true, true, true, true, true, true];
+	public static var weekUnlocked:Array<Bool> = [true, true, true, true, true, true, true, false, true, true, true, true, true, true];
 
 	var weekCharacters:Array<Dynamic> = [
 		['dad', 'bf', 'gf'],
@@ -42,10 +49,34 @@ class StoryMenuState extends MusicBeatState
 		['pico', 'bf', 'gf'],
 		['mom', 'bf', 'gf'],
 		['parents-christmas', 'bf', 'gf'],
+		['senpai', 'bf', 'gf'],
+		['dad', 'bf', 'gf'],
+		['dad', 'bf', 'gf'],
+		['spooky', 'bf', 'gf'],
+		['pico', 'bf', 'gf'],
+		['mom', 'bf', 'gf'],
+		['parents-christmas', 'bf', 'gf'],
 		['senpai', 'bf', 'gf']
 	];
-
+	
+	var Playables:Array<Dynamic> = [
+		['bf', 'bf-bloops', 'bf-pico', 'bf-milne'],
+		['bf'],
+		['bf', 'bf-bloops', 'bf-pico'],
+		['bf']
+	];
+	var CurPlayable:Int = 0;
+	var CurPlayerArray:Int = 0;
+	var ConfirmAnim:String = 'bfConfirm';
+	
 	var weekNames:Array<String> = [
+		"",
+		"Daddy Dearest",
+		"Spooky Month",
+		"PICO",
+		"MOMMY MUST MURDER",
+		"RED SNOW",
+		"hating simulator ft. moawling",
 		"",
 		"Daddy Dearest",
 		"Spooky Month",
@@ -71,6 +102,25 @@ class StoryMenuState extends MusicBeatState
 	var leftArrow:FlxSprite;
 	var rightArrow:FlxSprite;
 
+	var trackedAssets:Array<flixel.FlxBasic> = [];
+	
+	function GetPlayables()
+	{
+		switch (curWeek)
+		{
+			case 6:
+				CurPlayerArray = 1;
+			case 7|8|9|10|11|12:
+				CurPlayerArray = 2;
+			case 13:
+				CurPlayerArray = 3;
+			default:
+				CurPlayerArray = 0;
+		}
+	}
+				
+			
+	
 	override function create()
 	{
 		transIn = FlxTransitionableState.defaultTransIn;
@@ -113,7 +163,7 @@ class StoryMenuState extends MusicBeatState
 
 		trace("Line 70");
 		
-		#if desktop
+		#if windows
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("In the Menus", null);
 		#end
@@ -225,7 +275,14 @@ class StoryMenuState extends MusicBeatState
 	override function update(elapsed:Float)
 	{
 		// scoreText.setFormat('VCR OSD Mono', 32);
-		lerpScore = Math.floor(FlxMath.lerp(lerpScore, intendedScore, 0.5));
+				if (lerpScore != intendedScore)
+		{
+			if (lerpScore == intendedScore - 1)
+				lerpScore = intendedScore;
+			else
+				lerpScore = Math.floor(FlxMath.lerp(lerpScore, intendedScore, 0.5));
+		} // THANKS https://github.com/ninjamuffin99/Funkin/pull/447
+
 
 		scoreText.text = "WEEK SCORE:" + lerpScore;
 
@@ -245,6 +302,9 @@ class StoryMenuState extends MusicBeatState
 		{
 			if (!selectedWeek)
 			{
+				GetPlayables();
+				pleasechecklol();				
+				
 				if (controls.UP_P)
 				{
 					changeWeek(-1);
@@ -256,7 +316,7 @@ class StoryMenuState extends MusicBeatState
 				}
 
 				if (controls.RIGHT)
-					rightArrow.animation.play('press')
+					rightArrow.animation.play('press');
 				else
 					rightArrow.animation.play('idle');
 
@@ -269,11 +329,21 @@ class StoryMenuState extends MusicBeatState
 					changeDifficulty(1);
 				if (controls.LEFT_P)
 					changeDifficulty(-1);
+				
+				if (FlxG.keys.justPressed.E)
+					CurPlayable += 1;
+					pleasechecklol();
+					grpWeekCharacters.members[1].animation.play(Playables[CurPlayerArray][CurPlayable]);
+				if (FlxG.keys.justPressed.Q)
+					CurPlayable -= 1;
+					pleasechecklol();
+					grpWeekCharacters.members[1].animation.play(Playables[CurPlayerArray][CurPlayable]);					
+				
 			}
-
 			if (controls.ACCEPT)
 			{
 				selectWeek();
+				PlayState.CameFromChart = false;
 			}
 		}
 
@@ -290,7 +360,20 @@ class StoryMenuState extends MusicBeatState
 	var movedBack:Bool = false;
 	var selectedWeek:Bool = false;
 	var stopspamming:Bool = false;
-
+	
+	function pleasechecklol()
+	{
+		if (CurPlayable < 0)
+		{
+			CurPlayable = Playables[CurPlayerArray].length;
+			CurPlayable -= 1;
+		}
+		if (CurPlayable >= Playables[CurPlayerArray].length)
+		{
+			CurPlayable = 0;
+		}
+	}
+	
 	function selectWeek()
 	{
 		if (weekUnlocked[curWeek])
@@ -298,9 +381,23 @@ class StoryMenuState extends MusicBeatState
 			if (stopspamming == false)
 			{
 				FlxG.sound.play(Paths.sound('confirmMenu'));
-
-				grpWeekText.members[curWeek].startFlashing();
-				grpWeekCharacters.members[1].animation.play('bfConfirm');
+				
+				//grpWeekText.members[curWeek].startFlashing();
+				switch (Playables[CurPlayerArray][CurPlayable])
+				{
+					case 'bf':
+						ConfirmAnim = 'bfConfirm';
+					case 'bf-pico':
+						ConfirmAnim = 'bf-picoConfirm';
+					case 'bf-bloops':
+						ConfirmAnim = 'bf-bloopsConfirm';
+					case 'bf-milne':
+						ConfirmAnim = 'bf-milneConfirm';
+				}
+				
+				grpWeekCharacters.members[1].animation.play(ConfirmAnim);
+				PlayState.curPlayer = Playables[CurPlayerArray][CurPlayable];
+				trace(PlayState.curPlayer);
 				stopspamming = true;
 			}
 
@@ -390,7 +487,8 @@ class StoryMenuState extends MusicBeatState
 				item.alpha = 0.6;
 			bullShit++;
 		}
-
+		
+		grpWeekCharacters.members[1].animation.play(Playables[CurPlayerArray][CurPlayable]);
 		FlxG.sound.play(Paths.sound('scrollMenu'));
 
 		updateText();
@@ -399,7 +497,6 @@ class StoryMenuState extends MusicBeatState
 	function updateText()
 	{
 		grpWeekCharacters.members[0].animation.play(weekCharacters[curWeek][0]);
-		grpWeekCharacters.members[1].animation.play(weekCharacters[curWeek][1]);
 		grpWeekCharacters.members[2].animation.play(weekCharacters[curWeek][2]);
 		txtTracklist.text = "Tracks\n";
 
@@ -442,5 +539,18 @@ class StoryMenuState extends MusicBeatState
 		#if !switch
 		intendedScore = Highscore.getWeekScore(curWeek, curDifficulty);
 		#end
+	}
+	override function add(Object:flixel.FlxBasic):flixel.FlxBasic
+	{
+		trackedAssets.insert(trackedAssets.length, Object);
+		return super.add(Object);
+	}
+
+	function unloadAssets():Void
+	{
+		for (asset in trackedAssets)
+		{
+			remove(asset);
+		}
 	}
 }

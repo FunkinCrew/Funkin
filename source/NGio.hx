@@ -1,3 +1,4 @@
+#if newgrounds
 package;
 
 import flixel.FlxG;
@@ -46,8 +47,8 @@ class NGio
 			{
 				var call = NG.core.calls.app.getCurrentVersion(GAME_VER).addDataHandler(function(response:Response<GetCurrentVersionResult>)
 				{
-					GAME_VER = response.result.data.currentVersion;
-					GAME_VER_NUMS = GAME_VER.split(" ")[0].trim();
+					GAME_VER = '1';
+					GAME_VER_NUMS = '1';
 					trace('CURRENT NG VERSION: ' + GAME_VER);
 					trace('CURRENT NG VERSION: ' + GAME_VER_NUMS);
 					gotOnlineVer = true;
@@ -198,3 +199,4 @@ class NGio
 		}
 	}
 }
+#end

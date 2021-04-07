@@ -36,11 +36,12 @@ class LoadingState extends MusicBeatState
 	
 	override function create()
 	{
-		logo = new FlxSprite(-150, -100);
+		logo = new FlxSprite(0,0);
 		logo.frames = Paths.getSparrowAtlas('logoBumpin');
 		logo.antialiasing = true;
 		logo.animation.addByPrefix('bump', 'logo bumpin', 24);
 		logo.animation.play('bump');
+		logo.setGraphicSize(Std.int(logo.width*0.85));
 		logo.updateHitbox();
 		// logoBl.screenCenter();
 		// logoBl.color = FlxColor.BLACK;

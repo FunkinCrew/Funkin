@@ -1,7 +1,11 @@
 package;
 
-#if desktop
+#if windows
 import Discord.DiscordClient;
+#end
+
+#if newgrounds
+import io.newgrounds.NG;
 #end
 import flixel.FlxG;
 import flixel.FlxObject;
@@ -14,7 +18,6 @@ import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
-import io.newgrounds.NG;
 import lime.app.Application;
 
 using StringTools;
@@ -26,7 +29,7 @@ class MainMenuState extends MusicBeatState
 	var menuItems:FlxTypedGroup<FlxSprite>;
 
 	#if !switch
-	var optionShit:Array<String> = ['story mode', 'freeplay', 'donate', 'options'];
+	var optionShit:Array<String> = ['story mode', 'freeplay', 'options'];
 	#else
 	var optionShit:Array<String> = ['story mode', 'freeplay'];
 	#end
@@ -34,9 +37,11 @@ class MainMenuState extends MusicBeatState
 	var magenta:FlxSprite;
 	var camFollow:FlxObject;
 
+	var trackedAssets:Array<Dynamic> = [];
+
 	override function create()
 	{
-		#if desktop
+		#if windows
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("In the Menus", null);
 		#end
@@ -143,7 +148,7 @@ class MainMenuState extends MusicBeatState
 					#if linux
 					Sys.command('/usr/bin/xdg-open', ["https://ninja-muffin24.itch.io/funkin", "&"]);
 					#else
-					FlxG.openURL('https://ninja-muffin24.itch.io/funkin');
+					FlxG.openURL('https://www.youtube.com/channel/UCYANkBZFXtUUaALy4nJzDKQ');
 					#end
 				}
 				else
@@ -170,6 +175,7 @@ class MainMenuState extends MusicBeatState
 							FlxFlicker.flicker(spr, 1, 0.06, false, false, function(flick:FlxFlicker)
 							{
 								var daChoice:String = optionShit[curSelected];
+								unloadAssets();
 
 								switch (daChoice)
 								{
@@ -223,4 +229,17 @@ class MainMenuState extends MusicBeatState
 			spr.updateHitbox();
 		});
 	}
+	override function add(Object:flixel.FlxBasic):flixel.FlxBasic
+	{
+		trackedAssets.insert(trackedAssets.length, Object);
+		return super.add(Object);
+	}
+
+	function unloadAssets():Void
+	{
+		for (asset in trackedAssets)
+		{
+			remove(asset);
+		}
+	} //THANKS https://github.com/ninjamuffin99/Funkin/pull/283
 }

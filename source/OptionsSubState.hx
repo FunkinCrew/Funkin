@@ -8,7 +8,7 @@ import flixel.util.FlxColor;
 
 class OptionsSubState extends MusicBeatSubstate
 {
-	var textMenuItems:Array<String> = ['Master Volume', 'Sound Volume', 'Controls'];
+	var textMenuItems:Array<String> = ['WORK IN PROGRESS, PRESS BACKSPACE TO EXIT'];
 
 	var selector:FlxSprite;
 	var curSelected:Int = 0;
@@ -36,7 +36,10 @@ class OptionsSubState extends MusicBeatSubstate
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
-
+		
+		if (controls.BACK)
+			FlxG.switchState(new MainMenuState());
+					
 		if (controls.UP_P)
 			curSelected -= 1;
 
@@ -57,7 +60,7 @@ class OptionsSubState extends MusicBeatSubstate
 				txt.color = FlxColor.YELLOW;
 		});
 
-		if (controls.ACCEPT)
+		/*if (controls.ACCEPT)
 		{
 			switch (textMenuItems[curSelected])
 			{
@@ -65,6 +68,6 @@ class OptionsSubState extends MusicBeatSubstate
 					FlxG.state.closeSubState();
 					FlxG.state.openSubState(new ControlsSubState());
 			}
-		}
+		}*/
 	}
 }

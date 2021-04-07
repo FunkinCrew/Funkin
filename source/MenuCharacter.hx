@@ -16,15 +16,21 @@ class MenuCharacter extends FlxSprite
 		var tex = Paths.getSparrowAtlas('campaign_menu_UI_characters');
 		frames = tex;
 
-		animation.addByPrefix('bf', "BF idle dance white", 24);
-		animation.addByPrefix('bfConfirm', 'BF HEY!!', 24, false);
+		animation.addByPrefix('bf', "BF UI SELECTED", 24);
+		animation.addByPrefix('bfConfirm', 'BF UI SELECT', 24, false);
+		animation.addByPrefix('bf-bloops', "BLOOPS UI SELECTED", 24);
+		animation.addByPrefix('bf-bloopsConfirm', 'BLOOPS UI SELECT', 24, false);
+		animation.addByPrefix('bf-pico', "PICO UI SELECTED", 24);
+		animation.addByPrefix('bf-picoConfirm', 'PICO UI SELECT', 24, false);
 		animation.addByPrefix('gf', "GF Dancing Beat WHITE", 24);
 		animation.addByPrefix('dad', "Dad idle dance BLACK LINE", 24);
 		animation.addByPrefix('spooky', "spooky dance idle BLACK LINES", 24);
 		animation.addByPrefix('pico', "Pico Idle Dance", 24);
 		animation.addByPrefix('mom', "Mom Idle BLACK LINES", 24);
-		animation.addByPrefix('parents-christmas', "Parent Christmas Idle", 24);
+		animation.addByPrefix('parents-christmas', "Parent Christmas Idle Black Lines", 24);
 		animation.addByPrefix('senpai', "SENPAI idle Black Lines", 24);
+		animation.addByPrefix('bf-milne', "MILNE UI SELECTED", 24);
+		animation.addByPrefix('bf-milneConfirm', "MILNE UI SELECT", 24);
 		// Parent Christmas Idle
 
 		animation.play(character);

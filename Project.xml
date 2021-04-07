@@ -2,7 +2,7 @@
 <project>
 	<!-- _________________________ Application Settings _________________________ -->
 
-	<app title="Friday Night Funkin'" file="Funkin" packageName="com.ninjamuffin99.funkin" package="com.ninjamuffin99.funkin" main="Main" version="0.2.7.1" company="ninjamuffin99" />
+	<app title="Friday Night Champions" file="FunkinChamps" packageName="com.ninjamuffin99.funkin" package="com.ninjamuffin99.funkin" main="Main" version="0.1" company="ninjamuffin99" />
 
 	<!--Switch Export with Unique ApplicationID and Icon-->
 	<set name="APP_ID" value="0x0100f6c013bbc000" />
@@ -57,6 +57,13 @@
 		<library name="week4"    preload="true" />
 		<library name="week5"    preload="true" />
 		<library name="week6"    preload="true" />
+		<library name="week7"    preload="true" />
+		<library name="week8"    preload="true" />
+		<library name="week9"    preload="true" />
+		<library name="week10"    preload="true" />
+		<library name="week11"    preload="true" />
+		<library name="week12"    preload="true" />
+		<library name="week13"    preload="true" />
 	</section>
 	
 	<section if="NO_PRELOAD_ALL">
@@ -69,6 +76,13 @@
 		<library name="week4"    preload="false" />
 		<library name="week5"    preload="false" />
 		<library name="week6"    preload="false" />
+		<library name="week7"    preload="false" />
+		<library name="week8"    preload="false" />
+		<library name="week9"    preload="false" />
+		<library name="week10"    preload="false" />
+		<library name="week11"    preload="false" />
+		<library name="week12"    preload="false" />
+		<library name="week13"    preload="false" />
 	</section>
 	
 	<assets path="assets/songs"    library="songs"    exclude="*.ogg" if="web"/>
@@ -89,6 +103,20 @@
 	<assets path="assets/week5"    library="week5"    exclude="*.mp3" unless="web"/>
 	<assets path="assets/week6"    library="week6"    exclude="*.ogg" if="web"/>
 	<assets path="assets/week6"    library="week6"    exclude="*.mp3" unless="web"/>
+	<assets path="assets/week7"    library="week7"    exclude="*.ogg" if="web"/>
+	<assets path="assets/week7"    library="week7"    exclude="*.mp3" unless="web"/>
+	<assets path="assets/week8"    library="week8"    exclude="*.ogg" if="web"/>
+	<assets path="assets/week8"    library="week8"    exclude="*.mp3" unless="web"/>
+	<assets path="assets/week9"    library="week9"    exclude="*.ogg" if="web"/>
+	<assets path="assets/week9"    library="week9"    exclude="*.mp3" unless="web"/>
+	<assets path="assets/week10"    library="week10"    exclude="*.ogg" if="web"/>
+	<assets path="assets/week10"    library="week10"    exclude="*.mp3" unless="web"/>
+	<assets path="assets/week11"    library="week11"    exclude="*.ogg" if="web"/>
+	<assets path="assets/week11"    library="week11"    exclude="*.mp3" unless="web"/>
+	<assets path="assets/week12"    library="week12"    exclude="*.ogg" if="web"/>
+	<assets path="assets/week12"    library="week12"    exclude="*.mp3" unless="web"/>
+	<assets path="assets/week13"    library="week13"    exclude="*.ogg" if="web"/>
+	<assets path="assets/week13"    library="week13"    exclude="*.mp3" unless="web"/>
 	
 	<assets path='example_mods' rename='mods' embed='false'/>
 	<assets path='art/readme.txt' rename='do NOT readme.txt' />
@@ -113,10 +141,10 @@
 
 	<!--In case you want to use the ui package-->
 	<haxelib name="flixel-ui" />
-	<haxelib name="newgrounds"/>
+	<haxelib name="newgrounds" if='newgrounds'/>
 	<haxelib name="faxe" if='switch'/>
-	<haxelib name="polymod"/>
-	<haxelib name="discord_rpc" if="desktop"/>
+	<haxelib name="polymod" if='windows'/>
+	<haxelib name="discord_rpc" if='windows'/>
 	<!-- <haxelib name="hxcpp-debug-server" if="desktop"/> -->
 
 	<!-- <haxelib name="markdown" /> -->
