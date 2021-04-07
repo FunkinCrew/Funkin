@@ -170,13 +170,24 @@ class FlxVirtualPad extends FlxSpriteGroup
 
 	public static function getVirtualInputFrames():FlxAtlasFrames
 	{
+			#if !web
 			var bitmapData = new GraphicVirtualInput(0, 0);
+			#end
+
+			/*
 			#if html5 // dirty hack for openfl/openfl#682
 			Reflect.setProperty(bitmapData, "width", 399);
 			Reflect.setProperty(bitmapData, "height", 183);
 			#end
+			*/
+			
+			#if !web
 			var graphic:FlxGraphic = FlxGraphic.fromBitmapData(bitmapData);
 			return FlxAtlasFrames.fromSpriteSheetPacker(graphic, Std.string(new VirtualInputData()));
+			#else
+			var graphic:FlxGraphic = FlxGraphic.fromAssetKey(Paths.image('virtual-input'));
+			return FlxAtlasFrames.fromSpriteSheetPacker(graphic, Std.string(new VirtualInputData()));
+			#end
 	}
 }
 
