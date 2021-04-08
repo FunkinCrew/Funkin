@@ -1413,7 +1413,7 @@ class PlayState extends MusicBeatState
 	#if discord_rpc
 	override public function onFocus():Void
 	{
-		if (health > 0 && !paused)
+		if (health > 0 && !paused && FlxG.autoPause)
 		{
 			if (Conductor.songPosition > 0.0)
 			{
@@ -1430,7 +1430,7 @@ class PlayState extends MusicBeatState
 
 	override public function onFocusLost():Void
 	{
-		if (health > 0 && !paused)
+		if (health > 0 && !paused && FlxG.autoPause)
 		{
 			DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
 		}
