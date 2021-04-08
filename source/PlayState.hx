@@ -91,6 +91,9 @@ class PlayState extends MusicBeatState
 
 	private var iconP1:HealthIcon;
 	private var iconP2:HealthIcon;
+
+	private var lyricSpeakerIcon:HealthIcon;
+
 	private var camHUD:FlxCamera;
 	private var camGame:FlxCamera;
 
@@ -124,6 +127,7 @@ class PlayState extends MusicBeatState
 	// small things: debug texts
 	var conductorPosTxt:FlxText;
 	var hpTxt:FlxText;
+	var lyricIndicatorTxt:FlxText;
 	var iconP1txt:FlxText;
 	var iconP2txt:FlxText;
 
@@ -209,6 +213,7 @@ class PlayState extends MusicBeatState
 			try
 			{
 				lyrics = cast Json.parse(Assets.getText(Paths.json(SONG.song.toLowerCase() + '/lyrics')));
+				trace(lyrics);
 				hasLyrics = true;
 				trace("Found lyrics for " + SONG.song.toLowerCase());
 			} catch(e) {
@@ -789,8 +794,14 @@ class PlayState extends MusicBeatState
 		lyricTxt.setFormat(Paths.font("vcr.ttf"), 28, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		lyricTxt.scrollFactor.set();
 
+		lyricSpeakerIcon = new HealthIcon();
+		lyricSpeakerIcon.scale.x = 0.85;
+		lyricSpeakerIcon.scale.y = 0.85;
+		lyricSpeakerIcon.visible = false;
+
 		if (STOptions.st_lyrics == true) {
 			add(lyricTxt);
+			add(lyricSpeakerIcon);
 
 			// by default make this off
 			lyricTxt.text = "";
@@ -798,12 +809,16 @@ class PlayState extends MusicBeatState
 
 		// small things: debug text
 		conductorPosTxt = new FlxText(10, 10, "", 20);
-		conductorPosTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		conductorPosTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		conductorPosTxt.scrollFactor.set();
 		
 		hpTxt = new FlxText(10, 28, "", 20);
-		hpTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		hpTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		hpTxt.scrollFactor.set();
+
+		lyricIndicatorTxt = new FlxText(10, 46, "", 20);
+		lyricIndicatorTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		lyricIndicatorTxt.scrollFactor.set();
 		
 		iconP1txt = new FlxText(iconP1.x, iconP1.y + 10, "p1", 20);
 		iconP1txt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
@@ -818,6 +833,7 @@ class PlayState extends MusicBeatState
 		
 		if (STOptions.st_debug == true) {
 			add(conductorPosTxt);
+			add(lyricIndicatorTxt);
 			add(hpTxt);
 			add(iconP1txt);
 			add(iconP2txt);
@@ -832,9 +848,11 @@ class PlayState extends MusicBeatState
 		scoreTxt.cameras = [camHUD];
 		conductorPosTxt.cameras = [camHUD];
 		hpTxt.cameras = [camHUD];
+		lyricIndicatorTxt.cameras = [camHUD];
 		iconP1txt.cameras = [camHUD];
 		iconP2txt.cameras = [camHUD];
 		lyricTxt.cameras = [camHUD];
+		lyricSpeakerIcon.cameras = [camHUD];
 		doof.cameras = [camHUD];
 
 		// if (SONG.song == 'South')
@@ -843,6 +861,13 @@ class PlayState extends MusicBeatState
 
 		// cameras = [FlxG.cameras.list[1]];
 		startingSong = true;
+
+		if (hasLyrics)
+		{
+			lyricIndicatorTxt.text = "Lyrics: True";
+		} else {
+			lyricIndicatorTxt.text = "Lyrics: False";
+		}
 
 		if (isStoryMode)
 		{
@@ -1549,7 +1574,7 @@ class PlayState extends MusicBeatState
 			hpTxt.text = "HP: " + FlxMath.remapToRange(health, 0, 2, 0, 100) + "%";
 
 			scoreTxt.x = 10;
-			scoreTxt.y = 46;
+			scoreTxt.y = 64;
 		}
 
 		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause)
@@ -1602,6 +1627,9 @@ class PlayState extends MusicBeatState
 		lyricTxt.x = (healthBar.getMidpoint().x - 100) - 70;
 		lyricTxt.y = (healthBar.getMidpoint().y - 175);
 
+		lyricSpeakerIcon.x = lyricTxt.x + (lyricTxt.width / 2) - 64;
+		lyricSpeakerIcon.y = lyricTxt.y - 112;
+
 		iconP1txt.x = iconP1.x + iconP1.width - iconP1txt.width - iconOffset;
 		iconP2txt.x = iconP2.x;
 
@@ -1614,11 +1642,25 @@ class PlayState extends MusicBeatState
 				if (FlxMath.inBounds(Conductor.songPosition, i.start, i.start + lyricFailMargin))
 				{
 					lyricTxt.text = i.lyric;
+					lyricSpeakerIcon.animation.play(i.speaker);
+					lyricSpeakerIcon.visible = true;
+
+					/*
+					if (i.speaker == "gf") {
+						lyricTxt.color = FlxColor.fromRGB(165, 0, 77);
+					} else if (i.speaker == "monster" || i.speaker == "monster-christmas") {
+						lyricTxt.color = FlxColor.fromRGB(240, 218, 108);
+					} else {
+						lyricTxt.color = FlxColor.WHITE;
+					}
+					*/
 				}
 
 				if (FlxMath.inBounds(Conductor.songPosition, i.end, i.end + lyricFailMargin))
 				{
 					lyricTxt.text = "";
+					lyricSpeakerIcon.visible = false;
+					// lyricTxt.color = FlxColor.WHITE;
 				}
 			}
 		}

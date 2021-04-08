@@ -2,36 +2,43 @@
     {
         "start": 9550.00,
         "lyric": "Left, right, left, right",
-        "end": 14000.00
+        "end": 14000.00,
+        "speaker": "gf"
     },
     {
         "start": 18000.00,
         "lyric": "That's how ya do it!",
-        "end": 19000.00
+        "end": 19000.00,
+        "speaker": "gf"
     },
     {
         "start": 19200.00,
         "lyric": "Up, down, up, down",
-        "end": 23500.00
+        "end": 23500.00,
+        "speaker": "gf"
     },
     {
         "start": 27500.00,
         "lyric": "That's how ya do it!",
-        "end": 28500.00
+        "end": 28500.00,
+        "speaker": "gf"
     },
     {
         "start": 28700.00,
         "lyric": "Left, up, down, right",
-        "end": 33000.00
+        "end": 33000.00,
+        "speaker": "gf"
     },
     {
         "start": 38350.00,
         "lyric": "Down, down, up, down, down right",
-        "end": 42400.00
+        "end": 42400.00,
+        "speaker": "gf"
     },
     {
         "start": 47975.00,
         "lyric": "Down, up, right, up, right",
-        "end": 50200.00
+        "end": 50200.00,
+        "speaker": "gf"
     }
 ]
