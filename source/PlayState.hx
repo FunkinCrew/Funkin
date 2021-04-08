@@ -128,6 +128,7 @@ class PlayState extends MusicBeatState
 	var conductorPosTxt:FlxText;
 	var hpTxt:FlxText;
 	var lyricIndicatorTxt:FlxText;
+	var debugIndicatorTxt:FlxText;
 	var iconP1txt:FlxText;
 	var iconP2txt:FlxText;
 
@@ -819,7 +820,13 @@ class PlayState extends MusicBeatState
 		lyricIndicatorTxt = new FlxText(10, 46, "", 20);
 		lyricIndicatorTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		lyricIndicatorTxt.scrollFactor.set();
-		
+
+		debugIndicatorTxt = new FlxText(10, FlxG.height - 28, "", 20);
+		debugIndicatorTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		debugIndicatorTxt.scrollFactor.set();
+
+		debugIndicatorTxt.text = "ST " + MainMenuState.smallThingsVersion + " (DEBUG) - " + SONG.song.toLowerCase();
+ 		
 		iconP1txt = new FlxText(iconP1.x, iconP1.y + 10, "p1", 20);
 		iconP1txt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		iconP1txt.scrollFactor.set();
@@ -834,6 +841,7 @@ class PlayState extends MusicBeatState
 		if (STOptions.st_debug == true) {
 			add(conductorPosTxt);
 			add(lyricIndicatorTxt);
+			add(debugIndicatorTxt);
 			add(hpTxt);
 			add(iconP1txt);
 			add(iconP2txt);
@@ -849,6 +857,7 @@ class PlayState extends MusicBeatState
 		conductorPosTxt.cameras = [camHUD];
 		hpTxt.cameras = [camHUD];
 		lyricIndicatorTxt.cameras = [camHUD];
+		debugIndicatorTxt.cameras = [camHUD];
 		iconP1txt.cameras = [camHUD];
 		iconP2txt.cameras = [camHUD];
 		lyricTxt.cameras = [camHUD];
