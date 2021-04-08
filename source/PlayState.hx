@@ -62,6 +62,7 @@ class PlayState extends MusicBeatState
 	var halloweenLevel:Bool = false;
 
 	private var vocals:FlxSound;
+	private var vocalsFinished:Bool = false;
 
 	private var dad:Character;
 	private var gf:Character;
@@ -1156,6 +1157,9 @@ class PlayState extends MusicBeatState
 		else
 			vocals = new FlxSound();
 
+		vocals.onComplete = function(){
+			vocalsFinished = true;
+		};
 		FlxG.sound.list.add(vocals);
 
 		notes = new FlxTypedGroup<Note>();
@@ -1440,10 +1444,16 @@ class PlayState extends MusicBeatState
 
 	function resyncVocals():Void
 	{
-		vocals.pause();
+		if (_exiting)
+			return ;
 
+		vocals.pause();
 		FlxG.sound.music.play();
 		Conductor.songPosition = FlxG.sound.music.time;
+
+		if (vocalsFinished)
+			return ;
+
 		vocals.time = Conductor.songPosition;
 		vocals.play();
 	}
