@@ -202,7 +202,7 @@ class Note extends FlxSprite
 		if (mustPress)
 		{
 			// miss on the NEXT frame so lag doesnt make u miss notes
-			if (willMiss)
+			if (willMiss && !wasGoodHit)
 			{
 				tooLate = true;
 				canBeHit = false;
