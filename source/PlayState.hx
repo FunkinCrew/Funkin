@@ -903,6 +903,9 @@ class PlayState extends MusicBeatState
 
 	function ughIntro()
 	{
+		FlxG.sound.playMusic(Paths.music('DISTORTO'), 0);
+		FlxG.sound.music.fadeIn(5, 0, 0.5);
+
 		dad.visible = false;
 		var tankCutscene:FlxSprite = new FlxSprite(-20, 320);
 		tankCutscene.frames = Paths.getSparrowAtlas('cutsceneStuff/tankTalkSong1');
@@ -943,6 +946,8 @@ class PlayState extends MusicBeatState
 				{
 					FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, (Conductor.crochet / 1000) * 5, {ease: FlxEase.quadInOut});
 
+					FlxG.sound.music.fadeOut((Conductor.crochet / 1000) * 5, 0);
+
 					new FlxTimer().start((Conductor.crochet / 1000) * 5, function(money:FlxTimer)
 					{
 						dad.visible = true;
@@ -960,6 +965,11 @@ class PlayState extends MusicBeatState
 
 	function gunsIntro()
 	{
+		camHUD.visible = false;
+
+		FlxG.sound.playMusic(Paths.music('DISTORTO'), 0);
+		FlxG.sound.music.fadeIn(5, 0, 0.5);
+
 		camFollow.y += 100;
 
 		FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom * 1.3}, 4, {ease: FlxEase.quadInOut});
@@ -974,11 +984,18 @@ class PlayState extends MusicBeatState
 
 		FlxG.sound.play(Paths.sound('tankSong2'));
 
-		FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom * 1.4}, 0.4, {ease: FlxEase.quadOut, startDelay: 4.1});
-		FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom * 1.3}, 0.7, {ease: FlxEase.quadInOut, startDelay: 4.55});
+		new FlxTimer().start(4.1, function(ugly:FlxTimer)
+		{
+			FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom * 1.4}, 0.4, {ease: FlxEase.quadOut});
+			FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom * 1.3}, 0.7, {ease: FlxEase.quadInOut, startDelay: 0.45});
+
+			gf.playAnim('sad');
+		});
 
 		new FlxTimer().start(11, function(tmr:FlxTimer)
 		{
+			FlxG.sound.music.fadeOut((Conductor.crochet / 1000) * 5, 0);
+
 			FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, (Conductor.crochet * 9) / 1000, {ease: FlxEase.quartInOut});
 			startCountdown();
 			new FlxTimer().start((Conductor.crochet * 25) / 1000, function(daTim:FlxTimer)
@@ -986,6 +1003,8 @@ class PlayState extends MusicBeatState
 				dad.visible = true;
 				gfCutsceneLayer.remove(tankCutscene);
 			});
+
+			camHUD.visible = true;
 		});
 	}
 
@@ -1014,11 +1033,16 @@ class PlayState extends MusicBeatState
 
 		cutsceneSound.play();
 
+		FlxG.camera.zoom = defaultCamZoom * 1.15;
+
+		camFollow.x -= 200;
+
 		// cutsceneSound.onComplete = startCountdown;
 
 		new FlxTimer().start(15.1, function(tmr:FlxTimer)
 		{
 			camFollow.y -= 170;
+			camFollow.x += 200;
 			FlxTween.tween(FlxG.camera, {zoom: FlxG.camera.zoom * 1.3}, 2.1, {
 				ease: FlxEase.quadInOut,
 				onComplete: function(twen:FlxTween)
@@ -1029,7 +1053,9 @@ class PlayState extends MusicBeatState
 
 			new FlxTimer().start(2.2, function(swagTimer:FlxTimer)
 			{
-				camFollow.y += 170;
+				// camFollow.y -= 100;
+				camFollow.y += 200;
+				camFollow.x += 200;
 				boyfriend.visible = false;
 				bfCatchGf.visible = true;
 				bfCatchGf.animation.play('catch');
@@ -1037,7 +1063,16 @@ class PlayState extends MusicBeatState
 				{
 					bfCatchGf.visible = false;
 					boyfriend.visible = true;
+
+					camFollow.y -= 250;
+					camFollow.x -= 200;
 				};
+
+				new FlxTimer().start(2, function(weedShitBaby:FlxTimer)
+				{
+					camFollow.y += 180;
+					camFollow.x -= 80;
+				});
 			});
 
 			gf.visible = false;
