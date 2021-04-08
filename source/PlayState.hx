@@ -890,6 +890,8 @@ class PlayState extends MusicBeatState
 					ughIntro();
 				case 'stress':
 					stressIntro();
+				case 'guns':
+					gunsIntro();
 
 				default:
 					startCountdown();
@@ -908,7 +910,7 @@ class PlayState extends MusicBeatState
 		tankCutscene.animation.addByPrefix('killYou', 'TANK TALK 1 P2', 24, false);
 		tankCutscene.animation.play('wellWell');
 		tankCutscene.antialiasing = true;
-		add(tankCutscene);
+		gfCutsceneLayer.add(tankCutscene);
 
 		camHUD.visible = false;
 
@@ -944,7 +946,7 @@ class PlayState extends MusicBeatState
 					new FlxTimer().start((Conductor.crochet / 1000) * 5, function(money:FlxTimer)
 					{
 						dad.visible = true;
-						remove(tankCutscene);
+						gfCutsceneLayer.remove(tankCutscene);
 					});
 
 					cameraMovement();
@@ -952,6 +954,37 @@ class PlayState extends MusicBeatState
 					startCountdown();
 					camHUD.visible = true;
 				});
+			});
+		});
+	}
+
+	function gunsIntro()
+	{
+		camFollow.y += 100;
+
+		FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom * 1.3}, 4, {ease: FlxEase.quadInOut});
+
+		dad.visible = false;
+		var tankCutscene:FlxSprite = new FlxSprite(20, 320);
+		tankCutscene.frames = Paths.getSparrowAtlas('cutsceneStuff/tankTalkSong2');
+		tankCutscene.animation.addByPrefix('tankyguy', 'tankyguy', 24, false);
+		tankCutscene.animation.play('tankyguy');
+		tankCutscene.antialiasing = true;
+		gfCutsceneLayer.add(tankCutscene); // add();
+
+		FlxG.sound.play(Paths.sound('tankSong2'));
+
+		FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom * 1.4}, 0.4, {ease: FlxEase.quadOut, startDelay: 4.1});
+		FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom * 1.3}, 0.7, {ease: FlxEase.quadInOut, startDelay: 4.55});
+
+		new FlxTimer().start(11, function(tmr:FlxTimer)
+		{
+			FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, (Conductor.crochet * 9) / 1000, {ease: FlxEase.quartInOut});
+			startCountdown();
+			new FlxTimer().start((Conductor.crochet * 25) / 1000, function(daTim:FlxTimer)
+			{
+				dad.visible = true;
+				gfCutsceneLayer.remove(tankCutscene);
 			});
 		});
 	}
