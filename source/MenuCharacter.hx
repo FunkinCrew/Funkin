@@ -31,6 +31,8 @@ class MenuCharacter extends FlxSprite
 		animation.addByPrefix('senpai', "SENPAI idle Black Lines", 24);
 		animation.addByPrefix('bf-milne', "MILNE UI SELECTED", 24);
 		animation.addByPrefix('bf-milneConfirm', "MILNE UI SELECT", 24);
+		animation.addByPrefix('bf-dylan', "Dylan selected", 24);
+		animation.addByPrefix('bf-dylanConfirm', "Dylan select", 24);
 		// Parent Christmas Idle
 
 		animation.play(character);

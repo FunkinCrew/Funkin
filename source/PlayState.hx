@@ -55,7 +55,7 @@ class PlayState extends MusicBeatState
 	public static var storyDifficulty:Int = 1;
 	public static var CharacterSuffix:String = '';
 	public static var CameFromChart:Bool = false;
-	static var transHealth:Float = 1;
+	public static var transHealth:Float = 1;
 	private var Steppy:Bool = false;
 
 	var halloweenLevel:Bool = false;

@@ -1,0 +1,2 @@
+The three .json files (fresh, fresh-easy, fresh-hard) should replace the files with the same name in assets > data > fresh
+The two .ogg files should replace the files with the same name in assets > music

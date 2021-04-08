@@ -60,9 +60,9 @@ class StoryMenuState extends MusicBeatState
 	];
 	
 	var Playables:Array<Dynamic> = [
-		['bf', 'bf-bloops', 'bf-pico', 'bf-milne'],
+		['bf', 'bf-bloops', 'bf-pico', 'bf-milne', 'bf-dylan'],
 		['bf'],
-		['bf', 'bf-bloops', 'bf-pico'],
+		['bf', 'bf-bloops', 'bf-pico', 'bf-dylan'],
 		['bf']
 	];
 	var CurPlayable:Int = 0;
@@ -393,10 +393,13 @@ class StoryMenuState extends MusicBeatState
 						ConfirmAnim = 'bf-bloopsConfirm';
 					case 'bf-milne':
 						ConfirmAnim = 'bf-milneConfirm';
+					case 'bf-dylan':
+						ConfirmAnim = 'bf-dylanConfirm';
 				}
 				
 				grpWeekCharacters.members[1].animation.play(ConfirmAnim);
 				PlayState.curPlayer = Playables[CurPlayerArray][CurPlayable];
+				PlayState.transHealth = 1;
 				trace(PlayState.curPlayer);
 				stopspamming = true;
 			}

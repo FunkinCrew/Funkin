@@ -27,9 +27,9 @@ class FreeplayState extends MusicBeatState
 	var diffText:FlxText;
 	
 	var Playables:Array<Dynamic> = [
-		['bf', 'bf-bloops', 'bf-pico', 'bf-milne'],
+		['bf', 'bf-bloops', 'bf-pico', 'bf-milne', 'bf-dylan'],
 		['bf'],
-		['bf', 'bf-bloops', 'bf-pico'],
+		['bf', 'bf-bloops', 'bf-pico', 'bf-dylan'],
 		['bf']
 	];
 	var CurPlayable:Int = 0;

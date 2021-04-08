@@ -30,6 +30,23 @@ class Character extends FlxSprite
 
 		switch (curCharacter)
 		{
+			case 'kiryu':
+				tex = Paths.getSparrowAtlas('kiryu/Kiryu_night_funkin');
+				frames = tex;
+				animation.addByPrefix('idle', 'Idle', 24);
+				animation.addByPrefix('singUP', 'Up', 24);
+				animation.addByPrefix('singRIGHT', 'Right', 24);
+				animation.addByPrefix('singDOWN', 'Down', 24);
+				animation.addByPrefix('singLEFT', 'Left', 24);
+
+				addOffset('idle', 20, 10);
+				addOffset("singUP", 20, 10);
+				addOffset("singRIGHT", 20, 10);
+				addOffset("singLEFT", 20, 10);
+				addOffset("singDOWN", 20, 10);
+
+				playAnim('idle');
+				
 			case 'gf':
 				// GIRLFRIEND CODE
 				tex = Paths.getSparrowAtlas('GF_assets');

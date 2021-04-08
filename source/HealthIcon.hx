@@ -39,11 +39,13 @@ class HealthIcon extends FlxSprite
 		animation.add('senpai-angry', [33, 34, 35], 0, false, isPlayer);
 		animation.add('spirit', [36, 37, 38], 0, false, isPlayer);
 		animation.add('face', [39, 40, 41], 0, false, isPlayer);
+		animation.add('kiryu', [39, 40, 41], 0, false, isPlayer);
 		animation.add('bf-old', [42, 43, 44], 0, false, isPlayer);
 		animation.add('gf', [45, 49, 48], 0, false, isPlayer);
 		animation.add('bf-milne', [50, 51, 52], 0, false, isPlayer);
 		animation.add('bf-milne-car', [50, 51, 52], 0, false, isPlayer);
 		animation.add('bf-milne-christmas', [50, 51, 52], 0, false, isPlayer);
+		//animation.add('bf-
 		
 		animation.add('bf-bsides', [60,61,62], 0, false, isPlayer);
 		animation.add('bf-car-bsides', [60,61,62], 0, false, isPlayer);
