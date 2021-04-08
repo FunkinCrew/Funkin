@@ -56,26 +56,6 @@ class TitleState extends MusicBeatState
 		// FlxG.bitmap.clearCache();
 		#end
 
-		/* 
-
-			FlxG.stage.window.onDropFile.add(function(path:String)
-			{
-				trace("DROPPED FILE FROM: " + Std.string(path));
-				var newPath = "./" + Paths.image('gfDanceTitle');
-				File.copy(path, newPath);
-
-				var swag = Paths.image('gfDanceTitle');
-
-				if (gfDance != null)
-					remove(gfDance);
-				FlxG.bitmap.removeByKey(Paths.image('gfDanceTitle'));
-				Assets.cache.clear();
-
-				gfDance.loadGraphic(Paths.image('gfDanceTitle'));
-				add(gfDance);
-			});
-		 */
-
 		swagShader = new ColorSwap();
 
 		FlxG.sound.muteKeys = [ZERO];
