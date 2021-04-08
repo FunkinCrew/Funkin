@@ -24,7 +24,10 @@ Links: **[GameBanana mod page](https://gamebanana.com/gamefiles/16761) ⋅ [play
 
 TODO: Finish this section (add gameplay gif?)
 
+![funkingiftest480p30](https://user-images.githubusercontent.com/15311104/113989685-fa5aea80-9850-11eb-9180-f5819a774c79.gif)
+
 ![Free Play selection screen](https://i.imgur.com/LR0eWIC.png)
+
 ![enter image description here](https://i.imgur.com/LBXW9C1.png)
 
 # Features
