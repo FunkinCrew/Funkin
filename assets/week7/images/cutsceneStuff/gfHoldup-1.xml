@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="gfHoldup-1.png">
+	<!-- Created with Adobe Animate version 21.0.0.35450 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="GF STARTS TO TURN PART 2 instance 10000" x="0" y="3890" width="918" height="680" frameX="-224" frameY="-445" frameWidth="1149" frameHeight="1130"/>
+	<SubTexture name="GF STARTS TO TURN PART 2 instance 10001" x="922" y="3890" width="918" height="680" frameX="-224" frameY="-445" frameWidth="1149" frameHeight="1130"/>
+	<SubTexture name="GF STARTS TO TURN PART 2 instance 10002" x="1844" y="3890" width="918" height="680" frameX="-224" frameY="-445" frameWidth="1149" frameHeight="1130"/>
+	<SubTexture name="GF STARTS TO TURN PART 2 instance 10003" x="2778" y="3446" width="921" height="681" frameX="-222" frameY="-445" frameWidth="1149" frameHeight="1130"/>
+	<SubTexture name="GF STARTS TO TURN PART 2 instance 10004" x="2784" y="2760" width="922" height="682" frameX="-222" frameY="-444" frameWidth="1149" frameHeight="1130"/>
+	<SubTexture name="GF STARTS TO TURN PART 2 instance 10005" x="0" y="3204" width="922" height="682" frameX="-222" frameY="-444" frameWidth="1149" frameHeight="1130"/>
+	<SubTexture name="GF STARTS TO TURN PART 2 instance 10006" x="926" y="3204" width="922" height="682" frameX="-222" frameY="-444" frameWidth="1149" frameHeight="1130"/>
+	<SubTexture name="GF STARTS TO TURN PART 2 instance 10007" x="1852" y="3204" width="922" height="682" frameX="-222" frameY="-444" frameWidth="1149" frameHeight="1130"/>
+	<SubTexture name="GF STARTS TO TURN PART 2 instance 10008" x="1856" y="2416" width="924" height="682" frameX="-221" frameY="-444" frameWidth="1149" frameHeight="1130"/>
+	<SubTexture name="GF STARTS TO TURN PART 2 instance 10009" x="0" y="2517" width="924" height="683" frameX="-221" frameY="-444" frameWidth="1149" frameHeight="1130"/>
+	<SubTexture name="GF STARTS TO TURN PART 2 instance 10010" x="928" y="2517" width="924" height="683" frameX="-221" frameY="-444" frameWidth="1149" frameHeight="1130"/>
+	<SubTexture name="GF STARTS TO TURN PART 2 instance 10011" x="3019" y="688" width="924" height="684" frameX="-221" frameY="-443" frameWidth="1149" frameHeight="1130"/>
+	<SubTexture name="GF STARTS TO TURN PART 2 instance 10012" x="2798" y="2072" width="924" height="684" frameX="-221" frameY="-443" frameWidth="1149" frameHeight="1130"/>
+	<SubTexture name="GF STARTS TO TURN PART 2 instance 10013" x="3019" y="0" width="926" height="684" frameX="-220" frameY="-443" frameWidth="1149" frameHeight="1130"/>
+	<SubTexture name="GF STARTS TO TURN PART 2 instance 10014" x="2798" y="1382" width="926" height="686" frameX="-220" frameY="-442" frameWidth="1149" frameHeight="1130"/>
+	<SubTexture name="GF STARTS TO TURN PART 2 instance 10015" x="2089" y="0" width="926" height="687" frameX="-220" frameY="-442" frameWidth="1149" frameHeight="1130"/>
+	<SubTexture name="GF STARTS TO TURN PART 2 instance 10016" x="2089" y="691" width="926" height="687" frameX="-220" frameY="-442" frameWidth="1149" frameHeight="1130"/>
+	<SubTexture name="GF STARTS TO TURN PART 2 instance 10017" x="934" y="1724" width="928" height="688" frameX="-219" frameY="-441" frameWidth="1149" frameHeight="1130"/>
+	<SubTexture name="GF STARTS TO TURN PART 2 instance 10018" x="0" y="1825" width="928" height="688" frameX="-219" frameY="-441" frameWidth="1149" frameHeight="1130"/>
+	<SubTexture name="GF STARTS TO TURN PART 2 instance 10019" x="1866" y="1724" width="928" height="688" frameX="-219" frameY="-441" frameWidth="1149" frameHeight="1130"/>
+	<SubTexture name="GF STARTS TO TURN PART 2 instance 10020" x="0" y="1133" width="930" height="688" frameX="-218" frameY="-441" frameWidth="1149" frameHeight="1130"/>
+	<SubTexture name="GF STARTS TO TURN PART 2 instance 10021" x="1153" y="1031" width="932" height="689" frameX="-217" frameY="-441" frameWidth="1149" frameHeight="1130"/>
+	<SubTexture name="GF STARTS TO TURN PART 2 instance 10022" x="0" y="0" width="1149" height="1129" frameX="0" frameY="0" frameWidth="1149" frameHeight="1130"/>
+	<SubTexture name="GF STARTS TO TURN PART 2 instance 10023" x="1153" y="0" width="932" height="1027" frameX="-217" frameY="-103" frameWidth="1149" frameHeight="1130"/>
+</TextureAtlas>
