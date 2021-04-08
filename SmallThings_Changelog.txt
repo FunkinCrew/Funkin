@@ -2,6 +2,7 @@
 + Added a lyric indicator to debug mode
 + Added an icon above lyrics to show who's speaking
 + Added lyric info logging in the console
+- Disabled the notice screen
 - Fixed a grammar error in the Tutorial lyric chart
 
 === 0.0.4 ===
