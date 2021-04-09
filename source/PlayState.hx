@@ -124,6 +124,8 @@ class PlayState extends MusicBeatState
 
 	var tankmanRun:FlxTypedGroup<TankmenBG>;
 	var gfCutsceneLayer:FlxGroup;
+	var bfTankCutsceneLayer:FlxGroup;
+	var tankWatchtower:BGSprite;
 
 	var talking:Bool = true;
 	var songScore:Int = 0;
@@ -534,7 +536,7 @@ class PlayState extends MusicBeatState
 				var smokeRight:BGSprite = new BGSprite('smokeRight', 1100, -100, 0.4, 0.4, ['SmokeRight'], true);
 				add(smokeRight);
 
-				var tankWatchtower:BGSprite = new BGSprite('tankWatchtower', 100, 50, 0.5, 0.5);
+				tankWatchtower = new BGSprite('tankWatchtower', 100, 50, 0.5, 0.5, ['watchtower gradient color']);
 				add(tankWatchtower);
 
 				var tankGround:BGSprite = new BGSprite('tankGround', -420, -150);
@@ -733,6 +735,9 @@ class PlayState extends MusicBeatState
 
 		gfCutsceneLayer = new FlxGroup();
 		add(gfCutsceneLayer);
+
+		bfTankCutsceneLayer = new FlxGroup();
+		add(bfTankCutsceneLayer);
 
 		// Shitty layering but whatev it works LOL
 		if (curStage == 'limo')
@@ -975,7 +980,7 @@ class PlayState extends MusicBeatState
 		dad.visible = false;
 		var tankCutscene:FlxSprite = new FlxSprite(20, 320);
 		tankCutscene.frames = Paths.getSparrowAtlas('cutsceneStuff/tankTalkSong2');
-		tankCutscene.animation.addByPrefix('tankyguy', 'tankyguy', 24, false);
+		tankCutscene.animation.addByPrefix('tankyguy', 'TANK TALK 2', 24, false);
 		tankCutscene.animation.play('tankyguy');
 		tankCutscene.antialiasing = true;
 		gfCutsceneLayer.add(tankCutscene); // add();
@@ -1008,7 +1013,7 @@ class PlayState extends MusicBeatState
 
 	function stressIntro()
 	{
-		for (i in 0...5)
+		for (i in 0...7)
 		{
 			var dummyLoader:FlxSprite = new FlxSprite();
 			dummyLoader.loadGraphic(Paths.image('cutsceneStuff/gfHoldup-' + i));
@@ -1019,15 +1024,40 @@ class PlayState extends MusicBeatState
 
 		dad.visible = false;
 
-		var tankCutscene:FlxSprite = new FlxSprite(20, 320);
-		tankCutscene.frames = Paths.getSparrowAtlas('cutsceneStuff/tankTalkSong3');
-		tankCutscene.animation.addByPrefix('tankyguy', 'GodEffing', 24, false);
-		tankCutscene.animation.addByPrefix('weed', 'sexAmbig', 24, false);
+		// gf.y += 300;
+		gf.alpha = 0.01;
+
+		var gfTankmen:FlxSprite = new FlxSprite(210, 70);
+		gfTankmen.frames = Paths.getSparrowAtlas('characters/gfTankmen');
+		gfTankmen.animation.addByPrefix('loop', 'GF Dancing at Gunpoint', 24, true);
+		gfTankmen.animation.play('loop');
+		gfTankmen.antialiasing = true;
+		gfCutsceneLayer.add(gfTankmen);
+
+		var tankCutscene:FlxSprite = new FlxSprite(-70, 320);
+		tankCutscene.frames = Paths.getSparrowAtlas('cutsceneStuff/tankTalkSong3-pt1');
+		tankCutscene.animation.addByPrefix('tankyguy', 'TANK TALK 3 P1 UNCUT', 24, false);
+		// tankCutscene.animation.addByPrefix('weed', 'sexAmbig', 24, false);
 		tankCutscene.animation.play('tankyguy');
 		tankCutscene.antialiasing = true;
-		gfCutsceneLayer.add(tankCutscene); // add();
+		bfTankCutsceneLayer.add(tankCutscene); // add();
+
+		var alsoTankCutscene:FlxSprite = new FlxSprite(20, 320);
+		alsoTankCutscene.frames = Paths.getSparrowAtlas('cutsceneStuff/tankTalkSong3-pt2');
+		alsoTankCutscene.animation.addByPrefix('swagTank', 'TANK TALK 3 P2 UNCUT', 24, false);
+		alsoTankCutscene.antialiasing = true;
+
+		bfTankCutsceneLayer.add(alsoTankCutscene);
+
+		alsoTankCutscene.y = FlxG.height + 100;
 
 		camFollow.setPosition(gf.x + 350, gf.y + 560);
+		FlxG.camera.focusOn(camFollow.getPosition());
+
+		boyfriend.visible = false;
+
+		var fakeBF:Character = new Character(boyfriend.x, boyfriend.y, 'bf', true);
+		bfTankCutsceneLayer.add(fakeBF);
 
 		var bfCatchGf:FlxSprite = new FlxSprite(boyfriend.x - 10, boyfriend.y - 90);
 		bfCatchGf.frames = Paths.getSparrowAtlas('cutsceneStuff/bfCatchesGF');
@@ -1037,7 +1067,65 @@ class PlayState extends MusicBeatState
 		bfCatchGf.visible = false;
 
 		var cutsceneSound:FlxSound = new FlxSound();
-		cutsceneSound.loadEmbedded(Paths.sound('stressCutscene'));
+
+		if (PreferencesMenu.getPref('censor-naughty'))
+			cutsceneSound.loadEmbedded(Paths.sound('stressCutscene'));
+		else
+		{
+			cutsceneSound.loadEmbedded(Paths.sound('song3censor'));
+
+			var censor:FlxSprite = new FlxSprite();
+			censor.frames = Paths.getSparrowAtlas('cutsceneStuff/censor');
+			censor.animation.addByPrefix('censor', 'mouth censor', 24);
+			censor.animation.play('censor');
+			add(censor);
+			censor.visible = false;
+			//
+
+			new FlxTimer().start(4.6, function(censorTimer:FlxTimer)
+			{
+				censor.visible = true;
+				censor.setPosition(dad.x + 160, dad.y + 180);
+
+				new FlxTimer().start(0.2, function(endThing:FlxTimer)
+				{
+					censor.visible = false;
+				});
+			});
+
+			new FlxTimer().start(25.1, function(censorTimer:FlxTimer)
+			{
+				censor.visible = true;
+				censor.setPosition(dad.x + 120, dad.y + 170);
+
+				new FlxTimer().start(0.9, function(endThing:FlxTimer)
+				{
+					censor.visible = false;
+				});
+			});
+
+			new FlxTimer().start(30.7, function(censorTimer:FlxTimer)
+			{
+				censor.visible = true;
+				censor.setPosition(dad.x + 210, dad.y + 190);
+
+				new FlxTimer().start(0.4, function(endThing:FlxTimer)
+				{
+					censor.visible = false;
+				});
+			});
+
+			new FlxTimer().start(33.8, function(censorTimer:FlxTimer)
+			{
+				censor.visible = true;
+				censor.setPosition(dad.x + 180, dad.y + 170);
+
+				new FlxTimer().start(0.6, function(endThing:FlxTimer)
+				{
+					censor.visible = false;
+				});
+			});
+		}
 
 		cutsceneSound.play();
 
@@ -1048,7 +1136,7 @@ class PlayState extends MusicBeatState
 		// cutsceneSound.onComplete = startCountdown;
 
 		// Cunt 1
-		new FlxTimer().start(30.5, function(cunt:FlxTimer)
+		new FlxTimer().start(31.5, function(cunt:FlxTimer)
 		{
 			camFollow.x += 400;
 			camFollow.y += 150;
@@ -1067,56 +1155,32 @@ class PlayState extends MusicBeatState
 			};
 		});
 
-		// Cunt 2
-		new FlxTimer().start(33.7, function(cunt:FlxTimer)
-		{
-			camFollow.x += 400;
-			camFollow.y += 180;
-			FlxG.camera.zoom = defaultCamZoom * 1.5;
-			FlxTween.tween(FlxG.camera, {zoom: FlxG.camera.zoom + 0.4}, 0.5, {ease: FlxEase.elasticOut});
-			FlxG.camera.focusOn(camFollow.getPosition());
-			boyfriend.playAnim('singDOWNmiss');
-			boyfriend.animation.finishCallback = function(animFinish:String)
-			{
-				camFollow.x -= 400;
-				camFollow.y -= 180;
-				FlxG.camera.zoom = defaultCamZoom * 1.15;
-				FlxG.camera.focusOn(camFollow.getPosition());
-
-				boyfriend.animation.finishCallback = null;
-			};
-		});
-
 		new FlxTimer().start(15.1, function(tmr:FlxTimer)
 		{
 			camFollow.y -= 170;
 			camFollow.x += 200;
 			FlxTween.tween(FlxG.camera, {zoom: FlxG.camera.zoom * 1.3}, 2.1, {
-				ease: FlxEase.quadInOut,
-				onComplete: function(twen:FlxTween)
-				{
-					FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, 0.7, {ease: FlxEase.elasticOut});
-				}
+				ease: FlxEase.quadInOut
 			});
 
 			new FlxTimer().start(2.2, function(swagTimer:FlxTimer)
 			{
+				// FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, 0.7, {ease: FlxEase.elasticOut});
+				FlxG.camera.zoom = 0.8;
 				// camFollow.y -= 100;
-				camFollow.y += 200;
-				camFollow.x += 200;
 				boyfriend.visible = false;
 				bfCatchGf.visible = true;
 				bfCatchGf.animation.play('catch');
+
+				bfTankCutsceneLayer.remove(fakeBF);
+
 				bfCatchGf.animation.finishCallback = function(anim:String)
 				{
 					bfCatchGf.visible = false;
 					boyfriend.visible = true;
-
-					camFollow.y -= 250;
-					camFollow.x -= 200;
 				};
 
-				new FlxTimer().start(2, function(weedShitBaby:FlxTimer)
+				new FlxTimer().start(3, function(weedShitBaby:FlxTimer)
 				{
 					camFollow.y += 180;
 					camFollow.x -= 80;
@@ -1124,18 +1188,29 @@ class PlayState extends MusicBeatState
 
 				new FlxTimer().start(2.3, function(gayLol:FlxTimer)
 				{
-					tankCutscene.animation.play('weed');
+					bfTankCutsceneLayer.remove(tankCutscene);
+					alsoTankCutscene.y = 320;
+					alsoTankCutscene.animation.play('swagTank');
+					// tankCutscene.animation.play('weed');
 				});
 			});
 
 			gf.visible = false;
 			var cutsceneShit:CutsceneCharacter = new CutsceneCharacter(210, 70, 'gfHoldup');
 			gfCutsceneLayer.add(cutsceneShit);
+			gfCutsceneLayer.remove(gfTankmen);
+
+			cutsceneShit.onFinish = function()
+			{
+				gf.alpha = 1;
+				gf.visible = true;
+			};
+
 			// add(cutsceneShit);
 			new FlxTimer().start(20, function(alsoTmr:FlxTimer)
 			{
 				dad.visible = true;
-				gfCutsceneLayer.remove(tankCutscene);
+				bfTankCutsceneLayer.remove(alsoTankCutscene);
 				startCountdown();
 				gfCutsceneLayer.remove(cutsceneShit);
 			});
@@ -2830,6 +2905,8 @@ class PlayState extends MusicBeatState
 					trainCooldown = FlxG.random.int(-4, 0);
 					trainStart();
 				}
+			case 'tank':
+				tankWatchtower.dance();
 		}
 
 		if (isHalloween && FlxG.random.bool(10) && curBeat > lightningStrikeBeat + lightningOffset)
