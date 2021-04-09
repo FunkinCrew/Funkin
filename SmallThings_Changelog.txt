@@ -1,5 +1,6 @@
 === 0.0.4.2 ===
 - ACTUALLY fixed a grammar error in the Tutorial lyric chart
+- Changed the '1' icon to look more like a 1
 
 === 0.0.4.1 ===
 + Added a lyric indicator to debug mode
