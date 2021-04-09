@@ -56,8 +56,8 @@ class CutsceneCharacter extends FlxTypedGroup<FlxSprite>
 
 		cutScene.animation.finishCallback = function(anim:String)
 		{
-			// cutScene.kill();
-			// cutScene.destroy();
+			cutScene.kill();
+			cutScene.destroy();
 
 			if (daNum + 1 < arrayLMFAOOOO.length)
 				createCutscene(daNum + 1);
