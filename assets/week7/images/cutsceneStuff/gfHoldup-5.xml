@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="gfHoldup-5.png">
+	<!-- Created with Adobe Animate version 21.0.0.35450 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="PICO ARRIVES PART 3 instance 10000" x="0" y="0" width="2546" height="993"/>
+	<SubTexture name="PICO ARRIVES PART 3 instance 10001" x="2550" y="0" width="2546" height="993"/>
+	<SubTexture name="PICO ARRIVES PART 3 instance 10002" x="5100" y="0" width="2546" height="993"/>
+	<SubTexture name="PICO ARRIVES PART 3 instance 10003" x="0" y="997" width="2546" height="993"/>
+	<SubTexture name="PICO ARRIVES PART 3 instance 10004" x="2550" y="997" width="2546" height="993"/>
+	<SubTexture name="PICO ARRIVES PART 3 instance 10005" x="5100" y="997" width="2546" height="993"/>
+	<SubTexture name="PICO ARRIVES PART 3 instance 10006" x="5100" y="997" width="2546" height="993"/>
+	<SubTexture name="PICO ARRIVES PART 3 instance 10007" x="0" y="1994" width="2546" height="993"/>
+	<SubTexture name="PICO ARRIVES PART 3 instance 10008" x="2550" y="1994" width="2546" height="993"/>
+	<SubTexture name="PICO ARRIVES PART 3 instance 10009" x="5100" y="1994" width="2546" height="993"/>
+	<SubTexture name="PICO ARRIVES PART 3 instance 10010" x="0" y="2991" width="2546" height="980" frameX="0" frameY="-13" frameWidth="2546" frameHeight="993"/>
+	<SubTexture name="PICO ARRIVES PART 3 instance 10011" x="2550" y="2991" width="2546" height="980" frameX="0" frameY="-13" frameWidth="2546" frameHeight="993"/>
+	<SubTexture name="PICO ARRIVES PART 3 instance 10012" x="5100" y="2991" width="2546" height="932" frameX="0" frameY="-61" frameWidth="2546" frameHeight="993"/>
+	<SubTexture name="PICO ARRIVES PART 3 instance 10013" x="5592" y="5640" width="1517" height="847" frameX="0" frameY="-146" frameWidth="2546" frameHeight="993"/>
+	<SubTexture name="PICO ARRIVES PART 3 instance 10014" x="5100" y="4789" width="2546" height="847" frameX="0" frameY="-146" frameWidth="2546" frameHeight="993"/>
+	<SubTexture name="PICO ARRIVES PART 3 instance 10015" x="2550" y="3975" width="2546" height="852" frameX="0" frameY="-141" frameWidth="2546" frameHeight="993"/>
+	<SubTexture name="PICO ARRIVES PART 3 instance 10016" x="4071" y="5640" width="1517" height="852" frameX="0" frameY="-141" frameWidth="2546" frameHeight="993"/>
+	<SubTexture name="PICO ARRIVES PART 3 instance 10017" x="0" y="3975" width="2546" height="853" frameX="0" frameY="-140" frameWidth="2546" frameHeight="993"/>
+	<SubTexture name="PICO ARRIVES PART 3 instance 10018" x="0" y="4832" width="1517" height="853" frameX="0" frameY="-140" frameWidth="2546" frameHeight="993"/>
+	<SubTexture name="PICO ARRIVES PART 3 instance 10019" x="5100" y="3927" width="2546" height="858" frameX="0" frameY="-135" frameWidth="2546" frameHeight="993"/>
+	<SubTexture name="PICO ARRIVES PART 3 instance 10020" x="1521" y="4832" width="700" height="661" frameX="-817" frameY="-135" frameWidth="2546" frameHeight="993"/>
+	<SubTexture name="PICO ARRIVES PART 3 instance 10021" x="2550" y="4831" width="1517" height="859" frameX="0" frameY="-134" frameWidth="2546" frameHeight="993"/>
+	<SubTexture name="PICO ARRIVES PART 3 instance 10022" x="2550" y="4831" width="1517" height="859" frameX="0" frameY="-134" frameWidth="2546" frameHeight="993"/>
+	<SubTexture name="PICO ARRIVES PART 3 instance 10023" x="4071" y="4831" width="700" height="662" frameX="-817" frameY="-134" frameWidth="2546" frameHeight="993"/>
+	<SubTexture name="PICO ARRIVES PART 3 instance 10024" x="2550" y="4831" width="1517" height="859" frameX="0" frameY="-134" frameWidth="2546" frameHeight="993"/>
+	<SubTexture name="PICO ARRIVES PART 3 instance 10025" x="4071" y="4831" width="700" height="662" frameX="-817" frameY="-134" frameWidth="2546" frameHeight="993"/>
+	<SubTexture name="PICO ARRIVES PART 3 instance 10026" x="2550" y="4831" width="1517" height="859" frameX="0" frameY="-134" frameWidth="2546" frameHeight="993"/>
+</TextureAtlas>
