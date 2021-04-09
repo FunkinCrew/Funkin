@@ -16,10 +16,10 @@ class CutsceneAnimTestState extends FlxState
 		'GF STARTS TO TURN PART 2',
 		'PICO ARRIVES PART 1',
 		'PICO ARRIVES PART 2',
-		'PICO ARRIVES PART 2 POINT FIVE'
+		'PICO ARRIVES PART 2 POINT FIVE',
+		'PICO ARRIVES PART 3',
+		'Pico Dual Wield on Speaker'
 	];
-
-	var coolPosition:FlxPoint = FlxPoint.get(0, 100);
 
 	var cutsceneGroup:CutsceneCharacter;
 
@@ -34,7 +34,7 @@ class CutsceneAnimTestState extends FlxState
 		gridBG.scrollFactor.set(0.5, 0.5);
 		add(gridBG);
 
-		debugTxt = new FlxText(1000, 20, 0, "", 24);
+		debugTxt = new FlxText(900, 20, 0, "", 20);
 		debugTxt.color = FlxColor.BLUE;
 		add(debugTxt);
 
@@ -47,7 +47,7 @@ class CutsceneAnimTestState extends FlxState
 			dummyLoader.y = FlxG.height - 20;
 		}
 
-		cutsceneGroup = new CutsceneCharacter(0, 100, 'gfHoldup');
+		cutsceneGroup = new CutsceneCharacter(0, 0, 'gfHoldup');
 		add(cutsceneGroup);
 
 		// createCutscene(0);
@@ -65,6 +65,11 @@ class CutsceneAnimTestState extends FlxState
 				curSelected -= 1;
 			if (FlxG.keys.justPressed.DOWN)
 				curSelected += 1;
+
+			if (curSelected < 0)
+				curSelected = cutsceneGroup.members.length - 1;
+			if (curSelected >= cutsceneGroup.members.length)
+				curSelected = 0;
 		}
 		else
 		{
@@ -84,12 +89,6 @@ class CutsceneAnimTestState extends FlxState
 		}
 
 		debugTxt.text = curSelected + " : " + cutsceneGroup.members[curSelected].getPosition();
-
-		if (curSelected < 0)
-			curSelected = animShit.length - 1;
-
-		if (curSelected >= animShit.length)
-			curSelected = 0;
 
 		super.update(elapsed);
 	}
