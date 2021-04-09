@@ -1021,6 +1021,15 @@ class PlayState extends MusicBeatState
 
 		dad.visible = false;
 
+		gf.visible = false;
+
+		var gfTankmen:FlxSprite = new FlxSprite(210, 70);
+		gfTankmen.frames = Paths.getSparrowAtlas('characters/gfTankmen');
+		gfTankmen.animation.addByPrefix('loop', 'GF Dancing at Gunpoint', 24, true);
+		gfTankmen.animation.play('loop');
+		gfTankmen.antialiasing = true;
+		gfCutsceneLayer.add(gfTankmen);
+
 		var tankCutscene:FlxSprite = new FlxSprite(20, 320);
 		tankCutscene.frames = Paths.getSparrowAtlas('cutsceneStuff/tankTalkSong3');
 		tankCutscene.animation.addByPrefix('tankyguy', 'GodEffing', 24, false);
@@ -1030,6 +1039,11 @@ class PlayState extends MusicBeatState
 		gfCutsceneLayer.add(tankCutscene); // add();
 
 		camFollow.setPosition(gf.x + 350, gf.y + 560);
+
+		boyfriend.visible = false;
+
+		var fakeBF:Character = new Character(boyfriend.x, boyfriend.y, 'bf', true);
+		gfCutsceneLayer.add(fakeBF);
 
 		var bfCatchGf:FlxSprite = new FlxSprite(boyfriend.x - 10, boyfriend.y - 90);
 		bfCatchGf.frames = Paths.getSparrowAtlas('cutsceneStuff/bfCatchesGF');
@@ -1109,6 +1123,9 @@ class PlayState extends MusicBeatState
 				boyfriend.visible = false;
 				bfCatchGf.visible = true;
 				bfCatchGf.animation.play('catch');
+
+				gfCutsceneLayer.remove(fakeBF);
+
 				bfCatchGf.animation.finishCallback = function(anim:String)
 				{
 					bfCatchGf.visible = false;
@@ -1118,7 +1135,7 @@ class PlayState extends MusicBeatState
 					camFollow.x -= 200;
 				};
 
-				new FlxTimer().start(2, function(weedShitBaby:FlxTimer)
+				new FlxTimer().start(3, function(weedShitBaby:FlxTimer)
 				{
 					camFollow.y += 180;
 					camFollow.x -= 80;
@@ -1133,6 +1150,8 @@ class PlayState extends MusicBeatState
 			gf.visible = false;
 			var cutsceneShit:CutsceneCharacter = new CutsceneCharacter(210, 70, 'gfHoldup');
 			gfCutsceneLayer.add(cutsceneShit);
+			gfCutsceneLayer.remove(gfTankmen);
+
 			// add(cutsceneShit);
 			new FlxTimer().start(20, function(alsoTmr:FlxTimer)
 			{

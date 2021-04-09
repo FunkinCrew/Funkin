@@ -35,6 +35,8 @@ class CutsceneCharacter extends FlxTypedGroup<FlxSprite>
 		{
 			var xAndY:FlxPoint = FlxPoint.get();
 			var dumbSplit:Array<String> = i.split('---')[1].trim().split(' ');
+			trace('cool split: ' + i.split('---')[1]);
+			trace(dumbSplit);
 			xAndY.set(Std.parseFloat(dumbSplit[0]), Std.parseFloat(dumbSplit[1]));
 
 			animShit.set(i.split('---')[0].trim(), xAndY);
@@ -54,8 +56,8 @@ class CutsceneCharacter extends FlxTypedGroup<FlxSprite>
 
 		cutScene.animation.finishCallback = function(anim:String)
 		{
-			cutScene.kill();
-			cutScene.destroy();
+			// cutScene.kill();
+			// cutScene.destroy();
 
 			if (daNum + 1 < arrayLMFAOOOO.length)
 				createCutscene(daNum + 1);
