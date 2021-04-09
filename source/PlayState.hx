@@ -63,6 +63,7 @@ class PlayState extends MusicBeatState
 	var halloweenLevel:Bool = false;
 
 	private var vocals:FlxSound;
+	private var vocalsFinished:Bool = false;
 
 	private var dad:Character;
 	private var gf:Character;
@@ -605,9 +606,6 @@ class PlayState extends MusicBeatState
 			case 'schoolEvil':
 				gfVersion = 'gf-pixel';
 		}
-
-		if (curStage == 'limo')
-			gfVersion = 'gf-car';
 
 		if (SONG.song.toLowerCase() == 'stress')
 			gfVersion = 'pico-speaker';
@@ -1489,6 +1487,9 @@ class PlayState extends MusicBeatState
 		else
 			vocals = new FlxSound();
 
+		vocals.onComplete = function(){
+			vocalsFinished = true;
+		};
 		FlxG.sound.list.add(vocals);
 
 		notes = new FlxTypedGroup<Note>();
@@ -1745,7 +1746,7 @@ class PlayState extends MusicBeatState
 	#if discord_rpc
 	override public function onFocus():Void
 	{
-		if (health > 0 && !paused)
+		if (health > 0 && !paused && FlxG.autoPause)
 		{
 			if (Conductor.songPosition > 0.0)
 			{
@@ -1762,7 +1763,7 @@ class PlayState extends MusicBeatState
 
 	override public function onFocusLost():Void
 	{
-		if (health > 0 && !paused)
+		if (health > 0 && !paused && FlxG.autoPause)
 		{
 			DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
 		}
@@ -1773,10 +1774,16 @@ class PlayState extends MusicBeatState
 
 	function resyncVocals():Void
 	{
-		vocals.pause();
+		if (_exiting)
+			return ;
 
+		vocals.pause();
 		FlxG.sound.music.play();
 		Conductor.songPosition = FlxG.sound.music.time;
+
+		if (vocalsFinished)
+			return ;
+
 		vocals.time = Conductor.songPosition;
 		vocals.play();
 	}
@@ -2845,11 +2852,12 @@ class PlayState extends MusicBeatState
 		if (curBeat % 8 == 7 && curSong == 'Bopeebo')
 		{
 			boyfriend.playAnim('hey', true);
+		}
 
-			if (SONG.song == 'Tutorial' && dad.curCharacter == 'gf')
-			{
-				dad.playAnim('cheer', true);
-			}
+		if (curBeat % 16 == 15 && SONG.song == 'Tutorial' && dad.curCharacter == 'gf' && curBeat > 16 && curBeat < 48)
+		{
+			boyfriend.playAnim('hey', true);
+			dad.playAnim('cheer', true);
 		}
 
 		foregroundSprites.forEach(function(spr:BGSprite)
