@@ -7,6 +7,7 @@ import flixel.math.FlxPoint;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import haxe.display.Display.Package;
+import ui.PreferencesMenu;
 
 class GameOverSubstate extends MusicBeatSubstate
 {
@@ -60,7 +61,12 @@ class GameOverSubstate extends MusicBeatSubstate
 
 		bf.playAnim('firstDeath');
 
-		randomGameover = FlxG.random.int(1, 25);
+		var randomCensor:Array<Int> = [];
+
+		if (PreferencesMenu.getPref('censor-naughty'))
+			randomCensor = [1, 3, 8, 13, 17, 21];
+
+		randomGameover = FlxG.random.int(1, 25, randomCensor);
 	}
 
 	var playingDeathSound:Bool = false;
@@ -76,6 +82,8 @@ class GameOverSubstate extends MusicBeatSubstate
 
 		if (controls.BACK)
 		{
+			PlayState.deathCounter = 0;
+			PlayState.seenCutscene = false;
 			FlxG.sound.music.stop();
 
 			if (PlayState.isStoryMode)
