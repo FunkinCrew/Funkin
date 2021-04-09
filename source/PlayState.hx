@@ -102,6 +102,8 @@ class PlayState extends MusicBeatState
 
 	var dialogue:Array<String> = ['blah blah blah', 'coolswag'];
 
+	public static var seenCutscene:Bool = false;
+
 	var halloweenBG:FlxSprite;
 	var isHalloween:Bool = false;
 
@@ -148,6 +150,8 @@ class PlayState extends MusicBeatState
 	var detailsText:String = "";
 	var detailsPausedText:String = "";
 	#end
+
+	var camPos:FlxPoint;
 
 	override public function create()
 	{
@@ -632,7 +636,7 @@ class PlayState extends MusicBeatState
 
 		dad = new Character(100, 100, SONG.player2);
 
-		var camPos:FlxPoint = new FlxPoint(dad.getGraphicMidpoint().x, dad.getGraphicMidpoint().y);
+		camPos = new FlxPoint(dad.getGraphicMidpoint().x, dad.getGraphicMidpoint().y);
 
 		switch (SONG.player2)
 		{
@@ -841,8 +845,10 @@ class PlayState extends MusicBeatState
 		// cameras = [FlxG.cameras.list[1]];
 		startingSong = true;
 
-		if (isStoryMode)
+		if (isStoryMode && !seenCutscene)
 		{
+			seenCutscene = true;
+
 			switch (curSong.toLowerCase())
 			{
 				case "winter-horrorland":
@@ -881,6 +887,13 @@ class PlayState extends MusicBeatState
 				case 'thorns':
 					schoolIntro(doof);
 
+				case 'ugh':
+					ughIntro();
+				case 'stress':
+					stressIntro();
+				case 'guns':
+					gunsIntro();
+
 				default:
 					startCountdown();
 			}
@@ -889,12 +902,9 @@ class PlayState extends MusicBeatState
 		{
 			switch (curSong.toLowerCase())
 			{
-				case 'ugh':
-					ughIntro();
+				// REMOVE THIS LATER
 				case 'stress':
 					stressIntro();
-				case 'guns':
-					gunsIntro();
 
 				default:
 					startCountdown();
@@ -968,6 +978,8 @@ class PlayState extends MusicBeatState
 
 	function gunsIntro()
 	{
+		camFollow.setPosition(camPos.x, camPos.y);
+
 		camHUD.visible = false;
 
 		FlxG.sound.playMusic(Paths.music('DISTORTO'), 0);
@@ -1013,6 +1025,9 @@ class PlayState extends MusicBeatState
 
 	function stressIntro()
 	{
+		// for story mode shit
+		camFollow.setPosition(camPos.x, camPos.y);
+
 		for (i in 0...7)
 		{
 			var dummyLoader:FlxSprite = new FlxSprite();
@@ -1487,7 +1502,8 @@ class PlayState extends MusicBeatState
 		else
 			vocals = new FlxSound();
 
-		vocals.onComplete = function(){
+		vocals.onComplete = function()
+		{
 			vocalsFinished = true;
 		};
 		FlxG.sound.list.add(vocals);
@@ -1775,14 +1791,14 @@ class PlayState extends MusicBeatState
 	function resyncVocals():Void
 	{
 		if (_exiting)
-			return ;
+			return;
 
 		vocals.pause();
 		FlxG.sound.music.play();
 		Conductor.songPosition = FlxG.sound.music.time;
 
 		if (vocalsFinished)
-			return ;
+			return;
 
 		vocals.time = Conductor.songPosition;
 		vocals.play();
@@ -2152,6 +2168,7 @@ class PlayState extends MusicBeatState
 
 	function endSong():Void
 	{
+		seenCutscene = false;
 		deathCounter = 0;
 		canPause = false;
 		FlxG.sound.music.volume = 0;
