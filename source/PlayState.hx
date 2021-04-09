@@ -1010,7 +1010,7 @@ class PlayState extends MusicBeatState
 
 	function stressIntro()
 	{
-		for (i in 0...5)
+		for (i in 0...7)
 		{
 			var dummyLoader:FlxSprite = new FlxSprite();
 			dummyLoader.loadGraphic(Paths.image('cutsceneStuff/gfHoldup-' + i));
