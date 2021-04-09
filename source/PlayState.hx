@@ -1032,14 +1032,24 @@ class PlayState extends MusicBeatState
 		gfCutsceneLayer.add(gfTankmen);
 
 		var tankCutscene:FlxSprite = new FlxSprite(20, 320);
-		tankCutscene.frames = Paths.getSparrowAtlas('cutsceneStuff/tankTalkSong3');
-		tankCutscene.animation.addByPrefix('tankyguy', 'GodEffing', 24, false);
-		tankCutscene.animation.addByPrefix('weed', 'sexAmbig', 24, false);
+		tankCutscene.frames = Paths.getSparrowAtlas('cutsceneStuff/tankTalkSong3-pt1');
+		tankCutscene.animation.addByPrefix('tankyguy', 'TANK TALK 3 P1 UNCUT', 24, false);
+		// tankCutscene.animation.addByPrefix('weed', 'sexAmbig', 24, false);
 		tankCutscene.animation.play('tankyguy');
 		tankCutscene.antialiasing = true;
 		gfCutsceneLayer.add(tankCutscene); // add();
 
+		var alsoTankCutscene:FlxSprite = new FlxSprite(20, 320);
+		alsoTankCutscene.frames = Paths.getSparrowAtlas('cutsceneStuff/tankTalkSong3-pt2');
+		alsoTankCutscene.animation.addByPrefix('swagTank', 'TANK TALK 3 P2 UNCUT', 24, false);
+		alsoTankCutscene.antialiasing = true;
+
+		gfCutsceneLayer.add(alsoTankCutscene);
+
+		alsoTankCutscene.y = FlxG.height + 100;
+
 		camFollow.setPosition(gf.x + 350, gf.y + 560);
+		FlxG.camera.focusOn(camFollow.getPosition());
 
 		boyfriend.visible = false;
 
@@ -1065,7 +1075,7 @@ class PlayState extends MusicBeatState
 		// cutsceneSound.onComplete = startCountdown;
 
 		// Cunt 1
-		new FlxTimer().start(30.5, function(cunt:FlxTimer)
+		new FlxTimer().start(31.5, function(cunt:FlxTimer)
 		{
 			camFollow.x += 400;
 			camFollow.y += 150;
@@ -1084,43 +1094,19 @@ class PlayState extends MusicBeatState
 			};
 		});
 
-		// Cunt 2
-		new FlxTimer().start(33.7, function(cunt:FlxTimer)
-		{
-			camFollow.x += 400;
-			camFollow.y += 180;
-			FlxG.camera.zoom = defaultCamZoom * 1.5;
-			FlxTween.tween(FlxG.camera, {zoom: FlxG.camera.zoom + 0.4}, 0.5, {ease: FlxEase.elasticOut});
-			FlxG.camera.focusOn(camFollow.getPosition());
-			boyfriend.playAnim('singDOWNmiss');
-			boyfriend.animation.finishCallback = function(animFinish:String)
-			{
-				camFollow.x -= 400;
-				camFollow.y -= 180;
-				FlxG.camera.zoom = defaultCamZoom * 1.15;
-				FlxG.camera.focusOn(camFollow.getPosition());
-
-				boyfriend.animation.finishCallback = null;
-			};
-		});
-
 		new FlxTimer().start(15.1, function(tmr:FlxTimer)
 		{
 			camFollow.y -= 170;
 			camFollow.x += 200;
 			FlxTween.tween(FlxG.camera, {zoom: FlxG.camera.zoom * 1.3}, 2.1, {
-				ease: FlxEase.quadInOut,
-				onComplete: function(twen:FlxTween)
-				{
-					FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, 0.7, {ease: FlxEase.elasticOut});
-				}
+				ease: FlxEase.quadInOut
 			});
 
 			new FlxTimer().start(2.2, function(swagTimer:FlxTimer)
 			{
+				// FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, 0.7, {ease: FlxEase.elasticOut});
+				FlxG.camera.zoom = 0.8;
 				// camFollow.y -= 100;
-				camFollow.y += 200;
-				camFollow.x += 200;
 				boyfriend.visible = false;
 				bfCatchGf.visible = true;
 				bfCatchGf.animation.play('catch');
@@ -1131,9 +1117,6 @@ class PlayState extends MusicBeatState
 				{
 					bfCatchGf.visible = false;
 					boyfriend.visible = true;
-
-					camFollow.y -= 250;
-					camFollow.x -= 200;
 				};
 
 				new FlxTimer().start(3, function(weedShitBaby:FlxTimer)
@@ -1144,7 +1127,10 @@ class PlayState extends MusicBeatState
 
 				new FlxTimer().start(2.3, function(gayLol:FlxTimer)
 				{
-					tankCutscene.animation.play('weed');
+					gfCutsceneLayer.remove(tankCutscene);
+					alsoTankCutscene.y = 320;
+					alsoTankCutscene.animation.play('swagTank');
+					// tankCutscene.animation.play('weed');
 				});
 			});
 
@@ -1157,7 +1143,7 @@ class PlayState extends MusicBeatState
 			new FlxTimer().start(20, function(alsoTmr:FlxTimer)
 			{
 				dad.visible = true;
-				gfCutsceneLayer.remove(tankCutscene);
+				gfCutsceneLayer.remove(alsoTankCutscene);
 				startCountdown();
 				gfCutsceneLayer.remove(cutsceneShit);
 			});
