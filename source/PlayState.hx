@@ -978,7 +978,7 @@ class PlayState extends MusicBeatState
 		dad.visible = false;
 		var tankCutscene:FlxSprite = new FlxSprite(20, 320);
 		tankCutscene.frames = Paths.getSparrowAtlas('cutsceneStuff/tankTalkSong2');
-		tankCutscene.animation.addByPrefix('tankyguy', 'tankyguy', 24, false);
+		tankCutscene.animation.addByPrefix('tankyguy', 'TANK TALK 2', 24, false);
 		tankCutscene.animation.play('tankyguy');
 		tankCutscene.antialiasing = true;
 		gfCutsceneLayer.add(tankCutscene); // add();
