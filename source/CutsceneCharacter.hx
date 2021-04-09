@@ -61,8 +61,18 @@ class CutsceneCharacter extends FlxTypedGroup<FlxSprite>
 
 			if (daNum + 1 < arrayLMFAOOOO.length)
 				createCutscene(daNum + 1);
+			else
+				ended();
 		};
 
 		add(cutScene);
+	}
+
+	public var onFinish:Void->Void;
+
+	public function ended():Void
+	{
+		if (onFinish != null)
+			onFinish();
 	}
 }
