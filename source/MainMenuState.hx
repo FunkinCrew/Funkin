@@ -96,7 +96,8 @@ class MainMenuState extends MusicBeatState
 		// addMenuItem('options', function () startExitState(new OptionMenu()));
 		#if CAN_OPEN_LINKS
 		var hasPopupBlocker = #if web true #else false #end;
-		menuItems.createItem('donate', selectDonate, hasPopupBlocker);
+		menuItems.createItem('kickstarter', selectDonate, hasPopupBlocker);
+		// menuItems.createItem('donate', selectDonate, hasPopupBlocker);
 		#end
 		menuItems.createItem('options', function() startExitState(new OptionsState()));
 		// #if newgrounds
@@ -150,9 +151,12 @@ class MainMenuState extends MusicBeatState
 	function selectDonate()
 	{
 		#if linux
-		Sys.command('/usr/bin/xdg-open', ["https://ninja-muffin24.itch.io/funkin", "&"]);
+		// Sys.command('/usr/bin/xdg-open', ["https://ninja-muffin24.itch.io/funkin", "&"]);
+		Sys.command('/usr/bin/xdg-open', ["https://www.kickstarter.com/projects/funkin/", "&"]);
 		#else
-		FlxG.openURL('https://ninja-muffin24.itch.io/funkin');
+		// FlxG.openURL('https://ninja-muffin24.itch.io/funkin');
+
+		FlxG.openURL('https://www.kickstarter.com/projects/funkin/');
 		#end
 	}
 	#end
