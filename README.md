@@ -20,7 +20,7 @@ THESE INSTRUCTIONS ARE FOR COMPILING THE GAME'S SOURCE CODE!!!
 
 IF YOU WANT TO JUST DOWNLOAD AND INSTALL AND PLAY THE GAME NORMALLY, GO TO ITCH.IO TO DOWNLOAD THE GAME FOR PC, MAC, AND LINUX!!
 
-https://ninja-muffin24.itch.io/friday-night-funkin
+https://ninja-muffin24.itch.io/funkin
 
 IF YOU WANT TO COMPILE THE GAME YOURSELF, CONTINUE READING!!!
 
@@ -40,10 +40,11 @@ newgrounds
 ```
 So for each of those type `haxelib install [library]` so shit like `haxelib install newgrounds`
 
-You'll also need to install polymod. To do this, you need to do a few things first.
+You'll also need to install a couple things that involve Gits. To do this, you need to do a few things first.
 1. Download [git-scm](https://git-scm.com/downloads). Works for Windows, Mac, and Linux, just select your build.
 2. Follow instructions to install the application properly.
-3. Run `haxelib git polymod https://github.com/larsiusprime/polymod.git` in terminal/command-prompt after your git program is installed.
+3. Run `haxelib git polymod https://github.com/larsiusprime/polymod.git` to install Polymod.
+4. Run `haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc` to install Discord RPC.
 
 You should have everything ready for compiling the game! Follow the guide below to continue!
 
