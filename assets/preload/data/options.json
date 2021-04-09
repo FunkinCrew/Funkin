@@ -1,0 +1,12 @@
+[
+    {
+        "name": "debug",
+        "comment": "Enables / Disables the Small Things debug mode",
+        "value": false
+    },
+    {
+        "name": "lyrics",
+        "comment": "Enables / Disables on-screen lyrics for applicable songs",
+        "value": true
+    }
+]

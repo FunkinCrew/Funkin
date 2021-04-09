@@ -1,5 +1,8 @@
 package;
 
+import lime.utils.Assets;
+import haxe.Json;
+
 class Options
 {
 	public static var masterVolume:Float = 1;
@@ -7,6 +10,8 @@ class Options
 
 class STOptions
 {
+	public static var st_optionsState:Array<STOptionFileSection>;
+
 	// small things
 	public static var st_disableFnfVersionCheck:Bool = true;		// Small Things: Disable FNF version check
 	public static var st_debug:Bool = false;						// Small Things: Small Things debug
@@ -23,4 +28,26 @@ class STOptions
 	public static var st_outlineScore:Bool = true;					// Small Things: Outline score
 	public static var st_startWinterHorrorlandP2Invis:Bool = true;	// Small Things: Start Winter Horrorland P2 invisible
 	public static var st_unknownIcons:Bool = true;					// Small Things: Enable the unknown icons
+
+	public static function readSTOptionsFromFile()
+	{
+		st_optionsState = cast Json.parse(Assets.getText(Paths.json('options')));
+
+		trace(st_optionsState);
+
+		for (i in st_optionsState)
+		{
+			if (i.name == "debug")
+				STOptions.st_debug = i.value;
+
+			if (i.name == "lyrics")
+				STOptions.st_lyrics = i.value;
+		}
+	}
+}
+
+typedef STOptionFileSection = {
+	var name:String;
+	var value:Bool;
+	var comment:String;
 }
