@@ -21,8 +21,6 @@ class LoadingState extends MusicBeatState
 	var stopMusic = false;
 	var callbacks:MultiCallback;
 
-	var logo:FlxSprite;
-	var gfDance:FlxSprite;
 	var danceLeft = false;
 
 	function new(target:FlxState, stopMusic:Bool)
@@ -104,13 +102,13 @@ class LoadingState extends MusicBeatState
 	{
 		super.beatHit();
 
-		logo.animation.play('bump');
+		// logo.animation.play('bump');
 		danceLeft = !danceLeft;
-
-		if (danceLeft)
-			gfDance.animation.play('danceRight');
-		else
-			gfDance.animation.play('danceLeft');
+		/* 
+			if (danceLeft)
+				gfDance.animation.play('danceRight');
+			else
+				gfDance.animation.play('danceLeft'); */
 	}
 
 	override function update(elapsed:Float)
