@@ -20,6 +20,15 @@ import flixel.util.FlxTimer;
 import lime.app.Application;
 import lime.ui.Window;
 import openfl.Assets;
+import openfl.display.Sprite;
+import openfl.events.AsyncErrorEvent;
+import openfl.events.AsyncErrorEvent;
+import openfl.events.Event;
+import openfl.events.MouseEvent;
+import openfl.events.NetStatusEvent;
+import openfl.media.Video;
+import openfl.net.NetConnection;
+import openfl.net.NetStream;
 import shaderslmfao.ColorSwap;
 import ui.PreferencesMenu;
 
@@ -49,6 +58,10 @@ class TitleState extends MusicBeatState
 	var lastBeat:Int = 0;
 	var swagShader:ColorSwap;
 	var thingie:FlxSprite;
+
+	var video:Video;
+	var netStream:NetStream;
+	private var overlay:Sprite;
 
 	override public function create():Void
 	{
@@ -96,6 +109,31 @@ class TitleState extends MusicBeatState
 		FlxG.switchState(new FreeplayState());
 		#elseif CHARTING
 		FlxG.switchState(new ChartingState());
+		#elseif web
+		if (!initialized)
+		{
+			video = new Video();
+			FlxG.stage.addChild(video);
+
+			var netConnection = new NetConnection();
+			netConnection.connect(null);
+
+			netStream = new NetStream(netConnection);
+			netStream.client = {onMetaData: client_onMetaData};
+			netStream.addEventListener(AsyncErrorEvent.ASYNC_ERROR, netStream_onAsyncError);
+			netConnection.addEventListener(NetStatusEvent.NET_STATUS, netConnection_onNetStatus);
+			// netStream.addEventListener(NetStatusEvent.NET_STATUS) // netStream.play(Paths.file('music/kickstarterTrailer.mp4'));
+
+			overlay = new Sprite();
+			overlay.graphics.beginFill(0, 0.5);
+			overlay.graphics.drawRect(0, 0, 1280, 720);
+			overlay.addEventListener(MouseEvent.MOUSE_DOWN, overlay_onMouseDown);
+
+			overlay.buttonMode = true;
+			FlxG.stage.addChild(overlay);
+		}
+
+		// netConnection.addEventListener(MouseEvent.MOUSE_DOWN, overlay_onMouseDown);
 		#else
 		new FlxTimer().start(1, function(tmr:FlxTimer)
 		{
@@ -105,14 +143,48 @@ class TitleState extends MusicBeatState
 
 		#if discord_rpc
 		DiscordClient.initialize();
-		
-		Application.current.onExit.add (function (exitCode) {
+
+		Application.current.onExit.add(function(exitCode)
+		{
 			DiscordClient.shutdown();
-		 });
+		});
 		#end
 	}
 
+	private function client_onMetaData(metaData:Dynamic)
+	{
+		video.attachNetStream(netStream);
+
+		video.width = video.videoWidth;
+		video.height = video.videoHeight;
+	}
+
+	private function netStream_onAsyncError(event:AsyncErrorEvent):Void
+	{
+		trace("Error loading video");
+	}
+
+	private function netConnection_onNetStatus(event:NetStatusEvent):Void
+	{
+		if (event.info.code == 'NetStream.Play.Complete')
+		{
+			netStream.dispose();
+			FlxG.stage.removeChild(video);
+
+			startIntro();
+		}
+
+		trace(event.toString());
+	}
+
+	private function overlay_onMouseDown(event:MouseEvent):Void
+	{
+		netStream.play(Paths.file('music/kickstarterTrailer.mp4'));
+		FlxG.stage.removeChild(overlay);
+	}
+
 	var logoBl:FlxSprite;
+
 	var gfDance:FlxSprite;
 	var danceLeft:Bool = false;
 	var titleText:FlxSprite;
@@ -352,8 +424,18 @@ class TitleState extends MusicBeatState
 			skipIntro();
 		}
 
-		if (FlxG.keys.justPressed.SPACE)
-			swagShader.hasOutline = !swagShader.hasOutline;
+		#if web
+		if (!initialized && FlxG.keys.justPressed.ENTER)
+		{
+			netStream.dispose();
+			FlxG.stage.removeChild(video);
+
+			startIntro();
+		}
+		#end
+
+		// if (FlxG.keys.justPressed.SPACE)
+		// swagShader.hasOutline = !swagShader.hasOutline;
 
 		if (controls.UI_LEFT)
 		{

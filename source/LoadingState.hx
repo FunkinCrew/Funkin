@@ -4,6 +4,7 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.graphics.frames.FlxAtlasFrames;
+import flixel.math.FlxMath;
 import flixel.util.FlxTimer;
 import haxe.io.Path;
 import lime.app.Future;
@@ -21,9 +22,9 @@ class LoadingState extends MusicBeatState
 	var stopMusic = false;
 	var callbacks:MultiCallback;
 
-	var logo:FlxSprite;
-	var gfDance:FlxSprite;
 	var danceLeft = false;
+
+	var loadBar:FlxSprite;
 
 	function new(target:FlxState, stopMusic:Bool)
 	{
@@ -45,6 +46,10 @@ class LoadingState extends MusicBeatState
 		add(funkay);
 		funkay.scrollFactor.set();
 		funkay.screenCenter();
+
+		loadBar = new FlxSprite(0, FlxG.height - 20).makeGraphic(FlxG.width, 10, 0xFFff16d2);
+		loadBar.screenCenter(X);
+		add(loadBar);
 
 		initSongsManifest().onComplete(function(lib)
 		{
@@ -104,18 +109,29 @@ class LoadingState extends MusicBeatState
 	{
 		super.beatHit();
 
-		logo.animation.play('bump');
+		// logo.animation.play('bump');
 		danceLeft = !danceLeft;
-
-		if (danceLeft)
-			gfDance.animation.play('danceRight');
-		else
-			gfDance.animation.play('danceLeft');
+		/* 
+			if (danceLeft)
+				gfDance.animation.play('danceRight');
+			else
+				gfDance.animation.play('danceLeft'); */
 	}
+
+	var targetShit:Float = 0;
 
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+
+		if (callbacks != null)
+		{
+			targetShit = FlxMath.remapToRange(callbacks.numRemaining / callbacks.length, 1, 0, 0, 1);
+
+			loadBar.scale.x = FlxMath.lerp(loadBar.scale.x, targetShit, 0.50);
+			FlxG.watch.addQuick('percentage?', callbacks.numRemaining / callbacks.length);
+		}
+
 		#if debug
 		if (FlxG.keys.justPressed.SPACE)
 			trace('fired: ' + callbacks.getFired() + " unfired:" + callbacks.getUnfired());
