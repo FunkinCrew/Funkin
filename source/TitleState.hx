@@ -1,6 +1,7 @@
 package;
 
 import flixel.FlxG;
+import flixel.FlxGame;
 import flixel.FlxSprite;
 import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileDiamond;
 import flixel.addons.transition.FlxTransitionableState;
@@ -55,6 +56,8 @@ class TitleState extends MusicBeatState
 		polymod.Polymod.init({modRoot: "mods", dirs: ['introMod'], framework: OPENFL});
 		// FlxG.bitmap.clearCache();
 		#end
+
+		FlxG.game.focusLostFramerate = 60;
 
 		swagShader = new ColorSwap();
 
