@@ -96,8 +96,11 @@ class MainMenuState extends MusicBeatState
 		// addMenuItem('options', function () startExitState(new OptionMenu()));
 		#if CAN_OPEN_LINKS
 		var hasPopupBlocker = #if web true #else false #end;
-		menuItems.createItem('kickstarter', selectDonate, hasPopupBlocker);
-		// menuItems.createItem('donate', selectDonate, hasPopupBlocker);
+
+		if (VideoState.seenVideo)
+			menuItems.createItem('kickstarter', selectDonate, hasPopupBlocker);
+		else
+			menuItems.createItem('donate', selectDonate, hasPopupBlocker);
 		#end
 		menuItems.createItem('options', function() startExitState(new OptionsState()));
 		// #if newgrounds
