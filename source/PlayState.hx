@@ -915,8 +915,8 @@ class PlayState extends MusicBeatState
 			switch (curSong.toLowerCase())
 			{
 				// REMOVE THIS LATER
-				case 'stress':
-					stressIntro();
+				// case 'stress':
+				// stressIntro();
 
 				default:
 					startCountdown();
@@ -1110,13 +1110,12 @@ class PlayState extends MusicBeatState
 		add(bfCatchGf);
 		bfCatchGf.visible = false;
 
-		var cutsceneSound:FlxSound = new FlxSound();
-
 		if (PreferencesMenu.getPref('censor-naughty'))
-			cutsceneSound.loadEmbedded(Paths.sound('stressCutscene'));
+			tankCutscene.startSyncAudio = FlxG.sound.play(Paths.sound('stressCutscene'));
 		else
 		{
-			cutsceneSound.loadEmbedded(Paths.sound('song3censor'));
+			tankCutscene.startSyncAudio = FlxG.sound.play(Paths.sound('song3censor'));
+			// cutsceneSound.loadEmbedded(Paths.sound('song3censor'));
 
 			var censor:FlxSprite = new FlxSprite();
 			censor.frames = Paths.getSparrowAtlas('cutsceneStuff/censor');
@@ -1173,7 +1172,7 @@ class PlayState extends MusicBeatState
 
 		// new FlxTimer().start(0.01, function(tmr) cutsceneSound.play()); // cutsceneSound.play();
 		// cutsceneSound.play();
-		tankCutscene.startSyncAudio = cutsceneSound;
+		// tankCutscene.startSyncAudio = cutsceneSound;
 		// tankCutscene.animation.curAnim.curFrame
 
 		FlxG.camera.zoom = defaultCamZoom * 1.15;
@@ -2229,7 +2228,13 @@ class PlayState extends MusicBeatState
 				transIn = FlxTransitionableState.defaultTransIn;
 				transOut = FlxTransitionableState.defaultTransOut;
 
-				FlxG.switchState(new StoryMenuState());
+				switch (PlayState.storyWeek)
+				{
+					case 7:
+						FlxG.switchState(new VideoState());
+					default:
+						FlxG.switchState(new StoryMenuState());
+				}
 
 				// if ()
 				StoryMenuState.weekUnlocked[Std.int(Math.min(storyWeek + 1, StoryMenuState.weekUnlocked.length - 1))] = true;
