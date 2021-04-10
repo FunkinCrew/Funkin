@@ -54,6 +54,9 @@ class KadeEngineData
 		if (FlxG.save.data.frames == null)
 			FlxG.save.data.frames = 10;
 
+		if (FlxG.save.data.accuracyMod == null)
+			FlxG.save.data.accuracyMod = 1;
+
 		Conductor.recalculateTimings();
 
 		(cast (Lib.current.getChildAt(0), Main)).setFPSCap(FlxG.save.data.fpsCap);

@@ -2176,7 +2176,8 @@ class PlayState extends MusicBeatState
 			var rating:FlxSprite = new FlxSprite();
 			var score:Float = 350;
 
-			totalNotesHit += wife;
+			if (FlxG.save.data.accuracyMod == 1)
+				totalNotesHit += wife;
 
 			var daRating = daNote.rating;
 
@@ -2189,12 +2190,16 @@ class PlayState extends MusicBeatState
 					health -= 0.2;
 					ss = false;
 					shits++;
+					if (FlxG.save.data.accuracyMod == 0)
+						totalNotesHit--;
 				case 'bad':
 					daRating = 'bad';
 					score = 0;
 					health -= 0.06;
 					ss = false;
 					bads++;
+					if (FlxG.save.data.accuracyMod == 0)
+						totalNotesHit += 0.25;
 				case 'good':
 					daRating = 'good';
 					score = 200;
@@ -2202,9 +2207,13 @@ class PlayState extends MusicBeatState
 					goods++;
 					if (health < 2)
 						health += 0.04;
+					if (FlxG.save.data.accuracyMod == 0)
+						totalNotesHit += 0.50;
 				case 'sick':
 					if (health < 2)
 						health += 0.1;
+					if (FlxG.save.data.accuracyMod == 0)
+						totalNotesHit += 1;
 					sicks++;
 			}
 
@@ -2817,7 +2826,8 @@ class PlayState extends MusicBeatState
 			var noteDiff:Float = Math.abs(daNote.strumTime - Conductor.songPosition);
 			var wife:Float = EtternaFunctions.wife3(noteDiff, FlxG.save.data.etternaMode ? 1 : 1.7);
 
-			totalNotesHit += wife;
+			if (FlxG.save.data.accuracyMod == 1)
+				totalNotesHit += wife;
 
 			songScore -= 10;
 
