@@ -1,5 +1,6 @@
 package options;
 
+import flixel.system.FlxAssets.VirtualInputData;
 import flixel.ui.FlxButton;
 import lime.utils.Int16Array;
 import lime.utils.Assets;
@@ -13,10 +14,16 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.input.keyboard.FlxKey;
 import flixel.system.FlxSound;
 import flixel.util.FlxColor;
-import flixel.ui.FlxVirtualPad;
+import ui.FlxVirtualPad;
 import flixel.util.FlxSave;
 import flixel.math.FlxPoint;
+import haxe.Json;
 import ui.Hitbox;
+#if lime
+import lime.system.Clipboard;
+#end
+
+using StringTools;
 
 class CustomControlsState extends MusicBeatSubstate
 {
@@ -25,8 +32,9 @@ class CustomControlsState extends MusicBeatSubstate
 	var _hb:Hitbox;
 
 	var _saveconrtol:FlxSave;
-
 	var exitbutton:FlxUIButton;
+	var exportbutton:FlxUIButton;
+	var importbutton:FlxUIButton;
 
 	var up_text:FlxText;
 	var down_text:FlxText;
@@ -63,16 +71,6 @@ class CustomControlsState extends MusicBeatSubstate
 		bg.updateHitbox();
 		bg.screenCenter();
 		bg.antialiasing = true;
-
-		// buttons
-		var savebutton = new FlxUIButton(FlxG.width - 150,25,"save",save);
-		savebutton.resize(100,50);
-		savebutton.setLabelFormat("VCR OSD Mono",24,FlxColor.BLACK,"center");
-
-		exitbutton = new FlxUIButton(FlxG.width - 650,25,"exit");
-		exitbutton.resize(125,50);
-		exitbutton.setLabelFormat("VCR OSD Mono",24,FlxColor.BLACK,"center");
-
 
 		// load curSelected
 		if (_saveconrtol.data.buttonsmode == null){
@@ -118,12 +116,35 @@ class CustomControlsState extends MusicBeatSubstate
 		_hb = new Hitbox();
 		_hb.visible = false;
 
+		// buttons
+
+		exitbutton = new FlxUIButton(FlxG.width - 650,25,"exit");
+		exitbutton.resize(125,50);
+		exitbutton.setLabelFormat("VCR OSD Mono",24,FlxColor.BLACK,"center");
+
+		var savebutton = new FlxUIButton((exitbutton.x + exitbutton.width + 25),25,"exit and save",() -> {
+			save();
+			FlxG.switchState(new options.OptionsMenu());
+		});
+		savebutton.resize(250,50);
+		savebutton.setLabelFormat("VCR OSD Mono",24,FlxColor.BLACK,"center");
+
+		exportbutton = new FlxUIButton(FlxG.width - 150, 25, "export", () -> { savetoclipboard(_pad); } );
+		exportbutton.resize(125,50);
+		exportbutton.setLabelFormat("VCR OSD Mono", 24, FlxColor.BLACK,"center");
+
+		importbutton = new FlxUIButton(exportbutton.x, 100, "import", () -> { loadfromclipboard(_pad); });
+		importbutton.resize(125,50);
+		importbutton.setLabelFormat("VCR OSD Mono", 24, FlxColor.BLACK,"center");
+
 		// add bg
 		add(bg);
 
 		// add buttons
 		add(exitbutton);
 		add(savebutton);
+		add(exportbutton);
+		add(importbutton);
 
 		// add virtualpad
 		this.add(_pad);
@@ -378,10 +399,62 @@ class CustomControlsState extends MusicBeatSubstate
 	
 	}
 
-	override function destroy()
-	{
-
-		super.destroy();
+	function resizebuttons(vpad:FlxVirtualPad, ?int:Int = 200) {
+		for (button in vpad)
+		{
+				button.setGraphicSize(260);
+				button.updateHitbox();
+		}
 	}
 
+	function savetoclipboard(pad:FlxVirtualPad) {
+		trace("saved");
+		
+		var json = {
+			buttonsarray : []
+		};
+
+		var tempCount:Int = 0;
+		var buttonsarray = new Array();
+		
+		for (buttons in pad)
+		{
+			buttonsarray[tempCount] = FlxPoint.get(buttons.x, buttons.y);
+
+			tempCount++;
+		}
+
+		json.buttonsarray = buttonsarray;
+
+		trace(json);
+
+		var data:String = Json.stringify(json);
+
+		openfl.system.System.setClipboard(data.trim());
+	}
+
+	function loadfromclipboard(pad:FlxVirtualPad):Void{
+		//load pad
+
+		var cbtext:String = Clipboard.text;
+
+		if (!cbtext.endsWith("}")) return;
+
+		var json = Json.parse(cbtext);
+
+		var tempCount:Int = 0;
+
+		for(buttons in pad)
+		{
+			buttons.x = json.buttonsarray[tempCount].x;
+			buttons.y = json.buttonsarray[tempCount].y;
+			tempCount++;
+		}	
+		setbuttontexts();
+	}
+
+	override function destroy()
+	{
+		super.destroy();
+	}
 }
