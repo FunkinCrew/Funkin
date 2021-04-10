@@ -36,7 +36,7 @@ class MainMenuState extends MusicBeatState
 	var newGaming2:FlxText;
 	var newInput:Bool = true;
 
-	public static var nightly:String = "-Nightly2";
+	public static var nightly:String = "";
 
 	public static var kadeEngineVer:String = "1.4.1" + nightly;
 	public static var gameVer:String = "0.2.7.1";
@@ -60,7 +60,7 @@ class MainMenuState extends MusicBeatState
 
 		var bg:FlxSprite = new FlxSprite(-80).loadGraphic(Paths.image('menuBG'));
 		bg.scrollFactor.x = 0;
-		bg.scrollFactor.y = 0.18;
+		bg.scrollFactor.y = 0.15;
 		bg.setGraphicSize(Std.int(bg.width * 1.1));
 		bg.updateHitbox();
 		bg.screenCenter();

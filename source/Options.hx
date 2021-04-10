@@ -396,6 +396,27 @@ class ReplayOption extends Option
 	}
 }
 
+class AccuracyDOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+	
+	public override function press():Bool
+	{
+		FlxG.save.data.accuracyMod = FlxG.save.data.accuracyMod == 1 ? 0 : 1;
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Accuracy Mode: " + (FlxG.save.data.accuracyMod == 0 ? "Accurate" : "Complex");
+	}
+}
+
 class CustomizeGameplay extends Option
 {
 	public function new(desc:String)
