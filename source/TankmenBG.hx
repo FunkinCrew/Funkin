@@ -31,6 +31,11 @@ class TankmenBG extends FlxSprite
 		goingRight = isGoingRight;
 		endingOffset = FlxG.random.float(50, 200);
 
+		updateHitbox();
+
+		setGraphicSize(Std.int(width * 0.8));
+		updateHitbox();
+
 		tankSpeed = FlxG.random.float(0.6, 1);
 
 		if (goingRight)

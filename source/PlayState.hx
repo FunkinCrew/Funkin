@@ -543,13 +543,13 @@ class PlayState extends MusicBeatState
 				tankWatchtower = new BGSprite('tankWatchtower', 100, 50, 0.5, 0.5, ['watchtower gradient color']);
 				add(tankWatchtower);
 
+				tankmanRun = new FlxTypedGroup<TankmenBG>();
+				add(tankmanRun);
+
 				var tankGround:BGSprite = new BGSprite('tankGround', -420, -150);
 				tankGround.setGraphicSize(Std.int(tankGround.width * 1.15));
 				tankGround.updateHitbox();
 				add(tankGround);
-
-				tankmanRun = new FlxTypedGroup<TankmenBG>();
-				add(tankmanRun);
 
 				// smokeLeft.screenCenter();
 
@@ -609,6 +609,8 @@ class PlayState extends MusicBeatState
 				gfVersion = 'gf-pixel';
 			case 'schoolEvil':
 				gfVersion = 'gf-pixel';
+			case 'tank':
+				gfVersion = 'gf-tankmen';
 		}
 
 		if (SONG.song.toLowerCase() == 'stress')
@@ -625,9 +627,9 @@ class PlayState extends MusicBeatState
 
 				for (i in 0...TankmenBG.animationNotes.length)
 				{
-					if (FlxG.random.bool(50))
+					if (FlxG.random.bool(16))
 					{
-						var tankman:TankmenBG = new TankmenBG(500, 200 + FlxG.random.int(0, 150), TankmenBG.animationNotes[i][1] < 2);
+						var tankman:TankmenBG = new TankmenBG(500, 200 + FlxG.random.int(50, 100), TankmenBG.animationNotes[i][1] < 2);
 						tankman.strumTime = TankmenBG.animationNotes[i][0];
 						tankmanRun.add(tankman);
 					}
@@ -721,17 +723,17 @@ class PlayState extends MusicBeatState
 				gf.x += 180;
 				gf.y += 300;
 			case "tank":
-				gf.y += 10;
-				gf.x -= 30;
+				gf.y -= 65;
+				gf.x -= 110;
 				boyfriend.x += 40;
 				boyfriend.y += 0;
 				dad.y += 60;
 				dad.x -= 80;
 
-				if (gfVersion != 'pico-speaker')
+				if (gfVersion == 'gf-tankmen')
 				{
-					gf.x -= 80;
-					gf.y -= 75;
+					gf.x += 80;
+					// gf.y -= 75;
 				}
 		}
 
@@ -903,8 +905,8 @@ class PlayState extends MusicBeatState
 			switch (curSong.toLowerCase())
 			{
 				// REMOVE THIS LATER
-				case 'stress':
-					stressIntro();
+				// case 'stress':
+				// stressIntro();
 
 				default:
 					startCountdown();
@@ -2310,7 +2312,9 @@ class PlayState extends MusicBeatState
 			noteSplash.cameras = [camHUD];
 		}
 
-		songScore += score;
+		// Only add the score if you're not on practice mode
+		if (!practiceMode)
+			songScore += score;
 
 		/* if (combo > 60)
 				daRating = 'sick';
@@ -2619,7 +2623,8 @@ class PlayState extends MusicBeatState
 			}
 			combo = 0;
 
-			songScore -= 10;
+			if (!practiceMode)
+				songScore -= 10;
 
 			FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
 			// FlxG.sound.play(Paths.sound('missnote1'), 1, false);

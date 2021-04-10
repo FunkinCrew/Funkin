@@ -157,6 +157,7 @@ class TitleState extends MusicBeatState
 
 		video.width = video.videoWidth;
 		video.height = video.videoHeight;
+		// video.
 	}
 
 	private function netStream_onAsyncError(event:AsyncErrorEvent):Void
@@ -179,7 +180,10 @@ class TitleState extends MusicBeatState
 
 	private function overlay_onMouseDown(event:MouseEvent):Void
 	{
+		netStream.soundTransform.volume = 0.2;
+		netStream.soundTransform.pan = -1;
 		netStream.play(Paths.file('music/kickstarterTrailer.mp4'));
+
 		FlxG.stage.removeChild(overlay);
 	}
 
@@ -431,6 +435,7 @@ class TitleState extends MusicBeatState
 			FlxG.stage.removeChild(video);
 
 			startIntro();
+			skipIntro();
 		}
 		#end
 
