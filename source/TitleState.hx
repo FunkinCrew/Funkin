@@ -425,7 +425,7 @@ class TitleState extends MusicBeatState
 		}
 
 		#if web
-		if (!initialized && FlxG.keys.justPressed.ENTER)
+		if (!initialized && controls.ACCEPT)
 		{
 			netStream.dispose();
 			FlxG.stage.removeChild(video);
