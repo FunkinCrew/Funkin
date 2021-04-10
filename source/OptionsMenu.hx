@@ -153,7 +153,7 @@ class OptionsMenu extends MusicBeatState
 					else if (controls.LEFT_P)
 						FlxG.save.data.offset -= 0.1;
 					
-					versionShit.text = "Offset (Left, Right, Shift to go faster): " + truncateFloat(FlxG.save.data.offset,2) + " - Description - " + currentDescription;
+					versionShit.text = "Offset (Left, Right): " + truncateFloat(FlxG.save.data.offset,2) + " - Description - " + currentDescription;
 				}
 			}
 			else
@@ -164,9 +164,12 @@ class OptionsMenu extends MusicBeatState
 				if (FlxG.keys.pressed.LEFT)
 					FlxG.save.data.offset-= 0.01;
 				
-				versionShit.text = "Offset (Left, Right, Shift to go faster): " + truncateFloat(FlxG.save.data.offset,2) + " - Description - " + currentDescription;
+				versionShit.text = "Offset (Left, Right): " + truncateFloat(FlxG.save.data.offset,2) + " - Description - " + currentDescription;
 			}
 		
+
+			if (controls.RESET)
+					FlxG.save.data.offset = 0;
 
 			if (controls.ACCEPT)
 			{
