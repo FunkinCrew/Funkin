@@ -1023,6 +1023,17 @@ class PlayState extends MusicBeatState
 		});
 	}
 
+	/**
+	 * [
+	 * 	[0, function(){blah;}],
+	 * 	[4.6, function(){blah;}],
+	 * 	[25.1, function(){blah;}],
+	 * 	[30.7, function(){blah;}]
+	 * ]
+	 * SOMETHING LIKE THIS
+	 */
+	// var cutsceneFunctions:Array<Dynamic> = [];
+
 	function stressIntro()
 	{
 		// for story mode shit
@@ -1049,11 +1060,12 @@ class PlayState extends MusicBeatState
 		gfTankmen.antialiasing = true;
 		gfCutsceneLayer.add(gfTankmen);
 
-		var tankCutscene:FlxSprite = new FlxSprite(-70, 320);
+		var tankCutscene:TankCutscene = new TankCutscene(-70, 320);
 		tankCutscene.frames = Paths.getSparrowAtlas('cutsceneStuff/tankTalkSong3-pt1');
 		tankCutscene.animation.addByPrefix('tankyguy', 'TANK TALK 3 P1 UNCUT', 24, false);
 		// tankCutscene.animation.addByPrefix('weed', 'sexAmbig', 24, false);
 		tankCutscene.animation.play('tankyguy');
+
 		tankCutscene.antialiasing = true;
 		bfTankCutsceneLayer.add(tankCutscene); // add();
 
@@ -1142,7 +1154,10 @@ class PlayState extends MusicBeatState
 			});
 		}
 
-		cutsceneSound.play();
+		// new FlxTimer().start(0.01, function(tmr) cutsceneSound.play()); // cutsceneSound.play();
+		// cutsceneSound.play();
+		tankCutscene.startSyncAudio = cutsceneSound;
+		// tankCutscene.animation.curAnim.curFrame
 
 		FlxG.camera.zoom = defaultCamZoom * 1.15;
 
