@@ -28,14 +28,17 @@ class TankmenBG extends FlxSprite
 		animation.play('run');
 		animation.curAnim.curFrame = FlxG.random.int(0, animation.curAnim.numFrames - 1);
 
-		goingRight = isGoingRight;
-		endingOffset = FlxG.random.float(50, 200);
-
 		updateHitbox();
 
 		setGraphicSize(Std.int(width * 0.8));
 		updateHitbox();
+	}
 
+	public function resetShit(x:Float, y:Float, isGoingRight:Bool)
+	{
+		setPosition(x, y);
+		goingRight = isGoingRight;
+		endingOffset = FlxG.random.float(50, 200);
 		tankSpeed = FlxG.random.float(0.6, 1);
 
 		if (goingRight)
