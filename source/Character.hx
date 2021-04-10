@@ -457,24 +457,30 @@ class Character extends FlxSprite
 
 				if (isPlayer)
 				{
-					quickAnimAdd('singLEFT', 'Tankman Note Left0');
-					quickAnimAdd('singRIGHT', 'Tankman Right Note0');
+					quickAnimAdd('singLEFT', 'Tankman Note Left ');
+					quickAnimAdd('singRIGHT', 'Tankman Right Note ');
 					quickAnimAdd('singLEFTmiss', 'Tankman Note Left MISS');
 					quickAnimAdd('singRIGHTmiss', 'Tankman Right Note MISS');
 				}
 				else
 				{
 					// Need to be flipped! REDO THIS LATER
-					quickAnimAdd('singLEFT', 'Tankman Right Note0');
-					quickAnimAdd('singRIGHT', 'Tankman Note Left0');
+					quickAnimAdd('singLEFT', 'Tankman Right Note ');
+					quickAnimAdd('singRIGHT', 'Tankman Note Left ');
 					quickAnimAdd('singLEFTmiss', 'Tankman Right Note MISS');
 					quickAnimAdd('singRIGHTmiss', 'Tankman Note Left MISS');
 				}
 
-				quickAnimAdd('singUP', 'Tankman UP note0');
-				quickAnimAdd('singDOWN', 'Tankman DOWN note0');
+				quickAnimAdd('singUP', 'Tankman UP note ');
+				quickAnimAdd('singDOWN', 'Tankman DOWN note ');
 				quickAnimAdd('singUPmiss', 'Tankman UP note MISS');
 				quickAnimAdd('singDOWNmiss', 'Tankman DOWN note MISS');
+
+				// PRETTY GOOD tankman
+				// TANKMAN UGH instanc
+
+				quickAnimAdd('singDOWN-alt', 'PRETTY GOOD');
+				quickAnimAdd('singUP-alt', 'TANKMAN UGH');
 
 				loadOffsetFile(curCharacter);
 
@@ -636,6 +642,10 @@ class Character extends FlxSprite
 				case 'pico-speaker':
 				// lol weed
 				// playAnim('shoot' + FlxG.random.int(1, 4), true);
+
+				case 'tankman':
+					if (!animation.curAnim.name.endsWith('DOWN-alt'))
+						playAnim('idle');
 
 				case 'spooky':
 					danced = !danced;
