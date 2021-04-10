@@ -1,3 +1,6 @@
+=== 0.0.4.3 ===
++ Added an option within options.json to enable or disable unknown antagonist icons
+
 === 0.0.4.2 ===
 + Added an options.json within the data folder to edit options
 - ACTUALLY fixed a grammar error in the Tutorial lyric chart

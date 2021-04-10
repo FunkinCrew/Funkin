@@ -8,5 +8,10 @@
         "name": "lyrics",
         "comment": "Enables / Disables on-screen lyrics for applicable songs",
         "value": true
+    },
+    {
+        "name": "unknownIcons",
+        "comment": "Enables / Disables the unknown antagonist icons",
+        "value": true
     }
 ]

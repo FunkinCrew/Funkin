@@ -11,7 +11,7 @@ class Options
 class STOptions
 {
 	public static var st_optionsState:Array<STOptionFileSection>;
-	public static var st_version:String = "0.0.4.2";
+	public static var st_version:String = "0.0.4.3";
 
 	// small things
 	public static var st_disableFnfVersionCheck:Bool = true;		// Small Things: Disable FNF version check
@@ -34,7 +34,7 @@ class STOptions
 	{
 		st_optionsState = cast Json.parse(Assets.getText(Paths.json('options')));
 
-		trace(st_optionsState);
+		// trace(st_optionsState);
 
 		for (i in st_optionsState)
 		{
@@ -43,6 +43,9 @@ class STOptions
 
 			if (i.name == "lyrics")
 				STOptions.st_lyrics = i.value;
+
+			if (i.name == "unknownIcons")
+				STOptions.st_unknownIcons = i.value;
 		}
 	}
 }
