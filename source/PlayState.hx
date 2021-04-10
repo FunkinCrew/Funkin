@@ -133,6 +133,8 @@ class PlayState extends MusicBeatState
 	var songScore:Int = 0;
 	var scoreTxt:FlxText;
 
+	var grpNoteSplashes:FlxTypedGroup<NoteSplash>;
+
 	public static var campaignScore:Int = 0;
 
 	var defaultCamZoom:Float = 1.05;
@@ -170,8 +172,11 @@ class PlayState extends MusicBeatState
 		FlxG.cameras.add(camHUD, false);
 
 		// fake notesplash cache type deal so that it loads in the graphic?
+
+		grpNoteSplashes = new FlxTypedGroup<NoteSplash>();
+
 		var noteSplash:NoteSplash = new NoteSplash(100, 100, 0);
-		add(noteSplash);
+		grpNoteSplashes.add(noteSplash);
 		noteSplash.alpha = 0.1;
 
 		persistentUpdate = true;
@@ -629,8 +634,10 @@ class PlayState extends MusicBeatState
 				{
 					if (FlxG.random.bool(16))
 					{
-						var tankman:TankmenBG = new TankmenBG(500, 200 + FlxG.random.int(50, 100), TankmenBG.animationNotes[i][1] < 2);
+						var tankman:TankmenBG = tankmanRun.recycle(TankmenBG);
+						// new TankmenBG(500, 200 + FlxG.random.int(50, 100), TankmenBG.animationNotes[i][1] < 2);
 						tankman.strumTime = TankmenBG.animationNotes[i][0];
+						tankman.resetShit(500, 200 + FlxG.random.int(50, 100), TankmenBG.animationNotes[i][1] < 2);
 						tankmanRun.add(tankman);
 					}
 				}
@@ -723,17 +730,17 @@ class PlayState extends MusicBeatState
 				gf.x += 180;
 				gf.y += 300;
 			case "tank":
-				gf.y -= 65;
-				gf.x -= 110;
+				gf.y += 10;
+				gf.x -= 30;
 				boyfriend.x += 40;
 				boyfriend.y += 0;
 				dad.y += 60;
 				dad.x -= 80;
 
-				if (gfVersion == 'gf-tankmen')
+				if (gfVersion != 'pico-speaker')
 				{
-					gf.x += 80;
-					// gf.y -= 75;
+					gf.x -= 170;
+					gf.y -= 75;
 				}
 		}
 
@@ -773,6 +780,8 @@ class PlayState extends MusicBeatState
 
 		strumLineNotes = new FlxTypedGroup<FlxSprite>();
 		add(strumLineNotes);
+
+		add(grpNoteSplashes);
 
 		playerStrums = new FlxTypedGroup<FlxSprite>();
 
@@ -831,6 +840,7 @@ class PlayState extends MusicBeatState
 		iconP2.y = healthBar.y - (iconP2.height / 2);
 		add(iconP2);
 
+		grpNoteSplashes.cameras = [camHUD];
 		strumLineNotes.cameras = [camHUD];
 		notes.cameras = [camHUD];
 		healthBar.cameras = [camHUD];
@@ -905,8 +915,8 @@ class PlayState extends MusicBeatState
 			switch (curSong.toLowerCase())
 			{
 				// REMOVE THIS LATER
-				// case 'stress':
-				// stressIntro();
+				case 'stress':
+					stressIntro();
 
 				default:
 					startCountdown();
@@ -922,7 +932,7 @@ class PlayState extends MusicBeatState
 		FlxG.sound.music.fadeIn(5, 0, 0.5);
 
 		dad.visible = false;
-		var tankCutscene:FlxSprite = new FlxSprite(-20, 320);
+		var tankCutscene:TankCutscene = new TankCutscene(-20, 320);
 		tankCutscene.frames = Paths.getSparrowAtlas('cutsceneStuff/tankTalkSong1');
 		tankCutscene.animation.addByPrefix('wellWell', 'TANK TALK 1 P1', 24, false);
 		tankCutscene.animation.addByPrefix('killYou', 'TANK TALK 1 P2', 24, false);
@@ -935,7 +945,7 @@ class PlayState extends MusicBeatState
 		FlxG.camera.zoom *= 1.2;
 		camFollow.y += 100;
 
-		FlxG.sound.play(Paths.sound('wellWellWell'));
+		tankCutscene.startSyncAudio = FlxG.sound.load(Paths.sound('wellWellWell'));
 
 		new FlxTimer().start(3, function(tmr:FlxTimer)
 		{
@@ -992,14 +1002,14 @@ class PlayState extends MusicBeatState
 		FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom * 1.3}, 4, {ease: FlxEase.quadInOut});
 
 		dad.visible = false;
-		var tankCutscene:FlxSprite = new FlxSprite(20, 320);
+		var tankCutscene:TankCutscene = new TankCutscene(20, 320);
 		tankCutscene.frames = Paths.getSparrowAtlas('cutsceneStuff/tankTalkSong2');
 		tankCutscene.animation.addByPrefix('tankyguy', 'TANK TALK 2', 24, false);
 		tankCutscene.animation.play('tankyguy');
 		tankCutscene.antialiasing = true;
 		gfCutsceneLayer.add(tankCutscene); // add();
 
-		FlxG.sound.play(Paths.sound('tankSong2'));
+		tankCutscene.startSyncAudio = FlxG.sound.load(Paths.sound('tankSong2'));
 
 		new FlxTimer().start(4.1, function(ugly:FlxTimer)
 		{
@@ -1041,13 +1051,18 @@ class PlayState extends MusicBeatState
 		// for story mode shit
 		camFollow.setPosition(camPos.x, camPos.y);
 
+		var dummyLoaderShit:FlxGroup = new FlxGroup();
+
+		add(dummyLoaderShit);
+
 		for (i in 0...7)
 		{
 			var dummyLoader:FlxSprite = new FlxSprite();
 			dummyLoader.loadGraphic(Paths.image('cutsceneStuff/gfHoldup-' + i));
-			add(dummyLoader);
+			dummyLoaderShit.add(dummyLoader);
 			dummyLoader.alpha = 0.01;
 			dummyLoader.y = FlxG.height - 20;
+			// dummyLoader.drawFrame(true);
 		}
 
 		dad.visible = false;
@@ -1244,6 +1259,10 @@ class PlayState extends MusicBeatState
 				dad.visible = true;
 				bfTankCutsceneLayer.remove(alsoTankCutscene);
 				startCountdown();
+				remove(dummyLoaderShit);
+				dummyLoaderShit.destroy();
+				dummyLoaderShit = null;
+
 				gfCutsceneLayer.remove(cutsceneShit);
 			});
 		});
@@ -1252,7 +1271,7 @@ class PlayState extends MusicBeatState
 	function initDiscord():Void
 	{
 		#if discord_rpc
-		storyDifficultyText = CoolUtil.difficultyString();
+		storyDifficultyText = difficultyString();
 		iconRPC = SONG.player2;
 
 		// To avoid having duplicate images in Discord assets
@@ -1490,7 +1509,7 @@ class PlayState extends MusicBeatState
 		lastReportedPlayheadPosition = 0;
 
 		if (!paused)
-			FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 1, false);
+			FlxG.sound.playMusic(Paths.inst(SONG.song), 1, false);
 		FlxG.sound.music.onComplete = endSong;
 		vocals.play();
 
@@ -1515,7 +1534,7 @@ class PlayState extends MusicBeatState
 		curSong = songData.song;
 
 		if (SONG.needsVoices)
-			vocals = new FlxSound().loadEmbedded(Paths.voices(PlayState.SONG.song));
+			vocals = new FlxSound().loadEmbedded(Paths.voices(SONG.song));
 		else
 			vocals = new FlxSound();
 
@@ -1960,9 +1979,9 @@ class PlayState extends MusicBeatState
 			FlxG.switchState(new AnimationDebug(SONG.player2));
 		#end
 
-		if (generatedMusic && PlayState.SONG.notes[Std.int(curStep / 16)] != null)
+		if (generatedMusic && SONG.notes[Std.int(curStep / 16)] != null)
 		{
-			cameraRightSide = PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection;
+			cameraRightSide = SONG.notes[Std.int(curStep / 16)].mustHitSection;
 
 			cameraMovement();
 		}
@@ -2034,6 +2053,8 @@ class PlayState extends MusicBeatState
 
 				vocals.stop();
 				FlxG.sound.music.stop();
+
+				// unloadAssets();
 
 				deathCounter += 1;
 
@@ -2149,7 +2170,7 @@ class PlayState extends MusicBeatState
 				}
 
 				// WIP interpolation shit? Need to fix the pause issue
-				// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
+				// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * SONG.speed));
 
 				var noteMiss:Bool = daNote.y < -daNote.height;
 
@@ -2233,7 +2254,7 @@ class PlayState extends MusicBeatState
 					difficulty = '-hard';
 
 				trace('LOADING NEXT SONG');
-				trace(PlayState.storyPlaylist[0].toLowerCase() + difficulty);
+				trace(storyPlaylist[0].toLowerCase() + difficulty);
 
 				if (SONG.song.toLowerCase() == 'eggnog')
 				{
@@ -2250,7 +2271,7 @@ class PlayState extends MusicBeatState
 				FlxTransitionableState.skipNextTransOut = true;
 				prevCamFollow = camFollow;
 
-				PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + difficulty, PlayState.storyPlaylist[0]);
+				SONG = Song.loadFromJson(storyPlaylist[0].toLowerCase() + difficulty, storyPlaylist[0]);
 				FlxG.sound.music.stop();
 
 				LoadingState.loadAndSwitchState(new PlayState());
@@ -2259,6 +2280,7 @@ class PlayState extends MusicBeatState
 		else
 		{
 			trace('WENT BACK TO FREEPLAY??');
+			// unloadAssets();
 			FlxG.switchState(new FreeplayState());
 		}
 	}
@@ -2306,10 +2328,10 @@ class PlayState extends MusicBeatState
 
 		if (isSick)
 		{
-			var noteSplash:NoteSplash = new NoteSplash(daNote.x, daNote.y, daNote.noteData);
-			add(noteSplash);
-
-			noteSplash.cameras = [camHUD];
+			var noteSplash:NoteSplash = grpNoteSplashes.recycle(NoteSplash);
+			noteSplash.setupNoteSplash(daNote.x, daNote.y, daNote.noteData);
+			// new NoteSplash(daNote.x, daNote.y, daNote.noteData);
+			grpNoteSplashes.add(noteSplash);
 		}
 
 		// Only add the score if you're not on practice mode
