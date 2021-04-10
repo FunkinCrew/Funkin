@@ -406,8 +406,9 @@ class AccuracyDOption extends Option
 	
 	public override function press():Bool
 	{
-		FlxG.save.data.accuracyMod = cast (!FlxG.save.data.accuracyMod, Int);
-		return false;
+		FlxG.save.data.accuracyMod = FlxG.save.data.accuracyMod == 1 ? 0 : 1;
+		display = updateDisplay();
+		return true;
 	}
 
 	private override function updateDisplay():String
