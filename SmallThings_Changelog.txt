@@ -1,5 +1,6 @@
 === 0.0.4.3 ===
 + Added an option within options.json to enable or disable unknown antagonist icons
+- Renamed "Philly" to "Philly Nice", as that is the song's name on the OST
 
 === 0.0.4.2 ===
 + Added an options.json within the data folder to edit options

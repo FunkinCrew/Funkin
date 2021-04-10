@@ -287,7 +287,7 @@ class PlayState extends MusicBeatState
 
 		                  isHalloween = true;
 		          }
-		          case 'pico' | 'blammed' | 'philly': 
+		          case 'pico' | 'blammed' | 'philly-nice': 
                         {
 		                  curStage = 'philly';
 
