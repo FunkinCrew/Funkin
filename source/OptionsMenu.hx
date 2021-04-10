@@ -143,28 +143,37 @@ class OptionsMenu extends MusicBeatState
 				}
 				else
 				{
+
 					if (FlxG.keys.pressed.SHIFT)
-						if (FlxG.keys.pressed.RIGHT)
-							FlxG.save.data.offset += 1;
-						else if (FlxG.keys.pressed.LEFT)
-							FlxG.save.data.offset -= 1;
-					else if (controls.RIGHT_P)
+					{
+						if (FlxG.keys.justPressed.RIGHT)
 							FlxG.save.data.offset += 0.1;
-					else if (controls.LEFT_P)
+						else if (FlxG.keys.justPressed.LEFT)
+							FlxG.save.data.offset -= 0.1;
+					}
+					else if (FlxG.keys.pressed.RIGHT)
+						FlxG.save.data.offset += 0.1;
+					else if (FlxG.keys.pressed.LEFT)
 						FlxG.save.data.offset -= 0.1;
 					
-					versionShit.text = "Offset (Left, Right): " + truncateFloat(FlxG.save.data.offset,2) + " - Description - " + currentDescription;
+					versionShit.text = "Offset (Left, Right, Shift for slow): " + truncateFloat(FlxG.save.data.offset,2) + " - Description - " + currentDescription;
 				}
 			}
 			else
 			{
-				if (FlxG.keys.pressed.RIGHT)
-					FlxG.save.data.offset+= 0.01;
-
-				if (FlxG.keys.pressed.LEFT)
-					FlxG.save.data.offset-= 0.01;
+				if (FlxG.keys.pressed.SHIFT)
+					{
+						if (FlxG.keys.justPressed.RIGHT)
+							FlxG.save.data.offset += 0.1;
+						else if (FlxG.keys.justPressed.LEFT)
+							FlxG.save.data.offset -= 0.1;
+					}
+					else if (FlxG.keys.pressed.RIGHT)
+						FlxG.save.data.offset += 0.1;
+					else if (FlxG.keys.pressed.LEFT)
+						FlxG.save.data.offset -= 0.1;
 				
-				versionShit.text = "Offset (Left, Right): " + truncateFloat(FlxG.save.data.offset,2) + " - Description - " + currentDescription;
+				versionShit.text = "Offset (Left, Right, Shift for slow): " + truncateFloat(FlxG.save.data.offset,2) + " - Description - " + currentDescription;
 			}
 		
 
@@ -222,7 +231,7 @@ class OptionsMenu extends MusicBeatState
 			currentDescription = currentSelectedCat.getOptions()[curSelected].getDescription();
 		else
 			currentDescription = "Please select a catagory";
-		versionShit.text = "Offset (Left, Right): " + FlxG.save.data.offset + " - Description - " + currentDescription;
+		versionShit.text = "Offset (Left, Right, Shift for slow): " + truncateFloat(FlxG.save.data.offset,2) + " - Description - " + currentDescription;
 
 		// selector.y = (70 * curSelected) + 30;
 
