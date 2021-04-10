@@ -48,12 +48,6 @@ class STOptions
 				STOptions.st_unknownIcons = i.value;
 		}
 	}
-
-	public static function saveSTOptionsToFile()
-	{
-		// TODO
-		trace("TODO: Would've saved options here");
-	}
 }
 
 typedef STOptionFileSection = {
