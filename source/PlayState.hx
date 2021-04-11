@@ -928,6 +928,8 @@ class PlayState extends MusicBeatState
 
 	function ughIntro()
 	{
+		inCutscene = true;
+
 		FlxG.sound.playMusic(Paths.music('DISTORTO'), 0);
 		FlxG.sound.music.fadeIn(5, 0, 0.5);
 
@@ -957,7 +959,9 @@ class PlayState extends MusicBeatState
 			{
 				boyfriend.playAnim('singUP');
 				// play sound
-				FlxG.sound.play(Paths.sound('bfBeep'));
+				FlxG.sound.play(Paths.sound('bfBeep'), function() {
+					boyfriend.playAnim('idle');
+				});
 			});
 
 			new FlxTimer().start(3, function(swaggy:FlxTimer)
@@ -990,6 +994,8 @@ class PlayState extends MusicBeatState
 
 	function gunsIntro()
 	{
+		inCutscene = true;
+
 		camFollow.setPosition(camPos.x, camPos.y);
 
 		camHUD.visible = false;
@@ -1048,6 +1054,8 @@ class PlayState extends MusicBeatState
 
 	function stressIntro()
 	{
+		inCutscene = true;
+
 		// for story mode shit
 		camFollow.setPosition(camPos.x, camPos.y);
 
@@ -1382,8 +1390,6 @@ class PlayState extends MusicBeatState
 
 	function startCountdown():Void
 	{
-		gf.visible = true;
-
 		inCutscene = false;
 
 		generateStaticArrows(0);
