@@ -449,8 +449,9 @@ class WatermarkOption extends Option
 	public override function press():Bool
 	{
 		Main.watermarks = !Main.watermarks;
+		FlxG.save.data.watermark = Main.watermarks;
 		display = updateDisplay();
-		return false;
+		return true;
 	}
 
 	private override function updateDisplay():String
