@@ -1,6 +1,7 @@
 === 0.0.5 ===
 + Added an option within options.json to enable or disable unknown antagonist icons
 + Added a custom intro sequence
++ Added new intro texts
 + Added a week name to the Tutorial week
 + Added a '8' bold character to the internal font (for usage in crediting evilsk8er)
 + Added a '9' bold character to the internal font (for usage in crediting ninjamuffin99)
