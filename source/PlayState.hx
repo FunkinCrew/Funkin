@@ -132,6 +132,8 @@ class PlayState extends MusicBeatState
 	var iconP1txt:FlxText;
 	var iconP2txt:FlxText;
 
+	var levelInfo:FlxText = new FlxText(20, 15, 0, "", 32);
+
 	// small things: do icon check
 	var doIconCheck:Bool = true;
 
@@ -800,6 +802,9 @@ class PlayState extends MusicBeatState
 		lyricSpeakerIcon.scale.y = 0.85;
 		lyricSpeakerIcon.visible = false;
 
+		levelInfo.text = StringTools.replace(PlayState.SONG.song, "-", " ");
+		levelInfo.setFormat(Paths.font("vcr.ttf"), 48, FlxColor.WHITE, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+
 		if (STOptions.st_lyrics == true) {
 			add(lyricTxt);
 			add(lyricSpeakerIcon);
@@ -807,6 +812,13 @@ class PlayState extends MusicBeatState
 			// by default make this off
 			lyricTxt.text = "";
 		}
+
+		if (STOptions.st_levelInfo == true) {
+			add(levelInfo);
+		}
+
+		levelInfo.alpha = 0;
+		levelInfo.x = FlxG.width - (levelInfo.width + 20);
 
 		// small things: debug text
 		conductorPosTxt = new FlxText(10, 10, "", 20);
@@ -862,6 +874,7 @@ class PlayState extends MusicBeatState
 		iconP2txt.cameras = [camHUD];
 		lyricTxt.cameras = [camHUD];
 		lyricSpeakerIcon.cameras = [camHUD];
+		levelInfo.cameras = [camHUD];
 		doof.cameras = [camHUD];
 
 		// if (SONG.song == 'South')
@@ -1090,6 +1103,8 @@ class PlayState extends MusicBeatState
 
 			{
 				case 0:
+					FlxTween.tween(levelInfo, {alpha: 1, y: 20}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.3});
+
 					if (STOptions.st_fixWeek6CountSounds == true) {
 						FlxG.sound.play(Paths.sound('intro3' + altSuffix), 0.6);
 					} else {
@@ -1165,6 +1180,7 @@ class PlayState extends MusicBeatState
 						FlxG.sound.play(Paths.sound('introGo'), 0.6);
 					}
 				case 4:
+					FlxTween.tween(levelInfo, {alpha: 0, y: 20}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.3});
 			}
 
 			swagCounter += 1;
