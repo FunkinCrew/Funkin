@@ -1,5 +1,6 @@
 === 0.0.4.3 ===
 + Added an option within options.json to enable or disable unknown antagonist icons
+- Improved Daddy Dearest's healthy icon
 - Renamed "Philly" to "Philly Nice", as that is the song's name on the OST
 
 === 0.0.4.2 ===
