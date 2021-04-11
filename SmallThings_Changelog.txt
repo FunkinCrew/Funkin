@@ -1,4 +1,4 @@
-=== 0.0.5 ===
+=== 1.0 ===
 + Added an option within options.json to enable or disable unknown antagonist icons
 + Added a custom intro sequence
 + Added new intro texts
