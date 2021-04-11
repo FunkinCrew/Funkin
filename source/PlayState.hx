@@ -1976,7 +1976,12 @@ class PlayState extends MusicBeatState
 
 		#if debug
 		if (FlxG.keys.justPressed.EIGHT)
-			FlxG.switchState(new AnimationDebug(SONG.player2));
+		{
+			if (FlxG.keys.pressed.SHIFT)
+				FlxG.switchState(new AnimationDebug(SONG.player1));
+			else
+				FlxG.switchState(new AnimationDebug(SONG.player2));
+		}
 		#end
 
 		if (generatedMusic && SONG.notes[Std.int(curStep / 16)] != null)
