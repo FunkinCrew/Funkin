@@ -11,7 +11,7 @@ class Options
 class STOptions
 {
 	public static var st_optionsState:Array<STOptionFileSection>;
-	public static var st_version:String = "0.0.4.3";
+	public static var st_version:String = "0.0.5";
 
 	// small things
 	public static var st_disableFnfVersionCheck:Bool = true;		// Small Things: Disable FNF version check
