@@ -19,7 +19,7 @@
 - Fixed a grammar error in the Tutorial lyric chart
 
 === 0.0.4 ===
-+ Added a few more intro tets
++ Added a few more intro texts
 + Added a prototype lyric feature (WIP)
     + Added lyrics to Tutorial
     + Added lyrics to Monster
