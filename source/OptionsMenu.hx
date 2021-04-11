@@ -40,13 +40,16 @@ class OptionsMenu extends MusicBeatState
 			new AccuracyOption("Display accuracy information."),
 			new NPSDisplayOption("Shows your current Notes Per Second.")
 		]),
-		#if desktop
+		
 		new OptionCatagory("Misc", [
-			
+			#if desktop
 			new FPSOption("Toggle the FPS Counter"),
-			new ReplayOption("View replays")
+			new ReplayOption("View replays"),
+			#end
+			new WatermarkOption("Turn off all watermarks from the engine.")
+			
 		])
-		#end
+		
 	];
 
 	private var currentDescription:String = "";
