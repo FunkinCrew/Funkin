@@ -2,7 +2,7 @@
 + Added an option within options.json to enable or disable unknown antagonist icons
 + Added a week name to the Tutorial week
 - Improved Boyfriend.XML's healthy and danger icons
-- Improved Daddy Dearest's healthy icon
+- Improved Daddy Dearest's healthy and danger icons
 - Renamed "Philly" to "Philly Nice", as that is the song's name on the OST
 
 === 0.0.4.2 ===
