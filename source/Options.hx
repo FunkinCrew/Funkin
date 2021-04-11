@@ -14,6 +14,7 @@ class STOptions
 	public static var st_version:String = "0.0.5";
 
 	// small things
+	public static var st_customIntro:Bool = true;					// Small Things: Custom intro sequence
 	public static var st_disableFnfVersionCheck:Bool = true;		// Small Things: Disable FNF version check
 	public static var st_debug:Bool = false;						// Small Things: Small Things debug
 	public static var st_fixMonsterIconFreeplay:Bool = true;		// Small Things: Fix Monster's icon for Monster on Freeplay
