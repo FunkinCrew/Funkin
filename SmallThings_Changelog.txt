@@ -5,6 +5,7 @@
 + Added a week name to the Tutorial week
 + Added a '8' bold character to the internal font (for usage in crediting evilsk8er)
 + Added a '9' bold character to the internal font (for usage in crediting ninjamuffin99)
+- Finalized the in-game lyric feature
 - Improved Boyfriend.XML's healthy and danger icons
 - Improved Daddy Dearest's healthy and danger icons
 - Renamed "Philly" to "Philly Nice", as that is the song's name on the OST
