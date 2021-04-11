@@ -11,7 +11,7 @@ class Options
 class STOptions
 {
 	public static var st_optionsState:Array<STOptionFileSection>;
-	public static var st_version:String = "1.0";
+	public static var st_version:String = "1.0.1";
 
 	// small things
 	public static var st_customIntro:Bool = true;					// Small Things: Custom intro sequence
@@ -21,6 +21,7 @@ class STOptions
 	public static var st_fixScoreLayout:Bool = true;				// Small Things: Fix Score layout
 	public static var st_fixWeek6CountSounds:Bool = true;			// Small Things: Fix Week6 Countdown sounds
 	public static var st_hideOptionsMenu:Bool = true;				// Small Things: Hide options menu
+	public static var st_instMode:Bool = false;						// Small Things: Instrumental mode
 	public static var st_logNg:Bool = true;							// Small Things: Log Newgrounds
 	public static var st_lyrics:Bool = true;						// Small Things: [PROTO] Lyrics
 	public static var st_makeSpacesConsistent:Bool = true;			// Small Things: Make song spaces consistent
@@ -41,6 +42,9 @@ class STOptions
 		{
 			if (i.name == "debug")
 				STOptions.st_debug = i.value;
+
+			if (i.name == "instMode")
+				STOptions.st_instMode = i.value;
 
 			if (i.name == "lyrics")
 				STOptions.st_lyrics = i.value;

@@ -1,3 +1,6 @@
+=== 1.0.1 ===
++ Added an instrumental only mode that can be toggled in the options.json file
+
 === 1.0 ===
 + Added an option within options.json to enable or disable unknown antagonist icons
 + Added a custom intro sequence

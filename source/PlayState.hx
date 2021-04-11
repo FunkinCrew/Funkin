@@ -1766,7 +1766,13 @@ class PlayState extends MusicBeatState
 				}
 
 				if (dad.curCharacter == 'mom')
-					vocals.volume = 1;
+				{
+					if (STOptions.st_instMode == true) {
+						vocals.volume = 0;
+					} else {
+						vocals.volume = 1;
+					}
+				}
 
 				if (SONG.song.toLowerCase() == 'tutorial')
 				{
@@ -1998,6 +2004,9 @@ class PlayState extends MusicBeatState
 					if (SONG.needsVoices)
 						vocals.volume = 1;
 
+					if (STOptions.st_instMode)
+						vocals.volume = 0;
+
 					daNote.kill();
 					notes.remove(daNote, true);
 					daNote.destroy();
@@ -2119,7 +2128,11 @@ class PlayState extends MusicBeatState
 	{
 		var noteDiff:Float = Math.abs(strumtime - Conductor.songPosition);
 		// boyfriend.playAnim('hey');
-		vocals.volume = 1;
+		if (STOptions.st_instMode == true) {
+			vocals.volume = 0;
+		} else {
+			vocals.volume = 1;
+		}
 
 		var placement:String = Std.string(combo);
 
@@ -2567,7 +2580,12 @@ class PlayState extends MusicBeatState
 			});
 
 			note.wasGoodHit = true;
-			vocals.volume = 1;
+
+			if (STOptions.st_instMode == true) {
+				vocals.volume = 0;
+			} else {
+				vocals.volume = 1;
+			}
 
 			if (!note.isSustainNote)
 			{
