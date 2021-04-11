@@ -449,10 +449,12 @@ class TitleState extends MusicBeatState
 				case 5:
 					createCoolText(['Based on a', 'game by']);
 				case 7:
-					addMoreText('ninjamuffin99');
-				case 8:
 					deleteCoolText();
+				case 8:
+					createCoolText(['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er']);
 				case 9:
+					deleteCoolText();
+				case 10:
 					createCoolText([curWacky[0]]);
 				case 11:
 					addMoreText(curWacky[1]);
