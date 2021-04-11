@@ -376,6 +376,11 @@ class TitleState extends MusicBeatState
 		}
 		#end
 
+		if (FlxG.keys.justPressed.FIVE)
+		{
+			FlxG.switchState(new CutsceneAnimTestState());
+		}
+
 		var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
 
 		if (gamepad != null)
