@@ -58,6 +58,7 @@ class CutsceneCharacter extends FlxTypedGroup<FlxSprite>
 		{
 			cutScene.kill();
 			cutScene.destroy();
+			cutScene = null;
 
 			if (daNum + 1 < arrayLMFAOOOO.length)
 				createCutscene(daNum + 1);

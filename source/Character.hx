@@ -73,6 +73,14 @@ class Character extends FlxSprite
 				loadOffsetFile(curCharacter);
 
 				playAnim('danceRight');
+			case 'gf-tankmen':
+				frames = Paths.getSparrowAtlas('characters/gfTankmen');
+				animation.addByIndices('sad', 'GF Crying at Gunpoint', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], "", 24, true);
+				animation.addByIndices('danceLeft', 'GF Dancing at Gunpoint', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
+				animation.addByIndices('danceRight', 'GF Dancing at Gunpoint', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
+
+				loadOffsetFile('gf');
+				playAnim('danceRight');
 
 			case 'bf-holding-gf':
 				frames = Paths.getSparrowAtlas('characters/bfAndGF');
@@ -449,24 +457,30 @@ class Character extends FlxSprite
 
 				if (isPlayer)
 				{
-					quickAnimAdd('singLEFT', 'Tankman Note Left0');
-					quickAnimAdd('singRIGHT', 'Tankman Right Note0');
+					quickAnimAdd('singLEFT', 'Tankman Note Left ');
+					quickAnimAdd('singRIGHT', 'Tankman Right Note ');
 					quickAnimAdd('singLEFTmiss', 'Tankman Note Left MISS');
 					quickAnimAdd('singRIGHTmiss', 'Tankman Right Note MISS');
 				}
 				else
 				{
 					// Need to be flipped! REDO THIS LATER
-					quickAnimAdd('singLEFT', 'Tankman Right Note0');
-					quickAnimAdd('singRIGHT', 'Tankman Note Left0');
+					quickAnimAdd('singLEFT', 'Tankman Right Note ');
+					quickAnimAdd('singRIGHT', 'Tankman Note Left ');
 					quickAnimAdd('singLEFTmiss', 'Tankman Right Note MISS');
 					quickAnimAdd('singRIGHTmiss', 'Tankman Note Left MISS');
 				}
 
-				quickAnimAdd('singUP', 'Tankman UP note0');
-				quickAnimAdd('singDOWN', 'Tankman DOWN note0');
+				quickAnimAdd('singUP', 'Tankman UP note ');
+				quickAnimAdd('singDOWN', 'Tankman DOWN note ');
 				quickAnimAdd('singUPmiss', 'Tankman UP note MISS');
 				quickAnimAdd('singDOWNmiss', 'Tankman DOWN note MISS');
+
+				// PRETTY GOOD tankman
+				// TANKMAN UGH instanc
+
+				quickAnimAdd('singDOWN-alt', 'PRETTY GOOD');
+				quickAnimAdd('singUP-alt', 'TANKMAN UGH');
 
 				loadOffsetFile(curCharacter);
 
@@ -614,7 +628,7 @@ class Character extends FlxSprite
 		{
 			switch (curCharacter)
 			{
-				case 'gf' | 'gf-christmas' | 'gf-car' | 'gf-pixel':
+				case 'gf' | 'gf-christmas' | 'gf-car' | 'gf-pixel' | 'gf-tankmen':
 					if (!animation.curAnim.name.startsWith('hair'))
 					{
 						danced = !danced;
@@ -628,6 +642,10 @@ class Character extends FlxSprite
 				case 'pico-speaker':
 				// lol weed
 				// playAnim('shoot' + FlxG.random.int(1, 4), true);
+
+				case 'tankman':
+					if (!animation.curAnim.name.endsWith('DOWN-alt'))
+						playAnim('idle');
 
 				case 'spooky':
 					danced = !danced;
