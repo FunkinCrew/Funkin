@@ -6,9 +6,9 @@
 + Added a '9' bold character to the internal font (for usage in crediting ninjamuffin99)
 - Improved Boyfriend.XML's healthy and danger icons
 - Improved Daddy Dearest's healthy and danger icons
-- Removed Boyfriend.XML's "HEY" pose on Bopeebo
 - Renamed "Philly" to "Philly Nice", as that is the song's name on the OST
-- Replaced "Bopeebo"'s instrumentalw with the DrugPop version's instrumental
+- Replaced "Bopeebo"'s instrumental with the DrugPop version's instrumental
+    - As a result, removed Boyfriend.XML's "HEY" pose on Bopeebo
 
 === 0.0.4.2 ===
 + Added an options.json within the data folder to edit options
