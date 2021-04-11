@@ -165,7 +165,7 @@ class CustomControlsState extends MusicBeatSubstate
 		add(right_text);
 
 		// change selection
-		changeSelection();	
+		changeSelection();
 	}
 
 	override function update(elapsed:Float)
@@ -436,7 +436,10 @@ class CustomControlsState extends MusicBeatSubstate
 	function loadfromclipboard(pad:FlxVirtualPad):Void{
 		//load pad
 
-		var cbtext:String = Clipboard.text;
+		if (curSelected != 3)
+			changeSelection(0,3);
+
+		var cbtext:String = Clipboard.text; // this not working on android 10 or higher
 
 		if (!cbtext.endsWith("}")) return;
 
