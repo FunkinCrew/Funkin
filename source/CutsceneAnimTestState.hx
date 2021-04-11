@@ -1,5 +1,8 @@
 package;
 
+import animate.FlxAnimate;
+import animateAtlasPlayer.assets.AssetManager;
+import animateAtlasPlayer.core.Animation;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -8,6 +11,7 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxPoint;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
+import openfl.display.BitmapData;
 
 class CutsceneAnimTestState extends FlxState
 {
@@ -38,17 +42,8 @@ class CutsceneAnimTestState extends FlxState
 		debugTxt.color = FlxColor.BLUE;
 		add(debugTxt);
 
-		for (i in 0...animShit.length)
-		{
-			var dummyLoader:FlxSprite = new FlxSprite();
-			dummyLoader.loadGraphic(Paths.image('cutsceneStuff/gfHoldup-' + i));
-			add(dummyLoader);
-			dummyLoader.alpha = 0.01;
-			dummyLoader.y = FlxG.height - 20;
-		}
-
-		cutsceneGroup = new CutsceneCharacter(0, 0, 'gfHoldup');
-		add(cutsceneGroup);
+		var animated:FlxAnimate = new FlxAnimate(10, 10);
+		add(animated);
 
 		// createCutscene(0);
 		// createCutscene(1);
@@ -59,36 +54,37 @@ class CutsceneAnimTestState extends FlxState
 
 	override function update(elapsed:Float)
 	{
-		if (FlxG.keys.pressed.SHIFT)
-		{
-			if (FlxG.keys.justPressed.UP)
-				curSelected -= 1;
-			if (FlxG.keys.justPressed.DOWN)
-				curSelected += 1;
+		/* if (FlxG.keys.pressed.SHIFT)
+			{
+				if (FlxG.keys.justPressed.UP)
+					curSelected -= 1;
+				if (FlxG.keys.justPressed.DOWN)
+					curSelected += 1;
 
-			if (curSelected < 0)
-				curSelected = cutsceneGroup.members.length - 1;
-			if (curSelected >= cutsceneGroup.members.length)
-				curSelected = 0;
-		}
-		else
-		{
-			var valueMulti:Float = 1;
+				if (curSelected < 0)
+					curSelected = cutsceneGroup.members.length - 1;
+				if (curSelected >= cutsceneGroup.members.length)
+					curSelected = 0;
+			}
+			else
+			{
+				var valueMulti:Float = 1;
 
-			if (FlxG.keys.pressed.SPACE)
-				valueMulti = 10;
+				if (FlxG.keys.pressed.SPACE)
+					valueMulti = 10;
 
-			if (FlxG.keys.justPressed.UP)
-				cutsceneGroup.members[curSelected].y -= valueMulti;
-			if (FlxG.keys.justPressed.DOWN)
-				cutsceneGroup.members[curSelected].y += valueMulti;
-			if (FlxG.keys.justPressed.LEFT)
-				cutsceneGroup.members[curSelected].x -= valueMulti;
-			if (FlxG.keys.justPressed.RIGHT)
-				cutsceneGroup.members[curSelected].x += valueMulti;
-		}
+				if (FlxG.keys.justPressed.UP)
+					cutsceneGroup.members[curSelected].y -= valueMulti;
+				if (FlxG.keys.justPressed.DOWN)
+					cutsceneGroup.members[curSelected].y += valueMulti;
+				if (FlxG.keys.justPressed.LEFT)
+					cutsceneGroup.members[curSelected].x -= valueMulti;
+				if (FlxG.keys.justPressed.RIGHT)
+					cutsceneGroup.members[curSelected].x += valueMulti;
+			}
 
-		debugTxt.text = curSelected + " : " + cutsceneGroup.members[curSelected].getPosition();
+			debugTxt.text = curSelected + " : " + cutsceneGroup.members[curSelected].getPosition();
+		 */
 
 		super.update(elapsed);
 	}
