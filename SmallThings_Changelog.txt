@@ -1,6 +1,7 @@
 === 1.0.1 ===
 + Added an instrumental only mode that can be toggled in the options.json file
 + Added more characters to the internal font
++ Added the rest of Daddy Dearest's frames
 
 === 1.0 ===
 + Added an option within options.json to enable or disable unknown antagonist icons
