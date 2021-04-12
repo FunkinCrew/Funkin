@@ -14,89 +14,84 @@ import lime.utils.Assets;
 
 class OptionsMenu extends MusicBeatState
 {
-	var selector:FlxText;
-	var curSelected:Int = 0;
+	
+	function OnOffBool(lol:Bool)
+	{
+		if (lol)
+		{
+			return "ON";
+		}
+		else
+		{
+			return "OFF";
+		}
+	}
+	
+	static var curSelected:Int = 0;
+	var selector:FlxSprite;
+	var textMenuItems:Array<String> = ['NOTEMISS', 'PERFECT', 'CHARACTER PREFERENCES', 'NOTE CUSTOMIZATION'];
+	var textMenuoptions:Array<Dynamic> = ['', '', '', ''];
 
-	var controlsStrings:Array<String> = [];
-
-	private var grpControls:FlxTypedGroup<Alphabet>;
-
+	var grpOptionsTexts:FlxTypedGroup<Alphabet>;
+	
 	override function create()
 	{
 		var menuBG:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
-		controlsStrings = CoolUtil.coolTextFile(Paths.txt('controls'));
-		menuBG.color = 0xFFea71fd;
+		menuBG.color = 0xFF7289da;
 		menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
 		menuBG.updateHitbox();
 		menuBG.screenCenter();
 		menuBG.antialiasing = true;
 		add(menuBG);
 
-		/* 
-			grpControls = new FlxTypedGroup<Alphabet>();
-			add(grpControls);
-
-			for (i in 0...controlsStrings.length)
-			{
-				if (controlsStrings[i].indexOf('set') != -1)
-				{
-					var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, controlsStrings[i].substring(3) + ': ' + controlsStrings[i + 1], true, false);
-					controlLabel.isMenuItem = true;
-					controlLabel.targetY = i;
-					grpControls.add(controlLabel);
-				}
-				// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
-			}
-		 */
-
 		super.create();
-
-		openSubState(new OptionsSubState());
+		
+		textMenuoptions[0] = OnOffBool(PlayState.babymode);
+		makeOptionsText();
+		changeSelection(0);
 	}
+	function makeOptionsText()
+	{
+		grpOptionsTexts = new FlxTypedGroup<Alphabet>();
+		add(grpOptionsTexts);
 
+		for (i in 0...textMenuItems.length)
+		{
+			var optionText:Alphabet = new Alphabet(0, 30 + (70 * i), textMenuItems[i] + '  ' + textMenuoptions[i], true, false);
+			optionText.ID = i;
+			optionText.x += 10*(i+1);
+			grpOptionsTexts.add(optionText);
+		}
+	}
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
-
-		/* 
-			if (controls.ACCEPT)
-			{
-				changeBinding();
-			}
-
-			if (isSettingControl)
-				waitingInput();
-			else
-			{
-				if (controls.BACK)
-					FlxG.switchState(new MainMenuState());
-				if (controls.UP_P)
-					changeSelection(-1);
-				if (controls.DOWN_P)
-					changeSelection(1);
-			}
-		 */
-	}
-
-	function waitingInput():Void
-	{
-		if (FlxG.keys.getIsDown().length > 0)
+		if (controls.BACK)
+			FlxG.switchState(new MainMenuState());
+		if (controls.UP_P)
+			changeSelection(-1);
+		if (controls.DOWN_P)
+			changeSelection(1);
+		if (controls.ACCEPT)
 		{
-			PlayerSettings.player1.controls.replaceBinding(Control.LEFT, Keys, FlxG.keys.getIsDown()[0].ID, null);
-		}
-		// PlayerSettings.player1.controls.replaceBinding(Control)
-	}
-
-	var isSettingControl:Bool = false;
-
-	function changeBinding():Void
-	{
-		if (!isSettingControl)
-		{
-			isSettingControl = true;
+			trace(textMenuItems[curSelected]);
+			switch (textMenuItems[curSelected])
+			{
+				case "NOTEMISS":
+				{
+					PlayState.babymode = !PlayState.babymode;
+					textMenuoptions[0] = OnOffBool(PlayState.babymode);
+					remove(grpOptionsTexts);
+					makeOptionsText();
+					changeSelection(0);
+				}
+				case "CHARACTER PREFERENCES":
+				{
+					FlxG.switchState(new CharacterMenuState());
+				}
+			}
 		}
 	}
-
 	function changeSelection(change:Int = 0)
 	{
 		FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
@@ -104,15 +99,15 @@ class OptionsMenu extends MusicBeatState
 		curSelected += change;
 
 		if (curSelected < 0)
-			curSelected = grpControls.length - 1;
-		if (curSelected >= grpControls.length)
+			curSelected = grpOptionsTexts.length - 1;
+		if (curSelected >= grpOptionsTexts.length)
 			curSelected = 0;
 
 		// selector.y = (70 * curSelected) + 30;
 
 		var bullShit:Int = 0;
 
-		for (item in grpControls.members)
+		for (item in grpOptionsTexts.members)
 		{
 			item.targetY = bullShit - curSelected;
 			bullShit++;

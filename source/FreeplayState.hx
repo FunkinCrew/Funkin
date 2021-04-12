@@ -26,15 +26,7 @@ class FreeplayState extends MusicBeatState
 	var scoreText:FlxText;
 	var diffText:FlxText;
 	
-	var Playables:Array<Dynamic> = [
-		['bf', 'bf-bloops', 'bf-pico', 'bf-milne', 'bf-dylan'],
-		['bf'],
-		['bf', 'bf-bloops', 'bf-pico', 'bf-dylan'],
-		['bf']
-	];
-	var CurPlayable:Int = 0;
 	var CurPlayerArray:Int = 0;
-	var SongPlayer:FlxText;
 	
 	function GetPlayables()
 	{
@@ -169,10 +161,6 @@ class FreeplayState extends MusicBeatState
 
 		add(scoreText);
 		
-		SongPlayer = new FlxText(diffText.x, diffText.y + 36, 0, "bf", 24);
-		SongPlayer.font = diffText.font;
-		add(SongPlayer);
-
 		changeSelection();
 		changeDiff();
 
@@ -250,7 +238,6 @@ class FreeplayState extends MusicBeatState
 		var accepted = controls.ACCEPT;
 		
 		GetPlayables();
-		pleasechecklol();
 
 		if (upP)
 		{
@@ -265,23 +252,7 @@ class FreeplayState extends MusicBeatState
 			changeDiff(-1);
 		if (controls.RIGHT_P)
 			changeDiff(1);
-		if (FlxG.keys.justPressed.E)
-			CurPlayable += 1;
-		if (FlxG.keys.justPressed.Q)
-			CurPlayable -= 1;
-			
-		if (CurPlayable < 0)
-		{
-			CurPlayable = Playables[CurPlayerArray].length;
-			CurPlayable -= 1;
-		}
-		if (CurPlayable >= Playables[CurPlayerArray].length)
-		{
-			CurPlayable = 0;
-		}
-			
-		SongPlayer.text = Playables[CurPlayerArray][CurPlayable];
-		
+					
 		if (controls.BACK)
 		{
 			FlxG.switchState(new MainMenuState());
@@ -300,20 +271,8 @@ class FreeplayState extends MusicBeatState
 			PlayState.storyWeek = songs[curSelected].week;
 			trace('CUR WEEK' + PlayState.storyWeek);
 			LoadingState.loadAndSwitchState(new PlayState());
-			PlayState.curPlayer = SongPlayer.text;
+			PlayState.curPlayer = CharacterMenuState.Playables[CurPlayerArray][CharacterMenuState.CurPlayable[CurPlayerArray]];
 			PlayState.CameFromChart = false;
-		}
-	}
-	function pleasechecklol()
-	{
-		if (CurPlayable < 0)
-		{
-			CurPlayable = Playables[CurPlayerArray].length;
-			CurPlayable -= 1;
-		}
-		if (CurPlayable >= Playables[CurPlayerArray].length)
-		{
-			CurPlayable = 0;
 		}
 	}
 	function changeDiff(change:Int = 0)

@@ -284,7 +284,7 @@ class AlphaCharacter extends FlxSprite
 		updateHitbox();
 	}
 
-	public function createSymbol(letter:String)
+	public function createSymbol(letter:String):Void
 	{
 		switch (letter)
 		{
@@ -301,6 +301,9 @@ class AlphaCharacter extends FlxSprite
 				animation.play(letter);
 			case "!":
 				animation.addByPrefix(letter, 'exclamation point', 24);
+				animation.play(letter);
+			case "face":
+				animation.addByPrefix(letter, 'angry faic', 24);
 				animation.play(letter);
 		}
 

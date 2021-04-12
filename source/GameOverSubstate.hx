@@ -28,6 +28,8 @@ class GameOverSubstate extends MusicBeatSubstate
 			case 'bf-pico':
 				daBf = 'bf-pico';
 				CharSoundSuffix = '-pico';
+			case 'bf-dylan':
+				daBf = 'bf-dylan-dead';
 			default:
 				daBf = 'bf';
 		}

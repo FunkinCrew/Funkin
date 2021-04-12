@@ -59,13 +59,6 @@ class StoryMenuState extends MusicBeatState
 		['senpai', 'bf', 'gf']
 	];
 	
-	var Playables:Array<Dynamic> = [
-		['bf', 'bf-bloops', 'bf-pico', 'bf-milne', 'bf-dylan'],
-		['bf'],
-		['bf', 'bf-bloops', 'bf-pico', 'bf-dylan'],
-		['bf']
-	];
-	var CurPlayable:Int = 0;
 	var CurPlayerArray:Int = 0;
 	var ConfirmAnim:String = 'bfConfirm';
 	
@@ -94,6 +87,7 @@ class StoryMenuState extends MusicBeatState
 
 	var grpWeekText:FlxTypedGroup<MenuItem>;
 	var grpWeekCharacters:FlxTypedGroup<MenuCharacter>;
+	var BFSELECT:FlxTypedGroup<MenuCharacter>;
 
 	var grpLocks:FlxTypedGroup<FlxSprite>;
 
@@ -157,6 +151,8 @@ class StoryMenuState extends MusicBeatState
 		add(blackBarThingie);
 
 		grpWeekCharacters = new FlxTypedGroup<MenuCharacter>();
+		BFSELECT = new FlxTypedGroup<MenuCharacter>();
+		add(BFSELECT);
 
 		grpLocks = new FlxTypedGroup<FlxSprite>();
 		add(grpLocks);
@@ -301,10 +297,7 @@ class StoryMenuState extends MusicBeatState
 		if (!movedBack)
 		{
 			if (!selectedWeek)
-			{
-				GetPlayables();
-				pleasechecklol();				
-				
+			{			
 				if (controls.UP_P)
 				{
 					changeWeek(-1);
@@ -328,16 +321,7 @@ class StoryMenuState extends MusicBeatState
 				if (controls.RIGHT_P)
 					changeDifficulty(1);
 				if (controls.LEFT_P)
-					changeDifficulty(-1);
-				
-				if (FlxG.keys.justPressed.E)
-					CurPlayable += 1;
-					pleasechecklol();
-					grpWeekCharacters.members[1].animation.play(Playables[CurPlayerArray][CurPlayable]);
-				if (FlxG.keys.justPressed.Q)
-					CurPlayable -= 1;
-					pleasechecklol();
-					grpWeekCharacters.members[1].animation.play(Playables[CurPlayerArray][CurPlayable]);					
+					changeDifficulty(-1);				
 				
 			}
 			if (controls.ACCEPT)
@@ -361,19 +345,6 @@ class StoryMenuState extends MusicBeatState
 	var selectedWeek:Bool = false;
 	var stopspamming:Bool = false;
 	
-	function pleasechecklol()
-	{
-		if (CurPlayable < 0)
-		{
-			CurPlayable = Playables[CurPlayerArray].length;
-			CurPlayable -= 1;
-		}
-		if (CurPlayable >= Playables[CurPlayerArray].length)
-		{
-			CurPlayable = 0;
-		}
-	}
-	
 	function selectWeek()
 	{
 		if (weekUnlocked[curWeek])
@@ -383,22 +354,9 @@ class StoryMenuState extends MusicBeatState
 				FlxG.sound.play(Paths.sound('confirmMenu'));
 				
 				//grpWeekText.members[curWeek].startFlashing();
-				switch (Playables[CurPlayerArray][CurPlayable])
-				{
-					case 'bf':
-						ConfirmAnim = 'bfConfirm';
-					case 'bf-pico':
-						ConfirmAnim = 'bf-picoConfirm';
-					case 'bf-bloops':
-						ConfirmAnim = 'bf-bloopsConfirm';
-					case 'bf-milne':
-						ConfirmAnim = 'bf-milneConfirm';
-					case 'bf-dylan':
-						ConfirmAnim = 'bf-dylanConfirm';
-				}
 				
-				grpWeekCharacters.members[1].animation.play(ConfirmAnim);
-				PlayState.curPlayer = Playables[CurPlayerArray][CurPlayable];
+				grpWeekCharacters.members[1].animation.play(CharacterMenuState.Playables[CurPlayerArray][CharacterMenuState.CurPlayable[CurPlayerArray]] + 'Confirm');
+				PlayState.curPlayer = CharacterMenuState.Playables[CurPlayerArray][CharacterMenuState.CurPlayable[CurPlayerArray]];
 				PlayState.transHealth = 1;
 				trace(PlayState.curPlayer);
 				stopspamming = true;
@@ -490,16 +448,16 @@ class StoryMenuState extends MusicBeatState
 				item.alpha = 0.6;
 			bullShit++;
 		}
-		
-		grpWeekCharacters.members[1].animation.play(Playables[CurPlayerArray][CurPlayable]);
 		FlxG.sound.play(Paths.sound('scrollMenu'));
-
+		
+		GetPlayables();	
 		updateText();
 	}
 
 	function updateText()
 	{
 		grpWeekCharacters.members[0].animation.play(weekCharacters[curWeek][0]);
+		grpWeekCharacters.members[1].animation.play(CharacterMenuState.Playables[CurPlayerArray][CharacterMenuState.CurPlayable[CurPlayerArray]]);
 		grpWeekCharacters.members[2].animation.play(weekCharacters[curWeek][2]);
 		txtTracklist.text = "Tracks\n";
 

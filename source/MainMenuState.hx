@@ -38,7 +38,6 @@ class MainMenuState extends MusicBeatState
 	var camFollow:FlxObject;
 
 	var trackedAssets:Array<Dynamic> = [];
-
 	override function create()
 	{
 		#if windows
@@ -138,7 +137,9 @@ class MainMenuState extends MusicBeatState
 
 			if (controls.BACK)
 			{
-				FlxG.switchState(new TitleState());
+				#if desktop
+				Sys.exit(0);
+				#end
 			}
 
 			if (controls.ACCEPT)
@@ -188,8 +189,6 @@ class MainMenuState extends MusicBeatState
 										trace("Freeplay Menu Selected");
 
 									case 'options':
-										FlxTransitionableState.skipNextTransIn = true;
-										FlxTransitionableState.skipNextTransOut = true;
 										FlxG.switchState(new OptionsMenu());
 								}
 							});

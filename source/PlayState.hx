@@ -56,6 +56,7 @@ class PlayState extends MusicBeatState
 	public static var CharacterSuffix:String = '';
 	public static var CameFromChart:Bool = false;
 	public static var transHealth:Float = 1;
+	public static var babymode:Bool = false;
 	private var Steppy:Bool = false;
 
 	var halloweenLevel:Bool = false;
@@ -1798,6 +1799,13 @@ class PlayState extends MusicBeatState
 						vocals.volume = 0;
 						missCount += 1;
 						MissAnim(daNote.noteData);
+						if (combo > 5 && gf.animOffsets.exists('sad'))
+						{
+							gf.playAnim('sad');
+						}
+						combo = 0;
+
+						songScore -= 10;
 					}
 
 					daNote.active = false;
@@ -2317,32 +2325,35 @@ class PlayState extends MusicBeatState
 
 	function noteMiss(direction:Int = 1):Void
 	{
-		if (curStep > 0)
+		if (PlayState.babymode)
 		{
-			if (!boyfriend.stunned)
+			if (curStep > 0)
 			{
-				health -= 0.04;
-				if (combo > 5 && gf.animOffsets.exists('sad'))
+				if (!boyfriend.stunned)
 				{
-					gf.playAnim('sad');
+					health -= 0.04;
+					if (combo > 5 && gf.animOffsets.exists('sad'))
+					{
+						gf.playAnim('sad');
+					}
+					combo = 0;
+
+					songScore -= 10;
+
+					FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
+					// FlxG.sound.play(Paths.sound('missnote1'), 1, false);
+					// FlxG.log.add('played imss note');
+
+					boyfriend.stunned = true;
+
+					// get stunned for 5 seconds
+					new FlxTimer().start(5 / 60, function(tmr:FlxTimer)
+					{
+						boyfriend.stunned = false;
+					});
+					MissAnim(direction);
+					missCount += 1;
 				}
-				combo = 0;
-
-				songScore -= 10;
-
-				FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
-				// FlxG.sound.play(Paths.sound('missnote1'), 1, false);
-				// FlxG.log.add('played imss note');
-
-				boyfriend.stunned = true;
-
-				// get stunned for 5 seconds
-				new FlxTimer().start(5 / 60, function(tmr:FlxTimer)
-				{
-					boyfriend.stunned = false;
-				});
-				MissAnim(direction);
-				missCount += 1;
 			}
 		}
 	}

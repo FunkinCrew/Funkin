@@ -9,7 +9,7 @@ class HealthIcon extends FlxSprite
 	 */
 	public var sprTracker:FlxSprite;
 
-	public function new(char:String = 'bf', isPlayer:Bool = false)
+	public function new(char:String = 'bf', isPlayer:Bool = false, frame:Int = 0)
 	{
 		super();
 		loadGraphic(Paths.image('iconGrid'), true, 150, 150);
@@ -45,7 +45,9 @@ class HealthIcon extends FlxSprite
 		animation.add('bf-milne', [50, 51, 52], 0, false, isPlayer);
 		animation.add('bf-milne-car', [50, 51, 52], 0, false, isPlayer);
 		animation.add('bf-milne-christmas', [50, 51, 52], 0, false, isPlayer);
-		//animation.add('bf-
+		animation.add('bf-dylan', [53, 54, 55], 0, false, isPlayer);
+		animation.add('bf-dylan-car', [53, 54, 55], 0, false, isPlayer);
+		animation.add('bf-dylan-christmas', [53, 54, 55], 0, false, isPlayer);
 		
 		animation.add('bf-bsides', [60,61,62], 0, false, isPlayer);
 		animation.add('bf-car-bsides', [60,61,62], 0, false, isPlayer);
@@ -72,9 +74,13 @@ class HealthIcon extends FlxSprite
 		animation.add('face-bsides', [99, 100, 101], 0, false, isPlayer);
 		animation.add('bf-old-bsides', [102, 103, 104], 0, false, isPlayer);
 		animation.add('gf-bsides', [105, 109, 108], 0, false, isPlayer);
+		animation.add('bf-dylan-bsides', [113, 114, 115], 0, false, isPlayer);
+		animation.add('bf-dylan-car-bsides', [113, 114, 115], 0, false, isPlayer);
+		animation.add('bf-dylan-christmas-bsides', [113, 114, 115], 0, false, isPlayer);
 		
 		animation.play(char);
 		scrollFactor.set();
+		animation.curAnim.curFrame = frame;
 	}
 
 	override function update(elapsed:Float)
