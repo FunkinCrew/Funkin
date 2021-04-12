@@ -11,8 +11,16 @@ import flixel.math.FlxMath;
 import flixel.util.FlxTimer;
 import flixel.util.FlxTimer;
 
+using StringTools;
+
 class CharacterSelectState extends MusicBeatState
 {
+	var BloopsisDebugging:Bool = false;
+	var Shittext:FlxText;
+	var Shittext2:FlxText;
+	var Looking:Bool = false;
+	var Offshit:Int = 1;
+	
 	var Playables:Array<Dynamic> = [
 		['boyfriend', 'bloops', 'pico', 'milne', 'dylan'],
 		['boyfriend'],
@@ -25,6 +33,37 @@ class CharacterSelectState extends MusicBeatState
 	var Player:FlxSprite;
 	var Selected:Bool = false;
 	var icons:Array<Dynamic> = [];
+	var NotUpdated:Bool = true;
+	var OffSearch:Int = 0;
+	var Offsets:Array<Dynamic> = [ //PAIN
+	['boyfriend', 40, -15],
+	['boyfriendSelect', 40, -20],
+	['bloops', 119, -64],
+	['bloopsSelect', 119, -69],
+	['pico', 40, -65],
+	['picoSelect', 97, -417],
+	['milne', 10, -110],
+	['milneSelect', 40, -140],
+	['dylan', 50, -15],
+	['dylanSelect', 30, -20],
+	
+	['boyfriend-bsides', 40, -15],
+	['boyfriend-bsidesSelect', 40, -20],
+	['bloops-bsides', 119, -64],
+	['bloops-bsidesSelect', 119, -69],
+	['pico-bsides', 40, -65],
+	['pico-bsidesSelect', 97, -417],
+	['milne-bsides', 10, -110],
+	['milne-bsidesSelect', 40, -140],
+	['dylan-bsides', 50, -15],
+	['dylan-bsidesSelect', 30, -20],
+	
+	['boyfriend-pixel', 0, -130],
+	['boyfriend-pixelSelect', 0, -130],
+	['boyfriend-pixel-bsides', -70, -100],
+	['boyfriend-pixel-bsidesSelect', -70, -100]
+	
+	];
 	
 	function GetSuffix()
 	{
@@ -41,7 +80,6 @@ class CharacterSelectState extends MusicBeatState
 		}
 	}
 	
-	
 	override function create()
 	{
 		var menuBG:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
@@ -56,6 +94,7 @@ class CharacterSelectState extends MusicBeatState
 		GetSuffix();
 		makePlayerText();
 		changeSelection(0);
+		var tex:FlxAtlasFrames;
 		Player = new FlxSprite(770, 300);
 		Player.frames = Paths.getSparrowAtlas('CharSelect'); //this is gonna get ugly
 		
@@ -78,7 +117,7 @@ class CharacterSelectState extends MusicBeatState
 		Player.animation.addByPrefix('pico-bsides', "B-PICO", 24);
 		Player.animation.addByPrefix('pico-bsidesSelect', "HEY_B-PICO", 24, false);
 		Player.animation.addByPrefix('dylan-bsides', "B-DYLAN", 24);
-		Player.animation.addByPrefix('Dylan-bsidesSelect', "HEY_B-DYLAN", 24, false);
+		Player.animation.addByPrefix('dylan-bsidesSelect', "HEY_B-DYLAN", 24, false);
 		Player.animation.addByPrefix('milne-bsides', "B-MILNE", 24);
 		Player.animation.addByPrefix('milne-bsidesSelect', "HEY_B-MILNE", 24, false);
 		
@@ -92,13 +131,46 @@ class CharacterSelectState extends MusicBeatState
 		
 		add(Player);
 		Player.animation.play(Playables[CharacterMenuState.curSelected][curSelected] + CharSuffix, false);
+		if (BloopsisDebugging)
+		{
+			Shittext = new FlxText(FlxG.width * 0.7, 5, 0, "", 32);
+			Shittext.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.RED, RIGHT);
+			add(Shittext);
+			Shittext2 = new FlxText(FlxG.width * 0.7, 40, 0, "", 32);
+			Shittext2.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.RED, RIGHT);
+			add(Shittext2);
+		}
+		if (CharSuffix.startsWith('-pixel'))
+		{
+			Player.setGraphicSize(Std.int(Player.width * 2));
+			Player.updateHitbox();
+			Player.antialiasing = false;
+		}
 	}
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
 		if (!Selected)
 		{
-			Player.animation.play(Playables[CharacterMenuState.curSelected][curSelected] + CharSuffix, false);
+			if (!Looking)
+				Player.animation.play(Playables[CharacterMenuState.curSelected][curSelected] + CharSuffix, false);
+			if (NotUpdated)
+			{
+				for (i in 0...Offsets.length)
+				{
+					if(Offsets[i][0] == (Playables[CharacterMenuState.curSelected][curSelected] + CharSuffix))
+					{
+						OffSearch = i;
+						trace("AAAAA");
+						break;
+					}
+				}
+				Player.x = 770;
+				Player.y = 300;
+				Player.x += Offsets[OffSearch][1];
+				Player.y += Offsets[OffSearch][2];
+				NotUpdated = false;
+			}
 			if (controls.BACK)
 			{
 				FlxG.switchState(new CharacterMenuState());
@@ -130,6 +202,19 @@ class CharacterSelectState extends MusicBeatState
 					icons[i].y = 10+(100*(i-1));
 					add(icons[i]);
 				}
+				for (i in 0...Offsets.length)
+				{
+					if(Offsets[i][0] == (Playables[CharacterMenuState.curSelected][curSelected] + CharSuffix + 'Select'))
+					{
+						OffSearch = i;
+						trace("AAAAA");
+						break;
+					}
+				}
+				Player.x = 770;
+				Player.y = 300;
+				Player.x += Offsets[OffSearch][1];
+				Player.y += Offsets[OffSearch][2];
 				
 			}
 		}
@@ -139,6 +224,48 @@ class CharacterSelectState extends MusicBeatState
 			{
 				FlxG.switchState(new CharacterMenuState());
 			});
+		}
+		if (BloopsisDebugging)
+		{
+		
+			Player.x = 770;
+			Player.y = 300;
+			Player.x += Offsets[OffSearch][1];
+			Player.y += Offsets[OffSearch][2];
+			
+			Shittext.text = 'fuck :' + Offsets[OffSearch][1];
+			Shittext2.text = 'shit :' +Offsets[OffSearch][2];
+			if (FlxG.keys.pressed.SHIFT)
+			{
+				Offshit = 10;
+			}
+			else
+			{
+				Offshit = 1;
+			}
+			
+			if (FlxG.keys.justPressed.G)
+				Offsets[OffSearch][1] -= Offshit;
+			if (FlxG.keys.justPressed.B)
+				Offsets[OffSearch][1] += Offshit;
+			if (FlxG.keys.justPressed.H)
+				Offsets[OffSearch][2] -= Offshit;
+			if (FlxG.keys.justPressed.N)
+				Offsets[OffSearch][2] += Offshit;
+			if (FlxG.keys.justPressed.T)
+			{
+				Looking = !Looking;
+				if (Looking)
+				{
+					Player.animation.play(Playables[CharacterMenuState.curSelected][curSelected] + CharSuffix + 'Select', false);
+					OffSearch += 1;
+				}
+				else
+				{
+					Player.animation.play(Playables[CharacterMenuState.curSelected][curSelected] + CharSuffix, false);
+					OffSearch -= 1;
+				}
+			}
 		}
 	}
 	
@@ -171,6 +298,8 @@ class CharacterSelectState extends MusicBeatState
 				// item.setGraphicSize(Std.int(item.width));
 			}
 		}
+		NotUpdated = true;
+		Looking = false;
 	}
 	
 	function makePlayerText()

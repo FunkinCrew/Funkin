@@ -285,6 +285,8 @@ class Character extends FlxSprite
 				animation.addByPrefix('firstDeath', "pico dies", 24, false);
 				animation.addByPrefix('deathLoop', "pico dead loop", 24, true);
 				animation.addByPrefix('deathConfirm', "pico dead confirm", 24, false);
+				animation.addByPrefix('hey', "PICO HEY LOL", 24, false);
+				animation.addByPrefix('scared', "Pico Scared", 24, false);
 				
 				addOffset('idle', -86,30);
 				addOffset("singUP", -69,59);
@@ -298,6 +300,9 @@ class Character extends FlxSprite
 				addOffset('firstDeath', 131, 1);
 				addOffset('deathLoop', 131, 1);
 				addOffset('deathConfirm', 131, 41);
+				addOffset("hey", -143, 372);
+				addOffset('scared', -40, 30);
+
 				
 				playAnim('idle');
 
@@ -967,6 +972,8 @@ class Character extends FlxSprite
 				animation.addByPrefix('firstDeath', "pico dies", 24, false);
 				animation.addByPrefix('deathLoop', "pico dead loop", 24, true);
 				animation.addByPrefix('deathConfirm', "pico dead confirm", 24, false);
+				animation.addByPrefix('hey', "PICO HEY LOL", 24, false);
+				animation.addByPrefix('scared', "Pico Scared", 24, false);
 				
 				addOffset('idle', -86,30);
 				addOffset("singUP", -69,59);
@@ -980,9 +987,11 @@ class Character extends FlxSprite
 				addOffset('firstDeath', 131, 1);
 				addOffset('deathLoop', 131, 1);
 				addOffset('deathConfirm', 131, 41);
-				
-				playAnim('idle');
+				addOffset("hey", -143, 372);
+				addOffset('scared', -40, 30);
 
+				playAnim('idle');
+				
 				flipX = true;
 				
 			case 'bf-bloops-bsides':

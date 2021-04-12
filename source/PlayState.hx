@@ -1617,7 +1617,8 @@ class PlayState extends MusicBeatState
 				switch (curPlayer)
 				{
 					case'bf-pico':
-						camFollow.x -= 200;
+						//camFollow.x -= 200;
+						camFollow.y -= 300;
 				}
 
 				if (SONG.song.toLowerCase() == 'tutorial' || SONG.song.toLowerCase() == 'b-tutorial')
