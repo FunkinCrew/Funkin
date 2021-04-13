@@ -15,6 +15,11 @@
         "value": true
     },
     {
+        "name": "songIndicator",
+        "comment": "Enables / Disables the song indicator at the top right of the screen when starting a song (DEFAULT: true)",
+        "value": true
+    },
+    {
         "name": "unknownIcons",
         "comment": "Enables / Disables the unknown antagonist icons (DEFAULT: true)",
         "value": true

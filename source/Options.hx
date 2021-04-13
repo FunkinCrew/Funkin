@@ -29,6 +29,7 @@ class STOptions
 	public static var st_noticeEnabled:Bool = false;				// Small Things: Notice enabled
 	public static var st_outlinePauseInfo:Bool = true;				// Small Things: Outline pause info
 	public static var st_outlineScore:Bool = true;					// Small Things: Outline score
+	public static var st_songIndicator:Bool = true;					// Small Things: Song indicator
 	public static var st_startWinterHorrorlandP2Invis:Bool = true;	// Small Things: Start Winter Horrorland P2 invisible
 	public static var st_unknownIcons:Bool = true;					// Small Things: Enable the unknown icons
 
@@ -45,6 +46,9 @@ class STOptions
 
 			if (i.name == "instMode")
 				STOptions.st_instMode = i.value;
+
+			if (i.name == "songIndicator")
+				STOptions.st_songIndicator = i.value;
 
 			if (i.name == "lyrics")
 				STOptions.st_lyrics = i.value;
