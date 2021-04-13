@@ -40,11 +40,6 @@ class MainMenuState extends MusicBeatState
 
 	override function create()
 	{
-		// small things: hide options menu
-		if (STOptions.st_hideOptionsMenu == true) {
-			optionShit = ['story mode', 'freeplay', 'donate'];
-		}
-
 		#if desktop
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("In the Menus", null);
@@ -202,10 +197,14 @@ class MainMenuState extends MusicBeatState
 										trace("Freeplay Menu Selected");
 
 									case 'options':
-										FlxTransitionableState.skipNextTransIn = true;
-										FlxTransitionableState.skipNextTransOut = true;
+										//FlxTransitionableState.skipNextTransIn = true;
+										//FlxTransitionableState.skipNextTransOut = true;
 
-										FlxG.switchState(new OptionsMenu());
+										if (STOptions.st_hideOptionsMenu == true) {
+											FlxG.switchState(new NoticeSubState("HEY!\n\nThe options menu currently does not work.\nIf you wish to edit options, please edit the\noptions.json within the data folder.\n\nPress ENTER to continue."));
+										} else {
+											FlxG.switchState(new OptionsMenu());
+										}
 								}
 							});
 						}

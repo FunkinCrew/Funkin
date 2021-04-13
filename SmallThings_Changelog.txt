@@ -1,8 +1,11 @@
 === 1.0.1 ===
 + Added an instrumental only mode that can be toggled in the options.json file
++ Added a notice screen when attempting to go to the options menu
 + Added more characters to the internal font
 - Made the original developers credits last longer on the intro
 - Moved the small things intro texts to a separate file
+- Reworked the notice screen
+- Unhid the options menu
 
 === 1.0 ===
 + Added an option within options.json to enable or disable unknown antagonist icons
