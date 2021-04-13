@@ -731,9 +731,11 @@ class PlayState extends MusicBeatState
 
 
 		// mobile controls here!!!
+		#if mobile
 		mcontrols = new Mobilecontrols();
 		mcontrols.cameras = [camHUD];
 		add(mcontrols);
+		#end
 
 
 
