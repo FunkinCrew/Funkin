@@ -158,6 +158,7 @@ class PauseSubState extends MusicBeatSubstate
 				cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
 				offsetChanged = true;
 			}
+		}
 
 		if (accepted)
 		{
