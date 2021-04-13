@@ -4,6 +4,7 @@
 + Added more characters to the internal font
 - Fixed a hole in Tankman's icon
 - Fixed slight clipping on the notes
+- Made the lyric speaker icon change to the danger icon when applicable
 - Made the original developers credits last longer on the intro
 - Moved the small things intro texts to a separate file
 - Reworked the notice screen

@@ -1663,6 +1663,8 @@ class PlayState extends MusicBeatState
 
 		if (hasLyrics == true)
 		{
+			// TODO: Lyric fading
+
 			for (i in lyrics)
 			{
 				if (FlxMath.inBounds(Conductor.songPosition, i.start, i.start + lyricFailMargin))
@@ -1689,6 +1691,13 @@ class PlayState extends MusicBeatState
 					// lyricTxt.color = FlxColor.WHITE;
 				}
 			}
+		}
+		
+		if (healthBar.percent > 80)
+		{
+			lyricSpeakerIcon.animation.curAnim.curFrame = 1;
+		} else {
+			lyricSpeakerIcon.animation.curAnim.curFrame = 0;
 		}
 
 		/*
