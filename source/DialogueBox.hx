@@ -238,14 +238,14 @@ class DialogueBox extends FlxSpriteGroup
 
 		switch (curCharacter)
 		{
-			case 'dad':
+			case 'senpai':
 				portraitRight.visible = false;
 				if (!portraitLeft.visible)
 				{
 					portraitLeft.visible = true;
 					portraitLeft.animation.play('enter');
 				}
-			case 'bf':
+			case 'bf-pixel':
 				portraitLeft.visible = false;
 				if (!portraitRight.visible)
 				{
