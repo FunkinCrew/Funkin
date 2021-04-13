@@ -29,7 +29,7 @@ class OptionsMenu extends MusicBeatState
 	
 	static var curSelected:Int = 0;
 	var selector:FlxSprite;
-	var textMenuItems:Array<String> = ['NOTEMISS', 'PERFECT', 'CHARACTER PREFERENCES', 'NOTE CUSTOMIZATION'];
+	var textMenuItems:Array<String> = ['NOTEMISS', 'PERFECT MODE', 'CHARACTER PREFERENCES'];
 	var textMenuoptions:Array<Dynamic> = ['', '', '', ''];
 
 	var grpOptionsTexts:FlxTypedGroup<Alphabet>;
@@ -47,6 +47,13 @@ class OptionsMenu extends MusicBeatState
 		super.create();
 		
 		textMenuoptions[0] = OnOffBool(PlayState.babymode);
+		textMenuoptions[1] = OnOffBool(PlayState.perfectMode);
+		makeOptionsText();
+		changeSelection(0);
+	}
+	function Refresh()
+	{
+		remove(grpOptionsTexts);
 		makeOptionsText();
 		changeSelection(0);
 	}
@@ -81,9 +88,13 @@ class OptionsMenu extends MusicBeatState
 				{
 					PlayState.babymode = !PlayState.babymode;
 					textMenuoptions[0] = OnOffBool(PlayState.babymode);
-					remove(grpOptionsTexts);
-					makeOptionsText();
-					changeSelection(0);
+					Refresh();
+				}
+				case "PERFECT MODE":
+				{
+					PlayState.perfectMode = !PlayState.perfectMode;
+					textMenuoptions[1] = OnOffBool(PlayState.perfectMode);
+					Refresh();
 				}
 				case "CHARACTER PREFERENCES":
 				{
