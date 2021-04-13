@@ -48,7 +48,7 @@ class TitleState extends MusicBeatState
 	override public function create():Void
 	{
 		#if polymod
-		polymod.Polymod.init({modRoot: "mods", dirs: ['introMod']});
+		polymod.Polymod.init({modRoot: "mods", dirs: ['introMod', 'stIntroTexts']});
 		#end
 
 		PlayerSettings.init();
@@ -448,9 +448,9 @@ class TitleState extends MusicBeatState
 					deleteCoolText();
 				case 5:
 					createCoolText(['Based on a', 'game by']);
-				case 7:
+				case 6:
 					deleteCoolText();
-				case 8:
+				case 7:
 					createCoolText(['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er']);
 				case 9:
 					deleteCoolText();
