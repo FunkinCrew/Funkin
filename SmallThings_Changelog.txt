@@ -4,6 +4,12 @@
 + Added more characters to the internal font
 - Fixed a hole in Tankman's icon
 - Fixed slight clipping on the notes
+- Improved Mommy Mearest's healthy and danger icons
+- Improved Monster's healthy and danger icons
+- Improved Old-BF's healthy and danger icons
+- Improved Pico's healthy and danger icons
+- Improved Skid & Pump's healthy and danger icons
+- Improved The Parents' healthy and danger icons
 - Made the lyric speaker icon change to the danger icon when applicable
 - Made the original developers credits last longer on the intro
 - Moved the small things intro texts to a separate file
