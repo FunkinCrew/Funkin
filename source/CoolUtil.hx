@@ -3,6 +3,7 @@ package;
 import flixel.FlxG;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxAtlasFrames;
+import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import flixel.system.FlxAssets.FlxGraphicAsset;
@@ -53,6 +54,14 @@ class CoolUtil
 	public static function camLerpShit(lerp:Float):Float
 	{
 		return lerp * (FlxG.elapsed / (1 / 60));
+	}
+
+	/*
+	* just lerp that does camLerpShit for u so u dont have to do it every time
+	*/
+	public static function coolLerp(a:Float, b:Float, ratio:Float):Float
+	{
+		return FlxMath.lerp(a, b, camLerpShit(ratio));
 	}
 
 	public static function fromAnimate(Source:FlxGraphicAsset, Description:String):FlxAtlasFrames
