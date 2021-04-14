@@ -66,9 +66,9 @@ function update (elapsed)
 			_G['strum'..i..'Y'] = _G['defaultStrum'..i..'Y'] + 32 * math.cos((currentBeat + i*0.25) * math.pi)
 		end
 	else
-    	_G['strum'..i..'X'] = _G['defaultStrum'..i..'X']
-        _G['strum'..i..'Y'] = _G['defaultStrum'..i..'Y']
-    end
+		_G['strum'..i..'X'] = _G['defaultStrum'..i..'X']
+		_G['strum'..i..'Y'] = _G['defaultStrum'..i..'Y']
+    	end
 end
 ```
 
