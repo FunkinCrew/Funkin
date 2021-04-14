@@ -13,6 +13,8 @@ class Mobilecontrols extends FlxSpriteGroup
     public var hitboxisenabled:Bool = false;
 	public var keyboardisenabled:Bool = false;
 
+	public var downscroll_isenabled:Bool = false;
+
     var _pad:FlxVirtualPad;
 	var _hb:Hitbox;
 
@@ -46,6 +48,10 @@ class Mobilecontrols extends FlxSpriteGroup
         super();
 		_saveconrtol = new FlxSave();
     	_saveconrtol.bind("saveconrtol");
+
+		if (_saveconrtol.data.downscroll_isenabled != null){
+			downscroll_isenabled = _saveconrtol.data.downscroll_isenabled;
+		}
 
 		// load control mode num from FlxSave
 		if (_saveconrtol.data.buttonsmode == null){

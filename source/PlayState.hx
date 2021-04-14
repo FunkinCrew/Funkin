@@ -142,10 +142,20 @@ class PlayState extends MusicBeatState
 	var mcontrols:Mobilecontrols; 
 	#end
 
+	var downscroll_isenabled:Bool = false;
+
 	override public function create()
 	{
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
+
+		// its part 1 of mobile controls (part 2)
+
+		#if mobile
+		mcontrols = new Mobilecontrols();
+		#end
+
+		downscroll_isenabled = mcontrols.downscroll_isenabled;
 
 		// var gameCam:FlxCamera = FlxG.camera;
 		camGame = new FlxCamera();
@@ -694,7 +704,13 @@ class PlayState extends MusicBeatState
 
 		Conductor.songPosition = -5000;
 
-		strumLine = new FlxSprite(0, 50).makeGraphic(FlxG.width, 10);
+		if (!downscroll_isenabled){
+			strumLine = new FlxSprite(0, 50).makeGraphic(FlxG.width, 10);
+		}else{
+			strumLine = new FlxSprite(0, FlxG.height - 150).makeGraphic(FlxG.width, 10);
+		}
+		
+
 		strumLine.scrollFactor.set();
 
 		strumLineNotes = new FlxTypedGroup<FlxSprite>();
@@ -732,16 +748,17 @@ class PlayState extends MusicBeatState
 
 		// mobile controls here!!!
 		#if mobile
-		mcontrols = new Mobilecontrols();
 		mcontrols.cameras = [camHUD];
 		add(mcontrols);
 		#end
 
+		var ybar = FlxG.height * 0.9;
 
+		if (downscroll_isenabled) {
+			ybar = FlxG.height * 0.1;
+		}
 
-
-
-		healthBarBG = new FlxSprite(0, FlxG.height * 0.9).loadGraphic(Paths.image('healthBar'));
+		healthBarBG = new FlxSprite(0, ybar).loadGraphic(Paths.image('healthBar'));
 		healthBarBG.screenCenter(X);
 		healthBarBG.scrollFactor.set();
 		add(healthBarBG);
@@ -1648,8 +1665,13 @@ class PlayState extends MusicBeatState
 					daNote.active = true;
 				}
 
-				daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(SONG.speed, 2)));
+				if (!downscroll_isenabled) {
+					daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(SONG.speed, 2)));
+				}else {
+					daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (-0.45 * FlxMath.roundDecimal(SONG.speed, 2)));
 
+				}
+				
 				// i am so fucking sorry for this if condition
 				if (daNote.isSustainNote
 					&& daNote.y + daNote.offset.y <= strumLine.y + Note.swagWidth / 2
