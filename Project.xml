@@ -126,6 +126,12 @@
 	<haxelib name="faxe" if='switch'/>
 	<haxelib name="polymod"/>
 	<haxelib name="hxcpp-debug-server" if="desktop debug"/>
+	
+	<haxelib name="flixel-animate" />
+	<haxelib name="spinehaxe" />
+	<!-- https://github.com/ninjamuffin99/Flixel-Animate-Atlas-Player -->
+
+
 	<!--<haxelib name="discord_rpc" if="cpp"/> --> <!-- foesn't work with neko -->
 	<!-- <haxelib name="hxcpp-debug-server" if="desktop"/> -->
 

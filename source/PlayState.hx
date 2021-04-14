@@ -3,6 +3,8 @@ package;
 import Section.SwagSection;
 import Song.SwagSong;
 import WiggleEffect.WiggleEffectType;
+import animateAtlasPlayer.assets.AssetManager;
+import animateAtlasPlayer.core.Animation;
 import flixel.FlxBasic;
 import flixel.FlxCamera;
 import flixel.FlxG;
@@ -37,6 +39,7 @@ import flixel.util.FlxTimer;
 import haxe.Json;
 import lime.utils.Assets;
 import openfl.Lib;
+import openfl.display.BitmapData;
 import openfl.display.BlendMode;
 import openfl.display.StageQuality;
 import openfl.filters.ShaderFilter;
@@ -1062,16 +1065,18 @@ class PlayState extends MusicBeatState
 		var dummyLoaderShit:FlxGroup = new FlxGroup();
 
 		add(dummyLoaderShit);
+		/* 
+			for (i in 0...7)
+			{
+				var dummyLoader:FlxSprite = new FlxSprite();
+				dummyLoader.loadGraphic(Paths.image('cutsceneStuff/gfHoldup-' + i));
+				dummyLoaderShit.add(dummyLoader);
+				dummyLoader.alpha = 0.01;
+				dummyLoader.y = FlxG.height - 20;
+				// dummyLoader.drawFrame(true);
+			}
 
-		for (i in 0...7)
-		{
-			var dummyLoader:FlxSprite = new FlxSprite();
-			dummyLoader.loadGraphic(Paths.image('cutsceneStuff/gfHoldup-' + i));
-			dummyLoaderShit.add(dummyLoader);
-			dummyLoader.alpha = 0.01;
-			dummyLoader.y = FlxG.height - 20;
-			// dummyLoader.drawFrame(true);
-		}
+		 */
 
 		dad.visible = false;
 
@@ -1110,6 +1115,21 @@ class PlayState extends MusicBeatState
 
 		var fakeBF:Character = new Character(boyfriend.x, boyfriend.y, 'bf', true);
 		bfTankCutsceneLayer.add(fakeBF);
+
+		// var atlasCutscene:Animation
+		// var animAssets:AssetManager = new AssetManager();
+
+		// var url = 'images/gfDemon';
+
+		// // animAssets.enqueueSingle(Paths.file(url + "/spritemap1.png"));
+		// // animAssets.enqueueSingle(Paths.file(url + "/spritemap1.json"));
+		// // animAssets.enqueueSingle(Paths.file(url + "/Animation.json"));
+
+		// animAssets.loadQueue(function(asssss:AssetManager)
+		// {
+		// 	var daAnim:Animation = asssss.createAnimation('GF Turnin Demon W Effect');
+		// 	FlxG.addChildBelowMouse(daAnim);
+		// });
 
 		var bfCatchGf:FlxSprite = new FlxSprite(boyfriend.x - 10, boyfriend.y - 90);
 		bfCatchGf.frames = Paths.getSparrowAtlas('cutsceneStuff/bfCatchesGF');
