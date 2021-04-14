@@ -1,8 +1,6 @@
 package;
 
 import animate.FlxAnimate;
-import animateAtlasPlayer.assets.AssetManager;
-import animateAtlasPlayer.core.Animation;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -13,18 +11,10 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import openfl.display.BitmapData;
 
+// import animateAtlasPlayer.assets.AssetManager;
+// import animateAtlasPlayer.core.Animation;
 class CutsceneAnimTestState extends FlxState
 {
-	var animShit:Array<String> = [
-		'GF STARTS TO TURN PART 1',
-		'GF STARTS TO TURN PART 2',
-		'PICO ARRIVES PART 1',
-		'PICO ARRIVES PART 2',
-		'PICO ARRIVES PART 2 POINT FIVE',
-		'PICO ARRIVES PART 3',
-		'Pico Dual Wield on Speaker'
-	];
-
 	var cutsceneGroup:CutsceneCharacter;
 
 	var curSelected:Int = 0;
@@ -42,7 +32,7 @@ class CutsceneAnimTestState extends FlxState
 		debugTxt.color = FlxColor.BLUE;
 		add(debugTxt);
 
-		var animated:FlxAnimate = new FlxAnimate(10, 10);
+		var animated:FlxAnimate = new FlxAnimate(600, 200);
 		add(animated);
 
 		// createCutscene(0);
