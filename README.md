@@ -11,23 +11,20 @@ Play the game and support the project on the [Itch.io page](https://ninja-muffin
 Play the Ludum Dare prototype [here](https://ninja-muffin24.itch.io/friday-night-funkin)!
 
 ## Credits / Shoutouts
-### Programmers:
-💻 [ninjamuffin99 (me!)](https://twitter.com/ninja_muffin99) 
-
-### Artists:
-🎨 [PhantomArcade3K](https://twitter.com/phantomarcade3k)
-
-🎨 [Evilsk8r](https://twitter.com/evilsk8r)
-
-### Musicians:
-🎶 [Kawaisprite](https://twitter.com/kawaisprite)
+<p align="justify">
+	<a href='https://twitter.com/ninja_muffin99'><b>NinjaMuffin99</b><br><img src="/art/Ninja.png" alt="NinjaMuffin99" width="250" height="250"></a><br>
+	<b><a href='https://twitter.com/phantomarcade3k'>PhantomArcade3K</a>, <a href='https://twitter.com/evilsk8r'>Evilsk8r</a>, and <a href='https://twitter.com/kawaisprite'>Kawaisprite</a></b><br>
+	<a href='https://twitter.com/phantomarcade3k'><img src="/art/Phantom.png" alt="PhantomArcade3K" width="150" height="150"></a>
+	<a href='https://twitter.com/evilsk8r'><img src="/art/Evil.png" alt="Evilsk8r" width="150" height="150"></a>
+	<a href='https://twitter.com/kawaisprite'><img src="/art/Kawai.png" alt="Kawaisprite" width="150" height="150"></a>
+</p>
 
 ### Special Thanks:
 
 This game was made with love to Newgrounds and its community. Extra love to Tom Fulp. 💖
 
 <p align="center">
-	<a href="https://www.newgrounds.com/" target="_blank"><img src="/art/preloaderArt.png"></a>
+	<a href="https://www.newgrounds.com/"><img src="/art/preloaderArt.png"></a>
 </p>
 
 ## What can I do with compiling the game? Why should I compile the game instead of downloading it from [the Itch.io page of the game](https://ninja-muffin24.itch.io/friday-night-funkin)?
