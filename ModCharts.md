@@ -20,10 +20,10 @@ end
 
 function update (elapsed) -- example https://twitter.com/KadeDeveloper/status/1382178179184422918
 	local currentBeat = (songPos / 1000)*(bpm/60)
-		for i=0,7 do
-			_G['strum'..i..'X'] = _G['defaultStrum'..i..'X'] + 32 * math.sin((currentBeat + i*0.25) * math.pi)
-			_G['strum'..i..'Y'] = _G['defaultStrum'..i..'Y'] + 32 * math.cos((currentBeat + i*0.25) * math.pi)
-		end
+	for i=0,7 do
+		_G['strum'..i..'X'] = _G['defaultStrum'..i..'X'] + 32 * math.sin((currentBeat + i*0.25) * math.pi)
+		_G['strum'..i..'Y'] = _G['defaultStrum'..i..'Y'] + 32 * math.cos((currentBeat + i*0.25) * math.pi)
+	end
 end
 
 function beatHit (beat)
@@ -31,7 +31,7 @@ function beatHit (beat)
 end
 
 function stepHit (step)
-	-- do nothing
+   -- do nothing
 end
 
 print("Mod Chart script loaded :)")
@@ -41,9 +41,9 @@ Spinning Receptor Example
 
 ```lua
 function update (elapsed)
-		for i=0,7 do
-			_G['strum'..i..'Angle'] = _G['strum'..i..'Angle'] + 15
-		end
+	for i=0,7 do
+		_G['strum'..i..'Angle'] = _G['strum'..i..'Angle'] + 15
+	end
 end
 ```
 
