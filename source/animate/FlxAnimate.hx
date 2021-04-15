@@ -45,10 +45,33 @@ class FlxAnimate extends FlxSymbol
 
 	// notes to self
 	// account for different layers
+	var playingAnim:Bool = false;
+	var frameTickTypeShit:Float = 0;
+	var animFrameRate:Int = 24;
 
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+
+		if (FlxG.keys.justPressed.SPACE)
+			playingAnim = !playingAnim;
+
+		if (playingAnim)
+		{
+			frameTickTypeShit += elapsed;
+
+			// prob fix this framerate thing for higher framerates?
+			if (frameTickTypeShit >= 1 / 24)
+			{
+				changeFrame(1);
+				frameTickTypeShit = 0;
+			}
+		}
+
+		if (FlxG.keys.justPressed.RIGHT)
+			changeFrame(1);
+		if (FlxG.keys.justPressed.LEFT)
+			changeFrame(-1);
 	}
 
 	// This stuff is u
