@@ -2,7 +2,9 @@
 
 In the latest version of Kade Engine we introduced Mod Charts. Mod Charts are a way of changing gameplay without hard coded values, this is achieved by using the Lua Scripting language to create script files that run during runtime.
 
-All files **are located in** `assets/data/song/modchart.lua`
+All files **are located in** `assets/data/song/`
+
+Modchart Lua File should be in `assets/data/song/modchart.lua` **exactly**
 
 Lua code will only be ran if that file exists.
 
