@@ -2138,16 +2138,16 @@ class PlayState extends MusicBeatState
 						if (daNote.animation.curAnim.name.endsWith("end") && daNote.prevNote != null)
 							daNote.y += daNote.prevNote.height;
 						else
-							daNote.y += daNote.height / daNote.scale.y;
+							daNote.y += daNote.height / 2;
 
 						if ((!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit)))
 							&& daNote.y - daNote.offset.y * daNote.scale.y + daNote.height >= strumLineMid)
 						{
-							// div by scale because cliprect is affected by scale i THINK
-							var swagRect:FlxRect = new FlxRect(0, 0, daNote.width / daNote.scale.x, daNote.height / daNote.scale.y);
+							// clipRect is applied to graphic itself so use frame Heights
+							var swagRect:FlxRect = new FlxRect(0, 0, daNote.frameWidth, daNote.frameHeight);
 
 							swagRect.height = (strumLineMid - daNote.y) / daNote.scale.y;
-							swagRect.y = daNote.height / daNote.scale.y - swagRect.height;
+							swagRect.y = daNote.frameHeight - swagRect.height;
 							daNote.clipRect = swagRect;
 						}
 					}
