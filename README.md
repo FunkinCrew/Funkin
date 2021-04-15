@@ -12,10 +12,15 @@ Play the Ludum Dare prototype [here](https://ninja-muffin24.itch.io/friday-night
 
 ## Credits / Shoutouts
 <p align="justify">
+	<h3>🖥 Programmers:</h3><br>
 	<a href='https://twitter.com/ninja_muffin99'><b>NinjaMuffin99</b><br><img src="/art/Ninja.png" alt="NinjaMuffin99" width="250" height="250"></a><br>
-	<b><a href='https://twitter.com/phantomarcade3k'>PhantomArcade3K</a>, <a href='https://twitter.com/evilsk8r'>Evilsk8r</a>, and <a href='https://twitter.com/kawaisprite'>Kawaisprite</a></b><br>
-	<a href='https://twitter.com/phantomarcade3k'><img src="/art/Phantom.png" alt="PhantomArcade3K" width="150" height="150"></a>
-	<a href='https://twitter.com/evilsk8r'><img src="/art/Evil.png" alt="Evilsk8r" width="150" height="150"></a>
+	<h3>🖼 Artists</h3><br>
+	<b><a href='https://twitter.com/phantomarcade3k'>PhantomArcade3K</a><br>
+	<a href='https://twitter.com/phantomarcade3k'><img src="/art/Phantom.png" alt="PhantomArcade3K" width="150" height="150"></a><br><br>
+	<a href='https://twitter.com/evilsk8r'>Evilsk8r</a><br>
+	<a href='https://twitter.com/evilsk8r'><img src="/art/Evil.png" alt="Evilsk8r" width="150" height="150"></a></b><br>
+	<h3>🎶 Musicians:</h3><br>
+	<a href='https://twitter.com/kawaisprite'>Kawaisprite</a></b><br>
 	<a href='https://twitter.com/kawaisprite'><img src="/art/Kawai.png" alt="Kawaisprite" width="150" height="150"></a>
 </p>
 
