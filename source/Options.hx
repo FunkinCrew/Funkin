@@ -17,6 +17,7 @@ class STOptions
 	public static var st_customIntro:Bool = true;					// Small Things: Custom intro sequence
 	public static var st_disableFnfVersionCheck:Bool = true;		// Small Things: Disable FNF version check
 	public static var st_debug:Bool = false;						// Small Things: Small Things debug
+	public static var st_extraSongs:Bool = false;					// Small Things: Extra songs
 	public static var st_fixMonsterIconFreeplay:Bool = true;		// Small Things: Fix Monster's icon for Monster on Freeplay
 	public static var st_fixScoreLayout:Bool = true;				// Small Things: Fix Score layout
 	public static var st_fixWeek6CountSounds:Bool = true;			// Small Things: Fix Week6 Countdown sounds
@@ -43,6 +44,9 @@ class STOptions
 		{
 			if (i.name == "debug")
 				STOptions.st_debug = i.value;
+
+			if (i.name == "extraSongs")
+				STOptions.st_extraSongs = i.value;
 
 			if (i.name == "instMode")
 				STOptions.st_instMode = i.value;
