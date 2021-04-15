@@ -14,7 +14,7 @@ Play the Ludum Dare prototype [here](https://ninja-muffin24.itch.io/friday-night
 <p align="justify">
 	<h3>🖥 Programmers:</h3><br>
 	<a href='https://twitter.com/ninja_muffin99'><b>NinjaMuffin99</b><br><img src="/art/Ninja.png" alt="NinjaMuffin99" width="250" height="250"></a><br>
-	<h3>🖼 Artists</h3><br>
+	<h3>🖼 Artists:</h3><br>
 	<b><a href='https://twitter.com/phantomarcade3k'>PhantomArcade3K</a><br>
 	<a href='https://twitter.com/phantomarcade3k'><img src="/art/Phantom.png" alt="PhantomArcade3K" width="150" height="150"></a><br><br>
 	<a href='https://twitter.com/evilsk8r'>Evilsk8r</a><br>
