@@ -3,12 +3,24 @@
         "start": 7000.00,
         "lyric": "He's the one for me",
         "end": 8350.00,
-        "speaker": "dad-and-bf"
+        "speaker": "dad"
     },
     {
         "start": 8560.00,
         "lyric": "There's no place I'd rather be",
         "end": 11575.00,
         "speaker": "dad"
+    },
+    {
+        "start": 11820.00,
+        "lyric": "yeah yeah yeah",
+        "end": 13265.00,
+        "speaker": "dad"
+    },
+    {
+        "start": 13725.00,
+        "lyric": "To the finish line",
+        "end": 15090.00,
+        "speaker": "bf"
     }
 ]

@@ -1,4 +1,7 @@
 === 1.1.1 ===
++ Added an option to enable extra songs in options.json
++ Added Ridge as an Extra Song
+- Fixed layering on lyric icons
 - Improved Daddy Dearest's healthy and danger icons
 - Improved Girlfriend's healthy icon
 - Improved The Parents' healthy and danger icons

@@ -802,8 +802,8 @@ class PlayState extends MusicBeatState
 		lyricSpeakerIcon.visible = false;
 
 		if (STOptions.st_lyrics == true) {
-			add(lyricTxt);
 			add(lyricSpeakerIcon);
+			add(lyricTxt);
 
 			// by default make this off
 			lyricTxt.text = "";
