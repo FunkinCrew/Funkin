@@ -1,7 +1,8 @@
 package animate;
 
-import animateAtlasPlayer.assets.AssetManager;
-import animateAtlasPlayer.core.Animation;
+// import animateAtlasPlayer.assets.AssetManager;
+// import animateAtlasPlayer.core.Animation;
+import animate.FlxSymbol.Parsed;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.graphics.FlxGraphic;
@@ -11,75 +12,66 @@ import flixel.math.FlxRect;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import haxe.Json;
 import openfl.Assets;
-import openfl.display.Bitmap;
 import openfl.display.BitmapData;
-import openfl.geom.Point;
 import openfl.geom.Rectangle;
 
-class FlxAnimate extends FlxSprite
+class FlxAnimate extends FlxSymbol
 {
-	var myAnim:Animation;
-	var animBitmap:BitmapData;
-
+	// var myAnim:Animation;
+	// var animBitmap:BitmapData;
 	var loadedQueue:Bool = false;
 
 	var swagFrames:Array<BitmapData> = [];
 
 	public function new(x:Float, y:Float)
 	{
-		super(x, y);
+		var folder:String = 'tightBars';
+		coolParse = cast Json.parse(Assets.getText(Paths.file('images/' + folder + '/Animation.json')));
+		coolParse.AN.TL.L.reverse();
+		super(x, y, coolParse);
 
-		// get fromAnimate()
-		// get every symbol / piece needed
-		// animate them?
-
-		var swagAssets:AssetManager = new AssetManager();
-		swagAssets.enqueueSingle(Paths.file('images/picoShoot/spritemap1.png'));
-		swagAssets.enqueueSingle(Paths.file('images/picoShoot/spritemap1.json'));
-		swagAssets.enqueueSingle(Paths.file('images/picoShoot/Animation.json'));
-
-		swagAssets.loadQueue(function(assetMgr:AssetManager)
-		{
-			myAnim = assetMgr.createAnimation("Pico Saves them sequence");
-			myAnim.cacheAsBitmap = true;
-			myAnim.opaqueBackground = null;
-			// myAnim.root.x += 200;
-			// myAnim.root.y += 200;
-			// myAnim.x += 200;
-			// myAnim.y += 200;
-
-			var daAnim:BitmapData = new BitmapData(200, 200, true, 0x00000000);
-			daAnim.draw(myAnim);
-			animBitmap = new BitmapData(200, 200, true, 0x00000000);
-			animBitmap.draw(myAnim);
-
-			loadGraphic(animBitmap);
-			// framePixels = animBitmap;
-
-			loadedQueue = true;
-		});
+		frames = FlxAnimate.fromAnimate(Paths.file('images/' + folder + '/spritemap1.png'), Paths.file('images/' + folder + '/spritemap1.json'));
+		// frames
 	}
-
-	var pointZero:Point = new Point();
-
-	private var lastFrame:Int = 0;
 
 	override function draw()
 	{
 		super.draw();
 
-		if (loadedQueue)
+		renderFrame(coolParse.AN.TL, coolParse, true);
+	}
+
+	var curFrame:Int = 0;
+
+	// notes to self
+	// account for different layers
+	var playingAnim:Bool = false;
+	var frameTickTypeShit:Float = 0;
+	var animFrameRate:Int = 24;
+
+	override function update(elapsed:Float)
+	{
+		super.update(elapsed);
+
+		if (FlxG.keys.justPressed.SPACE)
+			playingAnim = !playingAnim;
+
+		if (playingAnim)
 		{
-			if (lastFrame != myAnim.currentFrame)
+			frameTickTypeShit += elapsed;
+
+			// prob fix this framerate thing for higher framerates?
+			if (frameTickTypeShit >= 1 / 24)
 			{
-				lastFrame = myAnim.currentFrame;
-				// loadGraphic(animBitmap);
-
-				animBitmap.draw(myAnim);
+				changeFrame(1);
+				frameTickTypeShit = 0;
 			}
-
-			// animBitmap.draw(myAnim);
 		}
+
+		if (FlxG.keys.justPressed.RIGHT)
+			changeFrame(1);
+		if (FlxG.keys.justPressed.LEFT)
+			changeFrame(-1);
 	}
 
 	// This stuff is u
