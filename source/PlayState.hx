@@ -152,9 +152,8 @@ class PlayState extends MusicBeatState
 		// its part 1 of mobile controls (part 2 in 750 line)
 		#if mobile
 		mcontrols = new Mobilecontrols();
-		#end
-
 		downscroll_isenabled = mcontrols.downscroll_isenabled;
+		#end
 
 		
 
