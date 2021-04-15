@@ -1,5 +1,6 @@
 package;
 
+import llua.Lua;
 import Controls.Control;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -179,6 +180,11 @@ class PauseSubState extends MusicBeatSubstate
 					FlxG.resetState();
 				case "Exit to menu":
 					PlayState.loadRep = false;
+					if (PlayState.lua != null)
+					{
+						Lua.close(PlayState.lua);
+						PlayState.lua = null;
+					}
 					if (PlayState.offsetTesting)
 					{
 						PlayState.offsetTesting = false;
