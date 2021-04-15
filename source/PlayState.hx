@@ -149,13 +149,14 @@ class PlayState extends MusicBeatState
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
 
-		// its part 1 of mobile controls (part 2)
-
+		// its part 1 of mobile controls (part 2 in 750 line)
 		#if mobile
 		mcontrols = new Mobilecontrols();
 		#end
 
 		downscroll_isenabled = mcontrols.downscroll_isenabled;
+
+		
 
 		// var gameCam:FlxCamera = FlxG.camera;
 		camGame = new FlxCamera();

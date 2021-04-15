@@ -12,6 +12,7 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import lime.utils.Assets;
 import ui.FlxVirtualPad;
+import Config;
 
 import flixel.util.FlxSave;
 
@@ -26,7 +27,7 @@ class OptionsMenu extends MusicBeatState
 
 	private var grpControls:FlxTypedGroup<Alphabet>;
 
-	var menuItems:Array<String> = ['controls', 'set fps', 'About', 'downscroll: off'];
+	var menuItems:Array<String> = ['controls', 'set fps', 'downscroll: off', 'About'];
 
 	var _pad:FlxVirtualPad;
 
@@ -37,11 +38,10 @@ class OptionsMenu extends MusicBeatState
 
 	var _saveconrtol:FlxSave;
 
+	var config:Config = new Config();
+
 	override function create()
 	{
-		_saveconrtol = new FlxSave();
-    	_saveconrtol.bind("saveconrtol");
-
 		var menuBG:FlxSprite = new FlxSprite().loadGraphic('assets/images/menuDesat.png');
 		//controlsStrings = CoolUtil.coolTextFile('assets/data/controls.txt');
 		menuBG.color = 0xFFea71fd;
@@ -54,13 +54,12 @@ class OptionsMenu extends MusicBeatState
 		grpControls = new FlxTypedGroup<Alphabet>();
 		add(grpControls);
 
-		if (_saveconrtol.data.downscroll_isenabled != null &&  _saveconrtol.data.downscroll_isenabled){
-			menuItems.remove('downscroll: off');
-			menuItems.insert(3, 'downscroll: on');
+		if (config.getdownscroll()){
+			menuItems[menuItems.indexOf('downscroll: off')] = 'downscroll: on';
 		}
 
 		for (i in 0...menuItems.length)
-		{
+		{ 
 			var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, menuItems[i], true, false);
 			controlLabel.isMenuItem = true;
 			controlLabel.targetY = i;
@@ -100,15 +99,18 @@ class OptionsMenu extends MusicBeatState
 			{
 				case "controls":
 					FlxG.switchState(new options.CustomControlsState());
+				
 				case "config":
 					trace("hello");
+				
 				case "set fps":
 					insubstate = true;
 					openSubState(new options.SetFpsSubState());
-				case "downscroll: on":
-					setdownscroll();
-				case "downscroll: off":
-					setdownscroll();
+				
+				case "downscroll: on" | "downscroll: off":
+					config.setdownscroll();
+					FlxG.resetState();
+				
 				case "About":
 					FlxG.switchState(new options.AboutState());
 			}
@@ -125,20 +127,6 @@ class OptionsMenu extends MusicBeatState
 			if (DOWN_P)
 				changeSelection(1);
 		}
-	}
-
-	function setdownscroll() {
-		if (_saveconrtol.data.downscroll_isenabled == null)
-		{
-			_saveconrtol.data.downscroll_isenabled = true;
-			_saveconrtol.flush();
-			FlxG.resetState();
-			return;
-		}
-		
-		_saveconrtol.data.downscroll_isenabled = !_saveconrtol.data.downscroll_isenabled;
-		_saveconrtol.flush();
-		FlxG.resetState();
 	}
 
 	function waitingInput():Void

@@ -82,6 +82,7 @@ class PauseSubState extends MusicBeatSubstate
 		_pad = new FlxVirtualPad(UP_DOWN, A);
     	_pad.alpha = 0.75;
     	this.add(_pad);
+		_pad.cameras = cameras;
 	}
 
 	override function update(elapsed:Float)

@@ -2,11 +2,11 @@ package;
 
 import flixel.FlxG;
 import flixel.group.FlxSpriteGroup;
-import flixel.util.FlxSave;
-import flixel.math.FlxPoint;
 
-import flixel.ui.FlxVirtualPad;
+import ui.FlxVirtualPad;
 import ui.Hitbox;
+
+import Config;
 
 class Mobilecontrols extends FlxSpriteGroup
 {
@@ -18,7 +18,6 @@ class Mobilecontrols extends FlxSpriteGroup
     var _pad:FlxVirtualPad;
 	var _hb:Hitbox;
 
-    var _saveconrtol:FlxSave;
 
 	var controlmode:Int = 0;
 
@@ -42,23 +41,19 @@ class Mobilecontrols extends FlxSpriteGroup
 	public var DOWN_R:Bool;
 	public var LEFT_R:Bool;
 
+	var config:Config = new Config();
+
 	// now controls here
     public function new()
     {
         super();
-		_saveconrtol = new FlxSave();
-    	_saveconrtol.bind("saveconrtol");
 
-		if (_saveconrtol.data.downscroll_isenabled != null){
-			downscroll_isenabled = _saveconrtol.data.downscroll_isenabled;
-		}
+		downscroll_isenabled = config.getdownscroll();
 
-		// load control mode num from FlxSave
-		if (_saveconrtol.data.buttonsmode == null){
-			controlmode = 0;
-		}else{
-			controlmode = _saveconrtol.data.buttonsmode[0];
-		}
+		// load control mode num from Config.hx
+		controlmode = config.getcontrolmode();
+
+
 		//controlmode
 		switch controlmode{
 			case 1: //left default
@@ -71,7 +66,7 @@ class Mobilecontrols extends FlxSpriteGroup
 				_pad = new FlxVirtualPad(RIGHT_FULL, NONE);
 				_pad.alpha = 0.75;
 				this.add(_pad);
-				loadcustom(_pad);
+				_pad = config.loadcustom(_pad);
 			case 4:
 				_hb = new Hitbox();
 				hitboxisenabled = true;
@@ -139,22 +134,6 @@ class Mobilecontrols extends FlxSpriteGroup
 			DOWN_R = _pad.buttonDown.justReleased;
 			LEFT_R = _pad.buttonLeft.justReleased;
 		}
-	}
-
-	function loadcustom(?_pad:FlxVirtualPad):Void{
-		//load pad
-		if (_saveconrtol.data.buttons[0] != null)
-		{
-			var tempCount:Int = 0;
-
-			for(buttons in _pad)
-			{
-				buttons.x = _saveconrtol.data.buttons[tempCount].x;
-				buttons.y = _saveconrtol.data.buttons[tempCount].y;
-				tempCount++;
-			}
-		}else { trace('ERROR: failed to load custom controls'); }	
-	
 	}
 }
 
