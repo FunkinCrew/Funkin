@@ -55,8 +55,10 @@ import openfl.display.BlendMode;
 import openfl.display.StageQuality;
 import openfl.filters.ShaderFilter;
 
-#if desktop
+#if windows
 import Discord.DiscordClient;
+#end
+#if desktop
 import Sys;
 import sys.FileSystem;
 #end
@@ -2592,7 +2594,7 @@ class PlayState extends MusicBeatState
 					
 
 					if (daNote.isSustainNote)
-						daNote.x += daNote.width / 2 + 7;
+						daNote.x += daNote.width / 2 + 17;
 
 					//trace(daNote.y);
 					// WIP interpolation shit? Need to fix the pause issue
