@@ -5,6 +5,7 @@
 - Improved Daddy Dearest's healthy and danger icons
 - Improved Girlfriend's healthy icon
 - Improved The Parents' healthy and danger icons
+- Removed the angry icon showing above the lyrics, as it was causing issues.
 
 === 1.1 ===
 + Added an instrumental only mode that can be toggled in the options.json file

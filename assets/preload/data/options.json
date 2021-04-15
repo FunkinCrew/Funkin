@@ -6,7 +6,7 @@
     },
     {
         "name": "extraSongs",
-        "comment": "Enables / Disables extra songs such as Ridge (DEFAULT: false)",
+        "comment": "Enables / Disables extra songs such as Ridge (DEFAULT: true)",
         "value": true
     },
     {

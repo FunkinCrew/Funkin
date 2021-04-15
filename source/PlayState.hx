@@ -1693,12 +1693,14 @@ class PlayState extends MusicBeatState
 			}
 		}
 		
+		/*
 		if (healthBar.percent > 80)
 		{
 			lyricSpeakerIcon.animation.curAnim.curFrame = 1;
 		} else {
 			lyricSpeakerIcon.animation.curAnim.curFrame = 0;
 		}
+		*/
 
 		/*
 		for (index => i in lyrics)
