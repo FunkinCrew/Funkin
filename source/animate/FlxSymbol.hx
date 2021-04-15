@@ -29,6 +29,8 @@ class FlxSymbol extends FlxSprite
 		super.draw();
 	}
 
+	public static var nestedShit:Map<Int, Array<FlxSymbol>> = new Map();
+
 	var swagX:Float = 0;
 	var swagY:Float = 0;
 
@@ -37,6 +39,7 @@ class FlxSymbol extends FlxSprite
 	var drawQueue:Array<FlxSymbol> = [];
 
 	public var daFrame:Int = 0;
+	public var nestDepth:Int = 0;
 
 	function renderFrame(TL:Timeline, coolParsed:Parsed, ?isMainLoop:Bool = false)
 	{
@@ -97,8 +100,9 @@ class FlxSymbol extends FlxSprite
 
 							// spr._matrix.setTo(m3d[0], m3d[1], m3d[4], m3d[5], m3d[12], m3d[13]);
 
-							drawQueue.push(spr);
-							// spr.draw();
+							// drawQueue.push(spr);
+
+							setDaMap(spr);
 
 							// swagX = 0;
 						}
@@ -138,6 +142,7 @@ class FlxSymbol extends FlxSprite
 							// nestedShit.oldMatrix = element.SI.M3D;
 
 							nestedShit.hasFrameByPass = true;
+							nestedShit.nestDepth = nestDepth + 1;
 							nestedShit.renderFrame(nestedSymbol.TL, coolParsed);
 
 							// renderFrame(nestedSymbol.TL, coolParsed);
@@ -149,8 +154,16 @@ class FlxSymbol extends FlxSprite
 
 		// drawQueue.reverse();
 		//
-		for (thing in drawQueue)
-			thing.draw();
+		// for (thing in drawQueue)
+		// thing.draw();
+	}
+
+	function setDaMap(spr:FlxSymbol):Void
+	{
+		if (!nestedShit.exists(nestDepth))
+			nestedShit.set(nestDepth, [spr]);
+		else
+			nestedShit.get(nestDepth).push(spr);
 	}
 
 	function changeFrame(frameChange:Int = 0):Void

@@ -39,6 +39,19 @@ class FlxAnimate extends FlxSymbol
 		super.draw();
 
 		renderFrame(coolParse.AN.TL, coolParse, true);
+
+		if (FlxG.keys.justPressed.E)
+		{
+			for (shit in FlxSymbol.nestedShit.keys())
+			{
+				for (spr in FlxSymbol.nestedShit.get(shit))
+				{
+					spr.draw();
+				}
+			}
+
+			FlxSymbol.nestedShit.clear();
+		}
 	}
 
 	var curFrame:Int = 0;
