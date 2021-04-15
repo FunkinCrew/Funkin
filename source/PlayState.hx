@@ -204,6 +204,201 @@ class PlayState extends MusicBeatState
 
 	private var executeModchart = false;
 
+	// LUA SHIT
+		
+	public static var lua:State = null;
+
+	function callLua(func_name : String, args : Array<Dynamic>, ?type : String) : Dynamic
+	{
+		var result : Any = null;
+
+		Lua.getglobal(lua, func_name);
+
+		for( arg in args ) {
+		Convert.toLua(lua, arg);
+		}
+
+		result = Lua.pcall(lua, args.length, 1, 0);
+
+		if (getLuaErrorMessage(lua) != null)
+			trace(func_name + ' LUA CALL ERROR ' + Lua.tostring(lua,result));
+
+		if( result == null) {
+			return null;
+		} else {
+			return convert(result, type);
+		}
+
+	}
+
+	function getType(l, type):Any
+	{
+		return switch Lua.type(l,type) {
+			case t if (t == Lua.LUA_TNIL): null;
+			case t if (t == Lua.LUA_TNUMBER): Lua.tonumber(l, type);
+			case t if (t == Lua.LUA_TSTRING): (Lua.tostring(l, type):String);
+			case t if (t == Lua.LUA_TBOOLEAN): Lua.toboolean(l, type);
+			case t: throw 'you don goofed up. lua type error ($t)';
+		}
+	}
+
+	function getReturnValues(l) {
+		var lua_v:Int;
+		var v:Any = null;
+		while((lua_v = Lua.gettop(l)) != 0) {
+			var type:String = getType(l,lua_v);
+			v = convert(lua_v, type);
+			Lua.pop(l, 1);
+		}
+		return v;
+	}
+
+
+	private function convert(v : Any, type : String) : Dynamic { // I didn't write this lol
+		if( Std.is(v, String) && type != null ) {
+		var v : String = v;
+		if( type.substr(0, 4) == 'array' ) {
+			if( type.substr(4) == 'float' ) {
+			var array : Array<String> = v.split(',');
+			var array2 : Array<Float> = new Array();
+
+			for( vars in array ) {
+				array2.push(Std.parseFloat(vars));
+			}
+
+			return array2;
+			} else if( type.substr(4) == 'int' ) {
+			var array : Array<String> = v.split(',');
+			var array2 : Array<Int> = new Array();
+
+			for( vars in array ) {
+				array2.push(Std.parseInt(vars));
+			}
+
+			return array2;
+			} else {
+			var array : Array<String> = v.split(',');
+			return array;
+			}
+		} else if( type == 'float' ) {
+			return Std.parseFloat(v);
+		} else if( type == 'int' ) {
+			return Std.parseInt(v);
+		} else if( type == 'bool' ) {
+			if( v == 'true' ) {
+			return true;
+			} else {
+			return false;
+			}
+		} else {
+			return v;
+		}
+		} else {
+		return v;
+		}
+	}
+
+	function getLuaErrorMessage(l) {
+		var v:String = Lua.tostring(l, -1);
+		Lua.pop(l, 1);
+		return v;
+	}
+
+	public function setVar(var_name : String, object : Dynamic){
+		// trace('setting variable ' + var_name + ' to ' + object);
+
+		Lua.pushnumber(lua,object);
+		Lua.setglobal(lua, var_name);
+	}
+
+	public function getVar(var_name : String, type : String) : Dynamic {
+		var result : Any = null;
+
+		// trace('getting variable ' + var_name + ' with a type of ' + type);
+
+		Lua.getglobal(lua, var_name);
+		result = Convert.fromLua(lua,-1);
+		Lua.pop(lua,1);
+
+		if( result == null ) {
+		return null;
+		} else {
+		var result = convert(result, type);
+		//trace(var_name + ' result: ' + result);
+		return result;
+		}
+	}
+
+	function getActorByName(id:String):Dynamic
+	{
+		// pre defined names
+		switch(id)
+		{
+			case 'boyfriend':
+				return boyfriend;
+			case 'girlfriend':
+				return gf;
+			case 'dad':
+				return dad;
+		}
+		// lua objects or what ever
+		if (luaSprites.get(id) == null)
+			return strumLineNotes.members[Std.parseInt(id)];
+		return luaSprites.get(id);
+	}
+
+	public static var luaSprites:Map<String,FlxSprite> = [];
+
+
+
+	function makeLuaSprite(spritePath:String,toBeCalled:String, drawBehind:Bool)
+	{
+		#if sys
+		var data:BitmapData = BitmapData.fromFile(Sys.getCwd() + "assets/data/" + PlayState.SONG.song.toLowerCase() + '/' + spritePath + ".png");
+
+		var sprite:FlxSprite = new FlxSprite(0,0);
+		var imgWidth:Float = FlxG.width / data.width;
+		var imgHeight:Float = FlxG.height / data.height;
+		var scale:Float = imgWidth <= imgHeight ? imgWidth : imgHeight;
+
+		// Cap the scale at x1
+		if (scale > 1)
+		{
+			scale = 1;
+		}
+
+		sprite.makeGraphic(Std.int(data.width * scale),Std.int(data.width * scale),FlxColor.TRANSPARENT);
+
+		var data2:BitmapData = sprite.pixels.clone();
+		var matrix:Matrix = new Matrix();
+		matrix.identity();
+		matrix.scale(scale, scale);
+		data2.fillRect(data2.rect, FlxColor.TRANSPARENT);
+		data2.draw(data, matrix, null, null, null, true);
+		sprite.pixels = data2;
+		
+		luaSprites.set(toBeCalled,sprite);
+		// and I quote:
+		// shitty layering but it works!
+		if (drawBehind)
+		{
+			remove(gf);
+			remove(boyfriend);
+			remove(dad);
+		}
+		add(sprite);
+		if (drawBehind)
+		{
+			add(gf);
+			add(boyfriend);
+			add(dad);
+		}
+		#end
+		return toBeCalled;
+	}
+
+	// LUA SHIT
+
 	override public function create()
 	{
 
@@ -902,6 +1097,164 @@ class PlayState extends MusicBeatState
 		if (loadRep)
 			replayTxt.cameras = [camHUD];
 
+		// if (SONG.song == 'South')
+		// FlxG.camera.alpha = 0.7;
+		// UI_camera.zoom = 1;
+
+		// cameras = [FlxG.cameras.list[1]];
+		startingSong = true;
+		
+		if (isStoryMode)
+		{
+			switch (curSong.toLowerCase())
+			{
+				case "winter-horrorland":
+					var blackScreen:FlxSprite = new FlxSprite(0, 0).makeGraphic(Std.int(FlxG.width * 2), Std.int(FlxG.height * 2), FlxColor.BLACK);
+					add(blackScreen);
+					blackScreen.scrollFactor.set();
+					camHUD.visible = false;
+
+					new FlxTimer().start(0.1, function(tmr:FlxTimer)
+					{
+						remove(blackScreen);
+						FlxG.sound.play(Paths.sound('Lights_Turn_On'));
+						camFollow.y = -2050;
+						camFollow.x += 200;
+						FlxG.camera.focusOn(camFollow.getPosition());
+						FlxG.camera.zoom = 1.5;
+
+						new FlxTimer().start(0.8, function(tmr:FlxTimer)
+						{
+							camHUD.visible = true;
+							remove(blackScreen);
+							FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, 2.5, {
+								ease: FlxEase.quadInOut,
+								onComplete: function(twn:FlxTween)
+								{
+									startCountdown();
+								}
+							});
+						});
+					});
+				case 'senpai':
+					schoolIntro(doof);
+				case 'roses':
+					FlxG.sound.play(Paths.sound('ANGRY'));
+					schoolIntro(doof);
+				case 'thorns':
+					schoolIntro(doof);
+				default:
+					startCountdown();
+			}
+		}
+		else
+		{
+			switch (curSong.toLowerCase())
+			{
+				default:
+					startCountdown();
+			}
+		}
+
+		if (!loadRep)
+			rep = new Replay("na");
+
+		super.create();
+	}
+
+	function schoolIntro(?dialogueBox:DialogueBox):Void
+	{
+		var black:FlxSprite = new FlxSprite(-100, -100).makeGraphic(FlxG.width * 2, FlxG.height * 2, FlxColor.BLACK);
+		black.scrollFactor.set();
+		add(black);
+
+		var red:FlxSprite = new FlxSprite(-100, -100).makeGraphic(FlxG.width * 2, FlxG.height * 2, 0xFFff1b31);
+		red.scrollFactor.set();
+
+		var senpaiEvil:FlxSprite = new FlxSprite();
+		senpaiEvil.frames = Paths.getSparrowAtlas('weeb/senpaiCrazy');
+		senpaiEvil.animation.addByPrefix('idle', 'Senpai Pre Explosion', 24, false);
+		senpaiEvil.setGraphicSize(Std.int(senpaiEvil.width * 6));
+		senpaiEvil.scrollFactor.set();
+		senpaiEvil.updateHitbox();
+		senpaiEvil.screenCenter();
+
+		if (SONG.song.toLowerCase() == 'roses' || SONG.song.toLowerCase() == 'thorns')
+		{
+			remove(black);
+
+			if (SONG.song.toLowerCase() == 'thorns')
+			{
+				add(red);
+			}
+		}
+
+		new FlxTimer().start(0.3, function(tmr:FlxTimer)
+		{
+			black.alpha -= 0.15;
+
+			if (black.alpha > 0)
+			{
+				tmr.reset(0.3);
+			}
+			else
+			{
+				if (dialogueBox != null)
+				{
+					inCutscene = true;
+
+					if (SONG.song.toLowerCase() == 'thorns')
+					{
+						add(senpaiEvil);
+						senpaiEvil.alpha = 0;
+						new FlxTimer().start(0.3, function(swagTimer:FlxTimer)
+						{
+							senpaiEvil.alpha += 0.15;
+							if (senpaiEvil.alpha < 1)
+							{
+								swagTimer.reset();
+							}
+							else
+							{
+								senpaiEvil.animation.play('idle');
+								FlxG.sound.play(Paths.sound('Senpai_Dies'), 1, false, null, true, function()
+								{
+									remove(senpaiEvil);
+									remove(red);
+									FlxG.camera.fade(FlxColor.WHITE, 0.01, true, function()
+									{
+										add(dialogueBox);
+									}, true);
+								});
+								new FlxTimer().start(3.2, function(deadTime:FlxTimer)
+								{
+									FlxG.camera.fade(FlxColor.WHITE, 1.6, false);
+								});
+							}
+						});
+					}
+					else
+					{
+						add(dialogueBox);
+					}
+				}
+				else
+					startCountdown();
+
+				remove(black);
+			}
+		});
+	}
+
+	var startTimer:FlxTimer;
+	var perfectMode:Bool = false;
+
+	function startCountdown():Void
+	{
+		inCutscene = false;
+
+		generateStaticArrows(0);
+		generateStaticArrows(1);
 
 
 		if (executeModchart) // dude I hate lua (jkjkjkjk)
@@ -917,7 +1270,7 @@ class PlayState extends MusicBeatState
 	
 				if (result != 0)
 					trace('COMPILE ERROR\n' + getLuaErrorMessage(lua));
-	
+
 				// get some fukin globals up in here bois
 	
 				setVar("bpm", Conductor.bpm);
@@ -1150,165 +1503,6 @@ class PlayState extends MusicBeatState
 				trace('return: ' + Lua.tostring(lua,callLua('start', [PlayState.SONG.song])));
 			}
 
-		// if (SONG.song == 'South')
-		// FlxG.camera.alpha = 0.7;
-		// UI_camera.zoom = 1;
-
-		// cameras = [FlxG.cameras.list[1]];
-		startingSong = true;
-
-		if (isStoryMode)
-		{
-			switch (curSong.toLowerCase())
-			{
-				case "winter-horrorland":
-					var blackScreen:FlxSprite = new FlxSprite(0, 0).makeGraphic(Std.int(FlxG.width * 2), Std.int(FlxG.height * 2), FlxColor.BLACK);
-					add(blackScreen);
-					blackScreen.scrollFactor.set();
-					camHUD.visible = false;
-
-					new FlxTimer().start(0.1, function(tmr:FlxTimer)
-					{
-						remove(blackScreen);
-						FlxG.sound.play(Paths.sound('Lights_Turn_On'));
-						camFollow.y = -2050;
-						camFollow.x += 200;
-						FlxG.camera.focusOn(camFollow.getPosition());
-						FlxG.camera.zoom = 1.5;
-
-						new FlxTimer().start(0.8, function(tmr:FlxTimer)
-						{
-							camHUD.visible = true;
-							remove(blackScreen);
-							FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, 2.5, {
-								ease: FlxEase.quadInOut,
-								onComplete: function(twn:FlxTween)
-								{
-									startCountdown();
-								}
-							});
-						});
-					});
-				case 'senpai':
-					schoolIntro(doof);
-				case 'roses':
-					FlxG.sound.play(Paths.sound('ANGRY'));
-					schoolIntro(doof);
-				case 'thorns':
-					schoolIntro(doof);
-				default:
-					startCountdown();
-			}
-		}
-		else
-		{
-			switch (curSong.toLowerCase())
-			{
-				default:
-					startCountdown();
-			}
-		}
-
-		if (!loadRep)
-			rep = new Replay("na");
-
-		super.create();
-	}
-
-	function schoolIntro(?dialogueBox:DialogueBox):Void
-	{
-		var black:FlxSprite = new FlxSprite(-100, -100).makeGraphic(FlxG.width * 2, FlxG.height * 2, FlxColor.BLACK);
-		black.scrollFactor.set();
-		add(black);
-
-		var red:FlxSprite = new FlxSprite(-100, -100).makeGraphic(FlxG.width * 2, FlxG.height * 2, 0xFFff1b31);
-		red.scrollFactor.set();
-
-		var senpaiEvil:FlxSprite = new FlxSprite();
-		senpaiEvil.frames = Paths.getSparrowAtlas('weeb/senpaiCrazy');
-		senpaiEvil.animation.addByPrefix('idle', 'Senpai Pre Explosion', 24, false);
-		senpaiEvil.setGraphicSize(Std.int(senpaiEvil.width * 6));
-		senpaiEvil.scrollFactor.set();
-		senpaiEvil.updateHitbox();
-		senpaiEvil.screenCenter();
-
-		if (SONG.song.toLowerCase() == 'roses' || SONG.song.toLowerCase() == 'thorns')
-		{
-			remove(black);
-
-			if (SONG.song.toLowerCase() == 'thorns')
-			{
-				add(red);
-			}
-		}
-
-		new FlxTimer().start(0.3, function(tmr:FlxTimer)
-		{
-			black.alpha -= 0.15;
-
-			if (black.alpha > 0)
-			{
-				tmr.reset(0.3);
-			}
-			else
-			{
-				if (dialogueBox != null)
-				{
-					inCutscene = true;
-
-					if (SONG.song.toLowerCase() == 'thorns')
-					{
-						add(senpaiEvil);
-						senpaiEvil.alpha = 0;
-						new FlxTimer().start(0.3, function(swagTimer:FlxTimer)
-						{
-							senpaiEvil.alpha += 0.15;
-							if (senpaiEvil.alpha < 1)
-							{
-								swagTimer.reset();
-							}
-							else
-							{
-								senpaiEvil.animation.play('idle');
-								FlxG.sound.play(Paths.sound('Senpai_Dies'), 1, false, null, true, function()
-								{
-									remove(senpaiEvil);
-									remove(red);
-									FlxG.camera.fade(FlxColor.WHITE, 0.01, true, function()
-									{
-										add(dialogueBox);
-									}, true);
-								});
-								new FlxTimer().start(3.2, function(deadTime:FlxTimer)
-								{
-									FlxG.camera.fade(FlxColor.WHITE, 1.6, false);
-								});
-							}
-						});
-					}
-					else
-					{
-						add(dialogueBox);
-					}
-				}
-				else
-					startCountdown();
-
-				remove(black);
-			}
-		});
-	}
-
-	var startTimer:FlxTimer;
-	var perfectMode:Bool = false;
-
-	function startCountdown():Void
-	{
-		inCutscene = false;
-
-		generateStaticArrows(0);
-		generateStaticArrows(1);
-
 		talking = false;
 		startedCountdown = true;
 		Conductor.songPosition = 0;
@@ -1418,197 +1612,6 @@ class PlayState extends MusicBeatState
 	var lastReportedPlayheadPosition:Int = 0;
 	var songTime:Float = 0;
 
-	// LUA SHIT
-	
-	public static var lua:State = null;
-
-	function callLua(func_name : String, args : Array<Dynamic>, ?type : String) : Dynamic
-	{
-		var result : Any = null;
-
-		Lua.getglobal(lua, func_name);
-
-		for( arg in args ) {
-		   Convert.toLua(lua, arg);
-		}
-  
-		result = Lua.pcall(lua, args.length, 1, 0);
-
-		if( result == null) {
-			return null;
-		  } else {
-			return convert(result, type);
-		  }
-
-	}
-
-	function getType(l, type):Any
-	{
-		return switch Lua.type(l,type) {
-			case t if (t == Lua.LUA_TNIL): null;
-			case t if (t == Lua.LUA_TNUMBER): Lua.tonumber(l, type);
-			case t if (t == Lua.LUA_TSTRING): (Lua.tostring(l, type):String);
-			case t if (t == Lua.LUA_TBOOLEAN): Lua.toboolean(l, type);
-			case t: throw 'you don goofed up. lua type error ($t)';
-		}
-	}
-
-	function getReturnValues(l) {
-		var lua_v:Int;
-		var v:Any = null;
-		while((lua_v = Lua.gettop(l)) != 0) {
-			var type:String = getType(l,lua_v);
-			v = convert(lua_v, type);
-			Lua.pop(l, 1);
-		}
-		return v;
-	}
-
-
-	private function convert(v : Any, type : String) : Dynamic { // I didn't write this lol
-		if( Std.is(v, String) && type != null ) {
-		  var v : String = v;
-		  if( type.substr(0, 4) == 'array' ) {
-			if( type.substr(4) == 'float' ) {
-			  var array : Array<String> = v.split(',');
-			  var array2 : Array<Float> = new Array();
-	
-			  for( vars in array ) {
-				array2.push(Std.parseFloat(vars));
-			  }
-	
-			  return array2;
-			} else if( type.substr(4) == 'int' ) {
-			  var array : Array<String> = v.split(',');
-			  var array2 : Array<Int> = new Array();
-	
-			  for( vars in array ) {
-				array2.push(Std.parseInt(vars));
-			  }
-	
-			  return array2;
-			} else {
-			  var array : Array<String> = v.split(',');
-			  return array;
-			}
-		  } else if( type == 'float' ) {
-			return Std.parseFloat(v);
-		  } else if( type == 'int' ) {
-			return Std.parseInt(v);
-		  } else if( type == 'bool' ) {
-			if( v == 'true' ) {
-			  return true;
-			} else {
-			  return false;
-			}
-		  } else {
-			return v;
-		  }
-		} else {
-		  return v;
-		}
-	  }
-
-	function getLuaErrorMessage(l) {
-		var v:String = Lua.tostring(l, -1);
-		Lua.pop(l, 1);
-		return v;
-	}
-
-	public function setVar(var_name : String, object : Dynamic){
-		// trace('setting variable ' + var_name + ' to ' + object);
-
-		Lua.pushnumber(lua,object);
-		Lua.setglobal(lua, var_name);
-	  }
-
-	public function getVar(var_name : String, type : String) : Dynamic {
-		var result : Any = null;
-
-		// trace('getting variable ' + var_name + ' with a type of ' + type);
-
-		Lua.getglobal(lua, var_name);
-		result = Convert.fromLua(lua,-1);
-		Lua.pop(lua,1);
-
-		if( result == null ) {
-		  return null;
-		} else {
-		  var result = convert(result, type);
-		  //trace(var_name + ' result: ' + result);
-		  return result;
-		}
-	  }
-
-	  function getActorByName(id:String):Dynamic
-	  {
-		  // pre defined names
-		  switch(id)
-		  {
-			case 'boyfriend':
-				return boyfriend;
-			case 'girlfriend':
-				return gf;
-			case 'dad':
-				return dad;
-		  }
-		  // lua objects or what ever
-		  if (luaSprites.get(id) == null)
-			return strumLineNotes.members[Std.parseInt(id)];
-		return luaSprites.get(id);
-	  }
-
-	public static var luaSprites:Map<String,FlxSprite> = [];
-
-
-
-	function makeLuaSprite(spritePath:String,toBeCalled:String, drawBehind:Bool)
-	{
-		#if sys
-		var data:BitmapData = BitmapData.fromFile(Sys.getCwd() + "assets/data/" + PlayState.SONG.song.toLowerCase() + '/' + spritePath + ".png");
-
-		var sprite:FlxSprite = new FlxSprite(0,0);
-		var imgWidth:Float = FlxG.width / data.width;
-		var imgHeight:Float = FlxG.height / data.height;
-		var scale:Float = imgWidth <= imgHeight ? imgWidth : imgHeight;
-
-		// Cap the scale at x1
-		if (scale > 1)
-		{
-			scale = 1;
-		}
-
-		sprite.makeGraphic(Std.int(data.width * scale),Std.int(data.width * scale),FlxColor.TRANSPARENT);
-
-		var data2:BitmapData = sprite.pixels.clone();
-		var matrix:Matrix = new Matrix();
-		matrix.identity();
-		matrix.scale(scale, scale);
-		data2.fillRect(data2.rect, FlxColor.TRANSPARENT);
-		data2.draw(data, matrix, null, null, null, true);
-		sprite.pixels = data2;
-		
-		luaSprites.set(toBeCalled,sprite);
-		// and I quote:
-		// shitty layering but it works!
-		if (drawBehind)
-		{
-			remove(gf);
-			remove(boyfriend);
-			remove(dad);
-		}
-		add(sprite);
-		if (drawBehind)
-		{
-			add(gf);
-			add(boyfriend);
-			add(dad);
-		}
-		#end
-		return toBeCalled;
-	}
-
-	// LUA SHIT
 
 	var songStarted = false;
 
@@ -2595,6 +2598,7 @@ class PlayState extends MusicBeatState
 
 					if (daNote.isSustainNote)
 						daNote.x += daNote.width / 2 + 17;
+					
 
 					//trace(daNote.y);
 					// WIP interpolation shit? Need to fix the pause issue
