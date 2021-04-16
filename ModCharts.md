@@ -251,13 +251,13 @@ Set's the scale of the rendered note id
 
 *Note: Setting a Rendered Note's property will stop the note from updating it's alpha & x properties*
 
-##### setRenderedNoteScaleX(float scale, int id)
+##### setRenderedNoteScaleX(float scale, int id) **Currently broken**
 
 Set's the scale x of the rendered note id
 
 *Note: Setting a Rendered Note's property will stop the note from updating it's alpha & x properties*
 
-##### setRenderedNoteScaleY(float scale, int id)
+##### setRenderedNoteScaleY(float scale, int id) **Currently broken**
 
 Set's the scale y of the rendered note id
 
@@ -307,11 +307,11 @@ Set's the angle for the sprite id
 
 Set's the scale for the sprite id
 
-##### setActorScaleX(float x, string/int id)
+##### setActorScaleX(float x, string/int id) **Currently broken**
 
 Set's the scale x for the sprite id
 
-##### setActorScaleY(float y, string/int id)
+##### setActorScaleY(float y, string/int id) **Currently broken**
 
 Set's the scale y for the sprite id
 
