@@ -269,6 +269,7 @@ class PlayState extends MusicBeatState
 				add(halloweenBG);
 
 				isHalloween = true;
+
 			case 'philly':
 				var bg:FlxSprite = new FlxSprite(-100).loadGraphic(Paths.image('sky'));
 				bg.scrollFactor.set(0.1, 0.1);
@@ -545,7 +546,6 @@ class PlayState extends MusicBeatState
 					add(waveSpriteFG);
 				*/
 		}
-
 
 		var gfVersion:String = 'gf';
 
