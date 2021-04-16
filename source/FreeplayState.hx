@@ -35,13 +35,6 @@ class FreeplayState extends MusicBeatState
 
 	override function create()
 	{
-		var initSonglist = CoolUtil.coolTextFile(Paths.txt('freeplaySonglist'));
-
-		for (i in 0...initSonglist.length)
-		{
-			songs.push(new SongMetadata(initSonglist[i], 'gf'));
-		}
-
 		/* 
 			if (FlxG.sound.music != null)
 			{
@@ -61,11 +54,14 @@ class FreeplayState extends MusicBeatState
 		isDebug = true;
 		#end
 
+		if (StoryMenuState.weekUnlocked[1] || isDebug)
+			addWeek(['Tutorial'], ['gf']);
+
 		if (StoryMenuState.weekUnlocked[2] || isDebug)
 			addWeek(['Bopeebo', 'Fresh', 'Dadbattle'], ['dad']);
 
 		if (StoryMenuState.weekUnlocked[2] || isDebug)
-			addWeek(['Spookeez', 'South', 'Monster'], ['spooky']);
+			addWeek(['Spookeez', 'South', 'Monster'], ['spooky', 'spooky', 'monster']);
 
 		if (StoryMenuState.weekUnlocked[3] || isDebug)
 			addWeek(['Pico', 'Philly', 'Blammed'], ['pico']);
@@ -78,6 +74,14 @@ class FreeplayState extends MusicBeatState
 
 		if (StoryMenuState.weekUnlocked[6] || isDebug)
 			addWeek(['Senpai', 'Roses', 'Thorns'], ['senpai', 'senpai', 'spirit']);
+
+		var customSonglist = CoolUtil.coolTextFile(Paths.txt('customSonglist'));
+
+		for (i in 0...customSonglist.length)
+		{
+			if (customSonglist[i] != "")
+				songs.push(new SongMetadata(customSonglist[i], 'bf-old'));
+		} 
 
 		// LOAD MUSIC
 
