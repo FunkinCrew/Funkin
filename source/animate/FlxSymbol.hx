@@ -1,7 +1,12 @@
 package animate;
 
+import flixel.FlxCamera;
 import flixel.FlxSprite;
+import flixel.graphics.frames.FlxFrame.FlxFrameAngle;
 import flixel.math.FlxAngle;
+import flixel.math.FlxMatrix;
+import flixel.math.FlxPoint;
+import openfl.geom.Matrix;
 
 class FlxSymbol extends FlxSprite
 {
@@ -31,15 +36,14 @@ class FlxSymbol extends FlxSprite
 
 	public static var nestedShit:Map<Int, Array<FlxSymbol>> = new Map();
 
-	var swagX:Float = 0;
-	var swagY:Float = 0;
-
 	var symbolMap:Map<String, Animation> = new Map();
 
 	var drawQueue:Array<FlxSymbol> = [];
 
 	public var daFrame:Int = 0;
 	public var nestDepth:Int = 0;
+
+	public var transformMatrix:Matrix = new Matrix();
 
 	function renderFrame(TL:Timeline, coolParsed:Parsed, ?isMainLoop:Bool = false)
 	{
@@ -58,53 +62,25 @@ class FlxSymbol extends FlxSprite
 					{
 						if (Reflect.hasField(element, 'ASI'))
 						{
-							var spr:FlxSymbol = new FlxSymbol(x + element.ASI.M3D[12], y + element.ASI.M3D[13], coolParsed);
-
-							if (oldMatrix != null)
-							{
-								// spr.x += oldMatrix[12];
-								// spr.y += oldMatrix[13];
-							}
-							// trace(element.ASI.M3D[12] + element.ASI.N);
-
+							var spr:FlxSymbol = new FlxSymbol(0, 0, coolParsed);
+							matrixExposed = true;
 							spr.frames = frames;
-							// spr.animation.addByPrefix('swag',)
-
 							spr.frame = spr.frames.getByName(element.ASI.N);
 
-							// spr.flipX = true;
-
 							var m3d = element.ASI.M3D;
-							_matrix.identity();
-							_matrix.setTo(m3d[0], m3d[1], m3d[4], m3d[5], m3d[12], m3d[13]);
+							var dumbassMatrix:Matrix = new Matrix(m3d[0], m3d[1], m3d[4], m3d[5], m3d[12], m3d[13]);
 
-							// spr.scale.x = m3d[0];
-							spr.scale.y = Math.sqrt(_matrix.c * _matrix.c + _matrix.d * _matrix.d);
-							spr.scale.x = Math.sqrt(_matrix.a * _matrix.a + _matrix.b * _matrix.b);
+							dumbassMatrix.concat(_matrix);
+							spr.matrixExposed = true;
+
+							spr.transformMatrix.concat(dumbassMatrix);
+
 							spr.origin.set();
 							spr.origin.x += origin.x;
 							spr.origin.y += origin.y;
-							spr.angle = FlxAngle.asDegrees(Math.atan2(m3d[1], m3d[0])) + angle;
+
 							spr.antialiasing = true;
-
-							// spr.scale.y = m3d[5];
-
-							// if (flipX || m3d[0] == -1)
-							// spr.flipX = true;
-
-							// _matrix.identity();
-
-							// _matrix.setTo(m3d[0], m3d[1], m3d[4], m3d[5], m3d[12], m3d[13]);
-							// spr.x = _matrix.tx + swagX;
-							// spr.y = _matrix.ty + swagY;
-
-							// spr._matrix.setTo(m3d[0], m3d[1], m3d[4], m3d[5], m3d[12], m3d[13]);
-
-							// drawQueue.push(spr);
-
-							setDaMap(spr);
-
-							// swagX = 0;
+							spr.draw();
 						}
 						else
 						{
@@ -117,18 +93,34 @@ class FlxSymbol extends FlxSprite
 
 							// nestedSymbol.TL.L.reverse();
 
-							_matrix.identity();
-							_matrix.setTo(element.SI.M3D[0], element.SI.M3D[1], element.SI.M3D[4], element.SI.M3D[5], element.SI.M3D[12], element.SI.M3D[13]);
+							// _matrix.identity();
 							// _matrix.scale(1, 1);
 
-							var nestedShit:FlxSymbol = new FlxSymbol(x + _matrix.tx, y + _matrix.ty, coolParse);
+							var nestedShit:FlxSymbol = new FlxSymbol(x, y, coolParse);
 							nestedShit.frames = frames;
 
-							nestedShit.scale.x = Math.sqrt(_matrix.a * _matrix.a + _matrix.b + _matrix.b);
-							nestedShit.scale.y = Math.sqrt(_matrix.a * _matrix.a + _matrix.b * _matrix.b);
-							nestedShit.origin.set(element.SI.TRP.x, element.SI.TRP.y);
+							var swagMatrix:FlxMatrix = new FlxMatrix(element.SI.M3D[0], element.SI.M3D[1], element.SI.M3D[4], element.SI.M3D[5],
+								element.SI.M3D[12], element.SI.M3D[13]);
 
-							nestedShit.angle = FlxAngle.asDegrees(Math.atan2(_matrix.b, _matrix.a));
+							// _matrix.concat(swagMatrix);
+
+							swagMatrix.concat(_matrix);
+
+							nestedShit._matrix.concat(swagMatrix);
+							// nestedShit.x = swagMatrix.tx;
+							// nestedShit.y = swagMatrix.ty;
+
+							// nestedShit._skewMatrix.identity();
+							// nestedShit._skewMatrix.concat(swagMatrix);
+							// _matrix.setTo(element.SI.M3D[0], element.SI.M3D[1], element.SI.M3D[4], element.SI.M3D[5], element.SI.M3D[12], element.SI.M3D[13]);
+
+							// nestedShit.scale.x = Math.sqrt(_matrix.a * _matrix.a + _matrix.b + _matrix.b);
+							// nestedShit.scale.y = Math.sqrt(_matrix.a * _matrix.a + _matrix.b * _matrix.b);
+							// nestedShit.origin.set(element.SI.TRP.x, element.SI.TRP.y);
+
+							nestedShit.origin.set(element.SI.TRP.x, element.SI.TRP.y);
+							// nestedShit.angle += ((180 / Math.PI) * Math.atan2(swagMatrix.b, swagMatrix.a));
+							// nestedShit.angle += angle;
 
 							if (symbolAtlasShit.exists(nestedSymbol.SN))
 							{
@@ -195,6 +187,61 @@ class FlxSymbol extends FlxSprite
 		}
 
 		return awesomeMap;
+	}
+
+	override function drawComplex(camera:FlxCamera):Void
+	{
+		_frame.prepareMatrix(_matrix, FlxFrameAngle.ANGLE_0, checkFlipX(), checkFlipY());
+		_matrix.translate(-origin.x, -origin.y);
+		_matrix.scale(scale.x, scale.y);
+
+		if (matrixExposed)
+		{
+			_matrix.concat(transformMatrix);
+		}
+		else
+		{
+			if (bakedRotationAngle <= 0)
+			{
+				updateTrig();
+
+				if (angle != 0)
+					_matrix.rotateWithTrig(_cosAngle, _sinAngle);
+			}
+
+			// updateSkewMatrix();
+			_matrix.concat(_skewMatrix);
+		}
+
+		_point.addPoint(origin);
+		if (isPixelPerfectRender(camera))
+			_point.floor();
+
+		_matrix.translate(_point.x, _point.y);
+		camera.drawPixels(_frame, framePixels, _matrix, colorTransform, blend, antialiasing);
+	}
+
+	var _skewMatrix:Matrix = new Matrix();
+
+	// public var transformMatrix(default, null):Matrix = new Matrix();
+
+	/**
+	 * Bool flag showing whether transformMatrix is used for rendering or not.
+	 * False by default, which means that transformMatrix isn't used for rendering
+	 */
+	public var matrixExposed:Bool = false;
+
+	public var skew(default, null):FlxPoint = FlxPoint.get();
+
+	function updateSkewMatrix():Void
+	{
+		_skewMatrix.identity();
+
+		if (skew.x != 0 || skew.y != 0)
+		{
+			_skewMatrix.b = Math.tan(skew.y * FlxAngle.TO_RAD);
+			_skewMatrix.c = Math.tan(skew.x * FlxAngle.TO_RAD);
+		}
 	}
 }
 
