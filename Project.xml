@@ -48,47 +48,51 @@
 	<define name="NO_PRELOAD_ALL" unless="PRELOAD_ALL"/>
 	
 	<section if="PRELOAD_ALL">
-		<library name="songs"    preload="true" />
-		<library name="shared"   preload="true" />
-		<library name="tutorial" preload="true" />
-		<library name="week1"    preload="true" />
-		<library name="week2"    preload="true" />
-		<library name="week3"    preload="true" />
-		<library name="week4"    preload="true" />
-		<library name="week5"    preload="true" />
-		<library name="week6"    preload="true" />
+		<library name="songs"       preload="true" />
+		<library name="shared"      preload="true" />
+		<library name="stage"       preload="true" />
+		<library name="spooky"      preload="true" />
+		<library name="philly"      preload="true" />
+		<library name="limo"        preload="true" />
+		<library name="mall"        preload="true" />
+		<library name="mall-evil"   preload="true" />
+		<library name="school"      preload="true" />
+		<library name="school-evil" preload="true" />
 	</section>
 	
 	<section if="NO_PRELOAD_ALL">
-		<library name="songs"    preload="false" />
-		<library name="shared"   preload="false" />
-		<library name="tutorial" preload="false" />
-		<library name="week1"    preload="false" />
-		<library name="week2"    preload="false" />
-		<library name="week3"    preload="false" />
-		<library name="week4"    preload="false" />
-		<library name="week5"    preload="false" />
-		<library name="week6"    preload="false" />
+		<library name="songs"       preload="false" />
+		<library name="shared"      preload="false" />
+		<library name="stage"       preload="false" />
+		<library name="spooky"      preload="false" />
+		<library name="philly"      preload="false" />
+		<library name="limo"        preload="false" />
+		<library name="mall"        preload="false" />
+		<library name="mall-evil"   preload="false" />
+		<library name="school"      preload="false" />
+		<library name="school-evil" preload="false" />
 	</section>
 	
-	<assets path="assets/songs"    library="songs"    exclude="*.ogg" if="web"/>
-	<assets path="assets/songs"    library="songs"    exclude="*.mp3" unless="web"/>
-	<assets path="assets/shared"   library="shared"   exclude="*.ogg" if="web"/>
-	<assets path="assets/shared"   library="shared"   exclude="*.mp3" unless="web"/>
-	<assets path="assets/tutorial" library="tutorial" exclude="*.ogg" if="web"/>
-	<assets path="assets/tutorial" library="tutorial" exclude="*.mp3" unless="web"/>
-	<assets path="assets/week1"    library="week1"    exclude="*.ogg" if="web"/>
-	<assets path="assets/week1"    library="week1"    exclude="*.mp3" unless="web"/>
-	<assets path="assets/week2"    library="week2"    exclude="*.ogg" if="web"/>
-	<assets path="assets/week2"    library="week2"    exclude="*.mp3" unless="web"/>
-	<assets path="assets/week3"    library="week3"    exclude="*.ogg" if="web"/>
-	<assets path="assets/week3"    library="week3"    exclude="*.mp3" unless="web"/>
-	<assets path="assets/week4"    library="week4"    exclude="*.ogg" if="web"/>
-	<assets path="assets/week4"    library="week4"    exclude="*.mp3" unless="web"/>
-	<assets path="assets/week5"    library="week5"    exclude="*.ogg" if="web"/>
-	<assets path="assets/week5"    library="week5"    exclude="*.mp3" unless="web"/>
-	<assets path="assets/week6"    library="week6"    exclude="*.ogg" if="web"/>
-	<assets path="assets/week6"    library="week6"    exclude="*.mp3" unless="web"/>
+	<assets path="assets/songs"       library="songs"       exclude="*.ogg" if="web"/>
+	<assets path="assets/songs"       library="songs"       exclude="*.mp3" unless="web"/>
+	<assets path="assets/shared"      library="shared"      exclude="*.ogg" if="web"/>
+	<assets path="assets/shared"      library="shared"      exclude="*.mp3" unless="web"/>
+	<assets path="assets/stage"       library="stage"       exclude="*.ogg" if="web"/>
+	<assets path="assets/stage"       library="stage"       exclude="*.mp3" unless="web"/>
+	<assets path="assets/spooky"      library="spooky"      exclude="*.ogg" if="web"/>
+	<assets path="assets/spooky"      library="spooky"      exclude="*.mp3" unless="web"/>
+	<assets path="assets/philly"      library="philly"      exclude="*.ogg" if="web"/>
+	<assets path="assets/philly"      library="philly"      exclude="*.mp3" unless="web"/>
+	<assets path="assets/limo"        library="limo"        exclude="*.ogg" if="web"/>
+	<assets path="assets/limo"        library="limo"        exclude="*.mp3" unless="web"/>
+	<assets path="assets/mall"        library="mall"        exclude="*.ogg" if="web"/>
+	<assets path="assets/mall"        library="mall"        exclude="*.mp3" unless="web"/>
+	<assets path="assets/mall-evil"   library="mall-evil"   exclude="*.ogg" if="web"/>
+	<assets path="assets/mall-evil"   library="mall-evil"   exclude="*.mp3" unless="web"/>
+	<assets path="assets/school"      library="school"      exclude="*.ogg" if="web"/>
+	<assets path="assets/school"      library="school"      exclude="*.mp3" unless="web"/>
+	<assets path="assets/school-evil" library="school-evil" exclude="*.ogg" if="web"/>
+	<assets path="assets/school-evil" library="school-evil" exclude="*.mp3" unless="web"/>
 	
 	<assets path='example_mods' rename='mods' embed='false'/>
 	<assets path='art/readme.txt' rename='do NOT readme.txt' />
