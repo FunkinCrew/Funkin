@@ -4,6 +4,17 @@ All notable changes will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.2]
+### Changed
+- Trails on notes are more consistent
+- Title now shows "Friday Night Funkin' Kade Engine"
+- **THIS UPDATE WILL RESET YOUR SAVE FOR KADE ENGINE**, so you gotta redo all of ur settings.
+
+### Added
+- Lua Modchart support [(documentation located here)](https://github.com/KadeDev/Kade-Engine/blob/master/ModCharts.md)
+- New option called watermarks which removes all watermarks from Kade Engine
+- Chart spesfic offsets
+
 ## [1.4.1]
 ### Fixed
 - Rating's and Accuracy calculation (they actually work now)
