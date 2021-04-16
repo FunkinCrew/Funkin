@@ -63,10 +63,7 @@ class LoadingState extends MusicBeatState
 				if (PlayState.SONG.needsVoices)
 					checkLoadSong(getVocalPath());
 				checkLibrary("shared");
-				if (PlayState.storyWeek > 0)
-					checkLibrary("week" + PlayState.storyWeek);
-				else
-					checkLibrary("tutorial");
+				checkLibrary(PlayState.curStage);
 				
 				var fadeTime = 0.5;
 				FlxG.camera.fade(FlxG.camera.bgColor, fadeTime, true);
@@ -151,11 +148,39 @@ class LoadingState extends MusicBeatState
 	
 	static function getNextState(target:FlxState, stopMusic = false):FlxState
 	{
-		Paths.setCurrentLevel("week" + PlayState.storyWeek);
+		// stage fallback so mods won't break
+		if (PlayState.SONG.stage == null)
+		{
+			switch (PlayState.SONG.song.toLowerCase())
+			{
+				case 'tutorial' | 'bopeebo' | 'fresh' | 'dadbattle':
+					PlayState.curStage = "stage";
+				case 'spookeez' | 'south' | 'monster':
+					PlayState.curStage = "spooky";
+				case 'pico' | 'philly' | 'blammed':
+					PlayState.curStage = "philly";
+				case 'satin-panties' | 'high' | 'milf':
+					PlayState.curStage = "limo";
+				case 'cocoa' | 'eggnog':
+					PlayState.curStage = "mall";
+				case 'winter-horrorland':
+					PlayState.curStage = "mall-evil";
+				case 'senpai' | 'roses':
+					PlayState.curStage = "school";
+				case 'thorns':
+					PlayState.curStage = "school-evil";
+				default:
+					PlayState.curStage = "stage";
+			}
+		}
+		else if (PlayState.SONG.stage != null)
+			PlayState.curStage = PlayState.SONG.stage;
+
+		Paths.setCurrentLevel(PlayState.curStage);
 		#if NO_PRELOAD_ALL
 		var loaded = isSoundLoaded(getSongPath())
 			&& (!PlayState.SONG.needsVoices || isSoundLoaded(getVocalPath()))
-			&& isLibraryLoaded("shared");
+			&& isLibraryLoaded("shared") && isLibraryLoaded(PlayState.curStage);
 		
 		if (!loaded)
 			return new LoadingState(target, stopMusic);
