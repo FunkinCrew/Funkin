@@ -1,3 +1,6 @@
+=== 1.1.2 ===
+- Revamped the Game Over screen
+
 === 1.1.1 ===
 + Added an option to enable extra songs in options.json
 + Added Ridge as an Extra Song
