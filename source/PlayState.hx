@@ -132,6 +132,7 @@ class PlayState extends MusicBeatState
 	var iconP1txt:FlxText;
 	var iconP2txt:FlxText;
 	var levelInfo:FlxText;
+	var levelInfoIcon:FlxSprite;
 
 	// small things: do icon check
 	var doIconCheck:Bool = true;
@@ -847,6 +848,13 @@ class PlayState extends MusicBeatState
 		levelInfo.alpha = 0;
 		levelInfo.x = FlxG.width - (levelInfo.width + 20);
 
+		levelInfoIcon = new HealthIcon(SONG.player2, false);
+		levelInfoIcon.scale.x = 0.35;
+		levelInfoIcon.scale.y = 0.35;
+		levelInfoIcon.x = FlxG.width - (levelInfo.width) - 120;
+		levelInfoIcon.y = levelInfo.y - (levelInfoIcon.height / 2) + 16;
+		levelInfoIcon.alpha = 0;
+
 		if (STOptions.st_debug == true) {
 			add(conductorPosTxt);
 			add(lyricIndicatorTxt);
@@ -858,6 +866,7 @@ class PlayState extends MusicBeatState
 
 		if (STOptions.st_songIndicator == true) {
 			add(levelInfo);
+			add(levelInfoIcon);
 		}
 
 		strumLineNotes.cameras = [camHUD];
@@ -876,6 +885,7 @@ class PlayState extends MusicBeatState
 		lyricTxt.cameras = [camHUD];
 		lyricSpeakerIcon.cameras = [camHUD];
 		levelInfo.cameras = [camHUD];
+		levelInfoIcon.cameras = [camHUD];
 		doof.cameras = [camHUD];
 
 		// if (SONG.song == 'South')
@@ -1105,6 +1115,7 @@ class PlayState extends MusicBeatState
 			{
 				case 0:
 					FlxTween.tween(levelInfo, {alpha: 1, y: 20}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.3});
+					FlxTween.tween(levelInfoIcon, {alpha: 1, y: 20 - (levelInfoIcon.height / 2) + 16}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.3});
 
 					if (STOptions.st_fixWeek6CountSounds == true) {
 						FlxG.sound.play(Paths.sound('intro3' + altSuffix), 0.6);
@@ -1182,6 +1193,7 @@ class PlayState extends MusicBeatState
 					}
 				case 4:
 					FlxTween.tween(levelInfo, {alpha: 0, y: 0}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.3});
+					FlxTween.tween(levelInfoIcon, {alpha: 0, y: 0 - (levelInfoIcon.height / 2) + 16}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.3});
 			}
 
 			swagCounter += 1;
@@ -1881,10 +1893,12 @@ class PlayState extends MusicBeatState
 					if (doIconCheck == true) {
 						if (Conductor.songPosition <= 0) {
 							iconP2.animation.play('unknown');
+							levelInfoIcon.animation.play('unknown');
 							iconP2txt.text = "unknown";
 						} else {
 							iconP2.animation.play(SONG.player2);
 							iconP2txt.text = SONG.player2;
+							levelInfoIcon.animation.play(SONG.player2);
 							doIconCheck = false;
 						}
 					}
@@ -1900,10 +1914,12 @@ class PlayState extends MusicBeatState
 					if (doIconCheck == true) {
 						if (Conductor.songPosition <= 9200) {
 							iconP2.animation.play('unknown');
+							levelInfoIcon.animation.play('unknown');
 							iconP2txt.text = "unknown";
 						} else {
 							iconP2.animation.play(SONG.player2);
 							iconP2txt.text = SONG.player2;
+							levelInfoIcon.animation.play(SONG.player2);
 							doIconCheck = false;
 						}
 					}

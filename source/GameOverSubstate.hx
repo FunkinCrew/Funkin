@@ -58,8 +58,8 @@ class GameOverSubstate extends MusicBeatSubstate
 		FlxG.camera.target = null;
 
 		bksp = new FlxSprite(32, FlxG.height - 128);
-		bksp.frames = Paths.getSparrowAtlas('backspace');
-		bksp.animation.addByPrefix('indicator', 'backspace to exit white', 24, false);
+		bksp.frames = Paths.getSparrowAtlas('st_ui_assets');
+		bksp.animation.addByPrefix('indicator', 'backspace indicator', 24, false);
 		bksp.antialiasing = true;
 		bksp.animation.play('indicator');
 		bksp.alpha = 0;
