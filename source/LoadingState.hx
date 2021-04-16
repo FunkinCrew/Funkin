@@ -173,7 +173,7 @@ class LoadingState extends MusicBeatState
 					PlayState.curStage = "stage";
 			}
 		}
-		else if (PlayState.SONG.stage != null)
+		else
 			PlayState.curStage = PlayState.SONG.stage;
 
 		Paths.setCurrentLevel(PlayState.curStage);
