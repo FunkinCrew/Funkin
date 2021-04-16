@@ -10,6 +10,7 @@ using StringTools;
 typedef SwagSong =
 {
 	var song:String;
+	var stage:String;
 	var notes:Array<SwagSection>;
 	var bpm:Int;
 	var needsVoices:Bool;
@@ -23,6 +24,7 @@ typedef SwagSong =
 class Song
 {
 	public var song:String;
+	public var stage:String;
 	public var notes:Array<SwagSection>;
 	public var bpm:Int;
 	public var needsVoices:Bool = true;
