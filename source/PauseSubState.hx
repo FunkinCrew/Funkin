@@ -1,6 +1,8 @@
 package;
 
+#if cpp
 import llua.Lua;
+#end
 import Controls.Control;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -71,7 +73,7 @@ class PauseSubState extends MusicBeatSubstate
 		perSongOffset.scrollFactor.set();
 		perSongOffset.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		
-		#if desktop
+		#if cpp
 			add(perSongOffset);
 		#end
 
@@ -112,7 +114,7 @@ class PauseSubState extends MusicBeatSubstate
 			changeSelection(1);
 		}
 		
-		#if desktop
+		#if cpp
 			else if (leftP)
 			{
 				oldOffset = PlayState.songOffset;
@@ -180,18 +182,14 @@ class PauseSubState extends MusicBeatSubstate
 					FlxG.resetState();
 				case "Exit to menu":
 					PlayState.loadRep = false;
+					#if cpp
 					if (PlayState.lua != null)
 					{
 						Lua.close(PlayState.lua);
 						PlayState.lua = null;
 					}
-					if (PlayState.offsetTesting)
-					{
-						PlayState.offsetTesting = false;
-						FlxG.switchState(new OptionsMenu());
-					}
-					else
-						FlxG.switchState(new MainMenuState());
+					#end
+					FlxG.switchState(new MainMenuState());
 			}
 		}
 

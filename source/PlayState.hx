@@ -8,10 +8,16 @@ import flixel.graphics.FlxGraphic;
 import openfl.utils.AssetManifest;
 import openfl.utils.AssetLibrary;
 import flixel.system.FlxAssets;
+
+// Lua
+
+#if cpp
 import llua.Convert;
 import llua.Lua;
 import llua.State;
 import llua.LuaL;
+#end
+
 import lime.app.Application;
 import lime.media.AudioContext;
 import lime.media.AudioManager;
@@ -58,7 +64,7 @@ import openfl.filters.ShaderFilter;
 #if windows
 import Discord.DiscordClient;
 #end
-#if desktop
+#if cpp
 import Sys;
 import sys.FileSystem;
 #end
@@ -205,7 +211,9 @@ class PlayState extends MusicBeatState
 	private var executeModchart = false;
 
 	// LUA SHIT
-		
+	
+	#if cpp
+
 	public static var lua:State = null;
 
 	function callLua(func_name : String, args : Array<Dynamic>, ?type : String) : Dynamic
@@ -396,7 +404,7 @@ class PlayState extends MusicBeatState
 		#end
 		return toBeCalled;
 	}
-
+	#end
 	// LUA SHIT
 
 	override public function create()
@@ -1257,6 +1265,7 @@ class PlayState extends MusicBeatState
 		generateStaticArrows(1);
 
 
+		#if cpp
 		if (executeModchart) // dude I hate lua (jkjkjkjk)
 			{
 				trace('opening a lua state (because we are cool :))');
@@ -1503,6 +1512,8 @@ class PlayState extends MusicBeatState
 				trace('return: ' + Lua.tostring(lua,callLua('start', [PlayState.SONG.song])));
 			}
 
+
+		#end
 		talking = false;
 		startedCountdown = true;
 		Conductor.songPosition = 0;
@@ -1707,7 +1718,7 @@ class PlayState extends MusicBeatState
 		var playerCounter:Int = 0;
 
 		// Per song offset check
-		#if desktop
+		#if cpp
 			var songPath = 'assets/data/' + PlayState.SONG.song.toLowerCase() + '/';
 			for(file in sys.FileSystem.readDirectory(songPath))
 			{
@@ -2080,6 +2091,7 @@ class PlayState extends MusicBeatState
 		perfectMode = false;
 		#end
 
+		#if cpp
 		if (executeModchart && lua != null && songStarted)
 		{
 			setVar('songPos',Conductor.songPosition);
@@ -2126,6 +2138,8 @@ class PlayState extends MusicBeatState
 					playerStrums.members[i].visible = p2;
 			}
 		}
+
+		#end
 
 		if (currentFrames == FlxG.save.data.fpsCap)
 		{
@@ -2206,11 +2220,13 @@ class PlayState extends MusicBeatState
 			DiscordClient.changePresence("Chart Editor", null, null, true);
 			#end
 			FlxG.switchState(new ChartingState());
+			#if cpp
 			if (lua != null)
 			{
 				Lua.close(lua);
 				lua = null;
 			}
+			#end
 		}
 
 		// FlxG.watch.addQuick('VOL', vocals.amplitudeLeft);
@@ -2393,7 +2409,16 @@ class PlayState extends MusicBeatState
 			
 			if (camFollow.x != dad.getMidpoint().x + 150 && !PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection)
 			{
-				camFollow.setPosition(dad.getMidpoint().x + 150 + (lua != null ? getVar("followXOffset", "float") : 0), dad.getMidpoint().y - 100 + (lua != null ? getVar("followYOffset", "float") : 0));
+				var offsetX = 0;
+				var offsetY = 0;
+				#if cpp
+				if (lua != null)
+				{
+					offsetX = getVar("followXOffset", "float");
+					offsetY = getVar("followYOffset", "float");
+				}
+				#end
+				camFollow.setPosition(dad.getMidpoint().x + 150 + offsetX, dad.getMidpoint().y - 100 + offsetY);
 				// camFollow.setPosition(lucky.getMidpoint().x - 120, lucky.getMidpoint().y + 210);
 
 				switch (dad.curCharacter)
@@ -2419,7 +2444,16 @@ class PlayState extends MusicBeatState
 
 			if (PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection && camFollow.x != boyfriend.getMidpoint().x - 100)
 			{
-				camFollow.setPosition(boyfriend.getMidpoint().x - 100 + (lua != null ? getVar("followXOffset", "float") : 0), boyfriend.getMidpoint().y - 100 + (lua != null ? getVar("followYOffset", "float") : 0));
+				var offsetX = 0;
+				var offsetY = 0;
+				#if cpp
+				if (lua != null)
+				{
+					offsetX = getVar("followXOffset", "float");
+					offsetY = getVar("followYOffset", "float");
+				}
+				#end
+				camFollow.setPosition(boyfriend.getMidpoint().x - 100 + offsetX, boyfriend.getMidpoint().y - 100 + offsetY);
 
 				switch (curStage)
 				{
@@ -2646,11 +2680,13 @@ class PlayState extends MusicBeatState
 		if (!loadRep)
 			rep.SaveReplay();
 
+		#if cpp
 		if (executeModchart)
 		{
 			Lua.close(lua);
 			lua = null;
 		}
+		#end
 
 		canPause = false;
 		FlxG.sound.music.volume = 0;
@@ -2686,11 +2722,13 @@ class PlayState extends MusicBeatState
 
 					FlxG.switchState(new StoryMenuState());
 
+					#if cpp
 					if (lua != null)
 					{
 						Lua.close(lua);
 						lua = null;
 					}
+					#end
 
 					// if ()
 					StoryMenuState.weekUnlocked[Std.int(Math.min(storyWeek + 1, StoryMenuState.weekUnlocked.length - 1))] = true;
@@ -3710,11 +3748,13 @@ class PlayState extends MusicBeatState
 			resyncVocals();
 		}
 
+		#if cpp
 		if (executeModchart && lua != null)
 		{
 			setVar('curStep',curStep);
 			callLua('stepHit',[curStep]);
 		}
+		#end
 
 		if (dad.curCharacter == 'spooky' && curStep % 4 == 2)
 		{
@@ -3747,11 +3787,13 @@ class PlayState extends MusicBeatState
 			notes.sort(FlxSort.byY, FlxSort.DESCENDING);
 		}
 
+		#if cpp
 		if (executeModchart && lua != null)
 		{
 			setVar('curBeat',curBeat);
 			callLua('beatHit',[curBeat]);
 		}
+		#end
 
 		if (SONG.notes[Math.floor(curStep / 16)] != null)
 		{
