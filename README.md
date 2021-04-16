@@ -25,8 +25,6 @@ Play the Ludum Dare prototype [here](https://ninja-muffin24.itch.io/friday-night
 <a href='https://twitter.com/kawaisprite'><img src="/art/Kawai.png" alt="Kawaisprite" width="175" height="175"></a></b>
 </p>
 
-This game was made with love to Newgrounds and its community. Extra love to Tom Fulp. 💖
-
 <p align="center">
 	<a href="https://www.newgrounds.com/"><img src="/art/preloaderArt.png"></a>
 </p>
