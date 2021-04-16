@@ -154,5 +154,35 @@
         "lyric": "Ridge Racer! Ooohhh, Ridge Racer",
         "end": 83940.00,
         "speaker": "dad-and-bf"
+    },
+    {
+        "start": 90700.00,
+        "lyric": "Step back, it's Ridge Racer...",
+        "end": 93770.00,
+        "speaker": "bf"
+    },
+    {
+        "start": 93770.00,
+        "lyric": "He's the only one to give me what I need",
+        "end": 97140.00,
+        "speaker": "dad"
+    },
+    {
+        "start": 97140.00,
+        "lyric": "Yeah, Ridge Racer",
+        "end": 10060.00,
+        "speaker": "dad-and-bf"
+    },
+    {
+        "start": 10060.00,
+        "lyric": "Yeah, Ridge Racer",
+        "end": 102380.00,
+        "spekaer": "bf"
+    },
+    {
+        "start": 103440.00,
+        "lyric": "Ridge Racer",
+        "end": 106540.00,
+        "speaker": "dad-and-bf"
     }
 ]

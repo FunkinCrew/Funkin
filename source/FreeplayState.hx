@@ -65,6 +65,9 @@ class FreeplayState extends MusicBeatState
 		if (StoryMenuState.weekUnlocked[2] || isDebug)
 			addWeek(['Bopeebo', 'Fresh', 'Dadbattle'], 1, ['dad']);
 
+		if (STOptions.st_extraSongs)
+			addSong("Ridge", 1, "dad");
+
 		if (StoryMenuState.weekUnlocked[2] || isDebug)
 			if (STOptions.st_fixMonsterIconFreeplay == true) {
 				addWeek(['Spookeez', 'South', 'Monster'], 2, ['spooky', 'spooky', 'monster']);
@@ -83,9 +86,6 @@ class FreeplayState extends MusicBeatState
 
 		if (StoryMenuState.weekUnlocked[6] || isDebug)
 			addWeek(['Senpai', 'Roses', 'Thorns'], 6, ['senpai', 'senpai', 'spirit']);
-
-		if (STOptions.st_extraSongs)
-			addSong("Ridge", 1, "dad");
 
 		// LOAD MUSIC
 
