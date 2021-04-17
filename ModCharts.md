@@ -1,6 +1,6 @@
 # Kade Engine Lua Mod Chart Documentation
 
-In the latest version of Kade Engine we introduced Mod Charts. Mod Charts are a way of changing gameplay without hard coded values, this is achieved by using the Lua Scripting language to create script files that run during runtime.
+In the 1.4.2 release of Kade Engine, we introduced Mod Charts. Mod Charts are a way of changing gameplay without hard coded values. This is achieved by using the Lua Scripting language to create script files that run during runtime.
 
 All files **are located in** `assets/data/song/`
 
@@ -197,7 +197,7 @@ Set's the current camera's zoom
 
 Set's the hud's zoom
 
-### Actor's
+### Actors
 
 ##### getRenderedNotes()
 
