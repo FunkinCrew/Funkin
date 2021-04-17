@@ -956,6 +956,12 @@ class PlayState extends MusicBeatState
 					});
 				case 'tutorial':
 					doDialogue(doof);
+				case 'bopeebo':
+					doDialogue(doof);
+				case 'fresh':
+					doDialogue(doof);
+				case 'dadbattle':
+					doDialogue(doof);
 				case 'senpai':
 					doDialogue(doof);
 				case 'roses':
