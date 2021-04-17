@@ -848,7 +848,7 @@ class PlayState extends MusicBeatState
 		levelInfo.alpha = 0;
 		levelInfo.x = FlxG.width - (levelInfo.width + 20);
 
-		levelInfoIcon = new HealthIcon(SONG.player2, false);
+		levelInfoIcon = new HealthIcon("mic", false);
 		levelInfoIcon.scale.x = 0.35;
 		levelInfoIcon.scale.y = 0.35;
 		levelInfoIcon.x = FlxG.width - (levelInfo.width) - 120;
@@ -1893,12 +1893,10 @@ class PlayState extends MusicBeatState
 					if (doIconCheck == true) {
 						if (Conductor.songPosition <= 0) {
 							iconP2.animation.play('unknown');
-							levelInfoIcon.animation.play('unknown');
 							iconP2txt.text = "unknown";
 						} else {
 							iconP2.animation.play(SONG.player2);
 							iconP2txt.text = SONG.player2;
-							levelInfoIcon.animation.play(SONG.player2);
 							doIconCheck = false;
 						}
 					}
@@ -1914,12 +1912,10 @@ class PlayState extends MusicBeatState
 					if (doIconCheck == true) {
 						if (Conductor.songPosition <= 9200) {
 							iconP2.animation.play('unknown');
-							levelInfoIcon.animation.play('unknown');
 							iconP2txt.text = "unknown";
 						} else {
 							iconP2.animation.play(SONG.player2);
 							iconP2txt.text = SONG.player2;
-							levelInfoIcon.animation.play(SONG.player2);
 							doIconCheck = false;
 						}
 					}

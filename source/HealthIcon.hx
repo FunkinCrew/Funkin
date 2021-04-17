@@ -12,7 +12,7 @@ class HealthIcon extends FlxSprite
 	public function new(char:String = 'bf', isPlayer:Bool = false)
 	{
 		super();
-		loadGraphic(Paths.image('iconGrid'), true, 150, 150);
+		loadGraphic(Paths.image('iconGridXL'), true, 150, 150);
 
 		antialiasing = true;
 		animation.add('bf', [0, 1], 0, false, isPlayer);
@@ -34,9 +34,9 @@ class HealthIcon extends FlxSprite
 		animation.add('parents-christmas', [17, 18], 0, false, isPlayer);
 		animation.add('monster', [19, 20], 0, false, isPlayer);
 		animation.add('monster-christmas', [19, 20], 0, false, isPlayer);
-		animation.add('unknown', [50], 0, false, isPlayer); // small things: unknown character icon
-		animation.add('dad-and-bf', [51, 51], 0, false, isPlayer); // small things: dad and bf
-		animation.add('mic', [59, 59], 0, false, isPlayer); // small things: microphone
+		animation.add('dad-and-bf', [200, 200], 0, false, isPlayer); // small things: dad and bf
+		animation.add('unknown', [220, 220], 0, false, isPlayer); // small things: unknown character icon
+		animation.add('mic', [221, 221], 0, false, isPlayer); // small things: microphone
 		animation.play(char);
 		scrollFactor.set();
 	}

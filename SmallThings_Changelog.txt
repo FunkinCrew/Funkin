@@ -1,5 +1,6 @@
 === 1.1.2 ===
 + Added an icon to the level indicator
+- Changed the IconGrid to an XL IconGrid
 - Fixed a clipping issue on the Week 6 menu graphic
 - Revamped the Game Over screen
 
