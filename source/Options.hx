@@ -17,6 +17,7 @@ class STOptions
 	public static var st_customIntro:Bool = true;					// Small Things: Custom intro sequence
 	public static var st_disableFnfVersionCheck:Bool = true;		// Small Things: Disable FNF version check
 	public static var st_debug:Bool = false;						// Small Things: Small Things debug
+	public static var st_extraDialogue:Bool = true;					// Small Things: Extra dialogue
 	public static var st_extraSongs:Bool = true;					// Small Things: Extra songs
 	public static var st_fixMonsterIconFreeplay:Bool = true;		// Small Things: Fix Monster's icon for Monster on Freeplay
 	public static var st_fixScoreLayout:Bool = true;				// Small Things: Fix Score layout
@@ -44,6 +45,9 @@ class STOptions
 		{
 			if (i.name == "debug")
 				STOptions.st_debug = i.value;
+
+			if (i.name == "extraDialogue")
+				STOptions.st_extraDialogue = i.value;
 
 			if (i.name == "extraSongs")
 				STOptions.st_extraSongs = i.value;

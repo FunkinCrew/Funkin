@@ -5,6 +5,11 @@
         "value": false
     },
     {
+        "name": "extraDialogue",
+        "comment": "Enables / Disables extra dialogue (DEFAULT: true)",
+        "value": true
+    },
+    {
         "name": "extraSongs",
         "comment": "Enables / Disables extra songs such as Ridge (DEFAULT: true)",
         "value": true
