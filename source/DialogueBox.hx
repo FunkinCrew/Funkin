@@ -40,6 +40,27 @@ class DialogueBox extends FlxSpriteGroup
 
 		switch (PlayState.SONG.song.toLowerCase())
 		{
+			case 'tutorial':
+				FlxG.sound.playMusic(Paths.music('tutorialInst'), 0.6);
+				FlxG.sound.music.fadeIn(1, 0, 0.8);
+			case 'bopeebo':
+				FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0.6);
+				FlxG.sound.music.fadeIn(1, 0, 0.8);
+			case 'fresh':
+				FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0.6);
+				FlxG.sound.music.fadeIn(1, 0, 0.8);
+			case 'dadbattle':
+				FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0.6);
+				FlxG.sound.music.fadeIn(1, 0, 0.8);
+			case 'satin-panties':
+				FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0.6);
+				FlxG.sound.music.fadeIn(1, 0, 0.8);
+			case 'high':
+				FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0.6);
+				FlxG.sound.music.fadeIn(1, 0, 0.8);
+			case 'milf':
+				FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0.6);
+				FlxG.sound.music.fadeIn(1, 0, 0.8);
 			case 'senpai':
 				FlxG.sound.playMusic(Paths.music('Lunchbox'), 0);
 				FlxG.sound.music.fadeIn(1, 0, 0.8);
@@ -87,6 +108,27 @@ class DialogueBox extends FlxSpriteGroup
 				box.setGraphicSize(Std.int(box.width * 1 * 0.9));
 				box.y = (FlxG.height - box.height) + 80;
 			case 'dadbattle':
+				hasDialog = true;
+				box.frames = Paths.getSparrowAtlas('speech_bubble_talking');
+				box.animation.addByPrefix('normalOpen', 'Speech Bubble Normal Open', 24, false);
+				box.animation.addByPrefix('normal', 'Speech Bubble Normal Open', 24, false);
+				box.setGraphicSize(Std.int(box.width * 1 * 0.9));
+				box.y = (FlxG.height - box.height) + 80;
+			case 'satin-panties':
+				hasDialog = true;
+				box.frames = Paths.getSparrowAtlas('speech_bubble_talking');
+				box.animation.addByPrefix('normalOpen', 'Speech Bubble Normal Open', 24, false);
+				box.animation.addByPrefix('normal', 'Speech Bubble Normal Open', 24, false);
+				box.setGraphicSize(Std.int(box.width * 1 * 0.9));
+				box.y = (FlxG.height - box.height) + 80;
+			case 'high':
+				hasDialog = true;
+				box.frames = Paths.getSparrowAtlas('speech_bubble_talking');
+				box.animation.addByPrefix('normalOpen', 'Speech Bubble Normal Open', 24, false);
+				box.animation.addByPrefix('normal', 'Speech Bubble Normal Open', 24, false);
+				box.setGraphicSize(Std.int(box.width * 1 * 0.9));
+				box.y = (FlxG.height - box.height) + 80;
+			case 'milf':
 				hasDialog = true;
 				box.frames = Paths.getSparrowAtlas('speech_bubble_talking');
 				box.animation.addByPrefix('normalOpen', 'Speech Bubble Normal Open', 24, false);
@@ -210,7 +252,7 @@ class DialogueBox extends FlxSpriteGroup
 		if (FlxG.keys.justPressed.ANY  && dialogueStarted == true)
 		{
 			remove(dialogue);
-				
+			
 			FlxG.sound.play(Paths.sound('clickText'), 0.8);
 
 			if (dialogueList[1] == null && dialogueList[0] != null)
@@ -219,8 +261,27 @@ class DialogueBox extends FlxSpriteGroup
 				{
 					isEnding = true;
 
-					if (PlayState.SONG.song.toLowerCase() == 'senpai' || PlayState.SONG.song.toLowerCase() == 'thorns')
-						FlxG.sound.music.fadeOut(2.2, 0);
+					switch (PlayState.SONG.song.toLowerCase())
+					{
+						case 'tutorial':
+							FlxG.sound.music.fadeOut(2.2, 0);
+						case 'bopeebo':
+							FlxG.sound.music.fadeOut(2.2, 0);
+						case 'fresh':
+							FlxG.sound.music.fadeOut(2.2, 0);
+						case 'dadbattle':
+							FlxG.sound.music.fadeOut(2.2, 0);
+						case 'satin-panties':
+							FlxG.sound.music.fadeOut(2.2, 0);
+						case 'high':
+							FlxG.sound.music.fadeOut(2.2, 0);
+						case 'milf':
+							FlxG.sound.music.fadeOut(2.2, 0);
+						case 'senpai':
+							FlxG.sound.music.fadeOut(2.2, 0);
+						case 'thorns':
+							FlxG.sound.music.fadeOut(2.2, 0);
+					}
 
 					new FlxTimer().start(0.2, function(tmr:FlxTimer)
 					{
@@ -314,6 +375,24 @@ class DialogueBox extends FlxSpriteGroup
 
 					portraitLeft.x = box.x + 64;
 					portraitLeft.y = box.y - 248;
+
+					portraitLeft.visible = true;
+					portraitLeft.animation.play('enter');
+				}
+			case 'mom':
+				portraitRight.visible = false;
+				if (!portraitLeft.visible)
+				{
+					portraitLeft.frames = Paths.getSparrowAtlas('portraits');
+					portraitLeft.animation.addByPrefix('enter', 'mom portrait', 24, false);
+					portraitLeft.setGraphicSize(Std.int(portraitLeft.width * 1 * 0.75));
+					portraitLeft.antialiasing = true;
+					portraitLeft.updateHitbox();
+					portraitLeft.scrollFactor.set();
+					// portraitLeft.screenCenter(X);
+
+					portraitLeft.x = box.x + 64;
+					portraitLeft.y = box.y - 264;
 
 					portraitLeft.visible = true;
 					portraitLeft.animation.play('enter');

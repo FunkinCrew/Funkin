@@ -194,6 +194,12 @@ class PlayState extends MusicBeatState
 				dialogue = CoolUtil.coolTextFile(Paths.txt('fresh/freshDialogue'));
 			case 'dadbattle':
 				dialogue = CoolUtil.coolTextFile(Paths.txt('dadbattle/dadbattleDialogue'));
+			case 'satin-panties':
+				dialogue = CoolUtil.coolTextFile(Paths.txt('satin-panties/satin-pantiesDialogue'));
+			case 'high':
+				dialogue = CoolUtil.coolTextFile(Paths.txt('high/highDialogue'));
+			case 'milf':
+				dialogue = CoolUtil.coolTextFile(Paths.txt('milf/milfDialogue'));
 			case 'senpai':
 				dialogue = CoolUtil.coolTextFile(Paths.txt('senpai/senpaiDialogue'));
 			case 'roses':
@@ -955,13 +961,26 @@ class PlayState extends MusicBeatState
 						});
 					});
 				case 'tutorial':
-					doDialogue(doof);
+					if (STOptions.st_extraDialogue)
+						doDialogue(doof);
 				case 'bopeebo':
-					doDialogue(doof);
+					if (STOptions.st_extraDialogue)
+						doDialogue(doof);
 				case 'fresh':
-					doDialogue(doof);
+					if (STOptions.st_extraDialogue)
+						doDialogue(doof);
 				case 'dadbattle':
-					doDialogue(doof);
+					if (STOptions.st_extraDialogue)
+						doDialogue(doof);
+				case 'satin-panties':
+					if (STOptions.st_extraDialogue)
+						doDialogue(doof);
+				case 'high':
+					if (STOptions.st_extraDialogue)
+						doDialogue(doof);
+				case 'milf':
+					if (STOptions.st_extraDialogue)
+						doDialogue(doof);
 				case 'senpai':
 					doDialogue(doof);
 				case 'roses':

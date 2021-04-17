@@ -2,7 +2,8 @@
 <TextureAtlas imagePath="portraits.png">
 	<!-- Created with Adobe Animate version 19.2.0.405 -->
 	<!-- http://www.adobe.com/products/animate.html -->
-	<SubTexture name="bf portrait0000" x="10" y="987" width="557" height="345"/>
-	<SubTexture name="dad portrait0000" x="10" y="10" width="496" height="547"/>
-	<SubTexture name="gf portrait0000" x="10" y="567" width="549" height="410"/>
+	<SubTexture name="bf portrait0000" x="10" y="1491" width="557" height="345"/>
+	<SubTexture name="dad portrait0000" x="10" y="514" width="496" height="547"/>
+	<SubTexture name="gf portrait0000" x="10" y="1071" width="549" height="410"/>
+	<SubTexture name="mom portrait0000" x="10" y="10" width="563" height="494"/>
 </TextureAtlas>
