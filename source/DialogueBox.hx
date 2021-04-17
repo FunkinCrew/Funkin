@@ -91,11 +91,6 @@ class DialogueBox extends FlxSpriteGroup
 			return;
 		
 		portraitLeft = new FlxSprite(-20, 40);
-		portraitLeft.frames = Paths.getSparrowAtlas('weeb/senpaiPortrait');
-		portraitLeft.animation.addByPrefix('enter', 'Senpai Portrait Enter', 24, false);
-		portraitLeft.setGraphicSize(Std.int(portraitLeft.width * PlayState.daPixelZoom * 0.9));
-		portraitLeft.updateHitbox();
-		portraitLeft.scrollFactor.set();
 		add(portraitLeft);
 		portraitLeft.visible = false;
 
@@ -108,11 +103,6 @@ class DialogueBox extends FlxSpriteGroup
 		}
 
 		portraitRight = new FlxSprite(0, 40);
-		portraitRight.frames = Paths.getSparrowAtlas('weeb/bfPixelPortrait');
-		portraitRight.animation.addByPrefix('enter', 'Boyfriend portrait enter', 24, false);
-		portraitRight.setGraphicSize(Std.int(portraitRight.width * PlayState.daPixelZoom * 0.9));
-		portraitRight.updateHitbox();
-		portraitRight.scrollFactor.set();
 		add(portraitRight);
 		portraitRight.visible = false;
 		
@@ -122,7 +112,7 @@ class DialogueBox extends FlxSpriteGroup
 		add(box);
 
 		box.screenCenter(X);
-		portraitLeft.screenCenter(X);
+		// portraitLeft.screenCenter(X);
 
 		handSelect = new FlxSprite(FlxG.width * 0.9, FlxG.height * 0.9).loadGraphic(Paths.image('weeb/pixelUI/hand_textbox'));
 		add(handSelect);
@@ -238,10 +228,58 @@ class DialogueBox extends FlxSpriteGroup
 
 		switch (curCharacter)
 		{
+			case 'gf':
+				portraitRight.visible = false;
+				if (!portraitLeft.visible)
+				{
+					portraitLeft.frames = Paths.getSparrowAtlas('weeb/senpaiPortrait');
+					portraitLeft.animation.addByPrefix('enter', 'Senpai Portrait Enter', 24, false);
+					portraitLeft.setGraphicSize(Std.int(portraitLeft.width * PlayState.daPixelZoom * 0.9));
+					portraitLeft.updateHitbox();
+					portraitLeft.scrollFactor.set();
+					portraitLeft.screenCenter(X);
+
+					portraitLeft.visible = true;
+					portraitLeft.animation.play('enter');
+				}
+			case 'bf':
+				portraitLeft.visible = false;
+				if (!portraitRight.visible)
+				{
+					portraitRight.frames = Paths.getSparrowAtlas('weeb/bfPixelPortrait');
+					portraitRight.animation.addByPrefix('enter', 'Boyfriend portrait enter', 24, false);
+					portraitRight.setGraphicSize(Std.int(portraitRight.width * PlayState.daPixelZoom * 0.9));
+					portraitRight.updateHitbox();
+					portraitRight.scrollFactor.set();
+
+					portraitRight.visible = true;
+					portraitRight.animation.play('enter');
+				}
+			case 'dad':
+				portraitRight.visible = false;
+				if (!portraitLeft.visible)
+				{
+					portraitLeft.frames = Paths.getSparrowAtlas('weeb/senpaiPortrait');
+					portraitLeft.animation.addByPrefix('enter', 'Senpai Portrait Enter', 24, false);
+					portraitLeft.setGraphicSize(Std.int(portraitLeft.width * PlayState.daPixelZoom * 0.9));
+					portraitLeft.updateHitbox();
+					portraitLeft.scrollFactor.set();
+					portraitLeft.screenCenter(X);
+
+					portraitLeft.visible = true;
+					portraitLeft.animation.play('enter');
+				}
 			case 'senpai':
 				portraitRight.visible = false;
 				if (!portraitLeft.visible)
 				{
+					portraitLeft.frames = Paths.getSparrowAtlas('weeb/senpaiPortrait');
+					portraitLeft.animation.addByPrefix('enter', 'Senpai Portrait Enter', 24, false);
+					portraitLeft.setGraphicSize(Std.int(portraitLeft.width * PlayState.daPixelZoom * 0.9));
+					portraitLeft.updateHitbox();
+					portraitLeft.scrollFactor.set();
+					portraitLeft.screenCenter(X);
+
 					portraitLeft.visible = true;
 					portraitLeft.animation.play('enter');
 				}
@@ -249,6 +287,12 @@ class DialogueBox extends FlxSpriteGroup
 				portraitLeft.visible = false;
 				if (!portraitRight.visible)
 				{
+					portraitRight.frames = Paths.getSparrowAtlas('weeb/bfPixelPortrait');
+					portraitRight.animation.addByPrefix('enter', 'Boyfriend portrait enter', 24, false);
+					portraitRight.setGraphicSize(Std.int(portraitRight.width * PlayState.daPixelZoom * 0.9));
+					portraitRight.updateHitbox();
+					portraitRight.scrollFactor.set();
+
 					portraitRight.visible = true;
 					portraitRight.animation.play('enter');
 				}
