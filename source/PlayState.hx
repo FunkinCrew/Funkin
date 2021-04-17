@@ -52,6 +52,10 @@ class PlayState extends MusicBeatState
 	public static var storyWeek:Int = 0;
 	public static var storyPlaylist:Array<String> = [];
 	public static var storyDifficulty:Int = 1;
+	public static var campaignScore:Int = 0;
+
+	// how big to stretch the pixel art assets
+	public static var daPixelZoom:Float = 6;
 
 	var halloweenLevel:Bool = false;
 
@@ -101,6 +105,8 @@ class PlayState extends MusicBeatState
 	var phillyTrain:FlxSprite;
 	var trainSound:FlxSound;
 
+	var gfVersion:String = 'gf';
+
 	var limo:FlxSprite;
 	var grpLimoDancers:FlxTypedGroup<BackgroundDancer>;
 	var fastCar:FlxSprite;
@@ -116,12 +122,7 @@ class PlayState extends MusicBeatState
 	var songScore:Int = 0;
 	var scoreTxt:FlxText;
 
-	public static var campaignScore:Int = 0;
-
 	var defaultCamZoom:Float = 1.05;
-
-	// how big to stretch the pixel art assets
-	public static var daPixelZoom:Float = 6;
 
 	var inCutscene:Bool = false;
 
@@ -547,15 +548,13 @@ class PlayState extends MusicBeatState
 				*/
 		}
 
-		var gfVersion:String = 'gf';
-
-		switch (curStage)
+		switch (SONG.player1)
 		{
-			case 'limo':
+			case 'bf-car':
 				gfVersion = 'gf-car';
-			case 'mall' | 'mall-evil':
+			case 'bf-christmas':
 				gfVersion = 'gf-christmas';
-			case 'school' | 'school-evil':
+			case 'bf-pixel':
 				gfVersion = 'gf-pixel';
 		}
 
