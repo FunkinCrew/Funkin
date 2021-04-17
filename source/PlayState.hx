@@ -644,12 +644,17 @@ class PlayState extends MusicBeatState
 		}
 
 		add(gf);
+		
+		if (dad.curCharacter.startsWith('gf'))
+			add(dad);
 
 		// Shitty layering but whatev it works LOL
 		if (curStage == 'limo')
 			add(limo);
 
-		add(dad);
+		if (!dad.curCharacter.startsWith('gf'))
+			add(dad);
+
 		add(boyfriend);
 
 		var doof:DialogueBox = new DialogueBox(false, dialogue);
