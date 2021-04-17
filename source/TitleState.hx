@@ -59,10 +59,14 @@ class TitleState extends MusicBeatState
 			sys.FileSystem.createDirectory(Sys.getCwd() + "/assets/replays");
 		#end
 
+		@:privateAccess
+		{
+			trace("Loaded " + openfl.Assets.getLibrary("default").assetsLoaded + " assets (DEFAULT)");
+		}
 		
 		PlayerSettings.init();
 
-		#if windows
+		#if desktop
 		DiscordClient.initialize();
 
 		Application.current.onExit.add (function (exitCode) {

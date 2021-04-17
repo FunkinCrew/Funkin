@@ -1,5 +1,6 @@
 package;
 
+import flixel.addons.effects.FlxSkewedSprite;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
@@ -21,7 +22,7 @@ class Note extends FlxSprite
 	public var tooLate:Bool = false;
 	public var wasGoodHit:Bool = false;
 	public var prevNote:Note;
-
+	public var modifiedByLua:Bool = false;
 	public var sustainLength:Float = 0;
 	public var isSustainNote:Bool = false;
 
@@ -172,6 +173,7 @@ class Note extends FlxSprite
 						prevNote.animation.play('redhold');
 				}
 
+				
 				prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.8 * FlxG.save.data.scrollSpeed;
 				prevNote.updateHitbox();
 				// prevNote.setGraphicSize();
