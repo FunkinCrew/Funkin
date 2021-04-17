@@ -7,11 +7,11 @@ gf-christmas
 dad
 spooky
 monster
+monster-christmas
 pico
 mom
 mom-car
 parents-christmas
-monster-christmas
 senpai
 senpai-angry
 spirit
