@@ -56,6 +56,16 @@ class DialogueBox extends FlxSpriteGroup
 					FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0.6);
 					FlxG.sound.music.fadeIn(1, 0, 0.8);
 				}
+			case 'spookeez':
+				if (STOptions.st_extraDialogue) {
+					FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0.6);
+					FlxG.sound.music.fadeIn(1, 0, 0.8);
+				}
+			case 'south':
+				if (STOptions.st_extraDialogue) {
+					FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0.6);
+					FlxG.sound.music.fadeIn(1, 0, 0.8);
+				}
 			case 'dadbattle':
 				if (STOptions.st_extraDialogue) {
 					FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0.6);
@@ -134,6 +144,24 @@ class DialogueBox extends FlxSpriteGroup
 					box.y = (FlxG.height - box.height) + 80;
 				}
 			case 'dadbattle':
+				if (STOptions.st_extraDialogue) {
+					hasDialog = true;
+					box.frames = Paths.getSparrowAtlas('speech_bubble_talking');
+					box.animation.addByPrefix('normalOpen', 'Speech Bubble Normal Open', 24, false);
+					box.animation.addByPrefix('normal', 'Speech Bubble Normal Open', 24, false);
+					box.setGraphicSize(Std.int(box.width * 1 * 0.9));
+					box.y = (FlxG.height - box.height) + 80;
+				}
+			case 'spookeez':
+				if (STOptions.st_extraDialogue) {
+					hasDialog = true;
+					box.frames = Paths.getSparrowAtlas('speech_bubble_talking');
+					box.animation.addByPrefix('normalOpen', 'Speech Bubble Normal Open', 24, false);
+					box.animation.addByPrefix('normal', 'Speech Bubble Normal Open', 24, false);
+					box.setGraphicSize(Std.int(box.width * 1 * 0.9));
+					box.y = (FlxG.height - box.height) + 80;
+				}
+			case 'south':
 				if (STOptions.st_extraDialogue) {
 					hasDialog = true;
 					box.frames = Paths.getSparrowAtlas('speech_bubble_talking');
@@ -318,6 +346,12 @@ class DialogueBox extends FlxSpriteGroup
 						case 'dadbattle':
 							if (STOptions.st_extraDialogue)
 								FlxG.sound.music.fadeOut(2.2, 0);
+						case 'spookeez':
+							if (STOptions.st_extraDialogue)
+								FlxG.sound.music.fadeOut(2.2, 0);
+						case 'south':
+							if (STOptions.st_extraDialogue)
+								FlxG.sound.music.fadeOut(2.2, 0);
 						case 'monster':
 							if (STOptions.st_extraDialogue)
 								FlxG.sound.music.fadeOut(2.2, 0);
@@ -356,6 +390,10 @@ class DialogueBox extends FlxSpriteGroup
 			else
 			{
 				dialogueList.remove(dialogueList[0]);
+
+				portraitLeft.visible = false;
+				portraitRight.visible = false;
+
 				startDialogue();
 			}
 		}
@@ -428,6 +466,60 @@ class DialogueBox extends FlxSpriteGroup
 
 					portraitLeft.x = box.x + 64;
 					portraitLeft.y = box.y - 248;
+
+					portraitLeft.visible = true;
+					portraitLeft.animation.play('enter');
+				}
+			case 'spooky':
+				portraitRight.visible = false;
+				if (!portraitLeft.visible)
+				{
+					portraitLeft.frames = Paths.getSparrowAtlas('portraits');
+					portraitLeft.animation.addByPrefix('enter', 'spooky portrait', 24, false);
+					portraitLeft.setGraphicSize(Std.int(portraitLeft.width * 1 * 0.75));
+					portraitLeft.antialiasing = true;
+					portraitLeft.updateHitbox();
+					portraitLeft.scrollFactor.set();
+					// portraitLeft.screenCenter(X);
+
+					portraitLeft.x = box.x + 64;
+					portraitLeft.y = box.y - 320;
+
+					portraitLeft.visible = true;
+					portraitLeft.animation.play('enter');
+				}
+			case 'spooky-skid':
+				portraitRight.visible = false;
+				if (!portraitLeft.visible)
+				{
+					portraitLeft.frames = Paths.getSparrowAtlas('portraits');
+					portraitLeft.animation.addByPrefix('enter', 'spooky-skid portrait', 24, false);
+					portraitLeft.setGraphicSize(Std.int(portraitLeft.width * 1 * 0.75));
+					portraitLeft.antialiasing = true;
+					portraitLeft.updateHitbox();
+					portraitLeft.scrollFactor.set();
+					// portraitLeft.screenCenter(X);
+
+					portraitLeft.x = box.x + 64;
+					portraitLeft.y = box.y - 320;
+
+					portraitLeft.visible = true;
+					portraitLeft.animation.play('enter');
+				}
+			case 'spooky-pump':
+				portraitRight.visible = false;
+				if (!portraitLeft.visible)
+				{
+					portraitLeft.frames = Paths.getSparrowAtlas('portraits');
+					portraitLeft.animation.addByPrefix('enter', 'spooky-pump portrait', 24, false);
+					portraitLeft.setGraphicSize(Std.int(portraitLeft.width * 1 * 0.75));
+					portraitLeft.antialiasing = true;
+					portraitLeft.updateHitbox();
+					portraitLeft.scrollFactor.set();
+					// portraitLeft.screenCenter(X);
+
+					portraitLeft.x = box.x + 64;
+					portraitLeft.y = box.y - 320;
 
 					portraitLeft.visible = true;
 					portraitLeft.animation.play('enter');

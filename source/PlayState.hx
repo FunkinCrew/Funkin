@@ -194,6 +194,10 @@ class PlayState extends MusicBeatState
 				dialogue = CoolUtil.coolTextFile(Paths.txt('fresh/freshDialogue'));
 			case 'dadbattle':
 				dialogue = CoolUtil.coolTextFile(Paths.txt('dadbattle/dadbattleDialogue'));
+			case 'spookeez':
+				dialogue = CoolUtil.coolTextFile(Paths.txt('spookeez/spookeezDialogue'));
+			case 'south':
+				dialogue = CoolUtil.coolTextFile(Paths.txt('south/southDialogue'));
 			case 'monster':
 				dialogue = CoolUtil.coolTextFile(Paths.txt('monster/monsterDialogue'));
 			case 'satin-panties':
@@ -978,6 +982,12 @@ class PlayState extends MusicBeatState
 					if (STOptions.st_extraDialogue)
 						doDialogue(doof);
 				case 'dadbattle':
+					if (STOptions.st_extraDialogue)
+						doDialogue(doof);
+				case 'spookeez':
+					if (STOptions.st_extraDialogue)
+						doDialogue(doof);
+				case 'south':
 					if (STOptions.st_extraDialogue)
 						doDialogue(doof);
 				case 'satin-panties':
