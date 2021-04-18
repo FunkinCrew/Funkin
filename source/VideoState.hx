@@ -23,6 +23,9 @@ class VideoState extends MusicBeatState
 
 		seenVideo = true;
 
+		FlxG.save.data.seenVideo = true;
+		FlxG.save.flush();
+
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
 
