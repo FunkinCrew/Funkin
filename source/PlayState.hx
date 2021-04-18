@@ -187,22 +187,37 @@ class PlayState extends MusicBeatState
 		switch (SONG.song.toLowerCase())
 		{
 			case 'tutorial':
-				dialogue = ["Hey you're pretty cute.", 'Use the arrow keys to keep up \nwith me singing.'];
+				dialogue = CoolUtil.coolTextFile(Paths.txt('tutorial/tutorialDialogue'));
 			case 'bopeebo':
-				dialogue = [
-					'HEY!',
-					"You think you can just sing\nwith my daughter like that?",
-					"If you want to date her...",
-					"You're going to have to go \nthrough ME first!"
-				];
+				dialogue = CoolUtil.coolTextFile(Paths.txt('bopeebo/bopeeboDialogue'));
 			case 'fresh':
-				dialogue = ["Not too shabby boy.", ""];
+				dialogue = CoolUtil.coolTextFile(Paths.txt('fresh/freshDialogue'));
 			case 'dadbattle':
-				dialogue = [
-					"gah you think you're hot stuff?",
-					"If you can beat me here...",
-					"Only then I will even CONSIDER letting you\ndate my daughter!"
-				];
+				dialogue = CoolUtil.coolTextFile(Paths.txt('dadbattle/dadbattleDialogue'));
+			case 'spookeez':
+				dialogue = CoolUtil.coolTextFile(Paths.txt('spookeez/spookeezDialogue'));
+			case 'south':
+				dialogue = CoolUtil.coolTextFile(Paths.txt('south/southDialogue'));
+			case 'monster':
+				dialogue = CoolUtil.coolTextFile(Paths.txt('monster/monsterDialogue'));
+			case 'pico':
+				dialogue = CoolUtil.coolTextFile(Paths.txt('pico/picoDialogue'));
+			case 'philly-nice':
+				dialogue = CoolUtil.coolTextFile(Paths.txt('philly-nice/philly-niceDialogue'));
+			case 'blammed':
+				dialogue = CoolUtil.coolTextFile(Paths.txt('blammed/blammedDialogue'));
+			case 'satin-panties':
+				dialogue = CoolUtil.coolTextFile(Paths.txt('satin-panties/satin-pantiesDialogue'));
+			case 'high':
+				dialogue = CoolUtil.coolTextFile(Paths.txt('high/highDialogue'));
+			case 'milf':
+				dialogue = CoolUtil.coolTextFile(Paths.txt('milf/milfDialogue'));
+			case 'cocoa':
+				dialogue = CoolUtil.coolTextFile(Paths.txt('cocoa/cocoaDialogue'));
+			case 'eggnog':
+				dialogue = CoolUtil.coolTextFile(Paths.txt('eggnog/eggnogDialogue'));
+			case 'winter-horrorland':
+				dialogue = CoolUtil.coolTextFile(Paths.txt('winter-horrorland/winter-horrorlandDialogue'));
 			case 'senpai':
 				dialogue = CoolUtil.coolTextFile(Paths.txt('senpai/senpaiDialogue'));
 			case 'roses':
@@ -927,13 +942,19 @@ class PlayState extends MusicBeatState
 									ease: FlxEase.quadInOut,
 									onComplete: function(twn:FlxTween)
 									{
-										startCountdown();
+										if (STOptions.st_extraDialogue)
+											doDialogue(doof);
+										else
+											startCountdown();
 									}
 								});
 							});
 						});
 					} else {
-						startCountdown();
+						if (STOptions.st_extraDialogue)
+							doDialogue(doof);
+						else
+							startCountdown();
 					}
 				case "winter-horrorland":
 					var blackScreen:FlxSprite = new FlxSprite(0, 0).makeGraphic(Std.int(FlxG.width * 2), Std.int(FlxG.height * 2), FlxColor.BLACK);
@@ -958,18 +979,63 @@ class PlayState extends MusicBeatState
 								ease: FlxEase.quadInOut,
 								onComplete: function(twn:FlxTween)
 								{
-									startCountdown();
+									if (STOptions.st_extraDialogue)
+										doDialogue(doof);
+									else
+										startCountdown();
 								}
 							});
 						});
 					});
+				case 'tutorial':
+					if (STOptions.st_extraDialogue)
+						doDialogue(doof);
+				case 'bopeebo':
+					if (STOptions.st_extraDialogue)
+						doDialogue(doof);
+				case 'fresh':
+					if (STOptions.st_extraDialogue)
+						doDialogue(doof);
+				case 'dadbattle':
+					if (STOptions.st_extraDialogue)
+						doDialogue(doof);
+				case 'spookeez':
+					if (STOptions.st_extraDialogue)
+						doDialogue(doof);
+				case 'south':
+					if (STOptions.st_extraDialogue)
+						doDialogue(doof);
+				case 'pico':
+					if (STOptions.st_extraDialogue)
+						doDialogue(doof);
+				case 'philly-nice':
+					if (STOptions.st_extraDialogue)
+						doDialogue(doof);
+				case 'blammed':
+					if (STOptions.st_extraDialogue)
+						doDialogue(doof);
+				case 'satin-panties':
+					if (STOptions.st_extraDialogue)
+						doDialogue(doof);
+				case 'high':
+					if (STOptions.st_extraDialogue)
+						doDialogue(doof);
+				case 'milf':
+					if (STOptions.st_extraDialogue)
+						doDialogue(doof);
+				case 'cocoa':
+					if (STOptions.st_extraDialogue)
+						doDialogue(doof);
+				case 'eggnog':
+					if (STOptions.st_extraDialogue)
+						doDialogue(doof);
 				case 'senpai':
-					schoolIntro(doof);
+					doDialogue(doof);
 				case 'roses':
 					FlxG.sound.play(Paths.sound('ANGRY'));
-					schoolIntro(doof);
+					doDialogue(doof);
 				case 'thorns':
-					schoolIntro(doof);
+					doDialogue(doof);
 				default:
 					startCountdown();
 			}
@@ -986,7 +1052,7 @@ class PlayState extends MusicBeatState
 		super.create();
 	}
 
-	function schoolIntro(?dialogueBox:DialogueBox):Void
+	function doDialogue(?dialogueBox:DialogueBox):Void
 	{
 		var black:FlxSprite = new FlxSprite(-100, -100).makeGraphic(FlxG.width * 2, FlxG.height * 2, FlxColor.BLACK);
 		black.scrollFactor.set();

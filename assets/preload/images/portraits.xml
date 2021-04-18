@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="portraits.png">
+	<!-- Created with Adobe Animate version 19.2.0.405 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="bf portrait0000" x="1077" y="1314" width="557" height="345"/>
+	<SubTexture name="dad portrait0000" x="10" y="1218" width="496" height="547"/>
+	<SubTexture name="gf portrait0000" x="1114" y="514" width="549" height="410"/>
+	<SubTexture name="mom portrait0000" x="1036" y="10" width="563" height="494"/>
+	<SubTexture name="monster portrait0000" x="523" y="614" width="581" height="389"/>
+	<SubTexture name="parents portrait0000" x="1114" y="934" width="544" height="370"/>
+	<SubTexture name="parents-dad portrait0000" x="516" y="1393" width="544" height="370"/>
+	<SubTexture name="parents-mom portrait0000" x="523" y="1013" width="544" height="370"/>
+	<SubTexture name="pico portrait0000" x="1609" y="10" width="404" height="390"/>
+	<SubTexture name="spooky portrait0000" x="10" y="10" width="503" height="594"/>
+	<SubTexture name="spooky-pump portrait0000" x="10" y="614" width="503" height="594"/>
+	<SubTexture name="spooky-skid portrait0000" x="523" y="10" width="503" height="594"/>
+</TextureAtlas>
