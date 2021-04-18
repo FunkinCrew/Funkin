@@ -200,6 +200,12 @@ class PlayState extends MusicBeatState
 				dialogue = CoolUtil.coolTextFile(Paths.txt('south/southDialogue'));
 			case 'monster':
 				dialogue = CoolUtil.coolTextFile(Paths.txt('monster/monsterDialogue'));
+			case 'pico':
+				dialogue = CoolUtil.coolTextFile(Paths.txt('pico/picoDialogue'));
+			case 'philly-nice':
+				dialogue = CoolUtil.coolTextFile(Paths.txt('philly-nice/philly-niceDialogue'));
+			case 'blammed':
+				dialogue = CoolUtil.coolTextFile(Paths.txt('blammed/blammedDialogue'));
 			case 'satin-panties':
 				dialogue = CoolUtil.coolTextFile(Paths.txt('satin-panties/satin-pantiesDialogue'));
 			case 'high':
@@ -988,6 +994,15 @@ class PlayState extends MusicBeatState
 					if (STOptions.st_extraDialogue)
 						doDialogue(doof);
 				case 'south':
+					if (STOptions.st_extraDialogue)
+						doDialogue(doof);
+				case 'pico':
+					if (STOptions.st_extraDialogue)
+						doDialogue(doof);
+				case 'philly-nice':
+					if (STOptions.st_extraDialogue)
+						doDialogue(doof);
+				case 'blammed':
 					if (STOptions.st_extraDialogue)
 						doDialogue(doof);
 				case 'satin-panties':

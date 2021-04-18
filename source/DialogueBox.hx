@@ -76,6 +76,21 @@ class DialogueBox extends FlxSpriteGroup
 					FlxG.sound.playMusic(Paths.music('monsterInst'), 0.6);
 					FlxG.sound.music.fadeIn(1, 0, 0.8);
 				}
+			case 'pico':
+				if (STOptions.st_extraDialogue) {
+					FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0.6);
+					FlxG.sound.music.fadeIn(1, 0, 0.8);
+				}
+			case 'philly-nice':
+				if (STOptions.st_extraDialogue) {
+					FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0.6);
+					FlxG.sound.music.fadeIn(1, 0, 0.8);
+				}
+			case 'blammed':
+				if (STOptions.st_extraDialogue) {
+					FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0.6);
+					FlxG.sound.music.fadeIn(1, 0, 0.8);
+				}
 			case 'satin-panties':
 				if (STOptions.st_extraDialogue) {
 					FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0.6);
@@ -171,6 +186,33 @@ class DialogueBox extends FlxSpriteGroup
 					box.y = (FlxG.height - box.height) + 80;
 				}
 			case 'monster':
+				if (STOptions.st_extraDialogue) {
+					hasDialog = true;
+					box.frames = Paths.getSparrowAtlas('speech_bubble_talking');
+					box.animation.addByPrefix('normalOpen', 'Speech Bubble Normal Open', 24, false);
+					box.animation.addByPrefix('normal', 'Speech Bubble Normal Open', 24, false);
+					box.setGraphicSize(Std.int(box.width * 1 * 0.9));
+					box.y = (FlxG.height - box.height) + 80;
+				}
+			case 'pico':
+				if (STOptions.st_extraDialogue) {
+					hasDialog = true;
+					box.frames = Paths.getSparrowAtlas('speech_bubble_talking');
+					box.animation.addByPrefix('normalOpen', 'Speech Bubble Normal Open', 24, false);
+					box.animation.addByPrefix('normal', 'Speech Bubble Normal Open', 24, false);
+					box.setGraphicSize(Std.int(box.width * 1 * 0.9));
+					box.y = (FlxG.height - box.height) + 80;
+				}
+			case 'philly-nice':
+				if (STOptions.st_extraDialogue) {
+					hasDialog = true;
+					box.frames = Paths.getSparrowAtlas('speech_bubble_talking');
+					box.animation.addByPrefix('normalOpen', 'Speech Bubble Normal Open', 24, false);
+					box.animation.addByPrefix('normal', 'Speech Bubble Normal Open', 24, false);
+					box.setGraphicSize(Std.int(box.width * 1 * 0.9));
+					box.y = (FlxG.height - box.height) + 80;
+				}
+			case 'blammed':
 				if (STOptions.st_extraDialogue) {
 					hasDialog = true;
 					box.frames = Paths.getSparrowAtlas('speech_bubble_talking');
@@ -355,6 +397,15 @@ class DialogueBox extends FlxSpriteGroup
 						case 'monster':
 							if (STOptions.st_extraDialogue)
 								FlxG.sound.music.fadeOut(2.2, 0);
+						case 'pico':
+							if (STOptions.st_extraDialogue)
+								FlxG.sound.music.fadeOut(2.2, 0);
+						case 'philly-nice':
+							if (STOptions.st_extraDialogue)
+								FlxG.sound.music.fadeOut(2.2, 0);
+						case 'blammed':
+							if (STOptions.st_extraDialogue)
+								FlxG.sound.music.fadeOut(2.2, 0);
 						case 'satin-panties':
 							if (STOptions.st_extraDialogue)
 								FlxG.sound.music.fadeOut(2.2, 0);
@@ -530,6 +581,24 @@ class DialogueBox extends FlxSpriteGroup
 				{
 					portraitLeft.frames = Paths.getSparrowAtlas('portraits');
 					portraitLeft.animation.addByPrefix('enter', 'monster portrait', 24, false);
+					portraitLeft.setGraphicSize(Std.int(portraitLeft.width * 1 * 0.75));
+					portraitLeft.antialiasing = true;
+					portraitLeft.updateHitbox();
+					portraitLeft.scrollFactor.set();
+					// portraitLeft.screenCenter(X);
+
+					portraitLeft.x = box.x + 64;
+					portraitLeft.y = box.y - 192;
+
+					portraitLeft.visible = true;
+					portraitLeft.animation.play('enter');
+				}
+			case 'pico':
+				portraitRight.visible = false;
+				if (!portraitLeft.visible)
+				{
+					portraitLeft.frames = Paths.getSparrowAtlas('portraits');
+					portraitLeft.animation.addByPrefix('enter', 'pico portrait', 24, false);
 					portraitLeft.setGraphicSize(Std.int(portraitLeft.width * 1 * 0.75));
 					portraitLeft.antialiasing = true;
 					portraitLeft.updateHitbox();
