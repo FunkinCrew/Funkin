@@ -125,7 +125,7 @@ class LoadingState extends MusicBeatState
 	{
 		super.update(elapsed);
 
-		funkay.setGraphicSize(Std.int(FlxMath.lerp(FlxG.width * 0.88, funkay.width, 0.95)));
+		funkay.setGraphicSize(Std.int(FlxMath.lerp(FlxG.width * 0.88, funkay.width, 0.9)));
 		funkay.updateHitbox();
 		// funkay.updateHitbox();
 
