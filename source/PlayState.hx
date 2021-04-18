@@ -934,8 +934,8 @@ class PlayState extends MusicBeatState
 			switch (curSong.toLowerCase())
 			{
 				// REMOVE THIS LATER
-				// case 'stress':
-				// stressIntro();
+				case 'stress':
+					stressIntro();
 
 				default:
 					startCountdown();
@@ -949,9 +949,14 @@ class PlayState extends MusicBeatState
 	{
 		inCutscene = true;
 
+		var blackShit:FlxSprite = new FlxSprite(-200, -200).makeGraphic(FlxG.width * 2, FlxG.height * 2, FlxColor.BLACK);
+		blackShit.scrollFactor.set();
+		add(blackShit);
+
 		var vid:FlxVideo = new FlxVideo('music/ughCutscene.mp4');
 		vid.finishCallback = function()
 		{
+			remove(blackShit);
 			FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, (Conductor.crochet / 1000) * 5, {ease: FlxEase.quadInOut});
 			startCountdown();
 			cameraMovement();
@@ -1030,9 +1035,15 @@ class PlayState extends MusicBeatState
 	{
 		inCutscene = true;
 
+		var blackShit:FlxSprite = new FlxSprite(-200, -200).makeGraphic(FlxG.width * 2, FlxG.height * 2, FlxColor.BLACK);
+		blackShit.scrollFactor.set();
+		add(blackShit);
+
 		var vid:FlxVideo = new FlxVideo('music/gunsCutscene.mp4');
 		vid.finishCallback = function()
 		{
+			remove(blackShit);
+
 			FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, (Conductor.crochet / 1000) * 5, {ease: FlxEase.quadInOut});
 			startCountdown();
 			cameraMovement();
@@ -1099,9 +1110,15 @@ class PlayState extends MusicBeatState
 	{
 		inCutscene = true;
 
+		var blackShit:FlxSprite = new FlxSprite(-200, -200).makeGraphic(FlxG.width * 2, FlxG.height * 2, FlxColor.BLACK);
+		blackShit.scrollFactor.set();
+		add(blackShit);
+
 		var vid:FlxVideo = new FlxVideo('music/stressCutscene.mp4');
 		vid.finishCallback = function()
 		{
+			remove(blackShit);
+
 			FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, (Conductor.crochet / 1000) * 5, {ease: FlxEase.quadInOut});
 			startCountdown();
 			cameraMovement();
