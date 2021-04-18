@@ -31,7 +31,7 @@ class OptionsState extends MusicBeatState
 		var options = addPage(Options, new OptionsMenu(false));
 		var preferences = addPage(Preferences, new PreferencesMenu());
 		var controls = addPage(Controls, new ControlsMenu());
-		var colors = addPage(Colors, new ColorsMenu());
+		// var colors = addPage(Colors, new ColorsMenu());
 
 		#if cpp
 		var mods = addPage(Mods, new ModMenu());
@@ -41,7 +41,7 @@ class OptionsState extends MusicBeatState
 		{
 			options.onExit.add(exitToMainMenu);
 			controls.onExit.add(switchPage.bind(Options));
-			colors.onExit.add(switchPage.bind(Options));
+			// colors.onExit.add(switchPage.bind(Options));
 			preferences.onExit.add(switchPage.bind(Options));
 
 			#if cpp
@@ -176,7 +176,7 @@ class OptionsMenu extends Page
 		add(items = new TextMenuList());
 		createItem('preferences', function() switchPage(Preferences));
 		createItem("controls", function() switchPage(Controls));
-		createItem('colors', function() switchPage(Colors));
+		// createItem('colors', function() switchPage(Colors));
 		#if cpp
 		createItem('mods', function() switchPage(Mods));
 		#end
