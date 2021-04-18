@@ -23,6 +23,7 @@ import flixel.graphics.atlas.FlxAtlas;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxGroup;
+import flixel.math.FlxAngle;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
@@ -133,6 +134,7 @@ class PlayState extends MusicBeatState
 	var gfCutsceneLayer:FlxGroup;
 	var bfTankCutsceneLayer:FlxGroup;
 	var tankWatchtower:BGSprite;
+	var tankGround:BGSprite;
 
 	var talking:Bool = true;
 	var songScore:Int = 0;
@@ -554,8 +556,13 @@ class PlayState extends MusicBeatState
 				var smokeRight:BGSprite = new BGSprite('smokeRight', 1100, -100, 0.4, 0.4, ['SmokeRight'], true);
 				add(smokeRight);
 
+				// tankGround.
+
 				tankWatchtower = new BGSprite('tankWatchtower', 100, 50, 0.5, 0.5, ['watchtower gradient color']);
 				add(tankWatchtower);
+
+				tankGround = new BGSprite('tankRolling', 300, 300, 0.5, 0.5, ['BG tank w lighting'], true);
+				add(tankGround);
 
 				tankmanRun = new FlxTypedGroup<TankmenBG>();
 				add(tankmanRun);
@@ -564,6 +571,8 @@ class PlayState extends MusicBeatState
 				tankGround.setGraphicSize(Std.int(tankGround.width * 1.15));
 				tankGround.updateHitbox();
 				add(tankGround);
+
+				moveTank();
 
 				// smokeLeft.screenCenter();
 
@@ -1950,7 +1959,11 @@ class PlayState extends MusicBeatState
 					}
 				}
 
-				lightFadeShader.update((Conductor.crochet / 1000) * FlxG.elapsed * 1.5); // phillyCityLights.members[curLight].alpha -= (Conductor.crochet / 1000) * FlxG.elapsed;
+				lightFadeShader.update((Conductor.crochet / 1000) * FlxG.elapsed * 1.5);
+			// phillyCityLights.members[curLight].alpha -= (Conductor.crochet / 1000) * FlxG.elapsed;
+
+			case 'tank':
+				moveTank();
 		}
 
 		super.update(elapsed);
@@ -2823,6 +2836,22 @@ class PlayState extends MusicBeatState
 			resetFastCar();
 		});
 	}
+
+	function moveTank():Void
+	{
+		var daAngleOffset:Float = 1;
+		tankAngle += FlxG.elapsed * tankSpeed;
+		tankGround.angle = tankAngle - 90 + 15;
+
+		tankGround.x = tankX + Math.cos(FlxAngle.asRadians((tankAngle * daAngleOffset) + 180)) * 1500;
+		tankGround.y = 1300 + Math.sin(FlxAngle.asRadians((tankAngle * daAngleOffset) + 180)) * 1100;
+	}
+
+	var tankResetShit:Bool = false;
+	var tankMoving:Bool = false;
+	var tankAngle:Float = FlxG.random.int(-90, 45);
+	var tankSpeed:Float = FlxG.random.float(5, 7);
+	var tankX:Float = 400;
 
 	var trainMoving:Bool = false;
 	var trainFrameTiming:Float = 0;
