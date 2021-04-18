@@ -64,6 +64,7 @@ class VideoState extends MusicBeatState
 		netStream.dispose();
 		FlxG.removeChild(video);
 
+		TitleState.initialized = false;
 		FlxG.switchState(new TitleState());
 	}
 
