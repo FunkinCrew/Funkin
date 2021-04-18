@@ -137,7 +137,10 @@ class Page extends FlxGroup
 	function updateEnabled(elapsed:Float)
 	{
 		if (canExit && controls.BACK)
+		{
+			FlxG.sound.play(Paths.sound('cancelMenu'));
 			exit();
+		}
 	}
 
 	function set_enabled(value:Bool)
