@@ -105,10 +105,13 @@ class GameOverSubstate extends MusicBeatSubstate
 				if (bf.animation.curAnim.name == 'firstDeath' && bf.animation.curAnim.finished && !playingDeathSound)
 				{
 					playingDeathSound = true;
+
+					bf.startedDeath = true;
+					coolStartDeath(0.2);
+
 					FlxG.sound.play(Paths.sound('jeffGameover/jeffGameover-' + randomGameover), 1, false, null, true, function()
 					{
-						bf.startedDeath = true;
-						coolStartDeath();
+						FlxG.sound.music.fadeIn(4, 0.2, 1);
 					});
 				}
 			default:
@@ -125,9 +128,9 @@ class GameOverSubstate extends MusicBeatSubstate
 		}
 	}
 
-	private function coolStartDeath():Void
+	private function coolStartDeath(?vol:Float = 1):Void
 	{
-		FlxG.sound.playMusic(Paths.music('gameOver' + stageSuffix));
+		FlxG.sound.playMusic(Paths.music('gameOver' + stageSuffix), vol);
 	}
 
 	override function beatHit()
