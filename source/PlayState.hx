@@ -1029,49 +1029,58 @@ class PlayState extends MusicBeatState
 	{
 		inCutscene = true;
 
-		camFollow.setPosition(camPos.x, camPos.y);
-
-		camHUD.visible = false;
-
-		FlxG.sound.playMusic(Paths.music('DISTORTO'), 0);
-		FlxG.sound.music.fadeIn(5, 0, 0.5);
-
-		camFollow.y += 100;
-
-		FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom * 1.3}, 4, {ease: FlxEase.quadInOut});
-
-		dad.visible = false;
-		var tankCutscene:TankCutscene = new TankCutscene(20, 320);
-		tankCutscene.frames = Paths.getSparrowAtlas('cutsceneStuff/tankTalkSong2');
-		tankCutscene.animation.addByPrefix('tankyguy', 'TANK TALK 2', 24, false);
-		tankCutscene.animation.play('tankyguy');
-		tankCutscene.antialiasing = true;
-		gfCutsceneLayer.add(tankCutscene); // add();
-
-		tankCutscene.startSyncAudio = FlxG.sound.load(Paths.sound('tankSong2'));
-
-		new FlxTimer().start(4.1, function(ugly:FlxTimer)
+		var vid:FlxVideo = new FlxVideo('music/gunsCutscene.mp4');
+		vid.finishCallback = function()
 		{
-			FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom * 1.4}, 0.4, {ease: FlxEase.quadOut});
-			FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom * 1.3}, 0.7, {ease: FlxEase.quadInOut, startDelay: 0.45});
-
-			gf.playAnim('sad');
-		});
-
-		new FlxTimer().start(11, function(tmr:FlxTimer)
-		{
-			FlxG.sound.music.fadeOut((Conductor.crochet / 1000) * 5, 0);
-
-			FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, (Conductor.crochet * 5) / 1000, {ease: FlxEase.quartIn});
+			FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, (Conductor.crochet / 1000) * 5, {ease: FlxEase.quadInOut});
 			startCountdown();
-			new FlxTimer().start((Conductor.crochet * 25) / 1000, function(daTim:FlxTimer)
+			cameraMovement();
+		};
+
+		/* 
+			camFollow.setPosition(camPos.x, camPos.y);
+
+			camHUD.visible = false;
+
+			FlxG.sound.playMusic(Paths.music('DISTORTO'), 0);
+			FlxG.sound.music.fadeIn(5, 0, 0.5);
+
+			camFollow.y += 100;
+
+			FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom * 1.3}, 4, {ease: FlxEase.quadInOut});
+
+			dad.visible = false;
+			var tankCutscene:TankCutscene = new TankCutscene(20, 320);
+			tankCutscene.frames = Paths.getSparrowAtlas('cutsceneStuff/tankTalkSong2');
+			tankCutscene.animation.addByPrefix('tankyguy', 'TANK TALK 2', 24, false);
+			tankCutscene.animation.play('tankyguy');
+			tankCutscene.antialiasing = true;
+			gfCutsceneLayer.add(tankCutscene); // add();
+
+			tankCutscene.startSyncAudio = FlxG.sound.load(Paths.sound('tankSong2'));
+
+			new FlxTimer().start(4.1, function(ugly:FlxTimer)
 			{
-				dad.visible = true;
-				gfCutsceneLayer.remove(tankCutscene);
+				FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom * 1.4}, 0.4, {ease: FlxEase.quadOut});
+				FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom * 1.3}, 0.7, {ease: FlxEase.quadInOut, startDelay: 0.45});
+
+				gf.playAnim('sad');
 			});
 
-			camHUD.visible = true;
-		});
+			new FlxTimer().start(11, function(tmr:FlxTimer)
+			{
+				FlxG.sound.music.fadeOut((Conductor.crochet / 1000) * 5, 0);
+
+				FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, (Conductor.crochet * 5) / 1000, {ease: FlxEase.quartIn});
+				startCountdown();
+				new FlxTimer().start((Conductor.crochet * 25) / 1000, function(daTim:FlxTimer)
+				{
+					dad.visible = true;
+					gfCutsceneLayer.remove(tankCutscene);
+				});
+
+				camHUD.visible = true;
+		});*/
 	}
 
 	/**
