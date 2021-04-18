@@ -23,6 +23,9 @@ class VideoState extends MusicBeatState
 
 		seenVideo = true;
 
+		FlxG.save.data.seenVideo = true;
+		FlxG.save.flush();
+
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
 
@@ -61,6 +64,7 @@ class VideoState extends MusicBeatState
 		netStream.dispose();
 		FlxG.removeChild(video);
 
+		TitleState.initialized = false;
 		FlxG.switchState(new TitleState());
 	}
 
