@@ -229,8 +229,10 @@ class PlayState extends MusicBeatState
 		result = Lua.pcall(lua, args.length, 1, 0);
 
 		if (getLuaErrorMessage(lua) != null)
-			trace(func_name + ' LUA CALL ERROR ' + Lua.tostring(lua,result));
-
+			if (Lua.tostring(lua,result) != null)
+				throw(func_name + ' LUA CALL ERROR ' + Lua.tostring(lua,result));
+			else
+				trace(func_name + ' prolly doesnt exist lol');
 		if( result == null) {
 			return null;
 		} else {
@@ -1257,6 +1259,8 @@ class PlayState extends MusicBeatState
 	var startTimer:FlxTimer;
 	var perfectMode:Bool = false;
 
+	var luaWiggles:Array<WiggleEffect> = [];
+
 	function startCountdown():Void
 	{
 		inCutscene = false;
@@ -1278,16 +1282,19 @@ class PlayState extends MusicBeatState
 				var result = LuaL.dofile(lua, Paths.lua(PlayState.SONG.song.toLowerCase() + "/modchart")); // execute le file
 	
 				if (result != 0)
-					trace('COMPILE ERROR\n' + getLuaErrorMessage(lua));
+					throw('COMPILE ERROR\n' + getLuaErrorMessage(lua));
 
 				// get some fukin globals up in here bois
 	
+				setVar("difficulty", storyDifficulty);
 				setVar("bpm", Conductor.bpm);
 				setVar("fpsCap", FlxG.save.data.fpsCap);
 				setVar("downscroll", FlxG.save.data.downscroll);
 	
 				setVar("curStep", 0);
 				setVar("curBeat", 0);
+				setVar("crochet", Conductor.stepCrochet);
+				setVar("safeZoneOffset", Conductor.safeZoneOffset);
 	
 				setVar("hudZoom", camHUD.zoom);
 				setVar("cameraZoom", FlxG.camera.zoom);
@@ -1375,14 +1382,6 @@ class PlayState extends MusicBeatState
 					return notes.members[id].scale.x;
 				}));
 	
-				trace(Lua_helper.add_callback(lua,"getRenderedNoteScaleY", function(id:Int) {
-					return notes.members[id].scale.y;
-				}));
-	
-				trace(Lua_helper.add_callback(lua,"getRenderedNoteAlpha", function(id:Int) {
-					return notes.members[id].alpha;
-				}));
-	
 				trace(Lua_helper.add_callback(lua,"setRenderedNotePos", function(x:Int,y:Int, id:Int) {
 					notes.members[id].modifiedByLua = true;
 					notes.members[id].x = x;
@@ -1397,16 +1396,6 @@ class PlayState extends MusicBeatState
 				trace(Lua_helper.add_callback(lua,"setRenderedNoteScale", function(scale:Float, id:Int) {
 					notes.members[id].modifiedByLua = true;
 					notes.members[id].setGraphicSize(Std.int(notes.members[id].width * scale));
-				}));
-	
-				trace(Lua_helper.add_callback(lua,"setRenderedNoteScaleX", function(scale:Float, id:Int) {
-					notes.members[id].modifiedByLua = true;
-					notes.members[id].scale.x = scale;
-				}));
-	
-				trace(Lua_helper.add_callback(lua,"setRenderedNoteScaleY", function(scale:Float, id:Int) {
-					notes.members[id].modifiedByLua = true;
-					notes.members[id].scale.y = scale;
 				}));
 	
 				trace(Lua_helper.add_callback(lua,"setActorX", function(x:Int,id:String) {
@@ -1429,13 +1418,6 @@ class PlayState extends MusicBeatState
 					getActorByName(id).setGraphicSize(Std.int(getActorByName(id).width * scale));
 				}));
 	
-				trace(Lua_helper.add_callback(lua,"setActorScaleX", function(scale:Float,id:String) {
-					getActorByName(id).scale.x = scale;
-				}));
-	
-				trace(Lua_helper.add_callback(lua,"setActorScaleY", function(scale:Float,id:String) {
-					getActorByName(id).scale.y = scale;
-				}));
 	
 				trace(Lua_helper.add_callback(lua,"getActorWidth", function (id:String) {
 					return getActorByName(id).width;
@@ -1460,17 +1442,34 @@ class PlayState extends MusicBeatState
 				trace(Lua_helper.add_callback(lua,"getActorY", function (id:String) {
 					return getActorByName(id).y;
 				}));
-	
-				trace(Lua_helper.add_callback(lua,"getActorScaleX", function (id:String) {
-					return getActorByName(id).scale.x;
-				}));
-	
-				trace(Lua_helper.add_callback(lua,"getActorScaleY", function (id:String) {
-					return getActorByName(id).scale.y;
-				}));
+
 	
 				// tweens
 				
+				Lua_helper.add_callback(lua,"tweenCameraPos", function(toX:Int, toY:Int, time:Float, onComplete:String) {
+					FlxTween.tween(FlxG.camera, {x: toX, y: toY}, time, {ease: FlxEase.cubeIn, onComplete: function(flxTween:FlxTween) { if (onComplete != '' && onComplete != null) {callLua(onComplete,["camera"]);}}});
+				});
+								
+				Lua_helper.add_callback(lua,"tweenCameraAngle", function(toAngle:Float, time:Float, onComplete:String) {
+					FlxTween.tween(FlxG.camera, {angle:toAngle}, time, {ease: FlxEase.cubeIn, onComplete: function(flxTween:FlxTween) { if (onComplete != '' && onComplete != null) {callLua(onComplete,["camera"]);}}});
+				});
+
+				Lua_helper.add_callback(lua,"tweenCameraZoom", function(toZoom:Float, time:Float, onComplete:String) {
+					FlxTween.tween(FlxG.camera, {zoom:toZoom}, time, {ease: FlxEase.cubeIn, onComplete: function(flxTween:FlxTween) { if (onComplete != '' && onComplete != null) {callLua(onComplete,["camera"]);}}});
+				});
+
+				Lua_helper.add_callback(lua,"tweenHudPos", function(toX:Int, toY:Int, time:Float, onComplete:String) {
+					FlxTween.tween(camHUD, {x: toX, y: toY}, time, {ease: FlxEase.cubeIn, onComplete: function(flxTween:FlxTween) { if (onComplete != '' && onComplete != null) {callLua(onComplete,["camera"]);}}});
+				});
+								
+				Lua_helper.add_callback(lua,"tweenHudAngle", function(toAngle:Float, time:Float, onComplete:String) {
+					FlxTween.tween(camHUD, {angle:toAngle}, time, {ease: FlxEase.cubeIn, onComplete: function(flxTween:FlxTween) { if (onComplete != '' && onComplete != null) {callLua(onComplete,["camera"]);}}});
+				});
+
+				Lua_helper.add_callback(lua,"tweenHudZoom", function(toZoom:Float, time:Float, onComplete:String) {
+					FlxTween.tween(camHUD, {zoom:toZoom}, time, {ease: FlxEase.cubeIn, onComplete: function(flxTween:FlxTween) { if (onComplete != '' && onComplete != null) {callLua(onComplete,["camera"]);}}});
+				});
+
 				Lua_helper.add_callback(lua,"tweenPos", function(id:String, toX:Int, toY:Int, time:Float, onComplete:String) {
 					FlxTween.tween(getActorByName(id), {x: toX, y: toY}, time, {ease: FlxEase.cubeIn, onComplete: function(flxTween:FlxTween) { if (onComplete != '' && onComplete != null) {callLua(onComplete,[id]);}}});
 				});
@@ -1494,6 +1493,54 @@ class PlayState extends MusicBeatState
 				Lua_helper.add_callback(lua,"tweenFadeOut", function(id:String, toAlpha:Int, time:Float, onComplete:String) {
 					FlxTween.tween(getActorByName(id), {alpha: toAlpha}, time, {ease: FlxEase.circOut, onComplete: function(flxTween:FlxTween) { if (onComplete != '' && onComplete != null) {callLua(onComplete,[id]);}}});
 				});
+
+				// shader
+
+				/*Lua_helper.add_callback(lua,"setRenderedNoteWiggle", function(id:Int, effectType:String, waveSpeed:Int, waveFrequency:Int) {
+					trace('call');
+					var wiggleEffect = new WiggleEffect();
+					switch(effectType.toLowerCase())
+					{
+						case 'dreamy':
+							wiggleEffect.effectType = WiggleEffectType.DREAMY;
+						case 'wavy':
+							wiggleEffect.effectType = WiggleEffectType.WAVY;
+						case 'heat_wave_horizontal':
+							wiggleEffect.effectType = WiggleEffectType.HEAT_WAVE_HORIZONTAL;
+						case 'heat_wave_vertical':
+							wiggleEffect.effectType = WiggleEffectType.HEAT_WAVE_VERTICAL;
+						case 'flag':
+							wiggleEffect.effectType = WiggleEffectType.FLAG;
+					}
+					wiggleEffect.waveFrequency = waveFrequency;
+					wiggleEffect.waveSpeed = waveSpeed;
+					wiggleEffect.shader.uTime.value = [(strumLine.y - Note.swagWidth * 4) / FlxG.height]; // from 4mbr0s3 2
+					notes.members[id].shader = wiggleEffect.shader;
+					luaWiggles.push(wiggleEffect);
+				});
+
+				Lua_helper.add_callback(lua,"setActorWiggle", function(id:String, effectType:String, waveSpeed:Int, waveFrequency:Int) {
+					trace('call');
+					var wiggleEffect = new WiggleEffect();
+					switch(effectType.toLowerCase())
+					{
+						case 'dreamy':
+							wiggleEffect.effectType = WiggleEffectType.DREAMY;
+						case 'wavy':
+							wiggleEffect.effectType = WiggleEffectType.WAVY;
+						case 'heat_wave_horizontal':
+							wiggleEffect.effectType = WiggleEffectType.HEAT_WAVE_HORIZONTAL;
+						case 'heat_wave_vertical':
+							wiggleEffect.effectType = WiggleEffectType.HEAT_WAVE_VERTICAL;
+						case 'flag':
+							wiggleEffect.effectType = WiggleEffectType.FLAG;
+					}
+					wiggleEffect.waveFrequency = waveFrequency;
+					wiggleEffect.waveSpeed = waveSpeed;
+					wiggleEffect.shader.uTime.value = [(strumLine.y - Note.swagWidth * 4) / FlxG.height]; // from 4mbr0s3 2
+					getActorByName(id).shader = wiggleEffect.shader;
+					luaWiggles.push(wiggleEffect);
+				});*/
 	
 				for (i in 0...strumLineNotes.length) {
 					var member = strumLineNotes.members[i];
@@ -2099,6 +2146,12 @@ class PlayState extends MusicBeatState
 			setVar('cameraZoom',FlxG.camera.zoom);
 			callLua('update', [elapsed]);
 
+			for (i in luaWiggles)
+			{
+				trace('wiggle le gaming');
+				i.update(elapsed);
+			}
+
 			/*for (i in 0...strumLineNotes.length) {
 				var member = strumLineNotes.members[i];
 				member.x = getVar("strum" + i + "X", "float");
@@ -2419,6 +2472,10 @@ class PlayState extends MusicBeatState
 				}
 				#end
 				camFollow.setPosition(dad.getMidpoint().x + 150 + offsetX, dad.getMidpoint().y - 100 + offsetY);
+				#if cpp
+				if (lua != null)
+					callLua('playerTwoTurn', []);
+				#end
 				// camFollow.setPosition(lucky.getMidpoint().x - 120, lucky.getMidpoint().y + 210);
 
 				switch (dad.curCharacter)
@@ -2435,11 +2492,6 @@ class PlayState extends MusicBeatState
 
 				if (dad.curCharacter == 'mom')
 					vocals.volume = 1;
-
-				if (SONG.song.toLowerCase() == 'tutorial')
-				{
-					tweenCamIn();
-				}
 			}
 
 			if (PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection && camFollow.x != boyfriend.getMidpoint().x - 100)
@@ -2455,6 +2507,11 @@ class PlayState extends MusicBeatState
 				#end
 				camFollow.setPosition(boyfriend.getMidpoint().x - 100 + offsetX, boyfriend.getMidpoint().y - 100 + offsetY);
 
+				#if cpp
+				if (lua != null)
+					callLua('playerOneTurn', []);
+				#end
+
 				switch (curStage)
 				{
 					case 'limo':
@@ -2467,11 +2524,6 @@ class PlayState extends MusicBeatState
 					case 'schoolEvil':
 						camFollow.x = boyfriend.getMidpoint().x - 200;
 						camFollow.y = boyfriend.getMidpoint().y - 200;
-				}
-
-				if (SONG.song.toLowerCase() == 'tutorial')
-				{
-					FlxTween.tween(FlxG.camera, {zoom: 1}, (Conductor.stepCrochet * 4 / 1000), {ease: FlxEase.elasticInOut});
 				}
 			}
 		}
@@ -2594,6 +2646,11 @@ class PlayState extends MusicBeatState
 								dad.playAnim('singLEFT' + altAnim, true);
 						}
 	
+						#if cpp
+						if (lua != null)
+							callLua('playerTwoSing', [Math.abs(daNote.noteData), Conductor.songPosition]);
+						#end
+
 						dad.holdTimer = 0;
 	
 						if (SONG.needsVoices)
@@ -3483,6 +3540,12 @@ class PlayState extends MusicBeatState
 					boyfriend.playAnim('singRIGHTmiss', true);
 			}
 
+			#if cpp
+			if (lua != null)
+				callLua('playerOneMiss', [direction, Conductor.songPosition]);
+			#end
+
+
 			updateAccuracy();
 		}
 	}
@@ -3631,6 +3694,12 @@ class PlayState extends MusicBeatState
 							boyfriend.playAnim('singLEFT', true);
 					}
 		
+					#if cpp
+					if (lua != null)
+						callLua('playerOneSing', [note.noteData, Conductor.songPosition]);
+					#end
+
+
 					if (!loadRep)
 						playerStrums.forEach(function(spr:FlxSprite)
 						{
