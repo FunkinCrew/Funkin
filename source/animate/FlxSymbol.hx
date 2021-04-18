@@ -62,18 +62,20 @@ class FlxSymbol extends FlxSprite
 					{
 						if (Reflect.hasField(element, 'ASI'))
 						{
+							var m3d = element.ASI.M3D;
+							var dumbassMatrix:Matrix = new Matrix(m3d[0], m3d[1], m3d[4], m3d[5], m3d[12], m3d[13]);
+
 							var spr:FlxSymbol = new FlxSymbol(0, 0, coolParsed);
 							matrixExposed = true;
 							spr.frames = frames;
 							spr.frame = spr.frames.getByName(element.ASI.N);
 
-							var m3d = element.ASI.M3D;
-							var dumbassMatrix:Matrix = new Matrix(m3d[0], m3d[1], m3d[4], m3d[5], m3d[12], m3d[13]);
+							// dumbassMatrix.translate(origin.x, origin.y);
 
 							dumbassMatrix.concat(_matrix);
 							spr.matrixExposed = true;
-
 							spr.transformMatrix.concat(dumbassMatrix);
+							// spr._matrix.concat(spr.transformMatrix);
 
 							spr.origin.set();
 							spr.origin.x += origin.x;
@@ -85,39 +87,15 @@ class FlxSymbol extends FlxSprite
 						else
 						{
 							var nestedSymbol = symbolMap.get(element.SI.SN);
-
-							// nestedSymbol
-
-							// if (element.SI.M3D[0] == -1 || flipX)
-							// nestedShit.flipX = true;
-
-							// nestedSymbol.TL.L.reverse();
-
-							// _matrix.identity();
-							// _matrix.scale(1, 1);
-
-							var nestedShit:FlxSymbol = new FlxSymbol(x, y, coolParse);
+							var nestedShit:FlxSymbol = new FlxSymbol(0, 0, coolParse);
 							nestedShit.frames = frames;
 
 							var swagMatrix:FlxMatrix = new FlxMatrix(element.SI.M3D[0], element.SI.M3D[1], element.SI.M3D[4], element.SI.M3D[5],
 								element.SI.M3D[12], element.SI.M3D[13]);
 
-							// _matrix.concat(swagMatrix);
-
 							swagMatrix.concat(_matrix);
 
 							nestedShit._matrix.concat(swagMatrix);
-							// nestedShit.x = swagMatrix.tx;
-							// nestedShit.y = swagMatrix.ty;
-
-							// nestedShit._skewMatrix.identity();
-							// nestedShit._skewMatrix.concat(swagMatrix);
-							// _matrix.setTo(element.SI.M3D[0], element.SI.M3D[1], element.SI.M3D[4], element.SI.M3D[5], element.SI.M3D[12], element.SI.M3D[13]);
-
-							// nestedShit.scale.x = Math.sqrt(_matrix.a * _matrix.a + _matrix.b + _matrix.b);
-							// nestedShit.scale.y = Math.sqrt(_matrix.a * _matrix.a + _matrix.b * _matrix.b);
-							// nestedShit.origin.set(element.SI.TRP.x, element.SI.TRP.y);
-
 							nestedShit.origin.set(element.SI.TRP.x, element.SI.TRP.y);
 							// nestedShit.angle += ((180 / Math.PI) * Math.atan2(swagMatrix.b, swagMatrix.a));
 							// nestedShit.angle += angle;
