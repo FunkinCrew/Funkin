@@ -3,8 +3,6 @@ package;
 import Section.SwagSection;
 import Song.SwagSong;
 import WiggleEffect.WiggleEffectType;
-import animateAtlasPlayer.assets.AssetManager;
-import animateAtlasPlayer.core.Animation;
 import flixel.FlxBasic;
 import flixel.FlxCamera;
 import flixel.FlxG;
@@ -539,15 +537,19 @@ class PlayState extends MusicBeatState
 				tankSky.velocity.x = FlxG.random.float(5, 15);
 				add(tankSky);
 
-				var tankMountains:BGSprite = new BGSprite('tankMountains', -200, 90, 0.2, 0.2);
-				tankMountains.setGraphicSize(Std.int(tankMountains.width * 1.1));
+				var tankMountains:BGSprite = new BGSprite('tankMountains', -300, -20, 0.2, 0.2);
+				tankMountains.setGraphicSize(Std.int(tankMountains.width * 1.2));
 				tankMountains.updateHitbox();
 				add(tankMountains);
 
-				var tankBuildings:BGSprite = new BGSprite('tankBuildings', -200, 200, 0.25, 0.25);
+				var tankBuildings:BGSprite = new BGSprite('tankBuildings', -200, 0, 0.30, 0.30);
+				tankBuildings.setGraphicSize(Std.int(tankBuildings.width * 1.1));
+				tankBuildings.updateHitbox();
 				add(tankBuildings);
 
 				var tankRuins:BGSprite = new BGSprite('tankRuins', -200, 0, 0.35, 0.35);
+				tankRuins.setGraphicSize(Std.int(tankRuins.width * 1.1));
+				tankRuins.updateHitbox();
 				add(tankRuins);
 
 				var smokeLeft:BGSprite = new BGSprite('smokeLeft', -200, -100, 0.4, 0.4, ['SmokeBlurLeft'], true);
@@ -587,13 +589,13 @@ class PlayState extends MusicBeatState
 				var fgTank2:BGSprite = new BGSprite('tank2', 450, 940, 1.5, 1.5, ['foreground']);
 				foregroundSprites.add(fgTank2);
 
-				var fgTank4:BGSprite = new BGSprite('tank4', 1200, 1080, 1.5, 1.5, ['fg']);
+				var fgTank4:BGSprite = new BGSprite('tank4', 1300, 900, 1.5, 1.5, ['fg']);
 				foregroundSprites.add(fgTank4);
 
-				var fgTank5:BGSprite = new BGSprite('tank5', 1800, 900, 1.5, 1.5, ['fg']);
+				var fgTank5:BGSprite = new BGSprite('tank5', 1620, 700, 1.5, 1.5, ['fg']);
 				foregroundSprites.add(fgTank5);
 
-				var fgTank3:BGSprite = new BGSprite('tank3', 1300, 1400, 3.5, 2.5, ['fg']);
+				var fgTank3:BGSprite = new BGSprite('tank3', 1300, 1200, 3.5, 2.5, ['fg']);
 				foregroundSprites.add(fgTank3);
 
 			default:
