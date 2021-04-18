@@ -194,6 +194,8 @@ class PlayState extends MusicBeatState
 				dialogue = CoolUtil.coolTextFile(Paths.txt('fresh/freshDialogue'));
 			case 'dadbattle':
 				dialogue = CoolUtil.coolTextFile(Paths.txt('dadbattle/dadbattleDialogue'));
+			case 'monster':
+				dialogue = CoolUtil.coolTextFile(Paths.txt('monster/monsterDialogue'));
 			case 'satin-panties':
 				dialogue = CoolUtil.coolTextFile(Paths.txt('satin-panties/satin-pantiesDialogue'));
 			case 'high':
@@ -924,13 +926,19 @@ class PlayState extends MusicBeatState
 									ease: FlxEase.quadInOut,
 									onComplete: function(twn:FlxTween)
 									{
-										startCountdown();
+										if (STOptions.st_extraDialogue)
+											doDialogue(doof);
+										else
+											startCountdown();
 									}
 								});
 							});
 						});
 					} else {
-						startCountdown();
+						if (STOptions.st_extraDialogue)
+							doDialogue(doof);
+						else
+							startCountdown();
 					}
 				case "winter-horrorland":
 					var blackScreen:FlxSprite = new FlxSprite(0, 0).makeGraphic(Std.int(FlxG.width * 2), Std.int(FlxG.height * 2), FlxColor.BLACK);
