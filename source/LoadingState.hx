@@ -25,6 +25,7 @@ class LoadingState extends MusicBeatState
 	var danceLeft = false;
 
 	var loadBar:FlxSprite;
+	var funkay:FlxSprite;
 
 	function new(target:FlxState, stopMusic:Bool)
 	{
@@ -38,7 +39,7 @@ class LoadingState extends MusicBeatState
 		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, 0xFFcaff4d);
 		add(bg);
 
-		var funkay:FlxSprite = new FlxSprite();
+		funkay = new FlxSprite();
 		funkay.loadGraphic(Paths.image('funkay'));
 		funkay.setGraphicSize(0, FlxG.height);
 		funkay.updateHitbox();
@@ -123,6 +124,19 @@ class LoadingState extends MusicBeatState
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+
+		funkay.setGraphicSize(Std.int(FlxMath.lerp(FlxG.width * 0.88, funkay.width, 0.95)));
+		funkay.updateHitbox();
+		// funkay.updateHitbox();
+
+		if (controls.ACCEPT)
+		{
+			funkay.setGraphicSize(Std.int(funkay.width + 60));
+			funkay.updateHitbox();
+			// funkay.setGraphicSize(0, Std.int(funkay.height + 50));
+			// funkay.updateHitbox();
+			// funkay.screenCenter();
+		}
 
 		if (callbacks != null)
 		{
