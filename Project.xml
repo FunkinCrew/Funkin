@@ -40,7 +40,7 @@
 
 	<classpath name="source" />
 
-	<assets path='assets/preload/music' include="*mp4" embed='false' />
+	<!-- <assets path='assets/preload/music' include="*mp4" embed='false' /> -->
 
 	<assets path="assets/preload" rename="assets" exclude="*.ogg" if="web"/>
 	<assets path="assets/preload" rename="assets" exclude="*.mp3" unless="web"/>
