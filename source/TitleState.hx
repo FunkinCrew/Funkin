@@ -41,6 +41,7 @@ class TitleState extends MusicBeatState
 	var ngSpr:FlxSprite;
 
 	var curWacky:Array<String> = [];
+	var nameLines:Array<String> = [];
 
 	var wackyImage:FlxSprite;
 
@@ -53,6 +54,7 @@ class TitleState extends MusicBeatState
 		PlayerSettings.init();
 
 		curWacky = FlxG.random.getObject(getIntroTextShit());
+		curWacky = FlxG.random.getObject(funkyText());
 
 		// DEBUG BULLSHIT
 
@@ -229,6 +231,20 @@ class TitleState extends MusicBeatState
 
 		return swagGoodArray;
 	}
+	function funkyText():Array<Array<String>>
+		{
+			var fullText:String = Assets.getText(Paths.txt('nameText'));
+	
+			var firstArray:Array<String> = fullText.split('\n');
+			var swagGoodArray:Array<Array<String>> = [];
+	
+			for (i in firstArray)
+			{
+				swagGoodArray.push(i.split('--'));
+			}
+	
+			return swagGoodArray;
+		}
 
 	var transitioning:Bool = false;
 
@@ -400,13 +416,13 @@ class TitleState extends MusicBeatState
 			// credTextShit.text = "Friday";
 			// credTextShit.screenCenter();
 			case 13:
-				addMoreText('Friday');
+				addMoreText(nameLines[0]);
 			// credTextShit.visible = true;
 			case 14:
-				addMoreText('Night');
+				addMoreText(nameLines[1]);
 			// credTextShit.text += '\nNight';
 			case 15:
-				addMoreText('Funkin'); // credTextShit.text += '\nFunkin';
+				addMoreText(nameLines[2]); // credTextShit.text += '\nFunkin';
 
 			case 16:
 				skipIntro();
