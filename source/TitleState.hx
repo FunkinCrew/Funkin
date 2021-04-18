@@ -29,6 +29,8 @@ import openfl.events.NetStatusEvent;
 import openfl.media.Video;
 import openfl.net.NetConnection;
 import openfl.net.NetStream;
+import shaderslmfao.BuildingShaders.BuildingShader;
+import shaderslmfao.BuildingShaders;
 import shaderslmfao.ColorSwap;
 import ui.PreferencesMenu;
 
@@ -45,7 +47,7 @@ import sys.thread.Thread;
 
 class TitleState extends MusicBeatState
 {
-	static var initialized:Bool = false;
+	public static var initialized:Bool = false;
 
 	var blackScreen:FlxSprite;
 	var credGroup:FlxGroup;
@@ -57,6 +59,7 @@ class TitleState extends MusicBeatState
 	var wackyImage:FlxSprite;
 	var lastBeat:Int = 0;
 	var swagShader:ColorSwap;
+	var alphaShader:BuildingShaders;
 	var thingie:FlxSprite;
 
 	var video:Video;
@@ -73,6 +76,7 @@ class TitleState extends MusicBeatState
 		FlxG.game.focusLostFramerate = 60;
 
 		swagShader = new ColorSwap();
+		alphaShader = new BuildingShaders();
 
 		FlxG.sound.muteKeys = [ZERO];
 
@@ -103,6 +107,11 @@ class TitleState extends MusicBeatState
 			// QUICK PATCH OOPS!
 			if (!StoryMenuState.weekUnlocked[0])
 				StoryMenuState.weekUnlocked[0] = true;
+		}
+
+		if (FlxG.save.data.seenVideo != null)
+		{
+			VideoState.seenVideo = FlxG.save.data.seenVideo;
 		}
 
 		#if FREEPLAY
@@ -249,6 +258,7 @@ class TitleState extends MusicBeatState
 		logoBl.updateHitbox();
 
 		logoBl.shader = swagShader.shader;
+		// logoBl.shader = alphaShader.shader;
 
 		// trace();
 		// logoBl.screenCenter();
@@ -465,11 +475,13 @@ class TitleState extends MusicBeatState
 		if (controls.UI_LEFT)
 		{
 			swagShader.update(-elapsed * 0.1);
+			// alphaShader.update(-elapsed * 0.1);
 		}
 
 		if (controls.UI_RIGHT)
 		{
 			swagShader.update(elapsed * 0.1);
+			// alphaShader.update(elapsed * 0.1);
 		}
 
 		super.update(elapsed);

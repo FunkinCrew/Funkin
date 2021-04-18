@@ -1,0 +1,766 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="tankTalkSong3.png">
+	<!-- Created with Adobe Animate version 21.0.0.35450 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="GodEffing0000" x="862" y="589" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0001" x="862" y="589" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0002" x="862" y="589" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0003" x="862" y="589" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0004" x="862" y="589" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0005" x="862" y="589" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0006" x="862" y="589" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0007" x="1293" y="589" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0008" x="1724" y="589" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0009" x="2155" y="589" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0010" x="2586" y="589" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0011" x="2586" y="589" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0012" x="2586" y="589" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0013" x="3017" y="589" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0014" x="3017" y="589" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0015" x="3017" y="589" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0016" x="3448" y="589" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0017" x="3448" y="589" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0018" x="3448" y="589" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0019" x="3879" y="589" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0020" x="3879" y="589" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0021" x="4310" y="589" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0022" x="4310" y="589" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0023" x="4741" y="589" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0024" x="4741" y="589" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0025" x="5172" y="589" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0026" x="5172" y="589" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0027" x="431" y="1765" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0028" x="431" y="1765" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0029" x="431" y="1765" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0030" x="431" y="2342" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0031" x="431" y="2342" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0032" x="0" y="2353" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0033" x="0" y="2353" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0034" x="1293" y="1764" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0035" x="1724" y="1764" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0036" x="1724" y="1764" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0037" x="1724" y="1764" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0038" x="4310" y="589" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0039" x="4310" y="589" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0040" x="2155" y="1764" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0041" x="2155" y="1764" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0042" x="2586" y="1764" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0043" x="2586" y="1764" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0044" x="3017" y="1764" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0045" x="3017" y="1764" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0046" x="3448" y="1764" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0047" x="3879" y="1764" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0048" x="3879" y="1764" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0049" x="4310" y="1764" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0050" x="4741" y="1764" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0051" x="4741" y="1764" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0052" x="4310" y="1764" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0053" x="4310" y="1764" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0054" x="5172" y="1764" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0055" x="5172" y="1764" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0056" x="5603" y="1764" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0057" x="5603" y="1764" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0058" x="5603" y="1764" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0059" x="5603" y="1764" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0060" x="5603" y="1764" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0061" x="5603" y="1764" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0062" x="5603" y="1764" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0063" x="5603" y="1764" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0064" x="5603" y="1764" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0065" x="5603" y="1764" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0066" x="5603" y="1764" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0067" x="1293" y="2341" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0068" x="862" y="2352" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0069" x="862" y="2352" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0070" x="431" y="2919" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0071" x="431" y="2919" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0072" x="431" y="2919" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0073" x="431" y="2919" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0074" x="431" y="2919" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0075" x="0" y="2930" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0076" x="1724" y="2341" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0077" x="1724" y="2341" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0078" x="2155" y="2341" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0079" x="2586" y="2341" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0080" x="2586" y="2341" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0081" x="3017" y="2341" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0082" x="3448" y="2341" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0083" x="3448" y="2341" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0084" x="3879" y="2341" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0085" x="3879" y="2341" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0086" x="4310" y="2341" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0087" x="4310" y="2341" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0088" x="4741" y="2341" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0089" x="4741" y="2341" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0090" x="5172" y="2341" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0091" x="5172" y="2341" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0092" x="5603" y="2341" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0093" x="5603" y="2341" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0094" x="1293" y="2918" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0095" x="862" y="2929" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0096" x="431" y="3496" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0097" x="431" y="3496" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0098" x="0" y="3507" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0099" x="0" y="3507" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0100" x="1724" y="2918" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0101" x="1724" y="2918" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0102" x="2155" y="2918" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0103" x="2586" y="2918" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0104" x="2586" y="2918" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0105" x="3017" y="2918" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0106" x="3017" y="2918" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0107" x="3017" y="2918" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0108" x="3017" y="2918" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0109" x="3448" y="2918" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0110" x="3448" y="2918" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0111" x="3879" y="2918" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0112" x="4310" y="2918" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0113" x="4741" y="2918" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0114" x="5172" y="2918" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0115" x="5172" y="2918" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0116" x="5603" y="2918" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0117" x="5603" y="2918" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0118" x="5603" y="2918" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0119" x="5603" y="2918" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0120" x="5603" y="2918" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0121" x="5603" y="2918" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0122" x="5603" y="2918" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0123" x="5603" y="2918" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0124" x="5603" y="2918" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0125" x="5603" y="2918" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0126" x="5603" y="2918" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0127" x="5603" y="2918" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0128" x="5603" y="2918" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0129" x="1293" y="3495" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0130" x="862" y="3506" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0131" x="862" y="3506" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0132" x="431" y="4073" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0133" x="431" y="4073" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0134" x="0" y="4084" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0135" x="0" y="4084" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0136" x="1724" y="3495" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0137" x="1724" y="3495" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0138" x="2155" y="3495" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0139" x="2155" y="3495" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0140" x="2586" y="3495" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0141" x="3017" y="3495" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0142" x="3017" y="3495" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0143" x="3448" y="3495" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0144" x="3448" y="3495" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0145" x="3448" y="3495" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0146" x="3879" y="3495" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0147" x="4310" y="3495" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0148" x="4310" y="3495" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0149" x="4741" y="3495" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0150" x="4741" y="3495" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0151" x="5172" y="3495" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0152" x="5172" y="3495" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0153" x="5603" y="3495" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0154" x="1293" y="4072" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0155" x="1293" y="4072" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0156" x="862" y="4083" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0157" x="862" y="4083" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0158" x="862" y="4083" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0159" x="862" y="4083" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0160" x="862" y="4083" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0161" x="862" y="4083" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0162" x="862" y="4083" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0163" x="862" y="4083" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0164" x="431" y="4650" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0165" x="431" y="4650" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0166" x="0" y="4661" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0167" x="0" y="4661" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0168" x="431" y="4650" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0169" x="431" y="4650" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0170" x="1724" y="4072" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0171" x="1724" y="4072" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0172" x="2155" y="4072" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0173" x="2155" y="4072" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0174" x="2586" y="4072" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0175" x="2586" y="4072" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0176" x="3017" y="4072" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0177" x="3448" y="4072" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0178" x="3448" y="4072" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0179" x="3879" y="4072" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0180" x="3879" y="4072" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0181" x="4310" y="4072" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0182" x="4310" y="4072" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0183" x="4741" y="4072" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0184" x="4741" y="4072" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0185" x="4741" y="4072" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0186" x="4741" y="4072" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0187" x="5172" y="4072" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0188" x="5603" y="4072" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0189" x="5603" y="4072" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0190" x="1293" y="4649" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0191" x="1293" y="4649" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0192" x="862" y="4660" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0193" x="431" y="5227" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0194" x="431" y="5227" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0195" x="0" y="5238" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0196" x="1724" y="4649" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0197" x="1724" y="4649" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0198" x="2155" y="4649" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0199" x="2155" y="4649" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0200" x="2155" y="4649" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0201" x="2155" y="4649" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0202" x="2586" y="4649" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0203" x="2586" y="4649" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0204" x="6034" y="575" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0205" x="6034" y="575" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0206" x="6034" y="1149" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0207" x="6034" y="1149" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0208" x="6034" y="1149" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0209" x="6034" y="1723" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0210" x="6034" y="1723" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0211" x="6034" y="1723" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0212" x="6034" y="2297" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0213" x="6034" y="2297" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0214" x="6034" y="2871" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0215" x="6034" y="2871" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0216" x="6034" y="2871" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0217" x="6034" y="2871" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0218" x="6034" y="2871" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0219" x="6034" y="2871" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0220" x="6034" y="2871" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0221" x="6034" y="2871" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0222" x="6034" y="2871" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0223" x="6034" y="2871" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0224" x="6034" y="2871" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0225" x="6034" y="2871" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0226" x="6034" y="2871" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0227" x="6034" y="2871" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0228" x="6034" y="2871" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0229" x="6034" y="3445" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0230" x="6034" y="3445" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0231" x="6034" y="4019" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0232" x="6034" y="4019" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0233" x="6034" y="4593" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0234" x="6034" y="5167" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0235" x="6034" y="5167" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0236" x="6034" y="5741" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0237" x="6034" y="5741" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0238" x="6034" y="6315" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0239" x="6034" y="6315" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0240" x="6034" y="6889" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0241" x="6034" y="6889" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0242" x="6034" y="6889" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0243" x="6034" y="6889" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0244" x="6034" y="6889" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0245" x="6034" y="6889" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0246" x="6034" y="6315" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0247" x="6034" y="6315" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0248" x="6034" y="7463" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0249" x="6034" y="7463" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0250" x="6465" y="0" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0251" x="6465" y="0" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0252" x="6465" y="574" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0253" x="6465" y="574" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0254" x="6465" y="1148" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0255" x="6465" y="1148" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0256" x="6465" y="1722" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0257" x="6465" y="1722" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0258" x="6465" y="574" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0259" x="6465" y="574" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0260" x="6465" y="2296" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0261" x="6465" y="2870" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0262" x="6465" y="2870" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0263" x="6465" y="3444" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0264" x="6465" y="3444" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0265" x="6465" y="4018" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0266" x="6034" y="1149" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0267" x="6034" y="1149" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0268" x="6465" y="4592" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0269" x="6465" y="4592" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0270" x="6465" y="5166" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0271" x="6465" y="5166" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0272" x="6465" y="5740" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0273" x="6465" y="5740" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0274" x="6465" y="5740" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0275" x="6465" y="5740" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0276" x="6465" y="5740" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0277" x="6465" y="5740" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0278" x="6465" y="5740" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0279" x="6465" y="5740" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0280" x="6465" y="5740" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0281" x="6465" y="5740" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0282" x="6465" y="5740" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0283" x="6465" y="6314" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0284" x="6465" y="6314" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0285" x="6465" y="6888" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0286" x="6465" y="6888" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0287" x="6465" y="7462" width="427" height="570" frameX="0" frameY="-14" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0288" x="3017" y="4649" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0289" x="3017" y="4649" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0290" x="3448" y="4649" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0291" x="3448" y="4649" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0292" x="3879" y="4649" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0293" x="3879" y="4649" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0294" x="4310" y="4649" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0295" x="4310" y="4649" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0296" x="4310" y="4649" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0297" x="4741" y="4649" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0298" x="4741" y="4649" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0299" x="5172" y="4649" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0300" x="5172" y="4649" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0301" x="5603" y="4649" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0302" x="5603" y="4649" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0303" x="1293" y="5226" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0304" x="1293" y="5226" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0305" x="862" y="5237" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0306" x="431" y="5804" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0307" x="431" y="5804" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0308" x="0" y="5815" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0309" x="0" y="5815" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0310" x="0" y="5815" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0311" x="1724" y="5226" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0312" x="1724" y="5226" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0313" x="2155" y="5226" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0314" x="2155" y="5226" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0315" x="2586" y="5226" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0316" x="2586" y="5226" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0317" x="3017" y="5226" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0318" x="5172" y="4649" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0319" x="5172" y="4649" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0320" x="5603" y="4649" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0321" x="5603" y="4649" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0322" x="3448" y="5226" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0323" x="3448" y="5226" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0324" x="3448" y="5226" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0325" x="3879" y="5226" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0326" x="3879" y="5226" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0327" x="4310" y="5226" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0328" x="4310" y="5226" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0329" x="4741" y="5226" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0330" x="4741" y="5226" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0331" x="5172" y="5226" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0332" x="5172" y="5226" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0333" x="5603" y="5226" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0334" x="5603" y="5226" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0335" x="1293" y="5803" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0336" x="1293" y="5803" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0337" x="862" y="5814" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0338" x="862" y="5814" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0339" x="862" y="5814" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0340" x="431" y="6381" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0341" x="431" y="6381" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0342" x="431" y="6381" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0343" x="431" y="6381" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0344" x="431" y="6381" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0345" x="0" y="6392" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0346" x="0" y="6392" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0347" x="1724" y="5803" width="427" height="573" frameX="0" frameY="-11" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="GodEffing0348" x="5603" y="0" width="427" height="584"/>
+	<SubTexture name="GodEffing0349" x="5603" y="0" width="427" height="584"/>
+	<SubTexture name="GodEffing0350" x="5603" y="588" width="427" height="584"/>
+	<SubTexture name="GodEffing0351" x="0" y="589" width="427" height="584"/>
+	<SubTexture name="GodEffing0352" x="0" y="589" width="427" height="584"/>
+	<SubTexture name="GodEffing0353" x="5603" y="0" width="427" height="584"/>
+	<SubTexture name="GodEffing0354" x="5603" y="0" width="427" height="584"/>
+	<SubTexture name="GodEffing0355" x="431" y="589" width="427" height="584"/>
+	<SubTexture name="GodEffing0356" x="431" y="589" width="427" height="584"/>
+	<SubTexture name="GodEffing0357" x="0" y="589" width="427" height="584"/>
+	<SubTexture name="GodEffing0358" x="0" y="589" width="427" height="584"/>
+	<SubTexture name="GodEffing0359" x="862" y="1176" width="427" height="584"/>
+	<SubTexture name="GodEffing0360" x="862" y="1176" width="427" height="584"/>
+	<SubTexture name="GodEffing0361" x="862" y="1176" width="427" height="584"/>
+	<SubTexture name="GodEffing0362" x="0" y="1177" width="427" height="584"/>
+	<SubTexture name="GodEffing0363" x="0" y="1177" width="427" height="584"/>
+	<SubTexture name="GodEffing0364" x="0" y="1177" width="427" height="584"/>
+	<SubTexture name="GodEffing0365" x="431" y="1177" width="427" height="584"/>
+	<SubTexture name="GodEffing0366" x="431" y="1177" width="427" height="584"/>
+	<SubTexture name="GodEffing0367" x="431" y="1177" width="427" height="584"/>
+	<SubTexture name="GodEffing0368" x="1293" y="1176" width="427" height="584"/>
+	<SubTexture name="GodEffing0369" x="1293" y="1176" width="427" height="584"/>
+	<SubTexture name="GodEffing0370" x="1293" y="1176" width="427" height="584"/>
+	<SubTexture name="GodEffing0371" x="1293" y="1176" width="427" height="584"/>
+	<SubTexture name="GodEffing0372" x="0" y="589" width="427" height="584"/>
+	<SubTexture name="GodEffing0373" x="0" y="589" width="427" height="584"/>
+	<SubTexture name="GodEffing0374" x="0" y="589" width="427" height="584"/>
+	<SubTexture name="GodEffing0375" x="1724" y="1176" width="427" height="584"/>
+	<SubTexture name="GodEffing0376" x="1724" y="1176" width="427" height="584"/>
+	<SubTexture name="GodEffing0377" x="1724" y="1176" width="427" height="584"/>
+	<SubTexture name="GodEffing0378" x="1724" y="1176" width="427" height="584"/>
+	<SubTexture name="GodEffing0379" x="1724" y="1176" width="427" height="584"/>
+	<SubTexture name="GodEffing0380" x="1724" y="1176" width="427" height="584"/>
+	<SubTexture name="GodEffing0381" x="1724" y="1176" width="427" height="584"/>
+	<SubTexture name="GodEffing0382" x="1724" y="1176" width="427" height="584"/>
+	<SubTexture name="GodEffing0383" x="1724" y="1176" width="427" height="584"/>
+	<SubTexture name="GodEffing0384" x="1724" y="1176" width="427" height="584"/>
+	<SubTexture name="GodEffing0385" x="1724" y="1176" width="427" height="584"/>
+	<SubTexture name="GodEffing0386" x="1724" y="1176" width="427" height="584"/>
+	<SubTexture name="GodEffing0387" x="1724" y="1176" width="427" height="584"/>
+	<SubTexture name="GodEffing0388" x="1724" y="1176" width="427" height="584"/>
+	<SubTexture name="GodEffing0389" x="1724" y="1176" width="427" height="584"/>
+	<SubTexture name="GodEffing0390" x="1724" y="1176" width="427" height="584"/>
+	<SubTexture name="GodEffing0391" x="1724" y="1176" width="427" height="584"/>
+	<SubTexture name="GodEffing0392" x="1724" y="1176" width="427" height="584"/>
+	<SubTexture name="GodEffing0393" x="1724" y="1176" width="427" height="584"/>
+	<SubTexture name="GodEffing0394" x="1724" y="1176" width="427" height="584"/>
+	<SubTexture name="GodEffing0395" x="1724" y="1176" width="427" height="584"/>
+	<SubTexture name="GodEffing0396" x="1724" y="1176" width="427" height="584"/>
+	<SubTexture name="GodEffing0397" x="1724" y="1176" width="427" height="584"/>
+	<SubTexture name="GodEffing0398" x="1724" y="1176" width="427" height="584"/>
+	<SubTexture name="GodEffing0399" x="1724" y="1176" width="427" height="584"/>
+	<SubTexture name="sexAmbig0000" x="862" y="589" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="sexAmbig0001" x="862" y="589" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="sexAmbig0002" x="862" y="589" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="sexAmbig0003" x="862" y="589" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="sexAmbig0004" x="862" y="589" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="sexAmbig0005" x="862" y="589" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="sexAmbig0006" x="862" y="589" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="sexAmbig0007" x="862" y="589" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="sexAmbig0008" x="862" y="589" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="sexAmbig0009" x="862" y="589" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="sexAmbig0010" x="862" y="589" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="sexAmbig0011" x="862" y="589" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="584"/>
+	<SubTexture name="sexAmbig0012" x="0" y="0" width="427" height="585"/>
+	<SubTexture name="sexAmbig0013" x="0" y="0" width="427" height="585"/>
+	<SubTexture name="sexAmbig0014" x="431" y="0" width="427" height="585"/>
+	<SubTexture name="sexAmbig0015" x="431" y="0" width="427" height="585"/>
+	<SubTexture name="sexAmbig0016" x="431" y="0" width="427" height="585"/>
+	<SubTexture name="sexAmbig0017" x="862" y="0" width="427" height="585"/>
+	<SubTexture name="sexAmbig0018" x="862" y="0" width="427" height="585"/>
+	<SubTexture name="sexAmbig0019" x="862" y="0" width="427" height="585"/>
+	<SubTexture name="sexAmbig0020" x="1293" y="0" width="427" height="585"/>
+	<SubTexture name="sexAmbig0021" x="1293" y="0" width="427" height="585"/>
+	<SubTexture name="sexAmbig0022" x="1724" y="0" width="427" height="585"/>
+	<SubTexture name="sexAmbig0023" x="1724" y="0" width="427" height="585"/>
+	<SubTexture name="sexAmbig0024" x="2155" y="0" width="427" height="585"/>
+	<SubTexture name="sexAmbig0025" x="2155" y="0" width="427" height="585"/>
+	<SubTexture name="sexAmbig0026" x="1724" y="0" width="427" height="585"/>
+	<SubTexture name="sexAmbig0027" x="2586" y="0" width="427" height="585"/>
+	<SubTexture name="sexAmbig0028" x="2586" y="0" width="427" height="585"/>
+	<SubTexture name="sexAmbig0029" x="1724" y="0" width="427" height="585"/>
+	<SubTexture name="sexAmbig0030" x="1724" y="0" width="427" height="585"/>
+	<SubTexture name="sexAmbig0031" x="3017" y="0" width="427" height="585"/>
+	<SubTexture name="sexAmbig0032" x="3017" y="0" width="427" height="585"/>
+	<SubTexture name="sexAmbig0033" x="3448" y="0" width="427" height="585"/>
+	<SubTexture name="sexAmbig0034" x="3448" y="0" width="427" height="585"/>
+	<SubTexture name="sexAmbig0035" x="3879" y="0" width="427" height="585"/>
+	<SubTexture name="sexAmbig0036" x="3879" y="0" width="427" height="585"/>
+	<SubTexture name="sexAmbig0037" x="3879" y="0" width="427" height="585"/>
+	<SubTexture name="sexAmbig0038" x="4310" y="0" width="427" height="585"/>
+	<SubTexture name="sexAmbig0039" x="4310" y="0" width="427" height="585"/>
+	<SubTexture name="sexAmbig0040" x="4741" y="0" width="427" height="585"/>
+	<SubTexture name="sexAmbig0041" x="4741" y="0" width="427" height="585"/>
+	<SubTexture name="sexAmbig0042" x="1724" y="0" width="427" height="585"/>
+	<SubTexture name="sexAmbig0043" x="1724" y="0" width="427" height="585"/>
+	<SubTexture name="sexAmbig0044" x="5172" y="0" width="427" height="585"/>
+	<SubTexture name="sexAmbig0045" x="5172" y="0" width="427" height="585"/>
+	<SubTexture name="sexAmbig0046" x="2586" y="0" width="427" height="585"/>
+	<SubTexture name="sexAmbig0047" x="2586" y="0" width="427" height="585"/>
+	<SubTexture name="sexAmbig0048" x="2586" y="0" width="427" height="585"/>
+	<SubTexture name="sexAmbig0049" x="1724" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0050" x="1724" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0051" x="2155" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0052" x="2155" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0053" x="2586" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0054" x="2586" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0055" x="3017" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0056" x="3017" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0057" x="3017" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0058" x="3448" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0059" x="3448" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0060" x="1724" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0061" x="1724" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0062" x="3879" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0063" x="3879" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0064" x="4310" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0065" x="4310" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0066" x="4741" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0067" x="5172" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0068" x="5172" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0069" x="5603" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0070" x="5603" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0071" x="1724" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0072" x="1724" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0073" x="1724" y="7532" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0074" x="1724" y="7532" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0075" x="1293" y="7534" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0076" x="1724" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0077" x="1724" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0078" x="3448" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0079" x="3448" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0080" x="862" y="7545" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0081" x="862" y="7545" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0082" x="1293" y="7534" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0083" x="1293" y="7534" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0084" x="3017" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0085" x="3017" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0086" x="2155" y="7532" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0087" x="2586" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0088" x="2586" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0089" x="2586" y="7532" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0090" x="2586" y="7532" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0091" x="3017" y="7532" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0092" x="3017" y="7532" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0093" x="3448" y="7532" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0094" x="3879" y="7532" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0095" x="3879" y="7532" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0096" x="3879" y="7532" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0097" x="1724" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0098" x="1724" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0099" x="1724" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0100" x="4310" y="7532" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0101" x="4310" y="7532" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0102" x="2586" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0103" x="2586" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0104" x="2586" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0105" x="4741" y="7532" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0106" x="4741" y="7532" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0107" x="5172" y="7532" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0108" x="5172" y="7532" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0109" x="5172" y="7532" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0110" x="2586" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0111" x="2586" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0112" x="3017" y="7532" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0113" x="3017" y="7532" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0114" x="2586" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0115" x="2586" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0116" x="5603" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0117" x="5603" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0118" x="3448" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0119" x="3448" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0120" x="2586" y="7532" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0121" x="2586" y="7532" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0122" x="1724" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0123" x="1724" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0124" x="2586" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0125" x="2586" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0126" x="2586" y="6957" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0127" x="5603" y="7532" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0128" x="5603" y="7532" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0129" x="5603" y="7532" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0130" x="5603" y="7532" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0131" x="7327" y="6888" width="427" height="569" frameX="0" frameY="-16" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0132" x="6896" y="0" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0133" x="6896" y="0" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0134" x="6896" y="574" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0135" x="6896" y="574" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0136" x="6896" y="1148" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0137" x="6896" y="1722" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0138" x="6896" y="1722" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0139" x="6896" y="2296" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0140" x="6896" y="2296" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0141" x="6896" y="2870" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0142" x="6896" y="3444" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0143" x="6896" y="3444" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0144" x="6896" y="4018" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0145" x="6896" y="4018" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0146" x="6896" y="4592" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0147" x="6896" y="4592" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0148" x="6896" y="3444" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0149" x="6896" y="3444" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0150" x="6896" y="5166" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0151" x="6896" y="5166" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0152" x="6896" y="5740" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0153" x="6896" y="5740" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0154" x="6896" y="6314" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0155" x="6896" y="6314" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0156" x="6896" y="6888" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0157" x="6896" y="6888" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0158" x="6896" y="6888" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0159" x="6896" y="6888" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0160" x="6896" y="6888" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0161" x="6896" y="6888" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0162" x="6896" y="6888" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0163" x="6896" y="6888" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0164" x="6896" y="6888" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0165" x="6896" y="6888" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0166" x="6896" y="6888" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0167" x="6896" y="6888" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0168" x="6896" y="6888" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0169" x="6896" y="6888" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0170" x="6896" y="6888" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0171" x="6896" y="6888" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0172" x="6896" y="6888" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0173" x="6896" y="6888" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0174" x="6896" y="6888" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0175" x="2155" y="5803" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0176" x="2586" y="5803" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0177" x="2586" y="5803" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0178" x="3017" y="5803" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0179" x="3017" y="5803" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0180" x="3448" y="5803" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0181" x="3448" y="5803" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0182" x="3879" y="5803" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0183" x="3879" y="5803" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0184" x="3017" y="5803" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0185" x="3017" y="5803" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0186" x="3448" y="5803" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0187" x="3879" y="5803" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0188" x="3879" y="5803" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0189" x="3017" y="5803" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0190" x="3017" y="5803" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0191" x="4310" y="5803" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0192" x="4310" y="5803" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0193" x="3448" y="5803" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0194" x="3448" y="5803" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0195" x="3448" y="5803" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0196" x="4741" y="5803" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0197" x="3017" y="5803" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0198" x="3017" y="5803" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0199" x="3017" y="5803" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0200" x="3448" y="5803" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0201" x="5172" y="5803" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0202" x="5172" y="5803" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0203" x="2586" y="5803" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0204" x="2586" y="5803" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0205" x="5603" y="5803" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0206" x="1293" y="6380" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0207" x="862" y="6391" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0208" x="862" y="6391" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0209" x="431" y="6958" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0210" x="431" y="6958" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0211" x="0" y="6969" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0212" x="0" y="6969" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0213" x="0" y="6969" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0214" x="0" y="6969" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0215" x="0" y="6969" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0216" x="0" y="6969" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0217" x="0" y="6969" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0218" x="0" y="6969" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0219" x="0" y="6969" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0220" x="0" y="6969" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0221" x="0" y="6969" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0222" x="0" y="6969" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0223" x="0" y="6969" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0224" x="0" y="6969" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0225" x="0" y="6969" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0226" x="0" y="6969" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0227" x="1724" y="6380" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0228" x="1724" y="6380" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0229" x="2155" y="6380" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0230" x="2155" y="6380" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0231" x="2586" y="6380" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0232" x="2586" y="6380" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0233" x="3017" y="6380" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0234" x="7327" y="7461" width="427" height="568" frameX="0" frameY="-17" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0235" x="6896" y="7462" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0236" x="6896" y="7462" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0237" x="7327" y="0" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0238" x="7327" y="0" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0239" x="7327" y="574" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0240" x="7327" y="574" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0241" x="7327" y="1148" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0242" x="7327" y="1148" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0243" x="7327" y="1722" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0244" x="7327" y="1722" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0245" x="7327" y="1722" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0246" x="7327" y="1722" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0247" x="7327" y="1722" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0248" x="7327" y="1722" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0249" x="7327" y="1722" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0250" x="7327" y="1722" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0251" x="7327" y="1722" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0252" x="7327" y="2296" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0253" x="7327" y="2870" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0254" x="7327" y="3444" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0255" x="7327" y="3444" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0256" x="7327" y="4018" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0257" x="7327" y="4018" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0258" x="7327" y="4592" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0259" x="7327" y="4592" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0260" x="7327" y="4018" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0261" x="7327" y="4018" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0262" x="7327" y="5166" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0263" x="7327" y="5166" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0264" x="7327" y="5740" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0265" x="7327" y="6314" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0266" x="7327" y="6314" width="427" height="570" frameX="0" frameY="-15" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0267" x="3448" y="6380" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0268" x="3448" y="6380" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0269" x="3879" y="6380" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0270" x="3879" y="6380" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0271" x="4310" y="6380" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0272" x="4310" y="6380" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0273" x="4310" y="6380" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0274" x="4741" y="6380" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0275" x="4741" y="6380" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0276" x="4741" y="6380" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0277" x="4741" y="6380" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0278" x="4741" y="6380" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0279" x="4741" y="6380" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0280" x="4741" y="6380" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0281" x="4741" y="6380" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0282" x="4741" y="6380" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0283" x="4741" y="6380" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0284" x="4741" y="6380" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0285" x="4741" y="6380" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0286" x="4741" y="6380" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0287" x="5172" y="6380" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0288" x="5172" y="6380" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0289" x="5603" y="6380" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0290" x="5603" y="6380" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0291" x="2155" y="1176" width="427" height="584" frameX="0" frameY="-1" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0292" x="2155" y="1176" width="427" height="584" frameX="0" frameY="-1" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0293" x="2586" y="1176" width="427" height="584" frameX="0" frameY="-1" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0294" x="2586" y="1176" width="427" height="584" frameX="0" frameY="-1" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0295" x="2586" y="1176" width="427" height="584" frameX="0" frameY="-1" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0296" x="3017" y="1176" width="427" height="584" frameX="0" frameY="-1" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0297" x="3017" y="1176" width="427" height="584" frameX="0" frameY="-1" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0298" x="3017" y="1176" width="427" height="584" frameX="0" frameY="-1" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0299" x="3448" y="1176" width="427" height="584" frameX="0" frameY="-1" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0300" x="3448" y="1176" width="427" height="584" frameX="0" frameY="-1" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0301" x="3879" y="1176" width="427" height="584" frameX="0" frameY="-1" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0302" x="3879" y="1176" width="427" height="584" frameX="0" frameY="-1" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0303" x="3879" y="1176" width="427" height="584" frameX="0" frameY="-1" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0304" x="3017" y="1176" width="427" height="584" frameX="0" frameY="-1" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0305" x="3017" y="1176" width="427" height="584" frameX="0" frameY="-1" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0306" x="3017" y="1176" width="427" height="584" frameX="0" frameY="-1" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0307" x="3448" y="1176" width="427" height="584" frameX="0" frameY="-1" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0308" x="3448" y="1176" width="427" height="584" frameX="0" frameY="-1" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0309" x="4310" y="1176" width="427" height="584" frameX="0" frameY="-1" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0310" x="4310" y="1176" width="427" height="584" frameX="0" frameY="-1" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0311" x="3017" y="1176" width="427" height="584" frameX="0" frameY="-1" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0312" x="3017" y="1176" width="427" height="584" frameX="0" frameY="-1" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0313" x="3017" y="1176" width="427" height="584" frameX="0" frameY="-1" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0314" x="3448" y="1176" width="427" height="584" frameX="0" frameY="-1" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0315" x="3448" y="1176" width="427" height="584" frameX="0" frameY="-1" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0316" x="3448" y="1176" width="427" height="584" frameX="0" frameY="-1" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0317" x="3448" y="1176" width="427" height="584" frameX="0" frameY="-1" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0318" x="3017" y="1176" width="427" height="584" frameX="0" frameY="-1" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0319" x="3017" y="1176" width="427" height="584" frameX="0" frameY="-1" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0320" x="3017" y="1176" width="427" height="584" frameX="0" frameY="-1" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0321" x="3448" y="1176" width="427" height="584" frameX="0" frameY="-1" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0322" x="3448" y="1176" width="427" height="584" frameX="0" frameY="-1" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0323" x="3448" y="1176" width="427" height="584" frameX="0" frameY="-1" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0324" x="4741" y="1176" width="427" height="584" frameX="0" frameY="-1" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0325" x="4741" y="1176" width="427" height="584" frameX="0" frameY="-1" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0326" x="4741" y="1176" width="427" height="584" frameX="0" frameY="-1" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0327" x="5172" y="1176" width="427" height="584" frameX="0" frameY="-1" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0328" x="5172" y="1176" width="427" height="584" frameX="0" frameY="-1" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0329" x="5172" y="1176" width="427" height="584" frameX="0" frameY="-1" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0330" x="4741" y="1176" width="427" height="584" frameX="0" frameY="-1" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0331" x="4741" y="1176" width="427" height="584" frameX="0" frameY="-1" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0332" x="5603" y="1176" width="427" height="584" frameX="0" frameY="-1" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0333" x="5603" y="1176" width="427" height="584" frameX="0" frameY="-1" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0334" x="862" y="1764" width="427" height="584" frameX="0" frameY="-1" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0335" x="862" y="1764" width="427" height="584" frameX="0" frameY="-1" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0336" x="0" y="1765" width="427" height="584" frameX="0" frameY="-1" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0337" x="5603" y="1176" width="427" height="584" frameX="0" frameY="-1" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0338" x="5603" y="1176" width="427" height="584" frameX="0" frameY="-1" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0339" x="5172" y="1176" width="427" height="584" frameX="0" frameY="-1" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0340" x="5172" y="1176" width="427" height="584" frameX="0" frameY="-1" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0341" x="6034" y="0" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0342" x="6034" y="0" width="427" height="571" frameX="0" frameY="-14" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0343" x="1293" y="6957" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0344" x="1293" y="6957" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0345" x="862" y="6968" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0346" x="431" y="7535" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0347" x="431" y="7535" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0348" x="0" y="7546" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0349" x="0" y="7546" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0350" x="0" y="7546" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0351" x="0" y="7546" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0352" x="0" y="7546" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0353" x="0" y="7546" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0354" x="0" y="7546" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0355" x="0" y="7546" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0356" x="0" y="7546" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0357" x="0" y="7546" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0358" x="0" y="7546" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0359" x="0" y="7546" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+	<SubTexture name="sexAmbig0360" x="0" y="7546" width="427" height="573" frameX="0" frameY="-12" frameWidth="427" frameHeight="585"/>
+</TextureAtlas>
