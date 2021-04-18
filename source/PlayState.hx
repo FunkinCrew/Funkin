@@ -563,7 +563,7 @@ class PlayState extends MusicBeatState
 
 				tankGround = new BGSprite('tankRolling', 300, 300, 0.5, 0.5, ['BG tank w lighting'], true);
 				add(tankGround);
-				tankGround.active = false;
+				// tankGround.active = false;
 
 				tankmanRun = new FlxTypedGroup<TankmenBG>();
 				add(tankmanRun);
@@ -653,6 +653,11 @@ class PlayState extends MusicBeatState
 				{
 					if (FlxG.random.bool(16))
 					{
+						var tempTankman:TankmenBG = new TankmenBG(20, 500, true);
+						tempTankman.strumTime = 10;
+						tempTankman.resetShit(20, 600, true);
+						tankmanRun.add(tempTankman);
+
 						var tankman:TankmenBG = tankmanRun.recycle(TankmenBG);
 						// new TankmenBG(500, 200 + FlxG.random.int(50, 100), TankmenBG.animationNotes[i][1] < 2);
 						tankman.strumTime = TankmenBG.animationNotes[i][0];
@@ -934,8 +939,12 @@ class PlayState extends MusicBeatState
 			switch (curSong.toLowerCase())
 			{
 				// REMOVE THIS LATER
-				case 'stress':
-					stressIntro();
+				// case 'ugh':
+				// 	ughIntro();
+				// case 'stress':
+				// 	stressIntro();
+				// case 'guns':
+				// 	gunsIntro();
 
 				default:
 					startCountdown();
@@ -967,8 +976,7 @@ class PlayState extends MusicBeatState
 		camFollow.x += 100;
 		camFollow.y += 100;
 
-		/* 
-			FlxG.sound.playMusic(Paths.music('DISTORTO'), 0);
+		/* FlxG.sound.playMusic(Paths.music('DISTORTO'), 0);
 			FlxG.sound.music.fadeIn(5, 0, 0.5);
 
 			dad.visible = false;
@@ -1049,8 +1057,7 @@ class PlayState extends MusicBeatState
 			cameraMovement();
 		};
 
-		/* 
-			camFollow.setPosition(camPos.x, camPos.y);
+		/* camFollow.setPosition(camPos.x, camPos.y);
 
 			camHUD.visible = false;
 
@@ -1124,8 +1131,7 @@ class PlayState extends MusicBeatState
 			cameraMovement();
 		};
 
-		/* 
-			camHUD.visible = false;
+		/* camHUD.visible = false;
 
 			// for story mode shit
 			camFollow.setPosition(camPos.x, camPos.y);
