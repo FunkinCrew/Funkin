@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="Blank_Notes.png">
+	<!-- Created with Adobe Animate version 21.0.1.37179 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="down base0000" x="2" y="2" width="157" height="154"/>
+	<SubTexture name="down miss0000" x="164" y="2" width="142" height="140" frameX="-4" frameY="-2" frameWidth="149" frameHeight="146"/>
+	<SubTexture name="down miss0001" x="164" y="2" width="142" height="140" frameX="-4" frameY="-2" frameWidth="149" frameHeight="146"/>
+	<SubTexture name="down miss0002" x="311" y="2" width="149" height="146"/>
+	<SubTexture name="down miss0003" x="311" y="2" width="149" height="146"/>
+	<SubTexture name="left base0000" x="465" y="2" width="154" height="157"/>
+	<SubTexture name="left miss0000" x="624" y="2" width="140" height="142" frameX="-3" frameY="-3" frameWidth="146" frameHeight="149"/>
+	<SubTexture name="left miss0001" x="624" y="2" width="140" height="142" frameX="-3" frameY="-3" frameWidth="146" frameHeight="149"/>
+	<SubTexture name="left miss0002" x="769" y="2" width="146" height="149"/>
+	<SubTexture name="left miss0003" x="769" y="2" width="146" height="149"/>
+	<SubTexture name="right base0000" x="2" y="164" width="154" height="157"/>
+	<SubTexture name="right miss0000" x="161" y="164" width="138" height="141" frameX="-3" frameY="-7" frameWidth="148" frameHeight="151"/>
+	<SubTexture name="right miss0001" x="161" y="164" width="138" height="141" frameX="-3" frameY="-7" frameWidth="148" frameHeight="151"/>
+	<SubTexture name="right miss0002" x="304" y="164" width="148" height="151"/>
+	<SubTexture name="right miss0003" x="304" y="164" width="148" height="151"/>
+	<SubTexture name="up base0000" x="457" y="164" width="157" height="154"/>
+	<SubTexture name="up miss0000" x="619" y="164" width="144" height="141" frameX="-5" frameY="-4" frameWidth="153" frameHeight="150"/>
+	<SubTexture name="up miss0001" x="619" y="164" width="144" height="141" frameX="-5" frameY="-4" frameWidth="153" frameHeight="150"/>
+	<SubTexture name="up miss0002" x="768" y="164" width="153" height="150"/>
+	<SubTexture name="up miss0003" x="768" y="164" width="153" height="150"/>
+</TextureAtlas>

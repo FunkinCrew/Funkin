@@ -15,7 +15,7 @@ using StringTools;
 
 class CharacterSelectState extends MusicBeatState
 {
-	var BloopsisDebugging:Bool = false;
+	var BloopsisDebugging:Bool = true;
 	var Shittext:FlxText;
 	var Shittext2:FlxText;
 	var Looking:Bool = false;
@@ -36,33 +36,32 @@ class CharacterSelectState extends MusicBeatState
 	var NotUpdated:Bool = true;
 	var OffSearch:Int = 0;
 	var Offsets:Array<Dynamic> = [ //PAIN
-	['boyfriend', 40, -15],
-	['boyfriendSelect', 40, -20],
-	['bloops', 119, -64],
-	['bloopsSelect', 119, -69],
-	['pico', 40, -65],
-	['picoSelect', 97, -417],
-	['milne', 10, -110],
-	['milneSelect', 40, -140],
-	['dylan', 50, -15],
-	['dylanSelect', 30, -20],
-	
-	['boyfriend-bsides', 40, -15],
-	['boyfriend-bsidesSelect', 40, -20],
-	['bloops-bsides', 119, -64],
-	['bloops-bsidesSelect', 119, -69],
-	['pico-bsides', 40, -65],
-	['pico-bsidesSelect', 97, -417],
-	['milne-bsides', 10, -110],
-	['milne-bsidesSelect', 40, -140],
-	['dylan-bsides', 50, -15],
-	['dylan-bsidesSelect', 30, -20],
-	
-	['boyfriend-pixel', 0, -130],
-	['boyfriend-pixelSelect', 0, -130],
-	['boyfriend-pixel-bsides', -70, -100],
-	['boyfriend-pixel-bsidesSelect', -70, -100]
-	
+		['boyfriend', 40, -15],
+		['boyfriendSelect', 40, -20],
+		['bloops', 119, -64],
+		['bloopsSelect', 119, -69],
+		['pico', 40, -65],
+		['picoSelect', 97, -417],
+		['milne', 10, -110],
+		['milneSelect', 40, -140],
+		['dylan', 50, -15],
+		['dylanSelect', 30, -20],
+		
+		['boyfriend-bsides', 40, -15],
+		['boyfriend-bsidesSelect', 40, -20],
+		['bloops-bsides', 119, -64],
+		['bloops-bsidesSelect', 119, -69],
+		['pico-bsides', 40, -65],
+		['pico-bsidesSelect', 97, -417],
+		['milne-bsides', 10, -110],
+		['milne-bsidesSelect', 40, -140],
+		['dylan-bsides', 50, -15],
+		['dylan-bsidesSelect', 30, -20],
+		
+		['boyfriend-pixel', -30, -30],
+		['boyfriend-pixelSelect', -20, -30],
+		['boyfriend-pixel-bsides', -30, -30],
+		['boyfriend-pixel-bsidesSelect', -20, -30]
 	];
 	
 	function GetSuffix()
@@ -123,9 +122,9 @@ class CharacterSelectState extends MusicBeatState
 		
 		//PIXEL
 		Player.animation.addByPrefix('boyfriend-pixel', "PIXEL BOYFRIEND", 24);
-		Player.animation.addByPrefix('boyfriend-pixelSelect', "PIXEL BOYFRIEND", 24, false);
+		Player.animation.addByPrefix('boyfriend-pixelSelect', "HEY_PIXEL BOYFRIEND", 24, false);
 		Player.animation.addByPrefix('boyfriend-pixel-bsides', "B-PIXEL BOYFRIEND", 24);
-		Player.animation.addByPrefix('boyfriend-pixel-bsidesSelect', "B-PIXEL BOYFRIEND", 24, false);
+		Player.animation.addByPrefix('boyfriend-pixel-bsidesSelect', "HEY_B-PIXEL BOYFRIEND", 24, false);
 		
 		Player.antialiasing = true;
 		
@@ -142,7 +141,7 @@ class CharacterSelectState extends MusicBeatState
 		}
 		if (CharSuffix.startsWith('-pixel'))
 		{
-			Player.setGraphicSize(Std.int(Player.width * 2));
+			Player.setGraphicSize(Std.int(Player.width * 1.75));
 			Player.updateHitbox();
 			Player.antialiasing = false;
 		}

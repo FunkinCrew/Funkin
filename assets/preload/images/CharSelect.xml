@@ -1,77 +1,77 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TextureAtlas imagePath="CharSelect.png">
+<TextureAtlas imagePath="charselect.png">
 	<!-- Created with Adobe Animate version 21.0.1.37179 -->
 	<!-- http://www.adobe.com/products/animate.html -->
-	<SubTexture name="B-BLOOPS0000" x="3672" y="2" width="263" height="428" frameX="0" frameY="-23" frameWidth="263" frameHeight="452"/>
-	<SubTexture name="B-BLOOPS0001" x="3940" y="2" width="263" height="427" frameX="0" frameY="-24" frameWidth="263" frameHeight="452"/>
-	<SubTexture name="B-BLOOPS0002" x="4208" y="2" width="263" height="446" frameX="0" frameY="-6" frameWidth="263" frameHeight="452"/>
-	<SubTexture name="B-BLOOPS0003" x="4476" y="2" width="263" height="450" frameX="0" frameY="-2" frameWidth="263" frameHeight="452"/>
-	<SubTexture name="B-BLOOPS0004" x="4744" y="2" width="263" height="452"/>
-	<SubTexture name="B-BLOOPS0005" x="5012" y="2" width="263" height="449" frameX="0" frameY="-3" frameWidth="263" frameHeight="452"/>
-	<SubTexture name="B-BLOOPS0006" x="5012" y="2" width="263" height="449" frameX="0" frameY="-3" frameWidth="263" frameHeight="452"/>
-	<SubTexture name="B-BLOOPS0007" x="5012" y="2" width="263" height="449" frameX="0" frameY="-3" frameWidth="263" frameHeight="452"/>
-	<SubTexture name="B-BLOOPS0008" x="5012" y="2" width="263" height="449" frameX="0" frameY="-3" frameWidth="263" frameHeight="452"/>
-	<SubTexture name="B-BLOOPS0009" x="5012" y="2" width="263" height="449" frameX="0" frameY="-3" frameWidth="263" frameHeight="452"/>
-	<SubTexture name="B-BLOOPS0010" x="5012" y="2" width="263" height="449" frameX="0" frameY="-3" frameWidth="263" frameHeight="452"/>
-	<SubTexture name="B-BLOOPS0011" x="5012" y="2" width="263" height="449" frameX="0" frameY="-3" frameWidth="263" frameHeight="452"/>
-	<SubTexture name="B-BLOOPS0012" x="5012" y="2" width="263" height="449" frameX="0" frameY="-3" frameWidth="263" frameHeight="452"/>
-	<SubTexture name="B-BLOOPS0013" x="5012" y="2" width="263" height="449" frameX="0" frameY="-3" frameWidth="263" frameHeight="452"/>
-	<SubTexture name="B-BOYFRIEND0000" x="5280" y="2" width="406" height="392" frameX="-1" frameY="-20" frameWidth="411" frameHeight="412"/>
-	<SubTexture name="B-BOYFRIEND0001" x="5280" y="2" width="406" height="392" frameX="-1" frameY="-20" frameWidth="411" frameHeight="412"/>
-	<SubTexture name="B-BOYFRIEND0002" x="5691" y="2" width="408" height="393" frameX="0" frameY="-19" frameWidth="411" frameHeight="412"/>
-	<SubTexture name="B-BOYFRIEND0003" x="5691" y="2" width="408" height="393" frameX="0" frameY="-19" frameWidth="411" frameHeight="412"/>
-	<SubTexture name="B-BOYFRIEND0004" x="6104" y="2" width="405" height="398" frameX="-3" frameY="-14" frameWidth="411" frameHeight="412"/>
-	<SubTexture name="B-BOYFRIEND0005" x="6104" y="2" width="405" height="398" frameX="-3" frameY="-14" frameWidth="411" frameHeight="412"/>
-	<SubTexture name="B-BOYFRIEND0006" x="6514" y="2" width="410" height="411" frameX="-1" frameY="-1" frameWidth="411" frameHeight="412"/>
-	<SubTexture name="B-BOYFRIEND0007" x="6514" y="2" width="410" height="411" frameX="-1" frameY="-1" frameWidth="411" frameHeight="412"/>
-	<SubTexture name="B-BOYFRIEND0008" x="6929" y="2" width="408" height="412" frameX="-2" frameY="0" frameWidth="411" frameHeight="412"/>
-	<SubTexture name="B-BOYFRIEND0009" x="6929" y="2" width="408" height="412" frameX="-2" frameY="0" frameWidth="411" frameHeight="412"/>
-	<SubTexture name="B-BOYFRIEND0010" x="6929" y="2" width="408" height="412" frameX="-2" frameY="0" frameWidth="411" frameHeight="412"/>
-	<SubTexture name="B-BOYFRIEND0011" x="6929" y="2" width="408" height="412" frameX="-2" frameY="0" frameWidth="411" frameHeight="412"/>
-	<SubTexture name="B-BOYFRIEND0012" x="6929" y="2" width="408" height="412" frameX="-2" frameY="0" frameWidth="411" frameHeight="412"/>
-	<SubTexture name="B-BOYFRIEND0013" x="6929" y="2" width="408" height="412" frameX="-2" frameY="0" frameWidth="411" frameHeight="412"/>
-	<SubTexture name="B-DYLAN0000" x="7342" y="2" width="398" height="395" frameX="0" frameY="-20" frameWidth="403" frameHeight="415"/>
-	<SubTexture name="B-DYLAN0001" x="7342" y="2" width="398" height="395" frameX="0" frameY="-20" frameWidth="403" frameHeight="415"/>
-	<SubTexture name="B-DYLAN0002" x="7745" y="2" width="399" height="396" frameX="0" frameY="-19" frameWidth="403" frameHeight="415"/>
-	<SubTexture name="B-DYLAN0003" x="7745" y="2" width="399" height="396" frameX="0" frameY="-19" frameWidth="403" frameHeight="415"/>
-	<SubTexture name="B-DYLAN0004" x="2" y="459" width="400" height="401" frameX="0" frameY="-14" frameWidth="403" frameHeight="415"/>
-	<SubTexture name="B-DYLAN0005" x="2" y="459" width="400" height="401" frameX="0" frameY="-14" frameWidth="403" frameHeight="415"/>
-	<SubTexture name="B-DYLAN0006" x="407" y="459" width="403" height="414" frameX="0" frameY="-1" frameWidth="403" frameHeight="415"/>
-	<SubTexture name="B-DYLAN0007" x="407" y="459" width="403" height="414" frameX="0" frameY="-1" frameWidth="403" frameHeight="415"/>
-	<SubTexture name="B-DYLAN0008" x="815" y="459" width="402" height="415" frameX="0" frameY="0" frameWidth="403" frameHeight="415"/>
-	<SubTexture name="B-DYLAN0009" x="815" y="459" width="402" height="415" frameX="0" frameY="0" frameWidth="403" frameHeight="415"/>
-	<SubTexture name="B-DYLAN0010" x="815" y="459" width="402" height="415" frameX="0" frameY="0" frameWidth="403" frameHeight="415"/>
-	<SubTexture name="B-DYLAN0011" x="815" y="459" width="402" height="415" frameX="0" frameY="0" frameWidth="403" frameHeight="415"/>
-	<SubTexture name="B-DYLAN0012" x="815" y="459" width="402" height="415" frameX="0" frameY="0" frameWidth="403" frameHeight="415"/>
-	<SubTexture name="B-DYLAN0013" x="815" y="459" width="402" height="415" frameX="0" frameY="0" frameWidth="403" frameHeight="415"/>
-	<SubTexture name="B-PICO0000" x="1222" y="459" width="435" height="461" frameX="-18" frameY="-13" frameWidth="453" frameHeight="475"/>
-	<SubTexture name="B-PICO0001" x="1222" y="459" width="435" height="461" frameX="-18" frameY="-13" frameWidth="453" frameHeight="475"/>
-	<SubTexture name="B-PICO0002" x="1662" y="459" width="442" height="468" frameX="-11" frameY="-6" frameWidth="453" frameHeight="475"/>
-	<SubTexture name="B-PICO0003" x="1662" y="459" width="442" height="468" frameX="-11" frameY="-6" frameWidth="453" frameHeight="475"/>
-	<SubTexture name="B-PICO0004" x="2109" y="459" width="448" height="469" frameX="-1" frameY="-6" frameWidth="453" frameHeight="475"/>
-	<SubTexture name="B-PICO0005" x="2562" y="459" width="444" height="469" frameX="-1" frameY="-6" frameWidth="453" frameHeight="475"/>
-	<SubTexture name="B-PICO0006" x="3011" y="459" width="444" height="474" frameX="-1" frameY="-1" frameWidth="453" frameHeight="475"/>
-	<SubTexture name="B-PICO0007" x="3460" y="459" width="442" height="474" frameX="-1" frameY="-1" frameWidth="453" frameHeight="475"/>
-	<SubTexture name="B-PICO0008" x="3907" y="459" width="443" height="475" frameX="0" frameY="0" frameWidth="453" frameHeight="475"/>
-	<SubTexture name="B-PICO0009" x="3907" y="459" width="443" height="475" frameX="0" frameY="0" frameWidth="453" frameHeight="475"/>
-	<SubTexture name="B-PICO0010" x="3907" y="459" width="443" height="475" frameX="0" frameY="0" frameWidth="453" frameHeight="475"/>
-	<SubTexture name="B-PICO0011" x="3907" y="459" width="443" height="475" frameX="0" frameY="0" frameWidth="453" frameHeight="475"/>
-	<SubTexture name="B-PICO0012" x="3907" y="459" width="443" height="475" frameX="0" frameY="0" frameWidth="453" frameHeight="475"/>
-	<SubTexture name="B-PICO0013" x="3907" y="459" width="443" height="475" frameX="0" frameY="0" frameWidth="453" frameHeight="475"/>
-	<SubTexture name="B-PIXEL BOYFRIEND0000" x="4355" y="459" width="61" height="56" frameX="0" frameY="-4" frameWidth="63" frameHeight="60"/>
-	<SubTexture name="B-PIXEL BOYFRIEND0001" x="4355" y="459" width="61" height="56" frameX="0" frameY="-4" frameWidth="63" frameHeight="60"/>
-	<SubTexture name="B-PIXEL BOYFRIEND0002" x="4421" y="459" width="62" height="57" frameX="0" frameY="-3" frameWidth="63" frameHeight="60"/>
-	<SubTexture name="B-PIXEL BOYFRIEND0003" x="4421" y="459" width="62" height="57" frameX="0" frameY="-3" frameWidth="63" frameHeight="60"/>
-	<SubTexture name="B-PIXEL BOYFRIEND0004" x="4488" y="459" width="59" height="59" frameX="-3" frameY="-1" frameWidth="63" frameHeight="60"/>
-	<SubTexture name="B-PIXEL BOYFRIEND0005" x="4488" y="459" width="59" height="59" frameX="-3" frameY="-1" frameWidth="63" frameHeight="60"/>
-	<SubTexture name="B-PIXEL BOYFRIEND0006" x="4552" y="459" width="58" height="60" frameX="-5" frameY="0" frameWidth="63" frameHeight="60"/>
-	<SubTexture name="B-PIXEL BOYFRIEND0007" x="4552" y="459" width="58" height="60" frameX="-5" frameY="0" frameWidth="63" frameHeight="60"/>
-	<SubTexture name="B-PIXEL BOYFRIEND0008" x="4615" y="459" width="58" height="59" frameX="-4" frameY="-1" frameWidth="63" frameHeight="60"/>
-	<SubTexture name="B-PIXEL BOYFRIEND0009" x="4615" y="459" width="58" height="59" frameX="-4" frameY="-1" frameWidth="63" frameHeight="60"/>
-	<SubTexture name="B-PIXEL BOYFRIEND0010" x="4615" y="459" width="58" height="59" frameX="-4" frameY="-1" frameWidth="63" frameHeight="60"/>
-	<SubTexture name="B-PIXEL BOYFRIEND0011" x="4615" y="459" width="58" height="59" frameX="-4" frameY="-1" frameWidth="63" frameHeight="60"/>
-	<SubTexture name="B-PIXEL BOYFRIEND0012" x="4615" y="459" width="58" height="59" frameX="-4" frameY="-1" frameWidth="63" frameHeight="60"/>
-	<SubTexture name="B-PIXEL BOYFRIEND0013" x="4615" y="459" width="58" height="59" frameX="-4" frameY="-1" frameWidth="63" frameHeight="60"/>
+	<SubTexture name="B-BLOOPS0000" x="4242" y="1287" width="263" height="428" frameX="0" frameY="-23" frameWidth="263" frameHeight="452"/>
+	<SubTexture name="B-BLOOPS0001" x="4510" y="1287" width="263" height="427" frameX="0" frameY="-24" frameWidth="263" frameHeight="452"/>
+	<SubTexture name="B-BLOOPS0002" x="4778" y="1287" width="263" height="446" frameX="0" frameY="-6" frameWidth="263" frameHeight="452"/>
+	<SubTexture name="B-BLOOPS0003" x="5046" y="1287" width="263" height="450" frameX="0" frameY="-2" frameWidth="263" frameHeight="452"/>
+	<SubTexture name="B-BLOOPS0004" x="5314" y="1287" width="263" height="452"/>
+	<SubTexture name="B-BLOOPS0005" x="5582" y="1287" width="263" height="449" frameX="0" frameY="-3" frameWidth="263" frameHeight="452"/>
+	<SubTexture name="B-BLOOPS0006" x="5582" y="1287" width="263" height="449" frameX="0" frameY="-3" frameWidth="263" frameHeight="452"/>
+	<SubTexture name="B-BLOOPS0007" x="5582" y="1287" width="263" height="449" frameX="0" frameY="-3" frameWidth="263" frameHeight="452"/>
+	<SubTexture name="B-BLOOPS0008" x="5582" y="1287" width="263" height="449" frameX="0" frameY="-3" frameWidth="263" frameHeight="452"/>
+	<SubTexture name="B-BLOOPS0009" x="5582" y="1287" width="263" height="449" frameX="0" frameY="-3" frameWidth="263" frameHeight="452"/>
+	<SubTexture name="B-BLOOPS0010" x="5582" y="1287" width="263" height="449" frameX="0" frameY="-3" frameWidth="263" frameHeight="452"/>
+	<SubTexture name="B-BLOOPS0011" x="5582" y="1287" width="263" height="449" frameX="0" frameY="-3" frameWidth="263" frameHeight="452"/>
+	<SubTexture name="B-BLOOPS0012" x="5582" y="1287" width="263" height="449" frameX="0" frameY="-3" frameWidth="263" frameHeight="452"/>
+	<SubTexture name="B-BLOOPS0013" x="5582" y="1287" width="263" height="449" frameX="0" frameY="-3" frameWidth="263" frameHeight="452"/>
+	<SubTexture name="B-BOYFRIEND0000" x="5850" y="1287" width="406" height="392" frameX="-1" frameY="-20" frameWidth="411" frameHeight="412"/>
+	<SubTexture name="B-BOYFRIEND0001" x="5850" y="1287" width="406" height="392" frameX="-1" frameY="-20" frameWidth="411" frameHeight="412"/>
+	<SubTexture name="B-BOYFRIEND0002" x="6261" y="1287" width="408" height="393" frameX="0" frameY="-19" frameWidth="411" frameHeight="412"/>
+	<SubTexture name="B-BOYFRIEND0003" x="6261" y="1287" width="408" height="393" frameX="0" frameY="-19" frameWidth="411" frameHeight="412"/>
+	<SubTexture name="B-BOYFRIEND0004" x="6674" y="1287" width="405" height="398" frameX="-3" frameY="-14" frameWidth="411" frameHeight="412"/>
+	<SubTexture name="B-BOYFRIEND0005" x="6674" y="1287" width="405" height="398" frameX="-3" frameY="-14" frameWidth="411" frameHeight="412"/>
+	<SubTexture name="B-BOYFRIEND0006" x="7084" y="1287" width="410" height="411" frameX="-1" frameY="-1" frameWidth="411" frameHeight="412"/>
+	<SubTexture name="B-BOYFRIEND0007" x="7084" y="1287" width="410" height="411" frameX="-1" frameY="-1" frameWidth="411" frameHeight="412"/>
+	<SubTexture name="B-BOYFRIEND0008" x="7499" y="1287" width="408" height="412" frameX="-2" frameY="0" frameWidth="411" frameHeight="412"/>
+	<SubTexture name="B-BOYFRIEND0009" x="7499" y="1287" width="408" height="412" frameX="-2" frameY="0" frameWidth="411" frameHeight="412"/>
+	<SubTexture name="B-BOYFRIEND0010" x="7499" y="1287" width="408" height="412" frameX="-2" frameY="0" frameWidth="411" frameHeight="412"/>
+	<SubTexture name="B-BOYFRIEND0011" x="7499" y="1287" width="408" height="412" frameX="-2" frameY="0" frameWidth="411" frameHeight="412"/>
+	<SubTexture name="B-BOYFRIEND0012" x="7499" y="1287" width="408" height="412" frameX="-2" frameY="0" frameWidth="411" frameHeight="412"/>
+	<SubTexture name="B-BOYFRIEND0013" x="7499" y="1287" width="408" height="412" frameX="-2" frameY="0" frameWidth="411" frameHeight="412"/>
+	<SubTexture name="B-DYLAN0000" x="2" y="1833" width="398" height="395" frameX="0" frameY="-20" frameWidth="403" frameHeight="415"/>
+	<SubTexture name="B-DYLAN0001" x="2" y="1833" width="398" height="395" frameX="0" frameY="-20" frameWidth="403" frameHeight="415"/>
+	<SubTexture name="B-DYLAN0002" x="405" y="1833" width="399" height="396" frameX="0" frameY="-19" frameWidth="403" frameHeight="415"/>
+	<SubTexture name="B-DYLAN0003" x="405" y="1833" width="399" height="396" frameX="0" frameY="-19" frameWidth="403" frameHeight="415"/>
+	<SubTexture name="B-DYLAN0004" x="809" y="1833" width="400" height="401" frameX="0" frameY="-14" frameWidth="403" frameHeight="415"/>
+	<SubTexture name="B-DYLAN0005" x="809" y="1833" width="400" height="401" frameX="0" frameY="-14" frameWidth="403" frameHeight="415"/>
+	<SubTexture name="B-DYLAN0006" x="1214" y="1833" width="403" height="414" frameX="0" frameY="-1" frameWidth="403" frameHeight="415"/>
+	<SubTexture name="B-DYLAN0007" x="1214" y="1833" width="403" height="414" frameX="0" frameY="-1" frameWidth="403" frameHeight="415"/>
+	<SubTexture name="B-DYLAN0008" x="1622" y="1833" width="402" height="415" frameX="0" frameY="0" frameWidth="403" frameHeight="415"/>
+	<SubTexture name="B-DYLAN0009" x="1622" y="1833" width="402" height="415" frameX="0" frameY="0" frameWidth="403" frameHeight="415"/>
+	<SubTexture name="B-DYLAN0010" x="1622" y="1833" width="402" height="415" frameX="0" frameY="0" frameWidth="403" frameHeight="415"/>
+	<SubTexture name="B-DYLAN0011" x="1622" y="1833" width="402" height="415" frameX="0" frameY="0" frameWidth="403" frameHeight="415"/>
+	<SubTexture name="B-DYLAN0012" x="1622" y="1833" width="402" height="415" frameX="0" frameY="0" frameWidth="403" frameHeight="415"/>
+	<SubTexture name="B-DYLAN0013" x="1622" y="1833" width="402" height="415" frameX="0" frameY="0" frameWidth="403" frameHeight="415"/>
+	<SubTexture name="B-PICO0000" x="2029" y="1833" width="435" height="461" frameX="-18" frameY="-13" frameWidth="453" frameHeight="475"/>
+	<SubTexture name="B-PICO0001" x="2029" y="1833" width="435" height="461" frameX="-18" frameY="-13" frameWidth="453" frameHeight="475"/>
+	<SubTexture name="B-PICO0002" x="2469" y="1833" width="442" height="468" frameX="-11" frameY="-6" frameWidth="453" frameHeight="475"/>
+	<SubTexture name="B-PICO0003" x="2469" y="1833" width="442" height="468" frameX="-11" frameY="-6" frameWidth="453" frameHeight="475"/>
+	<SubTexture name="B-PICO0004" x="2916" y="1833" width="448" height="469" frameX="-1" frameY="-6" frameWidth="453" frameHeight="475"/>
+	<SubTexture name="B-PICO0005" x="3369" y="1833" width="444" height="469" frameX="-1" frameY="-6" frameWidth="453" frameHeight="475"/>
+	<SubTexture name="B-PICO0006" x="3818" y="1833" width="444" height="474" frameX="-1" frameY="-1" frameWidth="453" frameHeight="475"/>
+	<SubTexture name="B-PICO0007" x="4267" y="1833" width="442" height="474" frameX="-1" frameY="-1" frameWidth="453" frameHeight="475"/>
+	<SubTexture name="B-PICO0008" x="4714" y="1833" width="443" height="475" frameX="0" frameY="0" frameWidth="453" frameHeight="475"/>
+	<SubTexture name="B-PICO0009" x="4714" y="1833" width="443" height="475" frameX="0" frameY="0" frameWidth="453" frameHeight="475"/>
+	<SubTexture name="B-PICO0010" x="4714" y="1833" width="443" height="475" frameX="0" frameY="0" frameWidth="453" frameHeight="475"/>
+	<SubTexture name="B-PICO0011" x="4714" y="1833" width="443" height="475" frameX="0" frameY="0" frameWidth="453" frameHeight="475"/>
+	<SubTexture name="B-PICO0012" x="4714" y="1833" width="443" height="475" frameX="0" frameY="0" frameWidth="453" frameHeight="475"/>
+	<SubTexture name="B-PICO0013" x="4714" y="1833" width="443" height="475" frameX="0" frameY="0" frameWidth="453" frameHeight="475"/>
+	<SubTexture name="B-PIXEL BOYFRIEND0000" x="5162" y="1833" width="60" height="55" frameX="0" frameY="-4" frameWidth="62" frameHeight="59"/>
+	<SubTexture name="B-PIXEL BOYFRIEND0001" x="5162" y="1833" width="60" height="55" frameX="0" frameY="-4" frameWidth="62" frameHeight="59"/>
+	<SubTexture name="B-PIXEL BOYFRIEND0002" x="5227" y="1833" width="61" height="56" frameX="0" frameY="-3" frameWidth="62" frameHeight="59"/>
+	<SubTexture name="B-PIXEL BOYFRIEND0003" x="5227" y="1833" width="61" height="56" frameX="0" frameY="-3" frameWidth="62" frameHeight="59"/>
+	<SubTexture name="B-PIXEL BOYFRIEND0004" x="5293" y="1833" width="59" height="58" frameX="-2" frameY="-1" frameWidth="62" frameHeight="59"/>
+	<SubTexture name="B-PIXEL BOYFRIEND0005" x="5293" y="1833" width="59" height="58" frameX="-2" frameY="-1" frameWidth="62" frameHeight="59"/>
+	<SubTexture name="B-PIXEL BOYFRIEND0006" x="5357" y="1833" width="58" height="59" frameX="-4" frameY="0" frameWidth="62" frameHeight="59"/>
+	<SubTexture name="B-PIXEL BOYFRIEND0007" x="5357" y="1833" width="58" height="59" frameX="-4" frameY="0" frameWidth="62" frameHeight="59"/>
+	<SubTexture name="B-PIXEL BOYFRIEND0008" x="5420" y="1833" width="58" height="58" frameX="-3" frameY="-1" frameWidth="62" frameHeight="59"/>
+	<SubTexture name="B-PIXEL BOYFRIEND0009" x="5420" y="1833" width="58" height="58" frameX="-3" frameY="-1" frameWidth="62" frameHeight="59"/>
+	<SubTexture name="B-PIXEL BOYFRIEND0010" x="5420" y="1833" width="58" height="58" frameX="-3" frameY="-1" frameWidth="62" frameHeight="59"/>
+	<SubTexture name="B-PIXEL BOYFRIEND0011" x="5420" y="1833" width="58" height="58" frameX="-3" frameY="-1" frameWidth="62" frameHeight="59"/>
+	<SubTexture name="B-PIXEL BOYFRIEND0012" x="5420" y="1833" width="58" height="58" frameX="-3" frameY="-1" frameWidth="62" frameHeight="59"/>
+	<SubTexture name="B-PIXEL BOYFRIEND0013" x="5420" y="1833" width="58" height="58" frameX="-3" frameY="-1" frameWidth="62" frameHeight="59"/>
 	<SubTexture name="BLOOPS0000" x="2" y="2" width="263" height="428" frameX="0" frameY="-23" frameWidth="263" frameHeight="452"/>
 	<SubTexture name="BLOOPS0001" x="270" y="2" width="263" height="427" frameX="0" frameY="-24" frameWidth="263" frameHeight="452"/>
 	<SubTexture name="BLOOPS0002" x="538" y="2" width="263" height="446" frameX="0" frameY="-6" frameWidth="263" frameHeight="452"/>
@@ -100,251 +100,281 @@
 	<SubTexture name="BOYFRIEND0011" x="3259" y="2" width="408" height="412" frameX="-2" frameY="0" frameWidth="411" frameHeight="412"/>
 	<SubTexture name="BOYFRIEND0012" x="3259" y="2" width="408" height="412" frameX="-2" frameY="0" frameWidth="411" frameHeight="412"/>
 	<SubTexture name="BOYFRIEND0013" x="3259" y="2" width="408" height="412" frameX="-2" frameY="0" frameWidth="411" frameHeight="412"/>
-	<SubTexture name="DYLAN0000" x="1825" y="939" width="398" height="395" frameX="0" frameY="-20" frameWidth="403" frameHeight="415"/>
-	<SubTexture name="DYLAN0001" x="1825" y="939" width="398" height="395" frameX="0" frameY="-20" frameWidth="403" frameHeight="415"/>
-	<SubTexture name="DYLAN0002" x="2228" y="939" width="399" height="396" frameX="0" frameY="-19" frameWidth="403" frameHeight="415"/>
-	<SubTexture name="DYLAN0003" x="2228" y="939" width="399" height="396" frameX="0" frameY="-19" frameWidth="403" frameHeight="415"/>
-	<SubTexture name="DYLAN0004" x="2632" y="939" width="400" height="401" frameX="0" frameY="-14" frameWidth="403" frameHeight="415"/>
-	<SubTexture name="DYLAN0005" x="2632" y="939" width="400" height="401" frameX="0" frameY="-14" frameWidth="403" frameHeight="415"/>
-	<SubTexture name="DYLAN0006" x="3037" y="939" width="403" height="414" frameX="0" frameY="-1" frameWidth="403" frameHeight="415"/>
-	<SubTexture name="DYLAN0007" x="3037" y="939" width="403" height="414" frameX="0" frameY="-1" frameWidth="403" frameHeight="415"/>
-	<SubTexture name="DYLAN0008" x="3445" y="939" width="402" height="415" frameX="0" frameY="0" frameWidth="403" frameHeight="415"/>
-	<SubTexture name="DYLAN0009" x="3445" y="939" width="402" height="415" frameX="0" frameY="0" frameWidth="403" frameHeight="415"/>
-	<SubTexture name="DYLAN0010" x="3445" y="939" width="402" height="415" frameX="0" frameY="0" frameWidth="403" frameHeight="415"/>
-	<SubTexture name="DYLAN0011" x="3445" y="939" width="402" height="415" frameX="0" frameY="0" frameWidth="403" frameHeight="415"/>
-	<SubTexture name="DYLAN0012" x="3445" y="939" width="402" height="415" frameX="0" frameY="0" frameWidth="403" frameHeight="415"/>
-	<SubTexture name="DYLAN0013" x="3445" y="939" width="402" height="415" frameX="0" frameY="0" frameWidth="403" frameHeight="415"/>
-	<SubTexture name="HEY_B-BLOOPS0000" x="4678" y="459" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
-	<SubTexture name="HEY_B-BLOOPS0001" x="4946" y="459" width="263" height="458"/>
-	<SubTexture name="HEY_B-BLOOPS0002" x="5214" y="459" width="263" height="455" frameX="0" frameY="-3" frameWidth="263" frameHeight="458"/>
-	<SubTexture name="HEY_B-BLOOPS0003" x="4678" y="459" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
-	<SubTexture name="HEY_B-BLOOPS0004" x="4678" y="459" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
-	<SubTexture name="HEY_B-BLOOPS0005" x="4678" y="459" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
-	<SubTexture name="HEY_B-BLOOPS0006" x="4678" y="459" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
-	<SubTexture name="HEY_B-BLOOPS0007" x="4678" y="459" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
-	<SubTexture name="HEY_B-BLOOPS0008" x="4678" y="459" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
-	<SubTexture name="HEY_B-BLOOPS0009" x="4678" y="459" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
-	<SubTexture name="HEY_B-BLOOPS0010" x="4678" y="459" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
-	<SubTexture name="HEY_B-BLOOPS0011" x="4678" y="459" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
-	<SubTexture name="HEY_B-BLOOPS0012" x="4678" y="459" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
-	<SubTexture name="HEY_B-BLOOPS0013" x="4678" y="459" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
-	<SubTexture name="HEY_B-BLOOPS0014" x="4678" y="459" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
-	<SubTexture name="HEY_B-BLOOPS0015" x="4678" y="459" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
-	<SubTexture name="HEY_B-BOYFRIEND0000" x="5482" y="459" width="395" height="416" frameX="0" frameY="0" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_B-BOYFRIEND0001" x="5482" y="459" width="395" height="416" frameX="0" frameY="0" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_B-BOYFRIEND0002" x="5882" y="459" width="413" height="410" frameX="-1" frameY="-8" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_B-BOYFRIEND0003" x="5882" y="459" width="413" height="410" frameX="-1" frameY="-8" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_B-BOYFRIEND0004" x="6300" y="459" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_B-BOYFRIEND0005" x="6300" y="459" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_B-BOYFRIEND0006" x="6300" y="459" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_B-BOYFRIEND0007" x="6300" y="459" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_B-BOYFRIEND0008" x="6300" y="459" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_B-BOYFRIEND0009" x="6300" y="459" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_B-BOYFRIEND0010" x="6300" y="459" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_B-BOYFRIEND0011" x="6300" y="459" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_B-BOYFRIEND0012" x="6300" y="459" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_B-BOYFRIEND0013" x="6300" y="459" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_B-BOYFRIEND0014" x="6300" y="459" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_B-BOYFRIEND0015" x="6300" y="459" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_B-BOYFRIEND0016" x="6300" y="459" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_B-BOYFRIEND0017" x="6300" y="459" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_B-BOYFRIEND0018" x="6300" y="459" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_B-BOYFRIEND0019" x="6300" y="459" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_B-BOYFRIEND0020" x="6300" y="459" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_B-BOYFRIEND0021" x="6300" y="459" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_B-BOYFRIEND0022" x="6300" y="459" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_B-BOYFRIEND0023" x="6300" y="459" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_B-BOYFRIEND0024" x="6300" y="459" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_B-BOYFRIEND0025" x="6300" y="459" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_B-DYLAN0000" x="6719" y="459" width="422" height="416" frameX="0" frameY="0" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_B-DYLAN0001" x="6719" y="459" width="422" height="416" frameX="0" frameY="0" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_B-DYLAN0002" x="7146" y="459" width="422" height="413" frameX="0" frameY="-5" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_B-DYLAN0003" x="7146" y="459" width="422" height="413" frameX="0" frameY="-5" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_B-DYLAN0004" x="7573" y="459" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_B-DYLAN0005" x="7573" y="459" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_B-DYLAN0006" x="7573" y="459" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_B-DYLAN0007" x="7573" y="459" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_B-DYLAN0008" x="7573" y="459" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_B-DYLAN0009" x="7573" y="459" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_B-DYLAN0010" x="7573" y="459" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_B-DYLAN0011" x="7573" y="459" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_B-DYLAN0012" x="7573" y="459" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_B-DYLAN0013" x="7573" y="459" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_B-DYLAN0014" x="7573" y="459" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_B-DYLAN0015" x="7573" y="459" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_B-DYLAN0016" x="7573" y="459" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_B-DYLAN0017" x="7573" y="459" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_B-DYLAN0018" x="7573" y="459" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_B-DYLAN0019" x="7573" y="459" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_B-DYLAN0020" x="7573" y="459" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_B-DYLAN0021" x="7573" y="459" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_B-DYLAN0022" x="7573" y="459" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_B-DYLAN0023" x="7573" y="459" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_B-DYLAN0024" x="7573" y="459" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_B-DYLAN0025" x="7573" y="459" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_B-PICO0000" x="2" y="939" width="356" height="731" frameX="-5" frameY="-86" frameWidth="362" frameHeight="817"/>
-	<SubTexture name="HEY_B-PICO0001" x="363" y="939" width="356" height="794" frameX="-5" frameY="-23" frameWidth="362" frameHeight="817"/>
-	<SubTexture name="HEY_B-PICO0002" x="724" y="939" width="362" height="817"/>
-	<SubTexture name="HEY_B-PICO0003" x="1091" y="939" width="362" height="770" frameX="0" frameY="-47" frameWidth="362" frameHeight="817"/>
-	<SubTexture name="HEY_B-PICO0004" x="1458" y="939" width="362" height="517" frameX="0" frameY="-300" frameWidth="362" frameHeight="817"/>
-	<SubTexture name="HEY_B-PICO0005" x="1458" y="939" width="362" height="517" frameX="0" frameY="-300" frameWidth="362" frameHeight="817"/>
-	<SubTexture name="HEY_B-PICO0006" x="1458" y="939" width="362" height="517" frameX="0" frameY="-300" frameWidth="362" frameHeight="817"/>
-	<SubTexture name="HEY_B-PICO0007" x="1458" y="939" width="362" height="517" frameX="0" frameY="-300" frameWidth="362" frameHeight="817"/>
-	<SubTexture name="HEY_B-PICO0008" x="1458" y="939" width="362" height="517" frameX="0" frameY="-300" frameWidth="362" frameHeight="817"/>
-	<SubTexture name="HEY_B-PICO0009" x="1458" y="939" width="362" height="517" frameX="0" frameY="-300" frameWidth="362" frameHeight="817"/>
-	<SubTexture name="HEY_B-PICO0010" x="1458" y="939" width="362" height="517" frameX="0" frameY="-300" frameWidth="362" frameHeight="817"/>
-	<SubTexture name="HEY_B-PICO0011" x="1458" y="939" width="362" height="517" frameX="0" frameY="-300" frameWidth="362" frameHeight="817"/>
-	<SubTexture name="HEY_B-PICO0012" x="1458" y="939" width="362" height="517" frameX="0" frameY="-300" frameWidth="362" frameHeight="817"/>
-	<SubTexture name="HEY_B-PICO0013" x="1458" y="939" width="362" height="517" frameX="0" frameY="-300" frameWidth="362" frameHeight="817"/>
-	<SubTexture name="HEY_BLOOPS0000" x="3852" y="939" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
-	<SubTexture name="HEY_BLOOPS0001" x="4120" y="939" width="263" height="458"/>
-	<SubTexture name="HEY_BLOOPS0002" x="4388" y="939" width="263" height="455" frameX="0" frameY="-3" frameWidth="263" frameHeight="458"/>
-	<SubTexture name="HEY_BLOOPS0003" x="3852" y="939" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
-	<SubTexture name="HEY_BLOOPS0004" x="3852" y="939" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
-	<SubTexture name="HEY_BLOOPS0005" x="3852" y="939" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
-	<SubTexture name="HEY_BLOOPS0006" x="3852" y="939" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
-	<SubTexture name="HEY_BLOOPS0007" x="3852" y="939" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
-	<SubTexture name="HEY_BLOOPS0008" x="3852" y="939" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
-	<SubTexture name="HEY_BLOOPS0009" x="3852" y="939" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
-	<SubTexture name="HEY_BLOOPS0010" x="3852" y="939" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
-	<SubTexture name="HEY_BLOOPS0011" x="3852" y="939" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
-	<SubTexture name="HEY_BLOOPS0012" x="3852" y="939" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
-	<SubTexture name="HEY_BLOOPS0013" x="3852" y="939" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
-	<SubTexture name="HEY_BLOOPS0014" x="3852" y="939" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
-	<SubTexture name="HEY_BLOOPS0015" x="3852" y="939" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
-	<SubTexture name="HEY_BOYFRIEND0000" x="4656" y="939" width="395" height="416" frameX="0" frameY="0" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_BOYFRIEND0001" x="4656" y="939" width="395" height="416" frameX="0" frameY="0" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_BOYFRIEND0002" x="5056" y="939" width="413" height="410" frameX="-1" frameY="-8" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_BOYFRIEND0003" x="5056" y="939" width="413" height="410" frameX="-1" frameY="-8" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_BOYFRIEND0004" x="5474" y="939" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_BOYFRIEND0005" x="5474" y="939" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_BOYFRIEND0006" x="5474" y="939" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_BOYFRIEND0007" x="5474" y="939" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_BOYFRIEND0008" x="5474" y="939" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_BOYFRIEND0009" x="5474" y="939" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_BOYFRIEND0010" x="5474" y="939" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_BOYFRIEND0011" x="5474" y="939" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_BOYFRIEND0012" x="5474" y="939" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_BOYFRIEND0013" x="5474" y="939" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_BOYFRIEND0014" x="5474" y="939" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_BOYFRIEND0015" x="5474" y="939" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_BOYFRIEND0016" x="5474" y="939" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_BOYFRIEND0017" x="5474" y="939" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_BOYFRIEND0018" x="5474" y="939" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_BOYFRIEND0019" x="5474" y="939" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_BOYFRIEND0020" x="5474" y="939" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_BOYFRIEND0021" x="5474" y="939" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_BOYFRIEND0022" x="5474" y="939" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_BOYFRIEND0023" x="5474" y="939" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_BOYFRIEND0024" x="5474" y="939" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_BOYFRIEND0025" x="5474" y="939" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
-	<SubTexture name="HEY_DYLAN0000" x="5893" y="939" width="422" height="416" frameX="0" frameY="0" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_DYLAN0001" x="5893" y="939" width="422" height="416" frameX="0" frameY="0" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_DYLAN0002" x="6320" y="939" width="422" height="413" frameX="0" frameY="-5" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_DYLAN0003" x="6320" y="939" width="422" height="413" frameX="0" frameY="-5" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_DYLAN0004" x="6747" y="939" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_DYLAN0005" x="6747" y="939" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_DYLAN0006" x="6747" y="939" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_DYLAN0007" x="6747" y="939" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_DYLAN0008" x="6747" y="939" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_DYLAN0009" x="6747" y="939" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_DYLAN0010" x="6747" y="939" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_DYLAN0011" x="6747" y="939" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_DYLAN0012" x="6747" y="939" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_DYLAN0013" x="6747" y="939" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_DYLAN0014" x="6747" y="939" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_DYLAN0015" x="6747" y="939" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_DYLAN0016" x="6747" y="939" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_DYLAN0017" x="6747" y="939" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_DYLAN0018" x="6747" y="939" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_DYLAN0019" x="6747" y="939" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_DYLAN0020" x="6747" y="939" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_DYLAN0021" x="6747" y="939" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_DYLAN0022" x="6747" y="939" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_DYLAN0023" x="6747" y="939" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_DYLAN0024" x="6747" y="939" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_DYLAN0025" x="6747" y="939" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
-	<SubTexture name="HEY_MILNE0000" x="7175" y="939" width="399" height="550"/>
-	<SubTexture name="HEY_MILNE0001" x="7175" y="939" width="399" height="550"/>
-	<SubTexture name="HEY_MILNE0002" x="7579" y="939" width="399" height="532" frameX="0" frameY="-17" frameWidth="399" frameHeight="550"/>
-	<SubTexture name="HEY_MILNE0003" x="7579" y="939" width="399" height="532" frameX="0" frameY="-17" frameWidth="399" frameHeight="550"/>
-	<SubTexture name="HEY_MILNE0004" x="2" y="1761" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
-	<SubTexture name="HEY_MILNE0005" x="2" y="1761" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
-	<SubTexture name="HEY_MILNE0006" x="406" y="1761" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
-	<SubTexture name="HEY_MILNE0007" x="406" y="1761" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
-	<SubTexture name="HEY_MILNE0008" x="810" y="1761" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
-	<SubTexture name="HEY_MILNE0009" x="810" y="1761" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
-	<SubTexture name="HEY_MILNE0010" x="1214" y="1761" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
-	<SubTexture name="HEY_MILNE0011" x="1214" y="1761" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
-	<SubTexture name="HEY_MILNE0012" x="1214" y="1761" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
-	<SubTexture name="HEY_MILNE0013" x="1214" y="1761" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
-	<SubTexture name="HEY_MILNE0014" x="1618" y="1761" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
-	<SubTexture name="HEY_MILNE0015" x="1618" y="1761" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
-	<SubTexture name="HEY_MILNE0016" x="810" y="1761" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
-	<SubTexture name="HEY_MILNE0017" x="810" y="1761" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
-	<SubTexture name="HEY_MILNE0018" x="810" y="1761" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
-	<SubTexture name="HEY_MILNE0019" x="810" y="1761" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
-	<SubTexture name="HEY_MILNE0020" x="810" y="1761" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
-	<SubTexture name="HEY_MILNE0021" x="810" y="1761" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
-	<SubTexture name="HEY_MILNE0022" x="810" y="1761" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
-	<SubTexture name="HEY_MILNE0023" x="810" y="1761" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
-	<SubTexture name="HEY_MILNE0024" x="810" y="1761" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
-	<SubTexture name="HEY_MILNE0025" x="810" y="1761" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
-	<SubTexture name="HEY_PICO0000" x="2022" y="1761" width="356" height="731" frameX="-5" frameY="-86" frameWidth="362" frameHeight="817"/>
-	<SubTexture name="HEY_PICO0001" x="2383" y="1761" width="356" height="794" frameX="-5" frameY="-23" frameWidth="362" frameHeight="817"/>
-	<SubTexture name="HEY_PICO0002" x="2744" y="1761" width="362" height="817"/>
-	<SubTexture name="HEY_PICO0003" x="3111" y="1761" width="362" height="770" frameX="0" frameY="-47" frameWidth="362" frameHeight="817"/>
-	<SubTexture name="HEY_PICO0004" x="3478" y="1761" width="362" height="517" frameX="0" frameY="-300" frameWidth="362" frameHeight="817"/>
-	<SubTexture name="HEY_PICO0005" x="3478" y="1761" width="362" height="517" frameX="0" frameY="-300" frameWidth="362" frameHeight="817"/>
-	<SubTexture name="HEY_PICO0006" x="3478" y="1761" width="362" height="517" frameX="0" frameY="-300" frameWidth="362" frameHeight="817"/>
-	<SubTexture name="HEY_PICO0007" x="3478" y="1761" width="362" height="517" frameX="0" frameY="-300" frameWidth="362" frameHeight="817"/>
-	<SubTexture name="HEY_PICO0008" x="3478" y="1761" width="362" height="517" frameX="0" frameY="-300" frameWidth="362" frameHeight="817"/>
-	<SubTexture name="HEY_PICO0009" x="3478" y="1761" width="362" height="517" frameX="0" frameY="-300" frameWidth="362" frameHeight="817"/>
-	<SubTexture name="HEY_PICO0010" x="3478" y="1761" width="362" height="517" frameX="0" frameY="-300" frameWidth="362" frameHeight="817"/>
-	<SubTexture name="HEY_PICO0011" x="3478" y="1761" width="362" height="517" frameX="0" frameY="-300" frameWidth="362" frameHeight="817"/>
-	<SubTexture name="HEY_PICO0012" x="3478" y="1761" width="362" height="517" frameX="0" frameY="-300" frameWidth="362" frameHeight="817"/>
-	<SubTexture name="HEY_PICO0013" x="3478" y="1761" width="362" height="517" frameX="0" frameY="-300" frameWidth="362" frameHeight="817"/>
-	<SubTexture name="MILNE0000" x="3845" y="1761" width="492" height="576" frameX="0" frameY="-1" frameWidth="492" frameHeight="577"/>
-	<SubTexture name="MILNE0001" x="3845" y="1761" width="492" height="576" frameX="0" frameY="-1" frameWidth="492" frameHeight="577"/>
-	<SubTexture name="MILNE0002" x="4342" y="1761" width="477" height="571" frameX="-7" frameY="0" frameWidth="492" frameHeight="577"/>
-	<SubTexture name="MILNE0003" x="4824" y="1761" width="459" height="564" frameX="-13" frameY="-3" frameWidth="492" frameHeight="577"/>
-	<SubTexture name="MILNE0004" x="5288" y="1761" width="459" height="564" frameX="-13" frameY="-3" frameWidth="492" frameHeight="577"/>
-	<SubTexture name="MILNE0005" x="5752" y="1761" width="403" height="541" frameX="-37" frameY="-7" frameWidth="492" frameHeight="577"/>
-	<SubTexture name="MILNE0006" x="6160" y="1761" width="403" height="541" frameX="-37" frameY="-7" frameWidth="492" frameHeight="577"/>
-	<SubTexture name="MILNE0007" x="6568" y="1761" width="373" height="521" frameX="-49" frameY="-14" frameWidth="492" frameHeight="577"/>
-	<SubTexture name="MILNE0008" x="6568" y="1761" width="373" height="521" frameX="-49" frameY="-14" frameWidth="492" frameHeight="577"/>
-	<SubTexture name="MILNE0009" x="6568" y="1761" width="373" height="521" frameX="-49" frameY="-14" frameWidth="492" frameHeight="577"/>
-	<SubTexture name="MILNE0010" x="6568" y="1761" width="373" height="521" frameX="-49" frameY="-14" frameWidth="492" frameHeight="577"/>
-	<SubTexture name="MILNE0011" x="6568" y="1761" width="373" height="521" frameX="-49" frameY="-14" frameWidth="492" frameHeight="577"/>
-	<SubTexture name="MILNE0012" x="6568" y="1761" width="373" height="521" frameX="-49" frameY="-14" frameWidth="492" frameHeight="577"/>
-	<SubTexture name="MILNE0013" x="6568" y="1761" width="373" height="521" frameX="-49" frameY="-14" frameWidth="492" frameHeight="577"/>
-	<SubTexture name="MILNE0014" x="6568" y="1761" width="373" height="521" frameX="-49" frameY="-14" frameWidth="492" frameHeight="577"/>
-	<SubTexture name="PICO0000" x="6946" y="1761" width="435" height="461" frameX="-18" frameY="-13" frameWidth="453" frameHeight="475"/>
-	<SubTexture name="PICO0001" x="6946" y="1761" width="435" height="461" frameX="-18" frameY="-13" frameWidth="453" frameHeight="475"/>
-	<SubTexture name="PICO0002" x="7386" y="1761" width="442" height="468" frameX="-11" frameY="-6" frameWidth="453" frameHeight="475"/>
-	<SubTexture name="PICO0003" x="7386" y="1761" width="442" height="468" frameX="-11" frameY="-6" frameWidth="453" frameHeight="475"/>
-	<SubTexture name="PICO0004" x="2" y="2583" width="448" height="469" frameX="-1" frameY="-6" frameWidth="453" frameHeight="475"/>
-	<SubTexture name="PICO0005" x="455" y="2583" width="444" height="469" frameX="-1" frameY="-6" frameWidth="453" frameHeight="475"/>
-	<SubTexture name="PICO0006" x="904" y="2583" width="444" height="474" frameX="-1" frameY="-1" frameWidth="453" frameHeight="475"/>
-	<SubTexture name="PICO0007" x="1353" y="2583" width="442" height="474" frameX="-1" frameY="-1" frameWidth="453" frameHeight="475"/>
-	<SubTexture name="PICO0008" x="1800" y="2583" width="443" height="475" frameX="0" frameY="0" frameWidth="453" frameHeight="475"/>
-	<SubTexture name="PICO0009" x="1800" y="2583" width="443" height="475" frameX="0" frameY="0" frameWidth="453" frameHeight="475"/>
-	<SubTexture name="PICO0010" x="1800" y="2583" width="443" height="475" frameX="0" frameY="0" frameWidth="453" frameHeight="475"/>
-	<SubTexture name="PICO0011" x="1800" y="2583" width="443" height="475" frameX="0" frameY="0" frameWidth="453" frameHeight="475"/>
-	<SubTexture name="PICO0012" x="1800" y="2583" width="443" height="475" frameX="0" frameY="0" frameWidth="453" frameHeight="475"/>
-	<SubTexture name="PICO0013" x="1800" y="2583" width="443" height="475" frameX="0" frameY="0" frameWidth="453" frameHeight="475"/>
-	<SubTexture name="PIXEL BOYFRIEND0000" x="2248" y="2583" width="72" height="72"/>
-	<SubTexture name="PIXEL BOYFRIEND0001" x="2248" y="2583" width="72" height="72"/>
-	<SubTexture name="PIXEL BOYFRIEND0002" x="2325" y="2583" width="72" height="72"/>
-	<SubTexture name="PIXEL BOYFRIEND0003" x="2325" y="2583" width="72" height="72"/>
-	<SubTexture name="PIXEL BOYFRIEND0004" x="2402" y="2583" width="72" height="72"/>
-	<SubTexture name="PIXEL BOYFRIEND0005" x="2402" y="2583" width="72" height="72"/>
-	<SubTexture name="PIXEL BOYFRIEND0006" x="2479" y="2583" width="72" height="72"/>
-	<SubTexture name="PIXEL BOYFRIEND0007" x="2479" y="2583" width="72" height="72"/>
-	<SubTexture name="PIXEL BOYFRIEND0008" x="2556" y="2583" width="72" height="72"/>
-	<SubTexture name="PIXEL BOYFRIEND0009" x="2556" y="2583" width="72" height="72"/>
-	<SubTexture name="PIXEL BOYFRIEND0010" x="2556" y="2583" width="72" height="72"/>
-	<SubTexture name="PIXEL BOYFRIEND0011" x="2556" y="2583" width="72" height="72"/>
-	<SubTexture name="PIXEL BOYFRIEND0012" x="2556" y="2583" width="72" height="72"/>
-	<SubTexture name="PIXEL BOYFRIEND0013" x="2556" y="2583" width="72" height="72"/>
+	<SubTexture name="DYLAN0000" x="3672" y="2" width="398" height="395" frameX="0" frameY="-20" frameWidth="403" frameHeight="415"/>
+	<SubTexture name="DYLAN0001" x="3672" y="2" width="398" height="395" frameX="0" frameY="-20" frameWidth="403" frameHeight="415"/>
+	<SubTexture name="DYLAN0002" x="4075" y="2" width="399" height="396" frameX="0" frameY="-19" frameWidth="403" frameHeight="415"/>
+	<SubTexture name="DYLAN0003" x="4075" y="2" width="399" height="396" frameX="0" frameY="-19" frameWidth="403" frameHeight="415"/>
+	<SubTexture name="DYLAN0004" x="4479" y="2" width="400" height="401" frameX="0" frameY="-14" frameWidth="403" frameHeight="415"/>
+	<SubTexture name="DYLAN0005" x="4479" y="2" width="400" height="401" frameX="0" frameY="-14" frameWidth="403" frameHeight="415"/>
+	<SubTexture name="DYLAN0006" x="4884" y="2" width="403" height="414" frameX="0" frameY="-1" frameWidth="403" frameHeight="415"/>
+	<SubTexture name="DYLAN0007" x="4884" y="2" width="403" height="414" frameX="0" frameY="-1" frameWidth="403" frameHeight="415"/>
+	<SubTexture name="DYLAN0008" x="5292" y="2" width="402" height="415" frameX="0" frameY="0" frameWidth="403" frameHeight="415"/>
+	<SubTexture name="DYLAN0009" x="5292" y="2" width="402" height="415" frameX="0" frameY="0" frameWidth="403" frameHeight="415"/>
+	<SubTexture name="DYLAN0010" x="5292" y="2" width="402" height="415" frameX="0" frameY="0" frameWidth="403" frameHeight="415"/>
+	<SubTexture name="DYLAN0011" x="5292" y="2" width="402" height="415" frameX="0" frameY="0" frameWidth="403" frameHeight="415"/>
+	<SubTexture name="DYLAN0012" x="5292" y="2" width="402" height="415" frameX="0" frameY="0" frameWidth="403" frameHeight="415"/>
+	<SubTexture name="DYLAN0013" x="5292" y="2" width="402" height="415" frameX="0" frameY="0" frameWidth="403" frameHeight="415"/>
+	<SubTexture name="HEY_B-BLOOPS0000" x="5483" y="1833" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
+	<SubTexture name="HEY_B-BLOOPS0001" x="5751" y="1833" width="263" height="458"/>
+	<SubTexture name="HEY_B-BLOOPS0002" x="6019" y="1833" width="263" height="455" frameX="0" frameY="-3" frameWidth="263" frameHeight="458"/>
+	<SubTexture name="HEY_B-BLOOPS0003" x="5483" y="1833" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
+	<SubTexture name="HEY_B-BLOOPS0004" x="5483" y="1833" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
+	<SubTexture name="HEY_B-BLOOPS0005" x="5483" y="1833" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
+	<SubTexture name="HEY_B-BLOOPS0006" x="5483" y="1833" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
+	<SubTexture name="HEY_B-BLOOPS0007" x="5483" y="1833" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
+	<SubTexture name="HEY_B-BLOOPS0008" x="5483" y="1833" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
+	<SubTexture name="HEY_B-BLOOPS0009" x="5483" y="1833" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
+	<SubTexture name="HEY_B-BLOOPS0010" x="5483" y="1833" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
+	<SubTexture name="HEY_B-BLOOPS0011" x="5483" y="1833" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
+	<SubTexture name="HEY_B-BLOOPS0012" x="5483" y="1833" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
+	<SubTexture name="HEY_B-BLOOPS0013" x="5483" y="1833" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
+	<SubTexture name="HEY_B-BLOOPS0014" x="5483" y="1833" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
+	<SubTexture name="HEY_B-BLOOPS0015" x="5483" y="1833" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
+	<SubTexture name="HEY_B-BOYFRIEND0000" x="6287" y="1833" width="395" height="416" frameX="0" frameY="0" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_B-BOYFRIEND0001" x="6287" y="1833" width="395" height="416" frameX="0" frameY="0" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_B-BOYFRIEND0002" x="6687" y="1833" width="413" height="410" frameX="-1" frameY="-8" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_B-BOYFRIEND0003" x="6687" y="1833" width="413" height="410" frameX="-1" frameY="-8" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_B-BOYFRIEND0004" x="7105" y="1833" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_B-BOYFRIEND0005" x="7105" y="1833" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_B-BOYFRIEND0006" x="7105" y="1833" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_B-BOYFRIEND0007" x="7105" y="1833" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_B-BOYFRIEND0008" x="7105" y="1833" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_B-BOYFRIEND0009" x="7105" y="1833" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_B-BOYFRIEND0010" x="7105" y="1833" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_B-BOYFRIEND0011" x="7105" y="1833" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_B-BOYFRIEND0012" x="7105" y="1833" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_B-BOYFRIEND0013" x="7105" y="1833" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_B-BOYFRIEND0014" x="7105" y="1833" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_B-BOYFRIEND0015" x="7105" y="1833" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_B-BOYFRIEND0016" x="7105" y="1833" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_B-BOYFRIEND0017" x="7105" y="1833" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_B-BOYFRIEND0018" x="7105" y="1833" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_B-BOYFRIEND0019" x="7105" y="1833" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_B-BOYFRIEND0020" x="7105" y="1833" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_B-BOYFRIEND0021" x="7105" y="1833" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_B-BOYFRIEND0022" x="7105" y="1833" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_B-BOYFRIEND0023" x="7105" y="1833" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_B-BOYFRIEND0024" x="7105" y="1833" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_B-BOYFRIEND0025" x="7105" y="1833" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_B-DYLAN0000" x="7524" y="1833" width="422" height="416" frameX="0" frameY="0" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_B-DYLAN0001" x="7524" y="1833" width="422" height="416" frameX="0" frameY="0" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_B-DYLAN0002" x="2" y="2313" width="422" height="413" frameX="0" frameY="-5" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_B-DYLAN0003" x="2" y="2313" width="422" height="413" frameX="0" frameY="-5" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_B-DYLAN0004" x="429" y="2313" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_B-DYLAN0005" x="429" y="2313" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_B-DYLAN0006" x="429" y="2313" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_B-DYLAN0007" x="429" y="2313" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_B-DYLAN0008" x="429" y="2313" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_B-DYLAN0009" x="429" y="2313" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_B-DYLAN0010" x="429" y="2313" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_B-DYLAN0011" x="429" y="2313" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_B-DYLAN0012" x="429" y="2313" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_B-DYLAN0013" x="429" y="2313" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_B-DYLAN0014" x="429" y="2313" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_B-DYLAN0015" x="429" y="2313" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_B-DYLAN0016" x="429" y="2313" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_B-DYLAN0017" x="429" y="2313" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_B-DYLAN0018" x="429" y="2313" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_B-DYLAN0019" x="429" y="2313" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_B-DYLAN0020" x="429" y="2313" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_B-DYLAN0021" x="429" y="2313" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_B-DYLAN0022" x="429" y="2313" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_B-DYLAN0023" x="429" y="2313" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_B-DYLAN0024" x="429" y="2313" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_B-DYLAN0025" x="429" y="2313" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_B-PICO0000" x="857" y="2313" width="356" height="731" frameX="-5" frameY="-86" frameWidth="362" frameHeight="817"/>
+	<SubTexture name="HEY_B-PICO0001" x="1218" y="2313" width="356" height="794" frameX="-5" frameY="-23" frameWidth="362" frameHeight="817"/>
+	<SubTexture name="HEY_B-PICO0002" x="1579" y="2313" width="362" height="817"/>
+	<SubTexture name="HEY_B-PICO0003" x="1946" y="2313" width="362" height="770" frameX="0" frameY="-47" frameWidth="362" frameHeight="817"/>
+	<SubTexture name="HEY_B-PICO0004" x="2313" y="2313" width="362" height="517" frameX="0" frameY="-300" frameWidth="362" frameHeight="817"/>
+	<SubTexture name="HEY_B-PICO0005" x="2313" y="2313" width="362" height="517" frameX="0" frameY="-300" frameWidth="362" frameHeight="817"/>
+	<SubTexture name="HEY_B-PICO0006" x="2313" y="2313" width="362" height="517" frameX="0" frameY="-300" frameWidth="362" frameHeight="817"/>
+	<SubTexture name="HEY_B-PICO0007" x="2313" y="2313" width="362" height="517" frameX="0" frameY="-300" frameWidth="362" frameHeight="817"/>
+	<SubTexture name="HEY_B-PICO0008" x="2313" y="2313" width="362" height="517" frameX="0" frameY="-300" frameWidth="362" frameHeight="817"/>
+	<SubTexture name="HEY_B-PICO0009" x="2313" y="2313" width="362" height="517" frameX="0" frameY="-300" frameWidth="362" frameHeight="817"/>
+	<SubTexture name="HEY_B-PICO0010" x="2313" y="2313" width="362" height="517" frameX="0" frameY="-300" frameWidth="362" frameHeight="817"/>
+	<SubTexture name="HEY_B-PICO0011" x="2313" y="2313" width="362" height="517" frameX="0" frameY="-300" frameWidth="362" frameHeight="817"/>
+	<SubTexture name="HEY_B-PICO0012" x="2313" y="2313" width="362" height="517" frameX="0" frameY="-300" frameWidth="362" frameHeight="817"/>
+	<SubTexture name="HEY_B-PICO0013" x="2313" y="2313" width="362" height="517" frameX="0" frameY="-300" frameWidth="362" frameHeight="817"/>
+	<SubTexture name="HEY_B-PIXEL BOYFRIEND0000" x="2680" y="2313" width="56" height="59" frameX="0" frameY="0" frameWidth="59" frameHeight="59"/>
+	<SubTexture name="HEY_B-PIXEL BOYFRIEND0001" x="2680" y="2313" width="56" height="59" frameX="0" frameY="0" frameWidth="59" frameHeight="59"/>
+	<SubTexture name="HEY_B-PIXEL BOYFRIEND0002" x="2741" y="2313" width="57" height="57" frameX="-1" frameY="-2" frameWidth="59" frameHeight="59"/>
+	<SubTexture name="HEY_B-PIXEL BOYFRIEND0003" x="2741" y="2313" width="57" height="57" frameX="-1" frameY="-2" frameWidth="59" frameHeight="59"/>
+	<SubTexture name="HEY_B-PIXEL BOYFRIEND0004" x="2803" y="2313" width="58" height="58" frameX="-1" frameY="-1" frameWidth="59" frameHeight="59"/>
+	<SubTexture name="HEY_B-PIXEL BOYFRIEND0005" x="2803" y="2313" width="58" height="58" frameX="-1" frameY="-1" frameWidth="59" frameHeight="59"/>
+	<SubTexture name="HEY_B-PIXEL BOYFRIEND0006" x="2803" y="2313" width="58" height="58" frameX="-1" frameY="-1" frameWidth="59" frameHeight="59"/>
+	<SubTexture name="HEY_B-PIXEL BOYFRIEND0007" x="2803" y="2313" width="58" height="58" frameX="-1" frameY="-1" frameWidth="59" frameHeight="59"/>
+	<SubTexture name="HEY_B-PIXEL BOYFRIEND0008" x="2803" y="2313" width="58" height="58" frameX="-1" frameY="-1" frameWidth="59" frameHeight="59"/>
+	<SubTexture name="HEY_B-PIXEL BOYFRIEND0009" x="2803" y="2313" width="58" height="58" frameX="-1" frameY="-1" frameWidth="59" frameHeight="59"/>
+	<SubTexture name="HEY_B-PIXEL BOYFRIEND0010" x="2803" y="2313" width="58" height="58" frameX="-1" frameY="-1" frameWidth="59" frameHeight="59"/>
+	<SubTexture name="HEY_B-PIXEL BOYFRIEND0011" x="2803" y="2313" width="58" height="58" frameX="-1" frameY="-1" frameWidth="59" frameHeight="59"/>
+	<SubTexture name="HEY_B-PIXEL BOYFRIEND0012" x="2803" y="2313" width="58" height="58" frameX="-1" frameY="-1" frameWidth="59" frameHeight="59"/>
+	<SubTexture name="HEY_B-PIXEL BOYFRIEND0013" x="2803" y="2313" width="58" height="58" frameX="-1" frameY="-1" frameWidth="59" frameHeight="59"/>
+	<SubTexture name="HEY_B-PIXEL BOYFRIEND0014" x="2803" y="2313" width="58" height="58" frameX="-1" frameY="-1" frameWidth="59" frameHeight="59"/>
+	<SubTexture name="HEY_BLOOPS0000" x="5699" y="2" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
+	<SubTexture name="HEY_BLOOPS0001" x="5967" y="2" width="263" height="458"/>
+	<SubTexture name="HEY_BLOOPS0002" x="6235" y="2" width="263" height="455" frameX="0" frameY="-3" frameWidth="263" frameHeight="458"/>
+	<SubTexture name="HEY_BLOOPS0003" x="5699" y="2" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
+	<SubTexture name="HEY_BLOOPS0004" x="5699" y="2" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
+	<SubTexture name="HEY_BLOOPS0005" x="5699" y="2" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
+	<SubTexture name="HEY_BLOOPS0006" x="5699" y="2" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
+	<SubTexture name="HEY_BLOOPS0007" x="5699" y="2" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
+	<SubTexture name="HEY_BLOOPS0008" x="5699" y="2" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
+	<SubTexture name="HEY_BLOOPS0009" x="5699" y="2" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
+	<SubTexture name="HEY_BLOOPS0010" x="5699" y="2" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
+	<SubTexture name="HEY_BLOOPS0011" x="5699" y="2" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
+	<SubTexture name="HEY_BLOOPS0012" x="5699" y="2" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
+	<SubTexture name="HEY_BLOOPS0013" x="5699" y="2" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
+	<SubTexture name="HEY_BLOOPS0014" x="5699" y="2" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
+	<SubTexture name="HEY_BLOOPS0015" x="5699" y="2" width="263" height="452" frameX="0" frameY="-6" frameWidth="263" frameHeight="458"/>
+	<SubTexture name="HEY_BOYFRIEND0000" x="6503" y="2" width="395" height="416" frameX="0" frameY="0" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_BOYFRIEND0001" x="6503" y="2" width="395" height="416" frameX="0" frameY="0" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_BOYFRIEND0002" x="6903" y="2" width="413" height="410" frameX="-1" frameY="-8" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_BOYFRIEND0003" x="6903" y="2" width="413" height="410" frameX="-1" frameY="-8" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_BOYFRIEND0004" x="7321" y="2" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_BOYFRIEND0005" x="7321" y="2" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_BOYFRIEND0006" x="7321" y="2" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_BOYFRIEND0007" x="7321" y="2" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_BOYFRIEND0008" x="7321" y="2" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_BOYFRIEND0009" x="7321" y="2" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_BOYFRIEND0010" x="7321" y="2" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_BOYFRIEND0011" x="7321" y="2" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_BOYFRIEND0012" x="7321" y="2" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_BOYFRIEND0013" x="7321" y="2" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_BOYFRIEND0014" x="7321" y="2" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_BOYFRIEND0015" x="7321" y="2" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_BOYFRIEND0016" x="7321" y="2" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_BOYFRIEND0017" x="7321" y="2" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_BOYFRIEND0018" x="7321" y="2" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_BOYFRIEND0019" x="7321" y="2" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_BOYFRIEND0020" x="7321" y="2" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_BOYFRIEND0021" x="7321" y="2" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_BOYFRIEND0022" x="7321" y="2" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_BOYFRIEND0023" x="7321" y="2" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_BOYFRIEND0024" x="7321" y="2" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_BOYFRIEND0025" x="7321" y="2" width="414" height="412" frameX="-1" frameY="-6" frameWidth="415" frameHeight="418"/>
+	<SubTexture name="HEY_DYLAN0000" x="7740" y="2" width="422" height="416" frameX="0" frameY="0" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_DYLAN0001" x="7740" y="2" width="422" height="416" frameX="0" frameY="0" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_DYLAN0002" x="2" y="465" width="422" height="413" frameX="0" frameY="-5" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_DYLAN0003" x="2" y="465" width="422" height="413" frameX="0" frameY="-5" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_DYLAN0004" x="429" y="465" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_DYLAN0005" x="429" y="465" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_DYLAN0006" x="429" y="465" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_DYLAN0007" x="429" y="465" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_DYLAN0008" x="429" y="465" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_DYLAN0009" x="429" y="465" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_DYLAN0010" x="429" y="465" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_DYLAN0011" x="429" y="465" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_DYLAN0012" x="429" y="465" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_DYLAN0013" x="429" y="465" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_DYLAN0014" x="429" y="465" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_DYLAN0015" x="429" y="465" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_DYLAN0016" x="429" y="465" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_DYLAN0017" x="429" y="465" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_DYLAN0018" x="429" y="465" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_DYLAN0019" x="429" y="465" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_DYLAN0020" x="429" y="465" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_DYLAN0021" x="429" y="465" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_DYLAN0022" x="429" y="465" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_DYLAN0023" x="429" y="465" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_DYLAN0024" x="429" y="465" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_DYLAN0025" x="429" y="465" width="423" height="415" frameX="0" frameY="-3" frameWidth="423" frameHeight="418"/>
+	<SubTexture name="HEY_MILNE0000" x="857" y="465" width="399" height="550"/>
+	<SubTexture name="HEY_MILNE0001" x="857" y="465" width="399" height="550"/>
+	<SubTexture name="HEY_MILNE0002" x="1261" y="465" width="399" height="532" frameX="0" frameY="-17" frameWidth="399" frameHeight="550"/>
+	<SubTexture name="HEY_MILNE0003" x="1261" y="465" width="399" height="532" frameX="0" frameY="-17" frameWidth="399" frameHeight="550"/>
+	<SubTexture name="HEY_MILNE0004" x="1665" y="465" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
+	<SubTexture name="HEY_MILNE0005" x="1665" y="465" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
+	<SubTexture name="HEY_MILNE0006" x="2069" y="465" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
+	<SubTexture name="HEY_MILNE0007" x="2069" y="465" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
+	<SubTexture name="HEY_MILNE0008" x="2473" y="465" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
+	<SubTexture name="HEY_MILNE0009" x="2473" y="465" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
+	<SubTexture name="HEY_MILNE0010" x="2877" y="465" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
+	<SubTexture name="HEY_MILNE0011" x="2877" y="465" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
+	<SubTexture name="HEY_MILNE0012" x="2877" y="465" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
+	<SubTexture name="HEY_MILNE0013" x="2877" y="465" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
+	<SubTexture name="HEY_MILNE0014" x="3281" y="465" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
+	<SubTexture name="HEY_MILNE0015" x="3281" y="465" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
+	<SubTexture name="HEY_MILNE0016" x="2473" y="465" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
+	<SubTexture name="HEY_MILNE0017" x="2473" y="465" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
+	<SubTexture name="HEY_MILNE0018" x="2473" y="465" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
+	<SubTexture name="HEY_MILNE0019" x="2473" y="465" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
+	<SubTexture name="HEY_MILNE0020" x="2473" y="465" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
+	<SubTexture name="HEY_MILNE0021" x="2473" y="465" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
+	<SubTexture name="HEY_MILNE0022" x="2473" y="465" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
+	<SubTexture name="HEY_MILNE0023" x="2473" y="465" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
+	<SubTexture name="HEY_MILNE0024" x="2473" y="465" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
+	<SubTexture name="HEY_MILNE0025" x="2473" y="465" width="399" height="537" frameX="0" frameY="-11" frameWidth="399" frameHeight="550"/>
+	<SubTexture name="HEY_PICO0000" x="3685" y="465" width="356" height="731" frameX="-5" frameY="-86" frameWidth="362" frameHeight="817"/>
+	<SubTexture name="HEY_PICO0001" x="4046" y="465" width="356" height="794" frameX="-5" frameY="-23" frameWidth="362" frameHeight="817"/>
+	<SubTexture name="HEY_PICO0002" x="4407" y="465" width="362" height="817"/>
+	<SubTexture name="HEY_PICO0003" x="4774" y="465" width="362" height="770" frameX="0" frameY="-47" frameWidth="362" frameHeight="817"/>
+	<SubTexture name="HEY_PICO0004" x="5141" y="465" width="362" height="517" frameX="0" frameY="-300" frameWidth="362" frameHeight="817"/>
+	<SubTexture name="HEY_PICO0005" x="5141" y="465" width="362" height="517" frameX="0" frameY="-300" frameWidth="362" frameHeight="817"/>
+	<SubTexture name="HEY_PICO0006" x="5141" y="465" width="362" height="517" frameX="0" frameY="-300" frameWidth="362" frameHeight="817"/>
+	<SubTexture name="HEY_PICO0007" x="5141" y="465" width="362" height="517" frameX="0" frameY="-300" frameWidth="362" frameHeight="817"/>
+	<SubTexture name="HEY_PICO0008" x="5141" y="465" width="362" height="517" frameX="0" frameY="-300" frameWidth="362" frameHeight="817"/>
+	<SubTexture name="HEY_PICO0009" x="5141" y="465" width="362" height="517" frameX="0" frameY="-300" frameWidth="362" frameHeight="817"/>
+	<SubTexture name="HEY_PICO0010" x="5141" y="465" width="362" height="517" frameX="0" frameY="-300" frameWidth="362" frameHeight="817"/>
+	<SubTexture name="HEY_PICO0011" x="5141" y="465" width="362" height="517" frameX="0" frameY="-300" frameWidth="362" frameHeight="817"/>
+	<SubTexture name="HEY_PICO0012" x="5141" y="465" width="362" height="517" frameX="0" frameY="-300" frameWidth="362" frameHeight="817"/>
+	<SubTexture name="HEY_PICO0013" x="5141" y="465" width="362" height="517" frameX="0" frameY="-300" frameWidth="362" frameHeight="817"/>
+	<SubTexture name="HEY_PIXEL BOYFRIEND0000" x="5508" y="465" width="56" height="59" frameX="0" frameY="0" frameWidth="59" frameHeight="59"/>
+	<SubTexture name="HEY_PIXEL BOYFRIEND0001" x="5508" y="465" width="56" height="59" frameX="0" frameY="0" frameWidth="59" frameHeight="59"/>
+	<SubTexture name="HEY_PIXEL BOYFRIEND0002" x="5569" y="465" width="57" height="57" frameX="-1" frameY="-2" frameWidth="59" frameHeight="59"/>
+	<SubTexture name="HEY_PIXEL BOYFRIEND0003" x="5569" y="465" width="57" height="57" frameX="-1" frameY="-2" frameWidth="59" frameHeight="59"/>
+	<SubTexture name="HEY_PIXEL BOYFRIEND0004" x="5631" y="465" width="58" height="58" frameX="-1" frameY="-1" frameWidth="59" frameHeight="59"/>
+	<SubTexture name="HEY_PIXEL BOYFRIEND0005" x="5631" y="465" width="58" height="58" frameX="-1" frameY="-1" frameWidth="59" frameHeight="59"/>
+	<SubTexture name="HEY_PIXEL BOYFRIEND0006" x="5631" y="465" width="58" height="58" frameX="-1" frameY="-1" frameWidth="59" frameHeight="59"/>
+	<SubTexture name="HEY_PIXEL BOYFRIEND0007" x="5631" y="465" width="58" height="58" frameX="-1" frameY="-1" frameWidth="59" frameHeight="59"/>
+	<SubTexture name="HEY_PIXEL BOYFRIEND0008" x="5631" y="465" width="58" height="58" frameX="-1" frameY="-1" frameWidth="59" frameHeight="59"/>
+	<SubTexture name="HEY_PIXEL BOYFRIEND0009" x="5631" y="465" width="58" height="58" frameX="-1" frameY="-1" frameWidth="59" frameHeight="59"/>
+	<SubTexture name="HEY_PIXEL BOYFRIEND0010" x="5631" y="465" width="58" height="58" frameX="-1" frameY="-1" frameWidth="59" frameHeight="59"/>
+	<SubTexture name="HEY_PIXEL BOYFRIEND0011" x="5631" y="465" width="58" height="58" frameX="-1" frameY="-1" frameWidth="59" frameHeight="59"/>
+	<SubTexture name="HEY_PIXEL BOYFRIEND0012" x="5631" y="465" width="58" height="58" frameX="-1" frameY="-1" frameWidth="59" frameHeight="59"/>
+	<SubTexture name="HEY_PIXEL BOYFRIEND0013" x="5631" y="465" width="58" height="58" frameX="-1" frameY="-1" frameWidth="59" frameHeight="59"/>
+	<SubTexture name="HEY_PIXEL BOYFRIEND0014" x="5631" y="465" width="58" height="58" frameX="-1" frameY="-1" frameWidth="59" frameHeight="59"/>
+	<SubTexture name="MILNE0000" x="5694" y="465" width="492" height="576" frameX="0" frameY="-1" frameWidth="492" frameHeight="577"/>
+	<SubTexture name="MILNE0001" x="5694" y="465" width="492" height="576" frameX="0" frameY="-1" frameWidth="492" frameHeight="577"/>
+	<SubTexture name="MILNE0002" x="6191" y="465" width="477" height="571" frameX="-7" frameY="0" frameWidth="492" frameHeight="577"/>
+	<SubTexture name="MILNE0003" x="6673" y="465" width="459" height="564" frameX="-13" frameY="-3" frameWidth="492" frameHeight="577"/>
+	<SubTexture name="MILNE0004" x="7137" y="465" width="459" height="564" frameX="-13" frameY="-3" frameWidth="492" frameHeight="577"/>
+	<SubTexture name="MILNE0005" x="7601" y="465" width="403" height="541" frameX="-37" frameY="-7" frameWidth="492" frameHeight="577"/>
+	<SubTexture name="MILNE0006" x="2" y="1287" width="403" height="541" frameX="-37" frameY="-7" frameWidth="492" frameHeight="577"/>
+	<SubTexture name="MILNE0007" x="410" y="1287" width="373" height="521" frameX="-49" frameY="-14" frameWidth="492" frameHeight="577"/>
+	<SubTexture name="MILNE0008" x="410" y="1287" width="373" height="521" frameX="-49" frameY="-14" frameWidth="492" frameHeight="577"/>
+	<SubTexture name="MILNE0009" x="410" y="1287" width="373" height="521" frameX="-49" frameY="-14" frameWidth="492" frameHeight="577"/>
+	<SubTexture name="MILNE0010" x="410" y="1287" width="373" height="521" frameX="-49" frameY="-14" frameWidth="492" frameHeight="577"/>
+	<SubTexture name="MILNE0011" x="410" y="1287" width="373" height="521" frameX="-49" frameY="-14" frameWidth="492" frameHeight="577"/>
+	<SubTexture name="MILNE0012" x="410" y="1287" width="373" height="521" frameX="-49" frameY="-14" frameWidth="492" frameHeight="577"/>
+	<SubTexture name="MILNE0013" x="410" y="1287" width="373" height="521" frameX="-49" frameY="-14" frameWidth="492" frameHeight="577"/>
+	<SubTexture name="MILNE0014" x="410" y="1287" width="373" height="521" frameX="-49" frameY="-14" frameWidth="492" frameHeight="577"/>
+	<SubTexture name="PICO0000" x="788" y="1287" width="435" height="461" frameX="-18" frameY="-13" frameWidth="453" frameHeight="475"/>
+	<SubTexture name="PICO0001" x="788" y="1287" width="435" height="461" frameX="-18" frameY="-13" frameWidth="453" frameHeight="475"/>
+	<SubTexture name="PICO0002" x="1228" y="1287" width="442" height="468" frameX="-11" frameY="-6" frameWidth="453" frameHeight="475"/>
+	<SubTexture name="PICO0003" x="1228" y="1287" width="442" height="468" frameX="-11" frameY="-6" frameWidth="453" frameHeight="475"/>
+	<SubTexture name="PICO0004" x="1675" y="1287" width="448" height="469" frameX="-1" frameY="-6" frameWidth="453" frameHeight="475"/>
+	<SubTexture name="PICO0005" x="2128" y="1287" width="444" height="469" frameX="-1" frameY="-6" frameWidth="453" frameHeight="475"/>
+	<SubTexture name="PICO0006" x="2577" y="1287" width="444" height="474" frameX="-1" frameY="-1" frameWidth="453" frameHeight="475"/>
+	<SubTexture name="PICO0007" x="3026" y="1287" width="442" height="474" frameX="-1" frameY="-1" frameWidth="453" frameHeight="475"/>
+	<SubTexture name="PICO0008" x="3473" y="1287" width="443" height="475" frameX="0" frameY="0" frameWidth="453" frameHeight="475"/>
+	<SubTexture name="PICO0009" x="3473" y="1287" width="443" height="475" frameX="0" frameY="0" frameWidth="453" frameHeight="475"/>
+	<SubTexture name="PICO0010" x="3473" y="1287" width="443" height="475" frameX="0" frameY="0" frameWidth="453" frameHeight="475"/>
+	<SubTexture name="PICO0011" x="3473" y="1287" width="443" height="475" frameX="0" frameY="0" frameWidth="453" frameHeight="475"/>
+	<SubTexture name="PICO0012" x="3473" y="1287" width="443" height="475" frameX="0" frameY="0" frameWidth="453" frameHeight="475"/>
+	<SubTexture name="PICO0013" x="3473" y="1287" width="443" height="475" frameX="0" frameY="0" frameWidth="453" frameHeight="475"/>
+	<SubTexture name="PIXEL BOYFRIEND0000" x="3921" y="1287" width="60" height="55" frameX="0" frameY="-4" frameWidth="62" frameHeight="59"/>
+	<SubTexture name="PIXEL BOYFRIEND0001" x="3921" y="1287" width="60" height="55" frameX="0" frameY="-4" frameWidth="62" frameHeight="59"/>
+	<SubTexture name="PIXEL BOYFRIEND0002" x="3986" y="1287" width="61" height="56" frameX="0" frameY="-3" frameWidth="62" frameHeight="59"/>
+	<SubTexture name="PIXEL BOYFRIEND0003" x="3986" y="1287" width="61" height="56" frameX="0" frameY="-3" frameWidth="62" frameHeight="59"/>
+	<SubTexture name="PIXEL BOYFRIEND0004" x="4052" y="1287" width="59" height="58" frameX="-2" frameY="-1" frameWidth="62" frameHeight="59"/>
+	<SubTexture name="PIXEL BOYFRIEND0005" x="4052" y="1287" width="59" height="58" frameX="-2" frameY="-1" frameWidth="62" frameHeight="59"/>
+	<SubTexture name="PIXEL BOYFRIEND0006" x="4116" y="1287" width="58" height="59" frameX="-4" frameY="0" frameWidth="62" frameHeight="59"/>
+	<SubTexture name="PIXEL BOYFRIEND0007" x="4116" y="1287" width="58" height="59" frameX="-4" frameY="0" frameWidth="62" frameHeight="59"/>
+	<SubTexture name="PIXEL BOYFRIEND0008" x="4179" y="1287" width="58" height="58" frameX="-3" frameY="-1" frameWidth="62" frameHeight="59"/>
+	<SubTexture name="PIXEL BOYFRIEND0009" x="4179" y="1287" width="58" height="58" frameX="-3" frameY="-1" frameWidth="62" frameHeight="59"/>
+	<SubTexture name="PIXEL BOYFRIEND0010" x="4179" y="1287" width="58" height="58" frameX="-3" frameY="-1" frameWidth="62" frameHeight="59"/>
+	<SubTexture name="PIXEL BOYFRIEND0011" x="4179" y="1287" width="58" height="58" frameX="-3" frameY="-1" frameWidth="62" frameHeight="59"/>
+	<SubTexture name="PIXEL BOYFRIEND0012" x="4179" y="1287" width="58" height="58" frameX="-3" frameY="-1" frameWidth="62" frameHeight="59"/>
+	<SubTexture name="PIXEL BOYFRIEND0013" x="4179" y="1287" width="58" height="58" frameX="-3" frameY="-1" frameWidth="62" frameHeight="59"/>
 </TextureAtlas>
