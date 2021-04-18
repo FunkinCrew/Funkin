@@ -43,6 +43,8 @@ import openfl.display.BitmapData;
 import openfl.display.BlendMode;
 import openfl.display.StageQuality;
 import openfl.filters.ShaderFilter;
+import shaderslmfao.BuildingShaders.BuildingShader;
+import shaderslmfao.BuildingShaders;
 import shaderslmfao.ColorSwap;
 import ui.PreferencesMenu;
 
@@ -157,6 +159,7 @@ class PlayState extends MusicBeatState
 	#end
 
 	var camPos:FlxPoint;
+	var lightFadeShader:BuildingShaders;
 
 	override public function create()
 	{
@@ -254,7 +257,9 @@ class PlayState extends MusicBeatState
 				city.updateHitbox();
 				add(city);
 
+				lightFadeShader = new BuildingShaders();
 				phillyCityLights = new FlxTypedGroup<FlxSprite>();
+
 				add(phillyCityLights);
 
 				for (i in 0...5)
@@ -265,6 +270,7 @@ class PlayState extends MusicBeatState
 					light.setGraphicSize(Std.int(light.width * 0.85));
 					light.updateHitbox();
 					light.antialiasing = true;
+					light.shader = lightFadeShader.shader;
 					phillyCityLights.add(light);
 				}
 
@@ -936,6 +942,7 @@ class PlayState extends MusicBeatState
 		var vid:FlxVideo = new FlxVideo('music/ughCutscene.mp4');
 		vid.finishCallback = function()
 		{
+			FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, (Conductor.crochet / 1000) * 5, {ease: FlxEase.quadInOut});
 			startCountdown();
 			cameraMovement();
 		};
@@ -1942,7 +1949,8 @@ class PlayState extends MusicBeatState
 						trainFrameTiming = 0;
 					}
 				}
-				// phillyCityLights.members[curLight].alpha -= (Conductor.crochet / 1000) * FlxG.elapsed;
+
+				lightFadeShader.update((Conductor.crochet / 1000) * FlxG.elapsed * 1.5); // phillyCityLights.members[curLight].alpha -= (Conductor.crochet / 1000) * FlxG.elapsed;
 		}
 
 		super.update(elapsed);
@@ -3002,6 +3010,8 @@ class PlayState extends MusicBeatState
 
 				if (curBeat % 4 == 0)
 				{
+					lightFadeShader.reset();
+
 					phillyCityLights.forEach(function(light:FlxSprite)
 					{
 						light.visible = false;
