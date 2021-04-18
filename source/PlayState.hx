@@ -212,6 +212,12 @@ class PlayState extends MusicBeatState
 				dialogue = CoolUtil.coolTextFile(Paths.txt('high/highDialogue'));
 			case 'milf':
 				dialogue = CoolUtil.coolTextFile(Paths.txt('milf/milfDialogue'));
+			case 'cocoa':
+				dialogue = CoolUtil.coolTextFile(Paths.txt('cocoa/cocoaDialogue'));
+			case 'eggnog':
+				dialogue = CoolUtil.coolTextFile(Paths.txt('eggnog/eggnogDialogue'));
+			case 'winter-horrorland':
+				dialogue = CoolUtil.coolTextFile(Paths.txt('winter-horrorland/winter-horrorlandDialogue'));
 			case 'senpai':
 				dialogue = CoolUtil.coolTextFile(Paths.txt('senpai/senpaiDialogue'));
 			case 'roses':
@@ -973,7 +979,10 @@ class PlayState extends MusicBeatState
 								ease: FlxEase.quadInOut,
 								onComplete: function(twn:FlxTween)
 								{
-									startCountdown();
+									if (STOptions.st_extraDialogue)
+										doDialogue(doof);
+									else
+										startCountdown();
 								}
 							});
 						});
@@ -1012,6 +1021,12 @@ class PlayState extends MusicBeatState
 					if (STOptions.st_extraDialogue)
 						doDialogue(doof);
 				case 'milf':
+					if (STOptions.st_extraDialogue)
+						doDialogue(doof);
+				case 'cocoa':
+					if (STOptions.st_extraDialogue)
+						doDialogue(doof);
+				case 'eggnog':
 					if (STOptions.st_extraDialogue)
 						doDialogue(doof);
 				case 'senpai':

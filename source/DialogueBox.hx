@@ -106,6 +106,21 @@ class DialogueBox extends FlxSpriteGroup
 					FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0.6);
 					FlxG.sound.music.fadeIn(1, 0, 0.8);
 				}
+			case 'cocoa':
+				if (STOptions.st_extraDialogue) {
+					FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0.6);
+					FlxG.sound.music.fadeIn(1, 0, 0.8);
+				}
+			case 'eggnog':
+				if (STOptions.st_extraDialogue) {
+					FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0.6);
+					FlxG.sound.music.fadeIn(1, 0, 0.8);
+				}
+			case 'winter-horrorland':
+				if (STOptions.st_extraDialogue) {
+					FlxG.sound.playMusic(Paths.music('winterHorrorlandInst'), 0.6);
+					FlxG.sound.music.fadeIn(1, 0, 0.8);
+				}
 			case 'senpai':
 				FlxG.sound.playMusic(Paths.music('Lunchbox'), 0);
 				FlxG.sound.music.fadeIn(1, 0, 0.8);
@@ -240,6 +255,33 @@ class DialogueBox extends FlxSpriteGroup
 					box.y = (FlxG.height - box.height) + 80;
 				}
 			case 'milf':
+				if (STOptions.st_extraDialogue) {
+					hasDialog = true;
+					box.frames = Paths.getSparrowAtlas('speech_bubble_talking');
+					box.animation.addByPrefix('normalOpen', 'Speech Bubble Normal Open', 24, false);
+					box.animation.addByPrefix('normal', 'Speech Bubble Normal Open', 24, false);
+					box.setGraphicSize(Std.int(box.width * 1 * 0.9));
+					box.y = (FlxG.height - box.height) + 80;
+				}
+			case 'cocoa':
+				if (STOptions.st_extraDialogue) {
+					hasDialog = true;
+					box.frames = Paths.getSparrowAtlas('speech_bubble_talking');
+					box.animation.addByPrefix('normalOpen', 'Speech Bubble Normal Open', 24, false);
+					box.animation.addByPrefix('normal', 'Speech Bubble Normal Open', 24, false);
+					box.setGraphicSize(Std.int(box.width * 1 * 0.9));
+					box.y = (FlxG.height - box.height) + 80;
+				}
+			case 'eggnog':
+				if (STOptions.st_extraDialogue) {
+					hasDialog = true;
+					box.frames = Paths.getSparrowAtlas('speech_bubble_talking');
+					box.animation.addByPrefix('normalOpen', 'Speech Bubble Normal Open', 24, false);
+					box.animation.addByPrefix('normal', 'Speech Bubble Normal Open', 24, false);
+					box.setGraphicSize(Std.int(box.width * 1 * 0.9));
+					box.y = (FlxG.height - box.height) + 80;
+				}
+			case 'winter-horrorland':
 				if (STOptions.st_extraDialogue) {
 					hasDialog = true;
 					box.frames = Paths.getSparrowAtlas('speech_bubble_talking');
@@ -413,6 +455,15 @@ class DialogueBox extends FlxSpriteGroup
 							if (STOptions.st_extraDialogue)
 								FlxG.sound.music.fadeOut(2.2, 0);
 						case 'milf':
+							if (STOptions.st_extraDialogue)
+								FlxG.sound.music.fadeOut(2.2, 0);
+						case 'cocoa':
+							if (STOptions.st_extraDialogue)
+								FlxG.sound.music.fadeOut(2.2, 0);
+						case 'eggnog':
+							if (STOptions.st_extraDialogue)
+								FlxG.sound.music.fadeOut(2.2, 0);
+						case 'winter-horrorland':
 							if (STOptions.st_extraDialogue)
 								FlxG.sound.music.fadeOut(2.2, 0);
 						case 'senpai':
@@ -625,6 +676,60 @@ class DialogueBox extends FlxSpriteGroup
 
 					portraitLeft.x = box.x + 64;
 					portraitLeft.y = box.y - 264;
+
+					portraitLeft.visible = true;
+					portraitLeft.animation.play('enter');
+				}
+			case 'parents':
+				portraitRight.visible = false;
+				if (!portraitLeft.visible)
+				{
+					portraitLeft.frames = Paths.getSparrowAtlas('portraits');
+					portraitLeft.animation.addByPrefix('enter', 'parents portrait', 24, false);
+					portraitLeft.setGraphicSize(Std.int(portraitLeft.width * 1 * 0.75));
+					portraitLeft.antialiasing = true;
+					portraitLeft.updateHitbox();
+					portraitLeft.scrollFactor.set();
+					// portraitLeft.screenCenter(X);
+
+					portraitLeft.x = box.x + 64;
+					portraitLeft.y = box.y - 176;
+
+					portraitLeft.visible = true;
+					portraitLeft.animation.play('enter');
+				}
+			case 'parents-dad':
+				portraitRight.visible = false;
+				if (!portraitLeft.visible)
+				{
+					portraitLeft.frames = Paths.getSparrowAtlas('portraits');
+					portraitLeft.animation.addByPrefix('enter', 'parents-dad portrait', 24, false);
+					portraitLeft.setGraphicSize(Std.int(portraitLeft.width * 1 * 0.75));
+					portraitLeft.antialiasing = true;
+					portraitLeft.updateHitbox();
+					portraitLeft.scrollFactor.set();
+					// portraitLeft.screenCenter(X);
+
+					portraitLeft.x = box.x + 64;
+					portraitLeft.y = box.y - 176;
+
+					portraitLeft.visible = true;
+					portraitLeft.animation.play('enter');
+				}
+			case 'parents-mom':
+				portraitRight.visible = false;
+				if (!portraitLeft.visible)
+				{
+					portraitLeft.frames = Paths.getSparrowAtlas('portraits');
+					portraitLeft.animation.addByPrefix('enter', 'parents-mom portrait', 24, false);
+					portraitLeft.setGraphicSize(Std.int(portraitLeft.width * 1 * 0.75));
+					portraitLeft.antialiasing = true;
+					portraitLeft.updateHitbox();
+					portraitLeft.scrollFactor.set();
+					// portraitLeft.screenCenter(X);
+
+					portraitLeft.x = box.x + 64;
+					portraitLeft.y = box.y - 176;
 
 					portraitLeft.visible = true;
 					portraitLeft.animation.play('enter');
