@@ -34,7 +34,7 @@ class HealthIcon extends FlxSprite
 		if (isOldIcon)
 			changeIcon('bf-old');
 		else
-			changeIcon('bf');
+			changeIcon(PlayState.SONG.player1);
 	}
 
 	public function changeIcon(newChar:String):Void
