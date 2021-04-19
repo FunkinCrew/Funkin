@@ -111,7 +111,8 @@ class GameOverSubstate extends MusicBeatSubstate
 
 					FlxG.sound.play(Paths.sound('jeffGameover/jeffGameover-' + randomGameover), 1, false, null, true, function()
 					{
-						FlxG.sound.music.fadeIn(4, 0.2, 1);
+						if (!isEnding)
+							FlxG.sound.music.fadeIn(4, 0.2, 1);
 					});
 				}
 			default:
@@ -130,7 +131,8 @@ class GameOverSubstate extends MusicBeatSubstate
 
 	private function coolStartDeath(?vol:Float = 1):Void
 	{
-		FlxG.sound.playMusic(Paths.music('gameOver' + stageSuffix), vol);
+		if (!isEnding)
+			FlxG.sound.playMusic(Paths.music('gameOver' + stageSuffix), vol);
 	}
 
 	override function beatHit()
