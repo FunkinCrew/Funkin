@@ -70,6 +70,9 @@ class GameOverSubstate extends MusicBeatSubstate
 
 	override function update(elapsed:Float)
 	{
+		// makes the lerp non-dependant on the framerate
+		FlxG.camera.followLerp = CoolUtil.camLerpShit(0.01);
+
 		super.update(elapsed);
 
 		if (controls.ACCEPT)
@@ -96,7 +99,7 @@ class GameOverSubstate extends MusicBeatSubstate
 
 		if (bf.animation.curAnim.name == 'firstDeath' && bf.animation.curAnim.curFrame == 12)
 		{
-			FlxG.camera.follow(camFollow, LOCKON, 0.01);
+			FlxG.camera.follow(camFollow, LOCKON, CoolUtil.camLerpShit(0.01));
 		}
 
 		switch (PlayState.storyWeek)
