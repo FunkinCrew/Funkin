@@ -2,7 +2,7 @@
 <project>
 	<!-- _________________________ Application Settings _________________________ -->
 
-	<app title="Friday Night Funkin'" file="Funkin" packageName="com.maska228.funkinfork" package="com.maska228.funkinfork" main="Main" version="0.2.7.1" company="maska228" />
+	<app title="Friday Night Funkin' fork" file="FunkinFork" packageName="com.maska228.funkinfork" package="com.maska228.funkinfork" main="Main" version="0.2.7.1" company="maska228" />
 
 	<!--Switch Export with Unique ApplicationID and Icon-->
 	<set name="APP_ID" value="0x0100f6c013bbc000" />
