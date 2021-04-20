@@ -26,5 +26,6 @@ haxelib git polymod https://github.com/larsiusprime/polymod.git && haxelib git d
 #	public static var EncKey:String = "";
 #}
 
+
 #Compile & Run
-lime test html5 -debug
+# Refer to https://github.com/ninjamuffin99/Funkin/blob/a97a6c206deffee9751a4f628465763d39cddb39/README.md for detailed instructions.
