@@ -2299,7 +2299,20 @@ class PlayState extends MusicBeatState
 				// if (PreferencesMenu.getPref('downscroll'))
 					// noteMiss = daNote.y > FlxG.height;
 
-				if (daNote.tooLate || daNote.wasGoodHit)
+				if (daNote.isSustainNote && daNote.wasGoodHit)
+				{
+					if ((!PreferencesMenu.getPref('downscroll') && daNote.y < -daNote.height)
+						|| (PreferencesMenu.getPref('downscroll') && daNote.y > FlxG.height))
+					{
+						daNote.active = false;
+						daNote.visible = false;
+
+						daNote.kill();
+						notes.remove(daNote, true);
+						daNote.destroy();
+					}
+				}
+				else if (daNote.tooLate || daNote.wasGoodHit)
 				{
 					if (daNote.tooLate)
 					{
