@@ -2162,7 +2162,7 @@ class PlayState extends MusicBeatState
 
 			if (health <= 0 && !practiceMode)
 			{
-				boyfriend.stunned = true;
+				// boyfriend.stunned = true;
 
 				persistentUpdate = false;
 				persistentDraw = false;
@@ -2199,7 +2199,8 @@ class PlayState extends MusicBeatState
 		{
 			notes.forEachAlive(function(daNote:Note)
 			{
-				if (daNote.y > FlxG.height)
+				if ((PreferencesMenu.getPref('downscroll') && daNote.y < -daNote.height)
+					|| (!PreferencesMenu.getPref('downscroll') && daNote.y > FlxG.height))
 				{
 					daNote.active = false;
 					daNote.visible = false;
@@ -2292,17 +2293,19 @@ class PlayState extends MusicBeatState
 				// WIP interpolation shit? Need to fix the pause issue
 				// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * SONG.speed));
 
-				var noteMiss:Bool = daNote.y < -daNote.height;
+				// removing this so whether the note misses or not is entirely up to Note class
+				// var noteMiss:Bool = daNote.y < -daNote.height;
 
-				if (PreferencesMenu.getPref('downscroll'))
-					noteMiss = daNote.y > FlxG.height;
+				// if (PreferencesMenu.getPref('downscroll'))
+					// noteMiss = daNote.y > FlxG.height;
 
-				if (noteMiss)
+				if (daNote.tooLate || daNote.wasGoodHit)
 				{
-					if (daNote.tooLate || !daNote.wasGoodHit)
+					if (daNote.tooLate)
 					{
 						health -= 0.0475;
 						vocals.volume = 0;
+						killCombo();
 					}
 
 					daNote.active = false;
@@ -2322,6 +2325,13 @@ class PlayState extends MusicBeatState
 		if (FlxG.keys.justPressed.ONE)
 			endSong();
 		#end
+	}
+
+	function killCombo():Void
+	{
+		if (combo > 5 && gf.animOffsets.exists('sad'))
+			gf.playAnim('sad');
+		combo = 0;
 	}
 
 	function endSong():Void
@@ -2725,7 +2735,7 @@ class PlayState extends MusicBeatState
 				for (shit in 0...pressArray.length)
 				{ // if a direction is hit that shouldn't be
 					if (pressArray[shit] && !directionList.contains(shit))
-						badNoteHit();
+						noteMiss(shit);
 				}
 				for (coolNote in possibleNotes)
 				{
@@ -2735,7 +2745,9 @@ class PlayState extends MusicBeatState
 			}
 			else
 			{
-				badNoteHit();
+				for (shit in 0...pressArray.length)
+					if (pressArray[shit])
+						noteMiss(shit);
 			}
 		}
 
@@ -2767,43 +2779,38 @@ class PlayState extends MusicBeatState
 
 	function noteMiss(direction:Int = 1):Void
 	{
-		if (!boyfriend.stunned)
+		// whole function used to be encased in if (!boyfriend.stunned)
+		health -= 0.04;
+		killCombo();
+
+		if (!practiceMode)
+			songScore -= 10;
+
+		vocals.volume = 0;
+		FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
+
+		/* boyfriend.stunned = true;
+
+		// get stunned for 5 seconds
+		new FlxTimer().start(5 / 60, function(tmr:FlxTimer)
 		{
-			health -= 0.04;
-			if (combo > 5 && gf.animOffsets.exists('sad'))
-			{
-				gf.playAnim('sad');
-			}
-			combo = 0;
+			boyfriend.stunned = false;
+		}); */
 
-			if (!practiceMode)
-				songScore -= 10;
-
-			FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
-			// FlxG.sound.play(Paths.sound('missnote1'), 1, false);
-			// FlxG.log.add('played imss note');
-
-			boyfriend.stunned = true;
-
-			// get stunned for 5 seconds
-			new FlxTimer().start(5 / 60, function(tmr:FlxTimer)
-			{
-				boyfriend.stunned = false;
-			});
-
-			switch (direction)
-			{
-				case 0:
-					boyfriend.playAnim('singLEFTmiss', true);
-				case 1:
-					boyfriend.playAnim('singDOWNmiss', true);
-				case 2:
-					boyfriend.playAnim('singUPmiss', true);
-				case 3:
-					boyfriend.playAnim('singRIGHTmiss', true);
-			}
+		switch (direction)
+		{
+			case 0:
+				boyfriend.playAnim('singLEFTmiss', true);
+			case 1:
+				boyfriend.playAnim('singDOWNmiss', true);
+			case 2:
+				boyfriend.playAnim('singUPmiss', true);
+			case 3:
+				boyfriend.playAnim('singRIGHTmiss', true);
 		}
 	}
+
+	/* not used anymore lol
 
 	function badNoteHit()
 	{
@@ -2822,7 +2829,7 @@ class PlayState extends MusicBeatState
 			noteMiss(2);
 		if (rightP)
 			noteMiss(3);
-	}
+	} */
 
 	function goodNoteHit(note:Note):Void
 	{
