@@ -2539,6 +2539,7 @@ class PlayState extends MusicBeatState
 		var comboSpr:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'combo' + pixelShitPart2));
 		comboSpr.screenCenter();
 		comboSpr.x = FlxG.width * 0.55;
+		comboSpr.y += 80;
 		comboSpr.acceleration.y = 600;
 		comboSpr.velocity.y -= 150;
 		comboSpr.velocity.x += FlxG.random.int(1, 10);
@@ -2582,6 +2583,7 @@ class PlayState extends MusicBeatState
 		{
 			var numScore:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'num' + Std.int(i) + pixelShitPart2));
 			numScore.y = comboSpr.y + 80;
+			numScore.y = comboSpr.y;
 
 			if (curStage.startsWith('school'))
 			{
