@@ -128,6 +128,8 @@ class MainMenuState extends MusicBeatState
 		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(versionShit);
 
+		versionShit.text += '(Newgrounds exclusive preview)';
+
 		// NG.core.calls.event.logEvent('swag').send();
 
 		super.create();
@@ -155,11 +157,14 @@ class MainMenuState extends MusicBeatState
 	{
 		#if linux
 		// Sys.command('/usr/bin/xdg-open', ["https://ninja-muffin24.itch.io/funkin", "&"]);
-		Sys.command('/usr/bin/xdg-open', ["https://www.kickstarter.com/projects/funkin/", "&"]);
+		Sys.command('/usr/bin/xdg-open', [
+			"https://www.kickstarter.com/projects/funkin/friday-night-funkin-the-full-ass-game/",
+			"&"
+		]);
 		#else
 		// FlxG.openURL('https://ninja-muffin24.itch.io/funkin');
 
-		FlxG.openURL('https://www.kickstarter.com/projects/funkin/');
+		FlxG.openURL('https://www.kickstarter.com/projects/funkin/friday-night-funkin-the-full-ass-game/');
 		#end
 	}
 	#end
