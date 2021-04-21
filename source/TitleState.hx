@@ -438,12 +438,15 @@ class TitleState extends MusicBeatState
 					if (version.trim() != onlineVersion)
 					{
 						trace('OLD VERSION!');
-						FlxG.switchState(new OutdatedSubState());
+						// FlxG.switchState(new OutdatedSubState());
 					}
 					else
 					{
-						FlxG.switchState(new MainMenuState());
+						// FlxG.switchState(new MainMenuState());
 					}
+
+					// REDO FOR ITCH/FINAL SHIT
+					FlxG.switchState(new MainMenuState());
 				});
 			}
 			#else
