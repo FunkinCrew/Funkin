@@ -22,17 +22,17 @@ class HealthIcon extends FlxSprite
 		#if sys
 		var charJson:Dynamic = CoolUtil.parseJson(File.getContent("assets/images/custom_chars/custom_chars.jsonc"));
 		#end
-		antialiasing = true;
+
 		switch (char) {
 			case 'bf':
 				loadGraphic('assets/images/iconGrid.png', true, 150, 150);
 				animation.add('icon', [0, 1, 24], 0, false, isPlayer);
 			case 'bf-car':
 				loadGraphic('assets/images/iconGrid.png', true, 150, 150);
-				animation.add('icon', [0, 1,24], 0, false, isPlayer);
+				animation.add('icon', [0, 1, 24], 0, false, isPlayer);
 			case 'bf-christmas':
 				loadGraphic('assets/images/iconGrid.png', true, 150, 150);
-				animation.add('icon', [0, 1,24], 0, false, isPlayer);
+				animation.add('icon', [0, 1, 24], 0, false, isPlayer);
 			case 'spooky':
 				loadGraphic('assets/images/iconGrid.png', true, 150, 150);
 				animation.add('icon', [2, 3], 0, false, isPlayer);
@@ -45,12 +45,6 @@ class HealthIcon extends FlxSprite
 			case 'mom-car':
 				loadGraphic('assets/images/iconGrid.png', true, 150, 150);
 				animation.add('icon', [6, 7], 0, false, isPlayer);
-			case 'tankman':
-				loadGraphic('assets/images/iconGrid.png', true, 150, 150);
-				animation.add('icon', [8, 9], 0, false, isPlayer);
-			case 'face':
-				loadGraphic('assets/images/iconGrid.png', true, 150, 150);
-				animation.add('icon', [10, 11], 0, false, isPlayer);
 			case 'dad':
 				loadGraphic('assets/images/iconGrid.png', true, 150, 150);
 				animation.add('icon', [12, 13], 0, false, isPlayer);
@@ -62,7 +56,7 @@ class HealthIcon extends FlxSprite
 				animation.add('icon', [16, 16], 0, false, isPlayer);
 			case 'parents-christmas':
 				loadGraphic('assets/images/iconGrid.png', true, 150, 150);
-				animation.add('icon', [17,17], 0, false, isPlayer);
+				animation.add('icon', [17, 18], 0, false, isPlayer);
 			case 'monster':
 				loadGraphic('assets/images/iconGrid.png', true, 150, 150);
 				animation.add('icon', [19, 20], 0, false, isPlayer);
@@ -93,6 +87,16 @@ class HealthIcon extends FlxSprite
 				}
 		}
 		animation.play('icon');
+		switch(char){
+			case 'bf-pixel' | 'senpai' | 'senpai-angry' | 'spirit' | 'gf-pixel':
+				{
+
+				}
+			default:
+				{
+					antialiasing = true;
+				}
+		}
 		scrollFactor.set();
 
 	}

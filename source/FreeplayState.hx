@@ -31,6 +31,7 @@ class FreeplayState extends MusicBeatState
 	public static var soundTest:Bool = false;
 	var vocals:FlxSound;
 	var songs:Array<String> = [];
+	var bgs:Array<String> = [];
 
 	var selector:FlxText;
 	var curSelected:Int = 0;
@@ -42,7 +43,15 @@ class FreeplayState extends MusicBeatState
 	var intendedScore:Int = 0;
 	var intendedAccuracy:Float = 0;
 	var lerpAccuracy:Int = 0;
+	var bg:FlxSprite;
+	var bgInfo:Array<String> = [];
+	var bgDir:Array<String> = [];
+	var bgNames:Array<String> = [];
+	var categoryBG:Array<String> = [];
+	var categoriesNames:Array<String> = [];
 	var usingCategoryScreen:Bool = false;
+	var nightcoreMode:Bool = false;
+	var daycoreMode:Bool = false;
 	private var grpSongs:FlxTypedGroup<Alphabet>;
 	private var curPlaying:Bool = false;
 
@@ -72,8 +81,23 @@ class FreeplayState extends MusicBeatState
 			// disable auto pause. I NEED MUSIC
 			FlxG.autoPause = false;
 		}
-		var bg:FlxSprite = new FlxSprite().loadGraphic('assets/images/menuBGBlue.png');
-		add(bg);
+		#if sys
+		//commenting this out for now cuz im dumb and can't code
+		/*var bgInfo:String = CoolUtil.parseJson(Assets.getText('assets/data/freeplaySongJson.jsonc'));
+		var categories:String = CoolUtil.parseJson(Assets.getText('assets/data/freeplaySongJson.jsonc'));
+		var categoryBG:String = CoolUtil.parseJson(Assets.getText('assets/data/categories/'+categoriesNames+'/BG.json'));
+		var bgDir:String = CoolUtil.parseJson(Assets.getText('assets/images/Custom_Menu_BGs/Custom_Menu_BGs.json'));
+		trace(bgNames);
+		if (!FileSystem.exists('assets/images/Custom_Menu_BGs/'+categoryBG+'/menuBGBlue.png')) {
+			new FlxSprite().loadGraphic('assets/images/Custom_Menu_BGs/Default/menuBGBlue.png');
+			add(bg);
+		} else {
+			new FlxSprite().loadGraphic('assets/images/Custom_Menu_BGs/'+categoryBG+'menuBGBlue.png');
+			add(bg);
+		}*/
+			new FlxSprite().loadGraphic('assets/images/Custom_Menu_BGs/Default/menuBGBlue.png');
+			add(bg);
+		#end
 
 		grpSongs = new FlxTypedGroup<Alphabet>();
 		add(grpSongs);
@@ -89,6 +113,7 @@ class FreeplayState extends MusicBeatState
 			// songText.screenCenter(X);
 		}
 
+		
 		scoreText = new FlxText(FlxG.width * 0.62, 5, 0, "", 32);
 		// scoreText.autoSize = false;
 		scoreText.setFormat("assets/fonts/vcr.ttf", 32, FlxColor.WHITE, RIGHT);
@@ -196,6 +221,157 @@ class FreeplayState extends MusicBeatState
 
 		if (accepted)
 		{
+			if (nightcoreMode) {
+				if (soundTest) {
+					// play both the vocals and inst
+					// bad music >:(
+					FlxG.sound.music.stop();
+					if (vocals != null && vocals.playing)
+						vocals.stop();
+					soundTestSong = Song.loadFromJson(songs[curSelected].toLowerCase(), songs[curSelected].toLowerCase());
+					if (soundTestSong.needsVoices)
+					{
+						var vocalSound = Sound.fromFile("assets/music/" + soundTestSong.song + "-Nightcore_Voices" + TitleState.soundExt);
+						vocals = new FlxSound().loadEmbedded(vocalSound);
+						FlxG.sound.list.add(vocals);
+						vocals.play();
+						vocals.pause();
+						vocals.looped = true;
+					}
+					FlxG.sound.playMusic(Sound.fromFile("assets/music/" + soundTestSong.song + "-Nightcore_Inst" + TitleState.soundExt));
+					Conductor.mapBPMChanges(soundTestSong);
+					Conductor.changeBPM(soundTestSong.bpm);
+					if (soundTestSong.needsVoices) {
+						resyncVocals();
+					}
+	
+					
+				} else {
+					var poop:String = songs[curSelected].toLowerCase() + DifficultyIcons.getEndingFP(curDifficulty);
+					trace(poop);
+					if (!FileSystem.exists('assets/data/' + songs[curSelected].toLowerCase() + '/' + poop.toLowerCase() + '.json'))
+					{
+						// assume we pecked up the difficulty, return to default difficulty
+						trace("UH OH SONG IN SPECIFIED DIFFICULTY DOESN'T EXIST\nUSING DEFAULT DIFFICULTY");
+						poop = songs[curSelected];
+						curDifficulty = DifficultyIcons.getDefaultDiffFP();
+					}
+					trace(poop);
+	
+					PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].toLowerCase());
+					PlayState.isStoryMode = false;
+					ModifierState.isStoryMode = false;
+					PlayState.storyDifficulty = curDifficulty;
+					if (!OptionsHandler.options.skipModifierMenu)
+						FlxG.switchState(new ModifierState());
+					else
+					{
+						if (FlxG.sound.music != null)
+							FlxG.sound.music.stop();
+						FlxG.switchState(new PlayState());
+					}
+				}
+			} else if (daycoreMode) {
+				if (soundTest) {
+					// play both the vocals and inst
+					// bad music >:(
+					FlxG.sound.music.stop();
+					if (vocals != null && vocals.playing)
+						vocals.stop();
+					soundTestSong = Song.loadFromJson(songs[curSelected].toLowerCase(), songs[curSelected].toLowerCase());
+					if (soundTestSong.needsVoices)
+					{
+						var vocalSound = Sound.fromFile("assets/music/" + soundTestSong.song + "-Daycore_Voices" + TitleState.soundExt);
+						vocals = new FlxSound().loadEmbedded(vocalSound);
+						FlxG.sound.list.add(vocals);
+						vocals.play();
+						vocals.pause();
+						vocals.looped = true;
+					}
+					FlxG.sound.playMusic(Sound.fromFile("assets/music/" + soundTestSong.song + "-Daycore_Inst" + TitleState.soundExt));
+					Conductor.mapBPMChanges(soundTestSong);
+					Conductor.changeBPM(soundTestSong.bpm);
+					if (soundTestSong.needsVoices) {
+						resyncVocals();
+					}
+	
+					
+				} else {
+					var poop:String = songs[curSelected].toLowerCase() + DifficultyIcons.getEndingFP(curDifficulty);
+					trace(poop);
+					if (!FileSystem.exists('assets/data/' + songs[curSelected].toLowerCase() + '/' + poop.toLowerCase() + '.json'))
+					{
+						// assume we pecked up the difficulty, return to default difficulty
+						trace("UH OH SONG IN SPECIFIED DIFFICULTY DOESN'T EXIST\nUSING DEFAULT DIFFICULTY");
+						poop = songs[curSelected];
+						curDifficulty = DifficultyIcons.getDefaultDiffFP();
+					}
+					trace(poop);
+	
+					PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].toLowerCase());
+					PlayState.isStoryMode = false;
+					ModifierState.isStoryMode = false;
+					PlayState.storyDifficulty = curDifficulty;
+					if (!OptionsHandler.options.skipModifierMenu)
+						FlxG.switchState(new ModifierState());
+					else
+					{
+						if (FlxG.sound.music != null)
+							FlxG.sound.music.stop();
+						FlxG.switchState(new PlayState());
+					}
+				}
+			} else {
+				if (soundTest) {
+					// play both the vocals and inst
+					// bad music >:(
+					FlxG.sound.music.stop();
+					if (vocals != null && vocals.playing)
+						vocals.stop();
+					soundTestSong = Song.loadFromJson(songs[curSelected].toLowerCase(), songs[curSelected].toLowerCase());
+					if (soundTestSong.needsVoices)
+					{
+						var vocalSound = Sound.fromFile("assets/music/" + soundTestSong.song + "_Voices" + TitleState.soundExt);
+						vocals = new FlxSound().loadEmbedded(vocalSound);
+						FlxG.sound.list.add(vocals);
+						vocals.play();
+						vocals.pause();
+						vocals.looped = true;
+					}
+					FlxG.sound.playMusic(Sound.fromFile("assets/music/" + soundTestSong.song + "_Inst" + TitleState.soundExt));
+					Conductor.mapBPMChanges(soundTestSong);
+					Conductor.changeBPM(soundTestSong.bpm);
+					if (soundTestSong.needsVoices) {
+						resyncVocals();
+					}
+	
+					
+				} else {
+					var poop:String = songs[curSelected].toLowerCase() + DifficultyIcons.getEndingFP(curDifficulty);
+					trace(poop);
+					if (!FileSystem.exists('assets/data/' + songs[curSelected].toLowerCase() + '/' + poop.toLowerCase() + '.json'))
+					{
+						// assume we pecked up the difficulty, return to default difficulty
+						trace("UH OH SONG IN SPECIFIED DIFFICULTY DOESN'T EXIST\nUSING DEFAULT DIFFICULTY");
+						poop = songs[curSelected];
+						curDifficulty = DifficultyIcons.getDefaultDiffFP();
+					}
+					trace(poop);
+	
+					PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].toLowerCase());
+					PlayState.isStoryMode = false;
+					ModifierState.isStoryMode = false;
+					PlayState.storyDifficulty = curDifficulty;
+					if (!OptionsHandler.options.skipModifierMenu)
+						FlxG.switchState(new ModifierState());
+					else
+					{
+						if (FlxG.sound.music != null)
+							FlxG.sound.music.stop();
+						FlxG.switchState(new PlayState());
+					}
+				}
+			}
 			if (soundTest) {
 				// play both the vocals and inst
 				// bad music >:(
@@ -288,7 +464,7 @@ class FreeplayState extends MusicBeatState
 	function changeSelection(change:Int = 0)
 	{
 
-		FlxG.sound.play('assets/sounds/scrollMenu' + TitleState.soundExt, 0.4);
+		FlxG.sound.play('assets/sounds/custom_menu_sounds/'+CoolUtil.parseJson(File.getContent("assets/sounds/custom_menu_sounds/custom_menu_sounds.json")).customMenuScroll+'/scrollMenu' + TitleState.soundExt, 0.4);
 
 		curSelected += change;
 

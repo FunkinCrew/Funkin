@@ -28,6 +28,7 @@ class CategoryState extends MusicBeatState
 	var categories:Array<String> = [];
 	public static var choosingFor:String = "freeplay";
 	var categorySongs:Array<Array<String>> =[];
+	var categorybgs:Array<Array<String>> =[];
 	var selector:FlxText;
 	var curSelected:Int = 0;
 
@@ -37,15 +38,18 @@ class CategoryState extends MusicBeatState
 	override function create()
 	{
 		// it's a js file to make syntax highlighting acceptable
+		var epicCategoryBgJs:Array<Dynamic> = CoolUtil.parseJson(Assets.getText('assets/images/Custom_Menu_BGs/Custom_Menu_BGs.json'));
 		var epicCategoryJs:Array<Dynamic> = CoolUtil.parseJson(Assets.getText('assets/data/freeplaySongJson.jsonc'));
 		if (epicCategoryJs.length > 1 || choosingFor != "freeplay") {
 			for (category in epicCategoryJs) {
 				categories.push(category.name);
 				categorySongs.push(category.songs);
+				categorybgs.push(category.bgs);
 			}
 		} else {
 			// just set freeplay states songs to the only category
 			trace(epicCategoryJs[0].songs);
+			trace(epicCategoryJs[0].Bg);
 			FreeplayState.currentSongList = epicCategoryJs[0].songs;
 			FlxG.switchState(new FreeplayState());
 		}
