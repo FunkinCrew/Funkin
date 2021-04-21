@@ -49,6 +49,11 @@ class TankmenBG extends FlxSprite
 	{
 		super.update(elapsed);
 
+		if (x >= FlxG.width * 1.2 || x <= FlxG.width * -0.5)
+			visible = false;
+		else
+			visible = true;
+
 		if (animation.curAnim.name == 'run')
 		{
 			var endDirection:Float = (FlxG.width * 0.74) + endingOffset;

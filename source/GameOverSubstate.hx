@@ -70,6 +70,9 @@ class GameOverSubstate extends MusicBeatSubstate
 
 	override function update(elapsed:Float)
 	{
+		// makes the lerp non-dependant on the framerate
+		FlxG.camera.followLerp = CoolUtil.camLerpShit(0.01);
+
 		super.update(elapsed);
 
 		if (controls.ACCEPT)
@@ -96,7 +99,7 @@ class GameOverSubstate extends MusicBeatSubstate
 
 		if (bf.animation.curAnim.name == 'firstDeath' && bf.animation.curAnim.curFrame == 12)
 		{
-			FlxG.camera.follow(camFollow, LOCKON, 0.01);
+			FlxG.camera.follow(camFollow, LOCKON, CoolUtil.camLerpShit(0.01));
 		}
 
 		switch (PlayState.storyWeek)
@@ -111,7 +114,8 @@ class GameOverSubstate extends MusicBeatSubstate
 
 					FlxG.sound.play(Paths.sound('jeffGameover/jeffGameover-' + randomGameover), 1, false, null, true, function()
 					{
-						FlxG.sound.music.fadeIn(4, 0.2, 1);
+						if (!isEnding)
+							FlxG.sound.music.fadeIn(4, 0.2, 1);
 					});
 				}
 			default:
@@ -130,7 +134,8 @@ class GameOverSubstate extends MusicBeatSubstate
 
 	private function coolStartDeath(?vol:Float = 1):Void
 	{
-		FlxG.sound.playMusic(Paths.music('gameOver' + stageSuffix), vol);
+		if (!isEnding)
+			FlxG.sound.playMusic(Paths.music('gameOver' + stageSuffix), vol);
 	}
 
 	override function beatHit()
