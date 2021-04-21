@@ -64,6 +64,8 @@ class ModifierState extends MusicBeatState
 				{name: "Invs Notes", value: false, conflicts: [10,14,16], multi: 1.5},
 				{name: "Snake Notes", value: false, conflicts: [15], multi: 0.5},
 				{name: "Drunk Notes", value: false, conflicts: [15], multi: 0.5},
+				{name: "Daycore Mode", value: false, conflicts: [19], multi: -0.5},
+				{name: "Nightcore Mode", value: false, conflicts: [18], multi: 2},
 				// just causes the game to instant restart, doesn't really do much to help
 				{name: "Stuck in a loop", value: false, conflicts: [2], multi: 0},
 				{name: "Chart", value: false, conflicts: [], multi: 1, times:true},
@@ -112,7 +114,7 @@ class ModifierState extends MusicBeatState
 	function changeSelection(change:Int = 0)
 	{
 
-		FlxG.sound.play('assets/sounds/scrollMenu' + TitleState.soundExt, 0.4);
+		FlxG.sound.play('assets/sounds/custom_menu_sounds/'+CoolUtil.parseJson(File.getContent("assets/sounds/custom_menu_sounds/custom_menu_sounds.json")).customMenuScroll+'/scrollMenu' + TitleState.soundExt, 0.4);
 
 		curSelected += change;
 

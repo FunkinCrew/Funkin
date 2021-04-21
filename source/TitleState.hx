@@ -24,6 +24,15 @@ import lime.app.Application;
 import openfl.Assets;
 import polymod.Polymod;
 import haxe.Json;
+#if sys
+import sys.io.File;
+import haxe.io.Path;
+import openfl.utils.ByteArray;
+import lime.media.AudioBuffer;
+import flash.media.Sound;
+import sys.FileSystem;
+import Song.SwagSong;
+#end
 import tjson.TJSON;
 using StringTools;
 
@@ -42,6 +51,11 @@ class TitleState extends MusicBeatState
 	var wackyEndBeat:Int = 0;
 	var wackyImage:FlxSprite;
 	var coolDudes:Array<String> = [];
+	var name_1:Array<String> = [];
+	var name_2:Array<String> = [];
+	var name_3:Array<String> = [];
+	var customMenuConfirm: Array<Array<String>>;
+	var customMenuScroll: Array<Array<String>>;
 	override public function create():Void
 	{
 		Polymod.init({modRoot: "mods", dirs: ['introMod']});
@@ -50,7 +64,6 @@ class TitleState extends MusicBeatState
 		PlayerSettings.init();
 
 		curWacky = FlxG.random.getObject(getIntroTextShit());
-
 		// DEBUG BULLSHIT
 
 		super.create();
@@ -84,7 +97,6 @@ class TitleState extends MusicBeatState
 	var gfDance:FlxSprite;
 	var danceLeft:Bool = false;
 	var titleText:FlxSprite;
-
 	function startIntro()
 	{
 		if (!initialized)
@@ -109,7 +121,7 @@ class TitleState extends MusicBeatState
 			// music.loadStream('assets/music/freakyMenu' + TitleState.soundExt);
 			// FlxG.sound.list.add(music);
 			// music.play();
-			FlxG.sound.playMusic('assets/music/freakyMenu' + TitleState.soundExt, 0);
+			FlxG.sound.playMusic('assets/music/custom_menu_music/'+CoolUtil.parseJson(File.getContent("assets/music/custom_menu_music/custom_menu_music.json")).Menu+'/freakyMenu' + TitleState.soundExt, 0);
 
 			FlxG.sound.music.fadeIn(4, 0, 0.7);
 		}
@@ -132,6 +144,7 @@ class TitleState extends MusicBeatState
 		// logoBl.screenCenter();
 		// logoBl.color = FlxColor.BLACK;
 
+		
 		gfDance = new FlxSprite(FlxG.width * 0.4, FlxG.height * 0.07);
 		gfDance.frames = FlxAtlasFrames.fromSparrow('assets/images/gfDanceTitle.png', 'assets/images/gfDanceTitle.xml');
 		gfDance.animation.addByIndices('danceLeft', 'gfDance', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
@@ -244,7 +257,7 @@ class TitleState extends MusicBeatState
 			titleText.animation.play('press');
 
 			FlxG.camera.flash(FlxColor.WHITE, 1);
-			FlxG.sound.play('assets/sounds/confirmMenu' + TitleState.soundExt, 0.7);
+			FlxG.sound.play('assets/sounds/custom_menu_sounds/'+CoolUtil.parseJson(File.getContent("assets/sounds/custom_menu_sounds/custom_menu_sounds.json")).customMenuConfirm+'/confirmMenu' + TitleState.soundExt, 0.7);
 
 			transitioning = true;
 			// FlxG.sound.music.stop();
@@ -374,11 +387,11 @@ class TitleState extends MusicBeatState
 					case 1:
 						deleteCoolText();
 					case 2:
-						addMoreText('Friday');
+						addMoreText(CoolUtil.parseJson(File.getContent("assets/data/gameInfo.json")).name_1);
 					case 3:
-						addMoreText('Night');
+						addMoreText(CoolUtil.parseJson(File.getContent("assets/data/gameInfo.json")).name_2);
 					case 4:
-						addMoreText('Funkin');
+						addMoreText(CoolUtil.parseJson(File.getContent("assets/data/gameInfo.json")).name_3);
 					case 5:
 						skipIntro();
 				}

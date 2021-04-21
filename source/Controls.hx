@@ -87,6 +87,7 @@ enum Control
 enum KeyboardScheme
 {
 	Solo;
+	Djfk;
 	Duo(first:Bool);
 	None;
 	Custom;
@@ -515,6 +516,30 @@ class Controls extends FlxActionSet
 		switch (scheme)
 		{
 			case Solo:
+				inline bindKeys(Control.UP, [W, FlxKey.UP, J]);
+				inline bindKeys(Control.DOWN, [S, FlxKey.DOWN, F]);
+				inline bindKeys(Control.LEFT, [A, FlxKey.LEFT, D]);
+				inline bindKeys(Control.RIGHT, [FlxKey.RIGHT, K]);
+				inline bindKeys(Control.ACCEPT, [Z, SPACE, ENTER]);
+				inline bindKeys(Control.BACK, [BACKSPACE, ESCAPE]);
+				inline bindKeys(Control.PAUSE, [P, ENTER, ESCAPE]);
+				inline bindKeys(Control.RESET, [R]);
+				inline bindKeys(Control.SECONDARY, [E]);
+				inline bindKeys(Control.TERTIARY,[Q]);
+
+			case Djfk:
+				inline bindKeys(Control.UP, [FlxKey.UP, J]);
+				inline bindKeys(Control.DOWN, [FlxKey.DOWN, F]);
+				inline bindKeys(Control.LEFT, [FlxKey.LEFT, D]);
+				inline bindKeys(Control.RIGHT, [FlxKey.RIGHT, K]);
+				inline bindKeys(Control.ACCEPT, [Z, SPACE, ENTER]);
+				inline bindKeys(Control.BACK, [BACKSPACE, ESCAPE]);
+				inline bindKeys(Control.PAUSE, [P, ENTER, ESCAPE]);
+				inline bindKeys(Control.RESET, [R]);
+				inline bindKeys(Control.SECONDARY, [E]);
+				inline bindKeys(Control.TERTIARY,[Q]);
+			
+			case Duo(true):
 				inline bindKeys(Control.UP, [W, FlxKey.UP, K]);
 				inline bindKeys(Control.DOWN, [S, FlxKey.DOWN, J]);
 				inline bindKeys(Control.LEFT, [A, FlxKey.LEFT, H]);
@@ -525,18 +550,6 @@ class Controls extends FlxActionSet
 				inline bindKeys(Control.RESET, [R]);
 				inline bindKeys(Control.SECONDARY, [E]);
 				inline bindKeys(Control.TERTIARY,[Q]);
-			
-			case Duo(true):
-				inline bindKeys(Control.UP, [W]);
-				inline bindKeys(Control.DOWN, [S]);
-				inline bindKeys(Control.LEFT, [A]);
-				inline bindKeys(Control.RIGHT, [D]);
-				inline bindKeys(Control.ACCEPT, [G, Z]);
-				inline bindKeys(Control.BACK, [H, X]);
-				inline bindKeys(Control.PAUSE, [ONE]);
-				inline bindKeys(Control.RESET, [R]);
-				inline bindKeys(Control.SECONDARY, [E]);
-				inline bindKeys(Control.TERTIARY, [Q]);
 			case Duo(false):
 				inline bindKeys(Control.UP, [FlxKey.UP]);
 				inline bindKeys(Control.DOWN, [FlxKey.DOWN]);
@@ -549,7 +562,17 @@ class Controls extends FlxActionSet
 				inline bindKeys(Control.SECONDARY, [BACKSLASH]);
 				inline bindKeys(Control.TERTIARY, [RBRACKET]);
 			case None: // nothing
-			case Custom: // nothing
+			case Custom:
+				inline bindKeys(Control.UP, [W, FlxKey.UP, J]);
+				inline bindKeys(Control.DOWN, [S, FlxKey.DOWN, F]);
+				inline bindKeys(Control.LEFT, [A, FlxKey.LEFT, D]);
+				inline bindKeys(Control.RIGHT, [FlxKey.RIGHT, K]);
+				inline bindKeys(Control.ACCEPT, [Z, SPACE, ENTER]);
+				inline bindKeys(Control.BACK, [BACKSPACE, ESCAPE]);
+				inline bindKeys(Control.PAUSE, [P, ENTER, ESCAPE]);
+				inline bindKeys(Control.RESET, [R]);
+				inline bindKeys(Control.SECONDARY, [E]);
+				inline bindKeys(Control.TERTIARY,[Q]);
 		}
 		#else
 		switch (scheme)
@@ -559,6 +582,15 @@ class Controls extends FlxActionSet
 				bindKeys(Control.DOWN, [S, FlxKey.DOWN, J]);
 				bindKeys(Control.LEFT, [A, FlxKey.LEFT, H]);
 				bindKeys(Control.RIGHT, [D, FlxKey.RIGHT, L]);
+				bindKeys(Control.ACCEPT, [Z, SPACE, ENTER]);
+				bindKeys(Control.BACK, [BACKSPACE, ESCAPE]);
+				bindKeys(Control.PAUSE, [P, ENTER, ESCAPE]);
+				bindKeys(Control.RESET, [R]);
+			case Djfk:
+				bindKeys(Control.UP, [W, FlxKey.UP, J]);
+				bindKeys(Control.DOWN, [S, FlxKey.DOWN, F]);
+				bindKeys(Control.LEFT, [A, FlxKey.LEFT, D]);
+				bindKeys(Control.RIGHT, [D, FlxKey.RIGHT, K]);
 				bindKeys(Control.ACCEPT, [Z, SPACE, ENTER]);
 				bindKeys(Control.BACK, [BACKSPACE, ESCAPE]);
 				bindKeys(Control.PAUSE, [P, ENTER, ESCAPE]);
