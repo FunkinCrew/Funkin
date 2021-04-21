@@ -2086,6 +2086,8 @@ class PlayState extends MusicBeatState
 			FlxG.switchState(new Charting()); */
 
 		#if debug
+		if (FlxG.keys.justPressed.ONE)
+			endSong();
 		if (FlxG.keys.justPressed.EIGHT)
 		{
 			/* 	 8 for opponent char
@@ -2342,11 +2344,6 @@ class PlayState extends MusicBeatState
 
 		if (!inCutscene)
 			keyShit();
-
-		#if debug
-		if (FlxG.keys.justPressed.ONE)
-			endSong();
-		#end
 	}
 
 	function killCombo():Void
