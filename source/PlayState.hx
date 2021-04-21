@@ -1425,10 +1425,15 @@ class PlayState extends MusicBeatState
 		/* if (FlxG.keys.justPressed.NINE)
 			FlxG.switchState(new Charting()); */
 
-		#if debug
 		if (FlxG.keys.justPressed.EIGHT)
+		{
 			FlxG.switchState(new AnimationDebug(SONG.player2));
-		#end
+		}
+				
+		if (FlxG.keys.justPressed.SIX)
+		{
+			FlxG.switchState(new AnimationDebug(SONG.player1));
+		}
 
 		if (startingSong)
 		{
@@ -1852,7 +1857,7 @@ class PlayState extends MusicBeatState
 
 		comboSpr.velocity.x += FlxG.random.int(1, 10);
 		add(rating);
-
+		add(comboSpr);
 		if (!curStage.startsWith('school'))
 		{
 			rating.setGraphicSize(Std.int(rating.width * 0.7));
