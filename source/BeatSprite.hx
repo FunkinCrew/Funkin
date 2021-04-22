@@ -5,10 +5,12 @@ import flixel.FlxSprite;
  */
 class BeatSprite extends FlxSprite {
     var danceDir : Bool = false;
+    public var danceBeat : Int = 1;
     public var shouldDance : Bool = false;
-    public function new (x : Float, y : Float, shouldDanceVar : Bool = false) {
+    public function new (x : Float, y : Float, shouldDanceVar : Bool = false, danceBeatVar : Int = 1) {
         super(x, y);
         shouldDance = shouldDanceVar;
+        danceBeat = danceBeatVar;
     }
     public function dance():Void {
         // if character doesn't have dance anim, don't dance

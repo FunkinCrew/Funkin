@@ -1,6 +1,7 @@
 package;
 import flixel.group.FlxGroup.FlxTypedGroup;
-
+import haxe.ds.Either;
+import flixel.FlxG;
 using StringTools;
 /**
  * Nice converter to convert funkin objects to regular objects
@@ -12,7 +13,7 @@ class FunkinUtility {
                 sprite.loadGraphic(funkee.graphic);
             }
         }
-        var realSprite : BeatSprite = new BeatSprite(funkin.x, funkin.y, false);
+        var realSprite : BeatSprite = new BeatSprite(funkin.x, funkin.y, funkin.canDance);
         if (funkin.graphic != null) {
             graphicCallback(realSprite, funkin);
         }
@@ -55,6 +56,38 @@ class FunkinUtility {
 
         return group;
     }
+    // thank you unions for being cool
+    static function calculateFunkinInt(funkinint:FunkinInt) : Int {
+        switch funkinint.type() {
+            case Int(i):
+                return i;
+            case FunkinRandomInt(f):
+                return FlxG.random.int(f.min, f.max);
+            case Null:
+                return 0;
+            default:
+                return 0;
+        }
+    }
+    static function executeFunktionOn(object:Dynamic, funktion : Funktion) : Null<Dynamic> {
+        var operators = funktion.operations;
+        for (operat in operators) {
+            switch (operat.field) {
+                case "return":
+                    // return the function now, with the value if specified
+                    if (operat.value != null) {
+                        return operat.value;
+                    } else {
+                        return null;
+                    }
+                default: 
+                    if (Reflect.hasField(object, operat.field) && operat.value != null) {
+                        Reflect.setProperty(object, operat.field, operat.value);
+                    }
+            }
+        }
+        return null;
+    }
  }
 /**
  * type used with json2object to make custom stages easier. includes all required members of a sprite
@@ -79,34 +112,62 @@ typedef FunkinSprite = {
     var scale : Int;
     @:default(false) @:optional
     var canDance : Bool;
+    @:default(1) @:optional
+    var beatmulti : Int;
+    @:optional
+    var event : SpecialEvent;
 }
+typedef LegalStageObject = Union3<FunkinSprite, IndexedSpriteGroup, OffsetSpriteGroup>;
 typedef StageGroup = {
     @:default("default")
     var name : String;
-    var sprites : Array<Union3<FunkinSprite, IndexedSpriteGroup, OffsetSpriteGroup>>;
+    var sprites : Array<LegalStageObject>;
+}
+/**
+ * A special type of int that can be either a regular int or a random int. Random
+ * is (usually) calculated whenever it is needed, and not constant. 
+ */
+typedef FunkinInt = Union<Int, FunkinRandomInt>;
+/**
+ * Base type for groups that use only one sprite as a reference. This doesn't mean the graphic is the same,
+ * it just means most things are similar between sprites.
+ */
+typedef CloneFunkinGroup = {
+    var sprite : FunkinSprite;
+    @:optional
+    var event : SpecialEvent;
+}
+/**
+ * A generic group, all it does is render sprites normally. Good for organization
+ * although will probably impact preformance
+ */
+typedef FunkinGroup = {
+    var sprites : Array<FunkinSprite>;
+    @:optional
+    var event : SpecialEvent;
 }
 /**
  * a sprite group that indexes each sprite. all sprites share the same values except the graphic,
  * which does a special file replacement. format of string is "blahblah${n}" and ${n} will be replaced
- * with a number
+ * with a number. Makes all but 1 invisible. 
  */
 typedef IndexedSpriteGroup = {
+    > CloneFunkinGroup,
     var file : String;
     var copies : Int;
-    var sprite : FunkinSprite;
 }
 /**
  * A sprite group that offsets on x/y based on a multiple of a value + a starting position. 
  * Used for the dancing demons on the limo stage
  */
 typedef OffsetSpriteGroup = {
+    > CloneFunkinGroup,
     @:default(0.0)
     var multiX : Float;
     @:default(0.0)
     var multiY : Float;
     @:default(1)
     var copies : Int;
-    var sprite : FunkinSprite;
 }
 typedef AnimationObject = {
     var prefix : String;
@@ -116,4 +177,51 @@ typedef AnimationObject = {
     var loop : Bool;
     @:default(24) @:optional
     var fps : Int;
-} 
+}
+/**
+ * Special events, animations, etc, that happen on beats. 
+ */
+typedef SpecialEvent = {
+    @:default(true) 
+    var onbeat : Bool;
+    // this will probably act weird, as it will be calculated every beat if it is random
+    @:default(1)
+    var beatmulti : FunkinInt;
+    // these ones are mostly used for lightning strike. 
+    @:default(false) @:optional
+    var onbool : Bool;
+    @:default(1)
+    var beatoffset : Int;
+    @:default(10)
+    var rollchance : Float;
+    // What to execute. Referenced from the actual sprite, if it exists. 
+    @:alias("function") var funkinfunction : Funktion;
+}
+
+/**
+ * Random Integer, in json form. 
+ */
+typedef FunkinRandomInt = {
+    @:default(0)
+    var min : Int;
+    @:default(1)
+    var max : Int;
+}
+/**
+ * A json based function that isn't as versitile as haxe, but allows manipulation of the sprite.
+ * 
+ */
+ typedef Funktion = {
+    var operations : Array<FunkinExpression>;
+ }
+/**
+ * A json based expression, used to operate on sprites. Used in Funktion.
+ */
+ typedef FunkinExpression = {
+     var field : String;
+     // dynamic because it could be anything. will have to mess with casting to make sure it is proper
+     // yes this means you will have to know FlxSprite names. Too Bad!
+     // it's optional because there are some special cases, like return.
+     @:optional
+     var value : Dynamic;
+ }
