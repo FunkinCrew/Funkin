@@ -1,21 +1,33 @@
 package;
 import flixel.group.FlxGroup.FlxTypedGroup;
-import haxe.ds.Either;
 import flixel.FlxG;
+import flixel.graphics.frames.FlxAtlasFrames;
 using StringTools;
 /**
  * Nice converter to convert funkin objects to regular objects
  */
 class FunkinUtility {
-    static function convertFunkinSprite(funkin: FunkinSprite, ?graphicCallback:(BeatSprite, FunkinSprite)->Void) : BeatSprite {
+    static function convertFunkinSprite(funkin: FunkinSprite, ?graphicCallback:(BeatSprite, FunkinSprite)->Void, ?animCallback:(BeatSprite,FunkinSprite)->Void) : BeatSprite {
         if (graphicCallback == null) {
             graphicCallback = function(sprite : BeatSprite, funkee : FunkinSprite) : Void {
-                sprite.loadGraphic(funkee.graphic);
+                sprite.loadGraphic(funkee.graphic + '.png');
+            }
+        }
+        if (animCallback == null) {
+            animCallback = function(sprite:BeatSprite, funkee : FunkinSprite) : Void {
+                // if animation e
+                var tex = FlxAtlasFrames.fromSparrow(funkee.graphic + '.png', funkee.graphic + '.xml');
+                sprite.frames = tex;
             }
         }
         var realSprite : BeatSprite = new BeatSprite(funkin.x, funkin.y, funkin.canDance);
         if (funkin.graphic != null) {
-            graphicCallback(realSprite, funkin);
+            
+			if (funkin.animation != null) {
+                animCallback(realSprite, funkin);
+            } else {
+				graphicCallback(realSprite, funkin);
+            }
         }
         realSprite.antialiasing = funkin.antialiasing;
         realSprite.flipX = funkin.flipX;
@@ -48,9 +60,16 @@ class FunkinUtility {
         var group : FlxTypedGroup<BeatSprite> = new FlxTypedGroup<BeatSprite>();
         for (i in 0...indexgroup.copies) {
             var callback = function (sprite : BeatSprite, funkin : FunkinSprite) {
-                sprite.loadGraphic(indexgroup.file.replace("${n}", Std.string(i)));
+                sprite.loadGraphic(indexgroup.file.replace("${n}", Std.string(i)) + '.png');
             }
-            var sprite : BeatSprite = convertFunkinSprite(indexgroup.sprite, callback);
+			var animCallback = function(sprite:BeatSprite, funkee:FunkinSprite):Void
+			{
+				// if animation e
+				var tex = FlxAtlasFrames.fromSparrow(indexgroup.file.replace("${n}", Std.string(i)) + '.png',
+					indexgroup.file.replace("${n}", Std.string(i)) + '.xml');
+				sprite.frames = tex;
+			}
+            var sprite : BeatSprite = convertFunkinSprite(indexgroup.sprite, callback, animCallback);
 			group.add(sprite);
         }
 
@@ -69,9 +88,20 @@ class FunkinUtility {
                 return 0;
         }
     }
-    static function executeFunktionOn(object:Dynamic, funktion : Funktion) : Null<Dynamic> {
+    static function executeFunktionOn(object:Dynamic, funktion : Funktion, boyfriend : Character, gf : Character, dad : Character) : Null<Dynamic> {
         var operators = funktion.operations;
+        var currentobject : Dynamic = object;
         for (operat in operators) {
+            switch (operat.useon) {
+                case "boyfriend" | "bf" :
+                    currentobject = boyfriend;
+                case "girlfriend" | "gf":
+                    currentobject = gf;
+                case "dad":
+                    currentobject = dad;
+                default:
+                    currentobject = object;
+            }
             switch (operat.field) {
                 case "return":
                     // return the function now, with the value if specified
@@ -80,9 +110,11 @@ class FunkinUtility {
                     } else {
                         return null;
                     }
+                case "play_anim":
+					currentobject.animation.play(operat.value);
                 default: 
-                    if (Reflect.hasField(object, operat.field) && operat.value != null) {
-                        Reflect.setProperty(object, operat.field, operat.value);
+					if (Reflect.hasField(currentobject, operat.field) && operat.value != null) {
+						Reflect.setProperty(currentobject, operat.field, operat.value);
                     }
             }
         }
@@ -105,6 +137,8 @@ typedef FunkinSprite = {
     @:optional
     var animation : Array<AnimationObject>;
     @:optional
+    // path relative to the main fnf folder. expected to have no file ending, and
+    // png files and xml files are only types supported.
     var graphic : String;
     @:default(false) @:optional
     var antialiasing : Bool;
@@ -171,6 +205,7 @@ typedef OffsetSpriteGroup = {
 }
 typedef AnimationObject = {
     var prefix : String;
+    @:optional
     var indices : Array<Int>;
     var name : String;
     @:default(false) @:optional
@@ -191,7 +226,7 @@ typedef SpecialEvent = {
     @:default(false) @:optional
     var onbool : Bool;
     @:default(1)
-    var beatoffset : Int;
+    var beatoffset : FunkinInt;
     @:default(10)
     var rollchance : Float;
     // What to execute. Referenced from the actual sprite, if it exists. 
@@ -224,4 +259,11 @@ typedef FunkinRandomInt = {
      // it's optional because there are some special cases, like return.
      @:optional
      var value : Dynamic;
+     @:optional
+     // who to use on. if not included presumes it is just ourselves.
+     // can be a value of boyfriend, girlfriend
+     var useon : String;
  }
+typedef Stage = {
+    var stages : Array<StageGroup>;
+}

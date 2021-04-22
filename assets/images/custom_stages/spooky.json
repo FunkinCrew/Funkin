@@ -1,0 +1,53 @@
+{
+    "stages": [
+        {
+            "name": "default",
+            "sprites": [
+                {
+                    "x": -200,
+                    "y": -100,
+                    "graphic": "assets/images/halloween_bg",
+                    "animation": [
+                        {
+                            "name": "idle",
+                            "prefix": "halloweem bg0"
+                        },
+                        {
+                            "name": "lightning",
+                            "prefix": "halloweem bg lightning strike",
+                            "fps": 24,
+                            "loop": false
+                        }
+                    ],
+                    "event": {
+                        "onbeat": false,
+                        "onbool": true,
+                        "beatoffset": {
+                            "min": 8,
+                            "max": 24
+                        },
+                        "rollchance": 10,
+                        "function": {
+                            "operations": [
+                                {
+                                    "field": "play_anim",
+                                    "value": "lightning"
+                                },
+                                {
+                                    "field": "play_anim",
+                                    "value": "scared",
+                                    "useon": "bf"
+                                },
+                                {
+                                    "field" : "play_anim",
+                                    "value" : "scared",
+                                    "useon": "gf"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

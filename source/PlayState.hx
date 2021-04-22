@@ -10,6 +10,7 @@ import flixel.FlxGame;
 import flixel.FlxObject;
 import DifficultyIcons;
 import flixel.FlxSprite;
+import flixel.FlxBasic;
 import flixel.FlxState;
 import flixel.FlxSubState;
 import flash.display.BitmapData;
@@ -109,7 +110,8 @@ class PlayState extends MusicBeatState
 	var phillyCityLights:FlxTypedGroup<FlxSprite>;
 	var phillyTrain:FlxSprite;
 	var trainSound:FlxSound;
-
+	// this'll work... right?
+	var backgroundgroup:FlxTypedGroup<FlxBasic>;
 	var limo:FlxSprite;
 	var grpLimoDancers:FlxTypedGroup<BackgroundDancer>;
 	var fastCar:FlxSprite;
@@ -582,6 +584,16 @@ class PlayState extends MusicBeatState
 		} else {
 			// use assets
 			var parsedStageJson = CoolUtil.parseJson(Assets.getText("assets/images/custom_stages/custom_stages.json"));
+			var parsedFuckeeJson:FunkinUtility.Stage = new json2object.JsonParser<FunkinUtility.Stage>().fromJson(File.getContent("assets/images/custom_stages/"
+				+ Reflect.field(parsedStageJson, SONG.stage) + ".json"),
+				"assets/images/custom_stages/"
+				+ Reflect.field(parsedStageJson, SONG.stage)
+				+ ".json");
+			// now we must read the file properly. Oh dear. 
+			for (stage in parsedFuckeeJson.stages) {
+
+			}
+			/*
 			switch (Reflect.field(parsedStageJson, SONG.stage)) {
 				case 'stage':
 					defaultCamZoom = 0.9;
@@ -1133,7 +1145,7 @@ class PlayState extends MusicBeatState
 					bg.scrollFactor.set(0.8, 0.9);
 					bg.scale.set(6, 6);
 					add(bg);
-			}
+			} */
 		}
 
 		var gfVersion:String = 'gf';
