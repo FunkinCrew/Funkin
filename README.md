@@ -41,6 +41,7 @@ hscript
 flixel-ui
 tjson
 json2object
+uniontypes
 ```
 
 So for each of those type `haxelib install [library]` so shit like `haxelib install hscript`
