@@ -1,15 +1,20 @@
 package;
-import flixel.graphics.FlxGraphic;
-import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
+
+using StringTools;
 /**
  * Nice converter to convert funkin objects to regular objects
  */
 class FunkinUtility {
-    static function convertFunkinSprite(funkin: FunkinSprite) : BeatSprite {
+    static function convertFunkinSprite(funkin: FunkinSprite, ?graphicCallback:(BeatSprite, FunkinSprite)->Void) : BeatSprite {
+        if (graphicCallback == null) {
+            graphicCallback = function(sprite : BeatSprite, funkee : FunkinSprite) : Void {
+                sprite.loadGraphic(funkee.graphic);
+            }
+        }
         var realSprite : BeatSprite = new BeatSprite(funkin.x, funkin.y, false);
         if (funkin.graphic != null) {
-            realSprite.loadGraphic(funkin.graphic);
+            graphicCallback(realSprite, funkin);
         }
         realSprite.antialiasing = funkin.antialiasing;
         realSprite.flipX = funkin.flipX;
@@ -30,26 +35,27 @@ class FunkinUtility {
     static function convertOffsetGroup(offsetgroup :OffsetSpriteGroup) : FlxTypedGroup<BeatSprite> {
         var group : FlxTypedGroup<BeatSprite> = new FlxTypedGroup<BeatSprite>();
         for (i in 0...offsetgroup.copies) {
-            var sprite : BeatSprite = new BeatSprite(offsetgroup.sprite.x, offsetgroup.sprite.y);
-			sprite.antialiasing = offsetgroup.sprite.antialiasing;
-			sprite.flipX = offsetgroup.sprite.flipX;
-			sprite.flipY = offsetgroup.sprite.flipY;
-			sprite.setGraphicSize(Std.int(offsetgroup.sprite.scale * sprite.width));
-            sprite.updateHitbox();
-			if (offsetgroup.sprite.animation != null) {
-				for (anim in offsetgroup.sprite.animation) {
-                    if (anim.indices != null) {
-                        sprite.animation.addByIndices(anim.name, anim.prefix, anim.indices, "", anim.fps, anim.loop);
-                    } else {
-                        sprite.animation.addByPrefix(anim.name, anim.prefix, anim.fps, anim.loop);
-                    }
-                }
-            }
+
+            var sprite : BeatSprite = convertFunkinSprite(offsetgroup.sprite);
+            sprite.x += i * offsetgroup.multiX;
+            sprite.y += i * offsetgroup.multiY;
             group.add(sprite);
         }
         return group;
     }
-}
+    static function convertIndexGroup(indexgroup:IndexedSpriteGroup) : FlxTypedGroup<BeatSprite> {
+        var group : FlxTypedGroup<BeatSprite> = new FlxTypedGroup<BeatSprite>();
+        for (i in 0...indexgroup.copies) {
+            var callback = function (sprite : BeatSprite, funkin : FunkinSprite) {
+                sprite.loadGraphic(indexgroup.file.replace("${n}", Std.string(i)));
+            }
+            var sprite : BeatSprite = convertFunkinSprite(indexgroup.sprite, callback);
+			group.add(sprite);
+        }
+
+        return group;
+    }
+ }
 /**
  * type used with json2object to make custom stages easier. includes all required members of a sprite
  **/ 
@@ -71,6 +77,8 @@ typedef FunkinSprite = {
     var antialiasing : Bool;
     @:default(1) @:optional
     var scale : Int;
+    @:default(false) @:optional
+    var canDance : Bool;
 }
 typedef StageGroup = {
     @:default("default")
@@ -84,6 +92,7 @@ typedef StageGroup = {
  */
 typedef IndexedSpriteGroup = {
     var file : String;
+    var copies : Int;
     var sprite : FunkinSprite;
 }
 /**
@@ -91,10 +100,6 @@ typedef IndexedSpriteGroup = {
  * Used for the dancing demons on the limo stage
  */
 typedef OffsetSpriteGroup = {
-    @:default(0.0)
-    var defaultX : Float;
-    @:default(0.0)
-    var defaultY : Float;
     @:default(0.0)
     var multiX : Float;
     @:default(0.0)
