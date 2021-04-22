@@ -128,6 +128,10 @@
 	<haxelib name="newgrounds"/>
 	<haxelib name="hxcpp-debug-server" if="desktop debug"/>
 	
+	<!-- swf stufffff -->
+	<haxelib name="swf"/>
+	<library path="assets/tanky.swf" preload="true"/>
+	
 	<!-- <haxelib name="flixel-animate" /> -->
 	<!-- <haxelib name="spinehaxe" /> -->
 	<!-- https://github.com/ninjamuffin99/Flixel-Animate-Atlas-Player -->
