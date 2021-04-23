@@ -3881,7 +3881,15 @@ class PlayState extends MusicBeatState
 			// Conductor.changeBPM(SONG.bpm);
 
 			// Dad doesnt interupt his own notes
-			if (SONG.notes[Math.floor(curStep / 16)].mustHitSection)
+			
+			// Commented out until a reason to bring this back arises in the future
+			/* if (SONG.notes[Math.floor(curStep / 16)].mustHitSection)
+				dad.dance(); */
+			
+			if(dad.animation.curAnim.name.startsWith('sing'))
+				if(dad.animation.finished)
+					dad.dance();
+			else
 				dad.dance();
 		}
 		// FlxG.log.add('change bpm' + SONG.notes[Std.int(curStep / 16)].changeBPM);
