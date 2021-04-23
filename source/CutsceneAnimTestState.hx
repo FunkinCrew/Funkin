@@ -11,6 +11,8 @@ import flixel.util.FlxColor;
 import openfl.Assets;
 import openfl.display.BitmapData;
 import openfl.display.MovieClip;
+import openfl.geom.Matrix;
+import openfl.geom.Rectangle;
 
 class CutsceneAnimTestState extends FlxState
 {
@@ -35,11 +37,12 @@ class CutsceneAnimTestState extends FlxState
 		add(debugTxt);
 
 		clip = Assets.getMovieClip("tanky:");
-		clip.x = FlxG.width/2;
-		clip.y = FlxG.height/2;
+		//clip.x = FlxG.width/2;
+		//clip.y = FlxG.height/2;
 		FlxG.stage.addChild(clip);
 
 		funnySprite.x = FlxG.width/2;
+		funnySprite.y = FlxG.height/2;
 		add(funnySprite);
 
 	}
@@ -48,8 +51,17 @@ class CutsceneAnimTestState extends FlxState
 	{
 		super.update(elapsed);
 
-		var funnyBmp:BitmapData = new BitmapData(FlxG.width, FlxG.height, true, 0x00000000);
-		funnyBmp.draw(clip, clip.transform.matrix, true);
+		// jam sprite into top left corner
+		var drawMatrix:Matrix = clip.transform.matrix;
+		var bounds:Rectangle = clip.getBounds(null);
+		drawMatrix.tx = -bounds.x;
+		drawMatrix.ty = -bounds.y;
+		// make bitmapdata only as big as it needs to be
+		var funnyBmp:BitmapData = new BitmapData(Math.ceil(bounds.width), Math.ceil(bounds.height), true, 0x00000000);
+		funnyBmp.draw(clip, drawMatrix, true);
 		funnySprite.loadGraphic(funnyBmp);
+		// jam sprite back into place lol
+		funnySprite.offset.x = -bounds.x;
+		funnySprite.offset.y = -bounds.y;
 	}
 }
