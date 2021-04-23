@@ -6,7 +6,7 @@
                 {
                     "x": -200,
                     "y": -100,
-                    "graphic": "assets/images/halloween_bg",
+                    "graphic": "halloween_bg",
                     "animation": [
                         {
                             "name": "idle",
@@ -20,11 +20,15 @@
                         }
                     ],
                     "event": {
-                        "beatmulti": 12,
+                        "beatmulti": 16,
                         "function": {
                             "operations": [
                                 {
                                     "field": "play_anim",
+                                    "value": "lightning"
+                                },
+                                {
+                                    "field": "play_sound",
                                     "value": "lightning"
                                 },
                                 {

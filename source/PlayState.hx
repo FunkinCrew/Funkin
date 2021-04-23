@@ -111,11 +111,9 @@ class PlayState extends MusicBeatState
 	var phillyTrain:FlxSprite;
 	var trainSound:FlxSound;
 	// this'll work... right?
-	var backgroundgroup:FlxTypedGroup<FlxBasic>;
-	var functionreference:Array<FunkinUtility.SpecialEvent> = [];
-	var spritedata:Array<FunkinUtility.SpriteData> = [];
-	var eventdata:Array<FunkinUtility.EventData> = [];
-	var funkinsprites:Array<FunkinUtility.LegalStageObject> = [];
+	var backgroundgroup:FlxTypedGroup<BeatSprite>;
+	var foregroundgroup:FlxTypedGroup<BeatSprite>;
+
 	var limo:FlxSprite;
 	var grpLimoDancers:FlxTypedGroup<BackgroundDancer>;
 	var fastCar:FlxSprite;
@@ -227,7 +225,8 @@ class PlayState extends MusicBeatState
 
 		Conductor.mapBPMChanges(SONG);
 		Conductor.changeBPM(SONG.bpm);
-		backgroundgroup = new FlxTypedGroup<FlxBasic>();
+		backgroundgroup = new FlxTypedGroup<BeatSprite>();
+		foregroundgroup  = new FlxTypedGroup<BeatSprite>();
 		switch (SONG.song.toLowerCase())
 		{
 			default:
@@ -597,37 +596,22 @@ class PlayState extends MusicBeatState
 			// todo
 			for (stage in parsedFuckeeJson.stages) {
 				if (stage.name == "default") {
-					var i = 0;
 					for (sprite in stage.sprites) {
-						switch (sprite.type()) {
-							case TFunkinSprite(f):
-								var coolsprite:BeatSprite = FunkinUtility.convertFunkinSprite(f);
-								functionreference.push(f.event);
-								spritedata.push({"eventindex": i, "spriteindex": i});
-								eventdata.push({"lastbeat": 0, "beatoffset": 1});
-								funkinsprites.push(f);
-								backgroundgroup.add(coolsprite);
-							case IndexedSpriteGroup(l):
-								var coolgroup:FlxTypedGroup<BeatSprite> = FunkinUtility.convertIndexGroup(l);
-								spritedata.push({"eventindex": i, "spriteindex": i});
-								eventdata.push({"lastbeat": 0, "beatoffset": 1});
-								funkinsprites.push(l);
-								functionreference.push(l.event);
-								backgroundgroup.add(coolgroup);
-							case OffsetSpriteGroup(o):
-								var coolgroup:FlxTypedGroup<BeatSprite> = FunkinUtility.convertOffsetGroup(o);
-								functionreference.push(o.event);
-								funkinsprites.push(o);
-								spritedata.push({"eventindex": i, "spriteindex": i});
-								eventdata.push({"lastbeat": 0, "beatoffset": 1});
-								backgroundgroup.add(coolgroup);
-							case Null:
-								// do nothing
-						}
-						i++;
+						sprite.graphicpath = "assets/images/custom_stages/"+SONG.stage+"/";
+						var coolsprite:BeatSprite = sprite.convertToBeatSprite();
+						backgroundgroup.add(coolsprite);
+					}
+				} else if (stage.name == "front") {
+					for (sprite in stage.sprites)
+					{
+						sprite.graphicpath = "assets/images/custom_stages/" + SONG.stage+"/";
+						var coolsprite:BeatSprite = sprite.convertToBeatSprite();
+						foregroundgroup.add(coolsprite);
 					}
 				}
  			}
+			trace(backgroundgroup.members);
+			add(backgroundgroup);
 			/*
 			switch (Reflect.field(parsedStageJson, SONG.stage)) {
 				case 'stage':
@@ -1312,6 +1296,7 @@ class PlayState extends MusicBeatState
 		// Shitty layering but whatev it works LOL
 		if (curStage == 'limo')
 			add(limo);
+		add(foregroundgroup);
 		trace('dad');
 		add(dad);
 		trace('dy UWU');
@@ -3498,13 +3483,13 @@ class PlayState extends MusicBeatState
 				dad.playAnim('cheer', true);
 			}
 		}
-		for (spritebit in spritedata) {
-			var eventpart = eventdata[spritebit.eventindex];
-			var functionpart = functionreference[spritebit.eventindex];
-			var sprite = backgroundgroup.members[spritebit.spriteindex];
-			var funkinsprite = funkinsprites[spritebit.spriteindex];
-			if (functionpart.onbeat && curBeat % functionpart.beatmulti == 0) {
-			}
+		trace(curBeat);
+		for (sprite in backgroundgroup.members) {
+			sprite.runEvent(curBeat, boyfriend, gf, dad);
+		}
+		for (sprite in foregroundgroup.members)
+		{
+			sprite.runEvent(curBeat, boyfriend, gf, dad);
 		}
 		switch (curStage)
 		{

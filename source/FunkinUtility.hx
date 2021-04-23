@@ -1,6 +1,8 @@
 package;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.FlxG;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 import flixel.graphics.frames.FlxAtlasFrames;
 using StringTools;
 /**
@@ -75,6 +77,7 @@ class FunkinUtility {
 
         return group;
     }
+    /*
     public static function executeFunktionOn(object:Dynamic, funktion : Funktion, boyfriend : Character, gf : Character, dad : Character) : Null<Dynamic> {
         var operators = funktion.operations;
         var currentobject : Dynamic = object;
@@ -107,6 +110,7 @@ class FunkinUtility {
         }
         return null;
     }
+    */
  }
 /**
  * type used with json2object to make custom stages easier. includes all required members of a sprite
@@ -148,7 +152,7 @@ class JSONFunkinSprite {
     // not read from the file. expected to be assigned by playstate, depending on what it is reading.
     // Makes it so json files aren't piling up :hueh:
     @:jignored public var graphicpath : String;
-    @:default(false) @:optional public var antialiasing : Bool;
+    @:default(true) @:optional public var antialiasing : Bool;
     @:default(1) @:optional public var scale : Int;
     @:default(false) @:optional public var canDance : Bool;
     @:default(1) @:optional public var beatmulti : Int;
@@ -156,10 +160,12 @@ class JSONFunkinSprite {
     public function new() {}
 
     public function convertToBeatSprite() : BeatSprite {
-        var beatsprite = new BeatSprite(x, y, canDance, beatmulti);
+        trace(graphicpath + graphic);
+        var beatsprite = new BeatSprite(x, y, canDance, beatmulti, event);
         beatsprite.flipX = flipX;
         beatsprite.flipY = flipY;
         if (animation != null) {
+            trace(animation);
             var tex = FlxAtlasFrames.fromSparrow(graphicpath + graphic + '.png', graphicpath + graphic + '.xml');
             beatsprite.frames = tex;
 			for (anim in animation)
@@ -172,11 +178,14 @@ class JSONFunkinSprite {
 				{
 					beatsprite.animation.addByPrefix(anim.name, anim.prefix, anim.fps, anim.loop);
 				}
+                
 			}
+			beatsprite.animation.play('idle');
         } else {
             beatsprite.loadGraphic(graphicpath + graphic + '.png');
         }
         beatsprite.antialiasing = antialiasing;
+        beatsprite.graphicpath = graphicpath;
         return beatsprite;
     }
 
@@ -185,7 +194,7 @@ typedef LegalStageObject = Union3<TFunkinSprite, IndexedSpriteGroup, OffsetSprit
 typedef StageGroup = {
     @:default("default")
     var name : String;
-    var sprites : Array<LegalStageObject>;
+    var sprites : Array<JSONFunkinSprite>;
 }
 /// There will actually no longer be any randomness. For consistencys sake, random events will be yeeted out the window. 
 // This will mean stages will no longer be 1 to 1 accurate with base game counterparts, but will reduce complexity
@@ -250,7 +259,7 @@ typedef SpecialEvent = {
     // What to execute. Referenced from the actual sprite, if it exists. 
     @:alias("function") var funkinfunction : Funktion;
 }
-
+typedef FunkinCommand = Union<FunkinExpression, FunkinIf>;
 /**
  * A json based function that isn't as versitile as haxe, but allows manipulation of the sprite.
  * 
@@ -267,11 +276,38 @@ typedef SpecialEvent = {
      // yes this means you will have to know FlxSprite names. Too Bad!
      // it's optional because there are some special cases, like return.
      @:optional
-     var value : Dynamic;
+     var value : String;
      @:optional
      // who to use on. if not included presumes it is just ourselves.
-     // can be a value of boyfriend, girlfriend
+     // can be a value of boyfriend, girlfriend, or dad
      var useon : String;
+     // do tween?
+     @:default(false) @:optional var dotween : Bool;
+     @:optional var tweentime : Float;
+
+     // linear or cubeinout
+     @:optional @:default("cubeinout") var easing : String;
+
+ }
+ typedef FunkinComparison = {
+     // how are we comparing?
+    @:default("equal")
+    var comparing : String;
+    // a value that will be compared using our comparing tool.
+    // on left side of equation
+    var valueone : String;
+    // on right side of equation
+    var valuetwo : String;
+ }
+ typedef FunkinIf = {
+     // a funkincomparison
+     var comparison : FunkinComparison;
+     // what to do if true
+    var iftrue : Funktion;
+    // what to do if false
+    @:optional @:alias("else")
+    var funkelse : Funktion;
+
  }
 typedef Stage = {
     var stages : Array<StageGroup>;
