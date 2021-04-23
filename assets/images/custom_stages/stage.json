@@ -1,0 +1,34 @@
+{
+    "stages": [
+        {
+            "name": "default",
+            "sprites": [
+                {
+                    "x": -600,
+                    "y": -200,
+                    "graphic": "stageback",
+                    "scrollX": 0.9,
+                    "scrollY": 0.9
+                },
+                {
+                    "x": -650,
+                    "y": 600,
+                    "graphic": "stagefront",
+                    "scrollX": 0.9,
+                    "scrollY": 0.9,
+                    "scale": 1.1
+                },
+                {
+
+                    "x": -500,
+                    "y" : -300,
+                    "graphic": "stagecurtains",
+                    "scrollX": 1.3,
+                    "scrollY": 1.3,
+                    "scale": 0.9
+                }
+            ]
+        }
+    ],
+    "defaultZoom": 0.9
+}
