@@ -215,7 +215,7 @@ class OptionsMenu extends Page
 	}
 
 	/**
-	 * True if this page has multiple options, ecluding the exit option.
+	 * True if this page has multiple options, excluding the exit option.
 	 * If false, there's no reason to ever show this page.
 	 */
 	public function hasMultipleOptions():Bool
@@ -267,11 +267,12 @@ class OptionsMenu extends Page
 
 	function checkLoginStatus()
 	{
+		// this shit don't work!! wtf!!!!
 		var prevLoggedIn = items.has("logout");
 		if (prevLoggedIn && !NGio.isLoggedIn)
-			items.resetItem("login", "logout", selectLogout);
-		else if (!prevLoggedIn && NGio.isLoggedIn)
 			items.resetItem("logout", "login", selectLogin);
+		else if (!prevLoggedIn && NGio.isLoggedIn)
+			items.resetItem("login", "logout", selectLogout);
 	}
 	#end
 }
