@@ -112,6 +112,10 @@ class PlayState extends MusicBeatState
 	var trainSound:FlxSound;
 	// this'll work... right?
 	var backgroundgroup:FlxTypedGroup<FlxBasic>;
+	var functionreference:Array<FunkinUtility.SpecialEvent> = [];
+	var spritedata:Array<FunkinUtility.SpriteData> = [];
+	var eventdata:Array<FunkinUtility.EventData> = [];
+	var funkinsprites:Array<FunkinUtility.LegalStageObject> = [];
 	var limo:FlxSprite;
 	var grpLimoDancers:FlxTypedGroup<BackgroundDancer>;
 	var fastCar:FlxSprite;
@@ -223,7 +227,7 @@ class PlayState extends MusicBeatState
 
 		Conductor.mapBPMChanges(SONG);
 		Conductor.changeBPM(SONG.bpm);
-
+		backgroundgroup = new FlxTypedGroup<FlxBasic>();
 		switch (SONG.song.toLowerCase())
 		{
 			default:
@@ -590,9 +594,40 @@ class PlayState extends MusicBeatState
 				+ Reflect.field(parsedStageJson, SONG.stage)
 				+ ".json");
 			// now we must read the file properly. Oh dear. 
+			// todo
 			for (stage in parsedFuckeeJson.stages) {
-
-			}
+				if (stage.name == "default") {
+					var i = 0;
+					for (sprite in stage.sprites) {
+						switch (sprite.type()) {
+							case FunkinSprite(f):
+								var coolsprite:BeatSprite = FunkinUtility.convertFunkinSprite(f);
+								functionreference.push(f.event);
+								spritedata.push({"eventindex": i, "spriteindex": i});
+								eventdata.push({"lastbeat": 0, "beatoffset": 1});
+								funkinsprites.push(f);
+								backgroundgroup.add(coolsprite);
+							case IndexedSpriteGroup(l):
+								var coolgroup:FlxTypedGroup<BeatSprite> = FunkinUtility.convertIndexGroup(l);
+								spritedata.push({"eventindex": i, "spriteindex": i});
+								eventdata.push({"lastbeat": 0, "beatoffset": 1});
+								funkinsprites.push(l);
+								functionreference.push(l.event);
+								backgroundgroup.add(coolgroup);
+							case OffsetSpriteGroup(o):
+								var coolgroup:FlxTypedGroup<BeatSprite> = FunkinUtility.convertOffsetGroup(o);
+								functionreference.push(o.event);
+								funkinsprites.push(o);
+								spritedata.push({"eventindex": i, "spriteindex": i});
+								eventdata.push({"lastbeat": 0, "beatoffset": 1});
+								backgroundgroup.add(coolgroup);
+							case Null:
+								// do nothing
+						}
+						i++;
+					}
+				}
+ 			}
 			/*
 			switch (Reflect.field(parsedStageJson, SONG.stage)) {
 				case 'stage':
@@ -3463,7 +3498,14 @@ class PlayState extends MusicBeatState
 				dad.playAnim('cheer', true);
 			}
 		}
-
+		for (spritebit in spritedata) {
+			var eventpart = eventdata[spritebit.eventindex];
+			var functionpart = functionreference[spritebit.eventindex];
+			var sprite = backgroundgroup.members[spritebit.spriteindex];
+			var funkinsprite = funkinsprites[spritebit.spriteindex];
+			if (functionpart.onbeat && curBeat % functionpart.beatmulti == 0) {
+			}
+		}
 		switch (curStage)
 		{
 			case 'school':

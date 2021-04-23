@@ -7,7 +7,7 @@ using StringTools;
  * Nice converter to convert funkin objects to regular objects
  */
 class FunkinUtility {
-    static function convertFunkinSprite(funkin: FunkinSprite, ?graphicCallback:(BeatSprite, FunkinSprite)->Void, ?animCallback:(BeatSprite,FunkinSprite)->Void) : BeatSprite {
+    public static function convertFunkinSprite(funkin: FunkinSprite, ?graphicCallback:(BeatSprite, FunkinSprite)->Void, ?animCallback:(BeatSprite,FunkinSprite)->Void) : BeatSprite {
         if (graphicCallback == null) {
             graphicCallback = function(sprite : BeatSprite, funkee : FunkinSprite) : Void {
                 sprite.loadGraphic(funkee.graphic + '.png');
@@ -45,7 +45,7 @@ class FunkinUtility {
         }
         return realSprite;
     }
-    static function convertOffsetGroup(offsetgroup :OffsetSpriteGroup) : FlxTypedGroup<BeatSprite> {
+    public static function convertOffsetGroup(offsetgroup :OffsetSpriteGroup) : FlxTypedGroup<BeatSprite> {
         var group : FlxTypedGroup<BeatSprite> = new FlxTypedGroup<BeatSprite>();
         for (i in 0...offsetgroup.copies) {
 
@@ -56,7 +56,7 @@ class FunkinUtility {
         }
         return group;
     }
-    static function convertIndexGroup(indexgroup:IndexedSpriteGroup) : FlxTypedGroup<BeatSprite> {
+    public static function convertIndexGroup(indexgroup:IndexedSpriteGroup) : FlxTypedGroup<BeatSprite> {
         var group : FlxTypedGroup<BeatSprite> = new FlxTypedGroup<BeatSprite>();
         for (i in 0...indexgroup.copies) {
             var callback = function (sprite : BeatSprite, funkin : FunkinSprite) {
@@ -76,7 +76,7 @@ class FunkinUtility {
         return group;
     }
     // thank you unions for being cool
-    static function calculateFunkinInt(funkinint:FunkinInt) : Int {
+    public static function calculateFunkinInt(funkinint:FunkinInt) : Int {
         switch funkinint.type() {
             case Int(i):
                 return i;
@@ -88,7 +88,7 @@ class FunkinUtility {
                 return 0;
         }
     }
-    static function executeFunktionOn(object:Dynamic, funktion : Funktion, boyfriend : Character, gf : Character, dad : Character) : Null<Dynamic> {
+    public static function executeFunktionOn(object:Dynamic, funktion : Funktion, boyfriend : Character, gf : Character, dad : Character) : Null<Dynamic> {
         var operators = funktion.operations;
         var currentobject : Dynamic = object;
         for (operat in operators) {
@@ -112,7 +112,7 @@ class FunkinUtility {
                     }
                 case "play_anim":
 					currentobject.animation.play(operat.value);
-                default: 
+                default:
 					if (Reflect.hasField(currentobject, operat.field) && operat.value != null) {
 						Reflect.setProperty(currentobject, operat.field, operat.value);
                     }
@@ -150,6 +150,12 @@ typedef FunkinSprite = {
     var beatmulti : Int;
     @:optional
     var event : SpecialEvent;
+}
+class CFunkinSprite {
+    @:default(0.0) public var x : Float;
+    @:default(0.0) public var y : Float;
+    @:default(false) @:optional public var flipX : Bool;
+    @:default(false) @:optional public var flipY : Bool;
 }
 typedef LegalStageObject = Union3<FunkinSprite, IndexedSpriteGroup, OffsetSpriteGroup>;
 typedef StageGroup = {
@@ -266,4 +272,19 @@ typedef FunkinRandomInt = {
  }
 typedef Stage = {
     var stages : Array<StageGroup>;
+}
+/**
+ * A register of all data currently being used, like the offset. 
+ */
+typedef EventData = {
+    var lastbeat : Int;
+    var beatoffset : Int;
+}
+/**
+ * A register of sprite data, like what event data it uses. Used mostly
+ * to link things together
+ */
+typedef SpriteData = {
+    var eventindex : Int;
+    var spriteindex : Int;
 }
