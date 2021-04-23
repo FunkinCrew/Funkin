@@ -210,10 +210,10 @@ class Judgement extends Option
 		Conductor.recalculateTimings();
 
 		OptionsMenu.versionShit.text = "Current Safe Frames: " + Conductor.safeFrames + " - Description - " + description + 
-		" - SIK: " + OptionsMenu.truncateFloat(45 * Conductor.timeScale, 0) +
-		"ms GD: " + OptionsMenu.truncateFloat(90 * Conductor.timeScale, 0) +
-		"ms BD: " + OptionsMenu.truncateFloat(135 * Conductor.timeScale, 0) + 
-		"ms SHT: " + OptionsMenu.truncateFloat(155 * Conductor.timeScale, 0) +
+		" - SIK: " + OptionsMenu.truncateFloat(44 * Conductor.timeScale, 0) +
+		"ms GD: " + OptionsMenu.truncateFloat(45 * Conductor.timeScale, 0) +
+		"ms BD: " + OptionsMenu.truncateFloat(90 * Conductor.timeScale, 0) + 
+		"ms SHT: " + OptionsMenu.truncateFloat(135 * Conductor.timeScale, 0) +
 		"ms TOTAL: " + OptionsMenu.truncateFloat(Conductor.safeZoneOffset,0) + "ms";
 		return true;
 	}
