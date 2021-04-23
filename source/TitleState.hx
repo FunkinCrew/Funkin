@@ -48,6 +48,7 @@ import sys.thread.Thread;
 class TitleState extends MusicBeatState
 {
 	public static var initialized:Bool = false;
+	var startedIntro:Bool;
 
 	var blackScreen:FlxSprite;
 	var credGroup:FlxGroup;
@@ -72,6 +73,8 @@ class TitleState extends MusicBeatState
 		polymod.Polymod.init({modRoot: "mods", dirs: ['introMod'], framework: OPENFL});
 		// FlxG.bitmap.clearCache();
 		#end
+
+		startedIntro = false;
 
 		FlxG.game.focusLostFramerate = 60;
 
@@ -222,20 +225,11 @@ class TitleState extends MusicBeatState
 				new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
 			FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.7, new FlxPoint(0, 1),
 				{asset: diamond, width: 32, height: 32}, new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
+		}
 
-			transIn = FlxTransitionableState.defaultTransIn;
-			transOut = FlxTransitionableState.defaultTransOut;
-
-			// HAD TO MODIFY SOME BACKEND SHIT
-			// IF THIS PR IS HERE IF ITS ACCEPTED UR GOOD TO GO
-			// https://github.com/HaxeFlixel/flixel-addons/pull/348
-
-			// var music:FlxSound = new FlxSound();
-			// music.loadStream(Paths.music('freakyMenu'));
-			// FlxG.sound.list.add(music);
-			// music.play();
+		if (FlxG.sound.music == null || !FlxG.sound.music.playing)
+		{
 			FlxG.sound.playMusic(Paths.music('freakyMenu'), 0);
-
 			FlxG.sound.music.fadeIn(4, 0, 0.7);
 		}
 
@@ -331,6 +325,7 @@ class TitleState extends MusicBeatState
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.onComplete = function() FlxG.switchState(new VideoState());
 
+		startedIntro = true;
 		// credGroup.add(credTextShit);
 	}
 
@@ -353,8 +348,10 @@ class TitleState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
+		#if debug
 		if (FlxG.keys.justPressed.EIGHT)
 			FlxG.switchState(new CutsceneAnimTestState());
+		#end
 
 		/* 
 			if (FlxG.keys.justPressed.R)
@@ -372,9 +369,7 @@ class TitleState extends MusicBeatState
 		// FlxG.watch.addQuick('amp', FlxG.sound.music.amplitude);
 
 		if (FlxG.keys.justPressed.F)
-		{
 			FlxG.fullscreen = !FlxG.fullscreen;
-		}
 
 		var pressedEnter:Bool = FlxG.keys.justPressed.ENTER;
 
@@ -382,16 +377,9 @@ class TitleState extends MusicBeatState
 		for (touch in FlxG.touches.list)
 		{
 			if (touch.justPressed)
-			{
 				pressedEnter = true;
-			}
 		}
 		#end
-
-		if (FlxG.keys.justPressed.FIVE)
-		{
-			FlxG.switchState(new CutsceneAnimTestState());
-		}
 
 		var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
 
@@ -456,9 +444,7 @@ class TitleState extends MusicBeatState
 		}
 
 		if (pressedEnter && !skippedIntro && initialized)
-		{
 			skipIntro();
-		}
 		/* 
 			#if web
 			if (!initialized && controls.ACCEPT)
@@ -476,16 +462,10 @@ class TitleState extends MusicBeatState
 		// swagShader.hasOutline = !swagShader.hasOutline;
 
 		if (controls.UI_LEFT)
-		{
 			swagShader.update(-elapsed * 0.1);
-			// alphaShader.update(-elapsed * 0.1);
-		}
 
 		if (controls.UI_RIGHT)
-		{
 			swagShader.update(elapsed * 0.1);
-			// alphaShader.update(elapsed * 0.1);
-		}
 
 		super.update(elapsed);
 	}
@@ -526,75 +506,83 @@ class TitleState extends MusicBeatState
 	{
 		super.beatHit();
 
-		logoBl.animation.play('bump', true);
+		if (!startedIntro)
+			return ;
 
-		danceLeft = !danceLeft;
-
-		if (danceLeft)
-			gfDance.animation.play('danceRight');
-		else
-			gfDance.animation.play('danceLeft');
-
-		FlxG.log.add(curBeat);
-		// if the user is draggin the window some beats will
-		// be missed so this is just to compensate
-		if (curBeat > lastBeat)
+		if (skippedIntro)
 		{
-			for (i in lastBeat...curBeat)
+			logoBl.animation.play('bump', true);
+
+			danceLeft = !danceLeft;
+
+			if (danceLeft)
+				gfDance.animation.play('danceRight');
+			else
+				gfDance.animation.play('danceLeft');
+		}
+		else
+		{
+			FlxG.log.add(curBeat);
+			// if the user is draggin the window some beats will
+			// be missed so this is just to compensate
+			if (curBeat > lastBeat)
 			{
-				switch (i + 1)
+				for (i in lastBeat...curBeat)
 				{
-					case 1:
-						createCoolText(['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er']);
-					// credTextShit.visible = true;
-					case 3:
-						addMoreText('present');
-					// credTextShit.text += '\npresent...';
-					// credTextShit.addText();
-					case 4:
-						deleteCoolText();
-					// credTextShit.visible = false;
-					// credTextShit.text = 'In association \nwith';
-					// credTextShit.screenCenter();
-					case 5:
-						createCoolText(['In association', 'with']);
-					case 7:
-						addMoreText('newgrounds');
-						ngSpr.visible = true;
-					// credTextShit.text += '\nNewgrounds';
-					case 8:
-						deleteCoolText();
-						ngSpr.visible = false;
-					// credTextShit.visible = false;
+					switch (i + 1)
+					{
+						case 1:
+							createCoolText(['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er']);
+						// credTextShit.visible = true;
+						case 3:
+							addMoreText('present');
+						// credTextShit.text += '\npresent...';
+						// credTextShit.addText();
+						case 4:
+							deleteCoolText();
+						// credTextShit.visible = false;
+						// credTextShit.text = 'In association \nwith';
+						// credTextShit.screenCenter();
+						case 5:
+							createCoolText(['In association', 'with']);
+						case 7:
+							addMoreText('newgrounds');
+							ngSpr.visible = true;
+						// credTextShit.text += '\nNewgrounds';
+						case 8:
+							deleteCoolText();
+							ngSpr.visible = false;
+						// credTextShit.visible = false;
 
-					// credTextShit.text = 'Shoutouts Tom Fulp';
-					// credTextShit.screenCenter();
-					case 9:
-						createCoolText([curWacky[0]]);
-					// credTextShit.visible = true;
-					case 11:
-						addMoreText(curWacky[1]);
-					// credTextShit.text += '\nlmao';
-					case 12:
-						deleteCoolText();
-					// credTextShit.visible = false;
-					// credTextShit.text = "Friday";
-					// credTextShit.screenCenter();
-					case 13:
-						addMoreText('Friday');
-					// credTextShit.visible = true;
-					case 14:
-						addMoreText('Night');
-					// credTextShit.text += '\nNight';
-					case 15:
-						addMoreText('Funkin'); // credTextShit.text += '\nFunkin';
+						// credTextShit.text = 'Shoutouts Tom Fulp';
+						// credTextShit.screenCenter();
+						case 9:
+							createCoolText([curWacky[0]]);
+						// credTextShit.visible = true;
+						case 11:
+							addMoreText(curWacky[1]);
+						// credTextShit.text += '\nlmao';
+						case 12:
+							deleteCoolText();
+						// credTextShit.visible = false;
+						// credTextShit.text = "Friday";
+						// credTextShit.screenCenter();
+						case 13:
+							addMoreText('Friday');
+						// credTextShit.visible = true;
+						case 14:
+							addMoreText('Night');
+						// credTextShit.text += '\nNight';
+						case 15:
+							addMoreText('Funkin'); // credTextShit.text += '\nFunkin';
 
-					case 16:
-						skipIntro();
+						case 16:
+							skipIntro();
+					}
 				}
 			}
+			lastBeat = curBeat;
 		}
-		lastBeat = curBeat;
 	}
 
 	var skippedIntro:Bool = false;
