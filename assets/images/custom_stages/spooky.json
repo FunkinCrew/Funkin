@@ -20,13 +20,7 @@
                         }
                     ],
                     "event": {
-                        "onbeat": false,
-                        "onbool": true,
-                        "beatoffset": {
-                            "min": 8,
-                            "max": 24
-                        },
-                        "rollchance": 10,
+                        "beatmulti": 12,
                         "function": {
                             "operations": [
                                 {

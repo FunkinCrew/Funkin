@@ -600,7 +600,7 @@ class PlayState extends MusicBeatState
 					var i = 0;
 					for (sprite in stage.sprites) {
 						switch (sprite.type()) {
-							case FunkinSprite(f):
+							case TFunkinSprite(f):
 								var coolsprite:BeatSprite = FunkinUtility.convertFunkinSprite(f);
 								functionreference.push(f.event);
 								spritedata.push({"eventindex": i, "spriteindex": i});

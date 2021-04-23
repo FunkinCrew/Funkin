@@ -74,6 +74,7 @@
 	<haxelib name="polymod"/>
 	<haxelib name="json2object"/>
 	<haxelib name="uniontypes"/>
+	<haxelib name="hxjsonast"/>
 	<!-- <haxelib name="markdown" /> -->
 	<!-- <haxelib name="HtmlParser" /> -->
 

@@ -7,14 +7,14 @@ using StringTools;
  * Nice converter to convert funkin objects to regular objects
  */
 class FunkinUtility {
-    public static function convertFunkinSprite(funkin: FunkinSprite, ?graphicCallback:(BeatSprite, FunkinSprite)->Void, ?animCallback:(BeatSprite,FunkinSprite)->Void) : BeatSprite {
+    public static function convertFunkinSprite(funkin: TFunkinSprite, ?graphicCallback:(BeatSprite, TFunkinSprite)->Void, ?animCallback:(BeatSprite,TFunkinSprite)->Void) : BeatSprite {
         if (graphicCallback == null) {
-            graphicCallback = function(sprite : BeatSprite, funkee : FunkinSprite) : Void {
+            graphicCallback = function(sprite : BeatSprite, funkee : TFunkinSprite) : Void {
                 sprite.loadGraphic(funkee.graphic + '.png');
             }
         }
         if (animCallback == null) {
-            animCallback = function(sprite:BeatSprite, funkee : FunkinSprite) : Void {
+            animCallback = function(sprite:BeatSprite, funkee : TFunkinSprite) : Void {
                 // if animation e
                 var tex = FlxAtlasFrames.fromSparrow(funkee.graphic + '.png', funkee.graphic + '.xml');
                 sprite.frames = tex;
@@ -59,10 +59,10 @@ class FunkinUtility {
     public static function convertIndexGroup(indexgroup:IndexedSpriteGroup) : FlxTypedGroup<BeatSprite> {
         var group : FlxTypedGroup<BeatSprite> = new FlxTypedGroup<BeatSprite>();
         for (i in 0...indexgroup.copies) {
-            var callback = function (sprite : BeatSprite, funkin : FunkinSprite) {
+            var callback = function (sprite : BeatSprite, funkin : TFunkinSprite) {
                 sprite.loadGraphic(indexgroup.file.replace("${n}", Std.string(i)) + '.png');
             }
-			var animCallback = function(sprite:BeatSprite, funkee:FunkinSprite):Void
+			var animCallback = function(sprite:BeatSprite, funkee:TFunkinSprite):Void
 			{
 				// if animation e
 				var tex = FlxAtlasFrames.fromSparrow(indexgroup.file.replace("${n}", Std.string(i)) + '.png',
@@ -74,19 +74,6 @@ class FunkinUtility {
         }
 
         return group;
-    }
-    // thank you unions for being cool
-    public static function calculateFunkinInt(funkinint:FunkinInt) : Int {
-        switch funkinint.type() {
-            case Int(i):
-                return i;
-            case FunkinRandomInt(f):
-                return FlxG.random.int(f.min, f.max);
-            case Null:
-                return 0;
-            default:
-                return 0;
-        }
     }
     public static function executeFunktionOn(object:Dynamic, funktion : Funktion, boyfriend : Character, gf : Character, dad : Character) : Null<Dynamic> {
         var operators = funktion.operations;
@@ -125,7 +112,7 @@ class FunkinUtility {
  * type used with json2object to make custom stages easier. includes all required members of a sprite
  **/ 
 
-typedef FunkinSprite = {
+typedef TFunkinSprite = {
     @:default(0.0)
     var x : Float;
 	@:default(0.0)
@@ -151,29 +138,64 @@ typedef FunkinSprite = {
     @:optional
     var event : SpecialEvent;
 }
-class CFunkinSprite {
+class JSONFunkinSprite {
     @:default(0.0) public var x : Float;
     @:default(0.0) public var y : Float;
     @:default(false) @:optional public var flipX : Bool;
     @:default(false) @:optional public var flipY : Bool;
+    @:optional public var animation : Array<AnimationObject>;
+    public var graphic : String;
+    // not read from the file. expected to be assigned by playstate, depending on what it is reading.
+    // Makes it so json files aren't piling up :hueh:
+    @:jignored public var graphicpath : String;
+    @:default(false) @:optional public var antialiasing : Bool;
+    @:default(1) @:optional public var scale : Int;
+    @:default(false) @:optional public var canDance : Bool;
+    @:default(1) @:optional public var beatmulti : Int;
+    @:optional public var event : SpecialEvent;
+    public function new() {}
+
+    public function convertToBeatSprite() : BeatSprite {
+        var beatsprite = new BeatSprite(x, y, canDance, beatmulti);
+        beatsprite.flipX = flipX;
+        beatsprite.flipY = flipY;
+        if (animation != null) {
+            var tex = FlxAtlasFrames.fromSparrow(graphicpath + graphic + '.png', graphicpath + graphic + '.xml');
+            beatsprite.frames = tex;
+			for (anim in animation)
+			{
+				if (anim.indices != null)
+				{
+					beatsprite.animation.addByIndices(anim.name, anim.prefix, anim.indices, "", anim.fps, anim.loop);
+				}
+				else
+				{
+					beatsprite.animation.addByPrefix(anim.name, anim.prefix, anim.fps, anim.loop);
+				}
+			}
+        } else {
+            beatsprite.loadGraphic(graphicpath + graphic + '.png');
+        }
+        beatsprite.antialiasing = antialiasing;
+        return beatsprite;
+    }
+
 }
-typedef LegalStageObject = Union3<FunkinSprite, IndexedSpriteGroup, OffsetSpriteGroup>;
+typedef LegalStageObject = Union3<TFunkinSprite, IndexedSpriteGroup, OffsetSpriteGroup>;
 typedef StageGroup = {
     @:default("default")
     var name : String;
     var sprites : Array<LegalStageObject>;
 }
-/**
- * A special type of int that can be either a regular int or a random int. Random
- * is (usually) calculated whenever it is needed, and not constant. 
- */
-typedef FunkinInt = Union<Int, FunkinRandomInt>;
+/// There will actually no longer be any randomness. For consistencys sake, random events will be yeeted out the window. 
+// This will mean stages will no longer be 1 to 1 accurate with base game counterparts, but will reduce complexity
+// of the system making it not as fucking stupid to use, and preserve my sanity.
 /**
  * Base type for groups that use only one sprite as a reference. This doesn't mean the graphic is the same,
  * it just means most things are similar between sprites.
  */
 typedef CloneFunkinGroup = {
-    var sprite : FunkinSprite;
+    var sprite : TFunkinSprite;
     @:optional
     var event : SpecialEvent;
 }
@@ -182,7 +204,7 @@ typedef CloneFunkinGroup = {
  * although will probably impact preformance
  */
 typedef FunkinGroup = {
-    var sprites : Array<FunkinSprite>;
+    var sprites : Array<TFunkinSprite>;
     @:optional
     var event : SpecialEvent;
 }
@@ -223,31 +245,12 @@ typedef AnimationObject = {
  * Special events, animations, etc, that happen on beats. 
  */
 typedef SpecialEvent = {
-    @:default(true) 
-    var onbeat : Bool;
-    // this will probably act weird, as it will be calculated every beat if it is random
     @:default(1)
-    var beatmulti : FunkinInt;
-    // these ones are mostly used for lightning strike. 
-    @:default(false) @:optional
-    var onbool : Bool;
-    @:default(1)
-    var beatoffset : FunkinInt;
-    @:default(10)
-    var rollchance : Float;
+    var beatmulti : Int;
     // What to execute. Referenced from the actual sprite, if it exists. 
     @:alias("function") var funkinfunction : Funktion;
 }
 
-/**
- * Random Integer, in json form. 
- */
-typedef FunkinRandomInt = {
-    @:default(0)
-    var min : Int;
-    @:default(1)
-    var max : Int;
-}
 /**
  * A json based function that isn't as versitile as haxe, but allows manipulation of the sprite.
  * 
