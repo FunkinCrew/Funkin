@@ -41,6 +41,10 @@ import lime.utils.Assets;
 import openfl.display.BlendMode;
 import openfl.display.StageQuality;
 import openfl.filters.ShaderFilter;
+//bloopstuff
+import flixel.system.FlxAssets;
+import openfl8.blends.*;
+import openfl8.effects.BlendModeEffect.BlendModeShader;
 
 using StringTools;
 
@@ -66,6 +70,7 @@ class PlayState extends MusicBeatState
 
 	private var dad:Character;
 	private var gf:Character;
+	private var mom:Character; //ok but, glowy eyes
 	private var boyfriend:Boyfriend;
 
 	private var notes:FlxTypedGroup<Note>;
@@ -112,8 +117,10 @@ class PlayState extends MusicBeatState
 	var trainSound:FlxSound;
 
 	var limo:FlxSprite;
+	var overlayShit:FlxSprite;
 	var grpLimoDancers:FlxTypedGroup<BackgroundDancer>;
 	var fastCar:FlxSprite;
+	var skyBG:FlxSprite;
 
 	var upperBoppers:FlxSprite;
 	var bottomBoppers:FlxSprite;
@@ -310,7 +317,20 @@ class PlayState extends MusicBeatState
 				curStage = 'limo';
 				defaultCamZoom = 0.90;
 
-				var skyBG:FlxSprite = new FlxSprite(-120, -50).loadGraphic(Paths.image('limo/limoSunset'));
+				if (SONG.song.endsWith('Milf'))
+				{
+					skyBG = new FlxSprite(-120, -50).loadGraphic(Paths.image('limo/limoDusk'));
+					overlayShit = new FlxSprite(-500, -600).loadGraphic(Paths.image('limo/limoOverlayDusk'));
+					overlayShit.blend = BlendMode.HARDLIGHT;
+					mom = new Character(100, 100, 'mom-car-eyes');
+				}
+				else
+				{
+					skyBG = new FlxSprite(-120, -50).loadGraphic(Paths.image('limo/limoSunset'));
+					overlayShit = new FlxSprite(-500, -600).loadGraphic(Paths.image('limo/limoOverlay'));
+					overlayShit.blend = BlendMode.MULTIPLY;
+				}
+				
 				skyBG.scrollFactor.set(0.1, 0.1);
 				add(skyBG);
 
@@ -331,15 +351,8 @@ class PlayState extends MusicBeatState
 					grpLimoDancers.add(dancer);
 				}
 
-				var overlayShit:FlxSprite = new FlxSprite(-500, -600).loadGraphic(Paths.image('limo/limoOverlay'));
 				overlayShit.alpha = 0.5;
-				// add(overlayShit);
-
-				// var shaderBullshit = new BlendModeEffect(new OverlayShader(), FlxColor.RED);
-
-				// FlxG.camera.setFilters([new ShaderFilter(cast shaderBullshit.shader)]);
-
-				// overlayShit.shader = shaderBullshit;
+				overlayShit.scrollFactor.set(0.1, 0.1);
 
 				var limoTex = Paths.getSparrowAtlas('limo/limoDrive');
 
@@ -733,6 +746,18 @@ class PlayState extends MusicBeatState
 
 		add(dad);
 		add(boyfriend);
+		
+		if (curStage == 'limo') //even better, i know
+			if (!SONG.song.endsWith('Panties'))
+				add(overlayShit);
+			if (SONG.player2.startsWith('mom-car') && SONG.song.endsWith('Milf'))
+			{
+				mom.blend = BlendMode.ADD;
+				mom.alpha = 0.7;
+				add(mom);
+			}
+			
+			
 		if (isStoryMode)
 		{
 			health = transHealth;
@@ -1006,11 +1031,10 @@ class PlayState extends MusicBeatState
 		{
 			dad.dance();
 			gf.dance();
-			if (CharacterSuffix.startsWith('-car') && curPlayer == 'bf' || curPlayer == 'bf-bloops')
-				boyfriend.dance();
-			else
-				boyfriend.playAnim('idle');
-
+			boyfriend.dance();
+			if (SONG.player2.startsWith('mom-car') && SONG.song.endsWith('Milf'))
+				mom.dance();
+			
 			var introAssets:Map<String, Array<String>> = new Map<String, Array<String>>();
 			introAssets.set('default', ['ready', "set", "go"]);
 			introAssets.set('school', ['weeb/pixelUI/ready-pixel', 'weeb/pixelUI/set-pixel', 'weeb/pixelUI/date-pixel']);
@@ -1777,6 +1801,20 @@ class PlayState extends MusicBeatState
 						case 3:
 							dad.playAnim('singRIGHT' + altAnim, true);
 					}
+					if (SONG.player2.startsWith('mom-car') && SONG.song.endsWith('Milf'))
+					{
+						switch (Math.abs(daNote.noteData))
+						{
+							case 0:
+								mom.playAnim('singLEFT', true);
+							case 1:
+								mom.playAnim('singDOWN', true);
+							case 2:
+								mom.playAnim('singUP', true);
+							case 3:
+								mom.playAnim('singRIGHT', true);
+						}
+					}
 					player2Strums.forEach(function(spr:FlxSprite)
 					{
 						if (Math.abs(daNote.noteData) == spr.ID)
@@ -1787,6 +1825,8 @@ class PlayState extends MusicBeatState
 					});
 
 					dad.holdTimer = 0;
+					if (SONG.player2.startsWith('mom-car') && SONG.song.endsWith('Milf'))
+						mom.holdTimer = 0;
 
 					if (SONG.needsVoices)
 						vocals.volume = 1;
@@ -2581,7 +2621,11 @@ class PlayState extends MusicBeatState
 
 			// Dad doesnt interupt his own notes
 			if (SONG.notes[Math.floor(curStep / 16)].mustHitSection)
+			{
 				dad.dance();
+				if (SONG.player2.startsWith('mom-car') && SONG.song.endsWith('Milf'))
+					mom.dance();
+			}
 		}
 		// FlxG.log.add('change bpm' + SONG.notes[Std.int(curStep / 16)].changeBPM);
 		wiggleShit.update(Conductor.crochet);

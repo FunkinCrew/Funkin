@@ -54,6 +54,13 @@ class LoadingState extends MusicBeatState
 		add(gfDance);
 		add(logo);
 		
+		/*
+		logo = new FlxSprite(0,0).loadGraphic(Paths.image('funkay'));
+		logo.setGraphicSize(Std.int(logo.width*0.70));
+		logo.updateHitbox();
+		add(logo);
+		*/
+		
 		initSongsManifest().onComplete
 		(
 			function (lib)

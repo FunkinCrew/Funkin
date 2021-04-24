@@ -16,6 +16,7 @@ class AnimationDebug extends FlxState
 {
 	var bf:Boyfriend;
 	var dad:Character;
+	var mom:Character;
 	var char:Character;
 	var textAnim:FlxText;
 	var dumbTexts:FlxTypedGroup<FlxText>;
@@ -45,12 +46,20 @@ class AnimationDebug extends FlxState
 		if (isDad)
 		{
 			dad = new Character(0, 0, daAnim);
-			dad.screenCenter();
+			//dad.screenCenter();
 			dad.debugMode = true;
 			add(dad);
 
 			char = dad;
 			dad.flipX = false;
+			if (daAnim == 'mom-car')
+			{
+				mom = new Character(0, 0, 'mom-car-eyes');
+				//mom.screenCenter();
+				mom.debugMode = true;
+				char = mom;
+				add(mom);
+			}
 		}
 		else
 		{
@@ -158,6 +167,7 @@ class AnimationDebug extends FlxState
 		if (FlxG.keys.justPressed.S || FlxG.keys.justPressed.W || FlxG.keys.justPressed.SPACE)
 		{
 			char.playAnim(animList[curAnim]);
+			dad.playAnim(animList[curAnim]);
 
 			updateTexts();
 			genBoyOffsets(false);

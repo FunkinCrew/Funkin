@@ -214,6 +214,47 @@ class Character extends FlxSprite
 				addOffset("singDOWN", 20, -160);
 
 				playAnim('idle');
+				
+			case 'mom-eyes':
+				tex = Paths.getSparrowAtlas('Night_Mom');
+				frames = tex;
+
+				animation.addByPrefix('idle', "Mom Idle", 24, false);
+				animation.addByPrefix('singUP', "Mom Up Pose", 24, false);
+				animation.addByPrefix('singDOWN', "MOM DOWN POSE", 24, false);
+				animation.addByPrefix('singLEFT', 'Mom Left Pose', 24, false);
+				// ANIMATION IS CALLED MOM LEFT POSE BUT ITS FOR THE RIGHT
+				// CUZ DAVE IS DUMB!
+				animation.addByPrefix('singRIGHT', 'Mom Pose Left', 24, false);
+
+				addOffset('idle', -127, -110);
+				addOffset("singUP", -100, -62);
+				addOffset("singRIGHT", -257, -204);
+				addOffset("singLEFT", 137, -175);
+				addOffset("singDOWN", -104, -307);
+
+				playAnim('idle');
+
+			case 'mom-car-eyes':
+				tex = Paths.getSparrowAtlas('Night_MomCar');
+				frames = tex;
+
+				animation.addByPrefix('idle', "Mom Idle", 24, false);
+				animation.addByPrefix('singUP', "Mom Up Pose", 24, false);
+				animation.addByPrefix('singDOWN', "MOM DOWN POSE", 24, false);
+				animation.addByPrefix('singLEFT', 'Mom Left Pose', 24, false);
+				// ANIMATION IS CALLED MOM LEFT POSE BUT ITS FOR THE RIGHT
+				// CUZ DAVE IS DUMB!
+				animation.addByPrefix('singRIGHT', 'Mom Pose Left', 24, false);
+
+				addOffset('idle', -127, -110);
+				addOffset("singUP", -100, -62);
+				addOffset("singRIGHT", -257, -204);
+				addOffset("singLEFT", 137, -175);
+				addOffset("singDOWN", -104, -307);
+
+				playAnim('idle');
+				
 			case 'monster':
 				tex = Paths.getSparrowAtlas('Monster_Assets');
 				frames = tex;
@@ -1440,7 +1481,7 @@ class Character extends FlxSprite
 			case 'gf' | 'gf-bsides':
 				if (animation.curAnim.name == 'hairFall' && animation.curAnim.finished)
 					playAnim('danceRight');
-			case 'mom-car' | 'mom-car-bsides':
+			case 'mom-car' | 'mom-car-bsides' | 'mom-car-eyes':
 				if (animation.curAnim.name == 'idle' && animation.curAnim.finished)
 				playAnim('idle',false,false,11);
 			case 'bf-car' | 'bf-car-bsides' | 'bf-dylan-car' | 'bf-dylan-car-bsides':
@@ -1484,7 +1525,7 @@ class Character extends FlxSprite
 						playAnim('danceRight');
 					else
 						playAnim('danceLeft');
-				case 'mom-car':
+				case 'mom-car' | 'mom-car-bsides' | 'mom-car-eyes':
 					if(danced)
 						playAnim('idle',true);
 					danced = !danced;
