@@ -90,6 +90,9 @@ class ChartingState extends MusicBeatState
 
 	private var lastNote:Note;
 
+	var player1Icon:String;
+	var player2Icon:String;
+
 
 	override function create()
 	{
@@ -97,20 +100,6 @@ class ChartingState extends MusicBeatState
 
 		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * 8, GRID_SIZE * 16);
 		add(gridBG);
-
-		leftIcon = new HealthIcon('bf');
-		rightIcon = new HealthIcon('dad');
-		leftIcon.scrollFactor.set(1, 1);
-		rightIcon.scrollFactor.set(1, 1);
-
-		leftIcon.setGraphicSize(0, 45);
-		rightIcon.setGraphicSize(0, 45);
-
-		add(leftIcon);
-		add(rightIcon);
-
-		leftIcon.setPosition(0, -100);
-		rightIcon.setPosition(gridBG.width / 2, -100);
 
 		gridBlackLine = new FlxSprite(gridBG.x + gridBG.width / 2).makeGraphic(2, Std.int(gridBG.height), FlxColor.BLACK);
 		add(gridBlackLine);
@@ -133,6 +122,23 @@ class ChartingState extends MusicBeatState
 				validScore: false
 			};
 		}
+
+		player1Icon = _song.player1;
+		player2Icon = _song.player2;
+
+		leftIcon = new HealthIcon(_song.player1);
+		rightIcon = new HealthIcon(_song.player2);
+		leftIcon.scrollFactor.set(1, 1);
+		rightIcon.scrollFactor.set(1, 1);
+
+		leftIcon.setGraphicSize(0, 45);
+		rightIcon.setGraphicSize(0, 45);
+
+		add(leftIcon);
+		add(rightIcon);
+
+		leftIcon.setPosition(0, -100);
+		rightIcon.setPosition(gridBG.width / 2, -100);
 
 		FlxG.mouse.visible = true;
 		FlxG.save.bind('funkin', 'ninjamuffin99');
@@ -526,6 +532,8 @@ class ChartingState extends MusicBeatState
 	override function update(elapsed:Float)
 	{
 		curStep = recalculateSteps();
+
+		changeIcon();
 
 		if (FlxG.keys.justPressed.ALT && UI_box.selected_tab == 0)
 		{
@@ -1011,7 +1019,7 @@ class ChartingState extends MusicBeatState
 	{
 		remove(gridBG);
 		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * 8, GRID_SIZE * _song.notes[curSection].lengthInSteps);
-        add(gridBG);
+		add(gridBG);
 
 		remove(gridBlackLine);
 		gridBlackLine = new FlxSprite(gridBG.x + gridBG.width / 2).makeGraphic(2, Std.int(gridBG.height), FlxColor.BLACK);
@@ -1119,6 +1127,38 @@ class ChartingState extends MusicBeatState
 		updateNoteUI();
 	}
 
+	function changeIcon():Void
+	{
+		if (_song.player1 != player1Icon)
+		{
+			remove(leftIcon);
+
+			player1Icon = _song.player1;
+			leftIcon = new HealthIcon(player1Icon);
+			leftIcon.scrollFactor.set(1, 1);
+
+			leftIcon.setGraphicSize(0, 45);
+
+			add(leftIcon);
+
+			leftIcon.setPosition(0, -100);
+		}
+
+		if (_song.player2 != player2Icon)
+		{
+			remove(rightIcon);
+
+			player2Icon = _song.player2;
+			rightIcon = new HealthIcon(player2Icon);
+			rightIcon.scrollFactor.set(1, 1);
+
+			rightIcon.setGraphicSize(0, 45);
+
+			add(rightIcon);
+
+			rightIcon.setPosition(gridBG.width / 2, -100);
+		}
+	}
 
 	function deleteNote(note:Note):Void
 		{

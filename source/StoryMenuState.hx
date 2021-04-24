@@ -305,6 +305,10 @@ class StoryMenuState extends MusicBeatState
 				LoadingState.loadAndSwitchState(new PlayState(), true);
 			});
 		}
+		else
+		{
+			FlxG.camera.shake(0.02, 0.02);
+		}
 	}
 
 	function changeDifficulty(change:Int = 0):Void

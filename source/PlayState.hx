@@ -74,6 +74,27 @@ using StringTools;
 
 class PlayState extends MusicBeatState
 {
+	var characterCol:Array<String> = CoolUtil.coolTextFile(Paths.txt('characterList'));
+	var col:Array<FlxColor> = [
+		0xFF51d8fb, // BF
+		0xFFc885e5, // DAD
+		0xFFca1f6f, // GF
+		0xFFf9a326, // SPOOKY
+		0xFFceec75, // PICO
+		0xFFec7aac, // MOM
+		0xFFec7aac, // MOM-CAR
+		0xFF51d8fb, // BF-CAR
+		0xFFffffff, // PARENTS-CHRISTMAS
+		0xFFf5ff8a, // MONSTER-CHRISTMAS
+		0xFF51d8fb, // BF-CHRISTMAS
+		0xFFca1f6f, // GF-CHRISTMAS
+		0xFFf5ff8a, // MONSTER
+		0xFF9fe6ff, // BF-PIXEL
+		0xFFffaa6f, // SENPAI
+		0xFFffaa6f, // SENPAI-ANGRY
+		0xFFff5d87 // SPIRIT
+	];
+
 	public static var curStage:String = '';
 	public static var SONG:SwagSong;
 	public static var isStoryMode:Bool = false;
@@ -125,6 +146,9 @@ class PlayState extends MusicBeatState
 
 	private var strumLineNotes:FlxTypedGroup<FlxSprite>;
 	private var playerStrums:FlxTypedGroup<FlxSprite>;
+	private var player2Strums:FlxTypedGroup<FlxSprite>;
+
+	private var strumming2:Array<Bool> = [false, false, false, false];
 
 	private var camZooming:Bool = false;
 	private var curSong:String = "";
@@ -998,6 +1022,7 @@ class PlayState extends MusicBeatState
 		add(strumLineNotes);
 
 		playerStrums = new FlxTypedGroup<FlxSprite>();
+		player2Strums = new FlxTypedGroup<FlxSprite>();
 
 		// startCountdown();
 
@@ -1027,28 +1052,29 @@ class PlayState extends MusicBeatState
 		FlxG.fixedTimestep = false;
 
 		if (FlxG.save.data.songPosition) // I dont wanna talk about this code :(
-			{
-				songPosBG = new FlxSprite(0, 10).loadGraphic(Paths.image('healthBar'));
-				if (FlxG.save.data.downscroll)
-					songPosBG.y = FlxG.height * 0.9 + 45; 
-				songPosBG.screenCenter(X);
-				songPosBG.scrollFactor.set();
-				add(songPosBG);
-				
-				songPosBar = new FlxBar(songPosBG.x + 4, songPosBG.y + 4, LEFT_TO_RIGHT, Std.int(songPosBG.width - 8), Std.int(songPosBG.height - 8), this,
-					'songPositionBar', 0, 90000);
-				songPosBar.scrollFactor.set();
-				songPosBar.createFilledBar(FlxColor.GRAY, FlxColor.LIME);
-				add(songPosBar);
-	
-				var songName = new FlxText(songPosBG.x + (songPosBG.width / 2) - 20,songPosBG.y,0,SONG.song, 16);
-				if (FlxG.save.data.downscroll)
-					songName.y -= 3;
-				songName.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
-				songName.scrollFactor.set();
-				add(songName);
-				songName.cameras = [camHUD];
-			}
+		{
+			songPosBG = new FlxSprite(0, 10).loadGraphic(Paths.image('healthBar'));
+			if (FlxG.save.data.downscroll)
+				songPosBG.y = FlxG.height * 0.9 + 45; 
+			songPosBG.screenCenter(X);
+			songPosBG.scrollFactor.set();
+			add(songPosBG);
+			
+			songPosBar = new FlxBar(songPosBG.x + 4, songPosBG.y + 4, LEFT_TO_RIGHT, Std.int(songPosBG.width - 8), Std.int(songPosBG.height - 8), this,
+				'songPositionBar', 0, 90000);
+			songPosBar.scrollFactor.set();
+			songPosBar.createFilledBar(FlxColor.GRAY, FlxColor.LIME);
+			add(songPosBar);
+
+			var songName = new FlxText(songPosBG.x + (songPosBG.width / 2) - 20,songPosBG.y,0,SONG.song, 16);
+			if (FlxG.save.data.downscroll)
+				songName.y -= 3;
+			songName.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
+			songName.scrollFactor.set();
+			add(songName);
+			songName.cameras = [camHUD];
+		}
+
 
 		healthBarBG = new FlxSprite(0, FlxG.height * 0.9).loadGraphic(Paths.image('healthBar'));
 		if (FlxG.save.data.downscroll)
@@ -1060,9 +1086,14 @@ class PlayState extends MusicBeatState
 		healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
 			'health', 0, 2);
 		healthBar.scrollFactor.set();
-		healthBar.createFilledBar(0xFFFF0000, 0xFF66FF33);
+		var curcol:FlxColor = col[characterCol.indexOf(dad.curCharacter)]; // Dad Icon
+		var curcol2:FlxColor = col[characterCol.indexOf(boyfriend.curCharacter)]; // Bf Icon
+		healthBar.createFilledBar(curcol, curcol2); // Use those colors
 		// healthBar
 		add(healthBar);
+
+
+
 
 		// Add Kade Engine watermark
 		kadeEngineWatermark = new FlxText(4,healthBarBG.y + 50,0,SONG.song + " " + (storyDifficulty == 2 ? "Hard" : storyDifficulty == 1 ? "Normal" : "Easy") + (Main.watermarks ? " - KE " + MainMenuState.kadeEngineVer : ""), 16);
@@ -2031,6 +2062,10 @@ class PlayState extends MusicBeatState
 			{
 				playerStrums.add(babyArrow);
 			}
+			else
+			{
+				player2Strums.add(babyArrow);
+			}
 
 			babyArrow.animation.play('static');
 			babyArrow.x += 50;
@@ -2620,6 +2655,15 @@ class PlayState extends MusicBeatState
 							case 0:
 								dad.playAnim('singLEFT' + altAnim, true);
 						}
+
+						player2Strums.forEach(function(spr:FlxSprite)
+						{
+							if (Math.abs(daNote.noteData) == spr.ID)
+							{
+								spr.animation.play('confirm');
+								sustainplayer2(spr.ID, spr, daNote);
+							}
+						});
 	
 						#if cpp
 						if (lua != null)
@@ -2637,6 +2681,23 @@ class PlayState extends MusicBeatState
 						notes.remove(daNote, true);
 						daNote.destroy();
 					}
+
+					player2Strums.forEach(function(spr:FlxSprite)
+					{
+						if (strumming2[spr.ID])
+						{
+							spr.animation.play("confirm");
+						}
+	
+						if (spr.animation.curAnim.name == 'confirm' && !curStage.startsWith('school'))
+						{
+							spr.centerOffsets();
+							spr.offset.x -= 13;
+							spr.offset.y -= 13;
+						}
+						else
+							spr.centerOffsets();
+					});
 	
 					if (!daNote.modifiedByLua)
 					{
@@ -2708,6 +2769,34 @@ class PlayState extends MusicBeatState
 		if (FlxG.keys.justPressed.ONE)
 			endSong();
 		#end
+	}
+
+	function sustainplayer2(strum:Int, spr:FlxSprite, note:Note):Void
+	{
+		var length:Float = note.sustainLength;
+		var tempo:Float = Conductor.bpm / 60;
+		var temp:Float = 1 / tempo;
+
+		if (length > 0)
+		{
+			strumming2[strum] = true;
+		}
+
+		if (!note.isSustainNote)
+		{
+			new FlxTimer().start(length == 0 ? 0.2 : (length / Conductor.crochet * temp) + 0.1, function(tmr:FlxTimer)
+			{
+				if (!strumming2[strum])
+				{
+					spr.animation.play("static", true);
+				}
+				else if (length > 0)
+				{
+					strumming2[strum] = false;
+					spr.animation.play("static", true);
+				}
+			});
+		}
 	}
 
 	function endSong():Void
@@ -3881,16 +3970,18 @@ class PlayState extends MusicBeatState
 			// Conductor.changeBPM(SONG.bpm);
 
 			// Dad doesnt interupt his own notes
-			
-			// Commented out until a reason to bring this back arises in the future
-			/* if (SONG.notes[Math.floor(curStep / 16)].mustHitSection)
-				dad.dance(); */
-			
-			if(dad.animation.curAnim.name.startsWith('sing'))
-				if(dad.animation.finished)
+			if (dad.animation.curAnim.name.startsWith('sing'))
+			{
+				if (dad.animation.finished)
+				{
 					dad.dance();
+				}
+
+			}
 			else
+			{
 				dad.dance();
+			}
 		}
 		// FlxG.log.add('change bpm' + SONG.notes[Std.int(curStep / 16)].changeBPM);
 		wiggleShit.update(Conductor.crochet);
