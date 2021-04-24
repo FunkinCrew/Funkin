@@ -75,6 +75,7 @@
 	<haxelib name="json2object"/>
 	<haxelib name="uniontypes"/>
 	<haxelib name="hxjsonast"/>
+	<haxelib name="linc_luajit"/>
 	<!-- <haxelib name="markdown" /> -->
 	<!-- <haxelib name="HtmlParser" /> -->
 
