@@ -32,7 +32,12 @@ class Character extends FlxSprite
 		{
 			case 'gf':
 				// GIRLFRIEND CODE
-				tex = Paths.getSparrowAtlas('GF_assets');
+				switch PlayState.SONG.song.toLowerCase() {
+					case 'bopeebo':
+						tex = Paths.getSparrowAtlas('GF_assets');
+					default:
+						tex = Paths.getSparrowAtlas('GF_assets_lite');
+				}
 				frames = tex;
 				animation.addByPrefix('cheer', 'GF Cheer', 24, false);
 				animation.addByPrefix('singLEFT', 'GF left note', 24, false);
