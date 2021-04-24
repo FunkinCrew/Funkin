@@ -7,6 +7,7 @@ class BeatSprite extends FunkinSprite {
     var danceDir : Bool = false;
     public var danceBeat : Int = 1;
     public var shouldDance : Bool = false;
+    public var shouldIdleDance : Bool = false;
     public function new (x : Float, y : Float, shouldDanceVar : Bool = false, danceBeatVar : Int = 1, ?event:FunkinUtility.SpecialEvent) {
         super(x, y,event);
         shouldDance = shouldDanceVar;
@@ -18,10 +19,12 @@ class BeatSprite extends FunkinSprite {
         if (beat % danceBeat != 0) return;
         danceDir = !danceDir;
 
-        if (danceDir) {
+        if (danceDir && !shouldIdleDance) {
             animation.play("danceRight", true);
-        } else {
+        } else if (!shouldIdleDance){
             animation.play("danceLeft", true);
+        } else {
+            animation.play("idle", true);
         }
     }
 

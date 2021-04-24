@@ -147,6 +147,7 @@ class JSONFunkinSprite {
     @:default(0.0) public var y : Float;
     @:default(false) @:optional public var flipX : Bool;
     @:default(false) @:optional public var flipY : Bool;
+    @:default(1.0) public var alpha : Float;
     @:optional public var animation : Array<AnimationObject>;
     public var graphic : String;
     // not read from the file. expected to be assigned by playstate, depending on what it is reading.
@@ -163,6 +164,7 @@ class JSONFunkinSprite {
         trace(graphicpath + graphic);
         var beatsprite = new BeatSprite(x, y, canDance, beatmulti, event);
         beatsprite.flipX = flipX;
+        beatsprite.alpha = alpha;
         beatsprite.flipY = flipY;
         if (animation != null) {
             trace(animation);
@@ -311,6 +313,10 @@ typedef FunkinCommand = Union<FunkinExpression, FunkinIf>;
  }
 typedef Stage = {
     var stages : Array<StageGroup>;
+    var bfoffset : Array<Float>;
+    var gfoffset : Array<Float>;
+    var dadoffset : Array<Float>;
+    var defaultZoom : Float;
 }
 /**
  * A register of all data currently being used, like the offset. 

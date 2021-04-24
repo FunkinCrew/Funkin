@@ -139,6 +139,9 @@ class PlayState extends MusicBeatState
 	// how big to stretch the pixel art assets
 	public static var daPixelZoom:Float = 6;
 
+	var bfoffset = [0.0, 0.0];
+	var gfoffset = [0.0, 0.0];
+	var dadoffset = [0.0, 0.0];
 	var inCutscene:Bool = false;
 	var alwaysDoCutscenes = false;
 	var fullComboMode:Bool = false;
