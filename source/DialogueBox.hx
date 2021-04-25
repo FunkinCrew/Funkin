@@ -43,7 +43,7 @@ class DialogueBox extends FlxSpriteGroup
 		{
 			case 'tutorial':
 				if (STOptions.st_extraDialogue) {
-					FlxG.sound.playMusic(Paths.music('tutorialInst'), 0.6);
+					FlxG.sound.playMusic(Paths.music('Inst_Tutorial', 'tutorial'), 0.6);
 					FlxG.sound.music.fadeIn(1, 0, 0.8);
 				}
 			case 'bopeebo':
@@ -73,7 +73,7 @@ class DialogueBox extends FlxSpriteGroup
 				}
 			case 'monster':
 				if (STOptions.st_extraDialogue) {
-					FlxG.sound.playMusic(Paths.music('monsterInst'), 0.6);
+					FlxG.sound.playMusic(Paths.music('Inst_Monster', 'week2'), 0.6);
 					FlxG.sound.music.fadeIn(1, 0, 0.8);
 				}
 			case 'pico':
@@ -118,7 +118,7 @@ class DialogueBox extends FlxSpriteGroup
 				}
 			case 'winter-horrorland':
 				if (STOptions.st_extraDialogue) {
-					FlxG.sound.playMusic(Paths.music('winterHorrorlandInst'), 0.6);
+					FlxG.sound.playMusic(Paths.music('Inst_WinterHorrorland', 'week5'), 0.6);
 					FlxG.sound.music.fadeIn(1, 0, 0.8);
 				}
 			case 'senpai':
@@ -357,13 +357,14 @@ class DialogueBox extends FlxSpriteGroup
 		}
 
 		swagDialogue = new FlxTypeText(240, 500, Std.int(FlxG.width * 0.6), "", 32);
-		swagDialogue.setFormat(Paths.font("vcr.ttf"), 48, FlxColor.BLACK, LEFT);
+		swagDialogue.setFormat(Paths.font("vcr.ttf"), 40, FlxColor.BLACK, LEFT);
+		dropText = new FlxText(242, 502, Std.int(FlxG.width * 0.6), "", 32);
+		dropText.setFormat(Paths.font("vcr.ttf"), 40, FlxColor.BLACK, LEFT);
 
 		if (PlayState.SONG.song.toLowerCase() == 'senpai' || PlayState.SONG.song.toLowerCase() == 'roses' || PlayState.SONG.song.toLowerCase() == 'thorns') {
 			dropText = new FlxText(242, 502, Std.int(FlxG.width * 0.6), "", 32);
 			dropText.font = 'Pixel Arial 11 Bold';
 			dropText.color = 0xFFD89494;
-			add(dropText);
 
 			swagDialogue = new FlxTypeText(240, 500, Std.int(FlxG.width * 0.6), "", 32);
 			swagDialogue.font = 'Pixel Arial 11 Bold';
@@ -371,6 +372,7 @@ class DialogueBox extends FlxSpriteGroup
 			swagDialogue.sounds = [FlxG.sound.load(Paths.sound('pixelText'), 0.6)];
 		}
 
+		add(dropText);
 		add(swagDialogue);
 
 		dialogue = new Alphabet(0, 80, "", false, true);
@@ -393,8 +395,7 @@ class DialogueBox extends FlxSpriteGroup
 			dropText.color = FlxColor.BLACK;
 		}
 
-		if (PlayState.SONG.song.toLowerCase() == 'senpai' || PlayState.SONG.song.toLowerCase() == 'roses' || PlayState.SONG.song.toLowerCase() == 'thorns')
-			dropText.text = swagDialogue.text;
+		dropText.text = swagDialogue.text;
 
 		if (box.animation.curAnim != null)
 		{
@@ -486,9 +487,7 @@ class DialogueBox extends FlxSpriteGroup
 						portraitLeft.visible = false;
 						portraitRight.visible = false;
 						swagDialogue.alpha -= 1 / 5;
-
-						if (PlayState.SONG.song.toLowerCase() == 'senpai' || PlayState.SONG.song.toLowerCase() == 'roses' || PlayState.SONG.song.toLowerCase() == 'thorns')
-							dropText.alpha = swagDialogue.alpha;
+						dropText.alpha = swagDialogue.alpha;
 					}, 5);
 
 					new FlxTimer().start(1.2, function(tmr:FlxTimer)
@@ -529,10 +528,11 @@ class DialogueBox extends FlxSpriteGroup
 		{
 			case 'gf':
 				swagDialogue.sounds = [FlxG.sound.load(Paths.sound('gfText'), 0.6)];
+				swagDialogue.color = FlxColor.fromRGB(238, 21, 54);
 				portraitRight.visible = false;
 				if (!portraitLeft.visible)
 				{
-					portraitLeft.frames = Paths.getSparrowAtlas('portraits');
+					portraitLeft.frames = Paths.getSparrowAtlas('portraits', 'shared');
 					portraitLeft.animation.addByPrefix('enter', 'gf portrait', 24, false);
 					portraitLeft.setGraphicSize(Std.int(portraitLeft.width * 1 * 0.75));
 					portraitLeft.antialiasing = true;
@@ -548,10 +548,11 @@ class DialogueBox extends FlxSpriteGroup
 				}
 			case 'bf':
 				swagDialogue.sounds = [FlxG.sound.load(Paths.sound('bfText'), 0.6)];
+				swagDialogue.color = FlxColor.fromRGB(80, 165, 235);
 				portraitLeft.visible = false;
 				if (!portraitRight.visible)
 				{
-					portraitRight.frames = Paths.getSparrowAtlas('portraits');
+					portraitRight.frames = Paths.getSparrowAtlas('portraits', 'shared');
 					portraitRight.animation.addByPrefix('enter', 'bf portrait', 24, false);
 					portraitRight.setGraphicSize(Std.int(portraitRight.width * 1 * 0.75));
 					portraitRight.antialiasing = true;
@@ -567,10 +568,11 @@ class DialogueBox extends FlxSpriteGroup
 				}
 			case 'dad':
 				swagDialogue.sounds = [FlxG.sound.load(Paths.sound('dadText'), 0.6)];
+				swagDialogue.color = FlxColor.fromRGB(211, 150, 252);
 				portraitRight.visible = false;
 				if (!portraitLeft.visible)
 				{
-					portraitLeft.frames = Paths.getSparrowAtlas('portraits');
+					portraitLeft.frames = Paths.getSparrowAtlas('portraits', 'shared');
 					portraitLeft.animation.addByPrefix('enter', 'dad portrait', 24, false);
 					portraitLeft.setGraphicSize(Std.int(portraitLeft.width * 1 * 0.65));
 					portraitLeft.antialiasing = true;
@@ -586,10 +588,11 @@ class DialogueBox extends FlxSpriteGroup
 				}
 			case 'spooky':
 				swagDialogue.sounds = [FlxG.sound.load(Paths.sound('spookyText'), 0.6)];
+				swagDialogue.color = FlxColor.fromRGB(82, 30, 104);
 				portraitRight.visible = false;
 				if (!portraitLeft.visible)
 				{
-					portraitLeft.frames = Paths.getSparrowAtlas('portraits');
+					portraitLeft.frames = Paths.getSparrowAtlas('portraits', 'shared');
 					portraitLeft.animation.addByPrefix('enter', 'spooky portrait', 24, false);
 					portraitLeft.setGraphicSize(Std.int(portraitLeft.width * 1 * 0.75));
 					portraitLeft.antialiasing = true;
@@ -605,10 +608,11 @@ class DialogueBox extends FlxSpriteGroup
 				}
 			case 'spooky-skid':
 				swagDialogue.sounds = [FlxG.sound.load(Paths.sound('spookyText'), 0.6)];
+				swagDialogue.color = FlxColor.fromRGB(82, 30, 104);
 				portraitRight.visible = false;
 				if (!portraitLeft.visible)
 				{
-					portraitLeft.frames = Paths.getSparrowAtlas('portraits');
+					portraitLeft.frames = Paths.getSparrowAtlas('portraits', 'shared');
 					portraitLeft.animation.addByPrefix('enter', 'spooky-skid portrait', 24, false);
 					portraitLeft.setGraphicSize(Std.int(portraitLeft.width * 1 * 0.75));
 					portraitLeft.antialiasing = true;
@@ -624,10 +628,11 @@ class DialogueBox extends FlxSpriteGroup
 				}
 			case 'spooky-pump':
 				swagDialogue.sounds = [FlxG.sound.load(Paths.sound('spookyText'), 0.6)];
+				swagDialogue.color = FlxColor.fromRGB(199, 70, 63);
 				portraitRight.visible = false;
 				if (!portraitLeft.visible)
 				{
-					portraitLeft.frames = Paths.getSparrowAtlas('portraits');
+					portraitLeft.frames = Paths.getSparrowAtlas('portraits', 'shared');
 					portraitLeft.animation.addByPrefix('enter', 'spooky-pump portrait', 24, false);
 					portraitLeft.setGraphicSize(Std.int(portraitLeft.width * 1 * 0.75));
 					portraitLeft.antialiasing = true;
@@ -643,10 +648,11 @@ class DialogueBox extends FlxSpriteGroup
 				}
 			case 'monster':
 				swagDialogue.sounds = [FlxG.sound.load(Paths.sound('monsterText'), 0.6)];
+				swagDialogue.color = FlxColor.fromRGB(240, 218, 108);
 				portraitRight.visible = false;
 				if (!portraitLeft.visible)
 				{
-					portraitLeft.frames = Paths.getSparrowAtlas('portraits');
+					portraitLeft.frames = Paths.getSparrowAtlas('portraits', 'shared');
 					portraitLeft.animation.addByPrefix('enter', 'monster portrait', 24, false);
 					portraitLeft.setGraphicSize(Std.int(portraitLeft.width * 1 * 0.75));
 					portraitLeft.antialiasing = true;
@@ -661,10 +667,12 @@ class DialogueBox extends FlxSpriteGroup
 					portraitLeft.animation.play('enter');
 				}
 			case 'pico':
+				swagDialogue.sounds = [FlxG.sound.load(Paths.sound('picoText'), 0.6)];
+				swagDialogue.color = FlxColor.fromRGB(36, 166, 91);
 				portraitRight.visible = false;
 				if (!portraitLeft.visible)
 				{
-					portraitLeft.frames = Paths.getSparrowAtlas('portraits');
+					portraitLeft.frames = Paths.getSparrowAtlas('portraits', 'shared');
 					portraitLeft.animation.addByPrefix('enter', 'pico portrait', 24, false);
 					portraitLeft.setGraphicSize(Std.int(portraitLeft.width * 1 * 0.75));
 					portraitLeft.antialiasing = true;
@@ -679,10 +687,12 @@ class DialogueBox extends FlxSpriteGroup
 					portraitLeft.animation.play('enter');
 				}
 			case 'mom':
+				swagDialogue.sounds = [FlxG.sound.load(Paths.sound('momText'), 0.6)];
+				swagDialogue.color = FlxColor.fromRGB(211, 150, 252);
 				portraitRight.visible = false;
 				if (!portraitLeft.visible)
 				{
-					portraitLeft.frames = Paths.getSparrowAtlas('portraits');
+					portraitLeft.frames = Paths.getSparrowAtlas('portraits', 'shared');
 					portraitLeft.animation.addByPrefix('enter', 'mom portrait', 24, false);
 					portraitLeft.setGraphicSize(Std.int(portraitLeft.width * 1 * 0.75));
 					portraitLeft.antialiasing = true;
@@ -697,10 +707,12 @@ class DialogueBox extends FlxSpriteGroup
 					portraitLeft.animation.play('enter');
 				}
 			case 'parents':
+				swagDialogue.sounds = [FlxG.sound.load(Paths.sound('parentsText'), 0.6)];
+				swagDialogue.color = FlxColor.fromRGB(211, 150, 252);
 				portraitRight.visible = false;
 				if (!portraitLeft.visible)
 				{
-					portraitLeft.frames = Paths.getSparrowAtlas('portraits');
+					portraitLeft.frames = Paths.getSparrowAtlas('portraits', 'shared');
 					portraitLeft.animation.addByPrefix('enter', 'parents portrait', 24, false);
 					portraitLeft.setGraphicSize(Std.int(portraitLeft.width * 1 * 0.75));
 					portraitLeft.antialiasing = true;
@@ -716,10 +728,11 @@ class DialogueBox extends FlxSpriteGroup
 				}
 			case 'parents-dad':
 				swagDialogue.sounds = [FlxG.sound.load(Paths.sound('dadText'), 0.6)];
+				swagDialogue.color = FlxColor.fromRGB(211, 150, 252);
 				portraitRight.visible = false;
 				if (!portraitLeft.visible)
 				{
-					portraitLeft.frames = Paths.getSparrowAtlas('portraits');
+					portraitLeft.frames = Paths.getSparrowAtlas('portraits', 'shared');
 					portraitLeft.animation.addByPrefix('enter', 'parents-dad portrait', 24, false);
 					portraitLeft.setGraphicSize(Std.int(portraitLeft.width * 1 * 0.75));
 					portraitLeft.antialiasing = true;
@@ -734,10 +747,12 @@ class DialogueBox extends FlxSpriteGroup
 					portraitLeft.animation.play('enter');
 				}
 			case 'parents-mom':
+				swagDialogue.sounds = [FlxG.sound.load(Paths.sound('momText'), 0.6)];
+				swagDialogue.color = FlxColor.fromRGB(211, 150, 252);
 				portraitRight.visible = false;
 				if (!portraitLeft.visible)
 				{
-					portraitLeft.frames = Paths.getSparrowAtlas('portraits');
+					portraitLeft.frames = Paths.getSparrowAtlas('portraits', 'shared');
 					portraitLeft.animation.addByPrefix('enter', 'parents-mom portrait', 24, false);
 					portraitLeft.setGraphicSize(Std.int(portraitLeft.width * 1 * 0.75));
 					portraitLeft.antialiasing = true;
