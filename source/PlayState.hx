@@ -1478,7 +1478,7 @@ class PlayState extends MusicBeatState
 					getActorByName(id).x = x;
 				}));
 	
-				trace(Lua_helper.add_callback(lua,"setActorAlpha", function(alpha:Int,id:String) {
+				trace(Lua_helper.add_callback(lua,"setActorAlpha", function(alpha:Float,id:String) {
 					getActorByName(id).alpha = alpha;
 				}));
 	
