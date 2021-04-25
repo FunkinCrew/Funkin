@@ -37,6 +37,7 @@ flixel-addons
 flixel-ui
 hscript
 newgrounds
+lime
 ```
 So for each of those type `haxelib install [library]` so shit like `haxelib install newgrounds`
 
@@ -50,6 +51,9 @@ You should have everything ready for compiling the game! Follow the guide below 
 
 At the moment, you can optionally fix the transition bug in songs with zoomed out cameras.
 - Run `haxelib git flixel-addons https://github.com/HaxeFlixel/flixel-addons` in the terminal/command-prompt.
+
+Install lime to compile the game
+- Run `haxelib run lime install`
 
 ### Ignored files
 
