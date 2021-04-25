@@ -59,7 +59,7 @@ class PlayState extends MusicBeatState
 	public static var storyDifficulty:Int = 1;
 	public static var CharacterSuffix:String = '';
 	public static var CameFromChart:Bool = false;
-	public static var transHealth:Float = 1;
+	public static var transHealth:Float = 2;
 	public static var babymode:Bool = true;
 	public static var perfectMode:Bool = false;
 	private var Steppy:Bool = false;
@@ -106,6 +106,8 @@ class PlayState extends MusicBeatState
 	private var iconP2:HealthIcon;
 	private var camHUD:FlxCamera;
 	private var camGame:FlxCamera;
+	private var perfect:FlxSprite;
+	private var perfecttext:FlxSprite;
 
 	var dialogue:Array<String> = ['blah blah blah', 'coolswag'];
 
@@ -113,6 +115,7 @@ class PlayState extends MusicBeatState
 	var isHalloween:Bool = false;
 
 	var phillyCityLights:FlxTypedGroup<FlxSprite>;
+	var phillyCityLightsSrc:FlxTypedGroup<FlxSprite>;
 	var phillyTrain:FlxSprite;
 	var trainSound:FlxSound;
 
@@ -297,6 +300,22 @@ class PlayState extends MusicBeatState
 					light.antialiasing = true;
 					phillyCityLights.add(light);
 				}
+				
+				phillyCityLightsSrc = new FlxTypedGroup<FlxSprite>();
+				add(phillyCityLightsSrc);
+
+				for (i in 0...5)
+				{
+					var light:FlxSprite = new FlxSprite(city.x).loadGraphic(Paths.image('philly/lights/win' + i));
+					light.scrollFactor.set(0.3, 0.3);
+					light.visible = false;
+					light.setGraphicSize(Std.int(light.width * 0.85));
+					light.updateHitbox();
+					light.antialiasing = true;
+					light.alpha = 0.9;
+					light.blend = BlendMode.SCREEN;
+					phillyCityLightsSrc.add(light);
+				}
 
 				var streetBehind:FlxSprite = new FlxSprite(-40, 50).loadGraphic(Paths.image('philly/behindTrain'));
 				add(streetBehind);
@@ -323,12 +342,14 @@ class PlayState extends MusicBeatState
 					overlayShit = new FlxSprite(-500, -600).loadGraphic(Paths.image('limo/limoOverlayDusk'));
 					overlayShit.blend = BlendMode.HARDLIGHT;
 					mom = new Character(100, 100, 'mom-car-eyes');
+					overlayShit.alpha = 0.5;
 				}
 				else
 				{
 					skyBG = new FlxSprite(-120, -50).loadGraphic(Paths.image('limo/limoSunset'));
 					overlayShit = new FlxSprite(-500, -600).loadGraphic(Paths.image('limo/limoOverlay'));
 					overlayShit.blend = BlendMode.MULTIPLY;
+					overlayShit.alpha = 0;
 				}
 				
 				skyBG.scrollFactor.set(0.1, 0.1);
@@ -351,7 +372,6 @@ class PlayState extends MusicBeatState
 					grpLimoDancers.add(dancer);
 				}
 
-				overlayShit.alpha = 0.5;
 				overlayShit.scrollFactor.set(0.1, 0.1);
 
 				var limoTex = Paths.getSparrowAtlas('limo/limoDrive');
@@ -849,6 +869,25 @@ class PlayState extends MusicBeatState
 			
 			scoreTxt.cameras = [camHUD];
 			missTxt.cameras = [camHUD];
+		}
+		else
+		{
+			perfect = new FlxSprite(15, (FlxG.height * 0.9) - 10);
+			perfect.frames = Paths.getSparrowAtlas('PerfectText');
+			perfect.animation.addByPrefix('idle', 'Perfect0', 24, true);
+			perfect.animation.addByPrefix('hit', 'Perfect Hit', 24, false);
+			perfect.animation.addByPrefix('dies', 'Perfect Dies', 24, false);
+			perfect.animation.play('idle');
+			add(perfect);
+			perfect.kill();
+			perfect.cameras = [camHUD];
+			
+			perfecttext = new FlxSprite(65, (FlxG.height * 0.9) + 20);
+			perfecttext.frames = Paths.getSparrowAtlas('PerfectText');
+			perfecttext.animation.addByPrefix('idle', 'Perfect Text', 24, true);
+			perfecttext.animation.play('idle');
+			add(perfecttext);
+			perfecttext.cameras = [camHUD];
 		}
 
 		
@@ -1449,21 +1488,26 @@ class PlayState extends MusicBeatState
 	{		
 		if (isStoryMode)
 		{
-			if (curStep < 0 && (curStep*-1) % 2 == 0 && !Steppy)
+			if (curStep < 0)
 			{
-				health += (health - 1)/-4;
-				Steppy = true;
-			}
-			else if (curStep < 0 && (curStep*-1) % 2 == 1)
-			{
-				Steppy = false;
+				health += (health - 1)/-40;
 			}
 			if (curStep == 1)
+			{
 				health = 1;
+			}
 		}
+		if ((curStage == 'limo') && SONG.song.endsWith('High'))
+		{
+			trace(overlayShit.alpha);
+			if (curStep < 0)
+				overlayShit.alpha += 0.7/130;
+		}
+
 		switch (curStage)
 		{
 			case 'philly':
+			{
 				if (trainMoving)
 				{
 					trainFrameTiming += elapsed;
@@ -1474,7 +1518,8 @@ class PlayState extends MusicBeatState
 						trainFrameTiming = 0;
 					}
 				}
-				// phillyCityLights.members[curLight].alpha -= (Conductor.crochet / 1000) * FlxG.elapsed;
+				phillyCityLightsSrc.members[curLight].alpha += (phillyCityLightsSrc.members[curLight].alpha - 0.1) / -150;
+			}
 		}
 
 		super.update(elapsed);
@@ -1550,7 +1595,39 @@ class PlayState extends MusicBeatState
 				iconP2.animation.curAnim.curFrame = 0;
 			}
 		}
+		else
+		{
+			if (perfect.animation.curAnim.name == 'hit' && perfect.animation.curAnim.finished)
+			{
+				perfect.animation.play('idle');
+				perfect.y = (FlxG.height * 0.9) - 10;
+			}
+			
+			if (perfect.animation.curAnim.name == 'dies' && perfect.animation.curAnim.finished)
+				health = 0;
+			
+			if (curBeat == 0)
+				perfect.revive();
+			//FLASHING TEXT
+			if (!(perfect.animation.curAnim.name == 'dies'))
+			{
+				if (Math.abs(curBeat) % 2 == 1)
+				{
+					perfecttext.revive();
+					
+				}
+				else if (Math.abs(curBeat) % 2 == 0)
+				{
+					perfecttext.kill();
+				}
+			}
+			else
+			{
+				perfecttext.kill();
+			}
 
+		}
+		
 		if (health > 2)
 			health = 2;
 			
@@ -1700,7 +1777,7 @@ class PlayState extends MusicBeatState
 		// better streaming of shit
 
 		// RESET = Quick Game Over Screen
-		if (controls.RESET)
+		if (controls.RESET && !perfectMode)
 		{
 			health = 0;
 			trace("RESET = True");
@@ -1841,7 +1918,7 @@ class PlayState extends MusicBeatState
 
 				if (daNote.y < -daNote.height)
 				{
-					if (daNote.tooLate || !daNote.wasGoodHit)
+					if ((daNote.tooLate || !daNote.wasGoodHit) && !(perfectMode && perfect.animation.curAnim.name == 'dies'))
 					{
 						health -= 0.0475;
 						vocals.volume = 0;
@@ -1856,10 +1933,7 @@ class PlayState extends MusicBeatState
 						songScore -= 10;
 						if (perfectMode)
 						{
-							health = 0;
-							#if desktop
-							Sys.exit(0);
-							#end
+							perfect.animation.play('dies');
 						}
 					}
 
@@ -2377,16 +2451,13 @@ class PlayState extends MusicBeatState
 
 	function noteMiss(direction:Int = 1):Void
 	{
-		if (PlayState.babymode)
+		if (PlayState.babymode && !(perfectMode && perfect.animation.curAnim.name == 'dies'))
 		{
 			if (curStep > 0)
 			{
 				if (perfectMode)
 				{
-					health = 0;
-					#if desktop
-					Sys.exit(0);
-					#end
+					perfect.animation.play('dies');
 				}
 				if (!boyfriend.stunned)
 				{
@@ -2419,36 +2490,42 @@ class PlayState extends MusicBeatState
 
 	function badNoteCheck()
 	{
-		// just double pasting this shit cuz fuk u
-		// REDO THIS SYSTEM!
-		var upP = controls.UP_P;
-		var rightP = controls.RIGHT_P;
-		var downP = controls.DOWN_P;
-		var leftP = controls.LEFT_P;
+		if (!(perfectMode && perfect.animation.curAnim.name == 'dies'))
+		{
+			// just double pasting this shit cuz fuk u
+			// REDO THIS SYSTEM!
+			var upP = controls.UP_P;
+			var rightP = controls.RIGHT_P;
+			var downP = controls.DOWN_P;
+			var leftP = controls.LEFT_P;
 
-		if (leftP)
-			noteMiss(0);
-		if (downP)
-			noteMiss(1);
-		if (upP)
-			noteMiss(2);
-		if (rightP)
-			noteMiss(3);
+			if (leftP)
+				noteMiss(0);
+			if (downP)
+				noteMiss(1);
+			if (upP)
+				noteMiss(2);
+			if (rightP)
+				noteMiss(3);
+		}
 	}
 
 	function noteCheck(keyP:Bool, note:Note):Void
 	{
-		if (keyP)
-			goodNoteHit(note);
-		else
+		if (!(perfectMode && perfect.animation.curAnim.name == 'dies'))
 		{
-			badNoteCheck();
+			if (keyP)
+				goodNoteHit(note);
+			else
+			{
+				badNoteCheck();
+			}
 		}
 	}
 
 	function goodNoteHit(note:Note):Void
 	{
-		if (!note.wasGoodHit)
+		if ((!note.wasGoodHit) && (!(perfectMode && perfect.animation.curAnim.name == 'dies')))
 		{
 			if (!note.isSustainNote)
 			{
@@ -2472,7 +2549,11 @@ class PlayState extends MusicBeatState
 				case 3:
 					boyfriend.playAnim('singRIGHT', true);
 			}
-
+			if (perfectMode)
+			{
+				perfect.animation.play('hit', true);
+				perfect.y = (FlxG.height * 0.9) - 20;
+			}
 			playerStrums.forEach(function(spr:FlxSprite)
 			{
 				if (Math.abs(note.noteData) == spr.ID)
@@ -2714,7 +2795,14 @@ class PlayState extends MusicBeatState
 					curLight = FlxG.random.int(0, phillyCityLights.length - 1);
 
 					phillyCityLights.members[curLight].visible = true;
-					// phillyCityLights.members[curLight].alpha = 1;
+					
+					phillyCityLightsSrc.forEach(function(light:FlxSprite)
+					{
+						light.visible = false;
+					});
+
+					phillyCityLightsSrc.members[curLight].visible = true;
+					phillyCityLightsSrc.members[curLight].alpha = 0.9;
 				}
 
 				if (curBeat % 8 == 4 && FlxG.random.bool(30) && !trainMoving && trainCooldown > 8)

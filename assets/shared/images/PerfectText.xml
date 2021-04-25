@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="PerfectText.png">
+	<!-- Created with Adobe Animate version 21.0.1.37179 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="Bronze0000" x="628" y="77" width="222" height="198" frameX="-3" frameY="0" frameWidth="225" frameHeight="198"/>
+	<SubTexture name="Bronze0001" x="628" y="77" width="222" height="198" frameX="-3" frameY="0" frameWidth="225" frameHeight="198"/>
+	<SubTexture name="Bronze0002" x="2" y="280" width="225" height="196" frameX="0" frameY="0" frameWidth="225" frameHeight="198"/>
+	<SubTexture name="Bronze0003" x="2" y="280" width="225" height="196" frameX="0" frameY="0" frameWidth="225" frameHeight="198"/>
+	<SubTexture name="Freeplay Bronze0000" x="232" y="280" width="100" height="89" frameX="-1" frameY="0" frameWidth="101" frameHeight="89"/>
+	<SubTexture name="Freeplay Bronze0001" x="232" y="280" width="100" height="89" frameX="-1" frameY="0" frameWidth="101" frameHeight="89"/>
+	<SubTexture name="Freeplay Bronze0002" x="337" y="280" width="101" height="89"/>
+	<SubTexture name="Freeplay Bronze0003" x="337" y="280" width="101" height="89"/>
+	<SubTexture name="Freeplay Gold0000" x="443" y="280" width="100" height="89" frameX="-1" frameY="0" frameWidth="101" frameHeight="89"/>
+	<SubTexture name="Freeplay Gold0001" x="443" y="280" width="100" height="89" frameX="-1" frameY="0" frameWidth="101" frameHeight="89"/>
+	<SubTexture name="Freeplay Gold0002" x="548" y="280" width="101" height="89"/>
+	<SubTexture name="Freeplay Gold0003" x="548" y="280" width="101" height="89"/>
+	<SubTexture name="Freeplay Silver0000" x="654" y="280" width="100" height="89" frameX="-1" frameY="0" frameWidth="101" frameHeight="89"/>
+	<SubTexture name="Freeplay Silver0001" x="654" y="280" width="100" height="89" frameX="-1" frameY="0" frameWidth="101" frameHeight="89"/>
+	<SubTexture name="Freeplay Silver0002" x="759" y="280" width="101" height="89"/>
+	<SubTexture name="Freeplay Silver0003" x="759" y="280" width="101" height="89"/>
+	<SubTexture name="Gold0000" x="2" y="481" width="222" height="198" frameX="-3" frameY="0" frameWidth="225" frameHeight="198"/>
+	<SubTexture name="Gold0001" x="2" y="481" width="222" height="198" frameX="-3" frameY="0" frameWidth="225" frameHeight="198"/>
+	<SubTexture name="Gold0002" x="229" y="481" width="225" height="196" frameX="0" frameY="0" frameWidth="225" frameHeight="198"/>
+	<SubTexture name="Gold0003" x="229" y="481" width="225" height="196" frameX="0" frameY="0" frameWidth="225" frameHeight="198"/>
+	<SubTexture name="Perfect0000" x="2" y="2" width="46" height="70"/>
+	<SubTexture name="Perfect0001" x="2" y="2" width="46" height="70"/>
+	<SubTexture name="Perfect0002" x="53" y="2" width="46" height="70"/>
+	<SubTexture name="Perfect0003" x="53" y="2" width="46" height="70"/>
+	<SubTexture name="Perfect Dies0000" x="104" y="2" width="59" height="70" frameX="0" frameY="0" frameWidth="65" frameHeight="70"/>
+	<SubTexture name="Perfect Dies0001" x="104" y="2" width="59" height="70" frameX="0" frameY="0" frameWidth="65" frameHeight="70"/>
+	<SubTexture name="Perfect Dies0002" x="168" y="2" width="59" height="70" frameX="0" frameY="0" frameWidth="65" frameHeight="70"/>
+	<SubTexture name="Perfect Dies0003" x="232" y="2" width="61" height="70" frameX="-4" frameY="0" frameWidth="65" frameHeight="70"/>
+	<SubTexture name="Perfect Dies0004" x="298" y="2" width="61" height="70" frameX="-4" frameY="0" frameWidth="65" frameHeight="70"/>
+	<SubTexture name="Perfect Dies0005" x="298" y="2" width="61" height="70" frameX="-4" frameY="0" frameWidth="65" frameHeight="70"/>
+	<SubTexture name="Perfect Dies0006" x="364" y="2" width="58" height="70" frameX="-1" frameY="0" frameWidth="65" frameHeight="70"/>
+	<SubTexture name="Perfect Dies0007" x="364" y="2" width="58" height="70" frameX="-1" frameY="0" frameWidth="65" frameHeight="70"/>
+	<SubTexture name="Perfect Dies0008" x="427" y="2" width="58" height="70" frameX="-1" frameY="0" frameWidth="65" frameHeight="70"/>
+	<SubTexture name="Perfect Dies0009" x="490" y="2" width="55" height="70" frameX="-4" frameY="0" frameWidth="65" frameHeight="70"/>
+	<SubTexture name="Perfect Dies0010" x="550" y="2" width="55" height="70" frameX="-4" frameY="0" frameWidth="65" frameHeight="70"/>
+	<SubTexture name="Perfect Dies0011" x="550" y="2" width="55" height="70" frameX="-4" frameY="0" frameWidth="65" frameHeight="70"/>
+	<SubTexture name="Perfect Dies0012" x="610" y="2" width="55" height="70" frameX="-4" frameY="0" frameWidth="65" frameHeight="70"/>
+	<SubTexture name="Perfect Dies0013" x="610" y="2" width="55" height="70" frameX="-4" frameY="0" frameWidth="65" frameHeight="70"/>
+	<SubTexture name="Perfect Dies0014" x="670" y="2" width="55" height="70" frameX="-4" frameY="0" frameWidth="65" frameHeight="70"/>
+	<SubTexture name="Perfect Dies0015" x="670" y="2" width="55" height="70" frameX="-4" frameY="0" frameWidth="65" frameHeight="70"/>
+	<SubTexture name="Perfect Dies0016" x="610" y="2" width="55" height="70" frameX="-4" frameY="0" frameWidth="65" frameHeight="70"/>
+	<SubTexture name="Perfect Dies0017" x="610" y="2" width="55" height="70" frameX="-4" frameY="0" frameWidth="65" frameHeight="70"/>
+	<SubTexture name="Perfect Dies0018" x="670" y="2" width="55" height="70" frameX="-4" frameY="0" frameWidth="65" frameHeight="70"/>
+	<SubTexture name="Perfect Dies0019" x="670" y="2" width="55" height="70" frameX="-4" frameY="0" frameWidth="65" frameHeight="70"/>
+	<SubTexture name="Perfect Hit0000" x="730" y="2" width="46" height="70" frameX="0" frameY="0" frameWidth="46" frameHeight="80"/>
+	<SubTexture name="Perfect Hit0001" x="781" y="2" width="46" height="69" frameX="0" frameY="-5" frameWidth="46" frameHeight="80"/>
+	<SubTexture name="Perfect Hit0002" x="781" y="2" width="46" height="69" frameX="0" frameY="-5" frameWidth="46" frameHeight="80"/>
+	<SubTexture name="Perfect Hit0003" x="832" y="2" width="46" height="70" frameX="0" frameY="-10" frameWidth="46" frameHeight="80"/>
+	<SubTexture name="Perfect Text0000" x="2" y="77" width="308" height="37"/>
+	<SubTexture name="Perfect Text0001" x="2" y="77" width="308" height="37"/>
+	<SubTexture name="Perfect Text0002" x="315" y="77" width="308" height="37"/>
+	<SubTexture name="Perfect Text0003" x="315" y="77" width="308" height="37"/>
+	<SubTexture name="Silver0000" x="459" y="481" width="222" height="198" frameX="-3" frameY="0" frameWidth="225" frameHeight="198"/>
+	<SubTexture name="Silver0001" x="459" y="481" width="222" height="198" frameX="-3" frameY="0" frameWidth="225" frameHeight="198"/>
+	<SubTexture name="Silver0002" x="686" y="481" width="225" height="196" frameX="0" frameY="0" frameWidth="225" frameHeight="198"/>
+	<SubTexture name="Silver0003" x="686" y="481" width="225" height="196" frameX="0" frameY="0" frameWidth="225" frameHeight="198"/>
+	<SubTexture name="Smol Bronze0000" x="916" y="481" width="100" height="89" frameX="-1" frameY="0" frameWidth="101" frameHeight="89"/>
+	<SubTexture name="Smol Bronze0001" x="916" y="481" width="100" height="89" frameX="-1" frameY="0" frameWidth="101" frameHeight="89"/>
+	<SubTexture name="Smol Bronze0002" x="2" y="684" width="101" height="89"/>
+	<SubTexture name="Smol Bronze0003" x="2" y="684" width="101" height="89"/>
+	<SubTexture name="Smol Gold0000" x="108" y="684" width="100" height="89" frameX="-1" frameY="0" frameWidth="101" frameHeight="89"/>
+	<SubTexture name="Smol Gold0001" x="108" y="684" width="100" height="89" frameX="-1" frameY="0" frameWidth="101" frameHeight="89"/>
+	<SubTexture name="Smol Gold0002" x="213" y="684" width="101" height="89"/>
+	<SubTexture name="Smol Gold0003" x="213" y="684" width="101" height="89"/>
+	<SubTexture name="Smol Silver0000" x="319" y="684" width="100" height="89" frameX="-1" frameY="0" frameWidth="101" frameHeight="89"/>
+	<SubTexture name="Smol Silver0001" x="319" y="684" width="100" height="89" frameX="-1" frameY="0" frameWidth="101" frameHeight="89"/>
+	<SubTexture name="Smol Silver0002" x="424" y="684" width="101" height="89"/>
+	<SubTexture name="Smol Silver0003" x="424" y="684" width="101" height="89"/>
+</TextureAtlas>

@@ -6,6 +6,8 @@ import flixel.FlxSubState;
 import flixel.math.FlxPoint;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import flixel.FlxSprite;
+import flixel.FlxCamera;
 
 using StringTools;
 
@@ -17,7 +19,14 @@ class GameOverSubstate extends MusicBeatSubstate
 	var stageSuffix:String = "";
 	var CharSoundSuffix:String = "";
 	var CharMusicSuffix:String = "";
-
+	var perfect:FlxSprite;
+	
+	/*private var camHUD2:FlxCamera;
+	
+	camHUD2 = new FlxCamera();
+	camHUD2.bgColor.alpha = 0;
+	FlxG.cameras.add(camHUD2);*/
+		
 	public function new(x:Float, y:Float)
 	{
 		var daPlayer = PlayState.curPlayer;
