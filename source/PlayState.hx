@@ -57,7 +57,13 @@ import llua.State;
 #end
 import tjson.TJSON;
 using StringTools;
-
+typedef LuaAnim = {
+	var prefix : String;
+	@:optional var indices: Array<Int>;
+	var name : String;
+	@:optional var fps : Int;
+	@:optional var loop : Bool;
+}
 class PlayState extends MusicBeatState
 {
 	public static var curStage:String = '';
@@ -178,20 +184,23 @@ class PlayState extends MusicBeatState
 	var inALoop:Bool = false;
 	var useVictoryScreen:Bool = true;
 	public static var lua:State = null;
-	function callLua(func_name:String, args:Array<Dynamic>, ?type:String):Dynamic
-	{
+	function callLua(func_name:String, args:Array<Dynamic>, ?type:String, ?uselua:State):Dynamic
+	{	
+		if (uselua == null){
+			uselua = lua;
+		}
 		var result:Any = null;
 		trace('ello');
-		Lua.getglobal(lua, func_name);
+		Lua.getglobal(uselua, func_name);
 
 		for (arg in args)
 		{
-			Convert.toLua(lua, arg);
+			Convert.toLua(uselua, arg);
 		}
 		trace("before call");
-		trace(lua);
+		trace(uselua);
 		trace(args);
-		Lua.call(lua, args.length, 1);
+		Lua.call(uselua, args.length, 1);
 
 		if (result == null)
 		{
@@ -302,23 +311,26 @@ class PlayState extends MusicBeatState
 		return v;
 	}
 
-	public function setVar(var_name:String, object:Dynamic)
+	public function setVar(var_name:String, object:Dynamic, ?uselua:State)
 	{
 		// trace('setting variable ' + var_name + ' to ' + object);
-
-		Lua.pushnumber(lua, object);
-		Lua.setglobal(lua, var_name);
+		if (uselua == null)
+			uselua = lua;
+		Lua.pushnumber(uselua, object);
+		Lua.setglobal(uselua, var_name);
 	}
 
-	public function getVar(var_name:String, type:String):Dynamic
+	public function getVar(var_name:String, type:String, ?uselua:State):Dynamic
 	{
+		if (uselua == null)
+			uselua = lua;
 		var result:Any = null;
 
 		// trace('getting variable ' + var_name + ' with a type of ' + type);
 
-		Lua.getglobal(lua, var_name);
-		result = Convert.fromLua(lua, -1);
-		Lua.pop(lua, 1);
+		Lua.getglobal(uselua, var_name);
+		result = Convert.fromLua(uselua, -1);
+		Lua.pop(uselua, 1);
 
 		if (result == null)
 		{
@@ -351,34 +363,38 @@ class PlayState extends MusicBeatState
 	}
 
 	public static var luaSprites:Map<String, FlxSprite> = [];
-
-	function makeLuaSprite(spritePath:String, toBeCalled:String, drawBehind:Bool)
+	var luaSound:Map<String, FlxSound> = [];
+	function makeLuaSprite(spritePath:String, toBeCalled:String, drawBehind:Bool, doAnim:Int)
 	{
 		trace("making sprite");
 		#if sys
 
-		var sprite:FlxSprite = new FlxSprite(0, 0).loadGraphic("assets/images/custom_stages/" + SONG.stage + '/' + spritePath + ".png");
-		/*
-		var imgWidth:Float = FlxG.width / data.width;
-		var imgHeight:Float = FlxG.height / data.height;
-		var scale:Float = imgWidth <= imgHeight ? imgWidth : imgHeight;
-
-		// Cap the scale at x1
-		if (scale > 1)
-		{
-			scale = 1;
+		var sprite:FlxSprite = new FlxSprite(0, 0);
+		if (doAnim == 0) {
+			sprite.loadGraphic("assets/images/custom_stages/" + SONG.stage + '/' + spritePath + ".png");
+		} else if (doAnim == 1) {
+			sprite.frames = FlxAtlasFrames.fromSparrow("assets/images/custom_stages/"
+				+ SONG.stage
+				+ '/'
+				+ spritePath
+				+ ".png",
+				"assets/images/custom_stages/"
+				+ SONG.stage
+				+ '/'
+				+ spritePath
+				+ ".xml");
+		} else {
+			sprite.frames = FlxAtlasFrames.fromSpriteSheetPacker("assets/images/custom_stages/"
+				+ SONG.stage
+				+ '/'
+				+ spritePath
+				+ ".png",
+				"assets/images/custom_stages/"
+				+ SONG.stage
+				+ '/'
+				+ spritePath
+				+ ".txt");
 		}
-
-		sprite.makeGraphic(Std.int(data.width * scale), Std.int(data.width * scale), FlxColor.TRANSPARENT);
-
-		var data2:BitmapData = sprite.pixels.clone();
-		var matrix:Matrix = new Matrix();
-		matrix.identity();
-		matrix.scale(scale, scale);
-		data2.fillRect(data2.rect, FlxColor.TRANSPARENT);
-		data2.draw(data, matrix, null, null, null, true);
-		sprite.pixels = data2;
-		*/
 		luaSprites.set(toBeCalled, sprite);
 		// and I quote:
 		// shitty layering but it works!
@@ -477,25 +493,7 @@ class PlayState extends MusicBeatState
 					dialogue = [':dad: The game tried to get a dialog file but couldn\'t find it. Please make sure there is a dialog file named "dialog.txt".'];
 				}
 		}
-
-		if (SONG.stage == 'spooky')
-		{
-			curStage = "spooky";
-			halloweenLevel = true;
-
-			var hallowTex = FlxAtlasFrames.fromSparrow('assets/images/halloween_bg.png', 'assets/images/halloween_bg.xml');
-
-			halloweenBG = new FlxSprite(-200, -100);
-			halloweenBG.frames = hallowTex;
-			halloweenBG.animation.addByPrefix('idle', 'halloweem bg0');
-			halloweenBG.animation.addByPrefix('lightning', 'halloweem bg lightning strike', 24, false);
-			halloweenBG.animation.play('idle');
-			halloweenBG.antialiasing = true;
-			add(halloweenBG);
-
-			isHalloween = true;
-		}
-		else if (SONG.stage == 'philly')
+		if (false)
 		{
 			curStage = 'philly';
 
@@ -787,41 +785,14 @@ class PlayState extends MusicBeatState
 				add(waveSprite);
 				add(waveSpriteFG);
 			 */
-		}
-		else if (SONG.stage == "stage")
-		{
-			defaultCamZoom = 0.9;
-			curStage = 'stage';
-			var bg:FlxSprite = new FlxSprite(-600, -200).loadGraphic('assets/images/stageback.png');
-			bg.antialiasing = true;
-			bg.scrollFactor.set(0.9, 0.9);
-			bg.active = false;
-			add(bg);
-
-			var stageFront:FlxSprite = new FlxSprite(-650, 600).loadGraphic('assets/images/stagefront.png');
-			stageFront.setGraphicSize(Std.int(stageFront.width * 1.1));
-			stageFront.updateHitbox();
-			stageFront.antialiasing = true;
-			stageFront.scrollFactor.set(0.9, 0.9);
-			stageFront.active = false;
-			add(stageFront);
-
-			var stageCurtains:FlxSprite = new FlxSprite(-500, -300).loadGraphic('assets/images/stagecurtains.png');
-			stageCurtains.setGraphicSize(Std.int(stageCurtains.width * 0.9));
-			stageCurtains.updateHitbox();
-			stageCurtains.antialiasing = true;
-			stageCurtains.scrollFactor.set(1.3, 1.3);
-			stageCurtains.active = false;
-
-			add(stageCurtains);
 		} else {
 			// use assets
-			var parsedStageJson = CoolUtil.parseJson(Assets.getText("assets/images/custom_stages/custom_stages.json"));
-			var parsedFuckeeJson:FunkinUtility.Stage = new json2object.JsonParser<FunkinUtility.Stage>().fromJson(File.getContent("assets/images/custom_stages/"
-				+ Reflect.field(parsedStageJson, SONG.stage) + ".json"),
-				"assets/images/custom_stages/"
-				+ Reflect.field(parsedStageJson, SONG.stage)
-				+ ".json");
+			//var parsedStageJson = CoolUtil.parseJson(Assets.getText("assets/images/custom_stages/custom_stages.json"));
+			//var parsedFuckeeJson:FunkinUtility.Stage = new json2object.JsonParser<FunkinUtility.Stage>().fromJson(File.getContent("assets/images/custom_stages/"
+			//	+ Reflect.field(parsedStageJson, SONG.stage) + ".json"),
+			//	"assets/images/custom_stages/"
+			//	+ Reflect.field(parsedStageJson, SONG.stage)
+			//	+ ".json");
 			// now we must read the file properly. Oh dear. 
 			// todo
 			/*
@@ -1346,7 +1317,14 @@ class PlayState extends MusicBeatState
 				remove(sprite);
 				return true;
 			});
-
+			trace(Lua_helper.add_callback(lua, "getGameWidth", function()
+			{
+				return FlxG.width;
+			}));
+			trace(Lua_helper.add_callback(lua, "getGameHeight", function()
+			{
+				return FlxG.height;
+			}));
 			// hud/camera
 			trace(Lua_helper.add_callback(lua, "trace", function(value:Dynamic)
 			{
@@ -1358,6 +1336,25 @@ class PlayState extends MusicBeatState
 				camHUD.y = y;
 			}));
 
+			trace(Lua_helper.add_callback(lua, "addActorAnimationPrefix", function(prefix:String, name:String,fps:Int, loop:Bool,id:String)
+			{
+				
+				getActorByName(id).animation.addByPrefix(name, prefix,fps,loop);
+				trace(getActorByName(id).animation);
+			}));
+			trace(Lua_helper.add_callback(lua, "addActorAnimationIndices", function(prefix:String, name:String, indices:Array<Int>,fps:Int, loop:Bool, id:String)
+			{
+				getActorByName(id).animation.addByIndices(name, prefix,indices,"",  fps, loop);
+			}));
+			trace(Lua_helper.add_callback(lua, "playActorAnimation", function(animation:String,force:Bool,id:String)
+			{
+				trace(animation);
+				getActorByName(id).animation.play(animation, force);
+			}));
+			trace(Lua_helper.add_callback(lua, "playCharacterAnimation", function(animation:String, force:Bool, id:String)
+			{
+				getActorByName(id).playAnim(animation, force);
+			}));
 			trace(Lua_helper.add_callback(lua, "getHudX", function()
 			{
 				return camHUD.x;
@@ -1373,12 +1370,31 @@ class PlayState extends MusicBeatState
 				FlxG.camera.x = x;
 				FlxG.camera.y = y;
 			}));
-
+			trace(Lua_helper.add_callback(lua, "playSound", function(filename:String)
+			{
+				FlxG.sound.play('assets/images/custom_stages/' + SONG.stage + '/' + filename + '.ogg');
+			}));
+			trace(Lua_helper.add_callback(lua, "playStoredSound", function(force:Bool, id:String)
+			{
+				luaSound.get(id).play(force);
+			}));
+			trace(Lua_helper.add_callback(lua, "getSoundPlaying", function(id:String)
+			{
+				return luaSound.get(id).playing;
+			}));
 			trace(Lua_helper.add_callback(lua, "getCameraX", function()
 			{
 				return FlxG.camera.x;
 			}));
-
+			trace(Lua_helper.add_callback(lua, "addSoundToList", function(filename:String, tobecalled:String)
+			{
+				luaSound.set(tobecalled, new FlxSound().loadEmbedded('assets/images/custom_stages/' + SONG.stage + '/' + filename + '.ogg'));
+				FlxG.sound.list.add(luaSound.get(tobecalled));
+			}));
+			trace(Lua_helper.add_callback(lua, "getSoundTime", function(id:String)
+			{
+				return luaSound.get(id).time;
+			}));
 			trace(Lua_helper.add_callback(lua, "getCameraY", function()
 			{
 				return FlxG.camera.y;
@@ -1390,6 +1406,7 @@ class PlayState extends MusicBeatState
 			}));
 			trace(Lua_helper.add_callback(lua, "setDefaultZoom", function(zoomAmount:Float)
 			{
+				FlxG.camera.zoom = zoomAmount;
 				defaultCamZoom = zoomAmount;
 			}));
 			trace(Lua_helper.add_callback(lua, "setHudZoom", function(zoomAmount:Float)
@@ -1401,7 +1418,10 @@ class PlayState extends MusicBeatState
 			{
 				getActorByName(id).x = x;
 			}));
-
+			trace(Lua_helper.add_callback(lua, "setActorVelocityX", function(x:Int, id:String)
+			{
+				getActorByName(id).velocity.x = x;
+			}));
 			trace(Lua_helper.add_callback(lua, "setActorAlpha", function(alpha:Int, id:String)
 			{
 				getActorByName(id).alpha = alpha;
@@ -1412,6 +1432,12 @@ class PlayState extends MusicBeatState
 				getActorByName(id).y = y;
 			}));
 
+			trace(Lua_helper.add_callback(lua, "setActorVelocityY", function(y:Int, id:String)
+			{
+				getActorByName(id).velocity.y = y;
+			}));
+
+
 			trace(Lua_helper.add_callback(lua, "setActorAngle", function(angle:Int, id:String)
 			{
 				getActorByName(id).angle = angle;
@@ -1420,6 +1446,10 @@ class PlayState extends MusicBeatState
 			trace(Lua_helper.add_callback(lua, "setActorScale", function(scale:Float, id:String)
 			{
 				getActorByName(id).setGraphicSize(Std.int(getActorByName(id).width * scale));
+			}));
+			trace(Lua_helper.add_callback(lua, "setActorAntialias", function(antialias:Bool, id:String)
+			{
+				getActorByName(id).antialiasing = antialias;
 			}));
 			trace(Lua_helper.add_callback(lua, "setActorScrollFactor", function(factorx:Float, factory:Float, id:String)
 			{
@@ -2390,7 +2420,10 @@ class PlayState extends MusicBeatState
 		perfectModeOld = false;
 		#end
 
-
+		if (lua != null)
+		{
+			callLua('update', [elapsed]);
+		}
 		switch (curStage)
 		{
 			case 'philly':
@@ -3485,11 +3518,7 @@ class PlayState extends MusicBeatState
 	override function beatHit()
 	{
 		super.beatHit();
-		if (lua != null)
-		{
-			setVar('curBeat', curBeat);
-			callLua('beatHit', [curBeat]);
-		}
+		
 		if (generatedMusic)
 		{
 			notes.sort(FlxSort.byY, FlxSort.DESCENDING);
@@ -3603,6 +3632,11 @@ class PlayState extends MusicBeatState
 		if (isHalloween && FlxG.random.bool(10) && curBeat > lightningStrikeBeat + lightningOffset)
 		{
 			lightningStrikeShit();
+		}
+		if (lua != null)
+		{
+			setVar('curBeat', curBeat);
+			callLua('beatHit', [curBeat]);
 		}
 	}
 
