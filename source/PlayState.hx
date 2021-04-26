@@ -2619,7 +2619,7 @@ class PlayState extends MusicBeatState
 								dad.playAnim('singDOWN' + altAnim, true);
 							case 0:
 								dad.playAnim('singLEFT' + altAnim, true);
-						}
+            }
 	
 						#if windows
 						if (lua != null)
