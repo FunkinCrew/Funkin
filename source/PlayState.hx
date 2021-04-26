@@ -3273,9 +3273,11 @@ class PlayState extends MusicBeatState
 								if (controlArray[coolNote.noteData])
 								{
 				
+									goodNoteHit(coolNote, (mashing > getKeyPresses(coolNote)));
+
 									// ANTI MASH CODE FOR THE BOYS
 				
-									if (mashing > getKeyPresses(coolNote) && mashViolations < 2)
+									/*if (mashing > getKeyPresses(coolNote) && mashViolations < 2)
 										{
 											mashViolations++;
 											
@@ -3303,8 +3305,8 @@ class PlayState extends MusicBeatState
 										if (controlArray[ignoreList[shit]])
 											inIgnoreList = true;
 									}
-								}
-							}
+								}*/
+							//}
 						}
 						else if (possibleNotes[0].noteData == possibleNotes[1].noteData)
 						{
@@ -3667,7 +3669,9 @@ class PlayState extends MusicBeatState
 			else if (controlArray[note.noteData])
 				{
 
-					if (mashing > getKeyPresses(note) && mashViolations <= 2)
+					goodNoteHit(note, (mashing > getKeyPresses(note)));
+					
+					/*if (mashing > getKeyPresses(note) && mashViolations <= 2)
 					{
 						mashViolations++;
 
@@ -3686,7 +3690,7 @@ class PlayState extends MusicBeatState
 							mashing = 0;
 					}
 					else
-						goodNoteHit(note, false);
+						goodNoteHit(note, false);*/
 
 				}
 		}
