@@ -20,10 +20,10 @@ jobs:
           haxelib install lime
           haxelib install openfl
           haxelib install flixel
-          haxelib run lime setup flixel --always
-          haxelib run lime setup --always
+          haxelib --always run lime setup flixel
+          haxelib --always run lime setup
           haxelib install flixel-tools
-          haxelib run flixel-tools setup --always
+          haxelib --always run flixel-tools setup 
           haxelib install flixel-ui
           haxelib install tjson
           haxelib install json2object
@@ -54,10 +54,10 @@ jobs:
           haxelib install lime
           haxelib install openfl
           haxelib install flixel
-          haxelib run lime setup flixel --always
-          haxelib run lime setup --always
+          haxelib --always run lime setup flixel
+          haxelib --always run lime setup
           haxelib install flixel-tools
-          haxelib run flixel-tools setup --always
+          haxelib --always run flixel-tools setup
           haxelib install flixel-ui
           haxelib install tjson
           haxelib install json2object
