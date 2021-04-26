@@ -3,7 +3,7 @@ jobs:
 
   # Neko
 
-   job: BuildCppLinux
+  - job: BuildCppLinux
     pool:
       vmImage: 'ubuntu-16.04'
     steps:
