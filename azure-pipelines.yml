@@ -20,7 +20,7 @@ jobs:
           haxelib install lime
           haxelib install openfl
           haxelib install flixel
-          haxelib --always run lime setup flixel
+          yes | haxelib --always run lime setup flixel
           haxelib install flixel-tools
           haxelib --always run flixel-tools setup 
           haxelib install flixel-ui
@@ -53,7 +53,7 @@ jobs:
           haxelib install lime
           haxelib install openfl
           haxelib install flixel
-          haxelib --always run lime setup flixel
+          yes | haxelib run lime setup flixel
           haxelib install flixel-tools
           haxelib --always run flixel-tools setup
           haxelib install flixel-ui
