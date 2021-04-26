@@ -1521,7 +1521,7 @@ class PlayState extends MusicBeatState
 
 		generateStaticArrows(0);
 		generateStaticArrows(1);
-		#if cpp
+		#if windows
 		if (FileSystem.exists("assets/images/custom_stages/" + SONG.stage + "/process.lua")) // dude I hate lua (jkjkjkjk)
 		{
 			trace('opening a lua state (because we are cool :))');
