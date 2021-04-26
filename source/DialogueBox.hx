@@ -43,83 +43,115 @@ class DialogueBox extends FlxSpriteGroup
 		{
 			case 'tutorial':
 				if (STOptions.st_extraDialogue) {
-					FlxG.sound.playMusic(Paths.music('Inst_Tutorial', 'tutorial'), 0.6);
-					FlxG.sound.music.fadeIn(1, 0, 0.8);
+					if (PlayState.isStoryMode) {
+						FlxG.sound.playMusic(Paths.music('Inst_Tutorial', 'tutorial'), 0.6);
+						FlxG.sound.music.fadeIn(1, 0, 0.8);
+					}
 				}
 			case 'bopeebo':
 				if (STOptions.st_extraDialogue) {
-					FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0.6);
-					FlxG.sound.music.fadeIn(1, 0, 0.8);
+					if (PlayState.isStoryMode) {
+						FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0.6);
+						FlxG.sound.music.fadeIn(1, 0, 0.8);
+					}
 				}
 			case 'fresh':
 				if (STOptions.st_extraDialogue) {
-					FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0.6);
-					FlxG.sound.music.fadeIn(1, 0, 0.8);
+					if (PlayState.isStoryMode) {
+						FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0.6);
+						FlxG.sound.music.fadeIn(1, 0, 0.8);
+					}
 				}
 			case 'spookeez':
 				if (STOptions.st_extraDialogue) {
-					FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0.6);
-					FlxG.sound.music.fadeIn(1, 0, 0.8);
+					if (PlayState.isStoryMode) {
+						FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0.6);
+						FlxG.sound.music.fadeIn(1, 0, 0.8);
+					}
 				}
 			case 'south':
 				if (STOptions.st_extraDialogue) {
-					FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0.6);
-					FlxG.sound.music.fadeIn(1, 0, 0.8);
+					if (PlayState.isStoryMode) {
+						FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0.6);
+						FlxG.sound.music.fadeIn(1, 0, 0.8);
+					}
 				}
 			case 'dadbattle':
 				if (STOptions.st_extraDialogue) {
-					FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0.6);
-					FlxG.sound.music.fadeIn(1, 0, 0.8);
+					if (PlayState.isStoryMode) {
+						FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0.6);
+						FlxG.sound.music.fadeIn(1, 0, 0.8);
+					}
 				}
 			case 'monster':
 				if (STOptions.st_extraDialogue) {
-					FlxG.sound.playMusic(Paths.music('Inst_Monster', 'week2'), 0.6);
-					FlxG.sound.music.fadeIn(1, 0, 0.8);
+					if (PlayState.isStoryMode) {
+						FlxG.sound.playMusic(Paths.music('Inst_Monster', 'week2'), 0.6);
+						FlxG.sound.music.fadeIn(1, 0, 0.8);
+					}
 				}
 			case 'pico':
 				if (STOptions.st_extraDialogue) {
-					FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0.6);
-					FlxG.sound.music.fadeIn(1, 0, 0.8);
+					if (PlayState.isStoryMode) {
+						FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0.6);
+						FlxG.sound.music.fadeIn(1, 0, 0.8);
+					}
 				}
 			case 'philly-nice':
 				if (STOptions.st_extraDialogue) {
-					FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0.6);
-					FlxG.sound.music.fadeIn(1, 0, 0.8);
+					if (PlayState.isStoryMode) {
+						FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0.6);
+						FlxG.sound.music.fadeIn(1, 0, 0.8);
+					}
 				}
 			case 'blammed':
 				if (STOptions.st_extraDialogue) {
-					FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0.6);
-					FlxG.sound.music.fadeIn(1, 0, 0.8);
+					if (PlayState.isStoryMode) {
+						FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0.6);
+						FlxG.sound.music.fadeIn(1, 0, 0.8);
+					}
 				}
 			case 'satin-panties':
 				if (STOptions.st_extraDialogue) {
-					FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0.6);
-					FlxG.sound.music.fadeIn(1, 0, 0.8);
+					if (PlayState.isStoryMode) {
+						FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0.6);
+						FlxG.sound.music.fadeIn(1, 0, 0.8);
+					}
 				}
 			case 'high':
 				if (STOptions.st_extraDialogue) {
-					FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0.6);
-					FlxG.sound.music.fadeIn(1, 0, 0.8);
+					if (PlayState.isStoryMode) {
+						FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0.6);
+						FlxG.sound.music.fadeIn(1, 0, 0.8);
+					}
 				}
 			case 'milf':
 				if (STOptions.st_extraDialogue) {
-					FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0.6);
-					FlxG.sound.music.fadeIn(1, 0, 0.8);
+					if (PlayState.isStoryMode) {
+						FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0.6);
+						FlxG.sound.music.fadeIn(1, 0, 0.8);
+					}
 				}
 			case 'cocoa':
 				if (STOptions.st_extraDialogue) {
-					FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0.6);
-					FlxG.sound.music.fadeIn(1, 0, 0.8);
+					if (PlayState.isStoryMode) {
+						FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0.6);
+						FlxG.sound.music.fadeIn(1, 0, 0.8);
+					};
 				}
 			case 'eggnog':
 				if (STOptions.st_extraDialogue) {
-					FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0.6);
-					FlxG.sound.music.fadeIn(1, 0, 0.8);
+					if (PlayState.isStoryMode) {
+						FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 0.6);
+						FlxG.sound.music.fadeIn(1, 0, 0.8);
+					}
 				}
 			case 'winter-horrorland':
 				if (STOptions.st_extraDialogue) {
-					FlxG.sound.playMusic(Paths.music('Inst_WinterHorrorland', 'week5'), 0.6);
-					FlxG.sound.music.fadeIn(1, 0, 0.8);
+					if (PlayState.isStoryMode) {
+						FlxG.sound.playMusic(Paths.music('Inst_WinterHorrorland', 'week5'), 0.6);
+						FlxG.sound.music.fadeIn(1, 0, 0.8);
+					}
 				}
 			case 'senpai':
 				FlxG.sound.playMusic(Paths.music('Lunchbox'), 0);
