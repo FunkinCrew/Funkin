@@ -9,13 +9,12 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.animation.FlxBaseAnimation;
 import flixel.math.FlxMath;
 import flixel.util.FlxTimer;
-import flixel.util.FlxTimer;
 
 using StringTools;
 
 class CharacterSelectState extends MusicBeatState
 {
-	var BloopsisDebugging:Bool = true;
+	var BloopsisDebugging:Bool = false;
 	var Shittext:FlxText;
 	var Shittext2:FlxText;
 	var Looking:Bool = false;

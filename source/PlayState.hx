@@ -1485,7 +1485,9 @@ class PlayState extends MusicBeatState
 	var canPause:Bool = true;
 
 	override public function update(elapsed:Float)
-	{		
+	{	
+		if (FlxG.keys.justPressed.T)
+			FlxG.switchState(new PerfectCertificateState());
 		if (isStoryMode)
 		{
 			if (curStep < 0)
@@ -2033,13 +2035,20 @@ class PlayState extends MusicBeatState
 
 			if (storyPlaylist.length <= 0)
 			{
-				FlxG.sound.playMusic(Paths.music('freakyMenu'));
-				unloadAssets();
 
 				transIn = FlxTransitionableState.defaultTransIn;
 				transOut = FlxTransitionableState.defaultTransOut;
-
-				FlxG.switchState(new StoryMenuState());
+				if (!perfectMode)
+				{
+					FlxG.sound.playMusic(Paths.music('freakyMenu'));
+					unloadAssets();
+					FlxG.switchState(new StoryMenuState());
+				}
+				else
+				{
+					unloadAssets();
+					FlxG.switchState(new PerfectCertificateState());
+				}
 
 				// if ()
 				StoryMenuState.weekUnlocked[Std.int(Math.min(storyWeek + 1, StoryMenuState.weekUnlocked.length - 1))] = true;

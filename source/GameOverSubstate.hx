@@ -105,7 +105,21 @@ class GameOverSubstate extends MusicBeatSubstate
 
 		if (bf.animation.curAnim.name == 'firstDeath' && bf.animation.curAnim.finished)
 		{
-			FlxG.sound.playMusic(Paths.music('gameOver' + stageSuffix + CharMusicSuffix));
+			if (!PlayState.perfectMode)
+			{
+				FlxG.sound.playMusic(Paths.music('gameOver' + stageSuffix + CharMusicSuffix));
+			}
+			else
+			{
+				if (stageSuffix.startsWith('-pixel'))
+				{
+					FlxG.sound.playMusic(Paths.music('PerfectFail-pixel'));
+				}
+				else
+				{
+					FlxG.sound.playMusic(Paths.music('PerfectFail'));
+				}
+			}
 		}
 
 		if (FlxG.sound.music.playing)
@@ -129,8 +143,11 @@ class GameOverSubstate extends MusicBeatSubstate
 		{
 			isEnding = true;
 			bf.playAnim('deathConfirm', true);
-			FlxG.sound.music.stop();
-			FlxG.sound.play(Paths.music('gameOverEnd' + stageSuffix + CharMusicSuffix));
+			if (!PlayState.perfectMode)
+			{
+				FlxG.sound.music.stop();
+				FlxG.sound.play(Paths.music('gameOverEnd' + stageSuffix + CharMusicSuffix));
+			}
 			new FlxTimer().start(0.7, function(tmr:FlxTimer)
 			{
 				FlxG.camera.fade(FlxColor.BLACK, 2, false, function()
