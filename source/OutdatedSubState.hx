@@ -14,14 +14,19 @@ class OutdatedSubState extends MusicBeatState
 	override function create()
 	{
 		super.create();
+		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+		add(bg);
+		var ver = "v" + Application.current.meta.get('version');
+		var txt:FlxText = new FlxText(0, 0, FlxG.width,
+			"HEY! You're running this game on mac or linux!\nThis is not a fully featured version\n Get a new operating system, idiot! ",
+			32);
+		txt.setFormat("VCR OSD Mono", 32, FlxColor.WHITE, CENTER);
+		txt.screenCenter();
+		add(txt);
 	}
 
 	override function update(elapsed:Float)
 	{
-		if (controls.ACCEPT)
-		{
-			FlxG.openURL("https://ninja-muffin24.itch.io/funkin");
-		}
 		if (controls.BACK)
 		{
 			leftState = true;
