@@ -22,7 +22,6 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import lime.app.Application;
 import openfl.Assets;
-import polymod.Polymod;
 import haxe.Json;
 import tjson.TJSON;
 using StringTools;
@@ -44,7 +43,6 @@ class TitleState extends MusicBeatState
 	var coolDudes:Array<String> = [];
 	override public function create():Void
 	{
-		Polymod.init({modRoot: "mods", dirs: ['introMod']});
 
 
 		PlayerSettings.init();

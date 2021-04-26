@@ -71,7 +71,6 @@
 	<!--In case you want to use the ui package-->
 	<haxelib name="flixel-ui" />
 	<haxelib name="faxe" if='switch'/>
-	<haxelib name="polymod"/>
 	<haxelib name="json2object"/>
 	<haxelib name="uniontypes"/>
 	<haxelib name="hxjsonast"/>

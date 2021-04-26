@@ -21,9 +21,14 @@ jobs:
           haxelib run flixel-tools setup
           haxelib install hscript
           haxelib install flixel-ui
-          haxelib git polymod https://github.com/larsiusprime/polymod.git
+          haxelib install tjson
+          haxelib install json2object
+          haxelib install uniontypes
+          haxelib install hxjsonast
+          haxelib install linc_luajit
+        
         displayName: 'Install haxelib'
-      - script: haxelib run lime build linux
+      - script: haxelib run lime build cpp
         displayName: 'Compile'
       - task: PublishPipelineArtifact@0
         inputs:
@@ -48,9 +53,13 @@ jobs:
           haxelib run flixel-tools setup
           haxelib install hscript
           haxelib install flixel-ui
-          haxelib git polymod https://github.com/larsiusprime/polymod.git
+          haxelib install tjson
+          haxelib install json2object
+          haxelib install uniontypes
+          haxelib install hxjsonast
+          haxelib install linc_luajit
         displayName: 'Install haxelib'
-      - script: haxelib run lime build mac
+      - script: haxelib run lime build cpp
         displayName: 'Compile'
       - task: PublishPipelineArtifact@0
         inputs:
@@ -79,10 +88,14 @@ jobs:
           haxelib run flixel-tools setup
           haxelib install hscript
           haxelib install flixel-ui
-          haxelib git polymod https://github.com/larsiusprime/polymod.git
+          haxelib install tjson
+          haxelib install json2object
+          haxelib install uniontypes
+          haxelib install hxjsonast
+          haxelib install linc_luajit
 
         displayName: 'Install haxelibs'
-      - script: haxelib run lime build windows
+      - script: haxelib run lime build cpp
         displayName: 'Compile'
       - task: PublishPipelineArtifact@0
         inputs:

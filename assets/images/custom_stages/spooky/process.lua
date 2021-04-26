@@ -1,6 +1,6 @@
 function start(song) 
     print("start :)");
-    makeSprite("halloween_bg", "bg", true, 1);
+    makeSprite("halloween_bg", "bg", BEHIND_ALL, 1);
     setActorX(-200, "bg");
     setActorY(-100, "bg");
     addActorAnimationPrefix("halloweem bg0", "idle", 24, true, "bg");

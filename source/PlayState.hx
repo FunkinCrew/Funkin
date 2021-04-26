@@ -64,6 +64,12 @@ typedef LuaAnim = {
 	@:optional var fps : Int;
 	@:optional var loop : Bool;
 }
+enum abstract DisplayLayer(Int) from Int to Int {
+	var BEHIND_GF = 1;
+	var BEHIND_BF = 1 << 1;
+	var BEHIND_DAD = 1 << 2;
+	var BEHIND_ALL = BEHIND_GF | BEHIND_BF | BEHIND_DAD;
+}
 class PlayState extends MusicBeatState
 {
 	public static var curStage:String = '';
@@ -112,6 +118,7 @@ class PlayState extends MusicBeatState
 	private var iconP2:HealthIcon;
 	private var camHUD:FlxCamera;
 	private var camGame:FlxCamera;
+
 
 	var dialogue:Array<String> = ['blah blah blah', 'coolswag'];
 
@@ -190,16 +197,12 @@ class PlayState extends MusicBeatState
 			uselua = lua;
 		}
 		var result:Any = null;
-		trace('ello');
 		Lua.getglobal(uselua, func_name);
 
 		for (arg in args)
 		{
 			Convert.toLua(uselua, arg);
 		}
-		trace("before call");
-		trace(uselua);
-		trace(args);
 		Lua.call(uselua, args.length, 1);
 
 		if (result == null)
@@ -244,6 +247,7 @@ class PlayState extends MusicBeatState
 			var v:String = v;
 			if (type.substr(0, 4) == 'array')
 			{
+				trace("array");
 				if (type.substr(4) == 'float')
 				{
 					var array:Array<String> = v.split(',');
@@ -364,7 +368,8 @@ class PlayState extends MusicBeatState
 
 	public static var luaSprites:Map<String, FlxSprite> = [];
 	var luaSound:Map<String, FlxSound> = [];
-	function makeLuaSprite(spritePath:String, toBeCalled:String, drawBehind:Bool, doAnim:Int)
+	var luaArray:Map<String, Array<Any>> = [];
+	function makeLuaSprite(spritePath:String, toBeCalled:String, drawBehind:DisplayLayer, doAnim:Int)
 	{
 		trace("making sprite");
 		#if sys
@@ -398,20 +403,23 @@ class PlayState extends MusicBeatState
 		luaSprites.set(toBeCalled, sprite);
 		// and I quote:
 		// shitty layering but it works!
-		if (drawBehind)
-		{
+		if (drawBehind & BEHIND_GF != 0) {
 			remove(gf);
-			remove(boyfriend);
-			remove(dad);
 		}
+		if (drawBehind & BEHIND_BF != 0)
+			remove(boyfriend);
+		if (drawBehind & BEHIND_DAD != 0)
+			remove(dad);
 		trace(":)");
 		add(sprite);
-		if (drawBehind)
+		if (drawBehind & BEHIND_GF != 0)
 		{
 			add(gf);
-			add(boyfriend);
-			add(dad);
 		}
+		if (drawBehind & BEHIND_BF != 0)
+			add(boyfriend);
+		if (drawBehind & BEHIND_DAD != 0)
+			add(dad);
 		#end
 		return toBeCalled;
 	}
@@ -494,48 +502,6 @@ class PlayState extends MusicBeatState
 				}
 		}
 		if (false)
-		{
-			curStage = 'philly';
-
-			var bg:FlxSprite = new FlxSprite(-100).loadGraphic('assets/images/philly/sky.png');
-			bg.scrollFactor.set(0.1, 0.1);
-			add(bg);
-
-			var city:FlxSprite = new FlxSprite(-10).loadGraphic('assets/images/philly/city.png');
-			city.scrollFactor.set(0.3, 0.3);
-			city.setGraphicSize(Std.int(city.width * 0.85));
-			city.updateHitbox();
-			add(city);
-
-			phillyCityLights = new FlxTypedGroup<FlxSprite>();
-			add(phillyCityLights);
-
-			for (i in 0...5)
-			{
-				var light:FlxSprite = new FlxSprite(city.x).loadGraphic('assets/images/philly/win' + i + '.png');
-				light.scrollFactor.set(0.3, 0.3);
-				light.visible = false;
-				light.setGraphicSize(Std.int(light.width * 0.85));
-				light.updateHitbox();
-				light.antialiasing = true;
-				phillyCityLights.add(light);
-			}
-
-			var streetBehind:FlxSprite = new FlxSprite(-40, 50).loadGraphic('assets/images/philly/behindTrain.png');
-			add(streetBehind);
-
-			phillyTrain = new FlxSprite(2000, 360).loadGraphic('assets/images/philly/train.png');
-			add(phillyTrain);
-
-			trainSound = new FlxSound().loadEmbedded('assets/sounds/train_passes' + TitleState.soundExt);
-			FlxG.sound.list.add(trainSound);
-
-			// var cityLights:FlxSprite = new FlxSprite().loadGraphic(AssetPaths.win0.png);
-
-			var street:FlxSprite = new FlxSprite(-40, streetBehind.y).loadGraphic('assets/images/philly/street.png');
-			add(street);
-		}
-		else if (SONG.stage == 'limo')
 		{
 			curStage = 'limo';
 			defaultCamZoom = 0.90;
@@ -1269,7 +1235,10 @@ class PlayState extends MusicBeatState
 			}
 
 			// get some fukin globals up in here bois
-
+			setVar("BEHIND_GF", BEHIND_GF);
+			setVar("BEHIND_BF", BEHIND_BF);
+			setVar("BEHIND_DAD", BEHIND_DAD);
+			setVar("BEHIND_ALL", BEHIND_ALL);
 			setVar("difficulty", storyDifficulty);
 			setVar("bpm", Conductor.bpm);
 			setVar("scrollspeed", FlxG.save.data.scrollSpeed != 1 ? FlxG.save.data.scrollSpeed : PlayState.SONG.speed);
@@ -1321,6 +1290,18 @@ class PlayState extends MusicBeatState
 			{
 				return FlxG.width;
 			}));
+			trace(Lua_helper.add_callback(lua, "addTimer", function(func:String, time:Float)
+			{
+				new FlxTimer().start(time, function(tmr:FlxTimer)
+				{
+					callLua(func, []);
+				});
+			}));
+			trace(Lua_helper.add_callback(lua, "bitwiseor", function(a:Int, b:Int)
+			{
+				return a | b;
+			}));
+			
 			trace(Lua_helper.add_callback(lua, "getGameHeight", function()
 			{
 				return FlxG.height;
@@ -1330,22 +1311,63 @@ class PlayState extends MusicBeatState
 			{
 				trace(value);
 			}));
+			trace(Lua_helper.add_callback(lua, "elapsed", function()
+			{
+				return FlxG.elapsed;
+			}));
 			trace(Lua_helper.add_callback(lua, "setHudPosition", function(x:Int, y:Int)
 			{
 				camHUD.x = x;
 				camHUD.y = y;
 			}));
+			trace(Lua_helper.add_callback(lua, "newArray", function(id:String)
+			{
+				luaArray.set(id, []);
 
+			}));
+			trace(Lua_helper.add_callback(lua, "pushArray", function(value:Any, id:String)
+			{
+				luaArray.get(id).push(value);
+			}));
+			trace(Lua_helper.add_callback(lua, "popArray", function(id:String)
+			{
+				return luaArray.get(id).pop();
+			}));
+			trace(Lua_helper.add_callback(lua, "newRangeArray", function(min:Int, max:Int, id:String)
+			{
+				var coolarray:Array<Any> = [];
+				// keep lua inclusive
+				for (i in min...(max+1)) {
+					coolarray.push(i);
+				}
+				luaArray.set(id, coolarray);
+			}));
+			trace(Lua_helper.add_callback(lua, "setActorFollowCam", function(x:Int, y:Int, id:String)
+			{
+				getActorByName(id).camFollowX = x;
+				getActorByName(id).camFollowY = y;
+			}));
+			trace(Lua_helper.add_callback(lua, "getActorFollowCamX", function(id:String)
+			{
+				return getActorByName(id).camFollowX;
+			}));
+			trace(Lua_helper.add_callback(lua, "getActorFollowCamY", function(id:String)
+			{
+				return getActorByName(id).camFollowY;
+			}));
 			trace(Lua_helper.add_callback(lua, "addActorAnimationPrefix", function(prefix:String, name:String,fps:Int, loop:Bool,id:String)
 			{
 				
 				getActorByName(id).animation.addByPrefix(name, prefix,fps,loop);
 				trace(getActorByName(id).animation);
 			}));
-			trace(Lua_helper.add_callback(lua, "addActorAnimationIndices", function(prefix:String, name:String, indices:Array<Int>,fps:Int, loop:Bool, id:String)
+			trace(Lua_helper.add_callback(lua, "addActorAnimationIndices", function(prefix:String, name:String, indices:String,fps:Int, id:String)
 			{
-				getActorByName(id).animation.addByIndices(name, prefix,indices,"",  fps, loop);
+
+				trace(luaArray.get(indices));
+				getActorByName(id).animation.addByIndices(name, prefix,luaArray.get(indices),"",  fps, false);
 			}));
+			
 			trace(Lua_helper.add_callback(lua, "playActorAnimation", function(animation:String,force:Bool,id:String)
 			{
 				trace(animation);
@@ -2573,22 +2595,17 @@ class PlayState extends MusicBeatState
 				{
 					// not sure that's how variable assignment works
 					case 'limo':
-						((camFollow.x = boyfriend.getMidpoint().x - 300) + boyfriend.followCamX); // why are you hard coded
+						camFollow.x = boyfriend.getMidpoint().x - 300 + boyfriend.followCamX; // why are you hard coded
 					case 'mall':
-						((camFollow.y = boyfriend.getMidpoint().y - 200) + boyfriend.followCamY);
+						camFollow.y = boyfriend.getMidpoint().y - 200 + boyfriend.followCamY;
 					case 'school':
-						((camFollow.x = boyfriend.getMidpoint().x - 200) + boyfriend.followCamX);
-						((camFollow.y = boyfriend.getMidpoint().y - 200) + boyfriend.followCamY);
+						camFollow.x = boyfriend.getMidpoint().x - 200 + boyfriend.followCamX;
+						camFollow.y = boyfriend.getMidpoint().y - 200 + boyfriend.followCamY;
 					case 'schoolEvil':
-						((camFollow.x = boyfriend.getMidpoint().x - 200) + boyfriend.followCamX);
-						((camFollow.y = boyfriend.getMidpoint().y - 200) + boyfriend.followCamY);
+						camFollow.x = boyfriend.getMidpoint().x - 200 + boyfriend.followCamX;
+						camFollow.y = boyfriend.getMidpoint().y - 200 + boyfriend.followCamY;
 				}
 
-				if (boyfriend.isCustom) {
-					camFollow.y = boyfriend.getMidpoint().y + boyfriend.followCamY;
-					camFollow.x = boyfriend.getMidpoint().x + boyfriend.followCamX;
-
-				}
 
 				if (SONG.song.toLowerCase() == 'tutorial')
 				{
