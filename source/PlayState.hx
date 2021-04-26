@@ -3275,38 +3275,8 @@ class PlayState extends MusicBeatState
 				
 									goodNoteHit(coolNote, (mashing > getKeyPresses(coolNote)));
 
-									// ANTI MASH CODE FOR THE BOYS
-				
-									/*if (mashing > getKeyPresses(coolNote) && mashViolations < 2)
-										{
-											mashViolations++;
-											
-											goodNoteHit(coolNote, (mashing > getKeyPresses(coolNote)));
-										}
-										else
-										{
-											// this is bad but fuck you
-											playerStrums.members[0].animation.play('static');
-											playerStrums.members[1].animation.play('static');
-											playerStrums.members[2].animation.play('static');
-											playerStrums.members[3].animation.play('static');
-											health -= 0.2;
-											trace('mash ' + mashing);
-										}
-					
-										if (mashing != 0)
-											mashing = 0;
 								}
-								else
-								{
-									var inIgnoreList:Bool = false;
-									for (shit in 0...ignoreList.length)
-									{
-										if (controlArray[ignoreList[shit]])
-											inIgnoreList = true;
-									}
-								}*/
-							//}
+							}
 						}
 						else if (possibleNotes[0].noteData == possibleNotes[1].noteData)
 						{
