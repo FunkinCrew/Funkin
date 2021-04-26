@@ -11,7 +11,6 @@ import lime.media.AudioBuffer;
 import flash.media.Sound;
 #end
 import tjson.TJSON;
-import hscript.*;
 import haxe.Json;
 using StringTools;
 
