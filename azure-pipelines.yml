@@ -51,7 +51,6 @@ jobs:
           haxelib install hxcpp > /dev/null
           
           haxelib install lime
-          haxelib --always run lime setup mac
           haxelib install openfl
           haxelib install flixel
           haxelib run lime setup flixel
