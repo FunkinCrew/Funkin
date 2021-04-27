@@ -93,7 +93,7 @@ function updateVroomVroom()
 end
 function resetVroomVroom()
     playCharacterAnimation("hairFall", false, "girlfriend");
-    setActorX(getGameWidth() + 200, "train");
+    setActorX(screenWidth + 200, "train");
     TrainMoving = false;
     TrainCars = 8;
     TrainFinishing = false;
