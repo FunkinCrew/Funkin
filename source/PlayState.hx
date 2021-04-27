@@ -1665,6 +1665,7 @@ class PlayState extends MusicBeatState
 
 					if (SONG.needsVoices)
 						vocals.volume = 1;
+						vocals.fadeOut(0.2);
 
 					daNote.kill();
 					notes.remove(daNote, true);
@@ -2236,6 +2237,7 @@ class PlayState extends MusicBeatState
 
 			note.wasGoodHit = true;
 			vocals.volume = 1;
+			vocals.fadeOut(0.2);
 
 			if (!note.isSustainNote)
 			{
