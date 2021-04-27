@@ -1,33 +1,33 @@
 function start(song) 
     print("start :)");
-    makeSprite("sky", "bg", BEHIND_ALL,0);
+    makeSprite("sky", "bg", BEHIND_ALL,STATIC_IMAGE);
     setActorX(-100, "bg");
     print("make sprite");
     setActorScrollFactor(0.1, 0.1, "bg");
     
-    makeSprite("city", "city", BEHIND_ALL,0);
+    makeSprite("city", "city", BEHIND_ALL,STATIC_IMAGE);
     setActorScrollFactor(0.3, 0.3, "city");
     setActorScale(0.85, "city");
     setActorX(-10, "city");
     print("make city");
     -- haxe is exclusive range, lua inclusive
     for i = 0, 4, 1 do
-        makeSprite("win"..i, "lights"..i, BEHIND_ALL, 0);
+        makeSprite("win"..i, "lights"..i, BEHIND_ALL, STATIC_IMAGE);
         setActorX(-10, "lights"..i);
         setActorScale(0.85, "lights"..i);
         setActorAlpha(0, "lights"..i);
         setActorScrollFactor(0.3, 0.3, "lights"..i);
         
     end
-    makeSprite("behindTrain", "streetBehind", BEHIND_ALL, 0);
+    makeSprite("behindTrain", "streetBehind", BEHIND_ALL, STATIC_IMAGE);
     setActorX(-40, "streetBehind");
     setActorY(50, "streetBehind");
 
-    makeSprite("train", "train", BEHIND_ALL, 0);
+    makeSprite("train", "train", BEHIND_ALL, STATIC_IMAGE);
     setActorX(2000, "train");
     setActorY(360, "train");
     addSoundToList("train_passes", "trainSound");
-    makeSprite("street", "street", BEHIND_ALL, 0);
+    makeSprite("street", "street", BEHIND_ALL, STATIC_IMAGE);
     setActorX(-40, "street");
     setActorY(50, "street");
 

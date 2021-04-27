@@ -1,17 +1,17 @@
 function start(song) 
     print("start :)");
-    makeSprite("stageback", "bg", BEHIND_ALL,0);
+    makeSprite("stageback", "bg", BEHIND_ALL,STATIC_IMAGE);
     setActorX(-600, "bg");
     setActorY(-200, "bg");
     print("make sprite");
     setActorScrollFactor(0.9, 0.9, "bg");
     
-    makeSprite("stagefront", "stageFront", BEHIND_ALL,0);
+    makeSprite("stagefront", "stageFront", BEHIND_ALL,STATIC_IMAGE);
     setActorScrollFactor(0.9, 0.9, "stageFront");
     setActorScale(1.1, "stageFront");
     setActorX(-650, "stageFront");
     setActorY(600, "stageFront");
-    makeSprite("stagecurtains", "stageCurtains", BEHIND_ALL,0);
+    makeSprite("stagecurtains", "stageCurtains", BEHIND_ALL,STATIC_IMAGE);
     
     setActorScale(0.9, "stageCurtains");
     setActorX(-500, "stageCurtains");

@@ -1,12 +1,12 @@
 function start(song) 
     print("start :)");
-    makeSprite("limoSunset", "bg", BEHIND_ALL,0);
+    makeSprite("limoSunset", "bg", BEHIND_ALL,STATIC_IMAGE);
     setActorX(-120, "bg");
     setActorY(-50, "bg");
     print("make sprite");
     setActorScrollFactor(0.1, 0.1, "bg");
     
-    makeSprite("bgLimo", "bgLimo", BEHIND_ALL,1);
+    makeSprite("bgLimo", "bgLimo", BEHIND_ALL,SPARROW_SHEET);
     addActorAnimationPrefix("background limo pink", "drive", 24, true, "bgLimo");
     playActorAnimation("drive",false, "bgLimo");
     setActorScrollFactor(0.4, 0.4, "bgLimo");
@@ -17,7 +17,7 @@ function start(song)
     newRangeArray(0, 14, "danceLeft");
     newRangeArray(15,29, "danceRight");
     for i = 0, 4, 1 do
-        makeSprite("limoDancer", "dancer"..i, BEHIND_ALL,1);
+        makeSprite("limoDancer", "dancer"..i, BEHIND_ALL,SPARROW_SHEET);
         print("owo");
         setActorX((370 * i) + 130, "dancer"..i);
         setActorY(80, "dancer"..i);
@@ -28,12 +28,12 @@ function start(song)
         setActorScrollFactor(0.4, 0.4, "dancer"..i);
     end
     print("finish dancers");
-    makeSprite("limoDrive", "limo", bitwiseor(BEHIND_DAD, BEHIND_BF), 1);
+    makeSprite("limoDrive", "limo", bitwiseor(BEHIND_DAD, BEHIND_BF), SPARROW_SHEET);
     setActorX(-120, "limo");
     setActorY(550, "limo");
     addActorAnimationPrefix("Limo stage", "drive", 24, true, "limo");
     playActorAnimation("drive", false, "limo");
-    makeSprite("fastCarLol", "fastcar", 0, 0);
+    makeSprite("fastCarLol", "fastcar", BEHIND_NONE, STATIC_IMAGE);
     setActorX(-300, "fastcar");
     setActorY(160, "fastcar");
     setDefaultZoom(0.9);

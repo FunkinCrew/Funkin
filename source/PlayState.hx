@@ -107,6 +107,7 @@ class PlayState extends MusicBeatState
 	private var enemyStrums:FlxTypedGroup<FlxSprite>;
 	private var camZooming:Bool = false;
 	private var curSong:String = "";
+	private var strumming2:Array<Bool> = [false, false, false, false];
 
 	private var gfSpeed:Int = 1;
 	private var health:Float = 1;
@@ -195,7 +196,7 @@ class PlayState extends MusicBeatState
 	var inALoop:Bool = false;
 	var useVictoryScreen:Bool = true;
 	#if windows
-	public static var luaStates:Map<String, State> = [];
+	public var luaStates:Map<String, State> = [];
 	function callLua(func_name:String, args:Array<Dynamic>, type:String, uselua:String):Dynamic
 	{	
 		var result:Any = null;
@@ -259,6 +260,10 @@ class PlayState extends MusicBeatState
 		setVar("BEHIND_BF", BEHIND_BF, uselua);
 		setVar("BEHIND_DAD", BEHIND_DAD, uselua);
 		setVar("BEHIND_ALL", BEHIND_ALL, uselua);
+		setVar("BEHIND_NONE", 0, uselua);
+		setVar("STATIC_IMAGE", 0, uselua);
+		setVar("SPARROW_SHEET", 1, uselua);
+		setVar("PACKER_SHEET", 2, uselua);
 		setVar("difficulty", storyDifficulty, uselua);
 		setVar("bpm", Conductor.bpm, uselua);
 		setVar("scrollspeed", PlayState.SONG.speed, uselua);
@@ -325,6 +330,8 @@ class PlayState extends MusicBeatState
 					+ spritePath
 					+ ".txt");
 			}
+			// you usually want this on, make it default.
+			sprite.antialiasing = true;
 			luaSprites.set(toBeCalled, sprite);
 			// and I quote:
 			// shitty layering but it works!
@@ -332,20 +339,22 @@ class PlayState extends MusicBeatState
 			{
 				remove(gf);
 			}
-			if (drawBehind & BEHIND_BF != 0)
-				remove(boyfriend);
 			if (drawBehind & BEHIND_DAD != 0)
 				remove(dad);
+			if (drawBehind & BEHIND_BF != 0)
+				remove(boyfriend);
+			
 			trace(":)");
 			add(sprite);
 			if (drawBehind & BEHIND_GF != 0)
 			{
 				add(gf);
 			}
-			if (drawBehind & BEHIND_BF != 0)
-				add(boyfriend);
 			if (drawBehind & BEHIND_DAD != 0)
 				add(dad);
+			if (drawBehind & BEHIND_BF != 0)
+				add(boyfriend);
+			
 			#end
 			return toBeCalled;
 		}));
@@ -529,6 +538,7 @@ class PlayState extends MusicBeatState
 		trace(Lua_helper.add_callback(luaStates.get(uselua), "setActorScale", function(scale:Float, id:String)
 		{
 			getActorByName(id).setGraphicSize(Std.int(getActorByName(id).width * scale));
+			getActorByName(id).updateHitbox();
 		}));
 		trace(Lua_helper.add_callback(luaStates.get(uselua), "setActorAntialias", function(antialias:Bool, id:String)
 		{
@@ -1270,53 +1280,6 @@ class PlayState extends MusicBeatState
 		}
 		#else
 		if (false)
-		{
-			curStage = 'limo';
-			defaultCamZoom = 0.90;
-
-			var skyBG:FlxSprite = new FlxSprite(-120, -50).loadGraphic('assets/images/limo/limoSunset.png');
-			skyBG.scrollFactor.set(0.1, 0.1);
-			add(skyBG);
-
-			var bgLimo:FlxSprite = new FlxSprite(-200, 480);
-			bgLimo.frames = FlxAtlasFrames.fromSparrow('assets/images/limo/bgLimo.png', 'assets/images/limo/bgLimo.xml');
-			bgLimo.animation.addByPrefix('drive', "background limo pink", 24);
-			bgLimo.animation.play('drive');
-			bgLimo.scrollFactor.set(0.4, 0.4);
-			add(bgLimo);
-
-			grpLimoDancers = new FlxTypedGroup<BackgroundDancer>();
-			add(grpLimoDancers);
-
-			for (i in 0...5)
-			{
-				var dancer:BackgroundDancer = new BackgroundDancer((370 * i) + 130, bgLimo.y - 400);
-				dancer.scrollFactor.set(0.4, 0.4);
-				grpLimoDancers.add(dancer);
-			}
-
-			var overlayShit:FlxSprite = new FlxSprite(-500, -600).loadGraphic('assets/images/limo/limoOverlay.png');
-			overlayShit.alpha = 0.5;
-			// add(overlayShit);
-
-			// var shaderBullshit = new BlendModeEffect(new OverlayShader(), FlxColor.RED);
-
-			// FlxG.camera.setFilters([new ShaderFilter(cast shaderBullshit.shader)]);
-
-			// overlayShit.shader = shaderBullshit;
-
-			var limoTex = FlxAtlasFrames.fromSparrow('assets/images/limo/limoDrive.png', 'assets/images/limo/limoDrive.xml');
-
-			limo = new FlxSprite(-120, 550);
-			limo.frames = limoTex;
-			limo.animation.addByPrefix('drive', "Limo stage", 24);
-			limo.animation.play('drive');
-			limo.antialiasing = true;
-
-			fastCar = new FlxSprite(-300, 160).loadGraphic('assets/images/limo/fastCarLol.png');
-			// add(limo);
-		}
-		else if (SONG.stage == 'mall')
 		{
 			curStage = 'mall';
 
@@ -2878,11 +2841,12 @@ class PlayState extends MusicBeatState
 					camFollow.x = dad.getMidpoint().x + dad.followCamX;
 				}
 				vocals.volume = 1;
-
+				/*
 				if (SONG.song.toLowerCase() == 'tutorial')
 				{
 					tweenCamIn();
 				}
+				*/
 			}
 
 			if (PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection && camFollow.x != boyfriend.getMidpoint().x - 100)
@@ -3080,7 +3044,8 @@ class PlayState extends MusicBeatState
 					{
 						if (Math.abs(daNote.noteData) == spr.ID)
 						{
-							spr.animation.play('confirm', true);
+							spr.animation.play('confirm');
+							sustain2(spr.ID, spr, daNote);
 						}
 					});
 					dad.holdTimer = 0;
@@ -3147,7 +3112,22 @@ class PlayState extends MusicBeatState
 						notes.remove(daNote, true);
 						daNote.destroy();
 				}
-				
+				enemyStrums.forEach(function(spr:FlxSprite)
+				{
+					if (strumming2[spr.ID])
+					{
+						spr.animation.play("confirm");
+					}
+
+					if (spr.animation.curAnim.name == 'confirm' && !daNote.isPixel)
+					{
+						spr.centerOffsets();
+						spr.offset.x -= 13;
+						spr.offset.y -= 13;
+					}
+					else
+						spr.centerOffsets();
+				});
 			});
 		}
 
@@ -3159,7 +3139,34 @@ class PlayState extends MusicBeatState
 			endSong();
 		#end
 	}
+	function sustain2(strum:Int, spr:FlxSprite, note:Note):Void
+	{
+		var length:Float = note.sustainLength;
 
+		if (length > 0)
+		{
+			strumming2[strum] = true;
+		}
+
+		var bps:Float = Conductor.bpm / 60;
+		var spb:Float = 1 / bps;
+
+		if (!note.isSustainNote)
+		{
+			new FlxTimer().start(length == 0 ? 0.2 : (length / Conductor.crochet * spb) + 0.1, function(tmr:FlxTimer)
+			{
+				if (!strumming2[strum])
+				{
+					spr.animation.play("static", true);
+				}
+				else if (length > 0)
+				{
+					strumming2[strum] = false;
+					spr.animation.play("static", true);
+				}
+			});
+		}
+	}
 	function endSong():Void
 	{
 		canPause = false;
@@ -3602,7 +3609,7 @@ class PlayState extends MusicBeatState
 					if (rightR)
 						spr.animation.play('static');
 			}
-
+			
 			if (spr.animation.curAnim.name == 'confirm' && SONG.uiType != 'pixel' && !FileSystem.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png"))
 			{
 				spr.centerOffsets();
