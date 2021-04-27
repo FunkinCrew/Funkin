@@ -114,7 +114,7 @@ class GameOverSubstate extends MusicBeatSubstate
 					FlxG.camera.fade(FlxColor.BLACK, 2, false, function()
 					{
 						if (PlayState.isStoryMode == true) {
-							LoadingState.loadAndSwitchState(new PlayState());
+							LoadingState.loadAndSwitchState(new StoryMenuState());
 						} else {
 							LoadingState.loadAndSwitchState(new FreeplayState());
 						}

@@ -1,3 +1,6 @@
+=== 2.0.1 ===
+- Fixed a bug where exiting out of the game over state using backspace restarts the song
+
 === 2.0 ===
 + Added an icon to the level indicator
 + Added extra dialogue to each week (This can be toggle on/off with options.json)
