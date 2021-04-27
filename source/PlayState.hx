@@ -893,60 +893,6 @@ class PlayState extends MusicBeatState
 	public static var luaSprites:Map<String, FlxSprite> = [];
 	var luaSound:Map<String, FlxSound> = [];
 	var luaArray:Map<String, Array<Any>> = [];
-	function makeLuaSprite(spritePath:String, toBeCalled:String, drawBehind:DisplayLayer, doAnim:Int)
-	{
-		trace("making sprite");
-		#if sys
-
-		var sprite:FlxSprite = new FlxSprite(0, 0);
-		if (doAnim == 0) {
-			sprite.loadGraphic("assets/images/custom_stages/" + SONG.stage + '/' + spritePath + ".png");
-		} else if (doAnim == 1) {
-			sprite.frames = FlxAtlasFrames.fromSparrow("assets/images/custom_stages/"
-				+ SONG.stage
-				+ '/'
-				+ spritePath
-				+ ".png",
-				"assets/images/custom_stages/"
-				+ SONG.stage
-				+ '/'
-				+ spritePath
-				+ ".xml");
-		} else {
-			sprite.frames = FlxAtlasFrames.fromSpriteSheetPacker("assets/images/custom_stages/"
-				+ SONG.stage
-				+ '/'
-				+ spritePath
-				+ ".png",
-				"assets/images/custom_stages/"
-				+ SONG.stage
-				+ '/'
-				+ spritePath
-				+ ".txt");
-		}
-		luaSprites.set(toBeCalled, sprite);
-		// and I quote:
-		// shitty layering but it works!
-		if (drawBehind & BEHIND_GF != 0) {
-			remove(gf);
-		}
-		if (drawBehind & BEHIND_BF != 0)
-			remove(boyfriend);
-		if (drawBehind & BEHIND_DAD != 0)
-			remove(dad);
-		trace(":)");
-		add(sprite);
-		if (drawBehind & BEHIND_GF != 0)
-		{
-			add(gf);
-		}
-		if (drawBehind & BEHIND_BF != 0)
-			add(boyfriend);
-		if (drawBehind & BEHIND_DAD != 0)
-			add(dad);
-		#end
-		return toBeCalled;
-	}
 	#end
 	override public function create()
 	{
@@ -2008,6 +1954,10 @@ class PlayState extends MusicBeatState
 		if (FileSystem.exists("assets/images/custom_stages/" + SONG.stage + "/process.lua")) // dude I hate lua (jkjkjkjk)
 		{
 			makeLuaState("stages", "assets/images/custom_stages/"+SONG.stage+"/", "process.lua");
+		}
+		if (FileSystem.exists("assets/data/" + SONG.song.toLowerCase() + "/modchart.lua")) // dude I hate lua (jkjkjkjk)
+		{
+			makeLuaState("stages", "assets/data/" + SONG.song.toLowerCase() + "/", "/modchart.lua");
 		}
 		#end
 		talking = false;
