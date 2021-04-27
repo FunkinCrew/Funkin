@@ -25,3 +25,21 @@ end
 function update(elapsed)
 
 end
+function stepHit(step)
+-- do nothing dumbass
+end
+function playerTwoTurn()
+    
+end
+function playerOneTurn()
+    
+end
+function playerTwoSing()
+    
+end
+function playerOneSing()
+    
+end
+function playerOneMiss()
+    
+end
