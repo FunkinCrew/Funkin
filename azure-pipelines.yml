@@ -65,7 +65,7 @@ jobs:
         displayName: 'Install haxelibs'
       - script: haxelib run lime build mac
         displayName: 'Compile'
-      - script: tar -czf bin.tar.gz 'export/release/mac/bin'
+      - script: tar -czf bin.tar.gz 'export/release/neko/bin'
         displayName: 'Archive'
       - task: PublishPipelineArtifact@0
         inputs:
