@@ -1,6 +1,7 @@
 === 2.0.1 ===
 - Fixed a bug where exiting out of the game over state using backspace restarts the song
 - Fixed a bug where exiting out of the game over state while on week6 does not play a sound
+- Fixed a bug where pressing 'R' during dialogue will crash the game
 
 === 2.0 ===
 + Added an icon to the level indicator

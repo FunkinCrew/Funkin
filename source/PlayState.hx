@@ -1054,6 +1054,8 @@ class PlayState extends MusicBeatState
 
 	function doDialogue(?dialogueBox:DialogueBox):Void
 	{
+		inCutscene = true;
+
 		var black:FlxSprite = new FlxSprite(-100, -100).makeGraphic(FlxG.width * 2, FlxG.height * 2, FlxColor.BLACK);
 		black.scrollFactor.set();
 		add(black);
@@ -1094,7 +1096,7 @@ class PlayState extends MusicBeatState
 			{
 				if (dialogueBox != null)
 				{
-					inCutscene = true;
+					// inCutscene = true;
 
 					if (SONG.song.toLowerCase() == 'thorns')
 					{
@@ -2006,8 +2008,10 @@ class PlayState extends MusicBeatState
 		// RESET = Quick Game Over Screen
 		if (controls.RESET)
 		{
-			health = 0;
-			trace("RESET = True");
+			if (!inCutscene) {
+				health = 0;
+				trace("RESET = True");
+			}
 		}
 
 		// CHEAT = brandon's a pussy
