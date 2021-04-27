@@ -95,7 +95,7 @@ class GameOverSubstate extends MusicBeatSubstate
 				isEnding = true;
 
 				FlxG.sound.music.stop();
-				FlxG.sound.play(Paths.music('gameOverConfirmEnd' + stageSuffix));
+				FlxG.sound.play(Paths.music('gameOverConfirmEnd'));
 
 				FlxTween.tween(bksp.scale, {x: 1.15, y: 1.15}, 0.125, {
 					ease: FlxEase.quartInOut,
