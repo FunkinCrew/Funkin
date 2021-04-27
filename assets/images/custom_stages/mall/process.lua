@@ -41,6 +41,10 @@ function start(song)
     setActorX(-840, "satan");
     setActorY(150, "satan");
     setDefaultZoom(0.8);
+    print(":)");
+    setActorX(getActorX("boyfriend") + 200, "boyfriend");
+    print(":)");
+    setActorFollowCam(getActorFollowCamX("boyfriend"), getActorFollowCamY("boyfriend")-100, "boyfriend");
     print("finish start :)");
 end
 function beatHit(beat)

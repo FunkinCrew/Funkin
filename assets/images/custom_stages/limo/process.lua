@@ -39,7 +39,7 @@ function start(song)
     setDefaultZoom(0.9);
     setActorX(getActorX("boyfriend") + 260, "boyfriend");
     setActorY(getActorY("boyfriend") - 220, "boyfriend");
-    setActorFollowCam(getActorFollowCamX("boyfriend")-300, getActorFollowCamY("boyfriend"));
+    setActorFollowCam(getActorFollowCamX("boyfriend")-200, getActorFollowCamY("boyfriend"), "boyfriend");
     ResetVroomVroom();
     print("finish start :)");
 end
