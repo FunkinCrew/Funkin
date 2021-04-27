@@ -1,5 +1,6 @@
 package;
 
+import flixel.ui.FlxButton.FlxTypedButton;
 import Section.SwagSection;
 import Song.SwagSong;
 import WiggleEffect.WiggleEffectType;
@@ -103,7 +104,7 @@ class PlayState extends MusicBeatState
 
 	private var strumLineNotes:FlxTypedGroup<FlxSprite>;
 	private var playerStrums:FlxTypedGroup<FlxSprite>;
-
+	private var enemyStrums:FlxTypedGroup<FlxSprite>;
 	private var camZooming:Bool = false;
 	private var curSong:String = "";
 
@@ -1679,6 +1680,7 @@ class PlayState extends MusicBeatState
 		add(strumLineNotes);
 
 		playerStrums = new FlxTypedGroup<FlxSprite>();
+		enemyStrums = new FlxTypedGroup<FlxSprite>();
 
 		// startCountdown();
 		trace('before generate');
@@ -1957,7 +1959,7 @@ class PlayState extends MusicBeatState
 		}
 		if (FileSystem.exists("assets/data/" + SONG.song.toLowerCase() + "/modchart.lua")) // dude I hate lua (jkjkjkjk)
 		{
-			makeLuaState("stages", "assets/data/" + SONG.song.toLowerCase() + "/", "/modchart.lua");
+			makeLuaState("modchart", "assets/data/" + SONG.song.toLowerCase() + "/", "/modchart.lua");
 		}
 		#end
 		talking = false;
@@ -2628,6 +2630,8 @@ class PlayState extends MusicBeatState
 			if (player == 1)
 			{
 				playerStrums.add(babyArrow);
+			} else {
+				enemyStrums.add(babyArrow);
 			}
 
 			babyArrow.animation.play('static');
@@ -2697,7 +2701,42 @@ class PlayState extends MusicBeatState
 		perfectModeOld = false;
 		#end
 		#if windows
+		setAllVar('songPos', Conductor.songPosition);
+		setAllVar('hudZoom', camHUD.zoom);
+		setAllVar('cameraZoom', FlxG.camera.zoom);
 		callAllLua('update', [elapsed], null);
+		if (luaStates.exists("modchart")) {
+			FlxG.camera.angle = getVar('cameraAngle', 'float', 'modchart');
+			camHUD.angle = getVar('camHudAngle', 'float', 'modchart');
+
+			if (getVar("showOnlyStrums", 'bool', 'modchart'))
+			{
+				healthBarBG.visible = false;
+				healthBar.visible = false;
+				iconP1.visible = false;
+				iconP2.visible = false;
+				scoreTxt.visible = false;
+			}
+			else
+			{
+				healthBarBG.visible = true;
+				healthBar.visible = true;
+				iconP1.visible = true;
+				iconP2.visible = true;
+				scoreTxt.visible = true;
+			}
+
+			var p1 = getVar("strumLine1Visible", 'bool', 'modchart');
+			var p2 = getVar("strumLine2Visible", 'bool', 'modchart');
+
+			for (i in 0...4)
+			{
+				strumLineNotes.members[i].visible = p1;
+				if (i <= playerStrums.length)
+					playerStrums.members[i].visible = p2;
+			}
+		}
+		
 		#end
 		switch (curStage)
 		{
@@ -2817,7 +2856,10 @@ class PlayState extends MusicBeatState
 			{
 				// trace(PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection);
 			}
-
+			#if windows
+			
+			setAllVar("mustHit", PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection);
+			#end
 			if (camFollow.x != dad.getMidpoint().x + 150 && !PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection)
 			{
 				camFollow.setPosition(dad.getMidpoint().x + 150, dad.getMidpoint().y - 100);
@@ -2852,8 +2894,10 @@ class PlayState extends MusicBeatState
 				switch (curStage)
 				{
 					// not sure that's how variable assignment works
+					#if !windows
 					case 'limo':
 						camFollow.x = boyfriend.getMidpoint().x - 300 + boyfriend.followCamX; // why are you hard coded
+					#end
 					case 'mall':
 						camFollow.y = boyfriend.getMidpoint().y - 200 + boyfriend.followCamY;
 					case 'school':
@@ -2863,12 +2907,13 @@ class PlayState extends MusicBeatState
 						camFollow.x = boyfriend.getMidpoint().x - 200 + boyfriend.followCamX;
 						camFollow.y = boyfriend.getMidpoint().y - 200 + boyfriend.followCamY;
 				}
-
-
+				
+				/*
 				if (SONG.song.toLowerCase() == 'tutorial')
 				{
 					FlxTween.tween(FlxG.camera, {zoom: 1}, (Conductor.stepCrochet * 4 / 1000), {ease: FlxEase.elasticInOut});
 				}
+				*/
 			}
 		}
 
@@ -3001,9 +3046,10 @@ class PlayState extends MusicBeatState
 
 				if (!daNote.mustPress && daNote.wasGoodHit)
 				{
+					/*
 					if (SONG.song != 'Tutorial')
 						camZooming = true;
-
+					*/
 					var altAnim:String = "";
 					
 					if (SONG.notes[Math.floor(curStep / 16)] != null)
@@ -3021,6 +3067,7 @@ class PlayState extends MusicBeatState
 					switch (Math.abs(daNote.noteData))
 					{
 						case 0:
+							
 							dad.playAnim('singLEFT' + altAnim, true);
 						case 1:
 							dad.playAnim('singDOWN' + altAnim, true);
@@ -3029,7 +3076,13 @@ class PlayState extends MusicBeatState
 						case 3:
 							dad.playAnim('singRIGHT' + altAnim, true);
 					}
-
+					enemyStrums.forEach(function(spr:FlxSprite)
+					{
+						if (Math.abs(daNote.noteData) == spr.ID)
+						{
+							spr.animation.play('confirm', true);
+						}
+					});
 					dad.holdTimer = 0;
 
 					if (SONG.needsVoices)
