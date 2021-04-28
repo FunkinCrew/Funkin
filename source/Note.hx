@@ -29,7 +29,7 @@ class Note extends FlxSprite
 
 	public var sustainLength:Float = 0;
 	public var isSustainNote:Bool = false;
-
+	public var modifiedByLua:Bool = false;
 	public var noteScore:Float = 1;
 	public var isPixel:Bool = false;
 	public static var swagWidth:Float = 160 * 0.7;

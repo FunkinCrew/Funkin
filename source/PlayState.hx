@@ -533,7 +533,113 @@ class PlayState extends MusicBeatState
 		{
 			getActorByName(id).alpha = alpha;
 		}));
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "getRenderedNotes", function()
+		{
+			return notes.length;
+		}));
 
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "getRenderedNoteX", function(id:Int)
+		{
+			return notes.members[id].x;
+		}));
+
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "getRenderedNoteY", function(id:Int)
+		{
+			return notes.members[id].y;
+		}));
+
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "getRenderedNoteType", function(id:Int)
+		{
+			return notes.members[id].noteData;
+		}));
+
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "isSustain", function(id:Int)
+		{
+			return notes.members[id].isSustainNote;
+		}));
+
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "isParentSustain", function(id:Int)
+		{
+			return notes.members[id].prevNote.isSustainNote;
+		}));
+
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "getRenderedNoteParentX", function(id:Int)
+		{
+			return notes.members[id].prevNote.x;
+		}));
+
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "getRenderedNoteParentY", function(id:Int)
+		{
+			return notes.members[id].prevNote.y;
+		}));
+
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "getRenderedNoteHit", function(id:Int)
+		{
+			return notes.members[id].mustPress;
+		}));
+
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "getRenderedNoteCalcX", function(id:Int)
+		{
+			if (notes.members[id].mustPress)
+				return playerStrums.members[Math.floor(Math.abs(notes.members[id].noteData))].x;
+			return strumLineNotes.members[Math.floor(Math.abs(notes.members[id].noteData))].x;
+		}));
+
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "anyNotes", function()
+		{
+			return notes.members.length != 0;
+		}));
+
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "getRenderedNoteStrumtime", function(id:Int)
+		{
+			return notes.members[id].strumTime;
+		}));
+
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "getRenderedNoteScaleX", function(id:Int)
+		{
+			return notes.members[id].scale.x;
+		}));
+
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "setRenderedNotePos", function(x:Float, y:Float, id:Int)
+		{
+			if (notes.members[id] == null)
+				throw('error! you cannot set a rendered notes position when it doesnt exist! ID: ' + id);
+			else
+			{
+				notes.members[id].modifiedByLua = true;
+				notes.members[id].x = x;
+				notes.members[id].y = y;
+			}
+		}));
+
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "setRenderedNoteAlpha", function(alpha:Float, id:Int)
+		{
+			notes.members[id].modifiedByLua = true;
+			notes.members[id].alpha = alpha;
+		}));
+
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "setRenderedNoteScale", function(scale:Float, id:Int)
+		{
+			notes.members[id].modifiedByLua = true;
+			notes.members[id].setGraphicSize(Std.int(notes.members[id].width * scale));
+		}));
+
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "setRenderedNoteScale", function(scaleX:Int, scaleY:Int, id:Int)
+		{
+			notes.members[id].modifiedByLua = true;
+			notes.members[id].setGraphicSize(scaleX, scaleY);
+		}));
+
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "getRenderedNoteWidth", function(id:Int)
+		{
+			return notes.members[id].width;
+		}));
+
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "setRenderedNoteAngle", function(angle:Float, id:Int)
+		{
+			notes.members[id].modifiedByLua = true;
+			notes.members[id].angle = angle;
+		}));
 		trace(Lua_helper.add_callback(luaStates.get(uselua), "setActorY", function(y:Int, id:String)
 		{
 			getActorByName(id).y = y;
@@ -620,7 +726,15 @@ class PlayState extends MusicBeatState
 				}
 			});
 		});
-
+		Lua_helper.add_callback(luaStates.get(uselua), "shakeCamera", function(intensity:Float,time:Float, onComplete:String)
+		{
+			FlxG.camera.shake(intensity,time,function() {
+				if (onComplete != '' && onComplete != null)
+				{
+					callLua(onComplete, ["camera"], null, uselua);
+				}
+			});
+		});
 		Lua_helper.add_callback(luaStates.get(uselua), "tweenCameraAngle", function(toAngle:Float, time:Float, onComplete:String)
 		{
 			FlxTween.tween(FlxG.camera, {angle: toAngle}, time, {
@@ -2816,20 +2930,22 @@ class PlayState extends MusicBeatState
 					daNote.visible = !invsNotes;
 					daNote.active = true;
 				}
+				if (!daNote.modifiedByLua) {
+					daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(SONG.speed, 2)));
 
-				daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(SONG.speed, 2)));
+					// i am so fucking sorry for this if condition
+					if (daNote.isSustainNote
+						&& daNote.y + daNote.offset.y <= strumLine.y + Note.swagWidth / 2
+						&& (!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit))))
+					{
+						var swagRect = new FlxRect(0, strumLine.y + Note.swagWidth / 2 - daNote.y, daNote.width * 2, daNote.height * 2);
+						swagRect.y /= daNote.scale.y;
+						swagRect.height -= swagRect.y;
 
-				// i am so fucking sorry for this if condition
-				if (daNote.isSustainNote
-					&& daNote.y + daNote.offset.y <= strumLine.y + Note.swagWidth / 2
-					&& (!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit))))
-				{
-					var swagRect = new FlxRect(0, strumLine.y + Note.swagWidth / 2 - daNote.y, daNote.width * 2, daNote.height * 2);
-					swagRect.y /= daNote.scale.y;
-					swagRect.height -= swagRect.y;
-
-					daNote.clipRect = swagRect;
+						daNote.clipRect = swagRect;
+					}
 				}
+				
 
 				if (!daNote.mustPress && daNote.wasGoodHit)
 				{
