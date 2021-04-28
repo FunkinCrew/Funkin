@@ -282,6 +282,7 @@ class SaveDataState extends MusicBeatState
 		}
 	}
 	function saveOptions() {
+		// DJ, you gotta edit the type or else it gets upset
 		OptionsHandler.options = {
 			"showMisses": optionList[6].value,
 			"DJFKKeys": optionList[5].value,

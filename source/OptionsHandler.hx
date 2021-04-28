@@ -1,6 +1,7 @@
 package;
 import lime.utils.Assets;
 import sys.io.File;
+// edit this to add more options
 typedef TOptions = {
     var skipVictoryScreen:Bool;
     var skipModifierMenu:Bool;
@@ -11,6 +12,7 @@ typedef TOptions = {
     var allowEditOptions:Bool;
     var useSaveDataMenu:Bool;
     var preferredSave:Int;
+    var Downscroll:Bool;
 }
 class OptionsHandler {
     public static var options(get, set):TOptions;

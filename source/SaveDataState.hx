@@ -306,7 +306,8 @@ class SaveDataState extends MusicBeatState
 			"useSaveDataMenu": true,
 			// just use whatever it is 
 			"allowEditOptions": OptionsHandler.options.allowEditOptions,
-			"preferredSave": preferredSave
+			"preferredSave": preferredSave,
+			"Downscroll": optionList[4].value 
 		};
 	}
 }
