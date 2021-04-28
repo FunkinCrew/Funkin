@@ -49,8 +49,9 @@ class SaveDataState extends MusicBeatState
 						{name: "Skip Modifier Menu", value: false}, 
 						{name: "Skip Victory Screen", value: false},
 						{name: "Use New input", value: false},
-						{name: "DJFK Keys", value: false},
+						{name:"Downscroll", value: false},
 						{name: "Show Misses", value: false},
+						{name: "DJFK Keys", value: false},
 						{name: "Sound Test...", value: false},
 						{name:"New Character...", value: false},
 						{name:"New Stage...", value:false},
@@ -298,7 +299,7 @@ class SaveDataState extends MusicBeatState
 	function saveOptions() {
 		OptionsHandler.options = {
 			"showMisses": optionList[5].value,
-			"DJFKKeys": optionList[4].value,
+			"DJFKKeys": optionList[6].value,
 			"useCustomInput": optionList[3].value,
 			"skipVictoryScreen": optionList[2].value,
 			"skipModifierMenu": optionList[1].value,
