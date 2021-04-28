@@ -198,7 +198,7 @@ class DistractionsAndEffectsOption extends Option
 
 	private override function updateDisplay():String
 	{
-		return "Distractions and Effects " + (!FlxG.save.data.distractions ? "off" : "on");
+		return "Distractions " + (!FlxG.save.data.distractions ? "off" : "on");
 	}
 }
 
