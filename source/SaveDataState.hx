@@ -67,8 +67,9 @@ class SaveDataState extends MusicBeatState
 		optionList[1].value = curOptions.skipModifierMenu;
 		optionList[2].value = curOptions.skipVictoryScreen;
 		optionList[3].value = curOptions.useCustomInput;
-		optionList[4].value = curOptions.DJFKKeys;
+		optionList[4].value = curOptions.Downscroll;
 		optionList[5].value = curOptions.showMisses;
+		optionList[6].value = curOptions.DJFKKeys;
 		saves = new FlxTypedSpriteGroup<SaveFile>();
 		menuBG.color = 0xFF7194fc;
 		menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
