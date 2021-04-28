@@ -63,6 +63,9 @@ class KadeEngineData
 		if (FlxG.save.data.ghost == null)
 			FlxG.save.data.ghost = true;
 
+		if (FlxG.save.data.distractions == null)
+			FlxG.save.data.distractions = true;
+
 		Conductor.recalculateTimings();
 
 		Main.watermarks = FlxG.save.data.watermark;
