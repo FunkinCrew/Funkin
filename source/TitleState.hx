@@ -22,7 +22,6 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import lime.app.Application;
 import openfl.Assets;
-import polymod.Polymod;
 import haxe.Json;
 #if sys
 import sys.io.File;
@@ -40,7 +39,7 @@ class TitleState extends MusicBeatState
 {
 	static var initialized:Bool = false;
 	static public var soundExt:String = ".ogg";
-
+	static public var firstTime = false;
 	var blackScreen:FlxSprite;
 	var credGroup:FlxGroup;
 	var credTextShit:Alphabet;
@@ -51,6 +50,7 @@ class TitleState extends MusicBeatState
 	var wackyEndBeat:Int = 0;
 	var wackyImage:FlxSprite;
 	var coolDudes:Array<String> = [];
+	
 	var name_1:Array<String> = [];
 	var name_2:Array<String> = [];
 	var name_3:Array<String> = [];
@@ -58,7 +58,6 @@ class TitleState extends MusicBeatState
 	var customMenuScroll: Array<Array<String>>;
 	override public function create():Void
 	{
-		Polymod.init({modRoot: "mods", dirs: ['introMod']});
 
 
 		PlayerSettings.init();

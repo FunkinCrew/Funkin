@@ -31,7 +31,7 @@ class FirstTimeState extends MusicBeatState
 		add(txt);
 
 		if (FlxG.save.data.FirstTime != null)
-			TitleState.FirstTime = FlxG.save.data.FirstTime;
+			TitleState.firstTime = FlxG.save.data.FirstTime;
 	}
 
 	override function update(elapsed:Float)
