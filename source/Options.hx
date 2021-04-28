@@ -182,6 +182,26 @@ class SongPositionOption extends Option
 	}
 }
 
+class DistractionsAndEffectsOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+	public override function press():Bool
+	{
+		FlxG.save.data.distractions = !FlxG.save.data.distractions;
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Distractions " + (!FlxG.save.data.distractions ? "off" : "on");
+	}
+}
+
 class Judgement extends Option
 {
 	
@@ -263,6 +283,8 @@ class FPSOption extends Option
 		return "FPS Counter " + (!FlxG.save.data.fps ? "off" : "on");
 	}
 }
+
+
 
 class FPSCapOption extends Option
 {
