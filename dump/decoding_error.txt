@@ -1,0 +1,623 @@
+{
+	doc: null
+	fields: [{
+		access: [APublic]
+		doc: null
+		kind: FFun({
+			args: [{
+				meta: null
+				name: errors
+				opt: true
+				type: TPath({
+					name: Array
+					pack: []
+					params: [TPType(TPath({
+						name: Error
+						pack: [json2object]
+						params: []
+						sub: null
+					}))]
+					sub: null
+				})
+				value: {
+					expr: EConst(CIdent(null))
+					pos: #pos
+				}
+			}, {
+				meta: null
+				name: putils
+				opt: true
+				type: TPath({
+					name: PositionUtils
+					pack: [json2object]
+					params: []
+					sub: null
+				})
+				value: {
+					expr: EConst(CIdent(null))
+					pos: #pos
+				}
+			}, {
+				meta: null
+				name: errorType
+				opt: true
+				type: TPath({
+					name: Error
+					pack: [json2object]
+					params: []
+					sub: ErrorType
+				})
+				value: {
+					expr: EField({
+						expr: EField({
+							expr: EField({
+								expr: EConst(CIdent(json2object))
+								pos: #pos
+							}, Error)
+							pos: #pos
+						}, ErrorType)
+						pos: #pos
+					}, NONE)
+					pos: #pos
+				}
+			}]
+			expr: {
+				expr: EBlock([{
+					expr: ECall({
+						expr: EConst(CIdent(super))
+						pos: #pos
+					}, [{
+						expr: EConst(CIdent(errors))
+						pos: #pos
+					}, {
+						expr: EConst(CIdent(putils))
+						pos: #pos
+					}, {
+						expr: EConst(CIdent(errorType))
+						pos: #pos
+					}])
+					pos: #pos
+				}, {
+					expr: EBlock([])
+					pos: #pos
+				}])
+				pos: #pos
+			}
+			params: []
+			ret: null
+		})
+		meta: null
+		name: new
+		pos: #pos
+	}, {
+		access: [AOverride, APrivate]
+		doc: null
+		kind: FFun({
+			args: [{
+				meta: null
+				name: pos
+				opt: false
+				type: TPath({
+					name: Position
+					pack: [json2object]
+					params: []
+					sub: null
+				})
+				value: null
+			}, {
+				meta: null
+				name: variable
+				opt: false
+				type: TPath({
+					name: String
+					pack: []
+					params: []
+					sub: null
+				})
+				value: null
+			}]
+			expr: {
+				expr: EBlock([{
+					expr: ECall({
+						expr: EField({
+							expr: EConst(CIdent(errors))
+							pos: #pos
+						}, push)
+						pos: #pos
+					}, [{
+						expr: ECall({
+							expr: EConst(CIdent(IncorrectType))
+							pos: #pos
+						}, [{
+							expr: EConst(CIdent(variable))
+							pos: #pos
+						}, {
+							expr: EConst(CString({ type : Void -> Unknown<0> }, DoubleQuotes))
+							pos: #pos
+						}, {
+							expr: EConst(CIdent(pos))
+							pos: #pos
+						}])
+						pos: #pos
+					}])
+					pos: #pos
+				}, {
+					expr: ECall({
+						expr: EField({
+							expr: EConst(CIdent(super))
+							pos: #pos
+						}, onIncorrectType)
+						pos: #pos
+					}, [{
+						expr: EConst(CIdent(pos))
+						pos: #pos
+					}, {
+						expr: EConst(CIdent(variable))
+						pos: #pos
+					}])
+					pos: #pos
+				}])
+				pos: #pos
+			}
+			params: []
+			ret: null
+		})
+		meta: null
+		name: onIncorrectType
+		pos: #pos
+	}, {
+		access: [AOverride, APrivate]
+		doc: null
+		kind: FFun({
+			args: [{
+				meta: null
+				name: pos
+				opt: false
+				type: TPath({
+					name: Position
+					pack: [json2object]
+					params: []
+					sub: null
+				})
+				value: null
+			}, {
+				meta: null
+				name: variable
+				opt: false
+				type: TPath({
+					name: String
+					pack: []
+					params: []
+					sub: null
+				})
+				value: null
+			}]
+			expr: {
+				expr: EBlock([{
+					expr: EBinop(OpAssign, {
+						expr: EConst(CIdent(value))
+						pos: #pos
+					}, {
+						expr: EConst(CIdent(null))
+						pos: #pos
+					})
+					pos: #pos
+				}])
+				pos: #pos
+			}
+			params: []
+			ret: null
+		})
+		meta: null
+		name: loadJsonNull
+		pos: #pos
+	}, {
+		access: [AOverride, APrivate]
+		doc: null
+		kind: FFun({
+			args: [{
+				meta: null
+				name: o
+				opt: false
+				type: TPath({
+					name: Array
+					pack: []
+					params: [TPType(TPath({
+						name: Json
+						pack: [hxjsonast]
+						params: []
+						sub: JObjectField
+					}))]
+					sub: null
+				})
+				value: null
+			}, {
+				meta: null
+				name: pos
+				opt: false
+				type: TPath({
+					name: Position
+					pack: [json2object]
+					params: []
+					sub: null
+				})
+				value: null
+			}, {
+				meta: null
+				name: variable
+				opt: false
+				type: TPath({
+					name: String
+					pack: []
+					params: []
+					sub: null
+				})
+				value: null
+			}]
+			expr: {
+				expr: EBlock([{
+					expr: EVars([{
+						expr: {
+							expr: ENew({
+								name: Map
+								pack: []
+								params: [TPType(TPath({
+									name: String
+									pack: []
+									params: []
+									sub: null
+								})), TPType(TPath({
+									name: Bool
+									pack: []
+									params: []
+									sub: null
+								}))]
+								sub: null
+							}, [])
+							pos: #pos
+						}
+						isFinal: false
+						name: assigned
+						type: null
+					}])
+					pos: #pos
+				}, {
+					expr: ECall({
+						expr: EConst(CIdent(objectSetupAssign))
+						pos: #pos
+					}, [{
+						expr: EConst(CIdent(assigned))
+						pos: #pos
+					}, {
+						expr: EArrayDecl([{
+							expr: EConst(CString(type, DoubleQuotes))
+							pos: #pos
+						}])
+						pos: #pos
+					}, {
+						expr: EArrayDecl([{
+							expr: EConst(CIdent(false))
+							pos: #pos
+						}])
+						pos: #pos
+					}])
+					pos: #pos
+				}, {
+					expr: EBinop(OpAssign, {
+						expr: EConst(CIdent(value))
+						pos: #pos
+					}, {
+						expr: ECall({
+							expr: EConst(CIdent(getAuto))
+							pos: #pos
+						}, [])
+						pos: #pos
+					})
+					pos: #pos
+				}, {
+					expr: EMeta({
+						name: :privateAccess
+						params: []
+						pos: #pos
+					}, {
+						expr: EBlock([{
+							expr: EFor({
+								expr: EBinop(OpIn, {
+									expr: EConst(CIdent(field))
+									pos: #pos
+								}, {
+									expr: EConst(CIdent(o))
+									pos: #pos
+								})
+								pos: #pos
+							}, {
+								expr: EBlock([{
+									expr: ESwitch({
+										expr: EField({
+											expr: EConst(CIdent(field))
+											pos: #pos
+										}, name)
+										pos: #pos
+									}, [{
+										expr: {
+											expr: EBlock([{
+												expr: EVars([{
+													expr: {
+														expr: ECall({
+															expr: EConst(CIdent(loadObjectField))
+															pos: #pos
+														}, [{
+															expr: EField({
+																expr: ENew({
+																	name: JsonParser
+																	pack: [json2object]
+																	params: [TPType(TFunction([], null <- expected enum value))]
+																	sub: null
+																}, [{
+																	expr: EConst(CIdent(errors))
+																	pos: #pos
+																}, {
+																	expr: EConst(CIdent(putils))
+																	pos: #pos
+																}, {
+																	expr: EConst(CIdent(OBJECTTHROW))
+																	pos: #pos
+																}])
+																pos: #pos
+															}, loadJson)
+															pos: #pos
+														}, {
+															expr: EConst(CIdent(field))
+															pos: #pos
+														}, {
+															expr: EConst(CString(type, DoubleQuotes))
+															pos: #pos
+														}, {
+															expr: EConst(CIdent(assigned))
+															pos: #pos
+														}, {
+															expr: EField({
+																expr: EConst(CIdent(value))
+																pos: #pos
+															}, type)
+															pos: #pos
+														}, {
+															expr: EConst(CIdent(pos))
+															pos: #pos
+														}])
+														pos: #pos
+													}
+													isFinal: false
+													name: v
+													type: null
+												}])
+												pos: #pos
+											}, {
+												expr: EIf({
+													expr: EBinop(OpNotEq, {
+														expr: EConst(CIdent(v))
+														pos: #pos
+													}, {
+														expr: EConst(CIdent(null))
+														pos: #pos
+													})
+													pos: #pos
+												}, {
+													expr: EBlock([{
+														expr: EBinop(OpAssign, {
+															expr: EField({
+																expr: EConst(CIdent(value))
+																pos: #pos
+															}, type)
+															pos: #pos
+														}, {
+															expr: ECast({
+																expr: EConst(CIdent(v))
+																pos: #pos
+															}, null)
+															pos: #pos
+														})
+														pos: #pos
+													}])
+													pos: #pos
+												}, {
+													expr: EBlock([{
+														expr: EBinop(OpAssign, {
+															expr: EField({
+																expr: EConst(CIdent(value))
+																pos: #pos
+															}, type)
+															pos: #pos
+														}, {
+															expr: EConst(CIdent(null))
+															pos: #pos
+														})
+														pos: #pos
+													}])
+													pos: #pos
+												})
+												pos: #pos
+											}])
+											pos: #pos
+										}
+										guard: null
+										values: [{
+											expr: EConst(CString(type, null))
+											pos: #pos
+										}]
+									}], {
+										expr: ECall({
+											expr: EField({
+												expr: EConst(CIdent(errors))
+												pos: #pos
+											}, push)
+											pos: #pos
+										}, [{
+											expr: ECall({
+												expr: EConst(CIdent(UnknownVariable))
+												pos: #pos
+											}, [{
+												expr: EField({
+													expr: EConst(CIdent(field))
+													pos: #pos
+												}, name)
+												pos: #pos
+											}, {
+												expr: ECall({
+													expr: EField({
+														expr: EConst(CIdent(putils))
+														pos: #pos
+													}, convertPosition)
+													pos: #pos
+												}, [{
+													expr: EField({
+														expr: EConst(CIdent(field))
+														pos: #pos
+													}, namePos)
+													pos: #pos
+												}])
+												pos: #pos
+											}])
+											pos: #pos
+										}])
+										pos: #pos
+									})
+									pos: #pos
+								}])
+								pos: #pos
+							})
+							pos: #pos
+						}])
+						pos: #pos
+					})
+					pos: #pos
+				}, {
+					expr: ECall({
+						expr: EConst(CIdent(objectErrors))
+						pos: #pos
+					}, [{
+						expr: EConst(CIdent(assigned))
+						pos: #pos
+					}, {
+						expr: EConst(CIdent(pos))
+						pos: #pos
+					}])
+					pos: #pos
+				}])
+				pos: #pos
+			}
+			params: []
+			ret: null
+		})
+		meta: null
+		name: loadJsonObject
+		pos: #pos
+	}, {
+		access: [APublic]
+		doc: null
+		kind: FFun({
+			args: []
+			expr: {
+				expr: EReturn({
+					expr: EObjectDecl([{
+						expr: {
+							expr: ECall({
+								expr: EField({
+									expr: ENew({
+										name: JsonParser
+										pack: [json2object]
+										params: [TPType(TFunction([], null <- expected enum value))]
+										sub: null
+									}, [{
+										expr: EArrayDecl([])
+										pos: #pos
+									}, {
+										expr: EConst(CIdent(putils))
+										pos: #pos
+									}, {
+										expr: EConst(CIdent(NONE))
+										pos: #pos
+									}])
+									pos: #pos
+								}, loadJson)
+								pos: #pos
+							}, [{
+								expr: EObjectDecl([{
+									expr: {
+										expr: EConst(CIdent(JNull))
+										pos: #pos
+									}
+									field: value
+									quotes: Unquoted
+								}, {
+									expr: {
+										expr: EObjectDecl([{
+											expr: {
+												expr: EConst(CString(, DoubleQuotes))
+												pos: #pos
+											}
+											field: file
+											quotes: Unquoted
+										}, {
+											expr: {
+												expr: EConst(CInt(0))
+												pos: #pos
+											}
+											field: min
+											quotes: Unquoted
+										}, {
+											expr: {
+												expr: EConst(CInt(1))
+												pos: #pos
+											}
+											field: max
+											quotes: Unquoted
+										}])
+										pos: #pos
+									}
+									field: pos
+									quotes: Unquoted
+								}])
+								pos: #pos
+							}])
+							pos: #pos
+						}
+						field: type
+						quotes: Unquoted
+					}])
+					pos: #pos
+				})
+				pos: #pos
+			}
+			params: null
+			ret: TPath({
+				name: FunkinUtility
+				pack: []
+				params: []
+				sub: LegalStageObject
+			})
+		})
+		meta: null
+		name: getAuto
+		pos: #pos
+	}]
+	isExtern: false
+	kind: TDClass({
+		name: BaseParser
+		pack: [json2object, reader]
+		params: [TPType(TPath({
+			name: FunkinUtility
+			pack: []
+			params: []
+			sub: LegalStageObject
+		}))]
+		sub: null
+	}, [], false, false)
+	meta: []
+	name: JsonParser_8
+	pack: []
+	params: []
+	pos: #pos
+}
+line 354: expected enum value
+line 529: expected enum value

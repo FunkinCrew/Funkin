@@ -1,15 +1,18 @@
 package;
 
+import flixel.ui.FlxButton.FlxTypedButton;
 import Section.SwagSection;
 import Song.SwagSong;
 import WiggleEffect.WiggleEffectType;
 import flixel.FlxBasic;
 import flixel.FlxCamera;
 import flixel.FlxG;
+import openfl.geom.Matrix;
 import flixel.FlxGame;
 import flixel.FlxObject;
 import DifficultyIcons;
 import flixel.FlxSprite;
+import flixel.FlxBasic;
 import flixel.FlxState;
 import flixel.FlxSubState;
 import flash.display.BitmapData;
@@ -48,10 +51,29 @@ import haxe.io.Path;
 import openfl.utils.ByteArray;
 import lime.media.AudioBuffer;
 import flash.media.Sound;
+
+#end
+#if windows
+import llua.Lua;
+import llua.LuaL;
+import llua.Convert;
+import llua.State;
 #end
 import tjson.TJSON;
 using StringTools;
-
+typedef LuaAnim = {
+	var prefix : String;
+	@:optional var indices: Array<Int>;
+	var name : String;
+	@:optional var fps : Int;
+	@:optional var loop : Bool;
+}
+enum abstract DisplayLayer(Int) from Int to Int {
+	var BEHIND_GF = 1;
+	var BEHIND_BF = 1 << 1;
+	var BEHIND_DAD = 1 << 2;
+	var BEHIND_ALL = BEHIND_GF | BEHIND_BF | BEHIND_DAD;
+}
 class PlayState extends MusicBeatState
 {
 	public static var curStage:String = '';
@@ -82,9 +104,10 @@ class PlayState extends MusicBeatState
 
 	private var strumLineNotes:FlxTypedGroup<FlxSprite>;
 	private var playerStrums:FlxTypedGroup<FlxSprite>;
-
+	private var enemyStrums:FlxTypedGroup<FlxSprite>;
 	private var camZooming:Bool = false;
 	private var curSong:String = "";
+	private var strumming2:Array<Bool> = [false, false, false, false];
 
 	private var gfSpeed:Int = 1;
 	private var health:Float = 1;
@@ -101,6 +124,7 @@ class PlayState extends MusicBeatState
 	private var camHUD:FlxCamera;
 	private var camGame:FlxCamera;
 
+
 	var dialogue:Array<String> = ['blah blah blah', 'coolswag'];
 
 	var halloweenBG:FlxSprite;
@@ -109,6 +133,9 @@ class PlayState extends MusicBeatState
 	var phillyCityLights:FlxTypedGroup<FlxSprite>;
 	var phillyTrain:FlxSprite;
 	var trainSound:FlxSound;
+	// this'll work... right?
+	var backgroundgroup:FlxTypedGroup<BeatSprite>;
+	var foregroundgroup:FlxTypedGroup<BeatSprite>;
 
 	var limo:FlxSprite;
 	var grpLimoDancers:FlxTypedGroup<BackgroundDancer>;
@@ -135,6 +162,9 @@ class PlayState extends MusicBeatState
 	// how big to stretch the pixel art assets
 	public static var daPixelZoom:Float = 6;
 
+	var bfoffset = [0.0, 0.0];
+	var gfoffset = [0.0, 0.0];
+	var dadoffset = [0.0, 0.0];
 	var inCutscene:Bool = false;
 	var alwaysDoCutscenes = false;
 	var fullComboMode:Bool = false;
@@ -165,6 +195,857 @@ class PlayState extends MusicBeatState
 	var alcholNumber:Float = 0;
 	var inALoop:Bool = false;
 	var useVictoryScreen:Bool = true;
+	#if windows
+	public var luaStates:Map<String, State> = [];
+	function callLua(func_name:String, args:Array<Dynamic>, type:String, uselua:String):Dynamic
+	{	
+		var result:Any = null;
+		Lua.getglobal(luaStates.get(uselua), func_name);
+
+		for (arg in args)
+		{
+			Convert.toLua(luaStates.get(uselua), arg);
+		}
+		Lua.call(luaStates.get(uselua), args.length, 1);
+
+		if (result == null)
+		{
+			return null;
+		}
+		else
+		{
+			return convert(result, type);
+		}
+	}
+	function callAllLua(func_name:String, args:Array<Dynamic>, type:String) {
+		for (key in luaStates.keys()) {
+			callLua(func_name, args,type,key);
+		}
+	}
+	function setAllVar(var_name:String, object:Dynamic) {
+		for (keys in luaStates.keys()) {
+			setVar(var_name, object, keys);
+		}
+	}
+
+	function getType(l, type):Any
+	{
+		return switch Lua.type(l, type)
+		{
+			case t if (t == Lua.LUA_TNIL): null;
+			case t if (t == Lua.LUA_TNUMBER): Lua.tonumber(l, type);
+			case t if (t == Lua.LUA_TSTRING): (Lua.tostring(l, type) : String);
+			case t if (t == Lua.LUA_TBOOLEAN): Lua.toboolean(l, type);
+			case t: throw 'you don goofed up. lua type error ($t)';
+		}
+	}
+	function makeLuaState(uselua:String, path:String, filename:String) {
+		trace('opening a lua state (because we are cool :))');
+		luaStates.set(uselua, LuaL.newstate());
+		LuaL.openlibs(luaStates.get(uselua));
+		trace("Lua version: " + Lua.version());
+		trace("LuaJIT version: " + Lua.versionJIT());
+		Lua.init_callbacks(luaStates.get(uselua));
+
+		var result = LuaL.dofile(luaStates.get(uselua), path + filename); // execute le file
+
+		if (result != 0)
+		{
+			luaStates.remove(uselua);
+			FlxG.switchState(new MainMenuState());
+		}
+
+		// get some fukin globals up in here bois
+		setVar("BEHIND_GF", BEHIND_GF, uselua);
+		setVar("BEHIND_BF", BEHIND_BF, uselua);
+		setVar("BEHIND_DAD", BEHIND_DAD, uselua);
+		setVar("BEHIND_ALL", BEHIND_ALL, uselua);
+		setVar("BEHIND_NONE", 0, uselua);
+		setVar("STATIC_IMAGE", 0, uselua);
+		setVar("SPARROW_SHEET", 1, uselua);
+		setVar("PACKER_SHEET", 2, uselua);
+		trace(PlayState.SONG.isMoody);
+		setVar("isMoody", PlayState.SONG.isMoody, uselua);
+		setVar("difficulty", storyDifficulty, uselua);
+		setVar("bpm", Conductor.bpm, uselua);
+		setVar("scrollspeed", PlayState.SONG.speed, uselua);
+		setVar("fpsCap", FlxG.save.data.fpsCap, uselua);
+		setVar("downscroll", FlxG.save.data.downscroll, uselua);
+
+		setVar("curStep", 0, uselua);
+		setVar("curBeat", 0, uselua);
+		setVar("crochet", Conductor.stepCrochet, uselua);
+		setVar("safeZoneOffset", Conductor.safeZoneOffset, uselua);
+
+		setVar("hudZoom", camHUD.zoom, uselua);
+		setVar("cameraZoom", FlxG.camera.zoom, uselua);
+
+		setVar("cameraAngle", FlxG.camera.angle, uselua);
+		setVar("camHudAngle", camHUD.angle, uselua);
+
+		setVar("followXOffset", 0, uselua);
+		setVar("followYOffset", 0, uselua);
+
+		setVar("showOnlyStrums", false, uselua);
+		setVar("strumLine1Visible", true, uselua);
+		setVar("strumLine2Visible", true, uselua);
+
+		setVar("screenWidth", FlxG.width, uselua);
+		setVar("screenHeight", FlxG.height, uselua);
+		setVar("hudWidth", camHUD.width, uselua);
+		setVar("hudHeight", camHUD.height, uselua);
+
+		setVar("mustHit", false, uselua);
+
+		setVar("strumLineY", strumLine.y, uselua);
+
+		// callbacks
+
+		// sprites
+
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "makeSprite", function(spritePath:String, toBeCalled:String, drawBehind:DisplayLayer, doAnim:Int)
+		{
+			trace("making sprite");
+			#if sys
+			var sprite:FlxSprite = new FlxSprite(0, 0);
+			if (doAnim == 0)
+			{
+				sprite.loadGraphic(path + spritePath + ".png");
+			}
+			else if (doAnim == 1)
+			{
+				sprite.frames = FlxAtlasFrames.fromSparrow(
+					path
+					+ spritePath
+					+ ".png",
+					path
+					+ spritePath
+					+ ".xml");
+			}
+			else
+			{
+				sprite.frames = FlxAtlasFrames.fromSpriteSheetPacker(
+					path
+					+ spritePath
+					+ ".png",
+					path
+					+ spritePath
+					+ ".txt");
+			}
+			// you usually want this on, make it default.
+			sprite.antialiasing = true;
+			luaSprites.set(toBeCalled, sprite);
+			// and I quote:
+			// shitty layering but it works!
+			if (drawBehind & BEHIND_GF != 0)
+			{
+				remove(gf);
+			}
+			if (drawBehind & BEHIND_DAD != 0)
+				remove(dad);
+			if (drawBehind & BEHIND_BF != 0)
+				remove(boyfriend);
+			
+			trace(":)");
+			add(sprite);
+			if (drawBehind & BEHIND_GF != 0)
+			{
+				add(gf);
+			}
+			if (drawBehind & BEHIND_DAD != 0)
+				add(dad);
+			if (drawBehind & BEHIND_BF != 0)
+				add(boyfriend);
+			
+			#end
+			return toBeCalled;
+		}));
+
+		Lua_helper.add_callback(luaStates.get(uselua), "destroySprite", function(id:String)
+		{
+			var sprite = luaSprites.get(id);
+			if (sprite == null)
+				return false;
+			remove(sprite);
+			return true;
+		});
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "addTimer", function(func:String, time:Float)
+		{
+			new FlxTimer().start(time, function(tmr:FlxTimer)
+			{
+				callLua(func, [], null, uselua);
+			});
+		}));
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "bitwiseor", function(a:Int, b:Int)
+		{
+			return a | b;
+		}));
+
+		// hud/camera
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "trace", function(value:Dynamic)
+		{
+			trace(value);
+		}));
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "elapsed", function()
+		{
+			return FlxG.elapsed;
+		}));
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "setHudPosition", function(x:Int, y:Int)
+		{
+			camHUD.x = x;
+			camHUD.y = y;
+		}));
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "newArray", function(id:String)
+		{
+			luaArray.set(id, []);
+		}));
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "pushArray", function(value:Any, id:String)
+		{
+			luaArray.get(id).push(value);
+		}));
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "popArray", function(id:String)
+		{
+			return luaArray.get(id).pop();
+		}));
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "newRangeArray", function(min:Int, max:Int, id:String)
+		{
+			var coolarray:Array<Any> = [];
+			// keep lua inclusive
+			for (i in min...(max + 1))
+			{
+				coolarray.push(i);
+			}
+			luaArray.set(id, coolarray);
+		}));
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "setActorFollowCam", function(x:Int, y:Int, id:String)
+		{
+			getActorByName(id).followCamX = x;
+			getActorByName(id).followCamY = y;
+		}));
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "getActorFollowCamX", function(id:String)
+		{
+			return getActorByName(id).followCamX;
+		}));
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "makeActorPixel", function(id:String)
+		{
+			getActorByName(id).setGraphicSize(Std.int(getActorByName(id).width * 6));
+			getActorByName(id).updateHitbox();
+			getActorByName(id).antialiasing = false;
+		}));
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "getActorFollowCamY", function(id:String)
+		{
+			return getActorByName(id).followCamY;
+		}));
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "addActorAnimationPrefix", function(prefix:String, name:String, fps:Int, loop:Bool, id:String)
+		{
+			getActorByName(id).animation.addByPrefix(name, prefix, fps, loop);
+			trace(getActorByName(id).animation);
+		}));
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "addActorAnimationIndices", function(prefix:String, name:String, indices:String, fps:Int, id:String)
+		{
+			trace(luaArray.get(indices));
+			getActorByName(id).animation.addByIndices(name, prefix, luaArray.get(indices), "", fps, false);
+		}));
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "addActorAnimation",
+			function(name:String, indices:String, fps:Int, loop:Bool, id:String)
+			{
+				trace(luaArray.get(indices));
+			getActorByName(id).animation.add(name, luaArray.get(indices), fps, loop);
+			}));
+
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "playActorAnimation", function(animation:String, force:Bool, id:String)
+		{
+			trace(animation);
+			getActorByName(id).animation.play(animation, force);
+		}));
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "playCharacterAnimation", function(animation:String, force:Bool, id:String)
+		{
+			getActorByName(id).playAnim(animation, force);
+		}));
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "getHudX", function()
+		{
+			return camHUD.x;
+		}));
+
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "getHudY", function()
+		{
+			return camHUD.y;
+		}));
+
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "setCamPosition", function(x:Int, y:Int)
+		{
+			FlxG.camera.x = x;
+			FlxG.camera.y = y;
+		}));
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "playSound", function(filename1:String)
+		{
+			FlxG.sound.play(path + filename1 + '.ogg');
+		}));
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "playStoredSound", function(force:Bool, id:String)
+		{
+			luaSound.get(id).play(force);
+		}));
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "getSoundPlaying", function(id:String)
+		{
+			return luaSound.get(id).playing;
+		}));
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "getCameraX", function()
+		{
+			return FlxG.camera.x;
+		}));
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "addSoundToList", function(filename1:String, tobecalled:String)
+		{
+			luaSound.set(tobecalled, new FlxSound().loadEmbedded(path + filename1 + '.ogg'));
+			FlxG.sound.list.add(luaSound.get(tobecalled));
+		}));
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "getSoundTime", function(id:String)
+		{
+			return luaSound.get(id).time;
+		}));
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "getCameraY", function()
+		{
+			return FlxG.camera.y;
+		}));
+
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "setCamZoom", function(zoomAmount:Float)
+		{
+			FlxG.camera.zoom = zoomAmount;
+		}));
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "setDefaultZoom", function(zoomAmount:Float)
+		{
+			FlxG.camera.zoom = zoomAmount;
+			defaultCamZoom = zoomAmount;
+		}));
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "setHudZoom", function(zoomAmount:Float)
+		{
+			camHUD.zoom = zoomAmount;
+		}));
+
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "setActorX", function(x:Int, id:String)
+		{
+			getActorByName(id).x = x;
+		}));
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "setActorVelocityX", function(x:Int, id:String)
+		{
+			getActorByName(id).velocity.x = x;
+		}));
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "setActorAlpha", function(alpha:Int, id:String)
+		{
+			getActorByName(id).alpha = alpha;
+		}));
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "getRenderedNotes", function()
+		{
+			return notes.length;
+		}));
+
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "getRenderedNoteX", function(id:Int)
+		{
+			return notes.members[id].x;
+		}));
+
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "getRenderedNoteY", function(id:Int)
+		{
+			return notes.members[id].y;
+		}));
+
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "getRenderedNoteType", function(id:Int)
+		{
+			return notes.members[id].noteData;
+		}));
+
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "isSustain", function(id:Int)
+		{
+			return notes.members[id].isSustainNote;
+		}));
+
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "isParentSustain", function(id:Int)
+		{
+			return notes.members[id].prevNote.isSustainNote;
+		}));
+
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "getRenderedNoteParentX", function(id:Int)
+		{
+			return notes.members[id].prevNote.x;
+		}));
+
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "getRenderedNoteParentY", function(id:Int)
+		{
+			return notes.members[id].prevNote.y;
+		}));
+
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "getRenderedNoteHit", function(id:Int)
+		{
+			return notes.members[id].mustPress;
+		}));
+
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "getRenderedNoteCalcX", function(id:Int)
+		{
+			if (notes.members[id].mustPress)
+				return playerStrums.members[Math.floor(Math.abs(notes.members[id].noteData))].x;
+			return strumLineNotes.members[Math.floor(Math.abs(notes.members[id].noteData))].x;
+		}));
+
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "anyNotes", function()
+		{
+			return notes.members.length != 0;
+		}));
+
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "getRenderedNoteStrumtime", function(id:Int)
+		{
+			return notes.members[id].strumTime;
+		}));
+
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "getRenderedNoteScaleX", function(id:Int)
+		{
+			return notes.members[id].scale.x;
+		}));
+
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "setRenderedNotePos", function(x:Float, y:Float, id:Int)
+		{
+			if (notes.members[id] == null)
+				throw('error! you cannot set a rendered notes position when it doesnt exist! ID: ' + id);
+			else
+			{
+				notes.members[id].modifiedByLua = true;
+				notes.members[id].x = x;
+				notes.members[id].y = y;
+			}
+		}));
+
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "setRenderedNoteAlpha", function(alpha:Float, id:Int)
+		{
+			notes.members[id].modifiedByLua = true;
+			notes.members[id].alpha = alpha;
+		}));
+
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "setRenderedNoteScale", function(scale:Float, id:Int)
+		{
+			notes.members[id].modifiedByLua = true;
+			notes.members[id].setGraphicSize(Std.int(notes.members[id].width * scale));
+		}));
+
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "setRenderedNoteScale", function(scaleX:Int, scaleY:Int, id:Int)
+		{
+			notes.members[id].modifiedByLua = true;
+			notes.members[id].setGraphicSize(scaleX, scaleY);
+		}));
+
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "getRenderedNoteWidth", function(id:Int)
+		{
+			return notes.members[id].width;
+		}));
+
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "setRenderedNoteAngle", function(angle:Float, id:Int)
+		{
+			notes.members[id].modifiedByLua = true;
+			notes.members[id].angle = angle;
+		}));
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "setActorY", function(y:Int, id:String)
+		{
+			getActorByName(id).y = y;
+		}));
+
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "setActorVelocityY", function(y:Int, id:String)
+		{
+			getActorByName(id).velocity.y = y;
+		}));
+
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "setActorAngle", function(angle:Int, id:String)
+		{
+			getActorByName(id).angle = angle;
+		}));
+
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "setActorScale", function(scale:Float, id:String)
+		{
+			getActorByName(id).setGraphicSize(Std.int(getActorByName(id).width * scale));
+			getActorByName(id).updateHitbox();
+		}));
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "setActorScaleMember", function(scale:Float, id:String)
+		{
+			trace(getActorByName(id).scale.x);
+			getActorByName(id).scale.set(scale, scale);
+		}));
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "getScaleX", function(id:String)
+		{
+			return getActorByName(id).scale.x;
+		}));
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "getScaleY", function(id:String)
+		{
+			return getActorByName(id).scale.y;
+		}));
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "setActorAntialias", function(antialias:Bool, id:String)
+		{
+			getActorByName(id).antialiasing = antialias;
+		}));
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "setActorScrollFactor", function(factorx:Float, factory:Float, id:String)
+		{
+			getActorByName(id).scrollFactor.set(factorx, factory);
+		}));
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "getActorWidth", function(id:String)
+		{
+			return getActorByName(id).width;
+		}));
+
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "getActorHeight", function(id:String)
+		{
+			return getActorByName(id).height;
+		}));
+
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "getActorAlpha", function(id:String)
+		{
+			return getActorByName(id).alpha;
+		}));
+
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "getActorAngle", function(id:String)
+		{
+			return getActorByName(id).angle;
+		}));
+
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "getActorX", function(id:String)
+		{
+			return getActorByName(id).x;
+		}));
+
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "getActorY", function(id:String)
+		{
+			return getActorByName(id).y;
+		}));
+
+		// tweens
+
+		Lua_helper.add_callback(luaStates.get(uselua), "tweenCameraPos", function(toX:Int, toY:Int, time:Float, onComplete:String)
+		{
+			FlxTween.tween(FlxG.camera, {x: toX, y: toY}, time, {
+				ease: FlxEase.cubeIn,
+				onComplete: function(flxTween:FlxTween)
+				{
+					if (onComplete != '' && onComplete != null)
+					{
+						callLua(onComplete, ["camera"], null, uselua);
+					}
+				}
+			});
+		});
+		Lua_helper.add_callback(luaStates.get(uselua), "shakeCamera", function(intensity:Float,time:Float, onComplete:String)
+		{
+			FlxG.camera.shake(intensity,time,function() {
+				if (onComplete != '' && onComplete != null)
+				{
+					callLua(onComplete, ["camera"], null, uselua);
+				}
+			});
+		});
+		Lua_helper.add_callback(luaStates.get(uselua), "tweenCameraAngle", function(toAngle:Float, time:Float, onComplete:String)
+		{
+			FlxTween.tween(FlxG.camera, {angle: toAngle}, time, {
+				ease: FlxEase.cubeIn,
+				onComplete: function(flxTween:FlxTween)
+				{
+					if (onComplete != '' && onComplete != null)
+					{
+						callLua(onComplete, ["camera"], null, uselua);
+					}
+				}
+			});
+		});
+
+		Lua_helper.add_callback(luaStates.get(uselua), "tweenCameraZoom", function(toZoom:Float, time:Float, onComplete:String)
+		{
+			FlxTween.tween(FlxG.camera, {zoom: toZoom}, time, {
+				ease: FlxEase.cubeIn,
+				onComplete: function(flxTween:FlxTween)
+				{
+					if (onComplete != '' && onComplete != null)
+					{
+						callLua(onComplete, ["camera"], null, uselua);
+					}
+				}
+			});
+		});
+
+		Lua_helper.add_callback(luaStates.get(uselua), "tweenHudPos", function(toX:Int, toY:Int, time:Float, onComplete:String)
+		{
+			FlxTween.tween(camHUD, {x: toX, y: toY}, time, {
+				ease: FlxEase.cubeIn,
+				onComplete: function(flxTween:FlxTween)
+				{
+					if (onComplete != '' && onComplete != null)
+					{
+						callLua(onComplete, ["camera"], null, uselua);
+					}
+				}
+			});
+		});
+
+		Lua_helper.add_callback(luaStates.get(uselua), "tweenHudAngle", function(toAngle:Float, time:Float, onComplete:String)
+		{
+			FlxTween.tween(camHUD, {angle: toAngle}, time, {
+				ease: FlxEase.cubeIn,
+				onComplete: function(flxTween:FlxTween)
+				{
+					if (onComplete != '' && onComplete != null)
+					{
+						callLua(onComplete, ["camera"], null, uselua);
+					}
+				}
+			});
+		});
+
+		Lua_helper.add_callback(luaStates.get(uselua), "tweenHudZoom", function(toZoom:Float, time:Float, onComplete:String)
+		{
+			FlxTween.tween(camHUD, {zoom: toZoom}, time, {
+				ease: FlxEase.cubeIn,
+				onComplete: function(flxTween:FlxTween)
+				{
+					if (onComplete != '' && onComplete != null)
+					{
+						callLua(onComplete, ["camera"], null, uselua);
+					}
+				}
+			});
+		});
+
+		Lua_helper.add_callback(luaStates.get(uselua), "tweenPos", function(id:String, toX:Int, toY:Int, time:Float, onComplete:String)
+		{
+			FlxTween.tween(getActorByName(id), {x: toX, y: toY}, time, {
+				ease: FlxEase.cubeIn,
+				onComplete: function(flxTween:FlxTween)
+				{
+					if (onComplete != '' && onComplete != null)
+					{
+						callLua(onComplete, [id], null, uselua);
+					}
+				}
+			});
+		});
+
+		Lua_helper.add_callback(luaStates.get(uselua), "tweenPosXAngle", function(id:String, toX:Int, toAngle:Float, time:Float, onComplete:String)
+		{
+			FlxTween.tween(getActorByName(id), {x: toX, angle: toAngle}, time, {
+				ease: FlxEase.cubeIn,
+				onComplete: function(flxTween:FlxTween)
+				{
+					if (onComplete != '' && onComplete != null)
+					{
+						callLua(onComplete, [id], null, uselua);
+					}
+				}
+			});
+		});
+
+		Lua_helper.add_callback(luaStates.get(uselua), "tweenPosYAngle", function(id:String, toY:Int, toAngle:Float, time:Float, onComplete:String)
+		{
+			FlxTween.tween(getActorByName(id), {y: toY, angle: toAngle}, time, {
+				ease: FlxEase.cubeIn,
+				onComplete: function(flxTween:FlxTween)
+				{
+					if (onComplete != '' && onComplete != null)
+					{
+						callLua(onComplete, [id], null, uselua);
+					}
+				}
+			});
+		});
+
+		Lua_helper.add_callback(luaStates.get(uselua), "tweenAngle", function(id:String, toAngle:Int, time:Float, onComplete:String)
+		{
+			FlxTween.tween(getActorByName(id), {angle: toAngle}, time, {
+				ease: FlxEase.cubeIn,
+				onComplete: function(flxTween:FlxTween)
+				{
+					if (onComplete != '' && onComplete != null)
+					{
+						callLua(onComplete, [id], null, uselua);
+					}
+				}
+			});
+		});
+
+		Lua_helper.add_callback(luaStates.get(uselua), "tweenFadeIn", function(id:String, toAlpha:Int, time:Float, onComplete:String)
+		{
+			FlxTween.tween(getActorByName(id), {alpha: toAlpha}, time, {
+				ease: FlxEase.circIn,
+				onComplete: function(flxTween:FlxTween)
+				{
+					if (onComplete != '' && onComplete != null)
+					{
+						callLua(onComplete, [id], null, uselua);
+					}
+				}
+			});
+		});
+
+		Lua_helper.add_callback(luaStates.get(uselua), "tweenFadeOut", function(id:String, toAlpha:Int, time:Float, onComplete:String)
+		{
+			FlxTween.tween(getActorByName(id), {alpha: toAlpha}, time, {
+				ease: FlxEase.circOut,
+				onComplete: function(flxTween:FlxTween)
+				{
+					if (onComplete != '' && onComplete != null)
+					{
+						callLua(onComplete, [id], null, uselua);
+					}
+				}
+			});
+		});
+
+
+		for (i in 0...strumLineNotes.length)
+		{
+			var member = strumLineNotes.members[i];
+			trace(strumLineNotes.members[i].x + " " + strumLineNotes.members[i].y + " " + strumLineNotes.members[i].angle + " | strum" + i);
+			// setVar("strum" + i + "X", Math.floor(member.x));
+			setVar("defaultStrum" + i + "X", Math.floor(member.x), uselua);
+			// setVar("strum" + i + "Y", Math.floor(member.y));
+			setVar("defaultStrum" + i + "Y", Math.floor(member.y), uselua);
+			// setVar("strum" + i + "Angle", Math.floor(member.angle));
+			setVar("defaultStrum" + i + "Angle", Math.floor(member.angle), uselua);
+			trace("Adding strum" + i);
+		}
+
+		trace('calling start function');
+
+		trace('return: ' + Lua.tostring(luaStates.get(uselua), callLua('start', [PlayState.SONG.song], null, uselua)));
+	}
+	function getReturnValues(l)
+	{
+		var lua_v:Int;
+		var v:Any = null;
+		while ((lua_v = Lua.gettop(l)) != 0)
+		{
+			var type:String = getType(l, lua_v);
+			v = convert(lua_v, type);
+			Lua.pop(l, 1);
+		}
+		return v;
+	}
+
+	private function convert(v:Any, type:String):Dynamic
+	{ // I didn't write this lol
+		if (Std.is(v, String) && type != null)
+		{
+			var v:String = v;
+			if (type.substr(0, 4) == 'array')
+			{
+				trace("array");
+				if (type.substr(4) == 'float')
+				{
+					var array:Array<String> = v.split(',');
+					var array2:Array<Float> = new Array();
+
+					for (vars in array)
+					{
+						array2.push(Std.parseFloat(vars));
+					}
+
+					return array2;
+				}
+				else if (type.substr(4) == 'int')
+				{
+					var array:Array<String> = v.split(',');
+					var array2:Array<Int> = new Array();
+
+					for (vars in array)
+					{
+						array2.push(Std.parseInt(vars));
+					}
+
+					return array2;
+				}
+				else
+				{
+					var array:Array<String> = v.split(',');
+					return array;
+				}
+			}
+			else if (type == 'float')
+			{
+				return Std.parseFloat(v);
+			}
+			else if (type == 'int')
+			{
+				return Std.parseInt(v);
+			}
+			else if (type == 'bool')
+			{
+				if (v == 'true')
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+			else
+			{
+				return v;
+			}
+		}
+		else
+		{
+			return v;
+		}
+	}
+
+	function getLuaErrorMessage(l)
+	{
+		var v:String = Lua.tostring(l, -1);
+		Lua.pop(l, 1);
+		return v;
+	}
+
+	public function setVar(var_name:String, object:Dynamic, uselua:String)
+	{
+		// trace('setting variable ' + var_name + ' to ' + object);
+		Lua.pushnumber(luaStates.get(uselua), object);
+		Lua.setglobal(luaStates.get(uselua), var_name);
+	}
+
+	public function getVar(var_name:String, type:String, uselua:String):Dynamic
+	{
+		var result:Any = null;
+
+		// trace('getting variable ' + var_name + ' with a type of ' + type);
+
+		Lua.getglobal(luaStates.get(uselua), var_name);
+		result = Convert.fromLua(luaStates.get(uselua), -1);
+		Lua.pop(luaStates.get(uselua), 1);
+
+		if (result == null)
+		{
+			return null;
+		}
+		else
+		{
+			var result = convert(result, type);
+			// trace(var_name + ' result: ' + result);
+			return result;
+		}
+	}
+
+	function getActorByName(id:String):Dynamic
+	{
+		// pre defined names
+		switch (id)
+		{
+			case 'boyfriend':
+				return boyfriend;
+			case 'girlfriend':
+				return gf;
+			case 'dad':
+				return dad;
+		}
+		// lua objects or what ever
+		if (luaSprites.get(id) == null)
+			return strumLineNotes.members[Std.parseInt(id)];
+		return luaSprites.get(id);
+	}
+
+	public static var luaSprites:Map<String, FlxSprite> = [];
+	var luaSound:Map<String, FlxSound> = [];
+	var luaArray:Map<String, Array<Any>> = [];
+	#end
 	override public function create()
 	{
 		// var gameCam:FlxCamera = FlxG.camera;
@@ -221,7 +1102,8 @@ class PlayState extends MusicBeatState
 
 		Conductor.mapBPMChanges(SONG);
 		Conductor.changeBPM(SONG.bpm);
-
+		backgroundgroup = new FlxTypedGroup<BeatSprite>();
+		foregroundgroup  = new FlxTypedGroup<BeatSprite>();
 		switch (SONG.song.toLowerCase())
 		{
 			default:
@@ -242,7 +1124,7 @@ class PlayState extends MusicBeatState
 					dialogue = [':dad: The game tried to get a dialog file but couldn\'t find it. Please make sure there is a dialog file named "dialog.txt".'];
 				}
 		}
-
+		#if !windows
 		if (SONG.stage == 'spooky')
 		{
 			curStage = "spooky";
@@ -509,49 +1391,6 @@ class PlayState extends MusicBeatState
 			bg.scale.set(6, 6);
 			add(bg);
 			trace("schoolEvilComplete");
-			/*
-				var bg:FlxSprite = new FlxSprite(posX, posY).loadGraphic('assets/images/weeb/evilSchoolBG.png');
-				bg.scale.set(6, 6);
-				// bg.setGraphicSize(Std.int(bg.width * 6));
-				// bg.updateHitbox();
-				add(bg);
-
-				var fg:FlxSprite = new FlxSprite(posX, posY).loadGraphic('assets/images/weeb/evilSchoolFG.png');
-				fg.scale.set(6, 6);
-				// fg.setGraphicSize(Std.int(fg.width * 6));
-				// fg.updateHitbox();
-				add(fg);
-
-				wiggleShit.effectType = WiggleEffectType.DREAMY;
-				wiggleShit.waveAmplitude = 0.01;
-				wiggleShit.waveFrequency = 60;
-				wiggleShit.waveSpeed = 0.8;
-			 */
-
-			// bg.shader = wiggleShit.shader;
-			// fg.shader = wiggleShit.shader;
-
-			/*
-				var waveSprite = new FlxEffectSprite(bg, [waveEffectBG]);
-				var waveSpriteFG = new FlxEffectSprite(fg, [waveEffectFG]);
-
-				// Using scale since setGraphicSize() doesnt work???
-				waveSprite.scale.set(6, 6);
-				waveSpriteFG.scale.set(6, 6);
-				waveSprite.setPosition(posX, posY);
-				waveSpriteFG.setPosition(posX, posY);
-
-				waveSprite.scrollFactor.set(0.7, 0.8);
-				waveSpriteFG.scrollFactor.set(0.9, 0.8);
-
-				// waveSprite.setGraphicSize(Std.int(waveSprite.width * 6));
-				// waveSprite.updateHitbox();
-				// waveSpriteFG.setGraphicSize(Std.int(fg.width * 6));
-				// waveSpriteFG.updateHitbox();
-
-				add(waveSprite);
-				add(waveSpriteFG);
-			 */
 		}
 		else if (SONG.stage == "stage")
 		{
@@ -579,563 +1418,8 @@ class PlayState extends MusicBeatState
 			stageCurtains.active = false;
 
 			add(stageCurtains);
-		} else {
-			// use assets
-			var parsedStageJson = CoolUtil.parseJson(Assets.getText("assets/images/custom_stages/custom_stages.json"));
-			switch (Reflect.field(parsedStageJson, SONG.stage)) {
-				case 'stage':
-					defaultCamZoom = 0.9;
-					// pretend it's stage, it doesn't check for correct images
-					curStage = 'stage';
-					// peck it no one is gonna build this for html5 so who cares if it doesn't compile
-					var bgPic:BitmapData;
-					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/stageback.png")) {
-						bgPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/stageback.png");
-					} else {
-						// fall back on base game file to avoid crashes
-						bgPic = BitmapData.fromImage(Assets.getImage("assets/images/stageback.png"));
-					}
-
-					var bg:FlxSprite = new FlxSprite(-600, -200).loadGraphic(bgPic);
-					// bg.setGraphicSize(Std.int(bg.width * 2.5));
-					// bg.updateHitbox();
-					bg.antialiasing = true;
-					bg.scrollFactor.set(0.9, 0.9);
-					bg.active = false;
-					add(bg);
-					var frontPic:BitmapData;
-					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/stagefront.png")) {
-						frontPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/stagefront.png");
-					} else {
-						// fall back on base game file to avoid crashes
-						frontPic = BitmapData.fromImage(Assets.getImage("assets/images/stagefront.png"));
-					}
-
-					var stageFront:FlxSprite = new FlxSprite(-650, 600).loadGraphic(frontPic);
-					stageFront.setGraphicSize(Std.int(stageFront.width * 1.1));
-					stageFront.updateHitbox();
-					stageFront.antialiasing = true;
-					stageFront.scrollFactor.set(0.9, 0.9);
-					stageFront.active = false;
-					add(stageFront);
-					var curtainPic:BitmapData;
-					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/stagecurtains.png")) {
-						curtainPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/stagecurtains.png");
-					} else {
-						// fall back on base game file to avoid crashes
-						curtainPic = BitmapData.fromImage(Assets.getImage("assets/images/stagecurtains.png"));
-					}
-					var stageCurtains:FlxSprite = new FlxSprite(-500, -300).loadGraphic(curtainPic);
-					stageCurtains.setGraphicSize(Std.int(stageCurtains.width * 0.9));
-					stageCurtains.updateHitbox();
-					stageCurtains.antialiasing = true;
-					stageCurtains.scrollFactor.set(1.3, 1.3);
-					stageCurtains.active = false;
-
-					add(stageCurtains);
-				case 'spooky':
-					curStage = "spooky";
-					halloweenLevel = true;
-					var bgPic:BitmapData;
-					var bgXml:String;
-					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/halloween_bg.png")) {
-						bgPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/halloween_bg.png");
-					} else {
-						// fall back on base game file to avoid crashes
-						bgPic = BitmapData.fromImage(Assets.getImage("assets/images/halloween_bg.png"));
-					}
-					    if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/halloween_bg.xml")) {
-					   bgXml = File.getContent('assets/images/custom_stages/'+SONG.stage+"/halloween_bg.xml");
-					} else {
-					   // fall back on base game file to avoid crashes
-						 bgXml = Assets.getText("assets/images/halloween_bg.xml");
-					}
-					var hallowTex = FlxAtlasFrames.fromSparrow(bgPic, bgXml);
-
-					halloweenBG = new FlxSprite(-200, -100);
-					halloweenBG.frames = hallowTex;
-					halloweenBG.animation.addByPrefix('idle', 'halloweem bg0');
-					halloweenBG.animation.addByPrefix('lightning', 'halloweem bg lightning strike', 24, false);
-					halloweenBG.animation.play('idle');
-					halloweenBG.antialiasing = true;
-					add(halloweenBG);
-
-					isHalloween = true;
-				case 'philly':
-					curStage = 'philly';
-					var bgPic:BitmapData;
-					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/sky.png")) {
-						bgPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/sky.png");
-					} else {
-						// fall back on base game file to avoid crashes
-						bgPic = BitmapData.fromImage(Assets.getImage("assets/images/philly/sky.png"));
-					}
-					var bg:FlxSprite = new FlxSprite(-100).loadGraphic(bgPic);
-					bg.scrollFactor.set(0.1, 0.1);
-					add(bg);
-					var cityPic:BitmapData;
-					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/city.png")) {
-						cityPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/city.png");
-					} else {
-						// fall back on base game file to avoid crashes
-						cityPic = BitmapData.fromImage(Assets.getImage("assets/images/philly/city.png"));
-					}
-					var city:FlxSprite = new FlxSprite(-10).loadGraphic(cityPic);
-					city.scrollFactor.set(0.3, 0.3);
-					city.setGraphicSize(Std.int(city.width * 0.85));
-					city.updateHitbox();
-					add(city);
-
-					phillyCityLights = new FlxTypedGroup<FlxSprite>();
-					add(phillyCityLights);
-
-					for (i in 0...5)
-					{
-						var lightPic:BitmapData;
-						if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/win"+i+".png")) {
-							lightPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/win"+i+".png");
-						} else {
-							// fall back on base game file to avoid crashes
-							lightPic = BitmapData.fromImage(Assets.getImage("assets/images/philly/win"+i+".png"));
-						}
-						var light:FlxSprite = new FlxSprite(city.x).loadGraphic(lightPic);
-						light.scrollFactor.set(0.3, 0.3);
-						light.visible = false;
-						light.setGraphicSize(Std.int(light.width * 0.85));
-						light.updateHitbox();
-						phillyCityLights.add(light);
-					}
-					var backstreetPic:BitmapData;
-					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/behindTrain.png")) {
-						backstreetPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/behindTrain.png");
-					} else {
-						// fall back on base game file to avoid crashes
-						backstreetPic = BitmapData.fromImage(Assets.getImage("assets/images/philly/behindTrain.png"));
-					}
-					var streetBehind:FlxSprite = new FlxSprite(-40, 50).loadGraphic(backstreetPic);
-					add(streetBehind);
-					var trainPic:BitmapData;
-					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/train.png")) {
-						trainPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/train.png");
-					} else {
-						// fall back on base game file to avoid crashes
-						trainPic = BitmapData.fromImage(Assets.getImage("assets/images/philly/train.png"));
-					}
-					phillyTrain = new FlxSprite(2000, 360).loadGraphic(trainPic);
-					add(phillyTrain);
-
-					trainSound = new FlxSound().loadEmbedded('assets/sounds/train_passes' + TitleState.soundExt);
-					FlxG.sound.list.add(trainSound);
-
-
-					var streetPic:BitmapData;
-					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/street.png")) {
-						streetPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/street.png");
-					} else {
-						// fall back on base game file to avoid crashes
-						streetPic = BitmapData.fromImage(Assets.getImage("assets/images/philly/street.png"));
-					}
-					var street:FlxSprite = new FlxSprite(-40, streetBehind.y).loadGraphic(streetPic);
-					add(street);
-				case 'limo':
-					curStage = 'limo';
-					defaultCamZoom = 0.90;
-					var bgPic:BitmapData;
-					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/limoSunset.png")) {
-						bgPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/limoSunset.png");
-					} else {
-						// fall back on base game file to avoid crashes
-						bgPic = BitmapData.fromImage(Assets.getImage("assets/images/limo/limoSunset.png"));
-					}
-					var skyBG:FlxSprite = new FlxSprite(-120, -50).loadGraphic(bgPic);
-					skyBG.scrollFactor.set(0.1, 0.1);
-					add(skyBG);
-					var bgLimoPic:BitmapData;
-					var bgLimoXml:String;
-					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/bgLimo.png")) {
-						bgLimoPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/bgLimo.png");
-					} else {
-						// fall back on base game file to avoid crashes
-						bgLimoPic = BitmapData.fromImage(Assets.getImage("assets/images/limo/bgLimo.png"));
-					}
-					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/bgLimo.xml")) {
-					   bgLimoXml = File.getContent('assets/images/custom_stages/'+SONG.stage+"/bgLimo.xml");
-					} else {
-					   // fall back on base game file to avoid crashes
-						 bgLimoXml = Assets.getText("assets/images/limo/bgLimo.xml");
-					}
-					var bgLimo:FlxSprite = new FlxSprite(-200, 480);
-					bgLimo.frames = FlxAtlasFrames.fromSparrow(bgLimoPic, bgLimoXml);
-					bgLimo.animation.addByPrefix('drive', "background limo pink", 24);
-					bgLimo.animation.play('drive');
-					bgLimo.scrollFactor.set(0.4, 0.4);
-					add(bgLimo);
-
-					grpLimoDancers = new FlxTypedGroup<BackgroundDancer>();
-					add(grpLimoDancers);
-
-					for (i in 0...5)
-					{
-						var dancer:BackgroundDancer = new BackgroundDancer((370 * i) + 130, bgLimo.y - 400, SONG.stage);
-						dancer.scrollFactor.set(0.4, 0.4);
-						grpLimoDancers.add(dancer);
-					}
-					var limoOverlayPic:BitmapData;
-					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/limoOverlay.png")) {
-						limoOverlayPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/limoOverlay.png");
-					} else {
-						// fall back on base game file to avoid crashes
-						limoOverlayPic = BitmapData.fromImage(Assets.getImage("assets/images/limo/limoOverlay.png"));
-					}
-					var overlayShit:FlxSprite = new FlxSprite(-500, -600).loadGraphic(limoOverlayPic);
-					overlayShit.alpha = 0.5;
-					// add(overlayShit);
-
-					// var shaderBullshit = new BlendModeEffect(new OverlayShader(), FlxColor.RED);
-
-					// FlxG.camera.setFilters([new ShaderFilter(cast shaderBullshit.shader)]);
-
-					// overlayShit.shader = shaderBullshit;
-					var limoPic:BitmapData;
-					var limoXml:String;
-					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/limoDrive.png")) {
-						limoPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/limoDrive.png");
-					} else {
-						// fall back on base game file to avoid crashes
-						limoPic = BitmapData.fromImage(Assets.getImage("assets/images/limo/limoDrive.png"));
-					}
-					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/limoDrive.xml")) {
-					   limoXml = File.getContent('assets/images/custom_stages/'+SONG.stage+"/limoDrive.xml");
-					} else {
-					   // fall back on base game file to avoid crashes
-						 limoXml = Assets.getText("assets/images/limo/limoDrive.xml");
-					}
-					var limoTex = FlxAtlasFrames.fromSparrow(limoPic, limoXml);
-
-					limo = new FlxSprite(-120, 550);
-					limo.frames = limoTex;
-					limo.animation.addByPrefix('drive', "Limo stage", 24);
-					limo.animation.play('drive');
-					limo.antialiasing = true;
-					var fastCarPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"_fastcar.png");
-					fastCar = new FlxSprite(-300, 160).loadGraphic(fastCarPic);
-					// add(limo);
-				case 'mall':
-					curStage = 'mall';
-
-					defaultCamZoom = 0.80;
-					var bgPic:BitmapData;
-					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/bgWalls.png")) {
-					   bgPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/bgWalls.png");
-					} else {
-					   // fall back on base game file to avoid crashes
-						 bgPic = BitmapData.fromImage(Assets.getImage("assets/images/christmas/bgWalls.png"));
-					}
-					var bg:FlxSprite = new FlxSprite(-1000, -500).loadGraphic(bgPic);
-					bg.antialiasing = true;
-					bg.scrollFactor.set(0.2, 0.2);
-					bg.active = false;
-					bg.setGraphicSize(Std.int(bg.width * 0.8));
-					bg.updateHitbox();
-					add(bg);
-					var standsPic:BitmapData;
-					var standsXml:String;
-					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/upperBop.png")) {
-					   standsPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/upperBop.png");
-					} else {
-					   // fall back on base game file to avoid crashes
-						 standsPic = BitmapData.fromImage(Assets.getImage("assets/images/christmas/upperBop.png"));
-					}
-					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/upperBop.xml")) {
-					   standsXml = File.getContent('assets/images/custom_stages/'+SONG.stage+"/upperBop.xml");
-					} else {
-					   // fall back on base game file to avoid crashes
-						 standsXml = Assets.getText("assets/images/christmas/upperBop.xml");
-					}
-					upperBoppers = new FlxSprite(-240, -90);
-					upperBoppers.frames = FlxAtlasFrames.fromSparrow(standsPic, standsXml);
-					upperBoppers.animation.addByPrefix('bop', "Upper Crowd Bob", 24, false);
-					upperBoppers.antialiasing = true;
-					upperBoppers.scrollFactor.set(0.33, 0.33);
-					upperBoppers.setGraphicSize(Std.int(upperBoppers.width * 0.85));
-					upperBoppers.updateHitbox();
-					add(upperBoppers);
-					var escalatorPic:BitmapData;
-					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/bgEscalator.png")) {
-					   escalatorPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/bgEscalator.png");
-					} else {
-					   // fall back on base game file to avoid crashes
-						 escalatorPic = BitmapData.fromImage(Assets.getImage("assets/images/christmas/bgEscalator.png"));
-					}
-					var bgEscalator:FlxSprite = new FlxSprite(-1100, -600).loadGraphic(escalatorPic);
-					bgEscalator.antialiasing = true;
-					bgEscalator.scrollFactor.set(0.3, 0.3);
-					bgEscalator.active = false;
-					bgEscalator.setGraphicSize(Std.int(bgEscalator.width * 0.9));
-					bgEscalator.updateHitbox();
-					add(bgEscalator);
-					var treePic:BitmapData;
-					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/christmasTree.png")) {
-					   treePic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/christmasTree.png");
-					} else {
-					   // fall back on base game file to avoid crashes
-						 treePic = BitmapData.fromImage(Assets.getImage("assets/images/christmas/christmasTree.png"));
-					}
-					var tree:FlxSprite = new FlxSprite(370, -250).loadGraphic(treePic);
-					tree.antialiasing = true;
-					tree.scrollFactor.set(0.40, 0.40);
-					add(tree);
-					var crowdPic:BitmapData;
-					var crowdXml:String;
-					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/bottomBop.png")) {
-					   crowdPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/bottomBop.png");
-					} else {
-					   // fall back on base game file to avoid crashes
-						 crowdPic = BitmapData.fromImage(Assets.getImage("assets/images/christmas/bottomBop.png"));
-					}
-					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/bottomBop.xml")) {
-					   crowdXml = File.getContent('assets/images/custom_stages/'+SONG.stage+"/bottomBop.xml");
-					} else {
-					   // fall back on base game file to avoid crashes
-						 crowdXml = Assets.getText("assets/images/christmas/bottomBop.xml");
-					}
-					bottomBoppers = new FlxSprite(-300, 140);
-					bottomBoppers.frames = FlxAtlasFrames.fromSparrow(crowdPic, crowdXml);
-					bottomBoppers.animation.addByPrefix('bop', 'Bottom Level Boppers', 24, false);
-					bottomBoppers.antialiasing = true;
-					bottomBoppers.scrollFactor.set(0.9, 0.9);
-					bottomBoppers.setGraphicSize(Std.int(bottomBoppers.width * 1));
-					bottomBoppers.updateHitbox();
-					add(bottomBoppers);
-					var snowPic:BitmapData;
-					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/fgSnow.png")) {
-					   snowPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/fgSnow.png");
-					} else {
-					   // fall back on base game file to avoid crashes
-						 snowPic = BitmapData.fromImage(Assets.getImage("assets/images/christmas/fgSnow.png"));
-					}
-					var fgSnow:FlxSprite = new FlxSprite(-600, 700).loadGraphic(snowPic);
-					fgSnow.active = false;
-					fgSnow.antialiasing = true;
-					add(fgSnow);
-					var santaPic:BitmapData;
-					var santaXml:String;
-					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/santa.png")) {
-					   santaPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/santa.png");
-					} else {
-					   // fall back on base game file to avoid crashes
-						 santaPic = BitmapData.fromImage(Assets.getImage("assets/images/christmas/santa.png"));
-					}
-					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/santa.xml")) {
-					   santaXml = File.getContent('assets/images/custom_stages/'+SONG.stage+"/santa.xml");
-					} else {
-					   // fall back on base game file to avoid crashes
-						 santaXml = Assets.getText("assets/images/christmas/santa.xml");
-					}
-					santa = new FlxSprite(-840, 150);
-					santa.frames = FlxAtlasFrames.fromSparrow(santaPic, santaXml);
-					santa.animation.addByPrefix('idle', 'santa idle in fear', 24, false);
-					santa.antialiasing = true;
-					add(santa);
-				case 'mallEvil':
-					curStage = 'mallEvil';
-					var bgPic:BitmapData;
-					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/evilBG.png")) {
-					   bgPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/evilBG.png");
-					} else {
-					   // fall back on base game file to avoid crashes
-						 bgPic = BitmapData.fromImage(Assets.getImage("assets/images/christmas/evilBG.png"));
-					}
-
-					var bg:FlxSprite = new FlxSprite(-400, -500).loadGraphic(bgPic);
-					bg.antialiasing = true;
-					bg.scrollFactor.set(0.2, 0.2);
-					bg.active = false;
-					bg.setGraphicSize(Std.int(bg.width * 0.8));
-					bg.updateHitbox();
-					add(bg);
-					var evilTreePic:BitmapData;
-					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/evilTree.png")) {
-					   evilTreePic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/evilTree.png");
-					} else {
-					   // fall back on base game file to avoid crashes
-						 evilTreePic = BitmapData.fromImage(Assets.getImage("assets/images/christmas/evilTree.png"));
-					}
-					var evilTree:FlxSprite = new FlxSprite(300, -300).loadGraphic(evilTreePic);
-					evilTree.antialiasing = true;
-					evilTree.scrollFactor.set(0.2, 0.2);
-					add(evilTree);
-					var evilSnowPic:BitmapData;
-					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/evilSnow.png")) {
-					   evilSnowPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/evilSnow.png");
-					} else {
-					   // fall back on base game file to avoid crashes
-						 evilSnowPic = BitmapData.fromImage(Assets.getImage("assets/images/christmas/evilSnow.png"));
-					}
-					var evilSnow:FlxSprite = new FlxSprite(-200, 700).loadGraphic(evilSnowPic);
-					evilSnow.antialiasing = true;
-					add(evilSnow);
-				case 'school':
-					curStage = 'school';
-					// school moody is just the girls are upset
-					// defaultCamZoom = 0.9;
-					var bgPic:BitmapData;
-					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/weebSky.png")) {
-					   bgPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/weebSky.png");
-					} else {
-					   // fall back on base game file to avoid crashes
-						 bgPic = BitmapData.fromImage(Assets.getImage("assets/images/weeb/weebSky.png"));
-					}
-					var bgSky = new FlxSprite().loadGraphic(bgPic);
-					bgSky.scrollFactor.set(0.1, 0.1);
-					add(bgSky);
-
-					var repositionShit = -200;
-					var schoolPic:BitmapData;
-					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/weebSchool.png")) {
-					   schoolPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/weebSchool.png");
-					} else {
-					   // fall back on base game file to avoid crashes
-						 schoolPic = BitmapData.fromImage(Assets.getImage("assets/images/weeb/weebSchool.png"));
-					}
-					var bgSchool:FlxSprite = new FlxSprite(repositionShit, 0).loadGraphic(schoolPic);
-					bgSchool.scrollFactor.set(0.6, 0.90);
-					add(bgSchool);
-					var streetPic:BitmapData;
-					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/weebStreet.png")) {
-					   streetPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/weebStreet.png");
-					} else {
-					   // fall back on base game file to avoid crashes
-						 streetPic = BitmapData.fromImage(Assets.getImage("assets/images/weeb/weebStreet.png"));
-					}
-					var bgStreet:FlxSprite = new FlxSprite(repositionShit).loadGraphic(streetPic);
-					bgStreet.scrollFactor.set(0.95, 0.95);
-					add(bgStreet);
-					var fgTreePic:BitmapData;
-					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/weebTreesBack.png")) {
-					   fgTreePic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/weebTreesBack.png");
-					} else {
-					   // fall back on base game file to avoid crashes
-						 fgTreePic = BitmapData.fromImage(Assets.getImage("assets/images/weeb/weebTreesBack.png"));
-					}
-					var fgTrees:FlxSprite = new FlxSprite(repositionShit + 170, 130).loadGraphic(fgTreePic);
-					fgTrees.scrollFactor.set(0.9, 0.9);
-					add(fgTrees);
-					var treesPic:BitmapData;
-					var treesTxt:String;
-					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/weebTrees.png")) {
-					   treesPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/weebTrees.png");
-					} else {
-					   // fall back on base game file to avoid crashes
-						 treesPic = BitmapData.fromImage(Assets.getImage("assets/images/weeb/weebTrees.png"));
-					}
-					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/weebTrees.txt")) {
-					   treesTxt = File.getContent('assets/images/custom_stages/'+SONG.stage+"/weebTrees.txt");
-					} else {
-					   // fall back on base game file to avoid crashes
-						 treesTxt = Assets.getText("assets/images/weeb/weebTrees.txt");
-					}
-					var bgTrees:FlxSprite = new FlxSprite(repositionShit - 380, -800);
-					var treetex = FlxAtlasFrames.fromSpriteSheetPacker(treesPic, treesTxt);
-					bgTrees.frames = treetex;
-					bgTrees.animation.add('treeLoop', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18], 12);
-					bgTrees.animation.play('treeLoop');
-					bgTrees.scrollFactor.set(0.85, 0.85);
-					add(bgTrees);
-					var petalsPic:BitmapData;
-					var petalsXml:String;
-					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/petals.png")) {
-					   petalsPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/petals.png");
-					} else {
-					   // fall back on base game file to avoid crashes
-						 petalsPic = BitmapData.fromImage(Assets.getImage("assets/images/weeb/petals.png"));
-					}
-					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/petals.xml")) {
-					   petalsXml = File.getContent('assets/images/custom_stages/'+SONG.stage+"/petals.xml");
-					} else {
-					   // fall back on base game file to avoid crashes
-						 petalsXml = Assets.getText("assets/images/weeb/petals.xml");
-					}
-					var treeLeaves:FlxSprite = new FlxSprite(repositionShit, -40);
-					treeLeaves.frames = FlxAtlasFrames.fromSparrow(petalsPic, petalsXml);
-					treeLeaves.animation.addByPrefix('leaves', 'PETALS ALL', 24, true);
-					treeLeaves.animation.play('leaves');
-					treeLeaves.scrollFactor.set(0.85, 0.85);
-					add(treeLeaves);
-
-					var widShit = Std.int(bgSky.width * 6);
-
-					bgSky.setGraphicSize(widShit);
-					bgSchool.setGraphicSize(widShit);
-					bgStreet.setGraphicSize(widShit);
-					bgTrees.setGraphicSize(Std.int(widShit * 1.4));
-					fgTrees.setGraphicSize(Std.int(widShit * 0.8));
-					treeLeaves.setGraphicSize(widShit);
-
-					fgTrees.updateHitbox();
-					bgSky.updateHitbox();
-					bgSchool.updateHitbox();
-					bgStreet.updateHitbox();
-					bgTrees.updateHitbox();
-					treeLeaves.updateHitbox();
-					var gorlsPic:BitmapData;
-					var gorlsXml:String;
-					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/bgFreaks.png")) {
-					   gorlsPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/bgFreaks.png");
-					} else {
-					   // fall back on base game file to avoid crashes
-						 gorlsPic = BitmapData.fromImage(Assets.getImage("assets/images/weeb/bgFreaks.png"));
-					}
-					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/bgFreaks.xml")) {
-					   gorlsXml = File.getContent('assets/images/custom_stages/'+SONG.stage+"/bgFreaks.xml");
-					} else {
-					   // fall back on base game file to avoid crashes
-						 gorlsXml = Assets.getText("assets/images/weeb/bgFreaks.xml");
-					}
-					bgGirls = new BackgroundGirls(-100, 190, gorlsPic, gorlsXml);
-					bgGirls.scrollFactor.set(0.9, 0.9);
-
-					if (SONG.isMoody)
-					{
-						bgGirls.getScared();
-					}
-
-					bgGirls.setGraphicSize(Std.int(bgGirls.width * daPixelZoom));
-					bgGirls.updateHitbox();
-					add(bgGirls);
-				case 'schoolEvil':
-					curStage = 'schoolEvil';
-
-					var waveEffectBG = new FlxWaveEffect(FlxWaveMode.ALL, 2, -1, 3, 2);
-					var waveEffectFG = new FlxWaveEffect(FlxWaveMode.ALL, 2, -1, 5, 2);
-
-					var posX = 400;
-					var posY = 200;
-
-					var bg:FlxSprite = new FlxSprite(posX, posY);
-					var evilSchoolPic:BitmapData;
-					var evilSchoolXml:String;
-					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/animatedEvilSchool.png")) {
-					   evilSchoolPic = BitmapData.fromFile('assets/images/custom_stages/'+SONG.stage+"/animatedEvilSchool.png");
-					} else {
-					   // fall back on base game file to avoid crashes
-						 evilSchoolPic = BitmapData.fromImage(Assets.getImage("assets/images/weeb/animatedEvilSchool.png"));
-					}
-					if (FileSystem.exists('assets/images/custom_stages/'+SONG.stage+"/animatedEvilSchool.xml")) {
-					   evilSchoolXml = File.getContent('assets/images/custom_stages/'+SONG.stage+"/animatedEvilSchool.xml");
-					} else {
-					   // fall back on base game file to avoid crashes
-						 evilSchoolXml = Assets.getText("assets/images/weeb/animatedEvilSchool.xml");
-					}
-					bg.frames = FlxAtlasFrames.fromSparrow(evilSchoolPic, evilSchoolXml);
-					bg.animation.addByPrefix('idle', 'background 2', 24);
-					bg.animation.play('idle');
-					bg.scrollFactor.set(0.8, 0.9);
-					bg.scale.set(6, 6);
-					add(bg);
-			}
 		}
-
+		#end
 		var gfVersion:String = 'gf';
 
 		gfVersion = SONG.gf;
@@ -1250,6 +1534,14 @@ class PlayState extends MusicBeatState
 				boyfriend.y += 220;
 				gf.x += 180;
 				gf.y += 300;
+			default:
+				boyfriend.x += bfoffset[0];
+				boyfriend.y += bfoffset[1];
+				gf.x += gfoffset[0];
+				gf.y += gfoffset[1];
+				dad.x += dadoffset[0];
+				dad.y += dadoffset[1];
+
 		}
 		trace('befpre spoop check');
 		if (SONG.isSpooky) {
@@ -1265,6 +1557,7 @@ class PlayState extends MusicBeatState
 		// Shitty layering but whatev it works LOL
 		if (curStage == 'limo')
 			add(limo);
+		add(foregroundgroup);
 		trace('dad');
 		add(dad);
 		trace('dy UWU');
@@ -1286,6 +1579,7 @@ class PlayState extends MusicBeatState
 		add(strumLineNotes);
 
 		playerStrums = new FlxTypedGroup<FlxSprite>();
+		enemyStrums = new FlxTypedGroup<FlxSprite>();
 
 		// startCountdown();
 		trace('before generate');
@@ -1557,7 +1851,16 @@ class PlayState extends MusicBeatState
 
 		generateStaticArrows(0);
 		generateStaticArrows(1);
-
+		#if windows
+		if (FileSystem.exists("assets/images/custom_stages/" + SONG.stage + "/process.lua")) // dude I hate lua (jkjkjkjk)
+		{
+			makeLuaState("stages", "assets/images/custom_stages/"+SONG.stage+"/", "process.lua");
+		}
+		if (FileSystem.exists("assets/data/" + SONG.song.toLowerCase() + "/modchart.lua")) // dude I hate lua (jkjkjkjk)
+		{
+			makeLuaState("modchart", "assets/data/" + SONG.song.toLowerCase() + "/", "/modchart.lua");
+		}
+		#end
 		talking = false;
 		startedCountdown = true;
 		Conductor.songPosition = 0;
@@ -2226,6 +2529,8 @@ class PlayState extends MusicBeatState
 			if (player == 1)
 			{
 				playerStrums.add(babyArrow);
+			} else {
+				enemyStrums.add(babyArrow);
 			}
 
 			babyArrow.animation.play('static');
@@ -2294,8 +2599,44 @@ class PlayState extends MusicBeatState
 		#if !debug
 		perfectModeOld = false;
 		#end
+		#if windows
+		setAllVar('songPos', Conductor.songPosition);
+		setAllVar('hudZoom', camHUD.zoom);
+		setAllVar('cameraZoom', FlxG.camera.zoom);
+		callAllLua('update', [elapsed], null);
+		if (luaStates.exists("modchart")) {
+			FlxG.camera.angle = getVar('cameraAngle', 'float', 'modchart');
+			camHUD.angle = getVar('camHudAngle', 'float', 'modchart');
 
+			if (getVar("showOnlyStrums", 'bool', 'modchart'))
+			{
+				healthBarBG.visible = false;
+				healthBar.visible = false;
+				iconP1.visible = false;
+				iconP2.visible = false;
+				scoreTxt.visible = false;
+			}
+			else
+			{
+				healthBarBG.visible = true;
+				healthBar.visible = true;
+				iconP1.visible = true;
+				iconP2.visible = true;
+				scoreTxt.visible = true;
+			}
 
+			var p1 = getVar("strumLine1Visible", 'bool', 'modchart');
+			var p2 = getVar("strumLine2Visible", 'bool', 'modchart');
+
+			for (i in 0...4)
+			{
+				strumLineNotes.members[i].visible = p1;
+				if (i <= playerStrums.length)
+					playerStrums.members[i].visible = p2;
+			}
+		}
+		
+		#end
 		switch (curStage)
 		{
 			case 'philly':
@@ -2414,11 +2755,17 @@ class PlayState extends MusicBeatState
 			{
 				// trace(PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection);
 			}
-
+			#if windows
+			
+			setAllVar("mustHit", PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection);
+			#end
 			if (camFollow.x != dad.getMidpoint().x + 150 && !PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection)
 			{
 				camFollow.setPosition(dad.getMidpoint().x + 150, dad.getMidpoint().y - 100);
 				// camFollow.setPosition(lucky.getMidpoint().x - 120, lucky.getMidpoint().y + 210);
+				#if windows
+				callAllLua("playerTwoTurn", [], null);
+				#end
 				if (dad.like == 'mom')
 					camFollow.y = dad.getMidpoint().y;
 				if (dad.like == 'senpai' || dad.like == 'senpai-angry') {
@@ -2430,42 +2777,44 @@ class PlayState extends MusicBeatState
 					camFollow.x = dad.getMidpoint().x + dad.followCamX;
 				}
 				vocals.volume = 1;
-
+				/*
 				if (SONG.song.toLowerCase() == 'tutorial')
 				{
 					tweenCamIn();
 				}
+				*/
 			}
 
 			if (PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection && camFollow.x != boyfriend.getMidpoint().x - 100)
 			{
-				camFollow.setPosition((boyfriend.getMidpoint().x - 100), (boyfriend.getMidpoint().y - 100));
-
+				camFollow.setPosition((boyfriend.getMidpoint().x - 100 + boyfriend.followCamX), (boyfriend.getMidpoint().y - 100+boyfriend.followCamY));
+				#if windows
+				callAllLua("playerOneTurn", [], null);
+				#end
 				switch (curStage)
 				{
 					// not sure that's how variable assignment works
+					#if !windows
 					case 'limo':
-						((camFollow.x = boyfriend.getMidpoint().x - 300) + boyfriend.followCamX); // why are you hard coded
+						camFollow.x = boyfriend.getMidpoint().x - 300 + boyfriend.followCamX; // why are you hard coded
+					
 					case 'mall':
-						((camFollow.y = boyfriend.getMidpoint().y - 200) + boyfriend.followCamY);
+						camFollow.y = boyfriend.getMidpoint().y - 200 + boyfriend.followCamY;
+					#end
 					case 'school':
-						((camFollow.x = boyfriend.getMidpoint().x - 200) + boyfriend.followCamX);
-						((camFollow.y = boyfriend.getMidpoint().y - 200) + boyfriend.followCamY);
+						camFollow.x = boyfriend.getMidpoint().x - 200 + boyfriend.followCamX;
+						camFollow.y = boyfriend.getMidpoint().y - 200 + boyfriend.followCamY;
 					case 'schoolEvil':
-						((camFollow.x = boyfriend.getMidpoint().x - 200) + boyfriend.followCamX);
-						((camFollow.y = boyfriend.getMidpoint().y - 200) + boyfriend.followCamY);
+						camFollow.x = boyfriend.getMidpoint().x - 200 + boyfriend.followCamX;
+						camFollow.y = boyfriend.getMidpoint().y - 200 + boyfriend.followCamY;
 				}
-
-				if (boyfriend.isCustom) {
-					camFollow.y = boyfriend.getMidpoint().y + boyfriend.followCamY;
-					camFollow.x = boyfriend.getMidpoint().x + boyfriend.followCamX;
-
-				}
-
+				
+				/*
 				if (SONG.song.toLowerCase() == 'tutorial')
 				{
 					FlxTween.tween(FlxG.camera, {zoom: 1}, (Conductor.stepCrochet * 4 / 1000), {ease: FlxEase.elasticInOut});
 				}
+				*/
 			}
 		}
 
@@ -2581,28 +2930,31 @@ class PlayState extends MusicBeatState
 					daNote.visible = !invsNotes;
 					daNote.active = true;
 				}
+				if (!daNote.modifiedByLua) {
+					daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(SONG.speed, 2)));
 
-				daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(SONG.speed, 2)));
+					// i am so fucking sorry for this if condition
+					if (daNote.isSustainNote
+						&& daNote.y + daNote.offset.y <= strumLine.y + Note.swagWidth / 2
+						&& (!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit))))
+					{
+						var swagRect = new FlxRect(0, strumLine.y + Note.swagWidth / 2 - daNote.y, daNote.width * 2, daNote.height * 2);
+						swagRect.y /= daNote.scale.y;
+						swagRect.height -= swagRect.y;
 
-				// i am so fucking sorry for this if condition
-				if (daNote.isSustainNote
-					&& daNote.y + daNote.offset.y <= strumLine.y + Note.swagWidth / 2
-					&& (!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit))))
-				{
-					var swagRect = new FlxRect(0, strumLine.y + Note.swagWidth / 2 - daNote.y, daNote.width * 2, daNote.height * 2);
-					swagRect.y /= daNote.scale.y;
-					swagRect.height -= swagRect.y;
-
-					daNote.clipRect = swagRect;
+						daNote.clipRect = swagRect;
+					}
 				}
+				
 
 				if (!daNote.mustPress && daNote.wasGoodHit)
 				{
+					/*
 					if (SONG.song != 'Tutorial')
 						camZooming = true;
-
+					*/
 					var altAnim:String = "";
-
+					
 					if (SONG.notes[Math.floor(curStep / 16)] != null)
 					{
 						if ((SONG.notes[Math.floor(curStep / 16)].altAnimNum > 0 && SONG.notes[Math.floor(curStep / 16)].altAnimNum != null) || SONG.notes[Math.floor(curStep / 16)].altAnim)
@@ -2612,10 +2964,13 @@ class PlayState extends MusicBeatState
 							else if (SONG.notes[Math.floor(curStep / 16)].altAnimNum != 0)
 								altAnim = '-' + SONG.notes[Math.floor(curStep / 16)].altAnimNum+'alt';
 					}
-
+					#if windows
+					callAllLua("playerTwoSing", [], null);
+					#end
 					switch (Math.abs(daNote.noteData))
 					{
 						case 0:
+							
 							dad.playAnim('singLEFT' + altAnim, true);
 						case 1:
 							dad.playAnim('singDOWN' + altAnim, true);
@@ -2624,7 +2979,14 @@ class PlayState extends MusicBeatState
 						case 3:
 							dad.playAnim('singRIGHT' + altAnim, true);
 					}
-
+					enemyStrums.forEach(function(spr:FlxSprite)
+					{
+						if (Math.abs(daNote.noteData) == spr.ID)
+						{
+							spr.animation.play('confirm');
+							sustain2(spr.ID, spr, daNote);
+						}
+					});
 					dad.holdTimer = 0;
 
 					if (SONG.needsVoices)
@@ -2689,7 +3051,22 @@ class PlayState extends MusicBeatState
 						notes.remove(daNote, true);
 						daNote.destroy();
 				}
-				
+				enemyStrums.forEach(function(spr:FlxSprite)
+				{
+					if (strumming2[spr.ID])
+					{
+						spr.animation.play("confirm");
+					}
+
+					if (spr.animation.curAnim.name == 'confirm' && !daNote.isPixel)
+					{
+						spr.centerOffsets();
+						spr.offset.x -= 13;
+						spr.offset.y -= 13;
+					}
+					else
+						spr.centerOffsets();
+				});
 			});
 		}
 
@@ -2701,7 +3078,34 @@ class PlayState extends MusicBeatState
 			endSong();
 		#end
 	}
+	function sustain2(strum:Int, spr:FlxSprite, note:Note):Void
+	{
+		var length:Float = note.sustainLength;
 
+		if (length > 0)
+		{
+			strumming2[strum] = true;
+		}
+
+		var bps:Float = Conductor.bpm / 60;
+		var spb:Float = 1 / bps;
+
+		if (!note.isSustainNote)
+		{
+			new FlxTimer().start(length == 0 ? 0.2 : (length / Conductor.crochet * spb) + 0.1, function(tmr:FlxTimer)
+			{
+				if (!strumming2[strum])
+				{
+					spr.animation.play("static", true);
+				}
+				else if (length > 0)
+				{
+					strumming2[strum] = false;
+					spr.animation.play("static", true);
+				}
+			});
+		}
+	}
 	function endSong():Void
 	{
 		canPause = false;
@@ -3144,7 +3548,7 @@ class PlayState extends MusicBeatState
 					if (rightR)
 						spr.animation.play('static');
 			}
-
+			
 			if (spr.animation.curAnim.name == 'confirm' && SONG.uiType != 'pixel' && !FileSystem.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png"))
 			{
 				spr.centerOffsets();
@@ -3199,6 +3603,9 @@ class PlayState extends MusicBeatState
 				case 3:
 					boyfriend.playAnim('singRIGHTmiss', true);
 			}
+			#if windows
+			callAllLua("playerOneMiss", [], null);
+			#end
 		}
 	}
 
@@ -3258,7 +3665,9 @@ class PlayState extends MusicBeatState
 				case 3:
 					boyfriend.playAnim('singRIGHT', true);
 			}
-
+			#if windows
+			callAllLua("playerOneSing", [], null);
+			#end
 			playerStrums.forEach(function(spr:FlxSprite)
 			{
 				if (Math.abs(note.noteData) == spr.ID)
@@ -3377,6 +3786,10 @@ class PlayState extends MusicBeatState
 				resyncVocals();
 			}
 		}
+		#if windows
+		setAllVar("curStep", curStep);
+		callAllLua("stepHit", [curStep], null);
+		#end
 
 		if (dad.curCharacter == 'spooky' && curStep % 4 == 2)
 		{
@@ -3390,7 +3803,7 @@ class PlayState extends MusicBeatState
 	override function beatHit()
 	{
 		super.beatHit();
-
+		
 		if (generatedMusic)
 		{
 			notes.sort(FlxSort.byY, FlxSort.DESCENDING);
@@ -3451,12 +3864,19 @@ class PlayState extends MusicBeatState
 				dad.playAnim('cheer', true);
 			}
 		}
-
+		trace(curBeat);
+		for (sprite in backgroundgroup.members) {
+			sprite.runEvent(curBeat, boyfriend, gf, dad);
+		}
+		for (sprite in foregroundgroup.members)
+		{
+			sprite.runEvent(curBeat, boyfriend, gf, dad);
+		}
 		switch (curStage)
 		{
 			case 'school':
 				bgGirls.dance();
-
+			#if !windows
 			case 'mall':
 				upperBoppers.animation.play('bop', true);
 				bottomBoppers.animation.play('bop', true);
@@ -3492,12 +3912,17 @@ class PlayState extends MusicBeatState
 					trainCooldown = FlxG.random.int(-4, 0);
 					trainStart();
 				}
+			#end
 		}
 
 		if (isHalloween && FlxG.random.bool(10) && curBeat > lightningStrikeBeat + lightningOffset)
 		{
 			lightningStrikeShit();
 		}
+		#if windows
+		setAllVar('curBeat', curBeat);
+		callAllLua('beatHit', [curBeat],null);
+		#end
 	}
 
 	var curLight:Int = 0;

@@ -3,32 +3,43 @@ jobs:
 
   # Neko
 
-  - job: BuildLinux
+  - job: BuildCppLinux
     pool:
       vmImage: 'ubuntu-16.04'
-    container: haxe:4.1.2
     steps:
       - script: |
+          sudo add-apt-repository ppa:haxe/releases -y
+          sudo apt update -y
+          sudo apt install haxe -y
+        displayName: 'Install Haxe'
+      - script: |
+          haxelib setup ~/haxelib
+          haxelib install hxcpp > /dev/null
           mkdir ~/artifacts
 
-          haxelib setup ~/haxelib
           haxelib install lime
+          haxelib run lime setup linux
           haxelib install openfl
           haxelib install flixel
-          haxelib run lime setup flixel
-          haxelib run lime setup
+          haxelib --always run lime setup flixel
           haxelib install flixel-tools
-          haxelib run flixel-tools setup
-          haxelib install hscript
           haxelib install flixel-ui
-          haxelib git polymod https://github.com/larsiusprime/polymod.git
-        displayName: 'Install haxelib'
+          haxelib install tjson
+          haxelib install json2object
+          haxelib install uniontypes
+          haxelib install hxjsonast
+          haxelib install linc_luajit
+          haxelib list
+        displayName: 'Install haxelibs'
       - script: haxelib run lime build linux
         displayName: 'Compile'
+      - script: tar -czf bin.tar.gz 'export/release/linux/bin'
+        displayName: 'Archive'
       - task: PublishPipelineArtifact@0
         inputs:
-          artifactName: 'linuxOutput'
-          targetPath: artifacts
+          artifactName: 'cppLinuxOutput'
+          targetPath: bin.tar.gz
+
   - job: BuildMac
     pool:
       vmImage: 'macOS-10.14'
@@ -36,27 +47,30 @@ jobs:
       - script: brew install haxe
         displayName: 'Install Haxe'
       - script: |
-          mkdir ~/artifacts
-
           haxelib setup ~/haxelib
+          haxelib install hxcpp > /dev/null
+          
           haxelib install lime
           haxelib install openfl
           haxelib install flixel
           haxelib run lime setup flixel
-          haxelib run lime setup
           haxelib install flixel-tools
-          haxelib run flixel-tools setup
-          haxelib install hscript
           haxelib install flixel-ui
-          haxelib git polymod https://github.com/larsiusprime/polymod.git
-        displayName: 'Install haxelib'
+          haxelib install tjson
+          haxelib install json2object
+          haxelib install uniontypes
+          haxelib install hxjsonast
+          haxelib install linc_luajit
+          haxelib list
+        displayName: 'Install haxelibs'
       - script: haxelib run lime build mac
         displayName: 'Compile'
+      - script: tar -czf bin.tar.gz 'export/release/neko/bin'
+        displayName: 'Archive'
       - task: PublishPipelineArtifact@0
         inputs:
-          artifactName: 'macOutput'
-          targetPath: artifacts
-
+          artifactName: 'cppMacOutput'
+          targetPath: bin.tar.gz
   - job: BuildCppWindows
     pool:
       vmImage: 'windows-2019'
@@ -65,11 +79,10 @@ jobs:
           choco install --no-progress haxe -y
           $nekoPath = (Get-ChildItem C:/ProgramData/chocolatey/lib/neko/*/neko.dll -Recurse).Directory
           echo "##vso[task.setvariable variable=NEKOPATH]$nekoPath"
-
         displayName: 'Install Haxe'
       - script: |
-          md "C:/artifacts"
           haxelib setup C:/haxelib
+          haxelib install hxcpp > nul
           haxelib install lime
           haxelib install openfl
           haxelib install flixel
@@ -77,14 +90,17 @@ jobs:
           haxelib run lime setup
           haxelib install flixel-tools
           haxelib run flixel-tools setup
-          haxelib install hscript
           haxelib install flixel-ui
-          haxelib git polymod https://github.com/larsiusprime/polymod.git
-
+          haxelib install tjson
+          haxelib install json2object
+          haxelib install uniontypes
+          haxelib install hxjsonast
+          haxelib install linc_luajit
+          haxelib list
         displayName: 'Install haxelibs'
-      - script: haxelib run lime build windows
+      - script: haxelib run lime build cpp
         displayName: 'Compile'
       - task: PublishPipelineArtifact@0
         inputs:
           artifactName: 'cppWindowsOutput'
-          targetPath: C:/artifacts
+          targetPath: 'export/release/windows/bin'

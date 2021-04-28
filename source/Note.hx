@@ -4,7 +4,6 @@ import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.math.FlxMath;
 import flixel.util.FlxColor;
-import polymod.format.ParseRules.TargetSignatureElement;
 import lime.system.System;
 import flash.display.BitmapData;
 #if sys
@@ -30,9 +29,9 @@ class Note extends FlxSprite
 
 	public var sustainLength:Float = 0;
 	public var isSustainNote:Bool = false;
-
+	public var modifiedByLua:Bool = false;
 	public var noteScore:Float = 1;
-	private var isPixel:Bool = false;
+	public var isPixel:Bool = false;
 	public static var swagWidth:Float = 160 * 0.7;
 	public static var PURP_NOTE:Int = 0;
 	public static var GREEN_NOTE:Int = 2;

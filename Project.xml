@@ -42,17 +42,14 @@
 
 	<assets path="assets/images" />
 	<assets path="assets/data" />
-	<assets path="assets/scripts"/>
 	<assets path='example_mods' rename='mods' embed='false'/>
 	<assets path='art/readme.txt' rename='do NOT readme.txt' />
 	<!-- <template path='mods' /> -->
 
 	<!-- <library name="noPreload" preload='false'/> -->
 	<!-- <library name="noPreload"/> -->
-	<assets path="assets/music" include="*.mp3" if="web"/>
-	<assets path="assets/music" include="*.ogg" unless="web"/>
-	<assets path="assets/sounds" include="*.mp3" if="web" />
-	<assets path="assets/sounds" include="*.ogg" unless="web" />
+	<assets path="assets/music"/>
+	<assets path="assets/sounds"/>
 
 	<assets path="CHANGELOG.md"/>
 	<assets path="USER-README.txt"/>
@@ -69,14 +66,15 @@
 
 	<!--In case you want to use the addons package-->
 	<haxelib name="flixel-addons" />
-	<haxelib name="hscript" />
 	<haxelib name="tjson"/>
 	<!--In case you want to use the ui package-->
 	<haxelib name="flixel-ui" />
 	<haxelib name="faxe" if='switch'/>
-	<haxelib name="polymod"/>
 	<haxelib name="json2object"/>
-
+	<haxelib name="uniontypes"/>
+	<haxelib name="hxcpp-debug-server" />
+	<haxelib name="hxjsonast"/>
+	<haxelib name="linc_luajit"/>
 	<!-- <haxelib name="markdown" /> -->
 	<!-- <haxelib name="HtmlParser" /> -->
 

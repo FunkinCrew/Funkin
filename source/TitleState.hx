@@ -22,7 +22,6 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import lime.app.Application;
 import openfl.Assets;
-import polymod.Polymod;
 import haxe.Json;
 import tjson.TJSON;
 using StringTools;
@@ -44,7 +43,6 @@ class TitleState extends MusicBeatState
 	var coolDudes:Array<String> = [];
 	override public function create():Void
 	{
-		Polymod.init({modRoot: "mods", dirs: ['introMod']});
 
 
 		PlayerSettings.init();
@@ -69,7 +67,7 @@ class TitleState extends MusicBeatState
 
 
 		#if FREEPLAY
-		FlxG.switchState(new FreeplayState());
+		FlxG.switchState(new CategoryState());
 		#elseif CHARTING
 		FlxG.switchState(new ChartingState());
 		#else
@@ -251,7 +249,13 @@ class TitleState extends MusicBeatState
 
 			new FlxTimer().start(2, function(tmr:FlxTimer)
 			{
+				// Check if version is outdated
+
+				#if !windows
+				FlxG.switchState(new OutdatedSubState());
+				#else
 				FlxG.switchState(new MainMenuState());
+				#end
 			});
 			// FlxG.sound.play('assets/music/titleShoot' + TitleState.soundExt, 0.7);
 		}
