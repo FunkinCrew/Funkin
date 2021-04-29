@@ -45,12 +45,14 @@ class GameOverSubstate extends MusicBeatSubstate
 				case "bf":
 					// bf has a death animation
 					daBf = p1;
+				case "bf-holding-gf":
+					daBf = p1 + '-dead';
 				case "bf-pixel":
 					// gotta deal with this dude
 					daBf = p1 + '-dead';
 					stageSuffix = '-pixel';
 				default:
-					if (StringTools.contains(unparsedAnimJson, "firstDeath")){ //if i had to build this for any longer i would lose my mind
+					if (Reflect.hasField(parsedAnimJson.animation, "firstDeath")){ //if i had to build this for any longer i would lose my mind
 						daBf = p1; //this should be less shitty
 						if (parsedAnimJson.isPixel)
 							stageSuffix = '-pixel'; //pixel check!

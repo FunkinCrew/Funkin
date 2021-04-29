@@ -26,7 +26,7 @@ class MenuCharacter extends FlxSprite
 		var parsedCharJson:Dynamic = CoolUtil.parseJson(Assets.getText("assets/images/campaign-ui-char/custom_ui_chars.json"));
 		if (!!Reflect.field(parsedCharJson,character).defaultGraphics) {
 			// use assets, it is less laggy
-			var tex = FlxAtlasFrames.fromSparrow('assets/images/campaign_menu_UI_characters.png', 'assets/images/campaign_menu_UI_characters.xml');
+			var tex = FlxAtlasFrames.fromSparrow('assets/images/campaign-ui-char/default.png', 'assets/images/campaign-ui-char/default.xml');
 			frames = tex;
 		} else {
 			var rawPic:BitmapData = BitmapData.fromFile('assets/images/campaign-ui-char/'+character+".png");

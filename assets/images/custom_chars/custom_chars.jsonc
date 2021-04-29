@@ -78,5 +78,28 @@
   "templateSpirit-hd": {
     "like": "spirit-hd",
     "icons": [23,23]
+  },
+  "tankman": {
+    "like": "tankman",
+    "icons": [8,9]
+  },
+  "gf-tankmen": {
+    "like": "gf-tankmen",
+    "icons": [
+      0,
+      1
+    ]
+  },
+  "pico-speaker": {
+    "like": "pico-speaker",
+    "icons": [
+      0, 1
+    ]
+  },
+  "bf-holding-gf": {
+    "like": "bf-holding-gf",
+    "icons": [
+      0,1
+    ]
   }
 }

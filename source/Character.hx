@@ -5,6 +5,7 @@ import flixel.animation.FlxBaseAnimation;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flash.display.BitmapData;
 import lime.utils.Assets;
+import flixel.FlxG;
 import lime.system.System;
 import lime.app.Application;
 #if sys
@@ -17,7 +18,12 @@ import haxe.Json;
 import tjson.TJSON;
 import haxe.format.JsonParser;
 using StringTools;
-
+enum abstract EpicLevel(Int) from Int to Int {
+	var Level_NotAHoe = 0;
+	var Level_Boogie = 1;
+	var Level_Sadness = 2;
+	var Level_Sing = 3;
+}
 class Character extends FlxSprite
 {
 	public var animOffsets:Map<String, Array<Dynamic>>;
@@ -35,7 +41,22 @@ class Character extends FlxSprite
 	public var midpointY:Int = 0;
 	public var isCustom:Bool = false;
 	public var holdTimer:Float = 0;
+	public var animationNotes:Array<Dynamic> = [];
 	public var like:String = "bf";
+	// sits on speakers, replaces gf
+	public var likeGf:Bool = false;
+	/**
+	 * how many animations our current gf supports. 
+	 * acts like a level meter, 0 means we aren't gf,
+	 * 1 means we support the least animations (i think pixel-gf)
+	 * 2 means we support the middle amount of animations (i think gf-car)
+	 * 3 means we support the full amount of animations (regular gf)
+	 * you can have an epic level lower than your actual animations, 
+	 * but the game will be safe and act like you don't have one.
+	 */
+	public var gfEpicLevel:Int = Level_NotAHoe;
+	// like bf, is playable
+	public var likeBf:Bool = false;
 	public var isDie:Bool = false;
 	public var isPixel:Bool = false;
 	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false)
@@ -83,6 +104,8 @@ class Character extends FlxSprite
 
 				playAnim('danceRight');
 				like = "gf";
+				likeGf = true;
+				gfEpicLevel = Level_Sing;
 			case 'gf-christmas':
 				tex = FlxAtlasFrames.fromSparrow('assets/images/christmas/gfChristmas.png', 'assets/images/christmas/gfChristmas.xml');
 				frames = tex;
@@ -114,6 +137,8 @@ class Character extends FlxSprite
 
 				playAnim('danceRight');
 				like ="gf";
+				likeGf = true;
+				gfEpicLevel = Level_Sing;
 			case 'gf-car':
 				tex = FlxAtlasFrames.fromSparrow('assets/images/gfCar.png', 'assets/images/gfCar.xml');
 				frames = tex;
@@ -127,7 +152,8 @@ class Character extends FlxSprite
 
 				playAnim('danceRight');
 				like = "gf-car";
-
+				likeGf = true;
+				gfEpicLevel = Level_Boogie;
 			case 'gf-pixel':
 				tex = FlxAtlasFrames.fromSparrow('assets/images/weeb/gfPixel.png', 'assets/images/weeb/gfPixel.xml');
 				frames = tex;
@@ -145,6 +171,8 @@ class Character extends FlxSprite
 				antialiasing = false;
 				isPixel = true;
 				like = "gf-pixel";
+				likeGf = true;
+				gfEpicLevel = Level_Boogie;
 			case 'dad':
 				// DAD ANIMATION LOADING CODE
 				tex = FlxAtlasFrames.fromSparrow('assets/images/DADDY_DEAREST.png', 'assets/images/DADDY_DEAREST.xml');
@@ -183,6 +211,7 @@ class Character extends FlxSprite
 
 				playAnim('danceRight');
 				like = "spooky";
+				gfEpicLevel = Level_Boogie;
 			case 'mom':
 				tex = FlxAtlasFrames.fromSparrow('assets/images/Mom_Assets.png', 'assets/images/Mom_Assets.xml');
 				frames = tex;
@@ -334,6 +363,7 @@ class Character extends FlxSprite
 
 				flipX = true;
 				like = "bf";
+				likeBf = true;
 			case 'bf-christmas':
 				var tex = FlxAtlasFrames.fromSparrow('assets/images/christmas/bfChristmas.png', 'assets/images/christmas/bfChristmas.xml');
 				frames = tex;
@@ -363,6 +393,7 @@ class Character extends FlxSprite
 
 				flipX = true;
 				like = "bf";
+				likeBf = true;
 			case 'bf-car':
 				var tex = FlxAtlasFrames.fromSparrow('assets/images/bfCar.png', 'assets/images/bfCar.xml');
 				frames = tex;
@@ -389,6 +420,7 @@ class Character extends FlxSprite
 
 				flipX = true;
 				like = "bf";
+				likeBf = true;
 			case 'bf-pixel':
 				frames = FlxAtlasFrames.fromSparrow('assets/images/weeb/bfPixel.png', 'assets/images/weeb/bfPixel.xml');
 				animation.addByPrefix('idle', 'BF IDLE', 24, false);
@@ -423,6 +455,7 @@ class Character extends FlxSprite
 				isPixel = true;
 				flipX = true;
 				like = "bf-pixel";
+				likeBf = true;
 			case 'bf-pixel-dead':
 				frames = FlxAtlasFrames.fromSparrow('assets/images/weeb/bfPixelsDEAD.png', 'assets/images/weeb/bfPixelsDEAD.xml');
 				animation.addByPrefix('singUP', "BF Dies pixel", 24, false);
@@ -442,6 +475,7 @@ class Character extends FlxSprite
 				flipX = true;
 				isPixel = true;
 				like = "bf-pixel";
+				likeBf = true;
 			case 'senpai':
 				frames = FlxAtlasFrames.fromSparrow('assets/images/weeb/senpai.png', 'assets/images/weeb/senpai.xml');
 				animation.addByPrefix('idle', 'Senpai Idle', 24, false);
@@ -622,6 +656,31 @@ class Character extends FlxSprite
 						// ignore it, this is used for gameover state
 						like = "bf";
 					}
+					if (like == "pico-speaker") {
+						loadMappedAnims();
+					}
+					switch(like) {
+						case "bf" |	"bf-pixel" | "bf-holding-gf":
+							likeBf = true;
+						case "gf" 
+						| "gf-car"
+						| "gf-pixel"
+						| "gf-tankmen"
+						// pico is like gf, he just doesn't boogie normally
+						| "pico-speaker":
+							switch(like) {
+								case "gf":
+									gfEpicLevel = Level_Sing;
+								case "gf-tankmen":
+									gfEpicLevel = Level_Sadness;
+								case "gf-pixel" 
+								| "gf-car":
+									gfEpicLevel = Level_Boogie;
+							}
+							likeGf = true;
+						case "spooky":
+							gfEpicLevel = Level_Boogie;
+					}
 					isPixel = parsedAnimJson.isPixel;
 					if (parsedAnimJson.isPixel) {
 						antialiasing = false;
@@ -768,7 +827,23 @@ class Character extends FlxSprite
 				holdTimer = 0;
 			}
 		}
-
+		if (0 < animationNotes.length && Conductor.songPosition > animationNotes[0][0]) {
+			trace("shoot anim " + animationNotes[0][1]);
+			var idkWhatThisISLol = 1;
+			if (true) {
+				idkWhatThisISLol = 3;
+				idkWhatThisISLol += FlxG.random.int(0,1);
+				trace("shoot"+idkWhatThisISLol);
+				playAnim("shoot"+idkWhatThisISLol, true);
+				animationNotes.shift();
+				if (animation.curAnim.finished)
+				{
+					playAnim(animation.curAnim.name, false, false, animation.curAnim.frames.length - 3);
+				}
+				
+			}
+			
+		}
 		switch (curCharacter)
 		{
 			case 'gf':
@@ -842,7 +917,8 @@ class Character extends FlxSprite
 					else
 						playAnim('danceLeft');
 				default:
-					if (like == "gf" || like == "spooky" || like == "gf-pixel" || like == "gf-car") {
+					// spooky will be considered boogie
+					if (gfEpicLevel >= cast Level_Boogie) {
 						if (!animation.curAnim.name.startsWith('hair'))
 						{
 							danced = !danced;
@@ -897,7 +973,23 @@ class Character extends FlxSprite
 			}
 		}
 	}
-
+	public function loadMappedAnims() {
+		// todo, make better
+		var picoAnims = Song.loadFromJson(curCharacter, "stress").notes;
+		for (anim in picoAnims) {
+			// this code looks fucking awful because I am reading the compiled
+			// html build
+			for (note in anim.sectionNotes) {
+				animationNotes.push(note);
+			}
+		} 
+		animationNotes.sort(sortAnims);
+	}
+	function sortAnims(a, b) {
+		var aThing = a[0];
+		var bThing = b[0];
+		return aThing < bThing ? -1 : 1;
+	}
 	public function addOffset(name:String, x:Float = 0, y:Float = 0)
 	{
 		animOffsets[name] = [x, y];

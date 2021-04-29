@@ -426,6 +426,14 @@ class PlayState extends MusicBeatState
 		{
 			return getActorByName(id).followCamX;
 		}));
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "getCurChar", function(id:String)
+		{
+			return getActorByName(id).curCharacter;
+		}));
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "isCharLike", function(char:String, id:String)
+		{
+			return getActorByName(id).like == char;
+		}));
 		trace(Lua_helper.add_callback(luaStates.get(uselua), "makeActorPixel", function(id:String)
 		{
 			getActorByName(id).setGraphicSize(Std.int(getActorByName(id).width * 6));
@@ -1474,7 +1482,7 @@ class PlayState extends MusicBeatState
 				dad.y += dad.enemyOffsetY;
 				camPos.x += dad.camOffsetX;
 				camPos.y += dad.camOffsetY;
-				if (dad.like == "gf") {
+				if (dad.likeGf) {
 					dad.setPosition(gf.x, gf.y);
 					gf.visible = false;
 					if (isStoryMode)
@@ -1496,7 +1504,7 @@ class PlayState extends MusicBeatState
 				//boyfriend.y += boyfriend.bfOffsetY;
 				camPos.x += boyfriend.camOffsetX;
 				camPos.y += boyfriend.camOffsetY;
-				if (boyfriend.like == "gf") {
+				if (boyfriend.likeGf) {
 					boyfriend.setPosition(gf.x, gf.y);
 					gf.visible = false;
 					if (isStoryMode)
@@ -2103,12 +2111,15 @@ class PlayState extends MusicBeatState
 				var daNoteData:Int = Std.int(songNotes[1] % 4);
 
 				var gottaHitNote:Bool = section.mustHitSection;
-
+				var altNote:Bool = false;
 				if (songNotes[1] > 3)
 				{
 					gottaHitNote = !section.mustHitSection;
 				}
-
+				if (songNotes[3] || section.altAnim)
+				{
+					altNote = true;
+				}
 				var oldNote:Note;
 				if (unspawnNotes.length > 0)
 					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
@@ -2116,6 +2127,9 @@ class PlayState extends MusicBeatState
 					oldNote = null;
 
 				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote, false, customImage, customXml, arrowEndsImage);
+				// altNote
+				trace(altNote);
+				swagNote.altNote = altNote;
 				// so much more complicated but makes playstation like shit work
 				if (flippedNotes) {
 					if (swagNote.animation.curAnim.name == 'greenScroll') {
@@ -2959,10 +2973,13 @@ class PlayState extends MusicBeatState
 					{
 						if ((SONG.notes[Math.floor(curStep / 16)].altAnimNum > 0 && SONG.notes[Math.floor(curStep / 16)].altAnimNum != null) || SONG.notes[Math.floor(curStep / 16)].altAnim)
 							// backwards compatibility shit
-							if (SONG.notes[Math.floor(curStep / 16)].altAnimNum == 1 || SONG.notes[Math.floor(curStep / 16)].altAnim)
+							if (SONG.notes[Math.floor(curStep / 16)].altAnimNum == 1 || SONG.notes[Math.floor(curStep / 16)].altAnim || daNote.altNote)
 								altAnim = '-alt';
 							else if (SONG.notes[Math.floor(curStep / 16)].altAnimNum != 0)
 								altAnim = '-' + SONG.notes[Math.floor(curStep / 16)].altAnimNum+'alt';
+					}
+					if (daNote.altNote) {
+						altAnim = '-alt';
 					}
 					#if windows
 					callAllLua("playerTwoSing", [], null);
@@ -3859,7 +3876,7 @@ class PlayState extends MusicBeatState
 		{
 			boyfriend.playAnim('hey', true);
 
-			if (SONG.song == 'Tutorial' && dad.like == 'gf')
+			if (SONG.song == 'Tutorial' && dad.gfEpicLevel >= cast Character.EpicLevel.Level_Sing)
 			{
 				dad.playAnim('cheer', true);
 			}
