@@ -595,8 +595,8 @@ class Character extends FlxSprite
 					if (isDie) {
 						// poor programming but whatev
 						playerSuffix = 'dead';
-						parsedAnimJson.animation = parsedAnimJson.deadAnimation;
-						parsedAnimJson.offset = parsedAnimJson.deadOffset;
+						trace(parsedAnimJson.animation = parsedAnimJson.deadAnimation);
+						trace(parsedAnimJson.offset = parsedAnimJson.deadOffset);
 					}
 					var rawPic = BitmapData.fromFile('assets/images/custom_chars/'+curCharacter+"/"+playerSuffix+".png");
 					var tex:FlxAtlasFrames;
@@ -641,6 +641,7 @@ class Character extends FlxSprite
 					for( field in Reflect.fields(parsedAnimJson.offset)) {
 						addOffset(field, Reflect.field(parsedAnimJson.offset,field)[0],  Reflect.field(parsedAnimJson.offset,field)[1]);
 					}
+					// ftguyuhjik why the fuck does bf-holding-gf dead fucking broken
 					camOffsetX = if (parsedAnimJson.camOffset != null) parsedAnimJson.camOffset[0] else 0;
 					camOffsetY = if (parsedAnimJson.camOffset != null) parsedAnimJson.camOffset[1] else 0;
 					enemyOffsetX = if (parsedAnimJson.enemyOffset != null) parsedAnimJson.enemyOffset[0] else 0;
@@ -658,6 +659,12 @@ class Character extends FlxSprite
 					}
 					if (like == "pico-speaker") {
 						loadMappedAnims();
+					}
+					if (isDie && like == "bf-holding-gf") {
+						animation.addByPrefix('firstDeath', "BF dies", 24, false);
+						animation.addByPrefix('deathLoop', "BF Dead Loop", 24, true);
+						animation.addByPrefix('deathConfirm', "BF Dead confirm", 24, false);
+						// brute force
 					}
 					switch(like) {
 						case "bf" |	"bf-pixel" | "bf-holding-gf":
@@ -731,6 +738,7 @@ class Character extends FlxSprite
 
 					flipX = true;
 					like = "bf";
+					trace("fuck");
 					playAnim('idle');
 				}
 
@@ -827,29 +835,28 @@ class Character extends FlxSprite
 				holdTimer = 0;
 			}
 		}
-		if (0 < animationNotes.length && Conductor.songPosition > animationNotes[0][0]) {
-			trace("shoot anim " + animationNotes[0][1]);
-			var idkWhatThisISLol = 1;
-			if (true) {
-				idkWhatThisISLol = 3;
-				idkWhatThisISLol += FlxG.random.int(0,1);
-				trace("shoot"+idkWhatThisISLol);
-				playAnim("shoot"+idkWhatThisISLol, true);
-				animationNotes.shift();
-				if (animation.curAnim.finished)
-				{
-					playAnim(animation.curAnim.name, false, false, animation.curAnim.frames.length - 3);
+		if (like == "pico-speaker") {
+			if (0 < animationNotes.length && Conductor.songPosition > animationNotes[0][0]) {
+				trace("shoot anim " + animationNotes[0][1]);
+				var idkWhatThisISLol = 1;
+				if (2 <= animationNotes[0][1]) {
+					idkWhatThisISLol = 3;				
 				}
+
+				idkWhatThisISLol += FlxG.random.int(0, 1);
+				trace("shoot" + idkWhatThisISLol);
+				playAnim("shoot" + idkWhatThisISLol, true);
+				animationNotes.shift();
 				
 			}
-			
+			if (animation.curAnim.finished)
+			{
+				playAnim(animation.curAnim.name, false, false, animation.curAnim.frames.length - 3);
+			}
 		}
-		switch (curCharacter)
-		{
-			case 'gf':
-				if (animation.curAnim.name == 'hairFall' && animation.curAnim.finished)
-					playAnim('danceRight');
-		}
+		if (animation.curAnim.name == 'hairFall' && animation.curAnim.finished && gfEpicLevel >= cast Level_Sing)
+			playAnim('danceRight');
+		
 
 		super.update(elapsed);
 	}
@@ -929,7 +936,11 @@ class Character extends FlxSprite
 								playAnim('danceLeft');
 						}
 					} else {
-						playAnim('idle');
+						if (like == 'tankman' && animation.curAnim.name.endsWith('DOWN-alt')) {
+							// do nothing dumbass
+						}
+						else
+							playAnim('idle');
 					}
 			}
 		}
@@ -939,18 +950,25 @@ class Character extends FlxSprite
 	{
 		trace(AnimName);
 		animation.play(AnimName, Force, Reversed, Frame);
+		#if FUCK
+			return;
+		#end
 		var animName = "";
 		if (animation.curAnim == null) {
 			// P A N I K
-			animName = "idle";
+			if (isDie)
+				animName = "firstDeath";
+			else
+				animName = "idle";
 			trace("OH SHIT OH FUCK");
 		} else {
 			// kalm
 			animName = animation.curAnim.name;
 		}
-		var daOffset = animOffsets.get(animName);
+		trace(animName);
 		if (animOffsets.exists(animName))
 		{
+			var daOffset = animOffsets.get(animName);
 			offset.set(daOffset[0], daOffset[1]);
 		}
 		else

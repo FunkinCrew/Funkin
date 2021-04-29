@@ -41,7 +41,7 @@
         "loop": false
     }
   },
-  "animationDead": {
+  "deadAnimation": {
     "firstDeath": {
       "name": "BF Dies with GF",
       "loop": false

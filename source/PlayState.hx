@@ -369,6 +369,11 @@ class PlayState extends MusicBeatState
 			remove(sprite);
 			return true;
 		});
+		Lua_helper.add_callback(luaStates.get(uselua), "existsSprite", function(id:String)
+		{
+			return getActorByName(id) != null;
+			
+		});
 		trace(Lua_helper.add_callback(luaStates.get(uselua), "addTimer", function(func:String, time:Float)
 		{
 			new FlxTimer().start(time, function(tmr:FlxTimer)
@@ -389,6 +394,10 @@ class PlayState extends MusicBeatState
 		trace(Lua_helper.add_callback(luaStates.get(uselua), "elapsed", function()
 		{
 			return FlxG.elapsed;
+		}));
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "getAnimationNotes", function(id:String)
+		{
+			return getActorByName(id).animationNotes;
 		}));
 		trace(Lua_helper.add_callback(luaStates.get(uselua), "setHudPosition", function(x:Int, y:Int)
 		{
@@ -2899,9 +2908,9 @@ class PlayState extends MusicBeatState
 			if (inALoop) {
 				FlxG.switchState(new PlayState());
 			} else {
-				openSubState(new GameOverSubstate(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 				// 1 / 1000 chance for Gitaroo Man easter egg
-				if (FlxG.random.bool(0.1))
+				// fuck it, we'll fix it when week 7 comes out
+				if (FlxG.random.bool(0.1) || boyfriend.like == "bf-holding-gf")
 				{
 					// gitaroo man easter egg
 					FlxG.switchState(new GitarooPause());

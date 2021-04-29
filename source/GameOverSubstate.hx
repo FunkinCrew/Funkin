@@ -58,8 +58,8 @@ class GameOverSubstate extends MusicBeatSubstate
 							stageSuffix = '-pixel'; //pixel check!
 					}
 					else
-					// just use bf, avoid pain
-					daBf = 'bf';
+						// just use bf, avoid pain
+						daBf = 'bf';
 			}
 		} else {
 			switch (PlayState.SONG.player1) {

@@ -1,4 +1,8 @@
+local CurSong = "idk lol";
+-- guess what this means
+local JohnLength = 0;
 function start(song) 
+    CurSong = song;
     print("start :)");
     -- ay yo ninjamuffin a bitch, i be out here
     -- porting the ng build before he be
@@ -113,10 +117,15 @@ function start(song)
     print(isCharLike("pico-speaker", "girlfriend"));
     setActorY(getActorY("girlfriend") -75, "girlfriend");
     setActorX(getActorX("girlfriend") - 170, "girlfriend");
+            setActorX(getActorX("boyfriend") + 40, "boyfriend");
     
-    setActorX(getActorX("boyfriend") + 40, "boyfriend");
-    setActorY(getActorY("dad") + 60, "dad");
-    setActorX(getActorX("dad") - 80, "dad");
+    if isCharLike("pico-speaker", "girlfriend") == 1 then
+        -- do nothing
+    else
+
+        setActorY(getActorY("dad") + 60, "dad");
+        setActorX(getActorX("dad") - 80, "dad");
+    end
     setDefaultZoom(0.9);
     print("finish start :)");
 end
@@ -131,9 +140,10 @@ TankSpeed = math.random() + math.random(5, 6);
 function moveTank(elapsed)
     TankAngle = TankAngle + (elapsed * TankSpeed);
     setActorAngle(TankAngle - 90 + 15, "tankGround");
-    setActorX(getActorX("tankGround") + (1500 * math.cos((math.pi / 180) * (getActorAngle("tankGround") + 180))), "tankGround");
+    print(TankAngle -90 + 15);
+    setActorX(getActorX("tankGround") + (1500 * math.cos(math.rad(getActorAngle("tankGround") + 180))), "tankGround");
     -- times pi/180 is like deg2rad, convert degrees to radians
-    setActorY(1300 + (1100 * math.sin((math.pi / 180) * (getActorAngle("tankGround") + 180))), "tankGround");
+    setActorY(1300 + (1100 * math.sin(math.rad(getActorAngle("tankGround") + 180))), "tankGround");
 
 end
 function update(elapsed)
