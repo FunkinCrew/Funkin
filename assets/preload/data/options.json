@@ -5,6 +5,11 @@
         "value": false
     },
     {
+        "name": "discordRPC",
+        "comment": "Enables / Disables Discord Rich Presence (DEFAULT: true)",
+        "value": true
+    },
+    {
         "name": "extraDialogue",
         "comment": "Enables / Disables extra dialogue (DEFAULT: true)",
         "value": true
