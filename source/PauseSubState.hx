@@ -183,10 +183,10 @@ class PauseSubState extends MusicBeatSubstate
 				case "Exit to menu":
 					PlayState.loadRep = false;
 					#if windows
-					if (PlayState.lua != null)
+					if (PlayState.luaModchart != null)
 					{
-						Lua.close(PlayState.lua);
-						PlayState.lua = null;
+						PlayState.luaModchart.die();
+						PlayState.luaModchart = null;
 					}
 					#end
 					FlxG.switchState(new MainMenuState());
