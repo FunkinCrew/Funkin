@@ -40,6 +40,7 @@ class DialogueBox extends FlxSpriteGroup
 	// SECOND DIALOGUE FOR THE PIXEL SHIT INSTEAD???
 	var swagDialogue:FlxTypeText;
 
+	var dialogEnded:Bool = false;
 	var dropText:FlxText;
 	var acceptSound:FlxSoundAsset;
 	var clickSounds:Array<Null<FlxSoundAsset>> = [null, null, null];
@@ -373,7 +374,10 @@ class DialogueBox extends FlxSpriteGroup
 		box.updateHitbox();
 		add(box);
 
-		handSelect = new FlxSprite(FlxG.width * 0.9, FlxG.height * 0.9).loadGraphic('assets/images/weeb/pixelUI/hand_textbox.png');
+		handSelect = new FlxSprite(1042, 590).loadGraphic('assets/images/weeb/pixelUI/hand_textbox.png');
+		handSelect.setGraphicSize(Std.int(handSelect.width * 6 * 0.9));
+		handSelect.updateHitbox();
+		handSelect.visible = false;
 		add(handSelect);
 
 		box.screenCenter(X);
@@ -445,6 +449,7 @@ class DialogueBox extends FlxSpriteGroup
 					portraitRight.visible = false;
 					swagDialogue.alpha -= 1 / 5;
 					dropText.alpha -= 1/5;
+					handSelect.alpha -= 1/5;
 				}, 5);
 
 				new FlxTimer().start(1.2, function(tmr:FlxTimer)
@@ -662,7 +667,13 @@ class DialogueBox extends FlxSpriteGroup
 		}
 		swagDialogue.resetText(dialogueList[0]);
 		swagDialogue.start(0.04, true);
-
+		swagDialogue.completeCallback = function() {
+			trace("dialogue finish");
+			handSelect.visible = true;
+			dialogEnded = true;
+		}
+		handSelect.visible = false;
+		dialogEnded = false;
 		switch (curCharacter)
 		{
 			case 'dad':
