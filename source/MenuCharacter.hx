@@ -17,6 +17,10 @@ class MenuCharacter extends FlxSprite
 {
 	public var character:String;
 	public var like:String;
+	public var jsonScale:Float = 1.0;
+	public var offsetX:Float = 0.0;
+	public var offsetY:Float = 0.0; 
+	public var jsonFlipX:Bool = false;
 	public function new(x:Float, character:String = 'bf')
 	{
 		super(x);
@@ -37,9 +41,15 @@ class MenuCharacter extends FlxSprite
 
 		// don't use assets because you can use custom like folders
 		var animJson = CoolUtil.parseJson(File.getContent("assets/images/campaign-ui-char/"+Reflect.field(parsedCharJson,character).like+".json"));
-		for (field in Reflect.fields(animJson)) {
-			animation.addByPrefix(field, Reflect.field(animJson, field), 24, (field == "idle"));
+		for (field in Reflect.fields(animJson.animation)) {
+			animation.addByPrefix(field, Reflect.field(animJson.animation, field), 24, (field == "idle"));
 		}
+		jsonScale = Reflect.hasField(animJson, "scale") ? animJson.scale : 1.0;
+		if (Reflect.hasField(animJson, "offset")) {
+			offsetX = animJson.offset[0];
+			offsetY = animJson.offset[1];
+		}
+		jsonFlipX = Reflect.hasField(animJson, "flipX") ? animJson.flipX : false;
 		this.like = Reflect.field(parsedCharJson,character).like;
 		animation.play('idle');
 		updateHitbox();

@@ -1,3 +1,8 @@
 {
-  "idle": "Pico Idle Dance"
+  "animation": {
+    "idle": "Pico Idle Dance"
+  },  
+  "scale": 0.6,
+  "offset": [-40, 40],
+  "flipX" : true
 }

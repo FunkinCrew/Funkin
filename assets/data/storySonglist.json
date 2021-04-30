@@ -6,7 +6,8 @@
     ["Week 3 press", "Pico", "Philly", "Blammed"],
     ["Week 4 press", "Satin-Panties", "High", "Milf"],
     ["week 5", "Cocoa", "Eggnog", "Winter-Horrorland"],
-    ["Week 6", "Senpai", "Roses", "Thorns"]
+    ["Week 6", "Senpai", "Roses", "Thorns"],
+    ["week7", "Ugh", "Guns", "Stress"]
   ],
   "weekNames": [
     "",
@@ -15,7 +16,8 @@
     "PICO",
     "MOMMY MUST MURDER",
     "RED SNOW",
-    "hating simulator ft. moawling"
+    "hating simulator ft. moawling",
+    "TANKMAN"
   ],
   "characters": [
     ["dad", "bf", "gf"],
@@ -24,6 +26,7 @@
 		["pico", "bf", "gf"],
 		["mom", "bf", "gf"],
 		["parents-christmas", "bf", "gf"],
-    ["senpai", "bf", "gf"]
+    ["senpai", "bf", "gf"],
+    ["tankman", "bf", "gf"]
   ]
 }

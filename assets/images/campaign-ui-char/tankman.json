@@ -1,0 +1,8 @@
+{
+  "animation": {
+    "idle": "Tankman Menu BLACK"
+  },
+  
+  "scale": 1,
+  "offset": [120,150]
+}

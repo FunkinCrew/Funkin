@@ -140,7 +140,6 @@ TankSpeed = math.random() + math.random(5, 6);
 function moveTank(elapsed)
     TankAngle = TankAngle + (elapsed * TankSpeed);
     setActorAngle(TankAngle - 90 + 15, "tankGround");
-    print(TankAngle -90 + 15);
     setActorX(getActorX("tankGround") + (1500 * math.cos(math.rad(getActorAngle("tankGround") + 180))), "tankGround");
     -- times pi/180 is like deg2rad, convert degrees to radians
     setActorY(1300 + (1100 * math.sin(math.rad(getActorAngle("tankGround") + 180))), "tankGround");

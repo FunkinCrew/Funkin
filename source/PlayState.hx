@@ -158,7 +158,7 @@ class PlayState extends MusicBeatState
 	public static var campaignScore:Int = 0;
 	public static var campaignAccuracy:Float = 0;
 	var defaultCamZoom:Float = 1.05;
-
+	var grpNoteSplashes:FlxTypedGroup<NoteSplash>;
 	// how big to stretch the pixel art assets
 	public static var daPixelZoom:Float = 6;
 
@@ -616,7 +616,10 @@ class PlayState extends MusicBeatState
 		{
 			return notes.members[id].scale.x;
 		}));
-
+		trace(Lua_helper.add_callback(luaStates.get(uselua), "isOnScreen", function(id:String)
+		{
+			return getActorByName(id).isOnScreen();
+		}));
 		trace(Lua_helper.add_callback(luaStates.get(uselua), "setRenderedNotePos", function(x:Float, y:Float, id:Int)
 		{
 			if (notes.members[id] == null)
@@ -1116,7 +1119,10 @@ class PlayState extends MusicBeatState
 
 		if (SONG == null)
 			SONG = Song.loadFromJson('tutorial');
-
+		grpNoteSplashes = new FlxTypedGroup<NoteSplash>();
+		var sploosh = new NoteSplash(100, 100, 0);
+		sploosh.alpha = 0.1;
+		grpNoteSplashes.add(sploosh);
 		Conductor.mapBPMChanges(SONG);
 		Conductor.changeBPM(SONG.bpm);
 		backgroundgroup = new FlxTypedGroup<BeatSprite>();
@@ -1594,7 +1600,7 @@ class PlayState extends MusicBeatState
 
 		strumLineNotes = new FlxTypedGroup<FlxSprite>();
 		add(strumLineNotes);
-
+		add(grpNoteSplashes);
 		playerStrums = new FlxTypedGroup<FlxSprite>();
 		enemyStrums = new FlxTypedGroup<FlxSprite>();
 
@@ -1666,7 +1672,7 @@ class PlayState extends MusicBeatState
 		practiceDieIcon.x = healthBar.x - 130;
 		practiceDieIcon.animation.curAnim.curFrame = 1;
 		add(practiceDieIcon);
-
+		grpNoteSplashes.cameras = [camHUD];
 		strumLineNotes.cameras = [camHUD];
 		notes.cameras = [camHUD];
 		healthBar.cameras = [camHUD];
@@ -1736,7 +1742,12 @@ class PlayState extends MusicBeatState
 				case 'none':
 					startCountdown();
 				default:
-					schoolIntro(doof);
+					if (SONG.cutsceneType.endsWith('-mp4'))
+						// videoIntro("assets/music/" + SONG.cutsceneType.substr(0, SONG.cutsceneType.length - 4)+'Cutscene.mp4');
+						// :grief: idk how videos work
+						startCountdown();
+					else
+						schoolIntro(doof);
 			}
 		}
 		else
@@ -1858,7 +1869,17 @@ class PlayState extends MusicBeatState
 			}
 		});
 	}
-
+	function videoIntro(filename:String) {
+		var b = new FlxSprite(-200, -200).makeGraphic(2*FlxG.width,2*FlxG.height, -16777216);
+		b.scrollFactor.set();
+		add(b);
+		trace(filename);
+		new FlxVideo(filename).finishCallback = function () {
+			remove(b);
+			FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, (Conductor.crochet / 1000) * 5, {ease: FlxEase.quadInOut});
+			startCountdown();
+		}
+	}
 	var startTimer:FlxTimer;
 	var perfectModeOld:Bool = false;
 
@@ -3213,7 +3234,7 @@ class PlayState extends MusicBeatState
 
 	var endingSong:Bool = false;
 
-	private function popUpScore(strumtime:Float):Void
+	private function popUpScore(strumtime:Float, daNote:Note):Void
 	{
 		var noteDiff:Float = Math.abs(strumtime - Conductor.songPosition);
 		// boyfriend.playAnim('hey');
@@ -3249,6 +3270,10 @@ class PlayState extends MusicBeatState
 			score = 200;
 			// good needs to be punished somewhat
 			notesHit += 0.95;
+		} else {
+			var recycledNote = grpNoteSplashes.recycle(NoteSplash);
+			recycledNote.setupNoteSplash(daNote.x, daNote.y, daNote.noteData);
+			grpNoteSplashes.add(recycledNote);
 		}
 		if (daRating == 'sick')
 			notesHit += 1;
@@ -3671,7 +3696,7 @@ class PlayState extends MusicBeatState
 			if (!note.isSustainNote)
 			{
 				notesPassing += 1;
-				popUpScore(note.strumTime);
+				popUpScore(note.strumTime, note);
 				combo += 1;
 			}
 

@@ -100,8 +100,7 @@ class FreeplayState extends MusicBeatState
 
 		diffText = new FlxText(scoreText.x, scoreText.y + 36, 0, "", 24);
 		diffText.font = scoreText.font;
-		if (!soundTest)
-			add(diffText);
+		add(diffText);
 
 		add(scoreText);
 
@@ -169,12 +168,10 @@ class FreeplayState extends MusicBeatState
 		{
 			changeSelection(1);
 		}
-		if (!soundTest) {
-			if (controls.LEFT_P)
-				changeDiff(-1);
-			if (controls.RIGHT_P)
-				changeDiff(1);
-		}
+		if (controls.LEFT_P)
+			changeDiff(-1);
+		if (controls.RIGHT_P)
+			changeDiff(1);
 		
 
 		if (controls.BACK)
@@ -203,19 +200,27 @@ class FreeplayState extends MusicBeatState
 				if (vocals != null && vocals.playing)
 					vocals.stop();
 				soundTestSong = Song.loadFromJson(songs[curSelected].toLowerCase(), songs[curSelected].toLowerCase());
-				if (soundTestSong.needsVoices)
+				if (soundTestSong.needsVoices && curDifficulty != 1)
 				{
-					var vocalSound = Sound.fromFile("assets/music/" + soundTestSong.song + "_Voices" + TitleState.soundExt);
-					vocals = new FlxSound().loadEmbedded(vocalSound);
-					FlxG.sound.list.add(vocals);
-					vocals.play();
-					vocals.pause();
-					vocals.looped = true;
+					if (curDifficulty == 0) {
+						var vocalSound = Sound.fromFile("assets/music/" + soundTestSong.song + "_Voices" + TitleState.soundExt);
+						vocals = new FlxSound().loadEmbedded(vocalSound);
+						FlxG.sound.list.add(vocals);
+						vocals.play();
+						vocals.pause();
+						vocals.looped = true;
+					} else {
+						FlxG.sound.playMusic(Sound.fromFile("assets/music/" + soundTestSong.song + "_Voices" + TitleState.soundExt));
+					}
+					
 				}
-				FlxG.sound.playMusic(Sound.fromFile("assets/music/" + soundTestSong.song + "_Inst" + TitleState.soundExt));
+				if (curDifficulty != 2) {
+					FlxG.sound.playMusic(Sound.fromFile("assets/music/" + soundTestSong.song + "_Inst" + TitleState.soundExt));
+				}
+				
 				Conductor.mapBPMChanges(soundTestSong);
 				Conductor.changeBPM(soundTestSong.bpm);
-				if (soundTestSong.needsVoices) {
+				if (soundTestSong.needsVoices && curDifficulty == 0) {
 					resyncVocals();
 				}
 
@@ -253,20 +258,40 @@ class FreeplayState extends MusicBeatState
 	function changeDiff(change:Int = 0)
 	{
 		trace("line 182 fp");
-		var difficultyObject:Dynamic = DifficultyIcons.changeDifficultyFreeplay(curDifficulty,change);
-		curDifficulty = difficultyObject.difficulty;
+		if (!soundTest) {
+			var difficultyObject:Dynamic = DifficultyIcons.changeDifficultyFreeplay(curDifficulty, change);
+			curDifficulty = difficultyObject.difficulty;
 
-		#if !switch
-		intendedScore = Highscore.getScore(songs[curSelected], curDifficulty);
-		intendedAccuracy = Highscore.getAccuracy(songs[curSelected], curDifficulty);
-		#end
+			#if !switch
+			intendedScore = Highscore.getScore(songs[curSelected], curDifficulty);
+			intendedAccuracy = Highscore.getAccuracy(songs[curSelected], curDifficulty);
+			#end
 
-		diffText.text = difficultyObject.text;
+			diffText.text = difficultyObject.text;
+		} else {
+			curDifficulty += change;
+			if (curDifficulty > 2) {
+				curDifficulty = 0;
+			}
+			if (curDifficulty < 0) {
+				curDifficulty = 2;
+			}
+			switch (curDifficulty) {
+				case 0:
+					diffText.text = "Both tracks";
+				case 1:
+					diffText.text = "Inst Only";
+				case 2:
+					diffText.text = "Vocals Only";
+			}
+
+		}
+		
 	}
 	override function stepHit()
 	{
 		super.stepHit();
-		if (soundTest && soundTestSong != null && soundTestSong.needsVoices)
+		if (soundTest && soundTestSong != null && soundTestSong.needsVoices && curDifficulty == 0)
 		{
 			if (vocals.time > Conductor.songPosition + 20 || vocals.time < Conductor.songPosition - 20)
 			{

@@ -1,3 +1,6 @@
 {
-  "idle": "Mom Idle BLACK LINES"
+  "animation": {
+    "idle": "Mom Idle BLACK LINES"
+  },
+  "scale": 0.45
 }

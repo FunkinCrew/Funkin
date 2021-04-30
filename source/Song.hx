@@ -158,6 +158,12 @@ class Song
 					parsedJson.cutsceneType = 'spirit';
 				case 'winter-horrorland':
 					parsedJson.cutsceneType = 'monster';
+				case 'ugh':
+					parsedJson.cutsceneType = 'ugh-mp4';
+				case 'guns':
+					parsedJson.cutsceneType = 'guns-mp4';
+				case 'stress':
+					parsedJson.cutsceneType = 'stress-mp4';
 				default:
 					parsedJson.cutsceneType = 'none';
 			}

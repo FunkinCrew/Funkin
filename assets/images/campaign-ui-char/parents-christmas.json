@@ -1,3 +1,7 @@
 {
-  "idle": "Parent Christmas Idle"
+  "animation": {
+    "idle": "Parent Christmas Idle"
+  },
+  "scale": 0.4,
+  "offset": [-150, 0]
 }

@@ -43,6 +43,7 @@ class Character extends FlxSprite
 	public var holdTimer:Float = 0;
 	public var animationNotes:Array<Dynamic> = [];
 	public var like:String = "bf";
+	public var beNormal:Bool = true;
 	// sits on speakers, replaces gf
 	public var likeGf:Bool = false;
 	/**
@@ -869,7 +870,7 @@ class Character extends FlxSprite
 	public function dance()
 	{
 		trace('boogie');
-		if (!debugMode)
+		if (!debugMode && beNormal)
 		{
 			switch (curCharacter)
 			{

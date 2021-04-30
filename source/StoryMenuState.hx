@@ -152,6 +152,13 @@ class StoryMenuState extends MusicBeatState
 				var weekCharacterThing:MenuCharacter = new MenuCharacter((FlxG.width * 0.25) * (1 + char) - 150, weekCharacters[i][char]);
 				weekCharacterThing.y += 70;
 				weekCharacterThing.antialiasing = true;
+				
+				weekCharacterThing.setGraphicSize(Std.int(weekCharacterThing.jsonScale * weekCharacterThing.width));
+				weekCharacterThing.updateHitbox();
+				weekCharacterThing.x += weekCharacterThing.offsetX;
+				weekCharacterThing.y += weekCharacterThing.offsetY;
+				weekCharacterThing.flipX = weekCharacterThing.jsonFlipX;
+				/*
 				switch (weekCharacterThing.like)
 				{
 					case 'dad':
@@ -190,7 +197,7 @@ class StoryMenuState extends MusicBeatState
 						weekCharacterThing.updateHitbox();
 						trace("like spooky kids?");
 				}
-
+				*/
 				weekCharactersArray.members[i].add(weekCharacterThing);
 			}
 			if (i != curWeek) {

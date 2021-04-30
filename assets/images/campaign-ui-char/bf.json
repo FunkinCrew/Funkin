@@ -1,4 +1,8 @@
 {
-  "bfConfirm": "BF HEY",
-  "idle": "BF idle dance white"
+  "animation": {
+    "bfConfirm": "BF HEY",
+    "idle": "BF idle dance white"
+  },
+  "scale": 0.9,
+  "offset": [-80, 0]
 }

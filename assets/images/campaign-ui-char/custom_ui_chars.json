@@ -30,5 +30,9 @@
   "senpai":{
     "like": "senpai",
     "defaultGraphics": true
+  },
+  "tankman": {
+    "like":"tankman",
+    "defaultGraphics": true
   }
 }

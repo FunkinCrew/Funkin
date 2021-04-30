@@ -1,3 +1,7 @@
 {
-  "idle": "spooky dance idle BLACK LINES"
+  "animation": {
+      "idle": "spooky dance idle BLACK LINES"
+  },
+  "scale": 0.5,
+  "offset": [-30, 30]
 }

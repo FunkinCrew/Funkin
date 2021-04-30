@@ -1,3 +1,6 @@
 {
-  "idle": "GF Dancing Beat WHITE"
+  "animation" : {
+    "idle": "GF Dancing Beat WHITE"
+  },
+  "scale": 0.5
 }

@@ -1,3 +1,6 @@
 {
-  "idle": "SENPAI idle Black Lines"
+  "animation": {
+    "idle": "SENPAI idle Black Lines"
+  }
+  
 }
