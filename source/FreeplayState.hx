@@ -71,6 +71,7 @@ class FreeplayState extends MusicBeatState
 		if (soundTest) {
 			// disable auto pause. I NEED MUSIC
 			FlxG.autoPause = false;
+			curDifficulty = 0;
 		}
 		var bg:FlxSprite = new FlxSprite().loadGraphic('assets/images/menuBGBlue.png');
 		add(bg);
