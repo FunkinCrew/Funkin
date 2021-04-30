@@ -1756,9 +1756,9 @@ class PlayState extends MusicBeatState
 					startCountdown();
 				default:
 					if (SONG.cutsceneType.endsWith('-mp4'))
-						// videoIntro("assets/music/" + SONG.cutsceneType.substr(0, SONG.cutsceneType.length - 4)+'Cutscene.mp4');
+						videoIntro("assets/music/" + SONG.cutsceneType.substr(0, SONG.cutsceneType.length - 4)+'Cutscene.mp4');
 						// :grief: idk how videos work
-						startCountdown();
+						// startCountdown();
 					else
 						schoolIntro(doof);
 			}
@@ -1883,6 +1883,8 @@ class PlayState extends MusicBeatState
 		});
 	}
 	function videoIntro(filename:String) {
+		startCountdown();
+		/*
 		var b = new FlxSprite(-200, -200).makeGraphic(2*FlxG.width,2*FlxG.height, -16777216);
 		b.scrollFactor.set();
 		add(b);
@@ -1891,7 +1893,7 @@ class PlayState extends MusicBeatState
 			remove(b);
 			FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, (Conductor.crochet / 1000) * 5, {ease: FlxEase.quadInOut});
 			startCountdown();
-		}
+		}*/
 	}
 	var startTimer:FlxTimer;
 	var perfectModeOld:Bool = false;
