@@ -1,8 +1,7 @@
-local CurSong = "idk lol";
--- guess what this means
-local JohnLength = 0;
+-- note to self and all gamers who are reading this:
+-- DON'T MAKE ANY GLOBAL VARIABLES OR THE GAME MAY CRASH
+
 function start(song) 
-    CurSong = song;
     print("start :)");
     -- ay yo ninjamuffin a bitch, i be out here
     -- porting the ng build before he be
@@ -77,7 +76,7 @@ function start(song)
     addActorAnimationPrefix("fg", "idle", 24, false, "tank0");
     playActorAnimation("idle", true, "tank0");
     setActorScrollFactor(1.7, 1.5, "tank0");
-
+    print("when the sus is sus");
     makeSprite("tank1", "tank1", BEHIND_NONE, SPARROW_SHEET);
     setActorX(-300, "tank1");
     setActorY(750, "tank1");
@@ -98,33 +97,38 @@ function start(song)
     addActorAnimationPrefix("fg", "idle", 24, false, "tank4");
     playActorAnimation("idle", true, "tank4");
     setActorScrollFactor(1.5, 1.5, "tank4");
-
+    print("about to do a  tankman :flushed:");
     makeSprite("tank5", "tank5", BEHIND_NONE, SPARROW_SHEET);
     setActorX(1620, "tank5");
     setActorY(700, "tank5");
     addActorAnimationPrefix("fg", "idle", 24, false, "tank5");
     playActorAnimation("idle", true, "tank5");
-    setActorScrollFactor(1.5, 1,5, "tank5");
-
+    -- guess why it was crashing. 1.5 had a comma in it. God is dead.
+    setActorScrollFactor(1.5, 1.5, "tank5");
+    print("wow that was quick");
     makeSprite("tank3", "tank3", BEHIND_NONE, SPARROW_SHEET);
     setActorX(1300, "tank3");
     setActorY(1200, "tank3");
     addActorAnimationPrefix("fg", "idle", 24, false, "tank3");
     playActorAnimation("idle", true, "tank3");
     setActorScrollFactor(3.5, 2.5, "tank3");
+    print("start editing char pos");
     setActorY(getActorY("girlfriend") + 10, "girlfriend");
+    print("when the gfy is sus");
     setActorX(getActorX("girlfriend") - 30, "girlfriend");
-    print(isCharLike("pico-speaker", "girlfriend"));
-    setActorY(getActorY("girlfriend") -75, "girlfriend");
-    setActorX(getActorX("girlfriend") - 170, "girlfriend");
-            setActorX(getActorX("boyfriend") + 40, "boyfriend");
     
-    if isCharLike("pico-speaker", "girlfriend") == 1 then
-        -- do nothing
-    else
+    print("when the bf is sus");
+    setActorX(getActorX("boyfriend") + 40, "boyfriend");
+    setActorY(getActorY("dad") + 60, "dad");
+    setActorX(getActorX("dad") - 80, "dad");
+    print("ah shit he we go with comparing people");
+    if not isCharLike("pico-speaker", "girlfriend") then
 
-        setActorY(getActorY("dad") + 60, "dad");
-        setActorX(getActorX("dad") - 80, "dad");
+        setActorY(getActorY("girlfriend") -75, "girlfriend");
+        setActorX(getActorX("girlfriend") - 170, "girlfriend");
+    else
+        setActorY(getActorY("girlfriend") -200, "girlfriend");
+        setActorX(getActorX("girlfriend") - 50, "girlfriend");
     end
     setDefaultZoom(0.9);
     print("finish start :)");
@@ -135,8 +139,8 @@ function beatHit(beat)
     end
     playActorAnimation("idle", true, "tower");
 end
-TankAngle = math.random(-90, 45);
-TankSpeed = math.random() + math.random(5, 6);
+local TankAngle = math.random(-90, 45);
+local TankSpeed = math.random() + math.random(5, 6);
 function moveTank(elapsed)
     TankAngle = TankAngle + (elapsed * TankSpeed);
     setActorAngle(TankAngle - 90 + 15, "tankGround");

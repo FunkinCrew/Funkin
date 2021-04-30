@@ -115,6 +115,10 @@ class PlayState extends MusicBeatState
 
 	private var healthBarBG:FlxSprite;
 	private var healthBar:FlxBar;
+	private var enemyColor:FlxColor = 0xFFFF0000;
+	private var playerColor:FlxColor = 0xFF66FF33;
+	private var poisonColor:FlxColor = 0xFFB75DEB;
+	private var barShowingPoison:Bool = false;
 
 	private var generatedMusic:Bool = false;
 	private var startingSong:Bool = false;
@@ -195,6 +199,7 @@ class PlayState extends MusicBeatState
 	var alcholNumber:Float = 0;
 	var inALoop:Bool = false;
 	var useVictoryScreen:Bool = true;
+	var luaRegistered:Bool = false;
 	#if windows
 	public var luaStates:Map<String, State> = [];
 	function callLua(func_name:String, args:Array<Dynamic>, type:String, uselua:String):Dynamic
@@ -251,10 +256,11 @@ class PlayState extends MusicBeatState
 
 		if (result != 0)
 		{
+			trace("shit :pensive:");
 			luaStates.remove(uselua);
 			FlxG.switchState(new MainMenuState());
 		}
-
+		trace("egg");
 		// get some fukin globals up in here bois
 		setVar("BEHIND_GF", BEHIND_GF, uselua);
 		setVar("BEHIND_BF", BEHIND_BF, uselua);
@@ -264,14 +270,15 @@ class PlayState extends MusicBeatState
 		setVar("STATIC_IMAGE", 0, uselua);
 		setVar("SPARROW_SHEET", 1, uselua);
 		setVar("PACKER_SHEET", 2, uselua);
-		trace(PlayState.SONG.isMoody);
+		trace("we quarter way there!");
 		setVar("isMoody", PlayState.SONG.isMoody, uselua);
 		setVar("difficulty", storyDifficulty, uselua);
 		setVar("bpm", Conductor.bpm, uselua);
 		setVar("scrollspeed", PlayState.SONG.speed, uselua);
-		setVar("fpsCap", FlxG.save.data.fpsCap, uselua);
-		setVar("downscroll", FlxG.save.data.downscroll, uselua);
-
+		trace("we halfway there!");
+		// setVar("fpsCap", FlxG.save.data.fpsCap, uselua);
+		// setVar("downscroll", FlxG.save.data.downscroll, uselua);
+		setVar("curSong", PlayState.SONG.song, uselua);
 		setVar("curStep", 0, uselua);
 		setVar("curBeat", 0, uselua);
 		setVar("crochet", Conductor.stepCrochet, uselua);
@@ -298,7 +305,7 @@ class PlayState extends MusicBeatState
 		setVar("mustHit", false, uselua);
 
 		setVar("strumLineY", strumLine.y, uselua);
-
+		trace("finish vars :flushed:");
 		// callbacks
 
 		// sprites
@@ -1051,7 +1058,7 @@ class PlayState extends MusicBeatState
 		{
 			case 'boyfriend':
 				return boyfriend;
-			case 'girlfriend':
+			case 'girlfriend' | 'gf':
 				return gf;
 			case 'dad':
 				return dad;
@@ -1638,7 +1645,7 @@ class PlayState extends MusicBeatState
 		healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
 			'health', 0, 2);
 		healthBar.scrollFactor.set();
-		healthBar.createFilledBar(0xFFFF0000, 0xFF66FF33);
+		healthBar.createFilledBar(enemyColor, playerColor);
 		// healthBar
 		add(healthBar);
 
@@ -1699,6 +1706,12 @@ class PlayState extends MusicBeatState
 		// cameras = [FlxG.cameras.list[1]];
 		startingSong = true;
 		trace('finish uo');
+		#if windows
+		if (FileSystem.exists("assets/images/custom_stages/" + SONG.stage + "/process.lua")) // dude I hate lua (jkjkjkjk)
+		{
+			makeLuaState("stages", "assets/images/custom_stages/" + SONG.stage + "/", "process.lua");
+		}
+		#end
 	if (alwaysDoCutscenes || isStoryMode )
 		{
 
@@ -1890,10 +1903,6 @@ class PlayState extends MusicBeatState
 		generateStaticArrows(0);
 		generateStaticArrows(1);
 		#if windows
-		if (FileSystem.exists("assets/images/custom_stages/" + SONG.stage + "/process.lua")) // dude I hate lua (jkjkjkjk)
-		{
-			makeLuaState("stages", "assets/images/custom_stages/"+SONG.stage+"/", "process.lua");
-		}
 		if (FileSystem.exists("assets/data/" + SONG.song.toLowerCase() + "/modchart.lua")) // dude I hate lua (jkjkjkjk)
 		{
 			makeLuaState("modchart", "assets/data/" + SONG.song.toLowerCase() + "/", "/modchart.lua");
@@ -2158,7 +2167,6 @@ class PlayState extends MusicBeatState
 
 				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote, false, customImage, customXml, arrowEndsImage);
 				// altNote
-				trace(altNote);
 				swagNote.altNote = altNote;
 				// so much more complicated but makes playstation like shit work
 				if (flippedNotes) {
@@ -2680,7 +2688,7 @@ class PlayState extends MusicBeatState
 			}
 		}
 		
-		#end
+		#else
 		switch (curStage)
 		{
 			case 'philly':
@@ -2696,7 +2704,7 @@ class PlayState extends MusicBeatState
 				}
 				// phillyCityLights.members[curLight].alpha -= (Conductor.crochet / 1000) * FlxG.elapsed;
 		}
-
+		#end
 		super.update(elapsed);
 		healthTxt.text = "Health:" + Math.round(health * 50) + "%";
 		scoreTxt.text = "Score:" + songScore + "(" + trueScore + ")";
@@ -2729,7 +2737,14 @@ class PlayState extends MusicBeatState
 		iconP2.updateHitbox();
 		practiceDieIcon.updateHitbox();
 		var iconOffset:Int = 26;
-
+		
+		if (poisonTimes > 0 && !barShowingPoison) {
+			healthBar.createFilledBar(enemyColor, poisonColor);
+			barShowingPoison = true;
+		} else if (poisonTimes == 0 && barShowingPoison) {
+			healthBar.createFilledBar(enemyColor, playerColor);
+			barShowingPoison = false;
+		}
 		iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset);
 		iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset);
 
