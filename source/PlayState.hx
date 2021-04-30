@@ -42,7 +42,8 @@ import openfl.display.BlendMode;
 import openfl.display.StageQuality;
 import openfl.filters.ShaderFilter;
 import Options.STOptions;
-import Lyric;
+import Lyric.SwagLyricSection;
+import STMetaFile.MetadataFile;
 
 using StringTools;
 
@@ -102,6 +103,9 @@ class PlayState extends MusicBeatState
 	var lyrics:Array<SwagLyricSection>;
 	var hasLyrics:Bool = false;
 
+	var metadata:MetadataFile;
+	var hasMetadataFile:Bool = false;
+
 	var halloweenBG:FlxSprite;
 	var isHalloween:Bool = false;
 
@@ -132,6 +136,7 @@ class PlayState extends MusicBeatState
 	var iconP1txt:FlxText;
 	var iconP2txt:FlxText;
 	var levelInfo:FlxText;
+	var levelInfoArtist:FlxText;
 	var levelInfoIcon:FlxSprite;
 
 	// small things: do icon check
@@ -226,6 +231,7 @@ class PlayState extends MusicBeatState
 				dialogue = CoolUtil.coolTextFile(Paths.txt('thorns/thornsDialogue'));
 		}
 
+		// check for lyrics
 		if (STOptions.st_lyrics == true)
 		{
 			try
@@ -237,6 +243,17 @@ class PlayState extends MusicBeatState
 			} catch(e) {
 				trace("No lyrics for " + SONG.song.toLowerCase());
 			}
+		}
+
+		// check for metadata
+		try
+		{
+			metadata = cast Json.parse(Assets.getText(Paths.json(SONG.song.toLowerCase() + '/meta')));
+			trace(metadata);
+			hasMetadataFile = true;
+			trace("Found metadata for " + SONG.song.toLowerCase());
+		} catch(e) {
+			trace("No metadata for " + SONG.song.toLowerCase());
 		}
 
 		#if desktop
@@ -857,7 +874,13 @@ class PlayState extends MusicBeatState
 
 		levelInfo = new FlxText(20, 15, 0, "", 36);
 		levelInfo.setFormat(Paths.font("vcr.ttf"), 36, FlxColor.WHITE, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		levelInfo.text += StringTools.replace(PlayState.SONG.song, "-", " ");
+		
+		if (hasMetadataFile == true) {
+			levelInfo.text = metadata.song.name;
+		} else {
+			levelInfo.text += StringTools.replace(PlayState.SONG.song, "-", " ");
+		}
+
 		levelInfo.updateHitbox();
 		levelInfo.scrollFactor.set();
 		levelInfo.alpha = 0;
@@ -869,6 +892,20 @@ class PlayState extends MusicBeatState
 		levelInfoIcon.x = FlxG.width - (levelInfo.width) - 120;
 		levelInfoIcon.y = levelInfo.y - (levelInfoIcon.height / 2) + 16;
 		levelInfoIcon.alpha = 0;
+
+		levelInfoArtist = new FlxText(38, 38, 0, "", 20);
+		levelInfoArtist.setFormat(Paths.font("vcr.ttf"), 20, FlxColor.WHITE, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		
+		if (hasMetadataFile == true) {
+			levelInfoArtist.text = metadata.song.artist;
+		} else {
+			levelInfoArtist.text = "";
+		}
+
+		levelInfoArtist.updateHitbox();
+		levelInfoArtist.scrollFactor.set();
+		levelInfoArtist.alpha = 0;
+		levelInfoArtist.x = FlxG.width - (levelInfoArtist.width + 20);
 
 		if (STOptions.st_debug == true) {
 			add(conductorPosTxt);
@@ -882,6 +919,7 @@ class PlayState extends MusicBeatState
 		if (STOptions.st_songIndicator == true) {
 			add(levelInfo);
 			add(levelInfoIcon);
+			add(levelInfoArtist);
 		}
 
 		strumLineNotes.cameras = [camHUD];
@@ -900,6 +938,7 @@ class PlayState extends MusicBeatState
 		lyricTxt.cameras = [camHUD];
 		lyricSpeakerIcon.cameras = [camHUD];
 		levelInfo.cameras = [camHUD];
+		levelInfoArtist.cameras = [camHUD];
 		levelInfoIcon.cameras = [camHUD];
 		doof.cameras = [camHUD];
 
@@ -1186,6 +1225,7 @@ class PlayState extends MusicBeatState
 			{
 				case 0:
 					FlxTween.tween(levelInfo, {alpha: 1, y: 20}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.3});
+					FlxTween.tween(levelInfoArtist, {alpha: 1, y: 58}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.3});
 					FlxTween.tween(levelInfoIcon, {alpha: 1, y: 20 - (levelInfoIcon.height / 2) + 16}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.3});
 
 					if (STOptions.st_fixWeek6CountSounds == true) {
@@ -1264,6 +1304,7 @@ class PlayState extends MusicBeatState
 					}
 				case 4:
 					FlxTween.tween(levelInfo, {alpha: 0, y: 0}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.3});
+					FlxTween.tween(levelInfoArtist, {alpha: 0, y: 38}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.3});
 					FlxTween.tween(levelInfoIcon, {alpha: 0, y: 0 - (levelInfoIcon.height / 2) + 16}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.3});
 			}
 

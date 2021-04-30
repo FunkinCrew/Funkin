@@ -1,3 +1,5 @@
+package;
+
 typedef SwagLyricSection = {
     var start:Float;            // Start position of lyric
     var lyric:String;           // Lyric text
