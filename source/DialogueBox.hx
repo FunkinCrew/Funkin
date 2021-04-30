@@ -373,9 +373,18 @@ class DialogueBox extends FlxSpriteGroup
 			clickSounds[1] = clickSounds[2];
 		box.updateHitbox();
 		add(box);
-
-		handSelect = new FlxSprite(1042, 590).loadGraphic('assets/images/weeb/pixelUI/hand_textbox.png');
-		handSelect.setGraphicSize(Std.int(handSelect.width * 6 * 0.9));
+		if (FileSystem.exists('assets/images/custom_ui/dialog_boxes/' + PlayState.SONG.cutsceneType + '/handSelect.png')) {
+			handSelect = new FlxSprite(1042, 590).loadGraphic('assets/images/custom_ui/dialog_boxes/' + PlayState.SONG.cutsceneType + '/handSelect.png');
+			if (isPixel[2])
+				handSelect.setGraphicSize(Std.int(handSelect.width * 6 * 0.9));
+			else
+				handSelect.setGraphicSize(Std.int(handSelect.width * 0.9));
+		} else {
+			handSelect = new FlxSprite(1042, 590).loadGraphic('assets/images/weeb/pixelUI/hand_textbox.png');
+			handSelect.setGraphicSize(Std.int(handSelect.width * 6 * 0.9));
+		}
+			
+		
 		handSelect.updateHitbox();
 		handSelect.visible = false;
 		add(handSelect);
@@ -462,7 +471,7 @@ class DialogueBox extends FlxSpriteGroup
 		{
 			remove(dialogue);
 				
-			FlxG.sound.play('assets/sounds/clickText' + TitleState.soundExt, 0.8);
+			FlxG.sound.play(acceptSound, 0.8);
 
 			if (dialogueList[1] == null && dialogueList[0] != null)
 			{
@@ -479,6 +488,9 @@ class DialogueBox extends FlxSpriteGroup
 						bgFade.alpha -= 1 / 5 * 0.7;
 						portraitLeft.visible = false;
 						portraitRight.visible = false;
+						if (portraitCustom != null) {
+							portraitCustom.visible = false;
+						}
 						swagDialogue.alpha -= 1 / 5;
 						dropText.alpha -= 1 / 5;
 					}, 5);
@@ -523,6 +535,7 @@ class DialogueBox extends FlxSpriteGroup
 				portraitCustom.animation.addByPrefix('enter', 'Boyfriend portrait enter', 24, false);
 				swagDialogue.sounds = [FlxG.sound.load(clickSounds[2], 0.6)];
 				portraitCustom.visible = false;
+				customHanded = true;
 			case 'char-dad':
 				portraitCustom = new FlxSprite(0, 40);
 				portraitCustom.frames = FlxAtlasFrames.fromSparrow('assets/images/dadPortrait.png', 'assets/images/dadPortrait.xml');
@@ -538,6 +551,7 @@ class DialogueBox extends FlxSpriteGroup
 				portraitCustom.animation.addByPrefix('enter', 'Boyfriend portrait enter', 24, false);
 				swagDialogue.sounds = [FlxG.sound.load(clickSounds[2], 0.6)];
 				portraitCustom.visible = false;
+				customHanded = true;
 			// TODO: Split into skid and pump
 			case 'char-spooky':
 				portraitCustom = new FlxSprite(0, 40);
@@ -598,6 +612,7 @@ class DialogueBox extends FlxSpriteGroup
 				flipX = true;
 				portraitCustom.animation.addByPrefix('enter', 'Boyfriend portrait enter', 24, false);
 				swagDialogue.sounds = [FlxG.sound.load(clickSounds[2], 0.6)];
+				customHanded = true;
 				portraitCustom.visible = false;
 			case 'char-bf-xmas':
 				portraitCustom = new FlxSprite(0, 40);
@@ -612,6 +627,7 @@ class DialogueBox extends FlxSpriteGroup
 				portraitCustom.frames = FlxAtlasFrames.fromSparrow('assets/images/weeb/bfPortrait.png', 'assets/images/weeb/bfPortrait.xml');
 				portraitCustom.animation.addByPrefix('enter', 'Boyfriend portrait enter', 24, false);
 				swagDialogue.sounds = [FlxG.sound.load(clickSounds[2], 0.6)];
+				customHanded = true;
 				portraitCustom.visible = false;
 			default:
 				var realChar = curCharacter.substr(5);
@@ -662,8 +678,8 @@ class DialogueBox extends FlxSpriteGroup
 			portraitCustom.scrollFactor.set();
 			portraitCustom.x = portraitLeft.x;
 			portraitCustom.y = portraitLeft.y;
-			// note to self you must add it for it to work
-			add(portraitCustom);
+			// insert it!
+			insert(members.length - 4, portraitCustom);
 		}
 		swagDialogue.resetText(dialogueList[0]);
 		swagDialogue.start(0.04, true);

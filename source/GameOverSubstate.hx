@@ -45,12 +45,12 @@ class GameOverSubstate extends MusicBeatSubstate
 				case "bf":
 					// bf has a death animation
 					daBf = p1;
-				case "bf-holding-gf":
-					daBf = p1 + '-dead';
 				case "bf-pixel":
 					// gotta deal with this dude
 					daBf = p1 + '-dead';
 					stageSuffix = '-pixel';
+				case "bf-holding-gf":
+					daBf = p1 + '-dead';
 				default:
 					if (Reflect.hasField(parsedAnimJson.animation, "firstDeath")){ //if i had to build this for any longer i would lose my mind
 						daBf = p1; //this should be less shitty
@@ -72,7 +72,6 @@ class GameOverSubstate extends MusicBeatSubstate
 			}
 		}
 		super();
-
 		Conductor.songPosition = 0;
 
 		bf = new Boyfriend(x, y, daBf);

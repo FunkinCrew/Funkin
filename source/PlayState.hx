@@ -2945,8 +2945,7 @@ class PlayState extends MusicBeatState
 				FlxG.switchState(new PlayState());
 			} else {
 				// 1 / 1000 chance for Gitaroo Man easter egg
-				// fuck it, we'll fix it when week 7 comes out
-				if (FlxG.random.bool(0.1) || boyfriend.like == "bf-holding-gf")
+				if (FlxG.random.bool(0.1))
 				{
 					// gitaroo man easter egg
 					FlxG.switchState(new GitarooPause());

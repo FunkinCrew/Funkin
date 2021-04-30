@@ -793,7 +793,7 @@ class Character extends FlxSprite
 		{
 			flipX = !flipX;
 			// Doesn't flip for BF, since his are already in the right place???
-			if (like != "bf" && like != "bf-pixel")
+			if (!likeBf)
 			{
 				// var animArray
 				var oldRight = animation.getByName('singRIGHT').frames;
@@ -819,7 +819,7 @@ class Character extends FlxSprite
 		//var animJson = File.getContent("assets/images/custom_chars/"+Reflect.field(charJson,curCharacter).like+".json");
 
 		//if (!StringTools.contains(animJson, "firstDeath") && like != "bf-pixel") //supposed to fix note anim shit for bfs with unique jsons, currently broken
-		if (like != "bf" && like != "bf-pixel")
+		if (!likeBf)
 		{
 			if (animation.curAnim.name.startsWith('sing'))
 			{

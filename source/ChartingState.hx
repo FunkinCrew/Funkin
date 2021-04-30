@@ -86,6 +86,7 @@ class ChartingState extends MusicBeatState
 	var cutsceneTextField:FlxInputText;
 	var uiTextField:FlxInputText;
 	var stageTextField:FlxInputText;
+	var isAltNoteCheck:FlxUICheckBox;
 	/*
 	 * WILL BE THE CURRENT / LAST PLACED NOTE
 	**/
@@ -390,10 +391,11 @@ class ChartingState extends MusicBeatState
 		stepperSusLength.name = 'note_susLength';
 
 		var applyLength:FlxButton = new FlxButton(100, 10, 'Apply');
-
+		isAltNoteCheck = new FlxUICheckBox(10, 100, null, null, "Alt Anim Note", 100);
+		isAltNoteCheck.name = "isAltNote";
 		tab_group_note.add(stepperSusLength);
 		tab_group_note.add(applyLength);
-
+		tab_group_note.add(isAltNoteCheck);
 		UI_box.addGroup(tab_group_note);
 	}
 
@@ -483,6 +485,10 @@ class ChartingState extends MusicBeatState
 					_song.isSpooky = check.checked;
 				case "Is Hey":
 					_song.isHey = check.checked;
+				case 'Alt Anim Note':
+					if (curSelectedNote != null) {
+						curSelectedNote[3] = check.checked;
+					}
 			}
 		}
 		else if (id == FlxUINumericStepper.CHANGE_EVENT && (sender is FlxUINumericStepper))
@@ -517,7 +523,7 @@ class ChartingState extends MusicBeatState
 			} else if (wname == 'alt_anim_number')
 			{
 				_song.notes[curSection].altAnimNum = Std.int(nums.value);
-			}
+			} 
 		}
 
 		// FlxG.log.add(id + " WEED " + sender + " WEED " + data + " WEED " + params);
@@ -645,7 +651,9 @@ class ChartingState extends MusicBeatState
 		{
 			changeNoteSustain(-Conductor.stepCrochet);
 		}
+		if (FlxG.keys.justPressed.N) {
 
+		}
 		if (FlxG.keys.justPressed.TAB)
 		{
 			if (FlxG.keys.pressed.SHIFT)
@@ -794,7 +802,17 @@ class ChartingState extends MusicBeatState
 		updateNoteUI();
 		updateGrid();
 	}
+	function toggleNoteAnim():Void {
+		if (curSelectedNote != null) {
+			if (curSelectedNote[3] != null) {
+				curSelectedNote[3] = !cast (curSelectedNote[3] : Bool);
 
+			} else {
+				curSelectedNote[3] = true;
+			}
+		}
+		updateNoteUI();
+	}
 	function recalculateSteps():Int
 	{
 		var lastChange:BPMChangeEvent = {
@@ -930,8 +948,13 @@ class ChartingState extends MusicBeatState
 
 	function updateNoteUI():Void
 	{
-		if (curSelectedNote != null)
+		if (curSelectedNote != null) {
 			stepperSusLength.value = curSelectedNote[2];
+			// null is falsy
+			isAltNoteCheck.checked = cast curSelectedNote[3];
+		}
+			
+
 	}
 
 	function updateGrid():Void
