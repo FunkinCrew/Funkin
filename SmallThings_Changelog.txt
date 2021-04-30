@@ -1,4 +1,5 @@
 === 2.0.1 ===
++ Added an artist indicator to the song info text in the top right
 + Added a discord rpc toggle within options.json
 - Fixed a bug where exiting out of the game over state using backspace restarts the song in story mode
 - Fixed a bug where exiting out of the game over state while on week6 does not play a sound
