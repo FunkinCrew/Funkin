@@ -1,7 +1,7 @@
 // this file is for modchart things, this is to declutter playstate.hx
 
 // Lua
-
+#if windows
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
@@ -9,21 +9,17 @@ import openfl.geom.Matrix;
 import openfl.display.BitmapData;
 import lime.app.Application;
 import flixel.FlxSprite;
-#if windows
 import llua.Convert;
 import llua.Lua;
 import llua.State;
 import llua.LuaL;
-#end
-
 import flixel.FlxBasic;
 import flixel.FlxCamera;
 import flixel.FlxG;
 
 class ModchartState 
 {
-    
-    #if windows
+   
 
 	public static var lua:State = null;
 
@@ -230,7 +226,6 @@ class ModchartState
 		#end
 		return toBeCalled;
 	}
-	#end
 
     public function die()
     {
@@ -606,3 +601,4 @@ class ModchartState
         return new ModchartState();
     }
 }
+#end
