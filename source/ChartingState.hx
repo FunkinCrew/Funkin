@@ -305,14 +305,11 @@ class ChartingState extends MusicBeatState
 		
 		var tab_group_assets = new FlxUI(null, UI_box);
 		tab_group_assets.name = "Assets";
-		tab_group_assets.add(player1DropDown);
-		tab_group_assets.add(player2DropDown);
+		tab_group_assets.add(noteStyleDropDown);
 		tab_group_assets.add(gfVersionDropDown);
 		tab_group_assets.add(stageDropDown);
-		tab_group_assets.add(noteStyleDropDown);
-
-
-
+		tab_group_assets.add(player1DropDown);
+		tab_group_assets.add(player2DropDown);
 
 		UI_box.addGroup(tab_group_song);
 		UI_box.addGroup(tab_group_assets);
