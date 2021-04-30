@@ -17,6 +17,10 @@ class Character extends FlxSprite
 
 	public var holdTimer:Float = 0;
 
+	var hastex:Bool = false;
+	var addtex:FlxAtlasFrames;
+	var newtex:FlxAtlasFrames;
+
 	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false)
 	{
 		super(x, y);
@@ -32,12 +36,36 @@ class Character extends FlxSprite
 		{
 			case 'gf':
 				// GIRLFRIEND CODE
-				switch PlayState.SONG.song.toLowerCase() {
-					case 'bopeebo':
-						tex = Paths.getSparrowAtlas('GF_assets');
-					default:
-						tex = Paths.getSparrowAtlas('GF_assets_lite');
+
+				var tex = Paths.getSparrowAtlas('gf/GF_assets');
+
+				switch PlayState.curStage.toLowerCase() {
+					case 'spooky':
+						hastex = true;
+						addtex = Paths.getSparrowAtlas('gf/GF_assets_week2');
+					case 'stage':
+						if (PlayState.SONG.song.toLowerCase() == 'tutorial')
+						{
+							hastex = true;
+							addtex = Paths.getSparrowAtlas('gf/GF_assets_tutorial');
+						}
+					case 'philly':
+						hastex = true;
+						addtex = Paths.getSparrowAtlas('gf/GF_assets_blowing');
+						newtex = Paths.getSparrowAtlas('gf/GF_ass_sets_landing');
+
+						for (frame in newtex.frames){
+							addtex.pushFrame(frame);
+						}
 				}
+
+				if (hastex) 
+				{
+					for (frame in addtex.frames){
+						tex.pushFrame(frame);
+					}
+				}
+
 				frames = tex;
 				animation.addByPrefix('cheer', 'GF Cheer', 24, false);
 				animation.addByPrefix('singLEFT', 'GF left note', 24, false);

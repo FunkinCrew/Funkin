@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="GF_assets_week2.png">
+	<!-- Created with Adobe Animate version 20.5.1.31044 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="GF FEAR 0000" x="0" y="0" width="699" height="640"/>
+	<SubTexture name="GF FEAR 0001" x="709" y="0" width="699" height="640"/>
+	<SubTexture name="GF FEAR 0002" x="0" y="650" width="699" height="638" frameX="0" frameY="-2" frameWidth="699" frameHeight="640"/>
+	<SubTexture name="GF FEAR 0003" x="709" y="650" width="699" height="640"/>
+</TextureAtlas>
