@@ -1110,7 +1110,9 @@ class PlayState extends MusicBeatState
 
 	var luaWiggles:Array<WiggleEffect> = [];
 
+	#if windows
 	public static var luaModchart:ModchartState = null;
+	#end
 
 	function startCountdown():Void
 	{
@@ -1808,11 +1810,13 @@ class PlayState extends MusicBeatState
 		if (FlxG.keys.justPressed.EIGHT)
 		{
 			FlxG.switchState(new AnimationDebug(SONG.player2));
+			#if windows
 			if (luaModchart != null)
 			{
 				luaModchart.die();
 				luaModchart = null;
 			}
+			#end
 		}
 		
 		#end
