@@ -1150,15 +1150,53 @@ class PlayState extends MusicBeatState
 				// prefer player 1
 				if (FileSystem.exists('assets/images/custom_chars/'+SONG.player1+'/'+SONG.song.toLowerCase()+'Dialog.txt')) {
 					dialogue = CoolUtil.coolDynamicTextFile('assets/images/custom_chars/'+SONG.player1+'/'+SONG.song.toLowerCase()+'Dialog.txt');
+					// haxe exclusive...
+					// for each modifier... later mods preferred.
+					for (mod in 0...22) {
+						// evaluate this first to take advantage of short circut evaluation
+						if (ModifierState.modifiers[mod].value
+							&& FileSystem.exists('assets/images/custom_chars/' + SONG.player1 + '/' + SONG.song.toLowerCase() + 'Dialog'+mod+'.txt')) {
+							dialogue = CoolUtil.coolDynamicTextFile('assets/images/custom_chars/' + SONG.player1 + '/' + SONG.song.toLowerCase() + 'Dialog'
+								+ mod + '.txt');
+							}
+					} 
 				// if no player 1 unique dialog, use player 2
 				} else if (FileSystem.exists('assets/images/custom_chars/'+SONG.player2+'/'+SONG.song.toLowerCase()+'Dialog.txt')) {
 					dialogue = CoolUtil.coolDynamicTextFile('assets/images/custom_chars/'+SONG.player2+'/'+SONG.song.toLowerCase()+'Dialog.txt');
+					for (mod in 0...22)
+					{
+						// evaluate this first to take advantage of short circut evaluation
+						if (ModifierState.modifiers[mod].value
+							&& FileSystem.exists('assets/images/custom_chars/' + SONG.player2 + '/' + SONG.song.toLowerCase() + 'Dialog' + mod + '.txt'))
+						{
+							dialogue = CoolUtil.coolDynamicTextFile('assets/images/custom_chars/' + SONG.player2 + '/' + SONG.song.toLowerCase() + 'Dialog'
+								+ mod + '.txt');
+						}
+					} 
 				// if no player dialog, use default
 				}	else if (FileSystem.exists('assets/data/'+SONG.song.toLowerCase()+'/dialog.txt')) {
 					dialogue = CoolUtil.coolDynamicTextFile('assets/data/'+SONG.song.toLowerCase()+'/dialog.txt');
+					for (mod in 0...22)
+					{
+						// evaluate this first to take advantage of short circut evaluation
+						if (ModifierState.modifiers[mod].value
+							&& FileSystem.exists('assets/data/' + SONG.song.toLowerCase() + '/dialog'+mod+'.txt'))
+						{
+							dialogue = CoolUtil.coolDynamicTextFile('assets/data/' + SONG.song.toLowerCase() + '/dialog' + mod + '.txt');
+						}
+					} 
 				} else if (FileSystem.exists('assets/data/'+SONG.song.toLowerCase()+'/dialogue.txt')){
 					// nerds spell dialogue properly gotta make em happy
 					dialogue = CoolUtil.coolDynamicTextFile('assets/data/' + SONG.song.toLowerCase() + '/dialogue.txt');
+					for (mod in 0...22)
+					{
+						// evaluate this first to take advantage of short circut evaluation
+						if (ModifierState.modifiers[mod].value
+							&& FileSystem.exists('assets/data/' + SONG.song.toLowerCase() + '/dialogue' + mod + '.txt'))
+						{
+							dialogue = CoolUtil.coolDynamicTextFile('assets/data/' + SONG.song.toLowerCase() + '/dialogue' + mod + '.txt');
+						}
+					} 
 				// otherwise, make the dialog an error message
 				} else {
 					dialogue = [':dad: The game tried to get a dialog file but couldn\'t find it. Please make sure there is a dialog file named "dialog.txt".'];
