@@ -70,7 +70,7 @@ function update (elapsed)
 	else
         for i=0,7 do
             setActorX(_G['defaultStrum'..i..'X'],i)
-            setActorX(_G['defaultStrum'..i..'Y'],i)
+            setActorY(_G['defaultStrum'..i..'Y'],i)
         end
     end
 end
