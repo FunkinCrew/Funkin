@@ -25,9 +25,10 @@ import tjson.TJSON;
 using StringTools;
 class VictoryLoopState extends MusicBeatSubstate
 {
-	var bf:Boyfriend;
+	var bf:Character;
 	var camFollow:FlxObject;
 	var gf:Character;
+	var dad:Character;
 	var stageSuffix:String = "";
 	var victoryTxt:Alphabet;
 	var retryTxt:Alphabet;
@@ -39,7 +40,7 @@ class VictoryLoopState extends MusicBeatSubstate
 	var accuracy:Float;
 	var accuracyTxt:FlxText;
 	var camHUD:FlxCamera;
-	public function new(x:Float, y:Float, gfX:Float, gfY:Float, accuracy:Float, score:Int)
+	public function new(x:Float, y:Float, gfX:Float, gfY:Float, accuracy:Float, score:Int, dadX:Float, dadY:Float)
 	{
 		//var background:FlxSprite = new FlxSprite(0,0).makeGraphic(FlxG.width, FlxG.height, FlxColor.PINK);
 		//add(background);
@@ -52,6 +53,8 @@ class VictoryLoopState extends MusicBeatSubstate
 		if (p1 == "bf-pixel") {
 			stageSuffix = '-pixel';
 		}
+		// if opponent play
+		
 		victoryTxt = new Alphabet(10, 10, "Victory",true);
 		retryTxt = new Alphabet(10, FlxG.height, "Replay", true);
 		retryTxt.y -= retryTxt.height;
@@ -113,13 +116,33 @@ class VictoryLoopState extends MusicBeatSubstate
 
 		Conductor.songPosition = 0;
 
-		bf = new Boyfriend(x, y, PlayState.SONG.player1);
+		
+		if (PlayState.opponentPlayer)
+		{
+			bf = new Character(dadX, dadY, PlayState.SONG.player2);
+		} else {
+			bf = new Character(x, y, PlayState.SONG.player1, true);
+		}
+		dad = new Character(dadX, dadY, PlayState.SONG.player2);
+		if (!PlayState.duoMode) {
+			dad.visible = false;
+		}
+		// i mean, not really, but being controlled doesn't mean actually recieving input
+		// it just means it acts like a player
+		bf.beingControlled = true;
 		// now listen here bf I take care of the animation
 		bf.beNormal = false;
 		add(gf);
 		add(bf);
-
-		camFollow = new FlxObject(bf.getGraphicMidpoint().x, bf.getGraphicMidpoint().y, 1, 1);
+		if (PlayState.opponentPlayer) {
+			camFollow = new FlxObject(dad.getGraphicMidpoint().x, dad.getGraphicMidpoint().y, 1, 1);
+		} else {
+			camFollow = new FlxObject(bf.getGraphicMidpoint().x, bf.getGraphicMidpoint().y, 1, 1);
+		}
+		if (PlayState.duoMode) {
+			camFollow.x = gf.getGraphicMidpoint().x;
+			camFollow.y = gf.getGraphicMidpoint().y;
+		}
 		add(camFollow);
 		add(victoryTxt);
 		add(retryTxt);

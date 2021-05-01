@@ -113,12 +113,15 @@ class PlayState extends MusicBeatState
 	private var gfSpeed:Int = 1;
 	private var health:Float = 1;
 	private var combo:Int = 0;
-	private var duoMode:Bool = false;
+	public static var duoMode:Bool = false;
 	private var healthBarBG:FlxSprite;
 	private var healthBar:FlxBar;
 	private var enemyColor:FlxColor = 0xFFFF0000;
+	private var opponentColor:FlxColor = 0xFFf7770e;
 	private var playerColor:FlxColor = 0xFF66FF33;
 	private var poisonColor:FlxColor = 0xFFB75DEB;
+	private var poisonColorEnemy:FlxColor = 0xFFff1489;
+	private var bfColor:FlxColor = 0xFF149dff;
 	private var barShowingPoison:Bool = false;
 
 	private var generatedMusic:Bool = false;
@@ -201,7 +204,7 @@ class PlayState extends MusicBeatState
 	var inALoop:Bool = false;
 	var useVictoryScreen:Bool = true;
 	var luaRegistered:Bool = false;
-	var opponentPlayer:Bool = false;
+	public static var opponentPlayer:Bool = false;
 	#if windows
 	public var luaStates:Map<String, State> = [];
 	function callLua(func_name:String, args:Array<Dynamic>, type:String, uselua:String):Dynamic
@@ -1655,7 +1658,13 @@ class PlayState extends MusicBeatState
 		healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
 			'health', 0, 2);
 		healthBar.scrollFactor.set();
-		healthBar.createFilledBar(enemyColor, playerColor);
+		var leftSideFill = opponentPlayer ? opponentColor : enemyColor;
+		if (duoMode)
+			leftSideFill = opponentColor;
+		var rightSideFill = opponentPlayer ? bfColor : playerColor;
+		if (duoMode)
+			rightSideFill = bfColor;
+		healthBar.createFilledBar(leftSideFill, rightSideFill);
 		// healthBar
 		add(healthBar);
 
@@ -2776,10 +2785,18 @@ class PlayState extends MusicBeatState
 		var iconOffset:Int = 26;
 		
 		if (poisonTimes > 0 && !barShowingPoison) {
-			healthBar.createFilledBar(enemyColor, poisonColor);
+			var leftSideFill = opponentPlayer ? poisonColorEnemy : enemyColor;
+			var rightSideFill = opponentPlayer ? bfColor : poisonColor;
+			healthBar.createFilledBar(leftSideFill, rightSideFill);
 			barShowingPoison = true;
 		} else if (poisonTimes == 0 && barShowingPoison) {
-			healthBar.createFilledBar(enemyColor, playerColor);
+			var leftSideFill = opponentPlayer ? opponentColor : enemyColor;
+			var rightSideFill = opponentPlayer ? bfColor : playerColor;
+			if (duoMode) {
+				leftSideFill = opponentColor;
+				rightSideFill = bfColor;
+			}
+			healthBar.createFilledBar(leftSideFill, rightSideFill);
 			barShowingPoison = false;
 		}
 		iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset);
@@ -2796,7 +2813,10 @@ class PlayState extends MusicBeatState
 			}
 
 		} else {
-			iconP1.animation.curAnim.curFrame = 2;
+			if (!opponentPlayer) {
+				iconP1.animation.curAnim.curFrame = 2;
+			}	
+			
 		}
 
 
@@ -2804,7 +2824,8 @@ class PlayState extends MusicBeatState
 			iconP2.animation.curAnim.curFrame = 1;
 		else
 			iconP2.animation.curAnim.curFrame = 0;
-
+		if (poisonTimes != 0 && opponentPlayer)
+			iconP2.animation.curAnim.curFrame = 0;
 		/* if (FlxG.keys.justPressed.NINE)
 			FlxG.switchState(new Charting()); */
 
@@ -3315,7 +3336,7 @@ class PlayState extends MusicBeatState
 
 				campaignAccuracy = campaignAccuracy / defaultPlaylistLength;
 				if (useVictoryScreen) {
-					FlxG.switchState(new VictoryLoopState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y, gf.getScreenPosition().x, gf.getScreenPosition().y, campaignAccuracy, campaignScore));
+					FlxG.switchState(new VictoryLoopState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y, gf.getScreenPosition().x, gf.getScreenPosition().y, campaignAccuracy, campaignScore, dad.getScreenPosition().x, dad.getScreenPosition().y));
 				} else {
 					transIn = FlxTransitionableState.defaultTransIn;
 					transOut = FlxTransitionableState.defaultTransOut;
@@ -3362,7 +3383,7 @@ class PlayState extends MusicBeatState
 		{
 			trace('WENT BACK TO FREEPLAY??');
 			if (useVictoryScreen) {
-				FlxG.switchState(new VictoryLoopState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y, gf.getScreenPosition().x,gf.getScreenPosition().y, notesHit/notesPassing, songScore));
+				FlxG.switchState(new VictoryLoopState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y, gf.getScreenPosition().x,gf.getScreenPosition().y, notesHit/notesPassing, songScore, dad.getScreenPosition().x, dad.getScreenPosition().y));
 			} else
 				FlxG.switchState(new FreeplayState());
 		}
@@ -3712,7 +3733,7 @@ class PlayState extends MusicBeatState
 		{
 			if (actingOn.animation.curAnim.name.startsWith('sing') && !actingOn.animation.curAnim.name.endsWith('miss'))
 			{
-				actingOn.playAnim('idle');
+				actingOn.dance();
 				trace("idle from non miss sing");
 			}
 		}
@@ -3874,7 +3895,6 @@ class PlayState extends MusicBeatState
 				popUpScore(note.strumTime, note);
 				combo += 1;
 			}
-			trace("is sus:"+note.isSustainNote+"data"+note.noteData);
 			if (playerOne) {
 				if (note.noteData >= 0)
 					health += 0.023 + healthGainModifier;
