@@ -117,11 +117,11 @@ class PlayState extends MusicBeatState
 	private var healthBarBG:FlxSprite;
 	private var healthBar:FlxBar;
 	private var enemyColor:FlxColor = 0xFFFF0000;
-	private var opponentColor:FlxColor = 0xFFf7770e;
+	private var opponentColor:FlxColor = 0xFFBC47FF;
 	private var playerColor:FlxColor = 0xFF66FF33;
 	private var poisonColor:FlxColor = 0xFFB75DEB;
-	private var poisonColorEnemy:FlxColor = 0xFFff1489;
-	private var bfColor:FlxColor = 0xFF149dff;
+	private var poisonColorEnemy:FlxColor = 0xFFF314FF;
+	private var bfColor:FlxColor = 0xFF149DFF;
 	private var barShowingPoison:Bool = false;
 
 	private var generatedMusic:Bool = false;
