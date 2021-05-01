@@ -122,7 +122,9 @@ class PlayerSettings
 			player1 = new PlayerSettings(0, Solo);
 			++numPlayers;
 		}
-
+		if (player2 == null) {
+			player2 = new PlayerSettings(1, Duo(false));
+		}
 		var numGamepads = FlxG.gamepads.numActiveGamepads;
 		if (numGamepads > 0)
 		{

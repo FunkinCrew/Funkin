@@ -26,7 +26,8 @@ class Note extends FlxSprite
 	public var tooLate:Bool = false;
 	public var wasGoodHit:Bool = false;
 	public var prevNote:Note;
-
+	public var duoMode:Bool = false;
+	public var oppMode:Bool = false;
 	public var sustainLength:Float = 0;
 	public var isSustainNote:Bool = false;
 	public var modifiedByLua:Bool = false;
@@ -247,8 +248,8 @@ class Note extends FlxSprite
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
-
-		if (mustPress)
+		// if we are player one and it's bf's note or we are duo mode or we are player two and it's p2's note
+		if (((mustPress && !oppMode) || duoMode) || (oppMode && !mustPress))
 		{
 			// The * 0.5 us so that its easier to hit them too late, instead of too early
 			if (strumTime > Conductor.songPosition - Conductor.safeZoneOffset

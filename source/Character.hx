@@ -1,5 +1,6 @@
 package;
 
+import flixel.util.FlxColor;
 import flixel.FlxSprite;
 import flixel.animation.FlxBaseAnimation;
 import flixel.graphics.frames.FlxAtlasFrames;
@@ -46,6 +47,8 @@ class Character extends FlxSprite
 	public var beNormal:Bool = true;
 	// sits on speakers, replaces gf
 	public var likeGf:Bool = false;
+	public var stunned:Bool = false;
+	public var beingControlled:Bool = false;
 	/**
 	 * how many animations our current gf supports. 
 	 * acts like a level meter, 0 means we aren't gf,
@@ -817,9 +820,31 @@ class Character extends FlxSprite
 		//curCharacter = curCharacter.trim();
 		//var charJson:Dynamic = Json.parse(Assets.getText('assets/images/custom_chars/custom_chars.json'));
 		//var animJson = File.getContent("assets/images/custom_chars/"+Reflect.field(charJson,curCharacter).like+".json");
+		if (beingControlled)
+		{
+			if (!debugMode)
+			{
+				if (animation.curAnim.name.startsWith('sing'))
+				{
+					holdTimer += elapsed;
+				}
+				else
+					holdTimer = 0;
 
+				if (animation.curAnim.name.endsWith('miss') && animation.curAnim.finished && !debugMode && beNormal)
+				{
+					playAnim('idle', true, false, 10);
+					trace("idle after miss");
+				}
+
+				if (animation.curAnim.name == 'firstDeath' && animation.curAnim.finished)
+				{
+					playAnim('deathLoop');
+				}
+			}
+		}
 		//if (!StringTools.contains(animJson, "firstDeath") && like != "bf-pixel") //supposed to fix note anim shit for bfs with unique jsons, currently broken
-		if (!likeBf)
+		if (!beingControlled)
 		{
 			if (animation.curAnim.name.startsWith('sing'))
 			{

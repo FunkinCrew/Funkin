@@ -46,16 +46,16 @@ class ModifierState extends MusicBeatState
 		// save between files
 		if (modifiers == null) {
 			modifiers = [
-				{name: "Sick Mode", value: false, conflicts: [1,2,3,4,5,6,7,8,9], multi: 3, times: true},
-				{name:"FC Mode", value: false, conflicts: [0,2,3,4,5,6,7,8,9], multi: 2, times: true},
-				{name: "Practice Mode", value: false, conflicts: [0,1,19], multi: 0, times:true},
-				{name: "Health Gain Up", value: false, conflicts: [0,1,4], multi: -0.5},
-				{name: "Health Gain Down", value: false, conflicts: [0,1,3], multi: 0.5},
-			 	{name: "Health Loss Up", value: false, conflicts: [0,1,6], multi: 0.5},
-			 	{name: "Health Loss Down", value: false, conflicts: [0,1,5], multi: -0.5},
-				{name: "Sup Love", value: false, conflicts: [0,1,8], multi: -0.4},
-				{name: "Poison Fright", value: false, conflicts: [0,1,7], multi: 0.4},
-				{name: "Fragile Funkin", value: false, conflicts: [0,1], multi: 1},
+				{name: "Sick Mode", value: false, conflicts: [1,2,3,4,5,6,7,8,9,19], multi: 3, times: true},
+				{name:"FC Mode", value: false, conflicts: [0,2,3,4,5,6,7,8,9,19], multi: 2, times: true},
+				{name: "Practice Mode", value: false, conflicts: [0,1,18,19], multi: 0, times:true},
+				{name: "Health Gain Up", value: false, conflicts: [0,1,4,19], multi: -0.5},
+				{name: "Health Gain Down", value: false, conflicts: [0,1,3,19], multi: 0.5},
+			 	{name: "Health Loss Up", value: false, conflicts: [0,1,6,19], multi: 0.5},
+			 	{name: "Health Loss Down", value: false, conflicts: [0,1,5,19], multi: -0.5},
+				{name: "Sup Love", value: false, conflicts: [0,1,8,19], multi: -0.4},
+				{name: "Poison Fright", value: false, conflicts: [0,1,7,19], multi: 0.4},
+				{name: "Fragile Funkin", value: false, conflicts: [0,1,19], multi: 1},
 				{name: "Flipped Notes", value: false, conflicts: [15], multi: 0.5},
 				{name: "Slow Notes", value: false, conflicts: [12,13], multi: -0.3},
 				{name: "Fast Notes", value: false, conflicts: [11,13], multi: 0.8},
@@ -66,6 +66,8 @@ class ModifierState extends MusicBeatState
 				{name: "Drunk Notes", value: false, conflicts: [15], multi: 0.5},
 				// just causes the game to instant restart, doesn't really do much to help
 				{name: "Stuck in a loop", value: false, conflicts: [2], multi: 0},
+				{name:"Duo Mode", value: false, conflicts: [0,1,2,3,4,5,6,7,8,9,20], multi: 0},
+				{name: "Opponent Play", value: false, conflicts: [19],multi:0},
 				{name: "Chart", value: false, conflicts: [], multi: 1, times:true},
 				{name: "Char Select", value: false, conflicts: [], multi: 1, times:true},
 				{name: "Play", value: false, conflicts: [], multi: 1, times:true}
