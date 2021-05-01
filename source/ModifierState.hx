@@ -68,6 +68,7 @@ class ModifierState extends MusicBeatState
 				{name: "Stuck in a loop", value: false, conflicts: [2], multi: 0},
 				{name:"Duo Mode", value: false, conflicts: [0,1,2,3,4,5,6,7,8,9,20], multi: 0},
 				{name: "Opponent Play", value: false, conflicts: [19],multi:0},
+				{name:"Show Cutscenes", value:false, conflicts:[], multi:0},
 				{name: "Chart", value: false, conflicts: [], multi: 1, times:true},
 				{name: "Char Select", value: false, conflicts: [], multi: 1, times:true},
 				{name: "Play", value: false, conflicts: [], multi: 1, times:true}
