@@ -2224,6 +2224,14 @@ class PlayState extends MusicBeatState
 					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
 
 					var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + Conductor.stepCrochet, daNoteData, oldNote, true, customImage, customXml, arrowEndsImage);
+					if (duoMode)
+					{
+						sustainNote.duoMode = true;
+					}
+					if (opponentPlayer)
+					{
+						sustainNote.oppMode = true;
+					}
 					sustainNote.scrollFactor.set();
 					unspawnNotes.push(sustainNote);
 
@@ -2242,9 +2250,6 @@ class PlayState extends MusicBeatState
 				if (swagNote.mustPress)
 				{
 					swagNote.x += FlxG.width / 2; // general offset
-				}
-				else
-				{
 				}
 			}
 			daBeats += 1;
@@ -2781,7 +2786,7 @@ class PlayState extends MusicBeatState
 		iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset);
 
 		if (poisonTimes == 0) {
-			if (healthBar.percent < 20) {
+			if (properHealth < 20) {
 				iconP1.animation.curAnim.curFrame = 1;
 				healthTxt.setFormat("assets/fonts/vcr.ttf", 20, FlxColor.RED, RIGHT);
 			}
@@ -3147,7 +3152,6 @@ class PlayState extends MusicBeatState
 							if (!daNote.mustPress) {
 								health += 0.0475;
 							} else if (!opponentPlayer) {
-								trace("draining health because note was too late");
 								health -= 0.0475;
 							}
 							
@@ -3674,7 +3678,7 @@ class PlayState extends MusicBeatState
 			}
 			else
 			{
-				badNoteCheck();
+				badNoteCheck(playerOne);
 			}
 		}
 
@@ -3753,9 +3757,6 @@ class PlayState extends MusicBeatState
 	function noteMiss(direction:Int = 1, playerOne:Bool=true):Void
 	{
 		var actingOn = playerOne ? boyfriend : dad;
-		if (opponentPlayer) {
-			actingOn = dad;
-		}
 		if (fullComboMode || perfectMode) {
 			// you signed up for this your fault
 			if (opponentPlayer)
@@ -3850,8 +3851,6 @@ class PlayState extends MusicBeatState
 		}
 		if (!note.wasGoodHit)
 		{
-			if (opponentPlayer)
-				trace("good hit!, must press:" + note.mustPress);
 			var altAnim = "";
 			if (SONG.notes[Math.floor(curStep / 16)] != null)
 			{
@@ -3875,6 +3874,7 @@ class PlayState extends MusicBeatState
 				popUpScore(note.strumTime, note);
 				combo += 1;
 			}
+			trace("is sus:"+note.isSustainNote+"data"+note.noteData);
 			if (playerOne) {
 				if (note.noteData >= 0)
 					health += 0.023 + healthGainModifier;
@@ -4102,12 +4102,12 @@ class PlayState extends MusicBeatState
 		{
 			boyfriend.playAnim('hey', true);
 
-			if (SONG.song == 'Tutorial' && dad.gfEpicLevel >= cast Character.EpicLevel.Level_Sing)
-			{
-				dad.playAnim('cheer', true);
-			}
+			
 		}
-		trace(curBeat);
+		if (curBeat % 8 == 7 && SONG.isCheer && dad.gfEpicLevel >= cast Character.EpicLevel.Level_Sing)
+		{
+			dad.playAnim('cheer', true);
+		}
 		for (sprite in backgroundgroup.members) {
 			sprite.runEvent(curBeat, boyfriend, gf, dad);
 		}

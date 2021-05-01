@@ -894,7 +894,6 @@ class Character extends FlxSprite
 	 */
 	public function dance()
 	{
-		trace('boogie');
 		if (!debugMode && beNormal)
 		{
 			switch (curCharacter)
@@ -955,7 +954,6 @@ class Character extends FlxSprite
 						if (!animation.curAnim.name.startsWith('hair'))
 						{
 							danced = !danced;
-							trace(danced);
 							if (danced)
 								playAnim('danceRight');
 							else
@@ -974,7 +972,6 @@ class Character extends FlxSprite
 
 	public function playAnim(AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0):Void
 	{
-		trace(AnimName);
 		animation.play(AnimName, Force, Reversed, Frame);
 		#if FUCK
 			return;
@@ -991,7 +988,6 @@ class Character extends FlxSprite
 			// kalm
 			animName = animation.curAnim.name;
 		}
-		trace(animName);
 		if (animOffsets.exists(animName))
 		{
 			var daOffset = animOffsets.get(animName);

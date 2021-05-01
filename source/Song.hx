@@ -29,6 +29,7 @@ typedef SwagSong =
 	var uiType:String;
 	var isSpooky:Null<Bool>;
 	var isHey:Null<Bool>;
+	var isCheer:Null<Bool>;
 }
 
 class Song
@@ -106,6 +107,12 @@ class Song
 			parsedJson.isHey = false;
 			if (parsedJson.song.toLowerCase() == 'bopeebo')
 				parsedJson.isHey = true;
+		}
+		if (parsedJson.isCheer = null) {
+			parsedJson.isCheer = false;
+			if (parsedJson.song.toLowerCase() == "tutorial") {
+				parsedJson.isCheer = true;
+			}
 		}
 		trace(parsedJson.stage);
 		if (parsedJson.gf == null) {

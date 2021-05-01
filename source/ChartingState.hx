@@ -144,7 +144,8 @@ class ChartingState extends MusicBeatState
 				isSpooky: false,
 				isMoody: false,
 				cutsceneType: "none",
-				uiType: 'normal'
+				uiType: 'normal',
+				isCheer: false
 			};
 		}
 
@@ -258,11 +259,14 @@ class ChartingState extends MusicBeatState
 		uiTextField = new FlxUIInputText(10, 140, 70, _song.uiType, 8);
 		var isMoodyCheck = new FlxUICheckBox(10, 220, null, null, "Is Moody", 100);
 		var isHeyCheck = new FlxUICheckBox(10, 250, null, null, "Is Hey", 100);
+		var isCheerCheck = new FlxUICheckBox(100, 250, null, null, "Is Cheer", 100);
 		isMoodyCheck.name = "isMoody";
 		isHeyCheck.name = "isHey";
+		isCheerCheck.name = "isCheer";
 		isMoodyCheck.checked = _song.isMoody;
 		isSpookyCheck.checked = _song.isSpooky;
 		isHeyCheck.checked = _song.isHey;
+		isCheerCheck.checked = _song.isCheer;
 		var curStage = _song.stage;
 		var tab_group_song = new FlxUI(null, UI_box);
 		tab_group_song.name = "Song";
@@ -273,6 +277,7 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(isMoodyCheck);
 		tab_group_song.add(isSpookyCheck);
 		tab_group_song.add(isHeyCheck);
+		tab_group_song.add(isCheerCheck);
 		tab_group_song.add(saveButton);
 		tab_group_song.add(reloadSong);
 		tab_group_song.add(reloadSongJson);
@@ -489,7 +494,9 @@ class ChartingState extends MusicBeatState
 					if (curSelectedNote != null) {
 						curSelectedNote[3] = check.checked;
 					}
-			}
+				case 'Is Cheer':
+					_song.isCheer = check.checked;
+				}
 		}
 		else if (id == FlxUINumericStepper.CHANGE_EVENT && (sender is FlxUINumericStepper))
 		{
