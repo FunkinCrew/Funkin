@@ -1034,7 +1034,7 @@ class Character extends FlxSprite
 	{
 		animOffsets[name] = [x, y];
 	}
-	public static function getAnimJson(char:String) {
+	public static function getAnimJson(char:String):Dynamic {
 		var charJson = CoolUtil.parseJson(Assets.getText('assets/images/custom_chars/custom_chars.jsonc'));
 		var animJson = CoolUtil.parseJson(File.getContent('assets/images/custom_chars/'+Reflect.field(charJson,char).like + '.json'));
 		return animJson;

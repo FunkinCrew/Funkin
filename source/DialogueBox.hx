@@ -632,6 +632,7 @@ class DialogueBox extends FlxSpriteGroup
 			default:
 				var realChar = curCharacter.substr(5);
 				portraitCustom = new FlxSprite(0, 40);
+				var coolJson = Character.getAnimJson(realChar);
 				var customPixel = false;
 				if (FileSystem.exists('assets/images/custom_chars/'+realChar+'/portrait.png')) {
 					var coolCustomJson = Character.getAnimJson(realChar);
@@ -670,6 +671,14 @@ class DialogueBox extends FlxSpriteGroup
 					portraitCustom.setGraphicSize(Std.int(portraitCustom.width * 0.9 * PlayState.daPixelZoom));
 				else 
 					portraitCustom.setGraphicSize(Std.int(portraitCustom.width * 0.9));
+				var offsetX:Int = 0;
+				var offsetY:Int = 0;
+				if (Reflect.hasField(coolJson, "portraitOffset")) {
+					offsetX = coolJson.portraitOffset[0];
+					offsetY = coolJson.portraitOffset[1];
+				}
+				portraitCustom.x += offsetX;
+				portraitCustom.y += offsetY;
 				portraitCustom.visible = false;
 		}
 		// swagDialogue.text = ;
