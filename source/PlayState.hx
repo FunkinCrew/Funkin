@@ -1089,7 +1089,7 @@ class PlayState extends MusicBeatState
 		FlxCamera.defaultCameras = [camGame];
 		persistentUpdate = true;
 		persistentDraw = true;
-		alwaysDoCutscenes = OptionsHandler.options.alwaysDoCutscenes || ModifierState.modifiers[21].value;
+		alwaysDoCutscenes = OptionsHandler.options.alwaysDoCutscenes;
 		useVictoryScreen = !OptionsHandler.options.skipVictoryScreen;
 		if (!OptionsHandler.options.skipModifierMenu) {
 			fullComboMode = ModifierState.modifiers[1].value;
