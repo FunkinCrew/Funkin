@@ -2843,11 +2843,11 @@ class PlayState extends MusicBeatState
 		if (poisonTimes == 0) {
 			if (healthBar.percent < 20) {
 				iconP1.animation.curAnim.curFrame = 1;
-				healthTxt.setFormat("assets/fonts/vcr.ttf", 20, FlxColor.RED, RIGHT);
+				
 			}
 			else {
 				iconP1.animation.curAnim.curFrame = 0;
-				healthTxt.setFormat("assets/fonts/vcr.ttf", 20, FlxColor.WHITE, RIGHT);
+				
 			}
 
 		} else {
@@ -2856,7 +2856,11 @@ class PlayState extends MusicBeatState
 			}	
 			
 		}
-
+		if (properHealth < 20) {
+			healthTxt.setFormat("assets/fonts/vcr.ttf", 20, FlxColor.RED, RIGHT);
+		} else {
+			healthTxt.setFormat("assets/fonts/vcr.ttf", 20, FlxColor.WHITE, RIGHT);
+		}	
 
 		if (healthBar.percent > 80)
 			iconP2.animation.curAnim.curFrame = 1;
