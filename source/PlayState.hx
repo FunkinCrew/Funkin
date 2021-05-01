@@ -2841,7 +2841,7 @@ class PlayState extends MusicBeatState
 		iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset);
 
 		if (poisonTimes == 0) {
-			if (properHealth < 20) {
+			if (healthBar.percent < 20) {
 				iconP1.animation.curAnim.curFrame = 1;
 				healthTxt.setFormat("assets/fonts/vcr.ttf", 20, FlxColor.RED, RIGHT);
 			}
