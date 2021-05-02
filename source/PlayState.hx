@@ -1632,9 +1632,7 @@ class PlayState extends MusicBeatState
 			// evilTrail.changeGraphic()
 			add(evilTrail);
 		}
-		trace('big titted goth gf');
 		add(gf);
-		trace('anime thighs she only 5');
 		// Shitty layering but whatev it works LOL
 		if (curStage == 'limo')
 			add(limo);
@@ -2856,7 +2854,8 @@ class PlayState extends MusicBeatState
 			}	
 			
 		}
-		if (properHealth < 20) {
+		// duo mode shouldn't show low health
+		if (properHealth < 20 && !duoMode) {
 			healthTxt.setFormat("assets/fonts/vcr.ttf", 20, FlxColor.RED, RIGHT, OUTLINE, FlxColor.BLACK);
 		} else {
 			healthTxt.setFormat("assets/fonts/vcr.ttf", 20, FlxColor.WHITE, RIGHT, OUTLINE, FlxColor.BLACK);
