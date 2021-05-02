@@ -95,7 +95,7 @@ class FNFAssets {
 	public static function saveBytes(id:String, data:Bytes)
 	{
 		#if sys
-		File.saveContent(id, data);
+		File.saveBytes(id, data);
 		#else
 		_file = new FileReference();
 
