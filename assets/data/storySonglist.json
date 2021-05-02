@@ -2,7 +2,7 @@
   "songs": [
     ["tutorial selected","Tutorial"],
     ["WEEK1 select", "Bopeebo", "Fresh","Dadbattle"],
-    ["week2 select", "Spookeez", "South"],
+    ["week2 select", "Spookeez", "South", "Monster"],
     ["Week 3 press", "Pico", "Philly", "Blammed"],
     ["Week 4 press", "Satin-Panties", "High", "Milf"],
     ["week 5", "Cocoa", "Eggnog", "Winter-Horrorland"],
@@ -10,7 +10,7 @@
     ["week7", "Ugh", "Guns", "Stress"]
   ],
   "weekNames": [
-    "",
+    "Learnin' How To Rap",
     "Daddy Dearest",
     "Spooky Month",
     "PICO",
@@ -21,11 +21,11 @@
   ],
   "characters": [
     ["dad", "bf", "gf"],
-		["dad", "bf", "gf"],
-		["spooky", "bf", "gf"],
-		["pico", "bf", "gf"],
-		["mom", "bf", "gf"],
-		["parents-christmas", "bf", "gf"],
+    ["dad", "bf", "gf"],
+    ["spooky", "bf", "gf"],
+    ["pico", "bf", "gf"],
+    ["mom", "bf", "gf"],
+    ["parents-christmas", "bf", "gf"],
     ["senpai", "bf", "gf"],
     ["tankman", "bf", "gf"]
   ]
