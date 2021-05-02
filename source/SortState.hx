@@ -144,7 +144,7 @@ class SortState extends MusicBeatState
 							}
 						}
 						trace(sortedSongs);
-						File.saveContent('assets/data/freeplaySongJson.jsonc',CoolUtil.stringifyJson(coolCategoryJson));
+						FNFAssets.saveContent('assets/data/freeplaySongJson.jsonc',CoolUtil.stringifyJson(coolCategoryJson));
 						FlxG.switchState(new SaveDataState());
 					case "categories": 
 						var coolCategoryJson:Array<SelectSongsState.TCategory> = CoolUtil.parseJson(Assets.getText('assets/data/freeplaySongJson.jsonc'));
@@ -152,7 +152,7 @@ class SortState extends MusicBeatState
 						for (i in referenceArray) {
 							coolReplacementJson.push(coolCategoryJson[i]);
 						}
-						File.saveContent('assets/data/freeplaySongJson.jsonc', CoolUtil.stringifyJson(coolReplacementJson));
+						FNFAssets.saveContent('assets/data/freeplaySongJson.jsonc', CoolUtil.stringifyJson(coolReplacementJson));
 						FlxG.switchState(new SaveDataState());
 					case "weeks":
 						// ha ha weeeeeee
@@ -164,8 +164,8 @@ class SortState extends MusicBeatState
 						var replacementJson:StoryMenuState.StorySongsJson = {songs: [], weekNames: [], characters: []};
 						for (i in referenceArray) {
 							// get files
-							var coolPng:Bytes = File.getBytes('assets/images/campaign-ui-week/week'+i+'.png');
-							var coolXml:String = File.getContent('assets/images/campaign-ui-week/week'+i+'.xml');
+							var coolPng:Bytes = FNFAssets.getBytes('assets/images/campaign-ui-week/week'+i+'.png');
+							var coolXml:String = FNFAssets.getText('assets/images/campaign-ui-week/week'+i+'.xml');
 							coolFiles.push({png: coolPng, xml:coolXml});
 							replacementJson.songs.push(coolStoryJson.songs[i]);
 							replacementJson.weekNames.push(coolStoryJson.weekNames[i]);
@@ -173,10 +173,10 @@ class SortState extends MusicBeatState
 						}
 						// save the files to their new positions
 						for (i in 0...coolFiles.length) {
-							File.saveBytes('assets/images/campaign-ui-week/week'+i+'.png',coolFiles[i].png);
-							File.saveContent('assets/images/campaign-ui-week/week'+i+'.xml',coolFiles[i].xml);
+							FNFAssets.saveBytes('assets/images/campaign-ui-week/week'+i+'.png',coolFiles[i].png);
+							FNFAssets.saveContent('assets/images/campaign-ui-week/week'+i+'.xml',coolFiles[i].xml);
 						}
-						File.saveContent('assets/data/storySonglist.json', CoolUtil.stringifyJson(replacementJson));
+						FNFAssets.saveContent('assets/data/storySonglist.json', CoolUtil.stringifyJson(replacementJson));
 						FlxG.switchState(new SaveDataState());
 				}
 				FlxG.switchState(new SaveDataState());

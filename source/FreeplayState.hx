@@ -6,6 +6,7 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.system.FlxSound;
 import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
@@ -204,19 +205,19 @@ class FreeplayState extends MusicBeatState
 				if (soundTestSong.needsVoices && curDifficulty != 1)
 				{
 					if (curDifficulty == 0) {
-						var vocalSound = Sound.fromFile("assets/music/" + soundTestSong.song + "_Voices" + TitleState.soundExt);
+						var vocalSound = FNFAssets.getSound("assets/music/" + soundTestSong.song + "_Voices" + TitleState.soundExt);
 						vocals = new FlxSound().loadEmbedded(vocalSound);
 						FlxG.sound.list.add(vocals);
 						vocals.play();
 						vocals.pause();
 						vocals.looped = true;
 					} else {
-						FlxG.sound.playMusic(Sound.fromFile("assets/music/" + soundTestSong.song + "_Voices" + TitleState.soundExt));
+						FlxG.sound.playMusic(FNFAssets.getSound("assets/music/" + soundTestSong.song + "_Voices" + TitleState.soundExt));
 					}
 					
 				}
 				if (curDifficulty != 2) {
-					FlxG.sound.playMusic(Sound.fromFile("assets/music/" + soundTestSong.song + "_Inst" + TitleState.soundExt));
+					FlxG.sound.playMusic(FNFAssets.getSound("assets/music/" + soundTestSong.song + "_Inst" + TitleState.soundExt));
 				}
 				
 				Conductor.mapBPMChanges(soundTestSong);
@@ -229,7 +230,7 @@ class FreeplayState extends MusicBeatState
 			} else {
 				var poop:String = songs[curSelected].toLowerCase() + DifficultyIcons.getEndingFP(curDifficulty);
 				trace(poop);
-				if (!FileSystem.exists('assets/data/' + songs[curSelected].toLowerCase() + '/' + poop.toLowerCase() + '.json'))
+				if (!FNFAssets.exists('assets/data/' + songs[curSelected].toLowerCase() + '/' + poop.toLowerCase() + '.json'))
 				{
 					// assume we pecked up the difficulty, return to default difficulty
 					trace("UH OH SONG IN SPECIFIED DIFFICULTY DOESN'T EXIST\nUSING DEFAULT DIFFICULTY");

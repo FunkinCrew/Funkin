@@ -9,7 +9,9 @@ import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import lime.utils.Assets;
+#if sys
 import sys.io.File;
+#end
 import haxe.Json;
 using StringTools;
 typedef TModifier = {
@@ -18,6 +20,7 @@ typedef TModifier = {
 	var conflicts: Array<Int>;
 	var multi: Float;
 	var ?times:Null<Bool>;
+	var desc:String;
 }
 class ModifierState extends MusicBeatState
 {
@@ -30,6 +33,7 @@ class ModifierState extends MusicBeatState
 	var multiTxt:FlxText;
 	public static var isStoryMode:Bool = false;
 	public static var scoreMultiplier:Float = 1;
+	var description:FlxText;
 	override function create()
 	{
 		var menuBG:FlxSprite = new FlxSprite().loadGraphic('assets/images/menuDesat.png');
@@ -43,34 +47,39 @@ class ModifierState extends MusicBeatState
 		multiTxt.setFormat("assets/fonts/vcr.ttf", 40, FlxColor.WHITE, RIGHT);
 		multiTxt.text = "Multiplier: 1";
 		multiTxt.scrollFactor.set();
+		description = new FlxText(500, FlxG.height - 50, 0, "", 150);
+		description.setFormat("assets/fonts/vcr.ttf", 40, FlxColor.WHITE, RIGHT, OUTLINE, FlxColor.BLACK);
+		description.text = "Instantly fail when you don't get \"Sick\"";
+		description.scrollFactor.set();
 		// save between files
 		if (modifiers == null) {
 			modifiers = [
-				{name: "Sick Mode", value: false, conflicts: [1,2,3,4,5,6,7,8,9,19], multi: 3, times: true},
-				{name:"FC Mode", value: false, conflicts: [0,2,3,4,5,6,7,8,9,19], multi: 2, times: true},
-				{name: "Practice Mode", value: false, conflicts: [0,1,18,19], multi: 0, times:true},
-				{name: "Health Gain Up", value: false, conflicts: [0,1,4,19], multi: -0.5},
-				{name: "Health Gain Down", value: false, conflicts: [0,1,3,19], multi: 0.5},
-			 	{name: "Health Loss Up", value: false, conflicts: [0,1,6,19], multi: 0.5},
-			 	{name: "Health Loss Down", value: false, conflicts: [0,1,5,19], multi: -0.5},
-				{name: "Sup Love", value: false, conflicts: [0,1,8,19], multi: -0.4},
-				{name: "Poison Fright", value: false, conflicts: [0,1,7,19], multi: 0.4},
-				{name: "Fragile Funkin", value: false, conflicts: [0,1,19], multi: 1},
-				{name: "Flipped Notes", value: false, conflicts: [15], multi: 0.5},
-				{name: "Slow Notes", value: false, conflicts: [12,13], multi: -0.3},
-				{name: "Fast Notes", value: false, conflicts: [11,13], multi: 0.8},
-				{name : "Accel Notes", value: false, conflicts: [11,12], multi: 0.4},
-				{name: "Vnsh Notes", value: false, conflicts: [15], multi: 0.5},
-				{name: "Invs Notes", value: false, conflicts: [10,14,16], multi: 1.5},
-				{name: "Snake Notes", value: false, conflicts: [15], multi: 0.5},
-				{name: "Drunk Notes", value: false, conflicts: [15], multi: 0.5},
+				{name: "Sick Mode", value: false, conflicts: [1,2,3,4,5,6,7,8,9,19,21], multi: 3, times: true, desc:"Instantly fail when you don't get 'Sick'"},
+				{name:"FC Mode", value: false, conflicts: [0,2,3,4,5,6,7,8,9,19,21], multi: 2, times: true, desc:"Fail when you miss a note"},
+				{name: "Practice Mode", value: false, conflicts: [0,1,18,19,21], multi: 0, times:true, desc:"You can't die! Disables score."},
+				{name: "Health Gain Up", value: false, conflicts: [0,1,4,19,21], multi: -0.5, desc:"Raise your health gain a little"},
+				{name: "Health Gain Down", value: false, conflicts: [0,1,3,19,21], multi: 0.5, desc:"Lower your health gain a little."},
+			 	{name: "Health Loss Up", value: false, conflicts: [0,1,6,19,21], multi: 0.5, desc:"Raise your health loss a little."},
+			 	{name: "Health Loss Down", value: false, conflicts: [0,1,5,19,21], multi: -0.5, desc:"Lower your health loss a little."},
+				{name: "Sup Love", value: false, conflicts: [0,1,8,19], multi: -0.4, desc:"Who knew simping could be so healthy?"},
+				{name: "Poison Fright", value: false, conflicts: [0,1,7,19,21], multi: 0.4,desc:"You are constantly losing health!"},
+				{name: "Fragile Funkin", value: false, conflicts: [0,1,19,21], multi: 1, desc:"Missing a note makes you lose a lot of health. You wanna have a bad time?"},
+				{name: "Flipped Notes", value: false, conflicts: [15], multi: 0.5, desc:"Notes are flipped"},
+				{name: "Slow Notes", value: false, conflicts: [12,13], multi: -0.3,desc:"Notes are slow"},
+				{name: "Fast Notes", value: false, conflicts: [11,13], multi: 0.8, desc:"Notes gotta go fast!"},
+				{name : "Accel Notes", value: false, conflicts: [11,12], multi: 0.4, desc:"Notes get faster and faster"},
+				{name: "Vnsh Notes", value: false, conflicts: [15], multi: 0.5, desc:"Notes vanish when they get close to the strum line."},
+				{name: "Invs Notes", value: false, conflicts: [10,14,16], multi: 1.5, desc:"Notes invisible lol"},
+				{name: "Snake Notes", value: false, conflicts: [15], multi: 0.5, desc:"Notes smoove across the screen"},
+				{name: "Drunk Notes", value: false, conflicts: [15], multi: 0.5, desc:"Notes be like my dad after a long day at work"},
 				// just causes the game to instant restart, doesn't really do much to help
-				{name: "Stuck in a loop", value: false, conflicts: [2], multi: 0},
-				{name:"Duo Mode", value: false, conflicts: [0,1,2,3,4,5,6,7,8,9,20], multi: 0},
-				{name: "Opponent Play", value: false, conflicts: [19],multi:0},
-				{name: "Chart", value: false, conflicts: [], multi: 1, times:true},
-				{name: "Char Select", value: false, conflicts: [], multi: 1, times:true},
-				{name: "Play", value: false, conflicts: [], multi: 1, times:true}
+				{name: "Stuck in a loop", value: false, conflicts: [2], multi: 0, desc:"Insta-replay the level after death!"},
+				{name:"Duo Mode", value: false, conflicts: [0,1,2,3,4,5,6,7,8,9,20,21], multi: 0,times:true, desc:"Boogie with a friend (friend not required)"},
+				{name: "Opponent Play", value: false, conflicts: [19,21],multi:0, desc:"Play as that dude you mercilessly beat up"},
+				{name: "Demo Mode", value: false, conflicts: [19,20,0,1,2,3,4,5,6,7,8,9],multi:0,times:true, desc:"Let the game play itself! (fucking idiot lol)"},
+				{name: "Chart", value: false, conflicts: [], multi: 1, times:true, desc:"Open charting menu"},
+				{name: "Char Select", value: false, conflicts: [], multi: 1, times:true, desc:"Ok i forgot what this one does lol"},
+				{name: "Play", value: false, conflicts: [], multi: 1, times:true, desc:"Funkin Play the Game!"}
 
 			];
 		}
@@ -87,8 +96,10 @@ class ModifierState extends MusicBeatState
 		add(menuBG);
 		add(grpAlphabet);
 		add(multiTxt);
+		add(description);
 		calculateMultiplier();
 		multiTxt.text = "Multiplier: "+scoreMultiplier;
+		changeSelection(0);
 		super.create();
 	}
 	override function update(elapsed:Float) {
@@ -140,6 +151,9 @@ class ModifierState extends MusicBeatState
 				// item.setGraphicSize(Std.int(item.width));
 			}
 		}
+		description.text = modifiers[curSelected].desc;
+		description.x = FlxG.width - description.width - 50;
+		description.y = FlxG.height - description.height - 10;
 	}
 	function calculateMultiplier() {
 		scoreMultiplier = 1;
@@ -160,29 +174,28 @@ class ModifierState extends MusicBeatState
 			scoreMultiplier = 0;
 		}
 	}
-	function toggleSelection() {
-		if (modifiers[curSelected].name != 'Play' && modifiers[curSelected].name != 'Chart' && modifiers[curSelected].name != 'Char Select'){
-			checkmarks[curSelected].visible = !checkmarks[curSelected].visible;
-			for (conflicting in modifiers[curSelected].conflicts) {
-				checkmarks[conflicting].visible = false;
-				modifiers[conflicting].value = false;
-			}
-			calculateMultiplier();
+	function toggleSelection() {			
+		switch(modifiers[curSelected].name) {
+			case 'Play':
+				if (FlxG.sound.music != null)
+					FlxG.sound.music.stop();
+				FlxG.switchState(new PlayState());
+			case 'Chart':
+				FlxG.switchState(new ChartingState());
+			case 'Char Select':
+				FlxG.switchState(new ChooseCharState(PlayState.SONG.player1));
+			default:
+					checkmarks[curSelected].visible = !checkmarks[curSelected].visible;
+					for (conflicting in modifiers[curSelected].conflicts)
+					{
+						checkmarks[conflicting].visible = false;
+						modifiers[conflicting].value = false;
+					}
+					calculateMultiplier();
 
-			modifiers[curSelected].value = checkmarks[curSelected].visible;
-			calculateMultiplier();
-			multiTxt.text = "Multiplier: "+scoreMultiplier;
-		} else if (modifiers[curSelected].name == 'Play') {
-			if (FlxG.sound.music != null)
-			FlxG.sound.music.stop();
-			FlxG.switchState(new PlayState());
+					modifiers[curSelected].value = checkmarks[curSelected].visible;
+					calculateMultiplier();
+					multiTxt.text = "Multiplier: " + scoreMultiplier;
 		}
-		else if (modifiers[curSelected].name == 'Chart') {
-			FlxG.switchState(new ChartingState());
-		}
-		else if (modifiers[curSelected].name == 'Char Select') {
-			FlxG.switchState(new ChooseCharState(PlayState.SONG.player1));
-		} //lol elif.
-
 	}
 }

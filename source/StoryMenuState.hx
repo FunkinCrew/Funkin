@@ -353,7 +353,7 @@ class StoryMenuState extends MusicBeatState
 
 			PlayState.storyDifficulty = curDifficulty;
 			for (peckUpAblePath in PlayState.storyPlaylist) {
-				if (!FileSystem.exists('assets/data/'+peckUpAblePath.toLowerCase()+'/'+peckUpAblePath.toLowerCase() + diffic+'.json')) {
+				if (!FNFAssets.exists('assets/data/'+peckUpAblePath.toLowerCase()+'/'+peckUpAblePath.toLowerCase() + diffic+'.json')) {
 					// probably messed up difficulty
 					trace("UH OH DIFFICULTY DOESN'T EXIST FOR A SONG");
 					trace("CHANGING TO DEFAULT DIFFICULTY");

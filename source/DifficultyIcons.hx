@@ -35,14 +35,14 @@ class DifficultyIcons {
       sprDiff.offset.x = diffJson.difficulties[level].offset;
       var diffPic:BitmapData;
       var diffXml:String;
-      if (FileSystem.exists('assets/images/custom_difficulties/'+diffJson.difficulties[level].name+".png")) {
-         diffPic = BitmapData.fromFile('assets/images/custom_difficulties/'+diffJson.difficulties[level].name+".png");
+      if (FNFAssets.exists('assets/images/custom_difficulties/'+diffJson.difficulties[level].name+".png")) {
+         diffPic = FNFAssets.getBitmapData('assets/images/custom_difficulties/'+diffJson.difficulties[level].name+".png");
       } else {
          // fall back on base game file to avoid crashes
-         diffPic = BitmapData.fromImage(Assets.getImage("assets/images/campaign_menu_UI_assets.png"));
+         diffPic = FNFAssets.getBitmapData("assets/images/campaign_menu_UI_assets.png");
       }
-      if (FileSystem.exists('assets/images/custom_difficulties/'+diffJson.difficulties[level].name+".xml")) {
-         diffXml = File.getContent('assets/images/custom_difficulties/'+diffJson.difficulties[level].name+".xml");
+      if (FNFAssets.exists('assets/images/custom_difficulties/'+diffJson.difficulties[level].name+".xml")) {
+         diffXml = FNFAssets.getText('assets/images/custom_difficulties/'+diffJson.difficulties[level].name+".xml");
       } else {
          // fall back on base game file to avoid crashes
          diffXml = Assets.getText("assets/images/campaign_menu_UI_assets.xml");

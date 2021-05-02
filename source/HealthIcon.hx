@@ -3,11 +3,12 @@ package;
 import flixel.FlxSprite;
 import lime.utils.Assets;
 import lime.system.System;
+import flash.display.BitmapData;
 #if sys
 import sys.io.File;
 import haxe.io.Path;
 import openfl.utils.ByteArray;
-import flash.display.BitmapData;
+
 import sys.FileSystem;
 #end
 import haxe.Json;
@@ -19,9 +20,7 @@ class HealthIcon extends FlxSprite
 	public function new(char:String = 'bf', isPlayer:Bool = false)
 	{
 		super();
-		#if sys
-		var charJson:Dynamic = CoolUtil.parseJson(File.getContent("assets/images/custom_chars/custom_chars.jsonc"));
-		#end
+		var charJson:Dynamic = CoolUtil.parseJson(FNFAssets.getText("assets/images/custom_chars/custom_chars.jsonc"));
 		antialiasing = true;
 		switch (char) {
 			case 'bf':
@@ -83,8 +82,8 @@ class HealthIcon extends FlxSprite
 				animation.add('icon', [21, 21, 25], 0, false, isPlayer);
 			default:
 				// check if there is an icon file
-				if (FileSystem.exists('assets/images/custom_chars/'+char+"/icons.png")) {
-					var rawPic:BitmapData = BitmapData.fromFile('assets/images/custom_chars/'+char+"/icons.png");
+				if (FNFAssets.exists('assets/images/custom_chars/'+char+"/icons.png")) {
+					var rawPic:BitmapData =FNFAssets.getBitmapData('assets/images/custom_chars/'+char+"/icons.png");
 					loadGraphic(rawPic, true, 150, 150);
 					animation.add('icon', Reflect.field(charJson,char).icons, false, isPlayer);
 				} else {

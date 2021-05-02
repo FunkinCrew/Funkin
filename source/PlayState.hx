@@ -44,13 +44,14 @@ import openfl.display.BlendMode;
 import openfl.display.StageQuality;
 import openfl.filters.ShaderFilter;
 import lime.system.System;
+import openfl.media.Sound;
 #if sys
 import sys.io.File;
 import sys.FileSystem;
 import haxe.io.Path;
 import openfl.utils.ByteArray;
 import lime.media.AudioBuffer;
-import flash.media.Sound;
+
 
 #end
 #if windows
@@ -203,6 +204,7 @@ class PlayState extends MusicBeatState
 	var alcholNumber:Float = 0;
 	var inALoop:Bool = false;
 	var useVictoryScreen:Bool = true;
+	var demoMode:Bool = false;
 	var luaRegistered:Bool = false;
 	public static var opponentPlayer:Bool = false;
 	#if windows
@@ -1104,6 +1106,7 @@ class PlayState extends MusicBeatState
 			inALoop = ModifierState.modifiers[18].value;
 			duoMode = ModifierState.modifiers[19].value;
 			opponentPlayer = ModifierState.modifiers[20].value;
+			demoMode = ModifierState.modifiers[21].value;
 			if (ModifierState.modifiers[3].value) {
 				healthGainModifier += 0.02;
 			} else if (ModifierState.modifiers[4].value) {
@@ -1148,51 +1151,51 @@ class PlayState extends MusicBeatState
 		{
 			default:
 				// prefer player 1
-				if (FileSystem.exists('assets/images/custom_chars/'+SONG.player1+'/'+SONG.song.toLowerCase()+'Dialog.txt')) {
+				if (FNFAssets.exists('assets/images/custom_chars/'+SONG.player1+'/'+SONG.song.toLowerCase()+'Dialog.txt')) {
 					dialogue = CoolUtil.coolDynamicTextFile('assets/images/custom_chars/'+SONG.player1+'/'+SONG.song.toLowerCase()+'Dialog.txt');
 					// haxe exclusive...
 					// for each modifier... later mods preferred.
 					for (mod in 0...22) {
 						// evaluate this first to take advantage of short circut evaluation
 						if (ModifierState.modifiers[mod].value
-							&& FileSystem.exists('assets/images/custom_chars/' + SONG.player1 + '/' + SONG.song.toLowerCase() + 'Dialog'+mod+'.txt')) {
+							&& FNFAssets.exists('assets/images/custom_chars/' + SONG.player1 + '/' + SONG.song.toLowerCase() + 'Dialog'+mod+'.txt')) {
 							dialogue = CoolUtil.coolDynamicTextFile('assets/images/custom_chars/' + SONG.player1 + '/' + SONG.song.toLowerCase() + 'Dialog'
 								+ mod + '.txt');
 							}
 					} 
 				// if no player 1 unique dialog, use player 2
-				} else if (FileSystem.exists('assets/images/custom_chars/'+SONG.player2+'/'+SONG.song.toLowerCase()+'Dialog.txt')) {
+				} else if (FNFAssets.exists('assets/images/custom_chars/'+SONG.player2+'/'+SONG.song.toLowerCase()+'Dialog.txt')) {
 					dialogue = CoolUtil.coolDynamicTextFile('assets/images/custom_chars/'+SONG.player2+'/'+SONG.song.toLowerCase()+'Dialog.txt');
 					for (mod in 0...22)
 					{
 						// evaluate this first to take advantage of short circut evaluation
 						if (ModifierState.modifiers[mod].value
-							&& FileSystem.exists('assets/images/custom_chars/' + SONG.player2 + '/' + SONG.song.toLowerCase() + 'Dialog' + mod + '.txt'))
+							&& FNFAssets.exists('assets/images/custom_chars/' + SONG.player2 + '/' + SONG.song.toLowerCase() + 'Dialog' + mod + '.txt'))
 						{
 							dialogue = CoolUtil.coolDynamicTextFile('assets/images/custom_chars/' + SONG.player2 + '/' + SONG.song.toLowerCase() + 'Dialog'
 								+ mod + '.txt');
 						}
 					} 
 				// if no player dialog, use default
-				}	else if (FileSystem.exists('assets/data/'+SONG.song.toLowerCase()+'/dialog.txt')) {
+				}	else if (FNFAssets.exists('assets/data/'+SONG.song.toLowerCase()+'/dialog.txt')) {
 					dialogue = CoolUtil.coolDynamicTextFile('assets/data/'+SONG.song.toLowerCase()+'/dialog.txt');
 					for (mod in 0...22)
 					{
 						// evaluate this first to take advantage of short circut evaluation
 						if (ModifierState.modifiers[mod].value
-							&& FileSystem.exists('assets/data/' + SONG.song.toLowerCase() + '/dialog'+mod+'.txt'))
+							&& FNFAssets.exists('assets/data/' + SONG.song.toLowerCase() + '/dialog'+mod+'.txt'))
 						{
 							dialogue = CoolUtil.coolDynamicTextFile('assets/data/' + SONG.song.toLowerCase() + '/dialog' + mod + '.txt');
 						}
 					} 
-				} else if (FileSystem.exists('assets/data/'+SONG.song.toLowerCase()+'/dialogue.txt')){
+				} else if (FNFAssets.exists('assets/data/'+SONG.song.toLowerCase()+'/dialogue.txt')){
 					// nerds spell dialogue properly gotta make em happy
 					dialogue = CoolUtil.coolDynamicTextFile('assets/data/' + SONG.song.toLowerCase() + '/dialogue.txt');
 					for (mod in 0...22)
 					{
 						// evaluate this first to take advantage of short circut evaluation
 						if (ModifierState.modifiers[mod].value
-							&& FileSystem.exists('assets/data/' + SONG.song.toLowerCase() + '/dialogue' + mod + '.txt'))
+							&& FNFAssets.exists('assets/data/' + SONG.song.toLowerCase() + '/dialogue' + mod + '.txt'))
 						{
 							dialogue = CoolUtil.coolDynamicTextFile('assets/data/' + SONG.song.toLowerCase() + '/dialogue' + mod + '.txt');
 						}
@@ -1838,26 +1841,26 @@ class PlayState extends MusicBeatState
 		red.scrollFactor.set();
 		var senpaiSound:Sound;
 		// try and find a player2 sound first
-		if (FileSystem.exists('assets/images/custom_chars/'+SONG.player2+'/Senpai_Dies.ogg')) {
-			senpaiSound = Sound.fromFile('assets/images/custom_chars/'+SONG.player2+'/Senpai_Dies.ogg');
+		if (FNFAssets.exists('assets/images/custom_chars/'+SONG.player2+'/Senpai_Dies.ogg')) {
+			senpaiSound = FNFAssets.getSound('assets/images/custom_chars/'+SONG.player2+'/Senpai_Dies.ogg');
 		// otherwise, try and find a song one
-		} else if (FileSystem.exists('assets/data/'+SONG.song.toLowerCase()+'/Senpai_Dies.ogg')) {
-			senpaiSound = Sound.fromFile('assets/data/'+SONG.song.toLowerCase()+'Senpai_Dies.ogg');
+		} else if (FNFAssets.exists('assets/data/'+SONG.song.toLowerCase()+'/Senpai_Dies.ogg')) {
+			senpaiSound = FNFAssets.getSound('assets/data/'+SONG.song.toLowerCase()+'Senpai_Dies.ogg');
 		// otherwise, use the default sound
 		} else {
-			senpaiSound = Sound.fromFile('assets/sounds/Senpai_Dies.ogg');
+			senpaiSound = FNFAssets.getSound('assets/sounds/Senpai_Dies.ogg');
 		}
 		var senpaiEvil:FlxSprite = new FlxSprite();
 		// dialog box overwrites character
-		if (FileSystem.exists('assets/images/custom_ui/dialog_boxes/'+SONG.cutsceneType+'/crazy.png')) {
-			var evilImage = BitmapData.fromFile('assets/images/custom_ui/dialog_boxes/'+SONG.cutsceneType+'/crazy.png');
-			var evilXml = File.getContent('assets/images/custom_ui/dialog_boxes/'+SONG.cutsceneType+'/crazy.xml');
+		if (FNFAssets.exists('assets/images/custom_ui/dialog_boxes/'+SONG.cutsceneType+'/crazy.png')) {
+			var evilImage = FNFAssets.getBitmapData('assets/images/custom_ui/dialog_boxes/'+SONG.cutsceneType+'/crazy.png');
+			var evilXml = FNFAssets.getText('assets/images/custom_ui/dialog_boxes/'+SONG.cutsceneType+'/crazy.xml');
 			senpaiEvil.frames = FlxAtlasFrames.fromSparrow(evilImage, evilXml);
 		// character then takes precendence over default
 		// will make things like monika way way easier
-		} else if (FileSystem.exists('assets/images/custom_chars/'+SONG.player2+'/crazy.png')) {
-			var evilImage = BitmapData.fromFile('assets/images/custom_chars/'+SONG.player2+'/crazy.png');
-			var evilXml = File.getContent('assets/images/custom_chars/'+SONG.player2+'/crazy.xml');
+		} else if (FNFAssets.exists('assets/images/custom_chars/'+SONG.player2+'/crazy.png')) {
+			var evilImage = FNFAssets.getBitmapData('assets/images/custom_chars/'+SONG.player2+'/crazy.png');
+			var evilXml = FNFAssets.getText('assets/images/custom_chars/'+SONG.player2+'/crazy.xml');
 			senpaiEvil.frames = FlxAtlasFrames.fromSparrow(evilImage, evilXml);
 		} else {
 			senpaiEvil.frames = FlxAtlasFrames.fromSparrow('assets/images/weeb/senpaiCrazy.png', 'assets/images/weeb/senpaiCrazy.xml');
@@ -1994,7 +1997,7 @@ class PlayState extends MusicBeatState
 			]);
 			for (field in CoolUtil.coolTextFile('assets/data/uitypes.txt')) {
 				if (field != 'pixel' && field != 'normal') {
-					if (FileSystem.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png"))
+					if (FNFAssets.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png"))
 						introAssets.set(field, ['custom_ui/ui_packs/'+field+'/ready-pixel.png','custom_ui/ui_packs/'+field+'/set-pixel.png','custom_ui/ui_packs/'+field+'/date-pixel.png']);
 					else
 						introAssets.set(field, ['custom_ui/ui_packs/'+field+'/ready.png','custom_ui/ui_packs/'+field+'/set.png','custom_ui/ui_packs/'+field+'/go.png']);
@@ -2013,28 +2016,28 @@ class PlayState extends MusicBeatState
 				{
 					introAlts = introAssets.get(value);
 					// ok so apparently a leading slash means absolute soooooo
-					if (SONG.uiType == 'pixel' || FileSystem.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png"))
+					if (SONG.uiType == 'pixel' || FNFAssets.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png"))
 						altSuffix = '-pixel';
 				}
 			}
 			if (SONG.uiType == 'normal') {
-				intro3Sound = Sound.fromAudioBuffer(AudioBuffer.fromBytes(Assets.getBytes('assets/sounds/intro3.ogg')));
-				intro2Sound = Sound.fromAudioBuffer(AudioBuffer.fromBytes(Assets.getBytes('assets/sounds/intro2.ogg')));
-				intro1Sound = Sound.fromAudioBuffer(AudioBuffer.fromBytes(Assets.getBytes('assets/sounds/intro1.ogg')));
-				introGoSound = Sound.fromAudioBuffer(AudioBuffer.fromBytes(Assets.getBytes('assets/sounds/introGo.ogg')));
+				intro3Sound = FNFAssets.getSound('assets/sounds/intro3.ogg');
+				intro2Sound = FNFAssets.getSound('assets/sounds/intro2.ogg');
+				intro1Sound = FNFAssets.getSound('assets/sounds/intro1.ogg');
+				introGoSound = FNFAssets.getSound('assets/sounds/introGo.ogg');
 			} else if (SONG.uiType == 'pixel') {
-				intro3Sound = Sound.fromAudioBuffer(AudioBuffer.fromBytes(Assets.getBytes('assets/sounds/intro3-pixel.ogg')));
-				intro2Sound = Sound.fromAudioBuffer(AudioBuffer.fromBytes(Assets.getBytes('assets/sounds/intro2-pixel.ogg')));
-				intro1Sound = Sound.fromAudioBuffer(AudioBuffer.fromBytes(Assets.getBytes('assets/sounds/intro1-pixel.ogg')));
-				introGoSound = Sound.fromAudioBuffer(AudioBuffer.fromBytes(Assets.getBytes('assets/sounds/introGo-pixel.ogg')));
+				intro3Sound = FNFAssets.getSound('assets/sounds/intro3-pixel.ogg');
+				intro2Sound = FNFAssets.getSound('assets/sounds/intro2-pixel.ogg');
+				intro1Sound = FNFAssets.getSound('assets/sounds/intro1-pixel.ogg');
+				introGoSound = FNFAssets.getSound('assets/sounds/introGo-pixel.ogg');
 			} else {
 				// god is dead for we have killed him
-				intro3Sound = Sound.fromFile("assets/images/custom_ui/ui_packs/"+SONG.uiType+'/intro3'+altSuffix+'.ogg');
-				intro2Sound = Sound.fromFile("assets/images/custom_ui/ui_packs/"+SONG.uiType+'/intro2'+altSuffix+'.ogg');
-				intro1Sound = Sound.fromFile("assets/images/custom_ui/ui_packs/"+SONG.uiType+'/intro1'+altSuffix+'.ogg');
+				intro3Sound = FNFAssets.getSound("assets/images/custom_ui/ui_packs/"+SONG.uiType+'/intro3'+altSuffix+'.ogg');
+				intro2Sound = FNFAssets.getSound("assets/images/custom_ui/ui_packs/"+SONG.uiType+'/intro2'+altSuffix+'.ogg');
+				intro1Sound = FNFAssets.getSound("assets/images/custom_ui/ui_packs/"+SONG.uiType+'/intro1'+altSuffix+'.ogg');
 				// apparently this crashes if we do it from audio buffer?
 				// no it just understands 'hey that file doesn't exist better do an error'
-				introGoSound = Sound.fromFile("assets/images/custom_ui/ui_packs/"+SONG.uiType+'/introGo'+altSuffix+'.ogg');
+				introGoSound = FNFAssets.getSound("assets/images/custom_ui/ui_packs/"+SONG.uiType+'/introGo'+altSuffix+'.ogg');
 			}
 
 
@@ -2045,12 +2048,12 @@ class PlayState extends MusicBeatState
 					FlxG.sound.play(intro3Sound, 0.6);
 				case 1:
 					// my life is a lie, it was always this simple
-					var readyImage = BitmapData.fromFile('assets/images/'+introAlts[0]);
+					var readyImage = FNFAssets.getBitmapData('assets/images/'+introAlts[0]);
 					var ready:FlxSprite = new FlxSprite().loadGraphic(readyImage);
 					ready.scrollFactor.set();
 					ready.updateHitbox();
 
-					if (SONG.uiType == 'pixel' || FileSystem.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png"))
+					if (SONG.uiType == 'pixel' || FNFAssets.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png"))
 						ready.setGraphicSize(Std.int(ready.width * daPixelZoom));
 
 					ready.screenCenter();
@@ -2064,12 +2067,12 @@ class PlayState extends MusicBeatState
 					});
 					FlxG.sound.play(intro2Sound, 0.6);
 				case 2:
-					var setImage = BitmapData.fromFile('assets/images/'+introAlts[1]);
+					var setImage = FNFAssets.getBitmapData('assets/images/'+introAlts[1]);
 					// can't believe you can actually use this as a variable name
 					var set:FlxSprite = new FlxSprite().loadGraphic(setImage);
 					set.scrollFactor.set();
 
-					if (SONG.uiType == 'pixel' || FileSystem.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png"))
+					if (SONG.uiType == 'pixel' || FNFAssets.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png"))
 						set.setGraphicSize(Std.int(set.width * daPixelZoom));
 
 					set.screenCenter();
@@ -2083,11 +2086,11 @@ class PlayState extends MusicBeatState
 					});
 					FlxG.sound.play(intro1Sound, 0.6);
 				case 3:
-					var goImage = BitmapData.fromFile('assets/images/'+introAlts[2]);
+					var goImage = FNFAssets.getBitmapData('assets/images/'+introAlts[2]);
 					var go:FlxSprite = new FlxSprite().loadGraphic(goImage);
 					go.scrollFactor.set();
 
-					if (SONG.uiType == 'pixel' || FileSystem.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png"))
+					if (SONG.uiType == 'pixel' || FNFAssets.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png"))
 						go.setGraphicSize(Std.int(go.width * daPixelZoom));
 
 					go.updateHitbox();
@@ -2198,13 +2201,13 @@ class PlayState extends MusicBeatState
 		var customXml:Null<String> = null;
 		var arrowEndsImage:Null<BitmapData> = null;
 		if (SONG.uiType != 'normal' && SONG.uiType != 'pixel') {
-			if (FileSystem.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/NOTE_assets.xml") && FileSystem.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/NOTE_assets.png")) {
+			if (FNFAssets.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/NOTE_assets.xml") && FNFAssets.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/NOTE_assets.png")) {
 				trace("has this been reached");
-				customImage = BitmapData.fromFile('assets/images/custom_ui/ui_packs/'+SONG.uiType+'/NOTE_assets.png');
-				customXml = File.getContent('assets/images/custom_ui/ui_packs/'+SONG.uiType+'/NOTE_assets.xml');
+				customImage = FNFAssets.getBitmapData('assets/images/custom_ui/ui_packs/'+SONG.uiType+'/NOTE_assets.png');
+				customXml = FNFAssets.getText('assets/images/custom_ui/ui_packs/'+SONG.uiType+'/NOTE_assets.xml');
 			} else {
-				customImage = BitmapData.fromFile('assets/images/custom_ui/ui_packs/'+SONG.uiType+'/arrow-pixels.png');
-				arrowEndsImage = BitmapData.fromFile('assets/images/custom_ui/ui_packs/'+SONG.uiType+'/arrowEnds.png');
+				customImage = FNFAssets.getBitmapData('assets/images/custom_ui/ui_packs/'+SONG.uiType+'/arrow-pixels.png');
+				arrowEndsImage = FNFAssets.getBitmapData('assets/images/custom_ui/ui_packs/'+SONG.uiType+'/arrowEnds.png');
 			}
 		}
 
@@ -2256,6 +2259,8 @@ class PlayState extends MusicBeatState
 				if (opponentPlayer) {
 					swagNote.oppMode = true;
 				}
+				if (demoMode)
+					swagNote.funnyMode = true;
 				swagNote.sustainLength = songNotes[2];
 				swagNote.scrollFactor.set(0, 0);
 
@@ -2277,6 +2282,8 @@ class PlayState extends MusicBeatState
 					{
 						sustainNote.oppMode = true;
 					}
+					if (demoMode)
+						sustainNote.funnyMode = true;
 					sustainNote.scrollFactor.set();
 					unspawnNotes.push(sustainNote);
 
@@ -2463,10 +2470,10 @@ class PlayState extends MusicBeatState
 							}
 					}
 				default:
-					if (FileSystem.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/NOTE_assets.xml") && FileSystem.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/NOTE_assets.png")) {
+					if (FNFAssets.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/NOTE_assets.xml") && FNFAssets.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/NOTE_assets.png")) {
 
-					  var noteXml = File.getContent('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/NOTE_assets.xml");
-						var notePic = BitmapData.fromFile('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/NOTE_assets.png");
+					  var noteXml = FNFAssets.getText('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/NOTE_assets.xml");
+						var notePic = FNFAssets.getBitmapData('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/NOTE_assets.png");
 						babyArrow.frames = FlxAtlasFrames.fromSparrow(notePic, noteXml);
 						babyArrow.animation.addByPrefix('green', 'arrowUP');
 						babyArrow.animation.addByPrefix('blue', 'arrowDOWN');
@@ -2525,8 +2532,8 @@ class PlayState extends MusicBeatState
 								}
 						}
 
-					} else if (FileSystem.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png")){
-						var notePic = BitmapData.fromFile('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png");
+					} else if (FNFAssets.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png")){
+						var notePic = FNFAssets.getBitmapData('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png");
 						babyArrow.loadGraphic(notePic, true, 17, 17);
 						babyArrow.animation.add('green', [6]);
 						babyArrow.animation.add('red', [7]);
@@ -3104,7 +3111,7 @@ class PlayState extends MusicBeatState
 				}
 				
 
-				if (!daNote.mustPress && daNote.wasGoodHit && !duoMode && !opponentPlayer)
+				if (!daNote.mustPress && daNote.wasGoodHit && ((!duoMode && !opponentPlayer) || demoMode))
 				{
 					/*
 					if (SONG.song != 'Tutorial')
@@ -3155,7 +3162,7 @@ class PlayState extends MusicBeatState
 					daNote.kill();
 					notes.remove(daNote, true);
 					daNote.destroy();
-				} else if (daNote.mustPress && daNote.wasGoodHit && opponentPlayer) {
+				} else if (daNote.mustPress && daNote.wasGoodHit && (opponentPlayer || demoMode)) {
 					#if windows
 					callAllLua("playerOneSing", [], null);
 					#end
@@ -3252,7 +3259,7 @@ class PlayState extends MusicBeatState
 						notes.remove(daNote, true);
 						daNote.destroy();
 				}
-				if (!duoMode && !opponentPlayer) {
+				if ((!duoMode && !opponentPlayer) || demoMode) {
 					enemyStrums.forEach(function(spr:FlxSprite)
 					{
 						if (strumming2[spr.ID])
@@ -3269,7 +3276,8 @@ class PlayState extends MusicBeatState
 						else
 							spr.centerOffsets();
 					});
-				} else if (opponentPlayer) {
+				} 
+				if (opponentPlayer || demoMode) {
 					playerStrums.forEach(function(spr:FlxSprite)
 					{
 						if (strumming1[spr.ID])
@@ -3291,7 +3299,7 @@ class PlayState extends MusicBeatState
 			});
 		}
 
-		if (!inCutscene) {
+		if (!inCutscene && !demoMode) {
 			// is that why it was crashing
 			if (!opponentPlayer)
 				keyShit(true);
@@ -3410,7 +3418,7 @@ class PlayState extends MusicBeatState
 				FlxTransitionableState.skipNextTransOut = true;
 					prevCamFollow = camFollow;
 				}
-				if (FileSystem.exists('assets/data/'+PlayState.storyPlaylist[0].toLowerCase()+'/'+PlayState.storyPlaylist[0].toLowerCase()+difficulty+'.json'))
+				if (FNFAssets.exists('assets/data/'+PlayState.storyPlaylist[0].toLowerCase()+'/'+PlayState.storyPlaylist[0].toLowerCase()+difficulty+'.json'))
 				  // do this to make custom difficulties not as unstable
 					PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + difficulty, PlayState.storyPlaylist[0]);
 				else
@@ -3496,17 +3504,17 @@ class PlayState extends MusicBeatState
 
 		var pixelShitPart1:String = "";
 		var pixelShitPart2:String = '';
-		if (FileSystem.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png")) {
+		if (FNFAssets.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png")) {
 			pixelShitPart2 = '-pixel';
 		}
 		var ratingImage:BitmapData;
 		switch (SONG.uiType) {
 			case 'pixel':
-				ratingImage = BitmapData.fromBytes(ByteArray.fromBytes(Assets.getBytes('assets/images/weeb/pixelUI/'+daRating+'-pixel.png')));
+				ratingImage = FNFAssets.getBitmapData('assets/images/weeb/pixelUI/'+daRating+'-pixel.png');
 			case 'normal':
-				ratingImage = BitmapData.fromBytes(ByteArray.fromBytes(Assets.getBytes('assets/images/'+daRating+'.png')));
+				ratingImage = FNFAssets.getBitmapData('assets/images/'+daRating+'.png');
 			default:
-				ratingImage = BitmapData.fromFile('assets/images/custom_ui/ui_packs/'+PlayState.SONG.uiType+'/'+daRating+pixelShitPart2+".png");
+				ratingImage = FNFAssets.getBitmapData('assets/images/custom_ui/ui_packs/'+PlayState.SONG.uiType+'/'+daRating+pixelShitPart2+".png");
 		}
 
 		rating.loadGraphic(ratingImage);
@@ -3526,7 +3534,7 @@ class PlayState extends MusicBeatState
 		comboSpr.velocity.x += FlxG.random.int(1, 10);
 		add(rating);
 		// gonna be fun explaining this
-		if (SONG.uiType != 'pixel' && !FileSystem.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png"))
+		if (SONG.uiType != 'pixel' && !FNFAssets.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png"))
 		{
 			rating.setGraphicSize(Std.int(rating.width * 0.7));
 			rating.antialiasing = true;
@@ -3554,18 +3562,18 @@ class PlayState extends MusicBeatState
 			var numImage:BitmapData;
 			switch (SONG.uiType) {
 				case 'pixel':
-					numImage = BitmapData.fromBytes(ByteArray.fromBytes(Assets.getBytes('assets/images/weeb/pixelUI/num'+Std.int(i)+'-pixel.png')));
+					numImage = FNFAssets.getBitmapData('assets/images/weeb/pixelUI/num'+Std.int(i)+'-pixel.png');
 				case 'normal':
-					numImage = BitmapData.fromBytes(ByteArray.fromBytes(Assets.getBytes('assets/images/num'+Std.int(i)+'.png')));
+					numImage = FNFAssets.getBitmapData('assets/images/num'+Std.int(i)+'.png');
 				default:
-					numImage = BitmapData.fromFile('assets/images/custom_ui/ui_packs/'+SONG.uiType+'/num'+Std.int(i)+pixelShitPart2+".png");
+					numImage = FNFAssets.getBitmapData('assets/images/custom_ui/ui_packs/'+SONG.uiType+'/num'+Std.int(i)+pixelShitPart2+".png");
 			}
 			var numScore:FlxSprite = new FlxSprite().loadGraphic(numImage);
 			numScore.screenCenter();
 			numScore.x = coolText.x + (43 * daLoop) - 90;
 			numScore.y += 80;
 
-			if (SONG.uiType != 'pixel' && !FileSystem.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png"))
+			if (SONG.uiType != 'pixel' && !FNFAssets.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png"))
 			{
 				numScore.antialiasing = true;
 				numScore.setGraphicSize(Std.int(numScore.width * 0.5));
@@ -3805,7 +3813,7 @@ class PlayState extends MusicBeatState
 						spr.animation.play('static');
 			}
 			
-			if (spr.animation.curAnim.name == 'confirm' && SONG.uiType != 'pixel' && !FileSystem.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png"))
+			if (spr.animation.curAnim.name == 'confirm' && SONG.uiType != 'pixel' && !FNFAssets.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png"))
 			{
 				spr.centerOffsets();
 				spr.offset.x -= 13;
@@ -4120,9 +4128,9 @@ class PlayState extends MusicBeatState
 			// Conductor.changeBPM(SONG.bpm);
 
 			// Dad doesnt interupt his own notes
-			if (SONG.notes[Math.floor(curStep / 16)].mustHitSection && !duoMode && !opponentPlayer)
+			if (SONG.notes[Math.floor(curStep / 16)].mustHitSection && ((!duoMode && !opponentPlayer) || demoMode))
 				dad.dance();
-			if (!SONG.notes[Math.floor(curStep / 16)].mustHitSection && opponentPlayer)
+			if (!SONG.notes[Math.floor(curStep / 16)].mustHitSection && (opponentPlayer || demoMode))
 				boyfriend.dance();
 		}
 		// FlxG.log.add('change bpm' + SONG.notes[Std.int(curStep / 16)].changeBPM);
@@ -4152,11 +4160,11 @@ class PlayState extends MusicBeatState
 			gf.dance();
 		}
 
-		if (!boyfriend.animation.curAnim.name.startsWith("sing") && !opponentPlayer)
+		if (!boyfriend.animation.curAnim.name.startsWith("sing") && !opponentPlayer || demoMode)
 		{
 			boyfriend.dance();
 		}
-		if (!dad.animation.curAnim.name.startsWith("sing") && (duoMode || opponentPlayer)) {
+		if (!dad.animation.curAnim.name.startsWith("sing") && (duoMode || opponentPlayer) || demoMode) {
 			dad.dance();
 		}
 		if (curBeat % 8 == 7 && SONG.isHey)

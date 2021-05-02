@@ -64,7 +64,7 @@ class Song
 			// means this isn't normal difficulty
 			// raw json 
 			// folder is always just the song name
-			rawJson = File.getContent("assets/data/"+folder.toLowerCase()+"/"+folder.toLowerCase()+".json").trim();
+			rawJson = FNFAssets.getText("assets/data/"+folder.toLowerCase()+"/"+folder.toLowerCase()+".json").trim();
 		} else {
 			#if sys
 			rawJson = File.getContent("assets/data/" + folder.toLowerCase() + "/" + jsonInput.toLowerCase() + '.json').trim();
@@ -203,7 +203,7 @@ class Song
 		{
 			// means this isn't normal difficulty
 			// lets finally overwrite notes
-			var realJson = parseJSONshit(File.getContent("assets/data/" + folder.toLowerCase() + "/" + jsonInput.toLowerCase() + '.json').trim());
+			var realJson = parseJSONshit(FNFAssets.getText("assets/data/" + folder.toLowerCase() + "/" + jsonInput.toLowerCase() + '.json').trim());
 			parsedJson.notes = realJson.notes;
 			parsedJson.bpm = realJson.bpm;
 			parsedJson.needsVoices = realJson.needsVoices;

@@ -569,7 +569,6 @@ class Character extends FlxSprite
 				addOffset("singDOWN-alt", -30, -27);
 				like = "parents";
 			default:
-				#if sys
 				// assume it is a custom character. if not: oh well
 				// protective ritual to protect against new lines
 				curCharacter = curCharacter.trim();
@@ -591,7 +590,7 @@ class Character extends FlxSprite
 				}
 				if (!isError) {
 					// use assets, as it is less laggy
-					var animJson = File.getContent("assets/images/custom_chars/"+Reflect.field(charJson,curCharacter).like+".json");
+					var animJson = FNFAssets.getText("assets/images/custom_chars/"+Reflect.field(charJson,curCharacter).like+".json");
 					var parsedAnimJson:Dynamic = CoolUtil.parseJson(animJson);
 
 
@@ -606,11 +605,11 @@ class Character extends FlxSprite
 					var tex:FlxAtlasFrames;
 					var rawXml:String;
 					// GOD IS DEAD WHY DOES THIS NOT WORK
-					if (FileSystem.exists('assets/images/custom_chars/'+curCharacter+"/"+playerSuffix+".txt")){
-						rawXml = File.getContent('assets/images/custom_chars/'+curCharacter+"/"+playerSuffix+".txt");
+					if (FNFAssets.exists('assets/images/custom_chars/'+curCharacter+"/"+playerSuffix+".txt")){
+						rawXml = FNFAssets.getText('assets/images/custom_chars/'+curCharacter+"/"+playerSuffix+".txt");
 						tex = FlxAtlasFrames.fromSpriteSheetPacker(rawPic,rawXml);
 					} else {
-						rawXml = File.getContent('assets/images/custom_chars/'+curCharacter+"/"+playerSuffix+".xml");
+						rawXml =FNFAssets.getText('assets/images/custom_chars/'+curCharacter+"/"+playerSuffix+".xml");
 						tex = FlxAtlasFrames.fromSparrow(rawPic,rawXml);
 					}
 					frames = tex;
@@ -745,47 +744,6 @@ class Character extends FlxSprite
 					trace("fuck");
 					playAnim('idle');
 				}
-
-				#else
-				// pretend its boyfriend, screw html5
-				var tex = FlxAtlasFrames.fromSparrow('assets/images/BOYFRIEND.png', 'assets/images/BOYFRIEND.xml');
-				frames = tex;
-				animation.addByPrefix('idle', 'BF idle dance', 24, false);
-				animation.addByPrefix('singUP', 'BF NOTE UP0', 24, false);
-				animation.addByPrefix('singLEFT', 'BF NOTE LEFT0', 24, false);
-				animation.addByPrefix('singRIGHT', 'BF NOTE RIGHT0', 24, false);
-				animation.addByPrefix('singDOWN', 'BF NOTE DOWN0', 24, false);
-				animation.addByPrefix('singUPmiss', 'BF NOTE UP MISS', 24, false);
-				animation.addByPrefix('singLEFTmiss', 'BF NOTE LEFT MISS', 24, false);
-				animation.addByPrefix('singRIGHTmiss', 'BF NOTE RIGHT MISS', 24, false);
-				animation.addByPrefix('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
-				animation.addByPrefix('hey', 'BF HEY', 24, false);
-
-				animation.addByPrefix('firstDeath', "BF dies", 24, false);
-				animation.addByPrefix('deathLoop', "BF Dead Loop", 24, true);
-				animation.addByPrefix('deathConfirm', "BF Dead confirm", 24, false);
-
-				animation.addByPrefix('scared', 'BF idle shaking', 24);
-
-				addOffset('idle', -5);
-				addOffset("singUP", -29, 27);
-				addOffset("singRIGHT", -38, -7);
-				addOffset("singLEFT", 12, -6);
-				addOffset("singDOWN", -10, -50);
-				addOffset("singUPmiss", -29, 27);
-				addOffset("singRIGHTmiss", -30, 21);
-				addOffset("singLEFTmiss", 12, 24);
-				addOffset("singDOWNmiss", -11, -19);
-				addOffset("hey", 7, 4);
-				addOffset('firstDeath', 37, 11);
-				addOffset('deathLoop', 37, 5);
-				addOffset('deathConfirm', 37, 69);
-				addOffset('scared', -4);
-
-				flipX = true;
-				like = "bf";
-				playAnim('idle');
-				#end
 		}
 
 
@@ -1036,7 +994,7 @@ class Character extends FlxSprite
 	}
 	public static function getAnimJson(char:String):Dynamic {
 		var charJson = CoolUtil.parseJson(Assets.getText('assets/images/custom_chars/custom_chars.jsonc'));
-		var animJson = CoolUtil.parseJson(File.getContent('assets/images/custom_chars/'+Reflect.field(charJson,char).like + '.json'));
+		var animJson = CoolUtil.parseJson(FNFAssets.getText('assets/images/custom_chars/'+Reflect.field(charJson,char).like + '.json'));
 		return animJson;
 	}
 }

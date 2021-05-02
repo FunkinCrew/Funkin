@@ -22,9 +22,9 @@ class MenuItem extends FlxSpriteGroup
 	public function new(x:Float, y:Float, weekNum:Int = 0)
 	{
 		super(x, y);
-		var parsedWeekJson:Array<Array<String>> = CoolUtil.parseJson(File.getContent("assets/data/storySongList.json")).songs;
-		var rawPic = BitmapData.fromFile('assets/images/campaign-ui-week/week'+weekNum+".png");
-		var rawXml = File.getContent('assets/images/campaign-ui-week/week'+weekNum+".xml");
+		var parsedWeekJson:Array<Array<String>> = CoolUtil.parseJson(FNFAssets.getText("assets/data/storySongList.json")).songs;
+		var rawPic = FNFAssets.getBitmapData('assets/images/campaign-ui-week/week'+weekNum+".png");
+		var rawXml = FNFAssets.getText('assets/images/campaign-ui-week/week'+weekNum+".xml");
 		var tex = FlxAtlasFrames.fromSparrow(rawPic, rawXml);
 
 		week = new FlxSprite();

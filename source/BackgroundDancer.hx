@@ -23,14 +23,14 @@ class BackgroundDancer extends FlxSprite
 		} else {
 			var rawPic:BitmapData;
 			var rawXml:String;
-			if (FileSystem.exists('assets/images/custom_stages/'+type+"/limoDancer.png")) {
-				rawPic = BitmapData.fromFile('assets/images/custom_stages/'+type+"/limoDancer.png");
+			if (FNFAssets.exists('assets/images/custom_stages/'+type+"/limoDancer.png")) {
+				rawPic =FNFAssets.getBitmapData('assets/images/custom_stages/'+type+"/limoDancer.png");
 			} else {
 				// fall back on base game file to avoid crashes
-				rawPic = BitmapData.fromImage(Assets.getImage("assets/images/limo/limoDancer.png"));
+				rawPic =FNFAssets.getBitmapData("assets/images/limo/limoDancer.png");
 			}
-			if (FileSystem.exists('assets/images/custom_stages/'+type+"/limoDancer.xml")) {
-			   rawXml = File.getContent('assets/images/custom_stages/'+type+"/limoDancer.xml");
+			if (FNFAssets.exists('assets/images/custom_stages/'+type+"/limoDancer.xml")) {
+			   rawXml = FNFAssets.getText('assets/images/custom_stages/'+type+"/limoDancer.xml");
 			} else {
 			   // fall back on base game file to avoid crashes
 				 rawXml = Assets.getText("assets/images/limo/limoDancer.xml");

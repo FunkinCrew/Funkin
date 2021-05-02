@@ -8,9 +8,10 @@ import lime.utils.Assets;
 import sys.io.File;
 import haxe.io.Path;
 import openfl.utils.ByteArray;
-import flash.display.BitmapData;
+
 #end
 import haxe.Json;
+import flash.display.BitmapData;
 import haxe.format.JsonParser;
 import tjson.TJSON;
 class MenuCharacter extends FlxSprite
@@ -33,14 +34,14 @@ class MenuCharacter extends FlxSprite
 			var tex = FlxAtlasFrames.fromSparrow('assets/images/campaign-ui-char/default.png', 'assets/images/campaign-ui-char/default.xml');
 			frames = tex;
 		} else {
-			var rawPic:BitmapData = BitmapData.fromFile('assets/images/campaign-ui-char/'+character+".png");
-			var rawXml:String = File.getContent('assets/images/campaign-ui-char/'+character+".xml");
+			var rawPic:BitmapData = FNFAssets.getBitmapData('assets/images/campaign-ui-char/'+character+".png");
+			var rawXml:String = FNFAssets.getText('assets/images/campaign-ui-char/'+character+".xml");
 			var tex = FlxAtlasFrames.fromSparrow(rawPic, rawXml);
 			frames = tex;
 		}
 
 		// don't use assets because you can use custom like folders
-		var animJson = CoolUtil.parseJson(File.getContent("assets/images/campaign-ui-char/"+Reflect.field(parsedCharJson,character).like+".json"));
+		var animJson = CoolUtil.parseJson(FNFAssets.getText("assets/images/campaign-ui-char/"+Reflect.field(parsedCharJson,character).like+".json"));
 		for (field in Reflect.fields(animJson.animation)) {
 			animation.addByPrefix(field, Reflect.field(animJson.animation, field), 24, (field == "idle"));
 		}

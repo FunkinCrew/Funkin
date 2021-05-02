@@ -8,9 +8,6 @@ class Main extends Sprite
 {
 	public function new()
 	{
-		#if !sys
-			throw("Hey! FNFM+ only compiles for desktop, not web or other sys.");
-		#end
 		super();
 		addChild(new FlxGame(0, 0, TitleState, 1, 60, 120, true));
 

@@ -105,7 +105,7 @@ class VictoryLoopState extends MusicBeatSubstate
 		var characterList = Assets.getText('assets/data/characterList.txt');
 		if (!StringTools.contains(characterList, p1)) {
 			var parsedCharJson:Dynamic = CoolUtil.parseJson(Assets.getText('assets/images/custom_chars/custom_chars.jsonc'));
-			var parsedAnimJson = CoolUtil.parseJson(File.getContent("assets/images/custom_chars/"+Reflect.field(parsedCharJson,p1).like+".json"));
+			var parsedAnimJson = CoolUtil.parseJson(FNFAssets.getText("assets/images/custom_chars/"+Reflect.field(parsedCharJson,p1).like+".json"));
 			switch (parsedAnimJson.like) {
 				case "bf-pixel":
 					// gotta deal with this dude
@@ -279,7 +279,7 @@ class VictoryLoopState extends MusicBeatSubstate
 				trace(PlayState.storyPlaylist);
 				var diffic = DifficultyIcons.getEndingFP(PlayState.storyDifficulty);
 				for (peckUpAblePath in PlayState.storyPlaylist) {
-					if (!FileSystem.exists('assets/data/'+peckUpAblePath.toLowerCase()+'/'+peckUpAblePath.toLowerCase() + diffic+'.json')) {
+					if (!FNFAssets.exists('assets/data/'+peckUpAblePath.toLowerCase()+'/'+peckUpAblePath.toLowerCase() + diffic+'.json')) {
 						// probably messed up difficulty
 						trace("UH OH DIFFICULTY DOESN'T EXIST FOR A SONG");
 						trace("CHANGING TO DEFAULT DIFFICULTY");

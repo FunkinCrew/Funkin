@@ -31,6 +31,7 @@ class Note extends FlxSprite
 	public var sustainLength:Float = 0;
 	public var isSustainNote:Bool = false;
 	public var modifiedByLua:Bool = false;
+	public var funnyMode:Bool = false;
 	public var noteScore:Float = 1;
 	public var altNote:Bool = false;
 	public var isPixel:Bool = false;
@@ -106,7 +107,7 @@ class Note extends FlxSprite
 				updateHitbox();
 				antialiasing = true;
 			default:
-				if (FileSystem.exists('assets/images/custom_ui/ui_packs/'+PlayState.SONG.uiType+"/NOTE_assets.xml") && FileSystem.exists('assets/images/custom_ui/ui_packs/'+PlayState.SONG.uiType+"/NOTE_assets.png")) {
+				if (FNFAssets.exists('assets/images/custom_ui/ui_packs/'+PlayState.SONG.uiType+"/NOTE_assets.xml") && FNFAssets.exists('assets/images/custom_ui/ui_packs/'+PlayState.SONG.uiType+"/NOTE_assets.png")) {
 
 
 					frames = FlxAtlasFrames.fromSparrow(customImage, customXml);
@@ -129,7 +130,7 @@ class Note extends FlxSprite
 	 				updateHitbox();
 	 				antialiasing = true;
 					// when arrowsEnds != arrowEnds :laughing_crying:
-				} else if (FileSystem.exists('assets/images/custom_ui/ui_packs/'+PlayState.SONG.uiType+"/arrows-pixels.png") && FileSystem.exists('assets/images/custom_ui/ui_packs/'+PlayState.SONG.uiType+"/arrowEnds.png")){
+				} else if (FNFAssets.exists('assets/images/custom_ui/ui_packs/'+PlayState.SONG.uiType+"/arrows-pixels.png") && FNFAssets.exists('assets/images/custom_ui/ui_packs/'+PlayState.SONG.uiType+"/arrowEnds.png")){
 					loadGraphic(customImage, true, 17, 17);
 					animation.add('greenScroll', [6]);
 					animation.add('redScroll', [7]);
@@ -249,7 +250,7 @@ class Note extends FlxSprite
 	{
 		super.update(elapsed);
 		// if we are player one and it's bf's note or we are duo mode or we are player two and it's p2's note
-		if (((mustPress && !oppMode) || duoMode) || (oppMode && !mustPress))
+		if (((mustPress && !oppMode) || duoMode) || (oppMode && !mustPress) && !funnyMode)
 		{
 			// The * 0.5 us so that its easier to hit them too late, instead of too early
 			if (strumTime > Conductor.songPosition - Conductor.safeZoneOffset
