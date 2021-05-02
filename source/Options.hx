@@ -11,7 +11,7 @@ class Options
 class STOptions
 {
 	public static var st_optionsState:Array<STOptionFileSection>;
-	public static var st_version:String = "2.0.1";
+	public static var st_version:String = "2.1";
 
 	// small things
 	public static var st_customIntro:Bool = true;					// Small Things: Custom intro sequence

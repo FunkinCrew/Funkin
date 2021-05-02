@@ -2004,8 +2004,8 @@ class PlayState extends MusicBeatState
 				if (STOptions.st_unknownIcons == true) {
 					if (doIconCheck == true) {
 						if (Conductor.songPosition <= 0) {
-							iconP2.animation.play('unknown');
-							iconP2txt.text = "unknown";
+							iconP2.animation.play('unknown-pixel');
+							iconP2txt.text = "unknown-pixel";
 						} else {
 							iconP2.animation.play(SONG.player2);
 							iconP2txt.text = SONG.player2;

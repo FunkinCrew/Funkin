@@ -1,4 +1,4 @@
-=== 2.0.1 ===
+=== 2.1 ===
 + Added an artist indicator to the song info text in the top right
 + Added a discord rpc toggle within options.json
 + Added better pixel icons (Thanks Pirlo!)
