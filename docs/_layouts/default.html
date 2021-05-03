@@ -51,7 +51,7 @@
       <section>
 
       {% if page.name == "index.md" %}
-      {% include {{ replace_index_with }} %}
+      {% include {{ site.replace_index_with }} %}
       {% else %}
       {{ content }}
       {% endif %}
