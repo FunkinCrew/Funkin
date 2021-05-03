@@ -38,6 +38,8 @@ import flixel.util.FlxColor;
 import flixel.util.FlxSort;
 import flixel.util.FlxStringUtil;
 import flixel.util.FlxTimer;
+import flixel.math.FlxAngle;
+import flixel.math.FlxMath;
 import haxe.Json;
 import lime.utils.Assets;
 import openfl.display.BlendMode;
@@ -45,13 +47,17 @@ import openfl.display.StageQuality;
 import openfl.filters.ShaderFilter;
 import lime.system.System;
 import openfl.media.Sound;
+import flixel.group.FlxGroup;
+import hscript.Interp;
+import hscript.Parser;
+import hscript.ParserEx;
+import hscript.InterpEx;
 #if sys
 import sys.io.File;
 import sys.FileSystem;
 import haxe.io.Path;
 import openfl.utils.ByteArray;
 import lime.media.AudioBuffer;
-
 
 #end
 #if windows
@@ -1079,6 +1085,125 @@ class PlayState extends MusicBeatState
 	var luaSound:Map<String, FlxSound> = [];
 	var luaArray:Map<String, Array<Any>> = [];
 	#end
+	// this is just so i can collapse it lol
+	#if true
+	var hscriptStates:Map<String, Interp> = [];
+	var haxeSprites:Map<String, FlxSprite> = [];
+	function callHscript(func_name:String, args:Array<Dynamic>, usehaxe:String) {
+		// if function doesn't exist
+		if (!hscriptStates.get(usehaxe).variables.exists(func_name)) {
+			trace("Function doesn't exist, silently skipping...");
+			return;
+		}
+		var method = hscriptStates.get(usehaxe).variables.get(func_name);
+		switch(args.length) {
+			case 0:
+				method();
+			case 1:
+				method(args[0]);
+		}
+	}
+	function callAllHScript(func_name:String, args:Array<Dynamic>) {
+		for (key in hscriptStates.keys()) {
+			callHscript(func_name, args, key);
+		}
+	}
+	function setHaxeVar(name:String, value:Dynamic, usehaxe:String) {
+		hscriptStates.get(usehaxe).variables.set(name,value);
+	}
+	function getHaxeVar(name:String, usehaxe:String):Dynamic {
+		return hscriptStates.get(usehaxe).variables.get(name);
+	}
+	function setAllHaxeVar(name:String, value:Dynamic) {
+		for (key in hscriptStates.keys())
+			setHaxeVar(name, value, key);
+	}
+	function getHaxeActor(name:String):Dynamic {
+		switch (name) {
+			case "boyfriend" | "bf":
+				return boyfriend;
+			case "girlfriend" | "gf":
+				return gf;
+			case "dad":
+				return dad;
+			default:
+				return strumLineNotes.members[Std.parseInt(name)];
+		}
+	}
+	function makeHaxeState(usehaxe:String, path:String, filename:String) {
+		trace("opening a haxe state (because we are cool :))");
+		var parser = new Parser();
+		var program = parser.parseString(FNFAssets.getText(path + filename));
+		var interp = new Interp();
+		// set vars
+		interp.variables.set("BEHIND_GF", BEHIND_GF);
+		interp.variables.set("BEHIND_BF", BEHIND_BF);
+		interp.variables.set("BEHIND_DAD", BEHIND_DAD);
+		interp.variables.set("BEHIND_ALL", BEHIND_ALL);
+		interp.variables.set("BEHIND_NONE", 0);
+		interp.variables.set("difficulty", storyDifficulty);
+		interp.variables.set("bpm", Conductor.bpm);
+		interp.variables.set("songData", SONG);
+		interp.variables.set("curSong", SONG.song);
+		interp.variables.set("curStep", 0);
+		interp.variables.set("curBeat", 0);
+		interp.variables.set("Conductor", Conductor);
+		interp.variables.set("camHUD", camHUD);
+		interp.variables.set("showOnlyStrums", false);
+		interp.variables.set("playerStrums", playerStrums);
+		interp.variables.set("enemyStrums", enemyStrums);
+		interp.variables.set("mustHit", false);
+		interp.variables.set("strumLineY", strumLine.y);
+		interp.variables.set("FlxSprite", FlxSprite);
+		interp.variables.set("FlxSound", FlxSound);
+		interp.variables.set("FlxAtlasFrames", FlxAtlasFrames);
+		interp.variables.set("FlxGroup",FlxGroup);
+		interp.variables.set("FlxAngle", FlxAngle);
+		interp.variables.set("FlxMath", FlxMath);
+		interp.variables.set("hscriptPath", path);
+		interp.variables.set("makeRangeArray", CoolUtil.numberArray);
+		interp.variables.set("boyfriend", boyfriend);
+		interp.variables.set("gf", gf);
+		interp.variables.set("dad", dad);
+		// give them access to save data, everything will be fine ;)
+		interp.variables.set("FlxG", FlxG);
+		interp.variables.set("FlxTimer", FlxTimer);
+		interp.variables.set("FlxTween", FlxTween);
+		interp.variables.set("Std", Std);
+		interp.variables.set("isInCutscene", function () return inCutscene);
+		trace("set vars");
+		// callbacks
+
+		interp.variables.set("addSprite", function (sprite, position) {
+			// sprite is a FlxSprite
+			// position is a Int
+			if (position & BEHIND_GF != 0)
+				remove(gf);
+			if (position & BEHIND_DAD != 0)
+				remove(dad);
+			if (position & BEHIND_BF != 0)
+				remove(boyfriend);
+			add(sprite);
+			if (position & BEHIND_GF != 0)
+				add(gf);
+			if (position & BEHIND_DAD != 0)
+				add(dad);
+			if (position & BEHIND_BF != 0)
+				add(boyfriend); 
+		});
+		interp.variables.set("setDefaultZoom", function(zoom) {defaultCamZoom = zoom;});
+		interp.variables.set("removeSprite", function(sprite) {
+			remove(sprite);
+		});
+		interp.variables.set("getHaxeActor", getHaxeActor);
+		trace("set stuff");
+		interp.execute(program);
+		hscriptStates.set(usehaxe,interp);
+		callHscript("start", [SONG.song], usehaxe);
+		trace('executed');
+		
+	}
+	#end
 	override public function create()
 	{
 		// var gameCam:FlxCamera = FlxG.camera;
@@ -1764,8 +1889,12 @@ class PlayState extends MusicBeatState
 		// cameras = [FlxG.cameras.list[1]];
 		startingSong = true;
 		trace('finish uo');
+		if (FNFAssets.exists("assets/images/custom_stages/" + SONG.stage + "/process.hx")) {
+			makeHaxeState("stages", "assets/images/custom_stages/" + SONG.stage + "/", "process.hx");
+		}
 		#if windows
-		if (FileSystem.exists("assets/images/custom_stages/" + SONG.stage + "/process.lua")) // dude I hate lua (jkjkjkjk)
+		// else if because we don't want both to activate
+		else if (FileSystem.exists("assets/images/custom_stages/" + SONG.stage + "/process.lua")) // dude I hate lua (jkjkjkjk)
 		{
 			makeLuaState("stages", "assets/images/custom_stages/" + SONG.stage + "/", "process.lua");
 		}
@@ -1962,11 +2091,16 @@ class PlayState extends MusicBeatState
 
 		generateStaticArrows(0);
 		generateStaticArrows(1);
+		if (FNFAssets.exists("assets/data/" + SONG.song.toLowerCase() + "/modchart.hx"))
+		{
+			makeHaxeState("modchart", "assets/data/" + SONG.song.toLowerCase() + "/", "/modchart.hx");
+		}
 		#if windows
-		if (FileSystem.exists("assets/data/" + SONG.song.toLowerCase() + "/modchart.lua")) // dude I hate lua (jkjkjkjk)
+		else if (FileSystem.exists("assets/data/" + SONG.song.toLowerCase() + "/modchart.lua")) // dude I hate lua (jkjkjkjk)
 		{
 			makeLuaState("modchart", "assets/data/" + SONG.song.toLowerCase() + "/", "/modchart.lua");
 		}
+		
 		#end
 		if (duoMode)
 		{
@@ -2739,6 +2873,26 @@ class PlayState extends MusicBeatState
 		#if !debug
 		perfectModeOld = false;
 		#end
+		callAllHScript('update', [elapsed]);
+		if (hscriptStates.exists("modchart")) {
+			if (getHaxeVar("showOnlyStrums", "modchart"))
+			{
+				healthBarBG.visible = false;
+				healthBar.visible = false;
+				iconP1.visible = false;
+				iconP2.visible = false;
+				scoreTxt.visible = false;
+			}
+			else
+			{
+				healthBarBG.visible = true;
+				healthBar.visible = true;
+				iconP1.visible = true;
+				iconP2.visible = true;
+				scoreTxt.visible = true;
+			}
+
+		}
 		#if windows
 		setAllVar('songPos', Conductor.songPosition);
 		setAllVar('hudZoom', camHUD.zoom);
@@ -2918,6 +3072,7 @@ class PlayState extends MusicBeatState
 			{
 				// trace(PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection);
 			}
+			setAllHaxeVar("mustHit", PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection);
 			#if windows
 			
 			setAllVar("mustHit", PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection);
@@ -2926,6 +3081,7 @@ class PlayState extends MusicBeatState
 			{
 				camFollow.setPosition(dad.getMidpoint().x + 150, dad.getMidpoint().y - 100);
 				// camFollow.setPosition(lucky.getMidpoint().x - 120, lucky.getMidpoint().y + 210);
+				callAllHScript("playerTwoTurn", []);
 				#if windows
 				callAllLua("playerTwoTurn", [], null);
 				#end
@@ -2951,6 +3107,7 @@ class PlayState extends MusicBeatState
 			if (PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection && camFollow.x != boyfriend.getMidpoint().x - 100)
 			{
 				camFollow.setPosition((boyfriend.getMidpoint().x - 100 + boyfriend.followCamX), (boyfriend.getMidpoint().y - 100+boyfriend.followCamY));
+				callAllHScript("playerOneTurn", []);
 				#if windows
 				callAllLua("playerOneTurn", [], null);
 				#end
@@ -3131,6 +3288,7 @@ class PlayState extends MusicBeatState
 					if (daNote.altNote) {
 						altAnim = '-alt';
 					}
+					callAllHScript("playerTwoSing", []);
 					#if windows
 					callAllLua("playerTwoSing", [], null);
 					#end
@@ -3163,6 +3321,7 @@ class PlayState extends MusicBeatState
 					notes.remove(daNote, true);
 					daNote.destroy();
 				} else if (daNote.mustPress && daNote.wasGoodHit && (opponentPlayer || demoMode)) {
+					callAllHScript("playerOneSing", []);
 					#if windows
 					callAllLua("playerOneSing", [], null);
 					#end
@@ -3874,12 +4033,18 @@ class PlayState extends MusicBeatState
 				case 3:
 					actingOn.playAnim('singRIGHTmiss', true);
 			}
-			#if windows
-			if (playerOne)
+
+			if (playerOne) {
+				#if windows
 				callAllLua("playerOneMiss", [], null);
-			// else 
+				#end
+				callAllHScript("playerOneMiss", []);
+			} else {
+				#if windows
 				// callAllLua("playerTwoMiss", [], null);
-			#end
+				#end
+				callAllHScript("playerTwoMiss", []);
+			}
 		}
 	}
 
@@ -3975,6 +4140,10 @@ class PlayState extends MusicBeatState
 			else 
 				callAllLua("playerTwoSing", [], null);
 			#end
+			if (playerOne)
+				callAllHScript("playerOneSing", []);
+			else
+				callAllHScript("playerTwoSing", []);
 			var strums = playerOne ? playerStrums : enemyStrums;
 			strums.forEach(function(spr:FlxSprite)
 			{
@@ -4094,6 +4263,9 @@ class PlayState extends MusicBeatState
 				resyncVocals();
 			}
 		}
+
+		setAllHaxeVar("curStep", curStep);
+		callAllHScript("stepHit", [curStep]);
 		#if windows
 		setAllVar("curStep", curStep);
 		callAllLua("stepHit", [curStep], null);
@@ -4231,6 +4403,8 @@ class PlayState extends MusicBeatState
 		{
 			lightningStrikeShit();
 		}
+		setAllHaxeVar('curBeat', curBeat);
+		callAllHScript('beatHit', [curBeat]);
 		#if windows
 		setAllVar('curBeat', curBeat);
 		callAllLua('beatHit', [curBeat],null);

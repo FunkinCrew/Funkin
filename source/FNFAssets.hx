@@ -22,7 +22,7 @@ class FNFAssets {
         #if sys
             // if there a library strip it out..
             // future proofing ftw
-            var path = Assets.getPath(id);
+			var path = Assets.exists(id) ? Assets.getPath(id) : null;
             if (path == null)
                 path = id;
             return File.getContent(path);
@@ -37,10 +37,10 @@ class FNFAssets {
 		#if sys
 		// if there a library strip it out..
 		// future proofing ftw
-		var path = Assets.getPath(id);
-		if (path == null)
-			path = id;
-		return File.getBytes(path);
+			var path = Assets.exists(id) ? Assets.getPath(id) : null;
+			if (path == null)
+				path = id;
+			return File.getBytes(path);
 		#else
 		// no need to strip it out...
 		// assets handles it
@@ -49,7 +49,7 @@ class FNFAssets {
 	}
     public static function exists(id:String):Bool {
         #if sys
-            var path = Assets.getPath(id);
+            var path = Assets.exists(id) ? Assets.getPath(id) : null;
             if (path == null)
                 path = id;
             return FileSystem.exists(path);
@@ -60,7 +60,7 @@ class FNFAssets {
     public static function getBitmapData(id:String, ?useCache:Bool=true):BitmapData {
         #if sys
             // idk if this works lol
-            var path = Assets.getPath(id);
+			var path = Assets.exists(id) ? Assets.getPath(id) : null;
             if (path == null)
                 path = id;
             return BitmapData.fromFile(path);
@@ -71,7 +71,7 @@ class FNFAssets {
 
     public static function getSound(id:String, ?useCache:Bool=true) {
         #if sys
-            var path = Assets.getPath(id);
+			var path = Assets.exists(id) ? Assets.getPath(id) : null;
             if (path == null)
                 path = id;
             return Sound.fromFile(path);

@@ -1,3 +1,4 @@
+-- DEPRECATED: Use haxe instead
 function start(song) 
     print("start :)");
     makeSprite("bgWalls", "bg", BEHIND_ALL,STATIC_IMAGE);
