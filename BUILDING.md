@@ -4,7 +4,7 @@
 
 **Also note**: you should be familiar with the commandline. If not, read this [quick guide by ninjamuffin](https://ninjamuffin99.newgrounds.com/news/post/1090480).
 
-**Also also note**: To build for *Windows*, you need to be on *Windows*. To build for *Linux*, you need to be on *Linux*. You can build for html5/browsers on any platform.
+**Also also note**: To build for *Windows*, you need to be on *Windows*. To build for *Linux*, you need to be on *Linux*. Same goes for macOS. You can build for html5/browsers on any platform.
 
 ## Dependencies
  1. [Install Haxe 4.1.5](https://haxe.org/download/version/4.1.5/). You should use 4.1.5 instead of the latest version because the latest version has some problems with Friday Night Funkin': Kade Engine.
@@ -45,6 +45,11 @@ If you are planning to build for Windows, you also need to install **Visual Stud
 -   MSVC v140 - VS 2015 C++ build tools (v14.00)
 
 This will install about 22 GB of crap, but is necessary to build for Windows.
+
+### macOS-only dependencies (these are required for building on macOS at all, including html5.)
+If you are running macOS, you'll need to install Xcode. You can download it from the macOS App Store or from the [Xcode website](https://developer.apple.com/xcode/).
+
+If you get an error telling you that you need a newer macOS version, you need to download an older version of Xcode from the [More Software Downloads](https://developer.apple.com/download/more/) section of the Apple Developer website. (You can check which version of Xcode you need for your macOS version on [Wikipedia's comparison table (in the `min macOS to run` column)](https://en.wikipedia.org/wiki/Xcode#Version_comparison_table).)
 
 ## Cloning the repository
 Since you already installed `git` in a previous step, we'll use it to clone the repository.
