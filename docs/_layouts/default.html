@@ -50,7 +50,11 @@
       </header>
       <section>
 
+      {% if page.name == "index.md" %}
+      {% include {{ replace_index_with }} %}
+      {% else %}
       {{ content }}
+      {% endif %}
 
       </section>
       <footer>
