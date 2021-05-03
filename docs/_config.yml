@@ -2,4 +2,5 @@ theme: jekyll-theme-minimal
 title: "Kade Engine"
 description: "Kade Engine is a mod for Friday Night Funkin', including a full engine rework, replays, and more."
 show_downloads: true
+replace_index_with: "https://github.com/KadeDev/Kade-Engine/raw/master/README.md"
 logo: "https://github.com/KadeDev/Kade-Engine/raw/master/KadeEngineLogo.png"
