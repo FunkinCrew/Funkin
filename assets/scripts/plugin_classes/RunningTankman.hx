@@ -9,8 +9,9 @@ class RunningTankman extends FlxSprite {
     public var strumTime = 0;
     public var hscriptPath = "assets/images/custom_stages";
     public var endingOffset = FlxG.random.float(0.6, 1);
-    public function new (x, y) {
+    public function new (?x=0, y=0, scriptPath:String) {
         super(x, y);
+        this.hscriptPath = scriptPath;
         frames = FlxAtlasFrames.fromSparrow(hscriptPath + 'tankmanKilled1.png', hscriptPath + 'tankmanKilled1.xml');
         antialiasing = true;
         animation.addByPrefix("run", "tankman running", 24, true);

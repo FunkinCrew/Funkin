@@ -1089,8 +1089,7 @@ class PlayState extends MusicBeatState
 	// this is just so i can collapse it lol
 	#if true
 	var hscriptStates:Map<String, Interp> = [];
-	var haxeClasses:Map<String, Array<String>> = [];
-	var haxeExStates:Map<String, InterpEx> = [];
+	var exInterp:InterpEx = new InterpEx();
 	var haxeSprites:Map<String, FlxSprite> = [];
 	function callHscript(func_name:String, args:Array<Dynamic>, usehaxe:String) {
 		// if function doesn't exist
@@ -1135,7 +1134,7 @@ class PlayState extends MusicBeatState
 	}
 	function makeHaxeState(usehaxe:String, path:String, filename:String) {
 		trace("opening a haxe state (because we are cool :))");
-		var parser = new Parser();
+		var parser = new ParserEx();
 		var program = parser.parseString(FNFAssets.getText(path + filename));
 		var interp = new Interp();
 		// set vars
@@ -1209,34 +1208,15 @@ class PlayState extends MusicBeatState
 		
 	}
 	function instanceExClass(classname:String, args:Array<Dynamic> = null) {
-		var bonk = false;
-		var useInterp:String = "";
-		for (interp in haxeExStates.keys()) {
-			for (className in haxeClasses.get(interp)) {
-				if (className == classname) {
-					useInterp = interp;
-					bonk = true;
-					break;
-				}
-			}
-			if (bonk) break;
-		}
-		return haxeExStates.get(useInterp).createScriptClassInstance(classname, args);
+		return exInterp.createScriptClassInstance(classname, args);
 	}
 	function makeHaxeExState(usehaxe:String, path:String, filename:String)
 	{
 		trace("opening a haxe state (because we are cool :))");
 		var parser = new ParserEx();
 		var program = parser.parseModule(FNFAssets.getText(path + filename));
-		var interp = new InterpEx();
 		trace("set stuff");
-		interp.registerModule(program);
-		var classNames = [];
-		for (decl in program) {
-			classNames.push(decl.getName());
-		}
-		haxeClasses.set(usehaxe, classNames);
-		haxeExStates.set(usehaxe, interp);
+		exInterp.registerModule(program);
 
 		trace('executed');
 	}
@@ -1926,7 +1906,7 @@ class PlayState extends MusicBeatState
 		// cameras = [FlxG.cameras.list[1]];
 		startingSong = true;
 		trace('finish uo');
-		#if false
+		#if sys
 		for (file in FileSystem.readDirectory("assets/scripts/plugin_classes/")) {
 			makeHaxeExState(Path.withoutExtension(file), "assets/scripts/plugin_classes/", Path.withoutDirectory(file));
 		}

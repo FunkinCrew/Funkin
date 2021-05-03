@@ -1,9 +1,10 @@
-
+trace(" : )");
 var steve;
 var johns;
-var watchtower;
+var tower;
 var losers;
 function start(song) {
+    trace(" : )");
     var bg = new FlxSprite(-400, -400).loadGraphic(hscriptPath + 'tankSky.png');
     bg.scrollFactor.set();
     bg.antialiasing = true;
@@ -37,23 +38,32 @@ function start(song) {
     smokeLeft.frames = FlxAtlasFrames.fromSparrow(hscriptPath + 'smokeLeft.png', hscriptPath + 'smokeLeft.xml');
     smokeLeft.animation.addByPrefix('idle', 'SmokeBlurLeft', 24, true);
     smokeLeft.animation.play('idle', true);
-    smokeLeft.scrollFactor(0.4, 0.4);
+    smokeLeft.scrollFactor.set(0.4, 0.4);
     smokeLeft.antialiasing = true;
     addSprite(smokeLeft, BEHIND_ALL);
+
+
+    trace(":weary:");
 	var smokeRight = new FlxSprite(1100, -100);
 	smokeRight.frames = FlxAtlasFrames.fromSparrow(hscriptPath + 'smokeRight.png', hscriptPath + 'smokeRight.xml');
 	smokeRight.animation.addByPrefix('idle', 'SmokeRight', 24, true);
 	smokeRight.animation.play('idle', true);
-	smokeRight.scrollFactor(0.4, 0.4);
+	smokeRight.scrollFactor.set(0.4, 0.4);
     smokeRight.antialiasing = true;
 	addSprite(smokeRight, BEHIND_ALL);
-    watchtower = new FlxSprite(100, 50);
-    watchtower.frames = FlxAtlasFrames.fromSparrow(hscriptPath + 'tankWatchtower.png', hscriptPath + 'tankWatchtower.xml');
-    watchtower.animation.addByPrefix('idle', 'watchtower gradient color', 24, false);
-    watchtower.animation.play('idle', true);
-    watchtower.scrollFactor.set(0.5, 0.5);
-    watchtower.antialiasing = true;
-    addSprite(watchtower, BEHIND_ALL);
+    trace(":hueh:");
+	tower = new FlxSprite(100, 50);
+    trace("WAH tower");
+	tower.frames = FlxAtlasFrames.fromSparrow(hscriptPath + 'tankWatchtower.png', hscriptPath + 'tankWatchtower.xml');
+    trace("RED ALERT: ioajfha");
+	tower.animation.addByPrefix('idle', 'watchtower gradient color', 24, false);
+	tower.animation.play('idle', true);
+    trace("eugh");
+	tower.scrollFactor.set(0.5, 0.5);
+	tower.updateHitbox();
+	tower.antialiasing = true;
+	addSprite(tower, BEHIND_ALL);
+    trace(":pensive:");
     steve = new FlxSprite(300, 300);
     steve.frames = FlxAtlasFrames.fromSparrow(hscriptPath + 'tankRolling.png', hscriptPath + 'tankRolling.xml');
     steve.animation.addByPrefix('idle', "BG tank w lighting", 24, true);
@@ -61,6 +71,9 @@ function start(song) {
     steve.antialiasing = true;
     steve.scrollFactor.set(0.5, 0.5);
     addSprite(steve, BEHIND_ALL);
+
+    // note to gamers, type classes don't work
+    trace("before johnathan");
     johns = new FlxGroup();
     addSprite(johns, BEHIND_ALL);
     var ground = new FlxSprite(-420, -150).loadGraphic(hscriptPath + 'tankGround.png');
@@ -119,66 +132,40 @@ function start(song) {
 
     addSprite(losers, BEHIND_NONE);
 
-    gf.y += 10;
-    gf.x -= 30;
-    boyfriend.x += 40;
-    dad.y += 60;
-    dad.x -= 80;
-    if (!gf.like == "pico-speaker") {
-        gf.x -= 170;
-        gf.y -= 75;
+	getHaxeActor("gf").y += 10;
+	getHaxeActor("gf").x -= 30;
+	getHaxeActor("boyfriend").x += 40;
+	trace(getHaxeActor("dad"));
+	getHaxeActor("dad").y += 60;
+	getHaxeActor("dad").x -= 80;
+	setDefaultZoom(0.9);
+    trace(gf.like);
+	if (getHaxeActor("gf").like != "pico-speaker") {
+        getHaxeActor("gf").x -= 170;
+		getHaxeActor("gf").y -= 75;
     } else {
-        gf.y -= 200;
-        gf.x -= 50;
+		getHaxeActor("gf").y -= 200;
+		getHaxeActor("gf").x -= 50;
+		trace("finna instance");
+		var john = instancePluginClass("RunningTankman", [20, 500, hscriptPath]);
+		john.strumTime = gf.animationNotes[0][0];
+		john.resetShit(20, 600, true);
+        johns.add(john);
+		for (c in 0...gf.animationNotes.length)
+		{
+			if (FlxG.random.float(0, 100) < 16)
+			{
+				var jahn = instancePluginClass("RunningTankman", [500, 20, hscriptPath]);
+				jahn.strumTime = gf.animationNotes[c + 1][0];
+				jahn.resetShit(500, 200 + FlxG.random.int(50, 100), 2 > gf.animationNotes[c + 1][1]);
+                johns.add(jahn);
+				trace("make johgf");
+			}
+		}
     }
-    setDefaultZoom(0.9);
-    /*
-    if (gf.like == "pico-speaker") {
-        var john = makeJohn(20, 500);
-        johnStrumTime[0] = gf.animationNotes[0][0];
-        resetJohn(20, 600, true, 0);
-        for (c in 1...gf.animationNotes.length) {
-            if (FlxG.random.float(0, 100) < 16) {
-                makeJohn(500, 200);
-                johnStrumTime[c] = gf.animationNotes[c][0];
-                resetJohn(500, 200 + FlxG.random.int(50, 100), 2 > gf.animationNotes[c][1], c);
-                trace("make johgf");
-            }
-        }
-    }
-    */
+    
 }
-var johnSpeeds = [];
-var johnGoingRight = [];
-var johnStrumTime = [];
-var johnEndingOffset = [];
-function makeJohn(x, y) {
-    var john = new FlxSprite(x,  y);
-    john.frames = FlxAtlasFrames.fromSparrow(hscriptPath + 'tankmanKilled1.png', hscriptPath + 'tankmanKilled1.xml');
-    john.antialiasing = true;
-    john.animation.addByPrefix("run", "tankman running", 24, true);
-    john.animation.addByPrefix("shot", "John Shot" + FlxG.random.int(1,2), 24, false);
-    john.animation.play("run");
-    john.animation.curAnim.curFrame = FlxG.random.int(0, john.animation.curAnim.frames.length - 1);
-    john.updateHitbox();
-    john.setGraphicSize(Std.int(0.8 * john.width));
-    john.updateHitbox();
-    johnSpeeds.push(0.7);
-    johns.add(john);
-    johnGoingRight.push(false);
-    johnStrumTime.push(0);
-    johnEndingOffset.push(0);
-    return john;
 
-}
-function resetJohn(x, y, goingRight, johnNumber) {
-    johns.members[johnNumber].x = x;
-    johns.members[johnNumber].y = y;
-    johnGoingRight[johnNumber] = goingRight;
-    johnEndingOffset[johnNumber] = FlxG.random.float(50, 200);
-    johnSpeeds = FlxG.random.float(0.6, 1);
-    johns.members[johnNumber].flipX = johnGoingRight[johnNumber];
-}
 
 
 function beatHit(beat)
@@ -186,7 +173,7 @@ function beatHit(beat)
     losers.forEach(function (spr) {
         spr.animation.play("idle", true);
     });
-    watchtower.animation.play("idle", true);
+    tower.animation.play("idle", true);
 }
 var tankAngle = FlxG.random.int(-90, 45);
 var tankSpeed = FlxG.random.float(5, 7);
@@ -202,43 +189,7 @@ function moveTank() {
 function update(elapsed)
 {
     moveTank();
-    /*
-    for (johnNum in 0...johns.members.length) {
-        var spr = johns.members[johnNum];
-		if (spr.x >= 1.2 * FlxG.width || spr.x <= -0.5 * FlxG.width)
-		{
-			spr.visible = false;
-		}
-		else
-		{
-			spr.visible = true;
-		}
-		if (spr.animation.curAnim.name == "run")
-		{
-			var placeholder = 0.74 * FlxG.width + johnEndingOffset[johnNum];
-			if (johnGoingRight[johnNum])
-			{
-				placeholder = 0.02 * FlxG.width - johnEndingOffset[johnNum];
-				spr.x = placeholder + (Conductor.songPosition - johnStrumTime[johnNum]) * johnSpeed[johnNum];
-			}
-			else
-			{
-				spr.x = placeholder = (Conductor.songPosition - johnStrumTime[johnNum]) * johnSpeed[johnNum];
-			}
-		}
-		if (Conductor.songPosition > johnStrumTime[johnNum])
-		{
-			spr.animation.play("shot");
-			if (johnGoingRight[johnNum])
-			{
-				spr.offset.y = 200;
-				spr.offset.x = 300;
-			}
-		}
-		if (spr.animation.curAnim.name == "shot" && spr.animation.curAnim.finished)
-			spr.kill();
-		trace("jogn");
-    } */
+
 }
 
 function stepHit(step)

@@ -14,7 +14,7 @@ function start(song) {
     stagecurtains.scrollFactor.set(1.3, 1.3);
     stagecurtains.updateHitbox();
     stageCurtains.antialiasing = true;
-    addSprite(stageCurtains, BEHIND_ALL)
+    addSprite(stageCurtains, BEHIND_ALL);
     setDefaultZoom(0.9);
 }
 
