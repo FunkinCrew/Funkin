@@ -132,6 +132,7 @@ function start(song) {
         gf.x -= 50;
     }
     setDefaultZoom(0.9);
+    /*
     if (gf.like == "pico-speaker") {
         var john = makeJohn(20, 500);
         johnStrumTime[0] = gf.animationNotes[0][0];
@@ -145,6 +146,7 @@ function start(song) {
             }
         }
     }
+    */
 }
 var johnSpeeds = [];
 var johnGoingRight = [];
@@ -200,6 +202,7 @@ function moveTank() {
 function update(elapsed)
 {
     moveTank();
+    /*
     for (johnNum in 0...johns.members.length) {
         var spr = johns.members[johnNum];
 		if (spr.x >= 1.2 * FlxG.width || spr.x <= -0.5 * FlxG.width)
@@ -235,7 +238,7 @@ function update(elapsed)
 		if (spr.animation.curAnim.name == "shot" && spr.animation.curAnim.finished)
 			spr.kill();
 		trace("jogn");
-    }
+    } */
 }
 
 function stepHit(step)

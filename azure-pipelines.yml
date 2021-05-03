@@ -29,6 +29,8 @@ jobs:
           haxelib install uniontypes
           haxelib install hxjsonast
           haxelib install linc_luajit
+          haxelib install hscript
+          haxelib git hscript-ex https://github.com/ianharrigan/hscript-ex
           haxelib list
         displayName: 'Install haxelibs'
       - script: haxelib run lime build linux
@@ -61,6 +63,8 @@ jobs:
           haxelib install uniontypes
           haxelib install hxjsonast
           haxelib install linc_luajit
+          haxelib install hscript
+          haxelib git hscript-ex https://github.com/ianharrigan/hscript-ex
           haxelib list
         displayName: 'Install haxelibs'
       - script: haxelib run lime build mac
@@ -96,6 +100,8 @@ jobs:
           haxelib install uniontypes
           haxelib install hxjsonast
           haxelib install linc_luajit
+          haxelib install hscript
+          haxelib git hscript-ex https://github.com/ianharrigan/hscript-ex
           haxelib list
         displayName: 'Install haxelibs'
       - script: haxelib run lime build cpp
