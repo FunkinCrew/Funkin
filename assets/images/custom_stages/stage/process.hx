@@ -13,8 +13,8 @@ function start(song) {
     stagecurtains.setGraphicSize(Std.int(stageFront.width * 0.9));
     stagecurtains.scrollFactor.set(1.3, 1.3);
     stagecurtains.updateHitbox();
-    stageCurtains.antialiasing = true;
-    addSprite(stageCurtains, BEHIND_ALL);
+    stagecurtains.antialiasing = true;
+    addSprite(stagecurtains, BEHIND_ALL);
     setDefaultZoom(0.9);
 }
 

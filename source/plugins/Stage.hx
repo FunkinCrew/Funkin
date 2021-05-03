@@ -2,11 +2,12 @@ package plugins;
 
 import flixel.group.FlxSpriteGroup;
 import PlayState.DisplayLayer;
+import flixel.FlxBasic;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.FlxSprite;
 import flixel.FlxCamera;
 // A plugin helper
-class Stage extends FlxSpriteGroup {
+class Stage {
     public var showOnlyStrums:Bool = false;
     public var curStep:Int = 0;
     public var curBeat:Int = 0;
@@ -18,8 +19,10 @@ class Stage extends FlxSpriteGroup {
     private var camHUD:FlxCamera;
     public var mustHit:Bool = false;
     public var hscriptPath:String = "";
+    public var foregroundGroup:FlxTypedGroup<FlxBasic>;
+    public var backgroundGroup:FlxTypedGroup<FlxBasic>;
     public function new (bf:Character, dad:Character, gf:Character, p1Strums:FlxTypedGroup<FlxSprite>, p2Strums:FlxTypedGroup<FlxSprite>, hud:FlxCamera, path:String) {
-        super();
+       
         boyfriend = bf;
         this.dad = dad;
         this.gf = gf;

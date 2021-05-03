@@ -7,6 +7,7 @@ function start(song) {
     bg.setGraphicSize(Std.int(6*bg.width));
     bg.updateHitbox();
 	addSprite(bg, BEHIND_ALL);
+    trace(": )");
     var school = new FlxSprite(-200).loadGraphic(hscriptPath + 'weebSchool.png');
     school.setGraphicSize(widShit);
     school.updateHitbox();
@@ -21,9 +22,12 @@ function start(song) {
     treesBack.setGraphicSize(Std.int(widShit * 0.8));
     treesBack.updateHitbox();
     treesBack.scrollFactor.set(0.9, 0.9);
+    trace(": (");
     addSprite(treesBack, BEHIND_ALL);
     var trees = new FlxSprite(-580, -800);
-    var tex = FlxAtlasFrames.fromSpritesheetPacker(hscriptPath + 'weebTrees.png', hscriptPath + 'weebTrees.txt');
+    trace(": /");
+    var tex = FlxAtlasFrames.fromSpriteSheetPacker(hscriptPath + 'weebTrees.png', hscriptPath + 'weebTrees.txt');
+    trace(": O");
     trees.frames = tex;
     trees.animation.add("treeLoop", makeRangeArray(0, 18), 12, true);
     trees.animation.play("treeLoop");
@@ -31,6 +35,7 @@ function start(song) {
     trees.updateHitbox();
     trees.scrollFactor.set(0.85, 0.85);
     addSprite(trees, BEHIND_ALL);
+    trace(":)");
     var petals = new FlxSprite(-200, -40);
     var petaltex = FlxAtlasFrames.fromSparrow(hscriptPath + 'petals.png', hscriptPath + 'petals.xml');
     petals.frames = petaltex;
@@ -39,16 +44,21 @@ function start(song) {
     petals.scrollFactor.set(0.85, 0.85);
     addSprite(petals, BEHIND_ALL);
     gorls = new FlxSprite(-100, 190);
-    var gorlstex = FlxAtlasFrames.fromSparrow(hscriptPath + 'bgFreaks.png', hscriptPath + 'bgFreaks.xml');
-    gorls.frames = gorlstex;
-    if (SONG.isMoody) {
-        gorls.animation.addByIndices("danceLeft","BG fangirls dissuaded", makeRangeArray(0,14),"",24,false);
-		gorls.animation.addByIndices("danceRight", "BG fangirls dissuaded", makeRangeArray(15, 30), "", 24, false);
-    } else {
-		gorls.animation.addByIndices("danceLeft", "BG girls group", makeRangeArray(0, 14), "", 24, false);
-		gorls.animation.addByIndices("danceRight", "BG girls group", makeRangeArray(15, 30), "", 24, false);
+	trace(gorls.frames = FlxAtlasFrames.fromSparrow(hscriptPath + 'bgFreaks.png', hscriptPath + 'bgFreaks.xml'));
+    trace(songData.isMoody);
+	gorls.animation.addByIndices("danceLeft", "BG girls group", makeRangeArray(14), "", 24, false);
+	gorls.animation.addByIndices("danceRight", "BG girls group", makeRangeArray(30, 15), "", 24, false);
+    trace(gorls.animation);
+    if (songData.isMoody) {
+        gorls.animation.addByIndices("danceLeft","BG fangirls dissuaded", makeRangeArray(14),"",24,false);
+		gorls.animation.addByIndices("danceRight", "BG fangirls dissuaded", makeRangeArray(30, 15), "", 24, false);
     }
+    gorls.setGraphicSize(Std.int(6 * gorls.width));
+    gorls.updateHitbox();
     gorls.animation.play("danceLeft",true);
+    gorls.antialiasing = false;
+    addSprite(gorls, BEHIND_ALL);
+    trace("; )");
     getHaxeActor("bf").x += 200;
     getHaxeActor("bf").y += 220;
     getHaxeActor('gf').x += 180;
