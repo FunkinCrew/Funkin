@@ -51,7 +51,7 @@
       <section id="content">
 
       {% if page.name == "index.md" %}
-      {% include_relative ../README.md %}
+      <!-- yay i'm NOT stupid -->
       {% else %}
       {{ content }}
       {% endif %}
@@ -65,7 +65,7 @@
       </footer>
     </div>
     <script src="{{ "/assets/js/scale.fix.js" | relative_url }}"></script>
-    {% if page.name == "your_mom.md" %}
+    {% if page.name == "index.md" %}
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
       function httpGet(theUrl)
@@ -75,7 +75,7 @@
           xmlHttp.send( null );
           return xmlHttp.responseText;
       }
-      document.getElementById('content').innerHTML = marked(httpGet("{{ site.replace_index_with }}"));
+      document.getElementById('content').innerHTML = marked(httpGet("https://thingproxy.freeboard.io/fetch/{{ site.replace_index_with }}"));
     </script>
     {% endif %}
     {% if site.google_analytics %}
