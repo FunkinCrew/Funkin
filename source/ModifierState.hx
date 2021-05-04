@@ -74,7 +74,7 @@ class ModifierState extends MusicBeatState
 				{name: "Drunk Notes", value: false, conflicts: [15], multi: 0.5, desc:"Notes be like my dad after a long day at work"},
 				{name: "Stuck in a loop", value: false, conflicts: [2], multi: 0, desc:"Insta-replay the level after you die! (Like in the Prototype!)"},
 				{name:"Duo Mode", value: false, conflicts: [0,1,2,3,4,5,6,7,8,9,20,21], multi: 0,times:true, desc:"Boogie with a friend (Friend not required)"},
-				{name: "Opponent Play", value: false, conflicts: [19,21],multi:0, desc:"Play as the enemy that you wanted to beat up"},
+				{name: "Opponent Play", value: false, conflicts: [19,21],multi:0, desc:"Play as the enemy that you wanted to beat up Boyfriend!"},
 				{name: "Demo Mode", value: false, conflicts: [19,20,0,1,2,3,4,5,6,7,8,9],multi:0,times:true, desc:"Let the game play itself! (You don't need FNFBot lol)"},
 				{name: "Chart", value: false, conflicts: [], multi: 1, times:true, desc:"Open the Debug Menu without Pressing 7"},
 				{name: "Char Select", value: false, conflicts: [], multi: 1, times:true, desc:"You can just select some custom characters"},
