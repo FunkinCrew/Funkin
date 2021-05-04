@@ -36,7 +36,7 @@ build_script:
   - haxelib run lime build mac
 
 after_build:
-  - gtar -cvf funkin-ke.tar -C /Users/appveyor/projects/kade-engine-macos/export/release/mac/bin .
+  - gtar -cvf funkin-ke.tar -C /Users/appveyor/projects/kade-engine-macos/export/release/macos/bin .
 
 artifacts:
 - path: funkin-ke.tar
