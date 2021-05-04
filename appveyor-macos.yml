@@ -9,6 +9,7 @@ install:
   - cd /Users/appveyor
   - brew install neko
   - brew install gnu-tar
+  - brew install wget
   - wget "https://github.com/HaxeFoundation/haxe/releases/download/4.1.5/haxe-4.1.5-osx.tar.gz"
   - mkdir $HAXE_INSTALLDIR
   - tar -xf haxe-4.1.5-osx.tar.gz -C $HAXE_INSTALLDIR
