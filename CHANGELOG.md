@@ -4,147 +4,152 @@ All notable changes will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.4.2]
 ### Changed
-- ASSET LOADING OVERHAUL, WAY FASTER LOAD TIMES ON WEB!!! (THANKS TO GEOKURELI WOKE KING)
-### Fixed
-- That one random note on Bopeebo
+- Trails on notes are more consistent
+- Title now shows "Friday Night Funkin' Kade Engine"
+- **THIS UPDATE WILL RESET YOUR SAVE FOR KADE ENGINE**, so you gotta redo all of ur settings.
 
-## [0.2.7.1] - 2021-02-14
 ### Added
-- Easter eggs
-- readme's in desktop versions of the game
+- Lua Modchart support [(documentation located here)](https://github.com/KadeDev/Kade-Engine/blob/master/ModCharts.md)
+- New option called watermarks which removes all watermarks from Kade Engine
+- Chart spesfic offsets
+
+## [1.4.1]
+### Fixed
+- Rating's and Accuracy calculation (they actually work now)
+- Deleting notes
+### Added
+- Accuracy mod toggle (complex = ms based, accurate = normal rating based. ex sick = 1, good = 0.75, bad = 0.50, shit = 0.25)
+- Judgement Selector (safe frames)
+
+## [1.4.1 Nightly2]
+### Fixed
+- Scroll Speed messing up hold note parts
+- Added caps for Safe Frames (so you couldn't break the game)
 ### Changed
+- Changed the fundamentals of how Ratings and other timing-related things like MS Acc are calculated.
+- and of course. hit window update
 
-- New icons, old one was placeholder since October woops!
-- Made the transitions between the story mode levels more seamless.
-- Offset of the Newgrounds logo on boot screen.
-- Made the changelog txt so it can be opened easier by normal people who don't have a markdown reader (most normal people);
+## [1.4.1 Nightly1]
 ### Fixed
-- Fixed crashes on Week 6 story mode dialogue if spam too fast ([Thanks to Lotusotho for the Pull Request!](https://github.com/ninjamuffin99/Funkin/pull/357))
-- Should show intro credits on desktop versions of the game more consistently
-- Layering on Week 4 songs with GF and the LIMO LOL HOW TF I MISS THIS
-- Chart's and chart editor now support changeBPM, GOD BLESS MTH FOR THIS ONE I BEEN STRUGGLIN WIT THAT SINCE OCTOBER LMAO ([GOD BLESS MTH](https://github.com/ninjamuffin99/Funkin/pull/382))
-- Fixed sustain note trails ALSO THANKS TO MTH U A REAL ONE ([MTH VERY POWERFUL](https://github.com/ninjamuffin99/Funkin/pull/415))
-- Antialiasing on the skyscraper lights
-
-## [0.2.7] - 2021-02-02
-### Added
-- PIXEL DAY UPDATE LOL 1 WEEK LATER
-- 3 New songs by Kawaisprite!
-- COOL CUTSCENES
-- WEEK 6 YOYOYOYOY
-- Swaggy pixel art by Moawling!
+- Notes can be deleted
+- Hit window updates
 ### Changed
-- Made it so you lose sliiiightly more health when you miss a note.
-- Removed the default HaxeFlixel pause screen when the game window loses focus, can get screenshots of the game easier hehehe
-### Fixed
-- Idle animation bug with BF christmas and BF hair blow sprites ([Thanks to Injourn for the Pull Request!](https://github.com/ninjamuffin99/Funkin/pull/237))
-
-## [0.2.6] - 2021-01-20
+- FPS Cap can now go faster or slower depending on whether you are holding shift or not.
 ### Added
-- 3 NEW CHRISTMAS SONGS. 2 BY KAWAISPRITE, 1 BY BASSETFILMS!!!!! BF WITH DRIP! SANTA HANGIN OUT!
-- Enemy icons change when they you are winning a lot ([Thanks to pahaze for the Pull Request!](https://github.com/ninjamuffin99/Funkin/pull/138))
-- Holding CTRL in charting editor places notes on both sides
-- Q and E changes sustain lengths in note editor
-- Other charting editor workflow improvements
-- More hair physics
-- Heads appear at top of chart editor to help show which side ur charting for
+- Safe Frames (the ability to change your hit windows)
+
+## [1.4]
+### Edited
+- offsets work. fucking contributors
 ### Changed
-- Tweaked code relating to inputs, hopefully making notes that are close together more fair to hit
-### Removed
-- Removed APE
-### Fixed
-- Maybe fixed double notes / jump notes. Need to tweak it for balance, but should open things up for cooler charts in the future.
-- Old Verison popup screen weirdness ([Thanks to gedehari for the Pull Request!](https://github.com/ninjamuffin99/Funkin/pull/155))
-- Song no longer loops when finishing the song. ([Thanks Injourn for the Pull Request!](https://github.com/ninjamuffin99/Funkin/pull/132))
-- Screen wipe being cut off in the limo/mom stage. Should fill the whole screen now.
-- Boyfriend animations on hold notes, and pressing on repeating notes should behave differently
+- Updated Judgements to contrast better with each other.
+- Changed Auto Offset to use the tutorial chart instead of a custom one
+- The file in data called "freeplaySonglist.txt" is now fully used.
+- Song Position now works a lot better
 
-## [0.2.5] - 2020-12-27
+## [1.3.1 Nightly3]
 ### Added
-- MOMMY GF, 3 NEW ASS SONGS BY KAWAISPRITE, NEW ART BY PHANTOMARCADE,WOOOOOOAH!!!!
-- Different icons depending on which character you are against, art by EVILSK8R!!
-- Autosave to chart editor
-- Clear section button to note editor
-- Swap button in note editor
-- a new boot text or two
-- automatic check for when you're on an old version of the game! 
+- Auto Offset (Kinda works
+- CTRL-Z Support for the charter
+- NPS Display
+### Fixed
+- You can delete notes
+- FPS No longer resets on changing screens
+- Some of the Rankings didn't work how they were supposed to, now they work.
+
+## [1.3.1 Nightly2]
+### Added
+- Option Categories
+- FPS Cap Option
+- FPS Rainbow Toggle
+- Scroll Speed Option
 ### Changed
-- Made Spookeez on Normal easier.
-- Mouse is now visible in note editor
+- Offset now allows you to hold down to change values
+- Rating hit windows update
 ### Fixed
-- Crash when playing Week 3 and then playing a non-week 3 song
-- When pausing music at the start, it doesn't continue the song anyways. ([shoutouts gedehari for the Pull Request!](https://github.com/ninjamuffin99/Funkin/pull/48))
-- IDK i think backing out of song menu should play main menu songs again hehe ([shoutouts gedehari for the Pull Request!](https://github.com/ninjamuffin99/Funkin/pull/48))
+- Tails being FUCKED
 
-## [0.2.4] - 2020-12-11
+## [1.3.1 Nightly]
 ### Added
-- 3 NEW SONGS BY KAWAISPRITE. Pico, Philly, and Blammed.
-- NEW CHARACTER, PICO. Based off the classic Flash game "Pico's School" by Tom Fulp
-- NEW LEVEL WOW! PHILLY BABEEEE
+- Gameplay Customization
+- The ability to change rating text's position
+### Fixed
+- You can now get a shit
+- Downscroll arrows are 100% fixed.
+### Redone
+- The rating system has been completely rewritten.
+
+## [1.3.1]
+### Added
+- Timing text in ms
 ### Changed
-- Made it less punishing to ATTEMPT to hit a note and miss, rather than let it pass you
+- Most UI elements now work based off the camera instead of real-world space (I.E combo, watermark, song bar, etc)
+- New Accuracy calculation (based off of Wife3 from Etterna a Stepmania Mod)
 ### Fixed
-- Song desync of you paused and unpaused frequently ([shoutouts SonicBlam](https://github.com/ninjamuffin99/Funkin/issues/37))
-- Animation offsets when GF is scared
+- Deleting notes
+- Misses due to the other player not hitting notes and thus it makes you miss because there wasn't a check. Now there is.
+- Downscroll tail ends being upside down.
 
-## [0.2.3] - 2020-12-04
+## [1.3]
 ### Added
-- More intro texts
+- Wife3 Accuracy System
+- Wife3 Ranking (Letter Grades/FC Conditions)
+- A Reset chart button on the song tab in the debug menu.
+- Pressing ALT when the note tab is open in the debug menu will allow you to write notes (by playing them, aka pressing DFJK/WASD/Arrow Keys) Press ALT again to toggle off.
+- Etterna Mode (by default this is off) Etterna Mode basicily puts all of the hit timings to Judgement 4. Which is harsher then the base game.
+### Tweaked
+- In the section tab (where it normally says 16) this now works. This is the sections length in steps. It allows you to chart 1/16,1/24,1/32 notes. etc etc.
+- The BPM stepper now allows you to go into decimals (ALLOWS FOR DECIMAL BPMS!!!!)
 ### Fixed
-- Exploit where you could potentially give yourself a high score via the debug menu
-- Issue/bug where you could spam the confirm button on the story menu ([shoutouts lotusotho for the CODE contribution/pull request!](https://github.com/ninjamuffin99/Funkin/pull/19))
-- Glitch where if you never would lose health if you missed a note on a fast song (shoutouts [MrDulfin](https://github.com/ninjamuffin99/Funkin/issues/10), [HotSauceBurritos](https://github.com/ninjamuffin99/Funkin/issues/13) and [LobsterMango](https://lobstermango.newgrounds.com))
-- Fixed tiny note bleed over thingies (shoutouts [lotusotho](https://github.com/ninjamuffin99/Funkin/pull/24))
+- Song Progress bar no longer clips into the strumline on upscroll on non-pixel charts.
+- Deleting notes now works
+- Kade Engine Watermark not showing on all charts.
 
-## [0.2.2] - 2020-11-20
+## [1.2.2]
 ### Added
-- Music playing on the freeplay menu.
-- UI sounds on freeplay menu
-- Score now shows mid-song.
-- Menu on pause screen! Can resume, and restart song, or go back to main menu.
-- New music made for pause menu!
+- A optional bar at the top (or bottom if you have downscroll) that shows the current progress of the song. By default this is turned off.
+- Discord Rich Presence (including accuracy, misses, and score)
+### Tweaked
+- How saving is handled and general code cleanup.
 
-### Changed
-- Moved all the intro texts to its own txt file instead of being hardcoded, this allows for much easier customization. File is in the data folder, called "introText.txt", follow the format in there and you're probably good to go!
+## [1.2.1]
 ### Fixed
-- Fixed soft lock when pausing on song finish ([shoutouts gedehari](https://github.com/ninjamuffin99/Funkin/issues/15))
-- Think I fixed issue that led to in-game scores being off by 2 ([shoutouts Mike](https://github.com/ninjamuffin99/Funkin/issues/4))
-- Should have fixed the 1 frame note appearance thing. ([shoutouts Mike](https://github.com/ninjamuffin99/Funkin/issues/6))
-- Cleaned up some charting on South on hard mode
-- Fixed some animation timings, should feel both better to play, and watch. (shoutouts Dave/Ivan lol)
-- Animation issue where GF would freak out on the title screen if you returned to it([shoutouts MultiXIII](https://github.com/ninjamuffin99/Funkin/issues/12)).
-
-## [0.2.1.2] - 2020-11-06
-### Fixed
-- Story mode scores not properly resetting, leading to VERY inflated highscores on the leaderboards. This also requires me to clear the scores that are on the leaderboard right now, sorry!
-- Difficulty on storymode and in freeplay scores
-- Hard mode difficulty on campaign levels have been fixed
-
-## [0.2.1.1] - 2020-11-06
-### Fixed
-- Week 2 not unlocking properly
-
-## [0.2.1] - 2020-11-06
+- Accuracy toggle now works
+### Tweaks
+- HP Drain Tweaks
 ### Added
-- Scores to the freeplay menu
-- A few new intro boot messages.
-- Lightning effect in Spooky stages
-- Campaign scores, can now compete on scoreboards for campaign!
-- Can now change difficulties in Freeplay mode
+- Anti-Mash
 
-### Changed
-- Balanced out Normal mode for the harder songs(Dadbattle and Spookeez, not South yet). Should be much easier all around.
-- Put tutorial in it's own 'week', so that if you want to play week 1, you don't have to play the tutorial.
-
+## [1.2]
+### Minor fixes
+- Combo can now go above 999
+- Accuracy display is now togglable
 ### Fixed
-- One of the charting bits on South and Spookeez during the intro.
+- Controls now save and reload upon startup instead of just not loading.
+- Random misses no longer happen.
+- REMOVED THE RESET KEYBIND (POG)
 
-## [0.2.0] - 2020-11-01
-### Added
-- Uhh Newgrounds release lolol I always lose track of shit.
+## [1.1.3]
+quick patch
+### Fixed
+- random misses when not missing
+- monster's icon in freeplay
 
-## [0.1.0] - 2020-10-05
-### Added
-- Uh, everything. This the game's initial gamejam release. We put it out
+## [1.1.2]
+ok i lied another release
+### Fixed
+- Misses not being counted
+- Replays just not at all attempting to work
+- Camera Zoom being WAYY too fast or slow
+- Healthbar in Downscroll not moving
+
+## [1.1.1]
+Ok this should be the last 1.1.x release for awhile lol. My bad.
+
+## [1.1]
+I'm really dumb lol
+
+## [1.0]
+Initial release poggers!

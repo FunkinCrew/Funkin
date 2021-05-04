@@ -55,6 +55,16 @@ class Paths
 		return getPath(file, type, library);
 	}
 
+	inline static public function lua(key:String,?library:String)
+	{
+		return getPath('data/$key.lua', TEXT, library);
+	}
+
+	inline static public function luaImage(key:String, ?library:String)
+	{
+		return getPath('data/$key.png', IMAGE, library);
+	}
+
 	inline static public function txt(key:String, ?library:String)
 	{
 		return getPath('data/$key.txt', TEXT, library);
