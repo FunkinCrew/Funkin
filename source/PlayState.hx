@@ -1347,7 +1347,7 @@ class PlayState extends MusicBeatState
 					dialogue = [':dad: The game tried to get a dialog file but couldn\'t find it. Please make sure there is a dialog file named "dialog.txt".'];
 				}
 		}
-		#if !windows
+		#if false
 		if (SONG.stage == 'spooky')
 		{
 			curStage = "spooky";

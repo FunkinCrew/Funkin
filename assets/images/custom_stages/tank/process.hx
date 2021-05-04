@@ -147,7 +147,7 @@ function start(song) {
 		getHaxeActor("gf").y -= 200;
 		getHaxeActor("gf").x -= 50;
 		trace("finna instance");
-		var john = instancePluginClass("RunningTankman", [20, 500, hscriptPath]);
+		var john = new RunningTankman(20, 500, hscriptPath);
 		john.strumTime = gf.animationNotes[0][0];
 		john.resetShit(20, 600, true);
         johns.add(john);
@@ -155,7 +155,7 @@ function start(song) {
 		{
 			if (FlxG.random.float(0, 100) < 16)
 			{
-				var jahn = instancePluginClass("RunningTankman", [500, 20, hscriptPath]);
+				var jahn = new RunningTankman(500, 20, hscriptPath);
 				jahn.strumTime = gf.animationNotes[c + 1][0];
 				jahn.resetShit(500, 200 + FlxG.random.int(50, 100), 2 > gf.animationNotes[c + 1][1]);
                 johns.add(jahn);

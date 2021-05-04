@@ -172,6 +172,8 @@ class VictoryLoopState extends MusicBeatSubstate
 		FlxG.camera.scroll.set();
 		FlxG.camera.target = null;
 		FlxG.camera.follow(camFollow, LOCKON, 0.01);
+		FlxG.camera.x = camFollow.x;
+		FlxG.camera.y = camFollow.y;
 		bf.playAnim('idle');
 	}
 

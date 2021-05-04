@@ -6,11 +6,15 @@ function start(song) {
     bg.scrollFactor.set(0.1, 0.1);
     bg.antialiasing = true;
     addSprite(bg, BEHIND_ALL);
+    trace("poyo");
     var city = new FlxSprite(-10).loadGraphic(hscriptPath + 'city.png');
-    city.setGraphicSize(Std.int(stageFront.width * 0.85));
+    trace("woozy");
+    trace(":woozy-face:");
     city.scrollFactor.set(0.3, 0.3);
     city.antialiasing = true;
+    city.scale.set(0.85, 0.85);
     city.updateHitbox();
+    trace(":POG:");
     addSprite(city, BEHIND_ALL);
     lights = new FlxGroup();
     for (i in 0...5) {
@@ -20,6 +24,7 @@ function start(song) {
         light.visible = false;
         light.antialiasing = true;
         light.scrollFactor.set(0.3,0.3);
+        lights.add(light);
     }
     addSprite(lights, BEHIND_ALL);
     var streetBehind = new FlxSprite(-40, 50).loadGraphic(hscriptPath + 'behindTrain.png');
@@ -50,7 +55,7 @@ function beatHit(beat)
     if (beat % 4 == 0) {
         lights.forEach(function(spr) {
             spr.visible = false;
-        })
+        });
         lights.members[FlxG.random.int(0,4)].visible = true;
     }
     if (beat % 8 == 4 && FlxG.random.bool(30) && !trainMoving && trainCooldown > 8) {
