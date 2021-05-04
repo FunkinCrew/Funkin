@@ -2362,7 +2362,7 @@ class PlayState extends MusicBeatState
 				customImage = FNFAssets.getBitmapData('assets/images/custom_ui/ui_packs/'+SONG.uiType+'/NOTE_assets.png');
 				customXml = FNFAssets.getText('assets/images/custom_ui/ui_packs/'+SONG.uiType+'/NOTE_assets.xml');
 			} else {
-				customImage = FNFAssets.getBitmapData('assets/images/custom_ui/ui_packs/'+SONG.uiType+'/arrow-pixels.png');
+				customImage = FNFAssets.getBitmapData('assets/images/custom_ui/ui_packs/'+SONG.uiType+'/arrows-pixels.png');
 				arrowEndsImage = FNFAssets.getBitmapData('assets/images/custom_ui/ui_packs/'+SONG.uiType+'/arrowEnds.png');
 			}
 		}
