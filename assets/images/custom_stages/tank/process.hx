@@ -147,6 +147,7 @@ function start(song) {
 		getHaxeActor("gf").y -= 200;
 		getHaxeActor("gf").x -= 50;
 		trace("finna instance");
+        /*
 		var john = new RunningTankman(20, 500, hscriptPath);
 		john.strumTime = gf.animationNotes[0][0];
 		john.resetShit(20, 600, true);
@@ -161,7 +162,7 @@ function start(song) {
                 johns.add(jahn);
 				trace("make johgf");
 			}
-		}
+		}*/
     }
     
 }
