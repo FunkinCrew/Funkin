@@ -75,7 +75,7 @@
           xmlHttp.send( null );
           return xmlHttp.responseText;
       }
-      document.getElementById('content').innerHTML = marked(httpGet("https://thingproxy.freeboard.io/fetch/{{ site.replace_index_with }}"));
+      document.getElementById('content').innerHTML = marked(httpGet("http://www.whateverorigin.org/get?url={{ site.replace_index_with }}"));
     </script>
     {% endif %}
     {% if site.google_analytics %}
