@@ -172,7 +172,7 @@ class ModchartState
 		// lua objects or what ever
 		if (luaSprites.get(id) == null)
 		{
-			if (Std.is(id, String))
+			if (Std.parseInt(id) == null)
 				return Reflect.getProperty(PlayState.instance,id);
 			return PlayState.PlayState.strumLineNotes.members[Std.parseInt(id)];
 		}
