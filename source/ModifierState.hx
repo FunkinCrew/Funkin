@@ -48,7 +48,7 @@ class ModifierState extends MusicBeatState
 		multiTxt.text = "Multiplier: 1";
 		multiTxt.scrollFactor.set();
 		description = new FlxText(750, 150, 350, "", 90);
-		description.setFormat("assets/fonts/vcr.ttf", 40, FlxColor.WHITE, LEFT, OUTLINE, FlxColor.BLACK);
+		description.setFormat("assets/fonts/vcr.ttf", 32, FlxColor.WHITE, LEFT, OUTLINE, FlxColor.BLACK);
 		description.text = "Instantly fail when you don't get \"Sick\"";
 		description.scrollFactor.set();
 		// save between files
