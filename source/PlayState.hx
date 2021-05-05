@@ -1174,6 +1174,7 @@ class PlayState extends MusicBeatState
 		interp.variables.set("FlxTween", FlxTween);
 		interp.variables.set("Std", Std);
 		interp.variables.set("isInCutscene", function () return inCutscene);
+		interp.variables.set("MetroSprite", plugins.tools.MetroSprite);
 		trace("set vars");
 		// callbacks
 
