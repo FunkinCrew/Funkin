@@ -163,8 +163,10 @@ class MainMenuState extends MusicBeatState
 				{
 					selectedSomethin = true;
 					FlxG.sound.play(Paths.sound('confirmMenu'));
-
-					FlxFlicker.flicker(magenta, 1.1, 0.15, false);
+					
+					if(FlxG.save.data.flashing){
+						FlxFlicker.flicker(magenta, 1.1, 0.15, false);
+					}
 
 					menuItems.forEach(function(spr:FlxSprite)
 					{

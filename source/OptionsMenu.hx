@@ -22,26 +22,36 @@ class OptionsMenu extends MusicBeatState
 	var options:Array<OptionCatagory> = [
 		new OptionCatagory("Gameplay", [
 			new DFJKOption(controls),
+			new DownscrollOption("Change the layout of the strumline."),
 			new GhostTapOption("Ghost Tapping is when you tap a direction and it doesn't give you a miss."),
 			new Judgement("Customize your Hit Timings (LEFT or RIGHT)"),
 			#if desktop
 			new FPSCapOption("Cap your FPS (Left for -10, Right for +10. SHIFT to go faster)"),
 			#end
-			new ScrollSpeedOption("Change your scroll speed (Left for -0.1, right for +0.1. If its at 1, it will be chart dependent)"),
+			new ScrollSpeedOption("Change your scroll speed (Left for -0.1, right for +0.1. If it's at 1, it will be chart dependent)"),
 			new AccuracyDOption("Change how accuracy is calculated. (Accurate = Simple, Complex = Milisecond Based)"),
 			// new OffsetMenu("Get a note offset based off of your inputs!"),
 			new CustomizeGameplay("Drag'n'Drop Gameplay Modules around to your preference")
 		]),
 		new OptionCatagory("Appearance", [
-			new SongPositionOption("Show the songs current position (as a bar)"),
-			new DownscrollOption("Change the layout of the strumline."),
-			new DistractionsAndEffectsOption("Toggle stage distractions that can hinder your gameplay."),
 			#if desktop
-			new RainbowFPSOption("Make the FPS Counter Rainbow (Only works with the FPS Counter toggled on)"),
+			new DistractionsAndEffectsOption("Toggle stage distractions that can hinder your gameplay."),
+			new RainbowFPSOption("Make the FPS Counter Rainbow (Only works with the FPS Counter toggled on and Flashing Lights toggled off)")
+			#else
+			new DistractionsAndEffectsOption("Toggle stage distractions that can hinder your gameplay.")
 			#end
-			new AccuracyOption("Display accuracy information."),
-			new NPSDisplayOption("Shows your current Notes Per Second.")
 		]),
+
+		new OptionCatagory("Indicators, Notices, and Displays", [
+			new AccuracyOption("Display accuracy information."),
+			new NPSDisplayOption("Shows your current Notes Per Second."),
+			new SongPositionOption("Show the songs current position (as a bar)"),
+		]),
+
+		new OptionCatagory("Health and Safety", [
+			new FlashingLightsOption("Toggle flashing lights that can cause epileptic seizures and strain.")
+		]),
+		
 		
 		new OptionCatagory("Misc", [
 			#if desktop
