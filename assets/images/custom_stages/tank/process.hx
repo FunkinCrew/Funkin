@@ -52,7 +52,7 @@ function start(song) {
     smokeRight.antialiasing = true;
 	addSprite(smokeRight, BEHIND_ALL);
     trace(":hueh:");
-	tower = new FlxSprite(100, 50);
+	tower = new MetroSprite(100, 50, true);
     trace("WAH tower");
 	tower.frames = FlxAtlasFrames.fromSparrow(hscriptPath + 'tankWatchtower.png', hscriptPath + 'tankWatchtower.xml');
     trace("RED ALERT: ioajfha");
@@ -82,7 +82,7 @@ function start(song) {
     ground.antialiasing = true;
     addSprite(ground, BEHIND_ALL);
     losers = new FlxGroup();
-    var tank0 = new FlxSprite(-500, 650);
+    var tank0 = new MetroSprite(-500, 650, true);
     tank0.frames = FlxAtlasFrames.fromSparrow(hscriptPath + 'tank0.png', hscriptPath + 'tank0.xml');
     tank0.antialiasing = true;
     tank0.animation.addByPrefix("idle", "fg", 24, false);
@@ -90,7 +90,7 @@ function start(song) {
     tank0.animation.play("idle");
     losers.add(tank0);
 
-	var tank1 = new FlxSprite(-300, 750);
+	var tank1 = new MetroSprite(-300, 750, true);
 	tank1.frames = FlxAtlasFrames.fromSparrow(hscriptPath + 'tank1.png', hscriptPath + 'tank1.xml');
 	tank1.antialiasing = true;
 	tank1.animation.addByPrefix("idle", "fg", 24, false);
@@ -98,7 +98,7 @@ function start(song) {
 	tank1.animation.play("idle");
 	losers.add(tank1);
 
-	var tank2 = new FlxSprite(450, 940);
+	var tank2 = new MetroSprite(450, 940, true);
 	tank2.frames = FlxAtlasFrames.fromSparrow(hscriptPath + 'tank2.png', hscriptPath + 'tank2.xml');
 	tank2.antialiasing = true;
 	tank2.animation.addByPrefix("idle", "foreground", 24, false);
@@ -106,7 +106,7 @@ function start(song) {
 	tank2.animation.play("idle");
 	losers.add(tank2);
 
-	var tank4 = new FlxSprite(1300, 900);
+	var tank4 = new MetroSprite(1300, 900, true);
 	tank4.frames = FlxAtlasFrames.fromSparrow(hscriptPath + 'tank4.png', hscriptPath + 'tank4.xml');
 	tank4.antialiasing = true;
 	tank4.animation.addByPrefix("idle", "fg", 24, false);
@@ -114,7 +114,7 @@ function start(song) {
 	tank4.animation.play("idle");
 	losers.add(tank4);
 
-	var tank5 = new FlxSprite(1620, 700);
+	var tank5 = new MetroSprite(1620, 700, true);
 	tank5.frames = FlxAtlasFrames.fromSparrow(hscriptPath + 'tank5.png', hscriptPath + 'tank5.xml');
 	tank5.antialiasing = true;
 	tank5.animation.addByPrefix("idle", "fg", 24, false);
@@ -122,7 +122,7 @@ function start(song) {
 	tank5.animation.play("idle");
 	losers.add(tank5);
 
-	var tank3 = new FlxSprite(1300, 1200);
+	var tank3 = new MetroSprite(1300, 1200, true);
 	tank3.frames = FlxAtlasFrames.fromSparrow(hscriptPath + 'tank3.png', hscriptPath + 'tank3.xml');
 	tank3.antialiasing = true;
 	tank3.animation.addByPrefix("idle", "fg", 24, false);
@@ -172,9 +172,9 @@ function start(song) {
 function beatHit(beat)
 {
     losers.forEach(function (spr) {
-        spr.animation.play("idle", true);
+        spr.dance();
     });
-    tower.animation.play("idle", true);
+    tower.dance();
 }
 var tankAngle = FlxG.random.int(-90, 45);
 var tankSpeed = FlxG.random.float(5, 7);
