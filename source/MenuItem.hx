@@ -37,13 +37,14 @@ class MenuItem extends FlxSpriteGroup
 	{
 		super.update(elapsed);
 		y = FlxMath.lerp(y, (targetY * 120) + 480, 0.17 * (60 / FlxG.save.data.fpsCap));
-
-		if (isFlashing)
-			flashingInt += 1;
-
-		if (flashingInt % fakeFramerate >= Math.floor(fakeFramerate / 2))
-			week.color = 0xFF33ffff;
-		else
-			week.color = FlxColor.WHITE;
+		if(FlxG.save.data.flashing){
+			if (isFlashing)
+				flashingInt += 1;
+	
+			if (flashingInt % fakeFramerate >= Math.floor(fakeFramerate / 2))
+				week.color = 0xFF33ffff;
+			else
+				week.color = FlxColor.WHITE;
+		}
 	}
 }

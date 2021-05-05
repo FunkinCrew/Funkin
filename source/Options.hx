@@ -202,6 +202,26 @@ class DistractionsAndEffectsOption extends Option
 	}
 }
 
+class FlashingLightsOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+	public override function press():Bool
+	{
+		FlxG.save.data.flashing = !FlxG.save.data.flashing;
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Flashing Lights " + (!FlxG.save.data.flashing ? "off" : "on");
+	}
+}
+
 class Judgement extends Option
 {
 	
