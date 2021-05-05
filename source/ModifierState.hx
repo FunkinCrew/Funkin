@@ -47,8 +47,8 @@ class ModifierState extends MusicBeatState
 		multiTxt.setFormat("assets/fonts/vcr.ttf", 40, FlxColor.WHITE, RIGHT);
 		multiTxt.text = "Multiplier: 1";
 		multiTxt.scrollFactor.set();
-		description = new FlxText(500, FlxG.height - 50, 0, "", 150);
-		description.setFormat("assets/fonts/vcr.ttf", 40, FlxColor.WHITE, RIGHT, OUTLINE, FlxColor.BLACK);
+		description = new FlxText(750, 150, 350, "", 90);
+		description.setFormat("assets/fonts/vcr.ttf", 40, FlxColor.WHITE, LEFT, OUTLINE, FlxColor.BLACK);
 		description.text = "Instantly fail when you don't get \"Sick\"";
 		description.scrollFactor.set();
 		// save between files
@@ -57,11 +57,11 @@ class ModifierState extends MusicBeatState
 				{name: "Sick Mode", value: false, conflicts: [1,2,3,4,5,6,7,8,9,19,21], multi: 3, times: true, desc:"Instantly fail when you don't get 'Sick'"},
 				{name:"FC Mode", value: false, conflicts: [0,2,3,4,5,6,7,8,9,19,21], multi: 2, times: true, desc:"Fail when you miss a note"},
 				{name: "Practice Mode", value: false, conflicts: [0,1,18,19,21], multi: 0, times:true, desc:"You can't die while you're in practice! (Disables score.)"},
-				{name: "Health Gain Up", value: false, conflicts: [0,1,4,19,21], multi: -0.5, desc:"Raise your health gain a little"},
-				{name: "Health Gain Down", value: false, conflicts: [0,1,3,19,21], multi: 0.5, desc:"Lower your health gain a little."},
-			 	{name: "Health Loss Up", value: false, conflicts: [0,1,6,19,21], multi: 0.5, desc:"Raise your health loss a little."},
-			 	{name: "Health Loss Down", value: false, conflicts: [0,1,5,19,21], multi: -0.5, desc:"Lower your health loss a little."},
-				{name: "Sup Love", value: false, conflicts: [0,1,8,19], multi: -0.4, desc:"Who knew simping could be so healthy?"},
+				{name: "Health Gain \\^", value: false, conflicts: [0,1,4,19,21], multi: -0.5, desc:"Raise your health gain a little"},
+				{name: "Health Gain \\v", value: false, conflicts: [0,1,3,19,21], multi: 0.5, desc:"Lower your health gain a little."},
+			 	{name: "Health Loss \\^", value: false, conflicts: [0,1,6,19,21], multi: 0.5, desc:"Raise your health loss a little."},
+			 	{name: "Health Loss \\v", value: false, conflicts: [0,1,5,19,21], multi: -0.5, desc:"Lower your health loss a little."},
+				{name: "Sup. Love", value: false, conflicts: [0,1,8,19], multi: -0.4, desc:"Who knew simping could be so healthy?"},
 				{name: "Poison Fright", value: false, conflicts: [0,1,7,19,21], multi: 0.4,desc:"You are constantly losing health!"},
 				{name: "Fragile Funkin", value: false, conflicts: [0,1,19,21], multi: 1, desc:"Missed note makes you lose a lot of health. You wanna have a bad time?"},
 				{name: "Flipped Notes", value: false, conflicts: [15], multi: 0.5, desc:"Notes are flipped"},
@@ -74,8 +74,8 @@ class ModifierState extends MusicBeatState
 				{name: "Drunk Notes", value: false, conflicts: [15], multi: 0.5, desc:"Notes be like my dad after a long day at work"},
 				{name: "Stuck in a loop", value: false, conflicts: [2], multi: 0, desc:"Insta-replay the level after you die! (Like in the Prototype!)"},
 				{name:"Duo Mode", value: false, conflicts: [0,1,2,3,4,5,6,7,8,9,20,21], multi: 0,times:true, desc:"Boogie with a friend (Friend not required)"},
-				{name: "Opponent Play", value: false, conflicts: [19,21],multi:0, desc:"Play as the enemy that you wanted to beat up Boyfriend!"},
-				{name: "Demo Mode", value: false, conflicts: [19,20,0,1,2,3,4,5,6,7,8,9],multi:0,times:true, desc:"Let the game play itself! (You don't need FNFBot lol)"},
+				{name: "Oppnt. Play", value: false, conflicts: [19,21],multi:0, desc:"Play as the enemy that wanted to beat up Boyfriend!"},
+				{name: "Demo Mode", value: false, conflicts: [19,20,0,1,2,3,4,5,6,7,8,9],multi:0,times:true, desc:"Let the game play itself!"},
 				{name: "Chart", value: false, conflicts: [], multi: 1, times:true, desc:"Open the Debug Menu without Pressing 7"},
 				{name: "Char Select", value: false, conflicts: [], multi: 1, times:true, desc:"You can just select some custom characters"},
 				{name: "Play", value: false, conflicts: [], multi: 1, times:true, desc:"Start your own Funkin Adventure"}
@@ -151,8 +151,6 @@ class ModifierState extends MusicBeatState
 			}
 		}
 		description.text = modifiers[curSelected].desc;
-		description.x = FlxG.width - description.width - 50;
-		description.y = FlxG.height - description.height - 10;
 	}
 	function calculateMultiplier() {
 		scoreMultiplier = 1;
