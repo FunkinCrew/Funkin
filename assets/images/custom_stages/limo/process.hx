@@ -22,7 +22,7 @@ function start(song) {
     dancers = new FlxGroup();
 	var bootex = FlxAtlasFrames.fromSparrow(hscriptPath + 'limoDancer.png',hscriptPath + 'limoDancer.xml');
     for (i in 0...5) {
-        var boogie = new FlxSprite((370 * i) + 130, 80);
+        var boogie = new MetroSprite((370 * i) + 130, 80, false);
         boogie.frames = bootex;
         boogie.animation.addByIndices('danceLeft', 'bg dancer sketch PINK', makeRangeArray(15), "", 24, false);
         boogie.animation.addByIndices('danceRight', 'bg dancer sketch PINK', makeRangeArray(30,15), "", 24, false);
@@ -50,7 +50,6 @@ function start(song) {
 
 }
 
-var danceDir = false;
 var vroomVroomCanVroom = true;
 function resetVroomVroom() {
     fastcar.x = -12600;
@@ -67,16 +66,9 @@ function doVroomVroom() {
     });
 }
 function beatHit(beat) {
-    danceDir = !danceDir;
-    if (danceDir) {
-        for (member in dancers.members) {
-            member.animation.play('danceLeft');
-        }
-    } else {
-        for (member in dancers.members) {
-            member.animation.play('danceRight');
-        }
-    }
+    dancers.forEach(function (spr) {
+        spr.dance();
+    });
     if (FlxG.random.bool(10) && vroomVroomCanVroom) {
         doVroomVroom();
     }

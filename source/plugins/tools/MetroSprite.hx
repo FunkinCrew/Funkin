@@ -17,7 +17,7 @@ class MetroSprite extends FlxSprite {
         } else if (danceDir) {
             animation.play("danceRight", true);
         } else {
-            animation.play("danceLeft");
+            animation.play("danceLeft", true);
         }
     }
  }

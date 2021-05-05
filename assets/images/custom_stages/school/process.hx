@@ -43,7 +43,7 @@ function start(song) {
     petals.animation.play("leaves");
     petals.scrollFactor.set(0.85, 0.85);
     addSprite(petals, BEHIND_ALL);
-    gorls = new FlxSprite(-100, 190);
+    gorls = new MetroSprite(-100, 190,false);
 	trace(gorls.frames = FlxAtlasFrames.fromSparrow(hscriptPath + 'bgFreaks.png', hscriptPath + 'bgFreaks.xml'));
     trace(songData.isMoody);
 	gorls.animation.addByIndices("danceLeft", "BG girls group", makeRangeArray(14), "", 24, false);
@@ -70,12 +70,7 @@ function start(song) {
 var danceDir = false;
 function beatHit(beat)
 {
-    danceDir = !danceDir;
-    if (danceDir) {
-        gorls.animation.play("danceRight");
-    } else {
-        gorls.animation.play("danceLeft");
-    }
+    gorls.dance();
 }
 
 function update(elapsed)

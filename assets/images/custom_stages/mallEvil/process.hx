@@ -14,6 +14,9 @@ function start(song) {
     var snow = new FlxSprite(-200, 700).loadGraphic(hscriptPath + 'evilSnow.png');
     snow.antialiasing = true;
     addSprite(snow, BEHIND_ALL);
+    boyfriend.x += 320;
+
+    dad.y -=80;
 }
 
 

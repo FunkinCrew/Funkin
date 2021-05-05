@@ -821,14 +821,12 @@ class Character extends FlxSprite
 		}
 		if (like == "pico-speaker") {
 			if (0 < animationNotes.length && Conductor.songPosition > animationNotes[0][0]) {
-				trace("shoot anim " + animationNotes[0][1]);
 				var idkWhatThisISLol = 1;
 				if (2 <= animationNotes[0][1]) {
 					idkWhatThisISLol = 3;				
 				}
 
 				idkWhatThisISLol += FlxG.random.int(0, 1);
-				trace("shoot" + idkWhatThisISLol);
 				playAnim("shoot" + idkWhatThisISLol, true);
 				animationNotes.shift();
 				
