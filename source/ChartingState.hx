@@ -494,7 +494,7 @@ class ChartingState extends MusicBeatState
 			var label = check.getLabel().text;
 			switch (label)
 			{
-				case 'Must hit section':
+				case 'Camera Points to P1?':
 					_song.notes[curSection].mustHitSection = check.checked;
 				case 'Change BPM':
 					_song.notes[curSection].changeBPM = check.checked;
