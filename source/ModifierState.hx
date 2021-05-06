@@ -55,7 +55,7 @@ class ModifierState extends MusicBeatState
 		if (modifiers == null) {
 			modifiers = [
 				{name: "Sick Mode", value: false, conflicts: [1,2,3,4,5,6,7,8,9,19,21], multi: 3, times: true, desc:"Instantly fail when you don't get 'Sick'"},
-				{name:"FC Mode", value: false, conflicts: [0,2,3,4,5,6,7,8,9,19,21], multi: 2, times: true, desc:"Fail when you miss a note"},
+				{name:"FC Mode", value: false, conflicts: [0,2,3,4,5,6,7,8,9,19,21], multi: 2, times: true, desc:"Fail when you miss a note, Go for the Perfect!"},
 				{name: "Practice Mode", value: false, conflicts: [0,1,18,19,21], multi: 0, times:true, desc:"You can't die while you're in practice! (Disables score.)"},
 				{name: "Health Gain \\^", value: false, conflicts: [0,1,4,19,21], multi: -0.5, desc:"Raise your health gain a little"},
 				{name: "Health Gain \\v", value: false, conflicts: [0,1,3,19,21], multi: 0.5, desc:"Lower your health gain a little."},
