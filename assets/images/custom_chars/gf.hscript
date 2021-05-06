@@ -1,10 +1,7 @@
 trace(": )");
 // char is a Character
 function init(char) {
-    trace(": )");
-    var tex = FlxAtlasFrames.fromSparrow(hscriptPath + 'char.png', hscriptPath + 'char.xml');
-    trace(": )");
-    char.frames = tex;
+    char.frames = FlxAtlasFrames.fromSparrow(hscriptPath + 'char.png', hscriptPath + 'char.xml');
     char.animation.addByPrefix('cheer', 'GF Cheer', 24, false);
     char.animation.addByPrefix('singLEFT', 'GF left note', 24, false);
     char.animation.addByPrefix('singRIGHT', 'GF Right Note', 24, false);

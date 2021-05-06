@@ -639,7 +639,7 @@ class Character extends FlxSprite
 		{
 			flipX = !flipX;
 			// Doesn't flip for BF, since his are already in the right place???
-			if (!likeBf)
+			if (!likeBf && !isDie)
 			{
 				// var animArray
 				var oldRight = animation.getByName('singRIGHT').frames;
@@ -689,7 +689,7 @@ class Character extends FlxSprite
 		//if (!StringTools.contains(animJson, "firstDeath") && like != "bf-pixel") //supposed to fix note anim shit for bfs with unique jsons, currently broken
 		if (!beingControlled)
 		{
-			if (animation.curAnim.name.startsWith('sing'))
+			if (animation.curAnim != null && animation.curAnim.name.startsWith('sing'))
 			{
 				holdTimer += elapsed;
 			}
@@ -718,12 +718,12 @@ class Character extends FlxSprite
 				animationNotes.shift();
 				
 			}
-			if (animation.curAnim.finished)
+			if (animation.curAnim != null && animation.curAnim.finished)
 			{
 				playAnim(animation.curAnim.name, false, false, animation.curAnim.frames.length - 3);
 			}
 		}
-		if (animation.curAnim.name == 'hairFall' && animation.curAnim.finished)
+		if (animation.curAnim != null && animation.curAnim.name == 'hairFall' && animation.curAnim.finished)
 			playAnim('danceRight');
 		
 		callInterp("update", [elapsed, this]);

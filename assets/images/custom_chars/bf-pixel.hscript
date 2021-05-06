@@ -54,7 +54,7 @@ function init(char) {
         char.addOffset('deathConfirm', -37);
         char.playAnim('firstDeath');
         // pixel bullshit
-        char.setGraphicSize(Std.int(width * 6));
+        char.setGraphicSize(Std.int(char.width * 6));
         char.updateHitbox();
         char.antialiasing = false;
         char.flipX = true;

@@ -8,8 +8,8 @@ function init(char) {
     char.animation.addByPrefix('idle', 'Parent Christmas Idle', 24, false);
     char.animation.addByPrefix('singUP', 'Parent Up Note Dad', 24, false);
     char.animation.addByPrefix('singLEFT','Parent Left Note Dad', 24, false);
-        char.animation.addByPrefix('singRIGHT', 'Parent Right Note Dad', 24, false);
-    
+    char.animation.addByPrefix('singRIGHT', 'Parent Right Note Dad', 24, false);
+    trace("FUCAK");
     char.animation.addByPrefix('singDOWN', 'Parent Down Note Dad', 24, false);
     char.animation.addByPrefix('singUP-alt', 'Parent Up Note Mom', 24, false);
     char.animation.addByPrefix('singDOWN-alt', 'Parent Down Note Mom', 24, false);

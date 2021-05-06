@@ -9,6 +9,7 @@ typedef TOptions = {
     var skipModifierMenu:Bool;
     var alwaysDoCutscenes:Bool;
     var allowEditOptions:Bool;
+    var downscroll:Bool;
     var useSaveDataMenu:Bool;
     var preferredSave:Int;
 }

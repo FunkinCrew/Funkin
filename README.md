@@ -43,14 +43,15 @@ flixel-ui
 tjson
 json2object
 uniontypes
+hxcpp-debug-server
 ```
 
 So for each of those type `haxelib install [library]` so shit like `haxelib install hscript`
 
-You'll also need to install polymod. Do this with
+You'll also need to install hscript-ex. Do this with
 
 ```
-haxelib git polymod https://github.com/larsiusprime/polymod.git
+haxelib git hscript-ex https://github.com/ianharrigan/hscript-ex
 ```
 
 

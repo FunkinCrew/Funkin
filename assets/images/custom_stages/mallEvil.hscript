@@ -6,7 +6,7 @@ function start(song) {
     bg.setGraphicSize(Std.int(0.8 * bg.width));
     bg.updateHitbox();
     addSprite(bg, BEHIND_ALL);
-;
+
     var tree = new FlxSprite(300, -300).loadGraphic(hscriptPath + 'evilTree.png');
     tree.antialiasing = true;
     tree.scrollFactor.set(0.4, 0.4);

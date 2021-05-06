@@ -4,5 +4,6 @@
     "alwaysDoCutscenes": false,
     "allowEditOptions": true,
     "useSaveDataMenu": true, 
+    "downscroll": false,
     "preferredSave": 0
 }

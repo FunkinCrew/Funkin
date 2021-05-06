@@ -8,110 +8,127 @@
     "icons": [
       0,
       1,
-      24
+      2
     ]
   },
   "bf-car": {
     "like": "bf-car",
-    "icons": [0,1,24]
+    "icons": [
+      0,
+      1,
+      2
+    ]
   },
   "bf-christmas": {
-    "like": "bf-christmas",
-    "icons": [0,1,24]
+    "like": "bf-car",
+    "icons": [
+      0,
+      1,
+      2
+    ]
   },
   "bf-pixel": {
     "like": "bf-pixel",
-    "icons": [21,21,25]
+    "icons": [0,1,2]
   },
   "dad": {
     "like": "dad",
-    "icons": [12,13]
+    "icons": [0,0,1]
   },
   "gf-car": {
     "like": "gf-car",
-    "icons": [16,16]
+    "icons": [0,0,1]
   },
   "gf-pixel": {
     "like": "gf-pixel",
-    "icons": [16,16]
+    "icons": [0,0,1]
+  },
+  "gf-christmas": {
+    "like": "gf",
+    "icons": [
+      0,
+      0,
+      1
+    ]
   },
   "gf": {
     "like": "gf",
-    "icons": [16,16]
+    "icons": [0,0,1]
   },
   "templateMonster": {
     "like": "monster",
-    "icons": [19,20]
+    "icons": [0,1,2]
   },
   "monster": {
     "like": "newmonster",
-    "icons": [19,20]
+    "icons": [0,1,2]
   },
   "monster-christmas": {
     "like": "newmonster",
-    "icons": [19,20]
+    "icons": [0,1,2]
   },
   "parents-christmas": {
     "like": "parents",
-    "icons": [17,18]
+    "icons": [0,0,1]
   },
   "pico": {
     "like": "pico",
-    "icons": [4,5]
+    "icons": [0,1,2]
   },
   "senpai-angry": {
     "like": "senpai-angry",
-    "icons": [22,22]
+    "icons": [0,1,2]
   },
   "senpai": {
     "like": "senpai",
-    "icons": [22,22]
+    "icons": [0,1,2]
   },
   "spirit": {
     "like": "spirit",
-    "icons": [23,23]
+    "icons": [0,1,2]
   },
   "spooky": {
     "like": "spooky",
-    "icons": [2,3]
+    "icons": [0,1,2]
   },
   "mom": {
     "like": "mom",
-    "icons": [6,7]
+    "icons": [0,1,2]
+  },
+  "mom-car": {
+    "like": "mom",
+    "icons": [0,1,2]
   },
   "templateSenpai-hd": {
     "like": "senpai-hd",
-    "icons": [22,22]
+    "icons": [0,1,2]
   },
   "templateSenpaiAngry-hd": {
     "like": "senpai-angry-hd",
-    "icons": [22,22]
+    "icons": [0,1,2]
   },
   "templateSpirit-hd": {
     "like": "spirit-hd",
-    "icons": [23,23]
+    "icons": [0,1,2]
   },
   "tankman": {
     "like": "tankman",
-    "icons": [8,9]
+    "icons": [0,1,2]
   },
   "gf-tankmen": {
     "like": "gf-tankmen",
-    "icons": [
-      16,
-      16
-    ]
+    "icons": [0,0,1 ]
   },
   "pico-speaker": {
     "like": "pico-speaker",
     "icons": [
-      4, 5
+      0,1,2
     ]
   },
   "bf-holding-gf": {
     "like": "bf-holding-gf",
     "icons": [
-      0,1,24
+      0,1,2
     ]
   }
 }

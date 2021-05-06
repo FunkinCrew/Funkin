@@ -15,8 +15,8 @@ function init(char) {
     char.addOffset('idle',0);
     char.addOffset('singUP', 5, 37);
     char.addOffset('singRIGHT');
-    char.addOffset('singLEFT', 250, -23);
-    char.addOffset('singDOWN', 20, -160);
+    char.addOffset('singLEFT', 40);
+    char.addOffset('singDOWN', 14);
 
     char.playAnim('idle');
 

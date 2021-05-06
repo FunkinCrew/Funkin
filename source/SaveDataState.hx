@@ -43,6 +43,7 @@ class SaveDataState extends MusicBeatState
 						{name: "Always Show Cutscenes", value: false}, 
 						{name: "Skip Modifier Menu", value: false}, 
 						{name: "Skip Victory Screen", value: false},
+						{name: "Downscroll", value: false},
 						{name: "Sound Test...", value: false},
 						{name:"New Character...", value: false},
 						{name:"New Stage...", value:false},
@@ -57,6 +58,7 @@ class SaveDataState extends MusicBeatState
 		optionList[0].value = curOptions.alwaysDoCutscenes;
 		optionList[1].value = curOptions.skipModifierMenu;
 		optionList[2].value = curOptions.skipVictoryScreen;
+		optionList[3].value = curOptions.downscroll;
 		saves = new FlxTypedSpriteGroup<SaveFile>();
 		menuBG.color = 0xFF7194fc;
 		menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
@@ -285,6 +287,7 @@ class SaveDataState extends MusicBeatState
 			"skipVictoryScreen": optionList[2].value,
 			"skipModifierMenu": optionList[1].value,
 			"alwaysDoCutscenes": optionList[0].value,
+			"downscroll": optionList[3].value,
 			"useSaveDataMenu": true,
 			// just use whatever it is 
 			"allowEditOptions": OptionsHandler.options.allowEditOptions,
