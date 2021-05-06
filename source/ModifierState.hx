@@ -44,7 +44,7 @@ class ModifierState extends MusicBeatState
 		menuBG.screenCenter();
 		menuBG.antialiasing = true;
 		multiTxt = new FlxText(800, 60, 0, "", 200);
-		multiTxt.setFormat("assets/fonts/vcr.ttf", 40, FlxColor.WHITE, RIGHT);
+		multiTxt.setFormat("assets/fonts/vcr.ttf", 40, FlxColor.WHITE, RIGHT, OUTLINE, FlxColor.BLACK);
 		multiTxt.text = "Multiplier: 1";
 		multiTxt.scrollFactor.set();
 		description = new FlxText(750, 150, 350, "", 90);
