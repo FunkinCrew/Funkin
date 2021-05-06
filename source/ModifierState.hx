@@ -44,7 +44,7 @@ class ModifierState extends MusicBeatState
 		menuBG.screenCenter();
 		menuBG.antialiasing = true;
 		multiTxt = new FlxText(800, 60, 0, "", 200);
-		multiTxt.setFormat("assets/fonts/vcr.ttf", 40, FlxColor.WHITE, RIGHT);
+		multiTxt.setFormat("assets/fonts/vcr.ttf", 40, FlxColor.WHITE, RIGHT, OUTLINE, FlxColor.BLACK);
 		multiTxt.text = "Multiplier: 1";
 		multiTxt.scrollFactor.set();
 		description = new FlxText(750, 150, 350, "", 90);
@@ -55,8 +55,8 @@ class ModifierState extends MusicBeatState
 		if (modifiers == null) {
 			modifiers = [
 				{name: "Sick Mode", value: false, conflicts: [1,2,3,4,5,6,7,8,9,19,21], multi: 3, times: true, desc:"Instantly fail when you don't get 'Sick'"},
-				{name:"FC Mode", value: false, conflicts: [0,2,3,4,5,6,7,8,9,19,21], multi: 2, times: true, desc:"Fail when you miss a note"},
-				{name: "Practice Mode", value: false, conflicts: [0,1,18,19,21], multi: 0, times:true, desc:"You can't die while you're in practice! (Disables score.)"},
+				{name:"FC Mode", value: false, conflicts: [0,2,3,4,5,6,7,8,9,19,21], multi: 2, times: true, desc:"Fail when you miss a note, Go for the Perfect!"},
+				{name: "Practice Mode", value: false, conflicts: [0,1,18,19,21], multi: 0, times:true, desc:"You can't die while you're in practice! (DISABLES SCORE)"},
 				{name: "Health Gain \\^", value: false, conflicts: [0,1,4,19,21], multi: -0.5, desc:"Raise your health gain a little"},
 				{name: "Health Gain \\v", value: false, conflicts: [0,1,3,19,21], multi: 0.5, desc:"Lower your health gain a little."},
 			 	{name: "Health Loss \\^", value: false, conflicts: [0,1,6,19,21], multi: 0.5, desc:"Raise your health loss a little."},
@@ -69,11 +69,11 @@ class ModifierState extends MusicBeatState
 				{name: "Fast Notes", value: false, conflicts: [11,13], multi: 0.8, desc:"Notes gotta go fast!"},
 				{name: "Accel Notes", value: false, conflicts: [11,12], multi: 0.4, desc:"Notes get faster and faster"},
 				{name: "Vnsh Notes", value: false, conflicts: [15], multi: 0.5, desc:"Notes vanish when they get close to the strum line."},
-				{name: "Invs Notes", value: false, conflicts: [10,14,16], multi: 1.5, desc:"Notes are now invisible (Hard enough for you?)"},
+				{name: "Invs Notes", value: false, conflicts: [10,14,16], multi: 1.5, desc:"Notes are now invisible! Hard enough for you?"},
 				{name: "Snake Notes", value: false, conflicts: [15], multi: 0.5, desc:"Notes smoove across the screen"},
 				{name: "Drunk Notes", value: false, conflicts: [15], multi: 0.5, desc:"Notes be like my dad after a long day at work"},
-				{name: "Stuck in a loop", value: false, conflicts: [2], multi: 0, desc:"Insta-replay the level after you die! (Like in the Prototype!)"},
-				{name:"Duo Mode", value: false, conflicts: [0,1,2,3,4,5,6,7,8,9,20,21], multi: 0,times:true, desc:"Boogie with a friend (Friend not required)"},
+				{name: "Stuck in a loop", value: false, conflicts: [2], multi: 0, desc:"Insta-replay the level after you die!"},
+				{name:"Duo Mode", value: false, conflicts: [0,1,2,3,4,5,6,7,8,9,20,21], multi: 0,times:true, desc:"Boogie with a friend! (FRIEND NOT REQUIRED)"},
 				{name: "Oppnt. Play", value: false, conflicts: [19,21],multi:0, desc:"Play as the enemy that wanted to beat up Boyfriend!"},
 				{name: "Demo Mode", value: false, conflicts: [19,20,0,1,2,3,4,5,6,7,8,9],multi:0,times:true, desc:"Let the game play itself!"},
 				{name: "Chart", value: false, conflicts: [], multi: 1, times:true, desc:"Open the Debug Menu without Pressing 7"},
