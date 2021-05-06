@@ -49,6 +49,18 @@ class FreeplayState extends MusicBeatState
 
 	override function create()
 	{
+		#if discord_rpc
+		// Updating Discord Rich Presence
+		DiscordClient.changePresence("In the Menus", null);
+		#end
+
+		var isDebug:Bool = false;
+
+		#if debug
+		isDebug = true;
+		addSong('Test', 1, 'bf-pixel');
+		#end
+
 		var initSonglist = CoolUtil.coolTextFile(Paths.txt('freeplaySonglist'));
 
 		for (i in 0...initSonglist.length)
@@ -61,17 +73,6 @@ class FreeplayState extends MusicBeatState
 			if (!FlxG.sound.music.playing)
 				FlxG.sound.playMusic(Paths.music('freakyMenu'));
 		}
-
-		#if discord_rpc
-		// Updating Discord Rich Presence
-		DiscordClient.changePresence("In the Menus", null);
-		#end
-
-		var isDebug:Bool = false;
-
-		#if debug
-		isDebug = true;
-		#end
 
 		if (StoryMenuState.weekUnlocked[2] || isDebug)
 			addWeek(['Bopeebo', 'Fresh', 'Dadbattle'], 1, ['dad']);
