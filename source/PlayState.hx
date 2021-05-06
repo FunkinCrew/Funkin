@@ -169,7 +169,7 @@ class PlayState extends MusicBeatState
 		FlxG.sound.cache(Paths.voices(PlayState.SONG.song));
 
 		// var gameCam:FlxCamera = FlxG.camera;
-		camGame = new FlxCamera();
+		camGame = new SwagCamera();
 		camHUD = new FlxCamera();
 		camHUD.bgColor.alpha = 0;
 
@@ -1860,7 +1860,7 @@ class PlayState extends MusicBeatState
 	override public function update(elapsed:Float)
 	{
 		// makes the lerp non-dependant on the framerate
-		FlxG.camera.followLerp = CoolUtil.camLerpShit(0.04);
+		// FlxG.camera.followLerp = CoolUtil.camLerpShit(0.04);
 
 		#if !debug
 		perfectMode = false;
