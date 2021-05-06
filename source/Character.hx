@@ -625,6 +625,7 @@ class Character extends FlxSprite
 		charJson = CoolUtil.parseJson(Assets.getText('assets/images/custom_chars/custom_chars.jsonc'));
 		interp = Character.getAnimInterp(curCharacter);
 		callInterp("init", [this]);
+		isPixel  = interp.variables.get("isPixel");
 		dance();
 
 		if (isPlayer)
@@ -690,7 +691,6 @@ class Character extends FlxSprite
 	
 			if (interp != null)
 			{
-				trace(interp.variables.get("dadVar"));
 				dadVar = interp.variables.get("dadVar");
 			}
 			if (holdTimer >= Conductor.stepCrochet * dadVar * 0.001)
@@ -820,6 +820,7 @@ class Character extends FlxSprite
 		interp.variables.set("portraitOffset", [0, 0]);
 		interp.variables.set("dadVar", 4.0);
 		interp.variables.set("isPixel", false);
+		interp.variables.set("Std", Std);
 		interp.execute(program);
 		trace(interp);
 		return interp;

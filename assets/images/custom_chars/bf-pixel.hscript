@@ -1,62 +1,73 @@
 // char is a Character
 function init(char) {
     if (!char.isDie) {
-        var tex = FlxAtlasFrames.fromSparrow(hscriptPath + 'char.png', hscriptPath + 'char.xml');
-        char.frames = tex;
+        char.frames = FlxAtlasFrames.fromSparrow('assets/images/weeb/bfPixel.png', 'assets/images/weeb/bfPixel.xml');
         char.animation.addByPrefix('idle', 'BF IDLE', 24, false);
         char.animation.addByPrefix('singUP', 'BF UP NOTE', 24, false);
-        char.animation.addByPrefix('singLEFT','BF LEFT NOTE', 24, false);
+        char.animation.addByPrefix('singLEFT', 'BF LEFT NOTE', 24, false);
         char.animation.addByPrefix('singRIGHT', 'BF RIGHT NOTE', 24, false);
         char.animation.addByPrefix('singDOWN', 'BF DOWN NOTE', 24, false);
         char.animation.addByPrefix('singUPmiss', 'BF UP MISS', 24, false);
-        char.animation.addByPrefix('singLEFTmiss', 'BF LEFT MISS',24, false);
-        char.animation.addByPrefix('singRIGHTmiss', 'BF RIGHT MISS',24,false);
+        char.animation.addByPrefix('singLEFTmiss', 'BF LEFT MISS', 24, false);
+        char.animation.addByPrefix('singRIGHTmiss', 'BF RIGHT MISS', 24, false);
         char.animation.addByPrefix('singDOWNmiss', 'BF DOWN MISS', 24, false);
 
-
-        char.addOffset('idle',0);
-        char.addOffset('singUP',0);
-        char.addOffset('singRIGHT',0);
-        char.addOffset('singLEFT',0);
-        char.addOffset('singDOWN',0);
-        char.addOffset('singUPmiss',0);
-        char.addOffset('singRIGHTmiss',0);
-        char.addOffset('singLEFTmiss',0);
-        char.addOffset('singDOWNmiss',0);
+        char.addOffset('idle');
+        char.addOffset("singUP");
+        char.addOffset("singRIGHT");
+        char.addOffset("singLEFT");
+        char.addOffset("singDOWN");
+        char.addOffset("singUPmiss");
+        char.addOffset("singRIGHTmiss");
+        char.addOffset("singLEFTmiss");
+        char.addOffset("singDOWNmiss");
+        trace("SCale"+char.width);
+        char.setGraphicSize(Std.int(char.width * 6));
+        trace("Scale:" +char.width);
+        char.updateHitbox();
 
         char.playAnim('idle');
+
         char.width -= 100;
         char.height -= 100;
-    } else {
-        var tex = FlxAtlasFrames.fromSparrow(hscriptPath + 'dead.png', hscriptPath + 'dead.xml');
-        
-        char.frames = tex;
-        char.animation.addByPrefix('firstDeath', 'BF Dies pixel', 24, false);
-        char.animation.addByPrefix('deathLoop','Retry Loop', 24, true);
-        char.animation.addByPrefix('deathConfirm', 'RETRY CONFIRM', 24, false);
 
-        char.addOffset('firstDeath', 37, 14);
-        char.addOffset('deathLoop', 37, -3);
-        char.addOffset('deathConfirm', 37, 28);
+        char.antialiasing = false;
+        char.isPixel = true;
+        char.flipX = true;
+        char.like = "bf-pixel";
+        char.likeBf = true;
+
+        char.enemyOffsetX = 0;
+        char.enemyOffsetY = 350;
+        char.followCamX = -100;
+        char.followCamY = -100;
+    } else {
+        char.frames = FlxAtlasFrames.fromSparrow('assets/images/weeb/bfPixelsDEAD.png', 'assets/images/weeb/bfPixelsDEAD.xml');
+        char.animation.addByPrefix('singUP', "BF Dies pixel", 24, false);
+        char.animation.addByPrefix('deathLoop', "Retry Loop", 24, true);
+        char.animation.addByPrefix('firstDeath', "BF Dies pixel", 24, false);
+        char.animation.addByPrefix('deathConfirm', "RETRY CONFIRM", 24, false);
+        char.animation.play('firstDeath');
+
+        char.addOffset('firstDeath');
+        char.addOffset('deathLoop', -37);
+        char.addOffset('deathConfirm', -37);
+        char.playAnim('firstDeath');
+        // pixel bullshit
+        char.setGraphicSize(Std.int(width * 6));
+        char.updateHitbox();
+        char.antialiasing = false;
+        char.flipX = true;
+        char.isPixel = true;
+        char.like = "bf-pixel";
+        char.likeBf = true;
+        char.enemyOffsetX = 0;
+        char.enemyOffsetY = 350;
+        char.followCamX = -100;
+        char.followCamY = -100;
     }
     
-
-    char.flipX = true;
-    char.like = "bf";
-    char.likeBf = true;
-
-    char.enemyOffsetX = 0;
-    char.enemyOffsetY = 350;
-    char.playerOffsetX = 0;
-    char.playerOffsetY = 0;
-    char.followCamX = -100;
-    char.followCamY = -100;
-    char.midpointX = 0;
-    char.midpointY = 0;
-    // basically what if pixel does
-    char.setGraphicSize(Std.int(char.width * 6));
-    char.updateHitbox();
-    char.antialiasing = false;
+    
 }
 var portraitOffset = [0, 0];
 var dadVar = 4.0;
