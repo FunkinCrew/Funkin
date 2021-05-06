@@ -1909,21 +1909,9 @@ class PlayState extends MusicBeatState
 		// cameras = [FlxG.cameras.list[1]];
 		startingSong = true;
 		trace('finish uo');
-		#if sys
-		for (file in FileSystem.readDirectory("assets/scripts/plugin_classes/")) {
-			makeHaxeExState(Path.withoutExtension(file), "assets/scripts/plugin_classes/", Path.withoutDirectory(file));
-		}
-		#end
-		if (FNFAssets.exists("assets/images/custom_stages/" + SONG.stage + "/process.hx")) {
-			makeHaxeState("stages", "assets/images/custom_stages/" + SONG.stage + "/", "process.hx");
-		}
-		#if windows
-		// else if because we don't want both to activate
-		else if (FileSystem.exists("assets/images/custom_stages/" + SONG.stage + "/process.lua")) // dude I hate lua (jkjkjkjk)
-		{
-			makeLuaState("stages", "assets/images/custom_stages/" + SONG.stage + "/", "process.lua");
-		}
-		#end
+		
+		var stageJson = CoolUtil.parseJson(FNFAssets.getText("assets/images/custom_stages/custom_stages.json"));
+		makeHaxeState("stages", "assets/images/custom_stages/" + SONG.stage + "/", "../"+Reflect.field(stageJson, SONG.stage)+".hscript");
 	if (alwaysDoCutscenes || isStoryMode )
 		{
 
