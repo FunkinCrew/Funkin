@@ -139,8 +139,7 @@ function start(song) {
 	getHaxeActor("dad").y += 60;
 	getHaxeActor("dad").x -= 80;
 	setDefaultZoom(0.9);
-    trace(gf.like);
-	if (getHaxeActor("gf").like != "pico-speaker") {
+	if (!getHaxeActor("gf").hasGun) {
         getHaxeActor("gf").x -= 170;
 		getHaxeActor("gf").y -= 75;
     } else {

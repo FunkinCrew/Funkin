@@ -60,7 +60,6 @@ class DifficultyIcons {
     changeDifficulty();
   }
   public function changeDifficulty(?change:Int = 0):Void {
-    trace("line 58");
     difficulty += change;
     if (difficulty > difficulties.length - 1) {
       difficulty = 0;
@@ -71,13 +70,9 @@ class DifficultyIcons {
     group.forEach(function (sprite:FlxSprite) {
       sprite.visible = false;
     });
-    trace(difficulty);
-    trace(group.members);
     group.members[difficulty].visible = true;
-    trace("hello");
   }
   public static function changeDifficultyFreeplay(difficultyFP:Int, ?change:Int = 0):Dynamic {
-    trace("line 73");
     var diffJson = CoolUtil.parseJson(Assets.getText("assets/images/custom_difficulties/difficulties.json"));
     var difficultiesFP:Array<Dynamic> = diffJson.difficulties;
     var freeplayDiff = difficultyFP;
@@ -111,7 +106,6 @@ class DifficultyIcons {
     if (fpDiff != diffJson.defaultDiff) {
       ending = "-"+difficultiesFP[fpDiff].name;
     }
-    trace(ending);
     return ending;
   }
   public static function getDefaultDiffFP():Int {

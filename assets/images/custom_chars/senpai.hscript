@@ -1,0 +1,47 @@
+trace(": )");
+// char is a Character
+function init(char) {
+    trace(": )");
+    var tex = FlxAtlasFrames.fromSparrow(hscriptPath + 'char.png', hscriptPath + 'char.xml');
+    trace(": )");
+    char.frames = tex;
+    char.animation.addByPrefix('idle', 'Senpai Idle', 24, false);
+    char.animation.addByPrefix('singUP', 'SENPAI UP NOTE', 24, false);
+    char.animation.addByPrefix('singLEFT','SENPAI LEFT NOTE', 24, false);
+    char.animation.addByPrefix('singRIGHT', 'SENPAI RIGHT NOTE', 24, false);
+    char.animation.addByPrefix('singDOWN', 'SENPAI DOWN NOTE', 24, false);
+    
+
+    char.addOffset('idle',0);
+    char.addOffset('singUP', 5, 37);
+    char.addOffset('singRIGHT');
+    char.addOffset('singLEFT', 250, -23);
+    char.addOffset('singDOWN', 20, -160);
+
+    char.playAnim('idle');
+
+    char.flipX = false;
+
+    char.enemyOffsetX = 150;
+    char.enemyOffsetY = 360;
+    char.camOffsetX = 370;
+    char.camOffsetY = 300;
+    char.followCamX = -100;
+    char.followCamY = -430;
+
+    char.setGraphicSize(Std.int(char.width * 6));
+    char.updateHitbox();
+    char.antialiasing = false;
+}
+var portraitOffset = [0, 0];
+var dadVar = 4.0;
+var isPixel = true;
+function update(elapsed, char) {
+    // do nothing...
+}
+var danced = false;
+function dance(char) {
+    trace(": )");
+    char.playAnim('idle');
+}
+trace("done");

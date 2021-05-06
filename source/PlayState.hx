@@ -1723,6 +1723,8 @@ class PlayState extends MusicBeatState
 				//boyfriend.y += boyfriend.bfOffsetY;
 				camPos.x += boyfriend.camOffsetX;
 				camPos.y += boyfriend.camOffsetY;
+				boyfriend.x += boyfriend.playerOffsetX;
+				boyfriend.y += boyfriend.playerOffsetY;
 				if (boyfriend.likeGf) {
 					boyfriend.setPosition(gf.x, gf.y);
 					gf.visible = false;

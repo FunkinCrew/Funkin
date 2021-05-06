@@ -198,8 +198,11 @@ class SaveDataState extends MusicBeatState
 						FreeplayState.soundTest = true;
 						FlxG.switchState(new CategoryState());
 					default:
-						checkmarks.members[optionsSelected].visible = !checkmarks.members[optionsSelected].visible;
-						optionList[optionsSelected].value = checkmarks.members[optionsSelected].visible;
+						if (OptionsHandler.options.allowEditOptions){
+							checkmarks.members[optionsSelected].visible = !checkmarks.members[optionsSelected].visible;
+							optionList[optionsSelected].value = checkmarks.members[optionsSelected].visible;
+						}
+						
 				}
 
 				FlxG.sound.play('assets/sounds/scrollMenu.ogg');

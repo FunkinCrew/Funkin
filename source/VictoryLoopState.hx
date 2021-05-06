@@ -102,15 +102,9 @@ class VictoryLoopState extends MusicBeatSubstate
 		rating.addText();
 		accuracyTxt = new FlxText(10, rating.y + rating.height,0 , "ACCURACY: "+Math.round(accuracy * 100) + "%");
 		accuracyTxt.setFormat("assets/fonts/vcr.ttf", 26, FlxColor.WHITE, RIGHT);
-		var characterList = Assets.getText('assets/data/characterList.txt');
-		if (!StringTools.contains(characterList, p1)) {
-			var parsedCharJson:Dynamic = CoolUtil.parseJson(Assets.getText('assets/images/custom_chars/custom_chars.jsonc'));
-			var parsedAnimJson = CoolUtil.parseJson(FNFAssets.getText("assets/images/custom_chars/"+Reflect.field(parsedCharJson,p1).like+".json"));
-			switch (parsedAnimJson.like) {
-				case "bf-pixel":
-					// gotta deal with this dude
-					stageSuffix = '-pixel';
-			}
+		var interp = Character.getAnimInterp(p1);
+		if (interp.variables.exists("isPixel") && interp.variables.get("isPixel")) {
+			stageSuffix = '-pixel';
 		}
 		super();
 

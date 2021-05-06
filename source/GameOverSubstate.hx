@@ -30,47 +30,12 @@ class GameOverSubstate extends MusicBeatSubstate
 	{
 		var daStage = PlayState.curStage;
 		var p1 = PlayState.SONG.player1;
-		var daBf:String = 'bf';
+		// hscript means everything is custom
+		// and they don't  fucking lose their shit if 
+		// they don't have the proper animation
+		var daBf:String = p1 + '-dead';
 		trace(p1);
-		if (p1 == "bf-pixel") {
-			stageSuffix = '-pixel';
-		}
-		var characterList = Assets.getText('assets/data/characterList.txt');
-		if (!StringTools.contains(characterList, p1)) {
-			var parsedCharJson:Dynamic = CoolUtil.parseJson(Assets.getText('assets/images/custom_chars/custom_chars.jsonc'));
-			//another CTRL+C CTRL+V ritual
-			var unparsedAnimJson = FNFAssets.getText("assets/images/custom_chars/"+Reflect.field(parsedCharJson,p1).like+".json"); //it might keep throwing an error if i dont do this
-			var parsedAnimJson = CoolUtil.parseJson(unparsedAnimJson);
-			switch (parsedAnimJson.like) {
-				case "bf":
-					// bf has a death animation
-					daBf = p1;
-				case "bf-pixel":
-					// gotta deal with this dude
-					daBf = p1 + '-dead';
-					stageSuffix = '-pixel';
-				case "bf-holding-gf":
-					daBf = p1 + '-dead';
-				default:
-					if (Reflect.hasField(parsedAnimJson.animation, "firstDeath")){ //if i had to build this for any longer i would lose my mind
-						daBf = p1; //this should be less shitty
-						if (parsedAnimJson.isPixel)
-							stageSuffix = '-pixel'; //pixel check!
-					}
-					else
-						// just use bf, avoid pain
-						daBf = 'bf';
-			}
-		} else {
-			switch (PlayState.SONG.player1) {
-				case 'bf':
-					daBf = 'bf';
-				case 'bf-pixel':
-					daBf = 'bf-pixel-dead';
-				default:
-					daBf = 'bf';
-			}
-		}
+		
 		super();
 		Conductor.songPosition = 0;
 

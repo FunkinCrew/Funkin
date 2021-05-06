@@ -1,0 +1,60 @@
+// char is a Character
+function init(char) {
+    var tex = FlxAtlasFrames.fromSparrow(hscriptPath + 'char.png', hscriptPath + 'char.xml');
+    char.frames = tex;
+    char.animation.addByPrefix('idle', 'Pico Idle Dance', 24, true);
+    char.animation.addByPrefix('singUP', 'pico Up note0', 24, false);
+    char.animation.addByPrefix('singDOWN', 'Pico Down Note0', 24, false);
+    char.animation.addByPrefix('singDOWNmiss', 'Pico Down Note MISS', 24, false);
+    char.animation.addByPrefix('singUPmiss', 'pico Up note miss', 24, false);
+    if (char.isPlayer) {
+        char.animation.addByPrefix('singLEFT','Pico NOTE LEFT0', 24, false);
+        char.animation.addByPrefix('singRIGHT', 'Pico Note Right0', 24, false);
+        char.animation.addByPrefix('singLEFTmiss', 'Pico NOTE LEFT miss',24, false);
+        char.animation.addByPrefix('singRIGHTmiss', 'Pico Note Right Miss',24,false);
+    } else {
+        char.animation.addByPrefix('singRIGHT','Pico NOTE LEFT0', 24, false);
+        char.animation.addByPrefix('singLEFT', 'Pico Note Right0', 24, false);
+        char.animation.addByPrefix('singRIGHTmiss', 'Pico NOTE LEFT miss',24, false);
+        char.animation.addByPrefix('singLEFTmiss', 'Pico Note Right Miss',24,false);
+    }
+    
+    
+
+
+    char.addOffset('idle',0);
+    char.addOffset('singUP', -29, 27);
+    char.addOffset('singRIGHT', -68, -7);
+    char.addOffset('singLEFT', 65, 9);
+    char.addOffset('singDOWN', 200, -70);
+    char.addOffset('singUPmiss', -19, 67);
+    char.addOffset('singRIGHTmiss', -60, 41);
+    char.addOffset('singLEFTmiss', 62, 64);
+    char.addOffset('singDOWNmiss', 210, -28);
+
+    char.playAnim('idle');
+    
+    
+
+    char.flipX = true;
+
+    char.enemyOffsetX = 0;
+    char.enemyOffsetY = 300;
+    char.playerOffsetX = 0;
+    char.playerOffsetY = 0;
+    char.followCamX = 150;
+    char.followCamY = -100;
+    char.camOffsetX = 600;
+    char.midpointX = 0;
+    char.midpointY = 0;
+}
+var portraitOffset = [0, 0];
+var dadVar = 4.0;
+var isPixel = false;
+function update(elapsed, char) {
+    // do nothing...
+}
+var danced = false;
+function dance(char) {
+    char.playAnim('idle');
+}

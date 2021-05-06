@@ -1,0 +1,48 @@
+trace(": )");
+// char is a Character
+function init(char) {
+    trace(": )");
+    var tex = FlxAtlasFrames.fromSparrow(hscriptPath + 'char.png', hscriptPath + 'char.xml');
+    trace(": )");
+    char.frames = tex;
+    char.animation.addByPrefix('idle', 'Tankman Idle Dance', 24, false);
+    char.animation.addByPrefix('singUP', 'Tankman UP note', 24, false);
+    if (char.isPlayer) {
+        char.animation.addByPrefix('singLEFT','Tankman Note Left', 24, false);
+        char.animation.addByPrefix('singRIGHT', 'Tankman Right Note', 24, false);
+    } else {
+        char.animation.addByPrefix('singRIGHT','Tankman Note Left', 24, false);
+        char.animation.addByPrefix('singLEFT', 'Tankman Right Note', 24, false);
+    }
+    
+    char.animation.addByPrefix('singDOWN', 'Tankman DOWN note', 24, false);
+    char.animation.addByPrefix('singUP-alt', 'TANKMAN UGH', 24, false);
+    char.animation.addByPrefix('singDOWN-alt', 'PRETTY GOOD', 24, false);
+
+    char.addOffset('idle',0);
+    char.addOffset('singUP', 50, 56);
+    char.addOffset('singRIGHT',-12, -27);
+    char.addOffset('singLEFT', 90, -14);
+    char.addOffset('singDOWN', 80, -100);
+    char.addOffset('singUP-alt', -15, -7);
+    char.addOffset('singDOWN-alt', 0, 15);
+    char.playAnim('idle');
+
+    char.flipX = true;
+
+    char.enemyOffsetX = 0;
+    char.enemyOffsetY = 180;
+}
+var portraitOffset = [0, 0];
+var dadVar = 4.0;
+var isPixel = false;
+function update(elapsed, char) {
+    // do nothing...
+}
+var danced = false;
+function dance(char) {
+    trace(": )");
+    if (char.animation.curAnim.name != "singDOWN-alt")
+        char.playAnim('idle');
+}
+trace("done");

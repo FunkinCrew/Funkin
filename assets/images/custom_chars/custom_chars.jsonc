@@ -3,67 +3,79 @@
     "like": "bf",
     "icons": [0,1,24]
   },
-  "templateBfCar": {
-    "like": "bf-car",
-    "icons": [0,1]
+  "bf": {
+    "like": "bf",
+    "icons": [
+      0,
+      1,
+      24
+    ]
   },
-  "templateBfChristmas": {
+  "bf-car": {
+    "like": "bf-car",
+    "icons": [0,1,24]
+  },
+  "bf-christmas": {
     "like": "bf-christmas",
     "icons": [0,1,24]
   },
-  "templateBfPixel": {
+  "bf-pixel": {
     "like": "bf-pixel",
-    "icons": [0,1,24]
+    "icons": [21,21,25]
   },
-  "templateDad": {
+  "dad": {
     "like": "dad",
-    "icons": [0,1]
+    "icons": [12,13]
   },
-  "templateGfCar": {
+  "gf-car": {
     "like": "gf-car",
-    "icons": [0,1]
+    "icons": [16,16]
   },
-  "templateGfPixel": {
+  "gf-pixel": {
     "like": "gf-pixel",
-    "icons": [0,1]
+    "icons": [16,16]
   },
-  "templateGf": {
+  "gf": {
     "like": "gf",
-    "icons": [0,1]
+    "icons": [16,16]
   },
   "templateMonster": {
     "like": "monster",
-    "icons": [0,1]
+    "icons": [19,20]
   },
-  "templateNewMonster": {
+  "monster": {
     "like": "newmonster",
-    "icons": [0,1]
+    "icons": [19,20]
   },
-  "templateParents": {
+  "monster-christmas": {
+    "like": "newmonster",
+    "icons": [19,20]
+  },
+  "parents-christmas": {
     "like": "parents",
-    "icons": [0,1]
+    "icons": [17,18]
   },
-  "templatePico": {
+  "pico": {
     "like": "pico",
-    "icons": [0,1]
+    "icons": [4,5]
   },
-  "templateSenpaiAngry": {
+  "senpai-angry": {
     "like": "senpai-angry",
-    "icons": [0,1]
+    "icons": [22,22]
   },
-  "templateSenpai": {
+  "senpai": {
     "like": "senpai",
-    "icons": [0,1]
+    "icons": [22,22]
   },
-  "templateSpirit": {
+  "spirit": {
     "like": "bf-christmas",
-    "icons": [0,1]
+    "icons": [23,23]
   },
-  "templateSpooky": {
+  "spooky": {
     "like": "spooky",
-    "icons": [0,1]
+    "icons": [2,3]
   },
-  "templateMom": {
+  "mom": {
     "like": "mom",
     "icons": [6,7]
   },
@@ -86,14 +98,14 @@
   "gf-tankmen": {
     "like": "gf-tankmen",
     "icons": [
-      0,
-      1
+      16,
+      16
     ]
   },
   "pico-speaker": {
     "like": "pico-speaker",
     "icons": [
-      0, 1
+      4, 5
     ]
   },
   "bf-holding-gf": {

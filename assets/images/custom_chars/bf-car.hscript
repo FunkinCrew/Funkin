@@ -1,0 +1,64 @@
+// char is a Character
+function init(char) {
+    if (!char.isDie) {
+        var tex = FlxAtlasFrames.fromSparrow(hscriptPath + 'char.png', hscriptPath + 'char.xml');
+        char.frames = tex;
+        char.animation.addByPrefix('idle', 'BF idle dance', 24, false);
+        char.animation.addByPrefix('singUP', 'BF NOTE UP0', 24, false);
+        char.animation.addByPrefix('singLEFT','BF NOTE LEFT0', 24, false);
+        char.animation.addByPrefix('singRIGHT', 'BF NOTE RIGHT0', 24, false);
+        char.animation.addByPrefix('singDOWN', 'BF NOTE DOWN0', 24, false);
+        char.animation.addByPrefix('singUPmiss', 'BF NOTE UP MISS', 24, false);
+        char.animation.addByPrefix('singLEFTmiss', 'BF NOTE LEFT MISS',24, false);
+        char.animation.addByPrefix('singRIGHTmiss', 'BF NOTE RIGHT MISS',24,false);
+        char.animation.addByPrefix('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
+
+
+        char.addOffset('idle', -5);
+        char.addOffset('singUP', -29, 27);
+        char.addOffset('singRIGHT', -38, -7);
+        char.addOffset('singLEFT', 12, -6);
+        char.addOffset('singDOWN', -10, -50);
+        char.addOffset('singUPmiss', -29, 27);
+        char.addOffset('singRIGHTmiss', -30, 21);
+        char.addOffset('singLEFTmiss', 12, 24);
+        char.addOffset('singDOWNmiss', -11, -19);
+
+        char.playAnim('idle');
+    } else {
+        var tex = FlxAtlasFrames.fromSparrow('assets/images/BOYFRIEND.png', 'assets/images/BOYFRIEND.xml');
+        
+        char.frames = tex;
+        char.animation.addByPrefix('firstDeath', 'BF dies', 24, false);
+        char.animation.addByPrefix('deathLoop','BF Dead Loop', 24, true);
+        char.animation.addByPrefix('deathConfirm', 'BF Dead confirm', 24, false);
+
+        char.addOffset('firstDeath', 37, 11);
+        char.addOffset('deathLoop', 37, 5);
+        char.addOffset('deathConfirm', 37, 69);
+    }
+    
+
+    char.flipX = true;
+    char.like = "bf";
+    char.likeBf = true;
+
+    char.enemyOffsetX = 0;
+    char.enemyOffsetY = 350;
+    char.playerOffsetX = 0;
+    char.playerOffsetY = 0;
+    char.followCamX = -100;
+    char.followCamY = -100;
+    char.midpointX = 0;
+    char.midpointY = 0;
+}
+var portraitOffset = [0, 0];
+var dadVar = 4.0;
+var isPixel = false;
+function update(elapsed, char) {
+    // do nothing...
+}
+var danced = false;
+function dance(char) {
+    char.playAnim('idle');
+}

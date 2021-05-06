@@ -1,0 +1,36 @@
+trace(": )");
+// char is a Character
+function init(char) {
+    trace(": )");
+    var tex = FlxAtlasFrames.fromSparrow(hscriptPath + 'char.png', hscriptPath + 'char.xml');
+    trace(": )");
+    char.frames = tex;
+    char.animation.addByPrefix('shoot1', 'Pico shoot 1',  24, false);
+    char.animation.addByPrefix('shoot2', 'Pico shoot 2',  24, false);
+    char.animation.addByPrefix('shoot3', 'Pico shoot 3', 24, false);
+    char.animation.addByPrefix('shoot4', 'Pico shoot 4', 24, false);
+
+    char.addOffset('shoot1', 0);
+    char.addOffset('shoot2', -1, -128);
+    char.addOffset('shoot3', 412, -64);
+    char.addOffset('shoot4', 439, -19);
+
+
+    char.playAnim('shoot1');
+    char.loadMappedAnims();
+    char.like = "gf";
+    char.likeGf = true;
+    char.hasGun = true;
+
+}
+var portraitOffset = [0, 0];
+var dadVar = 4.0;
+var isPixel = false;
+function update(elapsed, char) {
+    // do nothing...
+}
+var danced = false;
+function dance(char) {
+    // do nothing...
+}
+trace("done");

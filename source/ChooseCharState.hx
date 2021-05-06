@@ -78,15 +78,14 @@ class ChooseCharState extends MusicBeatState
         char.flipX = false;
 
 
-        var regCharacters:Array<String> = CoolUtil.coolTextFile('assets/data/characterList.txt');
-
+    
         charJson = CoolUtil.parseJson(Assets.getText('assets/images/custom_chars/custom_chars.jsonc'));
 
         if (characters == null) {
             // that is not how arrays work
             // characters = mergeArray(Reflect.fields(charJson), Reflect.fields(regCharacters)); // this doesn't work, try to make this work or just ignore it
             // reg characters should be first
-            characters = regCharacters.concat(Reflect.fields(charJson));
+            characters = Reflect.fields(charJson);
         }
 
 

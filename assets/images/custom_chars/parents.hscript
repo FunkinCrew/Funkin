@@ -1,0 +1,46 @@
+trace(": )");
+// char is a Character
+function init(char) {
+    trace(": )");
+    var tex = FlxAtlasFrames.fromSparrow(hscriptPath + 'char.png', hscriptPath + 'char.xml');
+    trace(": )");
+    char.frames = tex;
+    char.animation.addByPrefix('idle', 'Parent Christmas Idle', 24, false);
+    char.animation.addByPrefix('singUP', 'Parent Up Note Dad', 24, false);
+    char.animation.addByPrefix('singLEFT','Parent Left Note Dad', 24, false);
+        char.animation.addByPrefix('singRIGHT', 'Parent Right Note Dad', 24, false);
+    
+    char.animation.addByPrefix('singDOWN', 'Parent Down Note Dad', 24, false);
+    char.animation.addByPrefix('singUP-alt', 'Parent Up Note Mom', 24, false);
+    char.animation.addByPrefix('singDOWN-alt', 'Parent Down Note Mom', 24, false);
+    char.animation.addByPrefix('singLEFT-alt', 'Parent Left Note Mom', 24, false);
+    char.animation.addByPrefix('singRIGHT-alt', 'Parent Right Note Mom', 24, false);
+
+    char.addOffset('idle',0);
+    char.addOffset('singUP', -47, 24);
+    char.addOffset('singRIGHT',-1, -23);
+    char.addOffset('singLEFT', -30, 16);
+    char.addOffset('singDOWN', -31, -29);
+    char.addOffset('singUP-alt', -47, 24);
+    char.addOffset('singDOWN-alt', -30, -27);
+    char.addOffset('singLEFT-alt', -30, 15);
+    char.addOffset('singRIGHT-alt', -1, -24);
+    char.playAnim('idle');
+
+    char.flipX = false;
+
+    char.enemyOffsetX = -500;
+    char.enemyOffsetY = 0;
+}
+var portraitOffset = [0, 0];
+var dadVar = 4.0;
+var isPixel = false;
+function update(elapsed, char) {
+    // do nothing...
+}
+var danced = false;
+function dance(char) {
+    trace(": )");
+    char.playAnim('idle');
+}
+trace("done");

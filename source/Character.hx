@@ -1,5 +1,9 @@
 package;
 
+import hscript.Interp;
+import hscript.ParserEx;
+import haxe.xml.Parser;
+import hscript.InterpEx;
 import flixel.util.FlxColor;
 import flixel.FlxSprite;
 import flixel.animation.FlxBaseAnimation;
@@ -34,10 +38,12 @@ class Character extends FlxSprite
 	public var curCharacter:String = 'bf';
 	public var enemyOffsetX:Int = 0;
 	public var enemyOffsetY:Int = 0;
+	public var playerOffsetX:Int = 0;
+	public var playerOffsetY:Int = 0;
 	public var camOffsetX:Int = 0;
 	public var camOffsetY:Int = 0;
-	public var followCamX:Int = 0;
-	public var followCamY:Int = 0;
+	public var followCamX:Int = 150;
+	public var followCamY:Int = -100;
 	public var midpointX:Int = 0;
 	public var midpointY:Int = 0;
 	public var isCustom:Bool = false;
@@ -47,6 +53,8 @@ class Character extends FlxSprite
 	public var beNormal:Bool = true;
 	// sits on speakers, replaces gf
 	public var likeGf:Bool = false;
+	// uses animation notes
+	public var hasGun:Bool = false;
 	public var stunned:Bool = false;
 	public var beingControlled:Bool = false;
 	/**
@@ -63,6 +71,21 @@ class Character extends FlxSprite
 	public var likeBf:Bool = false;
 	public var isDie:Bool = false;
 	public var isPixel:Bool = false;
+	private var interp:Interp;
+	function callInterp(func_name:String, args:Array<Dynamic>) {
+		if (interp == null) return;
+		if (!interp.variables.exists(func_name)) return;
+		var method = interp.variables.get(func_name);
+		switch (args.length)
+		{
+			case 0:
+				method();
+			case 1:
+				method(args[0]);
+			case 2:
+				method(args[0], args[1]);
+		}
+	}
 	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false)
 	{
 		animOffsets = new Map<String, Array<Dynamic>>();
@@ -73,7 +96,7 @@ class Character extends FlxSprite
 
 		var tex:FlxAtlasFrames;
 		antialiasing = true;
-
+		#if false
 		switch (curCharacter)
 		{
 			case 'gf':
@@ -329,6 +352,7 @@ class Character extends FlxSprite
 				flipX = true;
 				like = "pico";
 			case 'bf':
+				// boyfrien
 				var tex = FlxAtlasFrames.fromSparrow('assets/images/BOYFRIEND.png', 'assets/images/BOYFRIEND.xml');
 				frames = tex;
 				animation.addByPrefix('idle', 'BF idle dance', 24, false);
@@ -581,173 +605,26 @@ class Character extends FlxSprite
 				trace(curCharacter);
 				var charJson:Dynamic = null;
 				var isError:Bool = false;
-				try {
-					charJson = CoolUtil.parseJson(Assets.getText('assets/images/custom_chars/custom_chars.jsonc'));
-				} catch (exception) {
-					// uh oh someone messed up their json
-					Application.current.window.alert("Hey! You messed up your custom_chars.jsonc. Your game won't crash but it will load bf. "+exception, "Alert");
-					isError = true;
-				}
-				if (!isError) {
-					// use assets, as it is less laggy
-					var animJson = FNFAssets.getText("assets/images/custom_chars/"+Reflect.field(charJson,curCharacter).like+".json");
-					var parsedAnimJson:Dynamic = CoolUtil.parseJson(animJson);
-
-
-					var playerSuffix = 'char';
-					if (isDie) {
-						// poor programming but whatev
-						playerSuffix = 'dead';
-						trace(parsedAnimJson.animation = parsedAnimJson.deadAnimation);
-						trace(parsedAnimJson.offset = parsedAnimJson.deadOffset);
-					}
-					var rawPic = BitmapData.fromFile('assets/images/custom_chars/'+curCharacter+"/"+playerSuffix+".png");
-					var tex:FlxAtlasFrames;
-					var rawXml:String;
-					// GOD IS DEAD WHY DOES THIS NOT WORK
-					if (FNFAssets.exists('assets/images/custom_chars/'+curCharacter+"/"+playerSuffix+".txt")){
-						rawXml = FNFAssets.getText('assets/images/custom_chars/'+curCharacter+"/"+playerSuffix+".txt");
-						tex = FlxAtlasFrames.fromSpriteSheetPacker(rawPic,rawXml);
-					} else {
-						rawXml =FNFAssets.getText('assets/images/custom_chars/'+curCharacter+"/"+playerSuffix+".xml");
-						tex = FlxAtlasFrames.fromSparrow(rawPic,rawXml);
-					}
-					frames = tex;
-
-					for( field in Reflect.fields(parsedAnimJson.animation) ) {
-						var fps = 24;
-						if (Reflect.hasField(Reflect.field(parsedAnimJson.animation,field), "fps")) {
-							fps = Reflect.field(parsedAnimJson.animation,field).fps;
-						}
-						var loop = false;
-						if (Reflect.hasField(Reflect.field(parsedAnimJson.animation,field), "loop")) {
-							loop = Reflect.field(parsedAnimJson.animation,field).loop;
-						}
-						if (Reflect.hasField(Reflect.field(parsedAnimJson.animation,field),"flippedname") && !isPlayer) {
-							// the double not is to turn a null into a false
-							if (Reflect.hasField(Reflect.field(parsedAnimJson.animation,field),"indices")) {
-								var indicesAnim:Array<Int> = Reflect.field(parsedAnimJson.animation,field).indices;
-								animation.addByIndices(field, Reflect.field(parsedAnimJson.animation,field).flippedname, indicesAnim, "", fps, !!Reflect.field(parsedAnimJson.animation,field).loop);
-							} else {
-								animation.addByPrefix(field,Reflect.field(parsedAnimJson.animation,field).flippedname, fps, !!Reflect.field(parsedAnimJson.animation,field).loop);
-							}
-
-						} else {
-							if (Reflect.hasField(Reflect.field(parsedAnimJson.animation,field),"indices")) {
-								var indicesAnim:Array<Int> = Reflect.field(parsedAnimJson.animation,field).indices;
-								animation.addByIndices(field, Reflect.field(parsedAnimJson.animation,field).name, indicesAnim, "", fps, !!Reflect.field(parsedAnimJson.animation,field).loop);
-							} else {
-								animation.addByPrefix(field,Reflect.field(parsedAnimJson.animation,field).name, fps, !!Reflect.field(parsedAnimJson.animation,field).loop);
-							}
-						}
-					}
-					for( field in Reflect.fields(parsedAnimJson.offset)) {
-						addOffset(field, Reflect.field(parsedAnimJson.offset,field)[0],  Reflect.field(parsedAnimJson.offset,field)[1]);
-					}
-					// ftguyuhjik why the fuck does bf-holding-gf dead fucking broken
-					camOffsetX = if (parsedAnimJson.camOffset != null) parsedAnimJson.camOffset[0] else 0;
-					camOffsetY = if (parsedAnimJson.camOffset != null) parsedAnimJson.camOffset[1] else 0;
-					enemyOffsetX = if (parsedAnimJson.enemyOffset != null) parsedAnimJson.enemyOffset[0] else 0;
-					enemyOffsetY = if (parsedAnimJson.enemyOffset != null) parsedAnimJson.enemyOffset[1] else 0;
-					followCamX = if (parsedAnimJson.followCam != null) parsedAnimJson.followCam[0] else 150;
-					followCamY = if (parsedAnimJson.followCam != null) parsedAnimJson.followCam[1] else -100;
-					midpointX = if (parsedAnimJson.midpoint != null) parsedAnimJson.midpoint[0] else 0;
-					midpointY = if (parsedAnimJson.midpoint != null) parsedAnimJson.midpoint[1] else 0;
-					flipX = if (parsedAnimJson.flipx != null) parsedAnimJson.flipx else false;
-
-					like = parsedAnimJson.like;
-					if (like == "bf-car") {
-						// ignore it, this is used for gameover state
-						like = "bf";
-					}
-					if (like == "pico-speaker") {
-						loadMappedAnims();
-					}
-					if (isDie && like == "bf-holding-gf") {
-						animation.addByPrefix('firstDeath', "BF dies", 24, false);
-						animation.addByPrefix('deathLoop', "BF Dead Loop", 24, true);
-						animation.addByPrefix('deathConfirm', "BF Dead confirm", 24, false);
-						// brute force
-					}
-					switch(like) {
-						case "bf" |	"bf-pixel" | "bf-holding-gf":
-							likeBf = true;
-						case "gf" 
-						| "gf-car"
-						| "gf-pixel"
-						| "gf-tankmen"
-						// pico is like gf, he just doesn't boogie normally
-						| "pico-speaker":
-							switch(like) {
-								case "gf":
-									gfEpicLevel = Level_Sing;
-								case "gf-tankmen":
-									gfEpicLevel = Level_Sadness;
-								case "gf-pixel" 
-								| "gf-car":
-									gfEpicLevel = Level_Boogie;
-							}
-							likeGf = true;
-						case "spooky":
-							gfEpicLevel = Level_Boogie;
-					}
-					isPixel = parsedAnimJson.isPixel;
-					if (parsedAnimJson.isPixel) {
-						antialiasing = false;
-						setGraphicSize(Std.int(width * 6));
-						updateHitbox(); // when the hitbox is sus!
-					}
-					if (!isDie) {
-						width += if (parsedAnimJson.size != null) parsedAnimJson.size[0] else 0;
-						height += if (parsedAnimJson.size != null) parsedAnimJson.size[1] else 0;
-					}
-					playAnim(parsedAnimJson.playAnim);
-				} else {
-					// uh oh we got an error
-					// pretend its boyfriend to prevent crashes
-					var tex = FlxAtlasFrames.fromSparrow('assets/images/BOYFRIEND.png', 'assets/images/BOYFRIEND.xml');
-					frames = tex;
-					animation.addByPrefix('idle', 'BF idle dance', 24, false);
-					animation.addByPrefix('singUP', 'BF NOTE UP0', 24, false);
-					animation.addByPrefix('singLEFT', 'BF NOTE LEFT0', 24, false);
-					animation.addByPrefix('singRIGHT', 'BF NOTE RIGHT0', 24, false);
-					animation.addByPrefix('singDOWN', 'BF NOTE DOWN0', 24, false);
-					animation.addByPrefix('singUPmiss', 'BF NOTE UP MISS', 24, false);
-					animation.addByPrefix('singLEFTmiss', 'BF NOTE LEFT MISS', 24, false);
-					animation.addByPrefix('singRIGHTmiss', 'BF NOTE RIGHT MISS', 24, false);
-					animation.addByPrefix('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
-					animation.addByPrefix('hey', 'BF HEY', 24, false);
-
-					animation.addByPrefix('firstDeath', "BF dies", 24, false);
-					animation.addByPrefix('deathLoop', "BF Dead Loop", 24, true);
-					animation.addByPrefix('deathConfirm', "BF Dead confirm", 24, false);
-
-					animation.addByPrefix('scared', 'BF idle shaking', 24);
-
-					addOffset('idle', -5);
-					addOffset("singUP", -29, 27);
-					addOffset("singRIGHT", -38, -7);
-					addOffset("singLEFT", 12, -6);
-					addOffset("singDOWN", -10, -50);
-					addOffset("singUPmiss", -29, 27);
-					addOffset("singRIGHTmiss", -30, 21);
-					addOffset("singLEFTmiss", 12, 24);
-					addOffset("singDOWNmiss", -11, -19);
-					addOffset("hey", 7, 4);
-					addOffset('firstDeath', 37, 11);
-					addOffset('deathLoop', 37, 5);
-					addOffset('deathConfirm', 37, 69);
-					addOffset('scared', -4);
-
-					flipX = true;
-					like = "bf";
-					trace("fuck");
-					playAnim('idle');
-				}
+				charJson = CoolUtil.parseJson(Assets.getText('assets/images/custom_chars/custom_chars.jsonc'));
+				interp = Character.getAnimInterp(curCharacter);
+				callInterp("init", [this]);
 		}
+		#end
 
-
-
+		curCharacter = curCharacter.trim();
+		trace(curCharacter);
+		isCustom = true;
+		if (StringTools.endsWith(curCharacter, "-dead"))
+		{
+			isDie = true;
+			curCharacter = curCharacter.substr(0, curCharacter.length - 5);
+		}
+		trace(curCharacter);
+		var charJson:Dynamic = null;
+		var isError:Bool = false;
+		charJson = CoolUtil.parseJson(Assets.getText('assets/images/custom_chars/custom_chars.jsonc'));
+		interp = Character.getAnimInterp(curCharacter);
+		callInterp("init", [this]);
 		dance();
 
 		if (isPlayer)
@@ -810,16 +687,19 @@ class Character extends FlxSprite
 			}
 
 			var dadVar:Float = 4;
-
-			if (curCharacter == 'dad')
-				dadVar = 6.1;
+	
+			if (interp != null)
+			{
+				trace(interp.variables.get("dadVar"));
+				dadVar = interp.variables.get("dadVar");
+			}
 			if (holdTimer >= Conductor.stepCrochet * dadVar * 0.001)
 			{
 				dance();
 				holdTimer = 0;
 			}
 		}
-		if (like == "pico-speaker") {
+		if (hasGun) {
 			if (0 < animationNotes.length && Conductor.songPosition > animationNotes[0][0]) {
 				var idkWhatThisISLol = 1;
 				if (2 <= animationNotes[0][1]) {
@@ -836,10 +716,10 @@ class Character extends FlxSprite
 				playAnim(animation.curAnim.name, false, false, animation.curAnim.frames.length - 3);
 			}
 		}
-		if (animation.curAnim.name == 'hairFall' && animation.curAnim.finished && gfEpicLevel >= cast Level_Sing)
+		if (animation.curAnim.name == 'hairFall' && animation.curAnim.finished)
 			playAnim('danceRight');
 		
-
+		callInterp("update", [elapsed, this]);
 		super.update(elapsed);
 	}
 
@@ -852,86 +732,16 @@ class Character extends FlxSprite
 	{
 		if (!debugMode && beNormal)
 		{
-			switch (curCharacter)
-			{
-				case 'gf':
-					if (!animation.curAnim.name.startsWith('hair'))
-					{
-						danced = !danced;
-
-						if (danced)
-							playAnim('danceRight');
-						else
-							playAnim('danceLeft');
-					}
-
-				case 'gf-christmas':
-					if (!animation.curAnim.name.startsWith('hair'))
-					{
-						danced = !danced;
-
-						if (danced)
-							playAnim('danceRight');
-						else
-							playAnim('danceLeft');
-					}
-
-				case 'gf-car':
-					if (!animation.curAnim.name.startsWith('hair'))
-					{
-						danced = !danced;
-
-						if (danced)
-							playAnim('danceRight');
-						else
-							playAnim('danceLeft');
-					}
-				case 'gf-pixel':
-					if (!animation.curAnim.name.startsWith('hair'))
-					{
-						danced = !danced;
-
-						if (danced)
-							playAnim('danceRight');
-						else
-							playAnim('danceLeft');
-					}
-
-				case 'spooky':
-					danced = !danced;
-
-					if (danced)
-						playAnim('danceRight');
-					else
-						playAnim('danceLeft');
-				default:
-					// spooky will be considered boogie
-					if (gfEpicLevel >= cast Level_Boogie) {
-						if (!animation.curAnim.name.startsWith('hair'))
-						{
-							danced = !danced;
-							if (danced)
-								playAnim('danceRight');
-							else
-								playAnim('danceLeft');
-						}
-					} else {
-						if (like == 'tankman' && animation.curAnim.name.endsWith('DOWN-alt')) {
-							// do nothing dumbass
-						}
-						else
-							playAnim('idle');
-					}
-			}
+			if (interp != null)
+				callInterp("dance", [this]);
+			else
+				playAnim('idle');
 		}
 	}
 
 	public function playAnim(AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0):Void
 	{
 		animation.play(AnimName, Force, Reversed, Frame);
-		#if FUCK
-			return;
-		#end
 		var animName = "";
 		if (animation.curAnim == null) {
 			// P A N I K
@@ -952,7 +762,7 @@ class Character extends FlxSprite
 		else
 			offset.set(0, 0);
 		// should spooky be on this?
-		if (like == 'gf'  || like == 'gf-pixel')
+		if (likeGf)
 		{
 			if (AnimName == 'singLEFT')
 			{
@@ -994,5 +804,24 @@ class Character extends FlxSprite
 		var charJson = CoolUtil.parseJson(Assets.getText('assets/images/custom_chars/custom_chars.jsonc'));
 		var animJson = CoolUtil.parseJson(FNFAssets.getText('assets/images/custom_chars/'+Reflect.field(charJson,char).like + '.json'));
 		return animJson;
+	}
+	public static function getAnimInterp(char:String):Interp {
+		var interp = new Interp();
+		var parser = new hscript.Parser();
+		var charJson = CoolUtil.parseJson(Assets.getText('assets/images/custom_chars/custom_chars.jsonc'));
+		var program = parser.parseString(FNFAssets.getText('assets/images/custom_chars/' + Reflect.field(charJson, char).like + '.hscript'));
+		interp.variables.set("hscriptPath", 'assets/images/custom_chars/' + char + '/');
+		interp.variables.set("FlxAtlasFrames", FlxAtlasFrames);
+		interp.variables.set("Level_NotAHoe", Level_NotAHoe);
+		interp.variables.set("Level_Boogie", Level_Boogie);
+		interp.variables.set("Level_Sadness", Level_Sadness);
+		interp.variables.set("Level_Sing", Level_Sing);
+		interp.variables.set("StringTools", StringTools);
+		interp.variables.set("portraitOffset", [0, 0]);
+		interp.variables.set("dadVar", 4.0);
+		interp.variables.set("isPixel", false);
+		interp.execute(program);
+		trace(interp);
+		return interp;
 	}
 }

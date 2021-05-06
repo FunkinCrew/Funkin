@@ -1,0 +1,70 @@
+// char is a Character
+function init(char) {
+    if (!char.isDie) {
+        var tex = FlxAtlasFrames.fromSparrow(hscriptPath + 'char.png', hscriptPath + 'char.xml');
+        char.frames = tex;
+        char.animation.addByPrefix('idle', 'BF IDLE', 24, false);
+        char.animation.addByPrefix('singUP', 'BF UP NOTE', 24, false);
+        char.animation.addByPrefix('singLEFT','BF LEFT NOTE', 24, false);
+        char.animation.addByPrefix('singRIGHT', 'BF RIGHT NOTE', 24, false);
+        char.animation.addByPrefix('singDOWN', 'BF DOWN NOTE', 24, false);
+        char.animation.addByPrefix('singUPmiss', 'BF UP MISS', 24, false);
+        char.animation.addByPrefix('singLEFTmiss', 'BF LEFT MISS',24, false);
+        char.animation.addByPrefix('singRIGHTmiss', 'BF RIGHT MISS',24,false);
+        char.animation.addByPrefix('singDOWNmiss', 'BF DOWN MISS', 24, false);
+
+
+        char.addOffset('idle',0);
+        char.addOffset('singUP',0);
+        char.addOffset('singRIGHT',0);
+        char.addOffset('singLEFT',0);
+        char.addOffset('singDOWN',0);
+        char.addOffset('singUPmiss',0);
+        char.addOffset('singRIGHTmiss',0);
+        char.addOffset('singLEFTmiss',0);
+        char.addOffset('singDOWNmiss',0);
+
+        char.playAnim('idle');
+        char.width -= 100;
+        char.height -= 100;
+    } else {
+        var tex = FlxAtlasFrames.fromSparrow(hscriptPath + 'dead.png', hscriptPath + 'dead.xml');
+        
+        char.frames = tex;
+        char.animation.addByPrefix('firstDeath', 'BF Dies pixel', 24, false);
+        char.animation.addByPrefix('deathLoop','Retry Loop', 24, true);
+        char.animation.addByPrefix('deathConfirm', 'RETRY CONFIRM', 24, false);
+
+        char.addOffset('firstDeath', 37, 14);
+        char.addOffset('deathLoop', 37, -3);
+        char.addOffset('deathConfirm', 37, 28);
+    }
+    
+
+    char.flipX = true;
+    char.like = "bf";
+    char.likeBf = true;
+
+    char.enemyOffsetX = 0;
+    char.enemyOffsetY = 350;
+    char.playerOffsetX = 0;
+    char.playerOffsetY = 0;
+    char.followCamX = -100;
+    char.followCamY = -100;
+    char.midpointX = 0;
+    char.midpointY = 0;
+    // basically what if pixel does
+    char.setGraphicSize(Std.int(char.width * 6));
+    char.updateHitbox();
+    char.antialiasing = false;
+}
+var portraitOffset = [0, 0];
+var dadVar = 4.0;
+var isPixel = true;
+function update(elapsed, char) {
+    // do nothing...
+}
+var danced = false;
+function dance(char) {
+    char.playAnim('idle');
+}

@@ -2,7 +2,7 @@
 <project>
 	<!-- _________________________ Application Settings _________________________ -->
 	<!-- i think that company and file is where the save data is stored -->
-	<app title="Friday Night Funkin' Modding Plus" file="Funkin" packageName="com.ninjamuffin99.funkin" main="Main" version="0.2.7.1-mod-4.0.0-alpha" company="ninjamuffin99" />
+	<app title="Friday Night Funkin' Modding Plus" file="Funkin" packageName="com.ninjamuffin99.funkin" main="Main" version="Modding+: Tankman-4.0.0-alpha" company="ninjamuffin99" />
 
 	<!--Switch Export with Unique ApplicationID and Icon-->
 	<set name="APP_ID" value="0x0100f6c013bbc000" />
@@ -78,6 +78,7 @@
 	<haxelib name="hscript"/>
 	<!-- git https://github.com/ianharrigan/hscript-ex-->
 	<haxelib name="hscript-ex"/>
+	<haxelib name="hxcpp-debug-server"/>
 	<!-- <haxelib name="markdown" /> -->
 	<!-- <haxelib name="HtmlParser" /> -->
 

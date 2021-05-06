@@ -635,19 +635,24 @@ class DialogueBox extends FlxSpriteGroup
 				portraitCustom = new FlxSprite(0, 40);
 				var coolJson = Character.getAnimJson(realChar);
 				var customPixel = false;
+				var interp = Character.getAnimInterp(realChar);
 				if (FNFAssets.exists('assets/images/custom_chars/'+realChar+'/portrait.png')) {
 					var coolCustomJson = Character.getAnimJson(realChar);
-					customPixel = if (Reflect.hasField(coolCustomJson, "isPixel"))
-						coolCustomJson.isPixel
+					
+					customPixel = if (interp.variables.exists("isPixel"))
+						interp.variables.get("isPixel");
 					else
 						false;
 					var rawPic = FNFAssets.getBitmapData('assets/images/custom_chars/' + realChar + "/portrait.png");
 					var rawXml = FNFAssets.getText('assets/images/custom_chars/' + realChar + "/portrait.xml");
+					portraitCustom.x += interp.variables.get("portraitOffset")[0];
+					portraitCustom.y += interp.variables.get("portraitOffset")[1];
 					portraitCustom.frames = FlxAtlasFrames.fromSparrow(rawPic, rawXml);
 				} else {
 					portraitCustom.frames = FlxAtlasFrames.fromSparrow('assets/images/weeb/bfPortrait.png', 'assets/images/weeb/bfPortrait.xml');
 					customPixel = true;
 				}
+				
 				var customFrameings:Array<FlxFrame> = [];
 				for (frame in portraitCustom.frames.frames)
 				{

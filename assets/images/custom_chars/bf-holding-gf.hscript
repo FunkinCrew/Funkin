@@ -1,0 +1,64 @@
+// char is a Character
+function init(char) {
+    if (!char.isDie) {
+        var tex = FlxAtlasFrames.fromSparrow(hscriptPath + 'char.png', hscriptPath + 'char.xml');
+        char.frames = tex;
+        char.animation.addByPrefix('idle', 'BF idle dance w gf', 24, false);
+        char.animation.addByPrefix('singUP', 'BF NOTE UP0', 24, false);
+        char.animation.addByPrefix('singLEFT','BF NOTE LEFT0', 24, false);
+        char.animation.addByPrefix('singRIGHT', 'BF NOTE RIGHT0', 24, false);
+        char.animation.addByPrefix('singDOWN', 'BF NOTE DOWN0', 24, false);
+        char.animation.addByPrefix('singUPmiss', 'BF NOTE UP MISS', 24, false);
+        char.animation.addByPrefix('singLEFTmiss', 'BF NOTE LEFT MISS',24, false);
+        char.animation.addByPrefix('singRIGHTmiss', 'BF NOTE RIGHT MISS',24,false);
+        char.animation.addByPrefix('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
+
+
+        char.addOffset('idle', 0, 0);
+        char.addOffset('singUP', -29,10);
+        char.addOffset('singRIGHT', -41, 23);
+        char.addOffset('singLEFT', 12, 7);
+        char.addOffset('singDOWN', -10, -10);
+        char.addOffset('singUPmiss', -29, 10);
+        char.addOffset('singRIGHTmiss', -41, 23);
+        char.addOffset('singLEFTmiss', 12, 7);
+        char.addOffset('singDOWNmiss', -10, -10);
+
+        char.playAnim('idle');
+    } else {
+        var tex = FlxAtlasFrames.fromSparrow(hscriptPath + 'dead.png', hscriptPath + 'dead.xml');
+        
+        char.frames = tex;
+        char.animation.addByPrefix('firstDeath', 'BF Dies with GF', 24, false);
+        char.animation.addByPrefix('deathLoop','BF Dead with GF Loop', 24, true);
+        char.animation.addByPrefix('deathConfirm', 'RETRY confirm holding gf', 24, false);
+
+        char.addOffset('firstDeath', 37, 14);
+        char.addOffset('deathLoop', 37, -3);
+        char.addOffset('deathConfirm', 37, 28);
+    }
+    
+
+    char.flipX = true;
+    char.like = "bf";
+    char.likeBf = true;
+
+    char.enemyOffsetX = 0;
+    char.enemyOffsetY = 350;
+    char.playerOffsetX = 0;
+    char.playerOffsetY = 0;
+    char.followCamX = -100;
+    char.followCamY = -100;
+    char.midpointX = 0;
+    char.midpointY = 0;
+}
+var portraitOffset = [0, 0];
+var dadVar = 4.0;
+var isPixel = false;
+function update(elapsed, char) {
+    // do nothing...
+}
+var danced = false;
+function dance(char) {
+    char.playAnim('idle');
+}

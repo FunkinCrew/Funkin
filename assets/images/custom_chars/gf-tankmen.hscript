@@ -1,0 +1,41 @@
+trace(": )");
+// char is a Character
+function init(char) {
+    trace(": )");
+    var tex = FlxAtlasFrames.fromSparrow(hscriptPath + 'char.png', hscriptPath + 'char.xml');
+    trace(": )");
+    char.frames = tex;
+    char.animation.addByPrefix('sad', 'GF Crying at Gunpoint', "", 24, false);
+    char.animation.addByIndices('danceLeft', 'GF Dancing at Gunpoint', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
+    char.animation.addByIndices('danceRight', 'GF Dancing at Gunpoint', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
+
+    char.addOffset('sad', -2, -26);
+    char.addOffset('danceLeft', 0, -9);
+    char.addOffset('danceRight', 0, -9);
+
+
+    char.playAnim('danceRight');
+    char.like = "gf";
+    char.likeGf = true;
+    char.gfEpicLevel = Level_Sadness;
+
+}
+var portraitOffset = [0, 0];
+var dadVar = 4.0;
+var isPixel = false;
+function update(elapsed, char) {
+    // do nothing...
+}
+var danced = false;
+function dance(char) {
+    if (!StringTools.startsWith(char.animation.curAnim.name, 'hair'))
+    {
+        danced = !danced;
+
+        if (danced)
+            char.playAnim('danceRight');
+        else
+            char.playAnim('danceLeft');
+    }
+}
+trace("done");

@@ -1,0 +1,46 @@
+trace(": )");
+// char is a Character
+function init(char) {
+    trace(": )");
+    var tex = FlxAtlasFrames.fromSparrow(hscriptPath + 'char.png', hscriptPath + 'char.xml');
+    trace(": )");
+    char.frames = tex;
+    char.animation.addByIndices('danceLeft', 'spooky dance idle', [0,2,6], "", 12, false);
+    char.animation.addByIndices('danceRight', 'spooky dance idle', [8,10,12,14], "", 12, false);
+    char.animation.addByPrefix('singUP', 'spooky UP NOTE', 24, false);
+    char.animation.addByPrefix('singLEFT','note sing left', 24, false);
+    char.animation.addByPrefix('singRIGHT', 'spooky sing right', 24, false);
+    char.animation.addByPrefix('singDOWN', 'spooky DOWN note', 24, false);
+    
+
+    char.addOffset('danceLeft',0);
+    char.addOffset('danceRight',0);
+    char.addOffset('singUP', -20, 26);
+    char.addOffset('singRIGHT',-130, -7);
+    char.addOffset('singLEFT', 130, -10);
+    char.addOffset('singDOWN', -50, -130);
+
+    char.playAnim('danceRight');
+
+    char.flipX = false;
+
+    char.enemyOffsetX = 0;
+    char.enemyOffsetY = 200;
+}
+var portraitOffset = [0, 0];
+var dadVar = 4.0;
+var isPixel = false;
+function update(elapsed, char) {
+    // do nothing...
+}
+var danced = false;
+function dance(char) {
+    trace(": )");
+    danced = !danced;
+    if (danced) {
+        char.playAnim('danceLeft');
+    } else {
+        char.playAnim('danceRight');
+    }
+}
+trace("done");
