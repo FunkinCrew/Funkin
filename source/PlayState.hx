@@ -2441,9 +2441,14 @@ class PlayState extends MusicBeatState
 			ratingPath = "weeb/pixelUI/" + ratingPath + "-pixel";
 
 		rating.loadGraphic(Paths.image(ratingPath));
-		rating.screenCenter();
 		rating.x = FlxG.width * 0.55 - 40;
-		rating.y -= 60;
+		// make sure rating is visible lol!
+		if (rating.x < FlxG.camera.scroll.x)
+			rating.x = FlxG.camera.scroll.x;
+		else if (rating.x > FlxG.camera.scroll.x + FlxG.camera.width - rating.width)
+			rating.x = FlxG.camera.scroll.x + FlxG.camera.width - rating.width;
+
+		rating.y = FlxG.camera.scroll.y + FlxG.camera.height * 0.4 - 60;
 		rating.acceleration.y = 550;
 		rating.velocity.y -= FlxG.random.int(140, 175);
 		rating.velocity.x -= FlxG.random.int(0, 10);
@@ -2484,9 +2489,15 @@ class PlayState extends MusicBeatState
 		}
 
 		var comboSpr:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'combo' + pixelShitPart2));
-		comboSpr.screenCenter();
+		comboSpr.y = FlxG.camera.scroll.y + FlxG.camera.height * 0.4 + 80;
 		comboSpr.x = FlxG.width * 0.55;
-		comboSpr.y += 80;
+		// make sure combo is visible lol!
+		// 194 fits 4 combo digits
+		if (comboSpr.x < FlxG.camera.scroll.x + 194)
+			comboSpr.x = FlxG.camera.scroll.x + 194;
+		else if (comboSpr.x > FlxG.camera.scroll.x + FlxG.camera.width - comboSpr.width)
+			comboSpr.x = FlxG.camera.scroll.x + FlxG.camera.width - comboSpr.width;
+
 		comboSpr.acceleration.y = 600;
 		comboSpr.velocity.y -= 150;
 		comboSpr.velocity.x += FlxG.random.int(1, 10);
@@ -2529,7 +2540,6 @@ class PlayState extends MusicBeatState
 		for (i in seperatedScore)
 		{
 			var numScore:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'num' + Std.int(i) + pixelShitPart2));
-			numScore.y = comboSpr.y + 80;
 			numScore.y = comboSpr.y;
 
 			if (curStage.startsWith('school'))
