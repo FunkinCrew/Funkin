@@ -2104,17 +2104,10 @@ class PlayState extends MusicBeatState
 
 		generateStaticArrows(0);
 		generateStaticArrows(1);
-		if (FNFAssets.exists("assets/data/" + SONG.song.toLowerCase() + "/modchart.hx"))
+		if (FNFAssets.exists("assets/data/" + SONG.song.toLowerCase() + "/modchart.hscript"))
 		{
-			makeHaxeState("modchart", "assets/data/" + SONG.song.toLowerCase() + "/", "/modchart.hx");
+			makeHaxeState("modchart", "assets/data/" + SONG.song.toLowerCase() + "/", "/modchart.script");
 		}
-		#if windows
-		else if (FileSystem.exists("assets/data/" + SONG.song.toLowerCase() + "/modchart.lua")) // dude I hate lua (jkjkjkjk)
-		{
-			makeLuaState("modchart", "assets/data/" + SONG.song.toLowerCase() + "/", "/modchart.lua");
-		}
-		
-		#end
 		if (duoMode)
 		{
 			controls.setKeyboardScheme(Duo(true));
@@ -2906,60 +2899,7 @@ class PlayState extends MusicBeatState
 			}
 
 		}
-		#if windows
-		setAllVar('songPos', Conductor.songPosition);
-		setAllVar('hudZoom', camHUD.zoom);
-		setAllVar('cameraZoom', FlxG.camera.zoom);
-		callAllLua('update', [elapsed], null);
-		if (luaStates.exists("modchart")) {
-			FlxG.camera.angle = getVar('cameraAngle', 'float', 'modchart');
-			camHUD.angle = getVar('camHudAngle', 'float', 'modchart');
 
-			if (getVar("showOnlyStrums", 'bool', 'modchart'))
-			{
-				healthBarBG.visible = false;
-				healthBar.visible = false;
-				iconP1.visible = false;
-				iconP2.visible = false;
-				scoreTxt.visible = false;
-			}
-			else
-			{
-				healthBarBG.visible = true;
-				healthBar.visible = true;
-				iconP1.visible = true;
-				iconP2.visible = true;
-				scoreTxt.visible = true;
-			}
-
-			var p1 = getVar("strumLine1Visible", 'bool', 'modchart');
-			var p2 = getVar("strumLine2Visible", 'bool', 'modchart');
-
-			for (i in 0...4)
-			{
-				strumLineNotes.members[i].visible = p1;
-				if (i <= playerStrums.length)
-					playerStrums.members[i].visible = p2;
-			}
-		}
-		
-		#else
-		switch (curStage)
-		{
-			case 'philly':
-				if (trainMoving)
-				{
-					trainFrameTiming += elapsed;
-
-					if (trainFrameTiming >= 1 / 24)
-					{
-						updateTrainPos();
-						trainFrameTiming = 0;
-					}
-				}
-				// phillyCityLights.members[curLight].alpha -= (Conductor.crochet / 1000) * FlxG.elapsed;
-		}
-		#end
 		super.update(elapsed);
 		var properHealth = opponentPlayer ? 100 - Math.round(health*50) : Math.round(health*50);
 		healthTxt.text = "Health:" + properHealth + "%";

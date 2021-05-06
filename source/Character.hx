@@ -1,5 +1,11 @@
 package;
 
+import flixel.tweens.FlxTween;
+import flixel.util.FlxTimer;
+import flixel.group.FlxGroup;
+import flixel.math.FlxAngle;
+import flixel.math.FlxAngle;
+import flixel.math.FlxMath;
 import hscript.Interp;
 import hscript.ParserEx;
 import haxe.xml.Parser;
@@ -13,6 +19,7 @@ import lime.utils.Assets;
 import flixel.FlxG;
 import lime.system.System;
 import lime.app.Application;
+import flixel.system.FlxSound;
 #if sys
 import sys.io.File;
 import sys.FileSystem;
@@ -817,6 +824,15 @@ class Character extends FlxSprite
 		interp.variables.set("Level_Sadness", Level_Sadness);
 		interp.variables.set("Level_Sing", Level_Sing);
 		interp.variables.set("StringTools", StringTools);
+		interp.variables.set("FlxSound", FlxSound);
+		interp.variables.set("FlxAtlasFrames", FlxAtlasFrames);
+		interp.variables.set("FlxGroup", FlxGroup);
+		interp.variables.set("FlxAngle", FlxAngle);
+		interp.variables.set("Conductor", Conductor);
+		interp.variables.set("FlxMath", FlxMath);
+		interp.variables.set("FlxG", FlxG);
+		interp.variables.set("FlxTimer", FlxTimer);
+		interp.variables.set("FlxTween", FlxTween);
 		interp.variables.set("portraitOffset", [0, 0]);
 		interp.variables.set("dadVar", 4.0);
 		interp.variables.set("isPixel", false);
