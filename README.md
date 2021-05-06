@@ -79,7 +79,7 @@ To run it from your desktop (Windows, Mac, Linux) it can be a bit more involved.
 * MSVC v142 - VS 2019 C++ x64/x86 build tools (Latest)
 * Windows 10 SDK (10.0.19041.0)
 
-This will install about 22GB of crap, but once that is done you can open up a command line in the project's directory and run `lime test windows -debug`. Once that command finishes (it takes forever even on a higher end PC), you can run FNF from the .exe file under export\debug\windows\bin
+You can then open up a command line in the project's directory and run `lime test windows -debug`. Once that command finishes (it takes forever even on a higher end PC), you can run FNF from the .exe file under export\debug\windows\bin
 As for Mac, 'lime test mac -debug' should work, if not the internet surely has a guide on how to compile Haxe stuff for Mac.
 
 ### Additional guides
