@@ -23,7 +23,7 @@ class PreferencesMenu extends ui.OptionsState.Page
 	{
 		super();
 
-		menuCamera = new FlxCamera();
+		menuCamera = new SwagCamera();
 		FlxG.cameras.add(menuCamera, false);
 		menuCamera.bgColor = 0x0;
 		camera = menuCamera;
@@ -148,7 +148,7 @@ class PreferencesMenu extends ui.OptionsState.Page
 	{
 		super.update(elapsed);
 
-		menuCamera.followLerp = CoolUtil.camLerpShit(0.05);
+		// menuCamera.followLerp = CoolUtil.camLerpShit(0.05);
 
 		items.forEach(function(daItem:TextMenuItem)
 		{

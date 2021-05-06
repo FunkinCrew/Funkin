@@ -120,6 +120,7 @@ class MainMenuState extends MusicBeatState
 			menuItem.y = top + spacing * i;
 		}
 
+		FlxG.cameras.reset(new SwagCamera());
 		FlxG.camera.follow(camFollow, null, 0.06);
 		// FlxG.camera.setScrollBounds(bg.x, bg.x + bg.width, bg.y, bg.y + bg.height * 1.2);
 
@@ -249,7 +250,7 @@ class MainMenuState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
-		FlxG.camera.followLerp = CoolUtil.camLerpShit(0.06);
+		// FlxG.camera.followLerp = CoolUtil.camLerpShit(0.06);
 
 		if (FlxG.sound.music.volume < 0.8)
 		{
