@@ -2106,7 +2106,7 @@ class PlayState extends MusicBeatState
 		generateStaticArrows(1);
 		if (FNFAssets.exists("assets/data/" + SONG.song.toLowerCase() + "/modchart.hscript"))
 		{
-			makeHaxeState("modchart", "assets/data/" + SONG.song.toLowerCase() + "/", "/modchart.script");
+			makeHaxeState("modchart", "assets/data/" + SONG.song.toLowerCase() + "/", "/modchart.hscript");
 		}
 		if (duoMode)
 		{
