@@ -58,8 +58,8 @@ class OptionsMenu extends MusicBeatState
 			new FPSOption("Toggle the FPS Counter"),
 			new ReplayOption("View replays"),
 			#end
-			new WatermarkOption("Turn off all watermarks from the engine.")
-			
+			new WatermarkOption("Turn off all watermarks from the engine."),
+			new BotPlay("Showcase your charts and mods with autoplay.")
 		])
 		
 	];
@@ -239,7 +239,7 @@ class OptionsMenu extends MusicBeatState
 		if (isCat)
 			currentDescription = currentSelectedCat.getOptions()[curSelected].getDescription();
 		else
-			currentDescription = "Please select a catagory";
+			currentDescription = "Please select a category";
 		versionShit.text = "Offset (Left, Right, Shift for slow): " + HelperFunctions.truncateFloat(FlxG.save.data.offset,2) + " - Description - " + currentDescription;
 
 		// selector.y = (70 * curSelected) + 30;
