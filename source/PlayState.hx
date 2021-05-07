@@ -62,12 +62,6 @@ import openfl.utils.ByteArray;
 import lime.media.AudioBuffer;
 
 #end
-#if windows
-import llua.Lua;
-import llua.LuaL;
-import llua.Convert;
-import llua.State;
-#end
 import tjson.TJSON;
 using StringTools;
 typedef LuaAnim = {
@@ -940,7 +934,7 @@ class PlayState extends MusicBeatState
 
 		FlxG.fixedTimestep = false;
 		trace('gay');
-		healthBarBG = new FlxSprite(0, FlxG.height * 0.9).loadGraphic('assets/images/healthBar.png');
+		healthBarBG = new FlxSprite(0, FlxG.height * 0.85).loadGraphic('assets/images/healthBar.png');
 		if (downscroll)
 			healthBarBG.y = FlxG.height * 0.1;
 		healthBarBG.screenCenter(X);
@@ -960,22 +954,25 @@ class PlayState extends MusicBeatState
 		// healthBar
 		add(healthBar);
 
-		scoreTxt = new FlxText(healthBarBG.x + healthBarBG.width - 90, healthBarBG.y + 30, 0, "", 200);
+		scoreTxt = new FlxText(healthBarBG.x + healthBarBG.width - 90, healthBarBG.y + 40, 0, "", 200);
 		scoreTxt.setFormat("assets/fonts/vcr.ttf", 20, FlxColor.WHITE, RIGHT, OUTLINE, FlxColor.BLACK);
 		scoreTxt.scrollFactor.set();
 
-		healthTxt = new FlxText(healthBarBG.x + healthBarBG.width - 300, healthBarBG.y + 30, 0, "", 200);
+		healthTxt = new FlxText(healthBarBG.x + healthBarBG.width - 300, scoreTxt.y, 0, "", 200);
 		healthTxt.setFormat("assets/fonts/vcr.ttf", 20, FlxColor.WHITE, RIGHT, OUTLINE, FlxColor.BLACK);
 		healthTxt.scrollFactor.set();
 
-		accuracyTxt = new FlxText(healthBarBG.x, healthBarBG.y + 30, 0, "", 200);
+		accuracyTxt = new FlxText(healthBarBG.x, scoreTxt.y, 0, "", 200);
 		accuracyTxt.setFormat("assets/fonts/vcr.ttf", 20, FlxColor.WHITE, RIGHT, OUTLINE, FlxColor.BLACK);
 		accuracyTxt.scrollFactor.set();
 		difficTxt = new FlxText(10, FlxG.height, 0, "", 200);
-
+		
 		difficTxt.setFormat("assets/fonts/vcr.ttf", 20, FlxColor.WHITE, RIGHT, OUTLINE, FlxColor.BLACK);
 		difficTxt.scrollFactor.set();
 		difficTxt.y -= difficTxt.height;
+		if (downscroll) {
+			difficTxt.y = 0;
+		}
 		// screwy way of getting text
 		difficTxt.text = DifficultyIcons.changeDifficultyFreeplay(storyDifficulty, 0).text;
 		iconP1 = new HealthIcon(SONG.player1, true);
