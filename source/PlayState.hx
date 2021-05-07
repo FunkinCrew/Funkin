@@ -1656,6 +1656,9 @@ class PlayState extends MusicBeatState
 		perfectMode = false;
 		#end
 
+		if (FlxG.save.data.botplay && FlxG.keys.justPressed.ONE)
+			camHUD.visible = !camHUD.visible;
+
 		#if windows
 		if (executeModchart && luaModchart != null && songStarted)
 		{

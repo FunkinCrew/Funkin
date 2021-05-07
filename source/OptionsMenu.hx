@@ -37,27 +37,20 @@ class OptionsMenu extends MusicBeatState
 			#if desktop
 			new DistractionsAndEffectsOption("Toggle stage distractions that can hinder your gameplay."),
 			new RainbowFPSOption("Make the FPS Counter Rainbow (Only works with the FPS Counter toggled on and Flashing Lights toggled off)")
+			new AccuracyOption("Display accuracy information."),
+			new NPSDisplayOption("Shows your current Notes Per Second."),
+			new SongPositionOption("Show the songs current position (as a bar)"),
 			#else
 			new DistractionsAndEffectsOption("Toggle stage distractions that can hinder your gameplay.")
 			#end
 		]),
-
-		new OptionCatagory("Indicators, Notices, and Displays", [
-			new AccuracyOption("Display accuracy information."),
-			new NPSDisplayOption("Shows your current Notes Per Second."),
-			new SongPositionOption("Show the songs current position (as a bar)"),
-		]),
-
-		new OptionCatagory("Health and Safety", [
-			new FlashingLightsOption("Toggle flashing lights that can cause epileptic seizures and strain.")
-		]),
-		
 		
 		new OptionCatagory("Misc", [
 			#if desktop
 			new FPSOption("Toggle the FPS Counter"),
 			new ReplayOption("View replays"),
 			#end
+			new FlashingLightsOption("Toggle flashing lights that can cause epileptic seizures and strain."),
 			new WatermarkOption("Turn off all watermarks from the engine."),
 			new BotPlay("Showcase your charts and mods with autoplay.")
 		])
