@@ -56,6 +56,52 @@ class ModchartState
 
 	}
 
+	static function toLua(l:State, val:Any):Bool {
+		switch (Type.typeof(val)) {
+			case Type.ValueType.TNull:
+				Lua.pushnil(l);
+			case Type.ValueType.TBool:
+				Lua.pushboolean(l, val);
+			case Type.ValueType.TInt:
+				Lua.pushinteger(l, cast(val, Int));
+			case Type.ValueType.TFloat:
+				Lua.pushnumber(l, val);
+			case Type.ValueType.TClass(String):
+				Lua.pushstring(l, cast(val, String));
+			case Type.ValueType.TClass(Array):
+				Convert.arrayToLua(l, val);
+			case Type.ValueType.TObject:
+				objectToLua(l, val);
+			default:
+				trace("haxe value not supported - " + val + " which is a type of " + Type.typeof(val));
+				return false;
+		}
+
+		return true;
+
+	}
+
+	static function objectToLua(l:State, res:Any) {
+
+		var FUCK = 0;
+		for(n in Reflect.fields(res))
+		{
+			trace(Type.typeof(n).getName());
+			FUCK++;
+		}
+
+		Lua.createtable(l, FUCK, 0); // TODONE: I did it
+
+		for (n in Reflect.fields(res)){
+			if (!Reflect.isObject(n))
+				continue;
+			Lua.pushstring(l, n);
+			toLua(l, Reflect.field(res, n));
+			Lua.settable(l, -3);
+		}
+
+	}
+
 	function getType(l, type):Any
 	{
 		return switch Lua.type(l,type) {
@@ -179,6 +225,11 @@ class ModchartState
 		return luaSprites.get(id);
 	}
 
+	function getPropertyByName(id:String)
+	{
+		return Reflect.field(PlayState.instance,id);
+	}
+
 	public static var luaSprites:Map<String,FlxSprite> = [];
 
 
@@ -195,9 +246,7 @@ class ModchartState
 
 		// Cap the scale at x1
 		if (scale > 1)
-		{
 			scale = 1;
-		}
 
 		sprite.makeGraphic(Std.int(data.width * scale),Std.int(data.width * scale),FlxColor.TRANSPARENT);
 
@@ -301,6 +350,8 @@ class ModchartState
 	
 				trace(Lua_helper.add_callback(lua,"makeSprite", makeLuaSprite));
 	
+				trace(Lua_helper.add_callback(lua,"getProperty", getPropertyByName));
+
 				Lua_helper.add_callback(lua,"destroySprite", function(id:String) {
 					var sprite = luaSprites.get(id);
 					if (sprite == null)
@@ -638,6 +689,10 @@ class ModchartState
 				Lua_helper.add_callback(lua,"setFilterCam", function(shaderIndex:Int) {
 					FlxG.camera.setFilters([new ShaderFilter(shaders[shaderIndex])]);
 				});*/
+
+
+				objectToLua(lua,PlayState.instance.camHUD);
+				Lua.setglobal(lua,"fuckyou");
 
 				// default strums
 
