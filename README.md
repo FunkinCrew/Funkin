@@ -8,10 +8,10 @@ I at least would like to see the main author and a majority of secondary offers 
 If an author gives express disapproval, and the mod is up, you should take your mod down. I own the code to this mod so I can (and will)
 take down mods that don't follow this rule.
 
-Download on gamebanana: https://gamebanana.com/gamefiles/14264
-Play the original game: https://github.com/ninjamuffin99/Funkin
-Need Help? FNF Modding Plus discord: https://discord.gg/96nV4Q5HMr
-Trello page (todo list): https://trello.com/b/cFjJJIjF/fnf-modding-plus
+- Download on gamebanana: https://gamebanana.com/gamefiles/14264
+- Play the original game: https://github.com/ninjamuffin99/Funkin
+- Need Help? FNF Modding Plus discord: https://discord.gg/96nV4Q5HMr
+- Trello page (todo list): https://trello.com/b/cFjJJIjF/fnf-modding-plus
 ## Credits / shoutouts
 
 - [ninjamuffin99](https://twitter.com/ninja_muffin99) - Programmer
