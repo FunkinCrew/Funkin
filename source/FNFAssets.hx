@@ -141,3 +141,23 @@ class FNFAssets {
 		FlxG.log.error("Problem saving Level data");
 	}
 }
+
+// a proxy for HScript that gives some but not all of the features of
+// regular FNFAssets
+class HScriptAssets {
+	public static function getText(id:String):String {
+		return FNFAssets.getText(id);
+	}
+	public static function getBytes(id:String):Bytes {
+		return FNFAssets.getBytes(id);
+	}
+	public static function exists(id:String):Bool {
+		return FNFAssets.exists(id);
+	}
+	public static function getBitmapData(id:String):BitmapData {
+		return FNFAssets.getBitmapData(id);
+	}
+	public static function getSound(id:String):Sound {
+		return FNFAssets.getSound(id);
+	}
+}

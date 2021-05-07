@@ -1,5 +1,6 @@
 package;
 
+import FNFAssets.HScriptAssets;
 import flixel.ui.FlxButton.FlxTypedButton;
 import Section.SwagSection;
 import Song.SwagSong;
@@ -297,6 +298,7 @@ class PlayState extends MusicBeatState
 		interp.variables.set("boyfriend", boyfriend);
 		interp.variables.set("gf", gf);
 		interp.variables.set("dad", dad);
+		interp.variables.set("FNFAssets", HScriptAssets);
 		// give them access to save data, everything will be fine ;)
 		interp.variables.set("FlxG", FlxG);
 		interp.variables.set("FlxTimer", FlxTimer);
