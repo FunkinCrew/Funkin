@@ -92,7 +92,7 @@ class DialogueBox extends FlxSpriteGroup
 		bgFade.scrollFactor.set();
 		bgFade.alpha = 0;
 		add(bgFade);
-		acceptSound = 'assets/sound/clickText.ogg';
+		acceptSound = 'assets/sounds/clickText.ogg';
 		new FlxTimer().start(0.83, function(tmr:FlxTimer)
 		{
 			bgFade.alpha += (1 / 5) * 0.7;

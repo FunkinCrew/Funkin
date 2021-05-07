@@ -9,7 +9,7 @@ function start(song) {
 
     var tree = new FlxSprite(300, -300).loadGraphic(hscriptPath + 'evilTree.png');
     tree.antialiasing = true;
-    tree.scrollFactor.set(0.4, 0.4);
+    tree.scrollFactor.set(0.2, 0.2);
     addSprite(tree, BEHIND_ALL);
     var snow = new FlxSprite(-200, 700).loadGraphic(hscriptPath + 'evilSnow.png');
     snow.antialiasing = true;
