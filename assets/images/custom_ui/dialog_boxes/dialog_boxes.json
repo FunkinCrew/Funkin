@@ -10,5 +10,8 @@
   },
   "templateDialog": {
     "like": "dialog"
+  },
+  "templateDialogAngry": {
+    "like": "dialog-angry"
   }
 }
