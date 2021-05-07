@@ -1576,6 +1576,7 @@ class PlayState extends MusicBeatState
 						|| epicNote.animation.curAnim.name == 'purpleholdend')
 					{
 						epicNote.flipY = true;
+						epicNote.offset.y -= epicNote.height/2;
 					}
 				}
 			}

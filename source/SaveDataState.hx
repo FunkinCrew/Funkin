@@ -1,5 +1,6 @@
 package;
 
+import FunkinUtility.FunkinGroup;
 import Controls.Control;
 import flash.text.TextField;
 import flixel.FlxG;
@@ -44,6 +45,7 @@ class SaveDataState extends MusicBeatState
 						{name: "Skip Modifier Menu", value: false}, 
 						{name: "Skip Victory Screen", value: false},
 						{name: "Downscroll", value: false},
+						{name: "Credits", value: false},
 						{name: "Sound Test...", value: false},
 						{name:"New Character...", value: false},
 						{name:"New Stage...", value:false},
@@ -199,6 +201,9 @@ class SaveDataState extends MusicBeatState
 						saveOptions();
 						FreeplayState.soundTest = true;
 						FlxG.switchState(new CategoryState());
+					case "Credits": 
+						saveOptions();
+						FlxG.switchState(new CreditsState());
 					default:
 						if (OptionsHandler.options.allowEditOptions){
 							checkmarks.members[optionsSelected].visible = !checkmarks.members[optionsSelected].visible;
