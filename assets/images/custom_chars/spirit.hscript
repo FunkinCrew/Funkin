@@ -30,6 +30,7 @@ function init(char) {
     char.setGraphicSize(Std.int(char.width * 6));
     char.updateHitbox();
     char.antialiasing = false;
+    char.isPixel = true;
 }
 var portraitOffset = [0, 0];
 var dadVar = 4.0;

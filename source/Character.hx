@@ -632,7 +632,6 @@ class Character extends FlxSprite
 		charJson = CoolUtil.parseJson(Assets.getText('assets/images/custom_chars/custom_chars.jsonc'));
 		interp = Character.getAnimInterp(curCharacter);
 		callInterp("init", [this]);
-		isPixel  = interp.variables.get("isPixel");
 		dance();
 
 		if (isPlayer)
