@@ -21,7 +21,7 @@ take down mods that don't follow this rule.
 
 - [BulbyVR](https://gamebanana.com/members/1776425) - Owner/Programmer
 - [DJ Popsicle](https://gamebanana.com/members/1780306) - Co-Owner/Coding
-- [Matheus L/Mlops](https://gamebanana.com/members/1767306) - Artist for the Icons
+- [Matheus L/Mlops](https://gamebanana.com/members/1767306) and [AndreDoodles](https://gamebanana.com/members/1764840) - Artist for the Poison Icons
 
 This game was made with love to Newgrounds and it's community. Extra love to Tom Fulp.
 
