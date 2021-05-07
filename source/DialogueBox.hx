@@ -35,8 +35,7 @@ class DialogueBox extends FlxSpriteGroup
 	var curCharacter:String = '';
 
 	var dialogue:Alphabet;
-	var dialogueList:Array<String> = [];
-
+	var infoList:Array<FileParser.DialogTextInfo> = [];
 	// SECOND DIALOGUE FOR THE PIXEL SHIT INSTEAD???
 	var swagDialogue:FlxTypeText;
 
@@ -60,7 +59,14 @@ class DialogueBox extends FlxSpriteGroup
 	var senpaiVisible = true;
 	var sided:Bool = false;
 	public function new(talkingRight:Bool = true, ?dialogueList:Array<String>)
-	{
+	{	
+		var fileContent = "";
+		for (dialogText in dialogueList) {
+			fileContent += dialogText;
+			fileContent += '\n';
+		}
+		fileContent = fileContent.trim();
+		infoList = FileParser.parseDialog(fileContent);
 		super();
 		trace('hey guys');
 		clickSounds[2] = 'assets/sounds/pixelText.ogg';
@@ -359,7 +365,7 @@ class DialogueBox extends FlxSpriteGroup
 		}
 
 		box.animation.play('normalOpen');
-		if (dialogueList[0].startsWith(':dad:') && sided) {
+		if (infoList[0].speaker == "dad" && sided) {
 			box.flipX = true;
 		}
 		if (isPixel[2]) {
@@ -411,7 +417,6 @@ class DialogueBox extends FlxSpriteGroup
 		// dialogue.x = 90;
 		// add(dialogue);
 
-		this.dialogueList = dialogueList;
 	}
 
 	var dialogueOpened:Bool = false;
@@ -474,7 +479,7 @@ class DialogueBox extends FlxSpriteGroup
 				
 			FlxG.sound.play(acceptSound, 0.8);
 
-			if (dialogueList[1] == null && dialogueList[0] != null)
+			if (infoList.length == 1)
 			{
 				if (!isEnding)
 				{
@@ -505,7 +510,7 @@ class DialogueBox extends FlxSpriteGroup
 			}
 			else
 			{
-				dialogueList.remove(dialogueList[0]);
+				infoList.remove(infoList[0]);
 				startDialogue();
 			}
 		}
@@ -636,15 +641,14 @@ class DialogueBox extends FlxSpriteGroup
 				var coolJson = Character.getAnimJson(realChar);
 				var customPixel = false;
 				var interp = Character.getAnimInterp(realChar);
-				if (FNFAssets.exists('assets/images/custom_chars/'+realChar+'/portrait.png')) {
-					var coolCustomJson = Character.getAnimJson(realChar);
+				if (FNFAssets.exists('assets/images/custom_chars/'+realChar+'/portraits/'+infoList[0].speakermood+'.png')) {
 					
 					customPixel = if (interp.variables.exists("isPixel"))
 						interp.variables.get("isPixel");
 					else
 						false;
-					var rawPic = FNFAssets.getBitmapData('assets/images/custom_chars/' + realChar + "/portrait.png");
-					var rawXml = FNFAssets.getText('assets/images/custom_chars/' + realChar + "/portrait.xml");
+					var rawPic = FNFAssets.getBitmapData('assets/images/custom_chars/' + realChar + '/portraits/' + infoList[0].speakermood + '.png');
+					var rawXml = FNFAssets.getText('assets/images/custom_chars/' + realChar + '/portraits/' + infoList[0].speakermood + '.png');
 					portraitCustom.x += interp.variables.get("portraitOffset")[0];
 					portraitCustom.y += interp.variables.get("portraitOffset")[1];
 					portraitCustom.frames = FlxAtlasFrames.fromSparrow(rawPic, rawXml);
@@ -696,7 +700,7 @@ class DialogueBox extends FlxSpriteGroup
 			// insert it!
 			insert(members.length - 4, portraitCustom);
 		}
-		swagDialogue.resetText(dialogueList[0]);
+		swagDialogue.resetText(infoList[0].speech);
 		swagDialogue.start(0.04, true);
 		swagDialogue.completeCallback = function() {
 			trace("dialogue finish");
@@ -754,8 +758,6 @@ class DialogueBox extends FlxSpriteGroup
 
 	function cleanDialog():Void
 	{
-		var splitName:Array<String> = dialogueList[0].split(":");
-		curCharacter = splitName[1];
-		dialogueList[0] = dialogueList[0].substr(splitName[1].length + 2).trim();
+		curCharacter = infoList[0].speaker;
 	}
 }
