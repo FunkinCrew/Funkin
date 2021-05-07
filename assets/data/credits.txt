@@ -8,7 +8,7 @@ bulbyVR
 DJpopsicle
 m+ art
 mlops
-m+ helper of code & art
+m+ helper of coding & art
 alex director
 and all
 github contributors
