@@ -8,15 +8,16 @@ I at least would like to see the main author and a majority of secondary offers 
 If an author gives express disapproval, and the mod is up, you should take your mod down. I own the code to this mod so I can (and will)
 take down mods that don't follow this rule.
 
-- Download on gamebanana: https://gamebanana.com/gamefiles/14264
-- Play the original game: https://github.com/ninjamuffin99/Funkin
-- Need Help? FNF Modding Plus discord: https://discord.gg/96nV4Q5HMr
+- Download on GameBanana: https://gamebanana.com/gamefiles/14264
+- Play the Original Game: https://github.com/ninjamuffin99/Funkin
+- Need Help? FNF Modding Plus Discord: https://discord.gg/96nV4Q5HMr
 - Trello page (todo list): https://trello.com/b/cFjJJIjF/fnf-modding-plus
 ## Credits / shoutouts
 
 - [ninjamuffin99](https://twitter.com/ninja_muffin99) - Programmer
 - [PhantomArcade3K](https://twitter.com/phantomarcade3k) and [Evilsk8r](https://twitter.com/evilsk8r) - Art
-- [Kawaisprite](https://twitter.com/kawaisprite) - Musician
+- [KawaiSprite](https://twitter.com/kawaisprite) - Musician
+- [Matheus L/Mlops](https://gamebanana.com/members/1767306) - Help for the Icons
 
 This game was made with love to Newgrounds and it's community. Extra love to Tom Fulp.
 
