@@ -97,6 +97,5 @@ warning--choking hazard
 devin chat--what an honorable man
 kickstarter exclusive--intro text
 cussing--we have it
-this build is in alpha--we workin on it
-:grief:--i'm working on it
-@bulby
+this build is in alpha--im workin on it k
+downscroll--we now have it
