@@ -250,12 +250,7 @@ class TitleState extends MusicBeatState
 			new FlxTimer().start(2, function(tmr:FlxTimer)
 			{
 				// Check if version is outdated
-
-				#if !windows
-				FlxG.switchState(new OutdatedSubState());
-				#else
 				FlxG.switchState(new MainMenuState());
-				#end
 			});
 			// FlxG.sound.play('assets/music/titleShoot' + TitleState.soundExt, 0.7);
 		}
