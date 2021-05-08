@@ -89,6 +89,7 @@ class ChartingState extends MusicBeatState
 	var rightIcon:HealthIcon;
 
 	private var lastNote:Note;
+	var claps:Array<Note> = [];
 
 	override function create()
 	{
@@ -240,18 +241,29 @@ class ChartingState extends MusicBeatState
             });
 
 		var loadAutosaveBtn:FlxButton = new FlxButton(reloadSongJson.x, reloadSongJson.y + 30, 'load autosave', loadAutosave);
-
-		var stepperSpeed:FlxUINumericStepper = new FlxUINumericStepper(10, 80, 0.1, 1, 0.1, 10, 1);
-		stepperSpeed.value = _song.speed;
-		stepperSpeed.name = 'song_speed';
-
-		var stepperSpeedLabel = new FlxText(74,80,'Scroll Speed');
-
 		var stepperBPM:FlxUINumericStepper = new FlxUINumericStepper(10, 65, 0.1, 1, 1.0, 5000.0, 1);
 		stepperBPM.value = Conductor.bpm;
 		stepperBPM.name = 'song_bpm';
 
 		var stepperBPMLabel = new FlxText(74,65,'BPM');
+		
+		var stepperSpeed:FlxUINumericStepper = new FlxUINumericStepper(10, 80, 0.1, 1, 0.1, 10, 1);
+		stepperSpeed.value = _song.speed;
+		stepperSpeed.name = 'song_speed';
+
+		var stepperSpeedLabel = new FlxText(74,80,'Scroll Speed');
+		
+		var stepperVocalVol:FlxUINumericStepper = new FlxUINumericStepper(10, 95, 0.1, 1, 0.1, 10, 1);
+		stepperVocalVol.value = vocals.volume;
+		stepperVocalVol.name = 'song_vocalvol';
+
+		var stepperVocalVolLabel = new FlxText(74, 95, 'Vocal Volume');
+		
+		var stepperSongVol:FlxUINumericStepper = new FlxUINumericStepper(10, 110, 0.1, 1, 0.1, 10, 1);
+		stepperSongVol.value = FlxG.sound.music.volume;
+		stepperSongVol.name = 'song_instvol';
+
+		var stepperSongVolLabel = new FlxText(74, 110, 'Instrumental Volume');
 
 		var characters:Array<String> = CoolUtil.coolTextFile(Paths.txt('characterList'));
 		var gfVersions:Array<String> = CoolUtil.coolTextFile(Paths.txt('gfVersionList'));
@@ -312,6 +324,10 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(stepperBPMLabel);
 		tab_group_song.add(stepperSpeed);
 		tab_group_song.add(stepperSpeedLabel);
+		tab_group_song.add(stepperVocalVol);
+		tab_group_song.add(stepperVocalVolLabel);
+		tab_group_song.add(stepperSongVol);
+		tab_group_song.add(stepperSongVolLabel);
 		
 		var tab_group_assets = new FlxUI(null, UI_box);
 		tab_group_assets.name = "Assets";
@@ -545,6 +561,16 @@ class ChartingState extends MusicBeatState
 					nums.value = 0.1;
 				_song.notes[curSection].bpm = Std.int(nums.value);
 				updateGrid();
+			}else if (wname == 'song_vocalvol')
+			{
+				if (nums.value <= 0.1)
+					nums.value = 0.1;
+				vocals.volume = nums.value;
+			}else if (wname == 'song_instvol')
+			{
+				if (nums.value <= 0.1)
+					nums.value = 0.1;
+				FlxG.sound.music.volume = nums.value;
 			}
 		}
 
@@ -630,8 +656,23 @@ class ChartingState extends MusicBeatState
 		}
 
 		strumLine.y = getYfromStrum((Conductor.songPosition - sectionStartTime()) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps));
-
-
+		
+		curRenderedNotes.forEach(function(note:Note)
+		{
+			if (FlxG.sound.music.playing)
+			{
+				FlxG.overlap(strumLine, note, function(_, _)
+				{
+					if(!claps.contains(note))
+					{
+						claps.push(note);
+						if(_song.notes[curSection].mustHitSection) FlxG.sound.play(Paths.sound('CLAP'));
+						else FlxG.sound.play(Paths.sound('SNAP'));
+					}
+				});
+			}
+		});
+		
 		/*curRenderedNotes.forEach(function(note:Note) {
 			if (strumLine.overlaps(note) && strumLine.y == note.y) // yandere dev type shit
 			{
@@ -829,6 +870,7 @@ class ChartingState extends MusicBeatState
 				{
 					FlxG.sound.music.pause();
 					vocals.pause();
+					claps.splice(0, claps.length);
 				}
 				else
 				{
