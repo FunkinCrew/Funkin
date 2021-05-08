@@ -2,5 +2,6 @@
 <TextureAtlas imagePath="st_ui_assets.png">
 	<!-- Created with Adobe Animate version 19.2.0.405 -->
 	<!-- http://www.adobe.com/products/animate.html -->
-	<SubTexture name="backspace indicator0000" x="10" y="10" width="280" height="106"/>
+	<SubTexture name="backspace indicator0000" x="10" y="128" width="280" height="106"/>
+	<SubTexture name="backspace-pixel indicator0000" x="10" y="10" width="280" height="108"/>
 </TextureAtlas>
