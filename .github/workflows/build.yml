@@ -33,7 +33,7 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: Install Haxelib
         run: |
-          haxelib install hxcpp > nul
+          haxelib install hxcpp
           haxelib install lime
           haxelib install openfl
           haxelib install flixel
@@ -76,7 +76,7 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: Install Haxelib
         run: |
-          haxelib install hxcpp > nul
+          haxelib install hxcpp
           haxelib install lime
           haxelib install openfl
           haxelib install flixel
@@ -119,7 +119,7 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: Install Haxelib
         run: |
-          haxelib install hxcpp > nul
+          haxelib install hxcpp
           haxelib install lime
           haxelib install openfl
           haxelib install flixel
