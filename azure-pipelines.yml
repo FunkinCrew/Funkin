@@ -112,8 +112,6 @@ jobs:
         displayName: 'Install haxelibs'
       - script: haxelib run lime build cpp
         displayName: 'Compile'
-      - script: tar -czf windows.tar.gz 'export/release/windows/bin'
-        displayName: Archive
       - task: PublishPipelineArtifact@0
         inputs:
           artifactName: 'cppWindowsOutput'
