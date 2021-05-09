@@ -99,7 +99,7 @@ jobs:
           haxelib list
         shell: cmd
       - name: Compile
-        run: lime build windows
+        run: haxelib run lime build windows
       - name: Archive
         run: tar -czf bin.tar.gz 'export/release/windows/bin'
       - name: Publish Artifact
