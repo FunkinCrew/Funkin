@@ -33,7 +33,7 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: Install Haxelib
         run: |
-          haxelib setup
+          haxelib setup ~/haxelib
           haxelib install hxcpp
           haxelib install lime
           haxelib install openfl
@@ -77,7 +77,7 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: Install Haxelib
         run: |
-          haxelib setup
+          haxelib setup C:/haxelib
           haxelib install hxcpp
           haxelib install lime
           haxelib install openfl
@@ -121,7 +121,7 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: Install Haxelib
         run: |
-          haxelib setup
+          haxelib setup ~/haxelib
           haxelib install hxcpp
           haxelib install lime
           haxelib install openfl
