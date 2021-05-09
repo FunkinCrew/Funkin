@@ -73,7 +73,7 @@ jobs:
         displayName: 'Install haxelibs'
       - script: haxelib run lime build mac
         displayName: 'Compile'
-      - script: tar -czf bin.tar.gz 'export/release/neko/bin'
+      - script: tar -czf bin.tar.gz 'export/release/mac/bin'
         displayName: 'Archive'
       - task: PublishPipelineArtifact@0
         inputs:
@@ -112,7 +112,8 @@ jobs:
         displayName: 'Install haxelibs'
       - script: haxelib run lime build cpp
         displayName: 'Compile'
+      - script: tar -czf windows.tar.gz 'export/release/windows/bin'
       - task: PublishPipelineArtifact@0
         inputs:
           artifactName: 'cppWindowsOutput'
-          targetPath: 'export/release/windows/bin'
+          targetPath: 'windows.tar.gz'
