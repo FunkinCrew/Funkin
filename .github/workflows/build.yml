@@ -1,0 +1,149 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the action will run. 
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  buildLinux:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      - name: Setup Haxe environment
+        run: |
+          sudo add-apt-repository ppa:haxe/releases -y
+          sudo apt update -y
+          sudo apt install haxe -y
+      # Runs a set of commands using the runners shell
+      - name: Install Haxelib
+        run: |
+          haxelib install hxcpp > nul
+          haxelib install lime
+          haxelib install openfl
+          haxelib install flixel
+          haxelib run lime setup flixel
+          haxelib run lime setup
+          haxelib install flixel-tools
+          haxelib run flixel-tools setup
+          haxelib install flixel-ui
+          haxelib install tjson
+          haxelib install json2object
+          haxelib install uniontypes
+          haxelib install hxjsonast
+          haxelib install linc_luajit
+          haxelib install hscript
+          haxelib git hscript-ex https://github.com/ianharrigan/hscript-ex
+          haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
+          haxelib install hxcpp-debug-server
+          haxelib list
+      - name: Compile
+        run: lime build linux
+      - name: Archive
+        run: tar -czf bin.tar.gz 'export/release/linux/bin'
+      - name: Publish Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: linuxBuild
+          path: bin.tar.gz
+  buildWindows:
+    runs-on: windows-latest
+    
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      - name: Setup Haxe environment
+        run: |
+          choco install --no-progress haxe -y
+          $nekoPath = (Get-ChildItem C:/ProgramData/chocolatey/lib/neko/*/neko.dll -Recurse).Directory
+          echo "##vso[task.setvariable variable=NEKOPATH]$nekoPath"
+      # Runs a set of commands using the runners shell
+      - name: Install Haxelib
+        run: |
+          haxelib install hxcpp > nul
+          haxelib install lime
+          haxelib install openfl
+          haxelib install flixel
+          haxelib run lime setup flixel
+          haxelib run lime setup
+          haxelib install flixel-tools
+          haxelib run flixel-tools setup
+          haxelib install flixel-ui
+          haxelib install tjson
+          haxelib install json2object
+          haxelib install uniontypes
+          haxelib install hxjsonast
+          haxelib install linc_luajit
+          haxelib install hscript
+          haxelib git hscript-ex https://github.com/ianharrigan/hscript-ex
+          haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
+          haxelib install hxcpp-debug-server
+          haxelib list
+      - name: Compile
+        run: lime build windows
+      - name: Archive
+        run: tar -czf bin.tar.gz 'export/release/windows/bin'
+      - name: Publish Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: windowsBuild
+          path: bin.tar.gz
+  buildMac:
+    runs-on: mac-latest
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      - name: Setup Haxe environment
+        run: |
+          choco install --no-progress haxe -y
+          $nekoPath = (Get-ChildItem C:/ProgramData/chocolatey/lib/neko/*/neko.dll -Recurse).Directory
+          echo "##vso[task.setvariable variable=NEKOPATH]$nekoPath"
+      # Runs a set of commands using the runners shell
+      - name: Install Haxelib
+        run: |
+          haxelib install hxcpp > nul
+          haxelib install lime
+          haxelib install openfl
+          haxelib install flixel
+          haxelib run lime setup flixel
+          haxelib run lime setup
+          haxelib install flixel-tools
+          haxelib run flixel-tools setup
+          haxelib install flixel-ui
+          haxelib install tjson
+          haxelib install json2object
+          haxelib install uniontypes
+          haxelib install hxjsonast
+          haxelib install linc_luajit
+          haxelib install hscript
+          haxelib git hscript-ex https://github.com/ianharrigan/hscript-ex
+          haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
+          haxelib install hxcpp-debug-server
+          haxelib list
+      - name: Compile
+        run: lime build mac
+      - name: Archive
+        run: tar -czf bin.tar.gz 'export/release/mac/bin'
+      - name: Publish Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: macBuild
+          path: bin.tar.gz
