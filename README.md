@@ -9,6 +9,7 @@ If an author gives express disapproval, and the mod is up, you should take your 
 take down mods that don't follow this rule.
 
 - Download on GameBanana: https://gamebanana.com/gamefiles/14264
+- Get the cutting edge build: https://dev.azure.com/benharless820/FNF%20Modding%20Plus/_build
 - Play the Original Game: https://github.com/ninjamuffin99/Funkin
 - Need Help? FNF Modding Plus Discord: https://discord.gg/96nV4Q5HMr
 - Trello Page (todo list): https://trello.com/b/cFjJJIjF/fnf-modding-plus
