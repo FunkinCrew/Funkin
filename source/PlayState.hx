@@ -216,7 +216,9 @@ class PlayState extends MusicBeatState
 	{
 		instance = this;
 		
-
+		if (FlxG.save.data.fpsCap > 290)
+			(cast (Lib.current.getChildAt(0), Main)).setFPSCap(800);
+		
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
 
@@ -2315,6 +2317,9 @@ class PlayState extends MusicBeatState
 	{
 		if (!loadRep)
 			rep.SaveReplay();
+
+		if (FlxG.save.data.fpsCap > 290)
+			(cast (Lib.current.getChildAt(0), Main)).setFPSCap(290);
 
 		#if windows
 		if (luaModchart != null)
