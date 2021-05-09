@@ -73,12 +73,12 @@ jobs:
         displayName: 'Install haxelibs'
       - script: haxelib run lime build mac
         displayName: 'Compile'
-      - script: tar -cvzf bin.tar.gz export/release/neko/bin
+      - script: zip -r bin.zip export/release/neko/bin
         displayName: 'Archive'
       - task: PublishPipelineArtifact@0
         inputs:
           artifactName: 'cppMacOutput'
-          targetPath: bin.tar.gz
+          targetPath: bin.zip
   - job: BuildCppWindows
     pool:
       vmImage: 'windows-2019'
