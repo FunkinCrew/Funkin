@@ -120,3 +120,43 @@ jobs:
         inputs:
           artifactName: 'cppWindowsOutput'
           targetPath: 'export/release/windows/bin'
+  - job: BuildHtml5
+      pool:
+        vmImage: 'ubuntu-16.04'
+      steps:
+        - script: |
+            sudo add-apt-repository ppa:haxe/releases -y
+            sudo apt update -y
+            sudo apt install haxe -y
+          displayName: 'Install Haxe'
+        - script: |
+            haxelib setup ~/haxelib
+            haxelib install hxcpp > /dev/null
+            mkdir ~/artifacts
+
+            haxelib install lime
+            haxelib run lime setup linux
+            haxelib install openfl
+            haxelib install flixel
+            haxelib --always run lime setup flixel
+            haxelib install flixel-tools
+            haxelib install flixel-ui
+            haxelib install tjson
+            haxelib install json2object
+            haxelib install uniontypes
+            haxelib install hxjsonast
+            haxelib install linc_luajit
+            haxelib install hscript
+            haxelib git hscript-ex https://github.com/ianharrigan/hscript-ex
+            haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
+            haxelib install hxcpp-debug-server
+            haxelib list
+          displayName: 'Install haxelibs'
+        - script: haxelib run lime build html5
+          displayName: 'Compile'
+        - script: tar -czf bin.tar.gz 'export/release/html5/bin'
+          displayName: 'Archive'
+        - task: PublishPipelineArtifact@0
+          inputs:
+            artifactName: 'html5'
+            targetPath: bin.tar.gz
