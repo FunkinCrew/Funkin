@@ -11,6 +11,9 @@ import flixel.FlxG;
 import openfl.geom.Matrix;
 import flixel.FlxGame;
 import flixel.FlxObject;
+#if desktop
+import Discord.DiscordClient;
+#end
 import DifficultyIcons;
 import flixel.FlxSprite;
 import flixel.FlxBasic;
@@ -86,7 +89,7 @@ class PlayState extends MusicBeatState
 	public static var storyPlaylist:Array<String> = [];
 	public static var storyDifficulty:Int = 1;
 	public static var defaultPlaylistLength = 0;
-
+	public static var campaignScoreDef = 0;
 	var halloweenLevel:Bool = false;
 
 	private var vocals:FlxSound;
@@ -102,9 +105,20 @@ class PlayState extends MusicBeatState
 	private var curSection:Int = 0;
 
 	private var camFollow:FlxObject;
-
+	private var player1Icon:String;
+	private var player2Icon:String;
 	private static var prevCamFollow:FlxObject;
-
+	public static var misses:Int = 0;
+	public static var shits:Int = 0;
+	public static var bads:Int = 0;
+	public static var goods:Int = 0;
+	private var accuracy:Float = 0.00;
+	private var accuracyDefault:Float = 0.00;
+	public static var sicks:Int = 0;
+	var songLength:Float = 0.0;
+	var songScoreDef:Int = 0;
+	var nps:Int = 0;
+	var playingAsRpc:String = "";
 	private var strumLineNotes:FlxTypedGroup<FlxSprite>;
 	private var playerStrums:FlxTypedGroup<FlxSprite>;
 	private var enemyStrums:FlxTypedGroup<FlxSprite>;
@@ -126,7 +140,13 @@ class PlayState extends MusicBeatState
 	private var poisonColorEnemy:FlxColor = 0xFFEA2FFF;
 	private var bfColor:FlxColor = 0xFF149DFF;
 	private var barShowingPoison:Bool = false;
-
+	#if windows
+	// Discord RPC variables
+	var storyDifficultyText:String = "";
+	var iconRPC:String = "";
+	var detailsText:String = "";
+	var detailsPausedText:String = "";
+	#end
 	private var generatedMusic:Bool = false;
 	private var startingSong:Bool = false;
 
@@ -203,12 +223,14 @@ class PlayState extends MusicBeatState
 	var snekNumber:Float = 0;
 	var drunkNotes:Bool = false;
 	var alcholTimer:FlxTimer;
+	var notesHitArray:Array<Date> = [];
 	var alcholNumber:Float = 0;
 	var inALoop:Bool = false;
 	var useVictoryScreen:Bool = true;
 	var demoMode:Bool = false;
 	var downscroll:Bool = false;
 	var luaRegistered:Bool = false;
+	var currentFrames:Int = 0;
 	public static var opponentPlayer:Bool = false;
 	// this is just so i can collapse it lol
 	#if true
@@ -349,6 +371,65 @@ class PlayState extends MusicBeatState
 	#end
 	override public function create()
 	{
+		misses = 0;
+		bads = 0;
+		goods = 0;
+		sicks = 0;
+		shits = 0;
+		#if windows
+		// Making difficulty text for Discord Rich Presence.
+		switch (storyDifficulty)
+		{
+			case 0:
+				storyDifficultyText = "Easy";
+			case 1:
+				storyDifficultyText = "Normal";
+			case 2:
+				storyDifficultyText = "Hard";
+		}
+
+		iconRPC = SONG.player2;
+
+		// To avoid having duplicate images in Discord assets
+		switch (iconRPC)
+		{
+			case 'senpai-angry':
+				iconRPC = 'senpai';
+			case 'monster-christmas':
+				iconRPC = 'monster';
+			case 'mom-car':
+				iconRPC = 'mom';
+		}
+
+		// String that contains the mode defined here so it isn't necessary to call changePresence for each mode
+		if (isStoryMode)
+		{
+			detailsText = "Story Mode: Week " + storyWeek;
+		}
+		else
+		{
+			detailsText = "Freeplay";
+		}
+
+		// String for when the game is paused
+		detailsPausedText = "Paused - " + detailsText;
+
+		// Updating Discord Rich Presence.
+		DiscordClient.changePresence(detailsText
+			+ " "
+			+ SONG.song
+			+ " ("
+			+ storyDifficultyText
+			+ ") "
+			+ Ratings.GenerateLetterRank(accuracy),
+			"\nAcc: "
+			+ HelperFunctions.truncateFloat(accuracy, 2)
+			+ "% | Score: "
+			+ songScore
+			+ " | Misses: "
+			+ misses, iconRPC);
+		#end
+		
 		// var gameCam:FlxCamera = FlxG.camera;
 		camGame = new FlxCamera();
 		camHUD = new FlxCamera();
@@ -954,17 +1035,19 @@ class PlayState extends MusicBeatState
 		// healthBar
 		add(healthBar);
 
-		scoreTxt = new FlxText(healthBarBG.x + healthBarBG.width - 90, healthBarBG.y + 40, 0, "", 200);
+		scoreTxt = new FlxText(healthBarBG.x, healthBarBG.y + 40, 0, "", 200);
 		scoreTxt.setFormat("assets/fonts/vcr.ttf", 20, FlxColor.WHITE, RIGHT, OUTLINE, FlxColor.BLACK);
 		scoreTxt.scrollFactor.set();
 
 		healthTxt = new FlxText(healthBarBG.x + healthBarBG.width - 300, scoreTxt.y, 0, "", 200);
 		healthTxt.setFormat("assets/fonts/vcr.ttf", 20, FlxColor.WHITE, RIGHT, OUTLINE, FlxColor.BLACK);
 		healthTxt.scrollFactor.set();
-
+		healthTxt.visible = false;
 		accuracyTxt = new FlxText(healthBarBG.x, scoreTxt.y, 0, "", 200);
 		accuracyTxt.setFormat("assets/fonts/vcr.ttf", 20, FlxColor.WHITE, RIGHT, OUTLINE, FlxColor.BLACK);
 		accuracyTxt.scrollFactor.set();
+		// shitty work around but okay
+		accuracyTxt.visible = false;
 		difficTxt = new FlxText(10, FlxG.height, 0, "", 200);
 		
 		difficTxt.setFormat("assets/fonts/vcr.ttf", 20, FlxColor.WHITE, RIGHT, OUTLINE, FlxColor.BLACK);
@@ -1950,6 +2033,20 @@ class PlayState extends MusicBeatState
 				vocals.pause();
 			}
 
+			#if windows
+			DiscordClient.changePresence("PAUSED on "
+				+ SONG.song
+				+ " ("
+				+ storyDifficultyText
+				+ ") "
+				+ Ratings.GenerateLetterRank(accuracy),
+				"Acc: "
+				+ HelperFunctions.truncateFloat(accuracy, 2)
+				+ "% | Score: "
+				+ songScore
+				+ " | Misses: "
+				+ misses, iconRPC, null, null, playingAsRpc);
+			#end
 			if (!startTimer.finished)
 				startTimer.active = false;
 		}
@@ -1969,6 +2066,66 @@ class PlayState extends MusicBeatState
 			if (!startTimer.finished)
 				startTimer.active = true;
 			paused = false;
+			var currentIconState = "";
+			if (opponentPlayer)
+			{
+				if (healthBar.percent > 80)
+				{
+					currentIconState = "Dying";
+				}
+				else
+				{
+					currentIconState = "Playing";
+				}
+				if (poisonTimes != 0)
+				{
+					currentIconState = "Being Posioned";
+				}
+			}
+			else
+			{
+				if (healthBar.percent > 20)
+				{
+					currentIconState = "Dying";
+				}
+				else
+				{
+					currentIconState = "Playing";
+				}
+				if (poisonTimes != 0)
+				{
+					currentIconState = "Being Posioned";
+				}
+			}
+			#if windows
+			if (startTimer.finished)
+			{
+				DiscordClient.changePresence(detailsText
+					+ " "
+					+ SONG.song
+					+ " ("
+					+ storyDifficultyText
+					+ ") "
+					+ Ratings.GenerateLetterRank(accuracy),
+					"\nAcc: "
+					+ HelperFunctions.truncateFloat(accuracy, 2)
+					+ "% | Score: "
+					+ songScore
+					+ " | Misses: "
+					+ misses, iconRPC, true,
+					songLength
+					- Conductor.songPosition, playingAsRpc);
+			}
+			else
+			{
+				DiscordClient.changePresence(detailsText, SONG.song
+					+ " ("
+					+ storyDifficultyText
+					+ ") "
+					+ Ratings.GenerateLetterRank(accuracy), iconRPC,
+					playingAsRpc);
+			}
+			#end
 		}
 
 		super.closeSubState();
@@ -1982,6 +2139,23 @@ class PlayState extends MusicBeatState
 		Conductor.songPosition = FlxG.sound.music.time;
 		vocals.time = Conductor.songPosition;
 		vocals.play();
+		
+		#if windows
+		DiscordClient.changePresence(detailsText
+			+ " "
+			+ SONG.song
+			+ " ("
+			+ storyDifficultyText
+			+ ") "
+			+ Ratings.GenerateLetterRank(accuracy),
+			"\nAcc: "
+			+ HelperFunctions.truncateFloat(accuracy, 2)
+			+ "% | Score: "
+			+ songScore
+			+ " | Misses: "
+			+ misses, iconRPC,
+			playingAsRpc);
+		#end
 	}
 
 	private var paused:Bool = false;
@@ -1993,6 +2167,7 @@ class PlayState extends MusicBeatState
 		#if !debug
 		perfectModeOld = false;
 		#end
+		
 		callAllHScript('update', [elapsed]);
 		if (hscriptStates.exists("modchart")) {
 			if (getHaxeVar("showOnlyStrums", "modchart"))
@@ -2013,13 +2188,27 @@ class PlayState extends MusicBeatState
 			}
 
 		}
-
+		if (currentFrames == FlxG.save.data.fpsCap)
+		{
+			for (i in 0...notesHitArray.length)
+			{
+				var cock:Date = notesHitArray[i];
+				if (cock != null)
+					if (cock.getTime() + 2000 < Date.now().getTime())
+						notesHitArray.remove(cock);
+			}
+			nps = Math.floor(notesHitArray.length / 2);
+			currentFrames = 0;
+		}
+		else
+			currentFrames++;
 		super.update(elapsed);
 		var properHealth = opponentPlayer ? 100 - Math.round(health*50) : Math.round(health*50);
 		healthTxt.text = "Health:" + properHealth + "%";
-		scoreTxt.text = "Score:" + songScore + "(" + trueScore + ")";
+		accuracy = HelperFunctions.truncateFloat((notesHit / notesPassing) * 100, 2);
+		scoreTxt.text = Ratings.CalculateRanking(songScore, songScoreDef, nps, accuracy);
 		if (notesPassing != 0) {
-			accuracyTxt.text = "Accuracy:" + Math.round((notesHit/notesPassing) * 100) + "%";
+			accuracyTxt.text = "Accuracy:" + accuracy + "%";
 		} else {
 			accuracyTxt.text = "Accuracy:100%";
 		}
@@ -2034,6 +2223,9 @@ class PlayState extends MusicBeatState
 
 		if (FlxG.keys.justPressed.SEVEN)
 		{
+			#if windows
+			DiscordClient.changePresence("Chart Editor", null, null, true);
+			#end
 			FlxG.switchState(new ChartingState());
 		}
 
@@ -2063,22 +2255,47 @@ class PlayState extends MusicBeatState
 			healthBar.createFilledBar(leftSideFill, rightSideFill);
 			barShowingPoison = false;
 		}
+
 		iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset);
 		iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset);
-
-		if (poisonTimes == 0) {
+		player1Icon = SONG.player1;
+		switch(SONG.player1) {
+			case "bf-car":
+				player1Icon = "bf";
+			case "bf-christmas":
+				player1Icon = "bf";
+			case "bf-holding-gf":
+				player1Icon = "bf";
+			case "monster-christmas":
+				player1Icon = "monster";
+			case "mom-car":
+				player1Icon = "mom";
+			case "pico-speaker":
+				player1Icon = "pico";
+			case "gf-car":
+				player1Icon = "gf";
+			case "gf-christmas":
+				player1Icon = "gf";
+			case "gf-pixel":
+				player1Icon = "gf";
+			case "gf-tankman":
+				player1Icon = "gf";
+				
+		}
+		if (poisonTimes == 0 || opponentPlayer) {
 			if (healthBar.percent < 20) {
 				iconP1.animation.curAnim.curFrame = 1;
-				
+				iconRPC = player1Icon+"-dead";
 			}
 			else {
 				iconP1.animation.curAnim.curFrame = 0;
-				
+				iconRPC = player1Icon;
 			}
 
 		} else {
 			if (!opponentPlayer) {
 				iconP1.animation.curAnim.curFrame = 2;
+				iconRPC = player1Icon+"-dazed";
 			}	
 			
 		}
@@ -2088,13 +2305,49 @@ class PlayState extends MusicBeatState
 		} else {
 			healthTxt.setFormat("assets/fonts/vcr.ttf", 20, FlxColor.WHITE, RIGHT, OUTLINE, FlxColor.BLACK);
 		}	
+		player2Icon = SONG.player2;
+		switch (SONG.player2)
+		{
+			case "bf-car":
+				player2Icon = "bf";
+			case "bf-christmas":
+				player2Icon = "bf";
+			case "bf-holding-gf":
+				player2Icon = "bf";
+			case "monster-christmas":
+				player2Icon = "monster";
+			case "mom-car":
+				player2Icon = "mom";
+			case "pico-speaker":
+				player2Icon = "pico";
+			case "gf-car":
+				player2Icon = "gf";
+			case "gf-christmas":
+				player2Icon = "gf";
+			case "gf-pixel":
+				player2Icon = "gf";
+			case "gf-tankman":
+				player2Icon = "gf";
+		}
 
-		if (healthBar.percent > 80)
+		if (healthBar.percent > 80) {
 			iconP2.animation.curAnim.curFrame = 1;
-		else
+			if (opponentPlayer)
+				iconRPC = player2Icon + "-dead";
+		}
+		else {
 			iconP2.animation.curAnim.curFrame = 0;
-		if (poisonTimes != 0 && opponentPlayer)
+			if (opponentPlayer)
+				iconRPC = player2Icon;
+		}
+			
+		if (poisonTimes != 0 && opponentPlayer) {
 			iconP2.animation.curAnim.curFrame = 2;
+			if (opponentPlayer)
+				iconRPC = player2Icon + "-dazed";
+		}
+			
+		
 		/* if (FlxG.keys.justPressed.NINE)
 			FlxG.switchState(new Charting()); */
 
@@ -2163,7 +2416,38 @@ class PlayState extends MusicBeatState
 				}
 				*/
 			}
-
+			var currentIconState = "";
+			if (opponentPlayer)
+			{
+				if (healthBar.percent > 80)
+				{
+					currentIconState = "Dying";
+				}
+				else
+				{
+					currentIconState = "Playing";
+				}
+				if (poisonTimes != 0)
+				{
+					currentIconState = "Being Posioned";
+				}
+			}
+			else
+			{
+				if (healthBar.percent > 20)
+				{
+					currentIconState = "Dying";
+				}
+				else
+				{
+					currentIconState = "Playing";
+				}
+				if (poisonTimes != 0)
+				{
+					currentIconState = "Being Posioned";
+				}
+			}
+			playingAsRpc = "Playing as " + (opponentPlayer ? player2Icon : player1Icon) + " | " + currentIconState;
 			if (PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection && camFollow.x != boyfriend.getMidpoint().x - 100)
 			{
 				camFollow.setPosition((boyfriend.getMidpoint().x - 100 + boyfriend.followCamX), (boyfriend.getMidpoint().y - 100+boyfriend.followCamY));
@@ -2259,6 +2543,7 @@ class PlayState extends MusicBeatState
 
 			vocals.stop();
 			FlxG.sound.music.stop();
+			
 			if (inALoop) {
 				FlxG.switchState(new PlayState());
 			} else {
@@ -2270,6 +2555,22 @@ class PlayState extends MusicBeatState
 				}
 				else
 					openSubState(new GameOverSubstate(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
+				#if windows
+				// Game Over doesn't get his own variable because it's only used here
+				DiscordClient.changePresence("GAME OVER -- "
+					+ SONG.song
+					+ " ("
+					+ storyDifficultyText
+					+ ") "
+					+ Ratings.GenerateLetterRank(accuracy),
+					"\nAcc: "
+					+ HelperFunctions.truncateFloat(accuracy, 2)
+					+ "% | Score: "
+					+ songScore
+					+ " | Misses: "
+					+ misses, iconRPC, null, null,
+					playingAsRpc);
+				#end
 
 			}
 
@@ -2594,6 +2895,7 @@ class PlayState extends MusicBeatState
 		if (isStoryMode)
 		{
 			campaignScore += songScore;
+			campaignScoreDef += songScoreDef;
 			campaignAccuracy += notesHit/notesPassing;
 			storyPlaylist.remove(storyPlaylist[0]);
 
@@ -2602,11 +2904,23 @@ class PlayState extends MusicBeatState
 				FlxG.sound.playMusic('assets/music/freakyMenu' + TitleState.soundExt);
 
 				
-
 				Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficulty, campaignAccuracy / defaultPlaylistLength);
-
 				campaignAccuracy = campaignAccuracy / defaultPlaylistLength;
 				if (useVictoryScreen) {
+					#if windows	
+					DiscordClient.changePresence("Reviewing Score -- "
+					+ SONG.song
+					+ " ("
+					+ storyDifficultyText
+					+ ") "
+					+ Ratings.GenerateLetterRank(accuracy),
+					"\nAcc: "
+					+ HelperFunctions.truncateFloat(accuracy, 2)
+					+ "% | Score: "
+					+ songScore
+					+ " | Misses: "
+					+ misses, iconRPC, playingAsRpc);
+					#end
 					FlxG.switchState(new VictoryLoopState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y, gf.getScreenPosition().x, gf.getScreenPosition().y, campaignAccuracy, campaignScore, dad.getScreenPosition().x, dad.getScreenPosition().y));
 				} else {
 					transIn = FlxTransitionableState.defaultTransIn;
@@ -2654,6 +2968,7 @@ class PlayState extends MusicBeatState
 		{
 			trace('WENT BACK TO FREEPLAY??');
 			if (useVictoryScreen) {
+				
 				FlxG.switchState(new VictoryLoopState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y, gf.getScreenPosition().x,gf.getScreenPosition().y, notesHit/notesPassing, songScore, dad.getScreenPosition().x, dad.getScreenPosition().y));
 			} else
 				FlxG.switchState(new FreeplayState());
@@ -2688,6 +3003,7 @@ class PlayState extends MusicBeatState
 		}
 		else if (noteDiff > Conductor.safeZoneOffset * 0.75)
 		{
+			bads += 1;
 			daRating = 'bad';
 			score = 100;
 			notesHit += 0.75;
@@ -2715,6 +3031,7 @@ class PlayState extends MusicBeatState
 			notesHit = notesPassing;
 		}
 		songScore += Math.round(score * ModifierState.scoreMultiplier);
+		songScoreDef += Math.round(ConvertScore.convertScore(noteDiff));
 		trueScore += score;
 		/* if (combo > 60)
 				daRating = 'sick';
@@ -3058,6 +3375,7 @@ class PlayState extends MusicBeatState
 		}
 		if (!actingOn.stunned)
 		{
+			misses += 1;
 			notesPassing += 1;
 			if (playerOne)
 				health -= 0.04 + healthLossModifier;
@@ -3141,6 +3459,8 @@ class PlayState extends MusicBeatState
 		if (opponentPlayer) {
 			actingOn = dad;
 		}
+		if (!note.isSustainNote)
+			notesHitArray.push(Date.now());
 		if (!note.wasGoodHit)
 		{
 			var altAnim = "";
@@ -3318,10 +3638,27 @@ class PlayState extends MusicBeatState
 		setAllHaxeVar("curStep", curStep);
 		callAllHScript("stepHit", [curStep]);
 
-		if (dad.curCharacter == 'spooky' && curStep % 4 == 2)
-		{
-			// dad.dance();
-		}
+		#if windows
+		// Song duration in a float, useful for the time left feature
+		songLength = FlxG.sound.music.length;
+
+		// Updating Discord Rich Presence (with Time Left)
+		DiscordClient.changePresence(detailsText
+			+ " "
+			+ SONG.song
+			+ " ("
+			+ storyDifficultyText
+			+ ") "
+			+ Ratings.GenerateLetterRank(accuracy),
+			"Acc: "
+			+ HelperFunctions.truncateFloat(accuracy, 2)
+			+ "% | Score: "
+			+ songScore
+			+ " | Misses: "
+			+ misses, iconRPC,true,
+			songLength
+			- Conductor.songPosition, playingAsRpc);
+		#end
 	}
 
 	var lightningStrikeBeat:Int = 0;

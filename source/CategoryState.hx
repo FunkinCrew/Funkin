@@ -37,6 +37,10 @@ class CategoryState extends MusicBeatState
 	override function create()
 	{
 		// it's a js file to make syntax highlighting acceptable
+		#if windows
+		// Updating Discord Rich Presence
+		Discord.DiscordClient.changePresence("In the Freeplay Menu", null);
+		#end
 		var epicCategoryJs:Array<Dynamic> = CoolUtil.parseJson(Assets.getText('assets/data/freeplaySongJson.jsonc'));
 		if (epicCategoryJs.length > 1 || choosingFor != "freeplay") {
 			for (category in epicCategoryJs) {

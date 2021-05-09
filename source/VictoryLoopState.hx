@@ -66,39 +66,7 @@ class VictoryLoopState extends MusicBeatSubstate
 		rating.updateHitbox();
 		retryTxt.alpha = 0.6;
 		// if you do this you are epic gamer
-		if (accuracy == 1) {
-			rating.text = "S+";
-		} else if (accuracy >= 0.95) {
-			rating.text = "S";
-		} else if ( accuracy >= 0.93) {
-			rating.text = "S-";
-		} else if (accuracy >= 0.90) {
-			rating.text = "A+";
-		} else if (accuracy >= 0.85) {
-			rating.text = "A";
-		} else if (accuracy >= 0.82) {
-			rating.text = "A-";
-		} else if (accuracy >= 0.8) {
-			rating.text = "B+";
-		} else if (accuracy >= 0.78) {
-			rating.text = "B";
-		} else if (accuracy >= 0.75) {
-			rating.text = "B-";
-		} else if (accuracy >= 0.72) {
-			rating.text = "C+";
-		} else if (accuracy >= 0.69) {
-			rating.text = "C";
-		} else if (accuracy >= 0.65){
-			rating.text = "C-";
-		} else if (accuracy >= 0.60) {
-			rating.text = "D+";
-		} else if (accuracy >= 0.55) {
-			rating.text = "D";
-		} else if (accuracy >= 0.50) {
-			rating.text = "D-";
-		} else {
-			rating.text = "F";
-		}
+		rating.text = Ratings.GenerateLetterRank(accuracy);
 		rating.addText();
 		accuracyTxt = new FlxText(10, rating.y + rating.height,0 , "ACCURACY: "+Math.round(accuracy * 100) + "%");
 		accuracyTxt.setFormat("assets/fonts/vcr.ttf", 26, FlxColor.WHITE, RIGHT);

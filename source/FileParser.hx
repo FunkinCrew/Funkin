@@ -41,7 +41,7 @@ class FileParser {
                     if (things[3] != "") {
                         info.boxmood = things[3];
                     } else {
-                        info.boxmood = "";
+                        info.boxmood = "normal";
                     }
                     info.speech = things[4];
             } 

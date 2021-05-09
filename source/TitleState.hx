@@ -1,5 +1,8 @@
 package;
 
+#if windows
+import Discord.DiscordClient;
+#end
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -44,7 +47,14 @@ class TitleState extends MusicBeatState
 	override public function create():Void
 	{
 
+		#if windows
+		DiscordClient.initialize();
 
+		Application.current.onExit.add(function(exitCode)
+		{
+			DiscordClient.shutdown();
+		});
+		#end
 		PlayerSettings.init();
 		PluginManager.init();
 		curWacky = FlxG.random.getObject(getIntroTextShit());

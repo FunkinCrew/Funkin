@@ -33,6 +33,10 @@ class MainMenuState extends MusicBeatState
 
 	override function create()
 	{
+		#if windows
+		// Updating Discord Rich Presence
+		Discord.DiscordClient.changePresence("In Menus", null);
+		#end
 		transIn = FlxTransitionableState.defaultTransIn;
 		transOut = FlxTransitionableState.defaultTransOut;
 		if (!OptionsHandler.options.useSaveDataMenu) 
