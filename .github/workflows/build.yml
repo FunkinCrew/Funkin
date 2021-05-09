@@ -97,6 +97,7 @@ jobs:
           haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
           haxelib install hxcpp-debug-server
           haxelib list
+        shell: cmd
       - name: Compile
         run: lime build windows
       - name: Archive
@@ -107,7 +108,7 @@ jobs:
           name: windowsBuild
           path: bin.tar.gz
   buildMac:
-    runs-on: mac-latest
+    runs-on: macos-latest
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
