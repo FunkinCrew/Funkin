@@ -113,7 +113,8 @@ jobs:
       - script: haxelib run lime build cpp
         displayName: 'Compile'
       - script: tar -czf windows.tar.gz 'export/release/windows/bin'
+        displayName: Archive
       - task: PublishPipelineArtifact@0
         inputs:
           artifactName: 'cppWindowsOutput'
-          targetPath: 'windows.tar.gz'
+          targetPath: 'export/release/windows/bin'
