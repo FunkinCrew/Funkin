@@ -425,7 +425,7 @@ class StoryMenuState extends MusicBeatState
 
 		weekCharactersArray.members[lastWeek].kill();
 		weekCharactersArray.members[curWeek].revive();
-		txtTracklist.text = "Tracks\n";
+		txtTracklist.text = "Tracks";
 
 		switch (weekCharactersArray.members[curWeek].members[0].like)
 		{
@@ -457,9 +457,10 @@ class StoryMenuState extends MusicBeatState
 		{
 			txtTracklist.text += "\n" + i;
 		}
-
+		txtTracklist.text += "\n shitty workaround but ok";
+		trace(txtTracklist.text);
 		txtTracklist.text = StringTools.replace(txtTracklist.text.toUpperCase(), "-", " ");
-
+		trace(txtTracklist.text);
 		txtTracklist.screenCenter(X);
 		txtTracklist.x -= FlxG.width * 0.35;
 

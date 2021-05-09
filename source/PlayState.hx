@@ -2205,7 +2205,10 @@ class PlayState extends MusicBeatState
 		super.update(elapsed);
 		var properHealth = opponentPlayer ? 100 - Math.round(health*50) : Math.round(health*50);
 		healthTxt.text = "Health:" + properHealth + "%";
-		accuracy = HelperFunctions.truncateFloat((notesHit / notesPassing) * 100, 2);
+		if (notesPassing != 0)
+			accuracy = HelperFunctions.truncateFloat((notesHit / notesPassing) * 100, 2);
+		else
+			accuracy = 100;
 		scoreTxt.text = Ratings.CalculateRanking(songScore, songScoreDef, nps, accuracy);
 		if (notesPassing != 0) {
 			accuracyTxt.text = "Accuracy:" + accuracy + "%";
@@ -2446,7 +2449,7 @@ class PlayState extends MusicBeatState
 			}
 			else
 			{
-				if (healthBar.percent > 20)
+				if (healthBar.percent < 20)
 				{
 					currentIconState = "Dying";
 				}
@@ -2980,7 +2983,20 @@ class PlayState extends MusicBeatState
 		{
 			trace('WENT BACK TO FREEPLAY??');
 			if (useVictoryScreen) {
-				
+				#if windows
+				DiscordClient.changePresence("Reviewing Score -- "
+					+ SONG.song
+					+ " ("
+					+ storyDifficultyText
+					+ ") "
+					+ Ratings.GenerateLetterRank(accuracy),
+					"\nAcc: "
+					+ HelperFunctions.truncateFloat(accuracy, 2)
+					+ "% | Score: "
+					+ songScore
+					+ " | Misses: "
+					+ misses, iconRPC, playingAsRpc);
+				#end
 				FlxG.switchState(new VictoryLoopState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y, gf.getScreenPosition().x,gf.getScreenPosition().y, notesHit/notesPassing, songScore, dad.getScreenPosition().x, dad.getScreenPosition().y));
 			} else
 				FlxG.switchState(new FreeplayState());

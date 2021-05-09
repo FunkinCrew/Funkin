@@ -80,14 +80,17 @@ class DiscordClient
 		{
 			endTimestamp = startTimestamp + endTimestamp;
 		}
-
+		if (smallImageKey == null) {
+			smallImageKey = "icon";
+		}
+		if (smallImageString == null) {
+			smallImageString = "Friday Night Funkin' Modding Plus";
+		}
 		DiscordRpc.presence({
 			details: details,
 			state: state,
-			largeImageKey: 'icon',
-			largeImageText: "Friday Night Funkin' Modding Plus",
-			smallImageKey: smallImageKey,
-            smallImageText: smallImageString,
+			largeImageKey: smallImageKey,
+			largeImageText: smallImageString,
 			// Obtained times are in milliseconds so they are divided so Discord can use it
 			startTimestamp: Std.int(startTimestamp / 1000),
 			endTimestamp: Std.int(endTimestamp / 1000)

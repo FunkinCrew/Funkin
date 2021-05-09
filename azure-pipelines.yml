@@ -73,7 +73,9 @@ jobs:
         displayName: 'Install haxelibs'
       - script: haxelib run lime build mac
         displayName: 'Compile'
-      - script: zip -r bin.zip export/release/neko/bin
+      - script: |
+          [ -d "export/release/neko/bin" ] && echo "Directory neko exists."
+          tar -czf bin.tar.gz 'export/release/neko/bin'
         displayName: 'Archive'
       - task: PublishPipelineArtifact@0
         inputs:
