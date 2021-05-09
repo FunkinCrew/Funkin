@@ -71,16 +71,16 @@ jobs:
           haxelib install hxcpp-debug-server
           haxelib list
         displayName: 'Install haxelibs'
-      - script: haxelib run lime build mac
+      - script: haxelib run lime build cpp
         displayName: 'Compile'
       - script: |
-          [ -d "export/release/neko/bin" ] && echo "Directory neko exists."
-          tar -czf bin.tar.gz 'export/release/neko/bin'
+          [ -d "export/release/mac/bin" ] && echo "Directory neko exists."
+          tar -czf bin.tar.gz 'export/release/mac/bin'
         displayName: 'Archive'
       - task: PublishPipelineArtifact@0
         inputs:
           artifactName: 'cppMacOutput'
-          targetPath: bin.zip
+          targetPath: bin.tar.gz
   - job: BuildCppWindows
     pool:
       vmImage: 'windows-2019'

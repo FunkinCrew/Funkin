@@ -73,7 +73,6 @@
 	<haxelib name="faxe" if='switch'/>
 	<haxelib name="json2object"/>
 	<haxelib name="uniontypes"/>
-	<haxelib name="hxjsonast"/>
 	<haxelib name="hscript"/>
 	<!-- git https://github.com/ianharrigan/hscript-ex-->
 	<haxelib name="hscript-ex"/>
