@@ -34,7 +34,7 @@ jobs:
       - name: Install Haxelib
         run: |
           haxelib setup ~/haxelib
-          haxelib install hxcpp
+          haxelib install hxcpp > /dev/null
           haxelib install lime
           haxelib install openfl
           haxelib install flixel
@@ -78,7 +78,7 @@ jobs:
       - name: Install Haxelib
         run: |
           haxelib setup C:/haxelib
-          haxelib install hxcpp
+          haxelib install hxcpp > nul
           haxelib install lime
           haxelib install openfl
           haxelib install flixel
@@ -115,14 +115,12 @@ jobs:
 
       - name: Setup Haxe environment
         run: |
-          choco install --no-progress haxe -y
-          $nekoPath = (Get-ChildItem C:/ProgramData/chocolatey/lib/neko/*/neko.dll -Recurse).Directory
-          echo "##vso[task.setvariable variable=NEKOPATH]$nekoPath"
+          brew install haxe
       # Runs a set of commands using the runners shell
       - name: Install Haxelib
         run: |
           haxelib setup ~/haxelib
-          haxelib install hxcpp
+          haxelib install hxcpp > /dev/null
           haxelib install lime
           haxelib install openfl
           haxelib install flixel
