@@ -16,7 +16,7 @@ Full Example
 
 ```lua
 function start (song)
-	print("Song: " .. song .. " @ " .. bpm .. " donwscroll: " .. downscroll)
+	print("Song: " .. song .. " @ " .. bpm .. " downscroll: " .. downscroll)
 end
 
 

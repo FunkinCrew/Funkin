@@ -3269,12 +3269,13 @@ class PlayState extends MusicBeatState
 			// Commented out until a reason to bring this back arises in the future
 			/* if (SONG.notes[Math.floor(curStep / 16)].mustHitSection)
 				dad.dance(); */
-			
+			/* no because this is kinda dumb
 			if(dad.animation.curAnim.name.startsWith('sing'))
 				if(dad.animation.finished)
 					dad.dance();
 			else
 				dad.dance();
+			*/
 		}
 		// FlxG.log.add('change bpm' + SONG.notes[Std.int(curStep / 16)].changeBPM);
 		wiggleShit.update(Conductor.crochet);
@@ -3306,6 +3307,11 @@ class PlayState extends MusicBeatState
 		if (!boyfriend.animation.curAnim.name.startsWith("sing"))
 		{
 			boyfriend.playAnim('idle');
+		}
+		
+		if (!dad.animation.curAnim.name.startsWith("sing"))
+		{
+			dad.dance();
 		}
 
 		if (curBeat % 8 == 7 && curSong == 'Bopeebo')
