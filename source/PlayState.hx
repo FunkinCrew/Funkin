@@ -11,7 +11,7 @@ import flixel.FlxG;
 import openfl.geom.Matrix;
 import flixel.FlxGame;
 import flixel.FlxObject;
-#if desktop
+#if cpp
 import Discord.DiscordClient;
 #end
 import DifficultyIcons;
@@ -2285,17 +2285,23 @@ class PlayState extends MusicBeatState
 		if (poisonTimes == 0 || opponentPlayer) {
 			if (healthBar.percent < 20) {
 				iconP1.animation.curAnim.curFrame = 1;
+				#if windows
 				iconRPC = player1Icon+"-dead";
+				#end
 			}
 			else {
 				iconP1.animation.curAnim.curFrame = 0;
+				#if windows
 				iconRPC = player1Icon;
+				#end
 			}
 
 		} else {
 			if (!opponentPlayer) {
 				iconP1.animation.curAnim.curFrame = 2;
+				#if windows
 				iconRPC = player1Icon+"-dazed";
+				#end
 			}	
 			
 		}
@@ -2332,19 +2338,25 @@ class PlayState extends MusicBeatState
 
 		if (healthBar.percent > 80) {
 			iconP2.animation.curAnim.curFrame = 1;
+			#if windows
 			if (opponentPlayer)
 				iconRPC = player2Icon + "-dead";
+			#end
 		}
 		else {
 			iconP2.animation.curAnim.curFrame = 0;
+			#if windows
 			if (opponentPlayer)
 				iconRPC = player2Icon;
+			#end
 		}
 			
 		if (poisonTimes != 0 && opponentPlayer) {
 			iconP2.animation.curAnim.curFrame = 2;
+			#if windows
 			if (opponentPlayer)
 				iconRPC = player2Icon + "-dazed";
+			#end
 		}
 			
 		
