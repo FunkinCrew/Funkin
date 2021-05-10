@@ -17,9 +17,12 @@ class Character extends FlxSprite
 
 	public var holdTimer:Float = 0;
 
-	var hastex:Bool = false;
-	var addtex:FlxAtlasFrames;
-	var newtex:FlxAtlasFrames;
+	function jointex(frames1:FlxAtlasFrames, frames2:FlxAtlasFrames) {
+		for (frame in frames2.frames){
+			frames1.pushFrame(frame);
+		}
+		return frames1;
+	}
 
 	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false)
 	{
@@ -41,29 +44,15 @@ class Character extends FlxSprite
 
 				switch PlayState.curStage.toLowerCase() {
 					case 'spooky':
-						hastex = true;
-						addtex = Paths.getSparrowAtlas('gf/GF_assets_week2');
+						tex = jointex(tex, Paths.getSparrowAtlas('gf/GF_assets_week2'));
 					case 'stage':
 						if (PlayState.SONG.song.toLowerCase() == 'tutorial')
 						{
-							hastex = true;
-							addtex = Paths.getSparrowAtlas('gf/GF_assets_tutorial');
+							tex = jointex(tex, Paths.getSparrowAtlas('gf/GF_assets_tutorial'));
 						}
 					case 'philly':
-						hastex = true;
-						addtex = Paths.getSparrowAtlas('gf/GF_assets_blowing');
-						newtex = Paths.getSparrowAtlas('gf/GF_ass_sets_landing');
+						tex = jointex(tex, jointex(Paths.getSparrowAtlas('gf/GF_assets_blowing'), Paths.getSparrowAtlas('gf/GF_ass_sets_landing')));
 
-						for (frame in newtex.frames){
-							addtex.pushFrame(frame);
-						}
-				}
-
-				if (hastex) 
-				{
-					for (frame in addtex.frames){
-						tex.pushFrame(frame);
-					}
 				}
 
 				frames = tex;
