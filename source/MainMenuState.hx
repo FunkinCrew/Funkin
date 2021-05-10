@@ -13,14 +13,31 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import lime.utils.Assets;
 import lime.app.Application;
+#if sys
+import sys.io.File;
+import haxe.io.Path;
+import openfl.utils.ByteArray;
+import lime.media.AudioBuffer;
+import flash.media.Sound;
+import sys.FileSystem;
+import Song.SwagSong;
+#end
 import tjson.TJSON;
-
 using StringTools;
+typedef VersionJson = {
+	var version: Array<Array<String>>;
+	var name_1: Array<Array<String>>;
+	var name_2: Array<Array<String>>;
+	var name_3: Array<Array<String>>;
 
+}
+	
 class MainMenuState extends MusicBeatState
 {
 	var curSelected:Int = 0;
-
+	var customMenuConfirm: Array<Array<String>>;
+	var customMenuScroll: Array<Array<String>>;
+	var parsedcustomMenuConfirmJson:Array<Array<String>>;
 	var menuItems:FlxTypedGroup<FlxSprite>;
 	#if !switch
 	var optionShit:Array<String> = ['story mode', 'freeplay', 'donate', 'options'];
@@ -43,8 +60,9 @@ class MainMenuState extends MusicBeatState
 			optionShit = ['story mode', 'freeplay', 'donate'];
 		if (!FlxG.sound.music.playing)
 		{
-			FlxG.sound.playMusic('assets/music/freakyMenu' + TitleState.soundExt);
+			FlxG.sound.playMusic('assets/music/custom_menu_music/'+CoolUtil.parseJson(File.getContent("assets/music/custom_menu_music/custom_menu_music.json")).Menu+'/freakyMenu' + TitleState.soundExt);
 		}
+		
 		persistentUpdate = persistentDraw = true;
 		var bg:FlxSprite = new FlxSprite(-80).loadGraphic('assets/images/menuBG.png');
 		bg.scrollFactor.x = 0;
@@ -54,6 +72,7 @@ class MainMenuState extends MusicBeatState
 		bg.screenCenter();
 		bg.antialiasing = true;
 		add(bg);
+		
 
 		camFollow = new FlxObject(0, 0, 1, 1);
 		add(camFollow);
@@ -73,7 +92,7 @@ class MainMenuState extends MusicBeatState
 		menuItems = new FlxTypedGroup<FlxSprite>();
 		add(menuItems);
 
-		var tex = FlxAtlasFrames.fromSparrow('assets/images/FNF_main_menu_assets.png', 'assets/images/FNF_main_menu_assets.xml');
+		var tex = FlxAtlasFrames.fromSparrow('assets/images/FNF_NEW_main_menu_assets.png', 'assets/images/FNF_NEW_main_menu_assets.xml');
 
 		for (i in 0...optionShit.length)
 		{
@@ -91,7 +110,7 @@ class MainMenuState extends MusicBeatState
 
 		FlxG.camera.follow(camFollow, null, 0.06);
 
-		var versionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, "v" + Application.current.meta.get('version'), 12);
+		var versionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, CoolUtil.parseJson(File.getContent("assets/data/gameInfo.json")).version, 12);
 		var usingSave:FlxText = new FlxText(5, FlxG.height - 36, 0, FlxG.save.name, 12);
 		versionShit.scrollFactor.set();
 		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
@@ -142,13 +161,13 @@ class MainMenuState extends MusicBeatState
 		{
 			if (controls.UP_P)
 			{
-				FlxG.sound.play('assets/sounds/scrollMenu' + TitleState.soundExt);
+				FlxG.sound.play('assets/sounds/custom_menu_sounds/'+CoolUtil.parseJson(File.getContent("assets/sounds/custom_menu_sounds/custom_menu_sounds.json")).customMenuScroll+'/scrollMenu' + TitleState.soundExt);
 				changeItem(-1);
 			}
 
 			if (controls.DOWN_P)
 			{
-				FlxG.sound.play('assets/sounds/scrollMenu' + TitleState.soundExt);
+				FlxG.sound.play('assets/sounds/custom_menu_sounds/'+CoolUtil.parseJson(File.getContent("assets/sounds/custom_menu_sounds/custom_menu_sounds.json")).customMenuScroll+'/scrollMenu' + TitleState.soundExt);
 				changeItem(1);
 			}
 
@@ -170,7 +189,7 @@ class MainMenuState extends MusicBeatState
 				else
 				{
 					selectedSomethin = true;
-					FlxG.sound.play('assets/sounds/confirmMenu' + TitleState.soundExt);
+					FlxG.sound.play('assets/sounds/custom_menu_sounds/'+CoolUtil.parseJson(File.getContent("assets/sounds/custom_menu_sounds/custom_menu_sounds.json")).customMenuConfirm+'/confirmMenu' + TitleState.soundExt);
 
 					FlxFlicker.flicker(magenta, 1.1, 0.15, false);
 
@@ -209,7 +228,6 @@ class MainMenuState extends MusicBeatState
 											FlxG.switchState(new FreeplayState());
 										}
 										
-
 									case 'options':
 										FlxG.switchState(new SaveDataState());
 								}

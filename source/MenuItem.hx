@@ -22,9 +22,19 @@ class MenuItem extends FlxSpriteGroup
 	public function new(x:Float, y:Float, weekNum:Int = 0)
 	{
 		super(x, y);
-		var parsedWeekJson:Array<Array<String>> = CoolUtil.parseJson(FNFAssets.getText("assets/data/storySongList.json")).songs;
-		var rawPic = FNFAssets.getBitmapData('assets/images/campaign-ui-week/week'+weekNum+".png");
-		var rawXml = FNFAssets.getText('assets/images/campaign-ui-week/week'+weekNum+".xml");
+		var parsedVersionJson:Array<Array<String>> = CoolUtil.parseJson(File.getContent("assets/data/gameInfo.json")).version;
+		var parsedName_1Json:Array<Array<String>> = CoolUtil.parseJson(File.getContent("assets/data/gameInfo.json")).name_1;
+		var parsedName_2Json:Array<Array<String>> = CoolUtil.parseJson(File.getContent("assets/data/gameInfo.json")).name_2;
+		var parsedName_3Json:Array<Array<String>> = CoolUtil.parseJson(File.getContent("assets/data/gameInfo.json")).name_3;
+		var parsedcustomMenuConfirmJson:Array<Array<String>> = CoolUtil.parseJson(File.getContent("assets/sounds/custom_menu_sounds/custom_menu_sounds.json")).customMenuConfirm;
+		var parsedcustomMenuScrollJson:Array<Array<String>> = CoolUtil.parseJson(File.getContent("assets/sounds/custom_menu_sounds/custom_menu_sounds.json")).customMenuScroll;
+		var parsedcustomMenuScrollJson:Array<Array<String>> = CoolUtil.parseJson(File.getContent("assets/sounds/custom_menu_sounds/custom_menu_sounds.json")).Menu;
+		var parsedcustomFreakyMenuJson:Array<Array<String>> = CoolUtil.parseJson(File.getContent("assets/music/custom_menu_music/custom_menu_music.json")).Menu;
+		var parsedcustomOptionsMusicJson:Array<Array<String>> = CoolUtil.parseJson(File.getContent("assets/music/custom_menu_music/custom_menu_music.json")).Options;
+		var parsedcbgJson:Array<Array<String>> = CoolUtil.parseJson(File.getContent("assets/data/freeplaySongJson.json")).cbg;
+		var parsedWeekJson:Array<Array<String>> = CoolUtil.parseJson(File.getContent("assets/data/storySongList.json")).songs;
+		var rawPic = BitmapData.fromFile('assets/images/campaign-ui-week/week'+weekNum+".png");
+		var rawXml = File.getContent('assets/images/campaign-ui-week/week'+weekNum+".xml");
 		var tex = FlxAtlasFrames.fromSparrow(rawPic, rawXml);
 
 		week = new FlxSprite();

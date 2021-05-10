@@ -1,6 +1,5 @@
 package;
 
-import FunkinUtility.FunkinGroup;
 import Controls.Control;
 import flash.text.TextField;
 import flixel.FlxG;
@@ -38,27 +37,17 @@ class SaveDataState extends MusicBeatState
 	var optionsSelected:Int = 0;
 	var checkmarks:FlxTypedSpriteGroup<FlxSprite>;
 	var preferredSave:Int = 0;
-	var DJFKKeys:Bool = false;
 	override function create()
 	{
-		DJFKKeys = !OptionsHandler.options.DJFKKeys;
-		FlxG.sound.music.stop();
-		FlxG.sound.playMusic('assets/music/custom_menu_music/'+CoolUtil.parseJson(File.getContent("assets/music/custom_menu_music/custom_menu_music.json")).Options+'/Options' + TitleState.soundExt);
 		var menuBG:FlxSprite = new FlxSprite().loadGraphic('assets/images/menuDesat.png');
 		optionList = [
 						{name: "Always Show Cutscenes", value: false}, 
 						{name: "Skip Modifier Menu", value: false}, 
 						{name: "Skip Victory Screen", value: false},
-						{name: "Downscroll", value: false},
-						{name: "Use New input", value: false},
-						{name: "DJFK Keys", value: false},
-						{name: "Credits", value: false},
-						{name: "Sound Test...", value: false},
-						{name:"New Character...", value: false},
-						{name:"New Stage...", value:false},
-						{name: "New Song...", value: false},
-						{name: "New Week...", value: false},
-						{name: "Sort...", value: false}
+						{name: "Use custom input", value: true},
+						{name: "Downscroll", value: true},
+						{name: "DJFK Keys", value: true},
+						{name: "Show Misses", value: true},
 					];
 		// we use a var because if we don't it will read the file each time
 		// although it isn't as laggy thanks to assets
@@ -67,9 +56,10 @@ class SaveDataState extends MusicBeatState
 		optionList[0].value = curOptions.alwaysDoCutscenes;
 		optionList[1].value = curOptions.skipModifierMenu;
 		optionList[2].value = curOptions.skipVictoryScreen;
-		optionList[3].value = curOptions.downscroll;
-		optionList[4].value = curOptions.useCustomInput;
+		optionList[3].value = curOptions.useCustomInput;
+		optionList[4].value = curOptions.Downscroll;
 		optionList[5].value = curOptions.DJFKKeys;
+		optionList[6].value = curOptions.showMisses;
 		saves = new FlxTypedSpriteGroup<SaveFile>();
 		menuBG.color = 0xFF7194fc;
 		menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
@@ -117,8 +107,6 @@ class SaveDataState extends MusicBeatState
 				// we are gonna have to do some shenanagins to save our preffered save
 
 				saveOptions();
-				saveOptions();
-				FlxG.sound.music.stop();
 				FlxG.switchState(new MainMenuState());
 			} else {
 				if (saves.members[curSelected].askingToConfirm)
@@ -156,12 +144,7 @@ class SaveDataState extends MusicBeatState
 						FlxG.save.close();
 						preferredSave = curSelected;
 						FlxG.save.bind(saveName, "bulbyVR");
-						FlxG.sound.play('assets/sounds/custom_menu_sounds/'+CoolUtil.parseJson(File.getContent("assets/sounds/custom_menu_sounds/custom_menu_sounds.json")).customMenuConfirm+'/confirmMenu.ogg');
-						if (DJFKKeys) {
-							controls.setKeyboardScheme(KeyboardScheme.Solo, true);
-						} else {
-							controls.setKeyboardScheme(KeyboardScheme.Duo(true), true);
-						}						
+						FlxG.sound.play('assets/sounds/confirmMenu.ogg');
 						if (FlxG.save.data.songScores == null) {
 							FlxG.save.data.songScores = ["tutorial" => 0];
 						}
@@ -184,7 +167,7 @@ class SaveDataState extends MusicBeatState
 					Highscore.load();
 				}
 			} else if (!inOptionsMenu) {
-				FlxG.sound.play('assets/sounds/custom_menu_sounds/'+CoolUtil.parseJson(File.getContent("assets/sounds/custom_menu_sounds/custom_menu_sounds.json")).customMenuScroll+'/scrollMenu' + TitleState.soundExt);
+				FlxG.sound.play('assets/sounds/scrollMenu.ogg');
 				saves.members[curSelected].beSelected(true);
 			} else {
 				switch (optionList[optionsSelected].name) {
@@ -217,18 +200,14 @@ class SaveDataState extends MusicBeatState
 						saveOptions();
 						FreeplayState.soundTest = true;
 						FlxG.switchState(new CategoryState());
-					case "Credits": 
-						saveOptions();
-						FlxG.switchState(new CreditsState());
+					case "DJFK Keys":
+						controls.setKeyboardScheme(KeyboardScheme.Custom, true);
 					default:
-						if (OptionsHandler.options.allowEditOptions){
-							checkmarks.members[optionsSelected].visible = !checkmarks.members[optionsSelected].visible;
-							optionList[optionsSelected].value = checkmarks.members[optionsSelected].visible;
-						}
-						
+						checkmarks.members[optionsSelected].visible = !checkmarks.members[optionsSelected].visible;
+						optionList[optionsSelected].value = checkmarks.members[optionsSelected].visible;
 				}
 
-				FlxG.sound.play('assets/sounds/custom_menu_sounds/'+CoolUtil.parseJson(File.getContent("assets/sounds/custom_menu_sounds/custom_menu_sounds.json")).customMenuScroll+'/scrollMenu' + TitleState.soundExt);
+				FlxG.sound.play('assets/sounds/scrollMenu.ogg');
 			}
 		}
 
@@ -236,7 +215,7 @@ class SaveDataState extends MusicBeatState
 	function changeSelection(change:Int = 0)
 	{
 		if (!inOptionsMenu) {
-			FlxG.sound.play('assets/sounds/custom_menu_sounds/'+CoolUtil.parseJson(File.getContent("assets/sounds/custom_menu_sounds/custom_menu_sounds.json")).customMenuScroll+'/scrollMenu' + TitleState.soundExt, 0.4);
+			FlxG.sound.play('assets/sounds/scrollMenu' + TitleState.soundExt, 0.4);
 
 			curSelected += change;
 
@@ -263,7 +242,7 @@ class SaveDataState extends MusicBeatState
 				}
 			}
 		} else {
-			FlxG.sound.play('assets/sounds/custom_menu_sounds/'+CoolUtil.parseJson(File.getContent("assets/sounds/custom_menu_sounds/custom_menu_sounds.json")).customMenuScroll+'/scrollMenu' + TitleState.soundExt, 0.4);
+			FlxG.sound.play('assets/sounds/scrollMenu' + TitleState.soundExt, 0.4);
 
 			optionsSelected += change;
 
@@ -305,12 +284,13 @@ class SaveDataState extends MusicBeatState
 	}
 	function saveOptions() {
 		OptionsHandler.options = {
+			"showMisses": optionList[6].value,
 			"DJFKKeys": optionList[5].value,
-			"useCustomInput": optionList[4].value,
+			"Downscroll": optionList[4].value,
+			"useCustomInput": optionList[3].value,
 			"skipVictoryScreen": optionList[2].value,
 			"skipModifierMenu": optionList[1].value,
 			"alwaysDoCutscenes": optionList[0].value,
-			"downscroll": optionList[3].value,
 			"useSaveDataMenu": true,
 			// just use whatever it is 
 			"allowEditOptions": OptionsHandler.options.allowEditOptions,

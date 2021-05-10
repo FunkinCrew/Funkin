@@ -187,6 +187,7 @@ class PlayState extends MusicBeatState
 	var scoreTxt:FlxText;
 	var healthTxt:FlxText;
 	var accuracyTxt:FlxText;
+	var missesTxt:FlxText;
 	var difficTxt:FlxText;
 	public static var campaignScore:Int = 0;
 	public static var campaignAccuracy:Float = 0;
@@ -219,6 +220,7 @@ class PlayState extends MusicBeatState
 	var accelNotes:Bool = false;
 	var notesHit:Float = 0;
 	var notesPassing:Int = 0;
+	var Misses:Int = 0;
 	var vnshNotes:Bool = false;
 	var invsNotes:Bool = false;
 	var snakeNotes:Bool = false;
@@ -356,6 +358,10 @@ class PlayState extends MusicBeatState
 		trace('executed');
 	}
 	#end
+	var useCustomInput:Bool = false;
+	var showMisses:Bool = false;
+	var nightcoreMode:Bool = false;
+	var daycoreMode:Bool = false;
 	override public function create()
 	{
 		misses = 0;
@@ -429,6 +435,8 @@ class PlayState extends MusicBeatState
 		persistentUpdate = true;
 		persistentDraw = true;
 		alwaysDoCutscenes = OptionsHandler.options.alwaysDoCutscenes;
+		showMisses = OptionsHandler.options.showMisses;
+		useCustomInput = OptionsHandler.options.useCustomInput;
 		useVictoryScreen = !OptionsHandler.options.skipVictoryScreen;
 		downscroll = OptionsHandler.options.downscroll;
 		if (!OptionsHandler.options.skipModifierMenu) {
@@ -441,6 +449,8 @@ class PlayState extends MusicBeatState
 			invsNotes = ModifierState.modifiers[15].value;
 			snakeNotes = ModifierState.modifiers[16].value;
 			drunkNotes = ModifierState.modifiers[17].value;
+			nightcoreMode = ModifierState.modifiers[18].value;
+			daycoreMode = ModifierState.modifiers[19].value;
 			inALoop = ModifierState.modifiers[18].value;
 			duoMode = ModifierState.modifiers[19].value;
 			opponentPlayer = ModifierState.modifiers[20].value;
@@ -460,6 +470,11 @@ class PlayState extends MusicBeatState
 			if (accelNotes) {
 				noteSpeed = 0.45;
 				trace("accel arrows");
+			}
+			if (ModifierState.modifiers[18].value)
+				noteSpeed = 4;
+			if (daycoreMode) {
+				noteSpeed = 0.5;
 			}
 
 
@@ -1070,13 +1085,20 @@ class PlayState extends MusicBeatState
 		healthTxt.cameras = [camHUD];
 		doof.cameras = [camHUD];
 		accuracyTxt.cameras = [camHUD];
+		missesTxt.cameras = [camHUD];
 		difficTxt.cameras = [camHUD];
 		practiceDieIcon.visible = false;
 
 		add(scoreTxt);
 		add(healthTxt);
 
-		add(accuracyTxt);
+		if (showMisses) {
+			add(missesTxt);
+			add(accuracyTxt);
+		} else {
+			add(accuracyTxt);
+		}
+		
 		add(difficTxt);
 		// if (SONG.song == 'South')
 		// FlxG.camera.alpha = 0.7;
@@ -1988,7 +2010,7 @@ class PlayState extends MusicBeatState
 				babyArrow.alpha = 0;
 				FlxTween.tween(babyArrow, {y: babyArrow.y + 10, alpha: 1}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
 			}
-
+			
 			babyArrow.ID = i;
 
 			if (player == 1)
@@ -2751,6 +2773,8 @@ class PlayState extends MusicBeatState
 							}
 							
 							vocals.volume = 0;
+							Misses += 1;
+							notesPassing += 1;
 							if (poisonPlus && poisonTimes < 3)
 							{
 								poisonTimes += 1;
@@ -3421,10 +3445,10 @@ class PlayState extends MusicBeatState
 			}
 			combo = 0;
 			if (!practiceMode) {
-				songScore -= 10;
+				songScore -= 5;
 
 			}
-			trueScore -= 10;
+			trueScore -= 5;
 			FlxG.sound.play('assets/sounds/missnote' + FlxG.random.int(1, 3) + TitleState.soundExt, FlxG.random.float(0.1, 0.2));
 			// FlxG.sound.play('assets/sounds/missnote1' + TitleState.soundExt, 1, false);
 			// FlxG.log.add('played imss note');
@@ -3523,9 +3547,12 @@ class PlayState extends MusicBeatState
 				popUpScore(note.strumTime, note, playerOne);
 				combo += 1;
 			}
-			
-			if (playerOne)
-				altAnim = "";
+
+			if (note.noteData >= 0)
+				health += 0.01 + healthGainModifier;
+			else
+				health += 0.005 + healthGainModifier;
+
 			switch (note.noteData)
 			{
 				case 0:
