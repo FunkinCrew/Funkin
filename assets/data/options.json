@@ -2,6 +2,8 @@
     "skipVictoryScreen": false,
     "skipModifierMenu": false,
     "alwaysDoCutscenes": false,
+    "useCustomInput": false,
+    "DJFKKeys": false,
     "allowEditOptions": true,
     "useSaveDataMenu": true, 
     "downscroll": false,
