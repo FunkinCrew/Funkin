@@ -86,23 +86,14 @@ class FreeplayState extends MusicBeatState
 			FlxG.autoPause = false;
 			curDifficulty = 0;
 		}
-		#if sys
-		//commenting this out for now cuz im dumb and can't code
-		/*var bgInfo:String = CoolUtil.parseJson(Assets.getText('assets/data/freeplaySongJson.jsonc'));
-		var categories:String = CoolUtil.parseJson(Assets.getText('assets/data/freeplaySongJson.jsonc'));
-		var categoryBG:String = CoolUtil.parseJson(Assets.getText('assets/data/categories/'+categoriesNames+'/BG.json'));
-		var bgDir:String = CoolUtil.parseJson(Assets.getText('assets/images/Custom_Menu_BGs/Custom_Menu_BGs.json'));
-		trace(bgNames);
-		if (!FileSystem.exists('assets/images/Custom_Menu_BGs/'+categoryBG+'/menuBGBlue.png')) {
-			new FlxSprite().loadGraphic('assets/images/Custom_Menu_BGs/Default/menuBGBlue.png');
-			add(bg);
-		} else {
-			new FlxSprite().loadGraphic('assets/images/Custom_Menu_BGs/'+categoryBG+'menuBGBlue.png');
-			add(bg);
-		}*/
-			new FlxSprite().loadGraphic('assets/images/Custom_Menu_BGs/Default/menuBGBlue.png');
-			add(bg);
-		#end
+		// imagine making a sprite and not assigning a var
+		bg =  new FlxSprite();
+		if (FNFAssets.exists('assets/images/Custom_Menu_BGs/Default/menuBGBlue.png')) {
+			bg.loadGraphic('assets/images/Custom_Menu_BGs/Default/menuBGBlue.png');
+ 		} else {
+			 bg.loadGraphic('assets/images/menuBGBlue.png');
+		 }
+		add(bg);
 
 		grpSongs = new FlxTypedGroup<Alphabet>();
 		add(grpSongs);

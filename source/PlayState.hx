@@ -187,7 +187,6 @@ class PlayState extends MusicBeatState
 	var scoreTxt:FlxText;
 	var healthTxt:FlxText;
 	var accuracyTxt:FlxText;
-	var missesTxt:FlxText;
 	var difficTxt:FlxText;
 	public static var campaignScore:Int = 0;
 	public static var campaignAccuracy:Float = 0;
@@ -435,7 +434,6 @@ class PlayState extends MusicBeatState
 		persistentUpdate = true;
 		persistentDraw = true;
 		alwaysDoCutscenes = OptionsHandler.options.alwaysDoCutscenes;
-		showMisses = OptionsHandler.options.showMisses;
 		useCustomInput = OptionsHandler.options.useCustomInput;
 		useVictoryScreen = !OptionsHandler.options.skipVictoryScreen;
 		downscroll = OptionsHandler.options.downscroll;
@@ -1085,21 +1083,12 @@ class PlayState extends MusicBeatState
 		healthTxt.cameras = [camHUD];
 		doof.cameras = [camHUD];
 		accuracyTxt.cameras = [camHUD];
-		missesTxt.cameras = [camHUD];
 		difficTxt.cameras = [camHUD];
 		practiceDieIcon.visible = false;
 
 		add(scoreTxt);
-		add(healthTxt);
-
-		if (showMisses) {
-			add(missesTxt);
-			add(accuracyTxt);
-		} else {
-			add(accuracyTxt);
-		}
-		
-		add(difficTxt);
+		// don't add the accuracy shit lol
+		// because kade engine
 		// if (SONG.song == 'South')
 		// FlxG.camera.alpha = 0.7;
 		// UI_camera.zoom = 1;
