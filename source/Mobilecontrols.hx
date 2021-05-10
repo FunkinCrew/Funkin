@@ -1,5 +1,6 @@
 package;
 
+import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.group.FlxSpriteGroup;
 
@@ -16,7 +17,7 @@ class Mobilecontrols extends FlxSpriteGroup
 	public var downscroll_isenabled:Bool = false;
 
     var _pad:FlxVirtualPad;
-	var _hb:Hitbox;
+	var _hitbox:Hitbox;
 
 
 	var controlmode:Int = 0;
@@ -68,9 +69,9 @@ class Mobilecontrols extends FlxSpriteGroup
 				this.add(_pad);
 				_pad = config.loadcustom(_pad);
 			case 4:
-				_hb = new Hitbox();
+				_hitbox = new Hitbox();
 				hitboxisenabled = true;
-				add(_hb);
+				add(_hitbox);
 			default: //default (0)
 				_pad = new FlxVirtualPad(RIGHT_FULL, NONE);
 				_pad.alpha = 0.75;
@@ -102,20 +103,20 @@ class Mobilecontrols extends FlxSpriteGroup
 		}
 
 		if (hitboxisenabled){
-			UP = _hb.up.pressed;
-			RIGHT = _hb.right.pressed;
-			DOWN = _hb.down.pressed;
-			LEFT = _hb.left.pressed;
+			UP = _hitbox.up.pressed;
+			RIGHT = _hitbox.right.pressed;
+			DOWN = _hitbox.down.pressed;
+			LEFT = _hitbox.left.pressed;
 
-			UP_P = _hb.up.justPressed;
-			RIGHT_P = _hb.right.justPressed;
-			DOWN_P = _hb.down.justPressed;
-			LEFT_P = _hb.left.justPressed;
+			UP_P = _hitbox.up.justPressed;
+			RIGHT_P = _hitbox.right.justPressed;
+			DOWN_P = _hitbox.down.justPressed;
+			LEFT_P = _hitbox.left.justPressed;
 
-			UP_R = _hb.up.justReleased;
-			RIGHT_R = _hb.right.justReleased;
-			DOWN_R = _hb.down.justReleased;
-			LEFT_R = _hb.left.justReleased;
+			UP_R = _hitbox.up.justReleased;
+			RIGHT_R = _hitbox.right.justReleased;
+			DOWN_R = _hitbox.down.justReleased;
+			LEFT_R = _hitbox.left.justReleased;
 		}
 
 		if (!keyboardisenabled && !hitboxisenabled){

@@ -142,6 +142,7 @@ class PlayState extends MusicBeatState
 	var mcontrols:Mobilecontrols; 
 	#end
 
+	var config:Config = new Config();
 	var downscroll_isenabled:Bool = false;
 
 	override public function create()
@@ -149,13 +150,11 @@ class PlayState extends MusicBeatState
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
 
-		// its part 1 of mobile controls (part 2 in 750 line)
-		#if mobile
-		mcontrols = new Mobilecontrols();
-		downscroll_isenabled = mcontrols.downscroll_isenabled;
-		#end
 
-		
+		// part of mobile controls in 750 line
+		// get downscroll settings
+		downscroll_isenabled = config.getdownscroll();
+
 
 		// var gameCam:FlxCamera = FlxG.camera;
 		camGame = new FlxCamera();
@@ -748,15 +747,16 @@ class PlayState extends MusicBeatState
 
 		// mobile controls here!!!
 		#if mobile
-		mcontrols.cameras = [camHUD];
+		mcontrols = new Mobilecontrols();
+		var camcontrol = new FlxCamera();
+		FlxG.cameras.add(camcontrol);
+		camcontrol.bgColor.alpha = 0;
+		mcontrols.cameras = [camcontrol];
+
 		add(mcontrols);
 		#end
 
-		var ybar = FlxG.height * 0.9;
-
-		if (downscroll_isenabled) {
-			ybar = FlxG.height * 0.1;
-		}
+		var ybar:Float = downscroll_isenabled ? FlxG.height * 0.1 : FlxG.height * 0.9;
 
 		healthBarBG = new FlxSprite(0, ybar).loadGraphic(Paths.image('healthBar'));
 		healthBarBG.screenCenter(X);
