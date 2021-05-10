@@ -71,14 +71,14 @@ jobs:
           haxelib install hxcpp-debug-server
           haxelib list
         displayName: 'Install haxelibs'
-      - script: haxelib run lime build cpp
+      - script: haxelib run lime build mac
         displayName: 'Compile'
       - script: |
           [ -d "export/release/mac/bin" ] && echo "Directory neko exists."
           [ -d "export/release" ] && echo "Directory release exists."
           [ -d "export/release/mac" ] && echo "Directory mac exists."
           [ -d "export/release/windows/bin" ] && echo "Directory windows exists."
-          tar -czf bin.tar.gz 'export/release/mac/bin'
+          tar -czf bin.tar.gz 'export/release/macos/bin'
         displayName: 'Archive'
       - task: PublishPipelineArtifact@0
         inputs:
