@@ -78,7 +78,7 @@ class ModifierState extends MusicBeatState
 				{name: "Demo Mode", value: false, conflicts: [19,20,0,1,2,3,4,5,6,7,8,9],multi:0,times:true, desc:"Let the game play itself!"},
 				{name: "Chart", value: false, conflicts: [], multi: 1, times:true, desc:"Open the Debug Menu without Pressing 7"},
 				{name: "Char Select", value: false, conflicts: [], multi: 1, times:true, desc:"You can just select some custom characters"},
-				{name: "Play", value: false, conflicts: [], multi: 1, times:true, desc:"Start your own Funkin Adventure"}
+				{name: "Play", value: false, conflicts: [], multi: 1, times:true, desc:"Play the Funkin Game!"}
 
 			];
 		}
