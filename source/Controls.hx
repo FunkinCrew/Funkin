@@ -516,10 +516,10 @@ class Controls extends FlxActionSet
 		switch (scheme)
 		{
 			case Solo:
-				inline bindKeys(Control.UP, [W, FlxKey.UP, J]);
-				inline bindKeys(Control.DOWN, [S, FlxKey.DOWN, F]);
-				inline bindKeys(Control.LEFT, [A, FlxKey.LEFT, D]);
-				inline bindKeys(Control.RIGHT, [FlxKey.RIGHT, K]);
+				inline bindKeys(Control.UP, [W, FlxKey.UP, K]);
+				inline bindKeys(Control.DOWN, [S, FlxKey.DOWN, J]);
+				inline bindKeys(Control.LEFT, [A, FlxKey.LEFT, H]);
+				inline bindKeys(Control.RIGHT, [FlxKey.RIGHT, L]);
 				inline bindKeys(Control.ACCEPT, [Z, SPACE, ENTER]);
 				inline bindKeys(Control.BACK, [BACKSPACE, ESCAPE]);
 				inline bindKeys(Control.PAUSE, [P, ENTER, ESCAPE]);
