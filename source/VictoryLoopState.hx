@@ -68,7 +68,7 @@ class VictoryLoopState extends MusicBeatSubstate
 		// if you do this you are epic gamer
 		rating.text = Ratings.GenerateLetterRank(accuracy);
 		rating.addText();
-		accuracyTxt = new FlxText(10, rating.y + rating.height,0 , "ACCURACY: "+Math.round(accuracy * 100) + "%");
+		accuracyTxt = new FlxText(10, rating.y + rating.height,0 , "ACCURACY: "+accuracy + "%");
 		accuracyTxt.setFormat("assets/fonts/vcr.ttf", 26, FlxColor.WHITE, RIGHT);
 		var interp = Character.getAnimInterp(p1);
 		if (interp.variables.exists("isPixel") && interp.variables.get("isPixel")) {

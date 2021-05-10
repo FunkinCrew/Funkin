@@ -2912,7 +2912,7 @@ class PlayState extends MusicBeatState
 		{
 			campaignScore += songScore;
 			campaignScoreDef += songScoreDef;
-			campaignAccuracy += notesHit/notesPassing;
+			campaignAccuracy += accuracy;
 			storyPlaylist.remove(storyPlaylist[0]);
 
 			if (storyPlaylist.length <= 0)
@@ -2998,7 +2998,7 @@ class PlayState extends MusicBeatState
 					+ " | Misses: "
 					+ misses, iconRPC, playingAsRpc);
 				#end
-				FlxG.switchState(new VictoryLoopState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y, gf.getScreenPosition().x,gf.getScreenPosition().y, notesHit/notesPassing, songScore, dad.getScreenPosition().x, dad.getScreenPosition().y));
+				FlxG.switchState(new VictoryLoopState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y, gf.getScreenPosition().x,gf.getScreenPosition().y, accuracy, songScore, dad.getScreenPosition().x, dad.getScreenPosition().y));
 			} else
 				FlxG.switchState(new FreeplayState());
 		}
