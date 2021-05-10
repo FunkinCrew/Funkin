@@ -91,7 +91,7 @@ class PlayState extends MusicBeatState
 	public static var defaultPlaylistLength = 0;
 	public static var campaignScoreDef = 0;
 	var halloweenLevel:Bool = false;
-
+	public static var ss:Bool = true;
 	private var vocals:FlxSound;
 
 	private var dad:Character;
@@ -103,7 +103,9 @@ class PlayState extends MusicBeatState
 
 	private var strumLine:FlxSprite;
 	private var curSection:Int = 0;
-
+	var totalNotesHit:Float = 0;
+	var totalPlayed:Int =0;
+	var totalNotesHitDefault:Float = 0;
 	private var camFollow:FlxObject;
 	private var player1Icon:String;
 	private var player2Icon:String;
@@ -282,7 +284,7 @@ class PlayState extends MusicBeatState
 		trace("opening a haxe state (because we are cool :))");
 		var parser = new ParserEx();
 		var program = parser.parseString(FNFAssets.getText(path + filename));
-		var interp = new Interp();
+		var interp = PluginManager.createSimpleInterp();
 		// set vars
 		interp.variables.set("BEHIND_GF", BEHIND_GF);
 		interp.variables.set("BEHIND_BF", BEHIND_BF);
@@ -295,33 +297,18 @@ class PlayState extends MusicBeatState
 		interp.variables.set("curSong", SONG.song);
 		interp.variables.set("curStep", 0);
 		interp.variables.set("curBeat", 0);
-		interp.variables.set("Conductor", Conductor);
 		interp.variables.set("camHUD", camHUD);
 		interp.variables.set("showOnlyStrums", false);
 		interp.variables.set("playerStrums", playerStrums);
 		interp.variables.set("enemyStrums", enemyStrums);
 		interp.variables.set("mustHit", false);
 		interp.variables.set("strumLineY", strumLine.y);
-		interp.variables.set("FlxSprite", FlxSprite);
-		interp.variables.set("FlxSound", FlxSound);
-		interp.variables.set("FlxAtlasFrames", FlxAtlasFrames);
-		interp.variables.set("FlxGroup",FlxGroup);
-		interp.variables.set("FlxAngle", FlxAngle);
-		interp.variables.set("FlxMath", FlxMath);
-		interp.variables.set("Type", Type);
 		interp.variables.set("hscriptPath", path);
-		interp.variables.set("makeRangeArray", CoolUtil.numberArray);
 		interp.variables.set("boyfriend", boyfriend);
 		interp.variables.set("gf", gf);
 		interp.variables.set("dad", dad);
-		interp.variables.set("FNFAssets", HScriptAssets);
 		// give them access to save data, everything will be fine ;)
-		interp.variables.set("FlxG", FlxG);
-		interp.variables.set("FlxTimer", FlxTimer);
-		interp.variables.set("FlxTween", FlxTween);
-		interp.variables.set("Std", Std);
 		interp.variables.set("isInCutscene", function () return inCutscene);
-		interp.variables.set("MetroSprite", plugins.tools.MetroSprite);
 		trace("set vars");
 		// callbacks
 
@@ -376,6 +363,7 @@ class PlayState extends MusicBeatState
 		goods = 0;
 		sicks = 0;
 		shits = 0;
+		ss = true;
 		#if windows
 		// Making difficulty text for Discord Rich Presence.
 		switch (storyDifficulty)
@@ -2757,9 +2745,9 @@ class PlayState extends MusicBeatState
 						if ((daNote.tooLate || !daNote.wasGoodHit) && !daNote.isSustainNote)
 						{
 							if (!daNote.mustPress) {
-								health += 0.0475;
+								health += 0.0475 + healthLossModifier;
 							} else if (!opponentPlayer) {
-								health -= 0.0475;
+								health -= 0.0475 + healthLossModifier;
 							}
 							
 							vocals.volume = 0;
@@ -3005,9 +2993,10 @@ class PlayState extends MusicBeatState
 
 	var endingSong:Bool = false;
 
-	private function popUpScore(strumtime:Float, daNote:Note):Void
+	private function popUpScore(strumtime:Float, daNote:Note, playerOne:Bool):Void
 	{
-		var noteDiff:Float = Math.abs(strumtime - Conductor.songPosition);
+		var noteDiff:Float = Math.abs(Conductor.songPosition - daNote.strumTime);
+		var wife:Float = HelperFunctions.wife3(noteDiff, Conductor.timeScale);
 		// boyfriend.playAnim('hey');
 		vocals.volume = 1;
 
@@ -3023,32 +3012,44 @@ class PlayState extends MusicBeatState
 
 		var daRating:String = "sick";
 
-		if (noteDiff > Conductor.safeZoneOffset * 0.9)
+		daRating = daNote.rating;
+		var healthBonus = 0.0;
+		switch (daRating)
 		{
-			daRating = 'shit';
-			score = 50;
-			notesHit += 0.25;
+			case 'shit':
+				score = -300;
+				combo = 0;
+				misses++;
+				healthBonus -= 0.2 + healthLossModifier;
+				ss = false;
+				shits++;
+				notesHit += 0.25;
+			case 'bad':
+				daRating = 'bad';
+				score = 0;
+				healthBonus -= 0.06 + healthLossModifier;
+				ss = false;
+				bads++;
+				notesHit += 0.50;
+			case 'good':
+				daRating = 'good';
+				score = 200;
+				ss = false;
+				goods++;
+				healthBonus += 0.03 + healthGainModifier;
+				notesHit += 0.75;
+			case 'sick':
+				healthBonus += 0.07 + healthGainModifier;
+				notesHit += 1;
+				sicks++;
+				var recycledNote = grpNoteSplashes.recycle(NoteSplash);
+				recycledNote.setupNoteSplash(daNote.x, daNote.y, daNote.noteData);
+				grpNoteSplashes.add(recycledNote);
 		}
-		else if (noteDiff > Conductor.safeZoneOffset * 0.75)
-		{
-			bads += 1;
-			daRating = 'bad';
-			score = 100;
-			notesHit += 0.75;
-		}
-		else if (noteDiff > Conductor.safeZoneOffset * 0.2)
-		{
-			daRating = 'good';
-			score = 200;
-			// good needs to be punished somewhat
-			notesHit += 0.95;
-		} else {
-			var recycledNote = grpNoteSplashes.recycle(NoteSplash);
-			recycledNote.setupNoteSplash(daNote.x, daNote.y, daNote.noteData);
-			grpNoteSplashes.add(recycledNote);
-		}
-		if (daRating == 'sick')
-			notesHit += 1;
+		if (!playerOne)
+			health -= healthBonus;
+		else
+			health += healthBonus;
 		if (daRating != "sick" && perfectMode) {
 			if (opponentPlayer)
 				health = 50;
@@ -3193,7 +3194,12 @@ class PlayState extends MusicBeatState
 
 		curSection += 1;
 	}
-
+	function updateAccuracy()
+	{
+		totalPlayed += 1;
+		accuracy = Math.max(0, totalNotesHit / totalPlayed * 100);
+		accuracyDefault = Math.max(0, totalNotesHitDefault / totalPlayed * 100);
+	}
 	private function keyShit(?playerOne:Bool=true):Void
 	{
 		// HOLDING
@@ -3473,6 +3479,9 @@ class PlayState extends MusicBeatState
 
 	function noteCheck(keyP:Bool, note:Note, ?playerOne:Bool=true):Void
 	{
+		var noteDiff:Float = Math.abs(note.strumTime - Conductor.songPosition);
+
+		note.rating = Ratings.CalculateRating(noteDiff);
 		if (keyP)
 			goodNoteHit(note,playerOne);
 		else
@@ -3511,19 +3520,8 @@ class PlayState extends MusicBeatState
 			if (!note.isSustainNote)
 			{
 				notesPassing += 1;
-				popUpScore(note.strumTime, note);
+				popUpScore(note.strumTime, note, playerOne);
 				combo += 1;
-			}
-			if (playerOne) {
-				if (note.noteData >= 0)
-					health += 0.023 + healthGainModifier;
-				else
-					health += 0.004 + healthGainModifier;
-			} else {
-				if (note.noteData >= 0)
-					health -= 0.023 + healthGainModifier;
-				else
-					health -= 0.004 + healthGainModifier;
 			}
 			
 			if (playerOne)

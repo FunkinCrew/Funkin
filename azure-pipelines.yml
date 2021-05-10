@@ -75,6 +75,9 @@ jobs:
         displayName: 'Compile'
       - script: |
           [ -d "export/release/mac/bin" ] && echo "Directory neko exists."
+          [ -d "export/release" ] && echo "Directory release exists."
+          [ -d "export/release/mac" ] && echo "Directory mac exists."
+          [ -d "export/release/windows/bin" ] && echo "Directory windows exists."
           tar -czf bin.tar.gz 'export/release/mac/bin'
         displayName: 'Archive'
       - task: PublishPipelineArtifact@0

@@ -812,30 +812,19 @@ class Character extends FlxSprite
 		return animJson;
 	}
 	public static function getAnimInterp(char:String):Interp {
-		var interp = new Interp();
+		var interp = PluginManager.createSimpleInterp();
 		var parser = new hscript.Parser();
 		var charJson = CoolUtil.parseJson(Assets.getText('assets/images/custom_chars/custom_chars.jsonc'));
 		var program = parser.parseString(FNFAssets.getText('assets/images/custom_chars/' + Reflect.field(charJson, char).like + '.hscript'));
 		interp.variables.set("hscriptPath", 'assets/images/custom_chars/' + char + '/');
-		interp.variables.set("FlxAtlasFrames", FlxAtlasFrames);
+	
 		interp.variables.set("Level_NotAHoe", Level_NotAHoe);
 		interp.variables.set("Level_Boogie", Level_Boogie);
 		interp.variables.set("Level_Sadness", Level_Sadness);
 		interp.variables.set("Level_Sing", Level_Sing);
-		interp.variables.set("StringTools", StringTools);
-		interp.variables.set("FlxSound", FlxSound);
-		interp.variables.set("FlxAtlasFrames", FlxAtlasFrames);
-		interp.variables.set("FlxGroup", FlxGroup);
-		interp.variables.set("FlxAngle", FlxAngle);
-		interp.variables.set("Conductor", Conductor);
-		interp.variables.set("FlxMath", FlxMath);
-		interp.variables.set("FlxG", FlxG);
-		interp.variables.set("FlxTimer", FlxTimer);
-		interp.variables.set("FlxTween", FlxTween);
 		interp.variables.set("portraitOffset", [0, 0]);
 		interp.variables.set("dadVar", 4.0);
 		interp.variables.set("isPixel", false);
-		interp.variables.set("Std", Std);
 		interp.execute(program);
 		trace(interp);
 		return interp;
