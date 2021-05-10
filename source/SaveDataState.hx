@@ -43,7 +43,8 @@ class SaveDataState extends MusicBeatState
 	{
 		DJFKKeys = !OptionsHandler.options.DJFKKeys;
 		FlxG.sound.music.stop();
-		FlxG.sound.playMusic('assets/music/custom_menu_music/'+CoolUtil.parseJson(File.getContent("assets/music/custom_menu_music/custom_menu_music.json")).Options+'/Options' + TitleState.soundExt);
+		FlxG.sound.playMusic('assets/music/custom_menu_music/'
+			+ CoolUtil.parseJson(FNFAssets.getText("assets/music/custom_menu_music/custom_menu_music.json")).Options+'/Options' + TitleState.soundExt);
 		var menuBG:FlxSprite = new FlxSprite().loadGraphic('assets/images/menuDesat.png');
 		optionList = [
 						{name: "Always Show Cutscenes", value: false}, 
@@ -54,11 +55,13 @@ class SaveDataState extends MusicBeatState
 						{name: "DJFK Keys", value: false},
 						{name: "Credits", value: false},
 						{name: "Sound Test...", value: false},
+						#if sys
 						{name:"New Character...", value: false},
 						{name:"New Stage...", value:false},
 						{name: "New Song...", value: false},
 						{name: "New Week...", value: false},
 						{name: "Sort...", value: false}
+						#end
 					];
 		// we use a var because if we don't it will read the file each time
 		// although it isn't as laggy thanks to assets
@@ -156,7 +159,8 @@ class SaveDataState extends MusicBeatState
 						FlxG.save.close();
 						preferredSave = curSelected;
 						FlxG.save.bind(saveName, "bulbyVR");
-						FlxG.sound.play('assets/sounds/custom_menu_sounds/'+CoolUtil.parseJson(File.getContent("assets/sounds/custom_menu_sounds/custom_menu_sounds.json")).customMenuConfirm+'/confirmMenu.ogg');
+						FlxG.sound.play('assets/sounds/custom_menu_sounds/'
+							+ CoolUtil.parseJson(FNFAssets.getText("assets/sounds/custom_menu_sounds/custom_menu_sounds.json")).customMenuConfirm+'/confirmMenu.ogg');
 						if (DJFKKeys) {
 							controls.setKeyboardScheme(KeyboardScheme.Solo, true);
 						} else {
@@ -184,7 +188,8 @@ class SaveDataState extends MusicBeatState
 					Highscore.load();
 				}
 			} else if (!inOptionsMenu) {
-				FlxG.sound.play('assets/sounds/custom_menu_sounds/'+CoolUtil.parseJson(File.getContent("assets/sounds/custom_menu_sounds/custom_menu_sounds.json")).customMenuScroll+'/scrollMenu' + TitleState.soundExt);
+				FlxG.sound.play('assets/sounds/custom_menu_sounds/'
+					+ CoolUtil.parseJson(FNFAssets.getText("assets/sounds/custom_menu_sounds/custom_menu_sounds.json")).customMenuScroll+'/scrollMenu' + TitleState.soundExt);
 				saves.members[curSelected].beSelected(true);
 			} else {
 				switch (optionList[optionsSelected].name) {
@@ -228,7 +233,8 @@ class SaveDataState extends MusicBeatState
 						
 				}
 
-				FlxG.sound.play('assets/sounds/custom_menu_sounds/'+CoolUtil.parseJson(File.getContent("assets/sounds/custom_menu_sounds/custom_menu_sounds.json")).customMenuScroll+'/scrollMenu' + TitleState.soundExt);
+				FlxG.sound.play('assets/sounds/custom_menu_sounds/'
+					+ CoolUtil.parseJson(FNFAssets.getText("assets/sounds/custom_menu_sounds/custom_menu_sounds.json")).customMenuScroll+'/scrollMenu' + TitleState.soundExt);
 			}
 		}
 
@@ -236,7 +242,8 @@ class SaveDataState extends MusicBeatState
 	function changeSelection(change:Int = 0)
 	{
 		if (!inOptionsMenu) {
-			FlxG.sound.play('assets/sounds/custom_menu_sounds/'+CoolUtil.parseJson(File.getContent("assets/sounds/custom_menu_sounds/custom_menu_sounds.json")).customMenuScroll+'/scrollMenu' + TitleState.soundExt, 0.4);
+			FlxG.sound.play('assets/sounds/custom_menu_sounds/'
+				+ CoolUtil.parseJson(FNFAssets.getText("assets/sounds/custom_menu_sounds/custom_menu_sounds.json")).customMenuScroll+'/scrollMenu' + TitleState.soundExt, 0.4);
 
 			curSelected += change;
 
@@ -263,7 +270,8 @@ class SaveDataState extends MusicBeatState
 				}
 			}
 		} else {
-			FlxG.sound.play('assets/sounds/custom_menu_sounds/'+CoolUtil.parseJson(File.getContent("assets/sounds/custom_menu_sounds/custom_menu_sounds.json")).customMenuScroll+'/scrollMenu' + TitleState.soundExt, 0.4);
+			FlxG.sound.play('assets/sounds/custom_menu_sounds/'
+				+ CoolUtil.parseJson(FNFAssets.getText("assets/sounds/custom_menu_sounds/custom_menu_sounds.json")).customMenuScroll+'/scrollMenu' + TitleState.soundExt, 0.4);
 
 			optionsSelected += change;
 

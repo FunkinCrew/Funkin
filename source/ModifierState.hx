@@ -124,7 +124,8 @@ class ModifierState extends MusicBeatState
 	function changeSelection(change:Int = 0)
 	{
 
-		FlxG.sound.play('assets/sounds/custom_menu_sounds/'+CoolUtil.parseJson(File.getContent("assets/sounds/custom_menu_sounds/custom_menu_sounds.json")).customMenuScroll+'/scrollMenu' + TitleState.soundExt, 0.4);
+		FlxG.sound.play('assets/sounds/custom_menu_sounds/'
+			+ CoolUtil.parseJson(FNFAssets.getText("assets/sounds/custom_menu_sounds/custom_menu_sounds.json")).customMenuScroll+'/scrollMenu' + TitleState.soundExt, 0.4);
 
 		curSelected += change;
 

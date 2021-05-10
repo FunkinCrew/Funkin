@@ -224,14 +224,14 @@ class FreeplayState extends MusicBeatState
 					soundTestSong = Song.loadFromJson(songs[curSelected].toLowerCase(), songs[curSelected].toLowerCase());
 					if (soundTestSong.needsVoices)
 					{
-						var vocalSound = Sound.fromFile("assets/music/" + soundTestSong.song + "-Nightcore_Voices" + TitleState.soundExt);
+						var vocalSound = FNFAssets.getSound("assets/music/" + soundTestSong.song + "-Nightcore_Voices" + TitleState.soundExt);
 						vocals = new FlxSound().loadEmbedded(vocalSound);
 						FlxG.sound.list.add(vocals);
 						vocals.play();
 						vocals.pause();
 						vocals.looped = true;
 					}
-					FlxG.sound.playMusic(Sound.fromFile("assets/music/" + soundTestSong.song + "-Nightcore_Inst" + TitleState.soundExt));
+					FlxG.sound.playMusic(FNFAssets.getSound("assets/music/" + soundTestSong.song + "-Nightcore_Inst" + TitleState.soundExt));
 					Conductor.mapBPMChanges(soundTestSong);
 					Conductor.changeBPM(soundTestSong.bpm);
 					if (soundTestSong.needsVoices) {
@@ -242,7 +242,7 @@ class FreeplayState extends MusicBeatState
 				} else {
 					var poop:String = songs[curSelected].toLowerCase() + DifficultyIcons.getEndingFP(curDifficulty);
 					trace(poop);
-					if (!FileSystem.exists('assets/data/' + songs[curSelected].toLowerCase() + '/' + poop.toLowerCase() + '.json'))
+					if (!FNFAssets.exists('assets/data/' + songs[curSelected].toLowerCase() + '/' + poop.toLowerCase() + '.json'))
 					{
 						// assume we pecked up the difficulty, return to default difficulty
 						trace("UH OH SONG IN SPECIFIED DIFFICULTY DOESN'T EXIST\nUSING DEFAULT DIFFICULTY");
@@ -274,14 +274,14 @@ class FreeplayState extends MusicBeatState
 					soundTestSong = Song.loadFromJson(songs[curSelected].toLowerCase(), songs[curSelected].toLowerCase());
 					if (soundTestSong.needsVoices)
 					{
-						var vocalSound = Sound.fromFile("assets/music/" + soundTestSong.song + "-Daycore_Voices" + TitleState.soundExt);
+						var vocalSound = FNFAssets.getSound("assets/music/" + soundTestSong.song + "-Daycore_Voices" + TitleState.soundExt);
 						vocals = new FlxSound().loadEmbedded(vocalSound);
 						FlxG.sound.list.add(vocals);
 						vocals.play();
 						vocals.pause();
 						vocals.looped = true;
 					}
-					FlxG.sound.playMusic(Sound.fromFile("assets/music/" + soundTestSong.song + "-Daycore_Inst" + TitleState.soundExt));
+					FlxG.sound.playMusic(FNFAssets.getSound("assets/music/" + soundTestSong.song + "-Daycore_Inst" + TitleState.soundExt));
 					Conductor.mapBPMChanges(soundTestSong);
 					Conductor.changeBPM(soundTestSong.bpm);
 					if (soundTestSong.needsVoices) {
@@ -292,7 +292,7 @@ class FreeplayState extends MusicBeatState
 				} else {
 					var poop:String = songs[curSelected].toLowerCase() + DifficultyIcons.getEndingFP(curDifficulty);
 					trace(poop);
-					if (!FileSystem.exists('assets/data/' + songs[curSelected].toLowerCase() + '/' + poop.toLowerCase() + '.json'))
+					if (!FNFAssets.exists('assets/data/' + songs[curSelected].toLowerCase() + '/' + poop.toLowerCase() + '.json'))
 					{
 						// assume we pecked up the difficulty, return to default difficulty
 						trace("UH OH SONG IN SPECIFIED DIFFICULTY DOESN'T EXIST\nUSING DEFAULT DIFFICULTY");
@@ -324,14 +324,14 @@ class FreeplayState extends MusicBeatState
 					soundTestSong = Song.loadFromJson(songs[curSelected].toLowerCase(), songs[curSelected].toLowerCase());
 					if (soundTestSong.needsVoices)
 					{
-						var vocalSound = Sound.fromFile("assets/music/" + soundTestSong.song + "_Voices" + TitleState.soundExt);
+						var vocalSound = FNFAssets.getSound("assets/music/" + soundTestSong.song + "_Voices" + TitleState.soundExt);
 						vocals = new FlxSound().loadEmbedded(vocalSound);
 						FlxG.sound.list.add(vocals);
 						vocals.play();
 						vocals.pause();
 						vocals.looped = true;
 					}
-					FlxG.sound.playMusic(Sound.fromFile("assets/music/" + soundTestSong.song + "_Inst" + TitleState.soundExt));
+					FlxG.sound.playMusic(FNFAssets.getSound("assets/music/" + soundTestSong.song + "_Inst" + TitleState.soundExt));
 					Conductor.mapBPMChanges(soundTestSong);
 					Conductor.changeBPM(soundTestSong.bpm);
 					if (soundTestSong.needsVoices) {
@@ -342,7 +342,7 @@ class FreeplayState extends MusicBeatState
 				} else {
 					var poop:String = songs[curSelected].toLowerCase() + DifficultyIcons.getEndingFP(curDifficulty);
 					trace(poop);
-					if (!FileSystem.exists('assets/data/' + songs[curSelected].toLowerCase() + '/' + poop.toLowerCase() + '.json'))
+					if (!FNFAssets.exists('assets/data/' + songs[curSelected].toLowerCase() + '/' + poop.toLowerCase() + '.json'))
 					{
 						// assume we pecked up the difficulty, return to default difficulty
 						trace("UH OH SONG IN SPECIFIED DIFFICULTY DOESN'T EXIST\nUSING DEFAULT DIFFICULTY");
@@ -485,7 +485,7 @@ class FreeplayState extends MusicBeatState
 	function changeSelection(change:Int = 0)
 	{
 
-		FlxG.sound.play('assets/sounds/custom_menu_sounds/'+CoolUtil.parseJson(File.getContent("assets/sounds/custom_menu_sounds/custom_menu_sounds.json")).customMenuScroll+'/scrollMenu' + TitleState.soundExt, 0.4);
+		FlxG.sound.play('assets/sounds/custom_menu_sounds/'+CoolUtil.parseJson(FNFAssets.getText("assets/sounds/custom_menu_sounds/custom_menu_sounds.json")).customMenuScroll+'/scrollMenu' + TitleState.soundExt, 0.4);
 
 		curSelected += change;
 

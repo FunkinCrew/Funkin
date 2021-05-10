@@ -60,7 +60,8 @@ class MainMenuState extends MusicBeatState
 			optionShit = ['story mode', 'freeplay', 'donate'];
 		if (!FlxG.sound.music.playing)
 		{
-			FlxG.sound.playMusic('assets/music/custom_menu_music/'+CoolUtil.parseJson(File.getContent("assets/music/custom_menu_music/custom_menu_music.json")).Menu+'/freakyMenu' + TitleState.soundExt);
+			FlxG.sound.playMusic('assets/music/custom_menu_music/'
+				+ CoolUtil.parseJson(FNFAssets.getText("assets/music/custom_menu_music/custom_menu_music.json")).Menu+'/freakyMenu' + TitleState.soundExt);
 		}
 		
 		persistentUpdate = persistentDraw = true;
@@ -161,13 +162,15 @@ class MainMenuState extends MusicBeatState
 		{
 			if (controls.UP_P)
 			{
-				FlxG.sound.play('assets/sounds/custom_menu_sounds/'+CoolUtil.parseJson(File.getContent("assets/sounds/custom_menu_sounds/custom_menu_sounds.json")).customMenuScroll+'/scrollMenu' + TitleState.soundExt);
+				FlxG.sound.play('assets/sounds/custom_menu_sounds/'
+					+ CoolUtil.parseJson(FNFAssets.getText("assets/sounds/custom_menu_sounds/custom_menu_sounds.json")).customMenuScroll+'/scrollMenu' + TitleState.soundExt);
 				changeItem(-1);
 			}
 
 			if (controls.DOWN_P)
 			{
-				FlxG.sound.play('assets/sounds/custom_menu_sounds/'+CoolUtil.parseJson(File.getContent("assets/sounds/custom_menu_sounds/custom_menu_sounds.json")).customMenuScroll+'/scrollMenu' + TitleState.soundExt);
+				FlxG.sound.play('assets/sounds/custom_menu_sounds/'
+					+ CoolUtil.parseJson(FNFAssets.getText("assets/sounds/custom_menu_sounds/custom_menu_sounds.json")).customMenuScroll+'/scrollMenu' + TitleState.soundExt);
 				changeItem(1);
 			}
 
@@ -189,7 +192,8 @@ class MainMenuState extends MusicBeatState
 				else
 				{
 					selectedSomethin = true;
-					FlxG.sound.play('assets/sounds/custom_menu_sounds/'+CoolUtil.parseJson(File.getContent("assets/sounds/custom_menu_sounds/custom_menu_sounds.json")).customMenuConfirm+'/confirmMenu' + TitleState.soundExt);
+					FlxG.sound.play('assets/sounds/custom_menu_sounds/'
+						+ CoolUtil.parseJson(FNFAssets.getText("assets/sounds/custom_menu_sounds/custom_menu_sounds.json")).customMenuConfirm+'/confirmMenu' + TitleState.soundExt);
 
 					FlxFlicker.flicker(magenta, 1.1, 0.15, false);
 

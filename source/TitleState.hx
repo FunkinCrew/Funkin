@@ -27,7 +27,6 @@ import lime.app.Application;
 import openfl.Assets;
 import haxe.Json;
 #if sys
-import sys.io.File;
 import haxe.io.Path;
 import openfl.utils.ByteArray;
 import lime.media.AudioBuffer;
@@ -130,7 +129,8 @@ class TitleState extends MusicBeatState
 			// music.loadStream('assets/music/freakyMenu' + TitleState.soundExt);
 			// FlxG.sound.list.add(music);
 			// music.play();
-			FlxG.sound.playMusic('assets/music/custom_menu_music/'+CoolUtil.parseJson(File.getContent("assets/music/custom_menu_music/custom_menu_music.json")).Menu+'/freakyMenu' + TitleState.soundExt, 0);
+			FlxG.sound.playMusic('assets/music/custom_menu_music/'
+				+ CoolUtil.parseJson(FNFAssets.getText("assets/music/custom_menu_music/custom_menu_music.json")).Menu+'/freakyMenu' + TitleState.soundExt, 0);
 
 			FlxG.sound.music.fadeIn(4, 0, 0.7);
 		}
@@ -266,7 +266,8 @@ class TitleState extends MusicBeatState
 			titleText.animation.play('press');
 
 			FlxG.camera.flash(FlxColor.WHITE, 1);
-			FlxG.sound.play('assets/sounds/custom_menu_sounds/'+CoolUtil.parseJson(File.getContent("assets/sounds/custom_menu_sounds/custom_menu_sounds.json")).customMenuConfirm+'/confirmMenu' + TitleState.soundExt, 0.7);
+			FlxG.sound.play('assets/sounds/custom_menu_sounds/'
+				+ CoolUtil.parseJson(FNFAssets.getText("assets/sounds/custom_menu_sounds/custom_menu_sounds.json")).customMenuConfirm+'/confirmMenu' + TitleState.soundExt, 0.7);
 
 			transitioning = true;
 			// FlxG.sound.music.stop();
@@ -397,11 +398,11 @@ class TitleState extends MusicBeatState
 					case 1:
 						deleteCoolText();
 					case 2:
-						addMoreText(CoolUtil.parseJson(File.getContent("assets/data/gameInfo.json")).name_1);
+						addMoreText(CoolUtil.parseJson(FNFAssets.getText("assets/data/gameInfo.json")).name_1);
 					case 3:
-						addMoreText(CoolUtil.parseJson(File.getContent("assets/data/gameInfo.json")).name_2);
+						addMoreText(CoolUtil.parseJson(FNFAssets.getText("assets/data/gameInfo.json")).name_2);
 					case 4:
-						addMoreText(CoolUtil.parseJson(File.getContent("assets/data/gameInfo.json")).name_3);
+						addMoreText(CoolUtil.parseJson(FNFAssets.getText("assets/data/gameInfo.json")).name_3);
 					case 5:
 						skipIntro();
 				}
