@@ -1016,9 +1016,9 @@ class PlayState extends MusicBeatState
 
 		FlxG.fixedTimestep = false;
 		trace('gay');
-		healthBarBG = new FlxSprite(0, FlxG.height * 0.85).loadGraphic('assets/images/healthBar.png');
+		healthBarBG = new FlxSprite(0, FlxG.height * 0.9).loadGraphic('assets/images/healthBar.png');
 		if (downscroll)
-			healthBarBG.y = FlxG.height * 0.1;
+			healthBarBG.y = 50;
 		healthBarBG.screenCenter(X);
 		healthBarBG.scrollFactor.set();
 		add(healthBarBG);
@@ -1656,15 +1656,6 @@ class PlayState extends MusicBeatState
 						epicNote.animation.play('purpleholdend');
 					} else if (epicNote.animation.curAnim.name == 'purpleholdend') {
 						epicNote.animation.play('redholdend');
-					}
-				}
-				if (downscroll) {
-					if (epicNote.animation.curAnim.name == 'greenholdend' 
-					|| epicNote.animation.curAnim.name == 'blueholdend'
-						|| epicNote.animation.curAnim.name == 'redholdend'
-						|| epicNote.animation.curAnim.name == 'purpleholdend')
-					{
-						epicNote.flipY = true;
 					}
 				}
 			}
@@ -2622,7 +2613,79 @@ class PlayState extends MusicBeatState
 					daNote.visible = !invsNotes;
 					daNote.active = true;
 				}
+				var coolMustPress = daNote.mustPress;
+				if (duoMode)
+					coolMustPress = true;
+				if (opponentPlayer)
+					coolMustPress = !daNote.mustPress;
+							
 				if (!daNote.modifiedByLua) {
+					if (downscroll)
+					{
+						if (daNote.mustPress)
+							daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y
+								+
+								0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(FlxG.save.data.scrollSpeed == 1 ? SONG.speed : FlxG.save.data.scrollSpeed,
+									2));
+						else
+							daNote.y = (enemyStrums.members[Math.floor(Math.abs(daNote.noteData))].y
+								+
+								0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(FlxG.save.data.scrollSpeed == 1 ? SONG.speed : FlxG.save.data.scrollSpeed,
+									2));
+						if (daNote.isSustainNote)
+						{
+							// Remember = minus makes notes go up, plus makes them go down
+							if (daNote.animation.curAnim.name.endsWith('end') && daNote.prevNote != null)
+								daNote.y += daNote.prevNote.height;
+							else
+								daNote.y += daNote.height / 2;
+							
+							if ((daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit)
+								&& (daNote.y - daNote.offset.y * daNote.scale.y + daNote.height) >= (strumLine.y + Note.swagWidth / 2))
+							{
+								// Clip to strumline
+								var swagRect = new FlxRect(0, 0, daNote.frameWidth * 2, daNote.frameHeight * 2);
+								swagRect.height = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y
+									+ Note.swagWidth / 2
+									- daNote.y) / daNote.scale.y;
+								swagRect.y = daNote.frameHeight - swagRect.height;
+
+								daNote.clipRect = swagRect;
+							}
+
+						}
+					}
+					else
+					{
+						if (daNote.mustPress)
+							daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y
+								- 0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(FlxG.save.data.scrollSpeed == 1 ? SONG.speed : FlxG.save.data.scrollSpeed,
+									2));
+						else
+							daNote.y = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y
+								- 0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(FlxG.save.data.scrollSpeed == 1 ? SONG.speed : FlxG.save.data.scrollSpeed,
+									2));
+						if (daNote.isSustainNote)
+						{
+							daNote.y -= daNote.height / 2;
+
+							if ((daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit)
+								&& daNote.y + daNote.offset.y * daNote.scale.y <= (strumLine.y + Note.swagWidth / 2))
+							{
+								// Clip to strumline
+								var swagRect = new FlxRect(0, 0, daNote.width / daNote.scale.x, daNote.height / daNote.scale.y);
+								swagRect.y = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y
+									+ Note.swagWidth / 2
+									- daNote.y) / daNote.scale.y;
+								swagRect.height -= swagRect.y;
+
+								daNote.clipRect = swagRect;
+							}
+							
+						}
+						}
+					}
+					/*
 					if (downscroll) {
 						daNote.y = (strumLine.y + (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(SONG.speed, 2)));
 					} else {
@@ -2642,8 +2705,8 @@ class PlayState extends MusicBeatState
 						swagRect.height -= swagRect.y;
 
 						daNote.clipRect = swagRect;
-					}
-				}
+					}*/
+				
 				
 
 				if (!daNote.mustPress && daNote.wasGoodHit && ((!duoMode && !opponentPlayer) || demoMode))
