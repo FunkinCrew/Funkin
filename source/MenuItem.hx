@@ -31,7 +31,7 @@ class MenuItem extends FlxSpriteGroup
 		var parsedcustomMenuScrollJson:Array<Array<String>> = CoolUtil.parseJson(FNFAssets.getText("assets/sounds/custom_menu_sounds/custom_menu_sounds.json")).Menu;
 		var parsedcustomFreakyMenuJson:Array<Array<String>> = CoolUtil.parseJson(FNFAssets.getText("assets/music/custom_menu_music/custom_menu_music.json")).Menu;
 		var parsedcustomOptionsMusicJson:Array<Array<String>> = CoolUtil.parseJson(FNFAssets.getText("assets/music/custom_menu_music/custom_menu_music.json")).Options;
-		var parsedcbgJson:Array<Array<String>> = CoolUtil.parseJson(FNFAssets.getText("assets/data/freeplaySongJson.json")).cbg;
+		var parsedcbgJson:Array<Array<String>> = CoolUtil.parseJson(FNFAssets.getText("assets/data/freeplaySongJson.jsonc")).cbg;
 		var parsedWeekJson:Array<Array<String>> = CoolUtil.parseJson(FNFAssets.getText("assets/data/storySongList.json")).songs;
 		var rawPic = FNFAssets.getBitmapData('assets/images/campaign-ui-week/week'+weekNum+".png");
 		var rawXml = FNFAssets.getText('assets/images/campaign-ui-week/week'+weekNum+".xml");
