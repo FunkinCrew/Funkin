@@ -52,7 +52,8 @@ Since you already installed `git` in a previous step, we'll use it to clone the 
 2. `git clone https://github.com/KadeDev/Kade-Engine.git`
 3. `cd` into the source code: `cd Kade-Engine`
 4. (optional) If you want to build a specific version of Kade Engine, you can use `git checkout` to switch to it (i.e. `git checkout 1.4-KE`) (remember that versions 1.4 and older cannot build to Linux or HTML5)
-	- You should **not** do this if you are planning to contribute, as you should always be developing on the latest version.
+- You should **not** do this if you are planning to contribute, as you should always be developing on the latest version.
+
 ## Building
 Finally, we are ready to build.
 
