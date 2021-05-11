@@ -50,7 +50,7 @@
       </header>
       <section id="content">
       {% include header.html %}
-      {% if page.url == "/index.md" %}
+      {% if page.url == "/" %}
       <!-- yay i'm NOT stupid -->
       {% else %}
       {{ content }}
@@ -65,7 +65,7 @@
       </footer>
     </div>
     <script src="{{ "/assets/js/scale.fix.js" | relative_url }}"></script>
-    {% if page.url == "/index.md" %}
+    {% if page.url == "/" %}
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
       function httpGet(theUrl)
