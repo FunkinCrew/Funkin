@@ -1,16 +1,12 @@
-# Kade Engine Lua Mod Chart Documentation
+# Lua Modcharts
 
 In the 1.4.2 release of Kade Engine, we introduced Mod Charts. Mod Charts are a way of changing gameplay without hard coded values. This is achieved by using the Lua Scripting language to create script files that run during runtime.
 
-All files **are located in** `assets/data/song/`
+Song data is located in `assets/data/<song>/`, so the Lua file containing your scripts should be located at exactly `assets/data/<song>/modchart.lua`. (replace <song> with the name of the song. for example, `assets/data/milf/` for milf)
 
-Modchart Lua File should be in `assets/data/song/modchart.lua` **exactly**
+If the file doesn't exist, Lua code won't be ran.
 
-Lua code will only be ran if that file exists.
-
-
-
-### Examples
+## Examples
 
 Full Example
 
@@ -22,10 +18,10 @@ end
 
 function update (elapsed) -- example https://twitter.com/KadeDeveloper/status/1382178179184422918
 	local currentBeat = (songPos / 1000)*(bpm/60)
-		for i=0,7 do
-			setActorX(_G['defaultStrum'..i..'X'] + 32 * math.sin((currentBeat + i*0.25) * math.pi), i)
-			setActorY(_G['defaultStrum'..i..'Y'] + 32 * math.cos((currentBeat + i*0.25) * math.pi), i)
-		end
+	for i=0,7 do
+		setActorX(_G['defaultStrum'..i..'X'] + 32 * math.sin((currentBeat + i*0.25) * math.pi), i)
+		setActorY(_G['defaultStrum'..i..'Y'] + 32 * math.cos((currentBeat + i*0.25) * math.pi), i)
+	end
 end
 
 function beatHit (beat)
@@ -43,9 +39,9 @@ Spinning Receptor Example
 
 ```lua
 function update (elapsed)
-		for i=0,7 do
-			setActorAngle(getActorAngle(i) + 15, i)
-		end
+	for i=0,7 do
+		setActorAngle(getActorAngle(i) + 15, i)
+	end
 end
 ```
 
@@ -68,11 +64,11 @@ function update (elapsed)
 			setActorY(_G['defaultStrum'..i..'Y'] + 32 * math.cos((currentBeat + i*0.25) * math.pi), i)
 		end
 	else
-        for i=0,7 do
-            setActorX(_G['defaultStrum'..i..'X'],i)
-            setActorY(_G['defaultStrum'..i..'Y'],i)
-        end
-    end
+        	for i=0,7 do
+			setActorX(_G['defaultStrum'..i..'X'],i)
+			setActorY(_G['defaultStrum'..i..'Y'],i)
+        	end
+    	end
 end
 ```
 
@@ -90,23 +86,23 @@ end
 Looping through all of the rendered notes
 
 ```lua
-	for i = 0, getRenderedNotes() do -- sets all of the rendered notes to 0 0 on the x and y axsis
-		setRenderedNotePos(0,0,i)
-	end
+for i = 0, getRenderedNotes() do -- sets all of the rendered notes to 0 0 on the x and y axsis
+	setRenderedNotePos(0,0,i)
+end
 ```
 
 Centering BF's Side
 
 ```lua
-    function setDefault(id)
-        _G['defaultStrum'..id..'X'] = getActorX(id)
-    end
+function setDefault(id)
+	_G['defaultStrum'..id..'X'] = getActorX(id)
+end
 
-    -- put this somewhere in a function
+-- put this somewhere in a function
 
-    for i = 4, 7 do -- go to the center
-        tweenPosXAngle(i, _G['defaultStrum'..i..'X'] - 275,getActorAngle(i) + 360, 0.6, 'setDefault')
-    end
+for i = 4, 7 do -- go to the center
+	tweenPosXAngle(i, _G['defaultStrum'..i..'X'] - 275,getActorAngle(i) + 360, 0.6, 'setDefault')
+end
 ```
 
 
@@ -116,10 +112,10 @@ Current calls to functions include,
 
 |  Name   |   Arguments    |                         Description                          |
 | :-----: | :------------: | :----------------------------------------------------------: |
-|  start  |   Song Name    |              Get's called when the song starts               |
-| update  | Elapsed frames |       Get's called every frame (after the song starts)       |
-| stepHit |  Current Step  | Get's called when ever a step hits (steps are in between beats, aka 4 steps are in a beat) |
-| beatHit |  Current Beat  |              Get's called when ever a beat hits              |
+|  start  |   Song Name    |              Gets called when the song starts               |
+| update  | Elapsed frames |       Gets called every frame (after the song starts)       |
+| stepHit |  Current Step  | Gets called when ever a step hits (steps are in between beats, aka 4 steps are in a beat) |
+| beatHit |  Current Beat  |              Gets called when ever a beat hits              |
 
 
 
@@ -175,13 +171,13 @@ These premade id's are the following:
 
 Creates a sprite out of the specified image, returns the id you gave it.
 
-*Note: Sprite Path is normally the FILE NAME so if you have a file name of Image it'll go to assets/data/songName/Image.png so don't include the extension*
+*Note: Sprite Path is normally the FILE NAME so if your file is named `Image` it'll go to assets/data/songName/Image.png so don't include the extension*
 
 ### Hud/Camera
 
 ##### setHudPosition(int x, int y)
 
-Set's the game hud's position in space.
+Sets the game hud's position in space.
 
 ##### getHudX()
 
