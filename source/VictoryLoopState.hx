@@ -118,10 +118,10 @@ class VictoryLoopState extends MusicBeatSubstate
 		scoreTxt.visible = false;
 		accuracyTxt.visible = false;
 		// make files seperate to allow modding
-		if (accuracy >= 0.65) {
+		if (accuracy >= 65) {
 			Conductor.changeBPM(150);
 			FlxG.sound.playMusic('assets/music/goodScore' + TitleState.soundExt);
-		} else if (accuracy >= 0.5) {
+		} else if (accuracy >= 50) {
 			Conductor.changeBPM(100);
 			FlxG.sound.playMusic('assets/music/mehScore' + TitleState.soundExt);
 		} else {
