@@ -1649,6 +1649,8 @@ class PlayState extends MusicBeatState
 	private var paused:Bool = false;
 	var startedCountdown:Bool = false;
 	var canPause:Bool = true;
+	var nps:Int = 0;
+	var maxNPS:Int = 0;
 
 	public static var songRate = 1.5;
 
@@ -1732,6 +1734,8 @@ class PlayState extends MusicBeatState
 				balls--;
 			}
 			nps = notesHitArray.length;
+			if (nps > maxNPS)
+				maxNPS = nps;
 		}
 
 		if (FlxG.keys.justPressed.NINE)
@@ -1760,7 +1764,7 @@ class PlayState extends MusicBeatState
 
 		super.update(elapsed);
 
-		scoreTxt.text = Ratings.CalculateRanking(songScore,songScoreDef,nps,accuracy);
+		scoreTxt.text = Ratings.CalculateRanking(songScore,songScoreDef,nps,maxNPS,accuracy);
 		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause)
 		{
 			persistentUpdate = false;
@@ -3035,8 +3039,6 @@ class PlayState extends MusicBeatState
 
 				}
 		}
-
-		var nps:Int = 0;
 
 		function goodNoteHit(note:Note, resetMashViolation = true):Void
 			{
