@@ -5,7 +5,6 @@
 - Updated to Week 7 input with anti mash
 - Added toggle for ghost tapping
 - [PR #328](https://github.com/KadeDev/Kade-Engine/pulls/328) and [PR #331](https://github.com/KadeDev/Kade-Engine/pulls/331): Distractions toggle
-- [PR #334](https://github.com/KadeDev/Kade-Engine/pull/334) Unhardcode GF Version, stages, and noteskins and make them loaded from chart
 - [PR #341](https://github.com/KadeDev/Kade-Engine/pull/341): Update heads in realtime in charting state
 - [PR #362](https://github.com/KadeDev/Kade-Engine/pull/362): Officially support macOS (and add macOS requirements to docs)
 - Set up macOS CI builds
@@ -20,6 +19,7 @@
 ### Changes
 - Tutorial is now a modchart instead of being hardcoded
 - [PR #332](https://github.com/KadeDev/Kade-Engine/pull/332): Move the beatbox in Fresh to the vocal track
+- [PR #334](https://github.com/KadeDev/Kade-Engine/pull/334) Unhardcode GF Version, stages, and noteskins and make them loaded from chart
 - [PR #291](https://github.com/KadeDev/Kade-Engine/pull/291): Make it so you can compile with 4.0.x
 
 ### Bugfixes
