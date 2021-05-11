@@ -48,9 +48,8 @@
         </p>
         {% endif %}
       </header>
-      {% include header.html %}
       <section id="content">
-
+      {% include header.html %}<br>
       {% if page.name == "index.md" %}
       <!-- yay i'm NOT stupid -->
       {% else %}
@@ -76,7 +75,7 @@
           xmlHttp.send( null );
           return xmlHttp.responseText;
       }
-      document.getElementById('content').innerHTML = marked(httpGet("{{ site.replace_index_with }}"));
+      document.getElementById('content').innerHTML = document.getElementById('content').innerHTML + marked(httpGet("{{ site.replace_index_with }}"));
     </script>
     {% endif %}
     {% if site.google_analytics %}
