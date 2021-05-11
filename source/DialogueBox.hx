@@ -146,8 +146,8 @@ class DialogueBox extends FlxSpriteGroup
 			default:
 				if (FNFAssets.exists('assets/images/custom_chars/' + PlayState.SONG.player2 + '/portrait.png'))
 				{
-					var coolP2Json = Character.getAnimJson(PlayState.SONG.player2);
-					isPixel[1] = if (Reflect.hasField(coolP2Json, "isPixel")) coolP2Json.isPixel else false;
+					var coolP2Json = Character.getAnimInterp(PlayState.SONG.player2);
+					isPixel[1] = coolP2Json.variables.get("isPixel");
 					var rawPic = BitmapData.fromFile('assets/images/custom_chars/' + PlayState.SONG.player2 + "/portrait.png");
 					var rawXml = FNFAssets.getText('assets/images/custom_chars/' + PlayState.SONG.player2 + "/portrait.xml");
 					portraitLeft.frames = FlxAtlasFrames.fromSparrow(rawPic, rawXml);
@@ -210,8 +210,8 @@ class DialogueBox extends FlxSpriteGroup
 			default:
 				if (FNFAssets.exists('assets/images/custom_chars/' + PlayState.SONG.player1 + '/portrait.png'))
 				{
-					var coolP1Json = Character.getAnimJson(PlayState.SONG.player1);
-					isPixel[0] = if (Reflect.hasField(coolP1Json, "isPixel")) coolP1Json.isPixel else false;
+					var coolP1Json = Character.getAnimInterp(PlayState.SONG.player1);
+					isPixel[0] = coolP1Json.variables.get("isPixel");
 					var rawPic = FNFAssets.getBitmapData('assets/images/custom_chars/' + PlayState.SONG.player1 + "/portrait.png");
 					var rawXml = FNFAssets.getText('assets/images/custom_chars/' + PlayState.SONG.player1 + "/portrait.xml");
 					portraitRight.frames = FlxAtlasFrames.fromSparrow(rawPic, rawXml);
@@ -638,7 +638,6 @@ class DialogueBox extends FlxSpriteGroup
 			default:
 				var realChar = curCharacter.substr(5);
 				portraitCustom = new FlxSprite(0, 40);
-				var coolJson = Character.getAnimJson(realChar);
 				var customPixel = false;
 				var interp = Character.getAnimInterp(realChar);
 				if (FNFAssets.exists('assets/images/custom_chars/'+realChar+'/portraits/'+infoList[0].speakermood+'.png')) {
@@ -683,10 +682,8 @@ class DialogueBox extends FlxSpriteGroup
 					portraitCustom.setGraphicSize(Std.int(portraitCustom.width * 0.9));
 				var offsetX:Int = 0;
 				var offsetY:Int = 0;
-				if (Reflect.hasField(coolJson, "portraitOffset")) {
-					offsetX = coolJson.portraitOffset[0];
-					offsetY = coolJson.portraitOffset[1];
-				}
+				offsetX = interp.variables.get("portraitOffset")[0];
+					offsetY = interp.variables.get("portraitOffset")[1];
 				portraitCustom.x += offsetX;
 				portraitCustom.y += offsetY;
 				portraitCustom.visible = false;

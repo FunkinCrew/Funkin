@@ -806,11 +806,6 @@ class Character extends FlxSprite
 	{
 		animOffsets[name] = [x, y];
 	}
-	public static function getAnimJson(char:String):Dynamic {
-		var charJson = CoolUtil.parseJson(Assets.getText('assets/images/custom_chars/custom_chars.jsonc'));
-		var animJson = CoolUtil.parseJson(FNFAssets.getText('assets/images/custom_chars/'+Reflect.field(charJson,char).like + '.json'));
-		return animJson;
-	}
 	public static function getAnimInterp(char:String):Interp {
 		var interp = PluginManager.createSimpleInterp();
 		var parser = new hscript.Parser();
