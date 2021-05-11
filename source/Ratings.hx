@@ -48,31 +48,31 @@ class Ratings
 				switch (i)
 				{
 					case 0:
-						ranking += " AAAAA";
+						ranking += " S";
 					case 1:
-						ranking += " AAAA:";
+						ranking += " AAAA+";
 					case 2:
-						ranking += " AAAA.";
-					case 3:
 						ranking += " AAAA";
+					case 3:
+						ranking += " AAAA-";
 					case 4:
-						ranking += " AAA:";
+						ranking += " AAA+";
 					case 5:
-						ranking += " AAA.";
-					case 6:
 						ranking += " AAA";
+					case 6:
+						ranking += " AAA-";
 					case 7:
-						ranking += " AA:";
+						ranking += " AA+";
 					case 8:
-						ranking += " AA.";
-					case 9:
 						ranking += " AA";
+					case 9:
+						ranking += " AA-";
 					case 10:
-						ranking += " A:";
+						ranking += " A+";
 					case 11:
-						ranking += " A.";
-					case 12:
 						ranking += " A";
+					case 12:
+						ranking += " A-";
 					case 13:
 						ranking += " B";
 					case 14:

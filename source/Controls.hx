@@ -87,7 +87,6 @@ enum Control
 enum KeyboardScheme
 {
 	Solo;
-	Djfk;
 	Duo(first:Bool);
 	None;
 	Custom;
@@ -515,29 +514,26 @@ class Controls extends FlxActionSet
 		#if (haxe >= "4.0.0")
 		switch (scheme)
 		{
+			// Keys are always rebinded before playstate starts. Note that this totally fucks up menuing lol.
 			case Solo:
-				inline bindKeys(Control.UP, [W, FlxKey.UP, K]);
-				inline bindKeys(Control.DOWN, [S, FlxKey.DOWN, J]);
-				inline bindKeys(Control.LEFT, [A, FlxKey.LEFT, H]);
-				inline bindKeys(Control.RIGHT, [FlxKey.RIGHT, L]);
+				if (OptionsHandler.options.DJFKKeys) {
+					inline bindKeys(Control.UP, [W, FlxKey.UP, J]);
+					inline bindKeys(Control.DOWN, [S, FlxKey.DOWN, F]);
+					inline bindKeys(Control.LEFT, [A, FlxKey.LEFT, D]);
+					inline bindKeys(Control.RIGHT, [FlxKey.RIGHT, K]);
+				} else {
+					inline bindKeys(Control.UP, [W, FlxKey.UP, K]);
+					inline bindKeys(Control.DOWN, [S, FlxKey.DOWN, J]);
+					inline bindKeys(Control.LEFT, [A, FlxKey.LEFT, H]);
+					inline bindKeys(Control.RIGHT, [D, FlxKey.RIGHT, L]);
+				}
+				
 				inline bindKeys(Control.ACCEPT, [Z, SPACE, ENTER]);
 				inline bindKeys(Control.BACK, [BACKSPACE, ESCAPE]);
 				inline bindKeys(Control.PAUSE, [P, ENTER, ESCAPE]);
 				inline bindKeys(Control.RESET, [R]);
 				inline bindKeys(Control.SECONDARY, [E]);
 				inline bindKeys(Control.TERTIARY,[Q]);
-
-			case Djfk:
-				inline bindKeys(Control.UP, [FlxKey.UP, J]);
-				inline bindKeys(Control.DOWN, [FlxKey.DOWN, F]);
-				inline bindKeys(Control.LEFT, [FlxKey.LEFT, D]);
-				inline bindKeys(Control.RIGHT, [FlxKey.RIGHT, K]);
-				inline bindKeys(Control.ACCEPT, [Z, SPACE, ENTER]);
-				inline bindKeys(Control.BACK, [BACKSPACE, ESCAPE]);
-				inline bindKeys(Control.PAUSE, [P, ENTER, ESCAPE]);
-				inline bindKeys(Control.RESET, [R]);
-				inline bindKeys(Control.SECONDARY, [E]);
-				inline bindKeys(Control.TERTIARY,[Q,T]);
 			
 			case Duo(true):
 				inline bindKeys(Control.UP, [W,K]);
@@ -582,15 +578,6 @@ class Controls extends FlxActionSet
 				bindKeys(Control.DOWN, [S, FlxKey.DOWN, J]);
 				bindKeys(Control.LEFT, [A, FlxKey.LEFT, H]);
 				bindKeys(Control.RIGHT, [D, FlxKey.RIGHT, L]);
-				bindKeys(Control.ACCEPT, [Z, SPACE, ENTER]);
-				bindKeys(Control.BACK, [BACKSPACE, ESCAPE]);
-				bindKeys(Control.PAUSE, [P, ENTER, ESCAPE]);
-				bindKeys(Control.RESET, [R]);
-			case Djfk:
-				bindKeys(Control.UP, [W, FlxKey.UP, J]);
-				bindKeys(Control.DOWN, [S, FlxKey.DOWN, F]);
-				bindKeys(Control.LEFT, [A, FlxKey.LEFT, D]);
-				bindKeys(Control.RIGHT, [D, FlxKey.RIGHT, K]);
 				bindKeys(Control.ACCEPT, [Z, SPACE, ENTER]);
 				bindKeys(Control.BACK, [BACKSPACE, ESCAPE]);
 				bindKeys(Control.PAUSE, [P, ENTER, ESCAPE]);

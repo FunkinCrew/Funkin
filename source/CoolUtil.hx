@@ -61,4 +61,24 @@ class CoolUtil
 		var style:String = if (fancy) 'fancy' else null;
 		return TJSON.encode(json,style);
 	}
+	// include all helper functions to keep shit in the same place
+	public static function truncateFloat(number:Float, precision:Int):Float {
+		return HelperFunctions.truncateFloat(number, precision);
+	}
+	public static function erf(x:Float):Float {
+		return HelperFunctions.erf(x);
+	}
+	public static function getNotes():Int {
+		return HelperFunctions.getNotes();
+	}
+	public static function getHolds():Int {
+		return HelperFunctions.getHolds();
+	}
+	public static function getMapMaxScore():Int {
+		return HelperFunctions.getMapMaxScore();
+	}
+	public static function wife3(maxms:Float, ts:Float)
+	{
+		return HelperFunctions.wife3(maxms, ts);
+	}
 }

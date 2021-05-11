@@ -482,7 +482,10 @@ class PlayState extends MusicBeatState
 			poisonExr = ModifierState.modifiers[8].value;
 			poisonPlus = ModifierState.modifiers[9].value;
 		}
-
+		// rebind always, to support djkf
+		if (!opponentPlayer && !duoMode) {
+			controls.setKeyboardScheme(Solo);
+		}
 		if (opponentPlayer) {
 			controlsPlayerTwo.setKeyboardScheme(Solo);
 		} else {
@@ -1087,13 +1090,8 @@ class PlayState extends MusicBeatState
 		practiceDieIcon.visible = false;
 
 		add(scoreTxt);
-		// don't add the accuracy shit lol
-		// because kade engine
-		// if (SONG.song == 'South')
-		// FlxG.camera.alpha = 0.7;
-		// UI_camera.zoom = 1;
+		add(difficTxt);
 
-		// cameras = [FlxG.cameras.list[1]];
 		startingSong = true;
 		trace('finish uo');
 		
