@@ -60,3 +60,5 @@ This game was made with love to Newgrounds and its community. Extra love to Tom 
 # Other pages
  - [BUILDING.md](https://github.com/KadeDev/Kade-Engine/blob/master/BUILDING.md) - How to compile/build the game
  - [ModCharts.md](https://github.com/KadeDev/Kade-Engine/blob/master/ModCharts.md) - Mod Chart Documentation
+ - [ISSUES-WITH-ISSUES.md](https://github.com/KadeDev/Kade-Engine/blob/master/ISSUES-WITH-ISSUES.md) - Notes related to Issues & Discussions
+ - 
