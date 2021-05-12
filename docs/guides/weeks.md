@@ -80,15 +80,24 @@ Underneath the song list, there should be another array called "weekNames". Crea
 =====
 
 var weekNames:Array<String> = [
-		"How to Funk",
-		"Daddy dearest",
-		"Spooky Month",
-		"PICO",
-		"Mommy Must Murder",
-		"Red Snow",
-		"Hating Simulator ft. Moawlings",
-    		"Tankman"
-	];
+		
+	"How to Funk",
+		
+	"Daddy dearest",
+		
+	"Spooky Month",
+		
+	"PICO",
+		
+	"Mommy Must Murder",
+		
+	"Red Snow",
+		
+	"Hating Simulator ft. Moawlings",
+    		
+	"Tankman"
+	
+];
   
   =====
   
