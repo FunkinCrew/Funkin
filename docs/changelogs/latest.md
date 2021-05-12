@@ -15,6 +15,7 @@
 - [#353](https://github.com/KadeDev/Kade-Engine/issues/353) ([PR #400](https://github.com/KadeDev/Kade-Engine/pulls/400)): Clap assist for syncing charts
 - [PR #413](https://github.com/KadeDev/Kade-Engine/pulls/413): Option to disable flashing lights in menus
 - [PR #428](https://github.com/KadeDev/Kade-Engine/pulls/428): Move documentation to GitHub Pages + new changelog system
+- [PR #431](https://github.com/KadeDev/Kade-Engine/pull/431): Add Max NPS counter
 
 ### Changes
 - Tutorial is now a modchart instead of being hardcoded
@@ -31,3 +32,4 @@
 - [PR #376](https://github.com/KadeDev/Kade-Engine/pull/376): Fix must hit sections
 - [#368](https://github.com/KadeDev/Kade-Engine/issues/368) ([PR #392](https://github.com/KadeDev/Kade-Engine/pull/392)): Fix enemy idle animations not playing before first note
 - [PR #399](https://github.com/KadeDev/Kade-Engine/pulls/399): Fix downscroll typo
+- [PR #431](https://github.com/KadeDev/Kade-Engine/pull/431): Fix NPS counter
