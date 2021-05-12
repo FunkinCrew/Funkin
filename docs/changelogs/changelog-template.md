@@ -12,7 +12,7 @@
 
 ### Bugfixes
 - Use same templates as additions
-- This is for when bugs get fixed. This should, like, always have an issue link, always
+- This is for when bugs get fixed. This should, like, always have an issue link, most of the time (if it has one)
 
 ## Links
 [GitHub Release](https://github.com/KadeDev/Kade-Engine/releases/tag/1.4.2) · [Last Windows CI build]() · [Last macOS CI build]() · [Last Linux CI build]()
