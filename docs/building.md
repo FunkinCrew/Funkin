@@ -28,6 +28,7 @@
 	 - `haxelib git faxe https://github.com/uhrobots/faxe`
 	 - `haxelib git polymod https://github.com/larsiusprime/polymod.git`
 	 - `haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc`
+
 ### Windows-only dependencies (only for building *to* Windows. Building html5 on Windows does not require this)
 If you are planning to build for Windows, you also need to install **Visual Studio 2019**. While installing it, *don't click on any of the options to install workloads*. Instead, go to the **individual components** tab and choose the following:
 -   MSVC v142 - VS 2019 C++ x64/x86 build tools
@@ -57,10 +58,11 @@ Since you already installed `git` in a previous step, we'll use it to clone the 
 2. `git clone https://github.com/KadeDev/Kade-Engine.git`
 3. `cd` into the source code: `cd Kade-Engine`
 4. (optional) If you want to build a specific version of Kade Engine, you can use `git checkout` to switch to it (i.e. `git checkout 1.4-KE`) (remember that versions 1.4 and older cannot build to Linux or HTML5)
-	- You should **not** do this if you are planning to contribute, as you should always be developing on the latest version.
+- You should **not** do this if you are planning to contribute, as you should always be developing on the latest version.
+
 ## Building
 Finally, we are ready to build.
 
 - Run `lime build <target>`, replacing `<target>` with the platform you want to build to (`windows`, `linux`, `html5`) (i.e. `lime build windows`)
 - The build will be in `Kade-Engine/export/<target>/bin`, with `<target>` being the target you built to in the previous step. (i.e. `Kade-Engine/export/windows/bin`)
-	- Only the `bin` folder is necessary to run the game. The other ones in `export/<target>` are not.
+- Only the `bin` folder is necessary to run the game. The other ones in `export/<target>` are not.
