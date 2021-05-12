@@ -63,6 +63,6 @@ Since you already installed `git` in a previous step, we'll use it to clone the 
 ## Building
 Finally, we are ready to build.
 
-- Run `lime build <target>`, replacing `<target>` with the platform you want to build to (`windows`, `linux`, `html5`) (i.e. `lime build windows`)
+- Run `lime build <target>`, replacing `<target>` with the platform you want to build to (`windows`, `mac`, `linux`, `html5`) (i.e. `lime build windows`)
 - The build will be in `Kade-Engine/export/<target>/bin`, with `<target>` being the target you built to in the previous step. (i.e. `Kade-Engine/export/windows/bin`)
 - Only the `bin` folder is necessary to run the game. The other ones in `export/<target>` are not.
