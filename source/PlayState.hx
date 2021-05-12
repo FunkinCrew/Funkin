@@ -1728,7 +1728,6 @@ class PlayState extends MusicBeatState
 
 				transIn = FlxTransitionableState.defaultTransIn;
 				transOut = FlxTransitionableState.defaultTransOut;
-				FlxG.sound.playMusic('assets/music/freakyMenu' + TitleState.soundExt);
 				unloadAssets();
 
 				FlxG.switchState(new StoryMenuState());
