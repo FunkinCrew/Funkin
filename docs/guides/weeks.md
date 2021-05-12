@@ -33,14 +33,23 @@ var weekData:Array<Dynamic> = [
   
 =====
   
- Copy `['Senpai', 'Roses', 'Thorns']` into an empty line below it, and change the song names to the song names you want to use.
- Don't forget to add a comma at the end of the previous Week, and you have your songlist for the week completed!
+Copy `['Senpai', 'Roses', 'Thorns']` into an empty line below it, and change the song names to the song names you want to use.
+Don't forget to add a comma at the end of the previous Week, and you have your songlist for the week completed!
+ 
+=====
+
+Example:
+
+['Ugh', 'Guns', 'Stress']
+ 
+=====
  
  ### Step 3. Songlist
 Directly below the songlist should be an Array titled `weekCharacters`. This array tells the game what characters to display in the top yellow bar when a certain week is selected.
 It's not very useful unless you followed the Characters guide (will link to it once it's actually done). If you have, though, you can insert the name of your character into the first pair of quotes in a new "week". Example:
 
 =====
+Example:
 
 var weekCharacters:Array<Dynamic> = [
 		
@@ -64,7 +73,7 @@ var weekCharacters:Array<Dynamic> = [
   
 =====
 
-### Step 3. Week Names
+### Step 4. Week Names
 
 Underneath the song list, there should be another array called "weekNames". Creating a new line in that array, just enter a string that represents what you want the week to be called.
 
@@ -78,13 +87,13 @@ var weekNames:Array<String> = [
 		"Mommy Must Murder",
 		"Red Snow",
 		"Hating Simulator ft. Moawlings",
-    "Tankman"
+    		"Tankman"
 	];
   
   =====
   
   Now, compile the game, and if all goes correctly, the Story Mode menu shouldn't crash your game. If you make your way to the bottom of the list, there's your custom week! Except... its displaying as a HaxeFlixel Logo?
   
-  ### Step 4. Graphics
+  ### Step 5. Graphics
   
   Being honest here, Prokube doesn't really know. More information will be added later, but for now I gotta go.
