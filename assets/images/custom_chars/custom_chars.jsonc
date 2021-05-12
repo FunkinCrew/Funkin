@@ -33,7 +33,7 @@
   },
   "dad": {
     "like": "dad",
-    "icons": [0,0,1]
+    "icons": [0,1,2]
   },
   "gf-car": {
     "like": "gf-car",
@@ -69,7 +69,7 @@
   },
   "parents-christmas": {
     "like": "parents",
-    "icons": [0,0,1]
+    "icons": [0,1,2]
   },
   "pico": {
     "like": "pico",

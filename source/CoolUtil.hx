@@ -1,5 +1,7 @@
 package;
 
+import openfl.display.BitmapData;
+import flixel.FlxSprite;
 import lime.utils.Assets;
 import lime.system.System;
 #if sys
@@ -80,5 +82,14 @@ class CoolUtil
 	public static function wife3(maxms:Float, ts:Float)
 	{
 		return HelperFunctions.wife3(maxms, ts);
+	}
+}
+
+class FlxTools {
+	// Load a graphic and ensure it exists
+	static public function loadGraphicDynamic(s:FlxSprite, path:String, animated:Bool=false, width:Int=0, height:Int=0, unique:Bool=false, ?key:String):FlxSprite {
+		var sus:BitmapData = FNFAssets.getBitmapData(path);
+		s.loadGraphic(sus,animated,width,height,unique,key);
+		return s;
 	}
 }

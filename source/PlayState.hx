@@ -93,7 +93,8 @@ class PlayState extends MusicBeatState
 	var halloweenLevel:Bool = false;
 	public static var ss:Bool = true;
 	private var vocals:FlxSound;
-
+	// use old bf
+	private var oldMode:Bool = false;
 	private var dad:Character;
 	private var gf:Character;
 	private var boyfriend:Character;
@@ -2219,7 +2220,17 @@ class PlayState extends MusicBeatState
 			#end
 			FlxG.switchState(new ChartingState());
 		}
-
+		if (FlxG.keys.justPressed.NINE) {
+			oldMode = !oldMode;
+			if (oldMode) {
+				if (boyfriend.isPixel)
+					iconP1.switchAnim("bf-pixel-old");
+				else
+					iconP1.switchAnim("bf-old");
+			} else {
+				iconP1.switchAnim(SONG.player1);
+			}
+		}
 		// FlxG.watch.addQuick('VOL', vocals.amplitudeLeft);
 		// FlxG.watch.addQuick('VOLRight', vocals.amplitudeRight);
 
