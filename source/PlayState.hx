@@ -133,6 +133,7 @@ class PlayState extends MusicBeatState
 	var detailsText:String = "";
 	var detailsPausedText:String = "";
 	#end
+	var trackedAssets:Array<FlxBasic> = [];
 
 	override public function create()
 	{
@@ -1585,6 +1586,8 @@ class PlayState extends MusicBeatState
 			vocals.stop();
 			FlxG.sound.music.stop();
 
+			unloadAssets();
+			
 			openSubState(new GameOverSubstate(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 
 			// FlxG.switchState(new GameOverState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
@@ -1725,6 +1728,8 @@ class PlayState extends MusicBeatState
 
 				transIn = FlxTransitionableState.defaultTransIn;
 				transOut = FlxTransitionableState.defaultTransOut;
+				FlxG.sound.playMusic('assets/music/freakyMenu' + TitleState.soundExt);
+				unloadAssets();
 
 				FlxG.switchState(new StoryMenuState());
 
@@ -1770,6 +1775,7 @@ class PlayState extends MusicBeatState
 
 				PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + difficulty, PlayState.storyPlaylist[0]);
 				FlxG.sound.music.stop();
+				unloadAssets();
 
 				LoadingState.loadAndSwitchState(new PlayState());
 			}
@@ -1777,6 +1783,7 @@ class PlayState extends MusicBeatState
 		else
 		{
 			trace('WENT BACK TO FREEPLAY??');
+			unloadAssets();
 			FlxG.switchState(new FreeplayState());
 		}
 	}
@@ -2465,5 +2472,19 @@ class PlayState extends MusicBeatState
 		}
 	}
 
+	override function add(Object:FlxBasic):FlxBasic
+	{
+		trackedAssets.insert(trackedAssets.length, Object);
+		return super.add(Object);
+	}
+
+	function unloadAssets():Void
+	{
+		for (asset in trackedAssets)
+		{
+			remove(asset);
+		}
+	}
+	
 	var curLight:Int = 0;
 }
