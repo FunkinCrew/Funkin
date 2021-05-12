@@ -4,6 +4,7 @@
 - New thing without issue
 - [#1](https://github.com/KadeDev/Kade-Engine/issues/1): New thing with issue
 - [#1](https://github.com/KadeDev/Kade-Engine/issues/1) ([PR #1](https://github.com/KadeDev/Kade-Engine/pulls/1)): New thing with issue and pull request
+- [PR #1](https://github.com/KadeDev/Kade-Engine/pulls/1): New thing with pull request but no issue
 
 ### Changes
 - Use same templates as additions
