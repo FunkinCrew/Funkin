@@ -18,8 +18,8 @@ Links: **[GameBanana mod page](https://gamebanana.com/gamefiles/16761) ⋅ [play
 
 **REMEMBER**: This is a **mod**. This is not the vanilla game and should be treated as a **modification**. This is not and probably will never be official, so don't get confused.
 
-## Documentation
-Documentation for Kade Engine is available [here](https://KadeDev.github.io/Kade-Engine/).
+## Website ([KadeDev.github.io/kade-engine/](https://KadeDev.github.io/Kade-Engine/))
+If you're looking for documentation, changelogs, or guides, you can find those on the Kade Engine website.
 
 # Screenshots ([skip](#features))
 
