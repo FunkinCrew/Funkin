@@ -9,7 +9,7 @@ Navigate to your Kade Engine source code. In the `source` folder, look for `Stor
 
 ### Step 2. Songlist
 
-Scroll down to Line 26, or Search (Windows/Linux: `Ctrl+F` | Mac: `Cmd+F`) for "weekData". You should find an Array that looks like this:
+Scroll down to Line 26, or Search (Windows/Linux: `Ctrl+F`, Mac: `Cmd+F`) for "weekData". You should find an Array that looks like this:
 
 =====
 
@@ -44,7 +44,7 @@ Example:
  
 =====
  
- ### Step 3. Songlist
+### Step 3. Songlist
 Directly below the songlist should be an Array titled `weekCharacters`. This array tells the game what characters to display in the top yellow bar when a certain week is selected.
 It's not very useful unless you followed the Characters guide (will link to it once it's actually done). If you have, though, you can insert the name of your character into the first pair of quotes in a new "week". Example:
 
