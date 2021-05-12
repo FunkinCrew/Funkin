@@ -103,6 +103,10 @@ var weekNames:Array<String> = [
   
   Now, compile the game, and if all goes correctly, the Story Mode menu shouldn't crash your game. If you make your way to the bottom of the list, there's your custom week! Except... its displaying as a HaxeFlixel Logo?
   
-  ### Step 5. Graphics
+### Step 5. Graphics
   
-  Being honest here, Prokube doesn't really know. More information will be added later, but for now I gotta go.
+Displaying a week icon for your custom week is as simple as dropping a .png into `assets/images/storymenu`. Rename the file to "week7.png", "week8.png", etc.
+
+### Conclusion
+
+If you have followed all the steps correctly, you have successfully created a new week in the Story Mode.
