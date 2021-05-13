@@ -44,7 +44,7 @@ Example
  
 ---
  
-### Step 3. Songlist
+### Step 3. Week Characters
 Directly below the songlist should be an Array titled `weekCharacters`. This array tells the game what characters to display in the top yellow bar when a certain week is selected.
 It's not very useful unless you followed the Characters guide (will link to it once it's actually done). If you have, though, you can insert the name of your character into the first pair of quotes in a new "week". Example:
 
@@ -77,7 +77,7 @@ var weekCharacters:Array<Dynamic> = [
 
 ### Step 4. Week Names
 
-Underneath the song list, there should be another array called "weekNames". Creating a new line in that array, just enter a string that represents what you want the week to be called.
+Underneath the song list, there should be another array called `weekNames`. Creating a new line in that array, just enter a string that represents what you want the week to be called.
 
 Example
 ---
@@ -121,7 +121,7 @@ Example
 
 ![frrf 2](https://user-images.githubusercontent.com/68293280/118160865-b8830e00-b3d3-11eb-8a23-818a1b4cfdb2.png)
 
-NOTE: You will have to add a new item to "weekUnlocked", so that the week is playable.
+NOTE: You will have to add a new item to `weekUnlocked`, so that the week is playable.
 
 ![frrf 3](https://user-images.githubusercontent.com/68293280/118161461-7908f180-b3d4-11eb-89fa-e531ae5804d8.png)
 
