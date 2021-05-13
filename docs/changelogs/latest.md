@@ -20,8 +20,9 @@
 ### Changes
 - Tutorial is now a modchart instead of being hardcoded
 - [PR #332](https://github.com/KadeDev/Kade-Engine/pull/332): Move the beatbox in Fresh to the vocal track
-- [PR #334](https://github.com/KadeDev/Kade-Engine/pull/334) Unhardcode GF Version, stages, and noteskins and make them loaded from chart
+- [PR #334](https://github.com/KadeDev/Kade-Engine/pull/334): Unhardcode GF Version, stages, and noteskins and make them loaded from chart
 - [PR #291](https://github.com/KadeDev/Kade-Engine/pull/291): Make it so you can compile with 4.0.x
+- [PR #440](https://github.com/KadeDev/Kade-Engine/pull/440): Change how replays work + store scroll speed and direction in replays
 
 ### Bugfixes
 - [PR #289](https://github.com/KadeDev/Kade-Engine/pulls/289): Player 2 now plays idle animation properly when camera zooms in
