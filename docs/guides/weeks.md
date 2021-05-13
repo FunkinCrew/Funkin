@@ -110,7 +110,7 @@ var weekNames:Array<String> = [
   
 ### Step 5. Graphics
   
-Displaying a week icon for your custom week is as simple as dropping a .png into `assets/images/storymenu`. Rename the file to "week7.png", "week8.png", etc.
+Displaying a week icon for your custom week is as simple as dropping a .png into `assets/images/storymenu`. Rename the file to `week7.png`, `week8.png`, etc.
 
 Example
 ---
