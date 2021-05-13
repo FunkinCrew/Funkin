@@ -34,3 +34,4 @@
 - [#368](https://github.com/KadeDev/Kade-Engine/issues/368) ([PR #392](https://github.com/KadeDev/Kade-Engine/pull/392)): Fix enemy idle animations not playing before first note
 - [PR #399](https://github.com/KadeDev/Kade-Engine/pulls/399): Fix downscroll typo
 - [PR #431](https://github.com/KadeDev/Kade-Engine/pull/431): Fix NPS counter
+- [#404](https://github.com/KadeDev/Kade-Engine/issues/404) ([PR #446](https://github.com/KadeDev/Kade-Engine/pull/446)): Fix bug where Alt Animation in charting state doesn't stay checked after going to another section then back
