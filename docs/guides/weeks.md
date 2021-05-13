@@ -14,6 +14,7 @@ Scroll down to Line 26, or Search (Windows/Linux: `Ctrl+F`, Mac: `Cmd+F`) for "w
 
 ---
 
+```haxe
 var weekData:Array<Dynamic> = [
 		
     ['Tutorial'],
@@ -30,8 +31,11 @@ var weekData:Array<Dynamic> = [
 		
     ['Senpai', 'Roses', 'Thorns']
     
-	];
-  
+];
+```
+
+---
+
 Copy `['Senpai', 'Roses', 'Thorns']` into an empty line below it, and change the song names to the song names you want to use.
 Don't forget to add a comma at the end of the previous Week, and you have your songlist for the week completed!
 
@@ -40,7 +44,27 @@ Example
 
 ---
 
-`['Ugh', 'Guns', 'Stress']`
+```haxe
+var weekData:Array<Dynamic> = [
+		
+    ['Tutorial'],
+		
+    ['Bopeebo', 'Fresh', 'Dadbattle'],
+		
+    ['Spookeez', 'South', "Monster"],
+		
+    ['Pico', 'Philly', "Blammed"],
+		
+    ['Satin-Panties', "High", "Milf"],
+		
+    ['Cocoa', 'Eggnog', 'Winter-Horrorland'],
+		
+    ['Senpai', 'Roses', 'Thorns'],
+
+    ['Ugh', 'Guns', 'Stress']
+    
+];
+```
  
 ---
  
@@ -53,6 +77,7 @@ Example
 
 ---
 
+```haxe
 var weekCharacters:Array<Dynamic> = [
 		
     ['', 'bf', 'gf'],
@@ -72,7 +97,8 @@ var weekCharacters:Array<Dynamic> = [
     ['tankman', 'bf', 'gf']
 	
   ];
-  
+```
+
 ---
 
 ### Step 4. Week Names
@@ -83,7 +109,7 @@ Example
 ---
 
 ---
-
+```haxe
 var weekNames:Array<String> = [
 		
 	"How to Funk",
@@ -103,7 +129,8 @@ var weekNames:Array<String> = [
 	"Tankman"
 	
 ];
-  
+```
+
 ---
 
   Now, compile the game, and if all goes correctly, the Story Mode menu shouldn't crash your game. If you make your way to the bottom of the list, there's your custom week! Except... its displaying as a HaxeFlixel Logo?
