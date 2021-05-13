@@ -43,13 +43,13 @@ class OutdatedSubState extends MusicBeatState
 		add(kadeLogo);
 		
 		var txt:FlxText = new FlxText(0, 0, FlxG.width,
-			"Kade Engine is Outdated!\n"
+			"Your Kade Engine is outdated!\nYou are on "
 			+ MainMenuState.kadeEngineVer
-			+ " is your current version\nwhile the most recent version is " + needVer + "!"
-			+ "\n\nWhat's new\n\n"
+			+ "\nwhile the most recent version is " + needVer + "."
+			+ "\n\nWhat's new:\n\n"
 			+ currChanges
-			+ "\n\n...Bug fixes and other changes included!"
-			+ "\nPress Space to go to Github or ESCAPE to ignore this!!",
+			+ "\n\n + more changes and bugfixes"
+			+ "\nPress Space to view the full changelog and update\nor ESCAPE to ignore this",
 			32);
 		
 		txt.setFormat("VCR OSD Mono", 32, FlxColor.fromRGB(200, 200, 200), CENTER);
@@ -86,7 +86,7 @@ class OutdatedSubState extends MusicBeatState
 	{
 		if (controls.ACCEPT)
 		{
-			FlxG.openURL("https://kadedev.github.io/Kade-Engine/");
+			FlxG.openURL("https://kadedev.github.io/Kade-Engine/changelogs/changelog-" + needVer);
 		}
 		if (controls.BACK)
 		{
