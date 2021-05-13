@@ -40,7 +40,7 @@ Example
 
 ---
 
-['Ugh', 'Guns', 'Stress']
+`['Ugh', 'Guns', 'Stress']`
  
 ---
  
