@@ -48,8 +48,8 @@ class OutdatedSubState extends MusicBeatState
 			+ "\nwhile the most recent version is " + needVer + "."
 			+ "\n\nWhat's new:\n\n"
 			+ currChanges
-			+ "\n\n + more changes and bugfixes"
-			+ "\nPress Space to view the full changelog and update\nor ESCAPE to ignore this",
+			+ "\n& more changes and bugfixes in the full changelog"
+			+ "\n\nPress Space to view the full changelog and update\nor ESCAPE to ignore this",
 			32);
 		
 		txt.setFormat("VCR OSD Mono", 32, FlxColor.fromRGB(200, 200, 200), CENTER);
