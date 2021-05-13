@@ -515,7 +515,7 @@ class ChartingState extends MusicBeatState
 				case 'Change BPM':
 					_song.notes[curSection].changeBPM = check.checked;
 					FlxG.log.add('changed bpm shit');
-				case "Alt Animation":
+				case "Alternate Animation":
 					_song.notes[curSection].altAnim = check.checked;
 			}
 		}
