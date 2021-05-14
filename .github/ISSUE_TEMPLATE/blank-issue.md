@@ -1,6 +1,6 @@
 ---
 name: blank issue
-about: ''
+about: blank
 title: ''
 labels: ''
 assignees: ''
