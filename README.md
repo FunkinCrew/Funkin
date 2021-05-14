@@ -1,4 +1,5 @@
 # Friday Night Funkin
+[![Build](https://github.com/TheDrawingCoder-Gamer/Funkin/actions/workflows/build.yml/badge.svg)](https://github.com/TheDrawingCoder-Gamer/Funkin/actions/workflows/build.yml)
 
 This is the repository for Friday Night Funkin Modding Plus, a mod for FNF to add more features for modders and players alike.
 
@@ -7,7 +8,8 @@ Any mods made with this mod must have express permission from the creator of son
 I at least would like to see the main author and a majority of secondary offers get express permission)
 If an author gives express disapproval, and the mod is up, you should take your mod down. I own the code to this mod so I can (and will)
 take down mods that don't follow this rule.
-[![Build](https://github.com/TheDrawingCoder-Gamer/Funkin/actions/workflows/build.yml/badge.svg)](https://github.com/TheDrawingCoder-Gamer/Funkin/actions/workflows/build.yml)
+
+
 - Download on GameBanana: https://gamebanana.com/gamefiles/14264
 - Get the cutting edge build: https://dev.azure.com/benharless820/FNF%20Modding%20Plus/_build
 - Play the Original Game: https://github.com/ninjamuffin99/Funkin
