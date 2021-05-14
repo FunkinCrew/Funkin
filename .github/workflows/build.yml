@@ -25,11 +25,9 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      - name: Setup Haxe environment
-        run: |
-          sudo add-apt-repository ppa:haxe/releases -y
-          sudo apt update -y
-          sudo apt install haxe -y
+      - uses: krdlab/setup-haxe@master
+        with:
+          haxe-version: 4.2.0
       # Runs a set of commands using the runners shell
       - name: Install Haxelib
         run: |
@@ -71,7 +69,7 @@ jobs:
 
       - uses: krdlab/setup-haxe@master
         with:
-          haxe-version: 4.2.1
+          haxe-version: 4.2.0
       # Runs a set of commands using the runners shell
       - name: Install Haxelib
         run: |
@@ -112,9 +110,9 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      - name: Setup Haxe environment
-        run: |
-          brew install haxe
+      - uses: krdlab/setup-haxe@master
+        with:
+          haxe-version: 4.2.0
       # Runs a set of commands using the runners shell
       - name: Install Haxelib
         run: |
