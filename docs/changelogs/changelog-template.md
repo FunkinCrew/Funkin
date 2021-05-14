@@ -1,10 +1,13 @@
 # Latest changelog/Changelog for 1.0.0
 
+Changes marked with 💖 will be listed in the short version of the changelog in `version.downloadMe`.
+
 ### Additions
 - New thing without issue
 - [#1](https://github.com/KadeDev/Kade-Engine/issues/1): New thing with issue
 - [#1](https://github.com/KadeDev/Kade-Engine/issues/1) ([PR #1](https://github.com/KadeDev/Kade-Engine/pulls/1)): New thing with issue and pull request
 - [PR #1](https://github.com/KadeDev/Kade-Engine/pulls/1): New thing with pull request but no issue
+- 💖 [PR #1](https://github.com/KadeDev/Kade-Engine/pulls/1): New thing with pull request but no issue and it's going in the short changelog
 
 ### Changes
 - Use same templates as additions
