@@ -22,9 +22,9 @@ class PluginManager {
     public static function createSimpleInterp():Interp {
         var reterp = new Interp();
         reterp.variables.set("Conductor", Conductor);
-        reterp.variables.set("FlxSprite", flixel.FlxSprite);
+        reterp.variables.set("FlxSprite", DynamicSprite);
         reterp.variables.set("FlxSound", flixel.system.FlxSound);
-        reterp.variables.set("FlxAtlasFrames", flixel.graphics.frames.FlxAtlasFrames);
+        reterp.variables.set("FlxAtlasFrames", DynamicSprite.DynamicAtlasFrames);
         reterp.variables.set("FlxGroup", flixel.group.FlxGroup);
         reterp.variables.set("FlxAngle", flixel.math.FlxAngle);
         reterp.variables.set("FlxMath", flixel.math.FlxMath);

@@ -2,7 +2,7 @@ package plugins.tools;
 
 import flixel.FlxSprite;
 // utility sprite that handles dancing for you
-class MetroSprite extends FlxSprite {
+class MetroSprite extends DynamicSprite {
     var danceDir:Bool = false;
     public var danceInPlace:Bool = false;
 
