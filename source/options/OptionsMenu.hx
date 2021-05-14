@@ -13,6 +13,7 @@ import flixel.util.FlxColor;
 import lime.utils.Assets;
 import ui.FlxVirtualPad;
 import Config;
+import WebViewVideo;
 
 import flixel.util.FlxSave;
 
@@ -27,7 +28,7 @@ class OptionsMenu extends MusicBeatState
 
 	private var grpControls:FlxTypedGroup<Alphabet>;
 
-	var menuItems:Array<String> = ['controls', 'set fps', 'downscroll: off', 'About'];
+	var menuItems:Array<String> = ['controls', 'set fps', 'downscroll: off', 'About', 'test cutscene'];
 
 	var _pad:FlxVirtualPad;
 
@@ -113,6 +114,12 @@ class OptionsMenu extends MusicBeatState
 				
 				case "About":
 					FlxG.switchState(new options.AboutState());
+				case "test cutscene":
+					//webview.openHTML(Assets.getBytes('assets/index.html'));
+					//webview.openURLfromAssets('index.html');
+					#if extension-webview
+					WebViewVideo.openVideo('ughCutscene');
+					#end
 			}
 		}
 

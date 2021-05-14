@@ -44,6 +44,9 @@
 	<classpath name="source/ui" />
 
 	<assets path="assets" include="*.txt"/>
+	<!-- <assets path="assets" include="index.html"/>
+	<assets path="assets" include="video.min.js"/>
+	<assets path="assets" include="ughCutscene.mp4"/> -->
 	
 	<assets path="assets" include="important.jpg"/>
 	<assets path="assets" include="when imposter is YOU"/>
@@ -116,6 +119,7 @@
 
 	<haxelib name="flixel" />
 	<haxedev set='webgl' />
+	<!-- <haxelib name="extension-webview" /> -->
 
 	<!--In case you want to use the addons package-->
 	<haxelib name="flixel-addons" />

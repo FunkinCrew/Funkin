@@ -1,4 +1,4 @@
-package;
+package mobilecontrols;
 
 import flixel.FlxCamera;
 import flixel.FlxG;
@@ -7,7 +7,7 @@ import flixel.group.FlxSpriteGroup;
 import ui.FlxVirtualPad;
 import ui.Hitbox;
 
-import Config;
+import Config;//webSettings.setMediaPlaybackRequiresUserGesture(false);	 xml android:usesCleartextTraffic="true"
 
 class Mobilecontrols extends FlxSpriteGroup
 {
