@@ -42,7 +42,6 @@ jobs:
           haxelib install flixel-ui
           haxelib install flixel-addons
           haxelib install tjson
-          haxelib install json2object
           haxelib install uniontypes
           haxelib install hxjsonast
           haxelib install linc_luajit
@@ -52,7 +51,7 @@ jobs:
           haxelib install hxcpp-debug-server
           haxelib list
       - name: Compile
-        run: lime build linux
+        run: haxelib run lime build linux
       - name: Archive
         run: tar -czf bin.tar.gz 'export/release/linux/bin'
       - name: Publish Artifact
@@ -84,7 +83,6 @@ jobs:
           haxelib install flixel-ui
           haxelib install flixel-addons
           haxelib install tjson
-          haxelib install json2object
           haxelib install uniontypes
           haxelib install hxjsonast
           haxelib install linc_luajit
@@ -127,7 +125,6 @@ jobs:
           haxelib install flixel-ui
           haxelib install flixel-addons
           haxelib install tjson
-          haxelib install json2object
           haxelib install uniontypes
           haxelib install hxjsonast
           haxelib install linc_luajit
@@ -137,7 +134,7 @@ jobs:
           haxelib install hxcpp-debug-server
           haxelib list
       - name: Compile
-        run: lime build mac
+        run: haxelib run lime build mac
       - name: Archive
         run: tar -czf bin.tar.gz export/release/mac/bin
       - name: Publish Artifact
