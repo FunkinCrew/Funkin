@@ -133,7 +133,7 @@ jobs:
       - name: Compile
         run: haxelib run lime build mac
       - name: Archive
-        run: tar -czf bin.tar.gz export/release/mac/bin
+        run: tar -czf bin.tar.gz export/release/macos/bin
       - name: Publish Artifact
         uses: actions/upload-artifact@v2
         with:
