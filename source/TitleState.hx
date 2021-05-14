@@ -2,6 +2,7 @@ package;
 
 import flixel.FlxG;
 import flixel.FlxGame;
+import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileDiamond;
 import flixel.addons.transition.FlxTransitionableState;
@@ -487,7 +488,53 @@ class TitleState extends MusicBeatState
 			// alphaShader.update(elapsed * 0.1);
 		}
 
+		if (!cheatActive && skippedIntro)
+			cheatCodeShit();
+
 		super.update(elapsed);
+	}
+
+	var cheatArray:Array<Int> = [0x0001, 0x0010, 0x0001, 0x0010, 0x0100, 0x1000, 0x0100, 0x1000];
+	var curCheatPos:Int = 0;
+	var cheatActive:Bool = false;
+
+	function cheatCodeShit():Void
+	{
+		if (FlxG.keys.justPressed.ANY)
+		{
+			if (controls.NOTE_DOWN_P || controls.UI_DOWN_P)
+				codePress(FlxObject.DOWN);
+			if (controls.NOTE_UP_P || controls.UI_UP_P)
+				codePress(FlxObject.UP);
+			if (controls.NOTE_LEFT_P || controls.UI_LEFT_P)
+				codePress(FlxObject.LEFT);
+			if (controls.NOTE_RIGHT_P || controls.UI_RIGHT_P)
+				codePress(FlxObject.RIGHT);
+		}
+	}
+
+	function codePress(input:Int)
+	{
+		if (input == cheatArray[curCheatPos])
+		{
+			curCheatPos += 1;
+			if (curCheatPos >= cheatArray.length)
+				startCheat();
+		}
+		else
+			curCheatPos = 0;
+
+		trace(input);
+	}
+
+	function startCheat():Void
+	{
+		cheatActive = true;
+
+		FlxG.sound.playMusic(Paths.music('tutorialTitle'), 1);
+		Conductor.changeBPM(190);
+		FlxG.camera.flash(FlxColor.WHITE, 1);
+		FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
 	}
 
 	function createCoolText(textArray:Array<String>)
@@ -525,6 +572,9 @@ class TitleState extends MusicBeatState
 	override function beatHit()
 	{
 		super.beatHit();
+
+		if (cheatActive && curBeat % 2 == 0)
+			swagShader.update(0.125);
 
 		logoBl.animation.play('bump', true);
 

@@ -11,6 +11,7 @@ import flixel.util.FlxColor;
 import openfl.Assets;
 import openfl.display.BitmapData;
 import openfl.display.MovieClip;
+import openfl.display.Timeline;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 
@@ -37,14 +38,27 @@ class CutsceneAnimTestState extends FlxState
 		add(debugTxt);
 
 		clip = Assets.getMovieClip("tanky:");
-		//clip.x = FlxG.width/2;
-		//clip.y = FlxG.height/2;
+		// clip.x = FlxG.width/2;
+		// clip.y = FlxG.height/2;
 		FlxG.stage.addChild(clip);
 
-		funnySprite.x = FlxG.width/2;
-		funnySprite.y = FlxG.height/2;
-		add(funnySprite);
+		var swagShit:MovieClip = Assets.getMovieClip('tankBG:');
+		// swagShit.scaleX = 5;
 
+		FlxG.stage.addChild(swagShit);
+		swagShit.gotoAndStop(13);
+
+		var swfMountain = new BitmapData(FlxG.width, FlxG.height, true, 0x00000000);
+		swfMountain.draw(swagShit, swagShit.transform.matrix);
+
+		var mountains:FlxSprite = new FlxSprite().loadGraphic(swfMountain);
+		// add(mountains);
+
+		FlxG.stage.removeChild(swagShit);
+
+		funnySprite.x = FlxG.width / 2;
+		funnySprite.y = FlxG.height / 2;
+		add(funnySprite);
 	}
 
 	override function update(elapsed:Float)

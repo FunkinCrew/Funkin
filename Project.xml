@@ -131,6 +131,7 @@
 	<!-- swf stufffff -->
 	<haxelib name="swf"/>
 	<library path="assets/tanky.swf" preload="true"/>
+	<library path="assets/tankBG.swf" preload="true"/>
 	
 	<!-- <haxelib name="flixel-animate" /> -->
 	<!-- <haxelib name="spinehaxe" /> -->
