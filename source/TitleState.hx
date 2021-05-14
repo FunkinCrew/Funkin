@@ -572,13 +572,11 @@ class TitleState extends MusicBeatState
 	{
 		super.beatHit();
 
-		if (cheatActive && curBeat % 2 == 0)
-			swagShader.update(0.125);
-
-		logoBl.animation.play('bump', true);
-
 		if (skippedIntro)
 		{
+			if (cheatActive && curBeat % 2 == 0)
+				swagShader.update(0.125);
+
 			logoBl.animation.play('bump', true);
 
 			danceLeft = !danceLeft;
