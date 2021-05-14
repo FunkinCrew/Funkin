@@ -5,27 +5,15 @@
   },
   "bf": {
     "like": "bf",
-    "icons": [
-      0,
-      1,
-      2
-    ]
+    "icons": [0,1,2]
   },
   "bf-car": {
     "like": "bf-car",
-    "icons": [
-      0,
-      1,
-      2
-    ]
+    "icons": [0,1,2]
   },
   "bf-christmas": {
     "like": "bf-car",
-    "icons": [
-      0,
-      1,
-      2
-    ]
+    "icons": [0,1,2]
   },
   "bf-pixel": {
     "like": "bf-pixel",
@@ -45,11 +33,7 @@
   },
   "gf-christmas": {
     "like": "gf",
-    "icons": [
-      0,
-      0,
-      1
-    ]
+    "icons": [0,0,1]
   },
   "gf": {
     "like": "gf",
@@ -117,18 +101,14 @@
   },
   "gf-tankmen": {
     "like": "gf-tankmen",
-    "icons": [0,0,1 ]
+    "icons": [0,0,1]
   },
   "pico-speaker": {
     "like": "pico-speaker",
-    "icons": [
-      0,1,2
-    ]
+    "icons": [0,1,2]
   },
   "bf-holding-gf": {
     "like": "bf-holding-gf",
-    "icons": [
-      0,1,2
-    ]
+    "icons": [0,1,2]
   }
 }
