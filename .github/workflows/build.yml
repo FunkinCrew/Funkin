@@ -50,9 +50,9 @@ jobs:
           haxelib install hxcpp-debug-server
           haxelib list
       - name: Compile
-        run: haxelib run lime build linux
+        run: haxelib run lime build linux --app-version="4.0.0-${{ github.run_id}}"
       - name: Archive
-        run: tar -czf bin.tar.gz 'export/release/linux/bin'
+        run: tar -czf bin.tar.gz 'export/release/linux/bin' 
       - name: Publish Artifact
         uses: actions/upload-artifact@v2
         with:
@@ -91,7 +91,7 @@ jobs:
           haxelib list
         shell: cmd
       - name: Compile
-        run: haxelib run lime build windows
+        run: haxelib run lime build windows --app-version="4.0.0-${{ github.run_id}}"
       - name: Archive
         run: tar -czf bin.tar.gz export/release/windows/bin
       - name: Publish Artifact
@@ -131,7 +131,7 @@ jobs:
           haxelib install hxcpp-debug-server
           haxelib list
       - name: Compile
-        run: haxelib run lime build mac
+        run: haxelib run lime build mac --app-version="4.0.0-${{ github.run_id}}"
       - name: Archive
         run: tar -czf bin.tar.gz export/release/macos/bin
       - name: Publish Artifact
