@@ -42,7 +42,6 @@ class CategoryState extends MusicBeatState
 		// Updating Discord Rich Presence
 		Discord.DiscordClient.changePresence("In the Freeplay Menu", null);
 		#end
-		var epicCategoryBgJs:Array<Dynamic> = CoolUtil.parseJson(FNFAssets.getText('assets/images/Custom_Menu_BGs/Custom_Menu_BGs.json'));
 		var epicCategoryJs:Array<Dynamic> = CoolUtil.parseJson(FNFAssets.getText('assets/data/freeplaySongJson.jsonc'));
 		if (epicCategoryJs.length > 1 || choosingFor != "freeplay") {
 			for (category in epicCategoryJs) {
