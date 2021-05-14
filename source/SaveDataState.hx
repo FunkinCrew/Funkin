@@ -1,6 +1,5 @@
 package;
 
-import FunkinUtility.FunkinGroup;
 import Controls.Control;
 import flash.text.TextField;
 import flixel.FlxG;

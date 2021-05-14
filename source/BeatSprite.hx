@@ -1,8 +1,15 @@
+/*
+ * Mozilla Public License, Version 2.0
+ *
+ * Copyright (c) 2021 BulbyVR
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ 
 package;
 import flixel.FlxSprite;
-/**
- * A sprite that can dance based on the beat. Used mostly for custom stages.
- */
+
 class BeatSprite extends FunkinSprite {
     var danceDir : Bool = false;
     public var danceBeat : Int = 1;
@@ -28,4 +35,4 @@ class BeatSprite extends FunkinSprite {
         }
     }
 
-}
+}*/

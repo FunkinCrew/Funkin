@@ -167,9 +167,6 @@ class PlayState extends MusicBeatState
 	var phillyCityLights:FlxTypedGroup<FlxSprite>;
 	var phillyTrain:FlxSprite;
 	var trainSound:FlxSound;
-	// this'll work... right?
-	var backgroundgroup:FlxTypedGroup<BeatSprite>;
-	var foregroundgroup:FlxTypedGroup<BeatSprite>;
 
 	var limo:FlxSprite;
 	var grpLimoDancers:FlxTypedGroup<BackgroundDancer>;
@@ -500,8 +497,6 @@ class PlayState extends MusicBeatState
 		grpNoteSplashes.add(sploosh);
 		Conductor.mapBPMChanges(SONG);
 		Conductor.changeBPM(SONG.bpm);
-		backgroundgroup = new FlxTypedGroup<BeatSprite>();
-		foregroundgroup  = new FlxTypedGroup<BeatSprite>();
 		if (FNFAssets.exists('assets/images/custom_chars/' + SONG.player1 + '/' + SONG.song.toLowerCase() + 'Dialog.txt'))
 		{
 			dialogue = CoolUtil.coolDynamicTextFile('assets/images/custom_chars/' + SONG.player1 + '/' + SONG.song.toLowerCase() + 'Dialog.txt');
@@ -968,7 +963,6 @@ class PlayState extends MusicBeatState
 		// Shitty layering but whatev it works LOL
 		if (curStage == 'limo')
 			add(limo);
-		add(foregroundgroup);
 		trace('dad');
 		add(dad);
 		trace('dy UWU');
@@ -3846,13 +3840,6 @@ class PlayState extends MusicBeatState
 		if (curBeat % 8 == 7 && SONG.isCheer && dad.gfEpicLevel >= cast Character.EpicLevel.Level_Sing)
 		{
 			dad.playAnim('cheer', true);
-		}
-		for (sprite in backgroundgroup.members) {
-			sprite.runEvent(curBeat, boyfriend, gf, dad);
-		}
-		for (sprite in foregroundgroup.members)
-		{
-			sprite.runEvent(curBeat, boyfriend, gf, dad);
 		}
 		switch (curStage)
 		{

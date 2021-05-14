@@ -1,3 +1,5 @@
+/*
+
 package;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.FlxG;
@@ -5,9 +7,7 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.graphics.frames.FlxAtlasFrames;
 using StringTools;
-/**
- * Nice converter to convert funkin objects to regular objects
- */
+
 class FunkinUtility {
     public static function convertFunkinSprite(funkin: TFunkinSprite, ?graphicCallback:(BeatSprite, TFunkinSprite)->Void, ?animCallback:(BeatSprite,TFunkinSprite)->Void) : BeatSprite {
         if (graphicCallback == null) {
@@ -77,7 +77,7 @@ class FunkinUtility {
 
         return group;
     }
-    /*
+
     public static function executeFunktionOn(object:Dynamic, funktion : Funktion, boyfriend : Character, gf : Character, dad : Character) : Null<Dynamic> {
         var operators = funktion.operations;
         var currentobject : Dynamic = object;
@@ -110,11 +110,9 @@ class FunkinUtility {
         }
         return null;
     }
-    */
+
  }
-/**
- * type used with json2object to make custom stages easier. includes all required members of a sprite
- **/ 
+
 
 typedef TFunkinSprite = {
     @:default(0.0)
@@ -198,41 +196,25 @@ typedef StageGroup = {
     var name : String;
     var sprites : Array<JSONFunkinSprite>;
 }
-/// There will actually no longer be any randomness. For consistencys sake, random events will be yeeted out the window. 
-// This will mean stages will no longer be 1 to 1 accurate with base game counterparts, but will reduce complexity
-// of the system making it not as fucking stupid to use, and preserve my sanity.
-/**
- * Base type for groups that use only one sprite as a reference. This doesn't mean the graphic is the same,
- * it just means most things are similar between sprites.
- */
+
 typedef CloneFunkinGroup = {
     var sprite : TFunkinSprite;
     @:optional
     var event : SpecialEvent;
 }
-/**
- * A generic group, all it does is render sprites normally. Good for organization
- * although will probably impact preformance
- */
+
 typedef FunkinGroup = {
     var sprites : Array<TFunkinSprite>;
     @:optional
     var event : SpecialEvent;
 }
-/**
- * a sprite group that indexes each sprite. all sprites share the same values except the graphic,
- * which does a special file replacement. format of string is "blahblah${n}" and ${n} will be replaced
- * with a number. Makes all but 1 invisible. 
- */
+
 typedef IndexedSpriteGroup = {
     > CloneFunkinGroup,
     var file : String;
     var copies : Int;
 }
-/**
- * A sprite group that offsets on x/y based on a multiple of a value + a starting position. 
- * Used for the dancing demons on the limo stage
- */
+
 typedef OffsetSpriteGroup = {
     > CloneFunkinGroup,
     @:default(0.0)
@@ -252,9 +234,7 @@ typedef AnimationObject = {
     @:default(24) @:optional
     var fps : Int;
 }
-/**
- * Special events, animations, etc, that happen on beats. 
- */
+
 typedef SpecialEvent = {
     @:default(1)
     var beatmulti : Int;
@@ -262,16 +242,11 @@ typedef SpecialEvent = {
     @:alias("function") var funkinfunction : Funktion;
 }
 typedef FunkinCommand = Union<FunkinExpression, FunkinIf>;
-/**
- * A json based function that isn't as versitile as haxe, but allows manipulation of the sprite.
- * 
- */
+
  typedef Funktion = {
     var operations : Array<FunkinExpression>;
  }
-/**
- * A json based expression, used to operate on sprites. Used in Funktion.
- */
+
  typedef FunkinExpression = {
      var field : String;
      // dynamic because it could be anything. will have to mess with casting to make sure it is proper
@@ -318,18 +293,14 @@ typedef Stage = {
     var dadoffset : Array<Float>;
     var defaultZoom : Float;
 }
-/**
- * A register of all data currently being used, like the offset. 
- */
+
 typedef EventData = {
     var lastbeat : Int;
     var beatoffset : Int;
 }
-/**
- * A register of sprite data, like what event data it uses. Used mostly
- * to link things together
- */
+
 typedef SpriteData = {
     var eventindex : Int;
     var spriteindex : Int;
 }
+*/
