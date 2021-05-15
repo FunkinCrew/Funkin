@@ -664,10 +664,8 @@ class Controls extends FlxActionSet
 				inline bindKeys(Control.BACK, [BACKSPACE, ESCAPE]);
 				inline bindKeys(Control.PAUSE, [P, ENTER, ESCAPE]);
 				inline bindKeys(Control.RESET, [R]);
+				inline bindKeys(Control.CHEAT, [C]);
 
-				if (STOptions.st_debug == true) {
-					inline bindKeys(Control.CHEAT, [C]);
-				}
 			case Duo(true):
 				if (STOptions.st_inputMode == 1) {
 					inline bindKeys(Control.NOTE_UP, [J]);
