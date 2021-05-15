@@ -2,7 +2,7 @@
 <project>
 	<!-- _________________________ Application Settings _________________________ -->
 	<!-- i think that company and file is where the save data is stored -->
-	<app title="Friday Night Funkin' Modding Plus" file="Funkin" packageName="com.ninjamuffin99.funkin" main="Main" version="4.0.0" company="ninjamuffin99" />
+	<app title="Friday Night Funkin' Modding Plus" file="Funkin" packageName="com.ninjamuffin99.funkin" main="Main" version="v4.0.0" company="ninjamuffin99" />
 
 	<!--Switch Export with Unique ApplicationID and Icon-->
 	<set name="APP_ID" value="0x0100f6c013bbc000" />
