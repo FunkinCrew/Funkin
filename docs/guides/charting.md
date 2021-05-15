@@ -5,7 +5,7 @@ There are no specific requirements for this guide.
 
 ## Key
 
-![insert screenshot here]()
+TBA
 
 ---
 ### How to Access The Chart Editor
