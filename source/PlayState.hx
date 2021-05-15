@@ -873,7 +873,10 @@ class PlayState extends MusicBeatState
 		controlSchemeText.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		controlSchemeText.scrollFactor.set();
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 9da4952fdb6ed4f5976b172e8444bdaf694c0cc5
 		if (STOptions.st_inputMode == 0) {
 			controlSchemeText.text = "SCHEME: WASD";
 		} else if (STOptions.st_inputMode == 1) {

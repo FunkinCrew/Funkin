@@ -1,3 +1,66 @@
+=== 2.1 ===
++ Added an artist indicator to the song info text in the top right
++ Added a discord rpc toggle within options.json
++ Added better pixel icons (Thanks Pirlo!)
+- Fixed a bug where exiting out of the game over state using backspace restarts the song in story mode
+- Fixed a bug where exiting out of the game over state while on week6 does not play a sound
+- Fixed a bug where pressing 'R' during dialogue will crash the game
+
+=== 2.0 ===
++ Added an icon to the level indicator
++ Added extra dialogue to each week (This can be toggle on/off with options.json)
+- Changed the IconGrid to an XL IconGrid
+- Fixed a clipping issue on the Week 6 menu graphic
+- Revamped the Game Over screen
+
+=== 1.1.1 ===
++ Added an option to enable extra songs in options.json
++ Added Ridge as an Extra Song
+- Fixed layering on lyric icons
+- Improved Daddy Dearest's healthy and danger icons
+- Improved Girlfriend's healthy icon
+- Improved The Parents' healthy and danger icons
+- Removed the angry icon showing above the lyrics, as it was causing issues.
+
+=== 1.1 ===
++ Added an instrumental only mode that can be toggled in the options.json file
++ Added a notice screen when attempting to go to the options menu
++ Added a song indicator in the top right when starting a song
++ Added more characters to the internal font
+- Fixed a hole in Tankman's icon
+- Fixed slight clipping on the notes
+- Improved Mommy Mearest's healthy and danger icons
+- Improved Monster's healthy and danger icons
+- Improved Old-BF's healthy and danger icons
+- Improved Pico's healthy and danger icons
+- Improved Skid & Pump's healthy and danger icons
+- Improved The Parents' healthy and danger icons
+- Made the lyric speaker icon change to the danger icon when applicable
+- Made the original developers credits last longer on the intro
+- Moved the small things intro texts to a separate file
+- Reworked the notice screen
+- Unhid the options menu
+
+=== 1.0 ===
++ Added an option within options.json to enable or disable unknown antagonist icons
++ Added a custom intro sequence
++ Added new intro texts
++ Added a week name to the Tutorial week
++ Added a '8' bold character to the internal font (for usage in crediting evilsk8er)
++ Added a '9' bold character to the internal font (for usage in crediting ninjamuffin99)
+- Finalized the in-game lyric feature
+- Improved Boyfriend.XML's healthy and danger icons
+- Improved Daddy Dearest's healthy and danger icons
+- Renamed "Philly" to "Philly Nice", as that is the song's name on the OST
+- Replaced "Bopeebo"'s instrumental with the DrugPop version's instrumental
+    - As a result, removed Boyfriend.XML's "HEY" pose on Bopeebo
+
+=== 0.0.4.2 ===
++ Added an options.json within the data folder to edit options
+- ACTUALLY fixed a grammar error in the Tutorial lyric chart
+- Changed the '1' icon to look more like a 1
+- Removed the ability to toggle debug with debug.txt
+
 === 0.0.4.1 ===
 + Added a lyric indicator to debug mode
 + Added an icon above lyrics to show who's speaking
@@ -6,7 +69,7 @@
 - Fixed a grammar error in the Tutorial lyric chart
 
 === 0.0.4 ===
-+ Added a few more intro tets
++ Added a few more intro texts
 + Added a prototype lyric feature (WIP)
     + Added lyrics to Tutorial
     + Added lyrics to Monster
