@@ -252,7 +252,8 @@ class Note extends FlxSprite
 	{
 		super.update(elapsed);
 		// if we are player one and it's bf's note or we are duo mode or we are player two and it's p2's note
-		if (((mustPress && !oppMode) || duoMode) || (oppMode && !mustPress) && !funnyMode)
+		// and it isn't demo mode
+		if ((((mustPress && !oppMode) || duoMode) || (oppMode && !mustPress)) && !funnyMode)
 		{
 			// The * 0.5 us so that its easier to hit them too late, instead of too early
 			if (strumTime > Conductor.songPosition - Conductor.safeZoneOffset
