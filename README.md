@@ -26,8 +26,6 @@ take down mods that don't follow this rule.
 - [DJ Popsicle](https://gamebanana.com/members/1780306) - Co-Owner/Coding
 - [Matheus L/Mlops](https://gamebanana.com/members/1767306) and [AndreDoodles](https://gamebanana.com/members/1764840) - Artist for the Poison Icons
 
-This game was made with love to Newgrounds and it's community. Extra love to Tom Fulp.
-
 ## Build instructions
 
 THESE INSTRUCTIONS ARE FOR COMPILING THE GAME'S SOURCE CODE!!!
