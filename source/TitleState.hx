@@ -40,6 +40,7 @@ class TitleState extends MusicBeatState
 	var credTextShit:Alphabet;
 	var textGroup:FlxGroup;
 	var ngSpr:FlxSprite;
+	var dxSpr:FlxSprite;
 
 	var curWacky:Array<String> = [];
 
@@ -208,6 +209,14 @@ class TitleState extends MusicBeatState
 		ngSpr.updateHitbox();
 		ngSpr.screenCenter(X);
 		ngSpr.antialiasing = true;
+
+		dxSpr = new FlxSprite(0, FlxG.height * 0.52).loadGraphic(Paths.image('dx_team'));
+		add(dxSpr);
+		dxSpr.visible = false;
+		dxSpr.setGraphicSize(Std.int(dxSpr.width * 0.3));
+		dxSpr.updateHitbox();
+		dxSpr.screenCenter(X);
+		dxSpr.antialiasing = true;
 
 		FlxTween.tween(credTextShit, {y: credTextShit.y + 20}, 2.9, {ease: FlxEase.quadInOut, type: PINGPONG});
 
@@ -442,10 +451,15 @@ class TitleState extends MusicBeatState
 			switch (curBeat) {
 				case 1:
 					createCoolText(['DX Studios']);
+					dxSpr.visible = true;
 				case 3:
+					deleteCoolText();
+					createCoolText(['DX Studios']);
 					addMoreText('presents');
+					dxSpr.visible = true;
 				case 4:
 					deleteCoolText();
+					dxSpr.visible = false;
 				case 5:
 					createCoolText(['Based on a', 'game by']);
 				case 6:
