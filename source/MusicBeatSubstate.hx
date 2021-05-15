@@ -61,5 +61,6 @@ class MusicBeatSubstate extends FlxSubState
 	public function beatHit():Void
 	{
 		//do literally nothing dumbass
+		return;
 	}
 }

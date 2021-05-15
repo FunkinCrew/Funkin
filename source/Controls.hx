@@ -16,17 +16,29 @@ import Options.STOptions;
 enum abstract Action(String) to String from String
 {
 	var UP = "up";
+	var NOTE_UP = "note-up";
 	var LEFT = "left";
+	var NOTE_LEFT = "note-left";
 	var RIGHT = "right";
+	var NOTE_RIGHT = "note-right";
 	var DOWN = "down";
+	var NOTE_DOWN = "note-down";
 	var UP_P = "up-press";
+	var NOTE_UP_P = "note-up-press";
 	var LEFT_P = "left-press";
+	var NOTE_LEFT_P = "note-left-press";
 	var RIGHT_P = "right-press";
+	var NOTE_RIGHT_P = "note-right-press";
 	var DOWN_P = "down-press";
+	var NOTE_DOWN_P = "note-down-press";
 	var UP_R = "up-release";
+	var NOTE_UP_R = "note-up-release";
 	var LEFT_R = "left-release";
+	var NOTE_LEFT_R = "note-left-release";
 	var RIGHT_R = "right-release";
+	var NOTE_RIGHT_R = "note-right-release";
 	var DOWN_R = "down-release";
+	var NOTE_DOWN_R = "note-down-release";
 	var ACCEPT = "accept";
 	var BACK = "back";
 	var PAUSE = "pause";
@@ -38,17 +50,29 @@ enum abstract Action(String) to String from String
 abstract Action(String) to String from String
 {
 	var UP = "up";
+	var NOTE_UP = "note-up";
 	var LEFT = "left";
+	var NOTE_LEFT = "note-left";
 	var RIGHT = "right";
+	var NOTE_RIGHT = "note-right";
 	var DOWN = "down";
+	var NOTE_DOWN = "note-down";
 	var UP_P = "up-press";
+	var NOTE_UP_P = "note-up-press";
 	var LEFT_P = "left-press";
+	var NOTE_LEFT_P = "note-left-press";
 	var RIGHT_P = "right-press";
+	var NOTE_RIGHT_P = "note-right-press";
 	var DOWN_P = "down-press";
+	var NOTE_DOWN_P = "note-down-press";
 	var UP_R = "up-release";
+	var NOTE_UP_R = "note-up-release";
 	var LEFT_R = "left-release";
+	var NOTE_LEFT_R = "note-left-release";
 	var RIGHT_R = "right-release";
+	var NOTE_RIGHT_R = "note-right-release";
 	var DOWN_R = "down-release";
+	var NOTE_DOWN_R = "note-down-release";
 	var ACCEPT = "accept";
 	var BACK = "back";
 	var PAUSE = "pause";
@@ -74,6 +98,10 @@ enum Control
 	LEFT;
 	RIGHT;
 	DOWN;
+	NOTE_UP;
+	NOTE_LEFT;
+	NOTE_RIGHT;
+	NOTE_DOWN;
 	RESET;
 	ACCEPT;
 	BACK;
@@ -107,6 +135,18 @@ class Controls extends FlxActionSet
 	var _leftR = new FlxActionDigital(Action.LEFT_R);
 	var _rightR = new FlxActionDigital(Action.RIGHT_R);
 	var _downR = new FlxActionDigital(Action.DOWN_R);
+	var _noteUp = new FlxActionDigital(Action.NOTE_UP);
+	var _noteLeft = new FlxActionDigital(Action.NOTE_LEFT);
+	var _noteRight = new FlxActionDigital(Action.NOTE_RIGHT);
+	var _noteDown = new FlxActionDigital(Action.NOTE_DOWN);
+	var _noteUpP = new FlxActionDigital(Action.NOTE_UP_P);
+	var _noteLeftP = new FlxActionDigital(Action.NOTE_LEFT_P);
+	var _noteRightP = new FlxActionDigital(Action.NOTE_RIGHT_P);
+	var _noteDownP = new FlxActionDigital(Action.NOTE_DOWN_P);
+	var _noteUpR = new FlxActionDigital(Action.NOTE_UP_R);
+	var _noteLeftR = new FlxActionDigital(Action.NOTE_LEFT_R);
+	var _noteRightR = new FlxActionDigital(Action.NOTE_RIGHT_R);
+	var _noteDownR = new FlxActionDigital(Action.NOTE_DOWN_R);
 	var _accept = new FlxActionDigital(Action.ACCEPT);
 	var _back = new FlxActionDigital(Action.BACK);
 	var _pause = new FlxActionDigital(Action.PAUSE);
@@ -182,6 +222,66 @@ class Controls extends FlxActionSet
 	inline function get_DOWN_R()
 		return _downR.check();
 
+	public var NOTE_UP(get, never):Bool;
+
+	inline function get_NOTE_UP()
+		return _noteUp.check();
+
+	public var NOTE_LEFT(get, never):Bool;
+
+	inline function get_NOTE_LEFT()
+		return _noteLeft.check();
+
+	public var NOTE_RIGHT(get, never):Bool;
+
+	inline function get_NOTE_RIGHT()
+		return _noteRight.check();
+
+	public var NOTE_DOWN(get, never):Bool;
+
+	inline function get_NOTE_DOWN()
+		return _noteDown.check();
+
+	public var NOTE_UP_P(get, never):Bool;
+
+	inline function get_NOTE_UP_P()
+		return _noteUpP.check();
+
+	public var NOTE_LEFT_P(get, never):Bool;
+
+	inline function get_NOTE_LEFT_P()
+		return _noteLeftP.check();
+
+	public var NOTE_RIGHT_P(get, never):Bool;
+
+	inline function get_NOTE_RIGHT_P()
+		return _noteRightP.check();
+
+	public var NOTE_DOWN_P(get, never):Bool;
+
+	inline function get_NOTE_DOWN_P()
+		return _noteDownP.check();
+
+	public var NOTE_UP_R(get, never):Bool;
+
+	inline function get_NOTE_UP_R()
+		return _noteUpR.check();
+
+	public var NOTE_LEFT_R(get, never):Bool;
+
+	inline function get_NOTE_LEFT_R()
+		return _noteLeftR.check();
+
+	public var NOTE_RIGHT_R(get, never):Bool;
+
+	inline function get_NOTE_RIGHT_R()
+		return _noteRightR.check();
+
+	public var NOTE_DOWN_R(get, never):Bool;
+
+	inline function get_NOTE_DOWN_R()
+		return _downR.check();
+
 	public var ACCEPT(get, never):Bool;
 
 	inline function get_ACCEPT()
@@ -224,6 +324,18 @@ class Controls extends FlxActionSet
 		add(_leftR);
 		add(_rightR);
 		add(_downR);
+		add(_noteUp);
+		add(_noteLeft);
+		add(_noteRight);
+		add(_noteDown);
+		add(_noteUpP);
+		add(_noteLeftP);
+		add(_noteRightP);
+		add(_noteDownP);
+		add(_noteUpR);
+		add(_noteLeftR);
+		add(_noteRightR);
+		add(_noteDownR);
 		add(_accept);
 		add(_back);
 		add(_pause);
@@ -252,6 +364,18 @@ class Controls extends FlxActionSet
 		add(_leftR);
 		add(_rightR);
 		add(_downR);
+		add(_noteUp);
+		add(_noteLeft);
+		add(_noteRight);
+		add(_noteDown);
+		add(_noteUpP);
+		add(_noteLeftP);
+		add(_noteRightP);
+		add(_noteDownP);
+		add(_noteUpR);
+		add(_noteLeftR);
+		add(_noteRightR);
+		add(_noteDownR);
 		add(_accept);
 		add(_back);
 		add(_pause);
@@ -306,6 +430,10 @@ class Controls extends FlxActionSet
 			case DOWN: _down;
 			case LEFT: _left;
 			case RIGHT: _right;
+			case NOTE_UP: _noteUp;
+			case NOTE_DOWN: _noteDown;
+			case NOTE_LEFT: _noteLeft;
+			case NOTE_RIGHT: _noteRight;
 			case ACCEPT: _accept;
 			case BACK: _back;
 			case PAUSE: _pause;
@@ -346,6 +474,22 @@ class Controls extends FlxActionSet
 				func(_down, PRESSED);
 				func(_downP, JUST_PRESSED);
 				func(_downR, JUST_RELEASED);
+			case NOTE_UP:
+				func(_noteUp, PRESSED);
+				func(_noteUpP, JUST_PRESSED);
+				func(_noteUpR, JUST_RELEASED);
+			case NOTE_LEFT:
+				func(_noteLeft, PRESSED);
+				func(_noteLeftP, JUST_PRESSED);
+				func(_noteLeftR, JUST_RELEASED);
+			case NOTE_RIGHT:
+				func(_noteRight, PRESSED);
+				func(_noteRightP, JUST_PRESSED);
+				func(_noteRightR, JUST_RELEASED);
+			case NOTE_DOWN:
+				func(_noteDown, PRESSED);
+				func(_noteDownP, JUST_PRESSED);
+				func(_noteDownR, JUST_RELEASED);
 			case ACCEPT:
 				func(_accept, JUST_PRESSED);
 			case BACK:
@@ -499,6 +643,19 @@ class Controls extends FlxActionSet
 		switch (scheme)
 		{
 			case Solo:
+				if (STOptions.st_inputMode == 1) {
+					inline bindKeys(Control.NOTE_UP, [J, FlxKey.UP]);
+					inline bindKeys(Control.NOTE_DOWN, [F, FlxKey.DOWN]);
+					inline bindKeys(Control.NOTE_LEFT, [D, FlxKey.LEFT]);
+					inline bindKeys(Control.NOTE_RIGHT, [K, FlxKey.RIGHT]);
+				} else {
+					inline bindKeys(Control.NOTE_UP, [W, FlxKey.UP]);
+					inline bindKeys(Control.NOTE_DOWN, [S, FlxKey.DOWN]);
+					inline bindKeys(Control.NOTE_LEFT, [A, FlxKey.LEFT]);
+					inline bindKeys(Control.NOTE_RIGHT, [D, FlxKey.RIGHT]);
+				}
+
+
 				inline bindKeys(Control.UP, [W, FlxKey.UP]);
 				inline bindKeys(Control.DOWN, [S, FlxKey.DOWN]);
 				inline bindKeys(Control.LEFT, [A, FlxKey.LEFT]);
@@ -512,6 +669,18 @@ class Controls extends FlxActionSet
 					inline bindKeys(Control.CHEAT, [C]);
 				}
 			case Duo(true):
+				if (STOptions.st_inputMode == 1) {
+					inline bindKeys(Control.NOTE_UP, [J]);
+					inline bindKeys(Control.NOTE_DOWN, [F]);
+					inline bindKeys(Control.NOTE_LEFT, [D]);
+					inline bindKeys(Control.NOTE_RIGHT, [K]);
+				} else {
+					inline bindKeys(Control.NOTE_UP, [W]);
+					inline bindKeys(Control.NOTE_DOWN, [S]);
+					inline bindKeys(Control.NOTE_LEFT, [A]);
+					inline bindKeys(Control.NOTE_RIGHT, [D]);
+				}
+
 				inline bindKeys(Control.UP, [W]);
 				inline bindKeys(Control.DOWN, [S]);
 				inline bindKeys(Control.LEFT, [A]);
@@ -544,6 +713,19 @@ class Controls extends FlxActionSet
 		switch (scheme)
 		{
 			case Solo:
+				if (STOptions.st_inputMode == 1) {
+					bindKeys(Control.NOTE_UP, [J, FlxKey.UP]);
+					bindKeys(Control.NOTE_DOWN, [F, FlxKey.DOWN]);
+					bindKeys(Control.NOTE_LEFT, [D, FlxKey.LEFT]);
+					bindKeys(Control.NOTE_RIGHT, [K, FlxKey.RIGHT]);
+				} else {
+					bindKeys(Control.NOTE_UP, [W, FlxKey.UP]);
+					bindKeys(Control.NOTE_DOWN, [S, FlxKey.DOWN]);
+					bindKeys(Control.NOTE_LEFT, [A, FlxKey.LEFT]);
+					bindKeys(Control.NOTE_RIGHT, [D, FlxKey.RIGHT]);
+				}
+
+
 				bindKeys(Control.UP, [W, FlxKey.UP]);
 				bindKeys(Control.DOWN, [S, FlxKey.DOWN]);
 				bindKeys(Control.LEFT, [A, FlxKey.LEFT]);
@@ -554,9 +736,21 @@ class Controls extends FlxActionSet
 				bindKeys(Control.RESET, [R]);
 
 				if (STOptions.st_debug == true) {
-					inline bindKeys(Control.CHEAT, [C]);
+					bindKeys(Control.CHEAT, [C]);
 				}
 			case Duo(true):
+				if (STOptions.st_inputMode == 1) {
+					bindKeys(Control.NOTE_UP, [J]);
+					bindKeys(Control.NOTE_DOWN, [F]);
+					bindKeys(Control.NOTE_LEFT, [D]);
+					bindKeys(Control.NOTE_RIGHT, [K]);
+				} else {
+					bindKeys(Control.NOTE_UP, [W]);
+					bindKeys(Control.NOTE_DOWN, [S]);
+					bindKeys(Control.NOTE_LEFT, [A]);
+					bindKeys(Control.NOTE_RIGHT, [D]);
+				}
+
 				bindKeys(Control.UP, [W]);
 				bindKeys(Control.DOWN, [S]);
 				bindKeys(Control.LEFT, [A]);
@@ -654,6 +848,10 @@ class Controls extends FlxActionSet
 			Control.DOWN => [DPAD_DOWN, LEFT_STICK_DIGITAL_DOWN],
 			Control.LEFT => [DPAD_LEFT, LEFT_STICK_DIGITAL_LEFT],
 			Control.RIGHT => [DPAD_RIGHT, LEFT_STICK_DIGITAL_RIGHT],
+			Control.NOTE_UP => [DPAD_UP, LEFT_STICK_DIGITAL_UP],
+			Control.NOTE_DOWN => [DPAD_DOWN, LEFT_STICK_DIGITAL_DOWN],
+			Control.NOTE_LEFT => [DPAD_LEFT, LEFT_STICK_DIGITAL_LEFT],
+			Control.NOTE_RIGHT => [DPAD_RIGHT, LEFT_STICK_DIGITAL_RIGHT],
 			Control.PAUSE => [START],
 			Control.RESET => [Y]
 		]);
@@ -666,6 +864,10 @@ class Controls extends FlxActionSet
 			Control.DOWN => [DPAD_DOWN, LEFT_STICK_DIGITAL_DOWN, RIGHT_STICK_DIGITAL_DOWN],
 			Control.LEFT => [DPAD_LEFT, LEFT_STICK_DIGITAL_LEFT, RIGHT_STICK_DIGITAL_LEFT],
 			Control.RIGHT => [DPAD_RIGHT, LEFT_STICK_DIGITAL_RIGHT, RIGHT_STICK_DIGITAL_RIGHT],
+			Control.NOTE_UP => [DPAD_UP, LEFT_STICK_DIGITAL_UP, RIGHT_STICK_DIGITAL_UP],
+			Control.NOTE_DOWN => [DPAD_DOWN, LEFT_STICK_DIGITAL_DOWN, RIGHT_STICK_DIGITAL_DOWN],
+			Control.NOTE_LEFT => [DPAD_LEFT, LEFT_STICK_DIGITAL_LEFT, RIGHT_STICK_DIGITAL_LEFT],
+			Control.NOTE_RIGHT => [DPAD_RIGHT, LEFT_STICK_DIGITAL_RIGHT, RIGHT_STICK_DIGITAL_RIGHT],
 			Control.PAUSE => [START],
 			//Swap Y and X for switch
 			Control.RESET => [Y],

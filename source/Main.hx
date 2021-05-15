@@ -1,5 +1,6 @@
 package;
 
+import Options.STOptionFileSection;
 import flixel.FlxGame;
 import flixel.FlxState;
 import openfl.Assets;
@@ -7,6 +8,7 @@ import openfl.Lib;
 import openfl.display.FPS;
 import openfl.display.Sprite;
 import openfl.events.Event;
+import haxe.Json;
 import Options.STOptions;
 import StringTools;
 
@@ -53,6 +55,7 @@ class Main extends Sprite
 
 	private function setupGame():Void
 	{
+		/*
 		// Small Things: Read debug state from text file
 		var st_debugState = CoolUtil.coolTextFile(Paths.txt('debug'));
 
@@ -61,6 +64,10 @@ class Main extends Sprite
 		} else {
 			STOptions.st_debug = false;
 		}
+		*/
+
+		// SMALL THINGS: LOAD FROM OPTIONS.json
+		STOptions.readSTOptionsFromFile();
 
 		var stageWidth:Int = Lib.current.stage.stageWidth;
 		var stageHeight:Int = Lib.current.stage.stageHeight;

@@ -11,22 +11,34 @@ class NoticeSubState extends MusicBeatState
 {
 	public static var leftState:Bool = false;
 
-	override function create()
+	public function new(inText:String = "")
 	{
-		super.create();
+		super();
 
-		var textList:Array<String> = CoolUtil.coolTextFile(Paths.txt("notice"));
+		var bg:FlxSprite = new FlxSprite(-80).loadGraphic(Paths.image('menuNotice'));
+		bg.scrollFactor.x = 0;
+		bg.scrollFactor.y = 0.18;
+		bg.setGraphicSize(Std.int(bg.width * 1.1));
+		bg.updateHitbox();
+		bg.screenCenter();
+		bg.antialiasing = true;
+		add(bg);
+
 		var text:String = "";
 
-		for (i in 0...textList.length)
-		{
-			text = text + "\n" + textList[i];
+		if (inText == "") {
+			var textList:Array<String> = CoolUtil.coolTextFile(Paths.txt("notice"));
+
+			for (i in 0...textList.length)
+			{
+				text = text + "\n" + textList[i];
+			}
+		} else {
+			text = inText;
 		}
 
-		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
-		add(bg);
 		var txt:FlxText = new FlxText(0, 0, FlxG.width, text, 32);
-		txt.setFormat("VCR OSD Mono", 32, FlxColor.WHITE, CENTER);
+		txt.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		txt.screenCenter();
 		add(txt);
 	}

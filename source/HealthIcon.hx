@@ -12,7 +12,7 @@ class HealthIcon extends FlxSprite
 	public function new(char:String = 'bf', isPlayer:Bool = false)
 	{
 		super();
-		loadGraphic(Paths.image('iconGrid'), true, 150, 150);
+		loadGraphic(Paths.image('iconGridXL'), true, 150, 150);
 
 		antialiasing = true;
 		animation.add('bf', [0, 1], 0, false, isPlayer);
@@ -27,14 +27,17 @@ class HealthIcon extends FlxSprite
 		animation.add('face', [10, 11], 0, false, isPlayer);
 		animation.add('dad', [12, 13], 0, false, isPlayer);
 		animation.add('senpai', [22, 22], 0, false, isPlayer);
-		animation.add('senpai-angry', [22, 22], 0, false, isPlayer);
-		animation.add('spirit', [23, 23], 0, false, isPlayer);
+		animation.add('senpai-angry', [23, 23], 0, false, isPlayer);
+		animation.add('spirit', [24, 24], 0, false, isPlayer);
 		animation.add('bf-old', [14, 15], 0, false, isPlayer);
 		animation.add('gf', [16], 0, false, isPlayer);
 		animation.add('parents-christmas', [17, 18], 0, false, isPlayer);
 		animation.add('monster', [19, 20], 0, false, isPlayer);
 		animation.add('monster-christmas', [19, 20], 0, false, isPlayer);
-		animation.add('unknown', [50], 0, false, isPlayer); // small things: unknown character icon
+		animation.add('dad-and-bf', [200, 200], 0, false, isPlayer); // small things: dad and bf
+		animation.add('unknown', [220, 220], 0, false, isPlayer); // small things: unknown character icon
+		animation.add('unknown-pixel', [221, 221], 0, false, isPlayer); // small things: unknown pixel character icon
+		animation.add('mic', [222, 222], 0, false, isPlayer); // small things: microphone
 		animation.play(char);
 		scrollFactor.set();
 	}

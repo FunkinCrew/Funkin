@@ -106,6 +106,64 @@ class Alphabet extends FlxSpriteGroup
 				lastSprite = letter;
 			}
 
+			if (AlphaCharacter.numbers.indexOf(character.toLowerCase()) != -1)
+				// if (AlphaCharacter.alphabet.contains(character.toLowerCase()))
+			{
+				if (lastSprite != null)
+				{
+					xPos = lastSprite.x + lastSprite.width;
+				}
+
+				if (lastWasSpace)
+				{
+					xPos += 40;
+					lastWasSpace = false;
+				}
+
+				// var letter:AlphaCharacter = new AlphaCharacter(30 * loopNum, 0);
+				var letter:AlphaCharacter = new AlphaCharacter(xPos, 0);
+
+				if (isBold)
+					letter.createBold(character);
+				else
+				{
+					letter.createLetter(character);
+				}
+
+				add(letter);
+
+				lastSprite = letter;
+			}
+
+			if (AlphaCharacter.symbols.indexOf(character.toLowerCase()) != -1)
+				// if (AlphaCharacter.alphabet.contains(character.toLowerCase()))
+			{
+				if (lastSprite != null)
+				{
+					xPos = lastSprite.x + lastSprite.width;
+				}
+
+				if (lastWasSpace)
+				{
+					xPos += 40;
+					lastWasSpace = false;
+				}
+
+				// var letter:AlphaCharacter = new AlphaCharacter(30 * loopNum, 0);
+				var letter:AlphaCharacter = new AlphaCharacter(xPos, 0);
+
+				if (isBold)
+					letter.createBold(character);
+				else
+				{
+					letter.createLetter(character);
+				}
+
+				add(letter);
+
+				lastSprite = letter;
+			}
+
 			// loopNum += 1;
 		}
 	}

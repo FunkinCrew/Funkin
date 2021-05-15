@@ -1,3 +1,21 @@
+/*
+
+					!!! THIS IS A DEPRICATED CLASS !!!
+
+The Options substate is completely broken! While it does render stuff correctly,
+it only does it for a mere second. If you're looking to play around with the options menu,
+check OptionsMenu.hx! All (working) code has been moved into there, and it works fine.
+
+This class can probably be removed in a future update to Small Things, and probably the
+stock FNF engine as well.
+
+
+~ Zeexel
+
+
+*/
+
+
 package;
 
 import flixel.FlxG;
@@ -8,7 +26,7 @@ import flixel.util.FlxColor;
 
 class OptionsSubState extends MusicBeatSubstate
 {
-	var textMenuItems:Array<String> = ['Master Volume', 'Sound Volume', 'Controls'];
+	var textMenuItems:Array<String> = ['ST Debug Mode'];
 
 	var selector:FlxSprite;
 	var curSelected:Int = 0;
@@ -59,12 +77,7 @@ class OptionsSubState extends MusicBeatSubstate
 
 		if (controls.ACCEPT)
 		{
-			switch (textMenuItems[curSelected])
-			{
-				case "Controls":
-					FlxG.state.closeSubState();
-					FlxG.state.openSubState(new ControlsSubState());
-			}
+			trace("Do you like the mcrib?");
 		}
 	}
 }
