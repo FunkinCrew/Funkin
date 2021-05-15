@@ -24,11 +24,7 @@ class STOptions
 	public static var st_fixMonsterIconFreeplay:Bool = true;		// Small Things: Fix Monster's icon for Monster on Freeplay
 	public static var st_fixScoreLayout:Bool = true;				// Small Things: Fix Score layout
 	public static var st_fixWeek6CountSounds:Bool = true;			// Small Things: Fix Week6 Countdown sounds
-<<<<<<< HEAD
-	public static var st_hideOptionsMenu:Bool = false;				// Small Things: Hide options menu
-=======
 	public static var st_hideOptionsMenu:Bool = true;				// Small Things: Hide options menu
->>>>>>> 9da4952fdb6ed4f5976b172e8444bdaf694c0cc5
 	public static var st_inputMode:Int = 0;							// Small Things: Input Mode (0: WASD - 1: DFJK)
 	public static var st_instMode:Bool = false;						// Small Things: Instrumental mode
 	public static var st_logNg:Bool = true;							// Small Things: Log Newgrounds
@@ -42,10 +38,7 @@ class STOptions
 	public static var st_startWinterHorrorlandP2Invis:Bool = true;	// Small Things: Start Winter Horrorland P2 invisible
 	public static var st_unknownIcons:Bool = true;					// Small Things: Enable the unknown icons
 	public static var st_updatedInputSystem:Bool = true;			// Small Things: MtH Input re-write
-<<<<<<< HEAD
 	public static var st_missCounter:Bool = true;					// Small Things: Zeexel's Miss Counter
-=======
->>>>>>> 9da4952fdb6ed4f5976b172e8444bdaf694c0cc5
 
 	public static function readSTOptionsFromFile()
 	{
