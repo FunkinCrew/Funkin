@@ -201,7 +201,7 @@ class MainMenuState extends MusicBeatState
 										//FlxTransitionableState.skipNextTransOut = true;
 
 										if (STOptions.st_hideOptionsMenu == true) {
-											FlxG.switchState(new NoticeSubState("HEY!\n\nThe options menu currently does not work.\nIf you wish to edit options, please edit the\noptions.json within the data folder.\n\nPress ENTER to continue."));
+											FlxG.switchState(new NoticeSubState("HEY!\n\nThe options menu currently does not work.\nIf you wish to edit options, please edit the\noptions.json within the data folder.\n\n(You can edit control schemes there too!)\n\nPress ENTER to continue."));
 										} else {
 											FlxG.switchState(new OptionsMenu());
 										}

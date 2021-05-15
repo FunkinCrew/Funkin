@@ -138,6 +138,7 @@ class PlayState extends MusicBeatState
 	var levelInfo:FlxText;
 	var levelInfoArtist:FlxText;
 	var levelInfoIcon:FlxSprite;
+	var controlSchemeText:FlxText;
 
 	// small things: do icon check
 	var doIconCheck:Bool = true;
@@ -855,11 +856,21 @@ class PlayState extends MusicBeatState
 		lyricIndicatorTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		lyricIndicatorTxt.scrollFactor.set();
 
-		debugIndicatorTxt = new FlxText(10, FlxG.height - 28, "", 20);
+		debugIndicatorTxt = new FlxText(10, FlxG.height - 58, "", 20);
 		debugIndicatorTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		debugIndicatorTxt.scrollFactor.set();
 
 		debugIndicatorTxt.text = "ST " + MainMenuState.smallThingsVersion + " (DEBUG) - " + SONG.song.toLowerCase();
+
+		controlSchemeText = new FlxText(10, FlxG.height - 28, "", 20);
+		controlSchemeText.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		controlSchemeText.scrollFactor.set();
+
+		if (STOptions.st_inputMode == 0) {
+			controlSchemeText.text = "SCHEME: WASD";
+		} else if (STOptions.st_inputMode == 1) {
+			controlSchemeText.text = "SCHEME: DFJK";
+		}
  		
 		iconP1txt = new FlxText(iconP1.x, iconP1.y + 10, "p1", 20);
 		iconP1txt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
@@ -922,6 +933,8 @@ class PlayState extends MusicBeatState
 			add(levelInfoArtist);
 		}
 
+		add(controlSchemeText);
+
 		strumLineNotes.cameras = [camHUD];
 		notes.cameras = [camHUD];
 		healthBar.cameras = [camHUD];
@@ -933,6 +946,7 @@ class PlayState extends MusicBeatState
 		hpTxt.cameras = [camHUD];
 		lyricIndicatorTxt.cameras = [camHUD];
 		debugIndicatorTxt.cameras = [camHUD];
+		controlSchemeText.cameras = [camHUD];
 		iconP1txt.cameras = [camHUD];
 		iconP2txt.cameras = [camHUD];
 		lyricTxt.cameras = [camHUD];
