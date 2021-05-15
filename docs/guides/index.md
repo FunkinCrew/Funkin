@@ -1,5 +1,6 @@
 # Guides
 [Creating A Custom Week](https://kadedev.github.io/Kade-Engine/guides/weeks)
+
 [Using The Chart Editor](https://kadedev.github.io/Kade-Engine/guides/charting)
 
 ### Contributing
