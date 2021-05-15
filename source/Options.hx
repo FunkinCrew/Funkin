@@ -2,6 +2,7 @@ package;
 
 import lime.utils.Assets;
 import haxe.Json;
+import Controls;
 
 class Options
 {
@@ -24,6 +25,7 @@ class STOptions
 	public static var st_fixScoreLayout:Bool = true;				// Small Things: Fix Score layout
 	public static var st_fixWeek6CountSounds:Bool = true;			// Small Things: Fix Week6 Countdown sounds
 	public static var st_hideOptionsMenu:Bool = true;				// Small Things: Hide options menu
+	public static var st_inputMode:Int = 0;							// Small Things: Input Mode (0: WASD - 1: DFJK)
 	public static var st_instMode:Bool = false;						// Small Things: Instrumental mode
 	public static var st_logNg:Bool = true;							// Small Things: Log Newgrounds
 	public static var st_lyrics:Bool = true;						// Small Things: [PROTO] Lyrics
@@ -57,6 +59,9 @@ class STOptions
 			if (i.name == "extraSongs")
 				STOptions.st_extraSongs = i.value;
 
+			if (i.name == "inputMode")
+				STOptions.st_inputMode = i.intValue;
+
 			if (i.name == "instMode")
 				STOptions.st_instMode = i.value;
 
@@ -75,5 +80,6 @@ class STOptions
 typedef STOptionFileSection = {
 	var name:String;
 	var value:Bool;
+	var intValue:Int;
 	var comment:String;
 }

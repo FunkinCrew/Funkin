@@ -20,6 +20,11 @@
         "value": true
     },
     {
+        "name": "inputMode",
+        "comment": "Sets a specific input mode (0: WASD || 1: DFJK [DEFAULT: 0])",
+        "intValue": 0
+    },
+    {
         "name": "instMode",
         "comment": "Enables / Disables instrumental-only mode (DEFAULT: false)",
         "value": false
