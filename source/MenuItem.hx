@@ -22,7 +22,10 @@ class MenuItem extends FlxSpriteGroup
 	public function new(x:Float, y:Float, weekNum:Int = 0)
 	{
 		super(x, y);
-		var parsedVersionJson:Array<Array<String>> = CoolUtil.parseJson(FNFAssets.getText("assets/data/gameInfo.json")).version;
+		// WHAT THE FUCK
+		// IS THIS :GRIEF:
+		// WHY THE FUCK DO YOU READ A FILE FUCKING 5 TIMES
+		// NO WONDER THERE ARE PREFORMANCE ISSUES
 		var parsedName_1Json:Array<Array<String>> = CoolUtil.parseJson(FNFAssets.getText("assets/data/gameInfo.json")).name_1;
 		var parsedName_2Json:Array<Array<String>> = CoolUtil.parseJson(FNFAssets.getText("assets/data/gameInfo.json")).name_2;
 		var parsedName_3Json:Array<Array<String>> = CoolUtil.parseJson(FNFAssets.getText("assets/data/gameInfo.json")).name_3;
