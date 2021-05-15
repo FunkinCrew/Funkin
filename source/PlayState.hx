@@ -83,7 +83,14 @@ class PlayState extends MusicBeatState
 	private var gfSpeed:Int = 1;
 	private var health:Float = 1;
 	private var combo:Int = 0;
-	private var misses:Int = 0;
+	private var misses:Int = 0;		// Small Things: Miss counter
+
+	// Small Things: Accuracy
+	private var accuracy:Float = 0.00;
+	private var accuracyDefault:Float = 0.00;
+	private var notesHit:Float = 0.00;
+	private var notesHitDef:Float = 0.00;
+	private var notesPlayed:Float = 0.00;
 
 	private var healthBarBG:FlxSprite;
 	private var healthBar:FlxBar;
@@ -128,7 +135,7 @@ class PlayState extends MusicBeatState
 	var talking:Bool = true;
 	var songScore:Int = 0;
 	var scoreTxt:FlxText;
-	var missTxt:FlxText;
+	var missTxt:FlxText;	// Small Things: Miss counter text
 
 	// small things: debug texts
 	var conductorPosTxt:FlxText;
@@ -2323,6 +2330,8 @@ class PlayState extends MusicBeatState
 
 		var rating:FlxSprite = new FlxSprite();
 		var score:Int = 350;
+		notesHit += 1;
+		trace("NotesHit now " + notesHit);
 
 		var daRating:String = "sick";
 
@@ -2330,17 +2339,24 @@ class PlayState extends MusicBeatState
 		{
 			daRating = 'shit';
 			score = 50;
+			notesHit += 0.25;
+			trace("NotesHit now " + notesHit);
 		}
 		else if (noteDiff > Conductor.safeZoneOffset * 0.75)
 		{
 			daRating = 'bad';
 			score = 100;
+			notesHit += 0.50;
+			trace("NotesHit now " + notesHit);
 		}
 		else if (noteDiff > Conductor.safeZoneOffset * 0.2)
 		{
 			daRating = 'good';
 			score = 200;
+			notesHit += 0.75;
+			trace("NotesHit now " + notesHit);
 		}
+
 
 		songScore += score;
 
@@ -2819,6 +2835,8 @@ class PlayState extends MusicBeatState
 				case 3:
 					boyfriend.playAnim('singRIGHTmiss', true);
 			}
+
+			updateAccuracy();
 		}
 	}
 
@@ -2840,6 +2858,26 @@ class PlayState extends MusicBeatState
 		if (rightP)
 			noteMiss(3);
 	}
+
+	// Small Things: Accuracy
+	function updateAccuracy() {
+		// Borrowed the updateAccuracy function from KadeEngine because
+		// i wasn't entirely sure how to calculate accuracy.
+		notesPlayed += 1;
+		accuracy = Math.max(0, notesHit / notesPlayed * 100);
+		accuracyDefault = Math.max(0, notesHitDef / notesPlayed * 100);
+		trace("Accuracy is " + truncateFloat(accuracy, 2));
+	}
+
+	// This function prevents the accuracy counter from looking like this:
+	// 67.2392039203210933
+	private function truncateFloat(number:Float, precision:Int): Float {
+		var num = number;
+		num = num * Math.pow(10, precision);
+		num = Math.round(num) / Math.pow(10, precision);
+		return num;		// Returns a nice, pretty 67.23! 
+	}
+
 
 	function noteCheck(keyP:Bool, note:Note):Void
 	{
@@ -2899,6 +2937,7 @@ class PlayState extends MusicBeatState
 				note.kill();
 				notes.remove(note, true);
 				note.destroy();
+				updateAccuracy();
 			}
 		}
 	}
