@@ -873,10 +873,6 @@ class PlayState extends MusicBeatState
 		controlSchemeText.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		controlSchemeText.scrollFactor.set();
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 9da4952fdb6ed4f5976b172e8444bdaf694c0cc5
 		if (STOptions.st_inputMode == 0) {
 			controlSchemeText.text = "SCHEME: WASD";
 		} else if (STOptions.st_inputMode == 1) {
@@ -2201,6 +2197,9 @@ class PlayState extends MusicBeatState
 					if (daNote.tooLate || !daNote.wasGoodHit)
 					{
 						health -= 0.0475;
+						// ST: Lower song score when not pressing keys at all
+						songScore -= 10;
+						misses++;
 						vocals.volume = 0;
 					}
 
@@ -2331,13 +2330,11 @@ class PlayState extends MusicBeatState
 		{
 			daRating = 'shit';
 			score = 50;
-			misses++;
 		}
 		else if (noteDiff > Conductor.safeZoneOffset * 0.75)
 		{
 			daRating = 'bad';
 			score = 100;
-			misses++;
 		}
 		else if (noteDiff > Conductor.safeZoneOffset * 0.2)
 		{
@@ -2799,7 +2796,6 @@ class PlayState extends MusicBeatState
 
 			songScore -= 10;
 			misses++;
-			trace("Missed a note! Misses counter now " + misses);
 			FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
 			// FlxG.sound.play(Paths.sound('missnote1'), 1, false);
 			// FlxG.log.add('played imss note');
