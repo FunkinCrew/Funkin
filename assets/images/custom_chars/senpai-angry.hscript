@@ -5,7 +5,7 @@ function init(char) {
     var tex = FlxAtlasFrames.fromSparrow(hscriptPath + 'char.png', hscriptPath + 'char.xml');
     trace(": )");
     char.frames = tex;
-    char.animation.addByPrefix('idle', 'Angry Senpai Idle', 24, false);
+    char.animation.addByPrefix('idle', 'Angry Senpai Idle', 18, false);
     char.animation.addByPrefix('singUP', 'Angry Senpai UP NOTE', 24, false);
     char.animation.addByPrefix('singLEFT','Angry Senpai LEFT NOTE', 24, false);
     char.animation.addByPrefix('singRIGHT', 'Angry Senpai RIGHT NOTE', 24, false);
@@ -26,7 +26,7 @@ function init(char) {
     char.enemyOffsetY = 360;
     char.camOffsetX = 370;
     char.camOffsetY = 300;
-    char.followCamX = -100;
+    char.followCamX = -93;
     char.followCamY = -430;
 
     char.setGraphicSize(Std.int(char.width * 6));

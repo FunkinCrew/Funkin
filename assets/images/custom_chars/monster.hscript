@@ -13,7 +13,7 @@ function init(char) {
 
 
     char.addOffset('idle',0);
-    char.addOffset('singUP', -20, 50);
+    char.addOffset('singUP', -20, 85);
     char.addOffset('singRIGHT',-51, 0);
     char.addOffset('singLEFT', -30);
     char.addOffset('singDOWN', -30, -94);

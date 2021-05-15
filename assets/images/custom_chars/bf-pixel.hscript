@@ -39,8 +39,8 @@ function init(char) {
 
         char.enemyOffsetX = 0;
         char.enemyOffsetY = 350;
-        char.followCamX = -100;
-        char.followCamY = -100;
+        char.followCamX = -50;
+        char.followCamY = -20;
     } else {
         char.frames = FlxAtlasFrames.fromSparrow('assets/images/weeb/bfPixelsDEAD.png', 'assets/images/weeb/bfPixelsDEAD.xml');
         char.animation.addByPrefix('singUP', "BF Dies pixel", 24, false);

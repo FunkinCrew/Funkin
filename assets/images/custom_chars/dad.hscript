@@ -5,11 +5,11 @@ function init(char) {
     var tex = FlxAtlasFrames.fromSparrow(hscriptPath + 'char.png', hscriptPath + 'char.xml');
     trace(": )");
     char.frames = tex;
-    char.animation.addByPrefix('idle', 'Dad idle dance', 24, true);
-    char.animation.addByPrefix('singUP', 'Dad Sing Note UP', 24, true);
-    char.animation.addByPrefix('singLEFT','Dad Sing Note LEFT', 24, true);
-    char.animation.addByPrefix('singRIGHT', 'Dad Sing Note RIGHT', 24, true);
-    char.animation.addByPrefix('singDOWN', 'Dad Sing Note DOWN', 24, true);
+    char.animation.addByPrefix('idle', 'Dad idle dance', 31, false);
+    char.animation.addByPrefix('singUP', 'Dad Sing Note UP', 24, false);
+    char.animation.addByPrefix('singLEFT','Dad Sing Note LEFT', 24, false);
+    char.animation.addByPrefix('singRIGHT', 'Dad Sing Note RIGHT', 24, false);
+    char.animation.addByPrefix('singDOWN', 'Dad Sing Note DOWN', 24, false);
     trace("finish anim");
 
     char.addOffset('idle', 0);
@@ -26,8 +26,8 @@ function init(char) {
     char.enemyOffsetY = 0;
     char.playerOffsetX = 0;
     char.playerOffsetY = 0;
-    char.followCamX = 400;
-    char.followCamY = 0;
+    char.followCamX = 259;
+    char.followCamY = -100;
     char.midpointX = 0;
     char.midpointY = 0;
 }

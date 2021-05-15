@@ -2,7 +2,7 @@
 function init(char) {
     var tex = FlxAtlasFrames.fromSparrow(hscriptPath + 'char.png', hscriptPath + 'char.xml');
     char.frames = tex;
-    char.animation.addByPrefix('idle', 'Pico Idle Dance', 24, true);
+    char.animation.addByPrefix('idle', 'Pico Idle Dance', 24, false);
     char.animation.addByPrefix('singUP', 'pico Up note0', 24, false);
     char.animation.addByPrefix('singDOWN', 'Pico Down Note0', 24, false);
     char.animation.addByPrefix('singDOWNmiss', 'Pico Down Note MISS', 24, false);

@@ -47,8 +47,8 @@ function init(char) {
     char.enemyOffsetY = 350;
     char.playerOffsetX = 0;
     char.playerOffsetY = 0;
-    char.followCamX = -100;
-    char.followCamY = -100;
+    char.followCamX = -50;
+    char.followCamY = 0;
     char.midpointX = 0;
     char.midpointY = 0;
 }
