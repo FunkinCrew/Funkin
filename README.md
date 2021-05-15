@@ -6,6 +6,8 @@ Play the Ludum Dare prototype here: https://ninja-muffin24.itch.io/friday-night-
 Play the Newgrounds one here: https://www.newgrounds.com/portal/view/770371
 Support the project on the itch.io page: https://ninja-muffin24.itch.io/funkin
 
+IF YOU MAKE A MOD AND DISTRIBUTE A MODIFIED / RECOMIPLED VERSION, YOU MUST OPEN SOURCE YOUR MOD AS WELL
+
 ## Credits / shoutouts
 
 - [ninjamuffin99 (me!)](https://twitter.com/ninja_muffin99) - Programmer
