@@ -3115,6 +3115,14 @@ class PlayState extends MusicBeatState
 					if(!loadRep && note.mustPress)
 						saveNotes.push(HelperFunctions.truncateFloat(note.strumTime, 2));
 					
+					playerStrums.forEach(function(spr:FlxSprite)
+					{
+						if (Math.abs(note.noteData) == spr.ID)
+						{
+							spr.animation.play('confirm', true);
+						}
+					});
+					
 					note.wasGoodHit = true;
 					vocals.volume = 1;
 		
