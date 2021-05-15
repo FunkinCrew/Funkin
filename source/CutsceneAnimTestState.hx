@@ -1,6 +1,5 @@
 package;
 
-import animate.FlxAnimate;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -9,16 +8,22 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxPoint;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
+import openfl.Assets;
 import openfl.display.BitmapData;
+import openfl.display.MovieClip;
+import openfl.display.Timeline;
+import openfl.geom.Matrix;
+import openfl.geom.Rectangle;
 
-// import animateAtlasPlayer.assets.AssetManager;
-// import animateAtlasPlayer.core.Animation;
 class CutsceneAnimTestState extends FlxState
 {
 	var cutsceneGroup:CutsceneCharacter;
 
 	var curSelected:Int = 0;
 	var debugTxt:FlxText;
+
+	var funnySprite:FlxSprite = new FlxSprite();
+	var clip:MovieClip;
 
 	public function new()
 	{
@@ -32,50 +37,45 @@ class CutsceneAnimTestState extends FlxState
 		debugTxt.color = FlxColor.BLUE;
 		add(debugTxt);
 
-		var animated:FlxAnimate = new FlxAnimate(600, 200);
-		add(animated);
+		clip = Assets.getMovieClip("tanky:");
+		// clip.x = FlxG.width/2;
+		// clip.y = FlxG.height/2;
+		FlxG.stage.addChild(clip);
 
-		// createCutscene(0);
-		// createCutscene(1);
-		// createCutscene(2);
-		// createCutscene(3);
-		// createCutscene(4);
+		var swagShit:MovieClip = Assets.getMovieClip('tankBG:');
+		// swagShit.scaleX = 5;
+
+		FlxG.stage.addChild(swagShit);
+		swagShit.gotoAndStop(13);
+
+		var swfMountain = new BitmapData(FlxG.width, FlxG.height, true, 0x00000000);
+		swfMountain.draw(swagShit, swagShit.transform.matrix);
+
+		var mountains:FlxSprite = new FlxSprite().loadGraphic(swfMountain);
+		// add(mountains);
+
+		FlxG.stage.removeChild(swagShit);
+
+		funnySprite.x = FlxG.width / 2;
+		funnySprite.y = FlxG.height / 2;
+		add(funnySprite);
 	}
 
 	override function update(elapsed:Float)
 	{
-		/* if (FlxG.keys.pressed.SHIFT)
-			{
-				if (FlxG.keys.justPressed.UP)
-					curSelected -= 1;
-				if (FlxG.keys.justPressed.DOWN)
-					curSelected += 1;
-
-				if (curSelected < 0)
-					curSelected = cutsceneGroup.members.length - 1;
-				if (curSelected >= cutsceneGroup.members.length)
-					curSelected = 0;
-			}
-			else
-			{
-				var valueMulti:Float = 1;
-
-				if (FlxG.keys.pressed.SPACE)
-					valueMulti = 10;
-
-				if (FlxG.keys.justPressed.UP)
-					cutsceneGroup.members[curSelected].y -= valueMulti;
-				if (FlxG.keys.justPressed.DOWN)
-					cutsceneGroup.members[curSelected].y += valueMulti;
-				if (FlxG.keys.justPressed.LEFT)
-					cutsceneGroup.members[curSelected].x -= valueMulti;
-				if (FlxG.keys.justPressed.RIGHT)
-					cutsceneGroup.members[curSelected].x += valueMulti;
-			}
-
-			debugTxt.text = curSelected + " : " + cutsceneGroup.members[curSelected].getPosition();
-		 */
-
 		super.update(elapsed);
+
+		// jam sprite into top left corner
+		var drawMatrix:Matrix = clip.transform.matrix;
+		var bounds:Rectangle = clip.getBounds(null);
+		drawMatrix.tx = -bounds.x;
+		drawMatrix.ty = -bounds.y;
+		// make bitmapdata only as big as it needs to be
+		var funnyBmp:BitmapData = new BitmapData(Math.ceil(bounds.width), Math.ceil(bounds.height), true, 0x00000000);
+		funnyBmp.draw(clip, drawMatrix, true);
+		funnySprite.loadGraphic(funnyBmp);
+		// jam sprite back into place lol
+		funnySprite.offset.x = -bounds.x;
+		funnySprite.offset.y = -bounds.y;
 	}
 }

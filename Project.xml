@@ -98,8 +98,7 @@
 	
 	<!-- <assets path='example_mods' rename='mods' embed='false'/> -->
 
-	<template path="example_mods" rename="mods" />
-
+	<assets path='example_mods' rename='mods' embed='false'/>
 	<assets path='art/readme.txt' rename='do NOT readme.txt' />
 	<!-- <template path='mods' /> -->
 	
@@ -127,6 +126,11 @@
 	<haxelib name="polymod"/>
 	<haxelib name="newgrounds"/>
 	<haxelib name="hxcpp-debug-server" if="desktop debug"/>
+	
+	<!-- swf stufffff -->
+	<haxelib name="swf"/>
+	<library path="assets/tanky.swf" preload="true"/>
+	<library path="assets/tankBG.swf" preload="true"/>
 	
 	<!-- <haxelib name="flixel-animate" /> -->
 	<!-- <haxelib name="spinehaxe" /> -->
