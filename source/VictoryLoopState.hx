@@ -198,7 +198,7 @@ class VictoryLoopState extends MusicBeatSubstate
 		}
 
 		FlxG.log.add('beat');
-		if (curBeat % 2 == 0 && accuracy >= 0.65) {
+		if (curBeat % 2 == 0 && accuracy >= 65) {
 			switch(bf.animation.curAnim.name) {
 				case "idle":
 					bf.playAnim('singUP');

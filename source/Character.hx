@@ -68,7 +68,7 @@ class Character extends FlxSprite
 	 * how many animations our current gf supports. 
 	 * acts like a level meter, 0 means we aren't gf,
 	 * 1 means we support the least animations (i think pixel-gf)
-	 * 2 means we support the middle amount of animations (i think gf-car)
+	 * 2 means we support the middle amount of animations (i think gf-tankmen)
 	 * 3 means we support the full amount of animations (regular gf)
 	 * you can have an epic level lower than your actual animations, 
 	 * but the game will be safe and act like you don't have one.
