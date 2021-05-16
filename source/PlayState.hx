@@ -306,9 +306,13 @@ class PlayState extends MusicBeatState
 		interp.variables.set("boyfriend", boyfriend);
 		interp.variables.set("gf", gf);
 		interp.variables.set("dad", dad);
+		interp.variables.set("vocals", vocals);
+		interp.variables.set("gfSpeed", gfSpeed);
+		interp.variables.set("tweenCamIn", tweenCamIn);
 		// give them access to save data, everything will be fine ;)
 		interp.variables.set("isInCutscene", function () return inCutscene);
 		trace("set vars");
+		interp.variables.set("camZooming", false);
 		// callbacks
 
 		interp.variables.set("addSprite", function (sprite, position) {
@@ -1286,7 +1290,7 @@ class PlayState extends MusicBeatState
 		generateStaticArrows(1);
 		if (FNFAssets.exists("assets/data/" + SONG.song.toLowerCase() + "/modchart.hscript"))
 		{
-			makeHaxeState("modchart", "assets/data/" + SONG.song.toLowerCase() + "/", "/modchart.hscript");
+			makeHaxeState("modchart", "assets/data/" + SONG.song.toLowerCase() + "/", "modchart.hscript");
 		}
 		if (duoMode)
 		{
@@ -2150,8 +2154,10 @@ class PlayState extends MusicBeatState
 		#if !debug
 		perfectModeOld = false;
 		#end
-		
+		setAllHaxeVar('camZooming', camZooming);
+		setAllHaxeVar('gfSpeed', gfSpeed);
 		callAllHScript('update', [elapsed]);
+		
 		if (hscriptStates.exists("modchart")) {
 			if (getHaxeVar("showOnlyStrums", "modchart"))
 			{
@@ -2169,6 +2175,8 @@ class PlayState extends MusicBeatState
 				iconP2.visible = true;
 				scoreTxt.visible = true;
 			}
+			camZooming = getHaxeVar("camZooming", "modchart");
+			gfSpeed = getHaxeVar("gfSpeed", "modchart");
 
 		}
 		if (currentFrames == FlxG.save.data.fpsCap)
@@ -2495,7 +2503,8 @@ class PlayState extends MusicBeatState
 
 		FlxG.watch.addQuick("beatShit", curBeat);
 		FlxG.watch.addQuick("stepShit", curStep);
-
+		// now modchart
+		/*
 		if (curSong == 'Fresh')
 		{
 			switch (curBeat)
@@ -2513,8 +2522,9 @@ class PlayState extends MusicBeatState
 					// FlxG.sound.music.stop();
 					// FlxG.switchState(new TitleState());
 			}
-		}
-
+		}*/
+		// now mod chart
+		/*
 		if (curSong == 'Bopeebo')
 		{
 			switch (curBeat)
@@ -2524,7 +2534,7 @@ class PlayState extends MusicBeatState
 					// FlxG.sound.music.stop();
 					// FlxG.switchState(new PlayState());
 			}
-		}
+		}*/
 		// better streaming of shit
 
 		// RESET = Quick Game Over Screen
@@ -2714,10 +2724,7 @@ class PlayState extends MusicBeatState
 
 				if (!daNote.mustPress && daNote.wasGoodHit && ((!duoMode && !opponentPlayer) || demoMode))
 				{
-					/*
-					if (SONG.song != 'Tutorial')
-						camZooming = true;
-					*/
+					camZooming = true;
 					var altAnim:String = "";
 					
 					if (SONG.notes[Math.floor(curStep / 16)] != null)
@@ -2970,7 +2977,7 @@ class PlayState extends MusicBeatState
 		vocals.volume = 0;
 		
 		#if !switch
-		if (!demoMode)
+		if (!demoMode && ModifierState.scoreMultiplier > 0)
 			Highscore.saveScore(SONG.song, songScore, storyDifficulty, (notesHit / notesPassing));
 		#end
 		controls.setKeyboardScheme(Solo);
@@ -2985,7 +2992,7 @@ class PlayState extends MusicBeatState
 			{
 				FlxG.sound.playMusic('assets/music/freakyMenu' + TitleState.soundExt);
 
-				if (!demoMode)
+				if (!demoMode && ModifierState.scoreMultiplier > 0)
 					Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficulty, campaignAccuracy / defaultPlaylistLength);
 				campaignAccuracy = campaignAccuracy / defaultPlaylistLength;
 				if (useVictoryScreen) {
@@ -3125,6 +3132,9 @@ class PlayState extends MusicBeatState
 				var recycledNote = grpNoteSplashes.recycle(NoteSplash);
 				recycledNote.setupNoteSplash(daNote.x, daNote.y, daNote.noteData);
 				grpNoteSplashes.add(recycledNote);
+			case 'miss':
+				noteMiss(daNote.noteData, playerOne);
+				return;
 		}
 		if (!playerOne)
 			health -= healthBonus;
@@ -3358,7 +3368,7 @@ class PlayState extends MusicBeatState
 				var daNote = possibleNotes[0];
 
 				if (perfectModeOld)
-					noteCheck(true, daNote);
+					noteCheck(true, daNote, playerOne);
 				for (shit in 0...pressArray.length)
 				{ // if a direction is hit that shouldn't be
 					if (pressArray[shit] && !directionList.contains(shit))
@@ -3370,7 +3380,7 @@ class PlayState extends MusicBeatState
 					if (pressArray[coolNote.noteData])
 					{
 						scoreTxt.color = FlxColor.WHITE;
-						goodNoteHit(coolNote);
+						goodNoteHit(coolNote, playerOne);
 					}
 				}
 				/*
@@ -3443,7 +3453,7 @@ class PlayState extends MusicBeatState
 		});
 	}
 
-	function noteMiss(direction:Int = 1, playerOne:Bool=true):Void
+	function noteMiss(direction:Int = 1, playerOne:Bool):Void
 	{
 		var actingOn = playerOne ? boyfriend : dad;
 		if (fullComboMode || perfectMode) {
@@ -3523,7 +3533,7 @@ class PlayState extends MusicBeatState
 			noteMiss(3,playerOne);
 	}
 
-	function noteCheck(keyP:Bool, note:Note, ?playerOne:Bool=true):Void
+	function noteCheck(keyP:Bool, note:Note, playerOne:Bool):Void
 	{
 		var noteDiff:Float = Math.abs(note.strumTime - Conductor.songPosition);
 
@@ -3536,7 +3546,7 @@ class PlayState extends MusicBeatState
 		}
 	}
 
-	function goodNoteHit(note:Note, ?playerOne:Bool=true):Void
+	function goodNoteHit(note:Note, playerOne:Bool):Void
 	{
 		var actingOn = playerOne ? boyfriend : dad;
 
@@ -3768,11 +3778,13 @@ class PlayState extends MusicBeatState
 		wiggleShit.update(Conductor.crochet);
 
 		// HARDCODING FOR MILF ZOOMS!
+		// now modchart
+		/*
 		if (curSong.toLowerCase() == 'milf' && curBeat >= 168 && curBeat < 200 && camZooming && FlxG.camera.zoom < 1.35)
 		{
 			FlxG.camera.zoom += 0.015;
 			camHUD.zoom += 0.03;
-		}
+		}*/
 
 		if (camZooming && FlxG.camera.zoom < 1.35 && curBeat % 4 == 0)
 		{

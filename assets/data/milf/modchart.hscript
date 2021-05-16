@@ -6,12 +6,15 @@ function start(song) {
 
 function beatHit(beat)
 {
-
+    if (beat >= 168 && beat < 200 && camZooming && FlxG.camera.zoom < 1.35) {
+        trace("BJEUNG");
+        FlxG.camera.zoom += 0.015;
+        camHUD.zoom += 0.03;
+    }
 }
 
 function update(elapsed)
 {
-    camZooming = false;
 }
 
 function stepHit(step)
@@ -20,7 +23,7 @@ function stepHit(step)
 
 function playerTwoTurn()
 {
-    tweenCamIn();
+
 }
 
 function playerTwoMiss()
@@ -42,3 +45,4 @@ function playerOneMiss()
 function playerOneSing()
 {
 }
+trace("finish <3");

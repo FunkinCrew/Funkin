@@ -6,12 +6,13 @@ function start(song) {
 
 function beatHit(beat)
 {
-
+    if (beat == 128 || beat == 129 || beat == 130) {
+        vocals.volume = 0;
+    }
 }
 
 function update(elapsed)
 {
-    camZooming = false;
 }
 
 function stepHit(step)
@@ -20,7 +21,7 @@ function stepHit(step)
 
 function playerTwoTurn()
 {
-    tweenCamIn();
+    
 }
 
 function playerTwoMiss()

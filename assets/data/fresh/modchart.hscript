@@ -6,12 +6,21 @@ function start(song) {
 
 function beatHit(beat)
 {
-
+    switch (beat) {
+        case 16:
+            camZooming = true;
+            gfSpeed = 2;
+        case 48:
+            gfSpeed = 1;
+        case 80:
+            gfSpeed = 2;
+        case 112:
+            gfSpeed = 1;
+    }
 }
 
 function update(elapsed)
 {
-    camZooming = false;
 }
 
 function stepHit(step)
@@ -20,7 +29,7 @@ function stepHit(step)
 
 function playerTwoTurn()
 {
-    tweenCamIn();
+
 }
 
 function playerTwoMiss()
