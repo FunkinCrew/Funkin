@@ -220,7 +220,7 @@ class ResetButtonOption extends Option
 
 	private override function updateDisplay():String
 	{
-		return "Reset Button " + (!FlxG.save.data.distractions ? "off" : "on");
+		return "Reset Button " + (!FlxG.save.data.resetButton ? "off" : "on");
 	}
 }
 
