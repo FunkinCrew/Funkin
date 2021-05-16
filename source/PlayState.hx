@@ -3288,23 +3288,24 @@ class PlayState extends MusicBeatState
 		var right = coolControls.RIGHT;
 		var down = coolControls.DOWN;
 		var left = coolControls.LEFT;
-
+		var holdArray = [left, down, up, right];
 		var upP = coolControls.UP_P;
 		var rightP = coolControls.RIGHT_P;
 		var downP = coolControls.DOWN_P;
 		var leftP = coolControls.LEFT_P;
 
+		
 		var upR = coolControls.UP_R;
 		var rightR = coolControls.RIGHT_R;
 		var downR = coolControls.DOWN_R;
 		var leftR = coolControls.LEFT_R;
-
+		var releaseArray = [leftR, downR, upR, rightR];
 		var controlArray:Array<Bool> = [leftP, downP, upP, rightP];
 
 		// FlxG.watch.addQuick('asdfa', upP);
 		var actingOn:Character = playerOne ? boyfriend : dad;
-
-		if ((upP || rightP || downP || leftP) && !actingOn.stunned && generatedMusic)
+		// <3 easy way of doing it
+		if (controlArray.contains(true) && !actingOn.stunned && generatedMusic)
 		{
 			actingOn.holdTimer = 0;
 
@@ -3405,7 +3406,7 @@ class PlayState extends MusicBeatState
 			}
 		}
 
-		if ((up || right || down || left) && !actingOn.stunned && generatedMusic)
+		if (holdArray.contains(true) && !actingOn.stunned && generatedMusic)
 		{
 			notes.forEachAlive(function(daNote:Note)
 			{
@@ -3431,7 +3432,7 @@ class PlayState extends MusicBeatState
 				}
 			});
 		}
-		if (actingOn.holdTimer > Conductor.stepCrochet * 4 * 0.001 && !up && !down && !right && !left)
+		if (actingOn.holdTimer > Conductor.stepCrochet * 4 * 0.001 && !holdArray.contains(true))
 		{
 			if (actingOn.animation.curAnim.name.startsWith('sing') && !actingOn.animation.curAnim.name.endsWith('miss'))
 			{
@@ -3442,29 +3443,10 @@ class PlayState extends MusicBeatState
 		var strums = playerOne ? playerStrums : enemyStrums;
 		strums.forEach(function(spr:FlxSprite)
 		{
-			switch (spr.ID)
-			{
-				case 0:
-					if (leftP && spr.animation.curAnim.name != 'confirm')
-						spr.animation.play('pressed');
-					if (leftR)
-						spr.animation.play('static');
-				case 1:
-					if (downP && spr.animation.curAnim.name != 'confirm')
-						spr.animation.play('pressed');
-					if (downR)
-						spr.animation.play('static');
-				case 2:
-					if (upP && spr.animation.curAnim.name != 'confirm')
-						spr.animation.play('pressed');
-					if (upR)
-						spr.animation.play('static');
-				case 3:
-					if (rightP && spr.animation.curAnim.name != 'confirm')
-						spr.animation.play('pressed');
-					if (rightR)
-						spr.animation.play('static');
-			}
+			if (controlArray[spr.ID] && spr.animation.curAnim.name != 'confirm')
+				spr.animation.play('pressed');
+			if (releaseArray[spr.ID])
+				spr.animation.play('static');
 			
 			if (spr.animation.curAnim.name == 'confirm' && SONG.uiType != 'pixel' && !FNFAssets.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png"))
 			{
@@ -3573,9 +3555,7 @@ class PlayState extends MusicBeatState
 	function goodNoteHit(note:Note, ?playerOne:Bool=true):Void
 	{
 		var actingOn = playerOne ? boyfriend : dad;
-		if (opponentPlayer) {
-			actingOn = dad;
-		}
+
 		if (!note.isSustainNote)
 			notesHitArray.push(Date.now());
 		if (!note.wasGoodHit)

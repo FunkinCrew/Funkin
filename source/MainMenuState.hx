@@ -44,7 +44,8 @@ class MainMenuState extends MusicBeatState
 	#else
 	var optionShit:Array<String> = ['story mode', 'freeplay'];
 	#end
-
+	var menuSoundJson:Dynamic;
+	var scrollSound:String;
 	var magenta:FlxSprite;
 	var camFollow:FlxObject;
 
@@ -54,6 +55,8 @@ class MainMenuState extends MusicBeatState
 		// Updating Discord Rich Presence
 		Discord.DiscordClient.changePresence("In Menus", null);
 		#end
+		menuSoundJson = CoolUtil.parseJson(FNFAssets.getText("assets/sounds/custom_menu_sounds/custom_menu_sounds.json"));
+		scrollSound = menuSoundJson.customMenuScroll;
 		transIn = FlxTransitionableState.defaultTransIn;
 		transOut = FlxTransitionableState.defaultTransOut;
 		if (!OptionsHandler.options.useSaveDataMenu) 
@@ -110,8 +113,12 @@ class MainMenuState extends MusicBeatState
 		}
 
 		FlxG.camera.follow(camFollow, null, 0.06);
-
-		var versionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, ""+ Application.current.meta.get("version"), 12);
+		var infoJson:Dynamic = CoolUtil.parseJson(FNFAssets.getText("assets/data/gameInfo.json"));
+		if (infoJson.version != "") {
+			infoJson.version = " - " + infoJson.version; 
+		}
+		// ok, if you can't fucking code then don't edit the fucking code
+		var versionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, Application.current.meta.get("version") + infoJson.version, 12);
 		var usingSave:FlxText = new FlxText(5, FlxG.height - 36, 0, FlxG.save.name, 12);
 		versionShit.scrollFactor.set();
 		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
@@ -163,14 +170,14 @@ class MainMenuState extends MusicBeatState
 			if (controls.UP_P)
 			{
 				FlxG.sound.play('assets/sounds/custom_menu_sounds/'
-					+ CoolUtil.parseJson(FNFAssets.getText("assets/sounds/custom_menu_sounds/custom_menu_sounds.json")).customMenuScroll+'/scrollMenu' + TitleState.soundExt);
+				+ menuSoundJson.customMenuScroll +'/scrollMenu' + TitleState.soundExt);
 				changeItem(-1);
 			}
 
 			if (controls.DOWN_P)
 			{
 				FlxG.sound.play('assets/sounds/custom_menu_sounds/'
-					+ CoolUtil.parseJson(FNFAssets.getText("assets/sounds/custom_menu_sounds/custom_menu_sounds.json")).customMenuScroll+'/scrollMenu' + TitleState.soundExt);
+				+ menuSoundJson.customMenuScroll +'/scrollMenu' + TitleState.soundExt);
 				changeItem(1);
 			}
 
@@ -193,7 +200,7 @@ class MainMenuState extends MusicBeatState
 				{
 					selectedSomethin = true;
 					FlxG.sound.play('assets/sounds/custom_menu_sounds/'
-						+ CoolUtil.parseJson(FNFAssets.getText("assets/sounds/custom_menu_sounds/custom_menu_sounds.json")).customMenuConfirm+'/confirmMenu' + TitleState.soundExt);
+					+ menuSoundJson.customMenuConfirm+'/confirmMenu' + TitleState.soundExt);
 
 					FlxFlicker.flicker(magenta, 1.1, 0.15, false);
 
