@@ -4,4 +4,6 @@
 	<!-- http://www.adobe.com/products/animate.html -->
 	<SubTexture name="backspace indicator0000" x="10" y="128" width="280" height="106"/>
 	<SubTexture name="backspace-pixel indicator0000" x="10" y="10" width="280" height="108"/>
+	<SubTexture name="checkmark0000" x="10" y="244" width="143" height="137"/>
+	<SubTexture name="xmark0000" x="163" y="244" width="139" height="137"/>
 </TextureAtlas>
