@@ -543,6 +543,26 @@ class ModchartState
 					Application.current.window.y = y;
 				});
 
+				Lua_helper.add_callback(lua,"getWindowX",function() {
+					return Application.current.window.x;
+				});
+
+				Lua_helper.add_callback(lua,"getWindowY",function() {
+					return Application.current.window.y;
+				});
+
+				Lua_helper.add_callback(lua,"resizeWindow",function(Width:Int,Height:Int) {
+					Application.current.window.resize(Width,Height);
+				});
+				
+				Lua_helper.add_callback(lua,"getScreenWidth",function() {
+					return Application.current.window.displayMode.width;
+				});
+
+				Lua_helper.add_callback(lua,"getScreenHeight",function() {
+					return Application.current.window.displayMode.height;
+				});
+
 	
 				// tweens
 				

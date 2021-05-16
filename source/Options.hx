@@ -330,14 +330,14 @@ class FPSCapOption extends Option
 	override function right():Bool {
 		if (FlxG.save.data.fpsCap >= 290)
 		{
-			FlxG.save.data.fpsCap = 800; // set it really high lol, I mean. if you hit that cap, it really doesn't do much lol.
+			FlxG.save.data.fpsCap = 290;
 			(cast (Lib.current.getChildAt(0), Main)).setFPSCap(290);
 		}
 		else
 			FlxG.save.data.fpsCap = FlxG.save.data.fpsCap + 10;
 		(cast (Lib.current.getChildAt(0), Main)).setFPSCap(FlxG.save.data.fpsCap);
 
-		OptionsMenu.versionShit.text = "Current FPS Cap: " + (FlxG.save.data.fpsCap > 290 ? "Unlimited (In Gameplay)" : FlxG.save.data.fpsCap) + " - Description - " + description;
+		OptionsMenu.versionShit.text = "Current FPS Cap: " + FlxG.save.data.fpsCap + " - Description - " + description;
 
 		return true;
 	}
