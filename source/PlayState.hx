@@ -3367,18 +3367,21 @@ class PlayState extends MusicBeatState
 			{
 				var daNote = possibleNotes[0];
 
-				if (perfectModeOld)
-					noteCheck(true, daNote, playerOne);
-				for (shit in 0...pressArray.length)
-				{ // if a direction is hit that shouldn't be
-					if (pressArray[shit] && !directionList.contains(shit))
-						noteMiss(shit, playerOne);
+				if (!OptionsHandler.options.useCustomInput) {
+					for (shit in 0...pressArray.length)
+					{ // if a direction is hit that shouldn't be
+						if (pressArray[shit] && !directionList.contains(shit))
+							noteMiss(shit, playerOne);
+					}
 				}
+				
 				// Jump notes
 				for (coolNote in possibleNotes)
 				{
 					if (pressArray[coolNote.noteData])
 					{
+						if (mashViolations != 0)
+							mashViolations--;
 						scoreTxt.color = FlxColor.WHITE;
 						goodNoteHit(coolNote, playerOne);
 					}
@@ -3406,11 +3409,22 @@ class PlayState extends MusicBeatState
 					}
 				 */
 			}
-			else
+			else if (!OptionsHandler.options.useCustomInput)
 			{
 				for (shit in 0...pressArray.length)
 					if (pressArray[shit])
 						noteMiss(shit, playerOne);
+			}
+			// :shrug: idk what this for
+			if (dontCheck && possibleNotes.length > 0 && OptionsHandler.options.useCustomInput && !demoMode) {
+				if (mashViolations > 4)
+				{
+					trace('mash violations ' + mashViolations);
+					scoreTxt.color = FlxColor.RED;
+					noteMiss(0, playerOne);
+				}
+				else
+					mashViolations++;
 			}
 		}
 
@@ -3452,8 +3466,9 @@ class PlayState extends MusicBeatState
 				spr.centerOffsets();
 		});
 	}
-
-	function noteMiss(direction:Int = 1, playerOne:Bool):Void
+	var mashing:Int = 0;
+	var mashViolations:Int = 0;
+	function noteMiss(direction:Int = 1, playerOne:Bool, ?note:Null<Note>):Void
 	{
 		var actingOn = playerOne ? boyfriend : dad;
 		if (fullComboMode || perfectMode) {
