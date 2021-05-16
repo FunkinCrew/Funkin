@@ -348,9 +348,9 @@ class ModchartState
 	
 				// sprites
 	
-				trace(Lua_helper.add_callback(lua,"makeSprite", makeLuaSprite));
+				Lua_helper.add_callback(lua,"makeSprite", makeLuaSprite));
 	
-				trace(Lua_helper.add_callback(lua,"getProperty", getPropertyByName));
+				Lua_helper.add_callback(lua,"getProperty", getPropertyByName));
 
 				Lua_helper.add_callback(lua,"destroySprite", function(id:String) {
 					var sprite = luaSprites.get(id);
@@ -362,102 +362,102 @@ class ModchartState
 	
 				// hud/camera
 	
-				trace(Lua_helper.add_callback(lua,"setHudAngle", function (x:Float) {
+				Lua_helper.add_callback(lua,"setHudAngle", function (x:Float) {
 					PlayState.instance.camHUD.angle = x;
-				}));
+				});
 
-				trace(Lua_helper.add_callback(lua,"setHudPosition", function (x:Int, y:Int) {
+				Lua_helper.add_callback(lua,"setHudPosition", function (x:Int, y:Int) {
 					PlayState.instance.camHUD.x = x;
 					PlayState.instance.camHUD.y = y;
-				}));
+				});
 	
-				trace(Lua_helper.add_callback(lua,"getHudX", function () {
+				Lua_helper.add_callback(lua,"getHudX", function () {
 					return PlayState.instance.camHUD.x;
-				}));
+				});
 	
-				trace(Lua_helper.add_callback(lua,"getHudY", function () {
+				Lua_helper.add_callback(lua,"getHudY", function () {
 					return PlayState.instance.camHUD.y;
-				}));
+				});
 				
-				trace(Lua_helper.add_callback(lua,"setCamPosition", function (x:Int, y:Int) {
+				Lua_helper.add_callback(lua,"setCamPosition", function (x:Int, y:Int) {
 					FlxG.camera.x = x;
 					FlxG.camera.y = y;
-				}));
+				});
 	
-				trace(Lua_helper.add_callback(lua,"getCameraX", function () {
+				Lua_helper.add_callback(lua,"getCameraX", function () {
 					return FlxG.camera.x;
-				}));
+				});
 	
-				trace(Lua_helper.add_callback(lua,"getCameraY", function () {
+				Lua_helper.add_callback(lua,"getCameraY", function () {
 					return FlxG.camera.y;
-				}));
+				});
 	
-				trace(Lua_helper.add_callback(lua,"setCamZoom", function(zoomAmount:Int) {
+				Lua_helper.add_callback(lua,"setCamZoom", function(zoomAmount:Int) {
 					FlxG.camera.zoom = zoomAmount;
-				}));
+				});
 	
-				trace(Lua_helper.add_callback(lua,"setHudZoom", function(zoomAmount:Int) {
+				Lua_helper.add_callback(lua,"setHudZoom", function(zoomAmount:Int) {
 					PlayState.instance.camHUD.zoom = zoomAmount;
-				}));
+				});
 	
 				// actors
 				
-				trace(Lua_helper.add_callback(lua,"getRenderedNotes", function() {
+				Lua_helper.add_callback(lua,"getRenderedNotes", function() {
 					return PlayState.instance.notes.length;
-				}));
+				});
 	
-				trace(Lua_helper.add_callback(lua,"getRenderedNoteX", function(id:Int) {
+				Lua_helper.add_callback(lua,"getRenderedNoteX", function(id:Int) {
 					return PlayState.instance.notes.members[id].x;
-				}));
+				});
 	
-				trace(Lua_helper.add_callback(lua,"getRenderedNoteY", function(id:Int) {
+				Lua_helper.add_callback(lua,"getRenderedNoteY", function(id:Int) {
 					return PlayState.instance.notes.members[id].y;
-				}));
+				});
 
-				trace(Lua_helper.add_callback(lua,"getRenderedNoteType", function(id:Int) {
+				Lua_helper.add_callback(lua,"getRenderedNoteType", function(id:Int) {
 					return PlayState.instance.notes.members[id].noteData;
-				}));
+				});
 
-				trace(Lua_helper.add_callback(lua,"isSustain", function(id:Int) {
+				Lua_helper.add_callback(lua,"isSustain", function(id:Int) {
 					return PlayState.instance.notes.members[id].isSustainNote;
-				}));
+				});
 
-				trace(Lua_helper.add_callback(lua,"isParentSustain", function(id:Int) {
+				Lua_helper.add_callback(lua,"isParentSustain", function(id:Int) {
 					return PlayState.instance.notes.members[id].prevNote.isSustainNote;
-				}));
+				});
 
 				
-				trace(Lua_helper.add_callback(lua,"getRenderedNoteParentX", function(id:Int) {
+				Lua_helper.add_callback(lua,"getRenderedNoteParentX", function(id:Int) {
 					return PlayState.instance.notes.members[id].prevNote.x;
-				}));
+				});
 
-				trace(Lua_helper.add_callback(lua,"getRenderedNoteParentY", function(id:Int) {
+				Lua_helper.add_callback(lua,"getRenderedNoteParentY", function(id:Int) {
 					return PlayState.instance.notes.members[id].prevNote.y;
-				}));
+				});
 
-				trace(Lua_helper.add_callback(lua,"getRenderedNoteHit", function(id:Int) {
+				Lua_helper.add_callback(lua,"getRenderedNoteHit", function(id:Int) {
 					return PlayState.instance.notes.members[id].mustPress;
-				}));
+				});
 
-				trace(Lua_helper.add_callback(lua,"getRenderedNoteCalcX", function(id:Int) {
+				Lua_helper.add_callback(lua,"getRenderedNoteCalcX", function(id:Int) {
 					if (PlayState.instance.notes.members[id].mustPress)
 						return PlayState.playerStrums.members[Math.floor(Math.abs(PlayState.instance.notes.members[id].noteData))].x;
 					return PlayState.strumLineNotes.members[Math.floor(Math.abs(PlayState.instance.notes.members[id].noteData))].x;
-				}));
+				});
 
-				trace(Lua_helper.add_callback(lua,"anyNotes", function() {
+				Lua_helper.add_callback(lua,"anyNotes", function() {
 					return PlayState.instance.notes.members.length != 0;
-				}));
+				});
 
-				trace(Lua_helper.add_callback(lua,"getRenderedNoteStrumtime", function(id:Int) {
+				Lua_helper.add_callback(lua,"getRenderedNoteStrumtime", function(id:Int) {
 					return PlayState.instance.notes.members[id].strumTime;
-				}));
+				});
 	
-				trace(Lua_helper.add_callback(lua,"getRenderedNoteScaleX", function(id:Int) {
+				Lua_helper.add_callback(lua,"getRenderedNoteScaleX", function(id:Int) {
 					return PlayState.instance.notes.members[id].scale.x;
-				}));
+				});
 	
-				trace(Lua_helper.add_callback(lua,"setRenderedNotePos", function(x:Float,y:Float, id:Int) {
+				Lua_helper.add_callback(lua,"setRenderedNotePos", function(x:Float,y:Float, id:Int) {
 					if (PlayState.instance.notes.members[id] == null)
 						throw('error! you cannot set a rendered notes position when it doesnt exist! ID: ' + id);
 					else
@@ -466,77 +466,82 @@ class ModchartState
 						PlayState.instance.notes.members[id].x = x;
 						PlayState.instance.notes.members[id].y = y;
 					}
-				}));
+				});
 	
-				trace(Lua_helper.add_callback(lua,"setRenderedNoteAlpha", function(alpha:Float, id:Int) {
+				Lua_helper.add_callback(lua,"setRenderedNoteAlpha", function(alpha:Float, id:Int) {
 					PlayState.instance.notes.members[id].modifiedByLua = true;
 					PlayState.instance.notes.members[id].alpha = alpha;
-				}));
+				});
 	
-				trace(Lua_helper.add_callback(lua,"setRenderedNoteScale", function(scale:Float, id:Int) {
+				Lua_helper.add_callback(lua,"setRenderedNoteScale", function(scale:Float, id:Int) {
 					PlayState.instance.notes.members[id].modifiedByLua = true;
 					PlayState.instance.notes.members[id].setGraphicSize(Std.int(PlayState.instance.notes.members[id].width * scale));
-				}));
+				});
 
-				trace(Lua_helper.add_callback(lua,"setRenderedNoteScale", function(scaleX:Int, scaleY:Int, id:Int) {
+				Lua_helper.add_callback(lua,"setRenderedNoteScale", function(scaleX:Int, scaleY:Int, id:Int) {
 					PlayState.instance.notes.members[id].modifiedByLua = true;
 					PlayState.instance.notes.members[id].setGraphicSize(scaleX,scaleY);
-				}));
+				});
 
-				trace(Lua_helper.add_callback(lua,"getRenderedNoteWidth", function(id:Int) {
+				Lua_helper.add_callback(lua,"getRenderedNoteWidth", function(id:Int) {
 					return PlayState.instance.notes.members[id].width;
-				}));
+				});
 
 
-				trace(Lua_helper.add_callback(lua,"setRenderedNoteAngle", function(angle:Float, id:Int) {
+				Lua_helper.add_callback(lua,"setRenderedNoteAngle", function(angle:Float, id:Int) {
 					PlayState.instance.notes.members[id].modifiedByLua = true;
 					PlayState.instance.notes.members[id].angle = angle;
-				}));
+				});
 	
-				trace(Lua_helper.add_callback(lua,"setActorX", function(x:Int,id:String) {
+				Lua_helper.add_callback(lua,"setActorX", function(x:Int,id:String) {
 					getActorByName(id).x = x;
-				}));
+				});
 	
-				trace(Lua_helper.add_callback(lua,"setActorAlpha", function(alpha:Float,id:String) {
+				Lua_helper.add_callback(lua,"setActorAlpha", function(alpha:Float,id:String) {
 					getActorByName(id).alpha = alpha;
-				}));
+				});
 	
-				trace(Lua_helper.add_callback(lua,"setActorY", function(y:Int,id:String) {
+				Lua_helper.add_callback(lua,"setActorY", function(y:Int,id:String) {
 					getActorByName(id).y = y;
-				}));
+				});
 							
-				trace(Lua_helper.add_callback(lua,"setActorAngle", function(angle:Int,id:String) {
+				Lua_helper.add_callback(lua,"setActorAngle", function(angle:Int,id:String) {
 					getActorByName(id).angle = angle;
-				}));
+				});
 	
-				trace(Lua_helper.add_callback(lua,"setActorScale", function(scale:Float,id:String) {
+				Lua_helper.add_callback(lua,"setActorScale", function(scale:Float,id:String) {
 					getActorByName(id).setGraphicSize(Std.int(getActorByName(id).width * scale));
-				}));
+				});
 	
 	
-				trace(Lua_helper.add_callback(lua,"getActorWidth", function (id:String) {
+				Lua_helper.add_callback(lua,"getActorWidth", function (id:String) {
 					return getActorByName(id).width;
-				}));
+				});
 	
-				trace(Lua_helper.add_callback(lua,"getActorHeight", function (id:String) {
+				Lua_helper.add_callback(lua,"getActorHeight", function (id:String) {
 					return getActorByName(id).height;
-				}));
+				});
 	
-				trace(Lua_helper.add_callback(lua,"getActorAlpha", function(id:String) {
+				Lua_helper.add_callback(lua,"getActorAlpha", function(id:String) {
 					return getActorByName(id).alpha;
-				}));
+				});
 	
-				trace(Lua_helper.add_callback(lua,"getActorAngle", function(id:String) {
+				Lua_helper.add_callback(lua,"getActorAngle", function(id:String) {
 					return getActorByName(id).angle;
-				}));
+				});
 	
-				trace(Lua_helper.add_callback(lua,"getActorX", function (id:String) {
+				Lua_helper.add_callback(lua,"getActorX", function (id:String) {
 					return getActorByName(id).x;
-				}));
+				});
 	
-				trace(Lua_helper.add_callback(lua,"getActorY", function (id:String) {
+				Lua_helper.add_callback(lua,"getActorY", function (id:String) {
 					return getActorByName(id).y;
-				}));
+				});
+
+				Lua_helper.add_callback(lua,"setWindowPos",function(x:Int,y:Int) {
+					Application.current.window.x = x;
+					Application.current.window.y = y;
+				});
 
 	
 				// tweens
