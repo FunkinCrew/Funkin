@@ -306,7 +306,10 @@ class PlayState extends MusicBeatState
 		Conductor.changeBPM(SONG.bpm);
 
 		trace('INFORMATION ABOUT WHAT U PLAYIN WIT:\nFRAMES: ' + Conductor.safeFrames + '\nZONE: ' + Conductor.safeZoneOffset + '\nTS: ' + Conductor.timeScale + '\nBotPlay : ' + FlxG.save.data.botplay);
-		
+	
+
+
+		//dialogue shit
 		switch (SONG.song.toLowerCase())
 		{
 			case 'tutorial':
@@ -320,7 +323,7 @@ class PlayState extends MusicBeatState
 				];
 			case 'fresh':
 				dialogue = ["Not too shabby boy.", ""];
-			case 'dadbattle':
+			case 'dad battle':
 				dialogue = [
 					"gah you think you're hot stuff?",
 					"If you can beat me here...",

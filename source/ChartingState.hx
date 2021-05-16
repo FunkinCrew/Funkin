@@ -55,7 +55,7 @@ class ChartingState extends MusicBeatState
 	var bpmTxt:FlxText;
 
 	var strumLine:FlxSprite;
-	var curSong:String = 'Dadbattle';
+	var curSong:String = 'Dad Battle';
 	var amountSteps:Int = 0;
 	var bullshitUI:FlxGroup;
 	var writingNotesText:FlxText;
