@@ -3149,7 +3149,9 @@ class PlayState extends MusicBeatState
 			else if (combo > 4)
 				daRating = 'bad';
 		 */
-
+		// REST OF THIS SHIT BE RATINGS
+		if (daRating == 'miss')
+			return;
 		var pixelShitPart1:String = "";
 		var pixelShitPart2:String = '';
 		if (FNFAssets.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png")) {
@@ -3320,12 +3322,12 @@ class PlayState extends MusicBeatState
 				{
 					// the sorting probably doesn't need to be in here? who cares lol
 					possibleNotes.push(daNote);
-					possibleNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
+					
 
 					ignoreList.push(daNote.noteData);
 				}
 			});
-
+			possibleNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
 			if (possibleNotes.length > 0)
 			{
 				var daNote = possibleNotes[0];
@@ -3544,7 +3546,8 @@ class PlayState extends MusicBeatState
 		var noteDiff:Float = Math.abs(note.strumTime - Conductor.songPosition);
 
 		note.rating = Ratings.CalculateRating(noteDiff);
-		if (keyP)
+		// if it doesn't miss, try to do a good note hit
+		if (keyP || note.rating != 'miss')
 			goodNoteHit(note,playerOne);
 		else
 		{
