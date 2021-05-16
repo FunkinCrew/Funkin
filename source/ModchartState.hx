@@ -348,9 +348,9 @@ class ModchartState
 	
 				// sprites
 	
-				Lua_helper.add_callback(lua,"makeSprite", makeLuaSprite));
+				Lua_helper.add_callback(lua,"makeSprite", makeLuaSprite);
 	
-				Lua_helper.add_callback(lua,"getProperty", getPropertyByName));
+				Lua_helper.add_callback(lua,"getProperty", getPropertyByName);
 
 				Lua_helper.add_callback(lua,"destroySprite", function(id:String) {
 					var sprite = luaSprites.get(id);
