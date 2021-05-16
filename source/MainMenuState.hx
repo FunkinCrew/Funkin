@@ -118,7 +118,7 @@ class MainMenuState extends MusicBeatState
 			infoJson.version = " - " + infoJson.version; 
 		}
 		// ok, if you can't fucking code then don't edit the fucking code
-		var versionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, Application.current.meta.get("version") + infoJson.version, 12);
+		var versionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, "v"+ Application.current.meta.get("version") + infoJson.version, 12);
 		var usingSave:FlxText = new FlxText(5, FlxG.height - 36, 0, FlxG.save.name, 12);
 		versionShit.scrollFactor.set();
 		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
