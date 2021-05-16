@@ -21,7 +21,7 @@ Links: **[GameBanana mod page](https://gamebanana.com/gamefiles/16761) ⋅ [play
 ## Website ([KadeDev.github.io/kade-engine/](https://KadeDev.github.io/Kade-Engine/))
 If you're looking for documentation, changelogs, or guides, you can find those on the Kade Engine website.
 
-# Screenshots ([skip](#features))
+# Previews ([skip](#features))
 
 ![Tutorial (Hard) on Downscroll](https://user-images.githubusercontent.com/15311104/113989685-fa5aea80-9850-11eb-9180-f5819a774c79.gif) ![Milf (Hard) on Downscroll](https://user-images.githubusercontent.com/15311104/113990845-2c208100-9852-11eb-8e6d-f1c9e8439871.gif)
 
