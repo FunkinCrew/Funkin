@@ -204,6 +204,26 @@ class DistractionsAndEffectsOption extends Option
 	}
 }
 
+class ResetButtonOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+	public override function press():Bool
+	{
+		FlxG.save.data.resetButton = !FlxG.save.data.resetButton;
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Reset Button " + (!FlxG.save.data.resetButton ? "off" : "on");
+	}
+}
+
 class FlashingLightsOption extends Option
 {
 	public function new(desc:String)
