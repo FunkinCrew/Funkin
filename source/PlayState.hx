@@ -2923,7 +2923,6 @@ class PlayState extends MusicBeatState
 	function sustain2(strum:Int, spr:FlxSprite, note:Note):Void
 	{
 		var length:Float = note.sustainLength;
-		
 		if (length > 0)
 		{
 			if (opponentPlayer)
@@ -3091,8 +3090,9 @@ class PlayState extends MusicBeatState
 		var score:Int = 350;
 
 		var daRating:String = "sick";
-
+		daNote.rating = Ratings.CalculateRating(noteDiff);
 		daRating = daNote.rating;
+		trace(daRating);
 		var healthBonus = 0.0;
 		switch (daRating)
 		{
@@ -3149,9 +3149,6 @@ class PlayState extends MusicBeatState
 			else if (combo > 4)
 				daRating = 'bad';
 		 */
-		// REST OF THIS SHIT BE RATINGS
-		if (daRating == 'miss')
-			return;
 		var pixelShitPart1:String = "";
 		var pixelShitPart2:String = '';
 		if (FNFAssets.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png")) {
@@ -3303,7 +3300,7 @@ class PlayState extends MusicBeatState
 		var leftR = coolControls.LEFT_R;
 		var releaseArray = [leftR, downR, upR, rightR];
 		var controlArray:Array<Bool> = [leftP, downP, upP, rightP];
-
+		var pressArray = controlArray;
 		// FlxG.watch.addQuick('asdfa', upP);
 		var actingOn:Character = playerOne ? boyfriend : dad;
 		// <3 easy way of doing it
@@ -3312,66 +3309,69 @@ class PlayState extends MusicBeatState
 			actingOn.holdTimer = 0;
 
 			var possibleNotes:Array<Note> = [];
-
+			var directionList:Array<Int> = [];
+			var dumbNotes:Array<Note> = [];
 			var ignoreList:Array<Int> = [];
 
 			notes.forEachAlive(function(daNote:Note)
 			{
 				var coolShouldPress = playerOne ? daNote.mustPress : !daNote.mustPress;
-				if (daNote.canBeHit && coolShouldPress && !daNote.tooLate)
+				if (daNote.canBeHit && coolShouldPress && !daNote.tooLate && !daNote.wasGoodHit)
 				{
 					// the sorting probably doesn't need to be in here? who cares lol
-					possibleNotes.push(daNote);
-					
+					if (directionList.contains(daNote.noteData)) {
+						for (coolNote in possibleNotes) {
+							if (coolNote.noteData == daNote.noteData && Math.abs(daNote.strumTime - coolNote.strumTime) < 10) {
+								dumbNotes.push(daNote);
+								break;
+							} else if (coolNote.noteData == daNote.noteData && daNote.strumTime < coolNote.strumTime) {
+								possibleNotes.remove(coolNote);
+								possibleNotes.push(daNote);
+								break;
+							}
+						}
+					} else  {
+						possibleNotes.push(daNote);
+						directionList.push(daNote.noteData);
+					}
 
-					ignoreList.push(daNote.noteData);
 				}
 			});
+			for (note in dumbNotes)
+			{
+				FlxG.log.add("killing dumb ass note at " + note.strumTime);
+				note.kill();
+				notes.remove(note, true);
+				note.destroy();
+			}
 			possibleNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
-			if (possibleNotes.length > 0)
+
+			var dontCheck = false;
+
+			for (i in 0...pressArray.length)
+			{
+				if (pressArray[i] && !directionList.contains(i))
+					dontCheck = true;
+			}
+			if (possibleNotes.length > 0 && !dontCheck)
 			{
 				var daNote = possibleNotes[0];
 
 				if (perfectModeOld)
 					noteCheck(true, daNote);
-
-				// Jump notes
-				if (possibleNotes.length >= 2)
-				{
-					if (possibleNotes[0].strumTime == possibleNotes[1].strumTime)
-					{
-						for (coolNote in possibleNotes)
-						{
-							if (controlArray[coolNote.noteData])
-								goodNoteHit(coolNote,playerOne);
-							else
-							{
-								var inIgnoreList:Bool = false;
-								for (shit in 0...ignoreList.length)
-								{
-									if (controlArray[ignoreList[shit]])
-										inIgnoreList = true;
-								}
-								if (!inIgnoreList)
-									badNoteCheck(playerOne);
-							}
-						}
-					}
-					else if (possibleNotes[0].noteData == possibleNotes[1].noteData)
-					{
-						noteCheck(controlArray[daNote.noteData], daNote, playerOne);
-					}
-					else
-					{
-						for (coolNote in possibleNotes)
-						{
-							noteCheck(controlArray[coolNote.noteData], coolNote, playerOne);
-						}
-					}
+				for (shit in 0...pressArray.length)
+				{ // if a direction is hit that shouldn't be
+					if (pressArray[shit] && !directionList.contains(shit))
+						noteMiss(shit, playerOne);
 				}
-				else // regular notes?
+				// Jump notes
+				for (coolNote in possibleNotes)
 				{
-					noteCheck(controlArray[daNote.noteData], daNote, playerOne);
+					if (pressArray[coolNote.noteData])
+					{
+						scoreTxt.color = FlxColor.WHITE;
+						goodNoteHit(coolNote);
+					}
 				}
 				/*
 					if (controlArray[daNote.noteData])
@@ -3395,16 +3395,12 @@ class PlayState extends MusicBeatState
 								noteCheck(leftP, daNote);
 					}
 				 */
-				if (daNote.wasGoodHit)
-				{
-					daNote.kill();
-					notes.remove(daNote, true);
-					daNote.destroy();
-				}
 			}
 			else
 			{
-				badNoteCheck(playerOne);
+				for (shit in 0...pressArray.length)
+					if (pressArray[shit])
+						noteMiss(shit, playerOne);
 			}
 		}
 
@@ -3415,22 +3411,8 @@ class PlayState extends MusicBeatState
 				var coolShouldPress = playerOne ? daNote.mustPress : !daNote.mustPress;
 				if (daNote.canBeHit && coolShouldPress && daNote.isSustainNote)
 				{
-					switch (daNote.noteData)
-					{
-						// NOTES YOU ARE HOLDING
-						case 0:
-							if (left)
-								goodNoteHit(daNote,playerOne);
-						case 1:
-							if (down)
-								goodNoteHit(daNote,playerOne);
-						case 2:
-							if (up)
-								goodNoteHit(daNote,playerOne);
-						case 3:
-							if (right)
-								goodNoteHit(daNote,playerOne);
-					}
+					if (holdArray[daNote.noteData])
+						goodNoteHit(daNote, playerOne);
 				}
 			});
 		}
@@ -3546,8 +3528,7 @@ class PlayState extends MusicBeatState
 		var noteDiff:Float = Math.abs(note.strumTime - Conductor.songPosition);
 
 		note.rating = Ratings.CalculateRating(noteDiff);
-		// if it doesn't miss, try to do a good note hit
-		if (keyP || note.rating != 'miss')
+		if (keyP)
 			goodNoteHit(note,playerOne);
 		else
 		{
@@ -3563,6 +3544,7 @@ class PlayState extends MusicBeatState
 			notesHitArray.push(Date.now());
 		if (!note.wasGoodHit)
 		{
+			trace("<3 was good hit");
 			var altAnim = "";
 			if (SONG.notes[Math.floor(curStep / 16)] != null)
 			{
@@ -3582,6 +3564,7 @@ class PlayState extends MusicBeatState
 			}
 			if (!note.isSustainNote)
 			{
+				trace("<3 pop up score");
 				notesPassing += 1;
 				popUpScore(note.strumTime, note, playerOne);
 				combo += 1;
