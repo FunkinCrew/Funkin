@@ -2201,6 +2201,19 @@ class PlayState extends MusicBeatState
 		else
 			accuracy = 100;
 		scoreTxt.text = Ratings.CalculateRanking(songScore, songScoreDef, nps, accuracy);
+		if (perfectMode && !Ratings.CalculateFullCombo('sick'))
+		{
+			if (opponentPlayer)
+				health = 50;
+			else
+				health = -50;
+		}
+		if (fullComboMode && !Ratings.CalculateFullCombo('shit')) {
+			if (opponentPlayer)
+				health = 50;
+			else
+				health = -50;
+		}
 		if (notesPassing != 0) {
 			accuracyTxt.text = "Accuracy:" + accuracy + "%";
 		} else {
@@ -2854,14 +2867,6 @@ class PlayState extends MusicBeatState
 									poisonTimes -= 1;
 								});
 							}
-							if (fullComboMode || perfectMode)
-							{
-								// you signed up for this your fault
-								if (opponentPlayer)
-									health = 2;
-								else
-									health = 0;
-							}
 						}
 
 						daNote.active = false;
@@ -3106,7 +3111,7 @@ class PlayState extends MusicBeatState
 			case 'shit':
 				score = -300;
 				combo = 0;
-				misses++;
+				// misses++;
 				healthBonus -= 0.2 + healthLossModifier;
 				ss = false;
 				shits++;
@@ -3140,12 +3145,7 @@ class PlayState extends MusicBeatState
 			health -= healthBonus;
 		else
 			health += healthBonus;
-		if (daRating != "sick" && perfectMode) {
-			if (opponentPlayer)
-				health = 50;
-			else 
-				health = -50;
-		}
+
 		if (notesHit > notesPassing) {
 			notesHit = notesPassing;
 		}
@@ -3471,13 +3471,6 @@ class PlayState extends MusicBeatState
 	function noteMiss(direction:Int = 1, playerOne:Bool, ?note:Null<Note>):Void
 	{
 		var actingOn = playerOne ? boyfriend : dad;
-		if (fullComboMode || perfectMode) {
-			// you signed up for this your fault
-			if (opponentPlayer)
-				health = 2;
-			else
-				health = 0;
-		}
 		if (!actingOn.stunned)
 		{
 			misses += 1;

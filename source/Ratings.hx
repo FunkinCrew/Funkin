@@ -1,3 +1,4 @@
+import haxe.display.Display.Package;
 import flixel.FlxG;
 
 class Ratings
@@ -125,7 +126,20 @@ class Ratings
 			return "miss";
 		return "sick";
 	}
-
+	public static function CalculateFullCombo(level:String):Bool {
+		return switch (level) {
+			case 'sick':
+				(PlayState.misses == 0 && PlayState.bads == 0 && PlayState.shits == 0 && PlayState.goods == 0);
+			case 'good':
+				PlayState.misses == 0 && PlayState.bads == 0 && PlayState.shits == 0;
+			case 'bad':
+				PlayState.misses == 0 && PlayState.shits == 0;
+			case 'shit':
+				PlayState.misses == 0;
+			default:
+				false;
+		}
+	}
 	public static function CalculateRanking(score:Int, scoreDef:Int, nps:Int, accuracy:Float):String
 	{
 		return (FlxG.save.data.npsDisplay ? "NPS: " + nps + (!FlxG.save.data.botplay ? " | " : "") : "") + (!FlxG.save.data.botplay ? // NPS Toggle
