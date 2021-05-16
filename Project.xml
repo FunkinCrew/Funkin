@@ -124,13 +124,13 @@
 	<!--haxelib name="newgrounds" unless="switch"/> -->
 	<haxelib name="faxe" if='switch'/>
 	<haxelib name="polymod"/>
-	<haxelib name="newgrounds"/>
+	<!-- <haxelib name="newgrounds"/> -->
 	<haxelib name="hxcpp-debug-server" if="desktop debug"/>
 	
 	<!-- swf stufffff -->
-	<haxelib name="swf"/>
-	<library path="assets/tanky.swf" preload="true"/>
-	<library path="assets/tankBG.swf" preload="true"/>
+	<!-- <haxelib name="swf"/> -->
+	<!-- <library path="assets/tanky.swf" preload="true"/> -->
+	<!-- <library path="assets/tankBG.swf" preload="true"/> -->
 	
 	<!-- <haxelib name="flixel-animate" /> -->
 	<!-- <haxelib name="spinehaxe" /> -->

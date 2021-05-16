@@ -34,6 +34,7 @@ import shaderslmfao.BuildingShaders.BuildingShader;
 import shaderslmfao.BuildingShaders;
 import shaderslmfao.ColorSwap;
 import ui.PreferencesMenu;
+import ui.stageBuildShit.StageBuilderState;
 
 using StringTools;
 
@@ -152,6 +153,8 @@ class TitleState extends MusicBeatState
 		 */
 
 		// netConnection.addEventListener(MouseEvent.MOUSE_DOWN, overlay_onMouseDown);
+		#elseif STAGEBUILD
+		FlxG.switchState(new StageBuilderState());
 		#else
 		new FlxTimer().start(1, function(tmr:FlxTimer)
 		{
