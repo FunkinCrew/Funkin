@@ -2740,30 +2740,33 @@ class PlayState extends MusicBeatState
 					camZooming = true;
 					var altAnim:String = "";
 					
+					if (daNote.altNote)
+					{
+						dad.altAnim = '-alt';
+					}
 					if (SONG.notes[Math.floor(curStep / 16)] != null)
 					{
 						if ((SONG.notes[Math.floor(curStep / 16)].altAnimNum > 0 && SONG.notes[Math.floor(curStep / 16)].altAnimNum != null) || SONG.notes[Math.floor(curStep / 16)].altAnim)
 							// backwards compatibility shit
 							if (SONG.notes[Math.floor(curStep / 16)].altAnimNum == 1 || SONG.notes[Math.floor(curStep / 16)].altAnim || daNote.altNote)
-								altAnim = '-alt';
+								dad.altAnim = '-alt';
 							else if (SONG.notes[Math.floor(curStep / 16)].altAnimNum != 0)
-								altAnim = '-' + SONG.notes[Math.floor(curStep / 16)].altAnimNum+'alt';
+								dad.altAnim = '-' + SONG.notes[Math.floor(curStep / 16)].altAnimNum+'alt';
 					}
-					if (daNote.altNote) {
-						altAnim = '-alt';
-					}
+					
 					callAllHScript("playerTwoSing", []);
+					// go wild <3
 					switch (Math.abs(daNote.noteData))
 					{
 						case 0:
 							
-							dad.playAnim('singLEFT' + altAnim, true);
+							dad.playAnim('singLEFT' + dad.altAnim, true);
 						case 1:
-							dad.playAnim('singDOWN' + altAnim, true);
+							dad.playAnim('singDOWN' + dad.altAnim, true);
 						case 2:
-							dad.playAnim('singUP' + altAnim, true);
+							dad.playAnim('singUP' + dad.altAnim, true);
 						case 3:
-							dad.playAnim('singRIGHT' + altAnim, true);
+							dad.playAnim('singRIGHT' + dad.altAnim, true);
 					}
 					enemyStrums.forEach(function(spr:FlxSprite)
 					{

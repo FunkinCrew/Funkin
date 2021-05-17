@@ -43,6 +43,7 @@ class Character extends FlxSprite
 
 	public var isPlayer:Bool = false;
 	public var curCharacter:String = 'bf';
+	public var altAnim:String = "";
 	public var enemyOffsetX:Int = 0;
 	public var enemyOffsetY:Int = 0;
 	public var playerOffsetX:Int = 0;
