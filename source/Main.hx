@@ -67,7 +67,8 @@ class Main extends Sprite
 		*/
 
 		// SMALL THINGS: LOAD FROM OPTIONS.json
-		STOptions.readSTOptionsFromFile();
+		//STOptions.readSTOptionsFromFile();
+		STOptionsRewrite.Load();
 
 		var stageWidth:Int = Lib.current.stage.stageWidth;
 		var stageHeight:Int = Lib.current.stage.stageHeight;
