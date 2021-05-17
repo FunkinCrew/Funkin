@@ -2731,7 +2731,7 @@ class PlayState extends MusicBeatState
 				if (!daNote.mustPress && daNote.wasGoodHit && ((!duoMode && !opponentPlayer) || demoMode))
 				{
 					camZooming = true;
-					var altAnim:String = "";
+					dad.altAnim = "";
 					
 					if (daNote.altNote)
 					{
