@@ -446,49 +446,49 @@ class PlayState extends MusicBeatState
 		useVictoryScreen = !OptionsHandler.options.skipVictoryScreen;
 		downscroll = OptionsHandler.options.downscroll;
 		if (!OptionsHandler.options.skipModifierMenu) {
-			fullComboMode = ModifierState.modifiers[1].value;
-			perfectMode = ModifierState.modifiers[0].value;
-			practiceMode = ModifierState.modifiers[2].value;
-			flippedNotes = ModifierState.modifiers[10].value;
-			accelNotes= ModifierState.modifiers[13].value;
-			vnshNotes = ModifierState.modifiers[14].value;
-			invsNotes = ModifierState.modifiers[15].value;
-			snakeNotes = ModifierState.modifiers[16].value;
-			drunkNotes = ModifierState.modifiers[17].value;
-			nightcoreMode = ModifierState.modifiers[18].value;
-			daycoreMode = ModifierState.modifiers[19].value;
-			inALoop = ModifierState.modifiers[18].value;
-			duoMode = ModifierState.modifiers[19].value;
-			opponentPlayer = ModifierState.modifiers[20].value;
-			demoMode = ModifierState.modifiers[21].value;
-			if (ModifierState.modifiers[3].value) {
+			fullComboMode = ModifierState.namedModifiers.fc.value;
+			perfectMode = ModifierState.namedModifiers.mfc.value;
+			practiceMode = ModifierState.namedModifiers.practice.value;
+			flippedNotes = ModifierState.namedModifiers.flipped.value;
+			accelNotes = ModifierState.namedModifiers.accel.value;
+			vnshNotes = ModifierState.namedModifiers.vanish.value;
+			invsNotes = ModifierState.namedModifiers.invis.value;
+			snakeNotes = ModifierState.namedModifiers.snake.value;
+			drunkNotes = ModifierState.namedModifiers.drunk.value;
+			// nightcoreMode = ModifierState.modifiers[18].value;
+			// daycoreMode = ModifierState.modifiers[19].value;
+			inALoop = ModifierState.namedModifiers.loop.value;
+			duoMode = ModifierState.namedModifiers.duo.value;
+			opponentPlayer = ModifierState.namedModifiers.oppnt.value;
+			demoMode = ModifierState.namedModifiers.demo.value;
+			if (ModifierState.namedModifiers.hgu.value) {
 				healthGainModifier += 0.02;
-			} else if (ModifierState.modifiers[4].value) {
+			}
+			else if (ModifierState.namedModifiers.hgd.value) {
 				healthGainModifier -= 0.01;
 			}
-			if (ModifierState.modifiers[5].value) {
+			if (ModifierState.namedModifiers.hlu.value) {
 				healthLossModifier += 0.02;
-			} else if (ModifierState.modifiers[6].value) {
+			}
+			else if (ModifierState.namedModifiers.hld.value) {
 				healthLossModifier -= 0.02;
 			}
-			if (ModifierState.modifiers[11].value)
+			if (ModifierState.namedModifiers.slow.value)
 				noteSpeed = 0.3;
 			if (accelNotes) {
 				noteSpeed = 0.45;
 				trace("accel arrows");
 			}
-			if (ModifierState.modifiers[18].value)
-				noteSpeed = 4;
 			if (daycoreMode) {
 				noteSpeed = 0.5;
 			}
 
 
-			if (ModifierState.modifiers[12].value)
+			if (ModifierState.namedModifiers.fast.value)
 				noteSpeed = 0.9;
-			supLove = ModifierState.modifiers[7].value;
-			poisonExr = ModifierState.modifiers[8].value;
-			poisonPlus = ModifierState.modifiers[9].value;
+			supLove = ModifierState.namedModifiers.regen.value;
+			poisonExr = ModifierState.namedModifiers.degen.value;
+			poisonPlus = ModifierState.namedModifiers.poison.value;
 		}
 		// rebind always, to support djkf
 		if (!opponentPlayer && !duoMode) {
@@ -2825,7 +2825,7 @@ class PlayState extends MusicBeatState
 				}
 				if (vnshNotes) {
 					if (downscroll) {
-						daNote.alpha = FlxMath.remapToRange(daNote.y, 0,strumLine.y , 0, 1);
+						daNote.alpha = FlxMath.remapToRange(-daNote.y, -strumLine.y,0 , 0, 1);
 					} else {
 						daNote.alpha = FlxMath.remapToRange(daNote.y, strumLine.y, FlxG.height, 0, 1);
 					}

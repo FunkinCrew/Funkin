@@ -325,6 +325,10 @@ class DialogueBox extends FlxSpriteGroup
 						portraitLeft.y += coolAnimFile.portraitOffset[1];
 						portraitRight.x += coolAnimFile.portraitOffset[0];
 						portraitRight.y += coolAnimFile.portraitOffset[1];
+						portraitLeft.x += Character.getAnimInterp(PlayState.SONG.player2).variables.get("portraitOffset")[0];
+						portraitLeft.y += Character.getAnimInterp(PlayState.SONG.player2).variables.get("portraitOffset")[1];
+						portraitRight.x += Character.getAnimInterp(PlayState.SONG.player1).variables.get("portraitOffset")[0];
+						portraitRight.y += Character.getAnimInterp(PlayState.SONG.player1).variables.get("portraitOffset")[1];						
 					}
 					if (FNFAssets.exists('assets/images/custom_ui/dialog_boxes/' + PlayState.SONG.cutsceneType + '/text.ogg'))
 						clickSounds[2] = FNFAssets.getSound('assets/images/custom_ui/dialog_boxes/' + PlayState.SONG.cutsceneType + '/text.ogg');
