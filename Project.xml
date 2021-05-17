@@ -77,6 +77,9 @@
 	<haxelib name="hxcpp-debug-server"/>
 	<!--haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc -->
 	<haxelib name="discord_rpc"/>
+	<!--haxelib name="actuate" -->
+	<!--haxelib git extension-webm https://github.com/GrowtopiaFli/extension-webm-->
+	<!--haxelib name="extension-webm" if="desktop" -->
 	<!-- <haxelib name="markdown" /> -->
 	<!-- <haxelib name="HtmlParser" /> -->
 

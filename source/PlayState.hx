@@ -67,6 +67,7 @@ import lime.media.AudioBuffer;
 #end
 import tjson.TJSON;
 using StringTools;
+using CoolUtil.FlxTools;
 typedef LuaAnim = {
 	var prefix : String;
 	@:optional var indices: Array<Int>;
