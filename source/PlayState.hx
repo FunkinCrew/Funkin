@@ -96,9 +96,9 @@ class PlayState extends MusicBeatState
 	private var vocals:FlxSound;
 	// use old bf
 	private var oldMode:Bool = false;
-	private var dad:Character;
-	private var gf:Character;
-	private var boyfriend:Character;
+	public var dad:Character;
+	public var gf:Character;
+	public var boyfriend:Character;
 
 	private var notes:FlxTypedGroup<Note>;
 	private var unspawnNotes:Array<Note> = [];
@@ -131,12 +131,12 @@ class PlayState extends MusicBeatState
 	private var strumming2:Array<Bool> = [false, false, false, false];
 	private var strumming1:Array<Bool> = [false,false,false,false];
 
-	private var gfSpeed:Int = 1;
-	private var health:Float = 1;
+	public var gfSpeed:Int = 1;
+	public var health:Float = 1;
 	private var combo:Int = 0;
 	public static var duoMode:Bool = false;
-	private var healthBarBG:FlxSprite;
-	private var healthBar:FlxBar;
+	public var healthBarBG:FlxSprite;
+	public var healthBar:FlxBar;
 	//private var enemyColor:FlxColor = 0xFFFF0000;
 	//private var opponentColor:FlxColor = 0xFFBC47FF;
 	// private var playerColor:FlxColor = 0xFF66FF33;
@@ -154,9 +154,9 @@ class PlayState extends MusicBeatState
 	private var generatedMusic:Bool = false;
 	private var startingSong:Bool = false;
 
-	private var iconP1:HealthIcon;
-	private var iconP2:HealthIcon;
-	private var camHUD:FlxCamera;
+	public var iconP1:HealthIcon;
+	public var iconP2:HealthIcon;
+	public var camHUD:FlxCamera;
 	private var camGame:FlxCamera;
 
 
@@ -233,6 +233,7 @@ class PlayState extends MusicBeatState
 	var luaRegistered:Bool = false;
 	var currentFrames:Int = 0;
 	public static var opponentPlayer:Bool = false;
+	public var drainBy:Float = 0.005;
 	// this is just so i can collapse it lol
 	#if true
 	var hscriptStates:Map<String, Interp> = [];
@@ -309,6 +310,11 @@ class PlayState extends MusicBeatState
 		interp.variables.set("vocals", vocals);
 		interp.variables.set("gfSpeed", gfSpeed);
 		interp.variables.set("tweenCamIn", tweenCamIn);
+		interp.variables.set("health", health);
+		interp.variables.set("iconP1", iconP1);
+		interp.variables.set("iconP2", iconP2);
+		interp.variables.set("currentPlayState", this);
+		interp.variables.set("PlayState", PlayState);
 		// give them access to save data, everything will be fine ;)
 		interp.variables.set("isInCutscene", function () return inCutscene);
 		trace("set vars");
@@ -1437,9 +1443,9 @@ class PlayState extends MusicBeatState
 			// generateSong('fresh');
 		}, 5);
 		regenTimer = new FlxTimer().start(2, function (tmr:FlxTimer) {
-			var bonus = 0.005;
+			var bonus = drainBy;
 			if (opponentPlayer) {
-				bonus = -0.005;
+				bonus = -1 * drainBy;
 			}
 			if (poisonExr && !paused)
 				health -= bonus;
@@ -2156,6 +2162,7 @@ class PlayState extends MusicBeatState
 		#end
 		setAllHaxeVar('camZooming', camZooming);
 		setAllHaxeVar('gfSpeed', gfSpeed);
+		setAllHaxeVar('health', health);
 		callAllHScript('update', [elapsed]);
 		
 		if (hscriptStates.exists("modchart")) {
@@ -2177,6 +2184,7 @@ class PlayState extends MusicBeatState
 			}
 			camZooming = getHaxeVar("camZooming", "modchart");
 			gfSpeed = getHaxeVar("gfSpeed", "modchart");
+			health = getHaxeVar("health", "modchart");
 
 		}
 		if (currentFrames == FlxG.save.data.fpsCap)
