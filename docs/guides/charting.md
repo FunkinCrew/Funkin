@@ -63,7 +63,7 @@ You can also reset the whole chart to start over again, and reload the chart or 
 ![statistics sucks](https://user-images.githubusercontent.com/68293280/118525571-30af4380-b6f4-11eb-8a49-b7d5af6dba28.png)
 
 
-In the top right of the chart editor, there is various information about your position in the chart, such as your current Section, Step, and how long the song that accompanies the track is.
+In the top right of the chart editor, you can find information about your position in the chart, such as your current Section, Step, and how long the song that accompanies the track is.
 
 ## Extra Shortcuts
 
