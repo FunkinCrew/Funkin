@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="monsterChristmas3.png">
+	<!-- Created with Adobe Animate version 20.5.1.31044 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="Monster Right note0000" x="0" y="0" width="375" height="719" frameX="-4" frameY="0" frameWidth="381" frameHeight="719"/>
+	<SubTexture name="Monster Right note0001" x="375" y="0" width="375" height="719" frameX="-4" frameY="0" frameWidth="381" frameHeight="719"/>
+	<SubTexture name="Monster Right note0002" x="750" y="0" width="381" height="713" frameX="0" frameY="-3" frameWidth="381" frameHeight="719"/>
+	<SubTexture name="Monster Right note0003" x="1131" y="0" width="381" height="713" frameX="0" frameY="-3" frameWidth="381" frameHeight="719"/>
+	<SubTexture name="Monster Right note0004" x="1512" y="0" width="381" height="715" frameX="0" frameY="-1" frameWidth="381" frameHeight="719"/>
+	<SubTexture name="Monster Right note0005" x="1893" y="0" width="381" height="715" frameX="0" frameY="-1" frameWidth="381" frameHeight="719"/>
+	<SubTexture name="Monster Right note0006" x="2274" y="0" width="381" height="710" frameX="0" frameY="-6" frameWidth="381" frameHeight="719"/>
+	<SubTexture name="Monster Right note0007" x="2655" y="0" width="381" height="710" frameX="0" frameY="-6" frameWidth="381" frameHeight="719"/>
+	<SubTexture name="Monster Right note0008" x="3036" y="0" width="381" height="710" frameX="0" frameY="-6" frameWidth="381" frameHeight="719"/>
+	<SubTexture name="Monster Right note0009" x="3417" y="0" width="381" height="710" frameX="0" frameY="-6" frameWidth="381" frameHeight="719"/>
+	<SubTexture name="Monster Right note0010" x="0" y="719" width="381" height="710" frameX="0" frameY="-6" frameWidth="381" frameHeight="719"/>
+	<SubTexture name="Monster Right note0011" x="381" y="719" width="381" height="710" frameX="0" frameY="-6" frameWidth="381" frameHeight="719"/>
+	<SubTexture name="Monster Right note0012" x="762" y="719" width="381" height="710" frameX="0" frameY="-6" frameWidth="381" frameHeight="719"/>
+	<SubTexture name="Monster Right note0013" x="1143" y="719" width="381" height="710" frameX="0" frameY="-6" frameWidth="381" frameHeight="719"/>
+	<SubTexture name="Monster Right note0014" x="1524" y="719" width="381" height="710" frameX="0" frameY="-6" frameWidth="381" frameHeight="719"/>
+</TextureAtlas>

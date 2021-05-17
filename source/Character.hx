@@ -86,6 +86,9 @@ class Character extends FlxSprite
 
 			case 'gf-christmas':
 				tex = Paths.getSparrowAtlas('christmas/gfChristmas');
+
+				tex = jointex(tex, Paths.getSparrowAtlas('christmas/gfChristmas_em'));
+
 				frames = tex;
 				animation.addByPrefix('cheer', 'GF Cheer', 24, false);
 				animation.addByPrefix('singLEFT', 'GF left note', 24, false);
@@ -236,6 +239,13 @@ class Character extends FlxSprite
 				playAnim('idle');
 			case 'monster-christmas':
 				tex = Paths.getSparrowAtlas('christmas/monsterChristmas');
+				
+				var tex2 = Paths.getSparrowAtlas('christmas/monsterChristmas2');
+				var tex3 = Paths.getSparrowAtlas('christmas/monsterChristmas3');
+
+
+				tex = jointex(tex, jointex(tex2, tex3));
+
 				frames = tex;
 				animation.addByPrefix('idle', 'monster idle', 24, false);
 				animation.addByPrefix('singUP', 'monster up note', 24, false);
@@ -493,7 +503,17 @@ class Character extends FlxSprite
 				antialiasing = false;
 
 			case 'parents-christmas':
-				frames = Paths.getSparrowAtlas('christmas/mom_dad_christmas_assets');
+				var tex = Paths.getSparrowAtlas('christmas/mom_dad_christmas_assets');
+				var tex2 = Paths.getSparrowAtlas('christmas/mom_dad_christmas_assets2');
+				var tex3 = Paths.getSparrowAtlas('christmas/mom_dad_christmas_assets3');
+
+
+				tex = jointex(tex, jointex(tex2, tex3));
+				
+				frames = tex;
+				//setGraphicSize(Std.int(width * 2));
+				//updateHitbox();
+
 				animation.addByPrefix('idle', 'Parent Christmas Idle', 24, false);
 				animation.addByPrefix('singUP', 'Parent Up Note Dad', 24, false);
 				animation.addByPrefix('singDOWN', 'Parent Down Note Dad', 24, false);

@@ -28,7 +28,7 @@ class OptionsMenu extends MusicBeatState
 
 	private var grpControls:FlxTypedGroup<Alphabet>;
 
-	var menuItems:Array<String> = ['controls', 'set fps', 'downscroll: off', 'About', 'test cutscene'];
+	var menuItems:Array<String> = ['controls', 'set fps', 'downscroll: off', 'About'];
 
 	var _pad:FlxVirtualPad;
 
@@ -189,6 +189,24 @@ class OptionsMenu extends MusicBeatState
 			}
 		}
 	}
+
+	// (this function is not working)
+	function changeLabel(i:Int, text:String) {
+		var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, text, true, false);
+		controlLabel.isMenuItem = true;
+		controlLabel.targetY = i;
+		
+		grpControls.forEach((basic)->{
+			trace(basic.text);
+			if (basic.text == menuItems[i])
+			{
+				grpControls.remove(basic);
+			}
+		});
+		grpControls.insert(i, controlLabel);	
+		menuItems[i] = text;
+	}
+
 	override function closeSubState()
 		{
 			insubstate = false;
