@@ -137,12 +137,12 @@ class PlayState extends MusicBeatState
 	public static var duoMode:Bool = false;
 	private var healthBarBG:FlxSprite;
 	private var healthBar:FlxBar;
-	private var enemyColor:FlxColor = 0xFFFF0000;
-	private var opponentColor:FlxColor = 0xFFBC47FF;
-	private var playerColor:FlxColor = 0xFF66FF33;
-	private var poisonColor:FlxColor = 0xFFA22CD1;
-	private var poisonColorEnemy:FlxColor = 0xFFEA2FFF;
-	private var bfColor:FlxColor = 0xFF149DFF;
+	//private var enemyColor:FlxColor = 0xFFFF0000;
+	//private var opponentColor:FlxColor = 0xFFBC47FF;
+	// private var playerColor:FlxColor = 0xFF66FF33;
+	// private var poisonColor:FlxColor = 0xFFA22CD1;
+	// private var poisonColorEnemy:FlxColor = 0xFFEA2FFF;
+	// private var bfColor:FlxColor = 0xFF149DFF;
 	private var barShowingPoison:Bool = false;
 	#if windows
 	// Discord RPC variables
@@ -1028,12 +1028,12 @@ class PlayState extends MusicBeatState
 		healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
 			'health', 0, 2);
 		healthBar.scrollFactor.set();
-		var leftSideFill = opponentPlayer ? opponentColor : enemyColor;
+		var leftSideFill = opponentPlayer ? dad.opponentColor : dad.enemyColor;
 		if (duoMode)
-			leftSideFill = opponentColor;
-		var rightSideFill = opponentPlayer ? bfColor : playerColor;
+			leftSideFill = dad.opponentColor;
+		var rightSideFill = opponentPlayer ? boyfriend.bfColor : boyfriend.playerColor;
 		if (duoMode)
-			rightSideFill = bfColor;
+			rightSideFill = boyfriend.bfColor;
 		healthBar.createFilledBar(leftSideFill, rightSideFill);
 		// healthBar
 		add(healthBar);
@@ -2258,16 +2258,16 @@ class PlayState extends MusicBeatState
 		var iconOffset:Int = 26;
 		
 		if (poisonTimes > 0 && !barShowingPoison) {
-			var leftSideFill = opponentPlayer ? poisonColorEnemy : enemyColor;
-			var rightSideFill = opponentPlayer ? bfColor : poisonColor;
+			var leftSideFill = opponentPlayer ? dad.poisonColorEnemy : dad.enemyColor;
+			var rightSideFill = opponentPlayer ? boyfriend.bfColor : boyfriend.poisonColor;
 			healthBar.createFilledBar(leftSideFill, rightSideFill);
 			barShowingPoison = true;
 		} else if (poisonTimes == 0 && barShowingPoison) {
-			var leftSideFill = opponentPlayer ? opponentColor : enemyColor;
-			var rightSideFill = opponentPlayer ? bfColor : playerColor;
+			var leftSideFill = opponentPlayer ? dad.opponentColor : dad.enemyColor;
+			var rightSideFill = opponentPlayer ? boyfriend.bfColor : boyfriend.playerColor;
 			if (duoMode) {
-				leftSideFill = opponentColor;
-				rightSideFill = bfColor;
+				leftSideFill = dad.opponentColor;
+				rightSideFill = boyfriend.bfColor;
 			}
 			healthBar.createFilledBar(leftSideFill, rightSideFill);
 			barShowingPoison = false;

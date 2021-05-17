@@ -59,6 +59,12 @@ class Character extends FlxSprite
 	public var animationNotes:Array<Dynamic> = [];
 	public var like:String = "bf";
 	public var beNormal:Bool = true;
+	public var enemyColor:FlxColor = 0xFFFF0000;
+	public var opponentColor:FlxColor = 0xFFBC47FF;
+	public var playerColor:FlxColor = 0xFF66FF33;
+	public var poisonColor:FlxColor = 0xFFA22CD1;
+	public var poisonColorEnemy:FlxColor = 0xFFEA2FFF;
+	public var bfColor:FlxColor = 0xFF149DFF;
 	// sits on speakers, replaces gf
 	public var likeGf:Bool = false;
 	// uses animation notes
