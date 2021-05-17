@@ -43,8 +43,8 @@ function init(char) {
     char.playerOffsetX = 0;
     char.playerOffsetY = 0;
     char.followCamX = 150;
-    char.followCamY = -100;
-    char.camOffsetX = 600;
+    char.followCamY = -50;
+    char.camOffsetX = 100;
     char.midpointX = 0;
     char.midpointY = 0;
 }
