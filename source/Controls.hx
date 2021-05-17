@@ -10,7 +10,6 @@ import flixel.input.actions.FlxActionSet;
 import flixel.input.gamepad.FlxGamepadButton;
 import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.input.keyboard.FlxKey;
-import Options.STOptions;
 
 #if (haxe >= "4.0.0")
 enum abstract Action(String) to String from String
@@ -643,7 +642,7 @@ class Controls extends FlxActionSet
 		switch (scheme)
 		{
 			case Solo:
-				if (STOptions.st_inputMode == 1) {
+				if (STOptionsRewrite._variables.inputMode == 1) {
 					inline bindKeys(Control.NOTE_UP, [J, FlxKey.UP]);
 					inline bindKeys(Control.NOTE_DOWN, [F, FlxKey.DOWN]);
 					inline bindKeys(Control.NOTE_LEFT, [D, FlxKey.LEFT]);
@@ -667,7 +666,7 @@ class Controls extends FlxActionSet
 				inline bindKeys(Control.CHEAT, [C]);
 
 			case Duo(true):
-				if (STOptions.st_inputMode == 1) {
+				if (STOptionsRewrite._variables.inputMode == 1) {
 					inline bindKeys(Control.NOTE_UP, [J]);
 					inline bindKeys(Control.NOTE_DOWN, [F]);
 					inline bindKeys(Control.NOTE_LEFT, [D]);
@@ -688,7 +687,7 @@ class Controls extends FlxActionSet
 				inline bindKeys(Control.PAUSE, [ONE]);
 				inline bindKeys(Control.RESET, [R]);
 
-				if (STOptions.st_debug == true) {
+				if (STOptionsRewrite._variables.debug == true) {
 					inline bindKeys(Control.CHEAT, [C]);
 				}
 			case Duo(false):
@@ -701,7 +700,7 @@ class Controls extends FlxActionSet
 				inline bindKeys(Control.PAUSE, [ENTER]);
 				inline bindKeys(Control.RESET, [BACKSPACE]);
 
-				if (STOptions.st_debug == true) {
+				if (STOptionsRewrite._variables.debug == true) {
 					inline bindKeys(Control.CHEAT, [C]);
 				}
 			case None: // nothing
@@ -711,7 +710,7 @@ class Controls extends FlxActionSet
 		switch (scheme)
 		{
 			case Solo:
-				if (STOptions.st_inputMode == 1) {
+				if (STOptionsRewrite._variables.inputMode == 1) {
 					bindKeys(Control.NOTE_UP, [J, FlxKey.UP]);
 					bindKeys(Control.NOTE_DOWN, [F, FlxKey.DOWN]);
 					bindKeys(Control.NOTE_LEFT, [D, FlxKey.LEFT]);
@@ -733,11 +732,11 @@ class Controls extends FlxActionSet
 				bindKeys(Control.PAUSE, [P, ENTER, ESCAPE]);
 				bindKeys(Control.RESET, [R]);
 
-				if (STOptions.st_debug == true) {
+				if (STOptionsRewrite._variables.debug == true) {
 					bindKeys(Control.CHEAT, [C]);
 				}
 			case Duo(true):
-				if (STOptions.st_inputMode == 1) {
+				if (STOptionsRewrite._variables.inputMode == 1) {
 					bindKeys(Control.NOTE_UP, [J]);
 					bindKeys(Control.NOTE_DOWN, [F]);
 					bindKeys(Control.NOTE_LEFT, [D]);
@@ -758,7 +757,7 @@ class Controls extends FlxActionSet
 				bindKeys(Control.PAUSE, [ONE]);
 				bindKeys(Control.RESET, [R]);
 
-				if (STOptions.st_debug == true) {
+				if (STOptionsRewrite._variables.debug == true) {
 					inline bindKeys(Control.CHEAT, [C]);
 				}
 			case Duo(false):
@@ -771,7 +770,7 @@ class Controls extends FlxActionSet
 				bindKeys(Control.PAUSE, [ENTER]);
 				bindKeys(Control.RESET, [BACKSPACE]);
 
-				if (STOptions.st_debug == true) {
+				if (STOptionsRewrite._variables.debug == true) {
 					inline bindKeys(Control.CHEAT, [C]);
 				}
 			case None: // nothing

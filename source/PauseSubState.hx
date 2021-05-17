@@ -12,7 +12,6 @@ import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
-import Options.STOptions;
 import StringTools;
 
 class PauseSubState extends MusicBeatSubstate
@@ -49,12 +48,12 @@ class PauseSubState extends MusicBeatSubstate
 		var levelInfo:FlxText = new FlxText(20, 15, 0, "", 32);
 		levelInfo.text += PlayState.SONG.song;
 
-		if (STOptions.st_makeSpacesConsistent == true) {
+		if (STOptionsRewrite._variables.makeSpacesConsistent == true) {
 			levelInfo.text = StringTools.replace(levelInfo.text, "-", " ");
 		}
 
 		levelInfo.scrollFactor.set();
-		if (STOptions.st_outlinePauseInfo == true) {
+		if (STOptionsRewrite._variables.outlinePauseInfo == true) {
 			levelInfo.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK); // small things: outline
 		} else {
 			levelInfo.setFormat(Paths.font("vcr.ttf"), 32);
@@ -65,7 +64,7 @@ class PauseSubState extends MusicBeatSubstate
 		var levelDifficulty:FlxText = new FlxText(20, 15 + 32, 0, "", 32);
 		levelDifficulty.text += CoolUtil.difficultyString();
 		levelDifficulty.scrollFactor.set();
-		if (STOptions.st_outlinePauseInfo == true) {
+		if (STOptionsRewrite._variables.outlinePauseInfo == true) {
 			levelDifficulty.setFormat(Paths.font("vcr.ttf"), 32);
 		}
 		levelDifficulty.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK); // small things: outline

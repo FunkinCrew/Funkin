@@ -1,6 +1,5 @@
 package;
 
-import Options.STOptionFileSection;
 import flixel.FlxGame;
 import flixel.FlxState;
 import openfl.Assets;
@@ -9,7 +8,6 @@ import openfl.display.FPS;
 import openfl.display.Sprite;
 import openfl.events.Event;
 import haxe.Json;
-import Options.STOptions;
 import StringTools;
 
 class Main extends Sprite
@@ -60,9 +58,9 @@ class Main extends Sprite
 		var st_debugState = CoolUtil.coolTextFile(Paths.txt('debug'));
 
 		if (st_debugState[0] == ("on")) {
-			STOptions.st_debug = true;
+			STOptionsRewrite._variables.debug = true;
 		} else {
-			STOptions.st_debug = false;
+			STOptionsRewrite._variables.debug = false;
 		}
 		*/
 

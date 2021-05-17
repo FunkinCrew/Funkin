@@ -1,6 +1,5 @@
 package;
 
-import Options.STOptions;
 import haxe.ds.Option;
 #if desktop
 import Discord.DiscordClient;
@@ -17,7 +16,6 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import lime.net.curl.CURLCode;
-import Options.STOptions;
 import StringTools;
 
 using StringTools;
@@ -440,7 +438,7 @@ class StoryMenuState extends MusicBeatState
 
 		txtTracklist.text = txtTracklist.text.toUpperCase();
 		
-		if (STOptions.st_makeSpacesConsistent == true) {
+		if (STOptionsRewrite._variables.makeSpacesConsistent == true) {
 			txtTracklist.text = StringTools.replace(txtTracklist.text, "-", " ");
 		}
 

@@ -1,6 +1,5 @@
 package;
 
-import Options.STOptions;
 import Controls.Control;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -101,7 +100,7 @@ class OptionsMenu extends MusicBeatState
 			
 			switch (curSelected) {
 				case 0:
-					if (STOptions.st_debug == false)
+					if (STOptionsRewrite._variables.debug == false)
 						EDTxt.text = "FALSE";
 					else
 						EDTxt.text = "TRUE";
@@ -115,10 +114,10 @@ class OptionsMenu extends MusicBeatState
 			// TODO: Get this shitty code out of here and make it actually good.
 			switch (curSelected) {
 				case 0:
-					if (STOptions.st_debug == false)
-						STOptions.st_debug = true;
+					if (STOptionsRewrite._variables.debug == false)
+						STOptionsRewrite._variables.debug = true;
 					else
-						STOptions.st_debug = false;
+						STOptionsRewrite._variables.debug = false;
 			}
 		}
 

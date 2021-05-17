@@ -68,7 +68,7 @@ class STOptionsRewrite
                 lyrics: true,
                 makeSpacesConsistent: true,
                 monsterIntro: true,
-                noticeEnabled: true,
+                noticeEnabled: false,
                 outlinePauseInfo: true,
                 outlineScore: true,
                 songIndicator: true,

@@ -9,6 +9,9 @@ class Options
 	public static var masterVolume:Float = 1;
 }
 
+// HEY! Everything below is obsolete and replaced in STOptionsRewrite.hx!
+
+/*
 class STOptions
 {
 	public static var st_optionsState:Array<STOptionFileSection>;
@@ -49,31 +52,31 @@ class STOptions
 		for (i in st_optionsState)
 		{
 			if (i.name == "debug")
-				STOptions.st_debug = i.value;
+				STOptionsRewrite._variables.debug = i.value;
 
 			if (i.name == "discordRPC")
-				STOptions.st_discordRpc = i.value;
+				STOptionsRewrite._variables.discordRpc = i.value;
 
 			if (i.name == "extraDialogue")
-				STOptions.st_extraDialogue = i.value;
+				STOptionsRewrite._variables.extraDialogue = i.value;
 
 			if (i.name == "extraSongs")
-				STOptions.st_extraSongs = i.value;
+				STOptionsRewrite._variables.extraSongs = i.value;
 
 			if (i.name == "inputMode")
-				STOptions.st_inputMode = i.intValue;
+				STOptionsRewrite._variables.inputMode = i.intValue;
 
 			if (i.name == "instMode")
-				STOptions.st_instMode = i.value;
+				STOptionsRewrite._variables.instMode = i.value;
 
 			if (i.name == "songIndicator")
-				STOptions.st_songIndicator = i.value;
+				STOptionsRewrite._variables.songIndicator = i.value;
 
 			if (i.name == "lyrics")
-				STOptions.st_lyrics = i.value;
+				STOptionsRewrite._variables.lyrics = i.value;
 
 			if (i.name == "unknownIcons")
-				STOptions.st_unknownIcons = i.value;
+				STOptionsRewrite._variables.unknownIcons = i.value;
 		}
 	}
 }
@@ -84,3 +87,4 @@ typedef STOptionFileSection = {
 	var intValue:Int;
 	var comment:String;
 }
+*/

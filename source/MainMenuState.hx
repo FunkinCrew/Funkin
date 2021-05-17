@@ -16,14 +16,13 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import io.newgrounds.NG;
 import lime.app.Application;
-import Options.STOptions;
 
 using StringTools;
 
 class MainMenuState extends MusicBeatState
 {
 	// small things: version
-	public static var smallThingsVersion:String = STOptions.st_version;
+	public static var smallThingsVersion:String = "3.0";
 
 	var curSelected:Int = 0;
 
@@ -110,7 +109,7 @@ class MainMenuState extends MusicBeatState
 		smallThingsVersionShit.scrollFactor.set();
 		smallThingsVersionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 
-		if (STOptions.st_debug == true) {
+		if (STOptionsRewrite._variables.debug == true) {
 			smallThingsVersionShit.text = "Small Things v" + smallThingsVersion + " (DEBUG)";
 		}
 
@@ -200,7 +199,7 @@ class MainMenuState extends MusicBeatState
 										//FlxTransitionableState.skipNextTransIn = true;
 										//FlxTransitionableState.skipNextTransOut = true;
 
-										if (STOptions.st_hideOptionsMenu == true) {
+										if (STOptionsRewrite._variables.hideOptionsMenu == true) {
 											FlxG.switchState(new NoticeSubState("HEY!\n\nThe options menu currently does not work.\nIf you wish to edit options, please edit the\noptions.json within the data folder.\n\n(You can edit control schemes there too!)\n\nPress ENTER to continue."));
 										} else {
 											FlxG.switchState(new OptionsMenu());
