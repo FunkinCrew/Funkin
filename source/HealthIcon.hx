@@ -18,6 +18,7 @@ using StringTools;
 class HealthIcon extends FlxSprite
 {
 	var player:Bool = false;
+	public var sprTracker:FlxSprite;
 	public function new(char:String = 'bf', isPlayer:Bool = false)
 	{
 		player = isPlayer;
@@ -55,5 +56,13 @@ class HealthIcon extends FlxSprite
 			animation.add('icon', iconFrames, false, player);
 		}
 		animation.play('icon');
+		animation.pause();
+	}
+	override function update(elapsed:Float)
+	{
+		super.update(elapsed);
+
+		if (sprTracker != null)
+			setPosition(sprTracker.x + sprTracker.width + 10, sprTracker.y - 30);
 	}
 }

@@ -1,5 +1,6 @@
 package;
 
+import FreeplayState.JsonMetadata;
 import flash.text.TextField;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -25,7 +26,7 @@ import tjson.TJSON;
 using StringTools;
 typedef TCategory = {
 	var name:String;
-	var songs:Array<String>;
+	var songs:Array<JsonMetadata>;
 }
 class SelectSongsState extends MusicBeatSubstate
 {
@@ -49,7 +50,7 @@ class SelectSongsState extends MusicBeatSubstate
 
 		for (coolCategory in coolCategoryJson) {
 			for (coolSong in coolCategory.songs) {
-				songs.push(coolSong);
+				songs.push(coolSong.name);
 			}
 		}
 

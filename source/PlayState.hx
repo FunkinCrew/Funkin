@@ -217,7 +217,6 @@ class PlayState extends MusicBeatState
 	var accelNotes:Bool = false;
 	var notesHit:Float = 0;
 	var notesPassing:Int = 0;
-	var Misses:Int = 0;
 	var vnshNotes:Bool = false;
 	var invsNotes:Bool = false;
 	var snakeNotes:Bool = false;
@@ -2438,12 +2437,6 @@ class PlayState extends MusicBeatState
 					camFollow.x = dad.getMidpoint().x + dad.followCamX;
 				}
 				vocals.volume = 1;
-				/*
-				if (SONG.song.toLowerCase() == 'tutorial')
-				{
-					tweenCamIn();
-				}
-				*/
 			}
 			var currentIconState = "";
 			if (opponentPlayer)
@@ -2851,7 +2844,7 @@ class PlayState extends MusicBeatState
 							}
 							
 							vocals.volume = 0;
-							Misses += 1;
+							misses += 1;
 							notesPassing += 1;
 							if (poisonPlus && poisonTimes < 3)
 							{

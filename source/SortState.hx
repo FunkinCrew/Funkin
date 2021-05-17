@@ -1,5 +1,7 @@
 package;
 
+import flixel.util.typeLimit.OneOfTwo;
+import FreeplayState.JsonMetadata;
 import flash.text.TextField;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -29,10 +31,10 @@ class SortState extends MusicBeatState
 {
 	public static var sorting:String = "songs";
 	public static var category:String = "Base Game";
-	public static var sortedSongs:Array<String> = [];
-	public static var stuffToSort:Array<String> = [];
+	public static var sortedSongs:Array<OneOfTwo<String, JsonMetadata>> = [];
+	public static var stuffToSort:Array<OneOfTwo<String, JsonMetadata>> = [];
 	var referenceArray:Array<Int> = [];
-	var songs:Array<String> = [];
+	var songs:Array<OneOfTwo<String, JsonMetadata>> = [];
 	var selector:FlxText;
 	var curSelected:Int = 0;
 	var lerpScore:Int = 0;
@@ -60,7 +62,13 @@ class SortState extends MusicBeatState
 
 		for (i in 0...songs.length)
 		{
-			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, songs[i], true, false);
+			var coolName = "";
+			if (sorting != "songs") {
+				coolName = songs[i]; 
+			} else {
+				coolName = (songs:Array<JsonMetadata>)[i].name;
+			}
+			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, coolName, true, false);
 			songText.isMenuItem = true;
 			songText.targetY = i;
 			var checkmark = new FlxSprite(0, 0).loadGraphic('assets/images/checkmark.png');

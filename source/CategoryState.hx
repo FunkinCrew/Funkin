@@ -1,5 +1,6 @@
 package;
 
+import FreeplayState.JsonMetadata;
 import flash.text.TextField;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -27,7 +28,7 @@ class CategoryState extends MusicBeatState
 {
 	var categories:Array<String> = [];
 	public static var choosingFor:String = "freeplay";
-	var categorySongs:Array<Array<String>> =[];
+	var categorySongs:Array<Array<JsonMetadata>> =[];
 	var categorybgs:Array<Array<String>> =[];
 	var selector:FlxText;
 	var curSelected:Int = 0;
