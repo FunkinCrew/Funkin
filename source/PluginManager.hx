@@ -1,5 +1,6 @@
 package;
 
+import flixel.addons.effects.FlxTrail;
 import plugins.tools.MetroSprite;
 import FNFAssets.HScriptAssets;
 import hscript.InterpEx;
@@ -36,6 +37,7 @@ class PluginManager {
         reterp.variables.set("Std", Std);
         reterp.variables.set("StringTools", StringTools);
         reterp.variables.set("MetroSprite",MetroSprite);
+        reterp.variables.set("FlxTrail", FlxTrail);
         return reterp;
     }
 }

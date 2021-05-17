@@ -195,7 +195,7 @@ class NewSongState extends MusicBeatState
 		for (coolCategory in coolSongListFile) {
 			if (coolCategory.name == categoryText.text) {
 				foundSomething = true; 
-				coolCategory.songs.push(nameText.text);
+				coolCategory.songs.push({"name": nameText.text, "character": p2Text.text, "week": 0});
 				break;
 			}
 		}
