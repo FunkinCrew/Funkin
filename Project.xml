@@ -95,7 +95,7 @@
 	<!-- <template path='mods' /> -->
 	
 	<!--Allows the License to be in exports and compiles of the code-->
-	<assets path="LICENSE" rename="Game License"/>
+	<assets path="LICENSE" rename="Game License.txt"/>
 	
 	<assets path="CHANGELOG.md" rename='changelog.txt'/>
 
