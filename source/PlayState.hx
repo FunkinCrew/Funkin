@@ -100,18 +100,18 @@ class PlayState extends MusicBeatState
 	public var gf:Character;
 	public var boyfriend:Character;
 
-	private var notes:FlxTypedGroup<Note>;
+	public var notes:FlxTypedGroup<Note>;
 	private var unspawnNotes:Array<Note> = [];
 
-	private var strumLine:FlxSprite;
+	public var strumLine:FlxSprite;
 	private var curSection:Int = 0;
 	var totalNotesHit:Float = 0;
 	var totalPlayed:Int =0;
 	var totalNotesHitDefault:Float = 0;
-	private var camFollow:FlxObject;
+	public var camFollow:FlxObject;
 	private var player1Icon:String;
 	private var player2Icon:String;
-	private static var prevCamFollow:FlxObject;
+	public static var prevCamFollow:FlxObject;
 	public static var misses:Int = 0;
 	public static var shits:Int = 0;
 	public static var bads:Int = 0;
@@ -167,7 +167,7 @@ class PlayState extends MusicBeatState
 	public var camHUD:FlxCamera;
 	private var camGame:FlxCamera;
 
-
+	public var doof:DialogueBox;
 	var dialogue:Array<String> = ['blah blah blah', 'coolswag'];
 
 	var halloweenBG:FlxSprite;
@@ -204,7 +204,7 @@ class PlayState extends MusicBeatState
 	 * Total Accuracy of the week. Not a good idea to touch as it is a total. 
 	 */
 	public static var campaignAccuracy:Float = 0;
-	var defaultCamZoom:Float = 1.05;
+	public var defaultCamZoom:Float = 1.05;
 	var grpNoteSplashes:FlxTypedGroup<NoteSplash>;
 	/**
 	 * How big pixel assets are stretched
@@ -344,7 +344,22 @@ class PlayState extends MusicBeatState
 		trace("set vars");
 		interp.variables.set("camZooming", false);
 		// callbacks
-
+		interp.variables.set("start", function (song) {});
+		interp.variables.set("beatHit", function (beat) {});
+		interp.variables.set("update", function (elapsed) {});
+		interp.variables.set("stepHit", function(step) {});
+		interp.variables.set("playerTwoTurn", function () {});
+		interp.variables.set("playerTwoMiss", function () {});
+		interp.variables.set("playerTwoSing", function () {});
+		interp.variables.set("playerOneTurn", function()
+		{
+		});
+		interp.variables.set("playerOneMiss", function()
+		{
+		});
+		interp.variables.set("playerOneSing", function()
+		{
+		});
 		interp.variables.set("addSprite", function (sprite, position) {
 			// sprite is a FlxSprite
 			// position is a Int
@@ -1003,7 +1018,7 @@ class PlayState extends MusicBeatState
 		add(boyfriend);
 		trace('bf cheeks');
 
-		var doof:DialogueBox = new DialogueBox(false, dialogue);
+		doof = new DialogueBox(false, dialogue);
 		trace('doofensmiz');
 		// doof.x += 70;
 		// doof.y = FlxG.height * 0.5;
@@ -1131,6 +1146,7 @@ class PlayState extends MusicBeatState
 
 			switch (SONG.cutsceneType)
 			{
+				/*
 				case "monster":
 					var blackScreen:FlxSprite = new FlxSprite(0, 0).makeGraphic(Std.int(FlxG.width * 2), Std.int(FlxG.height * 2), FlxColor.BLACK);
 					add(blackScreen);
@@ -1159,22 +1175,19 @@ class PlayState extends MusicBeatState
 							});
 						});
 					});
+				*/
 				case 'senpai':
 					schoolIntro(doof);
 				case 'angry-senpai':
-					FlxG.sound.play('assets/sounds/ANGRY' + TitleState.soundExt);
+					
 					schoolIntro(doof);
 				case 'spirit':
 					schoolIntro(doof);
 				case 'none':
 					startCountdown();
 				default:
-					if (SONG.cutsceneType.endsWith('-mp4'))
-						videoIntro("assets/music/" + SONG.cutsceneType.substr(0, SONG.cutsceneType.length - 4)+'Cutscene.mp4');
-						// :grief: idk how videos work
-						// startCountdown();
-					else
-						schoolIntro(doof);
+					// schoolIntro(doof);
+					customIntro(doof);
 			}
 		}
 		else
@@ -1187,6 +1200,15 @@ class PlayState extends MusicBeatState
 
 	}
 
+	function customIntro(?dialogueBox:DialogueBox) {
+		var goodJson = CoolUtil.parseJson(FNFAssets.getText('assets/images/custom_cutscenes/cutscenes.json'));
+		if (!Reflect.hasField(goodJson, SONG.cutsceneType)) {
+			schoolIntro(dialogueBox);
+			return;
+		}
+		makeHaxeState("cutscene", "assets/images/custom_cutscenes/"+SONG.cutsceneType+'/', "../"+Reflect.field(goodJson, SONG.cutsceneType)+'.hscript');
+		
+	}
 	function schoolIntro(?dialogueBox:DialogueBox):Void
 	{
 		var black:FlxSprite = new FlxSprite(-100, -100).makeGraphic(FlxG.width * 2, FlxG.height * 2, FlxColor.BLACK);
@@ -1312,7 +1334,7 @@ class PlayState extends MusicBeatState
 	var startTimer:FlxTimer;
 	var perfectModeOld:Bool = false;
 
-	function startCountdown():Void
+	public function startCountdown():Void
 	{
 		inCutscene = false;
 

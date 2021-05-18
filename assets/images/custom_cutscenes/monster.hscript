@@ -1,0 +1,26 @@
+function start(song) {
+    trace("wink");
+    FlxG.camera.visible = false;
+    camHUD.visible = false;
+    
+    trace("help");
+    new FlxTimer().start(0.1, function(tmr)
+    {
+        FlxG.camera.visible = true;
+        FlxG.sound.play(FNFAssets.getSound('assets/sounds/Lights_Turn_On' + TitleState.soundExt));
+        currentPlayState.camFollow.y = -2050;
+        currentPlayState.camFollow.x += 200;
+        FlxG.camera.focusOn(currentPlayState.camFollow.getPosition());
+        FlxG.camera.zoom = 1.5;
+
+        new FlxTimer().start(0.8, function(tmr) {
+            currentPlayState.camHUD.visible = true;
+            FlxTween.tween(FlxG.camera, {zoom: currentPlayState.defaultCamZoom}, 2.5, {
+                ease: FlxEase.quadInOut,
+                onComplete: function(twn) {
+                    currentPlayState.startCountdown();
+                }
+            });
+        });
+    });
+}

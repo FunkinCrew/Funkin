@@ -283,6 +283,7 @@ class DialogueBox extends FlxSpriteGroup
 				box.animation.addByIndices('normal', 'Text Box Appear', [4], "", 24);
 				like = "senpai";
 			case 'angry-senpai':
+				FlxG.sound.play('assets/sounds/ANGRY' + TitleState.soundExt);
 				FlxG.sound.play('assets/sounds/ANGRY_TEXT_BOX' + TitleState.soundExt);
 
 				box.frames = FlxAtlasFrames.fromSparrow('assets/images/weeb/pixelUI/dialogueBox-senpaiMad.png',
@@ -337,6 +338,7 @@ class DialogueBox extends FlxSpriteGroup
 						box.animation.addByIndices('normal', 'Text Box Appear', [4], "", 24);
 						like = "senpai";
 					} else if (coolAnimFile.like == "senpai-angry") {
+						FlxG.sound.play('assets/sounds/ANGRY' + TitleState.soundExt);
 						// should i keep this?
 						if (FNFAssets.exists('assets/images/custom_ui/dialog_boxes/'+PlayState.SONG.cutsceneType+'/angry.ogg')) {
 							var coolSound = FNFAssets.getSound('assets/images/custom_ui/dialog_boxes/' + PlayState.SONG.cutsceneType + '/angry.ogg');

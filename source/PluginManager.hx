@@ -1,5 +1,6 @@
 package;
 
+import flixel.util.FlxColor;
 import flixel.tweens.FlxEase;
 import flixel.addons.effects.FlxTrail;
 import plugins.tools.MetroSprite;
@@ -30,6 +31,7 @@ class PluginManager {
         reterp.variables.set("FlxGroup", flixel.group.FlxGroup);
         reterp.variables.set("FlxAngle", flixel.math.FlxAngle);
         reterp.variables.set("FlxMath", flixel.math.FlxMath);
+        reterp.variables.set("TitleState", TitleState);
         reterp.variables.set("makeRangeArray", CoolUtil.numberArray);
         reterp.variables.set("FNFAssets", HScriptAssets);
         reterp.variables.set("FlxG", flixel.FlxG);
