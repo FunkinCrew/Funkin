@@ -2772,6 +2772,7 @@ class PlayState extends MusicBeatState
 						dad.altAnim = '-alt';
 						dad.altNum = 1;
 					}
+					dad.altNum = daNote.altNum;
 					if (SONG.notes[Math.floor(curStep / 16)] != null)
 					{
 						if ((SONG.notes[Math.floor(curStep / 16)].altAnimNum > 0 && SONG.notes[Math.floor(curStep / 16)].altAnimNum != null) || SONG.notes[Math.floor(curStep / 16)].altAnim)
@@ -2781,6 +2782,7 @@ class PlayState extends MusicBeatState
 							else if (SONG.notes[Math.floor(curStep / 16)].altAnimNum != 0)
 								dad.altNum = SONG.notes[Math.floor(curStep / 16)].altAnimNum;
 					}
+					
 					if (dad.altNum == 1) {
 						dad.altAnim = '-alt';
 					} else if (dad.altNum > 1) {
@@ -3583,6 +3585,7 @@ class PlayState extends MusicBeatState
 			}
 			if (note.altNote)
 				actingOn.altNum = 1;
+			actingOn.altNum = note.altNum;
 			if (actingOn.altNum == 1)
 			{
 				actingOn.altAnim = '-alt';
