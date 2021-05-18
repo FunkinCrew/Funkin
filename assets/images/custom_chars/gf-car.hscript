@@ -18,9 +18,9 @@ function init(char) {
     char.gfEpicLevel = Level_Boogie;
 
 }
-var portraitOffset = [0, 0];
-var dadVar = 4.0;
-var isPixel = false;
+portraitOffset = [0, 0];
+dadVar = 4.0;
+isPixel = false;
 function update(elapsed, char) {
     // do nothing...
 }

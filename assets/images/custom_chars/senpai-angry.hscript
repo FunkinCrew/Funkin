@@ -34,9 +34,9 @@ function init(char) {
     char.antialiasing = false;
     char.isPixel = true;
 }
-var portraitOffset = [0, 0];
-var dadVar = 4.0;
-var isPixel = true;
+portraitOffset = [0, 0];
+dadVar = 4.0;
+isPixel = true;
 function update(elapsed, char) {
     // do nothing...
 }

@@ -325,11 +325,9 @@ class DialogueBox extends FlxSpriteGroup
 						portraitLeft.y += coolAnimFile.portraitOffset[1];
 						portraitRight.x += coolAnimFile.portraitOffset[0];
 						portraitRight.y += coolAnimFile.portraitOffset[1];
-						portraitLeft.x += Character.getAnimInterp(PlayState.SONG.player2).variables.get("portraitOffset")[0];
-						portraitLeft.y += Character.getAnimInterp(PlayState.SONG.player2).variables.get("portraitOffset")[1];
-						portraitRight.x += Character.getAnimInterp(PlayState.SONG.player1).variables.get("portraitOffset")[0];
-						portraitRight.y += Character.getAnimInterp(PlayState.SONG.player1).variables.get("portraitOffset")[1];						
+						
 					}
+											
 					if (FNFAssets.exists('assets/images/custom_ui/dialog_boxes/' + PlayState.SONG.cutsceneType + '/text.ogg'))
 						clickSounds[2] = FNFAssets.getSound('assets/images/custom_ui/dialog_boxes/' + PlayState.SONG.cutsceneType + '/text.ogg');
 					if (FNFAssets.exists('assets/images/custom_ui/dialog_boxes/'+PlayState.SONG.cutsceneType+'/accept.ogg'))
@@ -416,7 +414,14 @@ class DialogueBox extends FlxSpriteGroup
 			swagDialogue.alpha = textColor.alphaFloat;
 		swagDialogue.sounds = [FlxG.sound.load(clickSounds[2], 0.6)];
 		add(swagDialogue);
-
+		var leftOffset = Character.getAnimInterp(PlayState.SONG.player2).variables.get("portraitOffset");
+		var rightOffset = Character.getAnimInterp(PlayState.SONG.player1).variables.get("portraitOffset");
+		trace("enemy x " + leftOffset[0] + ", y " + leftOffset[1]);
+		trace("player x " + rightOffset[0]+ ", y " + rightOffset[1]);
+		portraitLeft.x += leftOffset[0];
+		portraitLeft.y += leftOffset[1];
+		portraitRight.x += rightOffset[0];
+		portraitRight.y += rightOffset[1];
 		dialogue = new Alphabet(0, 80, "", false, true);
 		// dialogue.x = 90;
 		// add(dialogue);
@@ -540,15 +545,6 @@ class DialogueBox extends FlxSpriteGroup
 			case 'none':
 				// only set sound...
 				swagDialogue.sounds = [FlxG.sound.load(clickSounds[2], 0.6)];
-			case 'char-bf':
-				// we have to change the custom portrait
-				portraitCustom = new FlxSprite(0, 40);
-				portraitCustom.setGraphicSize(Std.int(portraitCustom.width * 0.9));
-				portraitCustom.frames = FlxAtlasFrames.fromSparrow('assets/images/bfPortrait.png', 'assets/images/bfPortrait.xml');
-				portraitCustom.animation.addByPrefix('enter', 'Boyfriend portrait enter', 24, false);
-				swagDialogue.sounds = [FlxG.sound.load(clickSounds[2], 0.6)];
-				portraitCustom.visible = false;
-				customHanded = true;
 			case 'char-dad':
 				portraitCustom = new FlxSprite(0, 40);
 				portraitCustom.frames = FlxAtlasFrames.fromSparrow('assets/images/dadPortrait.png', 'assets/images/dadPortrait.xml');

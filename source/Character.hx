@@ -60,7 +60,7 @@ class Character extends FlxSprite
 	public var like:String = "bf";
 	public var beNormal:Bool = true;
 	public var enemyColor:FlxColor = 0xFFFF0000;
-	public var opponentColor:FlxColor = 0xFFBC47FF;
+	public var opponentColor:FlxColor = 0xFFE7C53C;
 	public var playerColor:FlxColor = 0xFF66FF33;
 	public var poisonColor:FlxColor = 0xFFA22CD1;
 	public var poisonColorEnemy:FlxColor = 0xFFEA2FFF;
@@ -662,7 +662,30 @@ class Character extends FlxSprite
 			}
 		}
 	}
-
+	public function sing(direction:Int, ?miss:Bool=false, ?alt:Int=0) {
+		var directName:String = "";
+		switch (direction) {
+			case 0:
+				directName = "singLEFT";
+			case 1:
+				directName = "singDOWN";
+			case 2:
+				directName = "singUP";
+			case 3:
+				directName = "singRIGHT";
+		}
+		if (miss) {
+			directName += "miss";
+		}
+		if (alt > 0) {
+			if (alt == 1 && animation.getByName(directName + '-alt') != null) {
+				directName += "-alt";
+			} else if (alt > 1 &&  animation.getByName(directName + "-" + alt + "alt") != null) {
+				directName += "-" + alt + "alt";
+			}
+		}
+		playAnim(directName, true);
+	}
 	override function update(elapsed:Float)
 	{
 

@@ -52,9 +52,9 @@ function init(char) {
     char.midpointX = 0;
     char.midpointY = 0;
 }
-var portraitOffset = [0, 0];
-var dadVar = 4.0;
-var isPixel = false;
+portraitOffset = [0, 0];
+dadVar = 4.0;
+isPixel = false;
 function update(elapsed, char) {
     // do nothing...
 }
