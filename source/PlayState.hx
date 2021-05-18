@@ -153,9 +153,17 @@ class PlayState extends MusicBeatState
 	#end
 	private var generatedMusic:Bool = false;
 	private var startingSong:Bool = false;
-
+	/**
+	 * Icon of player one
+	 */
 	public var iconP1:HealthIcon;
+	/**
+	 * Icon of player two
+	 */
 	public var iconP2:HealthIcon;
+	/**
+	 * HUD Camera (arrows, health)
+	 */
 	public var camHUD:FlxCamera;
 	private var camGame:FlxCamera;
 
@@ -187,11 +195,20 @@ class PlayState extends MusicBeatState
 	var healthTxt:FlxText;
 	var accuracyTxt:FlxText;
 	var difficTxt:FlxText;
+	/**
+	 * The total score of the week. Not a good idea to touch
+	 * as it is a total and not divided until the end.
+	 */
 	public static var campaignScore:Int = 0;
+	/**
+	 * Total Accuracy of the week. Not a good idea to touch as it is a total. 
+	 */
 	public static var campaignAccuracy:Float = 0;
 	var defaultCamZoom:Float = 1.05;
 	var grpNoteSplashes:FlxTypedGroup<NoteSplash>;
-	// how big to stretch the pixel art assets
+	/**
+	 * How big pixel assets are stretched
+	 */
 	public static var daPixelZoom:Float = 6;
 
 	var bfoffset = [0.0, 0.0];
@@ -232,7 +249,14 @@ class PlayState extends MusicBeatState
 	var downscroll:Bool = false;
 	var luaRegistered:Bool = false;
 	var currentFrames:Int = 0;
+	/**
+	 * If we are playing as opponent. 
+	 */
 	public static var opponentPlayer:Bool = false;
+	/**
+	 *  How much health is drained/regened with Supportive love 
+	 * or Poison Fright
+	 */
 	public var drainBy:Float = 0.005;
 	// this is just so i can collapse it lol
 	#if true
@@ -1570,6 +1594,7 @@ class PlayState extends MusicBeatState
 				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote, false, customImage, customXml, arrowEndsImage);
 				// altNote
 				swagNote.altNote = altNote;
+				swagNote.altNum = songNotes[3] == null ? (swagNote.altNote ? 1 : 0) : songNotes[3];
 				// so much more complicated but makes playstation like shit work
 				if (flippedNotes) {
 					if (swagNote.animation.curAnim.name == 'greenScroll') {
@@ -2745,6 +2770,7 @@ class PlayState extends MusicBeatState
 					if (daNote.altNote)
 					{
 						dad.altAnim = '-alt';
+						dad.altNum = 1;
 					}
 					if (SONG.notes[Math.floor(curStep / 16)] != null)
 					{
