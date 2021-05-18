@@ -2741,7 +2741,7 @@ class PlayState extends MusicBeatState
 				{
 					camZooming = true;
 					dad.altAnim = "";
-					
+					dad.altNum = 0;
 					if (daNote.altNote)
 					{
 						dad.altAnim = '-alt';
@@ -2751,25 +2751,18 @@ class PlayState extends MusicBeatState
 						if ((SONG.notes[Math.floor(curStep / 16)].altAnimNum > 0 && SONG.notes[Math.floor(curStep / 16)].altAnimNum != null) || SONG.notes[Math.floor(curStep / 16)].altAnim)
 							// backwards compatibility shit
 							if (SONG.notes[Math.floor(curStep / 16)].altAnimNum == 1 || SONG.notes[Math.floor(curStep / 16)].altAnim || daNote.altNote)
-								dad.altAnim = '-alt';
+								dad.altNum = 1;
 							else if (SONG.notes[Math.floor(curStep / 16)].altAnimNum != 0)
-								dad.altAnim = '-' + SONG.notes[Math.floor(curStep / 16)].altAnimNum+'alt';
+								dad.altNum = SONG.notes[Math.floor(curStep / 16)].altAnimNum;
 					}
-					
+					if (dad.altNum == 1) {
+						dad.altAnim = '-alt';
+					} else if (dad.altNum > 1) {
+						dad.altAnim = '-' + dad.altNum + 'alt';
+					}
 					callAllHScript("playerTwoSing", []);
 					// go wild <3
-					switch (Math.abs(daNote.noteData))
-					{
-						case 0:
-							
-							dad.playAnim('singLEFT' + dad.altAnim, true);
-						case 1:
-							dad.playAnim('singDOWN' + dad.altAnim, true);
-						case 2:
-							dad.playAnim('singUP' + dad.altAnim, true);
-						case 3:
-							dad.playAnim('singRIGHT' + dad.altAnim, true);
-					}
+					dad.sing(Std.int(Math.abs(daNote.noteData)), false, dad.altNum);
 					enemyStrums.forEach(function(spr:FlxSprite)
 					{
 						if (Math.abs(daNote.noteData) == spr.ID)
@@ -2787,18 +2780,9 @@ class PlayState extends MusicBeatState
 					notes.remove(daNote, true);
 					daNote.destroy();
 				} else if (daNote.mustPress && daNote.wasGoodHit && (opponentPlayer || demoMode)) {
+					camZooming = true;
 					callAllHScript("playerOneSing", []);
-					switch (Math.abs(daNote.noteData))
-					{
-						case 0:
-							boyfriend.playAnim('singLEFT', true);
-						case 1:
-							boyfriend.playAnim('singDOWN', true);
-						case 2:
-							boyfriend.playAnim('singUP', true);
-						case 3:
-							boyfriend.playAnim('singRIGHT', true);
-					}
+					boyfriend.sing(Std.int(Math.abs(daNote.noteData)));
 					playerStrums.forEach(function(spr:FlxSprite)
 					{
 						if (Math.abs(daNote.noteData) == spr.ID)
@@ -3506,18 +3490,7 @@ class PlayState extends MusicBeatState
 				actingOn.stunned = false;
 			});
 
-			switch (direction)
-			{
-				case 0:
-					actingOn.playAnim('singLEFTmiss', true);
-				case 1:
-					actingOn.playAnim('singDOWNmiss', true);
-				case 2:
-					actingOn.playAnim('singUPmiss', true);
-				case 3:
-					actingOn.playAnim('singRIGHTmiss', true);
-			}
-
+			actingOn.sing(direction, true);
 			if (playerOne) {
 				callAllHScript("playerOneMiss", []);
 			} else {
@@ -3568,22 +3541,29 @@ class PlayState extends MusicBeatState
 		if (!note.wasGoodHit)
 		{
 			trace("<3 was good hit");
-			var altAnim = "";
+			actingOn.altAnim = "";
+			actingOn.altNum = 0;
+			
 			if (SONG.notes[Math.floor(curStep / 16)] != null)
 			{
-				if ((SONG.notes[Math.floor(curStep / 16)].altAnimNum > 0 && SONG.notes[Math.floor(curStep / 16)].altAnimNum != null)
+				if (( SONG.notes[Math.floor(curStep / 16)].altAnimNum != null && SONG.notes[Math.floor(curStep / 16)].altAnimNum > 0)
 					|| SONG.notes[Math.floor(curStep / 16)].altAnim)
 					// backwards compatibility shit
 					if (SONG.notes[Math.floor(curStep / 16)].altAnimNum == 1
-						|| SONG.notes[Math.floor(curStep / 16)].altAnim
-						|| note.altNote)
-						altAnim = '-alt';
-					else if (SONG.notes[Math.floor(curStep / 16)].altAnimNum != 0)
-						altAnim = '-' + SONG.notes[Math.floor(curStep / 16)].altAnimNum + 'alt';
+						|| SONG.notes[Math.floor(curStep / 16)].altAnim)
+						actingOn.altNum = 1;
+					else if (SONG.notes[Math.floor(curStep / 16)].altAnimNum > 1)
+						actingOn.altNum = SONG.notes[Math.floor(curStep / 16)].altAnimNum;
 			}
 			if (note.altNote)
+				actingOn.altNum = 1;
+			if (actingOn.altNum == 1)
 			{
-				altAnim = '-alt';
+				actingOn.altAnim = '-alt';
+			}
+			else if (actingOn.altNum > 1)
+			{
+				actingOn.altAnim = '-' + actingOn.altNum + 'alt';
 			}
 			if (!note.isSustainNote)
 			{
@@ -3598,17 +3578,7 @@ class PlayState extends MusicBeatState
 			else
 				health += 0.005 + healthGainModifier;
 
-			switch (note.noteData)
-			{
-				case 0:
-					actingOn.playAnim('singLEFT'+altAnim, true);
-				case 1:
-					actingOn.playAnim('singDOWN'+altAnim, true);
-				case 2:
-					actingOn.playAnim('singUP'+altAnim, true);
-				case 3:
-					actingOn.playAnim('singRIGHT'+altAnim, true);
-			}
+			actingOn.sing(note.noteData, false, actingOn.altNum);
 			if (playerOne)
 				callAllHScript("playerOneSing", []);
 			else

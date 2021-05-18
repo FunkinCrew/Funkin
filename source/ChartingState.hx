@@ -385,7 +385,7 @@ class ChartingState extends MusicBeatState
 	}
 
 	var stepperSusLength:FlxUINumericStepper;
-
+	var stepperAltNote:FlxUINumericStepper;
 	function addNoteUI():Void
 	{
 		var tab_group_note = new FlxUI(null, UI_box);
@@ -398,9 +398,13 @@ class ChartingState extends MusicBeatState
 		var applyLength:FlxButton = new FlxButton(100, 10, 'Apply');
 		isAltNoteCheck = new FlxUICheckBox(10, 100, null, null, "Alt Anim Note", 100);
 		isAltNoteCheck.name = "isAltNote";
+		stepperAltNote = new FlxUINumericStepper(10, 200, 1, 0, 0, 999, 0);
+		stepperAltNote.value = 0;
+		stepperAltNote.name = 'alt_anim_note';
 		tab_group_note.add(stepperSusLength);
 		tab_group_note.add(applyLength);
 		tab_group_note.add(isAltNoteCheck);
+		tab_group_note.add(stepperAltNote);
 		UI_box.addGroup(tab_group_note);
 	}
 
@@ -492,8 +496,9 @@ class ChartingState extends MusicBeatState
 					_song.isHey = check.checked;
 				case 'Alt Anim Note':
 					if (curSelectedNote != null) {
-						curSelectedNote[3] = check.checked;
+						curSelectedNote[3] = check.checked ? 1 : 0;
 					}
+					updateNoteUI();
 				case 'Is Cheer':
 					_song.isCheer = check.checked;
 				}
@@ -530,7 +535,11 @@ class ChartingState extends MusicBeatState
 			} else if (wname == 'alt_anim_number')
 			{
 				_song.notes[curSection].altAnimNum = Std.int(nums.value);
-			} 
+			}  else if (wname == 'alt_anim_note') {
+				if (curSelectedNote != null)
+					curSelectedNote[3] = nums.value;
+				updateNoteUI();
+			}
 		}
 
 		// FlxG.log.add(id + " WEED " + sender + " WEED " + data + " WEED " + params);
@@ -812,10 +821,10 @@ class ChartingState extends MusicBeatState
 	function toggleNoteAnim():Void {
 		if (curSelectedNote != null) {
 			if (curSelectedNote[3] != null) {
-				curSelectedNote[3] = !cast (curSelectedNote[3] : Bool);
+				curSelectedNote[3] = curSelectedNote[3] == 1 ? 0 : 1;
 
 			} else {
-				curSelectedNote[3] = true;
+				curSelectedNote[3] = 1;
 			}
 		}
 		updateNoteUI();
@@ -959,6 +968,7 @@ class ChartingState extends MusicBeatState
 			stepperSusLength.value = curSelectedNote[2];
 			// null is falsy
 			isAltNoteCheck.checked = cast curSelectedNote[3];
+			stepperAltNote.value = curSelectedNote[3] != null ? curSelectedNote[3] : 0;
 		}
 			
 

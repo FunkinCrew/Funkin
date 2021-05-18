@@ -201,29 +201,29 @@ class VictoryLoopState extends MusicBeatSubstate
 		if (curBeat % 2 == 0 && accuracy >= 65) {
 			switch(bf.animation.curAnim.name) {
 				case "idle":
-					bf.playAnim('singUP');
+					bf.sing(2);
 				case "singLEFT":
-					bf.playAnim('singUP');
+					bf.sing(2);
 				case "singUP":
-					bf.playAnim('singRIGHT');
+					bf.sing(3);
 				case "singRIGHT":
-					bf.playAnim('singDOWN');
+					bf.sing(1);
 				case "singDOWN":
-					bf.playAnim('singLEFT');
+					bf.sing(0);
 			}
 		} else if (curBeat % 2 == 0){
 			// funny look he misses now
 			switch(bf.animation.curAnim.name) {
 				case "idle":
-					bf.playAnim('singUPmiss');
+					bf.sing(2, true);
 				case "singLEFTmiss":
-					bf.playAnim('singUPmiss');
+					bf.sing(2, true);
 				case "singUPmiss":
-					bf.playAnim('singRIGHTmiss');
+					bf.sing(3, true);
 				case "singRIGHTmiss":
-					bf.playAnim('singDOWNmiss');
+					bf.sing(1, true);
 				case "singDOWNmiss":
-					bf.playAnim('singLEFTmiss');
+					bf.sing(0, true);
 			}
 		}
 	}

@@ -1,5 +1,6 @@
 package;
 
+import flixel.tweens.FlxEase;
 import flixel.addons.effects.FlxTrail;
 import plugins.tools.MetroSprite;
 import FNFAssets.HScriptAssets;
@@ -38,6 +39,7 @@ class PluginManager {
         reterp.variables.set("StringTools", StringTools);
         reterp.variables.set("MetroSprite",MetroSprite);
         reterp.variables.set("FlxTrail", FlxTrail);
+        reterp.variables.set("FlxEase", FlxEase);
         return reterp;
     }
 }
