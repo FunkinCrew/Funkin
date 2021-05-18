@@ -537,6 +537,9 @@ class DialogueBox extends FlxSpriteGroup
 				swagDialogue.sounds = [FlxG.sound.load(clickSounds[1], 0.6)];
 			case 'bf':
 				swagDialogue.sounds = [FlxG.sound.load(clickSounds[0], 0.6)];
+			case 'none':
+				// only set sound...
+				swagDialogue.sounds = [FlxG.sound.load(clickSounds[2], 0.6)];
 			case 'char-bf':
 				// we have to change the custom portrait
 				portraitCustom = new FlxSprite(0, 40);
@@ -739,6 +742,11 @@ class DialogueBox extends FlxSpriteGroup
 					portraitRight.visible = true;
 					portraitRight.animation.play('enter');
 				}
+			case 'none':
+				portraitLeft.visible = false;
+				portraitRight.visible = false;
+				if (portraitCustom != null)
+					portraitCustom.visible = false;
 			default:
 				portraitLeft.visible = false;
 				portraitRight.visible = false;
