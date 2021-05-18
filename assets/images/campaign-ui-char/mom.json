@@ -2,5 +2,6 @@
   "animation": {
     "idle": "Mom Idle BLACK LINES"
   },
-  "scale": 0.45
+  "scale": 0.45,
+  "offset": [10,-27]
 }
