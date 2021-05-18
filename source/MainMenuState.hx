@@ -63,8 +63,8 @@ class MainMenuState extends MusicBeatState
 			optionShit = ['story mode', 'freeplay', 'donate'];
 		if (!FlxG.sound.music.playing)
 		{
-			FlxG.sound.playMusic('assets/music/custom_menu_music/'
-				+ CoolUtil.parseJson(FNFAssets.getText("assets/music/custom_menu_music/custom_menu_music.json")).Menu+'/freakyMenu' + TitleState.soundExt);
+			FlxG.sound.playMusic(FNFAssets.getSound('assets/music/custom_menu_music/'
+				+ CoolUtil.parseJson(FNFAssets.getText("assets/music/custom_menu_music/custom_menu_music.json")).Menu+'/freakyMenu' + TitleState.soundExt));
 		}
 		
 		persistentUpdate = persistentDraw = true;

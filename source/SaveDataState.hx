@@ -42,8 +42,11 @@ class SaveDataState extends MusicBeatState
 	{
 		DJFKKeys = !OptionsHandler.options.DJFKKeys;
 		FlxG.sound.music.stop();
-		FlxG.sound.playMusic('assets/music/custom_menu_music/'
-			+ CoolUtil.parseJson(FNFAssets.getText("assets/music/custom_menu_music/custom_menu_music.json")).Options+'/Options' + TitleState.soundExt);
+		var goodSound = FNFAssets.getSound('assets/music/custom_menu_music/'
+			+ CoolUtil.parseJson(FNFAssets.getText("assets/music/custom_menu_music/custom_menu_music.json")).Options
+			+ '/options'
+			+ TitleState.soundExt);
+		FlxG.sound.playMusic(goodSound);
 		var menuBG:FlxSprite = new FlxSprite().loadGraphic('assets/images/menuDesat.png');
 		optionList = [
 						{name: "Always Show Cutscenes", value: false}, 
