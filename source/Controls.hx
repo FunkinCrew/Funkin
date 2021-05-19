@@ -517,9 +517,9 @@ class Controls extends FlxActionSet
 			// Keys are always rebinded before playstate starts. Note that this totally fucks up menuing lol.
 			case Solo:
 				if (OptionsHandler.options.DJFKKeys) {
-					inline bindKeys(Control.UP, [W, FlxKey.UP, J]);
-					inline bindKeys(Control.DOWN, [S, FlxKey.DOWN, F]);
-					inline bindKeys(Control.LEFT, [A, FlxKey.LEFT, D]);
+					inline bindKeys(Control.UP, [FlxKey.UP, J]);
+					inline bindKeys(Control.DOWN, [FlxKey.DOWN, F]);
+					inline bindKeys(Control.LEFT, [FlxKey.LEFT, D]);
 					inline bindKeys(Control.RIGHT, [FlxKey.RIGHT, K]);
 				} else {
 					inline bindKeys(Control.UP, [W, FlxKey.UP, K]);
