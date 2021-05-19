@@ -1,5 +1,6 @@
 # Friday Night Funkin
 [![Build](https://github.com/TheDrawingCoder-Gamer/Funkin/actions/workflows/build.yml/badge.svg)](https://github.com/TheDrawingCoder-Gamer/Funkin/actions/workflows/build.yml)
+![Pipelines](https://img.shields.io/azure-devops/build/benharless820/7af207e5-72fd-483f-9a48-6fc65e63abb9/4?label=pipelines)
 
 This is the repository for Friday Night Funkin Modding Plus, a mod for FNF to add more features for modders and players alike.
 
