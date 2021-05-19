@@ -120,8 +120,15 @@
    {
     "name": "Custom 1",
     "songs": [
-    "Bopeebo",
-    "Fresh",
+    {
+      "name": "Bopeebo",
+      "character": "dad",
+      "week": 1
+    },
+    {
+      "name": "Fresh",
+      "character": "dad",
+        "week" : 1
    ]
    },
   */
