@@ -547,65 +547,56 @@ class PlayState extends MusicBeatState
 		grpNoteSplashes.add(sploosh);
 		Conductor.mapBPMChanges(SONG);
 		Conductor.changeBPM(SONG.bpm);
+		var dialogSuffix = "";
+		// if this is skipped when love is on, that means love is less than or equal to fright soo
+		if (supLove && poisonMultiplier < loveMultiplier) {
+			dialogSuffix = "-love";
+		} else if (poisonExr && poisonMultiplier < 50) {
+			dialogSuffix = "-uneasy";
+		} else if (poisonExr && poisonMultiplier >= 50 && poisonMultiplier < 100) {
+			dialogSuffix = "-scared";
+		} else if (poisonExr && poisonMultiplier >= 100 && poisonMultiplier < 200) {
+			dialogSuffix = "-terrified";
+		} else if (poisonExr && poisonMultiplier >= 200) {
+			dialogSuffix = "-depressed";
+		} else if (practiceMode) {
+			dialogSuffix = "-practice";
+		} else if (perfectMode) {
+			dialogSuffix = "-perfect";
+		}
 		if (FNFAssets.exists('assets/images/custom_chars/' + SONG.player1 + '/' + SONG.song.toLowerCase() + 'Dialog.txt'))
-		{
-			dialogue = CoolUtil.coolDynamicTextFile('assets/images/custom_chars/' + SONG.player1 + '/' + SONG.song.toLowerCase() + 'Dialog.txt');
-			// haxe exclusive...
-			// for each modifier... later mods preferred.
-			for (mod in 0...22)
-			{
-				// evaluate this first to take advantage of short circut evaluation
-				if (ModifierState.modifiers[mod].value
-					&& FNFAssets.exists('assets/images/custom_chars/' + SONG.player1 + '/' + SONG.song.toLowerCase() + 'Dialog' + mod + '.txt'))
-				{
-					dialogue = CoolUtil.coolDynamicTextFile('assets/images/custom_chars/' + SONG.player1 + '/' + SONG.song.toLowerCase() + 'Dialog' + mod
-						+ '.txt');
-				}
-			}
-			// if no player 1 unique dialog, use player 2
+		{	
+			var filename = 'assets/images/custom_chars/' + SONG.player1 + '/' + SONG.song.toLowerCase() + 'Dialog.txt';
+			if (FNFAssets.exists('assets/images/custom_chars/' + SONG.player1 + '/' + SONG.song.toLowerCase() + 'Dialog'+dialogSuffix+'.txt'))
+				filename = 'assets/images/custom_chars/' + SONG.player1 + '/' + SONG.song.toLowerCase() + 'Dialog' + dialogSuffix + '.txt';
+			dialogue = CoolUtil.coolDynamicTextFile(filename);
 		}
 		else if (FNFAssets.exists('assets/images/custom_chars/' + SONG.player2 + '/' + SONG.song.toLowerCase() + 'Dialog.txt'))
 		{
-			dialogue = CoolUtil.coolDynamicTextFile('assets/images/custom_chars/' + SONG.player2 + '/' + SONG.song.toLowerCase() + 'Dialog.txt');
-			for (mod in 0...22)
-			{
-				// evaluate this first to take advantage of short circut evaluation
-				if (ModifierState.modifiers[mod].value
-					&& FNFAssets.exists('assets/images/custom_chars/' + SONG.player2 + '/' + SONG.song.toLowerCase() + 'Dialog' + mod + '.txt'))
-				{
-					dialogue = CoolUtil.coolDynamicTextFile('assets/images/custom_chars/' + SONG.player2 + '/' + SONG.song.toLowerCase() + 'Dialog' + mod
-						+ '.txt');
-				}
+			var filename = 'assets/images/custom_chars/' + SONG.player2 + '/' + SONG.song.toLowerCase() + 'Dialog.txt';
+			if (FNFAssets.exists('assets/images/custom_chars/' + SONG.player2 + '/' + SONG.song.toLowerCase() + 'Dialog${dialogSuffix}.txt')) {
+				filename = 'assets/images/custom_chars/' + SONG.player2 + '/' + SONG.song.toLowerCase() + 'Dialog${dialogSuffix}.txt';
 			}
+			dialogue = CoolUtil.coolDynamicTextFile(filename);
 			// if no player dialog, use default
 		}
 		else if (FNFAssets.exists('assets/data/' + SONG.song.toLowerCase() + '/dialog.txt'))
 		{
-			dialogue = CoolUtil.coolDynamicTextFile('assets/data/' + SONG.song.toLowerCase() + '/dialog.txt');
-			for (mod in 0...22)
+			var filename = 'assets/data/' + SONG.song.toLowerCase() + '/dialog.txt';
+			if (FNFAssets.exists('assets/data/' + SONG.song.toLowerCase() + '/dialog${dialogSuffix}.txt'))
 			{
-				// evaluate this first to take advantage of short circut evaluation
-				if (ModifierState.modifiers[mod].value
-					&& FNFAssets.exists('assets/data/' + SONG.song.toLowerCase() + '/dialog' + mod + '.txt'))
-				{
-					dialogue = CoolUtil.coolDynamicTextFile('assets/data/' + SONG.song.toLowerCase() + '/dialog' + mod + '.txt');
-				}
+				filename = 'assets/data/' + SONG.song.toLowerCase() + '/dialog${dialogSuffix}.txt';
 			}
+			dialogue = CoolUtil.coolDynamicTextFile(filename);
 		}
 		else if (FNFAssets.exists('assets/data/' + SONG.song.toLowerCase() + '/dialogue.txt'))
 		{
-			// nerds spell dialogue properly gotta make em happy
-			dialogue = CoolUtil.coolDynamicTextFile('assets/data/' + SONG.song.toLowerCase() + '/dialogue.txt');
-			for (mod in 0...22)
+			var filename = 'assets/data/' + SONG.song.toLowerCase() + '/dialogue.txt';
+			if (FNFAssets.exists('assets/data/' + SONG.song.toLowerCase() + '/dialogue${dialogSuffix}.txt'))
 			{
-				// evaluate this first to take advantage of short circut evaluation
-				if (ModifierState.modifiers[mod].value
-					&& FNFAssets.exists('assets/data/' + SONG.song.toLowerCase() + '/dialogue' + mod + '.txt'))
-				{
-					dialogue = CoolUtil.coolDynamicTextFile('assets/data/' + SONG.song.toLowerCase() + '/dialogue' + mod + '.txt');
-				}
+				filename = 'assets/data/' + SONG.song.toLowerCase() + '/dialogue${dialogSuffix}.txt';
 			}
-			// otherwise, make the dialog an error message
+			dialogue = CoolUtil.coolDynamicTextFile(filename);
 		}
 		else
 		{
