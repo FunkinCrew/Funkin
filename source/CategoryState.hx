@@ -55,7 +55,7 @@ class CategoryState extends MusicBeatState
 			trace(epicCategoryJs[0].songs);
 			trace(epicCategoryJs[0].Bg);
 			FreeplayState.currentSongList = epicCategoryJs[0].songs;
-			FlxG.switchState(new FreeplayState());
+			LoadingState.loadAndSwitchState(new FreeplayState());
 		}
 
 		/*
@@ -149,19 +149,19 @@ class CategoryState extends MusicBeatState
 
 		if (controls.BACK)
 		{
-			FlxG.switchState(new MainMenuState());
+			LoadingState.loadAndSwitchState(new MainMenuState());
 		}
 		// make sure it isn't a header
 		
 		if (accepted && categorySongs[curSelected].length > 0 && choosingFor == "freeplay")
 		{
 			FreeplayState.currentSongList = categorySongs[curSelected];
-			FlxG.switchState(new FreeplayState());
+			LoadingState.loadAndSwitchState(new FreeplayState());
 
 		} else if (accepted && categorySongs[curSelected].length > 0) {
 			SortState.stuffToSort = categorySongs[curSelected];
 			SortState.category = categories[curSelected];
-			FlxG.switchState(new SortState());
+			LoadingState.loadAndSwitchState(new SortState());
 		} 
 	}
 

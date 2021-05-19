@@ -112,7 +112,7 @@ class ChooseCharState extends MusicBeatState
     override function update(elapsed:Float) {
         super.update(elapsed);
         if (controls.BACK) {
-                FlxG.switchState(new ModifierState());
+			LoadingState.loadAndSwitchState(new ModifierState());
         }
         if (controls.UP_P)
         {

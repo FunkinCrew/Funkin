@@ -151,9 +151,9 @@ class VictoryLoopState extends MusicBeatSubstate
 				FlxG.sound.music.stop();
 
 				if (PlayState.isStoryMode)
-					FlxG.switchState(new StoryMenuState());
+					LoadingState.loadAndSwitchState(new StoryMenuState());
 				else
-					FlxG.switchState(new FreeplayState());
+					LoadingState.loadAndSwitchState(new FreeplayState());
 			}
 		}
 
@@ -259,7 +259,7 @@ class VictoryLoopState extends MusicBeatSubstate
 			{
 				FlxG.camera.fade(FlxColor.BLACK, 2, false, function()
 				{
-					FlxG.switchState(new PlayState());
+					LoadingState.loadAndSwitchState(new PlayState());
 				});
 			});
 		}

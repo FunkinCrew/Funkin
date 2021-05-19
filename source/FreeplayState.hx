@@ -210,14 +210,14 @@ class FreeplayState extends MusicBeatState
 			// main menu or else we are cursed
 			FlxG.autoPause = true;
 			if (soundTest)
-				FlxG.switchState(new SaveDataState());
+				LoadingState.loadAndSwitchState(new SaveDataState());
 			else {
 				var epicCategoryJs:Array<Dynamic> = CoolUtil.parseJson(Assets.getText('assets/data/freeplaySongJson.jsonc'));
 				if (epicCategoryJs.length > 1)
 				{
-					FlxG.switchState(new CategoryState());
+					LoadingState.loadAndSwitchState(new CategoryState());
 				} else
-					FlxG.switchState(new MainMenuState());
+					LoadingState.loadAndSwitchState(new MainMenuState());
 			}
 				
 		}
@@ -273,12 +273,12 @@ class FreeplayState extends MusicBeatState
 				ModifierState.isStoryMode = false;
 				PlayState.storyDifficulty = curDifficulty;
 				if (!OptionsHandler.options.skipModifierMenu)
-					FlxG.switchState(new ModifierState());
+					LoadingState.loadAndSwitchState(new ModifierState());
 				else
 				{
 					if (FlxG.sound.music != null)
 						FlxG.sound.music.stop();
-					FlxG.switchState(new PlayState());
+					LoadingState.loadAndSwitchState(new PlayState(), true);
 				}
 			}
 			

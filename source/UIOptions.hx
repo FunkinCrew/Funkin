@@ -69,7 +69,7 @@ class UIOptions extends MusicBeatState
 		if (controls.BACK) {
 			FlxG.mouse.visible = false;
 			File.saveContent('assets/data/options.json', Json.stringify(_options));
-			FlxG.switchState(new MainMenuState());
+			LoadingState.loadAndSwitchState(new MainMenuState());
 		}
 
 	}

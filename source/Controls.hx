@@ -86,7 +86,7 @@ enum Control
 
 enum KeyboardScheme
 {
-	Solo;
+	Solo(dfjk:Bool);
 	Duo(first:Bool);
 	None;
 	Custom;
@@ -515,18 +515,11 @@ class Controls extends FlxActionSet
 		switch (scheme)
 		{
 			// Keys are always rebinded before playstate starts. Note that this totally fucks up menuing lol.
-			case Solo:
-				if (OptionsHandler.options.DJFKKeys) {
-					inline bindKeys(Control.UP, [FlxKey.UP, J]);
-					inline bindKeys(Control.DOWN, [FlxKey.DOWN, F]);
-					inline bindKeys(Control.LEFT, [FlxKey.LEFT, D]);
-					inline bindKeys(Control.RIGHT, [FlxKey.RIGHT, K]);
-				} else {
-					inline bindKeys(Control.UP, [W, FlxKey.UP, K]);
-					inline bindKeys(Control.DOWN, [S, FlxKey.DOWN, J]);
-					inline bindKeys(Control.LEFT, [A, FlxKey.LEFT, H]);
-					inline bindKeys(Control.RIGHT, [D, FlxKey.RIGHT, L]);
-				}
+			case Solo(false):
+				inline bindKeys(Control.UP, [W, FlxKey.UP, K]);
+				inline bindKeys(Control.DOWN, [S, FlxKey.DOWN, J]);
+				inline bindKeys(Control.LEFT, [A, FlxKey.LEFT, H]);
+				inline bindKeys(Control.RIGHT, [D, FlxKey.RIGHT, L]);
 				
 				inline bindKeys(Control.ACCEPT, [Z, SPACE, ENTER]);
 				inline bindKeys(Control.BACK, [BACKSPACE, ESCAPE]);
@@ -534,7 +527,17 @@ class Controls extends FlxActionSet
 				inline bindKeys(Control.RESET, [R]);
 				inline bindKeys(Control.SECONDARY, [E]);
 				inline bindKeys(Control.TERTIARY,[Q]);
-			
+			case Solo(true):
+				inline bindKeys(Control.UP, [FlxKey.UP, J]);
+				inline bindKeys(Control.DOWN, [FlxKey.DOWN, F]);
+				inline bindKeys(Control.LEFT, [FlxKey.LEFT, D]);
+				inline bindKeys(Control.RIGHT, [FlxKey.RIGHT, K]);
+				inline bindKeys(Control.ACCEPT, [Z, SPACE, ENTER]);
+				inline bindKeys(Control.BACK, [BACKSPACE, ESCAPE]);
+				inline bindKeys(Control.PAUSE, [P, ENTER, ESCAPE]);
+				inline bindKeys(Control.RESET, [R]);
+				inline bindKeys(Control.SECONDARY, [E]);
+				inline bindKeys(Control.TERTIARY, [Q]);
 			case Duo(true):
 				inline bindKeys(Control.UP, [W,K]);
 				inline bindKeys(Control.DOWN, [S,J]);

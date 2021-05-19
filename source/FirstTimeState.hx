@@ -41,7 +41,7 @@ class FirstTimeState extends MusicBeatState
 
 		if (controls.ACCEPT)
 		{
-			FlxG.switchState(new MainMenuState());
+			LoadingState.loadAndSwitchState(new MainMenuState());
 		}
 		super.update(elapsed);
 	}

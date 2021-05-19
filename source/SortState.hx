@@ -153,7 +153,7 @@ class SortState extends MusicBeatState
 						}
 						trace(sortedSongs);
 						FNFAssets.saveContent('assets/data/freeplaySongJson.jsonc',CoolUtil.stringifyJson(coolCategoryJson));
-						FlxG.switchState(new SaveDataState());
+						LoadingState.loadAndSwitchState(new SaveDataState());
 					case "categories": 
 						var coolCategoryJson:Array<SelectSongsState.TCategory> = CoolUtil.parseJson(Assets.getText('assets/data/freeplaySongJson.jsonc'));
 						var coolReplacementJson:Array<SelectSongsState.TCategory> = [];
@@ -161,7 +161,7 @@ class SortState extends MusicBeatState
 							coolReplacementJson.push(coolCategoryJson[i]);
 						}
 						FNFAssets.saveContent('assets/data/freeplaySongJson.jsonc', CoolUtil.stringifyJson(coolReplacementJson));
-						FlxG.switchState(new SaveDataState());
+						LoadingState.loadAndSwitchState(new SaveDataState());
 					case "weeks":
 						// ha ha weeeeeee
 						// this also has to rename files
@@ -185,9 +185,9 @@ class SortState extends MusicBeatState
 							FNFAssets.saveContent('assets/images/campaign-ui-week/week'+i+'.xml',coolFiles[i].xml);
 						}
 						FNFAssets.saveContent('assets/data/storySonglist.json', CoolUtil.stringifyJson(replacementJson));
-						FlxG.switchState(new SaveDataState());
+						LoadingState.loadAndSwitchState(new SaveDataState());
 				}
-				FlxG.switchState(new SaveDataState());
+				LoadingState.loadAndSwitchState(new SaveDataState());
 			}
 		}
 

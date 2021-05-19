@@ -531,10 +531,10 @@ class PlayState extends MusicBeatState
 		}
 		// rebind always, to support djkf
 		if (!opponentPlayer && !duoMode) {
-			controls.setKeyboardScheme(Solo);
+			controls.setKeyboardScheme(Solo(OptionsHandler.options.DJFKKeys));
 		}
 		if (opponentPlayer) {
-			controlsPlayerTwo.setKeyboardScheme(Solo);
+			controlsPlayerTwo.setKeyboardScheme(Solo(OptionsHandler.options.DJFKKeys));
 		} else {
 			controlsPlayerTwo.setKeyboardScheme(Duo(false));
 		}
@@ -2072,7 +2072,7 @@ class PlayState extends MusicBeatState
 				FlxG.sound.music.pause();
 				vocals.pause();
 			}
-
+			controls.setKeyboardScheme(Solo(false));
 			#if windows
 			DiscordClient.changePresence("PAUSED on "
 				+ SONG.song
@@ -2102,7 +2102,13 @@ class PlayState extends MusicBeatState
 			{
 				resyncVocals();
 			}
-
+			if (!opponentPlayer && !duoMode)
+			{
+				controls.setKeyboardScheme(Solo(OptionsHandler.options.DJFKKeys));
+			}
+			if (duoMode) {
+				controls.setKeyboardScheme(Duo(true));
+			}
 			if (!startTimer.finished)
 				startTimer.active = true;
 			paused = false;
@@ -2288,7 +2294,7 @@ class PlayState extends MusicBeatState
 			#if windows
 			DiscordClient.changePresence("Chart Editor", null, null, true);
 			#end
-			FlxG.switchState(new ChartingState());
+			LoadingState.loadAndSwitchState(new ChartingState());
 		}
 		if (FlxG.keys.justPressed.NINE) {
 			oldMode = !oldMode;
@@ -2433,10 +2439,10 @@ class PlayState extends MusicBeatState
 			
 		
 		/* if (FlxG.keys.justPressed.NINE)
-			FlxG.switchState(new Charting()); */
+			LoadingState.loadAndSwitchState(new Charting()); */
 
 		if (FlxG.keys.justPressed.EIGHT) // stop checking for debug so i can fix my offsets!
-			FlxG.switchState(new AnimationDebug(SONG.player2, SONG.player1));
+			LoadingState.loadAndSwitchState(new AnimationDebug(SONG.player2, SONG.player1));
 
 		if (startingSong)
 		{
@@ -2625,13 +2631,13 @@ class PlayState extends MusicBeatState
 			FlxG.sound.music.stop();
 			
 			if (inALoop) {
-				FlxG.switchState(new PlayState());
+				FlxG.resetState();
 			} else {
 				// 1 / 1000 chance for Gitaroo Man easter egg
 				if (FlxG.random.bool(0.1))
 				{
 					// gitaroo man easter egg
-					FlxG.switchState(new GitarooPause());
+					LoadingState.loadAndSwitchState(new GitarooPause());
 				}
 				else
 					openSubState(new GameOverSubstate(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
@@ -3024,7 +3030,7 @@ class PlayState extends MusicBeatState
 		if (!demoMode && ModifierState.scoreMultiplier > 0)
 			Highscore.saveScore(SONG.song, songScore, storyDifficulty, (notesHit / notesPassing));
 		#end
-		controls.setKeyboardScheme(Solo);
+		controls.setKeyboardScheme(Solo(false));
 		if (isStoryMode)
 		{
 			campaignScore += songScore;
@@ -3054,11 +3060,11 @@ class PlayState extends MusicBeatState
 					+ " | Misses: "
 					+ misses, iconRPC, playingAsRpc);
 					#end
-					FlxG.switchState(new VictoryLoopState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y, gf.getScreenPosition().x, gf.getScreenPosition().y, campaignAccuracy, campaignScore, dad.getScreenPosition().x, dad.getScreenPosition().y));
+					LoadingState.loadAndSwitchState(new VictoryLoopState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y, gf.getScreenPosition().x, gf.getScreenPosition().y, campaignAccuracy, campaignScore, dad.getScreenPosition().x, dad.getScreenPosition().y));
 				} else {
 					transIn = FlxTransitionableState.defaultTransIn;
 					transOut = FlxTransitionableState.defaultTransOut;
-					FlxG.switchState(new StoryMenuState());
+					LoadingState.loadAndSwitchState(new StoryMenuState());
 				}
 				FlxG.save.flush();
 			}
@@ -3094,7 +3100,7 @@ class PlayState extends MusicBeatState
 					PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase(), PlayState.storyPlaylist[0]);
 				FlxG.sound.music.stop();
 
-				FlxG.switchState(new PlayState());
+				LoadingState.loadAndSwitchState(new PlayState());
 			}
 		}
 		else
@@ -3115,9 +3121,9 @@ class PlayState extends MusicBeatState
 					+ " | Misses: "
 					+ misses, iconRPC, playingAsRpc);
 				#end
-				FlxG.switchState(new VictoryLoopState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y, gf.getScreenPosition().x,gf.getScreenPosition().y, accuracy, songScore, dad.getScreenPosition().x, dad.getScreenPosition().y));
+				LoadingState.loadAndSwitchState(new VictoryLoopState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y, gf.getScreenPosition().x,gf.getScreenPosition().y, accuracy, songScore, dad.getScreenPosition().x, dad.getScreenPosition().y));
 			} else
-				FlxG.switchState(new FreeplayState());
+				LoadingState.loadAndSwitchState(new FreeplayState());
 		}
 	}
 

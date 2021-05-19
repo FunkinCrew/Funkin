@@ -183,7 +183,7 @@ class MainMenuState extends MusicBeatState
 
 			if (controls.BACK)
 			{
-				FlxG.switchState(new TitleState());
+				LoadingState.loadAndSwitchState(new TitleState());
 			}
 
 			if (controls.ACCEPT)
@@ -225,7 +225,7 @@ class MainMenuState extends MusicBeatState
 								switch (daChoice)
 								{
 									case 'story mode':
-										FlxG.switchState(new StoryMenuState());
+										LoadingState.loadAndSwitchState(new StoryMenuState());
 										trace("Story Menu Selected");
 									case 'freeplay':
 										CategoryState.choosingFor = "freeplay";
@@ -233,14 +233,14 @@ class MainMenuState extends MusicBeatState
 										FreeplayState.soundTest = false;
 										if (epicCategoryJs.length > 1)
 										{
-											FlxG.switchState(new CategoryState());
+											LoadingState.loadAndSwitchState(new CategoryState());
 										}  else {
 											FreeplayState.currentSongList = epicCategoryJs[0].songs;
-											FlxG.switchState(new FreeplayState());
+											LoadingState.loadAndSwitchState(new FreeplayState());
 										}
 										
 									case 'options':
-										FlxG.switchState(new SaveDataState());
+										LoadingState.loadAndSwitchState(new SaveDataState());
 								}
 							});
 						}

@@ -118,7 +118,7 @@ class SelectSortState extends MusicBeatState
 
 		if (controls.BACK)
 		{
-			FlxG.switchState(new SaveDataState());
+			LoadingState.loadAndSwitchState(new SaveDataState());
 		}
 
 		if (accepted)
@@ -127,7 +127,7 @@ class SelectSortState extends MusicBeatState
 			switch (songs[curSelected]) {
 				case "songs":
 					CategoryState.choosingFor = "sorting";
-					FlxG.switchState(new CategoryState());
+					LoadingState.loadAndSwitchState(new CategoryState());
 				case "categories":
 					var coolCategoryJson:Array<SelectSongsState.TCategory> = CoolUtil.parseJson(Assets.getText('assets/data/freeplaySongJson.jsonc'));
 					var coolCategories:Array<String> = [];
@@ -137,7 +137,7 @@ class SelectSortState extends MusicBeatState
 					}
 					SortState.stuffToSort = coolCategories;
 					SortState.sorting = "categories";
-					FlxG.switchState(new SortState());
+					LoadingState.loadAndSwitchState(new SortState());
 				case "weeks":
 					// gonna be reallllllllll fucky renaming files
 					SortState.sorting = "weeks";
@@ -148,7 +148,7 @@ class SelectSortState extends MusicBeatState
 						coolWeeks.push("week"+i);
 					}
 					SortState.stuffToSort = coolWeeks;
-					FlxG.switchState(new SortState());
+					LoadingState.loadAndSwitchState(new SortState());
 			}
 
 		}

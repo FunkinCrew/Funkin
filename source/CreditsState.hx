@@ -126,7 +126,7 @@ class CreditsState extends MusicBeatState
 		if (controls.BACK)
 		{
 			// main menu or else we are cursed
-			FlxG.switchState(new SaveDataState());
+			LoadingState.loadAndSwitchState(new SaveDataState());
 				
 		}
 

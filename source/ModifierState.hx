@@ -291,9 +291,9 @@ class ModifierState extends MusicBeatState
 		super.update(elapsed);
 		if (controls.BACK) {
 			if (isStoryMode)
-				FlxG.switchState(new StoryMenuState());
+				LoadingState.loadAndSwitchState(new StoryMenuState());
 			else
-				FlxG.switchState(new FreeplayState());
+				LoadingState.loadAndSwitchState(new FreeplayState());
 		}
 		if (controls.UP_P)
 		{
@@ -363,11 +363,11 @@ class ModifierState extends MusicBeatState
 			case 'Play':
 				if (FlxG.sound.music != null)
 					FlxG.sound.music.stop();
-				FlxG.switchState(new PlayState());
+				LoadingState.loadAndSwitchState(new PlayState(), true);
 			case 'Chart':
-				FlxG.switchState(new ChartingState());
+				LoadingState.loadAndSwitchState(new ChartingState());
 			case 'Char Select':
-				FlxG.switchState(new ChooseCharState(PlayState.SONG.player1));
+				LoadingState.loadAndSwitchState(new ChooseCharState(PlayState.SONG.player1));
 			default:
 					checkmarks[curSelected].visible = !checkmarks[curSelected].visible;
 					for (conflicting in modifiers[curSelected].conflicts)

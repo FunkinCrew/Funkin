@@ -321,7 +321,7 @@ class StoryMenuState extends MusicBeatState
 		{
 			FlxG.sound.play('assets/sounds/cancelMenu' + TitleState.soundExt);
 			movedBack = true;
-			FlxG.switchState(new MainMenuState());
+			LoadingState.loadAndSwitchState(new MainMenuState());
 		}
 
 		super.update(elapsed);
@@ -368,11 +368,11 @@ class StoryMenuState extends MusicBeatState
 			new FlxTimer().start(1, function(tmr:FlxTimer)
 			{
 				if (!OptionsHandler.options.skipModifierMenu)
-				 	FlxG.switchState(new ModifierState());
+				 	LoadingState.loadAndSwitchState(new ModifierState());
 				else {
 					if (FlxG.sound.music != null)
 						FlxG.sound.music.stop();
-					FlxG.switchState(new PlayState());
+					LoadingState.loadAndSwitchState(new PlayState());
 				}
 			});
 	}

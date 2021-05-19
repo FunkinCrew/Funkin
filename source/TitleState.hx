@@ -89,9 +89,9 @@ class TitleState extends MusicBeatState
 
 
 		#if FREEPLAY
-		FlxG.switchState(new CategoryState());
+		LoadingState.loadAndSwitchState(new CategoryState());
 		#elseif CHARTING
-		FlxG.switchState(new ChartingState());
+		LoadingState.loadAndSwitchState(new ChartingState());
 		#else
 		new FlxTimer().start(1, function(tmr:FlxTimer)
 		{
@@ -274,7 +274,7 @@ class TitleState extends MusicBeatState
 			new FlxTimer().start(2, function(tmr:FlxTimer)
 			{
 				// Check if version is outdated
-				FlxG.switchState(new MainMenuState());
+				LoadingState.loadAndSwitchState(new MainMenuState());
 			});
 			// FlxG.sound.play('assets/music/titleShoot' + TitleState.soundExt, 0.7);
 		}

@@ -220,7 +220,7 @@ class AnimationDebug extends FlxState
 
 		if (FlxG.keys.justPressed.ENTER)
 		{
-			FlxG.switchState(new FreeplayState());
+			LoadingState.loadAndSwitchState(new FreeplayState(), false);
 		}
 
 		var upP = FlxG.keys.anyJustPressed([UP]);

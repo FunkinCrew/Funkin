@@ -124,7 +124,7 @@ class SaveDataState extends MusicBeatState
 				saveOptions();
 				saveOptions();
 				FlxG.sound.music.stop();
-				FlxG.switchState(new MainMenuState());
+				LoadingState.loadAndSwitchState(new MainMenuState());
 			} else {
 				if (saves.members[curSelected].askingToConfirm)
 					saves.members[curSelected].askToConfirm(false);
@@ -163,11 +163,7 @@ class SaveDataState extends MusicBeatState
 						FlxG.save.bind(saveName, "bulbyVR");
 						FlxG.sound.play('assets/sounds/custom_menu_sounds/'
 							+ CoolUtil.parseJson(FNFAssets.getText("assets/sounds/custom_menu_sounds/custom_menu_sounds.json")).customMenuConfirm+'/confirmMenu.ogg');
-						if (DJFKKeys) {
-							controls.setKeyboardScheme(KeyboardScheme.Solo, true);
-						} else {
-							controls.setKeyboardScheme(KeyboardScheme.Duo(true), true);
-						}						
+						// don't edit the djkf
 						if (FlxG.save.data.songScores == null) {
 							FlxG.save.data.songScores = ["tutorial" => 0];
 						}
@@ -200,33 +196,33 @@ class SaveDataState extends MusicBeatState
 						// we are gonna have to do some shenanagins to save our preffered save
 
 						saveOptions();
-						FlxG.switchState(new NewCharacterState());
+						LoadingState.loadAndSwitchState(new NewCharacterState());
 					case "New Stage...":
 						// our current save saves this
 						// we are gonna have to do some shenanagins to save our preffered save
 
 						saveOptions();
 
-						FlxG.switchState(new NewStageState());
+						LoadingState.loadAndSwitchState(new NewStageState());
 					case "New Song...":
 						saveOptions();
 
-						FlxG.switchState(new NewSongState());
+						LoadingState.loadAndSwitchState(new NewSongState());
 					case "New Week...":
 						saveOptions();
 						NewWeekState.sorted = false;
-						FlxG.switchState(new NewWeekState());
+						LoadingState.loadAndSwitchState(new NewWeekState());
 					case "Sort...":
 						saveOptions();
 
-						FlxG.switchState(new SelectSortState());
+						LoadingState.loadAndSwitchState(new SelectSortState());
 					case "Sound Test...":
 						saveOptions();
 						FreeplayState.soundTest = true;
-						FlxG.switchState(new CategoryState());
+						LoadingState.loadAndSwitchState(new CategoryState());
 					case "Credits": 
 						saveOptions();
-						FlxG.switchState(new CreditsState());
+						LoadingState.loadAndSwitchState(new CreditsState());
 					default:
 						if (OptionsHandler.options.allowEditOptions){
 							checkmarks.members[optionsSelected].visible = !checkmarks.members[optionsSelected].visible;
