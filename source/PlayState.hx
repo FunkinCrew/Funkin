@@ -219,9 +219,8 @@ class PlayState extends MusicBeatState
 	var fullComboMode:Bool = false;
 	var perfectMode:Bool = false;
 	var practiceMode:Bool = false;
-	var healthGainModifier:Float = 0;
-	var healthLossModifier:Float = 0;
-	var supLove:Bool = false;
+	var healthLossMultiplier:Float = 1;
+	var healthGainMultiplier:Float = 1;
 	var poisonExr:Bool = false;
 	var poisonPlus:Bool = false;
 	var beingPoisioned:Bool = false;
@@ -249,6 +248,9 @@ class PlayState extends MusicBeatState
 	var downscroll:Bool = false;
 	var luaRegistered:Bool = false;
 	var currentFrames:Int = 0;
+	var supLove:Bool = false;
+	var loveMultiplier:Float = 0;
+	var poisonMultiplier:Float = 0;
 	/**
 	 * If we are playing as opponent. 
 	 */
@@ -257,6 +259,7 @@ class PlayState extends MusicBeatState
 	 *  How much health is drained/regened with Supportive love 
 	 * or Poison Fright
 	 */
+	 @:deprecated("REPLACED BY MODIFIER NUMBERS")
 	public var drainBy:Float = 0.005;
 	// this is just so i can collapse it lol
 	#if true
@@ -500,18 +503,10 @@ class PlayState extends MusicBeatState
 			duoMode = ModifierState.namedModifiers.duo.value;
 			opponentPlayer = ModifierState.namedModifiers.oppnt.value;
 			demoMode = ModifierState.namedModifiers.demo.value;
-			if (ModifierState.namedModifiers.hgu.value) {
-				healthGainModifier += 0.02;
-			}
-			else if (ModifierState.namedModifiers.hgd.value) {
-				healthGainModifier -= 0.01;
-			}
-			if (ModifierState.namedModifiers.hlu.value) {
-				healthLossModifier += 0.02;
-			}
-			else if (ModifierState.namedModifiers.hld.value) {
-				healthLossModifier -= 0.02;
-			}
+			if (ModifierState.namedModifiers.healthloss.value)
+				healthLossMultiplier = ModifierState.namedModifiers.healthloss.amount;
+			if (ModifierState.namedModifiers.healthgain.value)
+				healthGainMultiplier = ModifierState.namedModifiers.healthgain.amount;
 			if (ModifierState.namedModifiers.slow.value)
 				noteSpeed = 0.3;
 			if (accelNotes) {
@@ -525,8 +520,14 @@ class PlayState extends MusicBeatState
 
 			if (ModifierState.namedModifiers.fast.value)
 				noteSpeed = 0.9;
-			supLove = ModifierState.namedModifiers.regen.value;
-			poisonExr = ModifierState.namedModifiers.degen.value;
+			if (ModifierState.namedModifiers.regen.value) {
+				loveMultiplier = ModifierState.namedModifiers.regen.amount;
+				supLove = true;
+			}
+			if (ModifierState.namedModifiers.degen.value) {
+				poisonMultiplier = ModifierState.namedModifiers.degen.amount;
+				poisonExr = true;
+			}
 			poisonPlus = ModifierState.namedModifiers.poison.value;
 		}
 		// rebind always, to support djkf
@@ -1488,6 +1489,7 @@ class PlayState extends MusicBeatState
 			swagCounter += 1;
 			// generateSong('fresh');
 		}, 5);
+		/*
 		regenTimer = new FlxTimer().start(2, function (tmr:FlxTimer) {
 			var bonus = drainBy;
 			if (opponentPlayer) {
@@ -1498,6 +1500,7 @@ class PlayState extends MusicBeatState
 			if (supLove && !paused)
 				health +=  bonus;
 		}, 0);
+		*/
 		sickFastTimer = new FlxTimer().start(2, function (tmr:FlxTimer) {
 			if (accelNotes && !paused) {
 				trace("tick:" + noteSpeed);
@@ -2443,7 +2446,6 @@ class PlayState extends MusicBeatState
 
 		if (FlxG.keys.justPressed.EIGHT) // stop checking for debug so i can fix my offsets!
 			LoadingState.loadAndSwitchState(new AnimationDebug(SONG.player2, SONG.player1));
-
 		if (startingSong)
 		{
 			if (startedCountdown)
@@ -2530,6 +2532,12 @@ class PlayState extends MusicBeatState
 				{
 					currentIconState = "Being Posioned";
 				}
+			}
+			if (supLove) {
+				health += loveMultiplier / 600000;
+			}
+			if (poisonExr) {
+				health -= poisonMultiplier / 700000;
 			}
 			playingAsRpc = "Playing as " + (opponentPlayer ? player2Icon : player1Icon) + " | " + currentIconState;
 			if (PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection && camFollow.x != boyfriend.getMidpoint().x - 100)
@@ -2887,9 +2895,9 @@ class PlayState extends MusicBeatState
 						if ((daNote.tooLate || !daNote.wasGoodHit) && !daNote.isSustainNote)
 						{
 							if (!daNote.mustPress) {
-								health += 0.0475 + healthLossModifier;
+								health += 0.0475 * healthLossMultiplier;
 							} else if (!opponentPlayer) {
-								health -= 0.0475 + healthLossModifier;
+							health -= 0.0475 * healthLossMultiplier;
 							}
 							
 							vocals.volume = 0;
@@ -3157,14 +3165,14 @@ class PlayState extends MusicBeatState
 				score = -300;
 				combo = 0;
 				// misses++;
-				healthBonus -= 0.2 + healthLossModifier;
+				healthBonus -= 0.2 * healthLossMultiplier;
 				ss = false;
 				shits++;
 				notesHit += 0.25;
 			case 'bad':
 				daRating = 'bad';
 				score = 0;
-				healthBonus -= 0.06 + healthLossModifier;
+				healthBonus -= 0.06 * healthLossMultiplier;
 				ss = false;
 				bads++;
 				notesHit += 0.50;
@@ -3173,10 +3181,10 @@ class PlayState extends MusicBeatState
 				score = 200;
 				ss = false;
 				goods++;
-				healthBonus += 0.03 + healthGainModifier;
+				healthBonus += 0.03 * healthGainMultiplier;
 				notesHit += 0.75;
 			case 'sick':
-				healthBonus += 0.07 + healthGainModifier;
+				healthBonus += 0.07 * healthGainMultiplier;
 				notesHit += 1;
 				sicks++;
 				var recycledNote = grpNoteSplashes.recycle(NoteSplash);
@@ -3521,9 +3529,9 @@ class PlayState extends MusicBeatState
 			misses += 1;
 			notesPassing += 1;
 			if (playerOne)
-				health -= 0.04 + healthLossModifier;
+				health -= 0.04 * healthLossMultiplier;
 			else
-				health += 0.04 + healthLossModifier;
+				health += 0.04 * healthLossMultiplier;
 			if (combo > 5)
 			{
 				gf.playAnim('sad');
@@ -3631,9 +3639,9 @@ class PlayState extends MusicBeatState
 			}
 
 			if (note.noteData >= 0)
-				health += 0.01 + healthGainModifier;
+				health += 0.01 * healthGainMultiplier;
 			else
-				health += 0.005 + healthGainModifier;
+				health += 0.005 * healthGainMultiplier;
 
 			actingOn.sing(note.noteData, false, actingOn.altNum);
 			if (playerOne)

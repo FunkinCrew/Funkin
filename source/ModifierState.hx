@@ -16,11 +16,17 @@ import haxe.Json;
 using StringTools;
 typedef TModifierNoName = {
 	var value:Bool;
-	var conflicts:Array<Int>;
+	var conflicts:Array<String>;
 	var multi:Float;
 	var ?times:Null<Bool>;
 	var desc:String;
 	var ?amount:Null<Float>;
+	var ?defAmount:Null<Float>;
+	var ?precision:Null<Float>;
+	var ?minimum:Null<Float>;
+	var ?maximum:Null<Float>;
+	// used for things that give you points in both directions
+	var ?absolute:Null<Bool>;
 }
 typedef TModifier = {
 	> TModifierNoName,
@@ -37,7 +43,7 @@ class ModifierState extends MusicBeatState
 			name: "Sick Mode",
 			internName: "mfc",
 			value: false,
-			conflicts: [1, 2, 3, 4, 5, 6, 7, 8, 9, 19, 21],
+			conflicts: ["fc", "practice", "hgu", "hgd", "hlu", "hld", "regen", "degen", "poison", "duo", "demo"],
 			multi: 3,
 			times: true,
 			desc: "Instantly fail when you don't get 'Sick'"
@@ -46,7 +52,8 @@ class ModifierState extends MusicBeatState
 			name: "FC Mode",
 			internName: "fc",
 			value: false,
-			conflicts: [0, 2, 3, 4, 5, 6, 7, 8, 9, 19, 21],
+			conflicts: [
+				"mfc", "practice", "hgu", "hgd", "hlu", "hld", "regen", "degen", "poison", "duo", "demo"],
 			multi: 2,
 			times: true,
 			desc: "Fail when you miss a note, Go for the Perfect!"
@@ -55,16 +62,17 @@ class ModifierState extends MusicBeatState
 			name: "Practice Mode",
 			internName: "practice",
 			value: false,
-			conflicts: [0, 1, 18, 19, 21],
+			conflicts: ["mfc", "fc", "duo", "demo"],
 			multi: 0,
 			times: true,
 			desc: "You can't die while you're in practice! (DISABLES SCORE)"
 		},
+		/*
 		{
 			name: "Health Gain \\^",
 			internName: "hgu",
 			value: false,
-			conflicts: [0, 1, 4, 19, 21],
+			conflicts: ["mfc", "fc", 4, 19, 21],
 			multi: -0.5,
 			desc: "Raise your health gain a little"
 		},
@@ -92,27 +100,64 @@ class ModifierState extends MusicBeatState
 			multi: -0.5,
 			desc: "Lower your health loss a little."
 		},
+		*/
+		{
+			name: "Health Loss",
+			internName: "healthloss",
+			value:false,
+			conflicts: ["mfc", "fc"],
+			multi: 0.1,
+			amount: 1,
+			defAmount: 1,
+			precision: 0.5,
+			minimum: 0,
+			maximum: 10,
+			desc: "How much health you lose. Can be changed numbericly."
+		},
+		{
+			name: "Health Gain",
+			internName: "healthgain",
+			value: false,
+			conflicts: ["mfc", "fc"],
+			multi: -0.1,
+			amount: 1,
+			defAmount: 1,
+			precision: 0.5,
+			minimum: 0,
+			maximum: 10,
+			desc: "How much health you gain. Can be changed numbericly."
+		},
 		{
 			name: "Sup. Love",
 			internName: "regen",
 			value: false,
-			conflicts: [0, 1, 8, 19],
-			multi: -0.4,
+			conflicts: ["fc", "mfc", "degen", "duo", "demo"],
+			multi: -0.03,
+			amount: 0,
+			defAmount: 0,
+			precision: 5,
+			minimum: 0,
+			maximum: 500,
 			desc: "Who knew simping could be so healthy?"
 		},
 		{
 			name: "Poison Fright",
 			internName: "degen",
 			value: false,
-			conflicts: [0, 1, 7, 19, 21],
-			multi: 0.4,
+			conflicts: ["fc", "mfc", "duo", "regen", "demo"],
+			multi: 0.03,
+			amount: 0,
+			defAmount: 0,
+			precision: 5,
+			minimum: 0,
+			maximum: 500,
 			desc: "You are constantly losing health!"
 		},
 		{
 			name: "Fragile Funkin",
 			internName: "poison",
 			value: false,
-			conflicts: [0, 1, 19, 21],
+			conflicts: ["fc", "mfc", "duo", "demo"],
 			multi: 1,
 			desc: "Missed note makes you lose a lot of health. You wanna have a bad time?"
 		},
@@ -120,7 +165,7 @@ class ModifierState extends MusicBeatState
 			name: "Flipped Notes",
 			internName: "flipped",
 			value: false,
-			conflicts: [15],
+			conflicts: ["invis"],
 			multi: 0.5,
 			desc: "Notes are flipped"
 		},
@@ -128,7 +173,7 @@ class ModifierState extends MusicBeatState
 			name: "Slow Notes",
 			internName: "slow",
 			value: false,
-			conflicts: [12, 13],
+			conflicts: ["fast", "accel"],
 			multi: -0.3,
 			desc: "Notes are slow"
 		},
@@ -136,7 +181,7 @@ class ModifierState extends MusicBeatState
 			name: "Fast Notes",
 			value: false,
 			internName: "fast",
-			conflicts: [11, 13],
+			conflicts: ["slow", "accel"],
 			multi: 0.8,
 			desc: "Notes gotta go fast!"
 		},
@@ -144,7 +189,7 @@ class ModifierState extends MusicBeatState
 			name: "Accel Notes",
 			internName: "accel",
 			value: false,
-			conflicts: [11, 12],
+			conflicts: ["fast", "slow"],
 			multi: 0.4,
 			desc: "Notes get faster and faster"
 		},
@@ -152,7 +197,7 @@ class ModifierState extends MusicBeatState
 			name: "Vnsh Notes",
 			internName: "vanish",
 			value: false,
-			conflicts: [15],
+			conflicts: ["invis"],
 			multi: 0.5,
 			desc: "Notes vanish when they get close to the strum line."
 		},
@@ -160,7 +205,7 @@ class ModifierState extends MusicBeatState
 			name: "Invs Notes",
 			internName: "invis",
 			value: false,
-			conflicts: [10, 14, 16],
+			conflicts: ["flipped", "vanish", "snake", "drunk"],
 			multi: 1.5,
 			desc: "Notes are now invisible! Hard enough for you?"
 		},
@@ -168,7 +213,7 @@ class ModifierState extends MusicBeatState
 			name: "Snake Notes",
 			internName: "snake",
 			value: false,
-			conflicts: [15],
+			conflicts: ["invis"],
 			multi: 0.5,
 			desc: "Notes smoove across the screen"
 		},
@@ -176,7 +221,7 @@ class ModifierState extends MusicBeatState
 			name: "Drunk Notes",
 			internName: "drunk",
 			value: false,
-			conflicts: [15],
+			conflicts: ["invis"],
 			multi: 0.5,
 			desc: "Notes be like my dad after a long day at work"
 		},
@@ -184,7 +229,7 @@ class ModifierState extends MusicBeatState
 			name: "Stuck in a loop",
 			internName: "loop",
 			value: false,
-			conflicts: [2],
+			conflicts: ["practice"],
 			multi: 0,
 			desc: "Insta-replay the level after you die!"
 		},
@@ -192,7 +237,7 @@ class ModifierState extends MusicBeatState
 			name: "Duo Mode",
 			internName: "duo",
 			value: false,
-			conflicts: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 20, 21],
+			conflicts: ["mfc", "fc", "healthloss", "regen", "degen", "poison", "oppnt", "demo"],
 			multi: 0,
 			times: true,
 			desc: "Boogie with a friend! (FRIEND NOT REQUIRED)"
@@ -201,7 +246,7 @@ class ModifierState extends MusicBeatState
 			name: "Oppnt. Play",
 			internName: "oppnt",
 			value: false,
-			conflicts: [19, 21],
+			conflicts: ["duo", "demo"],
 			multi: 0,
 			desc: "Play as the enemy that wanted to beat up Boyfriend!"
 		},
@@ -209,7 +254,7 @@ class ModifierState extends MusicBeatState
 			name: "Demo Mode",
 			internName: "demo",
 			value: false,
-			conflicts: [19, 20, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+			conflicts: ["mfc", "fc", "healthloss", "regen", "degen", "poison", "oppnt", "duo"],
 			multi: 0,
 			times: true,
 			desc: "Let the game play itself!"
@@ -245,6 +290,7 @@ class ModifierState extends MusicBeatState
 	var grpAlphabet:FlxTypedGroup<Alphabet>;
 	var curSelected:Int = 0;
 	var checkmarks:Array<FlxSprite> = [];
+	var numberdisplays:Array<NumberDisplay> = [];
 	var multiTxt:FlxText;
 	public static var isStoryMode:Bool = false;
 	public static var scoreMultiplier:Float = 1;
@@ -273,9 +319,19 @@ class ModifierState extends MusicBeatState
 			swagModifier.targetY = modifier;
 			var coolCheckmark:FlxSprite = new FlxSprite().loadGraphic('assets/images/checkmark.png');
 			coolCheckmark.visible = modifiers[modifier].value;
+			var displayNum:NumberDisplay = new NumberDisplay(0, 0, modifiers[modifier].defAmount, modifiers[modifier].precision, modifiers[modifier].minimum, modifiers[modifier].maximum);
+			displayNum.visible = modifiers[modifier].amount != null;
+			if (displayNum.visible)
+				displayNum.value = modifiers[modifier].amount;
+			displayNum.size = 90;
 			checkmarks.push(coolCheckmark);
+			numberdisplays.push(displayNum);
+			displayNum.x += swagModifier.width + displayNum.width;
 			swagModifier.add(coolCheckmark);
+			swagModifier.add(displayNum);
 			grpAlphabet.add(swagModifier);
+			
+			
 			Reflect.setField(namedModifiers, modifiers[modifier].internName, modifiers[modifier]);
 		}
 		add(menuBG);
@@ -303,9 +359,27 @@ class ModifierState extends MusicBeatState
 		{
 			changeSelection(1);
 		}
-
+		if (controls.RIGHT_P) {
+			changeAmount(true);
+		}  else if (controls.LEFT_P) {
+			changeAmount(false);
+		}
 		if (controls.ACCEPT)
 			toggleSelection();
+	}
+	function changeAmount(increase:Bool=false) {
+		if (!numberdisplays[curSelected].visible)
+			// not meant to be here...
+			return;
+		numberdisplays[curSelected].changeAmount(increase);
+		modifiers[curSelected].amount = numberdisplays[curSelected].value;
+		if (numberdisplays[curSelected].value == numberdisplays[curSelected].useDefaultValue && modifiers[curSelected].value) {
+			toggleSelection();
+		}
+		else if (numberdisplays[curSelected].value != numberdisplays[curSelected].useDefaultValue && !modifiers[curSelected].value) {
+			toggleSelection();
+		}
+		calculateMultiplier();
 	}
 	function changeSelection(change:Int = 0)
 	{
@@ -342,21 +416,28 @@ class ModifierState extends MusicBeatState
 	function calculateMultiplier() {
 		scoreMultiplier = 1;
 		var timesThings:Array<Float> = [];
+		var i = 0;
 		for (modifier in modifiers) {
 			if (modifier.value) {
 				if (modifier.times)
 					timesThings.push(modifier.multi);
 				else {
-					scoreMultiplier += modifier.multi;
+					trace(numberdisplays[i].changedBy);
+					if (modifier.amount != null)
+						scoreMultiplier += numberdisplays[i].changedBy * modifier.multi;
+					else
+						scoreMultiplier += modifier.multi;
 				}
 			}
+			i++;
 		}
 		for (timesThing in timesThings) {
 			scoreMultiplier *= timesThing;
 		}
-		if (scoreMultiplier < 0) {
-			scoreMultiplier = 0;
+		if (scoreMultiplier <= 0 && timesThings.length == 0) {
+			scoreMultiplier = 0.1;
 		}
+		multiTxt.text = "Multiplier: " + scoreMultiplier;
 	}
 	function toggleSelection() {			
 		switch(modifiers[curSelected].name) {
@@ -372,12 +453,25 @@ class ModifierState extends MusicBeatState
 					checkmarks[curSelected].visible = !checkmarks[curSelected].visible;
 					for (conflicting in modifiers[curSelected].conflicts)
 					{
-						checkmarks[conflicting].visible = false;
-						modifiers[conflicting].value = false;
+						var coolNum = 0;
+						for (modifier in 0...modifiers.length) {
+							if (modifiers[modifier].internName == conflicting) {
+								coolNum = modifier;
+							}
+						}
+						checkmarks[coolNum].visible = false;
+						modifiers[coolNum].value = false;
 					}
 					calculateMultiplier();
 
 					modifiers[curSelected].value = checkmarks[curSelected].visible;
+				if (modifiers[curSelected].value
+					&& modifiers[curSelected].amount != null
+					&& numberdisplays[curSelected].value == numberdisplays[curSelected].useDefaultValue) {
+						numberdisplays[curSelected].changeAmount(true);
+					} else if (!modifiers[curSelected].value){
+						numberdisplays[curSelected].resetValues();
+					}
 					calculateMultiplier();
 					multiTxt.text = "Multiplier: " + scoreMultiplier;
 		}
