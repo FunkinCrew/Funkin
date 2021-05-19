@@ -20,6 +20,7 @@ typedef TModifierNoName = {
 	var multi:Float;
 	var ?times:Null<Bool>;
 	var desc:String;
+	var ?amount:Null<Float>;
 }
 typedef TModifier = {
 	> TModifierNoName,
