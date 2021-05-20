@@ -852,6 +852,7 @@ class Character extends FlxSprite
 		interp.variables.set("portraitOffset", [0, 0]);
 		interp.variables.set("dadVar", 4.0);
 		interp.variables.set("isPixel", false);
+		interp.variables.set("colors", [FlxColor.CYAN]);
 		interp.execute(program);
 		trace(interp);
 		return interp;

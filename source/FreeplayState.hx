@@ -56,7 +56,8 @@ class FreeplayState extends MusicBeatState
 	var daycoreMode:Bool = false;
 	private var grpSongs:FlxTypedGroup<Alphabet>;
 	private var curPlaying:Bool = false;
-
+	var charJson:Dynamic;
+	var record:Record;
 	override function create()
 	{
 		for (songSnippet in currentSongList) {
@@ -77,7 +78,7 @@ class FreeplayState extends MusicBeatState
 		Discord.DiscordClient.changePresence("In the Freeplay Menu", null);
 		#end
 		var isDebug:Bool = false;
-
+		charJson = CoolUtil.parseJson(FNFAssets.getText('assets/images/custom_chars/custom_chars.jsonc'));
 		#if debug
 		isDebug = true;
 		#end
@@ -134,7 +135,14 @@ class FreeplayState extends MusicBeatState
 		add(diffText);
 
 		add(scoreText);
-
+		var curCharacter = songs[0].songCharacter;
+		record = new Record(FlxG.width, FlxG.height, Reflect.field(charJson, curCharacter).colors);
+		// DON'T update hitbox, it breaks everything
+		record.scale.set(0.5, 0.5);
+		record.x -= record.width/1.5;
+		record.y -= record.height/1.5;
+		
+		add(record);
 		changeSelection();
 		changeDiff();
 
@@ -164,15 +172,15 @@ class FreeplayState extends MusicBeatState
 
 			trace(md);
 		 */
-
+		
 		super.create();
 	}
 
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
-
-		if (FlxG.sound.music.volume < 0.7)
+		// :grief: what
+		if (FlxG.sound.music.volume < 0.7 && (!soundTest || curDifficulty != 2))
 		{
 			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
 		}
@@ -242,12 +250,13 @@ class FreeplayState extends MusicBeatState
 				{
 					var vocalSound = FNFAssets.getSound("assets/music/" + soundTestSong.song + suffix + "_Voices" + TitleState.soundExt);
 					vocals = new FlxSound().loadEmbedded(vocalSound);
+					vocals.volume = curDifficulty != 1 ? 1 : 0;
 					FlxG.sound.list.add(vocals);
 					vocals.play();
 					vocals.pause();
 					vocals.looped = true;
 				}
-				FlxG.sound.playMusic(FNFAssets.getSound("assets/music/" + soundTestSong.song + suffix + "_Inst" + TitleState.soundExt));
+				FlxG.sound.playMusic(FNFAssets.getSound("assets/music/" + soundTestSong.song + suffix + "_Inst" + TitleState.soundExt), curDifficulty == 2 ? 0 : 1);
 				Conductor.mapBPMChanges(soundTestSong);
 				Conductor.changeBPM(soundTestSong.bpm);
 				if (soundTestSong.needsVoices)
@@ -337,6 +346,7 @@ class FreeplayState extends MusicBeatState
 		vocals.pause();
 
 		FlxG.sound.music.play();
+		
 		Conductor.songPosition = FlxG.sound.music.time;
 		vocals.time = Conductor.songPosition;
 		vocals.play();
@@ -361,11 +371,7 @@ class FreeplayState extends MusicBeatState
 		// lerpScore = 0;
 		#end
 		if (!soundTest)
-		#if sys
-			FlxG.sound.playMusic(Sound.fromFile("assets/music/"+songs[curSelected].songName+"_Inst"+TitleState.soundExt), 0);
-		#else
-			FlxG.sound.playMusic('assets/music/' + songs[curSelected].songName + "_Inst" + TitleState.soundExt, 0);
-		#end
+			FlxG.sound.playMusic(FNFAssets.getSound("assets/music/"+songs[curSelected].songName+"_Inst"+TitleState.soundExt), 0);
 		var bullShit:Int = 0;
 		for (i in 0...iconArray.length)
 		{
@@ -387,6 +393,7 @@ class FreeplayState extends MusicBeatState
 				// item.setGraphicSize(Std.int(item.width));
 			}
 		}
+		record.changeColor(Reflect.field(charJson, songs[curSelected].songCharacter).colors, songs[curSelected].songCharacter);
 	}
 }
 class SongMetadata
