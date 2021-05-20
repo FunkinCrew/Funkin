@@ -60,7 +60,7 @@
     "colors": ["#F2D046"]
   },
   "monster-christmas": {
-    "like": "newmonster",
+    "like": "monster-christmas",
     "icons": [0,1,2],
     "colors": ["#F2D046"]
   },
