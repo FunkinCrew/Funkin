@@ -43,7 +43,7 @@ how far back the section you want to copy from is. This stepper can go into nega
 
 "Clear Section" and "Swap Section", respectively, clear the current section and swap the notes of Player 1 and Player 2.
 
-Alternate Animation is used exclusively for the Mom and Dad from Week 5, but if your character has an Alternate Animation, you can tick this checkbox to use the other animation instead of the normal animation. This checkbox is applied per-section, which means you have to tick the checkmark across all the sections it is required for.
+Alternate Animation is used exclusively for the Mom and Dad from Week 5, but if your character has an Alternate Animation, you can tick this checkbox to use the other animation instead of the normal animation. This checkbox is applied per-section, which means you have to tick the checkmark across all the sections it is required for. You also cannot have an alternate idle animation
 
 ### Song Data
 
