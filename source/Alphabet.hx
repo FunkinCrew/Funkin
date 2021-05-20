@@ -278,8 +278,7 @@ class Alphabet extends FlxSpriteGroup
 					y = FlxMath.lerp(y, (scaledY * 120) + (FlxG.height * groupY), 0.16);
 				case "Vertical":
 					y = FlxMath.lerp(y, (scaledY * 120) + (FlxG.height * 0.5), 0.16 / 2);
-					x = FlxMath.lerp(x, (targetY * 0) + 308, 0.16 / 2);
-					x += groupX / 2;
+					// x = FlxMath.lerp(x, (targetY * 0) + 308, 0.16 / 2);
 				case "C-Shape":
 					// not actually a wheel, just trying to imitate mic'd up
 					// use exponent because circles????

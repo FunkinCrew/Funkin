@@ -119,6 +119,9 @@ class PlayState extends MusicBeatState
 	private var accuracy:Float = 0.00;
 	private var accuracyDefault:Float = 0.00;
 	public static var sicks:Int = 0;
+	public var songPosBar:FlxBar;
+	public var songPosBG:FlxSprite;
+	public var songPositionBar:Float = 0;
 	var songLength:Float = 0.0;
 	var songScoreDef:Int = 0;
 	var nps:Int = 0;
@@ -411,6 +414,8 @@ class PlayState extends MusicBeatState
 	var showMisses:Bool = false;
 	var nightcoreMode:Bool = false;
 	var daycoreMode:Bool = false;
+	var useSongBar:Bool = true;
+	var songName:FlxText;
 	override public function create()
 	{
 		misses = 0;
@@ -487,6 +492,7 @@ class PlayState extends MusicBeatState
 		useCustomInput = OptionsHandler.options.useCustomInput;
 		useVictoryScreen = !OptionsHandler.options.skipVictoryScreen;
 		downscroll = OptionsHandler.options.downscroll;
+		useSongBar = OptionsHandler.options.showSongPos;
 		if (!OptionsHandler.options.skipModifierMenu) {
 			fullComboMode = ModifierState.namedModifiers.fc.value;
 			perfectMode = ModifierState.namedModifiers.mfc.value;
@@ -1055,6 +1061,31 @@ class PlayState extends MusicBeatState
 
 		FlxG.fixedTimestep = false;
 		trace('gay');
+		if (useSongBar) {
+			// todo, add options
+			songPosBG = new FlxSprite(0, 10).loadGraphic('assets/images/healthBar.png');
+			if (downscroll)
+				songPosBG.y = FlxG.height * 0.9 + 45;
+			songPosBG.screenCenter(X);
+			songPosBG.scrollFactor.set();
+			add(songPosBG);
+			songPosBG.cameras = [camHUD];
+
+			songPosBar = new FlxBar(songPosBG.x + 4, songPosBG.y + 4, LEFT_TO_RIGHT, Std.int(songPosBG.width - 8), Std.int(songPosBG.height - 8), this,
+				'songPositionBar', 0, 90000);
+			songPosBar.scrollFactor.set();
+			songPosBar.createFilledBar(FlxColor.GRAY, FlxColor.LIME);
+			add(songPosBar);
+			songPosBar.cameras = [camHUD];
+
+			songName = new FlxText(songPosBG.x + (songPosBG.width / 2) - 20, songPosBG.y, 0, SONG.song, 16);
+			if (downscroll)
+				songName.y -= 3;
+			songName.setFormat("assets/fonts/vcr.ttf", 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			songName.scrollFactor.set();
+			add(songName);
+			songName.cameras = [camHUD];
+		}
 		healthBarBG = new FlxSprite(0, FlxG.height * 0.9).loadGraphic('assets/images/healthBar.png');
 		if (downscroll)
 			healthBarBG.y = 50;
@@ -1529,6 +1560,41 @@ class PlayState extends MusicBeatState
 			#else
 			FlxG.sound.playMusic("assets/music/" + SONG.song + "_Inst" + TitleState.soundExt, 1, false);
 			#end
+		songLength = FlxG.sound.music.length;
+
+		if (useSongBar) // I dont wanna talk about this code :(
+		{
+			remove(songPosBG);
+			remove(songPosBar);
+			remove(songName);
+
+			songPosBG = new FlxSprite(0, 10).loadGraphic('assets/images/healthBar.png');
+			if (downscroll)
+				songPosBG.y = FlxG.height * 0.9 + 45;
+			songPosBG.screenCenter(X);
+			songPosBG.scrollFactor.set();
+			add(songPosBG);
+			songPosBG.cameras = [camHUD];
+
+			songPosBar = new FlxBar(songPosBG.x
+				+ 4, songPosBG.y
+				+ 4, LEFT_TO_RIGHT, Std.int(songPosBG.width - 8), Std.int(songPosBG.height - 8), this,
+				'songPositionBar', 0, songLength
+				- 1000);
+			songPosBar.numDivisions = 1000;
+			songPosBar.scrollFactor.set();
+			songPosBar.createFilledBar(FlxColor.GRAY, FlxColor.LIME);
+			add(songPosBar);
+			songPosBar.cameras = [camHUD];
+
+			var songName = new FlxText(songPosBG.x + (songPosBG.width / 2) - 20, songPosBG.y, 0, SONG.song, 16);
+			if (downscroll)
+				songName.y -= 3;
+			songName.setFormat("assets/fonts/vcr.ttf", 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			songName.scrollFactor.set();
+			add(songName);
+			songName.cameras = [camHUD];
+		}
 		FlxG.sound.music.onComplete = endSong;
 		vocals.play();
 	}
@@ -2450,7 +2516,7 @@ class PlayState extends MusicBeatState
 		{
 			// Conductor.songPosition = FlxG.sound.music.time;
 			Conductor.songPosition += FlxG.elapsed * 1000;
-
+			songPositionBar = Conductor.songPosition;
 			if (!paused)
 			{
 				songTime += FlxG.game.ticks - previousFrameTime;

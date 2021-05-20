@@ -14,6 +14,7 @@ typedef TOptions = {
     var downscroll:Bool;
     var useSaveDataMenu:Bool;
     var preferredSave:Int;
+    var showSongPos:Bool;
 }
 class OptionsHandler {
     public static var options(get, set):TOptions;

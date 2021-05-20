@@ -260,7 +260,7 @@ class ModifierState extends MusicBeatState
 			desc: "Let the game play itself!"
 		},
 		{
-			name: "Chart",
+			name: "Chart...",
 			internName: "chart",
 			value: false,
 			conflicts: [],
@@ -269,7 +269,7 @@ class ModifierState extends MusicBeatState
 			desc: "Open the Debug Menu without Pressing 7"
 		},
 		{
-			name: "Char Select",
+			name: "Char Select...",
 			internName: "charselect",
 			value: false,
 			conflicts: [],
@@ -440,14 +440,14 @@ class ModifierState extends MusicBeatState
 		multiTxt.text = "Multiplier: " + scoreMultiplier;
 	}
 	function toggleSelection() {			
-		switch(modifiers[curSelected].name) {
-			case 'Play':
+		switch(modifiers[curSelected].internName) {
+			case 'play':
 				if (FlxG.sound.music != null)
 					FlxG.sound.music.stop();
 				LoadingState.loadAndSwitchState(new PlayState(), true);
-			case 'Chart':
+			case 'chart':
 				LoadingState.loadAndSwitchState(new ChartingState());
-			case 'Char Select':
+			case 'charselect':
 				LoadingState.loadAndSwitchState(new ChooseCharState(PlayState.SONG.player1));
 			default:
 					checkmarks[curSelected].visible = !checkmarks[curSelected].visible;

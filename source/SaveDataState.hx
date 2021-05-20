@@ -1,5 +1,7 @@
 package;
 
+import haxe.ds.Option;
+import OptionsHandler.TOptions;
 import Controls.Control;
 import flash.text.TextField;
 import flixel.FlxG;
@@ -23,6 +25,7 @@ import tjson.TJSON;
 using StringTools;
 typedef TOption = {
 	var name:String;
+	var intName:String;
 	var value:Bool;
 }
 class SaveDataState extends MusicBeatState
@@ -33,6 +36,7 @@ class SaveDataState extends MusicBeatState
 	// this will need to be initialized in title state!!!
 	public static var optionList:Array<TOption>;
 	var curSelected:Int = 0;
+	var mappedOptions:Dynamic = {};
 	var inOptionsMenu:Bool = false;
 	var optionsSelected:Int = 0;
 	var checkmarks:FlxTypedSpriteGroup<FlxSprite>;
@@ -49,32 +53,43 @@ class SaveDataState extends MusicBeatState
 		FlxG.sound.playMusic(goodSound);
 		var menuBG:FlxSprite = new FlxSprite().loadGraphic('assets/images/menuDesat.png');
 		optionList = [
-						{name: "Always Show Cutscenes", value: false}, 
-						{name: "Skip Modifier Menu", value: false}, 
-						{name: "Skip Victory Screen", value: false},
-						{name: "Downscroll", value: false},
-						{name: "Use New input", value: false},
-						{name: "DJFK Keys", value: false},
-						{name: "Credits", value: false},
-						{name: "Sound Test...", value: false},
+						{name: "Always Show Cutscenes", intName: "alwaysDoCutscenes", value: false}, 
+						{name: "Skip Modifier Menu", value: false, intName: "skipModifierMenu"}, 
+						{name: "Skip Victory Screen", value: false, intName : "skipVictoryScreen"},
+						{name: "Downscroll", value: false, intName: "downscroll"},
+						{name: "Use New input", value: false, intName: "useCustomInput"},
+						{name: "DJFK Keys", value: false, intName: "DJFKKeys"},
+						{name: "Show Song Position", value: false, intName: "showSongPos"},
+						{name: "Credits", value: false, intName:'credits'},
+						{name: "Sound Test...", value: false, intName: 'soundtest'},
 						#if sys
-						{name:"New Character...", value: false},
-						{name:"New Stage...", value:false},
-						{name: "New Song...", value: false},
-						{name: "New Week...", value: false},
-						{name: "Sort...", value: false}
+						{name:"New Character...", value: false, intName:'newchar'},
+						{name:"New Stage...", value:false, intName:'newstage'},
+						{name: "New Song...", value: false, intName:'newsong'},
+						{name: "New Week...", value: false, intName: 'newweek'},
+						{name: "Sort...", value: false, intName: 'sort'}
 						#end
 					];
+		// amount of things that aren't options
+		var uselessShit:Int = 7;
+		var curOptions:TOptions = OptionsHandler.options;
+		for (i in 0...(optionList.length - uselessShit)) {
+			Reflect.setField(mappedOptions, optionList[i].intName, optionList[i]);
+			optionList[i].value = Reflect.field(curOptions, optionList[i].intName);
+		}
 		// we use a var because if we don't it will read the file each time
 		// although it isn't as laggy thanks to assets
-		var curOptions = OptionsHandler.options;
+		
 		preferredSave = curOptions.preferredSave;
+		/*
 		optionList[0].value = curOptions.alwaysDoCutscenes;
 		optionList[1].value = curOptions.skipModifierMenu;
 		optionList[2].value = curOptions.skipVictoryScreen;
 		optionList[3].value = curOptions.downscroll;
 		optionList[4].value = curOptions.useCustomInput;
 		optionList[5].value = curOptions.DJFKKeys;
+		optionList[6].value = curOptions.showSongPos;
+		*/
 		saves = new FlxTypedSpriteGroup<SaveFile>();
 		menuBG.color = 0xFF7194fc;
 		menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
@@ -310,17 +325,14 @@ class SaveDataState extends MusicBeatState
 		}
 	}
 	function saveOptions() {
-		OptionsHandler.options = {
-			"DJFKKeys": optionList[5].value,
-			"useCustomInput": optionList[4].value,
-			"skipVictoryScreen": optionList[2].value,
-			"skipModifierMenu": optionList[1].value,
-			"alwaysDoCutscenes": optionList[0].value,
-			"downscroll": optionList[3].value,
-			"useSaveDataMenu": true,
-			// just use whatever it is 
+		var noneditableoptions:Dynamic = {
 			"allowEditOptions": OptionsHandler.options.allowEditOptions,
-			"preferredSave": preferredSave
+			"preferredSave": preferredSave,
+			"useSaveDataMenu": true
 		};
+		for (field in Reflect.fields(mappedOptions)) {
+			Reflect.setField(noneditableoptions, field, Reflect.field(mappedOptions, field).value);
+		}
+		OptionsHandler.options = noneditableoptions;
 	}
 }
