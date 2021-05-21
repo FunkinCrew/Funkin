@@ -9,5 +9,6 @@
     "downscroll": false,
     "preferredSave": 0,
     "showSongPos": false,
-    "style": true
+    "style": true,
+    "stressTankmen": false
 }

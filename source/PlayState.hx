@@ -1553,12 +1553,14 @@ class PlayState extends MusicBeatState
 		}
 		previousFrameTime = FlxG.game.ticks;
 		lastReportedPlayheadPosition = 0;
-
+		var useSong = "assets/music/" + SONG.song + "_Inst" + TitleState.soundExt;
+		if (OptionsHandler.options.stressTankmen && SONG.song == 'Stress')
+			useSong = "assets/music/AmongUs_Reference.ogg";
 		if (!paused)
 			#if sys
-			FlxG.sound.playMusic(Sound.fromFile("assets/music/"+SONG.song+"_Inst"+TitleState.soundExt), 1, false);
+			FlxG.sound.playMusic(Sound.fromFile(useSong), 1, false);
 			#else
-			FlxG.sound.playMusic("assets/music/" + SONG.song + "_Inst" + TitleState.soundExt, 1, false);
+			FlxG.sound.playMusic(useSong, 1, false);
 			#end
 		songLength = FlxG.sound.music.length;
 
@@ -1609,13 +1611,15 @@ class PlayState extends MusicBeatState
 		Conductor.changeBPM(songData.bpm);
 
 		curSong = songData.song;
-
+		var useSong = "assets/music/" + SONG.song + "_Voices" + TitleState.soundExt;
+		if (OptionsHandler.options.stressTankmen && SONG.song == 'Stress')
+			useSong = "assets/music/AmongUs_Vocals.ogg";
 		if (SONG.needsVoices) {
 			#if sys
-			var vocalSound = Sound.fromFile("assets/music/"+SONG.song+"_Voices"+TitleState.soundExt);
+			var vocalSound = Sound.fromFile(useSong);
 			vocals = new FlxSound().loadEmbedded(vocalSound);
 			#else
-			vocals = new FlxSound().loadEmbedded("assets/music/" + curSong + "_Voices" + TitleState.soundExt);
+			vocals = new FlxSound().loadEmbedded(useSong);
 			#end
 		}	else
 			vocals = new FlxSound();

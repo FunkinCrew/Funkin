@@ -1,5 +1,7 @@
 package;
 
+import flixel.tweens.FlxTween;
+import flixel.util.FlxGradient;
 import Section.SwagSection;
 import flash.text.TextField;
 import flixel.FlxG;
@@ -60,6 +62,7 @@ class FreeplayState extends MusicBeatState
 	var charJson:Dynamic;
 	var record:Record;
 	var recordPixel:Record;
+	var curOverlay:FlxSprite;
 	override function create()
 	{
 		for (songSnippet in currentSongList) {
@@ -95,13 +98,16 @@ class FreeplayState extends MusicBeatState
 		}
 		// imagine making a sprite and not assigning a var
 		bg =  new FlxSprite();
-		if (FNFAssets.exists('assets/images/Custom_Menu_BGs/Default/menuBGBlue.png')) {
-			bg.loadGraphic('assets/images/Custom_Menu_BGs/Default/menuBGBlue.png');
+		if (FNFAssets.exists('assets/images/Custom_Menu_BGs/Default/menuDesat.png')) {
+			bg.loadGraphic('assets/images/Custom_Menu_BGs/Default/menuDesat.png');
  		} else {
-			 bg.loadGraphic('assets/images/menuBGBlue.png');
+			 bg.loadGraphic('assets/images/menuDesat.png');
 		 }
 		add(bg);
+		// no fancy :)
+		//curOverlay = FlxGradient.createGradientFlxSprite(FlxG.width, FlxG.height, [FlxColor.WHITE]);
 
+		//add(curOverlay); 
 		grpSongs = new FlxTypedGroup<Alphabet>();
 		add(grpSongs);
 
@@ -387,8 +393,9 @@ class FreeplayState extends MusicBeatState
 		intendedAccuracy = Highscore.getAccuracy(songs[curSelected].songName, curDifficulty);
 		// lerpScore = 0;
 		#end
-		if (!soundTest)
-			FlxG.sound.playMusic(FNFAssets.getSound("assets/music/"+songs[curSelected].songName+"_Inst"+TitleState.soundExt), 0);
+		// comment out because lag?
+		// if (!soundTest)
+		//	FlxG.sound.playMusic(FNFAssets.getSound("assets/music/"+songs[curSelected].songName+"_Inst"+TitleState.soundExt), 0);
 		var bullShit:Int = 0;
 		for (i in 0...iconArray.length)
 		{
@@ -410,6 +417,17 @@ class FreeplayState extends MusicBeatState
 				// item.setGraphicSize(Std.int(item.width));
 			}
 		}
+		/*
+		var dealphaedColors:Array<FlxColor> = [];
+		for (color in (Reflect.field(charJson,songs[curSelected].songCharacter).colors : Array<String>)) {
+			var newColor = FlxColor.fromString(color);
+			newColor.alphaFloat = 0.5;
+			dealphaedColors.push(newColor);
+		}*/
+		//remove(curOverlay);
+		//curOverlay = FlxGradient.createGradientFlxSprite(FlxG.width, FlxG.height, dealphaedColors);
+		//insert(1, curOverlay);
+		FlxTween.color(bg,0.5, bg.color, FlxColor.fromString(Reflect.field(charJson, songs[curSelected].songCharacter).colors[0]));
 		if (OptionsHandler.options.style) {
 			record.changeColor(Reflect.field(charJson, songs[curSelected].songCharacter).colors, songs[curSelected].songCharacter);
 			recordPixel.changeColor(Reflect.field(charJson, songs[curSelected].songCharacter).colors, songs[curSelected].songCharacter);

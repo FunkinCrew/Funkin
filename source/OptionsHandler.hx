@@ -16,6 +16,7 @@ typedef TOptions = {
     var preferredSave:Int;
     var showSongPos:Bool;
     var style:Bool;
+    var stressTankmen:Bool;
 }
 class OptionsHandler {
     public static var options(get, set):TOptions;
