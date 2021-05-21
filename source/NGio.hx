@@ -1,3 +1,4 @@
+#if newgrounds
 package;
 
 import flixel.FlxG;
@@ -198,3 +199,4 @@ class NGio
 		}
 	}
 }
+#end

@@ -257,8 +257,10 @@ class FreeplayState extends MusicBeatState
 
 	function changeSelection(change:Int = 0)
 	{
+		#if newgrounds
 		#if !switch
 		NGio.logEvent('Fresh');
+		#end
 		#end
 
 		// NGio.logEvent('Fresh');
