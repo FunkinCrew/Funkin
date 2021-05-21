@@ -32,6 +32,9 @@ using StringTools;
 
 class TitleState extends MusicBeatState
 {
+	static var overrideUpdateCheck:Bool = false;
+	// ^^ For modders that don't want players do deal with an update notification all the damn time
+
 	static var initialized:Bool = false;
 
 	var blackScreen:FlxSprite;
@@ -292,7 +295,7 @@ class TitleState extends MusicBeatState
 
 				var version:String = "v" + Application.current.meta.get('version');
 
-				if (version.trim() != NGio.GAME_VER_NUMS.trim() && !OutdatedSubState.leftState)
+				if (!overrideUpdateCheck && version.trim() != NGio.GAME_VER_NUMS.trim() && !OutdatedSubState.leftState)
 				{
 					FlxG.switchState(new OutdatedSubState());
 					trace('OLD VERSION!');
