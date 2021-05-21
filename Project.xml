@@ -40,18 +40,7 @@
 
 	<classpath name="source" />
 
-	<classpath name="source/options" />
-	<classpath name="source/ui" />
-
-	<assets path="assets" include="*.txt"/>
-	<!-- <assets path="assets" include="index.html"/>
-	<assets path="assets" include="video.min.js"/>
-	<assets path="assets" include="ughCutscene.mp4"/> -->
-	
-	<assets path="assets" include="important.jpg"/>
-	<assets path="assets" include="when imposter is YOU"/>
-
-	<assets path="assets/shared/images/hitbox"/>
+	<assets path="assets/android"/>
 
 	<assets path="assets/preload" rename="assets" exclude="*.ogg" if="web"/>
 	<assets path="assets/preload" rename="assets" exclude="*.mp3" unless="web"/>
@@ -119,7 +108,6 @@
 
 	<haxelib name="flixel" />
 	<haxedev set='webgl' />
-	<!-- <haxelib name="extension-webview" /> -->
 
 	<!--In case you want to use the addons package-->
 	<haxelib name="flixel-addons" />

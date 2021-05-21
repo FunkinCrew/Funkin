@@ -1,5 +1,8 @@
 package;
 
+#if desktop
+import Discord.DiscordClient;
+#end
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.addons.transition.FlxTransitionableState;
@@ -12,7 +15,6 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import lime.net.curl.CURLCode;
-import ui.FlxVirtualPad;
 
 using StringTools;
 
@@ -69,8 +71,6 @@ class StoryMenuState extends MusicBeatState
 	var leftArrow:FlxSprite;
 	var rightArrow:FlxSprite;
 
-	var _pad:FlxVirtualPad;
-
 	override function create()
 	{
 		transIn = FlxTransitionableState.defaultTransIn;
@@ -112,6 +112,11 @@ class StoryMenuState extends MusicBeatState
 		add(grpLocks);
 
 		trace("Line 70");
+		
+		#if desktop
+		// Updating Discord Rich Presence
+		DiscordClient.changePresence("In the Menus", null);
+		#end
 
 		for (i in 0...weekData.length)
 		{
@@ -214,10 +219,6 @@ class StoryMenuState extends MusicBeatState
 
 		trace("Line 165");
 
-		_pad = new FlxVirtualPad(FULL, A_B);
-    	_pad.alpha = 0.75;
-    	this.add(_pad);
-
 		super.create();
 	}
 
@@ -240,60 +241,43 @@ class StoryMenuState extends MusicBeatState
 			lock.y = grpWeekText.members[lock.ID].y;
 		});
 
-		var UP_P = _pad.buttonUp.justPressed;
-		var RIGHT_P = _pad.buttonRight.justPressed;
-		var DOWN_P = _pad.buttonDown.justPressed;
-		var LEFT_P = _pad.buttonLeft.justPressed;
-		
-		var RIGHT = _pad.buttonRight.pressed;
-		var LEFT = _pad.buttonLeft.pressed;
-
-		var ACCEPT = _pad.buttonA.justPressed;
-		var BACK = _pad.buttonB.justPressed;
-
-		#if android
-			var BACK = _pad.buttonB.justPressed || FlxG.android.justReleased.BACK;
-		#else
-			var BACK = _pad.buttonB.justPressed;
-		#end
-
 		if (!movedBack)
 		{
 			if (!selectedWeek)
 			{
-				if (UP_P)
+				if (controls.UP_P)
 				{
 					changeWeek(-1);
 				}
 
-				if (DOWN_P)
+				if (controls.DOWN_P)
 				{
 					changeWeek(1);
 				}
 
-				if (RIGHT)
+				if (controls.RIGHT)
 					rightArrow.animation.play('press')
 				else
 					rightArrow.animation.play('idle');
 
-				if (LEFT)
+				if (controls.LEFT)
 					leftArrow.animation.play('press');
 				else
 					leftArrow.animation.play('idle');
 
-				if (RIGHT_P)
+				if (controls.RIGHT_P)
 					changeDifficulty(1);
-				if (LEFT_P)
+				if (controls.LEFT_P)
 					changeDifficulty(-1);
 			}
 
-			if (ACCEPT)
+			if (controls.ACCEPT)
 			{
 				selectWeek();
 			}
 		}
 
-		if (BACK && !movedBack && !selectedWeek)
+		if (controls.BACK && !movedBack && !selectedWeek)
 		{
 			FlxG.sound.play(Paths.sound('cancelMenu'));
 			movedBack = true;

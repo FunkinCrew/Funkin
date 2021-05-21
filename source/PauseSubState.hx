@@ -12,18 +12,15 @@ import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
-import ui.FlxVirtualPad;
 
 class PauseSubState extends MusicBeatSubstate
 {
 	var grpMenuShit:FlxTypedGroup<Alphabet>;
 
-	var menuItems:Array<String> = ['Resume', 'Restart Song', 'debug menu', 'Exit to menu'];
+	var menuItems:Array<String> = ['Resume', 'Restart Song', 'Exit to menu'];
 	var curSelected:Int = 0;
 
 	var pauseMusic:FlxSound;
-
-	var _pad:FlxVirtualPad;
 
 	public function new(x:Float, y:Float)
 	{
@@ -78,11 +75,6 @@ class PauseSubState extends MusicBeatSubstate
 		changeSelection();
 
 		cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
-
-		_pad = new FlxVirtualPad(UP_DOWN, A);
-    	_pad.alpha = 0.75;
-    	this.add(_pad);
-		_pad.cameras = cameras;
 	}
 
 	override function update(elapsed:Float)
@@ -91,20 +83,10 @@ class PauseSubState extends MusicBeatSubstate
 			pauseMusic.volume += 0.01 * elapsed;
 
 		super.update(elapsed);
-		/*
+
 		var upP = controls.UP_P;
 		var downP = controls.DOWN_P;
 		var accepted = controls.ACCEPT;
-		*/
-		var upP = _pad.buttonUp.justPressed;
-		var downP = _pad.buttonDown.justPressed;
-		var accepted = _pad.buttonA.justPressed;
-
-		#if android
-		if (FlxG.android.justReleased.BACK == true){
-			close();
-		}
-		#end
 
 		if (upP)
 		{
@@ -125,8 +107,6 @@ class PauseSubState extends MusicBeatSubstate
 					close();
 				case "Restart Song":
 					FlxG.resetState();
-				case "debug menu":
-					FlxG.switchState(new ChartingState());
 				case "Exit to menu":
 					FlxG.switchState(new MainMenuState());
 			}

@@ -1,4 +1,3 @@
-#if !mobile
 package;
 
 import flixel.FlxG;
@@ -199,4 +198,3 @@ class NGio
 		}
 	}
 }
-#end

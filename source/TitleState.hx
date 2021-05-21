@@ -1,5 +1,9 @@
 package;
 
+#if desktop
+import Discord.DiscordClient;
+import sys.thread.Thread;
+#end
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -20,10 +24,9 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
-//import io.newgrounds.NG;
+import io.newgrounds.NG;
 import lime.app.Application;
 import openfl.Assets;
-import lime.system.System;
 
 using StringTools;
 
@@ -43,14 +46,10 @@ class TitleState extends MusicBeatState
 
 	override public function create():Void
 	{
-		#if android
-		FlxG.android.preventDefaultKeys = [BACK];
-		#end
-		
 		#if polymod
 		polymod.Polymod.init({modRoot: "mods", dirs: ['introMod']});
 		#end
-		
+
 		PlayerSettings.init();
 
 		curWacky = FlxG.random.getObject(getIntroTextShit());
@@ -59,7 +58,7 @@ class TitleState extends MusicBeatState
 
 		super.create();
 
-		//NGio.noLogin(APIStuff.API);
+		NGio.noLogin(APIStuff.API);
 
 		#if ng
 		var ng:NGio = new NGio(APIStuff.API, APIStuff.EncKey);
@@ -93,6 +92,14 @@ class TitleState extends MusicBeatState
 		{
 			startIntro();
 		});
+		#end
+
+		#if desktop
+		DiscordClient.initialize();
+		
+		Application.current.onExit.add (function (exitCode) {
+			DiscordClient.shutdown();
+		 });
 		#end
 	}
 
@@ -248,14 +255,6 @@ class TitleState extends MusicBeatState
 		}
 		#end
 
-		// delete this later
-		#if web
-		if (FlxG.mouse.justPressed)
-		{
-			pressedEnter = true;
-		}
-		#end
-
 		var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
 
 		if (gamepad != null)
@@ -271,7 +270,6 @@ class TitleState extends MusicBeatState
 
 		if (pressedEnter && !transitioning && skippedIntro)
 		{
-			/*
 			#if !switch
 			NGio.unlockMedal(60960);
 
@@ -279,7 +277,7 @@ class TitleState extends MusicBeatState
 			if (Date.now().getDay() == 5)
 				NGio.unlockMedal(61034);
 			#end
-			*/
+
 			titleText.animation.play('press');
 
 			FlxG.camera.flash(FlxColor.WHITE, 1);
@@ -293,15 +291,15 @@ class TitleState extends MusicBeatState
 				// Check if version is outdated
 
 				var version:String = "v" + Application.current.meta.get('version');
-				//version.trim() != NGio.GAME_VER_NUMS.trim() 
-				if (false && !OutdatedSubState.leftState)
+
+				if (version.trim() != NGio.GAME_VER_NUMS.trim() && !OutdatedSubState.leftState)
 				{
+					FlxG.switchState(new OutdatedSubState());
 					trace('OLD VERSION!');
 					trace('old ver');
 					trace(version.trim());
 					trace('cur ver');
-					//trace(NGio.GAME_VER_NUMS.trim());
-					FlxG.switchState(new OutdatedSubState());
+					trace(NGio.GAME_VER_NUMS.trim());
 				}
 				else
 				{
@@ -315,13 +313,6 @@ class TitleState extends MusicBeatState
 		{
 			skipIntro();
 		}
-
-		#if android
-		if (FlxG.android.justReleased.BACK)
-			{
-				System.exit(0);
-			}
-		#end
 
 		super.update(elapsed);
 	}

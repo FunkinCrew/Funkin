@@ -1,6 +1,8 @@
 package;
 
-import lime.utils.Assets;
+#if desktop
+import Discord.DiscordClient;
+#end
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
@@ -12,9 +14,8 @@ import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
-//import io.newgrounds.NG;
+import io.newgrounds.NG;
 import lime.app.Application;
-import ui.FlxVirtualPad;
 
 using StringTools;
 
@@ -25,7 +26,7 @@ class MainMenuState extends MusicBeatState
 	var menuItems:FlxTypedGroup<FlxSprite>;
 
 	#if !switch
-	var optionShit:Array<String> = ['story mode', 'freeplay', 'options', 'donate'];
+	var optionShit:Array<String> = ['story mode', 'freeplay', 'donate', 'options'];
 	#else
 	var optionShit:Array<String> = ['story mode', 'freeplay'];
 	#end
@@ -33,10 +34,13 @@ class MainMenuState extends MusicBeatState
 	var magenta:FlxSprite;
 	var camFollow:FlxObject;
 
-	var _pad:FlxVirtualPad;
-
 	override function create()
 	{
+		#if desktop
+		// Updating Discord Rich Presence
+		DiscordClient.changePresence("In the Menus", null);
+		#end
+
 		transIn = FlxTransitionableState.defaultTransIn;
 		transOut = FlxTransitionableState.defaultTransOut;
 
@@ -92,21 +96,14 @@ class MainMenuState extends MusicBeatState
 
 		FlxG.camera.follow(camFollow, null, 0.06);
 
-		
-		var githubcurver:String = Assets.getText("assets/aboutmod.txt");
-
-		var versionShit:FlxText = new FlxText(10, FlxG.height - 20, 0, "v" + Application.current.meta.get('version') + " " + githubcurver, 12);
+		var versionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, "v" + Application.current.meta.get('version'), 12);
 		versionShit.scrollFactor.set();
-		versionShit.setFormat("VCR OSD Mono", 18, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(versionShit);
 
 		// NG.core.calls.event.logEvent('swag').send();
 
 		changeItem();
-
-		_pad = new FlxVirtualPad(UP_DOWN, A_B);
-		_pad.alpha = 0.75;
-		this.add(_pad);
 
 		super.create();
 	}
@@ -122,31 +119,24 @@ class MainMenuState extends MusicBeatState
 
 		if (!selectedSomethin)
 		{
-			var UP_P = _pad.buttonUp.justPressed;
-			var DOWN_P = _pad.buttonDown.justPressed;
-			var BACK = _pad.buttonB.justPressed;
-			var ACCEPT = _pad.buttonA.justPressed;
-
-			if (UP_P)
+			if (controls.UP_P)
 			{
 				FlxG.sound.play(Paths.sound('scrollMenu'));
 				changeItem(-1);
 			}
 
-			if (DOWN_P)
+			if (controls.DOWN_P)
 			{
 				FlxG.sound.play(Paths.sound('scrollMenu'));
 				changeItem(1);
 			}
 
-			#if android
-			if (BACK || FlxG.android.justReleased.BACK)
+			if (controls.BACK)
 			{
 				FlxG.switchState(new TitleState());
 			}
-			#end
 
-			if (ACCEPT)
+			if (controls.ACCEPT)
 			{
 				if (optionShit[curSelected] == 'donate')
 				{
@@ -194,7 +184,7 @@ class MainMenuState extends MusicBeatState
 									case 'options':
 										FlxTransitionableState.skipNextTransIn = true;
 										FlxTransitionableState.skipNextTransOut = true;
-										FlxG.switchState(new options.OptionsMenu());
+										FlxG.switchState(new OptionsMenu());
 								}
 							});
 						}

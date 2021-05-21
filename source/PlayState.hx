@@ -41,9 +41,6 @@ import lime.utils.Assets;
 import openfl.display.BlendMode;
 import openfl.display.StageQuality;
 import openfl.filters.ShaderFilter;
-#if mobile
-import mobilecontrols.Mobilecontrols;
-#end
 
 using StringTools;
 
@@ -137,24 +134,10 @@ class PlayState extends MusicBeatState
 	var detailsPausedText:String = "";
 	#end
 
-	
-	#if mobile
-	var mcontrols:Mobilecontrols; 
-	#end
-
-	var config:Config = new Config();
-	var downscroll_isenabled:Bool = false;
-
 	override public function create()
 	{
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
-
-
-		// part of mobile controls in 750 line
-		// get downscroll settings
-		downscroll_isenabled = config.getdownscroll();
-
 
 		// var gameCam:FlxCamera = FlxG.camera;
 		camGame = new FlxCamera();
@@ -703,13 +686,7 @@ class PlayState extends MusicBeatState
 
 		Conductor.songPosition = -5000;
 
-		if (!downscroll_isenabled){
-			strumLine = new FlxSprite(0, 50).makeGraphic(FlxG.width, 10);
-		}else{
-			strumLine = new FlxSprite(0, FlxG.height - 150).makeGraphic(FlxG.width, 10);
-		}
-		
-
+		strumLine = new FlxSprite(0, 50).makeGraphic(FlxG.width, 10);
 		strumLine.scrollFactor.set();
 
 		strumLineNotes = new FlxTypedGroup<FlxSprite>();
@@ -744,21 +721,7 @@ class PlayState extends MusicBeatState
 
 		FlxG.fixedTimestep = false;
 
-
-		// mobile controls here!!!
-		#if mobile
-		mcontrols = new Mobilecontrols();
-		var camcontrol = new FlxCamera();
-		FlxG.cameras.add(camcontrol);
-		camcontrol.bgColor.alpha = 0;
-		mcontrols.cameras = [camcontrol];
-
-		add(mcontrols);
-		#end
-
-		var ybar:Float = downscroll_isenabled ? FlxG.height * 0.1 : FlxG.height * 0.9;
-
-		healthBarBG = new FlxSprite(0, ybar).loadGraphic(Paths.image('healthBar'));
+		healthBarBG = new FlxSprite(0, FlxG.height * 0.9).loadGraphic(Paths.image('healthBar'));
 		healthBarBG.screenCenter(X);
 		healthBarBG.scrollFactor.set();
 		add(healthBarBG);
@@ -1403,13 +1366,7 @@ class PlayState extends MusicBeatState
 
 		scoreTxt.text = "Score:" + songScore;
 
-		#if android
-		var enterPressed = FlxG.keys.justPressed.ENTER || FlxG.android.justReleased.BACK;
-		#else
-		var enterPressed = FlxG.keys.justPressed.ENTER;
-		#end
-
-		if (enterPressed && startedCountdown && canPause)
+		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause)
 		{
 			persistentUpdate = false;
 			persistentDraw = true;
@@ -1665,13 +1622,8 @@ class PlayState extends MusicBeatState
 					daNote.active = true;
 				}
 
-				if (!downscroll_isenabled) {
-					daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(SONG.speed, 2)));
-				}else {
-					daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (-0.45 * FlxMath.roundDecimal(SONG.speed, 2)));
+				daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(SONG.speed, 2)));
 
-				}
-				
 				// i am so fucking sorry for this if condition
 				if (daNote.isSustainNote
 					&& daNote.y + daNote.offset.y <= strumLine.y + Note.swagWidth / 2
@@ -1722,8 +1674,7 @@ class PlayState extends MusicBeatState
 				// WIP interpolation shit? Need to fix the pause issue
 				// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
 
-				// I wouldn't have found this error with downscroll if I hadn't looked into the kade engine code (thanks to kade dev)
-				if (daNote.y < -daNote.height && !downscroll_isenabled || (daNote.y >= strumLine.y + 106) && downscroll_isenabled)
+				if (daNote.y < -daNote.height)
 				{
 					if (daNote.tooLate || !daNote.wasGoodHit)
 					{
@@ -1738,7 +1689,6 @@ class PlayState extends MusicBeatState
 					notes.remove(daNote, true);
 					daNote.destroy();
 				}
-				
 			});
 		}
 
@@ -1783,9 +1733,7 @@ class PlayState extends MusicBeatState
 
 				if (SONG.validScore)
 				{
-					#if !mobile
 					NGio.unlockMedal(60961);
-					#end
 					Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficulty);
 				}
 
@@ -1992,25 +1940,6 @@ class PlayState extends MusicBeatState
 	private function keyShit():Void
 	{
 		// HOLDING
-
-		#if mobile
-
-		var up = mcontrols.UP;
-		var right = mcontrols.RIGHT;
-		var down = mcontrols.DOWN;
-		var left = mcontrols.LEFT;
-
-		var upP = mcontrols.UP_P;
-		var rightP = mcontrols.RIGHT_P;
-		var downP = mcontrols.DOWN_P;
-		var leftP = mcontrols.LEFT_P;
-
-		var upR = mcontrols.UP_R;
-		var rightR = mcontrols.RIGHT_R;
-		var downR = mcontrols.DOWN_R;
-		var leftR = mcontrols.LEFT_R;
-
-		#else
 		var up = controls.UP;
 		var right = controls.RIGHT;
 		var down = controls.DOWN;
@@ -2025,7 +1954,6 @@ class PlayState extends MusicBeatState
 		var rightR = controls.RIGHT_R;
 		var downR = controls.DOWN_R;
 		var leftR = controls.LEFT_R;
-		#end
 
 		var controlArray:Array<Bool> = [leftP, downP, upP, rightP];
 
@@ -2246,19 +2174,10 @@ class PlayState extends MusicBeatState
 	{
 		// just double pasting this shit cuz fuk u
 		// REDO THIS SYSTEM!
-		#if mobile
-
-		var upP = mcontrols.UP_P;
-		var rightP = mcontrols.RIGHT_P;
-		var downP = mcontrols.DOWN_P;
-		var leftP = mcontrols.LEFT_P;
-
-		#else
 		var upP = controls.UP_P;
 		var rightP = controls.RIGHT_P;
 		var downP = controls.DOWN_P;
 		var leftP = controls.LEFT_P;
-		#end
 
 		if (leftP)
 			noteMiss(0);

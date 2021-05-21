@@ -1,5 +1,8 @@
 package;
 
+#if desktop
+import Discord.DiscordClient;
+#end
 import flash.text.TextField;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -9,7 +12,6 @@ import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import lime.utils.Assets;
-import ui.FlxVirtualPad;
 
 using StringTools;
 
@@ -31,8 +33,6 @@ class FreeplayState extends MusicBeatState
 
 	private var iconArray:Array<HealthIcon> = [];
 
-	var _pad:FlxVirtualPad;
-
 	override function create()
 	{
 		var initSonglist = CoolUtil.coolTextFile(Paths.txt('freeplaySonglist'));
@@ -49,6 +49,11 @@ class FreeplayState extends MusicBeatState
 					FlxG.sound.playMusic(Paths.music('freakyMenu'));
 			}
 		 */
+
+		#if desktop
+		// Updating Discord Rich Presence
+		DiscordClient.changePresence("In the Menus", null);
+		#end
 
 		var isDebug:Bool = false;
 
@@ -147,11 +152,7 @@ class FreeplayState extends MusicBeatState
 
 			trace(md);
 		 */
-		
-		_pad = new FlxVirtualPad(FULL, A_B);
-		_pad.alpha = 0.65;
-		this.add(_pad);
- 
+
 		super.create();
 	}
 
@@ -191,22 +192,9 @@ class FreeplayState extends MusicBeatState
 
 		scoreText.text = "PERSONAL BEST:" + lerpScore;
 
-		/*
 		var upP = controls.UP_P;
 		var downP = controls.DOWN_P;
 		var accepted = controls.ACCEPT;
-		*/
-
-		var upP = _pad.buttonUp.justPressed;
-		var downP = _pad.buttonDown.justPressed;
-		var LEFT_P = _pad.buttonLeft.justPressed;
-		var RIGHT_P = _pad.buttonRight.justPressed;
-		var accepted = _pad.buttonA.justPressed;
-		#if android
-			var BACK = _pad.buttonB.justPressed || FlxG.android.justReleased.BACK;
-		#else
-			var BACK = _pad.buttonB.justPressed;
-		#end
 
 		if (upP)
 		{
@@ -217,12 +205,12 @@ class FreeplayState extends MusicBeatState
 			changeSelection(1);
 		}
 
-		if (LEFT_P)
+		if (controls.LEFT_P)
 			changeDiff(-1);
-		if (RIGHT_P)
+		if (controls.RIGHT_P)
 			changeDiff(1);
 
-		if (BACK)
+		if (controls.BACK)
 		{
 			FlxG.switchState(new MainMenuState());
 		}
@@ -269,11 +257,10 @@ class FreeplayState extends MusicBeatState
 
 	function changeSelection(change:Int = 0)
 	{
-		/*
 		#if !switch
 		NGio.logEvent('Fresh');
 		#end
-		*/
+
 		// NGio.logEvent('Fresh');
 		FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 

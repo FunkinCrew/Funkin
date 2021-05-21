@@ -17,13 +17,6 @@ class Character extends FlxSprite
 
 	public var holdTimer:Float = 0;
 
-	function jointex(frames1:FlxAtlasFrames, frames2:FlxAtlasFrames) {
-		for (frame in frames2.frames){
-			frames1.pushFrame(frame);
-		}
-		return frames1;
-	}
-
 	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false)
 	{
 		super(x, y);
@@ -39,22 +32,7 @@ class Character extends FlxSprite
 		{
 			case 'gf':
 				// GIRLFRIEND CODE
-
-				var tex = Paths.getSparrowAtlas('gf/GF_assets');
-
-				switch PlayState.curStage.toLowerCase() {
-					case 'spooky':
-						tex = jointex(tex, Paths.getSparrowAtlas('gf/GF_assets_week2'));
-					case 'stage':
-						if (PlayState.SONG.song.toLowerCase() == 'tutorial')
-						{
-							tex = jointex(tex, Paths.getSparrowAtlas('gf/GF_assets_tutorial'));
-						}
-					case 'philly':
-						tex = jointex(tex, jointex(Paths.getSparrowAtlas('gf/GF_assets_blowing'), Paths.getSparrowAtlas('gf/GF_ass_sets_landing')));
-
-				}
-
+				tex = Paths.getSparrowAtlas('GF_assets');
 				frames = tex;
 				animation.addByPrefix('cheer', 'GF Cheer', 24, false);
 				animation.addByPrefix('singLEFT', 'GF left note', 24, false);
@@ -86,9 +64,6 @@ class Character extends FlxSprite
 
 			case 'gf-christmas':
 				tex = Paths.getSparrowAtlas('christmas/gfChristmas');
-
-				tex = jointex(tex, Paths.getSparrowAtlas('christmas/gfChristmas_em'));
-
 				frames = tex;
 				animation.addByPrefix('cheer', 'GF Cheer', 24, false);
 				animation.addByPrefix('singLEFT', 'GF left note', 24, false);
@@ -239,13 +214,6 @@ class Character extends FlxSprite
 				playAnim('idle');
 			case 'monster-christmas':
 				tex = Paths.getSparrowAtlas('christmas/monsterChristmas');
-				
-				var tex2 = Paths.getSparrowAtlas('christmas/monsterChristmas2');
-				var tex3 = Paths.getSparrowAtlas('christmas/monsterChristmas3');
-
-
-				tex = jointex(tex, jointex(tex2, tex3));
-
 				frames = tex;
 				animation.addByPrefix('idle', 'monster idle', 24, false);
 				animation.addByPrefix('singUP', 'monster up note', 24, false);
@@ -503,17 +471,7 @@ class Character extends FlxSprite
 				antialiasing = false;
 
 			case 'parents-christmas':
-				var tex = Paths.getSparrowAtlas('christmas/mom_dad_christmas_assets');
-				var tex2 = Paths.getSparrowAtlas('christmas/mom_dad_christmas_assets2');
-				var tex3 = Paths.getSparrowAtlas('christmas/mom_dad_christmas_assets3');
-
-
-				tex = jointex(tex, jointex(tex2, tex3));
-				
-				frames = tex;
-				//setGraphicSize(Std.int(width * 2));
-				//updateHitbox();
-
+				frames = Paths.getSparrowAtlas('christmas/mom_dad_christmas_assets');
 				animation.addByPrefix('idle', 'Parent Christmas Idle', 24, false);
 				animation.addByPrefix('singUP', 'Parent Up Note Dad', 24, false);
 				animation.addByPrefix('singDOWN', 'Parent Down Note Dad', 24, false);
