@@ -199,11 +199,11 @@ Returns the current camera's x position
 
 Returns the current camera's y position
 
-##### setCamZoom(int zoomAmount)
+##### setCamZoom(float zoomAmount)
 
 Set's the current camera's zoom
 
-##### setHudZoom(int zoomAmount)
+##### setHudZoom(float zoomAmount)
 
 Set's the hud's zoom
 

@@ -392,11 +392,11 @@ class ModchartState
 					return FlxG.camera.y;
 				});
 	
-				Lua_helper.add_callback(lua,"setCamZoom", function(zoomAmount:Int) {
+				Lua_helper.add_callback(lua,"setCamZoom", function(zoomAmount:Float) {
 					FlxG.camera.zoom = zoomAmount;
 				});
 	
-				Lua_helper.add_callback(lua,"setHudZoom", function(zoomAmount:Int) {
+				Lua_helper.add_callback(lua,"setHudZoom", function(zoomAmount:Float) {
 					PlayState.instance.camHUD.zoom = zoomAmount;
 				});
 	
