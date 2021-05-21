@@ -51,6 +51,7 @@ class FreeplayState extends MusicBeatState
 	var categoryBG:Array<String> = [];
 	var categoriesNames:Array<String> = [];
 	private var iconArray:Array<HealthIcon> = [];
+	var isPixelIcon:Array<Bool> = [];
 	var usingCategoryScreen:Bool = false;
 	var nightcoreMode:Bool = false;
 	var daycoreMode:Bool = false;
@@ -58,6 +59,7 @@ class FreeplayState extends MusicBeatState
 	private var curPlaying:Bool = false;
 	var charJson:Dynamic;
 	var record:Record;
+	var recordPixel:Record;
 	override function create()
 	{
 		for (songSnippet in currentSongList) {
@@ -106,13 +108,20 @@ class FreeplayState extends MusicBeatState
 		for (i in 0...songs.length)
 		{
 			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, songs[i].songName, true, false, false, null, null, null, true);
+			if (!OptionsHandler.options.style) {
+				songText.itemType = "Classic";
+			}
 			songText.isMenuItem = true;
 			songText.targetY = i;
 			grpSongs.add(songText);
 
 			var icon:HealthIcon = new HealthIcon(songs[i].songCharacter);
+			var interp = Character.getAnimInterp(songs[i].songCharacter);
+			trace(interp.variables.get("isPixel"));
+			isPixelIcon.push(interp.variables.get("isPixel"));
 			icon.sprTracker = songText;
-
+			// icons won't be visible 
+			icon.visible = !OptionsHandler.options.style;
 			iconArray.push(icon);
 			add(icon);
 			// songText.x += 40;
@@ -136,13 +145,21 @@ class FreeplayState extends MusicBeatState
 
 		add(scoreText);
 		var curCharacter = songs[0].songCharacter;
-		record = new Record(FlxG.width, FlxG.height, Reflect.field(charJson, curCharacter).colors);
-		// DON'T update hitbox, it breaks everything
-		record.scale.set(0.5, 0.5);
-		record.x -= record.width/1.5;
-		record.y -= record.height/1.5;
+		if (OptionsHandler.options.style) {
+			record = new Record(FlxG.width, FlxG.height, Reflect.field(charJson, curCharacter).colors);
+			// DON'T update hitbox, it breaks everything
+			record.scale.set(0.7, 0.7);
+			record.x -= record.width / 1.5;
+			record.y -= record.height / 1.5;
+			add(record);
+			recordPixel = new Record(FlxG.width, FlxG.height, Reflect.field(charJson, curCharacter).colors, null, true);
+			// DON'T update hitbox, it breaks everything
+			recordPixel.scale.set(0.7, 0.7);
+			recordPixel.x -= recordPixel.width / 1.5;
+			recordPixel.y -= recordPixel.height / 1.5;
+			add(recordPixel);
+		}
 		
-		add(record);
 		changeSelection();
 		changeDiff();
 
@@ -393,7 +410,21 @@ class FreeplayState extends MusicBeatState
 				// item.setGraphicSize(Std.int(item.width));
 			}
 		}
-		record.changeColor(Reflect.field(charJson, songs[curSelected].songCharacter).colors, songs[curSelected].songCharacter);
+		if (OptionsHandler.options.style) {
+			record.changeColor(Reflect.field(charJson, songs[curSelected].songCharacter).colors, songs[curSelected].songCharacter);
+			recordPixel.changeColor(Reflect.field(charJson, songs[curSelected].songCharacter).colors, songs[curSelected].songCharacter);
+			if (isPixelIcon[curSelected])
+			{
+				recordPixel.visible = true;
+				record.visible = false;
+			}
+			else
+			{
+				record.visible = true;
+				recordPixel.visible = false;
+			}
+		}
+		
 	}
 }
 class SongMetadata

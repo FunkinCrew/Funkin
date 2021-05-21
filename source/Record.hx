@@ -10,13 +10,14 @@ class Record extends FlxTypedSpriteGroup<FlxSprite> {
     var semicircles:Array<FlxSprite> = [];
     var icon:HealthIcon;
     var reordering:Bool = false;
-    public function new(X:Float=0, Y:Float=0, colors:Array<String>, ?character:String="bf") {
+    public function new(X:Float=0, Y:Float=0, colors:Array<String>, ?character:String="bf", ?pixel:Bool=false) {
         super();
         reordering = true;
-        recordsprite = new FlxSprite().loadGraphic('assets/images/record.png');
+        var suffix = pixel ? "-pixel" : "";
+        recordsprite = new FlxSprite().loadGraphic('assets/images/record$suffix.png');
         recordsprite.antialiasing = true;
         for (i in 0...2) {
-            var semicircle = new FlxSprite().loadGraphic('assets/images/record-center.png');
+            var semicircle = new FlxSprite().loadGraphic('assets/images/record-center$suffix.png');
             semicircles.push(semicircle);
             add(semicircle);
             semicircle.angle = i * 180;

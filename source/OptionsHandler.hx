@@ -15,13 +15,25 @@ typedef TOptions = {
     var useSaveDataMenu:Bool;
     var preferredSave:Int;
     var showSongPos:Bool;
+    var style:Bool;
 }
 class OptionsHandler {
     public static var options(get, set):TOptions;
+    // Preformance!
+    // We only read the file once...
+    // As all calls to options should go through options handler
+    // we can just cache the last options read until the file gets edited. 
+    static var lastOptions:TOptions;
+    static var needToRefresh:Bool = true;
     static function get_options() {
         #if sys
         // update the file
-        return CoolUtil.parseJson(Assets.getText('assets/data/options.json'));
+        if (needToRefresh) {
+			lastOptions = CoolUtil.parseJson(Assets.getText('assets/data/options.json'));
+            needToRefresh = false;
+			
+        }
+		return lastOptions;
         #else
         if (!Reflect.hasField(FlxG.save.data, "options"))
 			FlxG.save.data.options = CoolUtil.parseJson(Assets.getText('assets/data/options.json'));
@@ -30,6 +42,7 @@ class OptionsHandler {
     }
     static function set_options(opt:TOptions) {
         #if sys
+        needToRefresh = true;
         File.saveContent('assets/data/options.json', CoolUtil.stringifyJson(opt));
         #else
         FlxG.save.data.options = CoolUtil.stringifyJson(opt);

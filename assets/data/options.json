@@ -7,5 +7,7 @@
     "allowEditOptions": true,
     "useSaveDataMenu": true, 
     "downscroll": false,
-    "preferredSave": 0
+    "preferredSave": 0,
+    "showSongPos": false,
+    "style": true
 }

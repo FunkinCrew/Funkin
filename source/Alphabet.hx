@@ -104,7 +104,8 @@ class Alphabet extends FlxSpriteGroup
 			{
 				lastWasSpace = true;
 			}
-			if (dummyCharacter == "\\" && !lastWasEscape) {
+			// make grave or whatever? 
+			if ((dummyCharacter == "\\" || dummyCharacter == "`") && !lastWasEscape) {
 				lastWasEscape = true;
 				continue;
 			}

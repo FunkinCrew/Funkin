@@ -60,6 +60,7 @@ class SaveDataState extends MusicBeatState
 						{name: "Use New input", value: false, intName: "useCustomInput"},
 						{name: "DJFK Keys", value: false, intName: "DJFKKeys"},
 						{name: "Show Song Position", value: false, intName: "showSongPos"},
+						{name: "Style", value: false, intName: "style"},
 						{name: "Credits", value: false, intName:'credits'},
 						{name: "Sound Test...", value: false, intName: 'soundtest'},
 						#if sys
