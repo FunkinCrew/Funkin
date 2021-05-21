@@ -35,6 +35,13 @@ enum abstract EpicLevel(Int) from Int to Int {
 	var Level_Boogie = 1;
 	var Level_Sadness = 2;
 	var Level_Sing = 3;
+
+	@:op(A > B) static function gt(a:EpicLevel, b:EpicLevel):Bool;
+	@:op(A >= B) static function gte(a:EpicLevel, b:EpicLevel):Bool;
+	@:op(A == B) static function equals(a:EpicLevel, b:EpicLevel):Bool;
+	@:op(A != B) static function nequals(a:EpicLevel, b:EpicLevel):Bool;
+	@:op(A < B) static function lt(a:EpicLevel, b:EpicLevel):Bool;
+	@:op(A <= B) static function lte(a:EpicLevel, b:EpicLevel):Bool;
 }
 class Character extends FlxSprite
 {
@@ -81,7 +88,7 @@ class Character extends FlxSprite
 	 * you can have an epic level lower than your actual animations, 
 	 * but the game will be safe and act like you don't have one.
 	 */
-	public var gfEpicLevel:Int = Level_NotAHoe;
+	public var gfEpicLevel:EpicLevel = Level_NotAHoe;
 	// like bf, is playable
 	public var likeBf:Bool = false;
 	public var isDie:Bool = false;
@@ -665,6 +672,7 @@ class Character extends FlxSprite
 	}
 	public function sing(direction:Int, ?miss:Bool=false, ?alt:Int=0) {
 		var directName:String = "";
+		var missName:String = "";
 		switch (direction) {
 			case 0:
 				directName = "singLEFT";
@@ -675,8 +683,48 @@ class Character extends FlxSprite
 			case 3:
 				directName = "singRIGHT";
 		}
+		var missSupported:Bool = false;
+		var missAltSupported:Bool = false;
 		if (miss) {
-			directName += "miss";
+			missName = "miss";
+			if (animation.getByName(directName + missName) != null) {
+				missSupported = true;
+			}
+			if (alt > 0)
+			{
+				if (alt == 1 && animation.getByName(directName + missName + '-alt') != null)
+				{
+					missAltSupported = true;
+				}
+				else if (alt > 1 && animation.getByName(directName + missName +"-" + alt + "alt") != null)
+				{
+					missAltSupported = true;
+				}
+			}
+			if (missSupported && (alt == 0 || missAltSupported))
+				directName += missName;
+		} 
+		if (alt > 0 && (!miss || missAltSupported))
+		{
+			if (alt == 1 && animation.getByName(directName + '-alt') != null)
+			{
+				directName += "-alt";
+			}
+			else if (alt > 1 && animation.getByName(directName + "-" + alt + "alt") != null)
+			{
+				directName += "-" + alt + "alt";
+			}
+		}
+		// if we have to miss, but miss isn't supported...
+		if (miss && !(missSupported)) {
+			// first, we don't want to be using alt, which is already handled.
+			// second, we don't want no animation to be played, which again is handled.
+			// third, we want character to turn purple, which is handled here.
+			color = 0xCFAFFF;
+		}
+		else if (color != FlxColor.WHITE)
+		{
+			color = FlxColor.WHITE;
 		}
 		trace(alt);
 		if (alt > 0) {
@@ -774,6 +822,10 @@ class Character extends FlxSprite
 				callInterp("dance", [this]);
 			else
 				playAnim('idle');
+			if (color != FlxColor.WHITE)
+			{
+				color = FlxColor.WHITE;
+			}
 		}
 	}
 

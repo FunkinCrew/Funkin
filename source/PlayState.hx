@@ -1,5 +1,6 @@
 package;
 
+import Character.EpicLevel;
 import FNFAssets.HScriptAssets;
 import flixel.ui.FlxButton.FlxTypedButton;
 import Section.SwagSection;
@@ -3593,7 +3594,7 @@ class PlayState extends MusicBeatState
 				health -= 0.04 * healthLossMultiplier;
 			else
 				health += 0.04 * healthLossMultiplier;
-			if (combo > 5)
+			if (combo > 5 && gf.gfEpicLevel >= EpicLevel.Level_Sadness)
 			{
 				gf.playAnim('sad');
 			}
