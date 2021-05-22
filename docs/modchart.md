@@ -243,6 +243,12 @@ Returns the note data of an note (0-3, left, down, up, right)
 
 *Note: Rendered Notes id's are special in the way that they act. 0 = closest note to any receptor, last index = the farthest away from any receptor.*
 
+##### getRenderedNoteHit(int id)
+
+Returns whether a rendered note must be hit by the player or not
+
+*Note: Rendered Notes id's are special in the way that they act. 0 = closest note to any receptor, last index = the farthest away from any receptor.*
+
 ##### isSustain(int id)
 
 Returns whether a rendered note is a sustain note or not (if they appear as the trail)
