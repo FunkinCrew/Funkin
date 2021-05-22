@@ -1555,8 +1555,8 @@ class PlayState extends MusicBeatState
 		previousFrameTime = FlxG.game.ticks;
 		lastReportedPlayheadPosition = 0;
 		var useSong = "assets/music/" + SONG.song + "_Inst" + TitleState.soundExt;
-		if (OptionsHandler.options.stressTankmen && SONG.song == 'Stress')
-			useSong = "assets/music/AmongUs_Reference.ogg";
+		if (OptionsHandler.options.stressTankmen && FNFAssets.exists("assets/music/" + SONG.song + "Shit_Inst.ogg"))
+			useSong = "assets/music/" + SONG.song + "Shit_Inst.ogg";
 		if (!paused)
 			#if sys
 			FlxG.sound.playMusic(Sound.fromFile(useSong), 1, false);
@@ -1613,8 +1613,8 @@ class PlayState extends MusicBeatState
 
 		curSong = songData.song;
 		var useSong = "assets/music/" + SONG.song + "_Voices" + TitleState.soundExt;
-		if (OptionsHandler.options.stressTankmen && SONG.song == 'Stress')
-			useSong = "assets/music/AmongUs_Vocals.ogg";
+		if (OptionsHandler.options.stressTankmen && FNFAssets.exists("assets/music/" + SONG.song + "Shit_Voices.ogg"))
+			useSong = "assets/music/" + SONG.song + "Shit_Voices.ogg";
 		if (SONG.needsVoices) {
 			#if sys
 			var vocalSound = Sound.fromFile(useSong);
