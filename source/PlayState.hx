@@ -1005,6 +1005,7 @@ class PlayState extends MusicBeatState
 			var evilTrail = new FlxTrail(dad, null, 4, 24, 0.3, 0.069);
 			// evilTrail.changeValuesEnabled(false, false, false, false);
 			// evilTrail.changeGraphic()
+			trace(evilTrail);
 			add(evilTrail);
 		}
 		add(gf);
@@ -3253,7 +3254,8 @@ class PlayState extends MusicBeatState
 				recycledNote.setupNoteSplash(daNote.x, daNote.y, daNote.noteData);
 				grpNoteSplashes.add(recycledNote);
 			case 'miss':
-				noteMiss(daNote.noteData, playerOne);
+				if (!OptionsHandler.options.ignoreShittyTiming)
+					noteMiss(daNote.noteData, playerOne);
 				return;
 		}
 		if (!playerOne)

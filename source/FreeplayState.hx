@@ -272,13 +272,18 @@ class FreeplayState extends MusicBeatState
 					suffix = "-Nightcore";
 				if (daycoreMode)
 					suffix = "-Daycore";
+				var shit = "";
+				
 				FlxG.sound.music.stop();
 				if (vocals != null && vocals.playing)
 					vocals.stop();
 				soundTestSong = Song.loadFromJson(songs[curSelected].songName.toLowerCase(), songs[curSelected].songName.toLowerCase());
 				if (soundTestSong.needsVoices)
 				{
-					var vocalSound = FNFAssets.getSound("assets/music/" + soundTestSong.song + suffix + "_Voices" + TitleState.soundExt);
+					if (OptionsHandler.options.stressTankmen
+						&& FNFAssets.exists("assets/music/" + soundTestSong.song + "Shit" + suffix + "_Voices" + TitleState.soundExt))
+						shit = "Shit";
+					var vocalSound = FNFAssets.getSound("assets/music/" + soundTestSong.song + shit + suffix + "_Voices" + TitleState.soundExt);
 					vocals = new FlxSound().loadEmbedded(vocalSound);
 					vocals.volume = curDifficulty != 1 ? 1 : 0;
 					FlxG.sound.list.add(vocals);
@@ -286,6 +291,11 @@ class FreeplayState extends MusicBeatState
 					vocals.pause();
 					vocals.looped = true;
 				}
+				if (OptionsHandler.options.stressTankmen
+					&& FNFAssets.exists("assets/music/" + soundTestSong.song + "Shit" + suffix + "_Inst" + TitleState.soundExt))
+					shit = "Shit";
+				else
+					shit = "";
 				FlxG.sound.playMusic(FNFAssets.getSound("assets/music/" + soundTestSong.song + suffix + "_Inst" + TitleState.soundExt), curDifficulty == 2 ? 0 : 1);
 				Conductor.mapBPMChanges(soundTestSong);
 				Conductor.changeBPM(soundTestSong.bpm);

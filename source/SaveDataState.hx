@@ -27,12 +27,14 @@ typedef TOption = {
 	var name:String;
 	var intName:String;
 	var value:Bool;
+	var desc:String;
 }
 class SaveDataState extends MusicBeatState
 {
 
 	var saves:FlxTypedSpriteGroup<SaveFile>;
 	var options:FlxTypedSpriteGroup<Alphabet>;
+	var optionMenu:FlxTypedSpriteGroup<FlxSprite>;
 	// this will need to be initialized in title state!!!
 	public static var optionList:Array<TOption>;
 	var curSelected:Int = 0;
@@ -41,10 +43,9 @@ class SaveDataState extends MusicBeatState
 	var optionsSelected:Int = 0;
 	var checkmarks:FlxTypedSpriteGroup<FlxSprite>;
 	var preferredSave:Int = 0;
-	var DJFKKeys:Bool = false;
+	var description:FlxText;
 	override function create()
 	{
-		DJFKKeys = !OptionsHandler.options.DJFKKeys;
 		FlxG.sound.music.stop();
 		var goodSound = FNFAssets.getSound('assets/music/custom_menu_music/'
 			+ CoolUtil.parseJson(FNFAssets.getText("assets/music/custom_menu_music/custom_menu_music.json")).Options
@@ -53,27 +54,32 @@ class SaveDataState extends MusicBeatState
 		FlxG.sound.playMusic(goodSound);
 		var menuBG:FlxSprite = new FlxSprite().loadGraphic('assets/images/menuDesat.png');
 		optionList = [
-						{name: "Always Show Cutscenes", intName: "alwaysDoCutscenes", value: false}, 
-						{name: "Skip Modifier Menu", value: false, intName: "skipModifierMenu"}, 
-						{name: "Skip Victory Screen", value: false, intName : "skipVictoryScreen"},
-						{name: "Downscroll", value: false, intName: "downscroll"},
-						{name: "Use New input", value: false, intName: "useCustomInput"},
-						{name: "DJFK Keys", value: false, intName: "DJFKKeys"},
-						{name: "Show Song Position", value: false, intName: "showSongPos"},
-						{name: "Style", value: false, intName: "style"},
-						{name: "Funny Songs", value: false, intName: "stressTankmen"},
-						{name: "Credits", value: false, intName:'credits'},
-						{name: "Sound Test...", value: false, intName: 'soundtest'},
+						{name: "Always Show Cutscenes", intName: "alwaysDoCutscenes", value: false, desc: "Force show cutscenes, even in freeplay"}, 
+						{name: "Skip Modifier Menu", value: false, intName: "skipModifierMenu", desc: "Skip the modifier menu"}, 
+						{name: "Skip Victory Screen", value: false, intName : "skipVictoryScreen", desc: "Skip the victory screen at the end of songs."},
+						{name: "Downscroll", value: false, intName: "downscroll", desc: "Put da arrows on the bottom and have em scroll down"},
+						{name: "Use New input", value: false, intName: "useCustomInput", desc: "Whether to allow spamming"},
+						{name: "Ignore Bad Timing", value: false, intName:"ignoreShittyTiming", desc: "Even with new input on, if you hit a note really poorly, it counts as a miss. This disables that."},
+						{name: "DJFK Keys", value: false, intName: "DJFKKeys", desc: "Whether to use dfjk keys."},
+						{name: "Show Song Position", value: false, intName: "showSongPos", desc: "Whether to show the song bar."},
+						{name: "Style", value: false, intName: "style", desc: "Whether to use fancy style or default to base game."},
+						
+						{name: "Funny Songs", value: false, intName: "stressTankmen", desc: "funny songs"},
+						{name: "Credits", value: false, intName:'credits', desc: "Show the credits!"},
+						{name: "Sound Test...", value: false, intName: 'soundtest', desc: "Listen to the soundtrack [no funny songs tho :(]"},
 						#if sys
-						{name:"New Character...", value: false, intName:'newchar'},
-						{name:"New Stage...", value:false, intName:'newstage'},
-						{name: "New Song...", value: false, intName:'newsong'},
-						{name: "New Week...", value: false, intName: 'newweek'},
-						{name: "Sort...", value: false, intName: 'sort'}
+						{name:"New Character...", value: false, intName:'newchar', desc: "Make a new character!"},
+						{name:"New Stage...", value:false, intName:'newstage', desc: "Make a new stage!"},
+						{name: "New Song...", value: false, intName:'newsong', desc: "Make a new song!"},
+						{name: "New Week...", value: false, intName: 'newweek', desc: "Make a new week!"},
+						{name: "Sort...", value: false, intName: 'sort', desc: "Sort some of your current songs/weeks!"}
 						#end
 					];
 		// amount of things that aren't options
 		var uselessShit:Int = 7;
+		#if !sys
+		uselessShit = 2;
+		#end
 		var curOptions:TOptions = OptionsHandler.options;
 		for (i in 0...(optionList.length - uselessShit)) {
 			Reflect.setField(mappedOptions, optionList[i].intName, optionList[i]);
@@ -107,6 +113,8 @@ class SaveDataState extends MusicBeatState
 		trace("x3");
 		checkmarks = new FlxTypedSpriteGroup<FlxSprite>();
 		options = new FlxTypedSpriteGroup<Alphabet>();
+		optionMenu = new FlxTypedSpriteGroup<FlxSprite>();
+		optionMenu.add(options);
 		trace("hmmm");
 		for (j in 0...optionList.length) {
 			trace("l53");
@@ -123,10 +131,17 @@ class SaveDataState extends MusicBeatState
 		}
 		add(menuBG);
 		add(saves);
-		add(options);
+		add(optionMenu);
 		trace("hewwo");
-		options.x = FlxG.width + 10;
+		options.x = 10;
+		optionMenu.x = FlxG.width;
 		options.y = 10;
+		description = new FlxText(750, 150, 350, "", 90);
+		description.setFormat("assets/fonts/vcr.ttf", 32, FlxColor.WHITE, LEFT, OUTLINE, FlxColor.BLACK);
+		description.text = "Amongus???";
+		description.scrollFactor.set();
+		optionMenu.add(description);
+		changeSelection();
 		if (curOptions.allowEditOptions)
 			swapMenus();
 		super.create();
@@ -312,16 +327,17 @@ class SaveDataState extends MusicBeatState
 					// item.setGraphicSize(Std.int(item.width));
 				}
 			}
+			description.text = optionList[optionsSelected].desc;
 		}
 
 	}
 	function swapMenus() {
 		if (inOptionsMenu) {
-			FlxTween.tween(options, {x: FlxG.width + 10}, 0.2, {type: FlxTweenType.ONESHOT, ease: FlxEase.backInOut});
+			FlxTween.tween(optionMenu, {x: FlxG.width}, 0.2, {type: FlxTweenType.ONESHOT, ease: FlxEase.backInOut});
 			FlxTween.tween(saves, {x: 0}, 0.2, {type: FlxTweenType.ONESHOT, ease: FlxEase.backInOut});
 			inOptionsMenu = false;
 		} else {
-			FlxTween.tween(options, {x: 10}, 0.2, {type: FlxTweenType.ONESHOT, ease: FlxEase.backInOut});
+			FlxTween.tween(optionMenu, {x: 0}, 0.2, {type: FlxTweenType.ONESHOT, ease: FlxEase.backInOut});
 			FlxTween.tween(saves, {x: -FlxG.width }, 0.2, {type: FlxTweenType.ONESHOT, ease: FlxEase.backInOut});
 			inOptionsMenu = true;
 		}

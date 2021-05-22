@@ -1,7 +1,7 @@
 // char is a Character
 function init(char) {
     if (!char.isDie) {
-        char.frames = FlxAtlasFrames.fromSparrow('assets/images/weeb/bfPixel.png', 'assets/images/weeb/bfPixel.xml');
+        char.frames = FlxAtlasFrames.fromSparrow(hscriptPath + 'char.png', hscriptPath + 'char.xml');
         char.animation.addByPrefix('idle', 'BF IDLE', 24, false);
         char.animation.addByPrefix('singUP', 'BF UP NOTE', 24, false);
         char.animation.addByPrefix('singLEFT', 'BF LEFT NOTE', 24, false);
@@ -42,7 +42,7 @@ function init(char) {
         char.followCamX = -50;
         char.followCamY = -20;
     } else {
-        char.frames = FlxAtlasFrames.fromSparrow('assets/images/weeb/bfPixelsDEAD.png', 'assets/images/weeb/bfPixelsDEAD.xml');
+        char.frames = FlxAtlasFrames.fromSparrow(hscriptPath + 'dead.png', hscriptPath + 'dead.xml');
         char.animation.addByPrefix('singUP', "BF Dies pixel", 24, false);
         char.animation.addByPrefix('deathLoop', "Retry Loop", 24, true);
         char.animation.addByPrefix('firstDeath', "BF Dies pixel", 24, false);
