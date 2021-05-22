@@ -779,6 +779,8 @@ class PlayState extends MusicBeatState
 			camcontrol.bgColor.alpha = 0;
 			mcontrols.cameras = [camcontrol];
 
+			mcontrols.visible = false;
+
 			add(mcontrols);
 		#end
 
@@ -933,6 +935,10 @@ class PlayState extends MusicBeatState
 
 	function startCountdown():Void
 	{
+		#if mobileC
+		mcontrols.visible = true;
+		#end
+		
 		inCutscene = false;
 
 		generateStaticArrows(0);
@@ -1393,7 +1399,7 @@ class PlayState extends MusicBeatState
 
 		scoreTxt.text = "Score:" + songScore;
 
-		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause)
+		if (FlxG.keys.justPressed.ENTER #if android || FlxG.android.justReleased.BACK #end && (startedCountdown && canPause))
 		{
 			persistentUpdate = false;
 			persistentDraw = true;
@@ -1760,7 +1766,7 @@ class PlayState extends MusicBeatState
 
 				if (SONG.validScore)
 				{
-					#if !mobile
+					#if newgrounds
 					NGio.unlockMedal(60961);
 					#end
 					Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficulty);
