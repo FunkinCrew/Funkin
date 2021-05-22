@@ -3,6 +3,7 @@
     "skipModifierMenu": false,
     "alwaysDoCutscenes": false,
     "useCustomInput": false,
+    "ignoreShittyTiming": false,
     "DJFKKeys": false,
     "allowEditOptions": true,
     "useSaveDataMenu": true, 
