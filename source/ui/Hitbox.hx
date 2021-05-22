@@ -30,9 +30,12 @@ class Hitbox extends FlxSpriteGroup
     public var buttonUp:FlxButton;
     public var buttonRight:FlxButton;
     
-    public function new(?widghtScreen:Int, ?heightScreen:Int)
+    public function new(?widghtScreen:Int)
     {
-        super(widghtScreen, heightScreen);
+        super();
+
+        /*if (widghtScreen == null)
+            widghtScreen = FlxG.width;*/
 
         sizex = widghtScreen != null ? Std.int(widghtScreen / 4) : 320;
 
@@ -61,8 +64,9 @@ class Hitbox extends FlxSpriteGroup
         var button = new FlxButton(X, 0);
         var frames = FlxAtlasFrames.fromSparrow('assets/shared/images/hitbox/hitbox.png', 'assets/shared/images/hitbox/hitbox.xml');
         
+        var graphic:FlxGraphic = FlxGraphic.fromFrame(frames.getByName(framestring));
 
-        button.loadGraphic(FlxGraphic.fromFrame(frames.getByName(framestring)));
+        button.loadGraphic(graphic);
 
         button.alpha = 0;
 
