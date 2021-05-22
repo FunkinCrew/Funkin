@@ -1,0 +1,120 @@
+isPixel = charJson.isPixel;
+portraitOffset = [0, 0];
+if (charJson.like == "dad") {
+    dadVar = 6.1;
+} else {
+    dadVar = 4.0;
+}
+function init(char) {
+    var playerSuffix = "char";
+    if (char.isDie) {
+        // poor programming but whatev
+        playerSuffix = 'dead';
+        charJson.animation = charJson.deadAnimation;
+        charJson.offset = charJson.deadOffset;
+    }
+    var rawPic = FNFAssets.getBitmapData(hscriptPath+playerSuffix+".png");
+    var tex;
+    var rawXml;
+    // GOD IS DEAD WHY DOES THIS NOT WORK
+    trace("line 572");
+    if (FNFAssets.exists(hscriptPath+playerSuffix+".txt")){
+        rawXml = FNFAssets.getText(hscriptPath+playerSuffix+'.txt');
+        tex = FlxAtlasFrames.fromSpriteSheetPacker(rawPic,rawXml);
+    } else {
+        rawXml = FNFAssets.getText(hscriptPath+playerSuffix);
+        tex = FlxAtlasFrames.fromSparrow(rawPic,rawXml);
+    }
+
+    trace("line 581");
+    char.frames = tex;
+
+    for( field in Reflect.fields(charJson.animation) ) {
+        var fps = 24;
+        if (Reflect.hasField(Reflect.field(charJson.animation,field), "fps")) {
+            fps = Reflect.field(charJson.animation,field).fps;
+        }
+        var loop = false;
+        if (Reflect.hasField(Reflect.field(charJson.animation,field), "loop")) {
+            loop = Reflect.field(charJson.animation,field).loop;
+        }
+        if (Reflect.hasField(Reflect.field(charJson.animation,field),"flippedname") && !char.isPlayer) {
+
+            if (Reflect.hasField(Reflect.field(charJson.animation,field),"indices")) {
+                var indicesAnim:Array<Int> = Reflect.field(charJson.animation,field).indices;
+                char.animation.addByIndices(field, Reflect.field(charJson.animation,field).flippedname, indicesAnim, "", fps, loop);
+            } else {
+                char.animation.addByPrefix(field,Reflect.field(charJson.animation,field).flippedname, fps, loop);
+            }
+
+        } else {
+            if (Reflect.hasField(Reflect.field(charJson.animation,field),"indices")) {
+                var indicesAnim:Array<Int> = Reflect.field(charJson.animation,field).indices;
+                char.animation.addByIndices(field, Reflect.field(charJson.animation,field).name, indicesAnim, "", fps, loop);
+            } else {
+                char.animation.addByPrefix(field,Reflect.field(charJson.animation,field).name, fps, loop);
+            }
+        }
+    }
+    trace("before offset");
+    for( field in Reflect.fields(charJson.offset)) {
+        char.addOffset(field, Reflect.field(charJson.offset,field)[0],  Reflect.field(charJson.offset,field)[1]);
+    }
+    char.camOffsetX = if (charJson.camOffset != null) charJson.camOffset[0] else 0;
+    char.camOffsetY = if (charJson.camOffset != null) charJson.camOffset[1] else 0;
+    char.enemyOffsetX = if (charJson.enemyOffset != null) charJson.enemyOffset[0] else 0;
+    char.enemyOffsetY = if (charJson.enemyOffset != null) charJson.enemyOffset[1] else 0;
+    char.followCamX = if (charJson.followCam != null) parsedAnimJson.followCam[0] else 150;
+    char.followCamY = if (charJson.followCam != null) charJson.followCam[1] else -100;
+    char.midpointX = if (charJson.midpoint != null) charJson.midpoint[0] else 0;
+    char.midpointY = if (charJson.midpoint != null) charJson.midpoint[1] else 0;
+    char.flipX = if (charJson.flipx != null) charJson.flipx else false;
+    trace("before like");
+
+    char.like = parsedAnimJson.like;
+    switch(char.like) {
+        case 'bf' | 'bf-car' | 'bf-pixel' | 'bf-christmas':
+            char.likeBf = true;
+        case 'gf' | 'gf-car' | 'pico-speaker' | 'gf-christmas' | 'gf-pixel':
+            char.likeGf = true;
+            switch (char.like) {
+                case 'gf':
+                    char.gfEpicLevel = Level_Sing;
+                case 'gf-tankmen':
+                    char.gfEpicLevel = Level_Sadness;
+                case 'gf-pixel' | 'gf-car' | 'gf-christmas':
+                    char.gfEpicLevel = Level_Boogie;
+                case 'pico-speaker':
+                    char.hasGun = true;
+            }
+    }
+
+    if (charJson.isPixel) {
+        char.antialiasing = false;
+        char.setGraphicSize(Std.int(width * 6));
+        char.updateHitbox(); // when the hitbox is sus!
+    }
+    trace("tgiu");
+    if (!char.isDie) {
+        char.width += if (charJson.size != null) charJson.size[0] else 0;
+        char.height += if (charJson.size != null) charJson.size[1] else 0;
+    }
+    playAnim(charJson.playAnim);
+    trace("hmmb");
+}
+function update(elapsed,char) {
+    // NYET
+}
+var danced = false;
+function dance(char) {
+    if (char.likeGf || char.like == "spooky") {
+        danced = !danced;
+        if (danced) {
+            char.playAnim('danceLeft');
+        } else {
+            char.playAnim('danceRight');
+        }
+    } else {
+        char.playAnim('idle');
+    }
+}

@@ -1,5 +1,6 @@
 package;
 
+import hscript.Expr;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
 import flixel.group.FlxGroup;
@@ -894,9 +895,17 @@ class Character extends FlxSprite
 		var interp = PluginManager.createSimpleInterp();
 		var parser = new hscript.Parser();
 		var charJson = CoolUtil.parseJson(Assets.getText('assets/images/custom_chars/custom_chars.jsonc'));
-		var program = parser.parseString(FNFAssets.getText('assets/images/custom_chars/' + Reflect.field(charJson, char).like + '.hscript'));
+		var program:Expr;
+		if (FNFAssets.exists('assets/images/custom_chars/' + Reflect.field(charJson, char).like + '.hscript'))
+			program = parser.parseString(FNFAssets.getText('assets/images/custom_chars/' + Reflect.field(charJson, char).like + '.hscript'));
+		else
+			program = parser.parseString(FNFAssets.getText('assets/images/custom_chars/jsonbased.hscript'));
+		if (!FNFAssets.exists('assets/images/custom_chars/' + Reflect.field(charJson, char).like + '.hscript')) 
+			interp.variables.set("charJson", CoolUtil.parseJson(FNFAssets.getText('assets/images/custom_chars/'+Reflect.field(charJson, char).like+'.json')));
+		else
+			interp.variables.set("charJson", {});
 		interp.variables.set("hscriptPath", 'assets/images/custom_chars/' + char + '/');
-	
+		interp.variables.set("charName", char);
 		interp.variables.set("Level_NotAHoe", Level_NotAHoe);
 		interp.variables.set("Level_Boogie", Level_Boogie);
 		interp.variables.set("Level_Sadness", Level_Sadness);

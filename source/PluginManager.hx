@@ -42,6 +42,7 @@ class PluginManager {
         reterp.variables.set("MetroSprite",MetroSprite);
         reterp.variables.set("FlxTrail", FlxTrail);
         reterp.variables.set("FlxEase", FlxEase);
+        reterp.variables.set("Reflect", Reflect);
         return reterp;
     }
 }
