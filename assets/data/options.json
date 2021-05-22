@@ -8,7 +8,7 @@
     "useSaveDataMenu": true, 
     "downscroll": false,
     "preferredSave": 0,
-    "showSongPos": false,
+    "showSongPos": true,
     "style": true,
     "stressTankmen": false
 }

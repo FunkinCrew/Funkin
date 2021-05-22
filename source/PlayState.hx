@@ -3926,7 +3926,7 @@ class PlayState extends MusicBeatState
 
 			
 		}
-		if (curBeat % 8 == 7 && SONG.isCheer && dad.gfEpicLevel >= cast Character.EpicLevel.Level_Sing)
+		if (curBeat % 8 == 7 && SONG.isCheer && dad.gfEpicLevel >= Character.EpicLevel.Level_Sing)
 		{
 			dad.playAnim('cheer', true);
 		}

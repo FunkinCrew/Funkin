@@ -3,6 +3,10 @@ var steve;
 var johns;
 var tower;
 var losers;
+var tankSpeedJohn = [];
+var goingRightJohn = [];
+var strumTimeJohn = [];
+var endingOffsetJohn = [];
 function start(song) {
     trace(" : )");
     var bg = new FlxSprite(-400, -400).loadGraphic(hscriptPath + 'tankSky.png');
@@ -146,22 +150,47 @@ function start(song) {
 		getHaxeActor("gf").y -= 200;
 		getHaxeActor("gf").x -= 50;
 		trace("finna instance");
-        /*
-		var john = new RunningTankman(20, 500, hscriptPath);
-		john.strumTime = gf.animationNotes[0][0];
-		john.resetShit(20, 600, true);
+		var john = new FlxSprite(FlxG.width + 1000, 500);
+        john.frames = FlxAtlasFrames.fromSparrow(hscriptPath + 'tankmanKilled1.png', hscriptPath + 'tankmanKilled1.xml');
+        john.antialiasing = true;
+        john.animation.addByPrefix("run", "tankman running", 24, true);
+        john.animation.addByPrefix("shot", "John Shot " + FlxG.random.int(1,2), 24, false);
+        john.setGraphicSize(Std.int(0.8 * john.width));
+        john.updateHitbox();
+        john.animation.play("run");
+        tankSpeedJohn.push(0.7);
+        goingRightJohn.push(false);
+
+		strumTimeJohn.push(gf.animationNotes[0][0]);
+        endingOffsetJohn.push(FlxG.random.float(0.6, 1));
+		resetJohn(FlxG.width * 1.5, 600, true, john, 0);
         johns.add(john);
-		for (c in 0...gf.animationNotes.length)
+        var i = 0;
+		for (c in 1...gf.animationNotes.length)
 		{
 			if (FlxG.random.float(0, 100) < 16)
 			{
-				var jahn = new RunningTankman(500, 20, hscriptPath);
-				jahn.strumTime = gf.animationNotes[c + 1][0];
-				jahn.resetShit(500, 200 + FlxG.random.int(50, 100), 2 > gf.animationNotes[c + 1][1]);
+                var jahn = john.clone();
+                /*
+                jahn.frames = FlxAtlasFrames.fromSparrow(hscriptPath + 'tankmanKilled1.png', hscriptPath + 'tankmanKilled1.xml');
+                jahn.antialiasing = true;
+                jahn.animation.addByPrefix("run", "tankman running", 24, true);
+                jahn.animation.addByPrefix("shot", "John Shot " + FlxG.random.int(1,2), 24, false);
+                jahn.setGraphicSize(Std.int(0.8 * john.width));
+                jahn.updateHitbox();
+                jahn.animation.play("run");
+                */
+                tankSpeedJohn.push(0.7);
+                goingRightJohn.push(false);
+
+                strumTimeJohn.push(gf.animationNotes[c][0]);
+                endingOffsetJohn.push(FlxG.random.float(0.6, 1));
                 johns.add(jahn);
+                resetJohn(FlxG.width * 1.5, 200 + FlxG.random.int(50, 100),  2 > gf.animationNotes[c][1], jahn,i);
+                i++;
 				trace("make johgf");
 			}
-		}*/
+		}
     }
     
 }
@@ -186,10 +215,47 @@ function moveTank() {
         steve.y = 1300 + 1100 * FlxMath.fastSin(FlxAngle.asRadians(tankAngle + 180));
     }
 }
+function resetJohn(x, y, goingRight, spr, johnNum) {
+    trace(johnNum);
+    spr.x = x;
+    spr.y = y;
+    goingRightJohn[johnNum] = goingRight;
+    endingOffsetJohn[johnNum] = FlxG.random.float(50, 200);
+    tankSpeedJohn[johnNum] = FlxG.random.float(0.6, 1);
+     spr.flipX = if (goingRight) true else false;
+}
 function update(elapsed)
 {
     moveTank();
-
+    var i = 0;
+    for (spr in johns.members) {
+        if (spr.x >= 1.2 * FlxG.width || spr.x <= -0.5 * FlxG.width)
+            spr.visible = false;
+        else
+            spr.visible = true;
+        if (spr.animation.curAnim.name == "run") {
+            var fuck = 0.74 * FlxG.width + endingOffsetJohn[i];
+            if (goingRightJohn[i]) {
+                fuck = 0.02 * FlxG.width - endingOffsetJohn[i];
+                spr.x = fuck + (Conductor.songPosition - strumTimeJohn[i]) * tankSpeedJohn[i];
+                spr.flipX = true;
+            } else {
+                spr.x = fuck - (Conductor.songPosition - strumTimeJohn[i]) * tankSpeedJohn[i];
+                spr.flipX = false;
+            }
+        }
+        if (Conductor.songPosition > strumTimeJohn[i]) {
+            spr.animation.play("shot");
+            if (goingRightJohn[i]) {
+                spr.offset.y = 200;
+                spr.offset.x = 300;
+            }
+        }
+        if (spr.animation.curAnim.name == "shot" && spr.animation.curAnim.curFrame >= spr.animation.curAnim.frames.length - 1) {
+            spr.kill();
+        }
+        i++;
+    }
 }
 
 function stepHit(step)
