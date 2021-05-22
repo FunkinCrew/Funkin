@@ -169,15 +169,19 @@ class SortState extends MusicBeatState
 						// lets read the files first
 						var coolFiles:Array<{var png:Bytes; var xml:String;}> = [];
 						var coolStoryJson:StoryMenuState.StorySongsJson = CoolUtil.parseJson(Assets.getText('assets/data/storySonglist.json'));
-						var replacementJson:StoryMenuState.StorySongsJson = {songs: [], weekNames: [], characters: []};
+						var replacementJson:StoryMenuState.StorySongsJson = {songs: [], weekNames: [], characters: [], weeks: [], version: coolStoryJson.version};
 						for (i in referenceArray) {
 							// get files
 							var coolPng:Bytes = FNFAssets.getBytes('assets/images/campaign-ui-week/week'+i+'.png');
 							var coolXml:String = FNFAssets.getText('assets/images/campaign-ui-week/week'+i+'.xml');
 							coolFiles.push({png: coolPng, xml:coolXml});
-							replacementJson.songs.push(coolStoryJson.songs[i]);
-							replacementJson.weekNames.push(coolStoryJson.weekNames[i]);
-							replacementJson.characters.push(coolStoryJson.characters[i]);
+							if (coolStoryJson.version == null || coolStoryJson.version == 1) {
+								replacementJson.songs.push(coolStoryJson.songs[i]);
+								replacementJson.weekNames.push(coolStoryJson.weekNames[i]);
+								replacementJson.characters.push(coolStoryJson.characters[i]);
+							} else if (coolStoryJson.version == 2) {
+								replacementJson.weeks.push(coolStoryJson.weeks[i]);
+							}
 						}
 						// save the files to their new positions
 						for (i in 0...coolFiles.length) {

@@ -144,9 +144,14 @@ class SelectSortState extends MusicBeatState
 					// gonna do weeks ourselves?
 					var coolWeekJson:StoryMenuState.StorySongsJson = CoolUtil.parseJson(Assets.getText('assets/data/storySonglist.json'));
 					var coolWeeks:Array<String> = [];
-					for (i in 0...coolWeekJson.songs.length) {
-						coolWeeks.push("week"+i);
-					}
+					if (coolWeekJson.version == 1 || coolWeekJson.version == null)
+						for (i in 0...coolWeekJson.songs.length) {
+							coolWeeks.push("week"+i);
+						}
+					else if (coolWeekJson.version == 2)
+						for (i in 0...coolWeekJson.weeks.length)
+							coolWeeks.push("week" + i);
+					
 					SortState.stuffToSort = coolWeeks;
 					LoadingState.loadAndSwitchState(new SortState());
 			}

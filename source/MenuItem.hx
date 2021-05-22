@@ -35,16 +35,21 @@ class MenuItem extends FlxSpriteGroup
 		var parsedcustomFreakyMenuJson:Array<Array<String>> = CoolUtil.parseJson(FNFAssets.getText("assets/music/custom_menu_music/custom_menu_music.json")).Menu;
 		var parsedcustomOptionsMusicJson:Array<Array<String>> = CoolUtil.parseJson(FNFAssets.getText("assets/music/custom_menu_music/custom_menu_music.json")).Options;
 		var parsedcbgJson:Array<Array<String>> = CoolUtil.parseJson(FNFAssets.getText("assets/data/freeplaySongJson.jsonc")).cbg;
-		var parsedWeekJson:Array<Array<String>> = CoolUtil.parseJson(FNFAssets.getText("assets/data/storySongList.json")).songs;
+		var parsedWeekJson:StoryMenuState.StorySongsJson = CoolUtil.parseJson(FNFAssets.getText("assets/data/storySongList.json"));
 		var rawPic = FNFAssets.getBitmapData('assets/images/campaign-ui-week/week'+weekNum+".png");
 		var rawXml = FNFAssets.getText('assets/images/campaign-ui-week/week'+weekNum+".xml");
 		var tex = FlxAtlasFrames.fromSparrow(rawPic, rawXml);
-
+		var animName:String = "";
+		if (parsedWeekJson.version == 1) {
+			animName = parsedWeekJson.songs[weekNum][0];
+		}
+		if (parsedWeekJson.version == 2) {
+			animName = parsedWeekJson.weeks[weekNum].animation;
+		}
 		week = new FlxSprite();
 		week.frames = tex;
 		// TUTORIAL IS WEEK 0
-		trace(parsedWeekJson[weekNum][0]);
-		week.animation.addByPrefix("default", parsedWeekJson[weekNum][0], 24);
+		week.animation.addByPrefix("default", animName, 24);
 		add(week);
 
 		week.animation.play('default');

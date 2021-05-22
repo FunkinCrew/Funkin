@@ -40,11 +40,6 @@ import openfl.utils.ByteArray;
 import lime.ui.FileDialogType;
 import haxe.io.Path;
 using StringTools;
-typedef TWeekJson = {
-	var songs:Array<Array<String>>;
-	var weekNames:Array<String>;
-	var characters:Array<Array<String>>;
-}
 class NewWeekState extends MusicBeatState
 {
 	var addCharUi:FlxUI;
@@ -134,7 +129,7 @@ class NewWeekState extends MusicBeatState
 	}
 	function writeCharacters() {
 		#if sys
-		var parsedWeekJson:TWeekJson = CoolUtil.parseJson(File.getContent("assets/data/storySonglist.json"));
+		var parsedWeekJson:StoryMenuState.StorySongsJson = CoolUtil.parseJson(File.getContent("assets/data/storySonglist.json"));
 		
 		var coolSongArray:Array<String> = [];
 		coolSongArray.push(likeText.text);
@@ -148,9 +143,16 @@ class NewWeekState extends MusicBeatState
 		trace("ehh");
 		File.copy(epicFiles.xml, 'assets/images/campaign-ui-week/week' + parsedWeekJson.songs.length + '.xml');
 		trace("parsed");
-		parsedWeekJson.songs.push(coolSongArray);
-		parsedWeekJson.weekNames.push(nameText.text);
-		parsedWeekJson.characters.push([dadText.text,bfText.text,gfText.text]);
+		if (parsedWeekJson.version == 1 || parsedWeekJson.version == null) {
+			parsedWeekJson.songs.push(coolSongArray);
+			parsedWeekJson.weekNames.push(nameText.text);
+			parsedWeekJson.characters.push([dadText.text, bfText.text, gfText.text]);
+		} else if (parsedWeekJson.version == 2) {
+			var coolObject:StoryMenuState.WeekInfo = {animation: coolSongArray[0], name: nameText.text, bf: bfText.text, gf: gfText.text, dad: dadText.text, songs: coolSongArray.slice(1)};
+			parsedWeekJson.weeks.push(coolObject);
+
+		}
+		
 		File.saveContent('assets/data/storySonglist.json', CoolUtil.stringifyJson(parsedWeekJson));
 		trace("cool stuff");
 		#end

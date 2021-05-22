@@ -28,9 +28,19 @@ import Song.SwagSong;
 import tjson.TJSON;
 using StringTools;
 typedef StorySongsJson = {
-	var songs: Array<Array<String>>;
-	var weekNames: Array<String>;
-	var characters: Array<Array<String>>;
+	var ?songs: Array<Array<String>>;
+	var ?weekNames: Array<String>;
+	var ?characters: Array<Array<String>>;
+	var ?weeks:Array<WeekInfo>;
+	var ?version:Int;
+}
+typedef WeekInfo = {
+	var name : String;
+	var animation : String;
+	var songs: Array<String>;
+	var ?bf:String;
+	var ?dad:String;
+	var ?gf:String;
 }
 typedef DifficultysJson = {
 	var difficulties:Array<Dynamic>;
@@ -83,28 +93,67 @@ class StoryMenuState extends MusicBeatState
 				FlxG.sound.playMusic('assets/music/freakyMenu' + TitleState.soundExt);
 		}
 		var storySongJson:StorySongsJson = CoolUtil.parseJson(Assets.getText('assets/data/storySonglist.json'));
+		var versionJson = 0;
+		if (storySongJson.version == null) {
+			versionJson = 1;
+		} else {
+			versionJson = storySongJson.version;
+		}
 		persistentUpdate = persistentDraw = true;
-		for (storySongList in storySongJson.songs) {
+		var songsParsed:Array<Array<String>> = [];
+		var titlesParsed:Array<String> = [];
+		var charsParsed:Array<Array<String>> = [];
+		if (versionJson == 2) {
+			
+			for (weekInfo in storySongJson.weeks)
+			{
+				var songArray = [":flushed:"];
+				
+				songsParsed.push(songArray.concat(weekInfo.songs));
+				titlesParsed.push(weekInfo.name);
+				var charArray = [];
+				charArray.push(weekInfo.dad == null ? "dad" : weekInfo.dad);
+				charArray.push(weekInfo.bf == null ? "bf" : weekInfo.bf);
+				charArray.push(weekInfo.gf == null ? "gf" : weekInfo.gf);
+				charsParsed.push(charArray);
+			}
+		}
+		if (versionJson == 1) {
+			songsParsed = storySongJson.songs;
+			titlesParsed = storySongJson.weekNames;
+			charsParsed = storySongJson.characters;
+		}
+		for (storySongList in songsParsed)
+		{
 			var weekSongs = [];
-			for (song in storySongList) {
-				if (storySongList[0] == song) {
+			for (song in storySongList)
+			{
+				if (storySongList[0] == song)
+				{
 					weekNames.push(song);
-				} else {
+				}
+				else
+				{
 					weekSongs.push(song);
 				}
 			}
 			weekData.push(weekSongs);
 		}
-		for (weekTitle in storySongJson.weekNames) {
+		for (weekTitle in titlesParsed)
+		{
 			weekTitles.push(weekTitle);
 		}
-		for (storyCharList in storySongJson.characters) {
+		for (storyCharList in charsParsed)
+		{
 			var weekChars = [];
-			for (char in storyCharList) {
+			for (char in storyCharList)
+			{
 				weekChars.push(char);
 			}
 			weekCharacters.push(weekChars);
 		}
+
+		
 		scoreText = new FlxText(10, 10, 0, "SCORE: 49324858", 36);
 		scoreText.setFormat("VCR OSD Mono", 32);
 
