@@ -191,11 +191,11 @@ Returns the hud's y position
 
 Set's the current camera's position in space
 
-##### getCamX()
+##### getCameraX()
 
 Returns the current camera's x position
 
-##### getCamY()
+##### getCameraY()
 
 Returns the current camera's y position
 
@@ -424,3 +424,34 @@ Smoothly fade in to an alpha
 ##### tweenFadeOut(string/int id, float toAlpha, float time, string onComplete)
 
 Smoothly fade out to an alpha
+
+
+
+
+
+
+### Window & Screen
+
+##### getWindowX()
+
+Returns the window's x position
+
+##### getWindowY()
+
+Returns the window's y position
+
+##### getScreenWidth()
+
+Returns the width of the screen
+
+##### getScreenHeight()
+
+Returns the height of the screen
+
+##### setWindowPos(int x, int y)
+
+Sets the window's position
+
+##### resizeWindow(int width, int height)
+
+Resizes the window
