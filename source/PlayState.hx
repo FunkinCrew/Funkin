@@ -169,7 +169,7 @@ class PlayState extends MusicBeatState
 		FlxG.sound.cache(Paths.voices(PlayState.SONG.song));
 
 		// var gameCam:FlxCamera = FlxG.camera;
-		camGame = new FlxCamera();
+		camGame = new SwagCamera();
 		camHUD = new FlxCamera();
 		camHUD.bgColor.alpha = 0;
 
@@ -1860,7 +1860,7 @@ class PlayState extends MusicBeatState
 	override public function update(elapsed:Float)
 	{
 		// makes the lerp non-dependant on the framerate
-		FlxG.camera.followLerp = CoolUtil.camLerpShit(0.04);
+		// FlxG.camera.followLerp = CoolUtil.camLerpShit(0.04);
 
 		#if !debug
 		perfectMode = false;
@@ -1964,8 +1964,8 @@ class PlayState extends MusicBeatState
 		// FlxG.watch.addQuick('VOL', vocals.amplitudeLeft);
 		// FlxG.watch.addQuick('VOLRight', vocals.amplitudeRight);
 
-		iconP1.setGraphicSize(Std.int(FlxMath.lerp(150, iconP1.width, 0.85)));
-		iconP2.setGraphicSize(Std.int(FlxMath.lerp(150, iconP2.width, 0.85)));
+		iconP1.setGraphicSize(Std.int(CoolUtil.coolLerp(iconP1.width, 150, 0.15)));
+		iconP2.setGraphicSize(Std.int(CoolUtil.coolLerp(iconP2.width, 150, 0.15)));
 
 		iconP1.updateHitbox();
 		iconP2.updateHitbox();
