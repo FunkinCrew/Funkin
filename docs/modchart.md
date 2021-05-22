@@ -281,7 +281,7 @@ Returns what the game would normally put the specified rendered note x.
 
 ##### anyNotes()
 
-Returns the number of rendered notes on the screen.
+Returns true if there are rendered notes, and returns false if there are none
 
 ##### getRenderedNoteStrumtime(int id)
 
