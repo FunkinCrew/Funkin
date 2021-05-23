@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="gf-pixel.png">
+	<!-- Created with Adobe Animate version 21.0.0.35450 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="concerned0000" x="4" y="4" width="57" height="55"/>
+	<SubTexture name="default0000" x="63" y="4" width="57" height="55"/>
+</TextureAtlas>

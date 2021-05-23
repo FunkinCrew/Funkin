@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="pixel_mad.png">
+	<!-- Created with Adobe Animate version 21.0.0.35450 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="normal0000" x="4" y="4" width="215" height="66"/>
+	<SubTexture name="open0000" x="221" y="4" width="215" height="63" frameX="-6" frameY="-23" frameWidth="221" frameHeight="86"/>
+	<SubTexture name="open0001" x="4" y="72" width="202" height="56" frameX="-16" frameY="-9" frameWidth="221" frameHeight="86"/>
+	<SubTexture name="open0002" x="208" y="72" width="205" height="58" frameX="0" frameY="-17" frameWidth="221" frameHeight="86"/>
+	<SubTexture name="open0003" x="4" y="132" width="204" height="58" frameX="-3" frameY="0" frameWidth="221" frameHeight="86"/>
+	<SubTexture name="open0004" x="210" y="132" width="206" height="59" frameX="-10" frameY="-7" frameWidth="221" frameHeight="86"/>
+	<SubTexture name="open0005" x="210" y="132" width="206" height="59" frameX="-10" frameY="-7" frameWidth="221" frameHeight="86"/>
+	<SubTexture name="open0006" x="208" y="72" width="205" height="58" frameX="-5" frameY="-6" frameWidth="221" frameHeight="86"/>
+	<SubTexture name="open0007" x="208" y="72" width="205" height="58" frameX="0" frameY="-5" frameWidth="221" frameHeight="86"/>
+</TextureAtlas>

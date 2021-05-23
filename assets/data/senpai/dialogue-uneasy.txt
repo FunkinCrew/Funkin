@@ -1,0 +1,10 @@
+[178[ [179[ [223[ [216[ |Lunchbox| *100* =1= #pixel_normal#  <0.08< >4> (0.2( )5) {0.83{ }5} `hand_textbox` ~clickText~
+:senpai: !default! [Pixel Arial 11 Bold[ ]32] *100* =0= +0+ -0- <0< >0> ;0.04; |true| #pixel_normal# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      Ah, a new fair maiden has come in search of-
+:senpai: !neutral! [Pixel Arial 11 Bold[ ]32] *20* =0= +0+ -0- <0< >0> ;0.1; |true| #pixel_normal# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      ...
+:bf-pixel: !uneasy! [Pixel Arial 11 Bold[ ]20] *20* =0= +0+ -0- <0< >0> ;0.1; |false| #pixel_normal# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      Bah?
+:senpai: !neutral! [Pixel Arial 11 Bold[ ]32] *20* =0= +0+ -0- <0< >0> ;0.06; |true| #pixel_normal# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      Anything going on, little guy?
+:gf-pixel: !default! [Pixel Arial 11 Bold[ ]32] *20* =0= +0+ -0- <0< >0> ;0.04; |false| #pixel_normal# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      He's just a lil' uneasy, but he'll shake it off in no time.
+:senpai: !neutral! [Pixel Arial 11 Bold[ ]20] *50* =0= +0+ -0- <0< >0> ;0.06; |true| #pixel_normal# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      If you say so... Anyways.
+:senpai: !default! [Pixel Arial 11 Bold[ ]32] *75* =0= +0+ -0- <0< >0> ;0.04; |true| #pixel_normal# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      A serenade between gentlemen shall decide where her beautiful heart shall reside.
+:bf-pixel: !uneasy! [Pixel Arial 11 Bold[ ]20] *75* =0= +0+ -0- <0< >0> ;0.04; |false| #pixel_normal# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      ...
+:bf-pixel: !default! [Pixel Arial 11 Bold[ ]48] *100* =0= +0+ -0- <0< >0> ;0.04; |false| #pixel_normal# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      Beep bo bop

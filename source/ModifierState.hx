@@ -40,10 +40,23 @@ class ModifierState extends MusicBeatState
 	// use only in this class
 	public static var modifiers:Array<TModifier> = [
 		{
+			name: "",
+			internName: "antijank",
+			value: false,
+			conflicts: [],
+			multi: 1,
+			times: true,
+			desc: ""
+		},
+		{
 			name: "Sick Mode",
 			internName: "mfc",
 			value: false,
-			conflicts: ["fc", "practice", "hgu", "hgd", "hlu", "hld", "regen", "degen", "poison", "duo", "demo"],
+			conflicts: [
+				"fc",
+				"practice",
+				"healthloss",
+				"healthgain", "regen", "degen", "poison", "duo", "demo"],
 			multi: 3,
 			times: true,
 			desc: "Instantly fail when you don't get 'Sick'"
@@ -53,7 +66,7 @@ class ModifierState extends MusicBeatState
 			internName: "fc",
 			value: false,
 			conflicts: [
-				"mfc", "practice", "hgu", "hgd", "hlu", "hld", "regen", "degen", "poison", "duo", "demo"],
+				"mfc", "practice", "healthloss", "healthgain", "regen", "degen", "poison", "duo", "demo"],
 			multi: 2,
 			times: true,
 			desc: "Fail when you miss a note, Go for the Perfect!"
@@ -449,6 +462,8 @@ class ModifierState extends MusicBeatState
 				LoadingState.loadAndSwitchState(new ChartingState());
 			case 'charselect':
 				LoadingState.loadAndSwitchState(new ChooseCharState(PlayState.SONG.player1));
+			case 'antijank':
+				// do nothi n
 			default:
 					checkmarks[curSelected].visible = !checkmarks[curSelected].visible;
 					for (conflicting in modifiers[curSelected].conflicts)

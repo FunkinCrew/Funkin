@@ -1,0 +1,8 @@
+[178[ [179[ [223[ [216[ |Lunchbox| *0* =1= #pixel_mad#  <0.08< >4> (0.2( )5) {0.83{ }5} `hand_textbox` ~clickText~  <0.08< >4> (0.2( )5) {0.83{ }5} `hand_textbox` ~clickText~
+:senpai-angry: !default! [Pixel Arial 11 Bold[ ]32] *0* =0= +0+ -0- <0< >0> ;0.06; |true| #pixel_mad# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      Oh you think your love is strong enough?
+:bf-pixel: !default! [Pixel Arial 11 Bold[ ]48] *0* =0= +0+ -0- <0.2< >0> ;0.2; |false| #pixel_mad# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      Bah
+:senpai-angry: !default! [Pixel Arial 11 Bold[ ]32] *0* =0= +0+ -0- <0< >0> ;0.06; |true| #pixel_mad# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      Don't even play games with me! I will take your girlfriend from you!
+:senpai-angry: !default! [Pixel Arial 11 Bold[ ]40] *0* =0.005= +16+ -0- <5< >0> ;0.06; |true| #pixel_mad# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      She will get my nuts until she chokes on them!
+:gf-pixel: !default! [Pixel Arial 11 Bold[ ]32] *0* =0= +0+ -0- <0< >0> ;0.04; |false| #pixel_mad# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      Nah. I stay where I stay. With my cutie pie.
+:bf-pixel: !default! [Pixel Arial 11 Bold[ ]32] *0* =0= +0+ -0- <0< >0> ;0.2; |false| #pixel_mad# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      Bah
+:senpai-angry: !default! [Pixel Arial 11 Bold[ ]54] *0* =0= +0+ -0- <0< >0> ;0.09; |true| #pixel_mad# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      You two are so dead on the spot.

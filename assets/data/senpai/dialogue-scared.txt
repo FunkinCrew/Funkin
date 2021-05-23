@@ -1,0 +1,9 @@
+[178[ [179[ [223[ [216[ |Lunchbox| *100* =1= #pixel_normal#  <0.08< >4> (0.2( )5) {0.83{ }5} `hand_textbox` ~clickText~
+:senpai: !default! [Pixel Arial 11 Bold[ ]32] *100* =0= +0+ -0- <0< >0> ;0.04; |true| #pixel_normal# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      Ah, a ne-
+:bf-pixel: !shaking! [Pixel Arial 11 Bold[ ]72] *0* =0.005= +3+ -0- <3< >0> ;0.02; |false| #pixel_normal# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      DAH!
+:senpai: !worried! [Pixel Arial 11 Bold[ ]32] *0* =0= +0+ -0- <0< >0> ;0.04; |true| #pixel_normal# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      Oh.. What's with that reaction? ..Everything will be alright.
+:bf-pixel: !shaking! [Pixel Arial 11 Bold[ ]72] *0* =0.005= +9+ -0- <9< >0> ;0.02; |false| #pixel_normal# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      BAH BOOP!
+:senpai: !worried! [Pixel Arial 11 Bold[ ]20] *0* =0= +0+ -0- <0< >0> ;0.1; |true| #pixel_normal# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      I see...
+:gf-pixel: !default! [Pixel Arial 11 Bold[ ]32] *20* =0= +0+ -0- <0< >0> ;0.04; |false| #pixel_normal# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      He'll be okay.
+:gf-pixel: !concerned! [Pixel Arial 11 Bold[ ]25] *20* =0= +0+ -0- <0< >0> ;0.1; |false| #pixel_normal# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      ..Eventually.
+:senpai: !worried! [Pixel Arial 11 Bold[ ]25] *50* =0= +0+ -0- <0< >0> ;0.04; |true| #pixel_normal# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      We can cheer him up for now.

@@ -571,7 +571,7 @@ class PlayState extends MusicBeatState
 			dialogSuffix = "-depressed";
 		} else if (practiceMode) {
 			dialogSuffix = "-practice";
-		} else if (perfectMode) {
+		} else if (perfectMode || fullComboMode) {
 			dialogSuffix = "-perfect";
 		}
 		if (FNFAssets.exists('assets/images/custom_chars/' + SONG.player1 + '/' + SONG.song.toLowerCase() + 'Dialog.txt'))
@@ -597,6 +597,7 @@ class PlayState extends MusicBeatState
 			{
 				filename = 'assets/data/' + SONG.song.toLowerCase() + '/dialog${dialogSuffix}.txt';
 			}
+			trace(filename);
 			dialogue = CoolUtil.coolDynamicTextFile(filename);
 		}
 		else if (FNFAssets.exists('assets/data/' + SONG.song.toLowerCase() + '/dialogue.txt'))
@@ -606,6 +607,7 @@ class PlayState extends MusicBeatState
 			{
 				filename = 'assets/data/' + SONG.song.toLowerCase() + '/dialogue${dialogSuffix}.txt';
 			}
+			trace(filename);
 			dialogue = CoolUtil.coolDynamicTextFile(filename);
 		}
 		else
@@ -1279,7 +1281,7 @@ class PlayState extends MusicBeatState
 		senpaiEvil.scrollFactor.set();
 		senpaiEvil.updateHitbox();
 		senpaiEvil.screenCenter();
-
+		/*
 		if (dialogueBox != null && dialogueBox.like != 'senpai')
 		{
 			remove(black);
@@ -1289,7 +1291,7 @@ class PlayState extends MusicBeatState
 				add(red);
 			}
 		}
-
+		*/
 		new FlxTimer().start(0.3, function(tmr:FlxTimer)
 		{
 			black.alpha -= 0.15;
@@ -1304,7 +1306,7 @@ class PlayState extends MusicBeatState
 				{
 					inCutscene = true;
 
-					if (dialogueBox.like == 'spirit')
+					if (/*dialogueBox.like == 'spirit'*/ false)
 					{
 						add(senpaiEvil);
 						senpaiEvil.alpha = 0;

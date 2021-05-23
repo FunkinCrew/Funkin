@@ -1,0 +1,4 @@
+[178[ [179[ [223[ [216[ |Lunchbox| *0* =1= #pixel_mad#  <0.08< >4> (0.2( )5) {0.83{ }5} `hand_textbox` ~clickText~  <0.08< >4> (0.2( )5) {0.83{ }5} `hand_textbox` ~clickText~
+:senpai-angry: !default! [Pixel Arial 11 Bold[ ]54] *0* =0= +0+ -0- <0< >0> ;0.1; |true| #pixel_mad# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      Oh I'm so getting you for this.
+:senpai-angry: !default! [Pixel Arial 11 Bold[ ]32] *0* =0.005= +18+ -0- <0< >0> ;0.1; |true| #pixel_mad# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      I'm not letting myself lose! You WILL get your fate checked!
+:bf-pixel: !default! [Pixel Arial 11 Bold[ ]48] *0* =0= +0+ -0- <0< >0> ;0.04; |false| #pixel_mad# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      Bah bah

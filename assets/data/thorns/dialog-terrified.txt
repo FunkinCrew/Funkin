@@ -1,0 +1,4 @@
+[178[ [208[ [0[ [46[ |LunchboxScary| *100* =1= #pixel_spirit#  <0.08< >4> (0.2( )5) {0.83{ }5} `spirit_button` ~clickText~
+:senpai: !default! [Arial[ ]48] *100* =0= +0+ -0- <0< >0> ;0.04; |true| #pixel_spirit# ^pixelText^ !#FFFFFFFF! ?#FF000000? .#FF000000. ~~      Your cries won't help you this time.
+:senpai: !default! [Arial[ ]48] *100* =0= +0+ -0- <0< >0> ;0.04; |true| #pixel_spirit# ^pixelText^ !#FFFFFFFF! ?#FF000000? .#FF000000. ~~      Anger is the only thing you cause me, and I will punish you for it.
+:bf-pixel: !crying! [Pixel Arial 11 Bold[ ]96] *0* =0= +0+ -0- <0< >0> ;0.12; |false| #pixel_spirit# ^pixelText^ !#FFFFFFFF! ?#FF000000? .#FF000000. ~~      No...

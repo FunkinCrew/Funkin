@@ -1,0 +1,6 @@
+[178[ [179[ [223[ [216[ |Lunchbox| *0* =1= #pixel_mad#  <0.08< >4> (0.2( )5) {0.83{ }5} `hand_textbox` ~clickText~  <0.08< >4> (0.2( )5) {0.83{ }5} `hand_textbox` ~clickText~
+:senpai-angry: !default! [Pixel Arial 11 Bold[ ]32] *0* =0= +0+ -0- <0< >0> ;0.04; |true| #pixel_mad# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      I won't be able to hold my anger away. I'm sorry, but I need to.
+:gf-pixel: !concerned! [Pixel Arial 11 Bold[ ]17] *0* =0= +0+ -0- <0< >0> ;0.1; |false| #pixel_mad# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      uh oh
+:senpai-angry: !default! [Pixel Arial 11 Bold[ ]32] *0* =0= +0+ -0- <0< >0> ;0.04; |true| #pixel_mad# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      I don't care if you are crying. Man up and be happy that you just won a song!
+:senpai-angry: !default! [Pixel Arial 11 Bold[ ]64] *0* =0= +0.005+ -10- <5< >0> ;0.07; |true| #pixel_mad# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      Man the funk up!
+:bf-pixel: !crying! [Pixel Arial 11 Bold[ ]64] *0* =0= +0+ -0- <0< >0> ;0.12; |false| #pixel_mad# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      ...

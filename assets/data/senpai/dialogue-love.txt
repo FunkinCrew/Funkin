@@ -1,0 +1,11 @@
+[178[ [179[ [223[ [216[ |Lunchbox| *100* =1= #pixel_normal#  <0.08< >4> (0.2( )5) {0.83{ }5} `hand_textbox` ~clickText~
+:gf-pixel: !default! [Pixel Arial 11 Bold[ ]32] *100* =0= +0+ -0- <0< >0> ;0.04; |false| #pixel_normal# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      This place is perfect for romance, dont'cha think?
+:bf-pixel: !default! [Pixel Arial 11 Bold[ ]32] *100* =0= +0+ -0- <0< >0> ;0.04; |true| #pixel_normal# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      Bap
+:gf-pixel: !default! [Pixel Arial 11 Bold[ ]32] *100* =0= +0+ -0- <0< >0> ;0.04; |false| #pixel_normal# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      Less goooo for it!
+:senpai: !default! [Pixel Arial 11 Bold[ ]32] *100* =0= +0+ -0- <0< >0> ;0.04; |true| #pixel_normal# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      Oh I see you two are being love birds, is that correct?
+:gf-pixel: !default! [Pixel Arial 11 Bold[ ]32] *100* =0= +0+ -0- <0< >0> ;0.04; |false| #pixel_normal# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      Yup.
+:bf-pixel: !default! [Pixel Arial 11 Bold[ ]32] *100* =0= +0+ -0- <0< >0> ;0.04; |false| #pixel_normal# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      Beep skdoo bah de beep bop
+:senpai: !pleased! [Pixel Arial 11 Bold[ ]32] *100* =0= +0+ -0- <0< >0> ;0.04; |true| #pixel_normal# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      How pleasant to see you together.
+:senpai: !default! [Pixel Arial 11 Bold[ ]32] *100* =0= +0+ -0- <0< >0> ;0.06; |true| #pixel_normal# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      How about a serenade to prove your love to her? ..The winner gets her on their side.
+:bf-pixel: !default! [Pixel Arial 11 Bold[ ]64] *100* =0= +0+ -0- <0< >0> ;0.06; |false| #pixel_normal# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      Dee
+:senpai: !default! [Pixel Arial 11 Bold[ ]48] *100* =0= +0+ -0- <0< >0> ;0.04; |true| #pixel_normal# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      Let it commence.

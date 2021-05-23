@@ -1,0 +1,4 @@
+[178[ [179[ [223[ [216[ |Lunchbox| *100* =1= #pixel_normal#  <0.08< >4> (0.2( )5) {0.83{ }5} `hand_textbox` ~clickText~
+:bf-pixel: !default! [Pixel Arial 11 Bold[ ]32] *100* =0= +0+ -0- <0< >0> ;0.04; |false| #pixel_normal# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~     damn senpai finna make me act up
+:senpai: !default! [Pixel Arial 11 Bold[ ]48] *100* =0= +0+ -0- <0< >0> ;0.03; |true| #pixel_normal# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~     :flushed: that's sus
+:bf-pixel: !default! [Pixel Arial 11 Bold[ ]48] *100* =0= +0+ -0- <0< >0> ;0.04; |false| #pixel_normal# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~       :pleading: let me at them toes

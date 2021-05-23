@@ -1,0 +1,9 @@
+[178[ [179[ [223[ [216[ |Lunchbox| *0* =1= #pixel_mad#  <0.08< >4> (0.2( )5) {0.83{ }5} `hand_textbox` ~clickText~  <0.08< >4> (0.2( )5) {0.83{ }5} `hand_textbox` ~clickText~
+:senpai-angry: !default! [Pixel Arial 11 Bold[ ]32] *0* =0= +0+ -0- <0< >0> ;0.04; |false| #pixel_mad# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      You're all doing great, but even if I lose or not...
+:senpai-angry: !default! [Pixel Arial 11 Bold[ ]27] *0* =0= +0+ -0- <0< >0> ;0.1; |false| #pixel_mad# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      Excuse me for my funkin nerves.
+:gf-pixel: !default! [Pixel Arial 11 Bold[ ]32] *20* =0= +0+ -0- <0< >0> ;0.04; |true| #pixel_mad# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      Is k.
+:senpai-angry: !default! [Pixel Arial 11 Bold[ ]12] *0* =0= +0+ -0- <0< >0> ;0.1; |false| #pixel_mad# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      Keep your cool, Senpai.
+:senpai-angry: !default! [Pixel Arial 11 Bold[ ]16] *0* =0= +0+ -0- <0< >0> ;0.1; |true| #pixel_mad# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      ...
+:senpai-angry: !default! [Pixel Arial 11 Bold[ ]32] *0* =0= +0+ -0- <0< >0> ;0.04; |true| #pixel_mad# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      Not bad for an ugly worm.
+:senpai-angry: !default! [Pixel Arial 11 Bold[ ]32] *0* =0.005= +45+ -19- <6< >19> ;0.08; |true| #pixel_mad# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      But this time I'll rip your nuts off right after your girlfriend finishes gargling mine.
+:bf-pixel: !default! [Pixel Arial 11 Bold[ ]64] *0* =0= +0+ -0- <0< >0> ;0.2; |false| #pixel_mad# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      Bop beep be be skdoo bep

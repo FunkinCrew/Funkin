@@ -1,0 +1,6 @@
+[178[ [208[ [0[ [46[ |LunchboxScary| *100* =1= #pixel_spirit#  <0.08< >4> (0.2( )5) {0.83{ }5} `spirit_button` ~clickText~
+:senpai: !default! [Arial[ ]72] *100* =0= +0+ -0- <0< >0> ;0.04; |true| #pixel_spirit# ^pixelText^ !#FFFFFFFF! ?#FF000000? .#FF000000. ~~      ...
+:senpai: !default! [Arial[ ]49] *100* =0= +0+ -0- <0< >0> ;0.06; |true| #pixel_spirit# ^pixelText^ !#FFFFFFFF! ?#FF000000? .#FF000000. ~~      Good that you are depressed.
+:senpai: !default! [Arial[ ]32] *100* =0= +0+ -0- <0< >0> ;0.08; |true| #pixel_spirit# ^pixelText^ !#FFFFFFFF! ?#FF000000? .#FF000000. ~~      I wish that you were dead where you are so I can take over.
+:senpai: !default! [Arial[ ]49] *100* =0= +0+ -0- <0< >0> ;0.1; |true| #pixel_spirit# ^pixelText^ !#FFFFFFFF! ?#FF000000? .#FF000000. ~~      I will leave this place, with you dead or alive.
+:senpai: !default! [Arial[ ]64] *100* =0= +0+ -0- <0< >0> ;0.12; |true| #pixel_spirit# ^pixelText^ !#FFFFFFFF! ?#FF000000? .#FF000000. ~~      Mark my word

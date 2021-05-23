@@ -1,0 +1,3 @@
+[178[ [179[ [223[ [216[ |Lunchbox| *0* =1= #pixel_mad#  <0.08< >4> (0.2( )5) {0.83{ }5} `hand_textbox` ~clickText~  <0.08< >4> (0.2( )5) {0.83{ }5} `hand_textbox` ~clickText~
+:senpai-angry: !default! [Pixel Arial 11 Bold[ ]32] *0* =0= +0+ -0- <0< >0> ;0.04; |true| #pixel_mad# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      We can still try to calm him down again, however my nerves are taking the better on me.
+:gf-pixel: !default! [Pixel Arial 11 Bold[ ]32] *0* =0= +0+ -0- <0< >0> ;0.04; |false| #pixel_mad# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      Sounds good.

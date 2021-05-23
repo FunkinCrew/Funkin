@@ -1,5 +1,6 @@
-:bf: where them tootsies go
-:dad: gone
-:bf: *grief*
-:dad: your soul, hand it over
-:bf: no, you never give me toe suckky =(((
+[178[ [208[ [0[ [46[ |LunchboxScary| *100* =1= #pixel_spirit#  <0.08< >4> (0.2( )5) {0.83{ }5} `spirit_button` ~clickText~
+:senpai: !default! [Arial[ ]32] *100* =0= +0+ -0- <0< >0> ;0.04; |true| #pixel_spirit# ^pixelText^ !#FFFFFFFF! ?#FF000000? .#FF000000. ~~      listen here toe goblin
+:senpai: !default! [Arial[ ]49] *100* =0= +0+ -0- <0< >0> ;0.05; |true| #pixel_spirit# ^pixelText^ !#FFFFFFFF! ?#FF000000? .#FF000000. ~~      bad
+:senpai: !default! [Arial[ ]32] *100* =0= +0+ -0- <0< >0> ;0.07; |true| #pixel_spirit# ^pixelText^ !#FFFFFFFF! ?#FF000000? .#FF000000. ~~      no more tootsie eat
+:senpai: !default! [Arial[ ]49] *100* =0= +0+ -0- <0< >0> ;0.1; |true| #pixel_spirit# ^pixelText^ !#FFFFFFFF! ?#FF000000? .#FF000000. ~~     you're soul hand it over
+:senpai: !default! [Arial[ ]32] *100* =0= +0+ -0- <0< >0> ;0.15; |true| #pixel_spirit# ^pixelText^ !#FFFFFFFF! ?#FF000000? .#FF000000. ~~      please?

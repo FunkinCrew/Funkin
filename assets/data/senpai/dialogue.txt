@@ -1,0 +1,4 @@
+[178[ [179[ [223[ [216[ |Lunchbox| *100* =1= #pixel_normal#  <0.08< >4> (0.2( )5) {0.83{ }5} `hand_textbox` ~clickText~
+:senpai: !default! [Pixel Arial 11 Bold[ ]32] *100* =0= +0+ -0- <0< >0> ;0.04; |true| #pixel_normal# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      Ah, a new fair maiden has come in search of true love!
+:senpai: !default! [Pixel Arial 11 Bold[ ]32] *100* =0= +0+ -0- <0< >0> ;0.04; |true| #pixel_normal# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      A serenade between gentlemen shall decide where her beautiful heart shall reside.
+:bf-pixel: !default! [Pixel Arial 11 Bold[ ]48] *100* =0= +0+ -0- <0< >0> ;0.04; |false| #pixel_normal# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      Beep bo bop

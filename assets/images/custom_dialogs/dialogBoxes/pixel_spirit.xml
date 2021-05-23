@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="pixel_spirit.png">
+	<!-- Created with Adobe Animate version 21.0.0.35450 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="normal0000" x="4" y="4" width="190" height="42"/>
+	<SubTexture name="open0000" x="196" y="4" width="14" height="42" frameX="0" frameY="0" frameWidth="190" frameHeight="42"/>
+	<SubTexture name="open0001" x="196" y="4" width="14" height="42" frameX="0" frameY="0" frameWidth="190" frameHeight="42"/>
+	<SubTexture name="open0002" x="4" y="48" width="47" height="42" frameX="0" frameY="0" frameWidth="190" frameHeight="42"/>
+	<SubTexture name="open0003" x="4" y="48" width="47" height="42" frameX="0" frameY="0" frameWidth="190" frameHeight="42"/>
+	<SubTexture name="open0004" x="53" y="48" width="78" height="42" frameX="0" frameY="0" frameWidth="190" frameHeight="42"/>
+	<SubTexture name="open0005" x="53" y="48" width="78" height="42" frameX="0" frameY="0" frameWidth="190" frameHeight="42"/>
+	<SubTexture name="open0006" x="133" y="48" width="107" height="42" frameX="0" frameY="0" frameWidth="190" frameHeight="42"/>
+	<SubTexture name="open0007" x="133" y="48" width="107" height="42" frameX="0" frameY="0" frameWidth="190" frameHeight="42"/>
+	<SubTexture name="open0008" x="4" y="92" width="145" height="42" frameX="0" frameY="0" frameWidth="190" frameHeight="42"/>
+	<SubTexture name="open0009" x="4" y="92" width="145" height="42" frameX="0" frameY="0" frameWidth="190" frameHeight="42"/>
+	<SubTexture name="open0010" x="4" y="4" width="190" height="42"/>
+	<SubTexture name="open0011" x="4" y="4" width="190" height="42"/>
+</TextureAtlas>

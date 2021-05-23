@@ -1,0 +1,6 @@
+[178[ [179[ [223[ [216[ |Lunchbox| *0* =1= #pixel_mad#  <0.08< >4> (0.2( )5) {0.83{ }5} `hand_textbox` ~clickText~  <0.08< >4> (0.2( )5) {0.83{ }5} `hand_textbox` ~clickText~
+:senpai-angry: !default! [Pixel Arial 11 Bold[ ]32] *0* =0= +0+ -0- <0< >0> ;0.04; |true| #pixel_mad# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      He is more of a lost cause than anyone can be.
+:gf-pixel: !concerned! [Pixel Arial 11 Bold[ ]32] *0* =0= +0+ -0- <0< >0> ;0.07; |false| #pixel_mad# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      Don't say that. I know it's bad, but-
+:senpai-angry: !default! [Pixel Arial 11 Bold[ ]52] *0* =0= +0+ -0- <0< >0> ;0.04; |true| #pixel_mad# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      This is NOT gonna work.
+:gf-pixel: !default! [Pixel Arial 11 Bold[ ]32] *0* =0= +0+ -0- <0< >0> ;0.04; |false| #pixel_mad# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      Can we just try again?
+:senpai-angry: !default! [Pixel Arial 11 Bold[ ]21] *0* =0= +0+ -0- <0< >0> ;0.04; |true| #pixel_mad# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      Alright, but if that fails, I'm taking you.

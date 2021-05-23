@@ -1,0 +1,7 @@
+[178[ [208[ [0[ [46[ |LunchboxScary| *100* =1= #pixel_spirit#  <0.08< >4> (0.2( )5) {0.83{ }5} `spirit_button` ~clickText~
+:senpai: !default! [Arial[ ]32] *100* =0= +0+ -0- <0< >0> ;0.04; |true| #pixel_spirit# ^pixelText^ !#FFFFFFFF! ?#FF000000? .#FF000000. ~~      Direct contact with real humans, all because of true love,,,
+:senpai: !default! [Arial[ ]48] *100* =0= +0+ -0- <0< >0> ;0.07; |true| #pixel_spirit# ^pixelText^ !#FFFFFFFF! ?#FF000000? .#FF000000. ~~      It's all based upon lies,,
+:senpai: !default! [Arial[ ]48] *100* =0= +0+ -0- <0< >0> ;0.1; |true| #pixel_spirit# ^pixelText^ !#FFFFFFFF! ?#FF000000? .#FF000000. ~~      Your love is fake,, You don't deserve each other.
+:senpai: !default! [Arial[ ]54] *100* =0= +0+ -0- <0< >0> ;0.13; |true| #pixel_spirit# ^pixelText^ !#FFFFFFFF! ?#FF000000? .#FF000000. ~~      I do and I will take over.
+:senpai: !default! [Arial[ ]48] *100* =0= +0+ -0- <0< >0> ;0.16; |true| #pixel_spirit# ^pixelText^ !#FFFFFFFF! ?#FF000000? .#FF000000. ~~      If I can't take your girlfriend over, I will take you over instead.
+:senpai: !default! [Arial[ ]64] *100* =0= +0+ -0- <0< >0> ;0.2; |true| #pixel_spirit# ^pixelText^ !#FFFFFFFF! ?#FF000000? .#FF000000. ~~      And then I deal with her dad.

@@ -1,4 +1,4 @@
-:dad: my man i told you i don't swing that way
-:bf: *grief* just 1 toe?
-:dad: what the actual fuck
-:bf: pwease *pleading*
+[178[ [179[ [223[ [216[ |Lunchbox| *0* =1= #pixel_mad#  <0.08< >4> (0.2( )5) {0.83{ }5} `hand_textbox` ~clickText~  <0.08< >4> (0.2( )5) {0.83{ }5} `hand_textbox` ~clickText~
+:senpai-angry: !default! [Pixel Arial 11 Bold[ ]32] *0* =0= +0+ -0- <0< >0> ;0.04; |true| #pixel_mad# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      my man i don't swing that way
+:bf-pixel: !default! [Pixel Arial 11 Bold[ ]32] *0* =0.005= +0+ -0- <0< >0> ;0.08; |false| #pixel_mad# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      i don't bite ;)
+:senpai-angry: !default! [Pixel Arial 11 Bold[ ]64] *0* =0= +0+ -0- <3< >0> ;0.2; |true| #pixel_mad# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      that's sussy

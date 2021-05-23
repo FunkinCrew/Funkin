@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="pixel_normal.png">
+	<!-- Created with Adobe Animate version 21.0.0.35450 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="normal0000" x="4" y="99" width="205" height="58"/>
+	<SubTexture name="open0000" x="4" y="4" width="202" height="14" frameX="0" frameY="0" frameWidth="205" frameHeight="58"/>
+	<SubTexture name="open0001" x="4" y="20" width="204" height="29" frameX="0" frameY="0" frameWidth="205" frameHeight="58"/>
+	<SubTexture name="open0002" x="4" y="51" width="204" height="46" frameX="0" frameY="0" frameWidth="205" frameHeight="58"/>
+	<SubTexture name="open0003" x="4" y="99" width="205" height="58"/>
+	<SubTexture name="open0004" x="4" y="99" width="205" height="58"/>
+</TextureAtlas>

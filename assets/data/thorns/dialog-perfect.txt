@@ -1,0 +1,9 @@
+[178[ [208[ [0[ [46[ |LunchboxScary| *100* =1= #pixel_spirit#  <0.08< >4> (0.2( )5) {0.83{ }5} `spirit_button` ~clickText~
+:senpai: !default! [Arial[ ]96] *100* =0= +0+ -0- <0< >0> ;0.04; |true| #pixel_spirit# ^pixelText^ !#FFFFFFFF! ?#FF000000? .#FF000000. ~~      YOU.
+:senpai: !default! [Arial[ ]32] *100* =0= +0+ -0- <0< >0> ;0.06; |true| #pixel_spirit# ^pixelText^ !#FFFFFFFF! ?#FF000000? .#FF000000. ~~      Your father will pay for what he has done to me and many others.
+:senpai: !default! [Arial[ ]32] *100* =0= +0+ -0- <0< >0> ;0.08; |true| #pixel_spirit# ^pixelText^ !#FFFFFFFF! ?#FF000000? .#FF000000. ~~      I've been humiliated before, and I am being like that right now.
+:senpai: !default! [Arial[ ]48] *100* =0= +0+ -0- <0< >0> ;0.1; |true| #pixel_spirit# ^pixelText^ !#FFFFFFFF! ?#FF000000? .#FF000000. ~~      I will take away his spot.
+:senpai: !default! [Arial[ ]52] *100* =0= +0+ -0- <0< >0> ;0.13; |true| #pixel_spirit# ^pixelText^ !#FFFFFFFF! ?#FF000000? .#FF000000. ~~      I will do it.
+:senpai: !default! [Arial[ ]56] *100* =0= +0+ -0- <0< >0> ;0.16; |true| #pixel_spirit# ^pixelText^ !#FFFFFFFF! ?#FF000000? .#FF000000. ~~      I won't lose.
+:senpai: !default! [Arial[ ]16] *100* =0= +0+ -0- <0< >0> ;0.19; |true| #pixel_spirit# ^pixelText^ !#FFFFFFFF! ?#FF000000? .#FF000000. ~~      I won't let you leave without a scar.
+:senpai: !default! [Arial[ ]32] *100* =0= +0+ -0- <0< >0> ;0.23; |true| #pixel_spirit# ^pixelText^ !#FFFFFFFF! ?#FF000000? .#FF000000. ~~      I don't care if you mind your bodies being borrowed, I'm taking them for myself.

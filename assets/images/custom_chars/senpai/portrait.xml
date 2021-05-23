@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="senpai.png">
+	<!-- Created with Adobe Animate version 21.0.0.35450 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="concentrating0000" x="4" y="4" width="51" height="57"/>
+	<SubTexture name="default0000" x="57" y="4" width="51" height="57"/>
+	<SubTexture name="neutral0000" x="110" y="4" width="51" height="57"/>
+	<SubTexture name="pleased0000" x="163" y="4" width="51" height="57"/>
+	<SubTexture name="wink0000" x="4" y="63" width="51" height="57"/>
+	<SubTexture name="worried0000" x="57" y="63" width="51" height="57"/>
+</TextureAtlas>

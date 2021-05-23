@@ -1,3 +1,4 @@
-:dad:Not bad for an ugly worm.
-:dad:But this time I'll rip your nuts off right after your girlfriend finishes gargling mine.
-:bf:Bop beep be be skdoo bep
+[178[ [179[ [223[ [216[ |Lunchbox| *0* =1= #pixel_mad#  <0.08< >4> (0.2( )5) {0.83{ }5} `hand_textbox` ~clickText~  <0.08< >4> (0.2( )5) {0.83{ }5} `hand_textbox` ~clickText~
+:senpai-angry: !default! [Pixel Arial 11 Bold[ ]32] *0* =0= +0+ -0- <0< >0> ;0.04; |true| #pixel_mad# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      Not bad for an ugly worm.
+:senpai-angry: !default! [Pixel Arial 11 Bold[ ]32] *0* =0.005= +45+ -19- <6< >19> ;0.08; |true| #pixel_mad# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      But this time I'll rip your nuts off right after your girlfriend finishes gargling mine.
+:bf-pixel: !default! [Pixel Arial 11 Bold[ ]64] *0* =0= +0+ -0- <0< >0> ;0.2; |false| #pixel_mad# ^pixelText^ !#FF3F2021! ?#FFD89494? .. ~~      Bop beep be be skdoo bep
