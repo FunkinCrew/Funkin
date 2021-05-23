@@ -1,6 +1,7 @@
 package;
 
 
+import flixel.group.FlxGroup;
 import ui.Hitbox;
 import ui.FlxVirtualPad;
 import flixel.ui.FlxButton;
@@ -270,8 +271,14 @@ class Controls extends FlxActionSet
 	}
 	#end
 
+	public var trackedinputs:Array<FlxActionInput> = [];
+
 	public function addbutton(action:FlxActionDigital, button:FlxButton, state:FlxInputState) {
-		action.addInput(button, state);
+		var input = new FlxActionInputDigitalIFlxInput(button, state);
+		trackedinputs.push(input);
+		
+		action.add(input);
+		//action.addInput(button, state);
 	}
 	
 	public function setHitBox(hitbox:Hitbox) 
@@ -328,7 +335,7 @@ class Controls extends FlxActionSet
 	}
 	
 
-	public function removeFlxInput() {
+	public function removeFlxInput(Tinputs) {
 		for (action in this.digitalActions)
 		{
 			var i = action.inputs.length;
@@ -336,8 +343,13 @@ class Controls extends FlxActionSet
 			while (i-- > 0)
 			{
 				var input = action.inputs[i];
-				if (input.device == IFLXINPUT_OBJECT)
-					action.remove(input);
+				/*if (input.device == IFLXINPUT_OBJECT)
+					action.remove(input);*/
+
+				var x = Tinputs.length;
+				while (x-- > 0)
+					if (Tinputs[x] == input)
+						action.remove(input);
 			}
 		}
 	}

@@ -1,17 +1,10 @@
 package options;
 
-import Controls.Control;
 import flash.text.TextField;
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.addons.display.FlxGridOverlay;
 import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.input.keyboard.FlxKey;
-import flixel.math.FlxMath;
 import flixel.text.FlxText;
-import flixel.util.FlxColor;
-import lime.utils.Assets;
-import ui.FlxVirtualPad;
 import Config;
 import WebViewVideo;
 
@@ -29,8 +22,6 @@ class OptionsMenu extends MusicBeatState
 	private var grpControls:FlxTypedGroup<Alphabet>;
 
 	var menuItems:Array<String> = ['controls', 'set fps', 'downscroll: off', 'About', 'test cutscene'];
-
-	var _pad:FlxVirtualPad;
 
 	var UP_P:Bool;
 	var DOWN_P:Bool;
@@ -68,9 +59,9 @@ class OptionsMenu extends MusicBeatState
 			// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
 		}
 
-		_pad = new FlxVirtualPad(UP_DOWN, A_B);
-		_pad.alpha = 0.75;
-		this.add(_pad);
+		#if mobileC
+		addVirtualPad(UP_DOWN, A_B);
+		#end
 		
 		super.create();
 	}
@@ -78,21 +69,8 @@ class OptionsMenu extends MusicBeatState
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
-
-		if (!insubstate){
-			UP_P = _pad.buttonUp.justReleased;
-			DOWN_P = _pad.buttonDown.justReleased;
-
-			#if android
-			BACK = _pad.buttonB.justPressed || FlxG.android.justReleased.BACK;
-			#else
-			BACK = _pad.buttonB.justPressed;
-			#end
-			
-			ACCEPT = _pad.buttonA.justReleased;
-		}
 		
-		if (ACCEPT)
+		if (controls.ACCEPT)
 		{
 			var daSelected:String = menuItems[curSelected];
 
@@ -131,11 +109,11 @@ class OptionsMenu extends MusicBeatState
 			waitingInput();
 		else
 		{
-			if (BACK)
+			if (controls.BACK #if android || FlxG.android.justReleased.BACK #end)
 				FlxG.switchState(new MainMenuState());
-			if (UP_P)
+			if (controls.UP_P)
 				changeSelection(-1);
-			if (DOWN_P)
+			if (controls.DOWN_P)
 				changeSelection(1);
 		}
 	}
