@@ -1,5 +1,6 @@
 package;
 
+import haxe.DynamicAccess;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 import lime.system.System;
@@ -14,6 +15,16 @@ import haxe.Json;
 import flash.display.BitmapData;
 import haxe.format.JsonParser;
 import tjson.TJSON;
+typedef TMenuCharacterRef = {
+	var like:String;
+	var defaultGraphics:Bool;
+}
+typedef TMenuCharAnimation = {
+	var animation:Dynamic;
+	var ?scale:Float;
+	var ?offset:Array<Int>;
+	var ?flipX:Bool;
+}
 class MenuCharacter extends FlxSprite
 {
 	public var character:String;
@@ -28,8 +39,8 @@ class MenuCharacter extends FlxSprite
 
 		this.character = character;
 		// use assets it is less laggy
-		var parsedCharJson:Dynamic = CoolUtil.parseJson(Assets.getText("assets/images/campaign-ui-char/custom_ui_chars.json"));
-		if (!!Reflect.field(parsedCharJson,character).defaultGraphics) {
+		var parsedCharJson:DynamicAccess<TMenuCharacterRef> = CoolUtil.parseJson(Assets.getText("assets/images/campaign-ui-char/custom_ui_chars.json"));
+		if (parsedCharJson[character].defaultGraphics) {
 			// use assets, it is less laggy
 			var tex = FlxAtlasFrames.fromSparrow('assets/images/campaign-ui-char/default.png', 'assets/images/campaign-ui-char/default.xml');
 			frames = tex;
@@ -41,7 +52,7 @@ class MenuCharacter extends FlxSprite
 		}
 
 		// don't use assets because you can use custom like folders
-		var animJson = CoolUtil.parseJson(FNFAssets.getText("assets/images/campaign-ui-char/"+Reflect.field(parsedCharJson,character).like+".json"));
+		var animJson:TMenuCharAnimation = CoolUtil.parseJson(FNFAssets.getText("assets/images/campaign-ui-char/"+parsedCharJson[character].like+".json"));
 		for (field in Reflect.fields(animJson.animation)) {
 			animation.addByPrefix(field, Reflect.field(animJson.animation, field), 24, (field == "idle"));
 		}

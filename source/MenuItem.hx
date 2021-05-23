@@ -25,16 +25,8 @@ class MenuItem extends FlxSpriteGroup
 		// WHAT THE FUCK
 		// IS THIS :GRIEF:
 		// WHY THE FUCK DO YOU READ A FILE FUCKING 5 TIMES
-		// NO WONDER THERE ARE PREFORMANCE ISSUES
-		var parsedName_1Json:Array<Array<String>> = CoolUtil.parseJson(FNFAssets.getText("assets/data/gameInfo.json")).name_1;
-		var parsedName_2Json:Array<Array<String>> = CoolUtil.parseJson(FNFAssets.getText("assets/data/gameInfo.json")).name_2;
-		var parsedName_3Json:Array<Array<String>> = CoolUtil.parseJson(FNFAssets.getText("assets/data/gameInfo.json")).name_3;
-		var parsedcustomMenuConfirmJson:Array<Array<String>> = CoolUtil.parseJson(FNFAssets.getText("assets/sounds/custom_menu_sounds/custom_menu_sounds.json")).customMenuConfirm;
-		var parsedcustomMenuScrollJson:Array<Array<String>> = CoolUtil.parseJson(FNFAssets.getText("assets/sounds/custom_menu_sounds/custom_menu_sounds.json")).customMenuScroll;
-		var parsedcustomMenuScrollJson:Array<Array<String>> = CoolUtil.parseJson(FNFAssets.getText("assets/sounds/custom_menu_sounds/custom_menu_sounds.json")).Menu;
-		var parsedcustomFreakyMenuJson:Array<Array<String>> = CoolUtil.parseJson(FNFAssets.getText("assets/music/custom_menu_music/custom_menu_music.json")).Menu;
-		var parsedcustomOptionsMusicJson:Array<Array<String>> = CoolUtil.parseJson(FNFAssets.getText("assets/music/custom_menu_music/custom_menu_music.json")).Options;
-		var parsedcbgJson:Array<Array<String>> = CoolUtil.parseJson(FNFAssets.getText("assets/data/freeplaySongJson.jsonc")).cbg;
+		// NO WONDER THERE ARE PREFORMANCE ISSUE
+		
 		var parsedWeekJson:StoryMenuState.StorySongsJson = CoolUtil.parseJson(FNFAssets.getText("assets/data/storySongList.json"));
 		var rawPic = FNFAssets.getBitmapData('assets/images/campaign-ui-week/week'+weekNum+".png");
 		var rawXml = FNFAssets.getText('assets/images/campaign-ui-week/week'+weekNum+".xml");

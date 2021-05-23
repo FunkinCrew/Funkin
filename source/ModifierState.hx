@@ -314,7 +314,7 @@ class ModifierState extends MusicBeatState
 		description.text = "Instantly fail when you don't get \"Sick\"";
 		description.scrollFactor.set();
 		for (modifier in 0...modifiers.length) {
-			var swagModifier = new Alphabet(0, 10, "   "+modifiers[modifier].name, true, false, false);
+			var swagModifier = new Alphabet(0, 10, "   "+modifiers[modifier].name, true, false, true);
 			swagModifier.isMenuItem = true;
 			swagModifier.targetY = modifier;
 			var coolCheckmark:FlxSprite = new FlxSprite().loadGraphic('assets/images/checkmark.png');

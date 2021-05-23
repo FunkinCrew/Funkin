@@ -28,6 +28,7 @@ typedef TOption = {
 	var intName:String;
 	var value:Bool;
 	var desc:String;
+	var ?ignore:Bool;
 }
 class SaveDataState extends MusicBeatState
 {
@@ -65,14 +66,14 @@ class SaveDataState extends MusicBeatState
 						{name: "Style", value: false, intName: "style", desc: "Whether to use fancy style or default to base game."},
 						
 						{name: "Funny Songs", value: false, intName: "stressTankmen", desc: "funny songs"},
-						{name: "Credits", value: false, intName:'credits', desc: "Show the credits!"},
-						{name: "Sound Test...", value: false, intName: 'soundtest', desc: "Listen to the soundtrack [no funny songs tho :(]"},
+						{name: "Credits", value: false, intName:'credits', desc: "Show the credits!", ignore: true},
+						{name: "Sound Test...", value: false, intName: 'soundtest', desc: "Listen to the soundtrack", ignore: true},
 						#if sys
-						{name:"New Character...", value: false, intName:'newchar', desc: "Make a new character!"},
-						{name:"New Stage...", value:false, intName:'newstage', desc: "Make a new stage!"},
-						{name: "New Song...", value: false, intName:'newsong', desc: "Make a new song!"},
-						{name: "New Week...", value: false, intName: 'newweek', desc: "Make a new week!"},
-						{name: "Sort...", value: false, intName: 'sort', desc: "Sort some of your current songs/weeks!"}
+						{name:"New Character...", value: false, intName:'newchar', desc: "Make a new character!", ignore: true},
+						{name:"New Stage...", value:false, intName:'newstage', desc: "Make a new stage!", ignore: true},
+						{name: "New Song...", value: false, intName:'newsong', desc: "Make a new song!", ignore: true},
+						{name: "New Week...", value: false, intName: 'newweek', desc: "Make a new week!", ignore: true},
+						{name: "Sort...", value: false, intName: 'sort', desc: "Sort some of your current songs/weeks!", ignore : true}
 						#end
 					];
 		// amount of things that aren't options
@@ -81,7 +82,9 @@ class SaveDataState extends MusicBeatState
 		uselessShit = 2;
 		#end
 		var curOptions:TOptions = OptionsHandler.options;
-		for (i in 0...(optionList.length - uselessShit)) {
+		for (i in 0...optionList.length) {
+			if (optionList[i].ignore)
+				continue;
 			Reflect.setField(mappedOptions, optionList[i].intName, optionList[i]);
 			optionList[i].value = Reflect.field(curOptions, optionList[i].intName);
 		}

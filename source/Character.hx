@@ -44,6 +44,11 @@ enum abstract EpicLevel(Int) from Int to Int {
 	@:op(A < B) static function lt(a:EpicLevel, b:EpicLevel):Bool;
 	@:op(A <= B) static function lte(a:EpicLevel, b:EpicLevel):Bool;
 }
+typedef TCharacterRefJson = {
+	var like:String;
+	var icons:Array<Int>;
+	var ?colors:Array<String>;
+}
 class Character extends FlxSprite
 {
 	public var animOffsets:Map<String, Array<Dynamic>>;

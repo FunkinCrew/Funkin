@@ -122,7 +122,7 @@
   "tankman": {
     "like": "tankman",
     "icons": [0,1,2],
-    "colors": ["#C3C3C3"]
+    "colors": ["#F9B03A"]
   },
   "gf-tankmen": {
     "like": "gf-tankmen",

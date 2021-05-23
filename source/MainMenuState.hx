@@ -25,10 +25,10 @@ import Song.SwagSong;
 import tjson.TJSON;
 using StringTools;
 typedef VersionJson = {
-	var version: Array<Array<String>>;
-	var name_1: Array<Array<String>>;
-	var name_2: Array<Array<String>>;
-	var name_3: Array<Array<String>>;
+	var version: String;
+	var name_1: String;
+	var name_2: String;
+	var name_3: String;
 
 }
 	
