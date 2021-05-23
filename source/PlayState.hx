@@ -555,8 +555,11 @@ class PlayState extends MusicBeatState
 		Conductor.mapBPMChanges(SONG);
 		Conductor.changeBPM(SONG.bpm);
 		var dialogSuffix = "";
-		// if this is skipped when love is on, that means love is less than or equal to fright soo
-		if (supLove && poisonMultiplier < loveMultiplier) {
+		if (OptionsHandler.options.stressTankmen) {
+			dialogSuffix = "-shit";
+		}
+		// if this is skipped when love is on, that means love is less than or equal to fright so
+		else if (supLove && poisonMultiplier < loveMultiplier) {
 			dialogSuffix = "-love";
 		} else if (poisonExr && poisonMultiplier < 50) {
 			dialogSuffix = "-uneasy";
