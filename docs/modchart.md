@@ -207,6 +207,12 @@ Set's the current camera's zoom
 
 Set's the hud's zoom
 
+### Strumline
+
+##### setStrumlineY(float y)
+
+Set's the y position of the strumLine
+
 ### Actors
 
 ##### getRenderedNotes()
