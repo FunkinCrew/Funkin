@@ -400,6 +400,13 @@ class ModchartState
 					PlayState.instance.camHUD.zoom = zoomAmount;
 				});
 	
+				// strumline
+
+				Lua_helper.add_callback(lua, "setStrumlineY", function(y:Float)
+				{
+					PlayState.instance.strumLine.y = y;
+				});
+	
 				// actors
 				
 				Lua_helper.add_callback(lua,"getRenderedNotes", function() {
