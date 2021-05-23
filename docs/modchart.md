@@ -381,13 +381,17 @@ Set's the angle for the sprite id
 
 Set's the scale for the sprite id
 
-##### setActorScaleX(float x, string/int id) **Currently broken**
+##### setActorScaleXY(float scaleX, float scaleY, string/int id)
 
-Set's the scale x for the sprite id
+Set's the x and y scale for the sprite id
 
-##### setActorScaleY(float y, string/int id) **Currently broken**
+##### setActorFlipX(bool flip, string/int id)
 
-Set's the scale y for the sprite id
+Set's the x flip for the sprite id
+
+##### setActorFlipY(bool flip, string/int id)
+
+Set's the y flip for the sprite id
 
 ##### getActorWidth(string/int id)
 
