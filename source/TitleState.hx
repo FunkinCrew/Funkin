@@ -10,6 +10,7 @@ import flixel.addons.transition.TransitionData;
 import flixel.graphics.FlxGraphic;
 import flixel.group.FlxGroup;
 import flixel.input.gamepad.FlxGamepad;
+import flixel.input.gamepad.id.SwitchJoyconLeftID;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import flixel.system.FlxAssets.FlxGraphicAsset;
@@ -19,6 +20,8 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import lime.app.Application;
+import lime.graphics.Image;
+import lime.media.AudioContext;
 import lime.ui.Window;
 import openfl.Assets;
 import openfl.display.Sprite;
@@ -170,6 +173,9 @@ class TitleState extends MusicBeatState
 			DiscordClient.shutdown();
 		});
 		#end
+
+		// FlxG.stage.window.borderless = true;
+		// FlxG.stage.window.mouseLock = true;
 	}
 
 	private function client_onMetaData(metaData:Dynamic)
@@ -367,6 +373,40 @@ class TitleState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
+		/* 
+			FlxG.watch.addQuick('cur display', FlxG.stage.window.display.id);
+			if (FlxG.keys.justPressed.Y)
+			{
+				// trace(FlxG.stage.window.display.name);
+
+				if (FlxG.gamepads.firstActive != null)
+				{
+					trace(FlxG.gamepads.firstActive.model);
+					FlxG.gamepads.firstActive.id
+				}
+				else
+					trace('gamepad null');
+
+				// FlxG.stage.window.title = Std.string(FlxG.random.int(0, 20000));
+				// FlxG.stage.window.setIcon(Image.fromFile('assets/images/icon16.png'));
+				// FlxG.stage.window.readPixels;
+
+				if (FlxG.stage.window.width == Std.int(FlxG.stage.window.display.bounds.width))
+				{
+					FlxG.stage.window.width = 1280;
+					FlxG.stage.window.height = 720;
+					FlxG.stage.window.y = 30;
+				}
+				else
+				{
+					FlxG.stage.window.width = Std.int(FlxG.stage.window.display.bounds.width);
+					FlxG.stage.window.height = Std.int(FlxG.stage.window.display.bounds.height);
+					FlxG.stage.window.x = Std.int(FlxG.stage.window.display.bounds.x);
+					FlxG.stage.window.y = Std.int(FlxG.stage.window.display.bounds.y);
+				}
+			}
+		 */
+
 		#if debug
 		if (FlxG.keys.justPressed.EIGHT)
 			FlxG.switchState(new CutsceneAnimTestState());
@@ -386,10 +426,8 @@ class TitleState extends MusicBeatState
 		if (FlxG.sound.music != null)
 			Conductor.songPosition = FlxG.sound.music.time;
 		// FlxG.watch.addQuick('amp', FlxG.sound.music.amplitude);
-
 		if (FlxG.keys.justPressed.F)
 			FlxG.fullscreen = !FlxG.fullscreen;
-
 		var pressedEnter:Bool = FlxG.keys.justPressed.ENTER;
 
 		#if mobile
@@ -399,49 +437,39 @@ class TitleState extends MusicBeatState
 				pressedEnter = true;
 		}
 		#end
-
 		var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
 
 		if (gamepad != null)
 		{
 			if (gamepad.justPressed.START)
 				pressedEnter = true;
-
 			#if switch
 			if (gamepad.justPressed.B)
 				pressedEnter = true;
 			#end
 		}
-
 		if (pressedEnter && !transitioning && skippedIntro)
 		{
 			if (FlxG.sound.music != null)
 				FlxG.sound.music.onComplete = null;
 			// netStream.play(Paths.file('music/kickstarterTrailer.mp4'));
 			NGio.unlockMedal(60960);
-
 			// If it's Friday according to da clock
 			if (Date.now().getDay() == 5)
 				NGio.unlockMedal(61034);
-
 			titleText.animation.play('press');
-
 			FlxG.camera.flash(FlxColor.WHITE, 1);
 			FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
-
 			transitioning = true;
 			// FlxG.sound.music.stop();
-
 			#if newgrounds
 			if (!OutdatedSubState.leftState)
 			{
 				NGio.checkVersion(function(version)
 				{
 					// Check if version is outdated
-
 					var localVersion:String = "v" + Application.current.meta.get('version');
 					var onlineVersion = version.split(" ")[0].trim();
-
 					if (version.trim() != onlineVersion)
 					{
 						trace('OLD VERSION!');
@@ -451,7 +479,6 @@ class TitleState extends MusicBeatState
 					{
 						// FlxG.switchState(new MainMenuState());
 					}
-
 					// REDO FOR ITCH/FINAL SHIT
 					FlxG.switchState(new MainMenuState());
 				});
@@ -461,7 +488,6 @@ class TitleState extends MusicBeatState
 			#end
 			// FlxG.sound.play(Paths.music('titleShoot'), 0.7);
 		}
-
 		if (pressedEnter && !skippedIntro && initialized)
 			skipIntro();
 		/* 
@@ -479,16 +505,12 @@ class TitleState extends MusicBeatState
 
 		// if (FlxG.keys.justPressed.SPACE)
 		// swagShader.hasOutline = !swagShader.hasOutline;
-
 		if (controls.UI_LEFT)
 			swagShader.update(-elapsed * 0.1);
-
 		if (controls.UI_RIGHT)
 			swagShader.update(elapsed * 0.1);
-
 		if (!cheatActive && skippedIntro)
 			cheatCodeShit();
-
 		super.update(elapsed);
 	}
 
