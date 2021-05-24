@@ -6,13 +6,22 @@ function init(char) {
     trace(": )");
     char.frames = tex;
     char.animation.addByPrefix('idle', 'BF idle dance', 24, false);
+    if (char.isPlayer) {
+        char.animation.addByPrefix('singLEFT','BF NOTE LEFT0', 24, false);
+        char.animation.addByPrefix('singRIGHT', 'BF NOTE RIGHT0', 24, false);
+        char.animation.addByPrefix('singLEFTmiss', 'BF NOTE LEFT MISS',24, false);
+        char.animation.addByPrefix('singRIGHTmiss', 'BF NOTE RIGHT MISS',24,false);
+    } else {
+        char.animation.addByPrefix('singRIGHT','BF NOTE LEFT0', 24, false);
+        char.animation.addByPrefix('singLEFT', 'BF NOTE RIGHT0', 24, false);
+        char.animation.addByPrefix('singRIGHTmiss', 'BF NOTE LEFT MISS',24, false);
+        char.animation.addByPrefix('singLEFTmiss', 'BF NOTE RIGHT MISS',24,false);
+    }
     char.animation.addByPrefix('singUP', 'BF NOTE UP0', 24, false);
-    char.animation.addByPrefix('singLEFT','BF NOTE LEFT0', 24, false);
-    char.animation.addByPrefix('singRIGHT', 'BF NOTE RIGHT0', 24, false);
+    
     char.animation.addByPrefix('singDOWN', 'BF NOTE DOWN0', 24, false);
     char.animation.addByPrefix('singUPmiss', 'BF NOTE UP MISS', 24, false);
-    char.animation.addByPrefix('singLEFTmiss', 'BF NOTE LEFT MISS',24, false);
-    char.animation.addByPrefix('singRIGHTmiss', 'BF NOTE RIGHT MISS',24,false);
+    
     char.animation.addByPrefix('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
     char.animation.addByPrefix('hey', "BF HEY", 24, false);
 

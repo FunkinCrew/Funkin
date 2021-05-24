@@ -1561,14 +1561,10 @@ class PlayState extends MusicBeatState
 		previousFrameTime = FlxG.game.ticks;
 		lastReportedPlayheadPosition = 0;
 		var useSong = "assets/music/" + SONG.song + "_Inst" + TitleState.soundExt;
-		if (OptionsHandler.options.stressTankmen && FNFAssets.exists("assets/music/" + SONG.song + "Shit_Inst.ogg"))
-			useSong = "assets/music/" + SONG.song + "Shit_Inst.ogg";
+		if (OptionsHandler.options.stressTankmen && FNFAssets.exists("assets/music/" + SONG.song + "/Shit_Inst.ogg"))
+			useSong = "assets/music/" + SONG.song + "/Shit_Inst.ogg";
 		if (!paused)
-			#if sys
-			FlxG.sound.playMusic(Sound.fromFile(useSong), 1, false);
-			#else
-			FlxG.sound.playMusic(useSong, 1, false);
-			#end
+			FlxG.sound.playMusic(FNFAssets.getSound(useSong), 1, false);
 		songLength = FlxG.sound.music.length;
 
 		if (useSongBar) // I dont wanna talk about this code :(
@@ -1584,7 +1580,9 @@ class PlayState extends MusicBeatState
 			songPosBG.scrollFactor.set();
 			add(songPosBG);
 			songPosBG.cameras = [camHUD];
-
+			if (FlxG.sound.music.length == 0) {
+				songLength = 69696969;
+			}
 			songPosBar = new FlxBar(songPosBG.x
 				+ 4, songPosBG.y
 				+ 4, LEFT_TO_RIGHT, Std.int(songPosBG.width - 8), Std.int(songPosBG.height - 8), this,
@@ -3840,9 +3838,47 @@ class PlayState extends MusicBeatState
 		setAllHaxeVar("curStep", curStep);
 		callAllHScript("stepHit", [curStep]);
 
+		songLength = FlxG.sound.music.length;
+
+		if (useSongBar && songPosBar.max == 69695969) {
+			remove(songPosBG);
+			remove(songPosBar);
+			remove(songName);
+
+			songPosBG = new FlxSprite(0, 10).loadGraphic('assets/images/healthBar.png');
+			if (downscroll)
+				songPosBG.y = FlxG.height * 0.9 + 45;
+			songPosBG.screenCenter(X);
+			songPosBG.scrollFactor.set();
+			add(songPosBG);
+			songPosBG.cameras = [camHUD];
+			if (FlxG.sound.music.length == 0)
+			{
+				songLength = 69696969;
+			}
+			songPosBar = new FlxBar(songPosBG.x
+				+ 4, songPosBG.y
+				+ 4, LEFT_TO_RIGHT, Std.int(songPosBG.width - 8), Std.int(songPosBG.height - 8), this,
+				'songPositionBar', 0, songLength
+				- 1000);
+			songPosBar.numDivisions = 1000;
+			songPosBar.scrollFactor.set();
+			songPosBar.createFilledBar(FlxColor.GRAY, FlxColor.LIME);
+			add(songPosBar);
+			songPosBar.cameras = [camHUD];
+
+			var songName = new FlxText(songPosBG.x + (songPosBG.width / 2) - 20, songPosBG.y, 0, SONG.song, 16);
+			if (downscroll)
+				songName.y -= 3;
+			songName.setFormat("assets/fonts/vcr.ttf", 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			songName.scrollFactor.set();
+			add(songName);
+			songName.cameras = [camHUD];
+			
+		}
 		#if windows
 		// Song duration in a float, useful for the time left feature
-		songLength = FlxG.sound.music.length;
+		
 
 		// Updating Discord Rich Presence (with Time Left)
 		DiscordClient.changePresence(detailsText

@@ -5,12 +5,6 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import flash.display.BitmapData;
 import lime.utils.Assets;
 import lime.system.System;
-#if sys
-import sys.io.File;
-import sys.FileSystem;
-import haxe.io.Path;
-import openfl.utils.ByteArray;
-#end
 import haxe.Json;
 import haxe.format.JsonParser;
 class BackgroundDancer extends FlxSprite

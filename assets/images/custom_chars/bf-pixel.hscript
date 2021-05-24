@@ -4,12 +4,21 @@ function init(char) {
         char.frames = FlxAtlasFrames.fromSparrow(hscriptPath + 'char.png', hscriptPath + 'char.xml');
         char.animation.addByPrefix('idle', 'BF IDLE', 24, false);
         char.animation.addByPrefix('singUP', 'BF UP NOTE', 24, false);
-        char.animation.addByPrefix('singLEFT', 'BF LEFT NOTE', 24, false);
-        char.animation.addByPrefix('singRIGHT', 'BF RIGHT NOTE', 24, false);
+        if (char.isPlayer) {
+            char.animation.addByPrefix('singLEFT', 'BF LEFT NOTE', 24, false);
+            char.animation.addByPrefix('singRIGHT', 'BF RIGHT NOTE', 24, false);
+            char.animation.addByPrefix('singLEFTmiss', 'BF LEFT MISS', 24, false);
+            char.animation.addByPrefix('singRIGHTmiss', 'BF RIGHT MISS', 24, false);
+        } else {
+            char.animation.addByPrefix('singLEFT', 'BF RIGHT NOTE', 24, false);
+            char.animation.addByPrefix('singRIGHT', 'BF LEFT NOTE', 24, false);
+            char.animation.addByPrefix('singLEFTmiss', 'BF RIGHT MISS', 24, false);
+            char.animation.addByPrefix('singRIGHTmiss', 'BF LEFT MISS', 24, false);
+        }
+        
         char.animation.addByPrefix('singDOWN', 'BF DOWN NOTE', 24, false);
         char.animation.addByPrefix('singUPmiss', 'BF UP MISS', 24, false);
-        char.animation.addByPrefix('singLEFTmiss', 'BF LEFT MISS', 24, false);
-        char.animation.addByPrefix('singRIGHTmiss', 'BF RIGHT MISS', 24, false);
+        
         char.animation.addByPrefix('singDOWNmiss', 'BF DOWN MISS', 24, false);
 
         char.addOffset('idle');
@@ -36,11 +45,14 @@ function init(char) {
         char.flipX = true;
         char.like = "bf-pixel";
         char.likeBf = true;
-
-        char.enemyOffsetX = 0;
-        char.enemyOffsetY = 350;
         char.followCamX = -50;
-        char.followCamY = -20;
+        if (char.isPlayer) {
+            
+            char.followCamY = -20;
+        } else {
+            char.followCamY = -200;
+        }
+        
     } else {
         char.frames = FlxAtlasFrames.fromSparrow(hscriptPath + 'dead.png', hscriptPath + 'dead.xml');
         char.animation.addByPrefix('singUP', "BF Dies pixel", 24, false);
@@ -61,11 +73,12 @@ function init(char) {
         char.isPixel = true;
         char.like = "bf-pixel";
         char.likeBf = true;
-        char.enemyOffsetX = 0;
-        char.enemyOffsetY = 350;
+        
         char.followCamX = -100;
         char.followCamY = -100;
     }
+    char.enemyOffsetX = 230;
+    char.enemyOffsetY = 500;
     char.isPixel = true;
     
 }

@@ -83,13 +83,7 @@ class FNFAssets {
         #if sys
             File.saveContent(id, data);
         #else
-            _file = new FileReference();
-		
-            _file.addEventListener(Event.COMPLETE, onSaveComplete);
-            _file.addEventListener(Event.CANCEL, onSaveCancel);
-            _file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
-            var idSus = Path.withoutDirectory(id);
-            _file.save(data, idSus);
+            askToSave(id, data);
         #end
     }
 	public static function saveBytes(id:String, data:Bytes)
@@ -97,13 +91,7 @@ class FNFAssets {
 		#if sys
 		File.saveBytes(id, data);
 		#else
-		_file = new FileReference();
-
-		_file.addEventListener(Event.COMPLETE, onSaveComplete);
-		_file.addEventListener(Event.CANCEL, onSaveCancel);
-		_file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
-		var idSus = Path.withoutDirectory(id);
-		_file.save(data, idSus);
+		askToSave(id, data);
 		#end
 	}
     // you can save anything with this but you have to ask

@@ -4,16 +4,7 @@ import openfl.display.BitmapData;
 import flixel.FlxSprite;
 import lime.utils.Assets;
 import lime.system.System;
-#if sys
-import sys.io.File;
-import sys.FileSystem;
-import haxe.io.Path;
-import openfl.utils.ByteArray;
-import lime.media.AudioBuffer;
-import flash.media.Sound;
-#end
 import tjson.TJSON;
-import haxe.Json;
 using StringTools;
 
 

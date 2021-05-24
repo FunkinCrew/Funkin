@@ -16,13 +16,6 @@ import lime.utils.Assets;
 import flixel.graphics.frames.FlxFrame;
 import lime.system.System;
 import flixel.system.FlxAssets.FlxSoundAsset;
-#if sys
-import sys.FileSystem;
-import haxe.io.Path;
-import openfl.utils.ByteArray;
-import lime.media.AudioBuffer;
-import flash.media.Sound;
-#end
 import haxe.Json;
 import haxe.format.JsonParser;
 import tjson.TJSON;
@@ -32,6 +25,7 @@ typedef Dialogue =
 {
 	var addY:Int;
 	var canFlip:Bool;
+	var isPixel:Bool;
 }
 class DialogueBox extends FlxSpriteGroup
 {
@@ -98,6 +92,7 @@ class DialogueBox extends FlxSpriteGroup
 		_dialogue = {
 			addY: 0,
 			canFlip: true,
+			isPixel : false
 		};
 		var fileContent = "";
 		for (dialogText in dialogueList)
@@ -315,13 +310,11 @@ class DialogueBox extends FlxSpriteGroup
 			FlxG.cameras.flash(0xFFFFFFFF, curFlashTime * curSpeed);
 			if (curFlashTime > 0)
 			{
-				switch (PlayState.curStage)
-				{
-					case 'school' | 'schoolEvil':
-						FlxG.sound.play('assets/sounds/shocker-pixel.ogg', 1);
-					default:
-						FlxG.sound.play('assets/sounds/shocker.ogg', 1);
-				}
+				if (_dialogue.isPixel)
+					FlxG.sound.play('assets/sounds/shocker-pixel.ogg', 1);
+				else
+					FlxG.sound.play('assets/sounds/shocker.ogg', 1);
+				
 			}
 		});
 

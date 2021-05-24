@@ -67,7 +67,45 @@ class FreeplayState extends MusicBeatState
 	{
 		for (songSnippet in currentSongList) {
 			var songData = new SongMetadata(songSnippet.name, songSnippet.week, songSnippet.character);
-			songs.push(songData);
+			if (songSnippet.flags == null || songSnippet.flags.length == 0)
+				songs.push(songData);
+			else {
+				var canUse = true;
+				for (flag in songSnippet.flags) {
+					switch (flag) {
+						case 'debug':
+							#if debug
+								continue;
+							#else
+								canUse = false;
+								break;
+							#end
+						default:
+							var reg = ~/week(\d+)/g;
+							if (reg.match(flag)) {
+								var week:Int = Std.parseInt(reg.matched(1));
+								var diffJson = CoolUtil.parseJson(Assets.getText("assets/images/custom_difficulties/difficulties.json"));
+								var difficultiesFP:Array<Dynamic> = diffJson.difficulties;
+								var existsWeek = false;
+								for (diff in 0...difficultiesFP.length) {
+									if (Highscore.getWeekScore(week, diff) != 0) {
+										existsWeek = true;
+										break;
+									}
+										
+								}
+								if (existsWeek) {
+									continue;
+								} else {
+									canUse = false;
+									break;
+								}
+							}
+					}
+				}
+				if (canUse) 
+					songs.push(songData);
+			}
 		}
 
 		curDifficulty = DifficultyIcons.getDefaultDiffFP();
@@ -479,4 +517,5 @@ typedef JsonMetadata = {
 	var name:String;
 	var week:Int;
 	var character:String;
+	var ?flags:Array<String>;
 }

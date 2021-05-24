@@ -21,22 +21,9 @@ import flixel.ui.FlxButton;
 import flixel.ui.FlxSpriteButton;
 import flixel.addons.ui.FlxUITabMenu;
 import lime.system.System;
-#if sys
-import sys.io.File;
-import haxe.io.Path;
-import openfl.utils.ByteArray;
-import lime.media.AudioBuffer;
-import sys.FileSystem;
-import flash.media.Sound;
-
-#end
-import lime.ui.FileDialog;
 import lime.app.Event;
 import haxe.Json;
 import tjson.TJSON;
-import openfl.net.FileReference;
-import openfl.utils.ByteArray;
-import lime.ui.FileDialogType;
 using StringTools;
 
 

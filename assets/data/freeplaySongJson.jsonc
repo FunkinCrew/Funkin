@@ -111,6 +111,12 @@
         "character": "tankman",
         "week": 7
       },
+      {
+        "name": "Test",
+        "character": "bf-pixel",
+        "week": 0,
+        "flags" : ["debug"]
+      }
     ]
   },
   // trailing commas don't matter with tjson

@@ -6,7 +6,6 @@ import flash.display.BitmapData;
 import lime.utils.Assets;
 import lime.system.System;
 #if sys
-import sys.io.File;
 import haxe.io.Path;
 import openfl.utils.ByteArray;
 #end

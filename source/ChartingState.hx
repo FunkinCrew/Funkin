@@ -47,7 +47,7 @@ using StringTools;
 
 class ChartingState extends MusicBeatState
 {
-	var _file:FileReference;
+	//var _file:FileReference;
 
 	var UI_box:FlxUITabMenu;
 
@@ -1212,14 +1212,17 @@ class ChartingState extends MusicBeatState
 
 		if ((data != null) && (data.length > 0))
 		{
+			/*
 			_file = new FileReference();
 			_file.addEventListener(Event.COMPLETE, onSaveComplete);
 			_file.addEventListener(Event.CANCEL, onSaveCancel);
 			_file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
 			_file.save(data.trim(), _song.song.toLowerCase() + ".json");
+			*/ 
+			FNFAssets.askToSave(_song.song.toLowerCase() + '.json', data);
 		}
 	}
-
+	/*
 	function onSaveComplete(_):Void
 	{
 		_file.removeEventListener(Event.COMPLETE, onSaveComplete);
@@ -1228,10 +1231,11 @@ class ChartingState extends MusicBeatState
 		_file = null;
 		FlxG.log.notice("Successfully saved LEVEL DATA.");
 	}
-
+	*/
 	/**
 	 * Called when the save file dialog is cancelled.
 	 */
+	 /*
 	function onSaveCancel(_):Void
 	{
 		_file.removeEventListener(Event.COMPLETE, onSaveComplete);
@@ -1239,10 +1243,11 @@ class ChartingState extends MusicBeatState
 		_file.removeEventListener(IOErrorEvent.IO_ERROR, onSaveError);
 		_file = null;
 	}
-
+	*/
 	/**
 	 * Called if there is an error while saving the gameplay recording.
 	 */
+	 /*
 	function onSaveError(_):Void
 	{
 		_file.removeEventListener(Event.COMPLETE, onSaveComplete);
@@ -1250,5 +1255,5 @@ class ChartingState extends MusicBeatState
 		_file.removeEventListener(IOErrorEvent.IO_ERROR, onSaveError);
 		_file = null;
 		FlxG.log.error("Problem saving Level data");
-	}
+	}*/
 }
