@@ -17,7 +17,6 @@ import flixel.graphics.frames.FlxFrame;
 import lime.system.System;
 import flixel.system.FlxAssets.FlxSoundAsset;
 #if sys
-import sys.io.File;
 import sys.FileSystem;
 import haxe.io.Path;
 import openfl.utils.ByteArray;
@@ -166,7 +165,7 @@ class DialogueBox extends FlxSpriteGroup
 
 		if (curBox != null)
 		{
-			var data:String = File.getContent('assets/images/custom_dialogs/dialogBoxes/' + curBox+ '.json');
+			var data:String = FNFAssets.getText('assets/images/custom_dialogs/dialogBoxes/' + curBox+ '.json');
 			_dialogue = CoolUtil.parseJson(data);
 		}
 
@@ -381,7 +380,7 @@ class DialogueBox extends FlxSpriteGroup
 			box.screenCenter(X);
 			box.y = 710 - box.height;
 
-			var data:String = File.getContent('assets/images/custom_dialogs/dialogBoxes/' + curBox+ '.json');
+			var data:String = FNFAssets.getText('assets/images/custom_dialogs/dialogBoxes/' + curBox+ '.json');
 			_dialogue = Json.parse(data);
 
 			box.y += _dialogue.addY;
