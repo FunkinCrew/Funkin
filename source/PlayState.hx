@@ -2363,7 +2363,9 @@ class PlayState extends MusicBeatState
 						else
 						{
 							health -= 0.075;
+							#if windows
 							if (executeModchart && luaModchart != null){	luaModchart.setVar('health', health);};
+							#end
 							vocals.volume = 0;
 							if (theFunne)
 								noteMiss(daNote.noteData, daNote);
@@ -2559,7 +2561,9 @@ class PlayState extends MusicBeatState
 					combo = 0;
 					misses++;
 					health -= 0.2;
+					#if windows
 					if (executeModchart && luaModchart != null){	luaModchart.setVar('health', health);};
+					#end
 					ss = false;
 					shits++;
 					if (FlxG.save.data.accuracyMod == 0)
@@ -2568,7 +2572,9 @@ class PlayState extends MusicBeatState
 					daRating = 'bad';
 					score = 0;
 					health -= 0.06;
+					#if windows
 					if (executeModchart && luaModchart != null){	luaModchart.setVar('health', health);};
+					#end
 					ss = false;
 					bads++;
 					if (FlxG.save.data.accuracyMod == 0)
@@ -2580,13 +2586,17 @@ class PlayState extends MusicBeatState
 					goods++;
 					if (health < 2)
 						health += 0.04;
+						#if windows
 						if (executeModchart && luaModchart != null){	luaModchart.setVar('health', health);};
+						#end
 					if (FlxG.save.data.accuracyMod == 0)
 						totalNotesHit += 0.75;
 				case 'sick':
 					if (health < 2)
 						health += 0.1;
+						#if windows
 						if (executeModchart && luaModchart != null){	luaModchart.setVar('health', health);};
+						#end
 					if (FlxG.save.data.accuracyMod == 0)
 						totalNotesHit += 1;
 					sicks++;
@@ -2832,12 +2842,14 @@ class PlayState extends MusicBeatState
 					controls.UP_R,
 					controls.RIGHT_R
 				];
+				#if windows
 				if (luaModchart != null){
 				if (controls.LEFT_P){luaModchart.executeState('keyPressed',["left"]);};
 				if (controls.DOWN_P){luaModchart.executeState('keyPressed',["down"]);};
 				if (controls.UP_P){luaModchart.executeState('keyPressed',["up"]);};
 				if (controls.RIGHT_P){luaModchart.executeState('keyPressed',["right"]);};
 				};
+				#end
 		 
 				// Prevent player input if botplay is on
 				if(FlxG.save.data.botplay)
