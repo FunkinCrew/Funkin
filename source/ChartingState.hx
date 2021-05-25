@@ -124,7 +124,12 @@ class ChartingState extends MusicBeatState
 		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * 8, GRID_SIZE * 16);
 		add(gridBG);
 
-		snapText = new FlxText(-100,10,0,"Snap: 1/" + snap + " (Control + Left or Right to change.)\nAdd Notes: 1-8 (or click)\n", 24);
+		var blackBorder:FlxSprite = new FlxSprite(60,10).makeGraphic(120,100,FlxColor.BLACK);
+		blackBorder.scrollFactor.set();
+
+		blackBorder.alpha = 0.3;
+
+		snapText = new FlxText(60,10,0,"Snap: 1/" + snap + " (Control + Left or Right to change.)\nAdd Notes: 1-8 (or click)\n", 14);
 		snapText.scrollFactor.set();
 
 		gridBlackLine = new FlxSprite(gridBG.x + gridBG.width / 2).makeGraphic(2, Std.int(gridBG.height), FlxColor.BLACK);
@@ -193,6 +198,7 @@ class ChartingState extends MusicBeatState
 		add(curRenderedNotes);
 		add(curRenderedSustains);
 
+		add(blackBorder);
 		add(snapText);
 
 
@@ -630,7 +636,7 @@ class ChartingState extends MusicBeatState
 	{
 		updateHeads();
 
-		snapText.text = "Snap: " + snap;
+		snapText.text = "Snap: 1/" + snap + " (Control + Left or Right to change.)\nAdd Notes: 1-8 (or click)\n";
 
 		curStep = recalculateSteps();
 
