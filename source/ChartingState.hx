@@ -45,7 +45,7 @@ class ChartingState extends MusicBeatState
 
 	public var playClaps:Bool = false;
 
-	public var snap:Int = 2;
+	public var snap:Int = 1;
 
 	var UI_box:FlxUITabMenu;
 
@@ -615,6 +615,12 @@ class ChartingState extends MusicBeatState
 			else
 				return _song.notes[curSection].lengthInSteps;
 	}*/
+
+	function stepStartTime(step):Float
+	{
+		return _song.bpm / (step / 4) / 60;
+	}
+
 	function sectionStartTime():Float
 	{
 		var daBPM:Int = _song.bpm;
@@ -651,8 +657,8 @@ class ChartingState extends MusicBeatState
 			snap = Math.round(snap / 2);
 		if (snap >= 192)
 			snap = 192;
-		if (snap <= 2)
-			snap = 2;
+		if (snap <= 1)
+			snap = 1;
 		Conductor.songPosition = FlxG.sound.music.time;
 		_song.song = typingShit.text;
 
@@ -915,7 +921,8 @@ class ChartingState extends MusicBeatState
 				FlxG.sound.music.pause();
 				vocals.pause();
 
-				FlxG.sound.music.time -= (FlxG.mouse.wheel * Conductor.crochet / snap * 0.4);
+				FlxG.sound.music.time += (FlxG.mouse.wheel * Conductor.stepCrochet / snap);
+
 				vocals.time = FlxG.sound.music.time;
 			}
 
