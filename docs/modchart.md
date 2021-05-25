@@ -145,6 +145,7 @@ Kade Engine provides a list of global variables to be used in the lua scripting 
 |	  scrollSpeed	   |  Int  |				   The current scrollspeed					  |
 |	  	mustHit		   | Bool  |  		If the current section is a must hit section		  |
 |	  strumLineY	   | Float |  			The current Strum Line Y Position				  |
+|       health         | Float |                 The current health of the player             |
 
 ## Functions
 
@@ -465,3 +466,11 @@ Sets the window's position
 ##### resizeWindow(int width, int height)
 
 Resizes the window
+
+
+### Misc
+
+##### setHealth(float heal)
+
+Sets the player's health
+
