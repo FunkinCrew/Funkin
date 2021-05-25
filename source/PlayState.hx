@@ -3102,7 +3102,7 @@ class PlayState extends MusicBeatState
 		
 		#if !switch
 		if (!demoMode && ModifierState.scoreMultiplier > 0)
-			Highscore.saveScore(SONG.song, songScore, storyDifficulty, (notesHit / notesPassing));
+			Highscore.saveScore(SONG.song, songScore, storyDifficulty, (notesHit / notesPassing), Ratings.CalculateFullCombo('shit'));
 		#end
 		controls.setKeyboardScheme(Solo(false));
 		if (isStoryMode)

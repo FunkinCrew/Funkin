@@ -12,7 +12,7 @@ class CoolUtil
 {
 	public static function coolTextFile(path:String):Array<String>
 	{
-		var daList:Array<String> = Assets.getText(path).trim().split('\n');
+		var daList:Array<String> = FNFAssets.getText(path).trim().split('\n');
 
 		for (i in 0...daList.length)
 		{
@@ -23,14 +23,7 @@ class CoolUtil
 	}
 	public static function coolDynamicTextFile(path:String):Array<String>
 	{
-		var daList:Array<String> = FNFAssets.getText(path).trim().split('\n');
-
-		for (i in 0...daList.length)
-		{
-			daList[i] = daList[i].trim();
-		}
-
-		return daList;
+		return coolTextFile(path);
 	}
 	public static function numberArray(max:Int, ?min = 0):Array<Int>
 	{

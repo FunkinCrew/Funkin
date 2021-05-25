@@ -114,7 +114,7 @@
       {
         "name": "Test",
         "character": "bf-pixel",
-        "week": 0,
+        "week": 6,
         "flags" : ["debug"]
       }
     ]

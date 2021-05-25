@@ -7,12 +7,13 @@ class Highscore
 	#if (haxe >= "4.0.0")
 	public static var songScores:Map<String, Int> = new Map();
 	public static var songAccuracy:Map<String, Float> = new Map();
+	public static var songCompletions:Map<String, Bool> = new Map();
 	#else
 	public static var songScores:Map<String, Int> = new Map<String, Int>();
 	#end
 
 
-	public static function saveScore(song:String, score:Int = 0, ?diff:Int = 0, ?accuracy:Float = 0):Void
+	public static function saveScore(song:String, score:Int = 0, ?diff:Int = 0, ?accuracy:Float = 0, ?combo:Bool):Void
 	{
 		var daSong:String = formatSong(song, diff);
 
@@ -39,6 +40,14 @@ class Highscore
 		} else {
 			setAccuracy(daSong, accuracy);
 		}
+		if (songCompletions.exists(daSong)) {
+			if (!songCompletions.get(daSong)) {
+				setComplete(daSong,combo);
+			}
+		} else {
+			setComplete(daSong, combo);
+		}
+
 			
 	}
 	public static function saveWeekScore(week:Int = 1, score:Int = 0, ?diff:Int = 0, ?accuracy:Float = 0):Void
@@ -73,7 +82,12 @@ class Highscore
 		FlxG.save.data.songScores = songScores;
 		FlxG.save.flush();
 	}
-	static function setAccuracy(song:String, accuracy:Float):Void {
+	public static function setComplete(song:String, combo:Bool) {
+		songCompletions.set(song, combo);
+		FlxG.save.data.songCompletions = songCompletions;
+		FlxG.save.flush();
+	}
+	public static function setAccuracy(song:String, accuracy:Float):Void {
 		songAccuracy.set(song,accuracy);
 		FlxG.save.data.songAccuracy = songAccuracy;
 		FlxG.save.flush();
@@ -99,6 +113,11 @@ class Highscore
 			setAccuracy(formatSong(song, diff), 0);
 
 		return songAccuracy.get(formatSong(song, diff));
+	}
+	public static function getComplete(song:String, diff:Int):Bool {
+		if (!songCompletions.exists(formatSong(song, diff)))
+			setComplete(formatSong(song,diff), false);
+		return songCompletions.get(formatSong(song,diff));
 	}
 	public static function getTotalScore():Int {
 		var totalScore:Int = 0;
@@ -129,6 +148,16 @@ class Highscore
 		}
 		if (FlxG.save.data.songAccuracy != null) {
 			songAccuracy = FlxG.save.data.songAccuracy;
+		} else {
+			songAccuracy = [];
+			FlxG.save.data.songAccuracy = songAccuracy;
+		}
+		if (FlxG.save.data.songCompletions != null) {
+			songCompletions = FlxG.save.data.songCompletions;
+		} else {
+			songCompletions = [];
+			FlxG.save.data.songCompletions = songCompletions;
+			 
 		}
 	}
 }

@@ -1,5 +1,6 @@
 package;
 
+import flixel.input.keyboard.FlxKey;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxGradient;
 import Section.SwagSection;
@@ -196,19 +197,14 @@ class FreeplayState extends MusicBeatState
 
 		add(scoreText);
 		var curCharacter = songs[0].songCharacter;
+		
 		if (OptionsHandler.options.style) {
-			record = new Record(FlxG.width, FlxG.height, Reflect.field(charJson, curCharacter).colors);
+			record = new Record(FlxG.width, FlxG.height, Reflect.field(charJson, curCharacter).colors, songs[0].week, Highscore.getComplete(songs[0].songName, curDifficulty));
 			// DON'T update hitbox, it breaks everything
 			record.scale.set(0.7, 0.7);
 			record.x -= record.width / 1.5;
 			record.y -= record.height / 1.5;
 			add(record);
-			recordPixel = new Record(FlxG.width, FlxG.height, Reflect.field(charJson, curCharacter).colors, null, true);
-			// DON'T update hitbox, it breaks everything
-			recordPixel.scale.set(0.7, 0.7);
-			recordPixel.x -= recordPixel.width / 1.5;
-			recordPixel.y -= recordPixel.height / 1.5;
-			add(recordPixel);
 		}
 		
 		changeSelection();
@@ -267,6 +263,11 @@ class FreeplayState extends MusicBeatState
 		if (soundTest && soundTestSong != null) {
 			Conductor.songPosition += FlxG.elapsed * 1000;
 		}
+		#if debug
+		// i've ruined my save file :)
+		if (FlxG.keys.checkStatus(FlxKey.F2, 2))
+			Highscore.saveScore(songs[0].songName, 0, 1, 0, true);
+		#end
 		if (upP)
 		{
 			changeSelection(-1);
@@ -404,7 +405,13 @@ class FreeplayState extends MusicBeatState
 			}
 
 		}
-		
+		// do it here for the sweet sweet gold record
+
+		if (OptionsHandler.options.style)
+		{
+			record.changeColor(Reflect.field(charJson, songs[curSelected].songCharacter).colors, songs[curSelected].songCharacter, songs[curSelected].week,
+				Highscore.getComplete(songs[curSelected].songName, curDifficulty));
+		}
 	}
 	override function stepHit()
 	{
@@ -482,20 +489,12 @@ class FreeplayState extends MusicBeatState
 		//remove(curOverlay);
 		//curOverlay = FlxGradient.createGradientFlxSprite(FlxG.width, FlxG.height, dealphaedColors);
 		//insert(1, curOverlay);
+		trace(Highscore.getComplete(songs[0].songName, curDifficulty));
 		FlxTween.color(bg,0.5, bg.color, FlxColor.fromString(Reflect.field(charJson, songs[curSelected].songCharacter).colors[0]));
 		if (OptionsHandler.options.style) {
-			record.changeColor(Reflect.field(charJson, songs[curSelected].songCharacter).colors, songs[curSelected].songCharacter);
-			recordPixel.changeColor(Reflect.field(charJson, songs[curSelected].songCharacter).colors, songs[curSelected].songCharacter);
-			if (isPixelIcon[curSelected])
-			{
-				recordPixel.visible = true;
-				record.visible = false;
-			}
-			else
-			{
-				record.visible = true;
-				recordPixel.visible = false;
-			}
+			record.changeColor(Reflect.field(charJson, songs[curSelected].songCharacter).colors, songs[curSelected].songCharacter, songs[curSelected].week,
+				Highscore.getComplete(songs[curSelected].songName, curDifficulty));
+			
 		}
 		
 	}
