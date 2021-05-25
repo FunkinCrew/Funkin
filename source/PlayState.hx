@@ -2837,7 +2837,6 @@ class PlayState extends MusicBeatState
 				if (controls.DOWN_P){luaModchart.executeState('keyPressed',["down"]);};
 				if (controls.UP_P){luaModchart.executeState('keyPressed',["up"]);};
 				if (controls.RIGHT_P){luaModchart.executeState('keyPressed',["right"]);};
-				if (controls.ACCEPT_P){luaModchart.executeState('keyPressed',["accept"]);};
 				};
 		 
 				// Prevent player input if botplay is on
