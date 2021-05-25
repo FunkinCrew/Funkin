@@ -400,6 +400,13 @@ class ModchartState
 					PlayState.instance.camHUD.zoom = zoomAmount;
 				});
 	
+				// strumline
+
+				Lua_helper.add_callback(lua, "setStrumlineY", function(y:Float)
+				{
+					PlayState.instance.strumLine.y = y;
+				});
+	
 				// actors
 				
 				Lua_helper.add_callback(lua,"getRenderedNotes", function() {
@@ -512,7 +519,21 @@ class ModchartState
 				Lua_helper.add_callback(lua,"setActorScale", function(scale:Float,id:String) {
 					getActorByName(id).setGraphicSize(Std.int(getActorByName(id).width * scale));
 				});
+				
+				Lua_helper.add_callback(lua, "setActorScaleXY", function(scaleX:Float, scaleY:Float, id:String)
+				{
+					getActorByName(id).setGraphicSize(Std.int(getActorByName(id).width * scaleX), Std.int(getActorByName(id).height * scaleY));
+				});
 	
+				Lua_helper.add_callback(lua, "setActorFlipX", function(flip:Bool, id:String)
+				{
+					getActorByName(id).flipX = flip;
+				});
+
+				Lua_helper.add_callback(lua, "setActorFlipY", function(flip:Bool, id:String)
+				{
+					getActorByName(id).flipY = flip;
+				});
 	
 				Lua_helper.add_callback(lua,"getActorWidth", function (id:String) {
 					return getActorByName(id).width;
