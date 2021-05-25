@@ -1,3 +1,4 @@
+import openfl.geom.ColorTransform;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.display.BitmapData;
@@ -63,7 +64,7 @@ class Record extends FlxTypedSpriteGroup<FlxSprite> {
         centerPart = new FlxSprite().loadGraphic(sussyBackup.clone());
 		centerPart.origin.set(recordsprite.origin.x, recordsprite.origin.y);
 		centerPart.centerOffsets();
-        add(centerPart);
+        
         
         icon = new HealthIcon(character);
 		icon.origin.set(origin.x, origin.y);
@@ -71,6 +72,7 @@ class Record extends FlxTypedSpriteGroup<FlxSprite> {
         icon.y = recordsprite.height/2 - (icon.height/2);
         changeColor(colors);
         add(recordsprite);
+		add(centerPart);
         add(icon);
         x = X;
         y = Y;
@@ -124,9 +126,9 @@ class Record extends FlxTypedSpriteGroup<FlxSprite> {
                 }
             }
 
-            if (FNFAssets.exists('assets/images/campaign-ui-weeks/week$week-center.png'))
+            if (FNFAssets.exists('assets/images/campaign-ui-week/week$week-center.png'))
             {
-                sussyBackup = FNFAssets.getBitmapData('assets/images/campaign-ui-weeks/week$week-center.png');
+                sussyBackup = FNFAssets.getBitmapData('assets/images/campaign-ui-week/week$week-center.png');
             }
             else
             {
@@ -138,6 +140,7 @@ class Record extends FlxTypedSpriteGroup<FlxSprite> {
 		curWeek = week;
         var sussyGradThing = sussyBackup.clone();
 		var sussyGradientMap = FlxGradient.createGradientBitmapData(Std.int(centerPart.width), Std.int(centerPart.height), sussyColors);
+        sussyGradientMap.colorTransform(new Rectangle(0, 0, sussyGradientMap.width, sussyGradientMap.height), new ColorTransform(1, 1, 1, 0.8));
 		sussyGradThing.copyPixels(sussyGradientMap, new Rectangle(0, 0, sussyGradientMap.width, sussyGradientMap.height), new Point(0, 0), sussyBackup,
 			new Point(0, 0), true);
         centerPart.loadGraphic(sussyGradThing);
