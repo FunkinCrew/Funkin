@@ -50,10 +50,7 @@ jobs:
           haxelib install hxcpp-debug-server
           haxelib list
       - name: Create Version Tag
-        uses: "finnp/create-file-action@master"
-        env:
-          FILE_NAME: "source/APIStuff.hx"
-          FILE_DATA: "4.0.0-$${{ github.run_id}}"
+        run: echo "4.0.0${{github.run_id}}" > VERSION
       - name: Compile
         run: haxelib run lime build linux --app-version="4.0.0-${{ github.run_id}}"
       - name: Archive
@@ -96,10 +93,7 @@ jobs:
           haxelib list
         shell: cmd
       - name: Create Version Tag
-        uses: "finnp/create-file-action@master"
-        env:
-          FILE_NAME: "source/APIStuff.hx"
-          FILE_DATA: "4.0.0-$${{ github.run_id}}"
+        run: echo "4.0.0${{github.run_id}}" > VERSION
       - name: Compile
         run: haxelib run lime build windows --app-version="4.0.0-${{ github.run_id}}"
       - name: Archive
@@ -141,10 +135,7 @@ jobs:
           haxelib install hxcpp-debug-server
           haxelib list
       - name: Create Version Tag
-        uses: "finnp/create-file-action@master"
-        env:
-          FILE_NAME: "source/APIStuff.hx"
-          FILE_DATA: "4.0.0-$${{ github.run_id}}"
+        run: echo "4.0.0${{github.run_id}}" > VERSION
       - name: Compile
         run: haxelib run lime build mac --app-version="4.0.0-${{ github.run_id}}"
       - name: Archive
