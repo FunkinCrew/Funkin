@@ -302,7 +302,7 @@ class Judgement extends Option
 	}
 
 	override function getValue():String {
-		return Conductor.safeFrames + " - " +
+		return "Safe Frames: " + Conductor.safeFrames +
 		" - SIK: " + HelperFunctions.truncateFloat(45 * Conductor.timeScale, 0) +
 		"ms GD: " + HelperFunctions.truncateFloat(90 * Conductor.timeScale, 0) +
 		"ms BD: " + HelperFunctions.truncateFloat(135 * Conductor.timeScale, 0) + 
