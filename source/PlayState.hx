@@ -2374,14 +2374,17 @@ class PlayState extends MusicBeatState
 				});
 			}
 
-		cpuStrums.forEach(function(spr:FlxSprite)
+		if (FlxG.save.data.cpuStrums)
 		{
-			if (spr.animation.finished)
+			cpuStrums.forEach(function(spr:FlxSprite)
 			{
-				spr.animation.play('static');
-				spr.centerOffsets();
-			}
-		});
+				if (spr.animation.finished)
+				{
+					spr.animation.play('static');
+					spr.centerOffsets();
+				}
+			});
+		}
 
 		if (!inCutscene)
 			keyShit();

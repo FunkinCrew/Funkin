@@ -1,5 +1,6 @@
 package;
 
+import flixel.FlxCamera;
 import flixel.addons.ui.FlxUIText;
 import haxe.zip.Writer;
 import Conductor.BPMChangeEvent;
@@ -41,6 +42,10 @@ using StringTools;
 class ChartingState extends MusicBeatState
 {
 	var _file:FileReference;
+
+	public var playClaps:Bool = false;
+
+	public var snap:Int = 2;
 
 	var UI_box:FlxUITabMenu;
 
@@ -91,6 +96,8 @@ class ChartingState extends MusicBeatState
 	private var lastNote:Note;
 	var claps:Array<Note> = [];
 
+	public var snapText:FlxText;
+
 	override function create()
 	{
 		curSection = lastSection;
@@ -116,6 +123,9 @@ class ChartingState extends MusicBeatState
 
 		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * 8, GRID_SIZE * 16);
 		add(gridBG);
+
+		snapText = new FlxText(-100,10,0,"Snap: 1/" + snap + " (Control + Left or Right to change.)\nAdd Notes: 1-8 (or click)\n", 24);
+		snapText.scrollFactor.set();
 
 		gridBlackLine = new FlxSprite(gridBG.x + gridBG.width / 2).makeGraphic(2, Std.int(gridBG.height), FlxColor.BLACK);
 		add(gridBlackLine);
@@ -182,6 +192,10 @@ class ChartingState extends MusicBeatState
 
 		add(curRenderedNotes);
 		add(curRenderedSustains);
+
+		add(snapText);
+
+
 
 		super.create();
 	}
@@ -263,6 +277,14 @@ class ChartingState extends MusicBeatState
 		stepperSongVol.value = FlxG.sound.music.volume;
 		stepperSongVol.name = 'song_instvol';
 
+
+		var hitsounds = new FlxUICheckBox(10, stepperSongVol.y + 35, null, null, "Play hitsounds", 100);
+		hitsounds.checked = false;
+		hitsounds.callback = function()
+		{
+			playClaps = hitsounds.checked;
+		};
+
 		var stepperSongVolLabel = new FlxText(74, 110, 'Instrumental Volume');
 
 		var characters:Array<String> = CoolUtil.coolTextFile(Paths.txt('characterList'));
@@ -328,7 +350,8 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(stepperVocalVolLabel);
 		tab_group_song.add(stepperSongVol);
 		tab_group_song.add(stepperSongVolLabel);
-		
+		tab_group_song.add(hitsounds);
+
 		var tab_group_assets = new FlxUI(null, UI_box);
 		tab_group_assets.name = "Assets";
 		tab_group_assets.add(noteStyleDropDown);
@@ -436,7 +459,6 @@ class ChartingState extends MusicBeatState
 
 		var applyLength:FlxButton = new FlxButton(10, 100, 'Apply Data');
 
-		tab_group_note.add(writingNotesText);
 		tab_group_note.add(stepperSusLength);
 		tab_group_note.add(stepperSusLengthLabel);
 		tab_group_note.add(applyLength);
@@ -608,6 +630,8 @@ class ChartingState extends MusicBeatState
 	{
 		updateHeads();
 
+		snapText.text = "Snap: " + snap;
+
 		curStep = recalculateSteps();
 
 		if (FlxG.keys.justPressed.ALT && UI_box.selected_tab == 0)
@@ -615,64 +639,57 @@ class ChartingState extends MusicBeatState
 			writingNotes = !writingNotes;
 		}
 
-		if (writingNotes)
-			writingNotesText.text = "WRITING NOTES";
-		else
-			writingNotesText.text = "";
-
+		if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.RIGHT)
+			snap = snap * 2;
+		if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.LEFT)
+			snap = Math.round(snap / 2);
+		if (snap >= 192)
+			snap = 192;
+		if (snap <= 2)
+			snap = 2;
 		Conductor.songPosition = FlxG.sound.music.time;
 		_song.song = typingShit.text;
 
-		var upP = controls.UP_P;
-		var rightP = controls.RIGHT_P;
-		var downP = controls.DOWN_P;
-		var leftP = controls.LEFT_P;
+		var left = FlxG.keys.justPressed.ONE;
+		var down = FlxG.keys.justPressed.TWO;
+		var up = FlxG.keys.justPressed.THREE;
+		var right = FlxG.keys.justPressed.FOUR;
+		var leftO = FlxG.keys.justPressed.FIVE;
+		var downO = FlxG.keys.justPressed.SIX;
+		var upO = FlxG.keys.justPressed.SEVEN;
+		var rightO = FlxG.keys.justPressed.EIGHT;
 
-		var controlArray:Array<Bool> = [leftP, downP, upP, rightP];
+		var pressArray = [left, down, up, right, leftO, downO, upO, rightO];
 
-		if ((upP || rightP || downP || leftP) && writingNotes)
+		for (p in 0...pressArray.length)
 		{
-			for(i in 0...controlArray.length)
-			{
-				if (controlArray[i])
-				{
-					for (n in 0..._song.notes[curSection].sectionNotes.length)
-						{
-							var note = _song.notes[curSection].sectionNotes[n];
-							if (note == null)
-								continue;
-							if (note[0] == Conductor.songPosition && note[1] % 4 == i)
-							{
-								trace('GAMING');
-								_song.notes[curSection].sectionNotes.remove(note);
-							}
-						}
-					trace('adding note');
-					_song.notes[curSection].sectionNotes.push([Conductor.songPosition, i, 0]);
-					updateGrid();
-				}
-			}
-
+			var i = pressArray[p];
+			if (i)
+				addNote(new Note(Conductor.songPosition,p));
 		}
 
 		strumLine.y = getYfromStrum((Conductor.songPosition - sectionStartTime()) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps));
 		
-		curRenderedNotes.forEach(function(note:Note)
+
+
+		if (playClaps)
 		{
-			if (FlxG.sound.music.playing)
+			curRenderedNotes.forEach(function(note:Note)
 			{
-				FlxG.overlap(strumLine, note, function(_, _)
+				if (FlxG.sound.music.playing)
 				{
-					if(!claps.contains(note))
+					FlxG.overlap(strumLine, note, function(_, _)
 					{
-						claps.push(note);
-						if(_song.notes[curSection].mustHitSection) FlxG.sound.play(Paths.sound('CLAP'));
-						else FlxG.sound.play(Paths.sound('SNAP'));
-					}
-				});
-			}
-		});
-		
+						if(!claps.contains(note))
+						{
+							claps.push(note);
+							if(_song.notes[curSection].mustHitSection) FlxG.sound.play(Paths.sound('CLAP'));
+							else FlxG.sound.play(Paths.sound('SNAP'));
+						}
+					});
+				}
+			});
+		}
 		/*curRenderedNotes.forEach(function(note:Note) {
 			if (strumLine.overlaps(note) && strumLine.y == note.y) // yandere dev type shit
 			{
@@ -857,7 +874,7 @@ class ChartingState extends MusicBeatState
 			var shiftThing:Int = 1;
 			if (FlxG.keys.pressed.SHIFT)
 				shiftThing = 4;
-			if (!writingNotes)
+			if (!FlxG.keys.pressed.CONTROL)
 			{
 				if (FlxG.keys.justPressed.RIGHT || FlxG.keys.justPressed.D)
 					changeSection(curSection + shiftThing);
@@ -892,7 +909,7 @@ class ChartingState extends MusicBeatState
 				FlxG.sound.music.pause();
 				vocals.pause();
 
-				FlxG.sound.music.time -= (FlxG.mouse.wheel * Conductor.stepCrochet * 0.4);
+				FlxG.sound.music.time -= (FlxG.mouse.wheel * Conductor.crochet / snap * 0.4);
 				vocals.time = FlxG.sound.music.time;
 			}
 
