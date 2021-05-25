@@ -254,6 +254,7 @@ class SaveDataState extends MusicBeatState
 					case "Sound Test...":
 						saveOptions();
 						FreeplayState.soundTest = true;
+						CategoryState.choosingFor = "freeplay";
 						LoadingState.loadAndSwitchState(new CategoryState());
 					case "Credits": 
 						saveOptions();

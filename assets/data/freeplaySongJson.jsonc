@@ -113,7 +113,7 @@
       },
       {
         "name": "Test",
-        "character": "bf-pixel",
+        "character": "bf-old",
         "week": 6,
         "flags" : ["debug"]
       }

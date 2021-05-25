@@ -2682,7 +2682,10 @@ class PlayState extends MusicBeatState
 		// RESET = Quick Game Over Screen
 		if (controls.RESET)
 		{
-			health = 0;
+			if (opponentPlayer)
+				health = 2;
+			else
+				health = 0;
 			trace("RESET = True");
 		}
 

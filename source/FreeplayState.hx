@@ -168,9 +168,6 @@ class FreeplayState extends MusicBeatState
 			grpSongs.add(songText);
 
 			var icon:HealthIcon = new HealthIcon(songs[i].songCharacter);
-			var interp = Character.getAnimInterp(songs[i].songCharacter);
-			trace(interp.variables.get("isPixel"));
-			isPixelIcon.push(interp.variables.get("isPixel"));
 			icon.sprTracker = songText;
 			// icons won't be visible 
 			icon.visible = !OptionsHandler.options.style;
