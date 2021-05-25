@@ -191,11 +191,11 @@ Returns the hud's y position
 
 Set's the current camera's position in space
 
-##### getCamX()
+##### getCameraX()
 
 Returns the current camera's x position
 
-##### getCamY()
+##### getCameraY()
 
 Returns the current camera's y position
 
@@ -206,6 +206,12 @@ Set's the current camera's zoom
 ##### setHudZoom(float zoomAmount)
 
 Set's the hud's zoom
+
+### Strumline
+
+##### setStrumlineY(float y)
+
+Set's the y position of the strumLine
 
 ### Actors
 
@@ -243,6 +249,12 @@ Returns the note data of an note (0-3, left, down, up, right)
 
 *Note: Rendered Notes id's are special in the way that they act. 0 = closest note to any receptor, last index = the farthest away from any receptor.*
 
+##### getRenderedNoteHit(int id)
+
+Returns whether a rendered note must be hit by the player or not
+
+*Note: Rendered Notes id's are special in the way that they act. 0 = closest note to any receptor, last index = the farthest away from any receptor.*
+
 ##### isSustain(int id)
 
 Returns whether a rendered note is a sustain note or not (if they appear as the trail)
@@ -275,7 +287,7 @@ Returns what the game would normally put the specified rendered note x.
 
 ##### anyNotes()
 
-Returns the number of rendered notes on the screen.
+Returns true if there are rendered notes, and returns false if there are none
 
 ##### getRenderedNoteStrumtime(int id)
 
@@ -375,13 +387,17 @@ Set's the angle for the sprite id
 
 Set's the scale for the sprite id
 
-##### setActorScaleX(float x, string/int id) **Currently broken**
+##### setActorScaleXY(float scaleX, float scaleY, string/int id)
 
-Set's the scale x for the sprite id
+Set's the x and y scale for the sprite id
 
-##### setActorScaleY(float y, string/int id) **Currently broken**
+##### setActorFlipX(bool flip, string/int id)
 
-Set's the scale y for the sprite id
+Set's the x flip for the sprite id
+
+##### setActorFlipY(bool flip, string/int id)
+
+Set's the y flip for the sprite id
 
 ##### getActorWidth(string/int id)
 
@@ -418,3 +434,34 @@ Smoothly fade in to an alpha
 ##### tweenFadeOut(string/int id, float toAlpha, float time, string onComplete)
 
 Smoothly fade out to an alpha
+
+
+
+
+
+
+### Window & Screen
+
+##### getWindowX()
+
+Returns the window's x position
+
+##### getWindowY()
+
+Returns the window's y position
+
+##### getScreenWidth()
+
+Returns the width of the screen
+
+##### getScreenHeight()
+
+Returns the height of the screen
+
+##### setWindowPos(int x, int y)
+
+Sets the window's position
+
+##### resizeWindow(int width, int height)
+
+Resizes the window
