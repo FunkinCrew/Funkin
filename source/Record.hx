@@ -1,3 +1,4 @@
+import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.geom.ColorTransform;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
@@ -20,6 +21,7 @@ class Record extends FlxTypedSpriteGroup<FlxSprite> {
     var curWeek = -1;
     var sussyBackup:BitmapData;
     var completed:Bool = false;
+    var shiney:FlxSprite;
     public function new(X:Float=0, Y:Float=0, colors:Array<String>, ?character:String="bf", ?week:Int = -1, ?completion:Bool) {
         super();
         reordering = true;
@@ -66,15 +68,18 @@ class Record extends FlxTypedSpriteGroup<FlxSprite> {
 		centerPart.origin.set(recordsprite.origin.x, recordsprite.origin.y);
 		centerPart.centerOffsets();
         
-        
+        shiney = new FlxSprite(recordsprite.x, recordsprite.y);
+		shiney.origin.set(recordsprite.origin.x, recordsprite.origin.y);
         icon = new HealthIcon(character);
 		icon.origin.set(origin.x, origin.y);
         icon.x = recordsprite.width/2 - (icon.width/2);
         icon.y = recordsprite.height/2 - (icon.height/2);
-        changeColor(colors);
-        add(recordsprite);
+		add(recordsprite);
 		add(centerPart);
-        add(icon);
+		add(icon);
+        add(shiney);
+        changeColor(colors);
+        
         x = X;
         y = Y;
         reordering = false;
@@ -94,6 +99,8 @@ class Record extends FlxTypedSpriteGroup<FlxSprite> {
 			sussyColors.push(cooolor);
 		}
 		var sussyRecordGraphic:BitmapData;
+        var sussyShine:BitmapData;
+        var shineXml:String;
         if (week == -1)
         {
             if (rating >= Shit)
@@ -101,6 +108,8 @@ class Record extends FlxTypedSpriteGroup<FlxSprite> {
             else
                 sussyRecordGraphic = FNFAssets.getBitmapData('assets/images/campaign-ui-week/default-record.png');
             sussyBackup = FNFAssets.getBitmapData('assets/images/campaign-ui-week/default-center.png');
+            sussyShine = FNFAssets.getBitmapData('assets/images/campaign-ui-week/default-shine.png');
+            shineXml = FNFAssets.getText('assets/images/campaign-ui-week/default-shine.xml');
         }
         else
         {
@@ -126,7 +135,13 @@ class Record extends FlxTypedSpriteGroup<FlxSprite> {
                     sussyRecordGraphic = FNFAssets.getBitmapData('assets/images/campaign-ui-week/default-record.png');
                 }
             }
-
+            if (FNFAssets.exists('assets/images/campaign-ui-week/week$week-shine.png')) {
+				sussyShine = FNFAssets.getBitmapData('assets/images/campaign-ui-week/week$week-shine.png');
+				shineXml = FNFAssets.getText('assets/images/campaign-ui-week/week$week-shine.png');
+            } else {
+				sussyShine = FNFAssets.getBitmapData('assets/images/campaign-ui-week/default-shine.png');
+				shineXml = FNFAssets.getText('assets/images/campaign-ui-week/default-shine.xml');
+            }
             if (FNFAssets.exists('assets/images/campaign-ui-week/week$week-center.png'))
             {
                 sussyBackup = FNFAssets.getBitmapData('assets/images/campaign-ui-week/week$week-center.png');
@@ -136,8 +151,22 @@ class Record extends FlxTypedSpriteGroup<FlxSprite> {
                 sussyBackup = FNFAssets.getBitmapData('assets/images/campaign-ui-week/default-center.png');
             }
         }
-        recordsprite.loadGraphic(sussyRecordGraphic);
         
+        remove(shiney);
+        recordsprite.loadGraphic(sussyRecordGraphic);
+        shiney.frames = FlxAtlasFrames.fromSparrow(sussyShine, shineXml);
+        shiney.animation.addByPrefix("shine", "shine", 15);
+        shiney.animation.play("shine");
+		shiney.origin.set(recordsprite.origin.x, recordsprite.origin.y);
+        shiney.centerOffsets();
+        shiney.antialiasing = true;
+        
+        add(shiney);
+        if (rating < Good) {
+            shiney.visible = false;
+        } else {
+            shiney.visible = true;
+        }
 		curWeek = week;
         var sussyGradThing = sussyBackup.clone();
 		var sussyGradientMap = FlxGradient.createGradientBitmapData(Std.int(centerPart.width), Std.int(centerPart.height), sussyColors);

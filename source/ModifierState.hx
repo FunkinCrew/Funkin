@@ -54,6 +54,7 @@ class ModifierState extends MusicBeatState
 			value: false,
 			conflicts: [
 				"fc",
+				"gfc",
 				"practice",
 				"healthloss",
 				"healthgain", "regen", "degen", "poison", "duo", "demo"],
@@ -62,11 +63,31 @@ class ModifierState extends MusicBeatState
 			desc: "Instantly fail when you don't get 'Sick'"
 		},
 		{
+			name: "Good Full Combo",
+			internName : "gfc",
+			value: false,
+			conflicts: [
+				"mfc",
+				"fc",
+				"practice",
+				"healthloss",
+				"healthgain",
+				"regen",
+				"degen",
+				"poison",
+				"duo",
+				"demo"
+			],
+			multi : 2.5,
+			times: true,
+			desc: "Instantly fall if you get worse than 'Good'"
+		},
+		{
 			name: "FC Mode",
 			internName: "fc",
 			value: false,
 			conflicts: [
-				"mfc", "practice", "healthloss", "healthgain", "regen", "degen", "poison", "duo", "demo"],
+				"mfc","gfc", "practice", "healthloss", "healthgain", "regen", "degen", "poison", "duo", "demo"],
 			multi: 2,
 			times: true,
 			desc: "Fail when you miss a note, Go for the Perfect!"
@@ -75,7 +96,7 @@ class ModifierState extends MusicBeatState
 			name: "Practice Mode",
 			internName: "practice",
 			value: false,
-			conflicts: ["mfc", "fc", "duo", "demo"],
+			conflicts: ["mfc","gfc", "fc", "duo", "demo"],
 			multi: 0,
 			times: true,
 			desc: "You can't die while you're in practice! (DISABLES SCORE)"
@@ -118,7 +139,7 @@ class ModifierState extends MusicBeatState
 			name: "Health Loss",
 			internName: "healthloss",
 			value:false,
-			conflicts: ["mfc", "fc"],
+			conflicts: ["mfc", "fc", "gfc"],
 			multi: 0.1,
 			amount: 1,
 			defAmount: 1,
@@ -131,7 +152,7 @@ class ModifierState extends MusicBeatState
 			name: "Health Gain",
 			internName: "healthgain",
 			value: false,
-			conflicts: ["mfc", "fc"],
+			conflicts: ["mfc", "fc", "gfc"],
 			multi: -0.1,
 			amount: 1,
 			defAmount: 1,
@@ -144,7 +165,7 @@ class ModifierState extends MusicBeatState
 			name: "Sup. Love",
 			internName: "regen",
 			value: false,
-			conflicts: ["fc", "mfc", "degen", "duo", "demo"],
+			conflicts: ["fc", "mfc", "degen", "duo", "demo", "gfc"],
 			multi: -0.03,
 			amount: 0,
 			defAmount: 0,
@@ -157,7 +178,7 @@ class ModifierState extends MusicBeatState
 			name: "Poison Fright",
 			internName: "degen",
 			value: false,
-			conflicts: ["fc", "mfc", "duo", "regen", "demo"],
+			conflicts: ["fc", "mfc", "duo", "regen", "demo", "gfc"],
 			multi: 0.03,
 			amount: 0,
 			defAmount: 0,
@@ -170,7 +191,7 @@ class ModifierState extends MusicBeatState
 			name: "Fragile Funkin",
 			internName: "poison",
 			value: false,
-			conflicts: ["fc", "mfc", "duo", "demo"],
+			conflicts: ["fc", "mfc", "duo", "demo", "gfc"],
 			multi: 1,
 			desc: "Missed note makes you lose a lot of health. You wanna have a bad time?"
 		},
@@ -250,7 +271,7 @@ class ModifierState extends MusicBeatState
 			name: "Duo Mode",
 			internName: "duo",
 			value: false,
-			conflicts: ["mfc", "fc", "healthloss", "regen", "degen", "poison", "oppnt", "demo"],
+			conflicts: ["mfc", "fc", "gfc", "healthloss", "regen", "degen", "poison", "oppnt", "demo"],
 			multi: 0,
 			times: true,
 			desc: "Boogie with a friend! (FRIEND NOT REQUIRED)"
@@ -267,7 +288,7 @@ class ModifierState extends MusicBeatState
 			name: "Demo Mode",
 			internName: "demo",
 			value: false,
-			conflicts: ["mfc", "fc", "healthloss", "regen", "degen", "poison", "oppnt", "duo"],
+			conflicts: ["mfc", "fc","gfc", "healthloss", "regen", "degen", "poison", "oppnt", "duo"],
 			multi: 0,
 			times: true,
 			desc: "Let the game play itself!"
@@ -301,7 +322,7 @@ class ModifierState extends MusicBeatState
 		}
 	];
 	var grpAlphabet:FlxTypedGroup<Alphabet>;
-	var curSelected:Int = 0;
+	var curSelected:Int = 1;
 	var checkmarks:Array<FlxSprite> = [];
 	var numberdisplays:Array<NumberDisplay> = [];
 	var multiTxt:FlxText;
@@ -402,12 +423,9 @@ class ModifierState extends MusicBeatState
 
 		curSelected += change;
 
-		if (curSelected < 0)
-			curSelected = modifiers.length - 1;
-		if (curSelected >= modifiers.length)
-			curSelected = 0;
 
 
+		curSelected = Std.int(FlxMath.wrap(curSelected, 1, modifiers.length - 1));
 		var bullShit:Int = 0;
 
 		for (item in grpAlphabet.members)

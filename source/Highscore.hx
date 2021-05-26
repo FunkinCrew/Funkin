@@ -44,7 +44,7 @@ class Highscore
 		}
 		if (songAccuracy.exists(daSong))
 		{
-			if (songAccuracy.get(daSong) < accuracy)
+			if (songAccuracy.get(daSong) < accuracy || (songAccuracy.get(daSong) > 100 && songAccuracy.get(daSong)/100 < accuracy))
 			{
 				setAccuracy(daSong, accuracy);
 			}

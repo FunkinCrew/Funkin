@@ -564,11 +564,7 @@ class StoryMenuState extends MusicBeatState
 		lastWeek = curWeek;
 		curWeek += change;
 
-		if (curWeek >= weekData.length)
-			curWeek = 0;
-		if (curWeek < 0)
-			curWeek = weekData.length - 1;
-
+		curWeek = FlxMath.wrap(curWeek, 0, weekData.length - 1);
 		var bullShit:Int = 0;
 
 		for (item in grpWeekText.members)

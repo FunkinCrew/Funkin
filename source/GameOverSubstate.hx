@@ -44,7 +44,8 @@ class GameOverSubstate extends MusicBeatSubstate
 
 		camFollow = new FlxObject(bf.getGraphicMidpoint().x, bf.getGraphicMidpoint().y, 1, 1);
 		add(camFollow);
-
+		if (bf.isPixel)
+			stageSuffix = "-pixel";
 		FlxG.sound.play('assets/sounds/fnf_loss_sfx' + stageSuffix + TitleState.soundExt);
 		Conductor.changeBPM(100);
 

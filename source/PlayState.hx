@@ -255,6 +255,7 @@ class PlayState extends MusicBeatState
 	var supLove:Bool = false;
 	var loveMultiplier:Float = 0;
 	var poisonMultiplier:Float = 0;
+	var goodCombo:Bool = false;
 	/**
 	 * If we are playing as opponent. 
 	 */
@@ -496,6 +497,7 @@ class PlayState extends MusicBeatState
 		useSongBar = OptionsHandler.options.showSongPos;
 		if (!OptionsHandler.options.skipModifierMenu) {
 			fullComboMode = ModifierState.namedModifiers.fc.value;
+			goodCombo = ModifierState.namedModifiers.gfc.value;
 			perfectMode = ModifierState.namedModifiers.mfc.value;
 			practiceMode = ModifierState.namedModifiers.practice.value;
 			flippedNotes = ModifierState.namedModifiers.flipped.value;
@@ -571,7 +573,7 @@ class PlayState extends MusicBeatState
 			dialogSuffix = "-depressed";
 		} else if (practiceMode) {
 			dialogSuffix = "-practice";
-		} else if (perfectMode || fullComboMode) {
+		} else if (perfectMode || fullComboMode || goodCombo) {
 			dialogSuffix = "-perfect";
 		}
 		if (FNFAssets.exists('assets/images/custom_chars/' + SONG.player1 + '/' + SONG.song.toLowerCase() + 'Dialog.txt'))
@@ -2344,6 +2346,12 @@ class PlayState extends MusicBeatState
 			else
 				health = -50;
 		}
+		if (goodCombo && !Ratings.CalculateFullCombo(Good)) {
+			if (opponentPlayer)
+				health = 50;
+			else
+				health = -50;
+		}
 		if (notesPassing != 0) {
 			accuracyTxt.text = "Accuracy:" + accuracy + "%";
 		} else {
@@ -3105,7 +3113,7 @@ class PlayState extends MusicBeatState
 		
 		#if !switch
 		if (!demoMode && ModifierState.scoreMultiplier > 0)
-			Highscore.saveScore(SONG.song, songScore, storyDifficulty, accuracy, Ratings.CalculateFullCombo(Shit), Ratings.CalculateFCRating());
+			Highscore.saveScore(SONG.song, songScore, storyDifficulty, accuracy/100, Ratings.CalculateFullCombo(Shit), Ratings.CalculateFCRating());
 		#end
 		controls.setKeyboardScheme(Solo(false));
 		if (isStoryMode)
