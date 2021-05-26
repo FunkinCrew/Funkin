@@ -24,7 +24,7 @@ class StoryMenuState extends MusicBeatState
 
 	var weekData:Array<Dynamic> = [
 		['Tutorial'],
-		['Bopeebo', 'Fresh', 'Dadbattle'],
+		['Bopeebo', 'Fresh', 'Blob-Battle'],
 		['Spookeez', 'South', "Monster"],
 		['Pico', 'Philly', "Blammed"],
 		['Satin-Panties', "High", "Milf"],
@@ -47,7 +47,7 @@ class StoryMenuState extends MusicBeatState
 
 	var weekNames:Array<String> = [
 		"",
-		"Daddy Dearest",
+		"Blob",
 		"Spooky Month",
 		"PICO",
 		"MOMMY MUST MURDER",
@@ -98,7 +98,7 @@ class StoryMenuState extends MusicBeatState
 		rankText.screenCenter(X);
 
 		var ui_tex = Paths.getSparrowAtlas('campaign_menu_UI_assets');
-		var yellowBG:FlxSprite = new FlxSprite(0, 56).makeGraphic(FlxG.width, 400, 0xFFF9CF51);
+		var yellowBG:FlxSprite = new FlxSprite(0, 56).makeGraphic(FlxG.width, 400, 2F329F);
 
 		grpWeekText = new FlxTypedGroup<MenuItem>();
 		add(grpWeekText);
