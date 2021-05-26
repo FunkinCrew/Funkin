@@ -5,10 +5,8 @@ import flixel.FlxSprite;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.group.FlxGroup;
 import flixel.math.FlxPoint;
-import flixel.system.FlxSound;
 import flixel.ui.FlxButton;
 import flixel.util.FlxTimer;
-import openfl.Assets;
 
 class StageBuilderState extends MusicBeatState
 {
@@ -16,13 +14,51 @@ class StageBuilderState extends MusicBeatState
 
 	private var sprGrp:FlxGroup;
 
+	// var snd:Sound;
+	// var sndChannel:SoundChannel;
+
 	override function create()
 	{
 		super.create();
 
 		FlxG.mouse.visible = true;
 
-		// var snd:Sound = new Sound();
+		// var alsoSnd:FlxSound = new FlxSound();
+
+		// snd = new Sound();
+
+		// var swagBytes:ByteArray = new ByteArray(8192);
+
+		// for (shit in 0...8192)
+		// {
+		// swagBytes.writeFloat(Math.sin((shit) / Math.PI) * 0.25);
+		// swagBytes.writeFloat(Math.sin((shit) / Math.PI) * 0.25);
+		// trace('wweseosme???');
+		// }
+
+		// snd.__buffer = AudioBuffer.fromBytes(swagBytes);
+		// snd.dispatchEvent(new Event(Event.COMPLETE));
+
+		// swagBytes.writeFloat(Math.sin((shit + event.position) / Math.PI) * 0.25);
+		// swagBytes.writeFloat(Math.sin((shit + event.position) / Math.PI) * 0.25);
+
+		// function sineShit(event:SampleDataEvent):Void
+		// {
+		// 	for (shit in 0...8192)
+		// 	{
+		// 		event.data.writeFloat(Math.sin((shit + event.position) / Math.PI) * 0.25);
+		// 		event.data.writeFloat(Math.sin((shit + event.position) / Math.PI) * 0.25);
+		// 		trace('wweseosme???');
+		// 	}
+		// }
+
+		// snd.addEventListener(SampleDataEvent.SAMPLE_DATA, sineShit);
+		// snd.__buffer.
+		// snd = Assets.getSound(Paths.music('freakyMenu'));
+		// for (thing in snd.load)
+		// thing = Std.int(thing / 2);
+		// snd.play();
+		// trace(snd.__buffer.data.toBytes().getData().bytes);
 
 		var bg:FlxSprite = FlxGridOverlay.create(10, 10);
 		add(bg);
@@ -97,22 +133,12 @@ class StageBuilderState extends MusicBeatState
 		// trace();
 	}
 
-	var oldCamPos:FlxPoint = new FlxPoint();
-	var oldMousePos:FlxPoint = new FlxPoint();
-
 	override function update(elapsed:Float)
 	{
-		if (FlxG.mouse.justPressedMiddle)
-		{
-			oldCamPos.set(FlxG.camera.scroll.x, FlxG.camera.scroll.y);
-			oldMousePos.set(FlxG.mouse.screenX, FlxG.mouse.screenY);
-		}
+		// trace(sndChannel.position);
+		// trace(snd
 
-		if (FlxG.mouse.pressedMiddle)
-		{
-			FlxG.camera.scroll.x = oldCamPos.x - (FlxG.mouse.screenX - oldMousePos.x);
-			FlxG.camera.scroll.y = oldCamPos.y - (FlxG.mouse.screenY - oldMousePos.y);
-		}
+		CoolUtil.mouseCamDrag();
 
 		super.update(elapsed);
 	}

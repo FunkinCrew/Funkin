@@ -44,6 +44,24 @@ class CoolUtil
 		return dumbArray;
 	}
 
+	static var oldCamPos:FlxPoint = new FlxPoint();
+	static var oldMousePos:FlxPoint = new FlxPoint();
+
+	public static function mouseCamDrag():Void
+	{
+		if (FlxG.mouse.justPressedMiddle)
+		{
+			oldCamPos.set(FlxG.camera.scroll.x, FlxG.camera.scroll.y);
+			oldMousePos.set(FlxG.mouse.screenX, FlxG.mouse.screenY);
+		}
+
+		if (FlxG.mouse.pressedMiddle)
+		{
+			FlxG.camera.scroll.x = oldCamPos.x - (FlxG.mouse.screenX - oldMousePos.x);
+			FlxG.camera.scroll.y = oldCamPos.y - (FlxG.mouse.screenY - oldMousePos.y);
+		}
+	}
+
 	/**
 		Lerps camera, but accountsfor framerate shit?
 		Right now it's simply for use to change the followLerp variable of a camera during update
@@ -57,8 +75,8 @@ class CoolUtil
 	}
 
 	/*
-	* frame dependant lerp kinda lol
-	*/
+	 * frame dependant lerp kinda lol
+	 */
 	public static function coolLerp(base:Float, target:Float, ratio:Float):Float
 	{
 		return base + camLerpShit(ratio) * (target - base);

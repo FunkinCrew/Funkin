@@ -158,6 +158,8 @@ class TitleState extends MusicBeatState
 		// netConnection.addEventListener(MouseEvent.MOUSE_DOWN, overlay_onMouseDown);
 		#elseif STAGEBUILD
 		FlxG.switchState(new StageBuilderState());
+		#elseif ANIMDEBUG
+		FlxG.switchState(new DebugBoundingState());
 		#else
 		new FlxTimer().start(1, function(tmr:FlxTimer)
 		{
