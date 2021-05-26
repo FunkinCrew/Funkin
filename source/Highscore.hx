@@ -17,14 +17,11 @@ enum abstract FCLevel(Int) from Int to Int {
 }
 class Highscore
 {
-	#if (haxe >= "4.0.0")
 	public static var songScores:Map<String, Int> = new Map();
 	public static var songAccuracy:Map<String, Float> = new Map();
 	public static var songCompletions:Map<String, Bool> = new Map();
 	public static var songFCLevels:Map<String, Int> = new Map();
-	#else
-	public static var songScores:Map<String, Int> = new Map<String, Int>();
-	#end
+
 
 
 	public static function saveScore(song:String, score:Int = 0, ?diff:Int = 0, ?accuracy:Float = 0, ?combo:Bool, ?rating:FCLevel):Void
@@ -62,7 +59,7 @@ class Highscore
 			setComplete(daSong, combo);
 		}
 		if (songFCLevels.exists(daSong)) {
-			switch (songFCLevels.get(daSong)) {
+			switch (cast (songFCLevels.get(daSong) : FCLevel)) {
 				case Sick:
 					// nothing is better than a sick full combo...
 				case Good if (rating >= Good):
@@ -74,7 +71,9 @@ class Highscore
 				case Sdcb if (rating >= Sdcb):
 					setFCLevel(daSong, rating);
 				case None:
-					// if it exists and it is none and we got here, that means rating is none so meh
+					setFCLevel(daSong, rating);
+				default:
+					// SUS
 			}
 		} else {
 			setFCLevel(daSong, rating);
