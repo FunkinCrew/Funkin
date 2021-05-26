@@ -1,19 +1,33 @@
 package;
 
 import flixel.FlxG;
-
+@:forward
+enum abstract FCLevel(Int) from Int to Int {
+	var None;
+	var Sdcb;
+	var Shit;
+	var Bad;
+	var Good;
+	var Sick;
+	@:op(A > B) static function _(_,_):Bool;
+	@:op(A >= B) static function _(_, _):Bool;
+	@:op(A < B) static function _(_, _):Bool;
+	@:op(A <= B) static function _(_, _):Bool;
+	@:op(A == B) static function _(_, _):Bool;
+}
 class Highscore
 {
 	#if (haxe >= "4.0.0")
 	public static var songScores:Map<String, Int> = new Map();
 	public static var songAccuracy:Map<String, Float> = new Map();
 	public static var songCompletions:Map<String, Bool> = new Map();
+	public static var songFCLevels:Map<String, Int> = new Map();
 	#else
 	public static var songScores:Map<String, Int> = new Map<String, Int>();
 	#end
 
 
-	public static function saveScore(song:String, score:Int = 0, ?diff:Int = 0, ?accuracy:Float = 0, ?combo:Bool):Void
+	public static function saveScore(song:String, score:Int = 0, ?diff:Int = 0, ?accuracy:Float = 0, ?combo:Bool, ?rating:FCLevel):Void
 	{
 		var daSong:String = formatSong(song, diff);
 
@@ -47,7 +61,24 @@ class Highscore
 		} else {
 			setComplete(daSong, combo);
 		}
-
+		if (songFCLevels.exists(daSong)) {
+			switch (songFCLevels.get(daSong)) {
+				case Sick:
+					// nothing is better than a sick full combo...
+				case Good if (rating >= Good):
+					setFCLevel(daSong, rating);
+				case Bad if (rating >= Bad):
+					setFCLevel(daSong, rating);
+				case Shit if (rating >= Shit):
+					setFCLevel(daSong, rating);
+				case Sdcb if (rating >= Sdcb):
+					setFCLevel(daSong, rating);
+				case None:
+					// if it exists and it is none and we got here, that means rating is none so meh
+			}
+		} else {
+			setFCLevel(daSong, rating);
+		}
 			
 	}
 	public static function saveWeekScore(week:Int = 1, score:Int = 0, ?diff:Int = 0, ?accuracy:Float = 0):Void
@@ -92,6 +123,11 @@ class Highscore
 		FlxG.save.data.songAccuracy = songAccuracy;
 		FlxG.save.flush();
 	}
+	static function setFCLevel(song:String, level:Int ):Void {
+		songFCLevels.set(song, level);
+		FlxG.save.data.songFCLevels = songFCLevels;
+		FlxG.save.flush();
+	}
 	public static function formatSong(song:String, diff:Int):String
 	{
 		var daSong:String = song;
@@ -119,6 +155,11 @@ class Highscore
 			setComplete(formatSong(song,diff), false);
 		return songCompletions.get(formatSong(song,diff));
 	}
+	public static function getFCLevel(song:String, diff:Int):Int {
+		if (!songFCLevels.exists(formatSong(song, diff)))
+			setFCLevel(formatSong(song, diff), cast None);
+		return songFCLevels.get(formatSong(song, diff));
+	}
 	public static function getTotalScore():Int {
 		var totalScore:Int = 0;
 		for (key in songScores.keys()) {
@@ -139,6 +180,7 @@ class Highscore
 
 		return songAccuracy.get(formatSong('week' + week, diff));
 	}
+
 	public static function load():Void
 	{
 		if (FlxG.save.data.songScores != null)
@@ -154,10 +196,23 @@ class Highscore
 		}
 		if (FlxG.save.data.songCompletions != null) {
 			songCompletions = FlxG.save.data.songCompletions;
+			if (FlxG.save.data.songFCLevels == null) {
+				FlxG.save.data.songFCLevels = new Map<String, Int>();
+				for (thing in songCompletions.keyValueIterator()) {
+					if (thing.value)
+						FlxG.save.data.songFCLevels.set(thing.key, cast Shit);
+					else
+						FlxG.save.data.songFCLevels.set(thing.key, cast None);
+				}
+			}
 		} else {
 			songCompletions = [];
 			FlxG.save.data.songCompletions = songCompletions;
-			 
+			if (FlxG.save.data.songFCLevels == null)
+				songFCLevels = [];
+		}
+		if (FlxG.save.data.songFCLevels != null) {
+			songFCLevels = FlxG.save.data.songFCLevels;
 		}
 	}
 }

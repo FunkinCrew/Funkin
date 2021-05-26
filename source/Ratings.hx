@@ -1,3 +1,4 @@
+import Highscore.FCLevel;
 import haxe.display.Display.Package;
 import flixel.FlxG;
 
@@ -8,17 +9,18 @@ class Ratings
 		var ranking:String = "N/A";
 		if (FlxG.save.data.botplay)
 			ranking = "BotPlay";
-
-		if (PlayState.misses == 0 && PlayState.bads == 0 && PlayState.shits == 0 && PlayState.goods == 0) // Marvelous (SICK) Full Combo
-			ranking = "(MFC)";
-		else if (PlayState.misses == 0 && PlayState.bads == 0 && PlayState.shits == 0 && PlayState.goods >= 1) // Good Full Combo (Nothing but Goods & Sicks)
-			ranking = "(GFC)";
-		else if (PlayState.misses == 0) // Regular FC
-			ranking = "(FC)";
-		else if (PlayState.misses < 10) // Single Digit Combo Breaks
-			ranking = "(SDCB)";
-		else
-			ranking = "(Clear)";
+		switch (CalculateFCRating()) {
+			case Sick:
+				ranking = "(MFC)";
+			case Good:
+				ranking = "(GFC)";
+			case Shit | Bad:
+				ranking = "(FC)";
+			case Sdcb:
+				ranking = "(SDCB)";
+			default:
+				ranking = "(Clear)";
+		}
 
 		// WIFE TIME :)))) (based on Wife3)
 
@@ -126,19 +128,34 @@ class Ratings
 			return "miss";
 		return "sick";
 	}
-	public static function CalculateFullCombo(level:String):Bool {
+	public static function CalculateFullCombo(level:FCLevel):Bool {
 		return switch (level) {
-			case 'sick':
+			case Sick:
 				(PlayState.misses == 0 && PlayState.bads == 0 && PlayState.shits == 0 && PlayState.goods == 0);
-			case 'good':
+			case Good:
 				PlayState.misses == 0 && PlayState.bads == 0 && PlayState.shits == 0;
-			case 'bad':
+			case Bad:
 				PlayState.misses == 0 && PlayState.shits == 0;
-			case 'shit':
+			case Shit:
 				PlayState.misses == 0;
+			case Sdcb:
+				PlayState.misses < 10;
 			default:
 				false;
 		}
+	}
+	public static function CalculateFCRating():FCLevel {
+		if (CalculateFullCombo(Sick))
+			return Sick;
+		if (CalculateFullCombo(Good))
+			return Good;
+		if (CalculateFullCombo(Bad))
+			return Bad;
+		if (CalculateFullCombo(Shit))
+			return Shit;
+		if (CalculateFullCombo(Sdcb))
+			return Sdcb;
+		return None;
 	}
 	public static function CalculateRanking(score:Int, scoreDef:Int, nps:Int, accuracy:Float):String
 	{

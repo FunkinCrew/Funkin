@@ -41,6 +41,8 @@ typedef WeekInfo = {
 	var ?bf:String;
 	var ?dad:String;
 	var ?gf:String;
+	var ?flags:Array<String>;
+	var ?visibleFlags:Array<String>;
 }
 typedef DifficultysJson = {
 	var difficulties:Array<Dynamic>;
@@ -54,9 +56,10 @@ class StoryMenuState extends MusicBeatState
 	var weekNames:Array<String> = [];
 	var curDifficulty:Int = 1;
 
-	public static var weekUnlocked:Array<Bool> = [true, true, true, true, true, true, true];
+	public static var weekUnlocked:Array<Bool> = [];
 	public static var storySongPlaylist:Array<String>;
 	var weekCharacters:Array<Dynamic> = [];
+	var weekNums:Array<Int> = [];
 	var lastWeek:Int = 0;
 	/*var weekNames:Array<String> = [
 		"",
@@ -80,6 +83,7 @@ class StoryMenuState extends MusicBeatState
 	var grpDifficulty:DifficultyIcons;
 	var leftArrow:FlxSprite;
 	var rightArrow:FlxSprite;
+	var oldMode:Bool = false;
 	override function create()
 	{
 		trace(DifficultyIcons.getDefaultDiffFP());
@@ -103,12 +107,58 @@ class StoryMenuState extends MusicBeatState
 		var songsParsed:Array<Array<String>> = [];
 		var titlesParsed:Array<String> = [];
 		var charsParsed:Array<Array<String>> = [];
+		var flagsParsed:Array<Array<String>> = [];
 		if (versionJson == 2) {
-			
+			var useWeek = 0;
 			for (weekInfo in storySongJson.weeks)
 			{
 				var songArray = [":flushed:"];
-				
+				if (weekInfo.visibleFlags != null && !OptionsHandler.options.ignoreUnlocks) {
+					var canUse = true;
+					var reg = ~/week(\d+)/g;
+					for (flag in weekInfo.visibleFlags)
+					{
+						switch (flag)
+						{
+							case "debug":
+								#if debug
+								continue;
+								#else
+								canUse = false;
+								break;
+								#end
+							case _ if (reg.match(flag)):
+								var week:Int = Std.parseInt(reg.matched(1));
+								var diffJson = CoolUtil.parseJson(Assets.getText("assets/images/custom_difficulties/difficulties.json"));
+								var difficultiesFP:Array<Dynamic> = diffJson.difficulties;
+								var existsWeek = false;
+								for (diff in 0...difficultiesFP.length)
+								{
+									if (Highscore.getWeekScore(week, diff) != 0)
+									{
+										existsWeek = true;
+										break;
+									}
+								}
+								if (existsWeek)
+								{
+									continue;
+								}
+								else
+								{
+									canUse = false;
+									break;
+								}
+							default:
+								continue;
+						}
+					}
+					if (!canUse) {
+						useWeek++;
+						continue;
+					}
+					
+				}
 				songsParsed.push(songArray.concat(weekInfo.songs));
 				titlesParsed.push(weekInfo.name);
 				var charArray = [];
@@ -116,9 +166,14 @@ class StoryMenuState extends MusicBeatState
 				charArray.push(weekInfo.bf == null ? "bf" : weekInfo.bf);
 				charArray.push(weekInfo.gf == null ? "gf" : weekInfo.gf);
 				charsParsed.push(charArray);
+				var flagArray = weekInfo.flags == null ? [] : weekInfo.flags;
+				flagsParsed.push(flagArray);
+				weekNums.push(useWeek);
+				useWeek++;
 			}
 		}
 		if (versionJson == 1) {
+			oldMode = true;
 			songsParsed = storySongJson.songs;
 			titlesParsed = storySongJson.weekNames;
 			charsParsed = storySongJson.characters;
@@ -152,7 +207,54 @@ class StoryMenuState extends MusicBeatState
 			}
 			weekCharacters.push(weekChars);
 		}
+		if (!oldMode && !OptionsHandler.options.ignoreUnlocks) {
+			for (flags in flagsParsed) {
+				var canUse = true;
+				var reg = ~/week(\d+)/g;
+				for (flag in flags) {
 
+					switch (flag) {
+						case "debug":
+							#if debug
+								continue;
+							#else
+								canUse = false;
+								break;
+							#end
+						case _ if (reg.match(flag)):
+							var week:Int = Std.parseInt(reg.matched(1));
+							var diffJson = CoolUtil.parseJson(Assets.getText("assets/images/custom_difficulties/difficulties.json"));
+							var difficultiesFP:Array<Dynamic> = diffJson.difficulties;
+							var existsWeek = false;
+							for (diff in 0...difficultiesFP.length)
+							{
+								if (Highscore.getWeekScore(week, diff) != 0)
+								{
+									existsWeek = true;
+									break;
+								}
+							}
+							if (existsWeek)
+							{
+								continue;
+							}
+							else
+							{
+								canUse = false;
+								break;
+							}
+						default:
+							continue;
+					}
+				}
+				weekUnlocked.push(canUse);
+			}
+		} else {
+			for (_ in 0...weekTitles.length) {
+				weekUnlocked.push(true);
+			}
+		}
+		
 		
 		scoreText = new FlxText(10, 10, 0, "SCORE: 49324858", 36);
 		scoreText.setFormat("VCR OSD Mono", 32);
@@ -184,7 +286,7 @@ class StoryMenuState extends MusicBeatState
 
 		for (i in 0...weekData.length)
 		{
-			var weekThing:MenuItem = new MenuItem(0, yellowBG.y + yellowBG.height + 10, i);
+			var weekThing:MenuItem = new MenuItem(0, yellowBG.y + yellowBG.height + 10, weekNums[i]);
 			weekThing.y += ((weekThing.height + 20) * i);
 			weekThing.targetY = i;
 			grpWeekText.add(weekThing);
@@ -196,6 +298,15 @@ class StoryMenuState extends MusicBeatState
 
 			weekCharactersArray.add(group);
 			trace("after new group");
+			var lock:FlxSprite = new FlxSprite(weekThing.width + 10 + weekThing.x);
+			lock.frames = ui_tex;
+			lock.animation.addByPrefix('lock', 'lock');
+			lock.animation.play('lock');
+			lock.ID = i;
+			lock.antialiasing = true;
+			lock.visible = !weekUnlocked[i];
+			grpLocks.add(lock);
+			
 			for (char in 0...3)
 			{
 				var weekCharacterThing:MenuCharacter = new MenuCharacter((FlxG.width * 0.25) * (1 + char) - 150, weekCharacters[i][char]);
@@ -322,9 +433,8 @@ class StoryMenuState extends MusicBeatState
 		txtWeekTitle.x = FlxG.width - (txtWeekTitle.width + 10);
 
 		// FlxG.watch.addQuick('font', scoreText.font);
-		// damn you!!!!!!!
-		// difficultySelectors.visible = weekUnlocked[curWeek];
-		difficultySelectors.visible = true;
+		difficultySelectors.visible = weekUnlocked[curWeek];
+		grpLocks.members[curWeek].visible = !weekUnlocked[curWeek];
 		grpLocks.forEach(function(lock:FlxSprite)
 		{
 			lock.y = grpWeekText.members[lock.ID].y;
@@ -382,6 +492,8 @@ class StoryMenuState extends MusicBeatState
 
 	function selectWeek()
 	{
+			if (!weekUnlocked[curWeek])
+				return;
 			if (stopspamming == false)
 			{
 				FlxG.sound.play('assets/sounds/confirmMenu' + TitleState.soundExt);

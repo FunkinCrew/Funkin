@@ -20,7 +20,7 @@ import haxe.Json;
 import haxe.format.JsonParser;
 import tjson.TJSON;
 using StringTools;
-
+using CoolUtil.FlxTools;
 typedef Dialogue =
 {
 	var addY:Int;

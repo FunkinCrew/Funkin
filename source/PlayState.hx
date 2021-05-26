@@ -2331,14 +2331,14 @@ class PlayState extends MusicBeatState
 		else
 			accuracy = 100;
 		scoreTxt.text = Ratings.CalculateRanking(songScore, songScoreDef, nps, accuracy);
-		if (perfectMode && !Ratings.CalculateFullCombo('sick'))
+		if (perfectMode && !Ratings.CalculateFullCombo(Sick))
 		{
 			if (opponentPlayer)
 				health = 50;
 			else
 				health = -50;
 		}
-		if (fullComboMode && !Ratings.CalculateFullCombo('shit')) {
+		if (fullComboMode && !Ratings.CalculateFullCombo(Shit)) {
 			if (opponentPlayer)
 				health = 50;
 			else
@@ -3105,7 +3105,7 @@ class PlayState extends MusicBeatState
 		
 		#if !switch
 		if (!demoMode && ModifierState.scoreMultiplier > 0)
-			Highscore.saveScore(SONG.song, songScore, storyDifficulty, (notesHit / notesPassing), Ratings.CalculateFullCombo('shit'));
+			Highscore.saveScore(SONG.song, songScore, storyDifficulty, accuracy, Ratings.CalculateFullCombo(Shit), Ratings.CalculateFCRating());
 		#end
 		controls.setKeyboardScheme(Solo(false));
 		if (isStoryMode)

@@ -7,6 +7,7 @@ import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.util.FlxColor;
 import flixel.FlxSprite;
 import openfl.display.BlendMode;
+import Highscore.FCLevel;
 // :wink: "inspired" by exr
 
 class Record extends FlxTypedSpriteGroup<FlxSprite> {
@@ -84,7 +85,7 @@ class Record extends FlxTypedSpriteGroup<FlxSprite> {
             return;
         angle += 30 * elapsed;
     }
-    public function changeColor(colors:Array<String>, ?character:String="bf", ?week:Int = -1, ?completion:Bool = false) {
+    public function changeColor(colors:Array<String>, ?character:String="bf", ?week:Int = -1, ?rating:FCLevel = None) {
         reordering = true;
 		var sussyColors = [];
 		for (color in colors)
@@ -95,7 +96,7 @@ class Record extends FlxTypedSpriteGroup<FlxSprite> {
 		var sussyRecordGraphic:BitmapData;
         if (week == -1)
         {
-            if (completion)
+            if (rating >= Shit)
                 sussyRecordGraphic = FNFAssets.getBitmapData('assets/images/campaign-ui-week/default-gold.png');
             else
                 sussyRecordGraphic = FNFAssets.getBitmapData('assets/images/campaign-ui-week/default-record.png');
@@ -103,7 +104,7 @@ class Record extends FlxTypedSpriteGroup<FlxSprite> {
         }
         else
         {
-            if (completion)
+            if (rating >= Shit)
             {
                 if (FNFAssets.exists('assets/images/campaign-ui-week/week$week-gold.png'))
                 {

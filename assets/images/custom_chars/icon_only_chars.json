@@ -1,6 +1,6 @@
 {
-    "bf-old": [0,1,2],
-    "face": [0,1,2],
-    "bf-pixel-old": [0,1,2],
-    "bf-alpha": [0,1,2]
+    "bf-old": {"frames": [0,1,2], "colors": ["yellow"]},
+    "face": {"frames": [0,1,2], "colors": ["GRAY"]},
+    "bf-pixel-old": {"frames": [0,1,2], "colors": ["yellow"]},
+    "bf-alpha": {"frames": [0,1,2], "colors": ["yellow"]}
 }

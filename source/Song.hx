@@ -172,6 +172,9 @@ class Song
 				parsedJson.uiType = 'normal';
 			}
 		}
+		if (parsedJson.player1 == "bf-pixel" && OptionsHandler.options.stressTankmen) {
+			parsedJson.player1 = "bulb-pixel";
+		}
 		// FIX THE CASTING ON WINDOWS/NATIVE
 		// Windows???
 		// trace(songData);

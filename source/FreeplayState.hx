@@ -61,6 +61,7 @@ class FreeplayState extends MusicBeatState
 	private var grpSongs:FlxTypedGroup<Alphabet>;
 	private var curPlaying:Bool = false;
 	var charJson:Dynamic;
+	var iconJson:Dynamic;
 	var record:Record;
 	var recordPixel:Record;
 	var curOverlay:FlxSprite;
@@ -130,6 +131,7 @@ class FreeplayState extends MusicBeatState
 		#end
 		var isDebug:Bool = false;
 		charJson = CoolUtil.parseJson(FNFAssets.getText('assets/images/custom_chars/custom_chars.jsonc'));
+		iconJson = CoolUtil.parseJson(FNFAssets.getText("assets/images/custom_chars/icon_only_chars.json"));
 		#if debug
 		isDebug = true;
 		#end
@@ -260,11 +262,6 @@ class FreeplayState extends MusicBeatState
 		if (soundTest && soundTestSong != null) {
 			Conductor.songPosition += FlxG.elapsed * 1000;
 		}
-		#if debug
-		// i've ruined my save file :)
-		if (FlxG.keys.checkStatus(FlxKey.F2, 2))
-			Highscore.saveScore(songs[0].songName, 0, 1, 0, true);
-		#end
 		if (upP)
 		{
 			changeSelection(-1);
@@ -406,8 +403,17 @@ class FreeplayState extends MusicBeatState
 
 		if (OptionsHandler.options.style)
 		{
-			record.changeColor(Reflect.field(charJson, songs[curSelected].songCharacter).colors, songs[curSelected].songCharacter, songs[curSelected].week,
-				Highscore.getComplete(songs[curSelected].songName, curDifficulty));
+			var coolors = ["black"];
+			if (Reflect.hasField(charJson, songs[curSelected].songCharacter))
+			{
+				coolors = Reflect.field(charJson, songs[curSelected].songCharacter).colors;
+			}
+			else
+			{
+				coolors = Reflect.field(iconJson, songs[curSelected].songCharacter).colors;
+			}
+			record.changeColor(coolors, songs[curSelected].songCharacter, songs[curSelected].week,
+				Highscore.getFCLevel(songs[curSelected].songName, curDifficulty));
 		}
 	}
 	override function stepHit()
@@ -487,10 +493,16 @@ class FreeplayState extends MusicBeatState
 		//curOverlay = FlxGradient.createGradientFlxSprite(FlxG.width, FlxG.height, dealphaedColors);
 		//insert(1, curOverlay);
 		trace(Highscore.getComplete(songs[0].songName, curDifficulty));
-		FlxTween.color(bg,0.5, bg.color, FlxColor.fromString(Reflect.field(charJson, songs[curSelected].songCharacter).colors[0]));
+		var coolors = ["black"];
+		if (Reflect.hasField(charJson, songs[curSelected].songCharacter)) {
+			coolors = Reflect.field(charJson, songs[curSelected].songCharacter).colors;
+		} else {
+			coolors = Reflect.field(iconJson, songs[curSelected].songCharacter).colors;
+		}
+		FlxTween.color(bg,0.5, bg.color, FlxColor.fromString(coolors[0]));
 		if (OptionsHandler.options.style) {
-			record.changeColor(Reflect.field(charJson, songs[curSelected].songCharacter).colors, songs[curSelected].songCharacter, songs[curSelected].week,
-				Highscore.getComplete(songs[curSelected].songName, curDifficulty));
+			record.changeColor(coolors, songs[curSelected].songCharacter, songs[curSelected].week,
+				Highscore.getFCLevel(songs[curSelected].songName, curDifficulty));
 			
 		}
 		

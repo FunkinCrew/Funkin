@@ -24,6 +24,17 @@
     "icons": [0,1,2],
     "colors": ["#149DFF"]
   },
+  "bulb-pixel": {
+    "like": "bf-pixel",
+    "icons": [
+      0,
+      1,
+      2
+    ],
+    "colors": [
+      "#149DFF"
+    ]
+  },
   "dad": {
     "like": "dad",
     "icons": [0,1,2],

@@ -38,7 +38,7 @@ class HealthIcon extends FlxSprite
 		}
 		else if (Reflect.hasField(iconJson, char))
 		{
-			iconFrames = Reflect.field(iconJson, char);
+			iconFrames = Reflect.field(iconJson, char).frames;
 		}
 		else
 		{

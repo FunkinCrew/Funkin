@@ -11,5 +11,6 @@
     "preferredSave": 0,
     "showSongPos": true,
     "style": true,
-    "stressTankmen": false
+    "stressTankmen": false,
+    "ignoreUnlocks": false
 }

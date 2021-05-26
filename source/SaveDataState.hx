@@ -64,7 +64,12 @@ class SaveDataState extends MusicBeatState
 						{name: "DJFK Keys", value: false, intName: "DJFKKeys", desc: "Whether to use dfjk keys."},
 						{name: "Show Song Position", value: false, intName: "showSongPos", desc: "Whether to show the song bar."},
 						{name: "Style", value: false, intName: "style", desc: "Whether to use fancy style or default to base game."},
-						
+						{
+							name: "Ignore Unlocks",
+							value: false,
+							intName: "ignoreUnlocks",
+							desc: "Show/Unlock all songs/weeks, even if you haven't met conditions."
+						},
 						{name: "Funny Songs", value: false, intName: "stressTankmen", desc: "funny songs"},
 						{name: "Credits", value: false, intName:'credits', desc: "Show the credits!", ignore: true},
 						{name: "Sound Test...", value: false, intName: 'soundtest', desc: "Listen to the soundtrack", ignore: true},

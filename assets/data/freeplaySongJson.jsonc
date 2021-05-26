@@ -113,7 +113,7 @@
       },
       {
         "name": "Test",
-        "character": "bf-old",
+        "character": "face",
         "week": 6,
         "flags" : ["debug"]
       }
