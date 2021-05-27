@@ -4,6 +4,8 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.group.FlxGroup;
+import flixel.input.mouse.FlxMouseButton.FlxMouseButtonID;
+import flixel.input.mouse.FlxMouseEventManager;
 import flixel.math.FlxPoint;
 import flixel.ui.FlxButton;
 import flixel.util.FlxTimer;
@@ -75,6 +77,8 @@ class StageBuilderState extends MusicBeatState
 		var saveSceneBtn:FlxButton = new FlxButton(20, 50, "Save Scene", saveScene);
 		hudGrp.add(saveSceneBtn);
 
+		FlxMouseEventManager.init();
+
 		#if desktop
 		FlxG.stage.window.onDropFile.add(function(path:String)
 		{
@@ -95,12 +99,14 @@ class StageBuilderState extends MusicBeatState
 
 			fo.write(sys.io.File.getBytes(path));
 
-			new FlxTimer().start(1, function(tmr)
+			new FlxTimer().start(0.2, function(tmr)
 			{
-				var awesomeImg:SprStage = new SprStage();
+				var awesomeImg:SprStage = new SprStage(FlxG.mouse.x, FlxG.mouse.y);
 				awesomeImg.loadGraphic(Paths.image('stageBuild/stageTempImg'), false, 0, 0, true);
 
 				sprGrp.add(awesomeImg);
+
+				// FlxMouseEventManager.add(awesomeImg, swagMousePress, null, null, null, false, true, false, [FlxMouseButtonID.LEFT, FlxMouseButtonID.RIGHT]);
 			});
 
 			// Load the image shit by
@@ -121,6 +127,11 @@ class StageBuilderState extends MusicBeatState
 		#end
 	}
 
+	function swagMousePress(spr:SprStage)
+	{
+		// spr.setPosition(FlxG.mouse.x, FlxG.mouse.y);
+	}
+
 	function loadImage():Void
 	{
 		var img:FlxSprite = new FlxSprite().loadGraphic(Paths.image('newgrounds_logo'));
@@ -139,6 +150,9 @@ class StageBuilderState extends MusicBeatState
 		// trace(snd
 
 		CoolUtil.mouseCamDrag();
+
+		if (FlxG.keys.pressed.CONTROL)
+			CoolUtil.mouseWheelZoom();
 
 		super.update(elapsed);
 	}

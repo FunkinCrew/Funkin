@@ -62,6 +62,12 @@ class CoolUtil
 		}
 	}
 
+	public static function mouseWheelZoom():Void
+	{
+		if (FlxG.mouse.wheel != 0)
+			FlxG.camera.zoom += FlxG.mouse.wheel * (0.1 * FlxG.camera.zoom);
+	}
+
 	/**
 		Lerps camera, but accountsfor framerate shit?
 		Right now it's simply for use to change the followLerp variable of a camera during update
