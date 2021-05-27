@@ -115,7 +115,19 @@ class SongInfoPanel extends FlxTypedSpriteGroup<FlxSprite> {
          var sussyOption:DisplayOptions = cast (displaying : DisplayOptions);
          sussyOption += change;
          sussyOption = FlxMath.wrap(sussyOption, 0, BestOverall);
-        displaying = cast (sussyOption: String);
+		displaying = switch (sussyOption)
+		{
+			case BestScore:
+				"best-score";
+			case Recent:
+				"recent";
+			case BestAccuracy:
+				"best-accuracy";
+			case BestFc:
+				"best-fullcombo";
+			case BestOverall:
+				"best";
+		};
         changeSong(curSong, curDiff);
      }
 }

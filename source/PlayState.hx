@@ -3250,12 +3250,13 @@ class PlayState extends MusicBeatState
 					noteMiss(daNote.noteData, playerOne);
 				} else  {
 					healthBonus -= 0.06 * healthLossMultiplier;
+					ss = false;
+					shits++;
+					notesHit += 0.25;
 				}
 				// misses++;
 				
-				ss = false;
-				shits++;
-				notesHit += 0.25;
+				
 				if (daRating == 'miss')
 					return;
 			case 'bad':
