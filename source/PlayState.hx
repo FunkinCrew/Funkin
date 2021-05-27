@@ -540,6 +540,8 @@ class PlayState extends MusicBeatState
 				poisonExr = true;
 			}
 			poisonPlus = ModifierState.namedModifiers.poison.value;
+		} else {
+			ModifierState.scoreMultiplier = 1;
 		}
 		// rebind always, to support djkf
 		if (!opponentPlayer && !duoMode) {
