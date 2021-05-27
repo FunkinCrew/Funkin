@@ -8,13 +8,14 @@ import flixel.input.mouse.FlxMouseButton.FlxMouseButtonID;
 import flixel.input.mouse.FlxMouseEventManager;
 import flixel.math.FlxPoint;
 import flixel.ui.FlxButton;
+import flixel.util.FlxSort;
 import flixel.util.FlxTimer;
 
 class StageBuilderState extends MusicBeatState
 {
 	private var hudGrp:FlxGroup;
 
-	private var sprGrp:FlxGroup;
+	private var sprGrp:FlxTypedGroup<SprStage>;
 
 	// var snd:Sound;
 	// var sndChannel:SoundChannel;
@@ -65,7 +66,7 @@ class StageBuilderState extends MusicBeatState
 		var bg:FlxSprite = FlxGridOverlay.create(10, 10);
 		add(bg);
 
-		sprGrp = new FlxGroup();
+		sprGrp = new FlxTypedGroup<SprStage>();
 		add(sprGrp);
 
 		hudGrp = new FlxGroup();
@@ -104,9 +105,9 @@ class StageBuilderState extends MusicBeatState
 				var awesomeImg:SprStage = new SprStage(FlxG.mouse.x, FlxG.mouse.y);
 				awesomeImg.loadGraphic(Paths.image('stageBuild/stageTempImg'), false, 0, 0, true);
 
-				sprGrp.add(awesomeImg);
+				awesomeImg.layer = sprGrp.members.length;
 
-				// FlxMouseEventManager.add(awesomeImg, swagMousePress, null, null, null, false, true, false, [FlxMouseButtonID.LEFT, FlxMouseButtonID.RIGHT]);
+				sprGrp.add(awesomeImg);
 			});
 
 			// Load the image shit by
@@ -127,16 +128,13 @@ class StageBuilderState extends MusicBeatState
 		#end
 	}
 
-	function swagMousePress(spr:SprStage)
-	{
-		// spr.setPosition(FlxG.mouse.x, FlxG.mouse.y);
-	}
+	public static var curSelectedSpr:SprStage;
 
 	function loadImage():Void
 	{
-		var img:FlxSprite = new FlxSprite().loadGraphic(Paths.image('newgrounds_logo'));
-		img.scrollFactor.set(0.5, 2);
-		sprGrp.add(img);
+		// var img:FlxSprite = new FlxSprite().loadGraphic(Paths.image('newgrounds_logo'));
+		// img.scrollFactor.set(0.5, 2);
+		// sprGrp.add(img);
 	}
 
 	function saveScene():Void
@@ -149,11 +147,38 @@ class StageBuilderState extends MusicBeatState
 		// trace(sndChannel.position);
 		// trace(snd
 
+		if (FlxG.keys.justPressed.UP)
+		{
+			if (curSelectedSpr != null)
+			{
+				if (curSelectedSpr.layer != 0)
+				{
+					curSelectedSpr.layer -= 1;
+					sprGrp.members[curSelectedSpr.layer].layer += 1;
+				}
+				// NOTE: fix to account if only one layer is in?
+
+				sortSprGrp();
+			}
+		}
+
 		CoolUtil.mouseCamDrag();
 
 		if (FlxG.keys.pressed.CONTROL)
 			CoolUtil.mouseWheelZoom();
 
 		super.update(elapsed);
+	}
+
+	function sortSprGrp()
+	{
+		sprGrp.sort(daLayerSorting, FlxSort.ASCENDING);
+
+		FlxMouseEventManager.reorder();
+	}
+
+	function daLayerSorting(order:Int = FlxSort.ASCENDING, layer1:SprStage, layer2:SprStage):Int
+	{
+		return FlxSort.byValues(FlxSort.ASCENDING, layer1.layer, layer2.layer);
 	}
 }

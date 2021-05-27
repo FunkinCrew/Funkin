@@ -7,6 +7,8 @@ import flixel.math.FlxPoint;
 
 class SprStage extends FlxSprite
 {
+	public var layer:Int = 0;
+
 	public function new(?x:Float = 0, ?y:Float = 0)
 	{
 		super(x, y);
@@ -42,7 +44,9 @@ class SprStage extends FlxSprite
 
 	function dragShit(spr:SprStage)
 	{
+		StageBuilderState.curSelectedSpr = this;
 		mousePressing = true;
+
 		mouseOffset.set(FlxG.mouse.x - this.x, FlxG.mouse.y - this.y);
 	}
 }
