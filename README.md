@@ -29,8 +29,9 @@ take down mods that don't follow this rule.
 ## Modding+ Credits
 
 - [BulbyVR](https://gamebanana.com/members/1776425) - Owner/Programmer
-- [DJ Popsicle](https://gamebanana.com/members/1780306) - Co-Owner/Coding
+- [DJ Popsicle](https://gamebanana.com/members/1780306) - Co-Owner/Programmer
 - [Matheus L/Mlops](https://gamebanana.com/members/1767306) and [AndreDoodles](https://gamebanana.com/members/1764840) - Artist for the Poison Icons
+- [ThePinkPhantom/JuliettePink](https://gamebanana.com/members/1892442) - Portrait Artist
 - [Alex Director](https://gamebanana.com/members/1701629) - Icon Fixer (Not in the Recent Build but it will be...)
 
 ## Build instructions
