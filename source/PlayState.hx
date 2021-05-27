@@ -3243,22 +3243,14 @@ class PlayState extends MusicBeatState
 		}
 		switch (daRating)
 		{
-			case 'shit' | 'miss':
+			case 'shit':
 				score = -300;
 				combo = 0;
-				if (daRating == 'miss' && !OptionsHandler.options.ignoreShittyTiming) {
-					noteMiss(daNote.noteData, playerOne);
-				} else  {
-					healthBonus -= 0.06 * healthLossMultiplier;
-					ss = false;
-					shits++;
-					notesHit += 0.25;
-				}
 				// misses++;
-				
-				
-				if (daRating == 'miss')
-					return;
+				healthBonus -= 0.06 * healthLossMultiplier;
+				ss = false;
+				shits++;
+				notesHit += 0.25;
 			case 'bad':
 				daRating = 'bad';
 				score = 0;
@@ -3282,6 +3274,11 @@ class PlayState extends MusicBeatState
 					recycledNote.setupNoteSplash(daNote.x, daNote.y, daNote.noteData);
 					grpNoteSplashes.add(recycledNote);
 				}
+				
+			case 'miss':
+				if (!OptionsHandler.options.ignoreShittyTiming)
+					noteMiss(daNote.noteData, playerOne);
+				return;
 		}
 		if (daNote.isSustainNote) {
 			healthBonus  *= 0.2;

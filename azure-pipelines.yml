@@ -5,7 +5,7 @@ jobs:
 
   - job: BuildCppLinux
     pool:
-      vmImage: 'ubuntu-16.04'
+      vmImage: 'ubuntu-latest'
     steps:
       - script: |
           sudo add-apt-repository ppa:haxe/releases -y
@@ -34,6 +34,9 @@ jobs:
           haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
           haxelib install hxcpp-debug-server
           haxelib list
+          echo $runId > VERSION
+        env:
+          runId : $(Build.BuildNumber)
         displayName: 'Install haxelibs'
       - script: haxelib run lime build linux
         displayName: 'Compile'
@@ -70,6 +73,9 @@ jobs:
           haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
           haxelib install hxcpp-debug-server
           haxelib list
+          echo $runId > VERSION
+        env:
+          runId : $(Build.BuildNumber)
         displayName: 'Install haxelibs'
       - script: haxelib run lime build mac
         displayName: 'Compile'
@@ -154,6 +160,9 @@ jobs:
           haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
           haxelib install hxcpp-debug-server
           haxelib list
+          echo $env:runId
+        env:
+          runId : $(Build.BuildNumber)
         displayName: 'Install haxelibs'
       - script: haxelib run lime build html5
         displayName: 'Compile'

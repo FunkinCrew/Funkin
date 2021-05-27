@@ -33,6 +33,7 @@ class Judge {
         sickJudge = 45;
     }
     public static function setJudge(judge:Jury) {
+        trace(judge);
         switch (judge) {
             case Judge1:
                 shitJudge = 203;

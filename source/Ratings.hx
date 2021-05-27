@@ -118,13 +118,13 @@ class Ratings
 			return "bad";
 		else if (noteDiff > Judge.sickJudge * customTimeScale) // your kinda there
 			return "good";
-		else if (noteDiff < -Judge.sickJudge * customTimeScale) // little late
+		else if (noteDiff < -1 * Judge.sickJudge * customTimeScale) // little late
 			return "good";
-		else if (noteDiff < -Judge.goodJudge * customTimeScale) // late
+		else if (noteDiff < -1 * Judge.goodJudge * customTimeScale) // late
 			return "bad";
-		else if (noteDiff < -Judge.badJudge * customTimeScale) // late as fuck
+		else if (noteDiff < -1 * Judge.badJudge * customTimeScale) // late as fuck
 			return "shit";
-		else if (noteDiff < -Judge.shitJudge * customTimeScale) // so god damn late its a miss
+		else if (noteDiff < -1 * Judge.shitJudge * customTimeScale) // so god damn late its a miss
 			return "miss";
 		return "sick";
 	}

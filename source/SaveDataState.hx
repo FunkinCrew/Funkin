@@ -30,6 +30,7 @@ typedef TOption = {
 	var desc:String;
 	var ?ignore:Bool;
 	var ?amount:Int;
+	var ?defAmount:Int;
 }
 class SaveDataState extends MusicBeatState
 {
@@ -61,7 +62,7 @@ class SaveDataState extends MusicBeatState
 						{name: "Skip Modifier Menu", value: false, intName: "skipModifierMenu", desc: "Skip the modifier menu"}, 
 						{name: "Skip Victory Screen", value: false, intName : "skipVictoryScreen", desc: "Skip the victory screen at the end of songs."},
 						{name: "Downscroll", value: false, intName: "downscroll", desc: "Put da arrows on the bottom and have em scroll down"},
-						{name: "Judge", value: false, intName: "judge", desc: "The Judge to use.", amount: cast Judge.Jury.Classic},
+						{name: "Judge", value: false, intName: "judge", desc: "The Judge to use.", amount: cast Judge.Jury.Classic, defAmount: cast Judge.Jury.Classic},
 						{name: "Use New input", value: false, intName: "useCustomInput", desc: "Whether to allow spamming"},
 						{name: "Ignore Bad Timing", value: false, intName:"ignoreShittyTiming", desc: "Even with new input on, if you hit a note really poorly, it counts as a miss. This disables that."},
 						{name: "DJFK Keys", value: false, intName: "DJFKKeys", desc: "Whether to use dfjk keys."},
@@ -85,16 +86,16 @@ class SaveDataState extends MusicBeatState
 						#end
 					];
 		// amount of things that aren't options
-		var uselessShit:Int = 7;
-		#if !sys
-		uselessShit = 2;
-		#end
 		var curOptions:TOptions = OptionsHandler.options;
 		for (i in 0...optionList.length) {
 			if (optionList[i].ignore)
 				continue;
 			Reflect.setField(mappedOptions, optionList[i].intName, optionList[i]);
 			optionList[i].value = Reflect.field(curOptions, optionList[i].intName);
+			if ((Reflect.field(curOptions, optionList[i].intName) is Int)) {
+				optionList[i].amount = Reflect.field(curOptions, optionList[i].intName);
+				optionList[i].value = optionList[i].amount != optionList[i].defAmount;
+			}
 		}
 		// we use a var because if we don't it will read the file each time
 		// although it isn't as laggy thanks to assets
@@ -134,10 +135,22 @@ class SaveDataState extends MusicBeatState
 			swagOption.targetY = j;
 			trace("l57");
 			var coolCheckmark = new FlxSprite().loadGraphic('assets/images/checkmark.png');
-			var numDisplay = new NumberDisplay(0, 0, optionList[j].amount, 1, 0, 10);
+			var numDisplay = new NumberDisplay(0, 0, optionList[j].defAmount, 1, 0, 10);
 			numDisplay.visible = optionList[j].amount != null;
 			numberDisplays.push(numDisplay);
+			numDisplay.value = optionList[j].amount;
 			coolCheckmark.visible = optionList[j].value;
+			if (optionList[j].intName == "judge") {
+				switch (cast(optionList[j].amount : Judge.Jury))
+				{
+					case Judge.Jury.Classic:
+						numberDisplays[j].text = "Classic";
+					case Judge.Jury.Hard:
+						numberDisplays[j].text = "Hard";
+					default:
+						numberDisplays[j].text = optionList[j].amount + 1 + "";
+				}
+			}
 			numDisplay.size = 40;
 			numDisplay.x += numDisplay.width + swagOption.width;
 			checkmarks.add(coolCheckmark);
