@@ -32,6 +32,10 @@ function stepHit (step)
 	-- do nothing
 end
 
+function keyPressed (key)
+	-- do nothing
+end
+
 print("Mod Chart script loaded :)")
 ```
 
@@ -146,7 +150,6 @@ Kade Engine provides a list of global variables to be used in the lua scripting 
 |	  scrollSpeed	   |  Int  |				   The current scrollspeed					  |
 |	  	mustHit		   | Bool  |  		If the current section is a must hit section		  |
 |	  strumLineY	   | Float |  			The current Strum Line Y Position				  |
-|       health         | Float |                 The current health of the player             |
 
 ## Functions
 
@@ -437,6 +440,13 @@ Smoothly fade in to an alpha
 
 Smoothly fade out to an alpha
 
+##### changeBoyfriendCharacter(string id)
+
+Changes the Boyfriend sprite to another character
+
+##### changeDadCharacter(string id)
+
+Changes the Dad sprite to another character
 
 
 
@@ -467,11 +477,3 @@ Sets the window's position
 ##### resizeWindow(int width, int height)
 
 Resizes the window
-
-
-### Misc
-
-##### setHealth(float heal)
-
-Sets the player's health
-
