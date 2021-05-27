@@ -22,15 +22,15 @@ enum abstract Jury(Int) from Int to Int {
 class Judge {
     // it's shit judge because this is the highest value you can be off without missing
     // I think these are in ms? lmao
-    public static var shitJudge:Float = 166;
-    public static var badJudge:Float = 135;
-    public static var goodJudge:Float = 90;
-    public static var sickJudge:Float = 45;
+    public static var shitJudge:Float = 166 * (Conductor.safeZoneOffset / 166);
+	public static var badJudge:Float = 135 * (Conductor.safeZoneOffset / 166);
+	public static var goodJudge:Float = 90 * (Conductor.safeZoneOffset / 166);
+	public static var sickJudge:Float = 45 * (Conductor.safeZoneOffset / 166);
     public static function resetJudge() {
-        shitJudge = 166;
-        badJudge = 135;
-        goodJudge = 90;
-        sickJudge = 45;
+		shitJudge = 166 * (Conductor.safeZoneOffset / 166);
+		badJudge = 135 * (Conductor.safeZoneOffset / 166);
+		goodJudge = 90 * (Conductor.safeZoneOffset / 166);
+		sickJudge = 45 * (Conductor.safeZoneOffset / 166);
     }
     public static function setJudge(judge:Jury) {
         trace(judge);
@@ -83,11 +83,10 @@ class Judge {
             case Classic:
                 resetJudge();
             case Hard:
-                resetJudge();
-                shitJudge /= 2;
-                badJudge /= 2;
-                goodJudge /= 2;
-                sickJudge /= 2;
+				shitJudge = 83 * (Conductor.safeZoneOffset / 166);
+				badJudge = 68 * (Conductor.safeZoneOffset / 166);
+				goodJudge = 45 * (Conductor.safeZoneOffset / 166);
+				sickJudge = 23 * (Conductor.safeZoneOffset / 166);
 
         }
     }

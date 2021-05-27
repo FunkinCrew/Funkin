@@ -109,26 +109,26 @@ class Ratings
 		// I assume these are in milliseconds? lmao
 		if (ModifierState.namedModifiers.demo.value)
 			return "good"; // FUNNY
-
-		if (noteDiff > Judge.shitJudge * customTimeScale ) // so god damn early its a miss
-			if (!OptionsHandler.options.ignoreShittyTiming)
+		// ok these are actually in milliseconds
+		if (noteDiff > Judge.shitJudge ) // so god damn early its a miss
+			if (OptionsHandler.options.ignoreShittyTiming)
 				return "shit";
 			else
 				return "miss";
-		if (noteDiff > Judge.badJudge * customTimeScale) // way early
+		if (noteDiff > Judge.badJudge) // way early
 			return "shit";
-		else if (noteDiff > Judge.goodJudge * customTimeScale) // early
+		else if (noteDiff > Judge.goodJudge) // early
 			return "bad";
-		else if (noteDiff > Judge.sickJudge * customTimeScale) // your kinda there
+		else if (noteDiff > Judge.sickJudge) // your kinda there
 			return "good";
-		else if (noteDiff < -1 * Judge.sickJudge * customTimeScale) // little late
+		else if (noteDiff < -1 * Judge.sickJudge) // little late
 			return "good";
-		else if (noteDiff < -1 * Judge.goodJudge * customTimeScale) // late
+		else if (noteDiff < -1 * Judge.goodJudge) // late
 			return "bad";
-		else if (noteDiff < -1 * Judge.badJudge * customTimeScale) // late as fuck
+		else if (noteDiff < -1 * Judge.badJudge) // late as fuck
 			return "shit";
-		else if (noteDiff < -1 * Judge.shitJudge * customTimeScale) // so god damn late its a miss
-			if (!OptionsHandler.options.ignoreShittyTiming)
+		else if (noteDiff < -1 * Judge.shitJudge) // so god damn late its a miss
+			if (OptionsHandler.options.ignoreShittyTiming)
 				return "shit";
 			else
 				return "miss";

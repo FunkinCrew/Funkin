@@ -223,11 +223,11 @@ class DialogueBox extends FlxSpriteGroup
 		if (dialogueStarted)
 		{
 			FlxG.sound.music.volume = FlxMath.lerp(FlxG.sound.music.volume, 0.8 * curVolume / 100,
-				camLerp / 2);
+			camLerp / (CoolUtil.fps / 60));
 			if (curFlip)
-				portrait.x = FlxMath.lerp(portrait.x, 580 - portrait.width, (camLerp * 2) / 2);
+				portrait.x = FlxMath.lerp(portrait.x, 580 - portrait.width, (camLerp * 2) / (CoolUtil.fps / 60));
 			else
-				portrait.x = FlxMath.lerp(portrait.x, 700, (camLerp * 2) / 2);
+				portrait.x = FlxMath.lerp(portrait.x, 700, (camLerp * 2) / (CoolUtil.fps / 60));
 		}
 
 		dropText.text = swagDialogue.text;

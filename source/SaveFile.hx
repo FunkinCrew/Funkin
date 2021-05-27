@@ -129,7 +129,7 @@ class SaveFile extends FlxSpriteGroup
 	{
 		super.update(elapsed);
 
-		y = FlxMath.lerp(y, 150 + (targetY * 420), 0.17);
+		y = FlxMath.lerp(y, 150 + (targetY * 420), 0.17 / (CoolUtil.fps / 60));
 	}
 	public function askToConfirm(?turnOn:Bool = true) {
 		deleteConfirm.visible = turnOn;

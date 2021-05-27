@@ -10,6 +10,7 @@ using StringTools;
 
 class CoolUtil
 {
+	public static var fps:Int = 60;
 	public static function coolTextFile(path:String):Array<String>
 	{
 		var daList:Array<String> = FNFAssets.getText(path).trim().split('\n');
