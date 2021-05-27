@@ -412,6 +412,18 @@ Returns the width for the sprite id
 
 Returns the height for the sprite id
 
+##### changeBoyfriendCharacter(string id)
+
+Changes the Boyfriend sprite to another character
+
+##### changeDadCharacter(string id)
+
+Changes the Dad sprite to another character
+
+##### playActorAnimation(string/int id, string anim, bool force, bool reverse)
+
+Plays an animation on a sprite
+
 ### Tweens
 
 *Note, On Complete functions are based by the function name (and they also well get called when the tween completes)*
@@ -439,14 +451,6 @@ Smoothly fade in to an alpha
 ##### tweenFadeOut(string/int id, float toAlpha, float time, string onComplete)
 
 Smoothly fade out to an alpha
-
-##### changeBoyfriendCharacter(string id)
-
-Changes the Boyfriend sprite to another character
-
-##### changeDadCharacter(string id)
-
-Changes the Dad sprite to another character
 
 
 
