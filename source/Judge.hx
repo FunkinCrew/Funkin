@@ -83,10 +83,11 @@ class Judge {
             case Classic:
                 resetJudge();
             case Hard:
-				shitJudge = 83 * (Conductor.safeZoneOffset / 166);
-				badJudge = 68 * (Conductor.safeZoneOffset / 166);
-				goodJudge = 45 * (Conductor.safeZoneOffset / 166);
-				sickJudge = 23 * (Conductor.safeZoneOffset / 166);
+                resetJudge();
+				shitJudge /= 2;
+				badJudge /= 2;
+				goodJudge /= 2;
+				sickJudge /= 2;
 
         }
     }

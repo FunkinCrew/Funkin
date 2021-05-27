@@ -126,6 +126,7 @@ class PlayState extends MusicBeatState
 	var songLength:Float = 0.0;
 	var songScoreDef:Int = 0;
 	var nps:Int = 0;
+	var currentTimingShown:FlxText;
 	var playingAsRpc:String = "";
 	private var strumLineNotes:FlxTypedGroup<FlxSprite>;
 	private var playerStrums:FlxTypedGroup<FlxSprite>;
@@ -3214,7 +3215,7 @@ class PlayState extends MusicBeatState
 	}
 
 	var endingSong:Bool = false;
-
+	var timeShown:Int = 0;
 	private function popUpScore(strumtime:Float, daNote:Note, playerOne:Bool):Void
 	{
 		var noteDiff:Float = Math.abs(Conductor.songPosition - daNote.strumTime);
@@ -3347,7 +3348,35 @@ class PlayState extends MusicBeatState
 			rating.setGraphicSize(Std.int(rating.width * daPixelZoom * 0.7));
 			comboSpr.setGraphicSize(Std.int(comboSpr.width * daPixelZoom * 0.7));
 		}
+		var msTiming = HelperFunctions.truncateFloat(noteDiff, 3);
+		if (FlxG.save.data.botplay)
+			msTiming = 0;
+		timeShown = 0;
+		if (currentTimingShown != null)
+			remove(currentTimingShown);
 
+		currentTimingShown = new FlxText(0, 0, 0, "0ms");
+		switch (daRating)
+		{
+			case 'shit' | 'bad':
+				currentTimingShown.color = FlxColor.RED;
+			case 'good':
+				currentTimingShown.color = FlxColor.GREEN;
+			case 'sick':
+				currentTimingShown.color = FlxColor.CYAN;
+		}
+		currentTimingShown.borderStyle = OUTLINE;
+		currentTimingShown.borderSize = 1;
+		currentTimingShown.borderColor = FlxColor.BLACK;
+		currentTimingShown.text = msTiming + "ms";
+		currentTimingShown.size = 20;
+
+
+		if (currentTimingShown.alpha != 1)
+			currentTimingShown.alpha = 1;
+
+		if (!demoMode)
+			add(currentTimingShown);
 		comboSpr.updateHitbox();
 		rating.updateHitbox();
 
@@ -3357,6 +3386,11 @@ class PlayState extends MusicBeatState
 		seperatedScore.push(Math.floor((combo - (seperatedScore[0] * 100)) / 10));
 		seperatedScore.push(combo % 10);
 
+		currentTimingShown.screenCenter();
+		currentTimingShown.x = comboSpr.x + 100;
+		currentTimingShown.y = rating.y + 100;
+		currentTimingShown.acceleration.y = 600;
+		currentTimingShown.velocity.y -= 150;
 		var daLoop:Int = 0;
 		for (i in seperatedScore)
 		{
@@ -3402,6 +3436,7 @@ class PlayState extends MusicBeatState
 
 			daLoop++;
 		}
+		currentTimingShown.cameras = [camHUD];
 		/*
 			trace(combo);
 			trace(seperatedScore);
@@ -3411,7 +3446,13 @@ class PlayState extends MusicBeatState
 		// add(coolText);
 
 		FlxTween.tween(rating, {alpha: 0}, 0.2, {
-			startDelay: Conductor.crochet * 0.001
+			startDelay: Conductor.crochet * 0.001,
+			onUpdate: function(tween:FlxTween)
+			{
+				if (currentTimingShown != null)
+					currentTimingShown.alpha -= 0.02;
+				timeShown++;
+			},
 		});
 
 		FlxTween.tween(comboSpr, {alpha: 0}, 0.2, {
@@ -3421,6 +3462,11 @@ class PlayState extends MusicBeatState
 				comboSpr.destroy();
 
 				rating.destroy();
+				if (currentTimingShown != null && timeShown >= 20)
+				{
+					remove(currentTimingShown);
+					currentTimingShown = null;
+				}
 			},
 			startDelay: Conductor.crochet * 0.001
 		});
