@@ -2831,7 +2831,6 @@ class PlayState extends MusicBeatState
 				if (controls.DOWN_P){luaModchart.executeState('keyPressed',["down"]);};
 				if (controls.UP_P){luaModchart.executeState('keyPressed',["up"]);};
 				if (controls.RIGHT_P){luaModchart.executeState('keyPressed',["right"]);};
-				if (controls.ACCEPT){luaModchart.executeState('keyPressed',["accept"]);};
 				};
 				#end
 		 
