@@ -134,7 +134,7 @@ class DialogueBox extends FlxSpriteGroup
 		portrait.frames = FlxAtlasFrames.fromSparrow('assets/images/custom_chars/$curCharacter/portrait.png',
 			'assets/images/custom_chars/$curCharacter/portrait.xml');
 		portrait.animation.addByPrefix('neutral', 'neutral', 24, false);
-		portrait.setGraphicSize(Std.int(portrait.width * PlayState.daPixelZoom * 0.9));
+		portrait.setGraphicSize(Std.int(portrait.width * 0.9));
 		portrait.updateHitbox();
 		portrait.scale.set(charScale, charScale);
 		portrait.updateHitbox();
@@ -317,17 +317,27 @@ class DialogueBox extends FlxSpriteGroup
 				
 			}
 		});
-
+		remove(portrait);
+		portrait = new FlxSprite(-20, 40);
 		portrait.frames = FlxAtlasFrames.fromSparrow('assets/images/custom_chars/$curCharacter/portrait.png',
 			'assets/images/custom_chars/$curCharacter/portrait.xml');
-		portrait.visible = true;
+		portrait.animation.addByPrefix(curEmotion, curEmotion, 24, false);
+		portrait.setGraphicSize(Std.int(portrait.width * 0.9));
+		portrait.updateHitbox();
+		portrait.scale.set(charScale, charScale);
+		portrait.updateHitbox();
+		portrait.animation.play(curEmotion);
+		portrait.scrollFactor.set();
+		add(portrait);
 
 		if (portrait.width < 256)
 		{
+			trace(portrait.width);
 			portrait.setGraphicSize(Std.int(portrait.width * 6));
 			portrait.antialiasing = false;
 		}
 		else
+
 			portrait.antialiasing = true;
 
 		portrait.updateHitbox();
@@ -337,6 +347,10 @@ class DialogueBox extends FlxSpriteGroup
 		else
 			portrait.flipX = false;
 
+		if (curFlip)
+			portrait.x = 580 - portrait.width;
+		else
+			portrait.x = 700;
 		if (curCharacter != oldCharacter)
 		{
 			portrait.alpha = 0;
@@ -350,9 +364,10 @@ class DialogueBox extends FlxSpriteGroup
 				portrait.x = 280 - portrait.width;
 			else
 				portrait.x = 1000;
-
-			portrait.y = 441 - portrait.height;
 		}
+		
+
+		portrait.y = 441 - portrait.height;
 
 		if (curBox != oldBox)
 		{
@@ -382,8 +397,6 @@ class DialogueBox extends FlxSpriteGroup
 		if (_dialogue.canFlip)
 			box.flipX = portrait.flipX;
 
-		portrait.animation.addByPrefix(curEmotion, curEmotion, 24, false);
-		portrait.animation.play(curEmotion);
 
 		dropText.font = swagDialogue.font = curFont;
 		dropText.size = swagDialogue.size = curFontScale;
