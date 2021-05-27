@@ -125,7 +125,7 @@ class PlayState extends MusicBeatState
 	private var curSong:String = "";
 
 	private var gfSpeed:Int = 1;
-	public var health:Float = 1; //making public for modchart's sake, but things could go wrong
+	private var health:Float = 1;
 	private var combo:Int = 0;
 	public static var misses:Int = 0;
 	private var accuracy:Float = 0.00;
@@ -1833,9 +1833,6 @@ class PlayState extends MusicBeatState
 
 		if (health > 2)
 			health = 2;
-			#if windows
-			if (executeModchart && luaModchart != null){luaModchart.setVar('health', health);};
-			#end
 		if (healthBar.percent < 20)
 			iconP1.animation.curAnim.curFrame = 1;
 		else
@@ -2364,9 +2361,6 @@ class PlayState extends MusicBeatState
 						else
 						{
 							health -= 0.075;
-							#if windows
-							if (executeModchart && luaModchart != null){	luaModchart.setVar('health', health);};
-							#end
 							vocals.volume = 0;
 							if (theFunne)
 								noteMiss(daNote.noteData, daNote);
@@ -2562,9 +2556,6 @@ class PlayState extends MusicBeatState
 					combo = 0;
 					misses++;
 					health -= 0.2;
-					#if windows
-					if (executeModchart && luaModchart != null){	luaModchart.setVar('health', health);};
-					#end
 					ss = false;
 					shits++;
 					if (FlxG.save.data.accuracyMod == 0)
@@ -2573,9 +2564,6 @@ class PlayState extends MusicBeatState
 					daRating = 'bad';
 					score = 0;
 					health -= 0.06;
-					#if windows
-					if (executeModchart && luaModchart != null){	luaModchart.setVar('health', health);};
-					#end
 					ss = false;
 					bads++;
 					if (FlxG.save.data.accuracyMod == 0)
@@ -2587,17 +2575,11 @@ class PlayState extends MusicBeatState
 					goods++;
 					if (health < 2)
 						health += 0.04;
-						#if windows
-						if (executeModchart && luaModchart != null){	luaModchart.setVar('health', health);};
-						#end
 					if (FlxG.save.data.accuracyMod == 0)
 						totalNotesHit += 0.75;
 				case 'sick':
 					if (health < 2)
 						health += 0.1;
-						#if windows
-						if (executeModchart && luaModchart != null){	luaModchart.setVar('health', health);};
-						#end
 					if (FlxG.save.data.accuracyMod == 0)
 						totalNotesHit += 1;
 					sicks++;
