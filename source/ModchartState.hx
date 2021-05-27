@@ -527,6 +527,10 @@ class ModchartState
 				Lua_helper.add_callback(lua,"setActorX", function(x:Int,id:String) {
 					getActorByName(id).x = x;
 				});
+				
+				Lua_helper.add_callback(lua,"playActorAnimation", function(id:String,anim:String,force:Bool = false,reverse:Bool = false) {
+					getActorByName(id).playAnim(anim, force, reverse);
+				});
 	
 				Lua_helper.add_callback(lua,"setActorAlpha", function(alpha:Float,id:String) {
 					getActorByName(id).alpha = alpha;
