@@ -65,7 +65,8 @@ class HelperFunctions
 	{
 		return (getNotes() * 350);
 	}
-
+	// wife 3 is from eterna rhythm or whatever
+	// it's not porn :(
 	public static function wife3(maxms:Float, ts:Float)
 	{
 		var max_points = 1.0;

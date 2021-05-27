@@ -22,6 +22,9 @@ class Record extends FlxTypedSpriteGroup<FlxSprite> {
     var sussyBackup:BitmapData;
     var completed:Bool = false;
     var shiney:FlxSprite;
+    var doubleShiney:FlxSprite;
+    var almostSticker:FlxSprite;
+    var smudge:FlxSprite;
     public function new(X:Float=0, Y:Float=0, colors:Array<String>, ?character:String="bf", ?week:Int = -1, ?completion:Bool) {
         super();
         reordering = true;
@@ -53,8 +56,8 @@ class Record extends FlxTypedSpriteGroup<FlxSprite> {
 				}
             }
             
-            if (FNFAssets.exists('assets/images/campaign-ui-weeks/week$week-center.png')) {
-				sussyBackup = FNFAssets.getBitmapData('assets/images/campaign-ui-weeks/week$week-center.png');
+            if (FNFAssets.exists('assets/images/campaign-ui-week/week$week-center.png')) {
+				sussyBackup = FNFAssets.getBitmapData('assets/images/campaign-ui-week/week$week-center.png');
             } else {
 				sussyBackup = FNFAssets.getBitmapData('assets/images/campaign-ui-week/default-center.png');
             }
@@ -74,10 +77,13 @@ class Record extends FlxTypedSpriteGroup<FlxSprite> {
 		icon.origin.set(origin.x, origin.y);
         icon.x = recordsprite.width/2 - (icon.width/2);
         icon.y = recordsprite.height/2 - (icon.height/2);
+        almostSticker = new FlxSprite().loadGraphic('assets/images/campaign-ui-week/default-almost.png');
+        smudge = new FlxSprite().loadGraphic('assets/images/campaign-ui-week/default-smudge.png');
 		add(recordsprite);
 		add(centerPart);
 		add(icon);
         add(shiney);
+        add(almostSticker);
         changeColor(colors);
         
         x = X;
@@ -90,7 +96,7 @@ class Record extends FlxTypedSpriteGroup<FlxSprite> {
             return;
         angle += 30 * elapsed;
     }
-    public function changeColor(colors:Array<String>, ?character:String="bf", ?week:Int = -1, ?rating:FCLevel = None) {
+    public function changeColor(colors:Array<String>, ?character:String="bf", ?week:Int = -1, ?song:String, ?diff:Int) {
         reordering = true;
 		var sussyColors = [];
 		for (color in colors)
@@ -101,6 +107,9 @@ class Record extends FlxTypedSpriteGroup<FlxSprite> {
 		var sussyRecordGraphic:BitmapData;
         var sussyShine:BitmapData;
         var shineXml:String;
+        var almostPng:BitmapData;
+        var sussySmudge:BitmapData;
+        var rating = Highscore.getFCLevel(song, diff, "best");
         if (week == -1)
         {
             if (rating >= Shit)
@@ -110,6 +119,8 @@ class Record extends FlxTypedSpriteGroup<FlxSprite> {
             sussyBackup = FNFAssets.getBitmapData('assets/images/campaign-ui-week/default-center.png');
             sussyShine = FNFAssets.getBitmapData('assets/images/campaign-ui-week/default-shine.png');
             shineXml = FNFAssets.getText('assets/images/campaign-ui-week/default-shine.xml');
+            almostPng = FNFAssets.getBitmapData('assets/images/campaign-ui-week/default-almost.png');
+            sussySmudge = FNFAssets.getBitmapData('assets/images/campaign-ui-week/default-smudge.png');
         }
         else
         {
@@ -150,9 +161,27 @@ class Record extends FlxTypedSpriteGroup<FlxSprite> {
             {
                 sussyBackup = FNFAssets.getBitmapData('assets/images/campaign-ui-week/default-center.png');
             }
+			if (FNFAssets.exists('assets/images/campaign-ui-week/week$week-almost.png'))
+			{
+				almostPng = FNFAssets.getBitmapData('assets/images/campaign-ui-week/week$week-almost.png');
+			}
+			else
+			{
+				almostPng = FNFAssets.getBitmapData('assets/images/campaign-ui-week/default-almost.png');
+			}
+			if (FNFAssets.exists('assets/images/campaign-ui-week/week$week-smudge.png'))
+			{
+				sussySmudge = FNFAssets.getBitmapData('assets/images/campaign-ui-week/week$week-smudge.png');
+			}
+			else
+			{
+				sussySmudge = FNFAssets.getBitmapData('assets/images/campaign-ui-week/default-smudge.png');
+			}
         }
         
         remove(shiney);
+        if (doubleShiney != null)
+            remove(doubleShiney);
         recordsprite.loadGraphic(sussyRecordGraphic);
         shiney.frames = FlxAtlasFrames.fromSparrow(sussyShine, shineXml);
         shiney.animation.addByPrefix("shine", "shine", 15);
@@ -160,13 +189,24 @@ class Record extends FlxTypedSpriteGroup<FlxSprite> {
 		shiney.origin.set(recordsprite.origin.x, recordsprite.origin.y);
         shiney.centerOffsets();
         shiney.antialiasing = true;
-        
+        doubleShiney = shiney.clone();
+        doubleShiney.angle = angle + 180;
+        almostSticker.loadGraphic(almostPng);
+        smudge.loadGraphic(sussySmudge);
         add(shiney);
+        add(doubleShiney);
         if (rating < Good) {
             shiney.visible = false;
         } else {
             shiney.visible = true;
         }
+        if (rating == Sick) {
+            doubleShiney.visible = true;
+        } else {
+            doubleShiney.visible = false;
+        }
+        smudge.visible = (rating == Shit);
+        almostSticker.visible = (rating == Sdcb);
 		curWeek = week;
         var sussyGradThing = sussyBackup.clone();
 		var sussyGradientMap = FlxGradient.createGradientBitmapData(Std.int(centerPart.width), Std.int(centerPart.height), sussyColors);

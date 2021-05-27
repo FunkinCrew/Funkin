@@ -51,31 +51,31 @@ class Ratings
 				switch (i)
 				{
 					case 0:
-						ranking += " S";
+						ranking += " AAAAA";
 					case 1:
-						ranking += " AAAA+";
+						ranking += " AAAA:";
 					case 2:
-						ranking += " AAAA";
+						ranking += " AAAA.";
 					case 3:
-						ranking += " AAAA-";
+						ranking += " AAAA";
 					case 4:
-						ranking += " AAA+";
+						ranking += " AAA:";
 					case 5:
-						ranking += " AAA";
+						ranking += " AAA.";
 					case 6:
-						ranking += " AAA-";
+						ranking += " AAA";
 					case 7:
-						ranking += " AA+";
+						ranking += " AA:";
 					case 8:
-						ranking += " AA";
+						ranking += " AA.";
 					case 9:
-						ranking += " AA-";
+						ranking += " AA";
 					case 10:
-						ranking += " A+";
+						ranking += " A:";
 					case 11:
-						ranking += " A";
+						ranking += " A.";
 					case 12:
-						ranking += " A-";
+						ranking += " A";
 					case 13:
 						ranking += " B";
 					case 14:
@@ -106,25 +106,25 @@ class Ratings
 		// IF LEMON SEES THIS I'M SORRY :(
 
 		// trace('Hit Info\nDifference: ' + noteDiff + '\nZone: ' + Conductor.safeZoneOffset * 1.5 + "\nTS: " + customTimeScale + "\nLate: " + 155 * customTimeScale);
-
-		if (ModifierState.modifiers[21].value)
+		// I assume these are in milliseconds? lmao
+		if (ModifierState.namedModifiers.demo.value)
 			return "good"; // FUNNY
 
-		if (noteDiff > 166 * customTimeScale) // so god damn early its a miss
+		if (noteDiff > Judge.shitJudge * customTimeScale) // so god damn early its a miss
 			return "miss";
-		if (noteDiff > 135 * customTimeScale) // way early
+		if (noteDiff > Judge.badJudge * customTimeScale) // way early
 			return "shit";
-		else if (noteDiff > 90 * customTimeScale) // early
+		else if (noteDiff > Judge.goodJudge * customTimeScale) // early
 			return "bad";
-		else if (noteDiff > 45 * customTimeScale) // your kinda there
+		else if (noteDiff > Judge.sickJudge * customTimeScale) // your kinda there
 			return "good";
-		else if (noteDiff < -45 * customTimeScale) // little late
+		else if (noteDiff < -Judge.sickJudge * customTimeScale) // little late
 			return "good";
-		else if (noteDiff < -90 * customTimeScale) // late
+		else if (noteDiff < -Judge.goodJudge * customTimeScale) // late
 			return "bad";
-		else if (noteDiff < -135 * customTimeScale) // late as fuck
+		else if (noteDiff < -Judge.badJudge * customTimeScale) // late as fuck
 			return "shit";
-		else if (noteDiff < -166 * customTimeScale) // so god damn late its a miss
+		else if (noteDiff < -Judge.shitJudge * customTimeScale) // so god damn late its a miss
 			return "miss";
 		return "sick";
 	}

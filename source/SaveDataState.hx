@@ -29,6 +29,7 @@ typedef TOption = {
 	var value:Bool;
 	var desc:String;
 	var ?ignore:Bool;
+	var ?amount:Int;
 }
 class SaveDataState extends MusicBeatState
 {
@@ -43,6 +44,7 @@ class SaveDataState extends MusicBeatState
 	var inOptionsMenu:Bool = false;
 	var optionsSelected:Int = 0;
 	var checkmarks:FlxTypedSpriteGroup<FlxSprite>;
+	var numberDisplays:Array<NumberDisplay> = [];
 	var preferredSave:Int = 0;
 	var description:FlxText;
 	override function create()
@@ -59,6 +61,7 @@ class SaveDataState extends MusicBeatState
 						{name: "Skip Modifier Menu", value: false, intName: "skipModifierMenu", desc: "Skip the modifier menu"}, 
 						{name: "Skip Victory Screen", value: false, intName : "skipVictoryScreen", desc: "Skip the victory screen at the end of songs."},
 						{name: "Downscroll", value: false, intName: "downscroll", desc: "Put da arrows on the bottom and have em scroll down"},
+						{name: "Judge", value: false, intName: "judge", desc: "The Judge to use.", amount: cast Judge.Jury.Classic},
 						{name: "Use New input", value: false, intName: "useCustomInput", desc: "Whether to allow spamming"},
 						{name: "Ignore Bad Timing", value: false, intName:"ignoreShittyTiming", desc: "Even with new input on, if you hit a note really poorly, it counts as a miss. This disables that."},
 						{name: "DJFK Keys", value: false, intName: "DJFKKeys", desc: "Whether to use dfjk keys."},
@@ -131,10 +134,15 @@ class SaveDataState extends MusicBeatState
 			swagOption.targetY = j;
 			trace("l57");
 			var coolCheckmark = new FlxSprite().loadGraphic('assets/images/checkmark.png');
-
+			var numDisplay = new NumberDisplay(0, 0, optionList[j].amount, 1, 0, 10);
+			numDisplay.visible = optionList[j].amount != null;
+			numberDisplays.push(numDisplay);
 			coolCheckmark.visible = optionList[j].value;
+			numDisplay.size = 40;
+			numDisplay.x += numDisplay.width + swagOption.width;
 			checkmarks.add(coolCheckmark);
 			swagOption.add(coolCheckmark);
+			swagOption.add(numDisplay);
 			options.add(swagOption);
 		}
 		add(menuBG);
@@ -186,7 +194,11 @@ class SaveDataState extends MusicBeatState
 			if (controls.RIGHT_P || controls.LEFT_P) {
 				if (saves.members[curSelected].beingSelected)
 					saves.members[curSelected].changeSelection();
-				else {
+				else if (optionList[optionsSelected].amount != null) {
+
+					changeAmount(controls.RIGHT_P);
+
+				}	else {
 					if (OptionsHandler.options.allowEditOptions)
 						swapMenus();
 
@@ -278,6 +290,28 @@ class SaveDataState extends MusicBeatState
 		}
 
 	}
+	function changeAmount(increase:Bool=false) {
+		if (!numberDisplays[optionsSelected].visible)
+			return;
+		numberDisplays[optionsSelected].changeAmount(increase);
+		optionList[optionsSelected].amount = Std.int(numberDisplays[optionsSelected].value);
+		if (numberDisplays[optionsSelected].value == numberDisplays[optionsSelected].useDefaultValue && optionList[optionsSelected].value) {
+			toggleSelection();
+		}
+		else if (numberDisplays[optionsSelected].value != numberDisplays[optionsSelected].useDefaultValue && !optionList[optionsSelected].value) {
+			toggleSelection();
+		}
+		if (optionList[optionsSelected].intName == "judge") {
+			switch (cast (optionList[optionsSelected].amount : Judge.Jury)) {
+				case Judge.Jury.Classic:
+					numberDisplays[optionsSelected].text = "Classic";
+				case Judge.Jury.Hard:
+					numberDisplays[optionsSelected].text = "Hard";
+				default:
+					numberDisplays[optionsSelected].text = optionList[optionsSelected].amount + 1 + "";
+			}
+		}
+	}
 	function changeSelection(change:Int = 0)
 	{
 		if (!inOptionsMenu) {
@@ -359,7 +393,54 @@ class SaveDataState extends MusicBeatState
 		};
 		for (field in Reflect.fields(mappedOptions)) {
 			Reflect.setField(noneditableoptions, field, Reflect.field(mappedOptions, field).value);
+			if (Reflect.field(mappedOptions, field).amount != null) {
+				Reflect.setField(noneditableoptions, field, Reflect.field(mappedOptions, field).amount);
+			}
 		}
 		OptionsHandler.options = noneditableoptions;
+	}
+	function toggleSelection() { 
+		switch (optionList[optionsSelected].name)
+		{
+			case "New Character...":
+				// our current save saves this
+				// we are gonna have to do some shenanagins to save our preffered save
+
+				saveOptions();
+				LoadingState.loadAndSwitchState(new NewCharacterState());
+			case "New Stage...":
+				// our current save saves this
+				// we are gonna have to do some shenanagins to save our preffered save
+
+				saveOptions();
+
+				LoadingState.loadAndSwitchState(new NewStageState());
+			case "New Song...":
+				saveOptions();
+
+				LoadingState.loadAndSwitchState(new NewSongState());
+			case "New Week...":
+				saveOptions();
+				NewWeekState.sorted = false;
+				LoadingState.loadAndSwitchState(new NewWeekState());
+			case "Sort...":
+				saveOptions();
+
+				LoadingState.loadAndSwitchState(new SelectSortState());
+			case "Sound Test...":
+				saveOptions();
+				FreeplayState.soundTest = true;
+				CategoryState.choosingFor = "freeplay";
+				LoadingState.loadAndSwitchState(new CategoryState());
+			case "Credits":
+				saveOptions();
+				LoadingState.loadAndSwitchState(new CreditsState());
+			default:
+				if (OptionsHandler.options.allowEditOptions)
+				{
+					checkmarks.members[optionsSelected].visible = !checkmarks.members[optionsSelected].visible;
+					optionList[optionsSelected].value = checkmarks.members[optionsSelected].visible;
+				}
+		}
 	}
 }

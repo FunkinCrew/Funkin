@@ -65,6 +65,7 @@ class FreeplayState extends MusicBeatState
 	var record:Record;
 	var recordPixel:Record;
 	var curOverlay:FlxSprite;
+	var infoPanel:SongInfoPanel;
 	override function create()
 	{
 		for (songSnippet in currentSongList) {
@@ -191,10 +192,15 @@ class FreeplayState extends MusicBeatState
 		add(scoreBG);
 
 		diffText = new FlxText(scoreText.x, scoreText.y + 36, 0, "", 24);
+		if (!soundTest && OptionsHandler.options.style) {
+			diffText.x = scoreText.x;
+			diffText.y = scoreText.y;
+			diffText.size = scoreText.size;
+		}
 		diffText.font = scoreText.font;
 		add(diffText);
-
-		add(scoreText);
+		if (soundTest || !OptionsHandler.options.style)
+			add(scoreText);
 		var curCharacter = songs[0].songCharacter;
 		
 		if (OptionsHandler.options.style) {
@@ -205,7 +211,9 @@ class FreeplayState extends MusicBeatState
 			record.y -= record.height / 1.5;
 			add(record);
 		}
-		
+		infoPanel = new SongInfoPanel(FlxG.width - 500, 100, songs[0].songName, curDifficulty);
+		if (!soundTest && OptionsHandler.options.style)
+			add(infoPanel);
 		changeSelection();
 		changeDiff();
 
@@ -259,6 +267,11 @@ class FreeplayState extends MusicBeatState
 		var upP = controls.UP_P;
 		var downP = controls.DOWN_P;
 		var accepted = controls.ACCEPT;
+		#if debug
+		if (FlxG.keys.justPressed.F5) {
+			Highscore.saveScore('Tutorial', 0, 1, 0, Sick);
+		}
+		#end
 		if (soundTest && soundTestSong != null) {
 			Conductor.songPosition += FlxG.elapsed * 1000;
 		}
@@ -275,7 +288,10 @@ class FreeplayState extends MusicBeatState
 		if (controls.RIGHT_P)
 			changeDiff(1);
 		
-
+		if (controls.TERTIARY)
+			infoPanel.changeDisplay(-1);
+		else if (controls.SECONDARY)
+			infoPanel.changeDisplay(1);
 		if (controls.BACK)
 		{
 			// main menu or else we are cursed
@@ -397,10 +413,10 @@ class FreeplayState extends MusicBeatState
 				case 2:
 					diffText.text = "Vocals Only";
 			}
-
+			
 		}
 		// do it here for the sweet sweet gold record
-
+		infoPanel.changeSong(songs[curSelected].songName, curDifficulty);
 		if (OptionsHandler.options.style)
 		{
 			var coolors = ["black"];
@@ -413,7 +429,7 @@ class FreeplayState extends MusicBeatState
 				coolors = Reflect.field(iconJson, songs[curSelected].songCharacter).colors;
 			}
 			record.changeColor(coolors, songs[curSelected].songCharacter, songs[curSelected].week,
-				Highscore.getFCLevel(songs[curSelected].songName, curDifficulty));
+				songs[curSelected].songName, curDifficulty);
 		}
 	}
 	override function stepHit()
@@ -502,10 +518,10 @@ class FreeplayState extends MusicBeatState
 		FlxTween.color(bg,0.5, bg.color, FlxColor.fromString(coolors[0]));
 		if (OptionsHandler.options.style) {
 			record.changeColor(coolors, songs[curSelected].songCharacter, songs[curSelected].week,
-				Highscore.getFCLevel(songs[curSelected].songName, curDifficulty));
+				songs[curSelected].songName, curDifficulty);
 			
 		}
-		
+		infoPanel.changeSong(songs[curSelected].songName, curDifficulty);
 	}
 }
 class SongMetadata

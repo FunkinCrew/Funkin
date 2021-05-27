@@ -12,5 +12,6 @@
     "showSongPos": true,
     "style": true,
     "stressTankmen": false,
-    "ignoreUnlocks": false
+    "ignoreUnlocks": false,
+    "judge": 9
 }

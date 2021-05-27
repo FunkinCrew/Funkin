@@ -495,6 +495,7 @@ class PlayState extends MusicBeatState
 		useVictoryScreen = !OptionsHandler.options.skipVictoryScreen;
 		downscroll = OptionsHandler.options.downscroll;
 		useSongBar = OptionsHandler.options.showSongPos;
+		Judge.setJudge(cast OptionsHandler.options.judge);
 		if (!OptionsHandler.options.skipModifierMenu) {
 			fullComboMode = ModifierState.namedModifiers.fc.value;
 			goodCombo = ModifierState.namedModifiers.gfc.value;
@@ -2969,12 +2970,12 @@ class PlayState extends MusicBeatState
 				if ((daNote.y < -daNote.height && !downscroll) || (daNote.y > FlxG.height + daNote.height && downscroll))
 				{
 
-						if ((daNote.tooLate || !daNote.wasGoodHit) && !daNote.isSustainNote)
+						if ((daNote.tooLate || !daNote.wasGoodHit) /* && !daNote.isSustainNote */ )
 						{
 							if (!daNote.mustPress) {
 								health += 0.0475 * healthLossMultiplier;
 							} else if (!opponentPlayer) {
-							health -= 0.0475 * healthLossMultiplier;
+								health -= 0.0475 * healthLossMultiplier;
 							}
 							
 							vocals.volume = 0;
@@ -3113,7 +3114,7 @@ class PlayState extends MusicBeatState
 		
 		#if !switch
 		if (!demoMode && ModifierState.scoreMultiplier > 0)
-			Highscore.saveScore(SONG.song, songScore, storyDifficulty, accuracy/100, Ratings.CalculateFullCombo(Shit), Ratings.CalculateFCRating());
+			Highscore.saveScore(SONG.song, songScore, storyDifficulty, accuracy/100, Ratings.CalculateFCRating(), OptionsHandler.options.judge);
 		#end
 		controls.setKeyboardScheme(Solo(false));
 		if (isStoryMode)
@@ -3236,20 +3237,31 @@ class PlayState extends MusicBeatState
 		daRating = daNote.rating;
 		trace(daRating);
 		var healthBonus = 0.0;
+		// you can't really control how you hit sustains so always make em sick
+		if (daNote.isSustainNote) {
+			daRating = 'sick';
+		}
 		switch (daRating)
 		{
-			case 'shit':
+			case 'shit' | 'miss':
 				score = -300;
 				combo = 0;
+				if (daRating == 'miss' && !OptionsHandler.options.ignoreShittyTiming) {
+					noteMiss(daNote.noteData, playerOne);
+				} else  {
+					healthBonus -= 0.06 * healthLossMultiplier;
+				}
 				// misses++;
-				healthBonus -= 0.2 * healthLossMultiplier;
+				
 				ss = false;
 				shits++;
 				notesHit += 0.25;
+				if (daRating == 'miss')
+					return;
 			case 'bad':
 				daRating = 'bad';
 				score = 0;
-				healthBonus -= 0.06 * healthLossMultiplier;
+				healthBonus -= 0.03 * healthLossMultiplier;
 				ss = false;
 				bads++;
 				notesHit += 0.50;
@@ -3264,19 +3276,22 @@ class PlayState extends MusicBeatState
 				healthBonus += 0.07 * healthGainMultiplier;
 				notesHit += 1;
 				sicks++;
-				var recycledNote = grpNoteSplashes.recycle(NoteSplash);
-				recycledNote.setupNoteSplash(daNote.x, daNote.y, daNote.noteData);
-				grpNoteSplashes.add(recycledNote);
-			case 'miss':
-				if (!OptionsHandler.options.ignoreShittyTiming)
-					noteMiss(daNote.noteData, playerOne);
-				return;
+				if (!daNote.isSustainNote) {
+					var recycledNote = grpNoteSplashes.recycle(NoteSplash);
+					recycledNote.setupNoteSplash(daNote.x, daNote.y, daNote.noteData);
+					grpNoteSplashes.add(recycledNote);
+				}
+		}
+		if (daNote.isSustainNote) {
+			healthBonus  *= 0.2;
 		}
 		if (!playerOne)
 			health -= healthBonus;
 		else
 			health += healthBonus;
-
+		if (daNote.isSustainNote) {
+			return;
+		}
 		if (notesHit > notesPassing) {
 			notesHit = notesPassing;
 		}
@@ -3708,18 +3723,18 @@ class PlayState extends MusicBeatState
 			{
 				actingOn.altAnim = '-' + actingOn.altNum + 'alt';
 			}
-			if (!note.isSustainNote)
-			{
-				trace("<3 pop up score");
-				notesPassing += 1;
-				popUpScore(note.strumTime, note, playerOne);
-				combo += 1;
-			}
-
+			// We pop it up even for sustains, just to update score. We don't actually show anything.
+			trace("<3 pop up score");
+			notesPassing += 1;
+			popUpScore(note.strumTime, note, playerOne);
+			combo += 1;
+			
+			/*
 			if (note.noteData >= 0)
 				health += 0.01 * healthGainMultiplier;
 			else
 				health += 0.005 * healthGainMultiplier;
+			*/
 
 			actingOn.sing(note.noteData, false, actingOn.altNum);
 			if (playerOne)
@@ -3738,12 +3753,10 @@ class PlayState extends MusicBeatState
 			note.wasGoodHit = true;
 			vocals.volume = 1;
 
-			if (!note.isSustainNote)
-			{
-				note.kill();
-				notes.remove(note, true);
-				note.destroy();
-			}
+			note.kill();
+			notes.remove(note, true);
+			note.destroy();
+			
 		}
 	}
 

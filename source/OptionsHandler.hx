@@ -19,6 +19,7 @@ typedef TOptions = {
     var stressTankmen:Bool;
     var ignoreShittyTiming:Bool;
     var ignoreUnlocks:Bool;
+    var judge:Int;
 }
 class OptionsHandler {
     public static var options(get, set):TOptions;
