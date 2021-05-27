@@ -110,8 +110,11 @@ class Ratings
 		if (ModifierState.namedModifiers.demo.value)
 			return "good"; // FUNNY
 
-		if (noteDiff > Judge.shitJudge * customTimeScale) // so god damn early its a miss
-			return "miss";
+		if (noteDiff > Judge.shitJudge * customTimeScale ) // so god damn early its a miss
+			if (!OptionsHandler.options.ignoreShittyTiming)
+				return "shit";
+			else
+				return "miss";
 		if (noteDiff > Judge.badJudge * customTimeScale) // way early
 			return "shit";
 		else if (noteDiff > Judge.goodJudge * customTimeScale) // early
@@ -125,7 +128,10 @@ class Ratings
 		else if (noteDiff < -1 * Judge.badJudge * customTimeScale) // late as fuck
 			return "shit";
 		else if (noteDiff < -1 * Judge.shitJudge * customTimeScale) // so god damn late its a miss
-			return "miss";
+			if (!OptionsHandler.options.ignoreShittyTiming)
+				return "shit";
+			else
+				return "miss";
 		return "sick";
 	}
 	public static function CalculateFullCombo(level:FCLevel):Bool {
