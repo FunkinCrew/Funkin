@@ -62,6 +62,7 @@ class PlayState extends MusicBeatState
 	private var boyfriend:Boyfriend;
 
 	private var notes:FlxTypedGroup<Note>;
+	private var allNotes:Array<Note> = [];
 	private var unspawnNotes:Array<Note> = [];
 
 	private var strumLine:FlxSprite;
@@ -1125,7 +1126,21 @@ class PlayState extends MusicBeatState
 
 		unspawnNotes.sort(sortByShit);
 
+		allNotes = deepCopyNotes(unspawnNotes);
 		generatedMusic = true;
+	}
+
+	function deepCopyNotes(noteArray:Array<Note>):Array<Note>
+	{
+		var noteRef:Note = null;
+		var newNoteArray:Array<Note> = noteArray.map(function(note:Note){
+			var deepCopy:Note = new Note(note.strumTime,note.noteData,noteRef,note.isSustainNote);
+			deepCopy.mustPress = note.mustPress;
+			deepCopy.x = note.x;
+			noteRef = deepCopy;
+			return deepCopy;
+		});
+		return newNoteArray;
 	}
 
 	function sortByShit(Obj1:Note, Obj2:Note):Int
@@ -1443,6 +1458,13 @@ class PlayState extends MusicBeatState
 		{
 			// Conductor.songPosition = FlxG.sound.music.time;
 			Conductor.songPosition += FlxG.elapsed * 1000;
+			FlxG.watch.addQuick("songPosition", Conductor.songPosition);
+			if(Conductor.songPosition >= 10 * 1000){
+				Conductor.songPosition = 0;
+				FlxG.sound.music.time = 0;
+				resyncVocals();	
+				unspawnNotes = deepCopyNotes(allNotes);
+			}
 
 			if (!paused)
 			{
