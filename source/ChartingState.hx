@@ -1301,16 +1301,16 @@ class ChartingState extends MusicBeatState
 		updateGrid();
 	}
 
-	private function newSection(lengthInSteps:Int = 16,mustHitSection:Bool = false):SwagSection
+	private function newSection(lengthInSteps:Int = 16,mustHitSection:Bool = false,altAnim:Bool = true):SwagSection
 		{
 			var sec:SwagSection = {
 				lengthInSteps: lengthInSteps,
 				bpm: _song.bpm,
 				changeBPM: false,
-				mustHitSection: true,
+				mustHitSection: mustHitSection,
 				sectionNotes: [],
 				typeOfSection: 0,
-				altAnim: false
+				altAnim: altAnim
 			};
 
 			return sec;
@@ -1322,7 +1322,6 @@ class ChartingState extends MusicBeatState
 			
 			var millisecadd = (((measure*4)+step/4)*(60000/_song.bpm))+ms;
 			var totaladdsection = Std.int(millisecadd/60000*4);
-			trace(millisecadd,totaladdsection);
 			if(millisecadd > 0)
 				{
 					for(i in 0...totaladdsection)
@@ -1332,19 +1331,18 @@ class ChartingState extends MusicBeatState
 				}
 			for (daSection1 in 0..._song.notes.length)
 				{
-					newSong.push(newSection(16,_song.notes[daSection1].mustHitSection));
+					newSong.push(newSection(16,_song.notes[daSection1].mustHitSection,_song.notes[daSection1].altAnim));
 				}
 	
 			for (daSection in 0...(_song.notes.length))
 			{
-				newSong[daSection+Std.int(Math.max(0,totaladdsection))].mustHitSection = _song.notes[daSection].mustHitSection;
+				var aimtosetsection = daSection+Std.int(Math.max(0,totaladdsection));
+				newSong[aimtosetsection].mustHitSection = _song.notes[daSection].mustHitSection;
+				newSong[aimtosetsection].altAnim = _song.notes[daSection].altAnim;
 				//trace("section "+daSection);
 				for(daNote in 0...(_song.notes[daSection].sectionNotes.length))
 					{	
-						//trace("note #"+daNote+" with data "+_song.notes[daSection].sectionNotes[daNote]);
 						var newtiming = _song.notes[daSection].sectionNotes[daNote][0]+millisecadd;
-						//trace("newtiming",newtiming);
-						//trace("future section",futureSection);
 						if(newtiming<0)
 						{
 							newtiming = 0;
