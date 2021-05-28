@@ -257,6 +257,8 @@ class PlayState extends MusicBeatState
 	var loveMultiplier:Float = 0;
 	var poisonMultiplier:Float = 0;
 	var goodCombo:Bool = false;
+	private var judgementList:Array<String> = [];
+	private var preferredJudgement:String = '';
 	/**
 	 * If we are playing as opponent. 
 	 */
@@ -427,6 +429,11 @@ class PlayState extends MusicBeatState
 		sicks = 0;
 		shits = 0;
 		ss = true;
+		judgementList = CoolUtil.coolTextFile('assets/data/judgements.txt');
+		preferredJudgement = judgementList[OptionsHandler.options.preferJudgement];
+		if (preferredJudgement == 'none') {
+			preferredJudgement = SONG.uiType;
+		}
 		#if windows
 		// Making difficulty text for Discord Rich Presence.
 		switch (storyDifficulty)
@@ -1444,12 +1451,20 @@ class PlayState extends MusicBeatState
 				introGoSound = FNFAssets.getSound('assets/sounds/introGo-pixel.ogg');
 			} else {
 				// god is dead for we have killed him
-				intro3Sound = FNFAssets.getSound("assets/images/custom_ui/ui_packs/"+SONG.uiType+'/intro3'+altSuffix+'.ogg');
-				intro2Sound = FNFAssets.getSound("assets/images/custom_ui/ui_packs/"+SONG.uiType+'/intro2'+altSuffix+'.ogg');
-				intro1Sound = FNFAssets.getSound("assets/images/custom_ui/ui_packs/"+SONG.uiType+'/intro1'+altSuffix+'.ogg');
-				// apparently this crashes if we do it from audio buffer?
-				// no it just understands 'hey that file doesn't exist better do an error'
-				introGoSound = FNFAssets.getSound("assets/images/custom_ui/ui_packs/"+SONG.uiType+'/introGo'+altSuffix+'.ogg');
+				if (FNFAssets.exists("assets/images/custom_ui/ui_packs/" + SONG.uiType + '/intro3' + altSuffix + '.ogg')) {
+					intro3Sound = FNFAssets.getSound("assets/images/custom_ui/ui_packs/" + SONG.uiType + '/intro3' + altSuffix + '.ogg');
+					intro2Sound = FNFAssets.getSound("assets/images/custom_ui/ui_packs/" + SONG.uiType + '/intro2' + altSuffix + '.ogg');
+					intro1Sound = FNFAssets.getSound("assets/images/custom_ui/ui_packs/" + SONG.uiType + '/intro1' + altSuffix + '.ogg');
+					// apparently this crashes if we do it from audio buffer?
+					// no it just understands 'hey that file doesn't exist better do an error'
+					introGoSound = FNFAssets.getSound("assets/images/custom_ui/ui_packs/" + SONG.uiType + '/introGo' + altSuffix + '.ogg');
+				} else {
+					intro3Sound = FNFAssets.getSound('assets/sounds/intro3.ogg');
+					intro2Sound = FNFAssets.getSound('assets/sounds/intro2.ogg');
+					intro1Sound = FNFAssets.getSound('assets/sounds/intro1.ogg');
+					introGoSound = FNFAssets.getSound('assets/sounds/introGo.ogg');
+				}
+				
 			}
 
 
@@ -1460,7 +1475,10 @@ class PlayState extends MusicBeatState
 					FlxG.sound.play(intro3Sound, 0.6);
 				case 1:
 					// my life is a lie, it was always this simple
-					var readyImage = FNFAssets.getBitmapData('assets/images/'+introAlts[0]);
+					var sussyPath = 'assets/images/ready.png';
+					if (FNFAssets.exists('assets/images/' + introAlts[0]))
+						sussyPath = 'assets/images/' + introAlts[0];
+					var readyImage = FNFAssets.getBitmapData(sussyPath);
 					var ready:FlxSprite = new FlxSprite().loadGraphic(readyImage);
 					ready.scrollFactor.set();
 					ready.updateHitbox();
@@ -1479,7 +1497,10 @@ class PlayState extends MusicBeatState
 					});
 					FlxG.sound.play(intro2Sound, 0.6);
 				case 2:
-					var setImage = FNFAssets.getBitmapData('assets/images/'+introAlts[1]);
+					var sussyPath = 'assets/images/set.png';
+					if (FNFAssets.exists('assets/images/' + introAlts[1]))
+						sussyPath = 'assets/images/' + introAlts[1];
+					var setImage = FNFAssets.getBitmapData(sussyPath);
 					// can't believe you can actually use this as a variable name
 					var set:FlxSprite = new FlxSprite().loadGraphic(setImage);
 					set.scrollFactor.set();
@@ -1498,7 +1519,10 @@ class PlayState extends MusicBeatState
 					});
 					FlxG.sound.play(intro1Sound, 0.6);
 				case 3:
-					var goImage = FNFAssets.getBitmapData('assets/images/'+introAlts[2]);
+					var sussyPath = 'assets/images/go.png';
+					if (FNFAssets.exists('assets/images/' + introAlts[2]))
+						sussyPath = 'assets/images/' + introAlts[2];
+					var goImage = FNFAssets.getBitmapData(sussyPath);
 					var go:FlxSprite = new FlxSprite().loadGraphic(goImage);
 					go.scrollFactor.set();
 
@@ -3221,6 +3245,7 @@ class PlayState extends MusicBeatState
 	private function popUpScore(strumtime:Float, daNote:Note, playerOne:Bool):Void
 	{
 		var noteDiff:Float = Math.abs(Conductor.songPosition - daNote.strumTime);
+		var noteDiffSigned:Float = Conductor.songPosition - daNote.strumTime;
 		var wife:Float = HelperFunctions.wife3(noteDiff, Conductor.timeScale);
 		// boyfriend.playAnim('hey');
 		vocals.volume = 1;
@@ -3230,8 +3255,12 @@ class PlayState extends MusicBeatState
 		var coolText:FlxText = new FlxText(0, 0, 0, placement, 32);
 		coolText.screenCenter();
 		coolText.x = FlxG.width * 0.55;
-		//
-
+		if (OptionsHandler.options.newJudgementPos) {
+			coolText.y = 0;
+			coolText.x = FlxG.width * 0.65;
+			coolText.cameras = [camHUD];
+		}
+		
 		var rating:FlxSprite = new FlxSprite();
 		var score:Int = 350;
 
@@ -3296,7 +3325,7 @@ class PlayState extends MusicBeatState
 		if (notesHit > notesPassing) {
 			notesHit = notesPassing;
 		}
-		songScore += Math.round(score * ModifierState.scoreMultiplier);
+		songScore += Math.round(ConvertScore.convertScore(noteDiff) * ModifierState.scoreMultiplier);
 		songScoreDef += Math.round(ConvertScore.convertScore(noteDiff));
 		trueScore += score;
 		/* if (combo > 60)
@@ -3318,17 +3347,24 @@ class PlayState extends MusicBeatState
 			case 'normal':
 				ratingImage = FNFAssets.getBitmapData('assets/images/'+daRating+'.png');
 			default:
-				ratingImage = FNFAssets.getBitmapData('assets/images/custom_ui/ui_packs/'+PlayState.SONG.uiType+'/'+daRating+pixelShitPart2+".png");
+				if (FNFAssets.exists('assets/images/custom_ui/ui_packs/' + PlayState.SONG.uiType + '/' + daRating + pixelShitPart2 + ".png"))
+					ratingImage = FNFAssets.getBitmapData('assets/images/custom_ui/ui_packs/'+PlayState.SONG.uiType+'/'+daRating+pixelShitPart2+".png");
+				else
+					ratingImage = FNFAssets.getBitmapData('assets/images/' + daRating + '.png');
 		}
 
-		rating.loadGraphic(ratingImage);
+		rating = new Judgement(0, 0, daRating, preferredJudgement, noteDiffSigned < 0);
 		rating.screenCenter();
 		rating.x = coolText.x - 40;
 		rating.y -= 60;
 		rating.acceleration.y = 550;
 		rating.velocity.y -= FlxG.random.int(140, 175);
 		rating.velocity.x -= FlxG.random.int(0, 10);
-
+		if (OptionsHandler.options.newJudgementPos) {
+			rating.cameras = [camHUD];
+			rating.y = coolText.y + 180;
+			
+		}
 		var comboSpr:FlxSprite = new FlxSprite().loadGraphic(ratingImage);
 		comboSpr.screenCenter();
 		comboSpr.x = coolText.x;
@@ -3338,19 +3374,21 @@ class PlayState extends MusicBeatState
 		comboSpr.velocity.x += FlxG.random.int(1, 10);
 		add(rating);
 		// gonna be fun explaining this
+		// don't set things for rating because judgement handles it
 		if (SONG.uiType != 'pixel' && !FNFAssets.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png"))
 		{
-			rating.setGraphicSize(Std.int(rating.width * 0.7));
-			rating.antialiasing = true;
-			comboSpr.setGraphicSize(Std.int(comboSpr.width * 0.7));
-			comboSpr.antialiasing = true;
+			//rating.setGraphicSize(Std.int(rating.width * 0.7));
+			//rating.antialiasing = true;
+			//comboSpr.setGraphicSize(Std.int(comboSpr.width * 0.7));
+			//comboSpr.antialiasing = true;
 		}
 		else
 		{
-			rating.setGraphicSize(Std.int(rating.width * daPixelZoom * 0.7));
-			comboSpr.setGraphicSize(Std.int(comboSpr.width * daPixelZoom * 0.7));
+			//rating.setGraphicSize(Std.int(rating.width * daPixelZoom * 0.7));
+			//comboSpr.setGraphicSize(Std.int(comboSpr.width * daPixelZoom * 0.7));
 		}
-		var msTiming = HelperFunctions.truncateFloat(noteDiff, 3);
+		rating.setGraphicSize(Std.int(rating.width * 0.7));
+		var msTiming = HelperFunctions.truncateFloat(noteDiffSigned, 3);
 		if (FlxG.save.data.botplay)
 			msTiming = 0;
 		timeShown = 0;
@@ -3403,7 +3441,10 @@ class PlayState extends MusicBeatState
 				case 'normal':
 					numImage = FNFAssets.getBitmapData('assets/images/num'+Std.int(i)+'.png');
 				default:
-					numImage = FNFAssets.getBitmapData('assets/images/custom_ui/ui_packs/'+SONG.uiType+'/num'+Std.int(i)+pixelShitPart2+".png");
+					if (FNFAssets.exists('assets/images/custom_ui/ui_packs/' + SONG.uiType + '/num' + Std.int(i) + pixelShitPart2 + ".png"))
+						numImage = FNFAssets.getBitmapData('assets/images/custom_ui/ui_packs/'+SONG.uiType+'/num'+Std.int(i)+pixelShitPart2+".png");
+					else
+						numImage = FNFAssets.getBitmapData('assets/images/num' + Std.int(i) + '.png');
 			}
 			var numScore:FlxSprite = new FlxSprite().loadGraphic(numImage);
 			numScore.screenCenter();

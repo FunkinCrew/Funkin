@@ -1,5 +1,6 @@
 package;
 
+import OptionsHandler.TOptions;
 import Judge.Jury;
 import flixel.FlxG;
 @:forward
@@ -23,26 +24,33 @@ class Highscore
 	public static var songCompletions:Map<String, Bool> = new Map();
 	public static var songFCLevels:Map<String, Int> = new Map();
 	public static var songJudge:Map<String, Int> = new Map();
-
+	public static var songOptionsUsed:Map<String, OptionsHandler.TOptions> = new Map();
+	public static var songModifiersUsed:Map<String, Dynamic> = new Map();
 
 	public static function saveScore(song:String, score:Int = 0, ?diff:Int = 0, ?accuracy:Float = 0, ?rating:FCLevel, ?judge:Jury):Void
 	{
+		// we don't need the current options or modifiers as we can assume they haven't changed
 		var daSong:String = formatSong(song, diff, "best-score");
 		var recentSong:String = formatSong(song, diff, "recent");
 		var bestAccuracy:String = formatSong(song, diff, "best-accuracy");
 		var bestFC:String = formatSong(song, diff, "best-fullcombo");
 		var bestOfAll:String = formatSong(song,diff,"best");
-
+		var curOptions = OptionsHandler.options;
+		var modifierDynamic = ModifierState.namedModifiers;
 		setScore(recentSong, score);
 		setAccuracy(recentSong, accuracy);
 		setFCLevel(recentSong, rating);
 		setJudge(recentSong, judge);
+		setOptionsUsed(recentSong, curOptions);
+		setModifiersUsed(recentSong, modifierDynamic);
 		if (songScores.exists(daSong)) {
 			if (songScores.get(daSong) < score) {
 				setScore(daSong, score);
 				setAccuracy(daSong, accuracy);
 				setFCLevel(daSong, rating);
 				setJudge(daSong,judge);
+				setOptionsUsed(daSong, curOptions);
+				setModifiersUsed(daSong, modifierDynamic);
 				setScore(bestOfAll, score);
 			}
 		} else {
@@ -50,6 +58,8 @@ class Highscore
 			setAccuracy(daSong, accuracy);
 			setFCLevel(daSong, rating);
 			setJudge(daSong, judge);
+			setOptionsUsed(daSong, curOptions);
+			setModifiersUsed(daSong, modifierDynamic);
 			setScore(bestOfAll, score);
 		}
 		if (songAccuracy.exists(bestAccuracy)) {
@@ -58,6 +68,8 @@ class Highscore
 				setAccuracy(bestAccuracy, accuracy);
 				setFCLevel(bestAccuracy, rating);
 				setJudge(bestAccuracy, judge);
+				setOptionsUsed(bestAccuracy, curOptions);
+				setModifiersUsed(bestAccuracy, modifierDynamic);
 				setAccuracy(bestOfAll, accuracy);
 			}
 		} else {
@@ -65,6 +77,8 @@ class Highscore
 			setAccuracy(bestAccuracy, accuracy);
 			setFCLevel(bestAccuracy, rating);
 			setJudge(bestAccuracy, judge);
+			setOptionsUsed(bestAccuracy, curOptions);
+			setModifiersUsed(bestAccuracy, modifierDynamic);
 			setAccuracy(bestOfAll, accuracy);
 		}
 		
@@ -74,8 +88,20 @@ class Highscore
 				setAccuracy(bestFC, accuracy);
 				setFCLevel(bestFC, rating);
 				setJudge(bestFC, judge);
-				setFCLevel(bestOfAll, rating);
+				setOptionsUsed(bestFC, curOptions);
+				setModifiersUsed(bestFC, modifierDynamic);
+				if (!songFCLevels.exists(bestOfAll) || songFCLevels.get(bestOfAll) <= rating )
+					setFCLevel(bestOfAll, rating);
 			}
+		} else{
+			setScore(bestFC, score);
+			setAccuracy(bestFC, accuracy);
+			setFCLevel(bestFC, rating);
+			setJudge(bestFC, judge);
+			setOptionsUsed(bestFC, curOptions);
+			setModifiersUsed(bestFC, modifierDynamic);
+			if (!songFCLevels.exists(bestOfAll) || songFCLevels.get(bestOfAll) <= rating)
+				setFCLevel(bestOfAll, rating);
 		}
 		
 		
@@ -134,6 +160,18 @@ class Highscore
 		FlxG.save.data.songJudge = songJudge;
 		FlxG.save.flush();
 	}
+	static function setOptionsUsed(song:String, options:TOptions):Void
+	{
+		songOptionsUsed.set(song, options);
+		FlxG.save.data.songOptionsUsed = songOptionsUsed;
+		FlxG.save.flush();
+	}
+	static function setModifiersUsed(song:String, modifiers:Dynamic):Void
+	{
+		songModifiersUsed.set(song, modifiers);
+		FlxG.save.data.songModifiersUsed = songModifiersUsed;
+		FlxG.save.flush();
+	}
 	public static function formatSong(song:String, diff:Int, saving:String):String
 	{
 		// saving is just an extra thing
@@ -153,6 +191,20 @@ class Highscore
 			setScore(formatSong(song, diff, useFor), 0);
 
 		return songScores.get(formatSong(song, diff, useFor));
+	}
+	public static function getOptionsUsed(song:String, diff:Int, useFor:String = "best"):TOptions
+	{
+		if (!songOptionsUsed.exists(formatSong(song, diff, useFor)))
+			setOptionsUsed(formatSong(song, diff, useFor), OptionsHandler.options);
+
+		return songOptionsUsed.get(formatSong(song, diff, useFor));
+	}
+	public static function getModifiersUsed(song:String, diff:Int, useFor:String = "best"):Dynamic
+	{
+		if (!songModifiersUsed.exists(formatSong(song, diff, useFor)))
+			setModifiersUsed(formatSong(song, diff, useFor), ModifierState.namedModifiers);
+
+		return songModifiersUsed.get(formatSong(song, diff, useFor));
 	}
 	public static function getAccuracy(song:String, diff:Int, useFor:String = "best"):Float
 	{
@@ -223,5 +275,14 @@ class Highscore
 		} else {
 			songJudge = [];
 		}
+		if (FlxG.save.data.songModifiersUsed != null) {
+			songModifiersUsed = FlxG.save.data.songModifiersUsed;
+		} else {
+			songModifiersUsed = [];
+		}
+		if (FlxG.save.data.songOptionsUsed != null)
+			songOptionsUsed = FlxG.save.data.songOptionsUsed;
+		else
+			songOptionsUsed = [];
 	}
 }

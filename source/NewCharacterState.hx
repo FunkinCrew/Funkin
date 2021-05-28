@@ -58,6 +58,7 @@ class NewCharacterState extends MusicBeatState
 	var coolFile:FileReference;
 	var coolData:ByteArray;
 	var epicFiles:Dynamic;
+	var colorsText:FlxUIInputText;
 	private var grpSongs:FlxTypedGroup<Alphabet>;
 	private var curPlaying:Bool = false;
 
@@ -99,6 +100,7 @@ class NewCharacterState extends MusicBeatState
 		iconDead = new FlxUINumericStepper(100, 140,1,1,0,49);
 		var poisonText = new FlxText(100,170,"Poison Icon");
 		iconPoison = new FlxUINumericStepper(100, 190,1,24,0,49);
+		colorsText = new FlxUIInputText(100, 240, 70, "#FFFFFF,#FFFFFF");
 		add(nameText);
 		add(likeText);
 		add(iconAlive);
@@ -109,6 +111,7 @@ class NewCharacterState extends MusicBeatState
 		add(aliveText);
 		add(mainPngButton);
 		add(iconButton);
+		add(colorsText);
 		mainXmlButton = new FlxButton(10,60,"char.xml/txt",function ():Void {
 			var coolDialog = new FileDialog();
 			coolDialog.browse(FileDialogType.OPEN);
@@ -197,7 +200,8 @@ class NewCharacterState extends MusicBeatState
 		trace("hello");
 		var epicCharFile:Dynamic =CoolUtil.parseJson(Assets.getText('assets/images/custom_chars/custom_chars.jsonc'));
 		trace("parsed");
-		Reflect.setField(epicCharFile,nameText.text,{like:likeText.text,icons: [Std.int(iconAlive.value),Std.int(iconDead.value),Std.int(iconPoison.value)]});
+		var commaSeperatedColors = colorsText.text.split(",");
+		Reflect.setField(epicCharFile,nameText.text,{like:likeText.text,icons: [Std.int(iconAlive.value),Std.int(iconDead.value),Std.int(iconPoison.value)], colors: commaSeperatedColors});
 
 		File.saveContent('assets/images/custom_chars/custom_chars.jsonc', CoolUtil.stringifyJson(epicCharFile));
 		trace("cool stuff");

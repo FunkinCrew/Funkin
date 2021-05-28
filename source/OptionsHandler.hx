@@ -20,6 +20,8 @@ typedef TOptions = {
     var ignoreShittyTiming:Bool;
     var ignoreUnlocks:Bool;
     var judge:Int;
+    var preferJudgement:Int;
+    var newJudgementPos:Bool;
 }
 class OptionsHandler {
     public static var options(get, set):TOptions;

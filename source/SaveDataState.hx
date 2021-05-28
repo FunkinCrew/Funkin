@@ -31,6 +31,7 @@ typedef TOption = {
 	var ?ignore:Bool;
 	var ?amount:Int;
 	var ?defAmount:Int;
+	var ?max:Int;
 }
 class SaveDataState extends MusicBeatState
 {
@@ -62,7 +63,7 @@ class SaveDataState extends MusicBeatState
 						{name: "Skip Modifier Menu", value: false, intName: "skipModifierMenu", desc: "Skip the modifier menu"}, 
 						{name: "Skip Victory Screen", value: false, intName : "skipVictoryScreen", desc: "Skip the victory screen at the end of songs."},
 						{name: "Downscroll", value: false, intName: "downscroll", desc: "Put da arrows on the bottom and have em scroll down"},
-						{name: "Judge", value: false, intName: "judge", desc: "The Judge to use.", amount: cast Judge.Jury.Classic, defAmount: cast Judge.Jury.Classic},
+						{name: "Judge", value: false, intName: "judge", desc: "The Judge to use.", amount: cast Judge.Jury.Classic, defAmount: cast Judge.Jury.Classic, max: 10},
 						{name: "Use New input", value: false, intName: "useCustomInput", desc: "Whether to allow spamming"},
 						{name: "Ignore Bad Timing", value: false, intName:"ignoreShittyTiming", desc: "Even with new input on, if you hit a note really poorly, it counts as a miss. This disables that."},
 						{name: "DJFK Keys", value: false, intName: "DJFKKeys", desc: "Whether to use dfjk keys."},
@@ -74,6 +75,13 @@ class SaveDataState extends MusicBeatState
 							intName: "ignoreUnlocks",
 							desc: "Show/Unlock all songs/weeks, even if you haven't met conditions."
 						},
+						{
+							name: "New Judgement Layout",
+							value: false,
+							intName: "newJudgementPos",
+							desc: "Put judgements in a more convenient place."
+						},						
+						{name: "Overwrite Judgement", value: false, intName: "preferJudgement", desc: "What judgement to display other than default, if any.", defAmount: 0, amount: 0, max: CoolUtil.coolTextFile('assets/data/judgements.txt').length},
 						{name: "Funny Songs", value: false, intName: "stressTankmen", desc: "funny songs"},
 						{name: "Credits", value: false, intName:'credits', desc: "Show the credits!", ignore: true},
 						{name: "Sound Test...", value: false, intName: 'soundtest', desc: "Listen to the soundtrack", ignore: true},
@@ -135,7 +143,7 @@ class SaveDataState extends MusicBeatState
 			swagOption.targetY = j;
 			trace("l57");
 			var coolCheckmark = new FlxSprite().loadGraphic('assets/images/checkmark.png');
-			var numDisplay = new NumberDisplay(0, 0, optionList[j].defAmount, 1, 0, 10);
+			var numDisplay = new NumberDisplay(0, 0, optionList[j].defAmount, 1, 0, optionList[j].max);
 			numDisplay.visible = optionList[j].amount != null;
 			numberDisplays.push(numDisplay);
 			numDisplay.value = optionList[j].amount;
@@ -323,6 +331,10 @@ class SaveDataState extends MusicBeatState
 				default:
 					numberDisplays[optionsSelected].text = optionList[optionsSelected].amount + 1 + "";
 			}
+		}
+		if (optionList[optionsSelected].intName == "preferJudgement") {
+			var judgementList = CoolUtil.coolTextFile('assets/data/judgements.txt');
+			numberDisplays[optionsSelected].text = judgementList[optionList[optionsSelected].amount];
 		}
 	}
 	function changeSelection(change:Int = 0)
