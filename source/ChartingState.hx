@@ -1301,7 +1301,7 @@ class ChartingState extends MusicBeatState
 		updateGrid();
 	}
 
-	private function newSection(lengthInSteps:Int = 16):SwagSection
+	private function newSection(lengthInSteps:Int = 16,mustHitSection:Bool = false):SwagSection
 		{
 			var sec:SwagSection = {
 				lengthInSteps: lengthInSteps,
@@ -1321,20 +1321,23 @@ class ChartingState extends MusicBeatState
 			var newSong = [];
 			
 			var millisecadd = (((measure*4)+step/4)*(60000/_song.bpm))+ms;
+			var totaladdsection = Std.int(millisecadd/60000*4);
+			trace(millisecadd,totaladdsection);
 			if(millisecadd > 0)
 				{
-					for(i in 0...Std.int((measure/16+step+(ms/(60000/_song.bpm)*16))))
+					for(i in 0...totaladdsection)
 						{
 							newSong.unshift(newSection());
 						}
 				}
 			for (daSection1 in 0..._song.notes.length)
 				{
-					newSong.push(newSection());
+					newSong.push(newSection(16,_song.notes[daSection1].mustHitSection));
 				}
 	
 			for (daSection in 0...(_song.notes.length))
 			{
+				newSong[daSection+Std.int(Math.max(0,totaladdsection))].mustHitSection = _song.notes[daSection].mustHitSection;
 				//trace("section "+daSection);
 				for(daNote in 0...(_song.notes[daSection].sectionNotes.length))
 					{	
