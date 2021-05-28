@@ -1,4 +1,4 @@
-[178[ [179[ [223[ [216[ |Lunchbox| *0* =1= #classic#  <0.08< >4> (0.2( )5) {0.83{ }5} `hand_textbox` ~clickText~
-:bf-pixel: !default! [Funkin[ ]42] *0* =0= +0+ -0- <0< >0> ;0.04; |true| #classic# ^pixelText^ !#FF000000! ?#FFFFFFFF? .. ~~      Hello there!
-:bf-pixel: !default! [Funkin[ ]42] *0* =0= +0+ -0- <0< >0> ;0.04; |true| #classic# ^pixelText^ !#FF000000! ?#FFFFFFFF? .. ~~      This song is a testing purposes for Custom Characters, Dialogs, Modcharts, Stages, etc.
-:bf: !default! [Funkin[ ]65] *0* =0= +0+ -0- <0< >0> ;0.04; |false| #classic_loud# ^pixelText^ !#FF000000! ?#FFFFFFFF? .. ~~      Dah.
+[178[ [179[ [223[ [216[ |Breakfast| *100* =1= #classic#  <0.08< >4> (0.2( )5) {0.83{ }5} `hand_textbox` ~clickText~
+:bf-pixel: !default! [Funkin[ ]42] *100* =0= +0+ -0- <0< >0> ;0.04; |true| #classic# ^pixelText^ !#FF000000! ?#FFFFFFFF? .. ~~      Hello there!
+:bf-pixel: !default! [Funkin[ ]42] *100* =0= +0+ -0- <0< >0> ;0.04; |true| #classic# ^pixelText^ !#FF000000! ?#FFFFFFFF? .. ~~      This song is a testing purposes for Custom Characters, Dialogs, Modcharts, Stages, etc.
+:bf: !default! [Funkin[ ]65] *100* =0= +0+ -0- <0< >0> ;0.04; |false| #classic_loud# ^pixelText^ !#FF000000! ?#FFFFFFFF? .. ~~      Dah.
