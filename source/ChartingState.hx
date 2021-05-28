@@ -1321,7 +1321,7 @@ class ChartingState extends MusicBeatState
 			var newSong = [];
 			
 			var millisecadd = (((measure*4)+step/4)*(60000/_song.bpm))+ms;
-			var totaladdsection = Std.int(60000/millisecadd*4);
+			var totaladdsection = Std.int((millisecadd/(60000/_song.bpm)/4));
 			trace(millisecadd,totaladdsection);
 			if(millisecadd > 0)
 				{
@@ -1337,7 +1337,8 @@ class ChartingState extends MusicBeatState
 	
 			for (daSection in 0...(_song.notes.length))
 			{
-				var aimtosetsection = daSection+Std.int(Math.max(0,totaladdsection));
+				var aimtosetsection = daSection+Std.int((totaladdsection));
+				if(aimtosetsection<0) aimtosetsection = 0;
 				newSong[aimtosetsection].mustHitSection = _song.notes[daSection].mustHitSection;
 				newSong[aimtosetsection].altAnim = _song.notes[daSection].altAnim;
 				//trace("section "+daSection);
@@ -1359,6 +1360,7 @@ class ChartingState extends MusicBeatState
 			//trace("DONE BITCH");
 			_song.notes = newSong;
 			updateGrid();
+			updateSectionUI();
 			updateNoteUI();
 		}
 	private function addNote(?n:Note):Void
