@@ -1301,16 +1301,16 @@ class ChartingState extends MusicBeatState
 		updateGrid();
 	}
 
-	private function newSection(lengthInSteps:Int = 16):SwagSection
+	private function newSection(lengthInSteps:Int = 16,mustHitSection:Bool = false,altAnim:Bool = true):SwagSection
 		{
 			var sec:SwagSection = {
 				lengthInSteps: lengthInSteps,
 				bpm: _song.bpm,
 				changeBPM: false,
-				mustHitSection: true,
+				mustHitSection: mustHitSection,
 				sectionNotes: [],
 				typeOfSection: 0,
-				altAnim: false
+				altAnim: altAnim
 			};
 
 			return sec;
@@ -1321,27 +1321,30 @@ class ChartingState extends MusicBeatState
 			var newSong = [];
 			
 			var millisecadd = (((measure*4)+step/4)*(60000/_song.bpm))+ms;
+			var totaladdsection = Std.int((millisecadd/(60000/_song.bpm)/4));
+			trace(millisecadd,totaladdsection);
 			if(millisecadd > 0)
 				{
-					for(i in 0...Std.int((measure/16+step+(ms/(60000/_song.bpm)*16))))
+					for(i in 0...totaladdsection)
 						{
 							newSong.unshift(newSection());
 						}
 				}
 			for (daSection1 in 0..._song.notes.length)
 				{
-					newSong.push(newSection());
+					newSong.push(newSection(16,_song.notes[daSection1].mustHitSection,_song.notes[daSection1].altAnim));
 				}
 	
 			for (daSection in 0...(_song.notes.length))
 			{
+				var aimtosetsection = daSection+Std.int((totaladdsection));
+				if(aimtosetsection<0) aimtosetsection = 0;
+				newSong[aimtosetsection].mustHitSection = _song.notes[daSection].mustHitSection;
+				newSong[aimtosetsection].altAnim = _song.notes[daSection].altAnim;
 				//trace("section "+daSection);
 				for(daNote in 0...(_song.notes[daSection].sectionNotes.length))
 					{	
-						//trace("note #"+daNote+" with data "+_song.notes[daSection].sectionNotes[daNote]);
 						var newtiming = _song.notes[daSection].sectionNotes[daNote][0]+millisecadd;
-						//trace("newtiming",newtiming);
-						//trace("future section",futureSection);
 						if(newtiming<0)
 						{
 							newtiming = 0;
@@ -1357,6 +1360,7 @@ class ChartingState extends MusicBeatState
 			//trace("DONE BITCH");
 			_song.notes = newSong;
 			updateGrid();
+			updateSectionUI();
 			updateNoteUI();
 		}
 	private function addNote(?n:Note):Void
