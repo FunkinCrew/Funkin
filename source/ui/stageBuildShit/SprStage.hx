@@ -15,7 +15,8 @@ class SprStage extends FlxSprite
 
 		FlxMouseEventManager.add(this, dragShit, null, function(spr:SprStage)
 		{
-			alpha = 0.5;
+			if (FlxG.keys.pressed.CONTROL)
+				alpha = 0.5;
 		}, function(spr:SprStage)
 		{
 			alpha = 1;
@@ -44,7 +45,9 @@ class SprStage extends FlxSprite
 
 	function dragShit(spr:SprStage)
 	{
-		StageBuilderState.curSelectedSpr = this;
+		if (FlxG.keys.pressed.CONTROL)
+			StageBuilderState.curSelectedSpr = this;
+
 		mousePressing = true;
 
 		mouseOffset.set(FlxG.mouse.x - this.x, FlxG.mouse.y - this.y);

@@ -147,6 +147,18 @@ class StageBuilderState extends MusicBeatState
 		// trace(sndChannel.position);
 		// trace(snd
 
+		if (FlxG.keys.justPressed.R)
+		{
+			shakingScreen();
+
+			FlxG.stage.window.title = "YOU WILL DIE";
+
+			// FlxG.stage.window.x -= Std.int(10);
+			// FlxG.stage.window.y -= Std.int(10);
+			// FlxG.stage.window.width += Std.int(40);
+			// FlxG.stage.window.height += Std.int(20);
+		}
+
 		if (FlxG.keys.justPressed.UP)
 		{
 			if (curSelectedSpr != null)
@@ -162,12 +174,49 @@ class StageBuilderState extends MusicBeatState
 			}
 		}
 
+		if (FlxG.keys.justPressed.DELETE)
+		{
+			if (curSelectedSpr != null)
+			{
+				sprGrp.remove(curSelectedSpr, true);
+			}
+		}
+
 		CoolUtil.mouseCamDrag();
 
 		if (FlxG.keys.pressed.CONTROL)
 			CoolUtil.mouseWheelZoom();
 
+		if (isShaking)
+		{
+			FlxG.stage.window.x = Std.int(shakePos.x + (FlxG.random.float(-1, 1) * shakeIntensity));
+			FlxG.stage.window.y = Std.int(shakePos.y + (FlxG.random.float(-1, 1) * shakeIntensity));
+
+			shakeIntensity -= 30 * elapsed;
+
+			if (shakeIntensity <= 0)
+			{
+				isShaking = false;
+				shakeIntensity = 60;
+				FlxG.stage.window.x = Std.int(shakePos.x);
+				FlxG.stage.window.y = Std.int(shakePos.y);
+			}
+		}
+
 		super.update(elapsed);
+	}
+
+	var isShaking:Bool = false;
+	var shakeIntensity:Float = 60;
+	var shakePos:FlxPoint = new FlxPoint();
+
+	function shakingScreen()
+	{
+		if (!isShaking)
+		{
+			isShaking = true;
+			shakePos.set(FlxG.stage.window.x, FlxG.stage.window.y);
+		}
 	}
 
 	function sortSprGrp()
