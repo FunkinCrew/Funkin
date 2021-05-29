@@ -22,6 +22,7 @@ typedef TOptions = {
     var judge:Int;
     var preferJudgement:Int;
     var newJudgementPos:Bool;
+    var emuOsuLifts:Bool;
 }
 class OptionsHandler {
     public static var options(get, set):TOptions;

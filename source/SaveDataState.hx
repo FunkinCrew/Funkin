@@ -83,6 +83,7 @@ class SaveDataState extends MusicBeatState
 							desc: "Put judgements in a more convenient place."
 						},						
 						{name: "Overwrite Judgement", value: false, intName: "preferJudgement", desc: "What judgement to display other than default, if any.", defAmount: 0, amount: 0, max: CoolUtil.coolTextFile('assets/data/judgements.txt').length - 1},
+						{name: "Emulate Osu Lifts", value: false, intName: "emuOsuLifts", desc: "Whether to add lift notes at the end of sustains to force releasing buttons."},
 						{name: "Funny Songs", value: false, intName: "stressTankmen", desc: "funny songs"},
 						{name: "Credits", value: false, intName:'credits', desc: "Show the credits!", ignore: true},
 						{name: "Sound Test...", value: false, intName: 'soundtest', desc: "Listen to the soundtrack", ignore: true},

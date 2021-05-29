@@ -42,7 +42,8 @@ class Note extends FlxSprite
 	public static var BLUE_NOTE:Int = 1;
 	public static var RED_NOTE:Int = 3;
 	public var rating = "miss";
-	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?customImage:Null<BitmapData>, ?customXml:Null<String>, ?customEnds:Null<BitmapData>)
+	public var isLiftNote:Bool = false;
+	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?customImage:Null<BitmapData>, ?customXml:Null<String>, ?customEnds:Null<BitmapData>, ?LiftNote:Bool=false)
 	{
 		super();
 
@@ -51,7 +52,7 @@ class Note extends FlxSprite
 
 		this.prevNote = prevNote;
 		isSustainNote = sustainNote;
-
+		isLiftNote = LiftNote;
 		x += 50;
 		// MAKE SURE ITS DEFINITELY OFF SCREEN?
 		y -= 2000;
@@ -83,7 +84,12 @@ class Note extends FlxSprite
 					animation.add('redhold', [3]);
 					animation.add('bluehold', [1]);
 				}
-
+				if (isLiftNote) {
+					animation.add('greenScroll', [22]);
+					animation.add('redScroll', [23]);
+					animation.add('blueScroll', [21]);
+					animation.add('purpleScroll', [20]);
+				}
 				setGraphicSize(Std.int(width * PlayState.daPixelZoom));
 				updateHitbox();
 			case 'normal':

@@ -1698,7 +1698,7 @@ class PlayState extends MusicBeatState
 			{
 				var daStrumTime:Float = songNotes[0];
 				var daNoteData:Int = Std.int(songNotes[1] % 4);
-
+				var daLift:Bool = songNotes[4];
 				var gottaHitNote:Bool = section.mustHitSection;
 				var altNote:Bool = false;
 				if (songNotes[1] > 3)
@@ -1716,7 +1716,7 @@ class PlayState extends MusicBeatState
 				else
 					oldNote = null;
 
-				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote, false, customImage, customXml, arrowEndsImage);
+				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote, false, customImage, customXml, arrowEndsImage, daLift);
 				// altNote
 				swagNote.altNote = altNote;
 				swagNote.altNum = songNotes[3] == null ? (swagNote.altNote ? 1 : 0) : songNotes[3];
@@ -1749,33 +1749,56 @@ class PlayState extends MusicBeatState
 				susLength = susLength / Conductor.stepCrochet;
 				unspawnNotes.push(swagNote);
 				// when the imposter is sus XD
-				for (susNote in 0...Math.floor(susLength))
-				{
-					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
-
-					var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + Conductor.stepCrochet, daNoteData, oldNote, true, customImage, customXml, arrowEndsImage);
-					if (duoMode)
+				if (susLength != 0) {
+					for (susNote in 0...(Math.floor(susLength) + 2))
 					{
-						sustainNote.duoMode = true;
+						oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
+						if (OptionsHandler.options.emuOsuLifts && susLength < susNote)
+						{
+							// simulate osu!mania holds by adding lifts at the end
+							var liftNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + Conductor.stepCrochet, daNoteData, oldNote, false,
+								customImage, customXml, arrowEndsImage, true);
+							if (duoMode)
+								liftNote.duoMode = true;
+							if (opponentPlayer)
+								liftNote.oppMode = true;
+							if (demoMode)
+								liftNote.funnyMode = true;
+							liftNote.scrollFactor.set();
+							unspawnNotes.push(liftNote);
+							liftNote.mustPress = gottaHitNote;
+							if (liftNote.mustPress)
+								liftNote.x += FlxG.width / 2;
+
+							// how haxe works by default is exclusive?
+						}
+						else if (susLength > susNote)
+						{
+							var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + Conductor.stepCrochet, daNoteData, oldNote,
+								true, customImage, customXml, arrowEndsImage);
+							if (duoMode)
+							{
+								sustainNote.duoMode = true;
+							}
+							if (opponentPlayer)
+							{
+								sustainNote.oppMode = true;
+							}
+							if (demoMode)
+								sustainNote.funnyMode = true;
+							sustainNote.scrollFactor.set();
+							unspawnNotes.push(sustainNote);
+
+							sustainNote.mustPress = gottaHitNote;
+
+							if (sustainNote.mustPress)
+							{
+								sustainNote.x += FlxG.width / 2; // general offset
+							}
+						}
 					}
-					if (opponentPlayer)
-					{
-						sustainNote.oppMode = true;
-					}
-					if (demoMode)
-						sustainNote.funnyMode = true;
-					sustainNote.scrollFactor.set();
-					unspawnNotes.push(sustainNote);
-
-					sustainNote.mustPress = gottaHitNote;
-
-					if (sustainNote.mustPress)
-					{
-						sustainNote.x += FlxG.width / 2; // general offset
-					}
-
-
 				}
+				
 
 				swagNote.mustPress = gottaHitNote;
 
@@ -3564,7 +3587,7 @@ class PlayState extends MusicBeatState
 			notes.forEachAlive(function(daNote:Note)
 			{
 				var coolShouldPress = playerOne ? daNote.mustPress : !daNote.mustPress;
-				if (daNote.canBeHit && coolShouldPress && !daNote.tooLate && !daNote.wasGoodHit)
+				if (daNote.canBeHit && coolShouldPress && !daNote.tooLate && !daNote.wasGoodHit && !daNote.isLiftNote)
 				{
 					// the sorting probably doesn't need to be in here? who cares lol
 					if (directionList.contains(daNote.noteData)) {
@@ -3624,28 +3647,7 @@ class PlayState extends MusicBeatState
 						goodNoteHit(coolNote, playerOne);
 					}
 				}
-				/*
-					if (controlArray[daNote.noteData])
-						goodNoteHit(daNote);
-				 */
-				// trace(daNote.noteData);
-				/*
-					switch (daNote.noteData)
-					{
-						case 2: // NOTES YOU JUST PRESSED
-							if (upP || rightP || downP || leftP)
-								noteCheck(upP, daNote);
-						case 3:
-							if (upP || rightP || downP || leftP)
-								noteCheck(rightP, daNote);
-						case 1:
-							if (upP || rightP || downP || leftP)
-								noteCheck(downP, daNote);
-						case 0:
-							if (upP || rightP || downP || leftP)
-								noteCheck(leftP, daNote);
-					}
-				 */
+
 			}
 			else if (!OptionsHandler.options.useCustomInput)
 			{
@@ -3665,7 +3667,106 @@ class PlayState extends MusicBeatState
 					mashViolations++;
 			}
 		}
+		// lift notes :)
+		if (releaseArray.contains(true) && !actingOn.stunned && generatedMusic)
+		{
+			actingOn.holdTimer = 0;
 
+			var possibleNotes:Array<Note> = [];
+			var directionList:Array<Int> = [];
+			var dumbNotes:Array<Note> = [];
+			var ignoreList:Array<Int> = [];
+
+			notes.forEachAlive(function(daNote:Note)
+			{
+				var coolShouldPress = playerOne ? daNote.mustPress : !daNote.mustPress;
+				if (daNote.canBeHit && coolShouldPress && !daNote.tooLate && !daNote.wasGoodHit && daNote.isLiftNote)
+				{
+					// the sorting probably doesn't need to be in here? who cares lol
+					if (directionList.contains(daNote.noteData))
+					{
+						for (coolNote in possibleNotes)
+						{
+							if (coolNote.noteData == daNote.noteData && Math.abs(daNote.strumTime - coolNote.strumTime) < 10)
+							{
+								dumbNotes.push(daNote);
+								break;
+							}
+							else if (coolNote.noteData == daNote.noteData && daNote.strumTime < coolNote.strumTime)
+							{
+								possibleNotes.remove(coolNote);
+								possibleNotes.push(daNote);
+								break;
+							}
+						}
+					}
+					else
+					{
+						possibleNotes.push(daNote);
+						directionList.push(daNote.noteData);
+					}
+				}
+			});
+			for (note in dumbNotes)
+			{
+				FlxG.log.add("killing dumb ass note at " + note.strumTime);
+				note.kill();
+				notes.remove(note, true);
+				note.destroy();
+			}
+			possibleNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
+
+			var dontCheck = false;
+
+			for (i in 0...releaseArray.length)
+			{
+				if (releaseArray[i] && !directionList.contains(i))
+					dontCheck = true;
+			}
+			if (possibleNotes.length > 0 && !dontCheck)
+			{
+				var daNote = possibleNotes[0];
+
+				if (!OptionsHandler.options.useCustomInput)
+				{
+					for (shit in 0...releaseArray.length)
+					{ // if a direction is hit that shouldn't be
+						if (releaseArray[shit] && !directionList.contains(shit))
+							noteMiss(shit, playerOne);
+					}
+				}
+
+				// Jump notes
+				for (coolNote in possibleNotes)
+				{
+					if (releaseArray[coolNote.noteData])
+					{
+						if (mashViolations != 0)
+							mashViolations--;
+						scoreTxt.color = FlxColor.WHITE;
+						goodNoteHit(coolNote, playerOne);
+					}
+				}
+			}
+			else if (!OptionsHandler.options.useCustomInput)
+			{
+				for (shit in 0...releaseArray.length)
+					if (releaseArray[shit])
+						noteMiss(shit, playerOne);
+			}
+			// :shrug: idk what this for
+			if (dontCheck && possibleNotes.length > 0 && OptionsHandler.options.useCustomInput && !demoMode)
+			{
+				if (mashViolations > 4)
+				{
+					trace('mash violations ' + mashViolations);
+					scoreTxt.color = FlxColor.RED;
+					noteMiss(0, playerOne);
+				}
+				else
+					mashViolations++;
+			}
+		}
 		if (holdArray.contains(true) && !actingOn.stunned && generatedMusic)
 		{
 			notes.forEachAlive(function(daNote:Note)
@@ -3827,20 +3928,23 @@ class PlayState extends MusicBeatState
 			else
 				health += 0.005 * healthGainMultiplier;
 			*/
-
-			actingOn.sing(note.noteData, false, actingOn.altNum);
-			if (playerOne)
-				callAllHScript("playerOneSing", []);
-			else
-				callAllHScript("playerTwoSing", []);
-			var strums = playerOne ? playerStrums : enemyStrums;
-			strums.forEach(function(spr:FlxSprite)
-			{
-				if (Math.abs(note.noteData) == spr.ID)
+			if (!note.isLiftNote) {
+				actingOn.sing(note.noteData, false, actingOn.altNum);
+				if (playerOne)
+					callAllHScript("playerOneSing", []);
+				else
+					callAllHScript("playerTwoSing", []);
+				var strums = playerOne ? playerStrums : enemyStrums;
+				strums.forEach(function(spr:FlxSprite)
 				{
-					spr.animation.play('confirm', true);
-				}
-			});
+					if (Math.abs(note.noteData) == spr.ID)
+					{
+						spr.animation.play('confirm', true);
+					}
+				});
+			}
+				
+		
 
 			note.wasGoodHit = true;
 			vocals.volume = 1;
