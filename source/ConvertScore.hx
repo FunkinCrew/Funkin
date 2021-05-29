@@ -14,6 +14,10 @@ class ConvertScore
 				return 200;
 			case 'sick':
 				return 350;
+			case 'miss':
+				return -5;
+			case 'wayoff':
+				return -400;
 		}
 		return 0;
 	}

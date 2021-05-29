@@ -65,7 +65,8 @@ class SaveDataState extends MusicBeatState
 						{name: "Downscroll", value: false, intName: "downscroll", desc: "Put da arrows on the bottom and have em scroll down"},
 						{name: "Judge", value: false, intName: "judge", desc: "The Judge to use.", amount: cast Judge.Jury.Classic, defAmount: cast Judge.Jury.Classic, max: 10},
 						{name: "Use New input", value: false, intName: "useCustomInput", desc: "Whether to allow spamming"},
-						{name: "Ignore Bad Timing", value: false, intName:"ignoreShittyTiming", desc: "Even with new input on, if you hit a note really poorly, it counts as a miss. This disables that."},
+						// sorry, always ignore bad timing :penisve:
+						/*{name: "Ignore Bad Timing", value: false, intName:"ignoreShittyTiming", desc: "Even with new input on, if you hit a note really poorly, it counts as a miss. This disables that."},*/
 						{name: "DJFK Keys", value: false, intName: "DJFKKeys", desc: "Whether to use dfjk keys."},
 						{name: "Show Song Position", value: false, intName: "showSongPos", desc: "Whether to show the song bar."},
 						{name: "Style", value: false, intName: "style", desc: "Whether to use fancy style or default to base game."},
@@ -81,7 +82,7 @@ class SaveDataState extends MusicBeatState
 							intName: "newJudgementPos",
 							desc: "Put judgements in a more convenient place."
 						},						
-						{name: "Overwrite Judgement", value: false, intName: "preferJudgement", desc: "What judgement to display other than default, if any.", defAmount: 0, amount: 0, max: CoolUtil.coolTextFile('assets/data/judgements.txt').length},
+						{name: "Overwrite Judgement", value: false, intName: "preferJudgement", desc: "What judgement to display other than default, if any.", defAmount: 0, amount: 0, max: CoolUtil.coolTextFile('assets/data/judgements.txt').length - 1},
 						{name: "Funny Songs", value: false, intName: "stressTankmen", desc: "funny songs"},
 						{name: "Credits", value: false, intName:'credits', desc: "Show the credits!", ignore: true},
 						{name: "Sound Test...", value: false, intName: 'soundtest', desc: "Listen to the soundtrack", ignore: true},
@@ -414,7 +415,8 @@ class SaveDataState extends MusicBeatState
 		var noneditableoptions:Dynamic = {
 			"allowEditOptions": OptionsHandler.options.allowEditOptions,
 			"preferredSave": preferredSave,
-			"useSaveDataMenu": true
+			"useSaveDataMenu": true,
+			"ignoreShittyTiming": false
 		};
 		for (field in Reflect.fields(mappedOptions)) {
 			Reflect.setField(noneditableoptions, field, Reflect.field(mappedOptions, field).value);

@@ -1,5 +1,6 @@
 none
 normal
-pixel
 etternaNormal
 etternaTiming
+kade
+howIFeel

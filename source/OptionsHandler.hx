@@ -36,6 +36,9 @@ class OptionsHandler {
         // update the file
         if (needToRefresh) {
 			lastOptions = CoolUtil.parseJson(Assets.getText('assets/data/options.json'));
+            // sawee
+            // i think this is for the best, to be a real rhythm game
+            lastOptions.ignoreShittyTiming = false;
             needToRefresh = false;
 			
         }

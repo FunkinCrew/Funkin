@@ -149,6 +149,7 @@ class PlayState extends MusicBeatState
 	// private var poisonColorEnemy:FlxColor = 0xFFEA2FFF;
 	// private var bfColor:FlxColor = 0xFF149DFF;
 	private var barShowingPoison:Bool = false;
+	private var pixelUI:Bool = false;
 	#if windows
 	// Discord RPC variables
 	var storyDifficultyText:String = "";
@@ -433,6 +434,8 @@ class PlayState extends MusicBeatState
 		preferredJudgement = judgementList[OptionsHandler.options.preferJudgement];
 		if (preferredJudgement == 'none') {
 			preferredJudgement = SONG.uiType;
+			if (preferredJudgement == 'pixel')
+				preferredJudgement = 'normal';
 		}
 		#if windows
 		// Making difficulty text for Discord Rich Presence.
@@ -504,6 +507,7 @@ class PlayState extends MusicBeatState
 		downscroll = OptionsHandler.options.downscroll;
 		useSongBar = OptionsHandler.options.showSongPos;
 		Judge.setJudge(cast OptionsHandler.options.judge);
+		pixelUI = SONG.uiType == 'pixel' || FNFAssets.exists('assets/images/custom_ui/ui_packs/' + SONG.uiType + "/arrows-pixels.png");
 		if (!OptionsHandler.options.skipModifierMenu) {
 			fullComboMode = ModifierState.namedModifiers.fc.value;
 			goodCombo = ModifierState.namedModifiers.gfc.value;
@@ -3255,11 +3259,6 @@ class PlayState extends MusicBeatState
 		var coolText:FlxText = new FlxText(0, 0, 0, placement, 32);
 		coolText.screenCenter();
 		coolText.x = FlxG.width * 0.55;
-		if (OptionsHandler.options.newJudgementPos) {
-			coolText.y = 0;
-			coolText.x = FlxG.width * 0.65;
-			coolText.cameras = [camHUD];
-		}
 		
 		var rating:FlxSprite = new FlxSprite();
 		var score:Int = 350;
@@ -3273,16 +3272,26 @@ class PlayState extends MusicBeatState
 		if (daNote.isSustainNote) {
 			daRating = 'sick';
 		}
+		// SHIT IS A COMBO BREAKER IN ETTERNA NERDS
+		// GIT GUD
 		switch (daRating)
 		{
 			case 'shit':
 				score = -300;
 				combo = 0;
-				// misses++;
+				misses++;
 				healthBonus -= 0.06 * healthLossMultiplier;
 				ss = false;
 				shits++;
 				notesHit += 0.25;
+			case 'wayoff':
+				score = -300;
+				combo = 0;
+				misses++;
+				healthBonus -= 0.06 * healthLossMultiplier;
+				ss = false;
+				shits++;
+				notesHit += 0.1;
 			case 'bad':
 				daRating = 'bad';
 				score = 0;
@@ -3308,9 +3317,12 @@ class PlayState extends MusicBeatState
 				}
 				
 			case 'miss':
-				if (!OptionsHandler.options.ignoreShittyTiming)
-					noteMiss(daNote.noteData, playerOne);
-				return;
+				// noteMiss(daNote.noteData, playerOne);
+				healthBonus = -0.04 * healthLossMultiplier;
+				misses++;
+				ss = false;
+				score = -5;
+				
 		}
 		if (daNote.isSustainNote) {
 			healthBonus  *= 0.2;
@@ -3327,7 +3339,7 @@ class PlayState extends MusicBeatState
 		}
 		songScore += Math.round(ConvertScore.convertScore(noteDiff) * ModifierState.scoreMultiplier);
 		songScoreDef += Math.round(ConvertScore.convertScore(noteDiff));
-		trueScore += score;
+		trueScore += Math.round(ConvertScore.convertScore(noteDiff));
 		/* if (combo > 60)
 				daRating = 'sick';
 			else if (combo > 12)
@@ -3352,8 +3364,9 @@ class PlayState extends MusicBeatState
 				else
 					ratingImage = FNFAssets.getBitmapData('assets/images/' + daRating + '.png');
 		}
-
-		rating = new Judgement(0, 0, daRating, preferredJudgement, noteDiffSigned < 0);
+		trace(pixelUI);
+		rating = new Judgement(0, 0, daRating, preferredJudgement,
+			noteDiffSigned < 0, pixelUI);
 		rating.screenCenter();
 		rating.x = coolText.x - 40;
 		rating.y -= 60;
@@ -3362,7 +3375,11 @@ class PlayState extends MusicBeatState
 		rating.velocity.x -= FlxG.random.int(0, 10);
 		if (OptionsHandler.options.newJudgementPos) {
 			rating.cameras = [camHUD];
-			rating.y = coolText.y + 180;
+			rating.y = 0;
+			rating.x = 0;
+			if (!downscroll) {
+				rating.y = FlxG.height - rating.height;
+			}
 			
 		}
 		var comboSpr:FlxSprite = new FlxSprite().loadGraphic(ratingImage);
@@ -3373,20 +3390,6 @@ class PlayState extends MusicBeatState
 
 		comboSpr.velocity.x += FlxG.random.int(1, 10);
 		add(rating);
-		// gonna be fun explaining this
-		// don't set things for rating because judgement handles it
-		if (SONG.uiType != 'pixel' && !FNFAssets.exists('assets/images/custom_ui/ui_packs/'+SONG.uiType+"/arrows-pixels.png"))
-		{
-			//rating.setGraphicSize(Std.int(rating.width * 0.7));
-			//rating.antialiasing = true;
-			//comboSpr.setGraphicSize(Std.int(comboSpr.width * 0.7));
-			//comboSpr.antialiasing = true;
-		}
-		else
-		{
-			//rating.setGraphicSize(Std.int(rating.width * daPixelZoom * 0.7));
-			//comboSpr.setGraphicSize(Std.int(comboSpr.width * daPixelZoom * 0.7));
-		}
 		rating.setGraphicSize(Std.int(rating.width * 0.7));
 		var msTiming = HelperFunctions.truncateFloat(noteDiffSigned, 3);
 		if (FlxG.save.data.botplay)
@@ -3398,7 +3401,9 @@ class PlayState extends MusicBeatState
 		currentTimingShown = new FlxText(0, 0, 0, "0ms");
 		switch (daRating)
 		{
-			case 'shit' | 'bad':
+			case 'miss':
+				currentTimingShown.color = FlxColor.MAGENTA;
+			case 'shit' | 'bad' | 'wayoff':
 				currentTimingShown.color = FlxColor.RED;
 			case 'good':
 				currentTimingShown.color = FlxColor.GREEN;

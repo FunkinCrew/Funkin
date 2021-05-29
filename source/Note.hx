@@ -257,15 +257,15 @@ class Note extends FlxSprite
 		if ((((mustPress && !oppMode) || duoMode) || (oppMode && !mustPress)) && !funnyMode)
 		{
 			// The * 0.5 us so that its easier to hit them too late, instead of too early
-			if (strumTime > Conductor.songPosition - Conductor.safeZoneOffset
-				&& strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * 0.5))
+			if (strumTime > Conductor.songPosition - Judge.wayoffJudge
+				&& strumTime < Conductor.songPosition + Judge.wayoffJudge)
 			{
 				canBeHit = true;
 			}
 			else
 				canBeHit = false;
 
-			if (strumTime < Conductor.songPosition - Conductor.safeZoneOffset)
+			if (strumTime < Conductor.songPosition - Judge.wayoffJudge)
 				tooLate = true;
 		}
 		else

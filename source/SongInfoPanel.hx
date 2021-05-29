@@ -114,10 +114,13 @@ class SongInfoPanel extends FlxTypedSpriteGroup<FlxSprite> {
         var modifierUsed = Highscore.getModifiersUsed(song, diff, displaying);
         if (displaying != 'best') {
 			scoreTxt.text += '\n' + sussyjudge;
+            // Purge references to ignore shitty timing :)
+            /*
 			if (songOptions.ignoreShittyTiming)
 				scoreTxt.text += '\nUses virgin ignore shitty timing';
 			else
 				scoreTxt.text += '\nDoes not ignore shitties :)';
+            */
             if (modifierUsed.mfc.value || modifierUsed.gfc.value || modifierUsed.fc.value) {
                 scoreTxt.text += "\nTotally grinded for this lmao";
             }
