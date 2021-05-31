@@ -1972,7 +1972,12 @@ class PlayState extends MusicBeatState
 				{
 					// the sorting probably doesn't need to be in here? who cares lol
 					possibleNotes.push(daNote);
+
+					#if (haxe >= "4.0.0")
 					possibleNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
+					#else
+					possibleNotes.sort(function(a, b) return Std.int(a.strumTime - b.strumTime));
+					#end
 
 					ignoreList.push(daNote.noteData);
 				}
