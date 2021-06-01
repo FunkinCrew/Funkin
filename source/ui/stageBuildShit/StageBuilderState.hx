@@ -142,10 +142,27 @@ class StageBuilderState extends MusicBeatState
 		// trace();
 	}
 
+	public static var curTool:TOOLS = SELECT;
+
+	var tempTool:TOOLS = SELECT;
+
 	override function update(elapsed:Float)
 	{
-		// trace(sndChannel.position);
-		// trace(snd
+		if (FlxG.keys.justPressed.CONTROL)
+		{
+			tempTool = curTool;
+
+			changeTool(SELECT);
+		}
+		if (FlxG.keys.justReleased.CONTROL)
+		{
+			changeTool(tempTool);
+		}
+
+		if (FlxG.keys.justPressed.V)
+		{
+			changeTool(SELECT);
+		}
 
 		if (FlxG.keys.justPressed.R)
 		{
@@ -163,14 +180,15 @@ class StageBuilderState extends MusicBeatState
 		{
 			if (curSelectedSpr != null)
 			{
-				if (curSelectedSpr.layer != 0)
-				{
-					curSelectedSpr.layer -= 1;
-					sprGrp.members[curSelectedSpr.layer].layer += 1;
-				}
-				// NOTE: fix to account if only one layer is in?
+				moveLayer(1);
+			}
+		}
 
-				sortSprGrp();
+		if (FlxG.keys.justPressed.DOWN)
+		{
+			if (curSelectedSpr != null)
+			{
+				moveLayer(-1);
 			}
 		}
 
@@ -203,7 +221,54 @@ class StageBuilderState extends MusicBeatState
 			}
 		}
 
+		if (FlxG.keys.justPressed.Z && actionQueue.length > 0)
+		{
+			isUndoRedo = true;
+			actionQueue.pop()(posQueue.pop());
+		}
+
 		super.update(elapsed);
+	}
+
+	static public function changeTool(newTool:TOOLS)
+	{
+		curTool = newTool;
+
+		switch (curTool)
+		{
+			case SELECT:
+				FlxG.mouse.load(new FlxSprite().loadGraphic(Paths.image('stageBuild/cursorSelect')).pixels);
+			case GRABBING:
+				FlxG.mouse.load(new FlxSprite().loadGraphic(Paths.image('stageBuild/cursorGrabbing')).pixels);
+			case GRAB:
+				FlxG.mouse.load(new FlxSprite().loadGraphic(Paths.image('stageBuild/cursorGrab')).pixels);
+			default:
+				trace('swag');
+		}
+	}
+
+	var isUndoRedo:Bool = false;
+	var actionQueue:Array<Dynamic->Void> = [];
+	var posQueue:Array<Dynamic> = [];
+
+	function moveLayer(layerMovement:Int = 0):Void
+	{
+		if (curSelectedSpr.layer == 0 && layerMovement > 0)
+			return;
+
+		curSelectedSpr.layer -= layerMovement;
+		sprGrp.members[curSelectedSpr.layer].layer += layerMovement;
+		// NOTE: fix to account if only one layer is in?
+
+		sortSprGrp();
+
+		if (!isUndoRedo)
+		{
+			actionQueue.push(moveLayer);
+			posQueue.push(layerMovement * -1);
+		}
+		else
+			isUndoRedo = false;
 	}
 
 	var isShaking:Bool = false;
@@ -230,4 +295,12 @@ class StageBuilderState extends MusicBeatState
 	{
 		return FlxSort.byValues(FlxSort.ASCENDING, layer1.layer, layer2.layer);
 	}
+}
+
+enum TOOLS
+{
+	SELECT;
+	MOVE;
+	GRAB;
+	GRABBING;
 }

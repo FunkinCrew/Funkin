@@ -15,7 +15,7 @@ class SprStage extends FlxSprite
 
 		FlxMouseEventManager.add(this, dragShit, null, function(spr:SprStage)
 		{
-			if (FlxG.keys.pressed.CONTROL)
+			if (isSelected() || StageBuilderState.curTool == SELECT)
 				alpha = 0.5;
 		}, function(spr:SprStage)
 		{
@@ -23,11 +23,16 @@ class SprStage extends FlxSprite
 		}, false, true, true);
 	}
 
+	function isSelected():Bool
+	{
+		return StageBuilderState.curSelectedSpr == this;
+	}
+
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
 
-		if (mousePressing)
+		if (mousePressing && isSelected())
 		{
 			this.x = FlxG.mouse.x - mouseOffset.x;
 			this.y = FlxG.mouse.y - mouseOffset.y;
@@ -36,6 +41,7 @@ class SprStage extends FlxSprite
 		if (FlxG.mouse.justReleased)
 		{
 			mousePressing = false;
+			StageBuilderState.changeTool(GRAB);
 		}
 	}
 
@@ -45,11 +51,13 @@ class SprStage extends FlxSprite
 
 	function dragShit(spr:SprStage)
 	{
-		if (FlxG.keys.pressed.CONTROL)
+		if (StageBuilderState.curTool == SELECT)
 			StageBuilderState.curSelectedSpr = this;
 
 		mousePressing = true;
 
+		if (isSelected())
+			StageBuilderState.changeTool(GRABBING);
 		mouseOffset.set(FlxG.mouse.x - this.x, FlxG.mouse.y - this.y);
 	}
 }
