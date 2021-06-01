@@ -1,5 +1,5 @@
 ---
-name: blank issue
+name: Blank issue
 about: blank
 title: ''
 labels: ''
