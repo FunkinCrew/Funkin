@@ -1,5 +1,102 @@
 <!DOCTYPE html>
+<style>
+.coolBox {
+    background: #1a1a1aCC;
+    margin: 40px 4vw;
+    padding: 25px;
+    font-size: 120%;
+    border-radius: 10px;
+}
 
+#wrapper
+{
+    padding: 20px;
+    margin: auto;
+}
+
+marquee {
+    margin: auto;
+    text-align: center;
+    display: inline-block;
+}
+
+h1 {
+    text-align: center;
+}
+
+body {
+    background-image: url('img/skin-funkin-cardbordtoast.jpg');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    color:white;
+    background-color: #000;
+    font-family: Arial, Helvetica, sans-serif;
+    
+}
+
+a { color:inherit;
+  text-decoration: none;}
+
+
+.hovertext a{
+    color:white;
+    text-shadow: 0px 0px #00000077;
+    transition: color 1s, text-shadow 1s;
+}
+
+.hovertext a:hover
+{
+    text-shadow: 2px 2px #00000077;
+    color: #ffb50e;
+}
+
+.linktext {
+    text-align: center;
+    display:block;
+    font-size: 130%;
+    padding-bottom: 10px;
+}
+
+.linktext a {
+    font-weight: bold;  
+}
+
+.linktext a:hover {
+  border-radius: 5px;
+}
+
+#itch a:hover
+{
+    color: #fa5c5c;
+}
+#twitter a:hover
+{
+    color: #00acee;
+}
+
+
+#coolervidwrapper {
+    padding-left: min(12em, 75%);
+    padding-right: min(12em, 75%);
+    min-width: 30%;
+}
+
+.videoWrapper {
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 */
+  height: 0;
+
+  max-block-size: 1400px;
+}
+.videoWrapper iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+}</style>
 <html lang="en">
 
 <!-- 
@@ -8,9 +105,14 @@
 -->
 
 <!--Let's get meta bois-->
+<!-- Lots of kids play FNF, keep everything visible child friendly. -->
 <head>
 	<meta charset="utf-8">
-	<title>Friday Night Funkin'</title>
+	<title>Friday Night Funkin</title>
+	 <meta name="description" content="A really cool rhythm game inspired by DDR">
+     <meta name="keywords" content="FNF, rhythm, game, funkin,"> <!-- Add more tags for google! -->
+     <meta name="author" content="ninjamuffin"> <!-- For google too I think... -->
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="description" content="A dope ass rhythm game">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link href="styles.css" rel="stylesheet" type="text/css">
@@ -24,7 +126,7 @@
 	</header>
 
 	
-	<marquee width="1920" scrollamount="2" scrolldelay="10" truespeed="truespeed">Friday Night Funkin</marquee>
+	<marquee width="1920" scrollamount="2" scrolldelay="10" truespeed="truespeed">Dad is gay</marquee>
 	<!--Hot tortilla wrap-->
 	<div id="wrapper">
 		<h1>Friday Night Funkin' - Rhythm game extraordinaire</h1>
@@ -41,20 +143,37 @@
 		
 		<div class="coolBox hovertext" id="twitter">
 			<p class="description">Friday Night Funkin' is a dope ass rhythm game.</p>
-			<p class='description'>It is made by <a href="https://twitter.com/ninja_muffin99">ninjamuffin99 (programmer)</a>, <a
-				href="https://twitter.com/PhantomArcade3K">PhantomArcade (animator)</a>, <a
-				href="https://twitter.com/evilsk8r">evilsk8r (artist)</a>,
-			and <a href="https://twitter.com/kawaisprite">Kawaisprite (musician)</a> originally for Ludum Dare 47.</p>
+			<p class="description2">Uh oh! Your tryin to kiss ur hot girlfriend, but her MEAN and EVIL dad is trying to KILL you! He's an ex-rockstar, the only way to get to his heart? The power of music...</p> <!-- As im writing this code, my cat is on my lap and wanting belly rubs -->
+			
 		</div>
 
+
+		<div class="coolBox hovertect" id="Links">
 		<div class="linktext hovertext" id="ng">
-			<a href="https://www.newgrounds.com/portal/view/770371">Play demo on Newgrounds</a>
+			<a href="https://www.newgrounds.com/portal/view/770371">Play on Newgrounds</a>
 		</div>
-
+		<!-- Good to have, though the size is too large for upload to github.
+		<div class='linktext hovertext' id="Download">
+		
+		</div>
+		-->
 		<div class='linktext hovertext' id="itch">
 			<a href="https://ninja-muffin24.itch.io/funkin">Support the game on Itch.io</a>
 		</div>
+		</div>
+	    <div class="coolBox hovertext" id="Credits"><small>
+			<!-- Move to a different page?(funkin/credits) -->
+			<p>	<a href="https://twitter.com/ninja_muffin99">ninjamuffin99 <code>(programmer)</code></a>, 
+			<p>	<a href="https://twitter.com/PhantomArcade3K">PhantomArcade (animator)</a>, 
+			<p>	<a href="https://twitter.com/evilsk8r">evilsk8r (artist)</a>,
+			<p> <a href="https://twitter.com/kawaisprite">and Kawaisprite (musician)🎵</a> originally for Ludum Dare 47.
+			<p> <a href="https://github.com/ninjamuffin99/Funkin"><code>Github</code></a></p>
+		</div></small>
+		<!-- Good to have. Use when needed.
+		<div class="coolBox hovertext" id="Announcements">
 		
+		</div>
+		-->
 	</div>
 </body>
 </html>
