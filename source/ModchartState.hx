@@ -353,6 +353,8 @@ class ModchartState
 	
 				setVar("screenWidth",FlxG.width);
 				setVar("screenHeight",FlxG.height);
+				setVar("windowWidth",FlxG.width);
+				setVar("windowHeight",FlxG.height);
 				setVar("hudWidth", PlayState.instance.camHUD.width);
 				setVar("hudHeight", PlayState.instance.camHUD.height);
 	
@@ -605,11 +607,19 @@ class ModchartState
 				});
 				
 				Lua_helper.add_callback(lua,"getScreenWidth",function() {
-					return Application.current.window.displayMode.width;
+					return Application.current.window.display.currentMode.width;
 				});
 
 				Lua_helper.add_callback(lua,"getScreenHeight",function() {
-					return Application.current.window.displayMode.height;
+					return Application.current.window.display.currentMode.height;
+				});
+
+				Lua_helper.add_callback(lua,"getWindowWidth",function() {
+					return Application.current.window.width;
+				});
+
+				Lua_helper.add_callback(lua,"getWindowHeight",function() {
+					return Application.current.window.height;
 				});
 
 	
