@@ -103,11 +103,6 @@ jobs:
         with:
           name: windowsBuild
           path: bin.tar.gz
-      - name: Publish Artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: windowsBuild
-          path: bin.tar.gz
       - name: Compile 32 bit
         run: haxelib run lime build windows -D32bit
       - name: Archive
