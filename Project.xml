@@ -61,6 +61,8 @@
 	-->
 	<assets path="assets/fonts"/>
 	<assets path="assets/scripts"/>
+	<assets path="NOTICE"/>
+	<assets path="LICENSE"/>
 	<!-- _______________________________ Libraries ______________________________ -->
 
 	<haxelib name="flixel" />

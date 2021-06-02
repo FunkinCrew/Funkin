@@ -265,6 +265,7 @@ class ChartingState extends MusicBeatState
 		isMoodyCheck.name = "isMoody";
 		isHeyCheck.name = "isHey";
 		isCheerCheck.name = "isCheer";
+		isSpookyCheck.name = 'isSpooky';
 		isMoodyCheck.checked = _song.isMoody;
 		isSpookyCheck.checked = _song.isSpooky;
 		isHeyCheck.checked = _song.isHey;
