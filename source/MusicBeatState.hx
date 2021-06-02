@@ -111,4 +111,13 @@ class MusicBeatState extends FlxUIState
 	{
 		//do literally nothing dumbass
 	}
+	
+	public function fancyOpenURL(schmancy:String)
+	{
+		#if linux
+		Sys.command('/usr/bin/xdg-open', [schmancy, "&"]);
+		#else
+		FlxG.openURL(schmancy);
+		#end
+	}
 }
