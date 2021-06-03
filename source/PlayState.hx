@@ -3,6 +3,7 @@ package;
 #if desktop
 import Discord.DiscordClient;
 #end
+import LoopState;
 import Section.SwagSection;
 import Song.SwagSong;
 import WiggleEffect.WiggleEffectType;
@@ -64,6 +65,9 @@ class PlayState extends MusicBeatState
 	private var notes:FlxTypedGroup<Note>;
 	private var allNotes:Array<Note> = [];
 	private var unspawnNotes:Array<Note> = [];
+	private var loopA:Float = 0;
+	private var loopB:Float;
+	private var loopState:LoopState = NONE;
 
 	private var strumLine:FlxSprite;
 	private var curSection:Int = 0;
@@ -1014,7 +1018,7 @@ class PlayState extends MusicBeatState
 	var songTime:Float = 0;
 
 	function startSong():Void
-	{
+	{		
 		startingSong = false;
 
 		previousFrameTime = FlxG.game.ticks;
@@ -1024,6 +1028,7 @@ class PlayState extends MusicBeatState
 			FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 1, false);
 		FlxG.sound.music.onComplete = endSong;
 		vocals.play();
+		loopB = FlxG.sound.music.length - 100;
 
 		#if desktop
 		// Song duration in a float, useful for the time left feature
@@ -1130,17 +1135,56 @@ class PlayState extends MusicBeatState
 		generatedMusic = true;
 	}
 
-	function deepCopyNotes(noteArray:Array<Note>):Array<Note>
+	function deepCopyNotes(noteArray:Array<Note>,?startingpoint:Float = 0):Array<Note>
 	{
 		var noteRef:Note = null;
-		var newNoteArray:Array<Note> = noteArray.map(function(note:Note){
-			var deepCopy:Note = new Note(note.strumTime,note.noteData,noteRef,note.isSustainNote);
-			deepCopy.mustPress = note.mustPress;
-			deepCopy.x = note.x;
-			noteRef = deepCopy;
-			return deepCopy;
-		});
+		var newNoteArray:Array<Note> = [];
+
+		for(note in noteArray){
+			if(note.strumTime > startingpoint)
+			{
+				var deepCopy:Note = new Note(note.strumTime,note.noteData,noteRef,note.isSustainNote);
+				deepCopy.mustPress = note.mustPress;
+				deepCopy.x = note.x;
+				noteRef = deepCopy;
+				newNoteArray.push(deepCopy);
+			}
+			
+		}
 		return newNoteArray;
+	}
+
+	function loopHandler(abLoop:Bool):LoopState
+	{
+		FlxG.log.add("Made it" + abLoop);
+		if(abLoop){
+			switch(loopState){				
+				case REPEAT | NONE:
+					loopA = Conductor.songPosition;
+					loopState = ANODE;
+					FlxG.log.add("Setting A Node");
+				case ANODE:
+					loopB = Conductor.songPosition;
+					loopState = ABREPEAT;
+					FlxG.log.add("Setting B Node");
+				case ABREPEAT:
+					loopState = NONE;
+					FlxG.log.add("Removing Nodes");				
+			}
+		}
+		else{
+			switch(loopState){
+				case NONE | ABREPEAT:
+					loopA = 0;
+					loopB = FlxG.sound.music.length - 100;
+					loopState = REPEAT;
+					FlxG.log.add("Looping Entire Song");
+				case REPEAT | ANODE:
+					loopState = NONE;
+					FlxG.log.add("No longer Looping");
+			}
+		}
+		return loopState;
 	}
 
 	function sortByShit(Obj1:Note, Obj2:Note):Int
@@ -1394,7 +1438,7 @@ class PlayState extends MusicBeatState
 				FlxG.switchState(new GitarooPause());
 			}
 			else
-				openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
+				openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y,loopHandler.bind(_),loopState));
 		
 			#if desktop
 			DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
@@ -1459,11 +1503,11 @@ class PlayState extends MusicBeatState
 			// Conductor.songPosition = FlxG.sound.music.time;
 			Conductor.songPosition += FlxG.elapsed * 1000;
 			FlxG.watch.addQuick("songPosition", Conductor.songPosition);
-			if(Conductor.songPosition >= 10 * 1000){
-				Conductor.songPosition = 0;
-				FlxG.sound.music.time = 0;
+			if(loopState != NONE && Conductor.songPosition >= loopB){
+				Conductor.songPosition = loopA;
+				FlxG.sound.music.time = loopA;
 				resyncVocals();	
-				unspawnNotes = deepCopyNotes(allNotes);
+				unspawnNotes = deepCopyNotes(allNotes,loopA);
 			}
 
 			if (!paused)
