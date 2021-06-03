@@ -176,28 +176,31 @@ class StageBuilderState extends MusicBeatState
 			// FlxG.stage.window.height += Std.int(20);
 		}
 
+		if (FlxG.keys.justPressed.RIGHT)
+			moveSprPos([1, 0, true]);
+		if (FlxG.keys.justPressed.LEFT)
+			moveSprPos([-1, 0, true]);
 		if (FlxG.keys.justPressed.UP)
+			moveSprPos([0, -1, true]);
+		if (FlxG.keys.justPressed.DOWN)
+			moveSprPos([0, 1, true]);
+
+		if (FlxG.keys.justPressed.LBRACKET)
 		{
 			if (curSelectedSpr != null)
-			{
 				moveLayer(1);
-			}
 		}
 
-		if (FlxG.keys.justPressed.DOWN)
+		if (FlxG.keys.justPressed.RBRACKET)
 		{
 			if (curSelectedSpr != null)
-			{
 				moveLayer(-1);
-			}
 		}
 
 		if (FlxG.keys.justPressed.DELETE)
 		{
 			if (curSelectedSpr != null)
-			{
 				sprGrp.remove(curSelectedSpr, true);
-			}
 		}
 
 		CoolUtil.mouseCamDrag();
@@ -231,7 +234,7 @@ class StageBuilderState extends MusicBeatState
 
 		if (FlxG.keys.justPressed.Z && actionQueue.length > 0)
 		{
-			trace('UNDO - QUEUE LENGTH: ' + actionQueue.length);
+			// trace('UNDO - QUEUE LENGTH: ' + actionQueue.length);
 			isUndoRedo = true;
 			actionQueue.pop()(posQueue.pop());
 		}
@@ -295,11 +298,8 @@ class StageBuilderState extends MusicBeatState
 		var yDiff:Float = dumbArray[1];
 		var forceMove:Bool = dumbArray[2];
 
-		// if (forceMove == null)
-		// forceMove = false;
-
-		trace(xDiff);
-		trace(yDiff);
+		// trace(xDiff);
+		// trace(yDiff);
 
 		if (forceMove)
 		{
