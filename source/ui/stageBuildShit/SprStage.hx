@@ -8,12 +8,15 @@ import flixel.math.FlxPoint;
 class SprStage extends FlxSprite
 {
 	public var layer:Int = 0;
+	public var mousePressing:Bool = false;
 
-	public function new(?x:Float = 0, ?y:Float = 0)
+	public var mouseOffset:FlxPoint = FlxPoint.get(0, 0);
+
+	public function new(?x:Float = 0, ?y:Float = 0, dragShitFunc:SprStage->Void)
 	{
 		super(x, y);
 
-		FlxMouseEventManager.add(this, dragShit, null, function(spr:SprStage)
+		FlxMouseEventManager.add(this, dragShitFunc, null, function(spr:SprStage)
 		{
 			if (isSelected() || StageBuilderState.curTool == SELECT)
 				alpha = 0.5;
@@ -23,7 +26,7 @@ class SprStage extends FlxSprite
 		}, false, true, true);
 	}
 
-	function isSelected():Bool
+	public function isSelected():Bool
 	{
 		return StageBuilderState.curSelectedSpr == this;
 	}
@@ -43,21 +46,5 @@ class SprStage extends FlxSprite
 			mousePressing = false;
 			StageBuilderState.changeTool(GRAB);
 		}
-	}
-
-	public var mousePressing:Bool = false;
-
-	private var mouseOffset:FlxPoint = FlxPoint.get(0, 0);
-
-	function dragShit(spr:SprStage)
-	{
-		if (StageBuilderState.curTool == SELECT)
-			StageBuilderState.curSelectedSpr = this;
-
-		mousePressing = true;
-
-		if (isSelected())
-			StageBuilderState.changeTool(GRABBING);
-		mouseOffset.set(FlxG.mouse.x - this.x, FlxG.mouse.y - this.y);
 	}
 }

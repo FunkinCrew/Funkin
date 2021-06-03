@@ -102,7 +102,7 @@ class StageBuilderState extends MusicBeatState
 
 			new FlxTimer().start(0.2, function(tmr)
 			{
-				var awesomeImg:SprStage = new SprStage(FlxG.mouse.x, FlxG.mouse.y);
+				var awesomeImg:SprStage = new SprStage(FlxG.mouse.x, FlxG.mouse.y, sprDragShitFunc);
 				awesomeImg.loadGraphic(Paths.image('stageBuild/stageTempImg'), false, 0, 0, true);
 
 				awesomeImg.layer = sprGrp.members.length;
@@ -223,6 +223,7 @@ class StageBuilderState extends MusicBeatState
 
 		if (FlxG.keys.justPressed.Z && actionQueue.length > 0)
 		{
+			trace('UNDO - QUEUE LENGTH: ' + actionQueue.length);
 			isUndoRedo = true;
 			actionQueue.pop()(posQueue.pop());
 		}
@@ -236,6 +237,7 @@ class StageBuilderState extends MusicBeatState
 
 		switch (curTool)
 		{
+			// redo this later so it doesn't create brand new FlxSprites into memory or someshit??? this was lazy 3AM way
 			case SELECT:
 				FlxG.mouse.load(new FlxSprite().loadGraphic(Paths.image('stageBuild/cursorSelect')).pixels);
 			case GRABBING:
@@ -246,6 +248,34 @@ class StageBuilderState extends MusicBeatState
 				trace('swag');
 		}
 	}
+
+	function changeCurSelected(spr:SprStage)
+	{
+		if (!isUndoRedo)
+		{
+			actionQueue.push(changeCurSelected);
+			posQueue.push(curSelectedSpr);
+		}
+		else
+			isUndoRedo = false;
+
+		curSelectedSpr = spr;
+	}
+
+	function sprDragShitFunc(spr:SprStage)
+	{
+		if (curTool == SELECT)
+			changeCurSelected(spr);
+
+		spr.mousePressing = true;
+
+		if (spr.isSelected())
+			changeTool(GRABBING);
+		spr.mouseOffset.set(FlxG.mouse.x - spr.x, FlxG.mouse.y - spr.y);
+	}
+
+	// make function for changing cur selection
+	function moveSprPos(xDiff:Float, yDiff:Float) {}
 
 	var isUndoRedo:Bool = false;
 	var actionQueue:Array<Dynamic->Void> = [];
