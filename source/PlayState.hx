@@ -1160,7 +1160,10 @@ class PlayState extends MusicBeatState
 		if(abLoop){
 			switch(loopState){				
 				case REPEAT | NONE:
-					loopA = Conductor.songPosition;
+					if(!startingSong)
+						loopA = Conductor.songPosition;
+					else
+						loopA = 0;
 					loopState = ANODE;
 					FlxG.log.add("Setting A Node");
 				case ANODE:
