@@ -1143,10 +1143,10 @@ class PlayState extends MusicBeatState
 		for(note in noteArray){
 			if(note.strumTime > startingpoint)
 			{
+				noteRef = newNoteArray.length > 0 ? newNoteArray[newNoteArray.length - 1] : null;
 				var deepCopy:Note = new Note(note.strumTime,note.noteData,noteRef,note.isSustainNote);
 				deepCopy.mustPress = note.mustPress;
-				deepCopy.x = note.x;
-				noteRef = deepCopy;
+				deepCopy.x = note.x;				
 				newNoteArray.push(deepCopy);
 			}
 			
