@@ -29,7 +29,7 @@ Build instructions
 0.first need to install using this guide
 https://github.com/ninjamuffin99/Funkin
 
-Install have 4.2.2 instead of 4.1.5
+Install haxe 4.2.2 instead of 4.1.5
 
 1.we need to install android studio, jdk, ndk Revision 15c
 
