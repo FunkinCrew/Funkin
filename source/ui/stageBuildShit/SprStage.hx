@@ -11,6 +11,7 @@ class SprStage extends FlxSprite
 	public var mousePressing:Bool = false;
 
 	public var mouseOffset:FlxPoint = FlxPoint.get(0, 0);
+	public var oldPos:FlxPoint = FlxPoint.get(0, 0);
 
 	public function new(?x:Float = 0, ?y:Float = 0, dragShitFunc:SprStage->Void)
 	{

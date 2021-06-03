@@ -221,6 +221,14 @@ class StageBuilderState extends MusicBeatState
 			}
 		}
 
+		if (curTool == GRABBING && FlxG.mouse.justReleased)
+		{
+			moveSprPos([
+				curSelectedSpr.x - curSelectedSpr.oldPos.x,
+				curSelectedSpr.y - curSelectedSpr.oldPos.y
+			]);
+		}
+
 		if (FlxG.keys.justPressed.Z && actionQueue.length > 0)
 		{
 			trace('UNDO - QUEUE LENGTH: ' + actionQueue.length);
@@ -251,15 +259,20 @@ class StageBuilderState extends MusicBeatState
 
 	function changeCurSelected(spr:SprStage)
 	{
+		undoRedoCheck(changeCurSelected, curSelectedSpr);
+		curSelectedSpr = spr;
+	}
+
+	// base check to see if its in a state of undo or redo
+	function undoRedoCheck(daFunc:Dynamic->Void, daValue:Dynamic)
+	{
 		if (!isUndoRedo)
 		{
-			actionQueue.push(changeCurSelected);
-			posQueue.push(curSelectedSpr);
+			actionQueue.push(daFunc);
+			posQueue.push(daValue);
 		}
 		else
 			isUndoRedo = false;
-
-		curSelectedSpr = spr;
 	}
 
 	function sprDragShitFunc(spr:SprStage)
@@ -272,10 +285,30 @@ class StageBuilderState extends MusicBeatState
 		if (spr.isSelected())
 			changeTool(GRABBING);
 		spr.mouseOffset.set(FlxG.mouse.x - spr.x, FlxG.mouse.y - spr.y);
+		spr.oldPos.set(spr.x, spr.y);
 	}
 
 	// make function for changing cur selection
-	function moveSprPos(xDiff:Float, yDiff:Float) {}
+	function moveSprPos(dumbArray:Array<Dynamic>)
+	{
+		var xDiff:Float = dumbArray[0];
+		var yDiff:Float = dumbArray[1];
+		var forceMove:Bool = dumbArray[2];
+
+		// if (forceMove == null)
+		// forceMove = false;
+
+		trace(xDiff);
+		trace(yDiff);
+
+		if (forceMove)
+		{
+			curSelectedSpr.x += xDiff;
+			curSelectedSpr.y += yDiff;
+		}
+
+		undoRedoCheck(moveSprPos, [-xDiff, -yDiff, true]);
+	}
 
 	var isUndoRedo:Bool = false;
 	var actionQueue:Array<Dynamic->Void> = [];
@@ -291,14 +324,7 @@ class StageBuilderState extends MusicBeatState
 		// NOTE: fix to account if only one layer is in?
 
 		sortSprGrp();
-
-		if (!isUndoRedo)
-		{
-			actionQueue.push(moveLayer);
-			posQueue.push(layerMovement * -1);
-		}
-		else
-			isUndoRedo = false;
+		undoRedoCheck(moveLayer, layerMovement * -1);
 	}
 
 	var isShaking:Bool = false;
