@@ -674,14 +674,14 @@ class ChartingState extends MusicBeatState
 			writingNotes = !writingNotes;
 		}
 
-		/*if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.RIGHT)
+		if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.RIGHT)
 			snap = snap * 2;
 		if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.LEFT)
 			snap = Math.round(snap / 2);
 		if (snap >= 192)
 			snap = 192;
 		if (snap <= 1)
-			snap = 1;*/
+			snap = 1;
 		Conductor.songPosition = FlxG.sound.music.time;
 		_song.song = typingShit.text;
 
@@ -944,7 +944,16 @@ class ChartingState extends MusicBeatState
 				FlxG.sound.music.pause();
 				vocals.pause();
 
-				FlxG.sound.music.time = curStep * Conductor.stepCrochet - (FlxG.mouse.wheel * Conductor.stepCrochet / snap);
+				var stepMs = curStep * Conductor.stepCrochet;
+
+				if (FlxG.sound.music.time < 0)
+					FlxG.sound.music.time = 0;
+
+
+				trace(Conductor.stepCrochet / snap);
+
+				FlxG.sound.music.time = (stepMs + (Conductor.stepCrochet / snap)) * FlxG.mouse.wheel;
+				trace(stepMs + " + " + Conductor.stepCrochet / snap + " -> " + FlxG.sound.music.time);
 
 				vocals.time = FlxG.sound.music.time;
 			}
