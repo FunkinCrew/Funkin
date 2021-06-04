@@ -76,6 +76,8 @@ class KadeEngineData
 			FlxG.save.data.cpuStrums = false;
 
 		Conductor.recalculateTimings();
+		PlayerSettings.player1.controls.loadKeyBinds();
+		KeyBinds.keyCheck();
 
 		Main.watermarks = FlxG.save.data.watermark;
 
