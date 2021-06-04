@@ -14,8 +14,12 @@ import flixel.util.FlxColor;
 import flixel.util.FlxSpriteUtil;
 import lime.utils.Assets as LimeAssets;
 import openfl.Assets;
+import openfl.events.Event;
+import openfl.events.IOErrorEvent;
+import openfl.net.FileReference;
 import sys.io.File;
 
+using StringTools;
 using flixel.util.FlxSpriteUtil;
 
 class DebugBoundingState extends FlxState
@@ -242,6 +246,19 @@ class DebugBoundingState extends FlxState
 			swagChar.playAnim(animName);
 			trace(animName);
 		}
+
+		if (FlxG.keys.justPressed.ESCAPE)
+		{
+			var outputString:String = "";
+
+			for (i in swagChar.animOffsets.keys())
+			{
+				outputString += i + " " + swagChar.animOffsets.get(i)[0] + " " + swagChar.animOffsets.get(i)[1] + "\n";
+			}
+
+			outputString.trim();
+			saveOffsets(outputString);
+		}
 	}
 
 	var swagChar:Character;
@@ -276,6 +293,52 @@ class DebugBoundingState extends FlxState
 			trace(swagChar.animOffsets.get(animName));
 		};
 		dropDownSetup = true;
+	}
+
+	var _file:FileReference;
+
+	private function saveOffsets(saveString:String)
+	{
+		if ((saveString != null) && (saveString.length > 0))
+		{
+			_file = new FileReference();
+			_file.addEventListener(Event.COMPLETE, onSaveComplete);
+			_file.addEventListener(Event.CANCEL, onSaveCancel);
+			_file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
+			_file.save(saveString, swagChar.curCharacter + "Offsets.txt");
+		}
+	}
+
+	function onSaveComplete(_):Void
+	{
+		_file.removeEventListener(Event.COMPLETE, onSaveComplete);
+		_file.removeEventListener(Event.CANCEL, onSaveCancel);
+		_file.removeEventListener(IOErrorEvent.IO_ERROR, onSaveError);
+		_file = null;
+		FlxG.log.notice("Successfully saved LEVEL DATA.");
+	}
+
+	/**
+	 * Called when the save file dialog is cancelled.
+	 */
+	function onSaveCancel(_):Void
+	{
+		_file.removeEventListener(Event.COMPLETE, onSaveComplete);
+		_file.removeEventListener(Event.CANCEL, onSaveCancel);
+		_file.removeEventListener(IOErrorEvent.IO_ERROR, onSaveError);
+		_file = null;
+	}
+
+	/**
+	 * Called if there is an error while saving the gameplay recording.
+	 */
+	function onSaveError(_):Void
+	{
+		_file.removeEventListener(Event.COMPLETE, onSaveComplete);
+		_file.removeEventListener(Event.CANCEL, onSaveCancel);
+		_file.removeEventListener(IOErrorEvent.IO_ERROR, onSaveError);
+		_file = null;
+		FlxG.log.error("Problem saving Level data");
 	}
 }
 
