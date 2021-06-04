@@ -1,6 +1,6 @@
 DIALOGUE SYSTEM TUTORIAL:
 
-:: - character data, can range from bf to senpai or even the ones you make. To create a new character, make a file in assets/shared/images/portraits and name it however you want, then make an xml file named the same, it will be useful for animations. There are no limits to this one.
+:: - character data, can range from bf to senpai or even the ones you make. To create a new portrait, Make a new character (Well, if you already made one, that's fine.), make a file in assets\images\custom_chars\(character name) and name it however you want, then make an xml file named the same, it will be useful for animations. There are no limits to this one.
 
 !! - character's emotion, signified by an animation name. To make one, make a graphic for it inside of an image representing the character and then declare it inside of its xml file. There are no limits to this one.
 
@@ -24,9 +24,9 @@ DIALOGUE SYSTEM TUTORIAL:
 
 || - whether you want to flip your character to another side or not. Can be true, or false.
 
-## - dialogue box, can be anything. To create a new box, make a file in assets/shared/images/dialogueBoxes and name it however you want, then make an xml file named the same with two animations: 'open' and 'normal'. There are no limits to this one.
+## - dialogue box, can be anything. To create a new box, make a file in assets\images\custom_dialogs\dialogBoxes and name it however you want, then make an xml file named the same with two animations: 'open' and 'normal'. There are no limits to this one.
 
-^^ - dialogue sounds for a character to speak. to make a new dialogue sound, make a file in assets/shared/sounds/dialogueSounds.
+^^ - dialogue sounds for a character to speak. to make a new dialogue sound, make a file in assets\images\custom_dialogs\dialogSounds.
 
 !! - text color.  Filled in a #AARRGGBB fashion. AA - alpha, RR - red, GG - green, BB - blue, all valued in hex.
 
@@ -57,13 +57,13 @@ THERE ARE ALSO CERTAIN VARIABLES YOU CAN CHANGE AT THE BEGGINING OF DIALOGUE TO 
 
 [[ - Background color. There are 4 parameters to this. In order they are: alpha, red, green, blue. Must be an intenger from 0 to 255.
 
-|| - Music name. To get a custom one in, make a music file and put it in assets/shared/music/dialogueMusic
+|| - Music name. To get a custom one in, make a music file and put it in assets\images\custom_dialogs\dialogMusic
 
 ** - music volume. Accepted values: 0-100, but it can go higher if you want to.
 
 == - character scale. Can be any float.
 
-## - dialogue box, can be anything. To create a new box, make a file in assets/shared/images/dialogueBoxes and name it however you want, then make an xml file named the same with two animations: 'open' and 'normal'. There are no limits to this one.
+## - dialogue box, can be anything. To create a new box, make a file in assets\images\custom_dialogs\dialogBoxes and name it however you want, then make an xml file named the same with two animations: 'open' and 'normal'. There are no limits to this one.
 
 << - fade in time of many objects per some amount. Can be a float.
 
