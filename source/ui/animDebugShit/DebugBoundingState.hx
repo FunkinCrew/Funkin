@@ -1,4 +1,4 @@
-package;
+package ui.animDebugShit;
 
 import flixel.FlxCamera;
 import flixel.FlxG;
@@ -47,6 +47,7 @@ class DebugBoundingState extends FlxState
 	var curView:ANIMDEBUGVIEW = SPRITESHEET;
 
 	var spriteSheetView:FlxGroup;
+	var offsetView:FlxGroup;
 	var animDropDownMenu:FlxUIDropDownMenu;
 	var dropDownSetup:Bool = false;
 
@@ -65,26 +66,12 @@ class DebugBoundingState extends FlxState
 		add(bg);
 
 		initSpritesheetView();
+		initOffsetView();
 
 		// charInput = new FlxInputText(300, 10, 150, "bf", 16);
 		// charInput.focusCam = hudCam;
 		// charInput.cameras = [hudCam];
 		// charInput.scrollFactor.set();
-
-		animDropDownMenu = new FlxUIDropDownMenu(370, 20, FlxUIDropDownMenu.makeStrIdLabelArray(['weed'], true));
-		animDropDownMenu.cameras = [hudCam];
-		add(animDropDownMenu);
-
-		var characters:Array<String> = CoolUtil.coolTextFile(Paths.txt('characterList'));
-
-		charInput = new FlxUIDropDownMenu(200, 20, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(str:String)
-		{
-			loadAnimShit(characters[Std.parseInt(str)]);
-			// trace();
-		});
-		// charInput.
-		charInput.cameras = [hudCam];
-		add(charInput);
 
 		super.create();
 	}
@@ -145,6 +132,27 @@ class DebugBoundingState extends FlxState
 		});
 	}
 
+	function initOffsetView():Void
+	{
+		offsetView = new FlxGroup();
+		add(offsetView);
+
+		animDropDownMenu = new FlxUIDropDownMenu(370, 20, FlxUIDropDownMenu.makeStrIdLabelArray(['weed'], true));
+		animDropDownMenu.cameras = [hudCam];
+		offsetView.add(animDropDownMenu);
+
+		var characters:Array<String> = CoolUtil.coolTextFile(Paths.txt('characterList'));
+
+		charInput = new FlxUIDropDownMenu(200, 20, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(str:String)
+		{
+			loadAnimShit(characters[Std.parseInt(str)]);
+			// trace();
+		});
+		// charInput.
+		charInput.cameras = [hudCam];
+		offsetView.add(charInput);
+	}
+
 	function addInfo(str:String, value:Dynamic)
 	{
 		var swagText:FlxText = new FlxText(10, 10 + (28 * txtGrp.length));
@@ -184,8 +192,12 @@ class DebugBoundingState extends FlxState
 		{
 			case SPRITESHEET:
 				spriteSheetView.visible = true;
+				offsetView.visible = false;
+				offsetView.active = false;
 			case OFFSETSHIT:
 				spriteSheetView.visible = false;
+				offsetView.visible = true;
+				offsetView.active = true;
 				offsetControls();
 		}
 
@@ -209,14 +221,37 @@ class DebugBoundingState extends FlxState
 	{
 		if (FlxG.keys.justPressed.RBRACKET)
 		{
-			if (Std.parseInt(animDropDownMenu.selectedId) + 1 < animDropDownMenu.length)
+			if (Std.parseInt(animDropDownMenu.selectedId) + 1 <= animDropDownMenu.length)
 				animDropDownMenu.selectedId = Std.string(Std.parseInt(animDropDownMenu.selectedId) + 1);
+			else
+				animDropDownMenu.selectedId = Std.string(0);
 			animDropDownMenu.callback(animDropDownMenu.selectedId);
 		}
 		if (FlxG.keys.justPressed.LBRACKET)
 		{
 			if (Std.parseInt(animDropDownMenu.selectedId) - 1 >= 0)
 				animDropDownMenu.selectedId = Std.string(Std.parseInt(animDropDownMenu.selectedId) - 1);
+			else
+				animDropDownMenu.selectedId = Std.string(animDropDownMenu.length - 1);
+			animDropDownMenu.callback(animDropDownMenu.selectedId);
+		}
+
+		if (FlxG.keys.justPressed.W || FlxG.keys.justPressed.S || FlxG.keys.justPressed.D || FlxG.keys.justPressed.A)
+		{
+			var missShit:String = '';
+
+			if (FlxG.keys.pressed.SHIFT)
+				missShit = 'miss';
+
+			if (FlxG.keys.justPressed.W)
+				animDropDownMenu.selectedLabel = 'singUP' + missShit;
+			if (FlxG.keys.justPressed.S)
+				animDropDownMenu.selectedLabel = 'singDOWN' + missShit;
+			if (FlxG.keys.justPressed.A)
+				animDropDownMenu.selectedLabel = 'singLEFT' + missShit;
+			if (FlxG.keys.justPressed.D)
+				animDropDownMenu.selectedLabel = 'singRIGHT' + missShit;
+
 			animDropDownMenu.callback(animDropDownMenu.selectedId);
 		}
 

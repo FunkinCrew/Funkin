@@ -160,7 +160,7 @@ class TitleState extends MusicBeatState
 		#elseif STAGEBUILD
 		FlxG.switchState(new StageBuilderState());
 		#elseif ANIMDEBUG
-		FlxG.switchState(new DebugBoundingState());
+		FlxG.switchState(new ui.animDebugShit.DebugBoundingState());
 		#else
 		new FlxTimer().start(1, function(tmr:FlxTimer)
 		{
