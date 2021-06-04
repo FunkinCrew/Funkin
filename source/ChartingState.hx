@@ -695,12 +695,23 @@ class ChartingState extends MusicBeatState
 		var rightO = FlxG.keys.justPressed.EIGHT;
 
 		var pressArray = [left, down, up, right, leftO, downO, upO, rightO];
-
+		var delete = false;
+		curRenderedNotes.forEach(function(note:Note)
+			{
+				if (strumLine.overlaps(note) && pressArray[Math.floor(Math.abs(note.noteData))])
+				{
+					deleteNote(note);
+					delete = true;
+					trace('deelte note');
+				}
+			});
 		for (p in 0...pressArray.length)
 		{
 			var i = pressArray[p];
-			if (i)
+			if (i && !delete)
+			{
 				addNote(new Note(Conductor.songPosition,p));
+			}
 		}
 
 		strumLine.y = getYfromStrum((Conductor.songPosition - sectionStartTime()) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps));
@@ -718,8 +729,7 @@ class ChartingState extends MusicBeatState
 						if(!claps.contains(note))
 						{
 							claps.push(note);
-							if(_song.notes[curSection].mustHitSection) FlxG.sound.play(Paths.sound('CLAP'));
-							else FlxG.sound.play(Paths.sound('SNAP'));
+							FlxG.sound.play(Paths.sound('SNAP'));
 						}
 					});
 				}
@@ -947,6 +957,7 @@ class ChartingState extends MusicBeatState
 			{
 				FlxG.sound.music.pause();
 				vocals.pause();
+				claps.splice(0, claps.length);
 
 				var stepMs = curStep * Conductor.stepCrochet;
 
@@ -968,6 +979,7 @@ class ChartingState extends MusicBeatState
 				{
 					FlxG.sound.music.pause();
 					vocals.pause();
+					claps.splice(0, claps.length);
 
 					var daTime:Float = 700 * FlxG.elapsed;
 
