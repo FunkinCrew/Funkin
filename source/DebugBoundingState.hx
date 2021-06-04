@@ -182,6 +182,7 @@ class DebugBoundingState extends FlxState
 				spriteSheetView.visible = true;
 			case OFFSETSHIT:
 				spriteSheetView.visible = false;
+				offsetControls();
 		}
 
 		/* if (charInput.hasFocus && FlxG.keys.justPressed.ENTER)
@@ -198,6 +199,22 @@ class DebugBoundingState extends FlxState
 		bg.setGraphicSize(Std.int(bg.width / FlxG.camera.zoom));
 
 		super.update(elapsed);
+	}
+
+	function offsetControls():Void
+	{
+		if (FlxG.keys.justPressed.RBRACKET)
+		{
+			if (Std.parseInt(animDropDownMenu.selectedId) + 1 < animDropDownMenu.length)
+				animDropDownMenu.selectedId = Std.string(Std.parseInt(animDropDownMenu.selectedId) + 1);
+			animDropDownMenu.callback(animDropDownMenu.selectedId);
+		}
+		if (FlxG.keys.justPressed.LBRACKET)
+		{
+			if (Std.parseInt(animDropDownMenu.selectedId) - 1 >= 0)
+				animDropDownMenu.selectedId = Std.string(Std.parseInt(animDropDownMenu.selectedId) - 1);
+			animDropDownMenu.callback(animDropDownMenu.selectedId);
+		}
 	}
 
 	var swagChar:Character;
