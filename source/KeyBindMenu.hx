@@ -3,6 +3,7 @@ package;
 /// Code created by Rozebud for FPS Plus (thanks rozebud)
 // modified by KadeDev for use in Kade Engine/Tricky
 
+import flixel.util.FlxAxes;
 import flixel.FlxSubState;
 import Options.Option;
 import flixel.input.FlxInput;
@@ -79,6 +80,7 @@ class KeyBindMenu extends FlxSubState
 		infoText.borderSize = 2;
 		infoText.borderQuality = 3;
         infoText.alpha = 0;
+        infoText.screenCenter(FlxAxes.X);
         add(infoText);
         add(keyTextDisplay);
 
