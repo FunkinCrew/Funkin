@@ -1,5 +1,6 @@
 package ui.stageBuildShit;
 
+import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.addons.display.FlxGridOverlay;
@@ -7,21 +8,30 @@ import flixel.group.FlxGroup;
 import flixel.input.mouse.FlxMouseButton.FlxMouseButtonID;
 import flixel.input.mouse.FlxMouseEventManager;
 import flixel.math.FlxPoint;
+import flixel.text.FlxText;
 import flixel.ui.FlxButton;
+import flixel.util.FlxColor;
 import flixel.util.FlxSort;
 import flixel.util.FlxTimer;
 
 class StageBuilderState extends MusicBeatState
 {
 	private var hudGrp:FlxGroup;
+	var textInfo:FlxText;
 
 	private var sprGrp:FlxTypedGroup<SprStage>;
 
 	// var snd:Sound;
 	// var sndChannel:SoundChannel;
+	var hudCam:FlxCamera;
 
 	override function create()
 	{
+		hudCam = new FlxCamera();
+		hudCam.bgColor.alpha = 0;
+
+		FlxG.cameras.add(hudCam, false);
+
 		super.create();
 
 		FlxG.mouse.visible = true;
@@ -70,7 +80,13 @@ class StageBuilderState extends MusicBeatState
 		add(sprGrp);
 
 		hudGrp = new FlxGroup();
+		hudGrp.cameras = [hudCam];
 		add(hudGrp);
+
+		textInfo = new FlxText(10, 80, 0, "", 24);
+		textInfo.setFormat(Paths.font("vcr.ttf"), 20, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		textInfo.scrollFactor.set();
+		hudGrp.add(textInfo);
 
 		var imgBtn:FlxButton = new FlxButton(20, 20, "Load Image", loadImage);
 		hudGrp.add(imgBtn);
@@ -106,8 +122,11 @@ class StageBuilderState extends MusicBeatState
 				awesomeImg.loadGraphic(Paths.image('stageBuild/stageTempImg'), false, 0, 0, true);
 
 				awesomeImg.layer = sprGrp.members.length;
+				awesomeImg.imgName = fileName;
 
 				sprGrp.add(awesomeImg);
+
+				curFocus = MOVEMENTS;
 			});
 
 			// Load the image shit by
@@ -148,6 +167,101 @@ class StageBuilderState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
+		if (FlxG.keys.justPressed.H)
+			hudGrp.visible = !hudGrp.visible;
+
+		if (FlxG.keys.justPressed.ESCAPE)
+		{
+			if (curFocus == ATTRIBUTES)
+				curFocus = MOVEMENTS;
+			else
+				curFocus = ATTRIBUTES;
+		}
+
+		switch (curFocus)
+		{
+			case MOVEMENTS:
+				movementControls();
+			case ATTRIBUTES:
+				attributeControls();
+			default:
+		}
+
+		if (FlxG.keys.justPressed.DELETE)
+		{
+			if (curSelectedSpr != null)
+				sprGrp.remove(curSelectedSpr, true);
+		}
+
+		CoolUtil.mouseCamDrag();
+
+		if (FlxG.keys.pressed.CONTROL)
+			CoolUtil.mouseWheelZoom();
+
+		if (isShaking)
+		{
+			FlxG.stage.window.x = Std.int(shakePos.x + (FlxG.random.float(-1, 1) * shakeIntensity));
+			FlxG.stage.window.y = Std.int(shakePos.y + (FlxG.random.float(-1, 1) * shakeIntensity));
+
+			shakeIntensity -= 30 * elapsed;
+
+			if (shakeIntensity <= 0)
+			{
+				isShaking = false;
+				shakeIntensity = 60;
+				FlxG.stage.window.x = Std.int(shakePos.x);
+				FlxG.stage.window.y = Std.int(shakePos.y);
+			}
+		}
+
+		if (curTool == GRABBING && FlxG.mouse.justReleased)
+		{
+			moveSprPos([
+				curSelectedSpr.x - curSelectedSpr.oldPos.x,
+				curSelectedSpr.y - curSelectedSpr.oldPos.y
+			]);
+		}
+
+		if (FlxG.keys.justPressed.Z && actionQueue.length > 0)
+		{
+			// trace('UNDO - QUEUE LENGTH: ' + actionQueue.length);
+			isUndoRedo = true;
+
+			var daFunc = actionQueue.pop();
+			var daValue = posQueue.pop();
+
+			daFunc(daValue);
+		}
+
+		super.update(elapsed);
+	}
+
+	function attributeControls():Void
+	{
+		textInfo.alpha = 1;
+
+		if (FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.RIGHT)
+		{
+			if (FlxG.keys.justPressed.LEFT)
+			{
+				curSelectedSpr.scrollFactor.x -= 0.1;
+				curSelectedSpr.scrollFactor.y -= 0.1;
+			}
+
+			if (FlxG.keys.justPressed.RIGHT)
+			{
+				curSelectedSpr.scrollFactor.x += 0.1;
+				curSelectedSpr.scrollFactor.y += 0.1;
+			}
+
+			updateTextInfo();
+		}
+	}
+
+	function movementControls():Void
+	{
+		textInfo.alpha = 0.5;
+
 		if (FlxG.keys.justPressed.CONTROL)
 		{
 			tempTool = curTool;
@@ -196,51 +310,9 @@ class StageBuilderState extends MusicBeatState
 			if (curSelectedSpr != null)
 				moveLayer(-1);
 		}
-
-		if (FlxG.keys.justPressed.DELETE)
-		{
-			if (curSelectedSpr != null)
-				sprGrp.remove(curSelectedSpr, true);
-		}
-
-		CoolUtil.mouseCamDrag();
-
-		if (FlxG.keys.pressed.CONTROL)
-			CoolUtil.mouseWheelZoom();
-
-		if (isShaking)
-		{
-			FlxG.stage.window.x = Std.int(shakePos.x + (FlxG.random.float(-1, 1) * shakeIntensity));
-			FlxG.stage.window.y = Std.int(shakePos.y + (FlxG.random.float(-1, 1) * shakeIntensity));
-
-			shakeIntensity -= 30 * elapsed;
-
-			if (shakeIntensity <= 0)
-			{
-				isShaking = false;
-				shakeIntensity = 60;
-				FlxG.stage.window.x = Std.int(shakePos.x);
-				FlxG.stage.window.y = Std.int(shakePos.y);
-			}
-		}
-
-		if (curTool == GRABBING && FlxG.mouse.justReleased)
-		{
-			moveSprPos([
-				curSelectedSpr.x - curSelectedSpr.oldPos.x,
-				curSelectedSpr.y - curSelectedSpr.oldPos.y
-			]);
-		}
-
-		if (FlxG.keys.justPressed.Z && actionQueue.length > 0)
-		{
-			// trace('UNDO - QUEUE LENGTH: ' + actionQueue.length);
-			isUndoRedo = true;
-			actionQueue.pop()(posQueue.pop());
-		}
-
-		super.update(elapsed);
 	}
+
+	var curFocus:FOCUS = MOVEMENTS;
 
 	static public function changeTool(newTool:TOOLS)
 	{
@@ -264,6 +336,14 @@ class StageBuilderState extends MusicBeatState
 	{
 		undoRedoCheck(changeCurSelected, curSelectedSpr);
 		curSelectedSpr = spr;
+
+		updateTextInfo();
+	}
+
+	function updateTextInfo()
+	{
+		textInfo.text = curSelectedSpr.imgName;
+		textInfo.text += ' - parallax: ' + curSelectedSpr.scrollFactor;
 	}
 
 	// base check to see if its in a state of undo or redo
@@ -301,6 +381,7 @@ class StageBuilderState extends MusicBeatState
 		// trace(xDiff);
 		// trace(yDiff);
 
+		// usually set to false for the MOUSE DRAG, merely to track movements from the mouse
 		if (forceMove)
 		{
 			curSelectedSpr.x += xDiff;
@@ -351,6 +432,12 @@ class StageBuilderState extends MusicBeatState
 	{
 		return FlxSort.byValues(FlxSort.ASCENDING, layer1.layer, layer2.layer);
 	}
+}
+
+enum FOCUS
+{
+	ATTRIBUTES;
+	MOVEMENTS;
 }
 
 enum TOOLS

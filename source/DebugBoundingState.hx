@@ -5,11 +5,14 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.addons.display.FlxGridOverlay;
+import flixel.addons.ui.FlxInputText;
+import flixel.addons.ui.FlxUIDropDownMenu;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.util.FlxSpriteUtil;
+import lime.utils.Assets as LimeAssets;
 import openfl.Assets;
 import sys.io.File;
 
@@ -17,6 +20,17 @@ using flixel.util.FlxSpriteUtil;
 
 class DebugBoundingState extends FlxState
 {
+	/* 
+		TODAY'S TO-DO
+		- Refactor the animation offset menu to be in this one instead
+			- Cleaner UI
+			- Easier to access, test, and export data from.
+			- Easier movement
+			- Onion skinning
+			- Mouse controls??
+			- Load different characters on the fly
+
+	 */
 	var bg:FlxSprite;
 	var fileInfo:FlxText;
 
@@ -24,8 +38,12 @@ class DebugBoundingState extends FlxState
 
 	var hudCam:FlxCamera;
 
+	var charInput:FlxUIDropDownMenu;
+
 	override function create()
 	{
+		Paths.setCurrentLevel('week1');
+
 		hudCam = new FlxCamera();
 		hudCam.bgColor.alpha = 0;
 
@@ -61,6 +79,22 @@ class DebugBoundingState extends FlxState
 		txtGrp = new FlxGroup();
 		txtGrp.cameras = [hudCam];
 		add(txtGrp);
+
+		// charInput = new FlxInputText(300, 10, 150, "bf", 16);
+		// charInput.focusCam = hudCam;
+		// charInput.cameras = [hudCam];
+		// charInput.scrollFactor.set();
+
+		var characters:Array<String> = CoolUtil.coolTextFile(Paths.txt('characterList'));
+
+		charInput = new FlxUIDropDownMenu(200, 20, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(str:String)
+		{
+			loadAnimShit(characters[Std.parseInt(str)]);
+			// trace();
+		});
+		// charInput.
+		charInput.cameras = [hudCam];
+		txtGrp.add(charInput);
 
 		addInfo('boyfriend.xml', "");
 		addInfo('Width', bf.width);
@@ -99,8 +133,31 @@ class DebugBoundingState extends FlxState
 		swagText.text = str + ": " + Std.string(value);
 	}
 
+	function checkLibrary(library:String)
+	{
+		trace(Assets.hasLibrary(library));
+		if (Assets.getLibrary(library) == null)
+		{
+			@:privateAccess
+			if (!LimeAssets.libraryPaths.exists(library))
+				throw "Missing library: " + library;
+
+			// var callback = callbacks.add("library:" + library);
+			Assets.loadLibrary(library).onComplete(function(_)
+			{
+				trace('LOADED... awesomeness...');
+				// callback();
+			});
+		}
+	}
+
 	override function update(elapsed:Float)
 	{
+		/* if (charInput.hasFocus && FlxG.keys.justPressed.ENTER)
+			{
+				loadAnimShit();
+		}*/
+
 		CoolUtil.mouseCamDrag();
 		CoolUtil.mouseWheelZoom();
 
@@ -110,5 +167,22 @@ class DebugBoundingState extends FlxState
 		bg.setGraphicSize(Std.int(bg.width / FlxG.camera.zoom));
 
 		super.update(elapsed);
+	}
+
+	var swagChar:Character;
+
+	function loadAnimShit(char:String)
+	{
+		// trace('TRYING TO LOAD - ' + charInput.text);
+
+		if (swagChar != null)
+		{
+			remove(swagChar);
+			swagChar.destroy();
+		}
+
+		swagChar = new Character(100, 100, char);
+		swagChar.debugMode = true;
+		add(swagChar);
 	}
 }
