@@ -40,6 +40,12 @@ class DebugBoundingState extends FlxState
 
 	var charInput:FlxUIDropDownMenu;
 
+	var curView:ANIMDEBUGVIEW = SPRITESHEET;
+
+	var spriteSheetView:FlxGroup;
+	var animDropDownMenu:FlxUIDropDownMenu;
+	var dropDownSetup:Bool = false;
+
 	override function create()
 	{
 		Paths.setCurrentLevel('week1');
@@ -54,12 +60,42 @@ class DebugBoundingState extends FlxState
 		bg.scrollFactor.set();
 		add(bg);
 
+		initSpritesheetView();
+
+		// charInput = new FlxInputText(300, 10, 150, "bf", 16);
+		// charInput.focusCam = hudCam;
+		// charInput.cameras = [hudCam];
+		// charInput.scrollFactor.set();
+
+		animDropDownMenu = new FlxUIDropDownMenu(370, 20, FlxUIDropDownMenu.makeStrIdLabelArray(['weed'], true));
+		animDropDownMenu.cameras = [hudCam];
+		add(animDropDownMenu);
+
+		var characters:Array<String> = CoolUtil.coolTextFile(Paths.txt('characterList'));
+
+		charInput = new FlxUIDropDownMenu(200, 20, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(str:String)
+		{
+			loadAnimShit(characters[Std.parseInt(str)]);
+			// trace();
+		});
+		// charInput.
+		charInput.cameras = [hudCam];
+		add(charInput);
+
+		super.create();
+	}
+
+	function initSpritesheetView():Void
+	{
+		spriteSheetView = new FlxGroup();
+		add(spriteSheetView);
+
 		var tex = Paths.getSparrowAtlas('characters/temp');
 		// tex.frames[0].uv
 
 		var bf:FlxSprite = new FlxSprite();
 		bf.loadGraphic(tex.parent);
-		add(bf);
+		spriteSheetView.add(bf);
 
 		var swagGraphic:FlxSprite = new FlxSprite().makeGraphic(tex.parent.width, tex.parent.height, FlxColor.TRANSPARENT);
 
@@ -78,30 +114,14 @@ class DebugBoundingState extends FlxState
 
 		txtGrp = new FlxGroup();
 		txtGrp.cameras = [hudCam];
-		add(txtGrp);
-
-		// charInput = new FlxInputText(300, 10, 150, "bf", 16);
-		// charInput.focusCam = hudCam;
-		// charInput.cameras = [hudCam];
-		// charInput.scrollFactor.set();
-
-		var characters:Array<String> = CoolUtil.coolTextFile(Paths.txt('characterList'));
-
-		charInput = new FlxUIDropDownMenu(200, 20, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(str:String)
-		{
-			loadAnimShit(characters[Std.parseInt(str)]);
-			// trace();
-		});
-		// charInput.
-		charInput.cameras = [hudCam];
-		txtGrp.add(charInput);
+		spriteSheetView.add(txtGrp);
 
 		addInfo('boyfriend.xml', "");
 		addInfo('Width', bf.width);
 		addInfo('Height', bf.height);
 
 		swagGraphic.antialiasing = true;
-		add(swagGraphic);
+		spriteSheetView.add(swagGraphic);
 
 		FlxG.stage.window.onDropFile.add(function(path:String)
 		{
@@ -119,8 +139,6 @@ class DebugBoundingState extends FlxState
 			bf.loadGraphic(Paths.image('characters/temp'));
 			add(bf);
 		});
-
-		super.create();
 	}
 
 	function addInfo(str:String, value:Dynamic)
@@ -153,6 +171,19 @@ class DebugBoundingState extends FlxState
 
 	override function update(elapsed:Float)
 	{
+		if (FlxG.keys.justPressed.ONE)
+			curView = SPRITESHEET;
+		if (FlxG.keys.justReleased.TWO)
+			curView = OFFSETSHIT;
+
+		switch (curView)
+		{
+			case SPRITESHEET:
+				spriteSheetView.visible = true;
+			case OFFSETSHIT:
+				spriteSheetView.visible = false;
+		}
+
 		/* if (charInput.hasFocus && FlxG.keys.justPressed.ENTER)
 			{
 				loadAnimShit();
@@ -173,8 +204,6 @@ class DebugBoundingState extends FlxState
 
 	function loadAnimShit(char:String)
 	{
-		// trace('TRYING TO LOAD - ' + charInput.text);
-
 		if (swagChar != null)
 		{
 			remove(swagChar);
@@ -184,5 +213,27 @@ class DebugBoundingState extends FlxState
 		swagChar = new Character(100, 100, char);
 		swagChar.debugMode = true;
 		add(swagChar);
+
+		var animThing:Array<String> = [];
+
+		for (i in swagChar.animOffsets.keys())
+		{
+			animThing.push(i);
+			trace(i);
+			trace(swagChar.animOffsets[i]);
+		}
+
+		animDropDownMenu.setData(FlxUIDropDownMenu.makeStrIdLabelArray(animThing, true));
+		animDropDownMenu.callback = function(str:String)
+		{
+			swagChar.playAnim(animThing[Std.parseInt(str)]); // trace();
+		};
+		dropDownSetup = true;
 	}
+}
+
+enum ANIMDEBUGVIEW
+{
+	SPRITESHEET;
+	OFFSETSHIT;
 }
