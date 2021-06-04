@@ -215,6 +215,33 @@ class DebugBoundingState extends FlxState
 				animDropDownMenu.selectedId = Std.string(Std.parseInt(animDropDownMenu.selectedId) - 1);
 			animDropDownMenu.callback(animDropDownMenu.selectedId);
 		}
+
+		if (FlxG.keys.justPressed.RIGHT || FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.UP || FlxG.keys.justPressed.DOWN)
+		{
+			var animName = animDropDownMenu.selectedLabel;
+			var coolValues:Array<Dynamic> = swagChar.animOffsets.get(animName);
+
+			var multiplier:Float = 5;
+
+			if (FlxG.keys.pressed.CONTROL)
+				multiplier = 1;
+
+			if (FlxG.keys.pressed.SHIFT)
+				multiplier = 10;
+
+			if (FlxG.keys.justPressed.RIGHT)
+				coolValues[0] -= 1 * multiplier;
+			else if (FlxG.keys.justPressed.LEFT)
+				coolValues[0] += 1 * multiplier;
+			else if (FlxG.keys.justPressed.UP)
+				coolValues[1] += 1 * multiplier;
+			else if (FlxG.keys.justPressed.DOWN)
+				coolValues[1] -= 1 * multiplier;
+
+			swagChar.animOffsets.set(animDropDownMenu.selectedLabel, coolValues);
+			swagChar.playAnim(animName);
+			trace(animName);
+		}
 	}
 
 	var swagChar:Character;
@@ -243,7 +270,10 @@ class DebugBoundingState extends FlxState
 		animDropDownMenu.setData(FlxUIDropDownMenu.makeStrIdLabelArray(animThing, true));
 		animDropDownMenu.callback = function(str:String)
 		{
-			swagChar.playAnim(animThing[Std.parseInt(str)]); // trace();
+			var animName = animThing[Std.parseInt(str)];
+
+			swagChar.playAnim(animName); // trace();
+			trace(swagChar.animOffsets.get(animName));
 		};
 		dropDownSetup = true;
 	}
