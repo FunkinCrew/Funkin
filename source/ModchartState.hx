@@ -251,7 +251,7 @@ class ModchartState
 					PlayState.instance.addObject(PlayState.boyfriend);
 					PlayState.instance.iconP2.animation.play(id);
 	}
-	
+
 	function makeAnimatedLuaSprite(spritePath:String,names:Array<String>,prefixes:Array<String>,startAnim:String, id:String)
 	{
 		#if sys
@@ -403,7 +403,8 @@ class ModchartState
 	
 				Lua_helper.add_callback(lua,"getProperty", getPropertyByName);
 				
-				Lua_helper.add_callback(lua,"makeAnimatedSprite", makeAnimatedLuaSprite);
+				// Lua_helper.add_callback(lua,"makeAnimatedSprite", makeAnimatedLuaSprite);
+				// this one is still in development
 
 				Lua_helper.add_callback(lua,"destroySprite", function(id:String) {
 					var sprite = luaSprites.get(id);

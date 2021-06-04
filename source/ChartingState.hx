@@ -129,7 +129,7 @@ class ChartingState extends MusicBeatState
 
 		blackBorder.alpha = 0.3;
 
-		snapText = new FlxText(60,10,0,"Snap: 1/" + snap + " (Control + Left or Right to change.)\nAdd Notes: 1-8 (or click)\n", 14);
+		snapText = new FlxText(60,10,0,"Snap: 1/" + snap + " (Press Control to unsnap the cursor)\nAdd Notes: 1-8 (or click)\n", 14);
 		snapText.scrollFactor.set();
 
 		gridBlackLine = new FlxSprite(gridBG.x + gridBG.width / 2).makeGraphic(2, Std.int(gridBG.height), FlxColor.BLACK);
@@ -660,6 +660,7 @@ class ChartingState extends MusicBeatState
 	}
 
 	var writingNotes:Bool = false;
+	var doSnapShit:Bool = false;
 
 	override function update(elapsed:Float)
 	{
@@ -674,14 +675,18 @@ class ChartingState extends MusicBeatState
 			writingNotes = !writingNotes;
 		}
 
-		if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.RIGHT)
+		/*if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.RIGHT)
 			snap = snap * 2;
 		if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.LEFT)
 			snap = Math.round(snap / 2);
 		if (snap >= 192)
 			snap = 192;
 		if (snap <= 1)
-			snap = 1;
+			snap = 1;*/
+
+		if (FlxG.keys.justPressed.CONTROL)
+			doSnapShit = false;
+
 		Conductor.songPosition = FlxG.sound.music.time;
 		_song.song = typingShit.text;
 
@@ -946,13 +951,16 @@ class ChartingState extends MusicBeatState
 
 				var stepMs = curStep * Conductor.stepCrochet;
 
-				if (FlxG.sound.music.time < 0)
+				if (FlxG.sound.music.time < 0 || curStep < 0)
 					FlxG.sound.music.time = 0;
 
 
 				trace(Conductor.stepCrochet / snap);
 
-				FlxG.sound.music.time = (stepMs + (Conductor.stepCrochet / snap)) * FlxG.mouse.wheel;
+				if (doSnapShit)
+					FlxG.sound.music.time = (stepMs + (Conductor.stepCrochet / snap)) * FlxG.mouse.wheel;
+				else
+					FlxG.sound.music.time = (stepMs + (Conductor.stepCrochet / 16)) * FlxG.mouse.wheel;
 				trace(stepMs + " + " + Conductor.stepCrochet / snap + " -> " + FlxG.sound.music.time);
 
 				vocals.time = FlxG.sound.music.time;

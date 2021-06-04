@@ -2940,7 +2940,7 @@ class PlayState extends MusicBeatState
 
 					if(dontCheck && possibleNotes.length > 0 && FlxG.save.data.ghost && !FlxG.save.data.botplay)
 					{
-						if (mashViolations > 4)
+						if (mashViolations > 8)
 						{
 							trace('mash violations ' + mashViolations);
 							scoreTxt.color = FlxColor.RED;
