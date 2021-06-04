@@ -16,6 +16,7 @@ import lime.utils.Assets as LimeAssets;
 import openfl.Assets;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
+import openfl.geom.Rectangle;
 import openfl.net.FileReference;
 import sys.io.File;
 
@@ -50,6 +51,8 @@ class DebugBoundingState extends FlxState
 	var offsetView:FlxGroup;
 	var animDropDownMenu:FlxUIDropDownMenu;
 	var dropDownSetup:Bool = false;
+
+	var onionSkinChar:FlxSprite;
 
 	override function create()
 	{
@@ -137,6 +140,9 @@ class DebugBoundingState extends FlxState
 		offsetView = new FlxGroup();
 		add(offsetView);
 
+		onionSkinChar = new FlxSprite().makeGraphic(FlxG.width * 2, FlxG.height * 2, FlxColor.TRANSPARENT);
+		offsetView.add(onionSkinChar);
+
 		animDropDownMenu = new FlxUIDropDownMenu(370, 20, FlxUIDropDownMenu.makeStrIdLabelArray(['weed'], true));
 		animDropDownMenu.cameras = [hudCam];
 		offsetView.add(animDropDownMenu);
@@ -201,6 +207,9 @@ class DebugBoundingState extends FlxState
 				offsetControls();
 		}
 
+		if (FlxG.keys.justPressed.H)
+			hudCam.visible = !hudCam.visible;
+
 		/* if (charInput.hasFocus && FlxG.keys.justPressed.ENTER)
 			{
 				loadAnimShit();
@@ -219,7 +228,7 @@ class DebugBoundingState extends FlxState
 
 	function offsetControls():Void
 	{
-		if (FlxG.keys.justPressed.RBRACKET)
+		if (FlxG.keys.justPressed.RBRACKET || FlxG.keys.justPressed.E)
 		{
 			if (Std.parseInt(animDropDownMenu.selectedId) + 1 <= animDropDownMenu.length)
 				animDropDownMenu.selectedId = Std.string(Std.parseInt(animDropDownMenu.selectedId) + 1);
@@ -227,7 +236,7 @@ class DebugBoundingState extends FlxState
 				animDropDownMenu.selectedId = Std.string(0);
 			animDropDownMenu.callback(animDropDownMenu.selectedId);
 		}
-		if (FlxG.keys.justPressed.LBRACKET)
+		if (FlxG.keys.justPressed.LBRACKET || FlxG.keys.justPressed.Q)
 		{
 			if (Std.parseInt(animDropDownMenu.selectedId) - 1 >= 0)
 				animDropDownMenu.selectedId = Std.string(Std.parseInt(animDropDownMenu.selectedId) - 1);
@@ -236,6 +245,9 @@ class DebugBoundingState extends FlxState
 			animDropDownMenu.callback(animDropDownMenu.selectedId);
 		}
 
+		// Keyboards controls for general WASD "movement"
+		// modifies the animDropDownMenu so that it's properly updated and shit
+		// and then it's just played and updated from the animDropDownMenu callback, which is set in the loadAnimShit() function probabbly
 		if (FlxG.keys.justPressed.W || FlxG.keys.justPressed.S || FlxG.keys.justPressed.D || FlxG.keys.justPressed.A)
 		{
 			var missShit:String = '';
@@ -254,6 +266,22 @@ class DebugBoundingState extends FlxState
 
 			animDropDownMenu.callback(animDropDownMenu.selectedId);
 		}
+
+		if (FlxG.keys.justPressed.F)
+		{
+			onionSkinChar.visible = !onionSkinChar.visible;
+		}
+
+		// Plays the idle animation
+		if (FlxG.keys.justPressed.SPACE)
+		{
+			animDropDownMenu.selectedLabel = 'idle';
+			animDropDownMenu.callback(animDropDownMenu.selectedId);
+		}
+
+		// Playback the animation
+		if (FlxG.keys.justPressed.ENTER)
+			animDropDownMenu.callback(animDropDownMenu.selectedId);
 
 		if (FlxG.keys.justPressed.RIGHT || FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.UP || FlxG.keys.justPressed.DOWN)
 		{
@@ -322,9 +350,14 @@ class DebugBoundingState extends FlxState
 		animDropDownMenu.setData(FlxUIDropDownMenu.makeStrIdLabelArray(animThing, true));
 		animDropDownMenu.callback = function(str:String)
 		{
-			var animName = animThing[Std.parseInt(str)];
+			// clears the canvas
+			onionSkinChar.pixels.fillRect(new Rectangle(0, 0, FlxG.width * 2, FlxG.height * 2), 0x00000000);
 
-			swagChar.playAnim(animName); // trace();
+			onionSkinChar.stamp(swagChar, Std.int(swagChar.x - swagChar.offset.x), Std.int(swagChar.y - swagChar.offset.y));
+			onionSkinChar.alpha = 0.6;
+
+			var animName = animThing[Std.parseInt(str)];
+			swagChar.playAnim(animName, true); // trace();
 			trace(swagChar.animOffsets.get(animName));
 		};
 		dropDownSetup = true;
