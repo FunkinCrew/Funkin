@@ -9,6 +9,7 @@ import flixel.addons.ui.FlxInputText;
 import flixel.addons.ui.FlxUIDropDownMenu;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxGroup;
+import flixel.math.FlxPoint;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.util.FlxSpriteUtil;
@@ -30,10 +31,7 @@ class DebugBoundingState extends FlxState
 		- Refactor the animation offset menu to be in this one instead
 			- Cleaner UI
 			- Easier to access, test, and export data from.
-			- Easier movement
-			- Onion skinning
-			- Mouse controls??
-			- Load different characters on the fly
+			- Data to show offset positioning
 
 	 */
 	var bg:FlxSprite;
@@ -141,6 +139,7 @@ class DebugBoundingState extends FlxState
 		add(offsetView);
 
 		onionSkinChar = new FlxSprite().makeGraphic(FlxG.width * 2, FlxG.height * 2, FlxColor.TRANSPARENT);
+		onionSkinChar.visible = false;
 		offsetView.add(onionSkinChar);
 
 		animDropDownMenu = new FlxUIDropDownMenu(370, 20, FlxUIDropDownMenu.makeStrIdLabelArray(['weed'], true));
@@ -157,6 +156,30 @@ class DebugBoundingState extends FlxState
 		// charInput.
 		charInput.cameras = [hudCam];
 		offsetView.add(charInput);
+	}
+
+	public var mouseOffset:FlxPoint = FlxPoint.get(0, 0);
+	public var oldPos:FlxPoint = FlxPoint.get(0, 0);
+
+	function mouseOffsetMovement()
+	{
+		if (swagChar != null)
+		{
+			if (FlxG.mouse.justPressed)
+			{
+				mouseOffset.set(FlxG.mouse.x - -swagChar.offset.x, FlxG.mouse.y - -swagChar.offset.y);
+				// oldPos.set(swagChar.offset.x, swagChar.offset.y);
+				// oldPos.set(FlxG.mouse.x, FlxG.mouse.y);
+			}
+
+			if (FlxG.mouse.pressed)
+			{
+				swagChar.offset.x = (FlxG.mouse.x - mouseOffset.x) * -1;
+				swagChar.offset.y = (FlxG.mouse.y - mouseOffset.y) * -1;
+
+				swagChar.animOffsets.set(animDropDownMenu.selectedLabel, [swagChar.offset.x, swagChar.offset.y]);
+			}
+		}
 	}
 
 	function addInfo(str:String, value:Dynamic)
@@ -205,6 +228,7 @@ class DebugBoundingState extends FlxState
 				offsetView.visible = true;
 				offsetView.active = true;
 				offsetControls();
+				mouseOffsetMovement();
 		}
 
 		if (FlxG.keys.justPressed.H)
