@@ -25,6 +25,9 @@ Changes marked with 💖 will be listed in the short version of the changelog in
 - [PR #582](https://github.com/KadeDev/Kade-Engine/pull/582): Add changeDadCharacter, changeBoyfriendCharacter, keyPressed to lua modcharts
 - [PR #603](https://github.com/KadeDev/Kade-Engine/pull/603) and [PR #604](https://github.com/KadeDev/Kade-Engine/pull/604): Add note shifting to the chart editor
 - [PR #672](https://github.com/KadeDev/Kade-Engine/pull/672): Add getWindowWidth, getWindowHeight to lua modcharts
+- 💖 You can now fully customize your keybinds
+- Added new animations for the main menu and options menu
+- You can now place notes in the chart editor with 1-8 on your keyboard
 
 ### Changes
 - Tutorial is now a modchart instead of being hardcoded
@@ -38,6 +41,7 @@ Changes marked with 💖 will be listed in the short version of the changelog in
 - [PR #528](https://github.com/KadeDev/Kade-Engine/pull/528): setCamZoom and setHudZoom now use floats in lua modcharts
 - [PR #590](https://github.com/KadeDev/Kade-Engine/pull/590): The license is now automatically distributed with the game
 - (maybe 💖) [PR #612](https://github.com/KadeDev/Kade-Engine/pull/612): BPM is now a float (can have decimals)
+- The strumline in the chart editor now snaps to the time axis (toggle with Ctrl)
 
 ### Bugfixes
 - [PR #289](https://github.com/KadeDev/Kade-Engine/pulls/289): Player 2 now plays idle animation properly when camera zooms in
@@ -55,3 +59,4 @@ Changes marked with 💖 will be listed in the short version of the changelog in
 - [PR #638](https://github.com/KadeDev/Kade-Engine/pull/638): Fix bug with Girlfriend's dance in the tutorial
 - [PR #678](https://github.com/KadeDev/Kade-Engine/pull/678): Fix opening URLs on Linux
 - [PR #672](https://github.com/KadeDev/Kade-Engine/pull/672): Fix getScreenWidth and getScreenHeight in lua modcharts
+- Fixed early hit window
