@@ -50,7 +50,9 @@ class Note extends FlxSprite
 		x += 50;
 		// MAKE SURE ITS DEFINITELY OFF SCREEN?
 		y -= 2000;
-		this.strumTime = strumTime;
+		
+		// Take half the sprite's height to compensate for the offset down below
+		this.strumTime = strumTime - frameHeight / 2;
 
 		if (this.strumTime < 0 )
 			this.strumTime = 0;
@@ -125,20 +127,16 @@ class Note extends FlxSprite
 				animation.play('redScroll');
 		}
 
-		// trace(prevNote);
-
-		// we make sure its downscroll and its a SUSTAIN NOTE (aka a trail, not a note)
-		// and flip it so it doesn't look weird.
-		// THIS DOESN'T FUCKING FLIP THE NOTE, CONTRIBUTERS DON'T JUST COMMENT THIS OUT JESUS
-		if (FlxG.save.data.downscroll && sustainNote) 
-			flipY = true;
-
 		if (isSustainNote && prevNote != null)
 		{
 			noteScore * 0.2;
 			alpha = 0.6;
 
 			x += width / 2;
+			
+			flipY = true;
+			
+			offset.y = frameHeight;
 
 			switch (noteData)
 			{
@@ -161,6 +159,8 @@ class Note extends FlxSprite
 
 			if (prevNote.isSustainNote)
 			{
+				if(!FlxG.save.data.downscroll) flipY = false;
+				
 				switch (prevNote.noteData)
 				{
 					case 0:
@@ -178,6 +178,7 @@ class Note extends FlxSprite
 					prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.5 * FlxG.save.data.scrollSpeed;
 				else
 					prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.5 * PlayState.SONG.speed;
+				
 				prevNote.updateHitbox();
 				// prevNote.setGraphicSize();
 			}
@@ -193,6 +194,7 @@ class Note extends FlxSprite
 			// ass
 			if (isSustainNote)
 			{
+				trace('sustain note');
 				if (strumTime > Conductor.songPosition - (Conductor.safeZoneOffset * 1.5)
 					&& strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * 0.5))
 					canBeHit = true;
