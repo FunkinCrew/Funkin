@@ -33,6 +33,7 @@ class DebugBoundingState extends FlxState
 			- Easier to access, test, and export data from.
 			- Data to show offset positioning
 
+
 	 */
 	var bg:FlxSprite;
 	var fileInfo:FlxText;
