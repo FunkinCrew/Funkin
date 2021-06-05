@@ -202,6 +202,8 @@ class FreeplayState extends MusicBeatState
 
 		if (accepted)
 		{
+			trace(StringTools.replace(songs[curSelected].songName," ", "-").toLowerCase());
+
 			var poop:String = Highscore.formatSong(StringTools.replace(songs[curSelected].songName," ", "-").toLowerCase(), curDifficulty);
 
 			trace(poop);
