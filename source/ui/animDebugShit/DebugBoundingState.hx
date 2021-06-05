@@ -28,12 +28,8 @@ class DebugBoundingState extends FlxState
 {
 	/* 
 		TODAY'S TO-DO
-		- Refactor the animation offset menu to be in this one instead
-			- Cleaner UI
-			- Easier to access, test, and export data from.
-			- Data to show offset positioning
-
-
+		- Cleaner UI
+		- Data to show offset positioning
 	 */
 	var bg:FlxSprite;
 	var fileInfo:FlxText;
@@ -52,6 +48,7 @@ class DebugBoundingState extends FlxState
 	var dropDownSetup:Bool = false;
 
 	var onionSkinChar:FlxSprite;
+	var txtOffsetShit:FlxText;
 
 	override function create()
 	{
@@ -143,13 +140,18 @@ class DebugBoundingState extends FlxState
 		onionSkinChar.visible = false;
 		offsetView.add(onionSkinChar);
 
-		animDropDownMenu = new FlxUIDropDownMenu(370, 20, FlxUIDropDownMenu.makeStrIdLabelArray(['weed'], true));
+		txtOffsetShit = new FlxText(20, 20, 0, "", 20);
+		txtOffsetShit.setFormat(Paths.font("vcr.ttf"), 26, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		txtOffsetShit.cameras = [hudCam];
+		offsetView.add(txtOffsetShit);
+
+		animDropDownMenu = new FlxUIDropDownMenu(650, 20, FlxUIDropDownMenu.makeStrIdLabelArray(['weed'], true));
 		animDropDownMenu.cameras = [hudCam];
 		offsetView.add(animDropDownMenu);
 
 		var characters:Array<String> = CoolUtil.coolTextFile(Paths.txt('characterList'));
 
-		charInput = new FlxUIDropDownMenu(200, 20, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(str:String)
+		charInput = new FlxUIDropDownMenu(500, 20, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(str:String)
 		{
 			loadAnimShit(characters[Std.parseInt(str)]);
 			// trace();
@@ -179,6 +181,8 @@ class DebugBoundingState extends FlxState
 				swagChar.offset.y = (FlxG.mouse.y - mouseOffset.y) * -1;
 
 				swagChar.animOffsets.set(animDropDownMenu.selectedLabel, [swagChar.offset.x, swagChar.offset.y]);
+
+				txtOffsetShit.text = 'Offset: ' + swagChar.offset;
 			}
 		}
 	}
@@ -332,6 +336,9 @@ class DebugBoundingState extends FlxState
 
 			swagChar.animOffsets.set(animDropDownMenu.selectedLabel, coolValues);
 			swagChar.playAnim(animName);
+
+			txtOffsetShit.text = 'Offset: ' + coolValues;
+
 			trace(animName);
 		}
 
@@ -384,6 +391,8 @@ class DebugBoundingState extends FlxState
 			var animName = animThing[Std.parseInt(str)];
 			swagChar.playAnim(animName, true); // trace();
 			trace(swagChar.animOffsets.get(animName));
+
+			txtOffsetShit.text = 'Offset: ' + swagChar.offset;
 		};
 		dropDownSetup = true;
 	}
