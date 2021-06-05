@@ -223,19 +223,7 @@ class KeyBindMenu extends FlxSubState
 
         var notAllowed:Array<String> = [];
 
-        for(x in keys){
-            if(x != tempKey){notAllowed.push(x);}
-        }
-
         for(x in blacklist){notAllowed.push(x);}
-
-        if(curSelected != 4){
-
-            for(x in keyText){
-                if(x != keyText[curSelected]){notAllowed.push(x);}
-            }
-            
-        }
 
         trace(notAllowed);
 
