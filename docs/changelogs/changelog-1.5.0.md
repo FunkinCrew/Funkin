@@ -20,7 +20,6 @@ Changes marked with 💖 will be listed in the short version of the changelog in
 - [PR #431](https://github.com/KadeDev/Kade-Engine/pull/431): Add Max NPS counter
 - [PR #447](https://github.com/KadeDev/Kade-Engine/pull/447): New outdated version screen with small patch notes
 - (maybe 💖) [PR #490](https://github.com/KadeDev/Kade-Engine/pull/490): Bring back `R` to reset, but now you can toggle it in the options
-- [PR #513](https://github.com/KadeDev/Kade-Engine/pull/513): Alt animations can now have idles
 - [PR #551](https://github.com/KadeDev/Kade-Engine/pull/551): Add setActorScaleXY, setActorFlipX, setActorFlipY, setStrumlineY to lua modcharts
 - [PR #582](https://github.com/KadeDev/Kade-Engine/pull/582): Add changeDadCharacter, changeBoyfriendCharacter, keyPressed to lua modcharts
 - [PR #603](https://github.com/KadeDev/Kade-Engine/pull/603) and [PR #604](https://github.com/KadeDev/Kade-Engine/pull/604): Add note shifting to the chart editor
