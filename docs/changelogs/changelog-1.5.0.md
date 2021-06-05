@@ -61,4 +61,3 @@ Changes marked with 💖 will be listed in the short version of the changelog in
 - [PR #678](https://github.com/KadeDev/Kade-Engine/pull/678): Fix opening URLs on Linux
 - [PR #672](https://github.com/KadeDev/Kade-Engine/pull/672): Fix getScreenWidth and getScreenHeight in lua modcharts
 - Fixed early hit window
-- (maybe 💖) [PR #694](https://github.com/KadeDev/Kade-Engine/pull/694): Fix note trails, but better
