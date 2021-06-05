@@ -2202,38 +2202,28 @@ class PlayState extends MusicBeatState
 									daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y + 0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(FlxG.save.data.scrollSpeed == 1 ? SONG.speed : FlxG.save.data.scrollSpeed, 2));
 								else
 									daNote.y = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y + 0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(FlxG.save.data.scrollSpeed == 1 ? SONG.speed : FlxG.save.data.scrollSpeed, 2));
-								
 								if(daNote.isSustainNote)
 								{
-									daNote.y += daNote.frameHeight / 2;
-									
-									if(daNote.animation.curAnim.name.endsWith('holdend'))
-									{
-										daNote.y = daNote.prevNote.y - daNote.offset.y * 2;
-										
-										if (daNote.prevNote.hit)
-										{
-											daNote.visible = false;
-										}
-
-										if(SONG.noteStyle == 'pixel')
-											daNote.y += daNote.offset.y * 2;
-									}
-									
+									// Remember = minus makes notes go up, plus makes them go down
+									if(daNote.animation.curAnim.name.endsWith('end') && daNote.prevNote != null)
+										daNote.y += daNote.prevNote.height;
+									else
+										daNote.y += daNote.height / 2;
+	
 									// If not in botplay, only clip sustain notes when properly hit, botplay gets to clip it everytime
 									if(!FlxG.save.data.botplay)
 									{
 										if((!daNote.mustPress || daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit) && daNote.y - daNote.offset.y * daNote.scale.y + daNote.height >= (strumLine.y + Note.swagWidth / 2))
 										{
 											// Clip to strumline
-											var swagRect = new FlxRect(0, 0, daNote.frameWidth * 2, daNote.frameHeight * 4);
+											var swagRect = new FlxRect(0, 0, daNote.frameWidth * 2, daNote.frameHeight * 2);
 											swagRect.height = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y + Note.swagWidth / 2 - daNote.y) / daNote.scale.y;
 											swagRect.y = daNote.frameHeight - swagRect.height;
 	
 											daNote.clipRect = swagRect;
 										}
 									}else {
-										var swagRect = new FlxRect(0, 0, daNote.frameWidth * 2, daNote.frameHeight * 4);
+										var swagRect = new FlxRect(0, 0, daNote.frameWidth * 2, daNote.frameHeight * 2);
 										swagRect.height = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y + Note.swagWidth / 2 - daNote.y) / daNote.scale.y;
 										swagRect.y = daNote.frameHeight - swagRect.height;
 	
@@ -2246,37 +2236,10 @@ class PlayState extends MusicBeatState
 									daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y - 0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(FlxG.save.data.scrollSpeed == 1 ? SONG.speed : FlxG.save.data.scrollSpeed, 2));
 								else
 									daNote.y = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y - 0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(FlxG.save.data.scrollSpeed == 1 ? SONG.speed : FlxG.save.data.scrollSpeed, 2));
-								
 								if(daNote.isSustainNote)
 								{
-									// Don't look at this goofy ass shit, my hatred for upscroll knows no bounds
-									// I personally love upscroll and I fixed this code - Kade
-									daNote.y += daNote.frameHeight / 2;
-									
-									daNote.offset.y = -daNote.frameHeight - 15;
-
-
-									if(SONG.noteStyle == 'pixel')
-										daNote.y += daNote.height / 2;
-									
 									daNote.y -= daNote.height / 2;
-									
-									if(daNote.animation.curAnim.name.endsWith('holdend'))
-									{
-										daNote.y = daNote.prevNote.y + daNote.prevNote.height / 2 + daNote.frameHeight / 6;
-										
-										daNote.offset.y = -daNote.prevNote.frameHeight + 6;
-
-										if (daNote.prevNote.hit)
-										{
-											daNote.y -= 50;
-											daNote.visible = false;
-										}
-
-										if(SONG.noteStyle == 'pixel')
-											daNote.y += daNote.offset.y / 2;
-									}
-									
+	
 									if(!FlxG.save.data.botplay)
 									{
 										if((!daNote.mustPress || daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit) && daNote.y + daNote.offset.y * daNote.scale.y <= (strumLine.y + Note.swagWidth / 2))
@@ -2298,6 +2261,7 @@ class PlayState extends MusicBeatState
 								}
 							}
 						}
+		
 	
 					if (!daNote.mustPress && daNote.wasGoodHit)
 					{
@@ -2355,10 +2319,8 @@ class PlayState extends MusicBeatState
 	
 						daNote.active = false;
 
-						daNote.hit = true;
 
 						daNote.kill();
-						daNote.hit = true;
 						notes.remove(daNote, true);
 						daNote.destroy();
 					}
@@ -2392,19 +2354,10 @@ class PlayState extends MusicBeatState
 	
 					if ((daNote.mustPress && daNote.tooLate && !FlxG.save.data.downscroll || daNote.mustPress && daNote.tooLate && FlxG.save.data.downscroll) && daNote.mustPress)
 					{
-						if (!daNote.visible)
-						{
-							notes.remove(daNote, true);
-							daNote.kill();
-							daNote.destroy();
-						}
-						else
-						{
 							if (daNote.isSustainNote && daNote.wasGoodHit)
 							{
 								daNote.kill();
 								notes.remove(daNote, true);
-								daNote.destroy();
 							}
 							else
 							{
@@ -2415,12 +2368,10 @@ class PlayState extends MusicBeatState
 							}
 		
 							daNote.visible = false;
-							daNote.hit = true;
 							daNote.kill();
 							notes.remove(daNote, true);
-							daNote.destroy();
 						}
-					}
+					
 				});
 			}
 
@@ -2942,7 +2893,6 @@ class PlayState extends MusicBeatState
 					{
 						FlxG.log.add("killing dumb ass note at " + note.strumTime);
 						note.kill();
-						note.hit = true;
 						notes.remove(note, true);
 						note.destroy();
 					}
@@ -3258,7 +3208,6 @@ class PlayState extends MusicBeatState
 					vocals.volume = 1;
 		
 					note.kill();
-					note.hit = true;
 					notes.remove(note, true);
 					note.destroy();
 					
