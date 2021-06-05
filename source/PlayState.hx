@@ -3255,9 +3255,9 @@ class PlayState extends MusicBeatState
 	function trainStart():Void
 	{
 		if(FlxG.save.data.distractions){
-		trainMoving = true;
-		if (!trainSound.playing)
-			trainSound.play(true);
+			trainMoving = true;
+			if (!trainSound.playing)
+				trainSound.play(true);
 		}
 	}
 
