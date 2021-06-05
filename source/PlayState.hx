@@ -2265,7 +2265,7 @@ class PlayState extends MusicBeatState
 									{
 										daNote.y = daNote.prevNote.y + daNote.prevNote.height / 2 + daNote.frameHeight / 6;
 										
-										daNote.offset.y = -daNote.prevNote.frameHeight + 15;
+										daNote.offset.y = -daNote.prevNote.frameHeight + 6;
 
 										if (daNote.prevNote.hit)
 										{
