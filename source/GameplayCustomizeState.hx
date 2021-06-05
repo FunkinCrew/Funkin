@@ -1,3 +1,7 @@
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxColor;
+import flixel.text.FlxText;
 import flixel.math.FlxMath;
 import flixel.FlxCamera;
 import flixel.math.FlxPoint;
@@ -18,13 +22,16 @@ class GameplayCustomizeState extends MusicBeatState
     var defaultX:Float = FlxG.width * 0.55 - 135;
     var defaultY:Float = FlxG.height / 2 - 50;
 
-    var background:FlxSprite = new FlxSprite(-600, -200).loadGraphic(Paths.image('stageback','shared'));
-    var curt:FlxSprite = new FlxSprite(-500, -300).loadGraphic(Paths.image('stagecurtains','shared'));
-    var front:FlxSprite = new FlxSprite(-650, 600).loadGraphic(Paths.image('stagefront','shared'));
+    var background:FlxSprite;
+    var curt:FlxSprite;
+    var front:FlxSprite;
 
-    var sick:FlxSprite = new FlxSprite().loadGraphic(Paths.image('sick','shared'));
+    var sick:FlxSprite;
 
-    var bf:Boyfriend = new Boyfriend(770, 450, 'bf');
+    var text:FlxText;
+    var blackBorder:FlxSprite;
+
+    var bf:Boyfriend;
     var dad:Character;
 
     var strumLine:FlxSprite;
@@ -37,6 +44,12 @@ class GameplayCustomizeState extends MusicBeatState
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("Customizing Gameplay", null);
 		#end
+
+        sick = new FlxSprite().loadGraphic(Paths.image('sick','shared'));
+        sick.scrollFactor.set();
+        background = new FlxSprite(-600, -200).loadGraphic(Paths.image('stageback','shared'));
+        curt = new FlxSprite(-500, -300).loadGraphic(Paths.image('stagecurtains','shared'));
+        front = new FlxSprite(-650, 600).loadGraphic(Paths.image('stagefront','shared'));
 
 		Conductor.changeBPM(102);
 		persistentUpdate = true;
@@ -59,6 +72,8 @@ class GameplayCustomizeState extends MusicBeatState
 
 		dad = new Character(100, 100, 'dad');
 
+        bf = new Boyfriend(770, 450, 'bf');
+
 		var camPos:FlxPoint = new FlxPoint(dad.getGraphicMidpoint().x + 400, dad.getGraphicMidpoint().y);
 
 		camFollow.setPosition(camPos.x, camPos.y);
@@ -75,8 +90,11 @@ class GameplayCustomizeState extends MusicBeatState
 		FlxG.camera.zoom = 0.9;
 		FlxG.camera.focusOn(camFollow.getPosition());
 
-		strumLine = new FlxSprite(0, 25).makeGraphic(FlxG.width, 10);
+		strumLine = new FlxSprite(0, FlxG.save.data.strumline).makeGraphic(FlxG.width, 14);
 		strumLine.scrollFactor.set();
+        strumLine.alpha = 0.4;
+
+        add(strumLine);
 		
 		if (FlxG.save.data.downscroll)
 			strumLine.y = FlxG.height - 165;
@@ -93,7 +111,20 @@ class GameplayCustomizeState extends MusicBeatState
 		generateStaticArrows(0);
 		generateStaticArrows(1);
 
+        text = new FlxText(5, FlxG.height + 40, 0, "Drag around gameplay elements, R to reset, Escape to go back.", 12);
+		text.scrollFactor.set();
+		text.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
         
+        blackBorder = new FlxSprite(-30,FlxG.height + 40).makeGraphic((Std.int(text.width + 900)),Std.int(text.height + 600),FlxColor.BLACK);
+		blackBorder.alpha = 0.5;
+
+		add(blackBorder);
+
+		add(text);
+
+		FlxTween.tween(text,{y: FlxG.height - 18},2,{ease: FlxEase.elasticInOut});
+		FlxTween.tween(blackBorder,{y: FlxG.height - 18},2, {ease: FlxEase.elasticInOut});
+
         if (!FlxG.save.data.changedHit)
         {
             FlxG.save.data.changedHitX = defaultX;
@@ -103,7 +134,6 @@ class GameplayCustomizeState extends MusicBeatState
         sick.x = FlxG.save.data.changedHitX;
         sick.y = FlxG.save.data.changedHitY;
 
-        sick.updateHitbox();
 
         FlxG.mouse.visible = true;
 
@@ -121,14 +151,28 @@ class GameplayCustomizeState extends MusicBeatState
         if (FlxG.mouse.overlaps(sick) && FlxG.mouse.pressed)
         {
             sick.x = FlxG.mouse.x - sick.width / 2;
-            sick.y = FlxG.mouse.y - sick.height / 2;
+            sick.y = FlxG.mouse.y - sick.height;
         }
+
+        for (i in playerStrums)
+            i.y = strumLine.y;
+        for (i in strumLineNotes)
+            i.y = strumLine.y;
 
         if (FlxG.mouse.overlaps(sick) && FlxG.mouse.justReleased)
         {
             FlxG.save.data.changedHitX = sick.x;
             FlxG.save.data.changedHitY = sick.y;
             FlxG.save.data.changedHit = true;
+        }
+
+        if (FlxG.keys.justPressed.R)
+        {
+            sick.x = defaultX;
+            sick.y = defaultY;
+            FlxG.save.data.changedHitX = sick.x;
+            FlxG.save.data.changedHitY = sick.y;
+            FlxG.save.data.changedHit = false;
         }
 
         if (controls.BACK)
@@ -199,9 +243,7 @@ class GameplayCustomizeState extends MusicBeatState
                 babyArrow.ID = i;
     
                 if (player == 1)
-                {
                     playerStrums.add(babyArrow);
-                }
     
                 babyArrow.animation.play('static');
                 babyArrow.x += 50;

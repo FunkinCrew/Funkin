@@ -1,4 +1,5 @@
-1.5;
+1.5.1;
+- 1.5.1: Bug Fixes
 - Added toggle for ghost tapping
 - Officially support macOS (and add macOS requirements to docs)
 - Autoplay
