@@ -75,6 +75,12 @@ class KadeEngineData
 		if (FlxG.save.data.cpuStrums == null)
 			FlxG.save.data.cpuStrums = false;
 
+		if (FlxG.save.data.strumline == null)
+			FlxG.save.data.strumline = false;
+		
+		if (FlxG.save.data.customStrumLine == null)
+			FlxG.save.data.customStrumLine = 0;
+
 		Conductor.recalculateTimings();
 		PlayerSettings.player1.controls.loadKeyBinds();
 		KeyBinds.keyCheck();
