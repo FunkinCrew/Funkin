@@ -14,10 +14,6 @@
 	<SubTexture name="%0001" x="673" y="202" width="46" height="52"/>
 	<SubTexture name="%0002" x="850" y="243" width="45" height="52" frameX="0" frameY="0" frameWidth="46" frameHeight="52"/>
 	<SubTexture name="%0003" x="850" y="243" width="45" height="52" frameX="0" frameY="0" frameWidth="46" frameHeight="52"/>
-	<SubTexture name="&0000" x="410" y="307" width="36" height="58" pivotX="0" pivotY="0"/>
-	<SubTexture name="&0001" x="410" y="307" width="36" height="58"/>
-	<SubTexture name="&0002" x="563" y="307" width="36" height="58"/>
-	<SubTexture name="&0003" x="563" y="307" width="36" height="58"/>
 	<SubTexture name="(0000" x="554" y="196" width="26" height="57" pivotX="0" pivotY="0.15"/>
 	<SubTexture name="(0001" x="554" y="196" width="26" height="57"/>
 	<SubTexture name="(0002" x="254" y="202" width="26" height="56" frameX="0" frameY="0" frameWidth="26" frameHeight="57"/>
