@@ -416,8 +416,8 @@ class ScrollSpeedOption extends Option
 		if (FlxG.save.data.scrollSpeed < 1)
 			FlxG.save.data.scrollSpeed = 1;
 
-		if (FlxG.save.data.scrollSpeed > 10)
-			FlxG.save.data.scrollSpeed = 10;
+		if (FlxG.save.data.scrollSpeed > 4)
+			FlxG.save.data.scrollSpeed = 4;
 		return true;
 	}
 
@@ -431,8 +431,8 @@ class ScrollSpeedOption extends Option
 		if (FlxG.save.data.scrollSpeed < 1)
 			FlxG.save.data.scrollSpeed = 1;
 
-		if (FlxG.save.data.scrollSpeed > 10)
-			FlxG.save.data.scrollSpeed = 10;
+		if (FlxG.save.data.scrollSpeed > 4)
+			FlxG.save.data.scrollSpeed = 4;
 
 		return true;
 	}
