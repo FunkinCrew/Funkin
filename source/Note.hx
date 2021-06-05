@@ -25,6 +25,7 @@ class Note extends FlxSprite
 	public var prevNote:Note;
 	public var modifiedByLua:Bool = false;
 	public var sustainLength:Float = 0;
+	public var hit:Bool = false;
 	public var isSustainNote:Bool = false;
 
 	public var noteScore:Float = 1;
@@ -179,6 +180,9 @@ class Note extends FlxSprite
 				else
 					prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.5 * PlayState.SONG.speed;
 				
+
+
+				
 				prevNote.updateHitbox();
 				// prevNote.setGraphicSize();
 			}
@@ -194,7 +198,6 @@ class Note extends FlxSprite
 			// ass
 			if (isSustainNote)
 			{
-				trace('sustain note');
 				if (strumTime > Conductor.songPosition - (Conductor.safeZoneOffset * 1.5)
 					&& strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * 0.5))
 					canBeHit = true;
