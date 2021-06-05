@@ -11,3 +11,4 @@ Changes marked with 💖 will be listed in the short version of the changelog in
 - Fixed bug with spooky kids' dance
 - Fixed week 4 and 6 sprite issues
 - Made web builds work again
+- Game Play Customiziation works now.
