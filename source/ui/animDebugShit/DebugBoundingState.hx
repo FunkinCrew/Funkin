@@ -126,6 +126,8 @@ class DebugBoundingState extends FlxState
 
 	function generateOutlines(frameShit:Array<FlxFrame>):Void
 	{
+		// swagOutlines.width = frameShit[0].parent.width;
+		// swagOutlines.height = frameShit[0].parent.height;
 		swagOutlines.pixels.fillRect(new Rectangle(0, 0, swagOutlines.width, swagOutlines.height), 0x00000000);
 
 		for (i in frameShit)
@@ -162,6 +164,7 @@ class DebugBoundingState extends FlxState
 
 		var characters:Array<String> = CoolUtil.coolTextFile(Paths.txt('characterList'));
 
+		// charInput isnt only exclusive to offsetView shit now
 		charInput = new FlxUIDropDownMenu(500, 20, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(str:String)
 		{
 			loadAnimShit(characters[Std.parseInt(str)]);
@@ -169,7 +172,7 @@ class DebugBoundingState extends FlxState
 		});
 		// charInput.
 		charInput.cameras = [hudCam];
-		offsetView.add(charInput);
+		add(charInput);
 	}
 
 	public var mouseOffset:FlxPoint = FlxPoint.get(0, 0);
@@ -231,7 +234,14 @@ class DebugBoundingState extends FlxState
 		if (FlxG.keys.justPressed.ONE)
 			curView = SPRITESHEET;
 		if (FlxG.keys.justReleased.TWO)
+		{
 			curView = OFFSETSHIT;
+			if (swagChar != null)
+			{
+				FlxG.camera.focusOn(swagChar.getMidpoint());
+				FlxG.camera.zoom = 0.95;
+			}
+		}
 
 		switch (curView)
 		{
