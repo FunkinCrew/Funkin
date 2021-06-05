@@ -8,6 +8,7 @@ import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.ui.FlxInputText;
 import flixel.addons.ui.FlxUIDropDownMenu;
 import flixel.graphics.frames.FlxAtlasFrames;
+import flixel.graphics.frames.FlxFrame;
 import flixel.group.FlxGroup;
 import flixel.math.FlxPoint;
 import flixel.text.FlxText;
@@ -29,7 +30,7 @@ class DebugBoundingState extends FlxState
 	/* 
 		TODAY'S TO-DO
 		- Cleaner UI
-		- Data to show offset positioning
+		- Loading the spritesheet and spritesheet data from offsetview
 	 */
 	var bg:FlxSprite;
 	var fileInfo:FlxText;
@@ -75,6 +76,9 @@ class DebugBoundingState extends FlxState
 		super.create();
 	}
 
+	var bf:FlxSprite;
+	var swagOutlines:FlxSprite;
+
 	function initSpritesheetView():Void
 	{
 		spriteSheetView = new FlxGroup();
@@ -83,24 +87,13 @@ class DebugBoundingState extends FlxState
 		var tex = Paths.getSparrowAtlas('characters/temp');
 		// tex.frames[0].uv
 
-		var bf:FlxSprite = new FlxSprite();
+		bf = new FlxSprite();
 		bf.loadGraphic(tex.parent);
 		spriteSheetView.add(bf);
 
-		var swagGraphic:FlxSprite = new FlxSprite().makeGraphic(tex.parent.width, tex.parent.height, FlxColor.TRANSPARENT);
+		swagOutlines = new FlxSprite().makeGraphic(tex.parent.width, tex.parent.height, FlxColor.TRANSPARENT);
 
-		for (i in tex.frames)
-		{
-			var lineStyle:LineStyle = {color: FlxColor.RED, thickness: 2};
-
-			var uvW:Float = (i.uv.width * i.parent.width) - (i.uv.x * i.parent.width);
-			var uvH:Float = (i.uv.height * i.parent.height) - (i.uv.y * i.parent.height);
-
-			// trace(Std.int(i.uv.width * i.parent.width));
-			swagGraphic.drawRect(i.uv.x * i.parent.width, i.uv.y * i.parent.height, uvW, uvH, FlxColor.TRANSPARENT, lineStyle);
-			// swagGraphic.setPosition(, );
-			// trace(uvH);
-		}
+		generateOutlines(tex.frames);
 
 		txtGrp = new FlxGroup();
 		txtGrp.cameras = [hudCam];
@@ -110,8 +103,8 @@ class DebugBoundingState extends FlxState
 		addInfo('Width', bf.width);
 		addInfo('Height', bf.height);
 
-		swagGraphic.antialiasing = true;
-		spriteSheetView.add(swagGraphic);
+		swagOutlines.antialiasing = true;
+		spriteSheetView.add(swagOutlines);
 
 		FlxG.stage.window.onDropFile.add(function(path:String)
 		{
@@ -131,6 +124,24 @@ class DebugBoundingState extends FlxState
 		});
 	}
 
+	function generateOutlines(frameShit:Array<FlxFrame>):Void
+	{
+		swagOutlines.pixels.fillRect(new Rectangle(0, 0, swagOutlines.width, swagOutlines.height), 0x00000000);
+
+		for (i in frameShit)
+		{
+			var lineStyle:LineStyle = {color: FlxColor.RED, thickness: 2};
+
+			var uvW:Float = (i.uv.width * i.parent.width) - (i.uv.x * i.parent.width);
+			var uvH:Float = (i.uv.height * i.parent.height) - (i.uv.y * i.parent.height);
+
+			// trace(Std.int(i.uv.width * i.parent.width));
+			swagOutlines.drawRect(i.uv.x * i.parent.width, i.uv.y * i.parent.height, uvW, uvH, FlxColor.TRANSPARENT, lineStyle);
+			// swagGraphic.setPosition(, );
+			// trace(uvH);
+		}
+	}
+
 	function initOffsetView():Void
 	{
 		offsetView = new FlxGroup();
@@ -145,7 +156,7 @@ class DebugBoundingState extends FlxState
 		txtOffsetShit.cameras = [hudCam];
 		offsetView.add(txtOffsetShit);
 
-		animDropDownMenu = new FlxUIDropDownMenu(650, 20, FlxUIDropDownMenu.makeStrIdLabelArray(['weed'], true));
+		animDropDownMenu = new FlxUIDropDownMenu(630, 20, FlxUIDropDownMenu.makeStrIdLabelArray(['weed'], true));
 		animDropDownMenu.cameras = [hudCam];
 		offsetView.add(animDropDownMenu);
 
@@ -362,13 +373,16 @@ class DebugBoundingState extends FlxState
 	{
 		if (swagChar != null)
 		{
-			remove(swagChar);
+			offsetView.remove(swagChar);
 			swagChar.destroy();
 		}
 
 		swagChar = new Character(100, 100, char);
 		swagChar.debugMode = true;
-		add(swagChar);
+		offsetView.add(swagChar);
+
+		generateOutlines(swagChar.frames.frames);
+		bf.pixels = swagChar.pixels;
 
 		var animThing:Array<String> = [];
 
