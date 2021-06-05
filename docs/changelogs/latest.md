@@ -42,6 +42,7 @@ Changes marked with 💖 will be listed in the short version of the changelog in
 - [PR #590](https://github.com/KadeDev/Kade-Engine/pull/590): The license is now automatically distributed with the game
 - (maybe 💖) [PR #612](https://github.com/KadeDev/Kade-Engine/pull/612): BPM is now a float (can have decimals)
 - The strumline in the chart editor now snaps to the time axis (toggle with Ctrl)
+- Change the look of judgements (sick, good, bad, shit)
 
 ### Bugfixes
 - [PR #289](https://github.com/KadeDev/Kade-Engine/pulls/289): Player 2 now plays idle animation properly when camera zooms in
