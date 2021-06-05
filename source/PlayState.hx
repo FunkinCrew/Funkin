@@ -2269,7 +2269,7 @@ class PlayState extends MusicBeatState
 
 										if (daNote.prevNote.hit)
 										{
-											daNote.y -= 30;
+											daNote.y -= 50;
 											daNote.visible = false;
 										}
 
