@@ -236,7 +236,6 @@ class KeyBindMenu extends FlxSubState
             }
             
         }
-        else {for(x in keyText){notAllowed.push(x);}}
 
         trace(notAllowed);
 
@@ -245,6 +244,8 @@ class KeyBindMenu extends FlxSubState
                 var oK = keys[x];
                 if(oK == r)
                     keys[x] = null;
+                if (notAllowed.contains(oK))
+                    return;
             }
 
         if(shouldReturn){
