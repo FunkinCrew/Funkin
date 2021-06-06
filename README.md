@@ -41,8 +41,8 @@ If you're looking for documentation, changelogs, or guides, you can find those o
 	 - An improved input system, similar to Quaver or Etterna, with less delays, less dropped inputs and other improvements.
  - **More information during gameplay**
 	 - While you're playing, we show you information about how you're doing, such as your accuracy, combo break count, notes per second, and your grade/rating.
- - **Customizable key layouts**
-	 - Instead of being forced to use WASD and the arrow keys, now you can play with your own keybinds!
+ - **Customizable keybinds**
+	 - Instead of being forced to use WASD and the arrow keys, you can customize the keybinds to any keys you want!
  - **Replays** (in beta)
 	 - Have you ever gotten a crazy score but didn't record? The replay system solves that: it automatically saves a "replay" of your gameplay every time you complete a song, which you can play back inside of the game. 
 	 - Replays just store information about what you're doing, they don't actually record the screen -- so they take up way less space on your disk than videos.
