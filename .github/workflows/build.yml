@@ -115,7 +115,7 @@ jobs:
       - name: Compile HTML5
         run: haxelib run lime build html5
       - name: Archive
-        run: tar -czf html5.tar.gz export/html5/bin
+        run: tar -czf html5.tar.gz export/release/html5/bin
       - name: Publish Html5
         uses: actions/upload-artifact@v2
         with:
