@@ -1,5 +1,6 @@
 package;
 
+import flixel.util.typeLimit.OneOfTwo;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.math.FlxMath;
@@ -43,7 +44,18 @@ class Note extends FlxSprite
 	public static var RED_NOTE:Int = 3;
 	public var rating = "miss";
 	public var isLiftNote:Bool = false;
-	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?customImage:Null<BitmapData>, ?customXml:Null<String>, ?customEnds:Null<BitmapData>, ?LiftNote:Bool=false)
+	public var healMultiplier:Float = 1;
+	public var damageMultiplier:Float = 1;
+	// Whether to always do the same amount of healing for hitting and the same amount of damage for missing notes
+	public var consistentHealth:Bool = false;
+	// How relatively hard it is to hit the note. Lower numbers are harder, with 0 being literally impossible
+	public var timingMultiplier:Float = 1;
+	// whether to play the sing animation for hitting this note
+	public var shouldBeSung:Bool = true;
+	public var ignoreHealthMods:Bool = false;
+	// altNote can be int or bool. int just determines what alt is played
+	// format: [strumTime:Float, noteDirection:Int, sustainLength:Float, altNote:Union<Bool, Int>, isLiftNote:Bool, healMultiplier:Float, damageMultipler:Float, consistentHealth:Bool, timingMultiplier:Float, shouldBeSung:Bool, ignoreHealthMods:Bool, animSuffix:Union<String, Int>]
+	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?customImage:Null<BitmapData>, ?customXml:Null<String>, ?customEnds:Null<BitmapData>, ?LiftNote:Bool=false, ?animSuffix:OneOfTwo<String, Int>)
 	{
 		super();
 
@@ -53,6 +65,8 @@ class Note extends FlxSprite
 		this.prevNote = prevNote;
 		isSustainNote = sustainNote;
 		isLiftNote = LiftNote;
+		if (isLiftNote)
+			shouldBeSung = false;
 		x += 50;
 		// MAKE SURE ITS DEFINITELY OFF SCREEN?
 		y -= 2000;
@@ -65,102 +79,42 @@ class Note extends FlxSprite
 			case 'pixel':
 				loadGraphic('assets/images/weeb/pixelUI/arrows-pixels.png', true, 17, 17);
 				isPixel = true;
-				animation.add('greenScroll', [6]);
-				animation.add('redScroll', [7]);
-				animation.add('blueScroll', [5]);
-				animation.add('purpleScroll', [4]);
+				if (animSuffix != null && (animSuffix is Int)) {
+					animation.add('greenScroll', [animSuffix]);
+					animation.add('redScroll', [animSuffix]);
+					animation.add('blueScroll', [animSuffix]);
+					animation.add('purpleScroll', [animSuffix]);
 
-				if (isSustainNote)
-				{
-					loadGraphic('assets/images/weeb/pixelUI/arrowEnds.png', true, 7, 6);
+					if (isSustainNote)
+					{
+						loadGraphic('assets/images/weeb/pixelUI/arrowEnds.png', true, 7, 6);
 
-					animation.add('purpleholdend', [4]);
-					animation.add('greenholdend', [6]);
-					animation.add('redholdend', [7]);
-					animation.add('blueholdend', [5]);
+						animation.add('purpleholdend', [animSuffix]);
+						animation.add('greenholdend', [animSuffix]);
+						animation.add('redholdend', [animSuffix]);
+						animation.add('blueholdend', [animSuffix]);
 
-					animation.add('purplehold', [0]);
-					animation.add('greenhold', [2]);
-					animation.add('redhold', [3]);
-					animation.add('bluehold', [1]);
-				}
-				if (isLiftNote) {
-					animation.add('greenScroll', [22]);
-					animation.add('redScroll', [23]);
-					animation.add('blueScroll', [21]);
-					animation.add('purpleScroll', [20]);
-				}
-				setGraphicSize(Std.int(width * PlayState.daPixelZoom));
-				updateHitbox();
-			case 'normal':
-				frames = FlxAtlasFrames.fromSparrow('assets/images/NOTE_assets.png', 'assets/images/NOTE_assets.xml');
-
-				animation.addByPrefix('greenScroll', 'green0');
-				animation.addByPrefix('redScroll', 'red0');
-				animation.addByPrefix('blueScroll', 'blue0');
-				animation.addByPrefix('purpleScroll', 'purple0');
-
-				animation.addByPrefix('purpleholdend', 'pruple end hold');
-				animation.addByPrefix('greenholdend', 'green hold end');
-				animation.addByPrefix('redholdend', 'red hold end');
-				animation.addByPrefix('blueholdend', 'blue hold end');
-
-				animation.addByPrefix('purplehold', 'purple hold piece');
-				animation.addByPrefix('greenhold', 'green hold piece');
-				animation.addByPrefix('redhold', 'red hold piece');
-				animation.addByPrefix('bluehold', 'blue hold piece');
-				if (isLiftNote) {
-					animation.addByPrefix('greenScroll', 'green lift');
-					animation.addByPrefix('redScroll', 'red lift');
-					animation.addByPrefix('blueScroll', 'blue lift');
-					animation.addByPrefix('purpleScroll', 'purple lift');
-				}
-				setGraphicSize(Std.int(width * 0.7));
-				updateHitbox();
-				antialiasing = true;
-			default:
-				if (FNFAssets.exists('assets/images/custom_ui/ui_packs/'+PlayState.SONG.uiType+"/NOTE_assets.xml") && FNFAssets.exists('assets/images/custom_ui/ui_packs/'+PlayState.SONG.uiType+"/NOTE_assets.png")) {
-
-
-					frames = FlxAtlasFrames.fromSparrow(customImage, customXml);
-					animation.addByPrefix('greenScroll', 'green0');
-	 				animation.addByPrefix('redScroll', 'red0');
-	 				animation.addByPrefix('blueScroll', 'blue0');
-	 				animation.addByPrefix('purpleScroll', 'purple0');
-
-	 				animation.addByPrefix('purpleholdend', 'pruple end hold');
-	 				animation.addByPrefix('greenholdend', 'green hold end');
-	 				animation.addByPrefix('redholdend', 'red hold end');
-	 				animation.addByPrefix('blueholdend', 'blue hold end');
-
-	 				animation.addByPrefix('purplehold', 'purple hold piece');
-	 				animation.addByPrefix('greenhold', 'green hold piece');
-	 				animation.addByPrefix('redhold', 'red hold piece');
-	 				animation.addByPrefix('bluehold', 'blue hold piece');
-
+						animation.add('purplehold', [animSuffix]);
+						animation.add('greenhold', [animSuffix]);
+						animation.add('redhold', [animSuffix]);
+						animation.add('bluehold', [animSuffix]);
+					}
 					if (isLiftNote)
 					{
-						animation.addByPrefix('greenScroll', 'green lift');
-						animation.addByPrefix('redScroll', 'red lift');
-						animation.addByPrefix('blueScroll', 'blue lift');
-						animation.addByPrefix('purpleScroll', 'purple lift');
+						animation.add('greenScroll', [animSuffix]);
+						animation.add('redScroll', [animSuffix]);
+						animation.add('blueScroll', [animSuffix]);
+						animation.add('purpleScroll', [animSuffix]);
 					}
-
-	 				setGraphicSize(Std.int(width * 0.7));
-	 				updateHitbox();
-	 				antialiasing = true;
-					// when arrowsEnds != arrowEnds :laughing_crying:
-				} else if (FNFAssets.exists('assets/images/custom_ui/ui_packs/'+PlayState.SONG.uiType+"/arrows-pixels.png") && FNFAssets.exists('assets/images/custom_ui/ui_packs/'+PlayState.SONG.uiType+"/arrowEnds.png")){
-					loadGraphic(customImage, true, 17, 17);
+				} else {
 					animation.add('greenScroll', [6]);
 					animation.add('redScroll', [7]);
 					animation.add('blueScroll', [5]);
 					animation.add('purpleScroll', [4]);
-					isPixel = true;
+
 					if (isSustainNote)
 					{
-						var noteEndPic = BitmapData.fromFile('assets/images/custom_ui/ui_packs/'+PlayState.SONG.uiType+"/arrowEnds.png");
-						loadGraphic(noteEndPic, true, 7, 6);
+						loadGraphic('assets/images/weeb/pixelUI/arrowEnds.png', true, 7, 6);
 
 						animation.add('purpleholdend', [4]);
 						animation.add('greenholdend', [6]);
@@ -171,6 +125,140 @@ class Note extends FlxSprite
 						animation.add('greenhold', [2]);
 						animation.add('redhold', [3]);
 						animation.add('bluehold', [1]);
+					}
+					if (isLiftNote)
+					{
+						animation.add('greenScroll', [22]);
+						animation.add('redScroll', [23]);
+						animation.add('blueScroll', [21]);
+						animation.add('purpleScroll', [20]);
+					}
+				}
+				
+				setGraphicSize(Std.int(width * PlayState.daPixelZoom));
+				updateHitbox();
+			case 'normal':
+				frames = FlxAtlasFrames.fromSparrow('assets/images/NOTE_assets.png', 'assets/images/NOTE_assets.xml');
+				if (animSuffix == null) {
+					animSuffix = '';
+				}
+				animation.addByPrefix('greenScroll', 'green ${animSuffix}0');
+				animation.addByPrefix('redScroll', 'red ${animSuffix}0');
+				animation.addByPrefix('blueScroll', 'blue ${animSuffix}0');
+				animation.addByPrefix('purpleScroll', 'purple ${animSuffix}0');
+
+				animation.addByPrefix('purpleholdend', 'pruple end hold ${animSuffix}');
+				animation.addByPrefix('greenholdend', 'green hold end ${animSuffix}' );
+				animation.addByPrefix('redholdend', 'red hold end ${animSuffix}');
+				animation.addByPrefix('blueholdend', 'blue hold end ${animSuffix}');
+
+				animation.addByPrefix('purplehold', 'purple hold piece ${animSuffix}');
+				animation.addByPrefix('greenhold', 'green hold piece ${animSuffix}');
+				animation.addByPrefix('redhold', 'red hold piece ${animSuffix}');
+				animation.addByPrefix('bluehold', 'blue hold piece');
+				if (isLiftNote) {
+					animation.addByPrefix('greenScroll', 'green lift ${animSuffix}');
+					animation.addByPrefix('redScroll', 'red lift ${animSuffix}');
+					animation.addByPrefix('blueScroll', 'blue lift ${animSuffix}');
+					animation.addByPrefix('purpleScroll', 'purple lift ${animSuffix}');
+				}
+				setGraphicSize(Std.int(width * 0.7));
+				updateHitbox();
+				antialiasing = true;
+			default:
+				if (FNFAssets.exists('assets/images/custom_ui/ui_packs/'+PlayState.SONG.uiType+"/NOTE_assets.xml") && FNFAssets.exists('assets/images/custom_ui/ui_packs/'+PlayState.SONG.uiType+"/NOTE_assets.png")) {
+
+
+					frames = FlxAtlasFrames.fromSparrow(customImage, customXml);
+					if (animSuffix == null)
+					{
+						animSuffix = '';
+					}
+					animation.addByPrefix('greenScroll', 'green ${animSuffix}0');
+					animation.addByPrefix('redScroll', 'red ${animSuffix}0');
+					animation.addByPrefix('blueScroll', 'blue ${animSuffix}0');
+					animation.addByPrefix('purpleScroll', 'purple ${animSuffix}0');
+
+					animation.addByPrefix('purpleholdend', 'pruple end hold ${animSuffix}');
+					animation.addByPrefix('greenholdend', 'green hold end ${animSuffix}');
+					animation.addByPrefix('redholdend', 'red hold end ${animSuffix}');
+					animation.addByPrefix('blueholdend', 'blue hold end ${animSuffix}');
+
+					animation.addByPrefix('purplehold', 'purple hold piece ${animSuffix}');
+					animation.addByPrefix('greenhold', 'green hold piece ${animSuffix}');
+					animation.addByPrefix('redhold', 'red hold piece ${animSuffix}');
+					animation.addByPrefix('bluehold', 'blue hold piece');
+					if (isLiftNote)
+					{
+						animation.addByPrefix('greenScroll', 'green lift ${animSuffix}');
+						animation.addByPrefix('redScroll', 'red lift ${animSuffix}');
+						animation.addByPrefix('blueScroll', 'blue lift ${animSuffix}');
+						animation.addByPrefix('purpleScroll', 'purple lift ${animSuffix}');
+					}
+
+	 				setGraphicSize(Std.int(width * 0.7));
+	 				updateHitbox();
+	 				antialiasing = true;
+					// when arrowsEnds != arrowEnds :laughing_crying:
+				} else if (FNFAssets.exists('assets/images/custom_ui/ui_packs/'+PlayState.SONG.uiType+"/arrows-pixels.png") && FNFAssets.exists('assets/images/custom_ui/ui_packs/'+PlayState.SONG.uiType+"/arrowEnds.png")){
+					loadGraphic(customImage, true, 17, 17);
+					if (animSuffix != null && (animSuffix is Int))
+					{
+						animation.add('greenScroll', [animSuffix]);
+						animation.add('redScroll', [animSuffix]);
+						animation.add('blueScroll', [animSuffix]);
+						animation.add('purpleScroll', [animSuffix]);
+
+						if (isSustainNote)
+						{
+							loadGraphic('assets/images/weeb/pixelUI/arrowEnds.png', true, 7, 6);
+
+							animation.add('purpleholdend', [animSuffix]);
+							animation.add('greenholdend', [animSuffix]);
+							animation.add('redholdend', [animSuffix]);
+							animation.add('blueholdend', [animSuffix]);
+
+							animation.add('purplehold', [animSuffix]);
+							animation.add('greenhold', [animSuffix]);
+							animation.add('redhold', [animSuffix]);
+							animation.add('bluehold', [animSuffix]);
+						}
+						if (isLiftNote)
+						{
+							animation.add('greenScroll', [animSuffix]);
+							animation.add('redScroll', [animSuffix]);
+							animation.add('blueScroll', [animSuffix]);
+							animation.add('purpleScroll', [animSuffix]);
+						}
+					}
+					else
+					{
+						animation.add('greenScroll', [6]);
+						animation.add('redScroll', [7]);
+						animation.add('blueScroll', [5]);
+						animation.add('purpleScroll', [4]);
+
+						if (isSustainNote)
+						{
+							loadGraphic('assets/images/weeb/pixelUI/arrowEnds.png', true, 7, 6);
+
+							animation.add('purpleholdend', [4]);
+							animation.add('greenholdend', [6]);
+							animation.add('redholdend', [7]);
+							animation.add('blueholdend', [5]);
+
+							animation.add('purplehold', [0]);
+							animation.add('greenhold', [2]);
+							animation.add('redhold', [3]);
+							animation.add('bluehold', [1]);
+						}
+						if (isLiftNote)
+						{
+							animation.add('greenScroll', [22]);
+							animation.add('redScroll', [23]);
+							animation.add('blueScroll', [21]);
+							animation.add('purpleScroll', [20]);
+						}
 					}
 
 					setGraphicSize(Std.int(width * PlayState.daPixelZoom));
@@ -283,8 +371,8 @@ class Note extends FlxSprite
 		if ((((mustPress && !oppMode) || duoMode) || (oppMode && !mustPress)) && !funnyMode)
 		{
 			// The * 0.5 us so that its easier to hit them too late, instead of too early
-			if (strumTime > Conductor.songPosition - Judge.wayoffJudge
-				&& strumTime < Conductor.songPosition + Judge.wayoffJudge)
+			if (strumTime > Conductor.songPosition - Judge.wayoffJudge * timingMultiplier
+				&& strumTime < Conductor.songPosition + Judge.wayoffJudge * timingMultiplier)
 			{
 				canBeHit = true;
 			}

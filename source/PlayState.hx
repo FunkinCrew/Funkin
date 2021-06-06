@@ -1,5 +1,6 @@
 package;
 
+import flixel.util.typeLimit.OneOfTwo;
 import Character.EpicLevel;
 import FNFAssets.HScriptAssets;
 import flixel.ui.FlxButton.FlxTypedButton;
@@ -1699,6 +1700,15 @@ class PlayState extends MusicBeatState
 				var daStrumTime:Float = songNotes[0];
 				var daNoteData:Int = Std.int(songNotes[1] % 4);
 				var daLift:Bool = songNotes[4];
+				var noteHeal:Float = songNotes[5] == null ? 1 : songNotes[5];
+				var noteDamage:Float = songNotes[6] == null ? 1 : songNotes[6];
+				var consitentNote:Bool = cast songNotes[7];
+				var timeThingy:Float = songNotes[8] == null ? 1 : songNotes[8];
+				// casting is not ok as default is true
+				var shouldSing:Bool = if (songNotes[9] == null) true else songNotes[9];
+				// casting is ok as null is falsey
+				var ignoreHealthMods:Bool = cast songNotes[10];
+				var animSuffix:Null<OneOfTwo<String, Int>> = songNotes[11];
 				var gottaHitNote:Bool = section.mustHitSection;
 				var altNote:Bool = false;
 				if (songNotes[1] > 3)
@@ -1716,7 +1726,14 @@ class PlayState extends MusicBeatState
 				else
 					oldNote = null;
 
-				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote, false, customImage, customXml, arrowEndsImage, daLift);
+				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote, false, customImage, customXml, arrowEndsImage, daLift, animSuffix);
+				swagNote.shouldBeSung = shouldSing;
+				swagNote.ignoreHealthMods = ignoreHealthMods;
+				swagNote.timingMultiplier = timeThingy;
+				swagNote.healMultiplier = noteHeal;
+				swagNote.damageMultiplier = noteDamage;
+				swagNote.consistentHealth = consitentNote;
+
 				// altNote
 				swagNote.altNote = altNote;
 				swagNote.altNum = songNotes[3] == null ? (swagNote.altNote ? 1 : 0) : songNotes[3];
@@ -1765,6 +1782,12 @@ class PlayState extends MusicBeatState
 							if (demoMode)
 								liftNote.funnyMode = true;
 							liftNote.scrollFactor.set();
+							liftNote.shouldBeSung = false;
+							liftNote.ignoreHealthMods = ignoreHealthMods;
+							liftNote.timingMultiplier = timeThingy;
+							liftNote.healMultiplier = noteHeal;
+							liftNote.damageMultiplier = noteDamage;
+							liftNote.consistentHealth = consitentNote;
 							unspawnNotes.push(liftNote);
 							liftNote.mustPress = gottaHitNote;
 							if (liftNote.mustPress)
@@ -1788,7 +1811,12 @@ class PlayState extends MusicBeatState
 								sustainNote.funnyMode = true;
 							sustainNote.scrollFactor.set();
 							unspawnNotes.push(sustainNote);
-
+							sustainNote.shouldBeSung = shouldSing;
+							sustainNote.ignoreHealthMods = ignoreHealthMods;
+							sustainNote.timingMultiplier = timeThingy;
+							sustainNote.healMultiplier = noteHeal;
+							sustainNote.damageMultiplier = noteDamage;
+							sustainNote.consistentHealth = consitentNote;
 							sustainNote.mustPress = gottaHitNote;
 
 							if (sustainNote.mustPress)
@@ -2958,7 +2986,8 @@ class PlayState extends MusicBeatState
 					}
 					callAllHScript("playerTwoSing", []);
 					// go wild <3
-					dad.sing(Std.int(Math.abs(daNote.noteData)), false, dad.altNum);
+					if (daNote.shouldBeSung)
+						dad.sing(Std.int(Math.abs(daNote.noteData)), false, dad.altNum);
 					enemyStrums.forEach(function(spr:FlxSprite)
 					{
 						if (Math.abs(daNote.noteData) == spr.ID)
@@ -2978,7 +3007,8 @@ class PlayState extends MusicBeatState
 				} else if (daNote.mustPress && daNote.wasGoodHit && (opponentPlayer || demoMode)) {
 					camZooming = true;
 					callAllHScript("playerOneSing", []);
-					boyfriend.sing(Std.int(Math.abs(daNote.noteData)));
+					if (daNote.shouldBeSung)
+						boyfriend.sing(Std.int(Math.abs(daNote.noteData)));
 					playerStrums.forEach(function(spr:FlxSprite)
 					{
 						if (Math.abs(daNote.noteData) == spr.ID)
@@ -3303,7 +3333,7 @@ class PlayState extends MusicBeatState
 				score = -300;
 				combo = 0;
 				misses++;
-				healthBonus -= 0.06 * healthLossMultiplier;
+				healthBonus -= 0.06 * if (daNote.ignoreHealthMods) 1 else healthLossMultiplier * daNote.damageMultiplier;
 				ss = false;
 				shits++;
 				notesHit += 0.25;
@@ -3311,14 +3341,14 @@ class PlayState extends MusicBeatState
 				score = -300;
 				combo = 0;
 				misses++;
-				healthBonus -= 0.06 * healthLossMultiplier;
+				healthBonus -= 0.06 * if (daNote.ignoreHealthMods) 1 else healthLossMultiplier * daNote.damageMultiplier;
 				ss = false;
 				shits++;
 				notesHit += 0.1;
 			case 'bad':
 				daRating = 'bad';
 				score = 0;
-				healthBonus -= 0.03 * healthLossMultiplier;
+				healthBonus -= 0.03 * if (daNote.ignoreHealthMods) 1 else healthLossMultiplier * daNote.damageMultiplier;
 				ss = false;
 				bads++;
 				notesHit += 0.50;
@@ -3327,10 +3357,10 @@ class PlayState extends MusicBeatState
 				score = 200;
 				ss = false;
 				goods++;
-				healthBonus += 0.03 * healthGainMultiplier;
+				healthBonus += 0.03 * if (daNote.ignoreHealthMods) 1 else healthGainMultiplier * daNote.healMultiplier;
 				notesHit += 0.75;
 			case 'sick':
-				healthBonus += 0.07 * healthGainMultiplier;
+				healthBonus += 0.07 * if (daNote.ignoreHealthMods) 1 else healthGainMultiplier * daNote.healMultiplier;
 				notesHit += 1;
 				sicks++;
 				if (!daNote.isSustainNote) {
@@ -3341,11 +3371,17 @@ class PlayState extends MusicBeatState
 				
 			case 'miss':
 				// noteMiss(daNote.noteData, playerOne);
-				healthBonus = -0.04 * healthLossMultiplier;
+				healthBonus = -0.04 * if (daNote.ignoreHealthMods) 1 else healthLossMultiplier * daNote.damageMultiplier;
 				misses++;
 				ss = false;
 				score = -5;
 				
+		}
+		if (daNote.consistentHealth) {
+			if (daRating != 'miss') 
+				healthBonus = 0.04 * if (daNote.ignoreHealthMods) 1 else healthGainMultiplier * daNote.healMultiplier;
+			else 
+				healthBonus = -0.04 * daNote.damageMultiplier * if (daNote.ignoreHealthMods) 1 else healthLossMultiplier;
 		}
 		if (daNote.isSustainNote) {
 			healthBonus  *= 0.2;
@@ -3839,8 +3875,8 @@ class PlayState extends MusicBeatState
 			{
 				actingOn.stunned = false;
 			});
-
-			actingOn.sing(direction, true);
+			if (note == null || note.shouldBeSung)
+				actingOn.sing(direction, true);
 			if (playerOne) {
 				callAllHScript("playerOneMiss", []);
 			} else {
@@ -3929,7 +3965,8 @@ class PlayState extends MusicBeatState
 				health += 0.005 * healthGainMultiplier;
 			*/
 			if (!note.isLiftNote) {
-				actingOn.sing(note.noteData, false, actingOn.altNum);
+				if (note.shouldBeSung)
+					actingOn.sing(note.noteData, false, actingOn.altNum);
 				if (playerOne)
 					callAllHScript("playerOneSing", []);
 				else
