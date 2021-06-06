@@ -55,7 +55,7 @@ class Note extends FlxSprite
 	public var ignoreHealthMods:Bool = false;
 	// altNote can be int or bool. int just determines what alt is played
 	// format: [strumTime:Float, noteDirection:Int, sustainLength:Float, altNote:Union<Bool, Int>, isLiftNote:Bool, healMultiplier:Float, damageMultipler:Float, consistentHealth:Bool, timingMultiplier:Float, shouldBeSung:Bool, ignoreHealthMods:Bool, animSuffix:Union<String, Int>]
-	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?customImage:Null<BitmapData>, ?customXml:Null<String>, ?customEnds:Null<BitmapData>, ?LiftNote:Bool=false, ?animSuffix:OneOfTwo<String, Int>)
+	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?customImage:Null<BitmapData>, ?customXml:Null<String>, ?customEnds:Null<BitmapData>, ?LiftNote:Bool=false, ?animSuffix:String)
 	{
 		super();
 
@@ -79,32 +79,33 @@ class Note extends FlxSprite
 			case 'pixel':
 				loadGraphic('assets/images/weeb/pixelUI/arrows-pixels.png', true, 17, 17);
 				isPixel = true;
-				if (animSuffix != null && (animSuffix is Int)) {
-					animation.add('greenScroll', [animSuffix]);
-					animation.add('redScroll', [animSuffix]);
-					animation.add('blueScroll', [animSuffix]);
-					animation.add('purpleScroll', [animSuffix]);
+				if (animSuffix != null && animSuffix != "") {
+					var intSuffix = Std.parseInt(animSuffix);
+					animation.add('greenScroll', [intSuffix]);
+					animation.add('redScroll', [intSuffix]);
+					animation.add('blueScroll', [intSuffix]);
+					animation.add('purpleScroll', [intSuffix]);
 
 					if (isSustainNote)
 					{
 						loadGraphic('assets/images/weeb/pixelUI/arrowEnds.png', true, 7, 6);
 
-						animation.add('purpleholdend', [animSuffix]);
-						animation.add('greenholdend', [animSuffix]);
-						animation.add('redholdend', [animSuffix]);
-						animation.add('blueholdend', [animSuffix]);
+						animation.add('purpleholdend', [intSuffix]);
+						animation.add('greenholdend', [intSuffix]);
+						animation.add('redholdend', [intSuffix]);
+						animation.add('blueholdend', [intSuffix]);
 
-						animation.add('purplehold', [animSuffix]);
-						animation.add('greenhold', [animSuffix]);
-						animation.add('redhold', [animSuffix]);
-						animation.add('bluehold', [animSuffix]);
+						animation.add('purplehold', [intSuffix]);
+						animation.add('greenhold', [intSuffix]);
+						animation.add('redhold', [intSuffix]);
+						animation.add('bluehold', [intSuffix]);
 					}
 					if (isLiftNote)
 					{
-						animation.add('greenScroll', [animSuffix]);
-						animation.add('redScroll', [animSuffix]);
-						animation.add('blueScroll', [animSuffix]);
-						animation.add('purpleScroll', [animSuffix]);
+						animation.add('greenScroll', [intSuffix]);
+						animation.add('redScroll', [intSuffix]);
+						animation.add('blueScroll', [intSuffix]);
+						animation.add('purpleScroll', [intSuffix]);
 					}
 				} else {
 					animation.add('greenScroll', [6]);
@@ -141,26 +142,28 @@ class Note extends FlxSprite
 				frames = FlxAtlasFrames.fromSparrow('assets/images/NOTE_assets.png', 'assets/images/NOTE_assets.xml');
 				if (animSuffix == null) {
 					animSuffix = '';
+				} else {
+					animSuffix = ' ' + animSuffix;
 				}
-				animation.addByPrefix('greenScroll', 'green ${animSuffix}0');
-				animation.addByPrefix('redScroll', 'red ${animSuffix}0');
-				animation.addByPrefix('blueScroll', 'blue ${animSuffix}0');
-				animation.addByPrefix('purpleScroll', 'purple ${animSuffix}0');
+				animation.addByPrefix('greenScroll', 'green${animSuffix}0');
+				animation.addByPrefix('redScroll', 'red${animSuffix}0');
+				animation.addByPrefix('blueScroll', 'blue${animSuffix}0');
+				animation.addByPrefix('purpleScroll', 'purple${animSuffix}0');
 
-				animation.addByPrefix('purpleholdend', 'pruple end hold ${animSuffix}');
-				animation.addByPrefix('greenholdend', 'green hold end ${animSuffix}' );
-				animation.addByPrefix('redholdend', 'red hold end ${animSuffix}');
-				animation.addByPrefix('blueholdend', 'blue hold end ${animSuffix}');
+				animation.addByPrefix('purpleholdend', 'pruple end hold${animSuffix}');
+				animation.addByPrefix('greenholdend', 'green hold end${animSuffix}' );
+				animation.addByPrefix('redholdend', 'red hold end${animSuffix}');
+				animation.addByPrefix('blueholdend', 'blue hold end${animSuffix}');
 
-				animation.addByPrefix('purplehold', 'purple hold piece ${animSuffix}');
-				animation.addByPrefix('greenhold', 'green hold piece ${animSuffix}');
-				animation.addByPrefix('redhold', 'red hold piece ${animSuffix}');
-				animation.addByPrefix('bluehold', 'blue hold piece');
+				animation.addByPrefix('purplehold', 'purple hold piece${animSuffix}');
+				animation.addByPrefix('greenhold', 'green hold piece${animSuffix}');
+				animation.addByPrefix('redhold', 'red hold piece${animSuffix}');
+				animation.addByPrefix('bluehold', 'blue hold piece${animSuffix}');
 				if (isLiftNote) {
-					animation.addByPrefix('greenScroll', 'green lift ${animSuffix}');
-					animation.addByPrefix('redScroll', 'red lift ${animSuffix}');
-					animation.addByPrefix('blueScroll', 'blue lift ${animSuffix}');
-					animation.addByPrefix('purpleScroll', 'purple lift ${animSuffix}');
+					animation.addByPrefix('greenScroll', 'green lift${animSuffix}');
+					animation.addByPrefix('redScroll', 'red lift${animSuffix}');
+					animation.addByPrefix('blueScroll', 'blue lift${animSuffix}');
+					animation.addByPrefix('purpleScroll', 'purple lift${animSuffix}');
 				}
 				setGraphicSize(Std.int(width * 0.7));
 				updateHitbox();
@@ -174,26 +177,30 @@ class Note extends FlxSprite
 					{
 						animSuffix = '';
 					}
-					animation.addByPrefix('greenScroll', 'green ${animSuffix}0');
-					animation.addByPrefix('redScroll', 'red ${animSuffix}0');
-					animation.addByPrefix('blueScroll', 'blue ${animSuffix}0');
-					animation.addByPrefix('purpleScroll', 'purple ${animSuffix}0');
+					else
+					{
+						animSuffix = ' ' + animSuffix;
+					}
+					animation.addByPrefix('greenScroll', 'green${animSuffix}0');
+					animation.addByPrefix('redScroll', 'red${animSuffix}0');
+					animation.addByPrefix('blueScroll', 'blue${animSuffix}0');
+					animation.addByPrefix('purpleScroll', 'purple${animSuffix}0');
 
-					animation.addByPrefix('purpleholdend', 'pruple end hold ${animSuffix}');
-					animation.addByPrefix('greenholdend', 'green hold end ${animSuffix}');
-					animation.addByPrefix('redholdend', 'red hold end ${animSuffix}');
-					animation.addByPrefix('blueholdend', 'blue hold end ${animSuffix}');
+					animation.addByPrefix('purpleholdend', 'pruple end hold${animSuffix}');
+					animation.addByPrefix('greenholdend', 'green hold end${animSuffix}');
+					animation.addByPrefix('redholdend', 'red hold end${animSuffix}');
+					animation.addByPrefix('blueholdend', 'blue hold end${animSuffix}');
 
-					animation.addByPrefix('purplehold', 'purple hold piece ${animSuffix}');
-					animation.addByPrefix('greenhold', 'green hold piece ${animSuffix}');
-					animation.addByPrefix('redhold', 'red hold piece ${animSuffix}');
-					animation.addByPrefix('bluehold', 'blue hold piece');
+					animation.addByPrefix('purplehold', 'purple hold piece${animSuffix}');
+					animation.addByPrefix('greenhold', 'green hold piece${animSuffix}');
+					animation.addByPrefix('redhold', 'red hold piece${animSuffix}');
+					animation.addByPrefix('bluehold', 'blue hold piece${animSuffix}');
 					if (isLiftNote)
 					{
-						animation.addByPrefix('greenScroll', 'green lift ${animSuffix}');
-						animation.addByPrefix('redScroll', 'red lift ${animSuffix}');
-						animation.addByPrefix('blueScroll', 'blue lift ${animSuffix}');
-						animation.addByPrefix('purpleScroll', 'purple lift ${animSuffix}');
+						animation.addByPrefix('greenScroll', 'green lift${animSuffix}');
+						animation.addByPrefix('redScroll', 'red lift${animSuffix}');
+						animation.addByPrefix('blueScroll', 'blue lift${animSuffix}');
+						animation.addByPrefix('purpleScroll', 'purple lift${animSuffix}');
 					}
 
 	 				setGraphicSize(Std.int(width * 0.7));
@@ -202,33 +209,34 @@ class Note extends FlxSprite
 					// when arrowsEnds != arrowEnds :laughing_crying:
 				} else if (FNFAssets.exists('assets/images/custom_ui/ui_packs/'+PlayState.SONG.uiType+"/arrows-pixels.png") && FNFAssets.exists('assets/images/custom_ui/ui_packs/'+PlayState.SONG.uiType+"/arrowEnds.png")){
 					loadGraphic(customImage, true, 17, 17);
-					if (animSuffix != null && (animSuffix is Int))
+					if (animSuffix != null && animSuffix != "")
 					{
-						animation.add('greenScroll', [animSuffix]);
-						animation.add('redScroll', [animSuffix]);
-						animation.add('blueScroll', [animSuffix]);
-						animation.add('purpleScroll', [animSuffix]);
+						var intSuffix = Std.parseInt(animSuffix);
+						animation.add('greenScroll', [intSuffix]);
+						animation.add('redScroll', [intSuffix]);
+						animation.add('blueScroll', [intSuffix]);
+						animation.add('purpleScroll', [intSuffix]);
 
 						if (isSustainNote)
 						{
 							loadGraphic('assets/images/weeb/pixelUI/arrowEnds.png', true, 7, 6);
 
-							animation.add('purpleholdend', [animSuffix]);
-							animation.add('greenholdend', [animSuffix]);
-							animation.add('redholdend', [animSuffix]);
-							animation.add('blueholdend', [animSuffix]);
+							animation.add('purpleholdend', [intSuffix]);
+							animation.add('greenholdend', [intSuffix]);
+							animation.add('redholdend', [intSuffix]);
+							animation.add('blueholdend', [intSuffix]);
 
-							animation.add('purplehold', [animSuffix]);
-							animation.add('greenhold', [animSuffix]);
-							animation.add('redhold', [animSuffix]);
-							animation.add('bluehold', [animSuffix]);
+							animation.add('purplehold', [intSuffix]);
+							animation.add('greenhold', [intSuffix]);
+							animation.add('redhold', [intSuffix]);
+							animation.add('bluehold', [intSuffix]);
 						}
 						if (isLiftNote)
 						{
-							animation.add('greenScroll', [animSuffix]);
-							animation.add('redScroll', [animSuffix]);
-							animation.add('blueScroll', [animSuffix]);
-							animation.add('purpleScroll', [animSuffix]);
+							animation.add('greenScroll', [intSuffix]);
+							animation.add('redScroll', [intSuffix]);
+							animation.add('blueScroll', [intSuffix]);
+							animation.add('purpleScroll', [intSuffix]);
 						}
 					}
 					else

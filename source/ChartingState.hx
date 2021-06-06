@@ -147,7 +147,8 @@ class ChartingState extends MusicBeatState
 				isMoody: false,
 				cutsceneType: "none",
 				uiType: 'normal',
-				isCheer: false
+				isCheer: false,
+				preferredNoteAmount: 4
 			};
 		}
 

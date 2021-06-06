@@ -30,6 +30,7 @@ typedef SwagSong =
 	var isSpooky:Null<Bool>;
 	var isHey:Null<Bool>;
 	var isCheer:Null<Bool>;
+	var preferredNoteAmount:Null<Int>;
 }
 
 class Song
@@ -110,6 +111,8 @@ class Song
 				parsedJson.isCheer = true;
 			}
 		}
+		if (parsedJson.preferredNoteAmount == null)
+			parsedJson.preferredNoteAmount = 4;
 		trace(parsedJson.stage);
 		if (parsedJson.gf == null) {
 			// are you kidding me did i really do song to lowercase
