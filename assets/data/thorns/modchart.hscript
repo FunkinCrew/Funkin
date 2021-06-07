@@ -1,0 +1,44 @@
+
+function start(song)
+{
+    var trail = new FlxTrail(dad, null, 7, 2, 0.3, 0.05);
+    addSprite(trail, BEHIND_ALL );
+}
+
+
+function beatHit(beat)
+{
+}
+
+function update(elapsed)
+{
+}
+
+function stepHit(step)
+{
+}
+
+function playerTwoTurn()
+{
+    
+}
+
+function playerTwoMiss()
+{
+}
+
+function playerTwoSing()
+{
+}
+
+function playerOneTurn()
+{
+}
+
+function playerOneMiss()
+{
+}
+
+function playerOneSing()
+{
+}

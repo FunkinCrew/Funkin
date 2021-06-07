@@ -6,7 +6,6 @@ function start(song) {
 
 function beatHit(beat)
 {
-
 }
 
 function update(elapsed)
@@ -16,6 +15,14 @@ function update(elapsed)
 
 function stepHit(step)
 {
+        if (curStep == 124){
+            boyfriend.playAnim('hey');
+            dad.playAnim('cheer');
+        } 
+        if (curStep == 188){
+            boyfriend.playAnim('hey');
+            dad.playAnim('cheer');
+    }
 }
 
 function playerTwoTurn()
@@ -37,6 +44,7 @@ function playerOneTurn()
 
 function playerOneMiss()
 {
+    dad.playAnim('sad');
 }
 
 function playerOneSing()
