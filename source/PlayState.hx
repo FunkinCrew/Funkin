@@ -1711,9 +1711,19 @@ class PlayState extends MusicBeatState
 				var animSuffix:Null<OneOfTwo<String, Int>> = songNotes[11];
 				var gottaHitNote:Bool = section.mustHitSection;
 				var altNote:Bool = false;
-				if (songNotes[1] > 3)
+				if (songNotes[1] % 8 > 3)
 				{
 					gottaHitNote = !section.mustHitSection;
+				}
+				if (songNotes[1] > 7) {
+					// sussy fire note support? :flushed:
+					noteHeal = -5;
+					consitentNote = true;
+					shouldSing = false;
+					timeThingy = 0.5;
+					noteDamage = 0;
+					ignoreHealthMods = true;
+					animSuffix = "lift";
 				}
 				if (songNotes[3] || section.altAnim)
 				{
