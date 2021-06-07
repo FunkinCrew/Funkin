@@ -1511,6 +1511,7 @@ class PlayState extends MusicBeatState
 				FlxG.sound.music.time = loopA;
 				resyncVocals();	
 				unspawnNotes = deepCopyNotes(allNotes,loopA);
+				songScore = 0
 			}
 
 			if (!paused)
