@@ -3061,7 +3061,7 @@ class PlayState extends MusicBeatState
 				// WIP interpolation shit? Need to fix the pause issue
 				// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
 
-				if ((daNote.y < -daNote.height && !downscroll) || (daNote.y > FlxG.height + daNote.height && downscroll))
+				if (((daNote.y < -daNote.height && !downscroll) || (daNote.y > FlxG.height + daNote.height && downscroll)) && daNote.healMultiplier >= 0)
 				{
 
 						if ((daNote.tooLate || !daNote.wasGoodHit) /* && !daNote.isSustainNote */ )
@@ -3337,42 +3337,64 @@ class PlayState extends MusicBeatState
 		}
 		// SHIT IS A COMBO BREAKER IN ETTERNA NERDS
 		// GIT GUD
+		var dontCountNote = daNote.healMultiplier < 0;
 		switch (daRating)
 		{
 			case 'shit':
-				score = -300;
-				combo = 0;
-				misses++;
+				
+				if (!dontCountNote) {
+					ss = false;
+					shits++;
+					notesHit += 0.25;
+					misses++;
+					score = -300;
+					combo = 0;
+				}
+				
 				healthBonus -= 0.06 * if (daNote.ignoreHealthMods) 1 else healthLossMultiplier * daNote.damageMultiplier;
-				ss = false;
-				shits++;
-				notesHit += 0.25;
+			
+				
 			case 'wayoff':
-				score = -300;
-				combo = 0;
-				misses++;
+				if (!dontCountNote) {
+					score = -300;
+					combo = 0;
+					misses++;
+					ss = false;
+					shits++;
+					notesHit += 0.1;
+				}
+				
 				healthBonus -= 0.06 * if (daNote.ignoreHealthMods) 1 else healthLossMultiplier * daNote.damageMultiplier;
-				ss = false;
-				shits++;
-				notesHit += 0.1;
+				
 			case 'bad':
+				if (!dontCountNote) {
+					score = 0;
+					ss = false;
+					bads++;
+					notesHit += 0.50;
+				}
 				daRating = 'bad';
-				score = 0;
+				
 				healthBonus -= 0.03 * if (daNote.ignoreHealthMods) 1 else healthLossMultiplier * daNote.damageMultiplier;
-				ss = false;
-				bads++;
-				notesHit += 0.50;
+				
 			case 'good':
+				if (!dontCountNote) {
+					score = 200;
+					ss = false;
+					goods++;
+					notesHit += 0.75;
+				}
 				daRating = 'good';
-				score = 200;
-				ss = false;
-				goods++;
+				
 				healthBonus += 0.03 * if (daNote.ignoreHealthMods) 1 else healthGainMultiplier * daNote.healMultiplier;
-				notesHit += 0.75;
+				
 			case 'sick':
 				healthBonus += 0.07 * if (daNote.ignoreHealthMods) 1 else healthGainMultiplier * daNote.healMultiplier;
-				notesHit += 1;
-				sicks++;
+				if (!dontCountNote) {
+					notesHit += 1;
+					sicks++;
+				}
+				
 				if (!daNote.isSustainNote) {
 					var recycledNote = grpNoteSplashes.recycle(NoteSplash);
 					recycledNote.setupNoteSplash(daNote.x, daNote.y, daNote.noteData);
@@ -3382,9 +3404,12 @@ class PlayState extends MusicBeatState
 			case 'miss':
 				// noteMiss(daNote.noteData, playerOne);
 				healthBonus = -0.04 * if (daNote.ignoreHealthMods) 1 else healthLossMultiplier * daNote.damageMultiplier;
-				misses++;
-				ss = false;
-				score = -5;
+				if (!dontCountNote) {
+					misses++;
+					ss = false;
+					score = -5;
+				}
+				
 				
 		}
 		if (daNote.consistentHealth) {
@@ -3406,9 +3431,12 @@ class PlayState extends MusicBeatState
 		if (notesHit > notesPassing) {
 			notesHit = notesPassing;
 		}
-		songScore += Math.round(ConvertScore.convertScore(noteDiff) * ModifierState.scoreMultiplier);
-		songScoreDef += Math.round(ConvertScore.convertScore(noteDiff));
-		trueScore += Math.round(ConvertScore.convertScore(noteDiff));
+		if (!dontCountNote) {
+			songScore += Math.round(ConvertScore.convertScore(noteDiff) * ModifierState.scoreMultiplier);
+			songScoreDef += Math.round(ConvertScore.convertScore(noteDiff));
+			trueScore += Math.round(ConvertScore.convertScore(noteDiff));
+		}
+		
 		/* if (combo > 60)
 				daRating = 'sick';
 			else if (combo > 12)
@@ -3772,7 +3800,7 @@ class PlayState extends MusicBeatState
 			if (possibleNotes.length > 0 && !dontCheck)
 			{
 				var daNote = possibleNotes[0];
-
+				/*
 				if (!OptionsHandler.options.useCustomInput)
 				{
 					for (shit in 0...releaseArray.length)
@@ -3781,8 +3809,8 @@ class PlayState extends MusicBeatState
 							noteMiss(shit, playerOne);
 					}
 				}
-
-				// Jump notes
+				*/
+				//	 Jump notes
 				for (coolNote in possibleNotes)
 				{
 					if (releaseArray[coolNote.noteData])
@@ -3794,12 +3822,14 @@ class PlayState extends MusicBeatState
 					}
 				}
 			}
+			/*
 			else if (!OptionsHandler.options.useCustomInput)
 			{
 				for (shit in 0...releaseArray.length)
 					if (releaseArray[shit])
 						noteMiss(shit, playerOne);
 			}
+			*/
 			// :shrug: idk what this for
 			if (dontCheck && possibleNotes.length > 0 && OptionsHandler.options.useCustomInput && !demoMode)
 			{
@@ -3964,7 +3994,8 @@ class PlayState extends MusicBeatState
 			}
 			// We pop it up even for sustains, just to update score. We don't actually show anything.
 			trace("<3 pop up score");
-			notesPassing += 1;
+			if (note.healMultiplier >= 0)
+				notesPassing += 1;
 			popUpScore(note.strumTime, note, playerOne);
 			combo += 1;
 			
