@@ -20,13 +20,7 @@ class OptionsSubState extends MusicBeatSubstate
 		grpOptionsTexts = new FlxTypedGroup<Alphabet>();
 		add(grpOptionsTexts);
 
-		for (i in 0...textMenuItems.length)
-		{
-			var option = new Alphabet(20, 20 + (i * 100), textMenuItems[i], true, false);
-			option.isMenuItem = true;
-			option.targetY = i;
-			grpOptionsTexts.add(option);
-		}
+		spawnInTexts();
 	}
 
 	override function update(elapsed:Float)
@@ -50,7 +44,9 @@ class OptionsSubState extends MusicBeatSubstate
 			// Cool Options things
 			if (textMenuItems[curSelected] == 'Controls')
 			{
+				var coolText = new FlxText(0,0,0,"W,A,S,D | UP,LEFT,DOWN,RIGHT", 16);
 
+				add(coolText);
 			}
 		}
 
@@ -60,6 +56,19 @@ class OptionsSubState extends MusicBeatSubstate
 		{
 			x.targetY = bruh - curSelected;
 			bruh++;
+		}
+	}
+
+	function spawnInTexts()
+	{
+		grpOptionsTexts.clear();
+
+		for (i in 0...textMenuItems.length)
+		{
+			var option = new Alphabet(20, 20 + (i * 100), textMenuItems[i], true, false);
+			option.isMenuItem = true;
+			option.targetY = i;
+			grpOptionsTexts.add(option);
 		}
 	}
 }
