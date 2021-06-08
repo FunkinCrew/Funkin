@@ -49,9 +49,6 @@ class TitleState extends MusicBeatState
 		PlayerSettings.init();
 
 		curWacky = FlxG.random.getObject(getIntroTextShit());
-
-		// DEBUG BULLSHIT
-
 		super.create();
 
 		NGio.noLogin(APIStuff.API);
