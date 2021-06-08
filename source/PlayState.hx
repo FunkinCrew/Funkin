@@ -2519,10 +2519,10 @@ class PlayState extends MusicBeatState
 
 					trace('LOADING NEXT SONG');
 					// pre lowercasing the next story song name
-					var songLowercase = StringTools.replace(PlayState.storyPlaylist[0], " ", "-").toLowerCase();
-						switch (songLowercase) {
-							case 'dad-battle': songLowercase = 'dadbattle';
-							case 'philly-nice': songLowercase = 'philly';
+					var nextSongLowercase = StringTools.replace(PlayState.storyPlaylist[0], " ", "-").toLowerCase();
+						switch (nextSongLowercase) {
+							case 'dad-battle': nextSongLowercase = 'dadbattle';
+							case 'philly-nice': nextSongLowercase = 'philly';
 						}
 					trace(nextSongLowercase + difficulty);
 
