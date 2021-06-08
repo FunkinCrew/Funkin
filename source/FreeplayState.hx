@@ -37,11 +37,6 @@ class FreeplayState extends MusicBeatState
 	{
 		var initSonglist = CoolUtil.coolTextFile(Paths.txt('freeplaySonglist'));
 
-		for (i in 0...initSonglist.length)
-		{
-			songs.push(new SongMetadata(initSonglist[i], 1, 'gf'));
-		}
-
 		/* 
 			if (FlxG.sound.music != null)
 			{
@@ -61,23 +56,30 @@ class FreeplayState extends MusicBeatState
 		isDebug = true;
 		#end
 
-		if (StoryMenuState.weekUnlocked[2] || isDebug)
-			addWeek(['Bopeebo', 'Fresh', 'Dadbattle'], 1, ['dad']);
+		// Loops through all songs in freeplaySonglist.txt
+		for (i in 0...initSonglist.length)
+		{
+			// Creates an array of their strings
+			var listArray = initSonglist[i].split(":");
 
-		if (StoryMenuState.weekUnlocked[2] || isDebug)
-			addWeek(['Spookeez', 'South', 'Monster'], 2, ['spooky']);
+			// Variables I like yes mmmm tasty
+			var week = Std.parseInt(listArray[2]);
+			var icon = listArray[1];
+			var song = listArray[0];
 
-		if (StoryMenuState.weekUnlocked[3] || isDebug)
-			addWeek(['Pico', 'Philly', 'Blammed'], 3, ['pico']);
+			// code so you can actually play week 6 in freeplay lol
+			if (week == 6)
+			{
+				week = 5;
+			}
 
-		if (StoryMenuState.weekUnlocked[4] || isDebug)
-			addWeek(['Satin-Panties', 'High', 'Milf'], 4, ['mom']);
-
-		if (StoryMenuState.weekUnlocked[5] || isDebug)
-			addWeek(['Cocoa', 'Eggnog', 'Winter-Horrorland'], 5, ['parents-christmas', 'parents-christmas', 'monster-christmas']);
-
-		if (StoryMenuState.weekUnlocked[6] || isDebug)
-			addWeek(['Senpai', 'Roses', 'Thorns'], 6, ['senpai', 'senpai', 'spirit']);
+			// If you've unlocked the week after this one, then yes
+			if (StoryMenuState.weekUnlocked[week + 1] || isDebug)
+			{
+				// Creates new song data accordingly
+				songs.push(new SongMetadata(song, week, icon));
+			}
+		}
 
 		// LOAD MUSIC
 
@@ -257,11 +259,6 @@ class FreeplayState extends MusicBeatState
 
 	function changeSelection(change:Int = 0)
 	{
-		#if !switch
-		NGio.logEvent('Fresh');
-		#end
-
-		// NGio.logEvent('Fresh');
 		FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 
 		curSelected += change;
