@@ -48,15 +48,11 @@ class Song
 	{
 		trace(jsonInput);
 		// pre lowercasing the folder name
-		var folderLowercase = switch (folder)
-			{
-				case 'Dad Battle':
-					StringTools.replace(folder," ", "").toLowerCase();
-				case 'Philly Nice':
-					StringTools.replace(folder," Nice", "").toLowerCase();
-				default:
-					StringTools.replace(folder," ", "-").toLowerCase();
-			}
+		var folderLowercase = StringTools.replace(folder, " ", "-").toLowerCase();
+					switch (folderLowercase) {
+						case 'dad-battle': folderLowercase = 'dadbattle';
+						case 'philly-nice': folderLowercase = 'philly';
+					}
 		// pre lowercasing the jsonInput name
 		var jsonInputLowercase = folderLowercase + StringTools.replace(jsonInput,folder.toLowerCase(), "").toLowerCase();
 			
