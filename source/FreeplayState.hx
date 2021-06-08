@@ -203,7 +203,7 @@ class FreeplayState extends MusicBeatState
 		if (accepted)
 		{
 			// pre lowercasing the song name
-			var songLowercase = StringTools.replace(songs[curSelected], " ", "-").toLowerCase();
+			var songLowercase = StringTools.replace(songs[curSelected].songName, " ", "-").toLowerCase();
 			switch (songLowercase) {
 				case 'dad-battle': songLowercase = 'dadbattle';
 				case 'philly-nice': songLowercase = 'philly';
