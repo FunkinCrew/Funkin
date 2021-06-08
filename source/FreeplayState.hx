@@ -262,8 +262,6 @@ class FreeplayState extends MusicBeatState
 
 	function changeSelection(change:Int = 0)
 	{
-		FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
-
 		curSelected += change;
 
 		if (curSelected < 0)
@@ -271,14 +269,18 @@ class FreeplayState extends MusicBeatState
 		if (curSelected >= songs.length)
 			curSelected = 0;
 
-		// selector.y = (70 * curSelected) + 30;
+		// Sounds
+
+		// Scroll Sound
+		FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
+
+		// Song Inst
+		FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName));
 
 		#if !switch
 		intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
 		// lerpScore = 0;
 		#end
-
-		FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName));
 
 		var bullShit:Int = 0;
 
@@ -295,12 +297,10 @@ class FreeplayState extends MusicBeatState
 			bullShit++;
 
 			item.alpha = 0.6;
-			// item.setGraphicSize(Std.int(item.width * 0.8));
 
 			if (item.targetY == 0)
 			{
 				item.alpha = 1;
-				// item.setGraphicSize(Std.int(item.width));
 			}
 		}
 	}
