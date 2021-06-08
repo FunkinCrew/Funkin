@@ -1,11 +1,9 @@
 package;
 
-#if discord_rpc
-import Discord.DiscordClient;
-#end
 import flash.text.TextField;
 import flixel.FlxG;
 import flixel.FlxSprite;
+import flixel.FlxState;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
@@ -15,6 +13,10 @@ import flixel.util.FlxColor;
 import lime.utils.Assets;
 
 using StringTools;
+
+#if discord_rpc
+import Discord.DiscordClient;
+#end
 
 class FreeplayState extends MusicBeatState
 {
@@ -247,6 +249,12 @@ class FreeplayState extends MusicBeatState
 		}
 	}
 
+	override function switchTo(nextState:FlxState):Bool
+	{
+		clearDaCache(songs[curSelected].songName);
+		return super.switchTo(nextState);
+	}
+
 	function changeDiff(change:Int = 0)
 	{
 		curDifficulty += change;
@@ -262,6 +270,19 @@ class FreeplayState extends MusicBeatState
 
 		diffText.text = "< " + CoolUtil.difficultyString() + " >";
 		positionHighscore();
+	}
+
+	// Clears the cache of songs, frees up memory, they'll have to be loaded in later tho
+	function clearDaCache(actualSongTho:String)
+	{
+		for (song in songs)
+		{
+			if (song.songName != actualSongTho)
+			{
+				trace('trying to remove: ' + song.songName);
+				openfl.Assets.cache.clear(Paths.inst(song.songName));
+			}
+		}
 	}
 
 	function changeSelection(change:Int = 0)

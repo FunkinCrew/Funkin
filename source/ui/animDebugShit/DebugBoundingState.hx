@@ -30,7 +30,6 @@ class DebugBoundingState extends FlxState
 	/* 
 		TODAY'S TO-DO
 		- Cleaner UI
-		- Loading the spritesheet and spritesheet data from offsetview
 	 */
 	var bg:FlxSprite;
 	var fileInfo:FlxText;

@@ -194,6 +194,13 @@ class Note extends FlxSprite
 		}
 	}
 
+	override function destroy()
+	{
+		prevNote = null;
+
+		super.destroy();
+	}
+
 	public function updateColors():Void
 	{
 		colorSwap.update(arrowColors[noteData]);
