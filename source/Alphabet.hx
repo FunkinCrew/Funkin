@@ -154,8 +154,6 @@ class Alphabet extends FlxSpriteGroup
 			#end
 
 			if (AlphaCharacter.alphabet.indexOf(splitWords[loopNum].toLowerCase()) != -1 || isNumber || isSymbol)
-				// if (AlphaCharacter.alphabet.contains(splitWords[loopNum].toLowerCase()) || isNumber || isSymbol)
-
 			{
 				if (lastSprite != null && !xPosResetted)
 				{
@@ -179,9 +177,15 @@ class Alphabet extends FlxSpriteGroup
 				// var letter:AlphaCharacter = new AlphaCharacter(30 * loopNum, 0);
 				var letter:AlphaCharacter = new AlphaCharacter(xPos, 55 * yMulti);
 				letter.row = curRow;
+
 				if (isBold)
 				{
-					letter.createBold(splitWords[loopNum]);
+					if (isNumber)
+					{
+						letter.createNumber(splitWords[loopNum]);
+					} else {
+						letter.createBold(splitWords[loopNum]);
+					}
 				}
 				else
 				{
@@ -245,15 +249,22 @@ class AlphaCharacter extends FlxSprite
 	public function new(x:Float, y:Float)
 	{
 		super(x, y);
-		var tex = Paths.getSparrowAtlas('alphabet');
-		frames = tex;
+		frames = Paths.getSparrowAtlas('alphabet');
 
 		antialiasing = true;
 	}
 
 	public function createBold(letter:String)
 	{
-		animation.addByPrefix(letter, letter.toUpperCase() + " bold", 24);
+		var coolBold = " bold";
+
+		if (letter == "8")
+		{
+			letter = "EIGHT";
+			coolBold = "";
+		}
+
+		animation.addByPrefix(letter, letter.toUpperCase() + coolBold, 24);
 		animation.play(letter);
 		updateHitbox();
 	}
@@ -280,7 +291,6 @@ class AlphaCharacter extends FlxSprite
 	{
 		animation.addByPrefix(letter, letter, 24);
 		animation.play(letter);
-
 		updateHitbox();
 	}
 

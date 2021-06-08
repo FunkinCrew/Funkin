@@ -36,7 +36,6 @@ class TitleState extends MusicBeatState
 
 	var blackScreen:FlxSprite;
 	var credGroup:FlxGroup;
-	var credTextShit:Alphabet;
 	var textGroup:FlxGroup;
 	var ngSpr:FlxSprite;
 
@@ -178,13 +177,6 @@ class TitleState extends MusicBeatState
 		blackScreen = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 		credGroup.add(blackScreen);
 
-		credTextShit = new Alphabet(0, 0, "ninjamuffin99\nPhantomArcade\nkawaisprite\nevilsk8er", true);
-		credTextShit.screenCenter();
-
-		// credTextShit.alignment = CENTER;
-
-		credTextShit.visible = false;
-
 		ngSpr = new FlxSprite(0, FlxG.height * 0.52).loadGraphic(Paths.image('newgrounds_logo'));
 		add(ngSpr);
 		ngSpr.visible = false;
@@ -193,16 +185,12 @@ class TitleState extends MusicBeatState
 		ngSpr.screenCenter(X);
 		ngSpr.antialiasing = true;
 
-		FlxTween.tween(credTextShit, {y: credTextShit.y + 20}, 2.9, {ease: FlxEase.quadInOut, type: PINGPONG});
-
 		FlxG.mouse.visible = false;
 
 		if (initialized)
 			skipIntro();
 		else
 			initialized = true;
-
-		// credGroup.add(credTextShit);
 	}
 
 	function getIntroTextShit():Array<Array<String>>
@@ -282,20 +270,11 @@ class TitleState extends MusicBeatState
 
 				var version:String = "v" + Application.current.meta.get('version');
 
-				if (version.trim() != NGio.GAME_VER_NUMS.trim() && !OutdatedSubState.leftState)
-				{
-					FlxG.switchState(new OutdatedSubState());
-					trace('OLD VERSION!');
-					trace('old ver');
-					trace(version.trim());
-					trace('cur ver');
-					trace(NGio.GAME_VER_NUMS.trim());
-				}
-				else
-				{
-					FlxG.switchState(new MainMenuState());
-				}
+				trace("Current version of the game is: " + version + "!");
+
+				FlxG.switchState(new MainMenuState());
 			});
+
 			// FlxG.sound.play(Paths.music('titleShoot'), 0.7);
 		}
 
@@ -349,55 +328,34 @@ class TitleState extends MusicBeatState
 		else
 			gfDance.animation.play('danceLeft');
 
-		FlxG.log.add(curBeat);
-
 		switch (curBeat)
 		{
 			case 1:
 				createCoolText(['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er']);
-			// credTextShit.visible = true;
 			case 3:
 				addMoreText('present');
-			// credTextShit.text += '\npresent...';
-			// credTextShit.addText();
 			case 4:
 				deleteCoolText();
-			// credTextShit.visible = false;
-			// credTextShit.text = 'In association \nwith';
-			// credTextShit.screenCenter();
 			case 5:
 				createCoolText(['In association', 'with']);
 			case 7:
 				addMoreText('newgrounds');
 				ngSpr.visible = true;
-			// credTextShit.text += '\nNewgrounds';
 			case 8:
 				deleteCoolText();
 				ngSpr.visible = false;
-			// credTextShit.visible = false;
-
-			// credTextShit.text = 'Shoutouts Tom Fulp';
-			// credTextShit.screenCenter();
 			case 9:
 				createCoolText([curWacky[0]]);
-			// credTextShit.visible = true;
 			case 11:
 				addMoreText(curWacky[1]);
-			// credTextShit.text += '\nlmao';
 			case 12:
 				deleteCoolText();
-			// credTextShit.visible = false;
-			// credTextShit.text = "Friday";
-			// credTextShit.screenCenter();
 			case 13:
 				addMoreText('Friday');
-			// credTextShit.visible = true;
 			case 14:
 				addMoreText('Night');
-			// credTextShit.text += '\nNight';
 			case 15:
-				addMoreText('Funkin'); // credTextShit.text += '\nFunkin';
-
+				addMoreText('Funkin');
 			case 16:
 				skipIntro();
 		}
@@ -409,9 +367,8 @@ class TitleState extends MusicBeatState
 	{
 		if (!skippedIntro)
 		{
-			remove(ngSpr);
-
 			FlxG.camera.flash(FlxColor.WHITE, 4);
+			remove(ngSpr);
 			remove(credGroup);
 			skippedIntro = true;
 		}
