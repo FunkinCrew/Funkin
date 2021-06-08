@@ -129,6 +129,7 @@ class Note extends FlxSprite
 		else if (FNFAssets.exists('assets/images/custom_ui/ui_packs/' + PlayState.SONG.uiType + "/arrows-pixels.png")
 			&& FNFAssets.exists('assets/images/custom_ui/ui_packs/' + PlayState.SONG.uiType + "/arrowEnds.png"))
 		{
+			isPixel = true;
 			loadGraphic(customImage, true, 17, 17);
 			if (animSuffix != null && numSuffix == null)
 			{
