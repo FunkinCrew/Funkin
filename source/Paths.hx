@@ -97,14 +97,30 @@ class Paths
 
 	inline static public function voices(song:String)
 	{
-		song = StringTools.replace(song," ", "-");
-		return 'songs:assets/songs/${song.toLowerCase()}/Voices.$SOUND_EXT';
+		var songLowercase = switch (song)
+			{
+				case 'Dad Battle':
+					StringTools.replace(song," ", "").toLowerCase();
+				case 'Philly Nice':
+					StringTools.replace(song," Nice", "").toLowerCase();
+				default:
+					StringTools.replace(song," ", "-").toLowerCase();
+			}
+		return 'songs:assets/songs/${songLowercase}/Voices.$SOUND_EXT';
 	}
 
 	inline static public function inst(song:String)
 	{
-		song = StringTools.replace(song," ", "-");
-		return 'songs:assets/songs/${song.toLowerCase()}/Inst.$SOUND_EXT';
+		var songLowercase = switch (song)
+			{
+				case 'Dad Battle':
+					StringTools.replace(song," ", "").toLowerCase();
+				case 'Philly Nice':
+					StringTools.replace(song," Nice", "").toLowerCase();
+				default:
+					StringTools.replace(song," ", "-").toLowerCase();
+			}
+		return 'songs:assets/songs/${songLowercase}/Inst.$SOUND_EXT';
 	}
 
 	inline static public function image(key:String, ?library:String)

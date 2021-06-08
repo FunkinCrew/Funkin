@@ -236,14 +236,25 @@ class PlayState extends MusicBeatState
 		repPresses = 0;
 		repReleases = 0;
 
+		// pre lowercasing the song name (create)
+		var songLowercase = switch (PlayState.SONG.song)
+			{
+				case 'Dad Battle':
+					StringTools.replace(PlayState.SONG.song," ", "").toLowerCase();
+				case 'Philly Nice':
+					StringTools.replace(PlayState.SONG.song," Nice", "").toLowerCase();
+				default:
+					StringTools.replace(PlayState.SONG.song," ", "-").toLowerCase();
+			}
+		
 		#if windows
-		executeModchart = FileSystem.exists(Paths.lua(PlayState.SONG.song.toLowerCase()  + "/modchart"));
+		executeModchart = FileSystem.exists(Paths.lua(songLowercase  + "/modchart"));
 		#end
 		#if !cpp
 		executeModchart = false; // FORCE disable for non cpp targets
 		#end
 
-		trace('Mod chart: ' + executeModchart + " - " + Paths.lua(PlayState.SONG.song.toLowerCase() + "/modchart"));
+		trace('Mod chart: ' + executeModchart + " - " + Paths.lua(songLowercase + "/modchart"));
 
 		#if windows
 		// Making difficulty text for Discord Rich Presence.
@@ -310,7 +321,7 @@ class PlayState extends MusicBeatState
 		trace('INFORMATION ABOUT WHAT U PLAYIN WIT:\nFRAMES: ' + Conductor.safeFrames + '\nZONE: ' + Conductor.safeZoneOffset + '\nTS: ' + Conductor.timeScale + '\nBotPlay : ' + FlxG.save.data.botplay);
 	
 		//dialogue shit
-		switch (SONG.song.toLowerCase())
+		switch (songLowercase)
 		{
 			case 'tutorial':
 				dialogue = ["Hey you're pretty cute.", 'Use the arrow keys to keep up \nwith me singing.'];
@@ -323,7 +334,7 @@ class PlayState extends MusicBeatState
 				];
 			case 'fresh':
 				dialogue = ["Not too shabby boy.", ""];
-			case 'dad battle':
+			case 'dadbattle':
 				dialogue = [
 					"gah you think you're hot stuff?",
 					"If you can beat me here...",
@@ -592,7 +603,7 @@ class PlayState extends MusicBeatState
 					bgGirls = new BackgroundGirls(-100, 190);
 					bgGirls.scrollFactor.set(0.9, 0.9);
 
-					if (SONG.song.toLowerCase() == 'roses')
+					if (songLowercase == 'roses')
 						{
 							if(FlxG.save.data.distractions){
 								bgGirls.getScared();
@@ -1071,11 +1082,21 @@ class PlayState extends MusicBeatState
 		senpaiEvil.updateHitbox();
 		senpaiEvil.screenCenter();
 
-		if (SONG.song.toLowerCase() == 'roses' || SONG.song.toLowerCase() == 'thorns')
+		// pre lowercasing the song name (schoolIntro)
+		var songLowercase = switch (PlayState.SONG.song)
+			{
+				case 'Dad Battle':
+					StringTools.replace(PlayState.SONG.song," ", "").toLowerCase();
+				case 'Philly Nice':
+					StringTools.replace(PlayState.SONG.song," Nice", "").toLowerCase();
+				default:
+					StringTools.replace(PlayState.SONG.song," ", "-").toLowerCase();
+			}
+		if (songLowercase == 'roses' || songLowercase == 'thorns')
 		{
 			remove(black);
 
-			if (SONG.song.toLowerCase() == 'thorns')
+			if (songLowercase == 'thorns')
 			{
 				add(red);
 			}
@@ -1095,7 +1116,7 @@ class PlayState extends MusicBeatState
 				{
 					inCutscene = true;
 
-					if (SONG.song.toLowerCase() == 'thorns')
+					if (songLowercase == 'thorns')
 					{
 						add(senpaiEvil);
 						senpaiEvil.alpha = 0;
@@ -1328,7 +1349,7 @@ class PlayState extends MusicBeatState
 		// Song check real quick
 		switch(curSong)
 		{
-			case 'Bopeebo' | 'Philly' | 'Blammed' | 'Cocoa' | 'Eggnog': allowedToHeadbang = true;
+			case 'Bopeebo' | 'Philly Nice' | 'Blammed' | 'Cocoa' | 'Eggnog': allowedToHeadbang = true;
 			default: allowedToHeadbang = false;
 		}
 		
@@ -1368,9 +1389,20 @@ class PlayState extends MusicBeatState
 
 		var playerCounter:Int = 0;
 
+		// pre lowercasing the song name (generateSong)
+		var songLowercase = switch (PlayState.SONG.song)
+			{
+				case 'Dad Battle':
+					StringTools.replace(PlayState.SONG.song," ", "").toLowerCase();
+				case 'Philly Nice':
+					StringTools.replace(PlayState.SONG.song," Nice", "").toLowerCase();
+				default:
+					StringTools.replace(PlayState.SONG.song," ", "-").toLowerCase();
+			}
 		// Per song offset check
 		#if windows
-			var songPath = 'assets/data/' + StringTools.replace(PlayState.SONG.song," ", "-").toLowerCase() + '/';
+			var songPath = 'assets/data/' + songLowercase + '/';
+			
 			for(file in sys.FileSystem.readDirectory(songPath))
 			{
 				var path = haxe.io.Path.join([songPath, file]);
@@ -1935,7 +1967,7 @@ class PlayState extends MusicBeatState
 					// Per song treatment since some songs will only have the 'Hey' at certain times
 					switch(curSong)
 					{
-						case 'Philly':
+						case 'Philly Nice':
 						{
 							// General duration of the song
 							if(curBeat < 250)
@@ -2498,9 +2530,29 @@ class PlayState extends MusicBeatState
 						difficulty = '-hard';
 
 					trace('LOADING NEXT SONG');
-					trace(PlayState.storyPlaylist[0].toLowerCase() + difficulty);
+					// pre lowercasing the next story song name
+					var nextSongLowercase = switch (PlayState.storyPlaylist[0])
+					{
+						case 'Dad Battle':
+							StringTools.replace(PlayState.storyPlaylist[0]," ", "").toLowerCase();
+						case 'Philly Nice':
+							StringTools.replace(PlayState.storyPlaylist[0]," Nice", "").toLowerCase();
+						default:
+							StringTools.replace(PlayState.storyPlaylist[0]," ", "-").toLowerCase();
+					}
+					trace(nextSongLowercase + difficulty);
 
-					if (SONG.song.toLowerCase() == 'eggnog')
+					// pre lowercasing the song name (endSong)
+					var songLowercase = switch (PlayState.SONG.song)
+					{
+						case 'Dad Battle':
+							StringTools.replace(PlayState.SONG.song," ", "").toLowerCase();
+						case 'Philly Nice':
+							StringTools.replace(PlayState.SONG.song," Nice", "").toLowerCase();
+						default:
+							StringTools.replace(PlayState.SONG.song," ", "-").toLowerCase();
+					}
+					if (songLowercase == 'eggnog')
 					{
 						var blackShit:FlxSprite = new FlxSprite(-FlxG.width * FlxG.camera.zoom,
 							-FlxG.height * FlxG.camera.zoom).makeGraphic(FlxG.width * 3, FlxG.height * 3, FlxColor.BLACK);

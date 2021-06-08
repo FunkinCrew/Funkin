@@ -46,9 +46,23 @@ class Song
 
 	public static function loadFromJson(jsonInput:String, ?folder:String):SwagSong
 	{
-		trace('loading ' + StringTools.replace(folder," ", "-").toLowerCase() + '/' + StringTools.replace(jsonInput," ", "-").toLowerCase());
-
-		var rawJson = Assets.getText(Paths.json(StringTools.replace(folder," ", "-").toLowerCase() + '/' + StringTools.replace(jsonInput," ", "-").toLowerCase())).trim();
+		trace(jsonInput);
+		// pre lowercasing the folder name
+		var folderLowercase = switch (folder)
+			{
+				case 'Dad Battle':
+					StringTools.replace(folder," ", "").toLowerCase();
+				case 'Philly Nice':
+					StringTools.replace(folder," Nice", "").toLowerCase();
+				default:
+					StringTools.replace(folder," ", "-").toLowerCase();
+			}
+		// pre lowercasing the jsonInput name
+		var jsonInputLowercase = folderLowercase + StringTools.replace(jsonInput,folder.toLowerCase(), "").toLowerCase();
+			
+		trace('loading ' + folderLowercase + '/' + jsonInputLowercase);
+		
+		var rawJson = Assets.getText(Paths.json(folderLowercase + '/' + jsonInputLowercase)).trim();
 
 		while (!rawJson.endsWith("}"))
 		{

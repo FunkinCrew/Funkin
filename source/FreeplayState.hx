@@ -202,13 +202,24 @@ class FreeplayState extends MusicBeatState
 
 		if (accepted)
 		{
-			trace(StringTools.replace(songs[curSelected].songName," ", "-").toLowerCase());
+			// pre lowercasing the song name
+			var songLowercase = switch (songs[curSelected].songName)
+			{
+				case 'Dad Battle':
+					StringTools.replace(songs[curSelected].songName," ", "").toLowerCase();
+				case 'Philly Nice':
+					StringTools.replace(songs[curSelected].songName," Nice", "").toLowerCase();
+				default:
+					StringTools.replace(songs[curSelected].songName," ", "-").toLowerCase();
+			}
+			
+			trace(songLowercase);
 
-			var poop:String = Highscore.formatSong(StringTools.replace(songs[curSelected].songName," ", "-").toLowerCase(), curDifficulty);
+			var poop:String = Highscore.formatSong(songLowercase, curDifficulty);
 
 			trace(poop);
-
-			PlayState.SONG = Song.loadFromJson(poop, StringTools.replace(songs[curSelected].songName," ", "-").toLowerCase());
+			
+			PlayState.SONG = Song.loadFromJson(poop, songLowercase);
 			PlayState.isStoryMode = false;
 			PlayState.storyDifficulty = curDifficulty;
 			PlayState.storyWeek = songs[curSelected].week;
