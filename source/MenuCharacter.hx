@@ -1,33 +1,38 @@
 package;
 
 import flixel.FlxSprite;
-import flixel.graphics.frames.FlxAtlasFrames;
 
 class MenuCharacter extends FlxSprite
 {
 	public var character:String;
 
-	public function new(x:Float, character:String = 'bf')
+	private static var characters:Array<Dynamic> = [
+		["bf"],
+		["bfConfirm", true],
+		["gf"],
+		["dad"],
+		["spooky"],
+		["pico"],
+		["mom"],
+		["parents"],
+		["senpai"]
+	];
+
+	public function new(x:Float, character:String = 'bf', ?looped:Bool = true)
 	{
 		super(x);
 
 		this.character = character;
 
-		var tex = Paths.getSparrowAtlas('campaign_menu_UI_characters');
-		frames = tex;
+		frames = Paths.getSparrowAtlas('campaign_menu_UI_characters');
 
-		animation.addByPrefix('bf', "BF idle dance white", 24);
-		animation.addByPrefix('bfConfirm', 'BF HEY!!', 24, false);
-		animation.addByPrefix('gf', "GF Dancing Beat WHITE", 24);
-		animation.addByPrefix('dad', "Dad idle dance BLACK LINE", 24);
-		animation.addByPrefix('spooky', "spooky dance idle BLACK LINES", 24);
-		animation.addByPrefix('pico', "Pico Idle Dance", 24);
-		animation.addByPrefix('mom', "Mom Idle BLACK LINES", 24);
-		animation.addByPrefix('parents-christmas', "Parent Christmas Idle", 24);
-		animation.addByPrefix('senpai', "SENPAI idle Black Lines", 24);
-		// Parent Christmas Idle
+		for(x in characters)
+		{
+			animation.addByPrefix(x[0], x[0] + "0", 24, !x[1]);
+		}
 
 		animation.play(character);
+
 		updateHitbox();
 	}
 }

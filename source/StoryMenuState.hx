@@ -41,7 +41,7 @@ class StoryMenuState extends MusicBeatState
 		['spooky', 'bf', 'gf'],
 		['pico', 'bf', 'gf'],
 		['mom', 'bf', 'gf'],
-		['parents-christmas', 'bf', 'gf'],
+		['parents', 'bf', 'gf'],
 		['senpai', 'bf', 'gf']
 	];
 
@@ -159,12 +159,15 @@ class StoryMenuState extends MusicBeatState
 					weekCharacterThing.setGraphicSize(Std.int(weekCharacterThing.width * 0.9));
 					weekCharacterThing.updateHitbox();
 					weekCharacterThing.x -= 80;
+
 				case 'gf':
 					weekCharacterThing.setGraphicSize(Std.int(weekCharacterThing.width * 0.5));
 					weekCharacterThing.updateHitbox();
+
 				case 'pico':
 					weekCharacterThing.flipX = true;
-				case 'parents-christmas':
+
+				case 'parents':
 					weekCharacterThing.setGraphicSize(Std.int(weekCharacterThing.width * 0.9));
 					weekCharacterThing.updateHitbox();
 			}
@@ -405,7 +408,7 @@ class StoryMenuState extends MusicBeatState
 
 		switch (grpWeekCharacters.members[0].animation.curAnim.name)
 		{
-			case 'parents-christmas':
+			case 'parents':
 				grpWeekCharacters.members[0].offset.set(200, 200);
 				grpWeekCharacters.members[0].setGraphicSize(Std.int(grpWeekCharacters.members[0].width * 0.99));
 
