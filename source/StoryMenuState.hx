@@ -410,8 +410,8 @@ class StoryMenuState extends MusicBeatState
 		switch (grpWeekCharacters.members[0].animation.curAnim.name)
 		{
 			case 'parents':
-				grpWeekCharacters.members[0].offset.set(200, 200);
-				grpWeekCharacters.members[0].setGraphicSize(Std.int(grpWeekCharacters.members[0].width * 0.99));
+				grpWeekCharacters.members[0].offset.set(250, 200);
+				grpWeekCharacters.members[0].setGraphicSize(Std.int(grpWeekCharacters.members[0].width * 1.5));
 
 			case 'senpai':
 				grpWeekCharacters.members[0].offset.set(130, 0);
