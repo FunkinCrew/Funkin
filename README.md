@@ -1,6 +1,6 @@
 # Friday Night Funkin on android
 
-check releases to download apk
+![fnflogo](https://user-images.githubusercontent.com/59097731/121178442-29003c00-c867-11eb-8851-b07d2c5ca7b6.png)
 
 Download:
 
@@ -63,11 +63,5 @@ and run command "lime test android"
 
 This game was made with love to Newgrounds and it's community. Extra love to Tom Fulp.
 
-спасибо за такую активность
-![изображение](https://user-images.githubusercontent.com/59097731/104740090-91d00600-5758-11eb-9a7c-30d756df3740.png)
 
-
-
-
-Пиздец я ленивый
-
+![amogus](https://user-images.githubusercontent.com/59097731/121178490-34ebfe00-c867-11eb-8a42-f2bb37bcca69.png)
