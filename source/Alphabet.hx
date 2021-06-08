@@ -78,11 +78,10 @@ class Alphabet extends FlxSpriteGroup
 			}
 
 			if (AlphaCharacter.alphabet.indexOf(character.toLowerCase()) != -1)
-				// if (AlphaCharacter.alphabet.contains(character.toLowerCase()))
 			{
 				if (lastSprite != null)
 				{
-					xPos = lastSprite.x + lastSprite.width;
+					xPos += lastSprite.width;
 				}
 
 				if (lastWasSpace)
@@ -91,7 +90,6 @@ class Alphabet extends FlxSpriteGroup
 					lastWasSpace = false;
 				}
 
-				// var letter:AlphaCharacter = new AlphaCharacter(30 * loopNum, 0);
 				var letter:AlphaCharacter = new AlphaCharacter(xPos, 0);
 
 				if (isBold)
@@ -159,8 +157,6 @@ class Alphabet extends FlxSpriteGroup
 				{
 					lastSprite.updateHitbox();
 					xPos += lastSprite.width + 3;
-					// if (isBold)
-					// xPos -= 80;
 				}
 				else
 				{
@@ -172,20 +168,13 @@ class Alphabet extends FlxSpriteGroup
 					xPos += 20;
 					lastWasSpace = false;
 				}
-				// trace(_finalText.fastCodeAt(loopNum) + " " + _finalText.charAt(loopNum));
 
-				// var letter:AlphaCharacter = new AlphaCharacter(30 * loopNum, 0);
 				var letter:AlphaCharacter = new AlphaCharacter(xPos, 55 * yMulti);
 				letter.row = curRow;
 
 				if (isBold)
 				{
-					if (isNumber)
-					{
-						letter.createNumber(splitWords[loopNum]);
-					} else {
-						letter.createBold(splitWords[loopNum]);
-					}
+					letter.createBold(splitWords[loopNum]);
 				}
 				else
 				{
@@ -203,12 +192,6 @@ class Alphabet extends FlxSpriteGroup
 					}
 
 					letter.x += 90;
-				}
-
-				if (FlxG.random.bool(40))
-				{
-					var daSound:String = "GF_";
-					FlxG.sound.play(Paths.soundRandom(daSound, 1, 4));
 				}
 
 				add(letter);
@@ -250,21 +233,12 @@ class AlphaCharacter extends FlxSprite
 	{
 		super(x, y);
 		frames = Paths.getSparrowAtlas('alphabet');
-
 		antialiasing = true;
 	}
 
 	public function createBold(letter:String)
 	{
-		var coolBold = " bold";
-
-		if (letter == "8")
-		{
-			letter = "EIGHT";
-			coolBold = "";
-		}
-
-		animation.addByPrefix(letter, letter.toUpperCase() + coolBold, 24);
+		animation.addByPrefix(letter, letter.toUpperCase() + " bold", 24);
 		animation.play(letter);
 		updateHitbox();
 	}

@@ -97,6 +97,8 @@ class TitleState extends MusicBeatState
 	var danceLeft:Bool = false;
 	var titleText:FlxSprite;
 
+	public static var version:String = "v0.0";
+
 	function startIntro()
 	{
 		if (!initialized)
@@ -125,6 +127,8 @@ class TitleState extends MusicBeatState
 
 			FlxG.sound.music.fadeIn(4, 0, 0.7);
 		}
+
+		version = "v" + Application.current.meta.get('version');
 
 		Conductor.changeBPM(102);
 		persistentUpdate = true;
@@ -267,9 +271,6 @@ class TitleState extends MusicBeatState
 			new FlxTimer().start(2, function(tmr:FlxTimer)
 			{
 				// Check if version is outdated
-
-				var version:String = "v" + Application.current.meta.get('version');
-
 				trace("Current version of the game is: " + version + "!");
 
 				FlxG.switchState(new MainMenuState());
