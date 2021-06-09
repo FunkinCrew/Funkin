@@ -36,23 +36,7 @@ class MainMenuState extends MusicBeatState
 	var camFollow:FlxObject;
 
 	override function create()
-	{
-		Assets.loadLibrary("songs").onComplete(function (_) {  });
-
-		if (FlxG.save.data.weekUnlocked != null)
-		{
-			for (i in 0...FlxG.save.data.weekUnlocked.length)
-			{
-				if (FlxG.save.data.weekUnlocked[i])
-				{
-					StoryMenuState.weekUnlocked[i] = FlxG.save.data.weekUnlocked[i];
-				}
-			}
-		}
-
-		FlxG.save.data.weekUnlocked = StoryMenuState.weekUnlocked;
-		FlxG.save.flush();
-		
+	{	
 		#if desktop
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("In the Menus", null);
