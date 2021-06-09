@@ -12,7 +12,7 @@ import flixel.util.FlxColor;
 
 class OptionsSubState extends MusicBeatSubstate
 {
-	var textMenuItems:Array<String> = ['Controls', 'Sound', 'Misc'];
+	var textMenuItems:Array<String> = ['Controls', 'Sound', 'Misc','Graphics'];
 	var curSelected:Int = 0;
 	var grpOptionsTexts:FlxTypedGroup<Alphabet>;
 
@@ -105,6 +105,12 @@ class OptionsSubState extends MusicBeatSubstate
 					inMenu = true;
 				}
 
+				// Grayaphics Options things
+				if (textMenuItems[curSelected] == 'Graphics')
+				{
+					textMenuItems = ["Back", "Opponent Side Glow", "vSync"];
+					spawnInTexts();
+				}
 				// Controls Options things
 				if (textMenuItems[curSelected] == 'Controls')
 				{
@@ -120,7 +126,7 @@ class OptionsSubState extends MusicBeatSubstate
 				// Back Option
 				if (textMenuItems[curSelected] == 'Back')
 				{
-					textMenuItems = ['Controls', 'Sound', 'Misc'];
+					textMenuItems = ['Controls', 'Sound', 'Misc', 'Graphics'];
 					spawnInTexts();
 				}
 
