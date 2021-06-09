@@ -1,5 +1,7 @@
 package;
 
+import flixel.util.FlxTimer;
+import flixel.tile.FlxTile;
 import flixel.util.FlxAxes;
 import flixel.group.FlxGroup;
 import flixel.FlxG;
@@ -45,6 +47,28 @@ class OptionsSubState extends MusicBeatSubstate
 				curSelected += 1;
 				FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 			}
+		} else {
+			if (controls.UP_P)
+			{
+				if (textMenuItems[curSelected] == 'Volume')
+				{
+					if (FlxG.sound.volume < 1)
+					{
+						FlxG.sound.volume += 1;
+					}
+				}
+			}
+
+			if (controls.DOWN_P)
+			{
+				if (textMenuItems[curSelected] == 'Volume')
+				{
+					if (FlxG.sound.volume > 0.1)
+					{
+						FlxG.sound.volume -= 0.1;
+					}
+				}
+			}
 		}
 
 		if (curSelected < 0)
@@ -61,8 +85,9 @@ class OptionsSubState extends MusicBeatSubstate
 				if (textMenuItems[curSelected] == 'Controls')
 				{
 					remove(controlsBox);
-					inMenu = false;
 				}
+
+				inMenu = false;
 			} else {
 				FlxG.switchState(new MainMenuState());
 			}
@@ -72,11 +97,36 @@ class OptionsSubState extends MusicBeatSubstate
 		{
 			if (!inMenu)
 			{
+				// yes ik weird ordering, but if i dont do it this way then things kinda mess up (switching pages specifically)
+				if (textMenuItems[curSelected] != 'Muted')
+				{
+					inMenu = true;
+				}
+
 				// Cool Options things
 				if (textMenuItems[curSelected] == 'Controls')
 				{
 					add(controlsBox);
-					inMenu = true;
+				}
+
+				// Sound Menu (goes before so that u dont leave it instantly lol)
+				if (textMenuItems[curSelected] == 'Muted')
+				{
+					FlxG.sound.muted = !FlxG.sound.muted;
+				}
+
+				// Back Option
+				if (textMenuItems[curSelected] == 'Back')
+				{
+					textMenuItems = ['Controls', 'Graphics', 'Sound', 'Misc'];
+					spawnInTexts();
+				}
+
+				// Sound Options things
+				if (textMenuItems[curSelected] == 'Sound')
+				{
+					textMenuItems = ["Back", "Muted", "Volume"];
+					spawnInTexts();
 				}
 			}
 		}
@@ -92,6 +142,9 @@ class OptionsSubState extends MusicBeatSubstate
 
 	function spawnInTexts()
 	{
+		curSelected = 0;
+		inMenu = false;
+
 		grpOptionsTexts.clear();
 
 		for (i in 0...textMenuItems.length)
