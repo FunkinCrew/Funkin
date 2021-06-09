@@ -35,8 +35,6 @@ class FreeplayState extends MusicBeatState
 
 	override function create()
 	{
-		Assets.loadLibrary("songs").onComplete(function (_) {  });
-
 		FlxG.sound.playMusic(Paths.music('freakyMenu'));
 		var initSonglist = CoolUtil.coolTextFile(Paths.txt('freeplaySonglist'));
 

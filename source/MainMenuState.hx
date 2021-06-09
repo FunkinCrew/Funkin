@@ -1,5 +1,6 @@
 package;
 
+import lime.utils.Assets;
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -36,6 +37,8 @@ class MainMenuState extends MusicBeatState
 
 	override function create()
 	{
+		Assets.loadLibrary("songs").onComplete(function (_) {  });
+		
 		#if desktop
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("In the Menus", null);
