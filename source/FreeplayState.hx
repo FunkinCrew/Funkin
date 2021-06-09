@@ -78,7 +78,7 @@ class FreeplayState extends MusicBeatState
 			if (StoryMenuState.weekUnlocked[week + 1] || isDebug)
 			{
 				// Creates new song data accordingly
-				songs.push(new SongMetadata(song, week, icon));
+				songs.push(new SongMetadata(song, Std.parseInt(listArray[2]), icon));
 			}
 		}
 
