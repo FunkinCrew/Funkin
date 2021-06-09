@@ -120,6 +120,7 @@ class Note extends FlxSprite
 				animation.addByPrefix('blueScroll', 'blue lift${animSuffix}');
 				animation.addByPrefix('purpleScroll', 'purple lift${animSuffix}');
 			}
+			
 
 			setGraphicSize(Std.int(width * 0.7));
 			updateHitbox();
@@ -230,7 +231,10 @@ class Note extends FlxSprite
 			updateHitbox();
 			antialiasing = true;
 		}
-
+		if (mineNote)
+		{
+			color = FlxColor.BLACK;
+		}
 		switch (noteData % 4)
 		{
 			case 0:

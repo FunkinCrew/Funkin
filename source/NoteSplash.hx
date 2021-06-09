@@ -6,7 +6,8 @@ class NoteSplash extends FlxSprite {
     public function new(xPos:Float,yPos:Float,?c:Int) {
         if (c == null) c = 0;
         super(xPos,yPos);
-        frames = FlxAtlasFrames.fromSparrow("assets/images/noteSplashes.png", "assets/images/noteSplashes.xml");
+		frames = FlxAtlasFrames.fromSparrow('assets/images/custom_ui/ui_packs/${PlayState.SONG.uiType}/noteSplashes.png',
+			'assets/images/custom_ui/ui_packs/${PlayState.SONG.uiType}/noteSplashes.xml');
         animation.addByPrefix("note1-0", "note impact 1  blue", 24, false);
 		animation.addByPrefix("note2-0", "note impact 1 green", 24, false);
 		animation.addByPrefix("note0-0", "note impact 1 purple", 24, false);

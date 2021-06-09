@@ -1697,9 +1697,12 @@ class PlayState extends MusicBeatState
 				{
 					gottaHitNote = !section.mustHitSection;
 				}
-				if (songNotes[1] > 7) {
+
+				/*
+				if (songNotes[1] >= 8 && songNotes[1] < 16) {
 					// sussy fire note support? :flushed:
-					noteHeal = -5;
+					// Percent in decimal divided by health thingie
+					noteHeal = 0.125 / 0.04;
 					consitentNote = true;
 					shouldSing = false;
 					timeThingy = 0.5;
@@ -1707,6 +1710,7 @@ class PlayState extends MusicBeatState
 					ignoreHealthMods = true;
 					animSuffix = "lift";
 				}
+				*/
 				if (songNotes[3] || section.altAnim)
 				{
 					altNote = true;
@@ -3206,6 +3210,10 @@ class PlayState extends MusicBeatState
 		var score:Int = 350;
 
 		var daRating:String = "sick";
+		if (daNote.mineNote)
+			// make note diff sussy and harder to hit because mine notes are weird champ
+			noteDiff *= 2;
+		
 		daNote.rating = Ratings.CalculateRating(noteDiff);
 		daRating = daNote.rating;
 		trace(daRating);
@@ -3216,81 +3224,94 @@ class PlayState extends MusicBeatState
 		}
 		// SHIT IS A COMBO BREAKER IN ETTERNA NERDS
 		// GIT GUD
-		var dontCountNote = daNote.healMultiplier < 0;
-		switch (daRating)
-		{
-			case 'shit':
-				
-				if (!dontCountNote) {
-					ss = false;
-					shits++;
-					notesHit += 0.25;
-					misses++;
-					score = -300;
-					combo = 0;
-				}
-				
-				healthBonus -= 0.06 * if (daNote.ignoreHealthMods) 1 else healthLossMultiplier * daNote.damageMultiplier;
-			
-				
-			case 'wayoff':
-				if (!dontCountNote) {
-					score = -300;
-					combo = 0;
-					misses++;
-					ss = false;
-					shits++;
-					notesHit += 0.1;
-				}
-				
-				healthBonus -= 0.06 * if (daNote.ignoreHealthMods) 1 else healthLossMultiplier * daNote.damageMultiplier;
-				
-			case 'bad':
-				if (!dontCountNote) {
-					score = 0;
-					ss = false;
-					bads++;
-					notesHit += 0.50;
-				}
-				daRating = 'bad';
-				
-				healthBonus -= 0.03 * if (daNote.ignoreHealthMods) 1 else healthLossMultiplier * daNote.damageMultiplier;
-				
-			case 'good':
-				if (!dontCountNote) {
-					score = 200;
-					ss = false;
-					goods++;
-					notesHit += 0.75;
-				}
-				daRating = 'good';
-				
-				healthBonus += 0.03 * if (daNote.ignoreHealthMods) 1 else healthGainMultiplier * daNote.healMultiplier;
-				
-			case 'sick':
-				healthBonus += 0.07 * if (daNote.ignoreHealthMods) 1 else healthGainMultiplier * daNote.healMultiplier;
-				if (!dontCountNote) {
-					notesHit += 1;
-					sicks++;
-				}
-				
-				if (!daNote.isSustainNote) {
-					var recycledNote = grpNoteSplashes.recycle(NoteSplash);
-					recycledNote.setupNoteSplash(daNote.x, daNote.y, daNote.noteData);
-					grpNoteSplashes.add(recycledNote);
-				}
-				
-			case 'miss':
-				// noteMiss(daNote.noteData, playerOne);
-				healthBonus = -0.04 * if (daNote.ignoreHealthMods) 1 else healthLossMultiplier * daNote.damageMultiplier;
-				if (!dontCountNote) {
-					misses++;
-					ss = false;
-					score = -5;
-				}
-				
-				
+		var dontCountNote = daNote.healMultiplier < 0 || daNote.mineNote;
+		if (!daNote.mineNote) {
+			switch (daRating)
+			{
+				case 'shit':
+					if (!dontCountNote)
+					{
+						ss = false;
+						shits++;
+						notesHit += 0.25;
+						misses++;
+						score = -300;
+						combo = 0;
+					}
+
+					healthBonus -= 0.06 * if (daNote.ignoreHealthMods) 1 else healthLossMultiplier * daNote.damageMultiplier;
+
+				case 'wayoff':
+					if (!dontCountNote)
+					{
+						score = -300;
+						combo = 0;
+						misses++;
+						ss = false;
+						shits++;
+						notesHit += 0.1;
+					}
+
+					healthBonus -= 0.06 * if (daNote.ignoreHealthMods) 1 else healthLossMultiplier * daNote.damageMultiplier;
+
+				case 'bad':
+					if (!dontCountNote)
+					{
+						score = 0;
+						ss = false;
+						bads++;
+						notesHit += 0.50;
+					}
+					daRating = 'bad';
+
+					healthBonus -= 0.03 * if (daNote.ignoreHealthMods) 1 else healthLossMultiplier * daNote.damageMultiplier;
+
+				case 'good':
+					if (!dontCountNote)
+					{
+						score = 200;
+						ss = false;
+						goods++;
+						notesHit += 0.75;
+					}
+					daRating = 'good';
+
+					healthBonus += 0.03 * if (daNote.ignoreHealthMods) 1 else healthGainMultiplier * daNote.healMultiplier;
+
+				case 'sick':
+					healthBonus += 0.07 * if (daNote.ignoreHealthMods) 1 else healthGainMultiplier * daNote.healMultiplier;
+					if (!dontCountNote)
+					{
+						notesHit += 1;
+						sicks++;
+					}
+
+					if (!daNote.isSustainNote)
+					{
+						var recycledNote = grpNoteSplashes.recycle(NoteSplash);
+						recycledNote.setupNoteSplash(daNote.x, daNote.y, daNote.noteData);
+						grpNoteSplashes.add(recycledNote);
+					}
+
+				case 'miss':
+					// noteMiss(daNote.noteData, playerOne);
+					healthBonus = -0.04 * if (daNote.ignoreHealthMods) 1 else healthLossMultiplier * daNote.damageMultiplier;
+					if (!dontCountNote)
+					{
+						misses++;
+						ss = false;
+						score = -5;
+					}
+			}
+		} else {
+			switch (daRating) {
+				case 'miss':
+					// do nothing??
+				default:
+					healthBonus = -0.45;
+			}
 		}
+		
 		if (daNote.consistentHealth) {
 			if (daRating != 'miss') 
 				healthBonus = 0.04 * if (daNote.ignoreHealthMods) 1 else healthGainMultiplier * daNote.healMultiplier;
