@@ -666,6 +666,10 @@ class ChartingState extends MusicBeatState
 			+ Std.string(FlxMath.roundDecimal(FlxG.sound.music.length / 1000, 2))
 			+ "\nSection: "
 			+ curSection;
+
+		leftIcon.animation.play(_song.player1);
+		rightIcon.animation.play(_song.player2);
+
 		super.update(elapsed);
 	}
 
