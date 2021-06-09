@@ -1,5 +1,6 @@
 package;
 
+import flixel.util.FlxAxes;
 import flixel.group.FlxGroup;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -12,6 +13,10 @@ class OptionsSubState extends MusicBeatSubstate
 	var textMenuItems:Array<String> = ['Controls', 'Graphics', 'Sound', 'Misc'];
 	var curSelected:Int = 0;
 	var grpOptionsTexts:FlxTypedGroup<Alphabet>;
+
+	var controlsBox = new ControlsBox();
+
+	var inMenu = false;
 
 	public function new()
 	{
@@ -27,11 +32,20 @@ class OptionsSubState extends MusicBeatSubstate
 	{
 		super.update(elapsed);
 
-		if (controls.UP_P)
-			curSelected -= 1;
+		if (!inMenu)
+		{
+			if (controls.UP_P)
+			{
+				curSelected -= 1;
+				FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
+			}
 
-		if (controls.DOWN_P)
-			curSelected += 1;
+			if (controls.DOWN_P)
+			{
+				curSelected += 1;
+				FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
+			}
+		}
 
 		if (curSelected < 0)
 			curSelected = textMenuItems.length - 1;
@@ -39,14 +53,31 @@ class OptionsSubState extends MusicBeatSubstate
 		if (curSelected >= textMenuItems.length)
 			curSelected = 0;
 
+		if (controls.BACK)
+		{
+			if (inMenu)
+			{
+				// Cool Options things
+				if (textMenuItems[curSelected] == 'Controls')
+				{
+					remove(controlsBox);
+					inMenu = false;
+				}
+			} else {
+				FlxG.switchState(new MainMenuState());
+			}
+		}
+
 		if (controls.ACCEPT)
 		{
-			// Cool Options things
-			if (textMenuItems[curSelected] == 'Controls')
+			if (!inMenu)
 			{
-				var coolText = new FlxText(0,0,0,"W,A,S,D | UP,LEFT,DOWN,RIGHT", 16);
-
-				add(coolText);
+				// Cool Options things
+				if (textMenuItems[curSelected] == 'Controls')
+				{
+					add(controlsBox);
+					inMenu = true;
+				}
 			}
 		}
 
