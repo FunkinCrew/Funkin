@@ -33,7 +33,7 @@ class StoryMenuState extends MusicBeatState
 	];
 	var curDifficulty:Int = 1;
 
-	public static var weekUnlocked:Array<Bool> = [true, true, true, true, true, true, true];
+	public static var weekUnlocked:Array<Bool> = [true, false, false, false, false, false, false];
 
 	var weekCharacters:Array<Dynamic> = [
 		['dad', 'bf', 'gf'],
@@ -73,6 +73,17 @@ class StoryMenuState extends MusicBeatState
 
 	override function create()
 	{
+		if (FlxG.save.data.weekUnlocked != null)
+		{
+			for (i in 0...FlxG.save.data.weekUnlocked.length)
+			{
+				weekUnlocked[i] = FlxG.save.data.weekUnlocked[i];
+			}
+		}
+
+		FlxG.save.data.weekUnlocked = weekUnlocked;
+		FlxG.save.flush();
+
 		transIn = FlxTransitionableState.defaultTransIn;
 		transOut = FlxTransitionableState.defaultTransOut;
 
