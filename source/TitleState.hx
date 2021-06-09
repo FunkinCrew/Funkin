@@ -465,6 +465,13 @@ class TitleState extends MusicBeatState
 			FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
 			transitioning = true;
 			// FlxG.sound.music.stop();
+
+			// These assets are very unlikely to be used for the rest of gameplay, so it unloads them from cache/memory
+			// Saves about 50mb of RAM or so???
+			Assets.cache.clear(Paths.image('gfDanceTitle'));
+			Assets.cache.clear(Paths.image('logoBumpin'));
+			Assets.cache.clear(Paths.image('titleEnter'));
+
 			#if newgrounds
 			if (!OutdatedSubState.leftState)
 			{

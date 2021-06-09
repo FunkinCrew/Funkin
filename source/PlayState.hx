@@ -2732,6 +2732,14 @@ class PlayState extends MusicBeatState
 		});
 	}
 
+	override function switchTo(nextState:FlxState):Bool
+	{
+		openfl.utils.Assets.cache.clear(Paths.inst(SONG.song));
+		openfl.utils.Assets.cache.clear(Paths.voices(SONG.song));
+
+		return super.switchTo(nextState);
+	}
+
 	function noteMiss(direction:Int = 1):Void
 	{
 		// whole function used to be encased in if (!boyfriend.stunned)
