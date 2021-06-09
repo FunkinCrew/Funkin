@@ -1,4 +1,4 @@
-# Leather's Funkin' Engine :)
+# Leather's Funkin' Engine :(
 
 This is the repository for Leather's Funkin' Engine, an engine created for making mods for Friday Night Funkin'.
 
