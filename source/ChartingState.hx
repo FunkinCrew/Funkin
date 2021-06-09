@@ -228,12 +228,14 @@ class ChartingState extends MusicBeatState
 		var player1DropDown = new FlxUIDropDownMenu(10, 100, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
 		{
 			_song.player1 = characters[Std.parseInt(character)];
+			leftIcon.animation.play(_song.player1);
 		});
 		player1DropDown.selectedLabel = _song.player1;
 
 		var player2DropDown = new FlxUIDropDownMenu(140, 100, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
 		{
 			_song.player2 = characters[Std.parseInt(character)];
+			rightIcon.animation.play(_song.player2);
 		});
 
 		player2DropDown.selectedLabel = _song.player2;
@@ -667,9 +669,6 @@ class ChartingState extends MusicBeatState
 			+ "\nSection: "
 			+ curSection;
 
-		leftIcon.animation.play(_song.player1);
-		rightIcon.animation.play(_song.player2);
-
 		super.update(elapsed);
 	}
 
@@ -795,13 +794,13 @@ class ChartingState extends MusicBeatState
 	{
 		if (check_mustHitSection.checked)
 		{
-			leftIcon.animation.play('bf');
-			rightIcon.animation.play('dad');
+			leftIcon.animation.play(_song.player1);
+			rightIcon.animation.play(_song.player2);
 		}
 		else
 		{
-			leftIcon.animation.play('dad');
-			rightIcon.animation.play('bf');
+			leftIcon.animation.play(_song.player2);
+			rightIcon.animation.play(_song.player1);
 		}
 	}
 
