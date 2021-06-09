@@ -105,12 +105,6 @@ class OptionsSubState extends MusicBeatSubstate
 					inMenu = true;
 				}
 
-				// Grayaphics Options things
-				if (textMenuItems[curSelected] == 'Graphics')
-				{
-					textMenuItems = ["Back", "Opponent Side Glow", "vSync"];
-					spawnInTexts();
-				}
 				// Controls Options things
 				if (textMenuItems[curSelected] == 'Controls')
 				{
@@ -134,6 +128,13 @@ class OptionsSubState extends MusicBeatSubstate
 				if (textMenuItems[curSelected] == 'Sound')
 				{
 					textMenuItems = ["Back", "Muted", "Volume"];
+					spawnInTexts();
+				}
+
+				// Grayaphics Options things
+				if (textMenuItems[curSelected] == 'Graphics')
+				{
+					textMenuItems = ["Back", "Opponent Side Glow", "vSync"];
 					spawnInTexts();
 				}
 
