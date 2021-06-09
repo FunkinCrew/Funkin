@@ -100,62 +100,59 @@ class OptionsSubState extends MusicBeatSubstate
 			if (!inMenu)
 			{
 				// yes ik weird ordering, but if i dont do it this way then things kinda mess up (switching pages specifically)
-				if (textMenuItems[curSelected] != 'Muted' && textMenuItems[curSelected] != 'Old Title')
+				if (textMenuItems[curSelected] != 'Muted' && textMenuItems[curSelected] != 'Old Title' && textMenuItems[curSelected] != 'Opponent Side Glow' && textMenuItems[curSelected] != 'VSync')
 				{
 					inMenu = true;
 				}
 
-				// Controls Options things
-				if (textMenuItems[curSelected] == 'Controls')
+				switch(textMenuItems[curSelected])
 				{
-					add(controlsBox);
-				}
+					case 'Controls':
+						add(controlsBox);
 
-				// Sound Menu (goes before so that u dont leave it instantly lol)
-				if (textMenuItems[curSelected] == 'Muted')
-				{
-					FlxG.sound.muted = !FlxG.sound.muted;
-				}
+					case 'Muted':
+						FlxG.sound.muted = !FlxG.sound.muted;
 
-				// Back Option
-				if (textMenuItems[curSelected] == 'Back')
-				{
-					textMenuItems = ['Controls', 'Sound', 'Misc', 'Graphics'];
-					spawnInTexts();
-				}
-
-				// Sound Options things
-				if (textMenuItems[curSelected] == 'Sound')
-				{
-					textMenuItems = ["Back", "Muted", "Volume"];
-					spawnInTexts();
-				}
-
-				// Grayaphics Options things
-				if (textMenuItems[curSelected] == 'Graphics')
-				{
-					textMenuItems = ["Back", "Opponent Side Glow", "vSync"];
-					spawnInTexts();
-				}
-
-				// Old Title Thing
-				if (textMenuItems[curSelected] == 'Old Title')
-				{
-					if (FlxG.save.data.oldTitle == null)
+					case 'Back':
 					{
-						FlxG.save.data.oldTitle = false;
+						textMenuItems = ['Controls', 'Sound', 'Misc', 'Graphics'];
+						spawnInTexts();
 					}
 
-					FlxG.save.data.oldTitle = !FlxG.save.data.oldTitle;
-					FlxG.save.flush();
-					FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
-				}
+					case 'Sound':
+					{
+						textMenuItems = ["Back", "Muted", "Volume"];
+						spawnInTexts();
+					}
 
-				// Cool Options things
-				if (textMenuItems[curSelected] == 'Misc')
-				{
-					textMenuItems = ["Back", "Downscroll", "Old Title"];
-					spawnInTexts();
+					case 'Graphics':
+					{
+						textMenuItems = ["Back", "Opponent Side Glow", "VSync"];
+						spawnInTexts();
+					}
+
+					case 'Old Title':
+					{
+						if (FlxG.save.data.oldTitle == null)
+						{
+							FlxG.save.data.oldTitle = false;
+						}
+	
+						FlxG.save.data.oldTitle = !FlxG.save.data.oldTitle;
+						FlxG.save.flush();
+					}
+
+					case 'Opponent Side Glow':
+					{	
+						FlxG.save.data.enemyGlow = !FlxG.save.data.enemyGlow;
+						FlxG.save.flush();
+					}
+
+					case 'Misc':
+					{
+						textMenuItems = ["Back", "Downscroll", "Old Title"];
+						spawnInTexts();
+					}
 				}
 			}
 		}
