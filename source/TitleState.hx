@@ -125,7 +125,13 @@ class TitleState extends MusicBeatState
 			// music.loadStream(Paths.music('freakyMenu'));
 			// FlxG.sound.list.add(music);
 			// music.play();
-			FlxG.sound.playMusic(Paths.music('freakyMenu'), 0);
+			if (FlxG.save.data.oldTitle)
+			{
+				FlxG.sound.playMusic(Paths.music('title'), 0);
+			}
+			else {
+				FlxG.sound.playMusic(Paths.music('freakyMenu'), 0);
+			}
 
 			FlxG.sound.music.fadeIn(4, 0, 0.7);
 		}
@@ -135,28 +141,44 @@ class TitleState extends MusicBeatState
 		Conductor.changeBPM(102);
 		persistentUpdate = true;
 
-		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
-		// bg.antialiasing = true;
-		// bg.setGraphicSize(Std.int(bg.width * 0.6));
-		// bg.updateHitbox();
+		var bg:FlxSprite = new FlxSprite();
+
+		if (FlxG.save.data.oldTitle)
+		{
+			Assets.loadLibrary("shared").onComplete(function (_) { bg.loadGraphic(Paths.image("stageback", "shared")); });
+			bg.antialiasing = true;
+			bg.width = FlxG.width;
+			bg.height = FlxG.height;
+			bg.updateHitbox();
+		}
+		else
+		{
+			bg.makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+		}
+
 		add(bg);
 
-		logoBl = new FlxSprite(-150, -100);
-		logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
-		logoBl.antialiasing = true;
-		logoBl.animation.addByPrefix('bump', 'logo bumpin', 24);
-		logoBl.animation.play('bump');
-		logoBl.updateHitbox();
-		// logoBl.screenCenter();
-		// logoBl.color = FlxColor.BLACK;
+		if (FlxG.save.data.oldTitle)
+		{
+			logoBl = new FlxSprite().loadGraphic(Paths.image('logo'));
+			logoBl.screenCenter();
+			logoBl.color = FlxColor.BLACK;
+		}
+		else
+		{
+			logoBl = new FlxSprite(-150, -100);
+			logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
+			logoBl.antialiasing = true;
+			logoBl.animation.addByPrefix('bump', 'logo bumpin', 24);
+			logoBl.animation.play('bump');
+			logoBl.updateHitbox();
+		}
 
 		gfDance = new FlxSprite(FlxG.width * 0.4, FlxG.height * 0.07);
 		gfDance.frames = Paths.getSparrowAtlas('gfDanceTitle');
 		gfDance.animation.addByIndices('danceLeft', 'gfDance', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
 		gfDance.animation.addByIndices('danceRight', 'gfDance', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
 		gfDance.antialiasing = true;
-		add(gfDance);
-		add(logoBl);
 
 		titleText = new FlxSprite(100, FlxG.height * 0.8);
 		titleText.frames = Paths.getSparrowAtlas('titleEnter');
@@ -166,12 +188,25 @@ class TitleState extends MusicBeatState
 		titleText.animation.play('idle');
 		titleText.updateHitbox();
 		// titleText.screenCenter(X);
-		add(titleText);
+
+		add(logoBl);
+
+		if (!FlxG.save.data.oldTitle)
+		{
+			add(gfDance);
+			add(titleText);
+		}
 
 		var logo:FlxSprite = new FlxSprite().loadGraphic(Paths.image('logo'));
 		logo.screenCenter();
 		logo.antialiasing = true;
-		// add(logo);
+		if (FlxG.save.data.oldTitle)
+		{
+			add(logo);
+
+			FlxTween.tween(logoBl, {y: logoBl.y + 50}, 0.6, {ease: FlxEase.quadInOut, type: PINGPONG});
+			FlxTween.tween(logo, {y: logoBl.y + 50}, 0.6, {ease: FlxEase.quadInOut, type: PINGPONG, startDelay: 0.1});
+		}
 
 		// FlxTween.tween(logoBl, {y: logoBl.y + 50}, 0.6, {ease: FlxEase.quadInOut, type: PINGPONG});
 		// FlxTween.tween(logo, {y: logoBl.y + 50}, 0.6, {ease: FlxEase.quadInOut, type: PINGPONG, startDelay: 0.1});
@@ -265,7 +300,14 @@ class TitleState extends MusicBeatState
 			titleText.animation.play('press');
 
 			FlxG.camera.flash(FlxColor.WHITE, 1);
-			FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
+
+			if (FlxG.save.data.oldTitle)
+			{
+				FlxG.sound.play(Paths.music("titleShoot"), 0.7);
+			}
+			else {
+				FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
+			}
 
 			transitioning = true;
 			// FlxG.sound.music.stop();
@@ -323,44 +365,51 @@ class TitleState extends MusicBeatState
 	{
 		super.beatHit();
 
-		logoBl.animation.play('bump');
-		danceLeft = !danceLeft;
-
-		if (danceLeft)
-			gfDance.animation.play('danceRight');
-		else
-			gfDance.animation.play('danceLeft');
-
-		switch (curBeat)
+		if (!FlxG.save.data.oldTitle)
 		{
-			case 1:
-				createCoolText(['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er']);
-			case 3:
-				addMoreText('present');
-			case 4:
-				deleteCoolText();
-			case 5:
-				createCoolText(['In association', 'with']);
-			case 7:
-				addMoreText('newgrounds');
-				ngSpr.visible = true;
-			case 8:
-				deleteCoolText();
-				ngSpr.visible = false;
-			case 9:
-				createCoolText([curWacky[0]]);
-			case 11:
-				addMoreText(curWacky[1]);
-			case 12:
-				deleteCoolText();
-			case 13:
-				addMoreText('Friday');
-			case 14:
-				addMoreText('Night');
-			case 15:
-				addMoreText('Funkin');
-			case 16:
-				skipIntro();
+			logoBl.animation.play('bump');
+			danceLeft = !danceLeft;
+	
+			if (danceLeft)
+				gfDance.animation.play('danceRight');
+			else
+				gfDance.animation.play('danceLeft');
+	
+			switch (curBeat)
+			{
+				case 1:
+					createCoolText(['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er']);
+				case 3:
+					addMoreText('present');
+				case 4:
+					deleteCoolText();
+				case 5:
+					createCoolText(['In association', 'with']);
+				case 7:
+					addMoreText('newgrounds');
+					ngSpr.visible = true;
+				case 8:
+					deleteCoolText();
+					ngSpr.visible = false;
+				case 9:
+					createCoolText([curWacky[0]]);
+				case 11:
+					addMoreText(curWacky[1]);
+				case 12:
+					deleteCoolText();
+				case 13:
+					addMoreText('Friday');
+				case 14:
+					addMoreText('Night');
+				case 15:
+					addMoreText('Funkin');
+				case 16:
+					skipIntro();
+			}
+		} else {
+			remove(ngSpr);
+			remove(credGroup);
+			skippedIntro = true;
 		}
 	}
 

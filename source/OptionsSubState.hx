@@ -55,6 +55,7 @@ class OptionsSubState extends MusicBeatSubstate
 					if (FlxG.sound.volume < 1)
 					{
 						FlxG.sound.volume += 1;
+						FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 					}
 				}
 			}
@@ -66,6 +67,7 @@ class OptionsSubState extends MusicBeatSubstate
 					if (FlxG.sound.volume > 0.1)
 					{
 						FlxG.sound.volume -= 0.1;
+						FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 					}
 				}
 			}
@@ -98,12 +100,12 @@ class OptionsSubState extends MusicBeatSubstate
 			if (!inMenu)
 			{
 				// yes ik weird ordering, but if i dont do it this way then things kinda mess up (switching pages specifically)
-				if (textMenuItems[curSelected] != 'Muted')
+				if (textMenuItems[curSelected] != 'Muted' && textMenuItems[curSelected] != 'Old Title')
 				{
 					inMenu = true;
 				}
 
-				// Cool Options things
+				// Controls Options things
 				if (textMenuItems[curSelected] == 'Controls')
 				{
 					add(controlsBox);
@@ -126,6 +128,26 @@ class OptionsSubState extends MusicBeatSubstate
 				if (textMenuItems[curSelected] == 'Sound')
 				{
 					textMenuItems = ["Back", "Muted", "Volume"];
+					spawnInTexts();
+				}
+
+				// Old Title Thing
+				if (textMenuItems[curSelected] == 'Old Title')
+				{
+					if (FlxG.save.data.oldTitle == null)
+					{
+						FlxG.save.data.oldTitle = false;
+					}
+
+					FlxG.save.data.oldTitle = !FlxG.save.data.oldTitle;
+					FlxG.save.flush();
+					FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
+				}
+
+				// Cool Options things
+				if (textMenuItems[curSelected] == 'Misc')
+				{
+					textMenuItems = ["Back", "Downscroll", "Old Title"];
 					spawnInTexts();
 				}
 			}
