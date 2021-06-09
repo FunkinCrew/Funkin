@@ -2584,10 +2584,10 @@ class PlayState extends MusicBeatState
 				}
 			}
 			if (supLove) {
-				health += loveMultiplier / 600000;
+				health += loveMultiplier * (opponentPlayer ? -1 : 1) / 600000;
 			}
 			if (poisonExr) {
-				health -= poisonMultiplier / 700000;
+				health -= poisonMultiplier * (opponentPlayer ? -1 : 1)/ 700000;
 			}
 			playingAsRpc = "Playing as " + (opponentPlayer ? player2Icon : player1Icon) + " | " + currentIconState;
 			if (PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection && camFollow.x != boyfriend.getMidpoint().x - 100)
