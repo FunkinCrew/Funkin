@@ -43,7 +43,10 @@ class MainMenuState extends MusicBeatState
 		{
 			for (i in 0...FlxG.save.data.weekUnlocked.length)
 			{
-				StoryMenuState.weekUnlocked[i] = FlxG.save.data.weekUnlocked[i];
+				if (FlxG.save.data.weekUnlocked[i])
+				{
+					StoryMenuState.weekUnlocked[i] = FlxG.save.data.weekUnlocked[i];
+				}
 			}
 		}
 
