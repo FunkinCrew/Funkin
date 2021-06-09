@@ -12,8 +12,8 @@ class ControlsBox extends FlxTypedGroup<FlxSprite>
     // Creates controls box
     var box = new FlxSprite(0, 30);
     var controlsText = new FlxText(0, 50, 0, "null", 32);
-
     var selectedKey = 0;
+    var controlsTableIGuess = ["Left", "Down", "Up", "Right", "Reset"];
 
     public function new()
     {
@@ -31,6 +31,8 @@ class ControlsBox extends FlxTypedGroup<FlxSprite>
             + FlxG.save.data.rightBind
             + "\nReset: "
             + FlxG.save.data.killBind
+            + "\nSelected: "
+            + controlsTableIGuess[selectedKey]
         );
 
         controlsText.screenCenter(FlxAxes.X);
@@ -86,6 +88,9 @@ class ControlsBox extends FlxTypedGroup<FlxSprite>
                     + FlxG.save.data.rightBind
                     + "\nReset: "
                     + FlxG.save.data.killBind
+                    + "\nSelected: "
+                    + controlsTableIGuess[selectedKey]
+                    
                 );
 
                 controlsText.screenCenter(FlxAxes.X);
