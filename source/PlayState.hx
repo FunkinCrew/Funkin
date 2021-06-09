@@ -1672,8 +1672,11 @@ class PlayState extends MusicBeatState
 							{
 								spr.animation.play('confirm', true);
 								spr.centerOffsets();
-								spr.offset.x -= 13;
-								spr.offset.y -= 13;
+								if (!curStage.startsWith('school'))
+								{
+									spr.offset.x -= 13;
+									spr.offset.y -= 13;
+								}
 
 								new FlxTimer().start(0.1, function(tmr:FlxTimer) {
 									spr.animation.play('static', true);
