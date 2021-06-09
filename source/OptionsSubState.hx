@@ -120,7 +120,7 @@ class OptionsSubState extends MusicBeatSubstate
 				// Back Option
 				if (textMenuItems[curSelected] == 'Back')
 				{
-					textMenuItems = ['Controls', 'Graphics', 'Sound', 'Misc'];
+					textMenuItems = ['Controls', 'Sound', 'Misc'];
 					spawnInTexts();
 				}
 
