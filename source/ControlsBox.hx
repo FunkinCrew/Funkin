@@ -38,7 +38,7 @@ class ControlsBox extends FlxTypedGroup<FlxSprite>
         controlsText.screenCenter(FlxAxes.X);
         controlsText.alignment = CENTER;
 
-        // Sets stuff related to the text (may be changed mid running idk)
+        // Updates boxes positioning and stuff i guess
         box.makeGraphic(Std.int(controlsText.width) + 25, Std.int(controlsText.height) + 25, FlxColor.BLACK);
         box.alpha = 0.5;
         box.screenCenter(FlxAxes.X);
