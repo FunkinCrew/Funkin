@@ -63,16 +63,21 @@ class TitleState extends MusicBeatState
 
 		Highscore.load();
 
+		Assets.loadLibrary("songs").onComplete(function (_) {  });
+
 		if (FlxG.save.data.weekUnlocked != null)
 		{
-			// FIX LATER!!!
-			// WEEK UNLOCK PROGRESSION!!
-			// StoryMenuState.weekUnlocked = FlxG.save.data.weekUnlocked;
-
-			// QUICK PATCH OOPS!
-			if (!StoryMenuState.weekUnlocked[0])
-				StoryMenuState.weekUnlocked[0] = true;
+			for (i in 0...FlxG.save.data.weekUnlocked.length)
+			{
+				if (FlxG.save.data.weekUnlocked[i])
+				{
+					StoryMenuState.weekUnlocked[i] = FlxG.save.data.weekUnlocked[i];
+				}
+			}
 		}
+
+		FlxG.save.data.weekUnlocked = StoryMenuState.weekUnlocked;
+		FlxG.save.flush();
 
 		#if FREEPLAY
 		FlxG.switchState(new FreeplayState());
