@@ -12,7 +12,7 @@ import flixel.util.FlxColor;
 
 class OptionsSubState extends MusicBeatSubstate
 {
-	var textMenuItems:Array<String> = ['Controls', 'Graphics', 'Sound', 'Misc'];
+	var textMenuItems:Array<String> = ['Controls', 'Sound', 'Misc'];
 	var curSelected:Int = 0;
 	var grpOptionsTexts:FlxTypedGroup<Alphabet>;
 
