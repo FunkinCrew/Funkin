@@ -2299,7 +2299,7 @@ class PlayState extends MusicBeatState
 	
 					if (!daNote.mustPress && daNote.wasGoodHit)
 					{
-						if (SONG.song != 'Tutorial' && SONG.song != 'tutorial')
+						if (SONG.song != 'Tutorial')
 							camZooming = true;
 
 						var altAnim:String = "";
