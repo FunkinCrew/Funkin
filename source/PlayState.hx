@@ -73,6 +73,7 @@ class PlayState extends MusicBeatState
 
 	private var strumLineNotes:FlxTypedGroup<FlxSprite>;
 	private var playerStrums:FlxTypedGroup<FlxSprite>;
+	private var enemyStrums:FlxTypedGroup<FlxSprite>;
 
 	private var camZooming:Bool = false;
 	private var curSong:String = "";
@@ -693,6 +694,7 @@ class PlayState extends MusicBeatState
 		add(strumLineNotes);
 
 		playerStrums = new FlxTypedGroup<FlxSprite>();
+		enemyStrums = new FlxTypedGroup<FlxSprite>();
 
 		// startCountdown();
 
@@ -1226,6 +1228,8 @@ class PlayState extends MusicBeatState
 			if (player == 1)
 			{
 				playerStrums.add(babyArrow);
+			} else {
+				enemyStrums.add(babyArrow);
 			}
 
 			babyArrow.animation.play('static');
@@ -1658,6 +1662,25 @@ class PlayState extends MusicBeatState
 							dad.playAnim('singUP' + altAnim, true);
 						case 3:
 							dad.playAnim('singRIGHT' + altAnim, true);
+					}
+
+					if (FlxG.save.data.enemyGlow)
+					{
+						enemyStrums.forEach(function(spr:FlxSprite)
+						{
+							if (Math.abs(daNote.noteData) == spr.ID)
+							{
+								spr.animation.play('confirm', true);
+								spr.centerOffsets();
+								spr.offset.x -= 13;
+								spr.offset.y -= 13;
+
+								new FlxTimer().start(0.1, function(tmr:FlxTimer) {
+									spr.animation.play('static', true);
+									spr.centerOffsets();
+								}, 1);
+							}
+						});
 					}
 
 					dad.holdTimer = 0;
