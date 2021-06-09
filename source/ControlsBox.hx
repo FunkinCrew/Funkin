@@ -12,6 +12,8 @@ class ControlsBox extends FlxTypedGroup<FlxSprite>
     var box = new FlxSprite();
     var controlsText = new FlxText(0, 50, 0, "null", 32);
 
+    var selectedKey = "W";
+
     public function new()
     {
         super();
@@ -30,5 +32,12 @@ class ControlsBox extends FlxTypedGroup<FlxSprite>
         // Adds box before text for correct layering
         add(box);
         add(controlsText);
+    }
+
+    override function update(elapsed:Float)
+    {
+
+
+        super.update(elapsed);
     }
 }
