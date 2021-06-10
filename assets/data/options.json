@@ -13,5 +13,6 @@
     "style": true,
     "stressTankmen": false,
     "ignoreUnlocks": false,
+    "preferJudgement": 0,
     "judge": 9
 }

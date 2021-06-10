@@ -324,12 +324,15 @@ class Note extends FlxSprite
 		}
 		else
 		{
-			canBeHit = false;
+			if (!mineNote) {
+				canBeHit = false;
 
-			if (strumTime <= Conductor.songPosition)
-			{
-				wasGoodHit = true;
+				if (strumTime <= Conductor.songPosition)
+				{
+					wasGoodHit = true;
+				}
 			}
+			
 		}
 
 		if (tooLate)

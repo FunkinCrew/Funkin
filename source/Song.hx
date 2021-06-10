@@ -31,6 +31,7 @@ typedef SwagSong =
 	var isHey:Null<Bool>;
 	var isCheer:Null<Bool>;
 	var preferredNoteAmount:Null<Int>;
+	var forceJudgements:Null<Bool>;
 }
 
 class Song
@@ -153,6 +154,9 @@ class Song
 		}
 		if (parsedJson.song.toLowerCase() == 'winter-horrorland') {
 			parsedJson.cutsceneType = "monster";
+		}
+		if (parsedJson.forceJudgements == null) {
+			parsedJson.forceJudgements = false;
 		}
 		if (parsedJson.cutsceneType == null) {
 			switch (parsedJson.song.toLowerCase()) {

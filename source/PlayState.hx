@@ -433,7 +433,7 @@ class PlayState extends MusicBeatState
 		ss = true;
 		judgementList = CoolUtil.coolTextFile('assets/data/judgements.txt');
 		preferredJudgement = judgementList[OptionsHandler.options.preferJudgement];
-		if (preferredJudgement == 'none') {
+		if (preferredJudgement == 'none' || SONG.forceJudgements) {
 			preferredJudgement = SONG.uiType;
 			if (preferredJudgement == 'pixel')
 				preferredJudgement = 'normal';
@@ -2783,7 +2783,8 @@ class PlayState extends MusicBeatState
 								daNote.y += daNote.height / 2;
 							
 							if ((daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit)
-								&& (daNote.y - daNote.offset.y * daNote.scale.y + daNote.height) >= (strumLine.y + Note.swagWidth / 2))
+								&& (daNote.y - daNote.offset.y * daNote.scale.y + daNote.height) >= (strumLine.y + Note.swagWidth / 2)
+								&& (!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit))))
 							{
 								// Clip to strumline
 								var swagRect = new FlxRect(0, 0, daNote.frameWidth * 2, daNote.frameHeight * 2);
@@ -2812,7 +2813,8 @@ class PlayState extends MusicBeatState
 							daNote.y -= daNote.height / 2;
 
 							if ((daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit)
-								&& daNote.y + daNote.offset.y * daNote.scale.y <= (strumLine.y + Note.swagWidth / 2))
+								&& daNote.y + daNote.offset.y * daNote.scale.y <= (strumLine.y + Note.swagWidth / 2)
+								&& (!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit))))
 							{
 								// Clip to strumline
 								var swagRect = new FlxRect(0, 0, daNote.width / daNote.scale.x, daNote.height / daNote.scale.y);
@@ -2879,16 +2881,18 @@ class PlayState extends MusicBeatState
 					}
 					callAllHScript("playerTwoSing", []);
 					// go wild <3
-					if (daNote.shouldBeSung)
+					if (daNote.shouldBeSung && !daNote.mineNote && !daNote.isLiftNote) {
 						dad.sing(Std.int(Math.abs(daNote.noteData)), false, dad.altNum);
-					enemyStrums.forEach(function(spr:FlxSprite)
-					{
-						if (Math.abs(daNote.noteData) == spr.ID)
+						enemyStrums.forEach(function(spr:FlxSprite)
 						{
-							spr.animation.play('confirm');
-							sustain2(spr.ID, spr, daNote);
-						}
-					});
+							if (Math.abs(daNote.noteData) == spr.ID)
+							{
+								spr.animation.play('confirm');
+								sustain2(spr.ID, spr, daNote);
+							}
+						});
+					}
+						
 					dad.holdTimer = 0;
 
 					if (SONG.needsVoices)
@@ -2944,10 +2948,10 @@ class PlayState extends MusicBeatState
 				// WIP interpolation shit? Need to fix the pause issue
 				// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
 
-				if (((daNote.y < -daNote.height && !downscroll) || (daNote.y > FlxG.height + daNote.height && downscroll)) && daNote.healMultiplier >= 0)
+				if (((daNote.y < -daNote.height && !downscroll) || (daNote.y > FlxG.height + daNote.height && downscroll)) && daNote.healMultiplier >= 0 && !daNote.mineNote)
 				{
 
-						if ((daNote.tooLate || !daNote.wasGoodHit) /* && !daNote.isSustainNote */ )
+						if ((daNote.tooLate || !daNote.wasGoodHit) /* && !daNote.isSustainNote */)
 						{
 							if (!daNote.mustPress) {
 								health += 0.0475 * healthLossMultiplier;
@@ -3212,7 +3216,7 @@ class PlayState extends MusicBeatState
 		var daRating:String = "sick";
 		if (daNote.mineNote)
 			// make note diff sussy and harder to hit because mine notes are weird champ
-			noteDiff *= 2;
+			noteDiff *= 10;
 		
 		daNote.rating = Ratings.CalculateRating(noteDiff);
 		daRating = daNote.rating;
@@ -3880,7 +3884,7 @@ class PlayState extends MusicBeatState
 			}
 			// We pop it up even for sustains, just to update score. We don't actually show anything.
 			trace("<3 pop up score");
-			if (note.healMultiplier >= 0)
+			if (note.healMultiplier >= 0 && !note.mineNote)
 				notesPassing += 1;
 			popUpScore(note.strumTime, note, playerOne);
 			combo += 1;

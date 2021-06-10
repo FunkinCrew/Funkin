@@ -148,7 +148,8 @@ class ChartingState extends MusicBeatState
 				cutsceneType: "none",
 				uiType: 'normal',
 				isCheer: false,
-				preferredNoteAmount: 4
+				preferredNoteAmount: 4,
+				forceJudgements: false
 			};
 		}
 
