@@ -164,7 +164,6 @@ class Note extends FlxSprite
 				animation.add('redScroll', [intSuffix]);
 				animation.add('blueScroll', [intSuffix]);
 				animation.add('purpleScroll', [intSuffix]);
-				animation.add('')
 				if (isSustainNote)
 				{
 					loadGraphic('assets/images/weeb/pixelUI/arrowEnds.png', true, 7, 6);
