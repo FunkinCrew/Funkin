@@ -1,7 +1,7 @@
 
 function start(song)
 {
-    var trail = new FlxTrail(dad, null, 7, 2, 0.3, 0.05);
+    var trail = new FlxTrail(dad, null, 4, 24, 0.3, 0.069);
     addSprite(trail, BEHIND_ALL );
 }
 
