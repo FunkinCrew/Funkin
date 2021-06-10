@@ -11,6 +11,3 @@ Changes marked with 💖 will be listed in the short version of the changelog in
 
 ## Links
 [GitHub Release](https://github.com/KadeDev/Kade-Engine/releases/tag/1.5.2) · [Last Windows CI build]() · [Last macOS CI build]() · [Last Linux CI build]()
-
-// Only include links section after it is no longer "latest changelog"
-// "Last x CI build" links should link to a specific build, the last one for the version
