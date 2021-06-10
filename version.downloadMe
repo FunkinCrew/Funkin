@@ -1,5 +1,5 @@
-1.5.1;
-- 1.5.1: Bug Fixes
+1.5.2;
+- (1.5.2) Fix crashes on some songs
 - Added toggle for ghost tapping
 - Officially support macOS (and add macOS requirements to docs)
 - Autoplay
