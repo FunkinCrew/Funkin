@@ -564,6 +564,18 @@ class ModchartState
 					getActorByName(id).x = x;
 				});
 				
+				Lua_helper.add_callback(lua,"setActorAccelerationX", function(x:Int,id:String) {
+					getActorByName(id).acceleration.x = x;
+				});
+				
+				Lua_helper.add_callback(lua,"setActorDragX", function(x:Int,id:String) {
+					getActorByName(id).drag.x = x;
+				});
+				
+				Lua_helper.add_callback(lua,"setActorVelocityX", function(x:Int,id:String) {
+					getActorByName(id).velocity.x = x;
+				});
+				
 				Lua_helper.add_callback(lua,"playActorAnimation", function(id:String,anim:String,force:Bool = false,reverse:Bool = false) {
 					getActorByName(id).playAnim(anim, force, reverse);
 				});
@@ -575,7 +587,19 @@ class ModchartState
 				Lua_helper.add_callback(lua,"setActorY", function(y:Int,id:String) {
 					getActorByName(id).y = y;
 				});
-							
+
+				Lua_helper.add_callback(lua,"setActorAccelerationY", function(y:Int,id:String) {
+					getActorByName(id).acceleration.y = y;
+				});
+				
+				Lua_helper.add_callback(lua,"setActorDragY", function(y:Int,id:String) {
+					getActorByName(id).drag.y = y;
+				});
+				
+				Lua_helper.add_callback(lua,"setActorVelocityY", function(y:Int,id:String) {
+					getActorByName(id).velocity.y = y;
+				});
+				
 				Lua_helper.add_callback(lua,"setActorAngle", function(angle:Int,id:String) {
 					getActorByName(id).angle = angle;
 				});
