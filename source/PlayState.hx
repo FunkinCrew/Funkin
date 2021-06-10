@@ -431,6 +431,8 @@ class PlayState extends MusicBeatState
 		sicks = 0;
 		shits = 0;
 		ss = true;
+		// use current note amount
+		Note.NOTE_AMOUNT = SONG.preferredNoteAmount;
 		judgementList = CoolUtil.coolTextFile('assets/data/judgements.txt');
 		preferredJudgement = judgementList[OptionsHandler.options.preferJudgement];
 		if (preferredJudgement == 'none' || SONG.forceJudgements) {
@@ -440,6 +442,8 @@ class PlayState extends MusicBeatState
 		}
 		#if windows
 		// Making difficulty text for Discord Rich Presence.
+		// I JUST REALIZED THIS IS NOT VERY COMPATIBILE
+		/*
 		switch (storyDifficulty)
 		{
 			case 0:
@@ -449,7 +453,8 @@ class PlayState extends MusicBeatState
 			case 2:
 				storyDifficultyText = "Hard";
 		}
-
+		*/
+		storyDifficultyText = DifficultyIcons.getEndingFP(storyDifficulty).substr(1);
 		iconRPC = SONG.player2;
 
 		// To avoid having duplicate images in Discord assets
@@ -1680,7 +1685,7 @@ class PlayState extends MusicBeatState
 			for (songNotes in section.sectionNotes)
 			{
 				var daStrumTime:Float = songNotes[0];
-				var daNoteData:Int = Std.int(songNotes[1] % 4);
+				var daNoteData:Int = Std.int(songNotes[1] % Note.NOTE_AMOUNT);
 				var daLift:Bool = songNotes[4];
 				var noteHeal:Float = songNotes[5] == null ? 1 : songNotes[5];
 				var noteDamage:Float = songNotes[6] == null ? 1 : songNotes[6];
@@ -1715,7 +1720,10 @@ class PlayState extends MusicBeatState
 				{
 					altNote = true;
 				}
-				
+				// force nuke notes : )
+				if (songNotes[1] >= Note.NOTE_AMOUNT * 2 && songNotes[1] < Note.NOTE_AMOUNT * 4 && SONG.convertMineToNuke) {
+					songNotes[1] += Note.NOTE_AMOUNT * 4;
+				}
 				var oldNote:Note;
 				if (unspawnNotes.length > 0)
 					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
@@ -2881,7 +2889,7 @@ class PlayState extends MusicBeatState
 					}
 					callAllHScript("playerTwoSing", []);
 					// go wild <3
-					if (daNote.shouldBeSung && !daNote.mineNote && !daNote.isLiftNote) {
+					if (daNote.shouldBeSung && !daNote.mineNote && !daNote.isLiftNote && !daNote.nukeNote) {
 						dad.sing(Std.int(Math.abs(daNote.noteData)), false, dad.altNum);
 						enemyStrums.forEach(function(spr:FlxSprite)
 						{
@@ -2948,7 +2956,7 @@ class PlayState extends MusicBeatState
 				// WIP interpolation shit? Need to fix the pause issue
 				// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
 
-				if (((daNote.y < -daNote.height && !downscroll) || (daNote.y > FlxG.height + daNote.height && downscroll)) && daNote.healMultiplier >= 0 && !daNote.mineNote)
+				if (((daNote.y < -daNote.height && !downscroll) || (daNote.y > FlxG.height + daNote.height && downscroll)) && daNote.healMultiplier >= 0 && !daNote.mineNote && !daNote.nukeNote)
 				{
 
 						if ((daNote.tooLate || !daNote.wasGoodHit) /* && !daNote.isSustainNote */)
@@ -3216,8 +3224,9 @@ class PlayState extends MusicBeatState
 		var daRating:String = "sick";
 		if (daNote.mineNote)
 			// make note diff sussy and harder to hit because mine notes are weird champ
-			noteDiff *= 10;
-		
+			noteDiff *= 1.9;
+		if (daNote.nukeNote)
+			noteDiff *= 3;
 		daNote.rating = Ratings.CalculateRating(noteDiff);
 		daRating = daNote.rating;
 		trace(daRating);
@@ -3315,7 +3324,9 @@ class PlayState extends MusicBeatState
 					healthBonus = -0.45;
 			}
 		}
-		
+		if (daNote.nukeNote && daRating != 'miss')
+			// die <3
+			healthBonus = -4;
 		if (daNote.consistentHealth) {
 			if (daRating != 'miss') 
 				healthBonus = 0.04 * if (daNote.ignoreHealthMods) 1 else healthGainMultiplier * daNote.healMultiplier;
@@ -3329,6 +3340,7 @@ class PlayState extends MusicBeatState
 			health -= healthBonus;
 		else
 			health += healthBonus;
+		
 		if (daNote.isSustainNote) {
 			return;
 		}
@@ -3507,6 +3519,13 @@ class PlayState extends MusicBeatState
 		});
 
 		curSection += 1;
+		if (daNote.nukeNote && daRating != 'miss')
+		{
+			if (!playerOne)
+				health = 69;
+			else
+				health = -69;
+		}
 	}
 	function updateAccuracy()
 	{
@@ -3603,7 +3622,8 @@ class PlayState extends MusicBeatState
 				// Jump notes
 				for (coolNote in possibleNotes)
 				{
-					if (pressArray[coolNote.noteData])
+					// even though IT SHOULD BE ABLE TO BE HIT we do this terrible ness
+					if (pressArray[coolNote.noteData] && coolNote.canBeHit && !coolNote.tooLate)
 					{
 						if (mashViolations != 0)
 							mashViolations--;
@@ -3851,7 +3871,8 @@ class PlayState extends MusicBeatState
 	function goodNoteHit(note:Note, playerOne:Bool):Void
 	{
 		var actingOn = playerOne ? boyfriend : dad;
-
+		if (!note.canBeHit || note.tooLate)
+			return;
 		if (!note.isSustainNote)
 			notesHitArray.push(Date.now());
 		if (!note.wasGoodHit)

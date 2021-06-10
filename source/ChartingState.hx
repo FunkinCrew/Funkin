@@ -149,7 +149,9 @@ class ChartingState extends MusicBeatState
 				uiType: 'normal',
 				isCheer: false,
 				preferredNoteAmount: 4,
-				forceJudgements: false
+				forceJudgements: false,
+				convertMineToNuke: false,
+				mania: 0
 			};
 		}
 

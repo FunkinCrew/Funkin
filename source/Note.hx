@@ -48,9 +48,14 @@ class Note extends FlxSprite
 	public static var GREEN_NOTE:Int = 2;
 	public static var BLUE_NOTE:Int = 1;
 	public static var RED_NOTE:Int = 3;
+	public static var NOTE_AMOUNT:Int = 4;
 	public var rating = "miss";
 	public var isLiftNote:Bool = false;
 	public var mineNote:Bool = false;
+	// like expurgation's notes; insta die lmao
+	public var nukeNote:Bool = false;
+	// tabi mod
+	public var drainNote:Bool =  false;
 	public var healMultiplier:Float = 1;
 	public var damageMultiplier:Float = 1;
 	// Whether to always do the same amount of healing for hitting and the same amount of damage for missing notes
@@ -72,20 +77,29 @@ class Note extends FlxSprite
 		this.prevNote = prevNote;
 		isSustainNote = sustainNote;
 		isLiftNote = LiftNote;
-		if (isLiftNote)
-			shouldBeSung = false;
+		
 		x += 50;
 		// MAKE SURE ITS DEFINITELY OFF SCREEN?
 		y -= 2000;
 		this.strumTime = strumTime;
 
-		this.noteData = noteData % 4;
-		if (noteData >= 8 && noteData < 16) {
+		this.noteData = noteData % NOTE_AMOUNT;
+		// overloading : )
+		if (noteData >= NOTE_AMOUNT * 2 && noteData < NOTE_AMOUNT * 4) {
 			mineNote = true;
 		}
-		if (noteData >= 16 && noteData < 24) {
+		if (noteData >= NOTE_AMOUNT * 4 && noteData < NOTE_AMOUNT * 6) {
 			isLiftNote = true;
 		}
+		// die : )
+		if (noteData >= NOTE_AMOUNT * 6 && noteData < NOTE_AMOUNT * 8) {
+			nukeNote = true;
+		}
+		if (noteData >= NOTE_AMOUNT * 8 && noteData < NOTE_AMOUNT * 10) {
+			drainNote = true;
+		}
+		if (isLiftNote || mineNote || nukeNote)
+			shouldBeSung = false;
 		// var daStage:String = PlayState.curStage;
 		if (FNFAssets.exists('assets/images/custom_ui/ui_packs/' + PlayState.SONG.uiType + "/NOTE_assets.xml")
 			&& FNFAssets.exists('assets/images/custom_ui/ui_packs/' + PlayState.SONG.uiType + "/NOTE_assets.png"))
@@ -120,6 +134,13 @@ class Note extends FlxSprite
 				animation.addByPrefix('blueScroll', 'blue lift${animSuffix}');
 				animation.addByPrefix('purpleScroll', 'purple lift${animSuffix}');
 			}
+			if (nukeNote)
+			{
+				animation.addByPrefix('greenScroll', 'green nuke${animSuffix}');
+				animation.addByPrefix('redScroll', 'red nuke${animSuffix}');
+				animation.addByPrefix('blueScroll', 'blue nuke${animSuffix}');
+				animation.addByPrefix('purpleScroll', 'purple nuke${animSuffix}');
+			}
 			
 
 			setGraphicSize(Std.int(width * 0.7));
@@ -143,7 +164,7 @@ class Note extends FlxSprite
 				animation.add('redScroll', [intSuffix]);
 				animation.add('blueScroll', [intSuffix]);
 				animation.add('purpleScroll', [intSuffix]);
-
+				animation.add('')
 				if (isSustainNote)
 				{
 					loadGraphic('assets/images/weeb/pixelUI/arrowEnds.png', true, 7, 6);
@@ -227,6 +248,12 @@ class Note extends FlxSprite
 				animation.addByPrefix('blueScroll', 'blue lift');
 				animation.addByPrefix('purpleScroll', 'purple lift');
 			}
+			if (nukeNote) {
+				animation.addByPrefix('greenScroll', 'green nuke');
+				animation.addByPrefix('redScroll', 'red nuke');
+				animation.addByPrefix('blueScroll', 'blue nuke');
+				animation.addByPrefix('purpleScroll', 'purple nuke');
+			}
 			setGraphicSize(Std.int(width * 0.7));
 			updateHitbox();
 			antialiasing = true;
@@ -235,7 +262,7 @@ class Note extends FlxSprite
 		{
 			color = FlxColor.BLACK;
 		}
-		switch (noteData % 4)
+		switch (noteData % NOTE_AMOUNT)
 		{
 			case 0:
 				x += swagWidth * 0;
@@ -262,7 +289,7 @@ class Note extends FlxSprite
 
 			x += width / 2;
 
-			switch (noteData % 4)
+			switch (noteData % NOTE_AMOUNT)
 			{
 				case 2:
 					animation.play('greenholdend');
@@ -283,8 +310,8 @@ class Note extends FlxSprite
 
 			if (prevNote.isSustainNote)
 			{
-				// don't mod 4 because we already did that
-				switch (prevNote.noteData)
+				// DO mod it because we DIDN'T do that
+				switch (prevNote.noteData % NOTE_AMOUNT)
 				{
 					case 0:
 						prevNote.animation.play('purplehold');
@@ -318,13 +345,28 @@ class Note extends FlxSprite
 			}
 			else
 				canBeHit = false;
-
+			// Nuke notes can only be hit with a bad or better because nuke notes are weird champ
+			if (nukeNote && !(strumTime > Conductor.songPosition - Judge.badJudge * timingMultiplier && strumTime < Conductor.songPosition + Judge.badJudge * timingMultiplier)) {
+				canBeHit = false;
+			}
+			if (mineNote
+				&& !(strumTime > Conductor.songPosition - Judge.shitJudge * timingMultiplier
+					&& strumTime < Conductor.songPosition + Judge.shitJudge * timingMultiplier))
+			{
+				canBeHit = false;
+			}
 			if (strumTime < Conductor.songPosition - Judge.wayoffJudge)
 				tooLate = true;
+			if (nukeNote && strumTime < Conductor.songPosition - Judge.badJudge) {
+				tooLate = true;
+			}
+			if (mineNote && strumTime < Conductor.songPosition - Judge.shitJudge) {
+				tooLate = true;
+			}
 		}
 		else
 		{
-			if (!mineNote) {
+			if (!mineNote && !nukeNote) {
 				canBeHit = false;
 
 				if (strumTime <= Conductor.songPosition)

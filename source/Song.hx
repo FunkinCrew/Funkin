@@ -32,6 +32,8 @@ typedef SwagSong =
 	var isCheer:Null<Bool>;
 	var preferredNoteAmount:Null<Int>;
 	var forceJudgements:Null<Bool>;
+	var convertMineToNuke:Null<Bool>;
+	var mania:Null<Int>;
 }
 
 class Song
@@ -112,8 +114,28 @@ class Song
 				parsedJson.isCheer = true;
 			}
 		}
-		if (parsedJson.preferredNoteAmount == null)
-			parsedJson.preferredNoteAmount = 4;
+		if (parsedJson.preferredNoteAmount == null) {
+			switch (parsedJson.mania) {
+				case 1:
+					parsedJson.preferredNoteAmount = 6;
+				case 2:
+					parsedJson.preferredNoteAmount = 9;
+				default:
+					parsedJson.preferredNoteAmount = 4;
+			}
+		}
+		if (parsedJson.mania == null) {
+			switch (parsedJson.preferredNoteAmount) {
+				case 4:
+					parsedJson.mania = 0;
+				case 6:
+					parsedJson.mania = 1;
+				case 9:
+					parsedJson.mania = 2;
+				default:
+					parsedJson.mania = 0;
+			}
+		}
 		trace(parsedJson.stage);
 		if (parsedJson.gf == null) {
 			// are you kidding me did i really do song to lowercase
@@ -171,6 +193,12 @@ class Song
 				default:
 					parsedJson.cutsceneType = 'none';
 			}
+		}
+		if (parsedJson.convertMineToNuke == null) {
+			if (parsedJson.song.toLowerCase() == "expurgation")
+				parsedJson.convertMineToNuke = true;
+			else
+				parsedJson.convertMineToNuke = false;
 		}
 		if (parsedJson.uiType == null) {
 			if (parsedJson.song.toLowerCase() == 'roses' || parsedJson.song.toLowerCase() == 'senpai' || parsedJson.song.toLowerCase() == 'thorns') {
