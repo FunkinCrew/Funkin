@@ -40,4 +40,4 @@ after_build:
 
 artifacts:
 - path: KadeEngine-Linux.tar
-  name: Linux build
+  name: Kade Engine for Linux
