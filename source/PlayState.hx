@@ -344,7 +344,22 @@ class PlayState extends MusicBeatState
 				dialogue = CoolUtil.coolTextFile(Paths.txt('thorns/thornsDialogue'));
 		}
 
-		switch(SONG.stage)
+		//defaults if no stage was found in chart
+
+		var stageCheck:String = 'stage';
+		//i should check if its stage (but this is when none is found in chart anyway)
+		if (SONG.stage == null) {
+			switch(storyWeek)
+			{
+				case 2: stageCheck = 'halloween';
+				case 3: stageCheck = 'philly';
+				case 4: stageCheck = 'limo';
+				case 5: if (songLowercase == 'winter-horrorland') {stageCheck = 'mallEvil';} else {stageCheck = 'mall';}
+				case 6: if (songLowercase == 'thorns') {stageCheck = 'schoolEvil';} else {stageCheck = 'school';}
+			}
+		} else {stageCheck = SONG.stage;}
+
+		switch(stageCheck)
 		{
 			case 'halloween': 
 			{
