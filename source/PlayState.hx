@@ -3004,7 +3004,7 @@ class PlayState extends MusicBeatState
 							spr.animation.play("confirm");
 						}
 
-						if (spr.animation.curAnim.name == 'confirm' && !daNote.isPixel)
+						if (spr.animation.curAnim != null && spr.animation.curAnim.name == 'confirm' && !daNote.isPixel)
 						{
 							spr.centerOffsets();
 							spr.offset.x -= 13;
@@ -3781,7 +3781,7 @@ class PlayState extends MusicBeatState
 			if (releaseArray[spr.ID])
 				spr.animation.play('static');
 			
-			if (spr.animation.curAnim.name == 'confirm' && !pixelUI)
+			if (spr.animation.curAnim != null && spr.animation.curAnim.name == 'confirm' && !pixelUI)
 			{
 				spr.centerOffsets();
 				spr.offset.x -= 13;

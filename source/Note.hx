@@ -142,7 +142,13 @@ class Note extends FlxSprite
 				animation.addByPrefix('purpleScroll', 'purple nuke${animSuffix}');
 			}
 			
-
+			if (mineNote)
+			{
+				animation.addByPrefix('greenScroll', 'green mine${animSuffix}');
+				animation.addByPrefix('redScroll', 'red mine${animSuffix}');
+				animation.addByPrefix('blueScroll', 'blue mine${animSuffix}');
+				animation.addByPrefix('purpleScroll', 'purple mine${animSuffix}');
+			}
 			setGraphicSize(Std.int(width * 0.7));
 			updateHitbox();
 			antialiasing = true;
@@ -253,13 +259,15 @@ class Note extends FlxSprite
 				animation.addByPrefix('blueScroll', 'blue nuke');
 				animation.addByPrefix('purpleScroll', 'purple nuke');
 			}
+			if (mineNote) {
+				animation.addByPrefix('greenScroll', 'green mine');
+				animation.addByPrefix('redScroll', 'red mine');
+				animation.addByPrefix('blueScroll', 'blue mine');
+				animation.addByPrefix('purpleScroll', 'purple mine');
+			}
 			setGraphicSize(Std.int(width * 0.7));
 			updateHitbox();
 			antialiasing = true;
-		}
-		if (mineNote)
-		{
-			color = FlxColor.BLACK;
 		}
 		switch (noteData % NOTE_AMOUNT)
 		{
@@ -336,30 +344,31 @@ class Note extends FlxSprite
 		// and it isn't demo mode
 		if ((((mustPress && !oppMode) || duoMode) || (oppMode && !mustPress)) && !funnyMode)
 		{
+			var signedDiff = Conductor.songPosition - strumTime;
+			// ok.... so if strumTime is bigger than songPosition that means it is waiting to be hit because well the song hasn't reached it???
+			// negative is early, positive is late
+			var noteDiff = Math.abs(signedDiff);
 			// The * 0.5 us so that its easier to hit them too late, instead of too early
-			if (strumTime > Conductor.songPosition - Judge.wayoffJudge * timingMultiplier
-				&& strumTime < Conductor.songPosition + Judge.wayoffJudge * timingMultiplier)
+			if (noteDiff < Judge.wayoffJudge * timingMultiplier)
 			{
 				canBeHit = true;
 			}
 			else
 				canBeHit = false;
 			// Nuke notes can only be hit with a bad or better because nuke notes are weird champ
-			if (nukeNote && !(strumTime > Conductor.songPosition - Judge.badJudge * timingMultiplier && strumTime < Conductor.songPosition + Judge.badJudge * timingMultiplier)) {
+			if (nukeNote && !(noteDiff < Judge.badJudge * timingMultiplier)) {
 				canBeHit = false;
 			}
-			if (mineNote
-				&& !(strumTime > Conductor.songPosition - Judge.shitJudge * timingMultiplier
-					&& strumTime < Conductor.songPosition + Judge.shitJudge * timingMultiplier))
+			if (mineNote && !(noteDiff < Judge.shitJudge * timingMultiplier))
 			{
 				canBeHit = false;
 			}
-			if (strumTime < Conductor.songPosition - Judge.wayoffJudge)
+			if (signedDiff > Judge.wayoffJudge)
 				tooLate = true;
-			if (nukeNote && strumTime < Conductor.songPosition - Judge.badJudge) {
+			if (nukeNote && signedDiff > Judge.badJudge) {
 				tooLate = true;
 			}
-			if (mineNote && strumTime < Conductor.songPosition - Judge.shitJudge) {
+			if (mineNote && signedDiff > Judge.shitJudge) {
 				tooLate = true;
 			}
 		}
