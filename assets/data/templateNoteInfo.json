@@ -1,0 +1,34 @@
+// This is a template. Rename this file to "noteInfo.json" and put it in a song folder to use it.
+[
+    {
+        // star note
+        "animNames": [
+            "purple star", // left note
+            "blue star", // down note
+            "green star", // up note
+            "red star" // right note
+        ],
+        // this is required, but you can use default arrows. used with pixel ui. 
+        "animInt": [
+            0,
+            1,
+            2,
+            3
+        ],
+        // amount healed. Note that the range is 0-2, so it's a bit funky
+        "healAmount": 1,
+        // damage dealt, same deal as above
+        "damageAmount": 1,
+        // other fields include
+        // shouldSing: whether the note should play the sing anim
+        // healMultiplier, overwritten by healAmount, instead multiplies health healed
+        // damageMultiplier, overwritten by damageAmount, instead multiples health damage
+        // consistentHealth, whether to always heal the same health when hitting the note.
+        // makes bad, shit, and wayoff heal instead of hurt, if healCutoff isn't set
+        // healCutoff, a string, based on one of the timing intervals. Timings worse or equal to
+        // the cutoff damage while better heal. 
+        // timingMultiplier, how hard it is to hit the note. Lower numbers are harder.
+        // ignoreHealthMods, whether to bypass any modifiers that affect health when dealing damage.
+        
+    }
+]

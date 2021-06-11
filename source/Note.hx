@@ -23,6 +23,19 @@ enum abstract Direction(Int) from Int to Int {
 	var right;
 
 }
+typedef NoteInfo = {
+	var animNames:Array<String>;
+	var animInt:Array<Int>;
+	var ?healAmount:Null<Float>;
+	var ?damageAmount:Null<Float>;
+	var ?shouldSing:Null<Bool>;
+	var ?healMultiplier:Null<Float>;
+	var ?damageMultiplier:Null<Float>;
+	var ?consistentHealth:Null<Bool>;
+	var ?healCutoff:Null<String>;
+	var ?timingMultiplier:Null<Float>;
+	var ?ignoreHealthMods:Null<Bool>;
+}
 class Note extends FlxSprite
 {
 	public var strumTime:Float = 0;
@@ -49,6 +62,11 @@ class Note extends FlxSprite
 	public static var BLUE_NOTE:Int = 1;
 	public static var RED_NOTE:Int = 3;
 	public static var NOTE_AMOUNT:Int = 4;
+	public static var specialNoteJson:Null<Array<NoteInfo>>;
+	public var damageAmount:Null<Float> = null;
+	public var healAmount:Null<Float> = null;
+	// pwease freeplay state don't edit me i already have special info :grief: :grief:
+	public var dontEdit:Bool = false;
 	public var rating = "miss";
 	public var isLiftNote:Bool = false;
 	public var mineNote:Bool = false;
@@ -65,6 +83,8 @@ class Note extends FlxSprite
 	// whether to play the sing animation for hitting this note
 	public var shouldBeSung:Bool = true;
 	public var ignoreHealthMods:Bool = false;
+	public var healCutoff:Null<String>;
+	var specialNoteInfo:NoteInfo;
 	// altNote can be int or bool. int just determines what alt is played
 	// format: [strumTime:Float, noteDirection:Int, sustainLength:Float, altNote:Union<Bool, Int>, isLiftNote:Bool, healMultiplier:Float, damageMultipler:Float, consistentHealth:Bool, timingMultiplier:Float, shouldBeSung:Bool, ignoreHealthMods:Bool, animSuffix:Union<String, Int>]
 	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?customImage:Null<BitmapData>, ?customXml:Null<String>, ?customEnds:Null<BitmapData>, ?LiftNote:Bool=false, ?animSuffix:String, ?numSuffix:Int)
@@ -97,6 +117,42 @@ class Note extends FlxSprite
 		}
 		if (noteData >= NOTE_AMOUNT * 8 && noteData < NOTE_AMOUNT * 10) {
 			drainNote = true;
+		}
+		if (noteData >= NOTE_AMOUNT * 12 && specialNoteJson != null) {
+			// special note...
+			// get the note thingie
+			var sussyNoteThing = Math.floor(noteData/NOTE_AMOUNT) * NOTE_AMOUNT;
+			// there are already 4 thingies and the thing is index 0 
+			sussyNoteThing -= 5;
+			var thingie = specialNoteJson[sussyNoteThing];
+			dontEdit = true;
+			if (thingie.damageAmount != null) {
+				damageAmount = thingie.damageAmount;
+			} else if (thingie.damageMultiplier != null) {
+				damageMultiplier = thingie.damageMultiplier;
+			}
+			if (thingie.healAmount != null) {
+				healAmount = thingie.healAmount;
+			} else if (thingie.healMultiplier != null) {
+				healMultiplier = thingie.healMultiplier;
+			}
+			
+			if (thingie.shouldSing != null) {
+				shouldBeSung = thingie.shouldSing;
+			}
+
+			if (thingie.consistentHealth != null) {
+				consistentHealth = thingie.consistentHealth;
+			}
+
+			if (thingie.healCutoff != null) {
+				healCutoff = thingie.healCutoff;
+			}
+			if (thingie.timingMultiplier != null) {
+				timingMultiplier = thingie.timingMultiplier;
+			} 
+			specialNoteInfo = thingie;
+			ignoreHealthMods = cast thingie.ignoreHealthMods;
 		}
 		if (isLiftNote || mineNote || nukeNote)
 			shouldBeSung = false;
@@ -149,6 +205,13 @@ class Note extends FlxSprite
 				animation.addByPrefix('blueScroll', 'blue mine${animSuffix}');
 				animation.addByPrefix('purpleScroll', 'purple mine${animSuffix}');
 			}
+			if (dontEdit) {
+				animation.addByPrefix('greenScroll', specialNoteInfo.animNames[2]);
+				animation.addByPrefix('redScroll', specialNoteInfo.animNames[3]);
+				animation.addByPrefix('purpleScroll', specialNoteInfo.animNames[0]);
+				animation.addByPrefix('blueScroll', specialNoteInfo.animNames[1]);
+
+			}
 			setGraphicSize(Std.int(width * 0.7));
 			updateHitbox();
 			antialiasing = true;
@@ -191,6 +254,12 @@ class Note extends FlxSprite
 					animation.add('blueScroll', [intSuffix]);
 					animation.add('purpleScroll', [intSuffix]);
 				}
+				if (dontEdit) {
+					animation.add('greenScroll', [specialNoteInfo.animInt[2]]);
+					animation.add('redScroll', [specialNoteInfo.animInt[3]]);
+					animation.add('purpleScroll', [specialNoteInfo.animInt[0]]);
+					animation.add('blueScroll', [specialNoteInfo.animInt[1]]);
+				}
 			}
 			else
 			{
@@ -219,6 +288,13 @@ class Note extends FlxSprite
 					animation.add('redScroll', [23]);
 					animation.add('blueScroll', [21]);
 					animation.add('purpleScroll', [20]);
+				}
+				if (dontEdit)
+				{
+					animation.add('greenScroll', [specialNoteInfo.animInt[2]]);
+					animation.add('redScroll', [specialNoteInfo.animInt[3]]);
+					animation.add('purpleScroll', [specialNoteInfo.animInt[0]]);
+					animation.add('blueScroll', [specialNoteInfo.animInt[1]]);
 				}
 			}
 
@@ -264,6 +340,13 @@ class Note extends FlxSprite
 				animation.addByPrefix('redScroll', 'red mine');
 				animation.addByPrefix('blueScroll', 'blue mine');
 				animation.addByPrefix('purpleScroll', 'purple mine');
+			}
+			if (dontEdit)
+			{
+				animation.addByPrefix('greenScroll', specialNoteInfo.animNames[2]);
+				animation.addByPrefix('redScroll', specialNoteInfo.animNames[3]);
+				animation.addByPrefix('purpleScroll', specialNoteInfo.animNames[0]);
+				animation.addByPrefix('blueScroll', specialNoteInfo.animNames[1]);
 			}
 			setGraphicSize(Std.int(width * 0.7));
 			updateHitbox();
@@ -390,5 +473,174 @@ class Note extends FlxSprite
 			if (alpha > 0.3)
 				alpha = 0.3;
 		}
+	}
+	public function getHealth(rating:String):Float {
+		if (mineNote) {
+			if (rating != 'miss') {
+				return -0.45;
+			} else {
+				return 0;
+			}
+		}
+		if (nukeNote) {
+			if (rating != 'miss')
+				return -69;
+			else
+				return 0;
+		}
+		if (consistentHealth)
+		{
+			var ouchie = false;
+			switch (healCutoff)
+			{
+				case 'shit':
+					ouchie = rating == 'shit' || rating == 'wayoff' || rating == 'miss';
+				case 'wayoff':
+					ouchie = rating == 'wayoff' || rating == 'miss';
+				case 'miss':
+					ouchie = rating == 'miss';
+				case 'bad' | null:
+					ouchie = rating == 'shit' || rating == 'wayoff' || rating == 'bad' || rating == 'miss';
+				case 'good':
+					ouchie = rating == 'shit' || rating == 'wayoff' || rating == 'bad' || rating == 'miss' || rating == 'good';
+				case 'sick':
+					ouchie = true;
+				case 'none':
+					ouchie = false;
+			}
+			if (ouchie)
+			{
+				if (damageAmount != null)
+				{
+					return damageAmount * (ignoreHealthMods ? 1 : PlayState.healthLossMultiplier);
+				}
+				else
+				{
+					return damageMultiplier * -0.04 * (ignoreHealthMods ? 1 : PlayState.healthLossMultiplier);
+				}
+			}
+			else
+			{
+				if (healAmount != null)
+				{
+					return healAmount * (ignoreHealthMods ? 1 : PlayState.healthGainMultiplier);
+				}
+				else
+				{
+					return healMultiplier * (ignoreHealthMods ? 1 : PlayState.healthGainMultiplier) * 0.04;
+				}
+			}
+		} else {
+			var healies = 0.0;
+			switch (healCutoff) {
+				case "shit":
+					switch (rating) {
+						case "shit" | 'wayoff':
+							healies = -0.06;
+						case "bad":
+							healies = 0.03;
+						case "good":
+							healies = 0.03;
+						case "miss":
+							healies = -0.04;
+						case "sick":
+							healies = 0.07;
+					}
+				case "bad" | null: 
+					switch (rating)
+					{
+						case "shit" | 'wayoff':
+							healies = -0.06;
+						case "bad":
+							healies = -0.03;
+						case "good":
+							healies = 0.03;
+						case "miss":
+							healies = -0.04;
+						case "sick":
+							healies = 0.07;
+					}
+				case "good": 
+					switch (rating)
+					{
+						case "shit" | 'wayoff':
+							healies = -0.06;
+						case "bad":
+							healies = -0.03;
+						case "good":
+							healies = -0.03;
+						case "miss":
+							healies = -0.04;
+						case "sick":
+							healies = 0.07;
+					}
+				case "wayoff":
+					switch (rating)
+					{
+						case "shit":
+							healies = 0.06;
+						case 'wayoff': 
+							healies = -0.06;
+						case "bad":
+							healies = -0.03;
+						case "good":
+							healies = 0.03;
+						case "miss":
+							healies = -0.04;
+						case "sick":
+							healies = 0.07;
+					}
+				case "miss":
+					switch (rating)
+					{
+						case "shit" | 'wayoff':
+							healies = 0.06;
+						case "bad":
+							healies = 0.03;
+						case "good":
+							healies = 0.03;
+						case "miss":
+							healies = -0.04;
+						case "sick":
+							healies = 0.07;
+					}
+
+				case "sick":
+					switch (rating)
+					{
+						case "shit" | 'wayoff':
+							healies = -0.06;
+						case "bad":
+							healies = -0.03;
+						case "good":
+							healies = -0.03;
+						case "miss":
+							healies = -0.04;
+						case "sick":
+							healies = -0.07;
+					}
+			}
+			if (healies > 0) {
+				// this was pointless then :grief:
+				if (healAmount != null) {
+					return healAmount * (ignoreHealthMods ? 1 : PlayState.healthGainMultiplier);
+				} else {
+					return healMultiplier * healies * (ignoreHealthMods ? 1 : PlayState.healthGainMultiplier);
+
+				}
+
+			} else {
+				if (damageAmount != null)
+				{
+					return damageAmount * (ignoreHealthMods ? 1 : PlayState.healthLossMultiplier);
+				}
+				else
+				{
+					return damageMultiplier * healies * (ignoreHealthMods ? 1 : PlayState.healthLossMultiplier);
+				}
+			}
+		}
+		
+		
 	}
 }

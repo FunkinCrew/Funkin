@@ -226,8 +226,8 @@ class PlayState extends MusicBeatState
 	var fullComboMode:Bool = false;
 	var perfectMode:Bool = false;
 	var practiceMode:Bool = false;
-	var healthLossMultiplier:Float = 1;
-	var healthGainMultiplier:Float = 1;
+	public static var healthLossMultiplier:Float = 1;
+	public static var healthGainMultiplier:Float = 1;
 	var poisonExr:Bool = false;
 	var poisonPlus:Bool = false;
 	var beingPoisioned:Bool = false;
@@ -425,6 +425,10 @@ class PlayState extends MusicBeatState
 	var songName:FlxText;
 	override public function create()
 	{
+		Note.specialNoteJson = null;
+		if (FNFAssets.exists('assets/data/${SONG.song.toLowerCase()}/noteInfo.json')) {
+			Note.specialNoteJson = CoolUtil.parseJson(FNFAssets.getText('assets/data/${SONG.song.toLowerCase()}/noteInfo.json'));
+		}
 		misses = 0;
 		bads = 0;
 		goods = 0;
@@ -454,7 +458,7 @@ class PlayState extends MusicBeatState
 				storyDifficultyText = "Hard";
 		}
 		*/
-		storyDifficultyText = DifficultyIcons.getEndingFP(storyDifficulty).substr(1);
+		storyDifficultyText = DifficultyManager.getDiffName(storyDifficulty);
 		iconRPC = SONG.player2;
 
 		// To avoid having duplicate images in Discord assets
@@ -1731,12 +1735,15 @@ class PlayState extends MusicBeatState
 					oldNote = null;
 				// stand back i am a professional idiot
 				var swagNote:Note = new Note(daStrumTime, songNotes[1], oldNote, false, customImage, customXml, arrowEndsImage, daLift, animSuffix);
-				swagNote.shouldBeSung = shouldSing;
-				swagNote.ignoreHealthMods = ignoreHealthMods;
-				swagNote.timingMultiplier = timeThingy;
-				swagNote.healMultiplier = noteHeal;
-				swagNote.damageMultiplier = noteDamage;
-				swagNote.consistentHealth = consitentNote;
+				if (!swagNote.dontEdit) {
+					swagNote.shouldBeSung = shouldSing;
+					swagNote.ignoreHealthMods = ignoreHealthMods;
+					swagNote.timingMultiplier = timeThingy;
+					swagNote.healMultiplier = noteHeal;
+					swagNote.damageMultiplier = noteDamage;
+					swagNote.consistentHealth = consitentNote;
+				}
+				
 
 				// altNote
 				swagNote.altNote = altNote;
@@ -3252,7 +3259,7 @@ class PlayState extends MusicBeatState
 						combo = 0;
 					}
 
-					healthBonus -= 0.06 * if (daNote.ignoreHealthMods) 1 else healthLossMultiplier * daNote.damageMultiplier;
+					// healthBonus -= 0.06 * if (daNote.ignoreHealthMods) 1 else healthLossMultiplier * daNote.damageMultiplier;
 
 				case 'wayoff':
 					if (!dontCountNote)
@@ -3265,7 +3272,7 @@ class PlayState extends MusicBeatState
 						notesHit += 0.1;
 					}
 
-					healthBonus -= 0.06 * if (daNote.ignoreHealthMods) 1 else healthLossMultiplier * daNote.damageMultiplier;
+					// healthBonus -= 0.06 * if (daNote.ignoreHealthMods) 1 else healthLossMultiplier * daNote.damageMultiplier;
 
 				case 'bad':
 					if (!dontCountNote)
@@ -3277,7 +3284,7 @@ class PlayState extends MusicBeatState
 					}
 					daRating = 'bad';
 
-					healthBonus -= 0.03 * if (daNote.ignoreHealthMods) 1 else healthLossMultiplier * daNote.damageMultiplier;
+					// healthBonus -= 0.03 * if (daNote.ignoreHealthMods) 1 else healthLossMultiplier * daNote.damageMultiplier;
 
 				case 'good':
 					if (!dontCountNote)
@@ -3289,10 +3296,10 @@ class PlayState extends MusicBeatState
 					}
 					daRating = 'good';
 
-					healthBonus += 0.03 * if (daNote.ignoreHealthMods) 1 else healthGainMultiplier * daNote.healMultiplier;
+					// healthBonus += 0.03 * if (daNote.ignoreHealthMods) 1 else healthGainMultiplier * daNote.healMultiplier;
 
 				case 'sick':
-					healthBonus += 0.07 * if (daNote.ignoreHealthMods) 1 else healthGainMultiplier * daNote.healMultiplier;
+					// healthBonus += 0.07 * if (daNote.ignoreHealthMods) 1 else healthGainMultiplier * daNote.healMultiplier;
 					if (!dontCountNote)
 					{
 						notesHit += 1;
@@ -3333,6 +3340,7 @@ class PlayState extends MusicBeatState
 			else 
 				healthBonus = -0.04 * daNote.damageMultiplier * if (daNote.ignoreHealthMods) 1 else healthLossMultiplier;
 		}
+		healthBonus = daNote.getHealth(daRating);
 		if (daNote.isSustainNote) {
 			healthBonus  *= 0.2;
 		}
