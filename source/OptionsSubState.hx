@@ -2,7 +2,7 @@ package;
 
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.group.FlxGroup.AFlxTypedGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 
@@ -13,13 +13,13 @@ class OptionsSubState extends MusicBeatSubstate
 	var selector:FlxSprite;
 	var curSelected:Int = 0;
 
-	var grpOptionsTexts:FlxTypedGroup<FlxText>;
+	var grpOptionsTexts:AFlxTypedGroup<FlxText>;
 
 	public function new()
 	{
 		super();
 
-		grpOptionsTexts = new FlxTypedGroup<FlxText>();
+		grpOptionsTexts = new AFlxTypedGroup<FlxText>();
 		add(grpOptionsTexts);
 
 		selector = new FlxSprite().makeGraphic(5, 5, FlxColor.RED);

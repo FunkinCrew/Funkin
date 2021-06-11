@@ -34,7 +34,7 @@ import flixel.addons.effects.chainable.FlxWaveEffect;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.graphics.atlas.FlxAtlas;
 import flixel.graphics.frames.FlxAtlasFrames;
-import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.group.FlxGroup.AFlxTypedGroup;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
@@ -107,7 +107,7 @@ class PlayState extends MusicBeatState
 	public static var gf:Character;
 	public static var boyfriend:Boyfriend;
 
-	public var notes:FlxTypedGroup<Note>;
+	public var notes:AFlxTypedGroup<Note>;
 	private var unspawnNotes:Array<Note> = [];
 
 	public var strumLine:FlxSprite;
@@ -117,9 +117,9 @@ class PlayState extends MusicBeatState
 
 	private static var prevCamFollow:FlxObject;
 
-	public static var strumLineNotes:FlxTypedGroup<FlxSprite> = null;
-	public static var playerStrums:FlxTypedGroup<FlxSprite> = null;
-	public static var cpuStrums:FlxTypedGroup<FlxSprite> = null;
+	public static var strumLineNotes:AFlxTypedGroup<FlxSprite> = null;
+	public static var playerStrums:AFlxTypedGroup<FlxSprite> = null;
+	public static var cpuStrums:AFlxTypedGroup<FlxSprite> = null;
 
 	private var camZooming:Bool = false;
 	private var curSong:String = "";
@@ -158,12 +158,12 @@ class PlayState extends MusicBeatState
 	var halloweenBG:FlxSprite;
 	var isHalloween:Bool = false;
 
-	var phillyCityLights:FlxTypedGroup<FlxSprite>;
+	var phillyCityLights:AFlxTypedGroup<FlxSprite>;
 	var phillyTrain:FlxSprite;
 	var trainSound:FlxSound;
 
 	var limo:FlxSprite;
-	var grpLimoDancers:FlxTypedGroup<BackgroundDancer>;
+	var grpLimoDancers:AFlxTypedGroup<BackgroundDancer>;
 	var fastCar:FlxSprite;
 	var songName:FlxText;
 	var upperBoppers:FlxSprite;
@@ -370,7 +370,7 @@ class PlayState extends MusicBeatState
 					city.updateHitbox();
 					add(city);
 
-					phillyCityLights = new FlxTypedGroup<FlxSprite>();
+					phillyCityLights = new AFlxTypedGroup<FlxSprite>();
 					if(FlxG.save.data.distractions){
 						add(phillyCityLights);
 					}
@@ -418,7 +418,7 @@ class PlayState extends MusicBeatState
 					bgLimo.scrollFactor.set(0.4, 0.4);
 					add(bgLimo);
 					if(FlxG.save.data.distractions){
-						grpLimoDancers = new FlxTypedGroup<BackgroundDancer>();
+						grpLimoDancers = new AFlxTypedGroup<BackgroundDancer>();
 						add(grpLimoDancers);
 	
 						for (i in 0...5)
@@ -851,11 +851,11 @@ class PlayState extends MusicBeatState
 		if (FlxG.save.data.downscroll)
 			strumLine.y = FlxG.height - 165;
 
-		strumLineNotes = new FlxTypedGroup<FlxSprite>();
+		strumLineNotes = new AFlxTypedGroup<FlxSprite>();
 		add(strumLineNotes);
 
-		playerStrums = new FlxTypedGroup<FlxSprite>();
-		cpuStrums = new FlxTypedGroup<FlxSprite>();
+		playerStrums = new AFlxTypedGroup<FlxSprite>();
+		cpuStrums = new AFlxTypedGroup<FlxSprite>();
 
 		// startCountdown();
 
@@ -1347,7 +1347,7 @@ class PlayState extends MusicBeatState
 
 		FlxG.sound.list.add(vocals);
 
-		notes = new FlxTypedGroup<Note>();
+		notes = new AFlxTypedGroup<Note>();
 		add(notes);
 
 		var noteData:Array<SwagSection>;

@@ -7,7 +7,7 @@ import Discord.DiscordClient;
 import sys.thread.Thread;
 #end
 
-import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.group.FlxGroup.AFlxTypedGroup;
 import openfl.ui.Keyboard;
 import flixel.FlxSprite;
 import flixel.FlxG;
@@ -28,8 +28,8 @@ class GameplayCustomizeState extends MusicBeatState
     var dad:Character;
 
     var strumLine:FlxSprite;
-    var strumLineNotes:FlxTypedGroup<FlxSprite>;
-    var playerStrums:FlxTypedGroup<FlxSprite>;
+    var strumLineNotes:AFlxTypedGroup<FlxSprite>;
+    var playerStrums:AFlxTypedGroup<FlxSprite>;
     private var camHUD:FlxCamera;
     
     public override function create() {
@@ -81,10 +81,10 @@ class GameplayCustomizeState extends MusicBeatState
 		if (FlxG.save.data.downscroll)
 			strumLine.y = FlxG.height - 165;
 
-		strumLineNotes = new FlxTypedGroup<FlxSprite>();
+		strumLineNotes = new AFlxTypedGroup<FlxSprite>();
 		add(strumLineNotes);
 
-		playerStrums = new FlxTypedGroup<FlxSprite>();
+		playerStrums = new AFlxTypedGroup<FlxSprite>();
 
         sick.cameras = [camHUD];
         strumLine.cameras = [camHUD];
