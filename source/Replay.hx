@@ -24,7 +24,7 @@ typedef ReplayJSON =
 
 class Replay
 {
-    public static var version:String = "1.0"; // replay file version
+    public static var version:String = "1.1"; // replay file version
 
     public var path:String = "";
     public var replay:ReplayJSON;
@@ -56,7 +56,7 @@ class Replay
     public function SaveReplay(notearray:Array<Float>)
     {
         var json = {
-            "songName": PlayState.SONG.song.toLowerCase(),
+            "songName": PlayState.SONG.song,
             "songDiff": PlayState.storyDifficulty,
 			"noteSpeed": (FlxG.save.data.scrollSpeed > 1 ? FlxG.save.data.scrollSpeed : PlayState.SONG.speed),
 			"isDownscroll": FlxG.save.data.downscroll,

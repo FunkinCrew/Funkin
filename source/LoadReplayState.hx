@@ -148,9 +148,19 @@ class LoadReplayState extends MusicBeatState
 
                 PlayState.loadRep = true;
 
-                var poop:String = Highscore.formatSong(PlayState.rep.replay.songName.toLowerCase(), PlayState.rep.replay.songDiff);
+                // adjusting the song name to be compatible
+				var songFormat = StringTools.replace(PlayState.rep.replay.songName, " ", "-");
+				switch (songFormat) {
+					case 'Dad-Battle': songFormat = 'Dadbattle';
+					case 'Philly-Nice': songFormat = 'Philly';
+					// Replay v1.0 support
+					case 'dad-battle': songFormat = 'Dadbattle';
+					case 'philly-nice': songFormat = 'Philly';
+				}
 
-				PlayState.SONG = Song.loadFromJson(poop, PlayState.rep.replay.songName.toLowerCase());
+				var poop:String = Highscore.formatSong(songFormat, PlayState.rep.replay.songDiff);
+
+				PlayState.SONG = Song.loadFromJson(poop, PlayState.rep.replay.songName);
                 PlayState.isStoryMode = false;
                 PlayState.storyDifficulty = PlayState.rep.replay.songDiff;
                 PlayState.storyWeek = getWeekNumbFromSong(PlayState.rep.replay.songName);
