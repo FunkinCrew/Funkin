@@ -17,6 +17,10 @@ import haxe.Json;
 import tjson.TJSON;
 import haxe.format.JsonParser;
 using StringTools;
+typedef DiffInfo = {
+  var difficulty:Int;
+  var text:String;
+}
 class DifficultyIcons {
   public var group:FlxTypedGroup<FlxSprite>;
   public var width:Float = 0;
@@ -72,21 +76,8 @@ class DifficultyIcons {
     });
     group.members[difficulty].visible = true;
   }
-  public static function changeDifficultyFreeplay(difficultyFP:Int, ?change:Int = 0):Dynamic {
-    var diffJson = CoolUtil.parseJson(Assets.getText("assets/images/custom_difficulties/difficulties.json"));
-    var difficultiesFP:Array<Dynamic> = diffJson.difficulties;
-    var freeplayDiff = difficultyFP;
-    freeplayDiff += change;
-    if (freeplayDiff > difficultiesFP.length - 1) {
-      freeplayDiff = 0;
-    }
-    if (freeplayDiff < 0) {
-      freeplayDiff = difficultiesFP.length - 1;
-    }
-    trace("line 84");
-    var text = difficultiesFP[freeplayDiff].name.toUpperCase();
-    trace("lube :flushed:");
-    return {difficulty: freeplayDiff, text: text};
+  public static function changeDifficultyFreeplay(difficultyFP:Int, ?change:Int = 0):DiffInfo {
+    return DifficultyManager.changeDifficulty(difficultyFP, change);
   }
   function get_activeDiff():FlxSprite {
     trace("91");
@@ -100,16 +91,9 @@ class DifficultyIcons {
     return ending;
   }
   public static function getEndingFP(fpDiff:Int):String {
-    var diffJson = CoolUtil.parseJson(Assets.getText("assets/images/custom_difficulties/difficulties.json"));
-    var difficultiesFP:Array<Dynamic> = diffJson.difficulties;
-    var ending = "";
-    if (fpDiff != diffJson.defaultDiff) {
-      ending = "-"+difficultiesFP[fpDiff].name;
-    }
-    return ending;
+    return DifficultyManager.getDiffEnding(fpDiff);
   }
   public static function getDefaultDiffFP():Int {
-    var diffJson = CoolUtil.parseJson(Assets.getText("assets/images/custom_difficulties/difficulties.json"));
-    return diffJson.defaultDiff;
+    return DifficultyManager.getDefaultDiff();
   }
 }

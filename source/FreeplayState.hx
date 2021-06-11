@@ -388,7 +388,9 @@ class FreeplayState extends MusicBeatState
 	{
 		trace("line 182 fp");
 		if (!soundTest) {
-			var difficultyObject:Dynamic = DifficultyIcons.changeDifficultyFreeplay(curDifficulty, change);
+			// get valid one : )
+			// also forces
+			var difficultyObject:Dynamic = DifficultyManager.changeDifficultySans(curDifficulty, change, songs[curSelected].songName);
 			curDifficulty = difficultyObject.difficulty;
 
 			#if !switch
@@ -508,7 +510,10 @@ class FreeplayState extends MusicBeatState
 		//remove(curOverlay);
 		//curOverlay = FlxGradient.createGradientFlxSprite(FlxG.width, FlxG.height, dealphaedColors);
 		//insert(1, curOverlay);
+		
+		changeDiff();
 		trace(Highscore.getComplete(songs[0].songName, curDifficulty));
+		
 		var coolors = ["black"];
 		if (Reflect.hasField(charJson, songs[curSelected].songCharacter)) {
 			coolors = Reflect.field(charJson, songs[curSelected].songCharacter).colors;
@@ -516,11 +521,13 @@ class FreeplayState extends MusicBeatState
 			coolors = Reflect.field(iconJson, songs[curSelected].songCharacter).colors;
 		}
 		FlxTween.color(bg,0.5, bg.color, FlxColor.fromString(coolors[0]));
+		/*
 		if (OptionsHandler.options.style) {
 			record.changeColor(coolors, songs[curSelected].songCharacter, songs[curSelected].week,
 				songs[curSelected].songName, curDifficulty);
 			
-		}
+		}*/
+		
 		infoPanel.changeSong(songs[curSelected].songName, curDifficulty);
 	}
 }

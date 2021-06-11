@@ -71,6 +71,7 @@ class TitleState extends MusicBeatState
 		#end
 		PlayerSettings.init();
 		PluginManager.init();
+		DifficultyManager.init();
 		curWacky = FlxG.random.getObject(getIntroTextShit());
 		// DEBUG BULLSHIT
 		super.create();
