@@ -309,7 +309,7 @@ class PlayState extends MusicBeatState
 		persistentDraw = true;
 
 		if (SONG == null)
-			SONG = Song.loadFromJson('tutorial');
+			SONG = Song.loadFromJson('tutorial', 'tutorial');
 
 		Conductor.mapBPMChanges(SONG);
 		Conductor.changeBPM(SONG.bpm);
@@ -345,9 +345,8 @@ class PlayState extends MusicBeatState
 		}
 
 		//defaults if no stage was found in chart
-
 		var stageCheck:String = 'stage';
-		//i should check if its stage (but this is when none is found in chart anyway)
+		
 		if (SONG.stage == null) {
 			switch(storyWeek)
 			{
@@ -356,6 +355,7 @@ class PlayState extends MusicBeatState
 				case 4: stageCheck = 'limo';
 				case 5: if (songLowercase == 'winter-horrorland') {stageCheck = 'mallEvil';} else {stageCheck = 'mall';}
 				case 6: if (songLowercase == 'thorns') {stageCheck = 'schoolEvil';} else {stageCheck = 'school';}
+				//i should check if its stage (but this is when none is found in chart anyway)
 			}
 		} else {stageCheck = SONG.stage;}
 
@@ -1093,17 +1093,11 @@ class PlayState extends MusicBeatState
 		senpaiEvil.updateHitbox();
 		senpaiEvil.screenCenter();
 
-		// pre lowercasing the song name (schoolIntro)
-		var songLowercase = StringTools.replace(PlayState.SONG.song, " ", "-").toLowerCase();
-			switch (songLowercase) {
-				case 'dad-battle': songLowercase = 'dadbattle';
-				case 'philly-nice': songLowercase = 'philly';
-			}
-		if (songLowercase == 'roses' || songLowercase == 'thorns')
+		if (PlayState.SONG.song.toLowerCase() == 'roses' || PlayState.SONG.song.toLowerCase() == 'thorns')
 		{
 			remove(black);
 
-			if (songLowercase == 'thorns')
+			if (PlayState.SONG.song.toLowerCase() == 'thorns')
 			{
 				add(red);
 			}
@@ -1123,7 +1117,7 @@ class PlayState extends MusicBeatState
 				{
 					inCutscene = true;
 
-					if (songLowercase == 'thorns')
+					if (PlayState.SONG.song.toLowerCase() == 'thorns')
 					{
 						add(senpaiEvil);
 						senpaiEvil.alpha = 0;
@@ -1396,14 +1390,15 @@ class PlayState extends MusicBeatState
 
 		var playerCounter:Int = 0;
 
-		// pre lowercasing the song name (generateSong)
-		var songLowercase = StringTools.replace(PlayState.SONG.song, " ", "-").toLowerCase();
-			switch (songLowercase) {
-				case 'dad-battle': songLowercase = 'dadbattle';
-				case 'philly-nice': songLowercase = 'philly';
-			}
 		// Per song offset check
 		#if windows
+			// pre lowercasing the song name (generateSong)
+			var songLowercase = StringTools.replace(PlayState.SONG.song, " ", "-").toLowerCase();
+				switch (songLowercase) {
+					case 'dad-battle': songLowercase = 'dadbattle';
+					case 'philly-nice': songLowercase = 'philly';
+				}
+
 			var songPath = 'assets/data/' + songLowercase + '/';
 			
 			for(file in sys.FileSystem.readDirectory(songPath))
@@ -2532,30 +2527,20 @@ class PlayState extends MusicBeatState
 				}
 				else
 				{
-					var difficulty:String = "";
+					
+					// adjusting the song name to be compatible
+					var songFormat = StringTools.replace(PlayState.storyPlaylist[0], " ", "-");
+					switch (songFormat) {
+						case 'Dad-Battle': songFormat = 'Dadbattle';
+						case 'Philly-Nice': songFormat = 'Philly';
+					}
 
-					if (storyDifficulty == 0)
-						difficulty = '-easy';
-
-					if (storyDifficulty == 2)
-						difficulty = '-hard';
+					var poop:String = Highscore.formatSong(songFormat, storyDifficulty);
 
 					trace('LOADING NEXT SONG');
-					// pre lowercasing the next story song name
-					var nextSongLowercase = StringTools.replace(PlayState.storyPlaylist[0], " ", "-").toLowerCase();
-						switch (nextSongLowercase) {
-							case 'dad-battle': nextSongLowercase = 'dadbattle';
-							case 'philly-nice': nextSongLowercase = 'philly';
-						}
-					trace(nextSongLowercase + difficulty);
+					trace(poop);
 
-					// pre lowercasing the song name (endSong)
-					var songLowercase = StringTools.replace(PlayState.SONG.song, " ", "-").toLowerCase();
-					switch (songLowercase) {
-						case 'dad-battle': songLowercase = 'dadbattle';
-						case 'philly-nice': songLowercase = 'philly';
-					}
-					if (songLowercase == 'eggnog')
+					if (PlayState.storyPlaylist[0].toLowerCase() == 'eggnog')
 					{
 						var blackShit:FlxSprite = new FlxSprite(-FlxG.width * FlxG.camera.zoom,
 							-FlxG.height * FlxG.camera.zoom).makeGraphic(FlxG.width * 3, FlxG.height * 3, FlxColor.BLACK);
@@ -2570,7 +2555,8 @@ class PlayState extends MusicBeatState
 					FlxTransitionableState.skipNextTransOut = true;
 					prevCamFollow = camFollow;
 
-					PlayState.SONG = Song.loadFromJson(nextSongLowercase + difficulty, PlayState.storyPlaylist[0]);
+
+					PlayState.SONG = Song.loadFromJson(poop, PlayState.storyPlaylist[0]);
 					FlxG.sound.music.stop();
 
 					LoadingState.loadAndSwitchState(new PlayState());
