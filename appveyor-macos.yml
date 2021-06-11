@@ -35,7 +35,7 @@ install:
 build_script:
   - haxelib run lime build mac
 after_build:
-  - hdiutil create /Users/appveyor/temp.dmg -ov -volname "KadeEngine-macOS" -fs HFS+ -srcfolder "/Users/appveyor/projects/kade-engine-macos/export/release/mac/bin"
+  - hdiutil create /Users/appveyor/temp.dmg -ov -volname "KadeEngine-macOS" -fs HFS+ -srcfolder "/Users/appveyor/projects/kade-engine-macos/export/release/macos/bin"
   - hdiutil convert /Users/appveyor/temp.dmg -format UDZO -o /Users/appveyor/KadeEngine-macOS.dmg
 
 artifacts:
