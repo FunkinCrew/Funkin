@@ -540,7 +540,7 @@ class StoryMenuState extends MusicBeatState
 
 	function changeDifficulty(change:Int = 0):Void
 	{
-		grpDifficulty.changeDifficulty(change);
+		grpDifficulty.changeDifficulty(change, curWeek);
 		curDifficulty = grpDifficulty.difficulty;
 
 

@@ -63,14 +63,8 @@ class DifficultyIcons {
     difficulty = defaultDiff;
     changeDifficulty();
   }
-  public function changeDifficulty(?change:Int = 0):Void {
-    difficulty += change;
-    if (difficulty > difficulties.length - 1) {
-      difficulty = 0;
-    }
-    if (difficulty < 0) {
-      difficulty = difficulties.length - 1;
-    }
+  public function changeDifficulty(?change:Int = 0, ?week:Int=0):Void {
+    difficulty = DifficultyManager.changeDiffStorySans(difficulty, change, week).difficulty; 
     group.forEach(function (sprite:FlxSprite) {
       sprite.visible = false;
     });
