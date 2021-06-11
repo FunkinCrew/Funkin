@@ -39,5 +39,5 @@ after_build:
   - hdiutil convert /Users/appveyor/temp.dmg -format UDZO -o /Users/appveyor/KadeEngine-macOS.dmg
 
 artifacts:
-- path: **/KadeEngine-macOS.dmg
+- path: "**/KadeEngine-macOS.dmg"
   name: Kade Engine for macOS
