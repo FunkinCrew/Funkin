@@ -34,7 +34,7 @@ class Song
 	public var player1:String = 'bf';
 	public var player2:String = 'dad';
 	public var gfVersion:String = '';
-	public var noteStyle:String = 'normal';
+	public var noteStyle:String = '';
 	public var stage:String = '';
 
 	public function new(song, notes, bpm)

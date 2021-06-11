@@ -1512,7 +1512,14 @@ class PlayState extends MusicBeatState
 			// FlxG.log.add(i);
 			var babyArrow:FlxSprite = new FlxSprite(0, strumLine.y);
 
-			switch (SONG.noteStyle)
+			//defaults if no noteStyle was found in chart
+			var noteTypeCheck:String = 'normal';
+		
+			if (SONG.noteStyle == null) {
+				switch(storyWeek) { case 6: noteTypeCheck = 'pixel'; }
+			} else {noteTypeCheck = SONG.noteStyle;}
+
+			switch (noteTypeCheck)
 			{
 				case 'pixel':
 					babyArrow.loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels'), true, 17, 17);
