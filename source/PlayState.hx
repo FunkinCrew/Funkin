@@ -751,19 +751,20 @@ class PlayState extends MusicBeatState
 			}
 		} else {gfCheck = SONG.gfVersion;}
 
+		var curGf:String = '';
 		switch (gfCheck)
 		{
 			case 'gf-car':
-				gfVersion = 'gf-car';
+				curGf = 'gf-car';
 			case 'gf-christmas':
-				gfVersion = 'gf-christmas';
+				curGf = 'gf-christmas';
 			case 'gf-pixel':
-				gfVersion = 'gf-pixel';
+				curGf = 'gf-pixel';
 			default:
-				gfVersion = 'gf';
+				curGf = 'gf';
 		}
 
-		gf = new Character(400, 130, gfVersion);
+		gf = new Character(400, 130, curGf);
 		gf.scrollFactor.set(0.95, 0.95);
 
 		dad = new Character(100, 100, SONG.player2);
