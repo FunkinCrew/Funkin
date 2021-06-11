@@ -102,7 +102,7 @@ class LoadReplayState extends MusicBeatState
         for (i in 0...songs.length)
         {
             var pog:FreeplayState.SongMetadata = songs[i];
-            if (pog.songName.toLowerCase() == songName)
+            if (pog.songName == songName)
                 week = pog.week;
         }
         return week;

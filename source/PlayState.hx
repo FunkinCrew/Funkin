@@ -1517,7 +1517,7 @@ class PlayState extends MusicBeatState
 			var noteTypeCheck:String = 'normal';
 		
 			if (SONG.noteStyle == null) {
-				switch(storyWeek) { case 6: noteTypeCheck = 'pixel'; }
+				switch(storyWeek) {case 6: noteTypeCheck = 'pixel';}
 			} else {noteTypeCheck = SONG.noteStyle;}
 
 			switch (noteTypeCheck)
