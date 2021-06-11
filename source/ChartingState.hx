@@ -672,7 +672,7 @@ class ChartingState extends MusicBeatState
 		{
 			changeNoteSustain(Conductor.stepCrochet);
 		}
-		if (FlxG.keys.justPressed.Q)
+		if (FlxG.keys.justPressed.F)
 		{
 			changeNoteSustain(-Conductor.stepCrochet);
 		}
