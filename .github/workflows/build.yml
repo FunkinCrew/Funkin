@@ -104,7 +104,7 @@ jobs:
           name: windowsBuild
           path: bin.tar.gz
       - name: Compile 32 bit
-        run: haxelib run lime build windows -D32bit
+        run: haxelib run lime build windows -D32bit -32
       - name: Archive
         run: tar -czf 32bit.tar.gz export/32bit/windows/bin
       - name: Publish 32bit
