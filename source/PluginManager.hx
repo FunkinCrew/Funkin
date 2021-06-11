@@ -43,6 +43,7 @@ class PluginManager {
         reterp.variables.set("FlxTrail", FlxTrail);
         reterp.variables.set("FlxEase", FlxEase);
         reterp.variables.set("Reflect", Reflect);
+        reterp.variables.set("Character", Character);
         return reterp;
     }
 }
