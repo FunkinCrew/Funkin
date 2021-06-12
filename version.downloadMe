@@ -1,0 +1,11 @@
+1.5.2;
+- (1.5.2) Fix crashes on some songs
+- Added toggle for ghost tapping
+- Officially support macOS (and add macOS requirements to docs)
+- Autoplay
+- Clap assist for syncing charts
+- Bring back R to reset, but now you can toggle it in the options
+- You can now fully customize your keybinds
+- Change how replays work + store scroll speed and direction in replays
+- Opponent strumline now lights up when they hit a note, like the player's does
+- Now using the new recharts from Funkin v0.2.8

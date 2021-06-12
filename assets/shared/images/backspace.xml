@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="backspace.png">
+	<!-- Created with Adobe Animate version 20.0.0.17400 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="backspace PRESSED0000" x="0" y="0" width="288" height="160" frameX="-14" frameY="-6" frameWidth="314" frameHeight="174"/>
+	<SubTexture name="backspace PRESSED0001" x="0" y="0" width="288" height="160" frameX="-14" frameY="-6" frameWidth="314" frameHeight="174"/>
+	<SubTexture name="backspace PRESSED0002" x="298" y="0" width="314" height="174"/>
+	<SubTexture name="backspace to exit0000" x="622" y="0" width="280" height="106"/>
+	<SubTexture name="backspace to exit white0000" x="0" y="184" width="280" height="106"/>
+</TextureAtlas>
