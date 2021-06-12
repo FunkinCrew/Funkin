@@ -2969,9 +2969,9 @@ class PlayState extends MusicBeatState
 						if ((daNote.tooLate || !daNote.wasGoodHit) /* && !daNote.isSustainNote */)
 						{
 							if (!daNote.mustPress) {
-								health += 0.0475 * healthLossMultiplier;
+								health -= daNote.getHealth('miss');
 							} else if (!opponentPlayer) {
-								health -= 0.0475 * healthLossMultiplier;
+								health += daNote.getHealth('miss');
 							}
 							
 							vocals.volume = 0;
@@ -3315,7 +3315,7 @@ class PlayState extends MusicBeatState
 
 				case 'miss':
 					// noteMiss(daNote.noteData, playerOne);
-					healthBonus = -0.04 * if (daNote.ignoreHealthMods) 1 else healthLossMultiplier * daNote.damageMultiplier;
+					// healthBonus = -0.04 * if (daNote.ignoreHealthMods) 1 else healthLossMultiplier * daNote.damageMultiplier;
 					if (!dontCountNote)
 					{
 						misses++;
@@ -3334,13 +3334,9 @@ class PlayState extends MusicBeatState
 		if (daNote.nukeNote && daRating != 'miss')
 			// die <3
 			healthBonus = -4;
-		if (daNote.consistentHealth) {
-			if (daRating != 'miss') 
-				healthBonus = 0.04 * if (daNote.ignoreHealthMods) 1 else healthGainMultiplier * daNote.healMultiplier;
-			else 
-				healthBonus = -0.04 * daNote.damageMultiplier * if (daNote.ignoreHealthMods) 1 else healthLossMultiplier;
-		}
 		healthBonus = daNote.getHealth(daRating);
+		if (daNote.dontEdit)
+			trace(healthBonus);
 		if (daNote.isSustainNote) {
 			healthBonus  *= 0.2;
 		}
@@ -3808,10 +3804,14 @@ class PlayState extends MusicBeatState
 		{
 			misses += 1;
 			notesPassing += 1;
+			var healthBonus = -0.04 * healthLossMultiplier;
+			if (note != null) {
+				healthBonus = note.getHealth('miss');
+			}
 			if (playerOne)
-				health -= 0.04 * healthLossMultiplier;
+				health += healthBonus;
 			else
-				health += 0.04 * healthLossMultiplier;
+				health -= healthBonus;
 			if (combo > 5 && gf.gfEpicLevel >= EpicLevel.Level_Sadness)
 			{
 				gf.playAnim('sad');

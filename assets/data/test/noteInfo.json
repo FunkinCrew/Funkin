@@ -18,7 +18,7 @@
         // amount healed. Note that the range is 0-2, so it's a bit funky
         "healAmount": 1,
         // damage dealt, same deal as above
-        "damageAmount": 1,
+        "damageAmount": -1,
         // other fields include
         // shouldSing: whether the note should play the sing anim
         // healMultiplier, overwritten by healAmount, instead multiplies health healed

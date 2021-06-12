@@ -1,5 +1,6 @@
 package;
 
+import openfl.errors.Error;
 import flixel.util.typeLimit.OneOfTwo;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
@@ -118,10 +119,10 @@ class Note extends FlxSprite
 		if (noteData >= NOTE_AMOUNT * 8 && noteData < NOTE_AMOUNT * 10) {
 			drainNote = true;
 		}
-		if (noteData >= NOTE_AMOUNT * 12 && specialNoteJson != null) {
+		if (noteData >= NOTE_AMOUNT * 10 && specialNoteJson != null) {
 			// special note...
 			// get the note thingie
-			var sussyNoteThing = Math.floor(noteData/NOTE_AMOUNT) * NOTE_AMOUNT;
+			var sussyNoteThing = Math.floor(noteData/ (NOTE_AMOUNT * 2));
 			// there are already 4 thingies and the thing is index 0 
 			sussyNoteThing -= 5;
 			var thingie = specialNoteJson[sussyNoteThing];
@@ -247,19 +248,6 @@ class Note extends FlxSprite
 					animation.add('redhold', [intSuffix]);
 					animation.add('bluehold', [intSuffix]);
 				}
-				if (isLiftNote)
-				{
-					animation.add('greenScroll', [intSuffix]);
-					animation.add('redScroll', [intSuffix]);
-					animation.add('blueScroll', [intSuffix]);
-					animation.add('purpleScroll', [intSuffix]);
-				}
-				if (dontEdit) {
-					animation.add('greenScroll', [specialNoteInfo.animInt[2]]);
-					animation.add('redScroll', [specialNoteInfo.animInt[3]]);
-					animation.add('purpleScroll', [specialNoteInfo.animInt[0]]);
-					animation.add('blueScroll', [specialNoteInfo.animInt[1]]);
-				}
 			}
 			else
 			{
@@ -289,68 +277,33 @@ class Note extends FlxSprite
 					animation.add('blueScroll', [21]);
 					animation.add('purpleScroll', [20]);
 				}
-				if (dontEdit)
-				{
-					animation.add('greenScroll', [specialNoteInfo.animInt[2]]);
-					animation.add('redScroll', [specialNoteInfo.animInt[3]]);
-					animation.add('purpleScroll', [specialNoteInfo.animInt[0]]);
-					animation.add('blueScroll', [specialNoteInfo.animInt[1]]);
+				if (mineNote) {
+					animation.add('greenScroll', [26]);
+					animation.add('redScroll', [27]);
+					animation.add('blueScroll', [25]);
+					animation.add('purpleScroll', [24]);
+				}
+				if (nukeNote) {
+					animation.add('greenScroll', [30]);
+					animation.add('redScroll', [31]);
+					animation.add('blueScroll', [29]);
+					animation.add('purpleScroll', [28]);
 				}
 			}
-
+			if (dontEdit)
+			{
+				animation.add('greenScroll', [specialNoteInfo.animInt[2]]);
+				animation.add('redScroll', [specialNoteInfo.animInt[3]]);
+				animation.add('purpleScroll', [specialNoteInfo.animInt[0]]);
+				animation.add('blueScroll', [specialNoteInfo.animInt[1]]);
+			}
 			setGraphicSize(Std.int(width * PlayState.daPixelZoom));
 			updateHitbox();
 		}
 		else
 		{
-			// no crashing today :)
-			trace(PlayState.SONG.uiType);
-			frames = FlxAtlasFrames.fromSparrow('assets/images/NOTE_assets.png', 'assets/images/NOTE_assets.xml');
-
-			animation.addByPrefix('greenScroll', 'green0');
-			animation.addByPrefix('redScroll', 'red0');
-			animation.addByPrefix('blueScroll', 'blue0');
-			animation.addByPrefix('purpleScroll', 'purple0');
-
-			animation.addByPrefix('purpleholdend', 'pruple end hold');
-			animation.addByPrefix('greenholdend', 'green hold end');
-			animation.addByPrefix('redholdend', 'red hold end');
-			animation.addByPrefix('blueholdend', 'blue hold end');
-
-			animation.addByPrefix('purplehold', 'purple hold piece');
-			animation.addByPrefix('greenhold', 'green hold piece');
-			animation.addByPrefix('redhold', 'red hold piece');
-			animation.addByPrefix('bluehold', 'blue hold piece');
-
-			if (isLiftNote)
-			{
-				animation.addByPrefix('greenScroll', 'green lift');
-				animation.addByPrefix('redScroll', 'red lift');
-				animation.addByPrefix('blueScroll', 'blue lift');
-				animation.addByPrefix('purpleScroll', 'purple lift');
-			}
-			if (nukeNote) {
-				animation.addByPrefix('greenScroll', 'green nuke');
-				animation.addByPrefix('redScroll', 'red nuke');
-				animation.addByPrefix('blueScroll', 'blue nuke');
-				animation.addByPrefix('purpleScroll', 'purple nuke');
-			}
-			if (mineNote) {
-				animation.addByPrefix('greenScroll', 'green mine');
-				animation.addByPrefix('redScroll', 'red mine');
-				animation.addByPrefix('blueScroll', 'blue mine');
-				animation.addByPrefix('purpleScroll', 'purple mine');
-			}
-			if (dontEdit)
-			{
-				animation.addByPrefix('greenScroll', specialNoteInfo.animNames[2]);
-				animation.addByPrefix('redScroll', specialNoteInfo.animNames[3]);
-				animation.addByPrefix('purpleScroll', specialNoteInfo.animNames[0]);
-				animation.addByPrefix('blueScroll', specialNoteInfo.animNames[1]);
-			}
-			setGraphicSize(Std.int(width * 0.7));
-			updateHitbox();
-			antialiasing = true;
+			// crashing today :)
+			throw new Error("Couldn't find arrow file for current ui type.");
 		}
 		switch (noteData % NOTE_AMOUNT)
 		{
