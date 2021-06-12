@@ -38,7 +38,7 @@ class Replay
 			isDownscroll: false,
 			songNotes: [],
             replayGameVer: version,
-            timestamp: Date.now()
+            timestamp: "-"
         };
     }
 
