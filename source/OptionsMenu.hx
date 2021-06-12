@@ -9,7 +9,7 @@ import flash.text.TextField;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.addons.display.FlxGridOverlay;
-import flixel.group.FlxGroup.AFlxTypedGroup;
+import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.input.keyboard.FlxKey;
 import flixel.math.FlxMath;
 import flixel.text.FlxText;
@@ -62,7 +62,7 @@ class OptionsMenu extends MusicBeatState
 	];
 
 	private var currentDescription:String = "";
-	private var grpControls:AFlxTypedGroup<Alphabet>;
+	private var grpControls:FlxTypedGroup<Alphabet>;
 	public static var versionShit:FlxText;
 
 	var currentSelectedCat:OptionCategory;
@@ -78,7 +78,7 @@ class OptionsMenu extends MusicBeatState
 		menuBG.antialiasing = true;
 		add(menuBG);
 
-		grpControls = new AFlxTypedGroup<Alphabet>();
+		grpControls = new FlxTypedGroup<Alphabet>();
 		add(grpControls);
 
 		for (i in 0...options.length)

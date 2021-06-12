@@ -4,7 +4,7 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.graphics.frames.FlxAtlasFrames;
-import flixel.group.FlxGroup.AFlxTypedGroup;
+import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxGroup;
 import flixel.math.FlxMath;
 import flixel.text.FlxText;
@@ -62,10 +62,10 @@ class StoryMenuState extends MusicBeatState
 
 	var txtTracklist:FlxText;
 
-	var grpWeekText:AFlxTypedGroup<MenuItem>;
-	var grpWeekCharacters:AFlxTypedGroup<MenuCharacter>;
+	var grpWeekText:FlxTypedGroup<MenuItem>;
+	var grpWeekCharacters:FlxTypedGroup<MenuCharacter>;
 
-	var grpLocks:AFlxTypedGroup<FlxSprite>;
+	var grpLocks:FlxTypedGroup<FlxSprite>;
 
 	var difficultySelectors:FlxGroup;
 	var sprDifficulty:FlxSprite;
@@ -106,15 +106,15 @@ class StoryMenuState extends MusicBeatState
 		var ui_tex = Paths.getSparrowAtlas('campaign_menu_UI_assets');
 		var yellowBG:FlxSprite = new FlxSprite(0, 56).makeGraphic(FlxG.width, 400, 0xFFF9CF51);
 
-		grpWeekText = new AFlxTypedGroup<MenuItem>();
+		grpWeekText = new FlxTypedGroup<MenuItem>();
 		add(grpWeekText);
 
 		var blackBarThingie:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, 56, FlxColor.BLACK);
 		add(blackBarThingie);
 
-		grpWeekCharacters = new AFlxTypedGroup<MenuCharacter>();
+		grpWeekCharacters = new FlxTypedGroup<MenuCharacter>();
 
-		grpLocks = new AFlxTypedGroup<FlxSprite>();
+		grpLocks = new FlxTypedGroup<FlxSprite>();
 		add(grpLocks);
 
 		trace("Line 70");

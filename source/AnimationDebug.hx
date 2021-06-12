@@ -5,7 +5,7 @@ import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.addons.display.FlxGridOverlay;
-import flixel.group.FlxGroup.AFlxTypedGroup;
+import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 
@@ -18,7 +18,7 @@ class AnimationDebug extends FlxState
 	var dad:Character;
 	var char:Character;
 	var textAnim:FlxText;
-	var dumbTexts:AFlxTypedGroup<FlxText>;
+	var dumbTexts:FlxTypedGroup<FlxText>;
 	var animList:Array<String> = [];
 	var curAnim:Int = 0;
 	var isDad:Bool = true;
@@ -63,7 +63,7 @@ class AnimationDebug extends FlxState
 			bf.flipX = false;
 		}
 
-		dumbTexts = new AFlxTypedGroup<FlxText>();
+		dumbTexts = new FlxTypedGroup<FlxText>();
 		add(dumbTexts);
 
 		textAnim = new FlxText(300, 16);
