@@ -1026,13 +1026,17 @@ class ChartingState extends MusicBeatState
 			}
 		 */
 
+		var yummyPng = FNFAssets.getBitmapData('assets/images/custom_ui/ui_packs/normal/NOTE_assets.png');
+		var yummyXml = FNFAssets.getText('assets/images/custom_ui/ui_packs/normal/NOTE_assets.xml');
+		PlayState.SONG.uiType = 'normal';
 		for (i in sectionInfo)
 		{
 			var daNoteInfo = i[1];
 			var daStrumTime = i[0];
 			var daSus = i[2];
 			var daLift = i[4];
-			var note:Note = new Note(daStrumTime, daNoteInfo % 4, null, false, null, null, null, daLift);
+			
+			var note:Note = new Note(daStrumTime, daNoteInfo % 4, null, false, yummyPng, yummyXml, null, daLift);
 			note.sustainLength = daSus;
 			note.setGraphicSize(GRID_SIZE, GRID_SIZE);
 			note.updateHitbox();

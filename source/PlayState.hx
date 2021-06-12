@@ -1735,7 +1735,7 @@ class PlayState extends MusicBeatState
 					oldNote = null;
 				// stand back i am a professional idiot
 				var swagNote:Note = new Note(daStrumTime, songNotes[1], oldNote, false, customImage, customXml, arrowEndsImage, daLift, animSuffix);
-				if (!swagNote.dontEdit) {
+				if (!swagNote.dontEdit && !swagNote.mineNote && !swagNote.nukeNote && !swagNote.isLiftNote) {
 					swagNote.shouldBeSung = shouldSing;
 					swagNote.ignoreHealthMods = ignoreHealthMods;
 					swagNote.timingMultiplier = timeThingy;
@@ -1793,12 +1793,6 @@ class PlayState extends MusicBeatState
 							if (demoMode)
 								liftNote.funnyMode = true;
 							liftNote.scrollFactor.set();
-							liftNote.shouldBeSung = false;
-							liftNote.ignoreHealthMods = ignoreHealthMods;
-							liftNote.timingMultiplier = timeThingy;
-							liftNote.healMultiplier = noteHeal;
-							liftNote.damageMultiplier = noteDamage;
-							liftNote.consistentHealth = consitentNote;
 							unspawnNotes.push(liftNote);
 							liftNote.mustPress = gottaHitNote;
 							if (liftNote.mustPress)
@@ -2896,7 +2890,7 @@ class PlayState extends MusicBeatState
 					}
 					callAllHScript("playerTwoSing", []);
 					// go wild <3
-					if (daNote.shouldBeSung && !daNote.mineNote && !daNote.isLiftNote && !daNote.nukeNote) {
+					if (daNote.shouldBeSung) {
 						dad.sing(Std.int(Math.abs(daNote.noteData)), false, dad.altNum);
 						enemyStrums.forEach(function(spr:FlxSprite)
 						{
@@ -2907,7 +2901,6 @@ class PlayState extends MusicBeatState
 							}
 						});
 					}
-						
 					dad.holdTimer = 0;
 
 					if (SONG.needsVoices)
@@ -2919,16 +2912,19 @@ class PlayState extends MusicBeatState
 				} else if (daNote.mustPress && daNote.wasGoodHit && (opponentPlayer || demoMode)) {
 					camZooming = true;
 					callAllHScript("playerOneSing", []);
-					if (daNote.shouldBeSung)
+					if (daNote.shouldBeSung) {
 						boyfriend.sing(Std.int(Math.abs(daNote.noteData)));
-					playerStrums.forEach(function(spr:FlxSprite)
-					{
-						if (Math.abs(daNote.noteData) == spr.ID)
+						playerStrums.forEach(function(spr:FlxSprite)
 						{
-							spr.animation.play('confirm');
-							sustain2(spr.ID, spr, daNote);
-						}
-					});
+							if (Math.abs(daNote.noteData) == spr.ID)
+							{
+								spr.animation.play('confirm');
+								sustain2(spr.ID, spr, daNote);
+							}
+						});
+					}
+						
+						
 					boyfriend.holdTimer = 0;
 
 					if (SONG.needsVoices)
@@ -2963,7 +2959,7 @@ class PlayState extends MusicBeatState
 				// WIP interpolation shit? Need to fix the pause issue
 				// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
 
-				if (((daNote.y < -daNote.height && !downscroll) || (daNote.y > FlxG.height + daNote.height && downscroll)) && daNote.healMultiplier >= 0 && !daNote.mineNote && !daNote.nukeNote)
+				if (((daNote.y < -daNote.height && !downscroll) || (daNote.y > FlxG.height + daNote.height && downscroll)) && !daNote.dontCountNote)
 				{
 
 						if ((daNote.tooLate || !daNote.wasGoodHit) /* && !daNote.isSustainNote */)
@@ -3244,7 +3240,7 @@ class PlayState extends MusicBeatState
 		}
 		// SHIT IS A COMBO BREAKER IN ETTERNA NERDS
 		// GIT GUD
-		var dontCountNote = daNote.healMultiplier < 0 || daNote.mineNote;
+		var dontCountNote = daNote.dontCountNote;
 		if (!daNote.mineNote) {
 			switch (daRating)
 			{
@@ -3913,7 +3909,7 @@ class PlayState extends MusicBeatState
 			}
 			// We pop it up even for sustains, just to update score. We don't actually show anything.
 			trace("<3 pop up score");
-			if (note.healMultiplier >= 0 && !note.mineNote)
+			if (!note.dontCountNote)
 				notesPassing += 1;
 			popUpScore(note.strumTime, note, playerOne);
 			combo += 1;
@@ -3924,9 +3920,8 @@ class PlayState extends MusicBeatState
 			else
 				health += 0.005 * healthGainMultiplier;
 			*/
-			if (!note.isLiftNote) {
-				if (note.shouldBeSung)
-					actingOn.sing(note.noteData, false, actingOn.altNum);
+			if (note.shouldBeSung) {
+				actingOn.sing(note.noteData, false, actingOn.altNum);
 				if (playerOne)
 					callAllHScript("playerOneSing", []);
 				else
@@ -3940,6 +3935,9 @@ class PlayState extends MusicBeatState
 					}
 				});
 			}
+				
+			
+				
 				
 		
 

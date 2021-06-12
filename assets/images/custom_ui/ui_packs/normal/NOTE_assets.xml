@@ -21,15 +21,16 @@
 	<SubTexture name="down press0001" x="238" y="235" width="149" height="146"/>
 	<SubTexture name="down press0002" x="387" y="235" width="149" height="146"/>
 	<SubTexture name="down press0003" x="387" y="235" width="149" height="146"/>
-	<SubTexture name="green0000" x="536" y="235" width="157" height="154"/>
-	<SubTexture name="green hold end0000" x="693" y="235" width="50" height="64"/>
-	<SubTexture name="green hold piece0000" x="743" y="235" width="50" height="44"/>
-	<SubTexture name="green lift0000" x="793" y="235" width="157" height="154"/>
-	<SubTexture name="green mine0000" x="950" y="235" width="170" height="166"/>
-	<SubTexture name="green nuke0000" x="1120" y="235" width="160" height="178"/>
-	<SubTexture name="green star0000" x="1280" y="235" width="157" height="154"/>
-	<SubTexture name="left confirm0000" x="1437" y="235" width="228" height="231"/>
-	<SubTexture name="left confirm0001" x="1665" y="235" width="228" height="231"/>
+	<SubTexture name="funny note0000" x="536" y="235" width="154" height="157"/>
+	<SubTexture name="green0000" x="690" y="235" width="157" height="154"/>
+	<SubTexture name="green hold end0000" x="847" y="235" width="50" height="64"/>
+	<SubTexture name="green hold piece0000" x="897" y="235" width="50" height="44"/>
+	<SubTexture name="green lift0000" x="947" y="235" width="157" height="154"/>
+	<SubTexture name="green mine0000" x="1104" y="235" width="170" height="166"/>
+	<SubTexture name="green nuke0000" x="1274" y="235" width="160" height="178"/>
+	<SubTexture name="green star0000" x="1434" y="235" width="157" height="154"/>
+	<SubTexture name="left confirm0000" x="1591" y="235" width="228" height="231"/>
+	<SubTexture name="left confirm0001" x="1819" y="235" width="228" height="231"/>
 	<SubTexture name="left confirm0002" x="0" y="470" width="228" height="231"/>
 	<SubTexture name="left confirm0003" x="0" y="470" width="228" height="231"/>
 	<SubTexture name="left press0000" x="228" y="470" width="146" height="149"/>

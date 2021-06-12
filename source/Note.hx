@@ -36,6 +36,8 @@ typedef NoteInfo = {
 	var ?healCutoff:Null<String>;
 	var ?timingMultiplier:Null<Float>;
 	var ?ignoreHealthMods:Null<Bool>;
+	var ?dontCountNote:Null<Bool>;
+	var ?dontStrum:Null<Bool>;
 }
 class Note extends FlxSprite
 {
@@ -86,6 +88,8 @@ class Note extends FlxSprite
 	public var ignoreHealthMods:Bool = false;
 	public var healCutoff:Null<String>;
 	var specialNoteInfo:NoteInfo;
+	public var dontCountNote = false;
+	public var dontStrum = false;
 	// altNote can be int or bool. int just determines what alt is played
 	// format: [strumTime:Float, noteDirection:Int, sustainLength:Float, altNote:Union<Bool, Int>, isLiftNote:Bool, healMultiplier:Float, damageMultipler:Float, consistentHealth:Bool, timingMultiplier:Float, shouldBeSung:Bool, ignoreHealthMods:Bool, animSuffix:Union<String, Int>]
 	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?customImage:Null<BitmapData>, ?customXml:Null<String>, ?customEnds:Null<BitmapData>, ?LiftNote:Bool=false, ?animSuffix:String, ?numSuffix:Int)
@@ -145,18 +149,33 @@ class Note extends FlxSprite
 			if (thingie.consistentHealth != null) {
 				consistentHealth = thingie.consistentHealth;
 			}
-
+			if (healAmount < 0 || healMultiplier < 0) {
+				dontCountNote = true;
+			}
+			if (thingie.dontCountNote != null)
+				dontCountNote = thingie.dontCountNote;
 			if (thingie.healCutoff != null) {
 				healCutoff = thingie.healCutoff;
 			}
 			if (thingie.timingMultiplier != null) {
 				timingMultiplier = thingie.timingMultiplier;
 			} 
+			if (thingie.dontStrum != null) {
+				dontStrum = thingie.dontStrum;
+			}
 			specialNoteInfo = thingie;
 			ignoreHealthMods = cast thingie.ignoreHealthMods;
 		}
-		if (isLiftNote || mineNote || nukeNote)
+		if (mineNote || nukeNote) {
 			shouldBeSung = false;
+			dontCountNote = true;
+			dontStrum = true;
+		}
+		if (isLiftNote) {
+			shouldBeSung = false;
+			// dontStrum = true;
+		}
+			
 		// var daStage:String = PlayState.curStage;
 		if (FNFAssets.exists('assets/images/custom_ui/ui_packs/' + PlayState.SONG.uiType + "/NOTE_assets.xml")
 			&& FNFAssets.exists('assets/images/custom_ui/ui_packs/' + PlayState.SONG.uiType + "/NOTE_assets.png"))
@@ -410,7 +429,7 @@ class Note extends FlxSprite
 		}
 		else
 		{
-			if (!mineNote && !nukeNote) {
+			if (!dontStrum) {
 				canBeHit = false;
 
 				if (strumTime <= Conductor.songPosition)

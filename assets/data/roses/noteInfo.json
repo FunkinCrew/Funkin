@@ -10,10 +10,10 @@
         ],
         // this is required, but you can use default arrows. used with pixel ui. 
         "animInt": [
-            0,
-            1,
-            2,
-            3
+            32,
+            33,
+            34,
+            35
         ],
         // amount healed. Note that the range is 0-2, so it's a bit funky
         "healAmount": 1,
@@ -29,6 +29,7 @@
         // the cutoff damage while better heal. 
         // timingMultiplier, how hard it is to hit the note. Lower numbers are harder.
         // ignoreHealthMods, whether to bypass any modifiers that affect health when dealing damage.
-        
+        // dontCountNote, whether to cause misses on notes. It's calculated automatically but you can force it.
+        // dontStrum, iirc this does nothing? lol
     }
 ]
