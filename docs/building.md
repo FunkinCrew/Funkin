@@ -31,8 +31,8 @@
 
 ### Windows-only dependencies (only for building *to* Windows. Building html5 on Windows does not require this)
 If you are planning to build for Windows, you also need to install **Visual Studio 2019**. While installing it, *don't click on any of the options to install workloads*. Instead, go to the **individual components** tab and choose the following:
--   MSVC v142 - VS 2019 C++ x64/x86 build tools
--   Windows SDK (10.0.19041.0)
+-   MSVC C++ x64/x86 build tools (versions 142 and up)
+-   Windows SDK (versions 10.0.19041.0 and up)
 
 This will install about 4 GB of crap, but is necessary to build for Windows.
 
