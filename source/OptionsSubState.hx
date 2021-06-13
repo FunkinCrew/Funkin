@@ -160,6 +160,7 @@ class OptionsSubState extends MusicBeatSubstate
 
 					case 'Misc':
 					{
+						curSelected = 0;
 						textMenuItems = ["Back", "Downscroll", "Old Title"];
 						spawnInTexts();
 					}
