@@ -1315,7 +1315,7 @@ class PlayState extends MusicBeatState
 				{
 					if (daNote.tooLate || !daNote.wasGoodHit)
 					{
-						health -= 0.0475;
+						noteMiss(daNote.noteData);
 						vocals.volume = 0;
 					}
 
