@@ -1,5 +1,6 @@
 package;
 
+import polymod.format.ParseRules.PlainTextParseFormat;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
@@ -143,6 +144,9 @@ class AnimationDebug extends FlxState
 		{
 			curAnim -= 1;
 		}
+
+		if (FlxG.keys.justPressed.ESCAPE)
+			FlxG.switchState(new PlayState());
 
 		if (FlxG.keys.justPressed.S)
 		{

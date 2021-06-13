@@ -93,6 +93,8 @@ class PlayState extends MusicBeatState
 	private var camHUD:FlxCamera;
 	private var camGame:FlxCamera;
 
+	var gfVersion:String = 'gf';
+
 	var dialogue:Array<String> = ['blah blah blah', 'coolswag'];
 
 	var halloweenBG:FlxSprite;
@@ -569,8 +571,6 @@ class PlayState extends MusicBeatState
 		                  add(stageCurtains);
 		          }
               }
-
-		var gfVersion:String = 'gf';
 
 		switch (curStage)
 		{
@@ -1428,10 +1428,13 @@ class PlayState extends MusicBeatState
 		/* if (FlxG.keys.justPressed.NINE)
 			FlxG.switchState(new Charting()); */
 
-		#if debug
-		if (FlxG.keys.justPressed.EIGHT)
+		//cool anim debug
+		if (FlxG.keys.justPressed.ONE)
 			FlxG.switchState(new AnimationDebug(SONG.player2));
-		#end
+		if (FlxG.keys.justPressed.TWO)
+			FlxG.switchState(new AnimationDebug(gfVersion));
+		if (FlxG.keys.justPressed.THREE)
+			FlxG.switchState(new AnimationDebug(SONG.player1));
 
 		if (startingSong)
 		{
