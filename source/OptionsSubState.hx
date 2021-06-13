@@ -174,6 +174,29 @@ class OptionsSubState extends MusicBeatSubstate
 						spawnInTexts();
 					}
 
+					case 'Downscroll':
+					{
+						if(FlxG.save.data.downscroll == null)
+						{
+							FlxG.save.data.downscroll = false;
+						}
+
+						FlxG.save.data.downscroll = !FlxG.save.data.downscroll;
+						FlxG.save.flush();
+
+						var option:Alphabet;
+
+						if(FlxG.save.data.downscroll)
+							option = new Alphabet(20, 20 + (2 * 100), "Downscroll", true, false);
+						else
+							option = new Alphabet(20, 20 + (2 * 100), "Upscroll", true, false);
+
+						option.isMenuItem = true;
+						option.targetY = 1;
+						grpOptionsTexts.members[1] = option;
+						inMenu = false;
+					}
+
 					case 'Misc':
 					{
 						curSelected = 0;
