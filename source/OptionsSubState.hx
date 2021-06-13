@@ -162,16 +162,38 @@ class OptionsSubState extends MusicBeatSubstate
 					{
 						FlxG.save.data.nohit = false;
 						FlxG.save.flush();
-						textMenuItems = ["Back", "Downscroll", "Old Title", "No-hit Off"];
-						spawnInTexts();
+
+						var option:Alphabet;
+
+						if(FlxG.save.data.nohit)
+							option = new Alphabet(20, 20 + (3 * 100), "No-hit On", true, false);
+						else
+							option = new Alphabet(20, 20 + (3 * 100), "No-hit Off", true, false);
+
+						option.isMenuItem = true;
+						option.targetY = 3;
+						grpOptionsTexts.members[3] = option;
+						textMenuItems[3] = "No-hit Off";
+						inMenu = false;
 					}
 
 					case 'No-hit Off':
 					{
 						FlxG.save.data.nohit = true;
 						FlxG.save.flush();
-						textMenuItems = ["Back", "Downscroll", "Old Title", "No-hit On"];
-						spawnInTexts();
+
+						var option:Alphabet;
+
+						if(FlxG.save.data.nohit)
+							option = new Alphabet(20, 20 + (3 * 100), "No-hit On", true, false);
+						else
+							option = new Alphabet(20, 20 + (3 * 100), "No-hit Off", true, false);
+
+						option.isMenuItem = true;
+						option.targetY = 3;
+						grpOptionsTexts.members[3] = option;
+						textMenuItems[3] = "No-hit On";
+						inMenu = false;
 					}
 
 					case 'Downscroll':
