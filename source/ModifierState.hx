@@ -146,7 +146,7 @@ class ModifierState extends MusicBeatState
 			precision: 0.5,
 			minimum: 0,
 			maximum: 10,
-			desc: "How much health you lose. Can be changed numbericly."
+			desc: "How much health you lose. Can be changed numerically."
 		},
 		{
 			name: "Health Gain",
@@ -159,7 +159,7 @@ class ModifierState extends MusicBeatState
 			precision: 0.5,
 			minimum: 0,
 			maximum: 10,
-			desc: "How much health you gain. Can be changed numbericly."
+			desc: "How much health you gain. Can be changed numerically."
 		},
 		{
 			name: "Sup. Love",
