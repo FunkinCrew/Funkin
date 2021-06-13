@@ -155,7 +155,7 @@ class TitleState extends MusicBeatState
 
 		if (FlxG.save.data.oldTitle)
 		{
-			Assets.loadLibrary("shared").onComplete(function (_) { bg.loadGraphic(Paths.image("stageback", "shared")); });
+			Assets.loadLibrary("shared").onComplete(function (_) { bg.loadGraphic(Paths.image("stage/stageback", "stages")); });
 			bg.antialiasing = true;
 			bg.width = FlxG.width;
 			bg.height = FlxG.height;
