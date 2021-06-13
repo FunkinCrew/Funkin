@@ -374,7 +374,30 @@ class StageGroup extends FlxGroup
     {
         switch(stage)
         {
-            
+            case 'limo':
+				PlayState.boyfriend.y -= 220;
+				PlayState.boyfriend.x += 260;
+
+				resetFastCar();
+				add(fastCar);
+			case 'mall':
+				PlayState.boyfriend.x += 200;
+			case 'evil-mall':
+				PlayState.boyfriend.x += 320;
+				PlayState.dad.y -= 80;
+			case 'school':
+				PlayState.boyfriend.x += 200;
+				PlayState.boyfriend.y += 220;
+				PlayState.gf.x += 180;
+				PlayState.gf.y += 300;
+			case 'evil-school':
+				var evilTrail = new FlxTrail(PlayState.dad, null, 4, 24, 0.3, 0.069);
+				add(evilTrail);
+
+				PlayState.boyfriend.x += 200;
+				PlayState.boyfriend.y += 220;
+				PlayState.gf.x += 180;
+				PlayState.gf.y += 300;
         }
     }
 

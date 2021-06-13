@@ -336,6 +336,8 @@ class PlayState extends MusicBeatState
 				gf.y += 300;
 		}
 
+		stage.setCharOffsets();
+
 		add(gf);
 		add(dad);
 		add(boyfriend);
