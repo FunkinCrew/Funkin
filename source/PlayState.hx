@@ -971,22 +971,6 @@ class PlayState extends MusicBeatState
 				iconP1.animation.play('bf-old');
 		}
 
-		switch (curStage)
-		{
-			case 'philly':
-				if (trainMoving)
-				{
-					trainFrameTiming += elapsed;
-
-					if (trainFrameTiming >= 1 / 24)
-					{
-						updateTrainPos();
-						trainFrameTiming = 0;
-					}
-				}
-				// phillyCityLights.members[curLight].alpha -= (Conductor.crochet / 1000) * FlxG.elapsed;
-		}
-
 		super.update(elapsed);
 
 		scoreTxt.text = "Score:" + songScore;
