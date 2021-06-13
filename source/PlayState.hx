@@ -141,6 +141,8 @@ class PlayState extends MusicBeatState
 	var mcontrols:Mobilecontrols; 
 	#end
 
+	var isDownScroll:Bool;
+
 	override public function create()
 	{
 		if (FlxG.sound.music != null)
@@ -693,7 +695,8 @@ class PlayState extends MusicBeatState
 
 		Conductor.songPosition = -5000;
 
-		var isDownScroll:Bool = new Config().getdownscroll();
+		isDownScroll = new Config().getdownscroll();
+		Note.isDownScroll = isDownScroll;
 
 		strumLine = new FlxSprite(0, (isDownScroll ? FlxG.height - 150 : 50)).makeGraphic(FlxG.width, 10);
 		strumLine.scrollFactor.set();
@@ -1658,12 +1661,17 @@ class PlayState extends MusicBeatState
 					daNote.active = true;
 				}
 
-				daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(SONG.speed, 2)));
+				if (isDownScroll)
+					daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (-0.45 * FlxMath.roundDecimal(SONG.speed, 2)))
+				else
+					daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(SONG.speed, 2)));
 
 				// i am so fucking sorry for this if condition
 				if (daNote.isSustainNote
 					&& daNote.y + daNote.offset.y <= strumLine.y + Note.swagWidth / 2
-					&& (!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit))))
+					&& (!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit)))
+					&& !isDownScroll // temporary fix for susnote(hold) enemy?
+					)
 				{
 					var swagRect = new FlxRect(0, strumLine.y + Note.swagWidth / 2 - daNote.y, daNote.width * 2, daNote.height * 2);
 					swagRect.y /= daNote.scale.y;
@@ -1710,7 +1718,8 @@ class PlayState extends MusicBeatState
 				// WIP interpolation shit? Need to fix the pause issue
 				// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
 
-				if (daNote.y < -daNote.height)
+				// from ke lol
+				if (daNote.y < -daNote.height && !isDownScroll || (daNote.y >= strumLine.y + 106) && isDownScroll)
 				{
 					if (daNote.tooLate || !daNote.wasGoodHit)
 					{
