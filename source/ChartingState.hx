@@ -272,7 +272,11 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(loadAutosaveBtn);
 		tab_group_song.add(stepperBPM);
 		tab_group_song.add(stepperSpeed);
-		tab_group_song.add(gfDropDown);
+
+		// if gf is not the enemy chosen then put it here (because this value doesnt matter if enemy is a gf)
+		if(_song.player2 != 'gf' && _song.player2 != 'gf-car' && _song.player2 != 'gf-christmas' && _song.player2 != 'gf-pixel')
+			tab_group_song.add(gfDropDown);
+
 		tab_group_song.add(stageDropDown);
 		tab_group_song.add(player1DropDown);
 		tab_group_song.add(player2DropDown);
