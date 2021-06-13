@@ -109,6 +109,30 @@ for i = 4, 7 do -- go to the center
 end
 ```
 
+Jumping Arrows Example
+```lua
+function stepHit (step)
+    if step == 1 then
+        setActorAccelerationY(100, 4)
+    end
+    if step == 3 then
+        setActorAccelerationY(100, 5)
+    end
+    if step == 5 then
+        setActorAccelerationY(100, 6)
+    end
+    if step == 7 then
+        setActorAccelerationY(100, 7)
+    end
+    for i=4,7 do
+        if getActorY(i) >= 100 then
+        setActorY(100, i)
+        setActorVelocityY(-100, i)
+        end
+    end
+end
+```
+
 
 ### Available Hooks
 
@@ -376,9 +400,33 @@ Returns the angle for the sprite id
 
 Set's the x position for the sprite id
 
+##### setActorAccelerationX(int x, string/int id)
+
+Sets the x acceleration for the sprite id
+
+##### setActorDragX(int x, string/int id)
+
+Sets the x drag for the sprite id
+
+##### setActorVelocityX(int x, string/int id)
+
+Sets the x velocity for the sprite id
+
 ##### setActorY(int y, string/int id)
 
 Set's the y position for the sprite id
+
+##### setActorAccelerationY(int y, string/int id)
+
+Sets the y acceleration for the sprite id
+
+##### setActorDragY(int y, string/int id)
+
+Sets the y drag for the sprite id
+
+##### setActorVelocityY(int y, string/int id)
+
+Sets the y velocity for the sprite id
 
 ##### setActorAlpha(float alpha, string/int id)
 

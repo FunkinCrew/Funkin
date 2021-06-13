@@ -86,20 +86,13 @@ class DFJKOption extends Option
 
 	public override function press():Bool
 	{
-		FlxG.save.data.dfjk = !FlxG.save.data.dfjk;
-		
-		if (FlxG.save.data.dfjk)
-			controls.setKeyboardScheme(KeyboardScheme.Solo, true);
-		else
-			controls.setKeyboardScheme(KeyboardScheme.Duo(true), true);
-
-		display = updateDisplay();
-		return true;
+		OptionsMenu.instance.openSubState(new KeyBindMenu());
+		return false;
 	}
 
 	private override function updateDisplay():String
 	{
-		return  FlxG.save.data.dfjk ? "DFJK" : "WASD";
+		return "Key Bindings";
 	}
 }
 
@@ -423,8 +416,8 @@ class ScrollSpeedOption extends Option
 		if (FlxG.save.data.scrollSpeed < 1)
 			FlxG.save.data.scrollSpeed = 1;
 
-		if (FlxG.save.data.scrollSpeed > 10)
-			FlxG.save.data.scrollSpeed = 10;
+		if (FlxG.save.data.scrollSpeed > 4)
+			FlxG.save.data.scrollSpeed = 4;
 		return true;
 	}
 
@@ -438,8 +431,8 @@ class ScrollSpeedOption extends Option
 		if (FlxG.save.data.scrollSpeed < 1)
 			FlxG.save.data.scrollSpeed = 1;
 
-		if (FlxG.save.data.scrollSpeed > 10)
-			FlxG.save.data.scrollSpeed = 10;
+		if (FlxG.save.data.scrollSpeed > 4)
+			FlxG.save.data.scrollSpeed = 4;
 
 		return true;
 	}

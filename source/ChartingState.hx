@@ -18,7 +18,7 @@ import flixel.addons.ui.FlxUIInputText;
 import flixel.addons.ui.FlxUINumericStepper;
 import flixel.addons.ui.FlxUITabMenu;
 import flixel.addons.ui.FlxUITooltip.FlxUITooltipStyle;
-import flixel.group.FlxGroup.AFlxTypedGroup;
+import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxGroup;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
@@ -70,8 +70,8 @@ class ChartingState extends MusicBeatState
 
 	var dummyArrow:FlxSprite;
 
-	var curRenderedNotes:AFlxTypedGroup<Note>;
-	var curRenderedSustains:AFlxTypedGroup<FlxSprite>;
+	var curRenderedNotes:FlxTypedGroup<Note>;
+	var curRenderedSustains:FlxTypedGroup<FlxSprite>;
 
 	var gridBG:FlxSprite;
 
@@ -129,14 +129,14 @@ class ChartingState extends MusicBeatState
 
 		blackBorder.alpha = 0.3;
 
-		snapText = new FlxText(60,10,0,"Snap: 1/" + snap + " (Control + Left or Right to change.)\nAdd Notes: 1-8 (or click)\n", 14);
+		snapText = new FlxText(60,10,0,"Snap: 1/" + snap + " (Press Control to unsnap the cursor)\nAdd Notes: 1-8 (or click)\n", 14);
 		snapText.scrollFactor.set();
 
 		gridBlackLine = new FlxSprite(gridBG.x + gridBG.width / 2).makeGraphic(2, Std.int(gridBG.height), FlxColor.BLACK);
 		add(gridBlackLine);
 
-		curRenderedNotes = new AFlxTypedGroup<Note>();
-		curRenderedSustains = new AFlxTypedGroup<FlxSprite>();
+		curRenderedNotes = new FlxTypedGroup<Note>();
+		curRenderedSustains = new FlxTypedGroup<FlxSprite>();
 
 		FlxG.mouse.visible = true;
 		FlxG.save.bind('funkin', 'ninjamuffin99');
@@ -660,19 +660,15 @@ class ChartingState extends MusicBeatState
 	}
 
 	var writingNotes:Bool = false;
+	var doSnapShit:Bool = true;
 
 	override function update(elapsed:Float)
 	{
 		updateHeads();
 
-		snapText.text = "Snap: 1/" + snap + " (Control + Left or Right to change.)\nAdd Notes: 1-8 (or click)\n";
+		snapText.text = "Snap: 1/" + snap + " (" + (doSnapShit ? "Control to disable" : "Snap Disabled, Control to renable") + ")\nAdd Notes: 1-8 (or click)\n";
 
 		curStep = recalculateSteps();
-
-		if (FlxG.keys.justPressed.ALT && UI_box.selected_tab == 0)
-		{
-			writingNotes = !writingNotes;
-		}
 
 		/*if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.RIGHT)
 			snap = snap * 2;
@@ -682,6 +678,10 @@ class ChartingState extends MusicBeatState
 			snap = 192;
 		if (snap <= 1)
 			snap = 1;*/
+
+		if (FlxG.keys.justPressed.CONTROL)
+			doSnapShit = !doSnapShit;
+
 		Conductor.songPosition = FlxG.sound.music.time;
 		_song.song = typingShit.text;
 
@@ -695,12 +695,23 @@ class ChartingState extends MusicBeatState
 		var rightO = FlxG.keys.justPressed.EIGHT;
 
 		var pressArray = [left, down, up, right, leftO, downO, upO, rightO];
-
+		var delete = false;
+		curRenderedNotes.forEach(function(note:Note)
+			{
+				if (strumLine.overlaps(note) && pressArray[Math.floor(Math.abs(note.noteData))])
+				{
+					deleteNote(note);
+					delete = true;
+					trace('deelte note');
+				}
+			});
 		for (p in 0...pressArray.length)
 		{
 			var i = pressArray[p];
-			if (i)
+			if (i && !delete)
+			{
 				addNote(new Note(Conductor.songPosition,p));
+			}
 		}
 
 		strumLine.y = getYfromStrum((Conductor.songPosition - sectionStartTime()) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps));
@@ -718,8 +729,7 @@ class ChartingState extends MusicBeatState
 						if(!claps.contains(note))
 						{
 							claps.push(note);
-							if(_song.notes[curSection].mustHitSection) FlxG.sound.play(Paths.sound('CLAP'));
-							else FlxG.sound.play(Paths.sound('SNAP'));
+							FlxG.sound.play(Paths.sound('SNAP'));
 						}
 					});
 				}
@@ -939,12 +949,26 @@ class ChartingState extends MusicBeatState
 					resetSection();
 			}
 
+			
+			if (FlxG.sound.music.time < 0 || curStep < 0)
+				FlxG.sound.music.time = 0;
+
 			if (FlxG.mouse.wheel != 0)
 			{
 				FlxG.sound.music.pause();
 				vocals.pause();
+				claps.splice(0, claps.length);
 
-				FlxG.sound.music.time = curStep * Conductor.stepCrochet - (FlxG.mouse.wheel * Conductor.stepCrochet / snap);
+				var stepMs = curStep * Conductor.stepCrochet;
+
+
+				trace(Conductor.stepCrochet / snap);
+
+				if (doSnapShit)
+					FlxG.sound.music.time = stepMs - (FlxG.mouse.wheel * Conductor.stepCrochet / snap);
+				else
+					FlxG.sound.music.time -= (FlxG.mouse.wheel * Conductor.stepCrochet * 0.4);
+				trace(stepMs + " + " + Conductor.stepCrochet / snap + " -> " + FlxG.sound.music.time);
 
 				vocals.time = FlxG.sound.music.time;
 			}
@@ -955,6 +979,7 @@ class ChartingState extends MusicBeatState
 				{
 					FlxG.sound.music.pause();
 					vocals.pause();
+					claps.splice(0, claps.length);
 
 					var daTime:Float = 700 * FlxG.elapsed;
 
