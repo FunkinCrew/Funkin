@@ -2082,53 +2082,6 @@ class PlayState extends MusicBeatState
 			boyfriend.playAnim('hey', true);
 			dad.playAnim('cheer', true);
 		}
-
-		switch (curStage)
-		{
-			case 'school':
-				bgGirls.dance();
-
-			case 'mall':
-				upperBoppers.animation.play('bop', true);
-				bottomBoppers.animation.play('bop', true);
-				santa.animation.play('idle', true);
-
-			case 'limo':
-				grpLimoDancers.forEach(function(dancer:BackgroundDancer)
-				{
-					dancer.dance();
-				});
-
-				if (FlxG.random.bool(10) && fastCarCanDrive)
-					fastCarDrive();
-			case "philly":
-				if (!trainMoving)
-					trainCooldown += 1;
-
-				if (curBeat % 4 == 0)
-				{
-					phillyCityLights.forEach(function(light:FlxSprite)
-					{
-						light.visible = false;
-					});
-
-					curLight = FlxG.random.int(0, phillyCityLights.length - 1);
-
-					phillyCityLights.members[curLight].visible = true;
-					// phillyCityLights.members[curLight].alpha = 1;
-				}
-
-				if (curBeat % 8 == 4 && FlxG.random.bool(30) && !trainMoving && trainCooldown > 8)
-				{
-					trainCooldown = FlxG.random.int(-4, 0);
-					trainStart();
-				}
-		}
-
-		if (isHalloween && FlxG.random.bool(10) && curBeat > lightningStrikeBeat + lightningOffset)
-		{
-			lightningStrikeShit();
-		}
 	}
 
 	var curLight:Int = 0;
