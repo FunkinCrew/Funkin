@@ -74,7 +74,7 @@ class Replay
 
 	public function LoadFromJSON()
 	{
-		if sys
+		#if sys
 		trace('loading ' + Sys.getCwd() + 'assets/replays/' + path + ' replay...');
 		try
 		{
