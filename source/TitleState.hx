@@ -65,6 +65,7 @@ class TitleState extends MusicBeatState
 
 		Assets.loadLibrary("songs").onComplete(function (_) {  });
 
+		#if !debug
 		if (FlxG.save.data.weekUnlocked != null)
 		{
 			for (i in 0...FlxG.save.data.weekUnlocked.length)
@@ -75,14 +76,24 @@ class TitleState extends MusicBeatState
 				}
 			}
 		}
+		#end
+
+		#if debug
+		for (i in 0...FlxG.save.data.weekUnlocked.length)
+		{
+			StoryMenuState.weekUnlocked[i] = true;
+		}
+		#end
 
 		if (FlxG.save.data.enemyGlow == null)
 		{
 			FlxG.save.data.enemyGlow = true;
 		}
 		
+		#if !debug
 		FlxG.save.data.weekUnlocked = StoryMenuState.weekUnlocked;
 		FlxG.save.flush();
+		#end
 
 		#if FREEPLAY
 		FlxG.switchState(new FreeplayState());

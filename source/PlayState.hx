@@ -237,21 +237,10 @@ class PlayState extends MusicBeatState
 
 		stage = new StageGroup(SONG.stage);
 		defaultCamZoom = stage.camZoom;
+		curStage = SONG.stage;
 		add(stage);
 
 		gfVersion = SONG.gf;
-
-		//switch (curStage)
-		//{
-		//	case 'limo':
-		//		gfVersion = 'gf-car';
-		//	case 'mall' | 'mallEvil':
-		//		gfVersion = 'gf-christmas';
-		//	case 'school':
-		//		gfVersion = 'gf-pixel';
-		//	case 'schoolEvil':
-		//		gfVersion = 'gf-pixel';
-		//}
 
 		gf = new Character(400, 130, gfVersion);
 		gf.scrollFactor.set(0.95, 0.95);
@@ -301,41 +290,6 @@ class PlayState extends MusicBeatState
 		boyfriend = new Boyfriend(770, 450, SONG.player1);
 
 		// REPOSITIONING PER STAGE
-		switch (curStage)
-		{
-			case 'limo':
-				boyfriend.y -= 220;
-				boyfriend.x += 260;
-
-				resetFastCar();
-				add(fastCar);
-
-			case 'mall':
-				boyfriend.x += 200;
-
-			case 'mallEvil':
-				boyfriend.x += 320;
-				dad.y -= 80;
-			case 'school':
-				boyfriend.x += 200;
-				boyfriend.y += 220;
-				gf.x += 180;
-				gf.y += 300;
-			case 'schoolEvil':
-				// trailArea.scrollFactor.set();
-
-				var evilTrail = new FlxTrail(dad, null, 4, 24, 0.3, 0.069);
-				// evilTrail.changeValuesEnabled(false, false, false, false);
-				// evilTrail.changeGraphic()
-				add(evilTrail);
-				// evilTrail.scrollFactor.set(1.1, 1.1);
-
-				boyfriend.x += 200;
-				boyfriend.y += 220;
-				gf.x += 180;
-				gf.y += 300;
-		}
-
 		stage.setCharOffsets();
 
 		add(gf);
@@ -615,7 +569,7 @@ class PlayState extends MusicBeatState
 					ready.scrollFactor.set();
 					ready.updateHitbox();
 
-					if (curStage.startsWith('school'))
+					if (curStage.contains('school'))
 						ready.setGraphicSize(Std.int(ready.width * daPixelZoom));
 
 					ready.screenCenter();
@@ -632,7 +586,7 @@ class PlayState extends MusicBeatState
 					var set:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[1]));
 					set.scrollFactor.set();
 
-					if (curStage.startsWith('school'))
+					if (curStage.contains('school'))
 						set.setGraphicSize(Std.int(set.width * daPixelZoom));
 
 					set.screenCenter();
@@ -649,7 +603,7 @@ class PlayState extends MusicBeatState
 					var go:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[2]));
 					go.scrollFactor.set();
 
-					if (curStage.startsWith('school'))
+					if (curStage.contains('school'))
 						go.setGraphicSize(Std.int(go.width * daPixelZoom));
 
 					go.updateHitbox();
@@ -806,7 +760,7 @@ class PlayState extends MusicBeatState
 
 			switch (curStage)
 			{
-				case 'school' | 'schoolEvil':
+				case 'school' | 'evil-school':
 					babyArrow.loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels'), true, 17, 17);
 					babyArrow.animation.add('green', [6]);
 					babyArrow.animation.add('red', [7]);
@@ -1177,7 +1131,7 @@ class PlayState extends MusicBeatState
 					case 'school':
 						camFollow.x = boyfriend.getMidpoint().x - 200;
 						camFollow.y = boyfriend.getMidpoint().y - 200;
-					case 'schoolEvil':
+					case 'evil-school':
 						camFollow.x = boyfriend.getMidpoint().x - 200;
 						camFollow.y = boyfriend.getMidpoint().y - 200;
 				}
@@ -1338,7 +1292,7 @@ class PlayState extends MusicBeatState
 							{
 								spr.animation.play('confirm', true);
 								spr.centerOffsets();
-								if (!curStage.startsWith('school'))
+								if (!curStage.contains('school'))
 								{
 									spr.offset.x -= 13;
 									spr.offset.y -= 13;
@@ -1523,7 +1477,7 @@ class PlayState extends MusicBeatState
 		var pixelShitPart1:String = "";
 		var pixelShitPart2:String = '';
 
-		if (curStage.startsWith('school'))
+		if (curStage.contains('school'))
 		{
 			pixelShitPart1 = 'weeb/pixelUI/';
 			pixelShitPart2 = '-pixel';
@@ -1549,7 +1503,7 @@ class PlayState extends MusicBeatState
 		comboSpr.cameras = [camHUD];
 		add(rating);
 
-		if (!curStage.startsWith('school'))
+		if (!curStage.contains('school'))
 		{
 			rating.setGraphicSize(Std.int(rating.width * 0.7));
 			rating.antialiasing = true;
@@ -1579,7 +1533,7 @@ class PlayState extends MusicBeatState
 			numScore.x = coolText.x + (43 * daLoop) - 90;
 			numScore.y += 80;
 
-			if (!curStage.startsWith('school'))
+			if (!curStage.contains('school'))
 			{
 				numScore.antialiasing = true;
 				numScore.setGraphicSize(Std.int(numScore.width * 0.5));
@@ -1784,7 +1738,7 @@ class PlayState extends MusicBeatState
 						spr.animation.play('static');
 			}
 
-			if (spr.animation.curAnim.name == 'confirm' && !curStage.startsWith('school'))
+			if (spr.animation.curAnim.name == 'confirm' && !curStage.contains('school'))
 			{
 				spr.centerOffsets();
 				spr.offset.x -= 13;
