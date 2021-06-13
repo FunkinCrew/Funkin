@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="Agoti_Dialogue.png">
+	<!-- Created with Adobe Animate version 21.0.0.35450 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="Agoti_Dialogue_A0000" x="0" y="0" width="420" height="481"/>
+	<SubTexture name="Agoti_Dialogue_A0001" x="0" y="0" width="420" height="481"/>
+	<SubTexture name="Agoti_Dialogue_A0002" x="420" y="0" width="420" height="481"/>
+	<SubTexture name="Agoti_Dialogue_A0003" x="420" y="0" width="420" height="481"/>
+	<SubTexture name="Agoti_Dialogue_A0004" x="840" y="0" width="420" height="481"/>
+	<SubTexture name="Agoti_Dialogue_A0005" x="840" y="0" width="420" height="481"/>
+	<SubTexture name="Agoti_Dialogue_A0006" x="1260" y="0" width="420" height="481"/>
+	<SubTexture name="Agoti_Dialogue_A0007" x="1260" y="0" width="420" height="481"/>
+	<SubTexture name="Agoti_Dialogue_A0008" x="1260" y="0" width="420" height="481"/>
+	<SubTexture name="Agoti_Dialogue_B0000" x="1680" y="0" width="420" height="481"/>
+	<SubTexture name="Agoti_Dialogue_B0001" x="1680" y="0" width="420" height="481"/>
+	<SubTexture name="Agoti_Dialogue_B0002" x="2100" y="0" width="420" height="481"/>
+	<SubTexture name="Agoti_Dialogue_B0003" x="2100" y="0" width="420" height="481"/>
+	<SubTexture name="Agoti_Dialogue_B0004" x="2520" y="0" width="420" height="481"/>
+	<SubTexture name="Agoti_Dialogue_B0005" x="2520" y="0" width="420" height="481"/>
+	<SubTexture name="Agoti_Dialogue_B0006" x="2940" y="0" width="420" height="481"/>
+	<SubTexture name="Agoti_Dialogue_B0007" x="2940" y="0" width="420" height="481"/>
+	<SubTexture name="Agoti_Dialogue_B0008" x="2940" y="0" width="420" height="481"/>
+	<SubTexture name="Agoti_Dialogue_C0000" x="3360" y="0" width="420" height="481"/>
+	<SubTexture name="Agoti_Dialogue_C0001" x="3360" y="0" width="420" height="481"/>
+	<SubTexture name="Agoti_Dialogue_C0002" x="0" y="481" width="420" height="481"/>
+	<SubTexture name="Agoti_Dialogue_C0003" x="0" y="481" width="420" height="481"/>
+	<SubTexture name="Agoti_Dialogue_C0004" x="420" y="481" width="420" height="481"/>
+	<SubTexture name="Agoti_Dialogue_C0005" x="420" y="481" width="420" height="481"/>
+	<SubTexture name="Agoti_Dialogue_C0006" x="840" y="481" width="420" height="481"/>
+	<SubTexture name="Agoti_Dialogue_C0007" x="840" y="481" width="420" height="481"/>
+	<SubTexture name="Agoti_Dialogue_C0008" x="840" y="481" width="420" height="481"/>
+	<SubTexture name="Agoti_Dialogue_D0000" x="1260" y="481" width="520" height="610"/>
+	<SubTexture name="Agoti_Dialogue_D0001" x="1260" y="481" width="520" height="610"/>
+	<SubTexture name="Agoti_Dialogue_D0002" x="1780" y="481" width="520" height="610"/>
+	<SubTexture name="Agoti_Dialogue_D0003" x="1780" y="481" width="520" height="610"/>
+	<SubTexture name="Agoti_Dialogue_D0004" x="2300" y="481" width="520" height="610"/>
+	<SubTexture name="Agoti_Dialogue_D0005" x="2300" y="481" width="520" height="610"/>
+	<SubTexture name="Agoti_Dialogue_D0006" x="2820" y="481" width="520" height="610"/>
+	<SubTexture name="Agoti_Dialogue_D0007" x="2820" y="481" width="520" height="610"/>
+	<SubTexture name="Agoti_Dialogue_D0008" x="2820" y="481" width="520" height="610"/>
+</TextureAtlas>

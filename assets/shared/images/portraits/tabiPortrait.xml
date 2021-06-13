@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker https://www.codeandweb.com/texturepacker -->
+<!-- $TexturePacker:SmartUpdate:c0bd9aac5f2bdb436ac740a19ad41e24:c4c4110afbf4cf9c680f6e6688a9b153:4898380799fe3f7efe32c21fed12af63$ -->
+<TextureAtlas imagePath="tabiPortrait.png" width="999" height="1413">
+    <SubTexture name="bfExp" x="334" y="739" width="346" height="326" frameX="-111" frameY="-87" frameWidth="457" frameHeight="413"/>
+    <SubTexture name="bfLeft" x="1" y="1067" width="383" height="345" frameX="0" frameY="-65" frameWidth="434" frameHeight="410"/>
+    <SubTexture name="bfRight" x="386" y="1067" width="383" height="345" frameX="-64" frameY="-65" frameWidth="447" frameHeight="410"/>
+    <SubTexture name="gfHmm" x="1" y="443" width="331" height="294" frameX="-89" frameY="-70" frameWidth="420" frameHeight="364"/>
+    <SubTexture name="gfLetsgo" x="334" y="443" width="331" height="294" frameX="-89" frameY="-70" frameWidth="420" frameHeight="364"/>
+    <SubTexture name="gfTalking" x="667" y="443" width="331" height="294" frameX="-89" frameY="-70" frameWidth="420" frameHeight="364"/>
+    <SubTexture name="gf" x="1" y="739" width="331" height="294" frameX="-89" frameY="-70" frameWidth="420" frameHeight="364"/>
+    <SubTexture name="tabiMad" x="1" y="1" width="297" height="440" frameX="0" frameY="-30" frameWidth="434" frameHeight="470"/>
+    <SubTexture name="tabiWorried" x="300" y="1" width="297" height="440" frameX="0" frameY="-30" frameWidth="434" frameHeight="470"/>
+    <SubTexture name="tabi" x="599" y="1" width="297" height="440" frameX="0" frameY="-30" frameWidth="434" frameHeight="470"/>
+</TextureAtlas>

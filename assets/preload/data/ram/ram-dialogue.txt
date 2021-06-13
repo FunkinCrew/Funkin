@@ -1,0 +1,12 @@
+:BGCHANGE:cutscenes/CUT7
+:bf:Aww yea! That was funky indeed!
+:gf:Mhm! Impressive as always.
+:hex:I agree. We really maximalized the amount of fun we could've possibly had!
+:hex:How about another round?
+:BGCHANGE:cutscenes/CUT8
+:bf:Hmm... what do you think?
+:gf:I don't mind it really...
+:gf:The sun is setting down so we have a nice vibe for another round.
+:BGCHANGE:cutscenes/CUT9
+:bf:You're right!
+:bf:Bring it on Hex!

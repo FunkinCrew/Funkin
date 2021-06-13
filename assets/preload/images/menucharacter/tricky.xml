@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker https://www.codeandweb.com/texturepacker -->
+<!-- $TexturePacker:SmartUpdate:fd100838f4ae3771b68cddcf3074698d:c21a2e786be76bc35fc3f0245a46214d:6e92182edca2cbd14076468b2cd00808$ -->
+<TextureAtlas imagePath="tricky.png" width="1024" height="1024">
+    <SubTexture name="Idle0000" x="312" y="656" width="305" height="309"/>
+    <SubTexture name="Idle0001" x="619" y="656" width="307" height="307"/>
+    <SubTexture name="Idle0002" x="312" y="331" width="311" height="323"/>
+    <SubTexture name="Idle0003" x="1" y="331" width="309" height="328"/>
+    <SubTexture name="Idle0004" x="315" y="1" width="311" height="323"/>
+    <SubTexture name="Idle0005" x="1" y="1" width="312" height="328"/>
+    <SubTexture name="Idle0006" x="1" y="661" width="309" height="326"/>
+    <SubTexture name="Idle0007" x="312" y="331" width="311" height="323"/>
+    <SubTexture name="Idle0008" x="1" y="331" width="309" height="328"/>
+    <SubTexture name="Idle0009" x="315" y="1" width="311" height="323"/>
+    <SubTexture name="Idle0010" x="1" y="1" width="312" height="328"/>
+    <SubTexture name="Idle0011" x="1" y="661" width="309" height="326"/>
+    <SubTexture name="Idle0012" x="312" y="331" width="311" height="323"/>
+    <SubTexture name="Idle0013" x="1" y="331" width="309" height="328"/>
+    <SubTexture name="Idle0014" x="315" y="1" width="311" height="323"/>
+    <SubTexture name="Idle0015" x="1" y="1" width="312" height="328"/>
+    <SubTexture name="Idle0016" x="1" y="661" width="309" height="326"/>
+    <SubTexture name="Idle0017" x="312" y="331" width="311" height="323"/>
+    <SubTexture name="Idle0018" x="1" y="331" width="309" height="328"/>
+    <SubTexture name="Idle0019" x="315" y="1" width="311" height="323"/>
+    <SubTexture name="Idle0020" x="1" y="1" width="312" height="328"/>
+    <SubTexture name="Idle0021" x="1" y="661" width="309" height="326"/>
+    <SubTexture name="Idle0022" x="312" y="331" width="311" height="323"/>
+    <SubTexture name="Idle0023" x="1" y="331" width="309" height="328"/>
+    <SubTexture name="Idle0024" x="315" y="1" width="311" height="323"/>
+</TextureAtlas>

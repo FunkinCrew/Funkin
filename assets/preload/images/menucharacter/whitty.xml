@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker https://www.codeandweb.com/texturepacker -->
+<!-- $TexturePacker:SmartUpdate:96efa98f4cb8d2a09af26a5f8fc48eca:782eaea46da3b468772ad341f868d5ae:bbe81cec2359ccbe7b950f3bc7e90b9c$ -->
+<TextureAtlas imagePath="whitty.png" width="1263" height="385">
+    <SubTexture name="Whitty idle dance BLACK LINE0000" x="843" y="1" width="211" height="377"/>
+    <SubTexture name="Whitty idle dance BLACK LINE0001" x="843" y="1" width="211" height="377"/>
+    <SubTexture name="Whitty idle dance BLACK LINE0002" x="1056" y="1" width="206" height="376"/>
+    <SubTexture name="Whitty idle dance BLACK LINE0003" x="1056" y="1" width="206" height="376"/>
+    <SubTexture name="Whitty idle dance BLACK LINE0004" x="631" y="1" width="210" height="378"/>
+    <SubTexture name="Whitty idle dance BLACK LINE0005" x="631" y="1" width="210" height="378"/>
+    <SubTexture name="Whitty idle dance BLACK LINE0006" x="422" y="1" width="207" height="381" frameX="-1" frameY="0" frameWidth="209" frameHeight="381"/>
+    <SubTexture name="Whitty idle dance BLACK LINE0007" x="422" y="1" width="207" height="381" frameX="-1" frameY="0" frameWidth="209" frameHeight="381"/>
+    <SubTexture name="Whitty idle dance BLACK LINE0008" x="1" y="1" width="209" height="383" frameX="0" frameY="0" frameWidth="210" frameHeight="383"/>
+    <SubTexture name="Whitty idle dance BLACK LINE0009" x="1" y="1" width="209" height="383" frameX="0" frameY="0" frameWidth="210" frameHeight="383"/>
+    <SubTexture name="Whitty idle dance BLACK LINE0010" x="212" y="1" width="208" height="383" frameX="0" frameY="0" frameWidth="210" frameHeight="383"/>
+    <SubTexture name="Whitty idle dance BLACK LINE0011" x="212" y="1" width="208" height="383" frameX="0" frameY="0" frameWidth="210" frameHeight="383"/>
+    <SubTexture name="Whitty idle dance BLACK LINE0012" x="212" y="1" width="208" height="383" frameX="0" frameY="0" frameWidth="210" frameHeight="383"/>
+    <SubTexture name="Whitty idle dance BLACK LINE0013" x="212" y="1" width="208" height="383" frameX="0" frameY="0" frameWidth="210" frameHeight="383"/>
+</TextureAtlas>

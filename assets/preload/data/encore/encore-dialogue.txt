@@ -1,0 +1,9 @@
+:BGCHANGE:cutscenes/CUT1
+:hex:...
+:hex:Thank you!
+:bf:beep bop bepoobee!.
+:hex:Play with me, one more time.
+:gf:Okay...
+:gf-cheer:I'll play this time.
+:bf:boop beep!!!
+:hex:^_^!!!!

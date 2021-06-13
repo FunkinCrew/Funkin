@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="tabi.png">
+	<!-- Created with Adobe Animate version 21.0.0.35450 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="Tabi Lines0000" x="0" y="0" width="452" height="779" pivotX="-246.8" pivotY="22.55" frameX="-7" frameY="0" frameWidth="465" frameHeight="779"/>
+	<SubTexture name="Tabi Lines0001" x="0" y="0" width="452" height="779" frameX="-7" frameY="0" frameWidth="465" frameHeight="779"/>
+	<SubTexture name="Tabi Lines0002" x="452" y="0" width="465" height="764" frameX="0" frameY="-14" frameWidth="465" frameHeight="779"/>
+	<SubTexture name="Tabi Lines0003" x="452" y="0" width="465" height="764" frameX="0" frameY="-14" frameWidth="465" frameHeight="779"/>
+	<SubTexture name="Tabi Lines0004" x="917" y="0" width="460" height="768" frameX="-3" frameY="-10" frameWidth="465" frameHeight="779"/>
+	<SubTexture name="Tabi Lines0005" x="917" y="0" width="460" height="768" frameX="-3" frameY="-10" frameWidth="465" frameHeight="779"/>
+	<SubTexture name="Tabi Lines0006" x="1377" y="0" width="447" height="777" frameX="-9" frameY="-2" frameWidth="465" frameHeight="779"/>
+	<SubTexture name="Tabi Lines0007" x="1377" y="0" width="447" height="777" frameX="-9" frameY="-2" frameWidth="465" frameHeight="779"/>
+	<SubTexture name="Tabi Lines0008" x="0" y="779" width="447" height="779" frameX="-9" frameY="0" frameWidth="465" frameHeight="779"/>
+	<SubTexture name="Tabi Lines0009" x="0" y="779" width="447" height="779" frameX="-9" frameY="0" frameWidth="465" frameHeight="779"/>
+	<SubTexture name="Tabi Lines0010" x="447" y="779" width="452" height="779" frameX="-7" frameY="0" frameWidth="465" frameHeight="779"/>
+	<SubTexture name="Tabi Lines0011" x="447" y="779" width="452" height="779" frameX="-7" frameY="0" frameWidth="465" frameHeight="779"/>
+	<SubTexture name="Tabi Lines0012" x="447" y="779" width="452" height="779" frameX="-7" frameY="0" frameWidth="465" frameHeight="779"/>
+	<SubTexture name="Tabi Lines0013" x="447" y="779" width="452" height="779" frameX="-7" frameY="0" frameWidth="465" frameHeight="779"/>
+</TextureAtlas>

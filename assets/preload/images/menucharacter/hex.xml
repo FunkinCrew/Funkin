@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="campaign_menu_UI_hex.png">
+	<!-- Created with Adobe Animate version 20.5.1.31044 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="Z_Hex0000" x="60" y="60" width="413" height="751" frameX="-3" frameY="0" frameWidth="425" frameHeight="752"/>
+	<SubTexture name="Z_Hex0001" x="60" y="60" width="413" height="751" frameX="-3" frameY="0" frameWidth="425" frameHeight="752"/>
+	<SubTexture name="Z_Hex0002" x="473" y="60" width="422" height="721" frameX="-3" frameY="-30" frameWidth="425" frameHeight="752"/>
+	<SubTexture name="Z_Hex0003" x="473" y="60" width="422" height="721" frameX="-3" frameY="-30" frameWidth="425" frameHeight="752"/>
+	<SubTexture name="Z_Hex0004" x="895" y="60" width="418" height="728" frameX="-3" frameY="-24" frameWidth="425" frameHeight="752"/>
+	<SubTexture name="Z_Hex0005" x="895" y="60" width="418" height="728" frameX="-3" frameY="-24" frameWidth="425" frameHeight="752"/>
+	<SubTexture name="Z_Hex0006" x="1313" y="60" width="413" height="740" frameX="-1" frameY="-12" frameWidth="425" frameHeight="752"/>
+	<SubTexture name="Z_Hex0007" x="1313" y="60" width="413" height="740" frameX="-1" frameY="-12" frameWidth="425" frameHeight="752"/>
+	<SubTexture name="Z_Hex0008" x="1726" y="60" width="414" height="750" frameX="-1" frameY="-2" frameWidth="425" frameHeight="752"/>
+	<SubTexture name="Z_Hex0009" x="1726" y="60" width="414" height="750" frameX="-1" frameY="-2" frameWidth="425" frameHeight="752"/>
+	<SubTexture name="Z_Hex0010" x="2140" y="60" width="413" height="751" frameX="0" frameY="-1" frameWidth="425" frameHeight="752"/>
+	<SubTexture name="Z_Hex0011" x="2140" y="60" width="413" height="751" frameX="0" frameY="-1" frameWidth="425" frameHeight="752"/>
+	<SubTexture name="Z_Hex0012" x="2140" y="60" width="413" height="751" frameX="0" frameY="-1" frameWidth="425" frameHeight="752"/>
+	<SubTexture name="Z_Hex0013" x="2140" y="60" width="413" height="751" frameX="0" frameY="-1" frameWidth="425" frameHeight="752"/>
+</TextureAtlas>

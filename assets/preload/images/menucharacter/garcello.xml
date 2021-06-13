@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker https://www.codeandweb.com/texturepacker -->
+<!-- $TexturePacker:SmartUpdate:6adf84eecd2ce2ee4d78211fcc84a32b:51a3bbc44b3cc1e393ee36ac3c433c18:889146dafec6391a190a219cceea679d$ -->
+<TextureAtlas imagePath="garcello.png" width="1024" height="1024">
+    <SubTexture name="Garcello idle0000" x="1" y="1" width="151" height="322" frameX="0" frameY="0" frameWidth="151" frameHeight="323"/>
+    <SubTexture name="Garcello idle0001" x="305" y="1" width="154" height="318"/>
+    <SubTexture name="Garcello idle0002" x="154" y="324" width="152" height="319" frameX="0" frameY="-1" frameWidth="152" frameHeight="320"/>
+    <SubTexture name="Garcello idle0003" x="152" y="649" width="150" height="321" frameX="-1" frameY="0" frameWidth="151" frameHeight="322"/>
+    <SubTexture name="Garcello idle0004" x="154" y="1" width="149" height="321" frameX="-1" frameY="-1" frameWidth="151" frameHeight="323"/>
+    <SubTexture name="Garcello idle0005" x="154" y="1" width="149" height="321" frameX="-1" frameY="-1" frameWidth="151" frameHeight="323"/>
+    <SubTexture name="Garcello idle0006" x="1" y="325" width="151" height="322" frameX="0" frameY="0" frameWidth="151" frameHeight="323"/>
+    <SubTexture name="Garcello idle0007" x="1" y="649" width="149" height="322" frameX="-1" frameY="0" frameWidth="151" frameHeight="323"/>
+    <SubTexture name="Garcello idle0008" x="1" y="1" width="151" height="322" frameX="0" frameY="0" frameWidth="151" frameHeight="323"/>
+    <SubTexture name="Garcello idle0009" x="1" y="1" width="151" height="322" frameX="0" frameY="0" frameWidth="151" frameHeight="323"/>
+</TextureAtlas>

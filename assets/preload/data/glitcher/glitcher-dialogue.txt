@@ -1,0 +1,49 @@
+:BGCHANGE:cutscenes/CUT13
+:bf:Huff.. puff... wow we spent a whole day on this.
+:bf:Aren't you tired?
+:hex:Nope! Not yet at least.
+:hex:My battery is solar-based so i'm saving energy at nights!
+:bf:Pff, lucky you then.
+:BGCHANGE:cutscenes/CUT14
+:gf:I'm tired though... I think we should go now.
+:BGCHANGE:cutscenes/CUT15
+:bf:I agree.
+:bf:Well, see ya around Hex!
+:BGCHANGE:cutscenes/CUT16
+:hex:Yes, it was very fun! Good night-
+:BGCHANGE:cutscenes/CUT17
+:PLAYSOUND:bzzt
+:hex-virus:BZZZZZZZZZZT-
+:BGCHANGE:cutscenes/CUT18
+:BGTRACK:hectic
+:bf:H-Huh? Hex?
+:hex-virus:...Uh oh.
+:hex-virus:I think we might have a problem...
+:bf:What problem?
+:BGCHANGE:cutscenes/CUT19
+:hex-virus:I probably used too much processing power and let my guard down...
+:hex-virus:Something might have passed by my defenses, which means...
+:BGCHANGE:cutscenes/CUT20
+:hex-virus:There might be a virus inside me.
+:gf:Huh? Wait, isn't that like, dangerous to machines?
+:hex-virus:VERY dangerous.... oh no.
+:BGCHANGE:cutscenes/CUT21
+:hex-virus:I think it wants to take control over the system.
+:bf:Shoot... can't you do something to prevent that?
+:hex-virus:I... don't think i can... but.
+:hex-virus:Wait. Maybe you can.
+:BGCHANGE:cutscenes/CUT22
+:bf:Huh?
+:hex-virus:Grab my mic and fight that thing off!
+:hex-virus:If you order the system to input enough mic patterns it might crash.
+:hex-virus:Then i'll enter sleep mode and run a safety scan which will end that thing.
+:BGCHANGE:cutscenes/CUT23
+:hex-virus:Please! You're my only hope right now!
+:bf:...
+:BGCHANGE:cutscenes/CUT24
+:bf:...Alright Hex, i'll try. I'm not leaving you behind.
+:bf:Are you ready?
+:BGCHANGE:cutscenes/CUT25
+:hex-virus:...
+:BGCHANGE:cutscenes/CUT26
+:hex-virus:...I'm always ready.

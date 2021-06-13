@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="garPortrait.png">
+	<!-- Created with Adobe Animate version 20.0.0.17400 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="gar Default instance 10000" x="21" y="15" width="335" height="415"/>
+  <SubTexture name="gar Alt instance 10000" x="390" y="15" width="335" height="415"/>
+  <SubTexture name="gar Nervous Enter instance 10000" x="775" y="15" width="335" height="415"/>
+  <SubTexture name="gar Ghost Enter instance 10000" x="1166" y="15" width="335" height="415"/>
+  <SubTexture name="gar Dippy Enter instance 10000" x="1555" y="15" width="335" height="415"/>
+</TextureAtlas>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker https://www.codeandweb.com/texturepacker -->
+<!-- $TexturePacker:SmartUpdate:ccf33118b97a777611d96a53bd1b8b97:7f8a796355103d59f9ad185a196a475f:f4842dcadbf9fe83e94d854e978e7bd2$ -->
+<TextureAtlas imagePath="tiky.png" width="3959" height="2630">
+    <SubTexture name="Idle0001" x="1555" y="2057" width="395" height="552"/>
+    <SubTexture name="Idle0002" x="2456" y="994" width="395" height="519"/>
+    <SubTexture name="Idle0003" x="2795" y="1517" width="398" height="534"/>
+    <SubTexture name="Idle0004" x="3014" y="486" width="396" height="505"/>
+    <SubTexture name="Idle0005" x="1658" y="994" width="397" height="516"/>
+    <SubTexture name="Idle0006" x="848" y="994" width="408" height="514"/>
+    <SubTexture name="Idle0008" x="2357" y="2057" width="397" height="560"/>
+    <SubTexture name="Idle0009" x="1206" y="1517" width="395" height="527"/>
+    <SubTexture name="Idle0010" x="394" y="2057" width="401" height="540"/>
+    <SubTexture name="Idle0011" x="453" y="994" width="393" height="511"/>
+    <SubTexture name="Idle0012" x="1" y="1517" width="395" height="524"/>
+    <SubTexture name="Idle0013" x="3297" y="994" width="403" height="521"/>
+    <SubTexture name="Idle0014" x="2756" y="2057" width="403" height="560"/>
+    <SubTexture name="Idle0015" x="3195" y="1517" width="404" height="538"/>
+    <SubTexture name="Idle0016" x="2057" y="994" width="397" height="516"/>
+    <SubTexture name="Idle0017" x="805" y="1517" width="399" height="525"/>
+    <SubTexture name="Idle0018" x="1603" y="1517" width="403" height="530"/>
+    <SubTexture name="Idle0019" x="398" y="1517" width="405" height="524"/>
+    <SubTexture name="Idle0020" x="1952" y="2057" width="403" height="554"/>
+    <SubTexture name="Idle0021" x="2008" y="1517" width="403" height="530"/>
+    <SubTexture name="Idle0022" x="3412" y="486" width="405" height="506"/>
+    <SubTexture name="Idle0023" x="1258" y="994" width="398" height="515"/>
+    <SubTexture name="Proper Down0000" x="2070" y="1" width="407" height="448"/>
+    <SubTexture name="Proper Down0001" x="1267" y="1" width="407" height="444"/>
+    <SubTexture name="Proper Down0002" x="1" y="1" width="414" height="419"/>
+    <SubTexture name="Proper Down0003" x="417" y="1" width="443" height="426"/>
+    <SubTexture name="Proper Down0004" x="1676" y="1" width="392" height="444"/>
+    <SubTexture name="Proper Down0005" x="862" y="1" width="403" height="441"/>
+    <SubTexture name="Proper Left0000" x="3560" y="2057" width="398" height="572"/>
+    <SubTexture name="Proper Left0001" x="3161" y="2057" width="397" height="560"/>
+    <SubTexture name="Proper Left0002" x="2413" y="1517" width="380" height="532"/>
+    <SubTexture name="Proper Left0003" x="1" y="2057" width="391" height="538"/>
+    <SubTexture name="Proper Left0004" x="1181" y="2057" width="372" height="550"/>
+    <SubTexture name="Proper Left0005" x="797" y="2057" width="382" height="545"/>
+    <SubTexture name="Proper Right0000" x="1" y="486" width="433" height="484"/>
+    <SubTexture name="Proper Right0001" x="436" y="486" width="409" height="487"/>
+    <SubTexture name="Proper Right0002" x="2479" y="1" width="412" height="462"/>
+    <SubTexture name="Proper Right0003" x="2893" y="1" width="412" height="471"/>
+    <SubTexture name="Proper Right0004" x="1257" y="486" width="428" height="489"/>
+    <SubTexture name="Proper Right0005" x="847" y="486" width="408" height="487"/>
+    <SubTexture name="Proper Up0000" x="2853" y="994" width="442" height="520"/>
+    <SubTexture name="Proper Up0001" x="1" y="994" width="450" height="507"/>
+    <SubTexture name="Proper Up0002" x="2130" y="486" width="434" height="501"/>
+    <SubTexture name="Proper Up0003" x="3307" y="1" width="439" height="483"/>
+    <SubTexture name="Proper Up0004" x="2566" y="486" width="446" height="504"/>
+    <SubTexture name="Proper Up0005" x="1687" y="486" width="441" height="498"/>
+</TextureAtlas>

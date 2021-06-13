@@ -1,0 +1,32 @@
+:gf-letsgo:Hey There Boyfriend!
+:bf-left:Beep!
+:gf-letsgo:I Wanted To Tell You That Im Inviting You With Me To A Restaurant!
+:bf-left:Beep?
+:gf-talking:Well, My Father's Friend Invited Me For Some Reason
+:bf-left:Skboop Bep? Bep Dop Boop
+:gf-letsgo:It's My Favorite Restaurant!
+:gf-hmm:I Wonder How He Knew...
+:gf-talking:Anyways! I Wanted To Take You Aswell, I Want Ya'll To Meet Each Other Already He's My Uncle!
+:bf-left:Beep
+:gf-letsgo:Great, Then I'm Going To Call For A Taxi
+:noone:So They Went To The Restaurant To Meet Girlfriend's Uncle
+:BGCHANGE:cutscenes/1
+:gf:Hey Boyfriend, I Need To Go To The Bathroom, Wait For Me Here
+:bf-left:Beep! Skbeep!
+:gf-letsgo:Ahah! Okay, Okay! You Can Escort Me There My Love
+:sound:bfText
+:bf-left:*Shy Beeps*
+:gf-letsgo:I Love You Too!
+:gf-talking:Huh? TABI?!
+:tabi-mad:...
+:bf-right:Skbeep?
+:gf-hmm:Shit...
+:BGCHANGE:cutscenes/2
+:tabi:So We Finally Meet After 1 Year Of Hiding
+:gf-hmm:*Shaking From Fear*
+:tabi-mad:Wait? Who Are YOU?
+:bf-right:Beep Bop Skbeep
+:tabi:So You Already Started Dating Another Guy, Yet Another Victim Huh?
+:tabi:Listen Dude, This Is My Battle Not Yours Just Let Me End This All, Leave!
+:bf-right:Beep Bop Dop Skbop
+:tabi-mad:You Do Realize That She Is Just Using You, Right?

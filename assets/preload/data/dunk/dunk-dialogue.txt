@@ -1,0 +1,28 @@
+:BGCHANGE:cutscenes/CUT1
+:gf:Geez... That was intense. Have you seen his face?
+:bf:Yea, it was very uh.... "ballistic".
+:gf:At least now we can go to the park like we originally intended!
+:bf:Mhm!
+:BGCHANGE:cutscenes/CUT2
+:gf:You know, i really had fun during all those weeks spent with you.
+:bf:I'm glad you did... 
+:gf:Makes me wonder who will be next to challenge you, pff.
+:bf:Hopefully no one anytime soon, i'm tired... 
+:hex:Hello!
+:BGCHANGE:cutscenes/CUT3
+:bf:Hmm?
+:BGCHANGE:cutscenes/CUT4
+:hex:Are you perhaps up for a game or two?
+:bf:Uhh... sorry dude, i'm not really good at basketball.
+:hex:Oh, no no, I meant like, you know, the microphone.
+:bf:Oh! Maybe then- Wait a minute.
+:bf:Are you another guy that's not cool with me dating her?
+:BGCHANGE:cutscenes/CUT5
+:hex:Huh? No, where did that come from?
+:hex:I just thought it would be fun to use my microphone after a long time!
+:gf:Hmm... he does seem chill, what do you think?
+:bf:If it's gonna be just for fun then I'm up for it!
+:bf:Are you ready then... uh... what's your name?
+:BGCHANGE:cutscenes/CUT6
+:hex:Hex! I'm always ready!
+:bf:Alright Hex, let's funk!

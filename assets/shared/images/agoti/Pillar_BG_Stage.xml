@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker https://www.codeandweb.com/texturepacker -->
+<!-- $TexturePacker:SmartUpdate:d1da0554c1835cb0729c5e4812623ead:d0dbf41570c589bbf1047d6723b802d9:80e983331a731acf2a8d340a17e07004$ -->
+<TextureAtlas imagePath="Pillar_BG_Stage.png" width="1701" height="3976">
+    <SubTexture name="Pillar_BG_Stage0000" x="1" y="1" width="1699" height="1048"/>
+    <SubTexture name="Pillar_BG_Stage0001" x="1" y="1051" width="1693" height="1012"/>
+    <SubTexture name="Pillar_BG_Stage0002" x="1" y="2065" width="1699" height="970"/>
+    <SubTexture name="Pillar_BG_Stage0003" x="1" y="3037" width="1699" height="938"/>
+    <SubTexture name="Pillar_BG_Stage0004" x="1" y="1" width="1699" height="1048"/>
+    <SubTexture name="Pillar_BG_Stage0005" x="1" y="1051" width="1693" height="1012"/>
+    <SubTexture name="Pillar_BG_Stage0006" x="1" y="2065" width="1699" height="970"/>
+    <SubTexture name="Pillar_BG_Stage0007" x="1" y="3037" width="1699" height="938"/>
+    <SubTexture name="Pillar_BG_Stage0008" x="1" y="1" width="1699" height="1048"/>
+</TextureAtlas>

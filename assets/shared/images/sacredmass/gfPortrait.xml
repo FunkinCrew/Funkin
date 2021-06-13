@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker https://www.codeandweb.com/texturepacker -->
+<TextureAtlas imagePath="gfPortrait.png">
+    <sprite name="gfPortHappy0000" x="878" y="1041" width="354" height="315"/>
+    <sprite name="gfPortEnter0000" x="869" y="155" width="365" height="304"/>
+</TextureAtlas>

@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="gfCheerPortrait.png">
+	<!-- Created with Adobe Animate version 20.0.0.17400 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="Portrait Enter instance 10000" x="0" y="0" width="1494" height="870"/>
+	<SubTexture name="Portrait Enter instance 10001" x="1554" y="0" width="1494" height="870"/>
+	<SubTexture name="Portrait Enter instance 10002" x="1554" y="0" width="1494" height="870"/>
+	<SubTexture name="Portrait Enter instance 10003" x="0" y="930" width="1494" height="870"/>
+	<SubTexture name="Portrait Enter instance 10004" x="0" y="930" width="1494" height="870"/>
+	<SubTexture name="Portrait Enter instance 10005" x="1554" y="930" width="1494" height="870"/>
+	<SubTexture name="Portrait Enter instance 10006" x="1554" y="930" width="1494" height="870"/>
+	<SubTexture name="Portrait Enter instance 10007" x="1554" y="930" width="1494" height="870"/>
+	<SubTexture name="Portrait Enter instance 10008" x="1554" y="930" width="1494" height="870"/>
+</TextureAtlas>

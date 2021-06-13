@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="whittyPortrait.png">
+	<!-- Created with MY OWN FUCKING HANDS -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="Whitty Portrait Normal instance 10000" x="45" y="47" width="302" height="299"/>
+	<SubTexture name="Whitty Portrait Agitated instance 10000" x="403" y="47" width="302" height="299"/>
+	<SubTexture name="Whitty Portrait Crazy instance 10000" x="761" y="47" width="310" height="299"/>
+	<SubTexture name="Whitty Portrait Crazy instance 10001" x="1093" y="47" width="310" height="299"/>
+	<SubTexture name="Whitty Portrait Crazy instance 10002" x="1415" y="47" width="310" height="299"/>
+	<SubTexture name="Whitty Portrait Crazy instance 10003" x="1747" y="47" width="310" height="299"/>
+</TextureAtlas>
