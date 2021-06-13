@@ -1,5 +1,5 @@
 ---
-name: mod issue
+name: Mod issue
 about: add mod
 title: ''
 labels: mod
