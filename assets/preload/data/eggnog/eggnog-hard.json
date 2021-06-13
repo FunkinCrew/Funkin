@@ -2884,6 +2884,7 @@
         "needsVoices": true,
         "player1": "bf-christmas",
         "player2": "parents-christmas",
+        "gf": "gf-christmas", "stage": "mall",
         "sectionLengths": [],
         "speed": 1.9000000000000008,
         "validScore": true
