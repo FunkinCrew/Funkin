@@ -1700,7 +1700,7 @@ class PlayState extends MusicBeatState
 			}
 		}
 
-		if ((up || right || down || left) && !boyfriend.stunned && generatedMusic)
+		if ((up || right || down || left) && /*!boyfriend.stunned &&*/ generatedMusic)
 		{
 			notes.forEachAlive(function(daNote:Note)
 			{
@@ -1836,6 +1836,8 @@ class PlayState extends MusicBeatState
 	{
 		if (keyP)
 			goodNoteHit(note);
+		else
+			badNoteCheck();
 	}
 
 	function goodNoteHit(note:Note):Void

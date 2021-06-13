@@ -222,12 +222,9 @@ class OptionsSubState extends MusicBeatSubstate
 						FlxG.save.flush();
 
 						if(FlxG.save.data.unlimitedFPS)
-						{
 							openfl.Lib.current.stage.frameRate = 1000;
-						} else
-						{
+						else
 							openfl.Lib.current.stage.frameRate = 120;
-						}
 					}
 				}
 			}
