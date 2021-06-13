@@ -144,10 +144,17 @@ class PlayState extends MusicBeatState
 
 	override public function create()
 	{
+		if(FlxG.save.data.unlimitedFPS)
+		{
+			openfl.Lib.current.stage.frameRate = 1000;
+		} else
+		{
+			openfl.Lib.current.stage.frameRate = 120;
+		}
+
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
 
-		// var gameCam:FlxCamera = FlxG.camera;
 		camGame = new FlxCamera();
 		camHUD = new FlxCamera();
 		camHUD.bgColor.alpha = 0;
@@ -155,7 +162,7 @@ class PlayState extends MusicBeatState
 		FlxG.cameras.reset(camGame);
 		FlxG.cameras.add(camHUD);
 
-		FlxCamera.defaultCameras = [camGame];
+		FlxG.cameras.setDefaultDrawTarget(camGame, true);
 
 		persistentUpdate = true;
 		persistentDraw = true;
@@ -1264,10 +1271,10 @@ class PlayState extends MusicBeatState
 
 					daNote.clipRect = swagRect;
 
-					if(daNote.animation.curAnim.name.endsWith('end') && daNote.prevNote != null)
-						daNote.y += daNote.prevNote.height;
-					else
-						daNote.y += daNote.height / 2;
+					//if(daNote.animation.curAnim.name.endsWith('end') && daNote.prevNote != null)
+						//daNote.y += daNote.prevNote.height;
+					//else
+						//daNote.y += daNote.height / 2;
 				}
 
 				if (!daNote.mustPress && daNote.wasGoodHit)
