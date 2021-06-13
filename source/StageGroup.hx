@@ -502,13 +502,13 @@ class StageGroup extends FlxGroup
 
     function lightningStrikeShit():Void
     {
+        PlayState.boyfriend.playAnim('scared', true);
+        PlayState.gf.playAnim('scared', true);
+        
         FlxG.sound.play(Paths.soundRandom('thunder_', 1, 2));
         halloweenBG.animation.play('lightning');
 
         lightningStrikeBeat = PlayState.currentBeat;
         lightningOffset = FlxG.random.int(8, 24);
-
-        PlayState.boyfriend.playAnim('scared', true);
-        PlayState.gf.playAnim('scared', true);
     }
 }
