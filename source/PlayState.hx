@@ -235,24 +235,23 @@ class PlayState extends MusicBeatState
 		DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
 		#end
 
-		stage = new StageGroup("evil-school");
+		stage = new StageGroup(SONG.stage);
 		defaultCamZoom = stage.camZoom;
 		add(stage);
 
-		switch (curStage)
-		{
-			case 'limo':
-				gfVersion = 'gf-car';
-			case 'mall' | 'mallEvil':
-				gfVersion = 'gf-christmas';
-			case 'school':
-				gfVersion = 'gf-pixel';
-			case 'schoolEvil':
-				gfVersion = 'gf-pixel';
-		}
+		gfVersion = SONG.gf;
 
-		if (curStage == 'limo')
-			gfVersion = 'gf-car';
+		//switch (curStage)
+		//{
+		//	case 'limo':
+		//		gfVersion = 'gf-car';
+		//	case 'mall' | 'mallEvil':
+		//		gfVersion = 'gf-christmas';
+		//	case 'school':
+		//		gfVersion = 'gf-pixel';
+		//	case 'schoolEvil':
+		//		gfVersion = 'gf-pixel';
+		//}
 
 		gf = new Character(400, 130, gfVersion);
 		gf.scrollFactor.set(0.95, 0.95);
