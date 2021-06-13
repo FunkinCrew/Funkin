@@ -12,7 +12,7 @@ import flixel.util.FlxColor;
 
 class OptionsSubState extends MusicBeatSubstate
 {
-	var textMenuItems:Array<String> = ['Controls', 'Sound', 'Misc','Graphics'];
+	var textMenuItems:Array<String> = ['Controls', 'Graphics', 'Sound', 'Misc'];
 	var curSelected:Int = 0;
 	var grpOptionsTexts:FlxTypedGroup<Alphabet>;
 
@@ -123,7 +123,7 @@ class OptionsSubState extends MusicBeatSubstate
 					case 'Back':
 					{
 						curSelected = 0;
-						textMenuItems = ['Controls', 'Sound', 'Misc', 'Graphics'];
+						textMenuItems = ['Controls', 'Graphics', 'Sound', 'Misc'];
 						spawnInTexts();
 					}
 
@@ -137,7 +137,7 @@ class OptionsSubState extends MusicBeatSubstate
 					case 'Graphics':
 					{
 						curSelected = 0;
-						textMenuItems = ["Back", "Opponent Side Glow", "VSync"];
+						textMenuItems = ["Back", "Opponent Side Glow", "Unlimited FPS"];
 						spawnInTexts();
 					}
 
@@ -208,6 +208,25 @@ class OptionsSubState extends MusicBeatSubstate
 							textMenuItems.push("No-hit On");
 						
 						spawnInTexts();
+					}
+
+					case 'Unlimited FPS':
+					{
+						if(FlxG.save.data.unlimitedFPS != null)
+						{
+							FlxG.save.data.unlimitedFPS = false;
+						}
+
+						FlxG.save.data.unlimitedFPS = !FlxG.save.data.unlimitedFPS;
+						FlxG.save.flush();
+
+						if(FlxG.save.data.unlimitedFPS)
+						{
+							openfl.Lib.current.stage.frameRate = 10000;
+						} else
+						{
+							openfl.Lib.current.stage.frameRate = 120;
+						}
 					}
 				}
 			}
