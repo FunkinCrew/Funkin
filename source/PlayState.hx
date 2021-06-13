@@ -1303,10 +1303,13 @@ class PlayState extends MusicBeatState
 									spr.offset.y -= 13;
 								}
 
-								new FlxTimer().start(0.1, function(tmr:FlxTimer) {
-									spr.animation.play('static', true);
-									spr.centerOffsets();
-								}, 1);
+								spr.animation.finishCallback = function(name:String) {
+									if(name != 'static')
+									{
+										spr.animation.play('static', true);
+										spr.centerOffsets();
+									}
+								}
 							}
 						});
 					}

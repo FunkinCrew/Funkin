@@ -46,7 +46,14 @@ class HealthIcon extends FlxSprite
 		animation.add('face', [10, 11], 0, false, isPlayer);
 
 		// custom goes here
+		
+		// plays anim lol
+		playChartAnimIGuessLolWhoKnows(char);
+		scrollFactor.set();
+	}
 
+	public function playChartAnimIGuessLolWhoKnows(?char:String = 'bf')
+	{
 		// coolio
 		switch(char)
 		{
@@ -63,7 +70,6 @@ class HealthIcon extends FlxSprite
 		}
 		
 		animation.play(char);
-		scrollFactor.set();
 	}
 
 	override function update(elapsed:Float)

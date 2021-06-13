@@ -1,5 +1,6 @@
 package;
 
+import flixel.addons.ui.FlxUIDropDownMenu;
 import polymod.format.ParseRules.PlainTextParseFormat;
 import flixel.FlxG;
 import flixel.FlxObject;
@@ -34,7 +35,8 @@ class AnimationDebug extends FlxState
 
 	override function create()
 	{
-		FlxG.sound.music.stop();
+		FlxG.mouse.visible = true;
+		//FlxG.sound.music.stop();
 
 		var gridBG:FlxSprite = FlxGridOverlay.create(10, 10);
 		gridBG.scrollFactor.set(0.5, 0.5);
@@ -79,6 +81,23 @@ class AnimationDebug extends FlxState
 		add(camFollow);
 
 		FlxG.camera.follow(camFollow);
+
+		var characters:Array<String> = CoolUtil.coolTextFile(Paths.txt('characterList'));
+
+		var charDropDown = new FlxUIDropDownMenu(10, 150, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
+		{
+			remove(char);
+			daAnim = characters[Std.parseInt(character)];
+			char = new Character(0, 0, daAnim);
+			char.screenCenter();
+			add(char);
+			updateTexts();
+			animList = [];
+			genBoyOffsets(true);
+		});
+
+		charDropDown.selectedLabel = daAnim;
+		add(charDropDown);
 
 		super.create();
 	}
