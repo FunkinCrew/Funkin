@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="PostExpGF_Assets.png">
+	<!-- Created with Adobe Animate version 21.0.0.35450 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="GF LayedDownHurt 0000" x="0" y="0" width="333" height="432" pivotX="-10.45" pivotY="-0.85" frameX="0" frameY="-15" frameWidth="333" frameHeight="449"/>
+	<SubTexture name="GF LayedDownHurt 0001" x="333" y="0" width="333" height="432" frameX="0" frameY="-15" frameWidth="333" frameHeight="449"/>
+	<SubTexture name="GF LayedDownHurt 0002" x="666" y="0" width="320" height="432" frameX="-8" frameY="-15" frameWidth="333" frameHeight="449"/>
+	<SubTexture name="GF LayedDownHurt 0003" x="986" y="0" width="320" height="432" frameX="-8" frameY="-15" frameWidth="333" frameHeight="449"/>
+	<SubTexture name="GF LayedDownHurt 0004" x="1306" y="0" width="310" height="432" frameX="-15" frameY="-15" frameWidth="333" frameHeight="449"/>
+	<SubTexture name="GF LayedDownHurt 0005" x="1616" y="0" width="310" height="432" frameX="-15" frameY="-15" frameWidth="333" frameHeight="449"/>
+	<SubTexture name="GF LayedDownHurt 0006" x="0" y="432" width="321" height="439" frameX="-7" frameY="-9" frameWidth="333" frameHeight="449"/>
+	<SubTexture name="GF LayedDownHurt 0007" x="321" y="432" width="321" height="439" frameX="-7" frameY="-9" frameWidth="333" frameHeight="449"/>
+	<SubTexture name="GF LayedDownHurt 0008" x="642" y="432" width="327" height="444" frameX="-4" frameY="-5" frameWidth="333" frameHeight="449"/>
+	<SubTexture name="GF LayedDownHurt 0009" x="969" y="432" width="327" height="444" frameX="-4" frameY="-5" frameWidth="333" frameHeight="449"/>
+	<SubTexture name="GF LayedDownHurt 0010" x="1296" y="432" width="321" height="447" frameX="-9" frameY="-2" frameWidth="333" frameHeight="449"/>
+	<SubTexture name="GF LayedDownHurt 0011" x="1617" y="432" width="321" height="447" frameX="-9" frameY="-2" frameWidth="333" frameHeight="449"/>
+	<SubTexture name="GF LayedDownHurt 0012" x="0" y="879" width="321" height="449" frameX="-9" frameY="0" frameWidth="333" frameHeight="449"/>
+	<SubTexture name="GF LayedDownHurt 0013" x="321" y="879" width="321" height="449" frameX="-9" frameY="0" frameWidth="333" frameHeight="449"/>
+	<SubTexture name="GF LayedDownHurt 0014" x="642" y="879" width="321" height="449" frameX="-9" frameY="0" frameWidth="333" frameHeight="449"/>
+	<SubTexture name="GF LayedDownHurt 0015" x="963" y="879" width="321" height="449" frameX="-9" frameY="0" frameWidth="333" frameHeight="449"/>
+</TextureAtlas>

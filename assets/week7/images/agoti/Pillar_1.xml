@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="Pillar_1.png">
+	<!-- Created with Adobe Animate version 21.0.0.35450 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="Pillar0000" x="0" y="0" width="494" height="1364"/>
+	<SubTexture name="Pillar0001" x="494" y="0" width="494" height="1364"/>
+	<SubTexture name="Pillar0002" x="988" y="0" width="494" height="1364"/>
+	<SubTexture name="Pillar0003" x="1482" y="0" width="494" height="1364"/>
+</TextureAtlas>

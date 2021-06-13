@@ -1,0 +1,103 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="sarvente_sheet.png">
+	<!-- Created with Kuro's hands and Sprite Cow -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="SarventeDown0000" x="1551" y="225" width="629" height="691" frameX="-4" frameY="0" frameWidth="632" frameHeight="691"/><!--1551,225,629,691 -->
+	<SubTexture name="SarventeDown0001" x="1551" y="225" width="629" height="691" frameX="-4" frameY="0" frameWidth="632" frameHeight="691"/>
+	<SubTexture name="SarventeDown0002" x="2235" y="229" width="625" height="686" frameX="0" frameY="-16" frameWidth="625" frameHeight="702"/><!--2235,229,625,686 to frm 14-->
+	<SubTexture name="SarventeDown0003" x="2235" y="229" width="625" height="686" frameX="0" frameY="-16" frameWidth="625" frameHeight="702"/>
+	<SubTexture name="SarventeDown0004" x="2235" y="229" width="625" height="686" frameX="0" frameY="-13" frameWidth="625" frameHeight="699"/>
+	<SubTexture name="SarventeDown0005" x="2235" y="229" width="625" height="686" frameX="0" frameY="-13" frameWidth="625" frameHeight="699"/>
+	<SubTexture name="SarventeDown0006" x="2235" y="229" width="625" height="686" frameX="0" frameY="-13" frameWidth="625" frameHeight="699"/>
+	<SubTexture name="SarventeDown0007" x="2235" y="229" width="625" height="686" frameX="0" frameY="-13" frameWidth="625" frameHeight="699"/>
+	<SubTexture name="SarventeDown0008" x="2235" y="229" width="625" height="686" frameX="0" frameY="-13" frameWidth="625" frameHeight="699"/>
+	<SubTexture name="SarventeDown0009" x="2235" y="229" width="625" height="686" frameX="0" frameY="-13" frameWidth="625" frameHeight="699"/>
+	<SubTexture name="SarventeDown0010" x="2235" y="229" width="625" height="686" frameX="0" frameY="-13" frameWidth="625" frameHeight="699"/>
+	<SubTexture name="SarventeDown0011" x="2235" y="229" width="625" height="686" frameX="0" frameY="-13" frameWidth="625" frameHeight="699"/>
+	<SubTexture name="SarventeDown0012" x="2235" y="229" width="625" height="686" frameX="0" frameY="-13" frameWidth="625" frameHeight="699"/>
+	<SubTexture name="SarventeDown0013" x="2235" y="229" width="625" height="686" frameX="0" frameY="-13" frameWidth="625" frameHeight="699"/>
+	<SubTexture name="SarventeDown0014" x="2235" y="229" width="625" height="686" frameX="0" frameY="-13" frameWidth="625" frameHeight="699"/>
+
+	<SubTexture name="SarventeIdle0000" x="65" y="1983" width="441" height="760" frameX="-10" frameY="0" frameWidth="460" frameHeight="760"/><!--0-->
+	<SubTexture name="SarventeIdle0001" x="528" y="1993" width="445" height="759" frameX="-8" frameY="-1" frameWidth="460" frameHeight="760"/><!--1-->
+	<SubTexture name="SarventeIdle0002" x="978" y="1993" width="454" height="753" frameX="-3" frameY="-7" frameWidth="460" frameHeight="760"/><!--2-->
+	<SubTexture name="SarventeIdle0003" x="1435" y="1997" width="460" height="750" frameX="0" frameY="-10" frameWidth="460" frameHeight="760"/><!--3-->
+	<SubTexture name="SarventeIdle0004" x="1907" y="1997" width="441" height="755" frameX="-10" frameY="-5" frameWidth="460" frameHeight="760"/><!--4-->
+	<SubTexture name="SarventeIdle0005" x="2360" y="1993" width="441" height="757" frameX="-10" frameY="-3" frameWidth="460" frameHeight="760"/><!--5-->
+	<SubTexture name="SarventeIdle0006" x="3412" y="156" width="442" height="760" frameX="-9" frameY="0" frameWidth="460" frameHeight="760"/><!--6-->
+	<SubTexture name="SarventeIdle0007" x="3412" y="156" width="442" height="760" frameX="-9" frameY="0" frameWidth="460" frameHeight="760"/><!--6-->
+	<SubTexture name="SarventeIdle0008" x="3412" y="156" width="442" height="760" frameX="-9" frameY="0" frameWidth="460" frameHeight="760"/><!--6-->
+	<SubTexture name="SarventeIdle0009" x="3412" y="156" width="442" height="760" frameX="-9" frameY="0" frameWidth="460" frameHeight="760"/><!--6-->
+	<SubTexture name="SarventeIdle0010" x="3412" y="156" width="442" height="760" frameX="-9" frameY="0" frameWidth="460" frameHeight="760"/><!--6-->
+	<SubTexture name="SarventeIdle0011" x="3412" y="156" width="442" height="760" frameX="-9" frameY="0" frameWidth="460" frameHeight="760"/><!--6-->
+	<SubTexture name="SarventeIdle0012" x="3412" y="156" width="442" height="760" frameX="-9" frameY="0" frameWidth="460" frameHeight="760"/><!--6-->
+
+	<!--SubTexture name="SarventeIdle0000" x="1422" y="1986" width="441" height="760" frameX="-4" frameY="-2" frameWidth="445" frameHeight="762"/><!-3 ->
+	<SubTexture name="SarventeIdle0001" x="1422" y="1986" width="441" height="760" frameX="-4" frameY="-2" frameWidth="445" frameHeight="762"/><!-3 ->
+	<SubTexture name="SarventeIdle0002" x="1422" y="1986" width="441" height="760" frameX="-4" frameY="-2" frameWidth="445" frameHeight="762"/><!-3 ->
+	<SubTexture name="SarventeIdle0003" x="965" y="1985" width="441" height="760" frameX="-4" frameY="-2" frameWidth="445" frameHeight="762"/><!-2 ->
+	<SubTexture name="SarventeIdle0004" x="965" y="1985" width="441" height="760" frameX="-4" frameY="-2" frameWidth="445" frameHeight="762"/><!-2 ->
+	<SubTexture name="SarventeIdle0005" x="517" y="1995" width="441" height="757" frameX="-4" frameY="-4" frameWidth="445" frameHeight="762"/><!-1 ->
+	<SubTexture name="SarventeIdle0006" x="1895" y="1988" width="439" height="755" frameX="-4" frameY="-3" frameWidth="443" frameHeight="758"/><!-4 ->
+	<SubTexture name="SarventeIdle0007" x="1895" y="1988" width="439" height="755" frameX="-4" frameY="-3" frameWidth="443" frameHeight="758"/><!-4 ->
+	<SubTexture name="SarventeIdle0008" x="2384" y="1993" width="438" height="754" frameX="-4" frameY="-3" frameWidth="442" frameHeight="758"/><!-5 ->
+	<SubTexture name="SarventeIdle0009" x="65" y="1982" width="441" height="759" frameX="-4" frameY="-2" frameWidth="445" frameHeight="761"/><!-0 ->
+	<SubTexture name="SarventeIdle0010" x="1422" y="1986" width="441" height="760" frameX="-4" frameY="-2" frameWidth="445" frameHeight="762"/><!-3 ->
+	<SubTexture name="SarventeIdle0011" x="1422" y="1986" width="441" height="760" frameX="-4" frameY="-2" frameWidth="445" frameHeight="762"/><!-3 ->
+	<SubTexture name="SarventeIdle0012" x="1422" y="1986" width="441" height="760" frameX="-4" frameY="-2" frameWidth="445" frameHeight="762"/><!-3 -->
+
+	<SubTexture name="SarventeLeft0000" x="1875" y="1058" width="518" height="742" frameX="0" frameY="0" frameWidth="529" frameHeight="742"/><!--1875,1058,518,742 -->
+	<SubTexture name="SarventeLeft0001" x="1875" y="1058" width="518" height="742" frameX="0" frameY="0" frameWidth="529" frameHeight="742"/>
+	<SubTexture name="SarventeLeft0002" x="2419" y="1058" width="518" height="741" frameX="-11" frameY="-15" frameWidth="529" frameHeight="756"/><!--2419,1058,518,741 -->
+	<SubTexture name="SarventeLeft0003" x="2419" y="1058" width="518" height="741" frameX="-11" frameY="-15" frameWidth="529" frameHeight="756"/>
+	<SubTexture name="SarventeLeft0004" x="2947" y="1062" width="517" height="738" frameX="-11" frameY="-11" frameWidth="528" frameHeight="749"/><!--2947,1062,517,738 to  frm 9-->
+	<SubTexture name="SarventeLeft0005" x="2947" y="1062" width="517" height="738" frameX="-11" frameY="-11" frameWidth="528" frameHeight="749"/>
+	<SubTexture name="SarventeLeft0006" x="2947" y="1062" width="517" height="738" frameX="-11" frameY="-11" frameWidth="528" frameHeight="749"/>
+	<SubTexture name="SarventeLeft0007" x="2947" y="1062" width="517" height="738" frameX="-11" frameY="-11" frameWidth="528" frameHeight="749"/>
+	<SubTexture name="SarventeLeft0008" x="2947" y="1062" width="517" height="738" frameX="-11" frameY="-11" frameWidth="528" frameHeight="749"/>
+	<SubTexture name="SarventeLeft0009" x="2947" y="1062" width="517" height="738" frameX="-11" frameY="-11" frameWidth="528" frameHeight="749"/>
+	
+	<SubTexture name="SarventeRight0000" x="9" y="150" width="492" height="764"/><!--9,150,492,764 -->
+	<SubTexture name="SarventeRight0001" x="9" y="150" width="492" height="764"/>
+	<SubTexture name="SarventeRight0002" x="507" y="150" width="484" height="764" frameX="0" frameY="-9" frameWidth="484" frameHeight="773"/><!--507,150,484,764 -->
+	<SubTexture name="SarventeRight0003" x="507" y="150" width="484" height="764" frameX="0" frameY="-9" frameWidth="484" frameHeight="773"/>
+	<SubTexture name="SarventeRight0004" x="1025" y="137" width="494" height="762" frameX="0" frameY="-7" frameWidth="494" frameHeight="769"/><!--1025,137,494,762 to frm9-->
+	<SubTexture name="SarventeRight0005" x="1025" y="137" width="494" height="762" frameX="0" frameY="-7" frameWidth="494" frameHeight="769"/>
+	<SubTexture name="SarventeRight0006" x="1025" y="137" width="494" height="762" frameX="0" frameY="-7" frameWidth="494" frameHeight="769"/>
+	<SubTexture name="SarventeRight0007" x="1025" y="137" width="494" height="762" frameX="0" frameY="-7" frameWidth="494" frameHeight="769"/>
+	<SubTexture name="SarventeRight0008" x="1025" y="137" width="494" height="762" frameX="0" frameY="-7" frameWidth="494" frameHeight="769"/>
+	<SubTexture name="SarventeRight0009" x="1025" y="137" width="494" height="762" frameX="0" frameY="-7" frameWidth="494" frameHeight="769"/>
+
+	<SubTexture name="SarventeUp0000" x="84" y="1044" width="406" height="816" frameX="0" frameY="-9" frameWidth="406" frameHeight="825"/><!--84,1044,406,819 -->
+	<SubTexture name="SarventeUp0001" x="84" y="1044" width="406" height="816" frameX="0" frameY="-9" frameWidth="406" frameHeight="825"/>
+	<SubTexture name="SarventeUp0002" x="529" y="1029" width="417" height="822" frameX="0" frameY="-9" frameWidth="417" frameHeight="831"/><!--529,1029,417,822 -->
+	<SubTexture name="SarventeUp0003" x="529" y="1029" width="417" height="822" frameX="0" frameY="-9" frameWidth="417" frameHeight="831"/>
+	<SubTexture name="SarventeUp0004" x="992" y="1032" width="417" height="822" frameX="-7" frameY="0" frameWidth="424" frameHeight="822"/><!--992,1032,417,822 -->
+	<SubTexture name="SarventeUp0005" x="992" y="1032" width="417" height="822" frameX="-7" frameY="0" frameWidth="424" frameHeight="822"/>
+	<SubTexture name="SarventeUp0006" x="529" y="1029" width="417" height="822" frameX="-7" frameY="0" frameWidth="424" frameHeight="822"/><!--529,1029,417,822 repeat 1&2 to frm 14-->
+	<SubTexture name="SarventeUp0007" x="529" y="1029" width="417" height="822" frameX="-7" frameY="0" frameWidth="424" frameHeight="822"/>
+	<SubTexture name="SarventeUp0008" x="992" y="1032" width="417" height="822" frameX="-7" frameY="-1" frameWidth="424" frameHeight="823"/>
+	<SubTexture name="SarventeUp0009" x="992" y="1032" width="417" height="822" frameX="-7" frameY="-1" frameWidth="424" frameHeight="823"/>
+	<SubTexture name="SarventeUp0010" x="529" y="1029" width="417" height="822" frameX="-7" frameY="-1" frameWidth="424" frameHeight="823"/>
+	<SubTexture name="SarventeUp0011" x="529" y="1029" width="417" height="822" frameX="-7" frameY="-1" frameWidth="424" frameHeight="823"/>
+	<SubTexture name="SarventeUp0012" x="992" y="1032" width="417" height="822" frameX="-7" frameY="-1" frameWidth="424" frameHeight="823"/>
+	<SubTexture name="SarventeUp0013" x="992" y="1032" width="417" height="822" frameX="-7" frameY="-1" frameWidth="424" frameHeight="823"/>
+	<SubTexture name="SarventeUp0014" x="529" y="1029" width="417" height="822" frameX="-7" frameY="-1" frameWidth="424" frameHeight="823"/>
+
+	<SubTexture name="SarventeHey0000" x="3103" y="1990" width="441" height="760" frameX="0" frameY="0" frameWidth="441" frameHeight="760"/>
+	<SubTexture name="SarventeHey0001" x="3103" y="1990" width="441" height="760" frameX="0" frameY="0" frameWidth="441" frameHeight="760"/>
+	<SubTexture name="SarventeHey0002" x="3566" y="1990" width="440" height="761" frameX="-1" frameY="-8" frameWidth="442" frameHeight="769"/>
+	<SubTexture name="SarventeHey0003" x="3566" y="1990" width="440" height="761" frameX="-1" frameY="-8" frameWidth="442" frameHeight="769"/>
+	<SubTexture name="SarventeHey0004" x="3566" y="1990" width="440" height="761" frameX="-1" frameY="-6" frameWidth="442" frameHeight="767"/>
+	<SubTexture name="SarventeHey0005" x="3566" y="1990" width="440" height="761" frameX="-1" frameY="-6" frameWidth="442" frameHeight="767"/>
+	<SubTexture name="SarventeHey0006" x="3566" y="1990" width="440" height="761" frameX="-1" frameY="-6" frameWidth="442" frameHeight="767"/>
+	<SubTexture name="SarventeHey0007" x="3566" y="1990" width="440" height="761" frameX="-1" frameY="-6" frameWidth="442" frameHeight="767"/>
+	<SubTexture name="SarventeHey0008" x="3566" y="1990" width="440" height="761" frameX="-1" frameY="-6" frameWidth="442" frameHeight="767"/>
+	<SubTexture name="SarventeHey0009" x="3566" y="1990" width="440" height="761" frameX="-1" frameY="-6" frameWidth="442" frameHeight="767"/>
+	<SubTexture name="SarventeHey0010" x="3566" y="1990" width="440" height="761" frameX="-1" frameY="-6" frameWidth="442" frameHeight="767"/>
+	<SubTexture name="SarventeHey0011" x="3566" y="1990" width="440" height="761" frameX="-1" frameY="-6" frameWidth="442" frameHeight="767"/>
+	<SubTexture name="SarventeHey0012" x="3566" y="1990" width="440" height="761" frameX="-1" frameY="-6" frameWidth="442" frameHeight="767"/>
+	<SubTexture name="SarventeHey0013" x="3566" y="1990" width="440" height="761" frameX="-1" frameY="-6" frameWidth="442" frameHeight="767"/>
+	<SubTexture name="SarventeHey0014" x="3103" y="1990" width="441" height="760" frameX="0" frameY="-6" frameWidth="441" frameHeight="766"/>
+	
+</TextureAtlas>

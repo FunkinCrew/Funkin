@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="smokinhotbabe.png">
+	<!-- Created with Kuro's hands and Sprite Cow -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="LuciferSarvDown0000" x="1708" y="208" width="567" height="678" frameX="0" frameY="-142" frameWidth="567" frameHeight="820"/><!--0-->
+	<SubTexture name="LuciferSarvDown0001" x="1708" y="208" width="567" height="678" frameX="0" frameY="-142" frameWidth="567" frameHeight="820"/><!--0-->
+	<SubTexture name="LuciferSarvDown0002" x="1708" y="208" width="567" height="678" frameX="0" frameY="-142" frameWidth="567" frameHeight="820"/><!--0-->
+	<SubTexture name="LuciferSarvDown0003" x="2342" y="220" width="570" height="677" frameX="0" frameY="-143" frameWidth="570" frameHeight="820"/><!--1-->
+	<SubTexture name="LuciferSarvDown0004" x="2342" y="220" width="570" height="677" frameX="0" frameY="-143" frameWidth="570" frameHeight="820"/><!--1-->
+	<SubTexture name="LuciferSarvDown0005" x="2342" y="220" width="570" height="677" frameX="0" frameY="-143" frameWidth="570" frameHeight="820"/><!--1-->
+	<SubTexture name="LuciferSarvDown0006" x="2342" y="220" width="570" height="677" frameX="0" frameY="-143" frameWidth="570" frameHeight="820"/><!--1-->
+	<SubTexture name="LuciferSarvDown0007" x="2342" y="220" width="570" height="677" frameX="0" frameY="-143" frameWidth="570" frameHeight="820"/><!--1-->
+	<SubTexture name="LuciferSarvDown0008" x="2342" y="220" width="570" height="677" frameX="0" frameY="-143" frameWidth="570" frameHeight="820"/><!--1-->
+	<SubTexture name="LuciferSarvDown0009" x="2342" y="220" width="570" height="677" frameX="0" frameY="-143" frameWidth="570" frameHeight="820"/><!--1-->
+
+	<SubTexture name="LuciferSarvIdle0000" x="986" y="1932" width="447" height="803" frameX="-5" frameY="-17" frameWidth="452" frameHeight="820"/><!--2-->
+	<SubTexture name="LuciferSarvIdle0001" x="986" y="1932" width="447" height="803" frameX="-5" frameY="-17" frameWidth="452" frameHeight="820"/><!--2-->
+	<SubTexture name="LuciferSarvIdle0002" x="986" y="1932" width="447" height="803" frameX="-5" frameY="-17" frameWidth="452" frameHeight="820"/><!--2-->
+	<SubTexture name="LuciferSarvIdle0003" x="24" y="1921" width="448" height="800" frameX="-5" frameY="-20" frameWidth="453" frameHeight="820"/><!--0-->
+	<SubTexture name="LuciferSarvIdle0004" x="24" y="1921" width="448" height="800" frameX="-5" frameY="-20" frameWidth="453" frameHeight="820"/><!--0-->
+	<SubTexture name="LuciferSarvIdle0005" x="1487" y="1920" width="447" height="803" frameX="-5" frameY="-17" frameWidth="452" frameHeight="820"/><!--3-->
+	<SubTexture name="LuciferSarvIdle0006" x="1487" y="1920" width="447" height="803" frameX="-5" frameY="-17" frameWidth="452" frameHeight="820"/><!--3-->
+	<SubTexture name="LuciferSarvIdle0007" x="488" y="1937" width="450" height="801" frameX="-5" frameY="-19" frameWidth="455" frameHeight="820"/><!--1-->
+	<SubTexture name="LuciferSarvIdle0008" x="1986" y="1920" width="455" height="803" frameX="-5" frameY="-17" frameWidth="460" frameHeight="820"/><!--4-->
+	<SubTexture name="LuciferSarvIdle0009" x="1986" y="1920" width="455" height="803" frameX="-5" frameY="-17" frameWidth="460" frameHeight="820"/><!--4-->
+	<SubTexture name="LuciferSarvIdle0010" x="2477" y="1939" width="462" height="802" frameX="-5" frameY="-18" frameWidth="467" frameHeight="820"/><!--5-->
+	<SubTexture name="LuciferSarvIdle0011" x="2477" y="1939" width="462" height="802" frameX="-5" frameY="-18" frameWidth="467" frameHeight="820"/><!--5-->
+	<SubTexture name="LuciferSarvIdle0012" x="2477" y="1939" width="462" height="802" frameX="-5" frameY="-18" frameWidth="467" frameHeight="820"/><!--5-->
+	<SubTexture name="LuciferSarvIdle0013" x="2477" y="1939" width="462" height="802" frameX="-5" frameY="-18" frameWidth="467" frameHeight="820"/><!--5-->
+	<SubTexture name="LuciferSarvIdle0014" x="2477" y="1939" width="462" height="802" frameX="-5" frameY="-18" frameWidth="467" frameHeight="820"/><!--5-->
+	<SubTexture name="LuciferSarvIdle0015" x="1986" y="1920" width="455" height="803" frameX="-5" frameY="-17" frameWidth="460" frameHeight="820"/><!--4-->
+	<SubTexture name="LuciferSarvIdle0016" x="1986" y="1920" width="455" height="803" frameX="-5" frameY="-17" frameWidth="460" frameHeight="820"/><!--4-->
+	<SubTexture name="LuciferSarvIdle0017" x="488" y="1937" width="450" height="801" frameX="-5" frameY="-19" frameWidth="455" frameHeight="820"/><!--1-->
+	<SubTexture name="LuciferSarvIdle0018" x="1487" y="1920" width="447" height="803" frameX="-5" frameY="-17" frameWidth="452" frameHeight="820"/><!--3-->
+	<SubTexture name="LuciferSarvIdle0019" x="1487" y="1920" width="447" height="803" frameX="-5" frameY="-17" frameWidth="452" frameHeight="820"/><!--3-->
+	<SubTexture name="LuciferSarvIdle0020" x="24" y="1921" width="448" height="800" frameX="-5" frameY="-20" frameWidth="453" frameHeight="820"/><!--0-->
+	<SubTexture name="LuciferSarvIdle0021" x="24" y="1921" width="448" height="800" frameX="-5" frameY="-20" frameWidth="453" frameHeight="820"/><!--0-->
+	<SubTexture name="LuciferSarvIdle0022" x="986" y="1932" width="447" height="803" frameX="-5" frameY="-17" frameWidth="452" frameHeight="820"/><!--2-->
+	<SubTexture name="LuciferSarvIdle0023" x="986" y="1932" width="447" height="803" frameX="-5" frameY="-17" frameWidth="452" frameHeight="820"/><!--2-->
+	<SubTexture name="LuciferSarvIdle0024" x="986" y="1932" width="447" height="803" frameX="-5" frameY="-17" frameWidth="452" frameHeight="820"/><!--2-->
+
+	<SubTexture name="LuciferSarvLeft0000" x="1762" y="1045" width="600" height="736" frameX="0" frameY="-84" frameWidth="600" frameHeight="820"/><!--0-->
+	<SubTexture name="LuciferSarvLeft0001" x="1762" y="1045" width="600" height="736" frameX="0" frameY="-84" frameWidth="600" frameHeight="820"/><!--0-->
+	<SubTexture name="LuciferSarvLeft0002" x="1762" y="1045" width="600" height="736" frameX="0" frameY="-84" frameWidth="600" frameHeight="820"/><!--0-->
+	<SubTexture name="LuciferSarvLeft0003" x="2399" y="1034" width="599" height="734" frameX="-2" frameY="-86" frameWidth="601" frameHeight="820"/><!--1-->
+	<SubTexture name="LuciferSarvLeft0004" x="2399" y="1034" width="599" height="734" frameX="-2" frameY="-86" frameWidth="601" frameHeight="820"/><!--1-->
+	<SubTexture name="LuciferSarvLeft0005" x="2399" y="1034" width="599" height="734" frameX="-2" frameY="-86" frameWidth="601" frameHeight="820"/><!--1-->
+	<SubTexture name="LuciferSarvLeft0006" x="3002" y="1035" width="597" height="737" frameX="0" frameY="-83" frameWidth="597" frameHeight="820"/><!--2-->
+	<SubTexture name="LuciferSarvLeft0007" x="3002" y="1035" width="597" height="737" frameX="0" frameY="-83" frameWidth="597" frameHeight="820"/><!--2-->
+	<SubTexture name="LuciferSarvLeft0008" x="3002" y="1035" width="597" height="737" frameX="0" frameY="-83" frameWidth="597" frameHeight="820"/><!--2-->
+	<SubTexture name="LuciferSarvLeft0009" x="3002" y="1035" width="597" height="737" frameX="0" frameY="-83" frameWidth="597" frameHeight="820"/><!--2-->
+	
+	<SubTexture name="LuciferSarvRight0000" x="23" y="155" width="521" height="719" frameX="0" frameY="-101" frameWidth="521" frameHeight="820"/><!--0-->
+	<SubTexture name="LuciferSarvRight0001" x="23" y="155" width="521" height="719" frameX="0" frameY="-101" frameWidth="521" frameHeight="820"/><!--0-->
+	<SubTexture name="LuciferSarvRight0002" x="23" y="155" width="521" height="719" frameX="0" frameY="-101" frameWidth="521" frameHeight="820"/><!--0-->
+	<SubTexture name="LuciferSarvRight0003" x="560" y="164" width="520" height="709" frameX="-7" frameY="-111" frameWidth="527" frameHeight="820"/><!--1-->
+	<SubTexture name="LuciferSarvRight0004" x="560" y="164" width="520" height="709" frameX="-7" frameY="-111" frameWidth="527" frameHeight="820"/><!--1-->
+	<SubTexture name="LuciferSarvRight0005" x="560" y="164" width="520" height="709" frameX="-7" frameY="-111" frameWidth="527" frameHeight="820"/><!--1-->
+	<SubTexture name="LuciferSarvRight0006" x="560" y="164" width="520" height="709" frameX="-7" frameY="-111" frameWidth="527" frameHeight="820"/><!--1-->
+	<SubTexture name="LuciferSarvRight0007" x="560" y="164" width="520" height="709" frameX="-7" frameY="-111" frameWidth="527" frameHeight="820"/><!--1-->
+	<SubTexture name="LuciferSarvRight0008" x="1087" y="177" width="519" height="712" frameX="-9" frameY="-108" frameWidth="528" frameHeight="820"/><!--2-->
+	<SubTexture name="LuciferSarvRight0009" x="1087" y="177" width="519" height="712" frameX="-9" frameY="-108" frameWidth="528" frameHeight="820"/><!--2-->
+	<SubTexture name="LuciferSarvRight0010" x="1087" y="177" width="519" height="712" frameX="-9" frameY="-108" frameWidth="528" frameHeight="820"/><!--2-->
+	<SubTexture name="LuciferSarvRight0011" x="1087" y="177" width="519" height="712" frameX="-9" frameY="-108" frameWidth="528" frameHeight="820"/><!--2-->
+	<SubTexture name="LuciferSarvRight0012" x="1087" y="177" width="519" height="712" frameX="-9" frameY="-108" frameWidth="528" frameHeight="820"/><!--2-->
+	
+	<SubTexture name="LuciferSarvUp0000" x="35" y="1002" width="525" height="820" frameX="0" frameY="0" frameWidth="525" frameHeight="820"/><!--0-->
+	<SubTexture name="LuciferSarvUp0001" x="35" y="1002" width="525" height="820" frameX="0" frameY="0" frameWidth="525" frameHeight="820"/><!--0-->
+	<SubTexture name="LuciferSarvUp0002" x="583" y="1016" width="526" height="820" frameX="-2" frameY="0" frameWidth="528" frameHeight="820"/><!--1-->
+	<SubTexture name="LuciferSarvUp0003" x="583" y="1016" width="526" height="820" frameX="-2" frameY="0" frameWidth="528" frameHeight="820"/><!--1-->
+	<SubTexture name="LuciferSarvUp0004" x="583" y="1016" width="526" height="820" frameX="-2" frameY="0" frameWidth="528" frameHeight="820"/><!--1-->
+	<SubTexture name="LuciferSarvUp0005" x="583" y="1016" width="526" height="820" frameX="-2" frameY="0" frameWidth="528" frameHeight="820"/><!--1-->
+	<SubTexture name="LuciferSarvUp0006" x="583" y="1016" width="526" height="820" frameX="-2" frameY="0" frameWidth="528" frameHeight="820"/><!--1-->
+	<SubTexture name="LuciferSarvUp0007" x="583" y="1016" width="526" height="820" frameX="-2" frameY="0" frameWidth="528" frameHeight="820"/><!--1-->
+	<SubTexture name="LuciferSarvUp0008" x="1131" y="1023" width="528" height="816" frameX="-4" frameY="-4" frameWidth="534" frameHeight="820"/><!--2-->
+	<SubTexture name="LuciferSarvUp0009" x="1131" y="1023" width="528" height="816" frameX="-4" frameY="-4" frameWidth="534" frameHeight="820"/><!--2-->
+	<SubTexture name="LuciferSarvUp0010" x="1131" y="1023" width="528" height="816" frameX="-4" frameY="-4" frameWidth="534" frameHeight="820"/><!--2-->
+	<SubTexture name="LuciferSarvUp0011" x="1131" y="1023" width="528" height="816" frameX="-4" frameY="-4" frameWidth="534" frameHeight="820"/><!--2-->
+	<SubTexture name="LuciferSarvUp0012" x="1131" y="1023" width="528" height="816" frameX="-4" frameY="-4" frameWidth="534" frameHeight="820"/><!--2-->
+	
+	
+</TextureAtlas>

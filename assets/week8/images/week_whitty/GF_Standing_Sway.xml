@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="GF_Standing_Sway.png">
+	<!-- Created with Adobe Animate version 21.0.3.38773 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="Idle Left0000" x="5" y="5" width="355" height="432"/>
+	<SubTexture name="Idle Left0001" x="370" y="5" width="355" height="432"/>
+	<SubTexture name="Idle Left0002" x="370" y="5" width="355" height="432"/>
+	<SubTexture name="Idle Left0003" x="735" y="5" width="355" height="432"/>
+	<SubTexture name="Idle Left0004" x="1100" y="5" width="355" height="432"/>
+	<SubTexture name="Idle Left0005" x="1100" y="5" width="355" height="432"/>
+	<SubTexture name="Idle Right0000" x="1465" y="5" width="360" height="433"/>
+	<SubTexture name="Idle Right0001" x="5" y="448" width="360" height="433"/>
+	<SubTexture name="Idle Right0002" x="5" y="448" width="360" height="433"/>
+	<SubTexture name="Idle Right0003" x="375" y="448" width="360" height="433"/>
+	<SubTexture name="Idle Right0004" x="745" y="448" width="360" height="433"/>
+	<SubTexture name="Idle Right0005" x="745" y="448" width="360" height="433"/>
+	<SubTexture name="Sad0000" x="1115" y="448" width="325" height="425"/>
+	<SubTexture name="Sad0001" x="1115" y="448" width="325" height="425"/>
+	<SubTexture name="Sad0002" x="1450" y="448" width="325" height="425"/>
+	<SubTexture name="Sad0003" x="1450" y="448" width="325" height="425"/>
+	<SubTexture name="Sad0004" x="5" y="891" width="325" height="425"/>
+	<SubTexture name="Sad0005" x="5" y="891" width="325" height="425"/>
+	<SubTexture name="Sad0006" x="340" y="891" width="325" height="425"/>
+	<SubTexture name="Sad0007" x="340" y="891" width="325" height="425"/>
+	<SubTexture name="Sad0008" x="1115" y="448" width="325" height="425"/>
+	<SubTexture name="Sad0009" x="1115" y="448" width="325" height="425"/>
+	<SubTexture name="Sad0010" x="1450" y="448" width="325" height="425"/>
+	<SubTexture name="Sad0011" x="1450" y="448" width="325" height="425"/>
+	<SubTexture name="Scared0000" x="675" y="891" width="357" height="432"/>
+	<SubTexture name="Scared0001" x="1042" y="891" width="357" height="432"/>
+	<SubTexture name="Scared0002" x="1409" y="891" width="357" height="432"/>
+	<SubTexture name="Scared0003" x="5" y="1333" width="357" height="432"/>
+</TextureAtlas>

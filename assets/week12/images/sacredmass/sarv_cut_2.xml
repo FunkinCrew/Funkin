@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker https://www.codeandweb.com/texturepacker -->
+<TextureAtlas imagePath="theseknees.png">
+    <SubTexture name="TiredSarv0000" x="1" y="1" width="890" height="920"/>
+    <SubTexture name="TiredSarv0001" x="893" y="1" width="890" height="920"/>
+    <SubTexture name="TiredSarv0002" x="1785" y="1" width="890" height="920"/>
+    <SubTexture name="TiredSarv0003" x="2677" y="1" width="890" height="920"/>
+    <SubTexture name="TiredSarv0004" x="1" y="923" width="890" height="920"/>
+    <SubTexture name="TiredSarv0005" x="893" y="923" width="890" height="920"/>
+    <SubTexture name="TiredSarv0006" x="1785" y="923" width="890" height="920"/>
+    <SubTexture name="TiredSarv0007" x="2677" y="923" width="890" height="920"/>
+    <SubTexture name="TiredSarv0008" x="1" y="1845" width="890" height="920"/>
+    <SubTexture name="TiredSarv0009" x="893" y="1845" width="890" height="920"/>
+    <SubTexture name="TiredSarv0010" x="1785" y="1845" width="890" height="920"/>
+    <SubTexture name="TiredSarv0011" x="2677" y="1845" width="890" height="920"/>
+</TextureAtlas>
