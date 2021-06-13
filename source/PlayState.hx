@@ -1642,9 +1642,6 @@ class PlayState extends MusicBeatState
 			{
 				var daNote = possibleNotes[0];
 
-				if (FlxG.save.data.nohit)
-					noteCheck(true, daNote);
-
 				// Jump notes
 				if (possibleNotes.length >= 2)
 				{
@@ -1767,6 +1764,9 @@ class PlayState extends MusicBeatState
 				gf.playAnim('sad');
 			}
 			combo = 0;
+
+			if (FlxG.save.data.nohit)
+				health = 0;
 
 			songScore -= 10;
 
