@@ -1,4 +1,4 @@
-# Latest changelog/Changelog for 1.0.0
+# Latest (master) changelog/Changelog for 1.0.0
 
 Changes marked with 💖 will be listed in the short version of the changelog in `version.downloadMe`.
 

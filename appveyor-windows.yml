@@ -42,5 +42,5 @@ build_script:
 
 artifacts:
   - path: export/release/windows/bin
-    name: Windows release
+    name: KadeEngine-Windows
     type: zip
