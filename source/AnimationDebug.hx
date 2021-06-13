@@ -84,7 +84,7 @@ class AnimationDebug extends FlxState
 
 		var characters:Array<String> = CoolUtil.coolTextFile(Paths.txt('characterList'));
 
-		var charDropDown = new FlxUIDropDownMenu(10, 150, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
+		var charDropDown = new FlxUIDropDownMenu(10, 500, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
 		{
 			remove(char);
 			daAnim = characters[Std.parseInt(character)];
