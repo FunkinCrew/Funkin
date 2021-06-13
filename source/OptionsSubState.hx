@@ -212,6 +212,7 @@ class OptionsSubState extends MusicBeatSubstate
 
 					case 'Unlimited FPS':
 					{
+						inMenu = false;
 						if(FlxG.save.data.unlimitedFPS != null)
 						{
 							FlxG.save.data.unlimitedFPS = false;
