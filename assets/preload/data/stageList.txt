@@ -1,0 +1,8 @@
+stage
+spooky
+philly
+limo
+mall
+evil-mall
+school
+evil-school
