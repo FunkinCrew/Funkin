@@ -63,11 +63,11 @@ class Song
 	public static function loadFromJson(jsonInput:String, ?folder:String):SwagSong
 	{
 		var rawJson:String = "";
-		if (jsonInput != folder)
+		if (jsonInput != folder && FNFAssets.exists("assets/data/" + folder.toLowerCase() + "/" + folder.toLowerCase() + ".json"))
 		{
 			// means this isn't normal difficulty
 			// raw json 
-			// folder is always just the song name
+
 			rawJson = FNFAssets.getText("assets/data/"+folder.toLowerCase()+"/"+folder.toLowerCase()+".json").trim();
 		} else {
 			rawJson = FNFAssets.getText("assets/data/" + folder.toLowerCase() + "/" + jsonInput.toLowerCase() + '.json').trim();
