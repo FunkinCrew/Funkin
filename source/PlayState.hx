@@ -237,7 +237,12 @@ class PlayState extends MusicBeatState
 
 		stage = new StageGroup(SONG.stage);
 		defaultCamZoom = stage.camZoom;
-		curStage = SONG.stage;
+		if(SONG.stage != null)
+		{
+			curStage = SONG.stage;
+		} else {
+			curStage = 'stage';
+		}
 		add(stage);
 
 		gfVersion = SONG.gf;
