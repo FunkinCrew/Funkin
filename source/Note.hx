@@ -54,7 +54,7 @@ class Note extends FlxSprite
 		switch (daStage)
 		{
 			case 'school' | 'evil-school':
-				loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels', 'week6'), true, 17, 17);
+				loadGraphic(Paths.image('ui/arrows-pixels', 'shared'), true, 17, 17);
 
 				animation.add('greenScroll', [6]);
 				animation.add('redScroll', [7]);
@@ -63,7 +63,7 @@ class Note extends FlxSprite
 
 				if (isSustainNote)
 				{
-					loadGraphic(Paths.image('weeb/pixelUI/arrowEnds', 'week6'), true, 7, 6);
+					loadGraphic(Paths.image('ui/arrowEnds', 'shared'), true, 7, 6);
 
 					animation.add('purpleholdend', [4]);
 					animation.add('greenholdend', [6]);
