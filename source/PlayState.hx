@@ -1,5 +1,6 @@
 package;
 
+import openfl.display.Stage;
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -57,9 +58,9 @@ class PlayState extends MusicBeatState
 
 	private var vocals:FlxSound;
 
-	private var dad:Character;
-	private var gf:Character;
-	private var boyfriend:Boyfriend;
+	public static var dad:Character;
+	public static var gf:Character;
+	public static var boyfriend:Boyfriend;
 
 	private var notes:FlxTypedGroup<Note>;
 	private var unspawnNotes:Array<Note> = [];
@@ -70,6 +71,8 @@ class PlayState extends MusicBeatState
 	private var camFollow:FlxObject;
 
 	private static var prevCamFollow:FlxObject;
+
+	private var stage:StageGroup;
 
 	private var strumLineNotes:FlxTypedGroup<FlxSprite>;
 	private var playerStrums:FlxTypedGroup<FlxSprite>;
@@ -92,6 +95,8 @@ class PlayState extends MusicBeatState
 	private var iconP2:HealthIcon;
 	private var camHUD:FlxCamera;
 	private var camGame:FlxCamera;
+
+	public static var currentBeat = 0;
 
 	var gfVersion:String = 'gf';
 
@@ -230,6 +235,7 @@ class PlayState extends MusicBeatState
 		DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
 		#end
 
+		/*
 		switch (SONG.song.toLowerCase())
 		{
                         case 'spookeez' | 'monster' | 'south': 
@@ -483,21 +489,21 @@ class PlayState extends MusicBeatState
 		          }
 		          case 'thorns':
 		          {
-		                  curStage = 'schoolEvil';
+		                curStage = 'schoolEvil';
 
-		                  var waveEffectBG = new FlxWaveEffect(FlxWaveMode.ALL, 2, -1, 3, 2);
-		                  var waveEffectFG = new FlxWaveEffect(FlxWaveMode.ALL, 2, -1, 5, 2);
+		                var waveEffectBG = new FlxWaveEffect(FlxWaveMode.ALL, 2, -1, 3, 2);
+		                var waveEffectFG = new FlxWaveEffect(FlxWaveMode.ALL, 2, -1, 5, 2);
 
-		                  var posX = 400;
-	                          var posY = 200;
+		                var posX = 400;
+	                    var posY = 200;
 
-		                  var bg:FlxSprite = new FlxSprite(posX, posY);
-		                  bg.frames = Paths.getSparrowAtlas('weeb/animatedEvilSchool');
-		                  bg.animation.addByPrefix('idle', 'background 2', 24);
-		                  bg.animation.play('idle');
-		                  bg.scrollFactor.set(0.8, 0.9);
-		                  bg.scale.set(6, 6);
-		                  add(bg);
+		                var bg:FlxSprite = new FlxSprite(posX, posY);
+		                bg.frames = Paths.getSparrowAtlas('weeb/animatedEvilSchool');
+		                bg.animation.addByPrefix('idle', 'background 2', 24);
+		                bg.animation.play('idle');
+		                bg.scrollFactor.set(0.8, 0.9);
+		                bg.scale.set(6, 6);
+		                add(bg);
 
 		                  /* 
 		                           var bg:FlxSprite = new FlxSprite(posX, posY).loadGraphic(Paths.image('weeb/evilSchoolBG'));
@@ -541,7 +547,6 @@ class PlayState extends MusicBeatState
 
 		                            add(waveSprite);
 		                            add(waveSpriteFG);
-		                    */
 		          }
 		          default:
 		          {
@@ -571,6 +576,10 @@ class PlayState extends MusicBeatState
 		                  add(stageCurtains);
 		          }
               }
+		*/
+		stage = new StageGroup("evil-school");
+		defaultCamZoom = stage.camZoom;
+		add(stage);
 
 		switch (curStage)
 		{
@@ -1727,6 +1736,8 @@ class PlayState extends MusicBeatState
 		if (FlxG.keys.justPressed.ONE)
 			endSong();
 		#end
+
+		currentBeat = curBeat;
 	}
 
 	function endSong():Void
@@ -2383,6 +2394,8 @@ class PlayState extends MusicBeatState
 	override function beatHit()
 	{
 		super.beatHit();
+
+		stage.beatHit();
 
 		if (generatedMusic)
 		{
