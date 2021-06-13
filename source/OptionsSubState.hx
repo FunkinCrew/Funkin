@@ -158,10 +158,32 @@ class OptionsSubState extends MusicBeatSubstate
 						FlxG.save.flush();
 					}
 
+					case 'No-hit On':
+					{
+						FlxG.save.data.nohit = false;
+						FlxG.save.flush();
+						textMenuItems = ["Back", "Downscroll", "Old Title", "No-hit Off"];
+						spawnInTexts();
+					}
+
+					case 'No-hit Off':
+					{
+						FlxG.save.data.nohit = true;
+						FlxG.save.flush();
+						textMenuItems = ["Back", "Downscroll", "Old Title", "No-hit On"];
+						spawnInTexts();
+					}
+
 					case 'Misc':
 					{
 						curSelected = 0;
 						textMenuItems = ["Back", "Downscroll", "Old Title"];
+
+						if(!FlxG.save.data.nohit)
+							textMenuItems.push("No-hit Off");
+						else
+							textMenuItems.push("No-hit On");
+						
 						spawnInTexts();
 					}
 				}

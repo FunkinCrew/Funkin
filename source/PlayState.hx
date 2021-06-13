@@ -1642,7 +1642,7 @@ class PlayState extends MusicBeatState
 			{
 				var daNote = possibleNotes[0];
 
-				if (perfectMode)
+				if (FlxG.save.data.nohit)
 					noteCheck(true, daNote);
 
 				// Jump notes
