@@ -316,11 +316,20 @@ class PlayState extends MusicBeatState
 
 		trace('INFORMATION ABOUT WHAT U PLAYIN WIT:\nFRAMES: ' + Conductor.safeFrames + '\nZONE: ' + Conductor.safeZoneOffset + '\nTS: ' + Conductor.timeScale + '\nBotPlay : ' + FlxG.save.data.botplay);
 	
+
+		
+		var SP:SongPlayer = new SongPlayer(this);
+		SP.loadSong(SONG);
+		SP.createDialogue();
+
+
+		//create dialogue shit dude
+
+
 		//dialogue shit
 		switch (songLowercase)
 		{
-			case 'tutorial':
-				dialogue = ["Hey you're pretty cute.", 'Use the arrow keys to keep up \nwith me singing.'];
+			
 			case 'bopeebo':
 				dialogue = [
 					'HEY!',
@@ -745,9 +754,6 @@ class PlayState extends MusicBeatState
 		dad = new Character(100, 100, SONG.player2);
 
 		var camPos:FlxPoint = new FlxPoint(dad.getGraphicMidpoint().x, dad.getGraphicMidpoint().y);
-
-		var SP:SongPlayer = new SongPlayer(this);
-		SP.loadSong(SONG);
 
 		switch (SONG.player2)
 		{
@@ -1660,6 +1666,15 @@ class PlayState extends MusicBeatState
 		super.openSubState(SubState);
 	}
 
+
+	override function destroy()
+	{
+		trace("before alloct: " + instance);
+		Alloctable.alloc(instance);
+		trace("after alloc: " + instance);
+
+		super.destroy();
+	}
 	override function closeSubState()
 	{
 		if (paused)
