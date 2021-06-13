@@ -1,5 +1,6 @@
 package;
 
+import flixel.addons.effects.FlxTrail;
 import flixel.util.FlxTimer;
 import flixel.system.FlxSound;
 import flixel.FlxG;
@@ -48,6 +49,40 @@ class StageGroup extends FlxGroup
         {
             stage = newStage;
         }
+
+        /*
+			case 'limo':
+				boyfriend.y -= 220;
+				boyfriend.x += 260;
+
+				resetFastCar();
+				add(fastCar);
+
+			case 'mall':
+				boyfriend.x += 200;
+
+			case 'mallEvil':
+				boyfriend.x += 320;
+				dad.y -= 80;
+			case 'school':
+				boyfriend.x += 200;
+				boyfriend.y += 220;
+				gf.x += 180;
+				gf.y += 300;
+			case 'schoolEvil':
+				// trailArea.scrollFactor.set();
+
+				var evilTrail = new FlxTrail(dad, null, 4, 24, 0.3, 0.069);
+				// evilTrail.changeValuesEnabled(false, false, false, false);
+				// evilTrail.changeGraphic()
+				add(evilTrail);
+				// evilTrail.scrollFactor.set(1.1, 1.1);
+
+				boyfriend.x += 200;
+				boyfriend.y += 220;
+				gf.x += 180;
+				gf.y += 300;
+        */
 
         switch(stage)
         {
@@ -161,6 +196,12 @@ class StageGroup extends FlxGroup
                 add(limo);
 
                 fastCar = new FlxSprite(-300, 160).loadGraphic(Paths.image(stage + '/fastCarLol', 'stages'));
+
+                PlayState.boyfriend.y -= 220;
+				PlayState.boyfriend.x += 260;
+
+				resetFastCar();
+				add(fastCar);
             }
             case "mall":
             {
@@ -215,6 +256,8 @@ class StageGroup extends FlxGroup
                 santa.animation.addByPrefix('idle', 'santa idle in fear', 24, false);
                 santa.antialiasing = true;
                 add(santa);
+
+                PlayState.boyfriend.x += 200;
             }
             case "evil-mall":
             {
@@ -234,6 +277,9 @@ class StageGroup extends FlxGroup
                 var evilSnow:FlxSprite = new FlxSprite(-200, 700).loadGraphic(Paths.image(stage + "/evilSnow", 'stages'));
                 evilSnow.antialiasing = true;
                 add(evilSnow);
+
+                PlayState.boyfriend.x += 320;
+				PlayState.dad.y -= 80;
             }
             case "school":
             {
@@ -297,6 +343,11 @@ class StageGroup extends FlxGroup
                 bgGirls.setGraphicSize(Std.int(bgGirls.width * PlayState.daPixelZoom));
                 bgGirls.updateHitbox();
                 add(bgGirls);
+
+                PlayState.boyfriend.x += 200;
+				PlayState.boyfriend.y += 220;
+				PlayState.gf.x += 180;
+				PlayState.gf.y += 300;
             }
             case "evil-school":
             {
@@ -307,6 +358,14 @@ class StageGroup extends FlxGroup
                 bg.scrollFactor.set(0.8, 0.9);
                 bg.scale.set(6, 6);
                 add(bg);
+
+				var evilTrail = new FlxTrail(PlayState.dad, null, 4, 24, 0.3, 0.069);
+				add(evilTrail);
+
+				PlayState.boyfriend.x += 200;
+				PlayState.boyfriend.y += 220;
+				PlayState.gf.x += 180;
+				PlayState.gf.y += 300;
             }
         }
     }
