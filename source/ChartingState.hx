@@ -245,10 +245,18 @@ class ChartingState extends MusicBeatState
 		});
 		gfDropDown.selectedLabel = _song.gf;
 
+		var tab_group_song = new FlxUI(null, UI_box);
+
 		var player2DropDown = new FlxUIDropDownMenu(140, 100, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
 		{
 			_song.player2 = characters[Std.parseInt(character)];
 			updateHeads();
+
+			// if gf is not the enemy chosen then put it here (because this value doesnt matter if enemy is a gf)
+			if(_song.player2 != 'gf' && _song.player2 != 'gf-car' && _song.player2 != 'gf-christmas' && _song.player2 != 'gf-pixel')
+				tab_group_song.add(gfDropDown);
+			else
+				tab_group_song.remove(gfDropDown);
 		});
 
 		var stageDropDown = new FlxUIDropDownMenu(140, 150, FlxUIDropDownMenu.makeStrIdLabelArray(stages, true), function(stage:String)
@@ -260,7 +268,6 @@ class ChartingState extends MusicBeatState
 
 		player2DropDown.selectedLabel = _song.player2;
 
-		var tab_group_song = new FlxUI(null, UI_box);
 		tab_group_song.name = "Song";
 		tab_group_song.add(UI_songTitle);
 
