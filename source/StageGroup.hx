@@ -370,6 +370,14 @@ class StageGroup extends FlxGroup
         }
     }
 
+    public function setCharOffsets():Void
+    {
+        switch(stage)
+        {
+            
+        }
+    }
+
     override public function new(?stageName:String) {
         super();
 
