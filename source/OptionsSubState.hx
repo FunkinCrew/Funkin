@@ -110,23 +110,33 @@ class OptionsSubState extends MusicBeatSubstate
 					case 'Controls':
 						add(controlsBox);
 
-					case 'Muted':
-						FlxG.sound.muted = !FlxG.sound.muted;
+					case 'Mute':
+						FlxG.sound.muted = true;
+						textMenuItems = ["Back", "Unmute", "Volume"];
+						spawnInTexts();
+
+					case 'Unmute':
+						FlxG.sound.muted = false;
+						textMenuItems = ["Back", "Mute", "Volume"];
+						spawnInTexts();
 
 					case 'Back':
 					{
+						curSelected = 0;
 						textMenuItems = ['Controls', 'Sound', 'Misc', 'Graphics'];
 						spawnInTexts();
 					}
 
 					case 'Sound':
 					{
-						textMenuItems = ["Back", "Muted", "Volume"];
+						curSelected = 0;
+						textMenuItems = ["Back", "Mute", "Volume"];
 						spawnInTexts();
 					}
 
 					case 'Graphics':
 					{
+						curSelected = 0;
 						textMenuItems = ["Back", "Opponent Side Glow", "VSync"];
 						spawnInTexts();
 					}
@@ -143,7 +153,7 @@ class OptionsSubState extends MusicBeatSubstate
 					}
 
 					case 'Opponent Side Glow':
-					{	
+					{
 						FlxG.save.data.enemyGlow = !FlxG.save.data.enemyGlow;
 						FlxG.save.flush();
 					}
@@ -168,7 +178,6 @@ class OptionsSubState extends MusicBeatSubstate
 
 	function spawnInTexts()
 	{
-		curSelected = 0;
 		inMenu = false;
 
 		grpOptionsTexts.clear();
