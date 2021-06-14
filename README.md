@@ -1,3 +1,11 @@
+THE FMF Mod
+What's purpose of the mod, that's you can easier add other mods without re-write code.
+
+How does it work
+The current engine working in the flow that we excecute all songs in one logic file that called PlayState, so this engine will not use that.
+FMF will split the song logic into another file called SongPlayer, each song will have a SongPlayer file that execute logic itself like dialogue, mid-song event, cutscenes.., and that you can easier management and modify it without finding it in thousands line of code.
+
+
 ![Kade Engine logo](https://user-images.githubusercontent.com/26305836/110529589-4b4eb600-80ce-11eb-9c44-e899118b0bf0.png)
 
 [![AppVeyor](https://img.shields.io/appveyor/build/KadeDev/Kade-Engine-Windows?label=windows%20build)](https://ci.appveyor.com/project/KadeDev/kade-engine-windows/build/artifacts)   [![AppVeyor](https://img.shields.io/appveyor/build/KadeDev/Kade-Engine-Linux?label=linux%20build)](https://ci.appveyor.com/project/KadeDev/kade-engine-linux/build/artifacts) [![Discord](https://img.shields.io/discord/808039740464300104?label=discord)](https://discord.gg/MG6GQFh52U) [![GitHub issues](https://img.shields.io/github/issues/KadeDev/Kade-Engine)](https://github.com/KadeDev/Kade-Engine/issues) [![GitHub pull requests](https://img.shields.io/github/issues-pr/KadeDev/Kade-Engine)](https://github.com/KadeDev/Kade-Engine/pulls) []() []()
