@@ -31,5 +31,7 @@
         // ignoreHealthMods, whether to bypass any modifiers that affect health when dealing damage.
         // dontCountNote, whether to cause misses on notes. It's calculated automatically but you can force it.
         // dontStrum, iirc this does nothing? lol
+        // classes, array of string. it adds info that can be used in hscripts with the "noteHit" function
+        // id, a string that adds info for noteHit
     }
 ]

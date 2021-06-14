@@ -53,13 +53,18 @@ jobs:
         run: echo "${{github.run_id}}" > VERSION
       - name: Compile
         run: haxelib run lime build linux --app-version="4.0.0-${{ github.run_id}}"
-      - name: Archive
-        run: tar -czf bin.tar.gz 'export/release/linux/bin' 
       - name: Publish Artifact
         uses: actions/upload-artifact@v2
         with:
           name: linuxBuild
-          path: bin.tar.gz
+          path: 'export/release/linux/bin' 
+      - name: Compile HTML5
+        run: haxelib run lime build html5
+      - name: Publish Html5
+        uses: actions/upload-artifact@v2
+        with:
+          name: html5Build
+          path: export/release/html5/bin
   buildWindows:
     runs-on: windows-latest
     
@@ -96,31 +101,18 @@ jobs:
         run: echo "${{github.run_id}}" > VERSION
       - name: Compile
         run: haxelib run lime build windows --app-version="4.0.0-${{ github.run_id}}"
-      - name: Archive
-        run: tar -czf bin.tar.gz export/release/windows/bin
       - name: Publish Artifact
         uses: actions/upload-artifact@v2
         with:
           name: windowsBuild
-          path: bin.tar.gz
+          path: export/release/windows/bin
       - name: Compile 32 bit
         run: haxelib run lime build windows -D32bit -32
-      - name: Archive
-        run: tar -czf 32bit.tar.gz export/32bit/windows/bin
       - name: Publish 32bit
         uses: actions/upload-artifact@v2
         with:
           name: windows32Build
-          path: 32bit.tar.gz
-      - name: Compile HTML5
-        run: haxelib run lime build html5
-      - name: Archive
-        run: tar -czf html5.tar.gz export/release/html5/bin
-      - name: Publish Html5
-        uses: actions/upload-artifact@v2
-        with:
-          name: html5Build
-          path: html5.tar.gz
+          path: export/32bit/windows/bin
   buildMac:
     runs-on: macos-latest
 
@@ -156,10 +148,8 @@ jobs:
         run: echo "${{github.run_id}}" > VERSION
       - name: Compile
         run: haxelib run lime build mac --app-version="4.0.0-${{ github.run_id}}"
-      - name: Archive
-        run: tar -czf bin.tar.gz export/release/macos/bin
       - name: Publish Artifact
         uses: actions/upload-artifact@v2
         with:
           name: macBuild
-          path: bin.tar.gz
+          path: export/release/macos/bin

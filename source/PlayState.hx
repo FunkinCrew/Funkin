@@ -373,6 +373,7 @@ class PlayState extends MusicBeatState
 		interp.variables.set("playerOneSing", function()
 		{
 		});
+		interp.variables.set("noteHit", function(player1:Bool, note:Note) {});
 		interp.variables.set("addSprite", function (sprite, position) {
 			// sprite is a FlxSprite
 			// position is a Int
@@ -3935,7 +3936,7 @@ class PlayState extends MusicBeatState
 					}
 				});
 			}
-				
+			callAllHScript("noteHit", [playerOne, note]);
 			
 				
 				
