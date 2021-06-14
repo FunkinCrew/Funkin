@@ -1036,6 +1036,7 @@ class PlayState extends MusicBeatState
 		if (SONG.isSpooky) {
 			trace("WOAH SPOOPY");
 			var evilTrail = new FlxTrail(dad, null, 4, 24, 0.3, 0.069);
+			evilTrail.framesEnabled = false;
 			// evilTrail.changeValuesEnabled(false, false, false, false);
 			// evilTrail.changeGraphic()
 			trace(evilTrail);
