@@ -11,6 +11,7 @@ The current engine working in the flow that we excecute all songs in one logic f
 FMF will split the song logic into another file called SongPlayer, each song will have a SongPlayer file that execute logic itself like dialogue, mid-song event, 
 cutscenes...
 
+And sure, this mod is using KadeEngine, lmao. When KadeDev update it, I will clone!! :AHAHAHAHAHAHAHA
 
 ![Kade Engine logo](https://user-images.githubusercontent.com/26305836/110529589-4b4eb600-80ce-11eb-9c44-e899118b0bf0.png)
 
