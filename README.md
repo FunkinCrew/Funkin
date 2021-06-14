@@ -1,7 +1,10 @@
-THE FMF Mod
-What's purpose of the mod, that's you can easier add other mods without re-write code.
+THE FMF Mod?
 
-How does it work
+What's purpose of the mod???
+You can easier add or modify mod easier!!!!!!
+
+How does it work??
+
 The current engine working in the flow that we excecute all songs in one logic file that called PlayState, so this engine will not use that.
 FMF will split the song logic into another file called SongPlayer, each song will have a SongPlayer file that execute logic itself like dialogue, mid-song event, cutscenes.., and that you can easier management and modify it without finding it in thousands line of code.
 
