@@ -53,7 +53,7 @@ https://github.com/luckydog7/Funkin-android/releases
 5.and run command `lime setup android`
   - you need to insert the program paths
 
-  - as in this picture
+  - as in this picture (use jdk, not jre)
 ![lime](https://user-images.githubusercontent.com/59097731/104179268-9e80f100-541c-11eb-948d-a00d85317b1a.PNG)
 
 
