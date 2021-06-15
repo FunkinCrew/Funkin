@@ -35,8 +35,9 @@ class SongPlayer
 		dialogueBox.scrollFactor.set();
 		dialogueBox.finishThing = callback;
 		dialogueBox.cameras = [playState.camHUD];
-
 		playState.add(dialogueBox);
+
+		trace('whee mai dialgue siht!');
 	}
 
 	public function loadSong(song:SwagSong):Void
@@ -80,6 +81,8 @@ class SongPlayer
 		createBF();
 		createDad();
 
+		gf.scrollFactor.set(0.95, 0.95);
+		
 		playState.add(gf);
 		playState.add(dad);
 		playState.add(bf);
@@ -213,7 +216,7 @@ class SongPlayer
 
 	public function createGF()
 	{
-		gf = new Character(400, 250);
+		gf = new GF(400, 250);
 		getGFTex();
 		createGFAnimations();
 		createGFAnimationOffsets();

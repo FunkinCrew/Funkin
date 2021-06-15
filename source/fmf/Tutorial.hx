@@ -8,6 +8,7 @@ class Tutorial extends SongPlayer
 	{
 		super.createCharacters();
 		gf.alpha = 0;
+        dad.scrollFactor.set(0.95, 0.95);
 	}
 
 	override function midSongEventUpdate(curBeat:Int):Void

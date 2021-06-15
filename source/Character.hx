@@ -1,5 +1,6 @@
 package;
 
+import flixel.util.FlxTimer;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.animation.FlxBaseAnimation;
@@ -438,6 +439,21 @@ class Character extends FlxSprite
 
 	private var danced:Bool = false;
 
+	private var isLockAnim:Bool;
+	
+	public function lockAnim(duration:Float)
+	{
+		if (isLockAnim)
+			return;
+
+		isLockAnim = true;
+		new FlxTimer().start(duration, function(tmr:FlxTimer)
+		{
+			isLockAnim = false;
+		});
+	}
+
+
 	public function dance():Void
 	{
 		if (!debugMode)
@@ -448,6 +464,9 @@ class Character extends FlxSprite
 
 	public function playAnim(AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0):Void
 	{
+		if (isLockAnim)
+			return;
+
 		animation.play(AnimName, Force, Reversed, Frame);
 
 		var daOffset = animOffsets.get(AnimName);
@@ -457,23 +476,6 @@ class Character extends FlxSprite
 		}
 		else
 			offset.set(0, 0);
-
-		// if (curCharacter == 'gf')
-		// {
-		// 	if (AnimName == 'singLEFT')
-		// 	{
-		// 		danced = true;
-		// 	}
-		// 	else if (AnimName == 'singRIGHT')
-		// 	{
-		// 		danced = false;
-		// 	}
-
-		// 	if (AnimName == 'singUP' || AnimName == 'singDOWN')
-		// 	{
-		// 		danced = !danced;
-		// 	}
-		// }
 	}
 
 	public function addOffset(name:String, x:Float = 0, y:Float = 0)

@@ -107,7 +107,7 @@ class PlayState extends MusicBeatState
 	var detailsPausedText:String = "";
 	#end
 
-	private var vocals:FlxSound;
+	public var vocals:FlxSound;
 
 	public static function dad():Character 
 	{
@@ -338,10 +338,14 @@ class PlayState extends MusicBeatState
 		trace('INFORMATION ABOUT WHAT U PLAYIN WIT:\nFRAMES: ' + Conductor.safeFrames + '\nZONE: ' + Conductor.safeZoneOffset + '\nTS: ' + Conductor.timeScale + '\nBotPlay : ' + FlxG.save.data.botplay);
 	
 
+		trace("cur song shit: "  + CURRENT_SONG);
+
 		switch (CURRENT_SONG)
 		{
 			case 'tutorial':
 				songPlayer = new Tutorial(this);
+			case 'bopeebo' | 'fresh' | 'dad battles':
+				songPlayer = new DaddyDearest(this);
 		}
 		
 		songPlayer.loadSong(SONG);
@@ -759,19 +763,19 @@ class PlayState extends MusicBeatState
 		// 			add(stageCurtains);
 		// 	}
 		// }
-		var gfVersion:String = 'gf';
+		// var gfVersion:String = 'gf';
 
-		switch (SONG.gfVersion)
-		{
-			case 'gf-car':
-				gfVersion = 'gf-car';
-			case 'gf-christmas':
-				gfVersion = 'gf-christmas';
-			case 'gf-pixel':
-				gfVersion = 'gf-pixel';
-			default:
-				gfVersion = 'gf';
-		}
+		// switch (SONG.gfVersion)
+		// {
+		// 	case 'gf-car':
+		// 		gfVersion = 'gf-car';
+		// 	case 'gf-christmas':
+		// 		gfVersion = 'gf-christmas';
+		// 	case 'gf-pixel':
+		// 		gfVersion = 'gf-pixel';
+		// 	default:
+		// 		gfVersion = 'gf';
+		// }
 
 
 
@@ -1044,6 +1048,7 @@ class PlayState extends MusicBeatState
 		if (isStoryMode)
 		{
 			songPlayer.showDialogue(startCountdown);
+			
 			// switch (StringTools.replace(curSong," ", "-").toLowerCase())
 			// {
 			// 	case "winter-horrorland":
@@ -1378,11 +1383,11 @@ class PlayState extends MusicBeatState
 		}
 		
 		// Song check real quick
-		switch(curSong)
-		{
-			case 'Bopeebo' | 'Philly Nice' | 'Blammed' | 'Cocoa' | 'Eggnog': allowedToHeadbang = true;
-			default: allowedToHeadbang = false;
-		}
+		// switch(curSong)
+		// {
+		// 	case 'Bopeebo' | 'Philly Nice' | 'Blammed' | 'Cocoa' | 'Eggnog': allowedToHeadbang = true;
+		// 	default: allowedToHeadbang = false;
+		// }
 		
 		#if windows
 		// Updating Discord Rich Presence (with Time Left)
@@ -2023,21 +2028,21 @@ class PlayState extends MusicBeatState
 								}
 							}
 						}
-						case 'Bopeebo':
-						{
-							// Where it starts || where it ends
-							if(curBeat > 5 && curBeat < 130)
-							{
-								if(curBeat % 8 == 7)
-								{
-									if(!triggeredAlready)
-									{
-										gf().playAnim('cheer');
-										triggeredAlready = true;
-									}
-								}else triggeredAlready = false;
-							}
-						}
+						// case 'Bopeebo':
+						// {
+						// 	// Where it starts || where it ends
+						// 	if(curBeat > 5 && curBeat < 130)
+						// 	{
+						// 		if(curBeat % 8 == 7)
+						// 		{
+						// 			if(!triggeredAlready)
+						// 			{
+						// 				gf().playAnim('cheer');
+						// 				triggeredAlready = true;
+						// 			}
+						// 		}else triggeredAlready = false;
+						// 	}
+						// }
 						case 'Blammed':
 						{
 							if(curBeat > 30 && curBeat < 190)
@@ -3538,10 +3543,10 @@ class PlayState extends MusicBeatState
 		}
 		
 
-		if (curBeat % 8 == 7 && curSong == 'Bopeebo')
-		{
-			boyfriend().playAnim('hey', true);
-		}
+		// if (curBeat % 8 == 7 && curSong == 'Bopeebo')
+		// {
+		// 	boyfriend().playAnim('hey', true);
+		// }
 
 		
 

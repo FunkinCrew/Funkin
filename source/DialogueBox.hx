@@ -299,59 +299,7 @@ class DialogueBox extends FlxSpriteGroup
 	}
 
 	var isEnding:Bool = false;
-
-	function getCharPortrait(char:String):String
-	{
-		switch (char)
-		{
-			case 'gf':
-			return 'gf';
-
-			case 'dad' | 'dearest': 
-				return 'dad';
-
-			case 'spookeez':
-				return 'skid';
-
-			case 'pico':
-				return 'pico';
-			
-			case 'philly' | 'blammed':
-				return 'picoAngry';
-			
-			case 'mom' | 'mom-car':
-				return 'mom';
-
-			case 'monster' | 'monster-christmas':
-				return 'christmasLemon';
-
-			case 'parents-christmas':
-				return 'parents';
-			
-			case 'garcello' | 'garcellotired' | 'garcellodead' | 'garcelloghosty':
-				return 'gar';
-
-			case 'hex' | 'hex-virus':
-				return 'hex';
-
-			case 'sarvente' | 'parish' | 'sarvente-dark' |'luci-sarv' |
-				 'worship' | 'zavodila' | 'ruv' | 
-				 'selever' | 'casanova':
-				 return 'mfm';
-
-			case 'tricky' | 'trickymask':
-				return 'tricky';
-
-			case 'whitty' | 'whitty-overhead' | 'ballistic':
-				return 'whitty';
-
-			default:
-				return 'empty';
-		}
-
-		// return 
-	}
-
+		
 	function addLeftChar(
 		char:String, x:
 		Float = 100, y:Float = 360, 
