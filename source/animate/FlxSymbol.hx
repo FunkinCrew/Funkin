@@ -38,17 +38,13 @@ class FlxSymbol extends FlxSprite
 
 	var symbolMap:Map<String, Animation> = new Map();
 
-	var drawQueue:Array<FlxSymbol> = [];
-
 	public var daFrame:Int = 0;
 	public var nestDepth:Int = 0;
 
 	public var transformMatrix:Matrix = new Matrix();
 
-	function renderFrame(TL:Timeline, coolParsed:Parsed, ?isMainLoop:Bool = false)
+	function renderFrame(TL:Timeline, coolParsed:Parsed, ?traceShit:Bool = false)
 	{
-		drawQueue = [];
-
 		for (layer in TL.L)
 		{
 			// layer.FR.reverse();
@@ -78,11 +74,17 @@ class FlxSymbol extends FlxSprite
 							// spr._matrix.concat(spr.transformMatrix);
 
 							spr.origin.set();
-							spr.origin.x += origin.x;
-							spr.origin.y += origin.y;
+							// Prob dont need these offset thingies???
+							// spr.origin.x += origin.x;
+							// spr.origin.y += origin.y;
 
 							spr.antialiasing = true;
 							spr.draw();
+
+							if (traceShit)
+							{
+								trace(element.ASI.N);
+							}
 						}
 						else
 						{
@@ -121,11 +123,6 @@ class FlxSymbol extends FlxSprite
 				}
 			}
 		}
-
-		// drawQueue.reverse();
-		//
-		// for (thing in drawQueue)
-		// thing.draw();
 	}
 
 	function setDaMap(spr:FlxSymbol):Void

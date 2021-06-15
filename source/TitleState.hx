@@ -123,7 +123,7 @@ class TitleState extends MusicBeatState
 		#if FREEPLAY
 		FlxG.switchState(new FreeplayState());
 		#elseif ANIMATE
-		FlxG.switchState(new CutsceneAnimTestState());
+		FlxG.switchState(new animate.AnimTestStage());
 		#elseif CHARTING
 		FlxG.switchState(new ChartingState());
 		/* 

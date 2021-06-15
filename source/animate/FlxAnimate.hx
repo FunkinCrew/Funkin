@@ -25,7 +25,7 @@ class FlxAnimate extends FlxSymbol
 
 	public function new(x:Float, y:Float)
 	{
-		var folder:String = 'tightBars';
+		var folder:String = 'tightBarsLol';
 		coolParse = cast Json.parse(Assets.getText(Paths.file('images/' + folder + '/Animation.json')));
 		coolParse.AN.TL.L.reverse();
 		super(x, y, coolParse);
@@ -46,6 +46,7 @@ class FlxAnimate extends FlxSymbol
 			{
 				for (spr in FlxSymbol.nestedShit.get(shit))
 				{
+					trace(shit);
 					spr.draw();
 				}
 			}
