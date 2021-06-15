@@ -193,7 +193,9 @@ class Note extends FlxSprite
 		if (FNFAssets.exists('assets/images/custom_ui/ui_packs/' + PlayState.SONG.uiType + "/NOTE_assets.xml")
 			&& FNFAssets.exists('assets/images/custom_ui/ui_packs/' + PlayState.SONG.uiType + "/NOTE_assets.png"))
 		{
-			frames = FlxAtlasFrames.fromSparrow(customImage, customXml);
+			frames = FlxAtlasFrames.fromSparrow('assets/images/custom_ui/ui_packs/'
+				+ PlayState.SONG.uiType
+				+ "/NOTE_assets.png", 'assets/images/custom_ui/ui_packs/' + PlayState.SONG.uiType + "/NOTE_assets.xml");
 			if (animSuffix == null)
 			{
 				animSuffix = '';
@@ -254,7 +256,7 @@ class Note extends FlxSprite
 			&& FNFAssets.exists('assets/images/custom_ui/ui_packs/' + PlayState.SONG.uiType + "/arrowEnds.png"))
 		{
 			isPixel = true;
-			loadGraphic(customImage, true, 17, 17);
+			loadGraphic('assets/images/custom_ui/ui_packs/' + PlayState.SONG.uiType + "/arrows-pixels.png", true, 17, 17);
 			if (animSuffix != null && numSuffix == null)
 			{
 				numSuffix = Std.parseInt(animSuffix);
@@ -268,7 +270,7 @@ class Note extends FlxSprite
 				animation.add('purpleScroll', [intSuffix]);
 				if (isSustainNote)
 				{
-					loadGraphic('assets/images/weeb/pixelUI/arrowEnds.png', true, 7, 6);
+					loadGraphic('assets/images/custom_ui/ui_packs/' + PlayState.SONG.uiType + "/arrowEnds.png", true, 7, 6);
 
 					animation.add('purpleholdend', [intSuffix]);
 					animation.add('greenholdend', [intSuffix]);
@@ -290,7 +292,7 @@ class Note extends FlxSprite
 
 				if (isSustainNote)
 				{
-					loadGraphic('assets/images/weeb/pixelUI/arrowEnds.png', true, 7, 6);
+					loadGraphic('assets/images/custom_ui/ui_packs/' + PlayState.SONG.uiType + "/arrowEnds.png", true, 7, 6);
 
 					animation.add('purpleholdend', [4]);
 					animation.add('greenholdend', [6]);

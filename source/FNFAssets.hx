@@ -25,6 +25,8 @@ class FNFAssets {
 			var path = Assets.exists(id) ? Assets.getPath(id) : null;
             if (path == null)
                 path = id;
+			else
+				Assets.getText(id);
             return File.getContent(path);
         #else
             // no need to strip it out... 
@@ -40,6 +42,8 @@ class FNFAssets {
 			var path = Assets.exists(id) ? Assets.getPath(id) : null;
 			if (path == null)
 				path = id;
+			else
+				Assets.getBytes(id);
 			return File.getBytes(path);
 		#else
 		// no need to strip it out...
@@ -52,6 +56,9 @@ class FNFAssets {
             var path = Assets.exists(id) ? Assets.getPath(id) : null;
             if (path == null)
                 path = id;
+			else
+				// if it _does_ exist then yeah of course  it works
+				return true;
             return FileSystem.exists(path);
         #else
             return Assets.exists(id);
@@ -63,6 +70,7 @@ class FNFAssets {
 			var path = Assets.exists(id) ? Assets.getPath(id) : null;
             if (path == null)
                 path = id;
+			else Assets.getBitmapData(id, useCache);
             return BitmapData.fromFile(path);
         #else
             return Assets.getBitmapData(id, useCache);
@@ -74,6 +82,9 @@ class FNFAssets {
 			var path = Assets.exists(id) ? Assets.getPath(id) : null;
             if (path == null)
                 path = id;
+			else
+				// prefer using assets as it uses a cache??
+				return Assets.getSound(id, useCache);
             return Sound.fromFile(path);
         #else
             return Assets.getSound(id, useCache);
