@@ -59,7 +59,14 @@ class Note extends FlxSprite
 
 		var daStage:String = PlayState.curStage;
 
-		switch (PlayState.SONG.noteStyle)
+		//defaults if no noteStyle was found in chart
+		var noteTypeCheck:String = 'normal';
+
+		if (PlayState.SONG.noteStyle == null) {
+			switch(PlayState.storyWeek) {case 6: noteTypeCheck = 'pixel';}
+		} else {noteTypeCheck = PlayState.SONG.noteStyle;}
+
+		switch (noteTypeCheck)
 		{
 			case 'pixel':
 				loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels','week6'), true, 17, 17);

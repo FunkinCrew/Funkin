@@ -33,9 +33,9 @@ class Song
 
 	public var player1:String = 'bf';
 	public var player2:String = 'dad';
-	public var gfVersion:String = 'gf';
-	public var noteStyle:String = 'normal';
-	public var stage:String = 'stage';
+	public var gfVersion:String = '';
+	public var noteStyle:String = '';
+	public var stage:String = '';
 
 	public function new(song, notes, bpm)
 	{
@@ -47,8 +47,8 @@ class Song
 	public static function loadFromJson(jsonInput:String, ?folder:String):SwagSong
 	{
 		trace(jsonInput);
-		
-		// pre lowercasing the song name (update)
+
+		// pre lowercasing the folder name
 		var folderLowercase = StringTools.replace(folder, " ", "-").toLowerCase();
 		switch (folderLowercase) {
 			case 'dad-battle': folderLowercase = 'dadbattle';
