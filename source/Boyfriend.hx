@@ -11,9 +11,9 @@ class Boyfriend extends Character
 {
 	public var stunned:Bool = false;
 
-	public function new(x:Float, y:Float, ?char:String = 'bf')
+	public function new(x:Float, y:Float)
 	{
-		super(x, y, char, true);
+		super(x, y);
 	}
 
 	override function update(elapsed:Float)
@@ -35,6 +35,11 @@ class Boyfriend extends Character
 			if (animation.curAnim.name == 'firstDeath' && animation.curAnim.finished)
 			{
 				playAnim('deathLoop');
+			}
+
+			if (animation.curAnim.name.startsWith('sing'))
+			{
+				holdTimer += elapsed;
 			}
 		}
 
