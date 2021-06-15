@@ -174,6 +174,8 @@ Kade Engine provides a list of global variables to be used in the lua scripting 
 |	  scrollSpeed	   |  Int  |				   The current scrollspeed					  |
 |	  	mustHit		   | Bool  |  		If the current section is a must hit section		  |
 |	  strumLineY	   | Float |  			The current Strum Line Y Position				  |
+|     distractions     | Bool  |         Whether the player has distractions enabled          |
+|       flashing       | Bool  |        Whether the player has flashing lights enabled        |
 
 ## Functions
 
