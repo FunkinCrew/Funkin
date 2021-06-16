@@ -6,8 +6,7 @@
     ["Week 3 press", "Pico", "Philly", "Blammed"],
     ["Week 4 press", "Satin-Panties", "High", "Milf"],
     ["week 5", "Cocoa", "Eggnog", "Winter-Horrorland"],
-    ["Week 6", "Senpai", "Roses", "Thorns"],
-    ["week7", "Ugh", "Guns", "Stress"]
+    ["Week 6", "Senpai", "Roses", "Thorns"]
   ],
   "weekNames": [
     "Learnin' How To Rap",
@@ -16,8 +15,7 @@
     "PICO",
     "MOMMY MUST MURDER",
     "RED SNOW",
-    "hating simulator ft. moawling",
-    "TANKMAN"
+    "hating simulator ft. moawling"
   ],
   "characters": [
     ["dad", "bf", "gf"],
@@ -26,8 +24,7 @@
     ["pico", "bf", "gf"],
     ["mom", "bf", "gf"],
     ["parents-christmas", "bf", "gf"],
-    ["senpai", "bf", "gf"],
-    ["tankman", "bf", "gf"]
+    ["senpai", "bf", "gf"]
   ],
   "weeks": [
     {
@@ -75,12 +72,6 @@
       "animation": "Week 6",
       "name": "hating simulator ft. maowling",
       "dad": "senpai"
-    },
-    {
-      "songs": ["Ugh", "Guns", "Stress"],
-      "animation": "week7",
-      "name": "TANKMAN",
-      "dad": "tankman"
     }
 
   ],

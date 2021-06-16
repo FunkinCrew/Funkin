@@ -77,6 +77,19 @@
       "flags": ["week5"],
       "name": "hating simulator ft. maowling",
       "dad": "senpai"
+    },
+    {
+      "songs": [
+        "Ugh",
+        "Guns",
+        "Stress"
+      ],
+      "animation": "week7",
+      "flags": [
+        "week6"
+      ],
+      "name": "TANKMAN",
+      "dad": "tankman"
     }
 
   ],
