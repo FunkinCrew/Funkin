@@ -129,25 +129,5 @@
     "like": "spirit-hd",
     "icons": [0,1,2],
     "colors": ["#BC7333"]
-  },
-  "tankman": {
-    "like": "tankman",
-    "icons": [0,1,2],
-    "colors": ["#F9B03A"]
-  },
-  "gf-tankmen": {
-    "like": "gf-tankmen",
-    "icons": [0,0,1],
-    "colors": ["#EE19D9"]
-  },
-  "pico-speaker": {
-    "like": "pico-speaker",
-    "icons": [0,1,2],
-    "colors": ["#99FF7D"]
-  },
-  "bf-holding-gf": {
-    "like": "bf-holding-gf",
-    "icons": [0,1,2],
-    "colors": ["#149DFF","#EE19D9"]
   }
 }
