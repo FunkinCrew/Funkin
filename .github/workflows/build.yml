@@ -58,8 +58,6 @@ jobs:
         with:
           name: linuxBuild
           path: 'export/release/linux/bin' 
-      - name: Compile HTML5
-        run: haxelib run lime build html5
       - name: Copy Week 7 Files
         run: cp -rf ./Week7Assets ./export/release/linux/bin/assets
       - name: Publish Artifact
@@ -67,6 +65,9 @@ jobs:
         with:
           name: linuxWeek7Build
           path: export/release/linux/bin
+      - name: Compile HTML5
+        run: haxelib run lime build html5
+      
       - name: Publish Html5
         uses: actions/upload-artifact@v2
         with:

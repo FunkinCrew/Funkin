@@ -330,6 +330,12 @@ class ModifierState extends MusicBeatState
 	public static var scoreMultiplier:Float = 1;
 	var description:FlxText;
 	public static var namedModifiers:Dynamic = {};
+	public static function init() {
+		for (modifier in 0...modifiers.length)
+		{
+			Reflect.setField(namedModifiers, modifiers[modifier].internName, modifiers[modifier]);
+		}
+	}
 	override function create()
 	{
 		var menuBG:FlxSprite = new FlxSprite().loadGraphic('assets/images/menuDesat.png');
