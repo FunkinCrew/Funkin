@@ -138,6 +138,7 @@ class SongPlayer
 		bf.animation.addByPrefix('scared', 'BF idle shaking', 24);
 	}
 
+	
 	private function createBFAnimationOffsets():Void
 	{
 
@@ -282,8 +283,13 @@ class SongPlayer
 		dad.y = gf.y;
 	}
 
+	public function update(elapsed:Float):Void
+	{
+	}
+
 	public function midSongEventUpdate(curBeat:Int):Void
 	{
+		
 	}
 
 }

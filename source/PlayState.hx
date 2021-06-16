@@ -178,9 +178,9 @@ class PlayState extends MusicBeatState
 	var halloweenBG:FlxSprite;
 	var isHalloween:Bool = false;
 
-	var phillyCityLights:FlxTypedGroup<FlxSprite>;
-	var phillyTrain:FlxSprite;
-	var trainSound:FlxSound;
+	// var phillyCityLights:FlxTypedGroup<FlxSprite>;
+	// var phillyTrain:FlxSprite;
+	// var trainSound:FlxSound;
 
 	var limo:FlxSprite;
 	var grpLimoDancers:FlxTypedGroup<BackgroundDancer>;
@@ -351,6 +351,9 @@ class PlayState extends MusicBeatState
 			case 'spookeez' | 'south' | "monster":
 				songPlayer = new Spookez(this);
 
+			case 'pico' | 'philly' | 'blammed':
+				songPlayer = new Philly(this);
+
 
 			}
 		
@@ -403,7 +406,7 @@ class PlayState extends MusicBeatState
 		// 		halloweenBG.frames = hallowTex;
 		// 		halloweenBG.animation.addByPrefix('idle', 'halloweem bg0');
 		// 		halloweenBG.animation.addByPrefix('lightning', 'halloweem bg lightning strike', 24, false);
-		// 		halloweenBG.animation.play('idle');
+	// 		halloweenBG.animation.plasy('idle');
 		// 		halloweenBG.antialiasing = true;
 		// 		add(halloweenBG);
 
@@ -1857,22 +1860,23 @@ class PlayState extends MusicBeatState
 				iconP1.animation.play('bf-old');
 		}
 
-		switch (curStage)
-		{
-			case 'philly':
-				if (trainMoving)
-				{
-					trainFrameTiming += elapsed;
+		// switch (curStage)
+		// {
+		// 	case 'philly':
+		// 		if (trainMoving)
+		// 		{
+		// 			trainFrameTiming += elapsed;
 
-					if (trainFrameTiming >= 1 / 24)
-					{
-						updateTrainPos();
-						trainFrameTiming = 0;
-					}
-				}
-				// phillyCityLights.members[curLight].alpha -= (Conductor.crochet / 1000) * FlxG.elapsed;
-		}
+		// 			if (trainFrameTiming >= 1 / 24)
+		// 			{
+		// 				updateTrainPos();
+		// 				trainFrameTiming = 0;
+		// 			}
+		// 		}
+		// 		// phillyCityLights.members[curLight].alpha -= (Conductor.crochet / 1000) * FlxG.elapsed;
+		// }
 
+		songPlayer.update(elapsed);
 		super.update(elapsed);
 
 		scoreTxt.text = Ratings.CalculateRanking(songScore,songScoreDef,nps,maxNPS,accuracy);
@@ -3367,66 +3371,66 @@ class PlayState extends MusicBeatState
 		}
 	}
 
-	var trainMoving:Bool = false;
-	var trainFrameTiming:Float = 0;
+	// var trainMoving:Bool = false;
+	// var trainFrameTiming:Float = 0;
 
-	var trainCars:Int = 8;
-	var trainFinishing:Bool = false;
-	var trainCooldown:Int = 0;
+	// var trainCars:Int = 8;
+	// var trainFinishing:Bool = false;
+	// var trainCooldown:Int = 0;
 
-	function trainStart():Void
-	{
-		if(FlxG.save.data.distractions){
-			trainMoving = true;
-			if (!trainSound.playing)
-				trainSound.play(true);
-		}
-	}
+	// function trainStart():Void
+	// {
+	// 	if(FlxG.save.data.distractions){
+	// 		trainMoving = true;
+	// 		if (!trainSound.playing)
+	// 			trainSound.play(true);
+	// 	}
+	// }
 
-	var startedMoving:Bool = false;
+	// var startedMoving:Bool = false;
 
-	function updateTrainPos():Void
-	{
-		if(FlxG.save.data.distractions){
-			if (trainSound.time >= 4700)
-				{
-					startedMoving = true;
-					gf().playAnim('hairBlow');
-				}
+	// function updateTrainPos():Void
+	// {
+	// 	if(FlxG.save.data.distractions){
+	// 		if (trainSound.time >= 4700)
+	// 			{
+	// 				startedMoving = true;
+	// 				gf().playAnim('hairBlow');
+	// 			}
 		
-				if (startedMoving)
-				{
-					phillyTrain.x -= 400;
+	// 			if (startedMoving)
+	// 			{
+	// 				phillyTrain.x -= 400;
 		
-					if (phillyTrain.x < -2000 && !trainFinishing)
-					{
-						phillyTrain.x = -1150;
-						trainCars -= 1;
+	// 				if (phillyTrain.x < -2000 && !trainFinishing)
+	// 				{
+	// 					phillyTrain.x = -1150;
+	// 					trainCars -= 1;
 		
-						if (trainCars <= 0)
-							trainFinishing = true;
-					}
+	// 					if (trainCars <= 0)
+	// 						trainFinishing = true;
+	// 				}
 		
-					if (phillyTrain.x < -4000 && trainFinishing)
-						trainReset();
-				}
-		}
+	// 				if (phillyTrain.x < -4000 && trainFinishing)
+	// 					trainReset();
+	// 			}
+	// 	}
 
-	}
+	// }
 
-	function trainReset():Void
-	{
-		if(FlxG.save.data.distractions){
-			gf().playAnim('hairFall');
-			phillyTrain.x = FlxG.width + 200;
-			trainMoving = false;
-			// trainSound.stop();
-			// trainSound.time = 0;
-			trainCars = 8;
-			trainFinishing = false;
-			startedMoving = false;
-		}
-	}
+	// function trainReset():Void
+	// {
+	// 	if(FlxG.save.data.distractions){
+	// 		gf().playAnim('hairFall');
+	// 		phillyTrain.x = FlxG.width + 200;
+	// 		trainMoving = false;
+	// 		// trainSound.stop();
+	// 		// trainSound.time = 0;
+	// 		trainCars = 8;
+	// 		trainFinishing = false;
+	// 		startedMoving = false;
+	// 	}
+	// }
 
 	// function lightningStrikeShit():Void
 	// {
@@ -3580,33 +3584,27 @@ class PlayState extends MusicBeatState
 						if (FlxG.random.bool(10) && fastCarCanDrive)
 							fastCarDrive();
 				}
-			case "philly":
-				if(FlxG.save.data.distractions){
-					if (!trainMoving)
-						trainCooldown += 1;
+			// case "philly":
+				// if(FlxG.save.data.distractions){
+				// 	if (!trainMoving)
+				// 		trainCooldown += 1;
 	
-					if (curBeat % 4 == 0)
-					{
-						phillyCityLights.forEach(function(light:FlxSprite)
-						{
-							light.visible = false;
-						});
+				// 	if (curBeat % 4 == 0)
+				// 	{
+				// 		phillyCityLights.forEach(function(light:FlxSprite)
+				// 		{
+				// 			light.visible = false;
+				// 		});
 	
-						curLight = FlxG.random.int(0, phillyCityLights.length - 1);
+				// 		curLight = FlxG.random.int(0, phillyCityLights.length - 1);
 	
-						phillyCityLights.members[curLight].visible = true;
-						// phillyCityLights.members[curLight].alpha = 1;
-				}
+				// 		phillyCityLights.members[curLight].visible = true;
+				// 		// phillyCityLights.members[curLight].alpha = 1;
+				// }
 
-				}
+				// }
 
-				if (curBeat % 8 == 4 && FlxG.random.bool(30) && !trainMoving && trainCooldown > 8)
-				{
-					if(FlxG.save.data.distractions){
-						trainCooldown = FlxG.random.int(-4, 0);
-						trainStart();
-					}
-				}
+			
 		}
 
 		// if (isHalloween && FlxG.random.bool(10) && curBeat > lightningStrikeBeat + lightningOffset)
@@ -3617,5 +3615,4 @@ class PlayState extends MusicBeatState
 		// }
 	}
 
-	var curLight:Int = 0;
 }
