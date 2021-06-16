@@ -25,4 +25,9 @@ class Tutorial extends SongPlayer
 			dad.playAnim('cheer', true);
 		}
 	}
+
+	public override function setCamPosition()
+	{
+		camPos.x += 600;
+	}
 }

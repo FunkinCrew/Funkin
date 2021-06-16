@@ -1,6 +1,6 @@
 package fmf.songs;
-import fmf.characters.*;
 
+import fmf.characters.*;
 import flixel.util.FlxTimer;
 import flixel.system.FlxSound;
 import flixel.group.FlxGroup.FlxTypedGroup;
@@ -175,15 +175,16 @@ class Philly extends SongPlayer
 		dad.addOffset("singRIGHTmiss", -60, 41);
 		dad.addOffset("singLEFTmiss", 62, 64);
 		dad.addOffset("singDOWNmiss", 210, -28);
+
+		dad.playAnim('idle');
+
 	}
 
 	override function createDad()
 	{
 		super.createDad();
 
-		dad.playAnim('idle');
 		dad.flipX = true;
-
 		dad.x -= 350;
 	}
 
@@ -206,17 +207,26 @@ class Philly extends SongPlayer
 		bf.x += 50;
 	}
 
+	override function setCamPosition()
+	{
+		camPos.x += 600;
+	}
+
+
 	override function midSongEventUpdate(curBeat:Int):Void
 	{
-		if (curBeat < 250)
+		if (playState.gfStep())
 		{
-			// Beats to skip or to stop GF from cheering
-			if (curBeat != 184 && curBeat != 216)
+			switch (PlayState.CURRENT_SONG)
 			{
-				if (curBeat % 16 == 8 && curBeat >= 32 && !trainMoving)
-				{
-					gf.playAnimForce('cheer', 0.5);
-				}
+				case 'pico':
+					picoMidSongEvent(curBeat);
+
+				case 'philly':
+					phillyMidSongEvent(curBeat);
+
+				case 'blammed':
+					blammedMidSongEvent(curBeat);
 			}
 		}
 
@@ -261,6 +271,50 @@ class Philly extends SongPlayer
 			{
 				updateTrainPos();
 				trainFrameTiming = 0;
+			}
+		}
+	}
+
+	function picoMidSongEvent(curBeat:Int)
+	{
+		if (curBeat < 250)
+		{
+			// Beats to skip or to stop GF from cheering
+			if (curBeat != 184 && curBeat != 216)
+			{
+				if (curBeat % 16 == 8 && curBeat >= 32 && !trainMoving)
+				{
+					gf.playAnimForce('cheer', 0.5);
+				}
+			}
+		}
+	}
+
+	function phillyMidSongEvent(curBeat:Int)
+	{
+		if (curBeat < 250)
+		{
+			// Beats to skip or to stop GF from cheering
+			if (curBeat != 184 && curBeat != 216)
+			{
+				if (curBeat % 16 == 8 && !trainMoving)
+				{
+					gf.playAnimForce('cheer', 0.5);
+				}
+			}
+		}
+	}
+
+	function blammedMidSongEvent(curBeat:Int)
+	{
+		if (curBeat > 30 && curBeat < 190)
+		{
+			if (curBeat < 90 || curBeat > 128)
+			{
+				if (curBeat % 4 == 2)
+				{
+					gf.playAnimForce('cheer', 0.5);
+				}
 			}
 		}
 	}

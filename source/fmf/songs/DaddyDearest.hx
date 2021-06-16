@@ -31,6 +31,8 @@ class DaddyDearest extends SongPlayer
 		dad.addOffset("singRIGHT", 0, 27);
 		dad.addOffset("singLEFT", -10, 10);
 		dad.addOffset("singDOWN", 0, -30);
+		dad.dance();
+
 	}
 
 	override function createDad()
@@ -40,31 +42,70 @@ class DaddyDearest extends SongPlayer
 		createDadAnimations();
 		createDadAnimationOffsets();
 		dad.dance();
+
     }
 
-        
+	override function setCamPosition()
+	{
+		camPos.x += 400;
+	}
+
 	override function midSongEventUpdate(curBeat:Int):Void
 	{
-		if (PlayState.CURRENT_SONG == "bopeebo")
+		if (playState.gfStep())
 		{
-			if (curBeat > 5 && curBeat < 130)
+			if (PlayState.CURRENT_SONG == "bopeebo")
 			{
-				if (curBeat % 8 == 7)
+				switch (PlayState.CURRENT_SONG)
 				{
-					gf.playAnimForce('cheer', 0.5);
+					case 'bopeebo':
+						bopeebooMidSongEvent(curBeat);
+
+					case 'fresh':
+						freshMidSongEvent(curBeat);
 				}
 			}
+		}
+	}
 
+	function bopeebooMidSongEvent(curBeat:Int)
+	{
+		if (curBeat > 5 && curBeat < 130)
+		{
 			if (curBeat % 8 == 7)
 			{
-                bf.playAnimForce('hey', 0.5);
+				gf.playAnimForce('cheer', 0.5);
 			}
+		}
 
-			switch (curBeat)
-			{
-				case 128, 129, 130:
-					playState.vocals.volume = 0;
-			}		
-        }
+		if (curBeat % 8 == 7)
+		{
+			bf.playAnimForce('hey', 0.5);
+		}
+
+		switch (curBeat)
+		{
+			case 128, 129, 130:
+				playState.vocals.volume = 0;
+		}
+	}
+
+	function freshMidSongEvent(curBeat:Int)
+	{
+		switch (curBeat)
+		{
+			case 16:
+				playState.camZooming = true;
+				playState.gfSpeed = 2;
+
+			case 48:
+				playState.gfSpeed = 1;
+
+			case 80:
+				playState.gfSpeed = 2;
+				
+			case 112:
+				playState.gfSpeed = 1;
+		}
 	}
 }

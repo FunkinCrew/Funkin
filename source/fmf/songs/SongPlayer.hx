@@ -1,5 +1,7 @@
 package fmf.songs;
 
+import flixel.FlxObject;
+import flixel.math.FlxPoint;
 import fmf.characters.*;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
@@ -17,6 +19,9 @@ class SongPlayer
 	public var SONG:SwagSong;
 	public var dialogue:Array<String>;
 	public var dialogueBox:DialogueBox;
+
+
+	public var camPos:FlxPoint;
 
 	public function new(state:PlayState)
 	{
@@ -46,8 +51,15 @@ class SongPlayer
 		this.SONG = song;
 		loadMap();
 		createCharacters();
+		initVariables();
 	}
 
+	function initVariables()
+	{
+		camPos = new FlxPoint(dad.getGraphicMidpoint().x, dad.getGraphicMidpoint().y);
+		setCamPosition();
+
+	}
 	function loadMap():Void
 	{
 		playState.defaultCamZoom = 0.9;
@@ -157,6 +169,9 @@ class SongPlayer
 		bf.addOffset('deathLoop', 37, 5);
 		bf.addOffset('deathConfirm', 37, 69);
 		bf.addOffset('scared', -4);
+
+		bf.playAnim('idle');
+		bf.flipX = true;
 	}
 
 	public function createBF():Void
@@ -165,9 +180,6 @@ class SongPlayer
 		getBFTex();
 		createBFAnimations();
 		createBFAnimationOffsets();
-
-		bf.playAnim('idle');
-		bf.flipX = true;
 
 		setBF();
 	}
@@ -214,6 +226,9 @@ class SongPlayer
 		gf.addOffset('hairFall', 0, -9);
 
 		gf.addOffset('scared', -2, -17);
+
+		gf.playAnim('danceRight');
+		gf.dance();
 	}
 
 	public function createGF()
@@ -222,9 +237,7 @@ class SongPlayer
 		getGFTex();
 		createGFAnimations();
 		createGFAnimationOffsets();
-		gf.playAnim('danceRight');
-
-		gf.dance();
+	
 	}
 
 	private function getDadTex()
@@ -269,6 +282,9 @@ class SongPlayer
 		dad.addOffset('hairFall', 0, -9);
 
 		dad.addOffset('scared', -2, -17);
+				
+		dad.playAnim('danceRight');
+		dad.dance();
 	}
 
 	public function createDad()
@@ -277,9 +293,7 @@ class SongPlayer
 		getDadTex();
 		createDadAnimations();
 		createDadAnimationOffsets();
-		
-		dad.playAnim('danceRight');
-		dad.dance();
+
 		dad.x = gf.x;
 		dad.y = gf.y;
 	}
@@ -292,5 +306,91 @@ class SongPlayer
 	{
 		
 	}
+
+	public function setCamPosition():Void
+	{
+	}
+
+	public function updateCamFollow():Void
+	{
+		// camFollow.setPosition(lucky.getMidpoint().x - 120, lucky.getMidpoint().y + 210);
+		// switch (dad().curCharacter)
+		// {
+		// 	case 'mom':
+		// 		camFollow.y = dad().getMidpoint().y;
+		// 	case 'senpai':
+		// 		camFollow.y = dad().getMidpoint().y - 430;
+		// 		camFollow.x = dad().getMidpoint().x - 100;
+		// 	case 'senpai-angry':
+		// 		camFollow.y = dad().getMidpoint().y - 430;
+		// 		camFollow.x = dad().getMidpoint().x - 100;
+		// }
+
+		// if (dad().curCharacter == 'mom')
+		// vocals.volume = 1;
+	}
+
+	public function applyCamPosition():Void
+	{
+		playState.camFollow = new FlxObject(0, 0, 1, 1);
+		playState.camFollow.setPosition(camPos.x, camPos.y);
+	}
+		// switch (SONG.player2)
+		// {
+		// 	case 'gf':
+		// 		dad().setPosition(gf().x, gf().y);
+		// 		gf().visible = false;
+		// 		if (isStoryMode)
+		// 		{
+		// 			camPos.x += 600;
+		// 			tweenCamIn();
+		// 		}
+
+		// 	case "spooky":
+		// 		dad().y += 200;
+		// 	case "monster":
+		// 		dad().y += 100;
+		// 	case 'monster-christmas':
+		// 		dad().y += 130;
+		// 	case 'dad':
+		// 		camPos.x += 400;
+		// 	case 'pico':
+		// 		camPos.x += 600;
+		// 		dad().y += 300;
+		// 	case 'parents-christmas':
+		// 		dad().x -= 500;
+		// 	case 'senpai':
+		// 		dad().x += 150;
+		// 		dad().y += 360;
+		// 		camPos.set(dad().getGraphicMidpoint().x + 300, dad().getGraphicMidpoint().y);
+		// 	case 'senpai-angry':
+		// 		dad().x += 150;
+		// 		dad().y += 360;
+		// 		camPos.set(dad().getGraphicMidpoint().x + 300, dad().getGraphicMidpoint().y);
+		// 	case 'spirit':
+		// 		dad().x -= 150;
+		// 		dad().y += 100;
+		// 		camPos.set(dad().getGraphicMidpoint().x + 300, dad().getGraphicMidpoint().y);
+		// }
+	// }
+
+
+	public function updateCameraOffset():Void
+	{
+		// switch (curStage)
+		// {
+		// 	case 'limo':
+		// 		camFollow.x = boyfriend().getMidpoint().x - 300;
+		// 	case 'mall':
+		// 		camFollow.y = boyfriend().getMidpoint().y - 200;
+		// 	case 'school':
+		// 		camFollow.x = boyfriend().getMidpoint().x - 200;
+		// 		camFollow.y = boyfriend().getMidpoint().y - 200;
+		// 	case 'schoolEvil':
+		// 		camFollow.x = boyfriend().getMidpoint().x - 200;
+		// 		camFollow.y = boyfriend().getMidpoint().y - 200;
+		// }
+	}
+
 
 }
