@@ -1,0 +1,139 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="mom_dad_christmas_assets.png">
+	<!-- Created with Adobe Animate version 21.0.5.40714 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="Parent Christmas Idle0000" x="0" y="0" width="436" height="389" frameX="-3" frameY="-2" frameWidth="442" frameHeight="391"/>
+	<SubTexture name="Parent Christmas Idle0001" x="0" y="0" width="436" height="389" frameX="-3" frameY="-2" frameWidth="442" frameHeight="391"/>
+	<SubTexture name="Parent Christmas Idle0002" x="436" y="0" width="438" height="380" frameX="0" frameY="-11" frameWidth="442" frameHeight="391"/>
+	<SubTexture name="Parent Christmas Idle0003" x="436" y="0" width="438" height="380" frameX="0" frameY="-11" frameWidth="442" frameHeight="391"/>
+	<SubTexture name="Parent Christmas Idle0004" x="874" y="0" width="439" height="383" frameX="-2" frameY="-8" frameWidth="442" frameHeight="391"/>
+	<SubTexture name="Parent Christmas Idle0005" x="874" y="0" width="439" height="383" frameX="-2" frameY="-8" frameWidth="442" frameHeight="391"/>
+	<SubTexture name="Parent Christmas Idle0006" x="1313" y="0" width="433" height="389" frameX="-9" frameY="-2" frameWidth="442" frameHeight="391"/>
+	<SubTexture name="Parent Christmas Idle0007" x="1313" y="0" width="433" height="389" frameX="-9" frameY="-2" frameWidth="442" frameHeight="391"/>
+	<SubTexture name="Parent Christmas Idle0008" x="1746" y="0" width="432" height="391" frameX="-10" frameY="0" frameWidth="442" frameHeight="391"/>
+	<SubTexture name="Parent Christmas Idle0009" x="1746" y="0" width="432" height="391" frameX="-10" frameY="0" frameWidth="442" frameHeight="391"/>
+	<SubTexture name="Parent Christmas Idle0010" x="2178" y="0" width="432" height="391" frameX="-10" frameY="0" frameWidth="442" frameHeight="391"/>
+	<SubTexture name="Parent Christmas Idle0011" x="2178" y="0" width="432" height="391" frameX="-10" frameY="0" frameWidth="442" frameHeight="391"/>
+	<SubTexture name="Parent Christmas Idle0012" x="2610" y="0" width="432" height="391" frameX="-10" frameY="0" frameWidth="442" frameHeight="391"/>
+	<SubTexture name="Parent Christmas Idle0013" x="2610" y="0" width="432" height="391" frameX="-10" frameY="0" frameWidth="442" frameHeight="391"/>
+	<SubTexture name="Parent Down Note Dad0000" x="3042" y="0" width="422" height="377" frameX="-4" frameY="-2" frameWidth="426" frameHeight="379"/>
+	<SubTexture name="Parent Down Note Dad0001" x="3464" y="0" width="422" height="377" frameX="-4" frameY="-2" frameWidth="426" frameHeight="379"/>
+	<SubTexture name="Parent Down Note Dad0002" x="0" y="391" width="424" height="376" frameX="0" frameY="-3" frameWidth="426" frameHeight="379"/>
+	<SubTexture name="Parent Down Note Dad0003" x="424" y="391" width="424" height="376" frameX="0" frameY="-3" frameWidth="426" frameHeight="379"/>
+	<SubTexture name="Parent Down Note Dad0004" x="848" y="391" width="424" height="379" frameX="0" frameY="0" frameWidth="426" frameHeight="379"/>
+	<SubTexture name="Parent Down Note Dad0005" x="1272" y="391" width="424" height="379" frameX="0" frameY="0" frameWidth="426" frameHeight="379"/>
+	<SubTexture name="Parent Down Note Dad0006" x="1272" y="391" width="424" height="379" frameX="0" frameY="0" frameWidth="426" frameHeight="379"/>
+	<SubTexture name="Parent Down Note Dad0007" x="848" y="391" width="424" height="379" frameX="0" frameY="0" frameWidth="426" frameHeight="379"/>
+	<SubTexture name="Parent Down Note Dad0008" x="848" y="391" width="424" height="379" frameX="0" frameY="0" frameWidth="426" frameHeight="379"/>
+	<SubTexture name="Parent Down Note Dad0009" x="1272" y="391" width="424" height="379" frameX="0" frameY="0" frameWidth="426" frameHeight="379"/>
+	<SubTexture name="Parent Down Note Dad0010" x="1272" y="391" width="424" height="379" frameX="0" frameY="0" frameWidth="426" frameHeight="379"/>
+	<SubTexture name="Parent Down Note Dad0011" x="848" y="391" width="424" height="379" frameX="0" frameY="0" frameWidth="426" frameHeight="379"/>
+	<SubTexture name="Parent Down Note Dad0012" x="848" y="391" width="424" height="379" frameX="0" frameY="0" frameWidth="426" frameHeight="379"/>
+	<SubTexture name="Parent Down Note Dad0013" x="1272" y="391" width="424" height="379" frameX="0" frameY="0" frameWidth="426" frameHeight="379"/>
+	<SubTexture name="Parent Down Note Dad0014" x="1272" y="391" width="424" height="379" frameX="0" frameY="0" frameWidth="426" frameHeight="379"/>
+	<SubTexture name="Parent Down Note Mom0000" x="1696" y="391" width="422" height="377" frameX="-4" frameY="-2" frameWidth="426" frameHeight="379"/>
+	<SubTexture name="Parent Down Note Mom0001" x="2118" y="391" width="422" height="377" frameX="-4" frameY="-2" frameWidth="426" frameHeight="379"/>
+	<SubTexture name="Parent Down Note Mom0002" x="2540" y="391" width="425" height="377" frameX="0" frameY="-2" frameWidth="426" frameHeight="379"/>
+	<SubTexture name="Parent Down Note Mom0003" x="2965" y="391" width="425" height="377" frameX="0" frameY="-2" frameWidth="426" frameHeight="379"/>
+	<SubTexture name="Parent Down Note Mom0004" x="3390" y="391" width="425" height="379" frameX="0" frameY="0" frameWidth="426" frameHeight="379"/>
+	<SubTexture name="Parent Down Note Mom0005" x="0" y="770" width="425" height="379" frameX="0" frameY="0" frameWidth="426" frameHeight="379"/>
+	<SubTexture name="Parent Down Note Mom0006" x="425" y="770" width="425" height="379" frameX="0" frameY="0" frameWidth="426" frameHeight="379"/>
+	<SubTexture name="Parent Down Note Mom0007" x="850" y="770" width="425" height="379" frameX="0" frameY="0" frameWidth="426" frameHeight="379"/>
+	<SubTexture name="Parent Down Note Mom0008" x="3390" y="391" width="425" height="379" frameX="0" frameY="0" frameWidth="426" frameHeight="379"/>
+	<SubTexture name="Parent Down Note Mom0009" x="0" y="770" width="425" height="379" frameX="0" frameY="0" frameWidth="426" frameHeight="379"/>
+	<SubTexture name="Parent Down Note Mom0010" x="425" y="770" width="425" height="379" frameX="0" frameY="0" frameWidth="426" frameHeight="379"/>
+	<SubTexture name="Parent Down Note Mom0011" x="850" y="770" width="425" height="379" frameX="0" frameY="0" frameWidth="426" frameHeight="379"/>
+	<SubTexture name="Parent Down Note Mom0012" x="3390" y="391" width="425" height="379" frameX="0" frameY="0" frameWidth="426" frameHeight="379"/>
+	<SubTexture name="Parent Down Note Mom0013" x="0" y="770" width="425" height="379" frameX="0" frameY="0" frameWidth="426" frameHeight="379"/>
+	<SubTexture name="Parent Down Note Mom0014" x="425" y="770" width="425" height="379" frameX="0" frameY="0" frameWidth="426" frameHeight="379"/>
+	<SubTexture name="Parent Left Note Dad0000" x="1275" y="770" width="392" height="401" frameX="-3" frameY="0" frameWidth="398" frameHeight="401"/>
+	<SubTexture name="Parent Left Note Dad0001" x="1667" y="770" width="392" height="401" frameX="-3" frameY="0" frameWidth="398" frameHeight="401"/>
+	<SubTexture name="Parent Left Note Dad0002" x="2059" y="770" width="398" height="396" frameX="0" frameY="-5" frameWidth="398" frameHeight="401"/>
+	<SubTexture name="Parent Left Note Dad0003" x="2457" y="770" width="398" height="396" frameX="0" frameY="-5" frameWidth="398" frameHeight="401"/>
+	<SubTexture name="Parent Left Note Dad0004" x="2855" y="770" width="398" height="400" frameX="0" frameY="-1" frameWidth="398" frameHeight="401"/>
+	<SubTexture name="Parent Left Note Dad0005" x="3253" y="770" width="398" height="400" frameX="0" frameY="-1" frameWidth="398" frameHeight="401"/>
+	<SubTexture name="Parent Left Note Dad0006" x="3651" y="770" width="398" height="400" frameX="0" frameY="-1" frameWidth="398" frameHeight="401"/>
+	<SubTexture name="Parent Left Note Dad0007" x="0" y="1171" width="398" height="400" frameX="0" frameY="-1" frameWidth="398" frameHeight="401"/>
+	<SubTexture name="Parent Left Note Dad0008" x="2855" y="770" width="398" height="400" frameX="0" frameY="-1" frameWidth="398" frameHeight="401"/>
+	<SubTexture name="Parent Left Note Dad0009" x="3253" y="770" width="398" height="400" frameX="0" frameY="-1" frameWidth="398" frameHeight="401"/>
+	<SubTexture name="Parent Left Note Dad0010" x="3651" y="770" width="398" height="400" frameX="0" frameY="-1" frameWidth="398" frameHeight="401"/>
+	<SubTexture name="Parent Left Note Dad0011" x="0" y="1171" width="398" height="400" frameX="0" frameY="-1" frameWidth="398" frameHeight="401"/>
+	<SubTexture name="Parent Left Note Dad0012" x="2855" y="770" width="398" height="400" frameX="0" frameY="-1" frameWidth="398" frameHeight="401"/>
+	<SubTexture name="Parent Left Note Dad0013" x="3253" y="770" width="398" height="400" frameX="0" frameY="-1" frameWidth="398" frameHeight="401"/>
+	<SubTexture name="Parent Left Note Dad0014" x="3651" y="770" width="398" height="400" frameX="0" frameY="-1" frameWidth="398" frameHeight="401"/>
+	<SubTexture name="Parent Left Note Dad0015" x="0" y="1171" width="398" height="400" frameX="0" frameY="-1" frameWidth="398" frameHeight="401"/>
+	<SubTexture name="Parent Left Note Mom0000" x="398" y="1171" width="392" height="400" frameX="-3" frameY="0" frameWidth="398" frameHeight="400"/>
+	<SubTexture name="Parent Left Note Mom0001" x="790" y="1171" width="392" height="400" frameX="-3" frameY="0" frameWidth="398" frameHeight="400"/>
+	<SubTexture name="Parent Left Note Mom0002" x="1182" y="1171" width="398" height="396" frameX="0" frameY="-4" frameWidth="398" frameHeight="400"/>
+	<SubTexture name="Parent Left Note Mom0003" x="1580" y="1171" width="398" height="396" frameX="0" frameY="-4" frameWidth="398" frameHeight="400"/>
+	<SubTexture name="Parent Left Note Mom0004" x="1978" y="1171" width="398" height="400"/>
+	<SubTexture name="Parent Left Note Mom0005" x="2376" y="1171" width="398" height="400"/>
+	<SubTexture name="Parent Left Note Mom0006" x="2774" y="1171" width="398" height="400"/>
+	<SubTexture name="Parent Left Note Mom0007" x="3172" y="1171" width="398" height="400"/>
+	<SubTexture name="Parent Left Note Mom0008" x="1978" y="1171" width="398" height="400"/>
+	<SubTexture name="Parent Left Note Mom0009" x="2376" y="1171" width="398" height="400"/>
+	<SubTexture name="Parent Left Note Mom0010" x="2774" y="1171" width="398" height="400"/>
+	<SubTexture name="Parent Left Note Mom0011" x="3172" y="1171" width="398" height="400"/>
+	<SubTexture name="Parent Left Note Mom0012" x="1978" y="1171" width="398" height="400"/>
+	<SubTexture name="Parent Left Note Mom0013" x="2376" y="1171" width="398" height="400"/>
+	<SubTexture name="Parent Left Note Mom0014" x="2774" y="1171" width="398" height="400"/>
+	<SubTexture name="Parent Right Note Dad0000" x="3570" y="1171" width="475" height="373" frameX="-4" frameY="-8" frameWidth="479" frameHeight="381"/>
+	<SubTexture name="Parent Right Note Dad0001" x="3570" y="1171" width="475" height="373" frameX="-4" frameY="-8" frameWidth="479" frameHeight="381"/>
+	<SubTexture name="Parent Right Note Dad0002" x="0" y="1571" width="476" height="381" frameX="0" frameY="0" frameWidth="479" frameHeight="381"/>
+	<SubTexture name="Parent Right Note Dad0003" x="0" y="1571" width="476" height="381" frameX="0" frameY="0" frameWidth="479" frameHeight="381"/>
+	<SubTexture name="Parent Right Note Dad0004" x="476" y="1571" width="476" height="380" frameX="0" frameY="-1" frameWidth="479" frameHeight="381"/>
+	<SubTexture name="Parent Right Note Dad0005" x="476" y="1571" width="476" height="380" frameX="0" frameY="-1" frameWidth="479" frameHeight="381"/>
+	<SubTexture name="Parent Right Note Dad0006" x="952" y="1571" width="476" height="380" frameX="0" frameY="-1" frameWidth="479" frameHeight="381"/>
+	<SubTexture name="Parent Right Note Dad0007" x="952" y="1571" width="476" height="380" frameX="0" frameY="-1" frameWidth="479" frameHeight="381"/>
+	<SubTexture name="Parent Right Note Dad0008" x="476" y="1571" width="476" height="380" frameX="0" frameY="-1" frameWidth="479" frameHeight="381"/>
+	<SubTexture name="Parent Right Note Dad0009" x="476" y="1571" width="476" height="380" frameX="0" frameY="-1" frameWidth="479" frameHeight="381"/>
+	<SubTexture name="Parent Right Note Dad0010" x="952" y="1571" width="476" height="380" frameX="0" frameY="-1" frameWidth="479" frameHeight="381"/>
+	<SubTexture name="Parent Right Note Dad0011" x="952" y="1571" width="476" height="380" frameX="0" frameY="-1" frameWidth="479" frameHeight="381"/>
+	<SubTexture name="Parent Right Note Dad0012" x="476" y="1571" width="476" height="380" frameX="0" frameY="-1" frameWidth="479" frameHeight="381"/>
+	<SubTexture name="Parent Right Note Dad0013" x="476" y="1571" width="476" height="380" frameX="0" frameY="-1" frameWidth="479" frameHeight="381"/>
+	<SubTexture name="Parent Right Note Dad0014" x="952" y="1571" width="476" height="380" frameX="0" frameY="-1" frameWidth="479" frameHeight="381"/>
+	<SubTexture name="Parent Right Note Dad0015" x="952" y="1571" width="476" height="380" frameX="0" frameY="-1" frameWidth="479" frameHeight="381"/>
+	<SubTexture name="Parent Right Note Mom0000" x="1428" y="1571" width="475" height="375" frameX="-4" frameY="-6" frameWidth="479" frameHeight="381"/>
+	<SubTexture name="Parent Right Note Mom0001" x="1428" y="1571" width="475" height="375" frameX="-4" frameY="-6" frameWidth="479" frameHeight="381"/>
+	<SubTexture name="Parent Right Note Mom0002" x="1903" y="1571" width="476" height="381" frameX="0" frameY="0" frameWidth="479" frameHeight="381"/>
+	<SubTexture name="Parent Right Note Mom0003" x="1903" y="1571" width="476" height="381" frameX="0" frameY="0" frameWidth="479" frameHeight="381"/>
+	<SubTexture name="Parent Right Note Mom0004" x="2379" y="1571" width="476" height="380" frameX="0" frameY="-1" frameWidth="479" frameHeight="381"/>
+	<SubTexture name="Parent Right Note Mom0005" x="2379" y="1571" width="476" height="380" frameX="0" frameY="-1" frameWidth="479" frameHeight="381"/>
+	<SubTexture name="Parent Right Note Mom0006" x="2855" y="1571" width="476" height="380" frameX="0" frameY="-1" frameWidth="479" frameHeight="381"/>
+	<SubTexture name="Parent Right Note Mom0007" x="2855" y="1571" width="476" height="380" frameX="0" frameY="-1" frameWidth="479" frameHeight="381"/>
+	<SubTexture name="Parent Right Note Mom0008" x="2379" y="1571" width="476" height="380" frameX="0" frameY="-1" frameWidth="479" frameHeight="381"/>
+	<SubTexture name="Parent Right Note Mom0009" x="2379" y="1571" width="476" height="380" frameX="0" frameY="-1" frameWidth="479" frameHeight="381"/>
+	<SubTexture name="Parent Right Note Mom0010" x="2855" y="1571" width="476" height="380" frameX="0" frameY="-1" frameWidth="479" frameHeight="381"/>
+	<SubTexture name="Parent Right Note Mom0011" x="2855" y="1571" width="476" height="380" frameX="0" frameY="-1" frameWidth="479" frameHeight="381"/>
+	<SubTexture name="Parent Right Note Mom0012" x="2379" y="1571" width="476" height="380" frameX="0" frameY="-1" frameWidth="479" frameHeight="381"/>
+	<SubTexture name="Parent Right Note Mom0013" x="2379" y="1571" width="476" height="380" frameX="0" frameY="-1" frameWidth="479" frameHeight="381"/>
+	<SubTexture name="Parent Right Note Mom0014" x="2855" y="1571" width="476" height="380" frameX="0" frameY="-1" frameWidth="479" frameHeight="381"/>
+	<SubTexture name="Parent Up Note Dad0000" x="3331" y="1571" width="393" height="403" frameX="-6" frameY="-1" frameWidth="400" frameHeight="404"/>
+	<SubTexture name="Parent Up Note Dad0001" x="0" y="1974" width="393" height="403" frameX="-6" frameY="-1" frameWidth="400" frameHeight="404"/>
+	<SubTexture name="Parent Up Note Dad0002" x="393" y="1974" width="400" height="402" frameX="0" frameY="-2" frameWidth="400" frameHeight="404"/>
+	<SubTexture name="Parent Up Note Dad0003" x="793" y="1974" width="400" height="402" frameX="0" frameY="-2" frameWidth="400" frameHeight="404"/>
+	<SubTexture name="Parent Up Note Dad0004" x="1193" y="1974" width="400" height="404"/>
+	<SubTexture name="Parent Up Note Dad0005" x="1593" y="1974" width="400" height="404"/>
+	<SubTexture name="Parent Up Note Dad0006" x="1993" y="1974" width="400" height="404"/>
+	<SubTexture name="Parent Up Note Dad0007" x="2393" y="1974" width="400" height="404"/>
+	<SubTexture name="Parent Up Note Dad0008" x="1193" y="1974" width="400" height="404"/>
+	<SubTexture name="Parent Up Note Dad0009" x="1593" y="1974" width="400" height="404"/>
+	<SubTexture name="Parent Up Note Dad0010" x="1993" y="1974" width="400" height="404"/>
+	<SubTexture name="Parent Up Note Dad0011" x="2393" y="1974" width="400" height="404"/>
+	<SubTexture name="Parent Up Note Dad0012" x="1193" y="1974" width="400" height="404"/>
+	<SubTexture name="Parent Up Note Dad0013" x="1593" y="1974" width="400" height="404"/>
+	<SubTexture name="Parent Up Note Mom0000" x="2793" y="1974" width="393" height="405" frameX="-6" frameY="0" frameWidth="400" frameHeight="405"/>
+	<SubTexture name="Parent Up Note Mom0001" x="3186" y="1974" width="393" height="405" frameX="-6" frameY="0" frameWidth="400" frameHeight="405"/>
+	<SubTexture name="Parent Up Note Mom0002" x="3579" y="1974" width="400" height="403" frameX="0" frameY="-2" frameWidth="400" frameHeight="405"/>
+	<SubTexture name="Parent Up Note Mom0003" x="0" y="2379" width="400" height="403" frameX="0" frameY="-2" frameWidth="400" frameHeight="405"/>
+	<SubTexture name="Parent Up Note Mom0004" x="400" y="2379" width="400" height="404" frameX="0" frameY="-1" frameWidth="400" frameHeight="405"/>
+	<SubTexture name="Parent Up Note Mom0005" x="800" y="2379" width="400" height="404" frameX="0" frameY="-1" frameWidth="400" frameHeight="405"/>
+	<SubTexture name="Parent Up Note Mom0006" x="1200" y="2379" width="400" height="404" frameX="0" frameY="-1" frameWidth="400" frameHeight="405"/>
+	<SubTexture name="Parent Up Note Mom0007" x="1600" y="2379" width="400" height="404" frameX="0" frameY="-1" frameWidth="400" frameHeight="405"/>
+	<SubTexture name="Parent Up Note Mom0008" x="400" y="2379" width="400" height="404" frameX="0" frameY="-1" frameWidth="400" frameHeight="405"/>
+	<SubTexture name="Parent Up Note Mom0009" x="800" y="2379" width="400" height="404" frameX="0" frameY="-1" frameWidth="400" frameHeight="405"/>
+	<SubTexture name="Parent Up Note Mom0010" x="1200" y="2379" width="400" height="404" frameX="0" frameY="-1" frameWidth="400" frameHeight="405"/>
+	<SubTexture name="Parent Up Note Mom0011" x="1600" y="2379" width="400" height="404" frameX="0" frameY="-1" frameWidth="400" frameHeight="405"/>
+	<SubTexture name="Parent Up Note Mom0012" x="400" y="2379" width="400" height="404" frameX="0" frameY="-1" frameWidth="400" frameHeight="405"/>
+	<SubTexture name="Parent Up Note Mom0013" x="800" y="2379" width="400" height="404" frameX="0" frameY="-1" frameWidth="400" frameHeight="405"/>
+</TextureAtlas>

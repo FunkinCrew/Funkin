@@ -344,9 +344,15 @@ class PlayState extends MusicBeatState
 		{
 			case 'tutorial':
 				songPlayer = new Tutorial(this);
+
 			case 'bopeebo' | 'fresh' | 'dad battles':
 				songPlayer = new DaddyDearest(this);
-		}
+
+			case 'spookeez' | 'south' | "monster":
+				songPlayer = new Spookez(this);
+
+
+			}
 		
 		songPlayer.loadSong(SONG);
 		songPlayer.createDialogue();
@@ -3422,17 +3428,17 @@ class PlayState extends MusicBeatState
 		}
 	}
 
-	function lightningStrikeShit():Void
-	{
-		FlxG.sound.play(Paths.soundRandom('thunder_', 1, 2));
-		halloweenBG.animation.play('lightning');
+	// function lightningStrikeShit():Void
+	// {
+	// 	FlxG.sound.play(Paths.soundRandom('thunder_', 1, 2));
+	// 	halloweenBG.animation.play('lightning');
 
-		lightningStrikeBeat = curBeat;
-		lightningOffset = FlxG.random.int(8, 24);
+	// 	lightningStrikeBeat = curBeat;
+	// 	lightningOffset = FlxG.random.int(8, 24);
 
-		boyfriend().playAnim('scared', true);
-		gf().playAnim('scared', true);
-	}
+	// 	bf().playAnim('scared', true);
+	// 	gf().playAnim('scared', true);
+	// }
 
 	var danced:Bool = false;
 
@@ -3603,12 +3609,12 @@ class PlayState extends MusicBeatState
 				}
 		}
 
-		if (isHalloween && FlxG.random.bool(10) && curBeat > lightningStrikeBeat + lightningOffset)
-		{
-			if(FlxG.save.data.distractions){
-				lightningStrikeShit();
-			}
-		}
+		// if (isHalloween && FlxG.random.bool(10) && curBeat > lightningStrikeBeat + lightningOffset)
+		// {
+		// 	if(FlxG.save.data.distractions){
+		// 		lightningStrikeShit();
+		// 	}
+		// }
 	}
 
 	var curLight:Int = 0;

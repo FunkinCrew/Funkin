@@ -50,15 +50,13 @@ class DaddyDearest extends SongPlayer
 			{
 				if (curBeat % 8 == 7)
 				{
-					gf.playAnim('cheer');
-                    gf.lockAnim(0.5);
+					gf.playAnimForce('cheer', 0.5);
 				}
 			}
 
 			if (curBeat % 8 == 7)
 			{
-				bf.playAnim('hey', true);
-                bf.lockAnim(0.5);
+                bf.playAnimForce('hey', 0.5);
 			}
 
 			switch (curBeat)
