@@ -1,6 +1,7 @@
 package;
 
-import fmf.*;
+import fmf.characters.*;
+import fmf.songs.*;
 
 import flixel.input.keyboard.FlxKey;
 import haxe.Exception;

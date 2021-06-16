@@ -1,5 +1,6 @@
-package fmf;
+package fmf.songs;
 
+import fmf.characters.*;
 import Song.SwagSong;
 
 class Tutorial extends SongPlayer

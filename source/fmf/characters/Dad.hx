@@ -1,4 +1,4 @@
-package;
+package fmf.characters;
 
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -7,7 +7,7 @@ import flixel.graphics.frames.FlxAtlasFrames;
 
 using StringTools;
 
-class Spooky extends Character
+class Dad extends Character
 {
 
 	override function update(elapsed:Float)
@@ -22,19 +22,8 @@ class Spooky extends Character
 			dance();
 			holdTimer = 0;
 		}
-		
+
 		super.update(elapsed);
-	}
-
-	override function dance()
-	{
-		danced = !danced;
-
-		if (danced)
-			playAnim('danceRight');
-		else
-			playAnim('danceLeft');
-
 	}
 
 

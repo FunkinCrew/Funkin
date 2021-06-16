@@ -1,4 +1,5 @@
-package fmf;
+package fmf.songs;
+import fmf.characters.*;
 
 import flixel.util.FlxTimer;
 import flixel.system.FlxSound;
@@ -23,7 +24,6 @@ class Philly extends SongPlayer
 	var startedMoving:Bool = false;
 
 	var curLight:Int = 0;
-
 
 	function trainStart():Void
 	{
@@ -71,7 +71,7 @@ class Philly extends SongPlayer
 		if (FlxG.save.data.distractions)
 		{
 			gf.playAnim('hairFall');
-			
+
 			phillyTrain.x = FlxG.width + 200;
 			trainMoving = false;
 			trainSound.stop();
@@ -85,7 +85,6 @@ class Philly extends SongPlayer
 			{
 				gf.playAnim('danceRight');
 			});
-
 		}
 	}
 
@@ -122,7 +121,7 @@ class Philly extends SongPlayer
 		playState.add(streetBehind);
 
 		phillyTrain = new FlxSprite(2000, 360).loadGraphic(Paths.image('philly/train', 'week3'));
-	
+
 		if (FlxG.save.data.distractions)
 		{
 			playState.add(phillyTrain);
@@ -141,8 +140,6 @@ class Philly extends SongPlayer
 		var tex = Paths.getSparrowAtlas('gf/GF_hair');
 		gf.frames = tex;
 	}
-
-
 
 	override function getDadTex()
 	{
@@ -189,7 +186,7 @@ class Philly extends SongPlayer
 
 		dad.x -= 350;
 	}
-	
+
 	override function createGF()
 	{
 		super.createGF();
@@ -267,5 +264,4 @@ class Philly extends SongPlayer
 			}
 		}
 	}
-
 }

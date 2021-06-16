@@ -1,5 +1,6 @@
-package fmf;
+package fmf.songs;
 
+import fmf.characters.*;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import Song.SwagSong;
