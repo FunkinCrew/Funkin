@@ -3,7 +3,6 @@ package fmf.songs;
 import fmf.characters.*;
 import flixel.FlxG;
 import flixel.FlxSprite;
-import Song.SwagSong;
 
 class Spookez extends SongPlayer
 {
@@ -31,11 +30,17 @@ class Spookez extends SongPlayer
 		gf.frames = tex;
     }
 
-    override function getDadTex()
+	override function getDadTex()
 	{
 		var tex = Paths.getSparrowAtlas('characters/spooky_kids_assets');
 		dad.frames = tex;
 	}
+
+	override function getDadVersion():Character
+	{
+		return new Spooky(100, 100);
+	}
+
    
 	override function createDadAnimations():Void
 	{
@@ -47,9 +52,8 @@ class Spookez extends SongPlayer
         animation.addByPrefix('singRIGHT', 'spooky sing right', 24, false);
         animation.addByIndices('danceLeft', 'spooky dance idle', [0, 2, 6], "", 12, false);
         animation.addByIndices('danceRight', 'spooky dance idle', [8, 10, 12, 14], "", 12, false);
-
-
 		dad.animation = animation;
+
 	}
 
 	override function createDadAnimationOffsets():Void
@@ -61,6 +65,9 @@ class Spookez extends SongPlayer
         dad.addOffset("singRIGHT", -130, -14);
         dad.addOffset("singLEFT", 130, -10);
         dad.addOffset("singDOWN", -50, -130);
+		
+		dad.dance();
+
 	}
 
 

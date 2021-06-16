@@ -1,7 +1,6 @@
 package fmf.songs;
 
 import fmf.characters.*;
-import Song.SwagSong;
 
 class DaddyDearest extends SongPlayer
 {

@@ -16,21 +16,17 @@ class SongPlayer
 	public var dad:Character;
 
 	public var playState:PlayState;
-	public var SONG:SwagSong;
 	public var dialogue:Array<String>;
 	public var dialogueBox:DialogueBox;
 
 
 	public var camPos:FlxPoint;
 
-	public function new(state:PlayState)
-	{
-		playState = state;
-	}
+	public function new (){}
 
 	public function createDialogue():Void
 	{
-		var path = SONG.song.toLowerCase() + '/' + SONG.song.toLowerCase() + '-dialogue';
+		var path = PlayState.CURRENT_SONG + '/' + PlayState.CURRENT_SONG + '-dialogue';
 		dialogue = CoolUtil.coolTextFile(Paths.txt(path));
 		trace("Create dialogue at path: " + path);
 	}
@@ -46,9 +42,10 @@ class SongPlayer
 		trace('whee mai dialgue siht!');
 	}
 
-	public function loadSong(song:SwagSong):Void
+	public function init(playState:PlayState):Void
 	{
-		this.SONG = song;
+		this.playState = playState;
+
 		loadMap();
 		createCharacters();
 		initVariables();
@@ -174,9 +171,14 @@ class SongPlayer
 		bf.flipX = true;
 	}
 
+	function getBFVersion():Boyfriend
+	{
+		return new Boyfriend(770, 450);
+	}
+
 	public function createBF():Void
 	{
-		bf = new Boyfriend(770, 450);
+		bf = getBFVersion();
 		getBFTex();
 		createBFAnimations();
 		createBFAnimationOffsets();
@@ -231,9 +233,15 @@ class SongPlayer
 		gf.dance();
 	}
 
+	function getGfVersion():Character
+	{
+		return new GF(400, 250);
+	}
+
 	public function createGF()
 	{
 		gf = new GF(400, 250);
+
 		getGFTex();
 		createGFAnimations();
 		createGFAnimationOffsets();
@@ -287,9 +295,14 @@ class SongPlayer
 		dad.dance();
 	}
 
+	function getDadVersion():Character
+	{
+		return new Character(100, 100);
+	}
+
 	public function createDad()
 	{
-		dad = new Character(100, 100);
+		dad = getDadVersion();
 		getDadTex();
 		createDadAnimations();
 		createDadAnimationOffsets();

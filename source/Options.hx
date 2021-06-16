@@ -7,7 +7,8 @@ import Controls.KeyboardScheme;
 import flixel.FlxG;
 import openfl.display.FPS;
 import openfl.Lib;
-
+import fmf.characters.*;
+import fmf.songs.*;
 class OptionCategory
 {
 	private var _options:Array<Option> = new Array<Option>();
