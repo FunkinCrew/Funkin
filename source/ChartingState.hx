@@ -87,6 +87,14 @@ class ChartingState extends MusicBeatState
 	var uiTextField:FlxInputText;
 	var stageTextField:FlxInputText;
 	var isAltNoteCheck:FlxUICheckBox;
+	
+	var playerText:FlxText;
+	var gfText:FlxText;
+	var enemyText:FlxText;
+	var stageText:FlxText;
+	var uiText:FlxText;
+	var cutsceneText:FlxText;
+	
 	/*
 	 * WILL BE THE CURRENT / LAST PLACED NOTE
 	**/
@@ -301,17 +309,30 @@ class ChartingState extends MusicBeatState
 	function addCharsUI():Void
 	{
 		player1TextField = new FlxUIInputText(10, 100, 70, _song.player1, 8);
-		player2TextField = new FlxUIInputText(80, 100, 70, _song.player2, 8);
+		player2TextField = new FlxUIInputText(120, 100, 70, _song.player2, 8);
 		gfTextField = new FlxUIInputText(10, 120, 70, _song.gf, 8);
-		stageTextField = new FlxUIInputText(80, 120, 70, _song.stage, 8);
-		cutsceneTextField = new FlxUIInputText(80, 140, 70, _song.cutsceneType, 8);
+		stageTextField = new FlxUIInputText(120, 120, 70, _song.stage, 8);
+		cutsceneTextField = new FlxUIInputText(120, 140, 70, _song.cutsceneType, 8);
 		uiTextField = new FlxUIInputText(10, 140, 70, _song.uiType, 8);
+
+		playerText = new FlxText(player1TextField.x + 70, player1TextField.y, 0, "Player", 8, false);
+		enemyText = new FlxText(player2TextField.x + 70, player2TextField.y, 0, "Enemy", 8, false);
+		gfText = new FlxText(gfTextField.x + 70, gfTextField.y, 0, "GF", 8, false);
+		stageText = new FlxText(stageTextField.x + 70, stageTextField.y, 0, "Stage", 8, false);
+		cutsceneText = new FlxText(cutsceneTextField.x + 70, uiTextField.y, 0, "Cutscene", 8, false);
+		uiText = new FlxText(uiTextField.x + 70, uiTextField.y, 0, "UI", 8, false);
+
 		var curStage = _song.stage;
 
 		var tab_group_char = new FlxUI(null, UI_box);
 		tab_group_char.name = "Char";
 
-
+		tab_group_char.add(playerText);
+		tab_group_char.add(enemyText);
+		tab_group_char.add(gfText);
+		tab_group_char.add(stageText);
+		tab_group_char.add(cutsceneText);
+		tab_group_char.add(uiText);
 		tab_group_char.add(uiTextField);
 		tab_group_char.add(cutsceneTextField);
 		tab_group_char.add(stageTextField);
@@ -321,7 +342,6 @@ class ChartingState extends MusicBeatState
 
 		UI_box.addGroup(tab_group_char);
 		UI_box.scrollFactor.set();
-
 	}
 
 	var stepperLength:FlxUINumericStepper;
