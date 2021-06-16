@@ -1,0 +1,153 @@
+{
+  "template": {
+    "like": "bf",
+    "icons": [0,1,24],
+    "colors": ["#149DFF"]
+  },
+  "bf": {
+    "like": "bf",
+    "icons": [0,1,2],
+    "colors": ["#149DFF"]
+  },
+  "bf-car": {
+    "like": "bf-car",
+    "icons": [0,1,2],
+    "colors": ["#149DFF"]
+  },
+  "bf-christmas": {
+    "like": "bf-car",
+    "icons": [0,1,2],
+    "colors": ["#149DFF"]
+  },
+  "bf-pixel": {
+    "like": "bf-pixel",
+    "icons": [0,1,2],
+    "colors": ["#149DFF"]
+  },
+  "bulb-pixel": {
+    "like": "bf-pixel",
+    "icons": [
+      0,
+      1,
+      2
+    ],
+    "colors": [
+      "#149DFF"
+    ]
+  },
+  "dad": {
+    "like": "dad",
+    "icons": [0,1,2],
+    "colors": ["#A200CA"]
+  },
+  "gf-car": {
+    "like": "gf-car",
+    "icons": [0,0,1],
+    "colors": ["#EE19D9"]
+  },
+  "gf-pixel": {
+    "like": "gf-pixel",
+    "icons": [0,0,1],
+    "colors": ["#EE19D9"]
+  },
+  "gf-christmas": {
+    "like": "gf",
+    "icons": [0,0,1],
+    "colors": ["#EE19D9"]
+  },
+  "gf": {
+    "like": "gf",
+    "icons": [0,0,1],
+    "colors": ["#EE19D9"]
+  },
+  "templateMonster": {
+    "like": "monster",
+    "icons": [0,1,2],
+    "colors": ["#F2D046"]
+  },
+  "monster": {
+    "like": "newmonster",
+    "icons": [0,1,2],
+    "colors": ["#F2D046"]
+  },
+  "monster-christmas": {
+    "like": "monster-christmas",
+    "icons": [0,1,2],
+    "colors": ["#F2D046"]
+  },
+  "parents-christmas": {
+    "like": "parents",
+    "icons": [0,1,2],
+    "colors": ["#A200CA", "#FF95C5"]
+  },
+  "pico": {
+    "like": "pico",
+    "icons": [0,1,2],
+    "colors": ["#99FF7D"]
+  },
+  "senpai-angry": {
+    "like": "senpai-angry",
+    "icons": [0,1,2],
+    "colors": ["#BC7333"]
+  },
+  "senpai": {
+    "like": "senpai",
+    "icons": [0,1,2],
+    "colors": ["#BC7333"]
+  },
+  "spirit": {
+    "like": "spirit",
+    "icons": [0,1,2],
+    "colors": ["#E77474"]
+  },
+  "spooky": {
+    "like": "spooky",
+    "icons": [0,1,2],
+    "colors": ["#FD9013","#C3C3C3"]
+  },
+  "mom": {
+    "like": "mom",
+    "icons": [0,1,2],
+    "colors": ["#FF95C5"]
+  },
+  "mom-car": {
+    "like": "mom-car",
+    "icons": [0,1,2],
+    "colors": ["#FF95C5"]
+  },
+  "templateSenpai-hd": {
+    "like": "senpai-hd",
+    "icons": [0,1,2],
+    "colors": ["#BC7333"]
+  },
+  "templateSenpaiAngry-hd": {
+    "like": "senpai-angry-hd",
+    "icons": [0,1,2],
+    "colors": ["#BC7333"]
+  },
+  "templateSpirit-hd": {
+    "like": "spirit-hd",
+    "icons": [0,1,2],
+    "colors": ["#BC7333"]
+  },
+  "tankman": {
+    "like": "tankman",
+    "icons": [0,1,2],
+    "colors": ["#F9B03A"]
+  },
+  "gf-tankmen": {
+    "like": "gf-tankmen",
+    "icons": [0,0,1],
+    "colors": ["#EE19D9"]
+  },
+  "pico-speaker": {
+    "like": "pico-speaker",
+    "icons": [0,1,2],
+    "colors": ["#99FF7D"]
+  },
+  "bf-holding-gf": {
+    "like": "bf-holding-gf",
+    "icons": [0,1,2],
+    "colors": ["#149DFF","#EE19D9"]
+  }
+}

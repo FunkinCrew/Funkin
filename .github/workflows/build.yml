@@ -60,10 +60,24 @@ jobs:
           path: 'export/release/linux/bin' 
       - name: Compile HTML5
         run: haxelib run lime build html5
+      - name: Copy Week 7 Files
+        run: cp -rf ./Week7Assets ./export/release/linux/bin/assets
+      - name: Publish Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: linuxWeek7Build
+          path: export/release/linux/bin
       - name: Publish Html5
         uses: actions/upload-artifact@v2
         with:
           name: html5Build
+          path: export/release/html5/bin
+      - name: Copy Week 7 Files
+        run: cp -rf ./Week7Assets ./export/release/html5/bin/assets
+      - name: Publish Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: html5Week7Build
           path: export/release/html5/bin
   buildWindows:
     runs-on: windows-latest
@@ -106,12 +120,26 @@ jobs:
         with:
           name: windowsBuild
           path: export/release/windows/bin
+      - name: Copy Week 7 Files
+        run: Copy-Item -Force -Recurse ./Week7Assets -Destination ./export/release/windows/bin/assets
+      - name: Publish Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: windowsWeek7Build
+          path: export/release/windows/bin
       - name: Compile 32 bit
         run: haxelib run lime build windows -D32bit -32
       - name: Publish 32bit
         uses: actions/upload-artifact@v2
         with:
           name: windows32Build
+          path: export/32bit/windows/bin
+      - name: Copy Week 7 Files
+        run: Copy-Item -Force -Recurse ./Week7Assets -Destination ./export/32bit/windows/bin/assets
+      - name: Publish Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: windowsWeek732bitBuild
           path: export/32bit/windows/bin
   buildMac:
     runs-on: macos-latest
@@ -152,4 +180,11 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: macBuild
+          path: export/release/macos/bin
+      - name: Copy Week 7 Files
+        run: cp -rf ./Week7Assets ./export/release/macos/bin/assets
+      - name: Publish Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: macWeek7Build
           path: export/release/macos/bin

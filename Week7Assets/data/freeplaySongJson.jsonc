@@ -1,0 +1,126 @@
+[
+  {
+    "name": "Base Game",
+    "songs": [
+      // we use tjson so we can do comments and do some incorrect things
+      // the reason we use tjson is because json is hard
+      // The category screen won't show up unless there are more than 1 categories
+      {"name":"Tutorial",
+      "character":"gf",
+      "week": 0},
+      {
+        "name": "Bopeebo",
+        "character": "dad",
+        "week": 1
+      },
+      {
+        "name": "Fresh",
+        "character": "dad",
+        "week": 1
+      },
+      {
+        "name": "Dadbattle",
+        "character": "dad",
+        "week": 1
+      },
+      {
+        "name": "Spookeez",
+        "character": "spooky",
+        "week": 2
+      },
+      {
+        "name": "South",
+        "character": "spooky",
+        "week": 2
+      },
+      {
+        "name": "Monster",
+        "character": "monster",
+        "week": 2
+      },
+      {
+        "name": "Pico",
+        "character": "pico",
+        "week": 3
+      },
+      {
+        "name": "Philly",
+        "character": "pico",
+        "week": 3
+      },{
+        "name": "Blammed",
+        "character": "pico",
+        "week": 3
+      },
+      {
+        "name": "Satin-Panties",
+        "character": "mom",
+        "week": 4
+      },
+      {
+        "name": "High",
+        "character": "mom",
+        "week": 4
+      },{
+        "name": "Milf",
+        "character": "mom",
+        "week": 4
+      },
+      {
+        "name": "Cocoa",
+        "character": "parents-christmas",
+        "week": 5
+      },
+      {
+        "name": "Eggnog",
+        "character": "parents-christmas",
+        "week": 5
+      },
+      {
+        "name": "Winter-Horrorland",
+        "character": "monster-christmas",
+        "week": 5
+      },
+      {
+        "name": "Senpai",
+        "character": "senpai",
+        "week": 6
+      },
+      {
+        "name": "Roses",
+        "character": "senpai-angry",
+        "week": 6
+      },
+      {
+        "name": "Thorns",
+        "character": "spirit",
+        "week": 6
+      },
+      {
+        "name": "Test",
+        "character": "face",
+        "week": 6,
+        "flags" : ["debug"]
+      }
+    ]
+  },
+  // trailing commas don't matter with tjson
+  // visual studio code is just pissy
+  /*
+  uncomment this for an example
+   {
+    "name": "Custom 1",
+    "songs": [
+    {
+      "name": "Bopeebo",
+      "character": "dad",
+      "week": 1
+    },
+    {
+      "name": "Fresh",
+      "character": "dad",
+        "week" : 1
+   ]
+   },
+  */
+]
