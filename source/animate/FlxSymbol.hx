@@ -1,6 +1,7 @@
 package animate;
 
 import flixel.FlxCamera;
+import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxFrame.FlxFrameAngle;
 import flixel.math.FlxAngle;
@@ -29,11 +30,6 @@ class FlxSymbol extends FlxSprite
 
 	var symbolAtlasShit:Map<String, String> = new Map();
 
-	override function draw()
-	{
-		super.draw();
-	}
-
 	public static var nestedShit:Map<Int, Array<FlxSymbol>> = new Map();
 
 	var symbolMap:Map<String, Animation> = new Map();
@@ -47,6 +43,9 @@ class FlxSymbol extends FlxSprite
 	{
 		for (layer in TL.L)
 		{
+			if (FlxG.keys.justPressed.TWO)
+				trace(layer.LN);
+
 			// layer.FR.reverse();
 			// var frame = layer.FR[0]
 
@@ -79,11 +78,12 @@ class FlxSymbol extends FlxSprite
 							// spr.origin.y += origin.y;
 
 							spr.antialiasing = true;
+							// if (layer.LN != 'head')
 							spr.draw();
 
-							if (traceShit)
+							if (FlxG.keys.justPressed.ONE)
 							{
-								trace(element.ASI.N);
+								trace("ASI - " + layer.LN + ": " + element.ASI.N);
 							}
 						}
 						else
@@ -112,6 +112,13 @@ class FlxSymbol extends FlxSprite
 							// scale.x = Math.sqrt(_matrix.a * _matrix.a + _matrix.b * _matrix.b);
 
 							// nestedShit.oldMatrix = element.SI.M3D;
+
+							if (FlxG.keys.justPressed.ONE)
+							{
+								trace("SI - " + layer.LN + ": " + element.SI.SN);
+							}
+
+							nestedSymbol.TL.L.reverse();
 
 							nestedShit.hasFrameByPass = true;
 							nestedShit.nestDepth = nestDepth + 1;

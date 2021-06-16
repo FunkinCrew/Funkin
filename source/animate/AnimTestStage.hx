@@ -10,8 +10,9 @@ class AnimTestStage extends FlxState
 	{
 		var bg:FlxSprite = FlxGridOverlay.create(32, 32);
 		add(bg);
+		bg.scrollFactor.set();
 
-		var swag:FlxAnimate = new FlxAnimate(0, 0);
+		var swag:FlxAnimate = new FlxAnimate(200, 200);
 		add(swag);
 
 		super.create();

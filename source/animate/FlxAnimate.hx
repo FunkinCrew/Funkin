@@ -38,6 +38,13 @@ class FlxAnimate extends FlxSymbol
 	{
 		super.draw();
 
+		if (FlxG.keys.justPressed.ONE)
+		{
+			trace("-------------------------------------");
+			trace('CUR FRAME: ' + daFrame);
+			trace('--------------');
+		}
+
 		renderFrame(coolParse.AN.TL, coolParse, true);
 
 		if (FlxG.keys.justPressed.E)
@@ -54,8 +61,6 @@ class FlxAnimate extends FlxSymbol
 			FlxSymbol.nestedShit.clear();
 		}
 	}
-
-	var curFrame:Int = 0;
 
 	// notes to self
 	// account for different layers
