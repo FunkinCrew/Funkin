@@ -62,7 +62,7 @@ class OptionsMenu extends MusicBeatState
 		
 		new OptionCategory("Saved Data", [
 			new LockWeeksOption("Lock all weeks. (exept Tutorial of course)")
-			// TODO reset score
+			// TODO reset score option
 		])
 		
 	];
