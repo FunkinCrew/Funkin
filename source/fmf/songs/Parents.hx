@@ -7,7 +7,6 @@ import Song.SwagSong;
 
 class Parents extends SongPlayer
 {
-
 	var upperBoppers:FlxSprite;
 	var bottomBoppers:FlxSprite;
 	var santa:FlxSprite;
@@ -68,66 +67,96 @@ class Parents extends SongPlayer
 		var fgSnow:FlxSprite = new FlxSprite(-600, 700).loadGraphic(Paths.image('christmas/fgSnow', 'week5'));
 		fgSnow.active = false;
 		fgSnow.antialiasing = true;
+		fgSnow.scale.x = 1.25;
 		playState.add(fgSnow);
 
-		santa = new FlxSprite(-840, 150);
+		santa = new FlxSprite(1300, 150);
 		santa.frames = Paths.getSparrowAtlas('christmas/santa', 'week5');
 		santa.animation.addByPrefix('idle', 'santa idle in fear', 24, false);
 		santa.antialiasing = true;
+		santa.flipX = true;
+
+		santa.scale.x = 0.5;
+		santa.scale.y = 0.5;
+
+		santa.y += 100;
+
 		if (FlxG.save.data.distractions)
 		{
 			playState.add(santa);
 		}
-
 	}
 
 	override function getGFTex()
 	{
-		var tex = Paths.getSparrowAtlas('gf/GF_normal');
+		var tex = Paths.getSparrowAtlas('gf/gfChristmas');
 		gf.frames = tex;
-    }
-
-    override function getDadTex()
-	{
-		var tex = Paths.getSparrowAtlas('characters/spooky_kids_assets');
-		dad.frames = tex;
 	}
-   
+
+	override function getBFTex()
+	{
+		var tex = Paths.getSparrowAtlas('characters/bfChristmas');
+		bf.frames = tex;
+	}
+
+	override function getDadTex()
+	{
+		var frames = Paths.getSparrowAtlas('characters/mom_dad_christmas_assets');
+		dad.frames = frames;
+	}
+
 	override function createDadAnimations():Void
 	{
 		var animation = dad.animation;
-      
-        animation.addByPrefix('singUP', 'spooky UP NOTE', 24, false);
-        animation.addByPrefix('singDOWN', 'spooky DOWN note', 24, false);
-        animation.addByPrefix('singLEFT', 'note sing left', 24, false);
-        animation.addByPrefix('singRIGHT', 'spooky sing right', 24, false);
-        animation.addByIndices('danceLeft', 'spooky dance idle', [0, 2, 6], "", 12, false);
-        animation.addByIndices('danceRight', 'spooky dance idle', [8, 10, 12, 14], "", 12, false);
 
+		animation.addByPrefix('idle', 'Parent Christmas Idle', 24, false);
+		animation.addByPrefix('singUP', 'Parent Up Note Dad', 24, false);
+		animation.addByPrefix('singDOWN', 'Parent Down Note Dad', 24, false);
+		animation.addByPrefix('singLEFT', 'Parent Left Note Dad', 24, false);
+		animation.addByPrefix('singRIGHT', 'Parent Right Note Dad', 24, false);
+
+		animation.addByPrefix('singUP-alt', 'Parent Up Note Mom', 24, false);
+		animation.addByPrefix('singDOWN-alt', 'Parent Down Note Mom', 24, false);
+		animation.addByPrefix('singLEFT-alt', 'Parent Left Note Mom', 24, false);
+		animation.addByPrefix('singRIGHT-alt', 'Parent Right Note Mom', 24, false);
 
 		dad.animation = animation;
 	}
 
 	override function createDadAnimationOffsets():Void
 	{
-        dad.addOffset('danceLeft');
-        dad.addOffset('danceRight');
+		dad.addOffset('idle');
+		dad.addOffset("singUP", -47, 24);
+		dad.addOffset("singRIGHT", -1, -23);
+		dad.addOffset("singLEFT", -30, 16);
+		dad.addOffset("singDOWN", -31, -29);
+		dad.addOffset("singUP-alt", -47, 24);
+		dad.addOffset("singRIGHT-alt", -1, -24);
+		dad.addOffset("singLEFT-alt", -30, 15);
+		dad.addOffset("singDOWN-alt", -30, -27);
 
-        dad.addOffset("singUP", -20, 26);
-        dad.addOffset("singRIGHT", -130, -14);
-        dad.addOffset("singLEFT", 130, -10);
-        dad.addOffset("singDOWN", -50, -130);
+		dad.playAnim('idle');
 	}
-
 
 	override function createCharacters()
 	{
-        super.createCharacters();
-        dad.x -= 250;
-        dad.y += 50;
-        gf.y -= 125;
-        bf.x += 50;
-    }
+		super.createCharacters();
+
+		dad.scale.x = 2;
+		dad.scale.y = 2;
+
+		dad.x -= 600;
+		dad.y += 50;
+
+		gf.scale.x = 2;
+		gf.scale.y = 2;
+
+		gf.y += 100;
+		gf.x += 50;
+
+		bf.x += 150;
+		bf.y += 50;
+	}
 
 	override function midSongEventUpdate(curBeat:Int):Void
 	{
@@ -140,7 +169,6 @@ class Parents extends SongPlayer
 
 				case 'eggnog':
 					eggnogMidSongEvent(curBeat);
-
 			}
 		}
 
@@ -169,6 +197,5 @@ class Parents extends SongPlayer
 
 	function lightningStrikeShit(curBeat:Int):Void
 	{
-		
 	}
 }

@@ -24,21 +24,22 @@ class SongPlayer
 
 	public function new (){}
 
-	public function createDialogue():Void
+	public function createDialogue(callback:Void->Void):Void
 	{
 		var path = PlayState.CURRENT_SONG + '/' + PlayState.CURRENT_SONG + '-dialogue';
-		dialogue = CoolUtil.coolTextFile(Paths.txt(path));
-		trace("Create dialogue at path: " + path);
-	}
-
-	public function showDialogue(callback:Void->Void):Void
-	{
+		dialogue = CoolUtil.coolTextFile(Paths.txt(path));		
 		dialogueBox = new DialogueBox(false, dialogue);
 		dialogueBox.scrollFactor.set();
 		dialogueBox.finishThing = callback;
 		dialogueBox.cameras = [playState.camHUD];
-		playState.add(dialogueBox);
+		trace("Create dialogue at path: " + path);
+	
+	}
 
+	public function showDialogue():Void
+	{
+		
+		playState.add(dialogueBox);
 		trace('whee mai dialgue siht!');
 	}
 
@@ -142,9 +143,7 @@ class SongPlayer
 		bf.animation.addByPrefix('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
 		bf.animation.addByPrefix('hey', 'BF HEY', 24, false);
 
-		bf.animation.addByPrefix('firstDeath', "BF dies", 24, false);
-		bf.animation.addByPrefix('deathLoop', "BF Dead Loop", 24, true);
-		bf.animation.addByPrefix('deathConfirm', "BF Dead confirm", 24, false);
+
 		bf.animation.addByPrefix('scared', 'BF idle shaking', 24);
 	}
 
@@ -162,9 +161,6 @@ class SongPlayer
 		bf.addOffset("singLEFTmisss", 12, 24);
 		bf.addOffset("singDOWNmiss", -11, -19);
 		bf.addOffset("hey", 7, 4);
-		bf.addOffset('firstDeath', 37, 11);
-		bf.addOffset('deathLoop', 37, 5);
-		bf.addOffset('deathConfirm', 37, 69);
 		bf.addOffset('scared', -4);
 
 		bf.playAnim('idle');

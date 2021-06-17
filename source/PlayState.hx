@@ -351,30 +351,23 @@ class PlayState extends MusicBeatState
 			case 'satin-panties' | "high" | "milf":
 				songPlayer = new Mom();
 
+			case 'cocoa'  | 'eggnog':
+				songPlayer = new Parents();
+			
+			case 'winter-horrorland':
+				songPlayer = new WinterHorrorland();
+
+
+
 		}
+		
 		songPlayer.init(this);
-		songPlayer.createDialogue();
 
-		// 	case 'mallEvil':
-		// 	{
-		// 			curStage = 'mallEvil';
-		// 			var bg:FlxSprite = new FlxSprite(-400, -500).loadGraphic(Paths.image('christmas/evilBG','week5'));
-		// 			bg.antialiasing = true;
-		// 			bg.scrollFactor.set(0.2, 0.2);
-		// 			bg.active = false;
-		// 			bg.setGraphicSize(Std.int(bg.width * 0.8));
-		// 			bg.updateHitbox();
-		// 			add(bg);
+		//no need create dialogue shit in freeplay, yay
+		if (isStoryMode)
+		songPlayer.createDialogue(startCountdown);
 
-		// 			var evilTree:FlxSprite = new FlxSprite(300, -300).loadGraphic(Paths.image('christmas/evilTree','week5'));
-		// 			evilTree.antialiasing = true;
-		// 			evilTree.scrollFactor.set(0.2, 0.2);
-		// 			add(evilTree);
-
-		// 			var evilSnow:FlxSprite = new FlxSprite(-200, 700).loadGraphic(Paths.image("christmas/evilSnow",'week5'));
-		// 				evilSnow.antialiasing = true;
-		// 			add(evilSnow);
-		// 			}
+	
 		// 	case 'school':
 		// 	{
 		// 			curStage = 'school';
@@ -722,38 +715,10 @@ class PlayState extends MusicBeatState
 
 		if (isStoryMode)
 		{
-			songPlayer.showDialogue(startCountdown);
+			songPlayer.showDialogue();
 			
 			// switch (StringTools.replace(curSong," ", "-").toLowerCase())
 			// {
-			// 	case "winter-horrorland":
-			// 		var blackScreen:FlxSprite = new FlxSprite(0, 0).makeGraphic(Std.int(FlxG.width * 2), Std.int(FlxG.height * 2), FlxColor.BLACK);
-			// 		add(blackScreen);
-			// 		blackScreen.scrollFactor.set();
-			// 		camHUD.visible = false;
-
-			// 		new FlxTimer().start(0.1, function(tmr:FlxTimer)
-			// 		{
-			// 			remove(blackScreen);
-			// 			FlxG.sound.play(Paths.sound('Lights_Turn_On'));
-			// 			camFollow.y = -2050;
-			// 			camFollow.x += 200;
-			// 			FlxG.camera.focusOn(camFollow.getPosition());
-			// 			FlxG.camera.zoom = 1.5;
-
-			// 			new FlxTimer().start(0.8, function(tmr:FlxTimer)
-			// 			{
-			// 				camHUD.visible = true;
-			// 				remove(blackScreen);
-			// 				FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, 2.5, {
-			// 					ease: FlxEase.quadInOut,
-			// 					onComplete: function(twn:FlxTween)
-			// 					{
-			// 						startCountdown();
-			// 					}
-			// 				});
-			// 			});
-			// 		});
 			// 	case 'senpai':
 			// 		schoolIntro(doof);
 			// 	case 'roses':
