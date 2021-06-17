@@ -39,37 +39,12 @@ class Highscore
 	{
 		var daSong:String = formatSong(song, diff);
 		var finalCombo:String = combo.split(')')[0].replace('(', '');
-		var finalComboInt:Int = 0;
-		var existingFinalComboInt:Int = 0;
-
-		switch(finalCombo)
-		{
-			case 'SDCB':
-				finalComboInt = 1;
-			case 'FC':
-				finalComboInt = 2;
-			case 'GFC':
-				finalComboInt = 3;
-			case 'MFC':
-				finalComboInt = 4;
-		}
 
 		if(!FlxG.save.data.botplay)
 		{
 			if (songCombos.exists(daSong))
 			{
-				switch(songCombos.get(daSong))
-				{
-					case 'SDCB':
-						existingFinalComboInt = 1;
-					case 'FC':
-						existingFinalComboInt = 2;
-					case 'GFC':
-						existingFinalComboInt = 3;
-					case 'MFC':
-						existingFinalComboInt = 4;
-				}
-				if (existingFinalComboInt < finalComboInt)
+				if (getComboInt(songCombos.get(daSong)) < getComboInt(finalCombo))
 					setCombo(daSong, finalCombo);
 			}
 			else
@@ -127,6 +102,23 @@ class Highscore
 			daSong += '-hard';
 
 		return daSong;
+	}
+
+	static function getComboInt(combo:String):Int
+	{
+		switch(combo)
+		{
+			case 'SDCB':
+				return 1;
+			case 'FC':
+				return 2;
+			case 'GFC':
+				return 3;
+			case 'MFC':
+				return 4;
+			default:
+				return 0;
+		}
 	}
 
 	public static function getScore(song:String, diff:Int):Int
