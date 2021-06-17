@@ -14,10 +14,13 @@ import lime.utils.Assets;
 
 class OptionsMenu extends MusicBeatState
 {
-	var selector:FlxText;
+	var textMenuItems:Array<String> = ['Controls', 'Graphics', 'Sound', 'Misc'];
 	var curSelected:Int = 0;
+	var grpOptionsTexts:FlxTypedGroup<Alphabet>;
 
-	private var grpControls:FlxTypedGroup<Alphabet>;
+	var controlsBox = new ControlsBox();
+
+	var inMenu = false;
 
 	override function create()
 	{
@@ -31,84 +34,256 @@ class OptionsMenu extends MusicBeatState
 
 		super.create();
 
-		openSubState(new OptionsSubState());
+		//openSubState(new OptionsSubState());
+		grpOptionsTexts = new FlxTypedGroup<Alphabet>();
+		add(grpOptionsTexts);
+
+		spawnInTexts();
 	}
 
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
 
-		/* 
-			if (controls.ACCEPT)
+		if (!inMenu)
+		{
+			if (controls.UP_P)
 			{
-				changeBinding();
+				curSelected -= 1;
+				FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 			}
 
-			if (isSettingControl)
-				waitingInput();
-			else
+			if (controls.DOWN_P)
 			{
-				if (controls.BACK)
-					FlxG.switchState(new MainMenuState());
-				if (controls.UP_P)
-					changeSelection(-1);
-				if (controls.DOWN_P)
-					changeSelection(1);
+				curSelected += 1;
+				FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 			}
-		 */
-	}
+		} else {
+			if (controls.UP_P)
+			{
+				if (textMenuItems[curSelected] == 'Volume')
+				{
+					if (FlxG.sound.volume < 1)
+					{
+						FlxG.sound.volume += 1;
+						FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
+					}
+				}
+			}
 
-	function waitingInput():Void
-	{
-		if (FlxG.keys.getIsDown().length > 0)
-		{
-			PlayerSettings.player1.controls.replaceBinding(Control.LEFT, Keys, FlxG.keys.getIsDown()[0].ID, null);
+			if (controls.DOWN_P)
+			{
+				if (textMenuItems[curSelected] == 'Volume')
+				{
+					if (FlxG.sound.volume > 0.1)
+					{
+						FlxG.sound.volume -= 0.1;
+						FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
+					}
+				}
+			}
 		}
-		// PlayerSettings.player1.controls.replaceBinding(Control)
-	}
-
-	var isSettingControl:Bool = false;
-
-	function changeBinding():Void
-	{
-		if (!isSettingControl)
-		{
-			isSettingControl = true;
-		}
-	}
-
-	function changeSelection(change:Int = 0)
-	{
-		#if !switch
-		NGio.logEvent('Fresh');
-		#end
-
-		FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
-
-		curSelected += change;
 
 		if (curSelected < 0)
-			curSelected = grpControls.length - 1;
-		if (curSelected >= grpControls.length)
+			curSelected = textMenuItems.length - 1;
+
+		if (curSelected >= textMenuItems.length)
 			curSelected = 0;
 
-		// selector.y = (70 * curSelected) + 30;
-
-		var bullShit:Int = 0;
-
-		for (item in grpControls.members)
+		if (controls.BACK)
 		{
-			item.targetY = bullShit - curSelected;
-			bullShit++;
-
-			item.alpha = 0.6;
-			// item.setGraphicSize(Std.int(item.width * 0.8));
-
-			if (item.targetY == 0)
+			if (inMenu)
 			{
-				item.alpha = 1;
-				// item.setGraphicSize(Std.int(item.width));
+				// Cool Options things
+				if (textMenuItems[curSelected] == 'Controls')
+				{
+					remove(controlsBox);
+				}
+
+				inMenu = false;
+			} else {
+				FlxG.switchState(new MainMenuState());
 			}
+		}
+
+		if (controls.ACCEPT)
+		{
+			if (!inMenu)
+			{
+				// yes ik weird ordering, but if i dont do it this way then things kinda mess up (switching pages specifically)
+				if (textMenuItems[curSelected] != 'Muted' && textMenuItems[curSelected] != 'Old Title' && textMenuItems[curSelected] != 'Opponent Side Glow' && textMenuItems[curSelected] != 'VSync')
+				{
+					inMenu = true;
+				}
+
+				switch(textMenuItems[curSelected])
+				{
+					case 'Controls':
+						add(controlsBox);
+
+					case 'Mute':
+						FlxG.sound.muted = true;
+						textMenuItems = ["Back", "Unmute", "Volume"];
+						spawnInTexts();
+
+					case 'Unmute':
+						FlxG.sound.muted = false;
+						textMenuItems = ["Back", "Mute", "Volume"];
+						spawnInTexts();
+
+					case 'Back':
+					{
+						curSelected = 0;
+						textMenuItems = ['Controls', 'Graphics', 'Sound', 'Misc'];
+						spawnInTexts();
+					}
+
+					case 'Sound':
+					{
+						curSelected = 0;
+						textMenuItems = ["Back", "Mute", "Volume"];
+						spawnInTexts();
+					}
+
+					case 'Graphics':
+					{
+						curSelected = 0;
+						textMenuItems = ["Back", "Opponent Side Glow", "Unlimited FPS"];
+						spawnInTexts();
+					}
+
+					case 'Old Title':
+					{
+						if (FlxG.save.data.oldTitle == null)
+						{
+							FlxG.save.data.oldTitle = false;
+						}
+
+						FlxG.save.data.oldTitle = !FlxG.save.data.oldTitle;
+						FlxG.save.flush();
+					}
+
+					case 'Opponent Side Glow':
+					{
+						FlxG.save.data.enemyGlow = !FlxG.save.data.enemyGlow;
+						FlxG.save.flush();
+					}
+
+					case 'No-hit On':
+					{
+						FlxG.save.data.nohit = false;
+						FlxG.save.flush();
+
+						var option:Alphabet;
+
+						if(FlxG.save.data.nohit)
+							option = new Alphabet(20, 20 + (3 * 100), "No-hit On", true, false);
+						else
+							option = new Alphabet(20, 20 + (3 * 100), "No-hit Off", true, false);
+
+						option.isMenuItem = true;
+						option.targetY = 3;
+						grpOptionsTexts.members[3] = option;
+						textMenuItems[3] = "No-hit Off";
+						inMenu = false;
+					}
+
+					case 'No-hit Off':
+					{
+						FlxG.save.data.nohit = true;
+						FlxG.save.flush();
+
+						var option:Alphabet;
+
+						if(FlxG.save.data.nohit)
+							option = new Alphabet(20, 20 + (3 * 100), "No-hit On", true, false);
+						else
+							option = new Alphabet(20, 20 + (3 * 100), "No-hit Off", true, false);
+
+						option.isMenuItem = true;
+						option.targetY = 3;
+						grpOptionsTexts.members[3] = option;
+						textMenuItems[3] = "No-hit On";
+						inMenu = false;
+					}
+
+					case 'Downscroll':
+					{
+						if(FlxG.save.data.downscroll == null)
+						{
+							FlxG.save.data.downscroll = false;
+						}
+
+						FlxG.save.data.downscroll = !FlxG.save.data.downscroll;
+						FlxG.save.flush();
+
+						var option:Alphabet;
+
+						if(FlxG.save.data.downscroll)
+							option = new Alphabet(20, 20 + (2 * 100), "Downscroll", true, false);
+						else
+							option = new Alphabet(20, 20 + (2 * 100), "Upscroll", true, false);
+
+						option.isMenuItem = true;
+						option.targetY = 1;
+						grpOptionsTexts.members[1] = option;
+						inMenu = false;
+					}
+
+					case 'Misc':
+					{
+						curSelected = 0;
+						textMenuItems = ["Back", "Downscroll", "Old Title"];
+
+						if(!FlxG.save.data.nohit)
+							textMenuItems.push("No-hit Off");
+						else
+							textMenuItems.push("No-hit On");
+						
+						spawnInTexts();
+					}
+
+					case 'Unlimited FPS':
+					{
+						inMenu = false;
+						if(FlxG.save.data.unlimitedFPS != null)
+						{
+							FlxG.save.data.unlimitedFPS = false;
+						}
+
+						FlxG.save.data.unlimitedFPS = !FlxG.save.data.unlimitedFPS;
+						FlxG.save.flush();
+
+						if(FlxG.save.data.unlimitedFPS)
+							openfl.Lib.current.stage.frameRate = 1000;
+						else
+							openfl.Lib.current.stage.frameRate = 120;
+					}
+				}
+			}
+		}
+
+		var bruh = 0;
+
+		for (x in grpOptionsTexts.members)
+		{
+			x.targetY = bruh - curSelected;
+			bruh++;
+		}
+	}
+
+	function spawnInTexts()
+	{
+		inMenu = false;
+
+		grpOptionsTexts.clear();
+
+		for (i in 0...textMenuItems.length)
+		{
+			var option = new Alphabet(20, 20 + (i * 100), textMenuItems[i], true, false);
+			option.isMenuItem = true;
+			option.targetY = i;
+			grpOptionsTexts.add(option);
 		}
 	}
 }
