@@ -129,14 +129,17 @@ class OptionsMenu extends MusicBeatState
 				isCat = false;
 				grpControls.clear();
 				for (i in 0...options.length)
-					{
-						var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, options[i].getName(), true, false);
-						controlLabel.isMenuItem = true;
-						controlLabel.targetY = i;
-						grpControls.add(controlLabel);
-						// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
-					}
+				{
+					var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, options[i].getName(), true, false);
+					controlLabel.isMenuItem = true;
+					controlLabel.targetY = i;
+					grpControls.add(controlLabel);
+					// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
+				}
+				
 				curSelected = 0;
+				
+				changeSelection(curSelected);
 			}
 			if (controls.UP_P)
 				changeSelection(-1);
@@ -186,18 +189,18 @@ class OptionsMenu extends MusicBeatState
 			else
 			{
 				if (FlxG.keys.pressed.SHIFT)
-					{
-						if (FlxG.keys.justPressed.RIGHT)
-							FlxG.save.data.offset += 0.1;
-						else if (FlxG.keys.justPressed.LEFT)
-							FlxG.save.data.offset -= 0.1;
-					}
-					else if (FlxG.keys.pressed.RIGHT)
+				{
+					if (FlxG.keys.justPressed.RIGHT)
 						FlxG.save.data.offset += 0.1;
-					else if (FlxG.keys.pressed.LEFT)
+					else if (FlxG.keys.justPressed.LEFT)
 						FlxG.save.data.offset -= 0.1;
-					
-					versionShit.text = "Offset (Left, Right, Shift for slow): " + HelperFunctions.truncateFloat(FlxG.save.data.offset,2) + " - Description - " + currentDescription;
+				}
+				else if (FlxG.keys.pressed.RIGHT)
+					FlxG.save.data.offset += 0.1;
+				else if (FlxG.keys.pressed.LEFT)
+					FlxG.save.data.offset -= 0.1;
+				
+				versionShit.text = "Offset (Left, Right, Shift for slow): " + HelperFunctions.truncateFloat(FlxG.save.data.offset,2) + " - Description - " + currentDescription;
 			}
 		
 
@@ -230,6 +233,8 @@ class OptionsMenu extends MusicBeatState
 						}
 					curSelected = 0;
 				}
+				
+				changeSelection(curSelected);
 			}
 		}
 		FlxG.save.flush();
