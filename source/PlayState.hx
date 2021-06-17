@@ -2576,16 +2576,19 @@ class PlayState extends MusicBeatState
 					}
 					#end
 
-					// if ()
-					StoryMenuState.weekUnlocked[Std.int(Math.min(storyWeek + 1, StoryMenuState.weekUnlocked.length - 1))] = true;
-
 					if (SONG.validScore)
 					{
 						NGio.unlockMedal(60961);
 						Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficulty);
 					}
 
-					FlxG.save.data.weekUnlocked = StoryMenuState.weekUnlocked;
+					if(storyWeek < StoryMenuState.getWeeks().length - 1 && FlxG.save.data.weekUnlocked == storyWeek)
+						{
+							StoryMenuState.weekUnlocked.push(true);
+							trace('Week ' + storyWeek + ' beat (Week ' + (storyWeek + 1) + ' unlocked)');
+						}
+		
+					FlxG.save.data.weekUnlocked = StoryMenuState.weekUnlocked.length - 1;
 					FlxG.save.flush();
 				}
 				else

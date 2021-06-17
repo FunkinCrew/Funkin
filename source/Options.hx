@@ -634,3 +634,25 @@ class CamZoomOption extends Option
 		return "Camera Zoom " + (!FlxG.save.data.camzoom ? "off" : "on");
 	}
 }
+
+class LockWeeksOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+	public override function press():Bool
+	{
+		FlxG.save.data.weekUnlocked = 0;
+		StoryMenuState.weekUnlocked = [true];
+		trace('Weeks Locked');
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Lock Weeks";
+	}
+}

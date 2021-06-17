@@ -34,7 +34,7 @@ class StoryMenuState extends MusicBeatState
 	];
 	var curDifficulty:Int = 1;
 
-	public static var weekUnlocked:Array<Bool> = [true, true, true, true, true, true, true];
+	public static var weekUnlocked:Array<Bool> = [];
 
 	var weekCharacters:Array<Dynamic> = [
 		['', 'bf', 'gf'],
@@ -72,8 +72,21 @@ class StoryMenuState extends MusicBeatState
 	var leftArrow:FlxSprite;
 	var rightArrow:FlxSprite;
 
+	function unlockWeeks():Array<Bool>
+	{
+		var weeks:Array<Bool> = [true];
+
+		for(i in 0...FlxG.save.data.weekUnlocked)
+			{
+				weeks.push(true);
+			}
+		return weeks;
+	}
+
 	override function create()
 	{
+		weekUnlocked = unlockWeeks();
+
 		#if windows
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("In the Story Mode Menu", null);
@@ -133,6 +146,7 @@ class StoryMenuState extends MusicBeatState
 			// Needs an offset thingie
 			if (!weekUnlocked[i])
 			{
+				trace('locking week ' + i);
 				var lock:FlxSprite = new FlxSprite(weekThing.width + 10 + weekThing.x);
 				lock.frames = ui_tex;
 				lock.animation.addByPrefix('lock', 'lock');
