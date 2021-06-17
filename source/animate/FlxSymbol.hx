@@ -16,6 +16,15 @@ class FlxSymbol extends FlxSprite
 
 	private var hasFrameByPass:Bool = false;
 
+	// Loop types shit
+	public static inline var LOOP:String = 'LP';
+	public static inline var PLAY_ONCE:String = 'PO';
+	public static inline var SINGLE_FRAME:String = 'SF';
+
+	public var firstFrame:Int = 0;
+
+	public var daLoopType:String = 'LP'; // LP by default, is set below!!!
+
 	public function new(x:Float, y:Float, coolParsed:Parsed)
 	{
 		super(x, y);
@@ -47,88 +56,113 @@ class FlxSymbol extends FlxSprite
 				trace(layer.LN);
 
 			// layer.FR.reverse();
-			// var frame = layer.FR[0]
 
-			for (frame in layer.FR)
+			// for (frame in layer.FR)
+			// {
+			var newFrameNum:Int = daFrame;
+
+			switch (daLoopType)
 			{
-				if (daFrame >= frame.I && daFrame < frame.I + frame.DU)
+				case LOOP:
+					var tempFrame = layer.FR[newFrameNum + firstFrame % layer.FR.length];
+					newFrameNum += 0; // temp, fix later for good looping
+				case PLAY_ONCE:
+					newFrameNum += 0;
+				case SINGLE_FRAME:
+					newFrameNum = firstFrame;
+			}
+
+			trace(daLoopType);
+			trace(newFrameNum);
+			trace(layer.FR.length);
+
+			trace(newFrameNum % layer.FR.length);
+
+			var swagFrame:Frame = layer.FR[newFrameNum % layer.FR.length]; // has modulo just in case????
+
+			// if (newFrameNum >= frame.I && newFrameNum < frame.I + frame.DU)
+			// {
+			for (element in swagFrame.E)
+			{
+				if (Reflect.hasField(element, 'ASI'))
 				{
-					for (element in frame.E)
+					var m3d = element.ASI.M3D;
+					var dumbassMatrix:Matrix = new Matrix(m3d[0], m3d[1], m3d[4], m3d[5], m3d[12], m3d[13]);
+
+					var spr:FlxSymbol = new FlxSymbol(0, 0, coolParsed);
+					matrixExposed = true;
+					spr.frames = frames;
+					spr.frame = spr.frames.getByName(element.ASI.N);
+
+					// dumbassMatrix.translate(origin.x, origin.y);
+
+					dumbassMatrix.concat(_matrix);
+					spr.matrixExposed = true;
+					spr.transformMatrix.concat(dumbassMatrix);
+					// spr._matrix.concat(spr.transformMatrix);
+
+					spr.origin.set();
+					// Prob dont need these offset thingies???
+					// spr.origin.x += origin.x;
+					// spr.origin.y += origin.y;
+
+					spr.antialiasing = true;
+					// if (layer.LN != 'head')
+					spr.draw();
+
+					if (FlxG.keys.justPressed.ONE)
 					{
-						if (Reflect.hasField(element, 'ASI'))
-						{
-							var m3d = element.ASI.M3D;
-							var dumbassMatrix:Matrix = new Matrix(m3d[0], m3d[1], m3d[4], m3d[5], m3d[12], m3d[13]);
-
-							var spr:FlxSymbol = new FlxSymbol(0, 0, coolParsed);
-							matrixExposed = true;
-							spr.frames = frames;
-							spr.frame = spr.frames.getByName(element.ASI.N);
-
-							// dumbassMatrix.translate(origin.x, origin.y);
-
-							dumbassMatrix.concat(_matrix);
-							spr.matrixExposed = true;
-							spr.transformMatrix.concat(dumbassMatrix);
-							// spr._matrix.concat(spr.transformMatrix);
-
-							spr.origin.set();
-							// Prob dont need these offset thingies???
-							// spr.origin.x += origin.x;
-							// spr.origin.y += origin.y;
-
-							spr.antialiasing = true;
-							// if (layer.LN != 'head')
-							spr.draw();
-
-							if (FlxG.keys.justPressed.ONE)
-							{
-								trace("ASI - " + layer.LN + ": " + element.ASI.N);
-							}
-						}
-						else
-						{
-							var nestedSymbol = symbolMap.get(element.SI.SN);
-							var nestedShit:FlxSymbol = new FlxSymbol(0, 0, coolParse);
-							nestedShit.frames = frames;
-
-							var swagMatrix:FlxMatrix = new FlxMatrix(element.SI.M3D[0], element.SI.M3D[1], element.SI.M3D[4], element.SI.M3D[5],
-								element.SI.M3D[12], element.SI.M3D[13]);
-
-							swagMatrix.concat(_matrix);
-
-							nestedShit._matrix.concat(swagMatrix);
-							nestedShit.origin.set(element.SI.TRP.x, element.SI.TRP.y);
-							// nestedShit.angle += ((180 / Math.PI) * Math.atan2(swagMatrix.b, swagMatrix.a));
-							// nestedShit.angle += angle;
-
-							if (symbolAtlasShit.exists(nestedSymbol.SN))
-							{
-								// nestedShit.frames.getByName(symbolAtlasShit.get(nestedSymbol.SN));
-								// nestedShit.draw();
-							}
-
-							// scale.y = Math.sqrt(_matrix.c * _matrix.c + _matrix.d * _matrix.d);
-							// scale.x = Math.sqrt(_matrix.a * _matrix.a + _matrix.b * _matrix.b);
-
-							// nestedShit.oldMatrix = element.SI.M3D;
-
-							if (FlxG.keys.justPressed.ONE)
-							{
-								trace("SI - " + layer.LN + ": " + element.SI.SN);
-							}
-
-							nestedSymbol.TL.L.reverse();
-
-							nestedShit.hasFrameByPass = true;
-							nestedShit.nestDepth = nestDepth + 1;
-							nestedShit.renderFrame(nestedSymbol.TL, coolParsed);
-
-							// renderFrame(nestedSymbol.TL, coolParsed);
-						}
+						trace("ASI - " + layer.LN + ": " + element.ASI.N);
 					}
 				}
+				else
+				{
+					var nestedSymbol = symbolMap.get(element.SI.SN);
+					var nestedShit:FlxSymbol = new FlxSymbol(0, 0, coolParse);
+					nestedShit.frames = frames;
+
+					var swagMatrix:FlxMatrix = new FlxMatrix(element.SI.M3D[0], element.SI.M3D[1], element.SI.M3D[4], element.SI.M3D[5], element.SI.M3D[12],
+						element.SI.M3D[13]);
+
+					swagMatrix.concat(_matrix);
+
+					nestedShit._matrix.concat(swagMatrix);
+					nestedShit.origin.set(element.SI.TRP.x, element.SI.TRP.y);
+					// nestedShit.angle += ((180 / Math.PI) * Math.atan2(swagMatrix.b, swagMatrix.a));
+					// nestedShit.angle += angle;
+
+					if (symbolAtlasShit.exists(nestedSymbol.SN))
+					{
+						// nestedShit.frames.getByName(symbolAtlasShit.get(nestedSymbol.SN));
+						// nestedShit.draw();
+					}
+
+					// scale.y = Math.sqrt(_matrix.c * _matrix.c + _matrix.d * _matrix.d);
+					// scale.x = Math.sqrt(_matrix.a * _matrix.a + _matrix.b * _matrix.b);
+
+					// nestedShit.oldMatrix = element.SI.M3D;
+
+					if (FlxG.keys.justPressed.ONE)
+					{
+						trace("SI - " + layer.LN + ": " + element.SI.SN + " - LOOP TYPE: " + element.SI.LP);
+					}
+
+					nestedShit.firstFrame = element.SI.FF;
+					// nestedShit.daFrame += nestedShit.firstFrame;
+
+					nestedSymbol.TL.L.reverse();
+
+					nestedShit.daLoopType = element.SI.LP;
+					nestedShit.daFrame = daFrame;
+					nestedShit.hasFrameByPass = true;
+					nestedShit.nestDepth = nestDepth + 1;
+					nestedShit.renderFrame(nestedSymbol.TL, coolParsed);
+
+					// renderFrame(nestedSymbol.TL, coolParsed);
+				}
 			}
+			// }
+			// }
 		}
 	}
 
@@ -310,6 +344,12 @@ typedef SymbolInstance =
 
 	/** SymbolType (Graphic, Movieclip, Button)*/
 	var ST:String;
+
+	/** First frame*/
+	var FF:Int;
+
+	/** Loop type (Loop, play once, single frame)*/
+	var LP:String;
 
 	var TRP:TransformationPoint;
 	var M3D:Array<Float>;
