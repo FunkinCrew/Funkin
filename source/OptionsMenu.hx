@@ -145,7 +145,6 @@ class OptionsMenu extends MusicBeatState
 			
 			if (isCat)
 			{
-				
 				if (currentSelectedCat.getOptions()[curSelected].getAccept())
 				{
 					if (FlxG.keys.pressed.SHIFT)
@@ -165,7 +164,6 @@ class OptionsMenu extends MusicBeatState
 				}
 				else
 				{
-
 					if (FlxG.keys.pressed.SHIFT)
 					{
 						if (FlxG.keys.justPressed.RIGHT)
@@ -178,7 +176,7 @@ class OptionsMenu extends MusicBeatState
 					else if (FlxG.keys.pressed.LEFT)
 						FlxG.save.data.offset -= 0.1;
 					
-				
+					versionShit.text = "Offset (Left, Right, Shift for slow): " + HelperFunctions.truncateFloat(FlxG.save.data.offset,2) + " - Description - " + currentDescription;
 				}
 				if (currentSelectedCat.getOptions()[curSelected].getAccept())
 					versionShit.text =  currentSelectedCat.getOptions()[curSelected].getValue() + " - Description - " + currentDescription;
@@ -198,6 +196,8 @@ class OptionsMenu extends MusicBeatState
 						FlxG.save.data.offset += 0.1;
 					else if (FlxG.keys.pressed.LEFT)
 						FlxG.save.data.offset -= 0.1;
+					
+					versionShit.text = "Offset (Left, Right, Shift for slow): " + HelperFunctions.truncateFloat(FlxG.save.data.offset,2) + " - Description - " + currentDescription;
 			}
 		
 
