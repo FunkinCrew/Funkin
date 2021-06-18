@@ -383,7 +383,7 @@ class PlayState extends MusicBeatState
 		// healthBar
 		add(healthBar);
 
-		scoreTxt = new FlxText(healthBarBG.x - healthBarBG.width / 2, healthBarBG.y + 30, 0, "", 20);
+		scoreTxt = new FlxText(healthBarBG.x + (healthBarBG.width / 2), healthBarBG.y + 30, 0, "", 20);
 		scoreTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		scoreTxt.scrollFactor.set();
 		add(scoreTxt);
@@ -989,14 +989,6 @@ class PlayState extends MusicBeatState
 		perfectMode = false;
 		#end
 
-		if (FlxG.keys.justPressed.NINE)
-		{
-			if (iconP1.animation.curAnim.name == 'bf-old')
-				iconP1.animation.play(SONG.player1);
-			else
-				iconP1.animation.play('bf-old');
-		}
-
 		super.update(elapsed);
 
 		accuracy = 100 / (totalNotes / hitNotes);
@@ -1004,6 +996,7 @@ class PlayState extends MusicBeatState
 		accuracy = accuracy * Math.pow(10, FlxG.save.data.accuracyPrecision);
 		accuracy = Math.round(accuracy) / Math.pow(10, FlxG.save.data.accuracyPrecision);
 
+		scoreTxt.x = (healthBarBG.x + (healthBarBG.width / 2)) - (scoreTxt.width / 2);
 		scoreTxt.text = (
 			"Misses: " + misses + " | " +
 			"Accuracy: " + accuracy + "% | " +
