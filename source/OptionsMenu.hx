@@ -156,7 +156,14 @@ class OptionsMenu extends MusicBeatState
 					}
 
 					case 'Animation Debug':
-						FlxG.switchState(new AnimationDebug());
+					{
+						PlayState.SONG = Song.loadFromJson(Highscore.formatSong('tutorial', 2), 'tutorial');
+						PlayState.isStoryMode = false;
+						PlayState.storyDifficulty = 2;
+						PlayState.storyWeek = 0;
+
+						LoadingState.loadAndSwitchState(new AnimationDebug('dad'));
+					}
 
 					case 'Sound':
 					{
