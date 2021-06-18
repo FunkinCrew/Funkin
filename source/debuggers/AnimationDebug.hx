@@ -1,4 +1,4 @@
-package;
+package debuggers;
 
 import flixel.addons.ui.FlxUIDropDownMenu;
 import polymod.format.ParseRules.PlainTextParseFormat;

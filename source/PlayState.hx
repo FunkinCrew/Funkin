@@ -1,5 +1,6 @@
 package;
 
+import debuggers.AnimationDebug;
 import openfl.display.Stage;
 #if desktop
 import Discord.DiscordClient;

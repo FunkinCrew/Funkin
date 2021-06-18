@@ -1,5 +1,6 @@
 package;
 
+import debuggers.AnimationDebug;
 import Controls.Control;
 import flash.text.TextField;
 import flixel.FlxG;
