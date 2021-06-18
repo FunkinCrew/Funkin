@@ -80,6 +80,32 @@ class StageGroup extends FlxGroup
                 stageCurtains.active = false;
                 add(stageCurtains);
             }
+            case "chromatic-stage":
+            {
+                camZoom = 0.9;
+                
+                var testBg:FlxSprite = new FlxSprite(-600, -200).loadGraphic(Paths.image(stage + '/chr-stageback', 'stages'));
+                testBg.antialiasing = true;
+                testBg.scrollFactor.set(0.9, 0.9);
+                testBg.active = false;
+                add(testBg);
+
+                var testFront:FlxSprite = new FlxSprite(-650, 600).loadGraphic(Paths.image(stage + '/chr-stagefront', 'stages'));
+                testFront.setGraphicSize(Std.int(testFront.width * 1.1));
+                testFront.updateHitbox();
+                testFront.antialiasing = true;
+                testFront.scrollFactor.set(0.9, 0.9);
+                testFront.active = false;
+                add(testFront);
+
+                var testCurtains:FlxSprite = new FlxSprite(-500, -300).loadGraphic(Paths.image(stage + '/chr-stagecurtains', 'stages'));
+                testCurtains.setGraphicSize(Std.int(testCurtains.width * 0.9));
+                testCurtains.updateHitbox();
+                testCurtains.antialiasing = true;
+                testCurtains.scrollFactor.set(1.3, 1.3);
+                testCurtains.active = false;
+                add(testCurtains);
+            }
             case "spooky":
             {
                 var hallowTex = Paths.getSparrowAtlas(stage + '/halloween_bg', 'stages');
