@@ -2581,14 +2581,7 @@ class PlayState extends MusicBeatState
 						Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficulty);
 					}
 
-					if(storyWeek < StoryMenuState.getWeeks().length - 1 && FlxG.save.data.weekUnlocked == storyWeek)
-						{
-							StoryMenuState.weekUnlocked.push(true);
-							trace('Week ' + storyWeek + ' beat (Week ' + (storyWeek + 1) + ' unlocked)');
-						}
-		
-					FlxG.save.data.weekUnlocked = StoryMenuState.weekUnlocked.length - 1;
-					FlxG.save.flush();
+					StoryMenuState.unlockNextWeek(storyWeek);
 				}
 				else
 				{
