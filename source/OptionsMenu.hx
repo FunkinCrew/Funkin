@@ -47,6 +47,42 @@ class OptionsMenu extends MusicBeatState
 
 		if (!inMenu)
 		{
+			// base menu hotkeys
+			if (FlxG.keys.justPressed.ONE)
+			{
+				moveTo('Graphics');
+			}
+
+			if (FlxG.keys.justPressed.TWO)
+			{
+				moveTo('Sound');
+			}
+
+			if (FlxG.keys.justPressed.THREE)
+			{
+				moveTo('Tools');
+			}
+
+			if (FlxG.keys.justPressed.FOUR)
+			{
+				moveTo('Misc');
+			}
+			// tools
+			if (FlxG.keys.justPressed.ONE)
+			{
+				moveTo('Charter');
+			}
+
+			if (FlxG.keys.justPressed.TWO)
+			{
+				moveTo('Animation Debug');
+			}
+
+			if (FlxG.keys.justPressed.THREE)
+			{
+				moveTo('Stage Editor');
+			}
+
 			if (controls.UP_P)
 			{
 				curSelected -= 1;
@@ -296,6 +332,17 @@ class OptionsMenu extends MusicBeatState
 		{
 			x.targetY = bruh - curSelected;
 			bruh++;
+		}
+	}
+
+	function moveTo(?option:String = 'Graphics')
+	{
+		for (i in 0...textMenuItems.length)
+		{
+			if (textMenuItems[i] == option)
+			{
+				curSelected = i;
+			}
 		}
 	}
 
