@@ -86,6 +86,9 @@ class PlayState extends MusicBeatState
 	private var health:Float = 1;
 	private var combo:Int = 0;
 
+	public var misses:Int = 0;
+	public var accuracy:Float = 100.0;
+
 	private var healthBarBG:FlxSprite;
 	private var healthBar:FlxBar;
 
@@ -126,6 +129,9 @@ class PlayState extends MusicBeatState
 	var scoreTxt:FlxText;
 
 	public static var campaignScore:Int = 0;
+
+	private var totalNotes:Int = 0;
+	private var hitNotes:Int = 0;
 
 	var defaultCamZoom:Float = 1.05;
 
@@ -357,7 +363,12 @@ class PlayState extends MusicBeatState
 
 		FlxG.fixedTimestep = false;
 
-		healthBarBG = new FlxSprite(0, FlxG.height * 0.9).loadGraphic(Paths.image('healthBar'));
+		var healthBarPosY = FlxG.height * 0.9;
+
+		if(FlxG.save.data.downscroll)
+			healthBarPosY = 60;
+
+		healthBarBG = new FlxSprite(0, healthBarPosY).loadGraphic(Paths.image('healthBar'));
 		healthBarBG.screenCenter(X);
 		healthBarBG.scrollFactor.set();
 		add(healthBarBG);
@@ -369,8 +380,8 @@ class PlayState extends MusicBeatState
 		// healthBar
 		add(healthBar);
 
-		scoreTxt = new FlxText(healthBarBG.x + healthBarBG.width - 190, healthBarBG.y + 30, 0, "", 20);
-		scoreTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT);
+		scoreTxt = new FlxText(healthBarBG.x - healthBarBG.width / 2, healthBarBG.y + 30, 0, "", 20);
+		scoreTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		scoreTxt.scrollFactor.set();
 		add(scoreTxt);
 
@@ -985,7 +996,17 @@ class PlayState extends MusicBeatState
 
 		super.update(elapsed);
 
-		scoreTxt.text = "Score:" + songScore;
+		accuracy = 100 / (totalNotes / hitNotes);
+		// math
+		accuracy = accuracy * Math.pow(10, FlxG.save.data.accuracyPrecision);
+		accuracy = Math.round(accuracy) / Math.pow(10, FlxG.save.data.accuracyPrecision);
+
+		scoreTxt.text = (
+			"Misses: " + misses + " | " +
+			"Accuracy: " + accuracy + "% | " +
+			"Score: " + songScore
+		);
+		//scoreTxt.text = "Score:" + songScore;
 
 		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause)
 		{
@@ -1782,6 +1803,8 @@ class PlayState extends MusicBeatState
 				gf.playAnim('sad');
 			}
 			combo = 0;
+			misses++;
+			totalNotes++;
 
 			if (FlxG.save.data.nohit)
 				health = 0;
@@ -1848,6 +1871,9 @@ class PlayState extends MusicBeatState
 				popUpScore(note.strumTime);
 				combo += 1;
 			}
+
+			hitNotes++;
+			totalNotes++;
 
 			if (note.noteData >= 0)
 				health += 0.023;

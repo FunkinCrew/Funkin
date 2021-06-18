@@ -65,6 +65,12 @@ class TitleState extends MusicBeatState
 
 		Assets.loadLibrary("songs").onComplete(function (_) {  });
 
+		if(!FlxG.save.data.accuracyPrecision)
+		{
+			FlxG.save.data.accuracyPrecision = 2;
+			FlxG.save.flush();
+		}
+
 		#if !debug
 		if (FlxG.save.data.weekUnlocked != null)
 		{
