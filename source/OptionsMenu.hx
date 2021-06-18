@@ -145,6 +145,12 @@ class OptionsMenu extends MusicBeatState
 						spawnInTexts();
 					}
 
+					case 'Charter':
+						LoadingState.loadAndSwitchState(new ChartingState());
+
+					case 'Animation Debug':
+						LoadingState.loadAndSwitchState(new AnimationDebug());
+
 					case 'Sound':
 					{
 						curSelected = 0;
