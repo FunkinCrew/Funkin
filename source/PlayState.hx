@@ -563,7 +563,7 @@ class PlayState extends MusicBeatState
 			var introAssets:Map<String, Array<String>> = new Map<String, Array<String>>();
 			introAssets.set('default', ['ready', "set", "go"]);
 			introAssets.set('school', ['ui/ready-pixel', 'ui/set-pixel', 'ui/date-pixel']);
-			introAssets.set('schoolEvil', ['ui/ready-pixel', 'ui/set-pixel', 'ui/date-pixel']);
+			introAssets.set('evil-school', ['ui/ready-pixel', 'ui/set-pixel', 'ui/date-pixel']);
 
 			var introAlts:Array<String> = introAssets.get('default');
 			var altSuffix:String = "";
