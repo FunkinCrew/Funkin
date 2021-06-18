@@ -213,7 +213,7 @@ class OptionsMenu extends MusicBeatState
 					case 'Graphics':
 					{
 						curSelected = 0;
-						textMenuItems = ["Back", "Opponent Side Glow", "Unlimited FPS"];
+						textMenuItems = ["Back", "Opponent Side Glow"];
 						spawnInTexts();
 					}
 
@@ -306,23 +306,6 @@ class OptionsMenu extends MusicBeatState
 							textMenuItems.push("No-hit On");
 						
 						spawnInTexts();
-					}
-
-					case 'Unlimited FPS':
-					{
-						inMenu = false;
-						if(FlxG.save.data.unlimitedFPS != null)
-						{
-							FlxG.save.data.unlimitedFPS = false;
-						}
-
-						FlxG.save.data.unlimitedFPS = !FlxG.save.data.unlimitedFPS;
-						FlxG.save.flush();
-
-						if(FlxG.save.data.unlimitedFPS)
-							openfl.Lib.current.stage.frameRate = 1000;
-						else
-							openfl.Lib.current.stage.frameRate = 120;
 					}
 				}
 			}
