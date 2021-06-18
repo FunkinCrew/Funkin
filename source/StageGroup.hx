@@ -11,7 +11,7 @@ using StringTools;
 
 class StageGroup extends FlxGroup
 {
-    public var stage:String = "stage";
+    public var stage:String = "chromatic-stage";
     public var camZoom:Float = 1.05;
     private var goodElapse:Float = 0;
 
