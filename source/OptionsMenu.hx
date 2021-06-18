@@ -62,7 +62,7 @@ class OptionsMenu extends MusicBeatState
 		
 		new OptionCategory("Saved Data", [
 			new ResetScoreOption("Reset your score on all songs and weeks."),
-			new LockWeeksOption("Reset your storymode progress. (only Tutorial + Week 1 is unlocked)")
+			new LockWeeksOption("Reset your storymode progress. (only Tutorial + Week 1 will be unlocked)")
 		])
 		
 	];

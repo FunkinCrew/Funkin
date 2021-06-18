@@ -661,7 +661,7 @@ class LockWeeksOption extends Option
 
 	private override function updateDisplay():String
 	{
-		return confirm ? "Confirm" : "Reset Story Progression";
+		return confirm ? "Confirm Story Reset" : "Reset Story Progress";
 	}
 }
 
@@ -691,7 +691,7 @@ class ResetScoreOption extends Option
 		for(key in Highscore.songCombos.keys())
 		{
 			Highscore.songCombos[key] = '';
-		}	
+		}
 		confirm = false;
 		trace('Save Data Wiped');
 		display = updateDisplay();
@@ -700,6 +700,6 @@ class ResetScoreOption extends Option
 
 	private override function updateDisplay():String
 	{
-		return confirm ? "Confirm" : "Reset Score";
+		return confirm ? "Confirm Score Reset" : "Reset Score";
 	}
 }
