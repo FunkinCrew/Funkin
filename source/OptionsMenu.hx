@@ -1,5 +1,6 @@
 package;
 
+import flixel.system.FlxSound;
 import debuggers.AnimationDebug;
 import Controls.Control;
 import flash.text.TextField;
@@ -198,7 +199,13 @@ class OptionsMenu extends MusicBeatState
 						PlayState.isStoryMode = false;
 						PlayState.storyDifficulty = 2;
 						PlayState.storyWeek = 0;
-						FlxG.sound.playMusic(Paths.music('breakfast'));
+
+						var pauseMusic = new FlxSound().loadEmbedded(Paths.music('breakfast'), true, true);
+						pauseMusic.volume = 1;
+						pauseMusic.play(false, FlxG.random.int(0, Std.int(pauseMusic.length / 2)));
+				
+						FlxG.sound.list.add(pauseMusic);
+						
 						LoadingState.loadAndSwitchState(new AnimationDebug('dad'));
 					}
 
