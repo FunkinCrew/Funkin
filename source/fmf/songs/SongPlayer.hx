@@ -11,6 +11,50 @@ import Song.SwagSong;
 // base class execute song data
 class SongPlayer
 {
+
+	public static function getCurrentSong():SongPlayer
+	{
+		var songPlayer:SongPlayer = null;
+
+		switch (PlayState.CURRENT_SONG)
+		{
+			case 'tutorial':
+				songPlayer = new Tutorial();
+
+			case 'bopeebo' | 'fresh' | 'dadbattle':
+				songPlayer = new DaddyDearest();
+
+			case 'spookeez' | 'south':
+				songPlayer = new Spookez();
+
+			case 'monster':
+				songPlayer = new Monster();
+
+			case 'pico' | 'philly' | 'blammed':
+				songPlayer = new Philly();
+
+			case 'satin-panties' | "high" | "milf":
+				songPlayer = new Mom();
+
+			case 'cocoa' | 'eggnog':
+				songPlayer = new Parents();
+
+			case 'winter-horrorland':
+				songPlayer = new WinterHorrorland();
+
+			case 'senpai':
+				songPlayer = new Senpai();
+
+			case 'roese':
+				songPlayer = new SenpaiAngry();
+
+			case 'thorns':
+				songPlayer = new SenpaiEvil();
+		}
+
+		return songPlayer;
+	}
+
 	public var bf:Boyfriend;
 	public var gf:Character;
 	public var dad:Character;
@@ -320,71 +364,10 @@ class SongPlayer
 	{
 	}
 
-	public function updateCamFollow():Void
+	public function updateCamFollowDad():Void
 	{
-		// camFollow.setPosition(lucky.getMidpoint().x - 120, lucky.getMidpoint().y + 210);
-		// switch (dad().curCharacter)
-		// {
-		// 	case 'mom':
-		// 		camFollow.y = dad().getMidpoint().y;
-		// 	case 'senpai':
-		// 		camFollow.y = dad().getMidpoint().y - 430;
-		// 		camFollow.x = dad().getMidpoint().x - 100;
-		// 	case 'senpai-angry':
-		// 		camFollow.y = dad().getMidpoint().y - 430;
-		// 		camFollow.x = dad().getMidpoint().x - 100;
-		// }
-
-		// if (dad().curCharacter == 'mom')
-		// vocals.volume = 1;
 	}
-
-	public function applyCamPosition():Void
-	{
-		playState.camFollow = new FlxObject(0, 0, 1, 1);
-		playState.camFollow.setPosition(camPos.x, camPos.y);
-	}
-		// switch (SONG.player2)
-		// {
-		// 	case 'gf':
-		// 		dad().setPosition(gf().x, gf().y);
-		// 		gf().visible = false;
-		// 		if (isStoryMode)
-		// 		{
-		// 			camPos.x += 600;
-		// 			tweenCamIn();
-		// 		}
-
-		// 	case "spooky":
-		// 		dad().y += 200;
-		// 	case "monster":
-		// 		dad().y += 100;
-		// 	case 'monster-christmas':
-		// 		dad().y += 130;
-		// 	case 'dad':
-		// 		camPos.x += 400;
-		// 	case 'pico':
-		// 		camPos.x += 600;
-		// 		dad().y += 300;
-		// 	case 'parents-christmas':
-		// 		dad().x -= 500;
-		// 	case 'senpai':
-		// 		dad().x += 150;
-		// 		dad().y += 360;
-		// 		camPos.set(dad().getGraphicMidpoint().x + 300, dad().getGraphicMidpoint().y);
-		// 	case 'senpai-angry':
-		// 		dad().x += 150;
-		// 		dad().y += 360;
-		// 		camPos.set(dad().getGraphicMidpoint().x + 300, dad().getGraphicMidpoint().y);
-		// 	case 'spirit':
-		// 		dad().x -= 150;
-		// 		dad().y += 100;
-		// 		camPos.set(dad().getGraphicMidpoint().x + 300, dad().getGraphicMidpoint().y);
-		// }
-	// }
-
-
-	public function updateCameraOffset():Void
+	public function updateCamFollowBF():Void
 	{
 		// switch (curStage)
 		// {
@@ -400,6 +383,16 @@ class SongPlayer
 		// 		camFollow.y = boyfriend().getMidpoint().y - 200;
 		// }
 	}
+
+	public function applyCamPosition():Void
+	{
+		playState.camFollow = new FlxObject(0, 0, 1, 1);
+		playState.camFollow.setPosition(camPos.x, camPos.y);
+	}
+
+
+
+
 
 
 }

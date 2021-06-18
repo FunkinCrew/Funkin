@@ -95,16 +95,8 @@ class Mom extends SongPlayer
 
 	override function getDadTex()
 	{
-		// if (PlayState.CURRENT_SONG == 'milf')
-		// {
 		var tex = Paths.getSparrowAtlas('characters/Mom_Assets');
 		dad.frames = tex;
-		// }
-		// else
-		// {
-		// 	var tex = Paths.getSparrowAtlas('characters/momCar');
-		// 	dad.frames = tex;
-		// }
 	}
 
 	override function createDadAnimations():Void
@@ -138,19 +130,8 @@ class Mom extends SongPlayer
 		gf.scrollFactor.set(0.95, 0.95);
 		gf.y -= 50;
 
-		// if (PlayState.CURRENT_SONG == 'milf')
-		// {
 		dad.x -= 250;
 		dad.y -= 200;
-		// }
-		// else
-		// {
-		// 	dad.scale.x = 2;
-		// 	dad.scale.y = 2;
-		// 	dad.x -= 100;
-		// 	// dad.y = 0;
-		// }
-	
 
 		bf.y -= 220;
 		bf.x += 260;
@@ -201,8 +182,13 @@ class Mom extends SongPlayer
 		}
 	}
 
-	public override function updateCamFollow():Void
+	public override function updateCamFollowDad():Void
 	{
 		playState.camFollow.y = dad.getMidpoint().y;
+	}
+
+	override function updateCamFollowBF():Void
+	{
+		playState.camFollow.x = bf.getMidpoint().x - 300;
 	}
 }

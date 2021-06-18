@@ -11,9 +11,6 @@ class Parents extends SongPlayer
 	var bottomBoppers:FlxSprite;
 	var santa:FlxSprite;
 
-	var fc:Bool = true;
-
-	var bgGirls:BackgroundGirls;
 
 	override function loadMap()
 	{
@@ -156,6 +153,11 @@ class Parents extends SongPlayer
 
 		bf.x += 150;
 		bf.y += 50;
+	}
+
+	override function updateCamFollowBF()
+	{
+		playState.camFollow.y = bf.getMidpoint().y - 200;
 	}
 
 	override function midSongEventUpdate(curBeat:Int):Void
