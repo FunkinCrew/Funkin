@@ -151,14 +151,6 @@ class PlayState extends MusicBeatState
 
 	override public function create()
 	{
-		if(FlxG.save.data.unlimitedFPS)
-		{
-			openfl.Lib.current.stage.frameRate = 1000;
-		} else
-		{
-			openfl.Lib.current.stage.frameRate = 120;
-		}
-
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
 
