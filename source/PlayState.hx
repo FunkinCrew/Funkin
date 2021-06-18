@@ -249,6 +249,9 @@ class PlayState extends MusicBeatState
 		DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
 		#end
 
+		if(SONG.stage == null)
+			SONG.stage = 'chromatic-stage';
+
 		stage = new StageGroup(SONG.stage);
 		defaultCamZoom = stage.camZoom;
 		if(SONG.stage != null)
