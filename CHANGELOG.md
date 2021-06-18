@@ -1,6 +1,14 @@
 # Changelog
 All notable changes will be documented in this file.
 
+## [0.2] - ?/?/?
+### Added
+- Placeholder
+### Changed
+- Placeholder
+### Fixed
+- Placeholder
+
 ## [0.1] - 6/18/2021
 ### Added
 - An Options Menu.
