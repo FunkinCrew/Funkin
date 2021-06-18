@@ -26,7 +26,7 @@ All notable changes will be documented in this file.
 ### Fixed
 - GF's animations have been fixed (she would go up like 20 pixels when the player broke a combo before).
 - Freeplay songs are now unlocked just like weeks.
-### Known Issues 
+### Known Issues
 - I do know that GF's layering on the limo stage is broken, but I have not found a solution to fixing this yet without just seperating the limo from it's stage.
 
 ## [0.0] - 6/18/2021
