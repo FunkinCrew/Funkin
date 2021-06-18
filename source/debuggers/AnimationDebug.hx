@@ -1,5 +1,6 @@
 package debuggers;
 
+import flixel.system.FlxSound;
 import flixel.addons.ui.FlxUIDropDownMenu;
 import polymod.format.ParseRules.PlainTextParseFormat;
 import flixel.FlxG;
@@ -79,6 +80,11 @@ class AnimationDebug extends FlxState
 		camFollow = new FlxObject(0, 0, 2, 2);
 		camFollow.screenCenter();
 		add(camFollow);
+
+		var pauseMusic = new FlxSound().loadEmbedded(Paths.music('breakfast'), true, true);
+		pauseMusic.volume = 1;
+		pauseMusic.play(false, FlxG.random.int(0, Std.int(pauseMusic.length / 2)));
+		FlxG.sound.list.add(pauseMusic);
 
 		FlxG.camera.follow(camFollow);
 
