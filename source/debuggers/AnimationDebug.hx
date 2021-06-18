@@ -96,6 +96,7 @@ class AnimationDebug extends FlxState
 			daAnim = characters[Std.parseInt(character)];
 			char = new Character(0, 0, daAnim);
 			char.screenCenter();
+			char.debugMode = true;
 			add(char);
 			updateTexts();
 			animList = [];
