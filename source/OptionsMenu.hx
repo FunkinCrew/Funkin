@@ -146,7 +146,14 @@ class OptionsMenu extends MusicBeatState
 					}
 
 					case 'Charter':
+					{
+						PlayState.SONG = Song.loadFromJson(Highscore.formatSong('tutorial', 2), 'tutorial');
+						PlayState.isStoryMode = false;
+						PlayState.storyDifficulty = 2;
+						PlayState.storyWeek = 0;
+
 						LoadingState.loadAndSwitchState(new ChartingState());
+					}
 
 					case 'Animation Debug':
 						LoadingState.loadAndSwitchState(new AnimationDebug());
