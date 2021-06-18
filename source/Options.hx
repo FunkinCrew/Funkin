@@ -703,3 +703,59 @@ class ResetScoreOption extends Option
 		return confirm ? "Confirm Score Reset" : "Reset Score";
 	}
 }
+
+class ResetSettings extends Option
+{
+	var confirm:Bool = false;
+
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+	public override function press():Bool
+	{
+		if(!confirm)
+		{
+			confirm = true;
+			display = updateDisplay();
+			return true;
+		}
+		FlxG.save.data.weekUnlocked = 6;
+		FlxG.save.data.newInput = true;
+		FlxG.save.data.downscroll = false;
+		FlxG.save.data.dfjk = false;
+		FlxG.save.data.accuracyDisplay = true;
+		FlxG.save.data.offset = 0;
+		FlxG.save.data.songPosition = false;
+		FlxG.save.data.fps = false;
+		FlxG.save.data.changedHitX = -1;
+		FlxG.save.data.changedHitY = -1;
+		FlxG.save.data.changedHit = false;
+		FlxG.save.data.fpsRain = false;
+		FlxG.save.data.fpsCap = 120;
+		FlxG.save.data.scrollSpeed = 1;
+		FlxG.save.data.npsDisplay = false;
+		FlxG.save.data.frames = 10;
+		FlxG.save.data.accuracyMod = 1;
+		FlxG.save.data.watermark = true;
+		FlxG.save.data.ghost = true;
+		FlxG.save.data.distractions = true;
+		FlxG.save.data.flashing = true;
+		FlxG.save.data.resetButton = false;
+		FlxG.save.data.botplay = false;
+		FlxG.save.data.cpuStrums = false;
+		FlxG.save.data.strumline = false;
+		FlxG.save.data.customStrumLine = 0;
+		FlxG.save.data.camzoom = true;
+		confirm = false;
+		trace('All settings have been reset');
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return confirm ? "Confirm Settings Reset" : "Reset Settings";
+	}
+}
