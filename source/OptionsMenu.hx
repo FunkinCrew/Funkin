@@ -156,7 +156,7 @@ class OptionsMenu extends MusicBeatState
 					}
 
 					case 'Animation Debug':
-						FlxG.switchState(new AnimationDebug("dad"));
+						FlxG.switchState(new AnimationDebug());
 
 					case 'Sound':
 					{
