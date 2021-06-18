@@ -637,6 +637,8 @@ class CamZoomOption extends Option
 
 class LockWeeksOption extends Option
 {
+	var confirm:Bool = false;
+
 	public function new(desc:String)
 	{
 		super();
@@ -644,8 +646,14 @@ class LockWeeksOption extends Option
 	}
 	public override function press():Bool
 	{
-		FlxG.save.data.weekUnlocked = 0;
-		StoryMenuState.weekUnlocked = [true];
+		if(!confirm)
+		{
+			confirm = true;
+			display = updateDisplay();
+			return true;
+		}
+		FlxG.save.data.weekUnlocked = 1;
+		StoryMenuState.weekUnlocked = [true, true];
 		trace('Weeks Locked');
 		display = updateDisplay();
 		return true;
@@ -653,6 +661,45 @@ class LockWeeksOption extends Option
 
 	private override function updateDisplay():String
 	{
-		return "Lock Weeks";
+		return confirm ? "Confirm" : "Reset Story Progression";
+	}
+}
+
+class ResetScoreOption extends Option
+{
+	var confirm:Bool = false;
+
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+	public override function press():Bool
+	{
+		if(!confirm)
+		{
+			confirm = true;
+			display = updateDisplay();
+			return true;
+		}
+		FlxG.save.data.songScores = null;
+		for(key in Highscore.songScores.keys())
+		{
+			Highscore.songScores[key] = 0;
+		}
+		FlxG.save.data.songCombos = null;
+		for(key in Highscore.songCombos.keys())
+		{
+			Highscore.songCombos[key] = '';
+		}	
+		confirm = false;
+		trace('Save Data Wiped');
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return confirm ? "Confirm" : "Reset Score";
 	}
 }

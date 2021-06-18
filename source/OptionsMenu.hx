@@ -61,8 +61,8 @@ class OptionsMenu extends MusicBeatState
 		]),
 		
 		new OptionCategory("Saved Data", [
-			new LockWeeksOption("Lock all weeks. (exept Tutorial of course)")
-			// TODO reset score option
+			new ResetScoreOption("Reset your score on all songs and weeks."),
+			new LockWeeksOption("Reset your storymode progress. (only Tutorial + Week 1 is unlocked)")
 		])
 		
 	];
