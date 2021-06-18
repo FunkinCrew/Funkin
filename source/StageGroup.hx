@@ -310,9 +310,6 @@ class StageGroup extends FlxGroup
                 bg.scrollFactor.set(0.8, 0.9);
                 bg.scale.set(6, 6);
                 add(bg);
-
-				var evilTrail = new FlxTrail(PlayState.dad, null, 4, 24, 0.3, 0.069);
-				add(evilTrail);
             }
         }
     }
@@ -338,11 +335,8 @@ class StageGroup extends FlxGroup
 				PlayState.gf.x += 180;
 				PlayState.gf.y += 300;
 			case 'evil-school':
-                if(PlayState.dad != null && !PlayState.gf.curCharacter.toLowerCase().startsWith('gf'))
-                {
-                    var evilTrail = new FlxTrail(PlayState.dad, null, 4, 24, 0.3, 0.069);
-                    add(evilTrail);
-                }
+                var evilTrail = new FlxTrail(PlayState.dad, null, 4, 24, 0.3, 0.069);
+                add(evilTrail);
 
 				PlayState.boyfriend.x += 200;
 				PlayState.boyfriend.y += 220;
