@@ -991,10 +991,13 @@ class PlayState extends MusicBeatState
 
 		super.update(elapsed);
 
-		accuracy = 100 / (totalNotes / hitNotes);
-		// math
-		accuracy = accuracy * Math.pow(10, FlxG.save.data.accuracyPrecision);
-		accuracy = Math.round(accuracy) / Math.pow(10, FlxG.save.data.accuracyPrecision);
+		if(totalNotes != 0)
+		{
+			accuracy = 100 / (totalNotes / hitNotes);
+			// math
+			accuracy = accuracy * Math.pow(10, FlxG.save.data.accuracyPrecision);
+			accuracy = Math.round(accuracy) / Math.pow(10, FlxG.save.data.accuracyPrecision);
+		}
 
 		scoreTxt.x = (healthBarBG.x + (healthBarBG.width / 2)) - (scoreTxt.width / 2);
 		scoreTxt.text = (
