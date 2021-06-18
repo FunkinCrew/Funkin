@@ -77,8 +77,8 @@ class Character extends FlxSprite
 				animation.addByIndices('hairFall', "GF Dancing Beat Hair Landing", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], "", 24, false);
 				animation.addByPrefix('scared', 'GF FEAR', 24);
 
-				addOffset('cheer');
-				addOffset('sad', -2, -2);
+				addOffset('cheer', -1);
+				addOffset('sad', -1, -20);
 				addOffset('danceLeft', 0, -9);
 				addOffset('danceRight', 0, -9);
 
@@ -86,10 +86,10 @@ class Character extends FlxSprite
 				addOffset("singRIGHT", 0, -20);
 				addOffset("singLEFT", 0, -19);
 				addOffset("singDOWN", 0, -20);
-				addOffset('hairBlow', 45, -8);
+				addOffset('hairBlow', 0, -9);
 				addOffset('hairFall', 0, -9);
 
-				addOffset('scared', -2, -17);
+				addOffset('scared', 0, -17);
 
 				playAnim('danceRight');
 
