@@ -7,6 +7,8 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup;
 
+using StringTools;
+
 class StageGroup extends FlxGroup
 {
     public var stage:String = "stage";
@@ -336,7 +338,7 @@ class StageGroup extends FlxGroup
 				PlayState.gf.x += 180;
 				PlayState.gf.y += 300;
 			case 'evil-school':
-                if(PlayState.dad != null)
+                if(PlayState.dad != null && !PlayState.gf.curCharacter.toLowerCase().startsWith('gf'))
                 {
                     var evilTrail = new FlxTrail(PlayState.dad, null, 4, 24, 0.3, 0.069);
                     add(evilTrail);
