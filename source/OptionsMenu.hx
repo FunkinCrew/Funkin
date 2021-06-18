@@ -261,9 +261,9 @@ class OptionsMenu extends MusicBeatState
 						var option:Alphabet;
 
 						if(FlxG.save.data.nohit)
-							option = new Alphabet(20, 20 + (3 * 100), "No-hit On", true, false);
+							option = new Alphabet(20, 320, "No-hit On", true, false);
 						else
-							option = new Alphabet(20, 20 + (3 * 100), "No-hit Off", true, false);
+							option = new Alphabet(20, 320, "No-hit Off", true, false);
 
 						option.isMenuItem = true;
 						option.targetY = 3;
@@ -285,13 +285,41 @@ class OptionsMenu extends MusicBeatState
 						var option:Alphabet;
 
 						if(FlxG.save.data.downscroll)
-							option = new Alphabet(20, 20 + (2 * 100), "Downscroll", true, false);
+							option = new Alphabet(20, 220, "Downscroll", true, false);
 						else
-							option = new Alphabet(20, 20 + (2 * 100), "Upscroll", true, false);
+							option = new Alphabet(20, 220, "Upscroll", true, false);
 
 						option.isMenuItem = true;
 						option.targetY = 1;
 						grpOptionsTexts.members[1] = option;
+						inMenu = false;
+					}
+
+					case "Reset Button On":
+					{
+						inMenu = false;
+						FlxG.save.data.resetButtonOn = false;
+						FlxG.save.flush();
+
+						var option = new Alphabet(20, 420, "Reset Button Off", true, false);
+						option.isMenuItem = true;
+						option.targetY = 4;
+						grpOptionsTexts.members[4] = option;
+						textMenuItems[4] = "Reset Button Off";
+						inMenu = false;
+					}
+
+					case "Reset Button Off":
+					{
+						inMenu = false;
+						FlxG.save.data.resetButtonOn = true;
+						FlxG.save.flush();
+
+						var option = new Alphabet(20, 420, "Reset Button On", true, false);
+						option.isMenuItem = true;
+						option.targetY = 4;
+						grpOptionsTexts.members[4] = option;
+						textMenuItems[4] = "Reset Button On";
 						inMenu = false;
 					}
 
@@ -304,6 +332,11 @@ class OptionsMenu extends MusicBeatState
 							textMenuItems.push("No-hit Off");
 						else
 							textMenuItems.push("No-hit On");
+
+						if(!FlxG.save.data.resetButtonOn)
+							textMenuItems.push("Reset Button Off");
+						else
+							textMenuItems.push("Reset Button On");
 						
 						spawnInTexts();
 					}
