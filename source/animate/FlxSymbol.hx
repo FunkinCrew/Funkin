@@ -5,6 +5,7 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxFrame.FlxFrameAngle;
 import flixel.math.FlxAngle;
+import flixel.math.FlxMath;
 import flixel.math.FlxMatrix;
 import flixel.math.FlxPoint;
 import openfl.geom.Matrix;
@@ -44,7 +45,6 @@ class FlxSymbol extends FlxSprite
 	var symbolMap:Map<String, Animation> = new Map();
 
 	public var daFrame:Int = 0;
-	public var nestDepth:Int = 0;
 
 	public var transformMatrix:Matrix = new Matrix();
 
@@ -65,6 +65,9 @@ class FlxSymbol extends FlxSprite
 			{
 				case LOOP:
 					var tempFrame = layer.FR[newFrameNum + firstFrame % layer.FR.length];
+					// newFrameNum += firstFrame;
+					// newFrameNum = newFrameNum % (tempFrame.I + tempFrame.DU);
+					// newFrameNum = FlxMath.wrap(newFrameNum, tempFrame.I, tempFrame.I + tempFrame.DU);
 					newFrameNum += 0; // temp, fix later for good looping
 				case PLAY_ONCE:
 					newFrameNum += 0;
@@ -72,11 +75,11 @@ class FlxSymbol extends FlxSprite
 					newFrameNum = firstFrame;
 			}
 
-			trace(daLoopType);
-			trace(newFrameNum);
-			trace(layer.FR.length);
+			// trace(daLoopType);
+			// trace(newFrameNum);
+			// trace(layer.FR.length);
 
-			trace(newFrameNum % layer.FR.length);
+			// trace(newFrameNum % layer.FR.length);
 
 			var swagFrame:Frame = layer.FR[newFrameNum % layer.FR.length]; // has modulo just in case????
 
@@ -150,12 +153,9 @@ class FlxSymbol extends FlxSprite
 					nestedShit.firstFrame = element.SI.FF;
 					// nestedShit.daFrame += nestedShit.firstFrame;
 
-					nestedSymbol.TL.L.reverse();
-
 					nestedShit.daLoopType = element.SI.LP;
 					nestedShit.daFrame = daFrame;
 					nestedShit.hasFrameByPass = true;
-					nestedShit.nestDepth = nestDepth + 1;
 					nestedShit.renderFrame(nestedSymbol.TL, coolParsed);
 
 					// renderFrame(nestedSymbol.TL, coolParsed);
@@ -164,14 +164,6 @@ class FlxSymbol extends FlxSprite
 			// }
 			// }
 		}
-	}
-
-	function setDaMap(spr:FlxSymbol):Void
-	{
-		if (!nestedShit.exists(nestDepth))
-			nestedShit.set(nestDepth, [spr]);
-		else
-			nestedShit.get(nestDepth).push(spr);
 	}
 
 	function changeFrame(frameChange:Int = 0):Void
@@ -187,6 +179,10 @@ class FlxSymbol extends FlxSprite
 			symbolMap.set(symbol.SN, symbol);
 
 			var symbolName = symbol.SN;
+
+			// one time reverse?
+			symbol.TL.L.reverse();
+
 			for (layer in symbol.TL.L)
 			{
 				for (frame in layer.FR)
@@ -320,6 +316,7 @@ typedef Layer =
 
 typedef Frame =
 {
+	/** Frame index*/
 	var I:Int;
 
 	/** Duration, in frames*/
