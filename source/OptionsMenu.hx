@@ -188,7 +188,7 @@ class OptionsMenu extends MusicBeatState
 						PlayState.isStoryMode = false;
 						PlayState.storyDifficulty = 2;
 						PlayState.storyWeek = 0;
-
+						
 						LoadingState.loadAndSwitchState(new ChartingState());
 					}
 
@@ -198,7 +198,7 @@ class OptionsMenu extends MusicBeatState
 						PlayState.isStoryMode = false;
 						PlayState.storyDifficulty = 2;
 						PlayState.storyWeek = 0;
-
+						FlxG.sound.playMusic(Paths.music('breakfast'));
 						LoadingState.loadAndSwitchState(new AnimationDebug('dad'));
 					}
 
