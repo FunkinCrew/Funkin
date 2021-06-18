@@ -138,6 +138,13 @@ class OptionsMenu extends MusicBeatState
 						spawnInTexts();
 					}
 
+					case 'Tools':
+					{
+						curSelected = 0;
+						textMenuItems = ["Back", "Charter", "Animation Debug", "(WIP) Stage Editor"];
+						spawnInTexts();
+					}
+
 					case 'Sound':
 					{
 						curSelected = 0;
