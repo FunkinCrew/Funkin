@@ -14,7 +14,7 @@ import lime.utils.Assets;
 
 class OptionsMenu extends MusicBeatState
 {
-	var textMenuItems:Array<String> = ['Controls', 'Graphics', 'Sound', 'Misc'];
+	var textMenuItems:Array<String> = ['Controls', 'Graphics', 'Sound', 'Tools', 'Misc'];
 	var curSelected:Int = 0;
 	var grpOptionsTexts:FlxTypedGroup<Alphabet>;
 
@@ -134,7 +134,7 @@ class OptionsMenu extends MusicBeatState
 					case 'Back':
 					{
 						curSelected = 0;
-						textMenuItems = ['Controls', 'Graphics', 'Sound', 'Misc'];
+						textMenuItems = ['Controls', 'Graphics', 'Sound', 'Tools', 'Misc'];
 						spawnInTexts();
 					}
 
