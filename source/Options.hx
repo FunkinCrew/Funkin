@@ -338,6 +338,27 @@ class FPSOption extends Option
 	}
 }
 
+class ScoreScreen extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+
+	public override function press():Bool
+	{
+		FlxG.save.data.scoreScreen = !FlxG.save.data.scoreScreen;
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return (FlxG.save.data.scoreScreen ? "Show Score Screen" : "No Score Screen");
+	}
+}
+
+
 
 
 class FPSCapOption extends Option

@@ -109,8 +109,7 @@ class Ratings
 
         if (FlxG.save.data.botplay && !PlayState.loadRep)
             return "sick"; // FUNNY
-	    
-        trace(noteDiff);
+	
 
         var rating = checkRating(noteDiff,customTimeScale);
 

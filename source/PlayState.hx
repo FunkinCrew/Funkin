@@ -2713,7 +2713,7 @@ class PlayState extends MusicBeatState
 	private function popUpScore(daNote:Note):Void
 		{
 			var noteDiff:Float = -(daNote.strumTime - Conductor.songPosition);
-			var wife:Float = EtternaFunctions.wife3(noteDiff, Conductor.timeScale);
+			var wife:Float = EtternaFunctions.wife3(-noteDiff, Conductor.timeScale);
 			// boyfriend.playAnim('hey');
 			vocals.volume = 1;
 			var placement:String = Std.string(combo);
@@ -3286,7 +3286,7 @@ class PlayState extends MusicBeatState
 					remove(boyfriend);
 					remove(dad);
 					add(videoSprite);
-					 add(gf);
+					add(gf);
 					add(boyfriend);
 					add(dad);
 			
@@ -3311,8 +3311,13 @@ class PlayState extends MusicBeatState
 			misses++;
 
 			if (daNote != null)
+			{
 				if (!loadRep)
-					saveNotes.push([daNote.strumTime,daNote.sustainLength,daNote.noteData,166 * Math.floor((PlayState.rep.replay.sf / 60) * 1000) / 166]);
+					saveNotes.push([daNote.strumTime,0,direction,166 * Math.floor((PlayState.rep.replay.sf / 60) * 1000) / 166]);
+			}
+			else
+				if (!loadRep)
+					saveNotes.push([Conductor.songPosition,0,direction,166 * Math.floor((PlayState.rep.replay.sf / 60) * 1000) / 166]);
 
 			//var noteDiff:Float = Math.abs(daNote.strumTime - Conductor.songPosition);
 			//var wife:Float = EtternaFunctions.wife3(noteDiff, FlxG.save.data.etternaMode ? 1 : 1.7);

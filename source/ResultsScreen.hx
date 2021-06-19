@@ -180,7 +180,9 @@ class ResultsScreen extends FlxSubState
         {
             music.fadeOut(0.3);
             
-            
+            PlayState.loadRep = false;
+            PlayState.rep = null;
+
             if (PlayState.isStoryMode)
             {
                 FlxG.sound.playMusic(Paths.music('freakyMenu'));
