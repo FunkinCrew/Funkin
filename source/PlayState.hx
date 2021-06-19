@@ -2627,7 +2627,13 @@ class PlayState extends MusicBeatState
 
 					FlxG.sound.music.stop();
 					vocals.stop();
-					openSubState(new ResultsScreen());
+					if (FlxG.save.data.scoreScreen)
+						openSubState(new ResultsScreen());
+					else
+					{
+						FlxG.sound.playMusic(Paths.music('freakyMenu'));
+						FlxG.switchState(new MainMenuState());
+					}
 
 					#if windows
 					if (luaModchart != null)
@@ -2696,7 +2702,10 @@ class PlayState extends MusicBeatState
 				FlxG.sound.music.stop();
 				vocals.stop();
 
-				openSubState(new ResultsScreen());
+				if (FlxG.save.data.scoreScreen)
+					openSubState(new ResultsScreen());
+				else
+					FlxG.switchState(new PlayState());
 			}
 		}
 	}
