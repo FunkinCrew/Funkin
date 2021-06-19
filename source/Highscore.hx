@@ -10,7 +10,7 @@ class Highscore
 	public static var songCombos:Map<String, String> = new Map();
 	#else
 	public static var songScores:Map<String, Int> = new Map<String, Int>();
-	public static var songCombos:Map<String, Int> = new Map<String, String>();
+	public static var songCombos:Map<String, String> = new Map<String, String>();
 	#end
 
 
