@@ -1,4 +1,4 @@
-Tutorial:gf:1
+Tutorial:gf:0
 Bopeebo:dad:1
 Fresh:dad:1
 Dad Battle:dad:1
