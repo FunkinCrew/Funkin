@@ -5,6 +5,8 @@ Changes marked with 💖 will be listed in the short version of the changelog in
 ### Additions
 - Score Screen (💖)
 - Show your highest combo in the freeplay menu
+- New asset loading system (💖)
+- New Logo (💖)
 
 ### Changes
 - Rewrote the entire hit ranking system (💖)
