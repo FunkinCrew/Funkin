@@ -102,6 +102,11 @@ class StageMakingState extends FlxState
             stageCam.zoom -= 0.1;
         }
 
+        if(stageCam.zoom < 0.1)
+        {
+            stageCam.zoom = 0.1;
+        }
+
         // da math
         zoom = stageCam.zoom;
         zoom = zoom * Math.pow(10, 1);
