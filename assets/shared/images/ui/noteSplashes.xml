@@ -2,10 +2,10 @@
 <TextureAtlas imagePath="noteSplashes.png">
 	<!-- Created with Adobe Animate version 21.0.0.35450 -->
 	<!-- http://www.adobe.com/products/animate.html -->
-	<SubTexture name="note impact 1  blue0000" x="1850" y="262" width="189" height="270" frameX="-32" frameY="-12" frameWidth="260" frameHeight="298"/>
-	<SubTexture name="note impact 1  blue0001" x="1540" y="556" width="213" height="265" frameX="-27" frameY="-22" frameWidth="260" frameHeight="298"/>
-	<SubTexture name="note impact 1  blue0002" x="1056" y="0" width="252" height="291" frameX="-4" frameY="-6" frameWidth="260" frameHeight="298"/>
-	<SubTexture name="note impact 1  blue0003" x="0" y="0" width="260" height="298"/>
+	<SubTexture name="note impact 1 blue0000" x="1850" y="262" width="189" height="270" frameX="-32" frameY="-12" frameWidth="260" frameHeight="298"/>
+	<SubTexture name="note impact 1 blue0001" x="1540" y="556" width="213" height="265" frameX="-27" frameY="-22" frameWidth="260" frameHeight="298"/>
+	<SubTexture name="note impact 1 blue0002" x="1056" y="0" width="252" height="291" frameX="-4" frameY="-6" frameWidth="260" frameHeight="298"/>
+	<SubTexture name="note impact 1 blue0003" x="0" y="0" width="260" height="298"/>
 	<SubTexture name="note impact 1 green0000" x="663" y="806" width="189" height="270" frameX="-32" frameY="-12" frameWidth="260" frameHeight="298"/>
 	<SubTexture name="note impact 1 green0001" x="1757" y="556" width="213" height="265" frameX="-27" frameY="-22" frameWidth="260" frameHeight="298"/>
 	<SubTexture name="note impact 1 green0002" x="1312" y="0" width="252" height="291" frameX="-4" frameY="-6" frameWidth="260" frameHeight="298"/>

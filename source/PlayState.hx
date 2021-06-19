@@ -1,5 +1,6 @@
 package;
 
+import flixel.math.FlxRandom;
 import debuggers.AnimationDebug;
 import openfl.display.Stage;
 #if desktop
@@ -161,8 +162,8 @@ class PlayState extends MusicBeatState
 		FlxG.cameras.reset(camGame);
 		FlxG.cameras.add(camHUD);
 
-        FlxG.cameras.setDefaultDrawTarget(camGame, true);
-
+        FlxCamera.defaultCameras = [camGame];
+		
 		persistentUpdate = true;
 		persistentDraw = true;
 
@@ -1313,6 +1314,43 @@ class PlayState extends MusicBeatState
 							if (Math.abs(daNote.noteData) == spr.ID)
 							{
 								spr.animation.play('confirm', true);
+
+								/* SPLASH THING */
+								if(!daNote.isSustainNote)
+								{
+									var splash:FlxSprite = new FlxSprite(spr.x - 80, spr.y - 80);
+									splash.frames = Paths.getSparrowAtlas("ui/noteSplashes", "shared");
+									splash.cameras = [camHUD];
+						
+									var nameThing = "orange";
+						
+									switch(daNote.noteData % 4)
+									{
+										case 0:
+											nameThing = "purple";
+										case 1:
+											nameThing = "blue";
+										case 2:
+											nameThing = "green";
+										case 3:
+											nameThing = "red";
+									}
+						
+									splash.animation.addByPrefix("chosen1", "note impact 1 " + nameThing, 24, false);
+									splash.animation.addByPrefix("chosen2", "note impact 2 " + nameThing, 24, false);
+						
+									add(splash);
+						
+									var numberRandomLolIGuessHeh = FlxG.random.int(1, 2);
+						
+									splash.animation.finishCallback = function(name:String) {
+										splash.destroy();
+									};
+						
+									splash.animation.play("chosen" + Std.string(numberRandomLolIGuessHeh));
+								}
+								/* END OF SPLASH */
+
 								spr.centerOffsets();
 								if (!curStage.contains('school'))
 								{
@@ -1462,7 +1500,7 @@ class PlayState extends MusicBeatState
 
 	var endingSong:Bool = false;
 
-	private function popUpScore(strumtime:Float):Void
+	private function popUpScore(strumtime:Float, noteData:Int):Void
 	{
 		var noteDiff:Float = Math.abs(strumtime - Conductor.songPosition);
 		// boyfriend.playAnim('hey');
@@ -1494,6 +1532,40 @@ class PlayState extends MusicBeatState
 		{
 			daRating = 'good';
 			score = 200;
+		}
+
+		if (daRating == "sick")
+		{
+			var splash:FlxSprite = new FlxSprite(playerStrums.members[noteData].x - 80, playerStrums.members[noteData].y - 80);
+			splash.frames = Paths.getSparrowAtlas("ui/noteSplashes", "shared");
+			splash.cameras = [camHUD];
+
+			var nameThing = "orange";
+
+			switch(noteData)
+			{
+				case 0:
+					nameThing = "purple";
+				case 1:
+					nameThing = "blue";
+				case 2:
+					nameThing = "green";
+				case 3:
+					nameThing = "red";
+			}
+
+			splash.animation.addByPrefix("chosen1", "note impact 1 " + nameThing, 24, false);
+			splash.animation.addByPrefix("chosen2", "note impact 2 " + nameThing, 24, false);
+
+			add(splash);
+
+			var numberRandomLolIGuessHeh = FlxG.random.int(1, 2);
+
+			splash.animation.finishCallback = function(name:String) {
+				splash.destroy();
+			};
+
+			splash.animation.play("chosen" + Std.string(numberRandomLolIGuessHeh));
 		}
 
 		songScore += score;
@@ -1850,7 +1922,7 @@ class PlayState extends MusicBeatState
 		{
 			if (!note.isSustainNote)
 			{
-				popUpScore(note.strumTime);
+				popUpScore(note.strumTime, note.noteData % 4);
 				combo += 1;
 			}
 
