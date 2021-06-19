@@ -1,5 +1,6 @@
 package;
 
+import flixel.FlxSprite;
 import flixel.util.FlxColor;
 import flixel.text.FlxText;
 import flixel.addons.plugin.taskManager.FlxTask;
@@ -38,6 +39,8 @@ class StageMakingState extends FlxState
     private var stageCam:FlxCamera;
     private var camHUD:FlxCamera;
 
+    private var camSpeed:Float = 1.0;
+
     public function new(selectedStage:String)
     {
         super();
@@ -55,7 +58,7 @@ class StageMakingState extends FlxState
     {
         stageCam = new FlxCamera();
         camHUD = new FlxCamera();
-		camHUD.bgColor.alpha = 0;
+        camHUD.bgColor.alpha = 0;
 
         FlxG.cameras.add(stageCam, true);
         FlxG.cameras.add(camHUD, false);
@@ -92,6 +95,7 @@ class StageMakingState extends FlxState
     override public function update(elapsed:Float) {
         super.update(elapsed);
 
+        // camera movement zoom
         if(FlxG.keys.justPressed.E)
         {
             stageCam.zoom += 0.1;
@@ -102,6 +106,31 @@ class StageMakingState extends FlxState
             stageCam.zoom -= 0.1;
         }
 
+        /*
+        // y position
+        if(FlxG.keys.pressed.UP)
+        {
+            stageCam.y -= camSpeed;
+        }
+
+        if(FlxG.keys.pressed.DOWN)
+        {
+            stageCam.y += camSpeed;
+        }
+
+        // x position
+        if(FlxG.keys.pressed.LEFT)
+        {
+            stageCam.x -= camSpeed;
+        }
+
+        if(FlxG.keys.pressed.RIGHT)
+        {
+            stageCam.x += camSpeed;
+        }
+        */
+
+        // zoom lock
         if(stageCam.zoom < 0.1)
         {
             stageCam.zoom = 0.1;
