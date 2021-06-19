@@ -15,8 +15,10 @@ Scroll down to Line 26, or Search (Windows/Linux: `Ctrl+F`, Mac: `Cmd+F`) for "w
 ---
 
 ```haxe
-var weekData:Array<Dynamic> = [
-		
+static function weekData():Array<Dynamic>
+{
+  return [
+
     ['Tutorial'],
 		
     ['Bopeebo', 'Fresh', 'Dadbattle'],
@@ -30,8 +32,9 @@ var weekData:Array<Dynamic> = [
     ['Cocoa', 'Eggnog', 'Winter-Horrorland'],
 		
     ['Senpai', 'Roses', 'Thorns']
-    
-];
+
+  ];
+}
 ```
 
 ---
@@ -45,8 +48,10 @@ Example
 ---
 
 ```haxe
-var weekData:Array<Dynamic> = [
-		
+static function weekData():Array<Dynamic>
+{
+  return [
+
     ['Tutorial'],
 		
     ['Bopeebo', 'Fresh', 'Dadbattle'],
@@ -58,12 +63,13 @@ var weekData:Array<Dynamic> = [
     ['Satin-Panties', "High", "Milf"],
 		
     ['Cocoa', 'Eggnog', 'Winter-Horrorland'],
-		
+
     ['Senpai', 'Roses', 'Thorns'],
 
     ['Ugh', 'Guns', 'Stress']
-    
-];
+
+  ];
+}
 ```
  
 ---
