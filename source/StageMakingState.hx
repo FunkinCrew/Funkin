@@ -28,7 +28,7 @@ class StageMakingState extends FlxState
     public function new(?selectedStage:String)
     {
         super();
-        
+
         if(selectedStage != null)
         {
             this.stage_Name = selectedStage;
@@ -48,7 +48,7 @@ class StageMakingState extends FlxState
 
         stage_Dropdown = new FlxUIDropDownMenu(10, 500, FlxUIDropDownMenu.makeStrIdLabelArray(stages, true), function(stageName:String)
         {
-            stage.updateStage(stageName);
+            //stage.updateStage(stageName);
         });
 
         stage_Dropdown.selectedLabel = stage_Name;
