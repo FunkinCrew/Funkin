@@ -70,10 +70,10 @@
 	<SubTexture name="7 bold0001" x="424" y="74" width="40" height="49"/>
 	<SubTexture name="7 bold0002" x="474" y="74" width="40" height="49"/>
 	<SubTexture name="7 bold0003" x="474" y="74" width="40" height="49"/>
-	<SubTexture name="EIGHT0000" x="524" y="74" width="34" height="56"/>
-	<SubTexture name="EIGHT0001" x="524" y="74" width="34" height="56"/>
-	<SubTexture name="EIGHT0002" x="568" y="74" width="33" height="56" frameX="0" frameY="0" frameWidth="34" frameHeight="56"/>
-	<SubTexture name="EIGHT0003" x="568" y="74" width="33" height="56" frameX="0" frameY="0" frameWidth="34" frameHeight="56"/>
+	<SubTexture name="8 bold0000" x="524" y="74" width="34" height="56"/>
+	<SubTexture name="8 bold0001" x="524" y="74" width="34" height="56"/>
+	<SubTexture name="8 bold0002" x="568" y="74" width="33" height="56" frameX="0" frameY="0" frameWidth="34" frameHeight="56"/>
+	<SubTexture name="8 bold0003" x="568" y="74" width="33" height="56" frameX="0" frameY="0" frameWidth="34" frameHeight="56"/>
 	<SubTexture name="9 bold0000" x="611" y="74" width="34" height="57"/>
 	<SubTexture name="9 bold0001" x="611" y="74" width="34" height="57"/>
 	<SubTexture name="9 bold0002" x="655" y="74" width="34" height="57"/>
