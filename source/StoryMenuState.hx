@@ -23,15 +23,18 @@ class StoryMenuState extends MusicBeatState
 {
 	var scoreText:FlxText;
 
-	var weekData:Array<Dynamic> = [
-		['Tutorial'],
-		['Bopeebo', 'Fresh', 'Dad Battle'],
-		['Spookeez', 'South', "Monster"],
-		['Pico', 'Philly Nice', "Blammed"],
-		['Satin Panties', "High", "Milf"],
-		['Cocoa', 'Eggnog', 'Winter Horrorland'],
-		['Senpai', 'Roses', 'Thorns']
-	];
+	static function weekData():Array<Dynamic>
+	{
+		return [
+			['Tutorial'],
+			['Bopeebo', 'Fresh', 'Dad Battle'],
+			['Spookeez', 'South', "Monster"],
+			['Pico', 'Philly Nice', "Blammed"],
+			['Satin Panties', "High", "Milf"],
+			['Cocoa', 'Eggnog', 'Winter Horrorland'],
+			['Senpai', 'Roses', 'Thorns']
+		];
+	}
 	var curDifficulty:Int = 1;
 
 	public static var weekUnlocked:Array<Bool> = [];
@@ -132,7 +135,7 @@ class StoryMenuState extends MusicBeatState
 
 		trace("Line 70");
 
-		for (i in 0...weekData.length)
+		for (i in 0...weekData().length)
 		{
 			var weekThing:MenuItem = new MenuItem(0, yellowBG.y + yellowBG.height + 10, i);
 			weekThing.y += ((weekThing.height + 20) * i);
@@ -295,7 +298,7 @@ class StoryMenuState extends MusicBeatState
 				stopspamming = true;
 			}
 
-			PlayState.storyPlaylist = weekData[curWeek];
+			PlayState.storyPlaylist = weekData()[curWeek];
 			PlayState.isStoryMode = true;
 			selectedWeek = true;
 
@@ -365,10 +368,10 @@ class StoryMenuState extends MusicBeatState
 	{
 		curWeek += change;
 
-		if (curWeek >= weekData.length)
+		if (curWeek >= weekData().length)
 			curWeek = 0;
 		if (curWeek < 0)
-			curWeek = weekData.length - 1;
+			curWeek = weekData().length - 1;
 
 		var bullShit:Int = 0;
 
@@ -394,7 +397,7 @@ class StoryMenuState extends MusicBeatState
 		grpWeekCharacters.members[2].setCharacter(weekCharacters[curWeek][2]);
 
 		txtTracklist.text = "Tracks\n";
-		var stringThing:Array<String> = weekData[curWeek];
+		var stringThing:Array<String> = weekData()[curWeek];
 
 		for (i in stringThing)
 			txtTracklist.text += "\n" + i;
@@ -413,18 +416,7 @@ class StoryMenuState extends MusicBeatState
 
 	public static function unlockNextWeek(week:Int):Void
 	{
-		// TODO: get the weekData from class (but making it static makes it dissapear when beating the week)
-		var weekData:Array<Dynamic> = [
-			['Tutorial'],
-			['Bopeebo', 'Fresh', 'Dad Battle'],
-			['Spookeez', 'South', "Monster"],
-			['Pico', 'Philly Nice', "Blammed"],
-			['Satin Panties', "High", "Milf"],
-			['Cocoa', 'Eggnog', 'Winter Horrorland'],
-			['Senpai', 'Roses', 'Thorns']
-		];
-
-		if(week <= weekData.length - 1 && FlxG.save.data.weekUnlocked == week)
+		if(week <= weekData().length - 1 && FlxG.save.data.weekUnlocked == week)
 		{
 			weekUnlocked.push(true);
 			trace('Week ' + week + ' beat (Week ' + (week + 1) + ' unlocked)');
