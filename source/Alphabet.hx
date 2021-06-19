@@ -240,7 +240,7 @@ class AlphaCharacter extends FlxSprite
 
 	public function createBold(letter:String)
 	{
-		animation.addByPrefix(letter, letter + " bold", 24);
+		animation.addByPrefix(letter, letter.toUpperCase() + " bold", 24);
 		animation.play(letter);
 		updateHitbox();
 	}

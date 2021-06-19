@@ -203,17 +203,17 @@ class OptionsMenu extends MusicBeatState
 						LoadingState.loadAndSwitchState(new AnimationDebug('dad'));
 					}
 
-					/*
+					
 					case 'Stage Editor':
 					{
 						PlayState.SONG = Song.loadFromJson(Highscore.formatSong('tutorial', 2), 'tutorial');
 						PlayState.isStoryMode = false;
 						PlayState.storyDifficulty = 2;
 						PlayState.storyWeek = 0;
-						FlxG.sound.music.stop();
-						LoadingState.loadAndSwitchState(new StageMakingState('stage'));
+
+						LoadingState.loadAndSwitchState(new StageMakingState('stage'), true);
 					}
-					*/
+					
 
 					case 'Sound':
 					{
