@@ -74,7 +74,7 @@ class ResultsScreen extends FlxSubState
             text.text = "Week Cleared!";
         }
 
-        comboText = new FlxText(20,-75,0,'Judgements:\nSicks - ${PlayState.sicks}\nGoods - ${PlayState.goods}\nBads - ${PlayState.bads}\n\nCombo Breaks - ${(PlayState.isStoryMode ? PlayState.campaignMisses : PlayState.misses) + PlayState.shits}\nHighest Combo: ${PlayState.highestCombo}\n\nScore: ${PlayState.instance.songScore}\nAccuracy: ${HelperFunctions.truncateFloat(PlayState.instance.accuracy,2)}%\n\n${Ratings.GenerateLetterRank(PlayState.instance.accuracy)}\n\nF1 - View replay\nF2 - Replay song
+        comboText = new FlxText(20,-75,0,'Judgements:\nSicks - ${PlayState.sicks}\nGoods - ${PlayState.goods}\nBads - ${PlayState.bads}\n\nCombo Breaks: ${(PlayState.isStoryMode ? PlayState.campaignMisses : PlayState.misses) + PlayState.shits}\nHighest Combo: ${PlayState.highestCombo}\n\nScore: ${PlayState.instance.songScore}\nAccuracy: ${HelperFunctions.truncateFloat(PlayState.instance.accuracy,2)}%\n\n${Ratings.GenerateLetterRank(PlayState.instance.accuracy)}\n\nF1 - View replay\nF2 - Replay song
         ');
         comboText.size = 28;
         comboText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
@@ -105,8 +105,8 @@ class ResultsScreen extends FlxSubState
         add(graphSprite);
 
 
-        var sicks = PlayState.sicks / PlayState.goods;
-        var goods = PlayState.goods / PlayState.bads;
+        var sicks = HelperFunctions.truncateFloat(PlayState.sicks / PlayState.goods,1);
+        var goods = HelperFunctions.truncateFloat(PlayState.goods / PlayState.bads,1);
 
         if (sicks == Math.POSITIVE_INFINITY)
             sicks = 0;
