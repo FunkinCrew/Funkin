@@ -50,7 +50,7 @@ class TitleState extends MusicBeatState
 		curWacky = FlxG.random.getObject(getIntroTextShit());
 		super.create();
 
-		NGio.noLogin("" /* API KEY HERE */);
+		//NGio.noLogin("" /* API KEY HERE */);
 
 		#if ng
 		var ng:NGio = new NGio("" /* API KEY HERE */, "" /* ENC KEY HERE */);
