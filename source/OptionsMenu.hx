@@ -60,7 +60,7 @@ class OptionsMenu extends MusicBeatState
 			new BotPlay("Showcase your charts and mods with autoplay.")
 		]),
 		
-		new OptionCategory("Saved Data", [
+		new OptionCategory("Manage Save Data", [
 			new ResetScoreOption("Reset your score on all songs and weeks."),
 			new LockWeeksOption("Reset your storymode progress. (only Tutorial + Week 1 will be unlocked)"),
 			new ResetSettings("Reset ALL your settings.")
