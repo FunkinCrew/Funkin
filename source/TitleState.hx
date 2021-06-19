@@ -50,10 +50,10 @@ class TitleState extends MusicBeatState
 		curWacky = FlxG.random.getObject(getIntroTextShit());
 		super.create();
 
-		NGio.noLogin(APIStuff.API);
+		NGio.noLogin("" /* API KEY HERE */);
 
 		#if ng
-		var ng:NGio = new NGio(APIStuff.API, APIStuff.EncKey);
+		var ng:NGio = new NGio("" /* API KEY HERE */, "" /* ENC KEY HERE */);
 		trace('NEWGROUNDS LOL');
 		#end
 
@@ -68,7 +68,6 @@ class TitleState extends MusicBeatState
 		if(!FlxG.save.data.accuracyPrecision)
 		{
 			FlxG.save.data.accuracyPrecision = 2;
-			FlxG.save.flush();
 		}
 
 		#if !debug
@@ -98,8 +97,9 @@ class TitleState extends MusicBeatState
 		
 		#if !debug
 		FlxG.save.data.weekUnlocked = StoryMenuState.weekUnlocked;
-		FlxG.save.flush();
 		#end
+
+		FlxG.save.flush();
 
 		#if FREEPLAY
 		FlxG.switchState(new FreeplayState());
