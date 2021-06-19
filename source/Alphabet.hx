@@ -48,6 +48,8 @@ class Alphabet extends FlxSpriteGroup
 		this.text = text;
 		isBold = bold;
 
+		trace(this.text);
+
 		if (text != "")
 		{
 			if (typed)
@@ -221,7 +223,7 @@ class Alphabet extends FlxSpriteGroup
 
 class AlphaCharacter extends FlxSprite
 {
-	public static var alphabet:String = "abcdefghijklmnopqrstuvwxyz";
+	public static var alphabet:String = "abcdefghijklmnopqrstuvwxyz1234567890";
 
 	public static var numbers:String = "1234567890";
 
@@ -238,7 +240,7 @@ class AlphaCharacter extends FlxSprite
 
 	public function createBold(letter:String)
 	{
-		animation.addByPrefix(letter, letter.toUpperCase() + " bold", 24);
+		animation.addByPrefix(letter, letter + " bold", 24);
 		animation.play(letter);
 		updateHitbox();
 	}
