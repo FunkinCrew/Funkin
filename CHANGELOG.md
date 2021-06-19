@@ -4,9 +4,10 @@ All notable changes will be documented in this file.
 ## [0.2] - ?/?/?
 ### Added
 - Numbers into Alphabet.
-- Stage Editor
+- Stage Editor.
+- Note Splashes.
 ### Changed
-- Placeholder
+- Slightly Better Input.
 ### Fixed
 - Placeholder
 
