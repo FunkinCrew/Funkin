@@ -1849,7 +1849,7 @@ class PlayState extends MusicBeatState
 
 	function noteMiss(direction:Int = 1):Void
 	{
-		if (!boyfriend.stunned)
+		if(!boyfriend.stunned)
 		{
 			health -= 0.04;
 			if (combo > 5 && gf.animOffsets.exists('sad'))
@@ -1900,14 +1900,19 @@ class PlayState extends MusicBeatState
 		var downP = controls.DOWN_P;
 		var leftP = controls.LEFT_P;
 
+		/*
 		if (leftP)
 			noteMiss(0);
+
 		if (downP)
 			noteMiss(1);
+
 		if (upP)
 			noteMiss(2);
+		
 		if (rightP)
 			noteMiss(3);
+		*/
 	}
 
 	function noteCheck(keyP:Bool, note:Note):Void
