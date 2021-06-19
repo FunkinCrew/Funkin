@@ -413,7 +413,7 @@ class StoryMenuState extends MusicBeatState
 
 	public static function unlockNextWeek(week:Int):Void
 	{
-		// TODO: get the weekData from class (but making it static makes it weird)
+		// TODO: get the weekData from class (but making it static makes it dissapear when beating the week)
 		var weekData:Array<Dynamic> = [
 			['Tutorial'],
 			['Bopeebo', 'Fresh', 'Dad Battle'],
@@ -424,7 +424,7 @@ class StoryMenuState extends MusicBeatState
 			['Senpai', 'Roses', 'Thorns']
 		];
 
-		if(week < weekData.length - 1 && FlxG.save.data.weekUnlocked == week)
+		if(week <= weekData.length - 1 && FlxG.save.data.weekUnlocked == week)
 		{
 			weekUnlocked.push(true);
 			trace('Week ' + week + ' beat (Week ' + (week + 1) + ' unlocked)');

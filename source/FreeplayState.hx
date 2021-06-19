@@ -44,7 +44,8 @@ class FreeplayState extends MusicBeatState
 		for (i in 0...initSonglist.length)
 		{
 			var data:Array<String> = initSonglist[i].split(':');
-			songs.push(new SongMetadata(data[0], Std.parseInt(data[2]), data[1]));
+			if(Std.parseInt(data[2]) <= FlxG.save.data.weekUnlocked - 1)
+				songs.push(new SongMetadata(data[0], Std.parseInt(data[2]), data[1]));
 		}
 
 		/* 
