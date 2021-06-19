@@ -1,5 +1,8 @@
 package;
 
+import ui.FlxVirtualPad.FlxActionMode;
+import ui.FlxVirtualPad.FlxDPadMode;
+import ui.Controller;
 import flash.text.TextField;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -138,6 +141,8 @@ class FreeplayState extends MusicBeatState
 			trace(md);
 		 */
 
+		Controller.init(this, FULL, A_B);
+
 		super.create();
 	}
 
@@ -177,9 +182,9 @@ class FreeplayState extends MusicBeatState
 
 		scoreText.text = "PERSONAL BEST:" + lerpScore;
 
-		var upP = controls.UP_P;
-		var downP = controls.DOWN_P;
-		var accepted = controls.ACCEPT;
+		var upP = Controller.UP_P;
+		var downP = Controller.DOWN_P;
+		var accepted = Controller.ACCEPT;
 
 		if (upP)
 		{
@@ -190,12 +195,12 @@ class FreeplayState extends MusicBeatState
 			changeSelection(1);
 		}
 
-		if (controls.LEFT_P)
+		if (Controller.LEFT_P)
 			changeDiff(-1);
-		if (controls.RIGHT_P)
+		if (Controller.RIGHT_P)
 			changeDiff(1);
 
-		if (controls.BACK)
+		if (Controller.BACK)
 		{
 			FlxG.switchState(new MainMenuState());
 		}

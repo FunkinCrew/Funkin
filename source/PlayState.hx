@@ -1,5 +1,9 @@
 package;
 
+import ui.Controller;
+import ui.FlxVirtualPad.FlxActionMode;
+import ui.FlxVirtualPad.FlxDPadMode;
+import ui.Controller;
 import fmf.characters.*;
 import fmf.songs.*;
 import flixel.input.keyboard.FlxKey;
@@ -23,7 +27,7 @@ import flixel.FlxBasic;
 import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxGame;
-import flixel.FlxObject;
+import flixel.FlxObject;	
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.FlxSubState;
@@ -241,8 +245,8 @@ class PlayState extends MusicBeatState
 	{
 		instance = this;
 
-		if (FlxG.save.data.fpsCap > 290)
-			(cast(Lib.current.getChildAt(0), Main)).setFPSCap(800);
+		// if (FlxG.save.data.fpsCap > 290)
+		// 	(cast(Lib.current.getChildAt(0), Main)).setFPSCap(800);
 
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
@@ -257,6 +261,8 @@ class PlayState extends MusicBeatState
 		repPresses = 0;
 		repReleases = 0;
 		CURRENT_SONG = SONG.song.toLowerCase();
+
+		botPlayShit = (!isStoryMode && botPlayShit) || (isStoryMode && botPlayShit && (isUnlocked()));
 
 		// pre lowercasing the song name (create)
 		var songLowercase = StringTools.replace(PlayState.SONG.song, " ", "-").toLowerCase();
@@ -351,7 +357,7 @@ class PlayState extends MusicBeatState
 		Conductor.changeBPM(SONG.bpm);
 
 		trace('INFORMATION ABOUT WHAT U PLAYIN WIT:\nFRAMES: ' + Conductor.safeFrames + '\nZONE: ' + Conductor.safeZoneOffset + '\nTS: '
-			+ Conductor.timeScale + '\nBotPlay : ' + FlxG.save.data.botplay);
+			+ Conductor.timeScale + '\nBotPlay : ' + botPlayShit);
 
 		trace("cur song shit: " + CURRENT_SONG);
 
@@ -359,7 +365,7 @@ class PlayState extends MusicBeatState
 		songPlayer = SongPlayer.getCurrentSong();
 
 		//hardcode this shit
-		if(CURRENT_SONG == 'sepai' | CURRENT_SONG == 'roses')
+		if(CURRENT_SONG == 'sepai' || CURRENT_SONG == 'roses')
 		curStage = 'school';
 
 		if(CURRENT_SONG == 'thorns')
@@ -378,7 +384,7 @@ class PlayState extends MusicBeatState
 			FlxG.watch.addQuick('rep rpesses', repPresses);
 			FlxG.watch.addQuick('rep releases', repReleases);
 
-			FlxG.save.data.botplay = true;
+			botPlayShit = true;
 			FlxG.save.data.scrollSpeed = rep.replay.noteSpeed;
 			FlxG.save.data.downscroll = rep.replay.isDownscroll;
 			// FlxG.watch.addQuick('Queued',inputsQueued);
@@ -488,7 +494,7 @@ class PlayState extends MusicBeatState
 		scoreTxt.scrollFactor.set();
 		if (offsetTesting)
 			scoreTxt.x += 300;
-		if (FlxG.save.data.botplay)
+		if (botPlayShit)
 			scoreTxt.x = FlxG.width / 2 - 20;
 		add(scoreTxt);
 
@@ -499,12 +505,12 @@ class PlayState extends MusicBeatState
 		{
 			add(replayTxt);
 		}
-		// Literally copy-paste of the above, fu
-		botPlayState = new FlxText(healthBarBG.x + healthBarBG.width / 2 - 75, healthBarBG.y + (FlxG.save.data.downscroll ? 100 : -100), 0, "BOTPLAY", 20);
-		botPlayState.setFormat(Paths.font("vcr.ttf"), 42, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+
+		botPlayState = new FlxText(5, 5, "AUTO", 15);
+		botPlayState.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		botPlayState.scrollFactor.set();
 
-		if (FlxG.save.data.botplay && !loadRep)
+		if (botPlayShit && !loadRep)
 			add(botPlayState);
 
 		iconP1 = new HealthIcon(SONG.player1, true);
@@ -552,8 +558,27 @@ class PlayState extends MusicBeatState
 		if (!loadRep)
 			rep = new Replay("na");
 
+
+		mcontrols = new Mobilecontrols();
+		mcontrols.cameras = [camHUD];
+
+		if(!botPlayShit) add(mcontrols);
+		
+		Controller.init(this, NONE, B);
+		Controller._pad.cameras = [camHUD];
+
+
 		super.create();
 	}
+
+	function isUnlocked():Bool
+	{
+		return (storyWeek + 1 >= StoryMenuState.weekUnlocked.length && FlxG.save.data.unlockedAllWeekShit)
+			|| (StoryMenuState.weekUnlocked[storyWeek + 1]);
+	}
+
+	var mcontrols:Mobilecontrols; 
+	var botPlayShit:Bool;
 
 	var startTimer:FlxTimer;
 	var perfectMode:Bool = false;
@@ -1162,7 +1187,7 @@ class PlayState extends MusicBeatState
 		perfectMode = false;
 		#end
 
-		if (FlxG.save.data.botplay && FlxG.keys.justPressed.ONE)
+		if (botPlayShit && FlxG.keys.justPressed.ONE)
 			camHUD.visible = !camHUD.visible;
 
 		#if windows
@@ -1247,22 +1272,6 @@ class PlayState extends MusicBeatState
 				iconP1.animation.play('bf-old');
 		}
 
-		// switch (curStage)
-		// {
-		// 	case 'philly':
-		// 		if (trainMoving)
-		// 		{
-		// 			trainFrameTiming += elapsed;
-
-		// 			if (trainFrameTiming >= 1 / 24)
-		// 			{
-		// 				updateTrainPos();
-		// 				trainFrameTiming = 0;
-		// 			}
-		// 		}
-		// 		// phillyCityLights.members[curLight].alpha -= (Conductor.crochet / 1000) * FlxG.elapsed;
-		// }
-
 		songPlayer.update(elapsed);
 		super.update(elapsed);
 
@@ -1270,7 +1279,7 @@ class PlayState extends MusicBeatState
 		if (!FlxG.save.data.accuracyDisplay)
 			scoreTxt.text = "Score: " + songScore;
 
-		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause)
+		if (Controller.BACK && startedCountdown && canPause)
 		{
 			persistentUpdate = false;
 			persistentDraw = true;
@@ -1580,7 +1589,7 @@ class PlayState extends MusicBeatState
 								daNote.y += daNote.height / 2;
 
 							// If not in botplay, only clip sustain notes when properly hit, botplay gets to clip it everytime
-							if (!FlxG.save.data.botplay)
+							if (!botPlayShit)
 							{
 								if ((!daNote.mustPress || daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit)
 									&& daNote.y - daNote.offset.y * daNote.scale.y + daNote.height >= (strumLine.y + Note.swagWidth / 2))
@@ -1621,7 +1630,7 @@ class PlayState extends MusicBeatState
 						{
 							daNote.y -= daNote.height / 2;
 
-							if (!FlxG.save.data.botplay)
+							if (!botPlayShit)
 							{
 								if ((!daNote.mustPress || daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit)
 									&& daNote.y + daNote.offset.y * daNote.scale.y <= (strumLine.y + Note.swagWidth / 2))
@@ -1785,7 +1794,7 @@ class PlayState extends MusicBeatState
 			rep.SaveReplay(saveNotes);
 		else
 		{
-			FlxG.save.data.botplay = false;
+			botPlayShit = false;
 			FlxG.save.data.scrollSpeed = 1;
 			FlxG.save.data.downscroll = false;
 		}
@@ -2034,7 +2043,7 @@ class PlayState extends MusicBeatState
 			rating.velocity.x -= FlxG.random.int(0, 10);
 
 			var msTiming = HelperFunctions.truncateFloat(noteDiff, 3);
-			if (FlxG.save.data.botplay)
+			if (botPlayShit)
 				msTiming = 0;
 
 			if (currentTimingShown != null)
@@ -2079,7 +2088,7 @@ class PlayState extends MusicBeatState
 			if (currentTimingShown.alpha != 1)
 				currentTimingShown.alpha = 1;
 
-			if (!FlxG.save.data.botplay)
+			if (!botPlayShit)
 				add(currentTimingShown);
 
 			var comboSpr:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'combo' + pixelShitPart2));
@@ -2097,7 +2106,7 @@ class PlayState extends MusicBeatState
 
 			comboSpr.velocity.x += FlxG.random.int(1, 10);
 			currentTimingShown.velocity.x += comboSpr.velocity.x;
-			if (!FlxG.save.data.botplay)
+			if (!botPlayShit)
 				add(rating);
 
 			if (!curStage.startsWith('school'))
@@ -2226,25 +2235,25 @@ class PlayState extends MusicBeatState
 	private function keyShit():Void // I've invested in emma stocks
 	{
 		// control arrays, order L D R U
-		var holdArray:Array<Bool> = [controls.LEFT, controls.DOWN, controls.UP, controls.RIGHT];
-		var pressArray:Array<Bool> = [controls.LEFT_P, controls.DOWN_P, controls.UP_P, controls.RIGHT_P];
-		var releaseArray:Array<Bool> = [controls.LEFT_R, controls.DOWN_R, controls.UP_R, controls.RIGHT_R];
+		var holdArray:Array<Bool> = [mcontrols.LEFT, mcontrols.DOWN, mcontrols.UP, mcontrols.RIGHT];
+		var pressArray:Array<Bool> = [mcontrols.LEFT_P, mcontrols.DOWN_P, mcontrols.UP_P, mcontrols.RIGHT_P];
+		var releaseArray:Array<Bool> = [mcontrols.LEFT_R, mcontrols.DOWN_R, mcontrols.UP_R, mcontrols.RIGHT_R];
 		#if windows
 		if (luaModchart != null)
 		{
-			if (controls.LEFT_P)
+			if (mcontrols.LEFT_P)
 			{
 				luaModchart.executeState('keyPressed', ["left"]);
 			};
-			if (controls.DOWN_P)
+			if (mcontrols.DOWN_P)
 			{
 				luaModchart.executeState('keyPressed', ["down"]);
 			};
-			if (controls.UP_P)
+			if (mcontrols.UP_P)
 			{
 				luaModchart.executeState('keyPressed', ["up"]);
 			};
-			if (controls.RIGHT_P)
+			if (mcontrols.RIGHT_P)
 			{
 				luaModchart.executeState('keyPressed', ["right"]);
 			};
@@ -2252,7 +2261,7 @@ class PlayState extends MusicBeatState
 		#end
 
 		// Prevent player input if botplay is on
-		if (FlxG.save.data.botplay)
+		if (botPlayShit)
 		{
 			holdArray = [false, false, false, false];
 			pressArray = [false, false, false, false];
@@ -2362,7 +2371,7 @@ class PlayState extends MusicBeatState
 						noteMiss(shit, null);
 			}
 
-			if (dontCheck && possibleNotes.length > 0 && FlxG.save.data.ghost && !FlxG.save.data.botplay)
+			if (dontCheck && possibleNotes.length > 0 && FlxG.save.data.ghost && !botPlayShit)
 			{
 				if (mashViolations > 8)
 				{
@@ -2380,7 +2389,7 @@ class PlayState extends MusicBeatState
 			if (FlxG.save.data.downscroll && daNote.y > strumLine.y || !FlxG.save.data.downscroll && daNote.y < strumLine.y)
 			{
 				// Force good note hit regardless if it's too late to hit it or not as a fail safe
-				if (FlxG.save.data.botplay && daNote.canBeHit && daNote.mustPress || FlxG.save.data.botplay && daNote.tooLate && daNote.mustPress)
+				if (botPlayShit && daNote.canBeHit && daNote.mustPress || botPlayShit && daNote.tooLate && daNote.mustPress)
 				{
 					if (loadRep)
 					{
@@ -2400,7 +2409,7 @@ class PlayState extends MusicBeatState
 			}
 		});
 
-		if (boyfriend().holdTimer > Conductor.stepCrochet * 4 * 0.001 && (!holdArray.contains(true) || FlxG.save.data.botplay))
+		if (boyfriend().holdTimer > Conductor.stepCrochet * 4 * 0.001 && (!holdArray.contains(true) || botPlayShit))
 		{
 			if (boyfriend().animation.curAnim.name.startsWith('sing') && !boyfriend().animation.curAnim.name.endsWith('miss'))
 				boyfriend().playAnim('idle');
@@ -2473,10 +2482,10 @@ class PlayState extends MusicBeatState
 			{
 				// just double pasting this shit cuz fuk u
 				// REDO THIS SYSTEM!
-				var upP = controls.UP_P;
-				var rightP = controls.RIGHT_P;
-				var downP = controls.DOWN_P;
-				var leftP = controls.LEFT_P;
+				var upP = mcontrols.UP_P;
+				var rightP = mcontrols.RIGHT_P;
+				var downP = mcontrols.DOWN_P;
+				var leftP = mcontrols.LEFT_P;
 
 				if (leftP)
 					noteMiss(0);
@@ -2535,7 +2544,7 @@ class PlayState extends MusicBeatState
 						goodNoteHit(note, false);
 					}
 				}
-		}*/ s
+		}*/ 
 
 		if (controlArray[note.noteData])
 		{

@@ -1,5 +1,6 @@
 package;
 
+import ui.Controller;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import openfl.Lib;
@@ -97,19 +98,21 @@ class OptionsMenu extends MusicBeatState
 
 		currentDescription = "none";
 
-		versionShit = new FlxText(5, FlxG.height + 40, 0, "Offset (Left, Right, Shift for slow): " + HelperFunctions.truncateFloat(FlxG.save.data.offset,2) + " - Description - " + currentDescription, 12);
+		versionShit = new FlxText(5, 0, 0, "Offset (Left, Right, Shift for slow): " + HelperFunctions.truncateFloat(FlxG.save.data.offset,2) + " - Description - " + currentDescription, 12);
 		versionShit.scrollFactor.set();
 		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		
-		blackBorder = new FlxSprite(-30,FlxG.height + 40).makeGraphic((Std.int(versionShit.width + 900)),Std.int(versionShit.height + 600),FlxColor.BLACK);
+		blackBorder = new FlxSprite(-30, 0).makeGraphic((Std.int(versionShit.width + 900)),Std.int(versionShit.height * 1.25),FlxColor.BLACK);
 		blackBorder.alpha = 0.5;
 
 		add(blackBorder);
 
 		add(versionShit);
 
-		FlxTween.tween(versionShit,{y: FlxG.height - 18},2,{ease: FlxEase.elasticInOut});
-		FlxTween.tween(blackBorder,{y: FlxG.height - 18},2, {ease: FlxEase.elasticInOut});
+		// FlxTween.tween(versionShit,{y:  18},2,{ease: FlxEase.elasticInOut});
+		// FlxTween.tween(blackBorder,{y: 18},2, {ease: FlxEase.elasticInOut});
+
+		Controller.init(this, FULL, A_B);
 
 		super.create();
 	}
@@ -123,9 +126,9 @@ class OptionsMenu extends MusicBeatState
 
 		if (acceptInput)
 		{
-			if (controls.BACK && !isCat)
+			if (Controller.BACK && !isCat)
 				FlxG.switchState(new MainMenuState());
-			else if (controls.BACK)
+			else if (Controller.BACK)
 			{
 				isCat = false;
 				grpControls.clear();
@@ -139,9 +142,9 @@ class OptionsMenu extends MusicBeatState
 					}
 				curSelected = 0;
 			}
-			if (controls.UP_P)
+			if (Controller.UP_P)
 				changeSelection(-1);
-			if (controls.DOWN_P)
+			if (Controller.DOWN_P)
 				changeSelection(1);
 			
 			if (isCat)
@@ -149,34 +152,34 @@ class OptionsMenu extends MusicBeatState
 				
 				if (currentSelectedCat.getOptions()[curSelected].getAccept())
 				{
-					if (FlxG.keys.pressed.SHIFT)
+					if (Controller.SHIFT)
 						{
-							if (FlxG.keys.pressed.RIGHT)
+							if (Controller.RIGHT)
 								currentSelectedCat.getOptions()[curSelected].right();
-							if (FlxG.keys.pressed.LEFT)
+							if (Controller.LEFT)
 								currentSelectedCat.getOptions()[curSelected].left();
 						}
 					else
 					{
-						if (FlxG.keys.justPressed.RIGHT)
+						if (Controller.RIGHT_P)
 							currentSelectedCat.getOptions()[curSelected].right();
-						if (FlxG.keys.justPressed.LEFT)
+						if (Controller.LEFT_P)
 							currentSelectedCat.getOptions()[curSelected].left();
 					}
 				}
 				else
 				{
 
-					if (FlxG.keys.pressed.SHIFT)
+					if (Controller.SHIFT)
 					{
-						if (FlxG.keys.justPressed.RIGHT)
+						if (Controller.RIGHT_P)
 							FlxG.save.data.offset += 0.1;
-						else if (FlxG.keys.justPressed.LEFT)
+						else if (Controller.LEFT_P)
 							FlxG.save.data.offset -= 0.1;
 					}
-					else if (FlxG.keys.pressed.RIGHT)
+					else if (Controller.RIGHT)
 						FlxG.save.data.offset += 0.1;
-					else if (FlxG.keys.pressed.LEFT)
+					else if (Controller.LEFT)
 						FlxG.save.data.offset -= 0.1;
 					
 				
@@ -188,24 +191,24 @@ class OptionsMenu extends MusicBeatState
 			}
 			else
 			{
-				if (FlxG.keys.pressed.SHIFT)
+				if (Controller.SHIFT)
 					{
-						if (FlxG.keys.justPressed.RIGHT)
+						if (Controller.RIGHT_P)
 							FlxG.save.data.offset += 0.1;
-						else if (FlxG.keys.justPressed.LEFT)
+						else if (Controller.LEFT_P)
 							FlxG.save.data.offset -= 0.1;
 					}
-					else if (FlxG.keys.pressed.RIGHT)
+					else if (Controller.RIGHT)
 						FlxG.save.data.offset += 0.1;
-					else if (FlxG.keys.pressed.LEFT)
+					else if (Controller.LEFT)
 						FlxG.save.data.offset -= 0.1;
 			}
 		
 
-			if (controls.RESET)
-					FlxG.save.data.offset = 0;
+			// if (Controller.RESET)
+					// FlxG.save.data.offset = 0;
 
-			if (controls.ACCEPT)
+			if (Controller.ACCEPT)
 			{
 				if (isCat)
 				{

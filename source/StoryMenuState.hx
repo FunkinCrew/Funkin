@@ -1,5 +1,8 @@
 package;
 
+import ui.FlxVirtualPad.FlxActionMode;
+import ui.FlxVirtualPad.FlxDPadMode;
+import ui.Controller;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.addons.transition.FlxTransitionableState;
@@ -196,6 +199,8 @@ class StoryMenuState extends MusicBeatState
 
 		trace("Line 165");
 
+		Controller.init(this, FULL, A_B);
+
 		super.create();
 	}
 
@@ -222,39 +227,39 @@ class StoryMenuState extends MusicBeatState
 		{
 			if (!selectedWeek)
 			{
-				if (controls.UP_P)
+				if (Controller.UP_P)
 				{
 					changeWeek(-1);
 				}
 
-				if (controls.DOWN_P)
+				if (Controller.DOWN_P)
 				{
 					changeWeek(1);
 				}
 
-				if (controls.RIGHT)
+				if (Controller.RIGHT)
 					rightArrow.animation.play('press')
 				else
 					rightArrow.animation.play('idle');
 
-				if (controls.LEFT)
+				if (Controller.LEFT)
 					leftArrow.animation.play('press');
 				else
 					leftArrow.animation.play('idle');
 
-				if (controls.RIGHT_P)
+				if (Controller.RIGHT_P)
 					changeDifficulty(1);
-				if (controls.LEFT_P)
+				if (Controller.LEFT_P)
 					changeDifficulty(-1);
 			}
 
-			if (controls.ACCEPT)
+			if (Controller.ACCEPT)
 			{
 				selectWeek();
 			}
 		}
 
-		if (controls.BACK && !movedBack && !selectedWeek)
+		if (Controller.BACK && !movedBack && !selectedWeek)
 		{
 			FlxG.sound.play(Paths.sound('cancelMenu'));
 			movedBack = true;

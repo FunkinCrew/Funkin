@@ -1,6 +1,6 @@
 package;
 
-import Controls.KeyboardScheme;
+import ui.Controller;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
@@ -15,6 +15,7 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import io.newgrounds.NG;
 import lime.app.Application;
+import ui.FlxVirtualPad;
 
 #if windows
 import Discord.DiscordClient;
@@ -58,6 +59,7 @@ class MainMenuState extends MusicBeatState
 		{
 			FlxG.sound.playMusic(Paths.music('freakyMenu'));
 		}
+
 
 		persistentUpdate = persistentDraw = true;
 
@@ -124,14 +126,16 @@ class MainMenuState extends MusicBeatState
 		// NG.core.calls.event.logEvent('swag').send();
 
 
-		if (FlxG.save.data.dfjk)
-			controls.setKeyboardScheme(KeyboardScheme.Solo, true);
-		else
-			controls.setKeyboardScheme(KeyboardScheme.Duo(true), true);
+		// if (FlxG.save.data.dfjk)
+		// 	Controller.setKeyboardScheme(KeyboardScheme.Solo, true);
+		// else
 
+		controls.setKeyboardScheme(KeyboardScheme.Duo(true), true);
 		changeItem();
 
+		Controller.init(this, UP_DOWN, A);
 		super.create();
+
 	}
 
 	var selectedSomethin:Bool = false;
@@ -145,24 +149,24 @@ class MainMenuState extends MusicBeatState
 
 		if (!selectedSomethin)
 		{
-			if (controls.UP_P)
+			if (Controller.UP_P)
 			{
 				FlxG.sound.play(Paths.sound('scrollMenu'));
 				changeItem(-1);
 			}
 
-			if (controls.DOWN_P)
+			if (Controller.DOWN_P)
 			{
 				FlxG.sound.play(Paths.sound('scrollMenu'));
 				changeItem(1);
 			}
 
-			if (controls.BACK)
-			{
-				FlxG.switchState(new TitleState());
-			}
+			// if (Controller.BACK)
+			// {
+			// 	FlxG.switchState(new TitleState());
+			// }
 
-			if (controls.ACCEPT)
+			if (Controller.ACCEPT)
 			{
 				if (optionShit[curSelected] == 'donate')
 				{
