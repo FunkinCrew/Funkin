@@ -721,7 +721,7 @@ class ResetSettings extends Option
 			display = updateDisplay();
 			return true;
 		}
-		FlxG.save.data.weekUnlocked = 6;
+		FlxG.save.data.weekUnlocked = 7;
 		FlxG.save.data.newInput = true;
 		FlxG.save.data.downscroll = false;
 		FlxG.save.data.dfjk = false;
