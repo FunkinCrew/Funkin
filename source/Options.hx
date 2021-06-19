@@ -296,8 +296,8 @@ class Judgement extends Option
 
 	override function getValue():String {
 		return "Safe Frames: " + Conductor.safeFrames +
-		" - SIK: " + HelperFunctions.truncateFloat(45 * Conductor.timeScale, 0) +
-		"ms GD: " + HelperFunctions.truncateFloat(90 * Conductor.timeScale, 0) +
+		" - SIK: " + HelperFunctions.truncateFloat(22 * Conductor.timeScale, 0) +
+		"ms GD: " + HelperFunctions.truncateFloat(45 * Conductor.timeScale, 0) +
 		"ms BD: " + HelperFunctions.truncateFloat(135 * Conductor.timeScale, 0) + 
 		"ms SHT: " + HelperFunctions.truncateFloat(155 * Conductor.timeScale, 0) +
 		"ms TOTAL: " + HelperFunctions.truncateFloat(Conductor.safeZoneOffset,0) + "ms";
@@ -337,6 +337,27 @@ class FPSOption extends Option
 		return "FPS Counter " + (!FlxG.save.data.fps ? "off" : "on");
 	}
 }
+
+class ScoreScreen extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+
+	public override function press():Bool
+	{
+		FlxG.save.data.scoreScreen = !FlxG.save.data.scoreScreen;
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return (FlxG.save.data.scoreScreen ? "Show Score Screen" : "No Score Screen");
+	}
+}
+
 
 
 
@@ -613,4 +634,24 @@ class BotPlay extends Option
 	
 	private override function updateDisplay():String
 		return "BotPlay " + (FlxG.save.data.botplay ? "on" : "off");
+}
+
+class CamZoomOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+	public override function press():Bool
+	{
+		FlxG.save.data.camzoom = !FlxG.save.data.camzoom;
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Camera Zoom " + (!FlxG.save.data.camzoom ? "off" : "on");
+	}
 }
