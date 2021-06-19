@@ -207,10 +207,10 @@ class Character extends FlxSprite
 				animation.addByPrefix('singRIGHT', 'Monster Right note', 24, false);
 
 				addOffset('idle');
-				addOffset("singUP", -20, 50);
-				addOffset("singRIGHT", -51);
-				addOffset("singLEFT", -30);
-				addOffset("singDOWN", -30, -40);
+				addOffset("singUP", -20, 94);
+				addOffset("singRIGHT", -51, 30);
+				addOffset("singLEFT", -30, 20);
+				addOffset("singDOWN", -50, -80);
 				playAnim('idle');
 			case 'monster-christmas':
 				tex = Paths.getSparrowAtlas('characters/monsterChristmas');
