@@ -17,14 +17,15 @@ typedef ReplayJSON =
 	public var timestamp:Date;
 	public var songName:String;
 	public var songDiff:Int;
-	public var songNotes:Array<Float>;
+	public var songNotes:Array<Dynamic>;
 	public var noteSpeed:Float;
 	public var isDownscroll:Bool;
+	public var sf:Int;
 }
 
 class Replay
 {
-	public static var version:String = "1.1"; // replay file version
+	public static var version:String = "1.2"; // replay file version
 
 	public var path:String = "";
 	public var replay:ReplayJSON;
@@ -38,7 +39,8 @@ class Replay
 			isDownscroll: false,
 			songNotes: [],
 			replayGameVer: version,
-			timestamp: Date.now()
+			timestamp: Date.now(),
+			sf: Conductor.safeFrames
 		};
 	}
 
@@ -48,12 +50,12 @@ class Replay
 
 		rep.LoadFromJSON();
 
-		trace('basic replay data:\nSong Name: ' + rep.replay.songName + '\nSong Diff: ' + rep.replay.songDiff + '\nNotes Length: ' + rep.replay.songNotes.length);
+		trace('basic replay data:\nSong Name: ' + rep.replay.songName + '\nSong Diff: ' + rep.replay.songDiff);
 
 		return rep;
 	}
 
-	public function SaveReplay(notearray:Array<Float>)
+	public function SaveReplay(notearray:Array<Dynamic>)
 	{
 		var json = {
 			"songName": PlayState.SONG.song,
@@ -62,13 +64,20 @@ class Replay
 			"isDownscroll": FlxG.save.data.downscroll,
 			"songNotes": notearray,
 			"timestamp": Date.now(),
-			"replayGameVer": version
+			"replayGameVer": version,
+			"sf": Conductor.safeFrames
 		};
 
 		var data:String = Json.stringify(json);
+		
+		var time = Date.now().getTime();
 
 		#if sys
-		File.saveContent("assets/replays/replay-" + PlayState.SONG.song + "-time" + Date.now().getTime() + ".kadeReplay", data);
+		File.saveContent("assets/replays/replay-" + PlayState.SONG.song + "-time" + time + ".kadeReplay", data);
+
+		path = "replay-" + PlayState.SONG.song + "-time" + time + ".kadeReplay"; // for score screen shit
+
+		LoadFromJSON();
 		#end
 	}
 
