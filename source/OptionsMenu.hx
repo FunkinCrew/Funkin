@@ -179,7 +179,7 @@ class OptionsMenu extends MusicBeatState
 					case 'Tools':
 					{
 						curSelected = 0;
-						textMenuItems = ["Back", "Charter", "Animation Debug", "(WIP) Stage Editor"];
+						textMenuItems = ["Back", "Charter", "Animation Debug", "Stage Editor"];
 						spawnInTexts();
 					}
 
@@ -201,6 +201,16 @@ class OptionsMenu extends MusicBeatState
 						PlayState.storyWeek = 0;
 						FlxG.sound.music.stop();
 						LoadingState.loadAndSwitchState(new AnimationDebug('dad'));
+					}
+
+					case 'Stage Editor':
+					{
+						PlayState.SONG = Song.loadFromJson(Highscore.formatSong('tutorial', 2), 'tutorial');
+						PlayState.isStoryMode = false;
+						PlayState.storyDifficulty = 2;
+						PlayState.storyWeek = 0;
+						FlxG.sound.music.stop();
+						LoadingState.loadAndSwitchState(new StageMakingState());
 					}
 
 					case 'Sound':

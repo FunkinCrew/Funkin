@@ -45,12 +45,14 @@ class StageGroup extends FlxGroup
     // SCHOOL STUFF
     private var bgGirls:BackgroundGirls;
 
-    function updateStage(?newStage:String)
+    public function updateStage(?newStage:String)
     {
         if(newStage != null)
         {
             stage = newStage;
         }
+
+        clear();
 
         switch(stage)
         {
