@@ -437,8 +437,6 @@ class ModchartState
 					PlayState.instance.removeObject(sprite);
 					return true;
 				});
-
-				
 	
 				// hud/camera
 
@@ -459,6 +457,14 @@ class ModchartState
 				
 				Lua_helper.add_callback(lua,"restartVideo", function() {
 					GlobalVideo.get().restart();
+				});
+
+				Lua_helper.add_callback(lua,"getVideoSpriteX", function() {
+					return PlayState.instance.videoSprite.x;
+				});
+
+				Lua_helper.add_callback(lua,"getVideoSpriteY", function() {
+					return PlayState.instance.videoSprite.y;
 				});
 
 				Lua_helper.add_callback(lua,"setVideoSpritePos", function(x:Int,y:Int) {

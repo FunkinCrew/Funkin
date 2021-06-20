@@ -3,10 +3,10 @@
 Changes marked with 💖 will be listed in the short version of the changelog in `version.downloadMe`.
 
 ### Additions
-- Nothing here yet!
+- Nothing yet!
 
 ### Changes
-- Nothing here yet!
+- Nothing yet!
 
 ### Bugfixes
-- Nothing here yet!
+- Nothing yet!

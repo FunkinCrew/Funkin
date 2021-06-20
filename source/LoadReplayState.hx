@@ -54,7 +54,7 @@ class LoadReplayState extends MusicBeatState
             var string:String = controlsStrings[i];
             actualNames[i] = string;
 			var rep:Replay = Replay.LoadReplay(string);
-            controlsStrings[i] = string.split("time")[0] + " " + (rep.replay.songDiff == 2 ? "HARD" : rep.replay.songDiff == 1 ? "EASY" : "NORMAL");
+            controlsStrings[i] = string.split("time")[0] + " " + CoolUtil.difficultyFromInt(rep.replay.songDiff).toUpperCase();
         }
 
         if (controlsStrings.length == 0)
@@ -148,23 +148,32 @@ class LoadReplayState extends MusicBeatState
 
                 PlayState.loadRep = true;
 
-                // adjusting the song name to be compatible
-				var songFormat = StringTools.replace(PlayState.rep.replay.songName, " ", "-");
-				switch (songFormat) {
-					case 'Dad-Battle': songFormat = 'Dadbattle';
-					case 'Philly-Nice': songFormat = 'Philly';
-					// Replay v1.0 support
-					case 'dad-battle': songFormat = 'Dadbattle';
-					case 'philly-nice': songFormat = 'Philly';
+				if (PlayState.rep.replay.replayGameVer == Replay.version)
+				{
+
+					// adjusting the song name to be compatible
+					var songFormat = StringTools.replace(PlayState.rep.replay.songName, " ", "-");
+					switch (songFormat) {
+						case 'Dad-Battle': songFormat = 'Dadbattle';
+						case 'Philly-Nice': songFormat = 'Philly';
+						// Replay v1.0 support
+						case 'dad-battle': songFormat = 'Dadbattle';
+						case 'philly-nice': songFormat = 'Philly';
+					}
+
+					var poop:String = Highscore.formatSong(songFormat, PlayState.rep.replay.songDiff);
+
+					PlayState.SONG = Song.loadFromJson(poop, PlayState.rep.replay.songName);
+					PlayState.isStoryMode = false;
+					PlayState.storyDifficulty = PlayState.rep.replay.songDiff;
+					PlayState.storyWeek = getWeekNumbFromSong(PlayState.rep.replay.songName);
+					LoadingState.loadAndSwitchState(new PlayState());
 				}
-
-				var poop:String = Highscore.formatSong(songFormat, PlayState.rep.replay.songDiff);
-
-				PlayState.SONG = Song.loadFromJson(poop, PlayState.rep.replay.songName);
-                PlayState.isStoryMode = false;
-                PlayState.storyDifficulty = PlayState.rep.replay.songDiff;
-                PlayState.storyWeek = getWeekNumbFromSong(PlayState.rep.replay.songName);
-                LoadingState.loadAndSwitchState(new PlayState());
+				else
+				{
+					PlayState.rep = null;
+					PlayState.loadRep = false;
+				}
 			}
 	}
 
@@ -187,7 +196,7 @@ class LoadReplayState extends MusicBeatState
 
 		var rep:Replay = Replay.LoadReplay(actualNames[curSelected]);
 
-		poggerDetails.text = "Replay Details - \nDate Created: " + rep.replay.timestamp + "\nSong: " + rep.replay.songName + "\nReplay Version: " + rep.replay.replayGameVer + ' (' + (rep.replay.replayGameVer != Replay.version ? "OUTDATED but still usable" : "Latest") + ')\n';
+		poggerDetails.text = "Replay Details - \nDate Created: " + rep.replay.timestamp + "\nSong: " + rep.replay.songName + "\nReplay Version: " + rep.replay.replayGameVer + ' (' + (rep.replay.replayGameVer != Replay.version ? "OUTDATED not useable!" : "Latest") + ')\n';
 
 		// selector.y = (70 * curSelected) + 30;
 
