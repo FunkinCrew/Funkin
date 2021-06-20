@@ -94,6 +94,7 @@ class PlayState extends MusicBeatState
 	private var strumLineNotes:FlxTypedGroup<FlxSprite>;
 	private var playerStrums:FlxTypedGroup<FlxSprite>;
 	private var enemyStrums:FlxTypedGroup<FlxSprite>;
+	private var splashes:FlxTypedGroup<FlxSprite>;
 
 	private var camZooming:Bool = false;
 	private var curSong:String = "";
@@ -330,6 +331,7 @@ class PlayState extends MusicBeatState
 
 		playerStrums = new FlxTypedGroup<FlxSprite>();
 		enemyStrums = new FlxTypedGroup<FlxSprite>();
+		splashes = new FlxTypedGroup<FlxSprite>();
 
 		// startCountdown();
 
@@ -878,6 +880,67 @@ class PlayState extends MusicBeatState
 
 			strumLineNotes.add(babyArrow);
 		}
+
+		for(babyArrow in playerStrums)
+		{
+			var splash:FlxSprite = new FlxSprite(babyArrow.x - 80, babyArrow.y - 80);
+			splash.frames = Paths.getSparrowAtlas("ui/noteSplashes", "shared");
+			splash.cameras = [camHUD];
+
+			var nameThing = "orange";
+
+			switch(Math.abs(babyArrow.ID))
+			{
+				case 0:
+					nameThing = "purple";
+				case 1:
+					nameThing = "blue";
+				case 2:
+					nameThing = "green";
+				case 3:
+					nameThing = "red";
+			}
+
+			splash.animation.addByPrefix("chosen1", "note impact 1 " + nameThing, 24, false);
+			splash.animation.addByPrefix("chosen2", "note impact 2 " + nameThing, 24, false);
+
+			splashes.add(splash);
+			
+			splash.animation.finishCallback = function(name:String) {
+				remove(splash);
+			};
+		}
+
+		for(babyArrow in enemyStrums)
+		{
+			var splash:FlxSprite = new FlxSprite(babyArrow.x - 80, babyArrow.y - 80);
+			splash.frames = Paths.getSparrowAtlas("ui/noteSplashes", "shared");
+			splash.cameras = [camHUD];
+
+			var nameThing = "orange";
+
+			switch(Math.abs(babyArrow.ID))
+			{
+				case 0:
+					nameThing = "purple";
+				case 1:
+					nameThing = "blue";
+				case 2:
+					nameThing = "green";
+				case 3:
+					nameThing = "red";
+			}
+
+			splash.animation.addByPrefix("chosen1", "note impact 1 " + nameThing, 24, false);
+			splash.animation.addByPrefix("chosen2", "note impact 2 " + nameThing, 24, false);
+
+			splashes.add(splash);
+
+			splash.animation.finishCallback = function(name:String) {
+				remove(splash);
+			};
+		}
+		
 	}
 
 	function tweenCamIn():Void
@@ -1310,35 +1373,9 @@ class PlayState extends MusicBeatState
 								/* SPLASH THING */
 								if(!daNote.isSustainNote)
 								{
-									var splash:FlxSprite = new FlxSprite(spr.x - 80, spr.y - 80);
-									splash.frames = Paths.getSparrowAtlas("ui/noteSplashes", "shared");
-									splash.cameras = [camHUD];
-						
-									var nameThing = "orange";
-						
-									switch(daNote.noteData % 4)
-									{
-										case 0:
-											nameThing = "purple";
-										case 1:
-											nameThing = "blue";
-										case 2:
-											nameThing = "green";
-										case 3:
-											nameThing = "red";
-									}
-						
-									splash.animation.addByPrefix("chosen1", "note impact 1 " + nameThing, 24, false);
-									splash.animation.addByPrefix("chosen2", "note impact 2 " + nameThing, 24, false);
-						
-									add(splash);
-						
+									var splash = splashes.members[daNote.noteData % 4];
 									var numberRandomLolIGuessHeh = FlxG.random.int(1, 2);
-						
-									splash.animation.finishCallback = function(name:String) {
-										splash.destroy();
-									};
-						
+									add(splash);
 									splash.animation.play("chosen" + Std.string(numberRandomLolIGuessHeh));
 								}
 								/* END OF SPLASH */
@@ -1512,47 +1549,13 @@ class PlayState extends MusicBeatState
 
 		if (daRating == "sick")
 		{
-			var splash:FlxSprite = new FlxSprite(playerStrums.members[noteData].x - 80, playerStrums.members[noteData].y - 80);
-			splash.frames = Paths.getSparrowAtlas("ui/noteSplashes", "shared");
-			splash.cameras = [camHUD];
-
-			var nameThing = "orange";
-
-			switch(noteData)
-			{
-				case 0:
-					nameThing = "purple";
-				case 1:
-					nameThing = "blue";
-				case 2:
-					nameThing = "green";
-				case 3:
-					nameThing = "red";
-			}
-
-			splash.animation.addByPrefix("chosen1", "note impact 1 " + nameThing, 24, false);
-			splash.animation.addByPrefix("chosen2", "note impact 2 " + nameThing, 24, false);
-
-			add(splash);
-
+			var splash = splashes.members[noteData + 4];
 			var numberRandomLolIGuessHeh = FlxG.random.int(1, 2);
-
-			splash.animation.finishCallback = function(name:String) {
-				splash.destroy();
-			};
-
+			add(splash);
 			splash.animation.play("chosen" + Std.string(numberRandomLolIGuessHeh));
 		}
 
 		songScore += score;
-
-		/* if (combo > 60)
-				daRating = 'sick';
-			else if (combo > 12)
-				daRating = 'good'
-			else if (combo > 4)
-				daRating = 'bad';
-		 */
 
 		var pixelShitPart1:String = "";
 		var pixelShitPart2:String = '';
