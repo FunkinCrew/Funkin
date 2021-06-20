@@ -1,5 +1,9 @@
 package fmf.songs;
 
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.FlxG;
+import flixel.util.FlxTimer;
 import flixel.FlxObject;
 import flixel.math.FlxPoint;
 import fmf.characters.*;
@@ -11,82 +15,45 @@ import Song.SwagSong;
 // base class execute song data
 class SongPlayer
 {
+	// super class
+	public var playState:PlayState;
 
-	public static function getCurrentSong():SongPlayer
-	{
-		var songPlayer:SongPlayer = null;
-
-		switch (PlayState.CURRENT_SONG)
-		{
-			case 'tutorial':
-				songPlayer = new Tutorial();
-
-			case 'bopeebo' | 'fresh' | 'dadbattle':
-				songPlayer = new DaddyDearest();
-
-			case 'spookeez' | 'south':
-				songPlayer = new Spookez();
-
-			case 'monster':
-				songPlayer = new Monster();
-
-			case 'pico' | 'philly' | 'blammed':
-				songPlayer = new Philly();
-
-			case 'satin-panties' | "high" | "milf":
-				songPlayer = new Mom();
-
-			case 'cocoa' | 'eggnog':
-				songPlayer = new Parents();
-
-			case 'winter-horrorland':
-				songPlayer = new WinterHorrorland();
-
-			case 'senpai':
-				songPlayer = new Senpai();
-
-			case 'roese':
-				songPlayer = new SenpaiAngry();
-
-			case 'thorns':
-				songPlayer = new SenpaiEvil();
-		}
-
-		return songPlayer;
-	}
-
-	public var bf:Boyfriend;
+	// characters shit
+	public var bf:Character;
 	public var gf:Character;
 	public var dad:Character;
 
-	public var playState:PlayState;
+	// dialogue
 	public var dialogue:Array<String>;
 	public var dialogueBox:DialogueBox;
 
-
+	// camera position at start
 	public var camPos:FlxPoint;
 
-	public function new (){}
+	// start countdown
+	var readySprite:FlxSprite;
+	var setSprite:FlxSprite;
+	var goSprite:FlxSprite;
+	var introAlts:Array<String> = ['ready', "set", "go"];
 
-	public function createDialogue(callback:Void->Void):Void
-	{
-		var path = PlayState.CURRENT_SONG + '/' + PlayState.CURRENT_SONG + '-dialogue';
-		dialogue = CoolUtil.coolTextFile(Paths.txt(path));		
-		dialogueBox = new DialogueBox(false, dialogue);
-		dialogueBox.scrollFactor.set();
-		dialogueBox.finishThing = callback;
-		dialogueBox.cameras = [playState.camHUD];
-		trace("Create dialogue at path: " + path);
-	
-	}
 
-	public function showDialogue():Void
-	{
-		
-		playState.add(dialogueBox);
-		trace('whee mai dialgue siht!');
-	}
+	// virtual function
 
+	//empty init
+	public function new(){}
+	// update function
+	public function update(elapsed:Float):Void {}
+	// mid song event update
+	public function midSongEventUpdate(curBeat:Int):Void{} 
+	// for setting camOffset at start
+	public function setCamPosition():Void{}
+	// update camera follow dad depending on song
+	public function updateCamFollowDad():Void{}
+	// update camera follow bf depending on song
+	public function updateCamFollowBF():Void{} 
+
+
+	//initalize function
 	public function init(playState:PlayState):Void
 	{
 		this.playState = playState;
@@ -100,12 +67,13 @@ class SongPlayer
 	{
 		camPos = new FlxPoint(dad.getGraphicMidpoint().x, dad.getGraphicMidpoint().y);
 		setCamPosition();
-
 	}
+
+
+	// what map should we load
 	function loadMap():Void
 	{
 		playState.defaultCamZoom = 0.9;
-		// curStage = 'stage';
 		var bg:FlxSprite = new FlxSprite(-600, -200).loadGraphic(Paths.image('stageback'));
 		bg.antialiasing = true;
 		bg.scrollFactor.set(0.9, 0.9);
@@ -130,6 +98,35 @@ class SongPlayer
 		playState.add(stageCurtains);
 	}
 
+	// camera follow initalize
+	public function applyCamPosition():Void
+	{
+		playState.camFollow = new FlxObject(0, 0, 1, 1);
+		playState.camFollow.setPosition(camPos.x, camPos.y);
+	}
+
+
+	// dialogue handle
+	public function createDialogue(callback:Void->Void):Void
+	{
+		var path = PlayState.CURRENT_SONG + '/' + PlayState.CURRENT_SONG + '-dialogue';
+		dialogue = CoolUtil.coolTextFile(Paths.txt(path));
+		dialogueBox = new DialogueBox(false, dialogue);
+		dialogueBox.scrollFactor.set();
+		dialogueBox.finishThing = callback;
+		dialogueBox.cameras = [playState.camHUD];
+		trace("Create dialogue at path: " + path);
+	}
+
+	public function showDialogue():Void
+	{
+		playState.add(dialogueBox);
+		trace('whee mai dialgue siht!');
+	}
+
+
+
+	// what character should we create
 	function createCharacters():Void
 	{
 		createGF();
@@ -137,45 +134,23 @@ class SongPlayer
 		createDad();
 
 		gf.scrollFactor.set(0.95, 0.95);
-		
+
 		playState.add(gf);
 		playState.add(dad);
 		playState.add(bf);
-
 	}
 
 
+	// bf skin
 	private function getBFTex():Void
 	{
 		var tex = Paths.getSparrowAtlas('characters/BoyFriend_Assets');
 		bf.frames = tex;
-		// tex = null;
 	}
 
-	private function setBF()
-	{
-
-		bf.dance();
-		bf.flipX = !bf.flipX;
-
-		// Doesn't flip for BF, since his are already in the right place???		{
-		var oldRight = bf.animation.getByName('singRIGHT').frames;
-		bf.animation.getByName('singRIGHT').frames = bf.animation.getByName('singLEFT').frames;
-		bf.animation.getByName('singLEFT').frames = oldRight;
-
-		// IF THEY HAVE MISS ANIMATIONS??
-		if (bf.animation.getByName('singRIGHTmiss') != null)
-		{
-			var oldMiss = bf.animation.getByName('singRIGHTmiss').frames;
-			bf.animation.getByName('singRIGHTmiss').frames = bf.animation.getByName('singLEFTmiss').frames;
-			bf.animation.getByName('singLEFTmiss').frames = oldMiss;
-		}
-		
-	}
-
+	// create animation for BF
 	private function createBFAnimations():Void
 	{
-		
 		bf.animation.addByPrefix('idle', 'BF idle dance', 24, false);
 		bf.animation.addByPrefix('singUP', 'BF NOTE UP0', 24, false);
 		bf.animation.addByPrefix('singLEFT', 'BF NOTE LEFT0', 24, false);
@@ -187,14 +162,12 @@ class SongPlayer
 		bf.animation.addByPrefix('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
 		bf.animation.addByPrefix('hey', 'BF HEY', 24, false);
 
-
 		bf.animation.addByPrefix('scared', 'BF idle shaking', 24);
 	}
 
-	
+	// create animation offset for BF
 	private function createBFAnimationOffsets():Void
 	{
-
 		bf.addOffset('idle', -5);
 		bf.addOffset("singUP", -29, 27);
 		bf.addOffset("singRIGHT", -38, -7);
@@ -211,21 +184,44 @@ class SongPlayer
 		bf.flipX = true;
 	}
 
-	function getBFVersion():Boyfriend
+	// set additional animation for BF
+	private function setBF()
+	{
+		bf.dance();
+		bf.flipX = !bf.flipX;
+
+		// Doesn't flip for BF, since his are already in the right place???		{
+		var oldRight = bf.animation.getByName('singRIGHT').frames;
+		bf.animation.getByName('singRIGHT').frames = bf.animation.getByName('singLEFT').frames;
+		bf.animation.getByName('singLEFT').frames = oldRight;
+
+		// IF THEY HAVE MISS ANIMATIONS??
+		if (bf.animation.getByName('singRIGHTmiss') != null)
+		{
+			var oldMiss = bf.animation.getByName('singRIGHTmiss').frames;
+			bf.animation.getByName('singRIGHTmiss').frames = bf.animation.getByName('singLEFTmiss').frames;
+			bf.animation.getByName('singLEFTmiss').frames = oldMiss;
+		}
+	}
+
+	// set BF difference behaviour
+	function getBFVersion():Character
 	{
 		return new Boyfriend(770, 450);
 	}
 
+	// create BF
 	public function createBF():Void
 	{
 		bf = getBFVersion();
 		getBFTex();
 		createBFAnimations();
 		createBFAnimationOffsets();
-
 		setBF();
 	}
 
+
+	// get GF skin
 	private function getGFTex()
 	{
 		var tex = Paths.getSparrowAtlas('gf/GF_tutorial');
@@ -233,6 +229,7 @@ class SongPlayer
 		// tex = null;
 	}
 
+	// create GF animations
 	private function createGFAnimations():Void
 	{
 		var animation = gf.animation;
@@ -250,9 +247,9 @@ class SongPlayer
 
 		gf.animation = animation;
 
-		// animation = null;//alloc
 	}
 
+	// create GF animation offsets
 	private function createGFAnimationOffsets():Void
 	{
 		gf.addOffset('cheer');
@@ -273,28 +270,29 @@ class SongPlayer
 		gf.dance();
 	}
 
+	// get GF version
 	function getGfVersion():Character
 	{
 		return new GF(400, 250);
 	}
 
+	// create GF
 	public function createGF()
 	{
-		gf = new GF(400, 250);
-
+		gf = getGfVersion();
 		getGFTex();
 		createGFAnimations();
 		createGFAnimationOffsets();
-	
 	}
 
+	// get dad skin
 	private function getDadTex()
 	{
 		var tex = Paths.getSparrowAtlas('gf/GF_tutorial');
 		dad.frames = tex;
-		// tex = null;
 	}
 
+	// create dad animation
 	private function createDadAnimations()
 	{
 		var animation = dad.animation;
@@ -311,12 +309,11 @@ class SongPlayer
 		animation.addByPrefix('scared', 'GF FEAR', 24);
 		dad.animation = animation;
 
-		// animation = null;//alloc
 	}
 
+	// create dad animation offsets
 	private function createDadAnimationOffsets()
 	{
-
 		dad.addOffset('cheer');
 		dad.addOffset('sad', -2, -2);
 		dad.addOffset('danceLeft', 0, -9);
@@ -330,16 +327,18 @@ class SongPlayer
 		dad.addOffset('hairFall', 0, -9);
 
 		dad.addOffset('scared', -2, -17);
-				
+
 		dad.playAnim('danceRight');
 		dad.dance();
 	}
 
+	// get dad version
 	function getDadVersion():Character
 	{
 		return new Character(100, 100);
 	}
 
+	// create dad
 	public function createDad()
 	{
 		dad = getDadVersion();
@@ -351,48 +350,100 @@ class SongPlayer
 		dad.y = gf.y;
 	}
 
-	public function update(elapsed:Float):Void
+	//UI Function
+
+	// start countdown
+	// show ready, set, go image and sound
+	public function startCountdown():Void
 	{
+		playState.talking = false;
+		playState.startedCountdown = true;
+		Conductor.songPosition = 0;
+		Conductor.songPosition -= Conductor.crochet * 5;
+
+		var swagCounter:Int = 0;
+		playState.startTimer = new FlxTimer().start(Conductor.crochet / 1000, function(tmr:FlxTimer)
+		{
+			dad.dance();
+			gf.dance();
+			bf.playAnim('idle');
+			switch (swagCounter)
+			{
+				case 0:
+					FlxG.sound.play(Paths.sound('intro3' + introType()), 0.6);
+				case 1:
+					ready();
+				case 2:
+					set();
+				case 3:
+					go();
+				case 4:
+			}
+
+			swagCounter += 1;
+		}, 5);
 	}
 
-	public function midSongEventUpdate(curBeat:Int):Void
+	// get alt suffix for countdown sound
+	// current we have default and school suffix
+	private function introType():String { return ""; }
+
+	// countdown ready
+	private function ready()
 	{
-		
+		readySprite = new FlxSprite().loadGraphic(Paths.image(introAlts[0]));
+		readySprite.scrollFactor.set();
+		readySprite.updateHitbox();
+		readySprite.screenCenter();
+		playState.add(readySprite);
+		FlxTween.tween(readySprite, {y: readySprite.y += 100, alpha: 0}, Conductor.crochet / 1000, {
+			ease: FlxEase.cubeInOut,
+			onComplete: function(twn:FlxTween)
+			{
+				readySprite.destroy();
+			}
+		});
+		FlxG.sound.play(Paths.sound('intro2' + introType()), 0.6);
 	}
 
-	public function setCamPosition():Void
+	// countdown set
+	private function set()
 	{
+		setSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[1]));
+		setSprite.scrollFactor.set();
+		setSprite.screenCenter();
+		playState.add(setSprite);
+		FlxTween.tween(setSprite, {y: setSprite.y += 100, alpha: 0}, Conductor.crochet / 1000, {
+			ease: FlxEase.cubeInOut,
+			onComplete: function(twn:FlxTween)
+			{
+				setSprite.destroy();
+			}
+		});
+		FlxG.sound.play(Paths.sound('intro1' + introType()), 0.6);
 	}
-
-	public function updateCamFollowDad():Void
+	
+	// countdown go
+	private function go()
 	{
+		goSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[2]));
+		goSprite.scrollFactor.set();
+		goSprite.updateHitbox();
+		goSprite.screenCenter();
+		playState.add(goSprite);
+
+
+		FlxTween.tween(goSprite, {y: goSprite.y += 100, alpha: 0}, Conductor.crochet / 1000, {
+			ease: FlxEase.cubeInOut,
+			onComplete: function(twn:FlxTween)
+			{
+				goSprite.destroy();
+			}
+		});
+
+		FlxG.sound.play(Paths.sound('introGo' + introType()), 0.6);
+		playState.isGameStarted = true;
+
 	}
-	public function updateCamFollowBF():Void
-	{
-		// switch (curStage)
-		// {
-		// 	case 'limo':
-		// 		camFollow.x = boyfriend().getMidpoint().x - 300;
-		// 	case 'mall':
-		// 		camFollow.y = boyfriend().getMidpoint().y - 200;
-		// 	case 'school':
-		// 		camFollow.x = boyfriend().getMidpoint().x - 200;
-		// 		camFollow.y = boyfriend().getMidpoint().y - 200;
-		// 	case 'schoolEvil':
-		// 		camFollow.x = boyfriend().getMidpoint().x - 200;
-		// 		camFollow.y = boyfriend().getMidpoint().y - 200;
-		// }
-	}
-
-	public function applyCamPosition():Void
-	{
-		playState.camFollow = new FlxObject(0, 0, 1, 1);
-		playState.camFollow.setPosition(camPos.x, camPos.y);
-	}
-
-
-
-
-
 
 }

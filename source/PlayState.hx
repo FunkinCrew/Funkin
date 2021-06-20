@@ -120,7 +120,7 @@ class PlayState extends MusicBeatState
 		return songPlayer.gf;
 	}
 
-	public static function boyfriend():Boyfriend
+	public static function boyfriend():Character
 	{
 		return songPlayer.bf;
 	}
@@ -189,7 +189,7 @@ class PlayState extends MusicBeatState
 
 	var wiggleShit:WiggleEffect = new WiggleEffect();
 
-	var talking:Bool = true;
+	public var talking:Bool = true;
 	var songScore:Int = 0;
 	var songScoreDef:Int = 0;
 	var scoreTxt:FlxText;
@@ -362,7 +362,7 @@ class PlayState extends MusicBeatState
 		trace("cur song shit: " + CURRENT_SONG);
 
 		
-		songPlayer = SongPlayer.getCurrentSong();
+		songPlayer = SongManager.getCurrentSong();
 
 		//hardcode this shit
 		if(CURRENT_SONG == 'sepai' || CURRENT_SONG == 'roses')
@@ -580,7 +580,7 @@ class PlayState extends MusicBeatState
 	var mcontrols:Mobilecontrols; 
 	var botPlayShit:Bool;
 
-	var startTimer:FlxTimer;
+	public var startTimer:FlxTimer;
 	var perfectMode:Bool = false;
 
 	var luaWiggles:Array<WiggleEffect> = [];
@@ -604,101 +604,7 @@ class PlayState extends MusicBeatState
 		}
 		#end
 
-		talking = false;
-		startedCountdown = true;
-		Conductor.songPosition = 0;
-		Conductor.songPosition -= Conductor.crochet * 5;
-
-		var swagCounter:Int = 0;
-
-		startTimer = new FlxTimer().start(Conductor.crochet / 1000, function(tmr:FlxTimer)
-		{
-			dad().dance();
-			gf().dance();
-			boyfriend().playAnim('idle');
-
-			var introAssets:Map<String, Array<String>> = new Map<String, Array<String>>();
-			introAssets.set('default', ['ready', "set", "go"]);
-			introAssets.set('school', ['weeb/pixelUI/ready-pixel', 'weeb/pixelUI/set-pixel', 'weeb/pixelUI/date-pixel']);
-			introAssets.set('schoolEvil', ['weeb/pixelUI/ready-pixel', 'weeb/pixelUI/set-pixel', 'weeb/pixelUI/date-pixel']);
-
-			var introAlts:Array<String> = introAssets.get('default');
-			var altSuffix:String = "";
-
-			for (value in introAssets.keys())
-			{
-				if (value == curStage)
-				{
-					introAlts = introAssets.get(value);
-					altSuffix = '-pixel';
-				}
-			}
-
-			switch (swagCounter)
-
-			{
-				case 0:
-					FlxG.sound.play(Paths.sound('intro3' + altSuffix), 0.6);
-				case 1:
-					var ready:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[0]));
-					ready.scrollFactor.set();
-					ready.updateHitbox();
-
-					if (curStage.startsWith('school'))
-						ready.setGraphicSize(Std.int(ready.width * daPixelZoom));
-
-					ready.screenCenter();
-					add(ready);
-					FlxTween.tween(ready, {y: ready.y += 100, alpha: 0}, Conductor.crochet / 1000, {
-						ease: FlxEase.cubeInOut,
-						onComplete: function(twn:FlxTween)
-						{
-							ready.destroy();
-						}
-					});
-					FlxG.sound.play(Paths.sound('intro2' + altSuffix), 0.6);
-				case 2:
-					var set:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[1]));
-					set.scrollFactor.set();
-
-					if (curStage.startsWith('school'))
-						set.setGraphicSize(Std.int(set.width * daPixelZoom));
-
-					set.screenCenter();
-					add(set);
-					FlxTween.tween(set, {y: set.y += 100, alpha: 0}, Conductor.crochet / 1000, {
-						ease: FlxEase.cubeInOut,
-						onComplete: function(twn:FlxTween)
-						{
-							set.destroy();
-						}
-					});
-					FlxG.sound.play(Paths.sound('intro1' + altSuffix), 0.6);
-				case 3:
-					var go:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[2]));
-					go.scrollFactor.set();
-
-					if (curStage.startsWith('school'))
-						go.setGraphicSize(Std.int(go.width * daPixelZoom));
-
-					go.updateHitbox();
-
-					go.screenCenter();
-					add(go);
-					FlxTween.tween(go, {y: go.y += 100, alpha: 0}, Conductor.crochet / 1000, {
-						ease: FlxEase.cubeInOut,
-						onComplete: function(twn:FlxTween)
-						{
-							go.destroy();
-						}
-					});
-					FlxG.sound.play(Paths.sound('introGo' + altSuffix), 0.6);
-				case 4:
-			}
-
-			swagCounter += 1;
-			// generateSong('fresh');
-		}, 5);
+		songPlayer.startCountdown();
 	}
 
 	var previousFrameTime:Int = 0;
@@ -1174,7 +1080,7 @@ class PlayState extends MusicBeatState
 	}
 
 	private var paused:Bool = false;
-	var startedCountdown:Bool = false;
+	public var startedCountdown:Bool = false;
 	var canPause:Bool = true;
 	var nps:Int = 0;
 	var maxNPS:Int = 0;
@@ -1474,7 +1380,6 @@ class PlayState extends MusicBeatState
 		if (health <= 0)
 		{
 			boyfriend().stunned = true;
-
 			persistentUpdate = false;
 			persistentDraw = false;
 			paused = true;
@@ -1661,9 +1566,7 @@ class PlayState extends MusicBeatState
 
 				if (!daNote.mustPress && daNote.wasGoodHit)
 				{
-					if (SONG.song != 'Tutorial')
-						camZooming = true;
-
+					camZooming = true;
 					var altAnim:String = "";
 
 					if (SONG.notes[Math.floor(curStep / 16)] != null)
@@ -2231,6 +2134,7 @@ class PlayState extends MusicBeatState
 	var downHold:Bool = false;
 	var rightHold:Bool = false;
 	var leftHold:Bool = false;
+	public var isGameStarted:Bool;
 
 	private function keyShit():Void // I've invested in emma stocks
 	{

@@ -187,11 +187,11 @@ class Senpai extends SongPlayer
 	}
 
 	override function setCamPosition()
-	{	
+	{
 		camPos.x = bf.x;
 		camPos.y = bf.y;
-
 	}
+
 	override function midSongEventUpdate(curBeat:Int)
 	{
 		if (FlxG.save.data.distractions)
@@ -208,6 +208,35 @@ class Senpai extends SongPlayer
 	{
 		playState.camFollow.x = bf.getMidpoint().x - 200;
 		playState.camFollow.y = bf.getMidpoint().y - 200;
+	}
+
+	private override function introType():String
+	{
+		return "-pixel";
+	}
+
+	override function initVariables()
+	{
+		super.initVariables();
+		introAlts = ['weeb/pixelUI/ready-pixel', 'weeb/pixelUI/set-pixel', 'weeb/pixelUI/date-pixel'];
+	}
+
+	override function ready()
+	{
+		super.ready();
+		readySprite.setGraphicSize(Std.int(readySprite.width * PlayState.daPixelZoom));
+	}
+
+	override function set()
+	{
+		super.set();
+		setSprite.setGraphicSize(Std.int(setSprite.width * PlayState.daPixelZoom));
+	}
+
+	override function go()
+	{
+		super.go();
+		goSprite.setGraphicSize(Std.int(goSprite.width * PlayState.daPixelZoom));
 	}
 
 	override function createCharacters()

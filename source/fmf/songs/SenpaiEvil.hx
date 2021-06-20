@@ -130,6 +130,12 @@ class SenpaiEvil extends Senpai
 		playState.camFollow.y = bf.getMidpoint().y - 200;
 	}
 
+	override function initVariables()
+	{
+		super.initVariables();
+		introAlts = ['weeb/pixelUI/ready-pixel', 'weeb/pixelUI/set-pixel', 'weeb/pixelUI/date-pixel'];
+	}
+
 	override function createCharacters()
 	{
 		super.createCharacters();

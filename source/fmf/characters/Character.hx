@@ -12,11 +12,8 @@ class Character extends FlxSprite
 {
 	public var animOffsets:Map<String, Array<Dynamic>>;
 	public var debugMode:Bool = false;
-
-	// public var isPlayer:Bool = false;
-	// public var curCharacter:String = 'bf';
-
 	public var holdTimer:Float = 0;
+	public var stunned:Bool;
 
 	public function new(x:Float, y:Float)
 	{
