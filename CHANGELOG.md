@@ -6,9 +6,11 @@ All notable changes will be documented in this file.
 - Numbers are visible when using bold alphabet now.
 - A stage editor / stage viewer.
 - Note splashes when you hit a sick!
+- Millisecond timer when hitting notes.
 ### Changed
 - Slightly better input.
 - Organized classes into packages.
+- Rating system now considers negative milliseconds differently from positive milliseconds.
 ### Fixed
 - Placeholder
 
