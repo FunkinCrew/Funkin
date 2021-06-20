@@ -6,7 +6,7 @@ import utilities.CoolUtil;
 import ui.HealthIcon;
 import ui.Alphabet;
 #if desktop
-import Discord.DiscordClient;
+import utilities.Discord.DiscordClient;
 #end
 import flash.text.TextField;
 import flixel.FlxG;

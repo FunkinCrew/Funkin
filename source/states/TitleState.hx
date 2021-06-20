@@ -5,7 +5,7 @@ import game.Highscore;
 import utilities.PlayerSettings;
 import ui.Alphabet;
 #if desktop
-import Discord.DiscordClient;
+import utilities.Discord.DiscordClient;
 import sys.thread.Thread;
 #end
 import flixel.FlxG;

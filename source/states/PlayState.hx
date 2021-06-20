@@ -6,7 +6,7 @@ import flixel.math.FlxRandom;
 import debuggers.AnimationDebug;
 import openfl.display.Stage;
 #if desktop
-import Discord.DiscordClient;
+import utilities.Discord.DiscordClient;
 #end
 import game.Section.SwagSection;
 import game.Song.SwagSong;

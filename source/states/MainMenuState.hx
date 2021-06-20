@@ -2,7 +2,7 @@ package states;
 
 import lime.utils.Assets;
 #if desktop
-import Discord.DiscordClient;
+import utilities.Discord.DiscordClient;
 #end
 import flixel.FlxG;
 import flixel.FlxObject;

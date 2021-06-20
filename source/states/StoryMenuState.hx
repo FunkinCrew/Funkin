@@ -3,7 +3,7 @@ package states;
 import ui.MenuCharacter;
 import ui.MenuItem;
 #if desktop
-import Discord.DiscordClient;
+import utilities.Discord.DiscordClient;
 #end
 import flixel.FlxG;
 import flixel.FlxSprite;
