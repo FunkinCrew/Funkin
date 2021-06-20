@@ -2697,7 +2697,7 @@ class PlayState extends MusicBeatState
 				if (FlxG.save.data.scoreScreen)
 					openSubState(new ResultsScreen());
 				else
-					FlxG.switchState(new PlayState());
+					FlxG.switchState(new FreeplayState());
 			}
 		}
 	}
