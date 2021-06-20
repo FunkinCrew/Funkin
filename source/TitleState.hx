@@ -163,7 +163,7 @@ class TitleState extends MusicBeatState
 			FlxG.sound.music.fadeIn(4, 0, 0.7);
 		}
 
-		version = "Leather's Funkin' Engine" + " Release v" + Application.current.meta.get('version');
+		version = "Leather's Funkin' Engine" + " Development Build v" + Application.current.meta.get('version');
 
 		Conductor.changeBPM(102);
 		persistentUpdate = true;
