@@ -1,5 +1,6 @@
 package;
 
+import ratings.Ratings;
 import debuggers.ChartingState;
 import flixel.math.FlxRandom;
 import debuggers.AnimationDebug;
@@ -1515,25 +1516,9 @@ class PlayState extends MusicBeatState
 		//
 
 		var rating:FlxSprite = new FlxSprite();
-		var score:Int = 350;
 
-		var daRating:String = "sick";
-
-		if (noteDiff > Conductor.safeZoneOffset * 0.9)
-		{
-			daRating = 'shit';
-			score = 50;
-		}
-		else if (noteDiff > Conductor.safeZoneOffset * 0.75)
-		{
-			daRating = 'bad';
-			score = 100;
-		}
-		else if (noteDiff > Conductor.safeZoneOffset * 0.2)
-		{
-			daRating = 'good';
-			score = 200;
-		}
+		var daRating:String = Ratings.getRating(noteDiff);
+		var score:Int = Ratings.getScore(daRating);
 
 		if (daRating == "sick")
 		{
@@ -1748,11 +1733,13 @@ class PlayState extends MusicBeatState
 							else
 							{
 								var inIgnoreList:Bool = false;
+
 								for (shit in 0...ignoreList.length)
 								{
 									if (controlArray[ignoreList[shit]])
 										inIgnoreList = true;
 								}
+
 								if (!inIgnoreList)
 									badNoteCheck();
 							}
@@ -1901,19 +1888,79 @@ class PlayState extends MusicBeatState
 		var downP = controls.DOWN_P;
 		var leftP = controls.LEFT_P;
 
-		/*
+		var isNote = false;
+
 		if (leftP)
-			noteMiss(0);
+		{
+			notes.forEachAlive(function(daNote:Note)
+			{
+				if (daNote.canBeHit && daNote.mustPress && !daNote.isSustainNote)
+				{
+					if (daNote.noteData % 4 == 0)
+					{
+						isNote = true;
+						goodNoteHit(daNote);
+					}
+				}
+			});
+			
+			if(!isNote)
+				noteMiss(0);
+		}
 
 		if (downP)
-			noteMiss(1);
+		{
+			notes.forEachAlive(function(daNote:Note)
+			{
+				if (daNote.canBeHit && daNote.mustPress && !daNote.isSustainNote)
+				{
+					if (daNote.noteData % 4 == 1)
+					{
+						isNote = true;
+						goodNoteHit(daNote);
+					}
+				}
+			});
+			
+			if(!isNote)
+				noteMiss(1);
+		}
 
 		if (upP)
-			noteMiss(2);
+		{
+			notes.forEachAlive(function(daNote:Note)
+			{
+				if (daNote.canBeHit && daNote.mustPress && !daNote.isSustainNote)
+				{
+					if (daNote.noteData % 4 == 2)
+					{
+						isNote = true;
+						goodNoteHit(daNote);
+					}
+				}
+			});
+			
+			if(!isNote)
+				noteMiss(2);
+		}
 		
 		if (rightP)
-			noteMiss(3);
-		*/
+		{
+			notes.forEachAlive(function(daNote:Note)
+			{
+				if (daNote.canBeHit && daNote.mustPress && !daNote.isSustainNote)
+				{
+					if (daNote.noteData % 4 == 3)
+					{
+						isNote = true;
+						goodNoteHit(daNote);
+					}
+				}
+			});
+			
+			if(!isNote)
+				noteMiss(3);
+		}
 	}
 
 	function noteCheck(keyP:Bool, note:Note):Void
