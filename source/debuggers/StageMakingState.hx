@@ -1,5 +1,11 @@
 package debuggers;
 
+import utilities.PlayerSettings;
+import states.MainMenuState;
+import utilities.Controls;
+import states.MusicBeatState;
+import utilities.CoolUtil;
+import game.StageGroup;
 import flixel.FlxSprite;
 import flixel.util.FlxColor;
 import flixel.text.FlxText;
@@ -21,6 +27,11 @@ import flixel.FlxState;
 
 class StageMakingState extends FlxState
 {
+    private var controls(get, never):Controls;
+
+    inline function get_controls():Controls
+		return PlayerSettings.player1.controls;
+
     /* STAGE STUFF */
     public var stages:Array<String>;
 
@@ -104,6 +115,11 @@ class StageMakingState extends FlxState
         if(FlxG.keys.justPressed.Q)
         {
             stageCam.zoom -= 0.1;
+        }
+
+        if(controls.ACCEPT)
+        {
+            FlxG.switchState(new MainMenuState());
         }
 
         /*
