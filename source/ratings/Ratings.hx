@@ -3,8 +3,10 @@ package ratings;
 class Ratings
 {
     private static var timings:Array<Dynamic> = [
-        [50, 'sick'],
-        [100, 'good'],
+        [-50, 'bad'],
+        [-45, 'good'],
+        [30, 'sick'],
+        [90, 'good'],
         [125, 'bad'],
         [1000, 'shit'],
     ];
@@ -13,7 +15,7 @@ class Ratings
         ['sick', 350],
         ['good', 200],
         ['bad', 100],
-        ['shit', 50]
+        ['shit', -50]
     ];
 
     public static function getRating(time:Float)

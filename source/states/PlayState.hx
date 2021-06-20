@@ -162,7 +162,11 @@ class PlayState extends MusicBeatState
 		FlxG.cameras.reset(camGame);
 		FlxG.cameras.add(camHUD);
 
-        FlxCamera.defaultCameras = [camGame];
+		FlxG.cameras.setDefaultDrawTarget(camGame, true);
+		
+		// bro i wish i could just comment this out and replace it with whats above (since this is deprecated in haxeflixel 4.9.0)
+		// but if we dont do this the thing doesnt fucking work AAAAAAAAAAAAAAA
+    	FlxCamera.defaultCameras = [camGame];
 		
 		persistentUpdate = true;
 		persistentDraw = true;
@@ -352,7 +356,6 @@ class PlayState extends MusicBeatState
 		add(camFollow);
 
 		FlxG.camera.follow(camFollow, LOCKON, 0.04);
-		// FlxG.camera.setScrollBounds(0, FlxG.width, 0, FlxG.height);
 		FlxG.camera.zoom = defaultCamZoom;
 		FlxG.camera.focusOn(camFollow.getPosition());
 
@@ -1531,7 +1534,7 @@ class PlayState extends MusicBeatState
 
 	private function popUpScore(strumtime:Float, noteData:Int):Void
 	{
-		var noteDiff:Float = Math.abs(strumtime - Conductor.songPosition);
+		var noteDiff:Float = strumtime - Conductor.songPosition;
 		// boyfriend.playAnim('hey');
 		vocals.volume = 1;
 
@@ -1540,7 +1543,6 @@ class PlayState extends MusicBeatState
 		var coolText:FlxText = new FlxText(0, 0, 0, placement, 32);
 		coolText.screenCenter();
 		coolText.x = FlxG.width * 0.55;
-		//
 
 		var rating:FlxSprite = new FlxSprite();
 
@@ -1568,17 +1570,26 @@ class PlayState extends MusicBeatState
 
 		rating.loadGraphic(Paths.image(pixelShitPart1 + daRating + pixelShitPart2, 'shared'));
 		rating.screenCenter();
-		rating.x = coolText.x - 40;
 		rating.y -= 60;
 		rating.acceleration.y = 550;
 		rating.velocity.y -= FlxG.random.int(140, 175);
 		rating.velocity.x -= FlxG.random.int(0, 10);
 
+		var col = new FlxText(rating.x, rating.y + 80, 0, noteDiff + " ms = " + daRating, 24);
+
+		if(FlxG.save.data.msText)
+		{
+			col.cameras = [camHUD];
+			col.color = FlxColor.GREEN;
+			col.borderStyle = FlxTextBorderStyle.OUTLINE;
+			col.borderSize = 5;
+			add(col);
+		}
+
 		rating.cameras = [camHUD];
 
 		var comboSpr:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'combo' + pixelShitPart2, 'shared'));
 		comboSpr.screenCenter();
-		comboSpr.x = coolText.x;
 		comboSpr.acceleration.y = 600;
 		comboSpr.velocity.y -= 150;
 
@@ -1613,7 +1624,7 @@ class PlayState extends MusicBeatState
 		{
 			var numScore:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'num' + Std.int(i) + pixelShitPart2, 'shared'));
 			numScore.screenCenter();
-			numScore.x = coolText.x + (43 * daLoop) - 90;
+			numScore.x += (43 * daLoop) - 90;
 			numScore.y += 80;
 
 			if (!curStage.contains('school'))
@@ -1658,6 +1669,13 @@ class PlayState extends MusicBeatState
 			startDelay: Conductor.crochet * 0.001
 		});
 
+		if(col != null)
+		{
+			FlxTween.tween(col, {alpha: 0}, 0.2, {
+				startDelay: Conductor.crochet * 0.0005
+			});
+		}
+
 		FlxTween.tween(comboSpr, {alpha: 0}, 0.2, {
 			onComplete: function(tween:FlxTween)
 			{
@@ -1665,6 +1683,9 @@ class PlayState extends MusicBeatState
 				comboSpr.destroy();
 
 				rating.destroy();
+
+				if(col != null)
+					col.destroy();
 			},
 			startDelay: Conductor.crochet * 0.001
 		});

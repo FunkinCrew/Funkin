@@ -209,7 +209,6 @@ class OptionsMenu extends MusicBeatState
 						FlxG.sound.music.stop();
 						LoadingState.loadAndSwitchState(new AnimationDebug('dad'));
 					}
-
 					
 					case 'Stage Editor':
 					{
@@ -220,7 +219,6 @@ class OptionsMenu extends MusicBeatState
 
 						LoadingState.loadAndSwitchState(new StageMakingState('stage'), true);
 					}
-					
 
 					case 'Sound':
 					{
@@ -232,8 +230,21 @@ class OptionsMenu extends MusicBeatState
 					case 'Graphics':
 					{
 						curSelected = 0;
-						textMenuItems = ["Back", "Opponent Side Glow"];
+						textMenuItems = ["Back", "Opponent Side Glow", "Accuracy Text"];
 						spawnInTexts();
+					}
+
+					case 'Accuracy Text':
+					{
+						inMenu = false;
+						
+						if(FlxG.save.data.msText == null)
+						{
+							FlxG.save.data.msText = false;
+						}
+
+						FlxG.save.data.msText = !FlxG.save.data.msText;
+						FlxG.save.flush();
 					}
 
 					case 'Old Title':

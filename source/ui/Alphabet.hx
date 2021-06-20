@@ -48,8 +48,6 @@ class Alphabet extends FlxSpriteGroup
 		this.text = text;
 		isBold = bold;
 
-		trace(this.text);
-
 		if (text != "")
 		{
 			if (typed)
