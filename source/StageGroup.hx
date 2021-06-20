@@ -1,5 +1,7 @@
 package;
 
+import backgrounds.BackgroundGirls;
+import backgrounds.BackgroundDancer;
 import flixel.addons.effects.FlxTrail;
 import flixel.util.FlxTimer;
 import flixel.system.FlxSound;
