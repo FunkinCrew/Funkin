@@ -252,4 +252,75 @@ class Senpai extends SongPlayer
 		gf.x += 150;
 		gf.y += 150;
 	}
+
+	public override function getArrowSkin(i:Int, babyArrow:FlxSprite)
+	{
+		babyArrow.loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels'), true, 17, 17);
+		babyArrow.animation.add('green', [6]);
+		babyArrow.animation.add('red', [7]);
+		babyArrow.animation.add('blue', [5]);
+		babyArrow.animation.add('purplel', [4]);
+
+		babyArrow.setGraphicSize(Std.int(babyArrow.width * PlayState.daPixelZoom));
+		babyArrow.updateHitbox();
+		babyArrow.antialiasing = false;
+
+		switch (Math.abs(i))
+		{
+			case 0:
+				babyArrow.x += Note.swagWidth * 0;
+				babyArrow.animation.add('static', [0]);
+				babyArrow.animation.add('pressed', [4, 8], 12, false);
+				babyArrow.animation.add('confirm', [12, 16], 24, false);
+			case 1:
+				babyArrow.x += Note.swagWidth * 1;
+				babyArrow.animation.add('static', [1]);
+				babyArrow.animation.add('pressed', [5, 9], 12, false);
+				babyArrow.animation.add('confirm', [13, 17], 24, false);
+			case 2:
+				babyArrow.x += Note.swagWidth * 2;
+				babyArrow.animation.add('static', [2]);
+				babyArrow.animation.add('pressed', [6, 10], 12, false);
+				babyArrow.animation.add('confirm', [14, 18], 12, false);
+			case 3:
+				babyArrow.x += Note.swagWidth * 3;
+				babyArrow.animation.add('static', [3]);
+				babyArrow.animation.add('pressed', [7, 11], 12, false);
+				babyArrow.animation.add('confirm', [15, 19], 24, false);
+		}
+	}
+
+	public override function getNoteSkin(note:Note)
+	{
+		note.loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels','week6'), true, 17, 17);
+
+
+		var animation = note.animation;
+
+		animation.add('greenScroll', [6]);
+		animation.add('redScroll', [7]);
+		animation.add('blueScroll', [5]);
+		animation.add('purpleScroll', [4]);
+
+		if (note.isSustainNote)
+		{
+			note.loadGraphic(Paths.image('weeb/pixelUI/arrowEnds','week6'), true, 7, 6);
+
+			animation.add('purpleholdend', [4]);
+			animation.add('greenholdend', [6]);
+			animation.add('redholdend', [7]);
+			animation.add('blueholdend', [5]);
+
+			animation.add('purplehold', [0]);
+			animation.add('greenhold', [2]);
+			animation.add('redhold', [3]);
+			animation.add('bluehold', [1]);
+		}
+
+		note.animation = animation;
+		note.setGraphicSize(Std.int(note.width * PlayState.daPixelZoom));
+		note.updateHitbox();
+	}
+
 }
+

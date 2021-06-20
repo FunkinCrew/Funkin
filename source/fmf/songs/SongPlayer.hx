@@ -446,4 +446,67 @@ class SongPlayer
 
 	}
 
+	//get arrow skin depending on song
+	public function getArrowSkin(i:Int, babyArrow:FlxSprite)
+	{
+		babyArrow.frames = Paths.getSparrowAtlas('NOTE_assets');
+		babyArrow.animation.addByPrefix('green', 'arrowUP');
+		babyArrow.animation.addByPrefix('blue', 'arrowDOWN');
+		babyArrow.animation.addByPrefix('purple', 'arrowLEFT');
+		babyArrow.animation.addByPrefix('red', 'arrowRIGHT');
+
+		babyArrow.antialiasing = true;
+		babyArrow.setGraphicSize(Std.int(babyArrow.width * 0.7));
+
+		switch (Math.abs(i))
+		{
+			case 0:
+				babyArrow.x += Note.swagWidth * 0;
+				babyArrow.animation.addByPrefix('static', 'arrowLEFT');
+				babyArrow.animation.addByPrefix('pressed', 'left press', 24, false);
+				babyArrow.animation.addByPrefix('confirm', 'left confirm', 24, false);
+			case 1:
+				babyArrow.x += Note.swagWidth * 1;
+				babyArrow.animation.addByPrefix('static', 'arrowDOWN');
+				babyArrow.animation.addByPrefix('pressed', 'down press', 24, false);
+				babyArrow.animation.addByPrefix('confirm', 'down confirm', 24, false);
+			case 2:
+				babyArrow.x += Note.swagWidth * 2;
+				babyArrow.animation.addByPrefix('static', 'arrowUP');
+				babyArrow.animation.addByPrefix('pressed', 'up press', 24, false);
+				babyArrow.animation.addByPrefix('confirm', 'up confirm', 24, false);
+			case 3:
+				babyArrow.x += Note.swagWidth * 3;
+				babyArrow.animation.addByPrefix('static', 'arrowRIGHT');
+				babyArrow.animation.addByPrefix('pressed', 'right press', 24, false);
+				babyArrow.animation.addByPrefix('confirm', 'right confirm', 24, false);
+		}
+
+	}
+	
+	//get note skin depending on song
+	public function getNoteSkin(note:Note)
+	{
+		note.frames = Paths.getSparrowAtlas('NOTE_assets');
+
+		note.animation.addByPrefix('greenScroll', 'green0');
+		note.animation.addByPrefix('redScroll', 'red0');
+		note.animation.addByPrefix('blueScroll', 'blue0');
+		note.animation.addByPrefix('purpleScroll', 'purple0');
+
+		note.animation.addByPrefix('purpleholdend', 'pruple end hold');
+		note.animation.addByPrefix('greenholdend', 'green hold end');
+		note.animation.addByPrefix('redholdend', 'red hold end');
+		note.animation.addByPrefix('blueholdend', 'blue hold end');
+
+		note.animation.addByPrefix('purplehold', 'purple hold piece');
+		note.animation.addByPrefix('greenhold', 'green hold piece');
+		note.animation.addByPrefix('redhold', 'red hold piece');
+		note.animation.addByPrefix('bluehold', 'blue hold piece');
+
+		note.setGraphicSize(Std.int(note.width * 0.7));
+		note.updateHitbox();
+		note.antialiasing = true;
+	}
+
 }
