@@ -1,5 +1,6 @@
 package;
 
+import debuggers.ChartingState;
 import flixel.math.FlxRandom;
 import debuggers.AnimationDebug;
 import openfl.display.Stage;

@@ -1,4 +1,4 @@
-package;
+package debuggers;
 
 import flixel.FlxSprite;
 import flixel.util.FlxColor;

@@ -1,5 +1,7 @@
 package;
 
+import debuggers.ChartingState;
+import debuggers.StageMakingState;
 import flixel.system.FlxSound;
 import debuggers.AnimationDebug;
 import Controls.Control;

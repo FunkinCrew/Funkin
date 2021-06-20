@@ -1,4 +1,4 @@
-package;
+package debuggers;
 
 import Conductor.BPMChangeEvent;
 import Section.SwagSection;
