@@ -3,11 +3,12 @@ All notable changes will be documented in this file.
 
 ## [0.2] - ?/?/?
 ### Added
-- Numbers into Alphabet.
-- Stage Editor.
-- Note Splashes.
+- Numbers are visible when using bold alphabet now.
+- A stage editor / stage viewer.
+- Note splashes when you hit a sick!
 ### Changed
-- Slightly Better Input.
+- Slightly better input.
+- Organized classes into packages.
 ### Fixed
 - Placeholder
 
