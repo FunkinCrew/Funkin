@@ -252,15 +252,7 @@ class FreeplayState extends MusicBeatState
 		combo = Highscore.getCombo(songHighscore, curDifficulty);
 		#end
 
-		switch (curDifficulty)
-		{
-			case 0:
-				diffText.text = "EASY";
-			case 1:
-				diffText.text = 'NORMAL';
-			case 2:
-				diffText.text = "HARD";
-		}
+		diffText.text = CoolUtil.difficultyFromInt(curDifficulty).toUpperCase();
 	}
 
 	function changeSelection(change:Int = 0)
