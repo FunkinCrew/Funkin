@@ -212,6 +212,7 @@ class PlayState extends MusicBeatState
 	private var botPlayState:FlxText;
 	// Replay shit
 	private var saveNotes:Array<Dynamic> = [];
+	private var saveJudge:Array<String> = [];
 
 	public static var highestCombo:Int = 0;
 
@@ -2563,7 +2564,7 @@ class PlayState extends MusicBeatState
 			campaignMisses = misses;
 
 		if (!loadRep)
-			rep.SaveReplay(saveNotes);
+			rep.SaveReplay(saveNotes, saveJudge);
 		else
 		{
 			PlayStateChangeables.botPlay = false;
@@ -3223,6 +3224,17 @@ class PlayState extends MusicBeatState
 					return null;
 				}
 
+			public function findByTimeIndex(time:Float):Int
+				{
+					for (i in 0...rep.replay.songNotes.length)
+					{
+						//trace('checking ' + Math.round(i[0]) + ' against ' + Math.round(time));
+						if (rep.replay.songNotes[i][0] == time)
+							return i;
+					}
+					return -1;
+				}
+
 			public var fuckingVolume:Float = 1;
 			public var useVideo = false;
 
@@ -3322,11 +3334,17 @@ class PlayState extends MusicBeatState
 			if (daNote != null)
 			{
 				if (!loadRep)
+				{
 					saveNotes.push([daNote.strumTime,0,direction,166 * Math.floor((PlayState.rep.replay.sf / 60) * 1000) / 166]);
+					saveJudge.push("miss");
+				}
 			}
 			else
 				if (!loadRep)
+				{
 					saveNotes.push([Conductor.songPosition,0,direction,166 * Math.floor((PlayState.rep.replay.sf / 60) * 1000) / 166]);
+					saveJudge.push("miss");
+				}
 
 			//var noteDiff:Float = Math.abs(daNote.strumTime - Conductor.songPosition);
 			//var wife:Float = EtternaFunctions.wife3(noteDiff, FlxG.save.data.etternaMode ? 1 : 1.7);
@@ -3468,9 +3486,12 @@ class PlayState extends MusicBeatState
 				var noteDiff:Float = -(note.strumTime - Conductor.songPosition);
 
 				if(loadRep)
+				{
 					noteDiff = findByTime(note.strumTime)[3];
-
-				note.rating = Ratings.CalculateRating(noteDiff);
+					note.rating = rep.replay.songJudgements[findByTimeIndex(note.strumTime)];
+				}
+				else
+					note.rating = Ratings.CalculateRating(noteDiff);
 
 				if (note.rating == "miss")
 					return;	
@@ -3522,6 +3543,7 @@ class PlayState extends MusicBeatState
 							array[1] = -1;
 						trace('pushing ' + array[0]);
 						saveNotes.push(array);
+						saveJudge.push(note.rating);
 					}
 					
 					playerStrums.forEach(function(spr:FlxSprite)
