@@ -214,10 +214,8 @@ class OptionsMenu extends MusicBeatState
 				if (isCat)
 				{
 					if (currentSelectedCat.getOptions()[curSelected].press()) {
-						grpControls.remove(grpControls.members[curSelected]);
-						var ctrl:Alphabet = new Alphabet(0, (70 * curSelected) + 30, currentSelectedCat.getOptions()[curSelected].getDisplay(), true, false);
-						ctrl.isMenuItem = true;
-						grpControls.add(ctrl);
+						grpControls.members[curSelected].reType(currentSelectedCat.getOptions()[curSelected].getDisplay());
+						trace(currentSelectedCat.getOptions()[curSelected].getDisplay());
 					}
 				}
 				else
@@ -236,7 +234,7 @@ class OptionsMenu extends MusicBeatState
 					curSelected = 0;
 				}
 				
-				changeSelection(curSelected);
+				changeSelection();
 			}
 		}
 		FlxG.save.flush();

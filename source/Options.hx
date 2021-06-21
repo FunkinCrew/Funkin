@@ -312,7 +312,7 @@ class Judgement extends Option
 		FlxG.save.data.frames = Conductor.safeFrames;
 
 		Conductor.recalculateTimings();
-		return true;
+		return false;
 	}
 
 	override function getValue():String {
@@ -370,6 +370,7 @@ class ScoreScreen extends Option
 	public override function press():Bool
 	{
 		FlxG.save.data.scoreScreen = !FlxG.save.data.scoreScreen;
+		display = updateDisplay();
 		return true;
 	}
 

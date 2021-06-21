@@ -44,8 +44,14 @@ class Alphabet extends FlxSpriteGroup
 
 	var isBold:Bool = false;
 
+	var pastX:Float = 0;
+	var pastY:Float  = 0;
+
 	public function new(x:Float, y:Float, text:String = "", ?bold:Bool = false, typed:Bool = false, shouldMove:Bool = false)
 	{
+		pastX = x;
+		pastY = y;
+
 		super(x, y);
 
 		_finalText = text;
@@ -64,6 +70,24 @@ class Alphabet extends FlxSpriteGroup
 			}
 
 		}
+	}
+
+	public function reType(text)
+	{
+		for (i in listOAlphabets)
+			remove(i);
+		_finalText = text;
+		this.text = text;
+
+		lastSprite = null;
+
+		updateHitbox();
+
+		listOAlphabets.clear();
+		x = pastX;
+		y = pastY;
+		
+		addText();
 	}
 
 	public function addText()
