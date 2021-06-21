@@ -1483,6 +1483,7 @@ class PlayState extends MusicBeatState
 						case 0:
 							dad().playAnim('singLEFT' + altAnim, true);
 					}
+		
 
 					if (FlxG.save.data.cpuStrums)
 					{
@@ -2231,7 +2232,8 @@ class PlayState extends MusicBeatState
 			}
 			else
 				spr.centerOffsets();
-		});
+		});	
+
 	}
 
 	function noteMiss(direction:Int = 1, daNote:Note):Void

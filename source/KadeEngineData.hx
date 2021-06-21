@@ -73,7 +73,7 @@ class KadeEngineData
 			FlxG.save.data.botplay = false;
 
 		if (FlxG.save.data.cpuStrums == null)
-			FlxG.save.data.cpuStrums = false;
+			FlxG.save.data.cpuStrums = true;
 
 		if (FlxG.save.data.strumline == null)
 			FlxG.save.data.strumline = false;

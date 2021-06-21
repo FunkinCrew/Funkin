@@ -47,4 +47,9 @@ class SongManager
 
 		return songPlayer;
 	}
+
+	public static function getArrow()
+	{
+		
+	}
 }

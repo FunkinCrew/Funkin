@@ -56,7 +56,6 @@ class Note extends FlxSprite
 			this.strumTime = 0;
 
 		this.noteData = noteData;
-
 		var daStage:String = PlayState.curStage;
 
 		//get note skin depending on what song are playing.
@@ -78,7 +77,6 @@ class Note extends FlxSprite
 				animation.play('redScroll');
 		}
 
-		// trace(prevNote);
 
 		// we make sure its downscroll and its a SUSTAIN NOTE (aka a trail, not a note)
 		// and flip it so it doesn't look weird.
@@ -131,8 +129,9 @@ class Note extends FlxSprite
 					prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.5 * FlxG.save.data.scrollSpeed;
 				else
 					prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.5 * PlayState.SONG.speed;
+		
 				prevNote.updateHitbox();
-				// prevNote.setGraphicSize();
+
 			}
 		}
 	}
@@ -152,6 +151,7 @@ class Note extends FlxSprite
 				else
 					canBeHit = false;
 			}
+
 			else
 			{
 				if (strumTime > Conductor.songPosition - Conductor.safeZoneOffset
@@ -170,6 +170,7 @@ class Note extends FlxSprite
 
 			if (strumTime <= Conductor.songPosition)
 				wasGoodHit = true;
+
 		}
 
 		if (tooLate)

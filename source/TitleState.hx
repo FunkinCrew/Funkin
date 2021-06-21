@@ -83,12 +83,12 @@ class TitleState extends MusicBeatState
 
 		// NGio.noLogin(APIStuff.API);
 
-		#if ng
-		var ng:NGio = new NGio(APIStuff.API, APIStuff.EncKey);
-		trace('NEWGROUNDS LOL');
-		#end
+		// #if ng
+		// var ng:NGio = new NGio(APIStuff.API, APIStuff.EncKey);
+		// trace('NEWGROUNDS LOL');
+		// #end
 
-		FlxG.save.bind('funkin', 'ninjamuffin99');
+		FlxG.save.bind('save', 'data');
 
 		KadeEngineData.initSave();
 
