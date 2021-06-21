@@ -57,7 +57,7 @@
 		<library name="week4"    preload="true" />
 		<library name="week5"    preload="true" />
 		<library name="week6"    preload="true" />
-		<library name="week_mods"    preload="true" />
+		<library name="mods"    preload="true" />
 
 	</section>
 	
@@ -71,7 +71,7 @@
 		<library name="week4"    preload="false" />
 		<library name="week5"    preload="false" />
 		<library name="week6"    preload="false" />
-		<library name="week_mods"    preload="false" />
+		<library name="mods"    preload="false" />
 
 
 	</section>
@@ -95,8 +95,8 @@
 	<assets path="assets/week6"    library="week6"    exclude="*.ogg" if="web"/>
 	<assets path="assets/week6"    library="week6"    exclude="*.mp3" unless="web"/>
 
-	<assets path="assets/week_mods"    library="week_mods"    exclude="*.ogg" if="web"/>
-	<assets path="assets/week_mods"    library="week_mods"    exclude="*.mp3" unless="web"/>
+	<assets path="assets/mods"    library="mods"    exclude="*.ogg" if="web"/>
+	<assets path="assets/mods"    library="mods"    exclude="*.mp3" unless="web"/>
 
 	
 	<assets path='example_mods' rename='mods' embed='false'/>

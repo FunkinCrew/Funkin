@@ -10,7 +10,7 @@ class Matt extends SongPlayer
 	override function loadMap()
 	{
 		playState.defaultCamZoom = 0.8;
-		var bg:FlxSprite = new FlxSprite(-400, -200).loadGraphic(Paths.image('swordfight', "week_mods"));
+		var bg:FlxSprite = new FlxSprite(-600, -200).loadGraphic(Paths.image('matt/swordfight', "mods"));
 		bg.antialiasing = true;
 		bg.scrollFactor.set(0.9, 0.9);
 		bg.active = true;
@@ -18,7 +18,7 @@ class Matt extends SongPlayer
 	}
     override function getDadTex()
 	{
-		var tex = Paths.getSparrowAtlas('characters/matt_assets');
+		var tex = Paths.getSparrowAtlas('matt/matt_assets', "mods");
 		dad.frames = tex;
 	}
 
