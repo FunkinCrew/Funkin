@@ -5,7 +5,7 @@ class Ratings
     public static function GenerateLetterRank(accuracy:Float) // generate a letter ranking
     {
         var ranking:String = "N/A";
-		if(FlxG.save.data.botplay)
+		if(FlxG.save.data.botplay && !PlayState.loadRep)
 			ranking = "BotPlay";
 
         if (PlayState.misses == 0 && PlayState.bads == 0 && PlayState.shits == 0 && PlayState.goods == 0) // Marvelous (SICK) Full Combo
@@ -86,7 +86,7 @@ class Ratings
 
         if (accuracy == 0)
             ranking = "N/A";
-		else if(FlxG.save.data.botplay)
+		else if(FlxG.save.data.botplay && !PlayState.loadRep)
 			ranking = "BotPlay";
 
         return ranking;
@@ -107,35 +107,45 @@ class Ratings
 
         // trace('Hit Info\nDifference: ' + noteDiff + '\nZone: ' + Conductor.safeZoneOffset * 1.5 + "\nTS: " + customTimeScale + "\nLate: " + 155 * customTimeScale);
 
-	if (FlxG.save.data.botplay)
-	    return "good"; // FUNNY
-	    
-        if (noteDiff > 166 * customTimeScale) // so god damn early its a miss
-            return "miss";
-        if (noteDiff > 135 * customTimeScale) // way early
-            return "shit";
-        else if (noteDiff > 90 * customTimeScale) // early
-            return "bad";
-        else if (noteDiff > 45 * customTimeScale) // your kinda there
-            return "good";
-        else if (noteDiff < -45 * customTimeScale) // little late
-            return "good";
-        else if (noteDiff < -90 * customTimeScale) // late
-            return "bad";
-        else if (noteDiff < -135 * customTimeScale) // late as fuck
-            return "shit";
-        else if (noteDiff < -166 * customTimeScale) // so god damn late its a miss
-            return "miss";
-        return "sick";
+        if (FlxG.save.data.botplay && !PlayState.loadRep)
+            return "sick"; // FUNNY
+	
+
+        var rating = checkRating(noteDiff,customTimeScale);
+
+
+        return rating;
+    }
+
+    public static function checkRating(ms:Float, ts:Float)
+    {
+        var rating = "sick";
+        if (ms <= 166 * ts && ms >= 135 * ts)
+            rating = "shit";
+        if (ms < 135 * ts && ms >= 90 * ts) 
+            rating = "bad";
+        if (ms < 90 * ts && ms >= 45 * ts)
+            rating = "good";
+        if (ms < 45 * ts && ms >= -45 * ts)
+            rating = "sick";
+        if (ms > -90 * ts && ms <= -45 * ts)
+            rating = "good";
+        if (ms > -135 * ts && ms <= -90 * ts)
+            rating = "bad";
+        if (ms > -166 * ts && ms <= -135 * ts)
+            rating = "shit";
+        return rating;
     }
 
     public static function CalculateRanking(score:Int,scoreDef:Int,nps:Int,maxNPS:Int,accuracy:Float):String
     {
-        return 
-        (FlxG.save.data.npsDisplay ? "NPS: " + nps + " (Max " + maxNPS + ")" + (!FlxG.save.data.botplay ? " | " : "") : "") + (!FlxG.save.data.botplay ?	// NPS Toggle
-        "Score:" + (Conductor.safeFrames != 10 ? score + " (" + scoreDef + ")" : "" + score) + 									// Score
-        " | Combo Breaks:" + PlayState.misses + 																				// Misses/Combo Breaks
-        " | Accuracy:" + (FlxG.save.data.botplay ? "N/A" : HelperFunctions.truncateFloat(accuracy, 2) + " %") +  				// Accuracy
-        " | " + GenerateLetterRank(accuracy) : ""); 																			// Letter Rank
+        return
+         (FlxG.save.data.npsDisplay ?																							// NPS Toggle
+         "NPS: " + nps + " (Max " + maxNPS + ")" + (!PlayStateChangeables.botPlay || PlayState.loadRep ? " | " : "") : "") +								// 	NPS
+         (!PlayStateChangeables.botPlay || PlayState.loadRep ? "Score:" + (Conductor.safeFrames != 10 ? score + " (" + scoreDef + ")" : "" + score) + 		// Score
+         (FlxG.save.data.accuracyDisplay ?																						// Accuracy Toggle
+         " | Combo Breaks:" + PlayState.misses + 																				// 	Misses/Combo Breaks
+         " | Accuracy:" + (PlayStateChangeables.botPlay && !PlayState.loadRep ? "N/A" : HelperFunctions.truncateFloat(accuracy, 2) + " %") +  				// 	Accuracy
+         " | " + GenerateLetterRank(accuracy) : "") : ""); 																		// 	Letter Rank
     }
 }
