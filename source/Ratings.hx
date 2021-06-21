@@ -119,7 +119,7 @@ class Ratings
 
     public static function checkRating(ms:Float, ts:Float)
     {
-        var rating = "miss";
+        var rating = "sick";
         if (ms <= 166 * ts && ms >= 135 * ts)
             rating = "shit";
         if (ms < 135 * ts && ms >= 90 * ts) 
