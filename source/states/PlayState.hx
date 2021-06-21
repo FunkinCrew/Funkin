@@ -1910,6 +1910,7 @@ class PlayState extends MusicBeatState
 
 		var isNote = false;
 
+		/*
 		if (leftP)
 		{
 			notes.forEachAlive(function(daNote:Note)
@@ -1981,6 +1982,7 @@ class PlayState extends MusicBeatState
 			if(!isNote)
 				noteMiss(3);
 		}
+		*/
 	}
 
 	function noteCheck(keyP:Bool, note:Note):Void
