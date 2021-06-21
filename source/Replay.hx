@@ -17,6 +17,14 @@ class Ana
 	public var nearestNote:Array<Dynamic>;
 	public var hit:Bool;
 	public var hitJudge:String;
+	public var key:Int;
+	public function new(_hitTime:Float,_nearestNote:Array<Dynamic>,_hit:Bool,_hitJudge:String, _key:Int) {
+		hitTime = _hitTime;
+		nearestNote = _nearestNote;
+		hit = _hit;
+		hitJudge = _hitJudge;
+		key = _key;
+	}
 }
 
 class Analysis
@@ -76,7 +84,7 @@ class Replay
 		return rep;
 	}
 
-	public function SaveReplay(notearray:Array<Dynamic>, judge:Array<String>)
+	public function SaveReplay(notearray:Array<Dynamic>, judge:Array<String>, ana:Analysis)
 	{
 		var json = {
 			"songName": PlayState.SONG.song,
@@ -88,7 +96,7 @@ class Replay
 			"timestamp": Date.now(),
 			"replayGameVer": version,
 			"sf": Conductor.safeFrames,
-			
+			"ana": ana
 		};
 
 		var data:String = Json.stringify(json);
@@ -101,6 +109,8 @@ class Replay
 		path = "replay-" + PlayState.SONG.song + "-time" + time + ".kadeReplay"; // for score screen shit
 
 		LoadFromJSON();
+
+		replay.ana = ana;
 		#end
 	}
 

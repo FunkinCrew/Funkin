@@ -126,11 +126,13 @@ class ResultsScreen extends FlxSubState
             // judgement
             var obj2 = PlayState.rep.replay.songJudgements[i];
 
+            var obj3 = obj[0];
+
             var diff = obj[3];
             var judge = obj2;
             mean += diff;
             if (obj[1] != -1)
-                graph.addToHistory(diff, judge);
+                graph.addToHistory(diff, judge, obj3);
         }
 
         graph.update();
@@ -184,6 +186,12 @@ class ResultsScreen extends FlxSubState
             }
             else
                 FlxG.switchState(new FreeplayState());
+        }
+
+        if (FlxG.keys.justPressed.EIGHT)
+        {
+            graph.showInput = !graph.showInput;
+            graph.update();
         }
 
         if (FlxG.keys.justPressed.F1)
