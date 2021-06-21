@@ -261,6 +261,27 @@ class FlashingLightsOption extends Option
 	}
 }
 
+class ShowInput extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+	public override function press():Bool
+	{
+		FlxG.save.data.inputShow = !FlxG.save.data.inputShow;
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return (FlxG.save.data.inputShow ? "Extended Score Info" : "Minimalized Info");
+	}
+}
+
+
 class Judgement extends Option
 {
 	
