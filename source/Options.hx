@@ -370,6 +370,7 @@ class ScoreScreen extends Option
 	public override function press():Bool
 	{
 		FlxG.save.data.scoreScreen = !FlxG.save.data.scoreScreen;
+		updateDisplay();
 		return true;
 	}
 
