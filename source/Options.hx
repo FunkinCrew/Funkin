@@ -312,7 +312,7 @@ class Judgement extends Option
 		FlxG.save.data.frames = Conductor.safeFrames;
 
 		Conductor.recalculateTimings();
-		return true;
+		return false;
 	}
 
 	override function getValue():String {
