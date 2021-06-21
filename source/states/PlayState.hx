@@ -1575,7 +1575,13 @@ class PlayState extends MusicBeatState
 		rating.velocity.y -= FlxG.random.int(140, 175);
 		rating.velocity.x -= FlxG.random.int(0, 10);
 
-		var col = new FlxText(rating.x, rating.y + 80, 0, noteDiff + " ms", 24);
+		var noteMath:Float = 0.0;
+
+		// math
+		noteMath = noteDiff * Math.pow(10, FlxG.save.data.accuracyPrecision);
+		noteMath = Math.round(noteMath) / Math.pow(10, FlxG.save.data.accuracyPrecision);
+
+		var col = new FlxText(rating.x, rating.y + 80, 0, noteMath + " ms", 24);
 
 		if(FlxG.save.data.msText)
 		{
