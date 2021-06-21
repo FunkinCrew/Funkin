@@ -119,21 +119,21 @@ class Ratings
 
     public static function checkRating(ms:Float, ts:Float)
     {
-        var rating = "miss";
-        if (ms < 166 * ts && ms > 135 * ts)
+        var rating = "sick";
+        if (ms <= 166 * ts && ms >= 135 * ts)
             rating = "shit";
-        if (ms > -166 * ts && ms < -135 * ts)
-            rating = "shit";
-        if (ms < 135 * ts && ms > 90 * ts) 
+        if (ms < 135 * ts && ms >= 90 * ts) 
             rating = "bad";
-        if (ms > -135 * ts && ms < -90 * ts)
-            rating = "bad";
-        if (ms < 90 * ts && ms > 45 * ts)
+        if (ms < 90 * ts && ms >= 45 * ts)
             rating = "good";
-        if (ms > -90 * ts && ms < -45 * ts)
-            rating = "good";
-        if (ms < 45 * ts && ms > -45 * ts)
+        if (ms < 45 * ts && ms >= -45 * ts)
             rating = "sick";
+        if (ms > -90 * ts && ms <= -45 * ts)
+            rating = "good";
+        if (ms > -135 * ts && ms <= -90 * ts)
+            rating = "bad";
+        if (ms > -166 * ts && ms <= -135 * ts)
+            rating = "shit";
         return rating;
     }
 

@@ -35,7 +35,7 @@ class ResultsScreen extends FlxSubState
 
     public var anotherBackground:FlxSprite;
     public var graph:HitGraph;
-    public var graphSprite:FlxSprite;
+    public var graphSprite:OFLSprite;
 
     public var comboText:FlxText;
     public var contText:FlxText;
@@ -97,7 +97,7 @@ class ResultsScreen extends FlxSubState
         graph = new HitGraph(FlxG.width - 500,45,495,240);
         graph.alpha = 0;
 
-        graphSprite = new FlxSprite(FlxG.width - 510,45);
+        graphSprite = new OFLSprite(FlxG.width - 510,45,460,240,graph);
 
         graphSprite.scrollFactor.set();
         graphSprite.alpha = 0;
@@ -116,28 +116,30 @@ class ResultsScreen extends FlxSubState
         var mean:Float = 0;
 
 
-        for (i in PlayState.rep.replay.songNotes)
+        for (i in 0...PlayState.rep.replay.songNotes.length)
         {
             // 0 = time
             // 1 = length
             // 2 = type
             // 3 = diff
-            var diff = i[3];
-            var judge = Ratings.CalculateRating(diff, Math.floor((PlayState.rep.replay.sf / 60) * 1000));
+            var obj = PlayState.rep.replay.songNotes[i];
+            // judgement
+            var obj2 = PlayState.rep.replay.songJudgements[i];
+
+            var obj3 = obj[0];
+
+            var diff = obj[3];
+            var judge = obj2;
             mean += diff;
-            if (i[1] != -1)
-                graph.addToHistory(diff, judge);
+            if (obj[1] != -1)
+                graph.addToHistory(diff, judge, obj3);
         }
 
         graph.update();
 
-        graphSprite.makeGraphic(460,240,FlxColor.TRANSPARENT);
-
-        graphSprite.pixels.draw(graph);
-
         mean = HelperFunctions.truncateFloat(mean / PlayState.rep.replay.songNotes.length,2);
 
-        settingsText = new FlxText(20,FlxG.height + 50,0,'SF: ${PlayState.rep.replay.sf} | Ratio (SA/GA): ${Math.round(sicks)}:1 ${Math.round(goods)}:1 | Mean: ${mean}ms | Played on ${PlayState.SONG.song} ${CoolUtil.difficultyString()}');
+        settingsText = new FlxText(20,FlxG.height + 50,0,'SF: ${PlayState.rep.replay.sf} | Ratio (SA/GA): ${Math.round(sicks)}:1 ${Math.round(goods)}:1 | Mean: ${mean}ms | Played on ${PlayState.SONG.song} ${CoolUtil.difficultyFromInt(PlayState.storyDifficulty).toUpperCase()}');
         settingsText.size = 16;
         settingsText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,2,1);
         settingsText.color = FlxColor.WHITE;
@@ -168,12 +170,6 @@ class ResultsScreen extends FlxSubState
         if (music.volume < 0.5)
 			music.volume += 0.01 * elapsed;
 
-        // render
-        if (frames != 2)
-        {
-            graphSprite.pixels.draw(graph);
-            frames++;
-        }
         // keybinds
 
         if (FlxG.keys.justPressed.ENTER)
@@ -190,6 +186,12 @@ class ResultsScreen extends FlxSubState
             }
             else
                 FlxG.switchState(new FreeplayState());
+        }
+
+        if (FlxG.keys.justPressed.EIGHT)
+        {
+            graph.showInput = !graph.showInput;
+            graph.update();
         }
 
         if (FlxG.keys.justPressed.F1)
