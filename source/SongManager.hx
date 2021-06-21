@@ -43,6 +43,10 @@ class SongManager
 
 			case 'thorns':
 				songPlayer = new SenpaiEvil();
+
+			case 'light-it-up' | 'ruckus' | 'target-practice':
+				songPlayer = new Matt();
+
 		}
 
 		return songPlayer;

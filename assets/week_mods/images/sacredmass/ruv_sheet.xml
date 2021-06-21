@@ -1,0 +1,106 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="ruv_sheet.png">
+	<!-- Created with Kuro's hands and Sprite Cow -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<!--global fH=773-->
+	<!--fH = 712-->
+	<SubTexture name="RuvDown0000" x="1798" y="203" width="529" height="712" frameX="-4" frameY="-130" frameWidth="533" frameHeight="843"/><!--0 -->
+	<SubTexture name="RuvDown0001" x="1798" y="203" width="529" height="712" frameX="-4" frameY="-130" frameWidth="533" frameHeight="843"/><!--0 -->
+	<SubTexture name="RuvDown0002" x="1798" y="203" width="529" height="712" frameX="-4" frameY="-130" frameWidth="533" frameHeight="843"/><!--0 -->
+	<SubTexture name="RuvDown0003" x="2398" y="204" width="532" height="712" frameX="-4" frameY="-130" frameWidth="536" frameHeight="843"/><!--1 -->
+	<SubTexture name="RuvDown0004" x="2398" y="204" width="532" height="712" frameX="-4" frameY="-130" frameWidth="536" frameHeight="843"/><!--1 -->
+	<SubTexture name="RuvDown0005" x="2398" y="204" width="532" height="712" frameX="-4" frameY="-130" frameWidth="536" frameHeight="843"/><!--1 -->
+	<SubTexture name="RuvDown0006" x="2398" y="204" width="532" height="712" frameX="-4" frameY="-130" frameWidth="536" frameHeight="843"/><!--1 -->
+	<SubTexture name="RuvDown0007" x="2398" y="204" width="532" height="712" frameX="-4" frameY="-130" frameWidth="536" frameHeight="843"/><!--1 -->
+	<SubTexture name="RuvDown0008" x="2398" y="204" width="532" height="712" frameX="-4" frameY="-130" frameWidth="536" frameHeight="843"/><!--1 -->
+	<SubTexture name="RuvDown0009" x="1798" y="203" width="529" height="712" frameX="-4" frameY="-130" frameWidth="533" frameHeight="843"/><!--0 -->
+	<SubTexture name="RuvDown0010" x="1798" y="203" width="529" height="712" frameX="-4" frameY="-130" frameWidth="533" frameHeight="843"/><!--0 -->
+	<SubTexture name="RuvDown0011" x="1798" y="203" width="529" height="712" frameX="-4" frameY="-130" frameWidth="533" frameHeight="843"/><!--0 -->
+
+	<!--
+	<SubTexture name="RuvIdle0000" x="1523" y="1977" width="407" height="766" frameX="-4" frameY="-3" frameWidth="411" frameHeight="769"/><!-3 ->
+	<SubTexture name="RuvIdle0001" x="1523" y="1977" width="407" height="766" frameX="-4" frameY="-3" frameWidth="411" frameHeight="769"/><!-3 ->
+	<SubTexture name="RuvIdle0002" x="1523" y="1977" width="407" height="766" frameX="-4" frameY="-3" frameWidth="411" frameHeight="769"/><!-3 ->
+	<SubTexture name="RuvIdle0003" x="1031" y="1977" width="407" height="766" frameX="-4" frameY="-3" frameWidth="411" frameHeight="769"/><!-2 ->
+	<SubTexture name="RuvIdle0004" x="1031" y="1977" width="407" height="766" frameX="-4" frameY="-3" frameWidth="411" frameHeight="769"/><!-2 ->
+	<SubTexture name="RuvIdle0005" x="565" y="1980" width="411" height="763" frameX="-4" frameY="-6" frameWidth="415" frameHeight="769"/><!-1 ->
+	<SubTexture name="RuvIdle0006" x="1999" y="1970" width="411" height="773" frameX="-4" frameY="-4" frameWidth="415" frameHeight="777"/><!-4 ->
+	<SubTexture name="RuvIdle0007" x="1999" y="1970" width="411" height="773" frameX="-4" frameY="-4" frameWidth="415" frameHeight="777"/><!-4 ->
+	<SubTexture name="RuvIdle0008" x="2470" y="1973" width="410" height="771" frameX="-4" frameY="-4" frameWidth="414" frameHeight="775"/><!-5 ->
+	<SubTexture name="RuvIdle0009" x="107" y="1980" width="409" height="763" frameX="-4" frameY="-4" frameWidth="413" frameHeight="767"/><!-0 ->
+	<SubTexture name="RuvIdle0010" x="1523" y="1977" width="407" height="766" frameX="-4" frameY="-3" frameWidth="411" frameHeight="769"/><!-3 ->
+	<SubTexture name="RuvIdle0011" x="1523" y="1977" width="407" height="766" frameX="-4" frameY="-3" frameWidth="411" frameHeight="769"/><!-3 ->
+-->
+	<!--fH=773-->
+	<SubTexture name="RuvIdle0000" x="107" y="1980" width="409" height="763" frameX="-4" frameY="-80" frameWidth="413" frameHeight="843"/><!--0-->
+	<SubTexture name="RuvIdle0001" x="107" y="1980" width="409" height="763" frameX="-4" frameY="-80" frameWidth="413" frameHeight="843"/><!--0-->
+	<SubTexture name="RuvIdle0002" x="565" y="1980" width="411" height="763" frameX="-4" frameY="-80" frameWidth="415" frameHeight="843"/><!--1-->
+	<SubTexture name="RuvIdle0003" x="1031" y="1977" width="407" height="766" frameX="-4" frameY="-77" frameWidth="411" frameHeight="843"/><!--2 -->
+	<SubTexture name="RuvIdle0004" x="1523" y="1977" width="407" height="766" frameX="-4" frameY="-77" frameWidth="411" frameHeight="843"/><!--3 -->
+	<SubTexture name="RuvIdle0005" x="1523" y="1977" width="407" height="766" frameX="-4" frameY="-77" frameWidth="411" frameHeight="843"/><!--3 -->
+	<SubTexture name="RuvIdle0006" x="1523" y="1977" width="407" height="766" frameX="-4" frameY="-77" frameWidth="411" frameHeight="843"/><!--3 -->
+	<SubTexture name="RuvIdle0007" x="1999" y="1970" width="411" height="773" frameX="-4" frameY="-70" frameWidth="415" frameHeight="843"/><!--4 -->
+	<SubTexture name="RuvIdle0008" x="1999" y="1970" width="411" height="773" frameX="-4" frameY="-70" frameWidth="415" frameHeight="843"/><!--4 -->
+	<SubTexture name="RuvIdle0009" x="2470" y="1973" width="410" height="771" frameX="-4" frameY="-72" frameWidth="414" frameHeight="843"/><!--5 -->
+	<SubTexture name="RuvIdle0010" x="2470" y="1973" width="410" height="771" frameX="-4" frameY="-72" frameWidth="414" frameHeight="843"/><!--5 -->
+	<SubTexture name="RuvIdle0011" x="107" y="1980" width="409" height="763" frameX="-4" frameY="-80" frameWidth="413" frameHeight="843"/><!--0-->
+	<!--ruv frame h=748-->
+	<SubTexture name="RuvLeft0000" x="1906" y="1121" width="498" height="743" frameX="-1" frameY="-30" frameWidth="499" frameHeight="843"/><!--0-->
+	<SubTexture name="RuvLeft0001" x="1906" y="1121" width="498" height="743" frameX="-1" frameY="-30" frameWidth="499" frameHeight="843"/><!--0-->
+	<SubTexture name="RuvLeft0002" x="2433" y="1119" width="498" height="746" frameX="-2" frameY="-27" frameWidth="500" frameHeight="843"/><!--1-->
+	<SubTexture name="RuvLeft0003" x="2433" y="1119" width="498" height="746" frameX="-2" frameY="-27" frameWidth="500" frameHeight="843"/><!--1-->
+	<SubTexture name="RuvLeft0004" x="2433" y="1119" width="498" height="746" frameX="-2" frameY="-27" frameWidth="500" frameHeight="843"/><!--1-->
+	<SubTexture name="RuvLeft0005" x="2433" y="1119" width="498" height="746" frameX="-2" frameY="-27" frameWidth="500" frameHeight="843"/><!--1-->
+	<SubTexture name="RuvLeft0006" x="2433" y="1119" width="498" height="746" frameX="-2" frameY="-27" frameWidth="500" frameHeight="843"/><!--1-->
+	<SubTexture name="RuvLeft0007" x="2433" y="1119" width="498" height="746" frameX="-2" frameY="-27" frameWidth="500" frameHeight="843"/><!--1-->
+	<SubTexture name="RuvLeft0008" x="2966" y="1117" width="501" height="747" frameX="-4" frameY="-26" frameWidth="505" frameHeight="843"/><!--2-->
+	<SubTexture name="RuvLeft0009" x="2966" y="1117" width="501" height="747" frameX="-4" frameY="-26" frameWidth="505" frameHeight="843"/><!--2-->
+	<SubTexture name="RuvLeft0010" x="2966" y="1117" width="501" height="747" frameX="-4" frameY="-26" frameWidth="505" frameHeight="843"/><!--2-->
+	<SubTexture name="RuvLeft0011" x="2966" y="1117" width="501" height="747" frameX="-4" frameY="-26" frameWidth="505" frameHeight="843"/><!--2-->
+	
+	
+	<SubTexture name="RuvRight0000" x="76" y="127" width="487" height="788" frameX="-2" frameY="-55" frameWidth="489" frameHeight="843"/><!--0-->
+	<SubTexture name="RuvRight0001" x="76" y="127" width="487" height="788" frameX="-2" frameY="-55" frameWidth="489" frameHeight="843"/><!--0-->
+	<SubTexture name="RuvRight0002" x="76" y="127" width="487" height="788" frameX="-2" frameY="-55" frameWidth="489" frameHeight="843"/><!--0-->
+	<SubTexture name="RuvRight0003" x="626" y="128" width="488" height="787" frameX="-2" frameY="-56" frameWidth="490" frameHeight="843"/><!--1-->
+	<SubTexture name="RuvRight0004" x="626" y="128" width="488" height="787" frameX="-2" frameY="-56" frameWidth="490" frameHeight="843"/><!--1-->
+	<SubTexture name="RuvRight0005" x="626" y="128" width="488" height="787" frameX="-2" frameY="-56" frameWidth="490" frameHeight="843"/><!--1-->
+	<SubTexture name="RuvRight0006" x="626" y="128" width="488" height="787" frameX="-2" frameY="-56" frameWidth="490" frameHeight="843"/><!--1-->
+	<SubTexture name="RuvRight0007" x="626" y="128" width="488" height="787" frameX="-2" frameY="-56" frameWidth="490" frameHeight="843"/><!--1-->
+	<SubTexture name="RuvRight0008" x="1174" y="126" width="491" height="790" frameX="0" frameY="-53" frameWidth="491" frameHeight="843"/><!--2-->
+	<SubTexture name="RuvRight0009" x="1174" y="126" width="491" height="790" frameX="0" frameY="-53" frameWidth="491" frameHeight="843"/><!--2-->
+	<SubTexture name="RuvRight0010" x="1174" y="126" width="491" height="790" frameX="0" frameY="-53" frameWidth="491" frameHeight="843"/><!--2-->
+	<SubTexture name="RuvRight0011" x="1174" y="126" width="491" height="790" frameX="0" frameY="-53" frameWidth="491" frameHeight="843"/><!--2-->
+	<SubTexture name="RuvRight0012" x="1174" y="126" width="491" height="790" frameX="0" frameY="-53" frameWidth="491" frameHeight="843"/><!--2-->
+	<SubTexture name="RuvRight0013" x="76" y="127" width="487" height="788" frameX="-2" frameY="-55" frameWidth="489" frameHeight="843"/><!--0-->
+	
+	<SubTexture name="RuvUp0000" x="92" y="1024" width="569" height="840" frameX="0" frameY="-3" frameWidth="569" frameHeight="843"/><!--0 -->
+	<SubTexture name="RuvUp0001" x="92" y="1024" width="569" height="840" frameX="0" frameY="-3" frameWidth="569" frameHeight="843"/><!--0 -->
+	<SubTexture name="RuvUp0002" x="92" y="1024" width="569" height="840" frameX="0" frameY="-3" frameWidth="569" frameHeight="843"/><!--0 -->
+	<SubTexture name="RuvUp0003" x="686" y="1021" width="568" height="843" frameX="-1" frameY="0" frameWidth="569" frameHeight="843"/><!--1 -->
+	<SubTexture name="RuvUp0004" x="686" y="1021" width="568" height="843" frameX="-1" frameY="0" frameWidth="569" frameHeight="843"/><!--1 -->
+	<SubTexture name="RuvUp0005" x="686" y="1021" width="568" height="843" frameX="-1" frameY="0" frameWidth="569" frameHeight="843"/><!--1 -->
+	<SubTexture name="RuvUp0006" x="686" y="1021" width="568" height="843" frameX="-1" frameY="0" frameWidth="569" frameHeight="843"/><!--1 -->
+	<SubTexture name="RuvUp0007" x="686" y="1021" width="568" height="843" frameX="-1" frameY="0" frameWidth="569" frameHeight="843"/><!--1 -->
+	<SubTexture name="RuvUp0008" x="686" y="1021" width="568" height="843" frameX="-1" frameY="0" frameWidth="569" frameHeight="843"/><!--1 -->
+	<SubTexture name="RuvUp0009" x="1264" y="1029" width="572" height="835" frameX="0" frameY="-8" frameWidth="572" frameHeight="843"/><!--2 -->
+	<SubTexture name="RuvUp0010" x="1264" y="1029" width="572" height="835" frameX="0" frameY="-8" frameWidth="572" frameHeight="843"/><!--2 -->
+	<SubTexture name="RuvUp0011" x="1264" y="1029" width="572" height="835" frameX="0" frameY="-8" frameWidth="572" frameHeight="843"/><!--2 -->
+
+	<!--SubTexture name="RuvHey0000" x="3103" y="1990" width="441" height="760" frameX="0" frameY="0" frameWidth="441" frameHeight="760"/>
+	<SubTexture name="RuvHey0001" x="3103" y="1990" width="441" height="760" frameX="0" frameY="0" frameWidth="441" frameHeight="760"/>
+	<SubTexture name="RuvHey0002" x="3566" y="1990" width="440" height="761" frameX="-1" frameY="-8" frameWidth="442" frameHeight="769"/>
+	<SubTexture name="RuvHey0003" x="3566" y="1990" width="440" height="761" frameX="-1" frameY="-8" frameWidth="442" frameHeight="769"/>
+	<SubTexture name="RuvHey0004" x="3566" y="1990" width="440" height="761" frameX="-1" frameY="-6" frameWidth="442" frameHeight="767"/>
+	<SubTexture name="RuvHey0005" x="3566" y="1990" width="440" height="761" frameX="-1" frameY="-6" frameWidth="442" frameHeight="767"/>
+	<SubTexture name="RuvHey0006" x="3566" y="1990" width="440" height="761" frameX="-1" frameY="-6" frameWidth="442" frameHeight="767"/>
+	<SubTexture name="RuvHey0007" x="3566" y="1990" width="440" height="761" frameX="-1" frameY="-6" frameWidth="442" frameHeight="767"/>
+	<SubTexture name="RuvHey0008" x="3566" y="1990" width="440" height="761" frameX="-1" frameY="-6" frameWidth="442" frameHeight="767"/>
+	<SubTexture name="RuvHey0009" x="3566" y="1990" width="440" height="761" frameX="-1" frameY="-6" frameWidth="442" frameHeight="767"/>
+	<SubTexture name="RuvHey0010" x="3566" y="1990" width="440" height="761" frameX="-1" frameY="-6" frameWidth="442" frameHeight="767"/>
+	<SubTexture name="RuvHey0011" x="3566" y="1990" width="440" height="761" frameX="-1" frameY="-6" frameWidth="442" frameHeight="767"/>
+	<SubTexture name="RuvHey0012" x="3566" y="1990" width="440" height="761" frameX="-1" frameY="-6" frameWidth="442" frameHeight="767"/>
+	<SubTexture name="RuvHey0013" x="3566" y="1990" width="440" height="761" frameX="-1" frameY="-6" frameWidth="442" frameHeight="767"/>
+	<SubTexture name="RuvHey0014" x="3103" y="1990" width="441" height="760" frameX="0" frameY="-6" frameWidth="441" frameHeight="766"/-->
+	
+</TextureAtlas>

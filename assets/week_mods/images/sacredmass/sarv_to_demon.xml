@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker https://www.codeandweb.com/texturepacker -->
+<!-- $TexturePacker:SmartUpdate:dce6587d2511dde5a460b017d911b814:5e5edf19aeb1c46c206f197a3cb69958:c72f9487597e277e1d0587ce534e7b32$ -->
+<!--Format:
+n  => name of the sprite
+x  => sprite x pos in texture
+y  => sprite y pos in texture
+w  => sprite width (may be trimmed)
+h  => sprite height (may be trimmed)
+pX => x pos of the pivot point (relative to sprite width)
+pY => y pos of the pivot point (relative to sprite height)
+oX => sprite's x-corner offset (only available if trimmed)
+oY => sprite's y-corner offset (only available if trimmed)
+oW => sprite's original width (only available if trimmed)
+oH => sprite's original height (only available if trimmed)
+r => 'y' only set if sprite is rotated
+with polygon mode enabled:
+vertices   => points in sprite coordinate system (x0,y0,x1,y1,x2,y2, ...)
+verticesUV => points in sheet coordinate system (x0,y0,x1,y1,x2,y2, ...)
+triangles  => sprite triangulation, 3 vertex indices per triangle
+-->
+<TextureAtlas imagePath="pegMePlease.png" width="6083" height="4067">
+    <sprite n="SarvTransAnim0000" x="5304" y="1709" w="761" h="443" oX="192" oY="217" oW="832" oH="995" r="y"/>
+    <sprite n="SarvTransAnim0001" x="5315" y="1263" w="764" h="444" oX="192" oY="215" oW="832" oH="995" r="y"/>
+    <sprite n="SarvTransAnim0002" x="4291" y="1554" w="538" h="769" oX="139" oY="211" oW="832" oH="995"/>
+    <sprite n="SarvTransAnim0003" x="4349" y="1" w="472" h="772" oX="163" oY="207" oW="832" oH="995"/>
+    <sprite n="SarvTransAnim0004" x="3926" y="1" w="421" h="777" oX="215" oY="202" oW="832" oH="995"/>
+    <sprite n="SarvTransAnim0005" x="3834" y="813" w="447" h="777" oX="201" oY="202" oW="832" oH="995"/>
+    <sprite n="SarvTransAnim0006" x="767" y="3679" w="777" h="379" oX="244" oY="202" oW="832" oH="995" r="y"/>
+    <sprite n="SarvTransAnim0007" x="3886" y="3249" w="344" h="777" oX="241" oY="202" oW="832" oH="995"/>
+    <sprite n="SarvTransAnim0008" x="1546" y="3678" w="779" h="352" oX="248" oY="200" oW="832" oH="995" r="y"/>
+    <sprite n="SarvTransAnim0009" x="4823" y="1" w="484" h="768" oX="180" oY="210" oW="832" oH="995"/>
+    <sprite n="SarvTransAnim0010" x="4821" y="775" w="492" h="768" oX="170" oY="210" oW="832" oH="995"/>
+    <sprite n="SarvTransAnim0011" x="5315" y="770" w="767" h="491" oX="171" oY="213" oW="832" oH="995" r="y"/>
+    <sprite n="SarvTransAnim0012" x="4831" y="1545" w="471" h="762" oX="190" oY="220" oW="832" oH="995"/>
+    <sprite n="SarvTransAnim0013" x="5304" y="2154" w="760" h="468" oX="189" oY="221" oW="832" oH="995" r="y"/>
+    <sprite n="SarvTransAnim0014" x="4831" y="2309" w="465" h="754" oX="183" oY="218" oW="832" oH="995"/>
+    <sprite n="SarvTransAnim0015" x="5298" y="2624" w="754" h="462" oX="184" oY="218" oW="832" oH="995" r="y"/>
+    <sprite n="SarvTransAnim0016" x="4736" y="3065" w="462" h="754" oX="184" oY="218" oW="832" oH="995"/>
+    <sprite n="SarvTransAnim0017" x="5200" y="3088" w="754" h="462" oX="184" oY="218" oW="832" oH="995" r="y"/>
+    <sprite n="SarvTransAnim0018" x="5200" y="3552" w="754" h="462" oX="184" oY="218" oW="832" oH="995" r="y"/>
+    <sprite n="SarvTransAnim0019" x="767" y="2844" w="462" h="833" oX="184" oY="139" oW="832" oH="995"/>
+    <sprite n="SarvTransAnim0020" x="744" y="972" w="604" h="870" oX="106" oY="102" oW="832" oH="995"/>
+    <sprite n="SarvTransAnim0021" x="1" y="1948" w="679" h="950" oX="87" oY="33" oW="832" oH="995"/>
+    <sprite n="SarvTransAnim0022" x="4232" y="3213" w="502" h="770" oX="168" oY="215" oW="832" oH="995"/>
+    <sprite n="SarvTransAnim0023" x="4283" y="780" w="536" h="772" oX="147" oY="215" oW="832" oH="995"/>
+    <sprite n="SarvTransAnim0024" x="3966" y="2436" w="581" h="775" oX="124" oY="215" oW="832" oH="995"/>
+    <sprite n="SarvTransAnim0025" x="2327" y="3457" w="793" h="584" oX="131" oY="194" oW="832" oH="995" r="y"/>
+    <sprite n="SarvTransAnim0026" x="2877" y="1" w="592" h="817" oX="124" oY="167" oW="832" oH="995"/>
+    <sprite n="SarvTransAnim0027" x="1" y="1" w="702" h="973" oX="48" oY="4" oW="832" oH="995"/>
+    <sprite n="SarvTransAnim0028" x="1" y="976" w="741" h="970" oX="25" oY="4" oW="832" oH="995"/>
+    <sprite n="SarvTransAnim0029" x="705" y="1" w="724" h="969" oX="49" oY="4" oW="832" oH="995"/>
+    <sprite n="SarvTransAnim0030" x="1" y="2900" w="764" h="915" oX="25" oY="58" oW="832" oH="995"/>
+    <sprite n="SarvTransAnim0031" x="682" y="1948" w="757" h="894" oX="17" oY="69" oW="832" oH="995"/>
+    <sprite n="SarvTransAnim0032" x="1350" y="972" w="802" h="839" oX="7" oY="121" oW="832" oH="995"/>
+    <sprite n="SarvTransAnim0033" x="3122" y="3284" w="762" h="782" oX="8" oY="91" oW="832" oH="995" r="y"/>
+    <sprite n="SarvTransAnim0034" x="1431" y="1" w="808" h="837" oX="10" oY="16" oW="832" oH="995"/>
+    <sprite n="SarvTransAnim0035" x="1231" y="2844" w="801" h="832" oX="7" oY="21" oW="832" oH="995"/>
+    <sprite n="SarvTransAnim0036" x="3522" y="1632" w="767" h="802" oX="29" oY="16" oW="832" oH="995"/>
+    <sprite n="SarvTransAnim0037" x="5309" y="1" w="713" h="767" oX="29" oY="105" oW="832" oH="995" r="y"/>
+    <sprite n="SarvTransAnim0038" x="2154" y="840" w="768" h="818" oX="41" oY="144" oW="832" oH="995"/>
+    <sprite n="SarvTransAnim0039" x="1441" y="1813" w="714" h="827" oX="59" oY="154" oW="832" oH="995"/>
+    <sprite n="SarvTransAnim0040" x="2241" y="1" w="634" h="817" oX="110" oY="160" oW="832" oH="995"/>
+    <sprite n="SarvTransAnim0041" x="2034" y="2642" w="566" h="813" oX="145" oY="164" oW="832" oH="995"/>
+    <sprite n="SarvTransAnim0042" x="2157" y="1660" w="453" h="810" oX="201" oY="164" oW="832" oH="995"/>
+    <sprite n="SarvTransAnim0043" x="2602" y="2472" w="453" h="810" oX="201" oY="164" oW="832" oH="995"/>
+    <sprite n="SarvTransAnim0044" x="2612" y="1660" w="453" h="810" oX="201" oY="164" oW="832" oH="995"/>
+    <sprite n="SarvTransAnim0045" x="2924" y="820" w="453" h="810" oX="201" oY="164" oW="832" oH="995"/>
+    <sprite n="SarvTransAnim0046" x="3057" y="2472" w="453" h="810" oX="201" oY="164" oW="832" oH="995"/>
+    <sprite n="SarvTransAnim0047" x="3067" y="1632" w="453" h="810" oX="201" oY="164" oW="832" oH="995"/>
+    <sprite n="SarvTransAnim0048" x="3379" y="820" w="453" h="810" oX="201" oY="164" oW="832" oH="995"/>
+    <sprite n="SarvTransAnim0049" x="3471" y="1" w="453" h="810" oX="201" oY="164" oW="832" oH="995"/>
+    <sprite n="SarvTransAnim0050" x="3512" y="2444" w="452" h="803" oX="202" oY="165" oW="832" oH="995"/>
+</TextureAtlas>

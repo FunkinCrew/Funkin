@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="Beam.png">
+	<!-- Created with Adobe Animate version 21.0.3.38773 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="BEAM0000" x="5" y="5" width="489" height="456" frameX="0" frameY="0" frameWidth="2231" frameHeight="472"/>
+	<SubTexture name="BEAM0001" x="504" y="5" width="514" height="453" frameX="-190" frameY="-19" frameWidth="2231" frameHeight="472"/>
+	<SubTexture name="BEAM0002" x="1028" y="5" width="624" height="425" frameX="-361" frameY="-35" frameWidth="2231" frameHeight="472"/>
+	<SubTexture name="BEAM0003" x="5" y="471" width="604" height="417" frameX="-648" frameY="-28" frameWidth="2231" frameHeight="472"/>
+	<SubTexture name="BEAM0004" x="619" y="471" width="701" height="376" frameX="-858" frameY="-34" frameWidth="2231" frameHeight="472"/>
+	<SubTexture name="BEAM0005" x="1330" y="471" width="709" height="297" frameX="-1015" frameY="-61" frameWidth="2231" frameHeight="472"/>
+	<SubTexture name="BEAM0006" x="5" y="898" width="831" height="278" frameX="-1400" frameY="-51" frameWidth="2231" frameHeight="472"/>
+</TextureAtlas>

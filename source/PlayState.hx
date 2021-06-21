@@ -513,13 +513,24 @@ class PlayState extends MusicBeatState
 		if (botPlayShit && !loadRep)
 			add(botPlayState);
 
-		iconP1 = new HealthIcon(SONG.player1, true);
-		iconP1.y = healthBar.y - (iconP1.height / 2);
+		iconP1 = new HealthIcon();
+		iconP2 = new HealthIcon();
+
+		
+		songPlayer.setIconDad(iconP1);
+		songPlayer.setIconBF(iconP2);
+		
+
+		iconP1.y = healthBar.y - (iconP1.height / 2); //so subtract half babe
 		add(iconP1);
 
-		iconP2 = new HealthIcon(SONG.player2, false);
-		iconP2.y = healthBar.y - (iconP2.height / 2);
+		iconP2.y = healthBar.y - (iconP2.height / 2); //subtract half babe
 		add(iconP2);
+
+
+		// iconP1.y = healthBar.y;
+		// iconP2.y = healthBar.y;
+
 
 		strumLineNotes.cameras = [camHUD];
 		notes.cameras = [camHUD];
@@ -1069,10 +1080,10 @@ class PlayState extends MusicBeatState
 
 		if (FlxG.keys.justPressed.NINE)
 		{
-			if (iconP1.animation.curAnim.name == 'bf-old')
-				iconP1.animation.play(SONG.player1);
-			else
-				iconP1.animation.play('bf-old');
+			// if (iconP1.animation.curAnim.name == 'bf-old')
+			// 	iconP1.animation.play(SONG.player1);
+			// else
+			// 	iconP1.animation.play('bf-old');
 		}
 
 		songPlayer.update(elapsed);

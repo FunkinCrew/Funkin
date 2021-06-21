@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker https://www.codeandweb.com/texturepacker -->
+<!-- $TexturePacker:SmartUpdate:2c208e85fbc71e6d51bf79a9745c0fd2:5fc2981413c60d86d969c5a687d2b451:edf360a06b80564eb93c3e63262b293e$ -->
+<TextureAtlas imagePath="LoudSpeaker_Moving.png" width="2748" height="3282">
+    <SubTexture name="StereoMoving0000" x="1" y="1" width="1371" height="638"/>
+    <SubTexture name="StereoMoving0001" x="1374" y="1" width="1372" height="650"/>
+    <SubTexture name="StereoMoving0002" x="1" y="653" width="1372" height="660"/>
+    <SubTexture name="StereoMoving0003" x="1375" y="653" width="1371" height="667"/>
+    <SubTexture name="StereoMoving0004" x="1" y="1322" width="1371" height="641"/>
+    <SubTexture name="StereoMoving0005" x="1374" y="1322" width="1372" height="650"/>
+    <SubTexture name="StereoMoving0006" x="1375" y="653" width="1371" height="667"/>
+    <SubTexture name="StereoMoving0007" x="1" y="1974" width="1372" height="664"/>
+    <SubTexture name="StereoMoving0008" x="1" y="1322" width="1371" height="641"/>
+    <SubTexture name="StereoMoving0009" x="1374" y="1322" width="1372" height="650"/>
+    <SubTexture name="StereoMoving0010" x="1" y="653" width="1372" height="660"/>
+    <SubTexture name="StereoMoving0011" x="1375" y="1974" width="1372" height="667"/>
+    <SubTexture name="StereoMoving0012" x="1" y="2643" width="1371" height="638"/>
+    <SubTexture name="StereoMoving0013" x="1375" y="1974" width="1372" height="667"/>
+    <SubTexture name="StereoMoving0014" x="1" y="653" width="1372" height="660"/>
+</TextureAtlas>

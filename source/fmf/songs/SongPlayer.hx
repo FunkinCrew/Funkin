@@ -509,4 +509,20 @@ class SongPlayer
 		note.antialiasing = true;
 	}
 
+	//set icons
+
+	public function setIconBF(icon:HealthIcon)
+	{
+		icon.loadGraphic(Paths.image('iconGrid'), true, 150, 150);
+		icon.animation.add('bf', [0, 1], 0, false, true);
+		icon.animation.play("bf");
+	}
+
+	public function setIconDad(icon:HealthIcon)
+	{
+		icon.loadGraphic(Paths.image('iconGrid'), true, 150, 150);
+		icon.animation.add('dad', [16, 7], 0, false, true);
+		icon.animation.play("dad");
+	}
+
 }

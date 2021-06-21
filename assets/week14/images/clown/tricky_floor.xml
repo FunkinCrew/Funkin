@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with TexturePacker https://www.codeandweb.com/texturepacker -->
-<!-- $TexturePacker:SmartUpdate:c0afe12ebd232f59fe333dfc11345493:04dea2c5b5d82a0650456594b449b2f1:c4b84938bc15acf23f0bd8a4dead91dd$ -->
-<TextureAtlas imagePath="tricky_floor.png" width="3968" height="3968">
-    <SubTexture name="Symbol 10000" x="0" y="0" width="1126" height="468"/>
-</TextureAtlas>

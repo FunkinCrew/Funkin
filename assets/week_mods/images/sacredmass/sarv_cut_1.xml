@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="nokiaPhoneCall.png">
+	<!-- Created with Adobe Animate version 20.0.0.17400 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="SarvIntroAnim0006" x="60" y="158" width="373" height="758" frameX="-3" frameY="-6" frameWidth="379" frameHeight="764"/><!--0-->
+	<SubTexture name="SarvIntroAnim0005" x="473" y="155" width="373" height="759" frameX="-3" frameY="-5" frameWidth="379" frameHeight="764"/><!--1-->
+	<SubTexture name="SarvIntroAnim0004" x="868" y="152" width="373" height="761" frameX="-3" frameY="-3" frameWidth="379" frameHeight="764"/><!--2-->
+	<SubTexture name="SarvIntroAnim0003" x="1282" y="144" width="374" height="760" frameX="-3" frameY="-4" frameWidth="379" frameHeight="764"/><!--3-->
+	<SubTexture name="SarvIntroAnim0002" x="1707" y="148" width="374" height="763" frameX="-3" frameY="-1" frameWidth="379" frameHeight="764"/><!--4-->
+	<SubTexture name="SarvIntroAnim0001" x="2092" y="152" width="374" height="763" frameX="-3" frameY="-1" frameWidth="379" frameHeight="764"/><!--5-->
+	<SubTexture name="SarvIntroAnim0000" x="2475" y="150" width="374" height="764" frameX="-3" frameY="0" frameWidth="379" frameHeight="764"/><!--6-->
+
+	<SubTexture name="SarvIntroAnim0007" x="49" y="1101" width="373" height="758" frameX="-3" frameY="-6" frameWidth="379" frameHeight="764"/><!--7-->
+	<SubTexture name="SarvIntroAnim0008" x="449" y="1099" width="373" height="759" frameX="-3" frameY="-5" frameWidth="379" frameHeight="764"/><!--8-->
+	<SubTexture name="SarvIntroAnim0009" x="839" y="1097" width="379" height="761" frameX="0" frameY="-3" frameWidth="379" frameHeight="764"/><!--9-->
+	<SubTexture name="SarvIntroAnim00010" x="1255" y="1093" width="374" height="760" frameX="-3" frameY="-4" frameWidth="379" frameHeight="764"/><!--10-->
+	<SubTexture name="SarvIntroAnim0011" x="1680" y="1092" width="374" height="763" frameX="-3" frameY="-1" frameWidth="379" frameHeight="764"/><!--11-->
+
+	<SubTexture name="SarvIntro2Anim0000" x="60" y="158" width="373" height="758" frameX="-3" frameY="-6" frameWidth="379" frameHeight="764"/><!--0-->
+	<SubTexture name="SarvIntro2Anim0001" x="60" y="158" width="373" height="758" frameX="-3" frameY="-6" frameWidth="379" frameHeight="764"/><!--0-->
+	<SubTexture name="SarvIntro2Anim0002" x="473" y="155" width="373" height="759" frameX="-3" frameY="-5" frameWidth="379" frameHeight="764"/><!--1-->
+	<SubTexture name="SarvIntro2Anim0003" x="473" y="155" width="373" height="759" frameX="-3" frameY="-5" frameWidth="379" frameHeight="764"/><!--1-->
+	<SubTexture name="SarvIntro2Anim0004" x="868" y="152" width="373" height="761" frameX="-3" frameY="-3" frameWidth="379" frameHeight="764"/><!--2-->
+	<SubTexture name="SarvIntro2Anim0005" x="1282" y="144" width="374" height="760" frameX="-3" frameY="-4" frameWidth="379" frameHeight="764"/><!--3-->
+	<SubTexture name="SarvIntro2Anim0006" x="1707" y="148" width="374" height="763" frameX="-3" frameY="-1" frameWidth="379" frameHeight="764"/><!--4-->
+	<SubTexture name="SarvIntro2Anim0007" x="2092" y="152" width="374" height="763" frameX="-3" frameY="-1" frameWidth="379" frameHeight="764"/><!--5-->
+	<SubTexture name="SarvIntro2Anim0008" x="2475" y="150" width="374" height="764" frameX="-3" frameY="0" frameWidth="379" frameHeight="764"/><!--6-->
+	<SubTexture name="SarvIntro2Anim0009" x="2475" y="150" width="374" height="764" frameX="-3" frameY="0" frameWidth="379" frameHeight="764"/><!--6-->
+	<SubTexture name="SarvIntro2Anim00010" x="2475" y="150" width="374" height="764" frameX="-3" frameY="0" frameWidth="379" frameHeight="764"/><!--6-->
+	<SubTexture name="SarvIntro2Anim00011" x="2475" y="150" width="374" height="764" frameX="-3" frameY="0" frameWidth="379" frameHeight="764"/><!--6-->
+
+
+</TextureAtlas>
