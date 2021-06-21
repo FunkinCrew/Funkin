@@ -179,6 +179,17 @@ class ResultsScreen extends FlxSubState
             PlayState.loadRep = false;
             PlayState.rep = null;
 
+			var songHighscore = StringTools.replace(PlayState.SONG.song, " ", "-");
+			switch (songHighscore) {
+				case 'Dad-Battle': songHighscore = 'Dadbattle';
+				case 'Philly-Nice': songHighscore = 'Philly';
+			}
+
+			#if !switch
+			Highscore.saveScore(songHighscore, Math.round(PlayState.instance.songScore), PlayState.storyDifficulty);
+			Highscore.saveCombo(songHighscore, Ratings.GenerateLetterRank(PlayState.instance.accuracy),PlayState.storyDifficulty);
+			#end
+
             if (PlayState.isStoryMode)
             {
                 FlxG.sound.playMusic(Paths.music('freakyMenu'));
@@ -210,6 +221,17 @@ class ResultsScreen extends FlxSubState
                 case 'philly-nice': songFormat = 'Philly';
             }
 
+			var songHighscore = StringTools.replace(PlayState.SONG.song, " ", "-");
+			switch (songHighscore) {
+				case 'Dad-Battle': songHighscore = 'Dadbattle';
+				case 'Philly-Nice': songHighscore = 'Philly';
+			}
+
+			#if !switch
+			Highscore.saveScore(songHighscore, Math.round(PlayState.instance.songScore), PlayState.storyDifficulty);
+			Highscore.saveCombo(songHighscore, Ratings.GenerateLetterRank(PlayState.instance.accuracy),PlayState.storyDifficulty);
+			#end
+
             var poop:String = Highscore.formatSong(songFormat, PlayState.rep.replay.songDiff);
 
             music.fadeOut(0.3);
@@ -226,6 +248,17 @@ class ResultsScreen extends FlxSubState
             PlayState.rep = null;
 
             PlayState.loadRep = false;
+
+			var songHighscore = StringTools.replace(PlayState.SONG.song, " ", "-");
+			switch (songHighscore) {
+				case 'Dad-Battle': songHighscore = 'Dadbattle';
+				case 'Philly-Nice': songHighscore = 'Philly';
+			}
+
+			#if !switch
+			Highscore.saveScore(songHighscore, Math.round(PlayState.instance.songScore), PlayState.storyDifficulty);
+			Highscore.saveCombo(songHighscore, Ratings.GenerateLetterRank(PlayState.instance.accuracy),PlayState.storyDifficulty);
+			#end
 
             var songFormat = StringTools.replace(PlayState.SONG.song, " ", "-");
             switch (songFormat) {
