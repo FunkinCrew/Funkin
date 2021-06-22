@@ -312,7 +312,7 @@ class Judgement extends Option
 		FlxG.save.data.frames = Conductor.safeFrames;
 
 		Conductor.recalculateTimings();
-		return true;
+		return false;
 	}
 
 	override function getValue():String {
@@ -370,6 +370,7 @@ class ScoreScreen extends Option
 	public override function press():Bool
 	{
 		FlxG.save.data.scoreScreen = !FlxG.save.data.scoreScreen;
+		display = updateDisplay();
 		return true;
 	}
 
@@ -501,6 +502,27 @@ class RainbowFPSOption extends Option
 	{
 		return "FPS Rainbow " + (!FlxG.save.data.fpsRain ? "off" : "on");
 	}
+}
+
+class Optimization extends Option
+{
+	public function new(desc:String)
+		{
+			super();
+			description = desc;
+		}
+	
+		public override function press():Bool
+		{
+			FlxG.save.data.optimize = !FlxG.save.data.optimize;
+			display = updateDisplay();
+			return true;
+		}
+	
+		private override function updateDisplay():String
+		{
+			return "Optimization " + (FlxG.save.data.optimize ? "ON" : "OFF");
+		}
 }
 
 class NPSDisplayOption extends Option

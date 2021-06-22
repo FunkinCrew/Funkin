@@ -57,9 +57,10 @@ class OptionsMenu extends MusicBeatState
 			#end
 			new FlashingLightsOption("Toggle flashing lights that can cause epileptic seizures and strain."),
 			new WatermarkOption("Enable and disable all watermarks from the engine."),
-			new BotPlay("Showcase your charts and mods with autoplay."),
 			new ScoreScreen("Show the score screen after the end of a song"),
-			new ShowInput("Display every single input in the score screen.")
+      new ShowInput("Display every single input in the score screen."),
+			new Optimization("No backgrounds, no characters, centered notes, no player 2."),
+			new BotPlay("Showcase your charts and mods with autoplay.")
 		]),
 		
 		new OptionCategory("Manage Save Data", [
@@ -220,10 +221,8 @@ class OptionsMenu extends MusicBeatState
 				if (isCat)
 				{
 					if (currentSelectedCat.getOptions()[curSelected].press()) {
-						grpControls.remove(grpControls.members[curSelected]);
-						var ctrl:Alphabet = new Alphabet(0, (70 * curSelected) + 30, currentSelectedCat.getOptions()[curSelected].getDisplay(), true, false);
-						ctrl.isMenuItem = true;
-						grpControls.add(ctrl);
+						grpControls.members[curSelected].reType(currentSelectedCat.getOptions()[curSelected].getDisplay());
+						trace(currentSelectedCat.getOptions()[curSelected].getDisplay());
 					}
 				}
 				else
@@ -242,7 +241,7 @@ class OptionsMenu extends MusicBeatState
 					curSelected = 0;
 				}
 				
-				changeSelection(curSelected);
+				changeSelection();
 			}
 		}
 		FlxG.save.flush();
