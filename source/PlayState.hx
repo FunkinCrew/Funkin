@@ -1594,7 +1594,7 @@ class PlayState extends MusicBeatState
 		var noteData:Array<SwagSection>;
 
 		// NEW SHIT
-		noteData = songData.notes[storyDifficulty];
+		noteData = songData.notes;
 
 		for (section in noteData)
 		{
@@ -2003,9 +2003,9 @@ class PlayState extends MusicBeatState
 			changeSection(-1);
 		#end
 
-		if (generatedMusic && SONG.notes[storyDifficulty][Std.int(curStep / 16)] != null)
+		if (generatedMusic && SONG.notes[Std.int(curStep / 16)] != null)
 		{
-			cameraRightSide = SONG.notes[storyDifficulty][Std.int(curStep / 16)].mustHitSection;
+			cameraRightSide = SONG.notes[Std.int(curStep / 16)].mustHitSection;
 
 			cameraMovement();
 		}
@@ -2093,8 +2093,7 @@ class PlayState extends MusicBeatState
 			}
 		}
 
-		while (unspawnNotes[0] != null
-			&& unspawnNotes[0].strumTime - Conductor.songPosition < 1800 / SONG.speed[PlayState.storyDifficulty])
+		while (unspawnNotes[0] != null && unspawnNotes[0].strumTime - Conductor.songPosition < 1800 / SONG.speed)
 		{
 			var dunceNote:Note = unspawnNotes[0];
 			notes.add(dunceNote);
@@ -2123,7 +2122,7 @@ class PlayState extends MusicBeatState
 
 				if (PreferencesMenu.getPref('downscroll'))
 				{
-					daNote.y = (strumLine.y + (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(SONG.speed[storyDifficulty], 2)));
+					daNote.y = (strumLine.y + (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(SONG.speed, 2)));
 
 					if (daNote.isSustainNote)
 					{
@@ -2146,7 +2145,7 @@ class PlayState extends MusicBeatState
 				}
 				else
 				{
-					daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(SONG.speed[storyDifficulty], 2)));
+					daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(SONG.speed, 2)));
 
 					if (daNote.isSustainNote
 						&& (!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit)))
@@ -2167,9 +2166,9 @@ class PlayState extends MusicBeatState
 
 					var altAnim:String = "";
 
-					if (SONG.notes[storyDifficulty][Math.floor(curStep / 16)] != null)
+					if (SONG.notes[Math.floor(curStep / 16)] != null)
 					{
-						if (SONG.notes[storyDifficulty][Math.floor(curStep / 16)].altAnim)
+						if (SONG.notes[Math.floor(curStep / 16)].altAnim)
 							altAnim = '-alt';
 					}
 
@@ -2263,9 +2262,9 @@ class PlayState extends MusicBeatState
 		var daPos:Float = 0;
 		for (i in 0...(Std.int(curStep / 16 + sec)))
 		{
-			if (SONG.notes[storyDifficulty][i].changeBPM)
+			if (SONG.notes[i].changeBPM)
 			{
-				daBPM = SONG.notes[storyDifficulty][i].bpm;
+				daBPM = SONG.notes[i].bpm;
 			}
 			daPos += 4 * (1000 * 60 / daBPM);
 		}
@@ -2974,17 +2973,17 @@ class PlayState extends MusicBeatState
 			notes.sort(sortNotes, FlxSort.DESCENDING);
 		}
 
-		if (SONG.notes[storyDifficulty][Math.floor(curStep / 16)] != null)
+		if (SONG.notes[Math.floor(curStep / 16)] != null)
 		{
-			if (SONG.notes[storyDifficulty][Math.floor(curStep / 16)].changeBPM)
+			if (SONG.notes[Math.floor(curStep / 16)].changeBPM)
 			{
-				Conductor.changeBPM(SONG.notes[storyDifficulty][Math.floor(curStep / 16)].bpm);
+				Conductor.changeBPM(SONG.notes[Math.floor(curStep / 16)].bpm);
 				FlxG.log.add('CHANGED BPM!');
 			}
 			// else
 			// Conductor.changeBPM(SONG.bpm);
 		}
-		// FlxG.log.add('change bpm' + SONG.notes[storyDifficulty][Std.int(curStep / 16)].changeBPM);
+		// FlxG.log.add('change bpm' + SONG.notes[Std.int(curStep / 16)].changeBPM);
 		wiggleShit.update(Conductor.crochet);
 
 		// HARDCODING FOR MILF ZOOMS!
