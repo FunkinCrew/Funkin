@@ -10,10 +10,10 @@ using StringTools;
 typedef SwagSong =
 {
 	var song:String;
-	var notes:Array<SwagSection>;
+	var notes:Array<Array<SwagSection>>;
 	var bpm:Float;
 	var needsVoices:Bool;
-	var speed:Float;
+	var speed:Array<Float>;
 
 	var player1:String;
 	var player2:String;
@@ -26,7 +26,7 @@ class Song
 	public var notes:Array<SwagSection>;
 	public var bpm:Float;
 	public var needsVoices:Bool = true;
-	public var speed:Float = 1;
+	public var speed:Array<Float> = [1, 1, 1];
 
 	public var player1:String = 'bf';
 	public var player2:String = 'dad';
