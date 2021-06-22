@@ -258,7 +258,7 @@ class PlayState extends MusicBeatState
 		PlayStateChangeables.safeFrames = FlxG.save.data.frames;
 		PlayStateChangeables.scrollSpeed = FlxG.save.data.scrollSpeed;
 		PlayStateChangeables.botPlay = FlxG.save.data.botplay;
-
+		PlayStateChangeables.Optimize = FlxG.save.data.optimize;
 
 		// pre lowercasing the song name (create)
 		var songLowercase = StringTools.replace(PlayState.SONG.song, " ", "-").toLowerCase();
@@ -271,6 +271,8 @@ class PlayState extends MusicBeatState
 
 		#if windows
 		executeModchart = FileSystem.exists(Paths.lua(songLowercase  + "/modchart"));
+		if (executeModchart)
+			PlayStateChangeables.Optimize = false;
 		#end
 		#if !cpp
 		executeModchart = false; // FORCE disable for non cpp targets
@@ -376,6 +378,9 @@ class PlayState extends MusicBeatState
 				//i should check if its stage (but this is when none is found in chart anyway)
 			}
 		} else {stageCheck = SONG.stage;}
+
+		if (!PlayStateChangeables.Optimize)
+		{
 
 		switch(stageCheck)
 		{
@@ -756,7 +761,7 @@ class PlayState extends MusicBeatState
 					add(stageCurtains);
 			}
 		}
-
+		}
 		//defaults if no gf was found in chart
 		var gfCheck:String = 'gf';
 		
@@ -781,7 +786,7 @@ class PlayState extends MusicBeatState
 			default:
 				curGf = 'gf';
 		}
-
+		
 		gf = new Character(400, 130, curGf);
 		gf.scrollFactor.set(0.95, 0.95);
 
@@ -870,14 +875,19 @@ class PlayState extends MusicBeatState
 				gf.y += 300;
 		}
 
-		add(gf);
+		if (!PlayStateChangeables.Optimize)
+		{
+			add(gf);
 
-		// Shitty layering but whatev it works LOL
-		if (curStage == 'limo')
-			add(limo);
+			// Shitty layering but whatev it works LOL
+			if (curStage == 'limo')
+				add(limo);
 
-		add(dad);
-		add(boyfriend);
+			add(dad);
+			add(boyfriend);
+		}
+
+
 		if (loadRep)
 		{
 			FlxG.watch.addQuick('rep rpesses',repPresses);
@@ -1538,6 +1548,10 @@ class PlayState extends MusicBeatState
 					oldNote = null;
 
 				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote);
+
+				if (!gottaHitNote && PlayStateChangeables.Optimize)
+					continue;
+
 				swagNote.sustainLength = songNotes[2];
 				swagNote.scrollFactor.set(0, 0);
 
@@ -1598,6 +1612,9 @@ class PlayState extends MusicBeatState
 			//defaults if no noteStyle was found in chart
 			var noteTypeCheck:String = 'normal';
 		
+			if (PlayStateChangeables.Optimize && player == 0)
+				continue;
+
 			if (SONG.noteStyle == null) {
 				switch(storyWeek) {case 6: noteTypeCheck = 'pixel';}
 			} else {noteTypeCheck = SONG.noteStyle;}
@@ -1731,6 +1748,9 @@ class PlayState extends MusicBeatState
 			babyArrow.animation.play('static');
 			babyArrow.x += 50;
 			babyArrow.x += ((FlxG.width / 2) * player);
+			
+			if (PlayStateChangeables.Optimize)
+				babyArrow.x -= 275;
 			
 			cpuStrums.forEach(function(spr:FlxSprite)
 			{					
@@ -1929,7 +1949,7 @@ class PlayState extends MusicBeatState
 		switch (curStage)
 		{
 			case 'philly':
-				if (trainMoving)
+				if (trainMoving && !PlayStateChangeables.Optimize)
 				{
 					trainFrameTiming += elapsed;
 

@@ -237,7 +237,7 @@ class HitGraph extends Sprite
 
 			/*if (i == 0)
 				gfx.moveTo(graphX, _axis.y + pointY);*/
-			gfx.drawRect(graphX + fitX(history[i][2]), pointY,4,4);
+			gfx.drawRect(fitX(history[i][2]), pointY,4,4);
 
 			gfx.endFill();
 		}
