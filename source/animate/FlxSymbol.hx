@@ -8,14 +8,13 @@ import flixel.math.FlxAngle;
 import flixel.math.FlxMath;
 import flixel.math.FlxMatrix;
 import flixel.math.FlxPoint;
+import lime.system.System;
 import openfl.geom.Matrix;
 
 class FlxSymbol extends FlxSprite
 {
 	public var coolParse:Parsed;
 	public var oldMatrix:Array<Float> = [];
-
-	private var hasFrameByPass:Bool = false;
 
 	// Loop types shit
 	public static inline var LOOP:String = 'LP';
@@ -29,6 +28,11 @@ class FlxSymbol extends FlxSprite
 	public function new(x:Float, y:Float, coolParsed:Parsed)
 	{
 		super(x, y);
+
+		// trace(System.deviceModel);
+		// trace(System.deviceVendor);
+		// trace(System.platformLabel);
+		// trace(System.platformName);
 
 		this.coolParse = coolParsed;
 
@@ -155,7 +159,7 @@ class FlxSymbol extends FlxSprite
 
 					nestedShit.daLoopType = element.SI.LP;
 					nestedShit.daFrame = daFrame;
-					nestedShit.hasFrameByPass = true;
+					nestedShit.scrollFactor.set(1, 1);
 					nestedShit.renderFrame(nestedSymbol.TL, coolParsed);
 
 					// renderFrame(nestedSymbol.TL, coolParsed);
