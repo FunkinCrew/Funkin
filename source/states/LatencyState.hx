@@ -1,5 +1,7 @@
 package states;
 
+import game.Conductor;
+import game.Note;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;

@@ -1,5 +1,7 @@
 package substates;
 
+import states.MainMenuState;
+import states.MusicBeatState;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxSubState;

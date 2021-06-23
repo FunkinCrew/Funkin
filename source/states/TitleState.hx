@@ -62,7 +62,7 @@ class TitleState extends MusicBeatState
 		trace('NEWGROUNDS LOL');
 		#end
 
-		FlxG.save.bind('funkin', 'ninjamuffin99');
+		FlxG.save.bind('leathersfunkinengine', 'leather128');
 
 		PlayerSettings.player1.controls.loadKeyBinds();
 
