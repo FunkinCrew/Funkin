@@ -102,4 +102,13 @@ class Spookez extends SongPlayer
 		bf.playAnimForce('scared', 0.5);
 		gf.playAnimForce('scared', 0.5);
 	}
+
+
+	public override function getDadIcon(icon:HealthIcon)
+	{
+		icon.loadGraphic(Paths.image('iconGrid'), true, 150, 150);
+		icon.animation.add('dad', [2, 3], 0, false, false);
+		icon.animation.play("dad");
+	}
+	
 }

@@ -1,5 +1,6 @@
 package;
 
+import fmf.songs.BaseSong;
 import ui.FlxVirtualPad.FlxActionMode;
 import ui.FlxVirtualPad.FlxDPadMode;
 import ui.Controller;
@@ -40,21 +41,25 @@ class FreeplayState extends MusicBeatState
 
 	override function create()
 	{
-		var initSonglist = CoolUtil.coolTextFile(Paths.txt('freeplaySonglist'));
-
-		for (i in 0...initSonglist.length)
+		
+		// fetch song shits from story menu
+		songs = new Array<SongMetadata>();
+		var weekNum = 0;
+		for (i in StoryMenuState.weekData)
 		{
-			var data:Array<String> = initSonglist[i].split(':');
-			songs.push(new SongMetadata(data[0], Std.parseInt(data[2]), data[1]));
+			var wweekSongs:Array<String> = i;
+			for (song in wweekSongs)
+			{
+				addSong(song, weekNum);
+			}
+
+			weekNum++;
 		}
 
-		/* 
-			if (FlxG.sound.music != null)
-			{
-				if (!FlxG.sound.music.playing)
-					FlxG.sound.playMusic(Paths.music('freakyMenu'));
-			}
-		 */
+
+		for(i in songs)
+			trace(i.songName);
+
 
 		 #if windows
 		 // Updating Discord Rich Presence
@@ -84,7 +89,11 @@ class FreeplayState extends MusicBeatState
 			songText.targetY = i;
 			grpSongs.add(songText);
 
+			var baseSong:BaseSong = SongManager.getCurrentSong(songs[i].songName);
+
 			var icon:HealthIcon = new HealthIcon();
+			baseSong.getDadIcon(icon);
+
 			icon.sprTracker = songText;
 
 			// using a FlxGroup is too much fuss!
@@ -146,9 +155,9 @@ class FreeplayState extends MusicBeatState
 		super.create();
 	}
 
-	public function addSong(songName:String, weekNum:Int, songCharacter:String)
+	public function addSong(songName:String, weekNum:Int)
 	{
-		songs.push(new SongMetadata(songName, weekNum, songCharacter));
+		songs.push(new SongMetadata(songName, weekNum));
 	}
 
 	public function addWeek(songs:Array<String>, weekNum:Int, ?songCharacters:Array<String>)
@@ -159,7 +168,7 @@ class FreeplayState extends MusicBeatState
 		var num:Int = 0;
 		for (song in songs)
 		{
-			addSong(song, weekNum, songCharacters[num]);
+			addSong(song, weekNum);
 
 			if (songCharacters.length != 1)
 				num++;
@@ -332,12 +341,15 @@ class SongMetadata
 {
 	public var songName:String = "";
 	public var week:Int = 0;
-	public var songCharacter:String = "";
 
-	public function new(song:String, week:Int, songCharacter:String)
+	//we no longer need character per song,
+	// I'm using the SongManager to handle which character should be render
+	// public var songCharacter:String = "";
+
+	public function new(song:String, week:Int)
 	{
 		this.songName = song;
 		this.week = week;
-		this.songCharacter = songCharacter;
+		// this.songCharacter = songCharacter;
 	}
 }

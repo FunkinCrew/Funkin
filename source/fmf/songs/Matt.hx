@@ -22,6 +22,12 @@ class Matt extends SongPlayer
 		dad.frames = tex;
 	}
 
+	override function getGFTex()
+	{
+		var tex = Paths.getSparrowAtlas("matt/GF_MII_assets", "mods");
+		gf.frames = tex;
+	}
+
 	override function createDadAnimations():Void
 	{
 		var animation = dad.animation;
@@ -40,7 +46,6 @@ class Matt extends SongPlayer
 		dad.addOffset("singRIGHT", -15, -20);
 		dad.addOffset("singLEFT", 30, -40);
 		dad.addOffset("singDOWN", 0, -20);
-		
 		dad.dance();
 
 	}
@@ -49,9 +54,10 @@ class Matt extends SongPlayer
 	{
 		super.createCharacters();
 
-
 		dad.x -= 250;
 		dad.y += 150;
+
+		gf.y -= 200;
 	}
 
 	override function setCamPosition()
@@ -59,10 +65,11 @@ class Matt extends SongPlayer
 		camPos.x += 400;
 	}
 
-	override function midSongEventUpdate(curBeat:Int):Void
+	public override function getDadIcon(icon:HealthIcon)
 	{
-		
+		icon.loadGraphic(Paths.image('matt/iconGrid', "mods"), true, 150, 150);
+		icon.animation.add('dad', [23, 24], 0, false, false);
+		icon.animation.play("dad");
 	}
-
 
 }

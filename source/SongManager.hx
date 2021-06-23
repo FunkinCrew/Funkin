@@ -5,16 +5,16 @@ import fmf.songs.*;
 
 class SongManager
 {
-	public static function getCurrentSong():SongPlayer
+	public static function getCurrentSong(songName:String):SongPlayer
 	{
-		var songPlayer:SongPlayer = null;
+		var songPlayer:SongPlayer = new Tutorial();
 
-		switch (PlayState.CURRENT_SONG)
+		switch (songName.toLowerCase())
 		{
 			case 'tutorial':
 				songPlayer = new Tutorial();
 
-			case 'bopeebo' | 'fresh' | 'dadbattle':
+			case 'bopeebo' | 'fresh' | 'dadbattle' | 'dad battle' | 'dad-battle':
 				songPlayer = new DaddyDearest();
 
 			case 'spookeez' | 'south':
@@ -23,22 +23,22 @@ class SongManager
 			case 'monster':
 				songPlayer = new Monster();
 
-			case 'pico' | 'philly' | 'blammed':
+			case 'pico' | 'philly' | 'blammed' | 'philly nice' |  'philly-nice' | 'phillynice':
 				songPlayer = new Philly();
 
-			case 'satin-panties' | "high" | "milf":
+			case 'satin-panties' | "high" | "milf"  | 'satin panties' | 'satinpanties':
 				songPlayer = new Mom();
 
 			case 'cocoa' | 'eggnog':
 				songPlayer = new Parents();
 
-			case 'winter-horrorland':
+			case 'winter-horrorland' | 'winter horrorland' | 'winterhorrorland':
 				songPlayer = new WinterHorrorland();
 
 			case 'senpai':
 				songPlayer = new Senpai();
 
-			case 'roese':
+			case 'roses':
 				songPlayer = new SenpaiAngry();
 
 			case 'thorns':
@@ -51,6 +51,7 @@ class SongManager
 
 		return songPlayer;
 	}
+
 
 	public static function getArrow()
 	{

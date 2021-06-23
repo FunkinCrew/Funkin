@@ -193,20 +193,18 @@ class Mobilecontrols extends FlxSpriteGroup
 
 
 		//controlmode
-		switch controlmode{
-			case 1: //left default
+		switch controlmode
+		{
+			case 1: // left default
 				_pad = new FlxVirtualPad(LEFT_FULL, NONE);
-				_pad.alpha = 0.855;
 				this.add(_pad);
 
 			case 2:
 				// keyboardisenabled = true;
 				_pad = new FlxVirtualPad(RIGHT_FULL, NONE);
-				_pad.alpha = 0.855;
 				this.add(_pad);
-			
+
 				_subPad = new FlxVirtualPad(LEFT_FULL, NONE);
-				_subPad.alpha = 0.855;
 				this.add(_subPad);
 
 			case 3:
@@ -214,18 +212,45 @@ class Mobilecontrols extends FlxSpriteGroup
 				hitboxisenabled = true;
 				add(_hb);
 
-			// case 4: //split 
-			// 	_pad = new FlxVirtualPad(SPLIT, NONE);
-			// 	_pad.alpha = 0.855;
-			// 	this.add(_pad);
+			case 4: // left down, right up sheet
+				_pad = new FlxVirtualPad(SPLIT, NONE);
+				this.add(_pad);
 
-			default: //default (0)
+			default: // default (0)
 				_pad = new FlxVirtualPad(RIGHT_FULL, NONE);
-				_pad.alpha = 0.855;
 				this.add(_pad);
 		}
+
+		if (_pad != null)
+			_pad.alpha = 0;
+
+		if (_subPad != null)
+			_subPad.alpha = 0;
+
+		if (_hb != null)
+			_hb.visible = false;
+
+		#if mobile
+		showMobileControls();
+		#end
+		#if debug
+		showMobileControls();
+		#end
+
     }
 
+	function showMobileControls()
+	{
+		if (_pad != null)
+			_pad.alpha = 0.85;
+
+		if (_subPad != null)
+			_subPad.alpha = 0.85;
+
+		if (_hb != null)
+			_hb.visible = true;
+
+	}
 	override public function update(elapsed:Float) {
 		group.update(elapsed);
 

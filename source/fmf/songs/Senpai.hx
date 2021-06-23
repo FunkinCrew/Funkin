@@ -322,5 +322,21 @@ class Senpai extends SongPlayer
 		note.updateHitbox();
 	}
 
+	override function getBFIcon(icon:HealthIcon)
+	{
+		icon.loadGraphic(Paths.image('iconGrid'), true, 150, 150);
+		icon.animation.add('bf', [21, 21], 0, false, true);
+		icon.animation.play("bf");
+		icon.antialiasing = false;
+	}
+
+	public override function getDadIcon(icon:HealthIcon)
+	{
+		icon.loadGraphic(Paths.image('iconGrid'), true, 150, 150);
+		icon.animation.add('dad', [22, 22], 0, false, false);
+		icon.animation.play("dad");
+		icon.antialiasing = false;
+	}
+
 }
 

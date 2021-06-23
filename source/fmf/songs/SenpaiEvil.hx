@@ -150,4 +150,14 @@ class SenpaiEvil extends Senpai
 			playState.add(evilTrail);
 		}
 	}
+
+
+	public override function getDadIcon(icon:HealthIcon)
+	{
+		icon.loadGraphic(Paths.image('iconGrid'), true, 150, 150);
+		icon.animation.add('dad', [23, 23], 0, false, false);
+		icon.animation.play("dad");
+		icon.antialiasing = false;
+	}
+	
 }

@@ -58,4 +58,5 @@ class SenpaiAngry extends Senpai
 
 		dad.antialiasing = false;
 	}
+
 }

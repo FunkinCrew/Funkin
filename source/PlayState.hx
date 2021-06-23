@@ -362,7 +362,7 @@ class PlayState extends MusicBeatState
 		trace("cur song shit: " + CURRENT_SONG);
 
 		
-		songPlayer = SongManager.getCurrentSong();
+		songPlayer = SongManager.getCurrentSong(CURRENT_SONG);
 
 		//hardcode this shit
 		if(CURRENT_SONG == 'sepai' || CURRENT_SONG == 'roses')
@@ -517,8 +517,8 @@ class PlayState extends MusicBeatState
 		iconP2 = new HealthIcon();
 
 		
-		songPlayer.setIconDad(iconP1);
-		songPlayer.setIconBF(iconP2);
+		songPlayer.getDadIcon(iconP2);
+		songPlayer.getBFIcon(iconP1);
 		
 
 		iconP1.y = healthBar.y - (iconP1.height / 2); //so subtract half babe
