@@ -24,7 +24,16 @@ class CoolUtil
 
 	public static function coolTextFile(path:String):Array<String>
 	{
-		var daList:Array<String> = Assets.getText(path).trim().split('\n');
+		var daList:Array<String> = [];
+
+		var swagArray:Array<String> = Assets.getText(path).trim().split('\n');
+
+		for (item in swagArray)
+		{
+			// comment support in the quick lil text formats??? using //
+			if (!item.trim().startsWith('//'))
+				daList.push(item);
+		}
 
 		for (i in 0...daList.length)
 		{
