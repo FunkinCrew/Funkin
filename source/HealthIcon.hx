@@ -46,11 +46,20 @@ class HealthIcon extends FlxSprite
 		{
 			if (animation.getByName(newChar) == null)
 			{
-				loadGraphic(Paths.image('icons/icon-' + newChar), true, 150, 150);
+				var imgSize:Int = 150;
+
+				if (newChar.endsWith('pixel'))
+					imgSize = 32;
+
+				loadGraphic(Paths.image('icons/icon-' + newChar), true, imgSize, imgSize);
+
 				animation.add(newChar, [0, 1], 0, false, isPlayer);
 			}
 			animation.play(newChar);
 			char = newChar;
+
+			if (newChar.endsWith('pixel'))
+				setGraphicSize(150, 150);
 		}
 	}
 
