@@ -37,6 +37,8 @@ class HealthIcon extends FlxSprite
 			changeIcon(PlayState.SONG.player1);
 	}
 
+	var pixelArrayFunny:Array<String> = CoolUtil.coolTextFile(Paths.file('images/icons/pixelIcons.txt'));
+
 	public function changeIcon(newChar:String):Void
 	{
 		if (newChar != 'bf-pixel' && newChar != 'bf-old')
@@ -48,7 +50,7 @@ class HealthIcon extends FlxSprite
 			{
 				var imgSize:Int = 150;
 
-				if (newChar.endsWith('pixel'))
+				if (newChar.endsWith('pixel') || pixelArrayFunny.contains(newChar))
 					imgSize = 32;
 
 				loadGraphic(Paths.image('icons/icon-' + newChar), true, imgSize, imgSize);
@@ -58,7 +60,7 @@ class HealthIcon extends FlxSprite
 			animation.play(newChar);
 			char = newChar;
 
-			if (newChar.endsWith('pixel'))
+			if (newChar.endsWith('pixel') || pixelArrayFunny.contains(newChar))
 			{
 				setGraphicSize(150);
 				updateHitbox();
