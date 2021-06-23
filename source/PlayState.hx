@@ -1353,20 +1353,37 @@ class PlayState extends MusicBeatState
 	var songTime:Float = 0;
 
 
+	private function getKey(charCode:Int):String
+	{
+		for (key => value in FlxKey.fromStringMap)
+		{
+			if (charCode == value)
+				return key;
+		}
+		return null;
+	}
+
 	private function handleInput(evt:KeyboardEvent):Void { // this actually handles press inputs
 
 		if (PlayStateChangeables.botPlay || loadRep || paused)
 			return;
 
-		var key = String.fromCharCode(evt.charCode);
+		// first convert it from openfl to a flixel key code
+		// then use FlxKey to get the key's name based off of the FlxKey dictionary
+		// this makes it work for special characters
+		@:privateAccess
+		var key = FlxKey.toStringMap.get(Keyboard.__convertKeyCode(evt.keyCode));
+	
 
 		var binds:Array<String> = [FlxG.save.data.leftBind,FlxG.save.data.downBind, FlxG.save.data.upBind, FlxG.save.data.rightBind];
 
 		var data = -1;
-
+		
 		for (i in 0...binds.length)
-			if (binds[i].toLowerCase() == key)
+		{
+			if (binds[i].toLowerCase() == key.toLowerCase())
 				data = i;
+		}
 
 		if (data == -1)
 			return;
@@ -2821,7 +2838,7 @@ class PlayState extends MusicBeatState
 					ss = false;
 					shits++;
 					if (FlxG.save.data.accuracyMod == 0)
-						totalNotesHit += 0.25;
+						totalNotesHit -= 1;
 				case 'bad':
 					daRating = 'bad';
 					score = 0;
