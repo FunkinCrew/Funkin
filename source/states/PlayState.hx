@@ -1575,6 +1575,21 @@ class PlayState extends MusicBeatState
 		var daRating:String = Ratings.getRating(noteDiff);
 		var score:Int = Ratings.getScore(daRating);
 
+		// health switch case
+		switch(daRating)
+		{
+			case 'sick':
+				health += 0.023;
+				hitNotes++;
+			case 'good':
+				health += 0.015;
+				hitNotes++;
+			case 'bad':
+				hitNotes++;
+			case 'shit':
+				health -= 0.023;
+		}
+
 		if (daRating == "sick")
 		{
 			var splash = splashes.members[noteData + 4];
@@ -2025,15 +2040,10 @@ class PlayState extends MusicBeatState
 			{
 				popUpScore(note.strumTime, note.noteData % 4);
 				combo += 1;
-			}
+			} else
+				hitNotes++;
 
-			hitNotes++;
 			totalNotes++;
-
-			if (note.noteData >= 0)
-				health += 0.023;
-			else
-				health += 0.004;
 
 			switch (note.noteData)
 			{

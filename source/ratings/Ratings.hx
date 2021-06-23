@@ -3,19 +3,21 @@ package ratings;
 class Ratings
 {
     private static var timings:Array<Dynamic> = [
-        [-40, 'bad'],
-        [-10, 'good'],
-        [30, 'sick'],
-        [90, 'good'],
-        [125, 'bad'],
-        [1000, 'shit'],
+        [-110, 'shit'],
+        [-80, 'bad'],
+        [-50, 'good'],
+        [-30, 'sick'],
+        [50, 'sick'],
+        [80, 'good'],
+        [110, 'bad'],
+        [10000, 'shit'],
     ];
 
     private static var scores:Array<Dynamic> = [
         ['sick', 350],
         ['good', 200],
-        ['bad', 100],
-        ['shit', -50]
+        ['bad', -50],
+        ['shit', -150]
     ];
 
     public static function getRating(time:Float)
