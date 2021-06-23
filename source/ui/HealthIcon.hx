@@ -16,6 +16,7 @@ class HealthIcon extends FlxSprite
 
 		antialiasing = true;
 		// the player character
+		animation.add('bf-prototype', [25, 26, 27], 0, false, isPlayer);
 		animation.add('bf-old', [14, 15], 0, false, isPlayer);
 		animation.add('bf', [0, 1], 0, false, isPlayer);
 		animation.add('bf-pixel', [21, 21], 0, false, isPlayer);
@@ -26,7 +27,7 @@ class HealthIcon extends FlxSprite
 
 		animation.add('dad', [12, 13], 0, false, isPlayer);
 		animation.add('mom', [6, 7], 0, false, isPlayer);
-		animation.add('parents-christmas', [17], 0, false, isPlayer);
+		animation.add('parents-christmas', [17, 18], 0, false, isPlayer);
 
 		// spooky kids
 		animation.add('spooky', [2, 3], 0, false, isPlayer);
