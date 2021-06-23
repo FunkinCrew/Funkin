@@ -1126,11 +1126,6 @@ class PlayState extends MusicBeatState
 			if(iconP1.animation.curAnim.curFrame != 2)
 				iconP1.animation.curAnim.curFrame = 0;
 		}
-		else
-		{
-			iconP2.animation.curAnim.curFrame = 0;
-			iconP1.animation.curAnim.curFrame = 0;
-		}
 
 		if (FlxG.keys.justPressed.NINE)
 		{
