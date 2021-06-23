@@ -8,7 +8,8 @@ import flixel.addons.display.FlxGridOverlay;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
-
+import fmf.characters.*;
+import fmf.songs.*;
 /**
 	*DEBUG MODE
  */
@@ -44,7 +45,7 @@ class AnimationDebug extends FlxState
 
 		if (isDad)
 		{
-			dad = new Character(0, 0, daAnim);
+			dad = new Character(0, 0);
 			dad.screenCenter();
 			dad.debugMode = true;
 			add(dad);

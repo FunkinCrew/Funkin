@@ -3,6 +3,7 @@ package;
 /// Code created by Rozebud for FPS Plus (thanks rozebud)
 // modified by KadeDev for use in Kade Engine/Tricky
 
+import ui.Controller;
 import flixel.util.FlxAxes;
 import flixel.FlxSubState;
 import Options.Option;
@@ -95,6 +96,8 @@ class KeyBindMenu extends FlxSubState
 
         textUpdate();
 
+        Controller.init(this, FULL, A_B);
+
 		super.create();
 	}
 
@@ -104,26 +107,27 @@ class KeyBindMenu extends FlxSubState
         switch(state){
 
             case "select":
-                if (FlxG.keys.justPressed.UP)
+                if (Controller.UP_P)
 				{
 					FlxG.sound.play(Paths.sound('scrollMenu'));
 					changeItem(-1);
 				}
 
-				if (FlxG.keys.justPressed.DOWN)
+				if (Controller.DOWN_P)
 				{
 					FlxG.sound.play(Paths.sound('scrollMenu'));
 					changeItem(1);
 				}
 
-                if (FlxG.keys.justPressed.ENTER){
+                if (Controller.ACCEPT){
                     FlxG.sound.play(Paths.sound('scrollMenu'));
                     state = "input";
                 }
-                else if(FlxG.keys.justPressed.ESCAPE){
+                else if(Controller.BACK){
                     quit();
                 }
-				else if (FlxG.keys.justPressed.BACKSPACE){
+				else if (FlxG.keys.justPressed.BACKSPACE)
+				{
                     reset();
                 }
 

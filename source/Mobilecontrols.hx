@@ -186,20 +186,20 @@ class Mobilecontrols extends FlxSpriteGroup
     {
         super();
 
-		downscroll_isenabled = config.getdownscroll();
+		downscroll_isenabled =  FlxG.save.data.downscroll; //config.getdownscroll();
 
 		// load control mode num from Config.hx
-		controlmode = config.getcontrolmode();
+		controlmode =  FlxG.save.data.mobileControl; //config.getcontrolmode();
 
 
 		//controlmode
 		switch controlmode
 		{
-			case 1: // left default
+			case 1: // gamepad left 
 				_pad = new FlxVirtualPad(LEFT_FULL, NONE);
 				this.add(_pad);
 
-			case 2:
+			case 2: //pad full
 				// keyboardisenabled = true;
 				_pad = new FlxVirtualPad(RIGHT_FULL, NONE);
 				this.add(_pad);
@@ -207,16 +207,21 @@ class Mobilecontrols extends FlxSpriteGroup
 				_subPad = new FlxVirtualPad(LEFT_FULL, NONE);
 				this.add(_subPad);
 
-			case 3:
+			case 3: //gamepad split, aka  left down, up right sheet
+				_pad = new FlxVirtualPad(SPLIT, NONE);
+				this.add(_pad);
+
+			case 4: // gamepad split, aka  left down, up right sheet
+				_pad = new FlxVirtualPad(SPLIT_FLAT, NONE);
+				this.add(_pad);
+
+			case 5: //hitbox
 				_hb = new Hitbox();
 				hitboxisenabled = true;
 				add(_hb);
 
-			case 4: // left down, right up sheet
-				_pad = new FlxVirtualPad(SPLIT, NONE);
-				this.add(_pad);
 
-			default: // default (0)
+			default: // right default
 				_pad = new FlxVirtualPad(RIGHT_FULL, NONE);
 				this.add(_pad);
 		}

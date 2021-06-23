@@ -262,7 +262,7 @@ class PlayState extends MusicBeatState
 		repReleases = 0;
 		CURRENT_SONG = SONG.song.toLowerCase();
 
-		botPlayShit = (!isStoryMode && botPlayShit) || (isStoryMode && botPlayShit && (isUnlocked()));
+		botPlayShit = (!isStoryMode && FlxG.save.data.botplay) || (isStoryMode && FlxG.save.data.botplay && (isUnlocked()));
 
 		// pre lowercasing the song name (create)
 		var songLowercase = StringTools.replace(PlayState.SONG.song, " ", "-").toLowerCase();

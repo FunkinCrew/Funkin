@@ -73,6 +73,112 @@ class Option
 	public function right():Bool { return throw "stub!"; }
 }
 
+class MobileControl extends Option
+{
+
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+		acceptValues = true;
+	}
+	
+	public override function press():Bool
+	{
+		right();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Mobile Control: " + getValueControlType();
+	}
+
+	override function left():Bool {
+
+
+		FlxG.save.data.mobileControl -= 1;
+
+		if(FlxG.save.data.mobileControl < 0)
+		{
+			FlxG.save.data.mobileControl = 5;
+		}
+
+		updateDisplay();
+		return true;
+	}
+	override function right():Bool {
+
+
+		FlxG.save.data.mobileControl += 1;
+
+		if(FlxG.save.data.mobileControl > 5)
+		{
+			FlxG.save.data.mobileControl = 0;
+		}
+
+		updateDisplay();
+		return true;
+	}
+	function getValueControlType():String
+	{
+		return  controlTypeShort;
+	}
+	override function getValue():String {
+		return "Control method:  " + controlType;
+	}
+
+	private var controlType(get, never):String;
+	private inline function get_controlType():String
+	{
+		var gamePad:String = "Gamepad Right";
+		switch (FlxG.save.data.mobileControl)
+		{
+			case 1:
+				gamePad = "Gamepad Left";
+
+			case 2:
+				gamePad = "Gamepad Full";
+
+			case 3:
+				gamePad = "Gamepad Split (Natural)";
+
+			case 4:
+				gamePad = "Gamepad Split (Flat)";
+					
+			case 5:
+				gamePad = "Hitbox";
+		}
+
+		return gamePad;
+	}
+
+
+	private var controlTypeShort(get, never):String;
+	private inline function get_controlTypeShort():String
+	{
+		var gamePad:String = "Right";
+		switch (FlxG.save.data.mobileControl)
+		{
+			case 1:
+				gamePad = "Left";
+
+			case 2:
+				gamePad = "Full";
+
+			case 3:
+				gamePad = "Split-N";
+
+			case 4:
+				gamePad = "Split-F";
+					
+			case 5:
+				gamePad = "Hitbox";
+		}
+
+		return gamePad;
+	}
+}
 
 
 class DFJKOption extends Option
