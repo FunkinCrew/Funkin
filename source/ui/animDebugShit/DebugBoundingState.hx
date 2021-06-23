@@ -1,7 +1,6 @@
 package ui.animDebugShit;
 
 import flixel.FlxCamera;
-import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.addons.display.FlxGridOverlay;

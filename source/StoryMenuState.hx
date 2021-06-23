@@ -3,7 +3,6 @@ package;
 #if discord_rpc
 import Discord.DiscordClient;
 #end
-import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.graphics.frames.FlxAtlasFrames;

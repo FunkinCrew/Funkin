@@ -3,7 +3,6 @@ package animate;
 // import animateAtlasPlayer.assets.AssetManager;
 // import animateAtlasPlayer.core.Animation;
 import animate.FlxSymbol.Parsed;
-import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxAtlasFrames;

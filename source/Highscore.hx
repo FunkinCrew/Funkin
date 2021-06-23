@@ -1,7 +1,5 @@
 package;
 
-import flixel.FlxG;
-
 class Highscore
 {
 	#if (haxe >= "4.0.0")
@@ -9,7 +7,6 @@ class Highscore
 	#else
 	public static var songScores:Map<String, Int> = new Map<String, Int>();
 	#end
-
 
 	public static function saveScore(song:String, score:Int = 0, ?diff:Int = 0):Void
 	{
@@ -56,7 +53,6 @@ class Highscore
 		 * I moved the compiler flag here, rather than using it everywhere else.
 		 */
 		#if !switch
-		
 		// Reminder that I don't need to format this song, it should come formatted!
 		songScores.set(formattedSong, score);
 		FlxG.save.data.songScores = songScores;

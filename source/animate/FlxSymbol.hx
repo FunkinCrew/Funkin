@@ -1,7 +1,6 @@
 package animate;
 
 import flixel.FlxCamera;
-import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxFrame.FlxFrameAngle;
 import flixel.math.FlxAngle;

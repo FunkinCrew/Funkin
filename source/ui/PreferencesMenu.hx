@@ -1,7 +1,6 @@
 package ui;
 
 import flixel.FlxCamera;
-import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup;

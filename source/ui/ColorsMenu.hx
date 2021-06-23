@@ -1,6 +1,5 @@
 package ui;
 
-import flixel.FlxG;
 import flixel.addons.effects.chainable.FlxEffectSprite;
 import flixel.addons.effects.chainable.FlxOutlineEffect;
 import flixel.group.FlxGroup.FlxTypedGroup;

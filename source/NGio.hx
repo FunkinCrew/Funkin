@@ -1,7 +1,6 @@
 package;
-#if newgrounds
 
-import flixel.FlxG;
+#if newgrounds
 import flixel.util.FlxSignal;
 import flixel.util.FlxTimer;
 import io.newgrounds.NG;
@@ -19,6 +18,7 @@ import openfl.display.Stage;
 
 using StringTools;
 #end
+
 /**
  * MADE BY GEOKURELI THE LEGENED GOD HERO MVP
  */
@@ -30,8 +30,10 @@ class NGio
 	 * Used in MainMenuState to show a popup to establish a new connection
 	 */
 	public static var savedSessionFailed(default, null):Bool = false;
+
 	public static var scoreboardsLoaded:Bool = false;
 	public static var isLoggedIn(get, never):Bool;
+
 	inline static function get_isLoggedIn()
 	{
 		return NG.core != null && NG.core.loggedIn;
@@ -43,20 +45,18 @@ class NGio
 	public static var ngScoresLoaded(default, null):FlxSignal = new FlxSignal();
 
 	public static var GAME_VER:String = "";
-	
+
 	static public function checkVersion(callback:String->Void)
 	{
 		trace('checking NG.io version');
 		GAME_VER = "v" + Application.current.meta.get('version');
 
-		NG.core.calls.app.getCurrentVersion(GAME_VER)
-			.addDataHandler(function(response)
-			{
-				GAME_VER = response.result.data.currentVersion;
-				trace('CURRENT NG VERSION: ' + GAME_VER);
-				callback(GAME_VER);
-			})
-			.send();
+		NG.core.calls.app.getCurrentVersion(GAME_VER).addDataHandler(function(response)
+		{
+			GAME_VER = response.result.data.currentVersion;
+			trace('CURRENT NG VERSION: ' + GAME_VER);
+			callback(GAME_VER);
+		}).send();
 	}
 
 	static public function init()
@@ -68,40 +68,41 @@ class NGio
 			return;
 		}
 		trace("connecting to newgrounds");
-		
+
 		#if NG_FORCE_EXPIRED_SESSION
-			var sessionId:String = "fake_session_id";
-			function onSessionFail(error:Error)
-			{
-				trace("Forcing an expired saved session. "
-					+ "To disable, comment out NG_FORCE_EXPIRED_SESSION in Project.xml");
-				savedSessionFailed = true;
-			}
+		var sessionId:String = "fake_session_id";
+		function onSessionFail(error:Error)
+		{
+			trace("Forcing an expired saved session. " + "To disable, comment out NG_FORCE_EXPIRED_SESSION in Project.xml");
+			savedSessionFailed = true;
+		}
 		#else
-			var sessionId:String = NGLite.getSessionId();
-			if (sessionId != null)
-				trace("found web session id");
-			
-			#if (debug)
-			if (sessionId == null && APIStuff.SESSION != null)
-			{
-				trace("using debug session id");
-				sessionId = APIStuff.SESSION;
-			}
-			#end
-		
-			var onSessionFail:Error->Void = null;
-			if (sessionId == null && FlxG.save.data.sessionId != null)
-			{
-				trace("using stored session id");
-				sessionId = FlxG.save.data.sessionId;
-				onSessionFail = function (error) savedSessionFailed = true;
-			}
+		var sessionId:String = NGLite.getSessionId();
+		if (sessionId != null)
+			trace("found web session id");
+
+		#if (debug)
+		if (sessionId == null && APIStuff.SESSION != null)
+		{
+			trace("using debug session id");
+			sessionId = APIStuff.SESSION;
+		}
 		#end
-		
+
+		var onSessionFail:Error->Void = null;
+		if (sessionId == null && FlxG.save.data.sessionId != null)
+		{
+			trace("using stored session id");
+			sessionId = FlxG.save.data.sessionId;
+			onSessionFail = function(error) savedSessionFailed = true;
+		}
+		#end
+
 		NG.create(api, sessionId, #if NG_DEBUG true #else false #end, onSessionFail);
-		
-		#if NG_VERBOSE NG.core.verbose = true; #end
+
+		#if NG_VERBOSE
+		NG.core.verbose = true;
+		#end
 		// Set the encryption cipher/format to RC4/Base64. AES128 and Hex are not implemented yet
 		NG.core.initEncryption(APIStuff.EncKey); // Found in you NG project view
 
@@ -113,7 +114,7 @@ class NGio
 			trace("attempting login");
 			NG.core.onLogin.add(onNGLogin);
 		}
-		//GK: taking out auto login, adding a login button to the main menu
+		// GK: taking out auto login, adding a login button to the main menu
 		// else
 		// {
 		// 	/* They are NOT playing on newgrounds.com, no session id was found. We must start one manually, if we want to.
@@ -122,7 +123,7 @@ class NGio
 		// 	NG.core.requestLogin(onNGLogin);
 		// }
 	}
-	
+
 	/**
 	 * Attempts to log in to newgrounds by requesting a new session ID, only call if no session ID was found automatically
 	 * @param popupLauncher The function to call to open the login url, must be inside
@@ -135,26 +136,26 @@ class NGio
 		var onPending:Void->Void = null;
 		if (popupLauncher != null)
 		{
-			onPending = function () popupLauncher(NG.core.openPassportUrl);
+			onPending = function() popupLauncher(NG.core.openPassportUrl);
 		}
-		
+
 		var onSuccess:Void->Void = onNGLogin;
 		var onFail:Error->Void = null;
 		var onCancel:Void->Void = null;
 		if (onComplete != null)
 		{
-			onSuccess = function ()
+			onSuccess = function()
 			{
 				onNGLogin();
 				onComplete(Success);
 			}
-			onFail = function (e) onComplete(Fail(e.message));
+			onFail = function(e) onComplete(Fail(e.message));
 			onCancel = function() onComplete(Cancelled);
 		}
-		
+
 		NG.core.requestLogin(onSuccess, onPending, onFail, onCancel);
 	}
-	
+
 	inline static public function cancelLogin():Void
 	{
 		NG.core.cancelLoginRequest();
@@ -173,11 +174,11 @@ class NGio
 
 		ngDataLoaded.dispatch();
 	}
-	
+
 	static public function logout()
 	{
 		NG.core.logOut();
-		
+
 		FlxG.save.data.sessionId = null;
 		FlxG.save.flush();
 	}
@@ -251,7 +252,9 @@ class NGio
 		NG.core.calls.event.logEvent(event).send();
 		trace('should have logged: ' + event);
 		#else
-			#if debug trace('event:$event - not logged, missing NG.io lib'); #end
+		#if debug
+		trace('event:$event - not logged, missing NG.io lib');
+		#end
 		#end
 	}
 
@@ -265,7 +268,9 @@ class NGio
 				medal.sendUnlock();
 		}
 		#else
-			#if debug trace('medal:$id - not unlocked, missing NG.io lib'); #end
+		#if debug
+		trace('medal:$id - not unlocked, missing NG.io lib');
+		#end
 		#end
 	}
 
@@ -287,7 +292,9 @@ class NGio
 			}
 		}
 		#else
-			#if debug trace('Song:$song, Score:$score - not posted, missing NG.io lib'); #end
+		#if debug
+		trace('Song:$song, Score:$score - not posted, missing NG.io lib');
+		#end
 		#end
 	}
 }
@@ -296,8 +303,10 @@ enum ConnectionResult
 {
 	/** Log in successful */
 	Success;
+
 	/** Could not login */
 	Fail(msg:String);
+
 	/** User cancelled the login */
 	Cancelled;
 }

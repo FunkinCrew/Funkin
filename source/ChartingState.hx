@@ -3,7 +3,6 @@ package;
 import Conductor.BPMChangeEvent;
 import Section.SwagSection;
 import Song.SwagSong;
-import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.ui.FlxInputText;

@@ -1,7 +1,6 @@
 package;
 
 import flixel.FlxBasic;
-import flixel.FlxG;
 import flixel.FlxSprite;
 import openfl.events.NetStatusEvent;
 import openfl.media.Video;

@@ -1,6 +1,5 @@
 package ui.stageBuildShit;
 
-import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.input.mouse.FlxMouseEventManager;
 import flixel.math.FlxPoint;

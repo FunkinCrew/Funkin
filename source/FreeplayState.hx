@@ -1,7 +1,6 @@
 package;
 
 import flash.text.TextField;
-import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.addons.display.FlxGridOverlay;

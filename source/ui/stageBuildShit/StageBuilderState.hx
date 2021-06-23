@@ -1,7 +1,6 @@
 package ui.stageBuildShit;
 
 import flixel.FlxCamera;
-import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.group.FlxGroup;

@@ -1,6 +1,5 @@
 package;
 
-import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.graphics.frames.FlxAtlasFrames;

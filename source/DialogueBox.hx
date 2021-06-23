@@ -1,6 +1,5 @@
 package;
 
-import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.addons.text.FlxTypeText;
 import flixel.graphics.frames.FlxAtlasFrames;
@@ -79,7 +78,7 @@ class DialogueBox extends FlxSpriteGroup
 		portraitRight.visible = false;
 
 		box = new FlxSprite(-20, 45);
-		
+
 		var hasDialog = false;
 		switch (PlayState.SONG.song.toLowerCase())
 		{
@@ -108,10 +107,10 @@ class DialogueBox extends FlxSpriteGroup
 		}
 
 		this.dialogueList = dialogueList;
-		
+
 		if (!hasDialog)
 			return;
-		
+
 		box.animation.play('normalOpen');
 		box.setGraphicSize(Std.int(box.width * PlayState.daPixelZoom * 0.9));
 		box.updateHitbox();
@@ -125,7 +124,6 @@ class DialogueBox extends FlxSpriteGroup
 		handSelect.updateHitbox();
 		handSelect.visible = false;
 		add(handSelect);
-
 
 		if (!talkingRight)
 		{
@@ -184,7 +182,7 @@ class DialogueBox extends FlxSpriteGroup
 		if (FlxG.keys.justPressed.ANY && dialogueEnded)
 		{
 			remove(dialogue);
-				
+
 			FlxG.sound.play(Paths.sound('clickText'), 0.8);
 
 			if (dialogueList[1] == null && dialogueList[0] != null)
@@ -222,7 +220,7 @@ class DialogueBox extends FlxSpriteGroup
 		}
 		else if (FlxG.keys.justPressed.ANY && dialogueStarted)
 			swagDialogue.skip();
-		
+
 		super.update(elapsed);
 	}
 

@@ -1,6 +1,5 @@
 package ui;
 
-import flixel.FlxG;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
@@ -84,6 +83,7 @@ class ModMenu extends ui.OptionsState.Page
 	}
 
 	inline static var MOD_PATH = "./mods";
+
 	private function refreshModList():Void
 	{
 		while (grpMods.members.length > 0)
@@ -94,14 +94,14 @@ class ModMenu extends ui.OptionsState.Page
 		#if desktop
 		var modList = [];
 		modFolders = [];
-		
+
 		trace("mods path:" + FileSystem.absolutePath(MOD_PATH));
 		if (!FileSystem.exists(MOD_PATH))
 		{
 			FlxG.log.warn("missing mods folder, expected: " + FileSystem.absolutePath(MOD_PATH));
 			return;
 		}
-		
+
 		for (file in FileSystem.readDirectory(MOD_PATH))
 		{
 			if (FileSystem.isDirectory(MOD_PATH + file))
