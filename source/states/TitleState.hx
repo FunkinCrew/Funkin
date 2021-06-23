@@ -1,5 +1,6 @@
 package states;
 
+import utilities.CoolUtil;
 import game.Conductor;
 import game.Highscore;
 import utilities.PlayerSettings;
@@ -51,6 +52,10 @@ class TitleState extends MusicBeatState
 	override public function create():Void
 	{
 		PlayerSettings.init();
+
+		#if polymod
+		polymod.Polymod.init({modRoot: "mods", dirs: CoolUtil.coolTextFile(Paths.txt('modList'))});
+		#end
 
 		curWacky = FlxG.random.getObject(getIntroTextShit());
 		super.create();
