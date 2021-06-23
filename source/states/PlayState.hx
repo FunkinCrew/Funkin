@@ -1108,6 +1108,9 @@ class PlayState extends MusicBeatState
 		{
 			iconP1.animation.curAnim.curFrame = 1;
 			iconP2.animation.curAnim.curFrame = 2;
+
+			if(iconP2.animation.curAnim.curFrame != 2)
+				iconP2.animation.curAnim.curFrame = 0;
 		}
 		else
 		{
@@ -1119,6 +1122,9 @@ class PlayState extends MusicBeatState
 		{
 			iconP2.animation.curAnim.curFrame = 1;
 			iconP1.animation.curAnim.curFrame = 2;
+
+			if(iconP1.animation.curAnim.curFrame != 2)
+				iconP1.animation.curAnim.curFrame = 0;
 		}
 		else
 		{
