@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="LeBoy1.png">
+	<!-- Created with Adobe Animate version 20.5.1.31044 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="o0001" x="0" y="0" width="1280" height="720"/>
+	<SubTexture name="o0002" x="0" y="720" width="1280" height="720"/>
+	<SubTexture name="o0003" x="0" y="1440" width="1280" height="720"/>
+	<SubTexture name="o0004" x="0" y="2160" width="1280" height="720"/>
+	<SubTexture name="o0005" x="0" y="2880" width="1280" height="720"/>
+</TextureAtlas>

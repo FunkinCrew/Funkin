@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="glitchAnim.png">
+	<!-- Created with Adobe Animate version 20.5.1.31044 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="g0001" x="0" y="0" width="1280" height="720"/>
+	<SubTexture name="g0010" x="1280" y="0" width="1280" height="720"/>
+	<SubTexture name="g0011" x="2560" y="0" width="1280" height="720"/>
+	<SubTexture name="g0012" x="3840" y="0" width="1280" height="720"/>
+	<SubTexture name="g0013" x="5120" y="0" width="1280" height="720"/>
+	<SubTexture name="g0014" x="6400" y="0" width="1280" height="720"/>
+	<SubTexture name="g0015" x="0" y="720" width="1280" height="720"/>
+	<SubTexture name="g0016" x="1280" y="720" width="1280" height="720"/>
+	<SubTexture name="g0017" x="2560" y="720" width="1280" height="720"/>
+	<SubTexture name="g0018" x="3840" y="720" width="1280" height="720"/>
+	<SubTexture name="g0019" x="5120" y="720" width="1280" height="720"/>
+	<SubTexture name="g0002" x="6400" y="720" width="1280" height="720"/>
+	<SubTexture name="g0020" x="0" y="1440" width="1280" height="720"/>
+	<SubTexture name="g0003" x="1280" y="1440" width="1280" height="720"/>
+	<SubTexture name="g0004" x="2560" y="1440" width="1280" height="720"/>
+	<SubTexture name="g0005" x="3840" y="1440" width="1280" height="720"/>
+	<SubTexture name="g0006" x="5120" y="1440" width="1280" height="720"/>
+	<SubTexture name="g0007" x="6400" y="1440" width="1280" height="720"/>
+	<SubTexture name="g0008" x="0" y="2160" width="1280" height="720"/>
+	<SubTexture name="g0009" x="1280" y="2160" width="1280" height="720"/>
+</TextureAtlas>

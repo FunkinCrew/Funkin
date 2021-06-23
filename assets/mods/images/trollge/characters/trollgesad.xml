@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="trollgesad.png">
+	<!-- Created with Adobe Animate version 20.5.1.31044 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="IncidentSad0000" x="100" y="100" width="471" height="693"/>
+	<SubTexture name="IncidentSad0001" x="671" y="100" width="471" height="693"/>
+	<SubTexture name="IncidentSad0002" x="1242" y="100" width="471" height="693"/>
+	<SubTexture name="IncidentSad0003" x="100" y="893" width="471" height="693"/>
+</TextureAtlas>

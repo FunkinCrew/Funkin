@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="SadSheet2.png">
+	<!-- Created with Adobe Animate version 20.5.1.31044 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="TrollfaceDown0000" x="0" y="0" width="290" height="553"/>
+	<SubTexture name="TrollfaceDown0001" x="311" y="0" width="290" height="553"/>
+	<SubTexture name="TrollfaceDown0002" x="622" y="0" width="290" height="553"/>
+	<SubTexture name="TrollfaceIdle0000" x="933" y="0" width="263" height="597"/>
+	<SubTexture name="TrollfaceIdle0001" x="1217" y="0" width="263" height="597"/>
+	<SubTexture name="TrollfaceIdle0002" x="1501" y="0" width="263" height="597"/>
+	<SubTexture name="TrollfaceIdle0003" x="1785" y="0" width="263" height="597"/>
+	<SubTexture name="TrollfaceIdle0004" x="0" y="618" width="263" height="597"/>
+	<SubTexture name="TrollfaceLeft0000" x="284" y="618" width="307" height="584"/>
+	<SubTexture name="TrollfaceLeft0001" x="612" y="618" width="307" height="584"/>
+	<SubTexture name="TrollfaceLeft0002" x="940" y="618" width="307" height="584"/>
+	<SubTexture name="TrollfaceRight0000" x="1268" y="618" width="506" height="585"/>
+	<SubTexture name="TrollfaceRight0001" x="0" y="1236" width="506" height="585"/>
+	<SubTexture name="TrollfaceRight0002" x="527" y="1236" width="506" height="585"/>
+	<SubTexture name="TrollfaceUp0000" x="1054" y="1236" width="311" height="595"/>
+	<SubTexture name="TrollfaceUp0001" x="1386" y="1236" width="311" height="595"/>
+	<SubTexture name="TrollfaceUp0002" x="1718" y="1236" width="311" height="595"/>
+</TextureAtlas>

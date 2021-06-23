@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="trollgephase4.png">
+	<!-- Created with Adobe Animate version 20.5.1.31044 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="IncidentSadSIdle0000" x="100" y="100" width="503" height="629"/>
+	<SubTexture name="IncidentSadSIdle0001" x="703" y="100" width="503" height="629"/>
+	<SubTexture name="IncidentSadSIdle0002" x="1306" y="100" width="503" height="629"/>
+	<SubTexture name="IncidentSadSIdle0003" x="1909" y="100" width="503" height="629"/>
+	<SubTexture name="IncidentSadSing0000" x="2512" y="100" width="504" height="629"/>
+	<SubTexture name="IncidentSadSing0001" x="100" y="829" width="504" height="629"/>
+	<SubTexture name="IncidentSadSing0002" x="704" y="829" width="504" height="629"/>
+	<SubTexture name="IncidentSadSmile0000" x="1308" y="829" width="503" height="629"/>
+	<SubTexture name="IncidentSadSpeaking0000" x="703" y="1558" width="504" height="629"/>
+	<SubTexture name="IncidentSadSpeaking0001" x="1307" y="1558" width="504" height="629"/>
+	<SubTexture name="IncidentSadSpeaking0002" x="1911" y="1558" width="504" height="629"/>
+</TextureAtlas>

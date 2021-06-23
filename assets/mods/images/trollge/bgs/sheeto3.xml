@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="sheeto3.png">
+	<!-- Created with Adobe Animate version 20.5.1.31044 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="n0000" x="0" y="0" width="322" height="182"/>
+	<SubTexture name="n0001" x="0" y="182" width="322" height="182"/>
+	<SubTexture name="n0002" x="0" y="364" width="322" height="182"/>
+	<SubTexture name="n0003" x="0" y="546" width="322" height="182"/>
+	<SubTexture name="n0004" x="0" y="728" width="322" height="182"/>
+</TextureAtlas>

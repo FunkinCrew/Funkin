@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="trollgeStatic1.png">
+	<!-- Created with Adobe Animate version 20.5.1.31044 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="TrollgeDown0000" x="0" y="0" width="506" height="624" frameX="-12" frameY="-24" frameWidth="522" frameHeight="648"/>
+	<SubTexture name="TrollgeDown0001" x="506" y="0" width="506" height="633" frameX="-8" frameY="-14" frameWidth="522" frameHeight="648"/>
+	<SubTexture name="TrollgeDown0002" x="1012" y="0" width="522" height="646" frameX="0" frameY="0" frameWidth="522" frameHeight="648"/>
+	<SubTexture name="TrollgeIdle0000" x="1534" y="0" width="474" height="674" frameX="0" frameY="-34" frameWidth="476" frameHeight="709"/>
+	<SubTexture name="TrollgeIdle0001" x="2008" y="0" width="453" height="683" frameX="-23" frameY="-26" frameWidth="476" frameHeight="709"/>
+	<SubTexture name="TrollgeIdle0002" x="2461" y="0" width="425" height="691" frameX="-48" frameY="-17" frameWidth="476" frameHeight="709"/>
+	<SubTexture name="TrollgeIdle0003" x="2886" y="0" width="408" height="704" frameX="-48" frameY="-4" frameWidth="476" frameHeight="709"/>
+	<SubTexture name="TrollgeIdle0004" x="3294" y="0" width="404" height="708" frameX="-46" frameY="0" frameWidth="476" frameHeight="709"/>
+	<SubTexture name="TrollgeLeft0000" x="0" y="708" width="449" height="696" frameX="0" frameY="-10" frameWidth="481" frameHeight="706"/>
+	<SubTexture name="TrollgeLeft0001" x="449" y="708" width="445" height="696" frameX="-8" frameY="-10" frameWidth="481" frameHeight="706"/>
+	<SubTexture name="TrollgeLeft0002" x="894" y="708" width="442" height="706" frameX="-39" frameY="0" frameWidth="481" frameHeight="706"/>
+	<SubTexture name="TrollgeRight0000" x="1336" y="708" width="669" height="687" frameX="-2" frameY="-16" frameWidth="671" frameHeight="705"/>
+	<SubTexture name="TrollgeRight0001" x="2005" y="708" width="651" height="697" frameX="0" frameY="-7" frameWidth="671" frameHeight="705"/>
+	<SubTexture name="TrollgeRight0002" x="2656" y="708" width="650" height="705" frameX="-2" frameY="0" frameWidth="671" frameHeight="705"/>
+	<SubTexture name="TrollgeUp0000" x="3306" y="708" width="696" height="717" frameX="0" frameY="0" frameWidth="713" frameHeight="717"/>
+	<SubTexture name="TrollgeUp0001" x="0" y="1425" width="694" height="710" frameX="-15" frameY="-6" frameWidth="713" frameHeight="717"/>
+	<SubTexture name="TrollgeUp0002" x="694" y="1425" width="693" height="712" frameX="-20" frameY="-1" frameWidth="713" frameHeight="717"/>
+</TextureAtlas>

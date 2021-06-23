@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="gfanim.png">
+	<!-- Created with Adobe Animate version 20.5.1.31044 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="Symbol 10000" x="0" y="0" width="312" height="639"/>
+	<SubTexture name="Symbol 10001" x="352" y="0" width="312" height="639"/>
+	<SubTexture name="Symbol 10002" x="704" y="0" width="312" height="639"/>
+	<SubTexture name="Symbol 10003" x="1056" y="0" width="312" height="639"/>
+	<SubTexture name="Symbol 10004" x="1408" y="0" width="312" height="639"/>
+	<SubTexture name="Symbol 10005" x="1760" y="0" width="312" height="639"/>
+	<SubTexture name="Symbol 10006" x="2112" y="0" width="312" height="639"/>
+	<SubTexture name="Symbol 10007" x="2464" y="0" width="312" height="639"/>
+	<SubTexture name="Symbol 10008" x="2816" y="0" width="312" height="639"/>
+	<SubTexture name="Symbol 10009" x="3168" y="0" width="312" height="639"/>
+	<SubTexture name="Symbol 10010" x="3520" y="0" width="312" height="639"/>
+	<SubTexture name="Symbol 10011" x="3872" y="0" width="312" height="639"/>
+	<SubTexture name="Symbol 10012" x="4224" y="0" width="312" height="639"/>
+</TextureAtlas>
