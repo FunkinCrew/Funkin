@@ -59,7 +59,11 @@ class HealthIcon extends FlxSprite
 			char = newChar;
 
 			if (newChar.endsWith('pixel'))
-				setGraphicSize(150, 150);
+			{
+				setGraphicSize(150);
+				updateHitbox();
+				antialiasing = false;
+			}
 		}
 	}
 
