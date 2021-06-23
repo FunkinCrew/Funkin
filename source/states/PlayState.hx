@@ -1504,7 +1504,9 @@ class PlayState extends MusicBeatState
 				FlxG.switchState(new StoryMenuState());
 
 				// if ()
+				#if !debug
 				StoryMenuState.weekUnlocked[Std.int(Math.min(storyWeek + 1, StoryMenuState.weekUnlocked.length - 1))] = true;
+				#end
 
 				if (SONG.validScore)
 				{
@@ -1512,8 +1514,10 @@ class PlayState extends MusicBeatState
 					Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficulty);
 				}
 
+				#if !debug
 				FlxG.save.data.weekUnlocked = StoryMenuState.weekUnlocked;
 				FlxG.save.flush();
+				#end
 			}
 			else
 			{
