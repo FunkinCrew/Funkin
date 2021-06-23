@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="bobscreen.png">
+	<!-- Created with Adobe Animate version 19.0.0.326 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="BobScreen0000" x="0" y="0" width="1729" height="955"/>
+	<SubTexture name="BobScreen0001" x="1729" y="0" width="1729" height="955"/>
+	<SubTexture name="BobScreen0002" x="0" y="955" width="1729" height="955"/>
+	<SubTexture name="BobScreen0003" x="0" y="955" width="1729" height="955"/>
+	<SubTexture name="BobScreen0004" x="0" y="955" width="1729" height="955"/>
+	<SubTexture name="BobScreen0005" x="1729" y="955" width="1729" height="955"/>
+	<SubTexture name="BobScreen0006" x="0" y="955" width="1729" height="955"/>
+	<SubTexture name="BobScreen0007" x="0" y="1910" width="1729" height="955"/>
+	<SubTexture name="BobScreen0008" x="0" y="1910" width="1729" height="955"/>
+	<SubTexture name="BobScreen0009" x="0" y="1910" width="1729" height="955"/>
+	<SubTexture name="BobScreen0010" x="1729" y="1910" width="1729" height="955"/>
+	<SubTexture name="BobScreen0011" x="1729" y="1910" width="1729" height="955"/>
+	<SubTexture name="BobScreen0012" x="1729" y="1910" width="1729" height="955"/>
+	<SubTexture name="BobScreen0013" x="0" y="2865" width="1729" height="955"/>
+	<SubTexture name="BobScreen0014" x="1729" y="2865" width="1729" height="955"/>
+	<SubTexture name="BobScreen0015" x="1729" y="2865" width="1729" height="955"/>
+	<SubTexture name="BobScreen0016" x="0" y="2865" width="1729" height="955"/>
+	<SubTexture name="BobScreen0017" x="0" y="3820" width="1729" height="955"/>
+	<SubTexture name="BobScreen0018" x="0" y="3820" width="1729" height="955"/>
+	<SubTexture name="BobScreen0019" x="1729" y="3820" width="1729" height="955"/>
+	<SubTexture name="BobScreen0020" x="0" y="4775" width="1729" height="955"/>
+	<SubTexture name="BobScreen0021" x="0" y="4775" width="1729" height="955"/>
+	<SubTexture name="BobScreen0022" x="1729" y="4775" width="1729" height="955"/>
+	<SubTexture name="BobScreen0023" x="1729" y="4775" width="1729" height="955"/>
+	<SubTexture name="BobScreen0024" x="1729" y="4775" width="1729" height="955"/>
+	<SubTexture name="BobScreen0025" x="1729" y="4775" width="1729" height="955"/>
+	<SubTexture name="BobScreen0026" x="0" y="5730" width="1729" height="955"/>
+	<SubTexture name="BobScreen0027" x="0" y="5730" width="1729" height="955"/>
+	<SubTexture name="BobScreen0028" x="0" y="5730" width="1729" height="955"/>
+	<SubTexture name="BobScreen0029" x="1729" y="5730" width="1729" height="955"/>
+	<SubTexture name="BobScreen0030" x="1729" y="5730" width="1729" height="955"/>
+	<SubTexture name="BobScreen0031" x="1729" y="5730" width="1729" height="955"/>
+</TextureAtlas>

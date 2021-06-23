@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="foolhardy_menu_text.png">
+	<!-- Created with Adobe Animate version 21.0.3.38773 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="foolhardy basic0000" x="5" y="5" width="532" height="126" frameX="0" frameY="0" frameWidth="533" frameHeight="127"/>
+	<SubTexture name="foolhardy basic0001" x="5" y="5" width="532" height="126" frameX="0" frameY="0" frameWidth="533" frameHeight="127"/>
+	<SubTexture name="foolhardy basic0002" x="5" y="141" width="532" height="126" frameX="0" frameY="0" frameWidth="533" frameHeight="127"/>
+	<SubTexture name="foolhardy basic0003" x="5" y="141" width="532" height="126" frameX="0" frameY="0" frameWidth="533" frameHeight="127"/>
+	<SubTexture name="foolhardy basic0004" x="5" y="277" width="532" height="126" frameX="-1" frameY="-1" frameWidth="533" frameHeight="127"/>
+	<SubTexture name="foolhardy basic0005" x="5" y="277" width="532" height="126" frameX="-1" frameY="-1" frameWidth="533" frameHeight="127"/>
+	<SubTexture name="foolhardy white0000" x="5" y="413" width="801" height="170" frameX="0" frameY="-1" frameWidth="802" frameHeight="172"/>
+	<SubTexture name="foolhardy white0001" x="5" y="593" width="801" height="171" frameX="0" frameY="0" frameWidth="802" frameHeight="172"/>
+	<SubTexture name="foolhardy white0002" x="5" y="774" width="801" height="171" frameX="-1" frameY="-1" frameWidth="802" frameHeight="172"/>
+</TextureAtlas>

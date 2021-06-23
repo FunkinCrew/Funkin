@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="bobPortraitPOAT.png">
+	<!-- Created with Adobe Animate version 19.0.0.326 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="Bob Portrait Enter HELL0000" x="0" y="0" width="1280" height="744"/>
+	<SubTexture name="Bob Portrait Enter HELL0001" x="1280" y="0" width="1280" height="744"/>
+	<SubTexture name="Bob Portrait Enter HELL0002" x="2560" y="0" width="1280" height="744"/>
+	<SubTexture name="Bob Portrait Enter HELL0003" x="0" y="744" width="1280" height="744"/>
+	<SubTexture name="Bob Portrait Enter HELL0004" x="1280" y="744" width="1280" height="744"/>
+	<SubTexture name="Bob Portrait Enter HELL0005" x="2560" y="744" width="1280" height="744"/>
+	<SubTexture name="Bob Portrait Enter HELL0006" x="2560" y="744" width="1280" height="744"/>
+	<SubTexture name="Bob Portrait Enter HELL0007" x="2560" y="744" width="1280" height="744"/>
+	<SubTexture name="Bob Portrait Enter HELL0008" x="2560" y="744" width="1280" height="744"/>
+	<SubTexture name="Bob Portrait Enter Mad0000" x="0" y="1488" width="1280" height="744"/>
+	<SubTexture name="Bob Portrait Enter Mad0001" x="1280" y="1488" width="1280" height="744"/>
+	<SubTexture name="Bob Portrait Enter Mad0002" x="2560" y="1488" width="1280" height="744"/>
+	<SubTexture name="Bob Portrait Enter Mad0003" x="0" y="2232" width="1280" height="744"/>
+	<SubTexture name="Bob Portrait Enter Mad0004" x="1280" y="2232" width="1280" height="744"/>
+	<SubTexture name="Bob Portrait Enter Mad0005" x="2560" y="2232" width="1280" height="744"/>
+	<SubTexture name="Bob Portrait Enter Mad0006" x="2560" y="2232" width="1280" height="744"/>
+	<SubTexture name="Bob Portrait Enter Mad0007" x="2560" y="2232" width="1280" height="744"/>
+	<SubTexture name="Bob Portrait Enter Mad0008" x="2560" y="2232" width="1280" height="744"/>
+</TextureAtlas>

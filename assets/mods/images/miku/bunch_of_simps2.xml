@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="bunch_of_simps.png">
+	<!-- Created with Adobe Animate version 19.0.0.326 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="Downer Crowd Bob0000" x="0" y="0" width="1940" height="429" frameX="0" frameY="-21" frameWidth="1940" frameHeight="450"/>
+	<SubTexture name="Downer Crowd Bob0001" x="0" y="0" width="1940" height="429" frameX="0" frameY="-21" frameWidth="1940" frameHeight="450"/>
+	<SubTexture name="Downer Crowd Bob0002" x="0" y="429" width="1913" height="434" frameX="-13" frameY="-15" frameWidth="1940" frameHeight="450"/>
+	<SubTexture name="Downer Crowd Bob0003" x="0" y="429" width="1913" height="434" frameX="-13" frameY="-15" frameWidth="1940" frameHeight="450"/>
+	<SubTexture name="Downer Crowd Bob0004" x="0" y="863" width="1907" height="441" frameX="-16" frameY="-8" frameWidth="1940" frameHeight="450"/>
+	<SubTexture name="Downer Crowd Bob0005" x="0" y="863" width="1907" height="441" frameX="-16" frameY="-8" frameWidth="1940" frameHeight="450"/>
+	<SubTexture name="Downer Crowd Bob0006" x="0" y="1304" width="1903" height="449" frameX="-18" frameY="0" frameWidth="1940" frameHeight="450"/>
+	<SubTexture name="Downer Crowd Bob0007" x="0" y="1304" width="1903" height="449" frameX="-18" frameY="0" frameWidth="1940" frameHeight="450"/>
+	<SubTexture name="Downer Crowd Bob0008" x="0" y="1304" width="1903" height="449" frameX="-18" frameY="0" frameWidth="1940" frameHeight="450"/>
+	<SubTexture name="Downer Crowd Bob0009" x="0" y="1304" width="1903" height="449" frameX="-18" frameY="0" frameWidth="1940" frameHeight="450"/>
+	<SubTexture name="Downer Crowd Bob0010" x="0" y="1304" width="1903" height="449" frameX="-18" frameY="0" frameWidth="1940" frameHeight="450"/>
+	<SubTexture name="Downer Crowd Bob0011" x="0" y="1304" width="1903" height="449" frameX="-18" frameY="0" frameWidth="1940" frameHeight="450"/>
+	<SubTexture name="Downer Crowd Bob0012" x="0" y="1304" width="1903" height="449" frameX="-18" frameY="0" frameWidth="1940" frameHeight="450"/>
+</TextureAtlas>

@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="Maze.png">
+	<!-- Created with Adobe Animate version 21.0.3.38773 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="Stage0000" x="5" y="5" width="2560" height="1440"/>
+	<SubTexture name="Stage0001" x="2575" y="5" width="2560" height="1440"/>
+	<SubTexture name="Stage0002" x="5145" y="5" width="2560" height="1440"/>
+	<SubTexture name="Stage0003" x="5" y="1455" width="2560" height="1440"/>
+	<SubTexture name="Stage0004" x="2575" y="1455" width="2560" height="1440"/>
+	<SubTexture name="Stage0005" x="5145" y="1455" width="2560" height="1440"/>
+	<SubTexture name="Stage0006" x="5" y="2905" width="2560" height="1440"/>
+	<SubTexture name="Stage0007" x="2575" y="2905" width="2560" height="1440"/>
+	<SubTexture name="Stage0008" x="5145" y="2905" width="2560" height="1440"/>
+	<SubTexture name="Stage0009" x="5" y="4355" width="2560" height="1440"/>
+	<SubTexture name="Stage0010" x="2575" y="4355" width="2560" height="1440"/>
+	<SubTexture name="Stage0011" x="5145" y="4355" width="2560" height="1440"/>
+	<SubTexture name="Stage0012" x="5" y="5805" width="2560" height="1440"/>
+	<SubTexture name="Stage0013" x="5145" y="4355" width="2560" height="1440"/>
+	<SubTexture name="Stage0014" x="2575" y="4355" width="2560" height="1440"/>
+	<SubTexture name="Stage0015" x="5" y="4355" width="2560" height="1440"/>
+	<SubTexture name="Stage0016" x="5145" y="2905" width="2560" height="1440"/>
+	<SubTexture name="Stage0017" x="2575" y="2905" width="2560" height="1440"/>
+	<SubTexture name="Stage0018" x="5" y="2905" width="2560" height="1440"/>
+	<SubTexture name="Stage0019" x="5145" y="1455" width="2560" height="1440"/>
+	<SubTexture name="Stage0020" x="2575" y="1455" width="2560" height="1440"/>
+	<SubTexture name="Stage0021" x="5" y="1455" width="2560" height="1440"/>
+	<SubTexture name="Stage0022" x="5145" y="5" width="2560" height="1440"/>
+	<SubTexture name="Stage0023" x="2575" y="5" width="2560" height="1440"/>
+</TextureAtlas>

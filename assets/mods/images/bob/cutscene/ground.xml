@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="ground.png">
+	<!-- Created with Adobe Animate version 19.0.0.326 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="ground shake0000" x="0" y="0" width="2601" height="1433"/>
+	<SubTexture name="ground shake0001" x="2601" y="0" width="2601" height="1433"/>
+	<SubTexture name="ground shake0002" x="0" y="0" width="2601" height="1433"/>
+	<SubTexture name="ground shake0003" x="2601" y="0" width="2601" height="1433"/>
+	<SubTexture name="ground shake0004" x="0" y="0" width="2601" height="1433"/>
+	<SubTexture name="ground shake0005" x="2601" y="0" width="2601" height="1433"/>
+	<SubTexture name="ground shake0006" x="0" y="0" width="2601" height="1433"/>
+	<SubTexture name="ground shake0007" x="5202" y="0" width="2601" height="1433"/>
+	<SubTexture name="ground shake0008" x="5202" y="0" width="2601" height="1433"/>
+	<SubTexture name="ground shake0009" x="0" y="1433" width="2601" height="1433"/>
+	<SubTexture name="ground shake0010" x="0" y="1433" width="2601" height="1433"/>
+	<SubTexture name="ground shake0011" x="2601" y="1433" width="2601" height="1433"/>
+	<SubTexture name="ground shake0012" x="5202" y="1433" width="2601" height="1433"/>
+	<SubTexture name="ground shake0013" x="5202" y="1433" width="2601" height="1433"/>
+	<SubTexture name="ground shake0014" x="5202" y="1433" width="2601" height="1433"/>
+	<SubTexture name="ground shake0015" x="0" y="2866" width="2601" height="1433"/>
+	<SubTexture name="ground shake0016" x="0" y="2866" width="2601" height="1433"/>
+	<SubTexture name="ground shake0017" x="0" y="2866" width="2601" height="1433"/>
+	<SubTexture name="ground shake0018" x="0" y="2866" width="2601" height="1433"/>
+	<SubTexture name="ground shake0019" x="2601" y="2866" width="2601" height="1433"/>
+	<SubTexture name="ground shake0020" x="2601" y="2866" width="2601" height="1433"/>
+	<SubTexture name="ground shake0021" x="2601" y="2866" width="2601" height="1433"/>
+	<SubTexture name="ground shake0022" x="2601" y="2866" width="2601" height="1433"/>
+	<SubTexture name="ground shake0023" x="5202" y="2866" width="2601" height="1433"/>
+	<SubTexture name="ground shake0024" x="5202" y="2866" width="2601" height="1433"/>
+	<SubTexture name="ground shake0025" x="5202" y="2866" width="2601" height="1433"/>
+</TextureAtlas>

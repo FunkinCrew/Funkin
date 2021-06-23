@@ -1,0 +1,162 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="ev_miku_mad.png">
+	<!-- Created with Adobe Animate version 19.0.0.326 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="Miku Scream Sing Note DOWN0000" x="0" y="0" width="520" height="742" frameX="0" frameY="-4" frameWidth="520" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note DOWN0001" x="520" y="0" width="510" height="746" frameX="-9" frameY="0" frameWidth="520" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note DOWN0002" x="1030" y="0" width="508" height="746" frameX="-10" frameY="0" frameWidth="520" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note DOWN0003" x="1030" y="0" width="508" height="746" frameX="-10" frameY="0" frameWidth="520" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note DOWN0004" x="1030" y="0" width="508" height="746" frameX="-10" frameY="0" frameWidth="520" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note DOWN0005" x="1030" y="0" width="508" height="746" frameX="-10" frameY="0" frameWidth="520" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note DOWN0006" x="1030" y="0" width="508" height="746" frameX="-10" frameY="0" frameWidth="520" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note DOWN0007" x="1030" y="0" width="508" height="746" frameX="-10" frameY="0" frameWidth="520" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note DOWN0008" x="1030" y="0" width="508" height="746" frameX="-10" frameY="0" frameWidth="520" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note DOWN0009" x="1030" y="0" width="508" height="746" frameX="-10" frameY="0" frameWidth="520" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note DOWN0010" x="1030" y="0" width="508" height="746" frameX="-10" frameY="0" frameWidth="520" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note DOWN0011" x="1030" y="0" width="508" height="746" frameX="-10" frameY="0" frameWidth="520" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note DOWN0012" x="1030" y="0" width="508" height="746" frameX="-10" frameY="0" frameWidth="520" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note DOWN0013" x="1030" y="0" width="508" height="746" frameX="-10" frameY="0" frameWidth="520" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note LEFT 0000" x="1538" y="0" width="535" height="746" frameX="0" frameY="0" frameWidth="536" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note LEFT 0001" x="2073" y="0" width="535" height="746" frameX="-1" frameY="0" frameWidth="536" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note LEFT 0002" x="2608" y="0" width="535" height="746" frameX="-1" frameY="0" frameWidth="536" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note LEFT 0003" x="2608" y="0" width="535" height="746" frameX="-1" frameY="0" frameWidth="536" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note LEFT 0004" x="2608" y="0" width="535" height="746" frameX="-1" frameY="0" frameWidth="536" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note LEFT 0005" x="2608" y="0" width="535" height="746" frameX="-1" frameY="0" frameWidth="536" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note LEFT 0006" x="2608" y="0" width="535" height="746" frameX="-1" frameY="0" frameWidth="536" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note LEFT 0007" x="2608" y="0" width="535" height="746" frameX="-1" frameY="0" frameWidth="536" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note LEFT 0008" x="2608" y="0" width="535" height="746" frameX="-1" frameY="0" frameWidth="536" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note LEFT 0009" x="2608" y="0" width="535" height="746" frameX="-1" frameY="0" frameWidth="536" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note LEFT 0010" x="2608" y="0" width="535" height="746" frameX="-1" frameY="0" frameWidth="536" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note LEFT 0011" x="2608" y="0" width="535" height="746" frameX="-1" frameY="0" frameWidth="536" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note LEFT 0012" x="2608" y="0" width="535" height="746" frameX="-1" frameY="0" frameWidth="536" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note LEFT 0013" x="2608" y="0" width="535" height="746" frameX="-1" frameY="0" frameWidth="536" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note LEFT 0014" x="2608" y="0" width="535" height="746" frameX="-1" frameY="0" frameWidth="536" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note LEFT 0015" x="2608" y="0" width="535" height="746" frameX="-1" frameY="0" frameWidth="536" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note LEFT 0016" x="2608" y="0" width="535" height="746" frameX="-1" frameY="0" frameWidth="536" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note LEFT 0017" x="2608" y="0" width="535" height="746" frameX="-1" frameY="0" frameWidth="536" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note LEFT 0018" x="2608" y="0" width="535" height="746" frameX="-1" frameY="0" frameWidth="536" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note LEFT 0019" x="2608" y="0" width="535" height="746" frameX="-1" frameY="0" frameWidth="536" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note RIGHT 0000" x="3143" y="0" width="511" height="746" frameX="-7" frameY="0" frameWidth="518" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note RIGHT 0001" x="0" y="746" width="511" height="746" frameX="0" frameY="0" frameWidth="518" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note RIGHT 0002" x="511" y="746" width="510" height="746" frameX="-1" frameY="0" frameWidth="518" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note RIGHT 0003" x="511" y="746" width="510" height="746" frameX="-1" frameY="0" frameWidth="518" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note RIGHT 0004" x="511" y="746" width="510" height="746" frameX="-1" frameY="0" frameWidth="518" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note RIGHT 0005" x="511" y="746" width="510" height="746" frameX="-1" frameY="0" frameWidth="518" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note RIGHT 0006" x="511" y="746" width="510" height="746" frameX="-1" frameY="0" frameWidth="518" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note RIGHT 0007" x="511" y="746" width="510" height="746" frameX="-1" frameY="0" frameWidth="518" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note RIGHT 0008" x="511" y="746" width="510" height="746" frameX="-1" frameY="0" frameWidth="518" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note RIGHT 0009" x="511" y="746" width="510" height="746" frameX="-1" frameY="0" frameWidth="518" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note RIGHT 0010" x="511" y="746" width="510" height="746" frameX="-1" frameY="0" frameWidth="518" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note RIGHT 0011" x="511" y="746" width="510" height="746" frameX="-1" frameY="0" frameWidth="518" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note RIGHT 0012" x="511" y="746" width="510" height="746" frameX="-1" frameY="0" frameWidth="518" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note RIGHT 0013" x="511" y="746" width="510" height="746" frameX="-1" frameY="0" frameWidth="518" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note RIGHT 0014" x="511" y="746" width="510" height="746" frameX="-1" frameY="0" frameWidth="518" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note RIGHT 0015" x="511" y="746" width="510" height="746" frameX="-1" frameY="0" frameWidth="518" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note RIGHT 0016" x="511" y="746" width="510" height="746" frameX="-1" frameY="0" frameWidth="518" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note RIGHT 0017" x="511" y="746" width="510" height="746" frameX="-1" frameY="0" frameWidth="518" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note UP0000" x="1021" y="746" width="503" height="746" frameX="-8" frameY="0" frameWidth="517" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note UP0001" x="1524" y="746" width="517" height="746"/>
+	<SubTexture name="Miku Scream Sing Note UP0002" x="2041" y="746" width="516" height="746" frameX="0" frameY="0" frameWidth="517" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note UP0003" x="2041" y="746" width="516" height="746" frameX="0" frameY="0" frameWidth="517" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note UP0004" x="2041" y="746" width="516" height="746" frameX="0" frameY="0" frameWidth="517" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note UP0005" x="2041" y="746" width="516" height="746" frameX="0" frameY="0" frameWidth="517" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note UP0006" x="2041" y="746" width="516" height="746" frameX="0" frameY="0" frameWidth="517" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note UP0007" x="2041" y="746" width="516" height="746" frameX="0" frameY="0" frameWidth="517" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note UP0008" x="2041" y="746" width="516" height="746" frameX="0" frameY="0" frameWidth="517" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note UP0009" x="2041" y="746" width="516" height="746" frameX="0" frameY="0" frameWidth="517" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note UP0010" x="2041" y="746" width="516" height="746" frameX="0" frameY="0" frameWidth="517" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note UP0011" x="2041" y="746" width="516" height="746" frameX="0" frameY="0" frameWidth="517" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note UP0012" x="2041" y="746" width="516" height="746" frameX="0" frameY="0" frameWidth="517" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note UP0013" x="2041" y="746" width="516" height="746" frameX="0" frameY="0" frameWidth="517" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note UP0014" x="2041" y="746" width="516" height="746" frameX="0" frameY="0" frameWidth="517" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note UP0015" x="2041" y="746" width="516" height="746" frameX="0" frameY="0" frameWidth="517" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note UP0016" x="2041" y="746" width="516" height="746" frameX="0" frameY="0" frameWidth="517" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note UP0017" x="2041" y="746" width="516" height="746" frameX="0" frameY="0" frameWidth="517" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note UP0018" x="2041" y="746" width="516" height="746" frameX="0" frameY="0" frameWidth="517" frameHeight="746"/>
+	<SubTexture name="Miku Scream Sing Note UP0019" x="2041" y="746" width="516" height="746" frameX="0" frameY="0" frameWidth="517" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note DOWN0000" x="2557" y="746" width="520" height="742" frameX="0" frameY="-4" frameWidth="520" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note DOWN0001" x="2557" y="746" width="520" height="742" frameX="0" frameY="-4" frameWidth="520" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note DOWN0002" x="3077" y="746" width="507" height="746" frameX="-11" frameY="0" frameWidth="520" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note DOWN0003" x="3077" y="746" width="507" height="746" frameX="-11" frameY="0" frameWidth="520" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note DOWN0004" x="3077" y="746" width="507" height="746" frameX="-11" frameY="0" frameWidth="520" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note DOWN0005" x="3077" y="746" width="507" height="746" frameX="-11" frameY="0" frameWidth="520" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note DOWN0006" x="3077" y="746" width="507" height="746" frameX="-11" frameY="0" frameWidth="520" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note DOWN0007" x="3077" y="746" width="507" height="746" frameX="-11" frameY="0" frameWidth="520" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note DOWN0008" x="3077" y="746" width="507" height="746" frameX="-11" frameY="0" frameWidth="520" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note DOWN0009" x="3077" y="746" width="507" height="746" frameX="-11" frameY="0" frameWidth="520" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note DOWN0010" x="3077" y="746" width="507" height="746" frameX="-11" frameY="0" frameWidth="520" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note DOWN0011" x="3077" y="746" width="507" height="746" frameX="-11" frameY="0" frameWidth="520" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note DOWN0012" x="3077" y="746" width="507" height="746" frameX="-11" frameY="0" frameWidth="520" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note DOWN0013" x="3077" y="746" width="507" height="746" frameX="-11" frameY="0" frameWidth="520" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note DOWN0014" x="3077" y="746" width="507" height="746" frameX="-11" frameY="0" frameWidth="520" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note DOWN0015" x="3584" y="746" width="0" height="0" frameX="-472" frameY="-519" frameWidth="520" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note LEFT0000" x="0" y="1492" width="620" height="746" frameX="-3" frameY="0" frameWidth="623" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note LEFT0001" x="0" y="1492" width="620" height="746" frameX="-3" frameY="0" frameWidth="623" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note LEFT0002" x="620" y="1492" width="618" height="746" frameX="0" frameY="0" frameWidth="623" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note LEFT0003" x="620" y="1492" width="618" height="746" frameX="0" frameY="0" frameWidth="623" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note LEFT0004" x="620" y="1492" width="618" height="746" frameX="0" frameY="0" frameWidth="623" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note LEFT0005" x="620" y="1492" width="618" height="746" frameX="0" frameY="0" frameWidth="623" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note LEFT0006" x="620" y="1492" width="618" height="746" frameX="0" frameY="0" frameWidth="623" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note LEFT0007" x="620" y="1492" width="618" height="746" frameX="0" frameY="0" frameWidth="623" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note LEFT0008" x="620" y="1492" width="618" height="746" frameX="0" frameY="0" frameWidth="623" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note LEFT0009" x="620" y="1492" width="618" height="746" frameX="0" frameY="0" frameWidth="623" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note LEFT0010" x="620" y="1492" width="618" height="746" frameX="0" frameY="0" frameWidth="623" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note LEFT0011" x="620" y="1492" width="618" height="746" frameX="0" frameY="0" frameWidth="623" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note LEFT0012" x="620" y="1492" width="618" height="746" frameX="0" frameY="0" frameWidth="623" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note LEFT0013" x="620" y="1492" width="618" height="746" frameX="0" frameY="0" frameWidth="623" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note LEFT0014" x="620" y="1492" width="618" height="746" frameX="0" frameY="0" frameWidth="623" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note LEFT0015" x="620" y="1492" width="618" height="746" frameX="0" frameY="0" frameWidth="623" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note LEFT0016" x="620" y="1492" width="618" height="746" frameX="0" frameY="0" frameWidth="623" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note LEFT0017" x="620" y="1492" width="618" height="746" frameX="0" frameY="0" frameWidth="623" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note LEFT0018" x="620" y="1492" width="618" height="746" frameX="0" frameY="0" frameWidth="623" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note LEFT0019" x="620" y="1492" width="618" height="746" frameX="0" frameY="0" frameWidth="623" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note RIGHT0000" x="1238" y="1492" width="556" height="746" frameX="-6" frameY="0" frameWidth="562" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note RIGHT0001" x="1238" y="1492" width="556" height="746" frameX="-6" frameY="0" frameWidth="562" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note RIGHT0002" x="1794" y="1492" width="556" height="746" frameX="0" frameY="0" frameWidth="562" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note RIGHT0003" x="1794" y="1492" width="556" height="746" frameX="0" frameY="0" frameWidth="562" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note RIGHT0004" x="1794" y="1492" width="556" height="746" frameX="0" frameY="0" frameWidth="562" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note RIGHT0005" x="1794" y="1492" width="556" height="746" frameX="0" frameY="0" frameWidth="562" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note RIGHT0006" x="1794" y="1492" width="556" height="746" frameX="0" frameY="0" frameWidth="562" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note RIGHT0007" x="1794" y="1492" width="556" height="746" frameX="0" frameY="0" frameWidth="562" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note RIGHT0008" x="1794" y="1492" width="556" height="746" frameX="0" frameY="0" frameWidth="562" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note RIGHT0009" x="1794" y="1492" width="556" height="746" frameX="0" frameY="0" frameWidth="562" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note RIGHT0010" x="1794" y="1492" width="556" height="746" frameX="0" frameY="0" frameWidth="562" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note RIGHT0011" x="1794" y="1492" width="556" height="746" frameX="0" frameY="0" frameWidth="562" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note RIGHT0012" x="1794" y="1492" width="556" height="746" frameX="0" frameY="0" frameWidth="562" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note RIGHT0013" x="1794" y="1492" width="556" height="746" frameX="0" frameY="0" frameWidth="562" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note RIGHT0014" x="1794" y="1492" width="556" height="746" frameX="0" frameY="0" frameWidth="562" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note RIGHT0015" x="1794" y="1492" width="556" height="746" frameX="0" frameY="0" frameWidth="562" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note RIGHT0016" x="1794" y="1492" width="556" height="746" frameX="0" frameY="0" frameWidth="562" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note RIGHT0017" x="1794" y="1492" width="556" height="746" frameX="0" frameY="0" frameWidth="562" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note UP0000" x="2350" y="1492" width="503" height="746"/>
+	<SubTexture name="Miku Sing Note UP0001" x="2350" y="1492" width="503" height="746"/>
+	<SubTexture name="Miku Sing Note UP0002" x="2853" y="1492" width="502" height="746" frameX="-1" frameY="0" frameWidth="503" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note UP0003" x="2853" y="1492" width="502" height="746" frameX="-1" frameY="0" frameWidth="503" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note UP0004" x="2853" y="1492" width="502" height="746" frameX="-1" frameY="0" frameWidth="503" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note UP0005" x="2853" y="1492" width="502" height="746" frameX="-1" frameY="0" frameWidth="503" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note UP0006" x="2853" y="1492" width="502" height="746" frameX="-1" frameY="0" frameWidth="503" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note UP0007" x="2853" y="1492" width="502" height="746" frameX="-1" frameY="0" frameWidth="503" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note UP0008" x="2853" y="1492" width="502" height="746" frameX="-1" frameY="0" frameWidth="503" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note UP0009" x="2853" y="1492" width="502" height="746" frameX="-1" frameY="0" frameWidth="503" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note UP0010" x="2853" y="1492" width="502" height="746" frameX="-1" frameY="0" frameWidth="503" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note UP0011" x="2853" y="1492" width="502" height="746" frameX="-1" frameY="0" frameWidth="503" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note UP0012" x="2853" y="1492" width="502" height="746" frameX="-1" frameY="0" frameWidth="503" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note UP0013" x="2853" y="1492" width="502" height="746" frameX="-1" frameY="0" frameWidth="503" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note UP0014" x="2853" y="1492" width="502" height="746" frameX="-1" frameY="0" frameWidth="503" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note UP0015" x="2853" y="1492" width="502" height="746" frameX="-1" frameY="0" frameWidth="503" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note UP0016" x="2853" y="1492" width="502" height="746" frameX="-1" frameY="0" frameWidth="503" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note UP0017" x="2853" y="1492" width="502" height="746" frameX="-1" frameY="0" frameWidth="503" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note UP0018" x="2853" y="1492" width="502" height="746" frameX="-1" frameY="0" frameWidth="503" frameHeight="746"/>
+	<SubTexture name="Miku Sing Note UP0019" x="2853" y="1492" width="502" height="746" frameX="-1" frameY="0" frameWidth="503" frameHeight="746"/>
+	<SubTexture name="Miku idle dance0000" x="3355" y="1492" width="509" height="746" frameX="-26" frameY="0" frameWidth="535" frameHeight="746"/>
+	<SubTexture name="Miku idle dance0001" x="3355" y="1492" width="509" height="746" frameX="-26" frameY="0" frameWidth="535" frameHeight="746"/>
+	<SubTexture name="Miku idle dance0002" x="0" y="2238" width="507" height="746" frameX="-15" frameY="0" frameWidth="535" frameHeight="746"/>
+	<SubTexture name="Miku idle dance0003" x="0" y="2238" width="507" height="746" frameX="-15" frameY="0" frameWidth="535" frameHeight="746"/>
+	<SubTexture name="Miku idle dance0004" x="507" y="2238" width="500" height="746" frameX="-8" frameY="0" frameWidth="535" frameHeight="746"/>
+	<SubTexture name="Miku idle dance0005" x="507" y="2238" width="500" height="746" frameX="-8" frameY="0" frameWidth="535" frameHeight="746"/>
+	<SubTexture name="Miku idle dance0006" x="1007" y="2238" width="509" height="746" frameX="-2" frameY="0" frameWidth="535" frameHeight="746"/>
+	<SubTexture name="Miku idle dance0007" x="1007" y="2238" width="509" height="746" frameX="-2" frameY="0" frameWidth="535" frameHeight="746"/>
+	<SubTexture name="Miku idle dance0008" x="1516" y="2238" width="511" height="746" frameX="0" frameY="0" frameWidth="535" frameHeight="746"/>
+	<SubTexture name="Miku idle dance0009" x="1516" y="2238" width="511" height="746" frameX="0" frameY="0" frameWidth="535" frameHeight="746"/>
+	<SubTexture name="Miku idle dance0010" x="1516" y="2238" width="511" height="746" frameX="0" frameY="0" frameWidth="535" frameHeight="746"/>
+</TextureAtlas>

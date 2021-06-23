@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="sky.png">
+	<!-- Created with Adobe Animate version 19.0.0.326 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="sky shake0000" x="0" y="0" width="1729" height="1071"/>
+	<SubTexture name="sky shake0001" x="0" y="0" width="1729" height="1071"/>
+	<SubTexture name="sky shake0002" x="1729" y="0" width="1729" height="1071"/>
+	<SubTexture name="sky shake0003" x="3458" y="0" width="1729" height="1070" frameX="0" frameY="-1" frameWidth="1729" frameHeight="1071"/>
+	<SubTexture name="sky shake0004" x="5187" y="0" width="1729" height="1070" frameX="0" frameY="-1" frameWidth="1729" frameHeight="1071"/>
+	<SubTexture name="sky shake0005" x="0" y="1071" width="1729" height="1070" frameX="0" frameY="-1" frameWidth="1729" frameHeight="1071"/>
+	<SubTexture name="sky shake0006" x="1729" y="1071" width="1729" height="1070" frameX="0" frameY="-1" frameWidth="1729" frameHeight="1071"/>
+	<SubTexture name="sky shake0007" x="3458" y="1071" width="1729" height="1069" frameX="0" frameY="-2" frameWidth="1729" frameHeight="1071"/>
+	<SubTexture name="sky shake0008" x="5187" y="1071" width="1729" height="1068" frameX="0" frameY="-3" frameWidth="1729" frameHeight="1071"/>
+	<SubTexture name="sky shake0009" x="0" y="2141" width="1729" height="1067" frameX="0" frameY="-4" frameWidth="1729" frameHeight="1071"/>
+	<SubTexture name="sky shake0010" x="1729" y="2141" width="1729" height="1065" frameX="0" frameY="-6" frameWidth="1729" frameHeight="1071"/>
+	<SubTexture name="sky shake0011" x="3458" y="2141" width="1729" height="1062" frameX="0" frameY="-9" frameWidth="1729" frameHeight="1071"/>
+	<SubTexture name="sky shake0012" x="5187" y="2141" width="1729" height="1058" frameX="0" frameY="-13" frameWidth="1729" frameHeight="1071"/>
+	<SubTexture name="sky shake0013" x="0" y="3208" width="1729" height="1054" frameX="0" frameY="-17" frameWidth="1729" frameHeight="1071"/>
+	<SubTexture name="sky shake0014" x="1729" y="3208" width="1729" height="1048" frameX="0" frameY="-23" frameWidth="1729" frameHeight="1071"/>
+	<SubTexture name="sky shake0015" x="3458" y="3208" width="1729" height="1041" frameX="0" frameY="-30" frameWidth="1729" frameHeight="1071"/>
+	<SubTexture name="sky shake0016" x="5187" y="3208" width="1729" height="1032" frameX="0" frameY="-39" frameWidth="1729" frameHeight="1071"/>
+	<SubTexture name="sky shake0017" x="0" y="4262" width="1729" height="1022" frameX="0" frameY="-49" frameWidth="1729" frameHeight="1071"/>
+	<SubTexture name="sky shake0018" x="1729" y="4262" width="1729" height="1010" frameX="0" frameY="-61" frameWidth="1729" frameHeight="1071"/>
+	<SubTexture name="sky shake0019" x="3458" y="4262" width="1729" height="995" frameX="0" frameY="-76" frameWidth="1729" frameHeight="1071"/>
+	<SubTexture name="sky shake0020" x="5187" y="4262" width="1729" height="978" frameX="0" frameY="-93" frameWidth="1729" frameHeight="1071"/>
+	<SubTexture name="sky shake0021" x="0" y="5284" width="1729" height="957" frameX="0" frameY="-114" frameWidth="1729" frameHeight="1071"/>
+	<SubTexture name="sky shake0022" x="1729" y="5284" width="1729" height="955" frameX="0" frameY="-116" frameWidth="1729" frameHeight="1071"/>
+	<SubTexture name="sky shake0023" x="3458" y="5284" width="1729" height="955" frameX="0" frameY="-116" frameWidth="1729" frameHeight="1071"/>
+	<SubTexture name="sky shake0024" x="5187" y="5284" width="1729" height="955" frameX="0" frameY="-116" frameWidth="1729" frameHeight="1071"/>
+	<SubTexture name="sky shake0025" x="0" y="6241" width="1729" height="955" frameX="0" frameY="-116" frameWidth="1729" frameHeight="1071"/>
+</TextureAtlas>

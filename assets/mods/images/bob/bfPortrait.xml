@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="bfPortrait.png">
+	<!-- Created with Adobe Animate version 19.0.0.326 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="Boyfriend portrait enter0000" x="0" y="0" width="1280" height="744"/>
+	<SubTexture name="Boyfriend portrait enter0001" x="1280" y="0" width="1280" height="744"/>
+	<SubTexture name="Boyfriend portrait enter0002" x="2560" y="0" width="1280" height="744"/>
+	<SubTexture name="Boyfriend portrait enter0003" x="0" y="744" width="1280" height="744"/>
+	<SubTexture name="Boyfriend portrait enter0004" x="1280" y="744" width="1280" height="744"/>
+	<SubTexture name="Boyfriend portrait enter0005" x="2560" y="744" width="1280" height="744"/>
+	<SubTexture name="Boyfriend portrait enter0006" x="0" y="1488" width="1280" height="744"/>
+	<SubTexture name="Boyfriend portrait enter0007" x="0" y="1488" width="1280" height="744"/>
+	<SubTexture name="Boyfriend portrait enter0008" x="0" y="1488" width="1280" height="744"/>
+	<SubTexture name="Boyfriend portrait enter0009" x="0" y="1488" width="1280" height="744"/>
+	<SubTexture name="Boyfriend portrait enter0010" x="0" y="1488" width="1280" height="744"/>
+</TextureAtlas>

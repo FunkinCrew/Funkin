@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="dialogueBox-bobevil.png">
+	<!-- Created with Adobe Animate version 19.0.0.326 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="Text Box Appear0000" x="0" y="0" width="1281" height="743"/>
+	<SubTexture name="Text Box Appear0001" x="1281" y="0" width="1281" height="743"/>
+	<SubTexture name="Text Box Appear0002" x="2562" y="0" width="1281" height="743"/>
+	<SubTexture name="Text Box Appear0003" x="0" y="743" width="1281" height="743"/>
+	<SubTexture name="Text Box Appear0004" x="1281" y="743" width="1281" height="743"/>
+	<SubTexture name="Text Box Appear0005" x="2562" y="743" width="1281" height="743"/>
+	<SubTexture name="Text Box Appear0006" x="0" y="1486" width="1281" height="743"/>
+</TextureAtlas>

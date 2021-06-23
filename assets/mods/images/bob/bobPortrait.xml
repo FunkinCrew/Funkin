@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="bobPortrait.png">
+	<!-- Created with Adobe Animate version 19.0.0.326 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="Bob Portrait Enter0000" x="0" y="0" width="1280" height="744"/>
+	<SubTexture name="Bob Portrait Enter0001" x="1280" y="0" width="1280" height="744"/>
+	<SubTexture name="Bob Portrait Enter0002" x="2560" y="0" width="1280" height="744"/>
+	<SubTexture name="Bob Portrait Enter0003" x="0" y="744" width="1280" height="744"/>
+	<SubTexture name="Bob Portrait Enter0004" x="1280" y="744" width="1280" height="744"/>
+	<SubTexture name="Bob Portrait Enter0005" x="2560" y="744" width="1280" height="744"/>
+	<SubTexture name="Bob Portrait Enter0006" x="2560" y="744" width="1280" height="744"/>
+	<SubTexture name="Bob Portrait Enter0007" x="2560" y="744" width="1280" height="744"/>
+	<SubTexture name="Bob Portrait Enter0008" x="2560" y="744" width="1280" height="744"/>
+</TextureAtlas>
