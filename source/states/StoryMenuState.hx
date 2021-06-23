@@ -242,7 +242,6 @@ class StoryMenuState extends MusicBeatState
 
 		scoreText.text = "WEEK SCORE:" + lerpScore;
 
-		txtWeekTitle.text = weekNames[curWeek];
 		txtWeekTitle.x = FlxG.width - (txtWeekTitle.width + 10);
 
 		// FlxG.watch.addQuick('font', scoreText.font);
@@ -416,6 +415,7 @@ class StoryMenuState extends MusicBeatState
 		grpWeekCharacters.members[2].animation.play(weekCharacters[curWeek][2]);
 
 		txtTracklist.text = "Tracks\n\n";
+		txtWeekTitle.text = weekNames[curWeek];
 
 		switch (grpWeekCharacters.members[0].animation.curAnim.name)
 		{
@@ -462,10 +462,17 @@ class StoryMenuState extends MusicBeatState
 			txtTracklist.text += i + "\n";
 		}
 
-		txtTracklist.text = txtTracklist.text.toUpperCase();
+		if(!weekUnlocked[curWeek])
+		{
+			grpWeekCharacters.members[0].visible = false;
+			txtTracklist.text = "Tracks\n\n???\n???\n???\n";
+			txtWeekTitle.text = "Complete previous week(s) to unlock this!";
+		} else
+			grpWeekCharacters.members[0].visible = true;
 
 		txtTracklist.screenCenter(X);
 		txtTracklist.x -= FlxG.width * 0.35;
+		txtTracklist.text = txtTracklist.text.toUpperCase();
 
 		#if !switch
 		intendedScore = Highscore.getWeekScore(curWeek, curDifficulty);
