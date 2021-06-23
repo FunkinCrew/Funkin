@@ -1,5 +1,6 @@
 package;
 
+import smTools.SMFile;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -92,6 +93,9 @@ class TitleState extends MusicBeatState
 
 		KadeEngineData.initSave();
 
+		// var file:SMFile = SMFile.loadFile("file.sm");
+		// this was testing things
+		
 		Highscore.load();
 
 		if (FlxG.save.data.weekUnlocked != null)
