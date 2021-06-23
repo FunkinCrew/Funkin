@@ -353,6 +353,34 @@ class OptionsMenu extends MusicBeatState
 						inMenu = false;
 					}
 
+					case "Debug Songs On":
+					{
+						inMenu = false;
+						FlxG.save.data.debugSongs = false;
+						FlxG.save.flush();
+
+						var option = new Alphabet(20, 420, "Debug Songs Off", true, false);
+						option.isMenuItem = true;
+						option.targetY = 5;
+						grpOptionsTexts.members[5] = option;
+						textMenuItems[5] = "Debug Songs Off";
+						inMenu = false;
+					}
+
+					case "Debug Songs Off":
+					{
+						inMenu = false;
+						FlxG.save.data.debugSongs = true;
+						FlxG.save.flush();
+
+						var option = new Alphabet(20, 420, "Debug Songs On", true, false);
+						option.isMenuItem = true;
+						option.targetY = 5;
+						grpOptionsTexts.members[5] = option;
+						textMenuItems[5] = "Debug Songs On";
+						inMenu = false;
+					}
+
 					case 'Misc':
 					{
 						curSelected = 0;
@@ -367,6 +395,11 @@ class OptionsMenu extends MusicBeatState
 							textMenuItems.push("Reset Button Off");
 						else
 							textMenuItems.push("Reset Button On");
+
+						if(!FlxG.save.data.debugSongs)
+							textMenuItems.push("Debug Songs Off");
+						else
+							textMenuItems.push("Debug Songs On");
 						
 						spawnInTexts();
 					}

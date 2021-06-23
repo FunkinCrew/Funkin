@@ -80,7 +80,11 @@ class FreeplayState extends MusicBeatState
 			}
 
 			// If you've unlocked the week after this one, then yes
-			if (StoryMenuState.weekUnlocked[week + 1] || isDebug)
+			if (listArray[3] == null && (StoryMenuState.weekUnlocked[week + 1] || isDebug))
+			{
+				// Creates new song data accordingly
+				songs.push(new SongMetadata(song, Std.parseInt(listArray[2]), icon));
+			} else if(listArray[3] != null && FlxG.save.data.debugSongs == true)
 			{
 				// Creates new song data accordingly
 				songs.push(new SongMetadata(song, Std.parseInt(listArray[2]), icon));
