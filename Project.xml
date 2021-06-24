@@ -209,4 +209,13 @@
 	<!-- <prebuild haxe="trace('prebuilding');"/> -->
 	<!-- <postbuild haxe="art/Postbuild.hx"/> -->
 	
+	<section if='TOOLS'>
+		<!-- Compiles tool for old song conversion shit -->
+		<!-- Assumes you use it on windows/desktop!!!! -->
+		<postbuild command='haxe -main art/SongConverter.hx --cs export/songShit'/>
+		<assets path='export/songShit/bin/SongConverter.exe' rename='SongConverter.exe' />
+
+		<!-- <postbuild command='ren export/songShit/bin export/songShit/tools '/> -->
+		<!-- <postbuild command='move export/songShit/tools export/release/windows/bin'/> -->
+	</section>
 </project>
