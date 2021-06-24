@@ -10,19 +10,28 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.graphics.frames.FlxFrame;
 import flixel.group.FlxGroup;
 import flixel.math.FlxPoint;
+import flixel.system.FlxSound;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.util.FlxSpriteUtil;
+import flixel.util.FlxTimer;
+import js.html.FileList;
 import lime.utils.Assets as LimeAssets;
 import openfl.Assets;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
 import openfl.geom.Rectangle;
 import openfl.net.FileReference;
-import sys.io.File;
+import openfl.net.URLLoader;
+import openfl.net.URLRequest;
+import openfl.utils.ByteArray;
 
 using StringTools;
 using flixel.util.FlxSpriteUtil;
+
+#if sys
+import sys.io.File;
+#end
 
 class DebugBoundingState extends FlxState
 {
@@ -106,6 +115,50 @@ class DebugBoundingState extends FlxState
 
 		FlxG.stage.window.onDropFile.add(function(path:String)
 		{
+			// WACKY ASS TESTING SHIT FOR WEB FILE LOADING??
+			#if web
+			var swagList:FileList = cast path;
+
+			var objShit = js.html.URL.createObjectURL(swagList.item(0));
+			trace(objShit);
+
+			var funnysound = new FlxSound().loadStream('https://cdn.discordapp.com/attachments/767500676166451231/817821618251759666/Flutter.mp3', false,
+				false, null, function()
+			{
+				trace('LOADED SHIT??');
+			});
+
+			funnysound.volume = 1;
+			funnysound.play();
+
+			var urlShit = new URLLoader(new URLRequest(objShit));
+
+			new FlxTimer().start(3, function(tmr:FlxTimer)
+			{
+				// music lol!
+				if (urlShit.dataFormat == BINARY)
+				{
+					// var daSwagBytes:ByteArray = urlShit.data;
+
+					// FlxG.sound.playMusic();
+
+					// trace('is binary!!');
+				}
+				trace(urlShit.dataFormat);
+			});
+
+			// remove(bf);
+			// FlxG.bitmap.removeByKey(Paths.image('characters/temp'));
+			// Assets.cache.clear();
+
+			// bf.loadGraphic(objShit);
+			// add(bf);
+
+			// trace(swagList.item(0).name);
+			// var urlShit = js.html.URL.createObjectURL(path);
+			#end
+
+			#if sys
 			trace("DROPPED FILE FROM: " + Std.string(path));
 			var newPath = "./" + Paths.image('characters/temp');
 			File.copy(path, newPath);
@@ -119,6 +172,7 @@ class DebugBoundingState extends FlxState
 
 			bf.loadGraphic(Paths.image('characters/temp'));
 			add(bf);
+			#end
 		});
 	}
 
