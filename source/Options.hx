@@ -504,6 +504,27 @@ class RainbowFPSOption extends Option
 	}
 }
 
+class Optimization extends Option
+{
+	public function new(desc:String)
+		{
+			super();
+			description = desc;
+		}
+	
+		public override function press():Bool
+		{
+			FlxG.save.data.optimize = !FlxG.save.data.optimize;
+			display = updateDisplay();
+			return true;
+		}
+	
+		private override function updateDisplay():String
+		{
+			return "Optimization " + (FlxG.save.data.optimize ? "ON" : "OFF");
+		}
+}
+
 class NPSDisplayOption extends Option
 {
 	public function new(desc:String)
