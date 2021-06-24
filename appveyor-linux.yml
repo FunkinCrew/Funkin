@@ -31,7 +31,6 @@ install:
   - haxelib install linc_luajit
   - haxelib install actuate
   - haxelib git extension-webm https://github.com/KadeDev/extension-webm
-  - lime rebuild extension-webm linux
   - haxelib list
   - cd /home/appveyor/projects/kade-engine-linux
 
