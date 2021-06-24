@@ -998,7 +998,11 @@ class PlayState extends MusicBeatState
 		add(healthBar);
 
 		// Add Kade Engine watermark
+<<<<<<< HEAD
+		kadeEngineWatermark = new FlxText(4,healthBarBG.y + 50,0,SONG.song + " " + CoolUtil.difficultyFromInt(storyDifficulty) + (Main.watermarks ? " - KE " + MainMenuState.kadeEngineVer : ""), 16);
+=======
 		kadeEngineWatermark = new FlxText(4,healthBarBG.y + 50,0,SONG.song + " - " + CoolUtil.difficultyFromInt(storyDifficulty) + (Main.watermarks ? " | KE " + MainMenuState.kadeEngineVer : ""), 16);
+>>>>>>> origin/master
 		kadeEngineWatermark.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 		kadeEngineWatermark.scrollFactor.set();
 		add(kadeEngineWatermark);
@@ -3140,6 +3144,10 @@ class PlayState extends MusicBeatState
 				if (controls.RIGHT_P){luaModchart.executeState('keyPressed',["right"]);};
 				};
 				#end
+<<<<<<< HEAD
+		 
+=======
+>>>>>>> origin/master
 				
 				// Prevent player input if botplay is on
 				if(PlayStateChangeables.botPlay)
@@ -3151,9 +3159,15 @@ class PlayState extends MusicBeatState
 
 				var anas:Array<Ana> = [null,null,null,null];
 
+<<<<<<< HEAD
+				for (i in 0...pressArray.length)
+					if (pressArray[i])
+						anas[i] = new Ana(Conductor.songPosition, null, false, "miss", i);
+=======
 				/*for (i in 0...pressArray.length)
 					if (pressArray[i])
 						anas[i] = new Ana(Conductor.songPosition, null, false, "miss", i);*/
+>>>>>>> origin/master
 
 				// HOLDS, check for sustain notes
 				if (holdArray.contains(true) && /*!boyfriend.stunned && */ generatedMusic)
@@ -3181,6 +3195,11 @@ class PlayState extends MusicBeatState
 						{
 							if (!directionsAccounted[daNote.noteData])
 							{
+<<<<<<< HEAD
+								directionsAccounted[daNote.noteData] = true;
+								possibleNotes.push(daNote);
+								directionList.push(daNote.noteData);
+=======
 								if (directionList.contains(daNote.noteData))
 									{
 										directionsAccounted[daNote.noteData] = true;
@@ -3205,6 +3224,7 @@ class PlayState extends MusicBeatState
 										possibleNotes.push(daNote);
 										directionList.push(daNote.noteData);
 									}
+>>>>>>> origin/master
 							}
 						}
 					});
@@ -3255,12 +3275,21 @@ class PlayState extends MusicBeatState
 									noteMiss(shit, null);
 						}
 
+<<<<<<< HEAD
+				}
+
+				if (!loadRep)
+					for (i in anas)
+						if (i != null)
+							replayAna.anaArray.push(i); // put em all there
+=======
 				}*/
 
 				/*if (!loadRep)
 					for (i in anas)
 						if (i != null)
 							replayAna.anaArray.push(i); // put em all there*/
+>>>>>>> origin/master
 				
 				notes.forEachAlive(function(daNote:Note)
 				{
