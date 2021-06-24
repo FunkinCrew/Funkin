@@ -1373,19 +1373,32 @@ class PlayState extends MusicBeatState
 		// first convert it from openfl to a flixel key code
 		// then use FlxKey to get the key's name based off of the FlxKey dictionary
 		// this makes it work for special characters
+
 		@:privateAccess
 		var key = FlxKey.toStringMap.get(Keyboard.__convertKeyCode(evt.keyCode));
 	
-
 		var binds:Array<String> = [FlxG.save.data.leftBind,FlxG.save.data.downBind, FlxG.save.data.upBind, FlxG.save.data.rightBind];
 
 		var data = -1;
 		
-		for (i in 0...binds.length)
+		switch(evt.keyCode) // arrow keys
+		{
+			case 37:
+				data = 0;
+			case 40:
+				data = 1;
+			case 38:
+				data = 2;
+			case 39:
+				data = 3;
+		}
+
+		for (i in 0...binds.length) // binds
 		{
 			if (binds[i].toLowerCase() == key.toLowerCase())
 				data = i;
 		}
+
 
 		if (data == -1)
 			return;
