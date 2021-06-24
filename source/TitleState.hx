@@ -1,6 +1,8 @@
 package;
 
+#if sys
 import smTools.SMFile;
+#end
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;

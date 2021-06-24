@@ -1,3 +1,4 @@
+#if sys
 package smTools;
 
 class SMMeasure
@@ -12,3 +13,4 @@ class SMMeasure
         notes = [];
     }
 }
+#end

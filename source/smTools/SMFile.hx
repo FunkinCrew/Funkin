@@ -1,3 +1,4 @@
+#if sys
 package smTools;
 
 import sys.io.File;
@@ -57,3 +58,4 @@ class SMFile
         trace(measures.length + " Measures");
     }
 }
+#end

@@ -1,3 +1,4 @@
+#if sys
 package smTools;
 
 class SMHeader
@@ -35,3 +36,4 @@ class SMHeader
         }
     }
 }
+#end

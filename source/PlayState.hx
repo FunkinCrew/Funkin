@@ -6,7 +6,9 @@ import openfl.ui.Keyboard;
 import openfl.events.KeyboardEvent;
 import Replay.Ana;
 import Replay.Analysis;
+#if cpp
 import webm.WebmPlayer;
+#end
 import flixel.input.keyboard.FlxKey;
 import haxe.Exception;
 import openfl.geom.Matrix;
@@ -3352,6 +3354,7 @@ class PlayState extends MusicBeatState
 
 			public function backgroundVideo(source:String) // for background videos
 				{
+					#if cpp
 					useVideo = true;
 			
 					FlxG.stage.window.onFocusOut.add(focusOut);
@@ -3402,6 +3405,7 @@ class PlayState extends MusicBeatState
 						webmHandler.pause();
 					else
 						webmHandler.resume();
+					#end
 				}
 
 	function noteMiss(direction:Int = 1, daNote:Note):Void

@@ -1,3 +1,4 @@
+#if sys
 package smTools;
 
 class SMNote
@@ -6,3 +7,4 @@ class SMNote
     public var data:Int;
     public var length:Float;
 }
+#end
