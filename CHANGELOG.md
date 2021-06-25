@@ -8,13 +8,15 @@ All notable changes will be documented in this file.
 - Note splashes when you hit a sick!
 - Millisecond timer when hitting notes.
 - Old debugging songs.
-- New input system.
-- A new rating system.
 ### Changed
 - Organized classes into packages.
-- Some more information about the song you're playing.
 ### Fixed
 - Placeholder
+
+DO THIS NOW:
+- New input system.
+- A new rating system.
+- Some more information about the song you're playing.
 
 ## [0.1] - 6/18/2021
 ### Added
