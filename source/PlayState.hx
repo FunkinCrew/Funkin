@@ -931,6 +931,16 @@ class PlayState extends MusicBeatState
 		add(dad);
 		add(boyfriend);
 
+		if (curStage == 'tankStage')
+		{
+			add(tankBop1);
+			add(tankBop2);
+			add(tankBop3);
+			add(tankBop4);
+			add(tankBop5);
+			add(tankBop6);
+		}
+
 		var doof:DialogueBox = new DialogueBox(false, dialogue);
 		// doof.x += 70;
 		// doof.y = FlxG.height * 0.5;
@@ -968,7 +978,11 @@ class PlayState extends MusicBeatState
 
 		add(camFollow);
 
-		FlxG.camera.follow(camFollow, LOCKON, 0.04);
+		FlxG.camera.follow(camFollow, LOCKON, camMove);
+		/*Note:
+		I added this little feature for 90 fps and 60 fps.
+		60 fps = 0.6
+		90 fps = 0.9*/
 		// FlxG.camera.setScrollBounds(0, FlxG.width, 0, FlxG.height);
 		FlxG.camera.zoom = defaultCamZoom;
 		FlxG.camera.focusOn(camFollow.getPosition());
