@@ -1094,6 +1094,12 @@ class PlayState extends MusicBeatState
 					schoolIntro(doof);
 				case 'thorns':
 					schoolIntro(doof);
+				case 'ugh':
+					ughIntro();
+				case 'guns':
+					gunsIntro();
+				case 'stress':
+					stressIntro();
 				default:
 					startCountdown();
 			}
@@ -1108,6 +1114,19 @@ class PlayState extends MusicBeatState
 		}
 
 		super.create();
+	}
+
+	function ughIntro()
+	{
+	    //dog
+	}
+	function gunsIntro()
+	{
+	    //lucky
+	}
+	function stressIntro()
+	{
+	    //hi
 	}
 
 	function schoolIntro(?dialogueBox:DialogueBox):Void
