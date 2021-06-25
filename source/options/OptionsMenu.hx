@@ -43,6 +43,12 @@ class OptionsMenu extends MusicBeatState
 		menuBG.antialiasing = true;
 		add(menuBG);
 
+		var notice = new FlxText(0, 0, 0,"Camera Movement: " + camMove + " Press LEFT or RIGHT to change values\n", 24);
+		add(notice);
+        notice.x = (FlxG.width / 2) - (notice.width / 2);
+        notice.y = FlxG.height - 56;
+        notice.alpha = 0.3;
+
 		grpControls = new FlxTypedGroup<Alphabet>();
 		add(grpControls);
 
@@ -60,7 +66,7 @@ class OptionsMenu extends MusicBeatState
 		}
 
 		#if mobileC
-		addVirtualPad(UP_DOWN, A_B);
+		addVirtualPad(FULL, A_B);
 		#end
 		
 		super.create();
@@ -98,7 +104,14 @@ class OptionsMenu extends MusicBeatState
 					#end
 			}
 		}
-
+		if (controls.RIGHT)
+		{
+		    camMove += 0.01;
+		}
+		if (controls.LEFT)
+		{
+		    camMove -= 0.01;
+		}
 		if (isSettingControl)
 			waitingInput();
 		else
