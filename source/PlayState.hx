@@ -2007,7 +2007,7 @@ class PlayState extends MusicBeatState
 
 		scoreTxt.x = (originalX - (lengthInPx / 2)) + 335;
 
-		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause)
+		if (controls.PAUSE && startedCountdown && canPause)
 		{
 			persistentUpdate = false;
 			persistentDraw = true;
@@ -2022,6 +2022,7 @@ class PlayState extends MusicBeatState
 			else
 				openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 		}
+
 
 		if (FlxG.keys.justPressed.SEVEN)
 		{
@@ -3187,7 +3188,6 @@ class PlayState extends MusicBeatState
 							{
 								if (daNote.canBeHit && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit && !directionsAccounted[daNote.noteData])
 								{
-									directionsAccounted[daNote.noteData] = true;
 									if (directionList.contains(daNote.noteData))
 										{
 											directionsAccounted[daNote.noteData] = true;
