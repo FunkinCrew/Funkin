@@ -124,7 +124,7 @@ class SetFpsSubState extends MusicBeatSubstate
         if (curSelected >= menuItems.length)
             curSelected = 0;
     
-        var bullShit:Int = 0;
+        var bullShit:Int = 0;//nice
     
         for (item in grpMenuShit.members)
         {
