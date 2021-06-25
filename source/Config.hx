@@ -7,6 +7,7 @@ import flixel.math.FlxPoint;
 
 class Config {
     var save:FlxSave;
+    var fpsVal:Int = 60;
 
     public function new() 
     {
@@ -84,6 +85,7 @@ class Config {
 		
 		FlxG.stage.frameRate = fps;
 		save.data.framerate = fps;
+		fpsVal = fps
 		save.flush();
 	}
 
