@@ -102,7 +102,7 @@ class SetFpsSubState extends MusicBeatSubstate
                 case 1:
                     new Config().setFrameRate(90);
                 default:
-                    new Config().setFrameRate(60);//srsly lucky, not adding a value will give a black screen to people.
+                    new Config().setFrameRate(60);//srsly lucky, not adding a value will give a black screen to people. -Zack
             }
             close();
         }
