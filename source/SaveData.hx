@@ -9,9 +9,9 @@ class SaveData
 
 	public static function initSave()
 	{
-		if (Config.fps == 60)
+		if (Config.fpsVal == 60)
 			camlerp.data.camMove = 0.06;
-		else if (Config.fps == 90)
-		
+		else if (Config.fpsVal == 90)
+			camlerp.data.camMove = 0.06;
 	}
 }
