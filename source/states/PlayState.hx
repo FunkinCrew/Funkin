@@ -889,6 +889,7 @@ class PlayState extends MusicBeatState
 			var splash:FlxSprite = new FlxSprite(babyArrow.x - 80, babyArrow.y - 80);
 			splash.frames = Paths.getSparrowAtlas("ui/noteSplashes", "shared");
 			splash.cameras = [camHUD];
+			splash.alpha = 0.6;
 
 			var nameThing = "orange";
 
@@ -919,6 +920,7 @@ class PlayState extends MusicBeatState
 			var splash:FlxSprite = new FlxSprite(babyArrow.x - 80, babyArrow.y - 80);
 			splash.frames = Paths.getSparrowAtlas("ui/noteSplashes", "shared");
 			splash.cameras = [camHUD];
+			splash.alpha = 0.6;
 
 			var nameThing = "orange";
 
