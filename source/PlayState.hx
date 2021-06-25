@@ -866,7 +866,7 @@ class PlayState extends MusicBeatState
 				dad.y += 100;
 				camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
 			case 'tankman':
-				dad.x = dad.x
+				//dad.x = dad.x
 				dad.y += 180;
 		}
 
@@ -906,6 +906,20 @@ class PlayState extends MusicBeatState
 				boyfriend.y += 220;
 				gf.x += 180;
 				gf.y += 300;
+			case 'tankStage':
+				gf.y += -55;
+				gf.x -= 200;
+
+				boyfriend.x += 40;
+				dad.y += 60;
+				dad.x -= 80;
+			case 'tankStage2':
+				gf.y += -55;
+				gf.x -= 200;
+
+				boyfriend.x += 40;
+				dad.y += 60;
+				dad.x -= 80;
 		}
 
 		add(gf);
