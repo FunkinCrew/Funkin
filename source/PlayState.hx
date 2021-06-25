@@ -2007,7 +2007,7 @@ class PlayState extends MusicBeatState
 
 		scoreTxt.x = (originalX - (lengthInPx / 2)) + 335;
 
-		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause)
+		if (controls.PAUSE && startedCountdown && canPause)
 		{
 			persistentUpdate = false;
 			persistentDraw = true;
@@ -2022,6 +2022,7 @@ class PlayState extends MusicBeatState
 			else
 				openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 		}
+
 
 		if (FlxG.keys.justPressed.SEVEN)
 		{
@@ -3184,18 +3185,36 @@ class PlayState extends MusicBeatState
 						var directionsAccounted:Array<Bool> = [false,false,false,false]; // we don't want to do judgments for more than one presses
 						
 						notes.forEachAlive(function(daNote:Note)
-						{
-							if (daNote.canBeHit && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit)
 							{
-								if (!directionsAccounted[daNote.noteData])
+								if (daNote.canBeHit && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit && !directionsAccounted[daNote.noteData])
 								{
-									directionsAccounted[daNote.noteData] = true;
-									possibleNotes.push(daNote);
-									directionList.push(daNote.noteData);
+									if (directionList.contains(daNote.noteData))
+										{
+											directionsAccounted[daNote.noteData] = true;
+											for (coolNote in possibleNotes)
+											{
+												if (coolNote.noteData == daNote.noteData && Math.abs(daNote.strumTime - coolNote.strumTime) < 10)
+												{ // if it's the same note twice at < 10ms distance, just delete it
+													// EXCEPT u cant delete it in this loop cuz it fucks with the collection lol
+													dumbNotes.push(daNote);
+													break;
+												}
+												else if (coolNote.noteData == daNote.noteData && daNote.strumTime < coolNote.strumTime)
+												{ // if daNote is earlier than existing note (coolNote), replace
+													possibleNotes.remove(coolNote);
+													possibleNotes.push(daNote);
+													break;
+												}
+											}
+										}
+										else
+										{
+											possibleNotes.push(daNote);
+											directionList.push(daNote.noteData);
+										}
 								}
-							}
 						});
-						trace('notes that can be hit: ' + possibleNotes.length);
+
 						for (note in dumbNotes)
 						{
 							FlxG.log.add("killing dumb ass note at " + note.strumTime);
