@@ -93,12 +93,6 @@ class OptionsMenu extends MusicBeatState
 				case "About":
 					FlxG.switchState(new options.AboutState());
 				case "test cutscene":
-					//webview.openHTML(Assets.getBytes('assets/index.html'));
-					//webview.openURLfromAssets('index.html');
-					//FlxG.stage.width = 1600; 
-					//FlxG.stage.frameRate = 30;
-					//FlxG.stage;
-					//trace(FlxG.stage.width);
 					#if extension-webview
 					WebViewVideo.openVideo('ughCutscene');
 					#end
