@@ -85,7 +85,7 @@ class Config {
 		
 		FlxG.stage.frameRate = fps;
 		save.data.framerate = fps;
-		fpsVal = fps
+		fpsVal = fps;
 		save.flush();
 	}
 
