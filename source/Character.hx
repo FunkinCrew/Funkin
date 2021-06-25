@@ -121,6 +121,33 @@ class Character extends FlxSprite
 				setGraphicSize(Std.int(width * PlayState.daPixelZoom));
 				updateHitbox();
 				antialiasing = false;
+			case 'gf-tankman':
+				frames = Paths.getSparrowAtlas('tankman/gfTankmen');
+				
+				animation.addByPrefix('cheer', 'GF Dancing at Gunpoint', 24, false);
+				animation.addByPrefix('singLEFT', 'GF Dancing at Gunpoint', 24, false);
+				animation.addByPrefix('singRIGHT', 'GF Dancing at Gunpoint', 24, false);
+				animation.addByPrefix('singUP', 'GF Dancing at Gunpoint', 24, false);
+				animation.addByPrefix('singDOWN', 'GF Dancing at Gunpoint', 24, false);
+				animation.addByIndices('sad', 'GF Crying at Gunpoint ', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], "", 24, false);
+				animation.addByIndices('danceLeft', 'GF Dancing at Gunpoint', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
+				animation.addByIndices('danceRight', 'GF Dancing at Gunpoint', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
+				
+				addOffset('cheer');
+				addOffset("singUP", 0, 4);
+				addOffset("singRIGHT", 0, -20);
+				addOffset("singLEFT", 0, -19);
+				addOffset("singDOWN", 0, -20);
+				addOffset('sad', -2, -21);
+				addOffset('danceLeft', 0, -9);
+				addOffset('danceRight', 0, -9);
+				updateHitbox();
+				
+
+				playAnim('danceRight');
+
+				
+
 
 			case 'dad':
 				// DAD ANIMATION LOADING CODE
