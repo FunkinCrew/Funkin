@@ -1,5 +1,6 @@
 package;
 
+import flixel.input.gamepad.FlxGamepad;
 import openfl.Lib;
 #if windows
 import llua.Lua;
@@ -108,12 +109,22 @@ class PauseSubState extends MusicBeatSubstate
 		if (PlayState.instance.useVideo)
 			menuItems.remove('Resume');
 
+		var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
+
 		var upP = controls.UP_P;
 		var downP = controls.DOWN_P;
 		var leftP = controls.LEFT_P;
 		var rightP = controls.RIGHT_P;
 		var accepted = controls.ACCEPT;
 		var oldOffset:Float = 0;
+
+		if (gamepad != null && KeyBinds.gamepad)
+		{
+			upP = gamepad.justPressed.DPAD_UP;
+			downP = gamepad.justPressed.DPAD_DOWN;
+			leftP = gamepad.justPressed.DPAD_LEFT;
+			rightP = gamepad.justPressed.DPAD_RIGHT;
+		}
 
 		// pre lowercasing the song name (update)
 		var songLowercase = StringTools.replace(PlayState.SONG.song, " ", "-").toLowerCase();
