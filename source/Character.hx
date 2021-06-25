@@ -312,6 +312,76 @@ class Character extends FlxSprite
 
 				flipX = true;
 
+			case 'bf-holding-gf':
+				
+				frames = Paths.getSparrowAtlas('bfAndGF', 'shared');
+				animation.addByPrefix('idle', 'BF idle dance w gf0', 24, false);
+				animation.addByPrefix('singUP', 'BF NOTE UP0', 24, false);
+				animation.addByPrefix('singLEFT', 'BF NOTE LEFT0', 24, false);
+				animation.addByPrefix('singRIGHT', 'BF NOTE RIGHT0', 24, false);
+				animation.addByPrefix('singDOWN', 'BF NOTE DOWN0', 24, false);
+				animation.addByPrefix('singUPmiss', 'BF NOTE UP MISS0', 24, false);
+				animation.addByPrefix('singLEFTmiss', 'BF NOTE LEFT MISS0', 24, false);
+				animation.addByPrefix('singRIGHTmiss', 'BF NOTE RIGHT MISS0', 24, false);
+				animation.addByPrefix('singDOWNmiss', 'BF NOTE DOWN MISS0', 24, false);
+				
+				
+
+				
+
+				addOffset('idle', 0, 0);
+				addOffset("singUP", -29, 10);
+				addOffset("singRIGHT", -41, 23);
+				addOffset("singLEFT", 12, 7);
+				addOffset("singDOWN", -10, -10);
+				addOffset("singUPmiss", -29, 10);
+				addOffset("singRIGHTmiss", -41, 23);
+				addOffset("singLEFTmiss", 12, 7);
+				addOffset("singDOWNmiss", -10, -10);
+				
+				
+
+				playAnim('idle');
+
+				flipX = true;
+
+
+			case 'bf-holding-gf-dead':
+				
+				frames = Paths.getSparrowAtlas('bfHoldingGF-DEAD', 'shared');
+				animation.addByPrefix('singUP', "BF Dies with GF0", 24, false);
+				animation.addByPrefix('firstDeath', "BF Dies with GF0", 24, false);
+				animation.addByPrefix('deathLoop', "BF Dead with GF Loop0", 24, true);
+				animation.addByPrefix('deathConfirm', "RETRY confirm holding gf0", 24, false);
+				animation.play('firstDeath');
+
+				addOffset('firstDeath', 37, 14);
+				addOffset('deathLoop', 37, -3);
+				addOffset('deathConfirm', 37, 28);
+				playAnim('firstDeath');
+				flipX = true;
+
+			case 'senpai':
+				frames = Paths.getSparrowAtlas('weeb/senpai','week6');
+				animation.addByPrefix('idle', 'Senpai Idle', 24, false);
+				animation.addByPrefix('singUP', 'SENPAI UP NOTE', 24, false);
+				animation.addByPrefix('singLEFT', 'SENPAI LEFT NOTE', 24, false);
+				animation.addByPrefix('singRIGHT', 'SENPAI RIGHT NOTE', 24, false);
+				animation.addByPrefix('singDOWN', 'SENPAI DOWN NOTE', 24, false);
+
+				addOffset('idle');
+				addOffset("singUP", 5, 37);
+				addOffset("singRIGHT");
+				addOffset("singLEFT", 40);
+				addOffset("singDOWN", 14);
+
+				playAnim('idle');
+
+				setGraphicSize(Std.int(width * 6));
+				updateHitbox();
+
+				antialiasing = false;
+
 			case 'bf':
 				var tex = Paths.getSparrowAtlas('BOYFRIEND');
 				frames = tex;
