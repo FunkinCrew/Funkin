@@ -73,7 +73,7 @@ class KeyBinds
             trace("No GRIGHT");
         }
 	if(FlxG.save.data.killBind == null){
-            FlxG.save.data.upBind = "R";
+            FlxG.save.data.killBind = "R";
             trace("No KILL");
         }
 
