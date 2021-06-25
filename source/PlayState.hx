@@ -812,10 +812,15 @@ class PlayState extends MusicBeatState
 				gfVersion = 'gf-pixel';
 			case 'schoolEvil':
 				gfVersion = 'gf-pixel';
+			case 'tankStage':
+				gfVersion = 'gf-tankman';
 		}
 
 		if (curStage == 'limo')
 			gfVersion = 'gf-car';
+		
+		if (curStage == 'tankStage')
+			gfVersion = 'gf-tankmen';
 
 		gf = new Character(400, 130, gfVersion);
 		gf.scrollFactor.set(0.95, 0.95);
@@ -860,6 +865,9 @@ class PlayState extends MusicBeatState
 				dad.x -= 150;
 				dad.y += 100;
 				camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
+			case 'tankman':
+				dad.x = dad.x
+				dad.y += 180;
 		}
 
 		boyfriend = new Boyfriend(770, 450, SONG.player1);
