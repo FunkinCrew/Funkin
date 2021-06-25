@@ -1118,15 +1118,15 @@ class PlayState extends MusicBeatState
 
 	function ughIntro()
 	{
-	    //dog
+	    startCountdown();
 	}
 	function gunsIntro()
 	{
-	    //lucky
+	    startCountdown();
 	}
 	function stressIntro()
 	{
-	    //hi
+	    startCountdown();
 	}
 
 	function schoolIntro(?dialogueBox:DialogueBox):Void
