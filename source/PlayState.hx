@@ -253,6 +253,8 @@ class PlayState extends MusicBeatState
 		}
 		misses = 0;
 
+
+		highestCombo = 0;
 		repPresses = 0;
 		repReleases = 0;
 
