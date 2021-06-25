@@ -53,10 +53,6 @@ class TitleState extends MusicBeatState
 	{
 		PlayerSettings.init();
 
-		#if polymod
-		polymod.Polymod.init({modRoot: "mods", dirs: CoolUtil.coolTextFile(Paths.txt('modList'))});
-		#end
-
 		curWacky = FlxG.random.getObject(getIntroTextShit());
 		super.create();
 
@@ -197,7 +193,7 @@ class TitleState extends MusicBeatState
 
 		if (FlxG.save.data.oldTitle)
 		{
-			logoBl = new FlxSprite().loadGraphic(Paths.image('logo'));
+			logoBl = new FlxSprite().loadGraphic(Paths.image("logo"));
 			logoBl.screenCenter();
 			logoBl.color = FlxColor.BLACK;
 		}

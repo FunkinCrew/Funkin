@@ -60,7 +60,7 @@ class HealthIcon extends FlxSprite
 		{
 			case 'mom-car':
 				char = 'mom';
-			case 'gf-car' | 'gf-christmas':
+			case 'gf-car' | 'gf-christmas' | 'gf-old':
 				char = 'gf';
 			case 'senpai-angry':
 				char = 'senpai';

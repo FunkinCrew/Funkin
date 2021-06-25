@@ -58,6 +58,20 @@ class Character extends FlxSprite
 
 				playAnim('danceRight');
 
+			case 'gf-old':
+				frames = Paths.getSparrowAtlas('characters/GF_OLD_assets', 'shared');
+				animation.addByPrefix('cheer', 'GF Cheer', 24, false);
+				animation.addByPrefix('sad', 'gf sad', 24, false);
+				animation.addByIndices('danceLeft', 'GF Dancing Beat', [29, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
+				animation.addByIndices('danceRight', 'GF Dancing Beat', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
+
+				addOffset('cheer');
+				addOffset('sad', -2, -21);
+				addOffset('danceLeft', 0, -9);
+				addOffset('danceRight', 0, -9);
+
+				playAnim('danceRight');
+
 			case 'gf-christmas':
 				frames = Paths.getSparrowAtlas('characters/gfChristmas', 'shared');
 				animation.addByPrefix('cheer', 'GF Cheer', 24, false);
@@ -555,39 +569,7 @@ class Character extends FlxSprite
 		{
 			switch (curCharacter)
 			{
-				case 'gf':
-					if (!animation.curAnim.name.startsWith('hair'))
-					{
-						danced = !danced;
-
-						if (danced)
-							playAnim('danceRight');
-						else
-							playAnim('danceLeft');
-					}
-
-				case 'gf-christmas':
-					if (!animation.curAnim.name.startsWith('hair'))
-					{
-						danced = !danced;
-
-						if (danced)
-							playAnim('danceRight');
-						else
-							playAnim('danceLeft');
-					}
-
-				case 'gf-car':
-					if (!animation.curAnim.name.startsWith('hair'))
-					{
-						danced = !danced;
-
-						if (danced)
-							playAnim('danceRight');
-						else
-							playAnim('danceLeft');
-					}
-				case 'gf-pixel':
+				case 'gf' | 'gf-christmas' | 'gf-car' | 'gf-pixel' | 'gf-old':
 					if (!animation.curAnim.name.startsWith('hair'))
 					{
 						danced = !danced;
