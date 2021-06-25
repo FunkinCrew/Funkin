@@ -495,6 +495,31 @@ class Character extends FlxSprite
 				addOffset("singDOWN-alt", -30, -27);
 
 				playAnim('idle');
+			case 'tankman':
+				tex = Paths.getSparrowAtlas('week7/tankmanCaptain');
+				frames = tex;
+				animation.addByPrefix('idle', "Tankman Idle Dance", 24);
+				animation.addByPrefix('oldSingUP', 'Tankman UP note ', 24, false);
+				animation.addByPrefix('singUP', 'Tankman UP note ', 24, false);
+				animation.addByPrefix('oldSingDOWN', 'Tankman DOWN note ', 24, false);
+				animation.addByPrefix('singDOWN', 'Tankman DOWN note ', 24, false);
+				animation.addByPrefix('singLEFT', 'Tankman Right Note ', 24, false);
+				animation.addByPrefix('singRIGHT', 'Tankman Note Left ', 24, false);
+
+				animation.addByPrefix('ughAnim', 'TANKMAN UGH', 24, false);
+				animation.addByPrefix('prettyGoodAnim', 'PRETTY GOOD', 24, false);
+
+				addOffset('idle');
+				addOffset("singUP", 24, 56);
+				addOffset("oldSingUP", 24, 56);
+				addOffset("singRIGHT", -1, -7);
+				addOffset("singLEFT", 100, -14);
+				addOffset("singDOWN", 98, -90);
+				addOffset("oldSingDOWN", 98, -90);
+				//addOffset("ughAnim", 45, 0);
+				addOffset("prettyGoodAnim", 45, 20);
+				playAnim('idle');
+				flipX = true;
 		}
 
 		dance();
