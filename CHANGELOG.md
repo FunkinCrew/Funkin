@@ -7,10 +7,12 @@ All notable changes will be documented in this file.
 - A stage editor / stage viewer.
 - Note splashes when you hit a sick!
 - Millisecond timer when hitting notes.
+- Old debugging songs.
+- New input system.
+- A new rating system.
 ### Changed
-- Slightly better input.
 - Organized classes into packages.
-- Rating system now considers negative milliseconds differently from positive milliseconds.
+- Some more information about the song you're playing.
 ### Fixed
 - Placeholder
 
