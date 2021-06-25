@@ -143,6 +143,20 @@ class PlayState extends MusicBeatState
 
 	var isDownScroll:Bool;
 
+	var tankX:Int = 400;
+	var tankSpeed:Float = FlxG.random.float(5, 7);
+	var tankAngle:Float = FlxG.random.float(-90, 45);
+	var tankWatchtower:FlxSprite;
+	var tankRolling:FlxSprite;
+	//tankbop shit
+	var tankBop1:FlxSprite;
+	var tankBop2:FlxSprite;
+	var tankBop3:FlxSprite;
+	var tankBop4:FlxSprite;
+	var tankBop5:FlxSprite;
+	var tankBop6:FlxSprite;
+	//end of tankbop
+
 	override public function create()
 	{
 		if (FlxG.sound.music != null)
