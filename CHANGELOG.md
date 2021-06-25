@@ -17,6 +17,7 @@ DO THIS NOW:
 - New input system.
 - A new rating system.
 - Some more information about the song you're playing.
+- More accurate accuracy percentage.
 
 ## [0.1] - 6/18/2021
 ### Added
