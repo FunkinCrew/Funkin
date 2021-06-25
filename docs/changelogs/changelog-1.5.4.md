@@ -14,3 +14,4 @@ Changes marked with 💖 will be listed in the short version of the changelog in
 - Fixed Input Drops/Disappering Notes (💖)
 - Fixed HitGraph/Result Screen bugs
 - Fixed the chart editor 
+- Fixed HTML5 Build issues
