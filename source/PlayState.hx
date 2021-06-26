@@ -70,7 +70,7 @@ class PlayState extends MusicBeatState
 
 	private var strumLine:FlxSprite;
 	private var curSection:Int = 0;
-	private var NoteSplash:SplashNote;
+	private var NoteSplash:NoteSplash;
 
 	private var camFollow:FlxObject;
 
@@ -2158,7 +2158,7 @@ class PlayState extends MusicBeatState
 		}
 		else if (noteDiff > Conductor.safeZoneOffset * 0.1)
 		{
-		    if (!daNote.isSustainNote && noteSplashOp)
+		    if (noteSplashOp)
 		    {
 		        var recycledNote = grpNoteSplashes.recycle(NoteSplash);
 		        recycledNote.setupNoteSplash(daNote.x, daNote.y, daNote.noteData);
@@ -2329,7 +2329,7 @@ class PlayState extends MusicBeatState
 
 			if (possibleNotes.length > 0)
 			{
-				var daNote = possibleNotes[0];
+				daNote = possibleNotes[0];
 
 				if (perfectMode)
 					noteCheck(true, daNote);
