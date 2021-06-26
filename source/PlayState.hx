@@ -1441,7 +1441,9 @@ class PlayState extends MusicBeatState
 			return;
 
 		if (keys[data])
+		{
 			return;
+		}
 
 		keys[data] = true;
 
@@ -3200,6 +3202,8 @@ class PlayState extends MusicBeatState
 				};
 				#end
 		 
+				var nonCpp = false;
+
 				
 				// Prevent player input if botplay is on
 				if(PlayStateChangeables.botPlay)
@@ -3208,6 +3212,10 @@ class PlayState extends MusicBeatState
 					pressArray = [false, false, false, false];
 					releaseArray = [false, false, false, false];
 				} 
+
+				#if !cpp
+				nonCpp = true;
+				#end
 
 				var anas:Array<Ana> = [null,null,null,null];
 
@@ -3225,7 +3233,7 @@ class PlayState extends MusicBeatState
 					});
 				}
 		 
-				if (KeyBinds.gamepad && !FlxG.keys.justPressed.ANY)
+				if ((KeyBinds.gamepad && !FlxG.keys.justPressed.ANY) || nonCpp)
 				{
 					// PRESSES, check for note hits
 					if (pressArray.contains(true) && generatedMusic)
