@@ -579,7 +579,7 @@ class PlayState extends MusicBeatState
 			
 				add(tankWatchtower);
 				
-				var tankRolling = new FlxSprite(300,300);
+				tankRolling = new FlxSprite(300,300);
 				tankRolling.frames = Paths.getSparrowAtlas('tankRolling');
 				tankRolling.animation.addByPrefix('idle', 'BG tank w lighting ', 24, true);
 						tankRolling.scrollFactor.set(0.5, 0.5);
@@ -597,7 +597,7 @@ class PlayState extends MusicBeatState
 				
 				ground.updateHitbox();
 				add(ground);
-
+				moveTank();
 				tankBop1 = new FlxSprite(-500,650);
 				tankBop1.frames = Paths.getSparrowAtlas('tank0');
 				tankBop1.animation.addByPrefix('bop', 'fg tankhead far right instance 1', 24);
@@ -643,7 +643,7 @@ class PlayState extends MusicBeatState
 				tankBop6.animation.play('bop');
 
 				}
-				case 'Stress': 
+				case 'stress': 
 				{
 					curStage = 'tankStage2';
 					defaultCamZoom = 0.9;
@@ -709,7 +709,7 @@ class PlayState extends MusicBeatState
 
 					add(tankWatchtower);
 					
-					var tankRolling = new FlxSprite(300,300);
+					tankRolling = new FlxSprite(300,300);
 					tankRolling.frames = Paths.getSparrowAtlas('tankRolling');
 					tankRolling.animation.addByPrefix('idle', 'BG tank w lighting ', 24, true);
 					tankRolling.scrollFactor.set(0.5, 0.5);
@@ -727,6 +727,7 @@ class PlayState extends MusicBeatState
 					
 					ground.updateHitbox();
 					add(ground);
+					moveTank();
 					tankmanRun = new FlxTypedGroup<TankmenBG>();
 					add(tankmanRun);
 					tankBop1 = new FlxSprite(-500,650);
@@ -2573,6 +2574,18 @@ class PlayState extends MusicBeatState
 				note.destroy();
 			}
 		}
+	}
+
+	function moveTank(){
+		if(!inCutscene){
+			tankAngle += FlxG.elapsed * tankSpeed;
+			tankRolling.angle = tankAngle - 90 + 15;
+			tankRolling.x = tankX + 1500 * Math.cos(Math.PI / 180 * (1 * tankAngle + 180));
+			tankRolling.y = 1300 + 1100 * Math.sin(Math.PI / 180 * (1 * tankAngle + 180));
+		}
+		
+		
+
 	}
 
 	var fastCarCanDrive:Bool = true;
