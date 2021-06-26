@@ -149,6 +149,7 @@ class PlayState extends MusicBeatState
 	var tankAngle:Float = FlxG.random.float(-90, 45);
 	var tankWatchtower:FlxSprite;
 	var tankRolling:FlxSprite;
+	var tankmanRun:FlxTypedGroup<TankmenBG>;
 	//tankbop shit
 	var tankBop1:FlxSprite;
 	var tankBop2:FlxSprite;
@@ -705,7 +706,7 @@ class PlayState extends MusicBeatState
 					tankWatchtower.animation.addByPrefix('bop', 'watchtower gradient color instance 1', 24, true);
 					tankWatchtower.scrollFactor.set(0.5, 0.5);
 					tankWatchtower.antialiasing = true;
-												
+
 					add(tankWatchtower);
 					
 					var tankRolling = new FlxSprite(300,300);
@@ -726,7 +727,8 @@ class PlayState extends MusicBeatState
 					
 					ground.updateHitbox();
 					add(ground);
-					
+					tankmanRun = new FlxTypedGroup<TankmenBG>();
+					add(tankmanRun);
 					tankBop1 = new FlxSprite(-500,650);
 					tankBop1.frames = Paths.getSparrowAtlas('tank0');
 					tankBop1.animation.addByPrefix('bop', 'fg tankhead far right instance 1', 24);
@@ -981,7 +983,7 @@ class PlayState extends MusicBeatState
 
 		add(camFollow);
 
-		FlxG.camera.follow(camFollow, LOCKON, camMove);
+		FlxG.camera.follow(camFollow, LOCKON, MusicBeatState.camMove);
 		/*Note:
 		I added this little feature for 90 fps and 60 fps.
 		60 fps = 0.6
