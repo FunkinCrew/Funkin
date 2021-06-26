@@ -36,8 +36,6 @@ class DiffCalc
             }
         }
 
-        trace('Notes ${cleanedNotes.length}');
-
         cleanedNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
 
         var firstNoteTime = cleanedNotes[0].strumTime;
@@ -49,7 +47,7 @@ class DiffCalc
         }
 
         // length in segments of the song
-        var length = ((cleanedNotes[cleanedNotes.length - 1].strumTime / 1000));
+        var length = ((cleanedNotes[cleanedNotes.length - 1].strumTime / 1000) / 0.5);
 
         // hackey way of creating a array with a length
         var segments:Array<Int> = new_Array(1,Std.int(length));
@@ -57,7 +55,7 @@ class DiffCalc
         // algo loop
         for(i in cleanedNotes)
         {
-            var index = Std.int(((i.strumTime / 1000) / 0.5));
+            var index = Std.int(((i.strumTime / 1000)));
             if (index + 1 > segments.length)
                 continue;
             segments[index] = segments[index] + 1;
@@ -78,9 +76,6 @@ class DiffCalc
             //trace(i);
             sum += i / .5; // half it because otherwise instead of nps its just fucking notes per half second which is dumb and stupid
         }
-
-        trace(sum + " - " + newLength + " - " + segments.length);
-
         return HelperFunctions.truncateFloat(sum / newLength,2);
     }
 
