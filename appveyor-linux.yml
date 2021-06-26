@@ -9,7 +9,7 @@ install:
   - cd /home/appveyor
   - sudo add-apt-repository ppa:haxe/releases -y
   - sudo apt update
-  - sudo apt install neko tar -y
+  - sudo apt install neko tar gcc-multilib g++-multilib -y
   - wget https://github.com/HaxeFoundation/haxe/releases/download/4.1.5/haxe-4.1.5-linux64.tar.gz
   - mkdir $HAXE_INSTALLDIR
   - tar -xf haxe-4.1.5-linux64.tar.gz -C $HAXE_INSTALLDIR
@@ -28,7 +28,10 @@ install:
   - haxelib git faxe https://github.com/uhrobots/faxe
   - haxelib git polymod https://github.com/larsiusprime/polymod.git
   - haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
+  - haxelib git extension-webm https://github.com/KadeDev/extension-webm
+  - haxelib run lime rebuild extension-webm linux
   - haxelib install linc_luajit
+  - haxelib install actuate
   - haxelib list
   - cd /home/appveyor/projects/kade-engine-linux
 

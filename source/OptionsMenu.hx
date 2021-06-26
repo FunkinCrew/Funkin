@@ -1,5 +1,6 @@
 package;
 
+import flixel.input.gamepad.FlxGamepad;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import openfl.Lib;
@@ -150,9 +151,26 @@ class OptionsMenu extends MusicBeatState
 				
 				changeSelection(curSelected);
 			}
-			if (controls.UP_P)
+
+			var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
+
+			if (gamepad != null)
+			{
+				if (gamepad.justPressed.DPAD_UP)
+				{
+					FlxG.sound.play(Paths.sound('scrollMenu'));
+					changeSelection(-1);
+				}
+				if (gamepad.justPressed.DPAD_DOWN)
+				{
+					FlxG.sound.play(Paths.sound('scrollMenu'));
+					changeSelection(1);
+				}
+			}
+			
+			if (FlxG.keys.justPressed.UP)
 				changeSelection(-1);
-			if (controls.DOWN_P)
+			if (FlxG.keys.justPressed.DOWN)
 				changeSelection(1);
 			
 			if (isCat)

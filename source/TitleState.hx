@@ -1,5 +1,8 @@
 package;
 
+#if sys
+import smTools.SMFile;
+#end
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -77,6 +80,8 @@ class TitleState extends MusicBeatState
 
 		curWacky = FlxG.random.getObject(getIntroTextShit());
 
+		trace('hello');
+
 		// DEBUG BULLSHIT
 
 		super.create();
@@ -92,6 +97,9 @@ class TitleState extends MusicBeatState
 
 		KadeEngineData.initSave();
 
+		// var file:SMFile = SMFile.loadFile("file.sm");
+		// this was testing things
+		
 		Highscore.load();
 
 		#if FREEPLAY
@@ -257,7 +265,7 @@ class TitleState extends MusicBeatState
 			FlxG.fullscreen = !FlxG.fullscreen;
 		}
 
-		var pressedEnter:Bool = FlxG.keys.justPressed.ENTER;
+		var pressedEnter:Bool = controls.ACCEPT;
 
 		#if mobile
 		for (touch in FlxG.touches.list)
@@ -268,19 +276,6 @@ class TitleState extends MusicBeatState
 			}
 		}
 		#end
-
-		var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
-
-		if (gamepad != null)
-		{
-			if (gamepad.justPressed.START)
-				pressedEnter = true;
-
-			#if switch
-			if (gamepad.justPressed.B)
-				pressedEnter = true;
-			#end
-		}
 
 		if (pressedEnter && !transitioning && skippedIntro)
 		{

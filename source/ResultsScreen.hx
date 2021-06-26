@@ -82,7 +82,7 @@ class ResultsScreen extends FlxSubState
         comboText.scrollFactor.set();
         add(comboText);
 
-        contText = new FlxText(FlxG.width - 475,FlxG.height + 50,0,'Press ENTER to continue.');
+        contText = new FlxText(FlxG.width - 475,FlxG.height + 50,0,'Press ${KeyBinds.gamepad ? 'A' : 'ENTER'} to continue.');
         contText.size = 28;
         contText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);
         contText.color = FlxColor.WHITE;
@@ -172,7 +172,7 @@ class ResultsScreen extends FlxSubState
 
         // keybinds
 
-        if (FlxG.keys.justPressed.ENTER)
+        if (PlayerSettings.player1.controls.ACCEPT)
         {
             music.fadeOut(0.3);
             
@@ -197,12 +197,6 @@ class ResultsScreen extends FlxSubState
             }
             else
                 FlxG.switchState(new FreeplayState());
-        }
-
-        if (FlxG.keys.justPressed.EIGHT)
-        {
-            graph.showInput = !graph.showInput;
-            graph.update();
         }
 
         if (FlxG.keys.justPressed.F1)

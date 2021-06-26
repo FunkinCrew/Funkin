@@ -1,5 +1,6 @@
 package;
 
+import flixel.input.gamepad.FlxGamepad;
 import openfl.Lib;
 #if windows
 import llua.Lua;
@@ -108,12 +109,21 @@ class PauseSubState extends MusicBeatSubstate
 		if (PlayState.instance.useVideo)
 			menuItems.remove('Resume');
 
-		var upP = controls.UP_P;
-		var downP = controls.DOWN_P;
-		var leftP = controls.LEFT_P;
-		var rightP = controls.RIGHT_P;
-		var accepted = controls.ACCEPT;
+		var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
+
+		var upPcontroller:Bool = false;
+		var downPcontroller:Bool = false;
+		var leftPcontroller:Bool = false;
+		var rightPcontroller:Bool = false;
 		var oldOffset:Float = 0;
+
+		if (gamepad != null && KeyBinds.gamepad)
+		{
+			upPcontroller = gamepad.justPressed.DPAD_UP;
+			downPcontroller = gamepad.justPressed.DPAD_DOWN;
+			leftPcontroller = gamepad.justPressed.DPAD_LEFT;
+			rightPcontroller = gamepad.justPressed.DPAD_RIGHT;
+		}
 
 		// pre lowercasing the song name (update)
 		var songLowercase = StringTools.replace(PlayState.SONG.song, " ", "-").toLowerCase();
@@ -123,17 +133,18 @@ class PauseSubState extends MusicBeatSubstate
 		}
 		var songPath = 'assets/data/' + songLowercase + '/';
 
-		if (upP)
+		if (controls.UP_P || upPcontroller)
 		{
 			changeSelection(-1);
    
-		}else if (downP)
+		}
+		else if (controls.DOWN_P || downPcontroller)
 		{
 			changeSelection(1);
 		}
 		
 		#if cpp
-			else if (leftP)
+			else if (controls.LEFT_P || leftPcontroller)
 			{
 				oldOffset = PlayState.songOffset;
 				PlayState.songOffset -= 1;
@@ -160,7 +171,8 @@ class PauseSubState extends MusicBeatSubstate
 					cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
 					offsetChanged = true;
 				}
-			}else if (rightP)
+			} 
+			else if (controls.RIGHT_P || rightPcontroller)
 			{
 				oldOffset = PlayState.songOffset;
 				PlayState.songOffset += 1;
@@ -188,7 +200,7 @@ class PauseSubState extends MusicBeatSubstate
 			}
 		#end
 
-		if (accepted)
+		if (controls.ACCEPT)
 		{
 			var daSelected:String = menuItems[curSelected];
 
