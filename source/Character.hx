@@ -123,7 +123,7 @@ class Character extends FlxSprite
 				antialiasing = false;
 			case 'picoSpeaker':
 				
-				tex = Paths.getSparrowAtlas('picoSpeaker', 'shared');
+				tex = Paths.getSparrowAtlas('tankman/picoSpeaker');
 				frames = tex;
 				
 				animation.addByIndices('idle', 'Pico shoot 1', [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24], "", 24, true);
@@ -314,7 +314,7 @@ class Character extends FlxSprite
 
 			case 'bf-holding-gf':
 				
-				frames = Paths.getSparrowAtlas('bfAndGF', 'shared');
+				frames = Paths.getSparrowAtlas('tankman/bfAndGF');
 				animation.addByPrefix('idle', 'BF idle dance w gf0', 24, false);
 				animation.addByPrefix('singUP', 'BF NOTE UP0', 24, false);
 				animation.addByPrefix('singLEFT', 'BF NOTE LEFT0', 24, false);
@@ -348,7 +348,7 @@ class Character extends FlxSprite
 
 			case 'bf-holding-gf-dead':
 				
-				frames = Paths.getSparrowAtlas('bfHoldingGF-DEAD', 'shared');
+				frames = Paths.getSparrowAtlas('tankman/bfHoldingGF-DEAD');
 				animation.addByPrefix('singUP', "BF Dies with GF0", 24, false);
 				animation.addByPrefix('firstDeath', "BF Dies with GF0", 24, false);
 				animation.addByPrefix('deathLoop', "BF Dead with GF Loop0", 24, true);
@@ -360,27 +360,6 @@ class Character extends FlxSprite
 				addOffset('deathConfirm', 37, 28);
 				playAnim('firstDeath');
 				flipX = true;
-
-			case 'senpai':
-				frames = Paths.getSparrowAtlas('weeb/senpai','week6');
-				animation.addByPrefix('idle', 'Senpai Idle', 24, false);
-				animation.addByPrefix('singUP', 'SENPAI UP NOTE', 24, false);
-				animation.addByPrefix('singLEFT', 'SENPAI LEFT NOTE', 24, false);
-				animation.addByPrefix('singRIGHT', 'SENPAI RIGHT NOTE', 24, false);
-				animation.addByPrefix('singDOWN', 'SENPAI DOWN NOTE', 24, false);
-
-				addOffset('idle');
-				addOffset("singUP", 5, 37);
-				addOffset("singRIGHT");
-				addOffset("singLEFT", 40);
-				addOffset("singDOWN", 14);
-
-				playAnim('idle');
-
-				setGraphicSize(Std.int(width * 6));
-				updateHitbox();
-
-				antialiasing = false;
 
 			case 'bf':
 				var tex = Paths.getSparrowAtlas('BOYFRIEND');
@@ -612,7 +591,7 @@ class Character extends FlxSprite
 
 				playAnim('idle');
 			case 'tankman':
-				tex = Paths.getSparrowAtlas('week7/tankmanCaptain');
+				tex = Paths.getSparrowAtlas('tankman/tankmanCaptain');
 				frames = tex;
 				animation.addByPrefix('idle', "Tankman Idle Dance", 24);
 				animation.addByPrefix('oldSingUP', 'Tankman UP note ', 24, false);
@@ -726,6 +705,27 @@ class Character extends FlxSprite
 							playAnim('danceLeft');
 					}
 
+				case 'picoSpeaker':
+					if (!animation.curAnim.name.startsWith('hair'))
+					{
+						danced = !danced;
+
+						if (danced)
+							playAnim('idle');
+						else
+							playAnim('idle');
+					}
+
+				case 'gf-tankman':
+					if (!animation.curAnim.name.startsWith('hair'))
+					{
+						danced = !danced;
+
+						if (danced)
+							playAnim('danceRight');
+						else
+							playAnim('danceLeft');
+					}
 				case 'gf-car':
 					if (!animation.curAnim.name.startsWith('hair'))
 					{
