@@ -70,6 +70,7 @@ class PlayState extends MusicBeatState
 
 	private var strumLine:FlxSprite;
 	private var curSection:Int = 0;
+	private var NoteSplash:SplashNote;
 
 	private var camFollow:FlxObject;
 
@@ -107,7 +108,9 @@ class PlayState extends MusicBeatState
 
 	var limo:FlxSprite;
 	var grpLimoDancers:FlxTypedGroup<BackgroundDancer>;
+	var grpNoteSplashes:FlxTypedGroup<NoteSplash>;
 	var fastCar:FlxSprite;
+	var noteSplashOp:Bool = true; //chadbross is cool
 
 	var upperBoppers:FlxSprite;
 	var bottomBoppers:FlxSprite;
@@ -179,6 +182,11 @@ class PlayState extends MusicBeatState
 
 		if (SONG == null)
 			SONG = Song.loadFromJson('tutorial');
+
+        grpNoteSplashes = new FlxTypedGroup<NoteSplash>();
+        var sploosh = new NoteSplash(100, 100, 0);
+        sploosh.alpha = 0.6;
+        grpNoteSplashes.add(sploosh);
 
 		Conductor.mapBPMChanges(SONG);
 		Conductor.changeBPM(SONG.bpm);
@@ -963,6 +971,7 @@ class PlayState extends MusicBeatState
 
 		strumLineNotes = new FlxTypedGroup<FlxSprite>();
 		add(strumLineNotes);
+		add(grpNoteSplashes);
 
 		playerStrums = new FlxTypedGroup<FlxSprite>();
 
@@ -1023,6 +1032,7 @@ class PlayState extends MusicBeatState
 		add(iconP2);
 
 		strumLineNotes.cameras = [camHUD];
+		grpNoteSplashes.cameras = [camHUD];
 		notes.cameras = [camHUD];
 		healthBar.cameras = [camHUD];
 		healthBarBG.cameras = [camHUD];
@@ -2145,6 +2155,15 @@ class PlayState extends MusicBeatState
 		{
 			daRating = 'good';
 			score = 200;
+		}
+		else if (noteDiff > Conductor.safeZoneOffset * 0.1)
+		{
+		    if (!daNote.isSustainNote && noteSplashOp)
+		    {
+		        var recycledNote = grpNoteSplashes.recycle(NoteSplash);
+		        recycledNote.setupNoteSplash(daNote.x, daNote.y, daNote.noteData);
+		        grpNoteSplashes.add(recycledNote);
+		    }
 		}
 
 		songScore += score;
