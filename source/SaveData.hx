@@ -4,9 +4,6 @@ import Config;
 class SaveData
 {
 	var camlerp:FlxSave;
-	camlerp = new FlxSave();
-	camlerp.bind("camMovement");
-
 	public static function initSave()
 	{
 		if (Config.fpsVal == 60)
