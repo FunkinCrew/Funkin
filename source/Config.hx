@@ -7,7 +7,7 @@ import flixel.math.FlxPoint;
 
 class Config {
     var save:FlxSave;
-    var fpsVal:Int = 60;
+    public static var fpsVal:Int = 60;
 
     public function new() 
     {
