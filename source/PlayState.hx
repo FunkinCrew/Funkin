@@ -3657,6 +3657,16 @@ class PlayState extends MusicBeatState
 
 				if (FlxG.random.bool(10) && fastCarCanDrive)
 					fastCarDrive();
+			case "tankStage" | "tankStage2":
+			    if (curBeat % 1 == 0)
+			    {
+			        tankBop6.animation.play('bop');
+			        tankBop5.animation.play('bop');
+			        tankBop4.animation.play('bop');
+			        tankBop3.animation.play('bop');
+			        tankBop2.animation.play('bop');
+			        tankBop1.animation.play('bop');
+			    }
 			case "philly":
 				if (!trainMoving)
 					trainCooldown += 1;
