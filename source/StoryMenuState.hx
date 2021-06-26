@@ -223,7 +223,7 @@ class StoryMenuState extends MusicBeatState
 
 		scoreText.text = "WEEK SCORE:" + lerpScore;
 
-		txtWeekTitle.text = SongManager.songs[curWeek].weekLabel.toUpperCase();
+		txtWeekTitle.text = SongManager.songs[curWeek].songTitle.toUpperCase();
 		txtWeekTitle.x = FlxG.width - (txtWeekTitle.width + 10);
 
 		// FlxG.watch.addQuick('font', scoreText.font);
@@ -393,7 +393,7 @@ class StoryMenuState extends MusicBeatState
 
 	function updateText()
 	{
-		grpWeekCharacters.members[0].setCharacter(SongManager.songs[curWeek].weekCharacter);
+		grpWeekCharacters.members[0].setCharacter(SongManager.songs[curWeek].character);
 		grpWeekCharacters.members[1].setCharacter('bf');
 		grpWeekCharacters.members[2].setCharacter('gf');
 

@@ -364,7 +364,7 @@ class PlayState extends MusicBeatState
 		trace("cur song shit: " + CURRENT_SONG);
 
 		
-		songPlayer = SongManager.getCurrentSong(CURRENT_SONG);
+		songPlayer = SongPlayerManager.getCurrentSong(CURRENT_SONG);
 
 		//hardcode this shit
 		if(CURRENT_SONG == 'sepai' || CURRENT_SONG == 'roses')
@@ -1738,7 +1738,7 @@ class PlayState extends MusicBeatState
 
 					SONG = Song.loadFromJson(nextSongLowercase + difficulty, playingSong.folder + storyPlaylist[0]);
 					CURRENT_SONG = SONG.song.toLowerCase();
-					
+
 					FlxG.sound.music.stop();
 
 					LoadingState.loadAndSwitchState(new PlayState());

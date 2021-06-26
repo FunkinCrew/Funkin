@@ -89,7 +89,7 @@ class FreeplayState extends MusicBeatState
 			songText.targetY = i;
 			grpSongs.add(songText);
 
-			var baseSong:BaseSong = SongManager.getCurrentSong(songs[i].songName);
+			var baseSong:BaseSong = SongPlayerManager.getCurrentSong(songs[i].songName);
 
 			var icon:HealthIcon = new HealthIcon();
 			baseSong.getDadIcon(icon);

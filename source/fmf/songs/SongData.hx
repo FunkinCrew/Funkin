@@ -4,9 +4,9 @@ package fmf.songs;
 
 class SongData
 {
-	public var weekName:String;
-	public var weekCharacter:String;
-	public var weekLabel:String;
+	public var folder:String;
+	public var character:String;
+	public var songTitle:String;
 	public var songList:Array<String>;
 
 	public var copySongList(get, never):Array<String>;
@@ -20,19 +20,19 @@ class SongData
 		}
 		return copySongs;
 	}
-
-	public var folder(get, never):String;
-	public inline function get_folder()
+	
+	public function new(
+		data:
+		{
+			folder:String,
+			character:String,
+			songTitle:String,
+			songList:Array<String>
+		})
 	{
-		return weekName + '/';
-	}
-
-
-	public function new(weekName:String, weekCharacter:String, weekLabel:String, songList:Array<String>)
-	{
-		this.weekName = weekName;
-		this.weekCharacter = weekCharacter;
-		this.songList = songList;
-		this.weekLabel = weekLabel;
+		this.folder = data.folder + "/";
+		this.character = data.character;
+		this.songList = data.songList;
+		this.songTitle = data.songTitle;
 	}
 }
