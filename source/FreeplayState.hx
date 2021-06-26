@@ -1,6 +1,6 @@
 package;
 
-import fmf.songs.BaseSong;
+import fmf.songs.*;
 import ui.FlxVirtualPad.FlxActionMode;
 import ui.FlxVirtualPad.FlxDPadMode;
 import ui.Controller;
@@ -42,12 +42,12 @@ class FreeplayState extends MusicBeatState
 	override function create()
 	{
 		
-		// fetch song shits from story menu
+		// fetch song shits from SongManager
 		songs = new Array<SongMetadata>();
 		var weekNum = 0;
-		for (i in StoryMenuState.weekData)
+		for (i in SongManager.songs)
 		{
-			var wweekSongs:Array<String> = i;
+			var wweekSongs:Array<String> = i.songList;
 			for (song in wweekSongs)
 			{
 				addSong(song, weekNum);
@@ -236,7 +236,9 @@ class FreeplayState extends MusicBeatState
 
 			trace(poop);
 			
-			PlayState.SONG = Song.loadFromJson(poop, songLowercase);
+			var curSong = SongManager.songs[curSelected];
+
+			PlayState.SONG = Song.loadFromJson(poop, curSong.folder +  songLowercase);
 			PlayState.isStoryMode = false;
 			PlayState.storyDifficulty = curDifficulty;
 			PlayState.storyWeek = songs[curSelected].week;
@@ -308,7 +310,7 @@ class FreeplayState extends MusicBeatState
 		#end
 
 		#if PRELOAD_ALL
-		FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName), 0);
+		FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName, PlayState.playingSong.folder), 0);
 		#end
 
 		var bullShit:Int = 0;

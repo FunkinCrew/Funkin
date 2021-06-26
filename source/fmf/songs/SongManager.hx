@@ -1,10 +1,19 @@
-package;
-
-import fmf.songs.*;
+package fmf.songs;
 
 
 class SongManager
 {
+
+
+	static public var songs:Array<SongData> = 
+	[
+		new SongData('week_tutorial', '', "How to Funk", ['Tutorial']),
+		new SongData('week1', 'dad', "Daddy Dearest", ['Bopeebo', 'Fresh', 'DadBattle'])
+
+
+	];
+
+
 	public static function getCurrentSong(songName:String):SongPlayer
 	{
 		var songPlayer:SongPlayer = new Tutorial();

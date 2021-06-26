@@ -26,8 +26,4 @@ class Tutorial extends SongPlayer
 		}
 	}
 
-	public override function setCamPosition()
-	{
-		camPos.x += 600;
-	}
 }

@@ -122,6 +122,8 @@ class ChartingState extends MusicBeatState
 				speed: 1,
 				validScore: false
 			};
+
+			PlayState.playingSong = SongManager.songs[0];
 		}
 
 		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * 8, GRID_SIZE * 16);
@@ -152,7 +154,7 @@ class ChartingState extends MusicBeatState
 
 		updateGrid();
 
-		loadSong(_song.song);
+		loadSong(_song.song, PlayState.playingSong.folder);
 		Conductor.changeBPM(_song.bpm);
 		Conductor.mapBPMChanges(_song);
 
@@ -242,7 +244,7 @@ class ChartingState extends MusicBeatState
 
 		var reloadSong:FlxButton = new FlxButton(saveButton.x + saveButton.width + 10, saveButton.y, "Reload Audio", function()
 		{
-			loadSong(_song.song);
+			loadSong(_song.song, PlayState.playingSong.folder);
 		});
 
 		var reloadSongJson:FlxButton = new FlxButton(reloadSong.x, saveButton.y + 30, "Reload JSON", function()
@@ -510,7 +512,7 @@ class ChartingState extends MusicBeatState
 
 	}
 
-	function loadSong(daSong:String):Void
+	function loadSong(daSong:String, folder:String):Void
 	{
 		if (FlxG.sound.music != null)
 		{
@@ -518,10 +520,10 @@ class ChartingState extends MusicBeatState
 			// vocals.stop();
 		}
 
-		FlxG.sound.playMusic(Paths.inst(daSong), 0.6);
+		FlxG.sound.playMusic(Paths.inst(daSong, folder), 0.6);
 
 		// WONT WORK FOR TUTORIAL OR TEST SONG!!! REDO LATER
-		vocals = new FlxSound().loadEmbedded(Paths.voices(daSong));
+		vocals = new FlxSound().loadEmbedded(Paths.voices(daSong, folder));
 		FlxG.sound.list.add(vocals);
 
 		FlxG.sound.music.pause();

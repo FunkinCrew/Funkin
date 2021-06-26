@@ -44,11 +44,6 @@ class DaddyDearest extends SongPlayer
 
     }
 
-	override function setCamPosition()
-	{
-		camPos.x += 400;
-	}
-
 	override function midSongEventUpdate(curBeat:Int):Void
 	{
 		if (playState.gfStep())

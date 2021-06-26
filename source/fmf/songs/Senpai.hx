@@ -186,12 +186,6 @@ class Senpai extends SongPlayer
 		dad.dance();
 	}
 
-	override function setCamPosition()
-	{
-		camPos.x = bf.x;
-		camPos.y = bf.y;
-	}
-
 	override function midSongEventUpdate(curBeat:Int)
 	{
 		if (FlxG.save.data.distractions)

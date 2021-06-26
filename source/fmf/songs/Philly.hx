@@ -207,12 +207,6 @@ class Philly extends SongPlayer
 		bf.x += 50;
 	}
 
-	override function setCamPosition()
-	{
-		camPos.x += 600;
-	}
-
-
 	override function midSongEventUpdate(curBeat:Int):Void
 	{
 		if (playState.gfStep())

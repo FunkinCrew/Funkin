@@ -80,6 +80,8 @@ class PlayState extends MusicBeatState
 	public static var isStoryMode:Bool = false;
 	public static var storyWeek:Int = 0;
 	public static var storyPlaylist:Array<String> = [];
+	public static var playingSong:SongData;
+
 	public static var storyDifficulty:Int = 1;
 	public static var weekSong:Int = 0;
 	public static var shits:Int = 0;
@@ -182,7 +184,7 @@ class PlayState extends MusicBeatState
 
 	public function gfStep():Bool
 	{
-		return (generatedMusic && PlayState.SONG.notes[Std.int(curStep / 16)] != null);
+		return (generatedMusic && SONG.notes[Std.int(curStep / 16)] != null);
 	}
 
 	var songName:FlxText;
@@ -265,7 +267,7 @@ class PlayState extends MusicBeatState
 		botPlayShit = (!isStoryMode && FlxG.save.data.botplay) || (isStoryMode && FlxG.save.data.botplay && (isUnlocked()));
 
 		// pre lowercasing the song name (create)
-		var songLowercase = StringTools.replace(PlayState.SONG.song, " ", "-").toLowerCase();
+		var songLowercase = StringTools.replace(CURRENT_SONG, " ", "-").toLowerCase();
 		switch (songLowercase)
 		{
 			case 'dad-battle':
@@ -324,7 +326,7 @@ class PlayState extends MusicBeatState
 		// Updating Discord Rich Presence.
 		DiscordClient.changePresence(detailsText
 			+ " "
-			+ SONG.song
+			+ CURRENT_SONG
 			+ " ("
 			+ storyDifficultyText
 			+ ") "
@@ -406,12 +408,12 @@ class PlayState extends MusicBeatState
 
 		// startCountdown();
 
-		if (SONG.song == null)
+		if (CURRENT_SONG == null)
 			trace('song is null???');
 		else
 			trace('song looks gucci');
 
-		generateSong(SONG.song);
+		generateSong(CURRENT_SONG);
 
 		camFollow = new FlxObject(0, 0, 1, 1);
 
@@ -449,7 +451,7 @@ class PlayState extends MusicBeatState
 			songPosBar.createFilledBar(FlxColor.GRAY, FlxColor.LIME);
 			add(songPosBar);
 
-			var songName = new FlxText(songPosBG.x + (songPosBG.width / 2) - 20, songPosBG.y, 0, SONG.song, 16);
+			var songName = new FlxText(songPosBG.x + (songPosBG.width / 2) - 20, songPosBG.y, 0, CURRENT_SONG, 16);
 			if (FlxG.save.data.downscroll)
 				songName.y -= 3;
 			songName.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
@@ -475,7 +477,7 @@ class PlayState extends MusicBeatState
 		// Add Kade Engine watermark
 		kadeEngineWatermark = new FlxText(4, healthBarBG.y
 			+ 50, 0,
-			SONG.song
+			CURRENT_SONG
 			+ " "
 			+ (storyDifficulty == 2 ? "Hard" : storyDifficulty == 1 ? "Normal" : "Easy")
 			+ (Main.watermarks ? " - KE " + MainMenuState.kadeEngineVer : ""),
@@ -509,6 +511,7 @@ class PlayState extends MusicBeatState
 		botPlayState = new FlxText(5, 5, "AUTO", 15);
 		botPlayState.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		botPlayState.scrollFactor.set();
+		botPlayState.cameras = [camHUD];
 
 		if (botPlayShit && !loadRep)
 			add(botPlayState);
@@ -611,7 +614,7 @@ class PlayState extends MusicBeatState
 		if (executeModchart)
 		{
 			luaModchart = ModchartState.createModchartState();
-			luaModchart.executeState('start', [PlayState.SONG.song]);
+			luaModchart.executeState('start', [CURRENT_SONG]);
 		}
 		#end
 
@@ -633,7 +636,7 @@ class PlayState extends MusicBeatState
 
 		if (!paused)
 		{
-			FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 1, false);
+			FlxG.sound.playMusic(Paths.inst(CURRENT_SONG, playingSong.folder), 1, false);
 		}
 
 		FlxG.sound.music.onComplete = endSong;
@@ -665,7 +668,7 @@ class PlayState extends MusicBeatState
 			songPosBar.createFilledBar(FlxColor.GRAY, FlxColor.LIME);
 			add(songPosBar);
 
-			var songName = new FlxText(songPosBG.x + (songPosBG.width / 2) - 20, songPosBG.y, 0, SONG.song, 16);
+			var songName = new FlxText(songPosBG.x + (songPosBG.width / 2) - 20, songPosBG.y, 0, CURRENT_SONG, 16);
 			if (FlxG.save.data.downscroll)
 				songName.y -= 3;
 			songName.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
@@ -681,7 +684,7 @@ class PlayState extends MusicBeatState
 		// Updating Discord Rich Presence (with Time Left)
 		DiscordClient.changePresence(detailsText
 			+ " "
-			+ SONG.song
+			+ CURRENT_SONG
 			+ " ("
 			+ storyDifficultyText
 			+ ") "
@@ -707,7 +710,7 @@ class PlayState extends MusicBeatState
 		curSong = songData.song;
 
 		if (SONG.needsVoices)
-			vocals = new FlxSound().loadEmbedded(Paths.voices(PlayState.SONG.song));
+			vocals = new FlxSound().loadEmbedded(Paths.voices(CURRENT_SONG, playingSong.folder));
 		else
 			vocals = new FlxSound();
 
@@ -726,7 +729,7 @@ class PlayState extends MusicBeatState
 		var playerCounter:Int = 0;
 
 		// pre lowercasing the song name (generateSong)
-		var songLowercase = StringTools.replace(PlayState.SONG.song, " ", "-").toLowerCase();
+		var songLowercase = StringTools.replace(CURRENT_SONG, " ", "-").toLowerCase();
 		switch (songLowercase)
 		{
 			case 'dad-battle':
@@ -891,7 +894,7 @@ class PlayState extends MusicBeatState
 
 			#if windows
 			DiscordClient.changePresence("PAUSED on "
-				+ SONG.song
+				+ CURRENT_SONG
 				+ " ("
 				+ storyDifficultyText
 				+ ") "
@@ -937,7 +940,7 @@ class PlayState extends MusicBeatState
 			{
 				DiscordClient.changePresence(detailsText
 					+ " "
-					+ SONG.song
+					+ CURRENT_SONG
 					+ " ("
 					+ storyDifficultyText
 					+ ") "
@@ -953,7 +956,7 @@ class PlayState extends MusicBeatState
 			}
 			else
 			{
-				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ") " + Ratings.GenerateLetterRank(accuracy), iconRPC);
+				DiscordClient.changePresence(detailsText, CURRENT_SONG + " (" + storyDifficultyText + ") " + Ratings.GenerateLetterRank(accuracy), iconRPC);
 			}
 			#end
 		}
@@ -973,7 +976,7 @@ class PlayState extends MusicBeatState
 		#if windows
 		DiscordClient.changePresence(detailsText
 			+ " "
-			+ SONG.song
+			+ CURRENT_SONG
 			+ " ("
 			+ storyDifficultyText
 			+ ") "
@@ -1216,7 +1219,7 @@ class PlayState extends MusicBeatState
 			// Conductor.lastSongPos = FlxG.sound.music.time;
 		}
 
-		if (generatedMusic && PlayState.SONG.notes[Std.int(curStep / 16)] != null)
+		if (generatedMusic && SONG.notes[Std.int(curStep / 16)] != null)
 		{
 			// Make sure Girlfriend cheers only for certain songs
 			if (allowedToHeadbang)
@@ -1231,10 +1234,10 @@ class PlayState extends MusicBeatState
 
 			#if windows
 			if (luaModchart != null)
-				luaModchart.setVar("mustHit", PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection);
+				luaModchart.setVar("mustHit", SONG.notes[Std.int(curStep / 16)].mustHitSection);
 			#end
 
-			if (camFollow.x != dad().getMidpoint().x + 150 && !PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection)
+			if (camFollow.x != dad().getMidpoint().x + 150 && !SONG.notes[Std.int(curStep / 16)].mustHitSection)
 			{
 				var offsetX = 0;
 				var offsetY = 0;
@@ -1254,7 +1257,7 @@ class PlayState extends MusicBeatState
 				songPlayer.updateCamFollowDad();
 			}
 
-			if (PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection && camFollow.x != boyfriend().getMidpoint().x - 100)
+			if (SONG.notes[Std.int(curStep / 16)].mustHitSection && camFollow.x != boyfriend().getMidpoint().x - 100)
 			{
 				var offsetX = 0;
 				var offsetY = 0;
@@ -1300,7 +1303,7 @@ class PlayState extends MusicBeatState
 			#if windows
 			// Game Over doesn't get his own variable because it's only used here
 			DiscordClient.changePresence("GAME OVER -- "
-				+ SONG.song
+				+ CURRENT_SONG
 				+ " ("
 				+ storyDifficultyText
 				+ ") "
@@ -1333,7 +1336,7 @@ class PlayState extends MusicBeatState
 				#if windows
 				// Game Over doesn't get his own variable because it's only used here
 				DiscordClient.changePresence("GAME OVER -- "
-					+ SONG.song
+					+ CURRENT_SONG
 					+ " ("
 					+ storyDifficultyText
 					+ ") "
@@ -1554,7 +1557,7 @@ class PlayState extends MusicBeatState
 
 				// trace(daNote.y);
 				// WIP interpolation shit? Need to fix the pause issue
-				// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
+				// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * SONG.speed));
 
 				if ((daNote.mustPress && daNote.tooLate && !FlxG.save.data.downscroll || daNote.mustPress && daNote.tooLate && FlxG.save.data.downscroll)
 					&& daNote.mustPress)
@@ -1629,7 +1632,7 @@ class PlayState extends MusicBeatState
 		{
 			// adjusting the highscore song name to be compatible
 			// would read original scores if we didn't change packages
-			var songHighscore = StringTools.replace(PlayState.SONG.song, " ", "-");
+			var songHighscore = StringTools.replace(CURRENT_SONG, " ", "-");
 			switch (songHighscore)
 			{
 				case 'Dad-Battle':
@@ -1675,7 +1678,6 @@ class PlayState extends MusicBeatState
 					}
 					#end
 
-					// if ()
 					StoryMenuState.weekUnlocked[Std.int(Math.min(storyWeek + 1, StoryMenuState.weekUnlocked.length - 1))] = true;
 
 					if (SONG.validScore)
@@ -1699,7 +1701,7 @@ class PlayState extends MusicBeatState
 
 					trace('LOADING NEXT SONG');
 					// pre lowercasing the next story song name
-					var nextSongLowercase = StringTools.replace(PlayState.storyPlaylist[0], " ", "-").toLowerCase();
+					var nextSongLowercase = StringTools.replace(storyPlaylist[0], " ", "-").toLowerCase();
 					switch (nextSongLowercase)
 					{
 						case 'dad-battle':
@@ -1710,7 +1712,7 @@ class PlayState extends MusicBeatState
 					trace(nextSongLowercase + difficulty);
 
 					// pre lowercasing the song name (endSong)
-					var songLowercase = StringTools.replace(PlayState.SONG.song, " ", "-").toLowerCase();
+					var songLowercase = StringTools.replace(CURRENT_SONG, " ", "-").toLowerCase();
 					switch (songLowercase)
 					{
 						case 'dad-battle':
@@ -1734,7 +1736,9 @@ class PlayState extends MusicBeatState
 					FlxTransitionableState.skipNextTransOut = true;
 					prevCamFollow = camFollow;
 
-					PlayState.SONG = Song.loadFromJson(nextSongLowercase + difficulty, PlayState.storyPlaylist[0]);
+					SONG = Song.loadFromJson(nextSongLowercase + difficulty, playingSong.folder + storyPlaylist[0]);
+					CURRENT_SONG = SONG.song.toLowerCase();
+					
 					FlxG.sound.music.stop();
 
 					LoadingState.loadAndSwitchState(new PlayState());
@@ -2484,7 +2488,7 @@ class PlayState extends MusicBeatState
 		// Updating Discord Rich Presence (with Time Left)
 		DiscordClient.changePresence(detailsText
 			+ " "
-			+ SONG.song
+			+ CURRENT_SONG
 			+ " ("
 			+ storyDifficultyText
 			+ ") "

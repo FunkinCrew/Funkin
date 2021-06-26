@@ -60,11 +60,6 @@ class Matt extends SongPlayer
 		gf.y -= 200;
 	}
 
-	override function setCamPosition()
-	{
-		camPos.x += 400;
-	}
-
 	public override function getDadIcon(icon:HealthIcon)
 	{
 		icon.loadGraphic(Paths.image('matt/iconGrid', "mods"), true, 150, 150);

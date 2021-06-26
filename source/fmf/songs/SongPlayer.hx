@@ -44,7 +44,7 @@ class SongPlayer extends  BaseSong
 	// mid song event update
 	public function midSongEventUpdate(curBeat:Int):Void{} 
 	// for setting camOffset at start
-	public function setCamPosition():Void{}
+	// public function setCamPosition():Void{}
 	// update camera follow dad depending on song
 	public function updateCamFollowDad():Void{}
 	// update camera follow bf depending on song
@@ -63,8 +63,8 @@ class SongPlayer extends  BaseSong
 
 	function initVariables()
 	{
-		camPos = new FlxPoint(dad.getGraphicMidpoint().x, dad.getGraphicMidpoint().y);
-		setCamPosition();
+		camPos = new FlxPoint(bf.getGraphicMidpoint().x, bf.getGraphicMidpoint().y);
+		// setCamPosition();
 	}
 
 
@@ -108,7 +108,7 @@ class SongPlayer extends  BaseSong
 	public function createDialogue(callback:Void->Void):Void
 	{
 		var path = PlayState.CURRENT_SONG + '/' + PlayState.CURRENT_SONG + '-dialogue';
-		dialogue = CoolUtil.coolTextFile(Paths.txt(path));
+		dialogue = CoolUtil.coolTextFile(Paths.txt(PlayState.playingSong.folder +  path));
 		dialogueBox = new DialogueBox(false, dialogue);
 		dialogueBox.scrollFactor.set();
 		dialogueBox.finishThing = callback;
