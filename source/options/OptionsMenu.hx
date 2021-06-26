@@ -43,7 +43,7 @@ class OptionsMenu extends MusicBeatState
 		menuBG.antialiasing = true;
 		add(menuBG);
 
-		var notice = new FlxText(0, 0, 0,"Camera Movement: " + camMove + " Press LEFT or RIGHT to change values\n", 24);
+		var notice = new FlxText(0, 0, 0,"Camera Movement: " + MusicBeatState.camMove + " Press LEFT or RIGHT to change values\n", 24);
 		add(notice);
         notice.x = (FlxG.width / 2) - (notice.width / 2);
         notice.y = FlxG.height - 56;
@@ -106,11 +106,11 @@ class OptionsMenu extends MusicBeatState
 		}
 		if (controls.RIGHT)
 		{
-		    camMove += 0.01;
+		    MusicBeatState.camMove += 0.01;
 		}
 		if (controls.LEFT)
 		{
-		    camMove -= 0.01;
+		    MusicBeatState.camMove -= 0.01;
 		}
 		if (isSettingControl)
 			waitingInput();
