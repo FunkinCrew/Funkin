@@ -141,7 +141,7 @@ class Character extends FlxSprite
 				playAnim('shoot1');
 
 			case 'gf-tankman':
-				frames = Paths.getSparrowAtlas('tankman/gfTankmen');
+				frames = Paths.getSparrowAtlas('tankman/gfTankman');
 				
 				animation.addByPrefix('cheer', 'GF Dancing at Gunpoint', 24, false);
 				animation.addByPrefix('singLEFT', 'GF Dancing at Gunpoint', 24, false);
