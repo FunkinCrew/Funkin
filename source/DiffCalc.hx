@@ -24,22 +24,24 @@ class DiffCalc
         {
             for (ii in i.sectionNotes) // notes
             {
-                var gottaHit = true;
-                if (ii[2] >= 1) // skip helds
+                if (ii[2] != 0) // skip helds
                     continue;
-                if (ii[1] > 3) // if the note data is greater than 3
-                    gottaHit = !i.mustHitSection;
-                if (gottaHit)
+                var gottaHitNote:Bool = i.mustHitSection;
+
+				if (ii[1] > 3)
+					gottaHitNote = !i.mustHitSection;
+
+                if (gottaHitNote)
                     cleanedNotes.push(new SmallNote(ii[0],ii[1]));
             }
         }
 
+        trace('Notes ${cleanedNotes.length}');
+
         cleanedNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
 
         var firstNoteTime = cleanedNotes[0].strumTime;
-
-        trace(firstNoteTime);
-
+        
         // normalize the notes
         for(i in cleanedNotes)
         {
@@ -47,9 +49,7 @@ class DiffCalc
         }
 
         // length in segments of the song
-        var length = ((cleanedNotes[cleanedNotes.length - 1].strumTime / 1000) / 0.5);
-
-        trace(length);
+        var length = ((cleanedNotes[cleanedNotes.length - 1].strumTime / 1000));
 
         // hackey way of creating a array with a length
         var segments:Array<Int> = new_Array(1,Std.int(length));
@@ -57,7 +57,7 @@ class DiffCalc
         // algo loop
         for(i in cleanedNotes)
         {
-            var index = Std.int(i.strumTime / 1000);
+            var index = Std.int(((i.strumTime / 1000) / 0.5));
             if (index + 1 > segments.length)
                 continue;
             segments[index] = segments[index] + 1;
@@ -75,10 +75,11 @@ class DiffCalc
                 newLength--;
                 continue;
             }
+            //trace(i);
             sum += i / .5; // half it because otherwise instead of nps its just fucking notes per half second which is dumb and stupid
         }
 
-        trace(sum + " - " + newLength);
+        trace(sum + " - " + newLength + " - " + segments.length);
 
         return HelperFunctions.truncateFloat(sum / newLength,2);
     }
