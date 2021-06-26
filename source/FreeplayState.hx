@@ -58,6 +58,8 @@ class FreeplayState extends MusicBeatState
 	{
 		var initSonglist = CoolUtil.coolTextFile(Paths.txt('freeplaySonglist'));
 
+		//var diffList = "";
+
 		for (i in 0...initSonglist.length)
 		{
 			var data:Array<String> = initSonglist[i].split(':');
@@ -75,8 +77,10 @@ class FreeplayState extends MusicBeatState
 			FreeplayState.loadDiff(2,format,meta.songName,diffs);
 			FreeplayState.songData.set(meta.songName,diffs);
 			trace('loaded diffs for ' + meta.songName);
-
+			//diffList += meta.songName + "\nEasy: " + DiffCalc.CalculateDiff(songData.get(meta.songName)[0]) + "\nNormal: " + DiffCalc.CalculateDiff(songData.get(meta.songName)[1]) + "\nHard: " + DiffCalc.CalculateDiff(songData.get(meta.songName)[2]) + "\n\n";
 		}
+
+		//trace("\n" + diffList);
 
 		/* 
 			if (FlxG.sound.music != null)
