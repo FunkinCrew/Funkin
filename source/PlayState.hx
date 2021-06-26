@@ -3660,12 +3660,12 @@ class PlayState extends MusicBeatState
 			case "tankStage" | "tankStage2":
 			    if (curBeat % 1 == 0)
 			    {
-			        tankBop6.animation.play('bop');
-			        tankBop5.animation.play('bop');
-			        tankBop4.animation.play('bop');
-			        tankBop3.animation.play('bop');
-			        tankBop2.animation.play('bop');
-			        tankBop1.animation.play('bop');
+			        tankBop6.animation.play('bop', false);
+			        tankBop5.animation.play('bop', false);
+			        tankBop4.animation.play('bop', false);
+			        tankBop3.animation.play('bop', false);
+			        tankBop2.animation.play('bop', false);
+			        tankBop1.animation.play('bop', false);
 			    }
 			case "philly":
 				if (!trainMoving)
