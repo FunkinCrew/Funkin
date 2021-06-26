@@ -63,21 +63,21 @@ class FreeplayState extends MusicBeatState
 			var data:Array<String> = initSonglist[i].split(':');
 			var meta = new SongMetadata(data[0], Std.parseInt(data[2]), data[1]);
 			if(Std.parseInt(data[2]) <= FlxG.save.data.weekUnlocked - 1)
-				songs.push(new SongMetadata(data[0], Std.parseInt(data[2]), data[1]));
-			songs.push(meta);
-			var format = StringTools.replace(meta.songName, " ", "-");
-			switch (format) {
-				case 'Dad-Battle': format = 'Dadbattle';
-				case 'Philly-Nice': format = 'Philly';
+			{
+				songs.push(meta);
+				var format = StringTools.replace(meta.songName, " ", "-");
+				switch (format) {
+					case 'Dad-Battle': format = 'Dadbattle';
+					case 'Philly-Nice': format = 'Philly';
+				}
+
+				var diffs = [];
+				FreeplayState.loadDiff(0,format,meta.songName,diffs);
+				FreeplayState.loadDiff(1,format,meta.songName,diffs);
+				FreeplayState.loadDiff(2,format,meta.songName,diffs);
+				FreeplayState.songData.set(meta.songName,diffs);
+				trace('loaded diffs for ' + meta.songName);
 			}
-
-			var diffs = [];
-			FreeplayState.loadDiff(0,format,meta.songName,diffs);
-			FreeplayState.loadDiff(1,format,meta.songName,diffs);
-			FreeplayState.loadDiff(2,format,meta.songName,diffs);
-			FreeplayState.songData.set(meta.songName,diffs);
-			trace('loaded diffs for ' + meta.songName);
-
 		}
 
 		/* 
