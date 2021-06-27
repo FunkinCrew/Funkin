@@ -17,7 +17,7 @@ class MusicBeatSubstate extends FlxSubState
 
 	private var lastBeat:Float = 0;
 	private var lastStep:Float = 0;
-	public static var deaths:Int = 1;
+	public static var deaths:Int = 0;
 
 	private var curStep:Int = 0;
 	private var curBeat:Int = 0;
