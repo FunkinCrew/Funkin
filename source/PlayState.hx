@@ -606,7 +606,6 @@ class PlayState extends MusicBeatState
 				ground.scrollFactor.set(1, 1);
 				
 				ground.updateHitbox();
-				add(ground);
 
 				tankBop1 = new FlxSprite(-500,650);
 				tankBop1.frames = Paths.getSparrowAtlas('tank0');
@@ -2165,7 +2164,7 @@ class PlayState extends MusicBeatState
 			daRating = 'good';
 			score = 200;
 		}
-		else if (noteDiff > Conductor.safeZoneOffset * 0.1 || noteDiff == 0)
+		else if (noteDiff > Conductor.safeZoneOffset * 0.1)
 		{
 		    daRating = 'sick';
 		    if (noteSplashOp)
