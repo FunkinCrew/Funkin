@@ -27,14 +27,6 @@ class SaveData
 			{
 				FlxG.save.data.buttons.push(FlxPoint.get(buttons.x, buttons.y));
 			}
-		}else
-		{
-			var tempCount:Int = 0;
-			for (buttons in _pad)
-			{
-				FlxG.save.data.buttons[tempCount] = FlxPoint.get(buttons.x, buttons.y);
-				tempCount++;
-			}
 		}
 	}
 }
