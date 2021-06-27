@@ -181,10 +181,10 @@ class PlayState extends MusicBeatState
 		if (SONG == null)
 			SONG = Song.loadFromJson('tutorial');
 
-        grpNoteSplashes = new FlxTypedGroup<NoteSplash>();
-        var sploosh = new NoteSplash(100, 100, 0);
-        sploosh.alpha = 0.6;
-        grpNoteSplashes.add(sploosh);
+		grpNoteSplashes = new FlxTypedGroup<NoteSplash>();
+		var sploosh = new NoteSplash(100, 100, 0);
+		sploosh.alpha = 0.6;
+		grpNoteSplashes.add(sploosh);
 
 		Conductor.mapBPMChanges(SONG);
 		Conductor.changeBPM(SONG.bpm);
@@ -1139,15 +1139,15 @@ class PlayState extends MusicBeatState
 
 	function ughIntro()
 	{
-	    startCountdown();
+		startCountdown();
 	}
 	function gunsIntro()
 	{
-	    startCountdown();
+		startCountdown();
 	}
 	function stressIntro()
 	{
-	    startCountdown();
+		startCountdown();
 	}
 
 	function schoolIntro(?dialogueBox:DialogueBox):Void
@@ -1922,7 +1922,7 @@ class PlayState extends MusicBeatState
 			vocals.stop();
 			FlxG.sound.music.stop();
 
-		    MusicBeatSubstate.deaths += 1;
+			MusicBeatSubstate.deaths += 1;
 
 			openSubState(new GameOverSubstate(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 
@@ -2165,13 +2165,13 @@ class PlayState extends MusicBeatState
 		}
 		else if (noteDiff > Conductor.safeZoneOffset * 0.1)
 		{
-		    daRating = 'sick';
-		    if (noteSplashOp)
-		    {
-		        var recycledNote = grpNoteSplashes.recycle(NoteSplash);
-		        recycledNote.setupNoteSplash(daNote.x, daNote.y, daNote.noteData);
-		        grpNoteSplashes.add(recycledNote);
-		    }
+			daRating = 'sick';
+			if (noteSplashOp)
+			{
+				var recycledNote = grpNoteSplashes.recycle(NoteSplash);
+				recycledNote.setupNoteSplash(daNote.x, daNote.y, daNote.noteData);
+				grpNoteSplashes.add(recycledNote);
+			}
 		}
 
 		songScore += score;
@@ -2691,7 +2691,7 @@ class PlayState extends MusicBeatState
 		gf.playAnim('scared', true);
 	}
 
-    var moreshit:Bool = false;
+	var moreshit:Bool = false;
 
 	override function stepHit()
 	{
@@ -3547,7 +3547,7 @@ class PlayState extends MusicBeatState
 				dad.addOffset("singDOWN", 98, -90);
 				dad.animation.getByName('singDOWN').frames = dad.animation.getByName('oldSingDOWN').frames;
 			}
-        }
+		}
 
 		if (dad.curCharacter == 'tankman' && SONG.song.toLowerCase() == 'ugh')
 		{
@@ -3573,15 +3573,15 @@ class PlayState extends MusicBeatState
 	{
 		super.beatHit();
 
-        /*if (curStage == 'tankStage' || curStage == 'tankStage2')
-        {
-            new FlxTimer().start(17.2, function(tmr:FlxTimer)
-            {
-                moveTank();
-                tanktimer = FlxG.random.int(0, 3);
-                tmr.reset(17.2 + tanktimer);
-            });
-        }*/
+		/*if (curStage == 'tankStage' || curStage == 'tankStage2')
+		{
+			new FlxTimer().start(17.2, function(tmr:FlxTimer)
+			{
+				moveTank();
+				tanktimer = FlxG.random.int(0, 3);
+				tmr.reset(17.2 + tanktimer);
+			});
+		}*/
 
 		if (generatedMusic)
 		{
@@ -3664,15 +3664,15 @@ class PlayState extends MusicBeatState
 				if (FlxG.random.bool(10) && fastCarCanDrive)
 					fastCarDrive();
 			case "tankStage" | "tankStage2":
-			    if (curBeat % 1 == 0)
-			    {
-			        tankBop6.animation.play('bop', false);
-			        tankBop5.animation.play('bop', false);
-			        tankBop4.animation.play('bop', false);
-			        tankBop3.animation.play('bop', false);
-			        tankBop2.animation.play('bop', false);
-			        tankBop1.animation.play('bop', false);
-			    }
+				if (curBeat % 1 == 0)
+				{
+					tankBop6.animation.play('bop', false);
+					tankBop5.animation.play('bop', false);
+					tankBop4.animation.play('bop', false);
+					tankBop3.animation.play('bop', false);
+					tankBop2.animation.play('bop', false);
+					tankBop1.animation.play('bop', false);
+				}
 			case "philly":
 				if (!trainMoving)
 					trainCooldown += 1;
@@ -3709,26 +3709,27 @@ class PlayState extends MusicBeatState
 		}*/
 	}
 
-	function moveTank(){
-		var tankX:Int = 400;
-		var tankSpeed:Float = FlxG.random.float(5, 7);
-		var tankAngle:Float = FlxG.random.float(-90, 45);
-		if(!inCutscene){
-			tankAngle += FlxG.elapsed * tankSpeed;
-			tankRolling.angle = tankAngle - 90 + 15;
-			tankRolling.x = tankX + 1500 * Math.cos(Math.PI / 180 * (1 * tankAngle + 180));
-			tankRolling.y = 1300 + 1100 * Math.sin(Math.PI / 180 * (1 * tankAngle + 180));
-		}
+	var tankX = 400;
+	var tankAngle:Float = FlxG.random.int(-90, 45);
+	var tankSpeed:Float = FlxG.random.float(5, 7);
+
+	function moveTank()
+	{
+		tankAngle += FlxG.elapsed * tankSpeed;
+		tankGround.angle = tankAngle - 90 + 15;
+		tankGround.x = tankX + 1500 * FlxMath.fastCos(FlxAngle.asRadians(tankAngle + 180));
+		tankGround.y = 1300 + 1100 * FlxMath.fastSin(FlxAngle.asRadians(tankAngle + 180));
 		new FlxTimer().start(17.2, function(tmr:FlxTimer)
-        {
-            again();
-        });
+		{
+			again();
+		});
 	}
+
 	function again()
 	{
-	    tankRolling.x = 300;
+		tankRolling.x = 300;
 		tankRolling.y = 300;
-	    moveTank();
+		moveTank();
 	}
 
 	var curLight:Int = 0;
