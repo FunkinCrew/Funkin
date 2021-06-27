@@ -110,7 +110,8 @@ class PlayState extends MusicBeatState
 	var grpLimoDancers:FlxTypedGroup<BackgroundDancer>;
 	var grpNoteSplashes:FlxTypedGroup<NoteSplash>;
 	var fastCar:FlxSprite;
-	var noteSplashOp:Bool = true; //chadbross is cool
+	var noteSplashOp:Bool = FlxG.save.data.splash; //chadbross is cool
+	var cutsceneOp:Bool = FlxG.save.data.cutscene;
 
 	var upperBoppers:FlxSprite;
 	var bottomBoppers:FlxSprite;
