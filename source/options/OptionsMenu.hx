@@ -46,14 +46,14 @@ class OptionsMenu extends MusicBeatState
 
 		notice = new FlxText(0, 0, 0,"", 24);
 
-        notice.x = (FlxG.width / 2) - (notice.width / 2);
-        notice.y = FlxG.height - 56;
-        notice.alpha = 0.5;
+		notice.x = (FlxG.width / 2) - (notice.width / 2);
+		notice.y = FlxG.height - 56;
+		notice.alpha = 0.5;
 
 		grpControls = new FlxTypedGroup<Alphabet>();
 		add(grpControls);
 
-		if (config.getdownscroll()){
+		if (FlxG.save.data.downscroll){
 			menuItems[menuItems.indexOf('downscroll: off')] = 'downscroll: on';
 		}
 
@@ -81,6 +81,7 @@ class OptionsMenu extends MusicBeatState
 		if (controls.ACCEPT)
 		{
 			var daSelected:String = menuItems[curSelected];
+			FlxG.save.data.camMove == MusicBeatState.camMove;
 
 			switch (daSelected)
 			{
@@ -95,7 +96,12 @@ class OptionsMenu extends MusicBeatState
 					openSubState(new options.SetFpsSubState());
 				
 				case "downscroll: on" | "downscroll: off":
-					config.setdownscroll();
+					if (FlxG.save.data.downscroll = false)
+						FlxG.save.data.downscroll = true;
+
+					if (FlxG.save.data.downscroll = true)
+						FlxG.save.data.downscroll = false;
+
 					FlxG.resetState();
 				
 				case "About":
@@ -108,11 +114,11 @@ class OptionsMenu extends MusicBeatState
 		}
 		if (controls.RIGHT && MusicBeatState.camMove < 1.1)
 		{
-		    MusicBeatState.camMove += 0.01;
+			MusicBeatState.camMove += 0.01;
 		}
 		if (controls.LEFT && MusicBeatState.camMove > 0)
 		{
-		    MusicBeatState.camMove -= 0.01;
+			MusicBeatState.camMove -= 0.01;
 		}
 
 		if (isSettingControl)
@@ -126,6 +132,7 @@ class OptionsMenu extends MusicBeatState
 			if (controls.DOWN_P)
 				changeSelection(1);
 		}
+		FlxG.save.flush();
 	}
 
 	function waitingInput():Void
