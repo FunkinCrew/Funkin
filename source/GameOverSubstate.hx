@@ -62,7 +62,7 @@ class GameOverSubstate extends MusicBeatSubstate
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
-
+		var daStage = PlayState.curStage;
 		if (controls.ACCEPT)
 		{
 			endBullshit();

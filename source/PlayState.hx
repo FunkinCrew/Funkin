@@ -58,7 +58,6 @@ class PlayState extends MusicBeatState
 	public static var storyDifficulty:Int = 1;
 
 	var halloweenLevel:Bool = false;
-	var ground:FlxSprite;
 
 	private var vocals:FlxSound;
 
@@ -596,16 +595,18 @@ class PlayState extends MusicBeatState
 				tankRolling.antialiasing = true;
 				tankRolling.animation.play('idle');
 				add(tankRolling);
+				moveTank();
 
 
 
-				ground:FlxSprite = new FlxSprite(-420,-150).loadGraphic(Paths.image('tankGround'));
+				var ground:FlxSprite = new FlxSprite(-420, -150).loadGraphic(Paths.image('tankGround'));
 				ground.scrollFactor.set();
 				ground.antialiasing = true;
 				ground.setGraphicSize(Std.int(ground.width * 1.15));
 				ground.scrollFactor.set(1, 1);
 				
 				ground.updateHitbox();
+				add(ground);
 
 				tankBop1 = new FlxSprite(-500,650);
 				tankBop1.frames = Paths.getSparrowAtlas('tank0');
@@ -725,17 +726,18 @@ class PlayState extends MusicBeatState
 					tankRolling.antialiasing = true;
 					tankRolling.animation.play('idle');
 					add(tankRolling);
+					moveTank();
 
 
 
-					ground:FlxSprite = new FlxSprite(-420,-150).loadGraphic(Paths.image('tankGround'));
+					var ground:FlxSprite = new FlxSprite(-420,-150).loadGraphic(Paths.image('tankGround'));
 					ground.scrollFactor.set();
 					ground.antialiasing = true;
 					ground.setGraphicSize(Std.int(ground.width * 1.15));
 					ground.scrollFactor.set(1, 1);
 					
 					ground.updateHitbox();
-					//add(ground);
+					add(ground);
 
 					tankmanRun = new FlxTypedGroup<TankmenBG>();
 					add(tankmanRun);
@@ -3528,12 +3530,6 @@ class PlayState extends MusicBeatState
 			}
 		}
 
-        if (curStage == 'tankStage' || curStage == 'tankStage2' && !moreshit)
-        {
-            add(ground);
-            moreshit = true;
-        }
-
 		if (dad.curCharacter == 'tankman' && SONG.song.toLowerCase() == 'stress')
 		{
 			if (curStep == 735)
@@ -3580,7 +3576,7 @@ class PlayState extends MusicBeatState
 	{
 		super.beatHit();
 
-        if(curStage == 'tankStage' || curStage == 'tankStage2')
+        /*if (curStage == 'tankStage' || curStage == 'tankStage2')
         {
             new FlxTimer().start(17.2, function(tmr:FlxTimer)
             {
@@ -3588,7 +3584,7 @@ class PlayState extends MusicBeatState
                 tanktimer = FlxG.random.int(0, 3);
                 tmr.reset(17.2 + tanktimer);
             });
-        }
+        }*/
 
 		if (generatedMusic)
 		{
@@ -3708,6 +3704,12 @@ class PlayState extends MusicBeatState
 		{
 			lightningStrikeShit();
 		}
+		/*if (curStage == 'tankStage' || curStage == 'tankStage2' && FlxG.random.bool(10))
+		{
+			tankRolling.x = 300;
+			tankRolling.y = 300;
+			moveTank();
+		}*/
 	}
 
 	function moveTank(){
@@ -3717,6 +3719,17 @@ class PlayState extends MusicBeatState
 			tankRolling.x = tankX + 1500 * Math.cos(Math.PI / 180 * (1 * tankAngle + 180));
 			tankRolling.y = 1300 + 1100 * Math.sin(Math.PI / 180 * (1 * tankAngle + 180));
 		}
+		new FlxTimer().start(17.2, function(tmr:FlxTimer)
+        {
+            again();
+            tmr.reset(17.2);
+        });
+	}
+	function again()
+	{
+	    tankRolling.x = 300;
+		tankRolling.y = 300;
+	    moveTank();
 	}
 
 	var curLight:Int = 0;
