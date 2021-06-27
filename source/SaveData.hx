@@ -4,17 +4,18 @@ import Config;
 class SaveData
 {
 	var camlerp:FlxSave;
-	public static function initSave()
+	public static function initLoad()
 	{
-		if (Config.fpsVal == 60)
-		{
-			//camlerp.data.camMove = 0.06;
-			MusicBeatState.camMove = 0.06;
-		}
-		else if (Config.fpsVal == 90)
-		{
-			//camlerp.data.camMove = 0.9;
-			MusicBeatState.camMove = 0.9;
-		}
+		if (FlxG.save.data.camMove == null)
+			FlxG.save.data.camMove == 0.06;
+
+		if (FlxG.save.data.downscroll = null)
+			FlxG.save.data.downscroll = false:
+
+		if (FlxG.save.data.dfjk = null)
+			FlxG.save.data.dfjk = false;
+
+		if (FlxG.save.data.controlmode == null)
+		    FlxG.save.data.controlmode == 0;
 	}
 }
