@@ -46,11 +46,18 @@ class Mobilecontrols extends FlxSpriteGroup
 	{
 		switch (vpadMode)
 		{
+			var tempCount:Int = 0;
 			case 1:
 				_virtualPad = new FlxVirtualPad(FULL, NONE);
 			case 2:
+				var 
 				_virtualPad = new FlxVirtualPad(FULL, NONE);
-				_virtualPad = config.loadcustom(_virtualPad);
+				for(buttons in _virtualPad)
+				{
+					buttons.x = FlxG.save.data.buttons[tempCount].x;
+					buttons.y = FlxG.save.data.buttons[tempCount].y;
+					tempCount++;
+				}
 			default: // 0
 				_virtualPad = new FlxVirtualPad(RIGHT_FULL, NONE);
 		}
