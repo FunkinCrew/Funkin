@@ -86,6 +86,10 @@ class GameOverSubstate extends MusicBeatSubstate
 		if (bf.animation.curAnim.name == 'firstDeath' && bf.animation.curAnim.finished)
 		{
 			FlxG.sound.playMusic(Paths.music('gameOver' + stageSuffix));
+			if (daStage == 'tankStage' || daStage == 'tankStage2')
+			{
+			    FlxG.sound.play(Paths.sound('jeffGameover-' + FlxG.random.int(1, 25), 'shared'));
+			}
 		}
 
 		if (FlxG.sound.music.playing)
