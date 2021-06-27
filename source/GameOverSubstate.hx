@@ -29,7 +29,7 @@ class GameOverSubstate extends MusicBeatSubstate
 			case 'tankStage':
 			    daBf = 'bf-holding-gf-dead';
 			case 'tankStage2':
-			    daBf = 'bf-holding-gf-dead'';
+			    daBf = 'bf-holding-gf-dead';
 			default:
 				daBf = 'bf';
 		}
