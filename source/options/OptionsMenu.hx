@@ -43,11 +43,11 @@ class OptionsMenu extends MusicBeatState
 		menuBG.antialiasing = true;
 		add(menuBG);
 
-		var notice = new FlxText(0, 0, 0,"Camera Movement: " + MusicBeatState.camMove + " Press LEFT or RIGHT to change values\n", 24);
-		add(notice);
+		var notice:FlxText = new FlxText(0, 0, 0,"", 24);
+
         notice.x = (FlxG.width / 2) - (notice.width / 2);
         notice.y = FlxG.height - 56;
-        notice.alpha = 0.3;
+        notice.alpha = 0.5;
 
 		grpControls = new FlxTypedGroup<Alphabet>();
 		add(grpControls);
@@ -64,6 +64,7 @@ class OptionsMenu extends MusicBeatState
 			grpControls.add(controlLabel);
 			// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
 		}
+		add(notice);
 
 		#if mobileC
 		addVirtualPad(FULL, A_B);
@@ -75,7 +76,7 @@ class OptionsMenu extends MusicBeatState
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
-		
+		notice.text= "Camera Movement: " + MusicBeatState.camMove + " Press LEFT or RIGHT to change values\n";
 		if (controls.ACCEPT)
 		{
 			var daSelected:String = menuItems[curSelected];
@@ -104,14 +105,15 @@ class OptionsMenu extends MusicBeatState
 					#end
 			}
 		}
-		if (controls.RIGHT)
+		if (controls.RIGHT && MusicBeatState.camMove < 1.1)
 		{
 		    MusicBeatState.camMove += 0.01;
 		}
-		if (controls.LEFT)
+		if (controls.LEFT && MusicBeatState.camMove > 0)
 		{
 		    MusicBeatState.camMove -= 0.01;
 		}
+
 		if (isSettingControl)
 			waitingInput();
 		else
