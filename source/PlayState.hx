@@ -144,9 +144,8 @@ class PlayState extends MusicBeatState
 	#if mobileC
 	var mcontrols:Mobilecontrols; 
 	#end
-	var NoteHx:Note;
 
-	var isDownScroll:Bool;
+	var isDownScroll:Bool = FlxG.save.data.downscroll;
 
 	var tankWatchtower:FlxSprite;
 	var tankRolling:FlxSprite;
@@ -968,7 +967,6 @@ class PlayState extends MusicBeatState
 
 		Conductor.songPosition = -5000;
 
-		isDownScroll = new Config().getdownscroll();
 		Note.isDownScroll = isDownScroll;
 
 		strumLine = new FlxSprite(0, (isDownScroll ? FlxG.height - 150 : 50)).makeGraphic(FlxG.width, 10);
