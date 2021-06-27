@@ -16,6 +16,7 @@ import flixel.util.FlxColor;
 class PauseSubState extends MusicBeatSubstate
 {
 	var grpMenuShit:FlxTypedGroup<Alphabet>;
+	var blueballs:Int = MusicBeatSubstate.deaths;
 
 	var menuItems:Array<String> = ['Resume', 'Restart Song', 'Exit to menu'];
 	var curSelected:Int = 0;
@@ -113,6 +114,7 @@ class PauseSubState extends MusicBeatSubstate
 				case "Restart Song":
 					FlxG.resetState();
 				case "Exit to menu":
+				    MusicBeatSubstate.deaths = 0;
 					FlxG.switchState(new MainMenuState());
 			}
 		}
