@@ -3722,7 +3722,6 @@ class PlayState extends MusicBeatState
 		new FlxTimer().start(17.2, function(tmr:FlxTimer)
         {
             again();
-            tmr.reset(17.2);
         });
 	}
 	function again()
