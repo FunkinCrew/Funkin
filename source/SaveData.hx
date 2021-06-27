@@ -18,9 +18,9 @@ class SaveData
 		if (FlxG.save.data.controlmode == null)
 			FlxG.save.data.controlmode == 0;
 
-		if (FlxG.save.data.buttons = null)
+		if (FlxG.save.data.buttons == null)
 		{
-			FlxG.save.data.buttons = new Array();
+			FlxG.save.data.buttons == new Array();
 			var _pad:FlxVirtualPad;
 
 			for (buttons in _pad)
@@ -28,5 +28,10 @@ class SaveData
 				FlxG.save.data.buttons.push(FlxPoint.get(buttons.x, buttons.y));
 			}
 		}
+		if (FlxG.save.data.splash = null)
+		    FlxG.save.data.splash = true;
+
+		if (FlxG.save.data.cutscene = null)
+		    FlxG.save.data.cutscene = true;
 	}
 }
