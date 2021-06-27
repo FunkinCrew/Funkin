@@ -27,6 +27,7 @@ class OptionsMenu extends MusicBeatState
 	var DOWN_P:Bool;
 	var BACK:Bool;
 	var ACCEPT:Bool;
+	var notice:FlxText;
 
 	var _saveconrtol:FlxSave;
 
@@ -43,7 +44,7 @@ class OptionsMenu extends MusicBeatState
 		menuBG.antialiasing = true;
 		add(menuBG);
 
-		var notice:FlxText = new FlxText(0, 0, 0,"", 24);
+		notice = new FlxText(0, 0, 0,"", 24);
 
         notice.x = (FlxG.width / 2) - (notice.width / 2);
         notice.y = FlxG.height - 56;
