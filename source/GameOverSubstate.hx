@@ -11,7 +11,7 @@ import fmf.songs.*;
 
 class GameOverSubstate extends MusicBeatSubstate
 {
-	var bf:Boyfriend;
+	var bf:Character;
 	var camFollow:FlxObject;
 
 	var stageSuffix:String = "";
@@ -20,21 +20,48 @@ class GameOverSubstate extends MusicBeatSubstate
 	{
 		var daStage = PlayState.curStage;
 		var daBf:String = '';
-		switch (PlayState.SONG.player1)
-		{
-			case 'bf-pixel':
-				stageSuffix = '-pixel';
-				daBf = 'bf-pixel-dead';
-			default:
-				daBf = 'bf';
-		}
+		
 
 		super();
 
 		Conductor.songPosition = 0;
 
-		bf = new Boyfriend(x, y);
+		bf = new Character(x, y);
 		add(bf);
+		if (PlayState.songPlayer.songLabel == 'school')
+		{
+				//okay now create pixel shit bf
+				bf.frames = Paths.getSparrowAtlas('characters/bfPixelsDEAD');
+				bf.animation.addByPrefix('singUP', "BF Dies pixel", 24, false);
+				bf.animation.addByPrefix('firstDeath', "BF Dies pixel", 24, false);
+				bf.animation.addByPrefix('deathLoop', "Retry Loop", 24, true);
+				bf.animation.addByPrefix('deathConfirm', "RETRY CONFIRM", 24, false);
+				bf.animation.play('firstDeath');
+
+				bf.addOffset('firstDeath');
+				bf.addOffset('deathLoop', -37);
+				bf.addOffset('deathConfirm', -37);
+				bf.playAnim('firstDeath');
+				// pixel bullshit
+				bf.setGraphicSize(Std.int(bf.width * 6));
+				bf.updateHitbox();
+				bf.antialiasing = false;
+				bf.flipX = true;
+				stageSuffix = '-pixel';
+		}
+		else
+		{
+				//okay now create normal bf
+				var tex = Paths.getSparrowAtlas('characters/BoyFriend_Dead_Assets');
+				bf.frames = tex;
+				bf.animation.addByPrefix('firstDeath', "BF dies", 24, false);
+				bf.animation.addByPrefix('deathLoop', "BF Dead Loop", 24, true);
+				bf.animation.addByPrefix('deathConfirm', "BF Dead confirm", 24, false);
+				bf.flipX = true;
+
+		}
+
+
 
 		camFollow = new FlxObject(bf.getGraphicMidpoint().x, bf.getGraphicMidpoint().y, 1, 1);
 		add(camFollow);
