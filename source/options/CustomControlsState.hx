@@ -53,7 +53,7 @@ class CustomControlsState extends MusicBeatSubstate
 		super();
 
 		//init config
-		config = new Config();
+		//config = new Config();
 		
 		// bg
 		var bg:FlxSprite = new FlxSprite(-80).loadGraphic('assets/images/menuBG.png');
@@ -65,7 +65,7 @@ class CustomControlsState extends MusicBeatSubstate
 		bg.antialiasing = true;
 
 		// load curSelected
-		curSelected = config.getcontrolmode();
+		curSelected = FlxG.save.data.controlmode;
 		
 
 		//pad
@@ -183,6 +183,7 @@ class CustomControlsState extends MusicBeatSubstate
 			//custom pad 
 			trackbutton(touch);
 		}
+		FlxG.save.flush();
 	}
 
 	function changeSelection(change:Int = 0,?forceChange:Int)
@@ -321,15 +322,19 @@ class CustomControlsState extends MusicBeatSubstate
 		right_text.text = "Button right x:" + _pad.buttonRight.x +" y:" + _pad.buttonRight.y;
 	}
 
-
+	function antiSpam() {
+		if (_pad.buttonUp.x == _pad.buttonDown.x || _pad.buttonDown.x == _pad.buttonLeft.x || _pad.buttonLeft.x == _pad.buttonRight.x || _pad.buttonRight.x == _pad.buttonUp.x || _pad.buttonUp.x == _pad.buttonLeft.x)//im sorry if yiu see this and have a headache -Zack
+			FlxG.resetState();
+	}
 
 	function save() {
 
-		config.setcontrolmode(curSelected);
+		FlxG.save.data.controlmode == curSelected;
 		
 		if (curSelected == 3){
 			savecustom();
 		}
+		FlxG.save.flush();
 	}
 
 	function savecustom() {
@@ -337,13 +342,31 @@ class CustomControlsState extends MusicBeatSubstate
 
 		//Config.setdata(55);
 
-		config.savecustom(_pad);
+		//config.savecustom(_pad);
+		var tempCount:Int = 0;
+		for (buttons in _pad)
+		{
+			FlxG.save.data.buttons[tempCount] = FlxPoint.get(buttons.x, buttons.y);
+			tempCount++;
+		}
+		FlxG.save.flush();
 	}
 
 	function loadcustom():Void{
 		//load pad
-		_pad = config.loadcustom(_pad);	
-	
+		//_pad = config.loadcustom(_pad);	
+		if (FlxG.save.data.buttons == null)
+		    return _pad;
+
+		var tempCount:Int = 0;
+
+		for(buttons in _pad)
+		{
+			buttons.x = FlxG.save.data.buttons[tempCount].x;
+			buttons.y = FlxG.save.data.buttons[tempCount].y;
+			tempCount++;
+		}
+		FlxG.save.flush();
 	}
 
 	function resizebuttons(vpad:FlxVirtualPad, ?int:Int = 200) {
