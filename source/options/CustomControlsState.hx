@@ -356,7 +356,7 @@ class CustomControlsState extends MusicBeatSubstate
 		//load pad
 		//_pad = config.loadcustom(_pad);	
 		if (FlxG.save.data.buttons == null)
-			return _pad;
+			_pad = new FlxVirtualPad(FULL, NONE)
 
 		var tempCount:Int = 0;
 
