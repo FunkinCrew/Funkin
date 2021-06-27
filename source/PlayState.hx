@@ -3723,7 +3723,7 @@ class PlayState extends MusicBeatState
 		tankGround.angle = tankAngle - 90 + 15;
 		tankGround.x = tankX + 1500 * FlxMath.fastCos(FlxAngle.asRadians(tankAngle + 180));
 		tankGround.y = 1300 + 1100 * FlxMath.fastSin(FlxAngle.asRadians(tankAngle + 180));
-		new FlxTimer().start(17.2, function(tmr:FlxTimer)
+		new FlxTimer().start(17.2, function(tmr:FlxTimer)//chadbross is awesome.
 		{
 			again();
 		});
