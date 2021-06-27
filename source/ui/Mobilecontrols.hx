@@ -15,17 +15,17 @@ class Mobilecontrols extends FlxSpriteGroup
 	public var _hitbox:Hitbox;
 	public var _virtualPad:FlxVirtualPad;
 
-	var config:Config;
+	//var config:Config;
 
 	public function new() 
 	{
 		super();
 		
-		config = new Config();
+		//config = new Config();
 
 		// load control mode num from Config.hx
-		mode = getModeFromNumber(config.getcontrolmode());
-		trace(config.getcontrolmode());
+		mode = getModeFromNumber(FlxG.save.data.controlmode);
+		trace(FlxG.save.data.controlmode);
 
 		switch (mode)
 		{
@@ -56,7 +56,7 @@ class Mobilecontrols extends FlxSpriteGroup
 		}
 		
 		_virtualPad.alpha = 0.75;
-		add(_virtualPad);	
+		add(_virtualPad);
 	}
 
 
