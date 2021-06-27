@@ -15,6 +15,7 @@ class HealthIcon extends FlxSprite
 		loadGraphic(Paths.image('iconGrid'), true, 150, 150);
 
 		antialiasing = true;
+
 		// the player character
 		animation.add('bf-prototype', [25, 26, 27], 0, false, isPlayer);
 		animation.add('bf-old', [14, 15], 0, false, isPlayer);
@@ -55,7 +56,7 @@ class HealthIcon extends FlxSprite
 
 	public function playSwagAnim(?char:String = 'bf')
 	{
-		// coolio
+		// CONVERTING CERTAIN CHARS
 		switch(char)
 		{
 			case 'mom-car':
@@ -68,6 +69,13 @@ class HealthIcon extends FlxSprite
 				char = 'bf';
 			case 'monster-christmas':
 				char = 'monster';
+		}
+
+		// antialiasing override
+		switch(char)
+		{
+			case 'bf-pixel' | 'gf-pixel' | 'senpai' | 'spirit':
+				antialiasing = false;
 		}
 		
 		animation.play(char);
