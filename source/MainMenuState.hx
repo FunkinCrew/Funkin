@@ -104,14 +104,13 @@ class MainMenuState extends MusicBeatState
 			menuItems.add(menuItem);
 			menuItem.scrollFactor.set();
 			menuItem.antialiasing = true;
+			menuItem.y = 60 + (i * 160);
+
 			if (firstStart)
-				FlxTween.tween(menuItem,{y: 60 + (i * 160)},1 + (i * 0.25) ,{ease: FlxEase.expoInOut, onComplete: function(flxTween:FlxTween) 
-					{ 
-						finishedFunnyMove = true; 
-						changeItem();
-					}});
-			else
-				menuItem.y = 60 + (i * 160);
+			{
+				finishedFunnyMove = true;
+				createFunnyFx();	
+			}
 		}
 
 		firstStart = false;
@@ -140,6 +139,29 @@ class MainMenuState extends MusicBeatState
 
 	var selectedSomethin:Bool = false;
 
+	function createFunnyFx()
+	{
+		
+		var blackScreen:FlxSprite = new FlxSprite(0, 0).makeGraphic(Std.int(FlxG.width * 3), Std.int(FlxG.height * 3), FlxColor.BLACK);
+		blackScreen.alpha = 1;
+		blackScreen.screenCenter();
+		add(blackScreen);
+		FlxTween.tween(blackScreen, {alpha: 0}, 0.25, {});
+		FlxG.camera.zoom = 0.1;
+
+		new FlxTimer().start(0.016, function(tmr:FlxTimer)
+		{
+			if (FlxG.camera.zoom < 1)
+			{
+				FlxG.camera.zoom += 0.016;
+			}
+			else
+			{
+				FlxG.camera.zoom = 1;
+				finishedFunnyMove = true;
+			}
+		}, 120);		
+	}
 	override function update(elapsed:Float)
 	{
 		if (FlxG.sound.music.volume < 0.8)

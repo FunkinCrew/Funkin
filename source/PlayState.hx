@@ -427,10 +427,10 @@ class PlayState extends MusicBeatState
 
 		add(camFollow);
 
-		FlxG.camera.follow(camFollow, LOCKON, 0.04 * (30 / (cast(Lib.current.getChildAt(0), Main)).getFPS()));
-		// FlxG.camera.setScrollBounds(0, FlxG.width, 0, FlxG.height);
-		FlxG.camera.zoom = defaultCamZoom;
-		FlxG.camera.focusOn(camFollow.getPosition());
+		camGame.follow(camFollow, LOCKON, 0.04 * (30 / (cast(Lib.current.getChildAt(0), Main)).getFPS()));
+		// camGame.setScrollBounds(0, FlxG.width, 0, FlxG.height);
+		camGame.zoom = defaultCamZoom;
+		camGame.focusOn(camFollow.getPosition());
 
 		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
 
@@ -1012,7 +1012,7 @@ class PlayState extends MusicBeatState
 		{
 			luaModchart.setVar('songPos', Conductor.songPosition);
 			luaModchart.setVar('hudZoom', camHUD.zoom);
-			luaModchart.setVar('cameraZoom', FlxG.camera.zoom);
+			luaModchart.setVar('cameraZoom', camGame.zoom);
 			luaModchart.executeState('update', [elapsed]);
 
 			for (i in luaWiggles)
@@ -1028,7 +1028,7 @@ class PlayState extends MusicBeatState
 				member.angle = luaModchart.getVar("strum" + i + "Angle", "float");
 			}*/
 
-			FlxG.camera.angle = luaModchart.getVar('cameraAngle', 'float');
+			camGame.angle = luaModchart.getVar('cameraAngle', 'float');
 			camHUD.angle = luaModchart.getVar('camHudAngle', 'float');
 
 			if (luaModchart.getVar("showOnlyStrums", 'bool'))
@@ -1281,7 +1281,7 @@ class PlayState extends MusicBeatState
 
 		if (camZooming)
 		{
-			FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, 0.95);
+			camGame.zoom = FlxMath.lerp(defaultCamZoom, camGame.zoom, 0.95);
 			camHUD.zoom = FlxMath.lerp(1, camHUD.zoom, 0.95);
 		}
 
@@ -1723,8 +1723,8 @@ class PlayState extends MusicBeatState
 
 					if (songLowercase == 'eggnog')
 					{
-						var blackShit:FlxSprite = new FlxSprite(-FlxG.width * FlxG.camera.zoom,
-							-FlxG.height * FlxG.camera.zoom).makeGraphic(FlxG.width * 3, FlxG.height * 3, FlxColor.BLACK);
+						var blackShit:FlxSprite = new FlxSprite(-FlxG.width * camGame.zoom,
+							-FlxG.height * camGame.zoom).makeGraphic(FlxG.width * 3, FlxG.height * 3, FlxColor.BLACK);
 						blackShit.scrollFactor.set();
 						add(blackShit);
 						camHUD.visible = false;
@@ -1750,6 +1750,42 @@ class PlayState extends MusicBeatState
 				FlxG.switchState(new FreeplayState());
 			}
 		}
+	}
+
+	function zoomInAndFading()
+	{
+		camZooming = false;
+		camGame.stopFX();
+
+		new FlxTimer().start(0.016, function(tmr:FlxTimer)
+		{
+			camGame.zoom += 0.016;
+		}, 120);
+	}
+
+	function createBlackFade(callback:Void->Void)
+	{
+
+		zoomInAndFading();
+
+		var blackScreen:FlxSprite = new FlxSprite(0, 0).makeGraphic(Std.int(FlxG.width * 3), Std.int(FlxG.height * 3), FlxColor.BLACK);
+
+		blackScreen.cameras = [camHUD];
+		blackScreen.alpha = 0;
+
+		add(blackScreen);
+		FlxTween.tween(blackScreen, {alpha: 1}, {});
+
+		new FlxTimer().start(2, function (tmr:FlxTimer) {
+			callback();
+		});
+	
+	}
+
+
+	function finishGame()
+	{
+
 	}
 
 	var endingSong:Bool = false;
@@ -2544,16 +2580,16 @@ class PlayState extends MusicBeatState
 		wiggleShit.update(Conductor.crochet);
 
 		// HARDCODING FOR MILF ZOOMS!
-		if (curSong.toLowerCase() == 'milf' && curBeat >= 168 && curBeat < 200 && camZooming && FlxG.camera.zoom < 1.35)
+		if (curSong.toLowerCase() == 'milf' && curBeat >= 168 && curBeat < 200 && camZooming && camHUD.zoom < 1.35)
 		{
-			FlxG.camera.zoom += 0.015;
-			camHUD.zoom += 0.03;
+			// camGame.zoom += 0.005;
+			camHUD.zoom += 0.015;
 		}
 
-		if (camZooming && FlxG.camera.zoom < 1.35 && curBeat % 4 == 0)
+		if (camZooming && camHUD.zoom < 1.25 && curBeat % 4 == 0)
 		{
-			FlxG.camera.zoom += 0.015;
-			camHUD.zoom += 0.03;
+			// camGame.zoom += 0.0075;
+			camHUD.zoom += 0.015;
 		}
 
 		iconP1.setGraphicSize(Std.int(iconP1.width + 30));

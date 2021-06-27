@@ -19,7 +19,7 @@ class Tutorial extends SongPlayer
 		if (curBeat % 2 == 0 && dad.animOffsets.exists('danceRight'))
 			dad.playAnim('danceRight');
 
-		if (curBeat % 16 == 15 && PlayState.CURRENT_SONG == 'Tutorial' && curBeat > 16 && curBeat < 48)
+		if (curBeat % 16 == 15 && PlayState.CURRENT_SONG == 'tutorial' && curBeat > 16 && curBeat < 48)
 		{
 			bf.playAnim('hey', true);
 			dad.playAnim('cheer', true);
