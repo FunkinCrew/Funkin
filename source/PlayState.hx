@@ -148,9 +148,6 @@ class PlayState extends MusicBeatState
 
 	var isDownScroll:Bool;
 
-	var tankX:Int = 400;
-	var tankSpeed:Float = FlxG.random.float(5, 7);
-	var tankAngle:Float = FlxG.random.float(-90, 45);
 	var tankWatchtower:FlxSprite;
 	var tankRolling:FlxSprite;
 	var tankmanRun:FlxTypedGroup<TankmenBG>;
@@ -3713,6 +3710,9 @@ class PlayState extends MusicBeatState
 	}
 
 	function moveTank(){
+		var tankX:Int = 400;
+		var tankSpeed:Float = FlxG.random.float(5, 7);
+		var tankAngle:Float = FlxG.random.float(-90, 45);
 		if(!inCutscene){
 			tankAngle += FlxG.elapsed * tankSpeed;
 			tankRolling.angle = tankAngle - 90 + 15;
