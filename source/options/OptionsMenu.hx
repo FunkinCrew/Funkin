@@ -21,7 +21,7 @@ class OptionsMenu extends MusicBeatState
 
 	private var grpControls:FlxTypedGroup<Alphabet>;
 
-	var menuItems:Array<String> = ['controls', 'set fps', 'downscroll: off', 'About', 'test cutscene'];
+	var menuItems:Array<String> = ['controls', 'set fps', 'note splash: on', 'downscroll: off', 'cutscenes: on', 'About', 'test cutscene'];
 
 	var UP_P:Bool;
 	var DOWN_P:Bool;
@@ -53,8 +53,14 @@ class OptionsMenu extends MusicBeatState
 		grpControls = new FlxTypedGroup<Alphabet>();
 		add(grpControls);
 
-		if (FlxG.save.data.downscroll){
+		if (FlxG.save.data.downscroll = true){
 			menuItems[menuItems.indexOf('downscroll: off')] = 'downscroll: on';
+		}
+		if (FlxG.save.data.cutscene = false){
+			menuItems[menuItems.indexOf('cutscenes: on')] = 'cutscenes: off';
+		}
+		if (FlxG.save.data.splash = false){
+			menuItems[menuItems.indexOf('note splash: on')] = 'note splash: off';
 		}
 
 		for (i in 0...menuItems.length)
@@ -95,12 +101,30 @@ class OptionsMenu extends MusicBeatState
 					insubstate = true;
 					openSubState(new options.SetFpsSubState());
 				
+				case "note splash: on" | "note splash: off":
+					if (FlxG.save.data.splash = false)
+						FlxG.save.data.splash = true;
+
+					if (FlxG.save.data.splash = true)
+						FlxG.save.data.splash = false;
+
+					FlxG.resetState();
+				
 				case "downscroll: on" | "downscroll: off":
 					if (FlxG.save.data.downscroll = false)
 						FlxG.save.data.downscroll = true;
 
 					if (FlxG.save.data.downscroll = true)
 						FlxG.save.data.downscroll = false;
+
+					FlxG.resetState();
+				
+				case "cutscenes: on" | "cutscenes: off":
+					if (FlxG.save.data.cutscene = false)
+						FlxG.save.data.cutscene = true;
+
+					if (FlxG.save.data.cutscene = true)
+						FlxG.save.data.cutscene = false;
 
 					FlxG.resetState();
 				
