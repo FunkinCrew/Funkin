@@ -1,4 +1,5 @@
 import flixel.util.FlxSave;
+import ui.FlxVirtualPad;
 import Config;
 
 class SaveData
@@ -15,6 +16,25 @@ class SaveData
 			FlxG.save.data.dfjk = false;
 
 		if (FlxG.save.data.controlmode == null)
-		    FlxG.save.data.controlmode == 0;
+			FlxG.save.data.controlmode == 0;
+
+		if (FlxG.save.data.buttons = null)
+		{
+			FlxG.save.data.buttons = new Array();
+			var _pad:FlxVirtualPad;
+
+			for (buttons in _pad)
+			{
+				FlxG.save.data.buttons.push(FlxPoint.get(buttons.x, buttons.y));
+			}
+		}else
+		{
+			var tempCount:Int = 0;
+			for (buttons in _pad)
+			{
+				FlxG.save.data.buttons[tempCount] = FlxPoint.get(buttons.x, buttons.y);
+				tempCount++;
+			}
+		}
 	}
 }
