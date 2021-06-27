@@ -1132,17 +1132,17 @@ class PlayState extends MusicBeatState
 		if (FlxG.keys.justPressed.NINE)
 		{
 			if (iconP1.animation.curAnim.name.startsWith('bf') && iconP1.animation.curAnim.name != 'bf')
-				iconP1.playChartAnimIGuessLolWhoKnows(SONG.player1);
+				iconP1.playSwagAnim(SONG.player1);
 			else
-				iconP1.playChartAnimIGuessLolWhoKnows("bf-old");
+				iconP1.playSwagAnim("bf-old");
 		}
 
 		if (FlxG.keys.justPressed.EIGHT)
 		{
 			if (iconP1.animation.curAnim.name.startsWith('bf') && iconP1.animation.curAnim.name != 'bf')
-				iconP1.playChartAnimIGuessLolWhoKnows(SONG.player1);
+				iconP1.playSwagAnim(SONG.player1);
 			else
-				iconP1.playChartAnimIGuessLolWhoKnows("bf-prototype");
+				iconP1.playSwagAnim("bf-prototype");
 		}
 
 		//cool anim debug

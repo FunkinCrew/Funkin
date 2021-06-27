@@ -49,11 +49,11 @@ class HealthIcon extends FlxSprite
 		// custom goes here
 		
 		// plays anim lol
-		playChartAnimIGuessLolWhoKnows(char);
+		playSwagAnim(char);
 		scrollFactor.set();
 	}
 
-	public function playChartAnimIGuessLolWhoKnows(?char:String = 'bf')
+	public function playSwagAnim(?char:String = 'bf')
 	{
 		// coolio
 		switch(char)
