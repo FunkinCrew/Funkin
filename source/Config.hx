@@ -76,7 +76,7 @@ class Config {
 			buttons.x = save.data.buttons[tempCount].x;
 			buttons.y = save.data.buttons[tempCount].y;
 			tempCount++;
-		}	
+		}
         return _pad;
 	}
 
