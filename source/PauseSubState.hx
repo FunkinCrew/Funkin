@@ -53,7 +53,7 @@ class PauseSubState extends MusicBeatSubstate
 		add(levelDifficulty);
 
 		var levelDeaths:FlxText = new FlxText(20, 47 + 32, 0, "", 32);
-		levelDeaths.text = "BLUEBALLED (DEATHS): " + MusicBeatSubstate.deaths + "";
+		levelDeaths.text = "BLUEBALLED (DEATHS): " + blueballs + "";
 		levelDeaths.scrollFactor.set();
 		levelDeaths.setFormat(Paths.font('vcr.ttf'), 32);
 		levelDeaths.updateHitbox();
