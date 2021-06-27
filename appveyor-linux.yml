@@ -9,7 +9,7 @@ install:
   - cd /home/appveyor
   - sudo add-apt-repository ppa:haxe/releases -y
   - sudo apt update
-  - sudo apt install neko tar gcc-multilib g++-multilib -y
+  - sudo apt install neko tar gcc-7 g++-7 gcc-7-multilib g++-7-multilib -y
   - wget https://github.com/HaxeFoundation/haxe/releases/download/4.1.5/haxe-4.1.5-linux64.tar.gz
   - mkdir $HAXE_INSTALLDIR
   - tar -xf haxe-4.1.5-linux64.tar.gz -C $HAXE_INSTALLDIR
