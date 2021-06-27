@@ -3,7 +3,6 @@ import Config;
 
 class SaveData
 {
-	var camlerp:FlxSave;
 	public static function initLoad()
 	{
 		if (FlxG.save.data.camMove == null)
