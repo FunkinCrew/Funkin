@@ -21,7 +21,7 @@ class OptionsMenu extends MusicBeatState
 
 	private var grpControls:FlxTypedGroup<Alphabet>;
 
-	var menuItems:Array<String> = ['controls', 'set fps', 'cutscenes: on', 'note splash: on' 'downscroll: off', 'About', 'test cutscene'];
+	var menuItems:Array<String> = ['controls', 'set fps', 'cutscenes: on', 'note splash: on', 'downscroll: off', 'About', 'test cutscene'];
 
 	var UP_P:Bool;
 	var DOWN_P:Bool;
