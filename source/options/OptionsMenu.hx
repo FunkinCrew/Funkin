@@ -63,7 +63,7 @@ class OptionsMenu extends MusicBeatState
 		}
 
 		#if mobileC
-		addVirtualPad(UP_DOWN, A_B);
+		addVirtualPad(FULL, A_B);
 		#end
 		
 		super.create();
@@ -99,25 +99,29 @@ class OptionsMenu extends MusicBeatState
 				
 				case "About":
 					FlxG.switchState(new options.AboutState());
+				
 				case "test cutscene":
-					//webview.openHTML(Assets.getBytes('assets/index.html'));
-					//webview.openURLfromAssets('index.html');
-					//FlxG.stage.width = 1600; 
-					//FlxG.stage.frameRate = 30;
-					//FlxG.stage;
-					//trace(FlxG.stage.width);
 					#if extension-webview
 					WebViewVideo.openVideo('ughCutscene');
 					#end
 			}
+		}
+		if (controls.RIGHT) {
+		    MusicBeatState += 0.01;
+		    config.camSave(MusicBeatState.camMove);
+		}
+		if (controls.LEFT) {
+		    MusicBeatState -= 0.01;
+		    config.camSave(MusicBeatState.camMove);
 		}
 
 		if (isSettingControl)
 			waitingInput();
 		else
 		{
-			if (controls.BACK #if android || FlxG.android.justReleased.BACK #end)
+			if (controls.BACK #if android || FlxG.android.justReleased.BACK #end) {
 				FlxG.switchState(new MainMenuState());
+			}
 			if (controls.UP_P)
 				changeSelection(-1);
 			if (controls.DOWN_P)
