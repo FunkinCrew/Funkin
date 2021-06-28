@@ -5,7 +5,7 @@ import flixel.math.FlxPoint;
 import flixel.FlxG;
 
 class SaveData
-{
+{//broken.
 	public static function initLoad()
 	{
 		if (FlxG.save.data.camMove == null)
