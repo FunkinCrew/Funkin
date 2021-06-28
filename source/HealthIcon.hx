@@ -9,6 +9,12 @@ class HealthIcon extends FlxSprite
 	 */
 	public var sprTracker:FlxSprite;
 
+	public var iconScale:Float = 1;
+	public var iconSize:Float;
+	public var defualtIconScale:Float = 1;
+
+	var pixelIcons:Array<String> = ["bf-pixel", "senpai", "senpai-angry", "spirit"];
+
 	public function new(char:String = 'bf', isPlayer:Bool = false)
 	{
 		super();
@@ -35,13 +41,22 @@ class HealthIcon extends FlxSprite
 		animation.add('parents-christmas', [17], 0, false, isPlayer);
 		animation.add('monster', [19, 20], 0, false, isPlayer);
 		animation.add('monster-christmas', [19, 20], 0, false, isPlayer);
+		
+		antialiasing = !pixelIcons.contains(char);
+		
 		animation.play(char);
 		scrollFactor.set();
+		
+		iconScale = defualtIconScale;
+		iconSize = width;
 	}
 
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+
+		setGraphicSize(Std.int(iconSize * iconScale));
+		updateHitbox();
 
 		if (sprTracker != null)
 			setPosition(sprTracker.x + sprTracker.width + 10, sprTracker.y - 30);
