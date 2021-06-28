@@ -30,6 +30,14 @@ class Config {
 		return save.data.cutscenes;
 	}
 
+	public function setsplash(?value:Bool):Bool {
+		if (save.data.splash == null) save.data.splash = true;
+		
+		save.data.splash = !save.data.splash;
+		save.flush();
+		return save.data.splash;
+	}
+
 	public function camSave(value:Float):Float {
 		if (save.data.cam == null) save.data.cam = 0.06;
 		
@@ -40,10 +48,10 @@ class Config {
 
 	public function camLoad():Float {
 		if (save.data.cam != null) {
-		    return save.data.cam;
+			return save.data.cam;
 		}
 		else {
-		    return 0.06;
+			return 0.06;
 		}
 	}
 
@@ -54,6 +62,11 @@ class Config {
 
 	public function getcutscenes():Bool {
 		if (save.data.cutscenes != null) return save.data.cutscenes;
+		return true;
+	}
+
+	public function getsplash():Bool {
+		if (save.data.splash != null) return save.data.splash;
 		return true;
 	}
 
