@@ -62,12 +62,12 @@ class Config {
 
 	public function getcutscenes():Bool {
 		if (save.data.cutscenes != null) return save.data.cutscenes;
-		return true;
+		return false;
 	}
 
 	public function getsplash():Bool {
 		if (save.data.splash != null) return save.data.splash;
-		return true;
+		return false;
 	}
 
 	public function getcontrolmode():Int {
