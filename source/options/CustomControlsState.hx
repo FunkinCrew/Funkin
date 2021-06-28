@@ -343,13 +343,8 @@ class CustomControlsState extends MusicBeatSubstate
 		//Config.setdata(55);
 
 		//config.savecustom(_pad);
-		var tempCount:Int = 0;
-		for (buttons in _pad)
-		{
-			FlxG.save.data.buttons[tempCount] = FlxPoint.get(buttons.x, buttons.y);
-			tempCount++;
-		}
-		FlxG.save.flush();
+		SaveData.initButton(_pad);
+
 	}
 
 	function loadcustom():Void{
