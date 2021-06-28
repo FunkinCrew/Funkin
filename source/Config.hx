@@ -30,6 +30,23 @@ class Config {
 		return save.data.cutscenes;
 	}
 
+	public function camSave(value:Float):Float {
+		if (save.data.cam == null) save.data.cam = 0.06;
+		
+		save.data.cam = value;
+		save.flush();
+		return save.data.cam;
+	}
+
+	public function camLoad():Float {
+		if (save.data.cam != null) {
+		    return save.data.cam;
+		}
+		else {
+		    return 0.06;
+		}
+	}
+
 	public function getdownscroll():Bool {
 		if (save.data.isdownscroll != null) return save.data.isdownscroll;
 		return false;
