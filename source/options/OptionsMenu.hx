@@ -21,7 +21,7 @@ class OptionsMenu extends MusicBeatState
 
 	private var grpControls:FlxTypedGroup<Alphabet>;
 
-	var menuItems:Array<String> = ['controls', 'set fps', 'cutscenes: off', 'note splash: off', 'downscroll: off', 'About', 'test cutscene'];//to luckydog, i am fucking stupid and dunno how to make it ON | OFF instead of OFF | ON -Zack
+	var menuItems:Array<String> = ['controls', 'set fps', 'cutscenes: off', 'note splash: off', 'downscroll: off', 'About', 'test cutscene'];
 
 	var UP_P:Bool;
 	var DOWN_P:Bool;
