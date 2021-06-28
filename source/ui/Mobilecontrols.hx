@@ -41,12 +41,12 @@ class Mobilecontrols extends FlxSpriteGroup
 			case KEYBOARD:
 		}
 	}
-
+	var tempCount:Int = 0;
 	function initVirtualPad(vpadMode:Int) 
 	{
 		switch (vpadMode)
 		{
-			var tempCount:Int = 0;
+			
 			case 1:
 				_virtualPad = new FlxVirtualPad(FULL, NONE);
 			case 2:
