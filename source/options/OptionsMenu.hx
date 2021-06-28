@@ -53,6 +53,9 @@ class OptionsMenu extends MusicBeatState
 		if (config.getcutscenes()){
 			menuItems[menuItems.indexOf('cutscenes: on')] = 'cutscenes: off';
 		}
+		if (config.getsplash()){
+			menuItems[menuItems.indexOf('note splash: on')] = 'note splash: off';
+		}
 
 		for (i in 0...menuItems.length)
 		{ 
@@ -98,6 +101,10 @@ class OptionsMenu extends MusicBeatState
 				
 				case "cutscenes: off" | "cutscenes: on":
 					config.setcutscenes();
+					FlxG.resetState();
+				
+				case "note splash: off" | "note splash: on":
+					config.setsplash();
 					FlxG.resetState();
 				
 				case "downscroll: on" | "downscroll: off":
