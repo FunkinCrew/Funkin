@@ -121,11 +121,11 @@ class OptionsMenu extends MusicBeatState
 			}
 		}
 		if (controls.RIGHT) {
-		    MusicBeatState += 0.01;
+		    MusicBeatState.camMove += 0.01;
 		    configa.camSave(MusicBeatState.camMove);
 		}
 		if (controls.LEFT) {
-		    MusicBeatState -= 0.01;
+		    MusicBeatState.camMove -= 0.01;
 		    configa.camSave(MusicBeatState.camMove);
 		}
 
