@@ -31,6 +31,7 @@ class OptionsMenu extends MusicBeatState
 	var _saveconrtol:FlxSave;
 
 	var config:Config = new Config();
+	var notice:FlxText;
 
 	override function create()
 	{
@@ -61,6 +62,12 @@ class OptionsMenu extends MusicBeatState
 			grpControls.add(controlLabel);
 			// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
 		}
+        notice = new FlxText(0, 0, 0,"", 24);
+
+        notice.x = (FlxG.width / 2) - (notice.width / 2);
+        notice.y = FlxG.height - 56;
+        notice.alpha = 0.5;
+        add(notice);
 
 		#if mobileC
 		addVirtualPad(FULL, A_B);
@@ -72,7 +79,7 @@ class OptionsMenu extends MusicBeatState
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
-		
+		notice.text = "Cam Speed: " + MusicBeatState.camMove + "Press LEFT or RIGHT to change values\n";
 		if (controls.ACCEPT)
 		{
 			var daSelected:String = menuItems[curSelected];
