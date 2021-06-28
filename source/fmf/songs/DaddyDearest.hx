@@ -1,5 +1,6 @@
 package fmf.songs;
 
+import MenuCharacter.CharacterSetting;
 import fmf.characters.*;
 
 class DaddyDearest extends SongPlayer
@@ -7,7 +8,7 @@ class DaddyDearest extends SongPlayer
 
     override function getDadTex()
 	{
-		var tex = Paths.getSparrowAtlas('vanilla/DADDY_DEAREST');
+		var tex = Paths.getSparrowAtlas('DADDY_DEAREST', 'week1');
 		dad.frames = tex;
 	}
 
@@ -108,5 +109,17 @@ class DaddyDearest extends SongPlayer
 		icon.loadGraphic(Paths.image('iconGrid'), true, 150, 150);
 		icon.animation.add('dad', [17, 18], 0, false, false);
 		icon.animation.play("dad");
+	}
+
+	public override function setDadMenuCharacter(dad:MenuCharacter)
+	{
+		super.setDadMenuCharacter(dad);
+
+		var frames = Paths.getSparrowAtlas('menucharacter/dad');
+		dad.frames = frames;
+
+		dad.animation.addByPrefix('dad', "Dad idle dance BLACK LINE", 24);
+		dad.animation.play('dad');
+		setMenuCharacter(dad, new CharacterSetting(-15, 230, 0.45));
 	}
 }

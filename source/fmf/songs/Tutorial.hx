@@ -12,6 +12,11 @@ class Tutorial extends SongPlayer
         dad.scrollFactor.set(0.95, 0.95);
 	}
 
+	public override function setDadMenuCharacter(dad:MenuCharacter)
+	{
+		dad.visible = false;
+	}
+
 	override function midSongEventUpdate(curBeat:Int):Void
 	{
 		if (curBeat % 2 == 1 && dad.animOffsets.exists('danceLeft'))

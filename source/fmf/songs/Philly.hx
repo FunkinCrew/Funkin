@@ -143,7 +143,7 @@ class Philly extends SongPlayer
 
 	override function getDadTex()
 	{
-		var tex = Paths.getSparrowAtlas('characters/Pico_FNF_assetss');
+		var tex = Paths.getSparrowAtlas('Pico_FNF_assets', 'week3');
 		dad.frames = tex;
 	}
 

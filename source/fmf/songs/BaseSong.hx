@@ -1,5 +1,6 @@
 package fmf.songs;
 
+import MenuCharacter.CharacterSetting;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.FlxG;
@@ -62,7 +63,7 @@ class BaseSong
 
 	function initVariables()
 	{
-		camPos = new FlxPoint(bf.getGraphicMidpoint().x, bf.getGraphicMidpoint().y);
+		camPos = new FlxPoint(dad.getGraphicMidpoint().x, dad.getGraphicMidpoint().y);
 		// setCamPosition();
 	}
 
@@ -528,6 +529,48 @@ class BaseSong
 		note.setGraphicSize(Std.int(note.width * 0.7));
 		note.updateHitbox();
 		note.antialiasing = true;
+	}
+
+//---------------------------------------------- Menu Character --------------------------------------------
+	
+	public function setDadMenuCharacter(dad:MenuCharacter)
+	{
+		//set active it
+		dad.visible = true;
+	}
+	
+	public function setBFMenuCharacter(bf:MenuCharacter)
+	{
+		var frames = Paths.getSparrowAtlas('menucharacter/campaign_menu_UI_characters');
+		bf.frames = frames;
+
+		bf.animation.addByPrefix('bf', "BF idle dance white", 24);
+		bf.animation.addByPrefix('bfConfirm', 'BF HEY!!', 24, false);
+
+		bf.animation.play('bf');
+		setMenuCharacter(bf, new CharacterSetting(0, -30, 0.85, true));
+	}
+
+	public function setGFMenuCharacter(gf:MenuCharacter)
+	{
+		var frames = Paths.getSparrowAtlas('menucharacter/campaign_menu_UI_characters');
+		gf.frames = frames;
+
+		gf.animation.addByPrefix('gf', "GF Dancing Beat WHITE", 24);
+		
+		gf.animation.play('gf');
+		//increase y to move it up
+		//increase x to move it to the left
+		setMenuCharacter(gf, new CharacterSetting(100, 125, 1, true));
+		
+	}
+
+	private function setMenuCharacter(character:MenuCharacter, setting:CharacterSetting)
+	{
+
+		character.offset.set(setting.x, setting.y);
+		character.setGraphicSize(Std.int(character.width * setting.scale));
+		character.flipX = setting.flipped != character.flipped;
 	}
 
 //------------------------------------------------ EVENTS-------------------------------------------------

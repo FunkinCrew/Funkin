@@ -61,6 +61,9 @@ class StoryMenuState extends MusicBeatState
 	// 	"Hating Simulator ft. Moawling"
 	// ];
 
+	var dad:MenuCharacter;
+	var bf:MenuCharacter;
+	var gf:MenuCharacter;
 
 
 	var curDifficulty:Int = 1;
@@ -86,6 +89,7 @@ class StoryMenuState extends MusicBeatState
 	var sprDifficulty:FlxSprite;
 	var leftArrow:FlxSprite;
 	var rightArrow:FlxSprite;
+	var baseSong:BaseSong;
 
 	override function create()
 	{
@@ -102,6 +106,8 @@ class StoryMenuState extends MusicBeatState
 			if (!FlxG.sound.music.playing)
 				FlxG.sound.playMusic(Paths.music('freakyMenu'));
 		}
+
+		baseSong = SongPlayerManager.getCurrentSong(SongManager.songs[curWeek].songList[0]);
 
 		persistentUpdate = persistentDraw = true;
 
@@ -160,10 +166,21 @@ class StoryMenuState extends MusicBeatState
 
 		trace("Line 96");
 
-		grpWeekCharacters.add(new MenuCharacter(0, 100, 0.5, false));
-		grpWeekCharacters.add(new MenuCharacter(450, 25, 0.9, true));
-		grpWeekCharacters.add(new MenuCharacter(850, 100, 0.5, true));
+		dad = new MenuCharacter(0, 100, 0.5, false);
+		bf = new MenuCharacter(450, 25, 0.9, true);
+		gf = new MenuCharacter(850, 100, 0.5, true);
 
+
+		grpWeekCharacters.add(dad);
+		grpWeekCharacters.add(bf);
+		grpWeekCharacters.add(gf);
+
+		trace('base song: ' + baseSong.songLabel);
+
+		//we se bf and gf one time, cuz its enough.
+		baseSong.setBFMenuCharacter(bf);
+		baseSong.setGFMenuCharacter(gf);
+		
 		difficultySelectors = new FlxGroup();
 		add(difficultySelectors);
 
@@ -208,6 +225,8 @@ class StoryMenuState extends MusicBeatState
 		add(txtWeekTitle);
 
 		updateText();
+
+
 
 		trace("Line 165");
 
@@ -386,6 +405,8 @@ class StoryMenuState extends MusicBeatState
 			bullShit++;
 		}
 
+		//get first song in the selected week
+		baseSong = SongPlayerManager.getCurrentSong(SongManager.songs[curWeek].songList[0]);
 		FlxG.sound.play(Paths.sound('scrollMenu'));
 
 		updateText();
@@ -393,9 +414,13 @@ class StoryMenuState extends MusicBeatState
 
 	function updateText()
 	{
-		grpWeekCharacters.members[0].setCharacter(SongManager.songs[curWeek].character);
-		grpWeekCharacters.members[1].setCharacter('bf');
-		grpWeekCharacters.members[2].setCharacter('gf');
+		// grpWeekCharacters.members[0].setCharacter(SongManager.songs[curWeek].character);
+		// grpWeekCharacters.members[1].setCharacter('bf');
+		// grpWeekCharacters.members[2].setCharacter('gf');
+		
+		
+		baseSong.setDadMenuCharacter(dad);
+
 
 		txtTracklist.text = "Tracks\n";
 		var stringThing:Array<String> = SongManager.songs[curWeek].songList;
