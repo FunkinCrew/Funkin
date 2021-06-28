@@ -110,8 +110,8 @@ class PlayState extends MusicBeatState
 	var grpLimoDancers:FlxTypedGroup<BackgroundDancer>;
 	var grpNoteSplashes:FlxTypedGroup<NoteSplash>;
 	var fastCar:FlxSprite;
-	var noteSplashOp:Bool = FlxG.save.data.splash; //chadbross is cool
-	var cutsceneOp:Bool = FlxG.save.data.cutscene;
+	var noteSplashOp:Bool; //chadbross is cool
+	var cutsceneOp:Bool;
 
 	var upperBoppers:FlxSprite;
 	var bottomBoppers:FlxSprite;
@@ -968,6 +968,8 @@ class PlayState extends MusicBeatState
 
 		Conductor.songPosition = -5000;
 		isDownScroll = new Config().getdownscroll();
+		cutsceneOp = new Config().getcutscenes();
+		noteSplashOp = new Config().getsplash();
 		Note.isDownScroll = isDownScroll;
 
 		strumLine = new FlxSprite(0, (isDownScroll ? FlxG.height - 150 : 50)).makeGraphic(FlxG.width, 10);
