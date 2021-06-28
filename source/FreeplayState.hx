@@ -192,6 +192,15 @@ class FreeplayState extends MusicBeatState
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+		for (i in 0...iconArray.length)
+			{
+				iconArray[i].animation.curAnim.curFrame = 0;
+			}
+
+		FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, 0.95);
+
+		if (FlxG.sound.music != null)
+			Conductor.songPosition = FlxG.sound.music.time;
 
 		if (FlxG.sound.music.volume < 0.7)
 		{
@@ -267,6 +276,23 @@ class FreeplayState extends MusicBeatState
 				diffText.text = "HARD";
 		}
 	}
+	override function beatHit()
+		{
+			super.beatHit();
+			trace(curBeat);
+
+			iconBop();
+
+			if (FlxG.camera.zoom < 1.35 && songs[curSelected].songName.toLowerCase() == 'milf' && curBeat >= 8)
+				{
+					FlxG.camera.zoom += 0.030;
+				}
+			//Sum extra detail
+			if (FlxG.camera.zoom < 1.35 && songs[curSelected].songName.toLowerCase() == 'milf' && curBeat >= 168 && curBeat < 200)
+				{
+					FlxG.camera.zoom += 0.060;
+				}
+		}
 
 	function changeSelection(change:Int = 0)
 	{
@@ -320,6 +346,11 @@ class FreeplayState extends MusicBeatState
 				// item.setGraphicSize(Std.int(item.width));
 			}
 		}
+	}
+	function iconBop(?_scale:Float = 1.25, ?_time:Float = 0.2):Void {
+		iconArray[curSelected].iconScale = iconArray[curSelected].defualtIconScale * _scale;
+
+		FlxTween.tween(iconArray[curSelected], {iconScale: iconArray[curSelected].defualtIconScale}, _time, {ease: FlxEase.quintOut});
 	}
 }
 
