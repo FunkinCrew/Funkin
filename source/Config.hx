@@ -6,44 +6,43 @@ import flixel.util.FlxSave;
 import flixel.math.FlxPoint;
 
 class Config {
-    var save:FlxSave;
-    public static var fpsVal:Int = 60;
+	var save:FlxSave;
 
-    public function new() 
-    {
-        save = new FlxSave();
-    	save.bind("saveconrtol");
-    }
+	public function new() 
+	{
+		save = new FlxSave();
+		save.bind("saveconrtol");
+	}
 
-    public function setdownscroll(?value:Bool):Bool {
+	public function setdownscroll(?value:Bool):Bool {
 		if (save.data.isdownscroll == null) save.data.isdownscroll = false;
 		
 		save.data.isdownscroll = !save.data.isdownscroll;
 		save.flush();
-        return save.data.isdownscroll;
+		return save.data.isdownscroll;
 	}
 
-    public function getdownscroll():Bool {
-        if (save.data.isdownscroll != null) return save.data.isdownscroll;
-        return false;
-    }
+	public function getdownscroll():Bool {
+		if (save.data.isdownscroll != null) return save.data.isdownscroll;
+		return false;
+	}
 
-    public function getcontrolmode():Int {
-        // load control mode num from FlxSave
+	public function getcontrolmode():Int {
+		// load control mode num from FlxSave
 		if (save.data.buttonsmode != null) return save.data.buttonsmode[0];
-        return 0;
-    }
+		return 0;
+	}
 
-    public function setcontrolmode(mode:Int = 0):Int {
-        // save control mode num from FlxSave
+	public function setcontrolmode(mode:Int = 0):Int {
+		// save control mode num from FlxSave
 		if (save.data.buttonsmode == null) save.data.buttonsmode = new Array();
-        save.data.buttonsmode[0] = mode;
-        save.flush();
+		save.data.buttonsmode[0] = mode;
+		save.flush();
 
-        return save.data.buttonsmode[0];
-    }
+		return save.data.buttonsmode[0];
+	}
 
-    public function savecustom(_pad:FlxVirtualPad) {
+	public function savecustom(_pad:FlxVirtualPad) {
 		trace("saved");
 
 		if (save.data.buttons == null)
@@ -76,8 +75,8 @@ class Config {
 			buttons.x = save.data.buttons[tempCount].x;
 			buttons.y = save.data.buttons[tempCount].y;
 			tempCount++;
-		}
-        return _pad;
+		}	
+		return _pad;
 	}
 
 	public function setFrameRate(fps:Int = 60) {
@@ -85,7 +84,6 @@ class Config {
 		
 		FlxG.stage.frameRate = fps;
 		save.data.framerate = fps;
-		//fpsVal = fps;
 		save.flush();
 	}
 
