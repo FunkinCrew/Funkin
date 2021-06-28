@@ -21,7 +21,7 @@ class OptionsMenu extends MusicBeatState
 
 	private var grpControls:FlxTypedGroup<Alphabet>;
 
-	var menuItems:Array<String> = ['controls', 'set fps', 'cutscenes: on', 'note splash: on', 'downscroll: off', 'About', 'test cutscene'];
+	var menuItems:Array<String> = ['controls', 'set fps', 'cutscenes: off', 'note splash: off', 'downscroll: off', 'About', 'test cutscene'];
 
 	var UP_P:Bool;
 	var DOWN_P:Bool;
@@ -51,10 +51,10 @@ class OptionsMenu extends MusicBeatState
 			menuItems[menuItems.indexOf('downscroll: off')] = 'downscroll: on';
 		}
 		if (configa.getcutscenes()){
-			menuItems[menuItems.indexOf('cutscenes: on')] = 'cutscenes: off';
+			menuItems[menuItems.indexOf('cutscenes: off')] = 'cutscenes: on';
 		}
 		if (configa.getsplash()){
-			menuItems[menuItems.indexOf('note splash: on')] = 'note splash: off';
+			menuItems[menuItems.indexOf('note splash: off')] = 'note splash: on';
 		}
 
 		for (i in 0...menuItems.length)
