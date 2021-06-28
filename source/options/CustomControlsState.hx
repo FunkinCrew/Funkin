@@ -53,7 +53,7 @@ class CustomControlsState extends MusicBeatSubstate
 		super();
 
 		//init config
-		//config = new Config();
+		config = new Config();
 		
 		// bg
 		var bg:FlxSprite = new FlxSprite(-80).loadGraphic('assets/images/menuBG.png');
@@ -65,7 +65,7 @@ class CustomControlsState extends MusicBeatSubstate
 		bg.antialiasing = true;
 
 		// load curSelected
-		curSelected = FlxG.save.data.controlmode;
+		curSelected = config.getcontrolmode();
 		
 
 		//pad
@@ -183,7 +183,6 @@ class CustomControlsState extends MusicBeatSubstate
 			//custom pad 
 			trackbutton(touch);
 		}
-		FlxG.save.flush();
 	}
 
 	function changeSelection(change:Int = 0,?forceChange:Int)
@@ -322,19 +321,15 @@ class CustomControlsState extends MusicBeatSubstate
 		right_text.text = "Button right x:" + _pad.buttonRight.x +" y:" + _pad.buttonRight.y;
 	}
 
-	function antiSpam() {
-		if (_pad.buttonUp.x == _pad.buttonDown.x || _pad.buttonDown.x == _pad.buttonLeft.x || _pad.buttonLeft.x == _pad.buttonRight.x || _pad.buttonRight.x == _pad.buttonUp.x || _pad.buttonUp.x == _pad.buttonLeft.x)//im sorry if yiu see this and have a headache -Zack
-			FlxG.resetState();
-	}
+
 
 	function save() {
 
-		FlxG.save.data.controlmode == curSelected;
+		config.setcontrolmode(curSelected);
 		
 		if (curSelected == 3){
 			savecustom();
 		}
-		FlxG.save.flush();
 	}
 
 	function savecustom() {
@@ -342,26 +337,13 @@ class CustomControlsState extends MusicBeatSubstate
 
 		//Config.setdata(55);
 
-		//config.savecustom(_pad);
-		SaveData.initButton(_pad);
-
+		config.savecustom(_pad);
 	}
 
 	function loadcustom():Void{
 		//load pad
-		//_pad = config.loadcustom(_pad);	
-		if (FlxG.save.data.buttons == null)
-			_pad = new FlxVirtualPad(FULL, NONE)
-
-		var tempCount:Int = 0;
-
-		for(buttons in _pad)
-		{
-			buttons.x = FlxG.save.data.buttons[tempCount].x;
-			buttons.y = FlxG.save.data.buttons[tempCount].y;
-			tempCount++;
-		}
-		FlxG.save.flush();
+		_pad = config.loadcustom(_pad);	
+	
 	}
 
 	function resizebuttons(vpad:FlxVirtualPad, ?int:Int = 200) {
