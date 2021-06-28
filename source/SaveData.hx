@@ -1,7 +1,8 @@
 import flixel.util.FlxSave;
 import ui.FlxVirtualPad;
 import Config;
-import flixel.FlxPoint;
+import flixel.math.FlxPoint;
+import flixel.FlxG;
 
 class SaveData
 {
