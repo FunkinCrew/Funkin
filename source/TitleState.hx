@@ -74,7 +74,7 @@ class TitleState extends MusicBeatState
 		#end
 
 		FlxG.save.bind('funkin', 'ninjamuffin99');
-
+	    SaveData.initLoad();
 		Highscore.load();
 
 		if (FlxG.save.data.weekUnlocked != null)
@@ -118,7 +118,6 @@ class TitleState extends MusicBeatState
 
 	function startIntro()
 	{
-	    SaveData.initLoad();
 		if (!initialized)
 		{
 			var diamond:FlxGraphic = FlxGraphic.fromClass(GraphicTransTileDiamond);
