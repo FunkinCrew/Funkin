@@ -22,8 +22,21 @@ class Config {
 		return save.data.isdownscroll;
 	}
 
+	public function setcutscenes(?value:Bool):Bool {
+		if (save.data.cutscenes == null) save.data.cutscenes = false;
+		
+		save.data.cutscenes = !save.data.cutscenes;
+		save.flush();
+		return save.data.cutscenes;
+	}
+
 	public function getdownscroll():Bool {
 		if (save.data.isdownscroll != null) return save.data.isdownscroll;
+		return false;
+	}
+
+	public function getcutscenes():Bool {
+		if (save.data.cutscenes != null) return save.data.cutscenes;
 		return false;
 	}
 
