@@ -49,6 +49,9 @@ class OptionsMenu extends MusicBeatState
 		if (config.getdownscroll()){
 			menuItems[menuItems.indexOf('downscroll: off')] = 'downscroll: on';
 		}
+		if (config.getcutscenes()){
+			menuItems[menuItems.indexOf('cutscenes: on')] = 'cutscenes: off';
+		}
 
 		for (i in 0...menuItems.length)
 		{ 
@@ -85,6 +88,10 @@ class OptionsMenu extends MusicBeatState
 				case "set fps":
 					insubstate = true;
 					openSubState(new options.SetFpsSubState());
+				
+				case "cutscenes: off" | "cutscenes: on":
+					config.setcutscenes();
+					FlxG.resetState();
 				
 				case "downscroll: on" | "downscroll: off":
 					config.setdownscroll();
