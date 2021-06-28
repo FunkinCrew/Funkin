@@ -21,13 +21,12 @@ class OptionsMenu extends MusicBeatState
 
 	private var grpControls:FlxTypedGroup<Alphabet>;
 
-	var menuItems:Array<String> = ['controls', 'set fps', 'note splash: on', 'downscroll: off', 'cutscenes: on', 'About', 'test cutscene'];
+	var menuItems:Array<String> = ['controls', 'set fps', 'downscroll: off', 'About', 'test cutscene'];
 
 	var UP_P:Bool;
 	var DOWN_P:Bool;
 	var BACK:Bool;
 	var ACCEPT:Bool;
-	var notice:FlxText;
 
 	var _saveconrtol:FlxSave;
 
@@ -44,23 +43,11 @@ class OptionsMenu extends MusicBeatState
 		menuBG.antialiasing = true;
 		add(menuBG);
 
-		notice = new FlxText(0, 0, 0,"", 24);
-
-		notice.x = (FlxG.width / 2) - (notice.width / 2);
-		notice.y = FlxG.height - 56;
-		notice.alpha = 0.5;
-
 		grpControls = new FlxTypedGroup<Alphabet>();
 		add(grpControls);
 
-		if (FlxG.save.data.downscroll = true){
+		if (config.getdownscroll()){
 			menuItems[menuItems.indexOf('downscroll: off')] = 'downscroll: on';
-		}
-		if (FlxG.save.data.cutscene = false){
-			menuItems[menuItems.indexOf('cutscenes: on')] = 'cutscenes: off';
-		}
-		if (FlxG.save.data.splash = false){
-			menuItems[menuItems.indexOf('note splash: on')] = 'note splash: off';
 		}
 
 		for (i in 0...menuItems.length)
@@ -71,10 +58,9 @@ class OptionsMenu extends MusicBeatState
 			grpControls.add(controlLabel);
 			// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
 		}
-		add(notice);
 
 		#if mobileC
-		addVirtualPad(FULL, A_B);
+		addVirtualPad(UP_DOWN, A_B);
 		#end
 		
 		super.create();
@@ -83,11 +69,10 @@ class OptionsMenu extends MusicBeatState
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
-		notice.text= "Camera Movement: " + MusicBeatState.camMove + " Press LEFT or RIGHT to change values\n";
+		
 		if (controls.ACCEPT)
 		{
 			var daSelected:String = menuItems[curSelected];
-			FlxG.save.data.camMove == MusicBeatState.camMove;
 
 			switch (daSelected)
 			{
@@ -101,48 +86,23 @@ class OptionsMenu extends MusicBeatState
 					insubstate = true;
 					openSubState(new options.SetFpsSubState());
 				
-				case "note splash: on" | "note splash: off":
-					if (FlxG.save.data.splash = false)
-						FlxG.save.data.splash = true;
-
-					if (FlxG.save.data.splash = true)
-						FlxG.save.data.splash = false;
-
-					FlxG.resetState();
-				
 				case "downscroll: on" | "downscroll: off":
-					if (FlxG.save.data.downscroll = false)
-						FlxG.save.data.downscroll = true;
-
-					if (FlxG.save.data.downscroll = true)
-						FlxG.save.data.downscroll = false;
-
-					FlxG.resetState();
-				
-				case "cutscenes: on" | "cutscenes: off":
-					if (FlxG.save.data.cutscene = false)
-						FlxG.save.data.cutscene = true;
-
-					if (FlxG.save.data.cutscene = true)
-						FlxG.save.data.cutscene = false;
-
+					config.setdownscroll();
 					FlxG.resetState();
 				
 				case "About":
 					FlxG.switchState(new options.AboutState());
 				case "test cutscene":
+					//webview.openHTML(Assets.getBytes('assets/index.html'));
+					//webview.openURLfromAssets('index.html');
+					//FlxG.stage.width = 1600; 
+					//FlxG.stage.frameRate = 30;
+					//FlxG.stage;
+					//trace(FlxG.stage.width);
 					#if extension-webview
 					WebViewVideo.openVideo('ughCutscene');
 					#end
 			}
-		}
-		if (controls.RIGHT && MusicBeatState.camMove < 1.1)
-		{
-			MusicBeatState.camMove += 0.01;
-		}
-		if (controls.LEFT && MusicBeatState.camMove > 0)
-		{
-			MusicBeatState.camMove -= 0.01;
 		}
 
 		if (isSettingControl)
@@ -156,7 +116,6 @@ class OptionsMenu extends MusicBeatState
 			if (controls.DOWN_P)
 				changeSelection(1);
 		}
-		FlxG.save.flush();
 	}
 
 	function waitingInput():Void
