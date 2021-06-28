@@ -1000,10 +1000,7 @@ class PlayState extends MusicBeatState
 		add(camFollow);
 
 		FlxG.camera.follow(camFollow, LOCKON, MusicBeatState.camMove);
-		/*Note:
-		I added this little feature for 90 fps and 60 fps.
-		60 fps = 0.6
-		90 fps = 0.9*/
+
 		// FlxG.camera.setScrollBounds(0, FlxG.width, 0, FlxG.height);
 		FlxG.camera.zoom = defaultCamZoom;
 		FlxG.camera.focusOn(camFollow.getPosition());
