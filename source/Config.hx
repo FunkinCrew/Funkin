@@ -67,7 +67,7 @@ class Config {
 
 	public function getsplash():Bool {
 		if (save.data.splash != null) return save.data.splash;
-		return false;
+		return false;//i hate flx save.
 	}
 
 	public function getcontrolmode():Int {
