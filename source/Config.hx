@@ -23,7 +23,7 @@ class Config {
 	}
 
 	public function setcutscenes(?value:Bool):Bool {
-		if (save.data.cutscenes == null) save.data.cutscenes = false;
+		if (save.data.cutscenes == null) save.data.cutscenes = true;
 		
 		save.data.cutscenes = !save.data.cutscenes;
 		save.flush();
@@ -37,7 +37,7 @@ class Config {
 
 	public function getcutscenes():Bool {
 		if (save.data.cutscenes != null) return save.data.cutscenes;
-		return false;
+		return true;
 	}
 
 	public function getcontrolmode():Int {
