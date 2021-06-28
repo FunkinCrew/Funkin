@@ -15,8 +15,7 @@ import Song.SwagSong;
 // base song hold variable and some helper function
 class BaseSong
 {
-
-//------------------ VARIABLES -------------------------
+//---------------------------------------- VARIABLES -----------------------------------------------------
 
 	// characters shit
 	public var bf:Character;
@@ -41,9 +40,25 @@ class BaseSong
 	//label for song, use it in somecase.
 	public var songLabel:String;
 
-//--------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------
 
-//------------------ MORPH -------------------------
+//------------------------------------------ INITIALIE ---------------------------------------------------
+
+	// init song with a familar name to identity
+	public function new(songLabel:String)
+	{
+		this.songLabel = songLabel;
+	}
+
+	// initalize function
+	public function init(playState:PlayState):Void
+	{
+		this.playState = playState;
+
+		loadMap();
+		createCharacters();
+		initVariables();
+	}
 
 	function initVariables()
 	{
@@ -92,6 +107,10 @@ class BaseSong
 		playState.add(dad);
 		playState.add(bf);
 	}
+
+//---------------------------------------------------------------------------------------------------------
+
+//--------------------------------------------------- GF --------------------------------------------------
 
 	// get GF skin
 	private function getGFTex()
@@ -155,6 +174,10 @@ class BaseSong
 		createGFAnimations();
 		createGFAnimationOffsets();
 	}
+
+//--------------------------------------------------------------------------------------------------------
+
+//------------------------------------------------- DAD --------------------------------------------------
 
 	// get dad skin
 	private function getDadTex()
@@ -220,8 +243,114 @@ class BaseSong
 		dad.y = gf.y;
 	}
 
+//--------------------------------------------------------------------------------------------------------
 
-//------------------ INTRO -------------------------
+//-------------------------------------------------- BF --------------------------------------------------
+
+	// bf place here for debug menu support
+	// bf skins
+	private function getBFTex():Void
+		{
+			var tex = Paths.getSparrowAtlas('characters/BoyFriend_Assets');
+			bf.frames = tex;
+		}
+	
+		// create animation for BF
+		private function createBFAnimations():Void
+		{
+			bf.animation.addByPrefix('idle', 'BF idle dance', 24, false);
+			bf.animation.addByPrefix('singUP', 'BF NOTE UP0', 24, false);
+			bf.animation.addByPrefix('singLEFT', 'BF NOTE LEFT0', 24, false);
+			bf.animation.addByPrefix('singRIGHT', 'BF NOTE RIGHT0', 24, false);
+			bf.animation.addByPrefix('singDOWN', 'BF NOTE DOWN0', 24, false);
+			bf.animation.addByPrefix('singUPmiss', 'BF NOTE UP MISS', 24, false);
+			bf.animation.addByPrefix('singLEFTmiss', 'BF NOTE LEFT MISS', 24, false);
+			bf.animation.addByPrefix('singRIGHTmiss', 'BF NOTE RIGHT MISS', 24, false);
+			bf.animation.addByPrefix('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
+			bf.animation.addByPrefix('hey', 'BF HEY', 24, false);
+	
+			bf.animation.addByPrefix('scared', 'BF idle shaking', 24);
+		}
+	
+		// create animation offset for BF
+		private function createBFAnimationOffsets():Void
+		{
+			bf.addOffset('idle', -5);
+			bf.addOffset("singUP", -29, 27);
+			bf.addOffset("singRIGHT", -38, -7);
+			bf.addOffset("singLEFT", 12, -6);
+			bf.addOffset("singDOWN", -10, -50);
+	
+			bf.addOffset("singUPmiss", -29, 27);
+			bf.addOffset("singRIGHTmiss", -30, 21);
+			bf.addOffset("singLEFTmisss", 12, 24);
+			bf.addOffset("singDOWNmiss", -11, -19);
+			bf.addOffset("hey", 7, 4);
+			bf.addOffset('scared', -4);
+	
+			bf.playAnim('idle');
+			bf.flipX = true;
+	
+	
+			//i dunno why i should do this, LOl
+			bf.dance();
+			bf.flipX = !bf.flipX;
+	
+			// Doesn't flip for BF, since his are already in the right place???		{
+			var oldRight = bf.animation.getByName('singRIGHT').frames;
+			bf.animation.getByName('singRIGHT').frames = bf.animation.getByName('singLEFT').frames;
+			bf.animation.getByName('singLEFT').frames = oldRight;
+	
+			// IF THEY HAVE MISS ANIMATIONS??
+			if (bf.animation.getByName('singRIGHTmiss') != null)
+			{
+				var oldMiss = bf.animation.getByName('singRIGHTmiss').frames;
+				bf.animation.getByName('singRIGHTmiss').frames = bf.animation.getByName('singLEFTmiss').frames;
+				bf.animation.getByName('singLEFTmiss').frames = oldMiss;
+			}
+	
+		}
+	
+		// set BF difference behaviour
+		private function getBFVersion():Character
+		{
+			return new Boyfriend(770, 450);
+		}
+	
+		// create BF
+		private function createBF():Void
+		{
+			bf = getBFVersion();
+			getBFTex();
+			createBFAnimations();
+			createBFAnimationOffsets();
+		}
+
+//--------------------------------------------------------------------------------------------------------
+
+//---------------------------------------------- DIALOGUE ------------------------------------------------
+
+	// dialogue handle
+	public function createDialogue(callback:Void->Void):Void
+	{
+		var path = PlayState.CURRENT_SONG + '/' + PlayState.CURRENT_SONG + '-dialogue';
+		dialogue = CoolUtil.coolTextFile(Paths.txt(PlayState.playingSong.folder + path));
+		dialogueBox = new DialogueBox(false, dialogue);
+		dialogueBox.scrollFactor.set();
+		dialogueBox.finishThing = callback;
+		dialogueBox.cameras = [playState.camHUD];
+		trace("Create dialogue at path: " + path);
+	}
+
+	public function showDialogue():Void
+	{
+		playState.add(dialogueBox);
+		trace('whee mai dialgue siht!');
+	}
+	
+//--------------------------------------------------------------------------------------------------------
+
+//---------------------------------------------- COUNTDOWN -----------------------------------------------
 
 	// UI Function
 	// start countdown
@@ -319,131 +448,9 @@ class BaseSong
 		playState.isGameStarted = true;
 	}
 
-	// bf place here for debug menu support
-	// bf skins
-	private function getBFTex():Void
-	{
-		var tex = Paths.getSparrowAtlas('characters/BoyFriend_Assets');
-		bf.frames = tex;
-	}
+//--------------------------------------------------------------------------------------------------------
 
-	// create animation for BF
-	private function createBFAnimations():Void
-	{
-		bf.animation.addByPrefix('idle', 'BF idle dance', 24, false);
-		bf.animation.addByPrefix('singUP', 'BF NOTE UP0', 24, false);
-		bf.animation.addByPrefix('singLEFT', 'BF NOTE LEFT0', 24, false);
-		bf.animation.addByPrefix('singRIGHT', 'BF NOTE RIGHT0', 24, false);
-		bf.animation.addByPrefix('singDOWN', 'BF NOTE DOWN0', 24, false);
-		bf.animation.addByPrefix('singUPmiss', 'BF NOTE UP MISS', 24, false);
-		bf.animation.addByPrefix('singLEFTmiss', 'BF NOTE LEFT MISS', 24, false);
-		bf.animation.addByPrefix('singRIGHTmiss', 'BF NOTE RIGHT MISS', 24, false);
-		bf.animation.addByPrefix('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
-		bf.animation.addByPrefix('hey', 'BF HEY', 24, false);
-
-		bf.animation.addByPrefix('scared', 'BF idle shaking', 24);
-	}
-
-	// create animation offset for BF
-	private function createBFAnimationOffsets():Void
-	{
-		bf.addOffset('idle', -5);
-		bf.addOffset("singUP", -29, 27);
-		bf.addOffset("singRIGHT", -38, -7);
-		bf.addOffset("singLEFT", 12, -6);
-		bf.addOffset("singDOWN", -10, -50);
-
-		bf.addOffset("singUPmiss", -29, 27);
-		bf.addOffset("singRIGHTmiss", -30, 21);
-		bf.addOffset("singLEFTmisss", 12, 24);
-		bf.addOffset("singDOWNmiss", -11, -19);
-		bf.addOffset("hey", 7, 4);
-		bf.addOffset('scared', -4);
-
-		bf.playAnim('idle');
-		bf.flipX = true;
-
-
-		//i dunno why i should do this, LOl
-		bf.dance();
-		bf.flipX = !bf.flipX;
-
-		// Doesn't flip for BF, since his are already in the right place???		{
-		var oldRight = bf.animation.getByName('singRIGHT').frames;
-		bf.animation.getByName('singRIGHT').frames = bf.animation.getByName('singLEFT').frames;
-		bf.animation.getByName('singLEFT').frames = oldRight;
-
-		// IF THEY HAVE MISS ANIMATIONS??
-		if (bf.animation.getByName('singRIGHTmiss') != null)
-		{
-			var oldMiss = bf.animation.getByName('singRIGHTmiss').frames;
-			bf.animation.getByName('singRIGHTmiss').frames = bf.animation.getByName('singLEFTmiss').frames;
-			bf.animation.getByName('singLEFTmiss').frames = oldMiss;
-		}
-
-	}
-
-	// set BF difference behaviour
-	private function getBFVersion():Character
-	{
-		return new Boyfriend(770, 450);
-	}
-
-	// create BF
-	private function createBF():Void
-	{
-		bf = getBFVersion();
-		getBFTex();
-		createBFAnimations();
-		createBFAnimationOffsets();
-	}
-
-
-
-//------------------PUBLIC FUNCIOTN -------------------------
-
-	// init song with a familar name to identity
-	public function new(songLabel:String)
-	{
-		this.songLabel = songLabel;
-	}
-
-	// initalize function
-	public function init(playState:PlayState):Void
-	{
-		this.playState = playState;
-
-		loadMap();
-		createCharacters();
-		initVariables();
-	}
-
-	// camera follow initalize
-	public function applyCamPosition():Void
-	{
-		playState.camFollow = new FlxObject(0, 0, 1, 1);
-		playState.camFollow.setPosition(camPos.x, camPos.y);
-	}
-
-	// dialogue handle
-	public function createDialogue(callback:Void->Void):Void
-	{
-		var path = PlayState.CURRENT_SONG + '/' + PlayState.CURRENT_SONG + '-dialogue';
-		dialogue = CoolUtil.coolTextFile(Paths.txt(PlayState.playingSong.folder + path));
-		dialogueBox = new DialogueBox(false, dialogue);
-		dialogueBox.scrollFactor.set();
-		dialogueBox.finishThing = callback;
-		dialogueBox.cameras = [playState.camHUD];
-		trace("Create dialogue at path: " + path);
-	}
-
-	public function showDialogue():Void
-	{
-		playState.add(dialogueBox);
-		trace('whee mai dialgue siht!');
-	}
-
-
+//---------------------------------------------- ARROW & NOTE --------------------------------------------
 
 	// set icon bf
 	public function getBFIcon(icon:HealthIcon)
@@ -523,7 +530,16 @@ class BaseSong
 		note.antialiasing = true;
 	}
 
-	//--------------------------------------------------------
+//------------------------------------------------ EVENTS-------------------------------------------------
+	
+	// camera follow initalize
+	public function applyCamPosition():Void
+	{
+		playState.camFollow = new FlxObject(0, 0, 1, 1);
+		playState.camFollow.setPosition(camPos.x, camPos.y);
+	}
+
+//--------------------------------------------------------------------------------------------------------
 
 
 }
