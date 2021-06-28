@@ -30,7 +30,7 @@ class OptionsMenu extends MusicBeatState
 
 	var _saveconrtol:FlxSave;
 
-	var config:Config = new Config();
+	var configa:Config = new Config();
 	var notice:FlxText;
 
 	override function create()
@@ -47,13 +47,13 @@ class OptionsMenu extends MusicBeatState
 		grpControls = new FlxTypedGroup<Alphabet>();
 		add(grpControls);
 
-		if (config.getdownscroll()){
+		if (configa.getdownscroll()){
 			menuItems[menuItems.indexOf('downscroll: off')] = 'downscroll: on';
 		}
-		if (config.getcutscenes()){
+		if (configa.getcutscenes()){
 			menuItems[menuItems.indexOf('cutscenes: on')] = 'cutscenes: off';
 		}
-		if (config.getsplash()){
+		if (configa.getsplash()){
 			menuItems[menuItems.indexOf('note splash: on')] = 'note splash: off';
 		}
 
@@ -92,7 +92,7 @@ class OptionsMenu extends MusicBeatState
 				case "controls":
 					FlxG.switchState(new options.CustomControlsState());
 				
-				case "config":
+				case "configa":
 					trace("hello");
 				
 				case "set fps":
@@ -100,15 +100,15 @@ class OptionsMenu extends MusicBeatState
 					openSubState(new options.SetFpsSubState());
 				
 				case "cutscenes: off" | "cutscenes: on":
-					config.setcutscenes();
+					configa.setcutscenes();
 					FlxG.resetState();
 				
 				case "note splash: off" | "note splash: on":
-					config.setsplash();
+					configa.setsplash();
 					FlxG.resetState();
 				
 				case "downscroll: on" | "downscroll: off":
-					config.setdownscroll();
+					configa.setdownscroll();
 					FlxG.resetState();
 				
 				case "About":
@@ -122,11 +122,11 @@ class OptionsMenu extends MusicBeatState
 		}
 		if (controls.RIGHT) {
 		    MusicBeatState += 0.01;
-		    config.camSave(MusicBeatState.camMove);
+		    configa.camSave(MusicBeatState.camMove);
 		}
 		if (controls.LEFT) {
 		    MusicBeatState -= 0.01;
-		    config.camSave(MusicBeatState.camMove);
+		    configa.camSave(MusicBeatState.camMove);
 		}
 
 		if (isSettingControl)
