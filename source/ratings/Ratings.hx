@@ -3,12 +3,8 @@ package ratings;
 class Ratings
 {
     private static var timings:Array<Dynamic> = [
-        [-110, 'shit'],
-        [-80, 'bad'],
-        [-50, 'good'],
-        [-30, 'sick'],
-        [50, 'sick'],
-        [80, 'good'],
+        [30, 'sick'],
+        [60, 'good'],
         [110, 'bad'],
         [10000, 'shit'],
     ];
@@ -16,7 +12,7 @@ class Ratings
     private static var scores:Array<Dynamic> = [
         ['sick', 350],
         ['good', 200],
-        ['bad', -50],
+        ['bad', 50],
         ['shit', -150]
     ];
 
