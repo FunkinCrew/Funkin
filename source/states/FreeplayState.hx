@@ -60,7 +60,6 @@ class FreeplayState extends MusicBeatState
 			songsReady = true;
 		});
 
-		FlxG.sound.playMusic(Paths.music('freakyMenu'));
 		var initSonglist = CoolUtil.coolTextFile(Paths.txt('freeplaySonglist'));
 
 		/* 
