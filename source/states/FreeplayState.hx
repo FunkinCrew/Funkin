@@ -47,7 +47,7 @@ class FreeplayState extends MusicBeatState
 		var black = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 
 		Assets.loadLibrary("songs").onComplete(function (_) {
-			FlxTween.tween(black, {alpha: 1}, 0.5, {
+			FlxTween.tween(black, {alpha: 0}, 0.5, {
 				ease: FlxEase.quadOut,
 				onComplete: function(twn:FlxTween)
 				{
