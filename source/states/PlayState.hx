@@ -1269,7 +1269,6 @@ class PlayState extends MusicBeatState
 			switch (curBeat)
 			{
 				case 16:
-					camZooming = true;
 					gfSpeed = 2;
 				case 48:
 					gfSpeed = 1;
