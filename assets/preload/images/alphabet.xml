@@ -562,14 +562,14 @@
 	<SubTexture name="p  lowercase0001" x="36" y="823" width="28" height="43"/>
 	<SubTexture name="p  lowercase0002" x="66" y="823" width="28" height="43"/>
 	<SubTexture name="p  lowercase0003" x="66" y="823" width="28" height="43"/>
-	<SubTexture name="period0000" x="96" y="823" width="14" height="14"/>
-	<SubTexture name="period0001" x="96" y="823" width="14" height="14"/>
-	<SubTexture name="period0002" x="112" y="823" width="14" height="14"/>
-	<SubTexture name="period0003" x="112" y="823" width="14" height="14"/>
-	<SubTexture name="period bold0000" x="585" y="365" width="22" height="20" frameX="0" frameY="0" frameWidth="22" frameHeight="21"/>
-	<SubTexture name="period bold0001" x="585" y="365" width="22" height="20" frameX="0" frameY="0" frameWidth="22" frameHeight="21"/>
-	<SubTexture name="period bold0002" x="609" y="365" width="20" height="21" frameX="-2" frameY="0" frameWidth="22" frameHeight="21"/>
-	<SubTexture name="period bold0003" x="609" y="365" width="20" height="21" frameX="-2" frameY="0" frameWidth="22" frameHeight="21"/>
+	<SubTexture name=".0000" x="96" y="823" width="14" height="14"/>
+	<SubTexture name=".0001" x="96" y="823" width="14" height="14"/>
+	<SubTexture name=".0002" x="112" y="823" width="14" height="14"/>
+	<SubTexture name=".0003" x="112" y="823" width="14" height="14"/>
+	<SubTexture name=". bold0000" x="585" y="364" width="22" height="21" frameX="0" frameY="0" frameWidth="22" frameHeight="22"/>
+	<SubTexture name=". bold0001" x="585" y="364" width="22" height="21" frameX="0" frameY="0" frameWidth="22" frameHeight="22"/>
+	<SubTexture name=". bold0002" x="609" y="364" width="20" height="22" frameX="-2" frameY="0" frameWidth="22" frameHeight="22"/>
+	<SubTexture name=". bold0003" x="609" y="364" width="20" height="22" frameX="-2" frameY="0" frameWidth="22" frameHeight="22"/>
 	<SubTexture name="q  lowercase0000" x="128" y="823" width="36" height="43"/>
 	<SubTexture name="q  lowercase0001" x="128" y="823" width="36" height="43"/>
 	<SubTexture name="q  lowercase0002" x="166" y="823" width="36" height="43"/>
