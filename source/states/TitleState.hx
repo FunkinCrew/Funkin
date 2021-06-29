@@ -120,6 +120,9 @@ class TitleState extends MusicBeatState
 		#end
 	}
 
+	var old_logo:FlxSprite;
+	var old_logo_black:FlxSprite;
+
 	var logoBl:FlxSprite;
 	var gfDance:FlxSprite;
 	var danceLeft:Bool = false;
@@ -185,9 +188,13 @@ class TitleState extends MusicBeatState
 
 		if (FlxG.save.data.oldTitle)
 		{
-			logoBl = new FlxSprite().loadGraphic(Paths.image("title/logo"));
-			logoBl.screenCenter();
-			logoBl.color = FlxColor.BLACK;
+			old_logo = new FlxSprite().loadGraphic(Paths.image('title/logo'));
+			old_logo.screenCenter();
+			old_logo.antialiasing = true;
+
+			old_logo_black = new FlxSprite().loadGraphic(Paths.image("title/logo"));
+			old_logo_black.screenCenter();
+			old_logo_black.color = FlxColor.BLACK;
 		}
 		else
 		{
@@ -222,19 +229,14 @@ class TitleState extends MusicBeatState
 			add(titleText);
 		}
 
-		var logo:FlxSprite = new FlxSprite().loadGraphic(Paths.image('logo'));
-		logo.screenCenter();
-		logo.antialiasing = true;
 		if (FlxG.save.data.oldTitle)
 		{
-			add(logo);
+			add(old_logo_black);
+			add(old_logo);
 
-			FlxTween.tween(logoBl, {y: logoBl.y + 50}, 0.6, {ease: FlxEase.quadInOut, type: PINGPONG});
-			FlxTween.tween(logo, {y: logoBl.y + 50}, 0.6, {ease: FlxEase.quadInOut, type: PINGPONG, startDelay: 0.1});
+			FlxTween.tween(old_logo_black, {y: old_logo_black.y + 50}, 0.6, {ease: FlxEase.quadInOut, type: PINGPONG});
+			FlxTween.tween(old_logo, {y: old_logo.y + 50}, 0.6, {ease: FlxEase.quadInOut, type: PINGPONG, startDelay: 0.1});
 		}
-
-		// FlxTween.tween(logoBl, {y: logoBl.y + 50}, 0.6, {ease: FlxEase.quadInOut, type: PINGPONG});
-		// FlxTween.tween(logo, {y: logoBl.y + 50}, 0.6, {ease: FlxEase.quadInOut, type: PINGPONG, startDelay: 0.1});
 
 		credGroup = new FlxGroup();
 		add(credGroup);
