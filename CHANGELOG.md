@@ -9,9 +9,12 @@ All notable changes will be documented in this file.
 - Millisecond timer when hitting notes.
 - Old debugging songs.
 - A new rating system.
+- Prototype health icon when pressing 8 in-game.
 ### Changed
 - Organized classes into packages.
 - Song names are now more accurate to the actual song names.
+- Health icons that were repeated (like bf and bf-car) no longer work that way.
+- Alphabet now has more stuff (like bold numbers), which I took from the Agoti mod (yes ik I didn't make it myself, but I don't have adobe animate so ¯|_(ツ)_|¯)
 ### Fixed
 - Placeholder
 
