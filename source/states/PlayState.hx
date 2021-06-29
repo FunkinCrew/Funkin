@@ -1067,8 +1067,8 @@ class PlayState extends MusicBeatState
 		{
 			accuracy = 100 / (totalNotes / hitNotes);
 			// math
-			accuracy = accuracy * Math.pow(10, FlxG.save.data.accuracyPrecision);
-			accuracy = Math.round(accuracy) / Math.pow(10, FlxG.save.data.accuracyPrecision);
+			accuracy = accuracy * Math.pow(10, 2);
+			accuracy = Math.round(accuracy) / Math.pow(10, 2);
 		}
 
 		scoreTxt.x = (healthBarBG.x + (healthBarBG.width / 2)) - (scoreTxt.width / 2);
@@ -1637,8 +1637,8 @@ class PlayState extends MusicBeatState
 		var noteMath:Float = 0.0;
 
 		// math
-		noteMath = noteDiff * Math.pow(10, FlxG.save.data.accuracyPrecision);
-		noteMath = Math.round(noteMath) / Math.pow(10, FlxG.save.data.accuracyPrecision);
+		noteMath = noteDiff * Math.pow(10, 2);
+		noteMath = Math.round(noteMath) / Math.pow(10, 2);
 
 		var col = new FlxText(rating.x, rating.y + 80, 0, noteMath + " ms", 24);
 

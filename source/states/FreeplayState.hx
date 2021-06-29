@@ -38,8 +38,12 @@ class FreeplayState extends MusicBeatState
 
 	private var iconArray:Array<HealthIcon> = [];
 
+	var songsReady:Bool = false;
+
 	override function create()
 	{
+		Assets.loadLibrary("songs").onComplete(function (_) {songsReady = true;});
+
 		FlxG.sound.playMusic(Paths.music('freakyMenu'));
 		var initSonglist = CoolUtil.coolTextFile(Paths.txt('freeplaySonglist'));
 
@@ -230,11 +234,11 @@ class FreeplayState extends MusicBeatState
 		switch (curDifficulty)
 		{
 			case 0:
-				diffText.text = "EASY";
+				diffText.text = "> EASY <";
 			case 1:
-				diffText.text = 'NORMAL';
+				diffText.text = '> NORMAL <';
 			case 2:
-				diffText.text = "HARD";
+				diffText.text = "> HARD <";
 		}
 	}
 
@@ -253,7 +257,8 @@ class FreeplayState extends MusicBeatState
 		FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 
 		// Song Inst
-		FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName));
+		if(songsReady)
+			FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName));
 
 		#if !switch
 		intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
