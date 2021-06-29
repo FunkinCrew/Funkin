@@ -56,6 +56,8 @@ class FreeplayState extends MusicBeatState
 						remove(black);
 						black.kill();
 						black.destroy();
+
+						FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName));
 					}
 				});
 	
@@ -142,8 +144,9 @@ class FreeplayState extends MusicBeatState
 		scoreBG.alpha = 0.6;
 		add(scoreBG);
 
-		diffText = new FlxText(scoreText.x, scoreText.y + 36, 0, "", 24);
+		diffText = new FlxText(scoreText.x + 100, scoreText.y + 36, 0, "", 24);
 		diffText.font = scoreText.font;
+		diffText.alignment = CENTER;
 		add(diffText);
 
 		add(scoreText);
@@ -155,8 +158,6 @@ class FreeplayState extends MusicBeatState
 
 		selector.size = 40;
 		selector.text = ">";
-
-		var swag:Alphabet = new Alphabet(1, 0, "swag");
 
 		if(!songsReady)
 		{
@@ -261,11 +262,11 @@ class FreeplayState extends MusicBeatState
 		switch (curDifficulty)
 		{
 			case 0:
-				diffText.text = "> EASY <";
+				diffText.text = ">  EASY  <";
 			case 1:
 				diffText.text = '> NORMAL <';
 			case 2:
-				diffText.text = "> HARD <";
+				diffText.text = ">  HARD  <";
 		}
 	}
 
