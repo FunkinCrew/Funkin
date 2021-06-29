@@ -1,5 +1,7 @@
 package states;
 
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 import game.Song;
 import game.Highscore;
 import utilities.CoolUtil;
@@ -44,7 +46,19 @@ class FreeplayState extends MusicBeatState
 	{
 		var black = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 
-		Assets.loadLibrary("songs").onComplete(function (_) {remove(black); songsReady = true;});
+		Assets.loadLibrary("songs").onComplete(function (_) {
+			FlxTween.tween(black, {alpha: 1}, 0.5, {
+				ease: FlxEase.quadOut,
+				onComplete: function(twn:FlxTween)
+				{
+					remove(black);
+					black.kill();
+					black.destroy();
+				}
+			});
+
+			songsReady = true;
+		});
 
 		FlxG.sound.playMusic(Paths.music('freakyMenu'));
 		var initSonglist = CoolUtil.coolTextFile(Paths.txt('freeplaySonglist'));
