@@ -6,7 +6,6 @@ import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import Config;
-import WebViewVideo;
 
 import flixel.util.FlxSave;
 
@@ -21,7 +20,7 @@ class OptionsMenu extends MusicBeatState
 
 	private var grpControls:FlxTypedGroup<Alphabet>;
 
-	var menuItems:Array<String> = ['controls', 'set fps', 'cutscenes: off', 'note splash: off', 'downscroll: off', 'About', 'test cutscene'];
+	var menuItems:Array<String> = ['controls', 'set fps', 'cutscenes: off', 'note splash: off', 'downscroll: off', 'About'];
 
 	var UP_P:Bool;
 	var DOWN_P:Bool;
@@ -113,11 +112,6 @@ class OptionsMenu extends MusicBeatState
 				
 				case "About":
 					FlxG.switchState(new options.AboutState());
-				
-				case "test cutscene":
-					#if extension-webview
-					WebViewVideo.openVideo('ughCutscene');
-					#end
 			}
 		}
 		if (controls.RIGHT) {
