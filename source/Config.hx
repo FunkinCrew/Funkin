@@ -6,43 +6,86 @@ import flixel.util.FlxSave;
 import flixel.math.FlxPoint;
 
 class Config {
-    var save:FlxSave;
+	var save:FlxSave;
 
-    public function new() 
-    {
-        save = new FlxSave();
-    	save.bind("saveconrtol");
-    }
+	public function new() 
+	{
+		save = new FlxSave();
+		save.bind("saveconrtol");
+	}
 
-    public function setdownscroll(?value:Bool):Bool {
+	public function setdownscroll(?value:Bool):Bool {
 		if (save.data.isdownscroll == null) save.data.isdownscroll = false;
 		
 		save.data.isdownscroll = !save.data.isdownscroll;
 		save.flush();
-        return save.data.isdownscroll;
+		return save.data.isdownscroll;
 	}
 
-    public function getdownscroll():Bool {
-        if (save.data.isdownscroll != null) return save.data.isdownscroll;
-        return false;
-    }
+	public function setcutscenes(?value:Bool):Bool {
+		if (save.data.cutscenes == null) save.data.cutscenes = true;
+		
+		save.data.cutscenes = !save.data.cutscenes;
+		save.flush();
+		return save.data.cutscenes;
+	}
 
-    public function getcontrolmode():Int {
-        // load control mode num from FlxSave
+	public function setsplash(?value:Bool):Bool {
+		if (save.data.splash == null) save.data.splash = true;
+		
+		save.data.splash = !save.data.splash;
+		save.flush();
+		return save.data.splash;
+	}
+
+	public function camSave(value:Float):Float {
+		if (save.data.cam == null) save.data.cam = 0.06;
+		
+		save.data.cam = value;
+		save.flush();
+		return save.data.cam;
+	}
+
+	public function camLoad():Float {
+		if (save.data.cam != null) {
+			return save.data.cam;
+		}
+		else {
+			return 0.06;
+		}
+	}
+
+	public function getdownscroll():Bool {
+		if (save.data.isdownscroll != null) return save.data.isdownscroll;
+		return false;
+	}
+
+	public function getcutscenes():Bool {
+		if (save.data.cutscenes != null) return save.data.cutscenes;
+		return false;
+	}
+
+	public function getsplash():Bool {
+		if (save.data.splash != null) return save.data.splash;
+		return false;//i hate flx save.
+	}
+
+	public function getcontrolmode():Int {
+		// load control mode num from FlxSave
 		if (save.data.buttonsmode != null) return save.data.buttonsmode[0];
-        return 0;
-    }
+		return 0;
+	}
 
-    public function setcontrolmode(mode:Int = 0):Int {
-        // save control mode num from FlxSave
+	public function setcontrolmode(mode:Int = 0):Int {
+		// save control mode num from FlxSave
 		if (save.data.buttonsmode == null) save.data.buttonsmode = new Array();
-        save.data.buttonsmode[0] = mode;
-        save.flush();
+		save.data.buttonsmode[0] = mode;
+		save.flush();
 
-        return save.data.buttonsmode[0];
-    }
+		return save.data.buttonsmode[0];
+	}
 
-    public function savecustom(_pad:FlxVirtualPad) {
+	public function savecustom(_pad:FlxVirtualPad) {
 		trace("saved");
 
 		if (save.data.buttons == null)
@@ -76,7 +119,7 @@ class Config {
 			buttons.y = save.data.buttons[tempCount].y;
 			tempCount++;
 		}	
-        return _pad;
+		return _pad;
 	}
 
 	public function setFrameRate(fps:Int = 60) {

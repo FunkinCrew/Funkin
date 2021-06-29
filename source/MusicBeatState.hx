@@ -10,15 +10,17 @@ import flixel.util.FlxTimer;
 #if mobileC
 import ui.FlxVirtualPad;
 #end
+import Config;
 
 class MusicBeatState extends FlxUIState
 {
 	private var lastBeat:Float = 0;
 	private var lastStep:Float = 0;
-
+	var config:Config = new Config();
 	private var curStep:Int = 0;
 	private var curBeat:Int = 0;
 	private var controls(get, never):Controls;
+	public static var camMove:Float;
 
 	inline function get_controls():Controls
 		return PlayerSettings.player1.controls;
@@ -63,6 +65,7 @@ class MusicBeatState extends FlxUIState
 	{
 		//everyStep();
 		var oldStep:Int = curStep;
+		camMove = config.camLoad();
 
 		updateCurStep();
 		updateBeat();

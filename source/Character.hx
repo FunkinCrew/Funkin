@@ -121,6 +121,52 @@ class Character extends FlxSprite
 				setGraphicSize(Std.int(width * PlayState.daPixelZoom));
 				updateHitbox();
 				antialiasing = false;
+			case 'picoSpeaker':
+				
+				tex = Paths.getSparrowAtlas('tankman/picoSpeaker');
+				frames = tex;
+				
+				animation.addByIndices('idle', 'Pico shoot 1', [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24], "", 24, true);
+
+				animation.addByIndices('shoot1', 'Pico shoot 1', [0, 1, 2, 3, 4, 5, 6, 7], "", 24, true);
+				animation.addByIndices('shoot2', 'Pico shoot 2', [0, 1, 2, 3, 4, 5, 6, 7], "", 24, false);
+				animation.addByIndices('shoot3', 'Pico shoot 3', [0, 1, 2, 3, 4, 5, 6, 7], "", 24, false);
+				animation.addByIndices('shoot4', 'Pico shoot 4', [0, 1, 2, 3, 4, 5, 6, 7], "", 24, false);
+				
+				addOffset('shoot1', 0, 0);
+				addOffset('shoot2', -1, -128);
+				addOffset('shoot3', 412, -64);
+				addOffset('shoot4', 439, -19);
+
+				playAnim('shoot1');
+
+			case 'gf-tankman':
+				frames = Paths.getSparrowAtlas('tankman/gfTankman');
+				
+				animation.addByPrefix('cheer', 'GF Dancing at Gunpoint', 24, false);
+				animation.addByPrefix('singLEFT', 'GF Dancing at Gunpoint', 24, false);
+				animation.addByPrefix('singRIGHT', 'GF Dancing at Gunpoint', 24, false);
+				animation.addByPrefix('singUP', 'GF Dancing at Gunpoint', 24, false);
+				animation.addByPrefix('singDOWN', 'GF Dancing at Gunpoint', 24, false);
+				animation.addByIndices('sad', 'GF Crying at Gunpoint ', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], "", 24, false);
+				animation.addByIndices('danceLeft', 'GF Dancing at Gunpoint', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
+				animation.addByIndices('danceRight', 'GF Dancing at Gunpoint', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
+				
+				addOffset('cheer');
+				addOffset("singUP", 0, 4);
+				addOffset("singRIGHT", 0, -20);
+				addOffset("singLEFT", 0, -19);
+				addOffset("singDOWN", 0, -20);
+				addOffset('sad', -2, -21);
+				addOffset('danceLeft', 0, -9);
+				addOffset('danceRight', 0, -9);
+				updateHitbox();
+				
+
+				playAnim('danceRight');
+
+				
+
 
 			case 'dad':
 				// DAD ANIMATION LOADING CODE
@@ -264,6 +310,55 @@ class Character extends FlxSprite
 
 				playAnim('idle');
 
+				flipX = true;
+
+			case 'bf-holding-gf':
+				
+				frames = Paths.getSparrowAtlas('tankman/bfAndGF');
+				animation.addByPrefix('idle', 'BF idle dance w gf0', 24, false);
+				animation.addByPrefix('singUP', 'BF NOTE UP0', 24, false);
+				animation.addByPrefix('singLEFT', 'BF NOTE LEFT0', 24, false);
+				animation.addByPrefix('singRIGHT', 'BF NOTE RIGHT0', 24, false);
+				animation.addByPrefix('singDOWN', 'BF NOTE DOWN0', 24, false);
+				animation.addByPrefix('singUPmiss', 'BF NOTE UP MISS0', 24, false);
+				animation.addByPrefix('singLEFTmiss', 'BF NOTE LEFT MISS0', 24, false);
+				animation.addByPrefix('singRIGHTmiss', 'BF NOTE RIGHT MISS0', 24, false);
+				animation.addByPrefix('singDOWNmiss', 'BF NOTE DOWN MISS0', 24, false);
+				
+				
+
+				
+
+				addOffset('idle', 0, 0);
+				addOffset("singUP", -29, 10);
+				addOffset("singRIGHT", -41, 23);
+				addOffset("singLEFT", 12, 7);
+				addOffset("singDOWN", -10, -10);
+				addOffset("singUPmiss", -29, 10);
+				addOffset("singRIGHTmiss", -41, 23);
+				addOffset("singLEFTmiss", 12, 7);
+				addOffset("singDOWNmiss", -10, -10);
+				
+				
+
+				playAnim('idle');
+
+				flipX = true;
+
+
+			case 'bf-holding-gf-dead':
+				
+				frames = Paths.getSparrowAtlas('tankman/bfHoldingGF-DEAD');
+				animation.addByPrefix('singUP', "BF Dies with GF0", 24, false);
+				animation.addByPrefix('firstDeath', "BF Dies with GF0", 24, false);
+				animation.addByPrefix('deathLoop', "BF Dead with GF Loop0", 24, true);
+				animation.addByPrefix('deathConfirm', "RETRY confirm holding gf0", 24, false);
+				animation.play('firstDeath');
+
+				addOffset('firstDeath', 37, 14);
+				addOffset('deathLoop', 37, -3);
+				addOffset('deathConfirm', 37, 28);
+				playAnim('firstDeath');
 				flipX = true;
 
 			case 'bf':
@@ -495,6 +590,31 @@ class Character extends FlxSprite
 				addOffset("singDOWN-alt", -30, -27);
 
 				playAnim('idle');
+			case 'tankman':
+				tex = Paths.getSparrowAtlas('tankman/tankmanCaptain');
+				frames = tex;
+				animation.addByPrefix('idle', "Tankman Idle Dance", 24);
+				animation.addByPrefix('oldSingUP', 'Tankman UP note ', 24, false);
+				animation.addByPrefix('singUP', 'Tankman UP note ', 24, false);
+				animation.addByPrefix('oldSingDOWN', 'Tankman DOWN note ', 24, false);
+				animation.addByPrefix('singDOWN', 'Tankman DOWN note ', 24, false);
+				animation.addByPrefix('singLEFT', 'Tankman Right Note ', 24, false);
+				animation.addByPrefix('singRIGHT', 'Tankman Note Left ', 24, false);
+
+				animation.addByPrefix('ughAnim', 'TANKMAN UGH', 24, false);
+				animation.addByPrefix('prettyGoodAnim', 'PRETTY GOOD', 24, false);
+
+				addOffset('idle');
+				addOffset("singUP", 24, 56);
+				addOffset("oldSingUP", 24, 56);
+				addOffset("singRIGHT", -1, -7);
+				addOffset("singLEFT", 100, -14);
+				addOffset("singDOWN", 98, -90);
+				addOffset("oldSingDOWN", 98, -90);
+				//addOffset("ughAnim", 45, 0);
+				addOffset("prettyGoodAnim", 45, 20);
+				playAnim('idle');
+				flipX = true;
 		}
 
 		dance();
@@ -585,6 +705,27 @@ class Character extends FlxSprite
 							playAnim('danceLeft');
 					}
 
+				case 'picoSpeaker':
+					if (!animation.curAnim.name.startsWith('hair'))
+					{
+						danced = !danced;
+
+						if (danced)
+							playAnim('idle');
+						else
+							playAnim('idle');
+					}
+
+				case 'gf-tankman':
+					if (!animation.curAnim.name.startsWith('hair'))
+					{
+						danced = !danced;
+
+						if (danced)
+							playAnim('danceRight');
+						else
+							playAnim('danceLeft');
+					}
 				case 'gf-car':
 					if (!animation.curAnim.name.startsWith('hair'))
 					{

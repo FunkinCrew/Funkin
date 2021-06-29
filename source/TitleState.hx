@@ -253,7 +253,7 @@ class TitleState extends MusicBeatState
 
 		var pressedEnter:Bool = FlxG.keys.justPressed.ENTER;
 
-		#if mobile
+		//#if mobile removed because it bugs higher-android phones.
 		for (touch in FlxG.touches.list)
 		{
 			if (touch.justPressed)
@@ -261,7 +261,7 @@ class TitleState extends MusicBeatState
 				pressedEnter = true;
 			}
 		}
-		#end
+		//#end
 
 		var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
 
@@ -419,7 +419,7 @@ class TitleState extends MusicBeatState
 				addMoreText('Night');
 			// credTextShit.text += '\nNight';
 			case 15:
-				addMoreText('Funkin'); // credTextShit.text += '\nFunkin';
+				addMoreText('Funkin\nAndroid'); // credTextShit.text += '\nFunkin';
 
 			case 16:
 				skipIntro();
