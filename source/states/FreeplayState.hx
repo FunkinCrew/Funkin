@@ -40,25 +40,28 @@ class FreeplayState extends MusicBeatState
 
 	private var iconArray:Array<HealthIcon> = [];
 
-	var songsReady:Bool = false;
+	public static var songsReady:Bool = false;
 
 	override function create()
 	{
 		var black = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 
-		Assets.loadLibrary("songs").onComplete(function (_) {
-			FlxTween.tween(black, {alpha: 0}, 0.5, {
-				ease: FlxEase.quadOut,
-				onComplete: function(twn:FlxTween)
-				{
-					remove(black);
-					black.kill();
-					black.destroy();
-				}
+		if(!songsReady)
+		{
+			Assets.loadLibrary("songs").onComplete(function (_) {
+				FlxTween.tween(black, {alpha: 0}, 0.5, {
+					ease: FlxEase.quadOut,
+					onComplete: function(twn:FlxTween)
+					{
+						remove(black);
+						black.kill();
+						black.destroy();
+					}
+				});
+	
+				songsReady = true;
 			});
-
-			songsReady = true;
-		});
+		}
 
 		var initSonglist = CoolUtil.coolTextFile(Paths.txt('freeplaySonglist'));
 
