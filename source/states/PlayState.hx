@@ -1264,30 +1264,28 @@ class PlayState extends MusicBeatState
 		FlxG.watch.addQuick("beatShit", curBeat);
 		FlxG.watch.addQuick("stepShit", curStep);
 
-		if (curSong == 'Fresh')
+		// curbeat switch per song
+		switch(curSong.toLowerCase())
 		{
-			switch (curBeat)
-			{
-				case 16:
-					gfSpeed = 2;
-				case 48:
-					gfSpeed = 1;
-				case 80:
-					gfSpeed = 2;
-				case 112:
-					gfSpeed = 1;
-			}
+			case 'fresh':
+				switch(curBeat)
+				{
+					case 16:
+						gfSpeed = 2;
+					case 48:
+						gfSpeed = 1;
+					case 80:
+						gfSpeed = 2;
+					case 112:
+						gfSpeed = 1;
+				}
+			case 'bopeebo':
+				switch (curBeat)
+				{
+					case 128, 129, 130:
+						vocals.volume = 0;
+				}
 		}
-
-		if (curSong == 'Bopeebo')
-		{
-			switch (curBeat)
-			{
-				case 128, 129, 130:
-					vocals.volume = 0;
-			}
-		}
-		// better streaming of shit
 
 		// RESET = Quick Game Over Screen
 		if (FlxG.save.data.resetButtonOn)
@@ -1311,8 +1309,6 @@ class PlayState extends MusicBeatState
 			FlxG.sound.music.stop();
 
 			openSubState(new GameOverSubstate(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
-
-			// FlxG.switchState(new GameOverState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 			
 			#if desktop
 			// Game Over doesn't get his own variable because it's only used here
