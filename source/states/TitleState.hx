@@ -159,7 +159,15 @@ class TitleState extends MusicBeatState
 				FlxG.sound.playMusic(Paths.music('title'), 0);
 			}
 			else {
-				FlxG.sound.playMusic(Paths.music('freakyMenu'), 0);
+				if (Date.now().getDay() == 5 && Date.now().getHours() >= 18)
+				{
+					FlxG.sound.playMusic(Paths.music('freakyNightMenu'), 0);
+					Conductor.changeBPM(117);
+				} else
+				{
+					FlxG.sound.playMusic(Paths.music('freakyMenu'), 0);
+					Conductor.changeBPM(102);
+				}
 			}
 
 			FlxG.sound.music.fadeIn(4, 0, 0.7);
@@ -167,7 +175,6 @@ class TitleState extends MusicBeatState
 
 		version = "Leather's Funkin' Engine" + " Github Release v" + Application.current.meta.get('version');
 
-		Conductor.changeBPM(102);
 		persistentUpdate = true;
 
 		var bg:FlxSprite = new FlxSprite();
