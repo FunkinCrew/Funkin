@@ -176,8 +176,9 @@ class TitleState extends MusicBeatState
 		{
 			bg.loadGraphic(Paths.image("title/stageback"));
 			bg.antialiasing = true;
-			bg.setGraphicSize(FlxG.width);
+			bg.setGraphicSize(Std.int(FlxG.width * 1.1));
 			bg.updateHitbox();
+			bg.screenCenter();
 		}
 		else
 		{
