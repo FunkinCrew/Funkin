@@ -387,9 +387,9 @@ class OptionsMenu extends MusicBeatState
 						textMenuItems = ["Back", "Downscroll", "Old Title"];
 
 						if(!FlxG.save.data.nohit)
-							textMenuItems.push("No-hit Off");
+							textMenuItems.push("No Hit Off");
 						else
-							textMenuItems.push("No-hit On");
+							textMenuItems.push("No Hit On");
 
 						if(!FlxG.save.data.resetButtonOn)
 							textMenuItems.push("Reset Button Off");
