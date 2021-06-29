@@ -3,9 +3,9 @@ package ratings;
 class Ratings
 {
     private static var timings:Array<Dynamic> = [
-        [30, 'sick'],
-        [60, 'good'],
-        [110, 'bad'],
+        [50, 'sick'],
+        [110, 'good'],
+        [150, 'bad'],
         [10000, 'shit'],
     ];
 
