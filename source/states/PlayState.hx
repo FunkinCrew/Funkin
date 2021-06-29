@@ -64,6 +64,8 @@ using StringTools;
 
 class PlayState extends MusicBeatState
 {
+	public static var instance:PlayState = null;
+
 	public static var curStage:String = '';
 	public static var SONG:SwagSong;
 	public static var isStoryMode:Bool = false;
@@ -119,7 +121,7 @@ class PlayState extends MusicBeatState
 
 	public static var currentBeat = 0;
 
-	var gfVersion:String = 'gf';
+	public var gfVersion:String = 'gf';
 
 	var dialogue:Array<String> = ['blah blah blah', 'coolswag'];
 
@@ -150,8 +152,14 @@ class PlayState extends MusicBeatState
 	var detailsPausedText:String = "";
 	#end
 
+	// copied from kade cuz im a lazy poo poo and dont feel like figuring this out lol \_(:D)_/
+	public function addObject(object:FlxBasic) { add(object); }
+	public function removeObject(object:FlxBasic) { remove(object); }
+
 	override public function create()
 	{
+		instance = this;
+
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
 
@@ -249,22 +257,27 @@ class PlayState extends MusicBeatState
 		if(SONG.stage == null)
 			SONG.stage = 'chromatic-stage';
 
-		stage = new StageGroup(SONG.stage);
-		defaultCamZoom = stage.camZoom;
-		if(SONG.stage != null)
-		{
-			curStage = SONG.stage;
-		} else {
-			curStage = 'stage';
-		}
-		add(stage);
-
+		/* character time :) */
 		gfVersion = SONG.gf;
 
 		gf = new Character(400, 130, gfVersion);
 		gf.scrollFactor.set(0.95, 0.95);
 
 		dad = new Character(100, 100, SONG.player2);
+		boyfriend = new Boyfriend(770, 450, SONG.player1);
+		/* end of character time */
+
+		if(SONG.stage != null)
+		{
+			curStage = SONG.stage;
+		} else {
+			curStage = 'chromatic-stage';
+		}
+
+		stage = new StageGroup(curStage);
+		add(stage);
+
+		defaultCamZoom = stage.camZoom;
 
 		var camPos:FlxPoint = new FlxPoint(dad.getGraphicMidpoint().x, dad.getGraphicMidpoint().y);
 
@@ -306,12 +319,15 @@ class PlayState extends MusicBeatState
 				camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
 		}
 
-		boyfriend = new Boyfriend(770, 450, SONG.player1);
-
 		// REPOSITIONING PER STAGE
 		stage.setCharOffsets();
 
 		add(gf);
+
+		// fuck haxeflixel and their no z ordering or somnething AAAAAAAAAAAAA
+		if(curStage == 'limo')
+			add(stage.limo);
+
 		add(dad);
 		add(boyfriend);
 
@@ -337,11 +353,7 @@ class PlayState extends MusicBeatState
 		enemyStrums = new FlxTypedGroup<FlxSprite>();
 		splashes = new FlxTypedGroup<FlxSprite>();
 
-		// startCountdown();
-
 		generateSong(SONG.song);
-
-		// add(strumLine);
 
 		camFollow = new FlxObject(0, 0, 1, 1);
 

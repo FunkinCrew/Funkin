@@ -40,6 +40,9 @@ class StageGroup extends FlxGroup
     private var fastCar:FlxSprite;
     private var fastCarCanDrive:Bool = true;
 
+    // for layering because FUCK I HATE LAYERING IN HAXEFLIXEL AAAAAAAAAAAAAAAAAA
+    public var limo:FlxSprite;
+
     // MALL STUFF
     private var santa:FlxSprite;
     private var upperBoppers:FlxSprite;
@@ -187,7 +190,8 @@ class StageGroup extends FlxGroup
                 }
 
                 var limoTex = Paths.getSparrowAtlas(stage + '/limoDrive', 'stages');
-                var limo = new FlxSprite(-120, 550);
+
+                limo = new FlxSprite(-120, 550);
                 limo.frames = limoTex;
                 limo.animation.addByPrefix('drive', "Limo stage", 24);
                 limo.animation.play('drive');
