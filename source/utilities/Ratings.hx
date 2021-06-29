@@ -1,4 +1,4 @@
-package ratings;
+package utilities;
 
 class Ratings
 {

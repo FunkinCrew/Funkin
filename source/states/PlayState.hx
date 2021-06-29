@@ -1,6 +1,6 @@
 package states;
 
-import ratings.Ratings;
+import utilities.Ratings;
 import debuggers.ChartingState;
 import flixel.math.FlxRandom;
 import debuggers.AnimationDebug;
