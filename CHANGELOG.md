@@ -8,16 +8,17 @@ All notable changes will be documented in this file.
 - Note splashes when you hit a sick!
 - Millisecond timer when hitting notes.
 - Old debugging songs.
+- A new rating system.
 ### Changed
 - Organized classes into packages.
+- Song names are now more accurate to the actual song names.
 ### Fixed
 - Placeholder
 
 DO THIS NOW:
 - New input system.
-- A new rating system.
 - Some more information about the song you're playing.
-- More accurate accuracy percentage.
+- More accurate accuracy percentage. 
 
 ## [0.1] - 6/18/2021
 ### Added
