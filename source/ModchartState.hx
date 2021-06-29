@@ -250,7 +250,7 @@ class ModchartState
 					PlayState.instance.removeObject(PlayState.boyfriend);
 					PlayState.boyfriend = new Boyfriend(oldboyfriendx, oldboyfriendy, id);
 					PlayState.instance.addObject(PlayState.boyfriend);
-					PlayState.instance.iconP2.animation.play(id);
+					PlayState.instance.iconP1.animation.play(id);
 	}
 
 	function makeAnimatedLuaSprite(spritePath:String,names:Array<String>,prefixes:Array<String>,startAnim:String, id:String)
