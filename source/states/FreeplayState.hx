@@ -42,7 +42,9 @@ class FreeplayState extends MusicBeatState
 
 	override function create()
 	{
-		Assets.loadLibrary("songs").onComplete(function (_) {songsReady = true;});
+		var black = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+
+		Assets.loadLibrary("songs").onComplete(function (_) {remove(black); songsReady = true;});
 
 		FlxG.sound.playMusic(Paths.music('freakyMenu'));
 		var initSonglist = CoolUtil.coolTextFile(Paths.txt('freeplaySonglist'));
@@ -139,6 +141,8 @@ class FreeplayState extends MusicBeatState
 		selector.text = ">";
 
 		var swag:Alphabet = new Alphabet(1, 0, "swag");
+
+		add(black);
 
 		super.create();
 	}
