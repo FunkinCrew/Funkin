@@ -264,7 +264,7 @@ class OptionsMenu extends MusicBeatState
 						FlxG.save.flush();
 					}
 
-					case 'No-hit On':
+					case 'No Hit On':
 					{
 						FlxG.save.data.nohit = false;
 						FlxG.save.flush();
@@ -272,18 +272,18 @@ class OptionsMenu extends MusicBeatState
 						var option:Alphabet;
 
 						if(FlxG.save.data.nohit)
-							option = new Alphabet(20, 20 + (3 * 100), "No-hit On", true, false);
+							option = new Alphabet(20, 20 + (3 * 100), "No Hit On", true, false);
 						else
-							option = new Alphabet(20, 20 + (3 * 100), "No-hit Off", true, false);
+							option = new Alphabet(20, 20 + (3 * 100), "No Hit Off", true, false);
 
 						option.isMenuItem = true;
 						option.targetY = 3;
 						grpOptionsTexts.members[3] = option;
-						textMenuItems[3] = "No-hit Off";
+						textMenuItems[3] = "No Hit Off";
 						inMenu = false;
 					}
 
-					case 'No-hit Off':
+					case 'No Hit Off':
 					{
 						FlxG.save.data.nohit = true;
 						FlxG.save.flush();
@@ -291,14 +291,14 @@ class OptionsMenu extends MusicBeatState
 						var option:Alphabet;
 
 						if(FlxG.save.data.nohit)
-							option = new Alphabet(20, 320, "No-hit On", true, false);
+							option = new Alphabet(20, 320, "No Hit On", true, false);
 						else
-							option = new Alphabet(20, 320, "No-hit Off", true, false);
+							option = new Alphabet(20, 320, "No Hit Off", true, false);
 
 						option.isMenuItem = true;
 						option.targetY = 3;
 						grpOptionsTexts.members[3] = option;
-						textMenuItems[3] = "No-hit On";
+						textMenuItems[3] = "No Hit On";
 						inMenu = false;
 					}
 
