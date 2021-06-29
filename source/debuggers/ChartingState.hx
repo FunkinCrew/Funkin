@@ -312,7 +312,7 @@ class ChartingState extends MusicBeatState
 		stepperSectionBPM.name = 'section_bpm';
 
 		var stepperCopy:FlxUINumericStepper = new FlxUINumericStepper(110, 130, 1, 1, -999, 999, 0);
-		var stepperText:FlxText = new FlxText(110 + stepperCopy.width, 130, 0, "Sections back", 11);
+		var stepperText:FlxText = new FlxText(110 + stepperCopy.width, 130, 0, "Sections back", 9);
 
 		var copyButton:FlxButton = new FlxButton(10, 130, "Copy last", function()
 		{
@@ -368,10 +368,11 @@ class ChartingState extends MusicBeatState
 		stepperSusLength.value = 0;
 		stepperSusLength.name = 'note_susLength';
 
-		var applyLength:FlxButton = new FlxButton(100, 10, 'Apply');
+		// OMG AMOGUS SUS IMPOSTOR AT 3 AM CLAL?!??!??!?? :OOOOOOOOOOOOOOOOOOOOOO
+		var susText = new FlxText(11 + stepperSusLength.width, 10, 0, "Sustain note length", 9);
 
 		tab_group_note.add(stepperSusLength);
-		tab_group_note.add(applyLength);
+		tab_group_note.add(susText);
 
 		UI_box.addGroup(tab_group_note);
 	}
