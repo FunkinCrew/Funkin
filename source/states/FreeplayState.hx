@@ -61,6 +61,10 @@ class FreeplayState extends MusicBeatState
 	
 				songsReady = true;
 			});
+		} else {
+			remove(black);
+			black.kill();
+			black.destroy();
 		}
 
 		var initSonglist = CoolUtil.coolTextFile(Paths.txt('freeplaySonglist'));
