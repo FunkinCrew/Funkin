@@ -61,10 +61,6 @@ class FreeplayState extends MusicBeatState
 	
 				songsReady = true;
 			});
-		} else {
-			remove(black);
-			black.kill();
-			black.destroy();
 		}
 
 		var initSonglist = CoolUtil.coolTextFile(Paths.txt('freeplaySonglist'));
@@ -162,7 +158,14 @@ class FreeplayState extends MusicBeatState
 
 		var swag:Alphabet = new Alphabet(1, 0, "swag");
 
-		add(black);
+		if(!songsReady)
+		{
+			add(black);
+		} else {
+			remove(black);
+			black.kill();
+			black.destroy();
+		}
 
 		super.create();
 	}
