@@ -48,10 +48,10 @@
 	<define name="NO_PRELOAD_ALL" unless="PRELOAD_ALL"/>
 	
 	<section if="PRELOAD_ALL">
-		<library name="stages"    preload="true" />
+		<library name="stages"   preload="true" />
 		<library name="songs"    preload="true" />
 		<library name="shared"   preload="true" />
-		<library name="tutorial" preload="true" />
+		<library name="week0" 	 preload="true" />
 		<library name="week1"    preload="true" />
 		<library name="week2"    preload="true" />
 		<library name="week3"    preload="true" />
@@ -61,10 +61,10 @@
 	</section>
 	
 	<section if="NO_PRELOAD_ALL">
-		<library name="stages"    preload="false" />
+		<library name="stages"   preload="false" />
 		<library name="songs"    preload="false" />
 		<library name="shared"   preload="false" />
-		<library name="tutorial" preload="false" />
+		<library name="week0" 	 preload="false" />
 		<library name="week1"    preload="false" />
 		<library name="week2"    preload="false" />
 		<library name="week3"    preload="false" />
@@ -82,8 +82,8 @@
 	<assets path="assets/shared"   library="shared"   exclude="*.ogg" if="web"/>
 	<assets path="assets/shared"   library="shared"   exclude="*.mp3" unless="web"/>
 
-	<assets path="assets/tutorial" library="tutorial" exclude="*.ogg" if="web"/>
-	<assets path="assets/tutorial" library="tutorial" exclude="*.mp3" unless="web"/>
+	<assets path="assets/week0" library="week0" exclude="*.ogg" if="web"/>
+	<assets path="assets/week0" library="week0" exclude="*.mp3" unless="web"/>
 
 	<assets path="assets/week1"    library="week1"    exclude="*.ogg" if="web"/>
 	<assets path="assets/week1"    library="week1"    exclude="*.mp3" unless="web"/>
