@@ -7,7 +7,6 @@ import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.ui.FlxUIState;
 import flixel.math.FlxRect;
 import flixel.util.FlxTimer;
-import SaveData;
 #if mobileC
 import ui.FlxVirtualPad;
 #end
