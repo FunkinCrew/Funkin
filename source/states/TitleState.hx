@@ -220,12 +220,10 @@ class TitleState extends MusicBeatState
 		titleText.antialiasing = true;
 		titleText.animation.play('idle');
 		titleText.updateHitbox();
-		// titleText.screenCenter(X);
-
-		add(logoBl);
 
 		if (!FlxG.save.data.oldTitle)
 		{
+			add(logoBl);
 			add(gfDance);
 			add(titleText);
 		}
