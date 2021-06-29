@@ -1578,7 +1578,7 @@ class PlayState extends MusicBeatState
 
 		var rating:FlxSprite = new FlxSprite();
 
-		var daRating:String = Ratings.getRating(noteDiff);
+		var daRating:String = Ratings.getRating(Math.abs(noteDiff));
 		var score:Int = Ratings.getScore(daRating);
 
 		// health switch case
