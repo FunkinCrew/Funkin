@@ -12,6 +12,8 @@ All notable changes will be documented in this file.
 - Prototype health icon when pressing 8 in-game.
 - Better accuracy system (instead of just going by number of notes / number of hit notes, it's slightly different).
 - Song name and difficulty to the bottom of the screen while playing.
+- Difficulty selector in song charter.
+- Revamped song charter.
 ### Changed
 - Organized classes into packages.
 - Health icons can now have more general types (like bf and senpai), instead of having to write down the same icon mutliple times in code.
