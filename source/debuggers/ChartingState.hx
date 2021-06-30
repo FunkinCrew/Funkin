@@ -194,12 +194,12 @@ class ChartingState extends MusicBeatState
 		var UI_songTitle = new FlxUIInputText(10, 10, 70, _song.song, 8);
 		typingShit = UI_songTitle;
 
-		var UI_songDiff = new FlxUIInputText(10 + UI_songTitle.width, 10, 70, Std.string(Difficulties.numToDiff(PlayState.storyDifficulty)), 8);
+		var UI_songDiff = new FlxUIInputText(10, 12 + UI_songTitle.height, 70, Std.string(Difficulties.numToDiff(PlayState.storyDifficulty)), 8);
 		swagShit = UI_songDiff;
-
-		var check_voices = new FlxUICheckBox(10, 25, null, null, "Has voice track", 100);
+		
+		var check_voices = new FlxUICheckBox(10, UI_songDiff.y + UI_songDiff.height + 1, null, null, "Has voice track", 100);
 		check_voices.checked = _song.needsVoices;
-		// _song.needsVoices = check_voices.checked;
+		
 		check_voices.callback = function()
 		{
 			_song.needsVoices = check_voices.checked;
@@ -233,7 +233,7 @@ class ChartingState extends MusicBeatState
 			loadJson(_song.song.toLowerCase(), difficulty.toLowerCase());
 		});
 
-		var loadAutosaveBtn:FlxButton = new FlxButton(reloadSongJson.x, reloadSongJson.y + 30, 'load autosave', loadAutosave);
+		var loadAutosaveBtn:FlxButton = new FlxButton(reloadSongJson.x, reloadSongJson.y + 30, 'Load Autosave', loadAutosave);
 
 		var stepperSpeed:FlxUINumericStepper = new FlxUINumericStepper(10, 80, 0.1, 1, 0.1, 10, 1);
 		stepperSpeed.value = _song.speed;
