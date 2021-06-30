@@ -20,11 +20,14 @@ All notable changes will be documented in this file.
 - The layering of GF on the limo stage has now been fixed! (:pog:)
 ### Re-Added
 - When pressing 9 in-game it now will revert your health icon to bf-old (because idk why I removed it).
+### Known Issues
+- In the Thorns cutscene, Senpai's dialogue portrait goes over Spirit's image.
 
-DO THIS NOW:
-- New input system.
-- Some more information about the song you're playing.
+DO THIS NOW (priority, top to bottom):
 - More accurate accuracy percentage. 
+- Some more information about the song you're playing.
+- Revamped dialogue system.
+- New input system.
 
 ## [0.1] - 6/18/2021
 ### Added
