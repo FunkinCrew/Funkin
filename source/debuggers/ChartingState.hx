@@ -194,7 +194,7 @@ class ChartingState extends MusicBeatState
 		var UI_songTitle = new FlxUIInputText(10, 10, 70, _song.song, 8);
 		typingShit = UI_songTitle;
 
-		var UI_songDiff = new FlxUIInputText(10 + UI_songTitle.width, 10, 70, 'Normal', 8);
+		var UI_songDiff = new FlxUIInputText(10 + UI_songTitle.width, 10, 70, Std.string(Difficulties.numToDiff(PlayState.storyDifficulty)), 8);
 		swagShit = UI_songDiff;
 
 		var check_voices = new FlxUICheckBox(10, 25, null, null, "Has voice track", 100);
