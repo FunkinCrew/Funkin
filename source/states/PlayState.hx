@@ -134,7 +134,7 @@ class PlayState extends MusicBeatState
 	public static var campaignScore:Int = 0;
 
 	private var totalNotes:Int = 0;
-	private var hitNotes:Int = 0;
+	private var hitNotes:Float = 0.0;
 
 	var defaultCamZoom:Float = 1.05;
 
@@ -1593,12 +1593,12 @@ class PlayState extends MusicBeatState
 		{
 			case 'sick':
 				health += 0.023;
-				hitNotes++;
+				hitNotes += 1;
 			case 'good':
 				health += 0.015;
-				hitNotes++;
+				hitNotes += 0.8;
 			case 'bad':
-				hitNotes++;
+				hitNotes += 0.3;
 			case 'shit':
 				health -= 0.023;
 		}
