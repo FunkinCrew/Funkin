@@ -27,7 +27,7 @@ All notable changes will be documented in this file.
 - In the Thorns cutscene, Senpai's dialogue portrait goes over Spirit's image.
 
 DO THIS NOW (priority, top to bottom):
-- Revamped song charter.
+- Song charter design slightly changed.
 - Revamped dialogue system.
 - New input system.
 
