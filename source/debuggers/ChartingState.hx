@@ -164,10 +164,9 @@ class ChartingState extends MusicBeatState
 		add(dummyArrow);
 
 		var tabs = [
-			//{name: "Stage", label: "Stage Settings"},
-			{name: "Song", label: 'Song Settings'},
-			{name: "Section", label: 'Section Settings'},
-			{name: "Note", label: 'Note Settings'}
+			{name: "Song", label: 'Song Options'},
+			{name: "Section", label: 'Chart Options'},
+			{name: "Note", label: 'Art Options'}
 		];
 
 		UI_box = new FlxUITabMenu(null, tabs, true);
