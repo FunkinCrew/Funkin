@@ -7,7 +7,7 @@ All notable changes will be documented in this file.
 - A stage editor / stage viewer.
 - Note splashes when you hit a sick!
 - Millisecond timer when hitting notes.
-- Old debugging songs.
+- You can now access previously unaccessible Debug Songs with the Debug Songs option in the options menu.
 - A new rating system.
 - Prototype health icon when pressing 8 in-game.
 ### Changed
