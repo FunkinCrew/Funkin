@@ -310,11 +310,13 @@ class ChartingState extends MusicBeatState
 		var tab_group_section = new FlxUI(null, UI_box);
 		tab_group_section.name = 'Section';
 
-		stepperLength = new FlxUINumericStepper(10, 10, 4, 0, 0, 999, 0);
+		var sectionText = new FlxText(10, 10, 0, "Section Options", 9);
+
+		stepperLength = new FlxUINumericStepper(10, 30, 4, 0, 0, 999, 0);
 		stepperLength.value = _song.notes[curSection].lengthInSteps;
 		stepperLength.name = "section_length";
 
-		stepperSectionBPM = new FlxUINumericStepper(10, 80, 1, Conductor.bpm, 0, 999, 0);
+		stepperSectionBPM = new FlxUINumericStepper(10, 100, 1, Conductor.bpm, 0, 999, 0);
 		stepperSectionBPM.value = Conductor.bpm;
 		stepperSectionBPM.name = 'section_bpm';
 
@@ -339,17 +341,32 @@ class ChartingState extends MusicBeatState
 			}
 		});
 
-		check_mustHitSection = new FlxUICheckBox(10, 30, null, null, "Camera points at P1", 100);
+		check_mustHitSection = new FlxUICheckBox(10, 50, null, null, "Camera points at P1", 100);
 		check_mustHitSection.name = 'check_mustHit';
 		check_mustHitSection.checked = true;
-		// _song.needsVoices = check_mustHit.checked;
 
-		check_altAnim = new FlxUICheckBox(10, 400, null, null, "Alt Animation", 100);
+		check_altAnim = new FlxUICheckBox(10, 210, null, null, "Alt Animation", 100);
 		check_altAnim.name = 'check_altAnim';
 
-		check_changeBPM = new FlxUICheckBox(10, 60, null, null, 'Change BPM', 100);
+		check_changeBPM = new FlxUICheckBox(10, 80, null, null, 'Change BPM', 100);
 		check_changeBPM.name = 'check_changeBPM';
 
+		var noteText = new FlxText(10, 240, 0, "Note Options", 9);
+
+		stepperSusLength = new FlxUINumericStepper(10, 260, Conductor.stepCrochet / 2, 0, 0, Conductor.stepCrochet * 16);
+		stepperSusLength.value = 0;
+		stepperSusLength.name = 'note_susLength';
+
+		// OMG AMOGUS SUS IMPOSTOR AT 3 AM CLAL?!??!??!?? :OOOOOOOOOOOOOOOOOOOOOO
+		var susText = new FlxText(11 + stepperSusLength.width, 260, 0, "Sustain note length", 9);
+
+		// note stuff
+		tab_group_section.add(noteText);
+		tab_group_section.add(stepperSusLength);
+		tab_group_section.add(susText);
+
+		// section stuff
+		tab_group_section.add(sectionText);
 		tab_group_section.add(stepperLength);
 		tab_group_section.add(stepperSectionBPM);
 		tab_group_section.add(stepperCopy);
@@ -371,15 +388,7 @@ class ChartingState extends MusicBeatState
 		var tab_group_note = new FlxUI(null, UI_box);
 		tab_group_note.name = 'Note';
 
-		stepperSusLength = new FlxUINumericStepper(10, 10, Conductor.stepCrochet / 2, 0, 0, Conductor.stepCrochet * 16);
-		stepperSusLength.value = 0;
-		stepperSusLength.name = 'note_susLength';
-
-		// OMG AMOGUS SUS IMPOSTOR AT 3 AM CLAL?!??!??!?? :OOOOOOOOOOOOOOOOOOOOOO
-		var susText = new FlxText(11 + stepperSusLength.width, 10, 0, "Sustain note length", 9);
-
-		tab_group_note.add(stepperSusLength);
-		tab_group_note.add(susText);
+		// insert stuff
 
 		UI_box.addGroup(tab_group_note);
 	}
