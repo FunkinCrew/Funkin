@@ -150,16 +150,18 @@ class TitleState extends MusicBeatState
 			// IF THIS PR IS HERE IF ITS ACCEPTED UR GOOD TO GO
 			// https://github.com/HaxeFlixel/flixel-addons/pull/348
 
-			// var music:FlxSound = new FlxSound();
-			// music.loadStream(Paths.music('freakyMenu'));
-			// FlxG.sound.list.add(music);
-			// music.play();
+			if(FlxG.save.data.nightMusic == null)
+			{
+				FlxG.save.data.nightMusic = false;
+				FlxG.save.flush();
+			}
+
 			if (FlxG.save.data.oldTitle)
 			{
 				FlxG.sound.playMusic(Paths.music('title'), 0);
 			}
 			else {
-				if (Date.now().getDay() == 5 && Date.now().getHours() >= 18)
+				if (Date.now().getDay() == 5 && Date.now().getHours() >= 18 || FlxG.save.data.nightMusic)
 				{
 					FlxG.sound.playMusic(Paths.music('freakyNightMenu'), 0);
 					Conductor.changeBPM(117);
