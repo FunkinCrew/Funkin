@@ -13,7 +13,7 @@ All notable changes will be documented in this file.
 ### Changed
 - Organized classes into packages.
 - Health icons can now have more general types (like bf and senpai), instead of having to write down the same icon mutliple times in code.
-- Alphabet now has more stuff (like bold numbers), which I took from the Agoti mod (yes ik I didn't make it myself, but I don't have adobe animate so ¯\_(ツ)_/¯)
+- Alphabet now has more stuff (like bold numbers), which I took from the Agoti mod (yes ik I didn't make it myself, but I don't have adobe animate so ¯＼_(ツ)_/¯)
 - Optimized the title screen by not loading unneccesary libraries on launch.
 ### Fixed
 - Song names like Philly and Dadbattle have been replaced to their actual song names (Philly Nice and Dad Battle).
