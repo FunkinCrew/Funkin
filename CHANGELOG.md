@@ -13,7 +13,6 @@ All notable changes will be documented in this file.
 - Better accuracy system (instead of just going by number of notes / number of hit notes, it's slightly different).
 - Song name and difficulty to the bottom of the screen while playing.
 - Difficulty selector in song charter.
-- Revamped song charter.
 ### Changed
 - Organized classes into packages.
 - Health icons can now have more general types (like bf and senpai), instead of having to write down the same icon mutliple times in code.
@@ -28,6 +27,7 @@ All notable changes will be documented in this file.
 - In the Thorns cutscene, Senpai's dialogue portrait goes over Spirit's image.
 
 DO THIS NOW (priority, top to bottom):
+- Revamped song charter.
 - Revamped dialogue system.
 - New input system.
 
