@@ -1,5 +1,8 @@
 package;
 
+import flixel.system.FlxSound;
+import flixel.FlxCamera;
+import haxe.macro.Expr.Catch;
 import openfl.Assets;
 import openfl.media.Sound;
 import flixel.FlxSprite;
@@ -10,6 +13,7 @@ import PlayState;
 import flixel.addons.ui.FlxUIState;
 import flixel.FlxSprite;
 import flixel.FlxG;
+import flixel.util.FlxPath;
 
 /**-200 -200
     usage:
@@ -22,16 +26,21 @@ import flixel.FlxG;
 **/
 
 class VideoPlayer extends FlxSprite {
-    public static var finishCallback:Void->Void=null;
+    public var finishCallback:Void->Void=null;
 
     public var player:WebmPlayer;
+
+    public var sound:FlxSound;
+
+    public var pathfile:String;
 
     public function new(x, y, path:String) 
     {
         super(x, y);
 
-        if (finishCallback == null)
-            finishCallback = ()->{};
+        WebmPlayer.SKIP_STEP_LIMIT = 10;
+
+        pathfile = path;
 
         var path = Asset2File.getPath(Paths.file(path), ".webm");
 
@@ -44,22 +53,34 @@ class VideoPlayer extends FlxSprite {
         });
 
         player.addEventListener('end', function(e) {
-            finishCallback();
+            if (finishCallback != null)
+                finishCallback();
         });
 
         player.addEventListener('stop', function(e) {
-            finishCallback();
+            if (finishCallback != null)
+                finishCallback();
         });
 
         loadGraphic(player.bitmapData); 
     }
 
     public function play() {
-        //var sound = Assets.getSound(path + '.ogg');
         player.play();
-        /*if (sound != null)
-            FlxG.sound.playMusic(sound);*/
+        
+        sound = FlxG.sound.play(Paths.file(pathfile + '.ogg'));
 
         //FlxG.sound.playMusic(Reflect.field(player, "sound"));// not working
+    }
+
+    public function ownCamera() {
+        var cam = new FlxCamera();
+	    FlxG.cameras.add(cam);
+		cam.bgColor.alpha = 0;
+		cameras = [cam];
+    }
+
+    override public function destroy() {
+        player.stop();
     }
 }

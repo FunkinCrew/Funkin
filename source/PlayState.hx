@@ -1138,15 +1138,36 @@ class PlayState extends MusicBeatState
 
 	function ughIntro()
 	{
-		startCountdown();
+		var video = new VideoPlayer(0, 0, 'videos/ughcutscene.webm');
+		video.finishCallback = () -> {
+			remove(video);
+			startCountdown();
+		}
+		video.ownCamera();
+		add(video);
+		video.play();
 	}
 	function gunsIntro()
 	{
-		startCountdown();
+		var video = new VideoPlayer(0, 0, 'videos/gunscutscene.webm');
+		video.finishCallback = () -> {
+			remove(video);
+			startCountdown();
+		}
+		video.ownCamera();
+		add(video);
+		video.play();
 	}
 	function stressIntro()
 	{
-		startCountdown();
+		var video = new VideoPlayer(0, 0, 'videos/stresscutscene.webm');
+		video.finishCallback = () -> {
+			remove(video);
+			startCountdown();
+		}
+		video.ownCamera();
+		add(video);
+		video.play();
 	}
 
 	function schoolIntro(?dialogueBox:DialogueBox):Void
