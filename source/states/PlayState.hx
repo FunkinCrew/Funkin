@@ -1,5 +1,6 @@
 package states;
 
+import utilities.Difficulties;
 import utilities.Ratings;
 import debuggers.ChartingState;
 import flixel.math.FlxRandom;
@@ -129,7 +130,9 @@ class PlayState extends MusicBeatState
 
 	var talking:Bool = true;
 	var songScore:Int = 0;
+
 	var scoreTxt:FlxText;
+	var infoTxt:FlxText;
 
 	public static var campaignScore:Int = 0;
 
@@ -392,10 +395,18 @@ class PlayState extends MusicBeatState
 		// healthBar
 		add(healthBar);
 
-		scoreTxt = new FlxText(healthBarBG.x + (healthBarBG.width / 2), healthBarBG.y + 45, 0, "", 20);
+		scoreTxt = new FlxText(0, healthBarBG.y + 45, 0, "", 20);
+		scoreTxt.screenCenter(X);
 		scoreTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		scoreTxt.scrollFactor.set();
 		add(scoreTxt);
+
+		infoTxt = new FlxText(0, 0, 0, SONG.song + " - " + Std.string(Difficulties.numToDiff(storyDifficulty)), 20);
+		infoTxt.screenCenter(X);
+		infoTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		infoTxt.y = FlxG.height - (infoTxt.height + 1);
+		infoTxt.scrollFactor.set();
+		add(infoTxt);
 
 		iconP1 = new HealthIcon(SONG.player1, true);
 		iconP1.y = healthBar.y - (iconP1.height / 2);
@@ -412,6 +423,7 @@ class PlayState extends MusicBeatState
 		iconP1.cameras = [camHUD];
 		iconP2.cameras = [camHUD];
 		scoreTxt.cameras = [camHUD];
+		infoTxt.cameras = [camHUD];
 		doof.cameras = [camHUD];
 
 		// if (SONG.song == 'South')
