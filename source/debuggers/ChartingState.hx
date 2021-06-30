@@ -1,5 +1,6 @@
 package debuggers;
 
+import utilities.Difficulties;
 import game.Song;
 import states.LoadingState;
 import utilities.CoolUtil;
@@ -76,7 +77,10 @@ class ChartingState extends MusicBeatState
 
 	var _song:SwagSong;
 
+	var difficulty:String = 'normal';
+
 	var typingShit:FlxInputText;
+	var swagShit:FlxInputText;
 	/*
 	 * WILL BE THE CURRENT / LAST PLACED NOTE
 	**/
@@ -190,6 +194,9 @@ class ChartingState extends MusicBeatState
 		var UI_songTitle = new FlxUIInputText(10, 10, 70, _song.song, 8);
 		typingShit = UI_songTitle;
 
+		var UI_songDiff = new FlxUIInputText(10 + UI_songTitle.width, 10, 70, 'Normal', 8);
+		swagShit = UI_songDiff;
+
 		var check_voices = new FlxUICheckBox(10, 25, null, null, "Has voice track", 100);
 		check_voices.checked = _song.needsVoices;
 		// _song.needsVoices = check_voices.checked;
@@ -223,7 +230,7 @@ class ChartingState extends MusicBeatState
 
 		var reloadSongJson:FlxButton = new FlxButton(reloadSong.x, saveButton.y + 30, "Reload JSON", function()
 		{
-			loadJson(_song.song.toLowerCase());
+			loadJson(_song.song.toLowerCase(), difficulty.toLowerCase());
 		});
 
 		var loadAutosaveBtn:FlxButton = new FlxButton(reloadSongJson.x, reloadSongJson.y + 30, 'load autosave', loadAutosave);
@@ -272,6 +279,7 @@ class ChartingState extends MusicBeatState
 
 		tab_group_song.name = "Song";
 		tab_group_song.add(UI_songTitle);
+		tab_group_song.add(UI_songDiff);
 
 		tab_group_song.add(check_voices);
 		tab_group_song.add(check_mute_inst);
@@ -501,6 +509,7 @@ class ChartingState extends MusicBeatState
 
 		Conductor.songPosition = FlxG.sound.music.time;
 		_song.song = typingShit.text;
+		difficulty = swagShit.text.toLowerCase();
 
 		strumLine.y = getYfromStrum((Conductor.songPosition - sectionStartTime()) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps));
 
@@ -1052,9 +1061,15 @@ class ChartingState extends MusicBeatState
 		return noteData;
 	}
 
-	function loadJson(song:String):Void
+	function loadJson(song:String, ?diff:String):Void
 	{
-		PlayState.SONG = Song.loadFromJson(song.toLowerCase(), song.toLowerCase());
+		var songT:String = song;
+
+		if(diff != 'normal')
+			songT = songT + '-' + diff.toLowerCase();
+
+		PlayState.storyDifficulty = Difficulties.stringToNum(diff.toLowerCase());
+		PlayState.SONG = Song.loadFromJson(songT.toLowerCase(), song.toLowerCase());
 		FlxG.resetState();
 	}
 

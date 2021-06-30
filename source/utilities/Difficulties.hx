@@ -26,4 +26,21 @@ class Difficulties
 
         return selected_Difficulty;
     }
+
+    public static function stringToNum(string:String):Int
+    {
+        var selected_Difficulty:Int = 1;
+
+        switch(string.toLowerCase())
+        {
+            case 'easy':
+                selected_Difficulty = 0;
+            case 'normal':
+                selected_Difficulty = 1;
+            case 'hard':
+                selected_Difficulty = 2;
+        }
+
+        return selected_Difficulty;
+    }
 }
