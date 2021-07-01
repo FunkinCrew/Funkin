@@ -302,6 +302,10 @@ class FreeplayState extends MusicBeatState
 
 	function changeDiff(change:Int = 0)
 	{
+		
+		if (songs[curSelected += change] == null)
+			return;
+
 		curDifficulty += change;
 
 		if (curDifficulty < 0)
@@ -332,6 +336,9 @@ class FreeplayState extends MusicBeatState
 
 		// NGio.logEvent('Fresh');
 		FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
+
+		if (songs[curSelected += change] == null)
+			return;
 
 		curSelected += change;
 
