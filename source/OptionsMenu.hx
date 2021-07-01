@@ -61,7 +61,13 @@ class OptionsMenu extends MusicBeatState
 			new ScoreScreen("Show the score screen after the end of a song"),
 			new ShowInput("Display every single input in the score screen."),
 			new Optimization("No backgrounds, no characters, centered notes, no player 2."),
-			new BotPlay("Showcase your charts and mods with autoplay."),
+			new BotPlay("Showcase your charts and mods with autoplay.")
+		]),
+		
+		new OptionCategory("Manage Save Data", [
+			new ResetScoreOption("Reset your score on all songs and weeks."),
+			new LockWeeksOption("Reset your storymode progress. (only Tutorial + Week 1 will be unlocked)"),
+			new ResetSettings("Reset ALL your settings.")
 		])
 		
 	];
