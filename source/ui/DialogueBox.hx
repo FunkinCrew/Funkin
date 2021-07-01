@@ -129,11 +129,6 @@ class DialogueBox extends FlxSpriteGroup
 		handSelect.setGraphicSize(Std.int(handSelect.width * PlayState.daPixelZoom));
 		add(handSelect);
 
-		if (!talkingRight)
-		{
-			// box.flipX = true;
-		}
-
 		dropText = new FlxText(242, 502, Std.int(FlxG.width * 0.6), "", 32);
 		dropText.font = 'Pixel Arial 11 Bold';
 		dropText.color = 0xFFD89494;
@@ -158,7 +153,7 @@ class DialogueBox extends FlxSpriteGroup
 			portraitLeft.visible = false;
 		if (PlayState.SONG.song.toLowerCase() == 'thorns')
 		{
-			portraitLeft.color = FlxColor.BLACK;
+			portraitLeft.visible = false;
 			swagDialogue.color = FlxColor.WHITE;
 			dropText.color = FlxColor.BLACK;
 		}
