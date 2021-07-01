@@ -280,7 +280,6 @@ class AlphaCharacter extends FlxSprite
 			case '.':
 				animation.addByPrefix(letter, '.0', 24);
 				animation.play(letter);
-				y += row * 60;
 			case "'":
 				animation.addByPrefix(letter, 'apostraphie0', 24);
 				animation.play(letter);
@@ -288,14 +287,17 @@ class AlphaCharacter extends FlxSprite
 			case "?":
 				animation.addByPrefix(letter, 'question mark0', 24);
 				animation.play(letter);
+				y -= height;
 			case "!":
 				animation.addByPrefix(letter, 'exclamation point0', 24);
 				animation.play(letter);
+				y -= height;
 			case ',':
 				animation.addByPrefix(letter, 'comma0', 24);
 				animation.play(letter);
-				y += row * 60;
 		}
+
+		y += row * 60;
 
 		updateHitbox();
 	}
