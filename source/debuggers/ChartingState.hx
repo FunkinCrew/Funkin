@@ -192,6 +192,8 @@ class ChartingState extends MusicBeatState
 	{
 		var UI_songTitle = new FlxUIInputText(10, 10, 70, _song.song, 8);
 		typingShit = UI_songTitle;
+		
+		var tab_group_song = new FlxUI(null, UI_box);
 
 		var UI_songDiff = new FlxUIInputText(10, 12 + UI_songTitle.height, 70, Std.string(Difficulties.numToDiff(PlayState.storyDifficulty)), 8);
 		swagShit = UI_songDiff;
@@ -242,40 +244,6 @@ class ChartingState extends MusicBeatState
 		stepperBPM.value = Conductor.bpm;
 		stepperBPM.name = 'song_bpm';
 
-		var characters:Array<String> = CoolUtil.coolTextFile(Paths.txt('characterList'));
-		var stages:Array<String> = CoolUtil.coolTextFile(Paths.txt('stageList'));
-
-		var player1DropDown = new FlxUIDropDownMenu(10, 100, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
-		{
-			_song.player1 = characters[Std.parseInt(character)];
-			updateHeads();
-		});
-		player1DropDown.selectedLabel = _song.player1;
-
-		var gfDropDown = new FlxUIDropDownMenu(10, 150, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
-		{
-			_song.gf = characters[Std.parseInt(character)];
-			updateHeads();
-		});
-		gfDropDown.selectedLabel = _song.gf;
-
-		var tab_group_song = new FlxUI(null, UI_box);
-
-		var player2DropDown = new FlxUIDropDownMenu(140, 100, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
-		{
-			_song.player2 = characters[Std.parseInt(character)];
-			updateHeads();
-		});
-
-		var stageDropDown = new FlxUIDropDownMenu(140, 150, FlxUIDropDownMenu.makeStrIdLabelArray(stages, true), function(stage:String)
-		{
-			_song.stage = stages[Std.parseInt(stage)];
-			updateHeads();
-		});
-		stageDropDown.selectedLabel = _song.stage;
-
-		player2DropDown.selectedLabel = _song.player2;
-
 		tab_group_song.name = "Song";
 		tab_group_song.add(UI_songTitle);
 		tab_group_song.add(UI_songDiff);
@@ -288,10 +256,6 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(loadAutosaveBtn);
 		tab_group_song.add(stepperBPM);
 		tab_group_song.add(stepperSpeed);
-		tab_group_song.add(gfDropDown);
-		tab_group_song.add(stageDropDown);
-		tab_group_song.add(player1DropDown);
-		tab_group_song.add(player2DropDown);
 
 		UI_box.addGroup(tab_group_song);
 		UI_box.scrollFactor.set();
@@ -412,8 +376,65 @@ class ChartingState extends MusicBeatState
 		var tab_group_note = new FlxUI(null, UI_box);
 		tab_group_note.name = 'Note';
 
-		// insert stuff
+		// CHARS
+		var characters:Array<String> = CoolUtil.coolTextFile(Paths.txt('characterList'));
 
+		var player1DropDown = new FlxUIDropDownMenu(10, 30, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
+		{
+			_song.player1 = characters[Std.parseInt(character)];
+			updateHeads();
+		});
+		player1DropDown.selectedLabel = _song.player1;
+
+		var gfDropDown = new FlxUIDropDownMenu(10, 50, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
+		{
+			_song.gf = characters[Std.parseInt(character)];
+			updateHeads();
+		});
+		gfDropDown.selectedLabel = _song.gf;
+
+		var player2DropDown = new FlxUIDropDownMenu(10, 70, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
+		{
+			_song.player2 = characters[Std.parseInt(character)];
+			updateHeads();
+		});
+		player2DropDown.selectedLabel = _song.player2;
+
+		// OTHER
+		var stages:Array<String> = CoolUtil.coolTextFile(Paths.txt('stageList'));
+
+		var stageDropDown = new FlxUIDropDownMenu(10, 120, FlxUIDropDownMenu.makeStrIdLabelArray(stages, true), function(stage:String)
+		{
+			_song.stage = stages[Std.parseInt(stage)];
+			updateHeads();
+		});
+		stageDropDown.selectedLabel = _song.stage;
+
+		// LABELS
+		var characterLabel = new FlxText(10, 10, 0, "Characters", 9);
+		var otherLabel = new FlxText(10, 100, 0, "Other", 9);
+
+		var p1Label = new FlxText(12 + player1DropDown.width, player1DropDown.y, 0, "Player 1", 9);
+		var gfLabel = new FlxText(12 + gfDropDown.width, gfDropDown.y, 0, "Girlfriend", 9);
+		var p2Label = new FlxText(12 + player2DropDown.width, player2DropDown.y, 0, "Player 2", 9);
+		var stageLabel = new FlxText(12 + stageDropDown.width, stageDropDown.y, 0, "Stage", 9);
+
+		// adding main dropdowns
+		tab_group_note.add(stageDropDown);
+		tab_group_note.add(player2DropDown);
+		tab_group_note.add(gfDropDown);
+		tab_group_note.add(player1DropDown);
+
+		// adding labels
+		tab_group_note.add(characterLabel);
+		tab_group_note.add(otherLabel);
+
+		tab_group_note.add(p1Label);
+		tab_group_note.add(gfLabel);
+		tab_group_note.add(p2Label);
+		tab_group_note.add(stageLabel);
+
+		// final add
 		UI_box.addGroup(tab_group_note);
 	}
 
