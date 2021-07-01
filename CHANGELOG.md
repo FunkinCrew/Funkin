@@ -3,7 +3,6 @@ All notable changes will be documented in this file.
 
 ## [0.2] - ?/?/?
 ### Added
-- Numbers are visible when using bold alphabet now.
 - A stage editor / stage viewer.
 - Note splashes when you hit a sick!
 - Millisecond timer when hitting notes.
@@ -18,6 +17,7 @@ All notable changes will be documented in this file.
 - Health icons can now have more general types (like bf and senpai), instead of having to write down the same icon mutliple times in code.
 - Alphabet now has more stuff (like bold numbers), which I took from the Agoti mod (yes ik I didn't make it myself, but I don't have adobe animate so ¯＼_(ツ)_/¯)
 - Optimized the title screen by not loading unneccesary libraries on launch.
+- The song charter has been revamped and now is more organized and easier to understand (generally).
 ### Fixed
 - Song names like Philly and Dadbattle have been replaced to their actual song names (Philly Nice and Dad Battle).
 - The layering of GF on the limo stage has now been fixed! (:pog:)
@@ -27,7 +27,6 @@ All notable changes will be documented in this file.
 - In the Thorns cutscene, Senpai's dialogue portrait goes over Spirit's image.
 
 DO THIS NOW (priority, top to bottom):
-- Song charter design slightly changed.
 - Revamped dialogue system.
 - New input system.
 
