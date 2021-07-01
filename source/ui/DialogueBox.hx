@@ -63,6 +63,7 @@ class DialogueBox extends FlxSpriteGroup
 		}, 5);
 
 		box = new FlxSprite(-20, 45);
+		add(box);
 		
 		var hasDialog = false;
 		switch (PlayState.SONG.song.toLowerCase())
