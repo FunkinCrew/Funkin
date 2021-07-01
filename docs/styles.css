@@ -6,8 +6,7 @@
     border-radius: 10px;
 }
 
-#wrapper
-{
+#wrapper {
     padding: 20px;
     margin: auto;
 }
@@ -28,12 +27,12 @@ body {
     color:white;
     background-color: #000;
     font-family: Arial, Helvetica, sans-serif;
-    
 }
 
-a { color:inherit;
-  text-decoration: none;}
-
+a { 
+  color:inherit;
+  text-decoration: none;
+}
 
 .hovertext a{
     color:white;
@@ -41,8 +40,7 @@ a { color:inherit;
     transition: color 1s, text-shadow 1s;
 }
 
-.hovertext a:hover
-{
+.hovertext a:hover{
     text-shadow: 2px 2px #00000077;
     color: #ffb50e;
 }
@@ -72,14 +70,13 @@ a { color:inherit;
   position: relative;
   padding-bottom: 56.25%; /* 16:9 */
   height: 0;
-
   max-block-size: 1400px;
 }
+
 .videoWrapper iframe {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-
 }
