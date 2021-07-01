@@ -164,9 +164,9 @@ class ChartingState extends MusicBeatState
 		add(dummyArrow);
 
 		var tabs = [
-			{name: "Song", label: 'Song Options'},
-			{name: "Section", label: 'Chart Options'},
-			{name: "Note", label: 'Art Options'}
+			{name: "Song Options", label: 'Song Options'},
+			{name: "Chart Options", label: 'Chart Options'},
+			{name: "Art Options", label: 'Art Options'}
 		];
 
 		UI_box = new FlxUITabMenu(null, tabs, true);
@@ -190,24 +190,37 @@ class ChartingState extends MusicBeatState
 
 	function addSongUI():Void
 	{
-		var UI_songTitle = new FlxUIInputText(10, 10, 70, _song.song, 8);
-		typingShit = UI_songTitle;
-		
+		//base ui thingy :D
 		var tab_group_song = new FlxUI(null, UI_box);
+		tab_group_song.name = "Song Options";
 
-		var UI_songDiff = new FlxUIInputText(10, 12 + UI_songTitle.height, 70, Std.string(Difficulties.numToDiff(PlayState.storyDifficulty)), 8);
+		// interactive
+
+		// inputs
+		var UI_songTitle = new FlxUIInputText(10, 30, 70, _song.song, 8);
+		typingShit = UI_songTitle;
+
+		var UI_songDiff = new FlxUIInputText(10, UI_songTitle.y + UI_songTitle.height + 2, 70, Std.string(Difficulties.numToDiff(PlayState.storyDifficulty)), 8);
 		swagShit = UI_songDiff;
-		
+
 		var check_voices = new FlxUICheckBox(10, UI_songDiff.y + UI_songDiff.height + 1, null, null, "Has voice track", 100);
 		check_voices.checked = _song.needsVoices;
-		
+
 		check_voices.callback = function()
 		{
 			_song.needsVoices = check_voices.checked;
 			trace('CHECKED!');
 		};
 
-		var check_mute_inst = new FlxUICheckBox(10, 200, null, null, "Mute Instrumental (in editor)", 100);
+		var stepperBPM:FlxUINumericStepper = new FlxUINumericStepper(10, check_voices.y + check_voices.height + 5, 0.1, 1, 0.1, 339, 1);
+		stepperBPM.value = Conductor.bpm;
+		stepperBPM.name = 'song_bpm';
+
+		var stepperSpeed:FlxUINumericStepper = new FlxUINumericStepper(10, stepperBPM.y + stepperBPM.height, 0.1, 1, 0.1, 10, 1);
+		stepperSpeed.value = _song.speed;
+		stepperSpeed.name = 'song_speed';
+
+		var check_mute_inst = new FlxUICheckBox(10, stepperSpeed.y + stepperSpeed.height + 10, null, null, "Mute Instrumental (in editor)", 100);
 		check_mute_inst.checked = false;
 		check_mute_inst.callback = function()
 		{
@@ -219,7 +232,7 @@ class ChartingState extends MusicBeatState
 			FlxG.sound.music.volume = vol;
 		};
 
-		var saveButton:FlxButton = new FlxButton(110, 8, "Save", function()
+		var saveButton:FlxButton = new FlxButton(10, 170, "Save", function()
 		{
 			saveLevel();
 		});
@@ -229,25 +242,24 @@ class ChartingState extends MusicBeatState
 			loadSong(_song.song);
 		});
 
-		var reloadSongJson:FlxButton = new FlxButton(reloadSong.x, saveButton.y + 30, "Reload JSON", function()
+		var reloadSongJson:FlxButton = new FlxButton(reloadSong.x, saveButton.y + 20, "Reload JSON", function()
 		{
 			loadJson(_song.song.toLowerCase(), difficulty.toLowerCase());
 		});
 
-		var loadAutosaveBtn:FlxButton = new FlxButton(reloadSongJson.x, reloadSongJson.y + 30, 'Load Autosave', loadAutosave);
+		var loadAutosaveBtn:FlxButton = new FlxButton(saveButton.x, saveButton.y + 20, 'Load Autosave', loadAutosave);
 
-		var stepperSpeed:FlxUINumericStepper = new FlxUINumericStepper(10, 80, 0.1, 1, 0.1, 10, 1);
-		stepperSpeed.value = _song.speed;
-		stepperSpeed.name = 'song_speed';
+		// labels
 
-		var stepperBPM:FlxUINumericStepper = new FlxUINumericStepper(10, 65, 0.1, 1, 0.1, 339, 1);
-		stepperBPM.value = Conductor.bpm;
-		stepperBPM.name = 'song_bpm';
+		var settingsLabel = new FlxText(10, 10, 0, "Setings", 9);
+		var actionsLabel = new FlxText(10, 150, 0, "Actions", 9);
 
-		tab_group_song.name = "Song";
+		// adding things
+		tab_group_song.add(settingsLabel);
+		tab_group_song.add(actionsLabel);
+
 		tab_group_song.add(UI_songTitle);
 		tab_group_song.add(UI_songDiff);
-
 		tab_group_song.add(check_voices);
 		tab_group_song.add(check_mute_inst);
 		tab_group_song.add(saveButton);
@@ -257,9 +269,11 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(stepperBPM);
 		tab_group_song.add(stepperSpeed);
 
+		// final addings
 		UI_box.addGroup(tab_group_song);
 		UI_box.scrollFactor.set();
 
+		// also this, idk what it does but ehhhh who cares \_(:/)_/
 		FlxG.camera.follow(strumLine);
 	}
 
@@ -273,7 +287,7 @@ class ChartingState extends MusicBeatState
 	{
 		// SECTION CREATION
 		var tab_group_section = new FlxUI(null, UI_box);
-		tab_group_section.name = 'Section';
+		tab_group_section.name = 'Chart Options';
 
 		// Section Titles
 		var sectionText = new FlxText(10, 10, 0, "Section Options", 9);
@@ -374,7 +388,7 @@ class ChartingState extends MusicBeatState
 	function addNoteUI():Void
 	{
 		var tab_group_note = new FlxUI(null, UI_box);
-		tab_group_note.name = 'Note';
+		tab_group_note.name = 'Art Options';
 
 		// CHARS
 		var characters:Array<String> = CoolUtil.coolTextFile(Paths.txt('characterList'));
@@ -1154,7 +1168,12 @@ class ChartingState extends MusicBeatState
 			_file.addEventListener(Event.COMPLETE, onSaveComplete);
 			_file.addEventListener(Event.CANCEL, onSaveCancel);
 			_file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
-			_file.save(data.trim(), _song.song.toLowerCase() + ".json");
+			var gamingName = _song.song.toLowerCase();
+
+			if(difficulty.toLowerCase() != 'normal')
+				gamingName = gamingName + '-' + difficulty.toLowerCase();
+
+			_file.save(data.trim(), gamingName + ".json");
 		}
 	}
 
