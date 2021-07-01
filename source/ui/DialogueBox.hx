@@ -195,7 +195,7 @@ class DialogueBox extends FlxSpriteGroup
 						bgFade.alpha -= 1 / 5 * 0.7;
 						portraitLeft.visible = false;
 						portraitRight.visible = false;
-						swagDialogue.alpha -= 1 / 5;
+						swagDialogue.alpha = 1 / 5;
 						dropText.alpha = swagDialogue.alpha;
 						handSelect.alpha = swagDialogue.alpha;
 					}, 5);
