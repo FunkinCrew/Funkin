@@ -307,11 +307,19 @@ class ChartingState extends MusicBeatState
 
 	function addSectionUI():Void
 	{
+		// SECTION CREATION
 		var tab_group_section = new FlxUI(null, UI_box);
 		tab_group_section.name = 'Section';
 
+		// Section Titles
 		var sectionText = new FlxText(10, 10, 0, "Section Options", 9);
+		var noteText = new FlxText(10, 240, 0, "Note Options", 9);
 
+		// Interactive Stuff
+
+		// Section Section (lol) //
+
+		// numbers
 		stepperLength = new FlxUINumericStepper(10, 30, 4, 0, 0, 999, 0);
 		stepperLength.value = _song.notes[curSection].lengthInSteps;
 		stepperLength.name = "section_length";
@@ -320,17 +328,17 @@ class ChartingState extends MusicBeatState
 		stepperSectionBPM.value = Conductor.bpm;
 		stepperSectionBPM.name = 'section_bpm';
 
-		var stepperCopy:FlxUINumericStepper = new FlxUINumericStepper(110, 130, 1, 1, -999, 999, 0);
-		var stepperText:FlxText = new FlxText(110 + stepperCopy.width, 130, 0, "Sections back", 9);
+		var copySectionCount:FlxUINumericStepper = new FlxUINumericStepper(110, 130, 1, 1, -999, 999, 0);
 
+		// BUTTONS
 		var copyButton:FlxButton = new FlxButton(10, 130, "Copy last", function()
 		{
-			copySection(Std.int(stepperCopy.value));
+			copySection(Std.int(copySectionCount.value));
 		});
 
 		var clearSectionButton:FlxButton = new FlxButton(10, 150, "Clear", clearSection);
 
-		var swapSection:FlxButton = new FlxButton(10, 170, "Swap section", function()
+		var swapSectionButton:FlxButton = new FlxButton(10, 170, "Swap section", function()
 		{
 			for (i in 0..._song.notes[curSection].sectionNotes.length)
 			{
@@ -341,43 +349,59 @@ class ChartingState extends MusicBeatState
 			}
 		});
 
+		// checkboxes
 		check_mustHitSection = new FlxUICheckBox(10, 50, null, null, "Camera points at P1", 100);
 		check_mustHitSection.name = 'check_mustHit';
 		check_mustHitSection.checked = true;
 
-		check_altAnim = new FlxUICheckBox(10, 210, null, null, "Alt Animation", 100);
+		check_altAnim = new FlxUICheckBox(10, 195, null, null, "Enemy Alt Animation", 100);
 		check_altAnim.name = 'check_altAnim';
 
-		check_changeBPM = new FlxUICheckBox(10, 80, null, null, 'Change BPM', 100);
+		check_changeBPM = new FlxUICheckBox(10, 80, null, null, 'Change BPM?', 100);
 		check_changeBPM.name = 'check_changeBPM';
 
-		var noteText = new FlxText(10, 240, 0, "Note Options", 9);
+		// Labels for Interactive Stuff
+		var stepperSizeText = new FlxText(stepperLength.x + stepperLength.width + 2, stepperLength.y, 0, "Section size", 9);
+		var stepperText:FlxText = new FlxText(110 + copySectionCount.width, 130, 0, "Sections back", 9);
+		var bpmText:FlxText = new FlxText(12 + stepperSectionBPM.width, 100, 0, "New BPM", 9);
 
+		// end of section section //
+
+		// NOTE SECTION //
+
+		// numbers
 		stepperSusLength = new FlxUINumericStepper(10, 260, Conductor.stepCrochet / 2, 0, 0, Conductor.stepCrochet * 16);
 		stepperSusLength.value = 0;
 		stepperSusLength.name = 'note_susLength';
 
-		// OMG AMOGUS SUS IMPOSTOR AT 3 AM CLAL?!??!??!?? :OOOOOOOOOOOOOOOOOOOOOO
+		// labels
 		var susText = new FlxText(11 + stepperSusLength.width, 260, 0, "Sustain note length", 9);
+
+		// Adding everything in
 
 		// note stuff
 		tab_group_section.add(noteText);
+
 		tab_group_section.add(stepperSusLength);
 		tab_group_section.add(susText);
 
 		// section stuff
 		tab_group_section.add(sectionText);
+
 		tab_group_section.add(stepperLength);
+		tab_group_section.add(bpmText);
 		tab_group_section.add(stepperSectionBPM);
-		tab_group_section.add(stepperCopy);
+		tab_group_section.add(copySectionCount);
 		tab_group_section.add(stepperText);
+		tab_group_section.add(stepperSizeText);
 		tab_group_section.add(check_mustHitSection);
 		tab_group_section.add(check_altAnim);
 		tab_group_section.add(check_changeBPM);
 		tab_group_section.add(copyButton);
 		tab_group_section.add(clearSectionButton);
-		tab_group_section.add(swapSection);
+		tab_group_section.add(swapSectionButton);
 
+		// final addition
 		UI_box.addGroup(tab_group_section);
 	}
 
