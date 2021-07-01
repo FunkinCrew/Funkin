@@ -43,7 +43,7 @@ class VideoPlayer extends FlxSprite {
         super(x, y);
 
         #if sys
-        WebmPlayer.SKIP_STEP_LIMIT = 10;
+        WebmPlayer.SKIP_STEP_LIMIT = 90;
 
         pathfile = path;
 
