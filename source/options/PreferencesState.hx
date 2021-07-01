@@ -16,7 +16,7 @@ class PreferencesState extends MusicBeatState
 
     var curSelected:Int = 0;
 
-	var menuItems:Array<String> = ['downscroll', 'cutscenes', 'note splash'];
+	var menuItems:Array<String> = ['downscroll', 'disable cutscenes', 'note splash'];
 
 	var notice:FlxText;
 
@@ -46,6 +46,15 @@ class PreferencesState extends MusicBeatState
             var ch = new Checkbox(controlLabel.x + controlLabel.width + 10, controlLabel.y - 20);
             checkboxGroup.add(ch);
             add(ch);
+
+			switch (menuItems[i]){
+				case "downscroll":
+					ch.change(config.downscroll);
+				case "disable cutscenes":
+					ch.change(config.cutscenes);
+				case "note splash":
+					ch.change(config.splash);
+			}
 
 			// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
 		}
@@ -101,7 +110,7 @@ class PreferencesState extends MusicBeatState
 			{
 				case "downscroll":
 					config.downscroll = checkboxGroup.members[curSelected].change();
-                case "cutscenes":
+                case "disable cutscenes":
                     config.cutscenes = checkboxGroup.members[curSelected].change();
                 case "note splash":
                     config.splash = checkboxGroup.members[curSelected].change();

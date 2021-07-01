@@ -16,6 +16,7 @@ import flixel.addons.ui.FlxUIState;
 import flixel.FlxSprite;
 import flixel.FlxG;
 import flixel.util.FlxPath;
+import Config;
 
 /**-200 -200
     usage:
@@ -77,9 +78,14 @@ class VideoPlayer extends FlxSprite {
 
     public function play() {
         #if sys
-        player.play();
-        
-        sound = FlxG.sound.play(Paths.file(pathfile + '.ogg'));
+        if (! new Config().cutscenes)
+        {
+            player.play();
+            sound = FlxG.sound.play(Paths.file(pathfile + '.ogg'));
+        }else{
+            if (finishCallback != null)
+                finishCallback();
+        }
         #end
 
         #if html5

@@ -1,4 +1,4 @@
-#if !mobile
+#if newgrounds
 package;
 
 class APIStuff
