@@ -52,7 +52,6 @@ class AnimationDebug extends FlxState
 		if (isDad)
 		{
 			dad = new Character(0, 0, daAnim);
-			dad.screenCenter();
 			dad.debugMode = true;
 			add(dad);
 
@@ -62,7 +61,6 @@ class AnimationDebug extends FlxState
 		else
 		{
 			bf = new Boyfriend(0, 0);
-			bf.screenCenter();
 			bf.debugMode = true;
 			add(bf);
 
@@ -93,14 +91,19 @@ class AnimationDebug extends FlxState
 
 		var characters:Array<String> = CoolUtil.coolTextFile(Paths.txt('characterList'));
 
+		char.screenCenter();
+
 		var charDropDown = new FlxUIDropDownMenu(10, 500, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
 		{
 			remove(char);
+			char.kill();
+			char.destroy();
+
 			daAnim = characters[Std.parseInt(character)];
 			char = new Character(0, 0, daAnim);
-			char.screenCenter();
 			char.debugMode = true;
 			add(char);
+			char.screenCenter();
 			updateTexts();
 			animList = [];
 			genBoyOffsets(true);
@@ -191,6 +194,7 @@ class AnimationDebug extends FlxState
 		if (FlxG.keys.justPressed.S || FlxG.keys.justPressed.W || FlxG.keys.justPressed.SPACE)
 		{
 			char.playAnim(animList[curAnim]);
+			char.screenCenter();
 
 			updateTexts();
 			genBoyOffsets(false);
