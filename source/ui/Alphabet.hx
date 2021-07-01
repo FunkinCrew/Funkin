@@ -151,7 +151,12 @@ class Alphabet extends FlxSpriteGroup
 			var isSymbol:Bool = AlphaCharacter.symbols.indexOf(splitWords[loopNum]) != -1;
 			#end
 
-			if (AlphaCharacter.alphabet.indexOf(splitWords[loopNum].toLowerCase()) != -1 || isNumber || isSymbol)
+			if (
+				AlphaCharacter.alphabet.indexOf(splitWords[loopNum].toLowerCase()) != -1 || 
+				(isBold && AlphaCharacter.boldalphabet.indexOf(splitWords[loopNum].toLowerCase()) != -1) 
+				|| isNumber
+				|| isSymbol
+			)
 			{
 				if (lastSprite != null && !xPosResetted)
 				{
@@ -221,7 +226,8 @@ class Alphabet extends FlxSpriteGroup
 
 class AlphaCharacter extends FlxSprite
 {
-	public static var alphabet:String = "abcdefghijklmnopqrstuvwxyz1234567890|~#$%()*+-:;<=>@[]^_.,'!?";
+	public static var boldalphabet:String = "abcdefghijklmnopqrstuvwxyz1234567890|~#$%()*+-:;<=>@[]^_.,'!?";
+	public static var alphabet:String = "abcdefghijklmnopqrstuvwxyz";
 
 	public static var numbers:String = "1234567890";
 
@@ -246,16 +252,15 @@ class AlphaCharacter extends FlxSprite
 	public function createLetter(letter:String):Void
 	{
 		var letterCase:String = "lowercase";
+
 		if (letter.toLowerCase() != letter)
 		{
 			letterCase = 'capital';
 		}
 
-		animation.addByPrefix(letter, letter + " " + letterCase, 24);
+		animation.addByPrefix(letter, letter + " " + letterCase + '0', 24);
 		animation.play(letter);
 		updateHitbox();
-
-		FlxG.log.add('the row' + row);
 
 		y = (110 - height);
 		y += row * 60;
@@ -273,19 +278,23 @@ class AlphaCharacter extends FlxSprite
 		switch (letter)
 		{
 			case '.':
-				animation.addByPrefix(letter, '.', 24);
+				animation.addByPrefix(letter, '.0', 24);
 				animation.play(letter);
 				y += 50;
 			case "'":
-				animation.addByPrefix(letter, 'apostraphie', 24);
+				animation.addByPrefix(letter, 'apostraphie0', 24);
 				animation.play(letter);
 				y -= 0;
 			case "?":
-				animation.addByPrefix(letter, 'question mark', 24);
+				animation.addByPrefix(letter, 'question mark0', 24);
 				animation.play(letter);
 			case "!":
-				animation.addByPrefix(letter, 'exclamation point', 24);
+				animation.addByPrefix(letter, 'exclamation point0', 24);
 				animation.play(letter);
+			case ',':
+				animation.addByPrefix(letter, 'comma0', 24);
+				animation.play(letter);
+				y += 50;
 		}
 
 		updateHitbox();

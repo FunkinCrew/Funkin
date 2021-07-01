@@ -202,10 +202,10 @@
 	<SubTexture name="A bold0001" x="286" y="147" width="54" height="67"/>
 	<SubTexture name="A bold0002" x="342" y="147" width="54" height="67"/>
 	<SubTexture name="A bold0003" x="342" y="147" width="54" height="67"/>
-	<SubTexture name="A captial0000" x="888" y="511" width="45" height="59"/>
-	<SubTexture name="A captial0001" x="888" y="511" width="45" height="59"/>
-	<SubTexture name="A captial0002" x="935" y="511" width="45" height="59"/>
-	<SubTexture name="A captial0003" x="935" y="511" width="45" height="59"/>
+	<SubTexture name="A capital0000" x="888" y="511" width="45" height="59"/>
+	<SubTexture name="A capital0001" x="888" y="511" width="45" height="59"/>
+	<SubTexture name="A capital0002" x="935" y="511" width="45" height="59"/>
+	<SubTexture name="A capital0003" x="935" y="511" width="45" height="59"/>
 	<SubTexture name="B bold0000" x="398" y="147" width="46" height="70"/>
 	<SubTexture name="B bold0001" x="398" y="147" width="46" height="70"/>
 	<SubTexture name="B bold0002" x="446" y="147" width="46" height="70"/>
@@ -274,10 +274,10 @@
 	<SubTexture name="J bold0001" x="187" y="219" width="54" height="70"/>
 	<SubTexture name="J bold0002" x="243" y="219" width="54" height="70"/>
 	<SubTexture name="J bold0003" x="243" y="219" width="54" height="70"/>
-	<SubTexture name="J captial0000" x="620" y="574" width="39" height="54"/>
-	<SubTexture name="J captial0001" x="620" y="574" width="39" height="54"/>
-	<SubTexture name="J captial0002" x="661" y="574" width="39" height="54"/>
-	<SubTexture name="J captial0003" x="661" y="574" width="39" height="54"/>
+	<SubTexture name="J capital0000" x="620" y="574" width="39" height="54"/>
+	<SubTexture name="J capital0001" x="620" y="574" width="39" height="54"/>
+	<SubTexture name="J capital0002" x="661" y="574" width="39" height="54"/>
+	<SubTexture name="J capital0003" x="661" y="574" width="39" height="54"/>
 	<SubTexture name="K bold0000" x="299" y="219" width="44" height="69"/>
 	<SubTexture name="K bold0001" x="299" y="219" width="44" height="69"/>
 	<SubTexture name="K bold0002" x="345" y="219" width="44" height="69"/>
