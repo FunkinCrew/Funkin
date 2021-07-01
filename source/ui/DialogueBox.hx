@@ -40,6 +40,8 @@ class DialogueBox extends FlxSpriteGroup
 	{
 		super();
 
+		// Ambient Music //
+
 		switch (PlayState.SONG.song.toLowerCase())
 		{
 			case 'senpai':
@@ -49,6 +51,8 @@ class DialogueBox extends FlxSpriteGroup
 				FlxG.sound.playMusic(Paths.music('LunchboxScary'), 0);
 				FlxG.sound.music.fadeIn(1, 0, 0.8);
 		}
+
+		// Background Fade //
 
 		bgFade = new FlxSprite(-200, -200).makeGraphic(Std.int(FlxG.width * 1.3), Std.int(FlxG.height * 1.3), 0xFFB3DFd8);
 		bgFade.scrollFactor.set();
@@ -93,10 +97,10 @@ class DialogueBox extends FlxSpriteGroup
 				add(face);
 		}
 
-		this.dialogueList = CoolUtil.coolTextFile(Paths.txt(PlayState.SONG.song.toLowerCase() + '/dialogue'));
-		
 		if (!hasDialog)
 			return;
+
+		this.dialogueList = CoolUtil.coolTextFile(Paths.txt(PlayState.SONG.song.toLowerCase() + '/dialogue'));
 		
 		portraitLeft = new FlxSprite(-20, 40);
 		portraitLeft.frames = Paths.getSparrowAtlas('weeb/senpaiPortrait');
