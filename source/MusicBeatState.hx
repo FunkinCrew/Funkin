@@ -20,7 +20,7 @@ class MusicBeatState extends FlxUIState
 	private var curStep:Int = 0;
 	private var curBeat:Int = 0;
 	private var controls(get, never):Controls;
-	public static var camMove:Float;
+	public static var camMove:Float = 0.04;
 
 	inline function get_controls():Controls
 		return PlayerSettings.player1.controls;

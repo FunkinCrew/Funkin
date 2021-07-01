@@ -8,7 +8,9 @@ import openfl.media.Sound;
 import flixel.FlxSprite;
 import webm.*;
 import utils.Asset2File;
+#if sys
 import webm.WebmPlayer;
+#end
 import PlayState;
 import flixel.addons.ui.FlxUIState;
 import flixel.FlxSprite;
@@ -28,7 +30,9 @@ import flixel.util.FlxPath;
 class VideoPlayer extends FlxSprite {
     public var finishCallback:Void->Void=null;
 
+    #if sys
     public var player:WebmPlayer;
+    #end
 
     public var sound:FlxSound;
 
@@ -38,6 +42,7 @@ class VideoPlayer extends FlxSprite {
     {
         super(x, y);
 
+        #if sys
         WebmPlayer.SKIP_STEP_LIMIT = 10;
 
         pathfile = path;
@@ -63,14 +68,22 @@ class VideoPlayer extends FlxSprite {
         });
 
         loadGraphic(player.bitmapData); 
+        #end
+
+        #if html5
+        trace('video is unsupported');
+        #end
     }
 
     public function play() {
+        #if sys
         player.play();
         
         sound = FlxG.sound.play(Paths.file(pathfile + '.ogg'));
+        #end
 
-        //FlxG.sound.playMusic(Reflect.field(player, "sound"));// not working
+        #if html5
+        #end
     }
 
     public function ownCamera() {
@@ -81,6 +94,9 @@ class VideoPlayer extends FlxSprite {
     }
 
     override public function destroy() {
+        #if sys
         player.stop();
+        super.destroy();
+        #end
     }
 }

@@ -153,9 +153,9 @@ class PlayState extends MusicBeatState
 
 	var rank:Rank;
 
-	var misses:Int;
+	var misses:Int = 0;
 	var perfect:Int = 0;
-	var hits:Int;
+	var hits:Int = 0;
 
 	var isDownScroll:Bool;
 

@@ -8,12 +8,54 @@ import flixel.math.FlxPoint;
 class Config {
 	var save:FlxSave;
 
+	// ---- new config
+
+	/**
+		how to use:
+
+		config.downscroll = true; // set downscroll
+
+		trace(config.downscroll); // get downscroll
+
+	**/
+
+	// downscroll
+	public var downscroll(get, set):Bool;
+	
+	function get_downscroll():Bool
+		return getdownscroll();
+	
+	function set_downscroll(downscroll:Bool):Bool
+		return setdownscroll(downscroll);
+
+	// splash settings
+	public var splash(get, set):Bool;
+	
+	function get_splash():Bool
+		return getsplash();
+	
+	function set_splash(splash:Bool):Bool
+		return setsplash(splash);
+
+	// cutscenes settings
+
+	public var cutscenes(get, set):Bool;
+	
+	function get_cutscenes():Bool
+		return getcutscenes();
+	
+	function set_cutscenes(cutscenes:Bool):Bool
+		return setcutscenes(cutscenes);
+
+	// ---- end
+
 	public function new() 
 	{
 		save = new FlxSave();
 		save.bind("saveconrtol");
 	}
 
+	// --- old config
 	public function setdownscroll(?value:Bool):Bool {
 		if (save.data.isdownscroll == null) save.data.isdownscroll = false;
 		

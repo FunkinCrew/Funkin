@@ -279,7 +279,7 @@ class FreeplayState extends MusicBeatState
 	override function beatHit()
 		{
 			super.beatHit();
-			trace(curBeat);
+			// trace(curBeat);
 
 			iconBop();
 
