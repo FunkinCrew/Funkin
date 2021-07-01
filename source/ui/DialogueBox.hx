@@ -10,6 +10,7 @@ import flixel.input.FlxKeyManager;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import utilities.CoolUtil;
 
 using StringTools;
 
@@ -90,7 +91,7 @@ class DialogueBox extends FlxSpriteGroup
 				add(face);
 		}
 
-		this.dialogueList = dialogueList;
+		this.dialogueList = CoolUtil.coolTextFile(Paths.txt(PlayState.SONG.song.toLowerCase() + '/dialogue'));
 		
 		if (!hasDialog)
 			return;
@@ -225,13 +226,16 @@ class DialogueBox extends FlxSpriteGroup
 	function startDialogue():Void
 	{
 		cleanDialog();
-		
-		var theDialog:Alphabet = new Alphabet(0, 70, dialogueList[0], false, true);
+
+		var gaming = dialogueList[0].replace("-lb-", "\n");
+
+		var theDialog:Alphabet = new Alphabet(0, 70, gaming, false, true);
 		dialogue = theDialog;
 		add(theDialog);
 
-		// swagDialogue.text = ;
-		swagDialogue.resetText(dialogueList[0]);
+		var pixelDialogue = dialogueList[0].replace("-lb-", " ");
+
+		swagDialogue.resetText(pixelDialogue);
 		swagDialogue.start(0.04, true);
 
 		switch (curCharacter)
