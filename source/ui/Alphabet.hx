@@ -284,6 +284,7 @@ class AlphaCharacter extends FlxSprite
 			case "'":
 				animation.addByPrefix(letter, 'apostraphie0', 24);
 				animation.play(letter);
+				y -= height;
 			case "?":
 				animation.addByPrefix(letter, 'question mark0', 24);
 				animation.play(letter);
