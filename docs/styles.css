@@ -18,9 +18,7 @@ marquee {
     display: inline-block;
 }
 
-h1 {
-    text-align: center;
-}
+h1 {text-align: center;}
 
 body {
     background-image: url('img/skin-funkin-cardbordtoast.jpg');
@@ -56,23 +54,13 @@ a { color:inherit;
     padding-bottom: 10px;
 }
 
-.linktext a {
-    font-weight: bold;  
-}
+.linktext a {font-weight: bold;}
 
-.linktext a:hover {
-  border-radius: 5px;
-}
+.linktext a:hover {border-radius: 5px;}
 
-#itch a:hover
-{
-    color: #fa5c5c;
-}
-#twitter a:hover
-{
-    color: #00acee;
-}
+#itch a:hover{color: #fa5c5c;} 
 
+#twitter a:hover{color: #00acee;}
 
 #coolervidwrapper {
     padding-left: min(12em, 75%);
