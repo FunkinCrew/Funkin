@@ -45,6 +45,7 @@ import openfl.filters.ShaderFilter;
 #if mobileC
 import ui.Mobilecontrols;
 #end
+import utils.Rank;
 
 using StringTools;
 
@@ -123,7 +124,10 @@ class PlayState extends MusicBeatState
 
 	var talking:Bool = true;
 	var songScore:Int = 0;
-	var scoreTxt:FlxText;
+	
+	var perfectTxt:FlxText;
+	var rankTxt:FlxText;
+	var missesTxt:FlxText;
 
 	public static var campaignScore:Int = 0;
 
@@ -146,6 +150,12 @@ class PlayState extends MusicBeatState
 	#if mobileC
 	var mcontrols:Mobilecontrols; 
 	#end
+
+	var rank:Rank;
+
+	var misses:Int;
+	var perfect:Int = 0;
+	var hits:Int;
 
 	var isDownScroll:Bool;
 
@@ -1022,10 +1032,21 @@ class PlayState extends MusicBeatState
 		// healthBar
 		add(healthBar);
 
-		scoreTxt = new FlxText(healthBarBG.x + healthBarBG.width - 190, healthBarBG.y + 30, 0, "", 20);
-		scoreTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT);
-		scoreTxt.scrollFactor.set();
-		add(scoreTxt);
+		// perfect , rank , misses
+		missesTxt = new FlxText(healthBarBG.x + healthBarBG.width - 100, healthBarBG.y + 35, 0, "", 20);
+		missesTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT);
+		missesTxt.scrollFactor.set();
+		add(missesTxt);
+		
+		rankTxt = new FlxText(healthBarBG.x + (healthBarBG.width / 2) - 24, healthBarBG.y + 35, 0, "", 20);
+		rankTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT);
+		rankTxt.scrollFactor.set();
+		add(rankTxt);
+		
+		perfectTxt = new FlxText(healthBarBG.x + 10, healthBarBG.y + 35, 0, "", 20);
+		perfectTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT);
+		perfectTxt.scrollFactor.set();
+		add(perfectTxt);
 
 		iconP1 = new HealthIcon(SONG.player1, true);
 		iconP1.y = healthBar.y - (iconP1.height / 2);
@@ -1042,8 +1063,14 @@ class PlayState extends MusicBeatState
 		healthBarBG.cameras = [camHUD];
 		iconP1.cameras = [camHUD];
 		iconP2.cameras = [camHUD];
-		scoreTxt.cameras = [camHUD];
+
+		perfectTxt.cameras = [camHUD];
+		missesTxt.cameras = [camHUD];
+		rankTxt.cameras = [camHUD];
+		
 		doof.cameras = [camHUD];
+
+		rank = new Rank();
 
 		#if mobileC
 			mcontrols = new Mobilecontrols();
@@ -1726,7 +1753,14 @@ class PlayState extends MusicBeatState
 
 		super.update(elapsed);
 
-		scoreTxt.text = "Score:" + songScore;
+		//scoreTxt.text = "Score:" + songScore;
+		missesTxt.text = 'Misses: $misses';
+		perfectTxt.text = 'Perfect: $perfect';
+
+		rank.goodhit = hits;
+		rank.misses = misses;
+
+		rankTxt.text = 'Rank: ${rank.calcRank()}';
 
 		if (FlxG.keys.justPressed.ENTER #if android || FlxG.android.justReleased.BACK #end && (startedCountdown && canPause))
 		{
@@ -2048,6 +2082,7 @@ class PlayState extends MusicBeatState
 				{
 					if (daNote.tooLate || !daNote.wasGoodHit)
 					{
+						misses += 1;
 						health -= 0.0475;
 						vocals.volume = 0;
 					}
@@ -2198,6 +2233,9 @@ class PlayState extends MusicBeatState
 				grpNoteSplashes.add(recycledNote);
 			}
 		}
+
+		if (daRating == "sick")
+			perfect += 1;
 
 		songScore += score;
 
@@ -2515,6 +2553,7 @@ class PlayState extends MusicBeatState
 
 	function noteMiss(direction:Int = 1):Void
 	{
+		misses += 1;
 		if (!boyfriend.stunned)
 		{
 			health -= 0.04;
@@ -2618,6 +2657,8 @@ class PlayState extends MusicBeatState
 
 			note.wasGoodHit = true;
 			vocals.volume = 1;
+
+			hits += 1;
 
 			if (!note.isSustainNote)
 			{
