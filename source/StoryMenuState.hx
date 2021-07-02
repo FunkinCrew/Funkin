@@ -212,6 +212,19 @@ class StoryMenuState extends MusicBeatState
 
 		updateText();
 
+
+		var bullShit:Int = 0;
+
+		for (item in grpWeekText.members)
+		{
+			item.targetY = bullShit - curWeek;
+			if (item.targetY == Std.int(0) && weekUnlocked[curWeek])
+				item.alpha = 1;
+			else
+				item.alpha = 0.6;
+			bullShit++;
+		}
+
 		trace("Line 165");
 
 		super.create();
