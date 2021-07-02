@@ -320,7 +320,7 @@ class KeyBindMenu extends FlxSubState
 
         var shouldReturn:Bool = true;
 
-        var notAllowed:Array<String> = ["START", "RIGHT_TRIGGER", "LEFT_TRIGGER"];
+        var notAllowed:Array<String> = ["START"];
 
         for(x in 0...gpKeys.length)
             {
