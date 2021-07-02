@@ -133,13 +133,13 @@ class StoryMenuState extends MusicBeatState
 		grpWeekText = new FlxTypedGroup<MenuItem>();
 		add(grpWeekText);
 
+		grpLocks = new FlxTypedGroup<FlxSprite>();
+		add(grpLocks);
+
 		var blackBarThingie:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, 56, FlxColor.BLACK);
 		add(blackBarThingie);
 
 		grpWeekCharacters = new FlxTypedGroup<MenuCharacter>();
-
-		grpLocks = new FlxTypedGroup<FlxSprite>();
-		add(grpLocks);
 
 		trace("Line 70");
 
