@@ -1345,6 +1345,14 @@ class PlayState extends MusicBeatState
 			else
 				iconP1.animation.play('bf-old');
 		}
+		
+		if (FlxG.keys.justPressed.NINE)
+		{
+			if (iconP2.animation.curAnim.name == 'dad')
+				iconP2.animation.play(SONG.player2);
+			else
+				iconP2.animation.play('dad');
+		}
 
 		switch (curStage)
 		{
