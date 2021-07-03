@@ -1,9 +1,10 @@
 export/
 
-# Editors
+# Editors/formatters
 .vscode/
+.prettierignore
 
-# OS Stuff 
+# OS Stuff
 .DS_Store
 # API
 APIStuff.hx
