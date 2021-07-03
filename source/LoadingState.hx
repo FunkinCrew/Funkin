@@ -12,6 +12,7 @@ import openfl.utils.Assets;
 import lime.utils.Assets as LimeAssets;
 import lime.utils.AssetLibrary;
 import lime.utils.AssetManifest;
+import flixel.util.FlxAxes;
 
 import haxe.io.Path;
 
@@ -33,9 +34,24 @@ class LoadingState extends MusicBeatState
 		this.target = target;
 		this.stopMusic = stopMusic;
 	}
+
+	var loadBar:FlxSprite;
 	
 	override function create()
 	{
+		var bg = new FlxSprite();
+		bg.loadGraphic(Paths.image('funkay'));
+		bg.setGraphicSize(FlxG.width);
+		bg.updateHitbox();
+		bg.antialiasing = true;
+		add(bg);
+		bg.scrollFactor.set();
+		bg.screenCenter();
+
+		loadBar = new FlxSprite(0, FlxG.height - 20).makeGraphic(FlxG.width, 10, -59694);
+		loadBar.screenCenter(FlxAxes.X);
+		add(loadBar);	
+
 		logo = new FlxSprite(-150, -100);
 		logo.frames = Paths.getSparrowAtlas('logoBumpin');
 		logo.antialiasing = true;
@@ -50,8 +66,8 @@ class LoadingState extends MusicBeatState
 		gfDance.animation.addByIndices('danceLeft', 'gfDance', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
 		gfDance.animation.addByIndices('danceRight', 'gfDance', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
 		gfDance.antialiasing = true;
-		add(gfDance);
-		add(logo);
+		//add(gfDance);
+		//add(logo);
 		
 		initSongsManifest().onComplete
 		(
@@ -120,6 +136,10 @@ class LoadingState extends MusicBeatState
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+
+		if (callbacks != null)
+			loadBar.scale.x = callbacks.getFired().length / callbacks.getUnfired().length;
+		
 		#if debug
 		if (FlxG.keys.justPressed.SPACE)
 			trace('fired: ' + callbacks.getFired() + " unfired:" + callbacks.getUnfired());
