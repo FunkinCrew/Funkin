@@ -1,3 +1,9 @@
 export/
+
+# Editors
 .vscode/
+
+# OS Stuff 
+.DS_Store
+# API
 APIStuff.hx
