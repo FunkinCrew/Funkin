@@ -42,18 +42,16 @@ class OptionsMenu extends MusicBeatState
 		new OptionCategory("Appearance", [
 			new DistractionsAndEffectsOption("Toggle stage distractions that can hinder your gameplay."),
 			new CamZoomOption("Toggle the camera zoom in-game."),
-			#if desktop
 			new RainbowFPSOption("Make the FPS Counter Rainbow"),
 			new AccuracyOption("Display accuracy information."),
 			new NPSDisplayOption("Shows your current Notes Per Second."),
 			new SongPositionOption("Show the songs current position (as a bar)"),
 			new CpuStrums("CPU's strumline lights up when a note hits it."),
-			#end
 		]),
 		
 		new OptionCategory("Misc", [
-			#if desktop
 			new FPSOption("Toggle the FPS Counter"),
+			#if desktop
 			new ReplayOption("View replays"),
 			#end
 			new FlashingLightsOption("Toggle flashing lights that can cause epileptic seizures and strain."),
