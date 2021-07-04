@@ -251,7 +251,10 @@ class StoryMenuState extends MusicBeatState
 
 		// FlxG.watch.addQuick('font', scoreText.font);
 
-		difficultySelectors.visible = weekUnlocked[curWeek];
+		if(weekProgression)
+			difficultySelectors.visible = weekUnlocked[curWeek];
+		else
+			difficultySelectors.visible = true;
 
 		grpLocks.forEach(function(lock:FlxSprite)
 		{
@@ -401,7 +404,7 @@ class StoryMenuState extends MusicBeatState
 		for (item in grpWeekText.members)
 		{
 			item.targetY = bullShit - curWeek;
-			if (item.targetY == Std.int(0) && weekUnlocked[curWeek])
+			if (item.targetY == Std.int(0) && (weekUnlocked[curWeek] && weekProgression))
 				item.alpha = 1;
 			else
 				item.alpha = 0.6;
