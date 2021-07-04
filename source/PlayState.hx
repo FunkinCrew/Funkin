@@ -60,6 +60,8 @@ class PlayState extends MusicBeatState
 	public static var storyDifficulty:Int = 1;
 
 	var halloweenLevel:Bool = false;
+	var triggeredAlready:Bool = false;
+	var theFunne:Bool = false;
 
 	private var vocals:FlxSound;
 
@@ -2908,6 +2910,7 @@ class PlayState extends MusicBeatState
 
 	function noteCheck(keyP:Bool, note:Note):Void
 	{
+	    var noteDiff:Float = Math.abs(note.strumTime - Conductor.songPosition);
 		note.rating = Ratings.CalculateRating(noteDiff);
 		if (keyP)
 			goodNoteHit(note);
@@ -2919,6 +2922,7 @@ class PlayState extends MusicBeatState
 
 	function goodNoteHit(note:Note):Void
 	{
+		var noteDiff:Float = Math.abs(note.strumTime - Conductor.songPosition);
 		note.rating = Ratings.CalculateRating(noteDiff);
 		if (!note.wasGoodHit)
 		{
