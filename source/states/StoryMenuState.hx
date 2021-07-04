@@ -37,6 +37,8 @@ class StoryMenuState extends MusicBeatState
 	];
 	var curDifficulty:Int = 1;
 
+	var weekProgression:Bool = true;
+
 	public static var weekUnlocked:Array<Bool> = [true, false, false, false, false, false, false];
 
 	var weekCharacters:Array<Dynamic> = [
@@ -142,7 +144,7 @@ class StoryMenuState extends MusicBeatState
 			// weekThing.updateHitbox();
 
 			// Needs an offset thingie
-			if (!weekUnlocked[i])
+			if (!weekUnlocked[i] || !weekProgression)
 			{
 				var lock:FlxSprite = new FlxSprite(weekThing.width + 10 + weekThing.x);
 				lock.frames = ui_tex;
@@ -305,7 +307,7 @@ class StoryMenuState extends MusicBeatState
 
 	function selectWeek()
 	{
-		if (weekUnlocked[curWeek])
+		if (weekUnlocked[curWeek] || !weekProgression)
 		{
 			if (stopspamming == false)
 			{
@@ -462,7 +464,7 @@ class StoryMenuState extends MusicBeatState
 			txtTracklist.text += i + "\n";
 		}
 
-		if(!weekUnlocked[curWeek])
+		if(!weekUnlocked[curWeek] && weekProgression)
 		{
 			grpWeekCharacters.members[0].visible = false;
 			txtTracklist.text = "Tracks\n\n???\n???\n???\n";
