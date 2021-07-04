@@ -46,6 +46,7 @@ import openfl.filters.ShaderFilter;
 import ui.Mobilecontrols;
 #end
 import utils.Rank;
+import Config;
 
 using StringTools;
 
@@ -62,6 +63,7 @@ class PlayState extends MusicBeatState
 	var halloweenLevel:Bool = false;
 	var triggeredAlready:Bool = false;
 	var theFunne:Bool = false;
+	var epic:Config = new Config();
 
 	private var vocals:FlxSound;
 
@@ -1005,10 +1007,10 @@ class PlayState extends MusicBeatState
 		doof.finishThing = startCountdown;
 
 		Conductor.songPosition = -5000;
-		isDownScroll = Config.downscroll;
-		cutsceneOp = Config.cutscenes;
-		noteSplashOp = Config.splash;
-		noteGlow = Config.noteglow;
+		isDownScroll = epic.downscroll;
+		cutsceneOp = epic.cutscenes;
+		noteSplashOp = epic.splash;
+		noteGlow = epic.noteglow;
 		Note.isDownScroll = isDownScroll;
 
 		strumLine = new FlxSprite(0, (isDownScroll ? FlxG.height - 150 : 50)).makeGraphic(FlxG.width, 10);//i hate math. :(
