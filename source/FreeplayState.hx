@@ -147,6 +147,8 @@ class FreeplayState extends MusicBeatState
 		// add(selector);
 
 		var swag:Alphabet = new Alphabet(1, 0, "swag");
+		bg = new FlxSprite().loadGraphic(Paths.image('menuBGDesat'));
+		add(bg);
 
 		// JUST DOIN THIS SHIT FOR TESTING!!!
 		/* 
@@ -199,9 +201,6 @@ class FreeplayState extends MusicBeatState
 			{
 				iconArray[i].animation.curAnim.curFrame = 0;
 			}
-
-		bg = new FlxSprite().loadGraphic(Paths.image('menuBGDesat'));
-		add(bg);
 
 		var colorLog:Int = 0;
 
