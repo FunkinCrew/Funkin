@@ -54,8 +54,6 @@ class PreferencesState extends MusicBeatState
 					ch.change(config.cutscenes);
 				case "note splash":
 					ch.change(config.splash);
-				case "note glow":
-				    ch.change(config.noteglow);
 			}
 
 			// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
@@ -116,8 +114,6 @@ class PreferencesState extends MusicBeatState
                     config.cutscenes = checkboxGroup.members[curSelected].change();
                 case "note splash":
                     config.splash = checkboxGroup.members[curSelected].change();//wjat.
-                case "note glow":
-                    config.noteglow = checkboxGroup.members[curSelected].change();
 			}
 		}
 
