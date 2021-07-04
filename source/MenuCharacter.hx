@@ -25,7 +25,7 @@ class MenuCharacter extends FlxSprite
 		animation.addByPrefix('mom', "Mom Idle BLACK LINES", 24);
 		animation.addByPrefix('parents-christmas', "Parent Christmas Idle", 24);
 		animation.addByPrefix('senpai', "SENPAI idle Black Lines", 24);
-		animation.addByPrefix('tankman', "Dad idle dance BLACK LINE", 24);//for template use.
+		animation.addByPrefix('tankman', "Tankman Menu BLACK", 24);//for template use.
 		// Parent Christmas Idle
 
 		animation.play(character);
