@@ -28,15 +28,6 @@ class Config {
 	function set_downscroll(downscroll:Bool):Bool
 		return setdownscroll(downscroll);
 
-	// cpu strums lllll
-	public var noteglow(get, set):Bool;
-	
-	function get_noteglow():Bool
-		return getnoteglow();
-	
-	function set_noteglow(noteglow:Bool):Bool
-		return setnoteglow(noteglow);
-
 
 	// splash settings
 	public var splash(get, set):Bool;
