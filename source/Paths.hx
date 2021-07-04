@@ -112,7 +112,7 @@ class Paths
 
 	inline static public function getCharacter(key:String)
 	{
-		return FlxAtlasFrames.fromSparrow(image(key, 'shared'), file('character/$key.xml', 'shared'));
+		return FlxAtlasFrames.fromSparrow(image('characters/$key', 'shared'), file('characters/$key.xml', 'shared'));
 	}
 
 	inline static public function getPackerAtlas(key:String, ?library:String)
