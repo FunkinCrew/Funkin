@@ -342,7 +342,7 @@ class TitleState extends MusicBeatState
 			else
 				FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
 
-			if(FlxG.save.data.weekProgression)
+			if(FlxG.save.data.weekProgression != null)
 				StoryMenuState.weekProgression = FlxG.save.data.weekProgression;
 
 			transitioning = true;
