@@ -3889,7 +3889,7 @@ class PlayState extends MusicBeatState
 				 )
 			{
 				var tankmanRunner:TankmenBG = new TankmenBG();
-				tankmanRunner.resetShit(FlxG.random.int(1500, 1700) * 1, 285, false, 1, 1.5);
+				tankmanRunner.resetShit(FlxG.random.int(1500, 1700) * 1, 275, false, 1, 1.5);
 				tankmanRun.add(tankmanRunner);
 			}
 		}
