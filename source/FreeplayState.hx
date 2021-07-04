@@ -31,6 +31,7 @@ class FreeplayState extends MusicBeatState
 	var diffText:FlxText;
 	var lerpScore:Int = 0;
 	var intendedScore:Int = 0;
+	var bg:FlxSprite;
 
 	var songWait:FlxTimer = new FlxTimer();
 	private var grpSongs:FlxTypedGroup<Alphabet>;
@@ -95,7 +96,7 @@ class FreeplayState extends MusicBeatState
 
 		// LOAD CHARACTERS
 
-		var bg:FlxSprite;
+		
 
 		grpSongs = new FlxTypedGroup<Alphabet>();
 		add(grpSongs);
