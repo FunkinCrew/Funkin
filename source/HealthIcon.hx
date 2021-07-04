@@ -23,24 +23,24 @@ class HealthIcon extends FlxSprite
 		antialiasing = true;
 		animation.add('bf', [0, 1], 0, false, isPlayer);
 		animation.add('bf-car', [0, 1], 0, false, isPlayer);
-		animation.add('bf-christmas', [0, 1], 0, false, isPlayer);
-		animation.add('bf-pixel', [21, 21], 0, false, isPlayer);
-		animation.add('bf-holding-gf', [0, 1], 0, false, isPlayer);
-		animation.add('spooky', [2, 3], 0, false, isPlayer);
+		animation.add('bf-christmas', [22, 23], 0, false, isPlayer);
+		animation.add('bf-pixel', [0, 1], 0, false, isPlayer);
+		animation.add('bf-holding-gf', [26, 27], 0, false, isPlayer);
+		animation.add('spooky', [10, 11], 0, false, isPlayer);
 		animation.add('pico', [4, 5], 0, false, isPlayer);
 		animation.add('mom', [6, 7], 0, false, isPlayer);
 		animation.add('mom-car', [6, 7], 0, false, isPlayer);
 		animation.add('tankman', [8, 9], 0, false, isPlayer);
-		animation.add('face', [10, 11], 0, false, isPlayer);
-		animation.add('dad', [12, 13], 0, false, isPlayer);
-		animation.add('senpai', [22, 22], 0, false, isPlayer);
-		animation.add('senpai-angry', [22, 22], 0, false, isPlayer);
-		animation.add('spirit', [23, 23], 0, false, isPlayer);
-		animation.add('bf-old', [14, 15], 0, false, isPlayer);
-		animation.add('gf', [16], 0, false, isPlayer);
-		animation.add('parents-christmas', [17], 0, false, isPlayer);
-		animation.add('monster', [19, 20], 0, false, isPlayer);
-		animation.add('monster-christmas', [19, 20], 0, false, isPlayer);
+		animation.add('face', [12, 13], 0, false, isPlayer);
+		animation.add('dad', [2, 3], 0, false, isPlayer);
+		animation.add('senpai', [18, 19], 0, false, isPlayer);
+		animation.add('senpai-angry', [18, 19], 0, false, isPlayer);
+		animation.add('spirit', [20, 21], 0, false, isPlayer);
+		animation.add('bf-old', [12, 13], 0, false, isPlayer);
+		animation.add('gf', [24, 25], 0, false, isPlayer);
+		animation.add('parents-christmas', [14, 15], 0, false, isPlayer);
+		animation.add('monster', [16, 17], 0, false, isPlayer);
+		animation.add('monster-christmas', [16, 17], 0, false, isPlayer);
 		
 		antialiasing = !pixelIcons.contains(char);
 		

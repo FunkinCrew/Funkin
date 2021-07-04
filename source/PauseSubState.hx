@@ -19,7 +19,7 @@ class PauseSubState extends MusicBeatSubstate
 	var grpMenuShit:FlxTypedGroup<Alphabet>;
 	var blueballs:Int = MusicBeatSubstate.deaths;
 
-	var menuItems:Array<String> = ['Resume', 'Restart Song', 'Exit to menu'];
+	var menuItems:Array<String> = ['Resume', 'Restart Song', 'Chart Editor', 'Exit to menu'];
 	var curSelected:Int = 0;
 
 	var pauseMusic:FlxSound;
@@ -131,6 +131,8 @@ class PauseSubState extends MusicBeatSubstate
 				case "Exit to menu":
 				    MusicBeatSubstate.deaths = 0;
 					FlxG.switchState(new MainMenuState());
+				case "Chart Editor":
+				    FlxG.switchState(new ChartingState());
 			}
 		}
 

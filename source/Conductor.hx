@@ -1,6 +1,7 @@
 package;
 
 import Song.SwagSong;
+import flixel.FlxG;
 
 /**
  * ...
@@ -28,8 +29,17 @@ class Conductor
 
 	public static var bpmChangeMap:Array<BPMChangeEvent> = [];
 
+	public static var timeScale:Float = Conductor.safeZoneOffset / 166;
+
 	public function new()
 	{
+	}
+
+	public static function recalculateTimings()
+	{
+		Conductor.safeFrames = FlxG.save.data.frames;
+		Conductor.safeZoneOffset = Math.floor((Conductor.safeFrames / 60) * 1000);
+		Conductor.timeScale = Conductor.safeZoneOffset / 166;
 	}
 
 	public static function mapBPMChanges(song:SwagSong)

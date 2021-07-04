@@ -28,6 +28,7 @@ class Config {
 	function set_downscroll(downscroll:Bool):Bool
 		return setdownscroll(downscroll);
 
+
 	// splash settings
 	public var splash(get, set):Bool;
 	

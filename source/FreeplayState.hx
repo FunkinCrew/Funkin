@@ -22,7 +22,7 @@ using StringTools;
 class FreeplayState extends MusicBeatState
 {
 	var songs:Array<SongMetadata> = [];
-	var beatArray:Array<Int> = [100,100,120,180,150,165,130,150,175,165,110,125,180];
+	var beatArray:Array<Int> = [100,100,120,180,150,165,130,150,175,165,110,125,180,100,150,159,144,120,190,160,185,178];
 	var selector:FlxText;
 	var curSelected:Int = 0;
 	var curDifficulty:Int = 1;
@@ -31,6 +31,7 @@ class FreeplayState extends MusicBeatState
 	var diffText:FlxText;
 	var lerpScore:Int = 0;
 	var intendedScore:Int = 0;
+	var bg:FlxSprite;
 
 	var songWait:FlxTimer = new FlxTimer();
 	private var grpSongs:FlxTypedGroup<Alphabet>;
@@ -88,11 +89,14 @@ class FreeplayState extends MusicBeatState
 		if (StoryMenuState.weekUnlocked[7] || isDebug)
 			addWeek(['Ugh', 'Guns', 'Stress'], 7, ['tankman']);
 
+//test song.
+		addWeek(['Test'], 8, ['bf-pixel']);
+
 		// LOAD MUSIC
 
 		// LOAD CHARACTERS
 
-		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuBGBlue'));
+		bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 		add(bg);
 
 		grpSongs = new FlxTypedGroup<Alphabet>();
@@ -197,6 +201,8 @@ class FreeplayState extends MusicBeatState
 				iconArray[i].animation.curAnim.curFrame = 0;
 			}
 
+		var colorLog:Int = 0;
+
 		FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, 0.95);
 
 		if (FlxG.sound.music != null)
@@ -214,6 +220,34 @@ class FreeplayState extends MusicBeatState
 
 		scoreText.text = "PERSONAL BEST:" + lerpScore;
 
+		switch (songs[curSelected].songName.toLowerCase())
+		{
+			case 'tutorial':
+				bg.color = FlxColor.fromRGB(245, 66, 152);
+			case 'bopeebo' | 'fresh' | 'dadbattle':
+				bg.color = FlxColor.fromRGB(174, 90, 191);
+			case 'spookeez' | 'south':
+				bg.color = FlxColor.fromRGB(255, 165, 31);
+			case 'monster':
+				bg.color = FlxColor.fromRGB(224, 2, 2);
+			case 'pico' | 'philly' | 'blammed':
+				bg.color = FlxColor.fromRGB(2, 224, 39);
+			case 'satin-panties' | 'high' | 'milf':
+				bg.color = FlxColor.fromRGB(245, 66, 155);
+			case 'cocoa' | 'eggnog':
+				bg.color = FlxColor.fromRGB(255, 184, 184);
+			case 'winter-horrorland':
+				bg.color = FlxColor.fromRGB(224, 2, 2);
+			case 'senpai' | 'roses':
+				bg.color = FlxColor.fromRGB(255, 184, 248);
+			case 'thorns':
+				bg.color = FlxColor.fromRGB(255, 0, 81);
+			case 'ugh' | 'guns' | 'stress':
+				bg.color = FlxColor.fromRGB(255, 204, 0);
+			case 'test':
+				bg.color = FlxColor.fromRGB(42, 210, 222);
+		}
+
 		var upP = controls.UP_P;
 		var downP = controls.DOWN_P;
 		var accepted = controls.ACCEPT;
@@ -221,10 +255,12 @@ class FreeplayState extends MusicBeatState
 		if (upP)
 		{
 			changeSelection(-1);
+			colorLog += -1;
 		}
 		if (downP)
 		{
 			changeSelection(1);
+			colorLog += 1;
 		}
 
 		if (controls.LEFT_P)
@@ -269,11 +305,11 @@ class FreeplayState extends MusicBeatState
 		switch (curDifficulty)
 		{
 			case 0:
-				diffText.text = "EASY";
+				diffText.text = "< EASY >";
 			case 1:
-				diffText.text = 'NORMAL';
+				diffText.text = '< NORMAL >';
 			case 2:
-				diffText.text = "HARD";
+				diffText.text = "< HARD >";
 		}
 	}
 	override function beatHit()
@@ -287,6 +323,10 @@ class FreeplayState extends MusicBeatState
 				{
 					FlxG.camera.zoom += 0.030;
 				}
+			else if (FlxG.camera.zoom < 1.35 && songs[curSelected].songName.toLowerCase() != 'milf'){
+				FlxG.camera.zoom += 0.020;
+				trace('beat!');
+			}
 			//Sum extra detail
 			if (FlxG.camera.zoom < 1.35 && songs[curSelected].songName.toLowerCase() == 'milf' && curBeat >= 168 && curBeat < 200)
 				{
