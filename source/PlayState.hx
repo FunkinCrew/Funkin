@@ -862,8 +862,8 @@ class PlayState extends MusicBeatState
 		gf.scrollFactor.set(0.95, 0.95);
 
 		if (SONG.song.toLowerCase() == 'test'){
-		    dad = new Character(100, 450, 'bf-pixel');
-		    pixel2 = new Character(80, 450, 'bf');
+		    dad = new Character(100, 550, 'bf-pixel');
+		    pixel2 = new Character(120, 450, 'bf');
 		    pixel2.alpha = 0.5;
 		}
 		else{
@@ -915,7 +915,7 @@ class PlayState extends MusicBeatState
 
 		if (SONG.song.toLowerCase() == 'test'){
 		    boyfriend = new Boyfriend(770, 450, 'bf');
-		    boyfriend2 = new Boyfriend(790, 450, 'bf-pixel');
+		    boyfriend2 = new Boyfriend(750, 550, 'bf-pixel');
 		    boyfriend2.alpha = 0.5;
 		}
 		boyfriend = new Boyfriend(770, 450, SONG.player1);
