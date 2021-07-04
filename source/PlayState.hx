@@ -1344,8 +1344,8 @@ class PlayState extends MusicBeatState
 		//mcontrols.visible = true;
 		new FlxTimer().start(0.1, function(tmr:FlxTimer)
 		{
-			mcontrols.alpha += 0.2;
-			if (mcontrols.alpha != 1){
+			mcontrols.alpha += 0.1;
+			if (mcontrols.alpha != 0.6){
 				tmr.reset(0.1);
 			}
 			else{
@@ -2398,8 +2398,8 @@ class PlayState extends MusicBeatState
 		//aaa
 		new FlxTimer().start(0.1, function(tmr:FlxTimer)
 		{
-			mcontrols.alpha += 0.2;
-			if (mcontrols.alpha != 1){
+			mcontrols.alpha -= 0.1;
+			if (mcontrols.alpha != 0){
 				tmr.reset(0.1);
 			}
 			else{
