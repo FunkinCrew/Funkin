@@ -96,7 +96,8 @@ class FreeplayState extends MusicBeatState
 
 		// LOAD CHARACTERS
 
-		
+		bg = new FlxSprite().loadGraphic(Paths.image('menuBGDesat'));
+		add(bg);
 
 		grpSongs = new FlxTypedGroup<Alphabet>();
 		add(grpSongs);
@@ -147,8 +148,6 @@ class FreeplayState extends MusicBeatState
 		// add(selector);
 
 		var swag:Alphabet = new Alphabet(1, 0, "swag");
-		bg = new FlxSprite().loadGraphic(Paths.image('menuBGDesat'));
-		add(bg);
 
 		// JUST DOIN THIS SHIT FOR TESTING!!!
 		/* 
@@ -306,11 +305,11 @@ class FreeplayState extends MusicBeatState
 		switch (curDifficulty)
 		{
 			case 0:
-				diffText.text = "EASY";
+				diffText.text = "< EASY >";
 			case 1:
-				diffText.text = 'NORMAL';
+				diffText.text = '< NORMAL >';
 			case 2:
-				diffText.text = "HARD";
+				diffText.text = "< HARD >";
 		}
 	}
 	override function beatHit()
