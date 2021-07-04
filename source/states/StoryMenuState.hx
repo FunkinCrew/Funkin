@@ -404,7 +404,7 @@ class StoryMenuState extends MusicBeatState
 		for (item in grpWeekText.members)
 		{
 			item.targetY = bullShit - curWeek;
-			if (item.targetY == Std.int(0) && (weekUnlocked[curWeek] && weekProgression))
+			if (item.targetY == Std.int(0) && weekUnlocked[curWeek] || !weekProgression)
 				item.alpha = 1;
 			else
 				item.alpha = 0.6;
