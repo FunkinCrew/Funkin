@@ -2393,6 +2393,19 @@ class PlayState extends MusicBeatState
 		canPause = false;
 		FlxG.sound.music.volume = 0;
 		vocals.volume = 0;
+		#if mobileC
+		//aaa
+		new FlxTimer().start(0.1, function(tmr:FlxTimer)
+		{
+			mcontrols.alpha += 0.2;
+			if (mcontrols.alpha != 1){
+				tmr.reset(0.1);
+			}
+			else{
+				trace('aweseom.');
+			}
+		});
+		#end
 		if (SONG.validScore)
 		{
 			#if !switch
@@ -4099,6 +4112,7 @@ class PlayState extends MusicBeatState
 
 	function moveTank()
 	{
+		super.update();
 		tankAngle += FlxG.elapsed * tankSpeed;
 		tankRolling.angle = tankAngle - 90 + 15;
 		tankRolling.x = tankX + 1500 * FlxMath.fastCos(FlxAngle.asRadians(tankAngle + 180));
@@ -4107,6 +4121,7 @@ class PlayState extends MusicBeatState
 		{
 			again();
 		});
+
 	}
 
 	function again()
