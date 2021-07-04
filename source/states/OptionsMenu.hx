@@ -386,6 +386,7 @@ class OptionsMenu extends MusicBeatState
 						inMenu = false;
 						FlxG.save.data.weekProgression = false;
 						FlxG.save.flush();
+						StoryMenuState.weekProgression = FlxG.save.data.weekProgression;
 
 						var option = new Alphabet(20, 420, "Week Progression Off", true, false);
 						option.isMenuItem = true;
@@ -400,6 +401,7 @@ class OptionsMenu extends MusicBeatState
 						inMenu = false;
 						FlxG.save.data.weekProgression = true;
 						FlxG.save.flush();
+						StoryMenuState.weekProgression = FlxG.save.data.weekProgression;
 
 						var option = new Alphabet(20, 420, "Week Progression On", true, false);
 						option.isMenuItem = true;
