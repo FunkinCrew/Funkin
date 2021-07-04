@@ -226,25 +226,25 @@ class FreeplayState extends MusicBeatState
 		{
 			case 'tutorial':
 				bg.color = FlxColor.fromRGB(245, 66, 152);
-			case 'bopeebo' || 'fresh' || 'dadbattle':
+			case 'bopeebo' | 'fresh' | 'dadbattle':
 				bg.color = FlxColor.fromRGB(174, 90, 191);
-			case 'spookeez' || 'south':
+			case 'spookeez' | 'south':
 				bg.color = FlxColor.fromRGB(255, 165, 31);
 			case 'monster':
 				bg.color = FlxColor.fromRGB(224, 2, 2);
-			case 'pico' || 'philly' || 'blammed':
+			case 'pico' | 'philly' | 'blammed':
 				bg.color = FlxColor.fromRGB(2, 224, 39);
-			case 'satin-panties' || 'high' || 'milf':
+			case 'satin-panties' | 'high' | 'milf':
 				bg.color = FlxColor.fromRGB(245, 66, 155);
-			case 'cocoa' || 'eggnog':
+			case 'cocoa' | 'eggnog':
 				bg.color = FlxColor.fromRGB(255, 184, 184);
 			case 'winter-horrorland':
 				bg.color = FlxColor.fromRGB(224, 2, 2);
-			case 'senpai' || 'roses':
+			case 'senpai' | 'roses':
 				bg.color = FlxColor.fromRGB(255, 184, 248);
 			case 'thorns':
 				bg.color = FlxColor.fromRGB(255, 0, 81);
-			case 'ugh' || 'guns' || 'stress':
+			case 'ugh' | 'guns' | 'stress':
 				bg.color = FlxColor.fromRGB(255, 204, 0);
 			case 'test':
 				bg.color = FlxColor.fromRGB(42, 210, 222);
