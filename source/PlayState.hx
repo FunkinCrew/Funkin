@@ -615,7 +615,7 @@ class PlayState extends MusicBeatState
 				tankRolling.antialiasing = true;
 				tankRolling.animation.play('idle');
 				add(tankRolling);
-				moveTank();
+				
 
 
 
@@ -746,8 +746,7 @@ class PlayState extends MusicBeatState
 					tankRolling.antialiasing = true;
 					tankRolling.animation.play('idle');
 					add(tankRolling);
-					moveTank();
-
+					
 
 
 					var ground:FlxSprite = new FlxSprite(-420,-150).loadGraphic(Paths.image('tankGround'));
@@ -1010,7 +1009,7 @@ class PlayState extends MusicBeatState
 		isDownScroll = epic.downscroll;
 		cutsceneOp = epic.cutscenes;
 		noteSplashOp = epic.splash;
-		noteGlow = epic.noteglow;
+		noteGlow = true;
 		Note.isDownScroll = isDownScroll;
 
 		strumLine = new FlxSprite(0, (isDownScroll ? FlxG.height - 150 : 50)).makeGraphic(FlxG.width, 10);//i hate math. :(
@@ -1828,6 +1827,10 @@ class PlayState extends MusicBeatState
 					}
 				}
 				// phillyCityLights.members[curLight].alpha -= (Conductor.crochet / 1000) * FlxG.elapsed;
+			case 'tankStage':
+				moveTank();
+			case 'tankStage2':
+				moveTank();
 		}
 
 		super.update(elapsed);
@@ -2359,8 +2362,6 @@ class PlayState extends MusicBeatState
 						{
 							health -= 0.075;
 							vocals.volume = 0;
-							if (theFunne)
-								noteMiss(daNote.noteData, daNote);
 						}
 	
 						daNote.active = false;
@@ -4118,16 +4119,10 @@ class PlayState extends MusicBeatState
 
 	function moveTank()
 	{
-		super.update();
 		tankAngle += FlxG.elapsed * tankSpeed;
 		tankRolling.angle = tankAngle - 90 + 15;
 		tankRolling.x = tankX + 1500 * FlxMath.fastCos(FlxAngle.asRadians(tankAngle + 180));
 		tankRolling.y = 1300 + 1100 * FlxMath.fastSin(FlxAngle.asRadians(tankAngle + 180));
-		new FlxTimer().start(17.2, function(tmr:FlxTimer)//chadbross is awesome.
-		{
-			again();
-		});
-
 	}
 
 	function again()
