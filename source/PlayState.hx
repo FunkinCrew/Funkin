@@ -615,8 +615,6 @@ class PlayState extends MusicBeatState
 				tankRolling.antialiasing = true;
 				tankRolling.animation.play('idle');
 				add(tankRolling);
-				
-
 
 
 				var ground:FlxSprite = new FlxSprite(-420, -150).loadGraphic(Paths.image('tankGround'));
@@ -746,7 +744,8 @@ class PlayState extends MusicBeatState
 					tankRolling.antialiasing = true;
 					tankRolling.animation.play('idle');
 					add(tankRolling);
-					
+		    		tankmanRun = new FlxTypedGroup<TankmenBG>();
+			    	add(tankmanRun);
 
 
 					var ground:FlxSprite = new FlxSprite(-420,-150).loadGraphic(Paths.image('tankGround'));
@@ -758,8 +757,6 @@ class PlayState extends MusicBeatState
 					ground.updateHitbox();
 					add(ground);
 
-					tankmanRun = new FlxTypedGroup<TankmenBG>();
-					add(tankmanRun);
 					tankBop1 = new FlxSprite(-500,650);
 					tankBop1.frames = Paths.getSparrowAtlas('tank0');
 					tankBop1.animation.addByPrefix('bop', 'fg tankhead far right instance 1', 24);
@@ -3738,7 +3735,7 @@ class PlayState extends MusicBeatState
 				 
 			{
 				var tankmanRunner:TankmenBG = new TankmenBG();
-				tankmanRunner.resetShit(FlxG.random.int(630, 730) * -1, 265, true, 1, 1.5);
+				tankmanRunner.resetShit(FlxG.random.int(630, 730) * -1, 255, true, 1, 1.5);
 
 				tankmanRun.add(tankmanRunner);
 			}
