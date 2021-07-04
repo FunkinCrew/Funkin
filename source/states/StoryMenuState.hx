@@ -37,7 +37,7 @@ class StoryMenuState extends MusicBeatState
 	];
 	var curDifficulty:Int = 1;
 
-	var weekProgression:Bool = true;
+	public static var weekProgression:Bool = true;
 
 	public static var weekUnlocked:Array<Bool> = [true, false, false, false, false, false, false];
 
@@ -79,6 +79,9 @@ class StoryMenuState extends MusicBeatState
 
 	override function create()
 	{
+		if(FlxG.save.data.weekProgression != null)
+			weekProgression = FlxG.save.data.weekProgression;
+
 		if(FlxG.save.data.unlimitedFPS)
 		{
 			openfl.Lib.current.stage.frameRate = 1000;

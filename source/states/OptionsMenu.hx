@@ -381,6 +381,34 @@ class OptionsMenu extends MusicBeatState
 						inMenu = false;
 					}
 
+					case "Week Progression On":
+					{
+						inMenu = false;
+						FlxG.save.data.weekProgression = false;
+						FlxG.save.flush();
+
+						var option = new Alphabet(20, 420, "Week Progression Off", true, false);
+						option.isMenuItem = true;
+						option.targetY = 6;
+						grpOptionsTexts.members[6] = option;
+						textMenuItems[6] = "Week Progression Off";
+						inMenu = false;
+					}
+
+					case "Week Progression Off":
+					{
+						inMenu = false;
+						FlxG.save.data.weekProgression = true;
+						FlxG.save.flush();
+
+						var option = new Alphabet(20, 420, "Week Progression On", true, false);
+						option.isMenuItem = true;
+						option.targetY = 6;
+						grpOptionsTexts.members[6] = option;
+						textMenuItems[6] = "Week Progression On";
+						inMenu = false;
+					}
+
 					case 'Misc':
 					{
 						curSelected = 0;
@@ -400,6 +428,11 @@ class OptionsMenu extends MusicBeatState
 							textMenuItems.push("Debug Songs Off");
 						else
 							textMenuItems.push("Debug Songs On");
+
+						if(!FlxG.save.data.weekProgression)
+							textMenuItems.push("Week Progression Off");
+						else
+							textMenuItems.push("Week Progression On");
 						
 						spawnInTexts();
 					}
