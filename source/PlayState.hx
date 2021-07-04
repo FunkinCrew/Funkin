@@ -1079,7 +1079,12 @@ class PlayState extends MusicBeatState
 		iconP1.y = healthBar.y - (iconP1.height / 2);
 		add(iconP1);
 
-		iconP2 = new HealthIcon(SONG.player2, false);
+		if (SONG.song.toLowerCase() == 'test'){
+		    iconP2 = new HealthIcon('bf', false);
+		}
+		else{
+		    iconP2 = new HealthIcon(SONG.player2, false);
+		}
 		iconP2.y = healthBar.y - (iconP2.height / 2);
 		add(iconP2);
 
