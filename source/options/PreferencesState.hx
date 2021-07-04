@@ -16,7 +16,7 @@ class PreferencesState extends MusicBeatState
 
     var curSelected:Int = 0;
 
-	var menuItems:Array<String> = ['downscroll', 'disable cutscenes', 'note splash'];
+	var menuItems:Array<String> = ['downscroll', 'cutscenes', 'note splash', 'note glow'];
 
 	var notice:FlxText;
 
@@ -50,10 +50,12 @@ class PreferencesState extends MusicBeatState
 			switch (menuItems[i]){
 				case "downscroll":
 					ch.change(config.downscroll);
-				case "disable cutscenes":
+				case "cutscenes":
 					ch.change(config.cutscenes);
 				case "note splash":
 					ch.change(config.splash);
+				case "note glow":
+				    ch.change(config.noteglow);
 			}
 
 			// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
@@ -90,7 +92,7 @@ class PreferencesState extends MusicBeatState
 		if (controls.LEFT) {
 		    MusicBeatState.camMove = floatToStringPrecision(Math.abs(MusicBeatState.camMove - 0.01), 2);
 		    config.camSave(MusicBeatState.camMove);
-		}
+		}//waht.
 
 		notice.text = "Cam Speed: " + MusicBeatState.camMove + "Press LEFT or RIGHT to change values\n";
 
@@ -113,7 +115,9 @@ class PreferencesState extends MusicBeatState
                 case "disable cutscenes":
                     config.cutscenes = checkboxGroup.members[curSelected].change();
                 case "note splash":
-                    config.splash = checkboxGroup.members[curSelected].change();
+                    config.splash = checkboxGroup.members[curSelected].change();//wjat.
+                case "note glow":
+                    config.noteglow = checkboxGroup.members[curSelected].change();
 			}
 		}
 
@@ -171,6 +175,6 @@ class PreferencesState extends MusicBeatState
 		}
 		else{
 		  return Std.parseFloat(str.substr(0, str.length-prec) + '.'+str.substr(str.length-prec));
-		}
+		}//what.
 	  }
 }
