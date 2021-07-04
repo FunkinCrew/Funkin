@@ -64,6 +64,7 @@ class PlayState extends MusicBeatState
 	var triggeredAlready:Bool = false;
 	var theFunne:Bool = false;
 	var epic:Config = new Config();
+	var spamDetected:Int = 0;
 
 	private var vocals:FlxSound;
 
@@ -2363,6 +2364,10 @@ class PlayState extends MusicBeatState
 						{
 							health -= 0.075;
 							vocals.volume = 0;
+							spamDetected += 1;
+							if (spamDetected > 3){
+							    health -= 0.095;
+							}
 						}
 	
 						daNote.active = false;
@@ -2923,11 +2928,12 @@ class PlayState extends MusicBeatState
 			badNoteCheck();
 		}
 	}
-
+	var resetSpam:Int = 0;
 	function goodNoteHit(note:Note):Void
 	{
 		var noteDiff:Float = Math.abs(note.strumTime - Conductor.songPosition);
 		note.rating = Ratings.CalculateRating(noteDiff);
+		
 		if (!note.wasGoodHit)
 		{
 			if (!note.isSustainNote)
@@ -2935,7 +2941,14 @@ class PlayState extends MusicBeatState
 				popUpScore(note);
 				combo += 1;
 			}
-
+	    	resetSpam += 1;
+	    	if (resetSpam == 3){
+	    	    resetSpam = 0;
+	    	    spamDetected = 0;
+	    	}
+	    	if (spamDetected > 3){
+	    	    health -= 0.025;
+	    	}
 			if (note.noteData >= 0)
 				health += 0.023;
 			else
