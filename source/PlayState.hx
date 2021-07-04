@@ -3989,6 +3989,14 @@ class PlayState extends MusicBeatState
 	override function beatHit()
 	{
 		super.beatHit();
+		new FlxTimer().start(0.1, function(tmr:FlxTimer)
+		{
+			defaultCamZoom += 0.018;
+		});
+		new FlxTimer().start(0.2, function(tmr:FlxTimer)
+		{
+			defaultCamZoom -= 0.018;
+		});//I dont know,it worka i think.
 
 		/*if (curStage == 'tankStage' || curStage == 'tankStage2')
 		{
