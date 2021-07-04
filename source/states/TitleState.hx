@@ -338,12 +338,12 @@ class TitleState extends MusicBeatState
 			FlxG.camera.flash(FlxColor.WHITE, 1);
 
 			if (FlxG.save.data.oldTitle)
-			{
 				FlxG.sound.play(Paths.music("titleShoot"), 0.7);
-			}
-			else {
+			else
 				FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
-			}
+
+			if(FlxG.save.data.weekProgression)
+				StoryMenuState.weekProgression = FlxG.save.data.weekProgression;
 
 			transitioning = true;
 			// FlxG.sound.music.stop();
