@@ -861,7 +861,7 @@ class PlayState extends MusicBeatState
 		gf = new Character(400, 130, gfVersion);
 		gf.scrollFactor.set(0.95, 0.95);
 
-		if (curSong.toLowerCase() == 'test'){
+		if (SONG.song.toLowerCase() == 'test'){
 		    dad = new Character(100, 450, 'bf-pixel');
 		    pixel2 = new Character(80, 450, 'bf');
 		    pixel2.alpha = 0.5;
@@ -913,7 +913,7 @@ class PlayState extends MusicBeatState
 				dad.y += 180;
 		}
 
-		if (curSong.toLowerCase() == 'test'){
+		if (SONG.song.toLowerCase() == 'test'){
 		    boyfriend = new Boyfriend(770, 450, 'bf');
 		    boyfriend2 = new Boyfriend(790, 450, 'bf-pixel');
 		    boyfriend2.alpha = 0.5;
@@ -978,7 +978,7 @@ class PlayState extends MusicBeatState
 		if (curStage == 'limo')
 			add(limo);
 
-		if (curSong.toLowerCase() == 'test'){
+		if (SONG.song.toLowerCase() == 'test'){
 		    add(pixel2);
 		    add(boyfriend2);
 		}
@@ -1132,7 +1132,7 @@ class PlayState extends MusicBeatState
 
 		if (isStoryMode)
 		{
-			switch (curSong.toLowerCase())
+			switch (SONG.song.toLowerCase())
 			{
 				case "winter-horrorland":
 					var blackScreen:FlxSprite = new FlxSprite(0, 0).makeGraphic(Std.int(FlxG.width * 2), Std.int(FlxG.height * 2), FlxColor.BLACK);
@@ -1181,7 +1181,7 @@ class PlayState extends MusicBeatState
 		}
 		else
 		{
-			switch (curSong.toLowerCase())
+			switch (SONG.song.toLowerCase())
 			{
 				default:
 					startCountdown();
@@ -3930,7 +3930,7 @@ class PlayState extends MusicBeatState
 				dad.animation.getByName('singUP').frames = dad.animation.getByName('oldSingUP').frames;
 			}
 		}
-		if (curSong.toLowerCase() == 'test'){
+		if (SONG.song.toLowerCase() == 'test'){
 	    	if (boyfriend.animation.curAnim.name == 'singRIGHT'){
 	    	    boyfriend2.playAnim('singLEFT', false);
 	    	}
@@ -4005,7 +4005,7 @@ class PlayState extends MusicBeatState
 		wiggleShit.update(Conductor.crochet);
 
 		// HARDCODING FOR MILF ZOOMS!
-		if (curSong.toLowerCase() == 'milf' && curBeat >= 168 && curBeat < 200 && camZooming && FlxG.camera.zoom < 1.35)
+		if (SONG.song.toLowerCase() == 'milf' && curBeat >= 168 && curBeat < 200 && camZooming && FlxG.camera.zoom < 1.35)
 		{
 			FlxG.camera.zoom += 0.015;
 			camHUD.zoom += 0.03;
