@@ -110,6 +110,11 @@ class Paths
 		return FlxAtlasFrames.fromSparrow(image(key, library), file('images/$key.xml', library));
 	}
 
+	inline static public function getCharacter(key:String)
+	{
+		return FlxAtlasFrames.fromSparrow(image(key, 'shared'), file('character/$key.xml', 'shared'));
+	}
+
 	inline static public function getPackerAtlas(key:String, ?library:String)
 	{
 		return FlxAtlasFrames.fromSpriteSheetPacker(image(key, library), file('images/$key.txt', library));
