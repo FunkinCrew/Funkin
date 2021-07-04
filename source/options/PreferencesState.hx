@@ -16,7 +16,7 @@ class PreferencesState extends MusicBeatState
 
     var curSelected:Int = 0;
 
-	var menuItems:Array<String> = ['downscroll', 'cutscenes', 'note splash', 'note glow'];
+	var menuItems:Array<String> = ['downscroll', 'cutscenes', 'note splash'];
 
 	var notice:FlxText;
 
