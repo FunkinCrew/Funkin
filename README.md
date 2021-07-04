@@ -8,24 +8,16 @@ For build intructions go to [Build.md](https://github.com/Leather128/LeathersFun
 
 ## Features
 
-### Old Title Screen
+> Proper Options Menu
 
-![Old Title Screen](https://github.com/Leather128/LeathersFunkinEngine/blob/master/screenshots/Old_Title.PNG)
+This includes things like custom controls, downscroll, opponent note glow, etc.
 
-Yeah I put the old title screen back in game as a setting you can toggle in the options menu.
+> Week Progression
 
-### Custom Controls
+You can now properly progress through weeks if you wish, aka you don't unlock everything at the start.
 
-![Custom Controls Screen](https://github.com/Leather128/LeathersFunkinEngine/blob/master/screenshots/Controls.PNG)
+> Extras
 
-There is a custom controls screen to set your keybinds!
+For fun I added some things like the old title screen, and debug songs in freeplay as options in the options menu.
 
-### Week Progression
-
-![Story Mode Screen](https://github.com/Leather128/LeathersFunkinEngine/blob/master/screenshots/Weeks.PNG)
-
-The Story Menu has been updated so that you unlock weeks as you beat them instead of getting everything at the start.
-
-![Freeplay Menu Screen](https://github.com/Leather128/LeathersFunkinEngine/blob/master/screenshots/Freeplay.PNG)
-
-The Freeplay Menu was also updated to only show songs from weeks you've completed already.
+> More to come...
