@@ -132,7 +132,7 @@ class PauseSubState extends MusicBeatSubstate
 				    MusicBeatSubstate.deaths = 0;
 					FlxG.switchState(new MainMenuState());
 				case "Chart Editor":
-				    FlxG.switchState(new ChartEditor());
+				    FlxG.switchState(new ChartingState());
 			}
 		}
 
