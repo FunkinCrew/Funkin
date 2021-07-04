@@ -104,7 +104,7 @@ class FreeplayState extends MusicBeatState
 			}
 
 			// If you've unlocked the week after this one, then yes
-			if (listArray[3] == null && (StoryMenuState.weekUnlocked[week + 1] || isDebug))
+			if (listArray[3] == null && (StoryMenuState.weekUnlocked[week + 1] || isDebug || !StoryMenuState.weekProgression))
 			{
 				// Creates new song data accordingly
 				songs.push(new SongMetadata(song, Std.parseInt(listArray[2]), icon));
