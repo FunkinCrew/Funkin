@@ -40,6 +40,7 @@ class Note extends FlxSprite
 	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false)
 	{
 		super();
+		alpha = 0.7;
 
 		if (prevNote == null)
 			prevNote = this;
