@@ -22,7 +22,7 @@ using StringTools;
 class FreeplayState extends MusicBeatState
 {
 	var songs:Array<SongMetadata> = [];
-	var beatArray:Array<Int> = [100,100,120,180,150,165,130,150,175,165,110,125,180,100,150,159,144,120,190,160,185,178];
+	var beatArray:Array<Int> = [100,100,120,180,150,165,130,150,175,165,110,125,180,100,150,159,144,120,190,160,185,178,150];
 	var selector:FlxText;
 	var curSelected:Int = 0;
 	var curDifficulty:Int = 1;
