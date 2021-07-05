@@ -41,6 +41,7 @@ class TitleState extends MusicBeatState
 	var credTextShit:Alphabet;
 	var textGroup:FlxGroup;
 	var ngSpr:FlxSprite;
+	var defaultCamZoom:Float = 1;
 
 	var curWacky:Array<String> = [];
 
@@ -329,6 +330,7 @@ class TitleState extends MusicBeatState
 		}
 
 		super.update(elapsed);
+		FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, 0.95);
 	}
 
 	function createCoolText(textArray:Array<String>)
@@ -364,6 +366,7 @@ class TitleState extends MusicBeatState
 	override function beatHit()
 	{
 		super.beatHit();
+		FlxG.camera.zoom += 0.020;
 
 		logoBl.animation.play('bump');
 		danceLeft = !danceLeft;
