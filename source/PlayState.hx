@@ -1494,6 +1494,7 @@ class PlayState extends MusicBeatState
 			case 'Bopeebo' | 'Philly' | 'Blammed' | 'Cocoa' | 'Eggnog': allowedToHeadbang = true;
 			default: allowedToHeadbang = false;
 		}
+		iconBop(1.5);
 	}
 
 	var debugNum:Int = 0;
@@ -1879,14 +1880,6 @@ class PlayState extends MusicBeatState
 			DiscordClient.changePresence("Chart Editor", null, null, true);
 			#end
 		}
-
-		// FlxG.watch.addQuick('VOL', vocals.amplitudeLeft);
-		// FlxG.watch.addQuick('VOLRight', vocals.amplitudeRight);
-
-		iconBop(1.5, 0.4);
-
-		iconP1.updateHitbox();
-		iconP2.updateHitbox();
 
 		var iconOffset:Int = 26;
 
@@ -3334,7 +3327,9 @@ class PlayState extends MusicBeatState
 			camHUD.zoom += 0.03;
 		}
 
-		iconBop();
+		if (curBeat % 0 == 1){
+	    	iconBop();
+		}
 
 
 		if (curBeat % gfSpeed == 0)
