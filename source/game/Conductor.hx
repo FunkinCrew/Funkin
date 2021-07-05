@@ -54,8 +54,15 @@ class Conductor
 
 			var deltaSteps:Int = song.notes[i].lengthInSteps;
 			totalSteps += deltaSteps;
-			totalPos += ((60 / curBPM) * 1000 / 4) * deltaSteps;
+
+			// bro thx kade for the functions :D
+			var mathPos = ((60 / curBPM) * 1000 / 4) * deltaSteps;
+			mathPos = mathPos * Math.pow(10, 4);
+			mathPos = Math.round(mathPos) / Math.pow(10, 4);
+
+			totalPos += mathPos;
 		}
+
 		trace("new BPM map BUDDY " + bpmChangeMap);
 	}
 
