@@ -20,7 +20,7 @@
 	<SubTexture name="(0003" x="254" y="202" width="26" height="56" frameX="0" frameY="0" frameWidth="26" frameHeight="57"/>
 	<SubTexture name=")0000" x="40" y="412" width="26" height="55" pivotX="0" pivotY="0"/>
 	<SubTexture name=")0001" x="40" y="412" width="26" height="55"/>
-	<SubTexture name=")0002" x="503" y="412" width="26" height="55"/>
+	<SubTexture name=")0002" x="503" y="412" width="26" height="55"/> 
 	<SubTexture name=")0003" x="503" y="412" width="26" height="55"/>
 	<SubTexture name="*0000" x="572" y="483" width="27" height="31" pivotX="0" pivotY="0"/>
 	<SubTexture name="*0001" x="572" y="483" width="27" height="31"/>
