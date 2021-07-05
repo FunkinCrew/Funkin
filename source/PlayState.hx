@@ -64,7 +64,6 @@ class PlayState extends MusicBeatState
 	var triggeredAlready:Bool = false;
 	var theFunne:Bool = false;
 	var epic:Config = new Config();
-	var spamDetected:Int = 0;
 
 	private var vocals:FlxSound;
 
@@ -183,6 +182,8 @@ class PlayState extends MusicBeatState
 	//for test song cuz it sucks. 4 bfs :)
 	private var boyfriend2:Boyfriend;
 	private var pixel2:Character;
+
+	var picoStep:Ps;
 
 	override public function create()
 	{
@@ -676,6 +677,9 @@ class PlayState extends MusicBeatState
 				{
 					curStage = 'tankStage2';
 					defaultCamZoom = 0.9;
+
+					picoStep = Json.parse(openfl.utils.Assets.getText(Paths.json('pico-speaker')));
+
 					var sky:FlxSprite = new FlxSprite(-400,-400).loadGraphic(Paths.image('tankSky'));
 					sky.scrollFactor.set(0, 0);
 					sky.antialiasing = true;
@@ -2364,10 +2368,6 @@ class PlayState extends MusicBeatState
 						{
 							health -= 0.075;
 							vocals.volume = 0;
-							spamDetected += 1;
-							if (spamDetected > 3){
-							    health -= 0.095;
-							}
 						}
 	
 						daNote.active = false;
@@ -2928,12 +2928,11 @@ class PlayState extends MusicBeatState
 			badNoteCheck();
 		}
 	}
-	var resetSpam:Int = 0;
+
 	function goodNoteHit(note:Note):Void
 	{
 		var noteDiff:Float = Math.abs(note.strumTime - Conductor.songPosition);
 		note.rating = Ratings.CalculateRating(noteDiff);
-		
 		if (!note.wasGoodHit)
 		{
 			if (!note.isSustainNote)
@@ -2941,14 +2940,7 @@ class PlayState extends MusicBeatState
 				popUpScore(note);
 				combo += 1;
 			}
-	    	resetSpam += 1;
-	    	if (resetSpam == 3){
-	    	    resetSpam = 0;
-	    	    spamDetected = 0;
-	    	}
-	    	if (spamDetected > 3){
-	    	    health -= 0.025;
-	    	}
+
 			if (note.noteData >= 0)
 				health += 0.023;
 			else
@@ -3096,660 +3088,92 @@ class PlayState extends MusicBeatState
 		if(SONG.song.toLowerCase() == 'stress')
 		{
 			//RIGHT
-			if (curStep == 2 || 
-				curStep == 3 || 
-				curStep == 5 || 
-				curStep == 9 || 
-				curStep == 10 || 
-				curStep == 16 || 
-				curStep == 22 || 
-				curStep == 25 || 
-				curStep == 26 || 
-				curStep == 34 || 
-				curStep == 35 || 
-				curStep == 37 || 
-				curStep == 41 || 
-				curStep == 42 || 
-				curStep == 48 || 
-				curStep == 54 || 
-				curStep == 57 || 
-				curStep == 58 || 
-				curStep == 66 || 
-				curStep == 67 || 
-				curStep == 69 || 
-				curStep == 73 || 
-				curStep == 74 || 
-				curStep == 80 || 
-				curStep == 86 || 
-				curStep == 89 || 
-				curStep == 90 || 
-				curStep == 98 || 
-				curStep == 99 || 
-				curStep == 101 || 
-				curStep == 105 ||
-				 curStep == 106 || 
-				 curStep == 112 || 
-				 curStep == 118 || 
-				 curStep == 121 || 
-				 curStep == 122 || 
-				 curStep == 253 || 
-				 curStep == 260 || 
-				 curStep == 268 || 
-				 curStep == 280 || 
-				 curStep == 284 || 
-				 curStep == 292 || 
-				 curStep == 300 || 
-				 curStep == 312 || 
-				 curStep == 316 || 
-				 curStep == 317 || 
-				 curStep == 318 || 
-				 curStep == 320 || 
-				 curStep == 332 || 
-				 curStep == 336 || 
-				 curStep == 344 || 
-				 curStep == 358 || 
-				 curStep == 360 || 
-				 curStep == 362 || 
-				 curStep == 364 || 
-				 curStep == 372 || 
-				 curStep == 376 || 
-				 curStep == 388 || 
-				 curStep == 396 || 
-				 curStep == 404 || 
-				 curStep == 408 || 
-				 curStep == 412 || 
-				 curStep == 420 || 
-				 curStep == 428 || 
-				 curStep == 436 || 
-				 curStep == 440 || 
-				 curStep == 444 || 
-				 curStep == 452 || 
-				 curStep == 456 || 
-				 curStep == 460 || 
-				 curStep == 468 || 
-				 curStep == 472 || 
-				 curStep == 476 || 
-				 curStep == 484 || 
-				 curStep == 488 || 
-				 curStep == 492 || 
-				 curStep == 508 || 
-				 curStep == 509 || 
-				 curStep == 510 || 
-				 curStep == 516 || 
-				 curStep == 520 || 
-				 curStep == 524 || 
-				 curStep == 532 || 
-				 curStep == 540 || 
-				 curStep == 552 || 
-				 curStep == 556 || 
-				 curStep == 564 || 
-				 curStep == 568 || 
-				 curStep == 572 || 
-				 curStep == 580 || 
-				 curStep == 584 || 
-				 curStep == 588 || 
-				 curStep == 596 || 
-				 curStep == 604 || 
-				 curStep == 612 || 
-				 curStep == 616 || 
-				 curStep == 620 || 
-				 curStep == 636 || 
-				 curStep == 637 || 
-				 curStep == 638 || 
-				 curStep == 642 || 
-				 curStep == 643 || 
-				 curStep == 645 || 
-				 curStep == 649 || 
-				 curStep == 650 || 
-				 curStep == 656 || 
-				 curStep == 662 || 
-				 curStep == 665 || 
-				 curStep == 666 || 
-				 curStep == 674 || 
-				 curStep == 675 || 
-				 curStep == 677 || 
-				 curStep == 681 || 
-				 curStep == 682 || 
-				 curStep == 688 || 
-				 curStep == 694 || 
-				 curStep == 697 || 
-				 curStep == 698 || 
-				 curStep == 706 || 
-				 curStep == 707 || 
-				 curStep == 709 || 
-				 curStep == 713 || 
-				 curStep == 714 || 
-				 curStep == 720 || 
-				 curStep == 726 || 
-				 curStep == 729 || 
-				 curStep == 730 || 
-				 curStep == 738 || 
-				 curStep == 739 || 
-				 curStep == 741 || 
-				 curStep == 745 || 
-				 curStep == 746 || 
-				 curStep == 753 || 
-				 curStep == 758 || 
-				 curStep == 761 || 
-				 curStep == 762 || 
-				 curStep == 768 || 
-				 curStep == 788 || 
-				 curStep == 792 || 
-				 curStep == 796 || 
-				 curStep == 800 || 
-				 curStep == 820 || 
-				 curStep == 824 || 
-				 curStep == 828 || 
-				 curStep == 829 || 
-				 curStep == 830 || 
-				 curStep == 832 || 
-				 curStep == 852 || 
-				 curStep == 856 || 
-				 curStep == 860 || 
-				 curStep == 861 || 
-				 curStep == 862 || 
-				 curStep == 864 || 
-				 curStep == 865 || 
-				 curStep == 866 || 
-				 curStep == 884 || 
-				 curStep == 885 || 
-				 curStep == 886 || 
-				 curStep == 887 || 
-				 curStep == 892 || 
-				 curStep == 900 || 
-				 curStep == 912 || 
-				 curStep == 916 || 
-				 curStep == 924 || 
-				 curStep == 926 || 
-				 curStep == 936 || 
-				 curStep == 948 || 
-				 curStep == 958 || 
-				 curStep == 962 || 
-				 curStep == 966 || 
-				 curStep == 970 || 
-				 curStep == 974 || 
-				 curStep == 976 || 
-				 curStep == 980 || 
-				 curStep == 984 || 
-				 curStep == 988 || 
-				 curStep == 990 || 
-				 curStep == 1000 || 
-				 curStep == 1004 || 
-				 curStep == 1006 || 
-				 curStep == 1008 || 
-				 curStep == 1012 || 
-				 curStep == 1019 || 
-				 curStep == 1028 || 
-				 curStep == 1036 || 
-				 curStep == 1044 || 
-				 curStep == 1052|| 
-				 curStep == 1060 || 
-				 curStep == 1068 || 
-				 curStep == 1076 || 
-				 curStep == 1084 || 
-				 curStep == 1092 || 
-				 curStep == 1100 || 
-				 curStep == 1108 || 
-				 curStep == 1116 || 
-				 curStep == 1124 || 
-				 curStep == 1132 || 
-				 curStep == 1148 || 
-				 curStep == 1149 || 
-				 curStep == 1150 || 
-				 curStep == 1156 || 
-				 curStep == 1160 || 
-				 curStep == 1164 || 
-				 curStep == 1172 || 
-				 curStep == 1180 || 
-				 curStep == 1188 || 
-				 curStep == 1192 || 
-				 curStep == 1196 || 
-				 curStep == 1204 || 
-				 curStep == 1208 || 
-				 curStep == 1212 || 
-				 curStep == 1220 || 
-				 curStep == 1224 || 
-				 curStep == 1228 || 
-				 curStep == 1236 || 
-				 curStep == 1244 || 
-				 curStep == 1252 || 
-				 curStep == 1256 || 
-				 curStep == 1260 || 
-				 curStep == 1276 || 
-				 curStep == 1296 || 
-				 curStep == 1300 || 
-				 curStep == 1304 || 
-				 curStep == 1308 || 
-				 curStep == 1320 || 
-				 curStep == 1324 || 
-				 curStep == 1328 || 
-				 curStep == 1332 || 
-				 curStep == 1340 || 
-				 curStep == 1352 || 
-				 curStep == 1358 || 
-				 curStep == 1364 || 
-				 curStep == 1372 || 
-				 curStep == 1374 || 
-				 curStep == 1378 || 
-				 curStep == 1388 || 
-				 curStep == 1392 || 
-				 curStep == 1400 || 
-				 curStep == 1401 || 
-				 curStep == 1405 || 
-				 curStep == 1410 || 
-				 curStep == 1411 || 
-				 curStep == 1413 || 
-				 curStep == 1417 || 
-				 curStep == 1418 || 
-				 curStep == 1424 || 
-				 curStep == 1430 || 
-				 curStep == 1433 || 
-				 curStep == 1434)
-				 
+			for(i in 0...picoStep.right.length)
 			{
-				gf.playAnim('shoot' + FlxG.random.int(1, 2), true);
-				var tankmanRunner:TankmenBG = new TankmenBG();
+				if (curStep == picoStep.right[i])
+				{
+					gf.playAnim('shoot' + FlxG.random.int(1, 2), true);
+					//var tankmanRunner:TankmenBG = new TankmenBG();
+				}
 			}
 			//LEFT
-			if (curStep == 0 || 
-				curStep == 7 || 
-				curStep == 12 || 
-				curStep == 14 || 
-				curStep == 15 || 
-				curStep == 18 || 
-				curStep == 19 || 
-				curStep == 24 || 
-				curStep == 28 || 
-				curStep == 32 || 
-				curStep == 39 || 
-				curStep == 44 || 
-				curStep == 46 || 
-				curStep == 47 || 
-				curStep == 50 || 
-				curStep == 51 || 
-				curStep == 56 || 
-				curStep == 60 || 
-				curStep == 61 || 
-				curStep == 62 || 
-				curStep == 64 || 
-				curStep == 71 || 
-				curStep == 76 || 
-				curStep == 78 || 
-				curStep == 79 || 
-				curStep == 82 || 
-				curStep == 83 || 
-				curStep == 88 || 
-				curStep == 92 || 
-				curStep == 96 || 
-				curStep == 103 ||
-				 curStep == 108 || 
-				 curStep == 110 || 
-				 curStep == 111 || 
-				 curStep == 114 || 
-				 curStep == 115 || 
-				 curStep == 120 || 
-				 curStep == 124 || 
-				 curStep == 252 || 
-				 curStep == 254 || 
-				 curStep == 256 || 
-				 curStep == 264 || 
-				 curStep == 272 || 
-				 curStep == 276 || 
-				 curStep == 288 || 
-				 curStep == 296 || 
-				 curStep == 304 || 
-				 curStep == 308 || 
-				 curStep == 324 || 
-				 curStep == 328 || 
-				 curStep == 340 || 
-				 curStep == 348 || 
-				 curStep == 352 || 
-				 curStep == 354 || 
-				 curStep == 356 || 
-				 curStep == 366 || 
-				 curStep == 368 || 
-				 curStep == 378 || 
-				 curStep == 384 || 
-				 curStep == 392 || 
-				 curStep == 394 || 
-				 curStep == 400 || 
-				 curStep == 410 || 
-				 curStep == 416 || 
-				 curStep == 424 || 
-				 curStep == 426 || 
-				 curStep == 432 || 
-				 curStep == 442 || 
-				 curStep == 448 || 
-				 curStep == 458 || 
-				 curStep == 464 || 
-				 curStep == 474 || 
-				 curStep == 480 || 
-				 curStep == 490 || 
-				 curStep == 496 || 
-				 curStep == 500 || 
-				 curStep == 504 || 
-				 curStep == 506 || 
-				 curStep == 512 || 
-				 curStep == 522 || 
-				 curStep == 528 || 
-				 curStep == 536 || 
-				 curStep == 538 || 
-				 curStep == 544 || 
-				 curStep == 554 || 
-				 curStep == 560 || 
-				 curStep == 570 || 
-				 curStep == 576 || 
-				 curStep == 586 || 
-				 curStep == 592 || 
-				 curStep == 600 || 
-				 curStep == 602 || 
-				 curStep == 608 || 
-				 curStep == 618 || 
-				 curStep == 624 || 
-				 curStep == 628 || 
-				 curStep == 632 || 
-				 curStep == 634 || 
-				 curStep == 640 || 
-				 curStep == 647 || 
-				 curStep == 652 || 
-				 curStep == 654 || 
-				 curStep == 655 || 
-				 curStep == 658 || 
-				 curStep == 659 || 
-				 curStep == 664 || 
-				 curStep == 668 || 
-				 curStep == 672 || 
-				 curStep == 679 || 
-				 curStep == 684 || 
-				 curStep == 686 || 
-				 curStep == 687 || 
-				 curStep == 690 || 
-				 curStep == 691 || 
-				 curStep == 696 || 
-				 curStep == 700 || 
-				 curStep == 701 || 
-				 curStep == 702 || 
-				 curStep == 704 || 
-				 curStep == 711 || 
-				 curStep == 716 || 
-				 curStep == 718 || 
-				 curStep == 719 || 
-				 curStep == 722 || 
-				 curStep == 723 || 
-				 curStep == 728 || 
-				 curStep == 732 || 
-				 curStep == 736 || 
-				 curStep == 743 || 
-				 curStep == 748 || 
-				 curStep == 750 || 
-				 curStep == 751 || 
-				 curStep == 754 || 
-				 curStep == 755 || 
-				 curStep == 760 || 
-				 curStep == 764 || 
-				 curStep == 772 || 
-				 curStep == 776 || 
-				 curStep == 780 || 
-				 curStep == 784 || 
-				 curStep == 804 || 
-				 curStep == 808 || 
-				 curStep == 812 || 
-				 curStep == 816 || 
-				 curStep == 836 || 
-				 curStep == 840 || 
-				 curStep == 844 || 
-				 curStep == 848 || 
-				 curStep == 868 || 
-				 curStep == 869 || 
-				 curStep == 870 || 
-				 curStep == 872 || 
-				 curStep == 873 || 
-				 curStep == 874 || 
-				 curStep == 876 || 
-				 curStep == 877 || 
-				 curStep == 878 || 
-				 curStep == 880 || 
-				 curStep == 881 || 
-				 curStep == 882 || 
-				 curStep == 883 || 
-				 curStep == 888 || 
-				 curStep == 889 || 
-				 curStep == 890 || 
-				 curStep == 891 || 
-				 curStep == 896 || 
-				 curStep == 904 || 
-				 curStep == 908 || 
-				 curStep == 920 || 
-				 curStep == 928 || 
-				 curStep == 932 || 
-				 curStep == 940 || 
-				 curStep == 944 || 
-				 curStep == 951 || 
-				 curStep == 952 || 
-				 curStep == 953 || 
-				 curStep == 955 || 
-				 curStep == 960 || 
-				 curStep == 964 || 
-				 curStep == 968 || 
-				 curStep == 972 || 
-				 curStep == 978 || 
-				 curStep == 982 || 
-				 curStep == 986 || 
-				 curStep == 992 || 
-				 curStep == 994 || 
-				 curStep == 996 || 
-				 curStep == 1016 || 
-				 curStep == 1017 || 
-				 curStep == 1021 || 
-				 curStep == 1024 || 
-				 curStep == 1034 || 
-				 curStep == 1040 || 
-				 curStep == 1050 || 
-				 curStep == 1056 || 
-				 curStep == 1066 || 
-				 curStep == 1072 || 
-				 curStep == 1082 || 
-				 curStep == 1088 || 
-				 curStep == 1098 || 
-				 curStep == 1104 || 
-				 curStep == 1114 || 
-				 curStep == 1120 || 
-				 curStep == 1130 || 
-				 curStep == 1136 || 
-				 curStep == 1140 || 
-				 curStep == 1144 || 
-				 curStep == 1146 || 
-				 curStep == 1152 || 
-				 curStep == 1162 || 
-				 curStep == 1168 || 
-				 curStep == 1176 || 
-				 curStep == 1178 || 
-				 curStep == 1184 || 
-				 curStep == 1194 || 
-				 curStep == 1200 || 
-				 curStep == 1210 || 
-				 curStep == 1216 || 
-				 curStep == 1226 || 
-				 curStep == 1232 || 
-				 curStep == 1240 || 
-				 curStep == 1242 || 
-				 curStep == 1248 || 
-				 curStep == 1258 || 
-				 curStep == 1264 || 
-				 curStep == 1268 || 
-				 curStep == 1272 || 
-				 curStep == 1280 || 
-				 curStep == 1284 || 
-				 curStep == 1288 || 
-				 curStep == 1292 || 
-				 curStep == 1312 || 
-				 curStep == 1314 || 
-				 curStep == 1316 || 
-				 curStep == 1336 || 
-				 curStep == 1344 || 
-				 curStep == 1356 || 
-				 curStep == 1360 || 
-				 curStep == 1368 || 
-				 curStep == 1376 || 
-				 curStep == 1380 || 
-				 curStep == 1384 || 
-				 curStep == 1396 || 
-				 curStep == 1404 || 
-				 curStep == 1408 || 
-				 curStep == 1415 || 
-				 curStep == 1420 || 
-				 curStep == 1422 || 
-				 curStep == 1423 || 
-				 curStep == 1426 || 
-				 curStep == 1427 || 
-				 curStep == 1432 || 
-				 curStep == 1436 || 
-				 curStep == 1437 || 
-				 curStep == 1438)
+			for(i in 0...picoStep.left.length)
 			{
-				gf.playAnim('shoot' + FlxG.random.int(3, 4), true);
+				if (curStep == picoStep.left[i])
+				{
+					gf.playAnim('shoot' + FlxG.random.int(3, 4), true);
+				}
 			}
 			//Left spawn
 			if (curStep == 2 || 
-				
 				curStep == 9 || 
-				
 				curStep == 22 || 
-				
 				curStep == 34 || 
-				
 				curStep == 41 || 
-				
 				curStep == 54 || 
-				
 				curStep == 66 || 
-				 
 				curStep == 73 || 
-				
 				curStep == 86 || 
-				
 				curStep == 98 || 
-				
 				curStep == 105 ||
-				  
 				 curStep == 118 || 
-				 
 				 curStep == 253 || 
-				  
 				 curStep == 280 || 
-				 
 				 curStep == 300 || 
-				 
 				 curStep == 317 || 
-				  
 				 curStep == 332 || 
-				  
 				 curStep == 358 || 
-				  
 				 curStep == 364 || 
-				  
 				 curStep == 388 || 
-				 
 				 curStep == 408 || 
-				  
 				 curStep == 428 || 
-				  
 				 curStep == 444 || 
-				  
 				 curStep == 460 || 
-				 
 				 curStep == 476 || 
-				 
 				 curStep == 492 || 
-				  
 				 curStep == 510 || 
-				 
 				 curStep == 524 || 
-				  
 				 curStep == 552 || 
-				 
 				 curStep == 568 || 
-				  
 				 curStep == 584 || 
-				  
 				 curStep == 604 || 
-				 
 				 curStep == 620 || 
-				 
 				 curStep == 638 || 
-				 
 				 curStep == 645 || 
-				  
 				 curStep == 656 || 
-				 
 				 curStep == 666 || 
-				  
 				 curStep == 677 || 
-				  
 				 curStep == 688 || 
-				 
 				 curStep == 698 || 
-				  
 				 curStep == 709 || 
-				 
 				 curStep == 720 || 
-				  
 				 curStep == 730 || 
-				 
 				 curStep == 741 || 
-				  
 				 curStep == 753 || 
-				 
 				 curStep == 762 || 
-				 
 				 curStep == 792 || 
-				 
 				 curStep == 820 || 
-				  
 				 curStep == 829 || 
-				 
 				 curStep == 852 || 
-				  
 				 curStep == 861 || 
-				 
 				 curStep == 865 || 
-				 
 				 curStep == 885 || 
-				 
 				 curStep == 892 || 
-				  
 				 curStep == 916 || 
-				  
 				 curStep == 936 || 
-				 
 				 curStep == 962 || 
-				 
 				 curStep == 974 || 
-				 
 				 curStep == 984 || 
-				 
 				 curStep == 1000 || 
-				 
 				 curStep == 1008 || 
-				  
 				 curStep == 1028 || 
-				 
 				 curStep == 1052|| 
-				 
 				 curStep == 1076 || 
-				 
 				 curStep == 1100 || 
-				  
 				 curStep == 1124 || 
-				  
 				 curStep == 1149 || 
-				 
 				 curStep == 1160 || 
-				 
-				 curStep == 1180 
-				  
-				 
-				 )
+				 curStep == 1180)
 				 
 			{
 				var tankmanRunner:TankmenBG = new TankmenBG();
@@ -3760,151 +3184,77 @@ class PlayState extends MusicBeatState
 
 			//Right spawn
 			if (curStep == 0 || 
-				
 				curStep == 14 || 
-				
 				curStep == 19 || 
-				
 				curStep == 32 || 
-				
 				curStep == 46 || 
-				
 				curStep == 51 || 
-				
 				curStep == 61 || 
-				 
 				curStep == 71 || 
-				
 				curStep == 79 || 
-				
 				curStep == 88 || 
-				
 				curStep == 103 ||
-				  
 				 curStep == 111 || 
-				 
 				 curStep == 120 || 
-				 
 				 curStep == 254 || 
-				 
 				 curStep == 272 || 
-				 
 				 curStep == 296 || 
-				  
 				 curStep == 324 || 
-				 
 				 curStep == 348 || 
-				 
 				 curStep == 356 || 
-				 
 				 curStep == 378 || 
-				  
 				 curStep == 394 || 
-				 
 				 curStep == 416 || 
-				  
 				 curStep == 432 || 
-				 
 				 curStep == 458 || 
-				 
 				 curStep == 480 || 
-				 
 				 curStep == 500 || 
-				 
 				 curStep == 512 || 
-				 
 				 curStep == 536 || 
-				 
 				 curStep == 554 || 
-				  
 				 curStep == 576 || 
-				 
 				 curStep == 600 || 
-				 
 				 curStep == 618 || 
-				  
 				 curStep == 632 || 
-				 
 				 curStep == 647 || 
-				 
 				 curStep == 655 || 
-				 
 				 curStep == 664 || 
-				 
 				 curStep == 679 || 
-				 
 				 curStep == 687 || 
-				 
 				 curStep == 696 || 
-				 
 				 curStep == 702 || 
-				 
 				 curStep == 716 || 
-				 
 				 curStep == 722 || 
-				 
 				 curStep == 732 || 
-				 
 				 curStep == 748 || 
-				 
 				 curStep == 754 || 
-				 
 				 curStep == 764 || 
-				 
 				 curStep == 780 || 
-				 
 				 curStep == 808 || 
-				 
 				 curStep == 836 || 
-				 
 				 curStep == 848 || 
-				 
 				 curStep == 870 || 
-				 
 				 curStep == 874 || 
-				 
 				 curStep == 878 || 
-				 
 				 curStep == 882 || 
-				 
 				 curStep == 889 || 
-				 
 				 curStep == 896 || 
-				 
 				 curStep == 920 || 
-				 
 				 curStep == 940 || 
-				 
 				 curStep == 952 || 
-				 
 				 curStep == 960 || 
-				 
 				 curStep == 972 || 
-				 
 				 curStep == 986 || 
-				 
 				 curStep == 996 || 
-				 
 				 curStep == 1021 || 
-				 
 				 curStep == 1040 || 
-				 
 				 curStep == 1066 || 
-				 
 				 curStep == 1088 || 
-				 
 				 curStep == 1114 || 
-				 
 				 curStep == 1136 || 
-				 
 				 curStep == 1146 || 
-				 
 				 curStep == 1168 || 
-				 
-				 curStep == 1184
-				
-				 
-				 )
+				 curStep == 1184)
 			{
 				var tankmanRunner:TankmenBG = new TankmenBG();
 				tankmanRunner.resetShit(FlxG.random.int(1500, 1700) * 1, 275, false, 1, 1.5);
@@ -3989,14 +3339,6 @@ class PlayState extends MusicBeatState
 	override function beatHit()
 	{
 		super.beatHit();
-		new FlxTimer().start(0.1, function(tmr:FlxTimer)
-		{
-			defaultCamZoom += 0.018;
-		});
-		new FlxTimer().start(0.2, function(tmr:FlxTimer)
-		{
-			defaultCamZoom -= 0.018;
-		});//I dont know,it worka i think.
 
 		/*if (curStage == 'tankStage' || curStage == 'tankStage2')
 		{
@@ -4158,4 +3500,11 @@ class PlayState extends MusicBeatState
 	}
 
 	var curLight:Int = 0;
+}
+
+typedef Ps = 
+{
+	var right:Array<Int>;
+	var left:Array<Int>;
+
 }
