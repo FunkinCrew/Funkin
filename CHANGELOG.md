@@ -13,6 +13,7 @@ All notable changes will be documented in this file.
 - Song name and difficulty to the bottom of the screen while playing.
 - Difficulty selector in song charter.
 - Week Progression can be toggled in options menu now.
+- Improved dialogue system (will still be improved).
 ### Changed
 - Organized classes into packages.
 - Health icons can now have more general types (like bf and senpai), instead of having to write down the same icon mutliple times in code.
@@ -28,7 +29,6 @@ All notable changes will be documented in this file.
 - In the Thorns cutscene, Senpai's dialogue portrait goes over Spirit's image.
 
 DO THIS NOW (priority, top to bottom):
-- Revamped dialogue system.
 - New input system.
 
 ## [0.1] - 6/18/2021

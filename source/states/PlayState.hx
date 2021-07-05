@@ -1,5 +1,7 @@
 package states;
 
+import flixel.system.FlxAssets.FlxSoundAsset;
+import openfl.media.Sound;
 import utilities.Difficulties;
 import utilities.Ratings;
 import debuggers.ChartingState;
@@ -691,6 +693,7 @@ class PlayState extends MusicBeatState
 
 		if (!paused)
 			FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 1, false);
+
 		FlxG.sound.music.onComplete = endSong;
 		vocals.play();
 
