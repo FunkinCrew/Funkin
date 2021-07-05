@@ -19,6 +19,7 @@ import flixel.util.FlxColor;
 import io.newgrounds.NG;
 #end
 import lime.app.Application;
+import utils.AndroidData;
 
 using StringTools;
 
@@ -38,6 +39,7 @@ class MainMenuState extends MusicBeatState
 	var camFollow:FlxObject;
 	public var bg:FlxSprite;
 	public var menuItem:FlxSprite;
+	var data:AndroidData = new AndroidData();
 
 	override function create()
 	{
@@ -115,6 +117,7 @@ class MainMenuState extends MusicBeatState
 		#end
 
 		super.create();
+		data.startData();
 	}
 
 	var selectedSomethin:Bool = false;
@@ -205,6 +208,7 @@ class MainMenuState extends MusicBeatState
 		super.update(elapsed);
 		menuItem.setGraphicSize(Std.int(menuItem.width * 1));
 		menuItem.updateHitbox();
+		data.flushData();
 
 		menuItems.forEach(function(spr:FlxSprite)
 		{
