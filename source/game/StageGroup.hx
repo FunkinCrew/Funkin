@@ -338,7 +338,7 @@ class StageGroup extends FlxGroup
             }
             case "evil-school":
             {
-                var bg:FlxSprite = new FlxSprite(400, 200);
+                var bg:FlxSprite = new FlxSprite(400, 220);
                 bg.frames = Paths.getSparrowAtlas(stage + '/animatedEvilSchool', 'stages');
                 bg.animation.addByPrefix('idle', 'background 2', 24);
                 bg.animation.play('idle');
