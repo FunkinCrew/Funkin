@@ -100,8 +100,17 @@ class DialogueBox extends FlxSpriteGroup
 		this.dialogueList = CoolUtil.coolTextFile(Paths.txt(PlayState.SONG.song.toLowerCase() + '/dialogue'));
 		
 		portraitLeft = new FlxSprite(-20, 40);
-		portraitLeft.frames = Paths.getSparrowAtlas('weeb/senpaiPortrait');
-		portraitLeft.animation.addByPrefix('enter', 'Senpai Portrait Enter', 24, false);
+
+		// hard coding cuz im not making proper system yet, just fixing bug
+		if(PlayState.SONG.song.toLowerCase() != 'roses')
+		{
+			portraitLeft.frames = Paths.getSparrowAtlas('weeb/senpaiPortrait');
+			portraitLeft.animation.addByPrefix('enter', 'Senpai Portrait Enter', 24, false);
+		} else {
+			portraitLeft.frames = Paths.getSparrowAtlas('weeb/madSenpai-Portrait');
+			portraitLeft.animation.addByPrefix('enter', 'SENPAI ANGRY IMPACT SPEECH', 24, false);
+		}
+
 		portraitLeft.setGraphicSize(Std.int(portraitLeft.width * PlayState.daPixelZoom * 0.9));
 		portraitLeft.updateHitbox();
 		portraitLeft.scrollFactor.set();
