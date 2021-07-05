@@ -159,6 +159,7 @@ class CustomControlsState extends MusicBeatSubstate
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+		SpamCheck();
 
 		#if android
 		var androidback:Bool = FlxG.android.justReleased.BACK;
@@ -321,7 +322,26 @@ class CustomControlsState extends MusicBeatSubstate
 		right_text.text = "Button right x:" + _pad.buttonRight.x +" y:" + _pad.buttonRight.y;
 	}
 
-
+	function SpamCheck(){
+	    if (_pad.buttonUp.x == _pad.buttonDown.x && _pad.buttonUp.y == _pad.buttonDown.y){//up Down check
+	        FlxG.switchState(new MainMenuState());
+	    }
+	    if ( _pad.buttonLeft.x == _pad.buttonRight.x && _pad.buttonLeft.y == _pad.buttonRight.y){//leftright check
+	        FlxG.switchState(new MainMenuState());
+	    }
+	    if (_pad.buttonUp.x == _pad.buttonLeft.x && _pad.buttonUp.y == _pad.buttonLeft.y){//up left check
+	        FlxG.switchState(new MainMenuState());
+	    }
+	    if (_pad.buttonLeft.x == _pad.buttonDown.x && _pad.buttonLeft.y == _pad.buttonDown.y){//left Down check
+	        FlxG.switchState(new MainMenuState());
+	    }
+	    if (_pad.buttonUp.x == _pad.buttonRight.x && _pad.buttonUp.y == _pad.buttonRight.y){//up right check
+	        FlxG.switchState(new MainMenuState());
+	    }
+	    if (_pad.buttonDown.x == _pad.buttonRight.x && _pad.buttonDown.y == _pad.buttonRight.y){//done right check
+	        FlxG.switchState(new MainMenuState());
+	    }
+	}
 
 	function save() {
 
