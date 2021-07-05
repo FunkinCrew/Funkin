@@ -110,7 +110,7 @@ class PreferencesState extends MusicBeatState
 			{
 				case "downscroll":
 					config.downscroll = checkboxGroup.members[curSelected].change();
-                case "disable cutscenes":
+                case "cutscenes":
                     config.cutscenes = checkboxGroup.members[curSelected].change();
                 case "note splash":
                     config.splash = checkboxGroup.members[curSelected].change();//wjat.
