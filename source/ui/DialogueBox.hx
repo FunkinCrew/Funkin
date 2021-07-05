@@ -79,11 +79,7 @@ class DialogueBox extends FlxSpriteGroup
 			case 'roses':
 				hasDialog = true;
 				FlxG.sound.play(Paths.sound('ANGRY_TEXT_BOX'));
-
 				box.loadGraphic(Paths.image('weeb/pixelUI/dialogueBox-pixel', 'week6'));
-				//box.frames = Paths.getSparrowAtlas('weeb/pixelUI/dialogueBox-senpaiMad');
-				//box.animation.addByPrefix('normalOpen', 'SENPAI ANGRY IMPACT SPEECH', 24, false);
-				//box.animation.addByIndices('normal', 'SENPAI ANGRY IMPACT SPEECH', [4], "", 24);
 
 			case 'thorns':
 				hasDialog = true;
@@ -99,51 +95,54 @@ class DialogueBox extends FlxSpriteGroup
 
 		this.dialogueList = CoolUtil.coolTextFile(Paths.txt(PlayState.SONG.song.toLowerCase() + '/dialogue'));
 		
-		portraitLeft = new FlxSprite(-20, 40);
+		portraitLeft = new FlxSprite(255, 120);
 
 		// hard coding cuz im not making proper system yet, just fixing bug
 		if(PlayState.SONG.song.toLowerCase() != 'roses')
-		{
-			portraitLeft.frames = Paths.getSparrowAtlas('weeb/senpaiPortrait');
-			portraitLeft.animation.addByPrefix('enter', 'Senpai Portrait Enter', 24, false);
-		} else {
-			portraitLeft.frames = Paths.getSparrowAtlas('weeb/madSenpai-Portrait');
-			portraitLeft.animation.addByPrefix('enter', 'SENPAI ANGRY IMPACT SPEECH', 24, false);
-		}
+			portraitLeft.loadGraphic(Paths.image('weeb/senpai_Port', 'week6'));
+		else
+			portraitLeft.loadGraphic(Paths.image('weeb/senpaiAngry_Port', 'week6'));
 
 		portraitLeft.setGraphicSize(Std.int(portraitLeft.width * PlayState.daPixelZoom * 0.9));
 		portraitLeft.updateHitbox();
 		portraitLeft.scrollFactor.set();
+
+		var boxOffset = 0.0;
+
+		if(PlayState.SONG.song.toLowerCase() != 'thorns')
+			boxOffset = 3.7;
+
+		box.setGraphicSize(Std.int(box.width * PlayState.daPixelZoom * 0.9));
+		box.updateHitbox();
+		box.screenCenter(X);
+
+		portraitLeft.x = (box.x + (portraitLeft.width / 2)) + 10;
+		portraitLeft.y = (box.y - (portraitLeft.height + (boxOffset * PlayState.daPixelZoom * 0.9)));
+
 		add(portraitLeft);
 		portraitLeft.visible = false;
 
-		portraitRight = new FlxSprite(0, 40);
-		portraitRight.frames = Paths.getSparrowAtlas('weeb/bfPortrait');
-		portraitRight.animation.addByPrefix('enter', 'Boyfriend portrait enter', 24, false);
+		portraitRight = new FlxSprite(700, 187);
+		portraitRight.loadGraphic(Paths.image('weeb/bf_Port', 'week6'));
 		portraitRight.setGraphicSize(Std.int(portraitRight.width * PlayState.daPixelZoom * 0.9));
 		portraitRight.updateHitbox();
 		portraitRight.scrollFactor.set();
 		add(portraitRight);
 		portraitRight.visible = false;
 
-		box.setGraphicSize(Std.int(box.width * PlayState.daPixelZoom * 0.9));
-		box.updateHitbox();
-		box.screenCenter(X);
 		box.y = (FlxG.height - box.height) - 15;
 		add(box);
-
-		portraitLeft.screenCenter(X);
 
 		handSelect = new FlxSprite(FlxG.width * 0.84, FlxG.height * 0.84).loadGraphic(Paths.image('weeb/pixelUI/hand_textbox'));
 		handSelect.setGraphicSize(Std.int(handSelect.width * PlayState.daPixelZoom));
 		add(handSelect);
 
-		dropText = new FlxText(242, 502, Std.int(FlxG.width * 0.6), "", 32);
+		dropText = new FlxText(242, 452, Std.int(FlxG.width * 0.6), "", 32);
 		dropText.font = 'Pixel Arial 11 Bold';
 		dropText.color = 0xFFD89494;
 		add(dropText);
 
-		swagDialogue = new FlxTypeText(240, 500, Std.int(FlxG.width * 0.6), "", 32);
+		swagDialogue = new FlxTypeText(240, 450, Std.int(FlxG.width * 0.6), "", 32);
 		swagDialogue.font = 'Pixel Arial 11 Bold';
 		swagDialogue.color = 0xFF3F2021;
 		swagDialogue.sounds = [FlxG.sound.load(Paths.sound('pixelText'), 0.6)];
@@ -160,8 +159,6 @@ class DialogueBox extends FlxSpriteGroup
 	override function update(elapsed:Float)
 	{
 		// HARD CODING CUZ IM STUPDI
-		if (PlayState.SONG.song.toLowerCase() == 'roses')
-			portraitLeft.visible = false;
 		if (PlayState.SONG.song.toLowerCase() == 'thorns')
 		{
 			portraitLeft.visible = false;
@@ -244,14 +241,12 @@ class DialogueBox extends FlxSpriteGroup
 				if (!portraitLeft.visible)
 				{
 					portraitLeft.visible = true;
-					portraitLeft.animation.play('enter');
 				}
 			case 'bf':
 				portraitLeft.visible = false;
 				if (!portraitRight.visible)
 				{
 					portraitRight.visible = true;
-					portraitRight.animation.play('enter');
 				}
 		}
 	}
