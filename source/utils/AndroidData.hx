@@ -1,4 +1,4 @@
-package;
+package utils;
 
 import ui.FlxVirtualPad;
 import flixel.FlxG;
