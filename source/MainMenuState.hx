@@ -36,6 +36,8 @@ class MainMenuState extends MusicBeatState
 
 	var magenta:FlxSprite;
 	var camFollow:FlxObject;
+	public var bg:FlxSprite;
+	public var menuItem:FlxSprite;
 
 	override function create()
 	{
@@ -54,10 +56,10 @@ class MainMenuState extends MusicBeatState
 
 		persistentUpdate = persistentDraw = true;
 
-		var bg:FlxSprite = new FlxSprite(-80).loadGraphic(Paths.image('menuBG'));
+		bg = new FlxSprite(-80).loadGraphic(Paths.image('menuBG'));
 		bg.scrollFactor.x = 0;
 		bg.scrollFactor.y = 0.18;
-		bg.setGraphicSize(Std.int(bg.width * 1.1));
+		//bg.setGraphicSize(Std.int(bg.width * 1.1));
 		bg.updateHitbox();
 		bg.screenCenter();
 		bg.antialiasing = true;
@@ -85,7 +87,7 @@ class MainMenuState extends MusicBeatState
 
 		for (i in 0...optionShit.length)
 		{
-			var menuItem:FlxSprite = new FlxSprite(0, 60 + (i * 160));
+			menuItem = new FlxSprite(0, 60 + (i * 160));
 			menuItem.frames = tex;
 			menuItem.animation.addByPrefix('idle', optionShit[i] + " idle", 24);
 			menuItem.animation.addByPrefix('selected', optionShit[i] + " selected", 24);
@@ -201,6 +203,8 @@ class MainMenuState extends MusicBeatState
 		}
 
 		super.update(elapsed);
+		menuItem.setGraphicSize(Std.int(menuItem.width * 1));
+		menuItem.updateHitbox();
 
 		menuItems.forEach(function(spr:FlxSprite)
 		{
@@ -229,5 +233,12 @@ class MainMenuState extends MusicBeatState
 
 			spr.updateHitbox();
 		});
+	}
+
+	override function beathit();
+	{
+	    super.beathit();
+		menuItem.setGraphicSize(Std.int(menuItem.width * 1.3));
+		menuItem.updateHitbox();
 	}
 }
