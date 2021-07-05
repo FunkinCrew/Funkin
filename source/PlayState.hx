@@ -145,6 +145,7 @@ class PlayState extends MusicBeatState
 	public static var daPixelZoom:Float = 6;
 
 	var inCutscene:Bool = false;
+	var disabledKeys:Bool = false;
 
 	#if desktop
 	// Discord RPC variables
@@ -1806,6 +1807,7 @@ class PlayState extends MusicBeatState
 	private var paused:Bool = false;
 	var startedCountdown:Bool = false;
 	var canPause:Bool = true;
+	var SpamViolation:Int = 0;
 
 	override public function update(elapsed:Float)
 	{
@@ -1842,6 +1844,13 @@ class PlayState extends MusicBeatState
 		}
 
 		super.update(elapsed);
+		if (controls.UP_P && controls.DOWN_P && controls.LEFT_P && controls.RIGHT_P){
+		    SpamViolation += 1
+		    if (SpamViolation == 2){
+		        SpamViolation = -1;
+		        disableKeys();//function in line 3540
+		    }
+		}
 
 		//scoreTxt.text = "Score:" + songScore;
 		missesTxt.text = 'Misses: $misses';
@@ -2389,6 +2398,8 @@ class PlayState extends MusicBeatState
 		#end
 	}
 
+
+
 	function endSong():Void
 	{
 		canPause = false;
@@ -2868,7 +2879,7 @@ class PlayState extends MusicBeatState
 	{
 	    var noteDiff:Float = Math.abs(note.strumTime - Conductor.songPosition);
 		note.rating = Ratings.CalculateRating(noteDiff);
-		if (keyP)
+		if (keyP && !disabledKeys)
 			goodNoteHit(note);
 		else
 		{
@@ -3321,7 +3332,7 @@ class PlayState extends MusicBeatState
 			camHUD.zoom += 0.03;
 		}
 
-		if (camZooming && FlxG.camera.zoom < 1.35 && curBeat % 4 == 0)
+		if (FlxG.camera.zoom < 1.35 && curBeat % 4 == 0)//why not.
 		{
 			FlxG.camera.zoom += 0.015;
 			camHUD.zoom += 0.03;
@@ -3434,6 +3445,19 @@ class PlayState extends MusicBeatState
 		tankRolling.x = 300;
 		tankRolling.y = 300;
 		moveTank();
+	}
+
+	function disableKeys(){//disables notegoodchecking for a certain amount of time.
+	    disabledKeys = true;
+	    new FlxTimer().start(1.3, function(tmr:FlxTimer)
+		{
+		    disabledKeys = false:
+		    health -= 0.039;
+		    trace('SPAM!1!1!1!');
+		    combo = 0;
+		    misses += 2;
+		    gf.playAnim('scared');
+		});
 	}
 
 	var curLight:Int = 0;
