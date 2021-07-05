@@ -1,5 +1,8 @@
 package states;
 
+import lime.system.System;
+import haxe.SysTools;
+import openfl.media.SoundChannel;
 import flixel.system.FlxAssets.FlxSoundAsset;
 import openfl.media.Sound;
 import utilities.Difficulties;
