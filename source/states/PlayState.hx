@@ -403,7 +403,11 @@ class PlayState extends MusicBeatState
 		infoTxt = new FlxText(0, 0, 0, SONG.song + " - " + Std.string(Difficulties.numToDiff(storyDifficulty)), 20);
 		infoTxt.screenCenter(X);
 		infoTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		infoTxt.y = FlxG.height - (infoTxt.height + 1);
+		if(FlxG.save.data.downscroll)
+			infoTxt.y = FlxG.height - (infoTxt.height + 1);
+		else
+			infoTxt.y = 0;
+		
 		infoTxt.scrollFactor.set();
 		add(infoTxt);
 
