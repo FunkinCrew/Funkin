@@ -7,6 +7,7 @@ import flixel.FlxG;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import Config;
+import AndroidData;
 
 class PreferencesState extends MusicBeatState
 {
@@ -16,9 +17,10 @@ class PreferencesState extends MusicBeatState
 
     var curSelected:Int = 0;
 
-	var menuItems:Array<String> = ['downscroll', 'cutscenes', 'note splash'];
+	var menuItems:Array<String> = ['downscroll', 'cutscenes', 'note splash', 'note glow'];
 
 	var notice:FlxText;
+	var data:AndroidData = new AndroidData();
 
     override public function create() 
     {
@@ -49,11 +51,13 @@ class PreferencesState extends MusicBeatState
 
 			switch (menuItems[i]){
 				case "downscroll":
-					ch.change(config.downscroll);
+					ch.change(data.getScroll);
 				case "cutscenes":
-					ch.change(config.cutscenes);
+					ch.change(data.getCutscenes);
 				case "note splash":
-					ch.change(config.splash);
+					ch.change(data.getSploosh);
+				case "note glow":
+					ch.change(data.getGlow);
 			}
 
 			// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
@@ -82,6 +86,7 @@ class PreferencesState extends MusicBeatState
     override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+		data.flushData();
 
 		if (controls.RIGHT) {
 		    MusicBeatState.camMove = floatToStringPrecision(Math.abs(MusicBeatState.camMove + 0.01), 2);
@@ -109,11 +114,13 @@ class PreferencesState extends MusicBeatState
 			switch (daSelected)
 			{
 				case "downscroll":
-					config.downscroll = checkboxGroup.members[curSelected].change();
+					data.saveScroll(checkboxGroup.members[curSelected].change());
                 case "cutscenes":
-                    config.cutscenes = checkboxGroup.members[curSelected].change();
+                    data.saveCutscenes(checkboxGroup.members[curSelected].change());
                 case "note splash":
-                    config.splash = checkboxGroup.members[curSelected].change();//wjat.
+                    data.saveSploosh(checkboxGroup.members[curSelected].change());//wjat.
+                case "note glow":
+                    data.saveGlow(checkboxGroup.members[curSelected].change());
 			}
 		}
 
