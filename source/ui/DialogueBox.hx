@@ -119,7 +119,9 @@ class DialogueBox extends FlxSpriteGroup
 		portraitLeft.x = (box.x + (portraitLeft.width / 2)) + 10;
 		portraitLeft.y = (box.y - (portraitLeft.height + (boxOffset * PlayState.daPixelZoom * 0.9)));
 
-		add(portraitLeft);
+		if(PlayState.SONG.song.toLowerCase() != 'thorns')
+			add(portraitLeft);
+		
 		portraitLeft.visible = false;
 
 		portraitRight = new FlxSprite(700, 187);
@@ -135,7 +137,8 @@ class DialogueBox extends FlxSpriteGroup
 
 		handSelect = new FlxSprite(FlxG.width * 0.84, FlxG.height * 0.84).loadGraphic(Paths.image('weeb/pixelUI/hand_textbox'));
 		handSelect.setGraphicSize(Std.int(handSelect.width * PlayState.daPixelZoom));
-		add(handSelect);
+		if(PlayState.SONG.song.toLowerCase() != 'thorns')
+			add(handSelect);
 
 		dropText = new FlxText(242, 452, Std.int(FlxG.width * 0.6), "", 32);
 		dropText.font = 'Pixel Arial 11 Bold';
