@@ -22,5 +22,49 @@ class AndroidData{
 	    if (android.data.glow == null){
 	        android.data.glow = false;
 	    }
+	    android.flush();
+	}
+
+	public function flushData(){
+	    android.flush();
+	}
+
+	public function saveGlow(glow:Bool){
+	    android.data.glow = glow;
+	}
+
+	public function getGlow(){
+	    if (android.data.glow == true){
+    	    return true;
+	    }
+	    else{
+	        return false;
+	    }
+	}
+
+	public function saveSploosh(sploosh:Bool){
+	    android.data.sploosh = sploosh;
+	}
+
+	public function getSploosh(){
+	    if (android.data.sploosh == true){
+    	    return true;
+	    }
+	    else{
+	        return false;
+	    }
+	}
+
+	public function getCutscenes(){
+	    if (android.data.cutscenes == true){
+	        return true;
+	    }
+	    else{
+	        return false;
+	    }
+	}
+
+	public function saveCutscenes(cut:Bool){
+	    android.data.cutscenes = cut;
 	}
 }
