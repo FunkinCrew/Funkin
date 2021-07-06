@@ -1307,10 +1307,6 @@ class PlayState extends MusicBeatState
 					case 128, 129, 130:
 						vocals.volume = 0;
 				}
-			case 'blammed':
-				if((curBeat >= 34 && curBeat <= 94) || (curBeat >= 130 && curBeat <= 190) && curBeat % 4 == 2)
-					if(gf.animation.curAnim.name == 'idle' || gf.animation.curAnim.name == 'danceLeft' || gf.animation.curAnim.name == 'danceRight')
-						gf.playAnim('cheer', true);
 		}
 
 		// RESET = Quick Game Over Screen

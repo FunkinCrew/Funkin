@@ -692,6 +692,7 @@ class Character extends FlxSprite
 						playAnim('danceRight');
 					else
 						playAnim('danceLeft');
+					
 				default:
 					playAnim('idle');
 			}
