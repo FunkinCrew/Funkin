@@ -1,6 +1,6 @@
 import flixel.FlxG;
 
-class Ratings
+class Ratings//from kade engine lmao
 {
 	public static function CalculateRating(noteDiff:Float, ?customSafeZone:Float):String // Generate a judgement through some timing shit
 	{
