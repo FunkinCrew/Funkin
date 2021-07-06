@@ -23,7 +23,7 @@ class AndroidData{
 			android.data.glow = false;
 		}
 		if (android.data.scroll == null){
-		    android.data.scroll = false
+			android.data.scroll = false
 		}
 		android.flush();
 	}
@@ -72,15 +72,15 @@ class AndroidData{
 	}
 
 	public function getScroll(){
-	    if (android.data.scroll == true){
-	        return true;
-	    }
-	    else{
-	        return false;
-	    }
+		if (android.data.scroll == true){
+			return true;
+		}
+		else{
+			return false;
+		}
 	}
 
 	public function saveScroll(scroll:Bool){
-	    android.data.scroll = scroll;
+		android.data.scroll = scroll;
 	}
 }
