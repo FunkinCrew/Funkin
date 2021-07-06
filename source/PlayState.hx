@@ -164,6 +164,7 @@ class PlayState extends MusicBeatState
 	#end
 
 	var rank:Rank;
+	var midScroll:Bool;
 
 	var misses:Int = 0;
 	var perfect:Int = 0;
@@ -197,6 +198,7 @@ class PlayState extends MusicBeatState
 
 		osuScroll = data.getOsu();//srsly who would play blackscreen with NOTES.
 		//ok just found out i made optimization mode. 
+		midScroll = data.getMid();
 
 		camGame = new FlxCamera();
 		camHUD = new FlxCamera();
