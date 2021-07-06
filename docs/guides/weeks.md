@@ -150,15 +150,11 @@ Example
 
 ---
 
-![frrf](https://user-images.githubusercontent.com/68293280/118160164-cdab6d00-b3d2-11eb-9b29-a940eaf45025.png)
+![weeks1](https://user-images.githubusercontent.com/55949451/122635123-69bb4900-d0e2-11eb-8bcc-1071cfda4e35.png)
 
-![frrf 2](https://user-images.githubusercontent.com/68293280/118160865-b8830e00-b3d3-11eb-8a23-818a1b4cfdb2.png)
+---
 
-NOTE: You will have to add a new item to `weekUnlocked`, so that the week is playable.
-
-![frrf 3](https://user-images.githubusercontent.com/68293280/118161461-7908f180-b3d4-11eb-89fa-e531ae5804d8.png)
-
-
+![weeks2](https://user-images.githubusercontent.com/55949451/122635129-763fa180-d0e2-11eb-841e-3456e74a50ba.png) \* *for this screenshot I removed tankman from weekCharacters as it would crash because I don't have a tankman character added*
 ### Conclusion
 
 If you followed all of the steps correctly, you have successfully created a new week in the Story Mode.
