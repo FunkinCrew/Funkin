@@ -251,10 +251,22 @@ class ChartingState extends MusicBeatState
 
 		// labels
 
+		var songNameLabel = new FlxText(UI_songTitle.x + UI_songTitle.width + 1, UI_songTitle.y, 0, "Song Name", 9);
+		var diffLabel = new FlxText(UI_songDiff.x + UI_songDiff.width + 1, UI_songDiff.y, 0, "Difficulty", 9);
+
+		var bpmLabel = new FlxText(stepperBPM.x + stepperBPM.width + 1, stepperBPM.y, 0, "BPM", 9);
+		var speedLabel = new FlxText(stepperSpeed.x + stepperSpeed.width + 1, stepperSpeed.y, 0, "Scroll Speed", 9);
+
 		var settingsLabel = new FlxText(10, 10, 0, "Setings", 9);
 		var actionsLabel = new FlxText(10, 150, 0, "Actions", 9);
 
 		// adding things
+		tab_group_song.add(songNameLabel);
+		tab_group_song.add(diffLabel);
+		
+		tab_group_song.add(bpmLabel);
+		tab_group_song.add(speedLabel);
+
 		tab_group_song.add(settingsLabel);
 		tab_group_song.add(actionsLabel);
 
