@@ -57,6 +57,7 @@ class ResultsScreen extends FlxSubState
         music = new FlxSound().loadEmbedded(Paths.music('breakfast'), true, true);
 		music.volume = 0;
 		music.play(false, FlxG.random.int(0, Std.int(music.length / 2)));
+		FlxG.sound.list.add(music);
 
         background.alpha = 0;
 
