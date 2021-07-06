@@ -3223,7 +3223,7 @@ class PlayState extends MusicBeatState
 
 		if (curBeat % 4 == 0)//why not.
 		{
-			FlxG.camera.zoom += 0.05;
+			FlxG.camera.zoom += 0.03;
 			camHUD.zoom += 0.01;
 		}
 
