@@ -1,4 +1,4 @@
-Tutorial:gf:-1
+Tutorial:gf:0
 Bopeebo:dad:1
 Fresh:dad:1
 Dad Battle:dad:1
@@ -17,5 +17,5 @@ Winter Horrorland:monster-christmas:5
 Senpai:senpai:6
 Roses:senpai-angry:6
 Thorns:spirit:6
-Test:bf-pixel:-1:debug
-Ridge:dad:-1:debug
+Test:bf-pixel:0:debug
+Ridge:dad:0:debug

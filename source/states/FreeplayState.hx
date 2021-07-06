@@ -1,5 +1,6 @@
 package states;
 
+import flixel.util.FlxTimer;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import game.Song;
@@ -42,6 +43,11 @@ class FreeplayState extends MusicBeatState
 
 	public static var songsReady:Bool = false;
 
+	private var coolColors:Array<Int> = [0xFF7F1833, 0xFF7C689E, -14535868, 0xFFA8E060, 0xFFFF87FF, 0xFF8EE8FF, 0xFFFF8CCD, 0xFFFF9900];
+	private var bg:FlxSprite;
+	private var selectedColor:Int = 0xFF7F1833;
+	private var interpolation:Float = 0.0;
+
 	override function create()
 	{
 		var black = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
@@ -67,14 +73,6 @@ class FreeplayState extends MusicBeatState
 
 		var initSonglist = CoolUtil.coolTextFile(Paths.txt('freeplaySonglist'));
 
-		/* 
-			if (FlxG.sound.music != null)
-			{
-				if (!FlxG.sound.music.playing)
-					FlxG.sound.playMusic(Paths.music('freakyMenu'));
-			}
-		 */
-
 		#if desktop
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("In the Menus", null);
@@ -97,27 +95,29 @@ class FreeplayState extends MusicBeatState
 			var icon = listArray[1];
 			var song = listArray[0];
 
-			// code so you can actually play week 6 in freeplay lol
-			if (week == 6)
-			{
-				week = 5;
-			}
-
 			// If you've unlocked the week after this one, then yes
-			if (listArray[3] == null && (StoryMenuState.weekUnlocked[week + 1] || isDebug || !StoryMenuState.weekProgression))
+			if (
+				listArray[3] == null && 
+				(StoryMenuState.weekUnlocked[week + 1]
+					|| isDebug
+					|| !StoryMenuState.weekProgression
+					|| (
+						StoryMenuState.weekUnlocked[week + 1] == null 
+						&& StoryMenuState.weekUnlocked[week]
+					)
+				)
+			)
 			{
 				// Creates new song data accordingly
-				songs.push(new SongMetadata(song, Std.parseInt(listArray[2]), icon));
+				songs.push(new SongMetadata(song, week, icon));
 			} else if(listArray[3] != null && FlxG.save.data.debugSongs == true)
 			{
 				// Creates new song data accordingly
-				songs.push(new SongMetadata(song, Std.parseInt(listArray[2]), icon));
+				songs.push(new SongMetadata(song, week, icon));
 			}
 		}
 
-		// LOAD CHARACTERS
-
-		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuBGBlue'));
+		bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 		add(bg);
 
 		grpSongs = new FlxTypedGroup<Alphabet>();
@@ -168,6 +168,9 @@ class FreeplayState extends MusicBeatState
 			black.destroy();
 		}
 
+		selectedColor = coolColors[songs[curSelected].week];
+		bg.color = selectedColor;
+
 		super.create();
 	}
 
@@ -194,6 +197,8 @@ class FreeplayState extends MusicBeatState
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+
+		bg.color = FlxColor.interpolate(bg.color, selectedColor, interpolation);
 
 		if (FlxG.sound.music.volume < 0.7)
 		{
@@ -313,6 +318,16 @@ class FreeplayState extends MusicBeatState
 			{
 				item.alpha = 1;
 			}
+		}
+
+		interpolation = 0.0;
+		selectedColor = coolColors[songs[curSelected].week];
+
+		for(i in 0...100)
+		{
+			new FlxTimer().start(i / 100, function(t:FlxTimer){
+				interpolation += 0.01;
+			});
 		}
 	}
 }
