@@ -1008,13 +1008,7 @@ class PlayState extends MusicBeatState
 		}
 
 		osuScroll = data.getOsu();//srsly who would play blackscreen with NOTES.
-		var blackstuff:FlxSprite
 
-		if (osuScroll){
-			blackstuff = new FlxSprite(0, 0).makeGraphic(Std.int(FlxG.width * 4), Std.int(FlxG.height * 4), FlxColor.BLACK);
-			blackstuff.cameras = [camHUD];
-			add(blackstuff);
-		}
 
 		var doof:DialogueBox = new DialogueBox(false, dialogue);
 		// doof.x += 70;
