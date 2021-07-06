@@ -32,7 +32,7 @@ class CreditState extends MusicBeatState{
 	    addWeek(['FNF Android Creator', 'V2.8 Coder'], 1, ['lucky', 'zack']);
 	    addWeek(['BetaTester + CreditIcons1', 'BetaTester + CreditIcons2'], 2, ['schepka', 'goldie']);
 	    addWeek(['Icon Artist', 'Icon Organizer', 'Logo Artist'], 3, ['idioticlucas', 'maskedpump', 'aarontal']);
-	    addWeek(['GF Animator'], 4, ['mark']);
+	    addWeek(['GF Animator', 'Freeplay Bumpin'], 4, ['mark', 'smokey']);
 	    addWeek(['Builder', 'Save help + builder', 'NoteSplash + tankroll'], 5, ['peppy', 'klavier', 'gamerbros']);
 	    addWeek(['Funkin Crew', 'Funkin Crew', 'Funkin Crew', 'Funkin Crew'], 6 ['muffin', 'phantom', 'kawaii', 'evil']);
 
@@ -122,22 +122,24 @@ class CreditState extends MusicBeatState{
 				bg.color = FlxColor.fromRGB(255, 165, 31);
 			case 'BetaTester + CreditIcons2':
 				bg.color = FlxColor.fromRGB(255, 0, 204);
-			case 'pico' | 'philly' | 'blammed':
+			case 'Icon Artist':
 				bg.color = FlxColor.fromRGB(255, 0, 0);
-			case 'satin-panties' | 'high' | 'milf':
-				bg.color = FlxColor.fromRGB(245, 66, 155);
-			case 'cocoa' | 'eggnog':
-				bg.color = FlxColor.fromRGB(255, 184, 184);
-			case 'winter-horrorland':
-				bg.color = FlxColor.fromRGB(224, 2, 2);
-			case 'senpai' | 'roses':
-				bg.color = FlxColor.fromRGB(255, 184, 248);
-			case 'thorns':
-				bg.color = FlxColor.fromRGB(255, 0, 81);
-			case 'ugh' | 'guns' | 'stress':
-				bg.color = FlxColor.fromRGB(255, 204, 0);
-			case 'test':
-				bg.color = FlxColor.fromRGB(42, 210, 222);
+			case 'Icon Organizer':
+				bg.color = FlxColor.fromRGB(255, 149, 0);
+			case 'Logo Artist':
+				bg.color = FlxColor.fromRGB(128, 255, 0);
+			case 'GF Animator':
+				bg.color = FlxColor.fromRGB(255, 0, 98);
+			case 'Builder':
+				bg.color = FlxColor.fromRGB(0, 238, 255);
+			case 'Save help + builder':
+				bg.color = FlxColor.fromRGB(170, 0, 255);
+			case 'NoteSplash + tankroll':
+				bg.color = FlxColor.fromRGB(255, 170, 0);
+			case 'Funkin Crew':
+				bg.color = FlxColor.fromRGB(0, 145, 255);
+			case 'Freeplay Bumpin':
+				bg.color = FlxColor.fromRGB(0, 68, 255);
 		}
 
 		var upP = controls.UP_P;
