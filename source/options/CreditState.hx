@@ -30,7 +30,7 @@ class CreditState extends MusicBeatState{
 	override function create()
 	{
 	    addWeek(['FNF Android Creator', 'V2.8 Coder'], 1, ['lucky', 'zack']);
-	    addWeek(['BetaTester + CreditIcons', 'BetaTester + CreditIcons'], 2, ['schepka', 'goldie']);
+	    addWeek(['BetaTester + CreditIcons1', 'BetaTester + CreditIcons2'], 2, ['schepka', 'goldie']);
 	    addWeek(['Icon Artist', 'Icon Organizer', 'Logo Artist'], 3, ['idioticlucas', 'maskedpump', 'aarontal']);
 	    addWeek(['GF Animator'], 4, ['mark']);
 	    addWeek(['Builder', 'Save help + builder', 'NoteSplash + tankroll'], 5, ['peppy', 'klavier', 'gamerbros']);
@@ -114,16 +114,16 @@ class CreditState extends MusicBeatState{
 
 		switch (songs[curSelected].songName.toLowerCase())
 		{
-			case 'tutorial':
-				bg.color = FlxColor.fromRGB(245, 66, 152);
-			case 'bopeebo' | 'fresh' | 'dadbattle':
-				bg.color = FlxColor.fromRGB(174, 90, 191);
-			case 'spookeez' | 'south':
+			case 'FNF Android Creator':
+				bg.color = FlxColor.fromRGB(255, 255, 0);
+			case 'V2.8 Coder':
+				bg.color = FlxColor.fromRGB(0, 255, 64);
+			case 'BetaTester + CreditIcons1':
 				bg.color = FlxColor.fromRGB(255, 165, 31);
-			case 'monster':
-				bg.color = FlxColor.fromRGB(224, 2, 2);
+			case 'BetaTester + CreditIcons2':
+				bg.color = FlxColor.fromRGB(255, 0, 204);
 			case 'pico' | 'philly' | 'blammed':
-				bg.color = FlxColor.fromRGB(2, 224, 39);
+				bg.color = FlxColor.fromRGB(255, 0, 0);
 			case 'satin-panties' | 'high' | 'milf':
 				bg.color = FlxColor.fromRGB(245, 66, 155);
 			case 'cocoa' | 'eggnog':
