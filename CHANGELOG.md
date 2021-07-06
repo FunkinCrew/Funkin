@@ -14,7 +14,8 @@ All notable changes will be documented in this file.
 - Difficulty selector in song charter.
 - Week Progression can be toggled in options menu now.
 - Improved dialogue system (will still be improved).
-
+- New Input System! (finally dude).
+- Anti-Mashing is now toggleable.
 - WEEK 7 IS FULLY IMPLEMENTED BESIDES THE CUTSCENES (and also besides pico-speaker's cool animations to the music).
 ### Changed
 - Organized classes into packages.
@@ -25,13 +26,9 @@ All notable changes will be documented in this file.
 ### Fixed
 - Song names like Philly and Dadbattle have been replaced to their actual song names (Philly Nice and Dad Battle).
 - The layering of GF on the limo stage has now been fixed! (:pog:)
+- In the Thorns dialogue, Senpai's dialogue portrait is now invisible, instead of behind or infront of Spirit.
 ### Re-Added
 - When pressing 9 in-game it now will revert your health icon to bf-old (because idk why I removed it).
-### Known Issues
-- In the Thorns cutscene, Senpai's dialogue portrait goes over Spirit's image.
-
-DO THIS NOW (priority, top to bottom):
-- New input system.
 
 ## [0.1] - 6/18/2021
 ### Added

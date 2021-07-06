@@ -411,6 +411,34 @@ class OptionsMenu extends MusicBeatState
 						inMenu = false;
 					}
 
+					case "Anti-Mash On":
+					{
+						inMenu = false;
+						FlxG.save.data.antiMash = false;
+						FlxG.save.flush();
+
+						var option = new Alphabet(20, 420, "Anti-Mash Off", true, false);
+						option.isMenuItem = true;
+						option.targetY = 7;
+						grpOptionsTexts.members[7] = option;
+						textMenuItems[7] = "Anti-Mash Off";
+						inMenu = false;
+					}
+
+					case "Anti-Mash Off":
+					{
+						inMenu = false;
+						FlxG.save.data.antiMash = true;
+						FlxG.save.flush();
+
+						var option = new Alphabet(20, 420, "Anti-Mash On", true, false);
+						option.isMenuItem = true;
+						option.targetY = 7;
+						grpOptionsTexts.members[7] = option;
+						textMenuItems[7] = "Anti-Mash On";
+						inMenu = false;
+					}
+
 					case 'Misc':
 					{
 						curSelected = 0;
@@ -435,6 +463,11 @@ class OptionsMenu extends MusicBeatState
 							textMenuItems.push("Week Progression Off");
 						else
 							textMenuItems.push("Week Progression On");
+
+						if(!FlxG.save.data.antiMash)
+							textMenuItems.push("Anti-Mash Off");
+						else
+							textMenuItems.push("Anti-Mash On");
 						
 						spawnInTexts();
 					}
