@@ -22,6 +22,9 @@ class AndroidData{
 		if (android.data.glow == null){
 			android.data.glow = false;
 		}
+		if (android.data.scroll == null){
+		    android.data.scroll = false
+		}
 		android.flush();
 	}
 
@@ -66,5 +69,18 @@ class AndroidData{
 
 	public function saveCutscenes(cut:Bool){
 		android.data.cutscenes = cut;
+	}
+
+	public function getScroll(){
+	    if (android.data.scroll == true){
+	        return true;
+	    }
+	    else{
+	        return false;
+	    }
+	}
+
+	public function saveScroll(scroll:Bool){
+	    android.data.scroll = scroll;
 	}
 }
