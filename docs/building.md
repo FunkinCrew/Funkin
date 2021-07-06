@@ -30,7 +30,7 @@
 	 - `haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc`
 	 - `haxelib install actuate`
 	 - `haxelib git extension-webm https://github.com/KadeDev/extension-webm`
-	 - `lime rebuild extension-webm windows`
+	 - `lime rebuild extension-webm <ie. windows, macos, linux>`
 
 ### Windows-only dependencies (only for building *to* Windows. Building html5 on Windows does not require this)
 If you are planning to build for Windows, you also need to install **Visual Studio 2019**. While installing it, *don't click on any of the options to install workloads*. Instead, go to the **individual components** tab and choose the following:
