@@ -67,16 +67,7 @@ class TitleState extends MusicBeatState
 			trace("Loaded " + openfl.Assets.getLibrary("default").assetsLoaded + " assets (DEFAULT)");
 		}
 		
-		PlayerSettings.init();
 
-		#if windows
-		DiscordClient.initialize();
-
-		Application.current.onExit.add (function (exitCode) {
-			DiscordClient.shutdown();
-		 });
-		 
-		#end
 
 		curWacky = FlxG.random.getObject(getIntroTextShit());
 
@@ -93,14 +84,8 @@ class TitleState extends MusicBeatState
 		trace('NEWGROUNDS LOL');
 		#end
 
-		FlxG.save.bind('funkin', 'ninjamuffin99');
-
-		KadeEngineData.initSave();
-
 		// var file:SMFile = SMFile.loadFile("file.sm");
 		// this was testing things
-		
-		Highscore.load();
 
 		#if FREEPLAY
 		FlxG.switchState(new FreeplayState());

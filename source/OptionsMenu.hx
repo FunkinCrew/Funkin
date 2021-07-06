@@ -59,6 +59,7 @@ class OptionsMenu extends MusicBeatState
 			new ScoreScreen("Show the score screen after the end of a song"),
 			new ShowInput("Display every single input in the score screen."),
 			new Optimization("No backgrounds, no characters, centered notes, no player 2."),
+			new GraphicLoading("On startup, cache every character. Significantly decrease load times. (HIGH MEMORY)"),
 			new BotPlay("Showcase your charts and mods with autoplay.")
 		]),
 		
