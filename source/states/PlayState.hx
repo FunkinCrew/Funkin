@@ -1,5 +1,7 @@
 package states;
 
+import flixel.graphics.tile.FlxGraphicsShader;
+import flixel.group.FlxGroup;
 import lime.system.System;
 import haxe.SysTools;
 import openfl.media.SoundChannel;
@@ -144,6 +146,8 @@ class PlayState extends MusicBeatState
 	private var totalNotes:Int = 0;
 	private var hitNotes:Float = 0.0;
 
+	public var foregroundSprites:FlxGroup = new FlxGroup();
+
 	var defaultCamZoom:Float = 1.05;
 
 	// how big to stretch the pixel art assets
@@ -159,10 +163,6 @@ class PlayState extends MusicBeatState
 	var detailsText:String = "";
 	var detailsPausedText:String = "";
 	#end
-
-	// copied from kade cuz im a lazy poo poo and dont feel like figuring this out lol \_(:D)_/
-	public function addObject(object:FlxBasic) { add(object); }
-	public function removeObject(object:FlxBasic) { remove(object); }
 
 	override public function create()
 	{
@@ -319,6 +319,8 @@ class PlayState extends MusicBeatState
 				dad.x -= 150;
 				dad.y += 100;
 				camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
+			case "tankman":
+				dad.y += 180;
 		}
 
 		// REPOSITIONING PER STAGE
@@ -332,6 +334,8 @@ class PlayState extends MusicBeatState
 
 		add(dad);
 		add(boyfriend);
+
+		add(foregroundSprites);
 
 		var doof:DialogueBox = new DialogueBox(false);
 		// doof.x += 70;

@@ -56,6 +56,11 @@ class StageGroup extends FlxGroup
     private var watchTower:FlxSprite;
     private var rollingTank:FlxSprite;
 
+    private var tankAngle:Float = FlxG.random.int(-90, 45);
+    private var tankSpeed:Float = FlxG.random.float(5, 7);
+
+    private var tankMen:Array<FlxSprite> = [];
+
     public function updateStage(?newStage:String)
     {
         if(newStage != null)
@@ -401,7 +406,7 @@ class StageGroup extends FlxGroup
                 rightSmoke.animation.play("default");
                 add(rightSmoke);
 
-                watchTower = new FlxSprite(1100, -100);
+                watchTower = new FlxSprite(100, 50);
                 watchTower.scrollFactor.set(0.5, 0.5);
                 watchTower.frames = Paths.getSparrowAtlas(stage + '/tankWatchtower', 'stages');
                 watchTower.animation.addByPrefix("idle", "watchtower gradient color", 24, false);
@@ -415,29 +420,64 @@ class StageGroup extends FlxGroup
                 rollingTank.animation.play("idle");
                 add(rollingTank);
 
-                /*
-                this.tankGround = new R("tankRolling",300,300,.5,.5,["BG tank w lighting"],!0);
-                this.add(this.tankGround);
-                this.tankmanRun = new x;
-                this.add(this.tankmanRun);
-                b = new R("tankGround",-420,-150);
-                b.setGraphicSize(1.15 * b.get_width() | 0);
-                b.updateHitbox();
-                this.add(b);
-                this.moveTank();
-                b = new R("tank0",-500,650,1.7,1.5,["fg"]);
-                this.foregroundSprites.add(b);
-                b = new R("tank1",-300,750,2,.2,["fg"]);
-                this.foregroundSprites.add(b);
-                b = new R("tank2",450,940,1.5,1.5,["foreground"]);
-                this.foregroundSprites.add(b);
-                b = new R("tank4",1300,900,1.5,1.5,["fg"]);
-                this.foregroundSprites.add(b);
-                b = new R("tank5",1620,700,1.5,1.5,["fg"]);
-                this.foregroundSprites.add(b);
-                b = new R("tank3",1300,1200,3.5,2.5,["fg"]);
-                this.foregroundSprites.add(b);
-                */
+                var ground = new FlxSprite(-420, -150);
+                ground.loadGraphic(Paths.image(stage + '/tankGround', 'stages'));
+                ground.setGraphicSize(Std.int(ground.width * 1.15));
+                ground.updateHitbox();
+                add(ground);
+
+                moveTank();
+
+                // THE FRONT MENSSSS
+
+                var tankMan0 = new FlxSprite(-500, 650);
+                tankMan0.scrollFactor.set(1.7, 1.5);
+                tankMan0.frames = Paths.getSparrowAtlas(stage + '/tank0', 'stages');
+                tankMan0.animation.addByPrefix("idle", "fg", 24, false);
+                tankMan0.animation.play("idle");
+                PlayState.instance.foregroundSprites.add(tankMan0);
+
+                var tankMan1 = new FlxSprite(-300, 750);
+                tankMan1.scrollFactor.set(2, 0.2);
+                tankMan1.frames = Paths.getSparrowAtlas(stage + '/tank1', 'stages');
+                tankMan1.animation.addByPrefix("idle", "fg", 24, false);
+                tankMan1.animation.play("idle");
+                PlayState.instance.foregroundSprites.add(tankMan1);
+
+                var tankMan2 = new FlxSprite(450, 940);
+                tankMan2.scrollFactor.set(1.5, 1.5);
+                tankMan2.frames = Paths.getSparrowAtlas(stage + '/tank2', 'stages');
+                tankMan2.animation.addByPrefix("idle", "foreground", 24, false);
+                tankMan2.animation.play("idle");
+                PlayState.instance.foregroundSprites.add(tankMan2);
+
+                var tankMan3 = new FlxSprite(1300, 900);
+                tankMan3.scrollFactor.set(1.5, 1.5);
+                tankMan3.frames = Paths.getSparrowAtlas(stage + '/tank4', 'stages');
+                tankMan3.animation.addByPrefix("idle", "fg", 24, false);
+                tankMan3.animation.play("idle");
+                PlayState.instance.foregroundSprites.add(tankMan3);
+
+                var tankMan4 = new FlxSprite(1300, 1200);
+                tankMan4.scrollFactor.set(3.5, 2.5);
+                tankMan4.frames = Paths.getSparrowAtlas(stage + '/tank3', 'stages');
+                tankMan4.animation.addByPrefix("idle", "fg", 24, false);
+                tankMan4.animation.play("idle");
+                PlayState.instance.foregroundSprites.add(tankMan4);
+
+                var tankMan5 = new FlxSprite(1620, 700);
+                tankMan5.scrollFactor.set(1.5, 1.5);
+                tankMan5.frames = Paths.getSparrowAtlas(stage + '/tank5', 'stages');
+                tankMan5.animation.addByPrefix("idle", "fg", 24, false);
+                tankMan5.animation.play("idle");
+                PlayState.instance.foregroundSprites.add(tankMan5);
+
+                tankMen.push(tankMan0);
+                tankMen.push(tankMan1);
+                tankMen.push(tankMan2);
+                tankMen.push(tankMan3);
+                tankMen.push(tankMan4);
+                tankMen.push(tankMan5);
             }
         }
     }
@@ -470,6 +510,20 @@ class StageGroup extends FlxGroup
 				PlayState.boyfriend.y += 220;
 				PlayState.gf.x += 180;
 				PlayState.gf.y += 300;
+            case 'wasteland':
+                PlayState.gf.y += 10;
+                PlayState.gf.x -= 30;
+
+                PlayState.boyfriend.x += 40;
+
+                PlayState.dad.y += 60;
+                PlayState.dad.x -= 80;
+
+                if(PlayState.gf.curCharacter == 'pico-speaker')
+                {
+                    PlayState.gf.x -= 170;
+                    PlayState.gf.y -= 75;
+                }
         }
     }
 
@@ -538,6 +592,11 @@ class StageGroup extends FlxGroup
             case 'wasteland':
             {
                 watchTower.animation.play("idle", true);
+
+                for(object in tankMen)
+                {
+                    object.animation.play("idle", true);
+                }
             }
         }
     }
@@ -546,21 +605,34 @@ class StageGroup extends FlxGroup
     {
         super.update(elapsed);
 
-        if(stage == "philly")
+        switch(stage)
         {
-            if (trainMoving)
-            {
-                trainFrameTiming += goodElapse;
-
-                if (trainFrameTiming >= 1 / 24)
+            case 'philly':
+                if (trainMoving)
                 {
-                    updateTrainPos();
-                    trainFrameTiming = 0;
+                    trainFrameTiming += goodElapse;
+    
+                    if (trainFrameTiming >= 1 / 24)
+                    {
+                        updateTrainPos();
+                        trainFrameTiming = 0;
+                    }
                 }
-            }
+            case 'wasteland':
+                moveTank();
         }
 
         goodElapse = elapsed;
+    }
+
+    //wasteland
+    function moveTank()
+    {
+        var tankX = 400;
+        tankAngle += FlxG.elapsed * tankSpeed;
+        rollingTank.angle = tankAngle - 90 + 15;
+        rollingTank.x = tankX + 1500 * Math.cos(Math.PI / 180 * (1 * tankAngle + 180));
+        rollingTank.y = 1300 + 1100 * Math.sin(Math.PI / 180 * (1 * tankAngle + 180));
     }
 
     // philly

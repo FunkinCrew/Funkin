@@ -7,5 +7,4 @@ mall
 evil-mall
 school
 evil-school
-WASTE UNFINISHED, GOT IT? GOOD.
 wasteland
