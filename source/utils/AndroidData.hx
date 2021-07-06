@@ -23,7 +23,7 @@ class AndroidData{
 			android.data.glow = false;
 		}
 		if (android.data.scroll == null){
-			android.data.scroll = false
+			android.data.scroll = false;
 		}
 		if (android.data.middle == null){
 		    android.data.middle = false;
@@ -32,7 +32,7 @@ class AndroidData{
 		    android.data.dfjk = false;
 		}
 		if (android.data.osu == null){
-		    android.data.osu = true:
+		    android.data.osu = true;
 		}
 		android.flush();
 	}
@@ -99,7 +99,7 @@ class AndroidData{
 
 	public function getMid(){
 	    if (android.data.middle == true){
-	        return true:
+	        return true;
 	    }
 	    else{
 	        return false;
@@ -115,7 +115,7 @@ class AndroidData{
 	        return true;
 	    }
 	    else{
-	        return false:
+	        return false;
 	    }
 	}
 }
