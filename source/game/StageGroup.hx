@@ -52,6 +52,10 @@ class StageGroup extends FlxGroup
     // SCHOOL STUFF
     private var bgGirls:BackgroundGirls;
 
+    // WASTELAND STUFF
+    private var watchTower:FlxSprite;
+    private var rollingTank:FlxSprite;
+
     public function updateStage(?newStage:String)
     {
         if(newStage != null)
@@ -383,17 +387,35 @@ class StageGroup extends FlxGroup
                 ruins.updateHitbox();
                 add(ruins);
 
+                var leftSmoke = new FlxSprite(-200, -100);
+                leftSmoke.scrollFactor.set(0.4, 0.4);
+                leftSmoke.frames = Paths.getSparrowAtlas(stage + '/smokeLeft', 'stages');
+                leftSmoke.animation.addByPrefix("default", "SmokeBlurLeft", 24, true);
+                leftSmoke.animation.play("default");
+                add(leftSmoke);
+
+                var rightSmoke = new FlxSprite(1100, -100);
+                rightSmoke.scrollFactor.set(0.4, 0.4);
+                rightSmoke.frames = Paths.getSparrowAtlas(stage + '/smokeRight', 'stages');
+                rightSmoke.animation.addByPrefix("default", "SmokeRight", 24, true);
+                rightSmoke.animation.play("default");
+                add(rightSmoke);
+
+                watchTower = new FlxSprite(1100, -100);
+                watchTower.scrollFactor.set(0.5, 0.5);
+                watchTower.frames = Paths.getSparrowAtlas(stage + '/tankWatchtower', 'stages');
+                watchTower.animation.addByPrefix("idle", "watchtower gradient color", 24, false);
+                watchTower.animation.play("idle");
+                add(watchTower);
+
+                rollingTank = new FlxSprite(300, 300);
+                rollingTank.scrollFactor.set(0.5, 0.5);
+                rollingTank.frames = Paths.getSparrowAtlas(stage + '/tankRolling', 'stages');
+                rollingTank.animation.addByPrefix("idle", "BG tank w lighting", 24, true);
+                rollingTank.animation.play("idle");
+                add(rollingTank);
+
                 /*
-                b = new R("tankRuins",-200,0,.35,.35);
-                b.setGraphicSize(1.1 * b.get_width() | 0);
-                b.updateHitbox();
-                this.add(b);
-                b = new R("smokeLeft",-200,-100,.4,.4,["SmokeBlurLeft"],!0);
-                this.add(b);
-                b = new R("smokeRight",1100,-100,.4,.4,["SmokeRight"],!0);
-                this.add(b);
-                this.tankWatchtower = new R("tankWatchtower",100,50,.5,.5,["watchtower gradient color"]);
-                this.add(this.tankWatchtower);
                 this.tankGround = new R("tankRolling",300,300,.5,.5,["BG tank w lighting"],!0);
                 this.add(this.tankGround);
                 this.tankmanRun = new x;
@@ -512,6 +534,10 @@ class StageGroup extends FlxGroup
                 {
                     lightningStrikeShit();
                 }
+            }
+            case 'wasteland':
+            {
+                watchTower.animation.play("idle", true);
             }
         }
     }
