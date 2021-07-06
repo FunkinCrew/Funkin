@@ -11,20 +11,20 @@ import AndroidData;
 
 class PreferencesState extends MusicBeatState
 {
-    private var grptext:FlxTypedGroup<Alphabet>;
+	private var grptext:FlxTypedGroup<Alphabet>;
 
-    private var checkboxGroup:FlxTypedGroup<Checkbox>;
+	private var checkboxGroup:FlxTypedGroup<Checkbox>;
 
-    var curSelected:Int = 0;
+	var curSelected:Int = 0;
 
 	var menuItems:Array<String> = ['downscroll', 'cutscenes', 'note splash', 'note glow'];
 
 	var notice:FlxText;
 	var data:AndroidData = new AndroidData();
 
-    override public function create() 
-    {
-        var menuBG:FlxSprite = new FlxSprite().loadGraphic('assets/images/menuDesat.png');
+	override public function create() 
+	{
+		var menuBG:FlxSprite = new FlxSprite().loadGraphic('assets/images/menuDesat.png');
 		menuBG.color = 0xFFea71fd;
 		menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
 		menuBG.updateHitbox();
@@ -32,10 +32,10 @@ class PreferencesState extends MusicBeatState
 		menuBG.antialiasing = true;
 		add(menuBG);   
 
-        grptext = new FlxTypedGroup<Alphabet>();
+		grptext = new FlxTypedGroup<Alphabet>();
 		add(grptext);
 
-        checkboxGroup = new FlxTypedGroup<Checkbox>();
+		checkboxGroup = new FlxTypedGroup<Checkbox>();
 		add(checkboxGroup);
 
 		for (i in 0...menuItems.length)
@@ -45,9 +45,9 @@ class PreferencesState extends MusicBeatState
 			controlLabel.targetY = i;
 			grptext.add(controlLabel);
 
-            var ch = new Checkbox(controlLabel.x + controlLabel.width + 10, controlLabel.y - 20);
-            checkboxGroup.add(ch);
-            add(ch);
+			var ch = new Checkbox(controlLabel.x + controlLabel.width + 10, controlLabel.y - 20);
+			checkboxGroup.add(ch);
+			add(ch);
 
 			switch (menuItems[i]){
 				case "downscroll":
@@ -69,58 +69,58 @@ class PreferencesState extends MusicBeatState
 
 		notice = new FlxText(0, 0, 0,"Cam Speed: " + MusicBeatState.camMove + "Press LEFT or RIGHT to change values\n", 24);
 
-        //notice.x = (FlxG.width / 2) - (notice.width / 2);
+		//notice.x = (FlxG.width / 2) - (notice.width / 2);
 		notice.screenCenter();
-        notice.y = FlxG.height - 56;
-        notice.alpha = 0.6;
+		notice.y = FlxG.height - 56;
+		notice.alpha = 0.6;
 		add(noticebg);
-        add(notice);
+		add(notice);
 
-        #if mobileC
+		#if mobileC
 		addVirtualPad(FULL, A_B);
 		#end
 
 		changeSelection();
-    }
+	}
 
-    override function update(elapsed:Float)
+	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
 		data.flushData();
 
 		if (controls.RIGHT) {
-		    MusicBeatState.camMove = floatToStringPrecision(Math.abs(MusicBeatState.camMove + 0.01), 2);
-		    config.camSave(MusicBeatState.camMove);
+			MusicBeatState.camMove = floatToStringPrecision(Math.abs(MusicBeatState.camMove + 0.01), 2);
+			config.camSave(MusicBeatState.camMove);
 		}
 		if (controls.LEFT) {
-		    MusicBeatState.camMove = floatToStringPrecision(Math.abs(MusicBeatState.camMove - 0.01), 2);
-		    config.camSave(MusicBeatState.camMove);
+			MusicBeatState.camMove = floatToStringPrecision(Math.abs(MusicBeatState.camMove - 0.01), 2);
+			config.camSave(MusicBeatState.camMove);
 		}//waht.
 
 		notice.text = "Cam Speed: " + MusicBeatState.camMove + "Press LEFT or RIGHT to change values\n";
 
-        for (i in 0...checkboxGroup.length)
-        {
-            checkboxGroup.members[i].x = grptext.members[i].x + grptext.members[i].width + 10;
-            checkboxGroup.members[i].y = grptext.members[i].y - 20;
-        } 
+		for (i in 0...checkboxGroup.length)
+		{
+			checkboxGroup.members[i].x = grptext.members[i].x + grptext.members[i].width + 10;
+			checkboxGroup.members[i].y = grptext.members[i].y - 20;
+		} 
 
 		if (controls.ACCEPT)
 		{
 			var daSelected:String = menuItems[curSelected];
 
-            trace(curSelected);
+			trace(curSelected);
 
 			switch (daSelected)
 			{
 				case "downscroll":
 					data.saveScroll(checkboxGroup.members[curSelected].change());
-                case "cutscenes":
-                    data.saveCutscenes(checkboxGroup.members[curSelected].change());
-                case "note splash":
-                    data.saveSploosh(checkboxGroup.members[curSelected].change());//wjat.
-                case "note glow":
-                    data.saveGlow(checkboxGroup.members[curSelected].change());
+				case "cutscenes":
+					data.saveCutscenes(checkboxGroup.members[curSelected].change());
+				case "note splash":
+					data.saveSploosh(checkboxGroup.members[curSelected].change());//wjat.
+				case "note glow":
+					data.saveGlow(checkboxGroup.members[curSelected].change());
 			}
 		}
 
@@ -135,7 +135,7 @@ class PreferencesState extends MusicBeatState
 
 	}
 
-    function changeSelection(change:Int = 0)
+	function changeSelection(change:Int = 0)
 	{
 		FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 
