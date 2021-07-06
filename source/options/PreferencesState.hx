@@ -30,7 +30,7 @@ class PreferencesState extends MusicBeatState
 		menuBG.updateHitbox();
 		menuBG.screenCenter();
 		menuBG.antialiasing = true;
-		add(menuBG);   
+		add(menuBG);
 
 		grptext = new FlxTypedGroup<Alphabet>();
 		add(grptext);
