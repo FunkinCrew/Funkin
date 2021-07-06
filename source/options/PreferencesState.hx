@@ -17,7 +17,7 @@ class PreferencesState extends MusicBeatState
 
 	var curSelected:Int = 0;
 
-	var menuItems:Array<String> = ['downscroll', 'cutscenes', 'note splash', 'note glow'];
+	var menuItems:Array<String> = ['downscroll', 'middlescroll', 'cutscenes', 'note splash', 'note glow', 'optimization', 'dfjk'];
 
 	var notice:FlxText;
 	var data:AndroidData = new AndroidData();
@@ -51,13 +51,17 @@ class PreferencesState extends MusicBeatState
 
 			switch (menuItems[i]){
 				case "downscroll":
-					ch.change(data.getScroll);
+					ch.change(data.getScroll());
 				case "cutscenes":
-					ch.change(data.getCutscenes);
+					ch.change(data.getCutscenes:);
 				case "note splash":
-					ch.change(data.getSploosh);
+					ch.change(data.getSploosh());
 				case "note glow":
-					ch.change(data.getGlow);
+					ch.change(data.getGlow());
+				case "middlescroll":
+					ch.change(data.getMid());
+				case "optimization":
+					ch.change(data.getOsu());
 			}
 
 			// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
@@ -121,6 +125,10 @@ class PreferencesState extends MusicBeatState
 					data.saveSploosh(checkboxGroup.members[curSelected].change());//wjat.
 				case "note glow":
 					data.saveGlow(checkboxGroup.members[curSelected].change());
+				case "middlescroll":
+					data.saveMid(checkboxGroup.members[curSelected].change());
+				case "optimization":
+					data.saveOsu(checkboxGroup.members[curSelected].change());
 			}
 		}
 
