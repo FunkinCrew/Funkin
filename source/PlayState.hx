@@ -61,6 +61,7 @@ class PlayState extends MusicBeatState
 	public static var storyWeek:Int = 0;
 	public static var storyPlaylist:Array<String> = [];
 	public static var storyDifficulty:Int = 1;
+	var osuScroll:Bool;
 
 	var halloweenLevel:Bool = false;
 	var triggeredAlready:Bool = false;
@@ -1006,6 +1007,15 @@ class PlayState extends MusicBeatState
 			add(tankBop6);
 		}
 
+		osuScroll = data.getOsu();//srsly who would play blackscreen with NOTES.
+		var blackstuff:FlxSprite
+
+		if (osuScroll){
+			blackstuff = new FlxSprite(0, 0).makeGraphic(Std.int(FlxG.width * 4), Std.int(FlxG.height * 4), FlxColor.BLACK);
+			blackstuff.cameras = [camHUD];
+			add(blackstuff);
+		}
+
 		var doof:DialogueBox = new DialogueBox(false, dialogue);
 		// doof.x += 70;
 		// doof.y = FlxG.height * 0.5;
@@ -1017,9 +1027,10 @@ class PlayState extends MusicBeatState
 		cutsceneOp = data.getCutscenes();
 		noteSplashOp = data.getSploosh();
 		noteGlow = data.getGlow();
+
 		Note.isDownScroll = isDownScroll;
 
-		strumLine = new FlxSprite(0, (isDownScroll ? FlxG.height - 150 : 50)).makeGraphic(FlxG.width, 10);//i hate math. :(
+		strumLine = new FlxSprite(0, (isDownScroll ? FlxG.height - 150 : 50)).makeGraphic(FlxG.width, 10);//i hate math.
 		strumLine.scrollFactor.set();
 
 		strumLineNotes = new FlxTypedGroup<FlxSprite>();
@@ -1069,6 +1080,19 @@ class PlayState extends MusicBeatState
 		// healthBar
 		add(healthBar);
 
+		iconP1 = new HealthIcon(SONG.player1, true);
+		iconP1.y = healthBar.y - (iconP1.height / 2);
+		add(iconP1);
+
+		if (SONG.song.toLowerCase() == 'test'){
+			iconP2 = new HealthIcon('bf', false);
+		}
+		else{
+			iconP2 = new HealthIcon(SONG.player2, false);
+		}
+
+		iconP2.y = healthBar.y - (iconP2.height / 2);
+		add(iconP2);
 		// perfect , rank , misses
 		missesTxt = new FlxText(healthBarBG.x + healthBarBG.width - 100, healthBarBG.y + 35, 0, "", 20);
 		missesTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT);
@@ -1085,18 +1109,6 @@ class PlayState extends MusicBeatState
 		perfectTxt.scrollFactor.set();
 		add(perfectTxt);
 
-		iconP1 = new HealthIcon(SONG.player1, true);
-		iconP1.y = healthBar.y - (iconP1.height / 2);
-		add(iconP1);
-
-		if (SONG.song.toLowerCase() == 'test'){
-			iconP2 = new HealthIcon('bf', false);
-		}
-		else{
-			iconP2 = new HealthIcon(SONG.player2, false);
-		}
-		iconP2.y = healthBar.y - (iconP2.height / 2);
-		add(iconP2);
 
 		strumLineNotes.cameras = [camHUD];
 		grpNoteSplashes.cameras = [camHUD];
