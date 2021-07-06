@@ -195,7 +195,9 @@ class PlayState extends MusicBeatState
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
 
-		// var gameCam:FlxCamera = FlxG.camera;
+		osuScroll = data.getOsu();//srsly who would play blackscreen with NOTES.
+		//ok just found out i can turn this into optimized code B)
+
 		camGame = new FlxCamera();
 		camHUD = new FlxCamera();
 		camHUD.bgColor.alpha = 0;
@@ -985,20 +987,21 @@ class PlayState extends MusicBeatState
 
 		add(gf);
 
+		if (!osuScroll){
 		// Shitty layering but whatev it works LOL
-		if (curStage == 'limo')
-			add(limo);
+	    	if (curStage == 'limo')
+	    		add(limo);
 
-		if (SONG.song.toLowerCase() == 'test'){
-			add(pixel2);
-			add(boyfriend2);
-		}
+	    	if (SONG.song.toLowerCase() == 'test'){
+		    	add(pixel2);
+		    	add(boyfriend2);
+	    	}
 
-		add(dad);
-		add(boyfriend);
+	    	add(dad);
+	    	add(boyfriend);
 
-		if (curStage == 'tankStage' || curStage == 'tankStage2')
-		{
+	    	if (curStage == 'tankStage' || curStage == 'tankStage2')
+	    	{
 			add(tankBop1);
 			add(tankBop2);
 			add(tankBop3);
@@ -1006,8 +1009,8 @@ class PlayState extends MusicBeatState
 			add(tankBop5);
 			add(tankBop6);
 		}
+		}
 
-		osuScroll = data.getOsu();//srsly who would play blackscreen with NOTES.
 
 
 		var doof:DialogueBox = new DialogueBox(false, dialogue);
@@ -1563,6 +1566,9 @@ class PlayState extends MusicBeatState
 				swagNote.sustainLength = songNotes[2];
 				swagNote.scrollFactor.set(0, 0);
 
+				if (!gottaHitNote && PlayStateChangeables.Optimize)
+					continue;
+
 				var susLength:Float = swagNote.sustainLength;
 
 				susLength = susLength / Conductor.stepCrochet;
@@ -1614,6 +1620,9 @@ class PlayState extends MusicBeatState
 		{
 			// FlxG.log.add(i);
 			var babyArrow:FlxSprite = new FlxSprite(0, strumLine.y);
+
+			if (PlayStateChangeables.Optimize && player == 0)
+				continue;
 
 			switch (curStage)
 			{
@@ -1711,7 +1720,13 @@ class PlayState extends MusicBeatState
 
 			babyArrow.animation.play('static');
 			babyArrow.x += 50;
+
+
 			babyArrow.x += ((FlxG.width / 2) * player);
+
+			if (PlayStateChangeables.Optimize)
+				babyArrow.x -= 275;
+
 			if (noteGlow){
 			cpuStrums.forEach(function(spr:FlxSprite)
 				{
@@ -1836,7 +1851,7 @@ class PlayState extends MusicBeatState
 		switch (curStage)
 		{
 			case 'philly':
-				if (trainMoving)
+				if (trainMoving && !osuScroll)
 				{
 					trainFrameTiming += elapsed;
 
