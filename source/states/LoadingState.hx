@@ -26,6 +26,8 @@ class LoadingState extends MusicBeatState
 	var logo:FlxSprite;
 	var gfDance:FlxSprite;
 	var danceLeft = false;
+
+	public static var instance:LoadingState = null;
 	
 	function new(target:FlxState, stopMusic:Bool)
 	{
@@ -36,6 +38,8 @@ class LoadingState extends MusicBeatState
 	
 	override function create()
 	{
+		instance = this;
+
 		logo = new FlxSprite(-150, -100);
 		logo.frames = Paths.getSparrowAtlas('title/logoBumpin');
 		logo.antialiasing = true;
@@ -79,10 +83,13 @@ class LoadingState extends MusicBeatState
 		);
 	}
 	
-	function checkLoadSong(path:String)
+	public function checkLoadSong(path:String)
 	{
 		if (!Assets.cache.hasSound(path))
 		{
+			if(callbacks == null)
+				callbacks = new MultiCallback(onLoad);
+
 			var library = Assets.getLibrary("songs");
 			final symbolPath = path.split(":").pop();
 			// @:privateAccess
@@ -138,12 +145,12 @@ class LoadingState extends MusicBeatState
 		FlxG.switchState(target);
 	}
 	
-	static function getSongPath()
+	public static function getSongPath()
 	{
 		return Paths.inst(PlayState.SONG.song);
 	}
 	
-	static function getVocalPath()
+	public static function getVocalPath()
 	{
 		return Paths.voices(PlayState.SONG.song);
 	}

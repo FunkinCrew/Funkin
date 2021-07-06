@@ -518,7 +518,7 @@ class ChartingState extends MusicBeatState
 				case 'Change BPM':
 					_song.notes[curSection].changeBPM = check.checked;
 					FlxG.log.add('changed bpm shit');
-				case "Alt Animation":
+				case "Enemy Alt Animation":
 					_song.notes[curSection].altAnim = check.checked;
 			}
 		}
@@ -950,7 +950,6 @@ class ChartingState extends MusicBeatState
 		if (_song.notes[curSection].changeBPM && _song.notes[curSection].bpm > 0)
 		{
 			Conductor.changeBPM(_song.notes[curSection].bpm);
-			Conductor.mapBPMChanges(_song);
 			FlxG.log.add('CHANGED BPM!');
 		}
 		else
@@ -963,7 +962,6 @@ class ChartingState extends MusicBeatState
 					daBPM = _song.notes[i].bpm;
 
 			Conductor.changeBPM(daBPM);
-			Conductor.mapBPMChanges(_song);
 		}
 
 		/* // PORT BULLSHIT, INCASE THERE'S NO SUSTAIN DATA FOR A NOTE
@@ -1153,6 +1151,12 @@ class ChartingState extends MusicBeatState
 
 		PlayState.storyDifficulty = Difficulties.stringToNum(diff.toLowerCase());
 		PlayState.SONG = Song.loadFromJson(songT.toLowerCase(), song.toLowerCase());
+
+		LoadingState.instance.checkLoadSong(LoadingState.getSongPath());
+
+		if (PlayState.SONG.needsVoices)
+			LoadingState.instance.checkLoadSong(LoadingState.getVocalPath());
+
 		FlxG.resetState();
 	}
 

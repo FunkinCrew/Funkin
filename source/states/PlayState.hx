@@ -323,6 +323,12 @@ class PlayState extends MusicBeatState
 				dad.y += 180;
 		}
 
+		if(gf.curCharacter == "pico-speaker")
+		{
+			gf.x -= 50;
+			gf.y -= 200;
+		}
+
 		// REPOSITIONING PER STAGE
 		stage.setCharOffsets();
 

@@ -33,13 +33,14 @@ class StoryMenuState extends MusicBeatState
 		['Pico', 'Philly Nice', "Blammed"],
 		['Satin Panties', "High", "M.I.L.F"],
 		['Cocoa', 'Eggnog', 'Winter Horrorland'],
-		['Senpai', 'Roses', 'Thorns']
+		['Senpai', 'Roses', 'Thorns'],
+		['Ugh', 'Guns', 'Stress']
 	];
 	var curDifficulty:Int = 1;
 
 	public static var weekProgression:Bool = true;
 
-	public static var weekUnlocked:Array<Bool> = [true, false, false, false, false, false, false];
+	public static var weekUnlocked:Array<Bool> = [true, false, false, false, false, false, false, false];
 
 	var weekCharacters:Array<Dynamic> = [
 		['dad', 'bf', 'gf'],
@@ -48,7 +49,8 @@ class StoryMenuState extends MusicBeatState
 		['pico', 'bf', 'gf'],
 		['mom', 'bf', 'gf'],
 		['parents', 'bf', 'gf'],
-		['senpai', 'bf', 'gf']
+		['senpai', 'bf', 'gf'],
+		['tankman', 'bf', 'gf']
 	];
 
 	var weekNames:Array<String> = [
@@ -58,7 +60,8 @@ class StoryMenuState extends MusicBeatState
 		"Pico",
 		"Mommy Must Murder",
 		"Red Snow",
-		"Hating Simulator Ft. Moawling"
+		"Hating Simulator Ft. Moawling",
+		"Tankman"
 	];
 
 	var txtWeekTitle:FlxText;
@@ -456,6 +459,10 @@ class StoryMenuState extends MusicBeatState
 				grpWeekCharacters.members[0].offset.set(150, 150);
 				grpWeekCharacters.members[0].flipX = false;
 				grpWeekCharacters.members[0].setGraphicSize(Std.int(grpWeekCharacters.members[0].width * 1.3));
+
+			case 'tankman':
+				grpWeekCharacters.members[0].offset.set(60, -20);
+                grpWeekCharacters.members[0].setGraphicSize(Std.int(grpWeekCharacters.members[0].width));
 
 			default:
 				grpWeekCharacters.members[0].offset.set(100, 100);

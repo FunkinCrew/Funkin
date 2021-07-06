@@ -559,13 +559,17 @@ class Character extends FlxSprite
 			case "pico-speaker":
 				frames = Paths.getSparrowAtlas('characters/picoSpeaker', 'shared');
 
+				animation.addByPrefix("tempIdle", "Pico shoot 1", 24, true);
+				addOffset("tempIdle");
+
 				quickAnimAdd("shoot1", "Pico shoot 1");
 				quickAnimAdd("shoot2", "Pico shoot 2");
 				quickAnimAdd("shoot3", "Pico shoot 3");
 				quickAnimAdd("shoot4", "Pico shoot 4");
 
 				loadOffsetFile(curCharacter);
-				playAnim("shoot1");
+				
+				playAnim("tempIdle");
 
 				// will add this back in when we get week 7 source cuz idk how tf im supposed to decipher this function from Funkin.js
 				//loadMappedAnims();

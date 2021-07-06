@@ -512,7 +512,7 @@ class StageGroup extends FlxGroup
 				PlayState.gf.y += 300;
             case 'wasteland':
                 PlayState.gf.y += 10;
-                PlayState.gf.x -= 30;
+                PlayState.gf.x -= 60;
 
                 PlayState.boyfriend.x += 40;
 
@@ -522,7 +522,7 @@ class StageGroup extends FlxGroup
                 if(PlayState.gf.curCharacter == 'pico-speaker')
                 {
                     PlayState.gf.x -= 170;
-                    PlayState.gf.y -= 75;
+                    PlayState.gf.y -= 45;
                 }
         }
     }
