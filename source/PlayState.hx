@@ -47,6 +47,7 @@ import ui.Mobilecontrols;
 #end
 import utils.Rank;
 import Config;
+import utils.AndroidData;
 
 using StringTools;
 
@@ -54,6 +55,7 @@ class PlayState extends MusicBeatState
 {
 	public static var curStage:String = '';
 	public static var SONG:SwagSong;
+	var data:AndroidData = new AndroidData();//data part 2 in line 1014
 
 	public static var isStoryMode:Bool = false;
 	public static var storyWeek:Int = 0;
@@ -1009,10 +1011,10 @@ class PlayState extends MusicBeatState
 		doof.finishThing = startCountdown;
 
 		Conductor.songPosition = -5000;
-		isDownScroll = epic.downscroll;
-		cutsceneOp = epic.cutscenes;
-		noteSplashOp = epic.splash;
-		noteGlow = true;
+		isDownScroll = data.getScroll();
+		cutsceneOp = data.getCutscenes();
+		noteSplashOp = data.getSploosh();
+		noteGlow = data.getGlow();
 		Note.isDownScroll = isDownScroll;
 
 		strumLine = new FlxSprite(0, (isDownScroll ? FlxG.height - 150 : 50)).makeGraphic(FlxG.width, 10);//i hate math. :(
