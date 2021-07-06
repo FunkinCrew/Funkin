@@ -83,6 +83,7 @@ class Caching extends MusicBeatState
 
         var images = [];
         var music = [];
+        var charts = [];
 
         trace("caching images...");
 
@@ -99,6 +100,7 @@ class Caching extends MusicBeatState
         {
             music.push(i);
         }
+    
 
         toBeDone = Lambda.count(images) + Lambda.count(music);
 
@@ -119,6 +121,7 @@ class Caching extends MusicBeatState
             trace("cached " + i);
             done++;
         }
+
 
         trace("Finished caching...");
 
