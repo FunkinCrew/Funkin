@@ -45,7 +45,7 @@ class AndroidData{
 		android.data.glow = glow;
 	}
 
-	public function getGlow(){
+	public function getGlow():Bool{
 		if (android.data.glow == true){
 			return true;
 		}
@@ -58,7 +58,7 @@ class AndroidData{
 		android.data.sploosh = sploosh;
 	}
 
-	public function getSploosh(){
+	public function getSploosh():Bool{
 		if (android.data.sploosh == true){
 			return true;
 		}
@@ -67,7 +67,7 @@ class AndroidData{
 		}
 	}
 
-	public function getCutscenes(){
+	public function getCutscenes():Bool{
 		if (android.data.cutscenes == true){
 			return true;
 		}
@@ -80,7 +80,7 @@ class AndroidData{
 		android.data.cutscenes = cut;
 	}
 
-	public function getScroll(){
+	public function getScroll():Bool{
 		if (android.data.scroll == true){
 			return true;
 		}
@@ -97,7 +97,7 @@ class AndroidData{
 	    android.data.middle = mid;
 	}
 
-	public function getMid(){
+	public function getMid():Bool{
 	    if (android.data.middle == true){
 	        return true;
 	    }
@@ -110,7 +110,7 @@ class AndroidData{
 	    android.data.osu = osu;
 	}
 
-	public function getOsu(){
+	public function getOsu():Bool{
 	    if (android.data.osu == true){
 	        return true;
 	    }
