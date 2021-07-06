@@ -137,8 +137,7 @@ class Paths
 
 	inline static public function imageCached(key:String):FlxGraphic
 	{
-
-		var data = FlxGraphic.fromBitmapData(Caching.bitmapData.get(key));
+		var data = Caching.bitmapData.get(key);
 		trace('finding ${key} - ${data.bitmap}');
 		return data;
 	}

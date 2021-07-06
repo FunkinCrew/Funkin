@@ -37,7 +37,7 @@ class Caching extends MusicBeatState
     var text:FlxText;
     var kadeLogo:FlxSprite;
 
-    public static var bitmapData:Map<String,BitmapData>;
+    public static var bitmapData:Map<String,FlxGraphic>;
 
     var images = [];
     var music = [];
@@ -50,7 +50,7 @@ class Caching extends MusicBeatState
 
         FlxG.worldBounds.set(0,0);
 
-        bitmapData = new Map<String,BitmapData>();
+        bitmapData = new Map<String,FlxGraphic>();
 
         text = new FlxText(FlxG.width / 2, FlxG.height / 2 + 300,0,"Loading...");
         text.size = 34;
@@ -160,7 +160,10 @@ class Caching extends MusicBeatState
             var replaced = i.replace(".png","");
             var data:BitmapData = BitmapData.fromFile("assets/shared/images/characters/" + i);
             trace('id ' + replaced + ' file - assets/shared/images/characters/' + i + ' ${data.width}');
-            bitmapData.set(replaced,data);
+            var graph = FlxGraphic.fromBitmapData(data);
+            graph.persist = true;
+            graph.destroyOnNoUse = false;
+            bitmapData.set(replaced,graph);
             done++;
         }
 
