@@ -31,6 +31,10 @@ class CreditState extends MusicBeatState{
 	{
 	    addWeek(['FNF Android Creator', 'V2.8 Coder'], 1, ['lucky', 'zack']);
 	    addWeek(['BetaTester + CreditIcons', 'BetaTester + CreditIcons'], 2, ['schepka', 'goldie']);
+	    addWeek(['Icon Artist', 'Icon Organizer', 'Logo Artist'], 3, ['idioticlucas', 'maskedpump', 'aarontal']);
+	    addWeek(['GF Animator'], 4, ['mark']);
+	    addWeek(['Builder', 'Save help + builder', 'NoteSplash + tankroll'], 5, ['peppy', 'klavier', 'gamerbros']);
+	    addWeek(['Funkin Crew', 'Funkin Crew', 'Funkin Crew', 'Funkin Crew'], 6 ['muffin', 'phantom', 'kawaii', 'evil']);
 
 		// LOAD MUSIC
 
