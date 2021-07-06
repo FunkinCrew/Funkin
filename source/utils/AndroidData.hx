@@ -34,6 +34,9 @@ class AndroidData{
 		if (android.data.osu == null){
 			android.data.osu = true;
 		}
+		if (android.data.icon2 == null){
+		    android.data.icon2 = false;
+		}
 		android.flush();
 	}
 
@@ -95,5 +98,13 @@ class AndroidData{
 
 	public function getDfjk():Bool{
 		return android.data.dfjk;
+	}
+
+	public function saveIcon(icon:Bool){
+	    android.data.icon2 = icon;
+	}
+
+	public function getIcon():Bool{
+	    return android.data.icon2;
 	}
 }
