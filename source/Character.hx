@@ -35,6 +35,7 @@ class Character extends FlxSprite
 				tex = Paths.getSparrowAtlas('GF_assets');
 				frames = tex;
 				animation.addByPrefix('cheer', 'GF Cheer', 24, false);
+				animation.addByPrefix('thatshowyoudoit', 'GF thats how you do it', 24, false);//by Mark.
 				animation.addByPrefix('singLEFT', 'GF left note', 24, false);
 				animation.addByPrefix('singRIGHT', 'GF Right Note', 24, false);
 				animation.addByPrefix('singUP', 'GF Up Note', 24, false);
@@ -47,6 +48,7 @@ class Character extends FlxSprite
 				animation.addByPrefix('scared', 'GF FEAR', 24);
 
 				addOffset('cheer');
+				addOffset('thatshowyoudoit');
 				addOffset('sad', -2, -2);
 				addOffset('danceLeft', 0, -9);
 				addOffset('danceRight', 0, -9);
