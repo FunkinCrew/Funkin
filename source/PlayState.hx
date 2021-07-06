@@ -196,7 +196,7 @@ class PlayState extends MusicBeatState
 			FlxG.sound.music.stop();
 
 		osuScroll = data.getOsu();//srsly who would play blackscreen with NOTES.
-		//ok just found out i can turn this into optimized code B)
+		//ok just found out i made optimization mode. 
 
 		camGame = new FlxCamera();
 		camHUD = new FlxCamera();
@@ -1566,7 +1566,7 @@ class PlayState extends MusicBeatState
 				swagNote.sustainLength = songNotes[2];
 				swagNote.scrollFactor.set(0, 0);
 
-				if (!gottaHitNote && PlayStateChangeables.Optimize)
+				if (!gottaHitNote && osuScroll)
 					continue;
 
 				var susLength:Float = swagNote.sustainLength;
@@ -1621,7 +1621,7 @@ class PlayState extends MusicBeatState
 			// FlxG.log.add(i);
 			var babyArrow:FlxSprite = new FlxSprite(0, strumLine.y);
 
-			if (PlayStateChangeables.Optimize && player == 0)
+			if (osuScroll && player == 0)
 				continue;
 
 			switch (curStage)
