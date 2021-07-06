@@ -17,7 +17,7 @@ class PreferencesState extends MusicBeatState
 
 	var curSelected:Int = 0;
 
-	var menuItems:Array<String> = ['downscroll', 'middlescroll', 'cutscenes', 'note splash', 'note glow', 'optimization', 'dfjk'];
+	var menuItems:Array<String> = ['downscroll', 'middlescroll', 'cutscenes', 'note splash', 'note glow', 'optimization', 'dfjk', 'change icons'];
 
 	var notice:FlxText;
 	var data:AndroidData = new AndroidData();
@@ -62,6 +62,10 @@ class PreferencesState extends MusicBeatState
 					ch.change(data.getMid());
 				case "optimization":
 					ch.change(data.getOsu());
+				case "dfjk":
+					ch.change(data.getDfjk());
+				case "change icons":
+					//do nothing.
 			}
 
 			// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
@@ -129,6 +133,10 @@ class PreferencesState extends MusicBeatState
 					data.saveMid(checkboxGroup.members[curSelected].change());
 				case "optimization":
 					data.saveOsu(checkboxGroup.members[curSelected].change());
+				case "dfjk":
+					data.saveDfjk(checkboxGroup.members[curSelected].change());
+				case "change icons":
+					FlxG.switchState(new IconState());
 			}
 		}
 
