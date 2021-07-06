@@ -1724,7 +1724,7 @@ class PlayState extends MusicBeatState
 
 			babyArrow.x += ((FlxG.width / 2) * player);
 
-			if (PlayStateChangeables.Optimize)
+			if (osuScroll || midScroll)
 				babyArrow.x -= 275;
 
 			if (noteGlow){
