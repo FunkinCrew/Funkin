@@ -241,7 +241,7 @@ class MainMenuState extends MusicBeatState
 
 	override function beathit();
 	{
-	    super.beathit();
+		super.beathit();
 		menuItem.setGraphicSize(Std.int(menuItem.width * 1.3));
 		menuItem.updateHitbox();
 	}
