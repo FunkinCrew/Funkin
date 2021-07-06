@@ -681,7 +681,7 @@ class PlayState extends MusicBeatState
 					curStage = 'tankStage2';
 					defaultCamZoom = 0.9;
 
-					picoStep = Json.parse(openfl.utils.Assets.getText(Paths.json('pico-speaker')));
+					picoStep = Json.parse(openfl.utils.Assets.getText(Paths.json('stress/pico-speaker')));
 
 					var sky:FlxSprite = new FlxSprite(-400,-400).loadGraphic(Paths.image('tankSky'));
 					sky.scrollFactor.set(0, 0);
