@@ -154,8 +154,8 @@ class TitleState extends MusicBeatState
 		// bg.setGraphicSize(Std.int(bg.width * 0.6));
 		// bg.updateHitbox();
 		add(bg);
-
-		logoBl = new FlxSprite(-150, -100);
+//-150, 100 <- original x and y
+		logoBl = new FlxSprite(-100, -200);
 		logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
 		logoBl.antialiasing = true;
 		logoBl.animation.addByPrefix('bump', 'logo bumpin', 24);
@@ -366,7 +366,7 @@ class TitleState extends MusicBeatState
 	override function beatHit()
 	{
 		super.beatHit();
-		FlxG.camera.zoom += 0.020;
+		FlxG.camera.zoom += 0.015;
 
 		logoBl.animation.play('bump');
 		danceLeft = !danceLeft;
