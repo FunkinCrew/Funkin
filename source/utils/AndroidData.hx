@@ -26,13 +26,13 @@ class AndroidData{
 			android.data.scroll = false;
 		}
 		if (android.data.middle == null){
-		    android.data.middle = false;
+			android.data.middle = false;
 		}
 		if (android.data.dfjk == null){
-		    android.data.dfjk = false;
+			android.data.dfjk = false;
 		}
 		if (android.data.osu == null){
-		    android.data.osu = true;
+			android.data.osu = true;
 		}
 		android.flush();
 	}
@@ -46,12 +46,7 @@ class AndroidData{
 	}
 
 	public function getGlow():Bool{
-		if (android.data.glow == true){
-			return true;
-		}
-		else{
-			return false;
-		}
+		return android.data.glow;
 	}
 
 	public function saveSploosh(sploosh:Bool){
@@ -59,21 +54,11 @@ class AndroidData{
 	}
 
 	public function getSploosh():Bool{
-		if (android.data.sploosh == true){
-			return true;
-		}
-		else{
-			return false;
-		}
+		return android.data.sploosh;
 	}
 
 	public function getCutscenes():Bool{
-		if (android.data.cutscenes == true){
-			return true;
-		}
-		else{
-			return false;
-		}
+		return android.data.cutscenes;
 	}
 
 	public function saveCutscenes(cut:Bool){
@@ -81,12 +66,7 @@ class AndroidData{
 	}
 
 	public function getScroll():Bool{
-		if (android.data.scroll == true){
-			return true;
-		}
-		else{
-			return false;
-		}
+		return android.data.scroll;
 	}
 
 	public function saveScroll(scroll:Bool){
@@ -94,28 +74,26 @@ class AndroidData{
 	}
 
 	public function saveMid(mid:Bool){
-	    android.data.middle = mid;
+		android.data.middle = mid;
 	}
 
 	public function getMid():Bool{
-	    if (android.data.middle == true){
-	        return true;
-	    }
-	    else{
-	        return false;
-	    }
+		return android.data.middle;
 	}
 
 	public function saveOsu(osu:Bool){
-	    android.data.osu = osu;
+		android.data.osu = osu;
 	}
 
 	public function getOsu():Bool{
-	    if (android.data.osu == true){
-	        return true;
-	    }
-	    else{
-	        return false;
-	    }
+		return android.data.osu;
+	}
+
+	public function saveDfjk(dfjk:Bool){
+		android.data.dfjk = dfjk;
+	}
+
+	public function getDfjk():Bool{
+		return android.data.dfjk;
 	}
 }
