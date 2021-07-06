@@ -3221,10 +3221,10 @@ class PlayState extends MusicBeatState
 			camHUD.zoom += 0.03;
 		}
 
-		if (FlxG.camera.zoom < 1.35 && curBeat % 4 == 0)//why not.
+		if (curBeat % 4 == 0)//why not.
 		{
-			FlxG.camera.zoom += 0.015;
-			camHUD.zoom += 0.03;
+			FlxG.camera.zoom += 0.05;
+			camHUD.zoom += 0.01;
 		}
 
 		if (curBeat % 0 == 1){
@@ -3250,7 +3250,7 @@ class PlayState extends MusicBeatState
 		if (curBeat % 16 == 15 && SONG.song == 'Tutorial' && dad.curCharacter == 'gf' && curBeat > 16 && curBeat < 48)
 		{
 			boyfriend.playAnim('hey', true);
-			dad.playAnim('cheer', true);
+			dad.playAnim('thatshowyoudoit', true);
 		}
 
 		switch (curStage)
