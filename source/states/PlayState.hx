@@ -1165,7 +1165,7 @@ class PlayState extends MusicBeatState
 
 		if (FlxG.keys.justPressed.NINE)
 		{
-			if (iconP1.animation.curAnim.name.startsWith('bf') && iconP1.animation.curAnim.name != 'bf')
+			if (iconP1.animation.curAnim.name != HealthIcon.charToAnimName(SONG.player1))
 				iconP1.playSwagAnim(SONG.player1);
 			else
 				iconP1.playSwagAnim("bf-old");
@@ -1173,7 +1173,7 @@ class PlayState extends MusicBeatState
 
 		if (FlxG.keys.justPressed.EIGHT)
 		{
-			if (iconP1.animation.curAnim.name.startsWith('bf') && iconP1.animation.curAnim.name != 'bf')
+			if (iconP1.animation.curAnim.name != HealthIcon.charToAnimName(SONG.player1))
 				iconP1.playSwagAnim(SONG.player1);
 			else
 				iconP1.playSwagAnim("bf-prototype");

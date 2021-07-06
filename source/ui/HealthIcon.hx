@@ -8,76 +8,55 @@ class HealthIcon extends FlxSprite
 	 * Used for FreeplayState! If you use it elsewhere, prob gonna annoying
 	 */
 	public var sprTracker:FlxSprite;
+	public var isPlayer:Bool = false;
 
 	public function new(char:String = 'bf', isPlayer:Bool = false)
 	{
 		super();
-		loadGraphic(Paths.image('iconGrid'), true, 150, 150);
 
-		antialiasing = true;
+		this.isPlayer = isPlayer;
 
-		// the player character
-		animation.add('bf-prototype', [25, 26, 27], 0, false, isPlayer);
-		animation.add('bf-old', [14, 15], 0, false, isPlayer);
-		animation.add('bf', [0, 1], 0, false, isPlayer);
-		animation.add('bf-pixel', [21, 21], 0, false, isPlayer);
-
-		// the dearest family
-		animation.add('gf', [16], 0, false, isPlayer);
-		animation.add('gf-pixel', [24], 0, false, isPlayer);
-
-		animation.add('dad', [12, 13], 0, false, isPlayer);
-		animation.add('mom', [6, 7], 0, false, isPlayer);
-		animation.add('parents-christmas', [17, 18], 0, false, isPlayer);
-
-		// spooky kids
-		animation.add('spooky', [2, 3], 0, false, isPlayer);
-
-		// pico
-		animation.add('pico', [4, 5], 0, false, isPlayer);
-
-		// spooky monster
-		animation.add('monster', [19, 20], 0, false, isPlayer);
-
-		// hating sim
-		animation.add('senpai', [22, 22], 0, false, isPlayer);
-		animation.add('spirit', [23, 23], 0, false, isPlayer);
-
-		// placeholder / coming soon
-		animation.add('tankman', [8, 9], 0, false, isPlayer);
-		animation.add('face', [10, 11], 0, false, isPlayer);
-
-		// custom goes here
-		
 		// plays anim lol
 		playSwagAnim(char);
 		scrollFactor.set();
 	}
 
 	public function playSwagAnim(?char:String = 'bf')
+	{		
+		changeIconSet(charToAnimName(char));
+	}
+
+	public static function charToAnimName(char:String = 'bf'):String
 	{
 		// CONVERTING CERTAIN CHARS
 		switch(char)
 		{
 			case 'mom-car':
 				char = 'mom';
-			case 'gf-car' | 'gf-christmas' | 'gf-old':
+			case 'gf-car' | 'gf-christmas' | 'gf-old' | 'gf-pixel':
 				char = 'gf';
-			case 'senpai-angry':
-				char = 'senpai';
 			case 'bf-car' | 'bf-christmas':
 				char = 'bf';
 			case 'monster-christmas':
 				char = 'monster';
 		}
 
+		return char;
+	}
+
+	public function changeIconSet(char:String = 'bf')
+	{
+		antialiasing = true;
+		loadGraphic(Paths.image('icons/' + char + '-icons'), true, 150, 150);
+
 		// antialiasing override
 		switch(char)
 		{
-			case 'bf-pixel' | 'gf-pixel' | 'senpai' | 'spirit':
+			case 'bf-pixel' | 'gf-pixel' | 'senpai' | 'senpai-angry' | 'spirit':
 				antialiasing = false;
 		}
-		
+
+		animation.add(char, [0, 1, 2], 0, false, isPlayer);
 		animation.play(char);
 	}
 

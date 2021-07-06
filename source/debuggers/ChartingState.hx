@@ -100,8 +100,8 @@ class ChartingState extends MusicBeatState
 		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * 8, GRID_SIZE * 16);
 		add(gridBG);
 
-		leftIcon = new HealthIcon('face');
-		rightIcon = new HealthIcon('face');
+		leftIcon = new HealthIcon('bf');
+		rightIcon = new HealthIcon('dad');
 		leftIcon.scrollFactor.set(1, 1);
 		rightIcon.scrollFactor.set(1, 1);
 
