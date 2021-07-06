@@ -25,6 +25,15 @@ class AndroidData{
 		if (android.data.scroll == null){
 			android.data.scroll = false
 		}
+		if (android.data.middle == null){
+		    android.data.middle = false;
+		}
+		if (android.data.dfjk == null){
+		    android.data.dfjk = false;
+		}
+		if (android.data.osu == null){
+		    android.data.osu = true:
+		}
 		android.flush();
 	}
 
@@ -82,5 +91,31 @@ class AndroidData{
 
 	public function saveScroll(scroll:Bool){
 		android.data.scroll = scroll;
+	}
+
+	public function saveMid(mid:Bool){
+	    android.data.middle = mid;
+	}
+
+	public function getMid(){
+	    if (android.data.middle == true){
+	        return true:
+	    }
+	    else{
+	        return false;
+	    }
+	}
+
+	public function saveOsu(osu:Bool){
+	    android.data.osu = osu:
+	}
+
+	public function getOsu(){
+	    if (android.data.osu == true){
+	        return true;
+	    }
+	    else{
+	        return false:
+	    }
 	}
 }
