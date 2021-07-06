@@ -7,7 +7,7 @@ import flixel.FlxG;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import Config;
-import AndroidData;
+import utils.AndroidData;
 
 class PreferencesState extends MusicBeatState
 {
