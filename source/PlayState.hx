@@ -752,8 +752,8 @@ class PlayState extends MusicBeatState
 					tankRolling.antialiasing = true;
 					tankRolling.animation.play('idle');
 					add(tankRolling);
-		    		tankmanRun = new FlxTypedGroup<TankmenBG>();
-			    	add(tankmanRun);
+					tankmanRun = new FlxTypedGroup<TankmenBG>();
+					add(tankmanRun);
 
 
 					var ground:FlxSprite = new FlxSprite(-420,-150).loadGraphic(Paths.image('tankGround'));
@@ -870,12 +870,12 @@ class PlayState extends MusicBeatState
 		gf.scrollFactor.set(0.95, 0.95);
 
 		if (SONG.song.toLowerCase() == 'test'){
-		    dad = new Character(100, 550, 'bf-pixel');
-		    pixel2 = new Character(120, 450, 'bf');
-		    pixel2.alpha = 0.5;
+			dad = new Character(100, 550, 'bf-pixel');
+			pixel2 = new Character(120, 450, 'bf');
+			pixel2.alpha = 0.5;
 		}
 		else{
-		    dad = new Character(100, 100, SONG.player2);
+			dad = new Character(100, 100, SONG.player2);
 		}
 
 		var camPos:FlxPoint = new FlxPoint(dad.getGraphicMidpoint().x, dad.getGraphicMidpoint().y);
@@ -922,9 +922,9 @@ class PlayState extends MusicBeatState
 		}
 
 		if (SONG.song.toLowerCase() == 'test'){
-		    boyfriend = new Boyfriend(770, 450, 'bf');
-		    boyfriend2 = new Boyfriend(750, 550, 'bf-pixel');
-		    boyfriend2.alpha = 0.5;
+			boyfriend = new Boyfriend(770, 450, 'bf');
+			boyfriend2 = new Boyfriend(750, 550, 'bf-pixel');
+			boyfriend2.alpha = 0.5;
 		}
 		boyfriend = new Boyfriend(770, 450, SONG.player1);
 
@@ -987,8 +987,8 @@ class PlayState extends MusicBeatState
 			add(limo);
 
 		if (SONG.song.toLowerCase() == 'test'){
-		    add(pixel2);
-		    add(boyfriend2);
+			add(pixel2);
+			add(boyfriend2);
 		}
 
 		add(dad);
@@ -1088,10 +1088,10 @@ class PlayState extends MusicBeatState
 		add(iconP1);
 
 		if (SONG.song.toLowerCase() == 'test'){
-		    iconP2 = new HealthIcon('bf', false);
+			iconP2 = new HealthIcon('bf', false);
 		}
 		else{
-		    iconP2 = new HealthIcon(SONG.player2, false);
+			iconP2 = new HealthIcon(SONG.player2, false);
 		}
 		iconP2.y = healthBar.y - (iconP2.height / 2);
 		add(iconP2);
@@ -1847,11 +1847,11 @@ class PlayState extends MusicBeatState
 
 		super.update(elapsed);
 		if (controls.UP_P && controls.DOWN_P && controls.LEFT_P && controls.RIGHT_P){
-		    SpamViolation += 1
-		    if (SpamViolation == 2){
-		        SpamViolation = -1;
-		        disableKeys();//function in line 3540
-		    }
+			SpamViolation += 1
+			if (SpamViolation == 2){
+				SpamViolation = -1;
+				disableKeys();//function in line 3540
+			}
 		}
 
 		//scoreTxt.text = "Score:" + songScore;
@@ -2187,7 +2187,7 @@ class PlayState extends MusicBeatState
 
 		if (generatedMusic)
 			{
-			    var crapshit:Bool = false;
+				var crapshit:Bool = false;
 				notes.forEachAlive(function(daNote:Note)
 				{
 
@@ -2379,16 +2379,16 @@ class PlayState extends MusicBeatState
 						daNote.destroy();
 					}
 				});
-	        	if (noteGlow){
-	    	    	cpuStrums.forEach(function(spr:FlxSprite)
-	    	    	{
-	    	    		if (spr.animation.finished)
-	    	    		{
-		    	    		spr.animation.play('static');
-		    	    		spr.centerOffsets();
-		    	    	}
-	    	    	});
-	        	}
+				if (noteGlow){
+					cpuStrums.forEach(function(spr:FlxSprite)
+					{
+						if (spr.animation.finished)
+						{
+							spr.animation.play('static');
+							spr.centerOffsets();
+						}
+					});
+				}
 			}
 
 		if (!inCutscene)
@@ -2536,12 +2536,12 @@ class PlayState extends MusicBeatState
 				case 'sick':
 					if (health < 2)
 						health += 0.1;
-		        	if (noteSplashOp)
-		        	{
-		        		var recycledNote = grpNoteSplashes.recycle(NoteSplash);
-			        	recycledNote.setupNoteSplash(daNote.x, daNote.y, daNote.noteData);
-			        	grpNoteSplashes.add(recycledNote);
-		        	}
+					if (noteSplashOp)
+					{
+						var recycledNote = grpNoteSplashes.recycle(NoteSplash);
+						recycledNote.setupNoteSplash(daNote.x, daNote.y, daNote.noteData);
+						grpNoteSplashes.add(recycledNote);
+					}
 			}
 
 		if (daRating == "sick")
@@ -2879,7 +2879,7 @@ class PlayState extends MusicBeatState
 
 	function noteCheck(keyP:Bool, note:Note):Void
 	{
-	    var noteDiff:Float = Math.abs(note.strumTime - Conductor.songPosition);
+		var noteDiff:Float = Math.abs(note.strumTime - Conductor.songPosition);
 		note.rating = Ratings.CalculateRating(noteDiff);
 		if (keyP && !disabledKeys)
 			goodNoteHit(note);
@@ -3259,36 +3259,36 @@ class PlayState extends MusicBeatState
 			}
 		}
 		if (SONG.song.toLowerCase() == 'test'){
-	    	if (boyfriend.animation.curAnim.name == 'singRIGHT'){
-	    	    boyfriend2.playAnim('singLEFT', false);
-	    	}
-	    	if (boyfriend.animation.curAnim.name == 'singUP'){
-	    	    boyfriend2.playAnim('singDOWN', false);
-	    	}
-	    	if (boyfriend.animation.curAnim.name == 'singLEFT'){
-	    	    boyfriend2.playAnim('singRIGHT', false);
-	    	}
-	    	if (boyfriend.animation.curAnim.name == 'singDOWN'){
-	    	    boyfriend2.playAnim('singUP', false);
-	    	}
-	    	if (boyfriend.animation.curAnim.name == 'idle'){
-	    	    boyfriend2.playAnim('idle');
-	    	}
-	    	if (dad.animation.curAnim.name == 'idle'){
-	    	    pixel2.playAnim('idle');
-	    	}
-	    	if (dad.animation.curAnim.name == 'singDOWN'){
-	    	    pixel2.playAnim('singUP', false);
-	    	}
-	    	if (dad.animation.curAnim.name == 'singLEFT'){
-	    	    pixel2.playAnim('singRIGHT', false);
-	    	}
-	    	if (dad.animation.curAnim.name == 'singRIGHT'){
-	    	    pixel2.playAnim('singLEFT', false);
-	    	}
-	    	if (dad.animation.curAnim.name == 'singUP'){
-	    	    pixel2.playAnim('singDOWN', false);
-	    	}
+			if (boyfriend.animation.curAnim.name == 'singRIGHT'){
+				boyfriend2.playAnim('singLEFT', false);
+			}
+			if (boyfriend.animation.curAnim.name == 'singUP'){
+				boyfriend2.playAnim('singDOWN', false);
+			}
+			if (boyfriend.animation.curAnim.name == 'singLEFT'){
+				boyfriend2.playAnim('singRIGHT', false);
+			}
+			if (boyfriend.animation.curAnim.name == 'singDOWN'){
+				boyfriend2.playAnim('singUP', false);
+			}
+			if (boyfriend.animation.curAnim.name == 'idle'){
+				boyfriend2.playAnim('idle');
+			}
+			if (dad.animation.curAnim.name == 'idle'){
+				pixel2.playAnim('idle');
+			}
+			if (dad.animation.curAnim.name == 'singDOWN'){
+				pixel2.playAnim('singUP', false);
+			}
+			if (dad.animation.curAnim.name == 'singLEFT'){
+				pixel2.playAnim('singRIGHT', false);
+			}
+			if (dad.animation.curAnim.name == 'singRIGHT'){
+				pixel2.playAnim('singLEFT', false);
+			}
+			if (dad.animation.curAnim.name == 'singUP'){
+				pixel2.playAnim('singDOWN', false);
+			}
 		}
 	}
 
@@ -3341,7 +3341,7 @@ class PlayState extends MusicBeatState
 		}
 
 		if (curBeat % 0 == 1){
-	    	iconBop();
+			iconBop();
 		}
 
 
@@ -3450,15 +3450,15 @@ class PlayState extends MusicBeatState
 	}
 
 	function disableKeys(){//disables notegoodchecking for a certain amount of time.
-	    disabledKeys = true;
-	    new FlxTimer().start(1.3, function(tmr:FlxTimer)
+		disabledKeys = true;
+		new FlxTimer().start(1.3, function(tmr:FlxTimer)
 		{
-		    disabledKeys = false:
-		    health -= 0.039;
-		    trace('SPAM!1!1!1!');
-		    combo = 0;
-		    misses += 2;
-		    gf.playAnim('scared');
+			disabledKeys = false:
+			health -= 0.039;
+			trace('SPAM!1!1!1!');
+			combo = 0;
+			misses += 2;
+			gf.playAnim('scared');
 		});
 	}
 
