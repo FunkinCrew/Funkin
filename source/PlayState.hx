@@ -987,23 +987,21 @@ class PlayState extends MusicBeatState
 				dad.x -= 80;
 		}
 
-		add(gf);
-
 		if (!osuScroll){
-		// Shitty layering but whatev it works LOL
-	    	if (curStage == 'limo')
-	    		add(limo);
+			add(gf);
+			if (curStage == 'limo')
+				add(limo);
 
-	    	if (SONG.song.toLowerCase() == 'test'){
-		    	add(pixel2);
-		    	add(boyfriend2);
-	    	}
+			if (SONG.song.toLowerCase() == 'test'){
+				add(pixel2);
+				add(boyfriend2);
+			}
 
-	    	add(dad);
-	    	add(boyfriend);
+			add(dad);
+			add(boyfriend);
 
-	    	if (curStage == 'tankStage' || curStage == 'tankStage2')
-	    	{
+			if (curStage == 'tankStage' || curStage == 'tankStage2')
+			{
 			add(tankBop1);
 			add(tankBop2);
 			add(tankBop3);
@@ -3093,10 +3091,10 @@ class PlayState extends MusicBeatState
 			for (i in 0...tankStep.left.length)
 			{
 				if (curStep == tankStep.left[i]){
-			    	var tankmanRunner:TankmenBG = new TankmenBG();
-			    	tankmanRunner.resetShit(FlxG.random.int(630, 730) * -1, 255, true, 1, 1.5);
+					var tankmanRunner:TankmenBG = new TankmenBG();
+					tankmanRunner.resetShit(FlxG.random.int(630, 730) * -1, 255, true, 1, 1.5);
 
-			    	tankmanRun.add(tankmanRunner);
+					tankmanRun.add(tankmanRunner);
 				}
 			}
 
@@ -3104,9 +3102,9 @@ class PlayState extends MusicBeatState
 			for(i in 0...tankStep.right.length)
 			{
 				if (curStep == tankStep.right[i]){
-		    		var tankmanRunner:TankmenBG = new TankmenBG();
-			    	tankmanRunner.resetShit(FlxG.random.int(1500, 1700) * 1, 275, false, 1, 1.5);
-		    		tankmanRun.add(tankmanRunner);
+					var tankmanRunner:TankmenBG = new TankmenBG();
+					tankmanRunner.resetShit(FlxG.random.int(1500, 1700) * 1, 275, false, 1, 1.5);
+					tankmanRun.add(tankmanRunner);
 				}
 			}
 		}
