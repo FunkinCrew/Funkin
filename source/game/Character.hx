@@ -1,5 +1,6 @@
 package game;
 
+import utilities.CoolUtil;
 import states.PlayState;
 import flixel.FlxSprite;
 
@@ -14,6 +15,7 @@ class Character extends FlxSprite
 	public var curCharacter:String = 'bf';
 
 	public var holdTimer:Float = 0;
+	var animationNotes:Array<Dynamic> = [];
 
 	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false)
 	{
@@ -42,19 +44,7 @@ class Character extends FlxSprite
 				animation.addByIndices('hairFall', "GF Dancing Beat Hair Landing", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], "", 24, false);
 				animation.addByPrefix('scared', 'GF FEAR', 24);
 
-				addOffset('cheer');
-				addOffset('sad', -2, -21);
-				addOffset('danceLeft', 0, -9);
-				addOffset('danceRight', 0, -9);
-
-				addOffset("singUP", 0, 4);
-				addOffset("singRIGHT", 0, -20);
-				addOffset("singLEFT", 0, -19);
-				addOffset("singDOWN", 0, -20);
-				addOffset('hairBlow', 45, -8);
-				addOffset('hairFall', 0, -9);
-
-				addOffset('scared', -2, -17);
+				loadOffsetFile("gf");
 
 				playAnim('danceRight');
 
@@ -495,6 +485,101 @@ class Character extends FlxSprite
 				addOffset("singDOWN-alt", -30, -27);
 
 				playAnim('idle');
+
+			// WEEK 7 POG :OOOOOOOOO
+
+			case 'tankman':
+				frames = Paths.getSparrowAtlas('characters/tankmanCaptain', 'shared');
+
+				quickAnimAdd("idle", "Tankman Idle Dance");
+
+				if(isPlayer)
+				{
+					quickAnimAdd("singLEFT", "Tankman Note Left ");
+					quickAnimAdd("singLEFTmiss", "Tankman Note Left MISS");
+
+					quickAnimAdd("singRIGHT", "Tankman Right Note ");
+					quickAnimAdd("singRIGHTmiss", "Tankman Right Note MISS");
+				} else
+				{
+					quickAnimAdd("singLEFT", "Tankman Right Note ");
+					quickAnimAdd("singLEFTmiss", "Tankman Right Note MISS");
+
+					quickAnimAdd("singRIGHT", "Tankman Note Left ");
+					quickAnimAdd("singRIGHTmiss", "Tankman Note Left MISS");
+				}
+				
+				quickAnimAdd("singUP", "Tankman UP note ");
+				quickAnimAdd("singDOWN", "Tankman DOWN note ");
+				quickAnimAdd("singUPmiss", "Tankman UP note MISS");
+				quickAnimAdd("singDOWNmiss", "Tankman DOWN note MISS");
+				quickAnimAdd("singDOWN-alt", "PRETTY GOOD");
+				quickAnimAdd("singUP-alt", "TANKMAN UGH");
+
+				loadOffsetFile(curCharacter);
+
+				playAnim("idle");
+				flipX = true;
+
+			case "bf-holding-gf":
+				frames = Paths.getSparrowAtlas('characters/bfAndGF', 'shared');
+
+				animation.addByPrefix('idle', 'BF idle dance', 24, false);
+
+				animation.addByPrefix('singDOWN', 'BF NOTE DOWN0', 24, false);
+				animation.addByPrefix('singLEFT', 'BF NOTE LEFT0', 24, false);
+				animation.addByPrefix('singRIGHT', 'BF NOTE RIGHT0', 24, false);
+				animation.addByPrefix('singUP', 'BF NOTE UP0', 24, false);
+
+				animation.addByPrefix('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
+				animation.addByPrefix('singLEFTmiss', 'BF NOTE LEFT MISS', 24, false);
+				animation.addByPrefix('singRIGHTmiss', 'BF NOTE RIGHT MISS', 24, false);
+				animation.addByPrefix('singUPmiss', 'BF NOTE UP MISS', 24, false);
+				animation.addByPrefix('bfCatch', 'BF catches GF', 24, false);
+
+				// YO MORE MODULARITY???? THX NINJAMUFFIN OR WHOEVER ELSE CODED THIS IN LOL
+				loadOffsetFile(curCharacter);
+
+				playAnim("idle");
+				flipX = true;
+
+			case "bf-holding-gf-dead":
+				frames = Paths.getSparrowAtlas('characters/bfHoldingGF-DEAD', 'shared');
+
+				quickAnimAdd("singUP", "BF Dead with GF Loop");
+				quickAnimAdd("firstDeath", "BF Dies with GF");
+				animation.addByPrefix("deathLoop", "BF Dead with GF Loop", 24, true);
+				quickAnimAdd("deathConfirm", "RETRY confirm holding gf");
+
+				loadOffsetFile(curCharacter);
+
+				playAnim("firstDeath");
+				flipX = true;
+
+			case "pico-speaker":
+				frames = Paths.getSparrowAtlas('characters/picoSpeaker', 'shared');
+
+				quickAnimAdd("shoot1", "Pico shoot 1");
+				quickAnimAdd("shoot2", "Pico shoot 2");
+				quickAnimAdd("shoot3", "Pico shoot 3");
+				quickAnimAdd("shoot4", "Pico shoot 4");
+
+				loadOffsetFile(curCharacter);
+				playAnim("shoot1");
+
+				// will add this back in when we get week 7 source cuz idk how tf im supposed to decipher this function from Funkin.js
+				//loadMappedAnims();
+
+			case "gf-tankmen":
+				frames = Paths.getSparrowAtlas('characters/gfTankmen', 'shared');
+
+				animation.addByIndices("sad", "GF Crying at Gunpoint", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], "", 24, true);
+				animation.addByIndices("danceLeft", "GF Dancing at Gunpoint", [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
+				animation.addByIndices("danceRight", "GF Dancing at Gunpoint", [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
+
+				loadOffsetFile("gf");
+
+				playAnim("danceRight");
 		}
 
 		if(!debugMode)
@@ -523,6 +608,26 @@ class Character extends FlxSprite
 				}
 			}
 		}
+	}
+
+	// week 7 function :pog:
+	public function loadOffsetFile(characterName:String)
+	{
+		var offsets = CoolUtil.coolTextFile(Paths.file("images/characters/" + characterName + "Offsets.txt", "shared"));
+
+		for(x in 0...offsets.length)
+		{
+			var selectedOffset = offsets[x];
+			var arrayOffset:Array<String>;
+			arrayOffset = selectedOffset.split(" ");
+
+			addOffset(arrayOffset[0], Std.parseInt(arrayOffset[1]), Std.parseInt(arrayOffset[2]));
+		}
+	}
+
+	public function quickAnimAdd(animName:String, animPrefix:String)
+	{
+		animation.addByPrefix(animName, animPrefix, 24, false);
 	}
 
 	override function update(elapsed:Float)
@@ -569,7 +674,7 @@ class Character extends FlxSprite
 		{
 			switch (curCharacter)
 			{
-				case 'gf' | 'gf-christmas' | 'gf-car' | 'gf-pixel' | 'gf-old':
+				case 'gf' | 'gf-christmas' | 'gf-car' | 'gf-pixel' | 'gf-old' | 'gf-tankmen':
 					if (!animation.curAnim.name.startsWith('hair'))
 					{
 						danced = !danced;

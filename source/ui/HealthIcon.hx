@@ -33,12 +33,14 @@ class HealthIcon extends FlxSprite
 		{
 			case 'mom-car':
 				char = 'mom';
-			case 'gf-car' | 'gf-christmas' | 'gf-old' | 'gf-pixel':
+			case 'gf-car' | 'gf-christmas' | 'gf-old' | 'gf-pixel' | 'gf-tankmen':
 				char = 'gf';
-			case 'bf-car' | 'bf-christmas':
+			case 'bf-car' | 'bf-christmas' | 'bf-holding-gf':
 				char = 'bf';
 			case 'monster-christmas':
 				char = 'monster';
+			case 'pico-speaker':
+				char = 'pico';
 		}
 
 		return char;

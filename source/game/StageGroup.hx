@@ -1,5 +1,6 @@
 package game;
 
+import openfl.filters.BlurFilter;
 import states.PlayState;
 import backgrounds.BackgroundGirls;
 import backgrounds.BackgroundDancer;
@@ -345,6 +346,76 @@ class StageGroup extends FlxGroup
                 bg.scrollFactor.set(0.8, 0.9);
                 bg.scale.set(6, 6);
                 add(bg);
+            }
+            case "wasteland":
+            {
+                camZoom = 0.9;
+
+                var sky = new FlxSprite(-400, -400);
+                sky.scrollFactor.set(0, 0);
+                sky.loadGraphic(Paths.image(stage + '/tankSky', 'stages'));
+                add(sky);
+
+                var clouds = new FlxSprite(FlxG.random.int(-700, -100), FlxG.random.int(-20, 20));
+                clouds.scrollFactor.set(0.1, 0.1);
+                clouds.loadGraphic(Paths.image(stage + '/tankClouds', 'stages'));
+                clouds.velocity.set(FlxG.random.float(5, 15));
+                add(clouds);
+
+                var mountains = new FlxSprite(-300, -20);
+                mountains.scrollFactor.set(0.2, 0.2);
+                mountains.loadGraphic(Paths.image(stage + '/tankMountains', 'stages'));
+                mountains.setGraphicSize(Std.int(mountains.width * 1.2));
+                mountains.updateHitbox();
+                add(mountains);
+
+                var buildings = new FlxSprite(-200, 0);
+                buildings.scrollFactor.set(0.3, 0.3);
+                buildings.loadGraphic(Paths.image(stage + '/tankBuildings', 'stages'));
+                buildings.setGraphicSize(Std.int(buildings.width * 1.1));
+                buildings.updateHitbox();
+                add(buildings);
+
+                var ruins = new FlxSprite(-200, 0);
+                ruins.scrollFactor.set(0.35, 0.35);
+                ruins.loadGraphic(Paths.image(stage + '/tankRuins', 'stages'));
+                ruins.setGraphicSize(Std.int(ruins.width * 1.1));
+                ruins.updateHitbox();
+                add(ruins);
+
+                /*
+                b = new R("tankRuins",-200,0,.35,.35);
+                b.setGraphicSize(1.1 * b.get_width() | 0);
+                b.updateHitbox();
+                this.add(b);
+                b = new R("smokeLeft",-200,-100,.4,.4,["SmokeBlurLeft"],!0);
+                this.add(b);
+                b = new R("smokeRight",1100,-100,.4,.4,["SmokeRight"],!0);
+                this.add(b);
+                this.tankWatchtower = new R("tankWatchtower",100,50,.5,.5,["watchtower gradient color"]);
+                this.add(this.tankWatchtower);
+                this.tankGround = new R("tankRolling",300,300,.5,.5,["BG tank w lighting"],!0);
+                this.add(this.tankGround);
+                this.tankmanRun = new x;
+                this.add(this.tankmanRun);
+                b = new R("tankGround",-420,-150);
+                b.setGraphicSize(1.15 * b.get_width() | 0);
+                b.updateHitbox();
+                this.add(b);
+                this.moveTank();
+                b = new R("tank0",-500,650,1.7,1.5,["fg"]);
+                this.foregroundSprites.add(b);
+                b = new R("tank1",-300,750,2,.2,["fg"]);
+                this.foregroundSprites.add(b);
+                b = new R("tank2",450,940,1.5,1.5,["foreground"]);
+                this.foregroundSprites.add(b);
+                b = new R("tank4",1300,900,1.5,1.5,["fg"]);
+                this.foregroundSprites.add(b);
+                b = new R("tank5",1620,700,1.5,1.5,["fg"]);
+                this.foregroundSprites.add(b);
+                b = new R("tank3",1300,1200,3.5,2.5,["fg"]);
+                this.foregroundSprites.add(b);
+                */
             }
         }
     }
