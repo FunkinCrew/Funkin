@@ -25,7 +25,7 @@ class CreditState extends MusicBeatState{
 	var songWait:FlxTimer = new FlxTimer();
 	private var grpSongs:FlxTypedGroup<Alphabet>;
 	private var curPlaying:Bool = false;
-
+	var notice:FlxText;
 	private var iconArray:Array<HealthIcon> = [];
 	override function create()
 	{
@@ -66,6 +66,19 @@ class CreditState extends MusicBeatState{
 		}
 
 		changeSelection();
+
+		var noticebg = new FlxSprite(0, FlxG.height - 56).makeGraphic(FlxG.width, 30, FlxColor.BLACK);
+		noticebg.alpha = 0.25;
+
+
+		notice = new FlxText(0, 0, 0,"", 24);
+
+		//notice.x = (FlxG.width / 2) - (notice.width / 2);
+		notice.screenCenter();
+		notice.y = FlxG.height - 56;
+		notice.alpha = 0.6;
+		add(noticebg);
+		add(notice);
 
 		#if mobileC
 		addVirtualPad(FULL, A_B);
@@ -116,30 +129,43 @@ class CreditState extends MusicBeatState{
 		{
 			case 'FNF Android Creator':
 				bg.color = FlxColor.fromRGB(255, 255, 0);
+				notice.text = "luckydog";
 			case 'V2.8 Coder':
 				bg.color = FlxColor.fromRGB(0, 255, 64);
+				notice.text = "zackdroid";
 			case 'BetaTester + CreditIcons1':
 				bg.color = FlxColor.fromRGB(255, 165, 31);
+				notice.text = "goldie";
 			case 'BetaTester + CreditIcons2':
 				bg.color = FlxColor.fromRGB(255, 0, 204);
+				notice.text = "schepka";
 			case 'Icon Artist':
 				bg.color = FlxColor.fromRGB(255, 0, 0);
+				notice.text = "idioticlucas";
 			case 'Icon Organizer':
 				bg.color = FlxColor.fromRGB(255, 149, 0);
+				notice.text = "maskedpump";
 			case 'Logo Artist':
 				bg.color = FlxColor.fromRGB(128, 255, 0);
+				notice.text = "aarontal";
 			case 'GF Animator':
 				bg.color = FlxColor.fromRGB(255, 0, 98);
+				notice.text = "markmemarnie";
 			case 'Builder':
 				bg.color = FlxColor.fromRGB(0, 238, 255);
+				notice.text = "peppy";
 			case 'Save help + builder':
 				bg.color = FlxColor.fromRGB(170, 0, 255);
+				notice.text = "klavier";
 			case 'NoteSplash + tankroll':
 				bg.color = FlxColor.fromRGB(255, 170, 0);
+				notice.text = "gamerbros";
 			case 'Funkin Crew':
 				bg.color = FlxColor.fromRGB(0, 145, 255);
+				notice.text = "Ninja, arcade, kawaii, sk8er";
 			case 'Freeplay Bumpin':
 				bg.color = FlxColor.fromRGB(0, 68, 255);
+				notice.text = "smokey";
 		}
 
 		var upP = controls.UP_P;
