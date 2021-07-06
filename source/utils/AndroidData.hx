@@ -96,6 +96,15 @@ class AndroidData{
 		android.data.dfjk = dfjk;
 	}
 
+	public function loadDfjk(){
+	    if (android.data.dfjk == true){
+	        return dfjk;
+	    }
+	    else{
+	        return solo;
+	    }
+	}
+
 	public function getDfjk():Bool{
 		return android.data.dfjk;
 	}
