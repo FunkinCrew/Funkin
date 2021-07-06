@@ -109,32 +109,21 @@ var weekCharacters:Array<Dynamic> = [
 
 ### Step 4. Week Names
 
-Underneath the song list, there should be another array called `weekNames`. Creating a new line in that array, just enter a string that represents what you want the week to be called.
+In `assets/preload/data`, there should be a .txt file called `weekNames`. Creating a new line in that file, just enter a string that represents what you want the week to be called.
 
 Example
 ---
 
 ---
-```haxe
-var weekNames:Array<String> = [
-		
-	"How to Funk",
-		
-	"Daddy dearest",
-		
-	"Spooky Month",
-		
-	"PICO",
-		
-	"Mommy Must Murder",
-		
-	"Red Snow",
-		
-	"Hating Simulator ft. Moawlings",
-    		
-	"Tankman"
-	
-];
+```
+Tutorial
+Daddy Dearest
+Spooky Month
+PICO
+MOMMY MUST MURDER
+RED SNOW
+Hating Simulator ft. Moawling
+TANKMAN
 ```
 
 ---
@@ -143,7 +132,7 @@ var weekNames:Array<String> = [
   
 ### Step 5. Graphics
   
-Displaying a week icon for your custom week is as simple as dropping a .png into `assets/images/storymenu`. Rename the file to `week7.png`, `week8.png`, etc.
+Displaying a week icon for your custom week is as simple as dropping a .png into `assets/preload/images/storymenu`. Rename the file to `week7.png`, `week8.png`, etc.
 
 Example
 ---
