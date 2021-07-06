@@ -187,6 +187,7 @@ class PlayState extends MusicBeatState
 	private var pixel2:Character;
 
 	var picoStep:Ps;
+	var tankStep:Ts;
 
 	override public function create()
 	{
@@ -681,7 +682,8 @@ class PlayState extends MusicBeatState
 					curStage = 'tankStage2';
 					defaultCamZoom = 0.9;
 
-					picoStep = Json.parse(openfl.utils.Assets.getText(Paths.json('stress/pico-speaker')));
+					picoStep = Json.parse(openfl.utils.Assets.getText(Paths.json('stress/picospeaker')));
+					tankStep = Json.parse(openfl.utils.Assets.getText(Paths.json('stress/tankSpawn')));
 
 					var sky:FlxSprite = new FlxSprite(-400,-400).loadGraphic(Paths.image('tankSky'));
 					sky.scrollFactor.set(0, 0);
@@ -3064,161 +3066,25 @@ class PlayState extends MusicBeatState
 					gf.playAnim('shoot' + FlxG.random.int(3, 4), true);
 				}
 			}
-			//Left spawn
-			if (curStep == 2 || 
-				curStep == 9 || 
-				curStep == 22 || 
-				curStep == 34 || 
-				curStep == 41 || 
-				curStep == 54 || 
-				curStep == 66 || 
-				curStep == 73 || 
-				curStep == 86 || 
-				curStep == 98 || 
-				curStep == 105 ||
-				 curStep == 118 || 
-				 curStep == 253 || 
-				 curStep == 280 || 
-				 curStep == 300 || 
-				 curStep == 317 || 
-				 curStep == 332 || 
-				 curStep == 358 || 
-				 curStep == 364 || 
-				 curStep == 388 || 
-				 curStep == 408 || 
-				 curStep == 428 || 
-				 curStep == 444 || 
-				 curStep == 460 || 
-				 curStep == 476 || 
-				 curStep == 492 || 
-				 curStep == 510 || 
-				 curStep == 524 || 
-				 curStep == 552 || 
-				 curStep == 568 || 
-				 curStep == 584 || 
-				 curStep == 604 || 
-				 curStep == 620 || 
-				 curStep == 638 || 
-				 curStep == 645 || 
-				 curStep == 656 || 
-				 curStep == 666 || 
-				 curStep == 677 || 
-				 curStep == 688 || 
-				 curStep == 698 || 
-				 curStep == 709 || 
-				 curStep == 720 || 
-				 curStep == 730 || 
-				 curStep == 741 || 
-				 curStep == 753 || 
-				 curStep == 762 || 
-				 curStep == 792 || 
-				 curStep == 820 || 
-				 curStep == 829 || 
-				 curStep == 852 || 
-				 curStep == 861 || 
-				 curStep == 865 || 
-				 curStep == 885 || 
-				 curStep == 892 || 
-				 curStep == 916 || 
-				 curStep == 936 || 
-				 curStep == 962 || 
-				 curStep == 974 || 
-				 curStep == 984 || 
-				 curStep == 1000 || 
-				 curStep == 1008 || 
-				 curStep == 1028 || 
-				 curStep == 1052|| 
-				 curStep == 1076 || 
-				 curStep == 1100 || 
-				 curStep == 1124 || 
-				 curStep == 1149 || 
-				 curStep == 1160 || 
-				 curStep == 1180)
-				 
+			//Left tankspawn
+			for (i in 0...tankStep.left.length)
 			{
-				var tankmanRunner:TankmenBG = new TankmenBG();
-				tankmanRunner.resetShit(FlxG.random.int(630, 730) * -1, 255, true, 1, 1.5);
+				if (curStep == tankStep.left[i]){
+			    	var tankmanRunner:TankmenBG = new TankmenBG();
+			    	tankmanRunner.resetShit(FlxG.random.int(630, 730) * -1, 255, true, 1, 1.5);
 
-				tankmanRun.add(tankmanRunner);
+			    	tankmanRun.add(tankmanRunner);
+				}
 			}
 
 			//Right spawn
-			if (curStep == 0 || 
-				curStep == 14 || 
-				curStep == 19 || 
-				curStep == 32 || 
-				curStep == 46 || 
-				curStep == 51 || 
-				curStep == 61 || 
-				curStep == 71 || 
-				curStep == 79 || 
-				curStep == 88 || 
-				curStep == 103 ||
-				 curStep == 111 || 
-				 curStep == 120 || 
-				 curStep == 254 || 
-				 curStep == 272 || 
-				 curStep == 296 || 
-				 curStep == 324 || 
-				 curStep == 348 || 
-				 curStep == 356 || 
-				 curStep == 378 || 
-				 curStep == 394 || 
-				 curStep == 416 || 
-				 curStep == 432 || 
-				 curStep == 458 || 
-				 curStep == 480 || 
-				 curStep == 500 || 
-				 curStep == 512 || 
-				 curStep == 536 || 
-				 curStep == 554 || 
-				 curStep == 576 || 
-				 curStep == 600 || 
-				 curStep == 618 || 
-				 curStep == 632 || 
-				 curStep == 647 || 
-				 curStep == 655 || 
-				 curStep == 664 || 
-				 curStep == 679 || 
-				 curStep == 687 || 
-				 curStep == 696 || 
-				 curStep == 702 || 
-				 curStep == 716 || 
-				 curStep == 722 || 
-				 curStep == 732 || 
-				 curStep == 748 || 
-				 curStep == 754 || 
-				 curStep == 764 || 
-				 curStep == 780 || 
-				 curStep == 808 || 
-				 curStep == 836 || 
-				 curStep == 848 || 
-				 curStep == 870 || 
-				 curStep == 874 || 
-				 curStep == 878 || 
-				 curStep == 882 || 
-				 curStep == 889 || 
-				 curStep == 896 || 
-				 curStep == 920 || 
-				 curStep == 940 || 
-				 curStep == 952 || 
-				 curStep == 960 || 
-				 curStep == 972 || 
-				 curStep == 986 || 
-				 curStep == 996 || 
-				 curStep == 1021 || 
-				 curStep == 1040 || 
-				 curStep == 1066 || 
-				 curStep == 1088 || 
-				 curStep == 1114 || 
-				 curStep == 1136 || 
-				 curStep == 1146 || 
-				 curStep == 1168 || 
-				 curStep == 1184)
+			for(i in 0...tankStep.right.length)
 			{
-				var tankmanRunner:TankmenBG = new TankmenBG();
-				tankmanRunner.resetShit(FlxG.random.int(1500, 1700) * 1, 275, false, 1, 1.5);
-				tankmanRun.add(tankmanRunner);
+				if (curStep == tankStep.right[i]){
+		    		var tankmanRunner:TankmenBG = new TankmenBG();
+			    	tankmanRunner.resetShit(FlxG.random.int(1500, 1700) * 1, 275, false, 1, 1.5);
+		    		tankmanRun.add(tankmanRunner);
+				}
 			}
 		}
 
@@ -3464,10 +3330,17 @@ class PlayState extends MusicBeatState
 
 	var curLight:Int = 0;
 }
+
 //picoshoot
 typedef Ps = 
 {
 	var right:Array<Int>;
 	var left:Array<Int>;
+}
 
+//tank spawns
+typedef Ts = 
+{
+	var right:Array<Int>;
+	var left:Array<Int>;
 }
