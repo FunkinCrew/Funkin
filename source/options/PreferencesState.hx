@@ -136,7 +136,7 @@ class PreferencesState extends MusicBeatState
 				case "dfjk":
 					data.saveDfjk(checkboxGroup.members[curSelected].change());
 				case "change icons":
-					FlxG.switchState(new IconState());
+					FlxG.switchState(new options.IconState());
 					data.flushData();
 			}
 		}
