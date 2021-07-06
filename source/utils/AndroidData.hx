@@ -107,7 +107,7 @@ class AndroidData{
 	}
 
 	public function saveOsu(osu:Bool){
-	    android.data.osu = osu:
+	    android.data.osu = osu;
 	}
 
 	public function getOsu(){
