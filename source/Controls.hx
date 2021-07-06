@@ -1,6 +1,6 @@
 package;
 
-
+import utils.AndroidData;
 import flixel.group.FlxGroup;
 import ui.Hitbox;
 import ui.FlxVirtualPad;
@@ -630,6 +630,15 @@ class Controls extends FlxActionSet
 				inline bindKeys(Control.RESET, [BACKSPACE]);
 			case None: // nothing
 			case Custom: // nothing
+			case dfjk://dfjk
+				inline bindKeys(Control.UP, [D, FlxKey.UP]);
+				inline bindKeys(Control.DOWN, [F, FlxKey.DOWN]);
+				inline bindKeys(Control.LEFT, [J, FlxKey.LEFT]);
+				inline bindKeys(Control.RIGHT, [K, FlxKey.RIGHT]);
+				inline bindKeys(Control.ACCEPT, [Z, SPACE, ENTER]);
+				inline bindKeys(Control.BACK, [BACKSPACE, ESCAPE]);
+				inline bindKeys(Control.PAUSE, [P, ENTER, ESCAPE]);
+				inline bindKeys(Control.RESET, [R]);
 		}
 		#else
 		switch (scheme)
@@ -663,6 +672,15 @@ class Controls extends FlxActionSet
 				bindKeys(Control.RESET, [BACKSPACE]);
 			case None: // nothing
 			case Custom: // nothing
+			case dfjk:
+				bindKeys(Control.UP, [D, FlxKey.UP]);
+				bindKeys(Control.DOWN, [F, FlxKey.DOWN]);
+				bindKeys(Control.LEFT, [J, FlxKey.LEFT]);
+				bindKeys(Control.RIGHT, [K, FlxKey.RIGHT]);
+				bindKeys(Control.ACCEPT, [Z, SPACE, ENTER]);
+				bindKeys(Control.BACK, [BACKSPACE, ESCAPE]);
+				bindKeys(Control.PAUSE, [P, ENTER, ESCAPE]);
+				bindKeys(Control.RESET, [R]);
 		}
 		#end
 	}
