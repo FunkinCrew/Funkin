@@ -14,6 +14,8 @@ All notable changes will be documented in this file.
 - Difficulty selector in song charter.
 - Week Progression can be toggled in options menu now.
 - Improved dialogue system (will still be improved).
+
+- WEEK 7 IS FULLY IMPLEMENTED BESIDES THE CUTSCENES (and also besides pico-speaker's cool animations to the music).
 ### Changed
 - Organized classes into packages.
 - Health icons can now have more general types (like bf and senpai), instead of having to write down the same icon mutliple times in code.

@@ -150,6 +150,8 @@ class PlayState extends MusicBeatState
 
 	var defaultCamZoom:Float = 1.05;
 
+	public static var stepsTexts:Array<String>;
+
 	// how big to stretch the pixel art assets
 	public static var daPixelZoom:Float = 6;
 
@@ -1316,6 +1318,17 @@ class PlayState extends MusicBeatState
 				{
 					case 128, 129, 130:
 						vocals.volume = 0;
+				}
+		}
+
+		// curSTEP switch per song
+		switch(curSong.toLowerCase())
+		{
+			case 'ugh':
+				for(x in stepsTexts)
+				{
+					if(curStep == Std.parseInt(x))
+						dad.playAnim("singUP-alt", true);
 				}
 		}
 

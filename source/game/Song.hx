@@ -1,5 +1,7 @@
 package game;
 
+import utilities.CoolUtil;
+import states.PlayState;
 import game.Section.SwagSection;
 import haxe.Json;
 import haxe.format.JsonParser;
@@ -52,6 +54,10 @@ class Song
 			rawJson = rawJson.substr(0, rawJson.length - 1);
 			// LOL GOING THROUGH THE BULLSHIT TO CLEAN IDK WHATS STRANGE
 		}
+
+		// hardcoded because \_(:/)_/ dont feel like making more files just for this yet lol
+		if(folder.toLowerCase() == "ugh")
+			PlayState.stepsTexts = CoolUtil.coolTextFile(Paths.txt(folder.toLowerCase() + "/" + "steps"));
 
 		// FIX THE CASTING ON WINDOWS/NATIVE
 		// Windows???
