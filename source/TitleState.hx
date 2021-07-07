@@ -29,6 +29,8 @@ import io.newgrounds.NG;
 #end
 import lime.app.Application;
 import openfl.Assets;
+import utils.AndroidData;
+import flixel.math.FlxMath;
 
 using StringTools;
 
@@ -41,6 +43,9 @@ class TitleState extends MusicBeatState
 	var credTextShit:Alphabet;
 	var textGroup:FlxGroup;
 	var ngSpr:FlxSprite;
+	var defaultCamZoom:Float = 1;
+	var data:AndroidData = new AndroidData();
+	var lite:Int = FlxG.random.int(8, 10);
 
 	var curWacky:Array<String> = [];
 
@@ -76,6 +81,7 @@ class TitleState extends MusicBeatState
 		FlxG.save.bind('funkin', 'ninjamuffin99');
 
 		Highscore.load();
+		data.startData();
 
 		if (FlxG.save.data.weekUnlocked != null)
 		{
@@ -153,12 +159,13 @@ class TitleState extends MusicBeatState
 		// bg.setGraphicSize(Std.int(bg.width * 0.6));
 		// bg.updateHitbox();
 		add(bg);
-
-		logoBl = new FlxSprite(-150, -100);
+//-150, 100 <- original x and y
+		logoBl = new FlxSprite(-100, -200);
 		logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
 		logoBl.antialiasing = true;
 		logoBl.animation.addByPrefix('bump', 'logo bumpin', 24);
 		logoBl.animation.play('bump');
+		logoBl.scale.set(0.7, 0.7);//yrses
 		logoBl.updateHitbox();
 		// logoBl.screenCenter();
 		// logoBl.color = FlxColor.BLACK;
@@ -328,6 +335,7 @@ class TitleState extends MusicBeatState
 		}
 
 		super.update(elapsed);
+		FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, 0.95);
 	}
 
 	function createCoolText(textArray:Array<String>)
@@ -363,6 +371,7 @@ class TitleState extends MusicBeatState
 	override function beatHit()
 	{
 		super.beatHit();
+		FlxG.camera.zoom += 0.015;
 
 		logoBl.animation.play('bump');
 		danceLeft = !danceLeft;

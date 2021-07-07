@@ -1,6 +1,7 @@
 package;
 
 import flixel.FlxSprite;
+import utils.AndroidData;
 
 class HealthIcon extends FlxSprite
 {
@@ -8,6 +9,7 @@ class HealthIcon extends FlxSprite
 	 * Used for FreeplayState! If you use it elsewhere, prob gonna annoying
 	 */
 	public var sprTracker:FlxSprite;
+	var data:AndroidData = new AndroidData();
 
 	public var iconScale:Float = 1;
 	public var iconSize:Float;
@@ -18,11 +20,23 @@ class HealthIcon extends FlxSprite
 	public function new(char:String = 'bf', isPlayer:Bool = false)
 	{
 		super();
-		loadGraphic(Paths.image('iconGrid'), true, 150, 150);
+		var shit:Bool = data.getIcon();
+		
+		if (!shit){
+	    	loadGraphic(Paths.image('iconGrid'), true, 150, 150);
+		}
+		else{
+		    loadGraphic(Paths.image('iconGridB'), true, 150, 150);
+		}
 
 		antialiasing = true;
 		animation.add('bf', [0, 1], 0, false, isPlayer);
-		animation.add('bf-car', [0, 1], 0, false, isPlayer);
+		if (shit){
+	    	animation.add('bf-car', [0, 1], 0, false, isPlayer);
+		}
+		else{
+		    animation.add('bf-car', [28, 29], 0, false, isPlayer);
+		}
 		animation.add('bf-christmas', [22, 23], 0, false, isPlayer);
 		animation.add('bf-pixel', [0, 1], 0, false, isPlayer);
 		animation.add('bf-holding-gf', [26, 27], 0, false, isPlayer);

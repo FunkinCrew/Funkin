@@ -172,6 +172,7 @@ class LoadingState extends MusicBeatState
 	static function getNextState(target:FlxState, stopMusic = false):FlxState
 	{
 		Paths.setCurrentLevel("week" + PlayState.storyWeek);
+
 		//#if NO_PRELOAD_ALL
 		var loaded = isSoundLoaded(getSongPath())
 			&& (!PlayState.SONG.needsVoices || isSoundLoaded(getVocalPath()))
@@ -179,6 +180,7 @@ class LoadingState extends MusicBeatState
 		
 		if (!loaded)
 			return new LoadingState(target, stopMusic);
+
 		//#end
 		if (stopMusic && FlxG.sound.music != null)
 			FlxG.sound.music.stop();
@@ -186,6 +188,7 @@ class LoadingState extends MusicBeatState
 		return target;
 	}
 	
+
 	//#if NO_PRELOAD_ALL
 	static function isSoundLoaded(path:String):Bool
 	{
@@ -196,6 +199,7 @@ class LoadingState extends MusicBeatState
 	{
 		return Assets.getLibrary(library) != null;
 	}
+
 	//#end
 	
 	override function destroy()

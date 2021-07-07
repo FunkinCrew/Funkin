@@ -19,6 +19,7 @@ import flixel.util.FlxColor;
 import io.newgrounds.NG;
 #end
 import lime.app.Application;
+import utils.AndroidData;
 
 using StringTools;
 
@@ -36,6 +37,9 @@ class MainMenuState extends MusicBeatState
 
 	var magenta:FlxSprite;
 	var camFollow:FlxObject;
+	public var bg:FlxSprite;
+	public var menuItem:FlxSprite;
+	var data:AndroidData = new AndroidData();
 
 	override function create()
 	{
@@ -43,6 +47,7 @@ class MainMenuState extends MusicBeatState
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("In the Menus", null);
 		#end
+		var dfjkShit:Bool = data.getDfjk();
 
 		transIn = FlxTransitionableState.defaultTransIn;
 		transOut = FlxTransitionableState.defaultTransOut;
@@ -54,10 +59,10 @@ class MainMenuState extends MusicBeatState
 
 		persistentUpdate = persistentDraw = true;
 
-		var bg:FlxSprite = new FlxSprite(-80).loadGraphic(Paths.image('menuBG'));
+		bg = new FlxSprite(-80).loadGraphic(Paths.image('menuBG'));
 		bg.scrollFactor.x = 0;
 		bg.scrollFactor.y = 0.18;
-		bg.setGraphicSize(Std.int(bg.width * 1.1));
+		//bg.setGraphicSize(Std.int(bg.width * 1.1));
 		bg.updateHitbox();
 		bg.screenCenter();
 		bg.antialiasing = true;
@@ -85,7 +90,7 @@ class MainMenuState extends MusicBeatState
 
 		for (i in 0...optionShit.length)
 		{
-			var menuItem:FlxSprite = new FlxSprite(0, 60 + (i * 160));
+			menuItem = new FlxSprite(0, 60 + (i * 160));
 			menuItem.frames = tex;
 			menuItem.animation.addByPrefix('idle', optionShit[i] + " idle", 24);
 			menuItem.animation.addByPrefix('selected', optionShit[i] + " selected", 24);
@@ -111,11 +116,22 @@ class MainMenuState extends MusicBeatState
 		#if mobileC
 		addVirtualPad(UP_DOWN, A_B);
 		#end
-
+		
+		/*
+		if (dfjkShit){
+		    Controls.setKeyboardScheme(Duo, true);
+		}
+		else{
+		    Controls.setKeyboardScheme(Solo, true);
+		}
+			FIX THIS!!!!!!!!!!!
+		*/
 		super.create();
+		//data.startData();
 	}
 
 	var selectedSomethin:Bool = false;
+	
 
 	override function update(elapsed:Float)
 	{
@@ -201,6 +217,9 @@ class MainMenuState extends MusicBeatState
 		}
 
 		super.update(elapsed);
+		menuItem.setGraphicSize(Std.int(menuItem.width * 1));
+		menuItem.updateHitbox();
+		data.flushData();
 
 		menuItems.forEach(function(spr:FlxSprite)
 		{
@@ -229,5 +248,12 @@ class MainMenuState extends MusicBeatState
 
 			spr.updateHitbox();
 		});
+	}
+
+	override function beatHit()
+	{
+		super.beatHit();
+		menuItem.setGraphicSize(Std.int(menuItem.width * 1.3));
+		menuItem.updateHitbox();
 	}
 }
