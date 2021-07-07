@@ -1,59 +1,97 @@
 package options;
 
-import flash.text.TextField;
+import flixel.tweens.FlxTween;
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.addons.display.FlxGridOverlay;
-import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.math.FlxMath;
-import flixel.text.FlxText;
-import flixel.util.FlxColor;
-import lime.utils.Assets;
+import openfl.utils.Assets;
 
 using StringTools;
 
 class AboutState extends MusicBeatState
 {
-	var logoBl:FlxSprite;
 
-	var text:FlxText;
+	var bg0:FlxSprite;
+	var bg1:FlxSprite;
+	var bg2:FlxSprite;
+	var bg3:FlxSprite;
 
 	override function create()
 	{
+		var bgasset = Assets.getBitmapData(Paths.image('bgcredit'));
 
-		// LOAD MUSIC
+		bg0 = new FlxSprite(0, 0).loadGraphic(bgasset);
+		bg1 = new FlxSprite(-1280, 0).loadGraphic(bgasset);
+		bg2 = new FlxSprite(0, -720).loadGraphic(bgasset);
+		bg3 = new FlxSprite(-1280, -720).loadGraphic(bgasset);
 
-		// LOAD CHARACTERS
+		add(bg0);
+		add(bg1);
+		add(bg2);
+		add(bg3);
 
-		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuBGBlue'));
-		
-		logoBl = new FlxSprite(-150, -100);
-		logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
-		logoBl.antialiasing = true;
-		logoBl.animation.addByPrefix('bump', 'logo bumpin', 24);
-		logoBl.animation.play('bump');
-		logoBl.updateHitbox();
-		logoBl.screenCenter();
-		logoBl.y = logoBl.y - 100;
+		var bgfront:FlxSprite = new FlxSprite().loadGraphic(Paths.image('creditfront'));
+		add(bgfront);
 
-		text = new FlxText(0, 0, 0, "version 0.2.7.1 ported by luckydog7 and zack", 64);
-		text.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, RIGHT);
-		text.alignment = CENTER;
-		text.screenCenter();
-		text.y = text.y + 150;
-
-		add(bg);
-		add(logoBl);
-		add(text);
-
+		move();
  
 		super.create();
+	}
+
+	function move(?tween) {
+
+		bg0.x = 0;
+		bg0.y = 0;
+
+		bg1.x = -1280;
+		bg1.y = 0;
+
+		bg2.x = 0;
+		bg2.y = -720;
+
+		bg3.x = -1280;
+		bg3.x = -720;
+
+		var duration:Float = 30;
+
+		// bg 1
+		FlxTween.num(0, 1280, duration, {onComplete: move}, num -> {
+			bg0.x = num;
+		});
+		FlxTween.num(0, 720, duration, {}, num -> {
+			bg0.y = num;
+		});
+
+		// bg 1
+		FlxTween.num(-1280, 0, duration, {}, num -> {
+			bg1.x = num;
+		});
+		FlxTween.num(0, 720, duration, {}, num -> {
+			bg1.y = num;
+		});
+
+		// bg 2
+		FlxTween.num(0, 1280, duration, {}, num -> {
+			bg2.x = num;
+		});
+		FlxTween.num(-720, 0, duration, {}, num -> {
+			bg2.y = num;
+		});
+
+		// bg 3
+		FlxTween.num(-1280, 0, duration, {}, num -> {
+			bg3.x = num;
+		});
+		FlxTween.num(-720, 0, duration, {}, num -> {
+			bg3.y = num;
+		});
 	}
 
 
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+
+
 
 		if (FlxG.sound.music.volume < 0.7)
 		{
