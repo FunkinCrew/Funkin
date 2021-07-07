@@ -31,6 +31,7 @@ All notable changes will be documented in this file.
 - When pressing 9 in-game it now will revert your health icon to bf-old (because idk why I removed it).
 ### Known Issues
 - When hitting notes REALLY close together on the new input system, the game may sometimes allow you to hit multiple notes at once.
+- Pressing "Beat Hit" in the stage editor on "Spooky" stage, may cause the game to crash.
 
 ## [0.1] - 6/18/2021
 ### Added
