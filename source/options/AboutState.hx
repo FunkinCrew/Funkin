@@ -4,6 +4,7 @@ import flixel.tweens.FlxTween;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import openfl.utils.Assets;
+import flixel.ui.FlxButton;
 
 using StringTools;
 
@@ -13,6 +14,8 @@ class AboutState extends MusicBeatState
 	var bg1:FlxSprite;
 	var bg2:FlxSprite;
 	var bg3:FlxSprite;
+
+	var amogusSprite:FlxSprite;
 
 	override function create()
 	{
@@ -28,8 +31,17 @@ class AboutState extends MusicBeatState
 		add(bg2);
 		add(bg3);
 
+		amogusSprite = new FlxSprite();
+		amogusSprite.visible = false;
+		add(amogusSprite);
+
 		var bgfront:FlxSprite = new FlxSprite().loadGraphic(Paths.image('creditfront'));
 		add(bgfront);
+
+		var button = new FlxButton(16, 16, "", ()-> {
+			FlxG.switchState(new OptionsMenu());
+		}).loadGraphic('assets/android/back.png');
+		add(button);
 
 		move();
  
@@ -37,6 +49,9 @@ class AboutState extends MusicBeatState
 	}
 
 	function move(?tween) {
+		if (FlxG.random.bool(30))
+			amogus();
+
 		bg0.x = 0;
 		bg0.y = 0;
 
@@ -82,6 +97,23 @@ class AboutState extends MusicBeatState
 		FlxTween.num(-720, 0, duration, {}, num -> {
 			bg3.y = num;
 		});
+	}
+
+	function amogus() {
+		amogusSprite.visible = true;
+		amogusSprite.loadGraphic('assets/android/amogus.png');
+		amogusSprite.x = -amogusSprite.width;
+		amogusSprite.y = (FlxG.height / 2) - (amogusSprite.height / 2);
+
+		var dur = 10;
+
+		FlxTween.angle(amogusSprite, 0, 960, dur);
+
+		FlxTween.num(-amogusSprite.width, FlxG.width + amogusSprite.width, dur, {}, (num) -> {
+			amogusSprite.x = num;
+		});
+
+		FlxG.sound.play('assets/android/amogus.ogg');
 	}
 
 

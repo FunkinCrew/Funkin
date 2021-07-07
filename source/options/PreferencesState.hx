@@ -53,7 +53,7 @@ class PreferencesState extends MusicBeatState
 				case "downscroll":
 					ch.change(data.getScroll());
 				case "cutscenes":
-					ch.change(data.getCutscenes:);
+					ch.change(data.getCutscenes());
 				case "note splash":
 					ch.change(data.getSploosh());
 				case "note glow":

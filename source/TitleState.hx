@@ -30,6 +30,7 @@ import io.newgrounds.NG;
 import lime.app.Application;
 import openfl.Assets;
 import utils.AndroidData;
+import flixel.math.FlxMath;
 
 using StringTools;
 

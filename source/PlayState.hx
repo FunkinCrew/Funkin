@@ -1872,7 +1872,7 @@ class PlayState extends MusicBeatState
 
 		super.update(elapsed);
 		if (controls.UP_P && controls.DOWN_P && controls.LEFT_P && controls.RIGHT_P){
-			SpamViolation += 1
+			SpamViolation += 1;
 			if (SpamViolation == 2){
 				SpamViolation = -1;
 				disableKeys();//function in line 3540
@@ -3342,7 +3342,7 @@ class PlayState extends MusicBeatState
 		disabledKeys = true;
 		new FlxTimer().start(FlxG.random.float(1.0, 1.7), function(tmr:FlxTimer)
 		{
-			disabledKeys = false:
+			disabledKeys = false;
 			health -= FlxG.random.float(0.025, 0.059);
 			trace('SPAM!1!1!1!');
 			combo = 0;

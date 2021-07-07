@@ -26,7 +26,7 @@ class CreditState extends MusicBeatState{
 	private var grpSongs:FlxTypedGroup<Alphabet>;
 	private var curPlaying:Bool = false;
 	var notice:FlxText;
-	private var iconArray:Array<HealthIcon> = [];
+	private var iconArray:Array<CreditIcon> = [];
 	override function create()
 	{
 	    addWeek(['FNF Android Creator', 'V2.8 Coder'], 1, ['lucky', 'zack']);
@@ -34,7 +34,7 @@ class CreditState extends MusicBeatState{
 	    addWeek(['Icon Artist', 'Icon Set 2'], 3, ['idioticlucas', 'maskedpump']);
 	    addWeek(['GF Animator', 'Freeplay Bumpin'], 4, ['mark', 'smokey']);
 	    addWeek(['Builder', 'Save help + builder', 'NoteSplash + tankroll'], 5, ['peppy', 'klavier', 'gamerbros']);
-	    addWeek(['Funkin Crew', 'Funkin Crew', 'Funkin Crew', 'Funkin Crew'], 6 ['muffin', 'phantom', 'kawaii', 'evil']);
+	    addWeek(['Funkin Crew', 'Funkin Crew', 'Funkin Crew', 'Funkin Crew'], 6, ['muffin', 'phantom', 'kawaii', 'evil']);
 
 		// LOAD MUSIC
 
@@ -230,10 +230,10 @@ class CreditState extends MusicBeatState{
 
 		// selector.y = (70 * curSelected) + 30;
 
-		#if !switch
+		/*#if !switch
 		intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
 		// lerpScore = 0;
-		#end
+		#end*/
 
 		FlxG.sound.playMusic(Paths.inst('test'), 0);
 

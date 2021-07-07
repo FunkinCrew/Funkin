@@ -117,13 +117,15 @@ class MainMenuState extends MusicBeatState
 		addVirtualPad(UP_DOWN, A_B);
 		#end
 		
+		/*
 		if (dfjkShit){
 		    Controls.setKeyboardScheme(Duo, true);
 		}
 		else{
 		    Controls.setKeyboardScheme(Solo, true);
 		}
-
+			FIX THIS!!!!!!!!!!!
+		*/
 		super.create();
 		//data.startData();
 	}
@@ -248,9 +250,9 @@ class MainMenuState extends MusicBeatState
 		});
 	}
 
-	override function beathit();
+	override function beatHit()
 	{
-		super.beathit();
+		super.beatHit();
 		menuItem.setGraphicSize(Std.int(menuItem.width * 1.3));
 		menuItem.updateHitbox();
 	}

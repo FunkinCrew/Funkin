@@ -3,7 +3,7 @@ package;
 import flixel.FlxSprite;
 import utils.AndroidData;
 
-class HealthIcon extends FlxSprite
+class CreditIcon extends FlxSprite
 {
 	/**
 	 * Used for FreeplayState! If you use it elsewhere, prob gonna annoying
