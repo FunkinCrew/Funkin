@@ -1,5 +1,8 @@
 package;
 
+import openfl.utils.Assets;
+import flixel.graphics.FlxGraphic;
+import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.FlxG;
 import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.utils.AssetType;
@@ -125,13 +128,30 @@ class Paths
 		return 'assets/fonts/$key';
 	}
 
-	inline static public function getSparrowAtlas(key:String, ?library:String)
+	inline static public function getSparrowAtlas(key:String, ?library:String, ?isCharacter:Bool = false)
 	{
+		if (isCharacter)
+			if (FlxG.save.data.cacheImages)
+				return FlxAtlasFrames.fromSparrow(imageCached(key), file('images/characters/$key.xml', library));
+			else
+				return FlxAtlasFrames.fromSparrow(image('characters/$key'), file('images/characters/$key.xml'));
 		return FlxAtlasFrames.fromSparrow(image(key, library), file('images/$key.xml', library));
 	}
 
-	inline static public function getPackerAtlas(key:String, ?library:String)
+	inline static public function imageCached(key:String):FlxGraphic
 	{
+		var data = Caching.bitmapData.get(key);
+		trace('finding ${key} - ${data.bitmap}');
+		return data;
+	}
+
+	inline static public function getPackerAtlas(key:String, ?library:String, ?isCharacter:Bool = false)
+	{
+		if (isCharacter)
+			if (FlxG.save.data.cacheImages)
+				return FlxAtlasFrames.fromSpriteSheetPacker(imageCached(key), file('images/$key.txt', library));
+			else
+				return FlxAtlasFrames.fromSpriteSheetPacker(image('characters/$key'), file('images/characters/$key.txt'));
 		return FlxAtlasFrames.fromSpriteSheetPacker(image(key, library), file('images/$key.txt', library));
 	}
 }
