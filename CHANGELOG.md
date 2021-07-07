@@ -1,7 +1,7 @@
 # Changelog
 All notable changes will be documented in this file.
 
-## [0.2] - ?/?/?
+## [0.2] - 7/7/2021
 ### Added
 - A stage editor / stage viewer.
 - Note splashes when you hit a sick!
