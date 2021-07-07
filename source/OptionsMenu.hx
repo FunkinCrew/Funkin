@@ -16,7 +16,7 @@ class OptionsMenu extends MusicBeatState
 
 	private var grpControls:FlxTypedGroup<Alphabet>;
 
-	var menuItems:Array<String> = ['preferences', 'controls', 'about', 'discord', 'credits', 'exit'];
+	var menuItems:Array<String> = ['preferences', 'controls', 'about', 'discord', 'special thanks', 'exit'];
 
 	var notice:FlxText;
 
@@ -73,9 +73,9 @@ class OptionsMenu extends MusicBeatState
 					FlxG.switchState(new MainMenuState());
 				case "discord":
 					FlxG.openURL('https://discord.gg/eGwJnUvZ9H');
-				case "credits":
-					//FlxG.switchState(new CreditState());
-					FlxG.openURL('https://youtu.be/2IdJzGZ70r4');
+				case "special thanks":
+					FlxG.switchState(new CreditState());
+					//FlxG.openURL('https://youtu.be/2IdJzGZ70r4');
 			}
 		}
 
