@@ -29,6 +29,8 @@ All notable changes will be documented in this file.
 - In the Thorns dialogue, Senpai's dialogue portrait is now invisible, instead of behind or infront of Spirit.
 ### Re-Added
 - When pressing 9 in-game it now will revert your health icon to bf-old (because idk why I removed it).
+### Known Issues
+- When hitting notes REALLY close together on the new input system, the game may sometimes allow you to hit multiple notes at once.
 
 ## [0.1] - 6/18/2021
 ### Added
