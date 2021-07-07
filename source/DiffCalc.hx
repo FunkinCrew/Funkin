@@ -16,7 +16,6 @@ class SmallNote // basically Note.hx but small as fuck
 
 class DiffCalc
 {
-
     public static var scale = 3 * 1.8;
 
     public static function CalculateDiff(song:SwagSong, ?accuracy:Float = .93)
@@ -77,6 +76,8 @@ class DiffCalc
             }
         }
 
+        // collect all of the notes in each col
+
         var leftHandCol:Array<Float> = []; // d 0
         var leftMHandCol:Array<Float> = []; // f 1
         var rightMHandCol:Array<Float> = []; // j 2
@@ -105,6 +106,8 @@ class DiffCalc
         var segmentsOne = new haxe.ds.Vector(Math.floor(length));
 
         var segmentsTwo = new haxe.ds.Vector(Math.floor(length));
+
+        // set em all to array's (so no null's)
 
         for(i in 0...segmentsOne.length)
             segmentsOne[i] = new Array<SmallNote>();
@@ -141,6 +144,7 @@ class DiffCalc
                 segmentsTwo[i] = null;
         }*/
 
+        // get nps for both hands
 
         var hand_npsOne:Array<Float> = new Array<Float>();
         var hand_npsTwo:Array<Float> = new Array<Float>();
@@ -157,7 +161,8 @@ class DiffCalc
                 continue;
             hand_npsTwo.push(i.length * scale * 1.6);
         }
-        
+
+        // get the diff vector's for all of the hands
 
         var hand_diffOne:Array<Float> = new Array<Float>();
         var hand_diffTwo:Array<Float> = new Array<Float>();
