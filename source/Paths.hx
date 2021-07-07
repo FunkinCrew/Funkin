@@ -131,7 +131,10 @@ class Paths
 	inline static public function getSparrowAtlas(key:String, ?library:String, ?isCharacter:Bool = false)
 	{
 		if (isCharacter)
-			return FlxAtlasFrames.fromSparrow(imageCached(key), file('images/characters/$key.xml', library));
+			if (FlxG.save.data.cacheImages)
+				return FlxAtlasFrames.fromSparrow(imageCached(key), file('images/characters/$key.xml', library));
+			else
+				return FlxAtlasFrames.fromSparrow(image('characters/$key'), file('images/characters/$key.xml'));
 		return FlxAtlasFrames.fromSparrow(image(key, library), file('images/$key.xml', library));
 	}
 
@@ -145,7 +148,10 @@ class Paths
 	inline static public function getPackerAtlas(key:String, ?library:String, ?isCharacter:Bool = false)
 	{
 		if (isCharacter)
-			return FlxAtlasFrames.fromSpriteSheetPacker(imageCached(key), file('images/characters/$key.txt', library));
+			if (FlxG.save.data.cacheImages)
+				return FlxAtlasFrames.fromSpriteSheetPacker(imageCached(key), file('images/$key.txt', library));
+			else
+				return FlxAtlasFrames.fromSpriteSheetPacker(image('characters/$key'), file('images/characters/$key.txt'));
 		return FlxAtlasFrames.fromSpriteSheetPacker(image(key, library), file('images/$key.txt', library));
 	}
 }
