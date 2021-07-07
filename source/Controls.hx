@@ -611,10 +611,10 @@ class Controls extends FlxActionSet
 				inline bindKeys(Control.PAUSE, [P, ENTER, ESCAPE]);
 				inline bindKeys(Control.RESET, [R]);
 			case Duo(true):
-				inline bindKeys(Control.UP, [W]);
-				inline bindKeys(Control.DOWN, [S]);
-				inline bindKeys(Control.LEFT, [A]);
-				inline bindKeys(Control.RIGHT, [D]);
+				inline bindKeys(Control.UP, [D]);
+				inline bindKeys(Control.DOWN, [F]);
+				inline bindKeys(Control.LEFT, [J]);
+				inline bindKeys(Control.RIGHT, [K]);
 				inline bindKeys(Control.ACCEPT, [G, Z]);
 				inline bindKeys(Control.BACK, [H, X]);
 				inline bindKeys(Control.PAUSE, [ONE]);
@@ -630,7 +630,7 @@ class Controls extends FlxActionSet
 				inline bindKeys(Control.RESET, [BACKSPACE]);
 			case None: // nothing
 			case Custom: // nothing
-			case dfjk://dfjk
+			/*case dfjk://dfjk
 				inline bindKeys(Control.UP, [D, FlxKey.UP]);
 				inline bindKeys(Control.DOWN, [F, FlxKey.DOWN]);
 				inline bindKeys(Control.LEFT, [J, FlxKey.LEFT]);
@@ -638,7 +638,7 @@ class Controls extends FlxActionSet
 				inline bindKeys(Control.ACCEPT, [Z, SPACE, ENTER]);
 				inline bindKeys(Control.BACK, [BACKSPACE, ESCAPE]);
 				inline bindKeys(Control.PAUSE, [P, ENTER, ESCAPE]);
-				inline bindKeys(Control.RESET, [R]);
+				inline bindKeys(Control.RESET, [R]);*/
 		}
 		#else
 		switch (scheme)
