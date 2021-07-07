@@ -115,6 +115,13 @@ class MainMenuState extends MusicBeatState
 		#if mobileC
 		addVirtualPad(UP_DOWN, A_B);
 		#end
+		
+		if (dfjkShit){
+		    Controls.setKeyboardScheme(Duo, true);
+		}
+		else{
+		    Controls.setKeyboardScheme(Solo, true);
+		}
 
 		super.create();
 		data.startData();
