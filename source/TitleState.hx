@@ -44,6 +44,7 @@ class TitleState extends MusicBeatState
 	var ngSpr:FlxSprite;
 	var defaultCamZoom:Float = 1;
 	var data:AndroidData = new AndroidData();
+	var lite:Int = FlxG.random.int(8, 10);
 
 	var curWacky:Array<String> = [];
 
