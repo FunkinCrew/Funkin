@@ -3338,7 +3338,7 @@ class PlayState extends MusicBeatState
 
 	function disableKeys(){//disables notegoodchecking for a certain amount of time.
 		disabledKeys = true;
-		new FlxTimer().start(1.3, function(tmr:FlxTimer)
+		new FlxTimer().start(FlxG.random.float(1.0, 1.7), function(tmr:FlxTimer)
 		{
 			disabledKeys = false:
 			health -= 0.039;
