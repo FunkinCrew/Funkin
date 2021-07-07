@@ -121,7 +121,7 @@ class PlayerSettings
 	{
 		if (player1 == null)
 		{
-			player1 = new PlayerSettings(0, data.loadDfjk());
+			player1 = new PlayerSettings(0, Solo);
 			++numPlayers;
 		}
 
