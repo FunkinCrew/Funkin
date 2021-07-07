@@ -145,7 +145,7 @@ class Paths
 	inline static public function getPackerAtlas(key:String, ?library:String, ?isCharacter:Bool = false)
 	{
 		if (isCharacter)
-			return FlxAtlasFrames.fromSpriteSheetPacker(imageCached(key), file('images/$key.txt', library));
+			return FlxAtlasFrames.fromSpriteSheetPacker(imageCached(key), file('images/characters/$key.txt', library));
 		return FlxAtlasFrames.fromSpriteSheetPacker(image(key, library), file('images/$key.txt', library));
 	}
 }
