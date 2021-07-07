@@ -1504,7 +1504,7 @@ class ChartingState extends MusicBeatState
 			"song": _song
 		};
 
-		var data:String = Json.stringify(json);
+		var data:String = Json.stringify(json,null," ");
 
 		if ((data != null) && (data.length > 0))
 		{

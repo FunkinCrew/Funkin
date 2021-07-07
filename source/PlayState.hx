@@ -1460,7 +1460,28 @@ class PlayState extends MusicBeatState
 
 		if (dataNotes.length != 0)
 		{
+
 			var coolNote = dataNotes[0];
+
+			if (dataNotes.length > 1) // stacked notes or really close ones
+			{
+				for(i in 0...dataNotes.length)
+				{
+					if (i == 0) // skip the first note
+						continue;
+
+					var note = dataNotes[i];
+
+					if (!note.isSustainNote && (note.strumTime - coolNote.strumTime) < 2)
+					{
+						trace('found a stacked/really close note ' + (note.strumTime - coolNote.strumTime));
+						// just fuckin remove it since it's a stacked note and shouldn't be there
+						note.kill();
+						notes.remove(note, true);
+						note.destroy();
+					}
+				}
+			}
 
 			goodNoteHit(coolNote);
 			var noteDiff:Float = -(coolNote.strumTime - Conductor.songPosition);
@@ -1469,7 +1490,12 @@ class PlayState extends MusicBeatState
 			ana.nearestNote = [coolNote.strumTime,coolNote.noteData,coolNote.sustainLength];
 		}
 		else if (!FlxG.save.data.ghost)
+		{
 			noteMiss(data,null);
+			ana.hit = false;
+			ana.hitJudge = "shit";
+			ana.nearestNote = [];
+		}
 		
 		
 	}
