@@ -102,7 +102,7 @@ class FreeplayState extends MusicBeatState
 					|| isDebug
 					|| !StoryMenuState.weekProgression
 					|| (
-						StoryMenuState.weekUnlocked[week + 1] == null 
+						week == StoryMenuState.weekUnlocked.length
 						&& StoryMenuState.weekUnlocked[week]
 					)
 				)
