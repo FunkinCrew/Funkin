@@ -75,7 +75,7 @@ class ChartingState extends MusicBeatState
 
 	var gridBG:FlxSprite;
 
-	var _song:SwagSong;
+	public static var _song:SwagSong;
 
 	var typingShit:FlxInputText;
 	/*
@@ -129,7 +129,7 @@ class ChartingState extends MusicBeatState
 
 		blackBorder.alpha = 0.3;
 
-		snapText = new FlxText(60,10,0,"Snap: 1/" + snap + " (Press Control to unsnap the cursor)\nAdd Notes: 1-8 (or click)\n", 14);
+		snapText = new FlxText(60,10,0,"Snap: 1/" + snap + " (Press Control to unsnap the cursor)\nAdd Notes: 1-8 (or click)\nDiff: 0", 14);
 		snapText.scrollFactor.set();
 
 		gridBlackLine = new FlxSprite(gridBG.x + gridBG.width / 2).makeGraphic(2, Std.int(gridBG.height), FlxColor.BLACK);
@@ -661,12 +661,14 @@ class ChartingState extends MusicBeatState
 
 	var writingNotes:Bool = false;
 	var doSnapShit:Bool = true;
+	
+	public var diff:Float = 0;
 
 	override function update(elapsed:Float)
 	{
 		updateHeads();
 
-		snapText.text = "Snap: 1/" + snap + " (" + (doSnapShit ? "Control to disable" : "Snap Disabled, Control to renable") + ")\nAdd Notes: 1-8 (or click)\n";
+		snapText.text = "Song Diff: " + diff + "\nSnap: 1/" + snap + " (" + (doSnapShit ? "Control to disable" : "Snap Disabled, Control to renable") + ")\nAdd Notes: 1-8 (or click)";
 
 		curStep = recalculateSteps();
 
@@ -1260,6 +1262,9 @@ class ChartingState extends MusicBeatState
 				curRenderedSustains.add(sustainVis);
 			}
 		}
+
+		if (_song != null)
+			diff = DiffCalc.CalculateDiff(_song);
 	}
 
 	private function addSection(lengthInSteps:Int = 16):Void

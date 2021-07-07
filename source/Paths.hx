@@ -134,14 +134,13 @@ class Paths
 			if (FlxG.save.data.cacheImages)
 				return FlxAtlasFrames.fromSparrow(imageCached(key), file('images/characters/$key.xml', library));
 			else
-				return FlxAtlasFrames.fromSparrow(image('characters/'+key), file('images/characters/$key.xml'));
+				return FlxAtlasFrames.fromSparrow(image('characters/$key'), file('images/characters/$key.xml'));
 		return FlxAtlasFrames.fromSparrow(image(key, library), file('images/$key.xml', library));
 	}
 
 	inline static public function imageCached(key:String):FlxGraphic
 	{
-
-		var data = FlxGraphic.fromBitmapData(Caching.bitmapData.get(key));
+		var data = Caching.bitmapData.get(key);
 		trace('finding ${key} - ${data.bitmap}');
 		return data;
 	}
@@ -152,7 +151,7 @@ class Paths
 			if (FlxG.save.data.cacheImages)
 				return FlxAtlasFrames.fromSpriteSheetPacker(imageCached(key), file('images/$key.txt', library));
 			else
-				return FlxAtlasFrames.fromSpriteSheetPacker(image('characters/'+key), file('images/characters/$key.txt'));
+				return FlxAtlasFrames.fromSpriteSheetPacker(image('characters/$key'), file('images/characters/$key.txt'));
 		return FlxAtlasFrames.fromSpriteSheetPacker(image(key, library), file('images/$key.txt', library));
 	}
 }
