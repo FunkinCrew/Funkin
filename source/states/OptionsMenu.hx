@@ -1,5 +1,7 @@
 package states;
 
+import ui.Checkbox;
+import flixel.group.FlxGroup;
 import debuggers.ChartingState;
 import debuggers.StageMakingState;
 import flixel.system.FlxSound;

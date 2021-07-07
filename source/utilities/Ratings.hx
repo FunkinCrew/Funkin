@@ -4,8 +4,8 @@ class Ratings
 {
     private static var timings:Array<Dynamic> = [
         [50, 'sick'],
-        [110, 'good'],
-        [150, 'bad'],
+        [70, 'good'],
+        [100, 'bad'],
         [10000, 'shit'],
     ];
 
