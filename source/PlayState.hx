@@ -3341,7 +3341,7 @@ class PlayState extends MusicBeatState
 		new FlxTimer().start(FlxG.random.float(1.0, 1.7), function(tmr:FlxTimer)
 		{
 			disabledKeys = false:
-			health -= 0.039;
+			health -= FlxG.random.float(0.025, 0.059);
 			trace('SPAM!1!1!1!');
 			combo = 0;
 			misses += 2;
