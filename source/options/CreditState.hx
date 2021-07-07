@@ -30,8 +30,8 @@ class CreditState extends MusicBeatState{
 	override function create()
 	{
 	    addWeek(['FNF Android Creator', 'V2.8 Coder'], 1, ['lucky', 'zack']);
-	    addWeek(['BetaTester + CreditIcons1', 'BetaTester + CreditIcons2'], 2, ['schepka', 'goldie']);
-	    addWeek(['Icon Artist', 'Icon Organizer', 'Logo Artist'], 3, ['idioticlucas', 'maskedpump', 'aarontal']);
+	    addWeek(['BetaTester1', 'BetaTester2'], 2, ['schepka', 'goldie']);
+	    addWeek(['Icon Artist', 'Icon Set 2'], 3, ['idioticlucas', 'maskedpump']);
 	    addWeek(['GF Animator', 'Freeplay Bumpin'], 4, ['mark', 'smokey']);
 	    addWeek(['Builder', 'Save help + builder', 'NoteSplash + tankroll'], 5, ['peppy', 'klavier', 'gamerbros']);
 	    addWeek(['Funkin Crew', 'Funkin Crew', 'Funkin Crew', 'Funkin Crew'], 6 ['muffin', 'phantom', 'kawaii', 'evil']);
@@ -133,21 +133,21 @@ class CreditState extends MusicBeatState{
 			case 'V2.8 Coder':
 				bg.color = FlxColor.fromRGB(0, 255, 64);
 				notice.text = "zackdroid";
-			case 'BetaTester + CreditIcons1':
+			case 'BetaTester1':
 				bg.color = FlxColor.fromRGB(255, 165, 31);
 				notice.text = "goldie";
-			case 'BetaTester + CreditIcons2':
+			case 'BetaTester2':
 				bg.color = FlxColor.fromRGB(255, 0, 204);
 				notice.text = "schepka";
 			case 'Icon Artist':
 				bg.color = FlxColor.fromRGB(255, 0, 0);
 				notice.text = "idioticlucas";
-			case 'Icon Organizer':
+			case 'Icon Set 2':
 				bg.color = FlxColor.fromRGB(255, 149, 0);
 				notice.text = "maskedpump";
-			case 'Logo Artist':
+			/*case 'Logo Artist':
 				bg.color = FlxColor.fromRGB(128, 255, 0);
-				notice.text = "aarontal";
+				notice.text = "aarontal";*/
 			case 'GF Animator':
 				bg.color = FlxColor.fromRGB(255, 0, 98);
 				notice.text = "markmemarnie";
