@@ -47,6 +47,7 @@ class MainMenuState extends MusicBeatState
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("In the Menus", null);
 		#end
+		var dfjkShit:Bool = data.getDfjk();
 
 		transIn = FlxTransitionableState.defaultTransIn;
 		transOut = FlxTransitionableState.defaultTransOut;
@@ -124,7 +125,7 @@ class MainMenuState extends MusicBeatState
 		}
 
 		super.create();
-		data.startData();
+		//data.startData();
 	}
 
 	var selectedSomethin:Bool = false;
