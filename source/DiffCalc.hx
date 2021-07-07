@@ -220,7 +220,7 @@ class DiffCalc
             // trace(bigFuck + " - hand two [" + i + "]");
         }
 
-        for (i in 0...3)
+        for (i in 0...4)
         {
             smoothBrain(hand_npsOne,0);
             smoothBrain(hand_npsTwo,0);
