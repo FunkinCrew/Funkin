@@ -74,7 +74,7 @@ class OptionsMenu extends MusicBeatState
 				case "discord":
 					FlxG.openURL('https://discord.gg/eGwJnUvZ9H');
 				case "special thanks":
-					FlxG.switchState(new CreditState());
+					FlxG.switchState(new options.CreditState());
 					//FlxG.openURL('https://youtu.be/2IdJzGZ70r4');
 			}
 		}
