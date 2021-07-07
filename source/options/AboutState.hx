@@ -9,7 +9,6 @@ using StringTools;
 
 class AboutState extends MusicBeatState
 {
-
 	var bg0:FlxSprite;
 	var bg1:FlxSprite;
 	var bg2:FlxSprite;
@@ -20,9 +19,9 @@ class AboutState extends MusicBeatState
 		var bgasset = Assets.getBitmapData(Paths.image('bgcredit'));
 
 		bg0 = new FlxSprite(0, 0).loadGraphic(bgasset);
-		bg1 = new FlxSprite(-1280, 0).loadGraphic(bgasset);
-		bg2 = new FlxSprite(0, -720).loadGraphic(bgasset);
-		bg3 = new FlxSprite(-1280, -720).loadGraphic(bgasset);
+		bg1 = new FlxSprite(0, 0).loadGraphic(bgasset);
+		bg2 = new FlxSprite(0, 0).loadGraphic(bgasset);
+		bg3 = new FlxSprite(0, 0).loadGraphic(bgasset);
 
 		add(bg0);
 		add(bg1);
@@ -38,7 +37,6 @@ class AboutState extends MusicBeatState
 	}
 
 	function move(?tween) {
-
 		bg0.x = 0;
 		bg0.y = 0;
 
@@ -49,9 +47,9 @@ class AboutState extends MusicBeatState
 		bg2.y = -720;
 
 		bg3.x = -1280;
-		bg3.x = -720;
+		bg3.y = -720;
 
-		var duration:Float = 30;
+		var duration:Float = 50;
 
 		// bg 1
 		FlxTween.num(0, 1280, duration, {onComplete: move}, num -> {
@@ -61,7 +59,7 @@ class AboutState extends MusicBeatState
 			bg0.y = num;
 		});
 
-		// bg 1
+		// bg 2
 		FlxTween.num(-1280, 0, duration, {}, num -> {
 			bg1.x = num;
 		});
@@ -69,7 +67,7 @@ class AboutState extends MusicBeatState
 			bg1.y = num;
 		});
 
-		// bg 2
+		// bg 3
 		FlxTween.num(0, 1280, duration, {}, num -> {
 			bg2.x = num;
 		});
@@ -77,7 +75,7 @@ class AboutState extends MusicBeatState
 			bg2.y = num;
 		});
 
-		// bg 3
+		// bg 4  
 		FlxTween.num(-1280, 0, duration, {}, num -> {
 			bg3.x = num;
 		});
@@ -90,8 +88,6 @@ class AboutState extends MusicBeatState
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
-
-
 
 		if (FlxG.sound.music.volume < 0.7)
 		{
