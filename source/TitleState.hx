@@ -29,6 +29,7 @@ import io.newgrounds.NG;
 #end
 import lime.app.Application;
 import openfl.Assets;
+import utils.AndroidData;
 
 using StringTools;
 
@@ -42,6 +43,7 @@ class TitleState extends MusicBeatState
 	var textGroup:FlxGroup;
 	var ngSpr:FlxSprite;
 	var defaultCamZoom:Float = 1;
+	var data:AndroidData = new AndroidData();
 
 	var curWacky:Array<String> = [];
 
@@ -77,6 +79,7 @@ class TitleState extends MusicBeatState
 		FlxG.save.bind('funkin', 'ninjamuffin99');
 
 		Highscore.load();
+		data.startData();
 
 		if (FlxG.save.data.weekUnlocked != null)
 		{
