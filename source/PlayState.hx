@@ -1468,6 +1468,9 @@ class PlayState extends MusicBeatState
 			ana.hitJudge = Ratings.CalculateRating(noteDiff, Math.floor((PlayStateChangeables.safeFrames / 60) * 1000));
 			ana.nearestNote = [coolNote.strumTime,coolNote.noteData,coolNote.sustainLength];
 		}
+		else if (!FlxG.save.data.ghost)
+			noteMiss(data,null);
+		
 		
 	}
 
