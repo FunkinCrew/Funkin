@@ -2776,7 +2776,7 @@ class PlayState extends MusicBeatState
 					else
 					{
 						FlxG.sound.playMusic(Paths.music('freakyMenu'));
-						FlxG.switchState(new MainMenuState());
+						FlxG.switchState(new StoryMenuState());
 					}
 
 					#if windows
