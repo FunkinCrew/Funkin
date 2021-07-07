@@ -1506,7 +1506,7 @@ class PlayState extends MusicBeatState
 						{
 							health -= 0.075;
 							vocals.volume = 0;
-							noteMiss(daNote.noteData);
+							noteMiss(daNote.noteData, daNote);
 						}
 	
 						daNote.active = false;
@@ -1930,42 +1930,55 @@ class PlayState extends MusicBeatState
 		});
 	}
 
-	function noteMiss(direction:Int = 1):Void
+	function noteMiss(direction:Int = 1, ?note:Note):Void
 	{
-		health -= 0.04;
-		if (combo > 5 && gf.animOffsets.exists('sad'))
+		var canMiss = false;
+
+		if(note == null)
+			canMiss = true;
+		else
 		{
-			gf.playAnim('sad');
+			if(note.mustPress)
+				canMiss = true;
 		}
-		combo = 0;
-		misses++;
-		totalNotes++;
 
-		if (FlxG.save.data.nohit)
-			health = 0;
-
-		songScore -= 10;
-
-		FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
-
-		boyfriend.stunned = true;
-
-		// get stunned for 5 seconds
-		new FlxTimer().start(5 / 60, function(tmr:FlxTimer)
+		if(canMiss)
 		{
-			boyfriend.stunned = false;
-		});
-
-		switch (direction)
-		{
-			case 0:
-				boyfriend.playAnim('singLEFTmiss', true);
-			case 1:
-				boyfriend.playAnim('singDOWNmiss', true);
-			case 2:
-				boyfriend.playAnim('singUPmiss', true);
-			case 3:
-				boyfriend.playAnim('singRIGHTmiss', true);
+			health -= 0.04;
+			if (combo > 5 && gf.animOffsets.exists('sad'))
+			{
+				gf.playAnim('sad');
+			}
+			combo = 0;
+			misses++;
+			totalNotes++;
+	
+			if (FlxG.save.data.nohit)
+				health = 0;
+	
+			songScore -= 10;
+	
+			FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
+	
+			boyfriend.stunned = true;
+	
+			// get stunned for 5 seconds
+			new FlxTimer().start(5 / 60, function(tmr:FlxTimer)
+			{
+				boyfriend.stunned = false;
+			});
+	
+			switch (direction)
+			{
+				case 0:
+					boyfriend.playAnim('singLEFTmiss', true);
+				case 1:
+					boyfriend.playAnim('singDOWNmiss', true);
+				case 2:
+					boyfriend.playAnim('singUPmiss', true);
+				case 3:
+					boyfriend.playAnim('singRIGHTmiss', true);
+			}
 		}
 	}
 
