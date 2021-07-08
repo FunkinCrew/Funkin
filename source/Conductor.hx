@@ -28,6 +28,8 @@ class Conductor
 	public static var safeZoneOffset:Float = Math.floor((safeFrames / 60) * 1000); // is calculated in create(), is safeFrames in milliseconds
 	public static var timeScale:Float = Conductor.safeZoneOffset / 166;
 
+	public static var lengthInSteps:Float = 0;
+
 	public static var bpmChangeMap:Array<BPMChangeEvent> = [];
 
 	public function new()
@@ -74,5 +76,9 @@ class Conductor
 
 		crochet = ((60 / bpm) * 1000);
 		stepCrochet = crochet / 4;
+
+		lengthInSteps = (FlxG.sound.music.length / stepCrochet);
+
+		trace("\nLength in in steps:  " + lengthInSteps);
 	}
 }
