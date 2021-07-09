@@ -360,6 +360,16 @@ class FreeplayState extends MusicBeatState
 		FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName), 0);
 		#end
 
+		var hmm;
+			try
+			{
+				hmm = songData.get(songs[curSelected].songName)[curDifficulty];
+				if (hmm != null)
+					Conductor.changeBPM(hmm.bpm);
+			}
+			catch(ex)
+			{}
+
 		var bullShit:Int = 0;
 
 		for (i in 0...iconArray.length)
