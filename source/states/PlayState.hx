@@ -1456,10 +1456,10 @@ class PlayState extends MusicBeatState
 								/* SPLASH THING */
 								if(!daNote.isSustainNote)
 								{
-									var splash = splashes.members[daNote.noteData % 4];
-									var numberRandomLolIGuessHeh = FlxG.random.int(1, 2);
-									add(splash);
-									splash.animation.play("chosen" + Std.string(numberRandomLolIGuessHeh));
+									//var splash = splashes.members[daNote.noteData % 4];
+									//var numberRandomLolIGuessHeh = FlxG.random.int(1, 2);
+									//add(splash);
+									//splash.animation.play("chosen" + Std.string(numberRandomLolIGuessHeh));
 								}
 								/* END OF SPLASH */
 
@@ -1648,10 +1648,10 @@ class PlayState extends MusicBeatState
 
 		if (daRating == "sick")
 		{
-			var splash = splashes.members[noteData + 4];
-			var numberRandomLolIGuessHeh = FlxG.random.int(1, 2);
-			add(splash);
-			splash.animation.play("chosen" + Std.string(numberRandomLolIGuessHeh));
+			//var splash = splashes.members[noteData + 4];
+			//var numberRandomLolIGuessHeh = FlxG.random.int(1, 2);
+			//add(splash);
+			//splash.animation.play("chosen" + Std.string(numberRandomLolIGuessHeh));
 		}
 
 		songScore += score;

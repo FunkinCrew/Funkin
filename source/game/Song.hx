@@ -47,7 +47,9 @@ class Song
 
 	public static function loadFromJson(jsonInput:String, ?folder:String):SwagSong
 	{
-		var rawJson = Assets.getText(Paths.json(folder.toLowerCase() + '/' + jsonInput.toLowerCase())).trim();
+		folder = "song data/" + folder + "/";
+
+		var rawJson = Assets.getText(Paths.json(folder.toLowerCase() + jsonInput.toLowerCase())).trim();
 
 		while (!rawJson.endsWith("}"))
 		{
@@ -57,7 +59,7 @@ class Song
 
 		// hardcoded because \_(:/)_/ dont feel like making more files just for this yet lol
 		if(folder.toLowerCase() == "ugh")
-			PlayState.stepsTexts = CoolUtil.coolTextFile(Paths.txt(folder.toLowerCase() + "/" + "steps"));
+			PlayState.stepsTexts = CoolUtil.coolTextFile(Paths.txt(folder.toLowerCase() + "steps"));
 
 		return parseJSONshit(rawJson);
 	}
