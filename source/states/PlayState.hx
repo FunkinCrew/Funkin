@@ -954,11 +954,11 @@ class PlayState extends MusicBeatState
 			splash.animation.addByPrefix("chosen1", "note impact 1 " + nameThing, 24, false);
 			splash.animation.addByPrefix("chosen2", "note impact 2 " + nameThing, 24, false);
 
-			splashes.add(splash);
+			//splashes.add(splash);
 			
-			splash.animation.finishCallback = function(name:String) {
-				remove(splash);
-			};
+			//splash.animation.finishCallback = function(name:String) {
+			//	remove(splash);
+			//};
 		}
 
 		for(babyArrow in enemyStrums)
@@ -985,11 +985,11 @@ class PlayState extends MusicBeatState
 			splash.animation.addByPrefix("chosen1", "note impact 1 " + nameThing, 24, false);
 			splash.animation.addByPrefix("chosen2", "note impact 2 " + nameThing, 24, false);
 
-			splashes.add(splash);
+			//splashes.add(splash);
 
-			splash.animation.finishCallback = function(name:String) {
-				remove(splash);
-			};
+			//splash.animation.finishCallback = function(name:String) {
+			//	remove(splash);
+			//};
 		}
 		
 	}
