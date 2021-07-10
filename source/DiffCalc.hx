@@ -18,6 +18,9 @@ class DiffCalc
 {
     public static var scale = 3 * 1.8;
 
+    public static var lastDiffHandOne:Array<Float> = [];
+    public static var lastDiffHandTwo:Array<Float> = [];
+
     public static function CalculateDiff(song:SwagSong, ?accuracy:Float = .93)
     {
         trace('calcuilafjwaf');
@@ -265,6 +268,10 @@ class DiffCalc
         
         if (accuracy > .965)
             accuracy = .965;
+
+        lastDiffHandOne = hand_diffOne;
+        lastDiffHandTwo = hand_diffTwo;
+
 
         return HelperFunctions.truncateFloat(chisel(accuracy,hand_diffOne,hand_diffTwo,point_npsOne,point_npsTwo,maxPoints),2);
     }

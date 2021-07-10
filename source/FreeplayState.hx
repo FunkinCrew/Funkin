@@ -21,16 +21,17 @@ using StringTools;
 
 class FreeplayState extends MusicBeatState
 {
-	var songs:Array<SongMetadata> = [];
+	public static var songs:Array<SongMetadata> = [];
 
 	var selector:FlxText;
-	var curSelected:Int = 0;
-	var curDifficulty:Int = 1;
+	public static var curSelected:Int = 0;
+	public static var curDifficulty:Int = 1;
 
 	var scoreText:FlxText;
 	var comboText:FlxText;
 	var diffText:FlxText;
 	var diffCalcText:FlxText;
+	var previewtext:FlxText;
 	var lerpScore:Int = 0;
 	var intendedScore:Int = 0;
 	var combo:String = '';
@@ -39,6 +40,8 @@ class FreeplayState extends MusicBeatState
 	private var curPlaying:Bool = false;
 
 	private var iconArray:Array<HealthIcon> = [];
+
+	public static var openedPreview = false;
 
 	public static var songData:Map<String,Array<SwagSong>> = [];
 
@@ -101,6 +104,8 @@ class FreeplayState extends MusicBeatState
 		isDebug = true;
 		#end
 
+		persistentUpdate = true;
+
 		// LOAD MUSIC
 
 		// LOAD CHARACTERS
@@ -146,6 +151,10 @@ class FreeplayState extends MusicBeatState
 		diffCalcText = new FlxText(scoreText.x, scoreText.y + 66, 0, "", 24);
 		diffCalcText.font = scoreText.font;
 		add(diffCalcText);
+
+		previewtext = new FlxText(scoreText.x, scoreText.y + 94, 0, "" + (KeyBinds.gamepad ? "X" : "SPACE") + " to preview", 24);
+		previewtext.font = scoreText.font;
+		//add(previewtext);
 
 		comboText = new FlxText(diffText.x + 100, diffText.y, 0, "", 24);
 		comboText.font = diffText.font;
@@ -205,7 +214,7 @@ class FreeplayState extends MusicBeatState
 				num++;
 		}
 	}
-
+	
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
@@ -223,14 +232,20 @@ class FreeplayState extends MusicBeatState
 		scoreText.text = "PERSONAL BEST:" + lerpScore;
 		comboText.text = combo + '\n';
 
+		if (FlxG.sound.music.volume > 0.8)
+		{
+			FlxG.sound.music.volume -= 0.5 * FlxG.elapsed;
+		}
+
 		var upP = FlxG.keys.justPressed.UP;
 		var downP = FlxG.keys.justPressed.DOWN;
-		var accepted = controls.ACCEPT;
+		var accepted = FlxG.keys.justPressed.ENTER;
 
 		var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
 
 		if (gamepad != null)
 		{
+
 			if (gamepad.justPressed.DPAD_UP)
 			{
 				changeSelection(-1);
@@ -247,6 +262,9 @@ class FreeplayState extends MusicBeatState
 			{
 				changeDiff(1);
 			}
+
+			//if (gamepad.justPressed.X && !openedPreview)
+				//openSubState(new DiffOverview());
 		}
 
 		if (upP)
@@ -257,6 +275,9 @@ class FreeplayState extends MusicBeatState
 		{
 			changeSelection(1);
 		}
+
+		//if (FlxG.keys.justPressed.SPACE && !openedPreview)
+			//openSubState(new DiffOverview());
 
 		if (FlxG.keys.justPressed.LEFT)
 			changeDiff(-1);
@@ -331,6 +352,7 @@ class FreeplayState extends MusicBeatState
 		// NGio.logEvent('Fresh');
 		FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 
+
 		curSelected += change;
 
 		if (curSelected < 0)
@@ -369,6 +391,12 @@ class FreeplayState extends MusicBeatState
 			}
 			catch(ex)
 			{}
+
+		if (openedPreview)
+		{
+			closeSubState();
+			openSubState(new DiffOverview());
+		}
 
 		var bullShit:Int = 0;
 
