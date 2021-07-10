@@ -9,6 +9,8 @@ All notable changes will be documented in this file.
 ### Fixed
 - dolor
 
+- quick mention: this commit will be the last one for a while since im gonna work on good mod support (which will take a while due to well... yea it's just hard, especially loading custom song files which im scared of figuring out since, i'll prob have to make a new haxelib for it)
+
 PLANS (priorities important to not important):
 - Add better mod support (as shown in my enhancement suggestions)
 - Give more information to the player about how they are doing on a song.
