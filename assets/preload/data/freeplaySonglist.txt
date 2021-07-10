@@ -17,8 +17,5 @@ Winter Horrorland:monster-christmas:5
 Senpai:senpai:6
 Roses:senpai-angry:6
 Thorns:spirit:6
-Ugh:tankman:7
-Guns:tankman:7
-Stress:tankman:7
 Test:bf-pixel:0:debug
 Ridge:dad:0:debug
