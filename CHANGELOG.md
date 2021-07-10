@@ -9,9 +9,12 @@ All notable changes will be documented in this file.
 ### Fixed
 - dolor
 
-PLANS:
+PLANS (priorities important to not important):
 - Remake the options menu (because its messy af)
 - Add better mod support (as shown in my enhancement suggestions)
+- Give more information to the player about how they are doing on a song.
+- Results screen
+- Playable character system? (possibly, i'm not sure yet)
 
 ## [0.2] - 7/7/2021
 ### Added
