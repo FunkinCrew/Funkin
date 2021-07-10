@@ -63,7 +63,8 @@ class Caching extends MusicBeatState
         text.y -= kadeLogo.height / 2 - 125;
         text.x -= 170;
         kadeLogo.setGraphicSize(Std.int(kadeLogo.width * 0.6));
-
+        kadeLogo.antialiasing = true;
+		
         kadeLogo.alpha = 0;
 
 		PlayerSettings.init();
