@@ -13,41 +13,36 @@ class Checkbox extends FlxSprite
 
         frames = Paths.getSparrowAtlas("optionsmenu/checkbox");
 
-        animation.addByPrefix("unchecked", "Check Box unselected", 24);
-        animation.addByPrefix("changed", "Check Box selecting animation", 24, false);
-        animation.addByPrefix("checked", "Check Box Selected Static", 24);
+        animation.addByPrefix("static", "Check Box unselected", 24, false);
+        animation.addByPrefix("checked", "Check Box selecting animation", 24, false);
 
-        animation.play("unchecked");
+        animation.play("static");
+
+        setGraphicSize(Std.int(width * 0.5));
+        updateHitbox();
 
         this.sprTracker = tracking;
         scrollFactor.set();
-
-        animation.finishCallback = function(name:String) {
-            if(name == "changed")
-            {
-                if(checked)
-                    animation.play("checked");
-                else
-                    animation.play("unchecked");
-            }
-        }
     }
 
     override function update(elapsed:Float)
     {
         super.update(elapsed);
 
+        switch (animation.curAnim.name)
+        {
+            case "checked":
+                offset.set(17, 70);
+            case "static":
+                offset.set();
+        }
+
         if (sprTracker != null)
-            setPosition(sprTracker.x - width - 5, sprTracker.y);
+            setPosition(sprTracker.x + sprTracker.width  + 5, sprTracker.y);
 
-        if (animation.curAnim.name == "unchecked" && checked)
-        {
-            animation.play("changed");
-        }
-
-        if (animation.curAnim.name == "checked" && !checked)
-        {
-            animation.play("changed", false, true);
-        }
+        if (animation.curAnim.name == "static" && checked)
+            animation.play("checked", true);
+        else if(animation.curAnim.name == "checked" && !checked)
+            animation.play("static");
     }
 }
