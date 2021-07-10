@@ -70,6 +70,7 @@ class LoadingState extends MusicBeatState
 
 				checkLibrary("shared");
 				checkLibrary("stages");
+				checkLibrary("songs");
 
 				if(PlayState.storyWeek < 0)
 					PlayState.storyWeek = 0;
