@@ -488,6 +488,7 @@ class Character extends FlxSprite
 
 			// WEEK 7 POG :OOOOOOOOO
 
+			/*
 			case 'tankman':
 				frames = Paths.getSparrowAtlas('characters/tankmanCaptain', 'shared');
 
@@ -584,6 +585,7 @@ class Character extends FlxSprite
 				loadOffsetFile("gf");
 
 				playAnim("danceRight");
+			*/
 		}
 
 		if(!debugMode)
@@ -614,10 +616,9 @@ class Character extends FlxSprite
 		}
 	}
 
-	// week 7 function :pog:
 	public function loadOffsetFile(characterName:String)
 	{
-		var offsets = CoolUtil.coolTextFile(Paths.file("images/characters/" + characterName + "Offsets.txt", "shared"));
+		var offsets = CoolUtil.coolTextFile(Paths.txt("characters/" + characterName + "/" + characterName + "Offsets.txt"));
 
 		for(x in 0...offsets.length)
 		{
