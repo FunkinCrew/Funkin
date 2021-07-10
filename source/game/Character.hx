@@ -618,7 +618,7 @@ class Character extends FlxSprite
 
 	public function loadOffsetFile(characterName:String)
 	{
-		var offsets = CoolUtil.coolTextFile(Paths.txt("characters/" + characterName + "/" + characterName + "Offsets.txt"));
+		var offsets = CoolUtil.coolTextFile(Paths.txt("characters/" + characterName + "/" + "offsets.txt"));
 
 		for(x in 0...offsets.length)
 		{
