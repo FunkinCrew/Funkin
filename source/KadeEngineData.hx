@@ -6,7 +6,10 @@ class KadeEngineData
 {
     public static function initSave()
     {
-        if (FlxG.save.data.newInput == null)
+        if (FlxG.save.data.weekUnlocked == null)
+			FlxG.save.data.weekUnlocked = 7;
+
+		if (FlxG.save.data.newInput == null)
 			FlxG.save.data.newInput = true;
 
 		if (FlxG.save.data.downscroll == null)
@@ -94,6 +97,9 @@ class KadeEngineData
 		if (FlxG.save.data.optimize == null)
 			FlxG.save.data.optimize = false;
 		
+		if (FlxG.save.data.cacheImages == null)
+			FlxG.save.data.cacheImages = false;
+
 		var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
 		
 		KeyBinds.gamepad = gamepad != null;

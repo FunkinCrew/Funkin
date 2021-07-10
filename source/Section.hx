@@ -2,7 +2,7 @@ package;
 
 typedef SwagSection =
 {
-	var sectionNotes:Array<Dynamic>;
+	var sectionNotes:Array<Array<Dynamic>>;
 	var lengthInSteps:Int;
 	var typeOfSection:Int;
 	var mustHitSection:Bool;
@@ -13,7 +13,7 @@ typedef SwagSection =
 
 class Section
 {
-	public var sectionNotes:Array<Dynamic> = [];
+	public var sectionNotes:Array<Array<Dynamic>> = [];
 
 	public var lengthInSteps:Int = 16;
 	public var typeOfSection:Int = 0;

@@ -57,6 +57,7 @@ class ResultsScreen extends FlxSubState
         music = new FlxSound().loadEmbedded(Paths.music('breakfast'), true, true);
 		music.volume = 0;
 		music.play(false, FlxG.random.int(0, Std.int(music.length / 2)));
+		FlxG.sound.list.add(music);
 
         background.alpha = 0;
 
@@ -74,7 +75,7 @@ class ResultsScreen extends FlxSubState
             text.text = "Week Cleared!";
         }
 
-        comboText = new FlxText(20,-75,0,'Judgements:\nSicks - ${PlayState.sicks}\nGoods - ${PlayState.goods}\nBads - ${PlayState.bads}\n\nCombo Breaks: ${(PlayState.isStoryMode ? PlayState.campaignMisses : PlayState.misses)}\nHighest Combo: ${PlayState.highestCombo + 1}\n\nScore: ${PlayState.instance.songScore}\nAccuracy: ${HelperFunctions.truncateFloat(PlayState.instance.accuracy,2)}%\n\n${Ratings.GenerateLetterRank(PlayState.instance.accuracy)}\n\nF1 - View replay\nF2 - Replay song
+        comboText = new FlxText(20,-75,0,'Judgements:\nSicks - ${PlayState.sicks}\nGoods - ${PlayState.goods}\nBads - ${PlayState.bads}\n\nCombo Breaks: ${(PlayState.isStoryMode ? PlayState.campaignMisses : PlayState.misses)}\nHighest Combo: ${PlayState.highestCombo + 1}\nScore: ${PlayState.instance.songScore}\nAccuracy: ${HelperFunctions.truncateFloat(PlayState.instance.accuracy,2)}%\n\n${Ratings.GenerateLetterRank(PlayState.instance.accuracy)}\n\nF1 - View replay\nF2 - Replay song
         ');
         comboText.size = 28;
         comboText.setBorderStyle(FlxTextBorderStyle.OUTLINE,FlxColor.BLACK,4,1);

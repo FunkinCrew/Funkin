@@ -30,26 +30,19 @@
 	 - `haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc`
 	 - `haxelib install actuate`
 	 - `haxelib git extension-webm https://github.com/KadeDev/extension-webm`
-	 - `lime rebuild extension-webm windows`
+	 - `lime rebuild extension-webm <ie. windows, macos, linux>`
 
 ### Windows-only dependencies (only for building *to* Windows. Building html5 on Windows does not require this)
 If you are planning to build for Windows, you also need to install **Visual Studio 2019**. While installing it, *don't click on any of the options to install workloads*. Instead, go to the **individual components** tab and choose the following:
 
 -   MSVC v142 - VS 2019 C++ x64/x86 build tools
+-   MSVC v141 - VS 2017 C++ x64/x86 build tools
 -   Windows SDK (10.0.17763.0)
 -   C++ Profiling tools
 -   C++ CMake tools for windows
 -   C++ ATL for v142 build tools (x86 & x64)
--   C++ MFC for v142 build tools (x86 & x64)
--   C++/CLI support for v142 build tools (14.21)
--   C++ Modules for v142 build tools (x64/x86)
--   Clang Compiler for Windows
--   Windows 10 SDK (10.0.17134.0)
--   Windows 10 SDK (10.0.16299.0)
--   MSVC v141 - VS 2017 C++ x64/x86 build tools
--   MSVC v140 - VS 2015 C++ build tools (v14.00)
 
-This will install about 22 GB of crap, but is necessary to build for Windows.
+This will install about 7 GB of crap, but is necessary to build for Windows.
 
 ### macOS-only dependencies (these are required for building on macOS at all, including html5.)
 If you are running macOS, you'll need to install Xcode. You can download it from the macOS App Store or from the [Xcode website](https://developer.apple.com/xcode/).
