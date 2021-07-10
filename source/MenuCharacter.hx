@@ -93,12 +93,14 @@ class MenuCharacter extends FlxSprite
 		if (character == 'gf' || character == 'spooky') {
 			danceLeft = !danceLeft;
 
-		if (danceLeft)
-			animation.play(character + "-left", true);
-		else
-			animation.play(character + "-right", true);
+			if (danceLeft)
+				animation.play(character + "-left", true);
+			else
+				animation.play(character + "-right", true);
 		} else {
 			//no spooky nor girlfriend so we do da normal animation
+			if (animation.name == "bfConfirm")
+				return;
 			animation.play(character, true);
 		}
 		if (LastFrame) {
