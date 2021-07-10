@@ -1,7 +1,6 @@
 package states;
 
 import ui.Option;
-import js.lib.webassembly.Global.ValueType;
 import ui.Checkbox;
 import flixel.group.FlxGroup;
 import debuggers.ChartingState;
