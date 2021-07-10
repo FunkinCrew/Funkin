@@ -1,6 +1,18 @@
 # Changelog
 All notable changes will be documented in this file.
 
+## [0.3] - ?/?/????
+### Added
+- Lorem
+### Changed
+- ipsum
+### Fixed
+- dolor
+
+PLANS:
+- Remake the options menu (because its messy af)
+- Add better mod support (as shown in my enhancement suggestions)
+
 ## [0.2] - 7/7/2021
 ### Added
 - A stage editor / stage viewer.
