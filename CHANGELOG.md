@@ -3,14 +3,13 @@ All notable changes will be documented in this file.
 
 ## [0.3] - ?/?/????
 ### Added
-- Lorem
+- Revamped options menu with checkboxes and other things.
 ### Changed
 - ipsum
 ### Fixed
 - dolor
 
 PLANS (priorities important to not important):
-- Remake the options menu (because its messy af)
 - Add better mod support (as shown in my enhancement suggestions)
 - Give more information to the player about how they are doing on a song.
 - Results screen
