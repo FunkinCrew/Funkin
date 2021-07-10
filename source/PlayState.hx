@@ -228,6 +228,9 @@ class PlayState extends MusicBeatState
 
 	private var executeModchart = false;
 
+	// Animation common suffixes
+	private var dataSuffix:Array<String> = ['LEFT', 'DOWN', 'UP', 'RIGHT'];
+
 	// API stuff
 	
 	public function addObject(object:FlxBasic) { add(object); }
@@ -2582,18 +2585,10 @@ class PlayState extends MusicBeatState
 							if (SONG.notes[Math.floor(curStep / 16)].altAnim)
 								altAnim = '-alt';
 						}
-	
-						switch (Math.abs(daNote.noteData))
-						{
-							case 2:
-								dad.playAnim('singUP' + altAnim, true);
-							case 3:
-								dad.playAnim('singRIGHT' + altAnim, true);
-							case 1:
-								dad.playAnim('singDOWN' + altAnim, true);
-							case 0:
-								dad.playAnim('singLEFT' + altAnim, true);
-						}
+						
+						// Accessing the animation name directly to play it
+						var singData:Int = Std.int(Math.abs(daNote.noteData));
+						dad.playAnim('sing' + dataSuffix[singData] + altAnim, true);
 						
 						if (FlxG.save.data.cpuStrums)
 						{
@@ -3530,17 +3525,8 @@ class PlayState extends MusicBeatState
 			// FlxG.sound.play(Paths.sound('missnote1'), 1, false);
 			// FlxG.log.add('played imss note');
 
-			switch (direction)
-			{
-				case 0:
-					boyfriend.playAnim('singLEFTmiss', true);
-				case 1:
-					boyfriend.playAnim('singDOWNmiss', true);
-				case 2:
-					boyfriend.playAnim('singUPmiss', true);
-				case 3:
-					boyfriend.playAnim('singRIGHTmiss', true);
-			}
+			// Hole switch statement replaced with a single line :)
+			boyfriend.playAnim('sing' + dataSuffix[direction] + 'miss', true);
 
 			#if windows
 			if (luaModchart != null)
@@ -3688,19 +3674,9 @@ class PlayState extends MusicBeatState
 					}
 					else
 						totalNotesHit += 1;
-	
-
-					switch (note.noteData)
-					{
-						case 2:
-							boyfriend.playAnim('singUP', true);
-						case 3:
-							boyfriend.playAnim('singRIGHT', true);
-						case 1:
-							boyfriend.playAnim('singDOWN', true);
-						case 0:
-							boyfriend.playAnim('singLEFT', true);
-					}
+					
+					var singData:Int = Std.int(note.noteData);
+					boyfriend.playAnim('sing' + dataSuffix[singData], true);
 		
 					#if windows
 					if (luaModchart != null)
