@@ -1556,6 +1556,12 @@ class PlayState extends MusicBeatState
 
 	function endSong():Void
 	{
+		instBytes.clear();
+		voicesBytes.clear();
+
+		instBytes = null;
+		voicesBytes = null;
+		
 		canPause = false;
 		FlxG.sound.music.volume = 0;
 		vocals.volume = 0;

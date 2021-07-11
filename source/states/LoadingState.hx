@@ -204,7 +204,7 @@ class LoadingState extends MusicBeatState
 			&& (!PlayState.SONG.needsVoices || isSoundLoaded(getVocalPath(), true))
 			&& isLibraryLoaded("shared");
 		
-		if (!loaded)
+		if (!loaded && PlayState.instBytes == null)
 			return new LoadingState(target, stopMusic);
 		//#end
 		if (stopMusic && FlxG.sound.music != null)
