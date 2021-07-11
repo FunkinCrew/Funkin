@@ -1,6 +1,7 @@
 package;
 
 import flixel.FlxCamera;
+import flixel.FlxObject;
 import flixel.addons.ui.FlxUIText;
 import haxe.zip.Writer;
 import Conductor.BPMChangeEvent;
@@ -98,6 +99,8 @@ class ChartingState extends MusicBeatState
 
 	public var snapText:FlxText;
 
+	var camFollow:FlxObject;
+
 	override function create()
 	{
 		curSection = lastSection;
@@ -121,8 +124,7 @@ class ChartingState extends MusicBeatState
 			};
 		}
 
-		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * 8, GRID_SIZE * 16);
-		add(gridBG);
+		addGrid(1);
 
 		var blackBorder:FlxSprite = new FlxSprite(60,10).makeGraphic(120,100,FlxColor.BLACK);
 		blackBorder.scrollFactor.set();
@@ -171,7 +173,7 @@ class ChartingState extends MusicBeatState
 		bpmTxt.scrollFactor.set();
 		add(bpmTxt);
 
-		strumLine = new FlxSprite(0, 50).makeGraphic(Std.int(FlxG.width / 2), 4);
+		strumLine = new FlxSprite(0, 50).makeGraphic(Std.int(GRID_SIZE * 8), 4);
 		add(strumLine);
 
 		dummyArrow = new FlxSprite().makeGraphic(GRID_SIZE, GRID_SIZE);
@@ -187,7 +189,7 @@ class ChartingState extends MusicBeatState
 		UI_box = new FlxUITabMenu(null, tabs, true);
 
 		UI_box.resize(300, 400);
-		UI_box.x = FlxG.width / 2;
+		UI_box.x = FlxG.width / 2 + 40;
 		UI_box.y = 20;
 		add(UI_box);
 
@@ -206,6 +208,12 @@ class ChartingState extends MusicBeatState
 		super.create();
 	}
 
+	function addGrid(?divisions:Float = 1)
+	{
+		remove(gridBG);
+		gridBG = FlxGridOverlay.create(GRID_SIZE, Std.int(GRID_SIZE / divisions), GRID_SIZE * 8, GRID_SIZE * 16);
+		add(gridBG);
+	}
 	function addSongUI():Void
 	{
 		var UI_songTitle = new FlxUIInputText(10, 10, 70, _song.song, 8);
@@ -397,8 +405,11 @@ class ChartingState extends MusicBeatState
 		UI_box.addGroup(tab_group_song);
 		UI_box.addGroup(tab_group_assets);
 		UI_box.scrollFactor.set();
+		
+		camFollow = new FlxObject(280, 0, 1, 1);
+		add(camFollow);
 
-		FlxG.camera.follow(strumLine);
+		FlxG.camera.follow(camFollow);
 	}
 
 	var stepperLength:FlxUINumericStepper;
@@ -717,7 +728,7 @@ class ChartingState extends MusicBeatState
 		}
 
 		strumLine.y = getYfromStrum((Conductor.songPosition - sectionStartTime()) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps));
-		
+		camFollow.y = strumLine.y;
 
 
 		if (playClaps)
@@ -1197,11 +1208,9 @@ class ChartingState extends MusicBeatState
 			stepperSusLength.value = curSelectedNote[2];
 	}
 
-	function updateGrid():Void
+	function updateGrid(?divisions:Float = 1):Void
 	{
-		remove(gridBG);
-		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * 8, GRID_SIZE * 16);
-        add(gridBG);
+		addGrid(divisions);
 
 		remove(gridBlackLine);
 		gridBlackLine = new FlxSprite(gridBG.x + gridBG.width / 2).makeGraphic(2, Std.int(gridBG.height), FlxColor.BLACK);
