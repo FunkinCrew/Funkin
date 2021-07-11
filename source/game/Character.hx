@@ -385,7 +385,10 @@ class Character extends FlxSprite
 		var offsets:Array<String>;
 
 		#if sys
-		offsets = File.getContent(Sys.getCwd() + "assets/data/" + "character data/" + characterName + "/" + "offsets.txt").trim().split('\n');
+		offsets = CoolUtil.coolTextFileFromSystem("data/character data/" + characterName + "/" + "offsets");
+
+		// og solution (if debugging needed lol)
+		//offsets = File.getContent(Sys.getCwd() + "assets/data/" + "character data/" + characterName + "/" + "offsets.txt").trim().split('\n');
 		#else
 		offsets = CoolUtil.coolTextFile(Paths.txt("character data/" + characterName + "/" + "offsets.txt"));
 		#end

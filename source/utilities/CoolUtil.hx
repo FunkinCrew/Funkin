@@ -1,5 +1,8 @@
 package utilities;
 
+#if sys
+import sys.io.File;
+#end
 import states.PlayState;
 import lime.utils.Assets;
 
@@ -25,6 +28,20 @@ class CoolUtil
 
 		return daList;
 	}
+
+	#if sys
+	public static function coolTextFileFromSystem(path:String):Array<String>
+	{
+		var daList:Array<String> = File.getContent(Sys.getCwd() + "assets/" + path + ".txt").trim().split('\n');
+
+		for (i in 0...daList.length)
+		{
+			daList[i] = daList[i].trim();
+		}
+
+		return daList;
+	}
+	#end
 
 	public static function numberArray(max:Int, ?min = 0):Array<Int>
 	{
