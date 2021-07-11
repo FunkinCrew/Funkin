@@ -16,7 +16,7 @@ using StringTools;
 class Note extends FlxSprite
 {
 	public var strumTime:Float = 0;
-
+	public var baseStrum:Float = 0;
 	public var mustPress:Bool = false;
 	public var noteData:Int = 0;
 	public var rawNoteData:Int = 0;
@@ -40,6 +40,13 @@ class Note extends FlxSprite
 
 	public var dataColor:Array<String> = ['purple', 'blue', 'green', 'red'];
 
+	public var isParent:Bool = false;
+	public var parent:Note = null;
+	public var spotInLine:Int = 0;
+	public var sustainActive:Bool = true;
+
+	public var children:Array<Note> = [];
+
 	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inCharter:Bool = false)
 	{
 		super();
@@ -58,6 +65,7 @@ class Note extends FlxSprite
 		else 
 			this.strumTime = Math.round(strumTime);
 
+
 		if (this.strumTime < 0 )
 			this.strumTime = 0;
 
@@ -68,39 +76,53 @@ class Note extends FlxSprite
 		//defaults if no noteStyle was found in chart
 		var noteTypeCheck:String = 'normal';
 
-		if (PlayState.SONG.noteStyle == null) {
-			switch(PlayState.storyWeek) {case 6: noteTypeCheck = 'pixel';}
-		} else {noteTypeCheck = PlayState.SONG.noteStyle;}
-
-		switch (noteTypeCheck)
+		if (!inCharter)
 		{
-			case 'pixel':
-				loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels', 'week6'), true, 17, 17);
-				if (isSustainNote)
-					loadGraphic(Paths.image('weeb/pixelUI/arrowEnds', 'week6'), true, 7, 6);
+			frames = Paths.getSparrowAtlas('NOTE_assets');
 
-				for (i in 0...4)
-				{
-					animation.add(dataColor[i] + 'Scroll', [i + 4]); // Normal notes
-					animation.add(dataColor[i] + 'hold', [i]); // Holds
-					animation.add(dataColor[i] + 'holdend', [i + 4]); // Tails
-				}
+			for (i in 0...4)
+			{
+				animation.addByPrefix(dataColor[i] + 'Scroll', dataColor[i] + ' alone'); // Normal notes
+				animation.addByPrefix(dataColor[i] + 'hold', dataColor[i] + ' hold'); // Hold
+				animation.addByPrefix(dataColor[i] + 'holdend', dataColor[i] + ' tail'); // Tails
+			}
 
-				setGraphicSize(Std.int(width * PlayState.daPixelZoom));
-				updateHitbox();
-			default:
-				frames = Paths.getSparrowAtlas('NOTE_assets');
+			setGraphicSize(Std.int(width * 0.7));
+			updateHitbox();
+			antialiasing = true;
+		}
+		else
+		{
+			switch (noteTypeCheck)
+			{
+				case 'pixel':
+					loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels', 'week6'), true, 17, 17);
+					if (isSustainNote)
+						loadGraphic(Paths.image('weeb/pixelUI/arrowEnds', 'week6'), true, 7, 6);
 
-				for (i in 0...4)
-				{
-					animation.addByPrefix(dataColor[i] + 'Scroll', dataColor[i] + ' alone'); // Normal notes
-					animation.addByPrefix(dataColor[i] + 'hold', dataColor[i] + ' hold'); // Hold
-					animation.addByPrefix(dataColor[i] + 'holdend', dataColor[i] + ' tail'); // Tails
-				}
+					for (i in 0...4)
+					{
+						animation.add(dataColor[i] + 'Scroll', [i + 4]); // Normal notes
+						animation.add(dataColor[i] + 'hold', [i]); // Holds
+						animation.add(dataColor[i] + 'holdend', [i + 4]); // Tails
+					}
 
-				setGraphicSize(Std.int(width * 0.7));
-				updateHitbox();
-				antialiasing = true;
+					setGraphicSize(Std.int(width * PlayState.daPixelZoom));
+					updateHitbox();
+				default:
+					frames = Paths.getSparrowAtlas('NOTE_assets');
+
+					for (i in 0...4)
+					{
+						animation.addByPrefix(dataColor[i] + 'Scroll', dataColor[i] + ' alone'); // Normal notes
+						animation.addByPrefix(dataColor[i] + 'hold', dataColor[i] + ' hold'); // Hold
+						animation.addByPrefix(dataColor[i] + 'holdend', dataColor[i] + ' tail'); // Tails
+					}
+
+					setGraphicSize(Std.int(width * 0.7));
+					updateHitbox();
+					antialiasing = true;
+			}
 		}
 
 		x += swagWidth * noteData;
@@ -131,6 +153,9 @@ class Note extends FlxSprite
 			if (noteTypeCheck == 'pixel')
 				x += 30;
 
+			if (inCharter)
+				x += 30;
+
 			if (prevNote.isSustainNote)
 			{
 				prevNote.animation.play(dataColor[prevNote.noteData] + 'hold');
@@ -148,6 +173,10 @@ class Note extends FlxSprite
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+
+		if (!modifiedByLua)
+			if (!sustainActive)
+				alpha = 0.4;
 
 		if (mustPress)
 		{
