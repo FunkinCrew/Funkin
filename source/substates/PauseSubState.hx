@@ -1,5 +1,6 @@
 package substates;
 
+import states.LoadingState;
 import states.PlayState;
 import ui.Alphabet;
 import utilities.Controls.Control;
@@ -112,7 +113,7 @@ class PauseSubState extends MusicBeatSubstate
 				case "Restart Song":
 					FlxG.resetState();
 				case "Exit to menu":
-					FlxG.switchState(new MainMenuState());
+					LoadingState.loadAndSwitchState(new MainMenuState(), true);
 			}
 		}
 
