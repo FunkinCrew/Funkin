@@ -2787,7 +2787,6 @@ class PlayState extends MusicBeatState
 					if (daNote.sustainActive)
 						daNote.alpha = playerStrums.members[Math.floor(Math.abs(daNote.noteData))].alpha;
 					daNote.modAngle = playerStrums.members[Math.floor(Math.abs(daNote.noteData))].angle;
-					daNote.alpha = playerStrums.members[Math.floor(Math.abs(daNote.noteData))].alpha;
 				}
 				else if (!daNote.wasGoodHit && !daNote.modifiedByLua)
 				{
@@ -2798,7 +2797,6 @@ class PlayState extends MusicBeatState
 					if (daNote.sustainActive)
 						daNote.alpha = strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].alpha;
 					daNote.modAngle = strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].angle;
-					daNote.alpha = strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].alpha;
 				}
 
 				if (daNote.isSustainNote)
