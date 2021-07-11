@@ -1546,6 +1546,9 @@ class PlayState extends MusicBeatState
 		if (dataNotes.length != 0)
 		{
 			var coolNote = dataNotes[0];
+			
+			if (!coolNote.sustainActive)
+				return;
 
 			if (dataNotes.length > 1) // stacked notes or really close ones
 			{
@@ -2842,7 +2845,7 @@ class PlayState extends MusicBeatState
 								if (!daNote.isSustainNote)
 									health -= 0.075;
 								vocals.volume = 0;
-								if (theFunne && daNote.sustainActive)
+								if (theFunne && !daNote.isSustainNote)
 									noteMiss(daNote.noteData, daNote);
 							}
 						}
@@ -2851,7 +2854,7 @@ class PlayState extends MusicBeatState
 							if (!daNote.isSustainNote)
 								health -= 0.075;
 							vocals.volume = 0;
-							if (theFunne && daNote.sustainActive)
+							if (theFunne && !daNote.isSustainNote)
 								noteMiss(daNote.noteData, daNote);
 						}
 					}
@@ -2861,9 +2864,7 @@ class PlayState extends MusicBeatState
 						health -= 0.2; // give a health punishment for failing a LN
 						trace("hold fell over at " + daNote.spotInLine);
 						for(i in daNote.parent.children)
-						{
 							i.sustainActive = false;
-						}
 					}
 
 					daNote.visible = false;
@@ -3095,7 +3096,7 @@ class PlayState extends MusicBeatState
 				score = -300;
 				combo = 0;
 				misses++;
-				health -= 0.35;
+				health -= 0.45;
 				ss = false;
 				shits++;
 				if (FlxG.save.data.accuracyMod == 0)
@@ -3103,7 +3104,7 @@ class PlayState extends MusicBeatState
 			case 'bad':
 				daRating = 'bad';
 				score = 0;
-				health -= 0.1;
+				health -= 0.2;
 				ss = false;
 				bads++;
 				if (FlxG.save.data.accuracyMod == 0)
@@ -3114,12 +3115,12 @@ class PlayState extends MusicBeatState
 				ss = false;
 				goods++;
 				if (health < 2)
-					health += 0.02;
+					health += 0.001;
 				if (FlxG.save.data.accuracyMod == 0)
 					totalNotesHit += 0.75;
 			case 'sick':
 				if (health < 2)
-					health += 0.15;
+					health += 0.02;
 				if (FlxG.save.data.accuracyMod == 0)
 					totalNotesHit += 1;
 				sicks++;
@@ -3415,7 +3416,10 @@ class PlayState extends MusicBeatState
 			notes.forEachAlive(function(daNote:Note)
 			{
 				if (daNote.isSustainNote && daNote.canBeHit && daNote.mustPress && holdArray[daNote.noteData] && daNote.sustainActive)
+				{
+					trace(daNote.sustainActive);
 					goodNoteHit(daNote);
+				}
 			});
 		}
 
