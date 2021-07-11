@@ -71,9 +71,9 @@ class BoolOption extends Option
 		add(Checkbox_Object);
 	}
 
-	public function GetObjectValue():Dynamic
+	public function GetObjectValue():Bool
 	{
-		var Value:Dynamic = false;
+		var Value:Bool = false;
 
 		//    MAKE THIS A BETTER SYSTEM LATER!!!    //
 		// (MAYBE SIMILAR TO HOW WEEK SCORES WORK?) //
@@ -100,8 +100,10 @@ class BoolOption extends Option
 				Value = FlxG.save.data.msText;
 			case "freeplayMusic":
 				Value = FlxG.save.data.freeplayMusic;
-			case "muted":
-				Value = FlxG.sound.muted;
+			case "fpsCounter":
+				Value = FlxG.save.data.fpsCounter;
+			case "memoryCounter":
+				Value = FlxG.save.data.memoryCounter;
 		}
 
 		return Value;
@@ -142,8 +144,12 @@ class BoolOption extends Option
 				FlxG.save.data.msText = !Option_Checked;
 			case "freeplayMusic":
 				FlxG.save.data.freeplayMusic = !Option_Checked;
-			case "muted":
-				FlxG.sound.muted = !Option_Checked;
+			case "fpsCounter":
+				FlxG.save.data.fpsCounter = !Option_Checked;
+				Main.toggleFPS(FlxG.save.data.fpsCounter);
+			case "memoryCounter":
+				FlxG.save.data.memoryCounter = !Option_Checked;
+				Main.toggleMem(FlxG.save.data.memoryCounter);
 		}
 
         if(Option_Value != "muted")

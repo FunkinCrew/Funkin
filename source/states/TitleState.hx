@@ -93,6 +93,16 @@ class TitleState extends MusicBeatState
 		{
 			FlxG.save.data.enemyGlow = true;
 		}
+
+		if (FlxG.save.data.fpsCounter == null)
+		{
+			FlxG.save.data.fpsCounter = true;
+		}
+
+		if (FlxG.save.data.memoryCounter == null)
+		{
+			FlxG.save.data.memoryCounter = true;
+		}
 		
 		#if !debug
 		FlxG.save.data.weekUnlocked = StoryMenuState.weekUnlocked;
@@ -173,6 +183,9 @@ class TitleState extends MusicBeatState
 			}
 
 			FlxG.sound.music.fadeIn(4, 0, 0.7);
+
+			Main.toggleFPS(FlxG.save.data.fpsCounter);
+			Main.toggleMem(FlxG.save.data.memoryCounter);
 		}
 
 		version = "Leather's Funkin' Engine" + " Github Development v" + Application.current.meta.get('version');

@@ -50,7 +50,9 @@ class OptionsMenu extends MusicBeatState
 			"Graphics",
 			new PageOption("Back", 0, "Categories"),
 			new BoolOption("Enemy Arrow Glow", "enemyGlow", FlxG.save.data.enemyGlow, 1),
-			new BoolOption("Note Accuracy Text", "msText", FlxG.save.data.msText, 2)
+			new BoolOption("Note Accuracy Text", "msText", FlxG.save.data.msText, 2),
+			new BoolOption("FPS Counter", "fpsCounter", FlxG.save.data.fpsCounter, 3),
+			new BoolOption("Memory Counter", "memoryCounter", FlxG.save.data.memoryCounter, 4)
 		],
 		[
 			"Tools",
