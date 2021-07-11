@@ -1,5 +1,8 @@
 package game;
 
+#if sys
+import sys.io.File;
+#end
 import utilities.CoolUtil;
 import states.PlayState;
 import flixel.FlxSprite;
@@ -379,7 +382,13 @@ class Character extends FlxSprite
 
 	public function loadOffsetFile(characterName:String)
 	{
-		var offsets = CoolUtil.coolTextFile(Paths.txt("character data/" + characterName + "/" + "offsets.txt"));
+		var offsets:Array<String>;
+
+		#if sys
+		offsets = File.getContent(Sys.getCwd() + "assets/data/" + "character data/" + characterName + "/" + "offsets.txt").trim().split('\n');
+		#else
+		offsets = CoolUtil.coolTextFile(Paths.txt("character data/" + characterName + "/" + "offsets.txt"));
+		#end
 
 		for(x in 0...offsets.length)
 		{
