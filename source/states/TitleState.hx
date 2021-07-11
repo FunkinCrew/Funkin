@@ -1,5 +1,6 @@
 package states;
 
+import utilities.MusicUtilities;
 import utilities.CoolUtil;
 import game.Conductor;
 import game.Highscore;
@@ -140,6 +141,11 @@ class TitleState extends MusicBeatState
 
 	public static var version:String = "v0.0";
 
+	public static function playTitleMusic()
+	{
+		FlxG.sound.playMusic(MusicUtilities.GetTitleMusicPath(), 0);
+	}
+
 	function startIntro()
 	{
 		if (!initialized)
@@ -168,16 +174,16 @@ class TitleState extends MusicBeatState
 
 			if (FlxG.save.data.oldTitle)
 			{
-				FlxG.sound.playMusic(Paths.music('title'), 0);
+				playTitleMusic();
 			}
 			else {
 				if (Date.now().getDay() == 5 && Date.now().getHours() >= 18 || FlxG.save.data.nightMusic)
 				{
-					FlxG.sound.playMusic(Paths.music('freakyNightMenu'), 0);
+					playTitleMusic();
 					Conductor.changeBPM(117);
 				} else
 				{
-					FlxG.sound.playMusic(Paths.music('freakyMenu'), 0);
+					playTitleMusic();
 					Conductor.changeBPM(102);
 				}
 			}

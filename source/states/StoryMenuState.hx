@@ -82,21 +82,13 @@ class StoryMenuState extends MusicBeatState
 		if(FlxG.save.data.weekProgression != null)
 			weekProgression = FlxG.save.data.weekProgression;
 
-		if(FlxG.save.data.unlimitedFPS)
-		{
-			openfl.Lib.current.stage.frameRate = 1000;
-		} else
-		{
-			openfl.Lib.current.stage.frameRate = 120;
-		}
-
 		transIn = FlxTransitionableState.defaultTransIn;
 		transOut = FlxTransitionableState.defaultTransOut;
 
 		if (FlxG.sound.music != null)
 		{
 			if (!FlxG.sound.music.playing)
-				FlxG.sound.playMusic(Paths.music('freakyMenu'));
+				TitleState.playTitleMusic();
 		}
 
 		persistentUpdate = persistentDraw = true;
