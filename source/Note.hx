@@ -17,6 +17,9 @@ class Note extends FlxSprite
 {
 	public var strumTime:Float = 0;
 	public var baseStrum:Float = 0;
+	
+	public var rStrumTime:Float = 0;
+
 	public var mustPress:Bool = false;
 	public var noteData:Int = 0;
 	public var rawNoteData:Int = 0;
@@ -27,6 +30,8 @@ class Note extends FlxSprite
 	public var modifiedByLua:Bool = false;
 	public var sustainLength:Float = 0;
 	public var isSustainNote:Bool = false;
+	public var originColor:Int = 0; // The sustain note's original note's color
+	public var noteSection:Int = 0;
 
 	public var noteScore:Float = 1;
 
@@ -38,7 +43,12 @@ class Note extends FlxSprite
 
 	public var rating:String = "shit";
 
+	public var modAngle:Float = 0; // The angle set by modcharts
+	public var localAngle:Float = 0; // The angle to be edited inside Note.hx
+
 	public var dataColor:Array<String> = ['purple', 'blue', 'green', 'red'];
+	public var quantityColor:Array<Int> = [RED_NOTE, 2, BLUE_NOTE, 2, PURP_NOTE, 2, BLUE_NOTE, 2];
+	public var arrowAngles:Array<Int> = [180, 90, 270, 0];
 
 	public var isParent:Bool = false;
 	public var parent:Note = null;
@@ -60,10 +70,17 @@ class Note extends FlxSprite
 		x += 50;
 		// MAKE SURE ITS DEFINITELY OFF SCREEN?
 		y -= 2000;
+
 		if (inCharter)
+		{
 			this.strumTime = strumTime;
-		else 
+			rStrumTime = strumTime;
+		}
+		else
+		{
 			this.strumTime = Math.round(strumTime);
+			rStrumTime = strumTime - (FlxG.save.data.offset + PlayState.songOffset);
+		}
 
 
 		if (this.strumTime < 0 )
@@ -127,9 +144,27 @@ class Note extends FlxSprite
 
 		x += swagWidth * noteData;
 		animation.play(dataColor[noteData] + 'Scroll');
+		originColor = noteData; // The note's origin color will be checked by its sustain notes
 
-		// trace(prevNote);
+		if (FlxG.save.data.stepMania && !isSustainNote)
+		{
+			var strumCheck:Float = rStrumTime;
 
+			// I give up on fluctuating bpms. something has to be subtracted from strumCheck to make them look right but idk what.
+			// I'd use the note's section's start time but neither the note's section nor its start time are accessible by themselves
+			//strumCheck -= ???
+
+			var ind:Int = Std.int(Math.round(strumCheck / (Conductor.stepCrochet / 2)));
+
+			var col:Int = 0;
+			col = quantityColor[ind % 8]; // Set the color depending on the beats
+
+			animation.play(dataColor[col] + 'Scroll');
+			localAngle -= arrowAngles[col];
+			localAngle += arrowAngles[noteData];
+			originColor = col;
+		}
+		
 		// we make sure its downscroll and its a SUSTAIN NOTE (aka a trail, not a note)
 		// and flip it so it doesn't look weird.
 		// THIS DOESN'T FUCKING FLIP THE NOTE, CONTRIBUTERS DON'T JUST COMMENT THIS OUT JESUS
@@ -144,8 +179,9 @@ class Note extends FlxSprite
 
 			x += width / 2;
 
-			animation.play(dataColor[noteData] + 'holdend');
+			originColor = prevNote.originColor; 
 
+			animation.play(dataColor[originColor] + 'holdend'); // This works both for normal colors and quantization colors
 			updateHitbox();
 
 			x -= width / 2;
@@ -158,7 +194,7 @@ class Note extends FlxSprite
 
 			if (prevNote.isSustainNote)
 			{
-				prevNote.animation.play(dataColor[prevNote.noteData] + 'hold');
+				prevNote.animation.play(dataColor[prevNote.originColor] + 'hold');
 
 				if(FlxG.save.data.scrollSpeed != 1)
 					prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.5 * FlxG.save.data.scrollSpeed;
@@ -173,6 +209,7 @@ class Note extends FlxSprite
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+		angle = modAngle + localAngle;
 
 		if (!modifiedByLua)
 			if (!sustainActive)
