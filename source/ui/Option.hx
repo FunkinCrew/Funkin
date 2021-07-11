@@ -104,6 +104,8 @@ class BoolOption extends Option
 				Value = FlxG.save.data.fpsCounter;
 			case "memoryCounter":
 				Value = FlxG.save.data.memoryCounter;
+			case "nightMusic":
+				Value = FlxG.save.data.nightMusic;
 		}
 
 		return Value;
@@ -150,6 +152,8 @@ class BoolOption extends Option
 			case "memoryCounter":
 				FlxG.save.data.memoryCounter = !Option_Checked;
 				Main.toggleMem(FlxG.save.data.memoryCounter);
+			case "nightMusic":
+				FlxG.save.data.nightMusic = !Option_Checked;
 		}
 
         if(Option_Value != "muted")
