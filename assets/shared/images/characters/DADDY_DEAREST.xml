@@ -10,6 +10,7 @@
 	<SubTexture name="Dad Sing Note DOWN0005" x="1839" y="0" width="462" height="735" frameX="-4" frameY="0" frameWidth="470" frameHeight="735"/>
 	<SubTexture name="Dad Sing Note DOWN0006" x="1839" y="0" width="462" height="735" frameX="-4" frameY="0" frameWidth="470" frameHeight="735"/>
 	<SubTexture name="Dad Sing Note LEFT0000" x="843" y="793" width="370" height="777"/>
+	<SubTexture name="Dad Sing Note LEFT0001" x="2359" y="860" width="381" height="772"/>
 	<SubTexture name="Dad Sing Note RIGHT0000" x="0" y="0" width="465" height="792" frameX="0" frameY="-1" frameWidth="465" frameHeight="793"/>
 	<SubTexture name="Dad Sing Note RIGHT0001" x="0" y="0" width="465" height="792" frameX="0" frameY="-1" frameWidth="465" frameHeight="793"/>
 	<SubTexture name="Dad Sing Note RIGHT0002" x="465" y="0" width="452" height="793" frameX="0" frameY="0" frameWidth="465" frameHeight="793"/>
