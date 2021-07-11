@@ -323,6 +323,9 @@ class StoryMenuState extends MusicBeatState
 			FlxG.switchState(new MainMenuState());
 		}
 
+		if (FlxG.sound.music != null)
+			Conductor.songPosition = FlxG.sound.music.time;
+
 		super.update(elapsed);
 	}
 
@@ -473,5 +476,14 @@ class StoryMenuState extends MusicBeatState
 
 		FlxG.save.data.weekUnlocked = weekUnlocked.length - 1;
 		FlxG.save.flush();
+	}
+
+	override function beatHit()
+	{
+		super.beatHit();
+
+		grpWeekCharacters.members[0].bopHead();
+		grpWeekCharacters.members[1].bopHead();
+		grpWeekCharacters.members[2].bopHead();
 	}
 }
