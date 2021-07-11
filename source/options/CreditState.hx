@@ -68,21 +68,23 @@ class CreditState extends MusicBeatState{
 		changeSelection();
 
 		var noticebg = new FlxSprite(0, FlxG.height - 56).makeGraphic(FlxG.width, 30, FlxColor.BLACK);
-		noticebg.alpha = 0.25;
+		noticebg.alpha = 0.5;
 
 
 		notice = new FlxText(0, 0, 0,"", 24);
 
-		//notice.x = (FlxG.width / 2) - (notice.width / 2);
+		notice.x = (FlxG.width / 2) - (notice.width / 2);
 		notice.screenCenter();
 		notice.y = FlxG.height - 56;
-		notice.alpha = 0.6;
+		notice.alpha = 0.8;
 		add(noticebg);
 		add(notice);
 
 		#if mobileC
-		addVirtualPad(FULL, A_B);
+		addVirtualPad(UP_DOWN, A_B);
 		#end
+
+		FlxG.sound.playMusic(Paths.inst('test'), 0);
 
 		super.create();
 	}
@@ -125,48 +127,50 @@ class CreditState extends MusicBeatState{
 			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
 		}
 
-		switch (songs[curSelected].songName.toLowerCase())
+		switch (curSelected)
 		{
-			case 'FNF Android Creator':
+			case 0:
 				bg.color = FlxColor.fromRGB(255, 255, 0);
 				notice.text = "luckydog";
-			case 'V2.8 Coder':
+			case 1:
 				bg.color = FlxColor.fromRGB(0, 255, 64);
 				notice.text = "zackdroid";
-			case 'BetaTester1':
+			case 2:
 				bg.color = FlxColor.fromRGB(255, 165, 31);
 				notice.text = "goldie";
-			case 'BetaTester2':
+			case 3:
 				bg.color = FlxColor.fromRGB(255, 0, 204);
 				notice.text = "schepka";
-			case 'Icon Artist':
+			case 4:
 				bg.color = FlxColor.fromRGB(255, 0, 0);
 				notice.text = "idioticlucas";
-			case 'Icon Set 2':
+			case 5:
 				bg.color = FlxColor.fromRGB(255, 149, 0);
 				notice.text = "maskedpump";
 			/*case 'Logo Artist':
 				bg.color = FlxColor.fromRGB(128, 255, 0);
 				notice.text = "aarontal";*/
-			case 'GF Animator':
+			case 6:
 				bg.color = FlxColor.fromRGB(255, 0, 98);
 				notice.text = "markmemarnie";
-			case 'Builder':
+			case 8:
 				bg.color = FlxColor.fromRGB(0, 238, 255);
 				notice.text = "peppy";
-			case 'Save help + builder':
+			case 9:
 				bg.color = FlxColor.fromRGB(170, 0, 255);
 				notice.text = "klavier";
-			case 'NoteSplash + tankroll':
+			case 10:
 				bg.color = FlxColor.fromRGB(255, 170, 0);
 				notice.text = "gamerbros";
-			case 'Funkin Crew':
+			case 11:
 				bg.color = FlxColor.fromRGB(0, 145, 255);
 				notice.text = "Ninja, arcade, kawaii, sk8er";
-			case 'Freeplay Bumpin':
+			case 7:
 				bg.color = FlxColor.fromRGB(0, 68, 255);
 				notice.text = "smokey";
 		}
+
+		notice.x = (FlxG.width / 2) - (notice.width / 2);
 
 		var upP = controls.UP_P;
 		var downP = controls.DOWN_P;
@@ -235,7 +239,7 @@ class CreditState extends MusicBeatState{
 		// lerpScore = 0;
 		#end*/
 
-		FlxG.sound.playMusic(Paths.inst('test'), 0);
+		//FlxG.sound.playMusic(Paths.inst('test'), 0);
 
 		var bullShit:Int = 0;
 

@@ -6,7 +6,7 @@ import utils.AndroidData;
 class CreditIcon extends FlxSprite
 {
 	/**
-	 * Used for FreeplayState! If you use it elsewhere, prob gonna annoying
+	 * Used for CreditState! If you use it elsewhere, prob gonna annoying
 	 */
 	public var sprTracker:FlxSprite;
 	var data:AndroidData = new AndroidData();
@@ -22,31 +22,25 @@ class CreditIcon extends FlxSprite
 		super();
 		var shit:Bool = data.getIcon();
 		
-		if (!shit){
-	    	loadGraphic(Paths.image('iconGrid'), true, 150, 150);
-		}
-		else{
-		    loadGraphic(Paths.image('iconGridB'), true, 150, 150);
-		}
+	    loadGraphic(Paths.image('credIcon'), true, 150, 150);
 
 		antialiasing = true;
-		animation.add('lucky', [0, 1], 0, false, isPlayer);
-		animation.add('zack', [0, 1], 0, false, isPlayer);
-		animation.add('schepka', [22, 23], 0, false, isPlayer);
-		animation.add('goldie', [0, 1], 0, false, isPlayer);
-		animation.add('idioticlucas', [26, 27], 0, false, isPlayer);
-		animation.add('maskedpump', [10, 11], 0, false, isPlayer);
-		animation.add('aarontal', [4, 5], 0, false, isPlayer);
-		animation.add('mark', [6, 7], 0, false, isPlayer);
-		animation.add('smokey', [6, 7], 0, false, isPlayer);
-		animation.add('tankman', [8, 9], 0, false, isPlayer);
-		animation.add('peppy', [12, 13], 0, false, isPlayer);
-		animation.add('klavier', [2, 3], 0, false, isPlayer);
-		animation.add('gamerbros', [18, 19], 0, false, isPlayer);
-		animation.add('muffin', [18, 19], 0, false, isPlayer);
-		animation.add('kawaii', [20, 21], 0, false, isPlayer);
-		animation.add('evil', [12, 13], 0, false, isPlayer);
-		animation.add('phantom', [24, 25], 0, false, isPlayer);
+		animation.add('lucky', [3], 0, false, isPlayer);
+		animation.add('zack', [2], 0, false, isPlayer);
+		animation.add('schepka', [7], 0, false, isPlayer);
+		animation.add('goldie', [8], 0, false, isPlayer);
+		animation.add('idioticlucas', [14], 0, false, isPlayer);
+		animation.add('maskedpump', [5], 0, false, isPlayer);
+		animation.add('aarontal', [0], 0, false, isPlayer);
+		animation.add('mark', [15], 0, false, isPlayer);
+		animation.add('smokey', [16], 0, false, isPlayer);
+		animation.add('peppy', [1], 0, false, isPlayer);
+		animation.add('klavier', [4], 0, false, isPlayer);
+		animation.add('gamerbros', [6], 0, false, isPlayer);
+		animation.add('muffin', [12], 0, false, isPlayer);
+		animation.add('kawaii', [13], 0, false, isPlayer);
+		animation.add('evil', [10], 0, false, isPlayer);
+		animation.add('phantom', [11], 0, false, isPlayer);
 		animation.add('parents-christmas', [14, 15], 0, false, isPlayer);
 		animation.add('monster', [16, 17], 0, false, isPlayer);
 		animation.add('monster-christmas', [16, 17], 0, false, isPlayer);

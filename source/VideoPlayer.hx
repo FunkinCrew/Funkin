@@ -32,7 +32,7 @@ import utils.AndroidData;
 class VideoPlayer extends FlxSprite {
 	public var finishCallback:Void->Void=null;
 	public var data:AndroidData = new AndroidData();
-	var DONTPLAYDUMBASS:Bool;
+	var PLAYDUMBASS:Bool;
 
 	#if sys
 	public var player:WebmPlayer;
@@ -47,7 +47,7 @@ class VideoPlayer extends FlxSprite {
 		super(x, y);
 
 		#if sys
-		WebmPlayer.SKIP_STEP_LIMIT = 90;
+		WebmPlayer.SKIP_STEP_LIMIT = 90;//Note to builder and lucky, FALSE ERROR. How to fix? remove the line lol -Zack and peppy (To make it more sync, go to your webmplayer.hx in your haxe directory and make SKIP_STEP_LIMIT 90 lolololol)
 
 		pathfile = path;
 
@@ -80,9 +80,9 @@ class VideoPlayer extends FlxSprite {
 	}
 
 	public function play() {
-		DONTPLAYDUMBASS = data.getCutscenes();
+		PLAYDUMBASS = data.getCutscenes();
 		#if sys
-		if (!DONTPLAYDUMBASS)
+		if (PLAYDUMBASS)
 		{
 			player.play();
 			sound = FlxG.sound.play(Paths.file(pathfile + '.ogg'));

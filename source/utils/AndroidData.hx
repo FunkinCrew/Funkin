@@ -32,7 +32,7 @@ class AndroidData{
 			android.data.dfjk = false;
 		}
 		if (android.data.osu == null){
-			android.data.osu = true;
+			android.data.osu = false;
 		}
 		if (android.data.icon2 == null){
 		    android.data.icon2 = false;

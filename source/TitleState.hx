@@ -45,7 +45,6 @@ class TitleState extends MusicBeatState
 	var ngSpr:FlxSprite;
 	var defaultCamZoom:Float = 1;
 	var data:AndroidData = new AndroidData();
-	var lite:Int = FlxG.random.int(8, 10);
 
 	var curWacky:Array<String> = [];
 
@@ -160,12 +159,12 @@ class TitleState extends MusicBeatState
 		// bg.updateHitbox();
 		add(bg);
 //-150, 100 <- original x and y
-		logoBl = new FlxSprite(-100, -200);
+		logoBl = new FlxSprite(-150, -100);
 		logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
 		logoBl.antialiasing = true;
 		logoBl.animation.addByPrefix('bump', 'logo bumpin', 24);
 		logoBl.animation.play('bump');
-		logoBl.scale.set(0.7, 0.7);//yrses
+		//logoBl.scale.set(0.7, 0.7);//yrses
 		logoBl.updateHitbox();
 		// logoBl.screenCenter();
 		// logoBl.color = FlxColor.BLACK;
@@ -382,6 +381,7 @@ class TitleState extends MusicBeatState
 			gfDance.animation.play('danceLeft');
 
 		FlxG.log.add(curBeat);
+		var lite:Bool = FlxG.random.bool(20);//easter egg.
 
 		switch (curBeat)
 		{
@@ -422,13 +422,28 @@ class TitleState extends MusicBeatState
 			// credTextShit.text = "Friday";
 			// credTextShit.screenCenter();
 			case 13:
-				addMoreText('Friday');
+				if (lite){
+				    addMoreText('FNF LITE');
+				}
+				else{
+			    	addMoreText('Friday');
+				}
 			// credTextShit.visible = true;
 			case 14:
-				addMoreText('Night');
+				if (lite){
+				    addMoreText('DEV');
+				}
+				else{
+				    addMoreText('Night');
+				}
 			// credTextShit.text += '\nNight';
 			case 15:
-				addMoreText('Funkin\nAndroid'); // credTextShit.text += '\nFunkin';
+				if (lite){
+				    addMoreText('IS SHIT');
+				}
+				else{
+			    	addMoreText('Funkin\nAndroid');
+				}
 
 			case 16:
 				skipIntro();

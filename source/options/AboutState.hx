@@ -38,7 +38,7 @@ class AboutState extends MusicBeatState
 		var bgfront:FlxSprite = new FlxSprite().loadGraphic(Paths.image('creditfront'));
 		add(bgfront);
 
-		var button = new FlxButton(16, 16, "", ()-> {
+		var button = new FlxButton(32, 32, "", ()-> {
 			FlxG.switchState(new OptionsMenu());
 		}).loadGraphic('assets/android/back.png');
 		add(button);

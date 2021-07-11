@@ -1568,7 +1568,7 @@ class PlayState extends MusicBeatState
 				swagNote.sustainLength = songNotes[2];
 				swagNote.scrollFactor.set(0, 0);
 
-				if (!gottaHitNote && osuScroll)
+				if (!gottaHitNote && osuScroll || midScroll)
 					continue;
 
 				var susLength:Float = swagNote.sustainLength;
@@ -1623,7 +1623,7 @@ class PlayState extends MusicBeatState
 			// FlxG.log.add(i);
 			var babyArrow:FlxSprite = new FlxSprite(0, strumLine.y);
 
-			if (osuScroll && player == 0)
+			if (osuScroll || midScroll && player == 0)
 				continue;
 
 			switch (curStage)
@@ -3223,20 +3223,26 @@ class PlayState extends MusicBeatState
 			camHUD.zoom += 0.03;
 		}
 
+		/*
 		if (curBeat % 4 == 0)//why not.
 		{
 			FlxG.camera.zoom += 0.03;
 			camHUD.zoom += 0.01;
 		}
+		*/
 
-		if (curBeat % 0 == 1){
-			iconBop();
-		}
+
+		
+		#if debug
+		FlxG.camera.zoom += 0.003;
+		#end
+
 
 
 		if (curBeat % gfSpeed == 0)
 		{
 			gf.dance();
+			iconBop();
 		}
 
 		if (!boyfriend.animation.curAnim.name.startsWith("sing"))

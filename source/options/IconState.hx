@@ -11,8 +11,8 @@ import utils.AndroidData;
 class IconState extends MusicBeatState{
 	var data:AndroidData = new AndroidData();
 	var curIcon:FlxSprite;
-	var Icon:Bool;
 
+	var Icon:Bool;
 	override public function create(){
 		Icon = data.getIcon();
 		

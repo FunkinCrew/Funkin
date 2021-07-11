@@ -6,7 +6,7 @@ import openfl.utils.Assets;
 import sys.FileSystem;
 import sys.io.File;
 #end
-
+//hi
 class Asset2File
 {
 	static var path:String = lime.system.System.applicationStorageDirectory;
