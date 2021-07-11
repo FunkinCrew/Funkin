@@ -66,11 +66,6 @@ class FreeplayState extends MusicBeatState
 						remove(black);
 						black.kill();
 						black.destroy();
-
-						if(FlxG.save.data.freeplayMusic)
-						{
-							FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName));
-						}
 					}
 				});
 	
@@ -315,6 +310,9 @@ class FreeplayState extends MusicBeatState
 					trace(sound);
 
 					// taken from .playMusic()
+					if(FlxG.sound.music.active)
+						FlxG.sound.music.stop();
+
 					FlxG.sound.music = sound;
 			
 					FlxG.sound.music.persist = true;
