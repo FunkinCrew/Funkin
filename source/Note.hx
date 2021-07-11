@@ -76,7 +76,7 @@ class Note extends FlxSprite
 		//defaults if no noteStyle was found in chart
 		var noteTypeCheck:String = 'normal';
 
-		if (!inCharter)
+		if (inCharter)
 		{
 			frames = Paths.getSparrowAtlas('NOTE_assets');
 

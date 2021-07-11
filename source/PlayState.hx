@@ -2845,7 +2845,8 @@ class PlayState extends MusicBeatState
 					daNote.x = playerStrums.members[Math.floor(Math.abs(daNote.noteData))].x;
 					if (!daNote.isSustainNote)
 						daNote.angle = playerStrums.members[Math.floor(Math.abs(daNote.noteData))].angle;
-					daNote.alpha = playerStrums.members[Math.floor(Math.abs(daNote.noteData))].alpha;
+					if (daNote.sustainActive)
+						daNote.alpha = playerStrums.members[Math.floor(Math.abs(daNote.noteData))].alpha;
 				}
 				else if (!daNote.wasGoodHit && !daNote.modifiedByLua)
 				{
@@ -2853,7 +2854,8 @@ class PlayState extends MusicBeatState
 					daNote.x = strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].x;
 					if (!daNote.isSustainNote)
 						daNote.angle = strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].angle;
-					daNote.alpha = strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].alpha;
+					if (daNote.sustainActive)
+						daNote.alpha = strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].alpha;
 				}
 
 				if (daNote.isSustainNote)
@@ -2871,11 +2873,6 @@ class PlayState extends MusicBeatState
 					{
 						daNote.kill();
 						notes.remove(daNote, true);
-						if (!daNote.isParent)
-						{
-							for(i in daNote.parent.children)
-								i.sustainActive = false;
-						}
 					}
 					else
 					{
@@ -2886,26 +2883,30 @@ class PlayState extends MusicBeatState
 								totalNotesHit += 1;
 							else
 							{
-								if (daNote.isSustainNote)
-								{
-									daNote.kill();
-									notes.remove(daNote, true);
-								}
-								else
-								{
+								if (!daNote.isSustainNote)
 									health -= 0.075;
-									vocals.volume = 0;
-									if (theFunne)
-										noteMiss(daNote.noteData, daNote);
-								}
+								vocals.volume = 0;
+								if (theFunne && daNote.sustainActive)
+									noteMiss(daNote.noteData, daNote);
 							}
 						}
 						else
 						{
-							health -= 0.075;
+							if (!daNote.isSustainNote)
+								health -= 0.075;
 							vocals.volume = 0;
-							if (theFunne)
+							if (theFunne && daNote.sustainActive)
 								noteMiss(daNote.noteData, daNote);
+						}
+					}
+
+					if (!daNote.wasGoodHit && daNote.isSustainNote && daNote.sustainActive && daNote.spotInLine != daNote.parent.children.length)
+					{
+						health -= 0.2; // give a health punishment for failing a LN
+						trace("hold fell over at " + daNote.spotInLine);
+						for(i in daNote.parent.children)
+						{
+							i.sustainActive = false;
 						}
 					}
 
@@ -3138,7 +3139,7 @@ class PlayState extends MusicBeatState
 				score = -300;
 				combo = 0;
 				misses++;
-				health -= 0.2;
+				health -= 0.35;
 				ss = false;
 				shits++;
 				if (FlxG.save.data.accuracyMod == 0)
@@ -3146,7 +3147,7 @@ class PlayState extends MusicBeatState
 			case 'bad':
 				daRating = 'bad';
 				score = 0;
-				health -= 0.06;
+				health -= 0.1;
 				ss = false;
 				bads++;
 				if (FlxG.save.data.accuracyMod == 0)
@@ -3157,12 +3158,12 @@ class PlayState extends MusicBeatState
 				ss = false;
 				goods++;
 				if (health < 2)
-					health += 0.04;
+					health += 0.02;
 				if (FlxG.save.data.accuracyMod == 0)
 					totalNotesHit += 0.75;
 			case 'sick':
 				if (health < 2)
-					health += 0.1;
+					health += 0.15;
 				if (FlxG.save.data.accuracyMod == 0)
 					totalNotesHit += 1;
 				sicks++;
@@ -3726,7 +3727,7 @@ class PlayState extends MusicBeatState
 	{
 		if (!boyfriend.stunned)
 		{
-			health -= 0.04;
+			//health -= 0.2;
 			if (combo > 5 && gf.animOffsets.exists('sad'))
 			{
 				gf.playAnim('sad');
@@ -3764,8 +3765,14 @@ class PlayState extends MusicBeatState
 			if (FlxG.save.data.accuracyMod == 1)
 				totalNotesHit -= 1;
 
-			songScore -= 10;
-
+			if (daNote != null)
+			{
+				if (!daNote.isSustainNote)
+					songScore -= 10;
+			}
+			else
+				songScore -= 10;
+			
 			FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
 			// FlxG.sound.play(Paths.sound('missnote1'), 1, false);
 			// FlxG.log.add('played imss note');
