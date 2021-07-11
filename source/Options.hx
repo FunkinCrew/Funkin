@@ -244,6 +244,26 @@ class DistractionsAndEffectsOption extends Option
 	}
 }
 
+class StepManiaOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+	public override function press():Bool
+	{
+		FlxG.save.data.stepMania = !FlxG.save.data.stepMania;
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Colors by quantization " + (!FlxG.save.data.stepMania ? "off" : "on");
+	}
+}
+
 class ResetButtonOption extends Option
 {
 	public function new(desc:String)
@@ -833,6 +853,7 @@ class ResetSettings extends Option
 		FlxG.save.data.strumline = null;
 		FlxG.save.data.customStrumLine = null;
 		FlxG.save.data.camzoom = null;
+		FlxG.save.data.stepMania = null;
 		KadeEngineData.initSave();
 		confirm = false;
 		trace('All settings have been reset');
