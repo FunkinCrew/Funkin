@@ -1,5 +1,7 @@
 package states;
 
+import modding.ModdingSound;
+import openfl.utils.ByteArray;
 import flixel.graphics.tile.FlxGraphicsShader;
 import flixel.group.FlxGroup;
 import lime.system.System;
@@ -157,6 +159,11 @@ class PlayState extends MusicBeatState
 
 	var inCutscene:Bool = false;
 
+	public static var instBytes:ByteArray;
+	public static var voicesBytes:ByteArray;
+
+	var instMusic:FlxSound;
+
 	#if desktop
 	// Discord RPC variables
 	var storyDifficultyText:String = "";
@@ -169,6 +176,8 @@ class PlayState extends MusicBeatState
 	override public function create()
 	{
 		instance = this;
+
+		instMusic = new ModdingSound().loadByteArray(instBytes);
 
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
@@ -711,7 +720,15 @@ class PlayState extends MusicBeatState
 		lastReportedPlayheadPosition = 0;
 
 		if (!paused)
+		{
+			#if sys
+			FlxG.sound.music = instMusic;
+			FlxG.sound.music.play();
+			//FlxG.sound.playMusic(, 1, false);
+			#else
 			FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 1, false);
+			#end
+		}
 
 		FlxG.sound.music.onComplete = endSong;
 		vocals.play();
@@ -737,9 +754,21 @@ class PlayState extends MusicBeatState
 		curSong = songData.song;
 
 		if (SONG.needsVoices)
+		{
+			#if sys
+			vocals = new ModdingSound().loadByteArray(voicesBytes);
+			#else
 			vocals = new FlxSound().loadEmbedded(Paths.voices(PlayState.SONG.song));
+			#end
+		}
 		else
+		{
+			#if sys
+			vocals = new ModdingSound();
+			#else
 			vocals = new FlxSound();
+			#end
+		}
 
 		FlxG.sound.list.add(vocals);
 
@@ -1600,6 +1629,13 @@ class PlayState extends MusicBeatState
 				prevCamFollow = camFollow;
 
 				PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + difficulty, PlayState.storyPlaylist[0]);
+				/*
+					ByteArray.loadFromFile(Sys.getCwd() + "assets/songs/g/Inst.ogg").onComplete(function(array:ByteArray){
+						var testSound = new ModdingSound().loadByteArray(array);
+
+						testSound.play();
+					});
+				*/
 				FlxG.sound.music.stop();
 
 				LoadingState.loadAndSwitchState(new PlayState());

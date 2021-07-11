@@ -18,7 +18,7 @@ class Checkbox extends FlxSprite
 
         animation.play("static");
 
-        setGraphicSize(Std.int(width * 0.5));
+        setGraphicSize(Std.int(width * 0.7));
         updateHitbox();
 
         this.sprTracker = tracking;

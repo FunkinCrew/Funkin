@@ -64,7 +64,8 @@ class OptionsMenu extends MusicBeatState
 			new PageOption("Back", 0, "Categories"),
 			new BoolOption("Old Title Screen", "oldTitle", FlxG.save.data.oldTitle, 1),
 			new BoolOption("Debug Songs in Freeplay", "debugSongs", FlxG.save.data.debugSongs, 2),
-			new BoolOption("Proper Week Progression", "weekProgression", FlxG.save.data.weekProgression, 3)
+			new BoolOption("Week Progression", "weekProgression", FlxG.save.data.weekProgression, 3),
+			new BoolOption("Freeplay Music", "freeplayMusic", FlxG.save.data.freeplayMusic, 4)
 		]
 	];
 

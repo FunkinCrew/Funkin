@@ -70,6 +70,16 @@ class Paths
 		return getPath('data/$key.json', TEXT, library);
 	}
 
+	#if sys
+	inline static public function jsonSYS(key:String, ?library:String)
+	{
+		if(library == null)
+			library = "";
+
+		return 'assets/' + library + (library == "" ? "" : "/") + "data/" + key + ".json";
+	}
+	#end
+
 	static public function sound(key:String, ?library:String)
 	{
 		return getPath('sounds/$key.$SOUND_EXT', SOUND, library);
@@ -94,6 +104,18 @@ class Paths
 	{
 		return 'songs:assets/songs/${song.toLowerCase()}/Inst.$SOUND_EXT';
 	}
+
+	#if sys
+	inline static public function voicesSYS(song:String)
+	{
+		return 'assets/songs/${song.toLowerCase()}/Voices.$SOUND_EXT';
+	}
+
+	inline static public function instSYS(song:String)
+	{
+		return 'assets/songs/${song.toLowerCase()}/Inst.$SOUND_EXT';
+	}
+	#end
 
 	inline static public function image(key:String, ?library:String)
 	{

@@ -1,5 +1,6 @@
 package utilities;
 
+import openfl.utils.ByteArray;
 #if sys
 import sys.io.File;
 #end
@@ -32,6 +33,7 @@ class CoolUtil
 	#if sys
 	public static function coolTextFileFromSystem(path:String):Array<String>
 	{
+		
 		var daList:Array<String> = File.getContent(Sys.getCwd() + "assets/" + path + ".txt").trim().split('\n');
 
 		for (i in 0...daList.length)

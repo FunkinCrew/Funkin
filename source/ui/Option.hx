@@ -98,6 +98,8 @@ class BoolOption extends Option
 				Value = FlxG.save.data.oldTitle;
 			case "msText":
 				Value = FlxG.save.data.msText;
+			case "freeplayMusic":
+				Value = FlxG.save.data.freeplayMusic;
 			case "muted":
 				Value = FlxG.sound.muted;
 		}
@@ -138,6 +140,8 @@ class BoolOption extends Option
 				FlxG.save.data.oldTitle = !Option_Checked;
 			case "msText":
 				FlxG.save.data.msText = !Option_Checked;
+			case "freeplayMusic":
+				FlxG.save.data.freeplayMusic = !Option_Checked;
 			case "muted":
 				FlxG.sound.muted = !Option_Checked;
 		}

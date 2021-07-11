@@ -1,5 +1,9 @@
 package game;
 
+#if sys
+import sys.FileSystem;
+import sys.io.File;
+#end
 import utilities.CoolUtil;
 import states.PlayState;
 import game.Section.SwagSection;
@@ -49,7 +53,13 @@ class Song
 	{
 		folder = "song data/" + folder + "/";
 
-		var rawJson = Assets.getText(Paths.json(folder.toLowerCase() + jsonInput.toLowerCase())).trim();
+		var rawJson:String;
+
+		#if sys
+		rawJson = File.getContent(Sys.getCwd() + Paths.jsonSYS(folder.toLowerCase() + jsonInput.toLowerCase())).trim();
+		#else
+		rawJson = Assets.getText(Paths.json(folder.toLowerCase() + jsonInput.toLowerCase())).trim();
+		#end
 
 		while (!rawJson.endsWith("}"))
 		{
@@ -57,9 +67,10 @@ class Song
 			// LOL GOING THROUGH THE BULLSHIT TO CLEAN IDK WHATS STRANGE
 		}
 
-		// hardcoded because \_(:/)_/ dont feel like making more files just for this yet lol
-		if(folder.toLowerCase() == "ugh")
-			PlayState.stepsTexts = CoolUtil.coolTextFile(Paths.txt(folder.toLowerCase() + "steps"));
+		#if sys
+		if(FileSystem.exists(Sys.getCwd() + "assets/data/" + folder + "steps.txt"))
+			PlayState.stepsTexts = CoolUtil.coolTextFileFromSystem(Sys.getCwd() + "assets/data/" + folder.toLowerCase() + "steps.txt");
+		#end
 
 		return parseJSONshit(rawJson);
 	}

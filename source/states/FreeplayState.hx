@@ -1,5 +1,7 @@
 package states;
 
+import openfl.utils.ByteArray;
+import modding.ModdingSound;
 import flixel.util.FlxTimer;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -48,6 +50,22 @@ class FreeplayState extends MusicBeatState
 	private var selectedColor:Int = 0xFF7F1833;
 	private var interpolation:Float = 0.0;
 
+	private var songData:Array<ByteArray> = [];
+
+	#if sys
+	function loadSongThing(name:String)
+	{
+		if(songData[curSelected] != null)
+		{
+			FlxG.sound.music.stop();
+			FlxG.sound.music.destroy();
+	
+			FlxG.sound.music = new ModdingSound().loadByteArray(songData[curSelected]);
+			FlxG.sound.music.play();
+		}
+	}
+	#end
+
 	override function create()
 	{
 		var black = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
@@ -63,7 +81,11 @@ class FreeplayState extends MusicBeatState
 						black.kill();
 						black.destroy();
 
+						#if sys
+						loadSongThing(songs[curSelected].songName);
+						#else
 						FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName));
+						#end
 					}
 				});
 	
@@ -110,10 +132,32 @@ class FreeplayState extends MusicBeatState
 			{
 				// Creates new song data accordingly
 				songs.push(new SongMetadata(song, week, icon));
+
+				if(FlxG.save.data.freeplayMusic)
+				{
+					#if sys
+					ByteArray.loadFromFile(Sys.getCwd() + 'assets/songs/' + song.toLowerCase() + '/Inst.ogg').onComplete(function(array:ByteArray){
+						songData.push(
+							array
+						);
+					});
+					#end
+				}
 			} else if(listArray[3] != null && FlxG.save.data.debugSongs == true)
 			{
 				// Creates new song data accordingly
 				songs.push(new SongMetadata(song, week, icon));
+
+				if(FlxG.save.data.freeplayMusic)
+				{
+					#if sys
+					ByteArray.loadFromFile(Sys.getCwd() + 'assets/songs/' + song.toLowerCase() + '/Inst.ogg').onComplete(function(array:ByteArray){
+						songData.push(
+							array
+						);
+					});
+					#end
+				}
 			}
 		}
 
@@ -290,8 +334,14 @@ class FreeplayState extends MusicBeatState
 		FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 
 		// Song Inst
-		if(songsReady)
+		if(FlxG.save.data.freeplayMusic)
+		{
+			#if sys
+			loadSongThing(songs[curSelected].songName);
+			#else
 			FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName));
+			#end
+		}
 
 		#if !switch
 		intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
