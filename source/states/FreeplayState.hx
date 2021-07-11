@@ -302,7 +302,28 @@ class FreeplayState extends MusicBeatState
 		// Song Inst
 		if(FlxG.save.data.freeplayMusic)
 		{
+			#if sys
+			if(Assets.exists(Paths.inst(songs[curSelected].songName)))
+			{
+				FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName));
+			}
+			else
+			{
+				ByteArray.loadFromFile(Sys.getCwd() + Paths.instSYS(songs[curSelected].songName)).onComplete(function(array:ByteArray){
+					var sound = new ModdingSound().loadByteArray(array);
+
+					trace(sound);
+
+					// taken from .playMusic()
+					FlxG.sound.music = sound;
+			
+					FlxG.sound.music.persist = true;
+					FlxG.sound.music.play();
+				});
+			}
+			#else
 			FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName));
+			#end
 		}
 
 		#if !switch

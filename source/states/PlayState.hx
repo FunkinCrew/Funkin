@@ -159,10 +159,8 @@ class PlayState extends MusicBeatState
 
 	var inCutscene:Bool = false;
 
-	public static var instBytes:ByteArray;
-	public static var voicesBytes:ByteArray;
-
-	var instMusic:FlxSound;
+	public static var inst:FlxSound;
+	public static var voices:FlxSound;
 
 	#if desktop
 	// Discord RPC variables
@@ -176,8 +174,6 @@ class PlayState extends MusicBeatState
 	override public function create()
 	{
 		instance = this;
-
-		instMusic = new ModdingSound().loadByteArray(instBytes);
 
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
@@ -722,9 +718,20 @@ class PlayState extends MusicBeatState
 		if (!paused)
 		{
 			#if sys
-			FlxG.sound.music = instMusic;
-			FlxG.sound.music.play();
-			//FlxG.sound.playMusic(, 1, false);
+			if(Assets.exists(Paths.inst(PlayState.SONG.song)))
+			{
+				FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 1, false);
+			}
+			else
+			{
+				trace(inst);
+
+				// taken from .playMusic()
+				FlxG.sound.music = inst;
+		
+				FlxG.sound.music.persist = true;
+				FlxG.sound.music.play();
+			}
 			#else
 			FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 1, false);
 			#end
@@ -756,18 +763,14 @@ class PlayState extends MusicBeatState
 		if (SONG.needsVoices)
 		{
 			#if sys
-			vocals = new ModdingSound().loadByteArray(voicesBytes);
+			vocals = voices;
 			#else
 			vocals = new FlxSound().loadEmbedded(Paths.voices(PlayState.SONG.song));
 			#end
 		}
 		else
 		{
-			#if sys
-			vocals = new ModdingSound();
-			#else
 			vocals = new FlxSound();
-			#end
 		}
 
 		FlxG.sound.list.add(vocals);
@@ -1555,16 +1558,11 @@ class PlayState extends MusicBeatState
 	}
 
 	function endSong():Void
-	{
-		instBytes.clear();
-		voicesBytes.clear();
-
-		instBytes = null;
-		voicesBytes = null;
-		
+	{		
 		canPause = false;
 		FlxG.sound.music.volume = 0;
 		vocals.volume = 0;
+
 		if (SONG.validScore)
 		{
 			#if !switch
@@ -1635,13 +1633,6 @@ class PlayState extends MusicBeatState
 				prevCamFollow = camFollow;
 
 				PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + difficulty, PlayState.storyPlaylist[0]);
-				/*
-					ByteArray.loadFromFile(Sys.getCwd() + "assets/songs/g/Inst.ogg").onComplete(function(array:ByteArray){
-						var testSound = new ModdingSound().loadByteArray(array);
-
-						testSound.play();
-					});
-				*/
 				FlxG.sound.music.stop();
 
 				LoadingState.loadAndSwitchState(new PlayState());

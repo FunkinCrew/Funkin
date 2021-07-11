@@ -74,7 +74,7 @@
 	</section>
 	
 	<assets path="assets/songs"    library="songs"    exclude="*.ogg" if="web"/>
-	<assets path="assets/songs"    library="songs"    exclude="*.mp3" unless="web"/>
+	<assets path="assets/songs"    library="songs"    exclude="*.mp3" unless="web"/> 
 
 	<assets path="assets/stages"    library="stages"    exclude="*.ogg" if="web"/>
 	<assets path="assets/stages"    library="stages"    exclude="*.mp3" unless="web"/>

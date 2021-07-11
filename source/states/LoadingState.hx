@@ -1,5 +1,7 @@
 package states;
 
+import openfl.media.Sound;
+import flixel.system.FlxSound;
 import sys.FileSystem;
 import sys.io.File;
 #if sys
@@ -116,15 +118,24 @@ class LoadingState extends MusicBeatState
 
 			#if sys
 			ByteArray.loadFromFile(Sys.getCwd() + path).onComplete(function(array:ByteArray){
+				trace(array);
+
 				if(voices)
-					PlayState.voicesBytes = array;
+					PlayState.voices = new ModdingSound().loadByteArray(array);
 				else
-					PlayState.instBytes = array;
+					PlayState.inst = new ModdingSound().loadByteArray(array);
 
 				callback();
 			});
 			#else
-			Assets.loadSound(path).onComplete(function (_) { callback(); });
+			Assets.loadSound(path).onComplete(function (sound:Sound) {
+				if(voices)
+					PlayState.voices = new FlxSound().loadEmbedded(path);
+				else
+					PlayState.inst = new FlxSound().loadEmbedded(path);
+
+				callback();
+			});
 			#end
 		}
 	}
@@ -204,7 +215,7 @@ class LoadingState extends MusicBeatState
 			&& (!PlayState.SONG.needsVoices || isSoundLoaded(getVocalPath(), true))
 			&& isLibraryLoaded("shared");
 		
-		if (!loaded && PlayState.instBytes == null)
+		if (!loaded)
 			return new LoadingState(target, stopMusic);
 		//#end
 		if (stopMusic && FlxG.sound.music != null)
@@ -217,14 +228,14 @@ class LoadingState extends MusicBeatState
 	static function isSoundLoaded(path:String, ?voices:Bool = false):Bool
 	{
 		#if sys
-		if(instance != null)
+		if(Assets.exists(path))
 		{
-			if(voices)
-				return instance.voicesBytes != null;
-			else
-				return instance.instBytes != null;
-		} else
+			return Assets.cache.hasSound(path);
+		}
+		else
+		{
 			return false;
+		}
 		#else
 		return Assets.cache.hasSound(path);
 		#end

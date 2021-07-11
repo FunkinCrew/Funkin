@@ -1,5 +1,7 @@
 package ui;
 
+import sys.FileSystem;
+import sys.io.File;
 import states.PlayState;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -74,15 +76,12 @@ class DialogueBox extends FlxSpriteGroup
 		switch (PlayState.SONG.song.toLowerCase())
 		{
 			case 'senpai':
-				hasDialog = true;
 				box.loadGraphic(Paths.image('weeb/pixelUI/dialogueBox-pixel', 'week6'));
 			case 'roses':
-				hasDialog = true;
 				FlxG.sound.play(Paths.sound('ANGRY_TEXT_BOX'));
 				box.loadGraphic(Paths.image('weeb/pixelUI/dialogueBox-pixel', 'week6'));
 
 			case 'thorns':
-				hasDialog = true;
 				box.loadGraphic(Paths.image('weeb/pixelUI/dialogueBox-evil', 'week6'));
 
 				face = new FlxSprite(320, 170).loadGraphic(Paths.image('weeb/spiritFaceForward'));
@@ -90,10 +89,12 @@ class DialogueBox extends FlxSpriteGroup
 				add(face);
 		}
 
+		hasDialog = FileSystem.exists(Sys.getCwd() + "assets/data/song data/" + PlayState.SONG.song.toLowerCase() + "/dialogue.txt");
+
 		if (!hasDialog)
 			return;
 
-		this.dialogueList = CoolUtil.coolTextFile(Paths.txt(PlayState.SONG.song.toLowerCase() + '/dialogue'));
+		this.dialogueList = CoolUtil.coolTextFileFromSystem("data/song data/" + PlayState.SONG.song.toLowerCase() + "/dialogue");
 		
 		portraitLeft = new FlxSprite(255, 120);
 

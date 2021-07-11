@@ -33,8 +33,7 @@ class StoryMenuState extends MusicBeatState
 		['Pico', 'Philly Nice', "Blammed"],
 		['Satin Panties', "High", "M.I.L.F"],
 		['Cocoa', 'Eggnog', 'Winter Horrorland'],
-		['Senpai', 'Roses', 'Thorns']//,
-		//['Ugh', 'Guns', 'Stress']
+		['Senpai', 'Roses', 'Thorns']
 	];
 	var curDifficulty:Int = 1;
 
@@ -49,8 +48,7 @@ class StoryMenuState extends MusicBeatState
 		['pico', 'bf', 'gf'],
 		['mom', 'bf', 'gf'],
 		['parents', 'bf', 'gf'],
-		['senpai', 'bf', 'gf']//,
-		//['tankman', 'bf', 'gf']
+		['senpai', 'bf', 'gf']
 	];
 
 	var weekNames:Array<String> = [
@@ -60,8 +58,7 @@ class StoryMenuState extends MusicBeatState
 		"Pico",
 		"Mommy Must Murder",
 		"Red Snow",
-		"Hating Simulator Ft. Moawling"//,
-		//"Tankman"
+		"Hating Simulator Ft. Moawling"
 	];
 
 	var txtWeekTitle:FlxText;
@@ -346,9 +343,10 @@ class StoryMenuState extends MusicBeatState
 			PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + diffic, PlayState.storyPlaylist[0].toLowerCase());
 			PlayState.storyWeek = curWeek;
 			PlayState.campaignScore = 0;
+
 			new FlxTimer().start(1, function(tmr:FlxTimer)
 			{
-				LoadingState.loadAndSwitchState(new PlayState(), true);
+				LoadingState.loadAndSwitchState(new PlayState());
 			});
 		}
 	}
