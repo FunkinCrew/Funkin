@@ -42,10 +42,11 @@ class OptionsMenu extends MusicBeatState
 		new OptionCategory("Appearance", [
 			new DistractionsAndEffectsOption("Toggle stage distractions that can hinder your gameplay."),
 			new CamZoomOption("Toggle the camera zoom in-game."),
-			new RainbowFPSOption("Make the FPS Counter Rainbow"),
+			new StepManiaOption("Sets the colors of the arrows depending on quantization instead of direction."),
 			new AccuracyOption("Display accuracy information."),
-			new NPSDisplayOption("Shows your current Notes Per Second."),
 			new SongPositionOption("Show the songs current position (as a bar)"),
+			new NPSDisplayOption("Shows your current Notes Per Second."),
+			new RainbowFPSOption("Make the FPS Counter Rainbow"),
 			new CpuStrums("CPU's strumline lights up when a note hits it."),
 		]),
 		
