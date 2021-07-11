@@ -112,6 +112,10 @@ class Note extends FlxSprite
 		}
 		else
 		{
+			if (PlayState.SONG.noteStyle == null) {
+				switch(PlayState.storyWeek) {case 6: noteTypeCheck = 'pixel';}
+			} else {noteTypeCheck = PlayState.SONG.noteStyle;}
+			
 			switch (noteTypeCheck)
 			{
 				case 'pixel':
