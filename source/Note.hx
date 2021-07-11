@@ -40,6 +40,13 @@ class Note extends FlxSprite
 
 	public var dataColor:Array<String> = ['purple', 'blue', 'green', 'red'];
 
+	public var isParent:Bool = false;
+	public var parent:Note = null;
+	public var spotInLine:Int = 0;
+	public var sustainActive:Bool = true;
+
+	public var children:Array<Note> = [];
+
 	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inCharter:Bool = false)
 	{
 		super();
@@ -166,6 +173,10 @@ class Note extends FlxSprite
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+
+		if (!modifiedByLua)
+			if (!sustainActive)
+				alpha = 0.4;
 
 		if (mustPress)
 		{

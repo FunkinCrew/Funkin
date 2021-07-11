@@ -1763,6 +1763,11 @@ class PlayState extends MusicBeatState
 				susLength = susLength / Conductor.stepCrochet;
 				unspawnNotes.push(swagNote);
 
+				if (susLength > 0)
+					swagNote.isParent = true;
+
+				var type = 0;
+
 				for (susNote in 0...Math.floor(susLength))
 				{
 					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
@@ -1777,6 +1782,11 @@ class PlayState extends MusicBeatState
 					{
 						sustainNote.x += FlxG.width / 2; // general offset
 					}
+
+					sustainNote.parent = swagNote;
+					swagNote.children.push(sustainNote);
+					sustainNote.spotInLine = type;
+					type++;
 				}
 
 				swagNote.mustPress = gottaHitNote;
@@ -2861,6 +2871,11 @@ class PlayState extends MusicBeatState
 					{
 						daNote.kill();
 						notes.remove(daNote, true);
+						if (!daNote.isParent)
+						{
+							for(i in daNote.parent.children)
+								i.sustainActive = false;
+						}
 					}
 					else
 					{
@@ -2871,10 +2886,18 @@ class PlayState extends MusicBeatState
 								totalNotesHit += 1;
 							else
 							{
-								health -= 0.075;
-								vocals.volume = 0;
-								if (theFunne)
-									noteMiss(daNote.noteData, daNote);
+								if (daNote.isSustainNote)
+								{
+									daNote.kill();
+									notes.remove(daNote, true);
+								}
+								else
+								{
+									health -= 0.075;
+									vocals.volume = 0;
+									if (theFunne)
+										noteMiss(daNote.noteData, daNote);
+								}
 							}
 						}
 						else
@@ -3101,6 +3124,8 @@ class PlayState extends MusicBeatState
 
 		var rating:FlxSprite = new FlxSprite();
 		var score:Float = 350;
+
+		trace(totalNotesHit);
 
 		if (FlxG.save.data.accuracyMod == 1)
 			totalNotesHit += wife;
@@ -3432,7 +3457,7 @@ class PlayState extends MusicBeatState
 		{
 			notes.forEachAlive(function(daNote:Note)
 			{
-				if (daNote.isSustainNote && daNote.canBeHit && daNote.mustPress && holdArray[daNote.noteData])
+				if (daNote.isSustainNote && daNote.canBeHit && daNote.mustPress && holdArray[daNote.noteData] && daNote.sustainActive)
 					goodNoteHit(daNote);
 			});
 		}
@@ -3779,6 +3804,7 @@ class PlayState extends MusicBeatState
 	 */
 	function updateAccuracy()
 	{
+		trace(totalPlayed + "/" + totalNotesHit);
 		totalPlayed += 1;
 		accuracy = Math.max(0, totalNotesHit / totalPlayed * 100);
 		accuracyDefault = Math.max(0, totalNotesHitDefault / totalPlayed * 100);
@@ -3885,6 +3911,7 @@ class PlayState extends MusicBeatState
 		{
 			if (!note.isSustainNote)
 			{
+				trace(totalNotesHit);
 				popUpScore(note);
 				combo += 1;
 			}
@@ -3921,21 +3948,10 @@ class PlayState extends MusicBeatState
 			{
 				if (Math.abs(note.noteData) == spr.ID)
 				{
-					if (!note.isSustainNote)
-					{
-						popUpScore(note);
-						combo += 1;
-					}
-					else
-						totalNotesHit += 1;
-
-					#if windows
-					if (luaModchart != null)
-						luaModchart.executeState('playerOneSing', [note.noteData, Conductor.songPosition]);
-					#end
 					spr.animation.play('confirm', true);
 				}
 			});
+
 			note.kill();
 			notes.remove(note, true);
 			note.destroy();
