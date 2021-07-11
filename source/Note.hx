@@ -92,7 +92,8 @@ class Note extends FlxSprite
 
 		//defaults if no noteStyle was found in chart
 		var noteTypeCheck:String = 'normal';
-
+		if (PlayState.curStage.startsWith('school'))
+			noteTypeCheck = 'pixel';
 
 		if (inCharter)
 		{

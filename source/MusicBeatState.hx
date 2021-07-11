@@ -51,13 +51,17 @@ class MusicBeatState extends FlxUIState
 	override function update(elapsed:Float)
 	{
 		//everyStep();
-		var oldStep:Int = curStep;
+		var nextStep:Int = updateCurStep();
 
-		updateCurStep();
-		updateBeat();
-
-		if (oldStep != curStep && curStep > 0)
-			stepHit();
+		if (nextStep > curStep && curStep >= 0)
+		{
+			for (i in curStep...nextStep)
+			{
+				curStep++;
+				updateBeat();
+				stepHit();
+			}
+		}
 
 		if (FlxG.save.data.fpsRain && skippedFrames >= 6)
 			{
@@ -78,13 +82,13 @@ class MusicBeatState extends FlxUIState
 
 	private function updateBeat():Void
 	{
-		lastBeat = curStep;
+		lastBeat = curBeat;
 		curBeat = Math.floor(curStep / 4);
 	}
 
 	public static var currentColor = 0;
 
-	private function updateCurStep():Void
+	private function updateCurStep():Int
 	{
 		var lastChange:BPMChangeEvent = {
 			stepTime: 0,
@@ -97,12 +101,11 @@ class MusicBeatState extends FlxUIState
 				lastChange = Conductor.bpmChangeMap[i];
 		}
 
-		curStep = lastChange.stepTime + Math.floor((Conductor.songPosition - lastChange.songTime) / Conductor.stepCrochet);
+		return lastChange.stepTime + Math.floor((Conductor.songPosition - lastChange.songTime) / Conductor.stepCrochet);
 	}
 
 	public function stepHit():Void
 	{
-
 		if (curStep % 4 == 0)
 			beatHit();
 	}

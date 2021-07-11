@@ -997,6 +997,9 @@ class PlayState extends MusicBeatState
 		playerStrums = new FlxTypedGroup<FlxSprite>();
 		cpuStrums = new FlxTypedGroup<FlxSprite>();
 
+		generateStaticArrows(0);
+		generateStaticArrows(1);
+
 		// startCountdown();
 
 		if (SONG.song == null)
@@ -1308,8 +1311,9 @@ class PlayState extends MusicBeatState
 	{
 		inCutscene = false;
 
-		generateStaticArrows(0);
-		generateStaticArrows(1);
+		appearStaticArrows();
+		//generateStaticArrows(0);
+		//generateStaticArrows(1);
 
 		#if windows
 		// pre lowercasing the song name (startCountdown)
@@ -1796,9 +1800,6 @@ class PlayState extends MusicBeatState
 				{
 					swagNote.x += FlxG.width / 2; // general offset
 				}
-				else
-				{
-				}
 			}
 			daBeats += 1;
 		}
@@ -1901,10 +1902,11 @@ class PlayState extends MusicBeatState
 			babyArrow.updateHitbox();
 			babyArrow.scrollFactor.set();
 
+			babyArrow.alpha = 0;
 			if (!isStoryMode)
 			{
 				babyArrow.y -= 10;
-				babyArrow.alpha = 0;
+				//babyArrow.alpha = 0;
 				FlxTween.tween(babyArrow, {y: babyArrow.y + 10, alpha: 1}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
 			}
 
@@ -1932,6 +1934,15 @@ class PlayState extends MusicBeatState
 
 			strumLineNotes.add(babyArrow);
 		}
+	}
+
+	private function appearStaticArrows():Void
+	{
+		strumLineNotes.forEach(function(babyArrow:FlxSprite)
+		{
+			if (isStoryMode)
+				babyArrow.alpha = 1;
+		});
 	}
 
 	function tweenCamIn():Void
@@ -2800,7 +2811,11 @@ class PlayState extends MusicBeatState
 				}
 
 				if (daNote.isSustainNote)
+				{
 					daNote.x += daNote.width / 2 + 17;
+					if (PlayState.curStage.startsWith('school'))
+						daNote.x -= 8;
+				}
 
 				// trace(daNote.y);
 				// WIP interpolation shit? Need to fix the pause issue
