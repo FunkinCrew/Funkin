@@ -89,6 +89,24 @@ class Main extends Sprite
 		toggleFPS(FlxG.save.data.fps);
 
 		#end
+
+		PlayerSettings.init();
+
+		#if windows
+		DiscordClient.initialize();
+
+		Application.current.onExit.add (function (exitCode) {
+			DiscordClient.shutdown();
+		 });
+		 
+		#end
+
+		
+		Highscore.load();
+
+		FlxG.save.bind('funkin', 'ninjamuffin99');
+
+		KadeEngineData.initSave();
 	}
 
 	var game:FlxGame;

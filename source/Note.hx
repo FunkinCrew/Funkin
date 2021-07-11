@@ -67,12 +67,7 @@ class Note extends FlxSprite
 		this.prevNote = prevNote;
 		isSustainNote = sustainNote;
 
-		this.noteData = noteData;
-
-		if (!inCharter)
-			x = PlayState.strumLineNotes.members[Math.floor(Math.abs(noteData))].x;
-		else
-			x += 50;
+		x += 50;
 		// MAKE SURE ITS DEFINITELY OFF SCREEN?
 		y -= 2000;
 
@@ -91,12 +86,16 @@ class Note extends FlxSprite
 		if (this.strumTime < 0 )
 			this.strumTime = 0;
 
+		this.noteData = noteData;
+
 		var daStage:String = PlayState.curStage;
 
 		//defaults if no noteStyle was found in chart
 		var noteTypeCheck:String = 'normal';
+		if (PlayState.curStage.startsWith('school'))
+			noteTypeCheck = 'pixel';
 
-		if (!inCharter)
+		if (inCharter)
 		{
 			frames = Paths.getSparrowAtlas('NOTE_assets');
 
@@ -180,20 +179,20 @@ class Note extends FlxSprite
 			noteScore * 0.2;
 			alpha = 0.6;
 
-			x += width / 2 + 17;
-			if (noteTypeCheck == 'pixel')
-				x -= 8;
-			//x += width / 2;
+			x += width / 2;
 
 			originColor = prevNote.originColor; 
 
 			animation.play(dataColor[originColor] + 'holdend'); // This works both for normal colors and quantization colors
 			updateHitbox();
 
-			//x -= width / 2;
+			x -= width / 2;
 
-			//if (PlayState.curStage.startsWith('school'))
-			//	x += 30;
+			if (noteTypeCheck == 'pixel')
+				x += 30;
+
+			if (inCharter)
+				x += 30;
 
 			if (prevNote.isSustainNote)
 			{
