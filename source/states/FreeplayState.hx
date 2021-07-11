@@ -52,20 +52,6 @@ class FreeplayState extends MusicBeatState
 
 	private var songData:Array<ByteArray> = [];
 
-	#if sys
-	function loadSongThing(name:String)
-	{
-		if(songData[curSelected] != null)
-		{
-			FlxG.sound.music.stop();
-			FlxG.sound.music.destroy();
-	
-			FlxG.sound.music = new ModdingSound().loadByteArray(songData[curSelected]);
-			FlxG.sound.music.play();
-		}
-	}
-	#end
-
 	override function create()
 	{
 		var black = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
@@ -81,11 +67,7 @@ class FreeplayState extends MusicBeatState
 						black.kill();
 						black.destroy();
 
-						#if sys
-						loadSongThing(songs[curSelected].songName);
-						#else
 						FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName));
-						#end
 					}
 				});
 	
@@ -132,32 +114,10 @@ class FreeplayState extends MusicBeatState
 			{
 				// Creates new song data accordingly
 				songs.push(new SongMetadata(song, week, icon));
-
-				if(FlxG.save.data.freeplayMusic)
-				{
-					#if sys
-					ByteArray.loadFromFile(Sys.getCwd() + 'assets/songs/' + song.toLowerCase() + '/Inst.ogg').onComplete(function(array:ByteArray){
-						songData.push(
-							array
-						);
-					});
-					#end
-				}
 			} else if(listArray[3] != null && FlxG.save.data.debugSongs == true)
 			{
 				// Creates new song data accordingly
 				songs.push(new SongMetadata(song, week, icon));
-
-				if(FlxG.save.data.freeplayMusic)
-				{
-					#if sys
-					ByteArray.loadFromFile(Sys.getCwd() + 'assets/songs/' + song.toLowerCase() + '/Inst.ogg').onComplete(function(array:ByteArray){
-						songData.push(
-							array
-						);
-					});
-					#end
-				}
 			}
 		}
 
@@ -336,11 +296,7 @@ class FreeplayState extends MusicBeatState
 		// Song Inst
 		if(FlxG.save.data.freeplayMusic)
 		{
-			#if sys
-			loadSongThing(songs[curSelected].songName);
-			#else
 			FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName));
-			#end
 		}
 
 		#if !switch
