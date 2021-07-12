@@ -130,26 +130,44 @@ class Paths
 
 	inline static public function getSparrowAtlas(key:String, ?library:String, ?isCharacter:Bool = false)
 	{
+		var usecahce = FlxG.save.data.cacheImages;
+		#if !cpp
+		usecahce = false;
+		#end
 		if (isCharacter)
-			if (FlxG.save.data.cacheImages)
+			if (usecahce)
+				#if cpp
 				return FlxAtlasFrames.fromSparrow(imageCached(key), file('images/characters/$key.xml', library));
+				#else
+				return null;
+				#end
 			else
 				return FlxAtlasFrames.fromSparrow(image('characters/$key'), file('images/characters/$key.xml'));
 		return FlxAtlasFrames.fromSparrow(image(key, library), file('images/$key.xml', library));
 	}
 
+	#if cpp
 	inline static public function imageCached(key:String):FlxGraphic
 	{
 		var data = Caching.bitmapData.get(key);
 		trace('finding ${key} - ${data.bitmap}');
 		return data;
 	}
-
+	#end
+	
 	inline static public function getPackerAtlas(key:String, ?library:String, ?isCharacter:Bool = false)
 	{
+		var usecahce = FlxG.save.data.cacheImages;
+		#if !cpp
+		usecahce = false;
+		#end
 		if (isCharacter)
-			if (FlxG.save.data.cacheImages)
+			if (usecahce)
+				#if cpp
 				return FlxAtlasFrames.fromSpriteSheetPacker(imageCached(key), file('images/$key.txt', library));
+				#else
+				return null;
+				#end
 			else
 				return FlxAtlasFrames.fromSpriteSheetPacker(image('characters/$key'), file('images/characters/$key.txt'));
 		return FlxAtlasFrames.fromSpriteSheetPacker(image(key, library), file('images/$key.txt', library));

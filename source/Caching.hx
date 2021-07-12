@@ -1,3 +1,4 @@
+#if sys
 package;
 
 import lime.app.Application;
@@ -172,3 +173,4 @@ class Caching extends MusicBeatState
 	}
 
 }
+#end

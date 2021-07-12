@@ -1209,7 +1209,6 @@ class PlayState extends MusicBeatState
 
 		FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, handleInput);
 		FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, releaseInput);
-
 		super.create();
 	}
 
@@ -2220,8 +2219,10 @@ class PlayState extends MusicBeatState
 			{
 				GlobalVideo.get().stop();
 				remove(videoSprite);
+				#if sys
 				FlxG.stage.window.onFocusOut.remove(focusOut);
 				FlxG.stage.window.onFocusIn.remove(focusIn);
+				#end
 				removedVideo = true;
 			}
 			#if windows
@@ -3451,8 +3452,6 @@ class PlayState extends MusicBeatState
 		};
 		#end
 
-		var nonCpp = false;
-
 		// Prevent player input if botplay is on
 		if (PlayStateChangeables.botPlay)
 		{
@@ -3460,10 +3459,6 @@ class PlayState extends MusicBeatState
 			pressArray = [false, false, false, false];
 			releaseArray = [false, false, false, false];
 		}
-
-		#if !cpp
-		nonCpp = true;
-		#end
 
 		var anas:Array<Ana> = [null, null, null, null];
 
@@ -3484,7 +3479,7 @@ class PlayState extends MusicBeatState
 			});
 		}
 
-		if ((KeyBinds.gamepad && !FlxG.keys.justPressed.ANY) || nonCpp)
+		if ((KeyBinds.gamepad && !FlxG.keys.justPressed.ANY))
 		{
 			// PRESSES, check for note hits
 			if (pressArray.contains(true) && generatedMusic)
@@ -3521,6 +3516,7 @@ class PlayState extends MusicBeatState
 						}
 						else
 						{
+							directionsAccounted[daNote.noteData] = true;
 							possibleNotes.push(daNote);
 							directionList.push(daNote.noteData);
 						}
@@ -3536,6 +3532,9 @@ class PlayState extends MusicBeatState
 				}
 
 				possibleNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
+
+				var hit = [false,false,false,false];
+
 				if (perfectMode)
 					goodNoteHit(possibleNotes[0]);
 				else if (possibleNotes.length > 0)
@@ -3550,10 +3549,11 @@ class PlayState extends MusicBeatState
 					}
 					for (coolNote in possibleNotes)
 					{
-						if (pressArray[coolNote.noteData])
+						if (pressArray[coolNote.noteData] && !hit[coolNote.noteData])
 						{
 							if (mashViolations != 0)
 								mashViolations--;
+							hit[coolNote.noteData] = true;
 							scoreTxt.color = FlxColor.WHITE;
 							var noteDiff:Float = -(coolNote.strumTime - Conductor.songPosition);
 							anas[coolNote.noteData].hit = true;
