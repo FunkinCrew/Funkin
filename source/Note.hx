@@ -185,14 +185,6 @@ class Note extends FlxSprite
 
 			x += width / 2;
 
-			switch (noteTypeCheck)
-			{
-				case 'pixel':
-					noteYOff = -13;
-				default:
-					noteYOff = -23;
-			}
-
 			originColor = prevNote.originColor; 
 
 			animation.play(dataColor[originColor] + 'holdend'); // This works both for normal colors and quantization colors
@@ -215,6 +207,14 @@ class Note extends FlxSprite
 				prevNote.updateHitbox();
 
 				// prevNote.setGraphicSize();
+
+				switch (noteTypeCheck)
+				{
+					case 'pixel':
+						noteYOff = -13;
+					default:
+						noteYOff = -23;
+				}
 			}
 		}
 	}
