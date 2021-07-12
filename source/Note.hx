@@ -35,6 +35,8 @@ class Note extends FlxSprite
 
 	public var noteScore:Float = 1;
 
+	public var noteYOff:Int = 0;
+
 	public static var swagWidth:Float = 160 * 0.7;
 	public static var PURP_NOTE:Int = 0;
 	public static var GREEN_NOTE:Int = 2;
@@ -92,8 +94,6 @@ class Note extends FlxSprite
 
 		//defaults if no noteStyle was found in chart
 		var noteTypeCheck:String = 'normal';
-		if (PlayState.curStage.startsWith('school'))
-			noteTypeCheck = 'pixel';
 
 		if (inCharter)
 		{
@@ -185,6 +185,14 @@ class Note extends FlxSprite
 
 			x += width / 2;
 
+			switch (noteTypeCheck)
+			{
+				case 'pixel':
+					noteYOff = -13;
+				default:
+					noteYOff = 0;
+			}
+
 			originColor = prevNote.originColor; 
 
 			animation.play(dataColor[originColor] + 'holdend'); // This works both for normal colors and quantization colors
@@ -192,9 +200,8 @@ class Note extends FlxSprite
 
 			x -= width / 2;
 
-			if (noteTypeCheck == 'pixel')
-				x += 30;
-
+			//if (noteTypeCheck == 'pixel')
+			//	x += 30;
 			if (inCharter)
 				x += 30;
 
@@ -202,10 +209,8 @@ class Note extends FlxSprite
 			{
 				prevNote.animation.play(dataColor[prevNote.originColor] + 'hold');
 
-				if(FlxG.save.data.scrollSpeed != 1)
-					prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.5 * FlxG.save.data.scrollSpeed;
-				else
-					prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.5 * PlayState.SONG.speed;
+				prevNote.noteYOff = 0;
+				prevNote.scale.y *= (0.45 * Conductor.stepCrochet * FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? PlayState.SONG.speed : PlayStateChangeables.scrollSpeed, 2)) / prevNote.height * 1.01; //The 1.01 is so that there aren't odd 1 pixel gaps as the notes scroll
 				prevNote.updateHitbox();
 				// prevNote.setGraphicSize();
 			}
