@@ -218,8 +218,12 @@ class Note extends FlxSprite
 		angle = modAngle + localAngle;
 
 		if (!modifiedByLua)
+		{
 			if (!sustainActive)
-				alpha = 0.4;
+			{
+				alpha = 0.3;
+			}
+		}
 
 		if (mustPress)
 		{
