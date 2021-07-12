@@ -190,7 +190,7 @@ class Note extends FlxSprite
 				case 'pixel':
 					noteYOff = -13;
 				default:
-					noteYOff = 0;
+					noteYOff = -23;
 			}
 
 			originColor = prevNote.originColor; 
@@ -208,10 +208,12 @@ class Note extends FlxSprite
 			if (prevNote.isSustainNote)
 			{
 				prevNote.animation.play(dataColor[prevNote.originColor] + 'hold');
+				prevNote.updateHitbox();
 
 				prevNote.noteYOff = 0;
 				prevNote.scale.y *= (0.45 * Conductor.stepCrochet * FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? PlayState.SONG.speed : PlayStateChangeables.scrollSpeed, 2)) / prevNote.height * 1.01; //The 1.01 is so that there aren't odd 1 pixel gaps as the notes scroll
 				prevNote.updateHitbox();
+
 				// prevNote.setGraphicSize();
 			}
 		}
