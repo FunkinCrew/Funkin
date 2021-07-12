@@ -53,11 +53,21 @@ class MusicBeatState extends FlxUIState
 		//everyStep();
 		var nextStep:Int = updateCurStep();
 
-		if (nextStep > curStep && curStep >= 0)
+		if (nextStep >= 0)
 		{
-			for (i in curStep...nextStep)
+			if (nextStep > curStep)
 			{
-				curStep++;
+				for (i in curStep...nextStep)
+				{
+					curStep++;
+					updateBeat();
+					stepHit();
+				}
+			}
+			else if (nextStep < curStep)
+			{
+				//Song reset?
+				curStep = nextStep;
 				updateBeat();
 				stepHit();
 			}
