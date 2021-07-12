@@ -118,6 +118,9 @@ class AnimationDebug extends FlxState
 		if (FlxG.keys.justPressed.Q)
 			FlxG.camera.zoom -= 0.25;
 
+		if (FlxG.keys.justPressed.F)
+			char.flipX = !char.flipX;
+
 		if (FlxG.keys.pressed.I || FlxG.keys.pressed.J || FlxG.keys.pressed.K || FlxG.keys.pressed.L)
 		{
 			if (FlxG.keys.pressed.I)
