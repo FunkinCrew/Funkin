@@ -178,6 +178,8 @@ class Note extends FlxSprite
 		if (FlxG.save.data.downscroll && sustainNote) 
 			flipY = true;
 
+		var stepHeight = (0.45 * Conductor.stepCrochet * FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? PlayState.SONG.speed : PlayStateChangeables.scrollSpeed, 2));
+
 		if (isSustainNote && prevNote != null)
 		{
 			noteScore * 0.2;
@@ -202,19 +204,13 @@ class Note extends FlxSprite
 				prevNote.animation.play(dataColor[prevNote.originColor] + 'hold');
 				prevNote.updateHitbox();
 
-				prevNote.noteYOff = 0;
-				prevNote.scale.y *= (0.45 * Conductor.stepCrochet * FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? PlayState.SONG.speed : PlayStateChangeables.scrollSpeed, 2)) / prevNote.height * 1.01; //The 1.01 is so that there aren't odd 1 pixel gaps as the notes scroll
+				prevNote.scale.y *= (stepHeight + 1) / prevNote.height; // + 1 so that there's no odd gaps as the notes scroll
 				prevNote.updateHitbox();
+				prevNote.noteYOff = Math.round(-prevNote.offset.y);
 
 				// prevNote.setGraphicSize();
 
-				switch (noteTypeCheck)
-				{
-					case 'pixel':
-						noteYOff = -13;
-					default:
-						noteYOff = -23;
-				}
+				noteYOff = Math.round(-offset.y);
 			}
 		}
 	}
