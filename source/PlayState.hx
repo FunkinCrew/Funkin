@@ -2825,9 +2825,9 @@ class PlayState extends MusicBeatState
 
 				if (daNote.isSustainNote)
 				{
-					daNote.x += daNote.width / 2 + 17;
+					daNote.x += daNote.width / 2 + 20;
 					if (PlayState.curStage.startsWith('school'))
-						daNote.x -= 8;
+						daNote.x -= 11;
 				}
 
 				// trace(daNote.y);
