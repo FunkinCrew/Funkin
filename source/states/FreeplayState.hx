@@ -22,6 +22,7 @@ import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import lime.utils.Assets;
+import openfl.utils.Assets as OpenFLAssets;
 
 using StringTools;
 
@@ -49,8 +50,6 @@ class FreeplayState extends MusicBeatState
 	private var bg:FlxSprite;
 	private var selectedColor:Int = 0xFF7F1833;
 	private var interpolation:Float = 0.0;
-
-	private var songData:Array<ByteArray> = [];
 
 	override function create()
 	{
@@ -320,7 +319,9 @@ class FreeplayState extends MusicBeatState
 				});
 			}
 			#else
-			FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName));
+			OpenFLAssets.loadSound(Paths.inst(songs[curSelected].songName)).onComplete(function (_) {
+				FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName));
+			});
 			#end
 		}
 

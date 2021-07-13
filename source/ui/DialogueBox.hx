@@ -1,7 +1,9 @@
 package ui;
 
+#if sys
 import sys.FileSystem;
 import sys.io.File;
+#end
 import states.PlayState;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -89,12 +91,20 @@ class DialogueBox extends FlxSpriteGroup
 				add(face);
 		}
 
+		#if sys
 		hasDialog = FileSystem.exists(Sys.getCwd() + "assets/data/song data/" + PlayState.SONG.song.toLowerCase() + "/dialogue.txt");
+		#else
+		hasDialog = PlayState.SONG.song.toLowerCase() == 'senpai' || PlayState.SONG.song.toLowerCase() == "roses" || PlayState.SONG.song.toLowerCase() == "thorns";
+		#end
 
 		if (!hasDialog)
 			return;
 
+		#if sys
 		this.dialogueList = CoolUtil.coolTextFileFromSystem("data/song data/" + PlayState.SONG.song.toLowerCase() + "/dialogue");
+		#else
+		this.dialogueList = CoolUtil.coolTextFile("song data/" + PlayState.SONG.song.toLowerCase() + "/dialogue");
+		#end
 		
 		portraitLeft = new FlxSprite(255, 120);
 
