@@ -52,7 +52,7 @@ class GameplayCustomizeState extends MusicBeatState
         curt = new FlxSprite(-500, -300).loadGraphic(Paths.image('stagecurtains','shared'));
         front = new FlxSprite(-650, 600).loadGraphic(Paths.image('stagefront','shared'));
 
-		//Conductor.changeBPM(102);
+		Conductor.changeBPM(102);
 		persistentUpdate = true;
 
         super.create();
@@ -193,9 +193,8 @@ class GameplayCustomizeState extends MusicBeatState
     {
         super.beatHit();
 
-        bf.playAnim('idle', true);
-        dad.dance(true);
-        gf.dance();
+        bf.playAnim('idle');
+        dad.dance();
 
         FlxG.camera.zoom += 0.015;
         camHUD.zoom += 0.010;

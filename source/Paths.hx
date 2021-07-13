@@ -53,7 +53,7 @@ class Paths
 		return 'assets/$file';
 	}
 
-	inline static public function file(file:String, ?library:String, type:AssetType = TEXT)
+	inline static public function file(file:String, type:AssetType = TEXT, ?library:String)
 	{
 		return getPath(file, type, library);
 	}
@@ -142,7 +142,7 @@ class Paths
 				return null;
 				#end
 			else
-				return FlxAtlasFrames.fromSparrow(image('characters/$key', library), file('images/characters/$key.xml', library));
+				return FlxAtlasFrames.fromSparrow(image('characters/$key'), file('images/characters/$key.xml'));
 		return FlxAtlasFrames.fromSparrow(image(key, library), file('images/$key.xml', library));
 	}
 
@@ -169,7 +169,7 @@ class Paths
 				return null;
 				#end
 			else
-				return FlxAtlasFrames.fromSpriteSheetPacker(image('characters/$key'), file('images/characters/$key.txt', library));
+				return FlxAtlasFrames.fromSpriteSheetPacker(image('characters/$key'), file('images/characters/$key.txt'));
 		return FlxAtlasFrames.fromSpriteSheetPacker(image(key, library), file('images/$key.txt', library));
 	}
 }
