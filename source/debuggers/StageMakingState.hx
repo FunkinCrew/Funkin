@@ -117,7 +117,7 @@ class StageMakingState extends FlxState
             stageCam.zoom -= 0.1;
         }
 
-        if(controls.ACCEPT)
+        if(controls.BACK)
         {
             FlxG.switchState(new MainMenuState());
         }

@@ -1,5 +1,6 @@
 package states;
 
+import utilities.MusicUtilities;
 import ui.Option;
 import ui.Checkbox;
 import flixel.group.FlxGroup;
@@ -57,9 +58,9 @@ class OptionsMenu extends MusicBeatState
 		[
 			"Tools",
 			new PageOption("Back", 0, "Categories"),
-			new GameStateOption("Charter", 1, ChartingState),
-			new GameStateOption("Animation Debug", 2, AnimationDebug),
-			new GameStateOption("Stage Editor", 3, StageMakingState)
+			new GameStateOption("Charter", 1, new ChartingState()),
+			new GameStateOption("Animation Debug", 2, new AnimationDebug("dad")),
+			new GameStateOption("Stage Editor", 3, new StageMakingState("stage"))
 		],
 		[
 			"Misc",
@@ -92,6 +93,8 @@ class OptionsMenu extends MusicBeatState
 
 		add(page);
 		LoadPage("Categories");
+
+		FlxG.sound.playMusic(MusicUtilities.GetOptionsMenuMusic(), 0.7, true);
 	}
 
 	public static function LoadPage(Page_Name:String)

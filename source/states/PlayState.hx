@@ -159,9 +159,6 @@ class PlayState extends MusicBeatState
 
 	var inCutscene:Bool = false;
 
-	public static var inst:FlxSound;
-	public static var voices:FlxSound;
-
 	#if desktop
 	// Discord RPC variables
 	var storyDifficultyText:String = "";
@@ -724,12 +721,6 @@ class PlayState extends MusicBeatState
 			}
 			else
 			{
-				trace(inst);
-
-				// taken from .playMusic()
-				FlxG.sound.music = inst;
-		
-				FlxG.sound.music.persist = true;
 				FlxG.sound.music.play();
 			}
 			#else
@@ -763,7 +754,17 @@ class PlayState extends MusicBeatState
 		if (SONG.needsVoices)
 		{
 			#if sys
-			vocals = voices;
+			if(Assets.exists(Paths.voices(PlayState.SONG.song)))
+			{
+				vocals = new FlxSound().loadEmbedded(Paths.voices(PlayState.SONG.song));
+			}
+			else
+			{
+				ByteArray.loadFromFile(Sys.getCwd() + "assets/songs/" + SONG.song.toLowerCase() + "/Voices." + Paths.SOUND_EXT).onComplete(function(array:ByteArray){
+					trace(array);
+					vocals = new ModdingSound().loadByteArray(array);
+				});
+			}
 			#else
 			vocals = new FlxSound().loadEmbedded(Paths.voices(PlayState.SONG.song));
 			#end
@@ -772,6 +773,18 @@ class PlayState extends MusicBeatState
 		{
 			vocals = new FlxSound();
 		}
+
+		// LOADING MUSIC FOR CUSTOM SONGS
+		#if sys
+		if(!Assets.exists(Paths.inst(PlayState.SONG.song)))
+		{
+			ByteArray.loadFromFile(Sys.getCwd() + "assets/songs/" + SONG.song.toLowerCase() + "/Inst." + Paths.SOUND_EXT).onComplete(function(array:ByteArray){
+				trace(array);
+				FlxG.sound.music = new ModdingSound().loadByteArray(array);
+				FlxG.sound.music.persist = true;
+			});
+		}
+		#end
 
 		FlxG.sound.list.add(vocals);
 

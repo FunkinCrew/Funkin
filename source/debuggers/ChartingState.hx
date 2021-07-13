@@ -95,6 +95,10 @@ class ChartingState extends MusicBeatState
 
 	override function create()
 	{
+		// FOR WHEN COMING IN FROM THE TOOLS PAGE LOL
+		if (Assets.getLibrary("shared") == null)
+			Assets.loadLibrary("shared").onComplete(function (_) { });
+
 		curSection = lastSection;
 
 		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * 8, GRID_SIZE * 16);
@@ -124,18 +128,7 @@ class ChartingState extends MusicBeatState
 			_song = PlayState.SONG;
 		else
 		{
-			_song = {
-				song: 'Test',
-				notes: [],
-				bpm: 150,
-				needsVoices: true,
-				player1: 'bf',
-				player2: 'dad',
-				speed: 1,
-				validScore: false,
-				gf: 'gf',
-				stage: 'stage'
-			};
+			_song = Song.loadFromJson("test", "test");
 		}
 
 		FlxG.mouse.visible = true;

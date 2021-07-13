@@ -244,7 +244,7 @@ class ControlsOption extends Option
 class GameStateOption extends Option
 {
     // OPTIONS //
-    public var Game_State:Dynamic = PlayState;
+    public var Game_State:FlxState;
 
     public function new(_Option_Name:String = "-", _Option_Row:Int = 0, _Game_State:Dynamic)
     {
@@ -267,6 +267,6 @@ class GameStateOption extends Option
         super.update(elapsed);
 
         if(FlxG.keys.justPressed.ENTER && Alphabet_Text.targetY == 0)
-            LoadingState.loadAndSwitchState(Game_State, true);
+			FlxG.switchState(Game_State);
     }
 }
