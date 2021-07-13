@@ -232,7 +232,6 @@ class ControlsOption extends Option
 
         if(FlxG.keys.justPressed.ESCAPE && Alphabet_Text.targetY == 0 && OptionsMenu.inMenu == true)
         {
-            OptionsMenu.inMenu = false;
             remove(controlsBox);
         }
     }

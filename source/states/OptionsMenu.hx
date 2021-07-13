@@ -154,9 +154,12 @@ class OptionsMenu extends MusicBeatState
 			}
 
 			if (controls.BACK)
-			{
 				FlxG.switchState(new MainMenuState());
-			}
+		}
+		else
+		{
+			if(controls.BACK)
+				inMenu = false;
 		}
 
 		if (curSelected < 0)

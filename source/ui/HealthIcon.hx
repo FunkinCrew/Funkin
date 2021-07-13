@@ -1,5 +1,6 @@
 package ui;
 
+import openfl.display.BitmapData;
 import flixel.FlxSprite;
 
 class HealthIcon extends FlxSprite
@@ -49,6 +50,23 @@ class HealthIcon extends FlxSprite
 	public function changeIconSet(char:String = 'bf')
 	{
 		antialiasing = true;
+
+		
+		#if sys
+		var graphicData = BitmapData.fromFile(Sys.getCwd() + "assets/images/icons/" + char + "-icons.png");
+
+		loadGraphic(graphicData, true, 150, 150, false, char);
+
+		// antialiasing override
+		switch(char)
+		{
+			case 'bf-pixel' | 'gf-pixel' | 'senpai' | 'senpai-angry' | 'spirit':
+				antialiasing = false;
+		}
+
+		animation.add(char, [0, 1, 2], 0, false, isPlayer);
+		animation.play(char);
+		#else
 		loadGraphic(Paths.image('icons/' + char + '-icons'), true, 150, 150);
 
 		// antialiasing override
@@ -60,6 +78,7 @@ class HealthIcon extends FlxSprite
 
 		animation.add(char, [0, 1, 2], 0, false, isPlayer);
 		animation.play(char);
+		#end
 	}
 
 	override function update(elapsed:Float)
