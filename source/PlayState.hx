@@ -1220,7 +1220,7 @@ class PlayState extends MusicBeatState
 	function ughIntro()
 	{
 		if (cutsceneOp){
-			var video = new VideoPlayer(0, 0, 'videos/ughcutscene.webm');
+			var video = new VideoPlayer('videos/ughcutscene.webm');
 			video.finishCallback = () -> {
 				remove(video);
 				startCountdown();
@@ -1238,7 +1238,7 @@ class PlayState extends MusicBeatState
 	function gunsIntro()
 	{
 		if (cutsceneOp){
-			var video = new VideoPlayer(0, 0, 'videos/gunscutscene.webm');
+			var video = new VideoPlayer('videos/gunscutscene.webm');
 			video.finishCallback = () -> {
 				remove(video);
 				startCountdown();
@@ -1256,7 +1256,7 @@ class PlayState extends MusicBeatState
 	function stressIntro()
 	{
 		if (cutsceneOp){
-			var video = new VideoPlayer(0, 0, 'videos/stresscutscene.webm');
+			var video = new VideoPlayer('videos/stresscutscene.webm');
 			video.finishCallback = () -> {
 				remove(video);
 				startCountdown();

@@ -1,27 +1,23 @@
 package;
 
-import flixel.system.FlxSound;
-import flixel.FlxCamera;
-import haxe.macro.Expr.Catch;
-import openfl.Assets;
-import openfl.media.Sound;
-import flixel.FlxSprite;
-import webm.*;
-import utils.Asset2File;
-#if sys
-import webm.WebmPlayer;
-#end
-import PlayState;
-import flixel.addons.ui.FlxUIState;
-import flixel.FlxSprite;
-import flixel.FlxG;
-import flixel.util.FlxPath;
-import Config;
+import openfl.utils.Assets;
 import utils.AndroidData;
+import flixel.FlxG;
+import flixel.FlxCamera;
+import Paths;
+#if cpp
+import webm.*;
+import flixel.system.FlxSound;
+import utils.Asset2File;
+#elseif html5
+import openfl.net.NetStream;
+import openfl.media.Video;
+#end
+import flixel.FlxSprite;
 
-/**-200 -200
+/**
 	usage:
-	var video = new VideoPlayer(0, 0, 'videos/ughintro.webm');
+	var video = new VideoPlayer('videos/ughintro.webm');
 	video.play();
 	add(video);
 
@@ -29,70 +25,100 @@ import utils.AndroidData;
 	maybe use vp8 (idk)
 **/
 
-class VideoPlayer extends FlxSprite {
-	public var finishCallback:Void->Void=null;
-	public var data:AndroidData = new AndroidData();
-	var PLAYDUMBASS:Bool;
-
+class VideoPlayer extends FlxSprite
+{
 	#if sys
-	public var player:WebmPlayer;
+	public var webm:WebmPlayer;
+	var sound:FlxSound;
+
+	public static var SKIP_STEP_LIMIT:Int = 90;
+	#elseif html5
+	var netStream:NetStream;
+	public var player:Video;
 	#end
 
-	public var sound:FlxSound;
+	var pathVideo:String;
 
-	public var pathfile:String;
 
-	public function new(x, y, path:String) 
+	/* 
+	execute function after stop, finish video
+	usage:
+	video.finishCallback = () -> {
+		remove(video);
+		startCountdown();
+	}
+	*/
+	public var finishCallback:Void->Void=null;
+
+	public function new(asset:String, ?x:Float, ?y:Float) 
 	{
 		super(x, y);
 
-		#if sys
-		WebmPlayer.SKIP_STEP_LIMIT = 90;//Note to builder and lucky, FALSE ERROR. How to fix? remove the line lol -Zack and peppy (To make it more sync, go to your webmplayer.hx in your haxe directory and make SKIP_STEP_LIMIT 90 lolololol)
+		#if cpp
+		WebmPlayer.SKIP_STEP_LIMIT = SKIP_STEP_LIMIT;
 
-		pathfile = path;
+		webm = new WebmPlayer();
+		
+		changeVideo(asset);
 
-		var path = Asset2File.getPath(Paths.file(path), ".webm");
+		webm.addEventListener('play', cast play);
+		webm.addEventListener('stop', cast stop);
+		webm.addEventListener('end', cast end);
 
-		var io:WebmIo = new WebmIoFile(path);
-		player = new WebmPlayer();
-		player.fuck(io);
 
-		player.addEventListener('play', function(e) {
-			trace('play!');
-		});
-
-		player.addEventListener('end', function(e) {
-			if (finishCallback != null)
-				finishCallback();
-		});
-
-		player.addEventListener('stop', function(e) {
-			if (finishCallback != null)
-				finishCallback();
-		});
-
-		loadGraphic(player.bitmapData); 
-		#end
-
-		#if html5
+		loadGraphic(webm.bitmapData); 
+		#elseif html5
 		trace('video is unsupported');
 		#end
+	
 	}
 
 	public function play() {
-		PLAYDUMBASS = data.getCutscenes();
+		var PLAYDUMBASS = new AndroidData().getCutscenes();
 		#if sys
 		if (PLAYDUMBASS)
 		{
-			player.play();
-			sound = FlxG.sound.play(Paths.file(pathfile + '.ogg'));
-		}else{
+			webm.play();
+
+			if (Assets.exists(Paths.file(pathVideo + '.ogg')))
+				sound = FlxG.sound.play(Paths.file(pathVideo + '.ogg'))
+			else
+				trace('sound dont exists');
+		}else
+		{
 			if (finishCallback != null)
 				finishCallback();
 		}
+		#elseif html5
+		//player = new Video();
+		if (finishCallback != null)
+			finishCallback();
+		
 		#end
+	}
 
-		#if html5
+	//callbacks
+	function start() {
+		trace('starting video!');
+	}
+	function stop() {
+		if (finishCallback != null)
+			finishCallback();
+	}
+	function end() {
+		if (finishCallback != null)
+			finishCallback();
+	}
+	
+
+	function changeVideo(asset:String) {
+		pathVideo = asset;
+		#if cpp
+		var path = Asset2File.getPath(Paths.file(pathVideo), ".webm"); // maybe use without paths
+
+		var io:WebmIo = new WebmIoFile(path);
+		webm.fuck(io);
+
 		#end
 	}
 
@@ -105,8 +131,10 @@ class VideoPlayer extends FlxSprite {
 
 	override public function destroy() {
 		#if sys
-		player.stop();
+		webm.stop();
 		super.destroy();
+		#elseif html5
+
 		#end
 	}
 }
