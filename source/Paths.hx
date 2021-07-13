@@ -1,5 +1,9 @@
 package;
 
+#if sys
+import sys.io.File;
+#end
+import openfl.display.BitmapData;
 import flixel.FlxG;
 import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.utils.AssetType;
@@ -136,4 +140,52 @@ class Paths
 	{
 		return FlxAtlasFrames.fromSpriteSheetPacker(image(key, library), file('images/$key.txt', library));
 	}
+
+	#if sys
+	inline static public function getSparrowAtlasSYS(key:String, ?library:String)
+	{
+		if(library == null)
+			library = "";
+
+		return FlxAtlasFrames.fromSparrow(
+			BitmapData.fromFile(
+				Sys.getCwd()
+				+ "assets/"
+				+ (library == "" ? "images/" : library + "/" + "images/")
+				+ key
+				+ ".png"
+			),
+			File.getContent(
+				Sys.getCwd()
+				+ "assets/"
+				+ (library == "" ? "images/" : library + "/" + "images/")
+				+ key
+				+ ".xml"
+			)
+		);
+	}
+
+	inline static public function getPackerAtlasSYS(key:String, ?library:String)
+	{
+		if(library == null)
+			library = "";
+
+		return FlxAtlasFrames.fromSpriteSheetPacker(
+			BitmapData.fromFile(
+				Sys.getCwd()
+				+ "assets/"
+				+ (library == "" ? "images/" : library + "/" + "images/")
+				+ key
+				+ ".png"
+			),
+			File.getContent(
+				Sys.getCwd()
+				+ "assets/"
+				+ (library == "" ? "images/" : library + "/" + "images/")
+				+ key
+				+ ".txt"
+			)
+		);
+	}
+	#end
 }

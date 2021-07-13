@@ -1,5 +1,8 @@
 package game;
 
+import lime.utils.Assets;
+import flixel.graphics.frames.FlxFramesCollection;
+import haxe.Json;
 #if sys
 import sys.io.File;
 #end
@@ -19,6 +22,8 @@ class Character extends FlxSprite
 
 	public var holdTimer:Float = 0;
 	var animationNotes:Array<Dynamic> = [];
+
+	var dancesLeftAndRight:Bool = false;
 
 	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false)
 	{
@@ -201,6 +206,7 @@ class Character extends FlxSprite
 				flipX = true;
 
 			case 'bf':
+				/*
 				frames = Paths.getSparrowAtlas('characters/BOYFRIEND', 'shared');
 				animation.addByPrefix('idle', 'BF idle dance', 24, false);
 				animation.addByPrefix('singUP', 'BF NOTE UP0', 24, false);
@@ -217,7 +223,10 @@ class Character extends FlxSprite
 				animation.addByPrefix('deathLoop', "BF Dead Loop", 24, true);
 				animation.addByPrefix('deathConfirm', "BF Dead confirm", 24, false);
 
-				animation.addByPrefix('scared', 'BF idle shaking', 24);
+				animation.addByPrefix('scared', 'BF idle shaking', 24, true);
+				*/
+
+				loadCharacterConfiguration(curCharacter);
 
 				playAnim('idle');
 
@@ -380,6 +389,78 @@ class Character extends FlxSprite
 		}
 	}
 
+	public function loadCharacterConfiguration(characterName:String)
+	{
+		var rawJson:String;
+
+		#if sys
+		rawJson = File.getContent(Sys.getCwd() + Paths.jsonSYS("character data/" + characterName + "/config")).trim();
+		#else
+		rawJson = Assets.getText(Paths.json("character data/" + characterName + "/config")).trim();
+		#end
+
+		while (!rawJson.endsWith("}"))
+		{
+			rawJson = rawJson.substr(0, rawJson.length - 1);
+			// LOL GOING THROUGH THE BULLSHIT TO CLEAN IDK WHATS STRANGE
+			// copied from Song.hx cuz idk if this will happen with the potential future character creator
+		}
+
+		var config:CharacterConfig = cast Json.parse(rawJson);
+
+		flipX = config.defaultFlipX;
+		dancesLeftAndRight = config.dancesLeftAndRight;
+
+		if(config.spritesheetType == "sparrow")
+		{
+			#if sys
+			frames = Paths.getSparrowAtlasSYS("characters/" + config.imagePath, "shared");
+			#else
+			frames = Paths.getSparrowAtlas('characters/' + config.imagePath, 'shared');
+			#end
+		}
+		else if(config.spritesheetType == "packer")
+		{
+			#if sys
+			frames = Paths.getPackerAtlasSYS("characters/" + config.imagePath, "shared");
+			#else
+			frames = Paths.getPackerAtlas('characters/' + config.imagePath, 'shared');
+			#end
+		}
+
+		trace(config.animations);
+
+		for(i in 0...config.animations.length)
+		{
+			var selected_animation = config.animations[i];
+
+			if(selected_animation.indices != null)
+			{
+				animation.addByIndices(
+					selected_animation.name,
+					selected_animation.animation_name,
+					selected_animation.indices, "",
+					selected_animation.fps,
+					selected_animation.looped
+				);
+			}
+			else
+			{
+				animation.addByPrefix(
+					selected_animation.name,
+					selected_animation.animation_name,
+					selected_animation.fps,
+					selected_animation.looped
+				);
+			}
+		}
+
+		if(dancesLeftAndRight)
+			playAnim("danceRight");
+		else
+			playAnim("idle");
+	}
+
 	public function loadOffsetFile(characterName:String)
 	{
 		var offsets:Array<String>;
@@ -463,16 +544,18 @@ class Character extends FlxSprite
 							playAnim('danceLeft');
 					}
 
-				case 'spooky':
-					danced = !danced;
-
-					if (danced)
-						playAnim('danceRight');
-					else
-						playAnim('danceLeft');
-
 				default:
-					playAnim('idle');
+					if(!dancesLeftAndRight)
+						playAnim('idle');
+					else
+					{
+						danced = !danced;
+
+						if (danced)
+							playAnim('danceRight');
+						else
+							playAnim('danceLeft');
+					}
 			}
 		}
 	}
@@ -512,4 +595,22 @@ class Character extends FlxSprite
 	{
 		animOffsets[name] = [x, y];
 	}
+}
+
+typedef CharacterConfig =
+{
+	var imagePath:String;
+	var animations:Array<CharacterAnimation>;
+	var defaultFlipX:Bool;
+	var dancesLeftAndRight:Bool;
+	var spritesheetType:String;
+}
+
+typedef CharacterAnimation =
+{
+	var name:String;
+	var animation_name:String;
+	var indices:Null<Array<Int>>;
+	var fps:Int;
+	var looped:Bool;
 }
