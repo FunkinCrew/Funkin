@@ -428,8 +428,6 @@ class Character extends FlxSprite
 			#end
 		}
 
-		trace(config.animations);
-
 		for(i in 0...config.animations.length)
 		{
 			var selected_animation = config.animations[i];
