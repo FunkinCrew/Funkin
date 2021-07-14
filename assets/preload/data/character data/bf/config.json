@@ -2,7 +2,7 @@
     "defaultFlipX": true,
     "dancesLeftAndRight": false,
     "imagePath": "BOYFRIEND",
-    "spritesheetType": "sparrow",
+    "spritesheetType": "SPARROW",
     "animations": [
         {
             "name": "idle",

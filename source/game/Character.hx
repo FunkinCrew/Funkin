@@ -1,5 +1,6 @@
 package game;
 
+import modding.CharacterCreationState.SpritesheetType;
 import lime.utils.Assets;
 import flixel.graphics.frames.FlxFramesCollection;
 import haxe.Json;
@@ -205,33 +206,6 @@ class Character extends FlxSprite
 
 				flipX = true;
 
-			case 'bf':
-				/*
-				frames = Paths.getSparrowAtlas('characters/BOYFRIEND', 'shared');
-				animation.addByPrefix('idle', 'BF idle dance', 24, false);
-				animation.addByPrefix('singUP', 'BF NOTE UP0', 24, false);
-				animation.addByPrefix('singLEFT', 'BF NOTE LEFT0', 24, false);
-				animation.addByPrefix('singRIGHT', 'BF NOTE RIGHT0', 24, false);
-				animation.addByPrefix('singDOWN', 'BF NOTE DOWN0', 24, false);
-				animation.addByPrefix('singUPmiss', 'BF NOTE UP MISS', 24, false);
-				animation.addByPrefix('singLEFTmiss', 'BF NOTE LEFT MISS', 24, false);
-				animation.addByPrefix('singRIGHTmiss', 'BF NOTE RIGHT MISS', 24, false);
-				animation.addByPrefix('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
-				animation.addByPrefix('hey', 'BF HEY', 24, false);
-
-				animation.addByPrefix('firstDeath', "BF dies", 24, false);
-				animation.addByPrefix('deathLoop', "BF Dead Loop", 24, true);
-				animation.addByPrefix('deathConfirm', "BF Dead confirm", 24, false);
-
-				animation.addByPrefix('scared', 'BF idle shaking', 24, true);
-				*/
-
-				loadCharacterConfiguration(curCharacter);
-
-				playAnim('idle');
-
-				flipX = true;
-
 			case 'bf-christmas':
 				frames = Paths.getSparrowAtlas('characters/bfChristmas', 'shared');
 				animation.addByPrefix('idle', 'BF idle dance', 24, false);
@@ -359,7 +333,13 @@ class Character extends FlxSprite
 				animation.addByPrefix('singRIGHT-alt', 'Parent Right Note Mom', 24, false);
 
 				playAnim('idle');
+
+			default:
+				loadNamedConfiguration(curCharacter);
 		}
+
+		if (isPlayer)
+			flipX = !flipX;
 
 		if(!debugMode)
 		{
@@ -367,8 +347,6 @@ class Character extends FlxSprite
 
 			if (isPlayer)
 			{
-				flipX = !flipX;
-	
 				// Doesn't flip for BF, since his are already in the right place???
 				if (!curCharacter.startsWith('bf'))
 				{
@@ -389,7 +367,7 @@ class Character extends FlxSprite
 		}
 	}
 
-	public function loadCharacterConfiguration(characterName:String)
+	function loadNamedConfiguration(characterName:String)
 	{
 		var rawJson:String;
 
@@ -399,27 +377,17 @@ class Character extends FlxSprite
 		rawJson = Assets.getText(Paths.json("character data/" + characterName + "/config")).trim();
 		#end
 
-		while (!rawJson.endsWith("}"))
-		{
-			rawJson = rawJson.substr(0, rawJson.length - 1);
-			// LOL GOING THROUGH THE BULLSHIT TO CLEAN IDK WHATS STRANGE
-			// copied from Song.hx cuz idk if this will happen with the potential future character creator
-		}
-
 		var config:CharacterConfig = cast Json.parse(rawJson);
 
+		loadCharacterConfiguration(config);
+	}
+
+	public function loadCharacterConfiguration(config:CharacterConfig)
+	{
 		flipX = config.defaultFlipX;
 		dancesLeftAndRight = config.dancesLeftAndRight;
 
-		if(config.spritesheetType == "sparrow")
-		{
-			#if sys
-			frames = Paths.getSparrowAtlasSYS("characters/" + config.imagePath, "shared");
-			#else
-			frames = Paths.getSparrowAtlas('characters/' + config.imagePath, 'shared');
-			#end
-		}
-		else if(config.spritesheetType == "packer")
+		if(config.spritesheetType == SpritesheetType.PACKER)
 		{
 			#if sys
 			frames = Paths.getPackerAtlasSYS("characters/" + config.imagePath, "shared");
@@ -427,11 +395,17 @@ class Character extends FlxSprite
 			frames = Paths.getPackerAtlas('characters/' + config.imagePath, 'shared');
 			#end
 		}
-
-		for(i in 0...config.animations.length)
+		else
 		{
-			var selected_animation = config.animations[i];
+			#if sys
+			frames = Paths.getSparrowAtlasSYS("characters/" + config.imagePath, "shared");
+			#else
+			frames = Paths.getSparrowAtlas('characters/' + config.imagePath, 'shared');
+			#end
+		}
 
+		for(selected_animation in config.animations)
+		{
 			if(selected_animation.indices != null)
 			{
 				animation.addByIndices(
@@ -457,6 +431,9 @@ class Character extends FlxSprite
 			playAnim("danceRight");
 		else
 			playAnim("idle");
+
+		if (isPlayer)
+			flipX = !flipX;
 	}
 
 	public function loadOffsetFile(characterName:String)
@@ -601,7 +578,7 @@ typedef CharacterConfig =
 	var animations:Array<CharacterAnimation>;
 	var defaultFlipX:Bool;
 	var dancesLeftAndRight:Bool;
-	var spritesheetType:String;
+	var spritesheetType:SpritesheetType;
 }
 
 typedef CharacterAnimation =

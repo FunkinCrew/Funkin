@@ -1,7 +1,9 @@
 package;
 
+import flixel.graphics.FlxGraphic;
 #if sys
 import sys.io.File;
+import sys.FileSystem;
 #end
 import openfl.display.BitmapData;
 import flixel.FlxG;
@@ -144,25 +146,21 @@ class Paths
 	#if sys
 	inline static public function getSparrowAtlasSYS(key:String, ?library:String)
 	{
-		if(library == null)
-			library = "";
+		var path = pathStyleSYS(key, library);
 
-		return FlxAtlasFrames.fromSparrow(
-			BitmapData.fromFile(
-				Sys.getCwd()
-				+ "assets/"
-				+ (library == "" ? "images/" : library + "/" + "images/")
-				+ key
-				+ ".png"
-			),
-			File.getContent(
-				Sys.getCwd()
-				+ "assets/"
-				+ (library == "" ? "images/" : library + "/" + "images/")
-				+ key
-				+ ".xml"
-			)
-		);
+		var imageData = BitmapData.fromFile(path + ".png");
+		var xmlData = File.getContent(path + ".xml");
+
+		return FlxAtlasFrames.fromSparrow(imageData, xmlData);
+	}
+
+	// bruh debugging
+	inline static public function pathStyleSYS(key:String, ?library:String)
+	{
+		if(library != null)
+			library = library + "/";
+
+		return Sys.getCwd() + "assets/" + library + "images/" + key;
 	}
 
 	inline static public function getPackerAtlasSYS(key:String, ?library:String)
