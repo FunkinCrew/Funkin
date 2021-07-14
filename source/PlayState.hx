@@ -2639,7 +2639,7 @@ class PlayState extends MusicBeatState
 				// FlxG.switchState(new GameOverState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 			}
 			else
-				health = 0.01;
+				health = 1;
 		}
 		if (FlxG.save.data.resetButton)
 		{
