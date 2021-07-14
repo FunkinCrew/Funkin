@@ -238,7 +238,6 @@ class ResultsScreen extends FlxSubState
             PlayState.SONG = Song.loadFromJson(poop, PlayState.rep.replay.songName);
             PlayState.isStoryMode = false;
             PlayState.storyDifficulty = PlayState.rep.replay.songDiff;
-            PlayState.storyWeek = 0;
             LoadingState.loadAndSwitchState(new PlayState());
         }
 
@@ -275,7 +274,6 @@ class ResultsScreen extends FlxSubState
             PlayState.SONG = Song.loadFromJson(poop, PlayState.SONG.song);
             PlayState.isStoryMode = false;
             PlayState.storyDifficulty = PlayState.storyDifficulty;
-            PlayState.storyWeek = 0;
             LoadingState.loadAndSwitchState(new PlayState());
         }
 
