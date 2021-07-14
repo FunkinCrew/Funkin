@@ -54,10 +54,13 @@ class ResultsScreen extends FlxSubState
         background.scrollFactor.set();
         add(background);
 
-        music = new FlxSound().loadEmbedded(Paths.music('breakfast'), true, true);
-		music.volume = 0;
-		music.play(false, FlxG.random.int(0, Std.int(music.length / 2)));
-		FlxG.sound.list.add(music);
+        if (!PlayState.inResults) 
+        {
+            music = new FlxSound().loadEmbedded(Paths.music('breakfast'), true, true);
+            music.volume = 0;
+            music.play(false, FlxG.random.int(0, Std.int(music.length / 2)));
+            FlxG.sound.list.add(music);
+        }
 
         background.alpha = 0;
 
@@ -168,8 +171,8 @@ class ResultsScreen extends FlxSubState
 
 	override function update(elapsed:Float)
 	{
-        if (music.volume < 0.5)
-			music.volume += 0.01 * elapsed;
+        if (music != null && music.volume < 0.5)
+		    music.volume += 0.01 * elapsed;
 
         // keybinds
 
@@ -194,6 +197,7 @@ class ResultsScreen extends FlxSubState
             if (PlayState.isStoryMode)
             {
                 FlxG.sound.playMusic(Paths.music('freakyMenu'));
+                Conductor.changeBPM(102);
                 FlxG.switchState(new MainMenuState());
             }
             else
@@ -234,7 +238,6 @@ class ResultsScreen extends FlxSubState
             PlayState.SONG = Song.loadFromJson(poop, PlayState.rep.replay.songName);
             PlayState.isStoryMode = false;
             PlayState.storyDifficulty = PlayState.rep.replay.songDiff;
-            PlayState.storyWeek = 0;
             LoadingState.loadAndSwitchState(new PlayState());
         }
 
@@ -265,12 +268,12 @@ class ResultsScreen extends FlxSubState
 
             var poop:String = Highscore.formatSong(songFormat, PlayState.storyDifficulty);
 
-            music.fadeOut(0.3);
+            if (music != null)
+                music.fadeOut(0.3);
 
             PlayState.SONG = Song.loadFromJson(poop, PlayState.SONG.song);
             PlayState.isStoryMode = false;
             PlayState.storyDifficulty = PlayState.storyDifficulty;
-            PlayState.storyWeek = 0;
             LoadingState.loadAndSwitchState(new PlayState());
         }
 
