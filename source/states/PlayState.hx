@@ -1173,6 +1173,7 @@ class PlayState extends MusicBeatState
 
 		if (FlxG.keys.justPressed.SEVEN)
 		{
+			vocals.stop();
 			FlxG.switchState(new ChartingState());
 
 			#if desktop
@@ -1235,14 +1236,6 @@ class PlayState extends MusicBeatState
 			else
 				iconP1.playSwagAnim("bf-prototype");
 		}
-
-		//cool anim debug
-		if (FlxG.keys.justPressed.ONE)
-			FlxG.switchState(new AnimationDebug(SONG.player2));
-		if (FlxG.keys.justPressed.TWO)
-			FlxG.switchState(new AnimationDebug(gfVersion));
-		if (FlxG.keys.justPressed.THREE)
-			FlxG.switchState(new AnimationDebug(SONG.player1));
 
 		if (startingSong)
 		{
@@ -1596,6 +1589,7 @@ class PlayState extends MusicBeatState
 				transIn = FlxTransitionableState.defaultTransIn;
 				transOut = FlxTransitionableState.defaultTransOut;
 
+				vocals.stop();
 				FlxG.switchState(new StoryMenuState());
 
 				#if !debug
@@ -1654,6 +1648,7 @@ class PlayState extends MusicBeatState
 		else
 		{
 			trace('WENT BACK TO FREEPLAY??');
+			vocals.stop();
 			FlxG.switchState(new FreeplayState());
 		}
 	}
@@ -1880,13 +1875,16 @@ class PlayState extends MusicBeatState
 				}
 			});
 
+			var noteDataPossibles:Array<Bool> = [false, false, false, false];
+
 			// if there is actual notes to hit
 			if (possibleNotes.length > 0)
 			{
 				for(i in 0...possibleNotes.length)
 				{
-					if(controlArray[possibleNotes[i].noteData])
+					if(controlArray[possibleNotes[i].noteData] && !noteDataPossibles[possibleNotes[i].noteData])
 					{
+						noteDataPossibles[possibleNotes[i].noteData] = true;
 						goodNoteHit(possibleNotes[i]);
 					}
 					else

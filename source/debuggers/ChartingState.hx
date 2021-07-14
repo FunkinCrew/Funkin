@@ -1,5 +1,8 @@
 package debuggers;
 
+#if sys
+import modding.ModdingSound;
+#end
 import utilities.Difficulties;
 import game.Song;
 import states.LoadingState;
@@ -127,9 +130,7 @@ class ChartingState extends MusicBeatState
 		if (PlayState.SONG != null)
 			_song = PlayState.SONG;
 		else
-		{
 			_song = Song.loadFromJson("test", "test");
-		}
 
 		FlxG.mouse.visible = true;
 
@@ -461,13 +462,43 @@ class ChartingState extends MusicBeatState
 		if (FlxG.sound.music != null)
 		{
 			FlxG.sound.music.stop();
-			// vocals.stop();
+			//PlayState.instance.vocals.stop();
 		}
 
+		#if sys
+		if(Assets.exists(Paths.inst(daSong)))
+			FlxG.sound.playMusic(Paths.inst(daSong), 1);
+		else
+		{
+			ByteArray.loadFromFile(Sys.getCwd() + "assets/songs/" + daSong.toLowerCase() + "/Inst." + Paths.SOUND_EXT).onComplete(function(array:ByteArray){
+				trace(array);
+				FlxG.sound.music = new ModdingSound().loadByteArray(array);
+				FlxG.sound.music.persist = true;
+			});
+		}
+		#else
 		FlxG.sound.playMusic(Paths.inst(daSong), 1);
+		#end
+		
+		if (_song.needsVoices)
+		{
+			#if sys
+			if(Assets.exists(Paths.voices(daSong)))
+				vocals = new FlxSound().loadEmbedded(Paths.voices(daSong));
+			else
+			{
+				ByteArray.loadFromFile(Sys.getCwd() + "assets/songs/" + daSong.toLowerCase() + "/Voices." + Paths.SOUND_EXT).onComplete(function(array:ByteArray){
+					trace(array);
+					vocals = new ModdingSound().loadByteArray(array);
+				});
+			}
+			#else
+			vocals = new FlxSound().loadEmbedded(Paths.voices(daSong));
+			#end
+		}
+		else
+			vocals = new FlxSound();
 
-		// WONT WORK FOR TUTORIAL OR TEST SONG!!! REDO LATER
-		vocals = new FlxSound().loadEmbedded(Paths.voices(daSong));
 		FlxG.sound.list.add(vocals);
 
 		FlxG.sound.music.pause();
@@ -1148,6 +1179,9 @@ class ChartingState extends MusicBeatState
 
 		if (PlayState.SONG.needsVoices)
 			LoadingState.instance.checkLoadSong(LoadingState.getVocalPath());
+
+		FlxG.sound.music.stop();
+		vocals.stop();
 
 		FlxG.resetState();
 	}
