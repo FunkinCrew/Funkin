@@ -106,6 +106,8 @@ class BoolOption extends Option
 				Value = FlxG.save.data.memoryCounter;
 			case "nightMusic":
 				Value = FlxG.save.data.nightMusic;
+			case "watermarks":
+				Value = FlxG.save.data.watermarks;
 		}
 
 		return Value;
@@ -154,6 +156,8 @@ class BoolOption extends Option
 				Main.toggleMem(FlxG.save.data.memoryCounter);
 			case "nightMusic":
 				FlxG.save.data.nightMusic = !Option_Checked;
+			case "watermarks":
+				FlxG.save.data.watermarks = !Option_Checked;
 		}
 
         if(Option_Value != "muted")

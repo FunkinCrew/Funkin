@@ -1,5 +1,6 @@
 package states;
 
+import utilities.MusicUtilities;
 import lime.utils.Assets;
 #if desktop
 import utilities.Discord.DiscordClient;
@@ -97,7 +98,7 @@ class MainMenuState extends MusicBeatState
 
 		FlxG.camera.follow(camFollow, null, 0.06);
 
-		var versionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, TitleState.version, 12);
+		var versionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, (FlxG.save.data.watermarks ? TitleState.version : "v0.2.7.1"), 12);
 		versionShit.scrollFactor.set();
 		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(versionShit);
@@ -105,6 +106,8 @@ class MainMenuState extends MusicBeatState
 		// NG.core.calls.event.logEvent('swag').send();
 
 		changeItem();
+
+		openfl.Assets.loadSound(MusicUtilities.GetOptionsMenuMusic());
 
 		super.create();
 	}

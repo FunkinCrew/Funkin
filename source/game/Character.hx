@@ -432,8 +432,11 @@ class Character extends FlxSprite
 		else
 			playAnim("idle");
 
-		if (isPlayer)
-			flipX = !flipX;
+		if(debugMode)
+		{
+			if (isPlayer)
+				flipX = !flipX;
+		}
 	}
 
 	public function loadOffsetFile(characterName:String)

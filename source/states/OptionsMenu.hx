@@ -69,9 +69,10 @@ class OptionsMenu extends MusicBeatState
 			new PageOption("Back", 0, "Categories"),
 			new BoolOption("Prototype Title Screen", "oldTitle", FlxG.save.data.oldTitle, 1),
 			new BoolOption("Friday-Night Title Music", "nightMusic", FlxG.save.data.nightMusic, 2),
-			new BoolOption("Debug Songs in Freeplay", "debugSongs", FlxG.save.data.debugSongs, 3),
-			new BoolOption("Week Progression", "weekProgression", FlxG.save.data.weekProgression, 4),
-			new BoolOption("Freeplay Music", "freeplayMusic", FlxG.save.data.freeplayMusic, 5)
+			new BoolOption("Watermarks", "watermarks", FlxG.save.data.watermarks, 3),
+			new BoolOption("Debug Songs in Freeplay", "debugSongs", FlxG.save.data.debugSongs, 4),
+			new BoolOption("Week Progression", "weekProgression", FlxG.save.data.weekProgression, 5),
+			new BoolOption("Freeplay Music", "freeplayMusic", FlxG.save.data.freeplayMusic, 6)
 		]
 	];
 
@@ -96,7 +97,8 @@ class OptionsMenu extends MusicBeatState
 		add(page);
 		LoadPage("Categories");
 
-		FlxG.sound.playMusic(MusicUtilities.GetOptionsMenuMusic(), 0.7, true);
+		if(FlxG.sound.music == null)
+			FlxG.sound.playMusic(MusicUtilities.GetOptionsMenuMusic(), 0.7, true);
 	}
 
 	public static function LoadPage(Page_Name:String)

@@ -1,5 +1,8 @@
 package modding;
 
+#if discord_rpc
+import utilities.Discord.DiscordClient;
+#end
 import flixel.addons.ui.FlxUIDropDownMenu;
 import flixel.ui.FlxButton;
 import openfl.display.BitmapData;
@@ -42,17 +45,25 @@ class CharacterCreationState extends FlxState
     public var Animations:Array<CharacterAnimation> = [];
 
     // VARIABLES //
+    
+    // DATA //
     private var Raw_JSON_Data:String;
     private var CC_Data:CharacterConfig;
-    private var Character:Character;
 
+    private var Animation_List:Array<String>;
+    private var Selected_Animation:String = "idle";
+
+    // OBJECTS //
     private var UI_Group:FlxGroup = new FlxGroup();
+
+    private var Character:Character;
 
     private var Image_Path_Box:FlxUIInputText;
     private var Char_Name_Box:FlxUIInputText;
 
+    private var UI_Base:FlxUI;
+    
     private var Animation_List_Menu:FlxUIDropDownMenu;
-    private var Animation_List:Array<String>;
 
     public function new(?New_Character:String = "bf")
     {
@@ -80,6 +91,10 @@ class CharacterCreationState extends FlxState
         Create_UI();
         add(UI_Group);
         add(Character);
+
+        #if discord_rpc
+        DiscordClient.changePresence("In the character creator", null, null);
+        #end
     }
 
     public function Read_JSON_Data(?JSON_Data:Null<String>)
@@ -99,7 +114,7 @@ class CharacterCreationState extends FlxState
     private function Create_UI()
     {
         // BASE //
-        var UI_Base = new FlxUI(null, null);
+        UI_Base = new FlxUI(null, null);
 
         // CHARTING STATE THING //
         var UI_box = new FlxUITabMenu(null, [], false);
@@ -152,8 +167,11 @@ class CharacterCreationState extends FlxState
                 Spritesheet_Type = SPARROW;
         };
 
+        // DROP DOWNS //
+        Load_Animations();
+
         // BUTTONS //
-        var Reload_Char:FlxButton = new FlxButton(20, 325, "Load Character", function(){
+        var Reload_Char:FlxButton = new FlxButton(20, 325, "Load Settings", function(){
             if(Character != null)
             {
                 remove(Character);
@@ -168,9 +186,8 @@ class CharacterCreationState extends FlxState
             Load_Animations();
         });
 
-        // DROP DOWNS //
-        Animation_List_Menu = new FlxUIDropDownMenu(20, 200, FlxUIDropDownMenu.makeStrIdLabelArray(Animation_List, true), function(id:String){
-
+        var Play_Selected_Animation:FlxButton = new FlxButton(Animation_List_Menu.x + Animation_List_Menu.width + 1, Animation_List_Menu.y, "Play Animation", function(){
+            Character.playAnim(Selected_Animation, true);
         });
 
         // ADDING OBJECTS //
@@ -191,6 +208,9 @@ class CharacterCreationState extends FlxState
         UI_Base.add(Actions_Label);
         UI_Base.add(Reload_Char);
 
+        UI_Base.add(Animation_List_Menu);
+        UI_Base.add(Play_Selected_Animation);
+
         UI_Group.add(UI_Base);
 
         Create_Character();
@@ -198,11 +218,13 @@ class CharacterCreationState extends FlxState
 
     function Load_New_JSON_Data()
     {
-        CC_Data.imagePath = Image_Path;
-        CC_Data.defaultFlipX = Default_FlipX;
-        CC_Data.dancesLeftAndRight = LeftAndRight_Idle;
-        CC_Data.spritesheetType = Spritesheet_Type;
-        CC_Data.animations = Animations;
+        CC_Data = {
+            imagePath: Image_Path,
+            animations: Animations,
+            defaultFlipX: Default_FlipX,
+            dancesLeftAndRight: LeftAndRight_Idle,
+            spritesheetType: Spritesheet_Type
+        };
     }
 
     function Create_Character(?New_Char:String)
@@ -228,6 +250,29 @@ class CharacterCreationState extends FlxState
 
             Animation_List.push(name);
         }
+
+        var newList:Bool = true;
+
+        if(Animation_List_Menu != null)
+        {
+            UI_Base.remove(Animation_List_Menu);
+            Animation_List_Menu.destroy();
+            newList = false;
+        }
+
+        Animation_List_Menu = new FlxUIDropDownMenu(100, 300, FlxUIDropDownMenu.makeStrIdLabelArray(Animation_List, true), function(id:String){
+            Selected_Animation = Animation_List[Std.parseInt(id)];
+            Character.playAnim(Selected_Animation, true);
+            Load_Animation_Info();
+        });
+
+        if(LeftAndRight_Idle)
+            Selected_Animation = Animation_List[Std.parseInt("danceLeft")];
+        else
+            Selected_Animation = Animation_List[Std.parseInt("idle")];
+
+        if(!newList)
+            UI_Base.add(Animation_List_Menu);
     }
 
     function Load_Animation_Info()
