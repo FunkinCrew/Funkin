@@ -437,6 +437,7 @@ enum FOCUS
 {
 	ATTRIBUTES;
 	MOVEMENTS;
+	TOOLBAR;
 }
 
 enum TOOLS
@@ -445,4 +446,5 @@ enum TOOLS
 	MOVE;
 	GRAB;
 	GRABBING;
+	BOYFRIEND;
 }

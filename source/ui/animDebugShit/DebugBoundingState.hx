@@ -15,7 +15,6 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.util.FlxSpriteUtil;
 import flixel.util.FlxTimer;
-import js.html.FileList;
 import lime.utils.Assets as LimeAssets;
 import openfl.Assets;
 import openfl.events.Event;
@@ -29,6 +28,9 @@ import openfl.utils.ByteArray;
 using StringTools;
 using flixel.util.FlxSpriteUtil;
 
+#if web
+import js.html.FileList;
+#end
 #if sys
 import sys.io.File;
 #end
@@ -67,7 +69,8 @@ class DebugBoundingState extends FlxState
 
 		FlxG.cameras.add(hudCam, false);
 
-		bg = FlxGridOverlay.create(10, 10);
+		// bg = FlxGridOverlay.create(10, 10);
+		bg = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.GREEN);
 
 		bg.scrollFactor.set();
 		add(bg);

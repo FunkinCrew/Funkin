@@ -41,6 +41,10 @@ import ui.stageBuildShit.StageBuilderState;
 
 using StringTools;
 
+#if colyseus
+import io.colyseus.Client;
+import io.colyseus.Room;
+#end
 #if discord_rpc
 import Discord.DiscordClient;
 #end
@@ -160,6 +164,8 @@ class TitleState extends MusicBeatState
 		FlxG.switchState(new StageBuilderState());
 		#elseif ANIMDEBUG
 		FlxG.switchState(new ui.animDebugShit.DebugBoundingState());
+		#elseif NETTEST
+		FlxG.switchState(new netTest.NetTest());
 		#else
 		new FlxTimer().start(1, function(tmr:FlxTimer)
 		{
@@ -375,6 +381,12 @@ class TitleState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
+		if (FlxG.keys.justPressed.Y)
+		{
+			FlxTween.tween(FlxG.stage.window, {x: FlxG.stage.window.x + 300}, 1.4, {ease: FlxEase.quadInOut, type: PINGPONG, startDelay: 0.35});
+			FlxTween.tween(FlxG.stage.window, {y: FlxG.stage.window.y + 100}, 0.7, {ease: FlxEase.quadInOut, type: PINGPONG});
+		}
+
 		/* 
 			FlxG.watch.addQuick('cur display', FlxG.stage.window.display.id);
 			if (FlxG.keys.justPressed.Y)
