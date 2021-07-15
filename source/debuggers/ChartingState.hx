@@ -460,21 +460,16 @@ class ChartingState extends MusicBeatState
 	function loadSong(daSong:String):Void
 	{
 		if (FlxG.sound.music != null)
-		{
 			FlxG.sound.music.stop();
-			//PlayState.instance.vocals.stop();
-		}
 
 		#if sys
 		if(Assets.exists(Paths.inst(daSong)))
 			FlxG.sound.playMusic(Paths.inst(daSong), 1);
 		else
 		{
-			ByteArray.loadFromFile(Sys.getCwd() + "assets/songs/" + daSong.toLowerCase() + "/Inst." + Paths.SOUND_EXT).onComplete(function(array:ByteArray){
-				trace(array);
-				FlxG.sound.music = new ModdingSound().loadByteArray(array);
-				FlxG.sound.music.persist = true;
-			});
+			var array =  ByteArray.fromFile(Sys.getCwd() + "assets/songs/" + daSong.toLowerCase() + "/Inst." + Paths.SOUND_EXT);
+			FlxG.sound.music = new ModdingSound().loadByteArray(array);
+			FlxG.sound.music.persist = true;
 		}
 		#else
 		FlxG.sound.playMusic(Paths.inst(daSong), 1);
@@ -487,10 +482,8 @@ class ChartingState extends MusicBeatState
 				vocals = new FlxSound().loadEmbedded(Paths.voices(daSong));
 			else
 			{
-				ByteArray.loadFromFile(Sys.getCwd() + "assets/songs/" + daSong.toLowerCase() + "/Voices." + Paths.SOUND_EXT).onComplete(function(array:ByteArray){
-					trace(array);
-					vocals = new ModdingSound().loadByteArray(array);
-				});
+				var array = ByteArray.fromFile(Sys.getCwd() + "assets/songs/" + daSong.toLowerCase() + "/Voices." + Paths.SOUND_EXT);
+				vocals = new ModdingSound().loadByteArray(array);
 			}
 			#else
 			vocals = new FlxSound().loadEmbedded(Paths.voices(daSong));

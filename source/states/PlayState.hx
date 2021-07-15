@@ -760,32 +760,27 @@ class PlayState extends MusicBeatState
 			}
 			else
 			{
-				ByteArray.loadFromFile(Sys.getCwd() + "assets/songs/" + SONG.song.toLowerCase() + "/Voices." + Paths.SOUND_EXT).onComplete(function(array:ByteArray){
-					trace(array);
-					vocals = new ModdingSound().loadByteArray(array);
-				});
+				var array = ByteArray.fromFile(Sys.getCwd() + "assets/songs/" + SONG.song.toLowerCase() + "/Voices." + Paths.SOUND_EXT);
+				vocals = new ModdingSound().loadByteArray(array);
 			}
 			#else
 			vocals = new FlxSound().loadEmbedded(Paths.voices(PlayState.SONG.song));
 			#end
 		}
 		else
-		{
 			vocals = new FlxSound();
-		}
 
 		// LOADING MUSIC FOR CUSTOM SONGS
 		#if sys
 		if(!Assets.exists(Paths.inst(PlayState.SONG.song)))
 		{
-			ByteArray.loadFromFile(Sys.getCwd() + "assets/songs/" + SONG.song.toLowerCase() + "/Inst." + Paths.SOUND_EXT).onComplete(function(array:ByteArray){
-				trace(array);
-				FlxG.sound.music = new ModdingSound().loadByteArray(array);
-				FlxG.sound.music.persist = true;
-			});
+			var array = ByteArray.fromFile(Sys.getCwd() + "assets/songs/" + SONG.song.toLowerCase() + "/Inst." + Paths.SOUND_EXT);
+			FlxG.sound.music = new ModdingSound().loadByteArray(array);
+			FlxG.sound.music.persist = true;
 		}
 		#end
 
+		vocals.persist = false;
 		FlxG.sound.list.add(vocals);
 
 		notes = new FlxTypedGroup<Note>();
