@@ -4,6 +4,11 @@ All notable changes will be documented in this file.
 ## [0.3] - ?/?/????
 ### Added
 - Revamped options menu with checkboxes and other things.
+- A rank while playing.
+- Character Creator.
+- Custom song support.
+- Custom health icon support.
+- Updated hit-window.
 ### Changed
 - ipsum
 ### Fixed
@@ -13,7 +18,6 @@ All notable changes will be documented in this file.
 
 PLANS (priorities important to not important):
 - Add better mod support (as shown in my enhancement suggestions)
-- Give more information to the player about how they are doing on a song.
 - Results screen
 - Playable character system? (possibly, i'm not sure yet)
 
