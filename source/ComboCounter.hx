@@ -3,6 +3,7 @@ package;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
+import flixel.util.FlxTimer;
 
 class ComboCounter extends FlxTypedSpriteGroup<FlxSprite>
 {
@@ -12,6 +13,8 @@ class ComboCounter extends FlxTypedSpriteGroup<FlxSprite>
 	var daCombo:Int = 0;
 
 	var grpNumbers:FlxTypedGroup<ComboNumber>;
+
+	var onScreenTime:Float = 0;
 
 	public function new(x:Float, y:Float, daCombo:Int = 0)
 	{
@@ -36,11 +39,21 @@ class ComboCounter extends FlxTypedSpriteGroup<FlxSprite>
 
 	public function forceFinish():Void
 	{
-		effectStuff.animation.play('funny', true, false, 18);
+		if (onScreenTime < 0.9)
+		{
+			new FlxTimer().start((Conductor.crochet / 1000) * 0.25, function(tmr)
+			{
+				forceFinish();
+			});
+		}
+		else
+			effectStuff.animation.play('funny', true, false, 18);
 	}
 
 	override function update(elapsed:Float)
 	{
+		onScreenTime += elapsed;
+
 		if (effectStuff.animation.curAnim.curFrame == 17)
 			effectStuff.animation.pause();
 

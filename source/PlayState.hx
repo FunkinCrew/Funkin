@@ -3020,7 +3020,6 @@ class PlayState extends MusicBeatState
 			var frameShit:Float = (1 / 24) * 2; // equals 2 frames in the animation
 
 			new FlxTimer().start(((Conductor.crochet / 1000) * 1.25) - frameShit, function(tmr)
-
 			{
 				animShit.forceFinish();
 			});
