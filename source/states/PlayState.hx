@@ -1149,7 +1149,8 @@ class PlayState extends MusicBeatState
 		scoreTxt.text = (
 			"Misses: " + misses + " | " +
 			"Accuracy: " + accuracy + "% | " +
-			"Score: " + songScore
+			"Score: " + songScore + " | " +
+			Ratings.getRank(accuracy)
 		);
 		//scoreTxt.text = "Score:" + songScore;
 
