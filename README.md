@@ -12,12 +12,16 @@ For build intructions go to [Build.md](https://github.com/Leather128/LeathersFun
 
 This includes things like custom controls, downscroll, opponent note glow, etc.
 
-> Week Progression
-
-You can now properly progress through weeks if you wish, aka you don't unlock everything at the start.
-
 > Extras
 
 For fun I added some things like the old title screen, and debug songs in freeplay as options in the options menu.
+
+> Full mod support
+
+Support for custom songs, characters, stages, weeks, basic cutscenes (videos and dialogue), all without modifying the source code (just some files in the assets folder).
+
+> Character creator
+
+You can create characters easily with the character creator (you can even drag and drop on images for the spritesheets!).
 
 > More to come...

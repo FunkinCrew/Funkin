@@ -223,7 +223,8 @@ class CharacterCreationState extends FlxState
             animations: Animations,
             defaultFlipX: Default_FlipX,
             dancesLeftAndRight: LeftAndRight_Idle,
-            spritesheetType: Spritesheet_Type
+            spritesheetType: Spritesheet_Type,
+            graphicsSize: 1
         };
     }
 

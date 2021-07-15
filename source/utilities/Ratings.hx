@@ -102,4 +102,75 @@ class Ratings
 
         return score;
     }
+
+    public static function rankToString(rank:SongRank)
+    {
+        if(rank != B_PLUS)
+            return Std.string(rank);
+        else
+            return "B+";
+    }
+
+    public static function rankToInt(rank:SongRank)
+    {
+        return rank.getIndex();
+    }
+
+    public static function stringToRank(string_Rank:String)
+    {
+        var ranks = SongRank.getConstructors();
+
+        for(rank_Index in 0...ranks.length)
+        {
+            var rank = ranks[rank_Index];
+
+            if(rank.toLowerCase() == string_Rank.toLowerCase() || string_Rank == "B+" && rank == "B_PLUS")
+                switch(rank.toUpperCase())
+                {
+                    case "FC":
+                        return FC;
+                    case "SS":
+                        return SS;
+                    case "S":
+                        return S;
+                    case "AA":
+                        return AA;
+                    case "A":
+                        return A;
+                    case "B_PLUS":
+                        return B_PLUS;
+                    case "B":
+                        return B;
+                    case "C":
+                        return C;
+                    case "D":
+                        return D;
+                    case "E":
+                        return E;
+                    case "F":
+                        return F;
+                    case "G":
+                        return G;
+                }
+        }
+
+        return UNKNOWN;
+    }
+}
+
+enum SongRank
+{
+    FC;
+    SS;
+    S;
+    AA;
+    A;
+    B_PLUS;
+    B;
+    C;
+    D;
+    E;
+    F;
+    G;
+    UNKNOWN;
 }

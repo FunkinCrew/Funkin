@@ -404,6 +404,12 @@ class Character extends FlxSprite
 			#end
 		}
 
+		if(config.graphicsSize != null)
+		{
+			setGraphicSize(Std.int(width * config.graphicsSize));
+			//updateHitbox();
+		}
+
 		for(selected_animation in config.animations)
 		{
 			if(selected_animation.indices != null)
@@ -582,6 +588,7 @@ typedef CharacterConfig =
 	var defaultFlipX:Bool;
 	var dancesLeftAndRight:Bool;
 	var spritesheetType:SpritesheetType;
+	var graphicsSize:Null<Float>;
 }
 
 typedef CharacterAnimation =

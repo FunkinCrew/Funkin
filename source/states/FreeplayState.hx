@@ -1,5 +1,6 @@
 package states;
 
+import utilities.Ratings.SongRank;
 import openfl.utils.ByteArray;
 import modding.ModdingSound;
 import flixel.util.FlxTimer;
@@ -50,6 +51,10 @@ class FreeplayState extends MusicBeatState
 	private var bg:FlxSprite;
 	private var selectedColor:Int = 0xFF7F1833;
 	private var interpolation:Float = 0.0;
+	private var scoreBG:FlxSprite;
+
+	private var rankText:FlxText;
+	private var curRank:String = "N/A";
 
 	override function create()
 	{
@@ -138,19 +143,24 @@ class FreeplayState extends MusicBeatState
 			add(icon);
 		}
 
-		scoreText = new FlxText(FlxG.width * 0.7, 5, 0, "", 32);
-		scoreText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, RIGHT);
+		scoreText = new FlxText(FlxG.width, 5, 0, "", 32);
 
-		var scoreBG:FlxSprite = new FlxSprite(scoreText.x - 6, 0).makeGraphic(Std.int(FlxG.width * 0.35), 66, 0xFF000000);
+		scoreBG = new FlxSprite(scoreText.x - 6, 0).makeGraphic(1, 1, 0xFF000000);
 		scoreBG.alpha = 0.6;
 		add(scoreBG);
+
+		scoreText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, RIGHT);
+		add(scoreText);
 
 		diffText = new FlxText(scoreText.x + 100, scoreText.y + 36, 0, "", 24);
 		diffText.font = scoreText.font;
 		diffText.alignment = CENTER;
 		add(diffText);
 
-		add(scoreText);
+		rankText = new FlxText(FlxG.width, diffText.y + 36, 0, "", 24);
+		rankText.font = scoreText.font;
+		rankText.alignment = CENTER;
+		add(rankText);
 
 		changeSelection();
 		changeDiff();
@@ -158,7 +168,7 @@ class FreeplayState extends MusicBeatState
 		selector = new FlxText();
 
 		selector.size = 40;
-		selector.text = ">";
+		selector.text = "<";
 
 		if(!songsReady)
 		{
@@ -211,7 +221,16 @@ class FreeplayState extends MusicBeatState
 		if (Math.abs(lerpScore - intendedScore) <= 10)
 			lerpScore = intendedScore;
 
+		scoreBG.x = scoreText.x - 6;
+
+		if(Std.int(scoreBG.width) != Std.int(scoreText.width + 6))
+			scoreBG.makeGraphic(Std.int(scoreText.width + 6), 102, FlxColor.BLACK);
+
+		scoreText.x = FlxG.width - scoreText.width;
 		scoreText.text = "PERSONAL BEST:" + lerpScore;
+
+		diffText.x = scoreText.x + (scoreText.width / 2) - (diffText.width / 2);
+		rankText.x = diffText.x + (diffText.width / 2) - (rankText.width / 2);
 
 		var upP = controls.UP_P;
 		var downP = controls.DOWN_P;
@@ -266,17 +285,20 @@ class FreeplayState extends MusicBeatState
 
 		#if !switch
 		intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
+		curRank = Highscore.getSongRank(songs[curSelected].songName, curDifficulty);
 		#end
 
 		switch (curDifficulty)
 		{
 			case 0:
-				diffText.text = ">  EASY  <";
+				diffText.text = "<  EASY  >";
 			case 1:
-				diffText.text = '> NORMAL <';
+				diffText.text = '< NORMAL >';
 			case 2:
-				diffText.text = ">  HARD  <";
+				diffText.text = "<  HARD  >";
 		}
+
+		rankText.text = "< " + curRank + " >";
 	}
 
 	function changeSelection(change:Int = 0)
@@ -319,16 +341,16 @@ class FreeplayState extends MusicBeatState
 				});
 			}
 			#else
-			OpenFLAssets.loadSound(Paths.inst(songs[curSelected].songName)).onComplete(function (_) {
-				FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName));
-			});
+			FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName));
 			#end
 		}
 
 		#if !switch
 		intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
-		// lerpScore = 0;
+		curRank = Highscore.getSongRank(songs[curSelected].songName, curDifficulty);
 		#end
+
+		rankText.text = "< " + curRank + " >";
 
 		var bullShit:Int = 0;
 

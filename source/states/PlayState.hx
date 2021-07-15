@@ -263,6 +263,9 @@ class PlayState extends MusicBeatState
 		if(SONG.stage == null)
 			SONG.stage = 'chromatic-stage';
 
+		if(SONG.gf == null)
+			SONG.gf = 'gf';
+
 		/* character time :) */
 		gfVersion = SONG.gf;
 
@@ -1569,6 +1572,7 @@ class PlayState extends MusicBeatState
 		{
 			#if !switch
 			Highscore.saveScore(SONG.song, songScore, storyDifficulty);
+			Highscore.saveRank(SONG.song, Ratings.getRank(accuracy), storyDifficulty);
 			#end
 		}
 
@@ -1853,7 +1857,6 @@ class PlayState extends MusicBeatState
 		var leftR = controls.LEFT_R;
 
 		var controlArray:Array<Bool> = [leftP, downP, upP, rightP];
-
 		
 		if (controlArray.contains(true) && generatedMusic)
 		{
@@ -1888,13 +1891,24 @@ class PlayState extends MusicBeatState
 						badNoteCheck();
 					}
 				}
-			}
-			else if(FlxG.save.data.antiMash)
-			{
-				for(i in 0...controlArray.length)
+
+				if(FlxG.save.data.antiMash)
 				{
-					if(controlArray[i])
-						noteMiss(i);
+					/*
+					for(i in 0...controlArray.length)
+					{
+						if(controlArray[i])
+							noteMiss(i);
+					}
+					*/
+
+					for(i in 0...controlArray.length)
+					{
+						if(controlArray[i] && !noteDataPossibles[i])
+						{
+							noteMiss(i);
+						}
+					}
 				}
 			}
 		}
