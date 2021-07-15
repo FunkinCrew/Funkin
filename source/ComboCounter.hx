@@ -34,8 +34,16 @@ class ComboCounter extends FlxTypedSpriteGroup<FlxSprite>
 		// add(grpNumbers);
 	}
 
+	public function forceFinish():Void
+	{
+		effectStuff.animation.play('funny', true, false, 18);
+	}
+
 	override function update(elapsed:Float)
 	{
+		if (effectStuff.animation.curAnim.curFrame == 17)
+			effectStuff.animation.pause();
+
 		if (effectStuff.animation.curAnim.curFrame == 2 && !wasComboSetup)
 		{
 			setupCombo(daCombo);

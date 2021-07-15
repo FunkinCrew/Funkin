@@ -3014,7 +3014,16 @@ class PlayState extends MusicBeatState
 			&& !SONG.notes[Math.floor(curStep / 16) + 1].mustHitSection)
 		{
 			var animShit:ComboCounter = new ComboCounter(-100, 300, combo);
+			animShit.scrollFactor.set(0.6, 0.6);
 			add(animShit);
+
+			var frameShit:Float = (1 / 24) * 2; // equals 2 frames in the animation
+
+			new FlxTimer().start(((Conductor.crochet / 1000) * 1.25) - frameShit, function(tmr)
+
+			{
+				animShit.forceFinish();
+			});
 		}
 
 		if (curBeat % gfSpeed == 0)
