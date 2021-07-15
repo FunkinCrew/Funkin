@@ -301,9 +301,11 @@ class TitleState extends MusicBeatState
 
 		// FlxTween.tween(logoBl, {y: logoBl.y + 50}, 0.6, {ease: FlxEase.quadInOut, type: PINGPONG});
 		// FlxTween.tween(logo, {y: logoBl.y + 50}, 0.6, {ease: FlxEase.quadInOut, type: PINGPONG, startDelay: 0.1});
-
+		var animShit:ComboCounter = new ComboCounter(200, 200, 1423);
+		add(animShit);
 		credGroup = new FlxGroup();
 		add(credGroup);
+
 		textGroup = new FlxGroup();
 
 		blackScreen = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);

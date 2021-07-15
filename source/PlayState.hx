@@ -3008,6 +3008,15 @@ class PlayState extends MusicBeatState
 		iconP1.updateHitbox();
 		iconP2.updateHitbox();
 
+		if (curBeat % 8 == 7
+			&& SONG.notes[Math.floor(curStep / 16)].mustHitSection
+			&& combo > 5
+			&& !SONG.notes[Math.floor(curStep / 16) + 1].mustHitSection)
+		{
+			var animShit:ComboCounter = new ComboCounter(-100, 300, combo);
+			add(animShit);
+		}
+
 		if (curBeat % gfSpeed == 0)
 			gf.dance();
 
