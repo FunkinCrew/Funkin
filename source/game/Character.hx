@@ -39,6 +39,7 @@ class Character extends FlxSprite
 		// YOOOOOOOOOO POG MODDING STUFF
 		loadOffsetFile(curCharacter);
 
+		dancesLeftAndRight = false;
 		switch (curCharacter)
 		{
 			case 'gf':
@@ -59,6 +60,7 @@ class Character extends FlxSprite
 
 				animation.addByPrefix('scared', 'GF FEAR', 24);
 
+				dancesLeftAndRight = true;
 				playAnim('danceRight');
 
 			case 'gf-old':
@@ -70,6 +72,7 @@ class Character extends FlxSprite
 				animation.addByIndices('danceLeft', 'GF Dancing Beat', [29, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
 				animation.addByIndices('danceRight', 'GF Dancing Beat', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
 
+				dancesLeftAndRight = true;
 				playAnim('danceRight');
 
 			case 'gf-christmas':
@@ -89,6 +92,7 @@ class Character extends FlxSprite
 
 				animation.addByPrefix('scared', 'GF FEAR', 24);
 
+				dancesLeftAndRight = true;
 				playAnim('danceRight');
 
 			case 'gf-car':
@@ -111,6 +115,7 @@ class Character extends FlxSprite
 				setGraphicSize(Std.int(width * PlayState.daPixelZoom));
 				updateHitbox();
 				antialiasing = false;
+				dancesLeftAndRight = true;
 
 			case 'dad':
 				// DAD ANIMATION LOADING CODE
@@ -132,6 +137,7 @@ class Character extends FlxSprite
 				animation.addByIndices('danceRight', 'spooky dance idle', [8, 10, 12, 14], "", 12, false);
 
 				playAnim('danceRight');
+				dancesLeftAndRight = true;
 			case 'mom':
 				frames = Paths.getSparrowAtlas('characters/Mom_Assets', 'shared');
 
@@ -407,7 +413,9 @@ class Character extends FlxSprite
 		if(config.graphicsSize != null)
 		{
 			setGraphicSize(Std.int(width * config.graphicsSize));
-			//updateHitbox();
+
+			if(config.graphicsSize >= 1)
+				updateHitbox();
 		}
 
 		for(selected_animation in config.animations)

@@ -2,6 +2,7 @@ package debuggers;
 
 #if sys
 import modding.ModdingSound;
+import sys.FileSystem;
 #end
 import utilities.Difficulties;
 import game.Song;
@@ -96,11 +97,25 @@ class ChartingState extends MusicBeatState
 	var leftIcon:HealthIcon;
 	var rightIcon:HealthIcon;
 
+	var characters:Array<String> = [];
+
 	override function create()
 	{
 		// FOR WHEN COMING IN FROM THE TOOLS PAGE LOL
 		if (Assets.getLibrary("shared") == null)
 			Assets.loadLibrary("shared").onComplete(function (_) { });
+
+		#if sys
+		var folders = FileSystem.readDirectory(Sys.getCwd() + "assets/data/character data");
+
+		for(i in 0...folders.length)
+		{
+			if(FileSystem.exists(Sys.getCwd() + "assets/data/character data/" + folders[i] + "/" + "config.json"))
+				characters.push(folders[i]);
+		}
+		#else
+		characters = CoolUtil.coolTextFile(Paths.txt('characterList'));
+		#end
 
 		curSection = lastSection;
 
@@ -396,8 +411,6 @@ class ChartingState extends MusicBeatState
 		tab_group_note.name = 'Art Options';
 
 		// CHARS
-		var characters:Array<String> = CoolUtil.coolTextFile(Paths.txt('characterList'));
-
 		var player1DropDown = new FlxUIDropDownMenu(10, 30, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
 		{
 			_song.player1 = characters[Std.parseInt(character)];
