@@ -1551,11 +1551,6 @@ class PlayState extends MusicBeatState
 			keyShit();
 
 		currentBeat = curBeat;
-
-		#if desktop
-		// Updating Discord Rich Presence.
-		DiscordClient.changePresence(detailsText, SONG.song + "-" + storyDifficultyText.toUpperCase() + " | " + scoreTxt.text, iconRPC);
-		#end
 	}
 
 	function endSong():Void
