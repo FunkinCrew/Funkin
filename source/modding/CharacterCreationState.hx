@@ -44,6 +44,8 @@ class CharacterCreationState extends FlxState
 
     public var Animations:Array<CharacterAnimation> = [];
 
+    public var Graphics_Size:Float;
+
     // VARIABLES //
     
     // DATA //
@@ -78,22 +80,14 @@ class CharacterCreationState extends FlxState
 
     override function create()
     {
-        Raw_JSON_Data = "";
-
-		#if sys
-		Raw_JSON_Data = File.getContent(Sys.getCwd() + Paths.jsonSYS("character data/" + Character_Name + "/config")).trim();
-		#else
-		Raw_JSON_Data = Assets.getText(Paths.json("character data/" + Character_Name + "/config")).trim();
-		#end
-
-        Read_JSON_Data();
+        Load_Character_File_JSON_Data();
 
         Create_UI();
         add(UI_Group);
         add(Character);
 
         #if discord_rpc
-        DiscordClient.changePresence("In the character creator", null, null);
+        DiscordClient.changePresence("Creating A Character", null, null);
         #end
     }
 
@@ -109,6 +103,11 @@ class CharacterCreationState extends FlxState
         LeftAndRight_Idle = CC_Data.dancesLeftAndRight;
         Spritesheet_Type = CC_Data.spritesheetType;
         Animations = CC_Data.animations;
+
+        if(CC_Data.graphicsSize != null)
+            Graphics_Size = CC_Data.graphicsSize;
+        else
+            Graphics_Size = 1;
     }
 
     private function Create_UI()
@@ -224,8 +223,21 @@ class CharacterCreationState extends FlxState
             defaultFlipX: Default_FlipX,
             dancesLeftAndRight: LeftAndRight_Idle,
             spritesheetType: Spritesheet_Type,
-            graphicsSize: 1
+            graphicsSize: Graphics_Size
         };
+    }
+
+    function Load_Character_File_JSON_Data()
+    {
+        Raw_JSON_Data = "";
+
+		#if sys
+		Raw_JSON_Data = File.getContent(Sys.getCwd() + Paths.jsonSYS("character data/" + Character_Name + "/config")).trim();
+		#else
+		Raw_JSON_Data = Assets.getText(Paths.json("character data/" + Character_Name + "/config")).trim();
+		#end
+
+        Read_JSON_Data();
     }
 
     function Create_Character(?New_Char:String)

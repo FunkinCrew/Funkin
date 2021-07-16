@@ -245,13 +245,9 @@ class PlayState extends MusicBeatState
 
 		// String that contains the mode defined here so it isn't necessary to call changePresence for each mode
 		if (isStoryMode)
-		{
 			detailsText = "Story Mode: Week " + storyWeek;
-		}
 		else
-		{
 			detailsText = "Freeplay";
-		}
 
 		// String for when the game is paused
 		detailsPausedText = "Paused - " + detailsText;
@@ -276,12 +272,7 @@ class PlayState extends MusicBeatState
 		boyfriend = new Boyfriend(770, 450, SONG.player1);
 		/* end of character time */
 
-		if(SONG.stage != null)
-		{
-			curStage = SONG.stage;
-		} else {
-			curStage = 'chromatic-stage';
-		}
+		curStage = SONG.stage;
 
 		stage = new StageGroup(curStage);
 		add(stage);
@@ -1560,6 +1551,11 @@ class PlayState extends MusicBeatState
 			keyShit();
 
 		currentBeat = curBeat;
+
+		#if desktop
+		// Updating Discord Rich Presence.
+		DiscordClient.changePresence(detailsText, SONG.song + "-" + storyDifficultyText.toUpperCase() + " | " + scoreTxt.text, iconRPC);
+		#end
 	}
 
 	function endSong():Void
