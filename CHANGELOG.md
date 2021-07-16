@@ -9,6 +9,7 @@ All notable changes will be documented in this file.
 - Custom song support.
 - Custom health icon support.
 - Updated hit-window.
+- Decimal BPM support.
 ### Changed
 - ipsum
 ### Fixed
