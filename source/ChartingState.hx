@@ -818,6 +818,8 @@ class ChartingState extends MusicBeatState
 			leftIcon.changeIcon(_song.player2);
 			rightIcon.changeIcon(_song.player1);
 		}
+		leftIcon.setGraphicSize(0, 45);
+		rightIcon.setGraphicSize(0, 45);
 	}
 
 	function updateNoteUI():Void
