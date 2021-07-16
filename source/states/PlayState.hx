@@ -1,5 +1,6 @@
 package states;
 
+import lime.media.HTML5AudioContext;
 import modding.ModdingSound;
 import openfl.utils.ByteArray;
 import flixel.graphics.tile.FlxGraphicsShader;
@@ -1715,9 +1716,16 @@ class PlayState extends MusicBeatState
 		if(FlxG.save.data.msText)
 		{
 			col.cameras = [camHUD];
-			col.color = FlxColor.GREEN;
+
+			if(Math.abs(noteMath) == noteMath)
+				col.color = FlxColor.CYAN;
+			else
+				col.color = FlxColor.ORANGE;
+			
 			col.borderStyle = FlxTextBorderStyle.OUTLINE;
-			col.borderSize = 5;
+			col.borderSize = 1;
+			col.font = Paths.font("vcr.ttf");
+
 			add(col);
 		}
 
@@ -1858,7 +1866,7 @@ class PlayState extends MusicBeatState
 			
 			// notes you can hit lol
 			notes.forEachAlive(function(note:Note) {
-				if (note.canBeHit && note.mustPress && !note.tooLate)
+				if (note.canBeHit && note.mustPress && !note.tooLate && !note.isSustainNote)
 				{
 					possibleNotes.push(note);
 					possibleNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
@@ -1906,6 +1914,8 @@ class PlayState extends MusicBeatState
 
 		if ((up || right || down || left) && /*!boyfriend.stunned &&*/ generatedMusic)
 		{
+			boyfriend.holdTimer = 0;
+			
 			notes.forEachAlive(function(daNote:Note)
 			{
 				if (daNote.canBeHit && daNote.mustPress && daNote.isSustainNote)
