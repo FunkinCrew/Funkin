@@ -38,8 +38,8 @@
 	<SubTexture name="right confirm0001" x="1627" y="226" width="223" height="226" frameX="-1" frameY="-3" frameWidth="226" frameHeight="230"/>
 	<SubTexture name="right confirm0002" x="1176" y="0" width="226" height="230"/>
 	<SubTexture name="right confirm0003" x="1176" y="0" width="226" height="230"/>
-	<SubTexture name="right press0000" x="932" y="442" width="138" height="141" frameX="-3" frameY="-7" frameWidth="148" frameHeight="151"/>
-	<SubTexture name="right press0001" x="932" y="442" width="138" height="141" frameX="-3" frameY="-7" frameWidth="148" frameHeight="151"/>
+	<SubTexture name="right press0000" x="790" y="552" width="138" height="141" frameX="-3" frameY="-7" frameWidth="148" frameHeight="151"/>
+	<SubTexture name="right press0001" x="790" y="552" width="138" height="141" frameX="-3" frameY="-7" frameWidth="148" frameHeight="151"/>
 	<SubTexture name="right press0002" x="784" y="385" width="148" height="151"/>
 	<SubTexture name="right press0003" x="784" y="385" width="148" height="151"/>
 	<SubTexture name="up confirm0000" x="476" y="0" width="236" height="232"/>
