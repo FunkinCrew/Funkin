@@ -36,7 +36,7 @@ class Ratings
         // yeah this is kinda taken from kade engine but i didnt use the etterna 'wife' ranking system (instead just my own custom values)
         var conditions:Array<Bool> = [
             accuracy == 100, // FC
-            accuracy >= 95, // GFC
+            accuracy >= 98, // GFC
             accuracy >= 92, // S
             accuracy >= 89, // AA
             accuracy >= 85, // A
