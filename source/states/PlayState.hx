@@ -1408,7 +1408,7 @@ class PlayState extends MusicBeatState
 		{
 			notes.forEachAlive(function(daNote:Note)
 			{
-				if (daNote.y > FlxG.height)
+				if (daNote.y > FlxG.height || daNote.y < -40)
 				{
 					daNote.active = false;
 					daNote.visible = false;
@@ -1419,6 +1419,56 @@ class PlayState extends MusicBeatState
 					daNote.active = true;
 				}
 
+				if(FlxG.save.data.downscroll)
+				{
+					if (daNote.mustPress)
+						daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y + 0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(SONG.speed, 2));
+					else
+						daNote.y = (enemyStrums.members[Math.floor(Math.abs(daNote.noteData))].y + 0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(SONG.speed, 2));
+
+					if(daNote.isSustainNote)
+					{
+						// Remember = minus makes notes go up, plus makes them go down
+						if(daNote.animation.curAnim.name.endsWith('end') && daNote.prevNote != null)
+							daNote.y += daNote.prevNote.height;
+						else
+							daNote.y += daNote.height / 2;
+
+						if((!daNote.mustPress || daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit) && daNote.y - daNote.offset.y * daNote.scale.y + daNote.height >= (strumLine.y + Note.swagWidth / 2))
+						{
+							// Clip to strumline
+							var swagRect = new FlxRect(0, 0, daNote.frameWidth * 2, daNote.frameHeight * 2);
+							swagRect.height = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y + Note.swagWidth / 2 - daNote.y) / daNote.scale.y;
+							swagRect.y = daNote.frameHeight - swagRect.height;
+
+							daNote.clipRect = swagRect;
+						}
+					}
+				}
+				else
+				{
+					if (daNote.mustPress)
+						daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y - 0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(SONG.speed, 2));
+					else
+						daNote.y = (enemyStrums.members[Math.floor(Math.abs(daNote.noteData))].y - 0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(SONG.speed, 2));
+
+					if(daNote.isSustainNote)
+					{
+						daNote.y -= daNote.height / 2;
+
+						if((!daNote.mustPress || daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit) && daNote.y + daNote.offset.y * daNote.scale.y <= (strumLine.y + Note.swagWidth / 2))
+						{
+							// Clip to strumline
+							var swagRect = new FlxRect(0, 0, daNote.width / daNote.scale.x, daNote.height / daNote.scale.y);
+							swagRect.y = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y + Note.swagWidth / 2 - daNote.y) / daNote.scale.y;
+							swagRect.height -= swagRect.y;
+
+							daNote.clipRect = swagRect;
+						}
+					}
+				}
+
+				/*
 				if(!FlxG.save.data.downscroll)
 					daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(SONG.speed, 2)));
 				else
@@ -1449,7 +1499,7 @@ class PlayState extends MusicBeatState
 						//daNote.y += daNote.prevNote.height;
 					//else
 						//daNote.y += daNote.height / 2;
-				}
+				}*/
 
 				if (!daNote.mustPress && daNote.wasGoodHit)
 				{
@@ -1525,28 +1575,28 @@ class PlayState extends MusicBeatState
 				// WIP interpolation shit? Need to fix the pause issue
 				// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
 
-				if (daNote.y < -daNote.height && !FlxG.save.data.downscroll || daNote.y >= strumLine.y + 106 && FlxG.save.data.downscroll)
+				if ((daNote.y < -daNote.height && !FlxG.save.data.downscroll || daNote.y >= strumLine.y + 106 && FlxG.save.data.downscroll) && daNote.mustPress)
+				{
+					if (daNote.isSustainNote && daNote.wasGoodHit)
 					{
-						if (daNote.isSustainNote && daNote.wasGoodHit)
-						{
-							daNote.kill();
-							notes.remove(daNote, true);
-							daNote.destroy();
-						}
-						else
-						{
-							health -= 0.075;
-							vocals.volume = 0;
-							noteMiss(daNote.noteData, daNote);
-						}
-	
-						daNote.active = false;
-						daNote.visible = false;
-	
 						daNote.kill();
 						notes.remove(daNote, true);
 						daNote.destroy();
 					}
+					else
+					{
+						health -= 0.075;
+						vocals.volume = 0;
+						noteMiss(daNote.noteData, daNote);
+					}
+
+					daNote.active = false;
+					daNote.visible = false;
+
+					daNote.kill();
+					notes.remove(daNote, true);
+					daNote.destroy();
+				}
 			});
 		}
 
@@ -1881,10 +1931,6 @@ class PlayState extends MusicBeatState
 						noteDataPossibles[possibleNotes[i].noteData] = true;
 						goodNoteHit(possibleNotes[i]);
 					}
-					else
-					{
-						badNoteCheck();
-					}
 				}
 
 				if(FlxG.save.data.antiMash)
@@ -1986,98 +2032,6 @@ class PlayState extends MusicBeatState
 					boyfriend.playAnim('singRIGHTmiss', true);
 			}
 		}
-	}
-
-	function badNoteCheck()
-	{
-		// just double pasting this shit cuz fuk u
-		// REDO THIS SYSTEM!
-		var upP = controls.UP_P;
-		var rightP = controls.RIGHT_P;
-		var downP = controls.DOWN_P;
-		var leftP = controls.LEFT_P;
-
-		var isNote = false;
-
-		/*
-		if (leftP)
-		{
-			notes.forEachAlive(function(daNote:Note)
-			{
-				if (daNote.canBeHit && daNote.mustPress && !daNote.isSustainNote)
-				{
-					if (daNote.noteData % 4 == 0)
-					{
-						isNote = true;
-						goodNoteHit(daNote);
-					}
-				}
-			});
-			
-			if(!isNote)
-				noteMiss(0);
-		}
-
-		if (downP)
-		{
-			notes.forEachAlive(function(daNote:Note)
-			{
-				if (daNote.canBeHit && daNote.mustPress && !daNote.isSustainNote)
-				{
-					if (daNote.noteData % 4 == 1)
-					{
-						isNote = true;
-						goodNoteHit(daNote);
-					}
-				}
-			});
-			
-			if(!isNote)
-				noteMiss(1);
-		}
-
-		if (upP)
-		{
-			notes.forEachAlive(function(daNote:Note)
-			{
-				if (daNote.canBeHit && daNote.mustPress && !daNote.isSustainNote)
-				{
-					if (daNote.noteData % 4 == 2)
-					{
-						isNote = true;
-						goodNoteHit(daNote);
-					}
-				}
-			});
-			
-			if(!isNote)
-				noteMiss(2);
-		}
-		
-		if (rightP)
-		{
-			notes.forEachAlive(function(daNote:Note)
-			{
-				if (daNote.canBeHit && daNote.mustPress && !daNote.isSustainNote)
-				{
-					if (daNote.noteData % 4 == 3)
-					{
-						isNote = true;
-						goodNoteHit(daNote);
-					}
-				}
-			});
-			
-			if(!isNote)
-				noteMiss(3);
-		}
-		*/
-	}
-
-	function noteCheck(keyP:Bool, note:Note):Void
-	{
-		if (keyP)
-			goodNoteHit(note);
 	}
 
 	function goodNoteHit(note:Note):Void
