@@ -76,6 +76,8 @@ class StoryMenuState extends MusicBeatState
 	var sprDifficulty:FlxSprite;
 	var leftArrow:FlxSprite;
 	var rightArrow:FlxSprite;
+	var yellowBG:FlxSprite;
+	var ui_tex = Paths.getSparrowAtlas('campaign_menu_UI_assets');
 
 	override function create()
 	{
@@ -106,8 +108,7 @@ class StoryMenuState extends MusicBeatState
 		rankText.size = scoreText.size;
 		rankText.screenCenter(X);
 
-		var ui_tex = Paths.getSparrowAtlas('campaign_menu_UI_assets');
-		var yellowBG:FlxSprite = new FlxSprite(0, 56).makeGraphic(FlxG.width, 400, 0xFFF9CF51);
+		yellowBG = new FlxSprite(0, 56).makeGraphic(FlxG.width, 400, 0xFFF9CF51);
 
 		grpWeekText = new FlxTypedGroup<MenuItem>();
 		add(grpWeekText);
@@ -127,65 +128,10 @@ class StoryMenuState extends MusicBeatState
 		DiscordClient.changePresence("In the Menus", null);
 		#end
 
-		for (i in 0...weekData.length)
-		{
-			var weekThing:MenuItem = new MenuItem(0, yellowBG.y + yellowBG.height + 10, i);
-			weekThing.y += ((weekThing.height + 20) * i);
-			weekThing.targetY = i;
-			grpWeekText.add(weekThing);
-
-			weekThing.screenCenter(X);
-			weekThing.antialiasing = true;
-			// weekThing.updateHitbox();
-
-			// Needs an offset thingie
-			if (!weekUnlocked[i] && weekProgression)
-			{
-				var lock:FlxSprite = new FlxSprite(weekThing.width + 10 + weekThing.x);
-				lock.frames = ui_tex;
-				lock.animation.addByPrefix('lock', 'lock');
-				lock.animation.play('lock');
-				lock.ID = i;
-				lock.antialiasing = true;
-				grpLocks.add(lock);
-			}
-		}
-
-		trace("Line 96");
-
-		for (char in 0...3)
-		{
-			var weekCharacterThing:MenuCharacter = new MenuCharacter((FlxG.width * 0.25) * (1 + char) - 150, weekCharacters[curWeek][char]);
-			weekCharacterThing.y += 70;
-			weekCharacterThing.antialiasing = true;
-
-			switch (weekCharacterThing.character)
-			{
-				case 'dad':
-					weekCharacterThing.setGraphicSize(Std.int(weekCharacterThing.width * 0.5));
-					weekCharacterThing.updateHitbox();
-
-				case 'bf':
-					weekCharacterThing.setGraphicSize(Std.int(weekCharacterThing.width * 0.9));
-					weekCharacterThing.updateHitbox();
-					weekCharacterThing.x -= 80;
-
-				case 'gf':
-					weekCharacterThing.setGraphicSize(Std.int(weekCharacterThing.width * 0.5));
-					weekCharacterThing.updateHitbox();
-
-				case 'parents':
-					weekCharacterThing.setGraphicSize(Std.int(weekCharacterThing.width * 1.5));
-					weekCharacterThing.updateHitbox();
-			}
-
-			grpWeekCharacters.add(weekCharacterThing);
-		}
+		createWeekStuff();
 
 		difficultySelectors = new FlxGroup();
 		add(difficultySelectors);
-
-		trace("Line 124");
 
 		leftArrow = new FlxSprite(grpWeekText.members[0].x + grpWeekText.members[0].width + 10, grpWeekText.members[0].y + 10);
 		leftArrow.frames = ui_tex;
@@ -302,6 +248,62 @@ class StoryMenuState extends MusicBeatState
 	var movedBack:Bool = false;
 	var selectedWeek:Bool = false;
 	var stopspamming:Bool = false;
+
+	function createWeekStuff()
+	{
+		for (i in 0...weekData.length)
+		{
+			var weekThing:MenuItem = new MenuItem(0, yellowBG.y + yellowBG.height + 10, i);
+			weekThing.y += ((weekThing.height + 20) * i);
+			weekThing.targetY = i;
+			grpWeekText.add(weekThing);
+
+			weekThing.screenCenter(X);
+			weekThing.antialiasing = true;
+			// weekThing.updateHitbox();
+
+			// Needs an offset thingie
+			if (!weekUnlocked[i] && weekProgression)
+			{
+				var lock:FlxSprite = new FlxSprite(weekThing.width + 10 + weekThing.x);
+				lock.frames = ui_tex;
+				lock.animation.addByPrefix('lock', 'lock');
+				lock.animation.play('lock');
+				lock.ID = i;
+				lock.antialiasing = true;
+				grpLocks.add(lock);
+			}
+		}
+
+		for (char in 0...3)
+		{
+			var weekCharacterThing:MenuCharacter = new MenuCharacter((FlxG.width * 0.25) * (1 + char) - 150, weekCharacters[curWeek][char]);
+			weekCharacterThing.y += 70;
+			weekCharacterThing.antialiasing = true;
+
+			switch (weekCharacterThing.character)
+			{
+				case 'dad':
+					weekCharacterThing.setGraphicSize(Std.int(weekCharacterThing.width * 0.5));
+					weekCharacterThing.updateHitbox();
+
+				case 'bf':
+					weekCharacterThing.setGraphicSize(Std.int(weekCharacterThing.width * 0.9));
+					weekCharacterThing.updateHitbox();
+					weekCharacterThing.x -= 80;
+
+				case 'gf':
+					weekCharacterThing.setGraphicSize(Std.int(weekCharacterThing.width * 0.5));
+					weekCharacterThing.updateHitbox();
+
+				case 'parents':
+					weekCharacterThing.setGraphicSize(Std.int(weekCharacterThing.width * 1.5));
+					weekCharacterThing.updateHitbox();
+			}
+
+			grpWeekCharacters.add(weekCharacterThing);
+		}
+	}
 
 	function selectWeek()
 	{
