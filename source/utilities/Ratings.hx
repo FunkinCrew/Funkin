@@ -33,7 +33,7 @@ class Ratings
 
     public static function getRank(accuracy:Float)
     {
-        // yeah this is kinda taken from kade engine but i didnt use the etterna 'wife' ranking system (instead just my own custom values)
+        // yeah this is kinda taken from kade engine but i didnt use the etterna 'wife3' ranking system (instead just my own custom values)
         var conditions:Array<Bool> = [
             accuracy == 100, // FC
             accuracy >= 98, // GFC
