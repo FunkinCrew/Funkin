@@ -83,7 +83,7 @@ class Highscore
 
 	public static function formatSong(song:String, diff:Int):String
 	{
-		var daSong:String = song;
+		var daSong:String = song.toLowerCase();
 
 		if (diff == 0)
 			daSong += '-easy';
