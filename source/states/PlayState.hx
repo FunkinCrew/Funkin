@@ -117,6 +117,7 @@ class PlayState extends MusicBeatState
 	private var combo:Int = 0;
 
 	public var misses:Int = 0;
+	public var mashes:Int = 0;
 	public var accuracy:Float = 100.0;
 
 	private var healthBarBG:FlxSprite;
@@ -1143,6 +1144,7 @@ class PlayState extends MusicBeatState
 		scoreTxt.x = (healthBarBG.x + (healthBarBG.width / 2)) - (scoreTxt.width / 2);
 		scoreTxt.text = (
 			"Misses: " + misses + " | " +
+			(FlxG.save.data.antiMash ? "Mashes: " + mashes + " | " : "") +
 			"Accuracy: " + accuracy + "% | " +
 			"Score: " + songScore + " | " +
 			Ratings.getRank(accuracy)
@@ -1855,7 +1857,12 @@ class PlayState extends MusicBeatState
 		var downR = controls.DOWN_R;
 		var leftR = controls.LEFT_R;
 
-		var controlArray:Array<Bool> = [leftP, downP, upP, rightP];
+		// PRESSING
+		var controlArray:Array<Bool> = [controls.LEFT_P, controls.DOWN_P, controls.UP_P, controls.RIGHT_P];
+		// RELEASING
+		var releaseArray:Array<Bool> = [controls.LEFT_R, controls.DOWN_R, controls.UP_R, controls.RIGHT_R];
+		// HOLDING
+		var heldArray:Array<Bool> = [controls.LEFT, controls.DOWN, controls.UP, controls.RIGHT];
 		
 		if (controlArray.contains(true) && generatedMusic)
 		{
@@ -1893,86 +1900,41 @@ class PlayState extends MusicBeatState
 
 				if(FlxG.save.data.antiMash)
 				{
-					/*
-					for(i in 0...controlArray.length)
-					{
-						if(controlArray[i])
-							noteMiss(i);
-					}
-					*/
-
 					for(i in 0...controlArray.length)
 					{
 						if(controlArray[i] && !noteDataPossibles[i])
 						{
 							noteMiss(i);
+							misses--;
+							mashes++;
 						}
 					}
 				}
 			}
 		}
 
-		if ((up || right || down || left) && /*!boyfriend.stunned &&*/ generatedMusic)
+		if (heldArray.contains(true) && generatedMusic)
 		{
 			boyfriend.holdTimer = 0;
 			
 			notes.forEachAlive(function(daNote:Note)
 			{
 				if (daNote.canBeHit && daNote.mustPress && daNote.isSustainNote)
-				{
-					switch (daNote.noteData)
-					{
-						// NOTES YOU ARE HOLDING
-						case 0:
-							if (left)
-								goodNoteHit(daNote);
-						case 1:
-							if (down)
-								goodNoteHit(daNote);
-						case 2:
-							if (up)
-								goodNoteHit(daNote);
-						case 3:
-							if (right)
-								goodNoteHit(daNote);
-					}
-				}
+					if (heldArray[daNote.noteData])
+						goodNoteHit(daNote);
 			});
 		}
 
-		if (boyfriend.holdTimer > Conductor.stepCrochet * 4 * 0.001 && !up && !down && !right && !left)
-		{
+		if (boyfriend.holdTimer > Conductor.stepCrochet * 4 * 0.001 && !heldArray.contains(true))
 			if (boyfriend.animation.curAnim.name.startsWith('sing') && !boyfriend.animation.curAnim.name.endsWith('miss'))
-			{
 				boyfriend.playAnim('idle');
-			}
-		}
 
 		playerStrums.forEach(function(spr:FlxSprite)
 		{
-			switch (spr.ID)
-			{
-				case 0:
-					if (leftP && spr.animation.curAnim.name != 'confirm')
-						spr.animation.play('pressed');
-					if (leftR)
-						spr.animation.play('static');
-				case 1:
-					if (downP && spr.animation.curAnim.name != 'confirm')
-						spr.animation.play('pressed');
-					if (downR)
-						spr.animation.play('static');
-				case 2:
-					if (upP && spr.animation.curAnim.name != 'confirm')
-						spr.animation.play('pressed');
-					if (upR)
-						spr.animation.play('static');
-				case 3:
-					if (rightP && spr.animation.curAnim.name != 'confirm')
-						spr.animation.play('pressed');
-					if (rightR)
-						spr.animation.play('static');
-			}
+			if (controlArray[spr.ID] && spr.animation.curAnim.name != 'confirm')
+				spr.animation.play('pressed');
+			if (releaseArray[spr.ID])
+				spr.animation.play('static');
 
 			if (spr.animation.curAnim.name == 'confirm' && !curStage.contains('school'))
 			{
