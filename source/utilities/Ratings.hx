@@ -36,7 +36,7 @@ class Ratings
         // yeah this is kinda taken from kade engine but i didnt use the etterna 'wife3' ranking system (instead just my own custom values)
         var conditions:Array<Bool> = [
             accuracy == 100, // FC
-            accuracy >= 98, // GFC
+            accuracy >= 98, // SSS
             accuracy >= 92, // S
             accuracy >= 89, // AA
             accuracy >= 85, // A
@@ -60,7 +60,7 @@ class Ratings
                     case 0:
                         return "FC";
                     case 1:
-                        return "GFC";
+                        return "SSS";
                     case 2:
                         return "S";
                     case 3:
@@ -129,8 +129,8 @@ class Ratings
                 {
                     case "FC":
                         return FC;
-                    case "GFC":
-                        return GFC;
+                    case "SSS":
+                        return SSS;
                     case "S":
                         return S;
                     case "AA":
@@ -161,7 +161,7 @@ class Ratings
 enum SongRank
 {
     FC;
-    GFC;
+    SSS;
     S;
     AA;
     A;
