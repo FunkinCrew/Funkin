@@ -1526,6 +1526,9 @@ class PlayState extends MusicBeatState
 							dad.playAnim('singRIGHT' + altAnim, true);
 					}
 
+					if (SONG.enemyDamages)
+						health -= 0.025;
+
 					if (FlxG.save.data.enemyGlow)
 					{
 						enemyStrums.forEach(function(spr:FlxSprite)
@@ -1724,12 +1727,13 @@ class PlayState extends MusicBeatState
 		switch(daRating)
 		{
 			case 'sick':
-				health += 0.023;
+				health += 0.035;
 				hitNotes += 1;
 			case 'good':
-				health += 0.015;
+				health += 0.025;
 				hitNotes += 0.8;
 			case 'bad':
+				health += 0.015;
 				hitNotes += 0.3;
 			case 'shit':
 				health -= 0.023;
@@ -2043,7 +2047,10 @@ class PlayState extends MusicBeatState
 				popUpScore(note.strumTime, note.noteData % 4);
 				combo += 1;
 			} else
+			{
 				hitNotes++;
+				health += 0.035;
+			}
 
 			totalNotes++;
 

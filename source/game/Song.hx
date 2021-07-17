@@ -26,6 +26,8 @@ typedef SwagSong =
 	var gf:String;
 	var stage:String;
 	var validScore:Bool;
+
+	var enemyDamages:Bool;
 }
 
 class Song
