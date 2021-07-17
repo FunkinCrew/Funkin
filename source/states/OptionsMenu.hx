@@ -71,8 +71,7 @@ class OptionsMenu extends MusicBeatState
 			new BoolOption("Friday-Night Title Music", "nightMusic", FlxG.save.data.nightMusic, 2),
 			new BoolOption("Watermarks", "watermarks", FlxG.save.data.watermarks, 3),
 			new BoolOption("Debug Songs in Freeplay", "debugSongs", FlxG.save.data.debugSongs, 4),
-			new BoolOption("Week Progression", "weekProgression", FlxG.save.data.weekProgression, 5),
-			new BoolOption("Freeplay Music", "freeplayMusic", FlxG.save.data.freeplayMusic, 6)
+			new BoolOption("Freeplay Music", "freeplayMusic", FlxG.save.data.freeplayMusic, 5)
 		]
 	];
 

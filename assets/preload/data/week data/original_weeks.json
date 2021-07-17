@@ -1,0 +1,102 @@
+{
+    "groupName": "Original Weeks",
+    "pathName": "default",
+    "weeks": [
+        {
+            "imagePath": "tutorial",
+            "songs": [
+                "Tutorial"
+            ],
+            "characters": [
+                "dad",
+                "bf",
+                "gf"
+            ],
+            "weekTitle": ""
+        },
+        {
+            "imagePath": "week1",
+            "songs": [
+                "Bopeebo",
+                "Fresh",
+                "Dad Battle"
+            ],
+            "characters": [
+                "dad",
+                "bf",
+                "gf"
+            ],
+            "weekTitle": "Daddy Dearest"
+        },
+        {
+            "imagePath": "week2",
+            "songs": [
+                "Spookeez",
+                "South",
+                "Monster"
+            ],
+            "characters": [
+                "spooky",
+                "bf",
+                "gf"
+            ],
+            "weekTitle": "Spooky Month"
+        },
+        {
+            "imagePath": "week3",
+            "songs": [
+                "Pico",
+                "Philly Nice",
+                "Blammed"
+            ],
+            "characters": [
+                "pico",
+                "bf",
+                "gf"
+            ],
+            "weekTitle": "Pico"
+        },
+        {
+            "imagePath": "week4",
+            "songs": [
+                "Satin Panties",
+                "High",
+                "M.I.L.F"
+            ],
+            "characters": [
+                "mom",
+                "bf",
+                "gf"
+            ],
+            "weekTitle": "Mommy Must Murder"
+        },
+        {
+            "imagePath": "week5",
+            "songs": [
+                "Cocoa",
+                "Eggnog",
+                "Winter Horrorland"
+            ],
+            "characters": [
+                "parents",
+                "bf",
+                "gf"
+            ],
+            "weekTitle": "Red Snow"
+        },
+        {
+            "imagePath": "week6",
+            "songs": [
+                "Senpai",
+                "Roses",
+                "Thorns"
+            ],
+            "characters": [
+                "senpai",
+                "bf",
+                "gf"
+            ],
+            "weekTitle": "Hating Simulator Ft. Moawling"
+        }
+    ]
+}

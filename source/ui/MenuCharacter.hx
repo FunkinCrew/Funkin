@@ -15,8 +15,7 @@ class MenuCharacter extends FlxSprite
 		["pico"],
 		["mom"],
 		["parents"],
-		["senpai"],
-		["tankman"]
+		["senpai"]
 	];
 
 	public function new(x:Float, character:String = 'bf', ?looped:Bool = true)

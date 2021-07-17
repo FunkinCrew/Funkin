@@ -259,10 +259,50 @@ class PlayState extends MusicBeatState
 		#end
 
 		if(SONG.stage == null)
-			SONG.stage = 'chromatic-stage';
+		{
+			switch(storyWeek)
+			{
+				case 0 | 1:
+					SONG.stage = 'stage';
+				case 2:
+					SONG.stage = 'spooky';
+				case 3:
+					SONG.stage = 'philly';
+				case 4:
+					SONG.stage = 'limo';
+				case 5:
+					SONG.stage = 'mall';
+				case 6:
+					SONG.stage = 'school';
+				case 7:
+					SONG.stage = 'wasteland';
+				default:
+					SONG.stage = 'chromatic-stage';
+			}
+
+			if(SONG.song.toLowerCase() == "winter horrorland")
+				SONG.stage = 'evil-mall';
+
+			if(SONG.song.toLowerCase() == "thorns")
+				SONG.stage = 'evil-school';
+		}
 
 		if(SONG.gf == null)
-			SONG.gf = 'gf';
+		{
+			switch(storyWeek)
+			{
+				case 4:
+					SONG.gf = 'gf-car';
+				case 5:
+					SONG.gf = 'gf-christmas';
+				case 6:
+					SONG.gf = 'gf-pixel';
+				case 7:
+					SONG.gf = 'gf-tankmen';
+				default:
+					SONG.gf = 'gf';
+			}
+		}
 
 		/* character time :) */
 		gfVersion = SONG.gf;
