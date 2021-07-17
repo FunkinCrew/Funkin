@@ -378,7 +378,10 @@ class Character extends FlxSprite
 		var rawJson:String;
 
 		#if sys
-		rawJson = File.getContent(Sys.getCwd() + Paths.jsonSYS("character data/" + characterName + "/config")).trim();
+		if(Assets.exists(Paths.json("character data/" + characterName + "/config")))
+			rawJson = Assets.getText(Paths.json("character data/" + characterName + "/config")).trim();
+		else
+			rawJson = File.getContent(Sys.getCwd() + Paths.jsonSYS("character data/" + characterName + "/config")).trim();
 		#else
 		rawJson = Assets.getText(Paths.json("character data/" + characterName + "/config")).trim();
 		#end
@@ -396,7 +399,10 @@ class Character extends FlxSprite
 		if(config.spritesheetType == SpritesheetType.PACKER)
 		{
 			#if sys
-			frames = Paths.getPackerAtlasSYS("characters/" + config.imagePath, "shared");
+			if(Assets.exists(Paths.image('characters/' + config.imagePath, 'shared')))
+				frames = Paths.getPackerAtlas('characters/' + config.imagePath, 'shared');
+			else
+				frames = Paths.getPackerAtlasSYS("characters/" + config.imagePath, "shared");
 			#else
 			frames = Paths.getPackerAtlas('characters/' + config.imagePath, 'shared');
 			#end
@@ -404,7 +410,10 @@ class Character extends FlxSprite
 		else
 		{
 			#if sys
-			frames = Paths.getSparrowAtlasSYS("characters/" + config.imagePath, "shared");
+			if(Assets.exists(Paths.image('characters/' + config.imagePath, 'shared')))
+				frames = Paths.getSparrowAtlas('characters/' + config.imagePath, 'shared');
+			else
+				frames = Paths.getSparrowAtlasSYS("characters/" + config.imagePath, "shared");
 			#else
 			frames = Paths.getSparrowAtlas('characters/' + config.imagePath, 'shared');
 			#end
@@ -458,7 +467,10 @@ class Character extends FlxSprite
 		var offsets:Array<String>;
 
 		#if sys
-		offsets = CoolUtil.coolTextFileFromSystem("data/character data/" + characterName + "/" + "offsets");
+		if(Assets.exists(Paths.txt("character data/" + characterName + "/" + "offsets")))
+			offsets = CoolUtil.coolTextFile(Paths.txt("character data/" + characterName + "/" + "offsets"));
+		else
+			offsets = CoolUtil.coolTextFileFromSystem("data/character data/" + characterName + "/" + "offsets");
 
 		// og solution (if debugging needed lol)
 		//offsets = File.getContent(Sys.getCwd() + "assets/data/" + "character data/" + characterName + "/" + "offsets.txt").trim().split('\n');

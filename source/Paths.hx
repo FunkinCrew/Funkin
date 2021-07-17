@@ -154,36 +154,23 @@ class Paths
 		return FlxAtlasFrames.fromSparrow(imageData, xmlData);
 	}
 
-	// bruh debugging
+	inline static public function getPackerAtlasSYS(key:String, ?library:String)
+	{
+		var path = pathStyleSYS(key, library);
+
+		var imageData = BitmapData.fromFile(path + ".png");
+		var txtData = File.getContent(path + ".txt");
+
+		return FlxAtlasFrames.fromSpriteSheetPacker(imageData, txtData);
+	}
+
+	// path stuff lol for system
 	inline static public function pathStyleSYS(key:String, ?library:String)
 	{
 		if(library != null)
 			library = library + "/";
 
 		return Sys.getCwd() + "assets/" + library + "images/" + key;
-	}
-
-	inline static public function getPackerAtlasSYS(key:String, ?library:String)
-	{
-		if(library == null)
-			library = "";
-
-		return FlxAtlasFrames.fromSpriteSheetPacker(
-			BitmapData.fromFile(
-				Sys.getCwd()
-				+ "assets/"
-				+ (library == "" ? "images/" : library + "/" + "images/")
-				+ key
-				+ ".png"
-			),
-			File.getContent(
-				Sys.getCwd()
-				+ "assets/"
-				+ (library == "" ? "images/" : library + "/" + "images/")
-				+ key
-				+ ".txt"
-			)
-		);
 	}
 	#end
 }
