@@ -11,7 +11,7 @@ All notable changes will be documented in this file.
 - Updated hit-window.
 - Decimal BPM support.
 ### Changed
-- ipsum
+- Input has been updated and is a lot better now.
 ### Fixed
 - dolor
 
