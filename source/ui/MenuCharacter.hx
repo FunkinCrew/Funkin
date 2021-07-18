@@ -36,3 +36,19 @@ class MenuCharacter extends FlxSprite
 		updateHitbox();
 	}
 }
+
+class MenuCharacterData
+{
+	public var Animation_Name:String = "bf";
+	public var FPS:Int = 24;
+	public var Animation_Looped:Bool = false;
+	public var Offsets:Array<Int> = [0, 0];
+
+	public function new(_Animation_Name:String = "bf", _Animation_Looped:Bool = false, _Offsets:Array<Int>, ?_FPS:Int = 24)
+	{
+		this.Animation_Name = _Animation_Name;
+		this.Animation_Looped = _Animation_Looped;
+		this.Offsets = _Offsets;
+		this.FPS = _FPS;
+	}
+}
