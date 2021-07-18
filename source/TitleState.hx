@@ -118,10 +118,11 @@ class TitleState extends MusicBeatState
 		// bg.updateHitbox();
 		add(bg);
 
-		logoBl = new FlxSprite(-150, 1500);
-		if(Main.watermarks) {
+		if (Main.watermarks) {
+			logoBl = new FlxSprite(-150, 1500);
 			logoBl.frames = Paths.getSparrowAtlas('KadeEngineLogoBumpin');
 		} else {
+			logoBl = new FlxSprite(-150, -100);
 			logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
 		}
 		logoBl.antialiasing = true;
