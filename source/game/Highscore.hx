@@ -44,14 +44,14 @@ class Highscore
 			setRank(daSong, rank);
 	}
 
-	public static function saveWeekScore(week:Int = 1, score:Int = 0, ?diff:Int = 0):Void
+	public static function saveWeekScore(week:Int = 1, score:Int = 0, ?diff:Int = 0, ?weekName:String = 'week'):Void
 	{
 		#if !switch
 		NGio.postScore(score, "Week " + week);
 		#end
 
 
-		var daWeek:String = formatSong('week' + week, diff);
+		var daWeek:String = formatSong(weekName + week, diff);
 
 		if (songScores.exists(daWeek))
 		{
@@ -101,12 +101,12 @@ class Highscore
 		return songScores.get(formatSong(song, diff));
 	}
 
-	public static function getWeekScore(week:Int, diff:Int):Int
+	public static function getWeekScore(week:Int, diff:Int, ?weekName:String = 'week'):Int
 	{
-		if (!songScores.exists(formatSong('week' + week, diff)))
-			setScore(formatSong('week' + week, diff), 0);
+		if (!songScores.exists(formatSong(weekName + week, diff)))
+			setScore(formatSong(weekName + week, diff), 0);
 
-		return songScores.get(formatSong('week' + week, diff));
+		return songScores.get(formatSong(weekName + week, diff));
 	}
 
 	public static function getSongRank(song:String, diff:Int):String

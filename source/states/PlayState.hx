@@ -1,5 +1,7 @@
 package states;
 
+import openfl.events.KeyboardEvent;
+import openfl.events.EventType;
 import lime.media.HTML5AudioContext;
 import modding.ModdingSound;
 import openfl.utils.ByteArray;
@@ -153,6 +155,7 @@ class PlayState extends MusicBeatState
 	public var foregroundSprites:FlxGroup = new FlxGroup();
 
 	var defaultCamZoom:Float = 1.05;
+	var altAnim:String = "";
 
 	public static var stepsTexts:Array<String>;
 
@@ -160,6 +163,8 @@ class PlayState extends MusicBeatState
 	public static var daPixelZoom:Float = 6;
 
 	var inCutscene:Bool = false;
+
+	public static var groupWeek:String = "";
 
 	#if desktop
 	// Discord RPC variables
@@ -650,9 +655,9 @@ class PlayState extends MusicBeatState
 
 		startTimer = new FlxTimer().start(Conductor.crochet / 1000, function(tmr:FlxTimer)
 		{
-			dad.dance();
+			dad.dance(altAnim);
 			gf.dance();
-			boyfriend.playAnim('idle');
+			boyfriend.dance();
 
 			var introAssets:Map<String, Array<String>> = new Map<String, Array<String>>();
 			introAssets.set('default', ['ready', "set", "go"]);
@@ -1546,12 +1551,12 @@ class PlayState extends MusicBeatState
 					if (SONG.song != 'Tutorial')
 						camZooming = true;
 
-					var altAnim:String = "";
-
 					if (SONG.notes[Math.floor(curStep / 16)] != null)
 					{
 						if (SONG.notes[Math.floor(curStep / 16)].altAnim)
 							altAnim = '-alt';
+						else
+							altAnim = "";
 					}
 
 					switch (Math.abs(daNote.noteData))
@@ -1650,7 +1655,7 @@ class PlayState extends MusicBeatState
 	}
 
 	function endSong():Void
-	{		
+	{
 		canPause = false;
 		FlxG.sound.music.volume = 0;
 		vocals.volume = 0;
@@ -1689,8 +1694,7 @@ class PlayState extends MusicBeatState
 	
 					if (SONG.validScore)
 					{
-						//NGio.unlockMedal(60961);
-						Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficulty);
+						Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficulty, (groupWeek != "" ? groupWeek + "Week" : "week"));
 					}
 	
 					#if !debug

@@ -1,5 +1,7 @@
 package ui;
 
+import openfl.display.BitmapData;
+import lime.utils.Assets;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
@@ -16,7 +18,16 @@ class MenuItem extends FlxSpriteGroup
 	public function new(x:Float, y:Float, weekName:String = "tutorial", weekFolder:String = "default")
 	{
 		super(x, y);
+
+		#if sys
+		if(Assets.exists(Paths.image('storymenu/' + weekFolder + "/" + weekName)))
+			week = new FlxSprite().loadGraphic(Paths.image('storymenu/' + weekFolder + "/" + weekName));
+		else
+			week = new FlxSprite().loadGraphic(BitmapData.fromFile(Sys.getCwd() + "assets/images/storymenu/" + weekFolder + "/" + weekName + ".png"));
+		#else
 		week = new FlxSprite().loadGraphic(Paths.image('storymenu/' + weekFolder + "/" + weekName));
+		#end
+
 		add(week);
 	}
 

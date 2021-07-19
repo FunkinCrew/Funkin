@@ -531,7 +531,7 @@ class Character extends FlxSprite
 	/**
 	 * FOR GF DANCING SHIT
 	 */
-	public function dance()
+	public function dance(?altAnim:String = "")
 	{
 		if (!debugMode)
 		{
@@ -543,22 +543,22 @@ class Character extends FlxSprite
 						danced = !danced;
 
 						if (danced)
-							playAnim('danceRight');
+							playAnim('danceRight' + altAnim);
 						else
-							playAnim('danceLeft');
+							playAnim('danceLeft' + altAnim);
 					}
 
 				default:
 					if(!dancesLeftAndRight)
-						playAnim('idle');
+						playAnim('idle' + altAnim);
 					else
 					{
 						danced = !danced;
 
 						if (danced)
-							playAnim('danceRight');
+							playAnim('danceRight' + altAnim);
 						else
-							playAnim('danceLeft');
+							playAnim('danceLeft' + altAnim);
 					}
 			}
 		}
