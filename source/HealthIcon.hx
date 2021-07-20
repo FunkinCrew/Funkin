@@ -12,10 +12,16 @@ class HealthIcon extends FlxSprite
 	public function new(char:String = 'bf', isPlayer:Bool = false)
 	{
 		super();
-		
-		loadGraphic(Paths.image('iconGrid'), true, 150, 150);
 
 		antialiasing = true;
+
+		if (char == 'sm')
+		{
+			loadGraphic(Paths.image("stepmania-icon"));
+			return;
+		}
+		
+		loadGraphic(Paths.image('iconGrid'), true, 150, 150);
 		animation.add('bf', [0, 1], 0, false, isPlayer);
 		animation.add('bf-car', [0, 1], 0, false, isPlayer);
 		animation.add('bf-christmas', [0, 1], 0, false, isPlayer);

@@ -1,0 +1,1 @@
+Put both the .sm and .ogg in the same folder and put the folder in this folder. Launch the game and go into freeplay, it'll load into the song list.
