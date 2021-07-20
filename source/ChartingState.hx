@@ -1935,14 +1935,6 @@ class ChartingState extends MusicBeatState
 				}
 			}
 
-			if (FlxG.keys.justPressed.R)
-			{
-				if (FlxG.keys.pressed.SHIFT)
-					resetSection(true);
-				else
-					resetSection();
-			}
-
 			
 			if (FlxG.sound.music.time < 0 || curDecimalBeat < 0)
 				FlxG.sound.music.time = 0;
