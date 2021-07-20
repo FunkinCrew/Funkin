@@ -82,7 +82,7 @@ class Note extends FlxSprite
 		}
 		else
 		{
-			this.strumTime = Math.round(strumTime);
+			this.strumTime = strumTime;
 			rStrumTime = strumTime - (FlxG.save.data.offset + PlayState.songOffset);
 		}
 
