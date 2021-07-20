@@ -1163,13 +1163,16 @@ class ChartingState extends MusicBeatState
 
 			var sect = lastUpdatedSection;
 
-			if (sect != null)
+			if (sect == null)
 				return;
 
 			for (i in 0...sect.sectionNotes.length)
 			{
 				var note = sect.sectionNotes[i];
-				note[1] = (note[1] + 4) % 8;
+				if (note[1] < 4)
+					note[1] += 4;
+				else
+					note[1] -= 4;
 				sect.sectionNotes[i] = note;
 				updateGrid();
 			}
@@ -1179,7 +1182,7 @@ class ChartingState extends MusicBeatState
 
 			trace(sect);
 
-			if (sect != null)
+			if (sect == null)
 				return;
 
 			sect.mustHitSection = check_mustHitSection.checked;
