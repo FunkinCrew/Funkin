@@ -2549,7 +2549,12 @@ class ChartingState extends MusicBeatState
 
 	function loadJson(song:String):Void
 	{
-		PlayState.SONG = Song.loadFromJson(song.toLowerCase(), song.toLowerCase());
+		var format = StringTools.replace(PlayState.SONG.song.toLowerCase(), " ", "-");
+		switch (format) {
+			case 'Dad-Battle': format = 'Dadbattle';
+			case 'Philly-Nice': format = 'Philly';
+		}
+		PlayState.SONG = Song.loadFromJson(format, format);
 		LoadingState.loadAndSwitchState(new ChartingState());
 	}
 
