@@ -1443,8 +1443,10 @@ class PlayState extends MusicBeatState
 			{
 				if (value == curStage)
 				{
+					trace(value + " - " + curStage);
 					introAlts = introAssets.get(value);
-					altSuffix = '-pixel';
+					if (curStage.contains('school'))
+						altSuffix = '-pixel';
 				}
 			}
 
@@ -1671,7 +1673,7 @@ class PlayState extends MusicBeatState
 			ana.hitJudge = Ratings.CalculateRating(noteDiff, Math.floor((PlayStateChangeables.safeFrames / 60) * 1000));
 			ana.nearestNote = [coolNote.strumTime, coolNote.noteData, coolNote.sustainLength];
 		}
-		else if (!FlxG.save.data.ghost)
+		else if (!FlxG.save.data.ghost && songStarted)
 		{
 			noteMiss(data, null);
 			ana.hit = false;

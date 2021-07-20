@@ -1515,9 +1515,9 @@ class ChartingState extends MusicBeatState
 						var increase:Float = 0;
 	
 						if (amount < 0)
-							increase = -0.04;
+							increase = -0.02;
 						else
-							increase = 0.04;
+							increase = 0.02;
 	
 						
 						zoomFactor += increase;
