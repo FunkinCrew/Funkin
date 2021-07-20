@@ -67,6 +67,18 @@ class TitleState extends MusicBeatState
 			trace("Loaded " + openfl.Assets.getLibrary("default").assetsLoaded + " assets (DEFAULT)");
 		}
 		
+		#if !cpp
+
+		FlxG.save.bind('funkin', 'ninjamuffin99');
+
+		PlayerSettings.init();
+
+		KadeEngineData.initSave();
+		
+		#end
+
+				
+		Highscore.load();
 
 
 		curWacky = FlxG.random.getObject(getIntroTextShit());
