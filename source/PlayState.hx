@@ -158,6 +158,7 @@ class PlayState extends MusicBeatState
 
 	public static var misses:Int = 0;
 	public static var campaignMisses:Int = 0;
+	
 
 	public var accuracy:Float = 0.00;
 
