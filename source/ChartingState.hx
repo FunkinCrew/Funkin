@@ -1556,6 +1556,9 @@ class ChartingState extends MusicBeatState
 							trace("SNAP - " + snap + " INCREASE - " + increase + " - GO TO BEAT " + beats);
 	
 							var data = TimingStruct.getTimingAtBeat(beats);
+
+							if (beats <= 0)
+								FlxG.sound.music.time = 0;
 	
 							var bpm = data != null ? data.bpm : _song.bpm;
 
@@ -1852,7 +1855,7 @@ class ChartingState extends MusicBeatState
 
 			dummyArrow.x = Math.floor(FlxG.mouse.x / GRID_SIZE) * GRID_SIZE;
 
-			dummyArrow.y = (Math.floor(FlxG.mouse.y / deezNuts.get(snap)) * deezNuts.get(snap));
+			dummyArrow.y = (Math.floor(FlxG.mouse.y / (GRID_SIZE / deezNuts.get(snap))) * (GRID_SIZE / deezNuts.get(snap)));
 		}
 		else
 		{
