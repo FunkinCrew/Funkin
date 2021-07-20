@@ -64,7 +64,10 @@ class LoadReplayState extends MusicBeatState
 		menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
 		menuBG.updateHitbox();
 		menuBG.screenCenter();
-		menuBG.antialiasing = true;
+		if(FlxG.save.data.antialiasing)
+			{
+				menuBG.antialiasing = true;
+			}
 		add(menuBG);
 
 		grpControls = new FlxTypedGroup<Alphabet>();
