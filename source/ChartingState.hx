@@ -348,7 +348,6 @@ class ChartingState extends MusicBeatState
 		UI_box.resize(300, 400);
 		UI_box.x = FlxG.width / 2 + 40;
 		UI_box.y = 20;
-		add(UI_box);
 
 		var opt_tabs = [{name: "Options", label:'Song Options'}, {name: "Events", label:'Song Events'}];
 
@@ -360,6 +359,7 @@ class ChartingState extends MusicBeatState
 		UI_options.x = UI_box.x;
 		UI_options.y = FlxG.height - 300;
 		add(UI_options);
+		add(UI_box);
 
 
 		addSongUI();
