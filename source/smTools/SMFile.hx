@@ -156,6 +156,8 @@ class SMFile
                 sectionNotes: [],
                 lengthInSteps: 16,
                 typeOfSection: 0,
+                startTime: 0.0,
+                endTime: 0.0,
                 mustHitSection: false,
                 bpm: header.getBPM(0),
                 changeBPM: false,
@@ -196,7 +198,10 @@ class SMFile
                 {
                     // if its a mine lets skip (maybe add mines in the future??)
                     if (i == "M")
+                    {
+                        index++;
                         continue;
+                    }
 
                     // get the lane and note type
                     var lane = index;
@@ -233,6 +238,24 @@ class SMFile
 
             measureIndex++;
         }
+
+        for (i in 0...song.notes.length) // loops through sections
+			{
+				var section = song.notes[i];
+
+				var currentBeat = 4 * i;
+
+				var currentSeg = TimingStruct.getTimingAtBeat(currentBeat);
+
+				var start:Float = (currentBeat - currentSeg.startBeat) / (currentSeg.bpm / 60);
+
+				section.startTime = (currentSeg.startTime + start) * 1000;
+
+				if (i != 0)
+					song.notes[i - 1].endTime = section.startTime;
+				section.endTime = Math.POSITIVE_INFINITY;
+
+			}
 
         //File.saveContent("fuac" + header.TITLE,output);
 
