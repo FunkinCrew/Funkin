@@ -216,6 +216,8 @@ class SMFile
                             var timeDiff = rowTime - data[0];
                             section.sectionNotes.push([data[0],lane,timeDiff]);
                             heldNotes[index] = [];
+                        case 4:
+                            heldNotes[lane] = [rowTime,lane,0];
                     }
                     index++;
                 }
