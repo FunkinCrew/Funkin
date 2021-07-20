@@ -1669,6 +1669,8 @@ class PlayState extends MusicBeatState
 			ana.hit = false;
 			ana.hitJudge = "shit";
 			ana.nearestNote = [];
+			misses++;
+			health -= 0.10;
 		}
 	}
 
