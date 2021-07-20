@@ -327,10 +327,11 @@ class KeyBindMenu extends FlxSubState
             {
                 var oK = gpKeys[x];
                 if(oK == r)
-                    gpKeys[x] = null;
+                    gpKeys[curSelected] = tempKey;
                 if (notAllowed.contains(oK))
                 {
-                    gpKeys[x] = null;
+                    gpKeys[curSelected] = tempKey;
+                    lastKey = r;
                     return;
                 }
             }
@@ -341,10 +342,7 @@ class KeyBindMenu extends FlxSubState
         }
         else{
             gpKeys[curSelected] = tempKey;
-            FlxG.sound.play(Paths.sound('scrollMenu'));
-            keyWarning.alpha = 1;
-            warningTween.cancel();
-            warningTween = FlxTween.tween(keyWarning, {alpha: 0}, 0.5, {ease: FlxEase.circOut, startDelay: 2});
+            lastKey = r;
         }
 
 	}
