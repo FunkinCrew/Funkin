@@ -823,8 +823,11 @@ class PlayState extends MusicBeatState
 					{
 						curStage = 'schoolEvil';
 
-						var waveEffectBG = new FlxWaveEffect(FlxWaveMode.ALL, 2, -1, 3, 2);
-						var waveEffectFG = new FlxWaveEffect(FlxWaveMode.ALL, 2, -1, 5, 2);
+						if (!PlayStateChangeables.Optimize)
+						{
+							var waveEffectBG = new FlxWaveEffect(FlxWaveMode.ALL, 2, -1, 3, 2);
+							var waveEffectFG = new FlxWaveEffect(FlxWaveMode.ALL, 2, -1, 5, 2);
+						}
 
 						var posX = 400;
 						var posY = 200;
@@ -989,10 +992,13 @@ class PlayState extends MusicBeatState
 				if (FlxG.save.data.distractions)
 				{
 					// trailArea.scrollFactor.set();
-					var evilTrail = new FlxTrail(dad, null, 4, 24, 0.3, 0.069);
-					// evilTrail.changeValuesEnabled(false, false, false, false);
-					// evilTrail.changeGraphic()
-					add(evilTrail);
+					if (!PlayStateChangeables.Optimize)
+					{
+						var evilTrail = new FlxTrail(dad, null, 4, 24, 0.3, 0.069);
+						// evilTrail.changeValuesEnabled(false, false, false, false);
+						// evilTrail.changeGraphic()
+						add(evilTrail);
+					}
 					// evilTrail.scrollFactor.set(1.1, 1.1);
 				}
 
