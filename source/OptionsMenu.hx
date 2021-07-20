@@ -55,8 +55,9 @@ class OptionsMenu extends MusicBeatState
 			new FlashingLightsOption("Toggle flashing lights that can cause epileptic seizures and strain."),
 			new WatermarkOption("Enable and disable all watermarks from the engine."),
 			new AntialiasingOption("Toggle antialiasing, improving graphics quality at a slight performance penalty."),
+			new MissSoundsOption("Toggle miss sounds playing when you don't hit a note."),
 			new ScoreScreen("Show the score screen after the end of a song"),
-			new ShowInput("Display every single input in the score screen."),
+			new ShowInput("Display every single input on the score screen."),
 			new Optimization("No characters or backgrounds. Just a rhythm game, with none of the extra bells and whistles."),
 			new GraphicLoading("On startup, cache every character. Significantly decrease load times. (HIGH MEMORY)"),
 			new BotPlay("Showcase your charts and mods with autoplay.")
