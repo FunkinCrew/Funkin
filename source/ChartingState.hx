@@ -2068,7 +2068,7 @@ class ChartingState extends MusicBeatState
 		var daSec = FlxMath.maxInt(curSection, sectionNum);
 		var sect = lastUpdatedSection;
 
-		if (sect != null)
+		if (sect == null)
 			return;
 
 		for (note in _song.notes[daSec - sectionNum].sectionNotes)
