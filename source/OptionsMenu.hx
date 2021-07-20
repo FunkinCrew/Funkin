@@ -58,7 +58,7 @@ class OptionsMenu extends MusicBeatState
 			new MissSoundsOption("Toggle miss sounds playing when you don't hit a note."),
 			new ScoreScreen("Show the score screen after the end of a song"),
 			new ShowInput("Display every single input on the score screen."),
-			new Optimization("No characters or backgrounds. Just a rhythm game, with none of the extra bells and whistles."),
+			new Optimization("No characters or backgrounds. Just a usual rhythm game layout."),
 			new GraphicLoading("On startup, cache every character. Significantly decrease load times. (HIGH MEMORY)"),
 			new BotPlay("Showcase your charts and mods with autoplay.")
 		]),
