@@ -3,15 +3,11 @@ package;
 #if windows
 import Discord.DiscordClient;
 #end
-import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import openfl.Lib;
 import Conductor.BPMChangeEvent;
 import flixel.FlxG;
-import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.ui.FlxUIState;
-import flixel.math.FlxRect;
-import flixel.util.FlxTimer;
 
 class MusicBeatState extends FlxUIState
 {
@@ -20,6 +16,7 @@ class MusicBeatState extends FlxUIState
 
 	private var curStep:Int = 0;
 	private var curBeat:Int = 0;
+	private var curDecimalBeat:Float = 0;
 	private var controls(get, never):Controls;
 
 	inline function get_controls():Controls
@@ -27,6 +24,7 @@ class MusicBeatState extends FlxUIState
 
 	override function create()
 	{
+		TimingStruct.clearTimings();
 		(cast (Lib.current.getChildAt(0), Main)).setFPSCap(FlxG.save.data.fpsCap);
 
 		if (transIn != null)
@@ -70,6 +68,29 @@ class MusicBeatState extends FlxUIState
 				curStep = nextStep;
 				updateBeat();
 				stepHit();
+			}
+		}
+
+		if (Conductor.songPosition < 0)
+			curDecimalBeat = 0;
+		else
+		{
+			if (TimingStruct.AllTimings.length > 1)
+			{
+				var data = TimingStruct.getTimingAtTimestamp(Conductor.songPosition);
+
+				FlxG.watch.addQuick("Current Conductor Timing Seg", data.bpm);
+
+				Conductor.crochet = ((60 / data.bpm) * 1000);
+
+				var percent = (Conductor.songPosition - (data.startTime * 1000)) / (data.length * 1000);
+
+				curDecimalBeat = data.startBeat + (((Conductor.songPosition/1000) - data.startTime) * (data.bpm / 60));
+			}
+			else
+			{
+				curDecimalBeat = (Conductor.songPosition / 1000) * (Conductor.bpm/60);
+				Conductor.crochet = ((60 / Conductor.bpm) * 1000);
 			}
 		}
 

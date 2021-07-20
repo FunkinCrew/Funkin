@@ -59,6 +59,13 @@ class OutdatedSubState extends MusicBeatState
 			+ "\n& more changes and bugfixes in the full changelog"
 			+ "\n\nPress Space to view the full changelog and update\nor ESCAPE to ignore this",
 			32);
+
+		if (MainMenuState.nightly != "")
+			txt.text = 
+			"You are on\n"
+			+ MainMenuState.kadeEngineVer + "-" + MainMenuState.nightly
+			+ "\nWhich is a PRE-RELEASE BUILD!"
+			+ "\n\nReport all bugs to the author of the pre-release.\nSpace/Escape ignores this.";
 		
 		txt.setFormat("VCR OSD Mono", 32, FlxColor.fromRGB(200, 200, 200), CENTER);
 		txt.borderColor = FlxColor.BLACK;
@@ -92,9 +99,14 @@ class OutdatedSubState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
-		if (controls.ACCEPT)
+		if (controls.ACCEPT && MainMenuState.nightly == "")
 		{
 			fancyOpenURL("https://kadedev.github.io/Kade-Engine/changelogs/changelog-" + needVer);
+		}
+		else if (controls.ACCEPT)
+		{
+			leftState = true;
+			FlxG.switchState(new MainMenuState());
 		}
 		if (controls.BACK)
 		{

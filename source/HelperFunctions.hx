@@ -12,4 +12,5 @@ class HelperFunctions
 	public static function GCD(a, b) {
 		return b == 0 ? FlxMath.absInt(a) : GCD(b, a % b);
 	}
+
 }

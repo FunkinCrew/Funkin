@@ -1,5 +1,12 @@
 package;
-
+import openfl.utils.Future;
+import openfl.media.Sound;
+import flixel.system.FlxSound;
+#if sys
+import smTools.SMFile;
+import sys.FileSystem;
+import sys.io.File;
+#end
 import Song.SwagSong;
 import flixel.input.gamepad.FlxGamepad;
 import flash.text.TextField;
@@ -63,6 +70,9 @@ class FreeplayState extends MusicBeatState
 
 		//var diffList = "";
 
+		songData = [];
+		songs = [];
+
 		for (i in 0...initSonglist.length)
 		{
 			var data:Array<String> = initSonglist[i].split(':');
@@ -82,6 +92,35 @@ class FreeplayState extends MusicBeatState
 			trace('loaded diffs for ' + meta.songName);
 
 		}
+
+		trace("tryin to load sm files");
+
+		#if sys
+		for(i in FileSystem.readDirectory("assets/sm/"))
+		{
+			trace(i);
+			if (FileSystem.isDirectory("assets/sm/" + i))
+			{
+				trace("Reading SM file dir " + i);
+				for (file in FileSystem.readDirectory("assets/sm/" + i))
+				{
+					if (file.contains(" "))
+						FileSystem.rename("assets/sm/" + i + "/" + file,"assets/sm/" + i + "/" + file.replace(" ","_"));
+					if (file.endsWith(".sm"))
+					{
+						trace("reading " + file);
+						var file:SMFile = SMFile.loadFile("assets/sm/" + i + "/" + file.replace(" ","_"));
+						trace("Converting " + file.header.TITLE);
+						var data = file.convertToFNF("assets/sm/" + i + "/converted.json");
+						var meta = new SongMetadata(file.header.TITLE, 0, "sm",file,"assets/sm/" + i);
+						songs.push(meta);
+						var song = Song.loadFromJsonRAW(data);
+						songData.set(file.header.TITLE, [song,song,song]);
+					}
+				}
+			}
+		}
+		#end
 
 		//trace("\n" + diffList);
 
@@ -319,6 +358,18 @@ class FreeplayState extends MusicBeatState
 			PlayState.storyDifficulty = curDifficulty;
 			PlayState.storyWeek = songs[curSelected].week;
 			trace('CUR WEEK' + PlayState.storyWeek);
+			#if sys
+			if (songs[curSelected].songCharacter == "sm")
+				{
+					PlayState.isSM = true;
+					PlayState.sm = songs[curSelected].sm;
+					PlayState.pathToSm = songs[curSelected].path;
+				}
+			else
+				PlayState.isSM = false;
+			#else
+			PlayState.isSM = false;
+			#end
 			LoadingState.loadAndSwitchState(new PlayState());
 		}
 	}
@@ -331,6 +382,7 @@ class FreeplayState extends MusicBeatState
 			curDifficulty = 2;
 		if (curDifficulty > 2)
 			curDifficulty = 0;
+
 
 		// adjusting the highscore song name to be compatible (changeDiff)
 		var songHighscore = StringTools.replace(songs[curSelected].songName, " ", "-");
@@ -355,6 +407,7 @@ class FreeplayState extends MusicBeatState
 
 		// NGio.logEvent('Fresh');
 		FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
+
 
 
 		curSelected += change;
@@ -383,7 +436,17 @@ class FreeplayState extends MusicBeatState
 		diffCalcText.text = 'RATING: ${DiffCalc.CalculateDiff(songData.get(songs[curSelected].songName)[curDifficulty])}';
 		
 		#if PRELOAD_ALL
-		FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName), 0);
+		if (songs[curSelected].songCharacter == "sm")
+		{
+			var data = songs[curSelected];
+			trace("Loading " + data.path + "/" + data.sm.header.MUSIC);
+			var bytes = File.getBytes(data.path + "/" + data.sm.header.MUSIC);
+			var sound = new Sound();
+			sound.loadCompressedDataFromByteArray(bytes.getData(), bytes.length);
+			FlxG.sound.playMusic(sound);
+		}
+		else
+			FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName), 0);
 		#end
 
 		var hmm;
@@ -432,12 +495,27 @@ class SongMetadata
 {
 	public var songName:String = "";
 	public var week:Int = 0;
+	#if sys
+	public var sm:SMFile;
+	public var path:String;
+	#end
 	public var songCharacter:String = "";
 
+	#if sys
+	public function new(song:String, week:Int, songCharacter:String, ?sm:SMFile = null, ?path:String = "")
+	{
+		this.songName = song;
+		this.week = week;
+		this.songCharacter = songCharacter;
+		this.sm = sm;
+		this.path = path;
+	}
+	#else
 	public function new(song:String, week:Int, songCharacter:String)
 	{
 		this.songName = song;
 		this.week = week;
 		this.songCharacter = songCharacter;
 	}
+	#end
 }
