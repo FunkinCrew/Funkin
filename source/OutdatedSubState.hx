@@ -55,7 +55,7 @@ class OutdatedSubState extends MusicBeatState
 		if (MainMenuState.nightly != "")
 			txt.text = 
 			"You are on\n"
-			+ MainMenuState.kadeEngineVer + "-" + MainMenuState.nightly
+			+ MainMenuState.kadeEngineVer
 			+ "\nWhich is a PRE-RELEASE BUILD!"
 			+ "\n\nReport all bugs to the author of the pre-release.\nSpace/Escape ignores this.";
 		
