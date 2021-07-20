@@ -45,8 +45,10 @@ typedef ReplayJSON =
 	public var songNotes:Array<Dynamic>;
 	public var songJudgements:Array<String>;
 	public var noteSpeed:Float;
+	public var chartPath:String;
 	public var isDownscroll:Bool;
 	public var sf:Int;
+	public var sm:Bool;
 	public var ana:Analysis;
 }
 
@@ -66,6 +68,8 @@ class Replay
 			isDownscroll: false,
 			songNotes: [],
 			replayGameVer: version,
+			chartPath: "",
+			sm: false,
 			timestamp: Date.now(),
 			sf: Conductor.safeFrames,
 			ana: new Analysis(),
@@ -86,20 +90,28 @@ class Replay
 
 	public function SaveReplay(notearray:Array<Dynamic>, judge:Array<String>, ana:Analysis)
 	{
+		#if sys
+		var chartPath = PlayState.isSM ? PlayState.pathToSm + "/converted.json" : "";
+		#else
+		var chartPath = "";
+		#end
+		
 		var json = {
 			"songName": PlayState.SONG.song,
 			"songDiff": PlayState.storyDifficulty,
+			"chartPath": chartPath,
+			"sm": PlayState.isSM,
+			"timestamp": Date.now(),
+			"replayGameVer": version,
+			"sf": Conductor.safeFrames,
 			"noteSpeed": (FlxG.save.data.scrollSpeed > 1 ? FlxG.save.data.scrollSpeed : PlayState.SONG.speed),
 			"isDownscroll": FlxG.save.data.downscroll,
 			"songNotes": notearray,
 			"songJudgements": judge,
-			"timestamp": Date.now(),
-			"replayGameVer": version,
-			"sf": Conductor.safeFrames,
 			"ana": ana
 		};
 
-		var data:String = Json.stringify(json);
+		var data:String = Json.stringify(json, null, "");
 		
 		var time = Date.now().getTime();
 
