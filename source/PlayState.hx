@@ -1,5 +1,11 @@
 package;
 
+import Song.Event;
+import openfl.media.Sound;
+#if sys
+import sys.io.File;
+import smTools.SMFile;
+#end
 import openfl.ui.KeyLocation;
 import openfl.events.Event;
 import haxe.EnumTools;
@@ -113,6 +119,12 @@ class PlayState extends MusicBeatState
 
 	private var vocals:FlxSound;
 
+	public static var isSM:Bool = false;
+	#if sys
+	public static var sm:SMFile;
+	public static var pathToSm:String;
+	#end
+
 	public var originalX:Float;
 
 	public static var dad:Character;
@@ -169,6 +181,8 @@ class PlayState extends MusicBeatState
 	private var camGame:FlxCamera;
 
 	public static var offsetTesting:Bool = false;
+
+	public var isSMFile:Bool = false;
 
 	var notesHitArray:Array<Date> = [];
 	var currentFrames:Int = 0;
@@ -261,6 +275,8 @@ class PlayState extends MusicBeatState
 
 	override public function create()
 	{
+
+		FlxG.mouse.visible = false;
 		instance = this;
 
 		if (FlxG.save.data.fpsCap > 290)
@@ -376,6 +392,47 @@ class PlayState extends MusicBeatState
 
 		Conductor.mapBPMChanges(SONG);
 		Conductor.changeBPM(SONG.bpm);
+
+		if (SONG.eventObjects == null)
+			{
+				SONG.eventObjects = [new Song.Event("Init BPM",0,SONG.bpm,"BPM Change")];
+			}
+	
+
+		TimingStruct.clearTimings();
+
+		var convertedStuff:Array<Song.Event> = [];
+
+		var currentIndex = 0;
+		for (i in SONG.eventObjects)
+		{
+			var name = Reflect.field(i,"name");
+			var type = Reflect.field(i,"type");
+			var pos = Reflect.field(i,"position");
+			var value = Reflect.field(i,"value");
+
+			if (type == "BPM Change")
+			{
+                var beat:Float = pos;
+
+                var endBeat:Float = Math.POSITIVE_INFINITY;
+
+                TimingStruct.addTiming(beat,value,endBeat, 0); // offset in this case = start time since we don't have a offset
+				
+                if (currentIndex != 0)
+                {
+                    var data = TimingStruct.AllTimings[currentIndex - 1];
+                    data.endBeat = beat;
+                    data.length = (data.endBeat - data.startBeat) / (data.bpm / 60);
+					TimingStruct.AllTimings[currentIndex].startTime = data.startTime + data.length;
+                }
+
+				currentIndex++;
+			}
+			convertedStuff.push(new Song.Event(name,pos,value,type));
+		}
+
+		SONG.eventObjects = convertedStuff;
 
 		trace('INFORMATION ABOUT WHAT U PLAYIN WIT:\nFRAMES: ' + PlayStateChangeables.safeFrames + '\nZONE: ' + Conductor.safeZoneOffset + '\nTS: '
 			+ Conductor.timeScale + '\nBotPlay : ' + PlayStateChangeables.botPlay);
@@ -1609,7 +1666,20 @@ class PlayState extends MusicBeatState
 
 		if (!paused)
 		{
+			#if sys
+			if (!isStoryMode && isSM)
+			{
+				trace("Loading " + pathToSm + "/" + sm.header.MUSIC);
+				var bytes = File.getBytes(pathToSm + "/" + sm.header.MUSIC);
+				var sound = new Sound();
+				sound.loadCompressedDataFromByteArray(bytes.getData(), bytes.length);
+				FlxG.sound.playMusic(sound);
+			}
+			else
+				FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 1, false);
+			#else
 			FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 1, false);
+			#end
 		}
 
 		FlxG.sound.music.onComplete = endSong;
@@ -1694,10 +1764,17 @@ class PlayState extends MusicBeatState
 
 		curSong = songData.song;
 
+		#if sys
+		if (SONG.needsVoices && !isSM)
+			vocals = new FlxSound().loadEmbedded(Paths.voices(PlayState.SONG.song));
+		else
+			vocals = new FlxSound();
+		#else
 		if (SONG.needsVoices)
 			vocals = new FlxSound().loadEmbedded(Paths.voices(PlayState.SONG.song));
 		else
 			vocals = new FlxSound();
+		#end
 
 		trace('loaded vocals');
 
@@ -1726,6 +1803,11 @@ class PlayState extends MusicBeatState
 		}
 
 		var songPath = 'assets/data/' + songLowercase + '/';
+		
+		#if sys
+		if (isSM && !isStoryMode)
+			songPath = pathToSm;
+		#end
 
 		for (file in sys.FileSystem.readDirectory(songPath))
 		{
@@ -2076,12 +2158,77 @@ class PlayState extends MusicBeatState
 	public var stopUpdate = false;
 	public var removedVideo = false;
 
+	public var currentBPM = 0;
+
+	public var updateFrame = 0;
+
 	override public function update(elapsed:Float)
 	{
 		#if !debug
 		perfectMode = false;
 		#end
 
+		if (updateFrame == 4)
+			{
+				TimingStruct.clearTimings();
+	
+					var currentIndex = 0;
+					for (i in SONG.eventObjects)
+					{
+						if (i.type == "BPM Change")
+						{
+							var beat:Float = i.position;
+	
+							var endBeat:Float = Math.POSITIVE_INFINITY;
+	
+							TimingStruct.addTiming(beat,i.value,endBeat, 0); // offset in this case = start time since we don't have a offset
+							
+							if (currentIndex != 0)
+							{
+								var data = TimingStruct.AllTimings[currentIndex - 1];
+								data.endBeat = beat;
+								data.length = (data.endBeat - data.startBeat) / (data.bpm / 60);
+								TimingStruct.AllTimings[currentIndex].startTime = data.startTime + data.length;
+							}
+	
+							currentIndex++;
+						}
+					}
+					updateFrame++;
+			}
+			else if (updateFrame != 5)
+				updateFrame++;
+	
+
+			var timingSeg = TimingStruct.getTimingAtTimestamp(Conductor.songPosition);
+	
+			if (timingSeg != null)
+			{
+	
+				var timingSegBpm = timingSeg.bpm;
+	
+				if (timingSegBpm != Conductor.bpm)
+				{
+					trace("BPM CHANGE to " + timingSegBpm);
+					Conductor.changeBPM(timingSegBpm, false);
+				}
+	
+			}
+
+		var newScroll = PlayStateChangeables.scrollSpeed;
+
+		for(i in SONG.eventObjects)
+		{
+			switch(i.type)
+			{
+				case "Scroll Speed Change":
+					if (i.position < curDecimalBeat)
+						newScroll = i.value;
+			}
+		}
+
+		PlayStateChangeables.scrollSpeed = newScroll;
+	
 		if (PlayStateChangeables.botPlay && FlxG.keys.justPressed.ONE)
 			camHUD.visible = !camHUD.visible;
 
@@ -2571,6 +2718,9 @@ class PlayState extends MusicBeatState
 			FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, 0.95);
 			camHUD.zoom = FlxMath.lerp(1, camHUD.zoom, 0.95);
 		}
+
+		FlxG.watch.addQuick("curBPM", Conductor.bpm);
+		FlxG.watch.addQuick("Closest Note", (unspawnNotes.length != 0 ? unspawnNotes[0].strumTime - Conductor.songPosition : "No note"));
 
 		FlxG.watch.addQuick("beatShit", curBeat);
 		FlxG.watch.addQuick("stepShit", curStep);
@@ -4226,11 +4376,6 @@ class PlayState extends MusicBeatState
 
 		if (SONG.notes[Math.floor(curStep / 16)] != null)
 		{
-			if (SONG.notes[Math.floor(curStep / 16)].changeBPM)
-			{
-				Conductor.changeBPM(SONG.notes[Math.floor(curStep / 16)].bpm);
-				FlxG.log.add('CHANGED BPM!');
-			}
 			// else
 			// Conductor.changeBPM(SONG.bpm);
 

@@ -76,3 +76,4 @@ This game was made with love to Newgrounds and its community. Extra love to Tom 
 - [Rozebud](https://github.com/ThatRozebudDude) - Ideas (that I stole)
 - [Puyo](https://github.com/puyoxyz) - Setting up appveyor and a lot of other help
 - [Smokey](https://github.com/Smokey555) - telling me that I should do the tricky asset loading
+- [Poco](https://github.com/poco0317) - math degree (aka most of the fucking math in this project)

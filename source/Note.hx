@@ -33,6 +33,8 @@ class Note extends FlxSprite
 	public var originColor:Int = 0; // The sustain note's original note's color
 	public var noteSection:Int = 0;
 
+	public var noteCharterObject:FlxSprite;
+
 	public var noteScore:Float = 1;
 
 	public var noteYOff:Int = 0;
