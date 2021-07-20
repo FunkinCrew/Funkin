@@ -180,6 +180,7 @@ class PlayState extends MusicBeatState
 	public var camHUD:FlxCamera;
 
 	private var camGame:FlxCamera;
+	public var cannotDie = false;
 
 	public static var offsetTesting:Bool = false;
 
@@ -2406,6 +2407,7 @@ class PlayState extends MusicBeatState
 				#end
 				removedVideo = true;
 			}
+			cannotDie = true;
 			#if windows
 			DiscordClient.changePresence("Chart Editor", null, null, true);
 			#end
@@ -2784,7 +2786,7 @@ class PlayState extends MusicBeatState
 			}
 		}
 
-		if (health <= 0)
+		if (health <= 0 && !cannotDie)
 		{
 			if (!usedTimeTravel) 
 			{
