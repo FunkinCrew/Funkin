@@ -365,10 +365,10 @@ class KeyBindMenu extends FlxSubState
             {
                 var oK = keys[x];
                 if(oK == r)
-                    keys[x] = null;
+                    keys[curSelected] = tempKey;
                 if (notAllowed.contains(oK))
                 {
-                    keys[x] = null;
+                    keys[curSelected] = tempKey;
                     lastKey = oK;
                     return;
                 }
@@ -376,7 +376,7 @@ class KeyBindMenu extends FlxSubState
 
         if (r.contains("NUMPAD"))
         {
-            keys[curSelected] = null;
+            keys[curSelected] = tempKey;
             lastKey = r;
             return;
         }
