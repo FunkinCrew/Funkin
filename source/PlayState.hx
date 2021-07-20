@@ -2811,7 +2811,7 @@ class PlayState extends MusicBeatState
 			else
 				health = 1;
 		}
-		if (FlxG.save.data.resetButton)
+		if (!inCutscene && FlxG.save.data.resetButton)
 		{
 			if (FlxG.keys.justPressed.R)
 			{
