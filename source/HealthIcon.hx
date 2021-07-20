@@ -13,14 +13,15 @@ class HealthIcon extends FlxSprite
 	{
 		super();
 
-		antialiasing = true;
-
+		if(FlxG.save.data.antialiasing)
+			{
+				antialiasing = true;
+			}
 		if (char == 'sm')
 		{
 			loadGraphic(Paths.image("stepmania-icon"));
 			return;
 		}
-		
 		loadGraphic(Paths.image('iconGrid'), true, 150, 150);
 		animation.add('bf', [0, 1], 0, false, isPlayer);
 		animation.add('bf-car', [0, 1], 0, false, isPlayer);

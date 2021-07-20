@@ -15,6 +15,12 @@ class KadeEngineData
 		if (FlxG.save.data.downscroll == null)
 			FlxG.save.data.downscroll = false;
 
+		if (FlxG.save.data.antialiasing == null)
+			FlxG.save.data.antialiasing = true;
+
+		if (FlxG.save.data.missSounds == null)
+			FlxG.save.data.missSounds = true;
+
 		if (FlxG.save.data.dfjk == null)
 			FlxG.save.data.dfjk = false;
 			

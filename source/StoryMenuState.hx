@@ -143,7 +143,10 @@ class StoryMenuState extends MusicBeatState
 			grpWeekText.add(weekThing);
 
 			weekThing.screenCenter(X);
-			weekThing.antialiasing = true;
+			if(FlxG.save.data.antialiasing)
+				{
+					weekThing.antialiasing = true;
+				}
 			// weekThing.updateHitbox();
 
 			// Needs an offset thingie
@@ -155,7 +158,10 @@ class StoryMenuState extends MusicBeatState
 				lock.animation.addByPrefix('lock', 'lock');
 				lock.animation.play('lock');
 				lock.ID = i;
-				lock.antialiasing = true;
+				if(FlxG.save.data.antialiasing)
+					{
+						lock.antialiasing = true;
+					}
 				grpLocks.add(lock);
 			}
 		}

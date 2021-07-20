@@ -43,7 +43,7 @@ class GameplayCustomizeState extends MusicBeatState
     public override function create() {
         #if windows
 		// Updating Discord Rich Presence
-		DiscordClient.changePresence("Customizing Gameplay", null);
+		DiscordClient.changePresence("Customizing Gameplay Modules", null);
 		#end
 
         sick = new FlxSprite().loadGraphic(Paths.image('sick','shared'));
@@ -116,7 +116,7 @@ class GameplayCustomizeState extends MusicBeatState
 		generateStaticArrows(0);
 		generateStaticArrows(1);
 
-        text = new FlxText(5, FlxG.height + 40, 0, "Drag around gameplay elements, R to reset, Escape to go back.", 12);
+        text = new FlxText(5, FlxG.height + 40, 0, "Click and drag around gameplay elements to customize their positions.\nPress R to reset.\nPress Escape to go back.", 12);
 		text.scrollFactor.set();
 		text.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
         

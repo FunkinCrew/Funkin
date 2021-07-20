@@ -150,6 +150,10 @@ class FreeplayState extends MusicBeatState
 		// LOAD CHARACTERS
 
 		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuBGBlue'));
+		if(FlxG.save.data.antialiasing)
+			{
+				bg.antialiasing = true;
+			}
 		add(bg);
 
 		grpSongs = new FlxTypedGroup<Alphabet>();

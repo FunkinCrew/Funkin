@@ -110,7 +110,10 @@ class Note extends FlxSprite
 
 			setGraphicSize(Std.int(width * 0.7));
 			updateHitbox();
-			antialiasing = true;
+			if(FlxG.save.data.antialiasing)
+				{
+					antialiasing = true;
+				}
 		}
 		else
 		{
@@ -146,7 +149,11 @@ class Note extends FlxSprite
 
 					setGraphicSize(Std.int(width * 0.7));
 					updateHitbox();
-					antialiasing = true;
+					
+					if(FlxG.save.data.antialiasing)
+						{
+							antialiasing = true;
+						}
 			}
 		}
 
