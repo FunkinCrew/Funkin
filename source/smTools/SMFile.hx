@@ -191,7 +191,6 @@ class SMFile
                 //output += " - Row " + noteRow + " - Time: " + rowTime + " (" + timeInSec + ") - Beat: " + currentBeat + " - Current BPM: " + header.getBPM(currentBeat) + "\n";
 
                 var index = 0;
-                var takeover = false;
 
                 for(i in notes)
                 {
@@ -216,7 +215,7 @@ class SMFile
                             var timeDiff = rowTime - data[0];
                             section.sectionNotes.push([data[0],lane,timeDiff]);
                             heldNotes[index] = [];
-                        case 4:
+                        case 4: // roll head
                             heldNotes[lane] = [rowTime,lane,0];
                     }
                     index++;
