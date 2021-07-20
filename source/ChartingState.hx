@@ -1319,12 +1319,8 @@ class ChartingState extends MusicBeatState
 		FlxG.sound.music.onComplete = function()
 		{
 			if (!PlayState.isSM)
-			{
 				vocals.pause();
-				vocals.time = 0;
-			}
 			FlxG.sound.music.pause();
-			FlxG.sound.music.time = 0;
 		};
 	}
 
