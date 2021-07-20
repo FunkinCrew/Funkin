@@ -119,6 +119,8 @@ class KeyBindMenu extends FlxSubState
         if (frames <= 10)
             frames++;
 
+        infoText.text = 'Current Mode: ${KeyBinds.gamepad ? 'GAMEPAD' : 'KEYBOARD'}. Press TAB to switch\n(${KeyBinds.gamepad ? 'RIGHT Trigger' : 'Escape'} to save, ${KeyBinds.gamepad ? 'LEFT Trigger' : 'Backspace'} to leave without saving. ${KeyBinds.gamepad ? 'START To change a keybind' : ''})\n${lastKey != "" ? lastKey + " is blacklisted!" : ""}';
+
         switch(state){
 
             case "select":
@@ -137,7 +139,6 @@ class KeyBindMenu extends FlxSubState
                 if (FlxG.keys.justPressed.TAB)
                 {
                     KeyBinds.gamepad = !KeyBinds.gamepad;
-                    infoText.text = 'Current Mode: ${KeyBinds.gamepad ? 'GAMEPAD' : 'KEYBOARD'}. Press TAB to switch\n(${KeyBinds.gamepad ? 'RIGHT Trigger' : 'Escape'} to save, ${KeyBinds.gamepad ? 'LEFT Trigger' : 'Backspace'} to leave without saving. ${KeyBinds.gamepad ? 'START To change a keybind' : ''})';
                     textUpdate();
                 }
 
@@ -348,6 +349,8 @@ class KeyBindMenu extends FlxSubState
 
 	}
 
+    public var lastKey:String = "";
+
 	function addKey(r:String){
 
         var shouldReturn:Bool = true;
@@ -366,6 +369,7 @@ class KeyBindMenu extends FlxSubState
                 if (notAllowed.contains(oK))
                 {
                     keys[x] = null;
+                    lastKey = oK;
                     return;
                 }
             }
@@ -373,8 +377,11 @@ class KeyBindMenu extends FlxSubState
         if (r.contains("NUMPAD"))
         {
             keys[curSelected] = null;
+            lastKey = r;
             return;
         }
+
+        lastKey = "";
 
         if(shouldReturn){
             keys[curSelected] = r;
