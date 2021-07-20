@@ -100,6 +100,7 @@ class PlayState extends MusicBeatState
 
 	public static var rep:Replay;
 	public static var loadRep:Bool = false;
+	public static var inResults:Bool = false;
 
 	public static var noteBools:Array<Bool> = [false, false, false, false];
 
@@ -185,6 +186,8 @@ class PlayState extends MusicBeatState
 
 	var notesHitArray:Array<Date> = [];
 	var currentFrames:Int = 0;
+	var idleToBeat:Bool = true; // change if bf and dad would idle to the beat of the song
+	var idleBeat:Int = 1; // how frequently bf and dad would play their idle animation(1 - every beat, 2 - every 2 beats and so on)
 
 	public var dialogue:Array<String> = ['dad:blah blah blah', 'bf:coolswag'];
 
@@ -226,6 +229,7 @@ class PlayState extends MusicBeatState
 
 	var funneEffect:FlxSprite;
 	var inCutscene:Bool = false;
+	var usedTimeTravel:Bool = false;
 
 	public static var repPresses:Int = 0;
 	public static var repReleases:Int = 0;
@@ -293,6 +297,7 @@ class PlayState extends MusicBeatState
 		highestCombo = 0;
 		repPresses = 0;
 		repReleases = 0;
+		inResults = false;
 
 		PlayStateChangeables.useDownscroll = FlxG.save.data.downscroll;
 		PlayStateChangeables.safeFrames = FlxG.save.data.frames;
@@ -2453,6 +2458,45 @@ class PlayState extends MusicBeatState
 			}
 			#end
 		}
+		
+		if(FlxG.keys.justPressed.TWO) { //Go 10 seconds into the future, credit: Shadow Mario#9396
+			if (!usedTimeTravel && Conductor.songPosition + 10000 < FlxG.sound.music.length) 
+			{
+				usedTimeTravel = true;
+				FlxG.sound.music.pause();
+				vocals.pause();
+				Conductor.songPosition += 10000;
+				notes.forEachAlive(function(daNote:Note)
+				{
+					if(daNote.strumTime - 500 < Conductor.songPosition) {
+						daNote.active = false;
+						daNote.visible = false;
+
+					
+						daNote.kill();
+						notes.remove(daNote, true);
+						daNote.destroy();
+					}
+				});
+				for (i in 0...unspawnNotes.length) {
+					var daNote:Note = unspawnNotes[0];
+					if(daNote.strumTime - 500 >= Conductor.songPosition) {
+						break;
+					}
+					unspawnNotes.splice(unspawnNotes.indexOf(daNote), 1);
+				}
+
+				FlxG.sound.music.time = Conductor.songPosition;
+				FlxG.sound.music.play();
+
+				vocals.time = Conductor.songPosition;
+				vocals.play();
+				new FlxTimer().start(0.5, function(tmr:FlxTimer)
+					{
+						usedTimeTravel = false;
+					});
+			}
+		}
 		#end
 
 		if (startingSong)
@@ -2713,34 +2757,39 @@ class PlayState extends MusicBeatState
 
 		if (health <= 0)
 		{
-			boyfriend.stunned = true;
+			if (!usedTimeTravel) 
+			{
+				boyfriend.stunned = true;
 
-			persistentUpdate = false;
-			persistentDraw = false;
-			paused = true;
+				persistentUpdate = false;
+				persistentDraw = false;
+				paused = true;
 
-			vocals.stop();
-			FlxG.sound.music.stop();
+				vocals.stop();
+				FlxG.sound.music.stop();
 
-			openSubState(new GameOverSubstate(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
+				openSubState(new GameOverSubstate(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 
-			#if windows
-			// Game Over doesn't get his own variable because it's only used here
-			DiscordClient.changePresence("GAME OVER -- "
-				+ SONG.song
-				+ " ("
-				+ storyDifficultyText
-				+ ") "
-				+ Ratings.GenerateLetterRank(accuracy),
-				"\nAcc: "
-				+ HelperFunctions.truncateFloat(accuracy, 2)
-				+ "% | Score: "
-				+ songScore
-				+ " | Misses: "
-				+ misses, iconRPC);
-			#end
+				#if windows
+				// Game Over doesn't get his own variable because it's only used here
+				DiscordClient.changePresence("GAME OVER -- "
+					+ SONG.song
+					+ " ("
+					+ storyDifficultyText
+					+ ") "
+					+ Ratings.GenerateLetterRank(accuracy),
+					"\nAcc: "
+					+ HelperFunctions.truncateFloat(accuracy, 2)
+					+ "% | Score: "
+					+ songScore
+					+ " | Misses: "
+					+ misses, iconRPC);
+				#end
 
-			// FlxG.switchState(new GameOverState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
+				// FlxG.switchState(new GameOverState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
+			}
+			else
+				health = 1;
 		}
 		if (FlxG.save.data.resetButton)
 		{
@@ -3192,10 +3241,17 @@ class PlayState extends MusicBeatState
 					FlxG.sound.music.stop();
 					vocals.stop();
 					if (FlxG.save.data.scoreScreen)
+					{
 						openSubState(new ResultsScreen());
+						new FlxTimer().start(1, function(tmr:FlxTimer)
+							{
+								inResults = true;
+							});
+					}
 					else
 					{
 						FlxG.sound.playMusic(Paths.music('freakyMenu'));
+						Conductor.changeBPM(102);
 						FlxG.switchState(new StoryMenuState());
 					}
 
@@ -3262,8 +3318,14 @@ class PlayState extends MusicBeatState
 				FlxG.sound.music.stop();
 				vocals.stop();
 
-				if (FlxG.save.data.scoreScreen)
+				if (FlxG.save.data.scoreScreen) 
+				{
 					openSubState(new ResultsScreen());
+					new FlxTimer().start(1, function(tmr:FlxTimer)
+						{
+							inResults = true;
+						});
+				}
 				else
 					FlxG.switchState(new FreeplayState());
 			}
@@ -4318,8 +4380,9 @@ class PlayState extends MusicBeatState
 			// Conductor.changeBPM(SONG.bpm);
 
 			// Dad doesnt interupt his own notes
-			if (SONG.notes[Math.floor(curStep / 16)].mustHitSection && dad.curCharacter != 'gf')
-				dad.dance();
+			if ((SONG.notes[Math.floor(curStep / 16)].mustHitSection || !dad.animation.curAnim.name.startsWith("sing")) && dad.curCharacter != 'gf')
+				if (curBeat % idleBeat == 0)
+					dad.dance(idleToBeat);
 		}
 		// FlxG.log.add('change bpm' + SONG.notes[Std.int(curStep / 16)].changeBPM);
 		wiggleShit.update(Conductor.crochet);
@@ -4351,9 +4414,9 @@ class PlayState extends MusicBeatState
 			gf.dance();
 		}
 
-		if (!boyfriend.animation.curAnim.name.startsWith("sing"))
+		if (!boyfriend.animation.curAnim.name.startsWith("sing") && curBeat % idleBeat == 0)
 		{
-			boyfriend.playAnim('idle');
+			boyfriend.playAnim('idle', idleToBeat);
 		}
 
 		/*if (!dad.animation.curAnim.name.startsWith("sing"))

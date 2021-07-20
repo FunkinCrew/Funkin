@@ -272,6 +272,7 @@ class TitleState extends MusicBeatState
 			// FlxG.sound.music.stop();
 
 			MainMenuState.firstStart = true;
+			MainMenuState.finishedFunnyMove = false;
 
 			new FlxTimer().start(2, function(tmr:FlxTimer)
 			{
