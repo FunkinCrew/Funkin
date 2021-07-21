@@ -214,6 +214,7 @@ class PauseSubState extends MusicBeatSubstate
 				case "Resume":
 					close();
 				case "Restart Song":
+					PlayState.startTime = 0;
 					if (PlayState.instance.useVideo)
 					{
 						GlobalVideo.get().stop();
@@ -222,6 +223,7 @@ class PauseSubState extends MusicBeatSubstate
 					}
 					FlxG.resetState();
 				case "Exit to menu":
+					PlayState.startTime = 0;
 					if (PlayState.instance.useVideo)
 					{
 						GlobalVideo.get().stop();

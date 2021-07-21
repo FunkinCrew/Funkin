@@ -1162,6 +1162,14 @@ class ChartingState extends MusicBeatState
 		});
 
 		var clearSectionButton:FlxButton = new FlxButton(10, 150, "Clear Section", clearSection);
+		var startSection:FlxButton = new FlxButton(10, 85, "Play Here", function() {
+			PlayState.SONG = _song;
+			FlxG.sound.music.stop();
+			if (!PlayState.isSM)
+			vocals.stop();
+			PlayState.startTime = lastUpdatedSection.startTime;
+			LoadingState.loadAndSwitchState(new PlayState());
+		});
 
 		var swapSection:FlxButton = new FlxButton(10, 170, "Swap Section", function()
 		{
@@ -1234,6 +1242,7 @@ class ChartingState extends MusicBeatState
 		tab_group_section.add(copyButton);
 		tab_group_section.add(clearSectionButton);
 		tab_group_section.add(swapSection);
+		tab_group_section.add(startSection);
 
 		UI_box.addGroup(tab_group_section);
 	}
