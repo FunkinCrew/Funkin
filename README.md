@@ -24,17 +24,23 @@ If you're looking for documentation, changelogs, or guides, you can find those o
 
 # Previews ([skip](#features))
 
-![Tutorial (Hard) on Downscroll](https://user-images.githubusercontent.com/15311104/113989685-fa5aea80-9850-11eb-9180-f5819a774c79.gif) ![Milf (Hard) on Downscroll](https://user-images.githubusercontent.com/15311104/113990845-2c208100-9852-11eb-8e6d-f1c9e8439871.gif)
+![Title Screen](art/readme/KadeEngineTitleScreen.png)
 
-![Roses (Hard) on Upscroll](https://user-images.githubusercontent.com/15311104/113993573-e31dfc00-9854-11eb-82ae-1f29dc8a0b04.png)
+![Week Select](art/readme/KadeEngineWeekSelect.png)
 
-![Milf (Hard) on Downscroll](https://user-images.githubusercontent.com/15311104/113991654-f4660900-9852-11eb-8c3d-f3927571f19b.png)
+![Freeplay](art/readme/KadeEngineFreeplay.png)
 
-![He malding](https://user-images.githubusercontent.com/15311104/113993693-02b52480-9855-11eb-9975-eb8a7a1be8d1.png)
+![Options](art/readme/KadeEngineOptions.png)
 
-![Free Play selection screen](https://i.imgur.com/LR0eWIC.png)
+![Senpai Gameplay (Hard, Upscroll)](art/readme/KadeEnginePixelGameplay.png)
 
-![Options Menu](https://i.imgur.com/LBXW9C1.png)
+![Roses Dialogue](art/readme/KadeEngineDialogue.png)
+
+![Pause Screen](art/readme/KadeEnginePauseScreen.png)
+
+![Results Screen](art/readme/KadeEngineResultsScreen.png)
+
+![Replay Loader](art/readme/KadeEngineReplayLoader.png)
 
 # Features
 
@@ -43,12 +49,15 @@ If you're looking for documentation, changelogs, or guides, you can find those o
  - **More information during gameplay**
 	 - While you're playing, we show you information about how you're doing, such as your accuracy, combo break count, notes per second, and your grade/rating.
  - **Customizable keybinds**
-	 - Instead of being forced to use WASD and the arrow keys, you can customize the keybinds to any keys you want!
+	 - Instead of being forced to use WASD and the arrow keys, you can set any keybinds you want!
  - **Replays** (in beta)
 	 - Have you ever gotten a crazy score but didn't record? The replay system solves that: it automatically saves a "replay" of your gameplay every time you complete a song, which you can play back inside of the game. 
 	 - Replays just store information about what you're doing, they don't actually record the screen -- so they take up way less space on your disk than videos.
  - **Audio offset**
-	 - If your headphones are delayed, you can set an offset in the options menu to line the game up with the delay and play with synced audio like intended.
+	 - If your speakers or headphones are delayed, you can set an offset in the options menu to line the game up with the delay and play with synced audio like intended!
+ - **And much, much more!**
+	 - There's so much more in store than just what's listed here! If you can imagine a quality of life feature, it's probably
+	 either already included in Kade Engine or is being worked on!
 
 # Credits
 ### Friday Night Funkin'
@@ -65,4 +74,6 @@ This game was made with love to Newgrounds and its community. Extra love to Tom 
 ### Shoutouts
 - [GWebDev](https://github.com/GrowtopiaFli) - Video Code
 - [Rozebud](https://github.com/ThatRozebudDude) - Ideas (that I stole)
-- [Puyo](https://github.com/daniel11420) - Setting up appveyor and a lot of other help
+- [Puyo](https://github.com/puyoxyz) - Setting up appveyor and a lot of other help
+- [Smokey](https://github.com/Smokey555) - telling me that I should do the tricky asset loading
+- [Poco](https://github.com/poco0317) - math degree (aka most of the fucking math in this project)

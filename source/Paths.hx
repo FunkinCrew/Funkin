@@ -1,5 +1,8 @@
 package;
 
+import openfl.utils.Assets;
+import flixel.graphics.FlxGraphic;
+import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.FlxG;
 import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.utils.AssetType;
@@ -50,7 +53,7 @@ class Paths
 		return 'assets/$file';
 	}
 
-	inline static public function file(file:String, type:AssetType = TEXT, ?library:String)
+	inline static public function file(file:String, ?library:String, type:AssetType = TEXT)
 	{
 		return getPath(file, type, library);
 	}
@@ -67,7 +70,7 @@ class Paths
 
 	inline static public function txt(key:String, ?library:String)
 	{
-		return getPath('data/$key.txt', TEXT, library);
+		return getPath('$key.txt', TEXT, library);
 	}
 
 	inline static public function xml(key:String, ?library:String)
@@ -125,13 +128,48 @@ class Paths
 		return 'assets/fonts/$key';
 	}
 
-	inline static public function getSparrowAtlas(key:String, ?library:String)
+	inline static public function getSparrowAtlas(key:String, ?library:String, ?isCharacter:Bool = false)
 	{
+		var usecahce = FlxG.save.data.cacheImages;
+		#if !cpp
+		usecahce = false;
+		#end
+		if (isCharacter)
+			if (usecahce)
+				#if cpp
+				return FlxAtlasFrames.fromSparrow(imageCached(key), file('images/characters/$key.xml', library));
+				#else
+				return null;
+				#end
+			else
+				return FlxAtlasFrames.fromSparrow(image('characters/$key', library), file('images/characters/$key.xml', library));
 		return FlxAtlasFrames.fromSparrow(image(key, library), file('images/$key.xml', library));
 	}
 
-	inline static public function getPackerAtlas(key:String, ?library:String)
+	#if cpp
+	inline static public function imageCached(key:String):FlxGraphic
 	{
+		var data = Caching.bitmapData.get(key);
+		trace('finding ${key} - ${data.bitmap}');
+		return data;
+	}
+	#end
+	
+	inline static public function getPackerAtlas(key:String, ?library:String, ?isCharacter:Bool = false)
+	{
+		var usecahce = FlxG.save.data.cacheImages;
+		#if !cpp
+		usecahce = false;
+		#end
+		if (isCharacter)
+			if (usecahce)
+				#if cpp
+				return FlxAtlasFrames.fromSpriteSheetPacker(imageCached(key), file('images/$key.txt', library));
+				#else
+				return null;
+				#end
+			else
+				return FlxAtlasFrames.fromSpriteSheetPacker(image('characters/$key'), file('images/characters/$key.txt', library));
 		return FlxAtlasFrames.fromSpriteSheetPacker(image(key, library), file('images/$key.txt', library));
 	}
 }

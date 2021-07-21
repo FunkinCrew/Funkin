@@ -1,0 +1,5 @@
+Put both the .sm and .ogg in the same folder and put the folder in this folder. Launch the game and go into freeplay, it'll load into the song list.
+
+Limitations:
+- You can only use songs that have one difficulty, so if a song has more than one. Remove all but the one you want to play. (it doesn't matter if it's challenge or what ever)
+- The song must be a .ogg

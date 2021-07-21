@@ -133,6 +133,11 @@ class PauseSubState extends MusicBeatSubstate
 		}
 		var songPath = 'assets/data/' + songLowercase + '/';
 
+		#if sys
+		if (PlayState.isSM && !PlayState.isStoryMode)
+			songPath = PlayState.pathToSm;
+		#end
+
 		if (controls.UP_P || upPcontroller)
 		{
 			changeSelection(-1);
@@ -209,6 +214,7 @@ class PauseSubState extends MusicBeatSubstate
 				case "Resume":
 					close();
 				case "Restart Song":
+					PlayState.startTime = 0;
 					if (PlayState.instance.useVideo)
 					{
 						GlobalVideo.get().stop();
@@ -217,6 +223,7 @@ class PauseSubState extends MusicBeatSubstate
 					}
 					FlxG.resetState();
 				case "Exit to menu":
+					PlayState.startTime = 0;
 					if (PlayState.instance.useVideo)
 					{
 						GlobalVideo.get().stop();
@@ -240,7 +247,10 @@ class PauseSubState extends MusicBeatSubstate
 					if (FlxG.save.data.fpsCap > 290)
 						(cast (Lib.current.getChildAt(0), Main)).setFPSCap(290);
 					
-					FlxG.switchState(new MainMenuState());
+					if (PlayState.isStoryMode)
+						FlxG.switchState(new StoryMenuState());
+					else
+						FlxG.switchState(new FreeplayState());
 			}
 		}
 
@@ -261,6 +271,8 @@ class PauseSubState extends MusicBeatSubstate
 	function changeSelection(change:Int = 0):Void
 	{
 		curSelected += change;
+		
+		FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 
 		if (curSelected < 0)
 			curSelected = menuItems.length - 1;

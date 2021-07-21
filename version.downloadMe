@@ -1,3 +1,8 @@
-1.5.4;
-- Controller Support
-- Fixed Input Drops/Disappering Notes
+1.6;
+- Full reworked charter
+- BPM Changes & Scroll Speed Change Support
+- StepMania File Format support
+- Pre-loading for characters option
+- New Main Menu Remix
+- Difficulty Calculator
+- Held note rework

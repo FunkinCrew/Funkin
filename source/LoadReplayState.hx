@@ -1,5 +1,12 @@
 package;
 
+import haxe.Exception;
+import lime.app.Application;
+
+#if sys
+import smTools.SMFile;
+import sys.FileSystem;
+#end
 import Controls.KeyboardScheme;
 import Controls.Control;
 import flash.text.TextField;
@@ -64,7 +71,10 @@ class LoadReplayState extends MusicBeatState
 		menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
 		menuBG.updateHitbox();
 		menuBG.screenCenter();
-		menuBG.antialiasing = true;
+		if(FlxG.save.data.antialiasing)
+			{
+				menuBG.antialiasing = true;
+			}
 		add(menuBG);
 
 		grpControls = new FlxTypedGroup<Alphabet>();
@@ -161,9 +171,55 @@ class LoadReplayState extends MusicBeatState
 						case 'philly-nice': songFormat = 'Philly';
 					}
 
-					var poop:String = Highscore.formatSong(songFormat, PlayState.rep.replay.songDiff);
+					var poop = "";
+					
+					#if sys
+					if (PlayState.rep.replay.sm)
+						if (!FileSystem.exists(StringTools.replace(PlayState.rep.replay.chartPath,"converted.json","")))
+						{
+							Application.current.window.alert("The SM file in this replay does not exist!","SM Replays");
+							return;
+						}
+					#end
 
-					PlayState.SONG = Song.loadFromJson(poop, PlayState.rep.replay.songName);
+					PlayState.isSM = PlayState.rep.replay.sm;
+					#if sys
+					if (PlayState.isSM)
+						PlayState.pathToSm = StringTools.replace(PlayState.rep.replay.chartPath,"converted.json","");
+					#end
+
+					#if sys
+					if (PlayState.isSM)
+					{
+						poop = File.getContent(PlayState.rep.replay.chartPath);
+						try
+							{
+						PlayState.sm = SMFile.loadFile(PlayState.pathToSm + "/" + StringTools.replace(PlayState.rep.replay.songName," ", "_") + ".sm");
+							}
+							catch(e:Exception)
+							{
+								Application.current.window.alert("Make sure that the SM file is called " + PlayState.pathToSm + "/" + StringTools.replace(PlayState.rep.replay.songName," ", "_") + ".sm!\nAs I couldn't read it.","SM Replays");
+								return;
+							}
+					}
+					else
+						poop = Highscore.formatSong(songFormat, PlayState.rep.replay.songDiff);
+					#else
+					poop = Highscore.formatSong(songFormat, PlayState.rep.replay.songDiff);
+					#end
+
+					try
+					{
+					if (PlayState.isSM)
+						PlayState.SONG = Song.loadFromJsonRAW(poop);
+					else
+						PlayState.SONG = Song.loadFromJson(poop, PlayState.rep.replay.songName);
+					}
+					catch(e:Exception)
+					{
+						Application.current.window.alert("Failed to load the song! Does the JSON exist?","Replays");
+						return;
+					}
 					PlayState.isStoryMode = false;
 					PlayState.storyDifficulty = PlayState.rep.replay.songDiff;
 					PlayState.storyWeek = getWeekNumbFromSong(PlayState.rep.replay.songName);
