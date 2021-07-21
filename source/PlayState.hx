@@ -263,6 +263,8 @@ class PlayState extends MusicBeatState
 	private var dataSuffix:Array<String> = ['LEFT', 'DOWN', 'UP', 'RIGHT'];
 	private var dataColor:Array<String> = ['purple', 'blue', 'green', 'red'];
 
+	public static var startTime = 0.0;
+
 	// API stuff
 
 	public function addObject(object:FlxBasic)
@@ -1401,6 +1403,35 @@ class PlayState extends MusicBeatState
 		//generateStaticArrows(0);
 		//generateStaticArrows(1);
 
+		if (startTime != 0)
+		{
+			var toBeRemoved = [];
+			for(i in 0...unspawnNotes.length)
+			{
+				var dunceNote:Note = unspawnNotes[i];
+
+				if (dunceNote.strumTime - startTime <= 0)
+					toBeRemoved.push(dunceNote);
+				else if (dunceNote.strumTime - startTime < 3500)
+				{
+					notes.add(dunceNote);
+
+					if (dunceNote.mustPress)
+						dunceNote.y = (playerStrums.members[Math.floor(Math.abs(dunceNote.noteData))].y
+							+ 0.45 * (startTime - dunceNote.strumTime) * FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
+								2)) - dunceNote.noteYOff;
+					else
+						dunceNote.y = (strumLineNotes.members[Math.floor(Math.abs(dunceNote.noteData))].y
+							+ 0.45 * (startTime - dunceNote.strumTime) * FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
+								2)) - dunceNote.noteYOff;
+					toBeRemoved.push(dunceNote);
+				}
+			}
+
+			for(i in toBeRemoved)
+				unspawnNotes.remove(i);
+		}
+
 		#if windows
 		// pre lowercasing the song name (startCountdown)
 		var songLowercase = StringTools.replace(PlayState.SONG.song, " ", "-").toLowerCase();
@@ -1424,6 +1455,8 @@ class PlayState extends MusicBeatState
 		Conductor.songPosition -= Conductor.crochet * 5;
 
 		var swagCounter:Int = 0;
+
+		var start = 
 
 		startTimer = new FlxTimer().start(Conductor.crochet / 1000, function(tmr:FlxTimer)
 		{
@@ -1782,6 +1815,15 @@ class PlayState extends MusicBeatState
 			+ " | Misses: "
 			+ misses, iconRPC);
 		#end
+
+		FlxG.sound.music.time = startTime;
+		vocals.time = startTime;
+		Conductor.songPosition = startTime;
+		startTime = 0;
+
+		for(i in 0...unspawnNotes.length)
+			if (unspawnNotes[i].strumTime < startTime)
+				unspawnNotes.remove(unspawnNotes[i]);
 	}
 
 	var debugNum:Int = 0;
@@ -1860,6 +1902,8 @@ class PlayState extends MusicBeatState
 		}
 		#end
 		var daBeats:Int = 0; // Not exactly representative of 'daBeats' lol, just how much it has looped
+
+
 		for (section in noteData)
 		{
 			var coolSection:Int = Std.int(section.lengthInSteps / 4);
