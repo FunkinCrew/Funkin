@@ -40,6 +40,7 @@ class OptionsMenu extends MusicBeatState
 			new CustomizeGameplay("Drag and drop gameplay modules to your prefered positions!")
 		]),
 		new OptionCategory("Appearance", [
+			new EditorRes("Not showing the editor grid will greatly increase editor performance"),
 			new DistractionsAndEffectsOption("Toggle stage distractions that can hinder your gameplay."),
 			new CamZoomOption("Toggle the camera zoom in-game."),
 			new StepManiaOption("Sets the colors of the arrows depending on quantization instead of direction."),
