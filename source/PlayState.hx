@@ -1456,9 +1456,6 @@ class PlayState extends MusicBeatState
 
 		var swagCounter:Int = 0;
 
-		var start = 
-		
-
 		startTimer = new FlxTimer().start(Conductor.crochet / 1000, function(tmr:FlxTimer)
 		{
 			dad.dance();
