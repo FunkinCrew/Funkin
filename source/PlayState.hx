@@ -1611,10 +1611,13 @@ class PlayState extends MusicBeatState
 				data = i;
 		}
 		if (data == -1)
+		{
+			trace("couldn't find a keybind with the code " + key);
 			return;
-
+		}
 		if (keys[data])
 		{
+			trace("ur already holding " + key);
 			return;
 		}
 
@@ -3390,8 +3393,6 @@ class PlayState extends MusicBeatState
 		var rating:FlxSprite = new FlxSprite();
 		var score:Float = 350;
 
-		trace(totalNotesHit);
-
 		if (FlxG.save.data.accuracyMod == 1)
 			totalNotesHit += wife;
 
@@ -3870,9 +3871,9 @@ class PlayState extends MusicBeatState
 
 		playerStrums.forEach(function(spr:FlxSprite)
 		{
-			if (pressArray[spr.ID] && spr.animation.curAnim.name != 'confirm')
+			if (keys[spr.ID] && spr.animation.curAnim.name != 'confirm')
 				spr.animation.play('pressed');
-			if (!holdArray[spr.ID])
+			if (!keys[spr.ID])
 				spr.animation.play('static');
 
 			if (spr.animation.curAnim.name == 'confirm' && !curStage.startsWith('school'))
@@ -4194,7 +4195,6 @@ class PlayState extends MusicBeatState
 		{
 			if (!note.isSustainNote)
 			{
-				trace(totalNotesHit);
 				popUpScore(note);
 				combo += 1;
 			}

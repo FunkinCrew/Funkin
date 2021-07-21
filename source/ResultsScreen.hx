@@ -139,7 +139,8 @@ class ResultsScreen extends FlxSubState
 
             var diff = obj[3];
             var judge = obj2;
-            mean += diff;
+            if (diff != (166 * Math.floor((PlayState.rep.replay.sf / 60) * 1000) / 166))
+                mean += diff;
             if (obj[1] != -1)
                 graph.addToHistory(diff, judge, obj3);
         }
