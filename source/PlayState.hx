@@ -3091,35 +3091,35 @@ class PlayState extends MusicBeatState
 									vocals.volume = 0;
 									if (theFunne && !daNote.isSustainNote)
 										noteMiss(daNote.noteData, daNote);
-								if (daNote.isParent)
-								{
-									health -= 0.20; // give a health punishment for failing a LN
-									trace("hold fell over at the start");
-									for (i in daNote.children)
-									{
-										i.alpha = 0.3;
-										i.sustainActive = false;
-									}
-								}
-								else
-								{
-									if (!daNote.wasGoodHit
-										&& daNote.isSustainNote
-										&& daNote.sustainActive
-										&& daNote.spotInLine != daNote.parent.children.length)
+									if (daNote.isParent)
 									{
 										health -= 0.20; // give a health punishment for failing a LN
-										trace("hold fell over at " + daNote.spotInLine);
-										for (i in daNote.parent.children)
+										trace("hold fell over at the start");
+										for (i in daNote.children)
 										{
 											i.alpha = 0.3;
 											i.sustainActive = false;
 										}
-										if (daNote.parent.wasGoodHit)
-											misses++;
-										updateAccuracy();
 									}
-								}
+									else
+									{
+										if (!daNote.wasGoodHit
+											&& daNote.isSustainNote
+											&& daNote.sustainActive
+											&& daNote.spotInLine != daNote.parent.children.length)
+										{
+											health -= 0.20; // give a health punishment for failing a LN
+											trace("hold fell over at " + daNote.spotInLine);
+											for (i in daNote.parent.children)
+											{
+												i.alpha = 0.3;
+												i.sustainActive = false;
+											}
+											if (daNote.parent.wasGoodHit)
+												misses++;
+											updateAccuracy();
+										}
+									}
 								}
 							}
 							else
