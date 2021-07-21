@@ -1,140 +1,145 @@
 package;
 
-import openfl.utils.Assets;
-import utils.AndroidData;
-import flixel.FlxG;
-import flixel.FlxCamera;
-import Paths;
-#if cpp
-import webm.*;
 import flixel.system.FlxSound;
-import utils.Asset2File;
-#elseif html5
-import openfl.net.NetStream;
-import openfl.media.Video;
-#end
+import flixel.FlxCamera;
+import haxe.macro.Expr.Catch;
+import openfl.Assets;
+import openfl.media.Sound;
 import flixel.FlxSprite;
+import webm.*;
+import Asset2File;
+#if sys
+import webm.WebmPlayer;
+#end
+import PlayState;
+import flixel.addons.ui.FlxUIState;
+import flixel.FlxSprite;
+import flixel.FlxG;
+import flixel.util.FlxPath;
 
-/**
-	usage:
-	var video = new VideoPlayer('videos/ughintro.webm');
-	video.play();
-	add(video);
+/**-200 -200
+    usage:
+    var video = new VideoPlayer(0, 0, 'videos/ughintro.webm');
+    video.play();
+    add(video);
 
-	- Bitstream not supported by this decoder
-	maybe use vp8 (idk)
+    - Bitstream not supported by this decoder
+    maybe use vp8 (idk)
 **/
+using StringTools;
 
-class VideoPlayer extends FlxSprite
-{
-	#if sys
-	public var webm:WebmPlayer;
-	var sound:FlxSound;
+class VideoPlayer extends FlxSprite {
+    public var finishCallback:Void->Void=null;
 
-	public static var SKIP_STEP_LIMIT:Int = 90;
-	#elseif html5
-	var netStream:NetStream;
-	public var player:Video;
-	#end
+    #if sys
+    public var player:WebmPlayer;
+    #end
 
-	var pathVideo:String;
+    public var sound:FlxSound;
+    public var soundMultiplier:Float = 1;
+    public var prevSoundMultiplier:Float = 1;
+    var videoFrames:Int = 0;
+    var doShit:Bool = false;
 
+    public var pathfile:String;
 
-	/* 
-	execute function after stop, finish video
-	usage:
-	video.finishCallback = () -> {
-		remove(video);
-		startCountdown();
-	}
-	*/
-	public var finishCallback:Void->Void=null;
+    public function new(x, y, path:String) 
+    {
+        super(x, y);
 
-	public function new(asset:String, ?x:Float, ?y:Float) 
-	{
-		super(x, y);
+        #if sys
+        //WebmPlayer.SKIP_STEP_LIMIT = 90;
 
-		#if cpp
-		WebmPlayer.SKIP_STEP_LIMIT = SKIP_STEP_LIMIT;
+        pathfile = path;
 
-		webm = new WebmPlayer();
-		
-		changeVideo(asset);
+        var path = Asset2File.getPath(Paths.file(path), ".webm");
 
-		webm.addEventListener('play', cast play);
-		webm.addEventListener('stop', cast stop);
-		webm.addEventListener('end', cast end);
+        videoFrames = Std.parseInt(Assets.getText(Paths.file(pathfile.replace(".webm", ".txt"))));
 
+        var io:WebmIo = new WebmIoFile(path);
+        player = new WebmPlayer();
+        player.fuck(io);
 
-		loadGraphic(webm.bitmapData); 
-		#elseif html5
-		trace('video is unsupported');
-		#end
-	
-	}
+        player.addEventListener('play', function(e) {
+            trace('play!');
+        });
 
-	public function play() {
-		var PLAYDUMBASS = new AndroidData().getCutscenes();
-		#if sys
-		if (PLAYDUMBASS)
-		{
-			webm.play();
+        player.addEventListener('end', function(e) {
+            if (finishCallback != null)
+                finishCallback();
+        });
 
-			if (Assets.exists(Paths.file(pathVideo + '.ogg')))
-				sound = FlxG.sound.play(Paths.file(pathVideo + '.ogg'))
-			else
-				trace('sound dont exists');
-		}else
-		{
-			if (finishCallback != null)
-				finishCallback();
-		}
-		#elseif html5
-		//player = new Video();
-		if (finishCallback != null)
-			finishCallback();
-		
-		#end
-	}
+        player.addEventListener('stop', function(e) {
+            if (finishCallback != null)
+                finishCallback();
+        });
 
-	//callbacks
-	function start() {
-		trace('starting video!');
-	}
-	function stop() {
-		if (finishCallback != null)
-			finishCallback();
-	}
-	function end() {
-		if (finishCallback != null)
-			finishCallback();
-	}
-	
+        loadGraphic(player.bitmapData);
+        sound = FlxG.sound.play(Paths.file(pathfile.replace('.webm', '.ogg'))); 
+        sound.time = sound.length * soundMultiplier;
+        doShit = true;
+        #end
 
-	function changeVideo(asset:String) {
-		pathVideo = asset;
-		#if cpp
-		var path = Asset2File.getPath(Paths.file(pathVideo), ".webm"); // maybe use without paths
+        #if html5
+        trace('video is unsupported');
+        #end
+    }
 
-		var io:WebmIo = new WebmIoFile(path);
-		webm.fuck(io);
+    public function play() {
+        #if sys
+            player.play();
+        #end
 
-		#end
-	}
+        #if html5
+        #end
+    }
 
-	public function ownCamera() {
-		var cam = new FlxCamera();
-		FlxG.cameras.add(cam);
+    public function ownCamera() {
+        var cam = new FlxCamera();
+	    FlxG.cameras.add(cam);
 		cam.bgColor.alpha = 0;
 		cameras = [cam];
-	}
+    }
+    override public function update(elapsed:Float) {
+        super.update(elapsed);
+        #if sys
+        soundMultiplier = player.renderedCount / videoFrames;
+        if (soundMultiplier > 1)
+			{
+				soundMultiplier = 1;
+			}
+			if (soundMultiplier < 0)
+			{
+				soundMultiplier = 0;
+			}
+        if (soundMultiplier == 0)
+			{
+				if (prevSoundMultiplier != 0)
+				{
+					sound.pause();
+					sound.time = 0;
+				}
+			} else {
+				if (prevSoundMultiplier == 0)
+				{
+					sound.resume();
+					sound.time = sound.length * soundMultiplier;
+				}
+			}
+            prevSoundMultiplier = soundMultiplier;
+            if (doShit)
+                {
+                    var compareShit:Float = 50;
+                    if (sound.time >= (sound.length * soundMultiplier) + compareShit || sound.time <= (sound.length * soundMultiplier) - compareShit)
+                        sound.time = sound.length * soundMultiplier;
+                }
+        #end
+    }
 
-	override public function destroy() {
-		#if sys
-		webm.stop();
-		super.destroy();
-		#elseif html5
-
-		#end
-	}
+    override public function destroy() {
+        #if sys
+        player.stop();
+        super.destroy();
+        #end
+    }
 }
