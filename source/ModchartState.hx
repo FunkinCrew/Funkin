@@ -241,7 +241,7 @@ class ModchartState
 					PlayState.instance.removeObject(PlayState.dad);
 					PlayState.dad = new Character(olddadx, olddady, id);
 					PlayState.instance.addObject(PlayState.dad);
-					PlayState.instance.iconP2.animation.play(id);
+					PlayState.instance.iconP2.changeIcon(id);
 	}
 
 	function changeBoyfriendCharacter(id:String)
@@ -250,7 +250,7 @@ class ModchartState
 					PlayState.instance.removeObject(PlayState.boyfriend);
 					PlayState.boyfriend = new Boyfriend(oldboyfriendx, oldboyfriendy, id);
 					PlayState.instance.addObject(PlayState.boyfriend);
-					PlayState.instance.iconP1.animation.play(id);
+					PlayState.instance.iconP1.changeIcon(id);
 	}
 
 	function makeAnimatedLuaSprite(spritePath:String,names:Array<String>,prefixes:Array<String>,startAnim:String, id:String)
