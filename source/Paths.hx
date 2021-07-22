@@ -164,7 +164,7 @@ class Paths
 		if (isCharacter)
 			if (usecahce)
 				#if cpp
-				return FlxAtlasFrames.fromSpriteSheetPacker(imageCached(key), file('images/$key.txt', library));
+				return FlxAtlasFrames.fromSpriteSheetPacker(imageCached(key), file('images/characters/$key.txt', library));
 				#else
 				return null;
 				#end
