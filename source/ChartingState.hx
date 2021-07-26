@@ -638,7 +638,7 @@ class ChartingState extends MusicBeatState
 			var eventPos = new FlxUIInputText(150,100,80,"");
 			var eventAdd = new FlxButton(95,155,"Add Event", function() {
 
-				var pog:Song.Event = new Song.Event("New Event " + HelperFunctions.truncateFloat(curDecimalBeat, 3),HelperFunctions.truncateFloat(curDecimalBeat, 3),_song.bpm + "","BPM Change");
+				var pog:Song.Event = new Song.Event("New Event " + HelperFunctions.truncateFloat(curDecimalBeat, 3),HelperFunctions.truncateFloat(curDecimalBeat, 3),_song.bpm,"BPM Change");
 				
 				trace("adding " + pog.name);
 
@@ -653,13 +653,13 @@ class ChartingState extends MusicBeatState
 
 				eventName.text = pog.name;
 				eventType.selectedLabel = pog.type;
-				eventValue.text = pog.value;
+				eventValue.text = pog.value + "";
 				eventPos.text = pog.position + "";
 				currentSelectedEventName = pog.name;
 				currentEventPosition = pog.position;
 
 				savedType = pog.type;
-				savedValue = pog.value;
+				savedValue = pog.value + "";
 
 				var listofnames = [];
 	
@@ -737,13 +737,13 @@ class ChartingState extends MusicBeatState
 
 				eventName.text = firstEvent.name;
 				eventType.selectedLabel = firstEvent.type;
-				eventValue.text = firstEvent.value;
+				eventValue.text = firstEvent.value + "";
 				eventPos.text = firstEvent.position + "";
 				currentSelectedEventName = firstEvent.name;
 				currentEventPosition = firstEvent.position;
 
 				savedType = firstEvent.type;
-				savedValue = firstEvent.value;
+				savedValue = firstEvent.value + "";
 
 				var listofnames = [];
 	
@@ -838,7 +838,7 @@ class ChartingState extends MusicBeatState
 				trace("bruh");
 				eventType.selectedLabel = firstEventObject.type;
 				trace("bruh");
-				eventValue.text = firstEventObject.value;
+				eventValue.text = firstEventObject.value + "";
 				trace("bruh");
 				currentSelectedEventName = firstEventObject.name;
 				trace("bruh");
@@ -858,7 +858,7 @@ class ChartingState extends MusicBeatState
 					trace('selecting ' + name + ' found: ' + event);
 	
 					eventName.text = event.name;
-					eventValue.text = event.value;
+					eventValue.text = event.value + "";
 					eventPos.text = event.position + "";
 					eventType.selectedLabel = event.type;
 					currentSelectedEventName = event.name;

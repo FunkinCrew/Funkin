@@ -73,11 +73,21 @@ class SMHeader
                     TimingStruct.AllTimings[currentIndex].startTime = data.startTime + data.length;
                 }
 
-                changeEvents.push(new Song.Event(HelperFunctions.truncateFloat(beat,0) + "SM",beat,bpm,"BPM Change"));
+                changeEvents.push(new Song.Event(HelperFunctions.truncateFloat(beat,3) + "SM",beat,bpm,"BPM Change"));
 
                 if (bpmSplit.length == 1)
                     break;
                 currentIndex++;
+            }
+
+            for(i in TimingStruct.AllTimings)
+            {
+                trace("BPM - " + i.bpm + " - " + i.startBeat);
+            }
+
+            for(i in changeEvents)
+            {
+                trace("BPM - " + i.value + " - " + i.position);
             }
 
             trace(changeEvents.length + " - BPM CHANGES");
