@@ -4469,20 +4469,8 @@ class PlayState extends MusicBeatState
 			//SPOOKY BOIS AND GF FIX
 			switch (dad.curCharacter) {
 				case 'spooky':
-					var commandToDance = false;
-					var commandCompleted = false;
-					if (SONG.notes[Math.floor(curStep / 16)].mustHitSection)
-					{
-						commandToDance = true;
-						commandCompleted = false;
-					}
-						
-					if (commandToDance && !commandCompleted)
-					{
+					if (curBeat % 128 == 0) //lol it works
 						dad.dance();
-						commandToDance = false;
-						commandCompleted = true;
-					}
 				case 'gf':
 				{
 					if (SONG.notes[Math.floor(curStep / 16)].mustHitSection)
