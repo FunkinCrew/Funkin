@@ -4464,7 +4464,7 @@ class PlayState extends MusicBeatState
 			// Conductor.changeBPM(SONG.bpm);
 	
 			// Dad doesnt interupt his own notes
-			if (SONG.notes[Math.floor(curStep / 16)].mustHitSection && (dad.curCharacter != 'gf' || dad.curCharacter != 'spooky' || dad.curCharacter != 'tankman')) 
+			if (SONG.notes[Math.floor(curStep / 16)].mustHitSection && (dad.curCharacter != 'gf' || dad.curCharacter != 'spooky')) 
 				dad.dance();
 			//SPOOKY BOIS AND GF FIX
 			switch (dad.curCharacter) {
