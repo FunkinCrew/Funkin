@@ -347,6 +347,8 @@ class ModchartState
 		lua = null;
     }
 
+	public var luaWiggles:Map<String,WiggleEffect> = new Map<String,WiggleEffect>();
+
     // LUA SHIT
 
     function new()
@@ -427,6 +429,41 @@ class ModchartState
 	
 				Lua_helper.add_callback(lua,"getProperty", getPropertyByName);
 				
+				Lua_helper.add_callback(lua,"setNoteWiggle", function(wiggleId) {
+					PlayState.instance.camNotes.setFilters([new ShaderFilter(luaWiggles.get(wiggleId).shader)]);
+				});
+				
+				Lua_helper.add_callback(lua,"setSustainWiggle", function(wiggleId) {
+					PlayState.instance.camSustains.setFilters([new ShaderFilter(luaWiggles.get(wiggleId).shader)]);
+				});
+
+				Lua_helper.add_callback(lua,"createWiggle", function(freq:Float,amplitude:Float,speed:Float) {
+					var wiggle = new WiggleEffect();
+					wiggle.waveAmplitude = amplitude;
+					wiggle.waveSpeed = speed;
+					wiggle.waveFrequency = freq;
+
+					var id = Lambda.count(luaWiggles) + 1 + "";
+
+					luaWiggles.set(id,wiggle);
+					return id;
+				});
+
+				Lua_helper.add_callback(lua,"setWiggleTime", function(wiggleId:String,time:Float) {
+					var wiggle = luaWiggles.get(wiggleId);
+
+					wiggle.shader.uTime.value = [time];
+				});
+
+				
+				Lua_helper.add_callback(lua,"setWiggleAmplitude", function(wiggleId:String,amp:Float) {
+					var wiggle = luaWiggles.get(wiggleId);
+
+					wiggle.waveAmplitude = amp;
+				});
+
+
+
 				// Lua_helper.add_callback(lua,"makeAnimatedSprite", makeAnimatedLuaSprite);
 				// this one is still in development
 

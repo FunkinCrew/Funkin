@@ -85,10 +85,10 @@ class FreeplayState extends MusicBeatState
 			}
 
 			var diffs = [];
-
-
 			var diffsThatExist = [];
 
+
+			#if sys
 			if (FileSystem.exists('assets/data/${format}/${format}-hard.json'))
 				diffsThatExist.push("Hard");
 			if (FileSystem.exists('assets/data/${format}/${format}-easy.json'))
@@ -101,6 +101,9 @@ class FreeplayState extends MusicBeatState
 				Application.current.window.alert("No difficulties found for chart, skipping.",meta.songName + " Chart");
 				continue;
 			}
+			#else
+			diffsThatExist = ["Easy","Normal","Hard"];
+			#end
 			if (diffsThatExist.contains("Easy"))
 				FreeplayState.loadDiff(0,format,meta.songName,diffs);
 			if (diffsThatExist.contains("Normal"))

@@ -1,7 +1,6 @@
 package;
 
 import openfl.system.System;
-import lime.app.Application;
 #if sys
 import sys.io.File;
 #end
@@ -1490,6 +1489,36 @@ class ChartingState extends MusicBeatState
 	override function update(elapsed:Float)
 	{
 		updateHeads();
+
+		for(i in sectionRenderes)
+		{
+			var diff = getYfromStrum(i.y) - Conductor.songPosition;
+			if (diff < 10000 && diff >= -40000)
+			{
+				i.active = true;
+				i.visible = true;
+			}
+			else
+			{
+				i.active = false;
+				i.visible = false;
+			}
+		}
+
+		for(i in curRenderedNotes)
+			{
+				var diff = i.strumTime - Conductor.songPosition;
+				if (diff < 10000 && diff >= -40000)
+				{
+					i.active = true;
+					i.visible = true;
+				}
+				else
+				{
+					i.active = false;
+					i.visible = false;
+				}
+			}
 
 		var doInput = true;
 

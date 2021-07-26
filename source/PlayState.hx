@@ -1,5 +1,6 @@
 package;
 
+
 import Song.Event;
 import openfl.media.Sound;
 #if sys
@@ -178,6 +179,8 @@ class PlayState extends MusicBeatState
 	public var iconP1:HealthIcon; // making these public again because i may be stupid
 	public var iconP2:HealthIcon; // what could go wrong?
 	public var camHUD:FlxCamera;
+	public var camSustains:FlxCamera;
+	public var camNotes:FlxCamera;
 
 	private var camGame:FlxCamera;
 	public var cannotDie = false;
@@ -382,9 +385,15 @@ class PlayState extends MusicBeatState
 		camGame = new FlxCamera();
 		camHUD = new FlxCamera();
 		camHUD.bgColor.alpha = 0;
+		camSustains = new FlxCamera();
+		camSustains.bgColor.alpha = 0;
+		camNotes = new FlxCamera();
+		camNotes.bgColor.alpha = 0;
 
 		FlxG.cameras.reset(camGame);
 		FlxG.cameras.add(camHUD);
+		FlxG.cameras.add(camSustains);
+		FlxG.cameras.add(camNotes);
 
 		FlxCamera.defaultCameras = [camGame];
 
@@ -2327,10 +2336,10 @@ class PlayState extends MusicBeatState
 			luaModchart.setVar('cameraZoom', FlxG.camera.zoom);
 			luaModchart.executeState('update', [elapsed]);
 
-			for (i in luaWiggles)
+			for (key => value in luaModchart.luaWiggles) 
 			{
 				trace('wiggle le gaming');
-				i.update(elapsed);
+				value.update(elapsed);
 			}
 
 			/*for (i in 0...strumLineNotes.length) {
@@ -2904,6 +2913,10 @@ class PlayState extends MusicBeatState
 			{
 				var dunceNote:Note = unspawnNotes[0];
 				notes.add(dunceNote);
+				if (!dunceNote.isSustainNote)
+					dunceNote.cameras = [camNotes];
+				else
+					dunceNote.cameras = [camSustains];
 
 				var index:Int = unspawnNotes.indexOf(dunceNote);
 				unspawnNotes.splice(index, 1);
