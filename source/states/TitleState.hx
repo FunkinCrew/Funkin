@@ -57,13 +57,6 @@ class TitleState extends MusicBeatState
 		curWacky = FlxG.random.getObject(getIntroTextShit());
 		super.create();
 
-		NGio.noLogin("" /* API KEY HERE */);
-
-		#if ng
-		var ng:NGio = new NGio("" /* API KEY HERE */, "" /* ENC KEY HERE */);
-		trace('NEWGROUNDS LOL');
-		#end
-
 		FlxG.save.bind('leathersfunkinengine', 'leather128');
 
 		PlayerSettings.player1.controls.loadKeyBinds();
@@ -348,14 +341,6 @@ class TitleState extends MusicBeatState
 
 		if (pressedEnter && !transitioning && skippedIntro)
 		{
-			#if !switch
-			NGio.unlockMedal(60960);
-
-			// If it's Friday according to da clock
-			if (Date.now().getDay() == 5)
-				NGio.unlockMedal(61034);
-			#end
-
 			if(titleText != null)
 				titleText.animation.play('press');
 
