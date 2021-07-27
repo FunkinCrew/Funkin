@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="boyfriend.png">
+	<!-- Created with Adobe Animate version 21.0.7.42652 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="bf0000" x="1" y="1" width="411" height="412"/>
+	<SubTexture name="bf0001" x="1" y="1" width="411" height="412"/>
+	<SubTexture name="bf0002" x="1" y="413" width="411" height="412"/>
+	<SubTexture name="bf0003" x="1" y="413" width="411" height="412"/>
+	<SubTexture name="bf0004" x="412" y="1" width="411" height="412"/>
+	<SubTexture name="bf0005" x="412" y="1" width="411" height="412"/>
+	<SubTexture name="bf0006" x="1" y="825" width="411" height="412"/>
+	<SubTexture name="bf0007" x="1" y="825" width="411" height="412"/>
+	<SubTexture name="bf0008" x="412" y="413" width="411" height="412"/>
+	<SubTexture name="bf0009" x="412" y="413" width="411" height="412"/>
+	<SubTexture name="bf0010" x="412" y="413" width="411" height="412"/>
+	<SubTexture name="bf0011" x="412" y="413" width="411" height="412"/>
+	<SubTexture name="bf0012" x="412" y="413" width="411" height="412"/>
+	<SubTexture name="bf0013" x="412" y="413" width="411" height="412"/>
+</TextureAtlas>

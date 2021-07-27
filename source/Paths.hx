@@ -1,5 +1,7 @@
 package;
 
+import lime.utils.AssetType as LimeAssetType;
+import lime.utils.Assets;
 import flixel.graphics.FlxGraphic;
 #if sys
 import sys.io.File;
@@ -169,6 +171,8 @@ class Paths
 	{
 		if(library != null)
 			library = library + "/";
+		else
+			library = "";
 
 		return Sys.getCwd() + "assets/" + library + "images/" + key;
 	}

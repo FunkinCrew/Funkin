@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="senpai-tv.png">
+	<!-- Created with Adobe Animate version 21.0.7.42652 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="SENPAI idle Black Lines instance 10000" x="0" y="0" width="338" height="289"/>
+	<SubTexture name="SENPAI idle Black Lines instance 10001" x="0" y="0" width="338" height="289"/>
+	<SubTexture name="SENPAI idle Black Lines instance 10002" x="338" y="0" width="338" height="289"/>
+	<SubTexture name="SENPAI idle Black Lines instance 10003" x="338" y="0" width="338" height="289"/>
+	<SubTexture name="SENPAI idle Black Lines instance 10004" x="0" y="289" width="338" height="289"/>
+	<SubTexture name="SENPAI idle Black Lines instance 10005" x="0" y="289" width="338" height="289"/>
+	<SubTexture name="SENPAI idle Black Lines instance 10006" x="0" y="578" width="338" height="289"/>
+	<SubTexture name="SENPAI idle Black Lines instance 10007" x="0" y="578" width="338" height="289"/>
+	<SubTexture name="SENPAI idle Black Lines instance 10008" x="338" y="289" width="338" height="289"/>
+	<SubTexture name="SENPAI idle Black Lines instance 10009" x="338" y="289" width="338" height="289"/>
+	<SubTexture name="SENPAI idle Black Lines instance 10010" x="338" y="289" width="338" height="289"/>
+	<SubTexture name="SENPAI idle Black Lines instance 10011" x="338" y="289" width="338" height="289"/>
+	<SubTexture name="SENPAI idle Black Lines instance 10012" x="338" y="289" width="338" height="289"/>
+	<SubTexture name="SENPAI idle Black Lines instance 10013" x="338" y="289" width="338" height="289"/>
+</TextureAtlas>

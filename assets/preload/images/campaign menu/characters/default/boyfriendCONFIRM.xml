@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="boyfriendCONFIRM.png">
+	<!-- Created with Adobe Animate version 21.0.7.42652 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="BF HEY!! instance 10000" x="0" y="0" width="312" height="330" frameX="0" frameY="0" frameWidth="329" frameHeight="332"/>
+	<SubTexture name="BF HEY!! instance 10001" x="0" y="0" width="312" height="330" frameX="0" frameY="0" frameWidth="329" frameHeight="332"/>
+	<SubTexture name="BF HEY!! instance 10002" x="312" y="0" width="326" height="325" frameX="-1" frameY="-7" frameWidth="329" frameHeight="332"/>
+	<SubTexture name="BF HEY!! instance 10003" x="312" y="0" width="326" height="325" frameX="-1" frameY="-7" frameWidth="329" frameHeight="332"/>
+	<SubTexture name="BF HEY!! instance 10004" x="638" y="0" width="328" height="327" frameX="-1" frameY="-5" frameWidth="329" frameHeight="332"/>
+	<SubTexture name="BF HEY!! instance 10005" x="638" y="0" width="328" height="327" frameX="-1" frameY="-5" frameWidth="329" frameHeight="332"/>
+	<SubTexture name="BF HEY!! instance 10006" x="638" y="0" width="328" height="327" frameX="-1" frameY="-5" frameWidth="329" frameHeight="332"/>
+	<SubTexture name="BF HEY!! instance 10007" x="638" y="0" width="328" height="327" frameX="-1" frameY="-5" frameWidth="329" frameHeight="332"/>
+	<SubTexture name="BF HEY!! instance 10008" x="638" y="0" width="328" height="327" frameX="-1" frameY="-5" frameWidth="329" frameHeight="332"/>
+	<SubTexture name="BF HEY!! instance 10009" x="638" y="0" width="328" height="327" frameX="-1" frameY="-5" frameWidth="329" frameHeight="332"/>
+	<SubTexture name="BF HEY!! instance 10010" x="638" y="0" width="328" height="327" frameX="-1" frameY="-5" frameWidth="329" frameHeight="332"/>
+	<SubTexture name="BF HEY!! instance 10011" x="638" y="0" width="328" height="327" frameX="-1" frameY="-5" frameWidth="329" frameHeight="332"/>
+	<SubTexture name="BF HEY!! instance 10012" x="638" y="0" width="328" height="327" frameX="-1" frameY="-5" frameWidth="329" frameHeight="332"/>
+	<SubTexture name="BF HEY!! instance 10013" x="638" y="0" width="328" height="327" frameX="-1" frameY="-5" frameWidth="329" frameHeight="332"/>
+	<SubTexture name="BF HEY!! instance 10014" x="638" y="0" width="328" height="327" frameX="-1" frameY="-5" frameWidth="329" frameHeight="332"/>
+	<SubTexture name="BF HEY!! instance 10015" x="638" y="0" width="328" height="327" frameX="-1" frameY="-5" frameWidth="329" frameHeight="332"/>
+	<SubTexture name="BF HEY!! instance 10016" x="638" y="0" width="328" height="327" frameX="-1" frameY="-5" frameWidth="329" frameHeight="332"/>
+	<SubTexture name="BF HEY!! instance 10017" x="638" y="0" width="328" height="327" frameX="-1" frameY="-5" frameWidth="329" frameHeight="332"/>
+	<SubTexture name="BF HEY!! instance 10018" x="638" y="0" width="328" height="327" frameX="-1" frameY="-5" frameWidth="329" frameHeight="332"/>
+	<SubTexture name="BF HEY!! instance 10019" x="638" y="0" width="328" height="327" frameX="-1" frameY="-5" frameWidth="329" frameHeight="332"/>
+	<SubTexture name="BF HEY!! instance 10020" x="638" y="0" width="328" height="327" frameX="-1" frameY="-5" frameWidth="329" frameHeight="332"/>
+	<SubTexture name="BF HEY!! instance 10021" x="638" y="0" width="328" height="327" frameX="-1" frameY="-5" frameWidth="329" frameHeight="332"/>
+	<SubTexture name="BF HEY!! instance 10022" x="638" y="0" width="328" height="327" frameX="-1" frameY="-5" frameWidth="329" frameHeight="332"/>
+	<SubTexture name="BF HEY!! instance 10023" x="638" y="0" width="328" height="327" frameX="-1" frameY="-5" frameWidth="329" frameHeight="332"/>
+	<SubTexture name="BF HEY!! instance 10024" x="638" y="0" width="328" height="327" frameX="-1" frameY="-5" frameWidth="329" frameHeight="332"/>
+	<SubTexture name="BF HEY!! instance 10025" x="638" y="0" width="328" height="327" frameX="-1" frameY="-5" frameWidth="329" frameHeight="332"/>
+</TextureAtlas>

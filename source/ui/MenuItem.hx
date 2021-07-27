@@ -20,12 +20,12 @@ class MenuItem extends FlxSpriteGroup
 		super(x, y);
 
 		#if sys
-		if(Assets.exists(Paths.image('storymenu/' + weekFolder + "/" + weekName)))
-			week = new FlxSprite().loadGraphic(Paths.image('storymenu/' + weekFolder + "/" + weekName));
+		if(Assets.exists(Paths.image('campaign menu/weeks/' + weekFolder + "/" + weekName)))
+			week = new FlxSprite().loadGraphic(Paths.image('campaign menu/weeks/' + weekFolder + "/" + weekName));
 		else
-			week = new FlxSprite().loadGraphic(BitmapData.fromFile(Sys.getCwd() + "assets/images/storymenu/" + weekFolder + "/" + weekName + ".png"));
+			week = new FlxSprite().loadGraphic(BitmapData.fromFile(Sys.getCwd() + "assets/images/campaign menu/weeks/" + weekFolder + "/" + weekName + ".png"));
 		#else
-		week = new FlxSprite().loadGraphic(Paths.image('storymenu/' + weekFolder + "/" + weekName));
+		week = new FlxSprite().loadGraphic(Paths.image('campaign menu/weeks/' + weekFolder + "/" + weekName));
 		#end
 
 		add(week);

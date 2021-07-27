@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="spooky_kids.png">
+	<!-- Created with Adobe Animate version 21.0.7.42652 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="spooky dance idle BLACK LINES instance 10000" x="0" y="0" width="253" height="364" frameX="-33" frameY="0" frameWidth="327" frameHeight="365"/>
+	<SubTexture name="spooky dance idle BLACK LINES instance 10001" x="0" y="0" width="253" height="364" frameX="-33" frameY="0" frameWidth="327" frameHeight="365"/>
+	<SubTexture name="spooky dance idle BLACK LINES instance 10002" x="253" y="0" width="253" height="360" frameX="-36" frameY="-5" frameWidth="327" frameHeight="365"/>
+	<SubTexture name="spooky dance idle BLACK LINES instance 10003" x="253" y="0" width="253" height="360" frameX="-36" frameY="-5" frameWidth="327" frameHeight="365"/>
+	<SubTexture name="spooky dance idle BLACK LINES instance 10004" x="506" y="0" width="238" height="321" frameX="-52" frameY="-41" frameWidth="327" frameHeight="365"/>
+	<SubTexture name="spooky dance idle BLACK LINES instance 10005" x="506" y="0" width="238" height="321" frameX="-52" frameY="-41" frameWidth="327" frameHeight="365"/>
+	<SubTexture name="spooky dance idle BLACK LINES instance 10006" x="744" y="0" width="235" height="329" frameX="-52" frameY="-34" frameWidth="327" frameHeight="365"/>
+	<SubTexture name="spooky dance idle BLACK LINES instance 10007" x="744" y="0" width="235" height="329" frameX="-52" frameY="-34" frameWidth="327" frameHeight="365"/>
+	<SubTexture name="spooky dance idle BLACK LINES instance 10008" x="0" y="364" width="327" height="353" frameX="0" frameY="-11" frameWidth="327" frameHeight="365"/>
+	<SubTexture name="spooky dance idle BLACK LINES instance 10009" x="0" y="364" width="327" height="353" frameX="0" frameY="-11" frameWidth="327" frameHeight="365"/>
+	<SubTexture name="spooky dance idle BLACK LINES instance 10010" x="327" y="364" width="319" height="348" frameX="-5" frameY="-13" frameWidth="327" frameHeight="365"/>
+	<SubTexture name="spooky dance idle BLACK LINES instance 10011" x="327" y="364" width="319" height="348" frameX="-5" frameY="-13" frameWidth="327" frameHeight="365"/>
+	<SubTexture name="spooky dance idle BLACK LINES instance 10012" x="506" y="0" width="238" height="321" frameX="-52" frameY="-41" frameWidth="327" frameHeight="365"/>
+	<SubTexture name="spooky dance idle BLACK LINES instance 10013" x="506" y="0" width="238" height="321" frameX="-52" frameY="-41" frameWidth="327" frameHeight="365"/>
+	<SubTexture name="spooky dance idle BLACK LINES instance 10014" x="744" y="0" width="235" height="329" frameX="-52" frameY="-34" frameWidth="327" frameHeight="365"/>
+	<SubTexture name="spooky dance idle BLACK LINES instance 10015" x="744" y="0" width="235" height="329" frameX="-52" frameY="-34" frameWidth="327" frameHeight="365"/>
+</TextureAtlas>

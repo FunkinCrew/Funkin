@@ -1,7 +1,9 @@
 {
-    "Animation_Name": "bf",
+    "Animation_Name": "bf0",
     "Animation_Looped": true,
     "FPS": 24,
     "Size": 0.9,
-    "Offsets": [-80, 0]
+    "Offsets": [25, 25],
+    "File_Name": "default/boyfriend",
+    "Flipped": false
 }

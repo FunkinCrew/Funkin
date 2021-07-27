@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="mom.png">
+	<!-- Created with Adobe Animate version 21.0.7.42652 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="Mom Idle BLACK LINES instance 10000" x="540" y="0" width="180" height="384" frameX="-2" frameY="-1" frameWidth="182" frameHeight="385"/>
+	<SubTexture name="Mom Idle BLACK LINES instance 10001" x="540" y="0" width="180" height="384" frameX="-2" frameY="-1" frameWidth="182" frameHeight="385"/>
+	<SubTexture name="Mom Idle BLACK LINES instance 10002" x="180" y="385" width="180" height="378" frameX="-2" frameY="-7" frameWidth="182" frameHeight="385"/>
+	<SubTexture name="Mom Idle BLACK LINES instance 10003" x="180" y="385" width="180" height="378" frameX="-2" frameY="-7" frameWidth="182" frameHeight="385"/>
+	<SubTexture name="Mom Idle BLACK LINES instance 10004" x="0" y="385" width="180" height="381" frameX="-1" frameY="-4" frameWidth="182" frameHeight="385"/>
+	<SubTexture name="Mom Idle BLACK LINES instance 10005" x="0" y="385" width="180" height="381" frameX="-1" frameY="-4" frameWidth="182" frameHeight="385"/>
+	<SubTexture name="Mom Idle BLACK LINES instance 10006" x="540" y="384" width="180" height="383" frameX="0" frameY="-2" frameWidth="182" frameHeight="385"/>
+	<SubTexture name="Mom Idle BLACK LINES instance 10007" x="540" y="384" width="180" height="383" frameX="0" frameY="-2" frameWidth="182" frameHeight="385"/>
+	<SubTexture name="Mom Idle BLACK LINES instance 10008" x="0" y="0" width="180" height="385" frameX="0" frameY="0" frameWidth="182" frameHeight="385"/>
+	<SubTexture name="Mom Idle BLACK LINES instance 10009" x="0" y="0" width="180" height="385" frameX="0" frameY="0" frameWidth="182" frameHeight="385"/>
+	<SubTexture name="Mom Idle BLACK LINES instance 10010" x="180" y="0" width="180" height="385" frameX="0" frameY="0" frameWidth="182" frameHeight="385"/>
+	<SubTexture name="Mom Idle BLACK LINES instance 10011" x="180" y="0" width="180" height="385" frameX="0" frameY="0" frameWidth="182" frameHeight="385"/>
+	<SubTexture name="Mom Idle BLACK LINES instance 10012" x="360" y="0" width="180" height="385" frameX="0" frameY="0" frameWidth="182" frameHeight="385"/>
+	<SubTexture name="Mom Idle BLACK LINES instance 10013" x="360" y="0" width="180" height="385" frameX="0" frameY="0" frameWidth="182" frameHeight="385"/>
+</TextureAtlas>

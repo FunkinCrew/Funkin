@@ -1,0 +1,9 @@
+{
+    "Animation_Name": "Dad idle dance BLACK LINE",
+    "Animation_Looped": true,
+    "FPS": 24,
+    "Size": 0.5,
+    "Offsets": [120, 200],
+    "File_Name": "default/dad",
+    "Flipped": false
+}

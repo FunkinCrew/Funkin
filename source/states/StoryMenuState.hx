@@ -224,27 +224,6 @@ class StoryMenuState extends MusicBeatState
 			var weekCharacterThing:MenuCharacter = new MenuCharacter((FlxG.width * 0.25) * (1 + char) - 150, currentGroup.weeks[curWeek].characters[char]);
 			weekCharacterThing.y += 70;
 			weekCharacterThing.antialiasing = true;
-
-			switch (weekCharacterThing.character)
-			{
-				case 'dad':
-					weekCharacterThing.setGraphicSize(Std.int(weekCharacterThing.width * 0.5));
-					weekCharacterThing.updateHitbox();
-
-				case 'bf':
-					weekCharacterThing.setGraphicSize(Std.int(weekCharacterThing.width * 0.9));
-					weekCharacterThing.updateHitbox();
-					weekCharacterThing.x -= 80;
-
-				case 'gf':
-					weekCharacterThing.setGraphicSize(Std.int(weekCharacterThing.width * 0.5));
-					weekCharacterThing.updateHitbox();
-
-				case 'parents':
-					weekCharacterThing.setGraphicSize(Std.int(weekCharacterThing.width * 1.5));
-					weekCharacterThing.updateHitbox();
-			}
-
 			menuCharacters.add(weekCharacterThing);
 		}
 	}
@@ -284,7 +263,10 @@ class StoryMenuState extends MusicBeatState
 			FlxG.sound.play(Paths.sound('confirmMenu'));
 
 			weekGraphics.members[curWeek].startFlashing();
-			menuCharacters.members[1].animation.play(menuCharacters.members[1].animation.curAnim.name + 'Confirm');
+
+			menuCharacters.members[1].character = menuCharacters.members[1].character + 'Confirm';
+			menuCharacters.members[1].loadCharacter();
+
 			stopspamming = true;
 
 			PlayState.storyPlaylist = currentGroup.weeks[curWeek].songs;
@@ -403,20 +385,25 @@ class StoryMenuState extends MusicBeatState
 
 		var curGroupWeek = currentGroup.weeks[curWeek];
 
-		menuCharacters.members[0].animation.play(curGroupWeek.characters[0]);
-		menuCharacters.members[1].animation.play(curGroupWeek.characters[1]);
-		menuCharacters.members[2].animation.play(curGroupWeek.characters[2]);
+		// Reloads menu characters
+		for(characterIndex in 0...menuCharacters.members.length)
+		{
+			var character = menuCharacters.members[characterIndex];
+
+			// performance or something i guess
+			if(character.character != curGroupWeek.characters[characterIndex])
+			{
+				character.character = curGroupWeek.characters[characterIndex];
+				character.loadCharacter();
+			}
+		}
 
 		weekSongListText.text = "Tracks\n\n";
 		weekTitleText.text = curGroupWeek.weekTitle;
 
+		/*
 		switch (menuCharacters.members[0].animation.curAnim.name)
 		{
-			case 'parents':
-				menuCharacters.members[0].offset.set(250, 200);
-				menuCharacters.members[0].flipX = false;
-				menuCharacters.members[0].setGraphicSize(Std.int(menuCharacters.members[0].width * 1.5));
-
 			case 'senpai':
 				menuCharacters.members[0].offset.set(130, 0);
 				menuCharacters.members[0].flipX = false;
@@ -426,11 +413,6 @@ class StoryMenuState extends MusicBeatState
 				menuCharacters.members[0].offset.set(100, 220);
 				menuCharacters.members[0].flipX = false;
 				menuCharacters.members[0].setGraphicSize(Std.int(menuCharacters.members[0].width * 0.8));
-
-			case 'dad':
-				menuCharacters.members[0].offset.set(120, 200);
-				menuCharacters.members[0].flipX = false;
-				menuCharacters.members[0].setGraphicSize(Std.int(menuCharacters.members[0].width * 1));
 
 			case 'pico':
 				menuCharacters.members[0].flipX = true;
@@ -447,13 +429,12 @@ class StoryMenuState extends MusicBeatState
 				menuCharacters.members[0].flipX = false;
 				menuCharacters.members[0].setGraphicSize(Std.int(menuCharacters.members[0].width * 1));
 		}
+		*/
 
 		for (i in curGroupWeek.songs)
 		{
 			weekSongListText.text += i + "\n";
 		}
-
-		menuCharacters.members[0].visible = true;
 
 		weekSongListText.screenCenter(X);
 		weekSongListText.x -= FlxG.width * 0.35;

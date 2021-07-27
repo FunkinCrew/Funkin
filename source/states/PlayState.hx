@@ -1005,7 +1005,7 @@ class PlayState extends MusicBeatState
 			}
 
 			babyArrow.animation.play('static');
-			babyArrow.x += 50;
+			babyArrow.x += 100;
 			babyArrow.x += ((FlxG.width / 2) * player);
 
 			strumLineNotes.add(babyArrow);
@@ -1072,7 +1072,6 @@ class PlayState extends MusicBeatState
 			//	remove(splash);
 			//};
 		}
-		
 	}
 
 	function tweenCamIn():Void
@@ -1477,7 +1476,7 @@ class PlayState extends MusicBeatState
 						if(daNote.animation.curAnim.name.endsWith('end') && daNote.prevNote != null)
 							daNote.y += daNote.prevNote.height;
 						else
-							daNote.y += daNote.height / 2;
+							daNote.y += daNote.height / SONG.speed;
 
 						if((!daNote.mustPress || daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit) && daNote.y - daNote.offset.y * daNote.scale.y + daNote.height >= (strumLine.y + Note.swagWidth / 2))
 						{

@@ -1,0 +1,9 @@
+{
+    "Animation_Name": "Pico menu asset",
+    "Animation_Looped": true,
+    "FPS": 24,
+    "Size": 1,
+    "Offsets": [100, 0],
+    "File_Name": "default/pico",
+    "Flipped": false
+}
