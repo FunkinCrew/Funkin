@@ -103,7 +103,7 @@ class DialogueBox extends FlxSpriteGroup
 		#if sys
 		this.dialogueList = CoolUtil.coolTextFileFromSystem("data/song data/" + PlayState.SONG.song.toLowerCase() + "/dialogue");
 		#else
-		this.dialogueList = CoolUtil.coolTextFile("song data/" + PlayState.SONG.song.toLowerCase() + "/dialogue");
+		this.dialogueList = CoolUtil.coolTextFile(Paths.txt("song data/" + PlayState.SONG.song.toLowerCase() + "/dialogue"));
 		#end
 		
 		portraitLeft = new FlxSprite(255, 120);
