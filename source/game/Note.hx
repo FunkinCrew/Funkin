@@ -48,7 +48,7 @@ class Note extends FlxSprite
 		this.prevNote = prevNote;
 		isSustainNote = sustainNote;
 
-		x += 100;
+		x += 100 - ((PlayState.SONG.keyCount - 4) * 16);
 		// MAKE SURE ITS DEFINITELY OFF SCREEN?
 		y = -2000;
 
@@ -57,9 +57,11 @@ class Note extends FlxSprite
 		this.noteData = noteData;
 
 		var daStage:String = PlayState.curStage;
+		var isSchool:Bool = daStage == 'school' || daStage == "evil-school";
 
 		switch (daStage)
 		{
+			/*
 			case 'school' | 'evil-school':
 				loadGraphic(Paths.image('ui/arrows-pixels', 'shared'), true, 17, 17);
 
@@ -85,19 +87,18 @@ class Note extends FlxSprite
 
 				setGraphicSize(Std.int(width * PlayState.daPixelZoom));
 				updateHitbox();
+			*/
 
 			default:
-				frames = Paths.getSparrowAtlas('NOTE_assets', 'shared');
+				frames = Paths.getSparrowAtlas((isSchool ? 'ui/arrows-pixels' : 'NOTE_assets'), 'shared');
 
 				animation.addByPrefix("default", NoteVariables.Other_Note_Anim_Stuff[PlayState.SONG.keyCount - 1][noteData] + "0");
+				animation.addByPrefix("hold", NoteVariables.Other_Note_Anim_Stuff[PlayState.SONG.keyCount - 1][noteData] + " hold0");
+				animation.addByPrefix("holdend", NoteVariables.Other_Note_Anim_Stuff[PlayState.SONG.keyCount - 1][noteData] + " hold end0");
 
-				// bruh i flipped them :facepalm:
-				animation.addByPrefix("hold", NoteVariables.Other_Note_Anim_Stuff[PlayState.SONG.keyCount - 1][noteData] + " hold end0");
-				animation.addByPrefix("holdend", NoteVariables.Other_Note_Anim_Stuff[PlayState.SONG.keyCount - 1][noteData] + " hold0");
-
-				setGraphicSize(Std.int(width * (0.7 - ((PlayState.SONG.keyCount - 4) * 0.07))));
+				setGraphicSize(Std.int((isSchool ? width * PlayState.daPixelZoom : width) * ((isSchool ? 1 : 0.7) - ((PlayState.SONG.keyCount - 4) * 0.06))));
 				updateHitbox();
-				antialiasing = true;
+				antialiasing = !isSchool;
 		}
 
 		x += swagWidth * noteData;
@@ -112,13 +113,14 @@ class Note extends FlxSprite
 			noteScore * 0.2;
 			alpha = 0.6;
 
-			x += width / 2;
+			if(!PlayState.curStage.contains('school'))
+				x += width / 2;
 
 			animation.play("holdend");
-
 			updateHitbox();
 
-			x -= width / 2;
+			if(!PlayState.curStage.contains('school'))
+				x -= width / 2;
 
 			if (PlayState.curStage.contains('school'))
 				x += 30;

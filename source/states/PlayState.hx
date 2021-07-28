@@ -187,7 +187,8 @@ class PlayState extends MusicBeatState
 	{
 		instance = this;
 		binds = NoteHandler.getBinds(SONG.keyCount);
-		Note.swagWidth = 160 * (0.7 - ((SONG.keyCount - 4) * 0.07));
+
+		Note.swagWidth = 160 * (0.7 - ((SONG.keyCount - 4) * 0.06));
 
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
@@ -930,8 +931,8 @@ class PlayState extends MusicBeatState
 					babyArrow.frames = Paths.getSparrowAtlas((isSchool ? 'ui/arrows-pixels' : 'NOTE_assets'), 'shared');
 
 					babyArrow.antialiasing = !isSchool;
-					babyArrow.setGraphicSize(Std.int((isSchool ? (babyArrow.width * daPixelZoom) : babyArrow.width) * (0.7 - ((SONG.keyCount - 4) * 0.07))));
 
+					babyArrow.setGraphicSize(Std.int((isSchool ? (babyArrow.width * daPixelZoom) : babyArrow.width) * ((isSchool ? 1 : 0.7) - ((SONG.keyCount - 4) * 0.06))));
 					babyArrow.x += Note.swagWidth * Math.abs(i);
 
 					var animation_Base_Name = NoteVariables.Note_Count_Directions[SONG.keyCount - 1][Std.int(Math.abs(i))].getName().toLowerCase();
@@ -961,7 +962,7 @@ class PlayState extends MusicBeatState
 			}
 
 			babyArrow.animation.play('static');
-			babyArrow.x += 100;
+			babyArrow.x += 100 - ((SONG.keyCount - 4) * 16);
 			babyArrow.x += ((FlxG.width / 2) * player);
 
 			strumLineNotes.add(babyArrow);
