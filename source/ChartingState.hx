@@ -1520,6 +1520,7 @@ class ChartingState extends MusicBeatState
 				}
 			}
 
+			
 		var doInput = true;
 
 		for (i in Typeables)

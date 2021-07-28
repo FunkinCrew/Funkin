@@ -297,7 +297,12 @@ class ModchartState
 			case 'philly-nice': songLowercase = 'philly';
 		}
 
-		var data:BitmapData = BitmapData.fromFile(Sys.getCwd() + "assets/data/" + songLowercase + '/' + spritePath + ".png");
+		var path = Sys.getCwd() + "assets/data/" + songLowercase + '/';
+
+		if (PlayState.isSM)
+			path = PlayState.pathToSm + "/";
+
+		var data:BitmapData = BitmapData.fromFile(path + spritePath + ".png");
 
 		var sprite:FlxSprite = new FlxSprite(0,0);
 		var imgWidth:Float = FlxG.width / data.width;
@@ -369,7 +374,11 @@ class ModchartState
 					case 'philly-nice': songLowercase = 'philly';
 				}
 
-				var result = LuaL.dofile(lua, Paths.lua(songLowercase + "/modchart")); // execute le file
+				var path = Paths.lua(songLowercase + "/modchart");
+				if (PlayState.isSM)
+					path = PlayState.pathToSm + "/modchart.lua";
+
+				var result = LuaL.dofile(lua, path); // execute le file
 	
 				if (result != 0)
 				{

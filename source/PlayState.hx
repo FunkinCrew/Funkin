@@ -326,6 +326,8 @@ class PlayState extends MusicBeatState
 
 		#if windows
 		executeModchart = FileSystem.exists(Paths.lua(songLowercase + "/modchart"));
+		if (isSM)
+			executeModchart = FileSystem.exists(pathToSm + "/modchart.lua");
 		if (executeModchart)
 			PlayStateChangeables.Optimize = false;
 		#end
@@ -2333,6 +2335,7 @@ class PlayState extends MusicBeatState
 		{
 			luaModchart.setVar('songPos', Conductor.songPosition);
 			luaModchart.setVar('hudZoom', camHUD.zoom);
+			luaModchart.setVar('curBeat', HelperFunctions.truncateFloat(curDecimalBeat,3);
 			luaModchart.setVar('cameraZoom', FlxG.camera.zoom);
 			luaModchart.executeState('update', [elapsed]);
 
@@ -4455,7 +4458,6 @@ class PlayState extends MusicBeatState
 		#if windows
 		if (executeModchart && luaModchart != null)
 		{
-			luaModchart.setVar('curBeat', curBeat);
 			luaModchart.executeState('beatHit', [curBeat]);
 		}
 		#end
