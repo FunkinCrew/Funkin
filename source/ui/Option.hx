@@ -108,6 +108,8 @@ class BoolOption extends Option
 				Value = FlxG.save.data.nightMusic;
 			case "watermarks":
 				Value = FlxG.save.data.watermarks;
+			case "bot":
+				Value = FlxG.save.data.bot;
 		}
 
 		return Value;
@@ -158,6 +160,8 @@ class BoolOption extends Option
 				FlxG.save.data.nightMusic = !Option_Checked;
 			case "watermarks":
 				FlxG.save.data.watermarks = !Option_Checked;
+			case "bot":
+				FlxG.save.data.bot = !Option_Checked;
 		}
 
         if(Option_Value != "muted")

@@ -98,6 +98,7 @@ class ChartingState extends MusicBeatState
 	var rightIcon:HealthIcon;
 
 	var characters:Array<String> = [];
+	var gridBlackLine:FlxSprite;
 
 	override function create()
 	{
@@ -130,13 +131,16 @@ class ChartingState extends MusicBeatState
 		leftIcon.setGraphicSize(0, 45);
 		rightIcon.setGraphicSize(0, 45);
 
+		leftIcon.updateHitbox();
+		rightIcon.updateHitbox();
+
 		add(leftIcon);
 		add(rightIcon);
 
-		leftIcon.setPosition(0, -100);
-		rightIcon.setPosition(gridBG.width / 2, -100);
+		leftIcon.setPosition(0, -45);
+		rightIcon.setPosition(gridBG.width / 2, -45);
 
-		var gridBlackLine:FlxSprite = new FlxSprite(gridBG.x + gridBG.width / 2).makeGraphic(2, Std.int(gridBG.height), FlxColor.BLACK);
+		gridBlackLine = new FlxSprite(gridBG.x + gridBG.width / 2).makeGraphic(2, Std.int(gridBG.height), FlxColor.BLACK);
 		add(gridBlackLine);
 
 		curRenderedNotes = new FlxTypedGroup<Note>();
@@ -152,8 +156,6 @@ class ChartingState extends MusicBeatState
 		tempBpm = _song.bpm;
 
 		addSection();
-
-		// sections = _song.notes;
 
 		updateGrid();
 
@@ -180,8 +182,8 @@ class ChartingState extends MusicBeatState
 		UI_box = new FlxUITabMenu(null, tabs, true);
 
 		UI_box.resize(300, 400);
-		UI_box.x = FlxG.width / 2;
-		UI_box.y = 20;
+		UI_box.x = 0;
+		UI_box.y = 100;
 		add(UI_box);
 
 		addSongUI();
@@ -192,6 +194,7 @@ class ChartingState extends MusicBeatState
 		add(curRenderedSustains);
 
 		updateHeads();
+		updateGrid();
 
 		super.create();
 	}
@@ -228,7 +231,11 @@ class ChartingState extends MusicBeatState
 		stepperSpeed.value = _song.speed;
 		stepperSpeed.name = 'song_speed';
 
-		var check_mute_inst = new FlxUICheckBox(10, stepperSpeed.y + stepperSpeed.height + 10, null, null, "Mute Instrumental (in editor)", 100);
+		var stepperKeyCount:FlxUINumericStepper = new FlxUINumericStepper(10, stepperSpeed.y + stepperSpeed.height, 1, 4, 1, 10);
+		stepperKeyCount.value = _song.keyCount;
+		stepperKeyCount.name = 'song_keycount';
+
+		var check_mute_inst = new FlxUICheckBox(10, stepperKeyCount.y + stepperKeyCount.height + 10, null, null, "Mute Instrumental (in editor)", 100);
 		check_mute_inst.checked = false;
 		check_mute_inst.callback = function()
 		{
@@ -244,7 +251,7 @@ class ChartingState extends MusicBeatState
 		check_enemyDamage.name = 'check_enemyDamage';
 		check_enemyDamage.checked = _song.enemyDamages;
 
-		var saveButton:FlxButton = new FlxButton(10, 170, "Save", function()
+		var saveButton:FlxButton = new FlxButton(10, 220, "Save", function()
 		{
 			saveLevel();
 		});
@@ -270,7 +277,7 @@ class ChartingState extends MusicBeatState
 		var speedLabel = new FlxText(stepperSpeed.x + stepperSpeed.width + 1, stepperSpeed.y, 0, "Scroll Speed", 9);
 
 		var settingsLabel = new FlxText(10, 10, 0, "Setings", 9);
-		var actionsLabel = new FlxText(10, 150, 0, "Actions", 9);
+		var actionsLabel = new FlxText(10, 200, 0, "Actions", 9);
 
 		// adding things
 		tab_group_song.add(songNameLabel);
@@ -293,6 +300,7 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(loadAutosaveBtn);
 		tab_group_song.add(stepperBPM);
 		tab_group_song.add(stepperSpeed);
+		tab_group_song.add(stepperKeyCount);
 
 		// final addings
 		UI_box.addGroup(tab_group_song);
@@ -563,30 +571,27 @@ class ChartingState extends MusicBeatState
 			var nums:FlxUINumericStepper = cast sender;
 			var wname = nums.name;
 			FlxG.log.add(wname);
-			if (wname == 'section_length')
+
+			switch(wname)
 			{
-				_song.notes[curSection].lengthInSteps = Std.int(nums.value);
-				updateGrid();
-			}
-			else if (wname == 'song_speed')
-			{
-				_song.speed = nums.value;
-			}
-			else if (wname == 'song_bpm')
-			{
-				tempBpm = nums.value;
-				Conductor.mapBPMChanges(_song);
-				Conductor.changeBPM(Std.int(nums.value));
-			}
-			else if (wname == 'note_susLength')
-			{
-				curSelectedNote[2] = nums.value;
-				updateGrid();
-			}
-			else if (wname == 'section_bpm')
-			{
-				_song.notes[curSection].bpm = Std.int(nums.value);
-				updateGrid();
+				case 'section_length':
+					_song.notes[curSection].lengthInSteps = Std.int(nums.value);
+					updateGrid();
+				case 'song_speed':
+					_song.speed = nums.value;
+				case 'song_keycount':
+					_song.keyCount = Std.int(nums.value);
+					updateGrid();
+				case 'song_bpm':
+					tempBpm = nums.value;
+					Conductor.mapBPMChanges(_song);
+					Conductor.changeBPM(Std.int(nums.value));
+				case 'note_susLength':
+					curSelectedNote[2] = nums.value;
+					updateGrid();
+				case 'section_bpm':
+					_song.notes[curSection].bpm = Std.int(nums.value);
+					updateGrid();
 			}
 		}
 
@@ -828,6 +833,9 @@ class ChartingState extends MusicBeatState
 			+ curBeat
 		);
 
+		leftIcon.x = gridBG.x;
+		rightIcon.x = gridBlackLine.x;
+
 		super.update(elapsed);
 	}
 
@@ -971,6 +979,12 @@ class ChartingState extends MusicBeatState
 
 	function updateGrid():Void
 	{
+		remove(gridBG);
+		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * _song.keyCount * 2, GRID_SIZE * _song.notes[curSection].lengthInSteps);
+        add(gridBG);
+
+		gridBlackLine.x = gridBG.x + gridBG.width / 2;
+
 		while (curRenderedNotes.members.length > 0)
 		{
 			curRenderedNotes.remove(curRenderedNotes.members[0], true);
@@ -1020,12 +1034,13 @@ class ChartingState extends MusicBeatState
 			var daStrumTime = i[0];
 			var daSus = i[2];
 
-			var note:Note = new Note(daStrumTime, daNoteInfo % 4);
+			var note:Note = new Note(daStrumTime, daNoteInfo % _song.keyCount);
 			note.sustainLength = daSus;
 			note.setGraphicSize(GRID_SIZE, GRID_SIZE);
 			note.updateHitbox();
 			note.x = Math.floor(daNoteInfo * GRID_SIZE);
 			note.y = Math.floor(getYfromStrum((daStrumTime - sectionStartTime()) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps)));
+			note.rawNoteData = daNoteInfo;
 
 			curRenderedNotes.add(note);
 
@@ -1075,7 +1090,7 @@ class ChartingState extends MusicBeatState
 	{
 		for (i in _song.notes[curSection].sectionNotes)
 		{
-			if (i[0] == note.strumTime && i[1] % 4 == note.noteData)
+			if (i[0] == note.strumTime && i[1] == note.rawNoteData)
 			{
 				FlxG.log.add('FOUND EVIL NUMBER');
 				_song.notes[curSection].sectionNotes.remove(i);

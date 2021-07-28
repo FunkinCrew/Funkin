@@ -28,6 +28,8 @@ typedef SwagSong =
 	var validScore:Bool;
 
 	var enemyDamages:Bool;
+
+	var keyCount:Int;
 }
 
 class Song
@@ -42,7 +44,9 @@ class Song
 	public var player2:String = 'dad';
 	public var gf:String = 'gf';
 	
-	public var stage:String = 'stage';
+	public var stage:String = 'chromatic-stage';
+
+	public var keyCount:Int = 4;
 
 	public function new(song, notes, bpm)
 	{
@@ -69,11 +73,6 @@ class Song
 			// LOL GOING THROUGH THE BULLSHIT TO CLEAN IDK WHATS STRANGE
 		}
 
-		#if sys
-		if(FileSystem.exists(Sys.getCwd() + "assets/data/" + folder + "steps.txt"))
-			PlayState.stepsTexts = CoolUtil.coolTextFileFromSystem(Sys.getCwd() + "assets/data/" + folder.toLowerCase() + "steps.txt");
-		#end
-
 		return parseJSONshit(rawJson);
 	}
 
@@ -81,6 +80,10 @@ class Song
 	{
 		var swagShit:SwagSong = cast Json.parse(rawJson).song;
 		swagShit.validScore = true;
+
+		if(swagShit.keyCount == null)
+			swagShit.keyCount = 4;
+
 		return swagShit;
 	}
 }

@@ -50,35 +50,27 @@ class HealthIcon extends FlxSprite
 	public function changeIconSet(char:String = 'bf')
 	{
 		antialiasing = true;
-
 		
 		#if sys
 		var graphicData = BitmapData.fromFile(Sys.getCwd() + "assets/images/icons/" + char + "-icons.png");
 
 		loadGraphic(graphicData, true, 150, 150, false, char);
 
-		// antialiasing override
-		switch(char)
-		{
-			case 'bf-pixel' | 'gf-pixel' | 'senpai' | 'senpai-angry' | 'spirit':
-				antialiasing = false;
-		}
-
 		animation.add(char, [0, 1, 2], 0, false, isPlayer);
 		animation.play(char);
 		#else
 		loadGraphic(Paths.image('icons/' + char + '-icons'), true, 150, 150);
 
-		// antialiasing override
-		switch(char)
-		{
-			case 'bf-pixel' | 'gf-pixel' | 'senpai' | 'senpai-angry' | 'spirit':
-				antialiasing = false;
-		}
-
 		animation.add(char, [0, 1, 2], 0, false, isPlayer);
 		animation.play(char);
 		#end
+
+		// antialiasing override
+		switch(char)
+		{
+			case 'bf-pixel' | 'senpai' | 'senpai-angry' | 'spirit':
+				antialiasing = false;
+		}
 	}
 
 	override function update(elapsed:Float)
