@@ -1583,7 +1583,7 @@ class PlayState extends MusicBeatState
 								/* END OF SPLASH */
 
 								spr.centerOffsets();
-								
+
 								if (!curStage.contains('school'))
 								{
 									spr.offset.x -= 13;
@@ -1657,8 +1657,11 @@ class PlayState extends MusicBeatState
 			if (SONG.validScore)
 			{
 				#if !switch
-				Highscore.saveScore(SONG.song, songScore, storyDifficulty);
-				Highscore.saveRank(SONG.song, Ratings.getRank(accuracy), storyDifficulty);
+				if(!FlxG.save.data.bot)
+				{
+					Highscore.saveScore(SONG.song, songScore, storyDifficulty);
+					Highscore.saveRank(SONG.song, Ratings.getRank(accuracy), storyDifficulty);
+				}
 				#end
 			}
 	
@@ -1685,7 +1688,10 @@ class PlayState extends MusicBeatState
 	
 					if (SONG.validScore)
 					{
-						Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficulty, (groupWeek != "" ? groupWeek + "Week" : "week"));
+						if(!FlxG.save.data.bot)
+						{
+							Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficulty, (groupWeek != "" ? groupWeek + "Week" : "week"));
+						}
 					}
 	
 					#if !debug
