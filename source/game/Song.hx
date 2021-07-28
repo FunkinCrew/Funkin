@@ -30,6 +30,9 @@ typedef SwagSong =
 	var enemyDamages:Bool;
 
 	var keyCount:Int;
+
+	// shaggy pog
+	var mania:Int;
 }
 
 class Song
@@ -83,6 +86,19 @@ class Song
 
 		if(Std.string(swagShit.keyCount) == "null")
 			swagShit.keyCount = 4;
+
+		if(Std.string(swagShit.mania) != "null")
+		{
+			switch(swagShit.mania)
+			{
+				case 0:
+					swagShit.keyCount = 4;
+				case 1:
+					swagShit.keyCount = 6;
+				case 2:
+					swagShit.keyCount = 9;
+			}
+		}
 
 		return swagShit;
 	}

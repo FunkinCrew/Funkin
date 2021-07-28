@@ -261,24 +261,24 @@ class ChartingState extends MusicBeatState
 			loadSong(_song.song);
 		});
 
-		var reloadSongJson:FlxButton = new FlxButton(reloadSong.x, saveButton.y + 20, "Reload JSON", function()
+		var reloadSongJson:FlxButton = new FlxButton(reloadSong.x, saveButton.y + saveButton.height + 20, "Reload JSON", function()
 		{
 			loadJson(_song.song.toLowerCase(), difficulty.toLowerCase());
 		});
 
-		var loadAutosaveBtn:FlxButton = new FlxButton(saveButton.x, saveButton.y + 20, 'Load Autosave', loadAutosave);
+		var loadAutosaveBtn:FlxButton = new FlxButton(saveButton.x, saveButton.y + saveButton.height + 20, 'Load Autosave', loadAutosave);
 
-		var restart = new FlxButton(loadAutosaveBtn.x, loadAutosaveBtn.y + loadAutosaveBtn.height,"Reset Chart", function()
+		var restart = new FlxButton(loadAutosaveBtn.x, loadAutosaveBtn.y + loadAutosaveBtn.height + 20,"Reset Chart", function()
 		{
 			for (ii in 0..._song.notes.length)
-			{
-				for (i in 0..._song.notes[ii].sectionNotes.length)
 				{
-					_song.notes[ii].sectionNotes = [];
+					for (i in 0..._song.notes[ii].sectionNotes.length)
+					{
+						_song.notes[ii].sectionNotes = [];
+					}
 				}
-			}
-
-			resetSection(true);
+	
+				resetSection(true);
 		});
 
 		// labels
@@ -288,6 +288,7 @@ class ChartingState extends MusicBeatState
 
 		var bpmLabel = new FlxText(stepperBPM.x + stepperBPM.width + 1, stepperBPM.y, 0, "BPM", 9);
 		var speedLabel = new FlxText(stepperSpeed.x + stepperSpeed.width + 1, stepperSpeed.y, 0, "Scroll Speed", 9);
+		var keyCountLabel = new FlxText(stepperKeyCount.x + stepperKeyCount.width + 1, stepperKeyCount.y, 0, "Key Count", 9);
 
 		var settingsLabel = new FlxText(10, 10, 0, "Setings", 9);
 		var actionsLabel = new FlxText(10, 200, 0, "Actions", 9);
@@ -298,6 +299,7 @@ class ChartingState extends MusicBeatState
 		
 		tab_group_song.add(bpmLabel);
 		tab_group_song.add(speedLabel);
+		tab_group_song.add(keyCountLabel);
 
 		tab_group_song.add(settingsLabel);
 		tab_group_song.add(actionsLabel);
