@@ -1583,6 +1583,7 @@ class PlayState extends MusicBeatState
 								/* END OF SPLASH */
 
 								spr.centerOffsets();
+								
 								if (!curStage.contains('school'))
 								{
 									spr.offset.x -= 13;

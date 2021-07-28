@@ -81,7 +81,7 @@ class Song
 		var swagShit:SwagSong = cast Json.parse(rawJson).song;
 		swagShit.validScore = true;
 
-		if(swagShit.keyCount == null)
+		if(Std.string(swagShit.keyCount) == "null")
 			swagShit.keyCount = 4;
 
 		return swagShit;
