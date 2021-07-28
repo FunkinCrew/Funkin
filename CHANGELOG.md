@@ -11,6 +11,7 @@ All notable changes will be documented in this file.
 - Updated hit-window.
 - Decimal BPM support.
 - Reworked anti-mash system.
+- 1 - 10 Key Support (aka POG NEW KEY SYSTEM TYPE THING).
 ### Changed
 - Input has been updated and is a lot better now.
 ### Fixed
