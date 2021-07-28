@@ -1549,17 +1549,7 @@ class PlayState extends MusicBeatState
 							altAnim = "";
 					}
 
-					switch (Math.abs(daNote.noteData) % 4)
-					{
-						case 0:
-							dad.playAnim('singLEFT' + altAnim, true);
-						case 1:
-							dad.playAnim('singDOWN' + altAnim, true);
-						case 2:
-							dad.playAnim('singUP' + altAnim, true);
-						case 3:
-							dad.playAnim('singRIGHT' + altAnim, true);
-					}
+					dad.playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][Std.int(Math.abs(daNote.noteData))] + altAnim, true);
 
 					if (SONG.enemyDamages)
 						health -= 0.025;
@@ -2152,20 +2142,17 @@ class PlayState extends MusicBeatState
 			note.wasGoodHit = true;
 			vocals.volume = 1;
 
-			/*
-			if (!note.isSustainNote)
-			{*/
-				note.kill();
-				notes.remove(note, true);
-				note.destroy();
-			//}
+			note.kill();
+			notes.remove(note, true);
+			note.destroy();
 		}
 	}
 
 	override function stepHit()
 	{
 		super.stepHit();
-		if (FlxG.sound.music.time > Conductor.songPosition + 20 || FlxG.sound.music.time < Conductor.songPosition - 20)
+		
+		if (FlxG.sound.music.time > Conductor.songPosition + 1 || FlxG.sound.music.time < Conductor.songPosition - 1)
 		{
 			resyncVocals();
 		}

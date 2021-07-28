@@ -48,6 +48,19 @@ class NoteVariables
         ["left", "down", "up", "right", "up2", "down2", "left2", "down2", "up2", "right2"]
     ];
 
+    public static var Character_Animation_Arrays:Array<Array<String>> = [
+        ["singUP"],
+        ["singLEFT", "singRIGHT"],
+        ["singLEFT", "singUP", "singRIGHT"],
+        ["singLEFT", "singDOWN", "singUP", "singRIGHT"],
+        ["singLEFT", "singDOWN", "singUP", "singUP", "singRIGHT"],
+        ["singLEFT", "singUP", "singRIGHT", "singLEFT", "singDOWN", "singRIGHT"],
+        ["singLEFT", "singUP", "singRIGHT", "singUP", "singLEFT", "singDOWN", "singRIGHT"],
+        ["singLEFT", "singDOWN", "singUP", "singRIGHT", "singLEFT", "singDOWN", "singUP", "singRIGHT"],
+        ["singLEFT", "singDOWN", "singUP", "singRIGHT", "singUP", "singLEFT", "singDOWN", "singUP", "singRIGHT"],
+        ["singLEFT", "singDOWN", "singUP", "singRIGHT", "singUP", "singDOWN", "singLEFT", "singDOWN", "singUP", "singRIGHT"]
+    ];
+
     public static function updateStuffs()
     {
         Player_Binds = [FlxG.save.data.leftBind,FlxG.save.data.downBind,FlxG.save.data.upBind,FlxG.save.data.rightBind];
