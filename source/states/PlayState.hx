@@ -1134,6 +1134,14 @@ class PlayState extends MusicBeatState
 		perfectMode = false;
 		#end
 
+		if (SONG.notes[Math.floor(curStep / 16)] != null)
+		{
+			if (SONG.notes[Math.floor(curStep / 16)].altAnim)
+				altAnim = '-alt';
+			else
+				altAnim = "";
+		}
+
 		super.update(elapsed);
 
 		if(totalNotes != 0)
@@ -1508,14 +1516,6 @@ class PlayState extends MusicBeatState
 				{
 					if (SONG.song != 'Tutorial')
 						camZooming = true;
-
-					if (SONG.notes[Math.floor(curStep / 16)] != null)
-					{
-						if (SONG.notes[Math.floor(curStep / 16)].altAnim)
-							altAnim = '-alt';
-						else
-							altAnim = "";
-					}
 
 					dad.playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][Std.int(Math.abs(daNote.noteData))] + altAnim, true);
 
