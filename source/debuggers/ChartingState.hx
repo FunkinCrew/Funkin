@@ -273,9 +273,9 @@ class ChartingState extends MusicBeatState
 			for (ii in 0..._song.notes.length)
 			{
 				for (i in 0..._song.notes[ii].sectionNotes.length)
-					{
-						_song.notes[ii].sectionNotes = [];
-					}
+				{
+					_song.notes[ii].sectionNotes = [];
+				}
 			}
 
 			resetSection(true);
