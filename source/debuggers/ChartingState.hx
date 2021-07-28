@@ -268,6 +268,19 @@ class ChartingState extends MusicBeatState
 
 		var loadAutosaveBtn:FlxButton = new FlxButton(saveButton.x, saveButton.y + 20, 'Load Autosave', loadAutosave);
 
+		var restart = new FlxButton(loadAutosaveBtn.x, loadAutosaveBtn.y + loadAutosaveBtn.height,"Reset Chart", function()
+		{
+			for (ii in 0..._song.notes.length)
+			{
+				for (i in 0..._song.notes[ii].sectionNotes.length)
+					{
+						_song.notes[ii].sectionNotes = [];
+					}
+			}
+
+			resetSection(true);
+		});
+
 		// labels
 
 		var songNameLabel = new FlxText(UI_songTitle.x + UI_songTitle.width + 1, UI_songTitle.y, 0, "Song Name", 9);
@@ -298,6 +311,7 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(reloadSong);
 		tab_group_song.add(reloadSongJson);
 		tab_group_song.add(loadAutosaveBtn);
+		tab_group_song.add(restart);
 		tab_group_song.add(stepperBPM);
 		tab_group_song.add(stepperSpeed);
 		tab_group_song.add(stepperKeyCount);
