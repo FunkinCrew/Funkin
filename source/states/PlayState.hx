@@ -2056,18 +2056,8 @@ class PlayState extends MusicBeatState
 			{
 				boyfriend.stunned = false;
 			});
-	
-			switch (direction)
-			{
-				case 0:
-					boyfriend.playAnim('singLEFTmiss', true);
-				case 1:
-					boyfriend.playAnim('singDOWNmiss', true);
-				case 2:
-					boyfriend.playAnim('singUPmiss', true);
-				case 3:
-					boyfriend.playAnim('singRIGHTmiss', true);
-			}
+
+			boyfriend.playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][direction] + "miss", true);
 		}
 	}
 
@@ -2087,17 +2077,7 @@ class PlayState extends MusicBeatState
 
 			totalNotes++;
 
-			switch (note.noteData % 4)
-			{
-				case 0:
-					boyfriend.playAnim('singLEFT', true);
-				case 1:
-					boyfriend.playAnim('singDOWN', true);
-				case 2:
-					boyfriend.playAnim('singUP', true);
-				case 3:
-					boyfriend.playAnim('singRIGHT', true);
-			}
+			boyfriend.playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][Std.int(Math.abs(note.noteData))], true);
 
 			playerStrums.forEach(function(spr:FlxSprite)
 			{
