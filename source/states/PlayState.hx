@@ -922,48 +922,15 @@ class PlayState extends MusicBeatState
 		{
 			var babyArrow:FlxSprite = new FlxSprite(0, strumLine.y);
 
+			var isSchool = curStage == "school" || curStage == "evil-school";
+
 			switch (curStage)
 			{
-				case 'school' | 'evil-school':
-					babyArrow.loadGraphic(Paths.image('ui/arrows-pixels', 'shared'), true, 17, 17);
-					babyArrow.animation.add('green', [6]);
-					babyArrow.animation.add('red', [7]);
-					babyArrow.animation.add('blue', [5]);
-					babyArrow.animation.add('purplel', [4]);
-
-					babyArrow.setGraphicSize(Std.int(babyArrow.width * daPixelZoom));
-					babyArrow.updateHitbox();
-					babyArrow.antialiasing = false;
-
-					switch (Math.abs(i))
-					{
-						case 0:
-							babyArrow.x += Note.swagWidth * 0;
-							babyArrow.animation.add('static', [0]);
-							babyArrow.animation.add('pressed', [4, 8], 12, false);
-							babyArrow.animation.add('confirm', [12, 16], 24, false);
-						case 1:
-							babyArrow.x += Note.swagWidth * 1;
-							babyArrow.animation.add('static', [1]);
-							babyArrow.animation.add('pressed', [5, 9], 12, false);
-							babyArrow.animation.add('confirm', [13, 17], 24, false);
-						case 2:
-							babyArrow.x += Note.swagWidth * 2;
-							babyArrow.animation.add('static', [2]);
-							babyArrow.animation.add('pressed', [6, 10], 12, false);
-							babyArrow.animation.add('confirm', [14, 18], 12, false);
-						default:
-							babyArrow.x += Note.swagWidth * Math.abs(i);
-							babyArrow.animation.add('static', [3]);
-							babyArrow.animation.add('pressed', [7, 11], 12, false);
-							babyArrow.animation.add('confirm', [15, 19], 24, false);
-					}
-
 				default:
-					babyArrow.frames = Paths.getSparrowAtlas('NOTE_assets', 'shared');
+					babyArrow.frames = Paths.getSparrowAtlas((isSchool ? 'ui/arrows-pixels' : 'NOTE_assets'), 'shared');
 
-					babyArrow.antialiasing = true;
-					babyArrow.setGraphicSize(Std.int(babyArrow.width * (0.7 - ((SONG.keyCount - 4) * 0.07))));
+					babyArrow.antialiasing = !isSchool;
+					babyArrow.setGraphicSize(Std.int((isSchool ? (babyArrow.width * daPixelZoom) : babyArrow.width) * (0.7 - ((SONG.keyCount - 4) * 0.07))));
 
 					babyArrow.x += Note.swagWidth * Math.abs(i);
 
@@ -2152,14 +2119,9 @@ class PlayState extends MusicBeatState
 	{
 		super.stepHit();
 		
-		if (FlxG.sound.music.time > Conductor.songPosition + 1 || FlxG.sound.music.time < Conductor.songPosition - 1)
+		if (FlxG.sound.music.time > Conductor.songPosition + 20 || FlxG.sound.music.time < Conductor.songPosition - 20)
 		{
 			resyncVocals();
-		}
-
-		if (dad.curCharacter == 'spooky' && curStep % 4 == 2)
-		{
-			// dad.dance();
 		}
 	}
 
@@ -2184,8 +2146,6 @@ class PlayState extends MusicBeatState
 				Conductor.changeBPM(SONG.notes[Math.floor(curStep / 16)].bpm);
 				FlxG.log.add('CHANGED BPM!');
 			}
-			// else
-			// Conductor.changeBPM(SONG.bpm);
 
 			// Dad doesnt interupt his own notes
 			if (SONG.notes[Math.floor(curStep / 16)].mustHitSection)

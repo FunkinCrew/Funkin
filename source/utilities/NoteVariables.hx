@@ -67,8 +67,8 @@ class NoteVariables
 
         Note_Count_Keybinds = [
             [Square_Key],
-            [Player_Binds[1], Player_Binds[2]],
-            [Player_Binds[1], Square_Key, Player_Binds[2]],
+            [Player_Binds[0], Player_Binds[3]],
+            [Player_Binds[0], Square_Key, Player_Binds[3]],
             [Player_Binds[0], Player_Binds[1], Player_Binds[2], Player_Binds[3]],
             [Player_Binds[0], Player_Binds[1], Square_Key, Player_Binds[2], Player_Binds[3]],
             ["S","D","F","J","K","L"],
