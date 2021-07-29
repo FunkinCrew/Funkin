@@ -197,13 +197,20 @@ class PlayState extends MusicBeatState
 		camHUD = new FlxCamera();
 		camHUD.bgColor.alpha = 0;
 
+		#if (flixel >= "4.9.0")
 		FlxG.cameras.reset();
 		FlxG.cameras.add(camGame, true);
 		FlxG.cameras.add(camHUD, false);
 
 		FlxG.cameras.setDefaultDrawTarget(camGame, true);
-		
+
 		FlxG.camera = camGame;
+		#else
+		FlxG.cameras.reset(camGame);
+		FlxG.cameras.add(camHUD);
+
+		FlxCamera.defaultCameras = [camGame];
+		#end
 		
 		persistentUpdate = true;
 		persistentDraw = true;
