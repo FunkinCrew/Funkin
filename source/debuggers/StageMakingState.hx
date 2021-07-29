@@ -71,8 +71,15 @@ class StageMakingState extends FlxState
         camHUD = new FlxCamera();
         camHUD.bgColor.alpha = 0;
 
+        #if (flixel >= "4.9.0")
         FlxG.cameras.add(stageCam, true);
         FlxG.cameras.add(camHUD, false);
+        #else
+        FlxG.cameras.reset(stageCam);
+        FlxG.cameras.add(camHUD);
+
+        FlxCamera.defaultCameras = [stageCam];
+        #end
 
         stage = new StageGroup(stage_Name);
         add(stage);
