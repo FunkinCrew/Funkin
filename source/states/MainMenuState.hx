@@ -32,7 +32,9 @@ class MainMenuState extends MusicBeatState
 	var camFollow:FlxObject;
 
 	override function create()
-	{	
+	{
+		Application.current.window.title = Application.current.meta.get('name');
+		
 		#if desktop
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("In the Menus", null);
@@ -97,8 +99,6 @@ class MainMenuState extends MusicBeatState
 		add(versionShit);
 
 		changeItem();
-
-		openfl.Assets.loadSound(MusicUtilities.GetOptionsMenuMusic());
 
 		super.create();
 	}

@@ -16,8 +16,8 @@ flixel
 flixel-addons
 flixel-ui
 hscript
-newgrounds
 discord_rpc
+polymod
 extension-webm
 ```
 So for each of those type `haxelib install [library]` so shit like `haxelib install newgrounds`
@@ -30,6 +30,7 @@ You'll also need to install a couple things that involve Gits. To do this, you n
 3. Run `haxelib git extension-webm https://github.com/KadeDev/extension-webm` to install Extension-Webm (for cutscenes).
 4. Run `lime rebuild extension-webm windows` to fix extension-webm
 5. Run `haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc` to install Discord RPC.
+6. Run `haxelib git polymod https://github.com/larsiusprime/polymod.git` to install Polymod (required for any desktop build).
 
 You should have everything ready for compiling the game! Follow the guide below to continue!
 

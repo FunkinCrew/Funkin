@@ -1,5 +1,6 @@
 package states;
 
+import lime.app.Application;
 import utilities.Ratings.SongRank;
 import openfl.utils.ByteArray;
 import modding.ModdingSound;
@@ -11,8 +12,12 @@ import game.Highscore;
 import utilities.CoolUtil;
 import ui.HealthIcon;
 import ui.Alphabet;
-#if desktop
+#if discord_rpc
 import utilities.Discord.DiscordClient;
+#end
+#if sys
+import polymod.Polymod;
+import polymod.backends.PolymodAssets;
 #end
 import flash.text.TextField;
 import flixel.FlxG;
@@ -58,6 +63,8 @@ class FreeplayState extends MusicBeatState
 
 	override function create()
 	{
+		Application.current.window.title = Application.current.meta.get('name');
+		
 		var black = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 
 		if(!songsReady)
@@ -77,7 +84,11 @@ class FreeplayState extends MusicBeatState
 			});
 		}
 
+		#if sys
+		var initSonglist = CoolUtil.coolTextFilePolymod(Paths.txt('freeplaySonglist'));
+		#else
 		var initSonglist = CoolUtil.coolTextFile(Paths.txt('freeplaySonglist'));
+		#end
 
 		#if desktop
 		// Updating Discord Rich Presence
@@ -328,20 +339,15 @@ class FreeplayState extends MusicBeatState
 			}
 			else
 			{
-				ByteArray.loadFromFile(Sys.getCwd() + Paths.instSYS(songs[curSelected].songName)).onComplete(function(array:ByteArray){
-					var sound = new ModdingSound().loadByteArray(array);
+				var array = PolymodAssets.getBytes(Paths.instSYS(songs[curSelected].songName));
 
-					trace(sound);
+				if(FlxG.sound.music.active)
+					FlxG.sound.music.stop();
 
-					// taken from .playMusic()
-					if(FlxG.sound.music.active)
-						FlxG.sound.music.stop();
+				FlxG.sound.music = new ModdingSound().loadByteArray(array);
 
-					FlxG.sound.music = sound;
-			
-					FlxG.sound.music.persist = true;
-					FlxG.sound.music.play();
-				});
+				FlxG.sound.music.persist = true;
+				FlxG.sound.music.play();
 			}
 			#else
 			FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName));

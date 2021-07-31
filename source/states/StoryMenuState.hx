@@ -1,11 +1,14 @@
 package states;
 
+import lime.app.Application;
+import utilities.CoolUtil;
 import haxe.macro.Expr.Var;
 import lime.utils.Assets;
 
 #if sys
 import sys.FileSystem;
 import sys.io.File;
+import polymod.backends.PolymodAssets;
 #end
 
 #if discord_rpc
@@ -70,6 +73,9 @@ class StoryMenuState extends MusicBeatState
 
 	override function create()
 	{
+		// UPDATE TITLE WINDOW JUST IN CASE LOL //
+		Application.current.window.title = Application.current.meta.get('name');
+
 		// SETUP THE GROUPS //
 		loadGroups();
 
@@ -147,7 +153,7 @@ class StoryMenuState extends MusicBeatState
 		weekTitleText.setFormat("VCR OSD Mono", 32, FlxColor.WHITE, RIGHT);
 		weekTitleText.alpha = 0.7;
 
-		yellowBG = new FlxSprite(0, 56).makeGraphic(FlxG.width, 400, 0xFFF9CF51);
+		yellowBG = new FlxSprite(0, 56).makeGraphic(FlxG.width, 400, FlxColor.WHITE);
 
 		weekGraphics = new FlxTypedGroup<MenuItem>();
 		add(weekGraphics);
@@ -348,7 +354,7 @@ class StoryMenuState extends MusicBeatState
 		{
 			item.targetY = bullShit - curWeek;
 
-			if (item.targetY == Std.int(0))
+			if (item.targetY == 0)
 				item.alpha = 1;
 			else
 				item.alpha = 0.6;
@@ -401,36 +407,6 @@ class StoryMenuState extends MusicBeatState
 		weekSongListText.text = "Tracks\n\n";
 		weekTitleText.text = curGroupWeek.weekTitle;
 
-		/*
-		switch (menuCharacters.members[0].animation.curAnim.name)
-		{
-			case 'senpai':
-				menuCharacters.members[0].offset.set(130, 0);
-				menuCharacters.members[0].flipX = false;
-				menuCharacters.members[0].setGraphicSize(Std.int(menuCharacters.members[0].width * 1.4));
-
-			case 'mom':
-				menuCharacters.members[0].offset.set(100, 220);
-				menuCharacters.members[0].flipX = false;
-				menuCharacters.members[0].setGraphicSize(Std.int(menuCharacters.members[0].width * 0.8));
-
-			case 'pico':
-				menuCharacters.members[0].flipX = true;
-				menuCharacters.members[0].offset.set(150, 100);
-				menuCharacters.members[0].setGraphicSize(Std.int(menuCharacters.members[0].width * 1.2));
-
-			case 'spooky':
-				menuCharacters.members[0].offset.set(150, 150);
-				menuCharacters.members[0].flipX = false;
-				menuCharacters.members[0].setGraphicSize(Std.int(menuCharacters.members[0].width * 1.3));
-
-			default:
-				menuCharacters.members[0].offset.set(100, 100);
-				menuCharacters.members[0].flipX = false;
-				menuCharacters.members[0].setGraphicSize(Std.int(menuCharacters.members[0].width * 1));
-		}
-		*/
-
 		for (i in curGroupWeek.songs)
 		{
 			weekSongListText.text += i + "\n";
@@ -439,26 +415,38 @@ class StoryMenuState extends MusicBeatState
 		weekSongListText.screenCenter(X);
 		weekSongListText.x -= FlxG.width * 0.35;
 		weekSongListText.text = weekSongListText.text.toUpperCase();
+
+		var bgColor = FlxColor.WHITE;
+
+		if(curGroupWeek.backgroundColor != null)
+		{
+			var arrayColor = curGroupWeek.backgroundColor;
+
+			bgColor = FlxColor.fromRGB(arrayColor[0], arrayColor[1], arrayColor[2]);
+		}
+		else
+			bgColor = FlxColor.fromRGB(249, 207, 81);
+
+		yellowBG.color = bgColor;
 	}
 
 	function loadJSON(name:String)
 	{
 		#if sys
-		groups.push(cast Json.parse(File.getContent(Sys.getCwd() + Paths.jsonSYS("week data/" + name)).trim()));
+		groups.push(cast Json.parse(PolymodAssets.getText(Paths.json("week data/" + name))));
 		#else
-		groups.push(cast Json.parse(Assets.getText(Paths.json("week data/" + name)).trim()));
+		groups.push(cast Json.parse(Assets.getText(Paths.json("week data/" + name))));
 		#end
 	}
 
 	function loadGroups()
 	{
 		#if sys
-		loadJSON("original_weeks");
+		var weeks = CoolUtil.coolTextFilePolymod(Paths.txt("storyWeekList"));
 
-		for(x in FileSystem.readDirectory(Sys.getCwd() + "assets/data/week data"))
+		for(WeekName in weeks)
 		{
-			if(x != "original_weeks.json")
-				loadJSON(x.split(".json")[0]);
+			loadJSON(WeekName);
 		}
 		#else
 		loadJSON("original_weeks");
@@ -481,4 +469,6 @@ typedef StoryWeek =
 	var songs:Array<String>;
 	var characters:Array<String>;
 	var weekTitle:String;
+
+	var backgroundColor:Array<Int>;
 }

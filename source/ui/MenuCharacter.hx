@@ -3,6 +3,7 @@ package ui;
 import lime.utils.Assets;
 #if sys
 import sys.io.File;
+import polymod.backends.PolymodAssets;
 #end
 import haxe.Json;
 import flixel.FlxSprite;
@@ -10,19 +11,6 @@ import flixel.FlxSprite;
 class MenuCharacter extends FlxSprite
 {
 	public var character:String;
-
-	private static var characters:Array<Dynamic> = [
-		["bf"],
-		["bfConfirm", true],
-		["gf"],
-		["dad"],
-		["spooky"],
-		["pico"],
-		["mom"],
-		["parents"],
-		["senpai"]
-	];
-
 	var characterData:MenuCharacterData;
 
 	public function new(x:Float, character:String = 'bf', ?looped:Bool = true)
@@ -42,12 +30,12 @@ class MenuCharacter extends FlxSprite
 			
 			if(animation.curAnim != null)
 			{
-				animation.stop();
+				animation.curAnim.stop();
 				animation.destroyAnimations();
 			}
 	
 			#if sys
-			characterData = cast Json.parse(File.getContent(Paths.jsonSYS("menu character data/" + character.toLowerCase())));
+			characterData = cast Json.parse(PolymodAssets.getText(Paths.json("menu character data/" + character.toLowerCase())));
 			#else
 			characterData = cast Json.parse(Assets.getText(Paths.json("menu character data/" + character.toLowerCase())));
 			#end

@@ -8,11 +8,12 @@
                 "Tutorial"
             ],
             "characters": [
-                "dad",
+                "",
                 "bf",
                 "gf"
             ],
-            "weekTitle": ""
+            "weekTitle": "",
+            "backgroundColor":[249, 207, 81]
         },
         {
             "imagePath": "week1",
@@ -26,7 +27,8 @@
                 "bf",
                 "gf"
             ],
-            "weekTitle": "Daddy Dearest"
+            "weekTitle": "Daddy Dearest",
+            "backgroundColor":[249, 207, 81]
         },
         {
             "imagePath": "week2",
@@ -40,7 +42,8 @@
                 "bf",
                 "gf"
             ],
-            "weekTitle": "Spooky Month"
+            "weekTitle": "Spooky Month",
+            "backgroundColor":[249, 207, 81]
         },
         {
             "imagePath": "week3",
@@ -54,7 +57,8 @@
                 "bf",
                 "gf"
             ],
-            "weekTitle": "Pico"
+            "weekTitle": "Pico",
+            "backgroundColor":[249, 207, 81]
         },
         {
             "imagePath": "week4",
@@ -68,7 +72,8 @@
                 "bf",
                 "gf"
             ],
-            "weekTitle": "Mommy Must Murder"
+            "weekTitle": "Mommy Must Murder",
+            "backgroundColor":[249, 207, 81]
         },
         {
             "imagePath": "week5",
@@ -82,7 +87,8 @@
                 "bf",
                 "gf"
             ],
-            "weekTitle": "Red Snow"
+            "weekTitle": "Red Snow",
+            "backgroundColor":[249, 207, 81]
         },
         {
             "imagePath": "week6",
@@ -96,7 +102,8 @@
                 "bf",
                 "gf"
             ],
-            "weekTitle": "Hating Simulator Ft. Moawling"
+            "weekTitle": "Hating Simulator Ft. Moawling",
+            "backgroundColor":[249, 207, 81]
         }
     ]
 }

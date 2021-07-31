@@ -12,6 +12,8 @@ All notable changes will be documented in this file.
 - Decimal BPM support.
 - Reworked anti-mash system.
 - 1 - 10 Key Support (aka POG NEW KEY SYSTEM TYPE THING).
+- Custom Stage System!
+- BACKEND MODDING SUPPORT WITH POLYMOD FULLY IMPLEMENTED!
 ### Changed
 - Input has been updated and is a lot better now.
 ### Fixed

@@ -6,6 +6,7 @@ import flixel.graphics.FlxGraphic;
 #if sys
 import sys.io.File;
 import sys.FileSystem;
+import polymod.backends.PolymodAssets;
 #end
 import openfl.display.BitmapData;
 import flixel.FlxG;
@@ -78,16 +79,6 @@ class Paths
 		return getPath('data/$key.json', TEXT, library);
 	}
 
-	#if sys
-	inline static public function jsonSYS(key:String, ?library:String)
-	{
-		if(library == null)
-			library = "";
-
-		return 'assets/' + library + (library == "" ? "" : "/") + "data/" + key + ".json";
-	}
-	#end
-
 	static public function sound(key:String, ?library:String)
 	{
 		return getPath('sounds/$key.$SOUND_EXT', SOUND, library);
@@ -112,18 +103,6 @@ class Paths
 	{
 		return 'songs:assets/songs/${song.toLowerCase()}/Inst.$SOUND_EXT';
 	}
-
-	#if sys
-	inline static public function voicesSYS(song:String)
-	{
-		return 'assets/songs/${song.toLowerCase()}/Voices.$SOUND_EXT';
-	}
-
-	inline static public function instSYS(song:String)
-	{
-		return 'assets/songs/${song.toLowerCase()}/Inst.$SOUND_EXT';
-	}
-	#end
 
 	inline static public function image(key:String, ?library:String)
 	{
@@ -150,31 +129,62 @@ class Paths
 	{
 		var path = pathStyleSYS(key, library);
 
-		var imageData = BitmapData.fromFile(path + ".png");
-		var xmlData = File.getContent(path + ".xml");
+		var imageDataRaw = PolymodAssets.getBytes(path + ".png");
+		var imageData = BitmapData.fromBytes(imageDataRaw);
+
+		var xmlData = PolymodAssets.getText(path + ".xml");
 
 		return FlxAtlasFrames.fromSparrow(imageData, xmlData);
+	}
+
+	inline static public function imageSYS(key:String, ?library:String)
+	{
+		var path = pathStyleSYS(key, library);
+
+		trace(path + ".png");
+
+		var imageDataRaw = PolymodAssets.getBytes(path + ".png");
+		var imageData = BitmapData.fromBytes(imageDataRaw);
+
+		return imageData;
 	}
 
 	inline static public function getPackerAtlasSYS(key:String, ?library:String)
 	{
 		var path = pathStyleSYS(key, library);
 
-		var imageData = BitmapData.fromFile(path + ".png");
+		var imageDataRaw = PolymodAssets.getBytes(path + ".png");
+		var imageData = BitmapData.fromBytes(imageDataRaw);
+
 		var txtData = File.getContent(path + ".txt");
 
 		return FlxAtlasFrames.fromSpriteSheetPacker(imageData, txtData);
 	}
 
+	inline static public function jsonSYS(key:String, ?library:String)
+	{
+		return pathStyleSYS(key + ".json", library, "data");
+	}
+
+	inline static public function voicesSYS(song:String)
+	{
+		return 'assets/songs/${song.toLowerCase()}/Voices.$SOUND_EXT';
+	}
+
+	inline static public function instSYS(song:String)
+	{
+		return 'assets/songs/${song.toLowerCase()}/Inst.$SOUND_EXT';
+	}
+
 	// path stuff lol for system
-	inline static public function pathStyleSYS(key:String, ?library:String)
+	inline static public function pathStyleSYS(key:String, ?library:String, ?dataType:String = "images")
 	{
 		if(library != null)
 			library = library + "/";
 		else
 			library = "";
 
-		return Sys.getCwd() + "assets/" + library + "images/" + key;
+		return "assets/" + library + dataType + "/" + key;
 	}
 	#end
 }

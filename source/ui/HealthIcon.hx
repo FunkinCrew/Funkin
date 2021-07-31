@@ -1,5 +1,10 @@
 package ui;
 
+#if sys
+import polymod.backends.PolymodAssetLibrary;
+import polymod.Polymod;
+import polymod.backends.PolymodAssets;
+#end
 import openfl.display.BitmapData;
 import flixel.FlxSprite;
 
@@ -52,7 +57,8 @@ class HealthIcon extends FlxSprite
 		antialiasing = true;
 		
 		#if sys
-		var graphicData = BitmapData.fromFile(Sys.getCwd() + "assets/images/icons/" + char + "-icons.png");
+		var imageDataRaw = PolymodAssets.getBytes("assets/images/icons/" + char + "-icons.png");
+		var graphicData = BitmapData.fromBytes(imageDataRaw);
 
 		loadGraphic(graphicData, true, 150, 150, false, char);
 

@@ -7,4 +7,3 @@ mall
 evil-mall
 school
 evil-school
-wasteland

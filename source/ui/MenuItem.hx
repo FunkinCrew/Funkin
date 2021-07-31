@@ -1,5 +1,8 @@
 package ui;
 
+#if sys
+import polymod.backends.PolymodAssets;
+#end
 import openfl.display.BitmapData;
 import lime.utils.Assets;
 import flixel.FlxG;
@@ -23,7 +26,10 @@ class MenuItem extends FlxSpriteGroup
 		if(Assets.exists(Paths.image('campaign menu/weeks/' + weekFolder + "/" + weekName)))
 			week = new FlxSprite().loadGraphic(Paths.image('campaign menu/weeks/' + weekFolder + "/" + weekName));
 		else
-			week = new FlxSprite().loadGraphic(BitmapData.fromFile(Sys.getCwd() + "assets/images/campaign menu/weeks/" + weekFolder + "/" + weekName + ".png"));
+		{
+			var bytes = PolymodAssets.getBytes(Paths.image('campaign menu/weeks/' + weekFolder + "/" + weekName));
+			week = new FlxSprite().loadGraphic(BitmapData.fromBytes(bytes));
+		}
 		#else
 		week = new FlxSprite().loadGraphic(Paths.image('campaign menu/weeks/' + weekFolder + "/" + weekName));
 		#end

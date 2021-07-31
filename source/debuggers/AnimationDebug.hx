@@ -1,5 +1,6 @@
 package debuggers;
 
+import states.MainMenuState;
 import states.PlayState;
 import utilities.CoolUtil;
 import game.Character;
@@ -40,7 +41,9 @@ class AnimationDebug extends FlxState
 	override function create()
 	{
 		FlxG.mouse.visible = true;
-		//FlxG.sound.music.stop();
+
+		if(FlxG.sound.music.active)
+			FlxG.sound.music.stop();
 
 		var gridBG:FlxSprite = FlxGridOverlay.create(10, 10);
 		gridBG.scrollFactor.set(0.5, 0.5);
@@ -82,16 +85,24 @@ class AnimationDebug extends FlxState
 		camFollow.screenCenter();
 		add(camFollow);
 
-		var pauseMusic = new FlxSound().loadEmbedded(Paths.music('breakfast'), true, true);
-		pauseMusic.volume = 0.5;
-		pauseMusic.play(false, FlxG.random.int(0, Std.int(pauseMusic.length / 2)));
-		FlxG.sound.list.add(pauseMusic);
-
+		FlxG.sound.playMusic(Paths.music('breakfast'));
+		
 		FlxG.camera.follow(camFollow);
 
-		var characters:Array<String> = CoolUtil.coolTextFile(Paths.txt('characterList'));
+		#if sys
+		var characterData:Array<String> = CoolUtil.coolTextFilePolymod(Paths.txt('characterList'));
+		#else
+		var characterData:Array<String> = CoolUtil.coolTextFile(Paths.txt('characterList'));
+		#end
 
 		char.screenCenter();
+
+		var characters:Array<String> = ["bf", "gf"];
+
+		for(item in characterData)
+		{
+			characters.push(item.split(":")[0]);
+		}
 
 		var charDropDown = new FlxUIDropDownMenu(10, 500, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
 		{
@@ -178,7 +189,7 @@ class AnimationDebug extends FlxState
 		}
 
 		if (FlxG.keys.justPressed.ESCAPE)
-			FlxG.switchState(new PlayState());
+			FlxG.switchState(new MainMenuState());
 
 		if (FlxG.keys.justPressed.S)
 		{

@@ -1,5 +1,14 @@
 package game;
 
+import lime.utils.Assets;
+import haxe.Json;
+import openfl.display.BitmapData;
+#if polymod
+import polymod.backends.PolymodAssets;
+#end
+import game.Character.CharacterAnimation;
+import flixel.util.FlxColor;
+import flixel.math.FlxPoint;
 import openfl.filters.BlurFilter;
 import states.PlayState;
 import backgrounds.BackgroundGirls;
@@ -18,6 +27,12 @@ class StageGroup extends FlxGroup
     public var stage:String = "chromatic-stage";
     public var camZoom:Float = 1.05;
     private var goodElapse:Float = 0;
+
+    public var player_1_Point:FlxPoint = new FlxPoint(1000, 800);
+    public var player_2_Point:FlxPoint = new FlxPoint(300, 725);
+    public var gf_Point:FlxPoint = new FlxPoint(600, 700);
+
+    private var stage_Data:StageData;
 
     // SPOOKY STUFF
     private var halloweenBG:FlxSprite;
@@ -61,69 +76,32 @@ class StageGroup extends FlxGroup
 
     private var tankMen:Array<FlxSprite> = [];
 
+    private var onBeatHit_Group:FlxTypedGroup<FlxSprite> = new FlxTypedGroup<FlxSprite>();
+
     public function updateStage(?newStage:String)
     {
         if(newStage != null)
-        {
             stage = newStage;
+
+        var bruhStages = ['spooky','philly','limo','mall','evil-mall','school','evil-school','wasteland'];
+
+        if(!bruhStages.contains(stage))
+        {
+            var JSON_Data:String = "";
+
+            #if sys
+            JSON_Data = PolymodAssets.getText(Paths.json("stage data/" + stage)).trim();
+            #else
+            JSON_Data = Assets.getText(Paths.json("stage data/" + stage)).trim();
+            #end
+
+            stage_Data = cast Json.parse(JSON_Data);
         }
 
         clear();
 
         switch(stage)
         {
-            case "stage":
-            {
-                camZoom = 0.9;
-                
-                var bg:FlxSprite = new FlxSprite(-600, -200).loadGraphic(Paths.image(stage + '/stageback', 'stages'));
-                bg.antialiasing = true;
-                bg.scrollFactor.set(0.9, 0.9);
-                bg.active = false;
-                add(bg);
-
-                var stageFront:FlxSprite = new FlxSprite(-650, 600).loadGraphic(Paths.image(stage + '/stagefront', 'stages'));
-                stageFront.setGraphicSize(Std.int(stageFront.width * 1.1));
-                stageFront.updateHitbox();
-                stageFront.antialiasing = true;
-                stageFront.scrollFactor.set(0.9, 0.9);
-                stageFront.active = false;
-                add(stageFront);
-
-                var stageCurtains:FlxSprite = new FlxSprite(-500, -300).loadGraphic(Paths.image(stage + '/stagecurtains', 'stages'));
-                stageCurtains.setGraphicSize(Std.int(stageCurtains.width * 0.9));
-                stageCurtains.updateHitbox();
-                stageCurtains.antialiasing = true;
-                stageCurtains.scrollFactor.set(1.3, 1.3);
-                stageCurtains.active = false;
-                add(stageCurtains);
-            }
-            case "chromatic-stage":
-            {
-                camZoom = 0.9;
-                
-                var testBg:FlxSprite = new FlxSprite(-600, -200).loadGraphic(Paths.image(stage + '/chr-stageback', 'stages'));
-                testBg.antialiasing = true;
-                testBg.scrollFactor.set(0.9, 0.9);
-                testBg.active = false;
-                add(testBg);
-
-                var testFront:FlxSprite = new FlxSprite(-650, 600).loadGraphic(Paths.image(stage + '/chr-stagefront', 'stages'));
-                testFront.setGraphicSize(Std.int(testFront.width * 1.1));
-                testFront.updateHitbox();
-                testFront.antialiasing = true;
-                testFront.scrollFactor.set(0.9, 0.9);
-                testFront.active = false;
-                add(testFront);
-
-                var testCurtains:FlxSprite = new FlxSprite(-500, -300).loadGraphic(Paths.image(stage + '/chr-stagecurtains', 'stages'));
-                testCurtains.setGraphicSize(Std.int(testCurtains.width * 0.9));
-                testCurtains.updateHitbox();
-                testCurtains.antialiasing = true;
-                testCurtains.scrollFactor.set(1.3, 1.3);
-                testCurtains.active = false;
-                add(testCurtains);
-            }
             case "spooky":
             {
                 var hallowTex = Paths.getSparrowAtlas(stage + '/halloween_bg', 'stages');
@@ -479,6 +457,74 @@ class StageGroup extends FlxGroup
                 tankMen.push(tankMan4);
                 tankMen.push(tankMan5);
             }
+
+            // CUSTOM SHIT
+            default:
+            {
+                trace(stage_Data);
+
+                camZoom = stage_Data.camera_Zoom;
+
+                player_1_Point.set(stage_Data.character_Positions[0][0], stage_Data.character_Positions[0][1]);
+                player_2_Point.set(stage_Data.character_Positions[1][0], stage_Data.character_Positions[1][1]);
+                gf_Point.set(stage_Data.character_Positions[2][0], stage_Data.character_Positions[2][1]);
+
+                for(Object in stage_Data.objects)
+                {
+                    var Sprite = new FlxSprite(Object.position[0], Object.position[1]);
+
+                    trace(Object);
+
+                    if(Object.color != null && Object.color != [])
+                        Sprite.color = FlxColor.fromRGB(Object.color[0], Object.color[1], Object.color[2]);
+
+                    Sprite.antialiasing = Object.antialiased;
+                    Sprite.scrollFactor.set(Object.scroll_Factor[0], Object.scroll_Factor[1]);
+
+                    if(Object.is_Animated)
+                    {
+                        #if sys
+                        Sprite.frames = Paths.getSparrowAtlasSYS(stage + "/" + Object.file_Name, "stages");
+                        #else
+                        Sprite.frames = Paths.getSparrowAtlas(stage + "/" + Object.file_Name, "stages");
+                        #end
+
+                        for(Animation in Object.animations)
+                        {
+                            var Anim_Name = Animation.name;
+
+                            if(Animation.name == "beatHit")
+                                onBeatHit_Group.add(Sprite);
+
+                            Sprite.animation.addByPrefix(
+                                Anim_Name,
+                                Animation.animation_name,
+                                Animation.fps,
+                                Animation.looped
+                            );
+                        }
+
+                        if(Object.start_Animation != "" && Object.start_Animation != null)
+                            Sprite.animation.play(Object.start_Animation);
+                    }
+                    else
+                    {
+                        #if sys
+                        if(Assets.exists(Paths.image(stage + "/" + Object.file_Name, "stages")))
+                            Sprite.loadGraphic(Paths.image(stage + "/" + Object.file_Name, "stages"));
+                        else
+                            Sprite.loadGraphic(Paths.imageSYS(stage + "/" + Object.file_Name, "stages"), false, 0, 0, false, Object.file_Name);
+                        #else
+                        Sprite.loadGraphic(Paths.image(stage + "/" + Object.file_Name, "stages"));
+                        #end
+                    }
+
+                    Sprite.setGraphicSize(Std.int(Sprite.width * Object.scale));
+                    Sprite.updateHitbox();
+
+                    add(Sprite);
+                }
+            }
         }
     }
 
@@ -525,6 +571,17 @@ class StageGroup extends FlxGroup
                     PlayState.gf.y -= 45;
                 }
         }
+
+        var p1 = PlayState.boyfriend;
+        var gf = PlayState.gf;
+        var p2 = PlayState.dad;
+
+        p1.setPosition(player_1_Point.x - (p1.width / 2), player_1_Point.y - p1.height);
+        gf.setPosition(gf_Point.x - (gf.width / 2), gf_Point.y - gf.height);
+        p2.setPosition(player_2_Point.x - (p2.width / 2), player_2_Point.y - p2.height);
+
+        if(PlayState.SONG.player2.startsWith("gf") && PlayState.SONG.gf.startsWith("gf"))
+            p2.setPosition(gf.x, gf.y);
     }
 
     override public function new(?stageName:String) {
@@ -536,6 +593,11 @@ class StageGroup extends FlxGroup
 
     public function beatHit()
     {
+        for(sprite in onBeatHit_Group)
+        {
+            sprite.animation.play("beatHit", true);
+        }
+
         switch(stage)
         {
             case 'philly':
@@ -714,4 +776,35 @@ class StageGroup extends FlxGroup
         lightningStrikeBeat = PlayState.currentBeat;
         lightningOffset = FlxG.random.int(8, 24);
     }
+}
+
+typedef StageData =
+{
+    var character_Positions:Array<Array<Int>>;
+    var camera_Zoom:Float;
+
+    var objects:Array<StageObject>;
+}
+
+typedef StageObject =
+{
+    // General Sprite Object Data //
+    var position:Array<Float>;
+    var scale:Float;
+    var antialiased:Bool;
+    var scroll_Factor:Array<Float>;
+
+    var color:Array<Int>;
+    
+    // Image Info //
+    var file_Name:String;
+    var is_Animated:Bool;
+
+    // Animations //
+    var animations:Array<CharacterAnimation>;
+
+    var on_Beat_Hit_Animation:String;
+    var on_Step_Hit_Animation:String;
+
+    var start_Animation:String;
 }

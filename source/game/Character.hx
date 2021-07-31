@@ -6,6 +6,7 @@ import flixel.graphics.frames.FlxFramesCollection;
 import haxe.Json;
 #if sys
 import sys.io.File;
+import polymod.backends.PolymodAssets;
 #end
 import utilities.CoolUtil;
 import states.PlayState;
@@ -378,10 +379,7 @@ class Character extends FlxSprite
 		var rawJson:String;
 
 		#if sys
-		if(Assets.exists(Paths.json("character data/" + characterName + "/config")))
-			rawJson = Assets.getText(Paths.json("character data/" + characterName + "/config")).trim();
-		else
-			rawJson = File.getContent(Sys.getCwd() + Paths.jsonSYS("character data/" + characterName + "/config")).trim();
+		rawJson = PolymodAssets.getText(Paths.json("character data/" + characterName + "/config")).trim();
 		#else
 		rawJson = Assets.getText(Paths.json("character data/" + characterName + "/config")).trim();
 		#end
@@ -467,13 +465,7 @@ class Character extends FlxSprite
 		var offsets:Array<String>;
 
 		#if sys
-		if(Assets.exists(Paths.txt("character data/" + characterName + "/" + "offsets")))
-			offsets = CoolUtil.coolTextFile(Paths.txt("character data/" + characterName + "/" + "offsets"));
-		else
-			offsets = CoolUtil.coolTextFileFromSystem("data/character data/" + characterName + "/" + "offsets");
-
-		// og solution (if debugging needed lol)
-		//offsets = File.getContent(Sys.getCwd() + "assets/data/" + "character data/" + characterName + "/" + "offsets.txt").trim().split('\n');
+		offsets = CoolUtil.coolTextFilePolymod(Paths.txt("character data/" + characterName + "/" + "offsets"));
 		#else
 		offsets = CoolUtil.coolTextFile(Paths.txt("character data/" + characterName + "/" + "offsets"));
 		#end

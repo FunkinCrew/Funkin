@@ -9,6 +9,8 @@ import ui.Alphabet;
 #if desktop
 import utilities.Discord.DiscordClient;
 import sys.thread.Thread;
+import polymod.Polymod;
+import sys.FileSystem;
 #end
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -51,6 +53,19 @@ class TitleState extends MusicBeatState
 
 	override public function create():Void
 	{
+		#if desktop
+		var mods = CoolUtil.coolTextFile(Paths.txt("modList"));
+
+		Polymod.init({
+			modRoot:"mods/",
+			dirs: mods,
+			errorCallback: function(error:PolymodError)
+			{
+				trace(error.message);
+			}
+		});
+		#end
+
 		PlayerSettings.init();
 
 		curWacky = FlxG.random.getObject(getIntroTextShit());
@@ -221,10 +236,17 @@ class TitleState extends MusicBeatState
 		{
 			logoBl = new FlxSprite(-150, -100);
 			
+			#if sys
+			if(FlxG.save.data.watermarks)
+				logoBl.frames = Paths.getSparrowAtlasSYS('title/leatherLogoBumpin');
+			else
+				logoBl.frames = Paths.getSparrowAtlasSYS('title/logoBumpin');
+			#else
 			if(FlxG.save.data.watermarks)
 				logoBl.frames = Paths.getSparrowAtlas('title/leatherLogoBumpin');
 			else
 				logoBl.frames = Paths.getSparrowAtlas('title/logoBumpin');
+			#end
 
 			logoBl.antialiasing = true;
 			logoBl.animation.addByPrefix('bump', 'logo bumpin', 24);
