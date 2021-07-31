@@ -1,3 +1,4 @@
+import flixel.FlxG;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.text.TextFieldAutoSize;
@@ -28,6 +29,8 @@ class HitGraph extends Sprite
 
 	public var minValue:Float = -(Math.floor((PlayState.rep.replay.sf / 60) * 1000) + 95);
 	public var maxValue:Float = Math.floor((PlayState.rep.replay.sf / 60) * 1000) + 95;
+
+	public var showInput:Bool = FlxG.save.data.inputShow;
 
 	public var graphColor:FlxColor;
 
@@ -185,14 +188,33 @@ class HitGraph extends Sprite
 		drawJudgementLine(-166);
 		gfx.endFill();
 
-
-		var inc:Float = _width / (PlayState.rep.replay.songNotes.length);
 		var range:Float = Math.max(maxValue - minValue, maxValue * 0.1);
 		var graphX = _axis.x + 1;
 
+		if (showInput)
+		{
+			for (i in 0...PlayState.rep.replay.ana.anaArray.length)
+			{
+				var ana = PlayState.rep.replay.ana.anaArray[i];
+
+				var value = (ana.key * 25 - minValue) / range;
+
+				if (ana.hit)
+					gfx.beginFill(0xFFFF00);
+				else 
+					gfx.beginFill(0xC2B280);
+
+				if (ana.hitTime < 0)
+					continue;
+
+				var pointY = (-value * _height - 1) + _height;
+				gfx.drawRect(graphX + fitX(ana.hitTime), pointY,2,2);
+				gfx.endFill();
+			}
+		}
+
 		for (i in 0...history.length)
 		{
-			
 			var value = (history[i][0] - minValue) / range;
 			var judge = history[i][1];
 
@@ -212,21 +234,28 @@ class HitGraph extends Sprite
 					gfx.beginFill(0xFFFFFF);
 			}
 			var pointY = (-value * _height - 1) + _height;
+
 			/*if (i == 0)
 				gfx.moveTo(graphX, _axis.y + pointY);*/
-			gfx.drawRect(graphX + (i * inc), pointY,4,4);
+			gfx.drawRect(fitX(history[i][2]), pointY,4,4);
 
 			gfx.endFill();
 		}
+
 
 		var bm = new BitmapData(_width,_height);
 		bm.draw(this);
 		bitmap = new Bitmap(bm);
 	}
 
-	public function addToHistory(diff:Float, judge:String)
+	public function fitX(x:Float)
 	{
-		history.push([diff,judge]);
+		return (x / FlxG.sound.music.length) * width;
+	}
+	
+	public function addToHistory(diff:Float, judge:String, time:Float)
+	{
+		history.push([diff,judge, time]);
 	}
 
 	public function update():Void

@@ -11,6 +11,31 @@ import haxe.Json;
 import flixel.input.keyboard.FlxKey;
 import openfl.utils.Dictionary;
 
+class Ana
+{
+	public var hitTime:Float;
+	public var nearestNote:Array<Dynamic>;
+	public var hit:Bool;
+	public var hitJudge:String;
+	public var key:Int;
+	public function new(_hitTime:Float,_nearestNote:Array<Dynamic>,_hit:Bool,_hitJudge:String, _key:Int) {
+		hitTime = _hitTime;
+		nearestNote = _nearestNote;
+		hit = _hit;
+		hitJudge = _hitJudge;
+		key = _key;
+	}
+}
+
+class Analysis
+{
+	public var anaArray:Array<Ana>;
+
+	public function new() {
+		anaArray = [];
+	}
+}
+
 typedef ReplayJSON =
 {
 	public var replayGameVer:String;
@@ -18,9 +43,13 @@ typedef ReplayJSON =
 	public var songName:String;
 	public var songDiff:Int;
 	public var songNotes:Array<Dynamic>;
+	public var songJudgements:Array<String>;
 	public var noteSpeed:Float;
+	public var chartPath:String;
 	public var isDownscroll:Bool;
 	public var sf:Int;
+	public var sm:Bool;
+	public var ana:Analysis;
 }
 
 class Replay
@@ -39,8 +68,12 @@ class Replay
 			isDownscroll: false,
 			songNotes: [],
 			replayGameVer: version,
+			chartPath: "",
+			sm: false,
 			timestamp: Date.now(),
-			sf: Conductor.safeFrames
+			sf: Conductor.safeFrames,
+			ana: new Analysis(),
+			songJudgements: []
 		};
 	}
 
@@ -55,20 +88,30 @@ class Replay
 		return rep;
 	}
 
-	public function SaveReplay(notearray:Array<Dynamic>)
+	public function SaveReplay(notearray:Array<Dynamic>, judge:Array<String>, ana:Analysis)
 	{
+		#if sys
+		var chartPath = PlayState.isSM ? PlayState.pathToSm + "/converted.json" : "";
+		#else
+		var chartPath = "";
+		#end
+		
 		var json = {
 			"songName": PlayState.SONG.song,
 			"songDiff": PlayState.storyDifficulty,
+			"chartPath": chartPath,
+			"sm": PlayState.isSM,
+			"timestamp": Date.now(),
+			"replayGameVer": version,
+			"sf": Conductor.safeFrames,
 			"noteSpeed": (FlxG.save.data.scrollSpeed > 1 ? FlxG.save.data.scrollSpeed : PlayState.SONG.speed),
 			"isDownscroll": FlxG.save.data.downscroll,
 			"songNotes": notearray,
-			"timestamp": Date.now(),
-			"replayGameVer": version,
-			"sf": Conductor.safeFrames
+			"songJudgements": judge,
+			"ana": ana
 		};
 
-		var data:String = Json.stringify(json);
+		var data:String = Json.stringify(json, null, "");
 		
 		var time = Date.now().getTime();
 
@@ -78,6 +121,8 @@ class Replay
 		path = "replay-" + PlayState.SONG.song + "-time" + time + ".kadeReplay"; // for score screen shit
 
 		LoadFromJSON();
+
+		replay.ana = ana;
 		#end
 	}
 
