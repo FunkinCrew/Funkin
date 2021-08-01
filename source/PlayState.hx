@@ -3737,25 +3737,22 @@ class PlayState extends MusicBeatState
 		var holdArray:Array<Bool> = [controls.LEFT, controls.DOWN, controls.UP, controls.RIGHT];
 		var pressArray:Array<Bool> = [controls.LEFT_P, controls.DOWN_P, controls.UP_P, controls.RIGHT_P];
 		var releaseArray:Array<Bool> = [controls.LEFT_R, controls.DOWN_R, controls.UP_R, controls.RIGHT_R];
+		var keynameArray:Array<String> = ['left', 'down', 'up', 'right'];
 		#if windows
 		if (luaModchart != null)
 		{
-			if (controls.LEFT_P)
-			{
-				luaModchart.executeState('keyPressed', ["left"]);
+			for (i in 0...pressArray.length) {
+				if (pressArray[i] == true) {
+				luaModchart.executeState('keyPressed', [keynameArray[i]]);
+				}
 			};
-			if (controls.DOWN_P)
-			{
-				luaModchart.executeState('keyPressed', ["down"]);
+			
+			for (i in 0...releaseArray.length) {
+				if (releaseArray[i] == true) {
+				luaModchart.executeState('keyReleased', [keynameArray[i]]);
+				}
 			};
-			if (controls.UP_P)
-			{
-				luaModchart.executeState('keyPressed', ["up"]);
-			};
-			if (controls.RIGHT_P)
-			{
-				luaModchart.executeState('keyPressed', ["right"]);
-			};
+			
 		};
 		#end
 
