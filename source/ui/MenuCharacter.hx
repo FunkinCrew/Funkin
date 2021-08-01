@@ -29,20 +29,17 @@ class MenuCharacter extends FlxSprite
 			visible = true;
 			
 			if(animation.curAnim != null)
-			{
 				animation.curAnim.stop();
-				animation.destroyAnimations();
-			}
 	
 			#if sys
-			characterData = cast Json.parse(PolymodAssets.getText(Paths.json("menu character data/" + character.toLowerCase())));
+			characterData = cast Json.parse(PolymodAssets.getText(Paths.json("menu character data/" + character)));
 			#else
-			characterData = cast Json.parse(Assets.getText(Paths.json("menu character data/" + character.toLowerCase())));
+			characterData = cast Json.parse(Assets.getText(Paths.json("menu character data/" + character)));
 			#end
 	
 			#if sys
 			// performance lol cuz it was laggy before
-			if(Assets.exists(Paths.image('campaign menu/characters/' + characterData.File_Name)))
+			if(Assets.exists(Paths.image('campaign menu/characters/' + characterData.File_Name), IMAGE))
 				frames = Paths.getSparrowAtlas('campaign menu/characters/' + characterData.File_Name);
 			else
 				frames = Paths.getSparrowAtlasSYS('campaign menu/characters/' + characterData.File_Name);

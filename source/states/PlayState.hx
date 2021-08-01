@@ -788,6 +788,14 @@ class PlayState extends MusicBeatState
 			}
 			else
 			{
+				var array = PolymodAssets.getBytes(Paths.instSYS(PlayState.SONG.song));
+
+				if(FlxG.sound.music.active)
+					FlxG.sound.music.stop();
+
+				FlxG.sound.music = new ModdingSound().loadByteArray(array);
+
+				FlxG.sound.music.persist = true;
 				FlxG.sound.music.play();
 			}
 			#else
