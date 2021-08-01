@@ -788,14 +788,6 @@ class PlayState extends MusicBeatState
 			}
 			else
 			{
-				var array = PolymodAssets.getBytes(Paths.instSYS(PlayState.SONG.song));
-
-				if(FlxG.sound.music.active)
-					FlxG.sound.music.stop();
-
-				FlxG.sound.music = new ModdingSound().loadByteArray(array);
-
-				FlxG.sound.music.persist = true;
 				FlxG.sound.music.play();
 			}
 			#else
@@ -844,11 +836,11 @@ class PlayState extends MusicBeatState
 
 		// LOADING MUSIC FOR CUSTOM SONGS
 		#if sys
-		if(FlxG.sound.music == null)
-		{
-			FlxG.sound.music = new ModdingSound().loadByteArray(PolymodAssets.getBytes(Paths.instSYS(SONG.song)));
-			FlxG.sound.music.persist = true;
-		}
+		if(FlxG.sound.music.active)
+			FlxG.sound.music.stop();
+
+		FlxG.sound.music = new ModdingSound().loadByteArray(PolymodAssets.getBytes(Paths.instSYS(SONG.song)));
+		FlxG.sound.music.persist = true;
 		#end
 
 		vocals.persist = false;
@@ -1865,12 +1857,21 @@ class PlayState extends MusicBeatState
 			var justPressedArray:Array<Bool> = [];
 			var releasedArray:Array<Bool> = [];
 			var heldArray:Array<Bool> = [];
+
+			var arrowBinds:Array<String> = ["LEFT", "DOWN", "UP", "RIGHT"];
 	
 			for(i in 0...binds.length)
 			{
 				justPressedArray[i] = FlxG.keys.checkStatus(FlxKey.fromString(binds[i]), FlxInputState.JUST_PRESSED);
 				releasedArray[i] = FlxG.keys.checkStatus(FlxKey.fromString(binds[i]), FlxInputState.JUST_RELEASED);
 				heldArray[i] = FlxG.keys.checkStatus(FlxKey.fromString(binds[i]), FlxInputState.PRESSED);
+
+				if(!justPressedArray.contains(true))
+					justPressedArray[i] = FlxG.keys.checkStatus(FlxKey.fromString(arrowBinds[i]), FlxInputState.JUST_PRESSED);
+				if(!releasedArray.contains(true))
+					releasedArray[i] = FlxG.keys.checkStatus(FlxKey.fromString(arrowBinds[i]), FlxInputState.JUST_RELEASED);
+				if(!heldArray.contains(true))
+					heldArray[i] = FlxG.keys.checkStatus(FlxKey.fromString(arrowBinds[i]), FlxInputState.PRESSED);
 			}
 			
 			if (justPressedArray.contains(true) && generatedMusic)
