@@ -141,8 +141,6 @@ class Paths
 	{
 		var path = pathStyleSYS(key, library);
 
-		trace(path + ".png");
-
 		var imageDataRaw = PolymodAssets.getBytes(path + ".png");
 		var imageData = BitmapData.fromBytes(imageDataRaw);
 

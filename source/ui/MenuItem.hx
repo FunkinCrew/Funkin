@@ -23,13 +23,10 @@ class MenuItem extends FlxSpriteGroup
 		super(x, y);
 
 		#if sys
-		if(Assets.exists(Paths.image('campaign menu/weeks/' + weekFolder + "/" + weekName)))
+		if(Assets.exists(Paths.image('campaign menu/weeks/' + weekFolder + "/" + weekName), IMAGE))
 			week = new FlxSprite().loadGraphic(Paths.image('campaign menu/weeks/' + weekFolder + "/" + weekName));
 		else
-		{
-			var bytes = PolymodAssets.getBytes(Paths.image('campaign menu/weeks/' + weekFolder + "/" + weekName));
-			week = new FlxSprite().loadGraphic(BitmapData.fromBytes(bytes));
-		}
+			week = new FlxSprite().loadGraphic(Paths.imageSYS('campaign menu/weeks/' + weekFolder + "/" + weekName));
 		#else
 		week = new FlxSprite().loadGraphic(Paths.image('campaign menu/weeks/' + weekFolder + "/" + weekName));
 		#end
