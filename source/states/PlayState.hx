@@ -1499,8 +1499,8 @@ class PlayState extends MusicBeatState
 
 								if (!curStage.contains('school'))
 								{
-									spr.offset.x -= 13;
-									spr.offset.y -= 13;
+									spr.offset.x -= 13 + ((SONG.keyCount - 4) * 1.7);
+									spr.offset.y -= 13 + ((SONG.keyCount - 4) * 1.7);
 								}
 
 								spr.animation.finishCallback = function(name:String) {
@@ -1857,21 +1857,12 @@ class PlayState extends MusicBeatState
 			var justPressedArray:Array<Bool> = [];
 			var releasedArray:Array<Bool> = [];
 			var heldArray:Array<Bool> = [];
-
-			var arrowBinds:Array<String> = ["LEFT", "DOWN", "UP", "RIGHT"];
 	
 			for(i in 0...binds.length)
 			{
 				justPressedArray[i] = FlxG.keys.checkStatus(FlxKey.fromString(binds[i]), FlxInputState.JUST_PRESSED);
 				releasedArray[i] = FlxG.keys.checkStatus(FlxKey.fromString(binds[i]), FlxInputState.JUST_RELEASED);
 				heldArray[i] = FlxG.keys.checkStatus(FlxKey.fromString(binds[i]), FlxInputState.PRESSED);
-
-				if(!justPressedArray.contains(true))
-					justPressedArray[i] = FlxG.keys.checkStatus(FlxKey.fromString(arrowBinds[i]), FlxInputState.JUST_PRESSED);
-				if(!releasedArray.contains(true))
-					releasedArray[i] = FlxG.keys.checkStatus(FlxKey.fromString(arrowBinds[i]), FlxInputState.JUST_RELEASED);
-				if(!heldArray.contains(true))
-					heldArray[i] = FlxG.keys.checkStatus(FlxKey.fromString(arrowBinds[i]), FlxInputState.PRESSED);
 			}
 			
 			if (justPressedArray.contains(true) && generatedMusic)
@@ -1945,8 +1936,8 @@ class PlayState extends MusicBeatState
 				if (spr.animation.curAnim.name == 'confirm' && !curStage.contains('school'))
 				{
 					spr.centerOffsets();
-					spr.offset.x -= 13;
-					spr.offset.y -= 13;
+					spr.offset.x -= 13 + ((SONG.keyCount - 4) * 1.7);
+					spr.offset.y -= 13 + ((SONG.keyCount - 4) * 1.7);
 				}
 				else
 					spr.centerOffsets();
@@ -1970,8 +1961,8 @@ class PlayState extends MusicBeatState
 				if (spr.animation.curAnim.name == 'confirm' && !curStage.contains('school'))
 				{
 					spr.centerOffsets();
-					spr.offset.x -= 13;
-					spr.offset.y -= 13;
+					spr.offset.x -= 13 + ((SONG.keyCount - 4) * 1.7);
+					spr.offset.y -= 13 + ((SONG.keyCount - 4) * 1.7);
 				}
 				else
 					spr.centerOffsets();
