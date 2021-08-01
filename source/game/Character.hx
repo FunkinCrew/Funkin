@@ -104,6 +104,7 @@ class Character extends FlxSprite
 					false);
 
 				playAnim('danceRight');
+				dancesLeftAndRight = true;
 
 			case 'gf-pixel':
 				frames = Paths.getSparrowAtlas('characters/gfPixel', 'shared');

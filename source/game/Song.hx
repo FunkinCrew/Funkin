@@ -104,7 +104,8 @@ class Song
 
 		if(Std.string(swagShit.keyCount) == "null")
 			swagShit.keyCount = 4;
-		else if(Std.string(swagShit.mania) != "null")
+		
+		if(Std.string(swagShit.mania) != "null")
 		{
 			//shaggy support pog
 			switch(swagShit.mania)
