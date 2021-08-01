@@ -839,7 +839,11 @@ class PlayState extends MusicBeatState
 		if(FlxG.sound.music.active)
 			FlxG.sound.music.stop();
 
-		FlxG.sound.music = new ModdingSound().loadByteArray(PolymodAssets.getBytes(Paths.instSYS(SONG.song)));
+		if(Assets.exists(Paths.inst(SONG.song)))
+			FlxG.sound.music = new FlxSound().loadEmbedded(Paths.inst(SONG.song));
+		else
+			FlxG.sound.music = new ModdingSound().loadByteArray(PolymodAssets.getBytes(Paths.instSYS(SONG.song)));
+
 		FlxG.sound.music.persist = true;
 		#end
 
