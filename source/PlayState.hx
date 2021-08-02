@@ -3922,9 +3922,9 @@ class PlayState extends MusicBeatState
 		playerStrums.forEach(function(spr:FlxSprite)
 		{
 			if (keys[spr.ID] && spr.animation.curAnim.name != 'confirm')
-				spr.animation.play('pressed');
+				spr.animation.play('pressed', false);
 			if (!keys[spr.ID])
-				spr.animation.play('static');
+				spr.animation.play('static', false);
 
 			if (spr.animation.curAnim.name == 'confirm' && !curStage.startsWith('school'))
 			{
