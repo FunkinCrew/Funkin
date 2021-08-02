@@ -69,8 +69,8 @@ class DebugBoundingState extends FlxState
 
 		FlxG.cameras.add(hudCam, false);
 
-		// bg = FlxGridOverlay.create(10, 10);
-		bg = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.GREEN);
+		bg = FlxGridOverlay.create(10, 10);
+		// bg = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.GREEN);
 
 		bg.scrollFactor.set();
 		add(bg);

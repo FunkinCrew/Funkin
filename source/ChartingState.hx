@@ -350,6 +350,23 @@ class ChartingState extends MusicBeatState
 			// vocals.stop();
 		}
 
+		var pathShit = Paths.inst(daSong);
+
+		if (!openfl.utils.Assets.cache.hasSound(pathShit))
+		{
+			var library = Assets.getLibrary("songs");
+			var symbolPath = pathShit.split(":").pop();
+			// @:privateAccess
+			// library.types.set(symbolPath, SOUND);
+			// @:privateAccess
+			// library.pathGroups.set(symbolPath, [library.__cacheBreak(symbolPath)]);
+			// var callback = callbacks.add("song:" + pathShit);
+			openfl.utils.Assets.loadSound(pathShit).onComplete(function(_)
+			{
+				// callback();
+			});
+		}
+
 		FlxG.sound.playMusic(Paths.inst(daSong), 0.6);
 
 		// WONT WORK FOR TUTORIAL OR TEST SONG!!! REDO LATER
@@ -549,7 +566,8 @@ class ChartingState extends MusicBeatState
 			PlayState.SONG = _song;
 			FlxG.sound.music.stop();
 			vocals.stop();
-			FlxG.switchState(new PlayState());
+			LoadingState.loadAndSwitchState(new PlayState());
+			// FlxG.switchState(new PlayState());
 		}
 
 		if (FlxG.keys.justPressed.E)
