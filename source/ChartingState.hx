@@ -1082,6 +1082,10 @@ class ChartingState extends MusicBeatState
 
 		var data:String = Json.stringify(json);
 
+		#if hl
+		var filename = _song.song.toLowerCase();
+		sys.io.File.saveContent('./$filename.json', data);
+		#else
 		if ((data != null) && (data.length > 0))
 		{
 			_file = new FileReference();
@@ -1090,6 +1094,7 @@ class ChartingState extends MusicBeatState
 			_file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
 			_file.save(data.trim(), _song.song.toLowerCase() + ".json");
 		}
+		#end
 	}
 
 	function onSaveComplete(_):Void
