@@ -1,5 +1,7 @@
 package substates;
 
+import states.FreeplayState;
+import states.StoryMenuState;
 import states.LoadingState;
 import states.PlayState;
 import ui.Alphabet;
@@ -113,7 +115,18 @@ class PauseSubState extends MusicBeatSubstate
 				case "Restart Song":
 					FlxG.resetState();
 				case "Exit to menu":
-					FlxG.switchState(new MainMenuState());
+					#if desktop
+					if (PlayState.luaModchart != null)
+					{
+						PlayState.luaModchart.die();
+						PlayState.luaModchart = null;
+					}
+					#end
+					
+					if (PlayState.isStoryMode)
+						FlxG.switchState(new StoryMenuState());
+					else
+						FlxG.switchState(new FreeplayState());
 			}
 		}
 

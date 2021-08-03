@@ -59,6 +59,11 @@ class Paths
 		return 'assets/$file';
 	}
 
+	inline static public function lua(key:String,?library:String)
+	{
+		return getPath('data/$key.lua', TEXT, library);
+	}
+
 	inline static public function file(file:String, type:AssetType = TEXT, ?library:String)
 	{
 		return getPath(file, type, library);

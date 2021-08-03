@@ -1,5 +1,6 @@
 package game;
 
+import utilities.CoolUtil;
 import lime.utils.Assets;
 import haxe.Json;
 import openfl.display.BitmapData;
@@ -85,7 +86,13 @@ class StageGroup extends FlxGroup
 
         var bruhStages = ['spooky','philly','limo','mall','evil-mall','school','evil-school','wasteland'];
 
-        if(!bruhStages.contains(stage))
+        #if sys
+        var stagesNormally = CoolUtil.coolTextFilePolymod(Paths.txt('stageList'));
+        #else
+        var stagesNormally = CoolUtil.coolTextFile(Paths.txt('stageList'));
+        #end
+
+        if(!bruhStages.contains(stage) && stagesNormally.contains(stage))
         {
             var JSON_Data:String = "";
 
@@ -104,6 +111,8 @@ class StageGroup extends FlxGroup
         {
             case "spooky":
             {
+                player_2_Point.y += 35;
+
                 var hallowTex = Paths.getSparrowAtlas(stage + '/halloween_bg', 'stages');
 
                 halloweenBG = new FlxSprite(-200, -100);
@@ -461,68 +470,71 @@ class StageGroup extends FlxGroup
             // CUSTOM SHIT
             default:
             {
-                trace(stage_Data);
-
-                camZoom = stage_Data.camera_Zoom;
-
-                player_1_Point.set(stage_Data.character_Positions[0][0], stage_Data.character_Positions[0][1]);
-                player_2_Point.set(stage_Data.character_Positions[1][0], stage_Data.character_Positions[1][1]);
-                gf_Point.set(stage_Data.character_Positions[2][0], stage_Data.character_Positions[2][1]);
-
-                for(Object in stage_Data.objects)
+                if(stage_Data != null)
                 {
-                    var Sprite = new FlxSprite(Object.position[0], Object.position[1]);
+                    trace(stage_Data);
 
-                    trace(Object);
-
-                    if(Object.color != null && Object.color != [])
-                        Sprite.color = FlxColor.fromRGB(Object.color[0], Object.color[1], Object.color[2]);
-
-                    Sprite.antialiasing = Object.antialiased;
-                    Sprite.scrollFactor.set(Object.scroll_Factor[0], Object.scroll_Factor[1]);
-
-                    if(Object.is_Animated)
+                    camZoom = stage_Data.camera_Zoom;
+    
+                    player_1_Point.set(stage_Data.character_Positions[0][0], stage_Data.character_Positions[0][1]);
+                    player_2_Point.set(stage_Data.character_Positions[1][0], stage_Data.character_Positions[1][1]);
+                    gf_Point.set(stage_Data.character_Positions[2][0], stage_Data.character_Positions[2][1]);
+    
+                    for(Object in stage_Data.objects)
                     {
-                        #if sys
-                        Sprite.frames = Paths.getSparrowAtlasSYS(stage + "/" + Object.file_Name, "stages");
-                        #else
-                        Sprite.frames = Paths.getSparrowAtlas(stage + "/" + Object.file_Name, "stages");
-                        #end
-
-                        for(Animation in Object.animations)
+                        var Sprite = new FlxSprite(Object.position[0], Object.position[1]);
+    
+                        trace(Object);
+    
+                        if(Object.color != null && Object.color != [])
+                            Sprite.color = FlxColor.fromRGB(Object.color[0], Object.color[1], Object.color[2]);
+    
+                        Sprite.antialiasing = Object.antialiased;
+                        Sprite.scrollFactor.set(Object.scroll_Factor[0], Object.scroll_Factor[1]);
+    
+                        if(Object.is_Animated)
                         {
-                            var Anim_Name = Animation.name;
-
-                            if(Animation.name == "beatHit")
-                                onBeatHit_Group.add(Sprite);
-
-                            Sprite.animation.addByPrefix(
-                                Anim_Name,
-                                Animation.animation_name,
-                                Animation.fps,
-                                Animation.looped
-                            );
+                            #if sys
+                            Sprite.frames = Paths.getSparrowAtlasSYS(stage + "/" + Object.file_Name, "stages");
+                            #else
+                            Sprite.frames = Paths.getSparrowAtlas(stage + "/" + Object.file_Name, "stages");
+                            #end
+    
+                            for(Animation in Object.animations)
+                            {
+                                var Anim_Name = Animation.name;
+    
+                                if(Animation.name == "beatHit")
+                                    onBeatHit_Group.add(Sprite);
+    
+                                Sprite.animation.addByPrefix(
+                                    Anim_Name,
+                                    Animation.animation_name,
+                                    Animation.fps,
+                                    Animation.looped
+                                );
+                            }
+    
+                            if(Object.start_Animation != "" && Object.start_Animation != null)
+                                Sprite.animation.play(Object.start_Animation);
                         }
-
-                        if(Object.start_Animation != "" && Object.start_Animation != null)
-                            Sprite.animation.play(Object.start_Animation);
-                    }
-                    else
-                    {
-                        #if sys
-                        if(Assets.exists(Paths.image(stage + "/" + Object.file_Name, "stages")))
-                            Sprite.loadGraphic(Paths.image(stage + "/" + Object.file_Name, "stages"));
                         else
-                            Sprite.loadGraphic(Paths.imageSYS(stage + "/" + Object.file_Name, "stages"), false, 0, 0, false, Object.file_Name);
-                        #else
-                        Sprite.loadGraphic(Paths.image(stage + "/" + Object.file_Name, "stages"));
-                        #end
+                        {
+                            #if sys
+                            if(Assets.exists(Paths.image(stage + "/" + Object.file_Name, "stages")))
+                                Sprite.loadGraphic(Paths.image(stage + "/" + Object.file_Name, "stages"));
+                            else
+                                Sprite.loadGraphic(Paths.imageSYS(stage + "/" + Object.file_Name, "stages"), false, 0, 0, false, Object.file_Name);
+                            #else
+                            Sprite.loadGraphic(Paths.image(stage + "/" + Object.file_Name, "stages"));
+                            #end
+                        }
+    
+                        Sprite.setGraphicSize(Std.int(Sprite.width * Object.scale));
+                        Sprite.updateHitbox();
+    
+                        add(Sprite);
                     }
-
-                    Sprite.setGraphicSize(Std.int(Sprite.width * Object.scale));
-                    Sprite.updateHitbox();
-
-                    add(Sprite);
                 }
             }
         }

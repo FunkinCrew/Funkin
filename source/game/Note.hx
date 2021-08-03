@@ -38,6 +38,10 @@ class Note extends FlxSprite
 
 	public var rawNoteData:Int = 0;
 
+	public var modifiedByLua:Bool;
+	public var modAngle:Float = 0;
+	public var localAngle:Float = 0;
+
 	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false)
 	{
 		super();
@@ -139,6 +143,8 @@ class Note extends FlxSprite
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+
+		angle = modAngle + localAngle;
 
 		if (mustPress)
 		{
