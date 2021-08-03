@@ -23,7 +23,7 @@ class GameOverSubstate extends MusicBeatSubstate
 	public function new(x:Float, y:Float)
 	{
 		var daBf:String = '';
-		var playBF = PlayState.boyfriend.curCharacter;
+		var playBF = PlayState.SONG.player1;
 
 		switch(playBF)
 		{
