@@ -7,6 +7,7 @@ class TimingStruct
     public var bpm:Float = 0;
 
     public var startBeat:Float = 0;
+    public var startStep:Int = 0;
     public var endBeat:Float = Math.POSITIVE_INFINITY;
     public var startTime:Float = 0;
 
