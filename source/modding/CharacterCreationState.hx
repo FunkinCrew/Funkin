@@ -175,6 +175,27 @@ class CharacterCreationState extends FlxState
             Load_Animations();
         });
 
+        var Reload_Json:FlxButton = new FlxButton(Reload_Char.x + Reload_Char.width, Reload_Char.y, "Load JSON", function(){
+            if(Character != null)
+            {
+                remove(Character);
+                Character.kill();
+                Character.destroy();
+            }
+
+            Load_Character_File_JSON_Data();
+            Create_Character();
+
+            Path_Box.text = Image_Path;
+            Name_Box.text = Character_Name;
+            Flip_Box.checked = Default_FlipX;
+            L_And_R_Box.checked = LeftAndRight_Idle;
+
+            add(Character);
+
+            Load_Animations();
+        });
+
         var Play_Selected_Animation:FlxButton = new FlxButton(Animation_List_Menu.x + Animation_List_Menu.width + 1, Animation_List_Menu.y, "Play Animation", function(){
             Character.playAnim(Selected_Animation, true);
         });
@@ -195,6 +216,7 @@ class CharacterCreationState extends FlxState
 
         UI_Base.add(Actions_Label);
         UI_Base.add(Reload_Char);
+        UI_Base.add(Reload_Json);
 
         UI_Base.add(Animation_List_Menu);
         UI_Base.add(Play_Selected_Animation);
