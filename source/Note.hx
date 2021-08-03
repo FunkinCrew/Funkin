@@ -274,7 +274,7 @@ class Note extends FlxSprite
 				wasGoodHit = true;
 		}
 
-		if (tooLate)
+		if (tooLate && !wasGoodHit)
 		{
 			if (alpha > 0.3)
 				alpha = 0.3;
