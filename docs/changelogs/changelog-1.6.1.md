@@ -1,4 +1,4 @@
-# Latest (master) changelog/Changelog for 1.0.0
+# Latest (master) changelog/Changelog
 
 Changes marked with 💖 will be listed in the short version of the changelog in `version.downloadMe`.
 
@@ -12,6 +12,7 @@ Changes marked with 💖 will be listed in the short version of the changelog in
 - SM Files can now have modcharts
 - 💖 Optimized the editor
 - 💖 Fixed HTML5 Delta Timings
+- Health Icons are now seperate files
 
 ### Bugfixes
 - 💖 Steps actually exist now
