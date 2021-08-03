@@ -55,7 +55,11 @@ class StageMakingState extends FlxState
     public function new(selectedStage:String)
     {
         super();
+        #if sys
+        stages = CoolUtil.coolTextFilePolymod(Paths.txt('stageList'));
+        #else
         stages = CoolUtil.coolTextFile(Paths.txt('stageList'));
+        #end
 
         if(selectedStage != null)
         {
@@ -83,15 +87,6 @@ class StageMakingState extends FlxState
 
         stage = new StageGroup(stage_Name);
         add(stage);
-
-        beat_Button = new FlxButton(10, startY, "Beat Hit", function(){
-            if(stage != null)
-            {
-                stage.beatHit();
-            }
-        });
-        beat_Button.cameras = [camHUD];
-        add(beat_Button);
 
         stage_Dropdown = new FlxUIDropDownMenu(10, startY + 50, FlxUIDropDownMenu.makeStrIdLabelArray(stages, true), function(stageName:String)
         {
@@ -128,30 +123,6 @@ class StageMakingState extends FlxState
         {
             FlxG.switchState(new MainMenuState());
         }
-
-        /*
-        // y position
-        if(FlxG.keys.pressed.UP)
-        {
-            stageCam.y -= camSpeed;
-        }
-
-        if(FlxG.keys.pressed.DOWN)
-        {
-            stageCam.y += camSpeed;
-        }
-
-        // x position
-        if(FlxG.keys.pressed.LEFT)
-        {
-            stageCam.x -= camSpeed;
-        }
-
-        if(FlxG.keys.pressed.RIGHT)
-        {
-            stageCam.x += camSpeed;
-        }
-        */
 
         // zoom lock
         if(stageCam.zoom < 0.1)
