@@ -24,7 +24,7 @@ class TimingStruct
         AllTimings.push(pog);
     }
 
-    public function new(startBeat,bpm,endBeat:Float, offset:Float)
+    public function new(startBeat:Float,bpm:Float,endBeat:Float, offset:Float)
     {
         this.bpm = bpm;
         this.startBeat = startBeat;
