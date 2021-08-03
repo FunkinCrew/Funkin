@@ -70,6 +70,8 @@ class SMHeader
                     var data = TimingStruct.AllTimings[currentIndex - 1];
                     data.endBeat = beat;
                     data.length = (data.endBeat - data.startBeat) / (data.bpm / 60);
+                    var step = ((60 / data.bpm) * 1000) / 4;
+					TimingStruct.AllTimings[currentIndex].startStep = Math.floor(((data.endBeat / (data.bpm / 60)) * 1000) / step);
                     TimingStruct.AllTimings[currentIndex].startTime = data.startTime + data.length;
                 }
 

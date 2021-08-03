@@ -241,7 +241,7 @@ class ModchartState
 					PlayState.instance.removeObject(PlayState.dad);
 					PlayState.dad = new Character(olddadx, olddady, id);
 					PlayState.instance.addObject(PlayState.dad);
-					PlayState.instance.iconP2.animation.play(id);
+					PlayState.instance.iconP2.changeIcon(id);
 	}
 
 	function changeBoyfriendCharacter(id:String)
@@ -250,7 +250,7 @@ class ModchartState
 					PlayState.instance.removeObject(PlayState.boyfriend);
 					PlayState.boyfriend = new Boyfriend(oldboyfriendx, oldboyfriendy, id);
 					PlayState.instance.addObject(PlayState.boyfriend);
-					PlayState.instance.iconP1.animation.play(id);
+					PlayState.instance.iconP1.changeIcon(id);
 	}
 
 	function makeAnimatedLuaSprite(spritePath:String,names:Array<String>,prefixes:Array<String>,startAnim:String, id:String)
@@ -297,7 +297,12 @@ class ModchartState
 			case 'philly-nice': songLowercase = 'philly';
 		}
 
-		var data:BitmapData = BitmapData.fromFile(Sys.getCwd() + "assets/data/" + songLowercase + '/' + spritePath + ".png");
+		var path = Sys.getCwd() + "assets/data/" + songLowercase + '/';
+
+		if (PlayState.isSM)
+			path = PlayState.pathToSm + "/";
+
+		var data:BitmapData = BitmapData.fromFile(path + spritePath + ".png");
 
 		var sprite:FlxSprite = new FlxSprite(0,0);
 		var imgWidth:Float = FlxG.width / data.width;
@@ -347,6 +352,8 @@ class ModchartState
 		lua = null;
     }
 
+	public var luaWiggles:Map<String,WiggleEffect> = new Map<String,WiggleEffect>();
+
     // LUA SHIT
 
     function new()
@@ -367,7 +374,11 @@ class ModchartState
 					case 'philly-nice': songLowercase = 'philly';
 				}
 
-				var result = LuaL.dofile(lua, Paths.lua(songLowercase + "/modchart")); // execute le file
+				var path = Paths.lua(songLowercase + "/modchart");
+				if (PlayState.isSM)
+					path = PlayState.pathToSm + "/modchart.lua";
+
+				var result = LuaL.dofile(lua, path); // execute le file
 	
 				if (result != 0)
 				{
@@ -427,6 +438,41 @@ class ModchartState
 	
 				Lua_helper.add_callback(lua,"getProperty", getPropertyByName);
 				
+				Lua_helper.add_callback(lua,"setNoteWiggle", function(wiggleId) {
+					PlayState.instance.camNotes.setFilters([new ShaderFilter(luaWiggles.get(wiggleId).shader)]);
+				});
+				
+				Lua_helper.add_callback(lua,"setSustainWiggle", function(wiggleId) {
+					PlayState.instance.camSustains.setFilters([new ShaderFilter(luaWiggles.get(wiggleId).shader)]);
+				});
+
+				Lua_helper.add_callback(lua,"createWiggle", function(freq:Float,amplitude:Float,speed:Float) {
+					var wiggle = new WiggleEffect();
+					wiggle.waveAmplitude = amplitude;
+					wiggle.waveSpeed = speed;
+					wiggle.waveFrequency = freq;
+
+					var id = Lambda.count(luaWiggles) + 1 + "";
+
+					luaWiggles.set(id,wiggle);
+					return id;
+				});
+
+				Lua_helper.add_callback(lua,"setWiggleTime", function(wiggleId:String,time:Float) {
+					var wiggle = luaWiggles.get(wiggleId);
+
+					wiggle.shader.uTime.value = [time];
+				});
+
+				
+				Lua_helper.add_callback(lua,"setWiggleAmplitude", function(wiggleId:String,amp:Float) {
+					var wiggle = luaWiggles.get(wiggleId);
+
+					wiggle.waveAmplitude = amp;
+				});
+
+
+
 				// Lua_helper.add_callback(lua,"makeAnimatedSprite", makeAnimatedLuaSprite);
 				// this one is still in development
 

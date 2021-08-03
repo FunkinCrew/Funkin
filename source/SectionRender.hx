@@ -15,13 +15,14 @@ class SectionRender extends FlxSprite
     {
         super(x,y);
 
-        makeGraphic(GRID_SIZE * 8, GRID_SIZE * Height,FlxColor.BLACK);
+        makeGraphic(GRID_SIZE * 8, GRID_SIZE * Height,0xffe7e6e6);
 
 		var h = GRID_SIZE;
 		if (Math.floor(h) != h)
 			h = GRID_SIZE;
 
-        FlxGridOverlay.overlay(this,GRID_SIZE, Std.int(h), GRID_SIZE * 8,GRID_SIZE * Height);
+        if (FlxG.save.data.editor)
+            FlxGridOverlay.overlay(this,GRID_SIZE, Std.int(h), GRID_SIZE * 8,GRID_SIZE * Height);
     }
 
         

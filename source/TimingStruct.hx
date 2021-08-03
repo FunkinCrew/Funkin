@@ -7,6 +7,7 @@ class TimingStruct
     public var bpm:Float = 0;
 
     public var startBeat:Float = 0;
+    public var startStep:Int = 0;
     public var endBeat:Float = Math.POSITIVE_INFINITY;
     public var startTime:Float = 0;
 
@@ -23,7 +24,7 @@ class TimingStruct
         AllTimings.push(pog);
     }
 
-    public function new(startBeat,bpm,endBeat:Float, offset:Float)
+    public function new(startBeat:Float,bpm:Float,endBeat:Float, offset:Float)
     {
         this.bpm = bpm;
         this.startBeat = startBeat;
