@@ -89,10 +89,7 @@ class DiffOverview extends FlxSubState
 			babyArrow.animation.addByPrefix('blue', 'arrowDOWN');
 			babyArrow.animation.addByPrefix('purple', 'arrowLEFT');
 			babyArrow.animation.addByPrefix('red', 'arrowRIGHT');
-			if(FlxG.save.data.antialiasing)
-				{
-					babyArrow.antialiasing = true;
-				}
+			babyArrow.antialiasing = FlxG.save.data.antialiasing;
 			babyArrow.setGraphicSize(Std.int(babyArrow.width * 0.7));
 
 			switch (Math.abs(i))
