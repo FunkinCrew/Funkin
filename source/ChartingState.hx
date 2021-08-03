@@ -2584,12 +2584,13 @@ class ChartingState extends MusicBeatState
 
 	function loadJson(song:String):Void
 	{
+		var difficultyArray:Array<String> = ['-easy', "", "-hard"];
 		var format = StringTools.replace(PlayState.SONG.song.toLowerCase(), " ", "-");
 		switch (format) {
 			case 'Dad-Battle': format = 'Dadbattle';
 			case 'Philly-Nice': format = 'Philly';
 		}
-		PlayState.SONG = Song.loadFromJson(format, format);
+		PlayState.SONG = Song.loadFromJson(format + difficultyArray[PlayState.storyDifficulty], format);
 		LoadingState.loadAndSwitchState(new ChartingState());
 	}
 
@@ -2609,6 +2610,7 @@ class ChartingState extends MusicBeatState
 
 	private function saveLevel()
 	{
+		var difficultyArray:Array<String> = ['-easy', "", "-hard"];
 		var json = {
 			"song": _song
 		};
@@ -2621,7 +2623,7 @@ class ChartingState extends MusicBeatState
 			_file.addEventListener(Event.COMPLETE, onSaveComplete);
 			_file.addEventListener(Event.CANCEL, onSaveCancel);
 			_file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
-			_file.save(data.trim(), _song.song.toLowerCase() + ".json");
+			_file.save(data.trim(), _song.song.toLowerCase() + difficultyArray[PlayState.storyDifficulty] + ".json");
 		}
 	}
 
