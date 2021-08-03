@@ -21,6 +21,7 @@ import haxe.Json;
 #if sys
 import sys.io.File;
 import sys.FileSystem;
+import polymod.backends.PolymodAssets;
 #end
 import game.Character.CharacterConfig;
 import game.Character.CharacterAnimation;
@@ -155,17 +156,6 @@ class CharacterCreationState extends FlxState
             LeftAndRight_Idle = L_And_R_Box.checked;
         };
 
-        var Packer_Box:FlxUICheckBox = new FlxUICheckBox(20, 185, null, null, "Packer Atlas used?", 250);
-        Packer_Box.checked = Spritesheet_Type == PACKER;
-
-        Packer_Box.callback = function()
-        {
-            if(Packer_Box.checked)
-                Spritesheet_Type = PACKER;
-            else
-                Spritesheet_Type = SPARROW;
-        };
-
         // DROP DOWNS //
         Load_Animations();
 
@@ -202,7 +192,6 @@ class CharacterCreationState extends FlxState
 
         UI_Base.add(Flip_Box);
         UI_Base.add(L_And_R_Box);
-        UI_Base.add(Packer_Box);
 
         UI_Base.add(Actions_Label);
         UI_Base.add(Reload_Char);
@@ -232,7 +221,7 @@ class CharacterCreationState extends FlxState
         Raw_JSON_Data = "";
 
 		#if sys
-		Raw_JSON_Data = File.getContent(Sys.getCwd() + Paths.jsonSYS("character data/" + Character_Name + "/config")).trim();
+		Raw_JSON_Data = PolymodAssets.getText(Paths.jsonSYS("character data/" + Character_Name + "/config")).trim();
 		#else
 		Raw_JSON_Data = Assets.getText(Paths.json("character data/" + Character_Name + "/config")).trim();
 		#end
@@ -248,8 +237,8 @@ class CharacterCreationState extends FlxState
         Load_New_JSON_Data();
 
         Character = new Character(0, 0, "bf", true);
-        Character.loadCharacterConfiguration(CC_Data);
         Character.debugMode = true;
+        Character.loadCharacterConfiguration(CC_Data);
         Character.screenCenter();
     }
 
