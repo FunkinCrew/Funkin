@@ -47,7 +47,12 @@ class GameOverSubstate extends MusicBeatSubstate
 		camFollow = new FlxObject(bf.getGraphicMidpoint().x, bf.getGraphicMidpoint().y, 1, 1);
 		add(camFollow);
 
-		FlxG.sound.play(Paths.sound('fnf_loss_sfx' + stageSuffix));
+		if(FlxG.sound.music.active)
+			FlxG.sound.music.stop();
+
+		var soundThing = FlxG.sound.play(Paths.sound('fnf_loss_sfx' + stageSuffix));
+		soundThing.play();
+
 		Conductor.changeBPM(100);
 
 		// FlxG.camera.followLerp = 1;
@@ -109,7 +114,9 @@ class GameOverSubstate extends MusicBeatSubstate
 			isEnding = true;
 			bf.playAnim('deathConfirm', true);
 			FlxG.sound.music.stop();
+
 			FlxG.sound.play(Paths.music('gameOverEnd' + stageSuffix));
+
 			new FlxTimer().start(0.7, function(tmr:FlxTimer)
 			{
 				FlxG.camera.fade(FlxColor.BLACK, 2, false, function()
