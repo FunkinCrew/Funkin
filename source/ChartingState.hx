@@ -2584,7 +2584,7 @@ class ChartingState extends MusicBeatState
 
 	function loadJson(song:String):Void
 	{
-		var difficultyArray:Array<String> = ['-easy', "", "-hard"];
+		var difficultyArray:Array<String> = ["-easy", "", "-hard"];
 		var format = StringTools.replace(PlayState.SONG.song.toLowerCase(), " ", "-");
 		switch (format) {
 			case 'Dad-Battle': format = 'Dadbattle';
@@ -2610,7 +2610,7 @@ class ChartingState extends MusicBeatState
 
 	private function saveLevel()
 	{
-		var difficultyArray:Array<String> = ['-easy', "", "-hard"];
+		var difficultyArray:Array<String> = ["-easy", "", "-hard"];
 		var json = {
 			"song": _song
 		};
