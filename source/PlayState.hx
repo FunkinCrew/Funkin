@@ -2387,6 +2387,15 @@ class PlayState extends MusicBeatState
 				if (i <= playerStrums.length)
 					playerStrums.members[i].visible = p2;
 			}
+
+			camNotes.zoom = camHUD.zoom;
+			camNotes.x = camHUD.x;
+			camNotes.y = camHUD.y;
+			camNotes.angle = camHUD.angle;
+			camSustains.zoom = camHUD.zoom;
+			camSustains.x = camHUD.x;
+			camSustains.y = camHUD.y;
+			camSustains.angle = camHUD.angle;
 		}
 		#end
 
