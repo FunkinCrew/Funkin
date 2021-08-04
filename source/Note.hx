@@ -119,10 +119,7 @@ class Note extends FlxSprite
 
 			setGraphicSize(Std.int(width * 0.7));
 			updateHitbox();
-			if(FlxG.save.data.antialiasing)
-				{
-					antialiasing = true;
-				}
+			antialiasing = FlxG.save.data.antialiasing;
 		}
 		else
 		{
@@ -159,10 +156,7 @@ class Note extends FlxSprite
 					setGraphicSize(Std.int(width * 0.7));
 					updateHitbox();
 					
-					if(FlxG.save.data.antialiasing)
-						{
-							antialiasing = true;
-						}
+					antialiasing = FlxG.save.data.antialiasing;
 			}
 		}
 
@@ -193,6 +187,7 @@ class Note extends FlxSprite
 		// and flip it so it doesn't look weird.
 		// THIS DOESN'T FUCKING FLIP THE NOTE, CONTRIBUTERS DON'T JUST COMMENT THIS OUT JESUS
 		// then what is this lol
+		// BRO IT LITERALLY SAYS IT FLIPS IF ITS A TRAIL AND ITS DOWNSCROLL
 		if (FlxG.save.data.downscroll && sustainNote) 
 			flipY = true;
 
@@ -275,7 +270,7 @@ class Note extends FlxSprite
 				wasGoodHit = true;
 		}
 
-		if (tooLate)
+		if (tooLate && !wasGoodHit)
 		{
 			if (alpha > 0.3)
 				alpha = 0.3;
