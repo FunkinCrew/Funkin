@@ -1714,7 +1714,7 @@ class PlayState extends MusicBeatState
 					sound.kill();
 					sound.destroy();
 				}
-				
+
 				luaModchart.die();
 				luaModchart = null;
 			}
@@ -2195,8 +2195,10 @@ class PlayState extends MusicBeatState
 				health = 0;
 	
 			songScore -= 10;
+
+			trace("MISS!");
 	
-			FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
+			FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), 0.15);
 	
 			boyfriend.stunned = true;
 	
