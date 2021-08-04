@@ -486,6 +486,16 @@ class ModchartUtilities
             return Application.current.window.height;
         });
 
+        // scroll speed
+
+        Lua_helper.add_callback(lua,"getScrollSpeed",function() {
+            return PlayState.SONG.speed;
+        });
+
+        Lua_helper.add_callback(lua,"setScrollSpeed",function(speed:Float) {
+            PlayState.SONG.speed = speed;
+        });
+
         // sounds
 
         Lua_helper.add_callback(lua, "createSound", function(id:String, file_Path:String, library:String, ?looped:Bool = false) {
