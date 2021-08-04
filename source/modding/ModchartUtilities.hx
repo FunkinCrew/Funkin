@@ -487,6 +487,8 @@ class ModchartUtilities
                     lua_Sounds.set(id, new FlxSound().loadEmbedded(file_Path, looped));
                 else
                     lua_Sounds.set(id, new ModdingSound().loadByteArray(PolymodAssets.getBytes(file_Path), looped));
+
+                FlxG.sound.list.add(lua_Sounds.get(id));
             }
             else
             {
