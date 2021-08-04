@@ -27,14 +27,19 @@ class GameOverSubstate extends MusicBeatSubstate
 
 		switch(playBF)
 		{
+			case 'bf-car' | 'bf-christmas':
+				playBF = 'bf';
+		}
+
+		switch(playBF)
+		{
 			case 'bf-holding-gf':
 				daBf = 'bf-holding-gf-dead';
 			case 'bf-pixel':
 				daBf = 'bf-pixel-dead';
 				stageSuffix = '-pixel';
 			default:
-				daBf = 'bf';
-				//daBf = playBF + '-dead';  <-- ADD THIS LATER LOL
+				daBf = playBF + '-dead';
 		}
 
 		super();

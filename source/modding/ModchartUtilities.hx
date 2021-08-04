@@ -1,5 +1,7 @@
 package modding;
 
+import lime.utils.Assets;
+import flixel.system.FlxSound;
 import utilities.CoolUtil;
 import polymod.Polymod;
 import polymod.backends.PolymodAssets;
@@ -30,6 +32,8 @@ class ModchartUtilities
         'girlfriend' => PlayState.gf,
         'dad' => PlayState.dad,
     ];
+
+    public static var lua_Sounds:Map<String, FlxSound> = [];
 
 	function getActorByName(id:String):Dynamic
     {
@@ -473,6 +477,43 @@ class ModchartUtilities
             return Application.current.window.height;
         });
 
+        // sounds
+
+        Lua_helper.add_callback(lua, "createSound", function(id:String, file_Path:String, ?looped:Bool = false) {
+            if(lua_Sounds.get(id) == null)
+            {
+                if(Assets.exists(file_Path))
+                    lua_Sounds.set(id, new FlxSound().loadEmbedded(file_Path, looped));
+                else
+                    lua_Sounds.set(id, new ModdingSound().loadByteArray(PolymodAssets.getBytes(file_Path), looped));
+            }
+            else
+            {
+                trace("Error! Sound " + id + " already exists! Try another sound name!");
+            }
+        });
+
+        Lua_helper.add_callback(lua, "removeSound",function(id:String) {
+            if(lua_Sounds.get(id) != null)
+            {
+                var sound = lua_Sounds.get(id);
+                sound.stop();
+                sound.kill();
+                sound.destroy();
+
+                lua_Sounds.set(id, null);
+            }
+        });
+
+        Lua_helper.add_callback(lua, "playSound",function(id:String, ?forceRestart:Bool = false) {
+            if(lua_Sounds.get(id) != null)
+                lua_Sounds.get(id).play(forceRestart);
+        });
+
+        Lua_helper.add_callback(lua, "stopSound",function(id:String) {
+            if(lua_Sounds.get(id) != null)
+                lua_Sounds.get(id).stop();
+        });
 
         // tweens
         

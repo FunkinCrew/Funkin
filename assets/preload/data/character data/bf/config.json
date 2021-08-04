@@ -1,7 +1,7 @@
 {
     "defaultFlipX": true,
     "dancesLeftAndRight": false,
-    "imagePath": "BOYFRIEND",
+    "imagePath": "Boyfriend_Assets",
     "spritesheetType": "SPARROW",
     "animations": [
         {
@@ -69,24 +69,6 @@
             "animation_name": "BF idle shaking",
             "fps": 24,
             "looped": true
-        },
-        {
-            "name": "firstDeath",
-            "animation_name": "BF dies",
-            "fps": 24,
-            "looped": false
-        },
-        {
-            "name": "deathLoop",
-            "animation_name": "BF Dead Loop",
-            "fps": 24,
-            "looped": true
-        },
-        {
-            "name": "deathConfirm",
-            "animation_name": "BF Dead confirm",
-            "fps": 24,
-            "looped": false
         }
     ]
 }

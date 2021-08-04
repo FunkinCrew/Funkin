@@ -8,7 +8,4 @@ singRIGHTmiss -30 21
 singLEFTmiss 12 24
 singDOWNmiss -11 -19
 hey 7 4
-firstDeath 37 11
-deathLoop 37 5
-deathConfirm 37 69
 scared -4 0
