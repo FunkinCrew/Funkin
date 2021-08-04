@@ -109,6 +109,14 @@ class ModchartUtilities
 
     function new()
     {
+        lua_Sprites = [
+            'boyfriend' => PlayState.boyfriend,
+            'girlfriend' => PlayState.gf,
+            'dad' => PlayState.dad,
+        ];
+    
+        lua_Sounds = [];
+
         lua = LuaL.newstate();
         LuaL.openlibs(lua);
 
@@ -480,20 +488,22 @@ class ModchartUtilities
 
         // sounds
 
-        Lua_helper.add_callback(lua, "createSound", function(id:String, file_Path:String, ?looped:Bool = false) {
+        Lua_helper.add_callback(lua, "createSound", function(id:String, file_Path:String, library:String, ?looped:Bool = false) {
             if(lua_Sounds.get(id) == null)
             {
-                if(Assets.exists(file_Path))
-                    lua_Sounds.set(id, new FlxSound().loadEmbedded(file_Path, looped));
+                if(Assets.exists(Paths.sound(file_Path, library)))
+                    lua_Sounds.set(id, new FlxSound().loadEmbedded(Paths.sound(file_Path, library), looped));
                 else
-                    lua_Sounds.set(id, new ModdingSound().loadByteArray(PolymodAssets.getBytes(file_Path), looped));
+                {
+                    lua_Sounds.set(id, new ModdingSound().loadByteArray(
+                        PolymodAssets.getBytes("assets/" + (library == "" ? "sounds/" : library + "/" + "sounds/") + file_Path + ".ogg"), looped
+                    ));
+                }
 
                 FlxG.sound.list.add(lua_Sounds.get(id));
             }
             else
-            {
                 trace("Error! Sound " + id + " already exists! Try another sound name!");
-            }
         });
 
         Lua_helper.add_callback(lua, "removeSound",function(id:String) {

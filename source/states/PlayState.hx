@@ -1708,6 +1708,13 @@ class PlayState extends MusicBeatState
 			#if desktop
 			if (luaModchart != null)
 			{
+				for(sound in ModchartUtilities.lua_Sounds)
+				{
+					sound.stop();
+					sound.kill();
+					sound.destroy();
+				}
+				
 				luaModchart.die();
 				luaModchart = null;
 			}
