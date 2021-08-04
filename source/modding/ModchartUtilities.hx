@@ -19,6 +19,8 @@ import llua.LuaL;
 import flixel.FlxSprite;
 import states.PlayState;
 
+using StringTools;
+
 class ModchartUtilities
 {
     public static var lua:State = null;
@@ -81,7 +83,8 @@ class ModchartUtilities
         {
             if (p != null)
             {
-                //Application.current.window.alert("LUA ERROR:\n" + p + "\nhaxe things: " + e,"Leather's Funkin' Engine Modcharts");
+                if(!p.contains("No such file or directory"))
+                    Application.current.window.alert("LUA ERROR:\n" + p + "\nhaxe things: " + e,"Leather's Funkin' Engine Modcharts");
                 //lua = null;
                 //LoadingState.loadAndSwitchState(new MainMenuState());
             }
@@ -138,6 +141,7 @@ class ModchartUtilities
 
         setVar("difficulty", PlayState.storyDifficulty);
         setVar("bpm", Conductor.bpm);
+        setVar("keyCount", PlayState.SONG.keyCount);
         setVar("scrollspeed", PlayState.SONG.speed);
         setVar("fpsCap", FlxG.save.data.fpsCap);
         setVar("downscroll", FlxG.save.data.downscroll);
@@ -168,14 +172,10 @@ class ModchartUtilities
         setVar("windowWidth",FlxG.width);
         setVar("windowHeight",FlxG.height);
 
-        @:privateAccess
         setVar("hudWidth", PlayState.instance.camHUD.width);
-        @:privateAccess
         setVar("hudHeight", PlayState.instance.camHUD.height);
 
         setVar("mustHit", false);
-
-        @:privateAccess
         setVar("strumLineY", PlayState.instance.strumLine.y);
         
         // callbacks
@@ -623,12 +623,11 @@ class ModchartUtilities
         for (i in 0...PlayState.strumLineNotes.length) {
             var member = PlayState.strumLineNotes.members[i];
             trace(PlayState.strumLineNotes.members[i].x + " " + PlayState.strumLineNotes.members[i].y + " " + PlayState.strumLineNotes.members[i].angle + " | strum" + i);
-            //setVar("strum" + i + "X", Math.floor(member.x));
+
             setVar("defaultStrum" + i + "X", Math.floor(member.x));
-            //setVar("strum" + i + "Y", Math.floor(member.y));
             setVar("defaultStrum" + i + "Y", Math.floor(member.y));
-            //setVar("strum" + i + "Angle", Math.floor(member.angle));
             setVar("defaultStrum" + i + "Angle", Math.floor(member.angle));
+
             trace("Adding strum" + i);
         }
     }
