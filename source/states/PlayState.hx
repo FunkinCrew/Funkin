@@ -1666,9 +1666,10 @@ class PlayState extends MusicBeatState
 
 				if (daNote.isSustainNote)
 				{
-					daNote.x += daNote.width / 2 + 20;
-					if (PlayState.curStage.startsWith('school'))
-						daNote.x -= 11;
+					daNote.x += daNote.width / 2 + (20 - (1.5 * (SONG.keyCount - 4)));
+
+					if (PlayState.SONG.stage.contains('school'))
+						daNote.x -= (11 - (1 * (SONG.keyCount - 4)));
 				}
 
 				// WIP interpolation shit? Need to fix the pause issue
