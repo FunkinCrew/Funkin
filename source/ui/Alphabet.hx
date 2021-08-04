@@ -77,7 +77,13 @@ class Alphabet extends FlxSpriteGroup
 				lastWasSpace = true;
 			}
 
-			if (AlphaCharacter.alphabet.indexOf(character.toLowerCase()) != -1)
+			#if (haxe >= "4.0.0")
+			var canDoThingyLol:Bool = (!isBold && AlphaCharacter.alphabet.contains(character.toLowerCase()) || isBold && AlphaCharacter.boldalphabet.contains(character.toLowerCase()));
+			#else
+			var canDoThingyLol:Bool = (!isBold && AlphaCharacter.alphabet.indexOf(character.toLowerCase()) != -1 || isBold && AlphaCharacter.boldalphabet.indexOf(character.toLowerCase()) != -1);
+			#end
+
+			if (canDoThingyLol)
 			{
 				if (lastSprite != null)
 				{
@@ -151,12 +157,13 @@ class Alphabet extends FlxSpriteGroup
 			var isSymbol:Bool = AlphaCharacter.symbols.indexOf(splitWords[loopNum]) != -1;
 			#end
 
-			if (
-				AlphaCharacter.alphabet.indexOf(splitWords[loopNum].toLowerCase()) != -1 || 
-				(isBold && AlphaCharacter.boldalphabet.indexOf(splitWords[loopNum].toLowerCase()) != -1) 
-				|| isNumber
-				|| isSymbol
-			)
+			#if (haxe >= "4.0.0")
+			var canDoThingyLol:Bool = (!isBold && AlphaCharacter.alphabet.contains(splitWords[loopNum].toLowerCase()) || isBold && AlphaCharacter.boldalphabet.contains(splitWords[loopNum].toLowerCase()) || isNumber || isSymbol);
+			#else
+			var canDoThingyLol:Bool = (!isBold && AlphaCharacter.alphabet.indexOf(splitWords[loopNum].toLowerCase()) != -1 || isBold && AlphaCharacter.boldalphabet.indexOf(splitWords[loopNum].toLowerCase()) != -1 || isNumber || isSymbol);
+			#end
+
+			if (canDoThingyLol)
 			{
 				if (lastSprite != null && !xPosResetted)
 				{
@@ -226,7 +233,7 @@ class Alphabet extends FlxSpriteGroup
 
 class AlphaCharacter extends FlxSprite
 {
-	public static var boldalphabet:String = "abcdefghijklmnopqrstuvwxyz1234567890|~#$%()*+-:;<=>@[]^_.,'!?";
+	public static var boldalphabet:String = "abcdefghijklmnopqrstuvwxyz1234567890";
 	public static var alphabet:String = "abcdefghijklmnopqrstuvwxyz";
 
 	public static var numbers:String = "1234567890";

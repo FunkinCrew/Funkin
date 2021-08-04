@@ -87,8 +87,7 @@ class ModchartUtilities
         {
             if (p != null)
             {
-                if(!p.contains("No such file or directory"))
-                    Application.current.window.alert("LUA ERROR:\n" + p + "\nhaxe things: " + e,"Leather's Funkin' Engine Modcharts");
+                //Application.current.window.alert("LUA ERROR:\n" + p + "\nhaxe things: " + e,"Leather's Funkin' Engine Modcharts");
                 //lua = null;
                 //LoadingState.loadAndSwitchState(new MainMenuState());
             }

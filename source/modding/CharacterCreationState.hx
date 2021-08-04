@@ -1,5 +1,10 @@
 package modding;
 
+import states.MainMenuState;
+import flixel.util.FlxTimer.FlxTimerManager;
+import openfl.events.IOErrorEvent;
+import openfl.events.Event;
+import openfl.net.FileReference;
 #if discord_rpc
 import utilities.Discord.DiscordClient;
 #end
@@ -102,7 +107,7 @@ class CharacterCreationState extends FlxState
         Image_Path = CC_Data.imagePath;
         Default_FlipX = CC_Data.defaultFlipX;
         LeftAndRight_Idle = CC_Data.dancesLeftAndRight;
-        Spritesheet_Type = CC_Data.spritesheetType;
+        Spritesheet_Type = SPARROW;
         Animations = CC_Data.animations;
 
         if(CC_Data.graphicsSize != null)
@@ -196,8 +201,13 @@ class CharacterCreationState extends FlxState
             Load_Animations();
         });
 
+        var Save_JSON:FlxButton = new FlxButton(Reload_Char.x, Reload_Char.y + Reload_Char.height + 2, "Save JSON", function(){
+            save_JSON();
+        });
+
         var Play_Selected_Animation:FlxButton = new FlxButton(Animation_List_Menu.x + Animation_List_Menu.width + 1, Animation_List_Menu.y, "Play Animation", function(){
             Character.playAnim(Selected_Animation, true);
+            Character.screenCenter();
         });
 
         // ADDING OBJECTS //
@@ -217,6 +227,7 @@ class CharacterCreationState extends FlxState
         UI_Base.add(Actions_Label);
         UI_Base.add(Reload_Char);
         UI_Base.add(Reload_Json);
+        UI_Base.add(Save_JSON);
 
         UI_Base.add(Animation_List_Menu);
         UI_Base.add(Play_Selected_Animation);
@@ -258,9 +269,10 @@ class CharacterCreationState extends FlxState
 
         Load_New_JSON_Data();
 
-        Character = new Character(0, 0, "bf", true);
+        Character = new Character(0, 0, "", true);
         Character.debugMode = true;
         Character.loadCharacterConfiguration(CC_Data);
+        Character.loadOffsetFile(Character_Name);
         Character.screenCenter();
     }
 
@@ -287,6 +299,7 @@ class CharacterCreationState extends FlxState
         Animation_List_Menu = new FlxUIDropDownMenu(100, 300, FlxUIDropDownMenu.makeStrIdLabelArray(Animation_List, true), function(id:String){
             Selected_Animation = Animation_List[Std.parseInt(id)];
             Character.playAnim(Selected_Animation, true);
+            Character.screenCenter();
             Load_Animation_Info();
         });
 
@@ -314,6 +327,67 @@ class CharacterCreationState extends FlxState
 
         if(Character != null)
             Character.screenCenter();
+
+        if(FlxG.keys.justPressed.ESCAPE)
+            FlxG.switchState(new MainMenuState());
+    }
+
+    var _file:FileReference;
+
+    private function save_JSON()
+    {
+        var json = {
+            "imagePath": Image_Path,
+            "animations": Animations,
+            "defaultFlipX": Default_FlipX,
+            "dancesLeftAndRight": LeftAndRight_Idle,
+            "spritesheetType": Std.string(Spritesheet_Type),
+            "graphicsSize": Graphics_Size
+        };
+
+        var data:String = Json.stringify(json, null, "\t");
+
+        if ((data != null) && (data.length > 0))
+        {
+            _file = new FileReference();
+            _file.addEventListener(Event.COMPLETE, onSaveComplete);
+            _file.addEventListener(Event.CANCEL, onSaveCancel);
+            _file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
+
+            _file.save(data.trim(), "config.json");
+        }
+    }
+
+    function onSaveComplete(_):Void
+    {
+        _file.removeEventListener(Event.COMPLETE, onSaveComplete);
+        _file.removeEventListener(Event.CANCEL, onSaveCancel);
+        _file.removeEventListener(IOErrorEvent.IO_ERROR, onSaveError);
+        _file = null;
+        FlxG.log.notice("Successfully saved LEVEL DATA.");
+    }
+
+    /**
+        * Called when the save file dialog is cancelled.
+        */
+    function onSaveCancel(_):Void
+    {
+        _file.removeEventListener(Event.COMPLETE, onSaveComplete);
+        _file.removeEventListener(Event.CANCEL, onSaveCancel);
+        _file.removeEventListener(IOErrorEvent.IO_ERROR, onSaveError);
+        _file = null;
+    }
+
+    /**
+        * Called if there is an error while saving the gameplay recording.
+        */
+    function onSaveError(_):Void
+    {
+        _file.removeEventListener(Event.COMPLETE, onSaveComplete);
+        _file.removeEventListener(Event.CANCEL, onSaveCancel);
+        _file.removeEventListener(IOErrorEvent.IO_ERROR, onSaveError);
+        _file = null;
+        FlxG.log.error("Problem saving Level data");
     }
 }
 

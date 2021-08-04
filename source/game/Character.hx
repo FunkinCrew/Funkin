@@ -345,6 +345,9 @@ class Character extends FlxSprite
 
 				playAnim('idle');
 
+			case '':
+				trace("NO VALUE THINGY LOL DONT LOAD SHIT");
+
 			default:
 				loadNamedConfiguration(curCharacter);
 		}
@@ -466,6 +469,8 @@ class Character extends FlxSprite
 
 	public function loadOffsetFile(characterName:String)
 	{
+		animOffsets = new Map<String, Array<Dynamic>>();
+		
 		var offsets:Array<String>;
 
 		#if sys
@@ -567,13 +572,11 @@ class Character extends FlxSprite
 		var daOffset = animOffsets.get(AnimName);
 
 		if (animOffsets.exists(AnimName))
-		{
 			offset.set(daOffset[0], daOffset[1]);
-		}
 		else
 			offset.set(0, 0);
 
-		if (curCharacter == 'gf')
+		if (curCharacter.startsWith('gf'))
 		{
 			if (AnimName == 'singLEFT')
 			{
@@ -593,7 +596,7 @@ class Character extends FlxSprite
 
 	public function addOffset(name:String, x:Float = 0, y:Float = 0)
 	{
-		animOffsets[name] = [x, y];
+		animOffsets.set(name, [x, y]);
 	}
 }
 
