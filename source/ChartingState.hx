@@ -1256,7 +1256,17 @@ class ChartingState extends MusicBeatState
 			check_altAnim.checked = section.altAnim;
 		});
 
+		var startSection:FlxButton = new FlxButton(10, 85, "Play Here", function() {
+			PlayState.SONG = _song;
+			FlxG.sound.music.stop();
+			if (!PlayState.isSM)
+			vocals.stop();
+			PlayState.startTime = lastUpdatedSection.startTime;
+			LoadingState.loadAndSwitchState(new PlayState());
+		});
+
 		tab_group_section.add(refresh);
+		tab_group_section.add(startSection);
 		tab_group_section.add(stepperCopy);
 		tab_group_section.add(stepperCopyLabel);
 		tab_group_section.add(check_mustHitSection);

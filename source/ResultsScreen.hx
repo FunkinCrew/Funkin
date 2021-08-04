@@ -145,6 +145,11 @@ class ResultsScreen extends FlxSubState
                 graph.addToHistory(diff, judge, obj3);
         }
 
+        if (sicks == Math.POSITIVE_INFINITY || sicks == Math.NaN)
+            sicks = 0;
+        if (goods == Math.POSITIVE_INFINITY || goods == Math.NaN)
+            goods = 0;
+
         graph.update();
 
         mean = HelperFunctions.truncateFloat(mean / PlayState.rep.replay.songNotes.length,2);
