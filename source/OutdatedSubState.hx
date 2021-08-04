@@ -32,10 +32,7 @@ class OutdatedSubState extends MusicBeatState
 		bg.scale.x *= 1.55;
 		bg.scale.y *= 1.55;
 		bg.screenCenter();
-		if(FlxG.save.data.antialiasing)
-			{
-				bg.antialiasing = true;
-			}
+		bg.antialiasing = FlxG.save.data.antialiasing;
 		add(bg);
 		
 		var kadeLogo:FlxSprite = new FlxSprite(FlxG.width, 0).loadGraphic(Paths.image('KadeEngineLogo'));
@@ -44,10 +41,7 @@ class OutdatedSubState extends MusicBeatState
 		kadeLogo.x -= kadeLogo.frameHeight;
 		kadeLogo.y -= 180;
 		kadeLogo.alpha = 0.8;
-		if(FlxG.save.data.antialiasing)
-			{
-				kadeLogo.antialiasing = true;
-			}
+		kadeLogo.antialiasing = FlxG.save.data.antialiasing;
 		add(kadeLogo);
 		
 		var txt:FlxText = new FlxText(0, 0, FlxG.width,

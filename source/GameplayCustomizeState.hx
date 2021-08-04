@@ -47,10 +47,14 @@ class GameplayCustomizeState extends MusicBeatState
 		#end
 
         sick = new FlxSprite().loadGraphic(Paths.image('sick','shared'));
+        sick.antialiasing = FlxG.save.data.antialiasing;
         sick.scrollFactor.set();
         background = new FlxSprite(-600, -200).loadGraphic(Paths.image('stageback','shared'));
         curt = new FlxSprite(-500, -300).loadGraphic(Paths.image('stagecurtains','shared'));
         front = new FlxSprite(-650, 600).loadGraphic(Paths.image('stagefront','shared'));
+        background.antialiasing = FlxG.save.data.antialiasing;
+        curt.antialiasing = FlxG.save.data.antialiasing;
+        front.antialiasing = FlxG.save.data.antialiasing;
 
 		//Conductor.changeBPM(102);
 		persistentUpdate = true;
@@ -218,7 +222,7 @@ class GameplayCustomizeState extends MusicBeatState
                 babyArrow.animation.addByPrefix('blue', 'arrowDOWN');
                 babyArrow.animation.addByPrefix('purple', 'arrowLEFT');
                 babyArrow.animation.addByPrefix('red', 'arrowRIGHT');
-                babyArrow.antialiasing = true;
+                babyArrow.antialiasing = FlxG.save.data.antialiasing;
                 babyArrow.setGraphicSize(Std.int(babyArrow.width * 0.7));
                 switch (Math.abs(i))
                 {
