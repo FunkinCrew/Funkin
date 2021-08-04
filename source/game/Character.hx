@@ -114,8 +114,9 @@ class Character extends FlxSprite
 
 				playAnim('danceRight');
 
-				setGraphicSize(Std.int(width * PlayState.daPixelZoom));
+				setGraphicSize(Std.int(width * 6));
 				updateHitbox();
+
 				antialiasing = false;
 				dancesLeftAndRight = true;
 
@@ -257,13 +258,15 @@ class Character extends FlxSprite
 				animation.addByPrefix('singRIGHTmiss', 'BF RIGHT MISS', 24, false);
 				animation.addByPrefix('singDOWNmiss', 'BF DOWN MISS', 24, false);
 
+				animation.addByPrefix('hey', 'BF Peace Sign', 24, false);
+
 				setGraphicSize(Std.int(width * 6));
 				updateHitbox();
 
 				playAnim('idle');
 
-				width -= 100;
-				height -= 100;
+				//width -= 100;
+				//height -= 100;
 
 				antialiasing = false;
 
