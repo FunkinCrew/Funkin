@@ -445,6 +445,14 @@ class ModchartUtilities
             return Application.current.window.y;
         });
 
+        Lua_helper.add_callback(lua,"getCenteredWindowX",function() {
+            return (Application.current.window.display.currentMode.width / 2) - (Application.current.window.width / 2);
+        });
+
+        Lua_helper.add_callback(lua,"getCenteredWindowY",function() {
+            return (Application.current.window.display.currentMode.height / 2) - (Application.current.window.height / 2);
+        });
+
         Lua_helper.add_callback(lua,"resizeWindow",function(Width:Int,Height:Int) {
             Application.current.window.resize(Width,Height);
         });
