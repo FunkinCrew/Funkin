@@ -311,6 +311,7 @@ class PlayState extends MusicBeatState
 		PlayStateChangeables.scrollSpeed = FlxG.save.data.scrollSpeed;
 		PlayStateChangeables.botPlay = FlxG.save.data.botplay;
 		PlayStateChangeables.Optimize = FlxG.save.data.optimize;
+		PlayStateChangeables.zoom = FlxG.save.data.zoom;
 
 		// pre lowercasing the song name (create)
 		var songLowercase = StringTools.replace(PlayState.SONG.song, " ", "-").toLowerCase();
@@ -396,6 +397,8 @@ class PlayState extends MusicBeatState
 		FlxG.cameras.add(camHUD);
 		FlxG.cameras.add(camSustains);
 		FlxG.cameras.add(camNotes);
+
+		camHUD.zoom = PlayStateChangeables.zoom;
 
 		FlxCamera.defaultCameras = [camGame];
 
@@ -1613,6 +1616,9 @@ class PlayState extends MusicBeatState
 		keys[data] = false;
 	}
 
+	public var closestNotes:Array<Note> = [];
+	
+
 	private function handleInput(evt:KeyboardEvent):Void
 	{ // this actually handles press inputs
 
@@ -1668,13 +1674,9 @@ class PlayState extends MusicBeatState
 		var ana = new Ana(Conductor.songPosition, null, false, "miss", data);
 
 		var dataNotes = [];
-		notes.forEachAlive(function(daNote:Note)
-		{
-			if (daNote.canBeHit && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit && daNote.noteData == data)
-				dataNotes.push(daNote);
-		}); // Collect notes that can be hit
-
-		dataNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime)); // sort by the earliest note
+		for(i in closestNotes)
+			if (i.noteData == data)
+				dataNotes.push(i);
 
 		if (dataNotes.length != 0)
 		{
@@ -1724,7 +1726,7 @@ class PlayState extends MusicBeatState
 			ana.hit = false;
 			ana.hitJudge = "shit";
 			ana.nearestNote = [];
-			health -= 0.10;
+			health -= 0.30;
 		}
 	}
 
@@ -2255,6 +2257,8 @@ class PlayState extends MusicBeatState
 		perfectMode = false;
 		#end
 
+		
+
 		if (updateFrame == 4)
 			{
 				TimingStruct.clearTimings();
@@ -2622,6 +2626,20 @@ class PlayState extends MusicBeatState
 
 		if (generatedMusic && PlayState.SONG.notes[Std.int(curStep / 16)] != null)
 		{
+
+			closestNotes = [];
+
+			notes.forEachAlive(function(daNote:Note)
+			{
+				if (daNote.canBeHit && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit)
+					closestNotes.push(daNote);
+			}); // Collect notes that can be hit
+
+			closestNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
+
+			if (closestNotes.length != 0)
+				FlxG.watch.addQuick("Current Note",closestNotes[0].strumTime - Conductor.songPosition);
+
 			// Make sure Girlfriend cheers only for certain songs
 			if (allowedToHeadbang)
 			{
@@ -3140,13 +3158,13 @@ class PlayState extends MusicBeatState
 								else
 								{
 									if (!daNote.isSustainNote)
-										health -= 0.10;
+										health -= 0.20;
 									vocals.volume = 0;
 									if (theFunne && !daNote.isSustainNote)
 										noteMiss(daNote.noteData, daNote);
 									if (daNote.isParent)
 									{
-										health -= 0.20; // give a health punishment for failing a LN
+										health -= 0.30; // give a health punishment for failing a LN
 										trace("hold fell over at the start");
 										for (i in daNote.children)
 										{
@@ -3161,7 +3179,7 @@ class PlayState extends MusicBeatState
 											&& daNote.sustainActive
 											&& daNote.spotInLine != daNote.parent.children.length)
 										{
-											health -= 0.20; // give a health punishment for failing a LN
+											health -= 0.30; // give a health punishment for failing a LN
 											trace("hold fell over at " + daNote.spotInLine);
 											for (i in daNote.parent.children)
 											{
@@ -3178,14 +3196,14 @@ class PlayState extends MusicBeatState
 							else
 							{
 								if (!daNote.isSustainNote)
-									health -= 0.10;
+									health -= 0.20;
 								vocals.volume = 0;
 								if (theFunne && !daNote.isSustainNote)
 									noteMiss(daNote.noteData, daNote);
 
 								if (daNote.isParent)
 								{
-									health -= 0.20; // give a health punishment for failing a LN
+									health -= 0.30; // give a health punishment for failing a LN
 									trace("hold fell over at the start");
 									for (i in daNote.children)
 									{
@@ -3201,7 +3219,7 @@ class PlayState extends MusicBeatState
 										&& daNote.sustainActive
 										&& daNote.spotInLine != daNote.parent.children.length)
 									{
-										health -= 0.20; // give a health punishment for failing a LN
+										health -= 0.40; // give a health punishment for failing a LN
 										trace("hold fell over at " + daNote.spotInLine);
 										for (i in daNote.parent.children)
 										{
@@ -3457,7 +3475,7 @@ class PlayState extends MusicBeatState
 				score = -300;
 				combo = 0;
 				misses++;
-				health -= 0.06;
+				health -= 0.1;
 				ss = false;
 				shits++;
 				if (FlxG.save.data.accuracyMod == 0)
@@ -3465,7 +3483,7 @@ class PlayState extends MusicBeatState
 			case 'bad':
 				daRating = 'bad';
 				score = 0;
-				health -= 0.03;
+				health -= 0.06;
 				ss = false;
 				bads++;
 				if (FlxG.save.data.accuracyMod == 0)

@@ -131,6 +131,8 @@ class ChartingState extends MusicBeatState
 
 	var camFollow:FlxObject;
 
+	public var waveform:Waveform;
+
 	public static var latestChartVersion = "2";
 
 	override function create()
@@ -313,6 +315,7 @@ class ChartingState extends MusicBeatState
 			height = Math.floor(renderer.y);
 		}
 
+
 		
 
 		trace(height);
@@ -385,6 +388,23 @@ class ChartingState extends MusicBeatState
 		
 
 		add(sectionRenderes);
+
+		// fuckin stupid ass bitch ass fucking waveform
+		/*if (PlayState.isSM)
+		{
+			waveform = new Waveform(0,0,PlayState.pathToSm + "/" + PlayState.sm.header.MUSIC,height);
+		}
+		else
+		{
+			if (_song.needsVoices)
+				waveform = new Waveform(0,0,Paths.voices(_song.song),height);
+			else
+				waveform = new Waveform(0,0,Paths.inst(_song.song),height);
+		}
+
+		waveform.drawWaveform();
+		add(waveform);
+		*/
 		add(dummyArrow);
 		add(strumLine);
 		add(lines);

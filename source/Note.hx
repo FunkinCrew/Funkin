@@ -83,12 +83,15 @@ class Note extends FlxSprite
 		else
 		{
 			this.strumTime = strumTime;
-			rStrumTime = strumTime - (FlxG.save.data.offset + PlayState.songOffset);
 			#if sys
 			if (PlayState.isSM)
 			{
-				rStrumTime = Math.round(rStrumTime + Std.parseFloat(PlayState.sm.header.OFFSET));
+				rStrumTime = strumTime;
 			}
+			else
+				rStrumTime = (strumTime - FlxG.save.data.offset + PlayState.songOffset);
+			#else
+			rStrumTime = (strumTime - FlxG.save.data.offset + PlayState.songOffset);
 			#end
 		}
 
@@ -245,25 +248,23 @@ class Note extends FlxSprite
 
 		if (mustPress)
 		{
-			// ass
 			if (isSustainNote)
 			{
-				if (strumTime > Conductor.songPosition - (Conductor.safeZoneOffset * 1.5)
-					&& strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * 0.5))
+				if (strumTime - Conductor.songPosition <= ((166 * Conductor.timeScale) * 0.5)
+					&& strumTime - Conductor.songPosition >= (-166 * Conductor.timeScale))
 					canBeHit = true;
 				else
 					canBeHit = false;
 			}
 			else
 			{
-				if (strumTime > Conductor.songPosition - Conductor.safeZoneOffset
-					&& strumTime < Conductor.songPosition + Conductor.safeZoneOffset)
+				if (strumTime - Conductor.songPosition <= (166 * Conductor.timeScale)
+					&& strumTime - Conductor.songPosition >= (-166 * Conductor.timeScale))
 					canBeHit = true;
 				else
 					canBeHit = false;
 			}
-
-			if (strumTime < Conductor.songPosition - Conductor.safeZoneOffset * Conductor.timeScale && !wasGoodHit)
+			if (strumTime - Conductor.songPosition < -166 && !wasGoodHit)
 				tooLate = true;
 		}
 		else
