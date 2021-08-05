@@ -227,6 +227,7 @@ class Character extends FlxSprite
 				animation.addByPrefix('singRIGHTmiss', 'BF NOTE RIGHT MISS', 24, false);
 				animation.addByPrefix('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
 				animation.addByPrefix('hey', 'BF HEY', 24, false);
+				animation.addByPrefix('scared', 'BF idle shaking', 24, false);
 
 				playAnim('idle');
 
@@ -242,6 +243,8 @@ class Character extends FlxSprite
 				animation.addByPrefix('singLEFTmiss', 'BF NOTE LEFT MISS', 24, false);
 				animation.addByPrefix('singRIGHTmiss', 'BF NOTE RIGHT MISS', 24, false);
 				animation.addByPrefix('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
+				animation.addByPrefix('hey', 'BF HEY', 24, false);
+				animation.addByPrefix('scared', 'BF idle shaking', 24, false);
 
 				playAnim('idle');
 
@@ -534,33 +537,39 @@ class Character extends FlxSprite
 	 */
 	public function dance(?altAnim:String = "")
 	{
-		if (!debugMode)
+		if(animation.curAnim == null)
+			playAnim('idle');
+
+		if(animation.curAnim.name != 'scared')
 		{
-			switch (curCharacter)
+			if (!debugMode)
 			{
-				case 'gf' | 'gf-christmas' | 'gf-car' | 'gf-pixel' | 'gf-old' | 'gf-tankmen':
-					if (!animation.curAnim.name.startsWith('hair'))
-					{
-						danced = !danced;
-
-						if (danced)
-							playAnim('danceRight' + altAnim);
+				switch (curCharacter)
+				{
+					case 'gf' | 'gf-christmas' | 'gf-car' | 'gf-pixel' | 'gf-old' | 'gf-tankmen':
+						if (!animation.curAnim.name.startsWith('hair'))
+						{
+							danced = !danced;
+	
+							if (danced)
+								playAnim('danceRight' + altAnim);
+							else
+								playAnim('danceLeft' + altAnim);
+						}
+	
+					default:
+						if(!dancesLeftAndRight)
+							playAnim('idle' + altAnim);
 						else
-							playAnim('danceLeft' + altAnim);
-					}
-
-				default:
-					if(!dancesLeftAndRight)
-						playAnim('idle' + altAnim);
-					else
-					{
-						danced = !danced;
-
-						if (danced)
-							playAnim('danceRight' + altAnim);
-						else
-							playAnim('danceLeft' + altAnim);
-					}
+						{
+							danced = !danced;
+	
+							if (danced)
+								playAnim('danceRight' + altAnim);
+							else
+								playAnim('danceLeft' + altAnim);
+						}
+				}
 			}
 		}
 	}

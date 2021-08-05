@@ -125,6 +125,11 @@ class StageGroup extends FlxGroup
             }
             case "philly":
             {
+                player_1_Point.x += 25;
+                gf_Point.x += 75;
+                gf_Point.y += 25;
+                player_2_Point.x += 175;
+
                 var bg:FlxSprite = new FlxSprite(-100).loadGraphic(Paths.image(stage + '/sky', 'stages'));
                 bg.scrollFactor.set(0.1, 0.1);
                 add(bg);
@@ -164,6 +169,11 @@ class StageGroup extends FlxGroup
             case "limo":
             {
                 camZoom = 0.9;
+
+                player_1_Point.x += 100;
+                player_1_Point.y -= 100;
+                gf_Point.y += 100;
+                player_2_Point.x -= 75;
 
                 var skyBG:FlxSprite = new FlxSprite(-120, -50).loadGraphic(Paths.image(stage + '/limoSunset', 'stages'));
                 skyBG.scrollFactor.set(0.1, 0.1);
@@ -787,6 +797,12 @@ class StageGroup extends FlxGroup
 
         lightningStrikeBeat = PlayState.currentBeat;
         lightningOffset = FlxG.random.int(8, 24);
+
+        new FlxTimer().start(0.5, function(tmr:FlxTimer)
+        {
+            PlayState.boyfriend.playAnim('idle', true);
+            PlayState.gf.playAnim('danceRight', true);
+        });
     }
 }
 
