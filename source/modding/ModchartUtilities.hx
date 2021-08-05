@@ -488,6 +488,12 @@ class ModchartUtilities
 
         // scroll speed
 
+        var original_Scroll_Speed = PlayState.SONG.speed;
+
+        Lua_helper.add_callback(lua,"getBaseScrollSpeed",function() {
+            return original_Scroll_Speed;
+        });
+
         Lua_helper.add_callback(lua,"getScrollSpeed",function() {
             return PlayState.SONG.speed;
         });
