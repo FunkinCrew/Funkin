@@ -217,6 +217,10 @@ class ModchartUtilities
         Lua_helper.add_callback(lua,"setHudAngle", function (x:Float) {
             PlayState.instance.camHUD.angle = x;
         });
+
+        Lua_helper.add_callback(lua,"getHealth", function() {
+            return PlayState.instance.health;
+        });
         
         Lua_helper.add_callback(lua,"setHealth", function (heal:Float) {
             PlayState.instance.health = heal;
