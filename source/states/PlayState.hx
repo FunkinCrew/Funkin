@@ -1488,6 +1488,9 @@ class PlayState extends MusicBeatState
 			#if desktop
 			// Game Over doesn't get his own variable because it's only used here
 			DiscordClient.changePresence("Game Over - " + detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
+
+			if(luaModchart != null)
+				luaModchart.executeState('onDeath', [Conductor.songPosition]);
 			#end
 		}
 
