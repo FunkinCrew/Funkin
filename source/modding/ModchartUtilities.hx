@@ -125,7 +125,7 @@ class ModchartUtilities
 
         Lua.init_callbacks(lua);
 
-        var path = Paths.lua("song data/" + PlayState.SONG.song.toLowerCase() + "/modchart");
+        var path = Paths.lua("modcharts/" + PlayState.SONG.modchartPath);
 
         var result = LuaL.dofile(lua, path); // execute le file
 
@@ -137,7 +137,7 @@ class ModchartUtilities
             {
                 if(result != 0)
                 {
-                    path = "mods/" + x + "/" + "data/song data/" + PlayState.SONG.song.toLowerCase() + "/modchart.lua";
+                    path = "mods/" + x + "/" + "data/modcharts/" + PlayState.SONG.modchartPath + ".lua";
                     result = LuaL.dofile(lua, path); // execute le file
                 }
             }

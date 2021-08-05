@@ -28,6 +28,8 @@ typedef SwagSong =
 	var stage:String;
 	var validScore:Bool;
 
+	var modchartPath:String;
+
 	var enemyDamages:Bool;
 
 	var keyCount:Int;

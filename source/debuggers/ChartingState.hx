@@ -87,6 +87,7 @@ class ChartingState extends MusicBeatState
 
 	var typingShit:FlxInputText;
 	var swagShit:FlxInputText;
+	var modchart_Input:FlxInputText;
 	/*
 	 * WILL BE THE CURRENT / LAST PLACED NOTE
 	**/
@@ -263,6 +264,8 @@ class ChartingState extends MusicBeatState
 			FlxG.sound.music.volume = vol;
 		};
 
+		modchart_Input = new FlxUIInputText(10, check_mute_inst.y + check_mute_inst.height + 2, 70, _song.modchartPath, 8);
+
 		check_enemyDamage = new FlxUICheckBox(check_mute_inst.x + check_mute_inst.width + 3, check_mute_inst.y, null, null, "Enemy Damages On Note Hit", 100);
 		check_enemyDamage.name = 'check_enemyDamage';
 		check_enemyDamage.checked = _song.enemyDamages;
@@ -306,6 +309,8 @@ class ChartingState extends MusicBeatState
 		var speedLabel = new FlxText(stepperSpeed.x + stepperSpeed.width + 1, stepperSpeed.y, 0, "Scroll Speed", 9);
 		var keyCountLabel = new FlxText(stepperKeyCount.x + stepperKeyCount.width + 1, stepperKeyCount.y, 0, "Key Count", 9);
 
+		var keyCountLabel = new FlxText(modchart_Input.x + modchart_Input.width + 1, modchart_Input.y, 0, "Modchart Path", 9);
+
 		var settingsLabel = new FlxText(10, 10, 0, "Setings", 9);
 		var actionsLabel = new FlxText(10, 200, 0, "Actions", 9);
 
@@ -324,6 +329,7 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(UI_songDiff);
 		tab_group_song.add(check_voices);
 		tab_group_song.add(check_mute_inst);
+		tab_group_song.add(modchart_Input);
 		tab_group_song.add(check_enemyDamage);
 		tab_group_song.add(saveButton);
 		tab_group_song.add(reloadSong);
@@ -519,7 +525,7 @@ class ChartingState extends MusicBeatState
 			mods.push(iterator.next());
 		}
 
-		var modDropDown = new FlxUIDropDownMenu(10, stageDropDown.y + stageDropDown.height + 2, FlxUIDropDownMenu.makeStrIdLabelArray(mods, true), function(mod:String)
+		var modDropDown = new FlxUIDropDownMenu(10, 140, FlxUIDropDownMenu.makeStrIdLabelArray(mods, true), function(mod:String)
 		{
 			selected_mod = mods[Std.parseInt(mod)];
 
@@ -718,6 +724,7 @@ class ChartingState extends MusicBeatState
 		Conductor.songPosition = FlxG.sound.music.time;
 		_song.song = typingShit.text;
 		difficulty = swagShit.text.toLowerCase();
+		_song.modchartPath = modchart_Input.text;
 
 		strumLine.y = getYfromStrum((Conductor.songPosition - sectionStartTime()) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps));
 

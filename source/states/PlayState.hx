@@ -199,8 +199,16 @@ class PlayState extends MusicBeatState
 		remove(object);
 	}
 
+	var missSounds:Array<FlxSound> = [];
+
 	override public function create()
 	{
+		for(i in 1...3)
+		{
+			var sound = FlxG.sound.load(Paths.sound('missnote' + Std.string(i)), 0.2);
+			missSounds.push(sound);
+		}
+
 		instance = this;
 		binds = NoteHandler.getBinds(SONG.keyCount);
 
@@ -587,18 +595,7 @@ class PlayState extends MusicBeatState
 		Application.current.window.title = Application.current.meta.get('name') + " - " + SONG.song + " " + (isStoryMode ? "(Story Mode)" : "(Freeplay)");
 
 		#if desktop
-		executeModchart = FileSystem.exists(Sys.getCwd() + "assets/data/song data/" + SONG.song.toLowerCase() + "/modchart.lua");
-
-		if(!executeModchart)
-		{
-			var mods = CoolUtil.coolTextFile(Paths.txt("modList"));
-
-            for(x in mods)
-            {
-                if(!executeModchart)
-					executeModchart = FileSystem.exists(Sys.getCwd() + "mods/" + x + "/data/song data/" + SONG.song.toLowerCase() + "/modchart.lua");
-            }
-		}
+		executeModchart = !(PlayState.SONG.modchartPath == '' || PlayState.SONG.modchartPath == null);
 
 		if (executeModchart)
 		{
@@ -1113,6 +1110,7 @@ class PlayState extends MusicBeatState
 
 			if (!startTimer.finished)
 				startTimer.active = true;
+
 			paused = false;
 
 			#if desktop
@@ -2198,10 +2196,8 @@ class PlayState extends MusicBeatState
 				health = 0;
 	
 			songScore -= 10;
-
-			trace("MISS!");
 	
-			FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), 0.15);
+			missSounds[FlxG.random.int(0, missSounds.length - 1)].play(true);
 	
 			boyfriend.stunned = true;
 	
