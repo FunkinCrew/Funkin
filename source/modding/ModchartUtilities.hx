@@ -190,8 +190,6 @@ class ModchartUtilities
         setVar("mustHit", false);
         setVar("strumLineY", PlayState.instance.strumLine.y);
         
-        setVar("canUseFullscreen", true);
-        
         // callbacks
 
         // sprites
@@ -495,12 +493,8 @@ class ModchartUtilities
             return Application.current.window.height;
         });
 
-        Lua_helper.add_callback(lua,"enableFullScreen",function() {
-            setVar('canUseFullscreen', true);
-        });
-
-        Lua_helper.add_callback(lua,"disableFullScreen",function() {
-            setVar('canUseFullscreen', false);
+        Lua_helper.add_callback(lua,"setCanFullscreen",function(can_Fullscreen:Bool) {
+            PlayState.instance.canFullscreen = can_Fullscreen;
         });
 
         // scroll speed

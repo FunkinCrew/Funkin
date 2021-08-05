@@ -1173,6 +1173,8 @@ class PlayState extends MusicBeatState
 	var startedCountdown:Bool = false;
 	var canPause:Bool = true;
 
+	public var canFullscreen:Bool = true;
+
 	override public function update(elapsed:Float)
 	{
 		if (SONG.notes[Math.floor(curStep / 16)] != null)
@@ -1272,7 +1274,7 @@ class PlayState extends MusicBeatState
 					playerStrums.members[i].visible = p2;
 			}
 
-			if(!luaModchart.getVar("canUseFullscreen", 'bool') && FlxG.fullscreen)
+			if(!canFullscreen && FlxG.fullscreen)
 				FlxG.fullscreen = false;
 		}
 		#end
