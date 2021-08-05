@@ -537,9 +537,6 @@ class Character extends FlxSprite
 	 */
 	public function dance(?altAnim:String = "")
 	{
-		if(animation.curAnim == null)
-			playAnim('idle');
-
 		if(animation.curAnim.name != 'scared')
 		{
 			if (!debugMode)
