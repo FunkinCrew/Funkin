@@ -537,36 +537,33 @@ class Character extends FlxSprite
 	 */
 	public function dance(?altAnim:String = "")
 	{
-		if(animation.curAnim.name != 'scared')
+		if (!debugMode)
 		{
-			if (!debugMode)
+			switch (curCharacter)
 			{
-				switch (curCharacter)
-				{
-					case 'gf' | 'gf-christmas' | 'gf-car' | 'gf-pixel' | 'gf-old' | 'gf-tankmen':
-						if (!animation.curAnim.name.startsWith('hair'))
-						{
-							danced = !danced;
-	
-							if (danced)
-								playAnim('danceRight' + altAnim);
-							else
-								playAnim('danceLeft' + altAnim);
-						}
-	
-					default:
-						if(!dancesLeftAndRight)
-							playAnim('idle' + altAnim);
+				case 'gf' | 'gf-christmas' | 'gf-car' | 'gf-pixel' | 'gf-old' | 'gf-tankmen':
+					if (!animation.curAnim.name.startsWith('hair'))
+					{
+						danced = !danced;
+
+						if (danced)
+							playAnim('danceRight' + altAnim);
 						else
-						{
-							danced = !danced;
-	
-							if (danced)
-								playAnim('danceRight' + altAnim);
-							else
-								playAnim('danceLeft' + altAnim);
-						}
-				}
+							playAnim('danceLeft' + altAnim);
+					}
+
+				default:
+					if(!dancesLeftAndRight)
+						playAnim('idle' + altAnim);
+					else
+					{
+						danced = !danced;
+
+						if (danced)
+							playAnim('danceRight' + altAnim);
+						else
+							playAnim('danceLeft' + altAnim);
+					}
 			}
 		}
 	}
