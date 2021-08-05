@@ -1567,7 +1567,7 @@ class PlayState extends MusicBeatState
 					}
 				}
 
-				if (!daNote.mustPress && daNote.wasGoodHit)
+				if (!daNote.mustPress && daNote.strumTime <= Conductor.songPosition)
 				{
 					if (SONG.song != 'Tutorial')
 						camZooming = true;
@@ -1576,7 +1576,12 @@ class PlayState extends MusicBeatState
 
 					#if desktop
 					if (luaModchart != null)
-						luaModchart.executeState('playerTwoSing', [Math.abs(daNote.noteData), Conductor.songPosition]);
+					{
+						if(daNote.isSustainNote)
+							luaModchart.executeState('playerTwoSingHeld', [Math.abs(daNote.noteData), Conductor.songPosition]);
+						else
+							luaModchart.executeState('playerTwoSing', [Math.abs(daNote.noteData), Conductor.songPosition]);
+					}
 					#end
 
 					if (SONG.enemyDamages)
@@ -1665,22 +1670,14 @@ class PlayState extends MusicBeatState
 				// WIP interpolation shit? Need to fix the pause issue
 				// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
 
-				if ((daNote.y < -daNote.height && !FlxG.save.data.downscroll || daNote.y >= strumLine.y + 106 && FlxG.save.data.downscroll))
+				//(daNote.y < -daNote.height && !FlxG.save.data.downscroll || daNote.y >= strumLine.y + 106 && FlxG.save.data.downscroll))
+				if (Conductor.songPosition - Conductor.safeZoneOffset > daNote.strumTime)
 				{
-					if (daNote.isSustainNote && daNote.wasGoodHit)
+					if(daNote.mustPress)
 					{
-						daNote.kill();
-						notes.remove(daNote, true);
-						daNote.destroy();
-					}
-					else
-					{
-						if(daNote.mustPress)
-						{
-							health -= 0.075;
-							vocals.volume = 0;
-							noteMiss(daNote.noteData, daNote);
-						}
+						health -= 0.075;
+						vocals.volume = 0;
+						noteMiss(daNote.noteData, daNote);
 					}
 
 					daNote.active = false;
@@ -2240,7 +2237,12 @@ class PlayState extends MusicBeatState
 
 			#if desktop
 			if (luaModchart != null)
-				luaModchart.executeState('playerOneSing', [note.noteData, Conductor.songPosition]);
+			{
+				if(note.isSustainNote)
+					luaModchart.executeState('playerOneSingHeld', [note.noteData, Conductor.songPosition]);
+				else
+					luaModchart.executeState('playerOneSing', [note.noteData, Conductor.songPosition]);
+			}
 			#end
 
 			playerStrums.forEach(function(spr:FlxSprite)
