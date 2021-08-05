@@ -258,9 +258,17 @@ class ModchartUtilities
 
         // strumline
 
-        Lua_helper.add_callback(lua, "setStrumlineY", function(y:Float)
+        Lua_helper.add_callback(lua, "setStrumlineY", function(y:Float, ?dontMove:Bool = false)
         {
             PlayState.instance.strumLine.y = y;
+
+            if(!dontMove)
+            {
+                for(note in PlayState.strumLineNotes)
+                {
+                    note.y = y;
+                }
+            }
         });
 
         // actors
