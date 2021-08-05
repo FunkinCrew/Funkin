@@ -203,9 +203,9 @@ class PlayState extends MusicBeatState
 
 	override public function create()
 	{
-		for(i in 1...3)
+		for(i in 0...2)
 		{
-			var sound = FlxG.sound.load(Paths.sound('missnote' + Std.string(i)), 0.2);
+			var sound = FlxG.sound.load(Paths.sound('missnote' + Std.string((i + 1))), 0.2);
 			missSounds.push(sound);
 		}
 
