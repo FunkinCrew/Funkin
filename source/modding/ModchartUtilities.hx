@@ -146,7 +146,7 @@ class ModchartUtilities
         if (result != 0)
         {
             Application.current.window.alert("lua COMPILE ERROR:\n" + Lua.tostring(lua,result),"Leather's Funkin' Engine Modcharts");
-            FlxG.switchState(new MainMenuState());
+            //FlxG.switchState(new MainMenuState());
         }
 
         // get some fukin globals up in here bois
