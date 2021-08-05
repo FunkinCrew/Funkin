@@ -1271,6 +1271,9 @@ class PlayState extends MusicBeatState
 				if (i <= playerStrums.length)
 					playerStrums.members[i].visible = p2;
 			}
+
+			if(!luaModchart.getVar("canUseFullscreen", 'bool') && FlxG.fullscreen)
+				FlxG.fullscreen = false;
 		}
 		#end
 
