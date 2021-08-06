@@ -98,8 +98,6 @@ class ControlsBox extends FlxTypedGroup<FlxSprite>
     
                 box.makeGraphic(Std.int(controlsText.width) + 25, Std.int(controlsText.height) + 25, FlxColor.BLACK);
                 box.screenCenter(FlxAxes.X);
-    
-                PlayerSettings.player1.controls.loadKeyBinds();
             }
         }
 

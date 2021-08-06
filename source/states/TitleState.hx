@@ -1,5 +1,6 @@
 package states;
 
+import utilities.SaveData;
 import utilities.MusicUtilities;
 import utilities.CoolUtil;
 import game.Conductor;
@@ -66,68 +67,15 @@ class TitleState extends MusicBeatState
 		});
 		#end
 
-		PlayerSettings.init();
+		SaveData.init();
 
 		curWacky = FlxG.random.getObject(getIntroTextShit());
 		super.create();
 
-		FlxG.save.bind('leathersfunkinengine', 'leather128');
-
-		PlayerSettings.player1.controls.loadKeyBinds();
-
-		Highscore.load();
-
-		#if !debug
-		if (FlxG.save.data.weekUnlocked != null)
-		{
-			for (i in 0...FlxG.save.data.weekUnlocked.length)
-			{
-				if (FlxG.save.data.weekUnlocked[i])
-				{
-					StoryMenuState.weekUnlocked[i] = FlxG.save.data.weekUnlocked[i];
-				}
-			}
-		}
-		#end
-
-		#if debug
-		for (i in 0...FlxG.save.data.weekUnlocked.length)
-		{
-			StoryMenuState.weekUnlocked[i] = true;
-		}
-		#end
-
-		if (FlxG.save.data.enemyGlow == null)
-		{
-			FlxG.save.data.enemyGlow = true;
-		}
-
-		if (FlxG.save.data.fpsCounter == null)
-		{
-			FlxG.save.data.fpsCounter = true;
-		}
-
-		if (FlxG.save.data.memoryCounter == null)
-		{
-			FlxG.save.data.memoryCounter = true;
-		}
-		
-		#if !debug
-		FlxG.save.data.weekUnlocked = StoryMenuState.weekUnlocked;
-		#end
-
-		FlxG.save.flush();
-
-		#if FREEPLAY
-		FlxG.switchState(new FreeplayState());
-		#elseif CHARTING
-		FlxG.switchState(new ChartingState());
-		#else
 		new FlxTimer().start(1, function(tmr:FlxTimer)
 		{
 			startIntro();
 		});
-		#end
 
 		#if desktop
 		DiscordClient.initialize();
