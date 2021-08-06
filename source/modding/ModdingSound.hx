@@ -41,7 +41,6 @@ class ModdingSound extends FlxSound
       * 							Default value is false, but `FlxG.sound.play()` and `FlxG.sound.stream()` will set it to true by default.
       * @return	This ModdingSound instance (nice for chaining stuff together, if you're into that).
       */
-    #if !flash11
     public function loadByteArray(Bytes:openfl.utils.ByteArray, Looped:Bool = false, AutoDestroy:Bool = false, ?OnComplete:Void->Void):FlxSound
     {
         cleanup(true);
@@ -52,5 +51,4 @@ class ModdingSound extends FlxSound
 
         return init(Looped, AutoDestroy, OnComplete);
     }
-    #end
 }
