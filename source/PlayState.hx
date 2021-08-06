@@ -159,7 +159,10 @@ class PlayState extends MusicBeatState
 
 	public static var misses:Int = 0;
 	public static var campaignMisses:Int = 0;
-	
+	public static var campaignSicks:Int = 0;
+	public static var campaignGoods:Int = 0;
+	public static var campaignBads:Int = 0;
+	public static var campaignShits:Int = 0;
 
 	public var accuracy:Float = 0.00;
 
@@ -292,13 +295,11 @@ class PlayState extends MusicBeatState
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
 
-		if (!isStoryMode)
-		{
-			sicks = 0;
-			bads = 0;
-			shits = 0;
-			goods = 0;
-		}
+		sicks = 0;
+		bads = 0;
+		shits = 0;
+		goods = 0;
+		
 		misses = 0;
 
 		highestCombo = 0;
@@ -3243,8 +3244,6 @@ class PlayState extends MusicBeatState
 			PlayState.instance.remove(PlayState.instance.videoSprite);
 		}
 
-		if (isStoryMode)
-			campaignMisses = misses;
 
 		if (!loadRep)
 			rep.SaveReplay(saveNotes, saveJudge, replayAna);
@@ -3302,6 +3301,11 @@ class PlayState extends MusicBeatState
 			if (isStoryMode)
 			{
 				campaignScore += Math.round(songScore);
+				campaignMisses += misses;
+				campaignSicks += sicks;
+				campaignGoods += goods;
+				campaignBads += bads;
+				campaignShits += shits;
 
 				storyPlaylist.remove(storyPlaylist[0]);
 
