@@ -81,7 +81,7 @@ class Alphabet extends FlxSpriteGroup
 		}
 	}
 
-	public function reType(text)
+	public function reType(text, xScale:Float = 1, yScale:Float = 1)
 	{
 		for (i in listOAlphabets)
 			remove(i);
@@ -95,6 +95,9 @@ class Alphabet extends FlxSpriteGroup
 		listOAlphabets.clear();
 		x = pastX;
 		y = pastY;
+
+		this.xScale = xScale;
+		this.yScale = yScale;
 		
 		addText();
 	}
@@ -277,6 +280,37 @@ class Alphabet extends FlxSpriteGroup
 		}
 
 		super.update(elapsed);
+	}
+
+	// ThatGuy: Ooga booga function for resizing text, with the option of wanting it to have the same midPoint
+		// Side note: Do not, EVER, do updateHitbox() unless you are retyping the whole thing. Don't know why, but the position gets retarded if you do that
+	public function resizeText(xScale:Float, yScale:Float, xStaysCentered:Bool = true, yStaysCentered:Bool = false):Void {
+		var oldWidth:Float = this.width;
+		var oldHeight:Float = this.height;
+		//trace('old x before scaling: ' + this.x);
+		//trace('old midpoint before scaling: ' + this.getMidpoint().x);
+		reType(text, xScale, yScale);
+		//trace('old x after scaling: ' + this.x);
+		//trace('old midpoint after scaling: ' + this.getMidpoint().x);
+		//This works, commenting out all the tracing
+		if(xStaysCentered) {
+			/* 
+			If oldX is the old position, that is the same for both sizes of text, e.g. oldX = 50
+			And oldWidth is the old width of the text, e.g. oldWidth = 100
+			And newWidth is the current width of the text, e.g. newWidth= 150
+			And the midpoint, is always the same, e.g. midpoint = oldX + oldWidth/2 = 50 + 100/2 = 100
+			and the newMidpoint, which is equal to midpoint, is newX + newWidth/2, then
+			newX = midpoint - newWidth/2 <=> newX = oldX + oldWidth/2 - newWidth/2, e.g., <=> newX = 50 + 100/2 - 150/2 <=> newX = 25
+			*/
+			//Since this.x doesnt change with text scaling, in this equation, this.x can be used as both the old and the new x
+			this.x = this.x + oldWidth/2 - this.width/2;
+			//trace('new x after scaling: ' + this.x);
+			//trace('new midpoint after scaling: ' + this.getMidpoint().x);
+		}
+		if(yStaysCentered) {
+			// Same logic applies here
+			this.y = this.y + oldHeight/2 - this.height/2;
+		}
 	}
 }
 
