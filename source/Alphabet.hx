@@ -47,10 +47,19 @@ class Alphabet extends FlxSpriteGroup
 	var pastX:Float = 0;
 	var pastY:Float  = 0;
 
-	public function new(x:Float, y:Float, text:String = "", ?bold:Bool = false, typed:Bool = false, shouldMove:Bool = false)
+	// ThatGuy: Variables here to be used later
+	var xScale:Float;
+	var yScale:Float;
+
+	// ThatGuy: Added 2 more variables, xScale and yScale for resizing text
+	public function new(x:Float, y:Float, text:String = "", ?bold:Bool = false, typed:Bool = false, shouldMove:Bool = false, xScale:Float = 1, yScale:Float = 1)
 	{
 		pastX = x;
 		pastY = y;
+
+		// ThatGuy: Have to assign these variables
+		this.xScale = xScale;
+		this.yScale = yScale;
 
 		super(x, y);
 
@@ -111,17 +120,24 @@ class Alphabet extends FlxSpriteGroup
 			{
 				if (lastSprite != null)
 				{
-					xPos = lastSprite.x + lastSprite.width;
+					// ThatGuy: This is the line that fixes the spacing error when the x position of this class's objects was anything other than 0
+					xPos = lastSprite.x - pastX + lastSprite.width;
 				}
 
 				if (lastWasSpace)
 				{
-					xPos += 40;
+					// ThatGuy: Also this line
+					xPos += 40 * xScale;
 					lastWasSpace = false;
 				}
 
 				// var letter:AlphaCharacter = new AlphaCharacter(30 * loopNum, 0);
 				var letter:AlphaCharacter = new AlphaCharacter(xPos, 0);
+				
+				// ThatGuy: These are the lines that change the individual scaling of each character
+				letter.scale.set(xScale, yScale);
+				letter.updateHitbox();
+
 				listOAlphabets.add(letter);
 
 				if (isBold)
@@ -147,6 +163,7 @@ class Alphabet extends FlxSpriteGroup
 
 	public var personTalking:String = 'gf';
 
+	// ThatGuy: THIS FUNCTION ISNT CHANGED! Because i dont use it lol
 	public function startTypedText():Void
 	{
 		_finalText = text;
@@ -278,7 +295,10 @@ class AlphaCharacter extends FlxSprite
 		super(x, y);
 		var tex = Paths.getSparrowAtlas('alphabet');
 		frames = tex;
-		antialiasing = FlxG.save.data.antialiasing;
+		if(FlxG.save.data.antialiasing)
+			{
+				antialiasing = true;
+			}
 	}
 
 	public function createBold(letter:String)
