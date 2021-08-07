@@ -62,4 +62,5 @@ Finally, we are ready to build.
 
 - Run `lime build <target>`, replacing `<target>` with the platform you want to build to (`windows`, `mac`, `linux`, `html5`) (i.e. `lime build windows`)
 - The build will be in `Kade-Engine/export/release/<target>/bin`, with `<target>` being the target you built to in the previous step. (i.e. `Kade-Engine/export/release/windows/bin`)
+- Incase you added the -debug flag the files will be inside `Kade-Engine/export/debug/<target>/bin`
 - Only the `bin` folder is necessary to run the game. The other ones in `export/release/<target>` are not.
