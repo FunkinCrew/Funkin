@@ -65,6 +65,8 @@ class GameplayCustomizeState extends MusicBeatState
 		camHUD.bgColor.alpha = 0;
         FlxG.cameras.add(camHUD);
 
+        camHUD.zoom = FlxG.save.data.zoom;
+
         background.scrollFactor.set(0.9,0.9);
         curt.scrollFactor.set(0.9,0.9);
         front.scrollFactor.set(0.9,0.9);
@@ -120,7 +122,7 @@ class GameplayCustomizeState extends MusicBeatState
 		generateStaticArrows(0);
 		generateStaticArrows(1);
 
-        text = new FlxText(5, FlxG.height + 40, 0, "Click and drag around gameplay elements to customize their positions.\nPress R to reset.\nPress Escape to go back.", 12);
+        text = new FlxText(5, FlxG.height + 40, 0, "Click and drag around gameplay elements to customize their positions.\nPress R to reset. +/- to change zoom.\nPress Escape to go back.", 12);
 		text.scrollFactor.set();
 		text.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
         
@@ -167,6 +169,18 @@ class GameplayCustomizeState extends MusicBeatState
             i.y = strumLine.y;
         for (i in strumLineNotes)
             i.y = strumLine.y;
+
+        if (FlxG.keys.pressed.PLUS)
+        {
+            FlxG.save.data.zoom += 0.1;
+            camHUD.zoom = FlxG.save.data.zoom;
+        }
+
+        if (FlxG.keys.pressed.MINUS)
+        {
+            FlxG.save.data.zoom -= 0.1;
+            camHUD.zoom = FlxG.save.data.zoom;
+        }
 
         if (FlxG.mouse.overlaps(sick) && FlxG.mouse.justReleased)
         {

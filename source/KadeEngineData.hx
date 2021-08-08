@@ -111,6 +111,9 @@ class KadeEngineData
 
 		if (FlxG.save.data.editor == null)
 			FlxG.save.data.editor = true;
+		
+		if (FlxG.save.data.zoom == null)
+			FlxG.save.data.zoom = 1;
 
 		var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
 		
