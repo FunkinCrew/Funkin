@@ -151,6 +151,7 @@ class ChartingState extends MusicBeatState
 		deezNuts.set(32,8);
 		deezNuts.set(64,16);
 
+
 		sectionRenderes = new FlxTypedGroup<SectionRender>();
 		lines = new FlxTypedGroup<FlxSprite>();
 		texts = new FlxTypedGroup<FlxText>();
