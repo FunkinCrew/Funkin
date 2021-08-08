@@ -29,7 +29,9 @@ https://github.com/luckydog7/Funkin-android/releases
 1. first of all we need to set up haxe and haxeflixel read more here - https://github.com/ninjamuffin99/Funkin
 
   - Install haxe 4.2.2 instead of 4.1.5
-  - if you updated it dont froget execute this command 'haxelib upgrade' and press 'y' everywhere
+  - if you updated it dont forget execute this command 'haxelib upgrade' and press 'y' everywhere
+  - Also get extension-webm using this command: 'haxelib git extension-webm https://github.com/KlavierGayming/extension-webm'
+  - the reason we use a different repo again is cuz of a lil error that happens with the audio sync, just adds a "public var renderedFrames" instead of "var renderedFrames", that's all extra that's needed
 
 
 2. after that, download Android studio, Jdk, Ndk revision 15c from these sites
@@ -55,6 +57,8 @@ https://github.com/luckydog7/Funkin-android/releases
 
   - as in this picture (use jdk, not jre)
 ![lime](https://user-images.githubusercontent.com/59097731/104179268-9e80f100-541c-11eb-948d-a00d85317b1a.PNG)
+
+  - Now do "lime rebuild extension-webm windows" (in the command line), if you're planning to build for windows. If you're plannin to build for android (which you obviously are), use "lime rebuild extension-webm android". If you get an error, download [this](https://www.mediafire.com/file/8jteungeq2bzc3l/Android.zip/file) and put the folder inside it in C:/HaxeToolkit/haxe/lib/extension-webm/git/ndll
 
 
 7. open project in command line `cd (path to fnf source)`
