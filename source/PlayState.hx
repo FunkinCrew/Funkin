@@ -3030,38 +3030,77 @@ class PlayState extends MusicBeatState
 					}
 					
 					// Accessing the animation name directly to play it
-					var singData:Int = Std.int(Math.abs(daNote.noteData));
-					dad.playAnim('sing' + dataSuffix[singData] + altAnim, true);
-
-					if (FlxG.save.data.cpuStrums)
+					if (!daNote.isParent && daNote.parent != null)
 					{
-						cpuStrums.forEach(function(spr:FlxSprite)
+						if (daNote.spotInLine != daNote.parent.children.length - 1)
 						{
-							if (Math.abs(daNote.noteData) == spr.ID)
+							var singData:Int = Std.int(Math.abs(daNote.noteData));
+							dad.playAnim('sing' + dataSuffix[singData] + altAnim, true);
+
+							if (FlxG.save.data.cpuStrums)
 							{
-								spr.animation.play('confirm', true);
+								cpuStrums.forEach(function(spr:FlxSprite)
+								{
+									if (Math.abs(daNote.noteData) == spr.ID)
+									{
+										spr.animation.play('confirm', true);
+									}
+									if (spr.animation.curAnim.name == 'confirm' && !curStage.startsWith('school'))
+									{
+										spr.centerOffsets();
+										spr.offset.x -= 13;
+										spr.offset.y -= 13;
+									}
+									else
+										spr.centerOffsets();
+								});
 							}
-							if (spr.animation.curAnim.name == 'confirm' && !curStage.startsWith('school'))
-							{
-								spr.centerOffsets();
-								spr.offset.x -= 13;
-								spr.offset.y -= 13;
-							}
-							else
-								spr.centerOffsets();
-						});
+
+							#if windows
+							if (luaModchart != null)
+								luaModchart.executeState('playerTwoSing', [Math.abs(daNote.noteData), Conductor.songPosition]);
+							#end
+
+							dad.holdTimer = 0;
+
+							if (SONG.needsVoices)
+								vocals.volume = 1;
+						}
 					}
+					else
+					{
+						var singData:Int = Std.int(Math.abs(daNote.noteData));
+							dad.playAnim('sing' + dataSuffix[singData] + altAnim, true);
 
-					#if windows
-					if (luaModchart != null)
-						luaModchart.executeState('playerTwoSing', [Math.abs(daNote.noteData), Conductor.songPosition]);
-					#end
+							if (FlxG.save.data.cpuStrums)
+							{
+								cpuStrums.forEach(function(spr:FlxSprite)
+								{
+									if (Math.abs(daNote.noteData) == spr.ID)
+									{
+										spr.animation.play('confirm', true);
+									}
+									if (spr.animation.curAnim.name == 'confirm' && !curStage.startsWith('school'))
+									{
+										spr.centerOffsets();
+										spr.offset.x -= 13;
+										spr.offset.y -= 13;
+									}
+									else
+										spr.centerOffsets();
+								});
+							}
 
-					dad.holdTimer = 0;
+							#if windows
+							if (luaModchart != null)
+								luaModchart.executeState('playerTwoSing', [Math.abs(daNote.noteData), Conductor.songPosition]);
+							#end
 
-					if (SONG.needsVoices)
-						vocals.volume = 1;
+							dad.holdTimer = 0;
 
+							if (SONG.needsVoices)
+								vocals.volume = 1;
+					}
 					daNote.active = false;
 
 					daNote.kill();
