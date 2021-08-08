@@ -81,6 +81,9 @@ class KadeEngineData
 
 		if (FlxG.save.data.resetButton == null)
 			FlxG.save.data.resetButton = false;
+
+		if (FlxG.save.data.InstantRespawn == null)
+			FlxG.save.data.InstantRespawn = false;
 		
 		if (FlxG.save.data.botplay == null)
 			FlxG.save.data.botplay = false;
