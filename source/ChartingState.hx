@@ -1281,6 +1281,24 @@ class ChartingState extends MusicBeatState
 	var stepperSusLength:FlxUINumericStepper;
 
 	var tab_group_note:FlxUI;
+
+	function goToSection(section:Int)
+	{
+		var beat = section * 4;
+		var data = TimingStruct.getTimingAtBeat(beat);
+
+		if (data == null)
+			return;
+
+		FlxG.sound.music.time = (beat / (data.bpm / 60)) * 1000;
+		curSection = section;
+		trace("Going too " + FlxG.sound.music.time + " | " + section + " | Which is at " + beat);
+
+		if (FlxG.sound.music.time < 0)
+			FlxG.sound.music.time = 0;
+		else if (FlxG.sound.music.time > FlxG.sound.music.length)
+			FlxG.sound.music.time = FlxG.sound.music.length;
+	}
 	
 	function addNoteUI():Void
 	{
@@ -1634,10 +1652,17 @@ class ChartingState extends MusicBeatState
 								FlxG.sound.music.time = (data.startTime + ((beats - data.startBeat) / (bpm/60)) ) * 1000;
 							}
 						}
+						else
+							FlxG.sound.music.time -= (FlxG.mouse.wheel * Conductor.stepCrochet * 0.4);
 						if (!PlayState.isSM)
 						vocals.time = FlxG.sound.music.time;
 					}
 				}
+
+			if (FlxG.keys.justPressed.RIGHT)
+				goToSection(curSection + 1);
+			else if (FlxG.keys.justPressed.LEFT)
+				goToSection(curSection - 1);
 		}
 
 		if (updateFrame == 4)
@@ -1677,21 +1702,21 @@ class ChartingState extends MusicBeatState
 		else if (updateFrame != 5)
 			updateFrame++;
 
-		snapText.text = "Snap: 1/" + snap + " (" + (doSnapShit ? "Shift to disable, Left or Right to increase/decrease" : "Snap Disabled, Shift to renable.") + ")\nAdd Notes: 1-8 (or click)\nZoom: " + zoomFactor;
+		snapText.text = "Snap: 1/" + snap + " (" + (doSnapShit ? "Shift to disable, CTRL Left or Right to increase/decrease" : "Snap Disabled, Shift to renable.") + ")\nAdd Notes: 1-8 (or click)\nZoom: " + zoomFactor;
 
 
-		if (FlxG.keys.justPressed.RIGHT)
+		if (FlxG.keys.justPressed.RIGHT && FlxG.keys.pressed.CONTROL)
 			snap = snap * 2;
-		if (FlxG.keys.justPressed.LEFT)
+		if (FlxG.keys.justPressed.LEFT && FlxG.keys.pressed.CONTROL)
 			snap = Math.round(snap / 2);
 		if (snap >= 64)
 			snap = 64;
 		if (snap <= 4)
 			snap = 4;
-		/*
+		
 		if (FlxG.keys.justPressed.SHIFT)
 			doSnapShit = !doSnapShit;
-		*/
+		
 
 		doSnapShit = defaultSnap;
 		if (FlxG.keys.pressed.SHIFT)
