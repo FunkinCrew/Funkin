@@ -456,32 +456,11 @@ class PlayState extends MusicBeatState
 		trace('INFORMATION ABOUT WHAT U PLAYIN WIT:\nFRAMES: ' + PlayStateChangeables.safeFrames + '\nZONE: ' + Conductor.safeZoneOffset + '\nTS: '
 			+ Conductor.timeScale + '\nBotPlay : ' + PlayStateChangeables.botPlay);
 
-		// dialogue shit
-		switch (songLowercase)
+		switch(songLowercase)
 		{
-			case 'tutorial':
-				dialogue = ["Hey you're pretty cute.", 'Use the arrow keys to keep up \nwith me singing.'];
-			case 'bopeebo':
-				dialogue = [
-					'HEY!',
-					"You think you can just sing\nwith my daughter like that?",
-					"If you want to date her...",
-					"You're going to have to go \nthrough ME first!"
-				];
-			case 'fresh':
-				dialogue = ["Not too shabby boy.", ""];
-			case 'dadbattle':
-				dialogue = [
-					"gah you think you're hot stuff?",
-					"If you can beat me here...",
-					"Only then I will even CONSIDER letting you\ndate my daughter!"
-				];
-			case 'senpai':
-				dialogue = CoolUtil.coolTextFile(Paths.txt('data/senpai/senpaiDialogue'));
-			case 'roses':
-				dialogue = CoolUtil.coolTextFile(Paths.txt('data/roses/rosesDialogue'));
-			case 'thorns':
-				dialogue = CoolUtil.coolTextFile(Paths.txt('data/thorns/thornsDialogue'));
+			//if the song has dialogue, so we don't accidentally try to load a nonexistant file and crash the game
+			case 'senpai' | 'roses' | 'thorns':
+				dialogue = CoolUtil.coolTextFile(Paths.txt('data/' + songLowercase + '/dialogue'));
 		}
 
 		// defaults if no stage was found in chart
