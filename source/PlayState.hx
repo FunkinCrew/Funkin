@@ -3192,6 +3192,17 @@ class PlayState extends MusicBeatState
 					spr.centerOffsets();
 				}
 			});
+			if (PlayStateChangeables.botPlay)
+			{
+				playerStrums.forEach(function(spr:FlxSprite)
+					{
+						if (spr.animation.finished)
+						{
+							spr.animation.play('static');
+							spr.centerOffsets();
+						}
+					});
+			}
 		}
 
 		if (!inCutscene && songStarted)
@@ -3857,6 +3868,25 @@ class PlayState extends MusicBeatState
 					{
 						goodNoteHit(daNote);
 						boyfriend.holdTimer = daNote.sustainLength;
+						if (FlxG.save.data.cpuStrums)
+							{
+								playerStrums.forEach(function(spr:FlxSprite)
+								{
+									trace(Math.abs(daNote.noteData));
+									if (Math.abs(daNote.noteData) == spr.ID)
+									{
+										spr.animation.play('confirm', true);
+									}
+									if (spr.animation.curAnim.name == 'confirm' && !curStage.startsWith('school'))
+									{
+										spr.centerOffsets();
+										spr.offset.x -= 13;
+										spr.offset.y -= 13;
+									}
+									else
+										spr.centerOffsets();
+								});
+							}
 					}
 				}
 			}
@@ -3868,22 +3898,25 @@ class PlayState extends MusicBeatState
 				boyfriend.playAnim('idle');
 		}
 
-		playerStrums.forEach(function(spr:FlxSprite)
+		if (!PlayStateChangeables.botPlay)
 		{
-			if (keys[spr.ID] && spr.animation.curAnim.name != 'confirm')
-				spr.animation.play('pressed', false);
-			if (!keys[spr.ID])
-				spr.animation.play('static', false);
-
-			if (spr.animation.curAnim.name == 'confirm' && !curStage.startsWith('school'))
+			playerStrums.forEach(function(spr:FlxSprite)
 			{
-				spr.centerOffsets();
-				spr.offset.x -= 13;
-				spr.offset.y -= 13;
-			}
-			else
-				spr.centerOffsets();
-		});
+				if (keys[spr.ID] && spr.animation.curAnim.name != 'confirm')
+					spr.animation.play('pressed', false);
+				if (!keys[spr.ID])
+					spr.animation.play('static', false);
+
+				if (spr.animation.curAnim.name == 'confirm' && !curStage.startsWith('school'))
+				{
+					spr.centerOffsets();
+					spr.offset.x -= 13;
+					spr.offset.y -= 13;
+				}
+				else
+					spr.centerOffsets();
+			});
+		}
 	}
 
 	public function findByTime(time:Float):Array<Dynamic>
