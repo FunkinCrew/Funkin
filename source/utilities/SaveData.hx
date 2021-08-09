@@ -21,6 +21,8 @@ class SaveData {
         if (FlxG.save.data.memoryCounter == null)
             FlxG.save.data.memoryCounter = true;
 
+        
+
         FlxG.save.flush();
     }
 }

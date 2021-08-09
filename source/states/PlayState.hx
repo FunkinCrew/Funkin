@@ -194,6 +194,12 @@ class PlayState extends MusicBeatState
 
 	var binds:Array<String>;
 
+	#if sys
+	public var ui_Settings:Array<String> = CoolUtil.coolTextFilePolymod(Paths.txt("ui skins/" + SONG.ui_Skin + "/config"));
+	#else
+	public var ui_Settings:Array<String> = CoolUtil.coolTextFile(Paths.txt("ui skins/" + SONG.ui_Skin + "/config"));
+	#end
+
 	public function removeObject(object:FlxBasic)
 	{
 		remove(object);
@@ -332,6 +338,9 @@ class PlayState extends MusicBeatState
 			if(SONG.song.toLowerCase() == "thorns")
 				SONG.stage = 'evil-school';
 		}
+
+		if(Std.string(SONG.ui_Skin) == "null")
+			SONG.ui_Skin = SONG.stage == "school" || SONG.stage == "evil-school" ? "pixel" : "default";
 
 		if(SONG.gf == null)
 		{
@@ -479,7 +488,7 @@ class PlayState extends MusicBeatState
 		if(FlxG.save.data.downscroll)
 			healthBarPosY = 60;
 
-		healthBarBG = new FlxSprite(0, healthBarPosY).loadGraphic(Paths.image('healthBar'));
+		healthBarBG = new FlxSprite(0, healthBarPosY).loadGraphic(Paths.image('ui skins/' + SONG.ui_Skin + '/other/healthBar', 'shared'));
 		healthBarBG.screenCenter(X);
 		healthBarBG.scrollFactor.set();
 		add(healthBarBG);
@@ -713,29 +722,20 @@ class PlayState extends MusicBeatState
 			gf.dance();
 			boyfriend.dance();
 
-			var introAssets:Map<String, Array<String>> = new Map<String, Array<String>>();
-			introAssets.set('default', ['ready', "set", "go"]);
-			introAssets.set('school', ['ui/ready-pixel', 'ui/set-pixel', 'ui/date-pixel']);
-			introAssets.set('evil-school', ['ui/ready-pixel', 'ui/set-pixel', 'ui/date-pixel']);
+			var introAssets:Array<String> = [
+				"ui skins/" + SONG.ui_Skin + "/countdown/ready",
+				"ui skins/" + SONG.ui_Skin + "/countdown/set",
+				"ui skins/" + SONG.ui_Skin + "/countdown/go"
+			];
 
-			var introAlts:Array<String> = introAssets.get('default');
-			var altSuffix:String = "";
-
-			for (value in introAssets.keys())
-			{
-				if (value == curStage)
-				{
-					introAlts = introAssets.get(value);
-					altSuffix = '-pixel';
-				}
-			}
+			var altSuffix = SONG.ui_Skin == 'pixel' ? "-pixel" : "";
 
 			switch (swagCounter)
 			{
 				case 0:
 					FlxG.sound.play(Paths.sound('intro3' + altSuffix), 0.6);
 				case 1:
-					var ready:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[0], 'shared'));
+					var ready:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAssets[0], 'shared'));
 					ready.scrollFactor.set();
 					ready.updateHitbox();
 
@@ -753,7 +753,7 @@ class PlayState extends MusicBeatState
 					});
 					FlxG.sound.play(Paths.sound('intro2' + altSuffix), 0.6);
 				case 2:
-					var set:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[1], 'shared'));
+					var set:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAssets[1], 'shared'));
 					set.scrollFactor.set();
 
 					if (curStage.contains('school'))
@@ -770,7 +770,7 @@ class PlayState extends MusicBeatState
 					});
 					FlxG.sound.play(Paths.sound('intro1' + altSuffix), 0.6);
 				case 3:
-					var go:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[2], 'shared'));
+					var go:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAssets[2], 'shared'));
 					go.scrollFactor.set();
 
 					if (curStage.contains('school'))
@@ -972,6 +972,20 @@ class PlayState extends MusicBeatState
 			switch (curStage)
 			{
 				default:
+					babyArrow.frames = Paths.getSparrowAtlas('ui skins/' + SONG.ui_Skin + "/arrows/default", 'shared');
+
+					babyArrow.antialiasing = ui_Settings[3] == "true";
+
+					babyArrow.setGraphicSize(Std.int((babyArrow.width * Std.parseFloat(ui_Settings[0])) * (Std.parseFloat(ui_Settings[2]) - ((SONG.keyCount - 4) * 0.06))));
+					babyArrow.x += Note.swagWidth * Math.abs(i);
+
+					var animation_Base_Name = NoteVariables.Note_Count_Directions[SONG.keyCount - 1][Std.int(Math.abs(i))].getName().toLowerCase();
+
+					babyArrow.animation.addByPrefix('static', animation_Base_Name + " static");
+					babyArrow.animation.addByPrefix('pressed', NoteVariables.Other_Note_Anim_Stuff[SONG.keyCount - 1][i] + ' press', 24, false);
+					babyArrow.animation.addByPrefix('confirm', NoteVariables.Other_Note_Anim_Stuff[SONG.keyCount - 1][i] + ' confirm', 24, false);
+				/*
+				default:
 					babyArrow.frames = Paths.getSparrowAtlas((isSchool ? 'ui/arrows-pixels' : 'NOTE_assets'), 'shared');
 
 					babyArrow.antialiasing = !isSchool;
@@ -984,6 +998,7 @@ class PlayState extends MusicBeatState
 					babyArrow.animation.addByPrefix('static', animation_Base_Name + " static");
 					babyArrow.animation.addByPrefix('pressed', NoteVariables.Other_Note_Anim_Stuff[SONG.keyCount - 1][i] + ' press', 24, false);
 					babyArrow.animation.addByPrefix('confirm', NoteVariables.Other_Note_Anim_Stuff[SONG.keyCount - 1][i] + ' confirm', 24, false);
+				*/
 			}
 
 			babyArrow.updateHitbox();
@@ -1886,16 +1901,7 @@ class PlayState extends MusicBeatState
 
 		songScore += score;
 
-		var pixelShitPart1:String = "";
-		var pixelShitPart2:String = '';
-
-		if (curStage.contains('school'))
-		{
-			pixelShitPart1 = 'ui/';
-			pixelShitPart2 = '-pixel';
-		}
-
-		rating.loadGraphic(Paths.image(pixelShitPart1 + daRating + pixelShitPart2, 'shared'));
+		rating.loadGraphic(Paths.image("ui skins/" + SONG.ui_Skin + "/ratings/" + daRating, 'shared'));
 		rating.screenCenter();
 		rating.y -= 60;
 		rating.acceleration.y = 550;
@@ -1928,7 +1934,7 @@ class PlayState extends MusicBeatState
 
 		rating.cameras = [camHUD];
 
-		var comboSpr:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'combo' + pixelShitPart2, 'shared'));
+		var comboSpr:FlxSprite = new FlxSprite().loadGraphic(Paths.image("ui skins/" + SONG.ui_Skin + "/ratings/combo", 'shared'));
 		comboSpr.screenCenter();
 		comboSpr.acceleration.y = 600;
 		comboSpr.velocity.y -= 150;
@@ -1937,18 +1943,11 @@ class PlayState extends MusicBeatState
 		comboSpr.cameras = [camHUD];
 		add(rating);
 
-		if (!curStage.contains('school'))
-		{
-			rating.setGraphicSize(Std.int(rating.width * 0.7));
-			rating.antialiasing = true;
-			comboSpr.setGraphicSize(Std.int(comboSpr.width * 0.7));
-			comboSpr.antialiasing = true;
-		}
-		else
-		{
-			rating.setGraphicSize(Std.int(rating.width * daPixelZoom * 0.7));
-			comboSpr.setGraphicSize(Std.int(comboSpr.width * daPixelZoom * 0.7));
-		}
+		rating.setGraphicSize(Std.int(rating.width * Std.parseFloat(ui_Settings[0]) * Std.parseFloat(ui_Settings[4])));
+		comboSpr.setGraphicSize(Std.int(comboSpr.width * Std.parseFloat(ui_Settings[0]) * Std.parseFloat(ui_Settings[4])));
+
+		rating.antialiasing = ui_Settings[3] == "true";
+		comboSpr.antialiasing = ui_Settings[3] == "true";
 
 		comboSpr.updateHitbox();
 		rating.updateHitbox();
@@ -1960,22 +1959,17 @@ class PlayState extends MusicBeatState
 		seperatedScore.push(combo % 10);
 
 		var daLoop:Int = 0;
+
 		for (i in seperatedScore)
 		{
-			var numScore:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'num' + Std.int(i) + pixelShitPart2, 'shared'));
+			var numScore:FlxSprite = new FlxSprite().loadGraphic(Paths.image("ui skins/" + SONG.ui_Skin + "/numbers/num" + Std.int(i), 'shared'));
 			numScore.screenCenter();
+
 			numScore.x += (43 * daLoop) - 90;
 			numScore.y += 80;
 
-			if (!curStage.contains('school'))
-			{
-				numScore.antialiasing = true;
-				numScore.setGraphicSize(Std.int(numScore.width * 0.5));
-			}
-			else
-			{
-				numScore.setGraphicSize(Std.int(numScore.width * daPixelZoom));
-			}
+			numScore.setGraphicSize(Std.int(numScore.width * Std.parseFloat(ui_Settings[1])));
+			numScore.antialiasing = ui_Settings[3] == "true";
 			numScore.updateHitbox();
 
 			numScore.acceleration.y = FlxG.random.int(200, 300);

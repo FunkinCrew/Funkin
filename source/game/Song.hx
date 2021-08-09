@@ -36,6 +36,8 @@ typedef SwagSong =
 
 	// shaggy pog
 	var mania:Int;
+
+	var ui_Skin:String;
 }
 
 class Song
@@ -123,6 +125,9 @@ class Song
 
 		if(originalSongName != null)
 			swagShit.song = originalSongName;
+
+		if(Std.string(swagShit.ui_Skin) == "null")
+			swagShit.ui_Skin = swagShit.song == "Senpai" || swagShit.song == "Roses" || swagShit.song == "Thorns" ? "pixel" : "default";
 
 		return swagShit;
 	}
