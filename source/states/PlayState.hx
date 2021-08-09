@@ -1611,17 +1611,30 @@ class PlayState extends MusicBeatState
 
 								spr.centerOffsets();
 
-								if (!curStage.contains('school'))
+								if(SONG.ui_Skin != 'pixel')
 								{
 									spr.offset.x -= 13 + ((SONG.keyCount - 4) * 1.7);
 									spr.offset.y -= 13 + ((SONG.keyCount - 4) * 1.7);
+								}
+			
+								if(NoteVariables.Other_Note_Anim_Stuff[SONG.keyCount - 1][spr.ID] == "square" && SONG.ui_Skin != 'pixel')
+								{
+									spr.offset.x -= 4 + ((SONG.keyCount - 4) * 1.7);
+									spr.offset.y -= 4 + ((SONG.keyCount - 4) * 1.7);
 								}
 
 								spr.animation.finishCallback = function(name:String) {
 									if(name != 'static')
 									{
 										spr.animation.play('static', true);
+
 										spr.centerOffsets();
+					
+										if(NoteVariables.Other_Note_Anim_Stuff[SONG.keyCount - 1][spr.ID] == "square" && SONG.ui_Skin != 'pixel')
+										{
+											spr.offset.x -= 1 + ((SONG.keyCount - 4) * 0.9);
+											spr.offset.y -= 1 + ((SONG.keyCount - 4) * 0.9);
+										}
 									}
 								}
 							}
@@ -2116,18 +2129,14 @@ class PlayState extends MusicBeatState
 					spr.offset.x -= 13 + ((SONG.keyCount - 4) * 1.7);
 					spr.offset.y -= 13 + ((SONG.keyCount - 4) * 1.7);
 
-					if(NoteVariables.Other_Note_Anim_Stuff[SONG.keyCount - 1][spr.ID] == "square")
+					if(NoteVariables.Other_Note_Anim_Stuff[SONG.keyCount - 1][spr.ID] == "square" && SONG.ui_Skin != 'pixel')
 					{
-						spr.offset.x -= 13 + ((SONG.keyCount - 4) * 1.7);
-						spr.offset.y -= 13 + ((SONG.keyCount - 4) * 1.7);
+						spr.offset.x -= 4 + ((SONG.keyCount - 4) * 1.7);
+						spr.offset.y -= 4 + ((SONG.keyCount - 4) * 1.7);
 					}
 				}
 				else
 				{
-					/*
-										spr.offset.x -= 13 + ((SONG.keyCount - 4) * 1.7);
-					spr.offset.y -= 13 + ((SONG.keyCount - 4) * 1.7);
-					*/
 					spr.centerOffsets();
 
 					if(NoteVariables.Other_Note_Anim_Stuff[SONG.keyCount - 1][spr.ID] == "square" && SONG.ui_Skin != 'pixel')
@@ -2153,14 +2162,28 @@ class PlayState extends MusicBeatState
 			{
 				spr.animation.play('static');
 	
-				if (spr.animation.curAnim.name == 'confirm' && !curStage.contains('school'))
+				if (spr.animation.curAnim.name == 'confirm' && SONG.ui_Skin != 'pixel')
 				{
 					spr.centerOffsets();
 					spr.offset.x -= 13 + ((SONG.keyCount - 4) * 1.7);
 					spr.offset.y -= 13 + ((SONG.keyCount - 4) * 1.7);
+
+					if(NoteVariables.Other_Note_Anim_Stuff[SONG.keyCount - 1][spr.ID] == "square" && SONG.ui_Skin != 'pixel')
+					{
+						spr.offset.x -= 4 + ((SONG.keyCount - 4) * 1.7);
+						spr.offset.y -= 4 + ((SONG.keyCount - 4) * 1.7);
+					}
 				}
 				else
+				{
 					spr.centerOffsets();
+
+					if(NoteVariables.Other_Note_Anim_Stuff[SONG.keyCount - 1][spr.ID] == "square" && SONG.ui_Skin != 'pixel')
+					{
+						spr.offset.x -= 1 + ((SONG.keyCount - 4) * 0.9);
+						spr.offset.y -= 1 + ((SONG.keyCount - 4) * 0.9);
+					}
+				}
 			});
 
 			if (boyfriend.holdTimer > Conductor.stepCrochet * 4 * 0.001)
