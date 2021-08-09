@@ -1,5 +1,12 @@
 package modding;
 
+#if linc_luajit
+import llua.Convert;
+import llua.Lua;
+import llua.State;
+import llua.LuaL;
+import flixel.FlxSprite;
+import states.PlayState;
 import lime.utils.Assets;
 import flixel.system.FlxSound;
 import utilities.CoolUtil;
@@ -13,13 +20,6 @@ import game.Conductor;
 import states.LoadingState;
 import lime.app.Application;
 import states.MainMenuState;
-#if linc_luajit
-import llua.Convert;
-import llua.Lua;
-import llua.State;
-import llua.LuaL;
-import flixel.FlxSprite;
-import states.PlayState;
 
 using StringTools;
 

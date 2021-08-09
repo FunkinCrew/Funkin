@@ -21,7 +21,7 @@ class SaveData {
         if (FlxG.save.data.memoryCounter == null)
             FlxG.save.data.memoryCounter = true;
 
-        
+        trace(FlxG.save.path);
 
         FlxG.save.flush();
     }

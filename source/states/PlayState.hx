@@ -1,6 +1,5 @@
 package states;
 
-import sys.FileSystem;
 import modding.ModchartUtilities;
 import lime.app.Application;
 import utilities.NoteVariables;
@@ -33,6 +32,7 @@ import polymod.backends.PolymodAssets;
 import polymod.fs.PolymodFileSystem;
 import polymod.Polymod;
 import polymod.backends.PolymodAssetLibrary;
+import sys.FileSystem;
 #end
 import game.Section.SwagSection;
 import game.Song.SwagSong;
