@@ -2130,7 +2130,7 @@ class PlayState extends MusicBeatState
 					*/
 					spr.centerOffsets();
 
-					if(NoteVariables.Other_Note_Anim_Stuff[SONG.keyCount - 1][spr.ID] == "square")
+					if(NoteVariables.Other_Note_Anim_Stuff[SONG.keyCount - 1][spr.ID] == "square" && SONG.ui_Skin != 'pixel')
 					{
 						spr.offset.x -= 1 + ((SONG.keyCount - 4) * 0.9);
 						spr.offset.y -= 1 + ((SONG.keyCount - 4) * 0.9);
