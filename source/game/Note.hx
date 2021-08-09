@@ -102,6 +102,7 @@ class Note extends FlxSprite
 
 				setGraphicSize(Std.int((width * Std.parseFloat(PlayState.instance.ui_Settings[0])) * (Std.parseFloat(PlayState.instance.ui_Settings[2]) - ((PlayState.SONG.keyCount - 4) * 0.06))));
 				updateHitbox();
+				
 				antialiasing = PlayState.instance.ui_Settings[3] == "true";
 		}
 
@@ -117,16 +118,16 @@ class Note extends FlxSprite
 			noteScore * 0.2;
 			alpha = 0.6;
 
-			if(!PlayState.curStage.contains('school'))
+			if(PlayState.SONG.ui_Skin != 'pixel')
 				x += width / 2;
 
 			animation.play("holdend");
 			updateHitbox();
 
-			if(!PlayState.curStage.contains('school'))
+			if(PlayState.SONG.ui_Skin != 'pixel')
 				x -= width / 2;
 
-			if (PlayState.curStage.contains('school'))
+			if (PlayState.SONG.ui_Skin == 'pixel')
 				x += 30;
 
 			if (prevNote.isSustainNote)

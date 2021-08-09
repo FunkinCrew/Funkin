@@ -967,8 +967,6 @@ class PlayState extends MusicBeatState
 		{
 			var babyArrow:FlxSprite = new FlxSprite(0, strumLine.y);
 
-			var isSchool = curStage == "school" || curStage == "evil-school";
-
 			switch (curStage)
 			{
 				default:
@@ -984,21 +982,6 @@ class PlayState extends MusicBeatState
 					babyArrow.animation.addByPrefix('static', animation_Base_Name + " static");
 					babyArrow.animation.addByPrefix('pressed', NoteVariables.Other_Note_Anim_Stuff[SONG.keyCount - 1][i] + ' press', 24, false);
 					babyArrow.animation.addByPrefix('confirm', NoteVariables.Other_Note_Anim_Stuff[SONG.keyCount - 1][i] + ' confirm', 24, false);
-				/*
-				default:
-					babyArrow.frames = Paths.getSparrowAtlas((isSchool ? 'ui/arrows-pixels' : 'NOTE_assets'), 'shared');
-
-					babyArrow.antialiasing = !isSchool;
-
-					babyArrow.setGraphicSize(Std.int((isSchool ? (babyArrow.width * daPixelZoom) : babyArrow.width) * ((isSchool ? 1 : 0.7) - ((SONG.keyCount - 4) * 0.06))));
-					babyArrow.x += Note.swagWidth * Math.abs(i);
-
-					var animation_Base_Name = NoteVariables.Note_Count_Directions[SONG.keyCount - 1][Std.int(Math.abs(i))].getName().toLowerCase();
-
-					babyArrow.animation.addByPrefix('static', animation_Base_Name + " static");
-					babyArrow.animation.addByPrefix('pressed', NoteVariables.Other_Note_Anim_Stuff[SONG.keyCount - 1][i] + ' press', 24, false);
-					babyArrow.animation.addByPrefix('confirm', NoteVariables.Other_Note_Anim_Stuff[SONG.keyCount - 1][i] + ' confirm', 24, false);
-				*/
 			}
 
 			babyArrow.updateHitbox();
@@ -1102,10 +1085,10 @@ class PlayState extends MusicBeatState
 		if (paused)
 		{
 			if (FlxG.sound.music != null)
-			{
 				FlxG.sound.music.pause();
+
+			if(vocals != null)
 				vocals.pause();
-			}
 
 			if (!startTimer.finished)
 				startTimer.active = false;
@@ -2127,14 +2110,32 @@ class PlayState extends MusicBeatState
 				if (releasedArray[spr.ID])
 					spr.animation.play('static');
 	
-				if (spr.animation.curAnim.name == 'confirm' && !curStage.contains('school'))
+				if (spr.animation.curAnim.name == 'confirm' && SONG.ui_Skin != 'pixel')
 				{
 					spr.centerOffsets();
 					spr.offset.x -= 13 + ((SONG.keyCount - 4) * 1.7);
 					spr.offset.y -= 13 + ((SONG.keyCount - 4) * 1.7);
+
+					if(NoteVariables.Other_Note_Anim_Stuff[SONG.keyCount - 1][spr.ID] == "square")
+					{
+						spr.offset.x -= 13 + ((SONG.keyCount - 4) * 1.7);
+						spr.offset.y -= 13 + ((SONG.keyCount - 4) * 1.7);
+					}
 				}
 				else
+				{
+					/*
+										spr.offset.x -= 13 + ((SONG.keyCount - 4) * 1.7);
+					spr.offset.y -= 13 + ((SONG.keyCount - 4) * 1.7);
+					*/
 					spr.centerOffsets();
+
+					if(NoteVariables.Other_Note_Anim_Stuff[SONG.keyCount - 1][spr.ID] == "square")
+					{
+						spr.offset.x -= 1 + ((SONG.keyCount - 4) * 0.9);
+						spr.offset.y -= 1 + ((SONG.keyCount - 4) * 0.9);
+					}
+				}
 			});
 		}
 		else
@@ -2143,7 +2144,7 @@ class PlayState extends MusicBeatState
 				if(note.mustPress && note.strumTime <= Conductor.songPosition || note.canBeHit && note.mustPress && note.isSustainNote)
 				{
 					boyfriend.holdTimer = 0;
-					
+
 					goodNoteHit(note);
 				}
 			});
