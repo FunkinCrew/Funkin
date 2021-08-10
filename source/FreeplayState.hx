@@ -9,13 +9,10 @@ import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
+import lime.app.Future;
 import lime.utils.Assets;
 
 using StringTools;
-
-#if discord_rpc
-import Discord.DiscordClient;
-#end
 
 class FreeplayState extends MusicBeatState
 {
@@ -279,7 +276,7 @@ class FreeplayState extends MusicBeatState
 			if (song.songName != actualSongTho)
 			{
 				trace('trying to remove: ' + song.songName);
-				openfl.Assets.cache.clear(Paths.inst(song.songName));
+				// openfl.Assets.cache.clear(Paths.inst(song.songName));
 			}
 		}
 	}

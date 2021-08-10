@@ -15,6 +15,7 @@ import flixel.addons.effects.FlxTrail;
 import flixel.addons.effects.FlxTrailArea;
 import flixel.addons.effects.chainable.FlxEffectSprite;
 import flixel.addons.effects.chainable.FlxWaveEffect;
+import flixel.addons.plugin.screengrab.FlxScreenGrab;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.graphics.atlas.FlxAtlas;
 import flixel.graphics.frames.FlxAtlasFrames;
@@ -39,8 +40,10 @@ import lime.utils.Assets;
 import openfl.Lib;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
+import openfl.display.PNGEncoderOptions;
 import openfl.display.StageQuality;
 import openfl.filters.ShaderFilter;
+import openfl.utils.ByteArray;
 import shaderslmfao.BuildingShaders.BuildingShader;
 import shaderslmfao.BuildingShaders;
 import shaderslmfao.ColorSwap;
@@ -1865,6 +1868,22 @@ class PlayState extends MusicBeatState
 
 		#if !debug
 		perfectMode = false;
+		#else
+		if (FlxG.keys.justPressed.H)
+			camHUD.visible = !camHUD.visible;
+		if (FlxG.keys.justPressed.K)
+		{
+			// FlxScreenGrab.grab(null, true, true);
+
+			/* 
+				var png:ByteArray = new ByteArray();
+				png = FlxG.camera.screen.pixels.encode(FlxG.camera.screen.pixels.rect, new PNGEncoderOptions());
+				var f = sys.io.File.write('./swag.png', true);
+				f.writeString(png.readUTFBytes(png.length));
+				f.close();
+			 */
+			// sys.io.File.saveContent('./swag.png', png.readUTFBytes(png.length));
+		}
 		#end
 
 		// do this BEFORE super.update() so songPosition is accurate

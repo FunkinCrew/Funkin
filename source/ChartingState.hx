@@ -1083,6 +1083,8 @@ class ChartingState extends MusicBeatState
 		var data:String = Json.stringify(json);
 
 		#if hl
+		// quick workaround, since it easier to load into hashlink, thus quicker/nicer to test?
+		// should get this auto-saved into a file or somethin
 		var filename = _song.song.toLowerCase();
 		sys.io.File.saveContent('./$filename.json', data);
 		#else
