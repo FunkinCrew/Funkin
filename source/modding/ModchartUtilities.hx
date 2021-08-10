@@ -372,6 +372,12 @@ class ModchartUtilities
         Lua_helper.add_callback(lua,"setActorX", function(x:Int,id:String) {
             getActorByName(id).x = x;
         });
+
+        Lua_helper.add_callback(lua,"setActorPos", function(x:Int,y:Int,id:String) {
+            var actor = getActorByName(id);
+            actor.x = x;
+            actor.y = y;
+        });
         
         Lua_helper.add_callback(lua,"setActorAccelerationX", function(x:Int,id:String) {
             getActorByName(id).acceleration.x = x;
