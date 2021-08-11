@@ -3910,7 +3910,7 @@ class PlayState extends MusicBeatState
 				
 				if (boyfriend.holdTimer > Conductor.stepCrochet * 4 * 0.001 && (!holdArray.contains(true) || PlayStateChangeables.botPlay))
 				{
-					if (boyfriend.animation.curAnim.name.startsWith('sing') && !boyfriend.animation.curAnim.name.endsWith('miss') && boyfriend.animation.curAnim.curFrame >= 10)
+					if (boyfriend.animation.curAnim.name.startsWith('sing') && !boyfriend.animation.curAnim.name.endsWith('miss') && (boyfriend.animation.curAnim.curFrame >= 10 || boyfriend.animation.curAnim.finished))
 						boyfriend.playAnim('idle');
 				}
 				else if (!FlxG.save.data.ghost)
@@ -3973,7 +3973,7 @@ class PlayState extends MusicBeatState
 
 		if (boyfriend.holdTimer > Conductor.stepCrochet * 4 * 0.001 && (!holdArray.contains(true) || PlayStateChangeables.botPlay))
 		{
-			if (boyfriend.animation.curAnim.name.startsWith('sing') && !boyfriend.animation.curAnim.name.endsWith('miss') && boyfriend.animation.curAnim.curFrame >= 10)
+			if (boyfriend.animation.curAnim.name.startsWith('sing') && !boyfriend.animation.curAnim.name.endsWith('miss') && (boyfriend.animation.curAnim.curFrame >= 10 || boyfriend.animation.curAnim.finished))
 				boyfriend.playAnim('idle');
 		}
 
@@ -3981,7 +3981,7 @@ class PlayState extends MusicBeatState
 		{
 			playerStrums.forEach(function(spr:FlxSprite)
 			{
-				if (keys[spr.ID] && spr.animation.curAnim.name != 'confirm')
+				if (keys[spr.ID] && spr.animation.curAnim.name != 'confirm' && spr.animation.curAnim.name != 'pressed')
 					spr.animation.play('pressed', false);
 				if (!keys[spr.ID])
 					spr.animation.play('static', false);
@@ -4546,7 +4546,7 @@ class PlayState extends MusicBeatState
 			// Conductor.changeBPM(SONG.bpm);
 
 			// Dad doesnt interupt his own notes
-			if ((SONG.notes[Math.floor(curStep / 16)].mustHitSection || !dad.animation.curAnim.name.startsWith("sing")) && dad.curCharacter != 'gf')
+			if ((!dad.animation.curAnim.name.startsWith("sing")) && dad.curCharacter != 'gf')
 				if ((curBeat % idleBeat == 0 || !idleToBeat) || dad.curCharacter == "spooky")
 					dad.dance(idleToBeat);
 		}
