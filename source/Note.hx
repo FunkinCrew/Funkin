@@ -18,6 +18,8 @@ class Note extends FlxSprite
 	public var strumTime:Float = 0;
 	public var baseStrum:Float = 0;
 	
+	public var charterSelected:Bool = false;
+
 	public var rStrumTime:Float = 0;
 
 	public var mustPress:Bool = false;
