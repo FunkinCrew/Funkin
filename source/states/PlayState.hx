@@ -188,8 +188,11 @@ class PlayState extends MusicBeatState
 	var detailsText:String = "";
 	var detailsPausedText:String = "";
 
-	public static var luaModchart:ModchartUtilities = null;
 	var executeModchart:Bool = false;
+
+	#if linc_luajit
+	public static var luaModchart:ModchartUtilities = null;
+	#end
 	#end
 
 	var binds:Array<String>;
@@ -603,7 +606,7 @@ class PlayState extends MusicBeatState
 		// WINDOW TITLE POG
 		Application.current.window.title = Application.current.meta.get('name') + " - " + SONG.song + " " + (isStoryMode ? "(Story Mode)" : "(Freeplay)");
 
-		#if desktop
+		#if linc_luajit
 		executeModchart = !(PlayState.SONG.modchartPath == '' || PlayState.SONG.modchartPath == null);
 
 		if (executeModchart)
@@ -1225,15 +1228,17 @@ class PlayState extends MusicBeatState
 			#if desktop
 			DiscordClient.changePresence("Chart Editor", null, null, true);
 
+			#if linc_luajit
 			if(luaModchart != null)
 			{
 				luaModchart.die();
 				luaModchart = null;
 			}
 			#end
+			#end
 		}
 
-		#if desktop
+		#if linc_luajit
 		if (executeModchart && luaModchart != null)
 		{
 			luaModchart.setVar('songPos', Conductor.songPosition);
@@ -1369,7 +1374,7 @@ class PlayState extends MusicBeatState
 			//offsetX = luaModchart.getVar("followXOffset", "float");
 			//offsetY = luaModchart.getVar("followYOffset", "float");
 
-			#if desktop
+			#if linc_luajit
 			if(executeModchart && luaModchart != null)
 				luaModchart.setVar("mustHit", PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection);
 			#end
@@ -1390,7 +1395,7 @@ class PlayState extends MusicBeatState
 						camFollow.x = dad.getMidpoint().x - 100;
 				}
 
-				#if desktop
+				#if linc_luajit
 				if (luaModchart != null)
 					luaModchart.executeState('playerTwoTurn', []);
 				#end
@@ -1419,7 +1424,7 @@ class PlayState extends MusicBeatState
 						camFollow.y = boyfriend.getMidpoint().y - 200;
 				}
 
-				#if desktop
+				#if linc_luajit
 				if (luaModchart != null)
 					luaModchart.executeState('playerOneTurn', []);
 				#end
@@ -1490,8 +1495,10 @@ class PlayState extends MusicBeatState
 			// Game Over doesn't get his own variable because it's only used here
 			DiscordClient.changePresence("Game Over - " + detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
 
+			#if linc_luajit
 			if(luaModchart != null)
 				luaModchart.executeState('onDeath', [Conductor.songPosition]);
+			#end
 			#end
 		}
 
@@ -1578,7 +1585,7 @@ class PlayState extends MusicBeatState
 
 					dad.playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][Std.int(Math.abs(daNote.noteData))] + altAnim, true);
 
-					#if desktop
+					#if linc_luajit
 					if (luaModchart != null)
 					{
 						if(daNote.isSustainNote)
@@ -1722,7 +1729,7 @@ class PlayState extends MusicBeatState
 		// lol dude when a song ended in freeplay it legit reloaded the page and i was like:  o_o ok
 		if(FlxG.state == instance)
 		{
-			#if desktop
+			#if linc_luajit
 			if (luaModchart != null)
 			{
 				for(sound in ModchartUtilities.lua_Sounds)
@@ -1764,7 +1771,7 @@ class PlayState extends MusicBeatState
 					vocals.stop();
 					FlxG.switchState(new StoryMenuState());
 
-					#if desktop
+					#if linc_luajit
 					if(luaModchart != null)
 					{
 						luaModchart.die();
@@ -1824,7 +1831,7 @@ class PlayState extends MusicBeatState
 					PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + difficulty, PlayState.storyPlaylist[0]);
 					FlxG.sound.music.stop();
 
-					#if desktop
+					#if linc_luajit
 					if(luaModchart != null)
 					{
 						luaModchart.die();
@@ -1841,7 +1848,7 @@ class PlayState extends MusicBeatState
 				vocals.stop();
 				FlxG.switchState(new FreeplayState());
 
-				#if desktop
+				#if linc_luajit
 				if(luaModchart != null)
 				{
 					luaModchart.die();
@@ -2038,7 +2045,7 @@ class PlayState extends MusicBeatState
 				heldArray[i] = FlxG.keys.checkStatus(FlxKey.fromString(binds[i]), FlxInputState.PRESSED);
 			}
 
-			#if desktop
+			#if linc_luajit
 			if (luaModchart != null)
 			{
 				for (i in 0...justPressedArray.length) {
@@ -2232,7 +2239,7 @@ class PlayState extends MusicBeatState
 
 			boyfriend.playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][direction] + "miss", true);
 
-			#if desktop
+			#if linc_luajit
 			if (luaModchart != null)
 				luaModchart.executeState('playerOneMiss', [direction, Conductor.songPosition]);
 			#end
@@ -2257,7 +2264,7 @@ class PlayState extends MusicBeatState
 
 			boyfriend.playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][Std.int(Math.abs(note.noteData))], true);
 
-			#if desktop
+			#if linc_luajit
 			if (luaModchart != null)
 			{
 				if(note.isSustainNote)
@@ -2293,7 +2300,7 @@ class PlayState extends MusicBeatState
 			resyncVocals();
 		}
 
-		#if desktop
+		#if linc_luajit
 		if (executeModchart && luaModchart != null)
 		{
 			luaModchart.setVar('curStep', curStep);
@@ -2308,7 +2315,7 @@ class PlayState extends MusicBeatState
 
 		stage.beatHit();
 
-		#if desktop
+		#if linc_luajit
 		if (executeModchart && luaModchart != null)
 			luaModchart.executeState('beatHit', [curBeat]);
 		#end

@@ -115,7 +115,7 @@ class PauseSubState extends MusicBeatSubstate
 				case "Restart Song":
 					FlxG.resetState();
 				case "Exit to menu":
-					#if desktop
+					#if linc_luajit
 					if (PlayState.luaModchart != null)
 					{
 						PlayState.luaModchart.die();
