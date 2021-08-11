@@ -77,6 +77,7 @@ class TitleState extends MusicBeatState
 		
 		#end
 
+
 				
 		Highscore.load();
 
