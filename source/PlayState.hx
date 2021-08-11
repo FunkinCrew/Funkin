@@ -2187,6 +2187,8 @@ class PlayState extends MusicBeatState
 
 	public var updateFrame = 0;
 
+	public var pastScrollChanges:Array<Song.Event> = [];
+
 	override public function update(elapsed:Float)
 	{
 		#if !debug
@@ -2249,8 +2251,12 @@ class PlayState extends MusicBeatState
 			switch(i.type)
 			{
 				case "Scroll Speed Change":
-					if (i.position < curDecimalBeat)
+					if (i.position <= curDecimalBeat && !pastScrollChanges.contains(i))
+					{
+						pastScrollChanges.push(i);
+						trace("SCROLL SPEED CHANGE to " + i.value);
 						newScroll = i.value;
+					}
 			}
 		}
 
