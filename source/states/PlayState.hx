@@ -1,5 +1,6 @@
 package states;
 
+import openfl.display.FPS;
 import modding.ModchartUtilities;
 import lime.app.Application;
 import utilities.NoteVariables;
@@ -1284,8 +1285,8 @@ class PlayState extends MusicBeatState
 
 		var icon_Zoom_Lerp = 0.09;
 
-		iconP1.setGraphicSize(Std.int(FlxMath.lerp(iconP1.width, 150, icon_Zoom_Lerp / (120 / 60))));
-		iconP2.setGraphicSize(Std.int(FlxMath.lerp(iconP2.width, 150, icon_Zoom_Lerp / (120 / 60))));
+		iconP1.setGraphicSize(Std.int(FlxMath.lerp(iconP1.width, 150, icon_Zoom_Lerp / (Main.fpsCounter.currentFPS / 60))));
+		iconP2.setGraphicSize(Std.int(FlxMath.lerp(iconP2.width, 150, icon_Zoom_Lerp / (Main.fpsCounter.currentFPS / 60))));
 
 		iconP1.updateHitbox();
 		iconP2.updateHitbox();
