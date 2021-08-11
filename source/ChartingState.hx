@@ -1736,7 +1736,8 @@ class ChartingState extends MusicBeatState
 					if (waitingForRelease)
 					{
 						trace(selectBox.width + " | " + selectBox.height);
-						selectBox.makeGraphic(Math.floor(FlxG.mouse.x - selectBox.x),Math.floor(FlxG.mouse.y - selectBox.y),FlxColor.fromRGB(173, 216, 230));
+						if (FlxG.mouse.x - selectBox.x > 0 && FlxG.mouse.y - selectBox.y > 0)
+							selectBox.makeGraphic(Math.floor(FlxG.mouse.x - selectBox.x),Math.floor(FlxG.mouse.y - selectBox.y),FlxColor.fromRGB(173, 216, 230));
 					}
 				}
 			}
