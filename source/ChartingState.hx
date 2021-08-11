@@ -66,7 +66,7 @@ class ChartingState extends MusicBeatState
 	public static var lengthInBeats:Float = 0;
 
 	public var beatsShown:Float = 1; // for the zoom factor
-	public var zoomFactor:Float = 1;
+	public var zoomFactor:Float = 0.4;
 
 	/**
 	 * Array of notes showing when each section STARTS in STEPS
@@ -1560,6 +1560,9 @@ class ChartingState extends MusicBeatState
 	public var copiedNotes:Array<Array<Dynamic>> = [];
 	public var pastedNotes:Array<Note> = [];
 
+	public var selectInitialX:Float = 0;
+	public var selectInitialY:Float = 0;
+
 	override function update(elapsed:Float)
 	{
 		updateHeads();
@@ -1733,6 +1736,10 @@ class ChartingState extends MusicBeatState
 					selectBox = new FlxSprite(FlxG.mouse.x,FlxG.mouse.y);
 					selectBox.makeGraphic(0,0,FlxColor.fromRGB(173, 216, 230));
 					selectBox.alpha = 0.4;
+
+					selectInitialX = selectBox.x;
+					selectInitialY = selectBox.y;
+
 					add(selectBox);
 				}
 				else
@@ -1740,31 +1747,10 @@ class ChartingState extends MusicBeatState
 					if (waitingForRelease)
 					{
 						trace(selectBox.width + " | " + selectBox.height);
-						var newX:Int = 0;
-						var newY:Int = 0;
-						if (FlxG.mouse.x - selectBox.x > 0)
-						{
-							newX = Math.floor(FlxG.mouse.x - selectBox.x);
-							selectBox.flipX = false;
-						}
-						else
-						{
-							newX = -Math.floor(FlxG.mouse.x - selectBox.x);
-							selectBox.flipX = true;
-						}
-
-						if (FlxG.mouse.y - selectBox.y > 0)
-						{
-							newY = Math.floor(FlxG.mouse.y - selectBox.y);
-							selectBox.flipY = false;
-						}
-						else
-						{
-							newY = -Math.floor(FlxG.mouse.y - selectBox.y);
-							selectBox.flipY = true;
-						}
-
-						selectBox.makeGraphic(newX,newY,FlxColor.fromRGB(173, 216, 230));
+						selectBox.x = Math.min(FlxG.mouse.x,selectInitialX);
+						selectBox.y = Math.min(FlxG.mouse.y,selectInitialY);
+						
+						selectBox.makeGraphic(Math.floor(Math.abs(FlxG.mouse.x - selectInitialX)),Math.floor(Math.abs(FlxG.mouse.y - selectInitialY)),FlxColor.fromRGB(173, 216, 230));
 					}
 				}
 			}
