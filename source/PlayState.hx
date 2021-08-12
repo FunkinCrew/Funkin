@@ -3188,7 +3188,9 @@ class PlayState extends MusicBeatState
 										health -= 0.20;
 									vocals.volume = 0;
 									if (theFunne && !daNote.isSustainNote)
+									{
 										noteMiss(daNote.noteData, daNote);
+									}
 									if (daNote.isParent)
 									{
 										health -= 0.30; // give a health punishment for failing a LN
@@ -3226,7 +3228,15 @@ class PlayState extends MusicBeatState
 									health -= 0.20;
 								vocals.volume = 0;
 								if (theFunne && !daNote.isSustainNote)
-									noteMiss(daNote.noteData, daNote);
+								{
+									if (PlayStateChangeables.botPlay)
+									{
+										daNote.rating = "bad";
+										goodNoteHit(daNote);
+									}
+									else
+										noteMiss(daNote.noteData, daNote);
+								}
 
 								if (daNote.isParent)
 								{
