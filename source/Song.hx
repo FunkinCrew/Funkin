@@ -117,6 +117,11 @@ class Song
 	{
 		var swagShit:SwagSong = cast Json.parse(rawJson).song;
 		swagShit.validScore = true;
+
+
+		// conversion stuff
+
+
 		return swagShit;
 	}
 }
