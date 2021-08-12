@@ -456,6 +456,34 @@ class PlayState extends MusicBeatState
 
 		SONG.eventObjects = convertedStuff;
 
+		var ba = SONG.bpm;
+
+		var index = 0;
+
+		trace("conversion stuff " + SONG.song + " " + SONG.notes.length);
+
+		for(i in SONG.notes)
+		{
+			var currentBeat = 4 * index;
+
+			var currentSeg = TimingStruct.getTimingAtBeat(currentBeat);
+
+			if (currentSeg == null)
+				continue;
+
+			var beat:Float = currentSeg.startBeat + (currentBeat - currentSeg.startBeat);
+
+			if (i.changeBPM && i.bpm != ba)
+			{
+				trace("converting changebpm for section " + index);
+				ba = i.bpm;
+				SONG.eventObjects.push(new Song.Event("FNF BPM Change " + index,beat,i.bpm,"BPM Change"));
+			}
+
+			index++;
+		}
+
+
 		trace('INFORMATION ABOUT WHAT U PLAYIN WIT:\nFRAMES: ' + PlayStateChangeables.safeFrames + '\nZONE: ' + Conductor.safeZoneOffset + '\nTS: '
 			+ Conductor.timeScale + '\nBotPlay : ' + PlayStateChangeables.botPlay);
 
@@ -3748,8 +3776,8 @@ class PlayState extends MusicBeatState
 					{
 						if (!visibleCombos.contains(numScore))
 						{
-							numScore.destroy();
 							tween.cancel();
+							numScore.destroy();
 						}
 					},
 					startDelay: Conductor.crochet * 0.002
