@@ -3940,8 +3940,10 @@ class PlayState extends MusicBeatState
 		if (PlayStateChangeables.botPlay)
 		notes.forEachAlive(function(daNote:Note)
 		{
-			daNote.rating = Ratings.CalculateRating(-(daNote.strumTime - Conductor.songPosition), Math.floor((PlayStateChangeables.safeFrames / 60) * 1000));
-			if (daNote.mustPress && daNote.rating == "sick")
+			var diff = -(daNote.strumTime - Conductor.songPosition);
+
+			daNote.rating = Ratings.CalculateRating(diff, Math.floor((PlayStateChangeables.safeFrames / 60) * 1000));
+			if (daNote.mustPress && daNote.rating == "sick" || (diff > 0 && daNote.mustPress))
 			{
 				// Force good note hit regardless if it's too late to hit it or not as a fail safe
 					if (loadRep)
