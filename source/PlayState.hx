@@ -2217,7 +2217,7 @@ class PlayState extends MusicBeatState
 				for(i in notes)
 				{
 					var diff = i.strumTime - Conductor.songPosition;
-					if (diff < 8000 && diff >= -8000)
+					if (diff < 2650 && diff >= -2650)
 					{
 						i.active = true;
 						i.visible = true;
@@ -3939,11 +3939,11 @@ class PlayState extends MusicBeatState
 		}
 		notes.forEachAlive(function(daNote:Note)
 		{
-			if (PlayStateChangeables.useDownscroll && daNote.y > strumLine.y || !PlayStateChangeables.useDownscroll && daNote.y < strumLine.y)
+			if ((daNote.mustPress && daNote.tooLate && !PlayStateChangeables.useDownscroll || daNote.mustPress && daNote.tooLate
+				&& PlayStateChangeables.useDownscroll)
+				&& daNote.mustPress && PlayStateChangeables.botPlay)
 			{
 				// Force good note hit regardless if it's too late to hit it or not as a fail safe
-				if (PlayStateChangeables.botPlay && daNote.canBeHit && daNote.mustPress || PlayStateChangeables.botPlay && daNote.tooLate && daNote.mustPress)
-				{
 					if (loadRep)
 					{
 						// trace('ReplayNote ' + tmpRepNote.strumtime + ' | ' + tmpRepNote.direction);
@@ -3978,7 +3978,6 @@ class PlayState extends MusicBeatState
 								});
 							}
 					}
-				}
 			}
 		});
 
