@@ -1217,13 +1217,15 @@ class ChartingState extends MusicBeatState
 							note[1] += 4;
 						else
 							note[1] -= 4;
-						secit.sectionNotes[i] = note;
 						newSwaps.push(note);
 					}
+
+					secit.sectionNotes = newSwaps;
+
 					for (i in shownNotes)
 					{
 						for(ii in newSwaps)
-							if (i.strumTime == ii[0])
+							if (i.strumTime == ii[0] && i.noteData == ii[1] % 4)
 							{
 								i.x = Math.floor(ii[1] * GRID_SIZE);
 
@@ -1312,7 +1314,7 @@ class ChartingState extends MusicBeatState
 		if (data == null)
 			return;
 
-		FlxG.sound.music.time = (beat / (data.bpm / 60)) * 1000;
+		FlxG.sound.music.time = (data.startBeat + (beat - data.startBeat) / (data.bpm / 60)) * 1000;
 		if (!PlayState.isSM)
 			vocals.time = FlxG.sound.music.time;
 		curSection = section;
@@ -2308,13 +2310,15 @@ class ChartingState extends MusicBeatState
 							note[1] += 4;
 						else
 							note[1] -= 4;
-						secit.sectionNotes[i] = note;
 						newSwaps.push(note);
 					}
+
+					secit.sectionNotes = newSwaps;
+
 					for (i in shownNotes)
 					{
 						for(ii in newSwaps)
-							if (i.strumTime == ii[0])
+							if (i.strumTime == ii[0] && i.noteData == ii[1] % 4)
 							{
 								i.x = Math.floor(ii[1] * GRID_SIZE);
 
