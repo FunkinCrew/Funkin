@@ -3937,11 +3937,11 @@ class PlayState extends MusicBeatState
 					if (i != null)
 						replayAna.anaArray.push(i); // put em all there
 		}
+		if (PlayStateChangeables.botPlay)
 		notes.forEachAlive(function(daNote:Note)
 		{
-			if ((daNote.mustPress && daNote.tooLate && !PlayStateChangeables.useDownscroll || daNote.mustPress && daNote.tooLate
-				&& PlayStateChangeables.useDownscroll)
-				&& daNote.mustPress && PlayStateChangeables.botPlay)
+			daNote.rating = Ratings.CalculateRating(-(daNote.strumTime - Conductor.songPosition), Math.floor((PlayStateChangeables.safeFrames / 60) * 1000));
+			if (daNote.canBeHit && !daNote.tooLate && daNote.mustPress && daNote.rating == "sick")
 			{
 				// Force good note hit regardless if it's too late to hit it or not as a fail safe
 					if (loadRep)
