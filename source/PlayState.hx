@@ -3096,7 +3096,7 @@ class PlayState extends MusicBeatState
 									{
 										spr.animation.play('confirm', true);
 									}
-									if (spr.animation.curAnim.name == 'confirm' && !curStage.startsWith('school'))
+									if (spr.animation.curAnim.name == 'confirm' && SONG.noteStyle != 'pixel')
 									{
 										spr.centerOffsets();
 										spr.offset.x -= 13;
@@ -3131,7 +3131,7 @@ class PlayState extends MusicBeatState
 									{
 										spr.animation.play('confirm', true);
 									}
-									if (spr.animation.curAnim.name == 'confirm' && !curStage.startsWith('school'))
+									if (spr.animation.curAnim.name == 'confirm' && SONG.noteStyle != 'pixel')
 									{
 										spr.centerOffsets();
 										spr.offset.x -= 13;
@@ -4029,7 +4029,7 @@ class PlayState extends MusicBeatState
 									{
 										spr.animation.play('confirm', true);
 									}
-									if (spr.animation.curAnim.name == 'confirm' && !curStage.startsWith('school'))
+									if (spr.animation.curAnim.name == 'confirm' && SONG.noteStyle != 'pixel')
 									{
 										spr.centerOffsets();
 										spr.offset.x -= 13;
@@ -4058,7 +4058,7 @@ class PlayState extends MusicBeatState
 				if (!keys[spr.ID])
 					spr.animation.play('static', false);
 
-				if (spr.animation.curAnim.name == 'confirm' && !curStage.startsWith('school'))
+				if (spr.animation.curAnim.name == 'confirm' && SONG.noteStyle != 'pixel')
 				{
 					spr.centerOffsets();
 					spr.offset.x -= 13;
