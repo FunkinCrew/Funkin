@@ -3755,7 +3755,7 @@ class PlayState extends MusicBeatState
 					startDelay: Conductor.crochet * 0.002
 				});
 
-				if (visibleCombos.length > 25)
+				if (visibleCombos.length > seperatedScore.length + 20)
 				{
 					for(i in 0...seperatedScore.length - 1)
 					{
