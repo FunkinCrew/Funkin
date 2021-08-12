@@ -97,6 +97,9 @@ class PlayState extends MusicBeatState
 	public static var sicks:Int = 0;
 
 	public static var songPosBG:FlxSprite;
+
+	public var visibleCombos:Array<FlxSprite> = [];
+
 	public static var songPosBar:FlxBar;
 
 	public static var rep:Replay;
@@ -3733,13 +3736,32 @@ class PlayState extends MusicBeatState
 
 				add(numScore);
 
+				visibleCombos.push(numScore);
+
 				FlxTween.tween(numScore, {alpha: 0}, 0.2, {
 					onComplete: function(tween:FlxTween)
 					{
+						visibleCombos.remove(numScore);
 						numScore.destroy();
+					},
+					onUpdate: function (tween:FlxTween)
+					{
+						if (!visibleCombos.contains(numScore))
+						{
+							numScore.destroy();
+							tween.cancel();
+						}
 					},
 					startDelay: Conductor.crochet * 0.002
 				});
+
+				if (visibleCombos.length > 25)
+				{
+					for(i in 0...seperatedScore.length - 1)
+					{
+						visibleCombos.remove(visibleCombos[visibleCombos.length - 1]);
+					}
+				}
 
 				daLoop++;
 			}
