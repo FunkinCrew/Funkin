@@ -19,10 +19,10 @@ class NoteVariables
         [LEFT, UP, RIGHT, SQUARE, LEFT, DOWN, RIGHT], // 7
         [LEFT, DOWN, UP, RIGHT, LEFT, DOWN, UP, RIGHT], // 8
         [LEFT, DOWN, UP, RIGHT, SQUARE, LEFT, DOWN, UP, RIGHT], // THS
-        [LEFT, DOWN, UP, RIGHT, UP, DOWN, LEFT, DOWN, UP, RIGHT], // 10
-        [LEFT, DOWN, UP, RIGHT, SQUARE, SQUARE, SQUARE, UP, LEFT, DOWN, UP, RIGHT], // 11
-        [LEFT, DOWN, UP, RIGHT, SQUARE, SQUARE, SQUARE, SQUARE, UP, LEFT, DOWN, UP, RIGHT], // 12
-        [LEFT, DOWN, UP, RIGHT, SQUARE, SQUARE, SQUARE, SQUARE, SQUARE, UP, LEFT, DOWN, UP, RIGHT], // 13
+        [LEFT, DOWN, UP, RIGHT, RUP, RDOWN, LEFT, DOWN, UP, RIGHT], // 10
+        [LEFT, DOWN, UP, RIGHT, RUP, PLUS, RDOWN, UP, LEFT, DOWN, UP, RIGHT], // 11
+        [LEFT, DOWN, UP, RIGHT, RLEFT, RDOWN, RUP, RRIGHT, UP, LEFT, DOWN, UP, RIGHT], // 12
+        [LEFT, DOWN, UP, RIGHT, RLEFT, RRIGHT, SQUARE, RLEFT, RRIGHT, UP, LEFT, DOWN, UP, RIGHT], // 13
         [LEFT, DOWN, UP, RIGHT, SQUARE, SQUARE, SQUARE, SQUARE, SQUARE, SQUARE, UP, LEFT, DOWN, UP, RIGHT], // 14
         [LEFT, DOWN, UP, RIGHT, SQUARE, SQUARE, SQUARE, SQUARE, SQUARE, SQUARE, SQUARE, UP, LEFT, DOWN, UP, RIGHT], // 15
         [LEFT, DOWN, UP, RIGHT, SQUARE, SQUARE, SQUARE, SQUARE, SQUARE, SQUARE, SQUARE, SQUARE, UP, LEFT, DOWN, UP, RIGHT] // 16
@@ -57,10 +57,10 @@ class NoteVariables
         ["left", "up", "right", "square", "left2", "down", "right2"],
         ["left", "down", "up", "right", "left2", "down2", "up2", "right2"],
         ["left", "down", "up", "right", "square", "left2", "down2", "up2", "right2"],
-        ["left", "down", "up", "right", "up2", "down2", "left2", "down2", "up2", "right2"],
-        ["left", "down", "up", "right", "square", "square", "square", "left2", "down2", "up2", "right2"], // 11 
-        ["left", "down", "up", "right", "square", "square", "square", "square", "left2", "down2", "up2", "right2"], // 12
-        ["left", "down", "up", "right", "square", "square", "square", "square", "square", "left2", "down2", "up2", "right2"], // 13
+        ["left", "down", "up", "right", "rup", "rdown", "left2", "down2", "up2", "right2"],
+        ["left", "down", "up", "right", "rup", "plus", "rdown", "left2", "down2", "up2", "right2"], // 11 
+        ["left", "down", "up", "right", "rleft", "rdown", "rup", "rright", "left2", "down2", "up2", "right2"], // 12
+        ["left", "down", "up", "right", "rleft", "rright", "square", "rleft2", "rright2", "left2", "down2", "up2", "right2"], // 13
         ["left", "down", "up", "right", "square", "square", "square", "square", "square", "square", "left2", "down2", "up2", "right2"], // 14
         ["left", "down", "up", "right", "square", "square", "square", "square", "square", "square", "square", "left2", "down2", "up2", "right2"], // 15
         ["left", "down", "up", "right", "square", "square", "square", "square", "square", "square", "square", "square", "left2", "down2", "up2", "right2"] // 16

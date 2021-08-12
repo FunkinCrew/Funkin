@@ -16,4 +16,9 @@ enum NoteDirection
     LEFT;
     RIGHT;
     SQUARE;
+    RUP;
+    RDOWN;
+    RLEFT;
+    RRIGHT;
+    PLUS;
 }

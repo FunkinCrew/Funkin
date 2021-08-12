@@ -93,4 +93,94 @@
 	<SubTexture name="right2 hold end0000" x="56" y="91" width="7" height="6"/>
 	<SubTexture name="right2 press0000" x="136" y="34" width="17" height="17"/>
 	<SubTexture name="right2 static0000" x="51" y="0" width="17" height="17"/>
+
+	<!-- PLUS NOTE-->
+	<SubTexture name="plus0000" x="153" y="17" width="17" height="17"/>
+	<SubTexture name="plus confirm0000" x="153" y="51" width="17" height="17"/>
+	<SubTexture name="plus confirm0001" x="153" y="51" width="17" height="17"/>
+	<SubTexture name="plus confirm0002" x="153" y="68" width="17" height="17"/>
+	<SubTexture name="plus hold0000" x="63" y="85" width="7" height="6"/>
+	<SubTexture name="plus hold end0000" x="63" y="91" width="7" height="6"/>
+	<SubTexture name="plus press0000" x="153" y="34" width="17" height="17"/>
+	<SubTexture name="plus static0000" x="153" y="0" width="17" height="17"/>
+
+	<!-- RHOMBIC LEFT ARROW-->
+	<SubTexture name="rleft0000" x="170" y="17" width="17" height="17"/>
+	<SubTexture name="rleft confirm0000" x="170" y="51" width="17" height="17"/>
+	<SubTexture name="rleft confirm0001" x="170" y="51" width="17" height="17"/>
+	<SubTexture name="rleft confirm0002" x="170" y="68" width="17" height="17"/>
+	<SubTexture name="rleft hold0000" x="70" y="85" width="7" height="6"/>
+	<SubTexture name="rleft hold end0000" x="70" y="91" width="7" height="6"/>
+	<SubTexture name="rleft press0000" x="170" y="34" width="17" height="17"/>
+	<SubTexture name="rleft static0000" x="170" y="0" width="17" height="17"/>
+
+	<!-- RHOMBIC DOWN ArrOW-->
+	<SubTexture name="rdown0000" x="187" y="17" width="17" height="17"/>
+	<SubTexture name="rdown confirm0000" x="187" y="51" width="17" height="17"/>
+	<SubTexture name="rdown confirm0001" x="187" y="51" width="17" height="17"/>
+	<SubTexture name="rdown confirm0002" x="187" y="68" width="17" height="17"/>
+	<SubTexture name="rdown hold0000" x="77" y="85" width="7" height="6"/>
+	<SubTexture name="rdown hold end0000" x="77" y="91" width="7" height="6"/>
+	<SubTexture name="rdown press0000" x="187" y="34" width="17" height="17"/>
+	<SubTexture name="rdown static0000" x="187" y="0" width="17" height="17"/>
+
+	<!-- RHOMBIC UP ArrOW-->
+	<SubTexture name="rup0000" x="204" y="17" width="17" height="17"/>
+	<SubTexture name="rup confirm0000" x="204" y="51" width="17" height="17"/>
+	<SubTexture name="rup confirm0001" x="204" y="51" width="17" height="17"/>
+	<SubTexture name="rup confirm0002" x="204" y="68" width="17" height="17"/>
+	<SubTexture name="rup hold0000" x="84" y="85" width="7" height="6"/>
+	<SubTexture name="rup hold end0000" x="84" y="91" width="7" height="6"/>
+	<SubTexture name="rup press0000" x="204" y="34" width="17" height="17"/>
+	<SubTexture name="rup static0000" x="204" y="0" width="17" height="17"/>
+
+	<!-- RHOMBIC RIGHT ArrOW-->
+	<SubTexture name="rright0000" x="221" y="17" width="17" height="17"/>
+	<SubTexture name="rright confirm0000" x="221" y="51" width="17" height="17"/>
+	<SubTexture name="rright confirm0001" x="221" y="51" width="17" height="17"/>
+	<SubTexture name="rright confirm0002" x="221" y="68" width="17" height="17"/>
+	<SubTexture name="rright hold0000" x="91" y="85" width="7" height="6"/>
+	<SubTexture name="rright hold end0000" x="91" y="91" width="7" height="6"/>
+	<SubTexture name="rright press0000" x="221" y="34" width="17" height="17"/>
+	<SubTexture name="rright static0000" x="221" y="0" width="17" height="17"/>
+
+		<!-- ALT RHOMBIC LEFT ArrOW-->
+	<SubTexture name="rleft20000" x="238" y="17" width="17" height="17"/>
+	<SubTexture name="rleft2 confirm0000" x="238" y="51" width="17" height="17"/>
+	<SubTexture name="rleft2 confirm0001" x="238" y="51" width="17" height="17"/>
+	<SubTexture name="rleft2 confirm0002" x="238" y="68" width="17" height="17"/>
+	<SubTexture name="rleft2 hold0000" x="98" y="85" width="7" height="6"/>
+	<SubTexture name="rleft2 hold end0000" x="98" y="91" width="7" height="6"/>
+	<SubTexture name="rleft2 press0000" x="238" y="34" width="17" height="17"/>
+	<SubTexture name="rleft2 static0000" x="238" y="0" width="17" height="17"/>
+
+	<!-- ALT RHOMBIC DOWN ArrOW-->
+	<SubTexture name="rdown20000" x="255" y="17" width="17" height="17"/>
+	<SubTexture name="rdown2 confirm0000" x="255" y="51" width="17" height="17"/>
+	<SubTexture name="rdown2 confirm0001" x="255" y="51" width="17" height="17"/>
+	<SubTexture name="rdown2 confirm0002" x="255" y="68" width="17" height="17"/>
+	<SubTexture name="rdown2 hold0000" x="105" y="85" width="7" height="6"/>
+	<SubTexture name="rdown2 hold end0000" x="105" y="91" width="7" height="6"/>
+	<SubTexture name="rdown2 press0000" x="255" y="34" width="17" height="17"/>
+	<SubTexture name="rdown2 static0000" x="255" y="0" width="17" height="17"/>
+
+	<!-- ALT RHOMBIC UP ArrOW-->
+	<SubTexture name="rup20000" x="272" y="17" width="17" height="17"/>
+	<SubTexture name="rup2 confirm0000" x="272" y="51" width="17" height="17"/>
+	<SubTexture name="rup2 confirm0001" x="272" y="51" width="17" height="17"/>
+	<SubTexture name="rup2 confirm0002" x="272" y="68" width="17" height="17"/>
+	<SubTexture name="rup2 hold0000" x="112" y="85" width="7" height="6"/>
+	<SubTexture name="rup2 hold end0000" x="112" y="91" width="7" height="6"/>
+	<SubTexture name="rup2 press0000" x="272" y="34" width="17" height="17"/>
+	<SubTexture name="rup2 static0000" x="272" y="0" width="17" height="17"/>
+
+	<!-- ALT RHOMBIC RIGHT ArrOW-->
+	<SubTexture name="rright20000" x="289" y="17" width="17" height="17"/>
+	<SubTexture name="rright2 confirm0000" x="289" y="51" width="17" height="17"/>
+	<SubTexture name="rright2 confirm0001" x="289" y="51" width="17" height="17"/>
+	<SubTexture name="rright2 confirm0002" x="289" y="68" width="17" height="17"/>
+	<SubTexture name="rright2 hold0000" x="119" y="85" width="7" height="6"/>
+	<SubTexture name="rright2 hold end0000" x="119" y="91" width="7" height="6"/>
+	<SubTexture name="rright2 press0000" x="289" y="34" width="17" height="17"/>
+	<SubTexture name="rright2 static0000" x="289" y="0" width="17" height="17"/>
 </TextureAtlas>

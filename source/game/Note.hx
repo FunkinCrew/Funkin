@@ -52,7 +52,7 @@ class Note extends FlxSprite
 		this.prevNote = prevNote;
 		isSustainNote = sustainNote;
 
-		x += 100 - ((PlayState.SONG.keyCount - 4) * 16);
+		x += 100 - ((PlayState.SONG.keyCount - 4) * 12);
 		// MAKE SURE ITS DEFINITELY OFF SCREEN?
 		y = -2000;
 
