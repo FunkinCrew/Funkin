@@ -1599,6 +1599,7 @@ class ChartingState extends MusicBeatState
 	{
 
 		regenerateLines();
+		updateGrid();
 	}
 
 	public var shownNotes:Array<Note> = [];
@@ -2291,6 +2292,7 @@ class ChartingState extends MusicBeatState
 			i.lastUpdated = sect.mustHitSection;
 		
 			add(sectionicon);
+			check_mustHitSection.checked = sect.mustHitSection;
 			trace("must hit " + sect.mustHitSection);
 
 		}
@@ -2565,6 +2567,7 @@ class ChartingState extends MusicBeatState
 		if (curSelectedNote != null)
 		{
 			stepperSusLength.value = curSelectedNote[2];
+			updateGrid();
 		}
 	}
 
