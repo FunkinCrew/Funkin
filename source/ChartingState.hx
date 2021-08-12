@@ -1314,7 +1314,7 @@ class ChartingState extends MusicBeatState
 		if (data == null)
 			return;
 
-		FlxG.sound.music.time = (data.startBeat + (beat - data.startBeat) / (data.bpm / 60)) * 1000;
+		FlxG.sound.music.time = (data.startTime + ((beat - data.startBeat) / (data.bpm / 60))) * 1000;
 		if (!PlayState.isSM)
 			vocals.time = FlxG.sound.music.time;
 		curSection = section;
