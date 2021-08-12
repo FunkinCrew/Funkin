@@ -944,14 +944,14 @@ class ChartingState extends MusicBeatState
 			tab_events.add(listLabel);
 			tab_events.add(typeLabel);
 			tab_events.add(eventName);
-			tab_events.add(eventType);
-			tab_events.add(listOfEvents);
 			tab_events.add(eventValue);
 			tab_events.add(eventSave);
 			tab_events.add(eventAdd);
 			tab_events.add(eventRemove);
 			tab_events.add(eventPos);
 			tab_events.add(updatePos);
+			tab_events.add(eventType);
+			tab_events.add(listOfEvents);
 			UI_options.addGroup(tab_events);
 	}
 
