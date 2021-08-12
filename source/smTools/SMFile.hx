@@ -201,6 +201,8 @@ class SMFile
                         changeBPM: false,
                         altAnim: false
                     };
+                    if (!isDouble)
+                        section.mustHitSection = true;
                 }
 
                 var seg = TimingStruct.getTimingAtBeat(currentBeat);
@@ -283,7 +285,7 @@ class SMFile
             song.eventObjects = header.changeEvents;
         }
 
-        var newSections = [];
+        /*var newSections = [];
 
 		for(s in 0...song.notes.length) // lets go ahead and make sure each note is actually in their own section haha
 		{
@@ -307,10 +309,11 @@ class SMFile
                 }
             }
             newSections.push(sec);
-		}
+		}*/
+        // WE ALREADY DO THIS
 	
 
-        song.notes = newSections;
+        //song.notes = newSections;
 
         // save da song
 

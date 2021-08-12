@@ -1051,6 +1051,23 @@ class PlayState extends MusicBeatState
 
 		generateSong(SONG.song);
 
+		for(i in unspawnNotes)
+		{
+			var dunceNote:Note = i;
+			notes.add(dunceNote);
+			if (executeModchart)
+			{
+				if (!dunceNote.isSustainNote)
+					dunceNote.cameras = [camNotes];
+				else
+					dunceNote.cameras = [camSustains];
+			}
+			else
+			{
+				dunceNote.cameras = [camHUD];
+			}
+		}
+
 		trace('generated');
 
 		// add(strumLine);
@@ -2195,7 +2212,23 @@ class PlayState extends MusicBeatState
 		perfectMode = false;
 		#end
 
-		
+		if (generatedMusic)
+			{
+				for(i in notes)
+				{
+					var diff = i.strumTime - Conductor.songPosition;
+					if (diff < 8000 && diff >= -8000)
+					{
+						i.active = true;
+						i.visible = true;
+					}
+					else
+					{
+						i.active = false;
+						i.visible = false;
+					}
+				}
+			}
 
 		if (updateFrame == 4)
 			{
@@ -2517,13 +2550,6 @@ class PlayState extends MusicBeatState
 						daNote.destroy();
 					}
 				});
-				for (i in 0...unspawnNotes.length) {
-					var daNote:Note = unspawnNotes[0];
-					if(daNote.strumTime - 500 >= Conductor.songPosition) {
-						break;
-					}
-					unspawnNotes.splice(unspawnNotes.indexOf(daNote), 1);
-				}
 
 				FlxG.sound.music.time = Conductor.songPosition;
 				FlxG.sound.music.play();
@@ -2899,27 +2925,6 @@ class PlayState extends MusicBeatState
 			}
 		}
 
-		if (unspawnNotes[0] != null)
-		{
-			if (unspawnNotes[0].strumTime - Conductor.songPosition < 3500)
-			{
-				var dunceNote:Note = unspawnNotes[0];
-				notes.add(dunceNote);
-				if (executeModchart)
-				{
-					if (!dunceNote.isSustainNote)
-						dunceNote.cameras = [camNotes];
-					else
-						dunceNote.cameras = [camSustains];
-				}
-				else
-				{
-					dunceNote.cameras = [camHUD];
-				}
-				var index:Int = unspawnNotes.indexOf(dunceNote);
-				unspawnNotes.splice(index, 1);
-			}
-		}
 
 		if (generatedMusic)
 		{
