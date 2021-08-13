@@ -1889,7 +1889,6 @@ class PlayState extends MusicBeatState
 				health += 0.025;
 				hitNotes += 0.8;
 			case 'bad':
-				health += 0.015;
 				hitNotes += 0.3;
 			case 'shit':
 				health -= 0.023;
