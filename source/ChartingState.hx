@@ -2132,14 +2132,14 @@ class ChartingState extends MusicBeatState
 
 		if (playClaps)
 		{
-			curRenderedNotes.forEach(function(note:Note)
+			for(note in shownNotes)
 			{
 				if (note.strumTime <= Conductor.songPosition && !claps.contains(note))
 				{
 					claps.push(note);
 					FlxG.sound.play(Paths.sound('SNAP'));
 				}
-			});
+			}
 		}
 		/*curRenderedNotes.forEach(function(note:Note) {
 			if (strumLine.overlaps(note) && strumLine.y == note.y) // yandere dev type shit
