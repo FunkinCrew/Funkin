@@ -2255,9 +2255,6 @@ class PlayState extends MusicBeatState
 							}
 						}
 		
-						recalculateAllSectionTimes();
-		
-						regenerateLines();
 						updateFrame++;
 				}
 				else if (updateFrame != 5)
