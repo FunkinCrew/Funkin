@@ -423,23 +423,16 @@ class PlayState extends MusicBeatState
 
 		TimingStruct.clearTimings();
 
-		var convertedStuff:Array<Song.Event> = [];
-
 		var currentIndex = 0;
 		for (i in SONG.eventObjects)
 		{
-			var name = Reflect.field(i,"name");
-			var type = Reflect.field(i,"type");
-			var pos = Reflect.field(i,"position");
-			var value = Reflect.field(i,"value");
-
-			if (type == "BPM Change")
+			if (i.type == "BPM Change")
 			{
-                var beat:Float = pos;
+                var beat:Float = i.position;
 
                 var endBeat:Float = Math.POSITIVE_INFINITY;
 
-                TimingStruct.addTiming(beat,value,endBeat, 0); // offset in this case = start time since we don't have a offset
+                TimingStruct.addTiming(beat,i.value,endBeat, 0); // offset in this case = start time since we don't have a offset
 				
                 if (currentIndex != 0)
                 {
@@ -451,38 +444,7 @@ class PlayState extends MusicBeatState
 
 				currentIndex++;
 			}
-			convertedStuff.push(new Song.Event(name,pos,value,type));
 		}
-
-		SONG.eventObjects = convertedStuff;
-
-		var ba = SONG.bpm;
-
-		var index = 0;
-
-		trace("conversion stuff " + SONG.song + " " + SONG.notes.length);
-
-		for(i in SONG.notes)
-		{
-			var currentBeat = 4 * index;
-
-			var currentSeg = TimingStruct.getTimingAtBeat(currentBeat);
-
-			if (currentSeg == null)
-				continue;
-
-			var beat:Float = currentSeg.startBeat + (currentBeat - currentSeg.startBeat);
-
-			if (i.changeBPM && i.bpm != ba)
-			{
-				trace("converting changebpm for section " + index);
-				ba = i.bpm;
-				SONG.eventObjects.push(new Song.Event("FNF BPM Change " + index,beat,i.bpm,"BPM Change"));
-			}
-
-			index++;
-		}
-
 
 		trace('INFORMATION ABOUT WHAT U PLAYIN WIT:\nFRAMES: ' + PlayStateChangeables.safeFrames + '\nZONE: ' + Conductor.safeZoneOffset + '\nTS: '
 			+ Conductor.timeScale + '\nBotPlay : ' + PlayStateChangeables.botPlay);
@@ -1939,6 +1901,8 @@ class PlayState extends MusicBeatState
 				susLength = susLength / Conductor.stepCrochet;
 				unspawnNotes.push(swagNote);
 
+				swagNote.isAlt = songNotes[3];
+
 				if (susLength > 0)
 					swagNote.isParent = true;
 
@@ -1951,6 +1915,7 @@ class PlayState extends MusicBeatState
 					var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + Conductor.stepCrochet, daNoteData, oldNote, true);
 					sustainNote.scrollFactor.set();
 					unspawnNotes.push(sustainNote);
+					sustainNote.isAlt = songNotes[3];
 
 					sustainNote.mustPress = gottaHitNote;
 
@@ -2261,36 +2226,39 @@ class PlayState extends MusicBeatState
 				}
 			}
 
-		if (updateFrame == 4)
-			{
-				TimingStruct.clearTimings();
-	
-					var currentIndex = 0;
-					for (i in SONG.eventObjects)
-					{
-						if (i.type == "BPM Change")
+			if (updateFrame == 4)
+				{
+					TimingStruct.clearTimings();
+		
+						var currentIndex = 0;
+						for (i in SONG.eventObjects)
 						{
-							var beat:Float = i.position;
-	
-							var endBeat:Float = Math.POSITIVE_INFINITY;
-	
-							TimingStruct.addTiming(beat,i.value,endBeat, 0); // offset in this case = start time since we don't have a offset
-							
-							if (currentIndex != 0)
+							if (i.type == "BPM Change")
 							{
-								var data = TimingStruct.AllTimings[currentIndex - 1];
-								data.endBeat = beat;
-								data.length = (data.endBeat - data.startBeat) / (data.bpm / 60);
-								TimingStruct.AllTimings[currentIndex].startTime = data.startTime + data.length;
+								var beat:Float = i.position;
+		
+								var endBeat:Float = Math.POSITIVE_INFINITY;
+		
+								TimingStruct.addTiming(beat,i.value,endBeat, 0); // offset in this case = start time since we don't have a offset
+								
+								if (currentIndex != 0)
+								{
+									var data = TimingStruct.AllTimings[currentIndex - 1];
+									data.endBeat = beat;
+									data.length = (data.endBeat - data.startBeat) / (data.bpm / 60);
+									var step = ((60 / data.bpm) * 1000) / 4;
+									TimingStruct.AllTimings[currentIndex].startStep = Math.floor(((data.endBeat / (data.bpm / 60)) * 1000) / step);
+									TimingStruct.AllTimings[currentIndex].startTime = data.startTime + data.length;
+								}
+		
+								currentIndex++;
 							}
-	
-							currentIndex++;
 						}
-					}
+		
+						updateFrame++;
+				}
+				else if (updateFrame != 5)
 					updateFrame++;
-			}
-			else if (updateFrame != 5)
-				updateFrame++;
 	
 
 			var timingSeg = TimingStruct.getTimingAtTimestamp(Conductor.songPosition);
@@ -3080,6 +3048,12 @@ class PlayState extends MusicBeatState
 							altAnim = '-alt';
 					}
 					
+					if (daNote.isAlt)
+					{
+						altAnim = '-alt';
+						trace("YOO WTF THIS IS AN ALT NOTE????");
+					}
+
 					// Accessing the animation name directly to play it
 					if (!daNote.isParent && daNote.parent != null)
 					{

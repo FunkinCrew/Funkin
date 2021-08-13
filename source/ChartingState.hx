@@ -1326,6 +1326,8 @@ class ChartingState extends MusicBeatState
 			FlxG.sound.music.time = FlxG.sound.music.length;
 	}
 	
+	public var check_naltAnim:FlxUICheckBox;
+
 	function addNoteUI():Void
 	{
 		tab_group_note = new FlxUI(null, UI_box);
@@ -1338,6 +1340,25 @@ class ChartingState extends MusicBeatState
 		stepperSusLength.value = 0;
 		stepperSusLength.name = 'note_susLength';
 
+		check_naltAnim = new FlxUICheckBox(10, 150, null, null, "Toggle Alternative Animation", 100);
+		check_naltAnim.callback = function()
+		{
+			if (curSelectedNote != null)
+			{
+				for(i in selectedBoxes)
+				{
+					i.connectedNoteData[3] = check_naltAnim.checked;
+
+					for(ii in _song.notes)
+					{
+						for(n in ii.sectionNotes)
+							if (n[0] == i.connectedNoteData[0] && n[1] == i.connectedNoteData[1])
+								n[3] = i.connectedNoteData[3];
+					}
+				}
+			}
+		}
+
 		var stepperSusLengthLabel = new FlxText(74,10,'Note Sustain Length');
 
 		var applyLength:FlxButton = new FlxButton(10, 100, 'Apply Data');
@@ -1345,6 +1366,7 @@ class ChartingState extends MusicBeatState
 		tab_group_note.add(stepperSusLength);
 		tab_group_note.add(stepperSusLengthLabel);
 		tab_group_note.add(applyLength);
+		tab_group_note.add(check_naltAnim);
 
 		UI_box.addGroup(tab_group_note);
 
@@ -1379,6 +1401,8 @@ class ChartingState extends MusicBeatState
 						var newData = [strum,i[1],i[2]];
 						ii.sectionNotes.push(newData);
 
+						var thing = ii.sectionNotes[ii.sectionNotes.length - 1];
+
 						var note:Note = new Note(strum, Math.floor(i[1] % 4),null,false,true);
 						note.rawNoteData = i[1];
 						note.sustainLength = i[2];
@@ -1392,6 +1416,7 @@ class ChartingState extends MusicBeatState
 						note.y = Math.floor(getYfromStrum(strum) * zoomFactor);
 
 						var box = new ChartingBox(note.x,note.y,note);
+						box.connectedNoteData = thing;
 						selectedBoxes.add(box);
 
 						curRenderedNotes.add(note);
@@ -1667,27 +1692,10 @@ class ChartingState extends MusicBeatState
 					}
 				}	
 
-		for(i in shownNotes)
+		for(ii in selectedBoxes.members)
 		{
-			if (i.charterSelected)
-			{
-				var movedBox = false;
-				for(ii in selectedBoxes.members)
-				{
-					if (ii.connectedNote.strumTime == i.strumTime && ii.connectedNote.noteData == i.noteData)
-					{
-						movedBox = true;
-						ii.x = i.x;
-						ii.y = i.y;
-					}
-				}
-				
-				if (!movedBox)
-				{
-					var box = new ChartingBox(i.x,i.y,i);
-					selectedBoxes.add(box);
-				}
-			}
+			ii.x = ii.connectedNote.x;
+			ii.y = ii.connectedNote.y;
 		}
 
 		var doInput = true;
@@ -1815,13 +1823,19 @@ class ChartingState extends MusicBeatState
 			{
 				trace("released!");
 				waitingForRelease = false;
-				for(i in shownNotes)
+
+				while(selectedBoxes.members.length != 0 && selectBox.width > 10 && selectBox.height > 10)
+				{
+					selectedBoxes.members[0].connectedNote.charterSelected = false;
+					selectedBoxes.members[0].destroy();
+					selectedBoxes.members.remove(selectedBoxes.members[0]);
+				}
+
+				for(i in curRenderedNotes)
 				{
 					if (i.overlaps(selectBox) && !i.charterSelected)
 					{
-						i.charterSelected = true;
-						var box = new ChartingBox(i.x,i.y,i);
-						selectedBoxes.add(box);
+						selectNote(i, false);
 					}
 				}
 				selectBox.destroy();
@@ -1832,6 +1846,7 @@ class ChartingState extends MusicBeatState
 			{
 				lastAction = "delete";
 				var notesToBeDeleted = [];
+				deletedNotes = [];
 				for(i in 0...selectedBoxes.members.length)
 				{
 					deletedNotes.push([selectedBoxes.members[i].connectedNote.strumTime,selectedBoxes.members[i].connectedNote.rawNoteData,selectedBoxes.members[i].connectedNote.sustainLength]);
@@ -1848,6 +1863,7 @@ class ChartingState extends MusicBeatState
 			{
 				lastAction = "delete";
 				var notesToBeDeleted = [];
+				deletedNotes = [];
 				for(i in 0...selectedBoxes.members.length)
 				{
 					deletedNotes.push([selectedBoxes.members[i].connectedNote.strumTime,selectedBoxes.members[i].connectedNote.rawNoteData,selectedBoxes.members[i].connectedNote.sustainLength]);
@@ -1868,7 +1884,7 @@ class ChartingState extends MusicBeatState
 					{
 						copiedNotes = [];
 						for(i in selectedBoxes.members)
-							copiedNotes.push([i.connectedNote.strumTime,i.connectedNote.rawNoteData,i.connectedNote.sustainLength]);
+							copiedNotes.push([i.connectedNote.strumTime,i.connectedNote.rawNoteData,i.connectedNote.sustainLength,i.connectedNote.isAlt]);
 
 						var firstNote = copiedNotes[0][0];
 
@@ -2524,7 +2540,7 @@ class ChartingState extends MusicBeatState
 		{
 			var strum = note[0] + Conductor.stepCrochet * (_song.notes[daSec].lengthInSteps * sectionNum);
 
-			var copiedNote:Array<Dynamic> = [strum, note[1], note[2]];
+			var copiedNote:Array<Dynamic> = [strum, note[1], note[2],note[3]];
 			sect.sectionNotes.push(copiedNote);
 		}
 
@@ -2567,6 +2583,13 @@ class ChartingState extends MusicBeatState
 		if (curSelectedNote != null)
 		{
 			stepperSusLength.value = curSelectedNote[2];
+			if (curSelectedNote[3] != null)
+				check_naltAnim.checked = curSelectedNote[3];
+			else
+			{
+				curSelectedNote[3] = false;
+				check_naltAnim.checked = false;
+			}
 			updateGrid();
 		}
 	}
@@ -2608,7 +2631,7 @@ class ChartingState extends MusicBeatState
 				var daStrumTime = i[0];
 				var daSus = i[2];
 
-				var note:Note = new Note(daStrumTime, daNoteInfo % 4,null,false,true);
+				var note:Note = new Note(daStrumTime, daNoteInfo % 4,null,false,true,i[3]);
 				note.rawNoteData = daNoteInfo;
 				note.sustainLength = daSus;
 				note.setGraphicSize(Math.floor(GRID_SIZE), Math.floor(GRID_SIZE));
@@ -2672,9 +2695,18 @@ class ChartingState extends MusicBeatState
 		_song.notes.push(sec);
 	}
 
-	function selectNote(note:Note):Void
+	function selectNote(note:Note, ?deleteAllBoxes:Bool = true):Void
 	{
 		var swagNum:Int = 0;
+
+
+		if (deleteAllBoxes)
+			while(selectedBoxes.members.length != 0)
+			{
+				selectedBoxes.members[0].connectedNote.charterSelected = false;
+				selectedBoxes.members[0].destroy();
+				selectedBoxes.members.remove(selectedBoxes.members[0]);
+			}
 
 		for (i in getSectionByTime(note.strumTime).sectionNotes)
 		{
@@ -2683,25 +2715,21 @@ class ChartingState extends MusicBeatState
 				curSelectedNote = getSectionByTime(note.strumTime).sectionNotes[swagNum];
 				if (curSelectedNoteObject != null)
 					curSelectedNoteObject.charterSelected = false;
-				curSelectedNoteObject = note;
-
-				while(selectedBoxes.members.length != 0)
-				{
-					selectedBoxes.members[0].connectedNote.charterSelected = false;
-					selectedBoxes.members[0].destroy();
-					selectedBoxes.members.remove(selectedBoxes.members[0]);
-				}
-
-				var box = new ChartingBox(note.x,note.y,note);
-				selectedBoxes.add(box);
 				
-				curSelectedNoteObject.charterSelected = true;
+				curSelectedNoteObject = note;
+				if (!note.charterSelected)
+				{	
+					var box = new ChartingBox(note.x,note.y,note);
+					box.connectedNoteData = i;
+					selectedBoxes.add(box);
+					curSelectedNoteObject.charterSelected = true;
+				}
+			
 			}
 
 			swagNum += 1;
 		}
 
-		updateGrid();
 		updateNoteUI();
 	}
 
@@ -2958,9 +2986,9 @@ class ChartingState extends MusicBeatState
 		var noteSus = 0;
 
 		if (n != null)
-			section.sectionNotes.push([n.strumTime, n.noteData, n.sustainLength]);
+			section.sectionNotes.push([n.strumTime, n.noteData, n.sustainLength, false]);
 		else
-			section.sectionNotes.push([noteStrum, noteData, noteSus]);
+			section.sectionNotes.push([noteStrum, noteData, noteSus, false]);
 
 		var thingy = section.sectionNotes[section.sectionNotes.length - 1];
 
@@ -2993,6 +3021,7 @@ class ChartingState extends MusicBeatState
 			note.y = Math.floor(getYfromStrum(noteStrum) * zoomFactor);
 
 			var box = new ChartingBox(note.x,note.y,note);
+			box.connectedNoteData = thingy;
 			selectedBoxes.add(box);
 
 			curRenderedNotes.add(note);
@@ -3018,6 +3047,7 @@ class ChartingState extends MusicBeatState
 			}
 
 			var box = new ChartingBox(note.x,note.y,note);
+			box.connectedNoteData = thingy;
 			selectedBoxes.add(box);
 			
 			curSelectedNoteObject.charterSelected = true;
