@@ -2134,16 +2134,10 @@ class ChartingState extends MusicBeatState
 		{
 			curRenderedNotes.forEach(function(note:Note)
 			{
-				if (FlxG.sound.music.playing)
+				if (note.strumTime <= Conductor.songPosition && !claps.contains(note))
 				{
-					if (strumLine.overlaps(note))
-					{
-						if(!claps.contains(note))
-						{
-							claps.push(note);
-							FlxG.sound.play(Paths.sound('SNAP'));
-						}
-					}
+					claps.push(note);
+					FlxG.sound.play(Paths.sound('SNAP'));
 				}
 			});
 		}
