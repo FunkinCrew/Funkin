@@ -1957,9 +1957,10 @@ class PlayState extends MusicBeatState
 
 		var seperatedScore:Array<Int> = [];
 
-		seperatedScore.push(Math.floor(combo / 100));
-		seperatedScore.push(Math.floor((combo - (seperatedScore[0] * 100)) / 10));
-		seperatedScore.push(combo % 10);
+		for(i in 0...Std.string(combo).length)
+		{
+			seperatedScore.push(Std.parseInt(Std.string(combo).split("")[i]));
+		}
 
 		var daLoop:Int = 0;
 
