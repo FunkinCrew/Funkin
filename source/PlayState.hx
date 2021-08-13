@@ -4358,17 +4358,14 @@ class PlayState extends MusicBeatState
 			else
 				totalNotesHit += 1;
 
-			switch (note.noteData)
-			{
-				case 2:
-					boyfriend.playAnim('singUP', true);
-				case 3:
-					boyfriend.playAnim('singRIGHT', true);
-				case 1:
-					boyfriend.playAnim('singDOWN', true);
-				case 0:
-					boyfriend.playAnim('singLEFT', true);
-			}
+			var altAnim:String = "";
+			if (note.isAlt)
+				{
+					altAnim = '-alt';
+					trace("Alt note on BF");
+				}
+
+			boyfriend.playAnim('sing' + dataSuffix[note.noteData] + altAnim, true);
 
 			#if windows
 			if (luaModchart != null)
@@ -4631,7 +4628,7 @@ class PlayState extends MusicBeatState
 
 		if (!boyfriend.animation.curAnim.name.startsWith("sing") && (curBeat % idleBeat == 0 || !idleToBeat))
 		{
-			boyfriend.playAnim('idle', idleToBeat);
+			boyfriend.playAnim('idle' + ((SONG.notes[Math.floor(curStep / 16)].altAnim && boyfriend.animation.getByName('idle-alt') != null) ? '-alt' : ''), idleToBeat);
 		}
 
 		/*if (!dad.animation.curAnim.name.startsWith("sing"))

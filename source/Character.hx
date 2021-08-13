@@ -483,6 +483,15 @@ class Character extends FlxSprite
 
 	public function playAnim(AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0):Void
 	{
+
+		if (AnimName.endsWith('alt') && animation.getByName(AnimName) == null)
+		{
+			#if debug
+			FlxG.log.warn(['Such alt animation doesnt exist: ' + AnimName]);
+			#end
+			AnimName = AnimName.split('-')[0];
+		}
+
 		animation.play(AnimName, Force, Reversed, Frame);
 
 		var daOffset = animOffsets.get(AnimName);

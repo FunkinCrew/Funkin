@@ -3027,7 +3027,7 @@ class ChartingState extends MusicBeatState
 		}
 		else
 		{
-			var note:Note = new Note(n.strumTime, n.noteData % 4,null,false,true);
+			var note:Note = new Note(n.strumTime, n.noteData % 4,null,false,true, n.isAlt);
 			note.rawNoteData = n.noteData;
 			note.sustainLength = noteSus;
 			note.setGraphicSize(Math.floor(GRID_SIZE), Math.floor(GRID_SIZE));
