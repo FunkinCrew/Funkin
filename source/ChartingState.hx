@@ -2134,7 +2134,7 @@ class ChartingState extends MusicBeatState
 		{
 			for(note in shownNotes)
 			{
-				if (note.strumTime <= Conductor.songPosition && !claps.contains(note))
+				if (note.strumTime <= Conductor.songPosition && !claps.contains(note) && FlxG.sound.music.playing)
 				{
 					claps.push(note);
 					FlxG.sound.play(Paths.sound('SNAP'));
