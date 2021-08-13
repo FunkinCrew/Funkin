@@ -1,5 +1,6 @@
 package ui;
 
+import flixel.FlxSubState;
 import states.LoadingState;
 import states.PlayState;
 import flixel.FlxState;
@@ -206,19 +207,19 @@ class PageOption extends Option
 }
 
 /**
-* An option specific to the controls menu since I don't think this type of option is used much.
+* Very simple option that opens up a substate when selecting it.
 */
-class ControlsOption extends Option
+class GameSubStateOption extends Option
 {
     // VARIABLES //
-    var controlsBox:ControlsBox = new ControlsBox();
+    public var Game_Sub_State:FlxSubState;
 
-    public function new(_Option_Row:Int = 0)
+    public function new(_Option_Name:String = "-", _Option_Row:Int = 0, _Game_Sub_State:Dynamic)
     {
         super();
 
         // SETTING VALUES //
-        this.Option_Name = "Controls";
+        this.Option_Name = _Option_Name;
         this.Option_Row = _Option_Row;
 
         // CREATING OTHER OBJECTS //
@@ -232,16 +233,8 @@ class ControlsOption extends Option
     {
         super.update(elapsed);
 
-        if(FlxG.keys.justPressed.ENTER && Alphabet_Text.targetY == 0 && OptionsMenu.inMenu == false)
-        {
-            OptionsMenu.inMenu = true;
-            add(controlsBox);
-        }
-
-        if(FlxG.keys.justPressed.ESCAPE && Alphabet_Text.targetY == 0 && OptionsMenu.inMenu == true)
-        {
-            remove(controlsBox);
-        }
+        if(FlxG.keys.justPressed.ENTER && Alphabet_Text.targetY == 0)
+            FlxG.state.openSubState(Game_Sub_State);
     }
 }
 

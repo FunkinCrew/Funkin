@@ -34,7 +34,7 @@ class OptionsMenu extends MusicBeatState
 	public var pages:Array<Dynamic> = [
 		[
 			"Categories",
-			new ControlsOption(0),
+			//new ControlsOption(0),
 			new PageOption("Gameplay", 1, "Gameplay"),
 			new PageOption("Graphics", 2, "Graphics"),
 			new PageOption("Tools", 3, "Tools"),
