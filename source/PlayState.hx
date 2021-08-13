@@ -2226,36 +2226,42 @@ class PlayState extends MusicBeatState
 				}
 			}
 
-		if (updateFrame == 4)
-			{
-				TimingStruct.clearTimings();
-	
-					var currentIndex = 0;
-					for (i in SONG.eventObjects)
-					{
-						if (i.type == "BPM Change")
+			if (updateFrame == 4)
+				{
+					TimingStruct.clearTimings();
+		
+						var currentIndex = 0;
+						for (i in SONG.eventObjects)
 						{
-							var beat:Float = i.position;
-	
-							var endBeat:Float = Math.POSITIVE_INFINITY;
-	
-							TimingStruct.addTiming(beat,i.value,endBeat, 0); // offset in this case = start time since we don't have a offset
-							
-							if (currentIndex != 0)
+							if (i.type == "BPM Change")
 							{
-								var data = TimingStruct.AllTimings[currentIndex - 1];
-								data.endBeat = beat;
-								data.length = (data.endBeat - data.startBeat) / (data.bpm / 60);
-								TimingStruct.AllTimings[currentIndex].startTime = data.startTime + data.length;
+								var beat:Float = i.position;
+		
+								var endBeat:Float = Math.POSITIVE_INFINITY;
+		
+								TimingStruct.addTiming(beat,i.value,endBeat, 0); // offset in this case = start time since we don't have a offset
+								
+								if (currentIndex != 0)
+								{
+									var data = TimingStruct.AllTimings[currentIndex - 1];
+									data.endBeat = beat;
+									data.length = (data.endBeat - data.startBeat) / (data.bpm / 60);
+									var step = ((60 / data.bpm) * 1000) / 4;
+									TimingStruct.AllTimings[currentIndex].startStep = Math.floor(((data.endBeat / (data.bpm / 60)) * 1000) / step);
+									TimingStruct.AllTimings[currentIndex].startTime = data.startTime + data.length;
+								}
+		
+								currentIndex++;
 							}
-	
-							currentIndex++;
 						}
-					}
+		
+						recalculateAllSectionTimes();
+		
+						regenerateLines();
+						updateFrame++;
+				}
+				else if (updateFrame != 5)
 					updateFrame++;
-			}
-			else if (updateFrame != 5)
-				updateFrame++;
 	
 
 			var timingSeg = TimingStruct.getTimingAtTimestamp(Conductor.songPosition);
