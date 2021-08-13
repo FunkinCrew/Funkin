@@ -2719,6 +2719,7 @@ class ChartingState extends MusicBeatState
 					var box = new ChartingBox(note.x,note.y,note);
 					box.connectedNoteData = i;
 					selectedBoxes.add(box);
+					note.charterSelected = true;
 					curSelectedNoteObject.charterSelected = true;
 				}
 			
@@ -2763,18 +2764,14 @@ class ChartingState extends MusicBeatState
 			if (note.sustainLength > 0)
 				curRenderedSustains.remove(note.noteCharterObject);
 
-			if (note.charterSelected)
+			for(i in 0...selectedBoxes.members.length)
 			{
-				note.charterSelected = false;
-				for(i in 0...selectedBoxes.members.length)
+				var box = selectedBoxes.members[i];
+				if (box.connectedNote == note)
 				{
-					var box = selectedBoxes.members[i];
-					if (box.connectedNote == note)
-					{
-						selectedBoxes.members.remove(box);
-						box.destroy();
-						return;
-					}
+					selectedBoxes.members.remove(box);
+					box.destroy();
+					return;
 				}
 			}
 		}
