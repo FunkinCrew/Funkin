@@ -125,7 +125,6 @@ class Song
 		if (song.eventObjects == null)
 			song.eventObjects = [];
 
-
 		for(i in song.eventObjects)
 		{
 			var name = Reflect.field(i,"name");
@@ -176,7 +175,11 @@ class Song
 
 
 		// conversion stuff
-
+		for (section in swagShit.notes) 
+		{
+			if (section.altAnim)
+				section.p1AltAnim = section.altAnim;
+		}
 
 		return swagShit;
 	}

@@ -301,7 +301,7 @@ class ChartingState extends MusicBeatState
 		{
 			var renderer = new SectionRender(0,640 * awfgaw,GRID_SIZE);
 			if (_song.notes[awfgaw] == null)
-				_song.notes.push(newSection(16,true,false));
+				_song.notes.push(newSection(16,true,false,false));
 			renderer.section = _song.notes[awfgaw];
 
 			sectionRenderes.add(renderer);
@@ -2699,6 +2699,7 @@ class ChartingState extends MusicBeatState
 			mustHitSection: true,
 			sectionNotes: [],
 			typeOfSection: 0,
+			altAnim: false,
 			p1AltAnim: false,
 			p2AltAnim: false
 		};
@@ -2838,6 +2839,7 @@ class ChartingState extends MusicBeatState
 				mustHitSection: mustHitSection,
 				sectionNotes: [],
 				typeOfSection: 0,
+				altAnim: false,
 				p1AltAnim: p1AltAnim,
 				p2AltAnim: p2AltAnim
 			};
