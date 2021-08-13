@@ -379,7 +379,8 @@ class FreeplayState extends MusicBeatState
 			}
 
 
-			PlayState.SONG = hmm;
+
+			PlayState.SONG = Song.conversionChecks(hmm);
 			PlayState.isStoryMode = false;
 			PlayState.storyDifficulty = curDifficulty;
 			PlayState.storyWeek = songs[curSelected].week;

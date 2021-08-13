@@ -4,6 +4,7 @@ import flixel.FlxSprite;
 class ChartingBox extends FlxSprite
 {
     public var connectedNote:Note;
+    public var connectedNoteData:Array<Dynamic>;
 
     public function new(x,y, originalNote:Note)
     {
