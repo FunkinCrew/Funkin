@@ -2560,7 +2560,6 @@ class ChartingState extends MusicBeatState
 		{
 			check_mustHitSection.checked = sec.mustHitSection;
 			check_altAnim.checked = sec.altAnim;
-			check_changeBPM.checked = sec.changeBPM;
 		}
 	}
 
