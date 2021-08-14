@@ -11,6 +11,8 @@ typedef SwagSection =
 	var bpm:Float;
 	var changeBPM:Bool;
 	var altAnim:Bool;
+	var p1AltAnim:Bool;
+	var p2AltAnim:Bool;
 }
 
 class Section
@@ -18,6 +20,8 @@ class Section
 	public var startTime:Float = 0;
 	public var endTime:Float = 0;
 	public var sectionNotes:Array<Array<Dynamic>> = [];
+	public var changeBPM:Bool = false;
+	public var bpm:Float = 0;
 
 	public var lengthInSteps:Int = 16;
 	public var typeOfSection:Int = 0;

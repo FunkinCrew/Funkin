@@ -36,10 +36,12 @@ class OptionsMenu extends MusicBeatState
 			new ScrollSpeedOption("Change your scroll speed. (1 = Chart dependent)"),
 			new AccuracyDOption("Change how accuracy is calculated. (Accurate = Simple, Complex = Milisecond Based)"),
 			new ResetButtonOption("Toggle pressing R to gameover."),
+			new InstantRespawn("Toggle if you instantly respawn after dying."),
 			// new OffsetMenu("Get a note offset based off of your inputs!"),
 			new CustomizeGameplay("Drag and drop gameplay modules to your prefered positions!")
 		]),
 		new OptionCategory("Appearance", [
+			new EditorRes("Not showing the editor grid will greatly increase editor performance"),
 			new DistractionsAndEffectsOption("Toggle stage distractions that can hinder your gameplay."),
 			new CamZoomOption("Toggle the camera zoom in-game."),
 			new StepManiaOption("Sets the colors of the arrows depending on quantization instead of direction."),
@@ -84,6 +86,7 @@ class OptionsMenu extends MusicBeatState
 	var blackBorder:FlxSprite;
 	override function create()
 	{
+		clean();
 		instance = this;
 		var menuBG:FlxSprite = new FlxSprite().loadGraphic(Paths.image("menuDesat"));
 
@@ -91,10 +94,7 @@ class OptionsMenu extends MusicBeatState
 		menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
 		menuBG.updateHitbox();
 		menuBG.screenCenter();
-		if(FlxG.save.data.antialiasing)
-			{
-				menuBG.antialiasing = true;
-			}
+		menuBG.antialiasing = FlxG.save.data.antialiasing;
 		add(menuBG);
 
 		grpControls = new FlxTypedGroup<Alphabet>();
@@ -124,6 +124,8 @@ class OptionsMenu extends MusicBeatState
 
 		FlxTween.tween(versionShit,{y: FlxG.height - 18},2,{ease: FlxEase.elasticInOut});
 		FlxTween.tween(blackBorder,{y: FlxG.height - 18},2, {ease: FlxEase.elasticInOut});
+		
+		changeSelection();
 
 		super.create();
 	}
@@ -138,7 +140,9 @@ class OptionsMenu extends MusicBeatState
 		if (acceptInput)
 		{
 			if (controls.BACK && !isCat)
+			{
 				FlxG.switchState(new MainMenuState());
+			}
 			else if (controls.BACK)
 			{
 				isCat = false;

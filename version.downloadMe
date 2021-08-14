@@ -1,3 +1,5 @@
-1.5.4;
-- Controller Support
-- Fixed Input Drops/Disappering Notes
+1.6.1;
+- Wiggle Shader for Lua Modcharts
+- Optimized the editor
+- Fixed HTML5 Delta Timings
+- Steps actually exist now

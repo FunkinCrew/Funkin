@@ -106,11 +106,7 @@ class Ratings
         // IF LEMON SEES THIS I'M SORRY :(
 
         // trace('Hit Info\nDifference: ' + noteDiff + '\nZone: ' + Conductor.safeZoneOffset * 1.5 + "\nTS: " + customTimeScale + "\nLate: " + 155 * customTimeScale);
-
-        if (FlxG.save.data.botplay && !PlayState.loadRep)
-            return "sick"; // FUNNY
 	
-
         var rating = checkRating(noteDiff,customTimeScale);
 
 
@@ -119,7 +115,7 @@ class Ratings
 
     public static function checkRating(ms:Float, ts:Float)
     {
-        var rating = "sick";
+        var rating = "shit";
         if (ms <= 166 * ts && ms >= 135 * ts)
             rating = "shit";
         if (ms < 135 * ts && ms >= 90 * ts) 

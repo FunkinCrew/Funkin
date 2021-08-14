@@ -6,6 +6,10 @@
 ![GitHub commits since latest release (by date)](https://img.shields.io/github/commits-since/KadeDev/Kade-Engine/latest) ![GitHub repo size](https://img.shields.io/github/repo-size/KadeDev/Kade-Engine) ![Lines of code](https://img.shields.io/tokei/lines/github/KadeDev/Kade-Engine) ![Supported platforms](https://img.shields.io/badge/supported%20platforms-windows%2C%20macOS%2C%20linux%2C%20html5-blue) ![GitHub all releases](https://img.shields.io/github/downloads/KadeDev/Kade-Engine/total) ![GitHub](https://img.shields.io/github/license/KadeDev/Kade-Engine) ![GitHub release (latest by date including pre-releases)](https://img.shields.io/github/v/release/KadeDev/Kade-Engine?include_prereleases&label=latest%20version) 
 
 # Friday Night Funkin': Kade Engine
+
+### If you want to contribute to Kade Engine, read [this](https://github.com/KadeDev/Kade-Engine/blob/stable/CONTRIBUTING.md) first.
+### If you want to build Kade Engine, read [this](https://github.com/KadeDev/Kade-Engine/blob/stable/docs/building.md).
+
 ## Friday Night Funkin'
 **Friday Night Funkin'** is a rhythm game originally made for Ludum Dare 47 "Stuck In a Loop".
 
@@ -69,6 +73,7 @@ This game was made with love to Newgrounds and its community. Extra love to Tom 
 ### Kade Engine
 - [KadeDeveloper](https://twitter.com/KadeDeveloper) - Maintainer and lead programmer
 - [The contributors](https://github.com/KadeDev/Kade-Engine/graphs/contributors)
+
 
 
 ### Shoutouts
