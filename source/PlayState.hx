@@ -2443,6 +2443,7 @@ class PlayState extends MusicBeatState
 			{
 				trace('GITAROO MAN EASTER EGG');
 				FlxG.switchState(new GitarooPause());
+				clean();
 			}
 			else
 				openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
@@ -2464,7 +2465,9 @@ class PlayState extends MusicBeatState
 			#if windows
 			DiscordClient.changePresence("Chart Editor", null, null, true);
 			#end
+
 			FlxG.switchState(new ChartingState());
+			clean();
 			FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, handleInput);
 			FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP, releaseInput);
 			#if windows
@@ -2518,6 +2521,7 @@ class PlayState extends MusicBeatState
 			}
 
 			FlxG.switchState(new AnimationDebug(SONG.player2));
+			clean();
 			FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, handleInput);
 			FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP, releaseInput);
 			#if windows
@@ -2532,6 +2536,7 @@ class PlayState extends MusicBeatState
 		if (FlxG.keys.justPressed.ZERO)
 		{
 			FlxG.switchState(new AnimationDebug(SONG.player1));
+			clean();
 			FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, handleInput);
 			FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP, releaseInput);
 			#if windows
@@ -3392,6 +3397,7 @@ class PlayState extends MusicBeatState
 			FlxG.sound.playMusic(Paths.music('freakyMenu'));
 			offsetTesting = false;
 			LoadingState.loadAndSwitchState(new OptionsMenu());
+			clean();
 			FlxG.save.data.offset = offsetTest;
 		}
 		else
@@ -3429,6 +3435,7 @@ class PlayState extends MusicBeatState
 						FlxG.sound.playMusic(Paths.music('freakyMenu'));
 						Conductor.changeBPM(102);
 						FlxG.switchState(new StoryMenuState());
+						clean();
 					}
 
 					#if windows
@@ -3483,6 +3490,7 @@ class PlayState extends MusicBeatState
 					FlxG.sound.music.stop();
 
 					LoadingState.loadAndSwitchState(new PlayState());
+					clean();
 				}
 			}
 			else
@@ -3503,7 +3511,10 @@ class PlayState extends MusicBeatState
 						});
 				}
 				else
+				{
 					FlxG.switchState(new FreeplayState());
+					clean();
+				}
 			}
 		}
 	}

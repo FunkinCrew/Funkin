@@ -99,8 +99,10 @@ class TitleState extends MusicBeatState
 
 		#if FREEPLAY
 		FlxG.switchState(new FreeplayState());
+		clean();
 		#elseif CHARTING
 		FlxG.switchState(new ChartingState());
+		clean();
 		#else
 		#if !cpp
 		new FlxTimer().start(1, function(tmr:FlxTimer)
@@ -305,16 +307,19 @@ class TitleState extends MusicBeatState
 						OutdatedSubState.needVer = returnedData[0];
 						OutdatedSubState.currChanges = returnedData[1];
 						FlxG.switchState(new OutdatedSubState());
+						clean();
 					}
 					else
 					{
 						FlxG.switchState(new MainMenuState());
+						clean();
 					}
 				}
 				
 				http.onError = function (error) {
 				  trace('error: $error');
 				  FlxG.switchState(new MainMenuState()); // fail but we go anyway
+				  clean();
 				}
 				
 				http.request();

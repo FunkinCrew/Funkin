@@ -134,12 +134,15 @@ class OptionsMenu extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
+		clean();
 		super.update(elapsed);
 
 		if (acceptInput)
 		{
 			if (controls.BACK && !isCat)
+			{
 				FlxG.switchState(new MainMenuState());
+			}
 			else if (controls.BACK)
 			{
 				isCat = false;

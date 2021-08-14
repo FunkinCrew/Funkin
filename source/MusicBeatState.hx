@@ -1,5 +1,6 @@
 package;
 
+import flixel.FlxBasic;
 #if windows
 import Discord.DiscordClient;
 #end
@@ -21,6 +22,24 @@ class MusicBeatState extends FlxUIState
 
 	inline function get_controls():Controls
 		return PlayerSettings.player1.controls;
+
+	private var assets:Array<FlxBasic> = [];
+
+	override function add(Object:flixel.FlxBasic):flixel.FlxBasic
+	{
+		if (FlxG.save.data.optimize)
+			assets.push(Object);
+		return super.add(Object);
+	}
+
+	public function clean()
+	{
+		if (FlxG.save.data.optimize)
+			for(i in assets)
+			{
+				remove(i);
+			}
+	}
 
 	override function create()
 	{
