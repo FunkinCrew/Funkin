@@ -3,6 +3,7 @@ package smTools;
 import sys.io.File;
 import haxe.Exception;
 import lime.app.Application;
+import Section.SwagSection;
 import haxe.Json;
 
 class SMFile
@@ -29,6 +30,8 @@ class SMFile
         {
             _fileData = data;
 
+
+
             // Gather header data
             var headerData = "";
             var inc = 0;
@@ -41,9 +44,16 @@ class SMFile
 
             header = new SMHeader(headerData.split(';'));
 
-            if (!StringTools.contains(header.MUSIC,"ogg"))
+            if (_fileData.toString().split("#NOTES").length > 2)
             {
-                Application.current.window.alert("The music MUST be an OGG File.","SM File loading (" + header.TITLE + ")");
+                Application.current.window.alert("The chart must only have 1 difficulty, this one has " + (_fileData.toString().split("#NOTES").length - 1),"SM File loading (" + header.TITLE + ")");
+                isValid = false;
+                return;
+            }
+
+            if (!StringTools.contains(header.MUSIC.toLowerCase(),"ogg"))
+            {
+                Application.current.window.alert("The music MUST be an OGG File, make sure the sm file has the right music property.","SM File loading (" + header.TITLE + ")");
                 isValid = false;
                 return;
             }
@@ -64,6 +74,8 @@ class SMFile
             inc += 5; // skip 5 down to where da notes @
 
             measures = [];
+
+
 
             var measure = "";
 
@@ -168,6 +180,7 @@ class SMFile
 
             if (!isDouble)
                 section.mustHitSection = true;
+            
 
             @:privateAccess
             for(i in 0...measure._measure.length - 1)
@@ -183,6 +196,25 @@ class SMFile
                 }
 
                 currentBeat = noteRow / 48;
+
+                if (currentBeat % 4 == 0)
+                {
+                    // ok new section time
+                    song.notes.push(section);
+                    section = {
+                        sectionNotes: [],
+                        lengthInSteps: 16,
+                        typeOfSection: 0,
+                        startTime: 0.0,
+                        endTime: 0.0,
+                        mustHitSection: false,
+                        bpm: header.getBPM(0),
+                        changeBPM: false,
+                        altAnim: false
+                    };
+                    if (!isDouble)
+                        section.mustHitSection = true;
+                }
 
                 var seg = TimingStruct.getTimingAtBeat(currentBeat);
 
@@ -263,6 +295,35 @@ class SMFile
         {
             song.eventObjects = header.changeEvents;
         }
+        /*var newSections = [];
+
+		for(s in 0...song.notes.length) // lets go ahead and make sure each note is actually in their own section haha
+		{
+			var sec:SwagSection = {
+				startTime: song.notes[s].startTime,
+				endTime: song.notes[s].endTime,
+				lengthInSteps: 16,
+				bpm: song.bpm,
+				changeBPM: false,
+				mustHitSection: song.notes[s].mustHitSection,
+				sectionNotes: [],
+				typeOfSection: 0,
+				altAnim: song.notes[s].altAnim
+			};
+			for(i in song.notes)
+            {
+                for(ii in i.sectionNotes)
+                {
+                    if (ii[0] >= sec.startTime && ii[0] < sec.endTime)
+                        sec.sectionNotes.push(ii);
+                }
+            }
+            newSections.push(sec);
+		}*/
+        // WE ALREADY DO THIS
+	
+
+        //song.notes = newSections;
 
         // save da song
 

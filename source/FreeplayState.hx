@@ -67,6 +67,7 @@ class FreeplayState extends MusicBeatState
 
 	override function create()
 	{
+		clean();
 		var initSonglist = CoolUtil.coolTextFile(Paths.txt('data/freeplaySonglist'));
 
 		//var diffList = "";
@@ -179,10 +180,7 @@ class FreeplayState extends MusicBeatState
 		// LOAD CHARACTERS
 
 		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuBGBlue'));
-		if(FlxG.save.data.antialiasing)
-			{
-				bg.antialiasing = true;
-			}
+		bg.antialiasing = FlxG.save.data.antialiasing;
 		add(bg);
 
 		grpSongs = new FlxTypedGroup<Alphabet>();
@@ -382,7 +380,8 @@ class FreeplayState extends MusicBeatState
 			}
 
 
-			PlayState.SONG = hmm;
+
+			PlayState.SONG = Song.conversionChecks(hmm);
 			PlayState.isStoryMode = false;
 			PlayState.storyDifficulty = curDifficulty;
 			PlayState.storyWeek = songs[curSelected].week;
@@ -400,6 +399,7 @@ class FreeplayState extends MusicBeatState
 			PlayState.isSM = false;
 			#end
 			LoadingState.loadAndSwitchState(new PlayState());
+			clean();
 		}
 	}
 
@@ -479,6 +479,7 @@ class FreeplayState extends MusicBeatState
 		#end
 
 		diffCalcText.text = 'RATING: ${DiffCalc.CalculateDiff(songData.get(songs[curSelected].songName)[curDifficulty])}';
+		diffText.text = CoolUtil.difficultyFromInt(curDifficulty).toUpperCase();
 		
 		#if PRELOAD_ALL
 		if (songs[curSelected].songCharacter == "sm")

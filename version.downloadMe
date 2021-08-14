@@ -1,5 +1,8 @@
-1.6.1;
-- Wiggle Shader for Lua Modcharts
-- Optimized the editor
-- Fixed HTML5 Delta Timings
-- Steps actually exist now
+1.6.2;
+- Added the ability to select and modify notes in the editor
+- Added copy and paste (with ctrl z support) while selecting notes
+- Optimized gameplay
+- Optimized the chart editor (less lag on longer songs, and faster load times)
+- Fixed stutter at the start of a song
+- Fixed scroll speed changes so they work when more then one of them exist
+- Modcharts now work on Linux!

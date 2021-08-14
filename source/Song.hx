@@ -113,10 +113,74 @@ class Song
 		return parseJSONshit(rawJson);
 	}
 
+	public static function conversionChecks(song:SwagSong):SwagSong
+	{
+		var ba = song.bpm;
+
+		var index = 0;
+		trace("conversion stuff " + song.song + " " + song.notes.length);
+		var convertedStuff:Array<Song.Event> = [];
+
+
+		if (song.eventObjects == null)
+			song.eventObjects = [new Song.Event("Init BPM",0,song.bpm,"BPM Change")];
+
+		for(i in song.eventObjects)
+		{
+			var name = Reflect.field(i,"name");
+			var type = Reflect.field(i,"type");
+			var pos = Reflect.field(i,"position");
+			var value = Reflect.field(i,"value");
+
+			convertedStuff.push(new Song.Event(name,pos,value,type));
+		}
+
+		song.eventObjects = convertedStuff;
+
+		for(i in song.notes)
+		{
+			var currentBeat = 4 * index;
+
+			var currentSeg = TimingStruct.getTimingAtBeat(currentBeat);
+
+			if (currentSeg == null)
+				continue;
+
+			var beat:Float = currentSeg.startBeat + (currentBeat - currentSeg.startBeat);
+
+			if (i.changeBPM && i.bpm != ba)
+			{
+				trace("converting changebpm for section " + index);
+				ba = i.bpm;
+				song.eventObjects.push(new Song.Event("FNF BPM Change " + index,beat,i.bpm,"BPM Change"));
+			}
+
+			for(ii in i.sectionNotes)
+			{
+				if (ii[3] == null)
+					ii[3] = false;
+			}
+
+			index++;
+		}
+
+		return song;
+
+	}
+
 	public static function parseJSONshit(rawJson:String):SwagSong
 	{
 		var swagShit:SwagSong = cast Json.parse(rawJson).song;
 		swagShit.validScore = true;
+
+
+		// conversion stuff
+		for (section in swagShit.notes) 
+		{
+			if (section.altAnim)
+				section.p1AltAnim = section.altAnim;
+		}
+
 		return swagShit;
 	}
 }
