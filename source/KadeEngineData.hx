@@ -112,8 +112,8 @@ class KadeEngineData
 		if (FlxG.save.data.cacheImages == null)
 			FlxG.save.data.cacheImages = false;
 
-		if (FlxG.save.data.editor == null)
-			FlxG.save.data.editor = true;
+		if (FlxG.save.data.editorBG == null)
+			FlxG.save.data.editor = false;
 		
 		if (FlxG.save.data.zoom == null)
 			FlxG.save.data.zoom = 1;

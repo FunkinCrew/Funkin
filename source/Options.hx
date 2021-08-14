@@ -152,7 +152,7 @@ class EditorRes extends Option
 
 	public override function press():Bool
 	{
-		FlxG.save.data.editor = !FlxG.save.data.editor;
+		FlxG.save.data.editorBG = !FlxG.save.data.editorBG;
 		
 		display = updateDisplay();
 		return true;
@@ -160,7 +160,7 @@ class EditorRes extends Option
 
 	private override function updateDisplay():String
 	{
-		return  FlxG.save.data.editor ? "Show Editor Grid" : "Do not Show Editor Grid";
+		return  FlxG.save.data.editorBG ? "Show Editor Grid" : "Do not Show Editor Grid";
 	}
 
 }
