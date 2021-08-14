@@ -30,6 +30,8 @@ class SMFile
         {
             _fileData = data;
 
+
+
             // Gather header data
             var headerData = "";
             var inc = 0;
@@ -42,9 +44,16 @@ class SMFile
 
             header = new SMHeader(headerData.split(';'));
 
-            if (!StringTools.contains(header.MUSIC,"ogg"))
+            if (_fileData.toString().split("#NOTES").length > 2)
             {
-                Application.current.window.alert("The music MUST be an OGG File.","SM File loading (" + header.TITLE + ")");
+                Application.current.window.alert("The chart must only have 1 difficulty, this one has " + (_fileData.toString().split("#NOTES").length - 1),"SM File loading (" + header.TITLE + ")");
+                isValid = false;
+                return;
+            }
+
+            if (!StringTools.contains(header.MUSIC.toLowerCase(),"ogg"))
+            {
+                Application.current.window.alert("The music MUST be an OGG File, make sure the sm file has the right music property.","SM File loading (" + header.TITLE + ")");
                 isValid = false;
                 return;
             }
@@ -65,6 +74,8 @@ class SMFile
             inc += 5; // skip 5 down to where da notes @
 
             measures = [];
+
+
 
             var measure = "";
 
@@ -284,7 +295,6 @@ class SMFile
         {
             song.eventObjects = header.changeEvents;
         }
-
         /*var newSections = [];
 
 		for(s in 0...song.notes.length) // lets go ahead and make sure each note is actually in their own section haha
