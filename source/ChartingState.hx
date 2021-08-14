@@ -301,7 +301,7 @@ class ChartingState extends MusicBeatState
 		{
 			var renderer = new SectionRender(0,640 * awfgaw,GRID_SIZE);
 			if (_song.notes[awfgaw] == null)
-				_song.notes.push(newSection(16,true,false));
+				_song.notes.push(newSection(16,true,false,false));
 			renderer.section = _song.notes[awfgaw];
 
 			sectionRenderes.add(renderer);
@@ -1183,7 +1183,8 @@ class ChartingState extends MusicBeatState
 	var check_mustHitSection:FlxUICheckBox;
 	var check_changeBPM:FlxUICheckBox;
 	var stepperSectionBPM:FlxUINumericStepper;
-	var check_altAnim:FlxUICheckBox;
+	var check_p1AltAnim:FlxUICheckBox;
+	var check_p2AltAnim:FlxUICheckBox;
 
 	function addSectionUI():Void
 	{
@@ -1267,8 +1268,11 @@ class ChartingState extends MusicBeatState
 		check_mustHitSection.checked = true;
 		// _song.needsVoices = check_mustHit.checked;
 
-		check_altAnim = new FlxUICheckBox(10, 340, null, null, "Alternate Animation", 100);
-		check_altAnim.name = 'check_altAnim';
+		check_p1AltAnim = new FlxUICheckBox(10, 340, null, null, "P1 Alternate Animation", 100);
+		check_p1AltAnim.name = 'check_p1AltAnim';
+
+		check_p2AltAnim = new FlxUICheckBox(200, 340, null, null, "P2 Alternate Animation", 100);
+		check_p2AltAnim.name = 'check_p2AltAnim';
 
 		var refresh = new FlxButton(10, 60, 'Refresh Section', function() {
 			var section = getSectionByTime(Conductor.songPosition);
@@ -1277,7 +1281,8 @@ class ChartingState extends MusicBeatState
 				return;
 
 			check_mustHitSection.checked = section.mustHitSection;
-			check_altAnim.checked = section.altAnim;
+			check_p1AltAnim.checked = section.p1AltAnim;
+			check_p2AltAnim.checked = section.p2AltAnim;
 		});
 
 		var startSection:FlxButton = new FlxButton(10, 85, "Play Here", function() {
@@ -1294,7 +1299,8 @@ class ChartingState extends MusicBeatState
 		//tab_group_section.add(stepperCopy);
 		//tab_group_section.add(stepperCopyLabel);
 		tab_group_section.add(check_mustHitSection);
-		tab_group_section.add(check_altAnim);
+		tab_group_section.add(check_p1AltAnim);
+		tab_group_section.add(check_p2AltAnim);
 		//tab_group_section.add(copyButton);
 		tab_group_section.add(clearSectionButton);
 		tab_group_section.add(swapSection);
@@ -1511,8 +1517,10 @@ class ChartingState extends MusicBeatState
 			var label = check.getLabel().text;
 			switch (label)
 			{
-				case "Alternate Animation":
-					getSectionByTime(Conductor.songPosition).altAnim = check.checked;
+				case "P1 Alternate Animation":
+					getSectionByTime(Conductor.songPosition).p1AltAnim = check.checked;
+				case "P2 Alternate Animation":
+					getSectionByTime(Conductor.songPosition).p2AltAnim = check.checked;
 			}
 		}
 		else if (id == FlxUINumericStepper.CHANGE_EVENT && (sender is FlxUINumericStepper))
@@ -2073,7 +2081,8 @@ class ChartingState extends MusicBeatState
 			{
 				lastUpdatedSection = weird;
 				check_mustHitSection.checked = weird.mustHitSection;
-				check_altAnim.checked = weird.altAnim;
+				check_p1AltAnim.checked = weird.p1AltAnim;
+				check_p2AltAnim.checked = weird.p2AltAnim;
 			}
 		}
 
@@ -2547,13 +2556,14 @@ class ChartingState extends MusicBeatState
 		if (sec == null)
 		{
 			check_mustHitSection.checked = true;
-			check_altAnim.checked = false;
+			check_p1AltAnim.checked = false;
+			check_p2AltAnim.checked = false;
 		}
 		else
 		{
 			check_mustHitSection.checked = sec.mustHitSection;
-			check_altAnim.checked = sec.altAnim;
-			check_changeBPM.checked = sec.changeBPM;
+			check_p1AltAnim.checked = sec.p1AltAnim;
+			check_p2AltAnim.checked = sec.p2AltAnim;
 		}
 	}
 
@@ -2681,7 +2691,9 @@ class ChartingState extends MusicBeatState
 			mustHitSection: true,
 			sectionNotes: [],
 			typeOfSection: 0,
-			altAnim: false
+			altAnim: false,
+			p1AltAnim: false,
+			p2AltAnim: false
 		};
 
 		_song.notes.push(sec);
@@ -2792,7 +2804,7 @@ class ChartingState extends MusicBeatState
 		updateGrid();
 	}
 
-	private function newSection(lengthInSteps:Int = 16,mustHitSection:Bool = false,altAnim:Bool = true):SwagSection
+	private function newSection(lengthInSteps:Int = 16,mustHitSection:Bool = false,p1AltAnim:Bool = true, p2AltAnim:Bool = true):SwagSection
 		{
 
 			var daPos:Float = 0;
@@ -2820,7 +2832,9 @@ class ChartingState extends MusicBeatState
 				mustHitSection: mustHitSection,
 				sectionNotes: [],
 				typeOfSection: 0,
-				altAnim: altAnim
+				altAnim: false,
+				p1AltAnim: p1AltAnim,
+				p2AltAnim: p2AltAnim
 			};
 
 
@@ -2894,7 +2908,7 @@ class ChartingState extends MusicBeatState
 				}
 			for (daSection1 in 0..._song.notes.length)
 				{
-					newSong.push(newSection(16,_song.notes[daSection1].mustHitSection,_song.notes[daSection1].altAnim));
+					newSong.push(newSection(16,_song.notes[daSection1].mustHitSection,_song.notes[daSection1].p1AltAnim,_song.notes[daSection1].p2AltAnim));
 				}
 	
 			for (daSection in 0...(_song.notes.length))
@@ -2902,7 +2916,8 @@ class ChartingState extends MusicBeatState
 				var aimtosetsection = daSection+Std.int((totaladdsection));
 				if(aimtosetsection<0) aimtosetsection = 0;
 				newSong[aimtosetsection].mustHitSection = _song.notes[daSection].mustHitSection;
-				newSong[aimtosetsection].altAnim = _song.notes[daSection].altAnim;
+				newSong[aimtosetsection].p1AltAnim = _song.notes[daSection].p1AltAnim;
+				newSong[aimtosetsection].p2AltAnim = _song.notes[daSection].p2AltAnim;
 				//trace("section "+daSection);
 				for(daNote in 0...(_song.notes[daSection].sectionNotes.length))
 					{	
@@ -3021,7 +3036,7 @@ class ChartingState extends MusicBeatState
 		}
 		else
 		{
-			var note:Note = new Note(n.strumTime, n.noteData % 4,null,false,true);
+			var note:Note = new Note(n.strumTime, n.noteData % 4,null,false,true, n.isAlt);
 			note.rawNoteData = n.noteData;
 			note.sustainLength = noteSus;
 			note.setGraphicSize(Math.floor(GRID_SIZE), Math.floor(GRID_SIZE));
