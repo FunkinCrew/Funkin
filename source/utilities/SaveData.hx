@@ -31,6 +31,12 @@ class SaveData {
         if (FlxG.save.data.killBind == null)
             FlxG.save.data.killBind = "R";
 
+        if (FlxG.save.data.uiSkin == null)
+            FlxG.save.data.uiSkin = "default";
+
+        if (FlxG.save.data.msText == null)
+            FlxG.save.data.msText = true;
+
         PlayerSettings.init();
         PlayerSettings.player1.controls.loadKeyBinds();
         
