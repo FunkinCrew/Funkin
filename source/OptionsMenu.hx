@@ -86,6 +86,7 @@ class OptionsMenu extends MusicBeatState
 	var blackBorder:FlxSprite;
 	override function create()
 	{
+		clean();
 		instance = this;
 		var menuBG:FlxSprite = new FlxSprite().loadGraphic(Paths.image("menuDesat"));
 
@@ -134,7 +135,6 @@ class OptionsMenu extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
-		clean();
 		super.update(elapsed);
 
 		if (acceptInput)
