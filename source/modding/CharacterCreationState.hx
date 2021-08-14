@@ -78,6 +78,7 @@ class CharacterCreationState extends FlxState
         super();
 
         instance = this;
+
         Character_Name = New_Character;
 
         if(Assets.getLibrary("shared") == null)
@@ -262,7 +263,7 @@ class CharacterCreationState extends FlxState
         Read_JSON_Data();
     }
 
-    function Create_Character(?New_Char:String)
+    function Create_Character(?New_Char:String = "bf")
     {
         if(New_Char != null)
             Character_Name = New_Char;

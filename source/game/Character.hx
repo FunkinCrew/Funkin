@@ -38,7 +38,8 @@ class Character extends FlxSprite
 		antialiasing = true;
 
 		// YOOOOOOOOOO POG MODDING STUFF
-		loadOffsetFile(curCharacter);
+		if(character != "")
+			loadOffsetFile(curCharacter);
 
 		dancesLeftAndRight = false;
 		switch (curCharacter)
@@ -358,26 +359,29 @@ class Character extends FlxSprite
 		if (isPlayer)
 			flipX = !flipX;
 
-		if(!debugMode)
+		if(curCharacter != '')
 		{
-			dance();
-
-			if (isPlayer)
+			if(!debugMode)
 			{
-				// Doesn't flip for BF, since his are already in the right place???
-				if (!curCharacter.startsWith('bf'))
-				{
-					// var animArray
-					var oldRight = animation.getByName('singRIGHT').frames;
-					animation.getByName('singRIGHT').frames = animation.getByName('singLEFT').frames;
-					animation.getByName('singLEFT').frames = oldRight;
+				dance();
 	
-					// IF THEY HAVE MISS ANIMATIONS??
-					if (animation.getByName('singRIGHTmiss') != null)
+				if (isPlayer)
+				{
+					// Doesn't flip for BF, since his are already in the right place???
+					if (!curCharacter.startsWith('bf'))
 					{
-						var oldMiss = animation.getByName('singRIGHTmiss').frames;
-						animation.getByName('singRIGHTmiss').frames = animation.getByName('singLEFTmiss').frames;
-						animation.getByName('singLEFTmiss').frames = oldMiss;
+						// var animArray
+						var oldRight = animation.getByName('singRIGHT').frames;
+						animation.getByName('singRIGHT').frames = animation.getByName('singLEFT').frames;
+						animation.getByName('singLEFT').frames = oldRight;
+		
+						// IF THEY HAVE MISS ANIMATIONS??
+						if (animation.getByName('singRIGHTmiss') != null)
+						{
+							var oldMiss = animation.getByName('singRIGHTmiss').frames;
+							animation.getByName('singRIGHTmiss').frames = animation.getByName('singLEFTmiss').frames;
+							animation.getByName('singLEFTmiss').frames = oldMiss;
+						}
 					}
 				}
 			}

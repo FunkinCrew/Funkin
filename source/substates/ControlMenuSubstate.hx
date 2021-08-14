@@ -6,6 +6,8 @@ import flixel.FlxSprite;
 
 class ControlMenuSubstate extends MusicBeatSubstate
 {
+    var key_Count:Int = 4;
+
     public function new()
     {
         super();
@@ -14,6 +16,8 @@ class ControlMenuSubstate extends MusicBeatSubstate
         bg.alpha = 0.5;
         bg.scrollFactor.set();
         add(bg);
+
+        create_Arrows();
     }
 
     override function update(elapsed:Float) {
@@ -29,5 +33,13 @@ class ControlMenuSubstate extends MusicBeatSubstate
             FlxG.save.flush();
             FlxG.state.closeSubState();
         }
+    }
+
+    function create_Arrows(?new_Key_Count = 4)
+    {
+        if(new_Key_Count != null)
+            key_Count = new_Key_Count;
+
+
     }
 }

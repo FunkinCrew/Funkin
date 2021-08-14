@@ -1,5 +1,8 @@
 package ui;
 
+import substates.ControlMenuSubstate;
+import substates.MusicBeatSubstate;
+import states.MusicBeatState;
 import flixel.FlxSubState;
 import states.LoadingState;
 import states.PlayState;
@@ -207,14 +210,11 @@ class PageOption extends Option
 }
 
 /**
-* Very simple option that opens up a substate when selecting it.
+* Option that opens the control menu when selected.
 */
-class GameSubStateOption extends Option
+class ControlMenuSubStateOption extends Option
 {
-    // VARIABLES //
-    public var Game_Sub_State:FlxSubState;
-
-    public function new(_Option_Name:String = "-", _Option_Row:Int = 0, _Game_Sub_State:Dynamic)
+    public function new(_Option_Name:String = "-", _Option_Row:Int = 0)
     {
         super();
 
@@ -234,7 +234,7 @@ class GameSubStateOption extends Option
         super.update(elapsed);
 
         if(FlxG.keys.justPressed.ENTER && Alphabet_Text.targetY == 0)
-            FlxG.state.openSubState(Game_Sub_State);
+			OptionsMenu.instance.openSubState(new ControlMenuSubstate());
     }
 }
 

@@ -1,5 +1,6 @@
 package states;
 
+import substates.ControlMenuSubstate;
 import modding.CharacterCreationState;
 import utilities.MusicUtilities;
 import ui.Option;
@@ -29,25 +30,26 @@ import game.Highscore;
 class OptionsMenu extends MusicBeatState
 {
 	var curSelected:Int = 0;
+
 	public static var inMenu = false;
 
 	public var pages:Array<Dynamic> = [
 		[
 			"Categories",
-			//new ControlsOption(0),
-			new PageOption("Gameplay", 1, "Gameplay"),
-			new PageOption("Graphics", 2, "Graphics"),
-			new PageOption("Tools", 3, "Tools"),
-			new PageOption("Misc", 4, "Misc")
+			new PageOption("Gameplay", 0, "Gameplay"),
+			new PageOption("Graphics", 1, "Graphics"),
+			new PageOption("Tools", 2, "Tools"),
+			new PageOption("Misc", 3, "Misc")
 		],
 		[
 			"Gameplay",
 			new PageOption("Back", 0, "Categories"),
-			new BoolOption("Downscroll", "downscroll", FlxG.save.data.downscroll, 1),
-			new BoolOption("No Hit", "nohit", FlxG.save.data.nohit, 2),
-			new BoolOption("Anti Mash", "antiMash", FlxG.save.data.antiMash, 3),
-			new BoolOption("Reset Button", "resetButtonOn", FlxG.save.data.resetButtonOn, 4),
-			new BoolOption("Bot", "bot", FlxG.save.data.bot, 5)
+			new ControlMenuSubStateOption("Binds", 1),
+			new BoolOption("Downscroll", "downscroll", FlxG.save.data.downscroll, 2),
+			new BoolOption("No Hit", "nohit", FlxG.save.data.nohit, 3),
+			new BoolOption("Anti Mash", "antiMash", FlxG.save.data.antiMash, 4),
+			new BoolOption("Reset Button", "resetButtonOn", FlxG.save.data.resetButtonOn, 5),
+			new BoolOption("Bot", "bot", FlxG.save.data.bot, 6)
 		],
 		[
 			"Graphics",
@@ -95,6 +97,7 @@ class OptionsMenu extends MusicBeatState
 		super.create();
 
 		add(page);
+
 		LoadPage("Categories");
 
 		if(FlxG.sound.music == null)
@@ -115,6 +118,7 @@ class OptionsMenu extends MusicBeatState
 		}
 
 		var curPage = instance.page;
+
 		curPage.clear();
 
 		var selectedPage:Array<Dynamic> = [];
