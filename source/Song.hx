@@ -123,7 +123,7 @@ class Song
 
 
 		if (song.eventObjects == null)
-			song.eventObjects = [];
+			song.eventObjects = [new Song.Event("Init BPM",0,song.bpm,"BPM Change")];
 
 		for(i in song.eventObjects)
 		{
