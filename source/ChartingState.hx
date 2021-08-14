@@ -201,7 +201,6 @@ class ChartingState extends MusicBeatState
 		curRenderedSustains = new FlxTypedGroup<FlxSprite>();
 
 		FlxG.mouse.visible = true;
-		FlxG.save.bind('funkin', 'ninjamuffin99');
 
 		tempBpm = _song.bpm;
 
@@ -1545,10 +1544,12 @@ class ChartingState extends MusicBeatState
 				case 'song_bpm':
 					if (nums.value <= 0)
 						nums.value = 1;
-					tempBpm = Std.int(nums.value);
-					Conductor.mapBPMChanges(_song);
-					Conductor.changeBPM(Std.int(nums.value));
+					_song.bpm = nums.value;
 
+					if (_song.eventObjects[0].type != "BPM Change")
+						Application.current.window.alert("i'm crying, first event isn't a bpm change. fuck you");
+					else
+						_song.eventObjects[0].value = nums.value;
 				case 'note_susLength':
 					if (curSelectedNote == null)
 						return;
@@ -1783,12 +1784,16 @@ class ChartingState extends MusicBeatState
 
 							if (data != null)
 							{
-	
+								
 								FlxG.sound.music.time = (data.startTime + ((beats - data.startBeat) / (bpm/60)) ) * 1000;
 							}
 						}
 						else
 							FlxG.sound.music.time -= (FlxG.mouse.wheel * Conductor.stepCrochet * 0.4);
+
+						if (FlxG.sound.music.time > FlxG.sound.music.length)
+							FlxG.sound.music.time = FlxG.sound.music.length;
+					
 						if (!PlayState.isSM)
 						vocals.time = FlxG.sound.music.time;
 					}
