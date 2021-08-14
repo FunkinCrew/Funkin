@@ -704,7 +704,20 @@ class ModchartState
 				});
 				
 				Lua_helper.add_callback(lua,"setActorAngle", function(angle:Int,id:String) {
-					getActorByName(id).angle = angle;
+					//god damn it
+					var angType:Int = 0;
+					for (i in 0...8)
+					{
+						if (id == '' + i)
+							angType = 1;
+					}
+					switch (angType)
+					{
+						case (0):
+							getActorByName(id).angle = angle;
+						case (1):
+							getActorByName(id).modAngle = angle;
+					}
 				});
 	
 				Lua_helper.add_callback(lua,"setActorScale", function(scale:Float,id:String) {
@@ -739,7 +752,17 @@ class ModchartState
 				});
 	
 				Lua_helper.add_callback(lua,"getActorAngle", function(id:String) {
-					return getActorByName(id).angle;
+					var angType:Int = 0;
+					for (i in 0...8)
+					{
+						if (id == '' + i)
+							angType = 1;
+					}
+					var retAng = getActorByName(id).angle;
+					if (angType == 1)
+						retAng = getActorByName(id).modAngle;
+					
+					return (retAng);
 				});
 	
 				Lua_helper.add_callback(lua,"getActorX", function (id:String) {
