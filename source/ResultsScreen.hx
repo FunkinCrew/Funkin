@@ -218,6 +218,7 @@ class ResultsScreen extends FlxSubState
             }
             else
                 FlxG.switchState(new FreeplayState());
+            PlayState.instance.clean();
         }
 
         if (FlxG.keys.justPressed.F1 && !PlayState.loadRep)
@@ -288,6 +289,7 @@ class ResultsScreen extends FlxSubState
             PlayState.isStoryMode = false;
             PlayState.storyDifficulty = PlayState.rep.replay.songDiff;
             LoadingState.loadAndSwitchState(new PlayState());
+            PlayState.instance.clean();
         }
 
         if (FlxG.keys.justPressed.F2  && !PlayState.loadRep)
@@ -324,6 +326,7 @@ class ResultsScreen extends FlxSubState
             PlayState.isStoryMode = false;
             PlayState.storyDifficulty = PlayState.storyDifficulty;
             LoadingState.loadAndSwitchState(new PlayState());
+            PlayState.instance.clean();
         }
 
 		super.update(elapsed);

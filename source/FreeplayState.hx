@@ -67,6 +67,7 @@ class FreeplayState extends MusicBeatState
 
 	override function create()
 	{
+		clean();
 		var initSonglist = CoolUtil.coolTextFile(Paths.txt('data/freeplaySonglist'));
 
 		//var diffList = "";
@@ -398,6 +399,7 @@ class FreeplayState extends MusicBeatState
 			PlayState.isSM = false;
 			#end
 			LoadingState.loadAndSwitchState(new PlayState());
+			clean();
 		}
 	}
 
