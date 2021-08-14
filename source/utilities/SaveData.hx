@@ -7,11 +7,6 @@ class SaveData {
     public static function init() {
         FlxG.save.bind('leathersfunkinengine', 'leather128');
 
-        PlayerSettings.init();
-        PlayerSettings.player1.controls.loadKeyBinds();
-        
-        Highscore.load();
-
         if (FlxG.save.data.enemyGlow == null)
             FlxG.save.data.enemyGlow = true;
 
@@ -21,7 +16,25 @@ class SaveData {
         if (FlxG.save.data.memoryCounter == null)
             FlxG.save.data.memoryCounter = true;
 
-        trace(FlxG.save.path);
+        if (FlxG.save.data.leftBind == null)
+            FlxG.save.data.leftBind = "A";
+
+        if (FlxG.save.data.downBind == null)
+            FlxG.save.data.downBind = "S";
+
+        if (FlxG.save.data.upBind == null)
+            FlxG.save.data.upBind = "W";
+
+        if (FlxG.save.data.rightBind == null)
+            FlxG.save.data.rightBind = "D";
+
+        if (FlxG.save.data.killBind == null)
+            FlxG.save.data.killBind = "R";
+
+        PlayerSettings.init();
+        PlayerSettings.player1.controls.loadKeyBinds();
+        
+        Highscore.load();
 
         FlxG.save.flush();
     }

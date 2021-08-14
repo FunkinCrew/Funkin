@@ -504,11 +504,7 @@ class Controls extends FlxActionSet
 		inline bindKeys(Control.ACCEPT, [Z, SPACE, ENTER]);
 		inline bindKeys(Control.BACK, [BACKSPACE, ESCAPE]);
 		inline bindKeys(Control.PAUSE, [P, ENTER, ESCAPE]);
-
-		if(FlxG.save.data.killBind != null)
-			inline bindKeys(Control.RESET, [FlxKey.fromString(FlxG.save.data.killBind)]);
-		else
-			inline bindKeys(Control.RESET, [FlxKey.R]);
+		inline bindKeys(Control.RESET, [FlxKey.fromString(FlxG.save.data.killBind)]);
 	}
 
 	function removeKeyboard()
