@@ -1,7 +1,5 @@
 function start(song) -- do nothing
     spinLength = 0
-    xAdjust = 0;
-    yAdjust = 0;
 end
 
 function update(elapsed)
