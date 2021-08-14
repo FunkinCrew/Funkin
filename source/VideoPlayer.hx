@@ -102,10 +102,6 @@ class VideoPlayer extends FlxSprite {
     }
     override public function update(elapsed:Float) {
         super.update(elapsed);
-		x = GlobalVideo.calc(0);
-		y = GlobalVideo.calc(1);
-		width = GlobalVideo.calc(2);
-		height = GlobalVideo.calc(3);
         #if sys
         soundMultiplier = player.renderedCount / videoFrames;
         if (soundMultiplier > 1)
