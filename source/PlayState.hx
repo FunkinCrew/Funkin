@@ -1420,7 +1420,7 @@ class PlayState extends MusicBeatState
 		}
 		if (executeModchart)
 		{
-			luaModchart = ModchartState.createModchartState();
+			luaModchart = ModchartState.createModchartState(isStoryMode);
 			luaModchart.executeState('start', [songLowercase]);
 		}
 		#end

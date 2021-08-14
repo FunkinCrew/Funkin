@@ -356,7 +356,7 @@ class ModchartState
 
     // LUA SHIT
 
-    function new()
+    function new(? isStoryMode = true)
     {
         		trace('opening a lua state (because we are cool :))');
 				lua = LuaL.newstate();
@@ -967,7 +967,15 @@ class ModchartState
 					//setVar("strum" + i + "X", Math.floor(member.x));
 					setVar("defaultStrum" + i + "X", Math.floor(member.x));
 					//setVar("strum" + i + "Y", Math.floor(member.y));
-					setVar("defaultStrum" + i + "Y", Math.floor(member.y));
+
+					if (isStoryMode)
+					{
+						setVar("defaultStrum" + i + "Y", Math.floor(member.y));
+					}
+					else
+					{
+						setVar("defaultStrum" + i + "Y", Math.floor(member.y + 10));
+					}
 					//setVar("strum" + i + "Angle", Math.floor(member.angle));
 					setVar("defaultStrum" + i + "Angle", Math.floor(member.angle));
 					trace("Adding strum" + i);
@@ -979,9 +987,9 @@ class ModchartState
         return Lua.tostring(lua,callLua(name, args));
     }
 
-    public static function createModchartState():ModchartState
+    public static function createModchartState(? isStoryMode = true):ModchartState
     {
-        return new ModchartState();
+        return new ModchartState(isStoryMode);
     }
 }
 #end

@@ -14,7 +14,7 @@ function update(elapsed)
 		for i=0,7 do
             setActorAngle((spinLength / 7) * -math.sin((currentBeat + i*0.25) * math.pi), i)
 			setActorX(_G['defaultStrum'..i..'X'] + spinLength * math.sin((currentBeat + i*0.25) * math.pi), i)
-			setActorY(10 + _G['defaultStrum'..i..'Y'] + spinLength * math.cos((currentBeat + i*0.25) * math.pi), i)
+			setActorY(_G['defaultStrum'..i..'Y'] + spinLength * math.cos((currentBeat + i*0.25) * math.pi), i)
 		end
     end
 end
