@@ -5,3 +5,4 @@
 - Optimized the chart editor (less lag on longer songs, and faster load times)
 - Fixed stutter at the start of a song
 - Fixed scroll speed changes so they work when more then one of them exist
+- Modcharts now work on Linux!

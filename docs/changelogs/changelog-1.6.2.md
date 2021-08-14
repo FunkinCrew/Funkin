@@ -26,3 +26,4 @@ Changes marked with 💖 will be listed in the short version of the changelog in
 - Fixed steps reseting to 0 on a bpm change IN gameplay
 - Fixed claps so they're based on time instead of the note's y position
 - Swap Section no longer breaks with duets
+- 💖 Modcharts now work on Linux!
