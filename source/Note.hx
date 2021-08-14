@@ -53,6 +53,7 @@ class Note extends FlxSprite
 
 	public var modAngle:Float = 0; // The angle set by modcharts
 	public var localAngle:Float = 0; // The angle to be edited inside Note.hx
+	public var originAngle:Float = 0; // The angle the OG note of the sus note had (?)
 
 	public var dataColor:Array<String> = ['purple', 'blue', 'green', 'red'];
 	public var quantityColor:Array<Int> = [RED_NOTE, 2, BLUE_NOTE, 2, PURP_NOTE, 2, BLUE_NOTE, 2];
@@ -188,6 +189,7 @@ class Note extends FlxSprite
 			animation.play(dataColor[col] + 'Scroll');
 			localAngle -= arrowAngles[col];
 			localAngle += arrowAngles[noteData];
+			originAngle = localAngle;
 			originColor = col;
 		}
 		
@@ -209,6 +211,7 @@ class Note extends FlxSprite
 			x += width / 2;
 
 			originColor = prevNote.originColor; 
+			originAngle = prevNote.originAngle;
 
 			animation.play(dataColor[originColor] + 'holdend'); // This works both for normal colors and quantization colors
 			updateHitbox();
