@@ -147,7 +147,9 @@ class Note extends FlxSprite
 						animation.add(dataColor[i] + 'holdend', [i + 4]); // Tails
 					}
 
-					setGraphicSize(Std.int(width * PlayState.daPixelZoom));
+					var widthSize = Std.int(PlayState.curStage.startsWith('school') ? (width * PlayState.daPixelZoom) : (isSustainNote ? (width * (PlayState.daPixelZoom - 1.5)) : (width * PlayState.daPixelZoom)));
+
+					setGraphicSize(widthSize);
 					updateHitbox();
 				default:
 					frames = Paths.getSparrowAtlas('NOTE_assets');
