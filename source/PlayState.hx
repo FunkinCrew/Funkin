@@ -1682,7 +1682,7 @@ class PlayState extends MusicBeatState
 			ana.hit = false;
 			ana.hitJudge = "shit";
 			ana.nearestNote = [];
-			health -= 0.30;
+			health -= 0.20;
 		}
 	}
 
@@ -3206,7 +3206,7 @@ class PlayState extends MusicBeatState
 								else
 								{
 									if (!daNote.isSustainNote)
-										health -= 0.20;
+										health -= 0.2;
 									vocals.volume = 0;
 									if (theFunne && !daNote.isSustainNote)
 									{
@@ -3229,7 +3229,7 @@ class PlayState extends MusicBeatState
 											&& daNote.sustainActive
 											&& daNote.spotInLine != daNote.parent.children.length)
 										{
-											health -= 0.30; // give a health punishment for failing a LN
+											health -= 0.35; // give a health punishment for failing a LN
 											trace("hold fell over at " + daNote.spotInLine);
 											for (i in daNote.parent.children)
 											{
@@ -3261,7 +3261,7 @@ class PlayState extends MusicBeatState
 
 								if (daNote.isParent)
 								{
-									health -= 0.30; // give a health punishment for failing a LN
+									health -= 0.2; // give a health punishment for failing a LN
 									trace("hold fell over at the start");
 									for (i in daNote.children)
 									{
@@ -3277,7 +3277,7 @@ class PlayState extends MusicBeatState
 										&& daNote.sustainActive
 										&& daNote.spotInLine != daNote.parent.children.length)
 									{
-										health -= 0.40; // give a health punishment for failing a LN
+										health -= 0.25; // give a health punishment for failing a LN
 										trace("hold fell over at " + daNote.spotInLine);
 										for (i in daNote.parent.children)
 										{
@@ -3576,7 +3576,7 @@ class PlayState extends MusicBeatState
 					totalNotesHit += 0.75;
 			case 'sick':
 				if (health < 2)
-					health += 0.04;
+					health += 0.02;
 				if (FlxG.save.data.accuracyMod == 0)
 					totalNotesHit += 1;
 				sicks++;
