@@ -206,6 +206,8 @@ class GameplayCustomizeState extends MusicBeatState
         {
             sick.x = defaultX;
             sick.y = defaultY;
+            FlxG.save.data.zoom = 1;
+            camHUD.zoom = FlxG.save.data.zoom;
             FlxG.save.data.changedHitX = sick.x;
             FlxG.save.data.changedHitY = sick.y;
             FlxG.save.data.changedHit = false;
