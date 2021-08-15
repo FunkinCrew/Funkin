@@ -2262,8 +2262,6 @@ class ChartingState extends MusicBeatState
 
 					var beat = seg.startBeat + (((time / 1000) - seg.startTime) * (seg.bpm / 60));
 					var snapped = Math.round(beat * deezNuts.get(snap)) / deezNuts.get(snap);
-
-					trace("snapped beat " + snapped + " | OG " + beat + " | " + (time / 1000) + " | " + FlxG.mouse.y);
 					
 					dummyArrow.y = getYfromStrum((seg.startTime + (snapped / (seg.bpm/60)) * 1000)) * zoomFactor;
 				}
