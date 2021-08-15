@@ -116,7 +116,6 @@ class Character extends FlxSprite
 				playAnim('danceRight');
 
 				setGraphicSize(Std.int(width * 6));
-				updateHitbox();
 
 				antialiasing = false;
 				dancesLeftAndRight = true;
@@ -265,7 +264,6 @@ class Character extends FlxSprite
 				animation.addByPrefix('hey', 'BF Peace Sign', 24, false);
 
 				setGraphicSize(Std.int(width * 6));
-				updateHitbox();
 
 				playAnim('idle');
 
@@ -285,7 +283,7 @@ class Character extends FlxSprite
 				playAnim('firstDeath');
 				// pixel bullshit
 				setGraphicSize(Std.int(width * 6));
-				updateHitbox();
+				
 				antialiasing = false;
 				flipX = true;
 
@@ -300,7 +298,6 @@ class Character extends FlxSprite
 				playAnim('idle');
 
 				setGraphicSize(Std.int(width * 6));
-				updateHitbox();
 
 				antialiasing = false;
 			case 'senpai-angry':
@@ -314,7 +311,6 @@ class Character extends FlxSprite
 				playAnim('idle');
 
 				setGraphicSize(Std.int(width * 6));
-				updateHitbox();
 
 				antialiasing = false;
 
@@ -327,7 +323,6 @@ class Character extends FlxSprite
 				animation.addByPrefix('singDOWN', "spirit down_", 24, false);
 
 				setGraphicSize(Std.int(width * 6));
-				updateHitbox();
 
 				playAnim('idle');
 
@@ -361,6 +356,8 @@ class Character extends FlxSprite
 
 		if(curCharacter != '')
 		{
+			updateHitbox();
+
 			if(!debugMode)
 			{
 				dance();
@@ -434,9 +431,6 @@ class Character extends FlxSprite
 		if(config.graphicsSize != null)
 		{
 			setGraphicSize(Std.int(width * config.graphicsSize));
-
-			if(config.graphicsSize >= 1)
-				updateHitbox();
 		}
 
 		for(selected_animation in config.animations)
@@ -472,6 +466,8 @@ class Character extends FlxSprite
 			if (isPlayer)
 				flipX = !flipX;
 		}
+
+		updateHitbox();
 	}
 
 	public function loadOffsetFile(characterName:String)

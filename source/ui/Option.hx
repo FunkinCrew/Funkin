@@ -1,5 +1,7 @@
 package ui;
 
+import flixel.FlxSprite;
+import substates.UISkinSelect;
 import substates.ControlMenuSubstate;
 import substates.MusicBeatSubstate;
 import states.MusicBeatState;
@@ -15,7 +17,7 @@ import flixel.group.FlxGroup;
 /**
  * The base option class that all options inherit from.
  */
-class Option extends FlxGroup
+class Option extends FlxTypedGroup<FlxSprite>
 {
 	// variables //
 	public var Alphabet_Text:Alphabet;
@@ -235,6 +237,35 @@ class ControlMenuSubStateOption extends Option
 
         if(FlxG.keys.justPressed.ENTER && Alphabet_Text.targetY == 0)
 			OptionsMenu.instance.openSubState(new ControlMenuSubstate());
+    }
+}
+
+/**
+* Option that opens the ui skin menu when selected.
+*/
+class UISkinSelectOption extends Option
+{
+    public function new(_Option_Name:String = "-", _Option_Row:Int = 0)
+    {
+        super();
+
+        // SETTING VALUES //
+        this.Option_Name = _Option_Name;
+        this.Option_Row = _Option_Row;
+
+        // CREATING OTHER OBJECTS //
+        Alphabet_Text = new Alphabet(20, 20 + (Option_Row * 100), Option_Name, true);
+        Alphabet_Text.isMenuItem = true;
+        Alphabet_Text.targetY = Option_Row;
+        add(Alphabet_Text);
+    }
+
+    override function update(elapsed:Float)
+    {
+        super.update(elapsed);
+
+        if(FlxG.keys.justPressed.ENTER && Alphabet_Text.targetY == 0)
+			OptionsMenu.instance.openSubState(new UISkinSelect());
     }
 }
 

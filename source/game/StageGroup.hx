@@ -30,8 +30,8 @@ class StageGroup extends FlxGroup
     private var goodElapse:Float = 0;
 
     public var player_1_Point:FlxPoint = new FlxPoint(1000, 800);
-    public var player_2_Point:FlxPoint = new FlxPoint(300, 725);
-    public var gf_Point:FlxPoint = new FlxPoint(600, 700);
+    public var player_2_Point:FlxPoint = new FlxPoint(300, 800);
+    public var gf_Point:FlxPoint = new FlxPoint(600, 750);
 
     private var stage_Data:StageData;
 

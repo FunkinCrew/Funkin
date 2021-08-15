@@ -741,6 +741,14 @@ class ChartingState extends MusicBeatState
 
 			changeSection(curSection + 1, false);
 		}
+		else if(curStep < 16 * curSection)
+		{
+			trace(curStep);
+			trace((_song.notes[curSection].lengthInSteps) * (curSection + 1));
+			trace('DUMBSHIT');
+
+			changeSection(curSection - 1, false);
+		}
 
 		FlxG.watch.addQuick('daBeat', curBeat);
 		FlxG.watch.addQuick('daStep', curStep);
@@ -1078,7 +1086,12 @@ class ChartingState extends MusicBeatState
 		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * _song.keyCount * 2, GRID_SIZE * _song.notes[curSection].lengthInSteps);
         add(gridBG);
 
-		gridBlackLine.x = gridBG.x + gridBG.width / 2;
+		remove(gridBlackLine);
+		gridBlackLine.kill();
+		gridBlackLine.destroy();
+
+		gridBlackLine = new FlxSprite(gridBG.x + gridBG.width / 2).makeGraphic(2, Std.int(gridBG.height), FlxColor.BLACK);
+		add(gridBlackLine);
 
 		while (curRenderedNotes.members.length > 0)
 		{

@@ -1,5 +1,6 @@
 package states;
 
+import substates.UISkinSelect;
 import substates.ControlMenuSubstate;
 import modding.CharacterCreationState;
 import utilities.MusicUtilities;
@@ -58,7 +59,7 @@ class OptionsMenu extends MusicBeatState
 			new BoolOption("Note Accuracy Text", "msText", FlxG.save.data.msText, 2),
 			new BoolOption("FPS Counter", "fpsCounter", FlxG.save.data.fpsCounter, 3),
 			new BoolOption("Memory Counter", "memoryCounter", FlxG.save.data.memoryCounter, 4),
-			
+			new UISkinSelectOption("UI Skin", 5)
 		],
 		[
 			"Tools",
@@ -183,6 +184,24 @@ class OptionsMenu extends MusicBeatState
 		{
 			x.Alphabet_Text.targetY = bruh - curSelected;
 			bruh++;
+		}
+
+		for (x in page.members)
+		{
+			if(x.Alphabet_Text.targetY != 0)
+			{
+				for(item in x.members)
+				{
+					item.alpha = 0.6;
+				}
+			}
+			else
+			{
+				for(item in x.members)
+				{
+					item.alpha = 1;
+				}
+			}
 		}
 	}
 }
