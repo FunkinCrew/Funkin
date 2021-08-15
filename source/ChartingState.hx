@@ -558,8 +558,8 @@ class ChartingState extends MusicBeatState
 	var check_snap:FlxUICheckBox;
 	var listOfEvents:FlxUIDropDownMenu;
 	var currentSelectedEventName:String = "";
-	var savedType:String = "";
-	var savedValue:String = "";
+	var savedType:String = "BPM Change";
+	var savedValue:String = "100";
 	var currentEventPosition:Float = 0;
 
 	function containsName(name:String, events:Array<Song.Event>):Song.Event
@@ -1549,7 +1549,11 @@ class ChartingState extends MusicBeatState
 					if (_song.eventObjects[0].type != "BPM Change")
 						Application.current.window.alert("i'm crying, first event isn't a bpm change. fuck you");
 					else
+					{
 						_song.eventObjects[0].value = nums.value;
+						regenerateLines();
+					}
+				
 				case 'note_susLength':
 					if (curSelectedNote == null)
 						return;
