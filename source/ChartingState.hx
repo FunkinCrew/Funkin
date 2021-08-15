@@ -265,6 +265,8 @@ class ChartingState extends MusicBeatState
 				lastSeg = seg;
 		}
 
+		trace("STRUCTS: " + TimingStruct.AllTimings.length);
+
 		
 		recalculateAllSectionTimes();		
 		
@@ -429,32 +431,6 @@ class ChartingState extends MusicBeatState
 
 		trace("create");
 
-		TimingStruct.clearTimings();
-
-		var currentIndex = 0;
-		for (i in _song.eventObjects)
-		{
-			if (i.type == "BPM Change")
-			{
-                var beat:Float = i.position;
-
-                var endBeat:Float = Math.POSITIVE_INFINITY;
-
-                TimingStruct.addTiming(beat,i.value,endBeat, 0); // offset in this case = start time since we don't have a offset
-				
-                if (currentIndex != 0)
-                {
-                    var data = TimingStruct.AllTimings[currentIndex - 1];
-                    data.endBeat = beat;
-                    data.length = (data.endBeat - data.startBeat) / (data.bpm / 60);
-					var step = ((60 / data.bpm) * 1000) / 4;
-					TimingStruct.AllTimings[currentIndex].startStep = Math.floor(((data.endBeat / (data.bpm / 60)) * 1000) / step);
-					TimingStruct.AllTimings[currentIndex].startTime = data.startTime + data.length;
-                }
-
-				currentIndex++;
-			}
-		}
 		super.create();
 	}
 
@@ -1789,7 +1765,7 @@ class ChartingState extends MusicBeatState
 							if (data != null)
 							{
 								
-								FlxG.sound.music.time = (data.startTime + ((beats - data.startBeat) / (bpm/60)) ) * 1000;
+								FlxG.sound.music.time = (data.startTime + ((beats - data.startBeat) / (bpm/60))) * 1000;
 							}
 						}
 						else
@@ -2275,7 +2251,27 @@ class ChartingState extends MusicBeatState
 
 			dummyArrow.x = Math.floor(FlxG.mouse.x / GRID_SIZE) * GRID_SIZE;
 
-			dummyArrow.y = (Math.floor(FlxG.mouse.y / (GRID_SIZE / deezNuts.get(snap))) * (GRID_SIZE / deezNuts.get(snap)));
+			if (doSnapShit)
+			{
+				var time = getStrumTime(FlxG.mouse.y / zoomFactor);
+
+				var seg = TimingStruct.getTimingAtTimestamp(time);
+
+				if (seg != null)
+				{
+
+					var beat = seg.startBeat + (((time / 1000) - seg.startTime) * (seg.bpm / 60));
+					var snapped = Math.round(beat * deezNuts.get(snap)) / deezNuts.get(snap);
+
+					trace("snapped beat " + snapped + " | OG " + beat + " | " + (time / 1000) + " | " + FlxG.mouse.y);
+					
+					dummyArrow.y = getYfromStrum((seg.startTime + (snapped / (seg.bpm/60)) * 1000)) * zoomFactor;
+				}
+			}
+			else
+			{
+				dummyArrow.y = FlxG.mouse.y;
+			}
 		}
 		else
 		{
