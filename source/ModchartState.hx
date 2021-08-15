@@ -356,7 +356,7 @@ class ModchartState
 
     // LUA SHIT
 
-    function new()
+    function new(? isStoryMode = true)
     {
         		trace('opening a lua state (because we are cool :))');
 				lua = LuaL.newstate();
@@ -704,7 +704,20 @@ class ModchartState
 				});
 				
 				Lua_helper.add_callback(lua,"setActorAngle", function(angle:Int,id:String) {
-					getActorByName(id).angle = angle;
+					//god damn it
+					var angType:Int = 0;
+					for (i in 0...8)
+					{
+						if (id == '' + i)
+							angType = 1;
+					}
+					switch (angType)
+					{
+						case (0):
+							getActorByName(id).angle = angle;
+						case (1):
+							getActorByName(id).modAngle = angle;
+					}
 				});
 	
 				Lua_helper.add_callback(lua,"setActorScale", function(scale:Float,id:String) {
@@ -739,7 +752,17 @@ class ModchartState
 				});
 	
 				Lua_helper.add_callback(lua,"getActorAngle", function(id:String) {
-					return getActorByName(id).angle;
+					var angType:Int = 0;
+					for (i in 0...8)
+					{
+						if (id == '' + i)
+							angType = 1;
+					}
+					var retAng = getActorByName(id).angle;
+					if (angType == 1)
+						retAng = getActorByName(id).modAngle;
+					
+					return (retAng);
 				});
 	
 				Lua_helper.add_callback(lua,"getActorX", function (id:String) {
@@ -944,7 +967,15 @@ class ModchartState
 					//setVar("strum" + i + "X", Math.floor(member.x));
 					setVar("defaultStrum" + i + "X", Math.floor(member.x));
 					//setVar("strum" + i + "Y", Math.floor(member.y));
-					setVar("defaultStrum" + i + "Y", Math.floor(member.y));
+
+					if (isStoryMode)
+					{
+						setVar("defaultStrum" + i + "Y", Math.floor(member.y));
+					}
+					else
+					{
+						setVar("defaultStrum" + i + "Y", Math.floor(member.y + 10));
+					}
 					//setVar("strum" + i + "Angle", Math.floor(member.angle));
 					setVar("defaultStrum" + i + "Angle", Math.floor(member.angle));
 					trace("Adding strum" + i);
@@ -956,9 +987,9 @@ class ModchartState
         return Lua.tostring(lua,callLua(name, args));
     }
 
-    public static function createModchartState():ModchartState
+    public static function createModchartState(? isStoryMode = true):ModchartState
     {
-        return new ModchartState();
+        return new ModchartState(isStoryMode);
     }
 }
 #end
