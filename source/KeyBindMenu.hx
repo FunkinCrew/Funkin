@@ -342,6 +342,13 @@ class KeyBindMenu extends FlxSubState
                 }
             }
 
+        if (notAllowed.contains(r))
+        {
+            gpKeys[curSelected] = tempKey;
+            lastKey = r;
+            return;
+        }
+
         if(shouldReturn){
             if (swapKey != -1) {
                 gpKeys[swapKey] = tempKey;
@@ -384,9 +391,9 @@ class KeyBindMenu extends FlxSubState
                 }
             }
 
-        if (r.contains("NUMPAD"))
+        if (r.contains("NUMPAD") || notAllowed.contains(r))
         {
-            keys[curSelected] = null;
+            keys[curSelected] = tempKey;
             lastKey = r;
             return;
         }
