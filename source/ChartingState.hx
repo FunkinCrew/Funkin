@@ -2183,7 +2183,7 @@ class ChartingState extends MusicBeatState
 		{
 		curRenderedNotes.forEach(function(note:Note)
 			{
-				if (strumLine.overlaps(note) && pressArray[Math.floor(Math.abs(note.noteData))])
+				if (strumLine.overlaps(note) && pressArray[Math.floor(Math.abs(note.rawNoteData))])
 				{
 					deleteNote(note);
 					delete = true;
