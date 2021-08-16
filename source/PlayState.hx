@@ -1538,7 +1538,7 @@ class PlayState extends MusicBeatState
 	private function releaseInput(evt:KeyboardEvent):Void // handles releases
 	{
 		@:privateAccess
-		var key = FlxKey.toStringMap.get(Keyboard.__convertKeyCode(evt.keyCode));
+		var key = FlxKey.toStringMap.get(evt.keyCode);
 
 		var binds:Array<String> = [
 			FlxG.save.data.leftBind,
@@ -1587,7 +1587,7 @@ class PlayState extends MusicBeatState
 		// this makes it work for special characters
 
 		@:privateAccess
-		var key = FlxKey.toStringMap.get(Keyboard.__convertKeyCode(evt.keyCode));
+		var key = FlxKey.toStringMap.get(evt.keyCode);
 
 		var binds:Array<String> = [
 			FlxG.save.data.leftBind,
