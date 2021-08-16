@@ -189,9 +189,6 @@ class DialogueBox extends FlxSpriteGroup
 				{
 					isEnding = true;
 
-					if (PlayState.SONG.song.toLowerCase() == 'senpai' || PlayState.SONG.song.toLowerCase() == 'thorns')
-						FlxG.sound.music.fadeOut(2.2, 0);
-
 					new FlxTimer().start(0.2, function(tmr:FlxTimer)
 					{
 						box.alpha -= 1 / 5;
