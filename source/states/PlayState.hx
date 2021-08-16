@@ -1240,7 +1240,7 @@ class PlayState extends MusicBeatState
 		}
 
 		#if linc_luajit
-		if (executeModchart && luaModchart != null)
+		if (executeModchart && luaModchart != null && generatedMusic)
 		{
 			luaModchart.setVar('songPos', Conductor.songPosition);
 			luaModchart.setVar('hudZoom', camHUD.zoom);

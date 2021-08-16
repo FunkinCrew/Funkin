@@ -1,5 +1,7 @@
 package game;
 
+import flixel.graphics.frames.FlxFramesCollection;
+import flixel.system.FlxAssets.FlxGraphicAsset;
 import utilities.CoolUtil;
 import lime.utils.Assets;
 import haxe.Json;
@@ -34,6 +36,8 @@ class StageGroup extends FlxGroup
     public var gf_Point:FlxPoint = new FlxPoint(600, 750);
 
     private var stage_Data:StageData;
+
+    public var stage_Objects:Array<Array<Dynamic>> = [];
 
     // SPOOKY STUFF
     private var halloweenBG:FlxSprite;
@@ -482,30 +486,53 @@ class StageGroup extends FlxGroup
             {
                 if(stage_Data != null)
                 {
-                    trace(stage_Data);
+                    var temp_Regular_Cache:Map<String, FlxGraphicAsset> = new Map<String, FlxGraphicAsset>();
+                    var temp_Animation_Cache:Map<String, FlxFramesCollection> = new Map<String, FlxFramesCollection>();
 
                     camZoom = stage_Data.camera_Zoom;
     
                     player_1_Point.set(stage_Data.character_Positions[0][0], stage_Data.character_Positions[0][1]);
                     player_2_Point.set(stage_Data.character_Positions[1][0], stage_Data.character_Positions[1][1]);
                     gf_Point.set(stage_Data.character_Positions[2][0], stage_Data.character_Positions[2][1]);
+
+                    var null_Object_Name_Loop:Int = 0;
     
                     for(Object in stage_Data.objects)
                     {
                         var Sprite = new FlxSprite(Object.position[0], Object.position[1]);
-    
-                        trace(Object);
     
                         if(Object.color != null && Object.color != [])
                             Sprite.color = FlxColor.fromRGB(Object.color[0], Object.color[1], Object.color[2]);
     
                         Sprite.antialiasing = Object.antialiased;
                         Sprite.scrollFactor.set(Object.scroll_Factor[0], Object.scroll_Factor[1]);
-    
+
+                        if(Object.object_Name != null && Object.object_Name != "")
+                            stage_Objects.push([Object.object_Name, Sprite]);
+                        else
+                        {
+                            stage_Objects.push(["undefinedSprite" + null_Object_Name_Loop, Sprite]);
+                            null_Object_Name_Loop++;
+                        }
+
                         if(Object.is_Animated)
                         {
                             #if sys
-                            Sprite.frames = Paths.getSparrowAtlasSYS(stage + "/" + Object.file_Name, "stages");
+                            if(temp_Animation_Cache.exists(Object.file_Name))
+                                Sprite.frames = temp_Animation_Cache.get(Object.file_Name);
+                            else
+                            {
+                                var frames:FlxFramesCollection;
+
+                                if(Assets.exists(Paths.image(stage + "/" + Object.file_Name, "stages"), IMAGE))
+                                    frames = Paths.getSparrowAtlas(stage + "/" + Object.file_Name, "stages");
+                                else
+                                    frames = Paths.getSparrowAtlasSYS(stage + "/" + Object.file_Name, "stages");
+
+                                temp_Animation_Cache.set(Object.file_Name, frames);
+
+                                Sprite.frames = frames;
+                            }
                             #else
                             Sprite.frames = Paths.getSparrowAtlas(stage + "/" + Object.file_Name, "stages");
                             #end
@@ -525,22 +552,35 @@ class StageGroup extends FlxGroup
                                 );
                             }
     
-                            if(Object.start_Animation != "" && Object.start_Animation != null)
+                            if(Object.start_Animation != "" && Object.start_Animation != null && Object.start_Animation != "null")
                                 Sprite.animation.play(Object.start_Animation);
                         }
                         else
                         {
                             #if sys
-                            if(Assets.exists(Paths.image(stage + "/" + Object.file_Name, "stages")))
-                                Sprite.loadGraphic(Paths.image(stage + "/" + Object.file_Name, "stages"));
+                            var graphic:FlxGraphicAsset;
+
+                            if(temp_Regular_Cache.exists(Object.file_Name))
+                                graphic = temp_Regular_Cache.get(Object.file_Name);
                             else
-                                Sprite.loadGraphic(Paths.imageSYS(stage + "/" + Object.file_Name, "stages"), false, 0, 0, false, Object.file_Name);
+                            {
+                                if(Assets.exists(Paths.image(stage + "/" + Object.file_Name, "stages")))
+                                    graphic = Paths.image(stage + "/" + Object.file_Name, "stages");
+                                else
+                                    graphic = Paths.imageSYS(stage + "/" + Object.file_Name, "stages");
+                            }
+
+                            Sprite.loadGraphic(graphic);
                             #else
                             Sprite.loadGraphic(Paths.image(stage + "/" + Object.file_Name, "stages"));
                             #end
                         }
     
-                        Sprite.setGraphicSize(Std.int(Sprite.width * Object.scale));
+                        if(Object.uses_Frame_Width)
+                            Sprite.setGraphicSize(Std.int(Sprite.frameWidth * Object.scale));
+                        else
+                            Sprite.setGraphicSize(Std.int(Sprite.width * Object.scale));
+
                         Sprite.updateHitbox();
     
                         add(Sprite);
@@ -823,6 +863,10 @@ typedef StageObject =
     var scroll_Factor:Array<Float>;
 
     var color:Array<Int>;
+
+    var uses_Frame_Width:Bool;
+
+    var object_Name:String;
     
     // Image Info //
     var file_Name:String;

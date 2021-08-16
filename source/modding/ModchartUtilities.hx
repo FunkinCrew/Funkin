@@ -38,7 +38,7 @@ class ModchartUtilities
 	function getActorByName(id:String):Dynamic
     {
         // lua objects or what ever
-        if(lua_Sprites.get(id) == null)
+        if(!lua_Sprites.exists(id))
         {
             if(Std.parseInt(id) == null)
                 return Reflect.getProperty(PlayState.instance, id);
@@ -728,6 +728,15 @@ class ModchartUtilities
             setVar("defaultStrum" + i + "Angle", Math.floor(member.angle));
 
             trace("Adding strum" + i);
+        }
+
+        @:privateAccess
+        for(object in PlayState.instance.stage.stage_Objects)
+        {
+            if(!lua_Sprites.exists(object[0]))
+                lua_Sprites.set(object[0], object[1]);
+            else
+                trace("THERE IS ALREADY AN OBJECT WITH THE NAME " + object[0]);
         }
     }
 
