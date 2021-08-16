@@ -4200,7 +4200,7 @@ class PlayState extends MusicBeatState
 						daNote.strumTime,
 						0,
 						direction,
-						166 * Math.floor((PlayState.rep.replay.sf / 60) * 1000) / 166
+						-(166 * Math.floor((PlayState.rep.replay.sf / 60) * 1000) / 166)
 					]);
 					saveJudge.push("miss");
 				}
@@ -4211,7 +4211,7 @@ class PlayState extends MusicBeatState
 					Conductor.songPosition,
 					0,
 					direction,
-					166 * Math.floor((PlayState.rep.replay.sf / 60) * 1000) / 166
+					-(166 * Math.floor((PlayState.rep.replay.sf / 60) * 1000) / 166)
 				]);
 				saveJudge.push("miss");
 			}

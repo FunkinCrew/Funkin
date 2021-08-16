@@ -134,7 +134,8 @@ class SMFile
             noteStyle: 'normal',
             stage: 'stage',
             speed: 1.0,
-            validScore: false
+            validScore: false,
+            chartVersion: "",
         };
 
         // lets check if the sm loading was valid
@@ -326,6 +327,8 @@ class SMFile
         //song.notes = newSections;
 
         // save da song
+
+        song.chartVersion = Song.latestChart;
 
 		var json = {
 			"song": song
