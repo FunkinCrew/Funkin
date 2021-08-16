@@ -116,6 +116,8 @@ class BoolOption extends Option
 				Value = FlxG.save.data.watermarks;
 			case "bot":
 				Value = FlxG.save.data.bot;
+			case "middleScroll":
+				Value = FlxG.save.data.middleScroll;
 		}
 
 		return Value;
@@ -168,6 +170,8 @@ class BoolOption extends Option
 				FlxG.save.data.watermarks = !Option_Checked;
 			case "bot":
 				FlxG.save.data.bot = !Option_Checked;
+			case "middleScroll":
+				FlxG.save.data.middleScroll = !Option_Checked;
 		}
 
         if(Option_Value != "muted")

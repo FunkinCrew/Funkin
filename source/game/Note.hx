@@ -94,7 +94,7 @@ class Note extends FlxSprite
 			*/
 
 			default:
-				frames = Paths.getSparrowAtlas('ui skins/' + PlayState.SONG.ui_Skin + "/arrows/default", 'shared');
+				frames = PlayState.arrow_Texture;
 
 				animation.addByPrefix("default", NoteVariables.Other_Note_Anim_Stuff[PlayState.SONG.keyCount - 1][noteData] + "0");
 				animation.addByPrefix("hold", NoteVariables.Other_Note_Anim_Stuff[PlayState.SONG.keyCount - 1][noteData] + " hold0");

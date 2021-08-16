@@ -47,10 +47,11 @@ class OptionsMenu extends MusicBeatState
 			new PageOption("Back", 0, "Categories"),
 			new ControlMenuSubStateOption("Binds", 1),
 			new BoolOption("Downscroll", "downscroll", FlxG.save.data.downscroll, 2),
-			new BoolOption("No Hit", "nohit", FlxG.save.data.nohit, 3),
-			new BoolOption("Anti Mash", "antiMash", FlxG.save.data.antiMash, 4),
-			new BoolOption("Reset Button", "resetButtonOn", FlxG.save.data.resetButtonOn, 5),
-			new BoolOption("Bot", "bot", FlxG.save.data.bot, 6)
+			new BoolOption("Centered Arrows", "middleScroll", FlxG.save.data.middleScroll, 3),
+			new BoolOption("No Hit", "nohit", FlxG.save.data.nohit, 4),
+			new BoolOption("Anti Mash", "antiMash", FlxG.save.data.antiMash, 5),
+			new BoolOption("Reset Button", "resetButtonOn", FlxG.save.data.resetButtonOn, 6),
+			new BoolOption("Bot", "bot", FlxG.save.data.bot, 7)
 		],
 		[
 			"Graphics",
