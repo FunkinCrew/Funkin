@@ -182,8 +182,10 @@ class KeyBindMenu extends FlxSubState
             case "input":
                 tempKey = keys[curSelected];
                 keys[curSelected] = "?";
-                if (KeyBinds.gamepad)
+                if (KeyBinds.gamepad) {
+                    tempKey = gpKeys[curSelected];
                     gpKeys[curSelected] = "?";
+                }
                 textUpdate();
                 state = "waiting";
 
