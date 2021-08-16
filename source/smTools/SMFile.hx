@@ -244,16 +244,16 @@ class SMFile
                     switch(numba)
                     {
                         case 1: // normal
-                            section.sectionNotes.push([rowTime,lane ,0]);
+                            section.sectionNotes.push([rowTime,lane ,0,0, currentBeat]);
                         case 2: // held head
-                            heldNotes[lane] = [rowTime,lane,0];
+                            heldNotes[lane] = [rowTime,lane,0,0, currentBeat];
                         case 3: // held tail
                             var data = heldNotes[lane];
                             var timeDiff = rowTime - data[0];
-                            section.sectionNotes.push([data[0],lane,timeDiff]);
+                            section.sectionNotes.push([data[0],lane,timeDiff,0, currentBeat]);
                             heldNotes[index] = [];
                         case 4: // roll head
-                            heldNotes[lane] = [rowTime,lane,0];
+                            heldNotes[lane] = [rowTime,lane,0,0, currentBeat];
                     }
                     index++;
                 }

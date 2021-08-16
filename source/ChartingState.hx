@@ -269,6 +269,8 @@ class ChartingState extends MusicBeatState
 
 		
 		recalculateAllSectionTimes();		
+
+		poggers();
 		
 
 		trace("Song length in MS: " + FlxG.sound.music.length);
@@ -628,7 +630,10 @@ class ChartingState extends MusicBeatState
 					}
 
 					if (pog.type == "BPM Change")
+					{
 						recalculateAllSectionTimes();
+						poggers();
+					}
 
 				regenerateLines();
 
@@ -719,6 +724,7 @@ class ChartingState extends MusicBeatState
 					trace(i.bpm + " - START: " + i.startBeat + " - END: " + i.endBeat + " - START-TIME: " + i.startTime);
 
 				recalculateAllSectionTimes();
+				poggers();
 
 				regenerateLines();
 
@@ -801,6 +807,7 @@ class ChartingState extends MusicBeatState
 					}
 
 				recalculateAllSectionTimes();
+				poggers();
 
 				regenerateLines();
 
@@ -1384,7 +1391,7 @@ class ChartingState extends MusicBeatState
 
 						var thing = ii.sectionNotes[ii.sectionNotes.length - 1];
 
-						var note:Note = new Note(strum, Math.floor(i[1] % 4),null,false,true);
+						var note:Note = new Note(strum, Math.floor(i[1] % 4),null,false,true, i[4]);
 						note.rawNoteData = i[1];
 						note.sustainLength = i[2];
 						note.setGraphicSize(Math.floor(GRID_SIZE), Math.floor(GRID_SIZE));
@@ -1529,7 +1536,50 @@ class ChartingState extends MusicBeatState
 						_song.eventObjects[0].value = nums.value;
 						regenerateLines();
 					}
-				
+
+					TimingStruct.clearTimings();
+
+					var currentIndex = 0;
+					for (i in _song.eventObjects)
+						{
+							var name = Reflect.field(i,"name");
+							var type = Reflect.field(i,"type");
+							var pos = Reflect.field(i,"position");
+							var value = Reflect.field(i,"value");
+	
+							trace(i.type);
+							if (type == "BPM Change")
+							{
+								var beat:Float = pos;
+	
+								var endBeat:Float = Math.POSITIVE_INFINITY;
+	
+								TimingStruct.addTiming(beat,value,endBeat, 0); // offset in this case = start time since we don't have a offset
+								
+								if (currentIndex != 0)
+								{
+									var data = TimingStruct.AllTimings[currentIndex - 1];
+									data.endBeat = beat;
+									data.length = (data.endBeat - data.startBeat) / (data.bpm / 60);
+									var step = ((60 / data.bpm) * 1000) / 4;
+									TimingStruct.AllTimings[currentIndex].startStep = Math.floor(((data.endBeat / (data.bpm / 60)) * 1000) / step);
+									TimingStruct.AllTimings[currentIndex].startTime = data.startTime + data.length;
+								}
+	
+								currentIndex++;
+							}
+						}
+					trace("BPM CHANGES:");
+	
+					for (i in TimingStruct.AllTimings)
+						trace(i.bpm + " - START: " + i.startBeat + " - END: " + i.endBeat + " - START-TIME: " + i.startTime);
+	
+					recalculateAllSectionTimes();
+	
+					regenerateLines();
+	
+					poggers();
+
 				case 'note_susLength':
 					if (curSelectedNote == null)
 						return;
@@ -1576,7 +1626,34 @@ class ChartingState extends MusicBeatState
 				return getSectionByTime(Conductor.songPosition).lengthInSteps;
 	}*/
 
-	
+	function poggers()
+	{
+		for(section in _song.notes)
+		{
+			if (section.endTime > FlxG.sound.music.length)
+				continue;
+			
+			for(note in section.sectionNotes)
+			{
+				// commit suicide
+				note[0] = TimingStruct.getTimeFromBeat(note[4]);
+			}
+		}
+
+		for(i in curRenderedNotes)
+		{
+			i.strumTime = TimingStruct.getTimeFromBeat(i.beat);
+			i.y = Math.floor(getYfromStrum(i.strumTime) * zoomFactor);
+			if (i.noteCharterObject != null)
+			{
+				i.noteCharterObject.y = i.y + 40;
+				i.noteCharterObject.makeGraphic(8,Math.floor((getYfromStrum(i.strumTime + i.sustainLength) * zoomFactor) - i.y),FlxColor.WHITE);
+			}
+		}
+
+		trace("FUCK YOU BITCH FUCKER CUCK SUCK BITCH " + _song.notes.length);
+	}
+
 
 	function stepStartTime(step):Float
 	{
@@ -2255,16 +2332,10 @@ class ChartingState extends MusicBeatState
 			{
 				var time = getStrumTime(FlxG.mouse.y / zoomFactor);
 
-				var seg = TimingStruct.getTimingAtTimestamp(time);
-
-				if (seg != null)
-				{
-
-					var beat = seg.startBeat + (((time / 1000) - seg.startTime) * (seg.bpm / 60));
-					var snapped = Math.round(beat * deezNuts.get(snap)) / deezNuts.get(snap);
+				var beat = TimingStruct.getBeatFromTime(time);
+				var snapped = Math.round(beat * deezNuts.get(snap)) / deezNuts.get(snap);
 					
-					dummyArrow.y = getYfromStrum((seg.startTime + (snapped / (seg.bpm/60)) * 1000)) * zoomFactor;
-				}
+				dummyArrow.y = getYfromStrum(TimingStruct.getTimeFromBeat(snapped)) * zoomFactor;
 			}
 			else
 			{
@@ -2636,7 +2707,7 @@ class ChartingState extends MusicBeatState
 				var daStrumTime = i[0];
 				var daSus = i[2];
 
-				var note:Note = new Note(daStrumTime, daNoteInfo % 4,null,false,true,i[3]);
+				var note:Note = new Note(daStrumTime, daNoteInfo % 4,null,false,true,i[3], i[4]);
 				note.rawNoteData = daNoteInfo;
 				note.sustainLength = daSus;
 				note.setGraphicSize(Math.floor(GRID_SIZE), Math.floor(GRID_SIZE));
@@ -2869,6 +2940,9 @@ class ChartingState extends MusicBeatState
 		}*/
 
 			trace("RECALCULATING SECTION TIMES");
+
+			var savedNotes:Array<Dynamic> = [];
+
 			for (i in 0..._song.notes.length) // loops through sections
 			{
 				var section = _song.notes[i];
@@ -2887,8 +2961,9 @@ class ChartingState extends MusicBeatState
 				if (i != 0)
 					_song.notes[i - 1].endTime = section.startTime;
 				section.endTime = Math.POSITIVE_INFINITY;
-
 			}
+
+			
 			once = true;
 	}
 
@@ -2997,9 +3072,9 @@ class ChartingState extends MusicBeatState
 		var noteSus = 0;
 
 		if (n != null)
-			section.sectionNotes.push([n.strumTime, n.noteData, n.sustainLength, false]);
+			section.sectionNotes.push([n.strumTime, n.noteData, n.sustainLength, false, TimingStruct.getBeatFromTime(n.strumTime)]);
 		else
-			section.sectionNotes.push([noteStrum, noteData, noteSus, false]);
+			section.sectionNotes.push([noteStrum, noteData, noteSus, false, TimingStruct.getBeatFromTime(noteStrum)]);
 
 		var thingy = section.sectionNotes[section.sectionNotes.length - 1];
 
@@ -3009,7 +3084,7 @@ class ChartingState extends MusicBeatState
 
 		if (n == null)
 		{
-			var note:Note = new Note(noteStrum, noteData % 4,null,false,true);
+			var note:Note = new Note(noteStrum, noteData % 4,null,false,true,TimingStruct.getBeatFromTime(noteStrum));
 			note.rawNoteData = noteData;
 			note.sustainLength = noteSus;
 			note.setGraphicSize(Math.floor(GRID_SIZE), Math.floor(GRID_SIZE));
@@ -3039,7 +3114,8 @@ class ChartingState extends MusicBeatState
 		}
 		else
 		{
-			var note:Note = new Note(n.strumTime, n.noteData % 4,null,false,true, n.isAlt);
+			var note:Note = new Note(n.strumTime, n.noteData % 4,null,false,true, n.isAlt,TimingStruct.getBeatFromTime(n.strumTime));
+			note.beat = TimingStruct.getBeatFromTime(n.strumTime);
 			note.rawNoteData = n.noteData;
 			note.sustainLength = noteSus;
 			note.setGraphicSize(Math.floor(GRID_SIZE), Math.floor(GRID_SIZE));

@@ -43,6 +43,8 @@ class Note extends FlxSprite
 
 	public var noteYOff:Int = 0;
 
+	public var beat:Float = 0;
+
 	public static var swagWidth:Float = 160 * 0.7;
 	public static var PURP_NOTE:Int = 0;
 	public static var GREEN_NOTE:Int = 2;
@@ -66,12 +68,14 @@ class Note extends FlxSprite
 
 	public var children:Array<Note> = [];
 
-	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inCharter:Bool = false, ?isAlt:Bool = false)
+	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inCharter:Bool = false, ?isAlt:Bool = false, ?bet:Float = 0)
 	{
 		super();
 
 		if (prevNote == null)
 			prevNote = this;
+
+		beat = bet;
 
 		this.isAlt = isAlt;
 
@@ -96,15 +100,18 @@ class Note extends FlxSprite
 				rStrumTime = strumTime;
 			}
 			else
-				rStrumTime = (strumTime - FlxG.save.data.offset + PlayState.songOffset);
+				rStrumTime = strumTime;
 			#else
-			rStrumTime = (strumTime - FlxG.save.data.offset + PlayState.songOffset);
+			rStrumTime = strumTime;
 			#end
 		}
 
 
 		if (this.strumTime < 0 )
 			this.strumTime = 0;
+
+		if (!inCharter)
+			y += FlxG.save.data.offset + PlayState.songOffset;
 
 		this.noteData = noteData;
 
@@ -173,16 +180,25 @@ class Note extends FlxSprite
 
 		if (FlxG.save.data.stepMania && !isSustainNote)
 		{
-			var strumCheck:Float = rStrumTime;
-
-			// I give up on fluctuating bpms. something has to be subtracted from strumCheck to make them look right but idk what.
-			// I'd use the note's section's start time but neither the note's section nor its start time are accessible by themselves
-			//strumCheck -= ???
-
-			var ind:Int = Std.int(Math.round(strumCheck / (Conductor.stepCrochet / 2)));
-
 			var col:Int = 0;
-			col = quantityColor[ind % 8]; // Set the color depending on the beats
+
+			var beatRow = Math.round(beat * 48);
+
+			// STOLEN ETTERNA CODE (IN 2002)
+
+			if (beatRow % (192 / 4) == 0)
+				col = quantityColor[0];
+			else if (beatRow % (192 / 8) == 0)
+				col = quantityColor[2];
+			else if (beatRow % (192 / 12) == 0)
+				col = quantityColor[4];
+			else if (beatRow % (192 / 16) == 0)
+				col = quantityColor[4];
+			else if (beatRow % (192 / 24) == 0)
+				col = quantityColor[6];
+			else if (beatRow % (192 / 32) == 0)
+				col = quantityColor[6];
+
 
 			animation.play(dataColor[col] + 'Scroll');
 			localAngle -= arrowAngles[col];
