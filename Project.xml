@@ -128,7 +128,7 @@
 	<haxelib name="polymod"/>
 	<haxelib name="discord_rpc" if="windows"/>
 	<haxelib name="linc_luajit"/>
-	<haxelib name="hxvm-luajit"/>
+	<haxelib name="hxvm-luajit" if="windows"/>
 	<!-- <haxelib name="hxcpp-debug-server" if="desktop"/> -->
 
 	<!-- <haxelib name="markdown" /> -->

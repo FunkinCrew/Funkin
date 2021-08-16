@@ -588,6 +588,7 @@ class ModchartState
 					return PlayState.instance.notes.members[id].noteData;
 				});
 
+
 				Lua_helper.add_callback(lua,"isSustain", function(id:Int) {
 					return PlayState.instance.notes.members[id].isSustainNote;
 				});
