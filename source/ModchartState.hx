@@ -609,11 +609,11 @@ class ModchartState
 				});
 
 				Lua_helper.add_callback(lua,"setSustainObjectX", function(idParent:Int, index:Int,x:Int) {
-					return PlayState.instance.notes.members[id].children[index].x = x;
+					return PlayState.instance.notes.members[idParent].children[index].x = x;
 				});
 
 				Lua_helper.add_callback(lua,"setSustainObjectY", function(idParent:Int, index:Int,y:Int) {
-					return PlayState.instance.notes.members[id].children[index].y = y;
+					return PlayState.instance.notes.members[idParent].children[index].y = y;
 				});
 				
 				Lua_helper.add_callback(lua,"getRenderedNoteParentX", function(id:Int) {
