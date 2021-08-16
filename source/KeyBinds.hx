@@ -35,26 +35,18 @@ class KeyBinds
             FlxG.save.data.upBind = "W";
             trace("No UP");
         }
-        if (StringTools.contains(FlxG.save.data.upBind,"NUMPAD"))
-            FlxG.save.data.upBind = "W";
         if(FlxG.save.data.downBind == null){
             FlxG.save.data.downBind = "S";
             trace("No DOWN");
         }
-        if (StringTools.contains(FlxG.save.data.downBind,"NUMPAD"))
-            FlxG.save.data.downBind = "S";
         if(FlxG.save.data.leftBind == null){
             FlxG.save.data.leftBind = "A";
             trace("No LEFT");
         }
-        if (StringTools.contains(FlxG.save.data.leftBind,"NUMPAD"))
-            FlxG.save.data.leftBind = "A";
         if(FlxG.save.data.rightBind == null){
             FlxG.save.data.rightBind = "D";
             trace("No RIGHT");
         }
-        if (StringTools.contains(FlxG.save.data.rightBind,"NUMPAD"))
-            FlxG.save.data.rightBind = "D";
         
         if(FlxG.save.data.gpupBind == null){
             FlxG.save.data.gpupBind = "DPAD_UP";
