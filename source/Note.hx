@@ -58,7 +58,7 @@ class Note extends FlxSprite
 	public var originAngle:Float = 0; // The angle the OG note of the sus note had (?)
 
 	public var dataColor:Array<String> = ['purple', 'blue', 'green', 'red'];
-	public var quantityColor:Array<Int> = [RED_NOTE, 2, BLUE_NOTE, 2, PURP_NOTE, 2, BLUE_NOTE, 2];
+	public var quantityColor:Array<Int> = [RED_NOTE, 2, BLUE_NOTE, 2, PURP_NOTE, 2, GREEN_NOTE, 2];
 	public var arrowAngles:Array<Int> = [180, 90, 270, 0];
 
 	public var isParent:Bool = false;
@@ -193,11 +193,11 @@ class Note extends FlxSprite
 			else if (beatRow % (192 / 12) == 0)
 				col = quantityColor[4];
 			else if (beatRow % (192 / 16) == 0)
-				col = quantityColor[4];
+				col = quantityColor[6];
 			else if (beatRow % (192 / 24) == 0)
-				col = quantityColor[6];
+				col = quantityColor[4];
 			else if (beatRow % (192 / 32) == 0)
-				col = quantityColor[6];
+				col = quantityColor[4];
 
 
 			animation.play(dataColor[col] + 'Scroll');

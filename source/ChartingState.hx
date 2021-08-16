@@ -1645,10 +1645,8 @@ class ChartingState extends MusicBeatState
 			i.strumTime = TimingStruct.getTimeFromBeat(i.beat);
 			i.y = Math.floor(getYfromStrum(i.strumTime) * zoomFactor);
 			if (i.noteCharterObject != null)
-			{
 				i.noteCharterObject.y = i.y + 40;
-				i.noteCharterObject.makeGraphic(8,Math.floor((getYfromStrum(i.strumTime + i.sustainLength) * zoomFactor) - i.y),FlxColor.WHITE);
-			}
+			
 		}
 
 		trace("FUCK YOU BITCH FUCKER CUCK SUCK BITCH " + _song.notes.length);
