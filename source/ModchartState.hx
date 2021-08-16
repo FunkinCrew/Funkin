@@ -573,7 +573,7 @@ class ModchartState
 				// actors
 				
 				Lua_helper.add_callback(lua,"getRenderedNotes", function() {
-					return PlayState.instance.notes.length;
+					return PlayState.instance.notes.members.length;
 				});
 	
 				Lua_helper.add_callback(lua,"getRenderedNoteX", function(id:Int) {
