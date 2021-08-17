@@ -1,134 +1,78 @@
 package;
 
-import Controls.Control;
-import flash.text.TextField;
-import flixel.FlxG;
-import flixel.FlxSprite;
-import flixel.addons.display.FlxGridOverlay;
-import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.input.keyboard.FlxKey;
-import flixel.math.FlxMath;
-import flixel.text.FlxText;
 import flixel.util.FlxColor;
-import lime.utils.Assets;
+import flixel.FlxSprite;
+import flixel.text.FlxText;
+import flixel.FlxG;
+import flixel.FlxState;
+import Controls.Control;
 
-class OptionsMenu extends MusicBeatState
-{
-	var selector:FlxText;
+using StringTools;
+
+class OptionsMenu extends MusicBeatState {
+	var options:Array<String> = ['o'];
+
+	var optionText:FlxText;
+	var optionDot:FlxSprite;
+
 	var curSelected:Int = 0;
 
-	var controlsStrings:Array<String> = [];
+	public override function create() {
+		optionText = new FlxText(0, 0, 0, 'OPTIONS LOLOLO', 32);
+		add(optionText);
+		optionText.screenCenter();
+		optionText.alignment = FlxTextAlign.CENTER;
 
-	private var grpControls:FlxTypedGroup<Alphabet>;
+		optionDot = new FlxSprite(0, 0).makeGraphic(10, 10, FlxColor.RED);
+		add(optionDot);
 
-	override function create()
-	{
-		var menuBG:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
-		controlsStrings = CoolUtil.coolTextFile(Paths.txt('controls'));
-		menuBG.color = 0xFFea71fd;
-		menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
-		menuBG.updateHitbox();
-		menuBG.screenCenter();
-		menuBG.antialiasing = true;
-		add(menuBG);
-
-		/* 
-			grpControls = new FlxTypedGroup<Alphabet>();
-			add(grpControls);
-
-			for (i in 0...controlsStrings.length)
-			{
-				if (controlsStrings[i].indexOf('set') != -1)
-				{
-					var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, controlsStrings[i].substring(3) + ': ' + controlsStrings[i + 1], true, false);
-					controlLabel.isMenuItem = true;
-					controlLabel.targetY = i;
-					grpControls.add(controlLabel);
-				}
-				// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
-			}
-		 */
+		optionDot.y = optionText.y + 16;
 
 		super.create();
-
-		openSubState(new OptionsSubState());
 	}
 
-	override function update(elapsed:Float)
-	{
-		super.update(elapsed);
+	public override function update(elapsed:Float) {
+		options = ['Controls ${!FlxG.save.data.dfjk ? 'WASD' : 'DFJK'}', 'Practice mode ${!FlxG.save.data.pmode ? 'off' : 'on'}'];
+		optionText.screenCenter();
 
-		/* 
-			if (controls.ACCEPT)
-			{
-				changeBinding();
-			}
+		optionDot.x = optionText.x - 20;
 
-			if (isSettingControl)
-				waitingInput();
-			else
-			{
-				if (controls.BACK)
-					FlxG.switchState(new MainMenuState());
-				if (controls.UP_P)
-					changeSelection(-1);
-				if (controls.DOWN_P)
-					changeSelection(1);
-			}
-		 */
-	}
-
-	function waitingInput():Void
-	{
-		if (FlxG.keys.getIsDown().length > 0)
-		{
-			PlayerSettings.player1.controls.replaceBinding(Control.LEFT, Keys, FlxG.keys.getIsDown()[0].ID, null);
+		optionText.text = '';
+		for (option in options) {
+			optionText.text += '\n${option}';
 		}
-		// PlayerSettings.player1.controls.replaceBinding(Control)
-	}
 
-	var isSettingControl:Bool = false;
-
-	function changeBinding():Void
-	{
-		if (!isSettingControl)
-		{
-			isSettingControl = true;
+		if (controls.ACCEPT) {
+			if (options[curSelected].startsWith('Controls')) {
+				FlxG.save.data.dfjk = !FlxG.save.data.dfjk;
+			}
+			if (options[curSelected].startsWith('Practice mode')) {
+				FlxG.save.data.pmode = !FlxG.save.data.pmode;
+			}
 		}
-	}
 
-	function changeSelection(change:Int = 0)
-	{
-		#if !switch
-		NGio.logEvent('Fresh');
-		#end
+		if (controls.BACK) {
+			FlxG.switchState(new MainMenuState());
+		}
 
-		FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
+		if (controls.UP_P) {
+			curSelected--;
+			optionDot.y -= 16 * 2.5;
+		}
+		if (controls.DOWN_P) {
+			curSelected++;
+			optionDot.y += 16 * 2.5;
+		}
 
-		curSelected += change;
-
-		if (curSelected < 0)
-			curSelected = grpControls.length - 1;
-		if (curSelected >= grpControls.length)
+		if (curSelected < 0) {
 			curSelected = 0;
-
-		// selector.y = (70 * curSelected) + 30;
-
-		var bullShit:Int = 0;
-
-		for (item in grpControls.members)
-		{
-			item.targetY = bullShit - curSelected;
-			bullShit++;
-
-			item.alpha = 0.6;
-			// item.setGraphicSize(Std.int(item.width * 0.8));
-
-			if (item.targetY == 0)
-			{
-				item.alpha = 1;
-				// item.setGraphicSize(Std.int(item.width));
-			}
+			optionDot.y += 16 * 2.5;
 		}
+		if (curSelected > options.length - 1) {
+			curSelected = options.length - 1;
+			optionDot.y -= 16 * 2.5;
+		}
+
+		super.update(elapsed);
 	}
 }
