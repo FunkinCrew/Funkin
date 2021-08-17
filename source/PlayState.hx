@@ -125,6 +125,12 @@ class PlayState extends MusicBeatState
 
 	var inCutscene:Bool = false;
 
+	var sicks:Int;
+	var goods:Int;
+	var bads:Int;
+	var shits:Int;
+	var misses:Int;
+
 	#if desktop
 	// Discord RPC variables
 	var storyDifficultyText:String = "";
@@ -136,6 +142,12 @@ class PlayState extends MusicBeatState
 
 	override public function create()
 	{
+		sicks = 0;
+		goods = 0;
+		bads = 0;
+		shits = 0;
+		misses = 0;
+
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
 
@@ -1364,7 +1376,7 @@ class PlayState extends MusicBeatState
 
 		super.update(elapsed);
 
-		scoreTxt.text = "Score:" + songScore;
+		scoreTxt.text = 'Score: ${songScore} | Misses: ${misses} | Hits/Total: ${sicks + goods + bads + shits}/${sicks + goods + bads + shits + misses}';
 
 		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause)
 		{
@@ -1805,16 +1817,19 @@ class PlayState extends MusicBeatState
 		{
 			daRating = 'shit';
 			score = 50;
+			shits++;
 		}
 		else if (noteDiff > Conductor.safeZoneOffset * 0.75)
 		{
 			daRating = 'bad';
 			score = 100;
+			bads++;
 		}
 		else if (noteDiff > Conductor.safeZoneOffset * 0.2)
 		{
 			daRating = 'good';
 			score = 200;
+			goods++;
 		}
 
 		songScore += score;
@@ -2168,6 +2183,7 @@ class PlayState extends MusicBeatState
 					boyfriend.playAnim('singRIGHTmiss', true);
 			}
 		}
+		misses++;
 	}
 
 	function badNoteCheck()
