@@ -213,6 +213,16 @@ class FreeplayState extends MusicBeatState
 		var downP = controls.UI_DOWN_P;
 		var accepted = controls.ACCEPT;
 
+		#if mobile
+		for (touch in FlxG.touches.list)
+		{
+			if (touch.justPressed)
+			{
+				accepted = true;
+			}
+		}
+		#end
+
 		if (upP)
 			changeSelection(-1);
 		if (downP)

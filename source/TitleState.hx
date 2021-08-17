@@ -36,6 +36,7 @@ import openfl.net.NetStream;
 import shaderslmfao.BuildingShaders.BuildingShader;
 import shaderslmfao.BuildingShaders;
 import shaderslmfao.ColorSwap;
+import shaderslmfao.TitleOutline;
 import ui.PreferencesMenu;
 import ui.stageBuildShit.StageBuilderState;
 
@@ -266,7 +267,8 @@ class TitleState extends MusicBeatState
 
 		logoBl.updateHitbox();
 
-		logoBl.shader = swagShader.shader;
+		// logoBl.shader = swagShader.shader;
+		logoBl.shader = new TitleOutline();
 		// logoBl.shader = alphaShader.shader;
 
 		// trace();
@@ -281,6 +283,8 @@ class TitleState extends MusicBeatState
 		add(gfDance);
 
 		gfDance.shader = swagShader.shader;
+
+		// gfDance.shader = new TitleOutline();
 
 		add(logoBl);
 
@@ -302,7 +306,7 @@ class TitleState extends MusicBeatState
 		// FlxTween.tween(logoBl, {y: logoBl.y + 50}, 0.6, {ease: FlxEase.quadInOut, type: PINGPONG});
 		// FlxTween.tween(logo, {y: logoBl.y + 50}, 0.6, {ease: FlxEase.quadInOut, type: PINGPONG, startDelay: 0.1});
 		var animShit:ComboCounter = new ComboCounter(200, 200, 1423);
-		add(animShit);
+		// add(animShit);
 		credGroup = new FlxGroup();
 		add(credGroup);
 
@@ -381,6 +385,9 @@ class TitleState extends MusicBeatState
 
 	var transitioning:Bool = false;
 
+	var fnfShit:String = "Friday Night Funkin'";
+	var thingOffset:Int = 0;
+
 	override function update(elapsed:Float)
 	{
 		if (FlxG.keys.justPressed.Y)
@@ -450,7 +457,10 @@ class TitleState extends MusicBeatState
 		for (touch in FlxG.touches.list)
 		{
 			if (touch.justPressed)
+			{
+				FlxG.switchState(new FreeplayState());
 				pressedEnter = true;
+			}
 		}
 		#end
 		var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
