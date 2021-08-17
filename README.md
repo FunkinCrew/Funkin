@@ -3,7 +3,9 @@
 This is the repository for Friday Night Funkin, a game originally made for Ludum Dare 47 "Stuck In a Loop".
 
 [Click here to play the Ludum Dare prototype](https://ninja-muffin24.itch.io/friday-night-funkin)
+
 [Click here to play on Newgrounds](https://www.newgrounds.com/portal/view/770371)
+
 [Support the project on the itch.io page](https://ninja-muffin24.itch.io/funkin)
 
 IF YOU MAKE A MOD AND DISTRIBUTE A MODIFIED / RECOMIPLED VERSION, YOU MUST OPEN SOURCE YOUR MOD AS WELL
