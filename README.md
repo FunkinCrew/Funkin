@@ -80,7 +80,7 @@ and you should be good to go there.
 
 ### Compiling game
 
-Once you have all those installed, it's pretty easy to compile the game. You just need to run 'lime test target -debug' in the root of the project directory. Replace target with the system you want to build to. (so shit like lime test windows -debug). HTML5 is also an option.
+Once you have all those installed, it's pretty easy to compile the game. You just need to run `lime test target -debug` in the root of the project directory. Replace target with the system you want to build to. (so shit like lime test windows -debug). HTML5 is also an option.
 
 
 To build for Windows, you need to install Visual Studio Community 2019. While installing VSC, don't click on any of the options to install workloads. Instead, go to the individual components tab and choose the following:
