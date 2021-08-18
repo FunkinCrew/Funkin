@@ -21,11 +21,7 @@ class OutdatedSubState extends MusicBeatState
 		add(bg);
 		var ver = "v" + MainMenuState.version;
 		var txt:FlxText = new FlxText(0, 0, FlxG.width,
-			"HEY! You're running an outdated version of the game!\nCurrent version is "
-			+ ver
-			+ " while the most recent version is "
-			+ needVer
-			+ "! Press Space to go to github, or ESCAPE to ignore this!!",
+			'HEY! Your version of UFNF is outdated!\nThe most recent version is v${needVer} while you have ${ver}!\n\nChanges:\n${currChanges}',
 			32);
 		txt.setFormat("VCR OSD Mono", 32, FlxColor.WHITE, CENTER);
 		txt.screenCenter();

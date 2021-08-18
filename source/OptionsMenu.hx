@@ -26,7 +26,7 @@ class OptionsMenu extends MusicBeatState {
 		optionDot = new FlxSprite(0, 0).makeGraphic(10, 10, FlxColor.RED);
 		add(optionDot);
 
-		optionDot.y = optionText.y + 16;
+		optionDot.y = optionText.y - 20;
 
 		super.create();
 	}

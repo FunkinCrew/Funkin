@@ -1,4 +1,6 @@
-0.1.0;
-- Added Options
-- New Input System
-- Week songs now display properly
+0.2.0;
+- Added Ghost Tapping
+- Added 'Limited ScoreBar' Option
+- Updated logo
+- Fixed disappearing notes
+- Added character health colors

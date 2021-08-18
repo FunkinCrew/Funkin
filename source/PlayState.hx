@@ -743,7 +743,61 @@ class PlayState extends MusicBeatState
 		healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
 			'health', 0, 2);
 		healthBar.scrollFactor.set();
-		healthBar.createFilledBar(0xFFFF0000, 0xFF66FF33);
+		
+		var barColor:FlxColor;
+		var barColor2:FlxColor;
+		// Char colors
+		switch (dad.curCharacter.toLowerCase()) {
+			case 'bf', 'bf-car', 'bf-christmas', 'bf-pixel':
+				barColor = new FlxColor(0xFF23F0FF);
+			case 'dad':
+				barColor = new FlxColor(0xFF821A47);
+			case 'gf', 'gf-car', 'gf-christmas', 'gf-pixel':
+				barColor = new FlxColor(0xFFB7050E);
+			case 'spooky':
+				barColor = new FlxColor(0xFFFF793F);
+			case 'pico':
+				barColor = new FlxColor(0xFF46FF2D);
+			case 'mom', 'mom-car':
+				barColor = new FlxColor(0xFFFF5964);
+			case 'parents-christmas':
+				barColor = new FlxColor(0xFFFF7795);
+			case 'monster', 'monster-christmas':
+				barColor = new FlxColor(0xFFFFE016);
+			case 'senpai', 'senpai-angry':
+				barColor = new FlxColor(0xFFFFA647);
+			case 'spirit':
+				barColor = new FlxColor(0xFF9B0200);
+			default:
+				barColor = new FlxColor(0xFF000000);
+		}
+		switch (boyfriend.curCharacter.toLowerCase()) {
+			case 'bf', 'bf-car', 'bf-christmas', 'bf-pixel':
+				barColor2 = new FlxColor(0xFF23F0FF);
+			case 'dad':
+				barColor2 = new FlxColor(0xFF821A47);
+			case 'gf', 'gf-car', 'gf-christmas', 'gf-pixel':
+				barColor2 = new FlxColor(0xFFB7050E);
+			case 'spooky':
+				barColor2 = new FlxColor(0xFFFF793F);
+			case 'pico':
+				barColor2 = new FlxColor(0xFF46FF2D);
+			case 'mom', 'mom-car':
+				barColor2 = new FlxColor(0xFFFF5964);
+			case 'parents-christmas':
+				barColor2 = new FlxColor(0xFFFF7795);
+			case 'monster', 'monster-christmas':
+				barColor2 = new FlxColor(0xFFFFE016);
+			case 'senpai', 'senpai-angry':
+				barColor2 = new FlxColor(0xFFFFA647);
+			case 'spirit':
+				barColor2 = new FlxColor(0xFF9B0200);
+			default:
+				barColor2 = new FlxColor(0xFF000000);
+		}
+
+		healthBar.createFilledBar(barColor, barColor2);
+
 		// healthBar
 		add(healthBar);
 
@@ -2076,10 +2130,10 @@ class PlayState extends MusicBeatState
 						for (coolNote in possibleNotes)
 						{
 							if (left || up || down || right) {
-								noteCheck(controlArray[daNote.noteData], coolNote);
+								noteCheck(controlArray[coolNote.noteData], coolNote);
 							}
 							if (left2 || up2 || down2 || right2) {
-								noteCheck(controlArray2[daNote.noteData], coolNote);
+								noteCheck(controlArray2[coolNote.noteData], coolNote);
 							}
 						}
 					}
@@ -2140,16 +2194,16 @@ class PlayState extends MusicBeatState
 					{
 						// NOTES YOU ARE HOLDING
 						case 0:
-							if (left || left2)
+							if ((left && !left2) || (!left && left2))
 								goodNoteHit(daNote);
 						case 1:
-							if (down || down2)
+							if ((down && !down2) || (!down && down2))
 								goodNoteHit(daNote);
 						case 2:
-							if (up || up2)
+							if ((up && !up2) || (!up && up2))
 								goodNoteHit(daNote);
 						case 3:
-							if (right || right2)
+							if ((right && !right2) || (!right && right2))
 								goodNoteHit(daNote);
 					}
 				}
