@@ -616,6 +616,9 @@ class PlayState extends MusicBeatState
 		#if linc_luajit
 		executeModchart = !(PlayState.SONG.modchartPath == '' || PlayState.SONG.modchartPath == null);
 
+		if(!executeModchart && PlayState.SONG.song.toLowerCase() == 'm.i.l.f')
+			PlayState.SONG.modchartPath = 'milfcamerazoom';
+
 		if (executeModchart)
 		{
 			luaModchart = ModchartUtilities.createModchartUtilities();
@@ -2380,13 +2383,6 @@ class PlayState extends MusicBeatState
 		}
 		// FlxG.log.add('change bpm' + SONG.notes[Std.int(curStep / 16)].changeBPM);
 		wiggleShit.update(Conductor.crochet);
-
-		// HARDCODING FOR MILF ZOOMS!
-		if (curSong.toLowerCase() == 'm.i.l.f' && curBeat >= 168 && curBeat < 200 && camZooming && FlxG.camera.zoom < 1.35)
-		{
-			FlxG.camera.zoom += 0.015;
-			camHUD.zoom += 0.03;
-		}
 
 		if (camZooming && FlxG.camera.zoom < 1.35 && curBeat % 4 == 0)
 		{
