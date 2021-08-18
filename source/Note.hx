@@ -178,7 +178,7 @@ class Note extends FlxSprite
 		animation.play(dataColor[noteData] + 'Scroll');
 		originColor = noteData; // The note's origin color will be checked by its sustain notes
 
-		if (FlxG.save.data.stepMania && !isSustainNote)
+		if (FlxG.save.data.stepMania && !isSustainNote && !PlayState.instance.executeModchart)
 		{
 			var col:Int = 0;
 
@@ -256,7 +256,10 @@ class Note extends FlxSprite
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
-		angle = modAngle + localAngle;
+		if (!modifiedByLua)
+			angle = modAngle + localAngle;
+		else
+			angle = modAngle;
 
 		if (!modifiedByLua)
 		{

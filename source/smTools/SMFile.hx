@@ -251,7 +251,7 @@ class SMFile
                         case 3: // held tail
                             var data = heldNotes[lane];
                             var timeDiff = rowTime - data[0];
-                            section.sectionNotes.push([data[0],lane,timeDiff,0, currentBeat]);
+                            section.sectionNotes.push([data[0],lane,timeDiff,0, data[4]]);
                             heldNotes[index] = [];
                         case 4: // roll head
                             heldNotes[lane] = [rowTime,lane,0,0, currentBeat];

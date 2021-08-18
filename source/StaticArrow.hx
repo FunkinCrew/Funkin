@@ -9,7 +9,7 @@ using StringTools;
 
 class StaticArrow extends FlxSprite
 {
-	
+	public var modifiedByLua:Bool = false;
 	public var modAngle:Float = 0; // The angle set by modcharts
 	public var localAngle:Float = 0; // The angle to be edited inside here
 
@@ -23,7 +23,10 @@ class StaticArrow extends FlxSprite
 
 	override function update(elapsed:Float)
 	{
-		angle = localAngle + modAngle;
+		if (!modifiedByLua)
+			angle = localAngle + modAngle;
+		else 
+			angle = modAngle;
 		super.update(elapsed);
 
 		if (FlxG.keys.justPressed.THREE)
