@@ -32,7 +32,10 @@ class OptionsMenu extends MusicBeatState {
 	}
 
 	public override function update(elapsed:Float) {
-		options = ['Controls ${!FlxG.save.data.dfjk ? 'WASD' : 'DFJK'}', 'Practice mode ${!FlxG.save.data.pmode ? 'off' : 'on'}'];
+		options = ['Controls ${!FlxG.save.data.dfjk ? 'WASD' : 'DFJK'}',
+		'Practice mode ${!FlxG.save.data.pmode ? 'off' : 'on'}',
+		'Ghost Tapping ${!FlxG.save.data.gtapping ? 'on' : 'off'}',
+		'Limited ScoreBar ${!FlxG.save.data.sbar ? 'off' : 'on'}'];
 		optionText.screenCenter();
 
 		optionDot.x = optionText.x - 20;
@@ -48,6 +51,12 @@ class OptionsMenu extends MusicBeatState {
 			}
 			if (options[curSelected].startsWith('Practice mode')) {
 				FlxG.save.data.pmode = !FlxG.save.data.pmode;
+			}
+			if (options[curSelected].startsWith('Ghost Tapping')) {
+				FlxG.save.data.gtapping = !FlxG.save.data.gtapping;
+			}
+			if (options[curSelected].startsWith('Limited ScoreBar')) {
+				FlxG.save.data.sbar = !FlxG.save.data.sbar;
 			}
 		}
 

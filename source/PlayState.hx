@@ -161,8 +161,7 @@ class PlayState extends MusicBeatState
 		FlxG.cameras.reset(camGame);
 		FlxG.cameras.add(camHUD);
 
-		// FlxCamera.defaultCameras = [camGame]; So flixel can shut up
-		FlxG.cameras.setDefaultDrawTarget(camGame, true);
+		FlxCamera.defaultCameras = [camGame];
 
 		persistentUpdate = true;
 		persistentDraw = true;
@@ -1379,7 +1378,7 @@ class PlayState extends MusicBeatState
 
 		super.update(elapsed);
 
-		scoreTxt.text = 'Score: ${songScore} | Misses: ${misses}${FlxG.save.data.pmode ? ' | PRACTICE MODE' : ''}';
+		scoreTxt.text = 'Score: ${songScore}${!FlxG.save.data.sbar ? ' | Misses: ${misses}${FlxG.save.data.pmode ? ' | PRACTICE MODE' : ''}${!FlxG.save.data.gtapping ? ' | GHOST TAPPING' : ''}' : ''}';
 		scoreTxt.screenCenter(X);
 
 		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause)
@@ -1696,6 +1695,8 @@ class PlayState extends MusicBeatState
 					{
 						health -= 0.0475;
 						vocals.volume = 0;
+						misses++;
+						FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
 					}
 
 					daNote.active = false;
@@ -2204,26 +2205,30 @@ class PlayState extends MusicBeatState
 	{
 		if (!boyfriend.stunned)
 		{
-			health -= 0.04;
-			if (combo > 5 && gf.animOffsets.exists('sad'))
-			{
-				gf.playAnim('sad');
+			// Ghost tapping still triggers miss animations for input reasons
+			if (FlxG.save.data.gtapping) {
+				misses++;
+				health -= 0.04;
+				if (combo > 5 && gf.animOffsets.exists('sad'))
+				{
+					gf.playAnim('sad');
+				}
+				combo = 0;
+
+				songScore -= 10;
+
+				FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
+				// FlxG.sound.play(Paths.sound('missnote1'), 1, false);
+				// FlxG.log.add('played imss note');
+
+				boyfriend.stunned = true;
+
+				// get stunned for 5 seconds
+				new FlxTimer().start(5 / 60, function(tmr:FlxTimer)
+				{
+					boyfriend.stunned = false;
+				});
 			}
-			combo = 0;
-
-			songScore -= 10;
-
-			FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
-			// FlxG.sound.play(Paths.sound('missnote1'), 1, false);
-			// FlxG.log.add('played imss note');
-
-			boyfriend.stunned = true;
-
-			// get stunned for 5 seconds
-			new FlxTimer().start(5 / 60, function(tmr:FlxTimer)
-			{
-				boyfriend.stunned = false;
-			});
 
 			switch (direction)
 			{
@@ -2237,7 +2242,6 @@ class PlayState extends MusicBeatState
 					boyfriend.playAnim('singRIGHTmiss', true);
 			}
 		}
-		misses++;
 	}
 
 	function badNoteCheck()
@@ -2269,6 +2273,7 @@ class PlayState extends MusicBeatState
 		if (rightP || rightP2) {
 			noteMiss(3);
 			ghostTaps++;
+
 		}
 	}
 
