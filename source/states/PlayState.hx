@@ -616,7 +616,7 @@ class PlayState extends MusicBeatState
 		#if linc_luajit
 		executeModchart = !(PlayState.SONG.modchartPath == '' || PlayState.SONG.modchartPath == null);
 
-		if(!executeModchart && PlayState.SONG.song.toLowerCase() == 'm.i.l.f')
+		if((PlayState.SONG.modchartPath == '' || PlayState.SONG.modchartPath == null) && PlayState.SONG.song.toLowerCase() == 'm.i.l.f')
 			PlayState.SONG.modchartPath = 'milfcamerazoom';
 
 		if (executeModchart)
