@@ -8,6 +8,8 @@ using StringTools;
 
 class DiscordClient
 {
+	public static var started:Bool = false;
+
 	public function new()
 	{
 		trace("Discord Client starting...");
@@ -60,6 +62,8 @@ class DiscordClient
 		{
 			new DiscordClient();
 		});
+
+		started = true;
 		trace("Discord Client initialized");
 	}
 

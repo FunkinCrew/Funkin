@@ -78,11 +78,14 @@ class TitleState extends MusicBeatState
 		});
 
 		#if desktop
-		DiscordClient.initialize();
+		if(!DiscordClient.started)
+		{
+			DiscordClient.initialize();
 		
-		Application.current.onExit.add (function (exitCode) {
-			DiscordClient.shutdown();
-		 });
+			Application.current.onExit.add(function (exitCode) {
+				DiscordClient.shutdown();
+			});
+		}
 		#end
 	}
 
