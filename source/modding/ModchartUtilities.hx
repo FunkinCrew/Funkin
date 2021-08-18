@@ -1,5 +1,6 @@
 package modding;
 
+import flixel.util.FlxColor;
 #if linc_luajit
 import llua.Convert;
 import llua.Lua;
@@ -252,6 +253,14 @@ class ModchartUtilities
             return FlxG.camera.y;
         });
 
+        Lua_helper.add_callback(lua,"getCamZoom", function() {
+            return FlxG.camera.zoom;
+        });
+
+        Lua_helper.add_callback(lua,"getHudZoom", function() {
+            return PlayState.instance.camHUD.zoom;
+        });
+
         Lua_helper.add_callback(lua,"setCamZoom", function(zoomAmount:Float) {
             FlxG.camera.zoom = zoomAmount;
         });
@@ -390,6 +399,10 @@ class ModchartUtilities
         Lua_helper.add_callback(lua,"setActorVelocityX", function(x:Int,id:String) {
             getActorByName(id).velocity.x = x;
         });
+
+        Lua_helper.add_callback(lua,"addActorAnimation", function(id:String,prefix:String,anim:String,fps:Int = 30, looped:Bool = true) {
+            getActorByName(id).animation.addByPrefix(prefix, anim, fps, looped);
+        });
         
         Lua_helper.add_callback(lua,"playActorAnimation", function(id:String,anim:String,force:Bool = false,reverse:Bool = false) {
             getActorByName(id).playAnim(anim, force, reverse);
@@ -397,6 +410,10 @@ class ModchartUtilities
 
         Lua_helper.add_callback(lua,"setActorAlpha", function(alpha:Float,id:String) {
             getActorByName(id).alpha = alpha;
+        });
+
+        Lua_helper.add_callback(lua,"setActorColor", function(id:String,r:Int,g:Int,b:Int,alpha:Int = 255) {
+            getActorByName(id).color = FlxColor.fromRGB(r, g, b, alpha);
         });
 
         Lua_helper.add_callback(lua,"setActorY", function(y:Int,id:String) {
@@ -693,6 +710,26 @@ class ModchartUtilities
 
         Lua_helper.add_callback(lua,"tweenFadeOut", function(id:String, toAlpha:Float, time:Float, onComplete:String) {
             FlxTween.tween(getActorByName(id), {alpha: toAlpha}, time, {ease: FlxEase.circOut, onComplete: function(flxTween:FlxTween) { if (onComplete != '' && onComplete != null) {callLua(onComplete,[id]);}}});
+        });
+
+        Lua_helper.add_callback(lua,"tweenActorColor", function(id:String, r1:Int, g1:Int, b1:Int, r2:Int, g2:Int, b2:Int, time:Float, onComplete:String) {
+            var actor = getActorByName(id);
+
+            FlxTween.color(
+                actor,
+                time,
+                FlxColor.fromRGB(r1, g1, b1, 255),
+                FlxColor.fromRGB(r2, g2, b2, 255),
+                {
+                    ease: FlxEase.circIn,
+                    onComplete: function(flxTween:FlxTween) {
+                        if (onComplete != '' && onComplete != null)
+                        {
+                            callLua(onComplete,[id]);
+                        }
+                    }
+                }
+            );
         });
 
         //forgot and accidentally commit to master branch

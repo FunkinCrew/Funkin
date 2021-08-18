@@ -741,7 +741,7 @@ class ChartingState extends MusicBeatState
 
 			changeSection(curSection + 1, false);
 		}
-		else if(curStep < 16 * curSection)
+		else if(curStep < (16 * curSection) - 1)
 		{
 			trace(curStep);
 			trace((_song.notes[curSection].lengthInSteps) * (curSection + 1));
