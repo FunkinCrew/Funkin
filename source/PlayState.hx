@@ -1214,6 +1214,9 @@ class PlayState extends MusicBeatState
 			}
 		}
 
+		defaultCamZoom = FlxG.initialZoom + (defaultCamZoom - 1);
+		FlxG.camera.zoom = defaultCamZoom;
+
 		super.create();
 	}
 
@@ -2124,7 +2127,7 @@ class PlayState extends MusicBeatState
 		if (camZooming)
 		{
 			FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, 0.95);
-			camHUD.zoom = FlxMath.lerp(1, camHUD.zoom, 0.95);
+			camHUD.zoom = FlxMath.lerp(FlxG.initialZoom, camHUD.zoom, 0.95);
 		}
 
 		FlxG.watch.addQuick("beatShit", curBeat);
@@ -3233,9 +3236,9 @@ class PlayState extends MusicBeatState
 
 
 		
-		#if debug
+		/*#if debug
 		FlxG.camera.zoom += 0.003;
-		#end
+		#end*/
 
 
 

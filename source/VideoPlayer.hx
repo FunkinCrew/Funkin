@@ -7,7 +7,7 @@ import openfl.Assets;
 import openfl.media.Sound;
 import flixel.FlxSprite;
 import webm.*;
-import Asset2File;
+import utils.Asset2File;
 #if sys
 import webm.WebmPlayer;
 #end
@@ -43,12 +43,12 @@ class VideoPlayer extends FlxSprite {
 
     public var pathfile:String;
 
-    public function new(x, y, path:String) 
+    public function new(path:String, ?x, ?y) 
     {
         super(x, y);
 
         #if sys
-        //WebmPlayer.SKIP_STEP_LIMIT = 90;
+        WebmPlayer.SKIP_STEP_LIMIT = 90;
 
         pathfile = path;
 
@@ -102,7 +102,7 @@ class VideoPlayer extends FlxSprite {
     }
     override public function update(elapsed:Float) {
         super.update(elapsed);
-        #if sys
+        /*#if sys
         soundMultiplier = player.renderedCount / videoFrames;
         if (soundMultiplier > 1)
 			{
@@ -133,7 +133,7 @@ class VideoPlayer extends FlxSprite {
                     if (sound.time >= (sound.length * soundMultiplier) + compareShit || sound.time <= (sound.length * soundMultiplier) - compareShit)
                         sound.time = sound.length * soundMultiplier;
                 }
-        #end
+        #end*/
     }
 
     override public function destroy() {

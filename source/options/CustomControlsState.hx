@@ -375,7 +375,7 @@ class CustomControlsState extends MusicBeatSubstate
 	}
 
 	function savetoclipboard(pad:FlxVirtualPad) {
-		trace("saved");
+		trace("saved to clipboard");
 		
 		var json = {
 			buttonsarray : []

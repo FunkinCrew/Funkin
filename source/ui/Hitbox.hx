@@ -1,27 +1,19 @@
 package ui;
 
-import flixel.graphics.FlxGraphic;
-import flixel.addons.ui.FlxButtonPlus;
-import flixel.FlxSprite;
 import flixel.FlxG;
-import flixel.graphics.frames.FlxTileFrames;
+import flixel.graphics.FlxGraphic;
+import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
-import flixel.math.FlxPoint;
-import flixel.system.FlxAssets;
-import flixel.util.FlxDestroyUtil;
 import flixel.ui.FlxButton;
 import flixel.graphics.frames.FlxAtlasFrames;
-import flixel.graphics.frames.FlxFrame;
-import flixel.ui.FlxVirtualPad;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 
-// copyed from flxvirtualpad
 class Hitbox extends FlxSpriteGroup
 {
 	public var hitbox:FlxSpriteGroup;
 
-	var sizex:Int = 320;
+	var sizex:Float = 320;
 
 	var screensizey:Int = 720;
 
@@ -30,14 +22,14 @@ class Hitbox extends FlxSpriteGroup
 	public var buttonUp:FlxButton;
 	public var buttonRight:FlxButton;
 	
-	public function new(?widghtScreen:Int)
+	public function new(?widghtScreen:Float)
 	{
 		super();
 
-		/*if (widghtScreen == null)
-			widghtScreen = FlxG.width;*/
+		if (widghtScreen == null)
+			widghtScreen = FlxG.width;
 
-		sizex = widghtScreen != null ? Std.int(widghtScreen / 4) : 320;
+		sizex = widghtScreen != null ? widghtScreen / 4 : 320;
 
 		
 		//add graphic
@@ -48,6 +40,12 @@ class Hitbox extends FlxSpriteGroup
 
 		hitbox_hint.alpha = 0.2;
 
+		if (sizex != 320)
+		{
+		hitbox_hint.setGraphicSize(FlxG.width);
+		hitbox_hint.updateHitbox();
+		}
+			
 		add(hitbox_hint);
 
 
@@ -68,19 +66,31 @@ class Hitbox extends FlxSpriteGroup
 
 		button.loadGraphic(graphic);
 
+		/*button.width = sizex;
+		button.height = FlxG.height;*/
+		button.setGraphicSize(Std.int(sizex), FlxG.height);
+		button.updateHitbox();
+
 		button.alpha = 0;
 
-	
+		var tween:FlxTween;
+
 		button.onDown.callback = function (){
-			FlxTween.num(0, 0.75, .075, {ease: FlxEase.circInOut}, function (a:Float) { button.alpha = a; });
+			if (tween != null)
+				tween.cancel();
+			tween = FlxTween.num(button.alpha, 0.75, .075, {ease: FlxEase.circInOut}, function (a:Float) { button.alpha = a; });
 		};
 
 		button.onUp.callback = function (){
-			FlxTween.num(0.75, 0, .1, {ease: FlxEase.circInOut}, function (a:Float) { button.alpha = a; });
+			if (tween != null)
+				tween.cancel();
+			tween = FlxTween.num(button.alpha, 0, .15, {ease: FlxEase.circInOut}, function (a:Float) { button.alpha = a; });
 		}
 		
 		button.onOut.callback = function (){
-			FlxTween.num(button.alpha, 0, .2, {ease: FlxEase.circInOut}, function (a:Float) { button.alpha = a; });
+			if (tween != null)
+				tween.cancel();
+			tween = FlxTween.num(button.alpha, 0, .15, {ease: FlxEase.circInOut}, function (a:Float) { button.alpha = a; });
 		}
 
 		return button;
