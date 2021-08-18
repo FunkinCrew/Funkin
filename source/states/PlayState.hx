@@ -1608,9 +1608,6 @@ class PlayState extends MusicBeatState
 					}
 					#end
 
-					if (SONG.enemyDamages)
-						health -= 0.025;
-
 					if (FlxG.save.data.enemyGlow && enemyStrums.members.length - 1 == SONG.keyCount - 1)
 					{
 						enemyStrums.forEach(function(spr:FlxSprite)
@@ -1898,12 +1895,13 @@ class PlayState extends MusicBeatState
 				health += 0.035;
 				hitNotes += 1;
 			case 'good':
-				health += 0.025;
+				health += 0.015;
 				hitNotes += 0.8;
 			case 'bad':
+				health -= 0.075;
 				hitNotes += 0.3;
 			case 'shit':
-				health -= 0.023;
+				health -= 0.15;
 		}
 
 		if (daRating == "sick")

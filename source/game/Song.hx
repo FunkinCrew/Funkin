@@ -30,8 +30,6 @@ typedef SwagSong =
 
 	var modchartPath:String;
 
-	var enemyDamages:Bool;
-
 	var keyCount:Int;
 
 	// shaggy pog
