@@ -266,10 +266,6 @@ class ChartingState extends MusicBeatState
 
 		modchart_Input = new FlxUIInputText(10, check_mute_inst.y + check_mute_inst.height + 2, 70, _song.modchartPath, 8);
 
-		check_enemyDamage = new FlxUICheckBox(check_mute_inst.x + check_mute_inst.width + 3, check_mute_inst.y, null, null, "Enemy Damages On Note Hit", 100);
-		check_enemyDamage.name = 'check_enemyDamage';
-		check_enemyDamage.checked = _song.enemyDamages;
-
 		var saveButton:FlxButton = new FlxButton(10, 220, "Save", function()
 		{
 			saveLevel();
@@ -330,7 +326,6 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(check_voices);
 		tab_group_song.add(check_mute_inst);
 		tab_group_song.add(modchart_Input);
-		tab_group_song.add(check_enemyDamage);
 		tab_group_song.add(saveButton);
 		tab_group_song.add(reloadSong);
 		tab_group_song.add(reloadSongJson);
@@ -353,7 +348,6 @@ class ChartingState extends MusicBeatState
 	var check_changeBPM:FlxUICheckBox;
 	var stepperSectionBPM:FlxUINumericStepper;
 	var check_altAnim:FlxUICheckBox;
-	var check_enemyDamage:FlxUICheckBox;
 
 	function addSectionUI():Void
 	{
@@ -656,8 +650,6 @@ class ChartingState extends MusicBeatState
 					FlxG.log.add('changed bpm shit');
 				case "Enemy Alt Animation":
 					_song.notes[curSection].altAnim = check.checked;
-				case "Enemy Damages On Note Hit":
-					_song.enemyDamages = check.checked;
 			}
 		}
 		else if (id == FlxUINumericStepper.CHANGE_EVENT && (sender is FlxUINumericStepper))
