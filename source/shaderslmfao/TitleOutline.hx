@@ -1,13 +1,33 @@
 package shaderslmfao;
 
+import flixel.math.FlxPoint;
 import flixel.system.FlxAssets.FlxShader;
 
 class TitleOutline extends FlxShader
 {
+	public var funnyX(default, set):Float = 0;
+	public var funnyY(default, set):Float = 0;
+
+	function set_funnyX(x:Float):Float
+	{
+		xPos.value[0] = x;
+
+		return x;
+	}
+
+	function set_funnyY(y:Float):Float
+	{
+		yPos.value[0] = y;
+
+		return y;
+	}
+
 	@:glFragmentSource('
         #pragma header
 
         // uniform float alphaShit;
+        uniform float xPos;
+        uniform float yPos;
 
         vec3 rgb2hsv(vec3 c)
         {
@@ -23,7 +43,7 @@ class TitleOutline extends FlxShader
         void main()
         {
             vec4 color = flixel_texture2D(bitmap, openfl_TextureCoordv);
-            vec2 size = vec2(200, 20);
+            vec2 size = vec2(xPos, yPos);
 
             if (color.a == 0.0) {
                 float w = size.x / openfl_TextureSize.x;
@@ -45,5 +65,8 @@ class TitleOutline extends FlxShader
 	public function new()
 	{
 		super();
+
+		xPos.value = [0];
+		yPos.value = [0];
 	}
 }

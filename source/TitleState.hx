@@ -224,6 +224,7 @@ class TitleState extends MusicBeatState
 	}
 
 	var logoBl:FlxSprite;
+	var outlineShaderShit:TitleOutline;
 
 	var gfDance:FlxSprite;
 	var danceLeft:Bool = false;
@@ -267,8 +268,9 @@ class TitleState extends MusicBeatState
 
 		logoBl.updateHitbox();
 
+		outlineShaderShit = new TitleOutline();
 		// logoBl.shader = swagShader.shader;
-		logoBl.shader = new TitleOutline();
+		logoBl.shader = outlineShaderShit;
 		// logoBl.shader = alphaShader.shader;
 
 		// trace();
@@ -390,6 +392,14 @@ class TitleState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
+		if (FlxG.keys.justPressed.I)
+		{
+			FlxTween.tween(outlineShaderShit, {funnyX: 50, funnyY: 50}, 0.6, {ease: FlxEase.quartOut});
+		}
+		if (FlxG.keys.pressed.D)
+			outlineShaderShit.funnyX += 1;
+		// outlineShaderShit.xPos.value[0] += 1;
+
 		if (FlxG.keys.justPressed.Y)
 		{
 			FlxTween.tween(FlxG.stage.window, {x: FlxG.stage.window.x + 300}, 1.4, {ease: FlxEase.quadInOut, type: PINGPONG, startDelay: 0.35});
