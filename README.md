@@ -58,7 +58,7 @@ At the moment, you can optionally fix the transition bug in songs with zoomed-ou
 I gitignore the API keys for the game so that no one can nab them and post fake high scores on the leaderboards. But because of that the game
 doesn't compile without it.
 
-Just make a file in `/source` and call it `APIStuff.hx`, and copy-paste this into it
+Just make a file in `/source` and call it `APIStuff.hx`, and copy & paste this into it
 
 ```haxe
 package;
