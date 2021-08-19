@@ -1532,7 +1532,7 @@ class PlayState extends MusicBeatState
 		{
 			notes.forEachAlive(function(daNote:Note)
 			{
-				if (daNote.y > FlxG.height || daNote.y < -40)
+				if ((daNote.y > FlxG.height || daNote.y < daNote.height) || (daNote.x > FlxG.width || daNote.x < daNote.width))
 				{
 					daNote.active = false;
 					daNote.visible = false;
@@ -1921,7 +1921,7 @@ class PlayState extends MusicBeatState
 		rating.alpha = 1;
 		rating.loadGraphic(Paths.image("ui skins/" + SONG.ui_Skin + "/ratings/" + daRating, 'shared'));
 		rating.screenCenter();
-		rating.x -= (FlxG.save.data.middleScroll ? 500 : 0);
+		rating.x -= (FlxG.save.data.middleScroll ? 350 : 0);
 		rating.y -= 60;
 		rating.velocity.y = FlxG.random.int(30, 60);
 		rating.velocity.x = FlxG.random.int(-10, 10);
@@ -1990,7 +1990,7 @@ class PlayState extends MusicBeatState
 			numScore.alpha = 1;
 			numScore.loadGraphic(Paths.image("ui skins/" + SONG.ui_Skin + "/numbers/num" + Std.int(i), 'shared'));
 			numScore.screenCenter();
-			numScore.x -= (FlxG.save.data.middleScroll ? 500 : 0);
+			numScore.x -= (FlxG.save.data.middleScroll ? 350 : 0);
 
 			numScore.x += (43 * daLoop) - 90;
 			numScore.y += 80;
