@@ -26,6 +26,8 @@ class FlxAnimate extends FlxSymbol
 	{
 		var folder:String = 'tightBarsLol';
 		coolParse = cast Json.parse(Assets.getText(Paths.file('images/' + folder + '/Animation.json')));
+
+		// reverses the layers, for proper rendering!
 		coolParse.AN.TL.L.reverse();
 		super(x, y, coolParse);
 

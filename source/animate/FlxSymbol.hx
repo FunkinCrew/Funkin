@@ -68,6 +68,7 @@ class FlxSymbol extends FlxSprite
 			{
 				case LOOP:
 					var tempFrame = layer.FR[newFrameNum + firstFrame % layer.FR.length];
+					trace(tempFrame);
 					// newFrameNum += firstFrame;
 					// newFrameNum = newFrameNum % (tempFrame.I + tempFrame.DU);
 					// newFrameNum = FlxMath.wrap(newFrameNum, tempFrame.I, tempFrame.I + tempFrame.DU);
