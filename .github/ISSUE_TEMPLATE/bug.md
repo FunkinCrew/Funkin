@@ -38,3 +38,7 @@ labels: bug
 ## Have you identified any steps to reproduce the bug? If so, please describe them below in as much detail as possible. Use images if possible.
 
 ## Please describe your issue. Provide extensive detail and images if possible.
+
+
+
+## If you're game is FROZEN and you're playing a web version, press F12 to open up browser dev window, and go to console, and copy-paste whatever red error you're getting
