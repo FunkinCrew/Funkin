@@ -10,6 +10,8 @@ labels: bug
 [weed]: <> (DO NOT POST ABOUT ISSUES FROM OTHER FNF MOD ENGINES! I CANNOT AND PROBABLY WON'T SOLVE THOSE!)
 [weed]: <> (GO TO THEIR RESPECTIVE GITHUB ISSUES AND REPORT THEM THERE LOL!)
 
+[weed]: <> (ALSO MAKE SURE THAT YOU USE PROPER LABELS, IF YOU'RE RUNNING INTO COMPILER ISSUES, USE THE compiler issue LABEL!!!)
+
 #### Please check for duplicates or similar issues, as well performing simple troubleshooting steps (such as clearing cookies, clearing AppData, trying another browser) before submitting an issue.
 ### If you are playing the game in a browser, what site are you playing it from?
 
