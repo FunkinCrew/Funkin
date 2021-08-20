@@ -7,6 +7,8 @@ labels: bug
 
 [weed]: <> (FILL THIS ISSUE THING OUT AS MUCH AS POSSIBLE)
 [weed]: <> (OR ELSE YOUR ISSUE WILL BE LESS LIKELY TO BE SOLVED!)
+[weed]: <> (DO NOT POST ABOUT ISSUES FROM OTHER FNF MOD ENGINES! I CANNOT AND PROBABLY WON'T SOLVE THOSE!)
+[weed]: <> (GO TO THEIR RESPECTIVE GITHUB ISSUES AND REPORT THEM THERE LOL!)
 
 #### Please check for duplicates or similar issues, as well performing simple troubleshooting steps (such as clearing cookies, clearing AppData, trying another browser) before submitting an issue.
 ### If you are playing the game in a browser, what site are you playing it from?
