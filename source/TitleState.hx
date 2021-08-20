@@ -41,7 +41,7 @@ class TitleState extends MusicBeatState
 	var ngSpr:FlxSprite;
 
 	var curWacky:Array<String> = [];
-
+	var gameName:Array<String> = [];
 	var wackyImage:FlxSprite;
 
 	override public function create():Void
@@ -53,6 +53,7 @@ class TitleState extends MusicBeatState
 		PlayerSettings.init();
 
 		curWacky = FlxG.random.getObject(getIntroTextShit());
+		gameName = getName();
 
 		// DEBUG BULLSHIT
 
@@ -230,6 +231,15 @@ class TitleState extends MusicBeatState
 		return swagGoodArray;
 	}
 
+
+	function getName():Array<String>
+	{
+		var fullText:String = Assets.getText(Paths.txt('gameName'));
+
+		var firstArray:Array<String> = fullText.split('--');
+		return firstArray;
+	}
+	
 	var transitioning:Bool = false;
 
 	override function update(elapsed:Float)
@@ -290,7 +300,7 @@ class TitleState extends MusicBeatState
 			{
 				// Check if version is outdated
 
-				var version:String = "v" + Application.current.meta.get('version');
+				var version:String = "v" + Assets.getText(Paths.txt('version'));
 
 				if (version.trim() != NGio.GAME_VER_NUMS.trim() && !OutdatedSubState.leftState)
 				{
@@ -364,7 +374,8 @@ class TitleState extends MusicBeatState
 		switch (curBeat)
 		{
 			case 1:
-				createCoolText(['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er']);
+				var teamStuff = Assets.getText(Paths.txt('team')).split('--');
+				createCoolText(teamStuff);
 			// credTextShit.visible = true;
 			case 3:
 				addMoreText('present');
@@ -400,13 +411,13 @@ class TitleState extends MusicBeatState
 			// credTextShit.text = "Friday";
 			// credTextShit.screenCenter();
 			case 13:
-				addMoreText('Friday');
+				addMoreText(gameName[0]);
 			// credTextShit.visible = true;
 			case 14:
-				addMoreText('Night');
+				addMoreText(gameName[1]);
 			// credTextShit.text += '\nNight';
 			case 15:
-				addMoreText('Funkin'); // credTextShit.text += '\nFunkin';
+				addMoreText(gameName[2]); // credTextShit.text += '\nFunkin';
 
 			case 16:
 				skipIntro();
