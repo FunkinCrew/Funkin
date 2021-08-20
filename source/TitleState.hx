@@ -57,6 +57,9 @@ class TitleState extends MusicBeatState
 		PlayerSettings.init();
 
 		curWacky = FlxG.random.getObject(getIntroTextShit());
+		while (curWacky[0].startsWith('you wont ever see this')) {
+			curWacky = FlxG.random.getObject(getIntroTextShit()); // hehe
+		}
 
 		// DEBUG BULLSHIT
 
@@ -393,19 +396,19 @@ class TitleState extends MusicBeatState
 			// credTextShit.text = 'In association \nwith';
 			// credTextShit.screenCenter();
 			case 5:
-				createCoolText(['In association', 'with']);
+				createCoolText(['UFNF Engine', 'by']);
 			case 7:
-				addMoreText('newgrounds');
+				addMoreText('thepercentageguy');
 				ngSpr.visible = true;
 			// credTextShit.text += '\nNewgrounds';
 			case 8:
 				deleteCoolText();
-				ngSpr.visible = false;
 			// credTextShit.visible = false;
 
 			// credTextShit.text = 'Shoutouts Tom Fulp';
 			// credTextShit.screenCenter();
 			case 9:
+				ngSpr.visible = false;
 				createCoolText([curWacky[0]]);
 			// credTextShit.visible = true;
 			case 11:

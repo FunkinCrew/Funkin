@@ -1,5 +1,7 @@
 package;
 
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -33,6 +35,12 @@ class FreeplayState extends MusicBeatState
 
 	private var iconArray:Array<HealthIcon> = [];
 
+	private var chars:Array<String> = [];
+	private var colors:Array<Int> = [];
+	var tcolor:FlxColor;
+
+	var bg:FlxSprite;
+
 	override function create()
 	{
 		#if desktop
@@ -55,7 +63,7 @@ class FreeplayState extends MusicBeatState
 
 		// LOAD CHARACTERS
 
-		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuBGBlue'));
+		bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 		add(bg);
 
 		grpSongs = new FlxTypedGroup<Alphabet>();
@@ -64,6 +72,21 @@ class FreeplayState extends MusicBeatState
 		for (i in 0...songs.length)
 		{
 			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, songs[i].songName, true, false);
+			
+			/*
+			var tcolor:FlxColor = 0;
+
+			for (col in CoolUtil.coolTextFile(Paths.txt('healthcolors'))) {
+				var eugh = col.split(':');
+
+				if (songs[i].songCharacter.toLowerCase().startsWith(eugh[0])) {
+					tcolor = new FlxColor(Std.parseInt(eugh[1]));
+				}
+			}
+
+			songText.color = new FlxColor(tcolor);
+			*/
+
 			songText.isMenuItem = true;
 			songText.targetY = i;
 			grpSongs.add(songText);
@@ -71,9 +94,21 @@ class FreeplayState extends MusicBeatState
 			var icon:HealthIcon = new HealthIcon(songs[i].songCharacter);
 			icon.sprTracker = songText;
 
+			var array = CoolUtil.coolTextFile(Paths.txt('healthcolors'));
+
+			for (i in 0...array.length) {
+				var eugh = array[i].split(':');
+
+				if (songs[i].songCharacter.toLowerCase().startsWith(eugh[0])) {
+					colors.push(Std.parseInt(eugh[1]));
+				}
+			}
+
 			// using a FlxGroup is too much fuss!
 			iconArray.push(icon);
 			add(icon);
+
+			updateColor();
 
 			// songText.x += 40;
 			// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
@@ -171,10 +206,12 @@ class FreeplayState extends MusicBeatState
 		if (upP)
 		{
 			changeSelection(-1);
+			updateColor();
 		}
 		if (downP)
 		{
 			changeSelection(1);
+			updateColor();
 		}
 
 		if (controls.LEFT_P)
@@ -279,6 +316,19 @@ class FreeplayState extends MusicBeatState
 				// item.setGraphicSize(Std.int(item.width));
 			}
 		}
+	}
+	function updateColor() {
+		for (bruh in CoolUtil.coolTextFile(Paths.txt('healthcolors'))) {
+			var eugh = bruh.split(':');
+
+			if (songs[curSelected].songCharacter.toLowerCase().startsWith(eugh[0])) {
+				tcolor = new FlxColor(Std.parseInt(eugh[1]));
+			}
+		}
+
+		// FlxTween.tween(bg, {color: tcolor}, 0.5, {ease: FlxEase.quadInOut, type: ONESHOT});
+		FlxTween.color(bg, 0.5, bg.color, tcolor, {ease: FlxEase.quadInOut, type: ONESHOT});
+		// bg.color = tcolor;	
 	}
 }
 

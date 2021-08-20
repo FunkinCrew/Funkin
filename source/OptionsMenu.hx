@@ -35,7 +35,8 @@ class OptionsMenu extends MusicBeatState {
 		options = ['Controls ${!FlxG.save.data.dfjk ? 'WASD' : 'DFJK'}',
 		'Practice mode ${!FlxG.save.data.pmode ? 'off' : 'on'}',
 		'Ghost Tapping ${!FlxG.save.data.gtapping ? 'on' : 'off'}',
-		'Limited ScoreBar ${!FlxG.save.data.sbar ? 'off' : 'on'}'];
+		'Limited ScoreBar ${!FlxG.save.data.sbar ? 'off' : 'on'}',
+		'Light up CPU Strums ${!FlxG.save.data.cpuStrums ? 'off' : 'on'}'];
 		optionText.screenCenter();
 
 		optionDot.x = optionText.x - 20;
@@ -57,6 +58,9 @@ class OptionsMenu extends MusicBeatState {
 			}
 			if (options[curSelected].startsWith('Limited ScoreBar')) {
 				FlxG.save.data.sbar = !FlxG.save.data.sbar;
+			}
+			if (options[curSelected].startsWith('Light up CPU Strums')) {
+				FlxG.save.data.cpuStrums = !FlxG.save.data.cpuStrums;
 			}
 		}
 

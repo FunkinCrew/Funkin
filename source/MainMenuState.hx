@@ -34,7 +34,7 @@ class MainMenuState extends MusicBeatState
 	var magenta:FlxSprite;
 	var camFollow:FlxObject;
 
-	public static var version = '0.2.0';
+	public static var version = '0.3.0';
 
 	override function create()
 	{

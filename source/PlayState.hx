@@ -73,6 +73,7 @@ class PlayState extends MusicBeatState
 
 	private var strumLineNotes:FlxTypedGroup<FlxSprite>;
 	private var playerStrums:FlxTypedGroup<FlxSprite>;
+	public static var cpuStrums:FlxTypedGroup<FlxSprite> = null;
 
 	private var camZooming:Bool = false;
 	private var curSong:String = "";
@@ -707,6 +708,7 @@ class PlayState extends MusicBeatState
 		add(strumLineNotes);
 
 		playerStrums = new FlxTypedGroup<FlxSprite>();
+		cpuStrums = new FlxTypedGroup<FlxSprite>();
 
 		// startCountdown();
 
@@ -744,9 +746,22 @@ class PlayState extends MusicBeatState
 			'health', 0, 2);
 		healthBar.scrollFactor.set();
 		
-		var barColor:FlxColor;
-		var barColor2:FlxColor;
+		var barColor:FlxColor = 0xFF000000;
+		var barColor2:FlxColor = 0xFF000000;
 		// Char colors
+
+		for (color in CoolUtil.coolTextFile(Paths.txt('healthcolors'))) {
+			var eugh = color.split(':');
+
+			if (dad.curCharacter.toLowerCase().startsWith(eugh[0])) {
+				barColor = new FlxColor(Std.parseInt(eugh[1]));
+			}
+			if (boyfriend.curCharacter.toLowerCase().startsWith(eugh[0])) {
+				barColor2 = new FlxColor(Std.parseInt(eugh[1]));
+			}
+		}
+
+		/*
 		switch (dad.curCharacter.toLowerCase()) {
 			case 'bf', 'bf-car', 'bf-christmas', 'bf-pixel':
 				barColor = new FlxColor(0xFF23F0FF);
@@ -795,6 +810,7 @@ class PlayState extends MusicBeatState
 			default:
 				barColor2 = new FlxColor(0xFF000000);
 		}
+		*/
 
 		healthBar.createFilledBar(barColor, barColor2);
 
@@ -1292,14 +1308,22 @@ class PlayState extends MusicBeatState
 
 			babyArrow.ID = i;
 
-			if (player == 1)
+			switch (player)
 			{
-				playerStrums.add(babyArrow);
+				case 0:
+					cpuStrums.add(babyArrow);
+				case 1:
+					playerStrums.add(babyArrow);
 			}
 
 			babyArrow.animation.play('static');
 			babyArrow.x += 50;
 			babyArrow.x += ((FlxG.width / 2) * player);
+
+			cpuStrums.forEach(function(spr:FlxSprite)
+			{
+				spr.centerOffsets(); // CPU arrows start out slightly off-center
+			});
 
 			strumLineNotes.add(babyArrow);
 		}
@@ -1730,6 +1754,25 @@ class PlayState extends MusicBeatState
 							dad.playAnim('singRIGHT' + altAnim, true);
 					}
 
+					if (FlxG.save.data.cpuStrums)
+					{
+						cpuStrums.forEach(function(spr:FlxSprite)
+						{
+							if (Math.abs(daNote.noteData) == spr.ID)
+							{
+								spr.animation.play('confirm', true);
+							}
+							if (spr.animation.curAnim.name == 'confirm' /* gotta add this later && SONG.noteStyle != 'pixel'*/ )
+							{
+								spr.centerOffsets();
+								spr.offset.x -= 13;
+								spr.offset.y -= 13;
+							}
+							else
+								spr.centerOffsets();
+						});
+					}
+
 					dad.holdTimer = 0;
 
 					if (SONG.needsVoices)
@@ -1739,6 +1782,19 @@ class PlayState extends MusicBeatState
 					notes.remove(daNote, true);
 					daNote.destroy();
 				}
+
+				if (FlxG.save.data.cpuStrums)
+				{
+					cpuStrums.forEach(function(spr:FlxSprite)
+					{
+						if (spr.animation.finished)
+						{
+							spr.animation.play('static');
+							spr.centerOffsets();
+						}
+					});
+				}
+			
 
 				// WIP interpolation shit? Need to fix the pause issue
 				// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * PlayState.SONG.speed));

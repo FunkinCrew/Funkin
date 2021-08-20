@@ -1,6 +1,6 @@
-0.2.0;
-- Added Ghost Tapping
-- Added 'Limited ScoreBar' Option
-- Updated logo
-- Fixed disappearing notes
-- Added character health colors
+0.3.0;
+- Added colored backgrounds to freeplay
+- unhardcoded health colors
+- unhardcoded freeplay songs
+- CPU strums can now light up
+- if the ammount of songs overflows 4 it will display the ammount of songs left

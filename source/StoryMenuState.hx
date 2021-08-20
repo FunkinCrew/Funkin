@@ -429,9 +429,28 @@ class StoryMenuState extends MusicBeatState
 
 		var stringThing:Array<String> = weekData[curWeek];
 
+		var mSongs:Bool = false;
+		var ind:Int = 0;
+
+		// This entire thing is a pain in the ass
 		for (i in 0...stringThing.length + 1)
 		{
-			txtTracklist.text += "\n" + stringThing[i];
+			if (i <= 3) {
+				if (mSongs == false) {
+					txtTracklist.text += "\n" + stringThing[i];
+					mSongs = false;
+					ind = 0;
+				}
+			}
+			else {
+				trace('Ayo you got 3+ fuckin songs! (${stringThing[i]})');
+				mSongs = true;
+				ind++;
+			}
+		}
+		if (ind > 0) {
+			txtTracklist.text += '\nAnd ${ind - 1} more!';
+			txtTracklist.text += '\n'; // this is needed so shit displays properly
 		}
 
 		txtTracklist.text = txtTracklist.text.toUpperCase();
