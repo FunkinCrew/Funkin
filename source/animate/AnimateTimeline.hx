@@ -52,7 +52,7 @@ class AnimateTimeline extends FlxTypedGroup<FlxSprite>
 
 			for (frame in layer.FR)
 			{
-				var coolFrame:TimelineFrame = new TimelineFrame((frame.I * 12) + 12 * 5, layerNum * 12, frame.DU);
+				var coolFrame:TimelineFrame = new TimelineFrame((frame.I * 12) + 12 * 5, layerNum * 12, frame.DU, frame);
 				add(coolFrame);
 				frameNum++;
 			}
