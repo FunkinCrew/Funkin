@@ -65,7 +65,7 @@ class EtternaFunctions
         var max_points = 1.0;
         var miss_weight = -5.5;
         var ridic= 5 * ts;
-        var max_boo_weight = 180 * ts;
+        var max_boo_weight = 166 * (ts / PlayState.songMultiplier);
         var ts_pow = 0.75;
         var zero = 65 * (Math.pow(ts,ts_pow));
         var power = 2.5;

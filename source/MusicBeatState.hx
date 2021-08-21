@@ -107,8 +107,8 @@ class MusicBeatState extends FlxUIState
 				var step = ((60 / data.bpm) * 1000) / 4;
 				var startInMS = (data.startTime * 1000);
 
-				curDecimalBeat = data.startBeat + (((Conductor.songPosition/1000) - data.startTime) * (data.bpm / 60));
-				var ste:Int = Math.floor(data.startStep + ((Conductor.songPosition - startInMS) / step));
+				curDecimalBeat = data.startBeat + ((((Conductor.songPosition / 1000) ) - data.startTime) * (data.bpm / 60));
+				var ste:Int = Math.floor(data.startStep + ((Conductor.songPosition ) - startInMS) / step);
 				if (ste >= 0)
 				{
 					if (ste > curStep)
@@ -132,8 +132,8 @@ class MusicBeatState extends FlxUIState
 			}
 			else
 			{
-				curDecimalBeat = (Conductor.songPosition / 1000) * (Conductor.bpm/60);
-				var nextStep:Int = Math.floor(Conductor.songPosition / Conductor.stepCrochet);
+				curDecimalBeat = (((Conductor.songPosition / 1000))) * (Conductor.bpm/60);
+				var nextStep:Int = Math.floor((Conductor.songPosition) / Conductor.stepCrochet);
 				if (nextStep >= 0)
 				{
 					if (nextStep > curStep)

@@ -113,23 +113,29 @@ class Ratings
         return rating;
     }
 
+    public static var ratingsPerTap = "";
+
     public static function checkRating(ms:Float, ts:Float)
     {
+        
         var rating = "shit";
-        if (ms <= 166 * ts && ms >= 135 * ts)
+        if (ms <= (166 * ts) * PlayState.songMultiplier && ms >= (135 * ts) * PlayState.songMultiplier)
             rating = "shit";
-        if (ms < 135 * ts && ms >= 90 * ts) 
+        if (ms < (135 * ts) * PlayState.songMultiplier && ms >= (90 * ts) * PlayState.songMultiplier) 
             rating = "bad";
-        if (ms < 90 * ts && ms >= 45 * ts)
+        if (ms < (90 * ts) * PlayState.songMultiplier && ms >= (45 * ts) * PlayState.songMultiplier)
             rating = "good";
-        if (ms < 45 * ts && ms >= -45 * ts)
+        if (ms < (45 * ts) * PlayState.songMultiplier && ms >= (-45 * ts) * PlayState.songMultiplier)
             rating = "sick";
-        if (ms > -90 * ts && ms <= -45 * ts)
+        if (ms > (-90 * ts) * PlayState.songMultiplier && ms <= (-45 * ts) * PlayState.songMultiplier)
             rating = "good";
-        if (ms > -135 * ts && ms <= -90 * ts)
+        if (ms > (-135 * ts) * PlayState.songMultiplier && ms <= (-90 * ts) * PlayState.songMultiplier)
             rating = "bad";
-        if (ms > -166 * ts && ms <= -135 * ts)
+        if (ms > (-166 * ts) * PlayState.songMultiplier && ms <= (-135 * ts) * PlayState.songMultiplier)
             rating = "shit";
+
+        ratingsPerTap += Conductor.songPosition / 1000 + "s - DIFFERENCE - " + ms + " - RATING - " + rating + "\n";
+
         return rating;
     }
 
@@ -144,4 +150,5 @@ class Ratings
          " | Accuracy:" + (PlayStateChangeables.botPlay && !PlayState.loadRep ? "N/A" : HelperFunctions.truncateFloat(accuracy, 2) + " %") +  				// 	Accuracy
          " | " + GenerateLetterRank(accuracy) : "") : ""); 																		// 	Letter Rank
     }
+
 }

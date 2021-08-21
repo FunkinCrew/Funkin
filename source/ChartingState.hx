@@ -65,6 +65,8 @@ class ChartingState extends MusicBeatState
 	public static var lengthInSteps:Float = 0;
 	public static var lengthInBeats:Float = 0;
 
+	public var speed = 1.0;
+
 	public var beatsShown:Float = 1; // for the zoom factor
 	public var zoomFactor:Float = 0.4;
 
@@ -160,8 +162,26 @@ class ChartingState extends MusicBeatState
 		
 		TimingStruct.clearTimings();
 
+
+
+
 		if (PlayState.SONG != null)
-			_song = PlayState.SONG;
+		{
+			if (PlayState.isSM)
+				_song = Song.conversionChecks(Song.loadFromJsonRAW(File.getContent(PlayState.pathToSm + "/converted.json")));
+			else
+			{
+				var songFormat = StringTools.replace(PlayState.SONG.song, " ", "-");
+				switch (songFormat) {
+					case 'Dad-Battle': songFormat = 'Dadbattle';
+					case 'Philly-Nice': songFormat = 'Philly';
+				}
+	
+				var poop:String = Highscore.formatSong(songFormat, PlayState.storyDifficulty);
+
+				_song = Song.conversionChecks(Song.loadFromJson(poop, PlayState.SONG.song));
+			}
+		}
 		else
 		{
 			_song = {
@@ -1449,6 +1469,21 @@ class ChartingState extends MusicBeatState
 		FlxG.sound.playMusic(Paths.inst(daSong), 0.6);
 		#end
 
+		if (PlayState.isSM)
+			_song = Song.conversionChecks(Song.loadFromJsonRAW(File.getContent(PlayState.pathToSm + "/converted.json")));
+		else
+		{
+			var songFormat = StringTools.replace(PlayState.SONG.song, " ", "-");
+			switch (songFormat) {
+				case 'Dad-Battle': songFormat = 'Dadbattle';
+				case 'Philly-Nice': songFormat = 'Philly';
+			}
+
+			var poop:String = Highscore.formatSong(songFormat, PlayState.storyDifficulty);
+
+			_song = Song.conversionChecks(Song.loadFromJson(poop, PlayState.SONG.song));
+		}
+
 		// WONT WORK FOR TUTORIAL OR TEST SONG!!! REDO LATER
 		#if sys
 		if (PlayState.isSM)
@@ -1770,6 +1805,26 @@ class ChartingState extends MusicBeatState
 	
 			shownNotes = [];
 
+			if (FlxG.sound.music != null)
+			{
+				if (FlxG.sound.music.playing)
+				{
+					@:privateAccess
+					{
+						lime.media.openal.AL.sourcef(FlxG.sound.music._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, speed);
+						try
+						{
+							lime.media.openal.AL.sourcef(vocals._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, speed);
+						}
+						catch(e)
+						{
+							// trace("failed to pitch vocals (probably cuz they don't exist)");
+						}
+			
+					}	
+				}
+			}
+
 			for(note in curRenderedNotes)
 				{
 					var diff = note.strumTime - Conductor.songPosition;
@@ -1895,10 +1950,25 @@ class ChartingState extends MusicBeatState
 					}
 				}
 
-			if (FlxG.keys.justPressed.RIGHT && !FlxG.keys.pressed.CONTROL)
-				goToSection(curSection + 1);
-			else if (FlxG.keys.justPressed.LEFT && !FlxG.keys.pressed.CONTROL)
-				goToSection(curSection - 1);
+			if (FlxG.keys.pressed.SHIFT)
+			{
+				if (FlxG.keys.justPressed.RIGHT)
+					speed += 0.1;
+				else if (FlxG.keys.justPressed.LEFT) 
+					speed -= 0.1;
+				
+				if (speed > 3)
+					speed = 3;
+				if (speed <= 0.01)
+					speed = 0.1;
+			}
+			else
+			{
+				if (FlxG.keys.justPressed.RIGHT && !FlxG.keys.pressed.CONTROL)
+					goToSection(curSection + 1);
+				else if (FlxG.keys.justPressed.LEFT && !FlxG.keys.pressed.CONTROL)
+					goToSection(curSection - 1);
+			}
 
 			if (FlxG.mouse.pressed && FlxG.keys.pressed.CONTROL)
 			{
@@ -2204,7 +2274,9 @@ class ChartingState extends MusicBeatState
 		+ "\nCurStep: "
 		+ curStep
 		+ "\nZoom: "
-		+ HelperFunctions.truncateFloat(zoomFactor,2);
+		+ HelperFunctions.truncateFloat(zoomFactor,2)
+		+ "\nSpeed: "
+		+ speed;
 
 
 		var left = FlxG.keys.justPressed.ONE;
@@ -2960,27 +3032,6 @@ class ChartingState extends MusicBeatState
 	function recalculateAllSectionTimes()
 	{
 
-		/*if (TimingStruct.AllTimings.length > 0)
-		{
-			trace("Song length in MS: " + FlxG.sound.music.length);
-
-			for(i in 0...9000000) // REALLY HIGH BEATS just cuz like ig this is the upper limit, I mean ur chart is probably going to run like ass anyways
-			{
-				var seg = TimingStruct.getTimingAtBeat(i);
-
-				var time = (i / (seg.bpm / 60)) * 1000;
-
-				if (time > FlxG.sound.music.length)
-					break;
-
-				lengthInBeats = i;
-			}
-
-			lengthInSteps = lengthInBeats * 4;
-
-			trace('LENGTH IN STEPS ' + lengthInSteps + ' | LENGTH IN BEATS ' + lengthInBeats);
-		}*/
-
 			trace("RECALCULATING SECTION TIMES");
 
 			var savedNotes:Array<Dynamic> = [];
@@ -3004,12 +3055,8 @@ class ChartingState extends MusicBeatState
 					_song.notes[i - 1].endTime = section.startTime;
 				section.endTime = Math.POSITIVE_INFINITY;
 			}
-
-			
-			once = true;
 	}
 
-	var once = false;
 
 
 	function shiftNotes(measure:Int=0,step:Int=0,ms:Int = 0):Void

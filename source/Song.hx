@@ -64,6 +64,7 @@ class Song
 		this.notes = notes;
 		this.bpm = bpm;
 	}
+	
 
 	public static function loadFromJsonRAW(rawJson:String)
 	{
@@ -75,6 +76,7 @@ class Song
 	
 		return parseJSONshit(rawJson);
 	}
+	
 
 	public static function loadFromJson(jsonInput:String, ?folder:String):SwagSong
 	{

@@ -215,7 +215,10 @@ class Note extends FlxSprite
 		if (FlxG.save.data.downscroll && sustainNote) 
 			flipY = true;
 
-		var stepHeight = (0.45 * Conductor.stepCrochet * FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? PlayState.SONG.speed : PlayStateChangeables.scrollSpeed, 2));
+		
+		var stepHeight = (((0.45 * Conductor.stepCrochet)) * FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? PlayState.SONG.speed : PlayStateChangeables.scrollSpeed, 2));
+
+		// we can't divide step height cuz if we do uh it'll fucking lag the shit out of the game
 
 		if (isSustainNote && prevNote != null)
 		{
@@ -241,6 +244,7 @@ class Note extends FlxSprite
 			{
 				prevNote.animation.play(dataColor[prevNote.originColor] + 'hold');
 				prevNote.updateHitbox();
+
 
 				prevNote.scale.y *= (stepHeight + 1) / prevNote.height; // + 1 so that there's no odd gaps as the notes scroll
 				prevNote.updateHitbox();
@@ -273,22 +277,22 @@ class Note extends FlxSprite
 		{
 			if (isSustainNote)
 			{
-				if (strumTime - Conductor.songPosition <= ((166 * Conductor.timeScale) * 0.5)
-					&& strumTime - Conductor.songPosition >= (-166 * Conductor.timeScale))
+				if (strumTime - Conductor.songPosition  <= ((166 * Conductor.timeScale) * PlayState.songMultiplier * 0.5)
+					&& strumTime - Conductor.songPosition  >=((-166 * Conductor.timeScale) * PlayState.songMultiplier))
 					canBeHit = true;
 				else
 					canBeHit = false;
 			}
 			else
 			{
-				if (strumTime - Conductor.songPosition <= (166 * Conductor.timeScale)
-					&& strumTime - Conductor.songPosition >= (-166 * Conductor.timeScale))
+				if (strumTime - Conductor.songPosition  <= ((166 * Conductor.timeScale) * PlayState.songMultiplier)
+					&& strumTime  - Conductor.songPosition >= ((-166 * Conductor.timeScale) * PlayState.songMultiplier))
 					canBeHit = true;
 				else
 					canBeHit = false;
 			}
-			if (strumTime - Conductor.songPosition < -166 && !wasGoodHit)
-				tooLate = true;
+			/*if (strumTime - Conductor.songPosition < (-166 * Conductor.timeScale) && !wasGoodHit)
+				tooLate = true;*/
 		}
 		else
 		{
