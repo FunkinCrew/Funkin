@@ -20,6 +20,9 @@ class FlxSymbol extends FlxSprite
 	public static inline var PLAY_ONCE:String = 'PO';
 	public static inline var SINGLE_FRAME:String = 'SF';
 
+	/**
+	 * This gets set in some nest animation bullshit in animation render code
+	 */
 	public var firstFrame:Int = 0;
 
 	public var daLoopType:String = 'LP'; // LP by default, is set below!!!
@@ -62,6 +65,27 @@ class FlxSymbol extends FlxSprite
 
 			// for (frame in layer.FR)
 			// {
+
+			var keyFrames:Array<Int> = [];
+			var keyFrameMap:Map<Int, Frame> = new Map();
+
+			// probably dumb to generate this every single frame for every layer?
+			// prob want to generate it first when loading
+			for (frm in layer.FR)
+			{
+				keyFrameMap[frm.I] = frm;
+				keyFrames.push(frm.I);
+
+				for (thing in 0...frm.DU - 1)
+					keyFrames.push(frm.I);
+			}
+
+			if (FlxG.keys.justPressed.THREE)
+			{
+				trace(layer.LN);
+				trace(keyFrames);
+			}
+
 			var newFrameNum:Int = daFrame;
 
 			switch (daLoopType)
@@ -72,11 +96,26 @@ class FlxSymbol extends FlxSprite
 					// newFrameNum += firstFrame;
 					// newFrameNum = newFrameNum % (tempFrame.I + tempFrame.DU);
 					// newFrameNum = FlxMath.wrap(newFrameNum, tempFrame.I, tempFrame.I + tempFrame.DU);
-					newFrameNum += 0; // temp, fix later for good looping
+
+					trace(newFrameNum % keyFrames.length);
+					trace(newFrameNum);
+					trace(keyFrames);
+					newFrameNum = keyFrames[newFrameNum % keyFrames.length]; // temp, fix later for good looping
 				case PLAY_ONCE:
-					newFrameNum += 0;
+					trace(newFrameNum);
+					trace(keyFrames.length - 1);
+					trace(keyFrameMap.get(newFrameNum + firstFrame));
+					trace(keyFrameMap.get(keyFrames[keyFrames.length - 1]));
+					trace(layer.LN);
+					trace(keyFrames);
+					newFrameNum = Std.int(Math.min(newFrameNum + firstFrame, keyFrames.length - 1));
 				case SINGLE_FRAME:
-					newFrameNum = firstFrame;
+					trace(layer);
+					trace(firstFrame);
+					trace(newFrameNum);
+					trace(layer.LN);
+					trace(keyFrames);
+					newFrameNum = keyFrames[firstFrame];
 			}
 
 			// trace(daLoopType);
@@ -85,10 +124,15 @@ class FlxSymbol extends FlxSprite
 
 			// trace(newFrameNum % layer.FR.length);
 
-			var swagFrame:Frame = layer.FR[newFrameNum % layer.FR.length]; // has modulo just in case????
+			// var swagFrame:Frame = layer.FR[newFrameNum % layer.FR.length]; // has modulo just in case????
+			// doesnt actually use position in the array?3
+			var swagFrame:Frame = keyFrameMap.get(newFrameNum);
+
+			// get frame by going through
 
 			// if (newFrameNum >= frame.I && newFrameNum < frame.I + frame.DU)
 			// {
+			trace(daLoopType);
 			for (element in swagFrame.E)
 			{
 				if (Reflect.hasField(element, 'ASI'))
@@ -204,6 +248,8 @@ class FlxSymbol extends FlxSprite
 
 		return awesomeMap;
 	}
+
+	function getFrame() {}
 
 	override function drawComplex(camera:FlxCamera):Void
 	{
