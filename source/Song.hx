@@ -218,7 +218,7 @@ class Song
 		for (section in swagShit.notes) 
 		{
 			if (section.altAnim)
-				section.p1AltAnim = section.altAnim;
+				section.CPUAltAnim = section.altAnim;
 		}
 
 		return swagShit;

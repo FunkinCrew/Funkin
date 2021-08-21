@@ -1273,7 +1273,7 @@ class ChartingState extends MusicBeatState
 		check_CPUAltAnim = new FlxUICheckBox(10, 340, null, null, "CPU Alternate Animation", 100);
 		check_CPUAltAnim.name = 'check_CPUAltAnim';
 
-		check_playerAltAnim = new FlxUICheckBox(200, 340, null, null, "Player Alternate Animation", 100);
+		check_playerAltAnim = new FlxUICheckBox(180, 340, null, null, "Player Alternate Animation", 100);
 		check_playerAltAnim.name = 'check_playerAltAnim';
 
 		var refresh = new FlxButton(10, 60, 'Refresh Section', function() {
@@ -2487,6 +2487,7 @@ class ChartingState extends MusicBeatState
 			trace(sect);
 
 			sect.mustHitSection = !sect.mustHitSection;
+			check_mustHitSection.checked = sect.mustHitSection;
 			var i = sectionRenderes.members[curSection];
 			var cachedY = i.icon.y;
 			remove(i.icon);
