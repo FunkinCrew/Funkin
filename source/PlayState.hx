@@ -443,8 +443,6 @@ class PlayState extends MusicBeatState
 
 		TimingStruct.clearTimings();
 
-		Ratings.ratingsPerTap = "";
-
 		var currentIndex = 0;
 		for (i in SONG.eventObjects)
 		{
@@ -1692,7 +1690,7 @@ class PlayState extends MusicBeatState
 			goodNoteHit(coolNote);
 			var noteDiff:Float = -(coolNote.strumTime / songMultiplier - Conductor.songPosition / songMultiplier);
 			ana.hit = true;
-			ana.hitJudge = Ratings.CalculateRating(noteDiff, Math.floor((PlayStateChangeables.safeFrames / 60) * 1000));
+			ana.hitJudge = Ratings.judgeNote(coolNote);
 			ana.nearestNote = [coolNote.strumTime / songMultiplier, coolNote.noteData, coolNote.sustainLength];
 		}
 		else if (!FlxG.save.data.ghost && songStarted)
@@ -2292,30 +2290,6 @@ class PlayState extends MusicBeatState
 		perfectMode = false;
 		#end
 
-		if (unspawnNotes[0] != null)
-		{
-
-			if (unspawnNotes[0].strumTime - Conductor.songPosition < 14000 * songMultiplier)
-			{
-				var dunceNote:Note = unspawnNotes[0];
-				notes.add(dunceNote);
-				if (executeModchart)
-				{
-					if (!dunceNote.isSustainNote)
-						dunceNote.cameras = [camNotes];
-					else
-						dunceNote.cameras = [camSustains];
-				}
-				else
-				{
-					dunceNote.cameras = [camHUD];
-				}
-
-				var index:Int = unspawnNotes.indexOf(dunceNote);
-				unspawnNotes.splice(index, 1);
-			}
-		}
-
 
 		#if cpp
 		if (FlxG.sound.music.playing)
@@ -2413,7 +2387,7 @@ class PlayState extends MusicBeatState
 				}
 			}
 
-			PlayStateChangeables.scrollSpeed = newScroll;
+			PlayStateChangeables.scrollSpeed *= newScroll;
 		}
 	
 		if (PlayStateChangeables.botPlay && FlxG.keys.justPressed.ONE)
@@ -2741,7 +2715,7 @@ class PlayState extends MusicBeatState
 					closestNotes.push(daNote);
 			}); // Collect notes that can be hit
 
-			closestNotes.sort((a, b) -> Std.int(a.strumTime / songMultiplier - b.strumTime / songMultiplier));
+			closestNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
 
 			// Make sure Girlfriend cheers only for certain songs
 			if (allowedToHeadbang)
@@ -3519,14 +3493,14 @@ class PlayState extends MusicBeatState
 		}
 
 
-		//if (!loadRep)
-			//rep.SaveReplay(saveNotes, saveJudge, replayAna);
-		//else
-		//{
+		if (!loadRep)
+			rep.SaveReplay(saveNotes, saveJudge, replayAna);
+		else
+		{
 			PlayStateChangeables.botPlay = false;
 			PlayStateChangeables.scrollSpeed = 1;
 			PlayStateChangeables.useDownscroll = false;
-		//}
+		}
 
 		if (FlxG.save.data.fpsCap > 290)
 			(cast(Lib.current.getChildAt(0), Main)).setFPSCap(290);
@@ -3777,7 +3751,8 @@ class PlayState extends MusicBeatState
 				sicks++;
 		}
 
-		score = getRatesScore(songMultiplier, score);
+		if (songMultiplier >= 1.05)
+			score = getRatesScore(songMultiplier, score);
 
 
 		// trace('Wife accuracy loss: ' + wife + ' | Rating: ' + daRating + ' | Score: ' + score + ' | Weight: ' + (1 - wife));
@@ -3785,7 +3760,6 @@ class PlayState extends MusicBeatState
 		if (daRating != 'shit' || daRating != 'bad')
 		{
 			songScore += Math.round(score);
-			songScoreDef += Math.round(ConvertScore.convertScore(noteDiff));
 
 			/* if (combo > 60)
 					daRating = 'sick';
@@ -4166,7 +4140,7 @@ class PlayState extends MusicBeatState
 							scoreTxt.color = FlxColor.WHITE;
 							var noteDiff:Float = -(coolNote.strumTime - Conductor.songPosition);
 							anas[coolNote.noteData].hit = true;
-							anas[coolNote.noteData].hitJudge = Ratings.CalculateRating(noteDiff, Math.floor((PlayStateChangeables.safeFrames / 60) * 1000));
+							anas[coolNote.noteData].hitJudge = Ratings.judgeNote(coolNote);
 							anas[coolNote.noteData].nearestNote = [coolNote.strumTime, coolNote.noteData, coolNote.sustainLength];
 							goodNoteHit(coolNote);
 						}
@@ -4196,7 +4170,7 @@ class PlayState extends MusicBeatState
 		{
 			var diff = -(daNote.strumTime / songMultiplier - Conductor.songPosition / songMultiplier );
 
-			daNote.rating = Ratings.CalculateRating(diff, Math.floor((PlayStateChangeables.safeFrames / 60) * 1000));
+			daNote.rating = Ratings.judgeNote(daNote);
 			if (daNote.mustPress && daNote.rating == "sick" || (diff > 0 && daNote.mustPress))
 			{
 				// Force good note hit regardless if it's too late to hit it or not as a fail safe
@@ -4490,7 +4464,7 @@ class PlayState extends MusicBeatState
 	{
 		var noteDiff:Float = -(note.strumTime - Conductor.songPosition);
 
-		note.rating = Ratings.CalculateRating(noteDiff, Math.floor((PlayStateChangeables.safeFrames / 60) * 1000));
+		note.rating = Ratings.judgeNote(note);
 
 		/* if (loadRep)
 			{
@@ -4546,7 +4520,7 @@ class PlayState extends MusicBeatState
 			note.rating = rep.replay.songJudgements[findByTimeIndex(note.strumTime)];
 		}
 		else
-			note.rating = Ratings.CalculateRating(noteDiff);
+			note.rating = Ratings.judgeNote(note);
 
 		if (note.rating == "miss")
 			return;
@@ -4750,31 +4724,34 @@ class PlayState extends MusicBeatState
 			luaModchart.setVar('curStep', curStep);
 			luaModchart.executeState('stepHit', [curStep]);
 		}
-		#end
-		// yes this updates every step.
-		// yes this is bad
-		// but i'm doing it to update misses and accuracy
-		#if windows
-		// Song duration in a float, useful for the time left feature
-		songLength = FlxG.sound.music.length / 1000;
 
-		// Updating Discord Rich Presence (with Time Left)
-		DiscordClient.changePresence(detailsText
-			+ " "
-			+ SONG.song
-			+ " ("
-			+ storyDifficultyText
-			+ ") "
-			+ Ratings.GenerateLetterRank(accuracy),
-			"Acc: "
-			+ HelperFunctions.truncateFloat(accuracy, 2)
-			+ "% | Score: "
-			+ songScore
-			+ " | Misses: "
-			+ misses, iconRPC, true,
-			songLength
-			- Conductor.songPosition);
+
+		if (unspawnNotes[0] != null)
+			{
+	
+				if (unspawnNotes[0].strumTime - Conductor.songPosition < 14000 * songMultiplier)
+				{
+					var dunceNote:Note = unspawnNotes[0];
+					notes.add(dunceNote);
+					if (executeModchart)
+					{
+						if (!dunceNote.isSustainNote)
+							dunceNote.cameras = [camNotes];
+						else
+							dunceNote.cameras = [camSustains];
+					}
+					else
+					{
+						dunceNote.cameras = [camHUD];
+					}
+	
+					var index:Int = unspawnNotes.indexOf(dunceNote);
+					unspawnNotes.splice(index, 1);
+				}
+			}
+
 		#end
+	
 	}
 
 	var lightningStrikeBeat:Int = 0;

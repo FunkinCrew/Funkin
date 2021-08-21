@@ -147,7 +147,7 @@ class ResultsScreen extends FlxSubState
             if (diff != (166 * Math.floor((PlayState.rep.replay.sf / 60) * 1000) / 166))
                 mean += diff;
             if (obj[1] != -1)
-                graph.addToHistory(diff / PlayState.songMultiplier, judge, obj3);
+                graph.addToHistory(diff / PlayState.songMultiplier, judge, obj3 / PlayState.songMultiplier);
         }
 
         if (sicks == Math.POSITIVE_INFINITY || sicks == Math.NaN)
@@ -191,13 +191,6 @@ class ResultsScreen extends FlxSubState
 		    music.volume += 0.01 * elapsed;
 
         // keybinds
-
-        if (FlxG.keys.justPressed.E)
-        {
-            #if sys
-            File.saveContent("keyData-debug.txt",Ratings.ratingsPerTap);
-            #end
-        }
 
         if (PlayerSettings.player1.controls.ACCEPT)
         {
