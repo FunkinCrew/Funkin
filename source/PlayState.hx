@@ -3177,7 +3177,7 @@ class PlayState extends MusicBeatState
 
 					if (currentSection != null)
 					{
-						if (currentSection.p1AltAnim)
+						if (currentSection.CPUAltAnim)
 							altAnim = '-alt';
 					}
 					
@@ -4817,7 +4817,7 @@ class PlayState extends MusicBeatState
 			// Dad doesnt interupt his own notes
 			if ((!dad.animation.curAnim.name.startsWith("sing")) && dad.curCharacter != 'gf')
 				if ((curBeat % idleBeat == 0 || !idleToBeat) || dad.curCharacter == "spooky")
-					dad.dance(idleToBeat, currentSection.p1AltAnim);
+					dad.dance(idleToBeat, currentSection.CPUAltAnim);
 		}
 		// FlxG.log.add('change bpm' + SONG.notes[Std.int(curStep / 16)].changeBPM);
 		wiggleShit.update(Conductor.crochet);
@@ -4864,7 +4864,7 @@ class PlayState extends MusicBeatState
 
 			if (!boyfriend.animation.curAnim.name.startsWith("sing") && (curBeat % idleBeat == 0 || !idleToBeat))
 			{
-				boyfriend.playAnim('idle' + ((currentSection.p2AltAnim && boyfriend.animation.getByName('idle-alt') != null) ? '-alt' : ''), idleToBeat);
+				boyfriend.playAnim('idle' + ((currentSection.playerAltAnim && boyfriend.animation.getByName('idle-alt') != null) ? '-alt' : ''), idleToBeat);
 			}
 
 			/*if (!dad.animation.curAnim.name.startsWith("sing"))
