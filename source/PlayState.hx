@@ -3494,7 +3494,7 @@ class PlayState extends MusicBeatState
 						if (currentSeg == null)
 							return;
 		
-						var start:Float = (currentBeat - currentSeg.startBeat) / ((currentSeg.bpm / songMultiplier) / 60);
+						var start:Float = (currentBeat - currentSeg.startBeat) / ((currentSeg.bpm) / 60);
 		
 						section.startTime = (currentSeg.startTime + start) * 1000;
 		
