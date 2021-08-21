@@ -1185,8 +1185,8 @@ class ChartingState extends MusicBeatState
 	var check_mustHitSection:FlxUICheckBox;
 	var check_changeBPM:FlxUICheckBox;
 	var stepperSectionBPM:FlxUINumericStepper;
-	var check_p1AltAnim:FlxUICheckBox;
-	var check_p2AltAnim:FlxUICheckBox;
+	var check_CPUAltAnim:FlxUICheckBox;
+	var check_playerAltAnim:FlxUICheckBox;
 
 	function addSectionUI():Void
 	{
@@ -1239,7 +1239,7 @@ class ChartingState extends MusicBeatState
 					}
 				}
 		});
-		check_mustHitSection = new FlxUICheckBox(10, 30, null, null, "Camera Points to P1?", 100,null,function() {
+		check_mustHitSection = new FlxUICheckBox(10, 30, null, null, "Camera Points to Player?", 100,null,function() {
 			var sect = lastUpdatedSection;
 
 			trace(sect);
@@ -1270,11 +1270,11 @@ class ChartingState extends MusicBeatState
 		check_mustHitSection.checked = true;
 		// _song.needsVoices = check_mustHit.checked;
 
-		check_p1AltAnim = new FlxUICheckBox(10, 340, null, null, "P1 Alternate Animation", 100);
-		check_p1AltAnim.name = 'check_p1AltAnim';
+		check_CPUAltAnim = new FlxUICheckBox(10, 340, null, null, "CPU Alternate Animation", 100);
+		check_CPUAltAnim.name = 'check_CPUAltAnim';
 
-		check_p2AltAnim = new FlxUICheckBox(200, 340, null, null, "P2 Alternate Animation", 100);
-		check_p2AltAnim.name = 'check_p2AltAnim';
+		check_playerAltAnim = new FlxUICheckBox(200, 340, null, null, "Player Alternate Animation", 100);
+		check_playerAltAnim.name = 'check_playerAltAnim';
 
 		var refresh = new FlxButton(10, 60, 'Refresh Section', function() {
 			var section = getSectionByTime(Conductor.songPosition);
@@ -1283,8 +1283,8 @@ class ChartingState extends MusicBeatState
 				return;
 
 			check_mustHitSection.checked = section.mustHitSection;
-			check_p1AltAnim.checked = section.p1AltAnim;
-			check_p2AltAnim.checked = section.p2AltAnim;
+			check_CPUAltAnim.checked = section.CPUAltAnim;
+			check_playerAltAnim.checked = section.playerAltAnim;
 		});
 
 		var startSection:FlxButton = new FlxButton(10, 85, "Play Here", function() {
@@ -1301,8 +1301,8 @@ class ChartingState extends MusicBeatState
 		//tab_group_section.add(stepperCopy);
 		//tab_group_section.add(stepperCopyLabel);
 		tab_group_section.add(check_mustHitSection);
-		tab_group_section.add(check_p1AltAnim);
-		tab_group_section.add(check_p2AltAnim);
+		tab_group_section.add(check_CPUAltAnim);
+		tab_group_section.add(check_playerAltAnim);
 		//tab_group_section.add(copyButton);
 		tab_group_section.add(clearSectionButton);
 		tab_group_section.add(swapSection);
@@ -1534,10 +1534,10 @@ class ChartingState extends MusicBeatState
 			var label = check.getLabel().text;
 			switch (label)
 			{
-				case "P1 Alternate Animation":
-					getSectionByTime(Conductor.songPosition).p1AltAnim = check.checked;
-				case "P2 Alternate Animation":
-					getSectionByTime(Conductor.songPosition).p2AltAnim = check.checked;
+				case "CPU Alternate Animation":
+					getSectionByTime(Conductor.songPosition).CPUAltAnim = check.checked;
+				case "Player Alternate Animation":
+					getSectionByTime(Conductor.songPosition).playerAltAnim = check.checked;
 			}
 		}
 		else if (id == FlxUINumericStepper.CHANGE_EVENT && (sender is FlxUINumericStepper))
@@ -2252,8 +2252,8 @@ class ChartingState extends MusicBeatState
 			{
 				lastUpdatedSection = weird;
 				check_mustHitSection.checked = weird.mustHitSection;
-				check_p1AltAnim.checked = weird.p1AltAnim;
-				check_p2AltAnim.checked = weird.p2AltAnim;
+				check_CPUAltAnim.checked = weird.CPUAltAnim;
+				check_playerAltAnim.checked = weird.playerAltAnim;
 			}
 		}
 
@@ -2744,14 +2744,14 @@ class ChartingState extends MusicBeatState
 		if (sec == null)
 		{
 			check_mustHitSection.checked = true;
-			check_p1AltAnim.checked = false;
-			check_p2AltAnim.checked = false;
+			check_CPUAltAnim.checked = false;
+			check_playerAltAnim.checked = false;
 		}
 		else
 		{
 			check_mustHitSection.checked = sec.mustHitSection;
-			check_p1AltAnim.checked = sec.p1AltAnim;
-			check_p2AltAnim.checked = sec.p2AltAnim;
+			check_CPUAltAnim.checked = sec.CPUAltAnim;
+			check_playerAltAnim.checked = sec.playerAltAnim;
 		}
 	}
 
@@ -2880,8 +2880,8 @@ class ChartingState extends MusicBeatState
 			sectionNotes: [],
 			typeOfSection: 0,
 			altAnim: false,
-			p1AltAnim: false,
-			p2AltAnim: false
+			CPUAltAnim: false,
+			playerAltAnim: false
 		};
 
 		_song.notes.push(sec);
@@ -2992,7 +2992,7 @@ class ChartingState extends MusicBeatState
 		updateGrid();
 	}
 
-	private function newSection(lengthInSteps:Int = 16,mustHitSection:Bool = false,p1AltAnim:Bool = true, p2AltAnim:Bool = true):SwagSection
+	private function newSection(lengthInSteps:Int = 16,mustHitSection:Bool = false,CPUAltAnim:Bool = true, playerAltAnim:Bool = true):SwagSection
 		{
 
 			var daPos:Float = 0;
@@ -3021,8 +3021,8 @@ class ChartingState extends MusicBeatState
 				sectionNotes: [],
 				typeOfSection: 0,
 				altAnim: false,
-				p1AltAnim: p1AltAnim,
-				p2AltAnim: p2AltAnim
+				CPUAltAnim: CPUAltAnim,
+				playerAltAnim: playerAltAnim
 			};
 
 
@@ -3075,7 +3075,7 @@ class ChartingState extends MusicBeatState
 				}
 			for (daSection1 in 0..._song.notes.length)
 				{
-					newSong.push(newSection(16,_song.notes[daSection1].mustHitSection,_song.notes[daSection1].p1AltAnim,_song.notes[daSection1].p2AltAnim));
+					newSong.push(newSection(16,_song.notes[daSection1].mustHitSection,_song.notes[daSection1].CPUAltAnim,_song.notes[daSection1].playerAltAnim));
 				}
 	
 			for (daSection in 0...(_song.notes.length))
@@ -3083,8 +3083,8 @@ class ChartingState extends MusicBeatState
 				var aimtosetsection = daSection+Std.int((totaladdsection));
 				if(aimtosetsection<0) aimtosetsection = 0;
 				newSong[aimtosetsection].mustHitSection = _song.notes[daSection].mustHitSection;
-				newSong[aimtosetsection].p1AltAnim = _song.notes[daSection].p1AltAnim;
-				newSong[aimtosetsection].p2AltAnim = _song.notes[daSection].p2AltAnim;
+				newSong[aimtosetsection].CPUAltAnim = _song.notes[daSection].CPUAltAnim;
+				newSong[aimtosetsection].playerAltAnim = _song.notes[daSection].playerAltAnim;
 				//trace("section "+daSection);
 				for(daNote in 0...(_song.notes[daSection].sectionNotes.length))
 					{	
