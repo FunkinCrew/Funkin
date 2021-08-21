@@ -5,6 +5,7 @@ import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.input.touch.FlxTouch;
 import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
@@ -98,6 +99,7 @@ class FreeplayState extends MusicBeatState
 		// LOAD CHARACTERS
 
 		bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+		bg.setGraphicSize(Std.int(FlxG.width / FlxG.camera.initialZoom));
 		add(bg);
 
 		grpSongs = new FlxTypedGroup<Alphabet>();
@@ -190,8 +192,62 @@ class FreeplayState extends MusicBeatState
 		}
 	}
 
+	var touchY:Float = 0;
+	var dyTouch:Float = 0;
+	var velTouch:Float = 0;
+
+	var veloctiyLoopShit:Float = 0;
+
 	override function update(elapsed:Float)
 	{
+		if (FlxG.onMobile)
+		{
+			if (FlxG.touches.getFirst() != null)
+			{
+				var touch:FlxTouch = FlxG.touches.getFirst();
+
+				velTouch = Math.abs((touch.screenY - dyTouch)) / 50;
+
+				dyTouch = touch.screenY - touchY;
+
+				if (touch.justPressed)
+				{
+					touchY = touch.screenY;
+					dyTouch = 0;
+					velTouch = 0;
+				}
+
+				if (Math.abs(dyTouch) >= 100)
+				{
+					touchY = touch.screenY;
+
+					if (dyTouch != 0)
+						dyTouch < 0 ? changeSelection(1) : changeSelection(-1);
+					// changeSelection(1);
+				}
+			}
+			else
+			{
+				if (velTouch >= 0)
+				{
+					trace(velTouch);
+					velTouch -= FlxG.elapsed;
+
+					veloctiyLoopShit += velTouch;
+
+					trace("VEL LOOP: " + veloctiyLoopShit);
+
+					if (veloctiyLoopShit >= 30)
+					{
+						veloctiyLoopShit = 0;
+						changeSelection(1);
+					}
+
+					// trace(velTouch);
+				}
+			}
+		}
+
 		super.update(elapsed);
 
 		if (FlxG.sound.music != null)
@@ -218,7 +274,7 @@ class FreeplayState extends MusicBeatState
 		{
 			if (touch.justPressed)
 			{
-				accepted = true;
+				// accepted = true;
 			}
 		}
 		#end
@@ -311,7 +367,7 @@ class FreeplayState extends MusicBeatState
 		// lerpScore = 0;
 
 		#if PRELOAD_ALL
-		FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName), 0);
+		// FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName), 0);
 		#end
 
 		var bullShit:Int = 0;

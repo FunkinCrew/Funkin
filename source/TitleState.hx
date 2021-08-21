@@ -270,7 +270,7 @@ class TitleState extends MusicBeatState
 
 		outlineShaderShit = new TitleOutline();
 		// logoBl.shader = swagShader.shader;
-		logoBl.shader = outlineShaderShit;
+		// logoBl.shader = outlineShaderShit;
 		// logoBl.shader = alphaShader.shader;
 
 		// trace();
@@ -284,7 +284,7 @@ class TitleState extends MusicBeatState
 		gfDance.antialiasing = true;
 		add(gfDance);
 
-		gfDance.shader = swagShader.shader;
+		// gfDance.shader = swagShader.shader;
 
 		// gfDance.shader = new TitleOutline();
 
@@ -392,6 +392,15 @@ class TitleState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
+		/* if (FlxG.onMobile)
+			{
+				if (gfDance != null)
+				{
+					gfDance.x = (FlxG.width / 2) + (FlxG.accelerometer.x * (FlxG.width / 2));
+					// gfDance.y = (FlxG.height / 2) + (FlxG.accelerometer.y * (FlxG.height / 2));
+				}
+			}
+		 */
 		if (FlxG.keys.justPressed.I)
 		{
 			FlxTween.tween(outlineShaderShit, {funnyX: 50, funnyY: 50}, 0.6, {ease: FlxEase.quartOut});
@@ -614,6 +623,8 @@ class TitleState extends MusicBeatState
 
 	function addMoreText(text:String)
 	{
+		lime.ui.Haptic.vibrate(100, 100);
+
 		var coolText:Alphabet = new Alphabet(0, 0, text, true, false);
 		coolText.screenCenter(X);
 		coolText.y += (textGroup.length * 60) + 200;

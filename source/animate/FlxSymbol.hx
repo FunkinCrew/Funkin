@@ -88,6 +88,8 @@ class FlxSymbol extends FlxSprite
 
 			var newFrameNum:Int = daFrame;
 
+			// need to account for movie clip / Graphic bullshit?
+
 			switch (daLoopType)
 			{
 				case LOOP:
