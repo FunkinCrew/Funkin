@@ -14,16 +14,15 @@ labels: bug
 [weed]: <> (ALSO MAKE SURE THAT YOU USE PROPER LABELS, IF YOU'RE RUNNING INTO COMPILER ISSUES, USE THE compiler issue LABEL!!!)
 
 #### Please check for duplicates or similar issues, as well performing simple troubleshooting steps (such as clearing cookies, clearing AppData, trying another browser) before submitting an issue.
-### If you are playing the game in a browser, what site are you playing it from?
+### What platform do you play on?
 
 [weed]: <> (Put an X in the [ ] thingies to fill out checkbox!)
 [weed]: <> (something like [x] pretty much, don't screw up or you will look stupid)
 
-- [ ] [Newgrounds](https://www.newgrounds.com/portal/view/770371)
-- [ ] [Itch.io](https://ninja-muffin24.itch.io/funkin)? Specify below
-- - [ ] Windows
-- - [ ] Mac
-- - [ ] Linux
+- [ ] Gamejolt (online)
+- [ ] Windows
+- [ ] Mac
+- [ ] Linux
 
 ### If you are playing the game in a browser, what browser are you using?
 
@@ -33,7 +32,7 @@ labels: bug
 - [ ] Firefox
 - [ ] Safari
 
-## What version of the game are you using? Look in the bottom left corner of the main menu. (ex: 0.2.7, 0.2.1, shit like that)
+## What version of the game are you using? and are you using a Pre-Release? Look in the bottom left corner of the main menu. (ex: 0.2.0 or 0.3.0, shit like that)
 
 
 ## Have you identified any steps to reproduce the bug? If so, please describe them below in as much detail as possible. Use images if possible.
