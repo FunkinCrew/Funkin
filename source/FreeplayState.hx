@@ -201,6 +201,8 @@ class FreeplayState extends MusicBeatState
 	}
 
 	var touchY:Float = 0;
+	var touchX:Float = 0;
+	var dxTouch:Float = 0;
 	var dyTouch:Float = 0;
 	var velTouch:Float = 0;
 
@@ -243,12 +245,23 @@ class FreeplayState extends MusicBeatState
 				velTouch = Math.abs((touch.screenY - dyTouch)) / 50;
 
 				dyTouch = touch.screenY - touchY;
+				dxTouch = touch.screenX - touchX;
 
 				if (touch.justPressed)
 				{
 					touchY = touch.screenY;
 					dyTouch = 0;
 					velTouch = 0;
+
+					touchX = touch.screenX;
+					dxTouch = 0;
+				}
+
+				if (Math.abs(dxTouch) >= 100)
+				{
+					touchX = touch.screenX;
+					if (dxTouch != 0)
+						dxTouch < 0 ? changeDiff(1) : changeDiff(-1);
 				}
 
 				if (Math.abs(dyTouch) >= 100)
@@ -264,23 +277,23 @@ class FreeplayState extends MusicBeatState
 			{
 				touchTimer = 0;
 
-				if (velTouch >= 0)
-				{
-					trace(velTouch);
-					velTouch -= FlxG.elapsed;
-
-					veloctiyLoopShit += velTouch;
-
-					trace("VEL LOOP: " + veloctiyLoopShit);
-
-					if (veloctiyLoopShit >= 30)
+				/* if (velTouch >= 0)
 					{
-						veloctiyLoopShit = 0;
-						changeSelection(1);
-					}
+						trace(velTouch);
+						velTouch -= FlxG.elapsed;
 
-					// trace(velTouch);
-				}
+						veloctiyLoopShit += velTouch;
+
+						trace("VEL LOOP: " + veloctiyLoopShit);
+
+						if (veloctiyLoopShit >= 30)
+						{
+							veloctiyLoopShit = 0;
+							changeSelection(1);
+						}
+
+						// trace(velTouch);
+				}*/
 			}
 		}
 

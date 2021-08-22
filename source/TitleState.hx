@@ -8,6 +8,8 @@ import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.transition.TransitionData;
 import flixel.graphics.FlxGraphic;
 import flixel.group.FlxGroup;
+import flixel.input.android.FlxAndroidKey;
+import flixel.input.android.FlxAndroidKeys;
 import flixel.input.gamepad.FlxGamepad;
 import flixel.input.gamepad.id.SwitchJoyconLeftID;
 import flixel.math.FlxPoint;
@@ -81,6 +83,10 @@ class TitleState extends MusicBeatState
 
 	override public function create():Void
 	{
+		#if android
+		FlxG.android.preventDefaultKeys = [FlxAndroidKey.BACK];
+		#end
+
 		FlxG.debugger.addButton(LEFT, new BitmapData(200, 200), function()
 		{
 			FlxG.debugger.visible = false;
@@ -478,16 +484,18 @@ class TitleState extends MusicBeatState
 			FlxG.fullscreen = !FlxG.fullscreen;
 		var pressedEnter:Bool = FlxG.keys.justPressed.ENTER;
 
-		#if mobile
-		for (touch in FlxG.touches.list)
+		if (FlxG.onMobile)
 		{
-			if (touch.justPressed)
+			for (touch in FlxG.touches.list)
 			{
-				FlxG.switchState(new FreeplayState());
-				pressedEnter = true;
+				if (touch.justPressed)
+				{
+					FlxG.switchState(new FreeplayState());
+					pressedEnter = true;
+				}
 			}
 		}
-		#end
+
 		var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
 
 		if (gamepad != null)

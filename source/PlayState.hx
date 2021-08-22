@@ -1948,7 +1948,13 @@ class PlayState extends MusicBeatState
 
 		scoreTxt.text = "Score:" + songScore;
 
-		if (controls.PAUSE && startedCountdown && canPause)
+		var androidPause:Bool = false;
+
+		#if android
+		androidPause = FlxG.android.justPressed.BACK;
+		#end
+
+		if ((controls.PAUSE || androidPause) && startedCountdown && canPause)
 		{
 			persistentUpdate = false;
 			persistentDraw = true;
@@ -2666,30 +2672,30 @@ class PlayState extends MusicBeatState
 			{
 				if (touch.justPressed)
 				{
-					if (touch.justPressedPosition.x >= widHalf)
+					var getHeight:Int = Math.floor(touch.justPressedPosition.y / (FlxG.height / 3));
+
+					switch (getHeight)
 					{
-						if (touch.justPressedPosition.y >= heightHalf)
-							pressArray[3] = true;
-						else
+						case 0:
 							pressArray[2] = true;
+						case 1:
+							touch.justPressedPosition.x < widHalf ? pressArray[0] = true : pressArray[3] = true;
+						case 2:
+							pressArray[1] = true;
 					}
-					else if (touch.justPressedPosition.y >= heightHalf)
-						pressArray[1] = true;
-					else
-						pressArray[0] = true;
 				}
 
-				if (touch.justPressedPosition.x >= widHalf)
+				var getHeight:Int = Math.floor(touch.justPressedPosition.y / (FlxG.height / 3));
+
+				switch (getHeight)
 				{
-					if (touch.justPressedPosition.y >= heightHalf)
-						holdArray[3] = true;
-					else
+					case 0:
 						holdArray[2] = true;
+					case 1:
+						touch.justPressedPosition.x < widHalf ? holdArray[0] = true : holdArray[3] = true;
+					case 2:
+						holdArray[1] = true;
 				}
-				else if (touch.justPressedPosition.y >= heightHalf)
-					holdArray[1] = true;
-				else
-					holdArray[0] = true;
 			}
 		}
 
@@ -2706,7 +2712,7 @@ class PlayState extends MusicBeatState
 		// PRESSES, check for note hits
 		if (pressArray.contains(true) && /*!boyfriend.stunned && */ generatedMusic)
 		{
-			Haptic.vibrate(400, 70);
+			Haptic.vibrate(100, 100);
 
 			boyfriend.holdTimer = 0;
 

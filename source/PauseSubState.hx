@@ -138,6 +138,15 @@ class PauseSubState extends MusicBeatSubstate
 			changeSelection(1);
 		}
 
+		var androidPause:Bool = false;
+
+		#if android
+		androidPause = FlxG.android.justPressed.BACK;
+		#end
+
+		if (androidPause)
+			close();
+
 		if (accepted)
 		{
 			var daSelected:String = menuItems[curSelected];
