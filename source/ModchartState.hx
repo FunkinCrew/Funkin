@@ -1,6 +1,8 @@
 // this file is for modchart things, this is to declutter playstate.hx
 
 // Lua
+import LuaClass.LuaGame;
+import LuaClass.LuaWindow;
 import LuaClass.LuaSprite;
 import LuaClass.LuaCamera;
 import LuaClass.LuaReceptor;
@@ -347,6 +349,8 @@ class ModchartState
 		#end
 
 		new LuaSprite(sprite,toBeCalled).Register(lua);
+
+		return toBeCalled;
 	}
 
     public function die()
@@ -480,18 +484,15 @@ class ModchartState
 			PlayState.instance.strumLine.y = y;
 		});
 
-		// actors
-
-		Lua_helper.add_callback(lua, "getNumberOfNotes", function()
-		{
-			return PlayState.instance.visibleNotes.length;
-		});
-
 		for (i in 0...PlayState.strumLineNotes.length)
-		{
-			var member = PlayState.strumLineNotes.members[i];
-			new LuaReceptor(member, "receptor_" + i).Register(lua);
-		}
+			{
+				var member = PlayState.strumLineNotes.members[i];
+				new LuaReceptor(member, "receptor_" + i).Register(lua);
+			}
+
+		new LuaGame().Register(lua);
+
+		new LuaWindow().Register(lua);
     }
 
     public function executeState(name,args:Array<Dynamic>)
