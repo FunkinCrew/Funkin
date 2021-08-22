@@ -1,6 +1,8 @@
 package;
 
 import flash.text.TextField;
+import flixel.FlxCamera;
+import flixel.FlxGame;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.addons.display.FlxGridOverlay;
@@ -99,7 +101,13 @@ class FreeplayState extends MusicBeatState
 		// LOAD CHARACTERS
 
 		bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
-		bg.setGraphicSize(Std.int(FlxG.width / FlxG.camera.initialZoom));
+		bg.setGraphicSize(Std.int(FlxG.width));
+		bg.updateHitbox();
+		trace(FlxG.width);
+		trace(FlxG.camera.zoom);
+		trace(FlxG.camera.initialZoom);
+		trace(FlxCamera.defaultZoom);
+		trace(FlxG.initialZoom);
 		add(bg);
 
 		grpSongs = new FlxTypedGroup<Alphabet>();
@@ -197,13 +205,39 @@ class FreeplayState extends MusicBeatState
 	var velTouch:Float = 0;
 
 	var veloctiyLoopShit:Float = 0;
+	var touchTimer:Float = 0;
 
 	override function update(elapsed:Float)
 	{
+		super.update(elapsed);
+
+		if (FlxG.sound.music != null)
+		{
+			if (FlxG.sound.music.volume < 0.7)
+			{
+				FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
+			}
+		}
+
+		lerpScore = CoolUtil.coolLerp(lerpScore, intendedScore, 0.4);
+		bg.color = FlxColor.interpolate(bg.color, coolColors[songs[curSelected].week % coolColors.length], CoolUtil.camLerpShit(0.045));
+
+		scoreText.text = "PERSONAL BEST:" + Math.round(lerpScore);
+
+		positionHighscore();
+
+		var upP = controls.UI_UP_P;
+		var downP = controls.UI_DOWN_P;
+		var accepted = controls.ACCEPT;
+
 		if (FlxG.onMobile)
 		{
 			if (FlxG.touches.getFirst() != null)
 			{
+				if (touchTimer >= 1.5)
+					accepted = true;
+
+				touchTimer += FlxG.elapsed;
 				var touch:FlxTouch = FlxG.touches.getFirst();
 
 				velTouch = Math.abs((touch.screenY - dyTouch)) / 50;
@@ -228,6 +262,8 @@ class FreeplayState extends MusicBeatState
 			}
 			else
 			{
+				touchTimer = 0;
+
 				if (velTouch >= 0)
 				{
 					trace(velTouch);
@@ -247,27 +283,6 @@ class FreeplayState extends MusicBeatState
 				}
 			}
 		}
-
-		super.update(elapsed);
-
-		if (FlxG.sound.music != null)
-		{
-			if (FlxG.sound.music.volume < 0.7)
-			{
-				FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
-			}
-		}
-
-		lerpScore = CoolUtil.coolLerp(lerpScore, intendedScore, 0.4);
-		bg.color = FlxColor.interpolate(bg.color, coolColors[songs[curSelected].week % coolColors.length], CoolUtil.camLerpShit(0.045));
-
-		scoreText.text = "PERSONAL BEST:" + Math.round(lerpScore);
-
-		positionHighscore();
-
-		var upP = controls.UI_UP_P;
-		var downP = controls.UI_DOWN_P;
-		var accepted = controls.ACCEPT;
 
 		#if mobile
 		for (touch in FlxG.touches.list)

@@ -164,6 +164,10 @@ class PlayState extends MusicBeatState
 
 	override public function create()
 	{
+		defaultCamZoom = FlxCamera.defaultZoom;
+
+		defaultCamZoom *= 1.05;
+
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
 
@@ -282,7 +286,7 @@ class PlayState extends MusicBeatState
 				add(street);
 			case "milf" | 'satin-panties' | 'high':
 				curStage = 'limo';
-				defaultCamZoom = 0.90;
+				defaultCamZoom *= 0.90;
 
 				var skyBG:FlxSprite = new FlxSprite(-120, -50).loadGraphic(Paths.image('limo/limoSunset'));
 				skyBG.scrollFactor.set(0.1, 0.1);
@@ -323,7 +327,7 @@ class PlayState extends MusicBeatState
 			case "cocoa" | 'eggnog':
 				curStage = 'mall';
 
-				defaultCamZoom = 0.80;
+				defaultCamZoom *= 0.80;
 
 				var bg:FlxSprite = new FlxSprite(-1000, -500).loadGraphic(Paths.image('christmas/bgWalls'));
 				bg.antialiasing = true;
@@ -395,7 +399,7 @@ class PlayState extends MusicBeatState
 			case 'senpai' | 'roses':
 				curStage = 'school';
 
-				// defaultCamZoom = 0.9;
+				// defaultCamZoom *= 0.9;
 
 				var bgSky = new FlxSprite().loadGraphic(Paths.image('weeb/weebSky'));
 				bgSky.scrollFactor.set(0.1, 0.1);
@@ -519,7 +523,7 @@ class PlayState extends MusicBeatState
 			 */
 
 			case 'guns' | 'stress' | 'ugh':
-				defaultCamZoom = 0.90;
+				defaultCamZoom *= 0.90;
 				curStage = 'tank';
 
 				var bg:BGSprite = new BGSprite('tankSky', -400, -400, 0, 0);
@@ -592,7 +596,7 @@ class PlayState extends MusicBeatState
 				foregroundSprites.add(fgTank3);
 
 			default:
-				defaultCamZoom = 0.9;
+				defaultCamZoom *= 0.9;
 				curStage = 'stage';
 
 				var bg:BGSprite = new BGSprite('stageback', -600, -200, 0.9, 0.9);
@@ -1776,7 +1780,7 @@ class PlayState extends MusicBeatState
 
 	function tweenCamIn():Void
 	{
-		FlxTween.tween(FlxG.camera, {zoom: 1.3}, (Conductor.stepCrochet * 4 / 1000), {ease: FlxEase.elasticInOut});
+		FlxTween.tween(FlxG.camera, {zoom: 1.3 * FlxCamera.defaultZoom}, (Conductor.stepCrochet * 4 / 1000), {ease: FlxEase.elasticInOut});
 	}
 
 	override function openSubState(SubState:FlxSubState)
@@ -2031,7 +2035,7 @@ class PlayState extends MusicBeatState
 		if (camZooming)
 		{
 			FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, 0.95);
-			camHUD.zoom = FlxMath.lerp(1, camHUD.zoom, 0.95);
+			camHUD.zoom = FlxMath.lerp(1 * FlxCamera.defaultZoom, camHUD.zoom, 0.95);
 		}
 
 		FlxG.watch.addQuick("beatShit", curBeat);
@@ -2631,7 +2635,7 @@ class PlayState extends MusicBeatState
 			}
 
 			if (SONG.song.toLowerCase() == 'tutorial')
-				FlxTween.tween(FlxG.camera, {zoom: 1}, (Conductor.stepCrochet * 4 / 1000), {ease: FlxEase.elasticInOut});
+				FlxTween.tween(FlxG.camera, {zoom: 1 * FlxCamera.defaultZoom}, (Conductor.stepCrochet * 4 / 1000), {ease: FlxEase.elasticInOut});
 		}
 	}
 
@@ -3020,13 +3024,13 @@ class PlayState extends MusicBeatState
 		{
 			if (curSong.toLowerCase() == 'milf' && curBeat >= 168 && curBeat < 200 && camZooming && FlxG.camera.zoom < 1.35)
 			{
-				FlxG.camera.zoom += 0.015;
+				FlxG.camera.zoom += 0.015 * FlxCamera.defaultZoom;
 				camHUD.zoom += 0.03;
 			}
 
-			if (camZooming && FlxG.camera.zoom < 1.35 && curBeat % 4 == 0)
+			if (camZooming && FlxG.camera.zoom < (1.35 * FlxCamera.defaultZoom) && curBeat % 4 == 0)
 			{
-				FlxG.camera.zoom += 0.015;
+				FlxG.camera.zoom += 0.015 * FlxCamera.defaultZoom;
 				camHUD.zoom += 0.03;
 			}
 		}
