@@ -1344,6 +1344,10 @@ class PlayState extends MusicBeatState
 				iconP1.animation.play(SONG.player1);
 			else
 				iconP1.animation.play('bf-old');
+			if (iconP2.animation.curAnim.name == 'dad')
+				iconP2.animation.play(SONG.player2);
+			else
+				iconP2.animation.play('dad');
 		}
 
 		switch (curStage)
@@ -1428,6 +1432,8 @@ class PlayState extends MusicBeatState
 		#if debug
 		if (FlxG.keys.justPressed.EIGHT)
 			FlxG.switchState(new AnimationDebug(SONG.player2));
+		if (FlxG.keys.justPressed.SIX)
+			FlxG.switchState(new AnimationDebug(SONG.player1));		
 		#end
 
 		if (startingSong)
