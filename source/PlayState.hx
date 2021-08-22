@@ -88,7 +88,6 @@ class PlayState extends MusicBeatState
 {
 	public static var instance:PlayState = null;
 
-	public static var curStage:String = '';
 	public static var SONG:SwagSong;
 	public static var isStoryMode:Bool = false;
 	public static var storyWeek:Int = 0;
@@ -114,8 +113,6 @@ class PlayState extends MusicBeatState
 	public static var inResults:Bool = false;
 
 	public static var noteBools:Array<Bool> = [false, false, false, false];
-
-	public static var halloweenLevel:Bool = false;
 
 	var songLength:Float = 0;
 	var kadeEngineWatermark:FlxText;
@@ -209,8 +206,6 @@ class PlayState extends MusicBeatState
 
 	public var dialogue:Array<String> = ['dad:blah blah blah', 'bf:coolswag'];
 
-	public static var isHalloween:Bool = false;
-
 	public static var trainSound:FlxSound;
 
 	var songName:FlxText;
@@ -230,8 +225,6 @@ class PlayState extends MusicBeatState
 	var replayTxt:FlxText;
 
 	public static var campaignScore:Int = 0;
-
-	public static var defaultCamZoom:Float = 1.05;
 
 	public static var daPixelZoom:Float = 6;
 
@@ -382,8 +375,6 @@ class PlayState extends MusicBeatState
 
 		// String for when the game is paused
 		detailsPausedText = "Paused - " + detailsText;
-
-		curStage = "";
 
 		// Updating Discord Rich Presence.
 		DiscordClient.changePresence(detailsText
@@ -651,7 +642,7 @@ class PlayState extends MusicBeatState
 		}
 
 		// REPOSITIONING PER STAGE
-		switch (curStage)
+		switch (Stage.curStage)
 		{
 			case 'limo':
 				boyfriend.y -= 220;
@@ -813,7 +804,7 @@ class PlayState extends MusicBeatState
 
 		FlxG.camera.follow(camFollow, LOCKON, 0.04 * (30 / (cast(Lib.current.getChildAt(0), Main)).getFPS()));
 		// FlxG.camera.setScrollBounds(0, FlxG.width, 0, FlxG.height);
-		FlxG.camera.zoom = defaultCamZoom;
+		FlxG.camera.zoom = Stage.camZoom;
 		FlxG.camera.focusOn(camFollow.getPosition());
 
 		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
@@ -961,7 +952,7 @@ class PlayState extends MusicBeatState
 						{
 							camHUD.visible = true;
 							remove(blackScreen);
-							FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, 2.5, {
+							FlxTween.tween(FlxG.camera, {zoom: Stage.camZoom}, 2.5, {
 								ease: FlxEase.quadInOut,
 								onComplete: function(twn:FlxTween)
 								{
@@ -2195,7 +2186,7 @@ class PlayState extends MusicBeatState
 		if (FlxG.keys.justPressed.NINE)
 				iconP1.swapOldIcon();
 
-		switch (curStage)
+		switch (Stage.curStage)
 		{
 			case 'philly':
 				if (trainMoving && !PlayStateChangeables.Optimize)
@@ -2598,7 +2589,7 @@ class PlayState extends MusicBeatState
 					luaModchart.executeState('playerOneTurn', []);
 				#end
 
-				switch (curStage)
+				switch (Stage.curStage)
 				{
 					case 'limo':
 						camFollow.x = boyfriend.getMidpoint().x - 300;
@@ -2630,7 +2621,7 @@ class PlayState extends MusicBeatState
 
 			if (!executeModchart)
 			{
-				FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, 0.95);
+				FlxG.camera.zoom = FlxMath.lerp(Stage.camZoom, FlxG.camera.zoom, 0.95);
 				camHUD.zoom = FlxMath.lerp(FlxG.save.data.zoom, camHUD.zoom, 0.95);
 
 				camNotes.zoom = camHUD.zoom;
@@ -2638,7 +2629,7 @@ class PlayState extends MusicBeatState
 			}
 			else
 			{
-				FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, 0.95);
+				FlxG.camera.zoom = FlxMath.lerp(Stage.camZoom, FlxG.camera.zoom, 0.95);
 				camHUD.zoom = FlxMath.lerp(1, camHUD.zoom, 0.95);
 
 				camNotes.zoom = camHUD.zoom;
@@ -4606,7 +4597,7 @@ class PlayState extends MusicBeatState
 				dad.playAnim('cheer', true);
 			}
 
-			switch (curStage)
+			switch (Stage.curStage)
 			{
 				case 'school':
 					if (FlxG.save.data.distractions && Stage.swagBacks['bgGirls'] != null)
@@ -4663,7 +4654,7 @@ class PlayState extends MusicBeatState
 					}
 			}
 
-			if (isHalloween && FlxG.random.bool(Conductor.bpm > 320 ? 100 : 10) && curBeat > lightningStrikeBeat + lightningOffset)
+			if (Stage.halloweenLevel && FlxG.random.bool(Conductor.bpm > 320 ? 100 : 10) && curBeat > lightningStrikeBeat + lightningOffset)
 			{
 				if (FlxG.save.data.distractions)
 				{

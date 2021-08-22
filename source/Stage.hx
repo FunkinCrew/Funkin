@@ -9,8 +9,9 @@ import flixel.addons.effects.chainable.FlxWaveEffect;
 
 class Stage
 {
-
-    public var daStage:String;
+    public var curStage:String = '';
+    public var halloweenLevel:Bool = false;
+    public var camZoom:Float;
     public var hideLastBG:Bool = false; // True = hide last BG and show ones from slowBacks on certain step, False = Toggle Visibility of BGs from SlowBacks on certain step
     public var tweenDuration:Float = 2; // How long will it tween hiding/showing BGs, variable above must be set to True for tween to activate
     public var loadFirst:Array<Dynamic> = []; //Load BGs on stage startup, add BG using "loadFirst.push(bgVar);"
@@ -24,14 +25,15 @@ class Stage
     public function new(daStage:String)
     {
 
-        this.daStage = daStage;
-        PlayState.curStage = daStage;
+        this.curStage = daStage;
+        camZoom = 1.05; // Don't change zoom here, unless you want to change zoom of every stage that doesn't have custom one
+        halloweenLevel = false;
 
         switch(daStage)
         {
             case 'halloween':
 					{
-						PlayState.halloweenLevel = true;
+						halloweenLevel = true;
 
 						var hallowTex = Paths.getSparrowAtlas('halloween_bg', 'week2');
 
@@ -43,8 +45,6 @@ class Stage
 						halloweenBG.antialiasing = FlxG.save.data.antialiasing;
 						swagBacks['halloweenBG'] = halloweenBG;
                         loadFirst.push(halloweenBG);
-
-						PlayState.isHalloween = true;
 					}
 				case 'philly':
 					{
@@ -101,7 +101,7 @@ class Stage
 					}
 				case 'limo':
 					{
-						PlayState.defaultCamZoom = 0.90;
+						camZoom = 0.90;
 
 						var skyBG:FlxSprite = new FlxSprite(-120, -50).loadGraphic(Paths.image('limo/limoSunset', 'week4'));
 						skyBG.scrollFactor.set(0.1, 0.1);
@@ -167,7 +167,7 @@ class Stage
 					}
 				case 'mall':
 					{
-						PlayState.defaultCamZoom = 0.80;
+						camZoom = 0.80;
 
 						var bg:FlxSprite = new FlxSprite(-1000, -500).loadGraphic(Paths.image('christmas/bgWalls', 'week5'));
 						bg.antialiasing = FlxG.save.data.antialiasing;
@@ -398,8 +398,8 @@ class Stage
 					}
 				default:
 					{
-						PlayState.defaultCamZoom = 0.9;
-						PlayState.curStage = 'stage';
+						camZoom = 0.9;
+						curStage = 'stage';
 						var bg:FlxSprite = new FlxSprite(-600, -200).loadGraphic(Paths.image('stageback'));
 						bg.antialiasing = FlxG.save.data.antialiasing;
 						bg.scrollFactor.set(0.9, 0.9);
