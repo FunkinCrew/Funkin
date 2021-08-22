@@ -16,7 +16,7 @@ class Stage
     public var swagBacks:Map<String, Dynamic> = [];
     public var swagGroup:Map<String, FlxTypedGroup<Dynamic>> = [];
     public var animatedBacks:Array<FlxSprite> = [];
-    public var layInFront:Array<Array<FlxSprite>> = [[], [], []]; //first [0] - in front of GF, second [1] - in front of bf, third [2] - in front of opponent
+    public var layInFront:Array<Array<FlxSprite>> = [[], [], []]; //first [0] - in front of GF, second [1] - in front of bf, third [2] - in front of opponent(and techincally also BF since Haxe layering moment)
     public var slowBacks:Map<Int, Array<FlxSprite>> = [];
 
     public function new(daStage:String)

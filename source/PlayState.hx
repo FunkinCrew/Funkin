@@ -2270,6 +2270,30 @@ class PlayState extends MusicBeatState
 			#end
 		}
 
+		if (FlxG.keys.justPressed.EIGHT)
+			{
+				if (useVideo)
+				{
+					GlobalVideo.get().stop();
+					remove(videoSprite);
+					FlxG.stage.window.onFocusOut.remove(focusOut);
+					FlxG.stage.window.onFocusIn.remove(focusIn);
+					removedVideo = true;
+				}
+	
+				FlxG.switchState(new StagePositioningDebug(SONG.stage, gf.curCharacter, boyfriend.curCharacter, dad.curCharacter));
+				clean();
+				FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, handleInput);
+				FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP, releaseInput);
+				#if cpp
+				if (luaModchart != null)
+				{
+					luaModchart.die();
+					luaModchart = null;
+				}
+				#end
+			}
+
 		if (FlxG.keys.justPressed.ZERO)
 		{
 			FlxG.switchState(new AnimationDebug(boyfriend.curCharacter));
