@@ -2643,6 +2643,10 @@ class PlayState extends MusicBeatState
 			}
 		}
 
+		FlxG.watch.addQuick("curBPM", Conductor.bpm);
+		FlxG.watch.addQuick("beatShit", curBeat);
+		FlxG.watch.addQuick("stepShit", curStep);
+
 		if (curSong == 'Fresh')
 		{
 			switch (curBeat)
