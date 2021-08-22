@@ -44,6 +44,9 @@ import openfl.events.IOErrorEvent;
 import openfl.media.Sound;
 import openfl.net.FileReference;
 import openfl.utils.ByteArray;
+#if windows
+import Discord.DiscordClient;
+#end
 
 using StringTools;
 
@@ -1787,6 +1790,10 @@ class ChartingState extends MusicBeatState
 	override function update(elapsed:Float)
 	{
 		updateHeads();
+		
+		#if windows
+		DiscordClient.changePresence("Chart Editor", null, null, true);
+		#end
 
 		for(i in sectionRenderes)
 			{
