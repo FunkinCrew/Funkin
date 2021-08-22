@@ -566,25 +566,27 @@ class PlayState extends MusicBeatState
 
 		if (!PlayStateChangeables.Optimize)
 			{
-				Stage = new Stage(curStage);
-				for (i in Stage.swagBacks)
-					add(i);
-				for (key in Stage.swagFronts.keys())
+				Stage = new Stage(SONG.stage);
+				for (i in Stage.loadFirst)
 				{
-					switch (key)
+					add(i);
+				}
+				for (index => array in Stage.layInFront)
+				{
+					switch (index)
 					{
-						case 'gf':
+						case 0:
 							add(gf);
 							gf.scrollFactor.set(0.95, 0.95);
-							for (bg in Stage.swagFronts[key])
+							for (bg in array)
 								add(bg);
-						case 'player':
+						case 1:
 							add(boyfriend);
-							for (bg in Stage.swagFronts[key])
+							for (bg in array)
 								add(bg);
-						case 'opponent':
+						case 2:
 							add(dad);
-							for (bg in Stage.swagFronts[key])
+							for (bg in array)
 								add(bg);
 					}
 				}
@@ -885,11 +887,11 @@ class PlayState extends MusicBeatState
 		if (PlayStateChangeables.botPlay && !loadRep)
 			add(botPlayState);
 
-		iconP1 = new HealthIcon(dad.curCharacter, true);
+		iconP1 = new HealthIcon(boyfriend.curCharacter, true);
 		iconP1.y = healthBar.y - (iconP1.height / 2);
 		add(iconP1);
 
-		iconP2 = new HealthIcon(boyfriend.curCharacter, false);
+		iconP2 = new HealthIcon(dad.curCharacter, false);
 		iconP2.y = healthBar.y - (iconP2.height / 2);
 		add(iconP2);
 
