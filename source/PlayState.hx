@@ -1212,7 +1212,7 @@ class PlayState extends MusicBeatState
              case 'gf':
              healthBar.createFilledBar(0xFFFF0000, 0xFF0097C4);
              case 'dad' | 'mom-car' | 'parents-christmas':
-             healthBar.createFilledBar(0xFF5A07F5 0xFF0097C4);
+             healthBar.createFilledBar(0xFF5A07F5, 0xFF0097C4);
              case 'spooky':
               healthBar.createFilledBar(0xFFF57E07, 0xFF0097C4);
              case 'monster-christmas' | 'monster':
