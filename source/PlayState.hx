@@ -36,6 +36,7 @@ import flixel.util.FlxSort;
 import flixel.util.FlxStringUtil;
 import flixel.util.FlxTimer;
 import haxe.Json;
+import lime.ui.Haptic;
 import lime.utils.Assets;
 import openfl.Lib;
 import openfl.display.BitmapData;
@@ -2656,6 +2657,42 @@ class PlayState extends MusicBeatState
 			controls.NOTE_RIGHT_R
 		];
 
+		var widHalf = FlxG.width / 2;
+		var heightHalf = FlxG.height / 2;
+
+		if (FlxG.onMobile)
+		{
+			for (touch in FlxG.touches.list)
+			{
+				if (touch.justPressed)
+				{
+					if (touch.justPressedPosition.x >= widHalf)
+					{
+						if (touch.justPressedPosition.y >= heightHalf)
+							pressArray[3] = true;
+						else
+							pressArray[2] = true;
+					}
+					else if (touch.justPressedPosition.y >= heightHalf)
+						pressArray[1] = true;
+					else
+						pressArray[0] = true;
+				}
+
+				if (touch.justPressedPosition.x >= widHalf)
+				{
+					if (touch.justPressedPosition.y >= heightHalf)
+						holdArray[3] = true;
+					else
+						holdArray[2] = true;
+				}
+				else if (touch.justPressedPosition.y >= heightHalf)
+					holdArray[1] = true;
+				else
+					holdArray[0] = true;
+			}
+		}
+
 		// HOLDS, check for sustain notes
 		if (holdArray.contains(true) && /*!boyfriend.stunned && */ generatedMusic)
 		{
@@ -2669,6 +2706,8 @@ class PlayState extends MusicBeatState
 		// PRESSES, check for note hits
 		if (pressArray.contains(true) && /*!boyfriend.stunned && */ generatedMusic)
 		{
+			Haptic.vibrate(400, 70);
+
 			boyfriend.holdTimer = 0;
 
 			var possibleNotes:Array<Note> = []; // notes that can be hit

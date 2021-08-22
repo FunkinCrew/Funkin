@@ -24,6 +24,7 @@ import lime.graphics.Image;
 import lime.media.AudioContext;
 import lime.ui.Window;
 import openfl.Assets;
+import openfl.display.BitmapData;
 import openfl.display.Sprite;
 import openfl.events.AsyncErrorEvent;
 import openfl.events.AsyncErrorEvent;
@@ -80,6 +81,11 @@ class TitleState extends MusicBeatState
 
 	override public function create():Void
 	{
+		FlxG.debugger.addButton(LEFT, new BitmapData(200, 200), function()
+		{
+			FlxG.debugger.visible = false;
+		});
+
 		startedIntro = false;
 
 		FlxG.game.focusLostFramerate = 60;

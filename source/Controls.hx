@@ -3,12 +3,17 @@ package;
 import flixel.input.FlxInput;
 import flixel.input.actions.FlxAction;
 import flixel.input.actions.FlxActionInput;
+import flixel.input.actions.FlxActionInputAnalog.FlxActionInputAnalogClickAndDragMouseMotion;
 import flixel.input.actions.FlxActionInputDigital;
 import flixel.input.actions.FlxActionManager;
 import flixel.input.actions.FlxActionSet;
 import flixel.input.gamepad.FlxGamepadButton;
 import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.input.keyboard.FlxKey;
+import flixel.input.mouse.FlxMouseButton.FlxMouseButtonID;
+import flixel.ui.FlxVirtualPad;
+import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
 
 /**
  * Since, in many cases multiple actions should use similar keys, we don't want the
@@ -611,7 +616,14 @@ class Controls extends FlxActionSet
 			case None: // nothing
 			case Custom: // nothing
 		}
+
+		trace('added virtual controls!?');
+		trace(virutalPad);
+
+		if (FlxG.onMobile) {}
 	}
+
+	var virutalPad:FlxVirtualPad;
 
 	function removeKeyboard()
 	{
@@ -687,6 +699,14 @@ class Controls extends FlxActionSet
 	public function bindButtons(control:Control, id, buttons)
 	{
 		forEachBound(control, function(action, state) addButtons(action, buttons, state, id));
+	}
+
+	public function touchShit(control:Control, id)
+	{
+		forEachBound(control, function(action, state)
+		{
+			// action
+		});
 	}
 
 	/**

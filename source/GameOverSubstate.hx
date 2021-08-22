@@ -74,6 +74,16 @@ class GameOverSubstate extends MusicBeatSubstate
 
 		super.update(elapsed);
 
+		if (FlxG.onMobile)
+		{
+			var touch = FlxG.touches.getFirst();
+			if (touch != null)
+			{
+				if (touch.overlaps(bf))
+					endBullshit();
+			}
+		}
+
 		if (controls.ACCEPT)
 		{
 			endBullshit();
