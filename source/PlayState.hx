@@ -581,13 +581,16 @@ class PlayState extends MusicBeatState
 						case 'gf':
 							add(gf);
 							gf.scrollFactor.set(0.95, 0.95);
-							Stage.addFronts(key);
+							for (bg in Stage.swagFronts[key])
+								add(bg);
 						case 'player':
 							add(boyfriend);
-							Stage.addFronts(key);
+							for (bg in Stage.swagFronts[key])
+								add(bg);
 						case 'opponent':
 							add(dad);
-							Stage.addFronts(key);
+							for (bg in Stage.swagFronts[key])
+								add(bg);
 					}
 				}
 			}

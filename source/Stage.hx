@@ -388,11 +388,4 @@ class Stage
                 swagBacks[bgName] = map[bgName];
         }
     }
-
-    public function addFronts(key:String)
-    {
-        for (bg in swagFronts[key])
-            add(bg);
-    }
-
 }
