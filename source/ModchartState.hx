@@ -1,7 +1,6 @@
 // this file is for modchart things, this is to declutter playstate.hx
 
 // Lua
-import LuaClass.LuaSprite;
 import LuaClass.LuaCamera;
 import LuaClass.LuaReceptor;
 import openfl.display3D.textures.VideoTexture;
@@ -49,9 +48,7 @@ class ModchartState
 		if (e != null)
 		{
 			if (e != "attempt to call a nil value")
-			{
-				trace(StringTools.replace(e,"c++","haxe function"));
-			}
+				trace('lua err: ' + e);
 		}
 		if( result == null) {
 			return null;
@@ -345,8 +342,7 @@ class ModchartState
             }
         }
 		#end
-
-		new LuaSprite(sprite,toBeCalled).Register(lua);
+		return toBeCalled;
 	}
 
     public function die()
@@ -361,137 +357,291 @@ class ModchartState
 
     function new(? isStoryMode = true)
     {
-		trace('opening a lua state (because we are cool :))');
-		lua = LuaL.newstate();
-		LuaL.openlibs(lua);
-		trace("Lua version: " + Lua.version());
-		trace("LuaJIT version: " + Lua.versionJIT());
-		Lua.init_callbacks(lua);
+        		trace('opening a lua state (because we are cool :))');
+				lua = LuaL.newstate();
+				LuaL.openlibs(lua);
+				trace("Lua version: " + Lua.version());
+				trace("LuaJIT version: " + Lua.versionJIT());
+				Lua.init_callbacks(lua);
+				
+				//shaders = new Array<LuaShader>();
 
-		// shaders = new Array<LuaShader>();
+				// pre lowercasing the song name (new)
+				var songLowercase = StringTools.replace(PlayState.SONG.song, " ", "-").toLowerCase();
+				switch (songLowercase) {
+					case 'dad-battle': songLowercase = 'dadbattle';
+					case 'philly-nice': songLowercase = 'philly';
+				}
 
-		// pre lowercasing the song name (new)
-		var songLowercase = StringTools.replace(PlayState.SONG.song, " ", "-").toLowerCase();
-		switch (songLowercase)
-		{
-			case 'dad-battle':
-				songLowercase = 'dadbattle';
-			case 'philly-nice':
-				songLowercase = 'philly';
-		}
+				var path = Paths.lua(songLowercase + "/modchart");
+				if (PlayState.isSM)
+					path = PlayState.pathToSm + "/modchart.lua";
 
-		var path = Paths.lua(songLowercase + "/modchart");
-		if (PlayState.isSM)
-			path = PlayState.pathToSm + "/modchart.lua";
+				var result = LuaL.dofile(lua, path); // execute le file
+	
+				if (result != 0)
+				{
+					Application.current.window.alert("LUA COMPILE ERROR:\n" + Lua.tostring(lua,result),"Kade Engine Modcharts");
+					FlxG.switchState(new FreeplayState());
+					return;
+				}
 
-		var result = LuaL.dofile(lua, path); // execute le file
+				// get some fukin globals up in here bois
+	
+				setVar("difficulty", PlayState.storyDifficulty);
+				setVar("bpm", Conductor.bpm);
+				setVar("scrollspeed", FlxG.save.data.scrollSpeed != 1 ? FlxG.save.data.scrollSpeed : PlayState.SONG.speed);
+				setVar("fpsCap", FlxG.save.data.fpsCap);
+				setVar("downscroll", FlxG.save.data.downscroll);
+				setVar("flashing", FlxG.save.data.flashing);
+				setVar("distractions", FlxG.save.data.distractions);
+	
+				setVar("curStep", 0);
+				setVar("curBeat", 0);
+				setVar("crochet", Conductor.stepCrochet);
+				setVar("safeZoneOffset", Conductor.safeZoneOffset);
+	
+				setVar("hudZoom", PlayState.instance.camHUD.zoom);
+				setVar("cameraZoom", FlxG.camera.zoom);
+	
+				setVar("cameraAngle", FlxG.camera.angle);
+				setVar("camHudAngle", PlayState.instance.camHUD.angle);
+	
+				setVar("followXOffset",0);
+				setVar("followYOffset",0);
+	
+				setVar("showOnlyStrums", false);
+				setVar("strumLine1Visible", true);
+				setVar("strumLine2Visible", true);
+	
+				setVar("screenWidth",FlxG.width);
+				setVar("screenHeight",FlxG.height);
+				setVar("windowWidth",FlxG.width);
+				setVar("windowHeight",FlxG.height);
+				setVar("hudWidth", PlayState.instance.camHUD.width);
+				setVar("hudHeight", PlayState.instance.camHUD.height);
+	
+				setVar("mustHit", false);
 
-		if (result != 0)
-		{
-			Application.current.window.alert("LUA COMPILE ERROR:\n" + Lua.tostring(lua, result), "Kade Engine Modcharts");
-			FlxG.switchState(new FreeplayState());
-			return;
-		}
+				setVar("strumLineY", PlayState.instance.strumLine.y);
+				
+				// callbacks
+	
+				// sprites
+	
+				Lua_helper.add_callback(lua,"makeSprite", makeLuaSprite);
+				
+				Lua_helper.add_callback(lua,"changeDadCharacter", changeDadCharacter);
 
-		// get some fukin globals up in here bois
+				Lua_helper.add_callback(lua,"changeBoyfriendCharacter", changeBoyfriendCharacter);
+	
+				Lua_helper.add_callback(lua,"getProperty", getPropertyByName);
+				
+				Lua_helper.add_callback(lua,"setNoteWiggle", function(wiggleId) {
+					PlayState.instance.camNotes.setFilters([new ShaderFilter(luaWiggles.get(wiggleId).shader)]);
+				});
+				
+				Lua_helper.add_callback(lua,"setSustainWiggle", function(wiggleId) {
+					PlayState.instance.camSustains.setFilters([new ShaderFilter(luaWiggles.get(wiggleId).shader)]);
+				});
 
-		setVar("difficulty", PlayState.storyDifficulty);
-		setVar("bpm", Conductor.bpm);
-		setVar("scrollspeed", FlxG.save.data.scrollSpeed != 1 ? FlxG.save.data.scrollSpeed : PlayState.SONG.speed);
-		setVar("fpsCap", FlxG.save.data.fpsCap);
-		setVar("downscroll", FlxG.save.data.downscroll);
-		setVar("flashing", FlxG.save.data.flashing);
-		setVar("distractions", FlxG.save.data.distractions);
+				Lua_helper.add_callback(lua,"createWiggle", function(freq:Float,amplitude:Float,speed:Float) {
+					var wiggle = new WiggleEffect();
+					wiggle.waveAmplitude = amplitude;
+					wiggle.waveSpeed = speed;
+					wiggle.waveFrequency = freq;
 
-		setVar("curStep", 0);
-		setVar("curBeat", 0);
-		setVar("crochet", Conductor.stepCrochet);
-		setVar("safeZoneOffset", Conductor.safeZoneOffset);
+					var id = Lambda.count(luaWiggles) + 1 + "";
 
-		setVar("hudZoom", PlayState.instance.camHUD.zoom);
-		setVar("cameraZoom", FlxG.camera.zoom);
+					luaWiggles.set(id,wiggle);
+					return id;
+				});
 
-		setVar("cameraAngle", FlxG.camera.angle);
-		setVar("camHudAngle", PlayState.instance.camHUD.angle);
+				Lua_helper.add_callback(lua,"setWiggleTime", function(wiggleId:String,time:Float) {
+					var wiggle = luaWiggles.get(wiggleId);
 
-		setVar("followXOffset", 0);
-		setVar("followYOffset", 0);
+					wiggle.shader.uTime.value = [time];
+				});
 
-		setVar("showOnlyStrums", false);
-		setVar("strumLine1Visible", true);
-		setVar("strumLine2Visible", true);
+				
+				Lua_helper.add_callback(lua,"setWiggleAmplitude", function(wiggleId:String,amp:Float) {
+					var wiggle = luaWiggles.get(wiggleId);
 
-		setVar("screenWidth", FlxG.width);
-		setVar("screenHeight", FlxG.height);
-		setVar("windowWidth", FlxG.width);
-		setVar("windowHeight", FlxG.height);
-		setVar("hudWidth", PlayState.instance.camHUD.width);
-		setVar("hudHeight", PlayState.instance.camHUD.height);
+					wiggle.waveAmplitude = amp;
+				});
 
-		setVar("mustHit", false);
 
-		setVar("strumLineY", PlayState.instance.strumLine.y);
 
-		// callbacks
+				// Lua_helper.add_callback(lua,"makeAnimatedSprite", makeAnimatedLuaSprite);
+				// this one is still in development
 
-		Lua_helper.add_callback(lua, "makeSprite", makeLuaSprite);
+				Lua_helper.add_callback(lua,"destroySprite", function(id:String) {
+					var sprite = luaSprites.get(id);
+					if (sprite == null)
+						return false;
+					PlayState.instance.removeObject(sprite);
+					return true;
+				});
+	
+				// hud/camera
 
-		// sprites
+				Lua_helper.add_callback(lua,"initBackgroundVideo", function(videoName:String) {
+					trace('playing assets/videos/' + videoName + '.webm');
+					PlayState.instance.backgroundVideo("assets/videos/" + videoName + ".webm");
+				});
 
-		Lua_helper.add_callback(lua, "setNoteWiggle", function(wiggleId)
-		{
-			PlayState.instance.camNotes.setFilters([new ShaderFilter(luaWiggles.get(wiggleId).shader)]);
-		});
+				Lua_helper.add_callback(lua,"pauseVideo", function() {
+					if (!GlobalVideo.get().paused)
+						GlobalVideo.get().pause();
+				});
 
-		Lua_helper.add_callback(lua, "setSustainWiggle", function(wiggleId)
-		{
-			PlayState.instance.camSustains.setFilters([new ShaderFilter(luaWiggles.get(wiggleId).shader)]);
-		});
+				Lua_helper.add_callback(lua,"resumeVideo", function() {
+					if (GlobalVideo.get().paused)
+						GlobalVideo.get().pause();
+				});
+				
+				Lua_helper.add_callback(lua,"restartVideo", function() {
+					GlobalVideo.get().restart();
+				});
 
-		Lua_helper.add_callback(lua, "createWiggle", function(freq:Float, amplitude:Float, speed:Float)
-		{
-			var wiggle = new WiggleEffect();
-			wiggle.waveAmplitude = amplitude;
-			wiggle.waveSpeed = speed;
-			wiggle.waveFrequency = freq;
+				Lua_helper.add_callback(lua,"getVideoSpriteX", function() {
+					return PlayState.instance.videoSprite.x;
+				});
 
-			var id = Lambda.count(luaWiggles) + 1 + "";
+				Lua_helper.add_callback(lua,"getVideoSpriteY", function() {
+					return PlayState.instance.videoSprite.y;
+				});
 
-			luaWiggles.set(id, wiggle);
-			return id;
-		});
+				Lua_helper.add_callback(lua,"setVideoSpritePos", function(x:Int,y:Int) {
+					PlayState.instance.videoSprite.setPosition(x,y);
+				});
+				
+				Lua_helper.add_callback(lua,"setVideoSpriteScale", function(scale:Float) {
+					PlayState.instance.videoSprite.setGraphicSize(Std.int(PlayState.instance.videoSprite.width * scale));
+				});
+	
+				Lua_helper.add_callback(lua,"setHudAngle", function (x:Float) {
+					PlayState.instance.camHUD.angle = x;
+				});
+				
+				Lua_helper.add_callback(lua,"setHealth", function (heal:Float) {
+					PlayState.instance.health = heal;
+				});
 
-		Lua_helper.add_callback(lua, "setWiggleTime", function(wiggleId:String, time:Float)
-		{
-			var wiggle = luaWiggles.get(wiggleId);
+				Lua_helper.add_callback(lua,"setHudPosition", function (x:Int, y:Int) {
+					PlayState.instance.camHUD.x = x;
+					PlayState.instance.camHUD.y = y;
+				});
+	
+				Lua_helper.add_callback(lua,"getHudX", function () {
+					return PlayState.instance.camHUD.x;
+				});
+	
+				Lua_helper.add_callback(lua,"getHudY", function () {
+					return PlayState.instance.camHUD.y;
+				});
+				
+				Lua_helper.add_callback(lua,"setCamPosition", function (x:Int, y:Int) {
+					FlxG.camera.x = x;
+					FlxG.camera.y = y;
+				});
+	
+				Lua_helper.add_callback(lua,"getCameraX", function () {
+					return FlxG.camera.x;
+				});
+	
+				Lua_helper.add_callback(lua,"getCameraY", function () {
+					return FlxG.camera.y;
+				});
+	
+				Lua_helper.add_callback(lua,"setCamZoom", function(zoomAmount:Float) {
+					FlxG.camera.zoom = zoomAmount;
+				});
+	
+				Lua_helper.add_callback(lua,"setHudZoom", function(zoomAmount:Float) {
+					PlayState.instance.camHUD.zoom = zoomAmount;
+				});
+	
+				// strumline
 
-			wiggle.shader.uTime.value = [time];
-		});
+				Lua_helper.add_callback(lua, "setStrumlineY", function(y:Float)
+				{
+					PlayState.instance.strumLine.y = y;
+				});
+	
+				// actors
+				
+				Lua_helper.add_callback(lua,"getNumberOfNotes", function() {
+					return PlayState.instance.visibleNotes.length;
+				});
 
-		Lua_helper.add_callback(lua, "setWiggleAmplitude", function(wiggleId:String, amp:Float)
-		{
-			var wiggle = luaWiggles.get(wiggleId);
+				Lua_helper.add_callback(lua,"setWindowPos",function(x:Int,y:Int) {
+					Application.current.window.x = x;
+					Application.current.window.y = y;
+				});
 
-			wiggle.waveAmplitude = amp;
-		});
+				Lua_helper.add_callback(lua,"getWindowX",function() {
+					return Application.current.window.x;
+				});
 
-		Lua_helper.add_callback(lua, "setStrumlineY", function(y:Float)
-		{
-			PlayState.instance.strumLine.y = y;
-		});
+			
 
-		// actors
+				Lua_helper.add_callback(lua,"getWindowY",function() {
+					return Application.current.window.y;
+				});
 
-		Lua_helper.add_callback(lua, "getNumberOfNotes", function()
-		{
-			return PlayState.instance.visibleNotes.length;
-		});
+				Lua_helper.add_callback(lua,"resizeWindow",function(Width:Int,Height:Int) {
+					Application.current.window.resize(Width,Height);
+				});
+				
+				Lua_helper.add_callback(lua,"getScreenWidth",function() {
+					return Application.current.window.display.currentMode.width;
+				});
 
-		for (i in 0...PlayState.strumLineNotes.length)
-		{
-			var member = PlayState.strumLineNotes.members[i];
-			new LuaReceptor(member, "receptor_" + i).Register(lua);
-		}
+				Lua_helper.add_callback(lua,"getScreenHeight",function() {
+					return Application.current.window.display.currentMode.height;
+				});
+
+				Lua_helper.add_callback(lua,"getWindowWidth",function() {
+					return Application.current.window.width;
+				});
+
+				Lua_helper.add_callback(lua,"getWindowHeight",function() {
+					return Application.current.window.height;
+				});
+
+				//forgot and accidentally commit to master branch
+				// shader
+				
+				/*Lua_helper.add_callback(lua,"createShader", function(frag:String,vert:String) {
+					var shader:LuaShader = new LuaShader(frag,vert);
+
+					trace(shader.glFragmentSource);
+
+					shaders.push(shader);
+					// if theres 1 shader we want to say theres 0 since 0 index and length returns a 1 index.
+					return shaders.length == 1 ? 0 : shaders.length;
+				});
+
+				
+				Lua_helper.add_callback(lua,"setFilterHud", function(shaderIndex:Int) {
+					PlayState.instance.camHUD.setFilters([new ShaderFilter(shaders[shaderIndex])]);
+				});
+
+				Lua_helper.add_callback(lua,"setFilterCam", function(shaderIndex:Int) {
+					FlxG.camera.setFilters([new ShaderFilter(shaders[shaderIndex])]);
+				});*/
+
+				// default strums
+
+				for (i in 0...PlayState.strumLineNotes.length) {
+					var member = PlayState.strumLineNotes.members[i];
+					new LuaReceptor(member,"receptor_" + i).Register(lua);
+				}
+
+				new LuaCamera(PlayState.instance.camHUD,"camHUD").Register(lua);
+				new LuaCamera(PlayState.instance.camNotes,"camNotes").Register(lua);
+				new LuaCamera(PlayState.instance.camSustains,"camSustains").Register(lua);
     }
 
     public function executeState(name,args:Array<Dynamic>)
