@@ -406,8 +406,9 @@ class ModchartState
 		setVar("downscroll", FlxG.save.data.downscroll);
 		setVar("flashing", FlxG.save.data.flashing);
 		setVar("distractions", FlxG.save.data.distractions);
-
-		setVar("curStep", 0);
+                setVar("colour", FlxG.save.data.colour);    
+		
+	        setVar("curStep", 0);
 		setVar("curBeat", 0);
 		setVar("crochet", Conductor.stepCrochet);
 		setVar("safeZoneOffset", Conductor.safeZoneOffset);
