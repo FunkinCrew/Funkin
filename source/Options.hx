@@ -276,7 +276,7 @@ class Colour extends Option
 	}
 	public override function press():Bool
 	{
-		FlxG.save.data.colour = !FlxG.save.colour;
+		FlxG.save.data.colour = !FlxG.save.data.colour;
 		display = updateDisplay();
 		return true;
 	}
