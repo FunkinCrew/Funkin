@@ -1999,7 +1999,6 @@ class PlayState extends MusicBeatState
 			}
 		#end
 
-		trace ("time: " + (FlxG.sound.music.length - Conductor.songPosition));
 		if (generatedMusic)
 			{
 				if (songStarted && !endingSong)
