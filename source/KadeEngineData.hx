@@ -73,7 +73,10 @@ class KadeEngineData
 		if (FlxG.save.data.distractions == null)
 			FlxG.save.data.distractions = true;
 		
-		if (FlxG.save.data.stepMania == null)
+	    	if (FlxG.save.data.colour == null)
+			FlxG.save.data.colour = true;
+		
+	        if (FlxG.save.data.stepMania == null)
 			FlxG.save.data.stepMania = false;
 
 		if (FlxG.save.data.flashing == null)
