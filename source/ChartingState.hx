@@ -1666,24 +1666,65 @@ class ChartingState extends MusicBeatState
 
 	function poggers()
 	{
+		var notes = [];
+
 		for(section in _song.notes)
 		{
-			if (section.endTime > FlxG.sound.music.length)
-				continue;
 			
+			var removed = [];
+
 			for(note in section.sectionNotes)
 			{
 				// commit suicide
+				var old = note[0];
 				note[0] = TimingStruct.getTimeFromBeat(note[4]);
+				note[2] = TimingStruct.getTimeFromBeat(TimingStruct.getBeatFromTime(note[2]));
+				if (note[0] < section.startTime)
+				{
+					notes.push(note);
+					removed.push(note);
+				}
+				if (note[0] > section.endTime)
+				{
+					notes.push(note);
+					removed.push(note);
+				}
 			}
+
+			for(i in removed)
+			{
+				section.sectionNotes.remove(i);
+			}
+		}
+
+		for(section in _song.notes)
+		{
+
+			var saveRemove = [];
+
+			for(i in notes)
+			{
+				if (i[0] >= section.startTime && i[0] < section.endTime)
+				{
+					saveRemove.push(i);
+					section.sectionNotes.push(i);
+				}
+			}
+
+			for(i in saveRemove)
+				notes.remove(i);
 		}
 
 		for(i in curRenderedNotes)
 		{
 			i.strumTime = TimingStruct.getTimeFromBeat(i.beat);
 			i.y = Math.floor(getYfromStrum(i.strumTime) * zoomFactor);
+			i.sustainLength = TimingStruct.getTimeFromBeat(TimingStruct.getBeatFromTime(i.sustainLength));
 			if (i.noteCharterObject != null)
+			{
 				i.noteCharterObject.y = i.y + 40;
+				i.noteCharterObject.makeGraphic(8,Math.floor((getYfromStrum(i.strumTime + i.sustainLength) * zoomFactor) - i.y),FlxColor.WHITE);
+			}
 			
 		}
 
@@ -2449,6 +2490,9 @@ class ChartingState extends MusicBeatState
 		if (FlxG.keys.justPressed.C && !FlxG.keys.pressed.CONTROL)
 		{
 			var sect = _song.notes[curSection];
+
+			trace(sect);
+
 			sect.mustHitSection = !sect.mustHitSection;
 			check_mustHitSection.checked = sect.mustHitSection;
 			var i = sectionRenderes.members[curSection];

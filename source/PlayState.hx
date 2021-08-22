@@ -2,6 +2,7 @@ package;
 
 
 import lime.media.openal.AL;
+import LuaClass.LuaNote;
 import Song.Event;
 import openfl.media.Sound;
 #if sys
@@ -101,6 +102,8 @@ class PlayState extends MusicBeatState
 	public static var songPosBG:FlxSprite;
 
 	public var visibleCombos:Array<FlxSprite> = [];
+
+	public var visibleNotes:Array<Note> = [];
 
 	public static var songPosBar:FlxBar;
 
@@ -264,7 +267,7 @@ class PlayState extends MusicBeatState
 
 	public static var highestCombo:Int = 0;
 
-	private var executeModchart = false;
+	public var executeModchart = false;
 
 	// Animation common suffixes
 	private var dataSuffix:Array<String> = ['LEFT', 'DOWN', 'UP', 'RIGHT'];
@@ -721,22 +724,24 @@ class PlayState extends MusicBeatState
 
 		generateSong(SONG.song);
 
-		for(i in unspawnNotes)
+		#if cpp
+		// pre lowercasing the song name (startCountdown)
+		var songLowercase = StringTools.replace(PlayState.SONG.song, " ", "-").toLowerCase();
+		switch (songLowercase)
 		{
-			var dunceNote:Note = i;
-			notes.add(dunceNote);
-			if (executeModchart)
-			{
-				if (!dunceNote.isSustainNote)
-					dunceNote.cameras = [camNotes];
-				else
-					dunceNote.cameras = [camSustains];
-			}
-			else
-			{
-				dunceNote.cameras = [camHUD];
-			}
+			case 'dad-battle':
+				songLowercase = 'dadbattle';
+			case 'philly-nice':
+				songLowercase = 'philly';
 		}
+		if (executeModchart)
+		{
+			luaModchart = ModchartState.createModchartState(isStoryMode);
+			luaModchart.executeState('start', [songLowercase]);
+		}
+		#end
+
+		var index = 0;
 
 		if (startTime != 0)
 			{
@@ -1084,23 +1089,6 @@ class PlayState extends MusicBeatState
 
 
 
-		#if cpp
-		// pre lowercasing the song name (startCountdown)
-		var songLowercase = StringTools.replace(PlayState.SONG.song, " ", "-").toLowerCase();
-		switch (songLowercase)
-		{
-			case 'dad-battle':
-				songLowercase = 'dadbattle';
-			case 'philly-nice':
-				songLowercase = 'philly';
-		}
-		if (executeModchart)
-		{
-			luaModchart = ModchartState.createModchartState(isStoryMode);
-			luaModchart.executeState('start', [songLowercase]);
-		}
-		#end
-
 		talking = false;
 		startedCountdown = true;
 		Conductor.songPosition = 0;
@@ -1395,6 +1383,9 @@ class PlayState extends MusicBeatState
 
 		if (useVideo)
 			GlobalVideo.get().resume();
+
+		if (executeModchart)
+			luaModchart.executeState("songStart",[null]);
 
 		#if windows
 		// Updating Discord Rich Presence (with Time Left)
@@ -2070,6 +2061,7 @@ class PlayState extends MusicBeatState
 			luaModchart.setVar('hudZoom', camHUD.zoom);
 			luaModchart.setVar('curBeat', HelperFunctions.truncateFloat(curDecimalBeat,3));
 			luaModchart.setVar('cameraZoom', FlxG.camera.zoom);
+			
 			luaModchart.executeState('update', [elapsed]);
 
 			for (key => value in luaModchart.luaWiggles) 
@@ -2077,6 +2069,8 @@ class PlayState extends MusicBeatState
 				trace('wiggle le gaming');
 				value.update(elapsed);
 			}
+
+			PlayStateChangeables.useDownscroll = luaModchart.getVar("downscroll","bool");
 
 			/*for (i in 0...strumLineNotes.length) {
 				var member = strumLineNotes.members[i];
