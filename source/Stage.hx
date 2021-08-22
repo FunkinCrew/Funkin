@@ -235,6 +235,7 @@ class Stage
 						{
 						    swagBacks['santa'] = santa;
                             loadFirst.push(santa);
+                            animatedBacks.push(santa);
 						}
 					}
 				case 'mallEvil':
