@@ -586,11 +586,11 @@ class PlayState extends MusicBeatState
 							for (bg in array)
 								add(bg);
 						case 1:
-							add(boyfriend);
+							add(dad);
 							for (bg in array)
 								add(bg);
 						case 2:
-							add(dad);
+							add(boyfriend);
 							for (bg in array)
 								add(bg);
 					}
