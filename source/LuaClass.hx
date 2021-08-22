@@ -1,3 +1,4 @@
+import flixel.FlxG;
 import llua.Convert;
 import llua.Lua;
 import llua.State;
@@ -78,7 +79,7 @@ class LuaClass {
   };
 
 
-  private static function index(l:StatePointer):Int{
+  public static function index(l:StatePointer):Int{
     var l = state;
     var index = Lua.tostring(l,-1);
     if(Lua.getmetatable(l,-2)!=0){
@@ -100,7 +101,7 @@ class LuaClass {
     return 0;
   }
 
-  private static function newindex(l:StatePointer):Int{
+  public static function newindex(l:StatePointer):Int{
     var l = state;
     var index = Lua.tostring(l,2);
     if(Lua.getmetatable(l,1)!=0){
@@ -236,6 +237,62 @@ class LuaNote extends LuaClass { // again, stolen from andromeda but improved a 
               return 1;
             },
             setter: SetNumProperty
+          },
+
+        "isParent"=>{
+            defaultValue: 1 ,
+            getter: function(l:State,data:Any):Int{
+              Lua.pushboolean(l,connectedNote.isParent);
+              return 1;
+            },
+            setter:function(l:State){
+              LuaL.error(l,"isParent is read-only.");
+              return 0;
+            }
+          },
+
+        "getParent"=>{
+            defaultValue: 1 ,
+            getter: function(l:State,data:Any):Int{
+              Lua.pushstring(l,"note_" + connectedNote.parent.luaID);
+              return 1;
+            },
+            setter:function(l:State){
+              LuaL.error(l,"getParent is read-only.");
+              return 0;
+            }
+          },
+
+        "getChildren"=>{
+            defaultValue: 1 ,
+            getter: function(l:State,data:Any):Int{
+              Lua.newtable(l);
+
+              for(i in 0...connectedNote.children.length)
+              {
+                var note = connectedNote.children[i];
+                Lua.pushstring(l,"note_" + note.luaID);
+                Lua.rawseti(l, -2, i);
+              }
+
+              return 1;
+            },
+            setter:function(l:State){
+              LuaL.error(l,"getChildren is read-only.");
+              return 0;
+            }
+          },
+
+        "getSpotInline"=>{
+            defaultValue: 1 ,
+            getter: function(l:State,data:Any):Int{
+              Lua.pushnumber(l,connectedNote.spotInLine);
+              return 1;
+            },
+            setter:function(l:State){
+              LuaL.error(l,"spot in line is read-only.");
+              return 0;
+            }
           },
 
         "x"=> {
@@ -1540,6 +1597,155 @@ class LuaNote extends LuaClass { // again, stolen from andromeda but improved a 
         return 0;
       }
       Reflect.setProperty(sprite,Lua.tostring(l,2),Lua.tonumber(l,3));
+      return 0;
+    }
+
+    override function Register(l:State){
+      state=l;
+      super.Register(l);
+    }
+  }
+
+  class LuaWindow extends LuaClass { // again, stolen from andromeda but improved a lot for better thinking interoperability (I made that up)
+    private static var state:State;
+
+    public function new(){ 
+      super();
+      className= "Window";
+
+      properties=[
+        "x"=> {
+          defaultValue: Application.current.window.x,
+          getter: function(l:State,data:Any):Int{
+            Lua.pushnumber(l,Application.current.window.x);
+            return 1;
+          },
+          setter: SetNumProperty
+        },
+
+        "y"=> {
+          defaultValue: Application.current.window.y,
+          getter: function(l:State,data:Any):Int{
+            Lua.pushnumber(l,Application.current.window.y);
+            return 1;
+          },
+          setter: SetNumProperty
+        },
+        
+
+        "width"=> {
+          defaultValue: Application.current.window.width,
+          getter: function(l:State,data:Any):Int{
+            Lua.pushnumber(l,Application.current.window.width);
+            return 1;
+          },
+          setter: SetNumProperty
+        },
+
+        "height"=> {
+          defaultValue: Application.current.window.height,
+          getter: function(l:State,data:Any):Int{
+            Lua.pushnumber(l,Application.current.window.height);
+            return 1;
+          },
+          setter: SetNumProperty
+        },
+
+        "tweenPos"=>{
+          defaultValue:0,
+          getter:function(l:State,data:Any){
+            Lua.pushcfunction(l,tweenPosC);
+            return 1;
+          },
+          setter:function(l:State){
+            LuaL.error(l,"tweenPos is read-only.");
+            return 0;
+          },
+          
+        },
+      ];
+
+    }
+      private static function tweenPos(l:StatePointer):Int{
+        // 1 = self
+        // 2 = x
+        // 3 = y
+        // 4 = time
+        var xp = LuaL.checknumber(state,2);
+        var yp = LuaL.checknumber(state,3);
+        var time = LuaL.checknumber(state,4);
+  
+        FlxTween.tween(Application.current.window,{x: xp,y:yp},time);
+  
+        return 0;
+      }
+
+
+      private static var tweenPosC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(tweenPos);
+
+    private function SetNumProperty(l:State){
+      // 1 = self
+      // 2 = key
+      // 3 = value
+      // 4 = metatable
+      if(Lua.type(l,3)!=Lua.LUA_TNUMBER){
+        LuaL.error(l,"invalid argument #3 (number expected, got " + Lua.typename(l,Lua.type(l,3)) + ")");
+        return 0;
+      }
+      Reflect.setProperty(Application.current.window,Lua.tostring(l,2),Lua.tonumber(l,3));
+      return 0;
+    }
+
+    override function Register(l:State){
+      state=l;
+      super.Register(l);
+    }
+  }
+
+  class LuaGame extends LuaClass { // again, stolen from andromeda but improved a lot for better thinking interoperability (I made that up)
+    private static var state:State;
+
+    public function new(){ 
+      super();
+      className= "Game";
+
+      properties=[
+
+        "health"=> {
+          defaultValue: PlayState.instance.health,
+          getter: function(l:State,data:Any):Int{
+            Lua.pushnumber(l,PlayState.instance.health);
+            return 1;
+          },
+          setter: function(l:State):Int{
+            PlayState.instance.health = Lua.tonumber(l,3);
+            return 0;
+          },
+        },
+
+        "accuracy"=> {
+          defaultValue: PlayState.instance.accuracy,
+          getter: function(l:State,data:Any):Int{
+            Lua.pushnumber(l,PlayState.instance.accuracy);
+            return 1;
+          },
+          setter: SetNumProperty
+        },
+
+      ];
+
+    }
+
+    private function SetNumProperty(l:State){
+      // 1 = self
+      // 2 = key
+      // 3 = value
+      // 4 = metatable
+      if(Lua.type(l,3)!=Lua.LUA_TNUMBER){
+        LuaL.error(l,"invalid argument #3 (number expected, got " + Lua.typename(l,Lua.type(l,3)) + ")");
+        return 0;
+      }
+      Reflect.setProperty(Application.current.window,Lua.tostring(l,2),Lua.tonumber(l,3));
       return 0;
     }
 

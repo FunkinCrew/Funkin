@@ -1964,7 +1964,10 @@ class PlayState extends MusicBeatState
 					notes.add(dunceNote);
 
 					if (executeModchart)
-						new LuaNote(dunceNote,currentLuaIndex);					
+					{
+						new LuaNote(dunceNote,currentLuaIndex);			
+						dunceNote.luaID = currentLuaIndex;
+					}		
 					
 					if (executeModchart)
 					{

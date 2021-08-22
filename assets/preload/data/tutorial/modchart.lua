@@ -2,7 +2,6 @@ function start(song) -- do nothing
     spinLength = 0
 end
 
-
 function update(elapsed)
 
     if difficulty == 2 and curStep > 400 then
