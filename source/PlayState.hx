@@ -2176,7 +2176,7 @@ class PlayState extends MusicBeatState
 				+ storyDifficultyText
 				+ ") "
 				+ Ratings.GenerateLetterRank(accuracy),
-				"Acc: "
+				"\nAcc: "
 				+ HelperFunctions.truncateFloat(accuracy, 2)
 				+ "% | Score: "
 				+ songScore
@@ -2546,9 +2546,6 @@ class PlayState extends MusicBeatState
 				removedVideo = true;
 			}
 			cannotDie = true;
-			#if windows
-			DiscordClient.changePresence("Chart Editor", null, null, true);
-			#end
 
 			FlxG.switchState(new ChartingState());
 			clean();
