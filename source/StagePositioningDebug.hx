@@ -48,7 +48,7 @@ class StagePositioningDebug extends FlxState
 
         Stage = new Stage(daStage);
 
-		for (i in Stage.loadFirst)
+		for (i in Stage.toAdd)
 		{
 			add(i);
 		}
@@ -67,11 +67,11 @@ class StagePositioningDebug extends FlxState
 					for (bg in array)
 						add(bg);
 			    case 1:
-			    	add(boyfriend);
+			    	add(dad);
 					for (bg in array)
 						add(bg);
 				case 2:
-					add(dad);
+					add(boyfriend);
 					for (bg in array)
 						add(bg);
 			}

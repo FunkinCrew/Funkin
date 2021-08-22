@@ -563,7 +563,7 @@ class PlayState extends MusicBeatState
 		if (!PlayStateChangeables.Optimize)
 			{
 				Stage = new Stage(SONG.stage);
-				for (i in Stage.loadFirst)
+				for (i in Stage.toAdd)
 				{
 					add(i);
 				}
