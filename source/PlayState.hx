@@ -4414,6 +4414,30 @@ class PlayState extends MusicBeatState
 			resyncVocals();
 		}
 
+		for (step in Stage.slowBacks.keys())
+		{
+			if (step == curStep)
+			{
+				if (Stage.hideLastBG)
+				{
+					for (bg in Stage.swagBacks)
+					{
+						if (!Stage.slowBacks[step].contains(bg))
+							FlxTween.tween(bg, {alpha: 0}, Stage.tweenDuration);
+					}
+					for (bg in Stage.slowBacks[step])
+					{
+						FlxTween.tween(bg, {alpha: 1}, Stage.tweenDuration);
+					}
+				}
+				else
+				{
+					for (bg in Stage.slowBacks[step])
+						bg.visible = !bg.visible;
+				}
+			}
+		}
+
 		#if cpp
 		if (executeModchart && luaModchart != null)
 		{

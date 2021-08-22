@@ -11,13 +11,15 @@ class Stage
 {
 
     public var daStage:String;
-    public var hideLast:Bool = false;
-    public var loadFirst:Array<Dynamic> = [];
-    public var swagBacks:Map<String, Dynamic> = [];
-    public var swagGroup:Map<String, FlxTypedGroup<Dynamic>> = [];
-    public var animatedBacks:Array<FlxSprite> = [];
-    public var layInFront:Array<Array<FlxSprite>> = [[], [], []]; //first [0] - in front of GF, second [1] - in front of bf, third [2] - in front of opponent(and techincally also BF since Haxe layering moment)
-    public var slowBacks:Map<Int, Array<FlxSprite>> = [];
+    public var hideLastBG:Bool = false; // True = hide last BG and show ones from slowBacks on certain step, False = Toggle Visibility of BGs from SlowBacks on certain step
+    public var tweenDuration:Float = 2; // How long will it tween hiding/showing BGs, variable above must be set to True for tween to activate
+    public var loadFirst:Array<Dynamic> = []; //Load BGs on stage startup, add BG using "loadFirst.push(bgVar);"
+    // Layering algorithm for noobs: Everything loads by the method of "On Top", example: You load wall first(Every other added BG layers on it), then you load road(comes on top of wall and doesn't clip through it), then loading street lights(comes on top of wall and road)
+    public var swagBacks:Map<String, Dynamic> = []; // Store BGs here to use them later in PlayState or when slowBacks activate
+    public var swagGroup:Map<String, FlxTypedGroup<Dynamic>> = []; //Store Groups
+    public var animatedBacks:Array<FlxSprite> = []; // Store animated backgrounds and make them play animation(Animation must be named Idle!! Else use swagGroup)
+    public var layInFront:Array<Array<FlxSprite>> = [[], [], []]; // BG layering, format: first [0] - in front of GF, second [1] - in front of bf, third [2] - in front of opponent(and techincally also BF since Haxe layering moment)
+    public var slowBacks:Map<Int, Array<FlxSprite>> = []; // Change/add/remove backgrounds mid song! Format: "slowBacks[StepToBeActivated] = [Sprites,To,Be,Changed,Or,Added];"
 
     public function new(daStage:String)
     {
@@ -115,6 +117,11 @@ class Stage
 						bgLimo.antialiasing = FlxG.save.data.antialiasing;
 					    swagBacks['bgLimo'] = bgLimo;
                         loadFirst.push(bgLimo);
+                        
+                        var fastCar:FlxSprite;
+                        fastCar = new FlxSprite(-300, 160).loadGraphic(Paths.image('limo/fastCarLol', 'week4'));
+						fastCar.antialiasing = FlxG.save.data.antialiasing;
+
 						if (FlxG.save.data.distractions)
 						{
 							var grpLimoDancers = new FlxTypedGroup<BackgroundDancer>();
@@ -128,10 +135,8 @@ class Stage
 								grpLimoDancers.add(dancer);
 							}
 
-                            var fastCar = new FlxSprite(-300, 160).loadGraphic(Paths.image('limo/fastCarLol', 'week4'));
-						    fastCar.antialiasing = FlxG.save.data.antialiasing;
-                            layInFront[2].push(fastCar);
                             swagBacks['fastCar'] = fastCar;
+                            layInFront[2].push(fastCar);
 						}
 
 						var overlayShit:FlxSprite = new FlxSprite(-500, -600).loadGraphic(Paths.image('limo/limoOverlay', 'week4'));
@@ -153,6 +158,12 @@ class Stage
 						limo.antialiasing = FlxG.save.data.antialiasing;
 						layInFront[0].push(limo);
                         swagBacks['limo'] = limo;
+
+                        // Testing 
+                        //
+                        // hideLastBG = true;
+                        // slowBacks[40] = [limo];
+                        // slowBacks[120] = [limo, bgLimo, skyBG, fastCar];
 					}
 				case 'mall':
 					{
