@@ -17,7 +17,16 @@ class EndScreen extends MusicBeatState {
 		transOut = FlxTransitionableState.defaultTransOut;
 
         mainTxt = new FlxText(5, 5, 0, '', 32);
-        mainTxt.text = '${PlayState.isStoryMode ? 'WEEK' : 'SONG'} CLEARED!\n\nSTATS:\nSicks: ${PlayState.sicks}\nGoods: ${PlayState.goods}\nBads: ${PlayState.bads}\nShits: ${PlayState.shits}\nMisses: ${PlayState.misses}\n\n${whereGo != 0 ? '${PlayState.SONG.song}:${PlayState.difString}' : 'Week ${PlayState.storyWeek}:${PlayState.difString}'}';
+        mainTxt.text = '${PlayState.isStoryMode ? 'WEEK' : 'SONG'} CLEARED!\n\n'
+        + 'STATS:\n'
+        + 'Sicks: ${PlayState.sicks}\n'
+        + 'Goods: ${PlayState.goods}\n'
+        + 'Bads: ${PlayState.bads}\n'
+        + 'Shits: ${PlayState.shits}\n'
+        + 'Misses: ${PlayState.misses}\n'
+        + 'Hit ${PlayState.sicks + PlayState.goods + PlayState.bads + PlayState.shits}/${PlayState.misses + PlayState.sicks + PlayState.goods + PlayState.bads + PlayState.shits}'
+        + ' (That\'s ${Math.floor((((PlayState.sicks + PlayState.goods + PlayState.bads + PlayState.shits) / 100) / ((PlayState.misses + PlayState.sicks + PlayState.goods + PlayState.bads + PlayState.shits) / 100)) * 100)}%)\n\n'
+        + '${whereGo != 0 ? '${PlayState.SONG.song}:${PlayState.difString}' : 'Week ${PlayState.storyWeek}:${PlayState.difString}'}';
 
         pressEnter = new FlxText(0, FlxG.height - 50, 0, 'Press ENTER to Continue', 32);
         pressEnter.screenCenter(X);

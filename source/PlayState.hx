@@ -1724,12 +1724,10 @@ class PlayState extends MusicBeatState
 		// better streaming of shit
 
 		// RESET = Quick Game Over Screen
-		if (FlxG.save.data.ron) {
-			if (controls.RESET)
-			{
-				health = 0;
-				trace("RESET = True");
-			}
+		if (controls.RESET && FlxG.save.data.ron)
+		{
+			health = 0;
+			trace("RESET = True");
 		}
 
 		// CHEAT = brandon's a pussy
@@ -2085,7 +2083,7 @@ class PlayState extends MusicBeatState
 		var daLoop:Int = 0;
 		for (i in seperatedScore)
 		{
-			var numScore:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'num' + Std.int(i) + pixelShitPart2, SONG.noteStyle.startsWith('pixel') ? 'week6' : 'shared'));
+			var numScore:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'num' + Std.int(i) + pixelShitPart2, SONG.noteStyle.startsWith('pixel') ? 'week6' : 'default'));
 			numScore.screenCenter();
 			numScore.x = coolText.x + (43 * daLoop) - 90;
 			numScore.y += 80;
