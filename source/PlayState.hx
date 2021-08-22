@@ -1,6 +1,8 @@
 package;
 
 
+import LuaClass.LuaCamera;
+import LuaClass.LuaCharacter;
 import lime.media.openal.AL;
 import LuaClass.LuaNote;
 import Song.Event;
@@ -1015,6 +1017,7 @@ class PlayState extends MusicBeatState
 				gf.y += 300;
 		}
 
+
 		if (!PlayStateChangeables.Optimize)
 		{
 			add(gf);
@@ -1091,6 +1094,16 @@ class PlayState extends MusicBeatState
 		}
 		#end
 
+		if (executeModchart)
+			{
+				new LuaCamera(camGame,"camGame").Register(ModchartState.lua);
+				new LuaCamera(camHUD,"camHUD").Register(ModchartState.lua);
+				new LuaCamera(camSustains,"camSustains").Register(ModchartState.lua);
+				new LuaCamera(camSustains,"camNotes").Register(ModchartState.lua);
+				new LuaCharacter(dad,"dad").Register(ModchartState.lua);
+				new LuaCharacter(gf,"gf").Register(ModchartState.lua);
+				new LuaCharacter(boyfriend,"boyfriend").Register(ModchartState.lua);
+			}
 		var index = 0;
 
 		if (startTime != 0)
@@ -2284,11 +2297,43 @@ class PlayState extends MusicBeatState
 	public var pastScrollChanges:Array<Song.Event> = [];
 
 
+	var currentLuaIndex = 0;
+
 	override public function update(elapsed:Float)
 	{
 		#if !debug
 		perfectMode = false;
 		#end
+
+
+		if (unspawnNotes[0] != null)
+			{
+	
+				if (unspawnNotes[0].strumTime - Conductor.songPosition < 14000 * songMultiplier)
+				{
+					var dunceNote:Note = unspawnNotes[0];
+					notes.add(dunceNote);
+
+					if (executeModchart)
+						new LuaNote(dunceNote,currentLuaIndex);					
+					
+					if (executeModchart)
+					{
+						if (!dunceNote.isSustainNote)
+							dunceNote.cameras = [camNotes];
+						else
+							dunceNote.cameras = [camSustains];
+					}
+					else
+					{
+						dunceNote.cameras = [camHUD];
+					}
+	
+					var index:Int = unspawnNotes.indexOf(dunceNote);
+					unspawnNotes.splice(index, 1);
+					currentLuaIndex++;
+				}
+			}
 
 
 		#if cpp
@@ -2306,7 +2351,7 @@ class PlayState extends MusicBeatState
 			{
 				if (songStarted && !endingSong)
 				{
-					if (notes.length == 0 && FlxG.sound.music.length - Conductor.songPosition <= 1000)
+					if (notes.length == 0)
 					{
 						endSong();
 					}
@@ -2371,7 +2416,7 @@ class PlayState extends MusicBeatState
 		
 				}
 
-			var newScroll = PlayStateChangeables.scrollSpeed;
+			var newScroll = 1.0;
 
 			for(i in SONG.eventObjects)
 			{
@@ -2387,7 +2432,8 @@ class PlayState extends MusicBeatState
 				}
 			}
 
-			PlayStateChangeables.scrollSpeed *= newScroll;
+			if (newScroll != 0)
+				PlayStateChangeables.scrollSpeed *= newScroll;
 		}
 	
 		if (PlayStateChangeables.botPlay && FlxG.keys.justPressed.ONE)
@@ -4726,30 +4772,7 @@ class PlayState extends MusicBeatState
 		}
 
 
-		if (unspawnNotes[0] != null)
-			{
 	
-				if (unspawnNotes[0].strumTime - Conductor.songPosition < 14000 * songMultiplier)
-				{
-					var dunceNote:Note = unspawnNotes[0];
-					notes.add(dunceNote);
-					if (executeModchart)
-					{
-						if (!dunceNote.isSustainNote)
-							dunceNote.cameras = [camNotes];
-						else
-							dunceNote.cameras = [camSustains];
-					}
-					else
-					{
-						dunceNote.cameras = [camHUD];
-					}
-	
-					var index:Int = unspawnNotes.indexOf(dunceNote);
-					unspawnNotes.splice(index, 1);
-				}
-			}
-
 		#end
 	
 	}
