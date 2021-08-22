@@ -2189,7 +2189,7 @@ class PlayState extends MusicBeatState
 				+ storyDifficultyText
 				+ ") "
 				+ Ratings.GenerateLetterRank(accuracy),
-				"Acc: "
+				"\nAcc: "
 				+ HelperFunctions.truncateFloat(accuracy, 2)
 				+ "% | Score: "
 				+ songScore
@@ -2592,9 +2592,6 @@ class PlayState extends MusicBeatState
 				removedVideo = true;
 			}
 			cannotDie = true;
-			#if windows
-			DiscordClient.changePresence("Chart Editor", null, null, true);
-			#end
 
 			FlxG.switchState(new ChartingState());
 			clean();
@@ -4228,13 +4225,30 @@ class PlayState extends MusicBeatState
 						if (n != null)
 						{
 							goodNoteHit(daNote);
-							boyfriend.holdTimer = daNote.sustainLength;
+							boyfriend.holdTimer = 0;
+							if (FlxG.save.data.cpuStrums)
+							{
+								playerStrums.forEach(function(spr:StaticArrow)
+								{
+									pressArrow(spr, spr.ID, daNote);
+									/*
+									if (spr.animation.curAnim.name == 'confirm' && SONG.noteStyle != 'pixel')
+									{
+										spr.centerOffsets();
+										spr.offset.x -= 13;
+										spr.offset.y -= 13;
+									}
+									else
+										spr.centerOffsets();
+								*/
+								});
+							}
 						}
 					}
 					else
 					{
 						goodNoteHit(daNote);
-						boyfriend.holdTimer = daNote.sustainLength;
+						boyfriend.holdTimer = 0;
 						if (FlxG.save.data.cpuStrums)
 							{
 								playerStrums.forEach(function(spr:StaticArrow)
