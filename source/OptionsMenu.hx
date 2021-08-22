@@ -26,7 +26,7 @@ class OptionsMenu extends MusicBeatState {
 		optionDot = new FlxSprite(0, 0).makeGraphic(10, 10, FlxColor.RED);
 		add(optionDot);
 
-		optionDot.y = optionText.y - 20;
+		optionDot.y = optionText.y - 60;
 
 		super.create();
 	}
@@ -36,7 +36,8 @@ class OptionsMenu extends MusicBeatState {
 		'Practice mode ${!FlxG.save.data.pmode ? 'off' : 'on'}',
 		'Ghost Tapping ${!FlxG.save.data.gtapping ? 'on' : 'off'}',
 		'Limited ScoreBar ${!FlxG.save.data.sbar ? 'off' : 'on'}',
-		'Light up CPU Strums ${!FlxG.save.data.cpuStrums ? 'off' : 'on'}'];
+		'Light up CPU Strums ${!FlxG.save.data.cpuStrums ? 'off' : 'on'}',
+		'Allow using R to reset ${!FlxG.save.data.ron ? 'off' : 'on'}'];
 		optionText.screenCenter();
 
 		optionDot.x = optionText.x - 20;
@@ -61,6 +62,9 @@ class OptionsMenu extends MusicBeatState {
 			}
 			if (options[curSelected].startsWith('Light up CPU Strums')) {
 				FlxG.save.data.cpuStrums = !FlxG.save.data.cpuStrums;
+			}
+			if (options[curSelected].startsWith('Allow using R to reset')) {
+				FlxG.save.data.ron = !FlxG.save.data.ron;
 			}
 		}
 

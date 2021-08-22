@@ -1,5 +1,7 @@
 package;
 
+import openfl.Assets;
+import haxe.Json;
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -18,42 +20,26 @@ import lime.net.curl.CURLCode;
 
 using StringTools;
 
+typedef WeekJson = {
+	songs:Array<Array<String>>,
+	startsUnlocked:Array<Bool>,
+	characters:Array<Array<String>>,
+	names:Array<String>
+};
+
 class StoryMenuState extends MusicBeatState
 {
 	var scoreText:FlxText;
 
-	var weekData:Array<Dynamic> = [
-		['Tutorial'],
-		['Bopeebo', 'Fresh', 'Dadbattle'],
-		['Spookeez', 'South', "Monster"],
-		['Pico', 'Philly', "Blammed"],
-		['Satin-Panties', "High", "Milf"],
-		['Cocoa', 'Eggnog', 'Winter-Horrorland'],
-		['Senpai', 'Roses', 'Thorns']
-	];
+	var weekData:Array<Dynamic> = [];
 	var curDifficulty:Int = 1;
 
-	public static var weekUnlocked:Array<Bool> = [true, true, true, true, true, true, true];
+	public static var weekUnlocked:Array<Bool> = [];
 
-	var weekCharacters:Array<Dynamic> = [
-		['dad', 'bf', 'gf'],
-		['dad', 'bf', 'gf'],
-		['spooky', 'bf', 'gf'],
-		['pico', 'bf', 'gf'],
-		['mom', 'bf', 'gf'],
-		['parents-christmas', 'bf', 'gf'],
-		['senpai', 'bf', 'gf']
-	];
+	var weekCharacters:Array<Dynamic> = [];
 
 	var weekNames:Array<String> = [
-		"",
-		"Daddy Dearest",
-		"Spooky Month",
-		"PICO",
-		"MOMMY MUST MURDER",
-		"RED SNOW",
-		"hating simulator ft. moawling"
-	];
+];
 
 	var txtWeekTitle:FlxText;
 
@@ -73,6 +59,16 @@ class StoryMenuState extends MusicBeatState
 
 	override function create()
 	{
+		// Parse week json
+		var weekShit:WeekJson = Json.parse(Assets.getText(Paths.json('weekshit')));
+		
+		weekData = weekShit.songs;
+		weekUnlocked = weekShit.startsUnlocked;
+		weekCharacters = weekShit.characters;
+		weekNames = weekShit.names;
+
+
+
 		transIn = FlxTransitionableState.defaultTransIn;
 		transOut = FlxTransitionableState.defaultTransOut;
 

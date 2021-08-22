@@ -303,7 +303,7 @@ class TitleState extends MusicBeatState
 				{
 					returnedData[0] = data.substring(0, data.indexOf(';'));
 					returnedData[1] = data.substring(data.indexOf('-'), data.length);
-				  	if (!MainMenuState.version.contains(returnedData[0].trim()) && !OutdatedSubState.leftState)
+				  	if (!MainMenuState.version.contains(returnedData[0].trim()) && !OutdatedSubState.leftState && !MainMenuState.prerelease)
 					{
 						trace('outdated lmao! ' + returnedData[0] + ' != ' + MainMenuState.version);
 						OutdatedSubState.needVer = returnedData[0];
