@@ -484,6 +484,11 @@ class ModchartState
 			PlayState.instance.strumLine.y = y;
 		});
 
+		Lua_helper.add_callback(lua, "getNumberOfNotes", function(y:Float)
+		{
+			return PlayState.instance.notes.members.length;
+		});
+
 		for (i in 0...PlayState.strumLineNotes.length)
 			{
 				var member = PlayState.strumLineNotes.members[i];
