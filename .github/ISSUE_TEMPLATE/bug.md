@@ -41,4 +41,4 @@ labels: bug
 
 
 
-## If you're game is FROZEN and you're playing a web version, press F12 to open up browser dev window, and go to console, and copy-paste whatever red error you're getting
+## If your game is FROZEN and you're playing a web version, press F12 to open up browser dev window, and go to console, and copy-paste whatever red error you're getting
