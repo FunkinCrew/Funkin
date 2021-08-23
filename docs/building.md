@@ -24,7 +24,7 @@
 	 - `haxelib install flixel-ui`
 	 - `haxelib install hscript`
 	 - `haxelib install newgrounds`
-	 - `haxelib git linc_luajit https://github.com/AndreiRudenko/linc_luajit.git`
+	 - `haxelib git linc_luajit https://github.com/nebulazorua/linc_luajit.git`
 	 - `haxelib git hxvm-luajit https://github.com/nebulazorua/hxvm-luajit`
 	 - `haxelib git faxe https://github.com/uhrobots/faxe`
 	 - `haxelib git polymod https://github.com/larsiusprime/polymod.git`
