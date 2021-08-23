@@ -2798,7 +2798,7 @@ class ChartingState extends MusicBeatState
 				iconUpdate(true);
 		}
 		//
-		else if (i.icon.animation.curAnim.name != head && i.icon.animation.curAnim.name != head.split("-")[0])
+		else if (i.icon.animation.curAnim.name != head && i.icon.animation.curAnim.name != head.split("-")[0] || head == 'bf-pixel')
 		{
 			if (i.icon.animation.getByName(head) != null)
 				i.icon.animation.play(head);
