@@ -104,11 +104,10 @@ class StagePositioningDebug extends FlxState
 			camGame.zoom += 0.1;
 		if (FlxG.keys.justPressed.Q)
 		{
-			if (camGame.zoom > 0.1)
+			if (camGame.zoom > 0.11) // me when floating point error
 				camGame.zoom -= 0.1;
 		}
-
-		trace(FlxG.camera.zoom);
+        FlxG.watch.addQuick('Camera Zoom', camGame.zoom);
 
 		if (FlxG.keys.pressed.I || FlxG.keys.pressed.J || FlxG.keys.pressed.K || FlxG.keys.pressed.L)
 		{
@@ -130,12 +129,10 @@ class StagePositioningDebug extends FlxState
 		{
 			camFollow.velocity.set();
 		}
-		trace(camFollow);
 
 		if (FlxG.keys.justPressed.SPACE)
 		{
 			++curCharIndex;
-			trace(curCharIndex);
 			if (curCharIndex >= curChars.length)
 			{
 				curChar = curChars[0];

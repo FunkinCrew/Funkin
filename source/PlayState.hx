@@ -2306,7 +2306,7 @@ class PlayState extends MusicBeatState
 			#end
 		}
 
-		if (FlxG.keys.justPressed.EIGHT)
+		if (FlxG.keys.justPressed.EIGHT && songStarted)
 		{
 			paused = true;
 			if (useVideo)
@@ -2360,7 +2360,7 @@ class PlayState extends MusicBeatState
 			#end
 		}
 		
-		if(FlxG.keys.justPressed.TWO) { //Go 10 seconds into the future, credit: Shadow Mario#9396
+		if(FlxG.keys.justPressed.TWO && songStarted) { //Go 10 seconds into the future, credit: Shadow Mario#9396
 			if (!usedTimeTravel && Conductor.songPosition + 10000 < FlxG.sound.music.length) 
 			{
 				usedTimeTravel = true;
