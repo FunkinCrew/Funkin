@@ -382,7 +382,7 @@ class Character extends FlxSprite
 
 		dance();
 
-		if (isPlayer)
+		if (isPlayer && frames != null)
 		{
 			flipX = !flipX;
 
