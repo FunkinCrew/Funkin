@@ -29,9 +29,9 @@ install:
   - haxelib git polymod https://github.com/larsiusprime/polymod.git
   - haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
   - haxelib git extension-webm https://github.com/KadeDev/extension-webm
-  - haxelib git hxvm-luajit https://github.com/KadeDev/hxvm-luajit
+  - haxelib git linc_luajit https://github.com/nebulazorua/linc_luajit.git
+  - haxelib git hxvm-luajit https://github.com/nebulazorua/hxvm-luajit
   - haxelib run lime rebuild extension-webm macos
-  - haxelib install linc_luajit
   - haxelib install actuate
   - haxelib list
   - cd /Users/appveyor/projects/kade-engine-macos
