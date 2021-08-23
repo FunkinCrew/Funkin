@@ -1325,6 +1325,16 @@ class PlayState extends MusicBeatState
 
 		var ana = new Ana(Conductor.songPosition, null, false, "miss", data);
 
+		closestNotes = [];
+
+		notes.forEachAlive(function(daNote:Note)
+		{
+			if (daNote.canBeHit && daNote.mustPress && !daNote.wasGoodHit)
+				closestNotes.push(daNote);
+		}); // Collect notes that can be hit
+
+		closestNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
+
 		var dataNotes = [];
 		for(i in closestNotes)
 			if (i.noteData == data)
@@ -1357,9 +1367,9 @@ class PlayState extends MusicBeatState
 
 					var note = dataNotes[i];
 
-					if (!note.isSustainNote && (note.strumTime / songMultiplier - coolNote.strumTime / songMultiplier) < 2)
+					if (!note.isSustainNote && (note.strumTime - coolNote.strumTime ) < 2)
 					{
-						trace('found a stacked/really close note ' + (note.strumTime / songMultiplier - coolNote.strumTime / songMultiplier));
+						trace('found a stacked/really close note ' + (note.strumTime  - coolNote.strumTime ));
 						// just fuckin remove it since it's a stacked note and shouldn't be there
 						note.kill();
 						notes.remove(note, true);
@@ -1369,10 +1379,10 @@ class PlayState extends MusicBeatState
 			}
 
 			goodNoteHit(coolNote);
-			var noteDiff:Float = -(coolNote.strumTime / songMultiplier - Conductor.songPosition / songMultiplier);
+			var noteDiff:Float = -(coolNote.strumTime - Conductor.songPosition);
 			ana.hit = true;
 			ana.hitJudge = Ratings.judgeNote(coolNote);
-			ana.nearestNote = [coolNote.strumTime / songMultiplier, coolNote.noteData, coolNote.sustainLength];
+			ana.nearestNote = [coolNote.strumTime, coolNote.noteData, coolNote.sustainLength];
 		}
 		else if (!FlxG.save.data.ghost && songStarted)
 		{
@@ -2464,16 +2474,6 @@ class PlayState extends MusicBeatState
 
 		if (generatedMusic && currentSection != null)
 		{
-
-			closestNotes = [];
-
-			notes.forEachAlive(function(daNote:Note)
-			{
-				if (daNote.canBeHit && daNote.mustPress && !daNote.wasGoodHit)
-					closestNotes.push(daNote);
-			}); // Collect notes that can be hit
-
-			closestNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
 
 			// Make sure Girlfriend cheers only for certain songs
 			if (allowedToHeadbang)
@@ -3930,7 +3930,7 @@ class PlayState extends MusicBeatState
 		if (PlayStateChangeables.botPlay)
 		notes.forEachAlive(function(daNote:Note)
 		{
-			var diff = -(daNote.strumTime / songMultiplier - Conductor.songPosition / songMultiplier );
+			var diff = -((daNote.strumTime - Conductor.songPosition ) / songMultiplier);
 
 			daNote.rating = Ratings.judgeNote(daNote);
 			if (daNote.mustPress && daNote.rating == "sick" || (diff > 0 && daNote.mustPress))
@@ -4290,7 +4290,7 @@ class PlayState extends MusicBeatState
 		if (mashing != 0)
 			mashing = 0;
 
-		var noteDiff:Float = -(note.strumTime - Conductor.songPosition );
+		var noteDiff:Float = -((note.strumTime - Conductor.songPosition) / songMultiplier);
 
 
 		if (loadRep)
