@@ -4839,3 +4839,4 @@ class PlayState extends MusicBeatState
 
 	var curLight:Int = 0;
 }
+//u looked :O -ides
