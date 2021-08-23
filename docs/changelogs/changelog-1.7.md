@@ -20,6 +20,7 @@ Changes marked with 💖 will be listed in the short version of the changelog in
 - 💖 Changed the editor to work entirely on beats
 - Changed the BPM change code to work on beats instead of timestamps
 - Removed a lot of unnecessary code.
+- Changed **scroll speed** change events to be **based on multipliers instead of constant values** (aka 2 scroll speed would be scrollSpeed * 2 instead of setting it to 2)
 
 ### Bugfixes
 - 💖 Fix multiplie crashes with story mode and other weeks in story mode
