@@ -646,6 +646,7 @@ class PlayState extends MusicBeatState
 		}
 
 		// REPOSITIONING PER STAGE
+		if (!PlayStateChangeables.Optimize)
 		switch (Stage.curStage)
 		{
 			case 'limo':
@@ -2227,7 +2228,7 @@ class PlayState extends MusicBeatState
 
 		if (FlxG.keys.justPressed.NINE)
 				iconP1.swapOldIcon();
-
+		if (!PlayStateChangeables.Optimize)
 		switch (Stage.curStage)
 		{
 			case 'philly':
@@ -2359,6 +2360,7 @@ class PlayState extends MusicBeatState
 				FlxG.stage.window.onFocusIn.remove(focusIn);
 				removedVideo = true;
 			}
+			if (!PlayStateChangeables.Optimize)
 			new FlxTimer().start(0.3, function(tmr:FlxTimer)
 			{
 				for (bg in Stage.toAdd)
@@ -2637,7 +2639,7 @@ class PlayState extends MusicBeatState
 				if (luaModchart != null)
 					luaModchart.executeState('playerOneTurn', []);
 				#end
-
+				if (!PlayStateChangeables.Optimize)
 				switch (Stage.curStage)
 				{
 					case 'limo':
@@ -4503,6 +4505,7 @@ class PlayState extends MusicBeatState
 			resyncVocals();
 		}
 
+		if (!PlayStateChangeables.Optimize)
 		for (step in Stage.slowBacks.keys())
 		{
 			if (step == curStep)
@@ -4646,6 +4649,7 @@ class PlayState extends MusicBeatState
 				dad.playAnim('cheer', true);
 			}
 
+			if (!PlayStateChangeables.Optimize)
 			switch (Stage.curStage)
 			{
 				case 'school':
@@ -4703,6 +4707,7 @@ class PlayState extends MusicBeatState
 					}
 			}
 
+			if (!PlayStateChangeables.Optimize)
 			if (Stage.halloweenLevel && FlxG.random.bool(Conductor.bpm > 320 ? 100 : 10) && curBeat > lightningStrikeBeat + lightningOffset)
 			{
 				if (FlxG.save.data.distractions)
