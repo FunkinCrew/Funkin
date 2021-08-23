@@ -587,6 +587,10 @@ class PlayState extends MusicBeatState
 					}
 				}
 			}
+		else
+		{
+			Stage = new Stage("stage");
+		}
 
 		var camPos:FlxPoint = new FlxPoint(dad.getGraphicMidpoint().x, dad.getGraphicMidpoint().y);
 
