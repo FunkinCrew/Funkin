@@ -697,6 +697,7 @@ class PlayState extends MusicBeatState
 		}
 
 		Conductor.songPosition = -5000;
+		Conductor.rawPosition = Conductor.songPosition;
 
 		strumLine = new FlxSprite(0, 50).makeGraphic(FlxG.width, 10);
 		strumLine.scrollFactor.set();
