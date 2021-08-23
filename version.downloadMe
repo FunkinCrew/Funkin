@@ -1,8 +1,8 @@
-1.6.2;
-- Added the ability to select and modify notes in the editor
-- Added copy and paste (with ctrl z support) while selecting notes
-- Optimized gameplay
-- Optimized the chart editor (less lag on longer songs, and faster load times)
-- Fixed stutter at the start of a song
-- Fixed scroll speed changes so they work when more then one of them exist
-- Modcharts now work on Linux!
+1.7;
+- A speed modifier
+- Completely redid all of the modcharting api
+- Optimized a lot of code to run better
+- Allowed numpad to be binded as a key
+- Changed the editor to work entirely on beats
+- Fix multiplie crashes with story mode and other weeks in story mode
+- Fix desyncs with bpm changes and section notes in the charter

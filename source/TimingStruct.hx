@@ -4,12 +4,12 @@ class TimingStruct
 {
     public static var AllTimings:Array<TimingStruct> = [];
 
-    public var bpm:Float = 0;
+    public var bpm:Float = 0; // idk what does  this do
 
-    public var startBeat:Float = 0;
-    public var startStep:Int = 0;
-    public var endBeat:Float = Math.POSITIVE_INFINITY;
-    public var startTime:Float = 0;
+    public var startBeat:Float = 0; // BEATS
+    public var startStep:Int = 0; // BAD MEASUREMENTS
+    public var endBeat:Float = Math.POSITIVE_INFINITY; // BEATS
+    public var startTime:Float = 0; // SECONDS
 
     public var length:Float = Math.POSITIVE_INFINITY; // in beats
 
@@ -23,6 +23,29 @@ class TimingStruct
         var pog = new TimingStruct(startBeat,bpm,endBeat, offset);
         AllTimings.push(pog);
     }
+
+    public static function getBeatFromTime(time:Float)
+    {
+        var beat = -1.0;
+        var seg = TimingStruct.getTimingAtTimestamp(time);
+
+        if (seg != null)
+            beat = seg.startBeat + (((time / 1000) - seg.startTime) * (seg.bpm / 60));
+
+        return beat;
+    }
+
+    public static function getTimeFromBeat(beat:Float)
+    {
+        var time = -1.0;
+        var seg = TimingStruct.getTimingAtBeat(beat);
+
+        if (seg != null)
+            time = seg.startTime + ((beat - seg.startBeat) / (seg.bpm / 60));
+
+        return time * 1000;
+    }
+
 
     public function new(startBeat:Float,bpm:Float,endBeat:Float, offset:Float)
     {
@@ -40,7 +63,6 @@ class TimingStruct
             if (msTime >= i.startTime * 1000 && msTime < (i.startTime + i.length) * 1000)
                 return i;
         }
-        trace('Apparently ' + msTime + ' is out of any segs');
         return null;
     }
 

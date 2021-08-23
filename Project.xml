@@ -128,7 +128,7 @@
 	<haxelib name="polymod"/>
 	<haxelib name="discord_rpc" if="windows"/>
 	<haxelib name="linc_luajit"/>
-
+	<haxelib name="hxvm-luajit" if="windows"/>
 	<!-- <haxelib name="hxcpp-debug-server" if="desktop"/> -->
 
 	<!-- <haxelib name="markdown" /> -->
@@ -184,6 +184,8 @@
 	<icon path="art/icon512.png" size='512'/>
 	<icon path="art/iconOG.png" />
 
+	<haxeflag name="--no-traces" unless="debug" />
+	<haxeflag name="--dce full" if="release" />
 
 	<!-- <haxedef name="SKIP_TO_PLAYSTATE" if="debug" /> -->
 	<haxedef name="NG_LOGIN" if="newgrounds" />

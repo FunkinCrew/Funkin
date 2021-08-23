@@ -92,45 +92,31 @@ class Ratings
         return ranking;
     }
     
-    public static function CalculateRating(noteDiff:Float, ?customSafeZone:Float):String // Generate a judgement through some timing shit
+    public static var timingWindows = [166,135,90,45];
+
+    public static function judgeNote(note:Note)
     {
-
-        var customTimeScale = Conductor.timeScale;
-
-        if (customSafeZone != null)
-            customTimeScale = customSafeZone / 166;
-
-        // trace(customTimeScale + ' vs ' + Conductor.timeScale);
-
-        // I HATE THIS IF CONDITION
-        // IF LEMON SEES THIS I'M SORRY :(
-
-        // trace('Hit Info\nDifference: ' + noteDiff + '\nZone: ' + Conductor.safeZoneOffset * 1.5 + "\nTS: " + customTimeScale + "\nLate: " + 155 * customTimeScale);
-	
-        var rating = checkRating(noteDiff,customTimeScale);
-
-
-        return rating;
-    }
-
-    public static function checkRating(ms:Float, ts:Float)
-    {
-        var rating = "shit";
-        if (ms <= 166 * ts && ms >= 135 * ts)
-            rating = "shit";
-        if (ms < 135 * ts && ms >= 90 * ts) 
-            rating = "bad";
-        if (ms < 90 * ts && ms >= 45 * ts)
-            rating = "good";
-        if (ms < 45 * ts && ms >= -45 * ts)
-            rating = "sick";
-        if (ms > -90 * ts && ms <= -45 * ts)
-            rating = "good";
-        if (ms > -135 * ts && ms <= -90 * ts)
-            rating = "bad";
-        if (ms > -166 * ts && ms <= -135 * ts)
-            rating = "shit";
-        return rating;
+        var diff = Math.abs(note.strumTime - Conductor.songPosition);
+        for(index in 0...timingWindows.length) // based on 4 timing windows, will break with anything else
+        {
+            var time = timingWindows[index];
+            var nextTime = index + 1 > timingWindows.length - 1 ? 0 : timingWindows[index + 1];
+            if (diff < time * PlayState.songMultiplier && diff >= nextTime * PlayState.songMultiplier)
+            {
+                switch(index)
+                {
+                    case 0: // shit
+                        return "shit";
+                    case 1: // bad
+                        return "bad";
+                    case 2: // good
+                        return "good";
+                    case 3: // sick
+                        return "sick";
+                }
+            }
+        }
+        return "shit";
     }
 
     public static function CalculateRanking(score:Int,scoreDef:Int,nps:Int,maxNPS:Int,accuracy:Float):String
@@ -144,4 +130,5 @@ class Ratings
          " | Accuracy:" + (PlayStateChangeables.botPlay && !PlayState.loadRep ? "N/A" : HelperFunctions.truncateFloat(accuracy, 2) + " %") +  				// 	Accuracy
          " | " + GenerateLetterRank(accuracy) : "") : ""); 																		// 	Letter Rank
     }
+
 }

@@ -352,7 +352,7 @@ class StoryMenuState extends MusicBeatState
 			PlayState.storyPlaylist = weekData()[curWeek];
 			PlayState.isStoryMode = true;
 			selectedWeek = true;
-
+			PlayState.songMultiplier = 1;
 
 			PlayState.storyDifficulty = curDifficulty;
 

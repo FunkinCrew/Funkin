@@ -38,6 +38,8 @@ class HitGraph extends Sprite
 
 	public var bitmap:Bitmap;
 
+	public var ts:Float;
+
 	var _axis:Shape;
 	var _width:Int;
 	var _height:Int;
@@ -60,7 +62,7 @@ class HitGraph extends Sprite
 		_axis = new Shape();
 		_axis.x = _labelWidth + 10;
 
-		var ts = Math.floor((PlayState.rep.replay.sf / 60) * 1000) / 166;
+		ts = Math.floor((PlayState.rep.replay.sf / 60) * 1000) / 166;
 
 		var early = createTextField(10,10,FlxColor.WHITE,12);
 		var late = createTextField(10,_height - 20,FlxColor.WHITE,12);
@@ -157,35 +159,35 @@ class HitGraph extends Sprite
 		gfx.lineStyle(1, graphColor, 1);
 
 		gfx.beginFill(0x00FF00);
-		drawJudgementLine(45);
+		drawJudgementLine(45 );
 		gfx.endFill();
 
 		gfx.beginFill(0xFF0000);
-		drawJudgementLine(90);
+		drawJudgementLine(90 );
 		gfx.endFill();
 
 		gfx.beginFill(0x8b0000);
-		drawJudgementLine(135);
+		drawJudgementLine(135 );
 		gfx.endFill();
 
 		gfx.beginFill(0x580000);
-		drawJudgementLine(166);
+		drawJudgementLine(166 );
 		gfx.endFill();
 
 		gfx.beginFill(0x00FF00);
-		drawJudgementLine(-45);
+		drawJudgementLine(-45 );
 		gfx.endFill();
 
 		gfx.beginFill(0xFF0000);
-		drawJudgementLine(-90);
+		drawJudgementLine(-90 );
 		gfx.endFill();
 
 		gfx.beginFill(0x8b0000);
-		drawJudgementLine(-135);
+		drawJudgementLine(-135 );
 		gfx.endFill();
 
 		gfx.beginFill(0x580000);
-		drawJudgementLine(-166);
+		drawJudgementLine(-166 );
 		gfx.endFill();
 
 		var range:Float = Math.max(maxValue - minValue, maxValue * 0.1);
@@ -233,7 +235,7 @@ class HitGraph extends Sprite
 				default:
 					gfx.beginFill(0xFFFFFF);
 			}
-			var pointY = (-value * _height - 1) + _height;
+			var pointY = ((-value * _height - 1) + _height);
 
 			/*if (i == 0)
 				gfx.moveTo(graphX, _axis.y + pointY);*/
