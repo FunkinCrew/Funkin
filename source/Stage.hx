@@ -24,7 +24,6 @@ class Stage
 
     public function new(daStage:String)
     {
-
         this.curStage = daStage;
         camZoom = 1.05; // Don't change zoom here, unless you want to change zoom of every stage that doesn't have custom one
         halloweenLevel = false;

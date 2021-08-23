@@ -2307,28 +2307,43 @@ class PlayState extends MusicBeatState
 		}
 
 		if (FlxG.keys.justPressed.EIGHT)
+		{
+			paused = true;
+			if (useVideo)
 			{
-				if (useVideo)
-				{
-					GlobalVideo.get().stop();
-					remove(videoSprite);
-					FlxG.stage.window.onFocusOut.remove(focusOut);
-					FlxG.stage.window.onFocusIn.remove(focusIn);
-					removedVideo = true;
-				}
-	
-				FlxG.switchState(new StagePositioningDebug(SONG.stage, gf.curCharacter, boyfriend.curCharacter, dad.curCharacter));
-				clean();
-				FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, handleInput);
-				FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP, releaseInput);
-				#if cpp
-				if (luaModchart != null)
-				{
-					luaModchart.die();
-					luaModchart = null;
-				}
-				#end
+				GlobalVideo.get().stop();
+				remove(videoSprite);
+				FlxG.stage.window.onFocusOut.remove(focusOut);
+				FlxG.stage.window.onFocusIn.remove(focusIn);
+				removedVideo = true;
 			}
+			new FlxTimer().start(0.3, function(tmr:FlxTimer)
+			{
+				for (bg in Stage.toAdd)
+				{
+					remove(bg);
+				}
+				for (array in Stage.layInFront)
+				{
+					for (bg in array)
+						remove(bg);
+				}
+				remove(boyfriend);
+				remove(dad);
+				remove(gf);
+			});
+			FlxG.switchState(new StagePositioningDebug(SONG.stage, gf.curCharacter, boyfriend.curCharacter, dad.curCharacter));
+			clean();
+			FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, handleInput);
+			FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP, releaseInput);
+			#if cpp
+			if (luaModchart != null)
+			{
+				luaModchart.die();
+				luaModchart = null;
+			}
+			#end
+		}
 
 		if (FlxG.keys.justPressed.ZERO)
 		{

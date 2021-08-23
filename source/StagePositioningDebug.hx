@@ -10,64 +10,65 @@ import flixel.FlxSprite;
 
 class StagePositioningDebug extends FlxState
 {
+	public var daStage:String;
+	public var daBf:String;
+	public var daGf:String;
+	public var opponent:String;
 
-    public var daStage:String;
-    public var daBf:String;
-    public var daGf:String;
-    public var opponent:String;
-    var gf:Character;
-    var boyfriend:Boyfriend;
-    var dad:Character;
-    var Stage:Stage;
-    var camFollow:FlxObject;
-    var posText:FlxText;
-    var curChar:FlxSprite;
-    var curCharIndex:Int = 0;
-    var curCharString:String;
-    var curChars:Array<FlxSprite>;
-    var dragging:Bool = false;
-    var oldMousePosX:Int;
-    var oldMousePosY:Int;
-    var camHUD:FlxCamera;
-    var camGame:FlxCamera;
+	var gf:Character;
+	var boyfriend:Boyfriend;
+	var dad:Character;
+	var Stage:Stage;
+	var camFollow:FlxObject;
+	var posText:FlxText;
+	var curChar:FlxSprite;
+	var curCharIndex:Int = 0;
+	var curCharString:String;
+	var curChars:Array<FlxSprite>;
+	var dragging:Bool = false;
+	var oldMousePosX:Int;
+	var oldMousePosY:Int;
+	var camHUD:FlxCamera;
+	var camGame:FlxCamera;
 
-    public function new(daStage:String = 'stage', daGf:String = 'gf', daBf:String = 'bf', opponent:String = 'dad')
-    {
-        super();
-        this.daStage = daStage;
-        this.daGf = daGf;
-        this.daBf = daBf;
-        this.opponent = opponent;
-        curCharString = daGf;
-    }
+	public function new(daStage:String = 'stage', daGf:String = 'gf', daBf:String = 'bf', opponent:String = 'dad')
+	{
+		super();
+		this.daStage = daStage;
+		this.daGf = daGf;
+		this.daBf = daBf;
+		this.opponent = opponent;
+		curCharString = daGf;
+	}
 
-    override function create()
-    {
-        FlxG.sound.music.stop();
-        FlxG.mouse.visible = true;
+	override function create()
+	{
+		FlxG.sound.music.stop();
+		FlxG.mouse.visible = true;
 
-        Stage = new Stage(daStage);
+		Stage = PlayState.Stage;
+
+		gf = PlayState.gf;
+		boyfriend = PlayState.boyfriend;
+		dad = PlayState.dad;
+		curChars = [gf, boyfriend, dad];
+		curChar = curChars[curCharIndex];
 
 		for (i in Stage.toAdd)
 		{
 			add(i);
 		}
-        gf = new Character(400, 130, daGf);
-        boyfriend = new Boyfriend(770, 450, daBf);
-        dad = new Character(100, 100, opponent);
-        curChars = [gf, boyfriend, dad];
-        curChar = curChars[curCharIndex];
+
 		for (index => array in Stage.layInFront)
 		{
 			switch (index)
 			{
 				case 0:
 					add(gf);
-					gf.scrollFactor.set(0.95, 0.95);
 					for (bg in array)
 						add(bg);
-			    case 1:
-			    	add(dad);
+				case 1:
+					add(dad);
 					for (bg in array)
 						add(bg);
 				case 2:
@@ -77,108 +78,108 @@ class StagePositioningDebug extends FlxState
 			}
 		}
 
-        camFollow = new FlxObject(0, 0, 2, 2);
+		camFollow = new FlxObject(0, 0, 2, 2);
 		camFollow.screenCenter();
 		add(camFollow);
 
-        camHUD = new FlxCamera();
+		camHUD = new FlxCamera();
 		camHUD.bgColor.alpha = 0;
-        camGame = new FlxCamera();
-        camGame.zoom = 0.7;
-        FlxG.cameras.add(camGame);
-        FlxG.cameras.add(camHUD);
-        FlxCamera.defaultCameras = [camGame];
-        camGame.follow(camFollow);
+		camGame = new FlxCamera();
+		camGame.zoom = 0.7;
+		FlxG.cameras.add(camGame);
+		FlxG.cameras.add(camHUD);
+		FlxCamera.defaultCameras = [camGame];
+		camGame.follow(camFollow);
 
 		posText = new FlxText(0, 0);
 		posText.size = 26;
 		posText.scrollFactor.set();
-        posText.cameras = [camHUD];
+		posText.cameras = [camHUD];
 		add(posText);
-    }
+	}
 
-    override public function update(elapsed:Float)
-    {
-        if (FlxG.keys.justPressed.E)
+	override public function update(elapsed:Float)
+	{
+		if (FlxG.keys.justPressed.E)
 			camGame.zoom += 0.1;
 		if (FlxG.keys.justPressed.Q)
-        {
-            if (camGame.zoom > 0.1)
-			    camGame.zoom -= 0.1;
-        }
+		{
+			if (camGame.zoom > 0.1)
+				camGame.zoom -= 0.1;
+		}
 
-        trace(FlxG.camera.zoom);
+		trace(FlxG.camera.zoom);
 
-        if (FlxG.keys.pressed.I || FlxG.keys.pressed.J || FlxG.keys.pressed.K || FlxG.keys.pressed.L)
-            {
-                if (FlxG.keys.pressed.I)
-                    camFollow.velocity.y = -90;
-                else if (FlxG.keys.pressed.K)
-                    camFollow.velocity.y = 90;
-                else
-                    camFollow.velocity.y = 0;
-    
-                if (FlxG.keys.pressed.J)
-                    camFollow.velocity.x = -90;
-                else if (FlxG.keys.pressed.L)
-                    camFollow.velocity.x = 90;
-                else
-                    camFollow.velocity.x = 0;
-            }
-            else
-            {
-                camFollow.velocity.set();
-            }
-            trace(camFollow);
+		if (FlxG.keys.pressed.I || FlxG.keys.pressed.J || FlxG.keys.pressed.K || FlxG.keys.pressed.L)
+		{
+			if (FlxG.keys.pressed.I)
+				camFollow.velocity.y = -90;
+			else if (FlxG.keys.pressed.K)
+				camFollow.velocity.y = 90;
+			else
+				camFollow.velocity.y = 0;
 
-            if (FlxG.keys.justPressed.SPACE)
-            {
-                ++curCharIndex;
-                trace(curCharIndex);
-                if (curCharIndex >= curChars.length)
-                {
-                    curChar = curChars[0];
-                    curCharIndex = 0;
-                }
-                else
-                    curChar = curChars[curCharIndex]; 
-                switch(curCharIndex)
-                {
-                    case 0:
-                        curCharString = daGf;
-                    case 1:
-                        curCharString = daBf;
-                    case 2:
-                        curCharString = opponent;
-                }
-            }
+			if (FlxG.keys.pressed.J)
+				camFollow.velocity.x = -90;
+			else if (FlxG.keys.pressed.L)
+				camFollow.velocity.x = 90;
+			else
+				camFollow.velocity.x = 0;
+		}
+		else
+		{
+			camFollow.velocity.set();
+		}
+		trace(camFollow);
 
-            if (FlxG.mouse.pressed && curChar.pixelsOverlapPoint(FlxG.mouse.getPosition()) && !dragging)
-            {
-                dragging = true;
-                updateMousePos();
-            }
+		if (FlxG.keys.justPressed.SPACE)
+		{
+			++curCharIndex;
+			trace(curCharIndex);
+			if (curCharIndex >= curChars.length)
+			{
+				curChar = curChars[0];
+				curCharIndex = 0;
+			}
+			else
+				curChar = curChars[curCharIndex];
+			switch (curCharIndex)
+			{
+				case 0:
+					curCharString = daGf;
+				case 1:
+					curCharString = daBf;
+				case 2:
+					curCharString = opponent;
+			}
+		}
 
-            if (dragging && FlxG.mouse.justMoved)
-            {
-                curChar.setPosition(-(oldMousePosX - FlxG.mouse.x) + curChar.x, -(oldMousePosY - FlxG.mouse.y) + curChar.y);
-                updateMousePos();
-            }
+		if (FlxG.mouse.pressed && curChar.pixelsOverlapPoint(FlxG.mouse.getPosition()) && !dragging)
+		{
+			dragging = true;
+			updateMousePos();
+		}
 
-            if (dragging && FlxG.mouse.justReleased || FlxG.keys.justPressed.TAB)
-                dragging = false;
+		if (dragging && FlxG.mouse.justMoved)
+		{
+			curChar.setPosition(-(oldMousePosX - FlxG.mouse.x) + curChar.x, -(oldMousePosY - FlxG.mouse.y) + curChar.y);
+			updateMousePos();
+		}
 
-            posText.text = (curCharString + " X: " + curChar.x + " Y: " + curChar.y);
+		if (dragging && FlxG.mouse.justReleased || FlxG.keys.justPressed.TAB)
+			dragging = false;
 
-            if (FlxG.keys.justPressed.ESCAPE)
-                FlxG.switchState(new MainMenuState());
+		posText.text = (curCharString + " X: " + curChar.x + " Y: " + curChar.y);
 
-            super.update(elapsed);
-    }
+		if (FlxG.keys.justPressed.ESCAPE)
+			FlxG.switchState(new MainMenuState());
 
-    public function updateMousePos()
-    {
-        oldMousePosX = FlxG.mouse.x;
-        oldMousePosY = FlxG.mouse.y;
-    }
+		super.update(elapsed);
+	}
+
+	public function updateMousePos()
+	{
+		oldMousePosX = FlxG.mouse.x;
+		oldMousePosY = FlxG.mouse.y;
+	}
 }
