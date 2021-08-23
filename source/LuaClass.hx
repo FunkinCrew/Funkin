@@ -1741,6 +1741,7 @@ class LuaNote extends LuaClass { // again, stolen from andromeda but improved a 
             LuaL.error(l,"changeStage is read-only.");
             return 0;
           },
+        }
       ];
 
     }

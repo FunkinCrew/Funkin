@@ -2283,7 +2283,7 @@ class ChartingState extends MusicBeatState
 		+ "\nZoom: "
 		+ HelperFunctions.truncateFloat(zoomFactor,2)
 		+ "\nSpeed: "
-		+ speed;
+		+ HelperFunctions.truncateFloat(speed,1);
 
 
 		var left = FlxG.keys.justPressed.ONE;
