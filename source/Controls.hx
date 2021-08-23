@@ -7,6 +7,9 @@ import flixel.input.actions.FlxActionInputAnalog.FlxActionInputAnalogClickAndDra
 import flixel.input.actions.FlxActionInputDigital;
 import flixel.input.actions.FlxActionManager;
 import flixel.input.actions.FlxActionSet;
+import flixel.input.android.FlxAndroidKey;
+import flixel.input.android.FlxAndroidKeyList;
+import flixel.input.android.FlxAndroidKeys;
 import flixel.input.gamepad.FlxGamepadButton;
 import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.input.keyboard.FlxKey;
@@ -617,10 +620,12 @@ class Controls extends FlxActionSet
 			case Custom: // nothing
 		}
 
-		trace('added virtual controls!?');
-		trace(virutalPad);
-
-		if (FlxG.onMobile) {}
+		#if android
+		forEachBound(Control.BACK, function(action, pres)
+		{
+			action.add(new FlxActionInputDigitalAndroid(FlxAndroidKey.BACK, JUST_PRESSED));
+		});
+		#end
 	}
 
 	var virutalPad:FlxVirtualPad;
@@ -822,3 +827,33 @@ typedef SaveInputLists =
 	?keys:Array<Int>,
 	?pad:Array<Int>
 };
+
+// Maybe this can be committed to main HaxeFlixel repo?
+class FlxActionInputDigitalAndroid extends FlxActionInputDigital
+{
+	/**
+	 * Android buttons action input
+	 * @param	androidKeyID Key identifier (FlxAndroidKey.BACK, FlxAndroidKey.MENU... those are the only 2 lol)
+	 * @param	Trigger What state triggers this action (PRESSED, JUST_PRESSED, RELEASED, JUST_RELEASED)
+	 */
+	public function new(androidKeyID:FlxAndroidKey, Trigger:FlxInputState)
+	{
+		// if this gets PR'd into HF repo, the "OTHER" device should prob be changed to "MOBILE" or somethin
+		super(FlxInputDevice.OTHER, androidKeyID, Trigger);
+	}
+
+	override public function check(Action:FlxAction):Bool
+	{
+		return switch (trigger)
+		{
+			#if android
+			case PRESSED: FlxG.android.checkStatus(inputID, PRESSED) || FlxG.android.checkStatus(inputID, PRESSED);
+			case RELEASED: FlxG.android.checkStatus(inputID, RELEASED) || FlxG.android.checkStatus(inputID, JUST_RELEASED);
+			case JUST_PRESSED: FlxG.android.checkStatus(inputID, JUST_PRESSED);
+			case JUST_RELEASED: FlxG.android.checkStatus(inputID, JUST_RELEASED);
+			#end
+
+			default: false;
+		}
+	}
+}
