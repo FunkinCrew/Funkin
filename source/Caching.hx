@@ -2,7 +2,7 @@
 package;
 
 import lime.app.Application;
-#if windows
+#if desktop
 import Discord.DiscordClient;
 #end
 import openfl.display.BitmapData;
