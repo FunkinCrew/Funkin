@@ -1731,10 +1731,42 @@ class LuaNote extends LuaClass { // again, stolen from andromeda but improved a 
           },
           setter: SetNumProperty
         },
-
+        "changeStage"=>{
+          defaultValue:0,
+          getter:function(l:State,data:Any){
+            Lua.pushcfunction(l,changeStageC);
+            return 1;
+          },
+          setter:function(l:State){
+            LuaL.error(l,"changeStage is read-only.");
+            return 0;
+          },
       ];
 
     }
+
+    private static function changeStage(l:StatePointer):Int{
+      // 1 = self
+      // 2 = stage
+      var stageName = LuaL.checkstring(state,2);
+
+      for (i in PlayState.Stage.toAdd)
+      {
+        PlayState.instance.remove(i);
+      }
+
+      PlayState.Stage = new Stage(stageName);
+      
+      for (i in PlayState.Stage.toAdd)
+      {
+        PlayState.instance.add(i);
+      }
+
+      return 0;
+    }
+
+
+    private static var changeStageC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(changeStage);
 
     private function SetNumProperty(l:State){
       // 1 = self

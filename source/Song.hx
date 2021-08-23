@@ -140,6 +140,14 @@ class Song
 
 		song.eventObjects = convertedStuff;
 
+		if (song.noteStyle == null)
+			song.noteStyle = "normal";
+
+		if (song.gfVersion == null)
+			song.gfVersion = "gf";
+
+		if (song.stage == null)
+			song.stage = "stage";
 
 		TimingStruct.clearTimings();
         
