@@ -267,6 +267,26 @@ class DistractionsAndEffectsOption extends Option
 	}
 }
 
+class Colour extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+	public override function press():Bool
+	{
+		FlxG.save.data.colour = !FlxG.save.data.colour;
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Color Health Bar By Character " + (!FlxG.save.data.colour ? "off" : "on");
+	}
+}
+
 class StepManiaOption extends Option
 {
 	public function new(desc:String)
@@ -933,6 +953,7 @@ class ResetSettings extends Option
 		FlxG.save.data.watermark = null;
 		FlxG.save.data.ghost = null;
 		FlxG.save.data.distractions = null;
+		FlxG.save.data.colour = null;
 		FlxG.save.data.stepMania = null;
 		FlxG.save.data.flashing = null;
 		FlxG.save.data.resetButton = null;
