@@ -96,12 +96,12 @@ class Ratings
 
     public static function judgeNote(note:Note)
     {
-        var diff = Math.abs(note.strumTime - Conductor.songPosition);
+        var diff = Math.abs(note.strumTime - Conductor.songPosition) / (PlayState.songMultiplier >= 1 ? PlayState.songMultiplier : 1);
         for(index in 0...timingWindows.length) // based on 4 timing windows, will break with anything else
         {
             var time = timingWindows[index];
             var nextTime = index + 1 > timingWindows.length - 1 ? 0 : timingWindows[index + 1];
-            if (diff < time * PlayState.songMultiplier && diff >= nextTime * PlayState.songMultiplier)
+            if (diff < time && diff >= nextTime)
             {
                 switch(index)
                 {
