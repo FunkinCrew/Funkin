@@ -8,6 +8,7 @@ import flixel.addons.transition.FlxTransitionableState;
 import flixel.effects.FlxFlicker;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.input.touch.FlxTouch;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -249,6 +250,25 @@ class MainMenuState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
+		if (FlxG.onMobile)
+		{
+			var touch:FlxTouch = FlxG.touches.getFirst();
+
+			if (touch != null)
+			{
+				for (item in menuItems)
+				{
+					if (touch.overlaps(item))
+					{
+						if (menuItems.selectedIndex == item.ID && touch.justPressed)
+							menuItems.accept();
+						else
+							menuItems.selectItem(item.ID);
+					}
+				}
+			}
+		}
+
 		// FlxG.camera.followLerp = CoolUtil.camLerpShit(0.06);
 
 		if (FlxG.sound.music.volume < 0.8)
