@@ -1790,6 +1790,9 @@ class ChartingState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
+		if (FlxG.sound.music.time > FlxG.sound.music.length)
+			FlxG.sound.music.time = FlxG.sound.music.length;
+		
 		updateHeads();
 		
 		#if windows
