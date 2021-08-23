@@ -128,7 +128,7 @@ class AnimationDebug extends FlxState
 	{
 		textAnim.text = char.animation.curAnim.name;
 
-		if (FlxG.keys.justPressed.ENTER)
+		if (FlxG.keys.justPressed.ENTER || FlxG.keys.justPressed.ESCAPE)
 			FlxG.switchState(new MainMenuState());
 
 		if (FlxG.keys.justPressed.E)
