@@ -309,7 +309,7 @@ class StagePositioningDebug extends FlxState
 			_file.removeEventListener(Event.CANCEL, onSaveCancel);
 			_file.removeEventListener(IOErrorEvent.IO_ERROR, onSaveError);
 			_file = null;
-			FlxG.log.notice("Successfully saved OFFSET DATA.");
+			FlxG.log.notice("Successfully saved Positions DATA.");
 		}
 
 	/**
