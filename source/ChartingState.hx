@@ -2777,7 +2777,6 @@ class ChartingState extends MusicBeatState
 
 		function iconUpdate(failsafe:Bool = false):Void
 		{
-			trace('you called?');
 			var sect = _song.notes[curSection];
 			var cachedY = i.icon.y;
 			remove(i.icon);
