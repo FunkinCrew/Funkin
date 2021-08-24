@@ -2880,6 +2880,7 @@ class PlayState extends MusicBeatState
 									2))) + daNote.noteYOff;
 						if (daNote.isSustainNote)
 						{
+							daNote.y -= daNote.height / 2;
 
 							if (!PlayStateChangeables.botPlay)
 							{
