@@ -224,6 +224,7 @@ class PauseSubState extends MusicBeatSubstate
 					}
 					PlayState.instance.clean();
 					FlxG.resetState();
+					PlayState.stageTesting = false;
 				case "Exit to menu":
 					PlayState.startTime = 0;
 					if (PlayState.instance.useVideo)
@@ -239,6 +240,7 @@ class PauseSubState extends MusicBeatSubstate
 						FlxG.save.data.downscroll = false;
 					}
 					PlayState.loadRep = false;
+					PlayState.stageTesting = false;
 					#if desktop
 					if (PlayState.luaModchart != null)
 					{
