@@ -1212,10 +1212,10 @@ class PlayState extends MusicBeatState
 				if (idleToBeat && !boyfriend.animation.curAnim.name.startsWith("sing"))
 					boyfriend.dance(forcedToIdle);
 				if (idleToBeat && !dad.animation.curAnim.name.startsWith("sing"))
-					dad.dance(forcedToIdle);
+					dad.dance(forcedToIdle, currentSection.CPUAltAnim);
 			}
 			else if ((dad.curCharacter == 'spooky' || dad.curCharacter == 'gf') && !dad.animation.curAnim.name.startsWith("sing"))
-				dad.dance();
+				dad.dance(forcedToIdle, currentSection.CPUAltAnim);
 
 			var introAssets:Map<String, Array<String>> = new Map<String, Array<String>>();
 			introAssets.set('default', ['ready', "set", "go"]);
@@ -1500,7 +1500,7 @@ class PlayState extends MusicBeatState
 		if (idleToBeat && !boyfriend.animation.curAnim.name.startsWith("sing"))
 			boyfriend.dance(forcedToIdle);
 		if (idleToBeat && !dad.animation.curAnim.name.startsWith("sing"))
-			dad.dance(forcedToIdle);
+			dad.dance(forcedToIdle, currentSection.CPUAltAnim);
 
 		// Song check real quick
 		switch (curSong)
@@ -4662,12 +4662,12 @@ class PlayState extends MusicBeatState
 			if (curBeat % idleBeat == 0)
 			{
 				if (idleToBeat && !dad.animation.curAnim.name.startsWith('sing'))
-					dad.dance(forcedToIdle);
+					dad.dance(forcedToIdle, currentSection.CPUAltAnim);
 				if (idleToBeat && !boyfriend.animation.curAnim.name.startsWith('sing'))
 					boyfriend.dance(forcedToIdle);
 			}
 			else if (dad.curCharacter == 'spooky' || dad.curCharacter == 'gf')
-				dad.dance();
+				dad.dance(forcedToIdle, currentSection.CPUAltAnim);
 		}
 		// FlxG.log.add('change bpm' + SONG.notes[Std.int(curStep / 16)].changeBPM);
 		wiggleShit.update(Conductor.crochet);
