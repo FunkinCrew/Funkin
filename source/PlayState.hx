@@ -210,6 +210,8 @@ class PlayState extends MusicBeatState
 
 	var songName:FlxText;
 
+	var altSuffix:String = "";
+
 	public var currentSection:SwagSection;
 
 	var fc:Bool = true;
@@ -1214,7 +1216,6 @@ class PlayState extends MusicBeatState
 			introAssets.set('pixel', ['weeb/pixelUI/ready-pixel', 'weeb/pixelUI/set-pixel', 'weeb/pixelUI/date-pixel']);
 
 			var introAlts:Array<String> = introAssets.get('default');
-			var altSuffix:String = "";
 			var week6Bullshit:String = null;
 
 			if (SONG.noteStyle == 'pixel')
@@ -4270,7 +4271,7 @@ class PlayState extends MusicBeatState
 			
 			if(FlxG.save.data.missSounds)
 				{
-					FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
+					FlxG.sound.play(Paths.soundRandom('missnote' + altSuffix, 1, 3), FlxG.random.float(0.1, 0.2));
 					// FlxG.sound.play(Paths.sound('missnote1'), 1, false);
 					// FlxG.log.add('played imss note');
 				}
