@@ -7,6 +7,7 @@ import flixel.group.FlxGroup;
 import flixel.text.FlxText;
 import flixel.FlxCamera;
 import flixel.FlxSprite;
+import flixel.util.FlxCollision;
 
 class StagePositioningDebug extends FlxState
 {
@@ -30,6 +31,8 @@ class StagePositioningDebug extends FlxState
 	var oldMousePosY:Int;
 	var camHUD:FlxCamera;
 	var camGame:FlxCamera;
+	var charMode:Bool = true;
+	var usedObjects:Array<FlxSprite> = [];
 
 	public function new(daStage:String = 'stage', daGf:String = 'gf', daBf:String = 'bf', opponent:String = 'dad')
 	{
@@ -89,6 +92,7 @@ class StagePositioningDebug extends FlxState
 		FlxG.cameras.add(camGame);
 		FlxG.cameras.add(camHUD);
 		FlxCamera.defaultCameras = [camGame];
+		FlxG.camera = camGame;
 		camGame.follow(camFollow);
 
 		posText = new FlxText(0, 0);
@@ -108,6 +112,16 @@ class StagePositioningDebug extends FlxState
 				camGame.zoom -= 0.1;
 		}
         FlxG.watch.addQuick('Camera Zoom', camGame.zoom);
+
+		if (FlxG.keys.justPressed.SHIFT)
+		{
+			charMode = !charMode;
+			dragging = false;
+			if (charMode)
+				getNextChar();
+			else
+				getNextObject();
+		}
 
 		if (FlxG.keys.pressed.I || FlxG.keys.pressed.J || FlxG.keys.pressed.K || FlxG.keys.pressed.L)
 		{
@@ -132,33 +146,26 @@ class StagePositioningDebug extends FlxState
 
 		if (FlxG.keys.justPressed.SPACE)
 		{
-			++curCharIndex;
-			if (curCharIndex >= curChars.length)
+			if (charMode)
 			{
-				curChar = curChars[0];
-				curCharIndex = 0;
+				getNextChar();
 			}
 			else
-				curChar = curChars[curCharIndex];
-			switch (curCharIndex)
 			{
-				case 0:
-					curCharString = daGf;
-				case 1:
-					curCharString = daBf;
-				case 2:
-					curCharString = opponent;
+				getNextObject();
 			}
 		}
 
-		if (FlxG.mouse.pressed && curChar.pixelsOverlapPoint(FlxG.mouse.getPosition()) && !dragging)
+		if (FlxG.mouse.pressed && FlxCollision.pixelPerfectPointCheck(Math.floor(FlxG.mouse.x), Math.floor(FlxG.mouse.y), curChar) && !dragging)
 		{
 			dragging = true;
 			updateMousePos();
 		}
+		FlxG.watch.addQuick('dragging', dragging);
 
 		if (dragging && FlxG.mouse.justMoved)
 		{
+
 			curChar.setPosition(-(oldMousePosX - FlxG.mouse.x) + curChar.x, -(oldMousePosY - FlxG.mouse.y) + curChar.y);
 			updateMousePos();
 		}
@@ -169,14 +176,82 @@ class StagePositioningDebug extends FlxState
 		posText.text = (curCharString + " X: " + curChar.x + " Y: " + curChar.y);
 
 		if (FlxG.keys.justPressed.ESCAPE)
-			FlxG.switchState(new MainMenuState());
+		{
+			FlxG.switchState(new PlayState());
+			PlayState.stageTesting = true;
+			for (i in Stage.toAdd)
+			{
+				remove(i);
+			}
+
+			for (group in Stage.swagGroup)
+			{
+				remove(group);
+			}
+
+			for (index => array in Stage.layInFront)
+			{
+				switch (index)
+				{
+					case 0:
+						remove(gf);
+						for (bg in array)
+							remove(bg);
+					case 1:
+						remove(dad);
+						for (bg in array)
+							remove(bg);
+					case 2:
+						remove(boyfriend);
+						for (bg in array)
+							remove(bg);
+				}
+			}
+		}
 
 		super.update(elapsed);
 	}
 
-	public function updateMousePos()
+	function updateMousePos()
 	{
 		oldMousePosX = FlxG.mouse.x;
 		oldMousePosY = FlxG.mouse.y;
+	}
+
+	function getNextObject():Void
+	{
+		for (key => value in Stage.swagBacks)
+		{
+			if (!usedObjects.contains(value))
+			{
+				usedObjects.push(value);
+				curCharString = key;
+				curChar = value;
+				return;
+			}
+		}
+		usedObjects = [];
+		getNextObject();
+	}
+
+	function getNextChar()
+	{
+		++curCharIndex;
+		if (curCharIndex >= curChars.length)
+		{
+			curChar = curChars[0];
+			curCharIndex = 0;
+		}
+		else
+			curChar = curChars[curCharIndex];
+		switch (curCharIndex)
+		{
+			case 0:
+				curCharString = daGf;
+			case 1:
+				curCharString = daBf;
+			case 2:
+				curCharString = opponent;
+		}
 	}
 }
