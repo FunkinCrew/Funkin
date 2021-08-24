@@ -149,6 +149,7 @@ class Character extends FlxSprite
 				// ANIMATION IS CALLED MOM LEFT POSE BUT ITS FOR THE RIGHT
 				// CUZ DAVE IS DUMB!
 				animation.addByPrefix('singRIGHT', 'Mom Pose Left', 24, false);
+				animation.addByIndices('idleHair', 'Mom Idle', [10, 11, 12, 13], "", 24, true);
 
 				loadOffsetFile(curCharacter);
 
@@ -266,6 +267,7 @@ class Character extends FlxSprite
 				animation.addByPrefix('singLEFTmiss', 'BF NOTE LEFT MISS', 24, false);
 				animation.addByPrefix('singRIGHTmiss', 'BF NOTE RIGHT MISS', 24, false);
 				animation.addByPrefix('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
+				animation.addByIndices('idleHair', 'BF idle dance', [10, 11, 12, 13], "", 24, true);
 
 				loadOffsetFile(curCharacter);
 				playAnim('idle');
@@ -424,6 +426,9 @@ class Character extends FlxSprite
 			{
 				holdTimer += elapsed;
 			}
+
+			if (curCharacter.endsWith('-car') && !animation.curAnim.name.startsWith('sing') && animation.curAnim.finished && animation.getByName('idleHair') != null)
+				playAnim('idleHair');
 
 			var dadVar:Float = 4;
 

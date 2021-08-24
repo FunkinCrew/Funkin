@@ -4,6 +4,7 @@ import openfl.system.System;
 import lime.app.Application;
 #if sys
 import sys.io.File;
+import sys.FileSystem;
 #end
 import flixel.addons.ui.FlxUIButton;
 import flixel.addons.ui.StrNameLabel;
@@ -2769,16 +2770,45 @@ class ChartingState extends MusicBeatState
 
 	function updateHeads():Void
 	{
-		if (check_mustHitSection.checked)
+		var mustHit = check_mustHitSection.checked;
+		#if sys
+		var head = (mustHit ? _song.player1 : _song.player2);
+		var i = sectionRenderes.members[curSection];
+
+		function iconUpdate(failsafe:Bool = false):Void
 		{
-			leftIcon.animation.play(_song.player1);
-			rightIcon.animation.play(_song.player2);
+			var sect = _song.notes[curSection];
+			var cachedY = i.icon.y;
+			remove(i.icon);
+			var sectionicon = new HealthIcon(failsafe ? (mustHit ? 'bf' : 'face') : head).clone();
+			sectionicon.x = -95;
+			sectionicon.y = cachedY;
+			sectionicon.setGraphicSize(0, 45);
+	
+			i.icon = sectionicon;
+			i.lastUpdated = sect.mustHitSection;
+		
+			add(sectionicon);
 		}
-		else
+
+		// fail-safe
+		if (!FileSystem.exists(Paths.image('icons/icon-' + head.split("-")[0]))	&& !FileSystem.exists(Paths.image('icons/icon-' + head))) 
 		{
-			leftIcon.animation.play(_song.player2);
-			rightIcon.animation.play(_song.player1);
+			if (i.icon.animation.curAnim == null)
+				iconUpdate(true);
 		}
+		//
+		else if (i.icon.animation.curAnim.name != head && i.icon.animation.curAnim.name != head.split("-")[0] || head == 'bf-pixel' && i.icon.animation.curAnim.name != 'bf-pixel')
+		{
+			if (i.icon.animation.getByName(head) != null)
+				i.icon.animation.play(head);
+			else
+				iconUpdate();
+		}
+		#else
+		leftIcon.animation.play(mustHit ? _song.player1 : _song.player2);
+		rightIcon.animation.play(mustHit ? _song.player2 : _song.player1);
+		#end
 	}
 
 	function updateNoteUI():Void
