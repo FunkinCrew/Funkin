@@ -2666,38 +2666,40 @@ class PlayState extends MusicBeatState
 		var widHalf = FlxG.width / 2;
 		var heightHalf = FlxG.height / 2;
 
-		if (FlxG.onMobile)
-		{
-			for (touch in FlxG.touches.list)
+		/* 
+			if (FlxG.onMobile)
 			{
-				if (touch.justPressed)
+				for (touch in FlxG.touches.list)
 				{
+					if (touch.justPressed)
+					{
+						var getHeight:Int = Math.floor(touch.justPressedPosition.y / (FlxG.height / 3));
+
+						switch (getHeight)
+						{
+							case 0:
+								pressArray[2] = true;
+							case 1:
+								touch.justPressedPosition.x < widHalf ? pressArray[0] = true : pressArray[3] = true;
+							case 2:
+								pressArray[1] = true;
+						}
+					}
+
 					var getHeight:Int = Math.floor(touch.justPressedPosition.y / (FlxG.height / 3));
 
 					switch (getHeight)
 					{
 						case 0:
-							pressArray[2] = true;
+							holdArray[2] = true;
 						case 1:
-							touch.justPressedPosition.x < widHalf ? pressArray[0] = true : pressArray[3] = true;
+							touch.justPressedPosition.x < widHalf ? holdArray[0] = true : holdArray[3] = true;
 						case 2:
-							pressArray[1] = true;
+							holdArray[1] = true;
 					}
 				}
-
-				var getHeight:Int = Math.floor(touch.justPressedPosition.y / (FlxG.height / 3));
-
-				switch (getHeight)
-				{
-					case 0:
-						holdArray[2] = true;
-					case 1:
-						touch.justPressedPosition.x < widHalf ? holdArray[0] = true : holdArray[3] = true;
-					case 2:
-						holdArray[1] = true;
-				}
 			}
-		}
+		 */
 
 		// HOLDS, check for sustain notes
 		if (holdArray.contains(true) && /*!boyfriend.stunned && */ generatedMusic)
