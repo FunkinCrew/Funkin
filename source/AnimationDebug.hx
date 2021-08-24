@@ -75,6 +75,7 @@ class AnimationDebug extends FlxState
 
 		textAnim = new FlxText(300, 16);
 		textAnim.size = 26;
+		textAnim.setBorderStyle(OUTLINE, FlxColor.BLACK, 2);
 		textAnim.scrollFactor.set();
 		add(textAnim);
 
