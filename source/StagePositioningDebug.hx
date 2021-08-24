@@ -179,7 +179,15 @@ class StagePositioningDebug extends FlxState
 		if (dragging && FlxG.mouse.justReleased || FlxG.keys.justPressed.TAB)
 			dragging = false;
 
-		posText.text = (curCharString + " X: " + curChar.x + " Y: " + curChar.y);
+		if (FlxG.keys.pressed.Z)
+			curChar.angle -= 1 * Math.ceil(elapsed);
+		else if (FlxG.keys.pressed.X)
+			curChar.angle += 1 * Math.ceil(elapsed);
+		else if (FlxG.keys.pressed.R)
+			curChar.angle = 0;
+
+
+		posText.text = (curCharString + " X: " + curChar.x + " Y: " + curChar.y + " Rotation: " + curChar.angle);
 
 		if (FlxG.keys.justPressed.ESCAPE)
 		{
@@ -270,7 +278,7 @@ class StagePositioningDebug extends FlxState
 
 		for (spriteName => sprite in Stage.swagBacks)
 		{
-			var text = spriteName + " X: " + sprite.x + " Y: " + sprite.y;
+			var text = spriteName + " X: " + sprite.x + " Y: " + sprite.y + " Rotation: " + sprite.angle;
 			result += text + "\n";
 		}
 		var curCharIndex:Int = 0;
@@ -286,7 +294,7 @@ class StagePositioningDebug extends FlxState
 				case 2:
 					char = opponent;
 			}
-			result += char + ' X: ' + curChars[curCharIndex].x + " Y: " + curChars[curCharIndex].y + "\n";
+			result += char + ' X: ' + curChars[curCharIndex].x + " Y: " + curChars[curCharIndex].y + " Rotation: " + curChars[curCharIndex].angle + "\n";
 			++curCharIndex;
 		}
 
