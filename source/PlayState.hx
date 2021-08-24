@@ -4564,29 +4564,21 @@ class PlayState extends MusicBeatState
 			luaModchart.executeState('beatHit', [curBeat]);
 		}
 		#end
-
-		if (curSong == 'Tutorial' && dad.curCharacter == 'gf' && currentSection != null)
-		{
-			if (currentSection.mustHitSection)
-				dad.dance();
-			else
-			{
-				if (curBeat == 73 || curBeat % 4 == 0 || curBeat % 4 == 1)
-					dad.playAnim('danceLeft', true);
-				else
-					dad.playAnim('danceRight', true);
-			}
-		}
-
+		
+		//Dad dance
 		if (currentSection != null)
 		{
-			// else
-			// Conductor.changeBPM(SONG.bpm);
-
-			// Dad doesnt interupt his own notes
-			if ((!dad.animation.curAnim.name.startsWith("sing")) && dad.curCharacter != 'gf')
-				if ((curBeat % idleBeat == 0 || !idleToBeat) || dad.curCharacter == "spooky")
-					dad.dance(idleToBeat, currentSection.CPUAltAnim);
+			if (dad.curCharacter == 'gf')
+			{
+				if (curBeat % gfSpeed == 0)
+					dad.dance();
+			}
+			else
+			{
+				if (!dad.animation.curAnim.name.startsWith("sing"))
+					if ((curBeat % idleBeat == 0 || !idleToBeat) || dad.curCharacter == "spooky")
+						dad.dance(idleToBeat, currentSection.CPUAltAnim);
+			}
 		}
 		// FlxG.log.add('change bpm' + SONG.notes[Std.int(curStep / 16)].changeBPM);
 		wiggleShit.update(Conductor.crochet);
