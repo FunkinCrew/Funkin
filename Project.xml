@@ -210,6 +210,8 @@
 
 	<!-- <prebuild haxe="trace('prebuilding');"/> -->
 	<!-- <postbuild haxe="art/Postbuild.hx"/> -->
+
+	<config:ios allow-provisioning-updates="true" />
 	
 	<section if='TOOLS'>
 		<!-- Compiles tool for old song conversion shit -->
