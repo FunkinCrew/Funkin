@@ -2787,17 +2787,6 @@ class PlayState extends MusicBeatState
 			}
 		}
 
-		if (curSong == 'Bopeebo')
-		{
-			switch (curBeat)
-			{
-				case 128, 129, 130:
-					vocals.volume = 0;
-					// FlxG.sound.music.stop();
-					// FlxG.switchState(new PlayState());
-			}
-		}
-
 		if (health <= 0 && !cannotDie)
 		{
 			if (!usedTimeTravel) 
