@@ -8,7 +8,9 @@ import flixel.FlxState;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.input.touch.FlxTouch;
+import flixel.math.FlxAngle;
 import flixel.math.FlxMath;
+import flixel.math.FlxPoint;
 import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
@@ -209,6 +211,8 @@ class FreeplayState extends MusicBeatState
 	var veloctiyLoopShit:Float = 0;
 	var touchTimer:Float = 0;
 
+	var initTouchPos:FlxPoint = new FlxPoint();
+
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
@@ -234,6 +238,34 @@ class FreeplayState extends MusicBeatState
 
 		if (FlxG.onMobile)
 		{
+			for (touch in FlxG.touches.list)
+			{
+				if (touch.justPressed)
+				{
+					initTouchPos.set(touch.screenX, touch.screenY);
+				}
+				if (touch.pressed)
+				{
+					var dx = initTouchPos.x - touch.screenX;
+					var dy = initTouchPos.y - touch.screenY;
+
+					var angle = Math.atan2(dy, dx);
+					var length = Math.sqrt(dx * dx + dy * dy);
+
+					FlxG.watch.addQuick("LENGTH", length);
+					FlxG.watch.addQuick("ANGLE", Math.round(FlxAngle.asDegrees(angle)));
+					trace("ANGLE", Math.round(FlxAngle.asDegrees(angle)));
+				}
+
+				/* switch (inputID)
+					{
+						case FlxObject.UP:
+							return
+						case FlxObject.DOWN:
+					}
+				 */
+			}
+
 			if (FlxG.touches.getFirst() != null)
 			{
 				if (touchTimer >= 1.5)
@@ -347,6 +379,8 @@ class FreeplayState extends MusicBeatState
 
 	function changeDiff(change:Int = 0)
 	{
+		touchTimer = 0;
+
 		curDifficulty += change;
 
 		if (curDifficulty < 0)

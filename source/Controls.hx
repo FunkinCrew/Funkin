@@ -1,5 +1,6 @@
 package;
 
+import flixel.FlxObject;
 import flixel.input.FlxInput;
 import flixel.input.actions.FlxAction;
 import flixel.input.actions.FlxActionInput;
@@ -8,15 +9,16 @@ import flixel.input.actions.FlxActionInputDigital;
 import flixel.input.actions.FlxActionManager;
 import flixel.input.actions.FlxActionSet;
 import flixel.input.android.FlxAndroidKey;
-import flixel.input.android.FlxAndroidKeyList;
-import flixel.input.android.FlxAndroidKeys;
 import flixel.input.gamepad.FlxGamepadButton;
 import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.input.keyboard.FlxKey;
 import flixel.input.mouse.FlxMouseButton.FlxMouseButtonID;
+import flixel.math.FlxAngle;
+import flixel.math.FlxPoint;
 import flixel.ui.FlxVirtualPad;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import lime.ui.Haptic;
 
 /**
  * Since, in many cases multiple actions should use similar keys, we don't want the
@@ -625,6 +627,27 @@ class Controls extends FlxActionSet
 		{
 			action.add(new FlxActionInputDigitalAndroid(FlxAndroidKey.BACK, JUST_PRESSED));
 		});
+
+		#if FLX_TOUCH
+		forEachBound(Control.NOTE_UP, function(action, press)
+		{
+			action.add(new FlxActionInputDigitalMobileSwipeGameplay(FlxObject.UP, JUST_PRESSED));
+		});
+
+		forEachBound(Control.NOTE_DOWN, function(action, press)
+		{
+			action.add(new FlxActionInputDigitalMobileSwipeGameplay(FlxObject.DOWN, JUST_PRESSED));
+		});
+
+		forEachBound(Control.NOTE_LEFT, function(action, press)
+		{
+			action.add(new FlxActionInputDigitalMobileSwipeGameplay(FlxObject.LEFT, JUST_PRESSED));
+		});
+		forEachBound(Control.NOTE_RIGHT, function(action, press)
+		{
+			action.add(new FlxActionInputDigitalMobileSwipeGameplay(FlxObject.RIGHT, JUST_PRESSED));
+		});
+		#end
 		#end
 	}
 
@@ -828,17 +851,124 @@ typedef SaveInputLists =
 	?pad:Array<Int>
 };
 
+class FlxActionInputDigitalMobileSwipeGameplay extends FlxActionInputDigital
+{
+	public function new(swipeDir:Int = FlxObject.ANY, Trigger:FlxInputState)
+	{
+		super(MOBILE, swipeDir, Trigger);
+	}
+
+	// make thing to register swipes
+	// make thing to reset swipe when u hit it
+	// make haptic for swipes that goes on downward slope until you hit it, which then hits you with it
+	// can reset swipe and swipe another direction
+	// multiple swipe support
+	// move touch controls to update() override?
+	// make datatype that has all 3 needed info and then make an array of them?
+	var initTouchPos:FlxPoint = new FlxPoint();
+
+	var touchAngle:Float = 0;
+	var touchLength:Float = 0;
+	var curTouchPos:FlxPoint = new FlxPoint();
+
+	var vibrationSteps:Int = 5;
+	var curStep:Int = 5;
+	var activateLength:Float = 90;
+	var hapticPressure:Int = 100;
+
+	override function update():Void
+	{
+		super.update();
+
+		#if FLX_TOUCH
+		for (touch in FlxG.touches.list)
+		{
+			if (touch.justPressed)
+			{
+				initTouchPos.set(touch.screenX, touch.screenY);
+				curStep = 1;
+			}
+			if (touch.pressed)
+			{
+				curTouchPos.set(touch.screenX, touch.screenY);
+
+				var dx = initTouchPos.x - touch.screenX;
+				var dy = initTouchPos.y - touch.screenY;
+
+				touchAngle = Math.atan2(dy, dx);
+				touchLength = Math.sqrt(dx * dx + dy * dy);
+
+				FlxG.watch.addQuick("LENGTH", touchLength);
+				FlxG.watch.addQuick("ANGLE", FlxAngle.asDegrees(touchLength));
+
+				if (touchLength >= (activateLength / vibrationSteps) * curStep)
+				{
+					curStep += 1;
+					Haptic.vibrate(Std.int(hapticPressure / curStep), 50);
+				}
+			}
+
+			/* switch (inputID)
+				{
+					case FlxObject.UP:
+						return
+					case FlxObject.DOWN:
+				}
+			 */
+		}
+		#end
+	}
+
+	override public function check(Action:FlxAction):Bool
+	{
+		var degAngle = FlxAngle.asDegrees(touchAngle);
+
+		switch (trigger)
+		{
+			case JUST_PRESSED:
+				if (touchLength >= activateLength) // 90 is random ass value lol
+				{
+					switch (inputID)
+					{
+						case FlxObject.UP:
+							if (degAngle >= 45 && degAngle <= 90 + 45) return properTouch();
+						case FlxObject.DOWN:
+							if (-degAngle >= 45 && -degAngle <= 90 + 45) return properTouch();
+						case FlxObject.LEFT:
+							if (degAngle <= 45 && -degAngle <= 45) return properTouch();
+						case FlxObject.RIGHT:
+							if (degAngle >= 90 + 45 && -degAngle >= 90 + 45) return properTouch();
+
+						default:
+							return false;
+					}
+				}
+			default:
+				return false;
+		}
+
+		return false;
+	}
+
+	function properTouch():Bool
+	{
+		curStep = 1;
+		Haptic.vibrate(100, 20);
+		initTouchPos.set(curTouchPos.x, curTouchPos.y);
+		return true;
+	}
+}
+
 // Maybe this can be committed to main HaxeFlixel repo?
 class FlxActionInputDigitalAndroid extends FlxActionInputDigital
 {
 	/**
 	 * Android buttons action input
-	 * @param	androidKeyID Key identifier (FlxAndroidKey.BACK, FlxAndroidKey.MENU... those are the only 2 lol)
+	 * @param	androidKeyID Key identifier (FlxAndroidKey.BACK, FlxAndroidKey.MENU... those are the only 2 android specific ones)
 	 * @param	Trigger What state triggers this action (PRESSED, JUST_PRESSED, RELEASED, JUST_RELEASED)
 	 */
 	public function new(androidKeyID:FlxAndroidKey, Trigger:FlxInputState)
 	{
-		// if this gets PR'd into HF repo, the "OTHER" device should prob be changed to "MOBILE" or somethin
 		super(FlxInputDevice.OTHER, androidKeyID, Trigger);
 	}
 
