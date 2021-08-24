@@ -2777,6 +2777,7 @@ class ChartingState extends MusicBeatState
 
 		function iconUpdate(failsafe:Bool = false):Void
 		{
+			trace('you called?');
 			var sect = _song.notes[curSection];
 			var cachedY = i.icon.y;
 			remove(i.icon);
@@ -2798,7 +2799,7 @@ class ChartingState extends MusicBeatState
 				iconUpdate(true);
 		}
 		//
-		else if (i.icon.animation.curAnim.name != head && i.icon.animation.curAnim.name != head.split("-")[0] || head == 'bf-pixel')
+		else if (i.icon.animation.curAnim.name != head && i.icon.animation.curAnim.name != head.split("-")[0] || head == 'bf-pixel' && i.icon.animation.curAnim.name != 'bf-pixel')
 		{
 			if (i.icon.animation.getByName(head) != null)
 				i.icon.animation.play(head);
