@@ -92,14 +92,14 @@ class Ratings
         return ranking;
     }
     
-    public static var timingWindows = [166,135,90,45];
+    public static var timingWindows = [166.0,135.0,90.0,45.0];
 
-    public static function judgeNote(note:Note)
+    public static function judgeNote(noteDiff:Float)
     {
-        var diff = Math.abs(note.strumTime - Conductor.songPosition) / (PlayState.songMultiplier >= 1 ? PlayState.songMultiplier : 1);
+        var diff = Math.abs(noteDiff) / (PlayState.songMultiplier >= 1 ? PlayState.songMultiplier : 1);
         for(index in 0...timingWindows.length) // based on 4 timing windows, will break with anything else
         {
-            var time = timingWindows[index];
+            var time = timingWindows[index] * Conductor.timeScale;
             var nextTime = index + 1 > timingWindows.length - 1 ? 0 : timingWindows[index + 1];
             if (diff < time && diff >= nextTime)
             {
