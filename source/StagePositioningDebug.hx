@@ -8,6 +8,11 @@ import flixel.text.FlxText;
 import flixel.FlxCamera;
 import flixel.FlxSprite;
 import flixel.util.FlxCollision;
+import openfl.events.Event;
+import openfl.events.IOErrorEvent;
+import openfl.net.FileReference;
+
+using StringTools;
 
 class StagePositioningDebug extends FlxState
 {
@@ -15,6 +20,8 @@ class StagePositioningDebug extends FlxState
 	public var daBf:String;
 	public var daGf:String;
 	public var opponent:String;
+
+	var _file:FileReference;
 
 	var gf:Character;
 	var boyfriend:Boyfriend;
@@ -161,7 +168,6 @@ class StagePositioningDebug extends FlxState
 			dragging = true;
 			updateMousePos();
 		}
-		FlxG.watch.addQuick('dragging', dragging);
 
 		if (dragging && FlxG.mouse.justMoved)
 		{
@@ -209,6 +215,9 @@ class StagePositioningDebug extends FlxState
 			}
 		}
 
+		if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.S)
+			saveBoyPos();
+
 		super.update(elapsed);
 	}
 
@@ -254,4 +263,74 @@ class StagePositioningDebug extends FlxState
 				curCharString = opponent;
 		}
 	}
+
+	function saveBoyPos():Void
+	{
+		var result = "";
+
+		for (spriteName => sprite in Stage.swagBacks)
+		{
+			var text = spriteName + " X: " + sprite.x + " Y: " + sprite.y;
+			result += text + "\n";
+		}
+		var curCharIndex:Int = 0;
+		var char:String = '';
+		for (sprite in curChars)
+		{
+			switch (curCharIndex)
+			{
+				case 0:
+					char = daGf;
+				case 1:
+					char = daBf;
+				case 2:
+					char = opponent;
+			}
+			result += char + ' X: ' + curChars[curCharIndex].x + " Y: " + curChars[curCharIndex].y + "\n";
+			++curCharIndex;
+		}
+
+		if ((result != null) && (result.length > 0))
+		{
+				_file = new FileReference();
+				_file.addEventListener(Event.COMPLETE, onSaveComplete);
+				_file.addEventListener(Event.CANCEL, onSaveCancel);
+				_file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
+				_file.save(result.trim(), daStage + "Positions.txt");
+		}
+	}
+
+	/**
+	 * Called when the save file dialog is completed.
+	 */
+	 function onSaveComplete(_):Void
+		{
+			_file.removeEventListener(Event.COMPLETE, onSaveComplete);
+			_file.removeEventListener(Event.CANCEL, onSaveCancel);
+			_file.removeEventListener(IOErrorEvent.IO_ERROR, onSaveError);
+			_file = null;
+			FlxG.log.notice("Successfully saved OFFSET DATA.");
+		}
+
+	/**
+	 * Called when the save file dialog is cancelled.
+	 */
+	 function onSaveCancel(_):Void
+		{
+			_file.removeEventListener(Event.COMPLETE, onSaveComplete);
+			_file.removeEventListener(Event.CANCEL, onSaveCancel);
+			_file.removeEventListener(IOErrorEvent.IO_ERROR, onSaveError);
+			_file = null;
+		}
+
+	function onSaveError(_):Void
+		{
+			_file.removeEventListener(Event.COMPLETE, onSaveComplete);
+			_file.removeEventListener(Event.CANCEL, onSaveCancel);
+			_file.removeEventListener(IOErrorEvent.IO_ERROR, onSaveError);
+			_file = null;
+			FlxG.log.error("Problem saving Positions data");
+		}
+
+	
 }
