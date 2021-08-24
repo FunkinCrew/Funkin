@@ -1212,10 +1212,10 @@ class PlayState extends MusicBeatState
 				if (idleToBeat && !boyfriend.animation.curAnim.name.startsWith("sing"))
 					boyfriend.dance(forcedToIdle);
 				if (idleToBeat && !dad.animation.curAnim.name.startsWith("sing"))
-					dad.dance(forcedToIdle, currentSection.CPUAltAnim);
+					dad.dance(forcedToIdle);
 			}
 			else if ((dad.curCharacter == 'spooky' || dad.curCharacter == 'gf') && !dad.animation.curAnim.name.startsWith("sing"))
-				dad.dance(forcedToIdle, currentSection.CPUAltAnim);
+				dad.dance(forcedToIdle);
 
 			var introAssets:Map<String, Array<String>> = new Map<String, Array<String>>();
 			introAssets.set('default', ['ready', "set", "go"]);
@@ -1500,7 +1500,7 @@ class PlayState extends MusicBeatState
 		if (idleToBeat && !boyfriend.animation.curAnim.name.startsWith("sing"))
 			boyfriend.dance(forcedToIdle);
 		if (idleToBeat && !dad.animation.curAnim.name.startsWith("sing"))
-			dad.dance(forcedToIdle, currentSection.CPUAltAnim);
+			dad.dance(forcedToIdle);
 
 		// Song check real quick
 		switch (curSong)
