@@ -486,6 +486,13 @@ class Character extends FlxSprite
 						playAnim('danceRight');
 					else
 						playAnim('danceLeft');
+				/*
+				// new dance code is gonna end up cutting off animation with the idle
+				// so here's example code that'll fix it. just adjust it to ya character 'n shit
+				case 'custom character':
+					if (!animation.curAnim.name.endsWith('custom animation'))
+						playAnim('idle');
+				*/
 				default:
 					if (altAnim && animation.getByName('idle-alt') != null)
 						playAnim('idle-alt', forced);
