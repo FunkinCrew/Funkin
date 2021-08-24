@@ -126,9 +126,9 @@
 	<haxelib name="newgrounds"/>
 	<haxelib name="faxe" if='switch'/>
 	<haxelib name="polymod"/>
-	<haxelib name="discord_rpc" if="windows"/>
+	<haxelib name="discord_rpc" if="desktop"/>
 	<haxelib name="linc_luajit"/>
-	<haxelib name="hxvm-luajit" if="windows"/>
+	<haxelib name="hxvm-luajit" if="desktop"/>
 	<!-- <haxelib name="hxcpp-debug-server" if="desktop"/> -->
 
 	<!-- <haxelib name="markdown" /> -->

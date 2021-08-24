@@ -73,7 +73,7 @@ import lime.utils.Assets;
 import openfl.display.BlendMode;
 import openfl.display.StageQuality;
 import openfl.filters.ShaderFilter;
-#if windows
+#if desktop
 import Discord.DiscordClient;
 #end
 #if cpp
@@ -346,7 +346,7 @@ class PlayState extends MusicBeatState
 		if (executeModchart)
 			songMultiplier = 1;
 
-		#if windows
+		#if desktop
 		// Making difficulty text for Discord Rich Presence.
 		storyDifficultyText = CoolUtil.difficultyFromInt(storyDifficulty);
 
@@ -646,6 +646,7 @@ class PlayState extends MusicBeatState
 		}
 
 		// REPOSITIONING PER STAGE
+		if (!PlayStateChangeables.Optimize)
 		switch (Stage.curStage)
 		{
 			case 'limo':
@@ -1432,7 +1433,7 @@ class PlayState extends MusicBeatState
 		if (executeModchart)
 			luaModchart.executeState("songStart",[null]);
 
-		#if windows
+		#if desktop
 		// Updating Discord Rich Presence (with Time Left)
 		DiscordClient.changePresence(detailsText
 			+ " "
@@ -1864,7 +1865,7 @@ class PlayState extends MusicBeatState
 				vocals.pause();
 			}
 
-			#if windows
+			#if desktop
 			DiscordClient.changePresence("PAUSED on "
 				+ SONG.song
 				+ " ("
@@ -1898,7 +1899,7 @@ class PlayState extends MusicBeatState
 				startTimer.active = true;
 			paused = false;
 
-			#if windows
+			#if desktop
 			if (startTimer.finished)
 			{
 				DiscordClient.changePresence(detailsText
@@ -1944,7 +1945,7 @@ class PlayState extends MusicBeatState
 
 		}
 
-		#if windows
+		#if desktop
 		DiscordClient.changePresence(detailsText
 			+ " "
 			+ SONG.song
@@ -2039,7 +2040,7 @@ class PlayState extends MusicBeatState
 					// Song ends abruptly on slow rate even with second condition being deleted, 
 					// and if it's deleted on songs like cocoa then it would end without finishing instrumental fully,
 					// so no reason to delete it at all
-					if (notes.length == 0 && FlxG.sound.music.length - Conductor.songPosition <= 100)
+					if (unspawnNotes.length == 0 && FlxG.sound.music.length - Conductor.songPosition <= 100)
 					{
 						endSong();
 					}
@@ -2227,7 +2228,7 @@ class PlayState extends MusicBeatState
 
 		if (FlxG.keys.justPressed.NINE)
 				iconP1.swapOldIcon();
-
+		if (!PlayStateChangeables.Optimize)
 		switch (Stage.curStage)
 		{
 			case 'philly':
@@ -2359,6 +2360,7 @@ class PlayState extends MusicBeatState
 				FlxG.stage.window.onFocusIn.remove(focusIn);
 				removedVideo = true;
 			}
+			if (!PlayStateChangeables.Optimize)
 			new FlxTimer().start(0.3, function(tmr:FlxTimer)
 			{
 				for (bg in Stage.toAdd)
@@ -2637,7 +2639,7 @@ class PlayState extends MusicBeatState
 				if (luaModchart != null)
 					luaModchart.executeState('playerOneTurn', []);
 				#end
-
+				if (!PlayStateChangeables.Optimize)
 				switch (Stage.curStage)
 				{
 					case 'limo':
@@ -2742,7 +2744,7 @@ class PlayState extends MusicBeatState
 					openSubState(new GameOverSubstate(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 				}
 
-				#if windows
+				#if desktop
 				// Game Over doesn't get his own variable because it's only used here
 				DiscordClient.changePresence("GAME OVER -- "
 					+ SONG.song
@@ -2785,7 +2787,7 @@ class PlayState extends MusicBeatState
 					openSubState(new GameOverSubstate(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 				}
 
-				#if windows
+				#if desktop
 				// Game Over doesn't get his own variable because it's only used here
 				DiscordClient.changePresence("GAME OVER -- "
 					+ SONG.song
@@ -2878,6 +2880,7 @@ class PlayState extends MusicBeatState
 									2))) + daNote.noteYOff;
 						if (daNote.isSustainNote)
 						{
+							daNote.y -= daNote.height / 2;
 
 							if (!PlayStateChangeables.botPlay)
 							{
@@ -3481,7 +3484,7 @@ class PlayState extends MusicBeatState
 		if (FlxG.save.data.accuracyMod == 1)
 			totalNotesHit += wife;
 
-		var daRating = daNote.rating;
+		var daRating = Ratings.judgeNote(daNote);
 
 		switch (daRating)
 		{
@@ -4503,6 +4506,7 @@ class PlayState extends MusicBeatState
 			resyncVocals();
 		}
 
+		if (!PlayStateChangeables.Optimize)
 		for (step in Stage.slowBacks.keys())
 		{
 			if (step == curStep)
@@ -4646,6 +4650,7 @@ class PlayState extends MusicBeatState
 				dad.playAnim('cheer', true);
 			}
 
+			if (!PlayStateChangeables.Optimize)
 			switch (Stage.curStage)
 			{
 				case 'school':
@@ -4703,6 +4708,7 @@ class PlayState extends MusicBeatState
 					}
 			}
 
+			if (!PlayStateChangeables.Optimize)
 			if (Stage.halloweenLevel && FlxG.random.bool(Conductor.bpm > 320 ? 100 : 10) && curBeat > lightningStrikeBeat + lightningOffset)
 			{
 				if (FlxG.save.data.distractions)
@@ -4834,3 +4840,4 @@ class PlayState extends MusicBeatState
 
 	var curLight:Int = 0;
 }
+//u looked :O -ides
