@@ -952,6 +952,7 @@ class PlayState extends MusicBeatState
 		kadeEngineWatermark = new FlxText(4, healthBarBG.y
 			+ 50, 0,
 			SONG.song
+			+ (songMultiplier != 1 ? " (" + songMultiplier + "x)" : "")
 			+ " - "
 			+ CoolUtil.difficultyFromInt(storyDifficulty)
 			+ (Main.watermarks ? " | KE " + MainMenuState.kadeEngineVer : ""), 16);
