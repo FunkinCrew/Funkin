@@ -100,6 +100,21 @@ class AnimationDebug extends FlxState
 		}
 	}
 
+	function copyBoyOffsets():Void
+	{
+		var result = "";
+
+		for (anim => offsets in char.animOffsets)
+		{
+			var text = anim + " " + offsets.join(" ");
+			result += text + "\n";
+		}
+
+		trace("Outputting animation offsets to clipboard...");
+
+		openfl.system.System.setClipboard(result);
+	}
+
 	function updateTexts():Void
 	{
 		dumbTexts.forEach(function(text:FlxText)
@@ -112,6 +127,9 @@ class AnimationDebug extends FlxState
 	override function update(elapsed:Float)
 	{
 		textAnim.text = char.animation.curAnim.name;
+
+		if (FlxG.keys.justPressed.ENTER || FlxG.keys.justPressed.ESCAPE)
+			FlxG.switchState(new MainMenuState());
 
 		if (FlxG.keys.justPressed.E)
 			FlxG.camera.zoom += 0.25;
@@ -192,6 +210,9 @@ class AnimationDebug extends FlxState
 			genBoyOffsets(false);
 			char.playAnim(animList[curAnim]);
 		}
+
+		if (FlxG.keys.justPressed.V)
+			copyBoyOffsets();
 
 		super.update(elapsed);
 	}

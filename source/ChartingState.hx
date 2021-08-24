@@ -44,7 +44,7 @@ import openfl.events.IOErrorEvent;
 import openfl.media.Sound;
 import openfl.net.FileReference;
 import openfl.utils.ByteArray;
-#if windows
+#if desktop
 import Discord.DiscordClient;
 #end
 
@@ -1795,7 +1795,7 @@ class ChartingState extends MusicBeatState
 		
 		updateHeads();
 		
-		#if windows
+		#if desktop
 		DiscordClient.changePresence("Chart Editor", null, null, true);
 		#end
 
