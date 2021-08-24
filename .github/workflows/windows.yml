@@ -1,0 +1,57 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the workflow will run
+on: push
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: windows-latest
+    
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      - uses: krdlab/setup-haxe@v1
+        with:
+          haxe-version: 4.0.5
+      # Runs a set of commands using the runners shell
+      - name: script run line haha
+        run: |
+          cinst neko --version 2.3.0 -y
+          cinst haxe --version 4.1.5 -y
+          RefreshEnv
+          mkdir "%HAXELIB_ROOT%"
+          haxelib setup "%HAXELIB_ROOT%"
+          Install project dependencies
+          haxelib install lime 7.9.0
+          RefreshEnv
+          haxelib install openfl
+          haxelib install flixel
+          haxelib run lime setup flixel
+          haxelib run lime setup
+          haxelib install flixel-tools
+          haxelib run flixel-tools setup -y # Can't do this since it asks [y/n] even with -y argument! Stupid
+          haxelib install flixel-addons
+          haxelib install flixel-ui
+          haxelib install hscript
+          haxelib install newgrounds
+          haxelib install flixel-addons
+          haxelib git faxe https://github.com/uhrobots/faxe
+          haxelib git polymod https://github.com/larsiusprime/polymod.git
+          haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
+          haxelib git extension-webm https://github.com/KadeDev/extension-webm
+          haxelib run lime rebuild extension-webm windows
+          haxelib install linc_luajit
+          haxelib install actuate 
+          haxelib list
+          haxelib run lime build windows
+          
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Windows Build
+          path: export/release/windows/bin

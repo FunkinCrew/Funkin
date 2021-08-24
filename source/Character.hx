@@ -434,9 +434,12 @@ class Character extends FlxSprite
 
 			if (curCharacter == 'dad')
 				dadVar = 6.1;
+			else if (curCharacter == 'gf')
+				dadVar = 4.1; //fix double dances
 			if (holdTimer >= Conductor.stepCrochet * dadVar * 0.001)
 			{
-				trace('dance');
+				if (curCharacter == 'gf')
+					playAnim('danceLeft'); //overridden by dance correctly later
 				dance();
 				holdTimer = 0;
 			}
@@ -446,7 +449,10 @@ class Character extends FlxSprite
 		{
 			case 'gf':
 				if (animation.curAnim.name == 'hairFall' && animation.curAnim.finished)
+				{
+					danced = true;
 					playAnim('danceRight');
+				}
 		}
 
 		super.update(elapsed);
@@ -464,7 +470,7 @@ class Character extends FlxSprite
 			switch (curCharacter)
 			{
 				case 'gf' | 'gf-christmas' | 'gf-car' | 'gf-pixel':
-					if (!animation.curAnim.name.startsWith('hair'))
+					if (!animation.curAnim.name.startsWith('hair') && !animation.curAnim.name.startsWith('sing'))
 					{
 						danced = !danced;
 
