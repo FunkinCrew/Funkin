@@ -1134,9 +1134,12 @@ class PlayState extends MusicBeatState
 
 		startTimer = new FlxTimer().start(Conductor.crochet / 1000, function(tmr:FlxTimer)
 		{
-			dad.dance();
-			gf.dance();
-			boyfriend.playAnim('idle');
+			if (swagCounter != 4) //prevent animation overlap lol
+			{
+				dad.dance();
+				gf.dance();
+				boyfriend.playAnim('idle');
+			}
 
 			var introAssets:Map<String, Array<String>> = new Map<String, Array<String>>();
 			introAssets.set('default', ['ready', "set", "go"]);
@@ -2811,6 +2814,7 @@ class PlayState extends MusicBeatState
 		if (generatedMusic)
 		{
 			var holdArray:Array<Bool> = [controls.LEFT, controls.DOWN, controls.UP, controls.RIGHT];
+			var stepHeight = (0.45 * Conductor.stepCrochet * FlxMath.roundDecimal(PlayState.SONG.speed, 2));
 
 			notes.forEachAlive(function(daNote:Note)
 			{
@@ -2821,7 +2825,6 @@ class PlayState extends MusicBeatState
 				{
 					if (PlayStateChangeables.useDownscroll)
 					{
-						
 						if (daNote.mustPress)
 						{
 							daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y
@@ -2836,9 +2839,8 @@ class PlayState extends MusicBeatState
 									2))) - daNote.noteYOff;
 						if (daNote.isSustainNote)
 						{
-							// Remember = minus makes notes go up, plus makes them go down
-							//if (daNote.animation.curAnim.name.endsWith('end') && daNote.prevNote != null)
-							//	daNote.y += daNote.prevNote.height;
+							// Correct downscroll positioning
+							daNote.y -= daNote.height - stepHeight;
 
 							// If not in botplay, only clip sustain notes when properly hit, botplay gets to clip it everytime
 							if (!PlayStateChangeables.botPlay)
