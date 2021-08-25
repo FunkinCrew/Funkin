@@ -852,6 +852,14 @@ typedef SaveInputLists =
 	?pad:Array<Int>
 };
 
+typedef Swipes =
+{
+	?initTouchPos:FlxPoint,
+	?touchAngle:Float,
+	?touchLength:Float,
+	?curTouchPos:FlxPoint
+};
+
 class FlxActionInputDigitalMobileSwipeGameplay extends FlxActionInputDigital
 {
 	public function new(swipeDir:Int = FlxObject.ANY, Trigger:FlxInputState)
@@ -859,9 +867,10 @@ class FlxActionInputDigitalMobileSwipeGameplay extends FlxActionInputDigital
 		super(MOBILE, swipeDir, Trigger);
 	}
 
-	// multiple swipe support
-	// make datatype that has all 3 needed info and then make an array of them?
-	//
+	// fix right swipe
+	// fix down swipe on left side of screen?
+	var touchMap:Map<Int, Swipes> = new Map();
+
 	var initTouchPos:FlxPoint = new FlxPoint();
 
 	var touchAngle:Float = 0;
@@ -882,28 +891,45 @@ class FlxActionInputDigitalMobileSwipeGameplay extends FlxActionInputDigital
 		{
 			if (touch.justPressed)
 			{
-				initTouchPos.set(touch.screenX, touch.screenY);
+				var pos:FlxPoint = new FlxPoint(touch.screenX, touch.screenY);
+				var pos2:FlxPoint = new FlxPoint(touch.screenX, touch.screenY);
+
+				var swp:Swipes = {
+					initTouchPos: pos,
+					curTouchPos: pos2,
+					touchAngle: 0,
+					touchLength: 0
+				};
+				touchMap[touch.touchPointID] = swp;
+
 				curStep = 1;
 				Haptic.vibrate(40, 70);
 			}
 			if (touch.pressed)
 			{
-				curTouchPos.set(touch.screenX, touch.screenY);
+				var daSwipe = touchMap[touch.touchPointID];
 
-				var dx = initTouchPos.x - touch.screenX;
-				var dy = initTouchPos.y - touch.screenY;
+				daSwipe.curTouchPos.set(touch.screenX, touch.screenY);
 
-				touchAngle = Math.atan2(dy, dx);
-				touchLength = Math.sqrt(dx * dx + dy * dy);
+				var dx = daSwipe.initTouchPos.x - touch.screenX;
+				var dy = daSwipe.initTouchPos.y - touch.screenY;
 
-				FlxG.watch.addQuick("LENGTH", touchLength);
-				FlxG.watch.addQuick("ANGLE", FlxAngle.asDegrees(touchLength));
+				daSwipe.touchAngle = Math.atan2(dy, dx);
+				daSwipe.touchLength = Math.sqrt(dx * dx + dy * dy);
 
-				if (touchLength >= (activateLength / vibrationSteps) * curStep)
+				// FlxG.watch.addQuick("LENGTH", touchLength);
+				// FlxG.watch.addQuick("ANGLE", FlxAngle.asDegrees(touchLength));
+
+				if (daSwipe.touchLength >= (activateLength / vibrationSteps) * curStep)
 				{
 					curStep += 1;
 					// Haptic.vibrate(Std.int(hapticPressure / (curStep * 1.5)), 50);
 				}
+			}
+
+			if (touch.justReleased)
+			{
+				touchMap.remove(touch.touchPointID);
 			}
 
 			/* switch (inputID)
@@ -919,36 +945,39 @@ class FlxActionInputDigitalMobileSwipeGameplay extends FlxActionInputDigital
 
 	override public function check(Action:FlxAction):Bool
 	{
-		var degAngle = FlxAngle.asDegrees(touchAngle);
-
-		switch (trigger)
+		for (swp in touchMap)
 		{
-			case JUST_PRESSED:
-				if (touchLength >= activateLength) // 90 is random ass value lol
-				{
-					switch (inputID)
+			var degAngle = FlxAngle.asDegrees(swp.touchAngle);
+
+			switch (trigger)
+			{
+				case JUST_PRESSED:
+					if (swp.touchLength >= activateLength) // 90 is random ass value lol
 					{
-						case FlxObject.UP:
-							if (degAngle >= 45 && degAngle <= 90 + 45) return properTouch();
-						case FlxObject.DOWN:
-							if (-degAngle >= 45 && -degAngle <= 90 + 45) return properTouch();
-						case FlxObject.LEFT:
-							if (degAngle <= 45 && -degAngle <= 45) return properTouch();
-						case FlxObject.RIGHT:
-							if (degAngle >= 90 + 45 && -degAngle >= 90 + 45) return properTouch();
+						switch (inputID)
+						{
+							case FlxObject.UP:
+								if (degAngle >= 45 && degAngle <= 90 + 45) return properTouch(swp);
+							case FlxObject.DOWN:
+								if (-degAngle >= 45 && -degAngle <= 90 + 45) return properTouch(swp);
+							case FlxObject.LEFT:
+								if (degAngle <= 45 && -degAngle <= 45) return properTouch(swp);
+							case FlxObject.RIGHT:
+								if (degAngle >= 90 + 45 && -degAngle >= 90 + 45) return properTouch(swp);
+						}
 					}
-				}
-			default:
+				default:
+			}
 		}
 
 		return false;
 	}
 
-	function properTouch():Bool
+	function properTouch(swipe:Swipes):Bool
 	{
 		curStep = 1;
 		Haptic.vibrate(100, 30);
-		initTouchPos.set(curTouchPos.x, curTouchPos.y);
+		swipe.initTouchPos.set(curTouchPos.x, curTouchPos.y);
 		return true;
 	}
 }
