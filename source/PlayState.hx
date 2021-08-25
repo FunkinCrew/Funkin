@@ -2837,8 +2837,14 @@ class PlayState extends MusicBeatState
 						if (daNote.isSustainNote)
 						{
 							// Remember = minus makes notes go up, plus makes them go down
-							if (daNote.animation.curAnim.name.endsWith('end') && daNote.prevNote != null)
+							if (daNote.animation.curAnim.name.endsWith("end") && daNote.prevNote != null)
+							{
 								daNote.y += daNote.prevNote.height;
+							}
+							else
+							{
+								daNote.y += daNote.height / 2;
+							}
 
 							// If not in botplay, only clip sustain notes when properly hit, botplay gets to clip it everytime
 							if (!PlayStateChangeables.botPlay)
