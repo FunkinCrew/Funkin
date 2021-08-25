@@ -544,6 +544,11 @@ class Controls extends FlxActionSet
 		forEachBound(control, function(action, state) addKeys(action, keys, state));
 	}
 
+	public function bindSwipe(control:Control, swipeDir:Int = FlxObject.UP)
+	{
+		forEachBound(control, function(action, press) action.add(new FlxActionInputDigitalMobileSwipeGameplay(swipeDir, press)));
+	}
+
 	/**
 	 * Sets all actions that pertain to the binder to trigger when the supplied keys are used.
 	 * If binder is a literal you can inline this
@@ -622,36 +627,32 @@ class Controls extends FlxActionSet
 			case Custom: // nothing
 		}
 
+		bindMobileLol();
+	}
+
+	function bindMobileLol()
+	{
+		#if FLX_TOUCH
+		// MAKE BETTER TOUCH BIND CODE
+
+		bindSwipe(Control.NOTE_UP, FlxObject.UP);
+		bindSwipe(Control.NOTE_DOWN, FlxObject.DOWN);
+		bindSwipe(Control.NOTE_LEFT, FlxObject.LEFT);
+		bindSwipe(Control.NOTE_RIGHT, FlxObject.RIGHT);
+
+		bindSwipe(Control.UI_UP, FlxObject.UP);
+		bindSwipe(Control.UI_DOWN, FlxObject.DOWN);
+		bindSwipe(Control.UI_LEFT, FlxObject.LEFT);
+		bindSwipe(Control.UI_RIGHT, FlxObject.RIGHT);
+		#end
+
 		#if android
 		forEachBound(Control.BACK, function(action, pres)
 		{
 			action.add(new FlxActionInputDigitalAndroid(FlxAndroidKey.BACK, JUST_PRESSED));
 		});
-
-		#if FLX_TOUCH
-		forEachBound(Control.NOTE_UP, function(action, press)
-		{
-			action.add(new FlxActionInputDigitalMobileSwipeGameplay(FlxObject.UP, JUST_PRESSED));
-		});
-
-		forEachBound(Control.NOTE_DOWN, function(action, press)
-		{
-			action.add(new FlxActionInputDigitalMobileSwipeGameplay(FlxObject.DOWN, JUST_PRESSED));
-		});
-
-		forEachBound(Control.NOTE_LEFT, function(action, press)
-		{
-			action.add(new FlxActionInputDigitalMobileSwipeGameplay(FlxObject.LEFT, JUST_PRESSED));
-		});
-		forEachBound(Control.NOTE_RIGHT, function(action, press)
-		{
-			action.add(new FlxActionInputDigitalMobileSwipeGameplay(FlxObject.RIGHT, JUST_PRESSED));
-		});
-		#end
 		#end
 	}
-
-	var virutalPad:FlxVirtualPad;
 
 	function removeKeyboard()
 	{
@@ -858,13 +859,9 @@ class FlxActionInputDigitalMobileSwipeGameplay extends FlxActionInputDigital
 		super(MOBILE, swipeDir, Trigger);
 	}
 
-	// make thing to register swipes
-	// make thing to reset swipe when u hit it
-	// make haptic for swipes that goes on downward slope until you hit it, which then hits you with it
-	// can reset swipe and swipe another direction
 	// multiple swipe support
-	// move touch controls to update() override?
 	// make datatype that has all 3 needed info and then make an array of them?
+	//
 	var initTouchPos:FlxPoint = new FlxPoint();
 
 	var touchAngle:Float = 0;
@@ -887,6 +884,7 @@ class FlxActionInputDigitalMobileSwipeGameplay extends FlxActionInputDigital
 			{
 				initTouchPos.set(touch.screenX, touch.screenY);
 				curStep = 1;
+				Haptic.vibrate(40, 70);
 			}
 			if (touch.pressed)
 			{
@@ -904,7 +902,7 @@ class FlxActionInputDigitalMobileSwipeGameplay extends FlxActionInputDigital
 				if (touchLength >= (activateLength / vibrationSteps) * curStep)
 				{
 					curStep += 1;
-					Haptic.vibrate(Std.int(hapticPressure / curStep), 50);
+					// Haptic.vibrate(Std.int(hapticPressure / (curStep * 1.5)), 50);
 				}
 			}
 
@@ -938,13 +936,9 @@ class FlxActionInputDigitalMobileSwipeGameplay extends FlxActionInputDigital
 							if (degAngle <= 45 && -degAngle <= 45) return properTouch();
 						case FlxObject.RIGHT:
 							if (degAngle >= 90 + 45 && -degAngle >= 90 + 45) return properTouch();
-
-						default:
-							return false;
 					}
 				}
 			default:
-				return false;
 		}
 
 		return false;
@@ -953,7 +947,7 @@ class FlxActionInputDigitalMobileSwipeGameplay extends FlxActionInputDigital
 	function properTouch():Bool
 	{
 		curStep = 1;
-		Haptic.vibrate(100, 20);
+		Haptic.vibrate(100, 30);
 		initTouchPos.set(curTouchPos.x, curTouchPos.y);
 		return true;
 	}

@@ -2662,40 +2662,55 @@ class PlayState extends MusicBeatState
 			controls.NOTE_UP_R,
 			controls.NOTE_RIGHT_R
 		];
-
-		var widHalf = FlxG.width / 2;
-		var heightHalf = FlxG.height / 2;
-
 		/* 
+			var widHalf = FlxG.width / 2;
+			var heightHalf = FlxG.height / 2;
+
 			if (FlxG.onMobile)
 			{
 				for (touch in FlxG.touches.list)
 				{
+					var getHeight:Int = Math.floor(touch.justPressedPosition.y / (FlxG.height / 3));
+					var getWid:Int = Math.floor(touch.justPressedPosition.x / (FlxG.width / 4));
 					if (touch.justPressed)
 					{
-						var getHeight:Int = Math.floor(touch.justPressedPosition.y / (FlxG.height / 3));
-
-						switch (getHeight)
+						switch (getWid)
 						{
-							case 0:
-								pressArray[2] = true;
 							case 1:
-								touch.justPressedPosition.x < widHalf ? pressArray[0] = true : pressArray[3] = true;
+								pressArray[3] = true;
 							case 2:
-								pressArray[1] = true;
+								pressArray[0] = true;
+							default:
+								switch (getHeight)
+								{
+									case 0:
+										pressArray[2] = true;
+									case 1:
+										touch.justPressedPosition.x < widHalf ? pressArray[0] = true : pressArray[3] = true;
+									case 2:
+										pressArray[1] = true;
+								}
 						}
 					}
 
-					var getHeight:Int = Math.floor(touch.justPressedPosition.y / (FlxG.height / 3));
-
-					switch (getHeight)
+					switch (getWid)
 					{
-						case 0:
-							holdArray[2] = true;
 						case 1:
-							touch.justPressedPosition.x < widHalf ? holdArray[0] = true : holdArray[3] = true;
+							holdArray[3] = true;
+
 						case 2:
-							holdArray[1] = true;
+							holdArray[0] = true;
+
+						default:
+							switch (getHeight)
+							{
+								case 0:
+									holdArray[2] = true;
+								case 1:
+									touch.justPressedPosition.x < widHalf ? holdArray[0] = true : holdArray[3] = true;
+								case 2:
+									holdArray[1] = true;
+							}
 					}
 				}
 			}
