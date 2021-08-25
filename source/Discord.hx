@@ -39,7 +39,7 @@ class DiscordClient
 			details: "In the Menus",
 			state: null,
 			largeImageKey: 'icon',
-			largeImageText: "Friday Night Funkin'"
+			largeImageText: "Friday Night Funkin'" + #if debug ' DEBUG' #else '' #end
 		});
 	}
 

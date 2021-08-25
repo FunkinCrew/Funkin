@@ -161,6 +161,10 @@ class PlayState extends MusicBeatState
 			ghostTaps = 0;
 		}
 
+		Style.loadStyle(SONG.noteStyle.trim());
+		trace('Loaded this style: ${Style.lstyle.name}');
+		trace('FYI artstyle contains ${Style.lstyle}');
+
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
 
@@ -1048,7 +1052,7 @@ class PlayState extends MusicBeatState
 
 			for (value in introAssets.keys())
 			{
-				if (value == SONG.noteStyle)
+				if (value == Style.lstyle.name)
 				{
 					introAlts = introAssets.get(value);
 					altSuffix = '-pixel';
@@ -1061,16 +1065,12 @@ class PlayState extends MusicBeatState
 				case 0:
 					FlxG.sound.play(Paths.sound('intro3'), 0.6);
 				case 1:
-					if (SONG.noteStyle.startsWith('pixel')) {
-						libShit = 'week6';
-					} else {
-						libShit = 'shared';
-					}
+					libShit = Style.lstyle.library;
 					var ready:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[0], libShit));
 					ready.scrollFactor.set();
 					ready.updateHitbox();
 
-					if (SONG.noteStyle.startsWith('pixel'))
+					if (Style.lstyle.name.startsWith('pixel'))
 						ready.setGraphicSize(Std.int(ready.width * daPixelZoom));
 
 					ready.screenCenter();
@@ -1087,7 +1087,7 @@ class PlayState extends MusicBeatState
 					var set:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[1], libShit));
 					set.scrollFactor.set();
 
-					if (SONG.noteStyle.startsWith('pixel'))
+					if (Style.lstyle.name.startsWith('pixel'))
 						set.setGraphicSize(Std.int(set.width * daPixelZoom));
 
 					set.screenCenter();
@@ -1104,7 +1104,7 @@ class PlayState extends MusicBeatState
 					var go:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[2], libShit));
 					go.scrollFactor.set();
 
-					if (SONG.noteStyle.startsWith('pixel'))
+					if (Style.lstyle.name.startsWith('pixel'))
 						go.setGraphicSize(Std.int(go.width * daPixelZoom));
 
 					go.updateHitbox();
@@ -1259,85 +1259,16 @@ class PlayState extends MusicBeatState
 			// FlxG.log.add(i);
 			var babyArrow:FlxSprite = new FlxSprite(0, strumLine.y);
 
-			switch (SONG.noteStyle)
+			switch (curStage)
 			{
-				case 'pixel':
-					babyArrow.loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels', 'week6'), true, 17, 17);
-					babyArrow.animation.add('green', [6]);
-					babyArrow.animation.add('red', [7]);
-					babyArrow.animation.add('blue', [5]);
-					babyArrow.animation.add('purplel', [4]);
-
-					babyArrow.setGraphicSize(Std.int(babyArrow.width * daPixelZoom));
-					babyArrow.updateHitbox();
-					babyArrow.antialiasing = false;
-
-					switch (Math.abs(i))
-					{
-						case 0:
-							babyArrow.x += Note.swagWidth * 0;
-							babyArrow.animation.add('static', [0]);
-							babyArrow.animation.add('pressed', [4, 8], 12, false);
-							babyArrow.animation.add('confirm', [12, 16], 24, false);
-						case 1:
-							babyArrow.x += Note.swagWidth * 1;
-							babyArrow.animation.add('static', [1]);
-							babyArrow.animation.add('pressed', [5, 9], 12, false);
-							babyArrow.animation.add('confirm', [13, 17], 24, false);
-						case 2:
-							babyArrow.x += Note.swagWidth * 2;
-							babyArrow.animation.add('static', [2]);
-							babyArrow.animation.add('pressed', [6, 10], 12, false);
-							babyArrow.animation.add('confirm', [14, 18], 12, false);
-						case 3:
-							babyArrow.x += Note.swagWidth * 3;
-							babyArrow.animation.add('static', [3]);
-							babyArrow.animation.add('pressed', [7, 11], 12, false);
-							babyArrow.animation.add('confirm', [15, 19], 24, false);
-					}
-
-				case 'normal':
-					babyArrow.frames = Paths.getSparrowAtlas('NOTE_assets');
-					babyArrow.animation.addByPrefix('green', 'arrowUP');
-					babyArrow.animation.addByPrefix('blue', 'arrowDOWN');
-					babyArrow.animation.addByPrefix('purple', 'arrowLEFT');
-					babyArrow.animation.addByPrefix('red', 'arrowRIGHT');
-
-					babyArrow.antialiasing = true;
-					babyArrow.setGraphicSize(Std.int(babyArrow.width * 0.7));
-
-					switch (Math.abs(i))
-					{
-						case 0:
-							babyArrow.x += Note.swagWidth * 0;
-							babyArrow.animation.addByPrefix('static', 'arrowLEFT');
-							babyArrow.animation.addByPrefix('pressed', 'left press', 24, false);
-							babyArrow.animation.addByPrefix('confirm', 'left confirm', 24, false);
-						case 1:
-							babyArrow.x += Note.swagWidth * 1;
-							babyArrow.animation.addByPrefix('static', 'arrowDOWN');
-							babyArrow.animation.addByPrefix('pressed', 'down press', 24, false);
-							babyArrow.animation.addByPrefix('confirm', 'down confirm', 24, false);
-						case 2:
-							babyArrow.x += Note.swagWidth * 2;
-							babyArrow.animation.addByPrefix('static', 'arrowUP');
-							babyArrow.animation.addByPrefix('pressed', 'up press', 24, false);
-							babyArrow.animation.addByPrefix('confirm', 'up confirm', 24, false);
-						case 3:
-							babyArrow.x += Note.swagWidth * 3;
-							babyArrow.animation.addByPrefix('static', 'arrowRIGHT');
-							babyArrow.animation.addByPrefix('pressed', 'right press', 24, false);
-							babyArrow.animation.addByPrefix('confirm', 'right confirm', 24, false);
-					}
-
 				default:
-					babyArrow.frames = Paths.getSparrowAtlas('NOTE_assets');
+					babyArrow.frames = Paths.getSparrowAtlas(Style.lstyle.notes, Style.lstyle.library);
 					babyArrow.animation.addByPrefix('green', 'arrowUP');
 					babyArrow.animation.addByPrefix('blue', 'arrowDOWN');
 					babyArrow.animation.addByPrefix('purple', 'arrowLEFT');
 					babyArrow.animation.addByPrefix('red', 'arrowRIGHT');
 
-					babyArrow.antialiasing = true;
+					babyArrow.antialiasing = Style.lstyle.antialiasing;
 					babyArrow.setGraphicSize(Std.int(babyArrow.width * 0.7));
 
 					switch (Math.abs(i))
@@ -1832,7 +1763,7 @@ class PlayState extends MusicBeatState
 							{
 								spr.animation.play('confirm', true);
 							}
-							if (spr.animation.curAnim.name == 'confirm' && !SONG.noteStyle.startsWith('pixel') )
+							if (spr.animation.curAnim.name == 'confirm' && !Style.lstyle.name.startsWith('pixel') )
 							{
 								spr.centerOffsets();
 								spr.offset.x -= 13;
@@ -2035,13 +1966,13 @@ class PlayState extends MusicBeatState
 		var pixelShitPart1:String = "";
 		var pixelShitPart2:String = '';
 
-		if (SONG.noteStyle.startsWith('pixel'))
+		if (Style.lstyle.name.startsWith('pixel'))
 		{
 			pixelShitPart1 = 'weeb/pixelUI/';
 			pixelShitPart2 = '-pixel';
 		}
 
-		rating.loadGraphic(Paths.image(pixelShitPart1 + daRating + pixelShitPart2, SONG.noteStyle.startsWith('pixel') ? 'week6' : 'shared'));
+		rating.loadGraphic(Paths.image(pixelShitPart1 + daRating + pixelShitPart2, Style.lstyle.name.startsWith('pixel') ? 'week6' : 'shared'));
 		rating.screenCenter();
 		rating.x = coolText.x - 40;
 		rating.y -= 60;
@@ -2049,7 +1980,7 @@ class PlayState extends MusicBeatState
 		rating.velocity.y -= FlxG.random.int(140, 175);
 		rating.velocity.x -= FlxG.random.int(0, 10);
 
-		var comboSpr:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'combo' + pixelShitPart2, SONG.noteStyle.startsWith('pixel') ? 'week6' : 'shared'));
+		var comboSpr:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'combo' + pixelShitPart2, Style.lstyle.name.startsWith('pixel') ? 'week6' : 'shared'));
 		comboSpr.screenCenter();
 		comboSpr.x = coolText.x;
 		comboSpr.acceleration.y = 600;
@@ -2058,12 +1989,12 @@ class PlayState extends MusicBeatState
 		comboSpr.velocity.x += FlxG.random.int(1, 10);
 		add(rating);
 
-		if (!SONG.noteStyle.startsWith('pixel'))
+		if (!Style.lstyle.name.startsWith('pixel'))
 		{
 			rating.setGraphicSize(Std.int(rating.width * 0.7));
-			rating.antialiasing = true;
+			rating.antialiasing = Style.lstyle.antialiasing;
 			comboSpr.setGraphicSize(Std.int(comboSpr.width * 0.7));
-			comboSpr.antialiasing = true;
+			comboSpr.antialiasing = Style.lstyle.antialiasing;
 		}
 		else
 		{
@@ -2083,14 +2014,14 @@ class PlayState extends MusicBeatState
 		var daLoop:Int = 0;
 		for (i in seperatedScore)
 		{
-			var numScore:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'num' + Std.int(i) + pixelShitPart2, SONG.noteStyle.startsWith('pixel') ? 'week6' : 'default'));
+			var numScore:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'num' + Std.int(i) + pixelShitPart2, Style.lstyle.library));
 			numScore.screenCenter();
 			numScore.x = coolText.x + (43 * daLoop) - 90;
 			numScore.y += 80;
 
-			if (!SONG.noteStyle.startsWith('pixel'))
+			if (!Style.lstyle.name.startsWith('pixel'))
 			{
-				numScore.antialiasing = true;
+				numScore.antialiasing = Style.lstyle.antialiasing;
 				numScore.setGraphicSize(Std.int(numScore.width * 0.5));
 			}
 			else
@@ -2376,7 +2307,7 @@ class PlayState extends MusicBeatState
 			}
 
 			try {
-				if (spr.animation.curAnim.name == 'confirm' && !SONG.noteStyle.startsWith('pixel'))
+				if (spr.animation.curAnim.name == 'confirm' && !Style.lstyle.name.startsWith('pixel'))
 					{
 						spr.centerOffsets();
 						spr.offset.x -= 13;
