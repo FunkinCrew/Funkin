@@ -868,14 +868,7 @@ class FlxActionInputDigitalMobileSwipeGameplay extends FlxActionInputDigital
 	}
 
 	// fix right swipe
-	// fix down swipe on left side of screen?
 	var touchMap:Map<Int, Swipes> = new Map();
-
-	var initTouchPos:FlxPoint = new FlxPoint();
-
-	var touchAngle:Float = 0;
-	var touchLength:Float = 0;
-	var curTouchPos:FlxPoint = new FlxPoint();
 
 	var vibrationSteps:Int = 5;
 	var curStep:Int = 5;
@@ -977,7 +970,7 @@ class FlxActionInputDigitalMobileSwipeGameplay extends FlxActionInputDigital
 	{
 		curStep = 1;
 		Haptic.vibrate(100, 30);
-		swipe.initTouchPos.set(curTouchPos.x, curTouchPos.y);
+		swipe.initTouchPos.set(swipe.curTouchPos.x, swipe.curTouchPos.y);
 		return true;
 	}
 }
