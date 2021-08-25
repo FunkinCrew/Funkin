@@ -201,9 +201,9 @@ class PlayState extends MusicBeatState
 	var binds:Array<String>;
 
 	#if sys
-	public var ui_Settings:Array<String> = CoolUtil.coolTextFilePolymod(Paths.txt("ui skins/" + SONG.ui_Skin + "/config"));
+	public var ui_Settings:Array<String>;
 	#else
-	public var ui_Settings:Array<String> = CoolUtil.coolTextFile(Paths.txt("ui skins/" + SONG.ui_Skin + "/config"));
+	public var ui_Settings:Array<String>;
 	#end
 
 	public function removeObject(object:FlxBasic)
@@ -215,6 +215,8 @@ class PlayState extends MusicBeatState
 
 	public static var arrow_Texture:FlxFramesCollection;
 
+	public static var arrow_Type_Sprites:Map<String, FlxFramesCollection> = new Map<String, FlxFramesCollection>();
+
 	override public function create()
 	{
 		for(i in 0...2)
@@ -225,8 +227,6 @@ class PlayState extends MusicBeatState
 
 		instance = this;
 		binds = NoteHandler.getBinds(SONG.keyCount);
-
-		Note.swagWidth = 160 * (0.7 - ((SONG.keyCount - 4) * 0.06));
 
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
@@ -350,7 +350,16 @@ class PlayState extends MusicBeatState
 		if(Std.string(SONG.ui_Skin) == "null")
 			SONG.ui_Skin = SONG.stage == "school" || SONG.stage == "evil-school" ? "pixel" : "default";
 
+		#if sys
+		ui_Settings = CoolUtil.coolTextFilePolymod(Paths.txt("ui skins/" + SONG.ui_Skin + "/config"));
+		#else
+		ui_Settings = CoolUtil.coolTextFile(Paths.txt("ui skins/" + SONG.ui_Skin + "/config"));
+		#end
+
+		Note.swagWidth = 160 * (Std.parseFloat(ui_Settings[5]) - ((SONG.keyCount - 4) * 0.06));
+
 		arrow_Texture = Paths.getSparrowAtlas('ui skins/' + SONG.ui_Skin + "/arrows/default", 'shared');
+		arrow_Type_Sprites.set('default', arrow_Texture);
 
 		if(SONG.gf == null)
 		{
@@ -994,7 +1003,8 @@ class PlayState extends MusicBeatState
 					babyArrow.antialiasing = ui_Settings[3] == "true";
 
 					babyArrow.setGraphicSize(Std.int((babyArrow.width * Std.parseFloat(ui_Settings[0])) * (Std.parseFloat(ui_Settings[2]) - ((SONG.keyCount - 4) * 0.06))));
-					babyArrow.x += Note.swagWidth * Math.abs(i);
+					babyArrow.updateHitbox();
+					babyArrow.x += (babyArrow.width + 2) * Math.abs(i);
 
 					var animation_Base_Name = NoteVariables.Note_Count_Directions[SONG.keyCount - 1][Std.int(Math.abs(i))].getName().toLowerCase();
 
@@ -1003,7 +1013,6 @@ class PlayState extends MusicBeatState
 					babyArrow.animation.addByPrefix('confirm', NoteVariables.Other_Note_Anim_Stuff[SONG.keyCount - 1][i] + ' confirm', 24, false);
 			}
 
-			babyArrow.updateHitbox();
 			babyArrow.scrollFactor.set();
 
 			if (!isStoryMode)
