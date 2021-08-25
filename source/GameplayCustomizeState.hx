@@ -226,10 +226,15 @@ class GameplayCustomizeState extends MusicBeatState
     {
         super.beatHit();
 
-        bf.playAnim('idle', true);
-        dad.dance(true);
-        gf.dance();
+		if (curBeat % 2 == 0)
+		{
+			bf.dance();
+			dad.dance();
+		}
+		else if (dad.curCharacter == 'spooky' || dad.curCharacter == 'gf')
+			dad.dance();
 
+		gf.dance();
         FlxG.camera.zoom += 0.015;
         camHUD.zoom += 0.010;
 
