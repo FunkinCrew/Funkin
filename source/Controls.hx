@@ -982,6 +982,7 @@ class FlxActionInputDigitalMobileSwipeGameplay extends FlxActionInputDigital
 }
 
 // Maybe this can be committed to main HaxeFlixel repo?
+#if android
 class FlxActionInputDigitalAndroid extends FlxActionInputDigital
 {
 	/**
@@ -1009,3 +1010,4 @@ class FlxActionInputDigitalAndroid extends FlxActionInputDigital
 		}
 	}
 }
+#end
