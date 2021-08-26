@@ -439,7 +439,7 @@ class Character extends FlxSprite
 			if (holdTimer >= Conductor.stepCrochet * dadVar * 0.001)
 			{
 				if (curCharacter == 'gf' || curCharacter == 'spooky')
-					playAnim('danceLeft'); //overridden by dance correctly later
+					playAnim('danceRight'); //overridden by dance correctly later
 				dance();
 				holdTimer = 0;
 			}
