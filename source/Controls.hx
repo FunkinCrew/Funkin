@@ -544,9 +544,9 @@ class Controls extends FlxActionSet
 		forEachBound(control, function(action, state) addKeys(action, keys, state));
 	}
 
-	public function bindSwipe(control:Control, swipeDir:Int = FlxObject.UP)
+	public function bindSwipe(control:Control, swipeDir:Int = FlxObject.UP, ?swpLength:Float = 90)
 	{
-		forEachBound(control, function(action, press) action.add(new FlxActionInputDigitalMobileSwipeGameplay(swipeDir, press)));
+		forEachBound(control, function(action, press) action.add(new FlxActionInputDigitalMobileSwipeGameplay(swipeDir, press, swpLength)));
 	}
 
 	/**
@@ -635,13 +635,14 @@ class Controls extends FlxActionSet
 		#if FLX_TOUCH
 		// MAKE BETTER TOUCH BIND CODE
 
-		bindSwipe(Control.NOTE_UP, FlxObject.UP);
-		bindSwipe(Control.NOTE_DOWN, FlxObject.DOWN);
-		bindSwipe(Control.NOTE_LEFT, FlxObject.LEFT);
-		bindSwipe(Control.NOTE_RIGHT, FlxObject.RIGHT);
+		bindSwipe(Control.NOTE_UP, FlxObject.UP, 40);
+		bindSwipe(Control.NOTE_DOWN, FlxObject.DOWN, 40);
+		bindSwipe(Control.NOTE_LEFT, FlxObject.LEFT, 40);
+		bindSwipe(Control.NOTE_RIGHT, FlxObject.RIGHT, 40);
 
-		bindSwipe(Control.UI_UP, FlxObject.UP);
-		bindSwipe(Control.UI_DOWN, FlxObject.DOWN);
+		// feels more like drag when up/down are inversed
+		bindSwipe(Control.UI_UP, FlxObject.DOWN);
+		bindSwipe(Control.UI_DOWN, FlxObject.UP);
 		bindSwipe(Control.UI_LEFT, FlxObject.LEFT);
 		bindSwipe(Control.UI_RIGHT, FlxObject.RIGHT);
 		#end
@@ -862,18 +863,23 @@ typedef Swipes =
 
 class FlxActionInputDigitalMobileSwipeGameplay extends FlxActionInputDigital
 {
-	public function new(swipeDir:Int = FlxObject.ANY, Trigger:FlxInputState)
-	{
-		super(MOBILE, swipeDir, Trigger);
-	}
-
-	// fix right swipe
 	var touchMap:Map<Int, Swipes> = new Map();
 
 	var vibrationSteps:Int = 5;
 	var curStep:Int = 5;
 	var activateLength:Float = 90;
 	var hapticPressure:Int = 100;
+
+	public function new(swipeDir:Int = FlxObject.ANY, Trigger:FlxInputState, ?swipeLength:Float = 90)
+	{
+		super(MOBILE, swipeDir, Trigger);
+
+		activateLength = swipeLength;
+	}
+
+	// fix right swipe
+	// make so cant double swipe during gameplay
+	// hold notes?
 
 	override function update():Void
 	{
@@ -910,8 +916,8 @@ class FlxActionInputDigitalMobileSwipeGameplay extends FlxActionInputDigital
 				daSwipe.touchAngle = Math.atan2(dy, dx);
 				daSwipe.touchLength = Math.sqrt(dx * dx + dy * dy);
 
-				// FlxG.watch.addQuick("LENGTH", touchLength);
-				// FlxG.watch.addQuick("ANGLE", FlxAngle.asDegrees(touchLength));
+				FlxG.watch.addQuick("LENGTH", daSwipe.touchLength);
+				FlxG.watch.addQuick("ANGLE", FlxAngle.asDegrees(daSwipe.touchAngle));
 
 				if (daSwipe.touchLength >= (activateLength / vibrationSteps) * curStep)
 				{
@@ -945,7 +951,7 @@ class FlxActionInputDigitalMobileSwipeGameplay extends FlxActionInputDigital
 			switch (trigger)
 			{
 				case JUST_PRESSED:
-					if (swp.touchLength >= activateLength) // 90 is random ass value lol
+					if (swp.touchLength >= activateLength)
 					{
 						switch (inputID)
 						{
@@ -956,7 +962,7 @@ class FlxActionInputDigitalMobileSwipeGameplay extends FlxActionInputDigital
 							case FlxObject.LEFT:
 								if (degAngle <= 45 && -degAngle <= 45) return properTouch(swp);
 							case FlxObject.RIGHT:
-								if (degAngle >= 90 + 45 && -degAngle >= 90 + 45) return properTouch(swp);
+								if (degAngle >= 90 + 45 && degAngle <= -90 + -45) return properTouch(swp);
 						}
 					}
 				default:
