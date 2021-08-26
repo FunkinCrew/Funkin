@@ -315,8 +315,8 @@ class PlayState extends MusicBeatState
 		                  }
 
 		                  var overlayShit:FlxSprite = new FlxSprite(-500, -600).loadGraphic(Paths.image('limo/limoOverlay'));
-		                  overlayShit.alpha = 0.5;
-		                  // add(overlayShit);
+		                  overlayShit.alpha = 0.3;
+		                  add(overlayShit);
 
 		                  // var shaderBullshit = new BlendModeEffect(new OverlayShader(), FlxColor.RED);
 
@@ -745,7 +745,11 @@ class PlayState extends MusicBeatState
 		iconP2 = new HealthIcon(SONG.player2, false);
 		iconP2.y = healthBar.y - (iconP2.height / 2);
 		add(iconP2);
-
+		
+		if (curStage == 'limo')
+		{
+			overlayShit.cameras = [camHUD];
+		}	
 		strumLineNotes.cameras = [camHUD];
 		notes.cameras = [camHUD];
 		healthBar.cameras = [camHUD];
