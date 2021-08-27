@@ -118,7 +118,7 @@ class PlayState extends MusicBeatState
 	var wiggleShit:WiggleEffect = new WiggleEffect();
 
 	var talking:Bool = true;
-	var songScore:Int = 0;
+	public static var songScore:Int = 0;
 	var scoreTxt:FlxText;
 
 	var waterTxt:FlxText;
@@ -159,6 +159,7 @@ class PlayState extends MusicBeatState
 			shits = 0;
 			misses = 0;
 			ghostTaps = 0;
+			songScore = 0;
 		}
 
 		Style.loadStyle(SONG.noteStyle.trim());
@@ -253,7 +254,7 @@ class PlayState extends MusicBeatState
 		detailsPausedText = "Paused - " + detailsText;
 		
 		// Updating Discord Rich Presence.
-		DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
+		DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ") | " + '${misses} Misses | Rating ${calculateRating()}', iconRPC);
 		#end
 
 		switch (SONG.song.toLowerCase())
@@ -1045,7 +1046,7 @@ class PlayState extends MusicBeatState
 
 			var introAssets:Map<String, Array<String>> = new Map<String, Array<String>>();
 			introAssets.set('normal', ['ready', "set", "go"]);
-			introAssets.set('pixel', ['weeb/pixelUI/ready-pixel', 'weeb/pixelUI/set-pixel', 'weeb/pixelUI/date-pixel']);
+			introAssets.set('_PIXEL_', ['weeb/pixelUI/ready-pixel', 'weeb/pixelUI/set-pixel', 'weeb/pixelUI/date-pixel']);
 
 			var introAlts:Array<String> = introAssets.get('normal');
 			var altSuffix:String = "";
@@ -1070,7 +1071,7 @@ class PlayState extends MusicBeatState
 					ready.scrollFactor.set();
 					ready.updateHitbox();
 
-					if (Style.lstyle.name.startsWith('pixel'))
+					if (Style.lstyle.name.startsWith('_PIXEL_'))
 						ready.setGraphicSize(Std.int(ready.width * daPixelZoom));
 
 					ready.screenCenter();
@@ -1087,7 +1088,7 @@ class PlayState extends MusicBeatState
 					var set:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[1], libShit));
 					set.scrollFactor.set();
 
-					if (Style.lstyle.name.startsWith('pixel'))
+					if (Style.lstyle.name.startsWith('_PIXEL_'))
 						set.setGraphicSize(Std.int(set.width * daPixelZoom));
 
 					set.screenCenter();
@@ -1104,7 +1105,7 @@ class PlayState extends MusicBeatState
 					var go:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[2], libShit));
 					go.scrollFactor.set();
 
-					if (Style.lstyle.name.startsWith('pixel'))
+					if (Style.lstyle.name.startsWith('_PIXEL_'))
 						go.setGraphicSize(Std.int(go.width * daPixelZoom));
 
 					go.updateHitbox();
@@ -1148,7 +1149,7 @@ class PlayState extends MusicBeatState
 		songLength = FlxG.sound.music.length;
 
 		// Updating Discord Rich Presence (with Time Left)
-		DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC, true, songLength);
+		DiscordClient.changePresence(detailsText, SONG.song + SONG.song + " (" + storyDifficultyText + ") | " + '${misses} Misses | Rating ${calculateRating()}', iconRPC, true, songLength);
 		#end
 	}
 
@@ -1262,37 +1263,73 @@ class PlayState extends MusicBeatState
 			switch (curStage)
 			{
 				default:
-					babyArrow.frames = Paths.getSparrowAtlas(Style.lstyle.notes, Style.lstyle.library);
-					babyArrow.animation.addByPrefix('green', 'arrowUP');
-					babyArrow.animation.addByPrefix('blue', 'arrowDOWN');
-					babyArrow.animation.addByPrefix('purple', 'arrowLEFT');
-					babyArrow.animation.addByPrefix('red', 'arrowRIGHT');
+					if (Style.lstyle.indexAnimation) {
+						babyArrow.loadGraphic(Paths.image(Style.lstyle.uiPrefix + Style.lstyle.notes, Style.lstyle.library), true, 17, 17);
+						babyArrow.animation.add('green', [6]);
+						babyArrow.animation.add('red', [7]);
+						babyArrow.animation.add('blue', [5]);
+						babyArrow.animation.add('purplel', [4]);
 
-					babyArrow.antialiasing = Style.lstyle.antialiasing;
-					babyArrow.setGraphicSize(Std.int(babyArrow.width * 0.7));
+						babyArrow.setGraphicSize(Std.int(babyArrow.width * daPixelZoom));
+						babyArrow.updateHitbox();
+						babyArrow.antialiasing = false;
 
-					switch (Math.abs(i))
-					{
-						case 0:
-							babyArrow.x += Note.swagWidth * 0;
-							babyArrow.animation.addByPrefix('static', 'arrowLEFT');
-							babyArrow.animation.addByPrefix('pressed', 'left press', 24, false);
-							babyArrow.animation.addByPrefix('confirm', 'left confirm', 24, false);
-						case 1:
-							babyArrow.x += Note.swagWidth * 1;
-							babyArrow.animation.addByPrefix('static', 'arrowDOWN');
-							babyArrow.animation.addByPrefix('pressed', 'down press', 24, false);
-							babyArrow.animation.addByPrefix('confirm', 'down confirm', 24, false);
-						case 2:
-							babyArrow.x += Note.swagWidth * 2;
-							babyArrow.animation.addByPrefix('static', 'arrowUP');
-							babyArrow.animation.addByPrefix('pressed', 'up press', 24, false);
-							babyArrow.animation.addByPrefix('confirm', 'up confirm', 24, false);
-						case 3:
-							babyArrow.x += Note.swagWidth * 3;
-							babyArrow.animation.addByPrefix('static', 'arrowRIGHT');
-							babyArrow.animation.addByPrefix('pressed', 'right press', 24, false);
-							babyArrow.animation.addByPrefix('confirm', 'right confirm', 24, false);
+						switch (Math.abs(i))
+						{
+							case 0:
+								babyArrow.x += Note.swagWidth * 0;
+								babyArrow.animation.add('static', [0]);
+								babyArrow.animation.add('pressed', [4, 8], 12, false);
+								babyArrow.animation.add('confirm', [12, 16], 24, false);
+							case 1:
+								babyArrow.x += Note.swagWidth * 1;
+								babyArrow.animation.add('static', [1]);
+								babyArrow.animation.add('pressed', [5, 9], 12, false);
+								babyArrow.animation.add('confirm', [13, 17], 24, false);
+							case 2:
+								babyArrow.x += Note.swagWidth * 2;
+								babyArrow.animation.add('static', [2]);
+								babyArrow.animation.add('pressed', [6, 10], 12, false);
+								babyArrow.animation.add('confirm', [14, 18], 12, false);
+							case 3:
+								babyArrow.x += Note.swagWidth * 3;
+								babyArrow.animation.add('static', [3]);
+								babyArrow.animation.add('pressed', [7, 11], 12, false);
+								babyArrow.animation.add('confirm', [15, 19], 24, false);
+						}
+					} else {
+						babyArrow.frames = Paths.getSparrowAtlas(Style.lstyle.uiPrefix + Style.lstyle.notes, Style.lstyle.library);
+						babyArrow.animation.addByPrefix('green', 'arrowUP');
+						babyArrow.animation.addByPrefix('blue', 'arrowDOWN');
+						babyArrow.animation.addByPrefix('purple', 'arrowLEFT');
+						babyArrow.animation.addByPrefix('red', 'arrowRIGHT');
+	
+						babyArrow.antialiasing = true;
+						babyArrow.setGraphicSize(Std.int(babyArrow.width * 0.7));
+	
+						switch (Math.abs(i))
+						{
+							case 0:
+								babyArrow.x += Note.swagWidth * 0;
+								babyArrow.animation.addByPrefix('static', 'arrowLEFT');
+								babyArrow.animation.addByPrefix('pressed', 'left press', 24, false);
+								babyArrow.animation.addByPrefix('confirm', 'left confirm', 24, false);
+							case 1:
+								babyArrow.x += Note.swagWidth * 1;
+								babyArrow.animation.addByPrefix('static', 'arrowDOWN');
+								babyArrow.animation.addByPrefix('pressed', 'down press', 24, false);
+								babyArrow.animation.addByPrefix('confirm', 'down confirm', 24, false);
+							case 2:
+								babyArrow.x += Note.swagWidth * 2;
+								babyArrow.animation.addByPrefix('static', 'arrowUP');
+								babyArrow.animation.addByPrefix('pressed', 'up press', 24, false);
+								babyArrow.animation.addByPrefix('confirm', 'up confirm', 24, false);
+							case 3:
+								babyArrow.x += Note.swagWidth * 3;
+								babyArrow.animation.addByPrefix('static', 'arrowRIGHT');
+								babyArrow.animation.addByPrefix('pressed', 'right press', 24, false);
+								babyArrow.animation.addByPrefix('confirm', 'right confirm', 24, false);
+						}
 					}
 			}
 
@@ -1367,11 +1404,11 @@ class PlayState extends MusicBeatState
 			#if desktop
 			if (startTimer.finished)
 			{
-				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC, true, songLength - Conductor.songPosition);
+				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ") | " + '${misses} Misses | Rating ${calculateRating()}', iconRPC, true, songLength - Conductor.songPosition);
 			}
 			else
 			{
-				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
+				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ") | " + '${misses} Misses | Rating ${calculateRating()}', iconRPC);
 			}
 			#end
 		}
@@ -1386,11 +1423,11 @@ class PlayState extends MusicBeatState
 		{
 			if (Conductor.songPosition > 0.0)
 			{
-				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC, true, songLength - Conductor.songPosition);
+				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ") | " + '${misses} Misses | Rating ${calculateRating()}', iconRPC, true, songLength - Conductor.songPosition);
 			}
 			else
 			{
-				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
+				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ") | " + '${misses} Misses | Rating ${calculateRating()}', iconRPC);
 			}
 		}
 		#end
@@ -1403,7 +1440,7 @@ class PlayState extends MusicBeatState
 		#if desktop
 		if (health > 0 && !paused)
 		{
-			DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
+			DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ") | " + '${misses} Misses | Rating ${calculateRating()}', iconRPC);
 		}
 		#end
 
@@ -1426,6 +1463,12 @@ class PlayState extends MusicBeatState
 
 	override public function update(elapsed:Float)
 	{
+		#if desktop
+		if (!paused) {
+			DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ") | " + '${misses} Misses | Rating ${calculateRating()}', iconRPC);
+		}
+		#end
+
 		#if !debug
 		perfectMode = false;
 		#end
@@ -1475,7 +1518,7 @@ class PlayState extends MusicBeatState
 				openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 		
 			#if desktop
-			DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
+			DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ") | " + '${misses} Misses | Rating ${calculateRating()}', iconRPC);
 			#end
 		}
 
@@ -1685,7 +1728,7 @@ class PlayState extends MusicBeatState
 			
 			#if desktop
 			// Game Over doesn't get his own variable because it's only used here
-			DiscordClient.changePresence("Game Over - " + detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
+			DiscordClient.changePresence("Game Over - " + detailsText, SONG.song + " (" + storyDifficultyText + ") | " + '${misses} Misses | Rating ${calculateRating}', iconRPC);
 			#end
 		}
 
@@ -1763,7 +1806,7 @@ class PlayState extends MusicBeatState
 							{
 								spr.animation.play('confirm', true);
 							}
-							if (spr.animation.curAnim.name == 'confirm' && !Style.lstyle.name.startsWith('pixel') )
+							if (spr.animation.curAnim.name == 'confirm' && !Style.lstyle.name.startsWith('_PIXEL_') )
 							{
 								spr.centerOffsets();
 								spr.offset.x -= 13;
@@ -1966,13 +2009,13 @@ class PlayState extends MusicBeatState
 		var pixelShitPart1:String = "";
 		var pixelShitPart2:String = '';
 
-		if (Style.lstyle.name.startsWith('pixel'))
+		if (Style.lstyle.name.startsWith('_PIXEL_'))
 		{
 			pixelShitPart1 = 'weeb/pixelUI/';
 			pixelShitPart2 = '-pixel';
 		}
 
-		rating.loadGraphic(Paths.image(pixelShitPart1 + daRating + pixelShitPart2, Style.lstyle.name.startsWith('pixel') ? 'week6' : 'shared'));
+		rating.loadGraphic(Paths.image(pixelShitPart1 + daRating + pixelShitPart2, Style.lstyle.name.startsWith('_PIXEL_') ? 'week6' : 'shared'));
 		rating.screenCenter();
 		rating.x = coolText.x - 40;
 		rating.y -= 60;
@@ -1980,7 +2023,7 @@ class PlayState extends MusicBeatState
 		rating.velocity.y -= FlxG.random.int(140, 175);
 		rating.velocity.x -= FlxG.random.int(0, 10);
 
-		var comboSpr:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'combo' + pixelShitPart2, Style.lstyle.name.startsWith('pixel') ? 'week6' : 'shared'));
+		var comboSpr:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'combo' + pixelShitPart2, Style.lstyle.name.startsWith('_PIXEL_') ? 'week6' : 'shared'));
 		comboSpr.screenCenter();
 		comboSpr.x = coolText.x;
 		comboSpr.acceleration.y = 600;
@@ -1989,7 +2032,7 @@ class PlayState extends MusicBeatState
 		comboSpr.velocity.x += FlxG.random.int(1, 10);
 		add(rating);
 
-		if (!Style.lstyle.name.startsWith('pixel'))
+		if (!Style.lstyle.name.startsWith('_PIXEL_'))
 		{
 			rating.setGraphicSize(Std.int(rating.width * 0.7));
 			rating.antialiasing = Style.lstyle.antialiasing;
@@ -2019,7 +2062,7 @@ class PlayState extends MusicBeatState
 			numScore.x = coolText.x + (43 * daLoop) - 90;
 			numScore.y += 80;
 
-			if (!Style.lstyle.name.startsWith('pixel'))
+			if (!Style.lstyle.name.startsWith('_PIXEL_'))
 			{
 				numScore.antialiasing = Style.lstyle.antialiasing;
 				numScore.setGraphicSize(Std.int(numScore.width * 0.5));
@@ -2307,7 +2350,7 @@ class PlayState extends MusicBeatState
 			}
 
 			try {
-				if (spr.animation.curAnim.name == 'confirm' && !Style.lstyle.name.startsWith('pixel'))
+				if (spr.animation.curAnim.name == 'confirm' && !Style.lstyle.name.startsWith('_PIXEL_'))
 					{
 						spr.centerOffsets();
 						spr.offset.x -= 13;
@@ -2675,7 +2718,7 @@ class PlayState extends MusicBeatState
 
 	var curLight:Int = 0;
 
-	function calculateRating() {
+	public static function calculateRating() {
 		if (misses == 0) {
 			return 'FC!!${calculateLetter()}';
 		}
@@ -2693,7 +2736,7 @@ class PlayState extends MusicBeatState
 		}
 	}
 
-	function calculateLetter() {
+	static function calculateLetter() {
 		return ' ${sicks > goods ? 'A' : ''}${sicks > bads ? 'A' : ''}${sicks > shits ? 'A': ''}${sicks > misses ? 'A' : ''}';
 	}
 }

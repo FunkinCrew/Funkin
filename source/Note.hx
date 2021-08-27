@@ -53,75 +53,175 @@ class Note extends FlxSprite
 
 		switch (PlayState.SONG.noteStyle)
 		{
-			case 'pixel':
-				loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels', 'week6'), true, 17, 17);
+			default:
+				loadGraphic(Paths.image('${Style.lstyle.uiPrefix}${Style.lstyle.notes}', Style.lstyle.library), true, 17, 17);
 
-				animation.add('greenScroll', [6]);
-				animation.add('redScroll', [7]);
-				animation.add('blueScroll', [5]);
-				animation.add('purpleScroll', [4]);
+				trace(this.graphic.assetsKey);
 
 				if (isSustainNote)
 				{
-					loadGraphic(Paths.image('weeb/pixelUI/arrowEnds'), true, 7, 6);
+					if (Style.lstyle.arrowEnds != "") {
+						loadGraphic(Paths.image('${Style.lstyle.uiPrefix}${Style.lstyle.arrowEnds}', Style.lstyle.library), true, 7, 6);
 
-					animation.add('purpleholdend', [4]);
-					animation.add('greenholdend', [6]);
-					animation.add('redholdend', [7]);
-					animation.add('blueholdend', [5]);
+						if (Style.lstyle.indexAnimation) {
+							trace('O! HELD NOTE! BUT WITH INDEX ANIMATION AND DUMBASS WEEK6 ARROW ENDS!');
+							animation.add('purpleholdend', [4]);
+							animation.add('greenholdend', [6]);
+							animation.add('redholdend', [7]);
+							animation.add('blueholdend', [5]);
+		
+							animation.add('purplehold', [0]);
+							animation.add('greenhold', [2]);
+							animation.add('redhold', [3]);
+							animation.add('bluehold', [1]);
 
-					animation.add('purplehold', [0]);
-					animation.add('greenhold', [2]);
-					animation.add('redhold', [3]);
-					animation.add('bluehold', [1]);
+							animation.add('greenScroll', [6]);
+							animation.add('redScroll', [7]);
+							animation.add('blueScroll', [5]);
+							animation.add('purpleScroll', [4]);
+						} else {
+							frames = Paths.getSparrowAtlas('${Style.lstyle.uiPrefix}${Style.lstyle.arrowEnds}', Style.lstyle.library);
+							trace('O! HELD NOTE! BUT WITH DUMBASS WEEK6 ARROW ENDS!');
+							animation.addByPrefix('purpleholdend', 'pruple end hold');
+							animation.addByPrefix('greenholdend', 'green hold end');
+							animation.addByPrefix('redholdend', 'red hold end');
+							animation.addByPrefix('blueholdend', 'blue hold end');
+
+							animation.addByPrefix('purplehold', 'purple hold piece');
+							animation.addByPrefix('greenhold', 'green hold piece');
+							animation.addByPrefix('redhold', 'red hold piece');
+							animation.addByPrefix('bluehold', 'blue hold piece');
+
+							animation.addByPrefix('greenScroll', 'green0');
+							animation.addByPrefix('redScroll', 'red0');
+							animation.addByPrefix('blueScroll', 'blue0');
+							animation.addByPrefix('purpleScroll', 'purple0');
+
+						}
+					} else {
+						if (Style.lstyle.indexAnimation) {
+							trace('O! HELD NOTE! BUT WITH INDEX ANIMATION!');
+							animation.add('purpleholdend', [4]);
+							animation.add('greenholdend', [6]);
+							animation.add('redholdend', [7]);
+							animation.add('blueholdend', [5]);
+		
+							animation.add('purplehold', [0]);
+							animation.add('greenhold', [2]);
+							animation.add('redhold', [3]);
+							animation.add('bluehold', [1]);
+
+							animation.add('greenScroll', [6]);
+							animation.add('redScroll', [7]);
+							animation.add('blueScroll', [5]);
+							animation.add('purpleScroll', [4]);
+						} else {
+							frames = Paths.getSparrowAtlas('${Style.lstyle.uiPrefix}${Style.lstyle.notes}', Style.lstyle.library);
+							trace('O! HELD NOTE!');
+							animation.addByPrefix('purpleholdend', 'pruple end hold');
+							animation.addByPrefix('greenholdend', 'green hold end');
+							animation.addByPrefix('redholdend', 'red hold end');
+							animation.addByPrefix('blueholdend', 'blue hold end');
+
+							animation.addByPrefix('purplehold', 'purple hold piece');
+							animation.addByPrefix('greenhold', 'green hold piece');
+							animation.addByPrefix('redhold', 'red hold piece');
+							animation.addByPrefix('bluehold', 'blue hold piece');
+
+							animation.addByPrefix('greenScroll', 'green0');
+							animation.addByPrefix('redScroll', 'red0');
+							animation.addByPrefix('blueScroll', 'blue0');
+							animation.addByPrefix('purpleScroll', 'purple0');
+
+						}
+					}
+				} else {
+					if (Style.lstyle.arrowEnds != "") {
+						loadGraphic(Paths.image('${Style.lstyle.uiPrefix}${Style.lstyle.arrowEnds}', Style.lstyle.library), true, 7, 6);
+
+						if (Style.lstyle.indexAnimation) {
+							trace('O! NOTE! BUT WITH INDEX ANIMATION AND DUMBASS WEEK6 ARROW ENDS!');
+							animation.add('purpleholdend', [4]);
+							animation.add('greenholdend', [6]);
+							animation.add('redholdend', [7]);
+							animation.add('blueholdend', [5]);
+		
+							animation.add('purplehold', [0]);
+							animation.add('greenhold', [2]);
+							animation.add('redhold', [3]);
+							animation.add('bluehold', [1]);
+
+							animation.add('greenScroll', [6]);
+							animation.add('redScroll', [7]);
+							animation.add('blueScroll', [5]);
+							animation.add('purpleScroll', [4]);
+						} else {
+							frames = Paths.getSparrowAtlas('${Style.lstyle.uiPrefix}${Style.lstyle.arrowEnds}', Style.lstyle.library);
+							trace('O! NOTE! BUT WITH DUMBASS WEEK6 ARROW ENDS!');
+							animation.addByPrefix('purpleholdend', 'pruple end hold');
+							animation.addByPrefix('greenholdend', 'green hold end');
+							animation.addByPrefix('redholdend', 'red hold end');
+							animation.addByPrefix('blueholdend', 'blue hold end');
+
+							animation.addByPrefix('purplehold', 'purple hold piece');
+							animation.addByPrefix('greenhold', 'green hold piece');
+							animation.addByPrefix('redhold', 'red hold piece');
+							animation.addByPrefix('bluehold', 'blue hold piece');
+
+							animation.addByPrefix('greenScroll', 'green0');
+							animation.addByPrefix('redScroll', 'red0');
+							animation.addByPrefix('blueScroll', 'blue0');
+							animation.addByPrefix('purpleScroll', 'purple0');
+
+						}
+					} else {
+						if (Style.lstyle.indexAnimation) {
+							trace('O! NOTE! BUT WITH INDEX ANIMATION!');
+							animation.add('purpleholdend', [4]);
+							animation.add('greenholdend', [6]);
+							animation.add('redholdend', [7]);
+							animation.add('blueholdend', [5]);
+		
+							animation.add('purplehold', [0]);
+							animation.add('greenhold', [2]);
+							animation.add('redhold', [3]);
+							animation.add('bluehold', [1]);
+
+							animation.add('greenScroll', [6]);
+							animation.add('redScroll', [7]);
+							animation.add('blueScroll', [5]);
+							animation.add('purpleScroll', [4]);
+						} else {
+							frames = Paths.getSparrowAtlas('${Style.lstyle.uiPrefix}${Style.lstyle.notes}', Style.lstyle.library);
+							trace('O! NOTE!');
+							animation.addByPrefix('purpleholdend', 'pruple end hold');
+							animation.addByPrefix('greenholdend', 'green hold end');
+							animation.addByPrefix('redholdend', 'red hold end');
+							animation.addByPrefix('blueholdend', 'blue hold end');
+
+							animation.addByPrefix('purplehold', 'purple hold piece');
+							animation.addByPrefix('greenhold', 'green hold piece');
+							animation.addByPrefix('redhold', 'red hold piece');
+							animation.addByPrefix('bluehold', 'blue hold piece');
+
+							animation.addByPrefix('greenScroll', 'green0');
+							animation.addByPrefix('redScroll', 'red0');
+							animation.addByPrefix('blueScroll', 'blue0');
+							animation.addByPrefix('purpleScroll', 'purple0');
+
+						}
+					}
+	
 				}
 
-				setGraphicSize(Std.int(width * PlayState.daPixelZoom));
-				updateHitbox();
-
-			case 'normal':
-				frames = Paths.getSparrowAtlas('NOTE_assets');
-
-				animation.addByPrefix('greenScroll', 'green0');
-				animation.addByPrefix('redScroll', 'red0');
-				animation.addByPrefix('blueScroll', 'blue0');
-				animation.addByPrefix('purpleScroll', 'purple0');
-
-				animation.addByPrefix('purpleholdend', 'pruple end hold');
-				animation.addByPrefix('greenholdend', 'green hold end');
-				animation.addByPrefix('redholdend', 'red hold end');
-				animation.addByPrefix('blueholdend', 'blue hold end');
-
-				animation.addByPrefix('purplehold', 'purple hold piece');
-				animation.addByPrefix('greenhold', 'green hold piece');
-				animation.addByPrefix('redhold', 'red hold piece');
-				animation.addByPrefix('bluehold', 'blue hold piece');
-
-				setGraphicSize(Std.int(width * 0.7));
-				updateHitbox();
-				antialiasing = true;
-
-			default:
-				frames = Paths.getSparrowAtlas('NOTE_assets');
-
-				animation.addByPrefix('greenScroll', 'green0');
-				animation.addByPrefix('redScroll', 'red0');
-				animation.addByPrefix('blueScroll', 'blue0');
-				animation.addByPrefix('purpleScroll', 'purple0');
-
-				animation.addByPrefix('purpleholdend', 'pruple end hold');
-				animation.addByPrefix('greenholdend', 'green hold end');
-				animation.addByPrefix('redholdend', 'red hold end');
-				animation.addByPrefix('blueholdend', 'blue hold end');
-
-				animation.addByPrefix('purplehold', 'purple hold piece');
-				animation.addByPrefix('greenhold', 'green hold piece');
-				animation.addByPrefix('redhold', 'red hold piece');
-				animation.addByPrefix('bluehold', 'blue hold piece');
-
-				setGraphicSize(Std.int(width * 0.7));
-				updateHitbox();
-				antialiasing = true;
+				if (Style.lstyle.name.startsWith('_PIXEL_')) {
+					setGraphicSize(Std.int(width * PlayState.daPixelZoom));
+					updateHitbox();
+				} else {
+					setGraphicSize(Std.int(width * 0.7));
+					updateHitbox();
+				}
+				antialiasing = Style.lstyle.antialiasing;
 		}
 
 		switch (noteData)
@@ -165,7 +265,7 @@ class Note extends FlxSprite
 
 			x -= width / 2;
 
-			if (PlayState.SONG.noteStyle.startsWith('pixel'))
+			if (Style.lstyle.name.startsWith('_PIXEL_'))
 				x += 30;
 
 			if (prevNote.isSustainNote)

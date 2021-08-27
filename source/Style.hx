@@ -6,8 +6,11 @@ import haxe.Json;
 typedef ArtStyle = {
     name:String,
     notes:String,
+    arrowEnds:String,
+    uiPrefix:String,
     library:String,
     antialiasing:Bool,
+    indexAnimation:Bool,
     popUpScore:PUS,
     comboNums:CN,
     scalings:Array<String>,

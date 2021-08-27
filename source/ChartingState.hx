@@ -51,6 +51,8 @@ class ChartingState extends MusicBeatState
 
 	var bpmTxt:FlxText;
 
+	var hitSound:FlxSound;
+
 	var strumLine:FlxSprite;
 	var curSong:String = 'Dadbattle';
 	var amountSteps:Int = 0;
@@ -82,8 +84,13 @@ class ChartingState extends MusicBeatState
 	var leftIcon:HealthIcon;
 	var rightIcon:HealthIcon;
 
+	var playedHit:Bool = false;
+
 	override function create()
 	{
+		hitSound = new FlxSound();
+		hitSound.loadEmbedded(Paths.sound('hit', 'shared'));
+
 		curSection = lastSection;
 
 		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * 8, GRID_SIZE * 16);
@@ -91,6 +98,7 @@ class ChartingState extends MusicBeatState
 
 		leftIcon = new HealthIcon('bf');
 		rightIcon = new HealthIcon('dad');
+
 		leftIcon.scrollFactor.set(1, 1);
 		rightIcon.scrollFactor.set(1, 1);
 
@@ -125,6 +133,21 @@ class ChartingState extends MusicBeatState
 				noteStyle: "Default",
 				stage: "Default"
 			};
+		}
+
+		if (_song != null) {
+			if (_song.player1 != null && _song.player2 != null) {
+				leftIcon.animation.play(_song.player2);
+				rightIcon.animation.play(_song.player1);
+			} else {
+				leftIcon.animation.play('bf');
+				rightIcon.animation.play('dad');
+			}
+		} else {
+			trace('D: oh noooooooooo! _song is null!!!!!!!!!!!!!!');
+			leftIcon.animation.play('bf');
+			rightIcon.animation.play('dad');
+			trace('applied a shitty workaround for now...');
 		}
 
 		FlxG.mouse.visible = true;
@@ -232,6 +255,7 @@ class ChartingState extends MusicBeatState
 
 		var player1DropDown = new FlxUIDropDownMenu(10, 100, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
 		{
+			updateHeads();
 			_song.player1 = characters[Std.parseInt(character)];
 		});
 		player1DropDown.selectedLabel = _song.player1;
@@ -239,6 +263,7 @@ class ChartingState extends MusicBeatState
 
 		var player2DropDown = new FlxUIDropDownMenu(140, 100, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
 		{
+			updateHeads();
 			_song.player2 = characters[Std.parseInt(character)];
 		});
 		var player2Label = new FlxUIText(player2DropDown.x, player2DropDown.y + player2DropDown.height * .05, 0, "Player 2");
@@ -494,6 +519,32 @@ class ChartingState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
+		if (FlxG.overlap(curRenderedNotes, strumLine) && FlxG.sound.music.playing && !playedHit) {
+			trace('HIT SOUND!');
+			if (!playedHit) {
+				hitSound.play(false);
+				playedHit = true;
+			}
+		}
+
+		// alpha shit
+		for (note in curRenderedNotes) {
+			if (FlxG.overlap(note, strumLine) && FlxG.sound.music.playing) {
+				note.alpha = 0.2;
+				playedHit = true;
+			} else {
+				note.alpha = 1;
+				playedHit = false;
+			}
+		}
+		for (note in curRenderedSustains) {
+			if (FlxG.overlap(note, strumLine) && FlxG.sound.music.playing) {
+				note.alpha = 0.2;
+			} else {
+				note.alpha = 1;
+			}
+		}
+
 		curStep = recalculateSteps();
 
 		Conductor.songPosition = FlxG.sound.music.time;
@@ -816,13 +867,23 @@ class ChartingState extends MusicBeatState
 	{
 		if (check_mustHitSection.checked)
 		{
-			leftIcon.animation.play('bf');
-			rightIcon.animation.play('dad');
+			if (_song.player1 != null && _song.player2 != null) {
+				leftIcon.animation.play(_song.player1);
+				rightIcon.animation.play(_song.player2);
+			} else {
+				leftIcon.animation.play('dad');
+				rightIcon.animation.play('bf');
+			}
 		}
 		else
 		{
-			leftIcon.animation.play('dad');
-			rightIcon.animation.play('bf');
+			if (_song.player1 != null && _song.player2 != null) {
+				leftIcon.animation.play(_song.player2);
+				rightIcon.animation.play(_song.player1);
+			} else {
+				leftIcon.animation.play('bf');
+				rightIcon.animation.play('dad');
+			}
 		}
 	}
 

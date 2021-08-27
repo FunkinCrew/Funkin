@@ -1,0 +1,9 @@
+{
+    "name": "_PIXEL_",
+    "notes": "arrows-pixels",
+    "arrowEnds": "arrowEnds",
+    "uiPrefix": "weeb/pixelUI/",
+    "library": "week6",
+    "antialiasing": false,
+    "indexAnimation": true
+}
