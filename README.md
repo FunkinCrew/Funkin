@@ -45,7 +45,7 @@ So for each of those type `haxelib install [library]` so shit like `haxelib inst
 You'll also need to install a couple things that involve Gits. To do this, you need to do a few things first.
 1. Download [git-scm](https://git-scm.com/downloads). Works for Windows, Mac, and Linux, just select your build.
 2. Follow instructions to install the application properly.
-3. Run `haxelib git extension-webm https://github.com/KadeDev/extension-webm` to install Polymod.
+3. Run `haxelib git extension-webm https://github.com/KadeDev/extension-webm` to install Extension Webm.
 4. Run `haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc` to install Discord RPC.
 
 You should have everything ready for compiling the game! Follow the guide below to continue!
