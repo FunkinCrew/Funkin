@@ -360,7 +360,7 @@ class TitleState extends MusicBeatState
 		switch (curBeat)
 		{
 			case 1:
-				createCoolText(['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er']);
+				createCoolText(CoolUtil.coolTextFile(Paths.txt('authors')));
 			// credTextShit.visible = true;
 			case 3:
 				addMoreText('present');
