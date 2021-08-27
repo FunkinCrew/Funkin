@@ -48,6 +48,7 @@ import openfl.utils.ByteArray;
 import shaderslmfao.BuildingShaders.BuildingShader;
 import shaderslmfao.BuildingShaders;
 import shaderslmfao.ColorSwap;
+import shaderslmfao.OverlayBlend;
 import ui.PreferencesMenu;
 
 using StringTools;
@@ -290,6 +291,14 @@ class PlayState extends MusicBeatState
 				defaultCamZoom *= 0.90;
 
 				var skyBG:FlxSprite = new FlxSprite(-120, -50).loadGraphic(Paths.image('limo/limoSunset'));
+
+				var overlayShader:OverlayBlend = new OverlayBlend();
+				var sunOverlay:FlxSprite = new FlxSprite().loadGraphic(Paths.image('limo/limoOverlay'));
+				sunOverlay.setGraphicSize(Std.int(sunOverlay.width * 2));
+				sunOverlay.updateHitbox();
+				overlayShader.funnyShit.input = sunOverlay.pixels;
+				skyBG.shader = overlayShader;
+
 				skyBG.scrollFactor.set(0.1, 0.1);
 				add(skyBG);
 

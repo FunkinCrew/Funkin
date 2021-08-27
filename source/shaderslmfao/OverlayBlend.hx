@@ -3,7 +3,7 @@ package shaderslmfao;
 import flixel.math.FlxPoint;
 import flixel.system.FlxAssets.FlxShader;
 
-class TitleOutline extends FlxShader
+class OverlayBlend extends FlxShader
 {
 	// these r copypaste
 	public var funnyX(default, set):Float = 0;
@@ -27,13 +27,15 @@ class TitleOutline extends FlxShader
         #pragma header
 
         uniform float alphaShit;
+		uniform float yPos;
+		uniform float xPos;
 
 		uniform sampler2D funnyShit;
 
 
-		vec3 blendOverlay(vec3 base, vec3 blend)
+		vec4 blendOverlay(vec4 base, vec4 blend)
 		{
-			return mix(1.0 - 2.0 * (1.0 - base) * (1.0 - blend), 2.0 * base * blend, step(base, vec3(0.5)));
+			return mix(1.0 - 2.0 * (1.0 - base) * (1.0 - blend), 2.0 * base * blend, step(base, vec4(0.5)));
 		}
 
         void main()
@@ -41,12 +43,14 @@ class TitleOutline extends FlxShader
 			vec2 funnyUv = openfl_TextureCoordv;
             vec4 color = flixel_texture2D(bitmap, funnyUv);
             
-			vec4 gf = flixel_texture2D(funnyShit, openfl_TextureCoordv);
+			vec2 reallyFunnyUv = vec2(vec2(0.0, 0.0) - gl_FragCoord.xy / openfl_TextureSize.xy);
+
+			vec4 gf = flixel_texture2D(funnyShit, openfl_TextureCoordv.xy + vec2(0.1, 0.2));
 
 
-			vec3 mixedCol = blendOverlay(color.rgb, gf.rgb);
+			vec4 mixedCol = blendOverlay(gf, color);
 
-            gl_FragColor = vec4(mixedCol, color.a);
+            gl_FragColor = mixedCol;
         }
 
     ')

@@ -35,6 +35,8 @@ class BuildingShader extends FlxShader
         {
             vec4 color = flixel_texture2D(bitmap, openfl_TextureCoordv);
 
+			
+
             if (color.a > 0.0)
                 color -= alphaShit;
             
