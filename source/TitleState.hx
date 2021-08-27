@@ -283,7 +283,6 @@ class TitleState extends MusicBeatState
 		outlineShaderShit = new TitleOutline();
 		// logoBl.shader = swagShader.shader;
 		// logoBl.shader = outlineShaderShit;
-		// logoBl.shader = alphaShader.shader;
 
 		// trace();
 		// logoBl.screenCenter();
@@ -295,6 +294,12 @@ class TitleState extends MusicBeatState
 		gfDance.animation.addByIndices('danceRight', 'gfDance', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
 		gfDance.antialiasing = true;
 		add(gfDance);
+
+		// alphaShader.shader.funnyShit.input = gfDance.pixels; // old shit
+
+		logoBl.shader = alphaShader.shader;
+
+		// trace(alphaShader.shader.glFragmentSource)
 
 		// gfDance.shader = swagShader.shader;
 
