@@ -43,6 +43,7 @@ import lime.utils.Assets;
 import openfl.display.BlendMode;
 import openfl.display.StageQuality;
 import openfl.filters.ShaderFilter;
+import flixel.math.FlxAngle;
 
 using StringTools;
 
@@ -91,6 +92,13 @@ class PlayState extends MusicBeatState
 	private var camHUD:FlxCamera;
 	private var camGame:FlxCamera;
 
+	var tank0:FlxSprite;
+	var tank1:FlxSprite;
+	var tank2:FlxSprite;
+	var tank3:FlxSprite;
+	var tank4:FlxSprite;
+	var tank5:FlxSprite;
+
 	private var healthBarBG:FlxSprite;
 	private var healthBar:FlxBar;
 	private var songPosBG:FlxSprite;
@@ -102,6 +110,10 @@ class PlayState extends MusicBeatState
 
 	private var iconP1:HealthIcon;
 	private var iconP2:HealthIcon;
+
+	var steve:FlxSprite;
+
+	var losers:FlxTypedGroup<FlxSprite>;
 
 	var dialogue:Array<String> = ['blah blah blah', 'coolswag'];
 
@@ -557,6 +569,130 @@ class PlayState extends MusicBeatState
 		                            add(waveSpriteFG);
 		                    */
 		          }
+				case 'ugh' | 'guns' | 'stress':
+				{
+						curStage = 'tank';
+						defaultCamZoom = 0.9;
+
+						var bg = new FlxSprite(-400, -400).loadGraphic(Paths.image('tank/tankSky'));
+						bg.scrollFactor.set();
+						bg.antialiasing = true;
+						add(bg);
+					
+
+
+						var clouds = new FlxSprite(FlxG.random.int(-700, -100), FlxG.random.int(-20, 20)).loadGraphic(Paths.image('tank/tankClouds'));
+					
+						clouds.antialiasing = true;
+						clouds.scrollFactor.set(0.1, 0.1);
+						clouds.velocity.x = FlxG.random.float(5,15);
+						add(clouds);
+						var mountains = new FlxSprite(-300, -20).loadGraphic(Paths.image('tank/tankMountains'));
+						mountains.antialiasing = true;
+						mountains.setGraphicSize(Std.int(mountains.width * 1.2));
+						mountains.updateHitbox();
+						mountains.scrollFactor.set(0.2, 0.2);
+						add(mountains);
+						var building = new FlxSprite(-200).loadGraphic(Paths.image('tank/tankBuildings'));
+						building.setGraphicSize(Std.int(building.width * 1.1));
+						building.antialiasing = true;
+						building.updateHitbox();
+						building.scrollFactor.set(0.3, 0.3);
+						add(building);
+						var ruins = new FlxSprite(-200).loadGraphic(Paths.image('tank/tankRuins'));
+						ruins.scrollFactor.set(0.35, 0.35);
+						ruins.setGraphicSize(Std.int(1.1 * ruins.width));
+						ruins.updateHitbox();
+						ruins.antialiasing = true;
+						add(ruins);
+						var smokeLeft = new FlxSprite(-200 , -100);
+						smokeLeft.frames = Paths.getSparrowAtlas('tank/smokeLeft');
+						smokeLeft.animation.addByPrefix('idle', 'SmokeBlurLeft', 24, true);
+						smokeLeft.animation.play('idle', true);
+						smokeLeft.scrollFactor.set(0.4, 0.4);
+						smokeLeft.antialiasing = true;
+						add(smokeLeft);
+					
+					
+						trace(":weary:");
+						var smokeRight = new FlxSprite(1100, -100);
+						smokeRight.frames = Paths.getSparrowAtlas('tank/smokeRight');
+						smokeRight.animation.addByPrefix('idle', 'SmokeRight', 24, true);
+						smokeRight.animation.play('idle', true);
+						smokeRight.scrollFactor.set(0.4, 0.4);
+						smokeRight.antialiasing = true;
+						add(smokeRight);
+						trace(":hueh:");
+						var tower = new FlxSprite(100, 50);
+						trace("WAH tower");
+						tower.frames = Paths.getSparrowAtlas('tank/tankWatchtower');
+						trace("RED ALERT: ioajfha");
+						tower.animation.addByPrefix('idle', 'watchtower gradient color', 24, false);
+						tower.animation.play('idle');
+						trace("eugh");
+						tower.scrollFactor.set(0.5, 0.5);
+						tower.updateHitbox();
+						tower.antialiasing = true;
+						add(tower);
+						trace(":pensive:");
+						steve = new FlxSprite(270, 300);
+						steve.frames = Paths.getSparrowAtlas('tank/tankRolling');
+						steve.animation.addByPrefix('idle', "BG tank w lighting", 24);
+						steve.animation.play('idle');
+						steve.antialiasing = true;
+						steve.scrollFactor.set(0.5, 0.5);
+						add(steve);
+					
+						// note to gamers, type classes don't work
+						trace("before johnathan");
+						var ground = new FlxSprite(-420, -150).loadGraphic(Paths.image('tank/tankGround'));
+						ground.setGraphicSize(Std.int(1.15 * ground.width));
+						ground.updateHitbox();
+						ground.antialiasing = true;
+						add(ground);
+						losers = new FlxTypedGroup<FlxSprite>();
+						tank0 = new FlxSprite(-500, 650);
+						tank0.frames = Paths.getSparrowAtlas('tank/tank0');
+						tank0.antialiasing = true;
+						tank0.animation.addByPrefix("idle", "fg", 24, false);
+						tank0.scrollFactor.set(1.7, 1.5);
+						tank0.animation.play("idle");
+					
+						tank1 = new FlxSprite(-300, 750);
+						tank1.frames = Paths.getSparrowAtlas('tank/tank1');
+						tank1.antialiasing = true;
+						tank1.animation.addByPrefix("idle", "fg", 24, false);
+						tank1.scrollFactor.set(2, 0.2);
+						tank1.animation.play("idle");
+					
+						tank2 = new FlxSprite(450, 940);
+						tank2.frames = Paths.getSparrowAtlas('tank/tank2');
+						tank2.antialiasing = true;
+						tank2.animation.addByPrefix("idle", "foreground", 24, false);
+						tank2.scrollFactor.set(1.5, 1.5);
+						tank2.animation.play("idle");
+					
+						tank4 = new FlxSprite(1300, 900);
+						tank4.frames = Paths.getSparrowAtlas('tank/tank4');
+						tank4.antialiasing = true;
+						tank4.animation.addByPrefix("idle", "fg", 24, false);
+						tank4.scrollFactor.set(1.5, 1.5);
+						tank4.animation.play("idle");
+					
+						tank5 = new FlxSprite(1620, 700);
+						tank5.frames = Paths.getSparrowAtlas('tank/tank5');
+						tank5.antialiasing = true;
+						tank5.animation.addByPrefix("idle", "fg", 24, false);
+						tank5.scrollFactor.set(1.5, 1.5);
+						tank5.animation.play("idle");
+					
+						tank3 = new FlxSprite(1300, 1200);
+						tank3.frames = Paths.getSparrowAtlas('tank/tank3');
+						tank3.antialiasing = true;
+						tank3.animation.addByPrefix("idle", "fg", 24, false);
+						tank3.scrollFactor.set(3.5, 2.5);
+						tank3.animation.play("idle");
+					}
 		          default:
 		          {
 		                  defaultCamZoom = 0.9;
@@ -684,6 +820,10 @@ class PlayState extends MusicBeatState
 				boyfriend.y += 220;
 				gf.x += 180;
 				gf.y += 300;
+			case 'tank':
+				dad.y += 210;
+				boyfriend.x += 50;
+				gf.y -= 40;
 		}
 
 		add(gf);
@@ -694,6 +834,15 @@ class PlayState extends MusicBeatState
 
 		add(dad);
 		add(boyfriend);
+
+		if(curStage == 'tank') {
+			add(tank0);
+			add(tank1); 
+			add(tank2); 
+			add(tank4);
+			add(tank5);
+			add(tank3);
+		}
 
 		var doof:DialogueBox = new DialogueBox(false, dialogue);
 		// doof.x += 70;
@@ -956,6 +1105,16 @@ class PlayState extends MusicBeatState
 	var startTimer:FlxTimer;
 	var perfectMode:Bool = false;
 
+	var tankAngle:Float;
+	var tankX:Float;
+	var tankSpeed:Float = 6;
+	function moveTank() {
+		tankAngle += FlxG.elapsed * tankSpeed;
+		steve.angle = tankAngle - 90 + 15;
+		steve.x = tankX + 1500 * FlxMath.fastCos(FlxAngle.asRadians(tankAngle + 180));
+		steve.y = 1300 + 1100 * FlxMath.fastSin(FlxAngle.asRadians(tankAngle + 180));
+	}
+
 	function startCountdown():Void
 	{
 		inCutscene = false;
@@ -1189,7 +1348,7 @@ class PlayState extends MusicBeatState
 	{
 		if (FlxG.save.data.downscroll)
 			strumLine.y = FlxG.height - 165;
-		
+
 		for (i in 0...4)
 		{
 			// FlxG.log.add(i);
@@ -1399,6 +1558,15 @@ class PlayState extends MusicBeatState
 				iconP1.animation.play(SONG.player1);
 			else
 				iconP1.animation.play('bf-old');
+		}
+			
+
+		if(boyfriend.animation.curAnim.name == 'hey')
+			gf.animation.play('cheer');
+
+		if(curStage == 'tank')
+		{
+			moveTank();
 		}
 
 		accuracy = accuracyDefault;
@@ -2092,7 +2260,8 @@ class PlayState extends MusicBeatState
 										inIgnoreList = true;
 								}
 								if (!inIgnoreList)
-									updateAccuracy();
+									if(!FlxG.save.data.ghost)
+										badNoteCheck();
 							}
 						}
 					}
@@ -2145,7 +2314,8 @@ class PlayState extends MusicBeatState
 			}
 			else
 			{
-				updateAccuracy();
+				if(!FlxG.save.data.ghost)
+					badNoteCheck();
 			}
 		}
 
@@ -2261,7 +2431,7 @@ class PlayState extends MusicBeatState
 		updateAccuracy();
 	}
 
-	/*function badNoteCheck()
+	function badNoteCheck()
 	{
 		// just double pasting this shit cuz fuk u
 		// REDO THIS SYSTEM!
@@ -2278,7 +2448,7 @@ class PlayState extends MusicBeatState
 			noteMiss(2);
 		if (rightP)
 			noteMiss(3);
-	}*/
+	}
 	function updateAccuracy() 
 	{
 		totalPlayed += 1;

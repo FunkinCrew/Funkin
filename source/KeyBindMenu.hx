@@ -208,6 +208,7 @@ class KeyBindMenu extends FlxSubState
 
         FlxG.state.closeSubState();
         FlxG.state.openSubState(new OptionsSubState());
+        FlxG.save.bind('funkin', 'ninjamuffin99');
 
         FlxTween.tween(keyTextDisplay, {alpha: 0}, 1, {ease: FlxEase.expoInOut});
         FlxTween.tween(blackBox, {alpha: 0}, 1.1, {ease: FlxEase.expoInOut, onComplete: function(flx:FlxTween){close();}});

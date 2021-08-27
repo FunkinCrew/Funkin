@@ -17,6 +17,9 @@ class Character extends FlxSprite
 
 	public var holdTimer:Float = 0;
 
+	var enemyOffsetX:Float;
+	var enemyOffsetY:Float;
+
 	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false)
 	{
 		super(x, y);
@@ -495,6 +498,29 @@ class Character extends FlxSprite
 				addOffset("singDOWN-alt", -30, -27);
 
 				playAnim('idle');
+			case 'tankman':
+				var tex = Paths.getSparrowAtlas('tank/tankmanCaptain');
+				frames = tex;
+				animation.addByPrefix('idle', 'Tankman Idle Dance', 24, false);
+				animation.addByPrefix('singUP', 'Tankman UP note', 24, false);
+				animation.addByPrefix('singRIGHT','Tankman Note Left', 24, false);
+				animation.addByPrefix('singLEFT', 'Tankman Right Note', 24, false);	
+				animation.addByPrefix('singDOWN', 'Tankman DOWN note', 24, false);
+				animation.addByPrefix('singUP-alt', 'TANKMAN UGH', 24, false);
+				animation.addByPrefix('singDOWN-alt', 'PRETTY GOOD', 24, false);
+			
+				addOffset('idle',0);
+				addOffset('singUP', 50, 56);
+				addOffset('singRIGHT',-12, -27);
+				addOffset('singLEFT', 90, -14);
+				addOffset('singDOWN', 80, -100);
+				addOffset('singUP-alt', -15, -7);
+				addOffset('singDOWN-alt', 0, 15);
+				playAnim('idle');
+
+				flipX = true;
+
+				y += 150;
 		}
 
 		dance();
@@ -541,6 +567,9 @@ class Character extends FlxSprite
 				holdTimer = 0;
 			}
 		}
+
+		x = x + enemyOffsetX;
+		y = y + enemyOffsetY;
 
 		switch (curCharacter)
 		{
@@ -614,7 +643,10 @@ class Character extends FlxSprite
 					else
 						playAnim('danceLeft');
 				default:
-					playAnim('idle');
+					if(curCharacter == 'tankman' && animation.curAnim.name != "singDOWN-alt")
+        				playAnim('idle');
+					else
+						playAnim('idle');
 			}
 		}
 	}
