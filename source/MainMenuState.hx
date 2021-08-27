@@ -36,7 +36,7 @@ class MainMenuState extends MusicBeatState
 
 	public static var version = '0.4.0';
 	public static var versionTag = 'The "Artstyle" Update';
-	public static var prerelease = true;
+	public static var prerelease = false;
 
 	override function create()
 	{
