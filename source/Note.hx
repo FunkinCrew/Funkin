@@ -61,9 +61,10 @@ class Note extends FlxSprite
 				if (isSustainNote)
 				{
 					if (Style.lstyle.arrowEnds != "") {
-						loadGraphic(Paths.image('${Style.lstyle.uiPrefix}${Style.lstyle.arrowEnds}', Style.lstyle.library), true, 7, 6);
+						//loadGraphic(Paths.image('${Style.lstyle.uiPrefix}${Style.lstyle.arrowEnds}', Style.lstyle.library), true, 7, 6);
 
 						if (Style.lstyle.indexAnimation) {
+							loadGraphic(Paths.image('${Style.lstyle.uiPrefix}${Style.lstyle.arrowEnds}', Style.lstyle.library), true, 7, 6);
 							trace('O! HELD NOTE! BUT WITH INDEX ANIMATION AND DUMBASS WEEK6 ARROW ENDS!');
 							animation.add('purpleholdend', [4]);
 							animation.add('greenholdend', [6]);
@@ -75,10 +76,12 @@ class Note extends FlxSprite
 							animation.add('redhold', [3]);
 							animation.add('bluehold', [1]);
 
+							/*
 							animation.add('greenScroll', [6]);
 							animation.add('redScroll', [7]);
 							animation.add('blueScroll', [5]);
 							animation.add('purpleScroll', [4]);
+							*/
 						} else {
 							frames = Paths.getSparrowAtlas('${Style.lstyle.uiPrefix}${Style.lstyle.arrowEnds}', Style.lstyle.library);
 							trace('O! HELD NOTE! BUT WITH DUMBASS WEEK6 ARROW ENDS!');
@@ -92,14 +95,17 @@ class Note extends FlxSprite
 							animation.addByPrefix('redhold', 'red hold piece');
 							animation.addByPrefix('bluehold', 'blue hold piece');
 
+							/*
 							animation.addByPrefix('greenScroll', 'green0');
 							animation.addByPrefix('redScroll', 'red0');
 							animation.addByPrefix('blueScroll', 'blue0');
 							animation.addByPrefix('purpleScroll', 'purple0');
+							*/
 
 						}
 					} else {
 						if (Style.lstyle.indexAnimation) {
+							loadGraphic(Paths.image('${Style.lstyle.uiPrefix}${Style.lstyle.notes}', Style.lstyle.library), true, 17, 17);
 							trace('O! HELD NOTE! BUT WITH INDEX ANIMATION!');
 							animation.add('purpleholdend', [4]);
 							animation.add('greenholdend', [6]);
@@ -137,9 +143,9 @@ class Note extends FlxSprite
 					}
 				} else {
 					if (Style.lstyle.arrowEnds != "") {
-						loadGraphic(Paths.image('${Style.lstyle.uiPrefix}${Style.lstyle.arrowEnds}', Style.lstyle.library), true, 7, 6);
 
 						if (Style.lstyle.indexAnimation) {
+							loadGraphic(Paths.image('${Style.lstyle.uiPrefix}${Style.lstyle.notes}', Style.lstyle.library), true, 17, 17);
 							trace('O! NOTE! BUT WITH INDEX ANIMATION AND DUMBASS WEEK6 ARROW ENDS!');
 							animation.add('purpleholdend', [4]);
 							animation.add('greenholdend', [6]);
@@ -156,7 +162,7 @@ class Note extends FlxSprite
 							animation.add('blueScroll', [5]);
 							animation.add('purpleScroll', [4]);
 						} else {
-							frames = Paths.getSparrowAtlas('${Style.lstyle.uiPrefix}${Style.lstyle.arrowEnds}', Style.lstyle.library);
+							frames = Paths.getSparrowAtlas('${Style.lstyle.uiPrefix}${Style.lstyle.notes}', Style.lstyle.library);
 							trace('O! NOTE! BUT WITH DUMBASS WEEK6 ARROW ENDS!');
 							animation.addByPrefix('purpleholdend', 'pruple end hold');
 							animation.addByPrefix('greenholdend', 'green hold end');
@@ -176,6 +182,7 @@ class Note extends FlxSprite
 						}
 					} else {
 						if (Style.lstyle.indexAnimation) {
+							loadGraphic(Paths.image('${Style.lstyle.uiPrefix}${Style.lstyle.notes}', Style.lstyle.library), true, 17, 17);
 							trace('O! NOTE! BUT WITH INDEX ANIMATION!');
 							animation.add('purpleholdend', [4]);
 							animation.add('greenholdend', [6]);
