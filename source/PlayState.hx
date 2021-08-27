@@ -606,28 +606,7 @@ class PlayState extends MusicBeatState
 				foregroundSprites.add(fgTank3);
 
 			default:
-				defaultCamZoom *= 0.9;
-				curStage = 'stage';
-
-				var bg:BGSprite = new BGSprite('stageback', -600, -200, 0.9, 0.9);
-				add(bg);
-
-				var stageFront:FlxSprite = new FlxSprite(-650, 600).loadGraphic(Paths.image('stagefront'));
-				stageFront.setGraphicSize(Std.int(stageFront.width * 1.1));
-				stageFront.updateHitbox();
-				stageFront.antialiasing = true;
-				stageFront.scrollFactor.set(0.9, 0.9);
-				stageFront.active = false;
-				add(stageFront);
-
-				var stageCurtains:FlxSprite = new FlxSprite(-500, -300).loadGraphic(Paths.image('stagecurtains'));
-				stageCurtains.setGraphicSize(Std.int(stageCurtains.width * 0.9));
-				stageCurtains.updateHitbox();
-				stageCurtains.antialiasing = true;
-				stageCurtains.scrollFactor.set(1.3, 1.3);
-				stageCurtains.active = false;
-
-				add(stageCurtains);
+				loadStage('stage');
 		}
 
 		var gfVersion:String = 'gf';
@@ -1030,6 +1009,29 @@ class PlayState extends MusicBeatState
 					});
 				});
 		});*/
+	}
+
+	function loadStage(path:String)
+	{
+		curStage = path;
+
+		var json = Assets.getText(Paths.file('data/stagedata/$path.json'));
+
+		var parsed:StageData = cast Json.parse(json);
+
+		defaultCamZoom *= parsed.camZoom;
+
+		for (prop in parsed.propsBackground)
+		{
+			var funnyProp:BGSprite = new BGSprite(prop.path, prop.x, prop.y, prop.scrollX, prop.scrollY);
+
+			funnyProp.setGraphicSize(Std.int(funnyProp.width * prop.scaleX), Std.int(funnyProp.height * prop.scaleY));
+			funnyProp.updateHitbox();
+			funnyProp.scrollFactor.set(prop.scrollX, prop.scrollY);
+			add(funnyProp);
+		}
+
+		trace(parsed.propsBackground);
 	}
 
 	function gunsIntro()
@@ -3215,4 +3217,22 @@ class PlayState extends MusicBeatState
 	}
 
 	var curLight:Int = 0;
+}
+
+typedef StageData =
+{
+	var camZoom:Float;
+	var propsBackground:Array<Props>;
+}
+
+typedef Props =
+{
+	var x:Float;
+	var y:Float;
+	var scrollX:Float;
+	var scrollY:Float;
+	var propname:String;
+	var path:String;
+	var scaleX:Float;
+	var scaleY:Float;
 }

@@ -37,7 +37,7 @@ class OverlayBlend extends FlxShader
 		{
 			vec4 mixed = mix(1.0 - 2.0 * (1.0 - base) * (1.0 - blend), 2.0 * base * blend, step(base, vec4(0.5)));
 
-			// mixed = mix(mixed, blend, base.a); // proper alpha mixing
+			// mixed = mix(mixed, blend, base.a); // proper alpha mixing?
 
 			return mixed;
 		}
