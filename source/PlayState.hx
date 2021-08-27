@@ -1,5 +1,6 @@
 package;
 
+import Discord.DiscordClient;
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -37,6 +38,7 @@ import flixel.util.FlxSort;
 import flixel.util.FlxStringUtil;
 import flixel.util.FlxTimer;
 import haxe.Json;
+import flixel.FlxCamera;
 import lime.utils.Assets;
 import openfl.display.BlendMode;
 import openfl.display.StageQuality;
@@ -46,6 +48,7 @@ using StringTools;
 
 class PlayState extends MusicBeatState
 {
+	public static var instance:PlayState = null;
 	public static var curStage:String = '';
 	public static var SONG:SwagSong;
 	public static var isStoryMode:Bool = false;
@@ -81,16 +84,24 @@ class PlayState extends MusicBeatState
 	private var health:Float = 1;
 	private var combo:Int = 0;
 
+	private var totalPlayed:Int = 0;
+	private var totalNotesHit:Float = 0;
+	private var totalNotesHitDefault:Float = 0;
+
+	private var camHUD:FlxCamera;
+	private var camGame:FlxCamera;
+
 	private var healthBarBG:FlxSprite;
 	private var healthBar:FlxBar;
+	private var songPosBG:FlxSprite;
+	private var songPosBar:FlxBar;
+	private var songName:FlxText;
 
 	private var generatedMusic:Bool = false;
 	private var startingSong:Bool = false;
 
 	private var iconP1:HealthIcon;
 	private var iconP2:HealthIcon;
-	private var camHUD:FlxCamera;
-	private var camGame:FlxCamera;
 
 	var dialogue:Array<String> = ['blah blah blah', 'coolswag'];
 
@@ -116,9 +127,15 @@ class PlayState extends MusicBeatState
 	var songScore:Int = 0;
 	var scoreTxt:FlxText;
 
+	var misses:Int;
+
+	var accuracy:Float = 0.00;
+	var accuracyDefault:Float = 0.00;
+
 	public static var campaignScore:Int = 0;
 
 	var defaultCamZoom:Float = 1.05;
+	var watermark:FlxText;
 
 	// how big to stretch the pixel art assets
 	public static var daPixelZoom:Float = 6;
@@ -721,20 +738,55 @@ class PlayState extends MusicBeatState
 
 		FlxG.fixedTimestep = false;
 
-		healthBarBG = new FlxSprite(0, FlxG.height * 0.9).loadGraphic(Paths.image('healthBar'));
+		var dadColor = 0xFFFF0000;
+		var bfColor = 0xFF66FF33;
+
+		if (FlxG.save.data.songPosition) // I dont wanna talk about this code :(
+			{
+				songPosBG = new FlxSprite(0, 10).loadGraphic(Paths.image('healthBar'));
+				if (FlxG.save.data.downscroll)
+					songPosBG.y = FlxG.height * 0.9 + 45; 
+				songPosBG.screenCenter(X);
+				songPosBG.scrollFactor.set();
+				add(songPosBG);
+				
+				songPosBar = new FlxBar(songPosBG.x + 4, songPosBG.y + 4, LEFT_TO_RIGHT, Std.int(songPosBG.width - 8), Std.int(songPosBG.height - 8), this,
+					'songPositionBar', 0, 90000);
+				songPosBar.scrollFactor.set();
+				songPosBar.createFilledBar(FlxColor.GRAY, FlxColor.CYAN);
+				add(songPosBar);
+	
+				var songName = new FlxText(songPosBG.x + (songPosBG.width / 2) - 20,songPosBG.y,0,SONG.song, 16);
+				if (FlxG.save.data.downscroll)
+					songName.y -= 3;
+				songName.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
+				songName.scrollFactor.set();
+				add(songName);
+				songName.cameras = [camHUD];
+			}
+
+		healthBarBG = new FlxSprite(0, FlxG.height * 0.85).loadGraphic(Paths.image('healthBar'));
 		healthBarBG.screenCenter(X);
+		if (FlxG.save.data.downscroll)
+			healthBarBG.y = 50;
 		healthBarBG.scrollFactor.set();
 		add(healthBarBG);
 
 		healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
 			'health', 0, 2);
 		healthBar.scrollFactor.set();
-		healthBar.createFilledBar(0xFFFF0000, 0xFF66FF33);
+		healthBar.createFilledBar(dadColor, bfColor);
 		// healthBar
 		add(healthBar);
 
-		scoreTxt = new FlxText(healthBarBG.x + healthBarBG.width - 190, healthBarBG.y + 30, 0, "", 20);
-		scoreTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT);
+		watermark = new FlxText(4,healthBarBG.y + 50,0,SONG.song + " " + (storyDifficulty == 2 ? "Hard" : storyDifficulty == 1 ? "Normal" : "Easy") + " - WB Engine " + lime.app.Application.current.meta.get('version'), 16);
+		watermark.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
+		watermark.scrollFactor.set();
+		watermark.cameras = [camHUD];
+		add(watermark);
+
+		scoreTxt = new FlxText(healthBarBG.x + healthBarBG.width - 290, healthBarBG.y + 50, 0, "", 20);
+		scoreTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 		scoreTxt.scrollFactor.set();
 		add(scoreTxt);
 
@@ -1135,6 +1187,9 @@ class PlayState extends MusicBeatState
 
 	private function generateStaticArrows(player:Int):Void
 	{
+		if (FlxG.save.data.downscroll)
+			strumLine.y = FlxG.height - 165;
+		
 		for (i in 0...4)
 		{
 			// FlxG.log.add(i);
@@ -1224,14 +1279,14 @@ class PlayState extends MusicBeatState
 
 			babyArrow.ID = i;
 
-			if (player == 1)
-			{
+			if(player == 1) {
 				playerStrums.add(babyArrow);
 			}
 
 			babyArrow.animation.play('static');
 			babyArrow.x += 50;
 			babyArrow.x += ((FlxG.width / 2) * player);
+
 
 			strumLineNotes.add(babyArrow);
 		}
@@ -1346,6 +1401,8 @@ class PlayState extends MusicBeatState
 				iconP1.animation.play('bf-old');
 		}
 
+		accuracy = accuracyDefault;
+
 		switch (curStage)
 		{
 			case 'philly':
@@ -1364,7 +1421,7 @@ class PlayState extends MusicBeatState
 
 		super.update(elapsed);
 
-		scoreTxt.text = "Score:" + songScore;
+		scoreTxt.text = "Score:" + songScore + " Health:" + healthBar.percent + "%" + " Misses:" + misses;
 
 		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause)
 		{
@@ -1382,7 +1439,7 @@ class PlayState extends MusicBeatState
 				openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 		
 			#if desktop
-			DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
+			DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ") Misses:" + misses, iconRPC);
 			#end
 		}
 
@@ -1666,6 +1723,8 @@ class PlayState extends MusicBeatState
 					if (SONG.needsVoices)
 						vocals.volume = 1;
 
+					daNote.active = false;
+
 					daNote.kill();
 					notes.remove(daNote, true);
 					daNote.destroy();
@@ -1680,6 +1739,7 @@ class PlayState extends MusicBeatState
 					{
 						health -= 0.0475;
 						vocals.volume = 0;
+						misses++;
 					}
 
 					daNote.active = false;
@@ -1688,6 +1748,13 @@ class PlayState extends MusicBeatState
 					daNote.kill();
 					notes.remove(daNote, true);
 					daNote.destroy();
+				}
+
+				if(FlxG.save.data.downscroll){
+					daNote.y = (strumLine.y + (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(PlayState.SONG.speed, 2)));
+				}
+				else {
+					daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(PlayState.SONG.speed, 2)));
 				}
 			});
 		}
@@ -1783,7 +1850,7 @@ class PlayState extends MusicBeatState
 
 	var endingSong:Bool = false;
 
-	private function popUpScore(strumtime:Float):Void
+	private function popUpScore(strumtime:Float, daNote:Note):Void
 	{
 		var noteDiff:Float = Math.abs(strumtime - Conductor.songPosition);
 		// boyfriend.playAnim('hey');
@@ -1868,6 +1935,28 @@ class PlayState extends MusicBeatState
 
 		comboSpr.updateHitbox();
 		rating.updateHitbox();
+
+		var sploosh:FlxSprite = new FlxSprite(daNote.x, playerStrums.members[daNote.noteData].y);
+		var tex:flixel.graphics.frames.FlxAtlasFrames = Paths.getSparrowAtlas('noteSplashes', 'shared');
+		sploosh.frames = tex;
+		sploosh.animation.addByPrefix('splash 0 0', 'note impact 1 purple', 24, false);
+		sploosh.animation.addByPrefix('splash 0 1', 'note impact 1  blue', 24, false);
+		sploosh.animation.addByPrefix('splash 0 2', 'note impact 1 green', 24, false);
+		sploosh.animation.addByPrefix('splash 0 3', 'note impact 1 red', 24, false);
+		sploosh.animation.addByPrefix('splash 1 0', 'note impact 2 purple', 24, false);
+		sploosh.animation.addByPrefix('splash 1 1', 'note impact 2 blue', 24, false);
+		sploosh.animation.addByPrefix('splash 1 2', 'note impact 2 green', 24, false);
+		sploosh.animation.addByPrefix('splash 1 3', 'note impact 2 red', 24, false);
+		if (daRating == 'sick')
+		{
+			add(sploosh);
+			sploosh.animation.play('splash ' + FlxG.random.int(0, 1) + " " + daNote.noteData);
+			sploosh.alpha = 0.6;
+			sploosh.cameras = [camHUD];
+			sploosh.offset.x += 90;
+			sploosh.offset.y += 80;
+			sploosh.animation.finishCallback = function(name) sploosh.kill();
+		}
 
 		var seperatedScore:Array<Int> = [];
 
@@ -2003,7 +2092,7 @@ class PlayState extends MusicBeatState
 										inIgnoreList = true;
 								}
 								if (!inIgnoreList)
-									badNoteCheck();
+									updateAccuracy();
 							}
 						}
 					}
@@ -2056,7 +2145,7 @@ class PlayState extends MusicBeatState
 			}
 			else
 			{
-				badNoteCheck();
+				updateAccuracy();
 			}
 		}
 
@@ -2168,9 +2257,11 @@ class PlayState extends MusicBeatState
 					boyfriend.playAnim('singRIGHTmiss', true);
 			}
 		}
+
+		updateAccuracy();
 	}
 
-	function badNoteCheck()
+	/*function badNoteCheck()
 	{
 		// just double pasting this shit cuz fuk u
 		// REDO THIS SYSTEM!
@@ -2187,6 +2278,12 @@ class PlayState extends MusicBeatState
 			noteMiss(2);
 		if (rightP)
 			noteMiss(3);
+	}*/
+	function updateAccuracy() 
+	{
+		totalPlayed += 1;
+		accuracy = Math.max(0,totalNotesHit / totalPlayed * 100);
+		accuracyDefault = Math.max(0, totalNotesHitDefault / totalPlayed * 100);
 	}
 
 	function noteCheck(keyP:Bool, note:Note):Void
@@ -2195,7 +2292,7 @@ class PlayState extends MusicBeatState
 			goodNoteHit(note);
 		else
 		{
-			badNoteCheck();
+			updateAccuracy();
 		}
 	}
 
@@ -2205,7 +2302,7 @@ class PlayState extends MusicBeatState
 		{
 			if (!note.isSustainNote)
 			{
-				popUpScore(note.strumTime);
+				popUpScore(note.strumTime, note);
 				combo += 1;
 			}
 
@@ -2244,6 +2341,8 @@ class PlayState extends MusicBeatState
 				note.destroy();
 			}
 		}
+
+		updateAccuracy();
 	}
 
 	var fastCarCanDrive:Bool = true;

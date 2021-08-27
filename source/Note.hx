@@ -4,14 +4,14 @@ import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.math.FlxMath;
 import flixel.util.FlxColor;
-#if polymod
-import polymod.format.ParseRules.TargetSignatureElement;
-#end
+import flixel.FlxG;
 
 using StringTools;
 
 class Note extends FlxSprite
 {
+	public static var instance:Note = null;
+
 	public var strumTime:Float = 0;
 
 	public var mustPress:Bool = false;
@@ -170,6 +170,9 @@ class Note extends FlxSprite
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+
+		if (FlxG.save.data.downscroll && isSustainNote) 
+			flipY = true;
 
 		if (mustPress)
 		{
