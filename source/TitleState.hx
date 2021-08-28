@@ -286,11 +286,9 @@ class TitleState extends MusicBeatState
 			{
 				// Check if version is outdated
 
-				var http = new haxe.Http("https://raw.githubusercontent.com/GEDON6676/WB-Engine/master/.latest");
-
 				var version:String = "v" + Application.current.meta.get('version');
 
-				if (version.trim() != http)
+				if (version.trim() != Paths.txt('../../.latest.txt'))
 				{
 					FlxG.switchState(new OutdatedSubState());
 					trace('OLD VERSION!');
