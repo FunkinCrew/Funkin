@@ -526,13 +526,6 @@ class PlayState extends MusicBeatState
 				tankSky.velocity.x = FlxG.random.float(5, 15);
 				add(tankSky);
 
-				// need to implement animated effects, prob not too hard?
-				var smokeLeft:BGSprite = new BGSprite('smokeLeft', -200, -100, 0.4, 0.4, ['SmokeBlurLeft'], true);
-				add(smokeLeft);
-
-				var smokeRight:BGSprite = new BGSprite('smokeRight', 1100, -100, 0.4, 0.4, ['SmokeRight'], true);
-				add(smokeRight);
-
 				// tankGround.
 
 				tankWatchtower = new BGSprite('tankWatchtower', 100, 50, 0.5, 0.5, ['watchtower gradient color']);
@@ -991,7 +984,12 @@ class PlayState extends MusicBeatState
 
 		for (prop in parsed.propsBackground)
 		{
-			var funnyProp:BGSprite = new BGSprite(prop.path, prop.x, prop.y, prop.scrollX, prop.scrollY);
+			var funnyProp:BGSprite = new BGSprite(prop.path, prop.x, prop.y, prop.scrollX, prop.scrollY, null, false, false);
+
+			if (prop.animBullshit != null)
+				funnyProp.setupSparrow(prop.path, prop.animBullshit.anims, prop.animBullshit.isLooping);
+			else
+				funnyProp.justLoadImage(prop.path);
 
 			funnyProp.setGraphicSize(Std.int(funnyProp.width * prop.scaleX), Std.int(funnyProp.height * prop.scaleY));
 			funnyProp.updateHitbox();
@@ -3203,4 +3201,11 @@ typedef Props =
 	var path:String;
 	var scaleX:Float;
 	var scaleY:Float;
+	var ?animBullshit:PropAnimData;
+}
+
+typedef PropAnimData =
+{
+	var isLooping:Bool;
+	var anims:Array<String>;
 }
