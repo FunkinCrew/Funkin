@@ -1339,7 +1339,6 @@ class PlayState extends MusicBeatState
 	}
 
 	public var closestNotes:Array<Note> = [];
-	var lastPressedNote:Note;
 	
 
 	private function handleInput(evt:KeyboardEvent):Void
@@ -1463,8 +1462,6 @@ class PlayState extends MusicBeatState
 			ana.nearestNote = [];
 			health -= 0.20;
 		}
-
-		lastPressedNote = closestNotes[0];
 	}
 
 	var songStarted = false;
@@ -4794,7 +4791,7 @@ class PlayState extends MusicBeatState
 			}
 
 			if (PlayStateChangeables.Optimize)
-				if (vocals.volume == 0 && !currentSection.mustHitSection && lastPressedNote != null && lastPressedNote == closestNotes[0])
+				if (vocals.volume == 0 && !currentSection.mustHitSection)
 					vocals.volume = 1;
 		}
 	}
