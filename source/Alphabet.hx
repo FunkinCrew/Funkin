@@ -9,6 +9,7 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxMath;
 import flixel.util.FlxTimer;
+import openfl.Lib;
 
 using StringTools;
 
@@ -339,6 +340,7 @@ class AlphaCharacter extends FlxSprite
 	{
 		animation.addByPrefix(letter, letter.toUpperCase() + " bold", 24);
 		animation.play(letter);
+		animation.curAnim.frameRate = 24 * (60 / (cast(Lib.current.getChildAt(0), Main)).getFPS());
 		updateHitbox();
 	}
 

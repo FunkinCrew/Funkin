@@ -434,11 +434,11 @@ class Character extends FlxSprite
 
 			if (curCharacter == 'dad')
 				dadVar = 6.1;
-			else if (curCharacter == 'gf')
+			else if (curCharacter == 'gf' || curCharacter == 'spooky')
 				dadVar = 4.1; //fix double dances
 			if (holdTimer >= Conductor.stepCrochet * dadVar * 0.001)
 			{
-				if (curCharacter == 'gf')
+				if (curCharacter == 'gf' || curCharacter == 'spooky')
 					playAnim('danceLeft'); //overridden by dance correctly later
 				dance();
 				holdTimer = 0;
@@ -480,12 +480,22 @@ class Character extends FlxSprite
 							playAnim('danceLeft');
 					}
 				case 'spooky':
-					danced = !danced;
+					if (!animation.curAnim.name.startsWith('sing'))
+					{
+						danced = !danced;
 
-					if (danced)
-						playAnim('danceRight');
-					else
-						playAnim('danceLeft');
+						if (danced)
+							playAnim('danceRight');
+						else
+							playAnim('danceLeft');
+					}
+				/*
+				// new dance code is gonna end up cutting off animation with the idle
+				// so here's example code that'll fix it. just adjust it to ya character 'n shit
+				case 'custom character':
+					if (!animation.curAnim.name.endsWith('custom animation'))
+						playAnim('idle');
+				*/
 				default:
 					if (altAnim && animation.getByName('idle-alt') != null)
 						playAnim('idle-alt', forced);
