@@ -3380,7 +3380,7 @@ class PlayState extends MusicBeatState
 				remove(dad);
 				remove(gf);
 			});
-			FlxG.switchState(new StageDebugState());
+			FlxG.switchState(new StageDebugState(SONG.stage));
 		}
 		else
 		{
