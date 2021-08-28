@@ -1039,7 +1039,12 @@ class ChartingState extends MusicBeatState
 		var json = {
 			"song": _song
 		};
-
+		
+		var diffic:String = "";
+		if (PlayState.storyDifficulty == 0)
+			diffic = "-easy";
+		if (PlayState.storyDifficulty == 2)
+			diffic = "-hard";
 		var data:String = Json.stringify(json);
 
 		if ((data != null) && (data.length > 0))
@@ -1048,7 +1053,7 @@ class ChartingState extends MusicBeatState
 			_file.addEventListener(Event.COMPLETE, onSaveComplete);
 			_file.addEventListener(Event.CANCEL, onSaveCancel);
 			_file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
-			_file.save(data.trim(), _song.song.toLowerCase() + ".json");
+			_file.save(data.trim(), _song.song.toLowerCase() + diffic + ".json");
 		}
 	}
 
