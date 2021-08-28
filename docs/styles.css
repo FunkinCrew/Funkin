@@ -49,6 +49,24 @@ h3 {
     color: white;
 }
 
+.headerlinkBIG {
+    background-color: #555;
+    color: white;
+    float: none;
+    border: none;
+    border-style: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    font-size: 30px;
+    transition-duration: 0.4s;
+}
+  
+  .headerlink:hoverBIG {
+    background-color: #777;
+    color: white;
+}
+
 .bgText {
     background-color: rgb(75, 75, 75);
     border: #000;
