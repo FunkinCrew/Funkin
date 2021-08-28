@@ -37,7 +37,8 @@ class OptionsMenu extends MusicBeatState {
 		'Ghost Tapping ${!FlxG.save.data.gtapping ? 'on' : 'off'}',
 		'Limited ScoreBar ${!FlxG.save.data.sbar ? 'off' : 'on'}',
 		'Light up CPU Strums ${!FlxG.save.data.cpuStrums ? 'off' : 'on'}',
-		'Allow using R to reset ${!FlxG.save.data.ron ? 'off' : 'on'}'];
+		'Allow using R to reset ${!FlxG.save.data.ron ? 'off' : 'on'}',
+		'Hitsounds ${!FlxG.save.data.hsounds ? 'off' : 'on'}'];
 		optionText.screenCenter();
 
 		optionDot.x = optionText.x - 20;
@@ -65,6 +66,9 @@ class OptionsMenu extends MusicBeatState {
 			}
 			if (options[curSelected].startsWith('Allow using R to reset')) {
 				FlxG.save.data.ron = !FlxG.save.data.ron;
+			}
+			if (options[curSelected].startsWith('Hitsounds')) {
+				FlxG.save.data.hsounds = !FlxG.save.data.hsounds;
 			}
 		}
 

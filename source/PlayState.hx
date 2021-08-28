@@ -2454,6 +2454,10 @@ class PlayState extends MusicBeatState
 	{
 		if (!note.wasGoodHit)
 		{
+			if (FlxG.save.data.hsounds) {
+				FlxG.sound.play(Paths.sound('hit', 'shared'));
+			}
+			
 			if (!note.isSustainNote)
 			{
 				popUpScore(note.strumTime);

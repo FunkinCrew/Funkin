@@ -1,11 +1,15 @@
 package;
 
+import lime.app.Application;
 import Conductor.BPMChangeEvent;
 import flixel.FlxG;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.ui.FlxUIState;
 import flixel.math.FlxRect;
 import flixel.util.FlxTimer;
+#if desktop
+import Discord.DiscordClient;
+#end
 
 class MusicBeatState extends FlxUIState
 {
@@ -37,6 +41,13 @@ class MusicBeatState extends FlxUIState
 
 		if (oldStep != curStep && curStep > 0)
 			stepHit();
+
+		Application.current.onExit.add(function(exitCode)
+		{
+			#if desktop
+			DiscordClient.shutdown();
+			#end
+		});
 
 		super.update(elapsed);
 	}

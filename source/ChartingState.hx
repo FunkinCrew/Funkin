@@ -91,6 +91,8 @@ class ChartingState extends MusicBeatState
 		hitSound = new FlxSound();
 		hitSound.loadEmbedded(Paths.sound('hit', 'shared'));
 
+		// possible crash fix??
+		lastSection = 0;
 		curSection = lastSection;
 
 		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * 8, GRID_SIZE * 16);
@@ -519,27 +521,21 @@ class ChartingState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
-		if (FlxG.overlap(curRenderedNotes, strumLine) && FlxG.sound.music.playing && !playedHit) {
-			trace('HIT SOUND!');
-			if (!playedHit) {
-				hitSound.play(false);
-				playedHit = true;
-			}
-		}
-
 		// alpha shit
 		for (note in curRenderedNotes) {
 			if (FlxG.overlap(note, strumLine) && FlxG.sound.music.playing) {
 				note.alpha = 0.2;
-				playedHit = true;
+				// playedHit = true;
+				note.playHit();
 			} else {
 				note.alpha = 1;
-				playedHit = false;
+				// playedHit = false;
 			}
 		}
 		for (note in curRenderedSustains) {
 			if (FlxG.overlap(note, strumLine) && FlxG.sound.music.playing) {
 				note.alpha = 0.2;
+				// FlxG.sound.play(Paths.sound('hitSUS', 'shared'), 0.7);
 			} else {
 				note.alpha = 1;
 			}
@@ -653,6 +649,9 @@ class ChartingState extends MusicBeatState
 		{
 			if (FlxG.keys.justPressed.SPACE)
 			{
+				for (note in curRenderedNotes) {
+					note.resetHits();
+				}
 				if (FlxG.sound.music.playing)
 				{
 					FlxG.sound.music.pause();
