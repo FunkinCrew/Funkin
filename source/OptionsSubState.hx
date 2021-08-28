@@ -9,7 +9,7 @@ import flixel.text.FlxText;
 
 class OptionsSubState extends MusicBeatSubstate
 {
-	var textMenuItems:Array<String> = ['Controls', 'Downscroll', 'Song Position', 'Ghost Tapping'];
+	var textMenuItems:Array<String> = ['Controls', 'Downscroll', 'Song Position', 'Ghost Tapping', 'HaxeFlixel Logo'];
 
 	var selector:FlxSprite;
 	var curSelected:Int = 0;
@@ -77,6 +77,12 @@ class OptionsSubState extends MusicBeatSubstate
 				case "Ghost Tapping":
 					FlxG.save.data.ghost = !FlxG.save.data.ghost;
 					if(FlxG.save.data.ghost)
+						FlxG.sound.play(Paths.sound('confirmMenu'));
+					else
+						FlxG.sound.play(Paths.sound('cancelMenu'));
+				case "HaxeFlixel Logo":
+					Main.skipSplash = !Main.skipSplash;
+					if(FlxG.save.data.cacheCharacters)
 						FlxG.sound.play(Paths.sound('confirmMenu'));
 					else
 						FlxG.sound.play(Paths.sound('cancelMenu'));

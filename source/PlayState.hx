@@ -635,7 +635,7 @@ class PlayState extends MusicBeatState
 						tower.antialiasing = true;
 						add(tower);
 						trace(":pensive:");
-						steve = new FlxSprite(270, 300);
+						steve = new FlxSprite(380, 300);
 						steve.frames = Paths.getSparrowAtlas('tank/tankRolling');
 						steve.animation.addByPrefix('idle', "BG tank w lighting", 24);
 						steve.animation.play('idle');
@@ -821,7 +821,7 @@ class PlayState extends MusicBeatState
 				gf.x += 180;
 				gf.y += 300;
 			case 'tank':
-				dad.y += 210;
+				dad.y += 170;
 				boyfriend.x += 50;
 				gf.y -= 40;
 		}
@@ -1559,6 +1559,11 @@ class PlayState extends MusicBeatState
 			else
 				iconP1.animation.play('bf-old');
 		}
+
+		if(SONG.song.toLowerCase() == 'guns' && curBeat == 223)
+			FlxTween.tween(dad, {y: 180}, 5, {ease: FlxEase.expoInOut});
+		else if (SONG.song.toLowerCase() == 'guns' && curBeat == 287)
+			FlxTween.tween(dad, {y: -350}, 5, {ease: FlxEase.expoInOut});
 			
 
 		if(boyfriend.animation.curAnim.name == 'hey')
@@ -1637,15 +1642,18 @@ class PlayState extends MusicBeatState
 		if (health > 2)
 			health = 2;
 
-		if (healthBar.percent < 20)
+		if (healthBar.percent < 20) {
 			iconP1.animation.curAnim.curFrame = 1;
-		else
-			iconP1.animation.curAnim.curFrame = 0;
+			iconP2.animation.curAnim.curFrame = 2; }
 
-		if (healthBar.percent > 80)
+		else if (healthBar.percent > 80){ 
 			iconP2.animation.curAnim.curFrame = 1;
-		else
-			iconP2.animation.curAnim.curFrame = 0;
+			iconP1.animation.curAnim.curFrame = 2; }
+
+		else {
+			iconP1.animation.curAnim.curFrame = 0;
+			iconP2.animation.curAnim.curFrame = 0; }
+			
 
 		/* if (FlxG.keys.justPressed.NINE)
 			FlxG.switchState(new Charting()); */
