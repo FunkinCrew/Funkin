@@ -2349,6 +2349,7 @@ class PlayState extends MusicBeatState
 
 			FlxG.switchState(new ChartingState());
 			clean();
+			PlayState.stageTesting = false;
 			FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, handleInput);
 			FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP, releaseInput);
 			#if cpp
@@ -2403,6 +2404,7 @@ class PlayState extends MusicBeatState
 
 			FlxG.switchState(new AnimationDebug(dad.curCharacter));
 			clean();
+			PlayState.stageTesting = false;
 			FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, handleInput);
 			FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP, releaseInput);
 			#if cpp
@@ -2462,6 +2464,7 @@ class PlayState extends MusicBeatState
 		{
 			FlxG.switchState(new AnimationDebug(boyfriend.curCharacter));
 			clean();
+			PlayState.stageTesting = false;
 			FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, handleInput);
 			FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP, releaseInput);
 			#if cpp
