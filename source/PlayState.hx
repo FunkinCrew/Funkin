@@ -389,23 +389,7 @@ class PlayState extends MusicBeatState
 				santa.antialiasing = true;
 				add(santa);
 			case 'winter-horrorland':
-				curStage = 'mallEvil';
-				var bg:FlxSprite = new FlxSprite(-400, -500).loadGraphic(Paths.image('christmas/evilBG'));
-				bg.antialiasing = true;
-				bg.scrollFactor.set(0.2, 0.2);
-				bg.active = false;
-				bg.setGraphicSize(Std.int(bg.width * 0.8));
-				bg.updateHitbox();
-				add(bg);
-
-				var evilTree:FlxSprite = new FlxSprite(300, -300).loadGraphic(Paths.image('christmas/evilTree'));
-				evilTree.antialiasing = true;
-				evilTree.scrollFactor.set(0.2, 0.2);
-				add(evilTree);
-
-				var evilSnow:FlxSprite = new FlxSprite(-200, 700).loadGraphic(Paths.image("christmas/evilSnow"));
-				evilSnow.antialiasing = true;
-				add(evilSnow);
+				loadStage('mallEvil');
 			case 'senpai' | 'roses':
 				curStage = 'school';
 
@@ -533,32 +517,16 @@ class PlayState extends MusicBeatState
 			 */
 
 			case 'guns' | 'stress' | 'ugh':
-				defaultCamZoom *= 0.90;
-				curStage = 'tank';
+				loadStage('tank');
 
-				var bg:BGSprite = new BGSprite('tankSky', -400, -400, 0, 0);
-				add(bg);
-
+				// this goes after tankSky and before tankMountains in stage file
+				// need to accomodate for the velocity thing!
 				var tankSky:BGSprite = new BGSprite('tankClouds', FlxG.random.int(-700, -100), FlxG.random.int(-20, 20), 0.1, 0.1);
 				tankSky.active = true;
 				tankSky.velocity.x = FlxG.random.float(5, 15);
 				add(tankSky);
 
-				var tankMountains:BGSprite = new BGSprite('tankMountains', -300, -20, 0.2, 0.2);
-				tankMountains.setGraphicSize(Std.int(tankMountains.width * 1.2));
-				tankMountains.updateHitbox();
-				add(tankMountains);
-
-				var tankBuildings:BGSprite = new BGSprite('tankBuildings', -200, 0, 0.30, 0.30);
-				tankBuildings.setGraphicSize(Std.int(tankBuildings.width * 1.1));
-				tankBuildings.updateHitbox();
-				add(tankBuildings);
-
-				var tankRuins:BGSprite = new BGSprite('tankRuins', -200, 0, 0.35, 0.35);
-				tankRuins.setGraphicSize(Std.int(tankRuins.width * 1.1));
-				tankRuins.updateHitbox();
-				add(tankRuins);
-
+				// need to implement animated effects, prob not too hard?
 				var smokeLeft:BGSprite = new BGSprite('smokeLeft', -200, -100, 0.4, 0.4, ['SmokeBlurLeft'], true);
 				add(smokeLeft);
 
@@ -1015,7 +983,7 @@ class PlayState extends MusicBeatState
 	{
 		curStage = path;
 
-		var json = Assets.getText(Paths.file('data/stagedata/$path.json'));
+		var json = Assets.getText(Paths.file('data/stagedata/' + curStage + 'Stage.json'));
 
 		var parsed:StageData = cast Json.parse(json);
 
