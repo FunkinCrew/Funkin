@@ -21,7 +21,7 @@ class OutdatedSubState extends MusicBeatState
 			"HEY! You're running an outdated version of the game!\nCurrent version is "
 			+ ver
 			+ " while the most recent version is "
-			+ Paths.txt('../../.latest.txt')
+			+ Paths.txt('../../.latest.txt') // ok i dumb :) fix later
 			+ "! Press Space to go to itch.io, or ESCAPE to ignore this!!",
 			32);
 		txt.setFormat("VCR OSD Mono", 32, FlxColor.WHITE, CENTER);
