@@ -60,7 +60,7 @@ class Character extends FlxSprite
 				animation.addByIndices('hairBlow', "GF Dancing Beat Hair blowing", [0, 1, 2, 3], "", 24);
 				animation.addByIndices('hairFall', "GF Dancing Beat Hair Landing", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], "", 24, false);
 
-				animation.addByPrefix('scared', 'GF FEAR', 24);
+				animation.addByPrefix('scared', 'GF FEAR', 24, false);
 
 				dancesLeftAndRight = true;
 				playAnim('danceRight');
@@ -92,7 +92,7 @@ class Character extends FlxSprite
 				animation.addByIndices('hairBlow', "GF Dancing Beat Hair blowing", [0, 1, 2, 3], "", 24);
 				animation.addByIndices('hairFall', "GF Dancing Beat Hair Landing", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], "", 24, false);
 
-				animation.addByPrefix('scared', 'GF FEAR', 24);
+				animation.addByPrefix('scared', 'GF FEAR', 24, false);
 
 				dancesLeftAndRight = true;
 				playAnim('danceRight');

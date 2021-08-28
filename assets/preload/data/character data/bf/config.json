@@ -68,7 +68,7 @@
             "name": "scared",
             "animation_name": "BF idle shaking",
             "fps": 24,
-            "looped": true
+            "looped": false
         }
     ]
 }
