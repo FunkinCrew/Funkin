@@ -143,6 +143,10 @@ class ChartingState extends MusicBeatState
 
 	override function create()
 	{
+		#if desktop
+		DiscordClient.changePresence("Chart Editor", null, null, true);
+		#end
+		
 		curSection = lastSection;
 
 		trace(1 > Math.POSITIVE_INFINITY);
@@ -1795,10 +1799,6 @@ class ChartingState extends MusicBeatState
 			FlxG.sound.music.time = FlxG.sound.music.length;
 		
 		updateHeads();
-		
-		#if desktop
-		DiscordClient.changePresence("Chart Editor", null, null, true);
-		#end
 
 		for(i in sectionRenderes)
 			{
