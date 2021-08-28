@@ -11,22 +11,27 @@ class Stage
 {
     public var curStage:String = '';
     public var halloweenLevel:Bool = false;
-    public var camZoom:Float;
-    public var hideLastBG:Bool = false; // True = hide last BG and show ones from slowBacks on certain step, False = Toggle Visibility of BGs from SlowBacks on certain step
+    public var camZoom:Float; // The zoom of the camera to have at the start of the game
+    public var hideLastBG:Bool = false; // True = hide last BGs and show ones from slowBacks on certain step, False = Toggle visibility of BGs from SlowBacks on certain step
+	// Use visible property to manage if BG would be visible or not at the start of the game
     public var tweenDuration:Float = 2; // How long will it tween hiding/showing BGs, variable above must be set to True for tween to activate
     public var toAdd:Array<Dynamic> = []; // Add BGs on stage startup, load BG in by using "toAdd.push(bgVar);"
     // Layering algorithm for noobs: Everything loads by the method of "On Top", example: You load wall first(Every other added BG layers on it), then you load road(comes on top of wall and doesn't clip through it), then loading street lights(comes on top of wall and road)
-    public var swagBacks:Map<String, Dynamic> = []; // Store BGs here to use them later in PlayState / with slowBacks / or to adjust position in stage position debug menu(press 8 while in PlayState)
-    public var swagGroup:Map<String, FlxTypedGroup<Dynamic>> = []; //Store Groups
-    public var animatedBacks:Array<FlxSprite> = []; // Store animated backgrounds and make them play animation(Animation must be named Idle!! Else use swagGroup)
-    public var layInFront:Array<Array<FlxSprite>> = [[], [], []]; // BG layering, format: first [0] - in front of GF, second [1] - in front of opponent, third [2] - in front of boyfriend(and techincally also opponent since Haxe layering moment)
+    public var swagBacks:Map<String, Dynamic> = []; // Store BGs here to use them later in PlayState / with slowBacks / or to adjust position in stage debug menu(press 8 while in PlayState with debug build of the game)
+    public var swagGroup:Map<String, FlxTypedGroup<Dynamic>> = []; // Store Groups
+    public var animatedBacks:Array<FlxSprite> = []; // Store animated backgrounds and make them play animation(Animation must be named Idle!! Else use swagGroup/swagBacks and script it in PlayState)
+    public var layInFront:Array<Array<FlxSprite>> = [[], [], []]; // BG layering, format: first [0] - in front of GF, second [1] - in front of opponent, third [2] - in front of boyfriend(and technically also opponent since Haxe layering moment)
     public var slowBacks:Map<Int, Array<FlxSprite>> = []; // Change/add/remove backgrounds mid song! Format: "slowBacks[StepToBeActivated] = [Sprites,To,Be,Changed,Or,Added];"
+	// BGs still must be added by using toAdd Array for them to show in game after slowBacks take effect!!
+
+	// All of the above must be set or used in your stage case code block!!
 
     public function new(daStage:String)
     {
         this.curStage = daStage;
         camZoom = 1.05; // Don't change zoom here, unless you want to change zoom of every stage that doesn't have custom one
         halloweenLevel = false;
+		if (PlayStateChangeables.Optimize) return;
 
         switch(daStage)
         {
@@ -159,11 +164,11 @@ class Stage
 						layInFront[0].push(limo);
                         swagBacks['limo'] = limo;
 
-                        // Testing 
+                        // For Testing 
                         //
                         // hideLastBG = true;
                         // slowBacks[40] = [limo];
-                        // slowBacks[120] = [limo, bgLimo, skyBG, fastCar];
+                        // slowBacks[240] = [limo, bgLimo, skyBG, fastCar, swagBacks['dancer0'], swagBacks['dancer1'], swagBacks['dancer2'], swagBacks['dancer3'], swagBacks['dancer4']];
 					}
 				case 'mall':
 					{
@@ -340,11 +345,8 @@ class Stage
 					}
 				case 'schoolEvil':
 					{
-						if (!PlayStateChangeables.Optimize)
-						{
-							var waveEffectBG = new FlxWaveEffect(FlxWaveMode.ALL, 2, -1, 3, 2);
-							var waveEffectFG = new FlxWaveEffect(FlxWaveMode.ALL, 2, -1, 5, 2);
-						}
+						var waveEffectBG = new FlxWaveEffect(FlxWaveMode.ALL, 2, -1, 3, 2);
+						var waveEffectFG = new FlxWaveEffect(FlxWaveMode.ALL, 2, -1, 5, 2);
 
 						var posX = 400;
 						var posY = 200;
