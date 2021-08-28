@@ -109,6 +109,23 @@ class TitleState extends MusicBeatState
 		super.create();
 
 		FlxG.save.bind('funkin', 'ninjamuffin99');
+
+		// https://github.com/HaxeFlixel/flixel/pull/2396
+		// IF/WHEN MY PR GOES THRU AND IT GETS INTO MAIN FLIXEL, DELETE THIS CHUNKOF CODE, AND THEN UNCOMMENT THE LINE BELOW
+		// FlxG.sound.loadSavedPrefs();
+
+		if (FlxG.save.data.volume != null)
+		{
+			FlxG.sound.volume = FlxG.save.data.volume;
+		}
+
+		if (FlxG.save.data.mute != null)
+		{
+			FlxG.sound.muted = FlxG.save.data.mute;
+		}
+
+		// FlxG.save.close();
+		// FlxG.sound.loadSavedPrefs();
 		PreferencesMenu.initPrefs();
 		PlayerSettings.init();
 		Highscore.load();
