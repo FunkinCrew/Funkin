@@ -456,65 +456,7 @@ class PlayState extends MusicBeatState
 				bgGirls.updateHitbox();
 				add(bgGirls);
 			case 'thorns':
-				curStage = 'schoolEvil';
-
-				var waveEffectBG = new FlxWaveEffect(FlxWaveMode.ALL, 2, -1, 3, 2);
-				var waveEffectFG = new FlxWaveEffect(FlxWaveMode.ALL, 2, -1, 5, 2);
-
-				var posX = 400;
-				var posY = 200;
-
-				var bg:FlxSprite = new FlxSprite(posX, posY);
-				bg.frames = Paths.getSparrowAtlas('weeb/animatedEvilSchool');
-				bg.animation.addByPrefix('idle', 'background 2', 24);
-				bg.animation.play('idle');
-				bg.scrollFactor.set(0.8, 0.9);
-				bg.scale.set(6, 6);
-				add(bg);
-
-			/* 
-				var bg:FlxSprite = new FlxSprite(posX, posY).loadGraphic(Paths.image('weeb/evilSchoolBG'));
-				bg.scale.set(6, 6);
-				// bg.setGraphicSize(Std.int(bg.width * 6));
-				// bg.updateHitbox();
-				add(bg);
-
-				var fg:FlxSprite = new FlxSprite(posX, posY).loadGraphic(Paths.image('weeb/evilSchoolFG'));
-				fg.scale.set(6, 6);
-				// fg.setGraphicSize(Std.int(fg.width * 6));
-				// fg.updateHitbox();
-				add(fg);
-
-				wiggleShit.effectType = WiggleEffectType.DREAMY;
-				wiggleShit.waveAmplitude = 0.01;
-				wiggleShit.waveFrequency = 60;
-				wiggleShit.waveSpeed = 0.8;
-			 */
-
-			// bg.shader = wiggleShit.shader;
-			// fg.shader = wiggleShit.shader;
-
-			/* 
-				var waveSprite = new FlxEffectSprite(bg, [waveEffectBG]);
-				var waveSpriteFG = new FlxEffectSprite(fg, [waveEffectFG]);
-
-				// Using scale since setGraphicSize() doesnt work???
-				waveSprite.scale.set(6, 6);
-				waveSpriteFG.scale.set(6, 6);
-				waveSprite.setPosition(posX, posY);
-				waveSpriteFG.setPosition(posX, posY);
-
-				waveSprite.scrollFactor.set(0.7, 0.8);
-				waveSpriteFG.scrollFactor.set(0.9, 0.8);
-
-				// waveSprite.setGraphicSize(Std.int(waveSprite.width * 6));
-				// waveSprite.updateHitbox();
-				// waveSpriteFG.setGraphicSize(Std.int(fg.width * 6));
-				// waveSpriteFG.updateHitbox();
-
-				add(waveSprite);
-				add(waveSpriteFG);
-			 */
+				loadStage('schoolEvil');
 
 			case 'guns' | 'stress' | 'ugh':
 				loadStage('tank');
@@ -525,8 +467,6 @@ class PlayState extends MusicBeatState
 				tankSky.active = true;
 				tankSky.velocity.x = FlxG.random.float(5, 15);
 				add(tankSky);
-
-				// tankGround.
 
 				tankWatchtower = new BGSprite('tankWatchtower', 100, 50, 0.5, 0.5, ['watchtower gradient color']);
 				add(tankWatchtower);
@@ -991,8 +931,19 @@ class PlayState extends MusicBeatState
 			else
 				funnyProp.justLoadImage(prop.path);
 
-			funnyProp.setGraphicSize(Std.int(funnyProp.width * prop.scaleX), Std.int(funnyProp.height * prop.scaleY));
-			funnyProp.updateHitbox();
+			if (prop.updateHitbox != null && !prop.updateHitbox)
+			{
+				funnyProp.scale.set(prop.scaleX, prop.scaleY);
+			}
+			else
+			{
+				funnyProp.setGraphicSize(Std.int(funnyProp.width * prop.scaleX), Std.int(funnyProp.height * prop.scaleY));
+				funnyProp.updateHitbox();
+			}
+
+			if (prop.antialiasing != null)
+				funnyProp.antialiasing = prop.antialiasing;
+
 			funnyProp.scrollFactor.set(prop.scrollX, prop.scrollY);
 			add(funnyProp);
 		}
@@ -3202,6 +3153,8 @@ typedef Props =
 	var scaleX:Float;
 	var scaleY:Float;
 	var ?animBullshit:PropAnimData;
+	var ?updateHitbox:Bool;
+	var ?antialiasing:Bool;
 }
 
 typedef PropAnimData =
