@@ -1227,7 +1227,6 @@ class PlayState extends MusicBeatState
 
 		scoreTxt.text = (
 			"Misses: " + misses + " | " +
-			(FlxG.save.data.antiMash ? "Mashes: " + mashes + " | " : "") +
 			"Accuracy: " + accuracy + "% | " +
 			"Score: " + songScore + " | " +
 			Ratings.getRank(accuracy)
