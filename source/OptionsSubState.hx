@@ -13,6 +13,7 @@ class OptionsSubState extends MusicBeatSubstate
 
 	var selector:FlxSprite;
 	var curSelected:Int = 0;
+	var versionShit:FlxText;
 
 	var grpOptionsTexts:FlxTypedGroup<Alphabet>;
 
@@ -30,6 +31,12 @@ class OptionsSubState extends MusicBeatSubstate
 			grpOptionsTexts.add(optionText);
 			optionText.screenCenter(X);
 		}
+
+		versionShit = new FlxText(5, FlxG.height - 18, 0);
+		versionShit.size = 12;
+		versionShit.scrollFactor.set();
+		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		add(versionShit);
 	}
 
 	override function update(elapsed:Float)
@@ -56,6 +63,18 @@ class OptionsSubState extends MusicBeatSubstate
 			if (txt.ID == curSelected)
 				txt.alpha = 1;
 		});
+
+		if(FlxG.keys.pressed.LEFT)
+			FlxG.save.data.offset -= 1;
+		else if (FlxG.keys.pressed.RIGHT)
+			FlxG.save.data.offset += 1;
+
+		if(FlxG.save.data.offset < -150)
+			FlxG.save.data.offset = -150;
+		else if(FlxG.save.data.offset > 150)
+			FlxG.save.data.offset = 150;
+
+		versionShit.text = "Offset: " + FlxG.save.data.offset;
 
 		if (controls.ACCEPT)
 		{

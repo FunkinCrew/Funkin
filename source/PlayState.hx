@@ -150,6 +150,8 @@ class PlayState extends MusicBeatState
 	var defaultCamZoom:Float = 1.05;
 	var watermark:FlxText;
 
+	var songOffset:Float;
+
 	// how big to stretch the pixel art assets
 	public static var daPixelZoom:Float = 6;
 
@@ -1274,6 +1276,26 @@ class PlayState extends MusicBeatState
 
 		var playerCounter:Int = 0;
 
+		#if windows
+		var songPath = 'assets/data/' + PlayState.SONG.song.toLowerCase() + '/';
+		for(file in sys.FileSystem.readDirectory(songPath))
+		{
+			var path = haxe.io.Path.join([songPath, file]);
+			if(!sys.FileSystem.isDirectory(path))
+			{
+				if(path.endsWith('.offset'))
+				{
+					trace('Found offset file: ' + path);
+					songOffset = Std.parseFloat(file.substring(0, file.indexOf('.off')));
+					break;
+				}else {
+					trace('Offset file not found. Creating one @: ' + songPath);
+					sys.io.File.saveContent(songPath + songOffset + '.offset', '');
+				}
+			}
+		}
+	#end
+
 		var daBeats:Int = 0; // Not exactly representative of 'daBeats' lol, just how much it has looped
 		for (section in noteData)
 		{
@@ -1281,7 +1303,7 @@ class PlayState extends MusicBeatState
 
 			for (songNotes in section.sectionNotes)
 			{
-				var daStrumTime:Float = songNotes[0];
+				var daStrumTime:Float = songNotes[0] + FlxG.save.data.offset + songOffset;
 				var daNoteData:Int = Std.int(songNotes[1] % 4);
 
 				var gottaHitNote:Bool = section.mustHitSection;
@@ -1952,7 +1974,7 @@ class PlayState extends MusicBeatState
 
 				if (daNote.y < -daNote.height)
 				{
-					if (daNote.tooLate || !daNote.wasGoodHit)
+					if (daNote.tooLate || !daNote.wasGoodHit && !FlxG.save.data.botplay)
 					{
 						health -= 0.0475;
 						vocals.volume = 0;
