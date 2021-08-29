@@ -77,6 +77,7 @@ class PlayState extends MusicBeatState
 
 	private var strumLineNotes:FlxTypedGroup<FlxSprite>;
 	private var playerStrums:FlxTypedGroup<FlxSprite>;
+	private var cpuStrums:FlxTypedGroup<FlxSprite>;
 
 	private var camZooming:Bool = false;
 	private var curSong:String = "";
@@ -859,6 +860,7 @@ class PlayState extends MusicBeatState
 		add(strumLineNotes);
 
 		playerStrums = new FlxTypedGroup<FlxSprite>();
+		cpuStrums = new FlxTypedGroup<FlxSprite>();
 
 		// startCountdown();
 
@@ -1438,14 +1440,21 @@ class PlayState extends MusicBeatState
 
 			babyArrow.ID = i;
 
-			if(player == 1) {
-				playerStrums.add(babyArrow);
+			switch(player)
+			{
+				case 0:
+					cpuStrums.add(babyArrow);
+				case 1:
+					playerStrums.add(babyArrow);
 			}
 
 			babyArrow.animation.play('static');
 			babyArrow.x += 50;
 			babyArrow.x += ((FlxG.width / 2) * player);
 
+			cpuStrums.forEach(function(spr:FlxSprite) {
+				spr.centerOffsets();
+			});
 
 			strumLineNotes.add(babyArrow);
 		}
@@ -1894,6 +1903,25 @@ class PlayState extends MusicBeatState
 							dad.playAnim('singRIGHT' + altAnim, true);
 					}
 
+					if (FlxG.save.data.cpuStrums)
+						{
+							cpuStrums.forEach(function(spr:FlxSprite)
+							{
+								if (Math.abs(daNote.noteData) == spr.ID)
+								{
+									spr.animation.play('confirm', true);
+								}
+								if (spr.animation.curAnim.name == 'confirm' && !curStage.startsWith('school'))
+								{
+									spr.centerOffsets();
+									spr.offset.x -= 13;
+									spr.offset.y -= 13;
+								}
+								else
+									spr.centerOffsets();
+							});
+						}
+
 					dad.holdTimer = 0;
 
 					if (SONG.needsVoices)
@@ -1903,8 +1931,21 @@ class PlayState extends MusicBeatState
 
 					daNote.kill();
 					notes.remove(daNote, true);
+					daNote.active = false;
 					daNote.destroy();
 				}
+
+				if (FlxG.save.data.cpuStrums)
+					{
+						cpuStrums.forEach(function(spr:FlxSprite)
+						{
+							if (spr.animation.finished)
+							{
+								spr.animation.play('static');
+								spr.centerOffsets();
+							}
+						});
+					}
 
 				// WIP interpolation shit? Need to fix the pause issue
 				// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
@@ -2112,26 +2153,28 @@ class PlayState extends MusicBeatState
 		comboSpr.updateHitbox();
 		rating.updateHitbox();
 
-		var sploosh:FlxSprite = new FlxSprite(daNote.x, playerStrums.members[daNote.noteData].y);
-		var tex:flixel.graphics.frames.FlxAtlasFrames = Paths.getSparrowAtlas('noteSplashes', 'shared');
-		sploosh.frames = tex;
-		sploosh.animation.addByPrefix('splash 0 0', 'note impact 1 purple', 24, false);
-		sploosh.animation.addByPrefix('splash 0 1', 'note impact 1  blue', 24, false);
-		sploosh.animation.addByPrefix('splash 0 2', 'note impact 1 green', 24, false);
-		sploosh.animation.addByPrefix('splash 0 3', 'note impact 1 red', 24, false);
-		sploosh.animation.addByPrefix('splash 1 0', 'note impact 2 purple', 24, false);
-		sploosh.animation.addByPrefix('splash 1 1', 'note impact 2 blue', 24, false);
-		sploosh.animation.addByPrefix('splash 1 2', 'note impact 2 green', 24, false);
-		sploosh.animation.addByPrefix('splash 1 3', 'note impact 2 red', 24, false);
-		if (daRating == 'sick')
-		{
-			add(sploosh);
-			sploosh.animation.play('splash ' + FlxG.random.int(0, 1) + " " + daNote.noteData);
-			sploosh.alpha = 0.6;
-			sploosh.cameras = [camHUD];
-			sploosh.offset.x += 90;
-			sploosh.offset.y += 80;
-			sploosh.animation.finishCallback = function(name) sploosh.kill();
+		if(FlxG.save.data.sploosh) {
+			var sploosh:FlxSprite = new FlxSprite(daNote.x, playerStrums.members[daNote.noteData].y);
+			var tex:flixel.graphics.frames.FlxAtlasFrames = Paths.getSparrowAtlas('noteSplashes', 'shared');
+			sploosh.frames = tex;
+			sploosh.animation.addByPrefix('splash 0 0', 'note impact 1 purple', 24, false);
+			sploosh.animation.addByPrefix('splash 0 1', 'note impact 1  blue', 24, false);
+			sploosh.animation.addByPrefix('splash 0 2', 'note impact 1 green', 24, false);
+			sploosh.animation.addByPrefix('splash 0 3', 'note impact 1 red', 24, false);
+			sploosh.animation.addByPrefix('splash 1 0', 'note impact 2 purple', 24, false);
+			sploosh.animation.addByPrefix('splash 1 1', 'note impact 2 blue', 24, false);
+			sploosh.animation.addByPrefix('splash 1 2', 'note impact 2 green', 24, false);
+			sploosh.animation.addByPrefix('splash 1 3', 'note impact 2 red', 24, false);
+			if (daRating == 'sick')
+			{
+				add(sploosh);
+				sploosh.animation.play('splash ' + FlxG.random.int(0, 1) + " " + daNote.noteData);
+				sploosh.alpha = 0.6;
+				sploosh.cameras = [camHUD];
+				sploosh.offset.x += 90;
+				sploosh.offset.y += 80;
+				sploosh.animation.finishCallback = function(name) sploosh.kill();
+			}
 		}
 
 		var seperatedScore:Array<Int> = [];

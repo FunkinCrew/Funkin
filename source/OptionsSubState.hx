@@ -9,7 +9,7 @@ import flixel.text.FlxText;
 
 class OptionsSubState extends MusicBeatSubstate
 {
-	var textMenuItems:Array<String> = ['Controls', 'Downscroll', 'Song Position', 'Ghost Tapping'];
+	var textMenuItems:Array<String> = ['Controls', 'Downscroll', 'Song Position', 'Ghost Tapping', 'Note Splashes', 'Light CPU Strums'];
 
 	var selector:FlxSprite;
 	var curSelected:Int = 0;
@@ -62,7 +62,6 @@ class OptionsSubState extends MusicBeatSubstate
 			switch (textMenuItems[curSelected])
 			{
 				case "Controls":
-					FlxG.state.closeSubState();
 					FlxG.state.openSubState(new KeyBindMenu());
 				case "Downscroll":
 					FlxG.save.data.downscroll = !FlxG.save.data.downscroll;
@@ -79,6 +78,18 @@ class OptionsSubState extends MusicBeatSubstate
 				case "Ghost Tapping":
 					FlxG.save.data.ghost = !FlxG.save.data.ghost;
 					if(FlxG.save.data.ghost)
+						FlxG.sound.play(Paths.sound('confirmMenu'));
+					else
+						FlxG.sound.play(Paths.sound('cancelMenu'));
+				case "Note Splashes":
+					FlxG.save.data.sploosh = !FlxG.save.data.sploosh;
+					if(FlxG.save.data.sploosh)
+						FlxG.sound.play(Paths.sound('confirmMenu'));
+					else
+						FlxG.sound.play(Paths.sound('cancelMenu'));
+				case "Light CPU Strums":
+					FlxG.save.data.cpuStrums = !FlxG.save.data.cpuStrums;
+					if(FlxG.save.data.cpuStrums)
 						FlxG.sound.play(Paths.sound('confirmMenu'));
 					else
 						FlxG.sound.play(Paths.sound('cancelMenu'));
