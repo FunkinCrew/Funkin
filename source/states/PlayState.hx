@@ -1912,7 +1912,7 @@ class PlayState extends MusicBeatState
 				health += 0.005;
 				hitNotes += 0.3;
 			case 'shit':
-				health -= 0.15;
+				health -= 0.025;
 		}
 
 		/*
