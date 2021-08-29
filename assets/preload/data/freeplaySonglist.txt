@@ -19,3 +19,4 @@ Roses:senpai-angry:6
 Thorns:spirit:6
 Ugh:tankman:7
 Guns:tankman:7
+Stress:tankman:7
