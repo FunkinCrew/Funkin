@@ -20,8 +20,4 @@ What does this mean? Well, now if you want, you can choose a different amount of
 
 Support for custom songs, characters, stages, weeks, (in the future, basic cutscenes (videos and dialogue)), all without modifying the source code! All you have to do is follow a guide that I will be making in the future and then you can make as many mods as you want!
 
-> New Input System
-
-A new input system that well, isn't really similar to anything since I built it from the ground up. This new system, has no ghost tapping or 'antimash' but instead just makes you have to hit notes in the order they come in (which is hard to get used to sometimes!)
-
 > More to come...

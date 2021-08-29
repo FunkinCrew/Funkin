@@ -1199,12 +1199,6 @@ class PlayState extends MusicBeatState
 
 	override public function update(elapsed:Float)
 	{
-		if(stunFramesLeft > 0)
-			stunFramesLeft--;
-
-		if(stunFramesLeft == 0)
-			stunned = false;
-
 		if (SONG.notes[Math.floor(curStep / 16)] != null)
 		{
 			if (SONG.notes[Math.floor(curStep / 16)].altAnim)
@@ -1738,7 +1732,7 @@ class PlayState extends MusicBeatState
 		}
 
 		if (!inCutscene)
-			keyShit();
+			keyShit(elapsed);
 
 		currentBeat = curBeat;
 	}
@@ -1921,13 +1915,14 @@ class PlayState extends MusicBeatState
 				health -= 0.15;
 		}
 
+		/*
 		if (daRating == "sick")
 		{
 			//var splash = splashes.members[noteData + 4];
 			//var numberRandomLolIGuessHeh = FlxG.random.int(1, 2);
 			//add(splash);
 			//splash.animation.play("chosen" + Std.string(numberRandomLolIGuessHeh));
-		}
+		}*/
 
 		songScore += score;
 
@@ -2086,10 +2081,20 @@ class PlayState extends MusicBeatState
 		curSection += 1;
 	}
 
-	var stunned:Bool = false;
-	var stunFramesLeft:Int = 0;
+	private function closerNote(note1:Note, note2:Note):Note
+	{
+		if(note1.canBeHit && !note2.canBeHit)
+			return note1;
+		if(!note1.canBeHit && note2.canBeHit)
+			return note2;
 
-	private function keyShit():Void
+		if(Math.abs(Conductor.songPosition - note1.strumTime) < Math.abs(Conductor.songPosition - note2.strumTime))
+			return note1;
+
+		return note2;
+	}
+
+	private function keyShit(elapsed:Float):Void
 	{
 		if(!FlxG.save.data.bot)
 		{
@@ -2138,50 +2143,25 @@ class PlayState extends MusicBeatState
 				var possibleNotes:Array<Note> = [];
 				
 				// notes you can hit lol
-				for(note in notes)
-				{
-					if(note.alive)
+				notes.forEachAlive(function(note:Note) {
+					if (note.canBeHit && note.mustPress && !note.tooLate && !note.isSustainNote)
 					{
-						if (note.canBeHit && note.mustPress && !note.tooLate && !note.isSustainNote)
-						{
-							possibleNotes.push(note);
-							possibleNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
-						}
+						possibleNotes.push(note);
+						possibleNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
 					}
-				}
+				});
 	
 				var noteDataPossibles:Array<Bool> = [false, false, false, false];
 	
 				// if there is actual notes to hit
 				if (possibleNotes.length > 0)
 				{
-					var goodStrumTime:Float = possibleNotes[0].strumTime;
-
-					for(note in possibleNotes)
-					{
-						if(note.strumTime != goodStrumTime)
-							possibleNotes.remove(note);
-					}
-
 					for(i in 0...possibleNotes.length)
 					{
-						if(justPressedArray[possibleNotes[i].noteData] && !noteDataPossibles[possibleNotes[i].noteData] && !stunned)
+						if(justPressedArray[possibleNotes[i].noteData] && !noteDataPossibles[possibleNotes[i].noteData])
 						{
 							noteDataPossibles[possibleNotes[i].noteData] = true;
 							goodNoteHit(possibleNotes[i]);
-						}
-					}
-	
-					for(i in 0...justPressedArray.length)
-					{
-						if(justPressedArray[i] && !noteDataPossibles[i])
-						{
-							stunFramesLeft += 2;
-
-							if(stunFramesLeft > 8)
-								stunFramesLeft = 8;
-
-							stunned = true;
 						}
 					}
 				}
