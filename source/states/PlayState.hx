@@ -464,7 +464,8 @@ class PlayState extends MusicBeatState
 		doof.scrollFactor.set();
 		doof.finishThing = startCountdown;
 
-		Conductor.songPosition = -5000;
+		Conductor.baseSongPosition = -5000;
+		Conductor.songPosition = Conductor.baseSongPosition + Conductor.offset;
 
 		strumLine = new FlxSprite(0, 100).makeGraphic(FlxG.width, 10);
 
@@ -739,8 +740,9 @@ class PlayState extends MusicBeatState
 
 		talking = false;
 		startedCountdown = true;
-		Conductor.songPosition = 0;
-		Conductor.songPosition -= Conductor.crochet * 5;
+		Conductor.baseSongPosition = 0;
+		Conductor.baseSongPosition -= Conductor.crochet * 5;
+		Conductor.songPosition = Conductor.baseSongPosition + Conductor.offset;
 
 		var swagCounter:Int = 0;
 
@@ -1186,7 +1188,7 @@ class PlayState extends MusicBeatState
 		vocals.pause();
 
 		FlxG.sound.music.play();
-		Conductor.songPosition = FlxG.sound.music.time;
+		Conductor.songPosition = FlxG.sound.music.time + Conductor.offset;
 		vocals.time = Conductor.songPosition;
 		vocals.play();
 	}
@@ -1361,15 +1363,17 @@ class PlayState extends MusicBeatState
 		{
 			if (startedCountdown)
 			{
-				Conductor.songPosition += FlxG.elapsed * 1000;
+				Conductor.baseSongPosition += FlxG.elapsed * 1000;
+				Conductor.songPosition = Conductor.baseSongPosition + Conductor.offset;
+
 				if (Conductor.songPosition >= 0)
 					startSong();
 			}
 		}
 		else
 		{
-			// Conductor.songPosition = FlxG.sound.music.time;
-			Conductor.songPosition += FlxG.elapsed * 1000;
+			Conductor.baseSongPosition += FlxG.elapsed * 1000;
+			Conductor.songPosition = Conductor.baseSongPosition + Conductor.offset;
 
 			if (!paused)
 			{
@@ -2357,7 +2361,7 @@ class PlayState extends MusicBeatState
 	{
 		super.stepHit();
 		
-		if (FlxG.sound.music.time > Conductor.songPosition + 20 || FlxG.sound.music.time < Conductor.songPosition - 20)
+		if (FlxG.sound.music.time + Conductor.offset > Conductor.songPosition + 20 || FlxG.sound.music.time + Conductor.offset < Conductor.songPosition - 20)
 		{
 			resyncVocals();
 		}
