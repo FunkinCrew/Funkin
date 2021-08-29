@@ -101,7 +101,7 @@ class Ratings
         {
             var time = timingWindows[index] * Conductor.timeScale;
             var nextTime = index + 1 > timingWindows.length - 1 ? 0 : timingWindows[index + 1];
-            if (diff < time && diff >= nextTime)
+            if (diff < time && diff >= nextTime * Conductor.timeScale)
             {
                 switch(index)
                 {
@@ -116,7 +116,7 @@ class Ratings
                 }
             }
         }
-        return "shit";
+        return "good";
     }
 
     public static function CalculateRanking(score:Int,scoreDef:Int,nps:Int,maxNPS:Int,accuracy:Float):String

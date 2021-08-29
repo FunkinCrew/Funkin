@@ -53,7 +53,8 @@ class DiffCalc
         
         cleanedNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
 
-
+        if (cleanedNotes.length == 0 )
+            return 90000000000000000;
         
         var firstNoteTime = cleanedNotes[0].strumTime;
         
