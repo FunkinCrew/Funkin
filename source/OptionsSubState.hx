@@ -14,20 +14,21 @@ class OptionsSubState extends MusicBeatSubstate
 	var selector:FlxSprite;
 	var curSelected:Int = 0;
 
-	var grpOptionsTexts:FlxTypedGroup<FlxText>;
+	var grpOptionsTexts:FlxTypedGroup<Alphabet>;
 
 	public function new()
 	{
 		super();
 
-		grpOptionsTexts = new FlxTypedGroup<FlxText>();
+		grpOptionsTexts = new FlxTypedGroup<Alphabet>();
 		add(grpOptionsTexts);
 
 		for (i in 0...textMenuItems.length)
 		{
-			var optionText:FlxText = new FlxText(20, 20 + (i * 50), 0, textMenuItems[i], 35);
+			var optionText:Alphabet = new Alphabet(0, (85 * i) + 30, textMenuItems[i], true);
 			optionText.ID = i;
 			grpOptionsTexts.add(optionText);
+			optionText.screenCenter(X);
 		}
 	}
 
@@ -47,12 +48,13 @@ class OptionsSubState extends MusicBeatSubstate
 		if (curSelected >= textMenuItems.length)
 			curSelected = 0;
 
-		grpOptionsTexts.forEach(function(txt:FlxText)
+		grpOptionsTexts.forEach(function(txt:Alphabet)
 		{
 			txt.color = FlxColor.WHITE;
+			txt.alpha = 0.6;
 
 			if (txt.ID == curSelected)
-				txt.color = FlxColor.YELLOW;
+				txt.alpha = 1;
 		});
 
 		if (controls.ACCEPT)
