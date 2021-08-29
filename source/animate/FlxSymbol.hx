@@ -99,24 +99,24 @@ class FlxSymbol extends FlxSprite
 					// newFrameNum = newFrameNum % (tempFrame.I + tempFrame.DU);
 					// newFrameNum = FlxMath.wrap(newFrameNum, tempFrame.I, tempFrame.I + tempFrame.DU);
 
-					trace(newFrameNum % keyFrames.length);
-					trace(newFrameNum);
-					trace(keyFrames);
+					// trace(newFrameNum % keyFrames.length);
+					// trace(newFrameNum);
+					// trace(keyFrames);
 					newFrameNum = keyFrames[newFrameNum % keyFrames.length]; // temp, fix later for good looping
 				case PLAY_ONCE:
-					trace(newFrameNum);
-					trace(keyFrames.length - 1);
-					trace(keyFrameMap.get(newFrameNum + firstFrame));
-					trace(keyFrameMap.get(keyFrames[keyFrames.length - 1]));
-					trace(layer.LN);
-					trace(keyFrames);
+					// trace(newFrameNum);
+					// trace(keyFrames.length - 1);
+					// trace(keyFrameMap.get(newFrameNum + firstFrame));
+					// trace(keyFrameMap.get(keyFrames[keyFrames.length - 1]));
+					// trace(layer.LN);
+					// trace(keyFrames);
 					newFrameNum = Std.int(Math.min(newFrameNum + firstFrame, keyFrames.length - 1));
 				case SINGLE_FRAME:
-					trace(layer);
-					trace(firstFrame);
-					trace(newFrameNum);
-					trace(layer.LN);
-					trace(keyFrames);
+					// trace(layer);
+					// trace(firstFrame);
+					// trace(newFrameNum);
+					// trace(layer.LN);
+					// trace(keyFrames);
 					newFrameNum = keyFrames[firstFrame];
 			}
 
@@ -134,7 +134,7 @@ class FlxSymbol extends FlxSprite
 
 			// if (newFrameNum >= frame.I && newFrameNum < frame.I + frame.DU)
 			// {
-			trace(daLoopType);
+			// trace(daLoopType);
 			for (element in swagFrame.E)
 			{
 				if (Reflect.hasField(element, 'ASI'))
@@ -143,6 +143,7 @@ class FlxSymbol extends FlxSprite
 					var dumbassMatrix:Matrix = new Matrix(m3d[0], m3d[1], m3d[4], m3d[5], m3d[12], m3d[13]);
 
 					var spr:FlxSymbol = new FlxSymbol(0, 0, coolParsed);
+					spr.setPosition(x, y);
 					matrixExposed = true;
 					spr.frames = frames;
 					spr.frame = spr.frames.getByName(element.ASI.N);
@@ -159,8 +160,7 @@ class FlxSymbol extends FlxSprite
 					// spr.origin.x += origin.x;
 					// spr.origin.y += origin.y;
 
-					spr.antialiasing = true;
-					// if (layer.LN != 'head')
+					// spr.antialiasing = true;
 					spr.draw();
 
 					if (FlxG.keys.justPressed.ONE)
@@ -171,7 +171,7 @@ class FlxSymbol extends FlxSprite
 				else
 				{
 					var nestedSymbol = symbolMap.get(element.SI.SN);
-					var nestedShit:FlxSymbol = new FlxSymbol(0, 0, coolParse);
+					var nestedShit:FlxSymbol = new FlxSymbol(x, y, coolParse);
 					nestedShit.frames = frames;
 
 					var swagMatrix:FlxMatrix = new FlxMatrix(element.SI.M3D[0], element.SI.M3D[1], element.SI.M3D[4], element.SI.M3D[5], element.SI.M3D[12],

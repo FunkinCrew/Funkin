@@ -32,7 +32,7 @@ class AnimateTimeline extends FlxTypedGroup<FlxSprite>
 		super();
 
 		hudCamShit = new FlxCamera();
-		hudCamShit.bgColor = null;
+		hudCamShit.bgColor = FlxColor.TRANSPARENT;
 		FlxG.cameras.add(hudCamShit, false);
 
 		playhead = new FlxSprite(0, -12).makeGraphic(2, 10, FlxColor.MAGENTA);

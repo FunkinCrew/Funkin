@@ -10,6 +10,9 @@ import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import haxe.Json;
+import haxe.Utf8;
+import haxe.format.JsonParser;
+import lime.text.UTF8String;
 import openfl.Assets;
 import openfl.display.BitmapData;
 import openfl.geom.Rectangle;
@@ -37,7 +40,8 @@ class FlxAnimate extends FlxSymbol
 
 	override function draw()
 	{
-		super.draw();
+		// having this commented out fixes some wacky scaling bullshit?
+		// super.draw();
 
 		if (FlxG.keys.justPressed.ONE)
 		{
@@ -116,10 +120,13 @@ class FlxAnimate extends FlxSymbol
 
 		trace(json);
 
+		var funnyJson:Dynamic = {};
 		if (Assets.exists(json))
-			json = Assets.getText(json);
+			funnyJson = JaySon.parseFile(json);
 
-		data = cast Json.parse(json).ATLAS;
+		// trace(json);
+
+		data = cast funnyJson.ATLAS;
 
 		for (sprite in data.SPRITES)
 		{
@@ -137,6 +144,24 @@ class FlxAnimate extends FlxSymbol
 		}
 
 		return frames;
+	}
+}
+
+/**
+ * HL json encoding fix for some wacky bullshit
+ * https://github.com/HaxeFoundation/haxe/issues/6930#issuecomment-384570392
+ */
+class JaySon
+{
+	public static function parseFile(name:String)
+	{
+		var cont = Assets.getText(name);
+		function is(n:Int, what:Int)
+			return cont.charCodeAt(n) == what;
+		return JsonParser.parse(cont.substr(if (is(0, 65279)) /// looks like a HL target, skipping only first character here:
+			1 else if (is(0, 239) && is(1, 187) && is(2, 191)) /// it seems to be Neko or PHP, start from position 3:
+			3 else /// all other targets, that prepare the UTF string correctly
+			0));
 	}
 }
 
