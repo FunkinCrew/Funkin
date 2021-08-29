@@ -1716,7 +1716,6 @@ class PlayState extends MusicBeatState
 				{
 					if(daNote.mustPress)
 					{
-						health -= 0.075;
 						vocals.volume = 0;
 						noteMiss(daNote.noteData, daNote);
 					}
@@ -1912,7 +1911,7 @@ class PlayState extends MusicBeatState
 				health += 0.005;
 				hitNotes += 0.3;
 			case 'shit':
-				health -= 0.025;
+				health -= 0.04;
 		}
 
 		/*
