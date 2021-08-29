@@ -22,6 +22,6 @@ Support for custom songs, characters, stages, weeks, (in the future, basic cutsc
 
 > New Input System
 
-A new input system that well, isn't really similar to anything since I built it off of the input from the base game. This new system, has no ghost tapping but instead has an anti-mash system that may take some time to get used to.
+A new input system that well, isn't really similar to anything since I built it from the ground up. This new system, has no ghost tapping or 'antimash' but instead just makes you have to hit notes in the order they come in (which is hard to get used to sometimes!)
 
 > More to come...
