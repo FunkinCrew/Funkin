@@ -1,5 +1,6 @@
 package utilities;
 
+import game.Conductor;
 import flixel.FlxG;
 import game.Highscore;
 
@@ -36,6 +37,9 @@ class SaveData {
 
         if (FlxG.save.data.msText == null)
             FlxG.save.data.msText = true;
+
+        FlxG.save.data.songOffset = 0;
+        Conductor.offset = FlxG.save.data.songOffset;
 
         PlayerSettings.init();
         PlayerSettings.player1.controls.loadKeyBinds();

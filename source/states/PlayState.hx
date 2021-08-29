@@ -464,8 +464,7 @@ class PlayState extends MusicBeatState
 		doof.scrollFactor.set();
 		doof.finishThing = startCountdown;
 
-		Conductor.baseSongPosition = -5000;
-		Conductor.songPosition = Conductor.baseSongPosition + Conductor.offset;
+		Conductor.songPosition = -5000;
 
 		strumLine = new FlxSprite(0, 100).makeGraphic(FlxG.width, 10);
 
@@ -740,9 +739,8 @@ class PlayState extends MusicBeatState
 
 		talking = false;
 		startedCountdown = true;
-		Conductor.baseSongPosition = 0;
-		Conductor.baseSongPosition -= Conductor.crochet * 5;
-		Conductor.songPosition = Conductor.baseSongPosition + Conductor.offset;
+		Conductor.songPosition = 0;
+		Conductor.songPosition -= Conductor.crochet * 5;
 
 		var swagCounter:Int = 0;
 
@@ -1188,7 +1186,7 @@ class PlayState extends MusicBeatState
 		vocals.pause();
 
 		FlxG.sound.music.play();
-		Conductor.songPosition = FlxG.sound.music.time + Conductor.offset;
+		Conductor.songPosition = FlxG.sound.music.time;
 		vocals.time = Conductor.songPosition;
 		vocals.play();
 	}
@@ -1363,8 +1361,7 @@ class PlayState extends MusicBeatState
 		{
 			if (startedCountdown)
 			{
-				Conductor.baseSongPosition += FlxG.elapsed * 1000;
-				Conductor.songPosition = Conductor.baseSongPosition + Conductor.offset;
+				Conductor.songPosition += FlxG.elapsed * 1000;
 
 				if (Conductor.songPosition >= 0)
 					startSong();
@@ -1372,8 +1369,7 @@ class PlayState extends MusicBeatState
 		}
 		else
 		{
-			Conductor.baseSongPosition += FlxG.elapsed * 1000;
-			Conductor.songPosition = Conductor.baseSongPosition + Conductor.offset;
+			Conductor.songPosition += FlxG.elapsed * 1000;
 
 			if (!paused)
 			{
@@ -1556,9 +1552,9 @@ class PlayState extends MusicBeatState
 				if(FlxG.save.data.downscroll)
 				{
 					if (daNote.mustPress)
-						daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y + 0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(SONG.speed, 2));
+						daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y + 0.45 * ((Conductor.songPosition - daNote.strumTime) + Conductor.offset) * FlxMath.roundDecimal(SONG.speed, 2));
 					else
-						daNote.y = (enemyStrums.members[Math.floor(Math.abs(daNote.noteData))].y + 0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(SONG.speed, 2));
+						daNote.y = (enemyStrums.members[Math.floor(Math.abs(daNote.noteData))].y + 0.45 * ((Conductor.songPosition - daNote.strumTime) + Conductor.offset) * FlxMath.roundDecimal(SONG.speed, 2));
 
 					if(daNote.isSustainNote)
 					{
@@ -1582,9 +1578,9 @@ class PlayState extends MusicBeatState
 				else
 				{
 					if (daNote.mustPress)
-						daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y - 0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(SONG.speed, 2));
+						daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y - 0.45 * ((Conductor.songPosition - daNote.strumTime) + Conductor.offset) * FlxMath.roundDecimal(SONG.speed, 2));
 					else
-						daNote.y = (enemyStrums.members[Math.floor(Math.abs(daNote.noteData))].y - 0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(SONG.speed, 2));
+						daNote.y = (enemyStrums.members[Math.floor(Math.abs(daNote.noteData))].y - 0.45 * ((Conductor.songPosition - daNote.strumTime) + Conductor.offset) * FlxMath.roundDecimal(SONG.speed, 2));
 
 					if(daNote.isSustainNote)
 					{
@@ -1602,7 +1598,7 @@ class PlayState extends MusicBeatState
 					}
 				}
 
-				if (!daNote.mustPress && daNote.strumTime <= Conductor.songPosition)
+				if (!daNote.mustPress && daNote.strumTime + Conductor.offset <= Conductor.songPosition + Conductor.offset)
 				{
 					if (SONG.song != 'Tutorial')
 						camZooming = true;
@@ -1716,7 +1712,7 @@ class PlayState extends MusicBeatState
 				// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
 
 				//(daNote.y < -daNote.height && !FlxG.save.data.downscroll || daNote.y >= strumLine.y + 106 && FlxG.save.data.downscroll))
-				if (Conductor.songPosition - Conductor.safeZoneOffset > daNote.strumTime)
+				if ((Conductor.songPosition - Conductor.safeZoneOffset) + Conductor.offset > daNote.strumTime + Conductor.offset)
 				{
 					if(daNote.mustPress)
 					{
@@ -1897,7 +1893,7 @@ class PlayState extends MusicBeatState
 
 	private function popUpScore(strumtime:Float, noteData:Int):Void
 	{
-		var noteDiff:Float = strumtime - Conductor.songPosition;
+		var noteDiff:Float = (strumtime - Conductor.songPosition) - Conductor.offset;
 		vocals.volume = 1;
 
 		var daRating:String = Ratings.getRating(Math.abs(noteDiff));
@@ -2177,8 +2173,8 @@ class PlayState extends MusicBeatState
 				
 				notes.forEachAlive(function(daNote:Note)
 				{
-					if ((daNote.strumTime > Conductor.songPosition - (Conductor.safeZoneOffset * 1.5)
-						&& daNote.strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * 0.5))
+					if ((daNote.strumTime + Conductor.offset > (Conductor.songPosition - (Conductor.safeZoneOffset * 1.5) + Conductor.offset)
+						&& daNote.strumTime + Conductor.offset < (Conductor.songPosition + (Conductor.safeZoneOffset * 0.5)) + Conductor.offset)
 					&& daNote.mustPress && daNote.isSustainNote)
 						if(heldArray[daNote.noteData])
 							goodNoteHit(daNote);
@@ -2223,7 +2219,7 @@ class PlayState extends MusicBeatState
 		else
 		{
 			notes.forEachAlive(function(note:Note) {
-				if(note.mustPress && note.strumTime <= Conductor.songPosition || note.canBeHit && note.mustPress && note.isSustainNote)
+				if(note.mustPress && note.strumTime + Conductor.offset <= Conductor.songPosition + Conductor.offset || note.canBeHit && note.mustPress && note.isSustainNote)
 				{
 					boyfriend.holdTimer = 0;
 
@@ -2318,7 +2314,7 @@ class PlayState extends MusicBeatState
 		{
 			if (!note.isSustainNote)
 			{
-				popUpScore(note.strumTime, note.noteData % 4);
+				popUpScore(note.strumTime, note.noteData % SONG.keyCount);
 				combo += 1;
 			} else
 			{
@@ -2361,7 +2357,7 @@ class PlayState extends MusicBeatState
 	{
 		super.stepHit();
 		
-		if (FlxG.sound.music.time + Conductor.offset > Conductor.songPosition + 20 || FlxG.sound.music.time + Conductor.offset < Conductor.songPosition - 20)
+		if (FlxG.sound.music.time > Conductor.songPosition + 20 || FlxG.sound.music.time < Conductor.songPosition - 20)
 		{
 			resyncVocals();
 		}
