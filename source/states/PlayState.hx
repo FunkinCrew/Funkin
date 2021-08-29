@@ -1767,7 +1767,7 @@ class PlayState extends MusicBeatState
 				if(!FlxG.save.data.bot)
 				{
 					Highscore.saveScore(SONG.song, songScore, storyDifficulty);
-					Highscore.saveRank(SONG.song, Ratings.getRank(accuracy, misses), storyDifficulty);
+					Highscore.saveRank(SONG.song, Ratings.getRank(accuracy), storyDifficulty);
 				}
 				#end
 			}

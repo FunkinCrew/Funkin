@@ -31,7 +31,7 @@ class Ratings
         return rating;
     }
 
-    public static function getRank(accuracy:Float, misses:Int)
+    public static function getRank(accuracy:Float, ?misses:Int)
     {
         // yeah this is kinda taken from kade engine but i didnt use the etterna 'wife3' ranking system (instead just my own custom values)
         var conditions:Array<Bool> = [
@@ -51,12 +51,15 @@ class Ratings
 
         var missesRating:String = "";
 
-        if(misses == 0)
-            missesRating = "FC";
-        if(misses > 0 && misses < 10)
-            missesRating = "SDCB";
-        if(misses > 10)
-            missesRating = "CLEAR";
+        if(misses != null)
+        {
+            if(misses == 0)
+                missesRating = "FC - ";
+            if(misses > 0 && misses < 10)
+                missesRating = "SDCB - ";
+            if(misses >= 10)
+                missesRating = "CLEAR - ";
+        }
 
         for(condition in 0...conditions.length)
         {
@@ -69,27 +72,27 @@ class Ratings
                     case 0:
                         return "MFC";
                     case 1:
-                        return missesRating + " - SSS";
+                        return missesRating + "SSS";
                     case 2:
-                        return missesRating + " - S";
+                        return missesRating + "S";
                     case 3:
-                        return missesRating + " - AA";
+                        return missesRating + "AA";
                     case 4:
-                        return missesRating + " - A";
+                        return missesRating + "A";
                     case 5:
-                        return missesRating + " - B+";
+                        return missesRating + "B+";
                     case 6:
-                        return missesRating + " - B";
+                        return missesRating + "B";
                     case 7:
-                        return missesRating + " - C";
+                        return missesRating + "C";
                     case 8:
-                        return missesRating + " - D";
+                        return missesRating + "D";
                     case 9:
-                        return missesRating + " - E";
+                        return missesRating + "E";
                     case 10:
-                        return missesRating + " - F";
+                        return missesRating + "F";
                     case 11:
-                        return missesRating + " - G";
+                        return missesRating + "G";
                 }
             }
         }
