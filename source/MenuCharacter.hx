@@ -26,6 +26,14 @@ class MenuCharacter extends FlxSprite
 		animation.addByPrefix('parents-christmas', "Parent Christmas Idle", 24);
 		animation.addByPrefix('senpai', "SENPAI idle Black Lines", 24);
 		// Parent Christmas Idle
+		if(character == ''){
+			character = 'pico';
+			visible = false;
+		}
+		else{
+			this.character = character;
+			visible = true;
+		}
 
 		animation.play(character);
 		updateHitbox();
