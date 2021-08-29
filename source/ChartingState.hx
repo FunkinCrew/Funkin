@@ -183,6 +183,7 @@ class ChartingState extends MusicBeatState
 				switch (songFormat) {
 					case 'Dad-Battle': songFormat = 'Dadbattle';
 					case 'Philly-Nice': songFormat = 'Philly';
+					case 'M.I.L.F': songFormat = 'Milf';
 				}
 	
 				var poop:String = Highscore.formatSong(songFormat, PlayState.storyDifficulty);
@@ -1485,6 +1486,7 @@ class ChartingState extends MusicBeatState
 			switch (songFormat) {
 				case 'Dad-Battle': songFormat = 'Dadbattle';
 				case 'Philly-Nice': songFormat = 'Philly';
+				case 'M.I.L.F': songFormat = 'Milf';
 			}
 
 			var poop:String = Highscore.formatSong(songFormat, PlayState.storyDifficulty);
@@ -3344,6 +3346,7 @@ class ChartingState extends MusicBeatState
 		switch (format) {
 			case 'Dad-Battle': format = 'Dadbattle';
 			case 'Philly-Nice': format = 'Philly';
+			case 'M.I.L.F': format = 'Milf';
 		}
 		PlayState.SONG = Song.loadFromJson(format + difficultyArray[PlayState.storyDifficulty], format);
 		LoadingState.loadAndSwitchState(new ChartingState());

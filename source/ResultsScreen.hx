@@ -204,6 +204,7 @@ class ResultsScreen extends FlxSubState
 			switch (songHighscore) {
 				case 'Dad-Battle': songHighscore = 'Dadbattle';
 				case 'Philly-Nice': songHighscore = 'Philly';
+				case 'M.I.L.F': songHighscore = 'Milf';
 			}
 
 			#if !switch
@@ -233,6 +234,7 @@ class ResultsScreen extends FlxSubState
 			switch (songHighscore) {
 				case 'Dad-Battle': songHighscore = 'Dadbattle';
 				case 'Philly-Nice': songHighscore = 'Philly';
+				case 'M.I.L.F': songHighscore = 'Milf';
 			}
 
 			#if !switch

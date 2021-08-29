@@ -330,6 +330,8 @@ class PlayState extends MusicBeatState
 				songLowercase = 'dadbattle';
 			case 'philly-nice':
 				songLowercase = 'philly';
+			case 'm.i.l.f':
+				songLowercase = 'milf';
 		}
 
 		removedVideo = false;
@@ -801,6 +803,8 @@ class PlayState extends MusicBeatState
 				songLowercase = 'dadbattle';
 			case 'philly-nice':
 				songLowercase = 'philly';
+			case 'm.i.l.f':
+				songLowercase = 'milf';
 		}
 		if (executeModchart)
 		{
@@ -1692,6 +1696,8 @@ class PlayState extends MusicBeatState
 				songLowercase = 'dadbattle';
 			case 'philly-nice':
 				songLowercase = 'philly';
+			case 'm.i.l.f':
+				songLowercase = 'milf';
 		}
 
 		var songPath = 'assets/data/' + songLowercase + '/';
@@ -3364,6 +3370,8 @@ class PlayState extends MusicBeatState
 					songHighscore = 'Dadbattle';
 				case 'Philly-Nice':
 					songHighscore = 'Philly';
+				case 'M.I.L.F':
+					songHighscore = 'Milf';
 			}
 
 			#if !switch
@@ -3463,6 +3471,8 @@ class PlayState extends MusicBeatState
 							songFormat = 'Dadbattle';
 						case 'Philly-Nice':
 							songFormat = 'Philly';
+						case 'M.I.L.F':
+							songFormat = 'Milf';
 					}
 
 					var poop:String = Highscore.formatSong(songFormat, storyDifficulty);
@@ -4676,10 +4686,21 @@ class PlayState extends MusicBeatState
 		// FlxG.log.add('change bpm' + SONG.notes[Std.int(curStep / 16)].changeBPM);
 		wiggleShit.update(Conductor.crochet);
 
+		var songLowercase = StringTools.replace(PlayState.SONG.song, " ", "-").toLowerCase();
+		switch (songLowercase)
+		{
+			case 'dad-battle':
+				songLowercase = 'dadbattle';
+			case 'philly-nice':
+				songLowercase = 'philly';
+			case 'm.i.l.f':
+				songLowercase = 'milf';
+		}
+
 		if (FlxG.save.data.camzoom && Conductor.bpm < 340)
 		{
 			// HARDCODING FOR MILF ZOOMS!
-			if (curSong.toLowerCase() == 'milf' && curBeat >= 168 && curBeat < 200 && camZooming && FlxG.camera.zoom < 1.35)
+			if (songLowercase == 'milf' && curBeat >= 168 && curBeat < 200 && camZooming && FlxG.camera.zoom < 1.35)
 			{
 				FlxG.camera.zoom += 0.015 / songMultiplier;
 				camHUD.zoom += 0.03 / songMultiplier;

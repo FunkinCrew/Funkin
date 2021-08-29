@@ -86,6 +86,7 @@ class FreeplayState extends MusicBeatState
 			switch (format) {
 				case 'Dad-Battle': format = 'Dadbattle';
 				case 'Philly-Nice': format = 'Philly';
+				case 'M.I.L.F': format = 'Milf';
 			}
 
 			var diffs = [];
@@ -419,6 +420,7 @@ class FreeplayState extends MusicBeatState
 			switch (songFormat) {
 				case 'Dad-Battle': songFormat = 'Dadbattle';
 				case 'Philly-Nice': songFormat = 'Philly';
+				case 'M.I.L.F': songFormat = 'Milf';
 			}
 			var hmm;
 			try
@@ -478,6 +480,7 @@ class FreeplayState extends MusicBeatState
 		switch (songHighscore) {
 			case 'Dad-Battle': songHighscore = 'Dadbattle';
 			case 'Philly-Nice': songHighscore = 'Philly';
+			case 'M.I.L.F': songHighscore = 'Milf';
 		}
 		
 		#if !switch
@@ -527,6 +530,7 @@ class FreeplayState extends MusicBeatState
 		switch (songHighscore) {
 			case 'Dad-Battle': songHighscore = 'Dadbattle';
 			case 'Philly-Nice': songHighscore = 'Philly';
+			case 'M.I.L.F': songHighscore = 'Milf';
 		}
 
 		#if !switch
