@@ -1229,7 +1229,7 @@ class PlayState extends MusicBeatState
 			"Misses: " + misses + " | " +
 			"Accuracy: " + accuracy + "% | " +
 			"Score: " + songScore + " | " +
-			Ratings.getRank(accuracy)
+			Ratings.getRank(accuracy, misses)
 		);
 		//scoreTxt.text = "Score:" + songScore;
 
@@ -1773,7 +1773,7 @@ class PlayState extends MusicBeatState
 				if(!FlxG.save.data.bot)
 				{
 					Highscore.saveScore(SONG.song, songScore, storyDifficulty);
-					Highscore.saveRank(SONG.song, Ratings.getRank(accuracy), storyDifficulty);
+					Highscore.saveRank(SONG.song, Ratings.getRank(accuracy, misses), storyDifficulty);
 				}
 				#end
 			}

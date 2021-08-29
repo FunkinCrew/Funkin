@@ -1,5 +1,6 @@
 package substates;
 
+import flixel.text.FlxText;
 import utilities.CoolUtil;
 import game.Note;
 import flixel.tweens.FlxEase;
@@ -13,13 +14,19 @@ import flixel.FlxSprite;
 class ControlMenuSubstate extends MusicBeatSubstate
 {
     var key_Count:Int = 4;
-    var arrow_Group:FlxGroup = new FlxGroup();
+    var arrow_Group:FlxTypedGroup<FlxSprite> = new FlxTypedGroup<FlxSprite>();
+    var text_Group:FlxTypedGroup<FlxText> = new FlxTypedGroup<FlxText>();
 
     #if sys
 	public var ui_Settings:Array<String> = CoolUtil.coolTextFilePolymod(Paths.txt("ui skins/" + FlxG.save.data.uiSkin + "/config"));
 	#else
 	public var ui_Settings:Array<String> = CoolUtil.coolTextFile(Paths.txt("ui skins/" + FlxG.save.data.uiSkin + "/config"));
 	#end
+
+    var controlsLmao:Array<String> = [FlxG.save.data.leftBind, FlxG.save.data.downBind, FlxG.save.data.upBind, FlxG.save.data.rightBind];
+
+    var selectedControl:Int = 0;
+    var selectingStuff:Bool = false;
 
     public function new()
     {
@@ -35,6 +42,7 @@ class ControlMenuSubstate extends MusicBeatSubstate
         create_Arrows();
 
         add(arrow_Group);
+        add(text_Group);
     }
 
     override function update(elapsed:Float) {
@@ -47,8 +55,43 @@ class ControlMenuSubstate extends MusicBeatSubstate
 
         if(back)
         {
+            FlxG.save.data.leftBind = controlsLmao[0];
+            FlxG.save.data.downBind = controlsLmao[1];
+            FlxG.save.data.upBind = controlsLmao[2];
+            FlxG.save.data.rightBind = controlsLmao[3];
+
             FlxG.save.flush();
             FlxG.state.closeSubState();
+        }
+
+        for(x in arrow_Group)
+        {
+            if(FlxG.mouse.overlaps(x) &&  FlxG.mouse.justPressed && !selectingStuff)
+            {
+                selectedControl = x.ID;
+                selectingStuff = true;
+            }
+
+            if(FlxG.mouse.overlaps(x) || x.ID == selectedControl && selectingStuff)
+                x.color = FlxColor.GRAY;
+            else
+                x.color = FlxColor.WHITE;
+        }
+
+        if(selectingStuff && FlxG.keys.justPressed.ANY)
+        {
+            controlsLmao[selectedControl] = FlxG.keys.getIsDown()[0].ID.toString();
+            selectingStuff = false;
+        }
+
+        update_Text();
+    }
+
+    function update_Text()
+    {
+        for(i in 0...text_Group.length)
+        {
+            text_Group.members[i].text = controlsLmao[i];
         }
     }
 
@@ -91,6 +134,7 @@ class ControlMenuSubstate extends MusicBeatSubstate
 
             babyArrow.animation.play('static');
             arrow_Group.add(babyArrow);
+            text_Group.add(new FlxText(babyArrow.x + 40, babyArrow.y + 40, babyArrow.width, controlsLmao[i],36));
         }
     }
 }
