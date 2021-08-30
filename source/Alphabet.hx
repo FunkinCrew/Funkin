@@ -21,6 +21,8 @@ class Alphabet extends FlxSpriteGroup
 	public var targetY:Float = 0;
 	public var isMenuItem:Bool = false;
 
+	public var isBold:Bool = false;
+
 	public var text:String = "";
 
 	var _finalText:String = "";
@@ -37,8 +39,6 @@ class Alphabet extends FlxSpriteGroup
 	var lastWasSpace:Bool = false;
 
 	var splitWords:Array<String> = [];
-
-	var isBold:Bool = false;
 
 	public function new(x:Float, y:Float, text:String = "", ?bold:Bool = false, typed:Bool = false)
 	{

@@ -645,7 +645,7 @@ class Character extends FlxSprite
 				default:
 					if(curCharacter == 'tankman' && animation.curAnim.name != "singDOWN-alt")
         				playAnim('idle');
-					else
+					else if (curCharacter != 'tankman')
 						playAnim('idle');
 			}
 		}

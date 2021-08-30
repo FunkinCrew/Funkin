@@ -9,7 +9,16 @@ import flixel.text.FlxText;
 
 class OptionsSubState extends MusicBeatSubstate
 {
-	var textMenuItems:Array<String> = ['Controls', 'Downscroll', 'Song Position', 'Ghost Tapping', 'Note Splashes', 'Light CPU Strums'];
+	var textMenuItems:Array<String> = 
+	[
+	'Controls',
+	'Downscroll',
+	'Song Position',
+	'Ghost Tapping',
+	'Note Splashes',
+	'Light CPU Strums',
+	'Watermarks'
+	];
 
 	var selector:FlxSprite;
 	var curSelected:Int = 0;
@@ -28,6 +37,7 @@ class OptionsSubState extends MusicBeatSubstate
 		{
 			var optionText:Alphabet = new Alphabet(0, (85 * i) + 30, textMenuItems[i], true);
 			optionText.ID = i;
+			optionText.targetY = i;
 			grpOptionsTexts.add(optionText);
 			optionText.screenCenter(X);
 		}
@@ -39,15 +49,37 @@ class OptionsSubState extends MusicBeatSubstate
 		add(versionShit);
 	}
 
+	var bullShit:Int = 0;
+
+	function changeSelection(int:Int)
+	{
+		curSelected += int;
+
+		for (item in grpOptionsTexts.members)
+		{
+			item.targetY = bullShit - curSelected;
+			bullShit++;
+
+			item.alpha = 0.6;
+			// item.setGraphicSize(Std.int(item.width * 0.8));
+
+			if (item.targetY == 0)
+			{
+				item.alpha = 1;
+				// item.setGraphicSize(Std.int(item.width));
+			}
+		}
+	}
+
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
 
 		if (controls.UP_P)
-			curSelected -= 1;
+			changeSelection(-1);
 
 		if (controls.DOWN_P)
-			curSelected += 1;
+			changeSelection(1);
 
 		if (curSelected < 0)
 			curSelected = textMenuItems.length - 1;
@@ -74,7 +106,7 @@ class OptionsSubState extends MusicBeatSubstate
 		else if(FlxG.save.data.offset > 150)
 			FlxG.save.data.offset = 150;
 
-		versionShit.text = "Offset: " + FlxG.save.data.offset;
+		versionShit.text = "Offset: " + FlxG.save.data.offset + ' (Max 150, Min -150)';
 
 		if (controls.ACCEPT)
 		{
@@ -112,6 +144,12 @@ class OptionsSubState extends MusicBeatSubstate
 						FlxG.sound.play(Paths.sound('confirmMenu'));
 					else
 						FlxG.sound.play(Paths.sound('cancelMenu'));
+				case "Watermarks":
+					Main.watermarks = !Main.watermarks;
+					if(Main.watermarks)
+						FlxG.sound.play(Paths.sound('confirmMenu'));
+					else
+						FlxG.sound.play(Paths.sound('cancelMenu'));					
 			}
 		}
 		if(controls.BACK)

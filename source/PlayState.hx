@@ -227,6 +227,8 @@ class PlayState extends MusicBeatState
 				storyDifficultyText = "Normal";
 			case 2:
 				storyDifficultyText = "Hard";
+			case 3:
+				storyDifficultyText = "Harder";
 		}
 
 		iconRPC = SONG.player2;
@@ -932,7 +934,7 @@ class PlayState extends MusicBeatState
 		// healthBar
 		add(healthBar);
 
-		watermark = new FlxText(4,healthBarBG.y + 50,0,SONG.song + " " + (storyDifficulty == 2 ? "Hard" : storyDifficulty == 1 ? "Normal" : "Easy") + " - WB Engine " + lime.app.Application.current.meta.get('version'), 16);
+		watermark = new FlxText(4,healthBarBG.y + 50,0,SONG.song + " - " + (storyDifficulty == 2 ? "Hard" : storyDifficulty == 1 ? "Normal" : storyDifficulty == 3 ? "Harder" : "Easy") + (Main.watermarks ? " | WB Engine " + lime.app.Application.current.meta.get('version') : ""), 16);
 		watermark.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 		watermark.scrollFactor.set();
 		watermark.cameras = [camHUD];
@@ -1585,10 +1587,12 @@ class PlayState extends MusicBeatState
 
 		if (FlxG.keys.justPressed.NINE)
 		{
-			if (iconP1.animation.curAnim.name == 'bf-old')
+			if (iconP1.animation.curAnim.name == 'bf-old') {
 				iconP1.animation.play(SONG.player1);
-			else
+				iconP2.animation.play(SONG.player2); }
+			else {
 				iconP1.animation.play('bf-old');
+				iconP2.animation.play('dad'); }
 		}
 
 		if(SONG.song.toLowerCase() == 'guns' && curBeat == 223)
@@ -1925,6 +1929,9 @@ class PlayState extends MusicBeatState
 							dad.playAnim('singRIGHT' + altAnim, true);
 					}
 
+					if(storyDifficulty == 3 && healthBar.percent <= 10)
+						health -= 0.023;
+
 					if (FlxG.save.data.cpuStrums)
 						{
 							cpuStrums.forEach(function(spr:FlxSprite)
@@ -1948,8 +1955,6 @@ class PlayState extends MusicBeatState
 
 					if (SONG.needsVoices)
 						vocals.volume = 1;
-
-					daNote.active = false;
 
 					daNote.kill();
 					notes.remove(daNote, true);
@@ -2053,7 +2058,7 @@ class PlayState extends MusicBeatState
 				if (storyDifficulty == 0)
 					difficulty = '-easy';
 
-				if (storyDifficulty == 2)
+				if (storyDifficulty == 2 || storyDifficulty == 3)
 					difficulty = '-hard';
 
 				trace('LOADING NEXT SONG');
