@@ -139,6 +139,8 @@ class Ratings
             if(rank.toLowerCase() == string_Rank.toLowerCase() || string_Rank == "B+" && rank == "B_PLUS")
                 switch(rank.toUpperCase())
                 {
+                    case "MFC":
+                        return MFC;
                     case "FC":
                         return FC;
                     case "SSS":
@@ -172,6 +174,7 @@ class Ratings
 
 enum SongRank
 {
+    MFC;
     FC;
     SSS;
     S;
