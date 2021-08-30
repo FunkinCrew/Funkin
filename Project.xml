@@ -2,7 +2,7 @@
 <project>
 	<!-- _________________________ Application Settings _________________________ -->
 
-	<app title="Friday Night Funkin': WB Engine" file="WBEngine" packageName="com.gedon6676.wbengine" package="com.gedon6676.wbengine" main="Main" version="1.1.0" company="GEDON6676" />
+	<app title="Friday Night Funkin': WB Engine" file="WBEngine" packageName="com.gedon6676.wbengine" package="com.gedon6676.wbengine" main="Main" version="1.3.0" company="GEDON6676" />
 
 	<!--Switch Export with Unique ApplicationID and Icon-->
 	<set name="APP_ID" value="0x0100f6c013bbc000" />
