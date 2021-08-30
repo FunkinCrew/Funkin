@@ -130,6 +130,7 @@ class PauseSubState extends MusicBeatSubstate
 		switch (songLowercase) {
 			case 'dad-battle': songLowercase = 'dadbattle';
 			case 'philly-nice': songLowercase = 'philly';
+			case 'm.i.l.f': songLowercase = 'milf';
 		}
 		var songPath = 'assets/data/' + songLowercase + '/';
 

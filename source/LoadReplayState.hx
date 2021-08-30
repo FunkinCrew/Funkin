@@ -170,9 +170,11 @@ class LoadReplayState extends MusicBeatState
 					switch (songFormat) {
 						case 'Dad-Battle': songFormat = 'Dadbattle';
 						case 'Philly-Nice': songFormat = 'Philly';
+						case 'M.I.L.F': songFormat = 'Milf';
 						// Replay v1.0 support
 						case 'dad-battle': songFormat = 'Dadbattle';
 						case 'philly-nice': songFormat = 'Philly';
+						case 'm.i.l.f': songFormat = 'Milf';
 					}
 
 					var poop = "";

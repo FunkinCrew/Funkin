@@ -265,6 +265,7 @@ class ModchartState
 		switch (songLowercase) {
 			case 'dad-battle': songLowercase = 'dadbattle';
 			case 'philly-nice': songLowercase = 'philly';
+			case 'm.i.l.f': songLowercase = 'milf';
 		}
 
 		var data:BitmapData = BitmapData.fromFile(Sys.getCwd() + "assets/data/" + songLowercase + '/' + spritePath + ".png");
@@ -299,6 +300,7 @@ class ModchartState
 		switch (songLowercase) {
 			case 'dad-battle': songLowercase = 'dadbattle';
 			case 'philly-nice': songLowercase = 'philly';
+			case 'm.i.l.f': songLowercase = 'milf';
 		}
 
 		var path = Sys.getCwd() + "assets/data/" + songLowercase + '/';
@@ -382,6 +384,8 @@ class ModchartState
 				songLowercase = 'dadbattle';
 			case 'philly-nice':
 				songLowercase = 'philly';
+			case 'm.i.l.f':
+				songLowercase = 'milf';
 		}
 
 		var path = Paths.lua(songLowercase + "/modchart");
