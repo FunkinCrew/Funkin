@@ -4,6 +4,7 @@ package;
 import Discord.DiscordClient;
 #end
 import flash.text.TextField;
+import Song.SwagSong;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.addons.display.FlxGridOverlay;
@@ -27,6 +28,8 @@ class FreeplayState extends MusicBeatState
 	var diffText:FlxText;
 	var lerpScore:Int = 0;
 	var intendedScore:Int = 0;
+
+	public static var songData:Map<String,Array<SwagSong>> = [];
 
 	private var grpSongs:FlxTypedGroup<Alphabet>;
 	private var curPlaying:Bool = false;
@@ -74,7 +77,7 @@ class FreeplayState extends MusicBeatState
 
 		for (i in 0...songs.length)
 		{
-			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, songs[i].songName, true, false);
+			var songText:Alphabet = new Alphabet(0 + (curSelected * 10), (70 * i) + 30, songs[i].songName, true, false);
 			songText.isMenuItem = true;
 			songText.targetY = i;
 			grpSongs.add(songText);
@@ -86,7 +89,7 @@ class FreeplayState extends MusicBeatState
 			iconArray.push(icon);
 			add(icon);
 
-			// songText.x += 40;
+			songText.x += 40;
 			// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
 			// songText.screenCenter(X);
 		}
@@ -115,7 +118,9 @@ class FreeplayState extends MusicBeatState
 
 		selector.size = 40;
 		selector.text = ">";
-		// add(selector);
+		selector.screenCenter(Y);
+		selector.y += 15;
+		add(selector);
 
 		var swag:Alphabet = new Alphabet(1, 0, "swag");
 
