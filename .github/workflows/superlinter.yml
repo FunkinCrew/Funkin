@@ -1,6 +1,11 @@
+name: Superlinter
+on: push
 jobs:
   build:
-    runs-on: [ubuntu-latest, macos-latest]
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: krdlab/setup-haxe@v1
         with:
