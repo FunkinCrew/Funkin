@@ -30,6 +30,8 @@ IF YOU WANT TO COMPILE THE GAME YOURSELF, CONTINUE READING!!!
 
 First, you need to install [Haxe 4.1.5](https://haxe.org/download/version/4.1.5/) (Download 4.1.5 instead of 4.2.0 because 4.2.0 is broken and is not working with gits properly...)
 
+If you're on Windows and don't have admin, you can install Haxe with [Scoop](https://scoop.sh)
+
 Other installations you'd need are the additional libraries, a fully updated list will be in `Project.xml` in the project root. Currently, these are all of the things you need to install:
 ```
 flixel
