@@ -1,7 +1,7 @@
 name: Superlinter
 on: push
 jobs:
-  build:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: krdlab/setup-haxe@v1
