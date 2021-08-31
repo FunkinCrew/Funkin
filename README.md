@@ -47,7 +47,7 @@ haxelib run lime setup
 haxelib run lime setup flixel
 ```
 
-You'll also need to install a couple things that involve Gits. To do this, you need to do a few things first.
+You'll also need to install a couple things that involve Git. To do this, you need to do a few things first.
 1. Download [git-scm](https://git-scm.com/downloads). Works for Windows, Mac, and Linux, just select your build.
 2. Follow instructions to install the application properly.
 3. Run `haxelib git polymod https://github.com/larsiusprime/polymod.git` to install Polymod.
