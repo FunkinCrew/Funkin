@@ -2144,11 +2144,10 @@ class PlayState extends MusicBeatState
 				// notes you can hit lol
 				notes.forEachAlive(function(note:Note) {
 					if (note.canBeHit && note.mustPress && !note.tooLate && !note.isSustainNote)
-					{
 						possibleNotes.push(note);
-						possibleNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
-					}
 				});
+
+				possibleNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
 	
 				var noteDataPossibles:Array<Bool> = [false, false, false, false];
 	
@@ -2160,6 +2159,13 @@ class PlayState extends MusicBeatState
 						if(justPressedArray[possibleNotes[i].noteData] && !noteDataPossibles[possibleNotes[i].noteData])
 						{
 							noteDataPossibles[possibleNotes[i].noteData] = true;
+
+							for(note in possibleNotes)
+							{
+								if(note.noteData == possibleNotes[i].noteData && note.strumTime == possibleNotes[i].strumTime && note != possibleNotes[i])
+									note.destroy();
+							}
+
 							goodNoteHit(possibleNotes[i]);
 						}
 					}
