@@ -2,10 +2,7 @@ package;
 
 import flixel.FlxG;
 import flixel.FlxSprite;
-#if sys
-import sys.FileSystem;
-import sys.io.File;
-#end
+import lime.utils.Assets;
 
 using StringTools;
 
@@ -43,10 +40,8 @@ class HealthIcon extends FlxSprite
 		if (char != 'bf-pixel' && char != 'bf-old')
 			char = char.split("-")[0];
 
-		#if sys
-		if (!FileSystem.exists(Paths.image('icons/icon-' + char)))
+		if (!Assets.exists(Paths.image('icons/icon-' + char)))
 			char = 'bf';
-		#end
 
 		loadGraphic(Paths.image('icons/icon-' + char), true, 150, 150);
 
