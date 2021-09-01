@@ -10,4 +10,5 @@ jobs:
           haxe-version: 4.1.5
       - run: |
           haxelib install haxelint
-          haxelib run haxelint -s source Preloader.hx
+          haxelib run haxelint -s source 
+          haxelib run haxelint -s Preloader.hx
