@@ -8,5 +8,5 @@ jobs:
       - uses: krdlab/setup-haxe@v1
         with:
           haxe-version: 4.1.5
-      - run: haxelib install formatter && formatter -s source Preloader.hx
+      - run: haxelib install formatter &&  haxelib run formatter -s source Preloader.hx
       - uses: zwaldowski/git-commit-action@v1
