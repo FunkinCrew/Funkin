@@ -22,8 +22,6 @@ class Main extends Sprite
 
 	// You can pretty much ignore everything from here on - your code should go in your states.
 
-	public static var watermarks:Bool;
-
 	public static function main():Void
 	{
 		Lib.current.addChild(new Main());
@@ -67,14 +65,14 @@ class Main extends Sprite
 			gameHeight = Math.ceil(stageHeight / zoom);
 		}
 
-		#if !debug
-		initialState = Loading;
-		#end
-
 		addChild(new FlxGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen));
 
-		#if !mobile
-		addChild(new FPS(10, 3, 0xFFFFFF));
-		#end
+		if(flixel.FlxG.save.data.fps)
+		{
+			#if !mobile
+			addChild(new FPS(10, 3, 0xFFFFFF));
+			addChild(new MemoryCounter(10, 3, 0xFFFFFF));
+			#end
+		}
 	}
 }

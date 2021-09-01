@@ -23,28 +23,4 @@ class KeyBinds
 
 	}
 
-    public static function keyCheck():Void
-    {
-        if(FlxG.save.data.upBind == null){
-            FlxG.save.data.upBind = "W";
-            trace("No UP");
-        }
-        if(FlxG.save.data.downBind == null){
-            FlxG.save.data.downBind = "S";
-            trace("No DOWN");
-        }
-        if(FlxG.save.data.leftBind == null){
-            FlxG.save.data.leftBind = "A";
-            trace("No LEFT");
-        }
-        if(FlxG.save.data.rightBind == null){
-            FlxG.save.data.rightBind = "D";
-            trace("No RIGHT");
-        }
-        if(FlxG.save.data.killBind == null){
-            FlxG.save.data.killBind = "R";
-            trace("No KILL");
-        }
-    }
-
 }

@@ -3,6 +3,7 @@ package;
 import flixel.FlxBasic;
 import flixel.FlxG;
 import flixel.FlxSprite;
+import flixel.FlxObject;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.util.FlxColor;
 import flixel.text.FlxText;
@@ -13,16 +14,19 @@ class OptionsSubState extends MusicBeatSubstate
 	[
 	'Controls',
 	'Downscroll',
-	'Song Position',
 	'Ghost Tapping',
 	'Note Splashes',
 	'Light CPU Strums',
-	'Watermarks'
+	'Watermarks',
+	'Anti-Aliasing',
+	'Show FPS',
+	'BotPlay'
 	];
 
 	var selector:FlxSprite;
 	var curSelected:Int = 0;
 	var versionShit:FlxText;
+	var camFollow:FlxObject;
 
 	var grpOptionsTexts:FlxTypedGroup<Alphabet>;
 
@@ -30,16 +34,18 @@ class OptionsSubState extends MusicBeatSubstate
 	{
 		super();
 
+		camFollow = new FlxObject(0, 0, 1, 1);
+		add(camFollow);
+
 		grpOptionsTexts = new FlxTypedGroup<Alphabet>();
 		add(grpOptionsTexts);
 
 		for (i in 0...textMenuItems.length)
 		{
-			var optionText:Alphabet = new Alphabet(0, (85 * i) + 30, textMenuItems[i], true);
+			var optionText:Alphabet = new Alphabet(0 + (curSelected * 10), (85 * i) + 30, textMenuItems[i], true);
 			optionText.ID = i;
 			optionText.targetY = i;
 			grpOptionsTexts.add(optionText);
-			optionText.screenCenter(X);
 		}
 
 		versionShit = new FlxText(5, FlxG.height - 18, 0);
@@ -51,9 +57,26 @@ class OptionsSubState extends MusicBeatSubstate
 
 	var bullShit:Int = 0;
 
-	function changeSelection(int:Int)
+	function changeSelection(change:Int = 0)
 	{
-		curSelected += int;
+		#if !switch
+		NGio.logEvent('Fresh');
+		#end
+
+		FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
+
+		curSelected += change;
+
+		if (curSelected < 0)
+			curSelected = grpOptionsTexts.length - 1;
+		if (curSelected >= grpOptionsTexts.length)
+			curSelected = 0;
+
+		FlxG.save.flush();
+
+		// selector.y = (70 * curSelected) + 30;
+
+		var bullShit:Int = 0;
 
 		for (item in grpOptionsTexts.members)
 		{
@@ -96,17 +119,27 @@ class OptionsSubState extends MusicBeatSubstate
 				txt.alpha = 1;
 		});
 
-		if(FlxG.keys.pressed.LEFT)
-			FlxG.save.data.offset -= 1;
-		else if (FlxG.keys.pressed.RIGHT)
-			FlxG.save.data.offset += 1;
+		if(FlxG.keys.pressed.SHIFT)
+		{
+			if(FlxG.keys.pressed.LEFT)
+				FlxG.save.data.offset -= 1;
+			else if (FlxG.keys.pressed.RIGHT)
+				FlxG.save.data.offset += 1;
+		}
+		else
+		{
+			if(FlxG.keys.justPressed.LEFT)
+				FlxG.save.data.offset -= 1;
+			else if (FlxG.keys.justPressed.RIGHT)
+				FlxG.save.data.offset += 1;			
+		}
 
 		if(FlxG.save.data.offset < -150)
 			FlxG.save.data.offset = -150;
 		else if(FlxG.save.data.offset > 150)
 			FlxG.save.data.offset = 150;
 
-		versionShit.text = "Offset: " + FlxG.save.data.offset + ' (Max 150, Min -150)';
+		versionShit.text = "Offset: " + FlxG.save.data.offset + ' (Max 150, Min -150, Press SHIFT to go faster)';
 
 		if (controls.ACCEPT)
 		{
@@ -117,12 +150,6 @@ class OptionsSubState extends MusicBeatSubstate
 				case "Downscroll":
 					FlxG.save.data.downscroll = !FlxG.save.data.downscroll;
 					if(FlxG.save.data.downscroll)
-						FlxG.sound.play(Paths.sound('confirmMenu'));
-					else
-						FlxG.sound.play(Paths.sound('cancelMenu'));
-				case "Song Position":
-					FlxG.save.data.songPosition = !FlxG.save.data.songPosition;
-					if(FlxG.save.data.songPosition)
 						FlxG.sound.play(Paths.sound('confirmMenu'));
 					else
 						FlxG.sound.play(Paths.sound('cancelMenu'));
@@ -145,18 +172,35 @@ class OptionsSubState extends MusicBeatSubstate
 					else
 						FlxG.sound.play(Paths.sound('cancelMenu'));
 				case "Watermarks":
-					Main.watermarks = !Main.watermarks;
-					if(Main.watermarks)
+					FlxG.save.data.watermarks = !FlxG.save.data.watermarks;
+					if(FlxG.save.data.watermarks)
 						FlxG.sound.play(Paths.sound('confirmMenu'));
 					else
-						FlxG.sound.play(Paths.sound('cancelMenu'));					
+						FlxG.sound.play(Paths.sound('cancelMenu'));	
+				case "Anti-Aliasing":
+					FlxG.save.data.antialiasing = !FlxG.save.data.antialiasing;
+					if(FlxG.save.data.antialiasing)
+						FlxG.sound.play(Paths.sound('confirmMenu'));
+					else
+						FlxG.sound.play(Paths.sound('cancelMenu'));		
+				case 'Show FPS':
+					FlxG.save.data.fps = !FlxG.save.data.fps;
+					if(FlxG.save.data.fps)	
+						FlxG.sound.play(Paths.sound('confirmMenu'));
+					else
+						FlxG.sound.play(Paths.sound('cancelMenu'));		
+				case 'BotPlay':
+					FlxG.save.data.botplay = !FlxG.save.data.botplay;
+					if(FlxG.save.data.botplay)	
+						FlxG.sound.play(Paths.sound('confirmMenu'));
+					else
+						FlxG.sound.play(Paths.sound('cancelMenu'));								
 			}
 		}
 		if(controls.BACK)
 		{
 			FlxG.state.closeSubState();
 			FlxG.switchState(new MainMenuState());
-			FlxG.save.bind('funkin', 'ninjamuffin99');
 		}
 	}
 }
