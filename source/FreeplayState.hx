@@ -326,6 +326,7 @@ class FreeplayState extends MusicBeatState
 		var upP = FlxG.keys.justPressed.UP;
 		var downP = FlxG.keys.justPressed.DOWN;
 		var accepted = FlxG.keys.justPressed.ENTER;
+		var charting = FlxG.keys.justPressed.SEVEN;
 
 		var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
 
@@ -414,52 +415,60 @@ class FreeplayState extends MusicBeatState
 		}
 
 		if (accepted)
+			loadSong();
+		else if (charting)
+			loadSong(true);
+	}
+
+	function loadSong(isCharting:Bool = false)
+	{
+		// adjusting the song name to be compatible
+		var songFormat = StringTools.replace(songs[curSelected].songName, " ", "-");
+		switch (songFormat) {
+			case 'Dad-Battle': songFormat = 'Dadbattle';
+			case 'Philly-Nice': songFormat = 'Philly';
+			case 'M.I.L.F': songFormat = 'Milf';
+		}
+		var hmm;
+		try
 		{
-			// adjusting the song name to be compatible
-			var songFormat = StringTools.replace(songs[curSelected].songName, " ", "-");
-			switch (songFormat) {
-				case 'Dad-Battle': songFormat = 'Dadbattle';
-				case 'Philly-Nice': songFormat = 'Philly';
-				case 'M.I.L.F': songFormat = 'Milf';
-			}
-			var hmm;
-			try
-			{
-				hmm = songData.get(songs[curSelected].songName)[curDifficulty];
-				if (hmm == null)
-					return;
-			}
-			catch(ex)
-			{
+			hmm = songData.get(songs[curSelected].songName)[curDifficulty];
+			if (hmm == null)
 				return;
+		}
+		catch(ex)
+		{
+			return;
+		}
+
+
+
+		PlayState.SONG = Song.conversionChecks(hmm);
+		PlayState.isStoryMode = false;
+		PlayState.storyDifficulty = curDifficulty;
+		PlayState.storyWeek = songs[curSelected].week;
+		trace('CUR WEEK' + PlayState.storyWeek);
+		#if sys
+		if (songs[curSelected].songCharacter == "sm")
+			{
+				PlayState.isSM = true;
+				PlayState.sm = songs[curSelected].sm;
+				PlayState.pathToSm = songs[curSelected].path;
 			}
-
-
-
-			PlayState.SONG = Song.conversionChecks(hmm);
-			PlayState.isStoryMode = false;
-			PlayState.storyDifficulty = curDifficulty;
-			PlayState.storyWeek = songs[curSelected].week;
-			trace('CUR WEEK' + PlayState.storyWeek);
-			#if sys
-			if (songs[curSelected].songCharacter == "sm")
-				{
-					PlayState.isSM = true;
-					PlayState.sm = songs[curSelected].sm;
-					PlayState.pathToSm = songs[curSelected].path;
-				}
-			else
-				PlayState.isSM = false;
-			#else
+		else
 			PlayState.isSM = false;
-			#end
+		#else
+		PlayState.isSM = false;
+		#end
 
-			PlayState.songMultiplier = rate;
+		PlayState.songMultiplier = rate;
 
+		if (isCharting)
+			LoadingState.loadAndSwitchState(new ChartingState());
+		else
 			LoadingState.loadAndSwitchState(new PlayState());
 
-			clean();
-		}
+		clean();
 	}
 
 	function changeDiff(change:Int = 0)
