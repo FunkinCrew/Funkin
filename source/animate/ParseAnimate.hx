@@ -1,0 +1,280 @@
+package animate;
+
+import haxe.format.JsonParser;
+import openfl.Assets;
+import sys.io.File;
+
+class ParseAnimate
+{
+	// make list of frames needed to render (with ASI)
+	// make GIANT list of all the frames ever and have them in order?
+	public static var symbolMap:Map<String, Symbol> = new Map();
+	public static var actualSprites:Map<String, Sprite> = new Map();
+
+	public static function init()
+	{
+		// Main.gids
+		var folder:String = 'tightestBars';
+
+		// var spritemap:Spritemap =
+		// var spritemap:Spritemap = genSpritemap('test/$folder/spritemap1.json');
+
+		actualSprites = genSpritemap('test/$folder/spritemap1.json');
+
+		var animation:AnimJson = cast CoolUtil.coolJSON(Assets.getText('src/$folder/Animation.json'));
+
+		generateSymbolmap(animation.SD.S);
+
+		trace("\n\nANIMATION SHIT\n");
+
+		var timelineLength:Int = 0;
+		for (lyr in animation.AN.TL.L)
+			timelineLength = Std.int(Math.max(lyr.FR.length, timelineLength));
+
+		var content:String = animation.AN.TL.L[0].LN;
+		content += "TOTAL FRAMES NEEDED: " + timelineLength + "\n";
+
+		for (frm in 0...timelineLength)
+		{
+			trace('FRAME NUMBER ' + frm);
+			try
+			{
+				parseTimeline(animation.AN.TL, 1, frm);
+				content += 'Good write on frame: ' + frm + "\n";
+			}
+			catch (e)
+			{
+				content += "BAD WRITE : " + frm + "\n";
+				content += "\t" + e + "\n";
+				trace(e);
+			}
+
+			// File.saveContent("output.txt", content);
+		}
+
+		parseTimeline(animation.AN.TL, 1, 0);
+		trace(actualSprites);
+	}
+
+	/**
+	 * a MAP of SPRITES, not to be confused with Spritemap... lol
+	 */
+	public static function genSpritemap(json:String):Map<String, Sprite>
+	{
+		var sprShitty:Spritemap = cast CoolUtil.coolJSON(json);
+		var sprMap:Map<String, Sprite> = new Map();
+
+		for (spr in sprShitty.ATLAS.SPRITES)
+			sprMap.set(spr.SPRITE.name, spr.SPRITE);
+		return sprMap;
+	}
+
+	public static function generateSymbolmap(symbols:Array<Symbol>)
+	{
+		for (symbol in symbols)
+		{
+			// trace(symbol.SN + "has: " + symbol.TL.L.length + " LAYERS");
+
+			symbolMap.set(symbol.SN, symbol);
+			// parseTimeline(symbol.TL);
+		}
+	}
+
+	public static var curLoopType:String;
+
+	/**
+	 * Stuff for debug parsing
+	 */
+	public static var depthTypeBeat:String = "";
+
+	public static var frameList:Array<String> = [];
+	public static var matrixMap:Map<String, Array<Array<Float>>> = new Map();
+
+	// for loop stuf
+	public static var matrixHelp:Array<Array<Float>> = [];
+
+	public static function resetFrameList()
+	{
+		frameList = [];
+		matrixMap.clear();
+	}
+
+	public static function parseTimeline(TL:Timeline, tabbed:Int = 0, ?frameInput:Int)
+	{
+		var strTab:String = "";
+		for (i in 0...tabbed)
+			strTab += '\t';
+
+		for (layer in TL.L)
+		{
+			var frameArray:Array<Int> = [];
+			var frameMap:Map<Int, Frame> = new Map();
+
+			for (frms in layer.FR)
+			{
+				for (i in 0...frms.DU)
+					frameArray.push(frms.I);
+
+				frameMap.set(frms.I, frms);
+			}
+
+			if (frameInput == null)
+				frameInput = 0;
+
+			if (curLoopType == "LP")
+				frameInput = frameArray[frameInput % frameArray.length];
+			else
+				frameInput = frameArray[frameInput];
+
+			var frame:Frame = frameMap.get(frameInput);
+
+			for (element in frame.E)
+			{
+				if (Reflect.hasField(element, "ASI"))
+				{
+					frameList.push(element.ASI.N);
+					matrixHelp.push(element.ASI.M3D);
+					matrixMap.set(element.ASI.N, matrixHelp);
+
+					matrixHelp = [];
+
+					depthTypeBeat = "";
+					curLoopType = "";
+				}
+				else
+				{
+					matrixHelp.push(element.SI.M3D);
+					depthTypeBeat += "->" + element.SI.SN;
+					curLoopType = element.SI.LP;
+					parseTimeline(symbolMap.get(element.SI.SN).TL, tabbed + 1, element.SI.FF);
+				}
+			}
+		}
+	}
+}
+
+typedef AnimJson =
+{
+	AN:Animation,
+	SD:SymbolDictionary,
+	MD:MetaData
+}
+
+typedef Animation =
+{
+	N:String,
+	SN:String,
+	TL:Timeline
+}
+
+typedef SymbolDictionary =
+{
+	S:Array<Symbol>
+}
+
+typedef Symbol =
+{
+	/**Symbol name*/
+	SN:String,
+
+	TL:Timeline
+}
+
+typedef Timeline =
+{
+	L:Array<Layer>
+}
+
+typedef Layer =
+{
+	LN:String,
+	FR:Array<Frame>
+}
+
+typedef Frame =
+{
+	E:Array<Element>,
+	I:Int,
+	DU:Int
+}
+
+typedef Element =
+{
+	SI:SymbolInstance,
+	ASI:AlsoSymbolInstance
+	// lmfao idk what ASI stands for lmfaoo, i dont think its "also"
+}
+
+typedef SymbolInstance =
+{
+	SN:String,
+
+	/**Symbol type, prob either G (graphic), or movie clip?*/
+	ST:String,
+
+	/**First frame*/
+	FF:Int,
+
+	/**Loop type, loop ping pong, etc.*/
+	LP:String,
+
+	/**3D matrix*/
+	M3D:Array<Float>,
+
+	TRP:
+	{
+		x:Float, y:Float
+	}
+}
+
+typedef AlsoSymbolInstance =
+{
+	N:String,
+	M3D:Array<Float>
+}
+
+typedef MetaData =
+{
+	/**
+	 * Framerate
+	 */
+	FRT:Int
+}
+
+// SPRITEMAP BULLSHIT
+typedef Spritemap =
+{
+	ATLAS:
+	{
+		SPRITES:Array<SpriteBullshit>
+	},
+	meta:Meta
+}
+
+typedef SpriteBullshit =
+{
+	SPRITE:Sprite
+}
+
+typedef Sprite =
+{
+	name:String,
+	x:Int,
+	y:Int,
+	w:Int,
+	h:Int,
+	rotated:Bool
+}
+
+typedef Meta =
+{
+	app:String,
+	verstion:String,
+	image:String,
+	format:String,
+	size:
+	{
+		w:Int, h:Float
+	},
+	resolution:Float
+}

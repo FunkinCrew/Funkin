@@ -7,6 +7,7 @@ import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import haxe.Json;
+import haxe.format.JsonParser;
 import lime.math.Rectangle;
 import lime.utils.Assets;
 
@@ -86,6 +87,21 @@ class CoolUtil
 	public static function camLerpShit(lerp:Float):Float
 	{
 		return lerp * (FlxG.elapsed / (1 / 60));
+	}
+
+	/**
+	 * Hashlink json encoding fix for some wacky bullshit
+	 * https://github.com/HaxeFoundation/haxe/issues/6930#issuecomment-384570392
+	 */
+	public static function coolJSON(fileData:String)
+	{
+		var cont = fileData;
+		function is(n:Int, what:Int)
+			return cont.charCodeAt(n) == what;
+		return JsonParser.parse(cont.substr(if (is(0, 65279)) /// looks like a HL target, skipping only first character here:
+			1 else if (is(0, 239) && is(1, 187) && is(2, 191)) /// it seems to be Neko or PHP, start from position 3:
+			3 else /// all other targets, that prepare the UTF string correctly
+			0));
 	}
 
 	/*

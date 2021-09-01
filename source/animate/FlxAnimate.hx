@@ -2,17 +2,19 @@ package animate;
 
 // import animateAtlasPlayer.assets.AssetManager;
 // import animateAtlasPlayer.core.Animation;
-import animate.FlxSymbol.Parsed;
+import animate.ParseAnimate.AnimJson;
+import animate.ParseAnimate.Sprite;
+import animate.ParseAnimate.Spritemap;
+import flixel.FlxCamera;
 import flixel.FlxSprite;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxAtlasFrames;
+import flixel.graphics.frames.FlxFrame.FlxFrameAngle;
+import flixel.math.FlxMatrix;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import flixel.system.FlxAssets.FlxGraphicAsset;
-import haxe.Json;
-import haxe.Utf8;
 import haxe.format.JsonParser;
-import lime.text.UTF8String;
 import openfl.Assets;
 import openfl.display.BitmapData;
 import openfl.geom.Rectangle;
@@ -25,16 +27,30 @@ class FlxAnimate extends FlxSymbol
 
 	var swagFrames:Array<BitmapData> = [];
 
+	var jsonAnim:AnimJson;
+
 	public function new(x:Float, y:Float)
 	{
-		var folder:String = 'tightBarsLol';
-		coolParse = cast Json.parse(Assets.getText(Paths.file('images/' + folder + '/Animation.json')));
+		super(x, y);
 
-		// reverses the layers, for proper rendering!
-		coolParse.AN.TL.L.reverse();
-		super(x, y, coolParse);
+		var folder:String = "tightBarsLol";
 
-		frames = FlxAnimate.fromAnimate(Paths.file('images/' + folder + '/spritemap1.png'), Paths.file('images/' + folder + '/spritemap1.json'));
+		frames = FlxAnimate.fromAnimate(Paths.file('images/' + folder + "/spritemap1.png"), Paths.file('images/$folder/spritemap1.json'));
+
+		jsonAnim = cast CoolUtil.coolJSON(Assets.getText(Paths.file('images/$folder/Animation.json')));
+		ParseAnimate.generateSymbolmap(jsonAnim.SD.S);
+		ParseAnimate.parseTimeline(jsonAnim.AN.TL, 0, 0);
+
+		/* var folder:String = 'tightestBars';
+			coolParse = cast Json.parse(Assets.getText(Paths.file('images/' + folder + '/Animation.json')));
+
+			// reverses the layers, for proper rendering!
+			coolParse.AN.TL.L.reverse();
+			super(x, y, coolParse);
+
+			frames = FlxAnimate.fromAnimate(Paths.file('images/' + folder + '/spritemap1.png'), Paths.file('images/' + folder + '/spritemap1.json'));
+		 */
+
 		// frames
 	}
 
@@ -43,27 +59,48 @@ class FlxAnimate extends FlxSymbol
 		// having this commented out fixes some wacky scaling bullshit?
 		// super.draw();
 
-		if (FlxG.keys.justPressed.ONE)
-		{
-			trace("-------------------------------------");
-			trace('CUR FRAME: ' + daFrame);
-			trace('--------------');
-		}
+		// renderFrame(coolParse.AN.TL, coolParse, true);
 
-		renderFrame(coolParse.AN.TL, coolParse, true);
+		actualFrameRender();
+	}
 
-		if (FlxG.keys.justPressed.E)
+	function actualFrameRender()
+	{
+		for (i in ParseAnimate.frameList)
 		{
-			for (shit in FlxSymbol.nestedShit.keys())
+			var spr:FlxSymbol = new FlxSymbol(0, 0); // redo this to recycle from a list later
+			spr.frames = frames;
+			spr.frame = spr.frames.getByName(i);
+
+			if (FlxG.keys.justPressed.I)
 			{
-				for (spr in FlxSymbol.nestedShit.get(shit))
+				trace('\n\n\nSPR OLD: ' + spr._matrix);
+			}
+
+			ParseAnimate.matrixMap.get(i).reverse();
+
+			for (swagMatrix in ParseAnimate.matrixMap.get(i))
+			{
+				var alsoSwag:FlxMatrix = new FlxMatrix(swagMatrix[0], swagMatrix[1], swagMatrix[4], swagMatrix[5], swagMatrix[12], swagMatrix[13]);
+				spr.matrixExposed = true;
+
+				spr.transformMatrix.concat(alsoSwag);
+
+				if (FlxG.keys.justPressed.I)
 				{
-					trace(shit);
-					spr.draw();
+					trace(i + ": " + swagMatrix);
 				}
 			}
 
-			FlxSymbol.nestedShit.clear();
+			if (FlxG.keys.justPressed.I)
+			{
+				trace('SPR NEW: ' + spr._matrix);
+			}
+
+			// trace('MATRIX ' + spr._matrix);
+			// spr
+
+			spr.draw();
 		}
 	}
 
@@ -72,6 +109,8 @@ class FlxAnimate extends FlxSymbol
 	var playingAnim:Bool = false;
 	var frameTickTypeShit:Float = 0;
 	var animFrameRate:Int = 24;
+
+	// redo all the matrix animation stuff
 
 	override function update(elapsed:Float)
 	{
@@ -89,16 +128,22 @@ class FlxAnimate extends FlxSymbol
 			{
 				changeFrame(1);
 				frameTickTypeShit = 0;
+				ParseAnimate.resetFrameList();
+				ParseAnimate.parseTimeline(jsonAnim.AN.TL, 0, daFrame);
 			}
 		}
 
 		if (FlxG.keys.justPressed.RIGHT)
+		{
 			changeFrame(1);
+
+			ParseAnimate.resetFrameList();
+			ParseAnimate.parseTimeline(jsonAnim.AN.TL, 0, daFrame);
+		}
 		if (FlxG.keys.justPressed.LEFT)
 			changeFrame(-1);
 	}
 
-	// This stuff is u
 	public static function fromAnimate(Source:FlxGraphicAsset, Description:String):FlxAtlasFrames
 	{
 		var graphic:FlxGraphic = FlxG.bitmap.add(Source);
@@ -114,11 +159,11 @@ class FlxAnimate extends FlxSymbol
 
 		frames = new FlxAtlasFrames(graphic);
 
-		var data:AnimateObject;
+		var data:Spritemap;
 
 		var json:String = Description;
 
-		trace(json);
+		// trace(json);
 
 		var funnyJson:Dynamic = {};
 		if (Assets.exists(json))
@@ -126,12 +171,14 @@ class FlxAnimate extends FlxSymbol
 
 		// trace(json);
 
-		data = cast funnyJson.ATLAS;
+		// data = c
 
-		for (sprite in data.SPRITES)
+		data = cast funnyJson;
+
+		for (sprite in data.ATLAS.SPRITES)
 		{
 			// probably nicer way to do this? Oh well
-			var swagSprite:AnimateSprite = sprite.SPRITE;
+			var swagSprite:Sprite = sprite.SPRITE;
 
 			var rect = FlxRect.get(swagSprite.x, swagSprite.y, swagSprite.w, swagSprite.h);
 
@@ -147,10 +194,6 @@ class FlxAnimate extends FlxSymbol
 	}
 }
 
-/**
- * HL json encoding fix for some wacky bullshit
- * https://github.com/HaxeFoundation/haxe/issues/6930#issuecomment-384570392
- */
 class JaySon
 {
 	public static function parseFile(name:String)
@@ -163,19 +206,4 @@ class JaySon
 			3 else /// all other targets, that prepare the UTF string correctly
 			0));
 	}
-}
-
-typedef AnimateObject =
-{
-	SPRITES:Array<Dynamic>
-}
-
-typedef AnimateSprite =
-{
-	var name:String;
-	var x:Int;
-	var y:Int;
-	var w:Int;
-	var h:Int;
-	var rotated:Bool;
 }

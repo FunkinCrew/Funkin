@@ -1,5 +1,12 @@
 package animate;
 
+import animate.ParseAnimate.AnimJson;
+import animate.ParseAnimate.Animation;
+import animate.ParseAnimate.Frame;
+import animate.ParseAnimate.Sprite;
+import animate.ParseAnimate.Spritemap;
+import animate.ParseAnimate.SymbolDictionary;
+import animate.ParseAnimate.Timeline;
 import flixel.FlxCamera;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxFrame.FlxFrameAngle;
@@ -8,11 +15,11 @@ import flixel.math.FlxMath;
 import flixel.math.FlxMatrix;
 import flixel.math.FlxPoint;
 import lime.system.System;
+import openfl.Assets;
 import openfl.geom.Matrix;
 
 class FlxSymbol extends FlxSprite
 {
-	public var coolParse:Parsed;
 	public var oldMatrix:Array<Float> = [];
 
 	// Loop types shit
@@ -27,21 +34,11 @@ class FlxSymbol extends FlxSprite
 
 	public var daLoopType:String = 'LP'; // LP by default, is set below!!!
 
-	public function new(x:Float, y:Float, coolParsed:Parsed)
+	public function new(x:Float, y:Float)
 	{
 		super(x, y);
 
-		// trace(System.deviceModel);
-		// trace(System.deviceVendor);
-		// trace(System.platformLabel);
-		// trace(System.platformName);
-
-		this.coolParse = coolParsed;
-
-		var hasSymbolDictionary:Bool = Reflect.hasField(coolParse, "SD");
-
-		if (hasSymbolDictionary)
-			symbolAtlasShit = parseSymbolDictionary(coolParse);
+		var spritemap:Map<String, Sprite> = ParseAnimate.genSpritemap(Assets.getText(Paths.file('images/tightestBars/spritemap1.json')));
 	}
 
 	var symbolAtlasShit:Map<String, String> = new Map();
@@ -54,7 +51,7 @@ class FlxSymbol extends FlxSprite
 
 	public var transformMatrix:Matrix = new Matrix();
 
-	function renderFrame(TL:Timeline, coolParsed:Parsed, ?traceShit:Bool = false)
+	function renderFrame(TL:Timeline, ?traceShit:Bool = false)
 	{
 		for (layer in TL.L)
 		{
@@ -142,7 +139,7 @@ class FlxSymbol extends FlxSprite
 					var m3d = element.ASI.M3D;
 					var dumbassMatrix:Matrix = new Matrix(m3d[0], m3d[1], m3d[4], m3d[5], m3d[12], m3d[13]);
 
-					var spr:FlxSymbol = new FlxSymbol(0, 0, coolParsed);
+					var spr:FlxSymbol = new FlxSymbol(0, 0);
 					spr.setPosition(x, y);
 					matrixExposed = true;
 					spr.frames = frames;
@@ -160,18 +157,13 @@ class FlxSymbol extends FlxSprite
 					// spr.origin.x += origin.x;
 					// spr.origin.y += origin.y;
 
-					// spr.antialiasing = true;
+					spr.antialiasing = true;
 					spr.draw();
-
-					if (FlxG.keys.justPressed.ONE)
-					{
-						trace("ASI - " + layer.LN + ": " + element.ASI.N);
-					}
 				}
 				else
 				{
 					var nestedSymbol = symbolMap.get(element.SI.SN);
-					var nestedShit:FlxSymbol = new FlxSymbol(x, y, coolParse);
+					var nestedShit:FlxSymbol = new FlxSymbol(x, y);
 					nestedShit.frames = frames;
 
 					var swagMatrix:FlxMatrix = new FlxMatrix(element.SI.M3D[0], element.SI.M3D[1], element.SI.M3D[4], element.SI.M3D[5], element.SI.M3D[12],
@@ -202,11 +194,10 @@ class FlxSymbol extends FlxSprite
 
 					nestedShit.firstFrame = element.SI.FF;
 					// nestedShit.daFrame += nestedShit.firstFrame;
-
 					nestedShit.daLoopType = element.SI.LP;
 					nestedShit.daFrame = daFrame;
 					nestedShit.scrollFactor.set(1, 1);
-					nestedShit.renderFrame(nestedSymbol.TL, coolParsed);
+					nestedShit.renderFrame(nestedSymbol.TL);
 
 					// renderFrame(nestedSymbol.TL, coolParsed);
 				}
@@ -221,38 +212,25 @@ class FlxSymbol extends FlxSprite
 		daFrame += frameChange;
 	}
 
-	function parseSymbolDictionary(coolParsed:Parsed):Map<String, String>
-	{
-		var awesomeMap:Map<String, String> = new Map();
-		for (symbol in coolParsed.SD.S)
-		{
-			symbolMap.set(symbol.SN, symbol);
-
-			var symbolName = symbol.SN;
-
-			// one time reverse?
-			symbol.TL.L.reverse();
-
-			for (layer in symbol.TL.L)
-			{
-				for (frame in layer.FR)
-				{
-					for (element in frame.E)
-					{
-						if (Reflect.hasField(element, 'ASI'))
-						{
-							awesomeMap.set(symbolName, element.ASI.N);
-						}
-					}
-				}
-			}
-		}
-
-		return awesomeMap;
-	}
-
 	function getFrame() {}
 
+	/**
+		_frame.prepareMatrix(_matrix, FlxFrameAngle.ANGLE_0, checkFlipX(), checkFlipY());
+		_matrix.translate(-origin.x, -origin.y);
+		_matrix.scale(scale.x, scale.y);
+
+		if (bakedRotationAngle <= 0)
+		{
+			updateTrig();
+
+			if (angle != 0)
+				_matrix.rotateWithTrig(_cosAngle, _sinAngle);
+		}
+
+		_point.add(origin.x, origin.y);
+
+
+		camera.drawPixels(_frame, framePixels, _matrix, colorTransform, blend, antialiasing, shader);**/
 	override function drawComplex(camera:FlxCamera):Void
 	{
 		_frame.prepareMatrix(_matrix, FlxFrameAngle.ANGLE_0, checkFlipX(), checkFlipY());
@@ -273,16 +251,19 @@ class FlxSymbol extends FlxSprite
 					_matrix.rotateWithTrig(_cosAngle, _sinAngle);
 			}
 
-			// updateSkewMatrix();
+			updateSkewMatrix();
 			_matrix.concat(_skewMatrix);
 		}
 
 		_point.addPoint(origin);
-		if (isPixelPerfectRender(camera))
-			_point.floor();
-
 		_matrix.translate(_point.x, _point.y);
-		camera.drawPixels(_frame, framePixels, _matrix, colorTransform, blend, antialiasing);
+
+		if (isPixelPerfectRender(camera))
+		{
+			_matrix.tx = Math.floor(_matrix.tx);
+			_matrix.ty = Math.floor(_matrix.ty);
+		}
+		camera.drawPixels(_frame, framePixels, _matrix, colorTransform, blend, antialiasing, shader);
 	}
 
 	var _skewMatrix:Matrix = new Matrix();
@@ -293,7 +274,7 @@ class FlxSymbol extends FlxSprite
 	 * Bool flag showing whether transformMatrix is used for rendering or not.
 	 * False by default, which means that transformMatrix isn't used for rendering
 	 */
-	public var matrixExposed:Bool = false;
+	public var matrixExposed:Bool = true;
 
 	public var skew(default, null):FlxPoint = FlxPoint.get();
 
@@ -308,110 +289,88 @@ class FlxSymbol extends FlxSprite
 		}
 	}
 }
-
 // TYPEDEFS FOR ANIMATION.JSON PARSING
-
-typedef Parsed =
-{
-	var MD:Metadata;
-	var AN:Animation;
-	var SD:SymbolDictionary; // Doesn't always have symbol dictionary!!
-}
-
-typedef Metadata =
-{
-	/** Framerate */
-	var FRT:Int;
-}
-
-/** Basically treated like one big symbol*/
-typedef Animation =
-{
-	/** symbolName */
-	var SN:String;
-
-	var TL:Timeline;
-
-	/** IDK what STI stands for, Symbole Type Instance?
-		Anyways, it is NOT used in SYMBOLS, only the main AN animation    
-	 */
-	var STI:Dynamic;
-}
-
-/** DISCLAIMER, MAY NOT ACTUALLY BE CALLED
-	SYMBOL TYPE ISNTANCE, IM JUST MAKING ASSUMPTION!! */
-typedef SymbolTypeInstance =
-{
-	// var TL:Timeline;
-	// var SN:String;
-}
-
-typedef SymbolDictionary =
-{
-	var S:Array<Animation>;
-}
-
-typedef Timeline =
-{
-	/** Layers */
-	var L:Array<Layer>;
-}
-
-// Singular layer, not to be confused with LAYERS
-typedef Layer =
-{
-	var LN:String;
-
-	/** Frames */
-	var FR:Array<Frame>;
-}
-
-typedef Frame =
-{
-	/** Frame index*/
-	var I:Int;
-
-	/** Duration, in frames*/
-	var DU:Int;
-
-	/** Elements*/
-	var E:Array<Element>;
-}
-
-typedef Element =
-{
-	var SI:SymbolInstance;
-	var ASI:AtlasSymbolInstance;
-}
-
-/**
-	Symbol instance, for SYMBOLS and refers to SYMBOLS    
- */
-typedef SymbolInstance =
-{
-	var SN:String;
-
-	/** SymbolType (Graphic, Movieclip, Button)*/
-	var ST:String;
-
-	/** First frame*/
-	var FF:Int;
-
-	/** Loop type (Loop, play once, single frame)*/
-	var LP:String;
-
-	var TRP:TransformationPoint;
-	var M3D:Array<Float>;
-}
-
-typedef AtlasSymbolInstance =
-{
-	var N:String;
-	var M3D:Array<Float>;
-}
-
-typedef TransformationPoint =
-{
-	var x:Float;
-	var y:Float;
-}
+// typedef Parsed =
+// {
+// 	var MD:Metadata;
+// 	var AN:Animation;
+// 	var SD:SymbolDictionary; // Doesn't always have symbol dictionary!!
+// }
+// typedef Metadata =
+// {
+// 	/** Framerate */
+// 	var FRT:Int;
+// }
+// /** Basically treated like one big symbol*/
+// typedef Animation =
+// {
+// 	/** symbolName */
+// 	var SN:String;
+// 	var TL:Timeline;
+// 	/** IDK what STI stands for, Symbole Type Instance?
+// 		Anyways, it is NOT used in SYMBOLS, only the main AN animation
+// 	 */
+// 	var STI:Dynamic;
+// }
+// /** DISCLAIMER, MAY NOT ACTUALLY BE CALLED
+// 	SYMBOL TYPE ISNTANCE, IM JUST MAKING ASSUMPTION!! */
+// typedef SymbolTypeInstance =
+// {
+// 	// var TL:Timeline;
+// 	// var SN:String;
+// }
+// typedef SymbolDictionary =
+// {
+// 	var S:Array<Animation>;
+// }
+// typedef Timeline =
+// {
+// 	/** Layers */
+// 	var L:Array<Layer>;
+// }
+// // Singular layer, not to be confused with LAYERS
+// typedef Layer =
+// {
+// 	var LN:String;
+// 	/** Frames */
+// 	var FR:Array<Frame>;
+// }
+// typedef Frame =
+// {
+// 	/** Frame index*/
+// 	var I:Int;
+// 	/** Duration, in frames*/
+// 	var DU:Int;
+// 	/** Elements*/
+// 	var E:Array<Element>;
+// }
+// typedef Element =
+// {
+// 	var SI:SymbolInstance;
+// 	var ASI:AtlasSymbolInstance;
+// }
+// /**
+// 	Symbol instance, for SYMBOLS and refers to SYMBOLS
+//  */
+// typedef SymbolInstance =
+// {
+// 	var SN:String;
+// 	/** SymbolType (Graphic, Movieclip, Button)*/
+// 	var ST:String;
+// 	/** First frame*/
+// 	var FF:Int;
+// 	/** Loop type (Loop, play once, single frame)*/
+// 	var LP:String;
+// 	var TRP:TransformationPoint;
+// 	var M3D:Array<Float>;
+// }
+// typedef AtlasSymbolInstance =
+// {
+// 	var N:String;
+// 	var M3D:Array<Float>;
+// }
+// typedef TransformationPoint =
+// {
+// 	var x:Float;
+// 	var y:Float;
+// }
