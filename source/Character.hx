@@ -494,7 +494,7 @@ class Character extends FlxSprite
 				// so here's example code that'll fix it. just adjust it to ya character 'n shit
 				case 'custom character':
 					if (!animation.curAnim.name.endsWith('custom animation'))
-						playAnim('idle');
+						playAnim('idle', forced);
 				*/
 				default:
 					if (altAnim && animation.getByName('idle-alt') != null)
