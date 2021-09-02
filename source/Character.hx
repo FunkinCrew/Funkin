@@ -500,6 +500,16 @@ class Character extends FlxSprite
 				loadOffsetFile(curCharacter);
 
 				playAnim('idle');
+
+				animation.finishCallback = function(animShit:String)
+				{
+					if (animShit.startsWith('sing'))
+					{
+						// loop the anim
+						// this way is a little verbose, but basically sets it to the same animation, but 8 frames before finish
+						playAnim(animShit, true, false, animation.getByName(animShit).frames.length - 8);
+					}
+				}
 		}
 
 		dance();
