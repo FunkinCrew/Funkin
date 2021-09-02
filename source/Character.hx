@@ -486,6 +486,20 @@ class Character extends FlxSprite
 				playAnim('idle');
 
 				flipX = true;
+			case 'darnell':
+				frames = Paths.getSparrowAtlas('characters/darnell');
+
+				quickAnimAdd('idle', 'Darnell Idle');
+				quickAnimAdd('singUP', "Darnell pose up");
+				quickAnimAdd('singDOWN', 'Darnell Pose Down');
+				quickAnimAdd('singRIGHT', 'Darnell pose right');
+				quickAnimAdd('singLEFT', 'darnell pose left');
+				quickAnimAdd('laugh', 'darnell laugh');
+
+				// temp
+				loadOffsetFile(curCharacter);
+
+				playAnim('idle');
 		}
 
 		dance();

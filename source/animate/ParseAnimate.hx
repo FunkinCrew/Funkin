@@ -4,6 +4,11 @@ import haxe.format.JsonParser;
 import openfl.Assets;
 import sys.io.File;
 
+/**
+ * Generally designed / written in a way that can be easily taken out of FNF and used elsewhere
+ * I don't think it even has ties to OpenFL? Could probably just use it for ANY haxe
+ * project if needed, DOES NEED A LOT OF CLEANUP THOUGH!
+ */
 class ParseAnimate
 {
 	// make list of frames needed to render (with ASI)
@@ -11,6 +16,9 @@ class ParseAnimate
 	public static var symbolMap:Map<String, Symbol> = new Map();
 	public static var actualSprites:Map<String, Sprite> = new Map();
 
+	/**
+	 * Not used, was used for testing stuff though!	
+	 */
 	public static function init()
 	{
 		// Main.gids
@@ -175,8 +183,7 @@ class ParseAnimate
 						frameName: element.ASI.N,
 						M3D: element.ASI.M3D,
 						depthString: depthTypeBeat,
-						matrixArray: matrixHelp[matrixHelp.length - 1],
-						randomLol: FlxG.random.int(0, 100)
+						matrixArray: matrixHelp[matrixHelp.length - 1]
 					});
 
 					trpMap.set(element.ASI.N, trpHelpIDK);
@@ -226,8 +233,7 @@ typedef VALIDFRAME =
 	frameName:String,
 	M3D:Array<Float>,
 	depthString:String,
-	matrixArray:Array<Array<Float>>,
-	?randomLol:Float
+	matrixArray:Array<Array<Float>>
 }
 
 typedef AnimJson =
