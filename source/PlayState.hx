@@ -619,6 +619,8 @@ class PlayState extends MusicBeatState
 					gf.x -= 170;
 					gf.y -= 75;
 				}
+			case 'stage':
+				dad.y = 870 - dad.height;
 		}
 
 		add(gf);

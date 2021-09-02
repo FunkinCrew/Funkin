@@ -492,8 +492,8 @@ class Character extends FlxSprite
 				quickAnimAdd('idle', 'Darnell Idle');
 				quickAnimAdd('singUP', "Darnell pose up");
 				quickAnimAdd('singDOWN', 'Darnell Pose Down');
-				quickAnimAdd('singRIGHT', 'Darnell pose right');
-				quickAnimAdd('singLEFT', 'darnell pose left');
+				quickAnimAdd('singRIGHT', 'darnell pose left');
+				quickAnimAdd('singLEFT', 'Darnell pose right'); // naming is reversed for left/right for darnell!
 				quickAnimAdd('laugh', 'darnell laugh');
 
 				// temp

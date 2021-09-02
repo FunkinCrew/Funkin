@@ -33,6 +33,7 @@ import openfl.utils.ByteArray;
 
 using StringTools;
 
+// add in "compiler save" that saves the JSON directly to the debug json using File.write() stuff on windows / sys
 class ChartingState extends MusicBeatState
 {
 	var _file:FileReference;
