@@ -204,6 +204,11 @@ class ChartingState extends MusicBeatState
 			saveLevel();
 		});
 
+		var saveCompiler:FlxButton = new FlxButton(110, 30, "Save compile", function()
+		{
+			saveLevel(true);
+		});
+
 		var reloadSong:FlxButton = new FlxButton(saveButton.x + saveButton.width + 10, saveButton.y, "Reload Audio", function()
 		{
 			loadSong(_song.song);
@@ -247,6 +252,7 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(check_voices);
 		tab_group_song.add(check_mute_inst);
 		tab_group_song.add(saveButton);
+		tab_group_song.add(saveCompiler);
 		tab_group_song.add(reloadSong);
 		tab_group_song.add(reloadSongJson);
 		tab_group_song.add(loadAutosaveBtn);
@@ -1075,7 +1081,7 @@ class ChartingState extends MusicBeatState
 		FlxG.save.flush();
 	}
 
-	private function saveLevel()
+	private function saveLevel(?debugSavepath:Bool = false)
 	{
 		var json = {
 			"song": _song
@@ -1083,11 +1089,17 @@ class ChartingState extends MusicBeatState
 
 		var data:String = Json.stringify(json);
 
-		#if hl
+		#if sys
 		// quick workaround, since it easier to load into hashlink, thus quicker/nicer to test?
 		// should get this auto-saved into a file or somethin
 		var filename = _song.song.toLowerCase();
-		sys.io.File.saveContent('./$filename.json', data);
+
+		if (debugSavepath)
+		{
+			sys.io.File.saveContent('../../../../assets/preload/data/$filename/$filename.json', data);
+		}
+		else
+			sys.io.File.saveContent('./$filename.json', data);
 		#else
 		if ((data != null) && (data.length > 0))
 		{
