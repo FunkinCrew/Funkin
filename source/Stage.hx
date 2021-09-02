@@ -26,6 +26,38 @@ class Stage
 
 	// All of the above must be set or used in your stage case code block!!
 
+	public var positions:Map<String, Map<String, Array<Int>>> = [
+		'halloween' => [
+			'spooky' => [100, 300],
+			'monster' => [100, 200]
+		],
+		'philly' => [
+			'pico' => [100, 400]
+		],
+		'limo' => [
+			'bf-car' => [1030, 230]
+		],
+		'mall' => [
+			'bf-christmas' => [970, 450],
+			'parents-christmas' => [-400, 100]
+		],
+		'mallEvil' => [
+			'bf-christmas' => [1090, 450],
+			'monster-christmas' => [100, 150]
+		],
+		'school' => [
+			'gf-pixel' => [580, 430],
+			'bf-pixel' => [970, 670],
+			'senpai' => [250, 460],
+			'senpai-angry' => [250, 460]
+		],
+		'schoolEvil' => [
+			'gf-pixel' => [580, 430],
+			'bf-pixel' => [970, 670],
+			'spirit' => [-50, 200]
+		]
+	];
+
     public function new(daStage:String)
     {
         this.curStage = daStage;

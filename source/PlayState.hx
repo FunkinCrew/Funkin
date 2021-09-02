@@ -546,7 +546,7 @@ class PlayState extends MusicBeatState
 				#if debug
 				FlxG.log.warn(["Couldn't load gf: " + gfCheck + ". Loading default gf"]);
 				#end
-				gf = new Character(770, 450, 'gf');
+				gf = new Character(400, 130, 'gf');
 			}
 
 			boyfriend = new Boyfriend(770, 450, SONG.player1);
@@ -570,127 +570,28 @@ class PlayState extends MusicBeatState
 			}
 
 			Stage = new Stage(SONG.stage);
-			trace(Stage.toAdd.length);
-			for (i in Stage.toAdd)
-			{
-				add(i);
-			}
-			if (!PlayStateChangeables.Optimize)
-				for (index => array in Stage.layInFront)
-				{
-					switch (index)
-					{
-						case 0:
-							add(gf);
-							gf.scrollFactor.set(0.95, 0.95);
-							for (bg in array)
-								add(bg);
-						case 1:
-							add(dad);
-							for (bg in array)
-								add(bg);
-						case 2:
-							add(boyfriend);
-							for (bg in array)
-								add(bg);
-					}
-				}
-
-			camPos = new FlxPoint(dad.getGraphicMidpoint().x, dad.getGraphicMidpoint().y);
-
-			switch (dad.curCharacter)
-			{
-				case 'gf':
-					dad.setPosition(gf.x, gf.y);
-					gf.visible = false;
-					if (isStoryMode)
-					{
-						camPos.x += 600;
-						tweenCamIn();
-					}
-
-				case "spooky":
-					dad.y += 200;
-				case "monster":
-					dad.y += 100;
-				case 'monster-christmas':
-					dad.y += 130;
-				case 'dad':
-					camPos.x += 400;
-				case 'pico':
-					camPos.x += 600;
-					dad.y += 300;
-				case 'parents-christmas':
-					dad.x -= 500;
-				case 'senpai':
-					dad.x += 150;
-					dad.y += 360;
-					camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
-				case 'senpai-angry':
-					dad.x += 150;
-					dad.y += 360;
-					camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
-				case 'spirit':
-					if (FlxG.save.data.distractions)
-					{
-						// trailArea.scrollFactor.set();
-						if (!PlayStateChangeables.Optimize)
-						{
-							var evilTrail = new FlxTrail(dad, null, 4, 24, 0.3, 0.069);
-							// evilTrail.changeValuesEnabled(false, false, false, false);
-							// evilTrail.changeGraphic()
-							add(evilTrail);
-						}
-						// evilTrail.scrollFactor.set(1.1, 1.1);
-					}
-
-					dad.x -= 150;
-					dad.y += 100;
-					camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
-			}
-
-			// REPOSITIONING PER STAGE
-			if (!PlayStateChangeables.Optimize)
-				switch (Stage.curStage)
-				{
-					case 'limo':
-						boyfriend.y -= 220;
-						boyfriend.x += 260;
-						if (FlxG.save.data.distractions)
-						{
-							resetFastCar();
-						}
-
-					case 'mall':
-						boyfriend.x += 200;
-
-					case 'mallEvil':
-						boyfriend.x += 320;
-						dad.y -= 80;
-					case 'school':
-						boyfriend.x += 200;
-						boyfriend.y += 220;
-						gf.x += 180;
-						gf.y += 300;
-					case 'schoolEvil':
-						boyfriend.x += 200;
-						boyfriend.y += 220;
-						gf.x += 180;
-						gf.y += 300;
-				}
 		}
-		else
+
+		var positions = Stage.positions[Stage.curStage];
+		if (positions != null && !stageTesting)
 		{
-			for (i in Stage.toAdd)
-			{
-				add(i);
-			}
+			for (char => pos in positions)
+				for (person in [boyfriend, gf, dad])
+					if (person.curCharacter == char)
+						person.setPosition(pos[0], pos[1]);
+		}
+		for (i in Stage.toAdd)
+		{
+			add(i);
+		}
+		if (!PlayStateChangeables.Optimize)
 			for (index => array in Stage.layInFront)
 			{
 				switch (index)
 				{
 					case 0:
 						add(gf);
+						gf.scrollFactor.set(0.95, 0.95);
 						for (bg in array)
 							add(bg);
 					case 1:
@@ -704,42 +605,54 @@ class PlayState extends MusicBeatState
 				}
 			}
 
-			camPos = new FlxPoint(dad.getGraphicMidpoint().x, dad.getGraphicMidpoint().y);
+		camPos = new FlxPoint(dad.getGraphicMidpoint().x, dad.getGraphicMidpoint().y);
 
-			switch (dad.curCharacter)
-			{
-				case 'gf':
+		switch (dad.curCharacter)
+		{
+			case 'gf':
+				if (!stageTesting)
 					dad.setPosition(gf.x, gf.y);
-					gf.visible = false;
-					if (isStoryMode)
-					{
-						camPos.x += 600;
-						tweenCamIn();
-					}
-				case 'dad':
-					camPos.x += 400;
-				case 'pico':
+				gf.visible = false;
+				if (isStoryMode)
+				{
 					camPos.x += 600;
-				case 'senpai':
-					camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
-				case 'senpai-angry':
-					camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
-				case 'spirit':
+					tweenCamIn();
+				}
+			case 'dad':
+				camPos.x += 400;
+			case 'pico':
+				camPos.x += 600;
+			case 'senpai':
+				camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
+			case 'senpai-angry':
+				camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
+			case 'spirit':
+				if (FlxG.save.data.distractions)
+				{
+					// trailArea.scrollFactor.set();
+					if (!PlayStateChangeables.Optimize)
+					{
+						var evilTrail = new FlxTrail(dad, null, 4, 24, 0.3, 0.069);
+						// evilTrail.changeValuesEnabled(false, false, false, false);
+						// evilTrail.changeGraphic()
+						add(evilTrail);
+					}
+					// evilTrail.scrollFactor.set(1.1, 1.1);
+				}
+
+				camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
+		}
+
+		// Reset things here
+		if (!PlayStateChangeables.Optimize)
+			switch (Stage.curStage)
+			{
+				case 'limo':
 					if (FlxG.save.data.distractions)
 					{
-						// trailArea.scrollFactor.set();
-						if (!PlayStateChangeables.Optimize)
-						{
-							var evilTrail = new FlxTrail(dad, null, 4, 24, 0.3, 0.069);
-							// evilTrail.changeValuesEnabled(false, false, false, false);
-							// evilTrail.changeGraphic()
-							add(evilTrail);
-						}
-						// evilTrail.scrollFactor.set(1.1, 1.1);
+						resetFastCar();
 					}
-					camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
 			}
-		}
 
 		if (loadRep)
 		{
