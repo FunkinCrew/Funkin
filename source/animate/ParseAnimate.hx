@@ -87,13 +87,20 @@ class ParseAnimate
 	 */
 	public static var depthTypeBeat:String = "";
 
-	public static var frameList:Array<Array<String>> = [];
+	public static var frameList:Array<Array<VALIDFRAME>> = [];
 	public static var matrixMap:Map<String, Array<Array<Float>>> = new Map();
 	public static var trpMap:Map<String, Array<Array<Float>>> = new Map();
 	public static var theRoots:Map<String, String> = new Map();
 
 	// for loop stuf
-	public static var matrixHelp:Array<Array<Float>> = [];
+
+	/**
+	 * Similar to frameList, keeps track of shit according to framess?
+	 * That amount of arrays within arrays is fuckin dumb
+	 * but innermost array is basically just x and y value, cuz im dum
+	 */
+	public static var matrixHelp:Array<Array<Array<Float>>> = [];
+
 	public static var trpHelpIDK:Array<Array<Float>> = [];
 
 	public static var loopedFrameShit:Int = 0;
@@ -102,6 +109,8 @@ class ParseAnimate
 	{
 		frameList = [];
 		frameList.push([]);
+		matrixHelp = [];
+		matrixHelp.push([]);
 		matrixMap.clear();
 		theRoots.clear();
 		trpMap.clear();
@@ -130,15 +139,15 @@ class ParseAnimate
 				frameInput = 0;
 
 			var oldFrm:Int = frameInput;
+			/* 
+				if (curLoopType == "SF")
+				{
+					trace(layer.LN);
 
-			if (curLoopType == "SF")
-			{
-				trace(layer.LN);
-
-				trace(frameArray);
-				trace(frameInput);
-				trace(curLoopType);
-			}
+					trace(frameArray);
+					trace(frameInput);
+					trace(curLoopType);
+			}*/
 
 			if (curLoopType == "LP")
 				frameInput = frameArray[frameInput % frameArray.length];
@@ -159,16 +168,23 @@ class ParseAnimate
 			{
 				if (Reflect.hasField(element, "ASI"))
 				{
-					frameList[frameList.length - 1].push(element.ASI.N);
-					matrixHelp.push(element.ASI.M3D);
-					matrixMap.set(element.ASI.N, matrixHelp);
+					matrixHelp[matrixHelp.length - 1].push(element.ASI.M3D);
+					// matrixMap.set(element.ASI.N, matrixHelp);
+
+					frameList[frameList.length - 1].push({
+						frameName: element.ASI.N,
+						M3D: element.ASI.M3D,
+						depthString: depthTypeBeat,
+						matrixArray: matrixHelp[matrixHelp.length - 1],
+						randomLol: FlxG.random.int(0, 100)
+					});
 
 					trpMap.set(element.ASI.N, trpHelpIDK);
 
 					// flips the matrix once?? I cant remember exactly why it needs to be flipped
-					matrixMap.get(element.ASI.N).reverse();
+					// matrixMap[matrixHelp.length - 1].reverse();
+					// matrixHelp[matrixHelp.length - 1].reverse();
 
-					matrixHelp = [];
 					trpHelpIDK = [];
 
 					theRoots.set(element.ASI.N, depthTypeBeat);
@@ -179,7 +195,7 @@ class ParseAnimate
 				}
 				else
 				{
-					matrixHelp.push(element.SI.M3D);
+					matrixHelp[matrixHelp.length - 1].push(element.SI.M3D);
 					trpHelpIDK.push([element.SI.TRP.x, element.SI.TRP.y]);
 					depthTypeBeat += "->" + element.SI.SN;
 					curLoopType = element.SI.LP;
@@ -189,7 +205,7 @@ class ParseAnimate
 					// JANKY FIX, MAY NOT ACCOUNT FOR ALL SCENARIOS!
 					if (curLoopType == "SF")
 					{
-						trace("LOOP SHIT: " + inputFrame);
+						// trace("LOOP SHIT: " + inputFrame);
 						loopedFrameShit = inputFrame;
 					}
 
@@ -198,10 +214,20 @@ class ParseAnimate
 			}
 
 			frameList.push([]);
+			matrixHelp.push([]);
 		}
 
 		frameList.reverse();
 	}
+}
+
+typedef VALIDFRAME =
+{
+	frameName:String,
+	M3D:Array<Float>,
+	depthString:String,
+	matrixArray:Array<Array<Float>>,
+	?randomLol:Float
 }
 
 typedef AnimJson =
@@ -260,17 +286,13 @@ typedef SymbolInstance =
 {
 	SN:String,
 
-	/**Symbol type, prob either G (graphic), or movie clip?*/
-	ST:String,
+	/**Symbol type, prob either G (graphic), or movie clip?*/ ST:String,
 
-	/**First frame*/
-	FF:Int,
+	/**First frame*/ FF:Int,
 
-	/**Loop type, loop ping pong, etc.*/
-	LP:String,
+	/**Loop type, loop ping pong, etc.*/ LP:String,
 
-	/**3D matrix*/
-	M3D:Array<Float>,
+	/**3D matrix*/ M3D:Array<Float>,
 
 	TRP:
 	{

@@ -29,7 +29,7 @@ class FlxAnimate extends FlxSymbol
 	{
 		super(x, y);
 
-		var folder:String = "tightBarsLol";
+		var folder:String = "tightestBars";
 
 		frames = FlxAnimate.fromAnimate(Paths.file('images/' + folder + "/spritemap1.png"), Paths.file('images/$folder/spritemap1.json'));
 
@@ -66,6 +66,10 @@ class FlxAnimate extends FlxSymbol
 	// go thru animate file to see how it should all be ordered
 	// per frame symbol stuff to fix lip sync (in ParseAnimate?)
 	// definitely need to dig through Animate.json stuff
+	// something with TRP stuff, look through tighterBars (GF scene)
+	// redo map stuff incase there's multiple assets
+	// ONE CENTRAL THING FOR THIS DUMBASS BULLSHIT
+	// sorted framelist put it all in there, then make i actually mean something
 
 	function actualFrameRender()
 	{
@@ -75,12 +79,16 @@ class FlxAnimate extends FlxSymbol
 			{
 				var spr:FlxSymbol = new FlxSymbol(0, 0); // redo this to recycle from a list later
 				spr.frames = frames;
-				spr.frame = spr.frames.getByName(i);
+				spr.frame = spr.frames.getByName(i.frameName); // this one is fine
 
 				if (FlxG.keys.justPressed.I)
-					trace(ParseAnimate.theRoots.get(i) + ": " + i);
+				{
+					trace(i.frameName);
+					trace(i.depthString);
+					trace("random lol: " + i.randomLol);
+				}
 
-				for (swagMatrix in ParseAnimate.matrixMap.get(i))
+				for (swagMatrix in i.matrixArray)
 				{
 					var alsoSwag:FlxMatrix = new FlxMatrix(swagMatrix[0], swagMatrix[1], swagMatrix[4], swagMatrix[5], swagMatrix[12], swagMatrix[13]);
 					spr.matrixExposed = true;
