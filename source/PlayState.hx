@@ -838,27 +838,9 @@ class PlayState extends MusicBeatState
 			'health', 0, 2);
 		healthBar.scrollFactor.set();
 		if(FlxG.save.data.colour)
-        {
-         switch (SONG.player2)
-           {
-             case 'gf':
-             healthBar.createFilledBar(0xFFFF0000, 0xFF0097C4);
-             case 'dad' | 'mom-car' | 'parents-christmas':
-             healthBar.createFilledBar(0xFF5A07F5, 0xFF0097C4);
-             case 'spooky':
-              healthBar.createFilledBar(0xFFF57E07, 0xFF0097C4);
-             case 'monster-christmas' | 'monster':
-              healthBar.createFilledBar(0xFFF5DD07, 0xFF0097C4);
-             case 'pico':
-              healthBar.createFilledBar(0xFF52B514, 0xFF0097C4);
-             case 'senpai' | 'senpai-angry':
-              healthBar.createFilledBar(0xFFF76D6D, 0xFF0097C4);
-             case 'spirit':
-              healthBar.createFilledBar(0xFFAD0505, 0xFF0097C4);
-            }
-        }
+			healthBar.createFilledBar(dad.barColor, boyfriend.barColor);
         else
-         healthBar.createFilledBar(0xFFFF0000, 0xFF66FF33);
+         	healthBar.createFilledBar(0xFFFF0000, 0xFF66FF33);
         // healthBar
 		add(healthBar);
 

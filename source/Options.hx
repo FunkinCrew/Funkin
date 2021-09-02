@@ -283,7 +283,7 @@ class Colour extends Option
 
 	private override function updateDisplay():String
 	{
-		return "Color Health Bar By Character " + (!FlxG.save.data.colour ? "off" : "on");
+		return FlxG.save.data.colour ? "Character Colored HP Bars" : "Normal HP Bars";
 	}
 }
 
