@@ -26,7 +26,7 @@ class Stage
 
 	// All of the above must be set or used in your stage case code block!!
 
-	public var positions:Map<String, Map<String, Array<Int>>> = [
+	public var positions:Map<String, Map<String, Array<Int>>> = [ // Assign your characters positions on stage here!
 		'halloween' => [
 			'spooky' => [100, 300],
 			'monster' => [100, 200]
