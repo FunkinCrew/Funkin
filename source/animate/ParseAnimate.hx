@@ -96,6 +96,8 @@ class ParseAnimate
 	public static var matrixHelp:Array<Array<Float>> = [];
 	public static var trpHelpIDK:Array<Array<Float>> = [];
 
+	public static var loopedFrameShit:Int = 0;
+
 	public static function resetFrameList()
 	{
 		frameList = [];
@@ -127,10 +129,29 @@ class ParseAnimate
 			if (frameInput == null)
 				frameInput = 0;
 
+			var oldFrm:Int = frameInput;
+
+			if (curLoopType == "SF")
+			{
+				trace(layer.LN);
+
+				trace(frameArray);
+				trace(frameInput);
+				trace(curLoopType);
+			}
+
 			if (curLoopType == "LP")
 				frameInput = frameArray[frameInput % frameArray.length];
+			else if (curLoopType == "SF")
+			{
+				frameInput = frameArray[loopedFrameShit];
+
+				// see what happens when something has more than 2 layer?
+			}
 			else
 				frameInput = frameArray[frameInput];
+
+			// trace(frameMap.get(frameInput));
 
 			var frame:Frame = frameMap.get(frameInput);
 
@@ -154,6 +175,7 @@ class ParseAnimate
 
 					depthTypeBeat = "";
 					curLoopType = "";
+					loopedFrameShit = 0;
 				}
 				else
 				{
@@ -161,7 +183,17 @@ class ParseAnimate
 					trpHelpIDK.push([element.SI.TRP.x, element.SI.TRP.y]);
 					depthTypeBeat += "->" + element.SI.SN;
 					curLoopType = element.SI.LP;
-					parseTimeline(symbolMap.get(element.SI.SN).TL, tabbed + 1, element.SI.FF);
+
+					var inputFrame:Int = element.SI.FF;
+
+					// JANKY FIX, MAY NOT ACCOUNT FOR ALL SCENARIOS!
+					if (curLoopType == "SF")
+					{
+						trace("LOOP SHIT: " + inputFrame);
+						loopedFrameShit = inputFrame;
+					}
+
+					parseTimeline(symbolMap.get(element.SI.SN).TL, tabbed + 1, inputFrame);
 				}
 			}
 

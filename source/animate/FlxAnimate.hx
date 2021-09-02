@@ -64,6 +64,8 @@ class FlxAnimate extends FlxSymbol
 	// fix render order of ALL layers!
 	// seperate frameList into layers
 	// go thru animate file to see how it should all be ordered
+	// per frame symbol stuff to fix lip sync (in ParseAnimate?)
+	// definitely need to dig through Animate.json stuff
 
 	function actualFrameRender()
 	{
