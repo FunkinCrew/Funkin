@@ -23,10 +23,6 @@ class FlxAnimate extends FlxSymbol
 {
 	// var myAnim:Animation;
 	// var animBitmap:BitmapData;
-	var loadedQueue:Bool = false;
-
-	var swagFrames:Array<BitmapData> = [];
-
 	var jsonAnim:AnimJson;
 
 	public function new(x:Float, y:Float)
@@ -39,6 +35,7 @@ class FlxAnimate extends FlxSymbol
 
 		jsonAnim = cast CoolUtil.coolJSON(Assets.getText(Paths.file('images/$folder/Animation.json')));
 		ParseAnimate.generateSymbolmap(jsonAnim.SD.S);
+		ParseAnimate.resetFrameList();
 		ParseAnimate.parseTimeline(jsonAnim.AN.TL, 0, 0);
 
 		/* var folder:String = 'tightestBars';
@@ -64,43 +61,49 @@ class FlxAnimate extends FlxSymbol
 		actualFrameRender();
 	}
 
+	// fix render order of ALL layers!
+	// seperate frameList into layers
+	// go thru animate file to see how it should all be ordered
+
 	function actualFrameRender()
 	{
-		for (i in ParseAnimate.frameList)
+		for (frameSorted in ParseAnimate.frameList)
 		{
-			var spr:FlxSymbol = new FlxSymbol(0, 0); // redo this to recycle from a list later
-			spr.frames = frames;
-			spr.frame = spr.frames.getByName(i);
-
-			if (FlxG.keys.justPressed.I)
+			for (i in frameSorted)
 			{
-				trace('\n\n\nSPR OLD: ' + spr._matrix);
-			}
-
-			ParseAnimate.matrixMap.get(i).reverse();
-
-			for (swagMatrix in ParseAnimate.matrixMap.get(i))
-			{
-				var alsoSwag:FlxMatrix = new FlxMatrix(swagMatrix[0], swagMatrix[1], swagMatrix[4], swagMatrix[5], swagMatrix[12], swagMatrix[13]);
-				spr.matrixExposed = true;
-
-				spr.transformMatrix.concat(alsoSwag);
+				var spr:FlxSymbol = new FlxSymbol(0, 0); // redo this to recycle from a list later
+				spr.frames = frames;
+				spr.frame = spr.frames.getByName(i);
 
 				if (FlxG.keys.justPressed.I)
+					trace(ParseAnimate.theRoots.get(i) + ": " + i);
+
+				for (swagMatrix in ParseAnimate.matrixMap.get(i))
 				{
-					trace(i + ": " + swagMatrix);
+					var alsoSwag:FlxMatrix = new FlxMatrix(swagMatrix[0], swagMatrix[1], swagMatrix[4], swagMatrix[5], swagMatrix[12], swagMatrix[13]);
+					spr.matrixExposed = true;
+					spr.transformMatrix.concat(alsoSwag);
 				}
+
+				spr.alpha = 0.3;
+				spr.origin.set();
+				spr.antialiasing = true;
+				// spr.alpha = 0.5;
+				spr.draw();
+
+				/* 	if (i == "0225")
+					{
+						trace('FUNNY MATRIX!');
+						trace(spr._matrix);
+						trace("\n\n MATRIX MAP");
+						for (m in ParseAnimate.matrixMap.get("0225"))
+						{
+							trace(m);
+						}
+
+						trace('\n\n');
+				}*/
 			}
-
-			if (FlxG.keys.justPressed.I)
-			{
-				trace('SPR NEW: ' + spr._matrix);
-			}
-
-			// trace('MATRIX ' + spr._matrix);
-			// spr
-
-			spr.draw();
 		}
 	}
 

@@ -87,16 +87,22 @@ class ParseAnimate
 	 */
 	public static var depthTypeBeat:String = "";
 
-	public static var frameList:Array<String> = [];
+	public static var frameList:Array<Array<String>> = [];
 	public static var matrixMap:Map<String, Array<Array<Float>>> = new Map();
+	public static var trpMap:Map<String, Array<Array<Float>>> = new Map();
+	public static var theRoots:Map<String, String> = new Map();
 
 	// for loop stuf
 	public static var matrixHelp:Array<Array<Float>> = [];
+	public static var trpHelpIDK:Array<Array<Float>> = [];
 
 	public static function resetFrameList()
 	{
 		frameList = [];
+		frameList.push([]);
 		matrixMap.clear();
+		theRoots.clear();
+		trpMap.clear();
 	}
 
 	public static function parseTimeline(TL:Timeline, tabbed:Int = 0, ?frameInput:Int)
@@ -132,11 +138,19 @@ class ParseAnimate
 			{
 				if (Reflect.hasField(element, "ASI"))
 				{
-					frameList.push(element.ASI.N);
+					frameList[frameList.length - 1].push(element.ASI.N);
 					matrixHelp.push(element.ASI.M3D);
 					matrixMap.set(element.ASI.N, matrixHelp);
 
+					trpMap.set(element.ASI.N, trpHelpIDK);
+
+					// flips the matrix once?? I cant remember exactly why it needs to be flipped
+					matrixMap.get(element.ASI.N).reverse();
+
 					matrixHelp = [];
+					trpHelpIDK = [];
+
+					theRoots.set(element.ASI.N, depthTypeBeat);
 
 					depthTypeBeat = "";
 					curLoopType = "";
@@ -144,12 +158,17 @@ class ParseAnimate
 				else
 				{
 					matrixHelp.push(element.SI.M3D);
+					trpHelpIDK.push([element.SI.TRP.x, element.SI.TRP.y]);
 					depthTypeBeat += "->" + element.SI.SN;
 					curLoopType = element.SI.LP;
 					parseTimeline(symbolMap.get(element.SI.SN).TL, tabbed + 1, element.SI.FF);
 				}
 			}
+
+			frameList.push([]);
 		}
+
+		frameList.reverse();
 	}
 }
 

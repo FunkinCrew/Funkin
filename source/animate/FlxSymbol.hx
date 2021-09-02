@@ -49,6 +49,11 @@ class FlxSymbol extends FlxSprite
 
 	public var daFrame:Int = 0;
 
+	override function update(elapsed:Float)
+	{
+		super.update(elapsed);
+	}
+
 	public var transformMatrix:Matrix = new Matrix();
 
 	function renderFrame(TL:Timeline, ?traceShit:Bool = false)
