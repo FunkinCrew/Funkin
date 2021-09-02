@@ -4591,7 +4591,7 @@ class PlayState extends MusicBeatState
 				if (idleToBeat && !dad.animation.curAnim.name.startsWith('sing'))
 					dad.dance(forcedToIdle, currentSection.CPUAltAnim);
 				if (idleToBeat && !boyfriend.animation.curAnim.name.startsWith('sing'))
-					boyfriend.dance(forcedToIdle);
+					boyfriend.dance(forcedToIdle, currentSection.playerAltAnim);
 			}
 			else if (dad.curCharacter == 'spooky' || dad.curCharacter == 'gf')
 				dad.dance(forcedToIdle, currentSection.CPUAltAnim);
