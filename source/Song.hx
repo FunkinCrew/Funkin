@@ -228,6 +228,6 @@ class Song
 				section.CPUAltAnim = section.altAnim;
 		}
 
-		return swagShit;
+		return Song.conversionChecks(swagShit);
 	}
 }
