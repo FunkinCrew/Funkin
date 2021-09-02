@@ -164,6 +164,7 @@ class ParseAnimate
 				frameInput = frameArray[loopedFrameShit];
 
 				// see what happens when something has more than 2 layer?
+				// single frame stuff isn't fully implemented
 			}
 			else
 				frameInput = frameArray[frameInput];
@@ -209,7 +210,7 @@ class ParseAnimate
 
 					var inputFrame:Int = element.SI.FF;
 
-					// JANKY FIX, MAY NOT ACCOUNT FOR ALL SCENARIOS!
+					// JANKY FIX, MAY NOT ACCOUNT FOR ALL SCENARIOS OF SINGLE FRAME ANIMATIONS!!
 					if (curLoopType == "SF")
 					{
 						// trace("LOOP SHIT: " + inputFrame);

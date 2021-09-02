@@ -1096,6 +1096,8 @@ class ChartingState extends MusicBeatState
 
 		if (debugSavepath)
 		{
+			// file path to assumingly your assets folder in your SOURCE CODE assets folder!!!
+			// update this later so the save button ONLY appears when you compile in debug mode!
 			sys.io.File.saveContent('../../../../assets/preload/data/$filename/$filename.json', data);
 		}
 		else

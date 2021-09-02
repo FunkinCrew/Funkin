@@ -54,6 +54,7 @@ class FlxAnimate extends FlxSymbol
 	override function draw()
 	{
 		// having this commented out fixes some wacky scaling bullshit?
+		// or fixes drawing it twice?
 		// super.draw();
 
 		// renderFrame(coolParse.AN.TL, coolParse, true);
@@ -85,7 +86,7 @@ class FlxAnimate extends FlxSymbol
 				{
 					trace(i.frameName);
 					trace(i.depthString);
-					trace("random lol: " + i.randomLol);
+					// trace("random lol: " + i.randomLol);
 				}
 
 				for (swagMatrix in i.matrixArray)
@@ -157,6 +158,9 @@ class FlxAnimate extends FlxSymbol
 			changeFrame(-1);
 	}
 
+	/**
+	 * PARSES THE 'spritemap1.png' or whatever into a FlxAtlasFrames!!!
+	 */
 	public static function fromAnimate(Source:FlxGraphicAsset, Description:String):FlxAtlasFrames
 	{
 		var graphic:FlxGraphic = FlxG.bitmap.add(Source);
@@ -207,6 +211,7 @@ class FlxAnimate extends FlxSymbol
 	}
 }
 
+// handy json function that has some hashlink fix, see the thing in CoolUtils file to see the link / where i stole it from
 class JaySon
 {
 	public static function parseFile(name:String)
