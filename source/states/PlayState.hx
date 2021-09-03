@@ -1028,7 +1028,7 @@ class PlayState extends MusicBeatState
 				enemyStrums.add(babyArrow);
 
 			babyArrow.animation.play('static');
-			babyArrow.x += 100 - ((SONG.keyCount - 4) * 16);
+			babyArrow.x += 100 - ((SONG.keyCount - 4) * 16) + (SONG.keyCount == 10 ? 30 : 0);
 			babyArrow.x += ((FlxG.width / 2) * player);
 
 			strumLineNotes.add(babyArrow);
@@ -1702,7 +1702,7 @@ class PlayState extends MusicBeatState
 
 				if (daNote.isSustainNote)
 				{
-					daNote.x += daNote.width / 2 + (20 - (1.5 * (SONG.keyCount - 4)));
+					daNote.x += daNote.width / 2 + (20 - (1.2 * (SONG.keyCount - 4)));
 
 					if (PlayState.SONG.stage.contains('school'))
 						daNote.x -= (11 - (1 * (SONG.keyCount - 4)));
