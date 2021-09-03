@@ -1911,7 +1911,7 @@ class PlayState extends MusicBeatState
 				health += 0.005;
 				hitNotes += 0.3;
 			case 'shit':
-				health -= 0.04;
+				health -= 0.07;
 		}
 
 		/*
@@ -2280,7 +2280,7 @@ class PlayState extends MusicBeatState
 
 		if(canMiss)
 		{
-			health -= 0.04;
+			health -= 0.07;
 			if (combo > 5 && gf.animOffsets.exists('sad'))
 			{
 				gf.playAnim('sad');
