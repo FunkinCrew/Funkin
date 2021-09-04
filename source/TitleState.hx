@@ -292,14 +292,14 @@ class TitleState extends MusicBeatState
 
 				var version:String = "v" + Application.current.meta.get('version');
 
-				if (version.trim() != NGio.GAME_VER_NUMS.trim() && !OutdatedSubState.leftState)
+				if (version.trim() != NGio.GAME_VER.trim() && !OutdatedSubState.leftState) // instead of NGio.GAME_VER_NUMS https://github.com/ninjamuffin99/Funkin/pull/941
 				{
 					FlxG.switchState(new OutdatedSubState());
 					trace('OLD VERSION!');
 					trace('old ver');
 					trace(version.trim());
 					trace('cur ver');
-					trace(NGio.GAME_VER_NUMS.trim());
+					trace(NGio.GAME_VER.trim()); // instead of NGio.GAME_VER_NUMS
 				}
 				else
 				{
