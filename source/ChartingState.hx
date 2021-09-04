@@ -1867,6 +1867,14 @@ class ChartingState extends MusicBeatState
 					{
 						note.active = false;
 						note.visible = false;
+						if (note.sustainLength > 0)
+							{
+								if (note.noteCharterObject != null)
+								{
+									note.noteCharterObject.active = false;
+									note.noteCharterObject.visible = false;
+								}
+							}
 					}
 				}	
 
