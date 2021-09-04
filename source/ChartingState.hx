@@ -1302,6 +1302,15 @@ class ChartingState extends MusicBeatState
 			if (!PlayState.isSM)
 			vocals.stop();
 			PlayState.startTime = _song.notes[curSection].startTime;
+			while (curRenderedNotes.members.length > 0)
+				{
+					curRenderedNotes.remove(curRenderedNotes.members[0], true);
+				}
+		
+				while (curRenderedSustains.members.length > 0)
+				{
+					curRenderedSustains.remove(curRenderedSustains.members[0], true);
+				}
 			LoadingState.loadAndSwitchState(new PlayState());
 		});
 
@@ -2495,6 +2504,16 @@ class ChartingState extends MusicBeatState
 			FlxG.sound.music.stop();
 			if (!PlayState.isSM)
 			vocals.stop();
+
+			while (curRenderedNotes.members.length > 0)
+				{
+					curRenderedNotes.remove(curRenderedNotes.members[0], true);
+				}
+		
+				while (curRenderedSustains.members.length > 0)
+				{
+					curRenderedSustains.remove(curRenderedSustains.members[0], true);
+				}
 			LoadingState.loadAndSwitchState(new PlayState());
 		}
 
@@ -3357,12 +3376,42 @@ class ChartingState extends MusicBeatState
 			case 'M.I.L.F': format = 'Milf';
 		}
 		PlayState.SONG = Song.loadFromJson(format + difficultyArray[PlayState.storyDifficulty], format);
+
+		while (curRenderedNotes.members.length > 0)
+			{
+				curRenderedNotes.remove(curRenderedNotes.members[0], true);
+			}
+	
+			while (curRenderedSustains.members.length > 0)
+			{
+				curRenderedSustains.remove(curRenderedSustains.members[0], true);
+			}
+
 		LoadingState.loadAndSwitchState(new ChartingState());
 	}
 
 	function loadAutosave():Void
 	{
+		while (curRenderedNotes.members.length > 0)
+			{
+				curRenderedNotes.remove(curRenderedNotes.members[0], true);
+			}
+	
+			while (curRenderedSustains.members.length > 0)
+			{
+				curRenderedSustains.remove(curRenderedSustains.members[0], true);
+			}
+
 		PlayState.SONG = Song.parseJSONshit(FlxG.save.data.autosave);
+		while (curRenderedNotes.members.length > 0)
+			{
+				curRenderedNotes.remove(curRenderedNotes.members[0], true);
+			}
+	
+			while (curRenderedSustains.members.length > 0)
+			{
+				curRenderedSustains.remove(curRenderedSustains.members[0], true);
+			}
 		LoadingState.loadAndSwitchState(new ChartingState());
 	}
 
