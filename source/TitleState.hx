@@ -50,6 +50,11 @@ class TitleState extends MusicBeatState
 
 	override public function create():Void
 	{
+		// Check if mod compatable
+		#if !cpp
+		FlxG.switchState(new Disclaimer());
+		#end
+		
 		#if polymod
 		polymod.Polymod.init({modRoot: "mods", dirs: ['introMod']});
 		#end
