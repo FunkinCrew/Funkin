@@ -1,5 +1,7 @@
 package states;
 
+import modding.PolymodHandler;
+import modding.ModList;
 import utilities.SaveData;
 import utilities.MusicUtilities;
 import utilities.CoolUtil;
@@ -54,20 +56,11 @@ class TitleState extends MusicBeatState
 
 	override public function create():Void
 	{
-		#if desktop
-		var mods = CoolUtil.coolTextFile(Paths.txt("modList"));
-
-		Polymod.init({
-			modRoot:"mods/",
-			dirs: mods,
-			errorCallback: function(error:PolymodError)
-			{
-				trace(error.message);
-			}
-		});
-		#end
-
 		SaveData.init();
+
+		#if desktop
+		PolymodHandler.loadMods();
+		#end
 
 		curWacky = FlxG.random.getObject(getIntroTextShit());
 		super.create();

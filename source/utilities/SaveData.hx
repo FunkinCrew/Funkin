@@ -1,5 +1,6 @@
 package utilities;
 
+import modding.ModList;
 import game.Conductor;
 import flixel.FlxG;
 import game.Highscore;
@@ -45,6 +46,7 @@ class SaveData {
         PlayerSettings.player1.controls.loadKeyBinds();
         
         Highscore.load();
+        ModList.load();
 
         FlxG.save.flush();
     }
