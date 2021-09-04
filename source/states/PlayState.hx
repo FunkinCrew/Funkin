@@ -2280,21 +2280,27 @@ class PlayState extends MusicBeatState
 
 		if(canMiss)
 		{
-			health -= 0.07;
+			if(!note.isSustainNote)
+				health -= 0.07;
+			else
+				health -= 0.035;
+
 			if (combo > 5 && gf.animOffsets.exists('sad'))
-			{
 				gf.playAnim('sad');
-			}
+
 			combo = 0;
-			misses++;
-			totalNotes++;
 	
 			if (FlxG.save.data.nohit)
 				health = 0;
-	
-			songScore -= 10;
-	
-			missSounds[FlxG.random.int(0, missSounds.length - 1)].play(true);
+
+			if(!note.isSustainNote)
+			{
+				misses++;
+				totalNotes++;
+
+				songScore -= 10;
+				missSounds[FlxG.random.int(0, missSounds.length - 1)].play(true);
+			}
 	
 			boyfriend.stunned = true;
 	
@@ -2321,13 +2327,9 @@ class PlayState extends MusicBeatState
 			{
 				popUpScore(note.strumTime, note.noteData % SONG.keyCount);
 				combo += 1;
+				totalNotes++;
 			} else
-			{
-				hitNotes++;
 				health += 0.035;
-			}
-
-			totalNotes++;
 
 			boyfriend.playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][Std.int(Math.abs(note.noteData))], true);
 
