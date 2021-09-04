@@ -1311,6 +1311,11 @@ class ChartingState extends MusicBeatState
 				{
 					curRenderedSustains.remove(curRenderedSustains.members[0], true);
 				}
+
+				while (sectionRenderes.members.length > 0)
+					{
+						sectionRenderes.remove(sectionRenderes.members[0], true);
+					}
 			LoadingState.loadAndSwitchState(new PlayState());
 		});
 
@@ -2514,6 +2519,11 @@ class ChartingState extends MusicBeatState
 				{
 					curRenderedSustains.remove(curRenderedSustains.members[0], true);
 				}
+
+				while (sectionRenderes.members.length > 0)
+					{
+						sectionRenderes.remove(sectionRenderes.members[0], true);
+					}
 			LoadingState.loadAndSwitchState(new PlayState());
 		}
 
@@ -3387,6 +3397,17 @@ class ChartingState extends MusicBeatState
 				curRenderedSustains.remove(curRenderedSustains.members[0], true);
 			}
 
+
+			while (sectionRenderes.members.length > 0)
+			{
+				sectionRenderes.remove(sectionRenderes.members[0], true);
+			}
+
+			while (sectionRenderes.members.length > 0)
+				{
+					sectionRenderes.remove(sectionRenderes.members[0], true);
+				}
+
 		LoadingState.loadAndSwitchState(new ChartingState());
 	}
 
@@ -3412,6 +3433,11 @@ class ChartingState extends MusicBeatState
 			{
 				curRenderedSustains.remove(curRenderedSustains.members[0], true);
 			}
+
+			while (sectionRenderes.members.length > 0)
+				{
+					sectionRenderes.remove(sectionRenderes.members[0], true);
+				}
 		LoadingState.loadAndSwitchState(new ChartingState());
 	}
 
