@@ -496,7 +496,8 @@ class Character extends FlxSprite
 
 				playAnim('idle');
 		}
-
+		if (animOffsets.exists('danceRight'))
+			playAnim('danceRight');
 		dance();
 
 		if (isPlayer)
@@ -559,25 +560,22 @@ class Character extends FlxSprite
 	 */
 	public function dance()
 	{
-		if (!debugMode)
+		if (animOffsets.exists('danceRight'))
 		{
-			if (animOffsets.exists('danceRight'))
+			playAnim('danceRight');
+			if (!animation.curAnim.name.startsWith('hair'))
 			{
-				playAnim('danceRight');
-				if (!animation.curAnim.name.startsWith('hair'))
-				{
-					danced = !danced;
+				danced = !danced;
 
-					if (danced)
-						playAnim('danceRight');
-					else
-						playAnim('danceLeft');
-				}
+				if (danced)
+					playAnim('danceRight');
+				else
+					playAnim('danceLeft');
 			}
-			else
-			{
-				playAnim('idle');
-			}
+		}
+		else
+		{
+			playAnim('idle');
 		}
 	}
 
