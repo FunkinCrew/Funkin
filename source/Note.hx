@@ -17,7 +17,7 @@ class Note extends FlxSprite
 {
 	public var strumTime:Float = 0;
 	public var baseStrum:Float = 0;
-	
+
 	public var charterSelected:Bool = false;
 
 	public var rStrumTime:Float = 0;
@@ -108,8 +108,7 @@ class Note extends FlxSprite
 			#end
 		}
 
-
-		if (this.strumTime < 0 )
+		if (this.strumTime < 0)
 			this.strumTime = 0;
 
 		if (!inCharter)
@@ -119,7 +118,7 @@ class Note extends FlxSprite
 
 		var daStage:String = PlayState.Stage.curStage;
 
-		//defaults if no noteStyle was found in chart
+		// defaults if no noteStyle was found in chart
 		var noteTypeCheck:String = 'normal';
 
 		if (inCharter)
@@ -139,10 +138,19 @@ class Note extends FlxSprite
 		}
 		else
 		{
-			if (PlayState.SONG.noteStyle == null) {
-				switch(PlayState.storyWeek) {case 6: noteTypeCheck = 'pixel';}
-			} else {noteTypeCheck = PlayState.SONG.noteStyle;}
-			
+			if (PlayState.SONG.noteStyle == null)
+			{
+				switch (PlayState.storyWeek)
+				{
+					case 6:
+						noteTypeCheck = 'pixel';
+				}
+			}
+			else
+			{
+				noteTypeCheck = PlayState.SONG.noteStyle;
+			}
+
 			switch (noteTypeCheck)
 			{
 				case 'pixel':
@@ -171,7 +179,7 @@ class Note extends FlxSprite
 
 					setGraphicSize(Std.int(width * 0.7));
 					updateHitbox();
-					
+
 					antialiasing = FlxG.save.data.antialiasing;
 			}
 		}
@@ -201,36 +209,34 @@ class Note extends FlxSprite
 			else if (beatRow % (192 / 32) == 0)
 				col = quantityColor[4];
 
-
 			animation.play(dataColor[col] + 'Scroll');
 			localAngle -= arrowAngles[col];
 			localAngle += arrowAngles[noteData];
 			originAngle = localAngle;
 			originColor = col;
 		}
-		
+
 		// we make sure its downscroll and its a SUSTAIN NOTE (aka a trail, not a note)
 		// and flip it so it doesn't look weird.
 		// THIS DOESN'T FUCKING FLIP THE NOTE, CONTRIBUTERS DON'T JUST COMMENT THIS OUT JESUS
 		// then what is this lol
 		// BRO IT LITERALLY SAYS IT FLIPS IF ITS A TRAIL AND ITS DOWNSCROLL
-		if (FlxG.save.data.downscroll && sustainNote) 
+		if (FlxG.save.data.downscroll && sustainNote)
 			flipY = true;
 
-		
-		var stepHeight = (((0.45 * Conductor.stepCrochet) / (PlayState.songMultiplier < 1 ? PlayState.songMultiplier : 1)) * FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? PlayState.SONG.speed : PlayStateChangeables.scrollSpeed, 2));
-
+		var stepHeight = (((0.45 * Conductor.stepCrochet) / (PlayState.songMultiplier < 1 ? PlayState.songMultiplier : 1)) * FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? PlayState.SONG.speed : PlayStateChangeables.scrollSpeed,
+			2));
 
 		if (isSustainNote && prevNote != null)
 		{
 			noteYOff = Math.round(-stepHeight + swagWidth * 0.5);
-			
+
 			noteScore * 0.2;
 			alpha = 0.6;
 
 			x += width / 2;
 
-			originColor = prevNote.originColor; 
+			originColor = prevNote.originColor;
 			originAngle = prevNote.originAngle;
 
 			animation.play(dataColor[originColor] + 'holdend'); // This works both for normal colors and quantization colors
@@ -238,7 +244,7 @@ class Note extends FlxSprite
 
 			x -= width / 2;
 
-			//if (noteTypeCheck == 'pixel')
+			// if (noteTypeCheck == 'pixel')
 			//	x += 30;
 			if (inCharter)
 				x += 30;
@@ -250,7 +256,7 @@ class Note extends FlxSprite
 
 				prevNote.scale.y *= stepHeight / prevNote.height;
 				prevNote.updateHitbox();
-				
+
 				if (antialiasing)
 					prevNote.scale.y *= 1.0 + (1.0 / prevNote.frameHeight);
 			}
@@ -277,27 +283,27 @@ class Note extends FlxSprite
 		{
 			if (isSustainNote)
 			{
-				if (strumTime - Conductor.songPosition  <= (((166 * Conductor.timeScale) / (PlayState.songMultiplier < 1 ? PlayState.songMultiplier : 1) * 0.5))
-					&& strumTime - Conductor.songPosition  >= (((-166 * Conductor.timeScale) / (PlayState.songMultiplier < 1 ? PlayState.songMultiplier : 1))))
+				if (strumTime - Conductor.songPosition <= (((166 * Conductor.timeScale) / (PlayState.songMultiplier < 1 ? PlayState.songMultiplier : 1) * 0.5))
+					&& strumTime - Conductor.songPosition >= (((-166 * Conductor.timeScale) / (PlayState.songMultiplier < 1 ? PlayState.songMultiplier : 1))))
 					canBeHit = true;
 				else
 					canBeHit = false;
 			}
 			else
 			{
-				if (strumTime - Conductor.songPosition  <= (((166 * Conductor.timeScale) / (PlayState.songMultiplier < 1 ? PlayState.songMultiplier : 1)))
+				if (strumTime - Conductor.songPosition <= (((166 * Conductor.timeScale) / (PlayState.songMultiplier < 1 ? PlayState.songMultiplier : 1)))
 					&& strumTime - Conductor.songPosition >= (((-166 * Conductor.timeScale) / (PlayState.songMultiplier < 1 ? PlayState.songMultiplier : 1))))
 					canBeHit = true;
 				else
 					canBeHit = false;
 			}
 			/*if (strumTime - Conductor.songPosition < (-166 * Conductor.timeScale) && !wasGoodHit)
-				tooLate = true;*/
+				tooLate = true; */
 		}
 		else
 		{
 			canBeHit = false;
-			//if (strumTime <= Conductor.songPosition)
+			// if (strumTime <= Conductor.songPosition)
 			//	wasGoodHit = true;
 		}
 

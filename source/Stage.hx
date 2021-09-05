@@ -26,6 +26,7 @@ class Stage extends MusicBeatState
 	public var slowBacks:Map<Int, Array<FlxSprite>> = []; // Change/add/remove backgrounds mid song! Format: "slowBacks[StepToBeActivated] = [Sprites,To,Be,Changed,Or,Added];"
 	// BGs still must be added by using toAdd Array for them to show in game after slowBacks take effect!!
 
+	// BGs still must be added by using toAdd Array for them to show in game after slowBacks take effect!!
 	// All of the above must be set or used in your stage case code block!!
 
 	public var positions:Map<String, Map<String, Array<Int>>> = [ // Assign your characters positions on stage here!

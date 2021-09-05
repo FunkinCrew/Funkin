@@ -40,16 +40,14 @@ class Caching extends MusicBeatState
 	var text:FlxText;
 	var kadeLogo:FlxSprite;
 
-	public static var bitmapData:Map<String,FlxGraphic>;
+	public static var bitmapData:Map<String, FlxGraphic>;
 
 	var images = [];
 	var music = [];
 	var charts = [];
 
-
 	override function create()
 	{
-
 		FlxG.save.bind('funkin', 'ninjamuffin99');
 
 		PlayerSettings.init();
@@ -58,11 +56,11 @@ class Caching extends MusicBeatState
 
 		FlxG.mouse.visible = false;
 
-		FlxG.worldBounds.set(0,0);
+		FlxG.worldBounds.set(0, 0);
 
-		bitmapData = new Map<String,FlxGraphic>();
+		bitmapData = new Map<String, FlxGraphic>();
 
-		text = new FlxText(FlxG.width / 2, FlxG.height / 2 + 300,0,"Loading...");
+		text = new FlxText(FlxG.width / 2, FlxG.height / 2 + 300, 0, "Loading...");
 		text.size = 34;
 		text.alignment = FlxTextAlign.CENTER;
 		text.alpha = 0;
@@ -73,11 +71,11 @@ class Caching extends MusicBeatState
 		text.y -= kadeLogo.height / 2 - 125;
 		text.x -= 170;
 		kadeLogo.setGraphicSize(Std.int(kadeLogo.width * 0.6));
-		if(FlxG.save.data.antialiasing != null)
+		if (FlxG.save.data.antialiasing != null)
 			kadeLogo.antialiasing = FlxG.save.data.antialiasing;
 		else
 			kadeLogo.antialiasing = true;
-		
+
 		kadeLogo.alpha = 0;
 
 		FlxGraphic.defaultPersist = FlxG.save.data.cacheImages;
@@ -105,7 +103,7 @@ class Caching extends MusicBeatState
 
 		toBeDone = Lambda.count(images) + Lambda.count(music);
 
-		var bar = new FlxBar(10,FlxG.height - 50,FlxBarFillDirection.LEFT_TO_RIGHT,FlxG.width,40,null,"done",0,toBeDone);
+		var bar = new FlxBar(10, FlxG.height - 50, FlxBarFillDirection.LEFT_TO_RIGHT, FlxG.width, 40, null, "done", 0, toBeDone);
 		bar.color = FlxColor.PURPLE;
 
 		add(bar);
@@ -114,27 +112,28 @@ class Caching extends MusicBeatState
 		add(text);
 
 		trace('starting caching..');
-		
+
 		#if cpp
 		// update thread
 
-		sys.thread.Thread.create(() -> {
-			while(!loaded)
+		sys.thread.Thread.create(() ->
+		{
+			while (!loaded)
 			{
 				if (toBeDone != 0 && done != toBeDone)
-					{
-						var alpha = HelperFunctions.truncateFloat(done / toBeDone * 100,2) / 100;
-						kadeLogo.alpha = alpha;
-						text.alpha = alpha;
-						text.text = "Loading... (" + done + "/" + toBeDone + ")";
-					}
+				{
+					var alpha = HelperFunctions.truncateFloat(done / toBeDone * 100, 2) / 100;
+					kadeLogo.alpha = alpha;
+					text.alpha = alpha;
+					text.text = "Loading... (" + done + "/" + toBeDone + ")";
+				}
 			}
-		
 		});
 
 		// cache thread
 
-		sys.thread.Thread.create(() -> {
+		sys.thread.Thread.create(() ->
+		{
 			cache();
 		});
 		#end
@@ -144,11 +143,10 @@ class Caching extends MusicBeatState
 
 	var calledDone = false;
 
-	override function update(elapsed) 
+	override function update(elapsed)
 	{
 		super.update(elapsed);
 	}
-
 
 	function cache()
 	{
@@ -157,13 +155,13 @@ class Caching extends MusicBeatState
 
 		for (i in images)
 		{
-			var replaced = i.replace(".png","");
+			var replaced = i.replace(".png", "");
 			var data:BitmapData = BitmapData.fromFile("assets/shared/images/characters/" + i);
 			trace('id ' + replaced + ' file - assets/shared/images/characters/' + i + ' ${data.width}');
 			var graph = FlxGraphic.fromBitmapData(data);
 			graph.persist = true;
 			graph.destroyOnNoUse = false;
-			bitmapData.set(replaced,graph);
+			bitmapData.set(replaced, graph);
 			done++;
 		}
 
@@ -175,16 +173,13 @@ class Caching extends MusicBeatState
 			done++;
 		}
 
-
 		trace("Finished caching...");
 
 		loaded = true;
 
 		trace(Assets.cache.hasBitmapData('GF_assets'));
-
 		#end
 		FlxG.switchState(new TitleState());
 	}
-
 }
 #end
