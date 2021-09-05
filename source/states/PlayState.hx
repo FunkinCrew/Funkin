@@ -994,11 +994,11 @@ class PlayState extends MusicBeatState
 
 			strumLineNotes.add(babyArrow);
 
-			if(SONG.keyCount != 4)
+			if(SONG.keyCount != 4 && isPlayer)
 			{
 				var textSizeThing = 40 - (SONG.keyCount - 4) * 4;
 
-				var keyThingLol = new FlxText((babyArrow.x + (babyArrow.width / 2)) - (textSizeThing / 2), (babyArrow.y + (babyArrow.height / 2)) - (textSizeThing / 2), 0, binds[i], textSizeThing);
+				var keyThingLol = new FlxText((babyArrow.x + (babyArrow.width / 2)) - (textSizeThing / 2), babyArrow.y, 1, binds[i], textSizeThing);
 				keyThingLol.cameras = [camHUD];
 				add(keyThingLol);
 

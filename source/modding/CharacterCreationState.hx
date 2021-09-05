@@ -249,7 +249,8 @@ class CharacterCreationState extends FlxState
             dancesLeftAndRight: LeftAndRight_Idle,
             spritesheetType: Spritesheet_Type,
             graphicsSize: Graphics_Size,
-            barColor: Bar_Color
+            barColor: Bar_Color,
+            positionOffset: [0,0]
         };
     }
 

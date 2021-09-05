@@ -638,9 +638,9 @@ class StageGroup extends FlxGroup
         var gf = PlayState.gf;
         var p2 = PlayState.dad;
 
-        p1.setPosition(player_1_Point.x - (p1.width / 2), player_1_Point.y - p1.height);
-        gf.setPosition(gf_Point.x - (gf.width / 2), gf_Point.y - gf.height);
-        p2.setPosition(player_2_Point.x - (p2.width / 2), player_2_Point.y - p2.height);
+        p1.setPosition((player_1_Point.x - (p1.width / 2)) + p1.positioningOffset[0], (player_1_Point.y - p1.height) + p1.positioningOffset[1]);
+        gf.setPosition((gf_Point.x - (gf.width / 2)) + gf.positioningOffset[0], (gf_Point.y - gf.height) + gf.positioningOffset[1]);
+        p2.setPosition((player_2_Point.x - (p2.width / 2)) + p2.positioningOffset[0], (player_2_Point.y - p2.height) + p2.positioningOffset[1]);
 
         if(PlayState.SONG.player2.startsWith("gf") && PlayState.SONG.gf.startsWith("gf"))
             p2.setPosition(gf.x, gf.y);

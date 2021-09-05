@@ -29,6 +29,7 @@ class Character extends FlxSprite
 	var dancesLeftAndRight:Bool = false;
 
 	public var barColor:FlxColor = FlxColor.WHITE;
+	public var positioningOffset:Array<Float> = [0, 0];
 
 	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false)
 	{
@@ -491,6 +492,9 @@ class Character extends FlxSprite
 			config.barColor = [255,0,0];
 
 		barColor = FlxColor.fromRGB(config.barColor[0], config.barColor[1], config.barColor[2]);
+
+		if(config.positionOffset != null)
+			positioningOffset = config.positionOffset;
 	}
 
 	public function loadOffsetFile(characterName:String)
@@ -635,6 +639,7 @@ typedef CharacterConfig =
 	var spritesheetType:SpritesheetType;
 	var graphicsSize:Null<Float>;
 	var barColor:Array<Int>;
+	var positionOffset:Array<Float>;
 }
 
 typedef CharacterAnimation =
