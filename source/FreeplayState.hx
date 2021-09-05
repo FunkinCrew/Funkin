@@ -259,7 +259,7 @@ class FreeplayState extends MusicBeatState
 	{
 		/*#if !switch
 		NGio.logEvent('Fresh');     I literally have no idea why freeplay won't load is this is here but works fine if commented out so LOL https://github.com/ninjamuffin99/Funkin/issues/1459
-		#end*/
+		#end*/                      // -austin
 
 		// NGio.logEvent('Fresh');
 		FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
