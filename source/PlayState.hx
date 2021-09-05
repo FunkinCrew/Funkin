@@ -120,6 +120,9 @@ class PlayState extends MusicBeatState
 
 	var defaultCamZoom:Float = 1.05;
 
+	var saveStateFlag:Bool = false;
+	var saveStateTime:Float = 0; // the part of the music we're restarting to in our save state, in milliseconds
+
 	// how big to stretch the pixel art assets
 	public static var daPixelZoom:Float = 6;
 
@@ -227,6 +230,7 @@ class PlayState extends MusicBeatState
 		DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
 		#end
 
+		// i guess this sets up background graphics n animations --austin
 		switch (SONG.song.toLowerCase())
 		{
 			case 'spookeez' | 'monster' | 'south': 
@@ -1329,6 +1333,12 @@ class PlayState extends MusicBeatState
 		vocals.play();
 	}
 
+	function restartFromSaveState():Void
+	{
+		FlxG.sound.music.play(true, saveStateTime);
+		vocals.play(true, saveStateTime);
+	}
+
 	private var paused:Bool = false;
 	var startedCountdown:Bool = false;
 	var canPause:Bool = true;
@@ -1394,6 +1404,20 @@ class PlayState extends MusicBeatState
 			#if desktop
 			DiscordClient.changePresence("Chart Editor", null, null, true);
 			#end
+		}
+
+		if (FlxG.keys.justPressed.O && startedCountdown) // sets save state
+		{
+			saveStateTime = FlxG.sound.music.time;
+			trace("I PRESSED O");
+			trace("CURRENT TIME OF THE SONG:" + saveStateTime);
+			saveStateFlag = true;
+
+		}
+
+		if (FlxG.keys.justPressed.P && startedCountdown && saveStateFlag)
+		{
+			restartFromSaveState();
 		}
 
 		// FlxG.watch.addQuick('VOL', vocals.amplitudeLeft);
