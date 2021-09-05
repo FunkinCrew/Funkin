@@ -1,7 +1,7 @@
 # Changelog
 All notable changes will be documented in this file.
 
-## [1.0] - ?/?/????
+## [0.3] - ?/?/????
 ### Added
 - Revamped options menu with checkboxes and other things.
 - A rank while playing.
