@@ -26,7 +26,7 @@ class OptionsMenu extends MusicBeatState {
 		optionDot = new FlxSprite(0, 0).makeGraphic(10, 10, FlxColor.RED);
 		add(optionDot);
 
-		optionDot.y = optionText.y - 60;
+		optionDot.y = optionText.y - 80;
 
 		super.create();
 	}
@@ -38,7 +38,9 @@ class OptionsMenu extends MusicBeatState {
 		'Limited ScoreBar ${!FlxG.save.data.sbar ? 'off' : 'on'}',
 		'Light up CPU Strums ${!FlxG.save.data.cpuStrums ? 'off' : 'on'}',
 		'Allow using R to reset ${!FlxG.save.data.ron ? 'off' : 'on'}',
-		'Hitsounds ${!FlxG.save.data.hsounds ? 'off' : 'on'}'];
+		'Hitsounds ${!FlxG.save.data.hsounds ? 'off' : 'on'}',
+		'Offset: ${FlxG.save.data.offset}ms',
+		'RESET SETTINGS'];
 		optionText.screenCenter();
 
 		optionDot.x = optionText.x - 20;
@@ -46,6 +48,12 @@ class OptionsMenu extends MusicBeatState {
 		optionText.text = '';
 		for (option in options) {
 			optionText.text += '\n${option}';
+		}
+
+		if (FlxG.save.data.offset == null) FlxG.save.data.offset = 0;
+
+		if (FlxG.save.data.offset < 10 && FlxG.save.data.offset > -10) {
+			FlxG.save.data.offset = 0;
 		}
 
 		if (controls.ACCEPT) {
@@ -69,6 +77,26 @@ class OptionsMenu extends MusicBeatState {
 			}
 			if (options[curSelected].startsWith('Hitsounds')) {
 				FlxG.save.data.hsounds = !FlxG.save.data.hsounds;
+			}
+			if (options[curSelected].startsWith('RESET SETTINGS')) {
+				FlxG.save.data.offset = null;
+				FlxG.save.data.dfjk = null;
+				FlxG.save.data.pmode = null;
+				FlxG.save.data.gtapping = null;
+				FlxG.save.data.sbar = null;
+				FlxG.save.data.cpuStrums = null;
+				FlxG.save.data.ron = null;
+				FlxG.save.data.hsounds = null;
+			}
+		}
+		if (controls.LEFT_P) {
+			if (options[curSelected].startsWith('Offset: ')) {
+				FlxG.save.data.offset -= 10;
+			}
+		}
+		if (controls.RIGHT_P) {
+			if (options[curSelected].startsWith('Offset: ')) {
+				FlxG.save.data.offset += 10;
 			}
 		}
 
