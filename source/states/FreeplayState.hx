@@ -37,8 +37,8 @@ class FreeplayState extends MusicBeatState
 	var songs:Array<SongMetadata> = [];
 
 	var selector:FlxText;
-	var curSelected:Int = 0;
-	var curDifficulty:Int = 1;
+	static var curSelected:Int = 0;
+	static var curDifficulty:Int = 1;
 
 	var scoreText:FlxText;
 	var diffText:FlxText;
@@ -58,7 +58,6 @@ class FreeplayState extends MusicBeatState
 	private var interpolation:Float = 0.0;
 	private var scoreBG:FlxSprite;
 
-	private var rankText:FlxText;
 	private var curRank:String = "N/A";
 
 	override function create()
@@ -140,20 +139,6 @@ class FreeplayState extends MusicBeatState
 		grpSongs = new FlxTypedGroup<Alphabet>();
 		add(grpSongs);
 
-		for (i in 0...songs.length)
-		{
-			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, songs[i].songName, true, false);
-			songText.isMenuItem = true;
-			songText.targetY = i;
-			grpSongs.add(songText);
-
-			var icon:HealthIcon = new HealthIcon(songs[i].songCharacter);
-			icon.sprTracker = songText;
-
-			iconArray.push(icon);
-			add(icon);
-		}
-
 		scoreText = new FlxText(FlxG.width, 5, 0, "", 32);
 
 		scoreBG = new FlxSprite(scoreText.x - 6, 0).makeGraphic(1, 1, 0xFF000000);
@@ -168,10 +153,19 @@ class FreeplayState extends MusicBeatState
 		diffText.alignment = CENTER;
 		add(diffText);
 
-		rankText = new FlxText(FlxG.width, diffText.y + 36, 0, "", 24);
-		rankText.font = scoreText.font;
-		rankText.alignment = CENTER;
-		add(rankText);
+		for (i in 0...songs.length)
+		{
+			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, songs[i].songName, true, false);
+			songText.isMenuItem = true;
+			songText.targetY = i;
+			grpSongs.add(songText);
+
+			var icon:HealthIcon = new HealthIcon(songs[i].songCharacter);
+			icon.sprTracker = songText;
+
+			iconArray.push(icon);
+			add(icon);
+		}
 
 		changeSelection();
 		changeDiff();
@@ -241,7 +235,6 @@ class FreeplayState extends MusicBeatState
 		scoreText.text = "PERSONAL BEST:" + lerpScore;
 
 		diffText.x = scoreText.x + (scoreText.width / 2) - (diffText.width / 2);
-		rankText.x = diffText.x + (diffText.width / 2) - (rankText.width / 2);
 
 		var upP = controls.UP_P;
 		var downP = controls.DOWN_P;
@@ -304,14 +297,12 @@ class FreeplayState extends MusicBeatState
 		switch (curDifficulty)
 		{
 			case 0:
-				diffText.text = "<  EASY  >";
+				diffText.text = "<  EASY - " + curRank + " >";
 			case 1:
-				diffText.text = '< NORMAL >';
+				diffText.text = "< NORMAL - " + curRank + " >";
 			case 2:
-				diffText.text = "<  HARD  >";
+				diffText.text = "<  HARD - " + curRank + " >";
 		}
-
-		rankText.text = "< " + curRank + " >";
 	}
 
 	function changeSelection(change:Int = 0)
@@ -358,7 +349,7 @@ class FreeplayState extends MusicBeatState
 		curRank = Highscore.getSongRank(songs[curSelected].songName, curDifficulty);
 		#end
 
-		rankText.text = "< " + curRank + " >";
+		changeDiff();
 
 		var bullShit:Int = 0;
 

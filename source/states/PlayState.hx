@@ -1032,6 +1032,21 @@ class PlayState extends MusicBeatState
 			babyArrow.x += ((FlxG.width / 2) * player);
 
 			strumLineNotes.add(babyArrow);
+
+			if(SONG.keyCount != 4)
+			{
+				var textSizeThing = 40 - (SONG.keyCount - 4) * 4;
+
+				var keyThingLol = new FlxText((babyArrow.x + (babyArrow.width / 2)) - (textSizeThing / 2), (babyArrow.y + (babyArrow.height / 2)) - (textSizeThing / 2), 0, binds[i], textSizeThing);
+				keyThingLol.cameras = [camHUD];
+				add(keyThingLol);
+
+				FlxTween.tween(keyThingLol, {y: keyThingLol.y + 10, alpha: 0}, 2.5, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i), onComplete: function(_){
+					remove(keyThingLol);
+					keyThingLol.kill();
+					keyThingLol.destroy();
+				}});
+			}
 		}
 
 		/*
