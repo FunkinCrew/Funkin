@@ -14,6 +14,8 @@ All notable changes will be documented in this file.
 - 1 - 10 Key Support (aka POG NEW KEY SYSTEM TYPE THING).
 - Custom Stage System!
 - BACKEND MODDING SUPPORT WITH POLYMOD FULLY IMPLEMENTED!
+- Mod Loading System (Enabling and Disabling Mods).
+- Custom Healthbar Colors
 ### Changed
 - Input has been updated and is a lot better now.
 ### Fixed
