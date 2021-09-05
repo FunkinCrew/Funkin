@@ -138,6 +138,7 @@ class StoryMenuState extends MusicBeatState
 		{
 			FlxG.sound.play(Paths.sound('cancelMenu'));
 			movedBack = true;
+			MenuCharacter.characterCache.clear();
 			FlxG.switchState(new MainMenuState());
 		}
 
@@ -267,6 +268,8 @@ class StoryMenuState extends MusicBeatState
 		if (!stopspamming)
 		{
 			FlxG.sound.play(Paths.sound('confirmMenu'));
+
+			MenuCharacter.characterCache.clear();
 
 			weekGraphics.members[curWeek].startFlashing();
 
