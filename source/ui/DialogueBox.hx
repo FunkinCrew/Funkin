@@ -1,5 +1,6 @@
 package ui;
 
+import flixel.system.FlxSound;
 #if sys
 import sys.FileSystem;
 import sys.io.File;
@@ -39,6 +40,7 @@ class DialogueBox extends FlxSpriteGroup
 
 	var handSelect:FlxSprite;
 	var bgFade:FlxSprite;
+	var ambientMusic:FlxSound = null;
 
 	public function new(talkingRight:Bool = true, ?dialogueList:Array<String>)
 	{
@@ -49,11 +51,15 @@ class DialogueBox extends FlxSpriteGroup
 		switch (PlayState.SONG.song.toLowerCase())
 		{
 			case 'senpai':
-				FlxG.sound.playMusic(Paths.music('Lunchbox'), 0);
-				FlxG.sound.music.fadeIn(1, 0, 0.8);
+				ambientMusic = FlxG.sound.load(Paths.music('Lunchbox', 'preload'), 0, true);
 			case 'thorns':
-				FlxG.sound.playMusic(Paths.music('LunchboxScary'), 0);
-				FlxG.sound.music.fadeIn(1, 0, 0.8);
+				ambientMusic = FlxG.sound.load(Paths.music('LunchboxScary', 'preload'), 0, true);
+		}
+
+		if(ambientMusic != null)
+		{
+			ambientMusic.play();
+			ambientMusic.fadeIn(1, 0, 0.8);
 		}
 
 		// Background Fade //
@@ -201,7 +207,7 @@ class DialogueBox extends FlxSpriteGroup
 					isEnding = true;
 
 					if (PlayState.SONG.song.toLowerCase() == 'senpai' || PlayState.SONG.song.toLowerCase() == 'thorns')
-						FlxG.sound.music.fadeOut(2.2, 0);
+						ambientMusic.fadeOut(2.2, 0);
 
 					new FlxTimer().start(0.2, function(tmr:FlxTimer)
 					{
@@ -216,6 +222,9 @@ class DialogueBox extends FlxSpriteGroup
 
 					new FlxTimer().start(1.2, function(tmr:FlxTimer)
 					{
+						if(ambientMusic != null)
+							ambientMusic.stop();
+						
 						finishThing();
 						kill();
 					});

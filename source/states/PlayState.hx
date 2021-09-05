@@ -2112,7 +2112,12 @@ class PlayState extends MusicBeatState
 
 				possibleNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
 	
-				var noteDataPossibles:Array<Bool> = [false, false, false, false];
+				var noteDataPossibles:Array<Bool> = [];
+
+				for(i in 0...SONG.keyCount)
+				{
+					noteDataPossibles.push(false);
+				}
 	
 				// if there is actual notes to hit
 				if (possibleNotes.length > 0)
@@ -2137,6 +2142,13 @@ class PlayState extends MusicBeatState
 	
 			if (heldArray.contains(true) && generatedMusic)
 			{
+				var thingsHit:Array<Bool> = [];
+
+				for(i in 0...SONG.keyCount)
+				{
+					thingsHit.push(false);
+				}
+
 				boyfriend.holdTimer = 0;
 				
 				notes.forEachAlive(function(daNote:Note)
@@ -2144,8 +2156,11 @@ class PlayState extends MusicBeatState
 					if ((daNote.strumTime + Conductor.offset > (Conductor.songPosition - (Conductor.safeZoneOffset * 1.5) + Conductor.offset)
 						&& daNote.strumTime + Conductor.offset < (Conductor.songPosition + (Conductor.safeZoneOffset * 0.5)) + Conductor.offset)
 					&& daNote.mustPress && daNote.isSustainNote)
-						if(heldArray[daNote.noteData])
+						if(heldArray[daNote.noteData] && !thingsHit[daNote.noteData])
+						{
 							goodNoteHit(daNote);
+							thingsHit[daNote.noteData] = true;
+						}
 				});
 			}
 	
