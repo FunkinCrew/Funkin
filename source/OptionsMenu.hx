@@ -1,5 +1,6 @@
 package;
 
+import flixel.math.FlxMath;
 import flixel.util.FlxColor;
 import flixel.FlxSprite;
 import flixel.text.FlxText;
@@ -15,9 +16,16 @@ class OptionsMenu extends MusicBeatState {
 	var optionText:FlxText;
 	var optionDot:FlxSprite;
 
+	var topText:FlxText;
+
 	var curSelected:Int = 0;
 
+	var background:FlxSprite;
+
 	public override function create() {
+		background = new FlxSprite(0, 0, Paths.image('menuBGBlue'));
+		add(background);
+
 		optionText = new FlxText(0, 0, 0, 'OPTIONS LOLOLO', 32);
 		add(optionText);
 		optionText.screenCenter();
@@ -26,7 +34,11 @@ class OptionsMenu extends MusicBeatState {
 		optionDot = new FlxSprite(0, 0).makeGraphic(10, 10, FlxColor.RED);
 		add(optionDot);
 
-		optionDot.y = optionText.y - 80;
+		optionDot.y = optionText.y - 125; // red dot offset, adjust when adding new setting!
+
+		topText = new FlxText(0, optionDot.y - 360, 0, "OPTIONS", 32);
+		topText.screenCenter(X);
+		// add(topText);
 
 		super.create();
 	}
@@ -44,6 +56,13 @@ class OptionsMenu extends MusicBeatState {
 		optionText.screenCenter();
 
 		optionDot.x = optionText.x - 20;
+
+		topText.y = optionDot.y - 360;
+
+		FlxG.camera.y = -FlxMath.lerp(-FlxG.height * 2, optionDot.y, 0.8); // camera following the red dot
+
+		background.screenCenter(); // this is always funky
+		background.y = -FlxMath.lerp(-FlxG.height * 2, optionDot.y, 0.8); // do the same for the background
 
 		optionText.text = '';
 		for (option in options) {

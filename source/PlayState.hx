@@ -150,8 +150,10 @@ class PlayState extends MusicBeatState
 	var detailsPausedText:String = "";
 	#end
 
+	var flyingRadio:FlxSprite;
+
 	override public function create()
-	{
+	{	
 		if (!isStoryMode) {
 			sicks = 0;
 			goods = 0;

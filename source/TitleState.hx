@@ -48,12 +48,22 @@ class TitleState extends MusicBeatState
 
 	var wackyImage:FlxSprite;
 
+	public static var api:GJApi;
+
 	override public function create():Void
 	{
 		// Check if mod compatable
 		#if !cpp
 		FlxG.switchState(new Disclaimer());
 		#end
+
+		if (APIkeys.gameId != 0 && APIkeys.privateKey != '') {
+			api = new GJApi(APIkeys.privateKey, APIkeys.gameId);
+			openSubState(new LoginSubState(0xAA000000));
+		}
+		else {
+			trace('can\'t connect to GJ make sure you have an APIkeys.hx file!');
+		}
 		
 		#if polymod
 		polymod.Polymod.init({modRoot: "mods", dirs: ['introMod']});
@@ -376,8 +386,10 @@ class TitleState extends MusicBeatState
 	{
 		super.beatHit();
 
-		logoBl.animation.play('bump');
-		danceLeft = !danceLeft;
+		if (logoBl != null) {
+			logoBl.animation.play('bump');
+			danceLeft = !danceLeft;
+		}
 
 		if (danceLeft)
 			gfDance.animation.play('danceRight');

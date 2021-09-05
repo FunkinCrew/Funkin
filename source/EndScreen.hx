@@ -1,5 +1,6 @@
 package;
 
+import flixel.addons.api.FlxGameJolt;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.util.FlxTimer;
 import flixel.FlxG;
@@ -43,6 +44,27 @@ class EndScreen extends MusicBeatState {
 
         add(mainTxt);
         add(pressEnter);
+
+        if (PlayState.isStoryMode) {
+            switch (PlayState.storyWeek) {
+                case 0:
+                    FlxGameJolt.addTrophy(147875);
+                case 1:
+                    FlxGameJolt.addTrophy(147876);
+                case 2:
+                    FlxGameJolt.addTrophy(147877);
+                case 3:
+                    FlxGameJolt.addTrophy(147878);
+                case 4:
+                    FlxGameJolt.addTrophy(147879);
+                case 5:
+                    FlxGameJolt.addTrophy(147880);
+                case 6:
+                    FlxGameJolt.addTrophy(147881);
+            }
+        }
+
+        FlxGameJolt.addScore('${PlayState.isStoryMode ? '${PlayState.campaignScore} Week Points' : '${PlayState.songScore} Points'}', PlayState.isStoryMode ? PlayState.campaignScore : PlayState.songScore, 652366, true, "GUEST");
     }
 
     public override function update(elapsed:Float) {
