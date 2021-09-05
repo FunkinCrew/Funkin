@@ -30,6 +30,16 @@ You'll also need to install a couple things that involve Gits. To do this, you n
 
 You should have everything ready for compiling the game! Follow the guide below to continue!
 
+I .gitignore the Gamejolt API keys (for obvious reasons) so to get the game to compile make a new file inside the source folder called `APIkeys.hx` and put in following code:
+```haxe
+package;
+
+class APIkeys {
+    public static var gameId = 0;
+    public static var privateKey = "";
+}
+```
+
 ## Compiling game
 
 Once you have all those installed, it's pretty easy to compile the game. You just need to run ```lime test html5 -debug``` in the root of the project to build and run the HTML5 version. (command prompt navigation guide can be found here: [https://ninjamuffin99.newgrounds.com/news/post/1090480](https://ninjamuffin99.newgrounds.com/news/post/1090480))
