@@ -117,12 +117,6 @@ class TitleState extends MusicBeatState
 			// IF THIS PR IS HERE IF ITS ACCEPTED UR GOOD TO GO
 			// https://github.com/HaxeFlixel/flixel-addons/pull/348
 
-			if(FlxG.save.data.nightMusic == null)
-			{
-				FlxG.save.data.nightMusic = false;
-				FlxG.save.flush();
-			}
-
 			if (FlxG.save.data.oldTitle)
 			{
 				playTitleMusic();
@@ -315,9 +309,6 @@ class TitleState extends MusicBeatState
 				FlxG.sound.play(Paths.music("titleShoot"), 0.7);
 			else
 				FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
-
-			if(FlxG.save.data.weekProgression != null)
-				StoryMenuState.weekProgression = FlxG.save.data.weekProgression;
 
 			transitioning = true;
 			// FlxG.sound.music.stop();

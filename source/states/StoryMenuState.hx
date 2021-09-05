@@ -1,5 +1,6 @@
 package states;
 
+import flixel.graphics.frames.FlxFramesCollection;
 import lime.app.Application;
 import utilities.CoolUtil;
 import haxe.macro.Expr.Var;
@@ -66,10 +67,6 @@ class StoryMenuState extends MusicBeatState
 	var difficultySprite:FlxSprite;
 	var leftArrow:FlxSprite;
 	var rightArrow:FlxSprite;
-
-	// old ass variables to get rid of
-	public static var weekProgression:Bool = false;
-	public static var weekUnlocked:Array<Bool> = [true, false, false, false, false, false, false];
 
 	override function create()
 	{
@@ -138,7 +135,6 @@ class StoryMenuState extends MusicBeatState
 		{
 			FlxG.sound.play(Paths.sound('cancelMenu'));
 			movedBack = true;
-			MenuCharacter.characterCache.clear();
 			FlxG.switchState(new MainMenuState());
 		}
 
@@ -268,8 +264,6 @@ class StoryMenuState extends MusicBeatState
 		if (!stopspamming)
 		{
 			FlxG.sound.play(Paths.sound('confirmMenu'));
-
-			MenuCharacter.characterCache.clear();
 
 			weekGraphics.members[curWeek].startFlashing();
 

@@ -39,6 +39,9 @@ class SaveData {
         if (FlxG.save.data.msText == null)
             FlxG.save.data.msText = true;
 
+        if(FlxG.save.data.nightMusic == null)
+			FlxG.save.data.nightMusic = false;
+
         FlxG.save.data.songOffset = 0;
         Conductor.offset = FlxG.save.data.songOffset;
 

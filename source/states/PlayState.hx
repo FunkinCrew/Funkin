@@ -1809,11 +1809,6 @@ class PlayState extends MusicBeatState
 					}
 					#end
 	
-					#if !debug
-					if(StoryMenuState.weekProgression)
-						StoryMenuState.weekUnlocked[Std.int(Math.min(storyWeek + 1, StoryMenuState.weekUnlocked.length - 1))] = true;
-					#end
-	
 					if (SONG.validScore)
 					{
 						if(!FlxG.save.data.bot)
@@ -1821,14 +1816,6 @@ class PlayState extends MusicBeatState
 							Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficulty, (groupWeek != "" ? groupWeek + "Week" : "week"));
 						}
 					}
-	
-					#if !debug
-					if(StoryMenuState.weekProgression)
-					{
-						FlxG.save.data.weekUnlocked = StoryMenuState.weekUnlocked;
-						FlxG.save.flush();
-					}
-					#end
 				}
 				else
 				{

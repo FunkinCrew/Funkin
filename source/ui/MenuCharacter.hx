@@ -1,5 +1,6 @@
 package ui;
 
+import states.StoryMenuState;
 import flixel.graphics.frames.FlxFramesCollection;
 import lime.utils.Assets;
 #if sys
@@ -13,8 +14,6 @@ class MenuCharacter extends FlxSprite
 {
 	public var character:String;
 	var characterData:MenuCharacterData;
-
-	public static var characterCache:Map<String, FlxFramesCollection> = new Map();
 
 	public function new(x:Float, character:String = 'bf', ?looped:Bool = true)
 	{
@@ -42,15 +41,10 @@ class MenuCharacter extends FlxSprite
 	
 			#if sys
 			// performance lol cuz it was laggy before
-			if(!characterCache.exists(characterData.File_Name))
-			{
-				if(Assets.exists(Paths.image('campaign menu/characters/' + characterData.File_Name), IMAGE))
-					characterCache.set(characterData.File_Name, Paths.getSparrowAtlas('campaign menu/characters/' + characterData.File_Name));
-				else
-					characterCache.set(characterData.File_Name, Paths.getSparrowAtlasSYS('campaign menu/characters/' + characterData.File_Name));
-			}
-
-			frames = characterCache.get(characterData.File_Name);
+			if(Assets.exists(Paths.image('campaign menu/characters/' + characterData.File_Name), IMAGE))
+				frames = Paths.getSparrowAtlas('campaign menu/characters/' + characterData.File_Name);
+			else
+				frames = Paths.getSparrowAtlasSYS('campaign menu/characters/' + characterData.File_Name);
 			#else
 			frames = Paths.getSparrowAtlas('campaign menu/characters/' + characterData.File_Name);
 			#end
