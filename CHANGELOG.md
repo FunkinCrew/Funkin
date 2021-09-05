@@ -20,7 +20,8 @@ All notable changes will be documented in this file.
 - Input has been updated and is a lot better now.
 - Held notes no longer count to your accuracy.
 ### Fixed
-- dolor
+- Bug where music wouldn't play when opening the dialogue in Senpai and Thorns.
+- Bug where Roses would crash at end of dialogue (because of the fix I made for the issue above this one).
 ### Removed
 - Week 7 has been removed because gamebanana and stuff.
 
