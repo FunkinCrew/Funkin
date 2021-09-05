@@ -18,6 +18,7 @@ All notable changes will be documented in this file.
 - Custom Healthbar Colors
 ### Changed
 - Input has been updated and is a lot better now.
+- Held notes no longer count to your accuracy.
 ### Fixed
 - dolor
 ### Removed
