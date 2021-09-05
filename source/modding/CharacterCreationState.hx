@@ -1,5 +1,6 @@
 package modding;
 
+import flixel.util.FlxColor;
 import states.MainMenuState;
 import flixel.util.FlxTimer.FlxTimerManager;
 import openfl.events.IOErrorEvent;
@@ -51,6 +52,7 @@ class CharacterCreationState extends FlxState
     public var Animations:Array<CharacterAnimation> = [];
 
     public var Graphics_Size:Float;
+    public var Bar_Color:Array<Int> = [255, 0, 0];
 
     // VARIABLES //
     
@@ -246,7 +248,8 @@ class CharacterCreationState extends FlxState
             defaultFlipX: Default_FlipX,
             dancesLeftAndRight: LeftAndRight_Idle,
             spritesheetType: Spritesheet_Type,
-            graphicsSize: Graphics_Size
+            graphicsSize: Graphics_Size,
+            barColor: Bar_Color
         };
     }
 

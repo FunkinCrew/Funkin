@@ -3,6 +3,7 @@
     "dancesLeftAndRight": false,
     "imagePath": "Boyfriend_Assets",
     "spritesheetType": "SPARROW",
+    "barColor": [81, 201, 219],
     "animations": [
         {
             "name": "idle",

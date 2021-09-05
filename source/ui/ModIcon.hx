@@ -8,7 +8,7 @@ import flixel.FlxSprite;
 class ModIcon extends FlxSprite
 {
 	/**
-	 * Used for FreeplayState! If you use it elsewhere, prob gonna annoying
+	 * Used for ModMenu! If you use it elsewhere, prob gonna annoying
 	 */
 	public var sprTracker:FlxSprite;
 
@@ -23,6 +23,7 @@ class ModIcon extends FlxSprite
 
 		setGraphicSize(150, 150);
 		scrollFactor.set();
+		antialiasing = true;
 	}
 
 	override function update(elapsed:Float)
