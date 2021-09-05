@@ -116,7 +116,7 @@ class Note extends FlxSprite
 
 		this.noteData = noteData;
 
-		var daStage:String = (PlayState.instance != null ? PlayState.Stage.curStage : 'stage');
+		var daStage:String = ((PlayState.instance != null && !PlayStateChangeables.Optimize) ? PlayState.Stage.curStage : 'stage');
 
 		// defaults if no noteStyle was found in chart
 		var noteTypeCheck:String = 'normal';
