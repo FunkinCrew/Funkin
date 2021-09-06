@@ -30,6 +30,7 @@ class Character extends FlxSprite
 
 	public var barColor:FlxColor = FlxColor.WHITE;
 	public var positioningOffset:Array<Float> = [0, 0];
+	public var cameraOffset:Array<Float> = [0, 0];
 
 	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false)
 	{
@@ -495,6 +496,9 @@ class Character extends FlxSprite
 
 		if(config.positionOffset != null)
 			positioningOffset = config.positionOffset;
+
+		if(config.cameraOffset != null)
+			cameraOffset = config.cameraOffset;
 	}
 
 	public function loadOffsetFile(characterName:String)
@@ -640,6 +644,7 @@ typedef CharacterConfig =
 	var graphicsSize:Null<Float>;
 	var barColor:Array<Int>;
 	var positionOffset:Array<Float>;
+	var cameraOffset:Array<Float>;
 }
 
 typedef CharacterAnimation =

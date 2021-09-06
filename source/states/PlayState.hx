@@ -1391,6 +1391,12 @@ class PlayState extends MusicBeatState
 						camFollow.x = dad.getMidpoint().x - 100;
 				}
 
+				if(dad.cameraOffset != [0,0])
+				{
+					camFollow.y = dad.getMidpoint().y + dad.cameraOffset[0];
+					camFollow.x = dad.getMidpoint().x + dad.cameraOffset[1];
+				}
+
 				#if linc_luajit
 				if (luaModchart != null)
 					luaModchart.executeState('playerTwoTurn', []);
@@ -1418,6 +1424,12 @@ class PlayState extends MusicBeatState
 					case 'evil-school':
 						camFollow.x = boyfriend.getMidpoint().x - 200;
 						camFollow.y = boyfriend.getMidpoint().y - 200;
+				}
+
+				if(boyfriend.cameraOffset != [0,0])
+				{
+					camFollow.y = boyfriend.getMidpoint().y + boyfriend.cameraOffset[0];
+					camFollow.x = boyfriend.getMidpoint().x + boyfriend.cameraOffset[1];
 				}
 
 				#if linc_luajit
