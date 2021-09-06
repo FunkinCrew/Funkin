@@ -96,7 +96,7 @@ class FlxAnimate extends FlxSymbol
 					spr.transformMatrix.concat(alsoSwag);
 				}
 
-				spr.alpha = 0.3;
+				// spr.alpha = 0.3;
 				spr.origin.set();
 				spr.antialiasing = true;
 				// spr.alpha = 0.5;

@@ -48,7 +48,7 @@ class Main extends Sprite
 			frameworkParams: {
 				assetLibraryPaths: [
 					"songs" => "songs", "shared" => "shared", "tutorial" => "tutorial", "week1" => "week1", "week2" => "week2", "week3" => "week3",
-					"week4" => "week4",   "week5" => "week5",       "week6" => "week6", "week7" => "week7", "tanky" => "tanky", "tankBG" => "tankBG"
+					"week4" => "week4", "week5" => "week5", "week6" => "week6", "week7" => "week7", "week8" => "week8"
 				]
 			},
 			framework: OPENFL,

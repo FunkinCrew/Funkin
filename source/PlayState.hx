@@ -485,6 +485,9 @@ class PlayState extends MusicBeatState
 				var fgTank3:BGSprite = new BGSprite('tank3', 1300, 1200, 3.5, 2.5, ['fg']);
 				foregroundSprites.add(fgTank3);
 
+			case "darnell":
+				loadStage('phillyStreets');
+
 			default:
 				loadStage('stage');
 		}
@@ -619,7 +622,7 @@ class PlayState extends MusicBeatState
 					gf.x -= 170;
 					gf.y -= 75;
 				}
-			case 'stage':
+			case 'stage' | 'phillyStreets':
 				dad.y = 870 - dad.height;
 		}
 

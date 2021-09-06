@@ -173,6 +173,13 @@ class ParseAnimate
 
 			var frame:Frame = frameMap.get(frameInput);
 
+			// get somethin sorted per element list, which would essentially be per symbol things properly sorted
+			// seperate data types if symbol or atlassymbolinstance? would probably be maybe slightly less memory intensive? i dunno
+
+			// goes thru each layer, and then each element
+			// after it gets thru each element it adds to the layer frame stuff.
+			// make somethin that works recursively, maybe thats the symbol dictionary type shit?
+
 			for (element in frame.E)
 			{
 				if (Reflect.hasField(element, "ASI"))
@@ -217,11 +224,18 @@ class ParseAnimate
 						loopedFrameShit = inputFrame;
 					}
 
+					// condense the animation code, so it automatically already fills up animation shit per symbol
+
 					parseTimeline(symbolMap.get(element.SI.SN).TL, tabbed + 1, inputFrame);
 				}
 			}
 
-			frameList.push([]);
+			if (tabbed == 0)
+			{
+				frameList[frameList.length - 1].reverse();
+				frameList.push([]); // new layer essentially
+			}
+
 			matrixHelp.push([]);
 		}
 

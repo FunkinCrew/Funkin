@@ -24,6 +24,7 @@ import flixel.ui.FlxButton;
 import flixel.ui.FlxSpriteButton;
 import flixel.util.FlxColor;
 import haxe.Json;
+import lime.media.AudioBuffer;
 import lime.utils.Assets;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
@@ -81,9 +82,60 @@ class ChartingState extends MusicBeatState
 	var leftIcon:HealthIcon;
 	var rightIcon:HealthIcon;
 
+	var audioBuf:AudioBuffer = new AudioBuffer();
+
+	var playheadTest:FlxSprite;
+
 	override function create()
 	{
 		curSection = lastSection;
+
+		// trace(audioBuf.data.length);
+		audioBuf = AudioBuffer.fromFile(Paths.file('music/Voices.ogg'));
+
+		trace(audioBuf.data.length);
+
+		var bits:String = "";
+
+		playheadTest = new FlxSprite(0, 0).makeGraphic(2, 255, FlxColor.RED);
+		playheadTest.scrollFactor.set();
+		add(playheadTest);
+
+		for (thing in 0...444)
+		{
+			var weed:Int = thing % 4;
+
+			// BITS
+			// first 2 ints are left channel, 2nd 2 ints are right
+			// left channel
+			if (weed == 0)
+			{
+				trace(audioBuf.data[thing]);
+			}
+		}
+
+		for (shit in 0...FlxG.width)
+		{
+			var remap:Int = Math.floor(FlxMath.remapToRange(shit, 0, FlxG.width * 4, 0, audioBuf.data.length));
+
+			if (remap % 4 == 1)
+			{
+				var barThing:FlxSprite = new FlxSprite(shit / 4, audioBuf.data[remap]).makeGraphic(2, 2, FlxColor.PURPLE);
+				barThing.scrollFactor.set();
+				add(barThing);
+			}
+
+			if (remap % 4 == 0)
+			{
+				var barThing:FlxSprite = new FlxSprite(shit / 4, audioBuf.data[remap]).makeGraphic(2, 2, FlxColor.YELLOW);
+				barThing.scrollFactor.set();
+				add(barThing);
+			}
+		}
+
+		// sys.io.File.saveContent('./bitShit.txt', "swag");
+
+		trace(audioBuf.sampleRate);
 
 		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * 8, GRID_SIZE * 16);
 		add(gridBG);
@@ -499,7 +551,16 @@ class ChartingState extends MusicBeatState
 		Conductor.songPosition = FlxG.sound.music.time;
 		_song.song = typingShit.text;
 
+		playheadTest.x = FlxMath.remapToRange(Conductor.songPosition, 0, FlxG.sound.music.length, 0, FlxG.width);
+
 		strumLine.y = getYfromStrum((Conductor.songPosition - sectionStartTime()) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps));
+
+		if (FlxG.sound.music.playing)
+		{
+			var normalizedShitIDK:Int = Std.int(FlxMath.remapToRange(Conductor.songPosition, 0, FlxG.sound.music.length, 0, audioBuf.data.length));
+			FlxG.watch.addQuick('WEIRD AUDIO SHIT LOL', audioBuf.data[normalizedShitIDK]);
+			// leftIcon.scale.x = FlxMath.remapToRange(audioBuf.data[normalizedShitIDK], 0, 255, 1, 2);
+		}
 
 		if (FlxG.keys.justPressed.X)
 			toggleAltAnimNote();
