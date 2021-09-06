@@ -95,10 +95,10 @@ class ParseAnimate
 	 */
 	public static var depthTypeBeat:String = "";
 
+	/**
+	 * Array of bullshit that will eventually be RENDERED by whoever wanna use it!
+	 */
 	public static var frameList:Array<Array<VALIDFRAME>> = [];
-	public static var matrixMap:Map<String, Array<Array<Float>>> = new Map();
-	public static var trpMap:Map<String, Array<Array<Float>>> = new Map();
-	public static var theRoots:Map<String, String> = new Map();
 
 	// for loop stuf
 
@@ -113,15 +113,14 @@ class ParseAnimate
 
 	public static var loopedFrameShit:Int = 0;
 
+	// clean up all the crazy ass arrays
+
 	public static function resetFrameList()
 	{
 		frameList = [];
 		frameList.push([]);
 		matrixHelp = [];
 		matrixHelp.push([]);
-		matrixMap.clear();
-		theRoots.clear();
-		trpMap.clear();
 	}
 
 	public static function parseTimeline(TL:Timeline, tabbed:Int = 0, ?frameInput:Int)
@@ -185,24 +184,19 @@ class ParseAnimate
 				if (Reflect.hasField(element, "ASI"))
 				{
 					matrixHelp[matrixHelp.length - 1].push(element.ASI.M3D);
-					// matrixMap.set(element.ASI.N, matrixHelp);
 
 					frameList[frameList.length - 1].push({
 						frameName: element.ASI.N,
 						M3D: element.ASI.M3D,
 						depthString: depthTypeBeat,
-						matrixArray: matrixHelp[matrixHelp.length - 1]
+						matrixArray: matrixHelp[matrixHelp.length - 1],
+						trpArray: trpHelpIDK
 					});
 
-					trpMap.set(element.ASI.N, trpHelpIDK);
-
 					// flips the matrix once?? I cant remember exactly why it needs to be flipped
-					// matrixMap[matrixHelp.length - 1].reverse();
 					// matrixHelp[matrixHelp.length - 1].reverse();
 
 					trpHelpIDK = [];
-
-					theRoots.set(element.ASI.N, depthTypeBeat);
 
 					depthTypeBeat = "";
 					curLoopType = "";
@@ -248,7 +242,8 @@ typedef VALIDFRAME =
 	frameName:String,
 	M3D:Array<Float>,
 	depthString:String,
-	matrixArray:Array<Array<Float>>
+	matrixArray:Array<Array<Float>>,
+	trpArray:Array<Array<Float>>
 }
 
 typedef AnimJson =

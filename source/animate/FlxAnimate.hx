@@ -10,6 +10,7 @@ import flixel.FlxSprite;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.graphics.frames.FlxFrame.FlxFrameAngle;
+import flixel.group.FlxGroup;
 import flixel.math.FlxMatrix;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
@@ -25,9 +26,13 @@ class FlxAnimate extends FlxSymbol
 	// var animBitmap:BitmapData;
 	var jsonAnim:AnimJson;
 
+	var sprGrp:FlxTypedGroup<FlxSymbol>;
+
 	public function new(x:Float, y:Float)
 	{
 		super(x, y);
+
+		sprGrp = new FlxTypedGroup<FlxSymbol>();
 
 		var folder:String = "tightestBars";
 
@@ -36,7 +41,10 @@ class FlxAnimate extends FlxSymbol
 		jsonAnim = cast CoolUtil.coolJSON(Assets.getText(Paths.file('images/$folder/Animation.json')));
 		ParseAnimate.generateSymbolmap(jsonAnim.SD.S);
 		ParseAnimate.resetFrameList();
+
 		ParseAnimate.parseTimeline(jsonAnim.AN.TL, 0, 0);
+
+		generateSpriteShit();
 
 		/* var folder:String = 'tightestBars';
 			coolParse = cast Json.parse(Assets.getText(Paths.file('images/' + folder + '/Animation.json')));
@@ -62,23 +70,23 @@ class FlxAnimate extends FlxSymbol
 		actualFrameRender();
 	}
 
-	// fix render order of ALL layers!
-	// seperate frameList into layers
-	// go thru animate file to see how it should all be ordered
-	// per frame symbol stuff to fix lip sync (in ParseAnimate?)
-	// definitely need to dig through Animate.json stuff
-	// something with TRP stuff, look through tighterBars (GF scene)
-	// redo map stuff incase there's multiple assets
-	// ONE CENTRAL THING FOR THIS DUMBASS BULLSHIT
-	// sorted framelist put it all in there, then make i actually mean something
-
-	function actualFrameRender()
+	function generateSpriteShit()
 	{
 		for (frameSorted in ParseAnimate.frameList)
 		{
+			if (FlxG.keys.justPressed.I)
+			{
+				trace("\n\n\n\n");
+				trace('NEW LAYER TYPE SHIT');
+				trace(frameSorted.length);
+				// trace(i.depthString);
+				// trace("random lol: " + i.randomLol);
+			}
+
 			for (i in frameSorted)
 			{
-				var spr:FlxSymbol = new FlxSymbol(0, 0); // redo this to recycle from a list later
+				// instead of making them every frame, regenerate when needed?
+				var spr:FlxSymbol = sprGrp.recycle(FlxSymbol); // redo this to recycle from a list later
 				spr.frames = frames;
 				spr.frame = spr.frames.getByName(i.frameName); // this one is fine
 
@@ -99,8 +107,10 @@ class FlxAnimate extends FlxSymbol
 				// spr.alpha = 0.3;
 				spr.origin.set();
 				spr.antialiasing = true;
+				sprGrp.add(spr);
+				// trace(sprGrp);
+				// trace(spr);
 				// spr.alpha = 0.5;
-				spr.draw();
 
 				/* 	if (i == "0225")
 					{
@@ -116,6 +126,23 @@ class FlxAnimate extends FlxSymbol
 				}*/
 			}
 		}
+
+		// trace(sprGrp.length);
+	}
+
+	// fix render order of ALL layers!
+	// seperate frameList into layers
+	// go thru animate file to see how it should all be ordered
+	// per frame symbol stuff to fix lip sync (in ParseAnimate?)
+	// definitely need to dig through Animate.json stuff
+	// something with TRP stuff, look through tighterBars (GF scene)
+	// redo map stuff incase there's multiple assets
+	// ONE CENTRAL THING FOR THIS DUMBASS BULLSHIT
+	// sorted framelist put it all in there, then make i actually mean something
+
+	function actualFrameRender()
+	{
+		sprGrp.draw();
 	}
 
 	// notes to self
@@ -153,6 +180,8 @@ class FlxAnimate extends FlxSymbol
 
 			ParseAnimate.resetFrameList();
 			ParseAnimate.parseTimeline(jsonAnim.AN.TL, 0, daFrame);
+
+			generateSpriteShit();
 		}
 		if (FlxG.keys.justPressed.LEFT)
 			changeFrame(-1);
