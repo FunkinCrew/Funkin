@@ -550,7 +550,7 @@ class Stage extends MusicBeatState
 		if (FlxG.save.data.distractions && animatedBacks.length > 0)
 		{
 			for (bg in animatedBacks)
-				bg.animation.play('idle');
+				bg.animation.play('idle', true);
 		}
 
 		if (!PlayStateChangeables.Optimize)
