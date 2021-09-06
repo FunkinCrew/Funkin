@@ -1393,8 +1393,8 @@ class PlayState extends MusicBeatState
 
 				if(dad.cameraOffset != [0,0])
 				{
-					camFollow.y = dad.getMidpoint().y + dad.cameraOffset[0];
-					camFollow.x = dad.getMidpoint().x + dad.cameraOffset[1];
+					camFollow.x = dad.getMidpoint().x + dad.cameraOffset[0];
+					camFollow.y = dad.getMidpoint().y + dad.cameraOffset[1];
 				}
 
 				#if linc_luajit
@@ -1428,8 +1428,8 @@ class PlayState extends MusicBeatState
 
 				if(boyfriend.cameraOffset != [0,0])
 				{
-					camFollow.y = boyfriend.getMidpoint().y + boyfriend.cameraOffset[0];
-					camFollow.x = boyfriend.getMidpoint().x + boyfriend.cameraOffset[1];
+					camFollow.x = boyfriend.getMidpoint().x + boyfriend.cameraOffset[0];
+					camFollow.y = boyfriend.getMidpoint().y + boyfriend.cameraOffset[1];
 				}
 
 				#if linc_luajit
