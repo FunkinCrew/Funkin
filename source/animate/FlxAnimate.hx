@@ -34,7 +34,7 @@ class FlxAnimate extends FlxSymbol
 
 		sprGrp = new FlxTypedGroup<FlxSymbol>();
 
-		var folder:String = "tightestBars";
+		var folder:String = "tightBarsLol";
 
 		frames = FlxAnimate.fromAnimate(Paths.file('images/' + folder + "/spritemap1.png"), Paths.file('images/$folder/spritemap1.json'));
 
@@ -70,8 +70,16 @@ class FlxAnimate extends FlxSymbol
 		actualFrameRender();
 	}
 
+	/**
+	 * Puts all the needed sprites into a FlxTypedGroup, and properly recycles them?
+	**/
 	function generateSpriteShit()
 	{
+		sprGrp.kill(); // kills group, maybe dont need to do this one so broadly?
+
+		// just used for sum default shit?
+		var normalSpr:FlxSymbol = new FlxSymbol(0, 0);
+
 		for (frameSorted in ParseAnimate.frameList)
 		{
 			if (FlxG.keys.justPressed.I)
@@ -96,6 +104,10 @@ class FlxAnimate extends FlxSymbol
 					trace(i.depthString);
 					// trace("random lol: " + i.randomLol);
 				}
+
+				// cuz its in group, gets a lil fuckie when animated, need to go thru and properly reset each thing for shit like matrix!
+
+				spr.transformMatrix.copyFrom(normalSpr.transformMatrix);
 
 				for (swagMatrix in i.matrixArray)
 				{
@@ -171,6 +183,8 @@ class FlxAnimate extends FlxSymbol
 				frameTickTypeShit = 0;
 				ParseAnimate.resetFrameList();
 				ParseAnimate.parseTimeline(jsonAnim.AN.TL, 0, daFrame);
+
+				generateSpriteShit();
 			}
 		}
 
