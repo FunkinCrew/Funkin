@@ -32,6 +32,8 @@ class Character extends FlxSprite
 	public var positioningOffset:Array<Float> = [0, 0];
 	public var cameraOffset:Array<Float> = [0, 0];
 
+	public var otherCharacters:Array<Character> = [];
+
 	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false)
 	{
 		super(x, y);
@@ -372,7 +374,7 @@ class Character extends FlxSprite
 		if (isPlayer)
 			flipX = !flipX;
 
-		if(curCharacter != '')
+		if(curCharacter != '' && otherCharacters == [])
 		{
 			updateHitbox();
 
@@ -422,80 +424,83 @@ class Character extends FlxSprite
 
 	public function loadCharacterConfiguration(config:CharacterConfig)
 	{
-		flipX = config.defaultFlipX;
-		dancesLeftAndRight = config.dancesLeftAndRight;
-
-		if(config.spritesheetType == SpritesheetType.PACKER)
+		if(config.characters == null || config.characters == [])
 		{
-			#if sys
-			if(Assets.exists(Paths.image('characters/' + config.imagePath, 'shared')))
+			flipX = config.defaultFlipX;
+			dancesLeftAndRight = config.dancesLeftAndRight;
+
+			if(config.spritesheetType == SpritesheetType.PACKER)
+			{
+				#if sys
+				if(Assets.exists(Paths.image('characters/' + config.imagePath, 'shared')))
+					frames = Paths.getPackerAtlas('characters/' + config.imagePath, 'shared');
+				else
+					frames = Paths.getPackerAtlasSYS("characters/" + config.imagePath, "shared");
+				#else
 				frames = Paths.getPackerAtlas('characters/' + config.imagePath, 'shared');
+				#end
+			}
 			else
-				frames = Paths.getPackerAtlasSYS("characters/" + config.imagePath, "shared");
-			#else
-			frames = Paths.getPackerAtlas('characters/' + config.imagePath, 'shared');
-			#end
-		}
-		else
-		{
-			#if sys
-			if(Assets.exists(Paths.image('characters/' + config.imagePath, 'shared')))
+			{
+				#if sys
+				if(Assets.exists(Paths.image('characters/' + config.imagePath, 'shared')))
+					frames = Paths.getSparrowAtlas('characters/' + config.imagePath, 'shared');
+				else
+					frames = Paths.getSparrowAtlasSYS("characters/" + config.imagePath, "shared");
+				#else
 				frames = Paths.getSparrowAtlas('characters/' + config.imagePath, 'shared');
-			else
-				frames = Paths.getSparrowAtlasSYS("characters/" + config.imagePath, "shared");
-			#else
-			frames = Paths.getSparrowAtlas('characters/' + config.imagePath, 'shared');
-			#end
-		}
-
-		if(config.graphicsSize != null)
-		{
-			setGraphicSize(Std.int(width * config.graphicsSize));
-		}
-
-		for(selected_animation in config.animations)
-		{
-			if(selected_animation.indices != null)
-			{
-				animation.addByIndices(
-					selected_animation.name,
-					selected_animation.animation_name,
-					selected_animation.indices, "",
-					selected_animation.fps,
-					selected_animation.looped
-				);
+				#end
 			}
-			else
+
+			if(config.graphicsSize != null)
 			{
-				animation.addByPrefix(
-					selected_animation.name,
-					selected_animation.animation_name,
-					selected_animation.fps,
-					selected_animation.looped
-				);
+				setGraphicSize(Std.int(width * config.graphicsSize));
 			}
+
+			for(selected_animation in config.animations)
+			{
+				if(selected_animation.indices != null)
+				{
+					animation.addByIndices(
+						selected_animation.name,
+						selected_animation.animation_name,
+						selected_animation.indices, "",
+						selected_animation.fps,
+						selected_animation.looped
+					);
+				}
+				else
+				{
+					animation.addByPrefix(
+						selected_animation.name,
+						selected_animation.animation_name,
+						selected_animation.fps,
+						selected_animation.looped
+					);
+				}
+			}
+
+			if(dancesLeftAndRight)
+				playAnim("danceRight");
+			else
+				playAnim("idle");
+
+			if(debugMode)
+			{
+				if (isPlayer)
+					flipX = !flipX;
+			}
+
+			updateHitbox();
+
+			if(config.barColor == null)
+				config.barColor = [255,0,0];
+
+			barColor = FlxColor.fromRGB(config.barColor[0], config.barColor[1], config.barColor[2]);
+
+			if(config.positionOffset != null)
+				positioningOffset = config.positionOffset;
 		}
-
-		if(dancesLeftAndRight)
-			playAnim("danceRight");
-		else
-			playAnim("idle");
-
-		if(debugMode)
-		{
-			if (isPlayer)
-				flipX = !flipX;
-		}
-
-		updateHitbox();
-
-		if(config.barColor == null)
-			config.barColor = [255,0,0];
-
-		barColor = FlxColor.fromRGB(config.barColor[0], config.barColor[1], config.barColor[2]);
-
-		if(config.positionOffset != null)
-			positioningOffset = config.positionOffset;
 
 		if(config.cameraOffset != null)
 			cameraOffset = config.cameraOffset;
@@ -645,6 +650,15 @@ typedef CharacterConfig =
 	var barColor:Array<Int>;
 	var positionOffset:Array<Float>;
 	var cameraOffset:Array<Float>;
+
+	// multiple characters stuff
+	var characters:Array<CharacterNameData>;
+}
+
+typedef CharacterNameData =
+{
+	var name:String;
+	var positionOffset:Array<Float>;
 }
 
 typedef CharacterAnimation =
