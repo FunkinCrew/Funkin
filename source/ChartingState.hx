@@ -966,18 +966,6 @@ class ChartingState extends MusicBeatState
 			playClaps = hitsounds.checked;
 		};
 
-		var check_mute_inst = new FlxUICheckBox(10, 90, null, null, "Mute Instrumental", 100);
-		check_mute_inst.checked = false;
-		check_mute_inst.callback = function()
-		{
-			var vol:Float = 1;
-
-			if (check_mute_inst.checked)
-				vol = 0;
-
-			FlxG.sound.music.volume = vol;
-		};
-
 		check_snap = new FlxUICheckBox(80, 25, null, null, "Snap to grid", 100);
 		check_snap.checked = defaultSnap;
 		// _song.needsVoices = check_voices.checked;
@@ -990,7 +978,6 @@ class ChartingState extends MusicBeatState
 		var tab_options = new FlxUI(null, UI_options);
 		tab_options.name = "Options";
 		tab_options.add(hitsounds);
-		tab_options.add(check_mute_inst);
 		UI_options.addGroup(tab_options);
 	}
 
