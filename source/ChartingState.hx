@@ -161,6 +161,9 @@ class ChartingState extends MusicBeatState
 		deezNuts.set(32, 8);
 		deezNuts.set(64, 16);
 
+		if (FlxG.save.data.showHelp == null)
+			FlxG.save.data.showHelp = true;
+
 		sectionRenderes = new FlxTypedGroup<SectionRender>();
 		lines = new FlxTypedGroup<FlxSprite>();
 		texts = new FlxTypedGroup<FlxText>();
@@ -2221,12 +2224,7 @@ class ChartingState extends MusicBeatState
 		else if (updateFrame != 5)
 			updateFrame++;
 
-		snapText.text = "Snap: 1/"
-			+ snap
-			+ " ("
-			+ (doSnapShit ? "Shift to disable, CTRL Left or Right to increase/decrease" : "Snap Disabled, Shift to renable.")
-			+ ")\nAdd Notes: 1-8 (or click)\nZoom: "
-			+ zoomFactor;
+		snapText.text = "";
 
 		if (FlxG.keys.justPressed.RIGHT && FlxG.keys.pressed.CONTROL)
 		{
@@ -2335,7 +2333,11 @@ class ChartingState extends MusicBeatState
 			+ "\nZoom: "
 			+ HelperFunctions.truncateFloat(zoomFactor, 2)
 			+ "\nSpeed: "
-			+ HelperFunctions.truncateFloat(speed, 1);
+			+ HelperFunctions.truncateFloat(speed, 1)
+			+ "\n\nSnap: " 
+			+ snap
+			+ "\nCTRL-Left/Right to change snap,\n" + (doSnapShit ? "SHIFT to disable" : "Snap disabled")
+			+ (FlxG.save.data.showHelp ? "\n\nHelp:\nCtrl-MWheel\nZoom in and out\n\nCtrl-Drag Click\nSelect notes\n\nCtrl-C\nCopy the selected notes\n\nCtrl-V\nPaste the selected notes\n\nDelete\nDelete selected notes\n\nPress F1 to hide/show this!" : "");
 
 		var left = FlxG.keys.justPressed.ONE;
 		var down = FlxG.keys.justPressed.TWO;
@@ -2345,6 +2347,9 @@ class ChartingState extends MusicBeatState
 		var downO = FlxG.keys.justPressed.SIX;
 		var upO = FlxG.keys.justPressed.SEVEN;
 		var rightO = FlxG.keys.justPressed.EIGHT;
+
+		if (FlxG.keys.justPressed.F1)
+			FlxG.save.data.showHelp = !FlxG.save.data.showHelp;
 
 		var pressArray = [left, down, up, right, leftO, downO, upO, rightO];
 		var delete = false;

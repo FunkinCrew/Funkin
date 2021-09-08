@@ -32,7 +32,6 @@ class WaveformTestState extends FlxState
 			else
 				waveform = new Waveform(0, 0, Paths.inst(PlayState.SONG.song), 720);
 		}
-
 		waveform.drawWaveform();
 		add(waveform);
 	}
