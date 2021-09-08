@@ -1809,10 +1809,16 @@ class ChartingState extends MusicBeatState
 		if (FlxG.sound.music.time > FlxG.sound.music.length)
 			FlxG.sound.music.time = FlxG.sound.music.length;
 
+		#if debug
+		FlxG.watch.addQuick("Renderers",sectionRenderes.length);
+		FlxG.watch.addQuick("Notes",curRenderedNotes.length);
+		FlxG.watch.addQuick("Rendered Notes ",shownNotes.length);
+		#end
+
 		for (i in sectionRenderes)
 		{
 			var diff = i.y - strumLine.y;
-			if (diff < 4000 && diff >= -4000)
+			if (diff < 2500 && diff >= -2500)
 			{
 				i.active = true;
 				i.visible = true;
