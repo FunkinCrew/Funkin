@@ -371,7 +371,7 @@ class ChartingState extends MusicBeatState
 		leftIcon.scrollFactor.set();
 		rightIcon.scrollFactor.set();
 
-		bpmTxt = new FlxText(1000, 50, 0, "", 16);
+		bpmTxt = new FlxText(985, 25, 0, "", 16);
 		bpmTxt.scrollFactor.set();
 		add(bpmTxt);
 
@@ -2313,8 +2313,6 @@ class ChartingState extends MusicBeatState
 			+ Std.string(FlxMath.roundDecimal(FlxG.sound.music.length / 1000, 2))
 			+ "\nCur Section: "
 			+ curSection
-			+ "\nCurBPM: "
-			+ currentBPM
 			+ "\nCurBeat: "
 			+ HelperFunctions.truncateFloat(curDecimalBeat, 3)
 			+ "\nCurStep: "
@@ -2325,8 +2323,8 @@ class ChartingState extends MusicBeatState
 			+ HelperFunctions.truncateFloat(speed, 1)
 			+ "\n\nSnap: " 
 			+ snap
-			+ "\nCTRL-Left/Right to change snap,\n" + (doSnapShit ? "SHIFT to disable" : "Snap disabled")
-			+ (FlxG.save.data.showHelp ? "\n\nHelp:\nCtrl-MWheel\nZoom in and out\n\nCtrl-Drag Click\nSelect notes\n\nCtrl-C\nCopy the selected notes\n\nCtrl-V\nPaste the selected notes\n\nDelete\nDelete selected notes\n\nPress F1 to hide/show this!" : "");
+			+ "\nCTRL-Left/Right Change snap\n" + (doSnapShit ? "SHIFT to disable" : "Snap disabled")
+			+ (FlxG.save.data.showHelp ? "\n\nHelp:\nCtrl-MWheel\nZoom in and out\n\nShift-Left/Right\nSpeed up/slow down the song\n\nCtrl-Drag Click\nSelect notes\n\nCtrl-C\nCopy the selected notes\n\nCtrl-V\nPaste the selected notes\n\nCtrl-Z\nUndo the last action\n\nDelete\nDelete selected notes\n\nPress F1 to hide/show this!" : "");
 
 		var left = FlxG.keys.justPressed.ONE;
 		var down = FlxG.keys.justPressed.TWO;
