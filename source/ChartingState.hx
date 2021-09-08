@@ -1784,6 +1784,20 @@ class ChartingState extends MusicBeatState
 	public function resizeEverything()
 	{
 		regenerateLines();
+
+		for(i in curRenderedNotes.members)
+		{
+			i.y = getYfromStrum(i.strumTime) * zoomFactor;
+			if (i.noteCharterObject != null)
+			{
+				curRenderedSustains.remove(i.noteCharterObject);
+				var sustainVis:FlxSprite = new FlxSprite(i.x + (GRID_SIZE / 2),
+				i.y + GRID_SIZE).makeGraphic(8, Math.floor((getYfromStrum(i.strumTime + i.sustainLength) * zoomFactor) - i.y),FlxColor.WHITE);
+
+				i.noteCharterObject = sustainVis;
+				curRenderedSustains.add(i.noteCharterObject);
+			}
+		}
 	}
 
 	public var shownNotes:Array<Note> = [];
@@ -1862,18 +1876,11 @@ class ChartingState extends MusicBeatState
 			if (diff < 8000 && diff >= -8000)
 			{
 				shownNotes.push(note);
-				note.y = getYfromStrum(note.strumTime) * zoomFactor;
 				if (note.sustainLength > 0)
 				{
-					if (note.noteCharterObject != null)
-						if (note.noteCharterObject.y != note.y + GRID_SIZE)
-						{
-							note.noteCharterObject.y = note.y + GRID_SIZE;
-							note.noteCharterObject.makeGraphic(8, Math.floor((getYfromStrum(note.strumTime + note.sustainLength) * zoomFactor) - note.y),
-								FlxColor.WHITE);
-							note.noteCharterObject.active = true;
-							note.noteCharterObject.visible = true;
-						}
+
+					note.noteCharterObject.active = true;
+					note.noteCharterObject.visible = true;
 				}
 				note.active = true;
 				note.visible = true;
@@ -2715,6 +2722,8 @@ class ChartingState extends MusicBeatState
 
 				if (curSelectedNoteObject.noteCharterObject != null)
 					curRenderedSustains.remove(curSelectedNoteObject.noteCharterObject);
+
+				remove(curSelectedNoteObject.noteCharterObject);
 
 				var sustainVis:FlxSprite = new FlxSprite(curSelectedNoteObject.x + (GRID_SIZE / 2),
 					curSelectedNoteObject.y + GRID_SIZE).makeGraphic(8,
