@@ -82,15 +82,6 @@ class FlxAnimate extends FlxSymbol
 
 		for (frameSorted in ParseAnimate.frameList)
 		{
-			if (FlxG.keys.justPressed.I)
-			{
-				trace("\n\n\n\n");
-				trace('NEW LAYER TYPE SHIT');
-				trace(frameSorted.length);
-				// trace(i.depthString);
-				// trace("random lol: " + i.randomLol);
-			}
-
 			for (i in frameSorted)
 			{
 				// instead of making them every frame, regenerate when needed?
@@ -98,6 +89,7 @@ class FlxAnimate extends FlxSymbol
 				spr.frames = frames;
 				spr.frame = spr.frames.getByName(i.frameName); // this one is fine
 
+				// move this? wont work here!
 				if (FlxG.keys.justPressed.I)
 				{
 					trace(i.frameName);
@@ -106,7 +98,6 @@ class FlxAnimate extends FlxSymbol
 				}
 
 				// cuz its in group, gets a lil fuckie when animated, need to go thru and properly reset each thing for shit like matrix!
-
 				spr.transformMatrix.copyFrom(normalSpr.transformMatrix);
 
 				for (swagMatrix in i.matrixArray)
@@ -120,8 +111,6 @@ class FlxAnimate extends FlxSymbol
 				spr.origin.set();
 				spr.antialiasing = true;
 				sprGrp.add(spr);
-				// trace(sprGrp);
-				// trace(spr);
 				// spr.alpha = 0.5;
 
 				/* 	if (i == "0225")
