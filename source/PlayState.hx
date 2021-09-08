@@ -1005,8 +1005,7 @@ class PlayState extends MusicBeatState
 			SONG.song
 			+ (FlxMath.roundDecimal(songMultiplier, 2) != 1.00 ? " (" + FlxMath.roundDecimal(songMultiplier, 2) + "x)" : "")
 			+ " - "
-			+ CoolUtil.difficultyFromInt(storyDifficulty)
-			+ (Main.watermarks ? " | KE " + MainMenuState.kadeEngineVer : ""),
+			+ CoolUtil.difficultyFromInt(storyDifficulty),
 			16);
 		kadeEngineWatermark.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		kadeEngineWatermark.scrollFactor.set();
