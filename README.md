@@ -90,4 +90,4 @@ As for Mac, 'lime test mac -debug' should work, if not the internet surely has a
 - [Command line basics](https://ninjamuffin99.newgrounds.com/news/post/1090480)
 
 
-commits are signed and verified i think
+Commits are generally signed and verified, as of September 8th, 2021! Using GPG!
