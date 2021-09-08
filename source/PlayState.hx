@@ -1770,7 +1770,7 @@ class PlayState extends MusicBeatState
 		if (vocalsFinished)
 			return;
 
-		vocals.time = Conductor.songPosition;
+		vocals.time = FlxG.sound.music.time;
 		vocals.play();
 	}
 
@@ -1780,9 +1780,6 @@ class PlayState extends MusicBeatState
 
 	override public function update(elapsed:Float)
 	{
-		// makes the lerp non-dependant on the framerate
-		// FlxG.camera.followLerp = CoolUtil.camLerpShit(0.04);
-
 		#if !debug
 		perfectMode = false;
 		#else
@@ -1873,6 +1870,7 @@ class PlayState extends MusicBeatState
 			paused = true;
 
 			// 1 / 1000 chance for Gitaroo Man easter egg
+			// can this please move to dying it's kinda fucked up that pausing has a 1/1000 chance ur forced to restart
 			if (FlxG.random.bool(0.1))
 			{
 				// gitaroo man easter egg
@@ -1903,9 +1901,6 @@ class PlayState extends MusicBeatState
 
 		if (FlxG.keys.justPressed.NINE)
 			iconP1.swapOldIcon();
-
-		// FlxG.watch.addQuick('VOL', vocals.amplitudeLeft);
-		// FlxG.watch.addQuick('VOLRight', vocals.amplitudeRight);
 
 		iconP1.setGraphicSize(Std.int(CoolUtil.coolLerp(iconP1.width, 150, 0.15)));
 		iconP2.setGraphicSize(Std.int(CoolUtil.coolLerp(iconP2.width, 150, 0.15)));
@@ -1973,23 +1968,8 @@ class PlayState extends MusicBeatState
 					gfSpeed = 2;
 				case 112:
 					gfSpeed = 1;
-				case 163:
-					// FlxG.sound.music.stop();
-					// FlxG.switchState(new TitleState());
 			}
 		}
-
-		if (curSong == 'Bopeebo')
-		{
-			switch (curBeat)
-			{
-				case 128, 129, 130:
-					vocals.volume = 0;
-					// FlxG.sound.music.stop();
-					// FlxG.switchState(new PlayState());
-			}
-		}
-		// better streaming of shit
 
 		if (!inCutscene && !_exiting)
 		{
@@ -2223,6 +2203,7 @@ class PlayState extends MusicBeatState
 			daPos += 4 * (1000 * 60 / daBPM);
 		}
 		Conductor.songPosition = FlxG.sound.music.time = daPos;
+		Conductor.songPosition += Conductor.offset;
 		updateCurStep();
 		resyncVocals();
 	}
@@ -2962,11 +2943,6 @@ class PlayState extends MusicBeatState
 			|| (SONG.needsVoices && Math.abs(vocals.time - (Conductor.songPosition - Conductor.offset)) > 20))
 		{
 			resyncVocals();
-		}
-
-		if (dad.curCharacter == 'spooky' && curStep % 4 == 2)
-		{
-			// dad.dance();
 		}
 	}
 

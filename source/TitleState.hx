@@ -51,7 +51,7 @@ class TitleState extends MusicBeatState
 	var ngSpr:FlxSprite;
 
 	var curWacky:Array<String> = [];
-	var lastBeat:Int = -1;
+	var lastBeat:Int = 0;
 	var swagShader:ColorSwap;
 	var alphaShader:BuildingShaders;
 
