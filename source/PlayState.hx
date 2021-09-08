@@ -120,8 +120,11 @@ class PlayState extends MusicBeatState
 
 	var defaultCamZoom:Float = 1.05;
 
-	var saveStateFlag:Bool = false;
-	var saveStateTime:Float = 0; // the part of the music we're restarting to in our save state, in milliseconds
+	var saveStateFlag:Bool = false; 
+	var saveStateTime:Float = 0;     // the part of the music we're restarting to in our save state, in milliseconds
+	var saveStateNoteIndex:Int = 0;
+	var nextUnspawnedNote:Int = 0;
+
 
 	// how big to stretch the pixel art assets
 	public static var daPixelZoom:Float = 6;
@@ -1333,10 +1336,22 @@ class PlayState extends MusicBeatState
 		vocals.play();
 	}
 
+
+	// notes get pretty buggy after restarting from this? prob just my bluetooth earbuds
+	// TODO, also have to reset arrows back to the set position
+	//       unset save location by holding O
 	function restartFromSaveState():Void
 	{
+		unspawnNotes = [];
+		//generateSong();
+		FlxG.sound.music.pause();
+		vocals.pause();
+		generateSong(SONG.song);
 		FlxG.sound.music.play(true, saveStateTime);
 		vocals.play(true, saveStateTime);
+		nextUnspawnedNote = saveStateNoteIndex;
+
+
 	}
 
 	private var paused:Bool = false;
@@ -1349,6 +1364,7 @@ class PlayState extends MusicBeatState
 		perfectMode = false;
 		#end
 
+		// changes bf icon in score bar to older version purely cosmetic --austin
 		if (FlxG.keys.justPressed.NINE)
 		{
 			if (iconP1.animation.curAnim.name == 'bf-old')
@@ -1357,6 +1373,7 @@ class PlayState extends MusicBeatState
 				iconP1.animation.play('bf-old');
 		}
 
+		// switch statement for playing train animation
 		switch (curStage)
 		{
 			case 'philly':
@@ -1377,6 +1394,7 @@ class PlayState extends MusicBeatState
 
 		scoreTxt.text = "Score:" + songScore;
 
+		// pausing
 		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause)
 		{
 			persistentUpdate = false;
@@ -1397,6 +1415,7 @@ class PlayState extends MusicBeatState
 			#end
 		}
 
+		// charting state
 		if (FlxG.keys.justPressed.SEVEN)
 		{
 			FlxG.switchState(new ChartingState());
@@ -1409,7 +1428,7 @@ class PlayState extends MusicBeatState
 		if (FlxG.keys.justPressed.O && startedCountdown) // sets save state
 		{
 			saveStateTime = FlxG.sound.music.time;
-			trace("I PRESSED O");
+			saveStateNoteIndex = nextUnspawnedNote;
 			trace("CURRENT TIME OF THE SONG:" + saveStateTime);
 			saveStateFlag = true;
 
@@ -1620,15 +1639,19 @@ class PlayState extends MusicBeatState
 			#end
 		}
 
-		if (unspawnNotes[0] != null)
+	if (unspawnNotes[nextUnspawnedNote] != null)
 		{
-			if (unspawnNotes[0].strumTime - Conductor.songPosition < 1500)
+			if (unspawnNotes[nextUnspawnedNote].strumTime - Conductor.songPosition < 1500)
 			{
-				var dunceNote:Note = unspawnNotes[0];
+				var dunceNote:Note = unspawnNotes[nextUnspawnedNote];
+				dunceNote.visible = true;
 				notes.add(dunceNote);
+				nextUnspawnedNote++;
 
-				var index:Int = unspawnNotes.indexOf(dunceNote);
-				unspawnNotes.splice(index, 1);
+				var index:Int = unspawnNotes.indexOf(dunceNote);    // this part was kinda pointless even in the old implementation since the index would always be 0, 
+				trace(index);                                       // 	this is because unspawnNotes would be sorted according to strumTime in the first place --austin
+				//trace(dunceNote.alive);
+				// unspawnNotes.splice(index, 1);
 			}
 		}
 
@@ -1693,7 +1716,7 @@ class PlayState extends MusicBeatState
 
 					daNote.kill();
 					notes.remove(daNote, true);
-					daNote.destroy();
+					// daNote.destroy();
 				}
 
 				// WIP interpolation shit? Need to fix the pause issue
@@ -1712,7 +1735,8 @@ class PlayState extends MusicBeatState
 
 					daNote.kill();
 					notes.remove(daNote, true);
-					daNote.destroy();
+					//daNote.destroy();
+
 				}
 			});
 		}
@@ -2266,7 +2290,7 @@ class PlayState extends MusicBeatState
 			{
 				note.kill();
 				notes.remove(note, true);
-				note.destroy();
+				//note.destroy();
 			}
 		}
 	}
