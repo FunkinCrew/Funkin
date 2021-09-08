@@ -1355,6 +1355,8 @@ class ChartingState extends MusicBeatState
 			FlxG.sound.music.time = 0;
 		else if (FlxG.sound.music.time > FlxG.sound.music.length)
 			FlxG.sound.music.time = FlxG.sound.music.length;
+
+		claps.splice(0, claps.length);
 	}
 
 	public var check_naltAnim:FlxUICheckBox;
