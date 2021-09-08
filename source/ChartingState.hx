@@ -632,6 +632,10 @@ class ChartingState extends MusicBeatState
 			lastSection = curSection;
 
 			PlayState.SONG = _song;
+
+			// JUST FOR DEBUG DARNELL STUFF, GENERALIZE THIS FOR BETTER LOADING ELSEWHERE TOO!
+			PlayState.storyWeek = 8;
+
 			FlxG.sound.music.stop();
 			vocals.stop();
 			LoadingState.loadAndSwitchState(new PlayState());
