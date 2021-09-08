@@ -1344,6 +1344,7 @@ class PlayState extends MusicBeatState
 	{
 		unspawnNotes = [];
 		//generateSong();
+		notes.destroy();
 		FlxG.sound.music.pause();
 		vocals.pause();
 		generateSong(SONG.song);
