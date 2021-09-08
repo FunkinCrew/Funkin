@@ -1818,7 +1818,7 @@ class ChartingState extends MusicBeatState
 		for (i in sectionRenderes)
 		{
 			var diff = i.y - strumLine.y;
-			if (diff < 2500 && diff >= -2500)
+			if (diff < 720 && diff >= -720)
 			{
 				i.active = true;
 				i.visible = true;
