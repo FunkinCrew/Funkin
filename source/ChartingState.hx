@@ -1818,7 +1818,7 @@ class ChartingState extends MusicBeatState
 		for (i in sectionRenderes)
 		{
 			var diff = i.y - strumLine.y;
-			if (diff < 720 && diff >= -720)
+			if (diff < 2000 && diff >= -2000)
 			{
 				i.active = true;
 				i.visible = true;
@@ -1858,8 +1858,8 @@ class ChartingState extends MusicBeatState
 
 		for (note in curRenderedNotes)
 		{
-			var diff = note.y - strumLine.y;
-			if (diff < 720 && diff >= -720)
+			var diff = note.strumTime - Conductor.songPosition;
+			if (diff < 8000 && diff >= -8000)
 			{
 				shownNotes.push(note);
 				note.y = getYfromStrum(note.strumTime) * zoomFactor;
