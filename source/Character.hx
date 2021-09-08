@@ -217,26 +217,25 @@ class Character extends FlxSprite
 				quickAnimAdd('idle', "Pico Idle Dance");
 				quickAnimAdd('singUP', 'pico Up note0');
 				quickAnimAdd('singDOWN', 'Pico Down Note0');
-				if (isPlayer)
-				{
-					quickAnimAdd('singLEFT', 'Pico NOTE LEFT0');
-					quickAnimAdd('singRIGHT', 'Pico Note Right0');
-					quickAnimAdd('singRIGHTmiss', 'Pico Note Right Miss');
-					quickAnimAdd('singLEFTmiss', 'Pico NOTE LEFT miss');
-				}
-				else
-				{
-					// Need to be flipped! REDO THIS LATER!
-					quickAnimAdd('singLEFT', 'Pico Note Right0');
-					quickAnimAdd('singRIGHT', 'Pico NOTE LEFT0');
-					quickAnimAdd('singRIGHTmiss', 'Pico NOTE LEFT miss');
-					quickAnimAdd('singLEFTmiss', 'Pico Note Right Miss');
-				}
+
+				// isPlayer = true;
+
+				// Need to be flipped! REDO THIS LATER!
+				quickAnimAdd('singLEFT', 'Pico Note Right0');
+				quickAnimAdd('singRIGHT', 'Pico NOTE LEFT0');
+				quickAnimAdd('singRIGHTmiss', 'Pico NOTE LEFT miss');
+				quickAnimAdd('singLEFTmiss', 'Pico Note Right Miss');
 
 				quickAnimAdd('singUPmiss', 'pico Up note miss');
 				quickAnimAdd('singDOWNmiss', 'Pico Down Note MISS');
 
-				loadOffsetFile(curCharacter);
+				// right now it loads a seperate offset file for pico, would be cool if could generalize it!
+				var playerShit:String = "";
+
+				if (isPlayer)
+					playerShit += "Player";
+
+				loadOffsetFile(curCharacter + playerShit);
 
 				playAnim('idle');
 
@@ -661,10 +660,6 @@ class Character extends FlxSprite
 						else
 							playAnim('danceLeft');
 					}
-
-				case 'pico-speaker':
-				// lol weed
-				// playAnim('shoot' + FlxG.random.int(1, 4), true);
 
 				case 'tankman':
 					if (!animation.curAnim.name.endsWith('DOWN-alt'))
