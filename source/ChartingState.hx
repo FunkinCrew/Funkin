@@ -136,7 +136,7 @@ class ChartingState extends MusicBeatState
 
 	var camFollow:FlxObject;
 
-	// public var waveform:Waveform;
+	public var waveform:Waveform;
 	public static var latestChartVersion = "2";
 
 	override function create()
@@ -325,7 +325,7 @@ class ChartingState extends MusicBeatState
 
 		trace("TARGET " + targetY);
 
-		for (awfgaw in 0...Math.round(targetY / 640) + 1920) // grids/steps
+		for (awfgaw in 0...Math.round(targetY / 640)) // grids/steps
 		{
 			var renderer = new SectionRender(0, 640 * awfgaw, GRID_SIZE);
 			if (_song.notes[awfgaw] == null)
@@ -418,20 +418,19 @@ class ChartingState extends MusicBeatState
 
 		// fuckin stupid ass bitch ass fucking waveform
 		/*if (PlayState.isSM)
-			{
-				waveform = new Waveform(0,0,PlayState.pathToSm + "/" + PlayState.sm.header.MUSIC,height);
-			}
+		{
+			waveform = new Waveform(0,0,PlayState.pathToSm + "/" + PlayState.sm.header.MUSIC,height);
+		}
+		else
+		{
+			if (_song.needsVoices)
+				waveform = new Waveform(0,0,Paths.voices(_song.song),height);
 			else
-			{
-				if (_song.needsVoices)
-					waveform = new Waveform(0,0,Paths.voices(_song.song),height);
-				else
-					waveform = new Waveform(0,0,Paths.inst(_song.song),height);
-			}
+				waveform = new Waveform(0,0,Paths.inst(_song.song),height);
+		}
 
-			waveform.drawWaveform();
-			add(waveform);
-		 */
+		waveform.drawWaveform();
+		add(waveform);*/
 
 		add(dummyArrow);
 		add(strumLine);

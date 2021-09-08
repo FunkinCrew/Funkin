@@ -779,7 +779,7 @@ class PlayState extends MusicBeatState
 					if (section.startTime > 5000)
 					{
 						needSkip = true;
-						skipTo = section.startTime;
+						skipTo = section.startTime - 1000;
 					}
 					break;
 				}
@@ -810,7 +810,7 @@ class PlayState extends MusicBeatState
 						if (timing > 5000)
 						{
 							needSkip = true;
-							skipTo = timing;
+							skipTo = timing - 1000;
 						}
 					}
 				}
@@ -1250,6 +1250,12 @@ class PlayState extends MusicBeatState
 		Conductor.songPosition = 0;
 		Conductor.songPosition -= Conductor.crochet * 5;
 
+		if (FlxG.sound.music.playing)
+			FlxG.sound.music.stop();
+		if (vocals != null)
+			vocals.stop();
+
+
 		var swagCounter:Int = 0;
 
 		startTimer = new FlxTimer().start(Conductor.crochet / 1000, function(tmr:FlxTimer)
@@ -1628,6 +1634,8 @@ class PlayState extends MusicBeatState
 			skipText.size = 30;
 			skipText.color = 0xFFADD8E6;
 			skipText.cameras = [camHUD];
+			skipText.alpha = 0;
+			FlxTween.tween(skipText,{alpha: 1},0.2);
 			add(skipText);
 		}
 	}
@@ -2394,6 +2402,36 @@ class PlayState extends MusicBeatState
 				openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 		}
 
+		if (FlxG.keys.justPressed.FIVE && songStarted)
+		{
+			songMultiplier = 1;
+			if (useVideo)
+			{
+				GlobalVideo.get().stop();
+				remove(videoSprite);
+				#if sys
+				FlxG.stage.window.onFocusOut.remove(focusOut);
+				FlxG.stage.window.onFocusIn.remove(focusIn);
+				#end
+				removedVideo = true;
+			}
+			cannotDie = true;
+
+			FlxG.switchState(new WaveformTestState());
+			clean();
+			PlayState.stageTesting = false;
+			FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, handleInput);
+			FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP, releaseInput);
+			#if cpp
+			if (luaModchart != null)
+			{
+				luaModchart.die();
+				luaModchart = null;
+			}
+			#end
+		}
+
+
 		if (FlxG.keys.justPressed.SEVEN && songStarted)
 		{
 			songMultiplier = 1;
@@ -2589,7 +2627,7 @@ class PlayState extends MusicBeatState
 
 			vocals.time = Conductor.songPosition;
 			vocals.play();
-			remove(skipText);
+			FlxTween.tween(skipText,{alpha: 0},0.2,{onComplete: function(tw){remove(skipText);}});
 			skipActive = false;
 		}
 
