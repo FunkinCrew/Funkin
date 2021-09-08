@@ -105,6 +105,11 @@ class ChartingState extends MusicBeatState
 
 	var selected_mod:String = "default";
 
+	var stepperSusLength:FlxUINumericStepper;
+	var stepperCharLength:FlxUINumericStepper;
+
+	var current_Note_Character:Int = 0;
+
 	override function create()
 	{
 		// FOR WHEN COMING IN FROM THE TOOLS PAGE LOL
@@ -428,8 +433,13 @@ class ChartingState extends MusicBeatState
 		stepperSusLength.value = 0;
 		stepperSusLength.name = 'note_susLength';
 
+		stepperCharLength = new FlxUINumericStepper(stepperSusLength.x, stepperSusLength.y + stepperSusLength.height + 1, 1, 0, 0, 999);
+		stepperCharLength.value = 0;
+		stepperCharLength.name = 'note_char';
+
 		// labels
-		var susText = new FlxText(11 + stepperSusLength.width, 260, 0, "Sustain note length", 9);
+		var susText = new FlxText(stepperSusLength.x + stepperSusLength.width + 1, stepperSusLength.y, 0, "Sustain note length", 9);
+		var charText = new FlxText(stepperCharLength.x + stepperCharLength.width + 1, stepperCharLength.y, 0, "Character", 9);
 
 		// Adding everything in
 
@@ -438,6 +448,9 @@ class ChartingState extends MusicBeatState
 
 		tab_group_section.add(stepperSusLength);
 		tab_group_section.add(susText);
+
+		tab_group_section.add(stepperCharLength);
+		tab_group_section.add(charText);
 
 		// section stuff
 		tab_group_section.add(sectionText);
@@ -460,8 +473,6 @@ class ChartingState extends MusicBeatState
 		// final addition
 		UI_box.addGroup(tab_group_section);
 	}
-
-	var stepperSusLength:FlxUINumericStepper;
 
 	function addNoteUI():Void
 	{
@@ -675,6 +686,8 @@ class ChartingState extends MusicBeatState
 				case 'note_susLength':
 					curSelectedNote[2] = nums.value;
 					updateGrid();
+				case 'note_char':
+					current_Note_Character = Std.int(nums.value);
 				case 'section_bpm':
 					_song.notes[curSection].bpm = Std.int(nums.value);
 					updateGrid();
@@ -1258,7 +1271,7 @@ class ChartingState extends MusicBeatState
 		var noteData = Math.floor(FlxG.mouse.x / GRID_SIZE);
 		var noteSus = 0;
 
-		_song.notes[curSection].sectionNotes.push([noteStrum, noteData, noteSus]);
+		_song.notes[curSection].sectionNotes.push([noteStrum, noteData, noteSus, current_Note_Character]);
 
 		curSelectedNote = _song.notes[curSection].sectionNotes[_song.notes[curSection].sectionNotes.length - 1];
 

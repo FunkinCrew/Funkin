@@ -644,6 +644,30 @@ class StageGroup extends FlxGroup
 
         if(PlayState.SONG.player2.startsWith("gf") && PlayState.SONG.gf.startsWith("gf"))
             p2.setPosition(gf.x, gf.y);
+
+        if(p1.otherCharacters != null)
+        {
+            for(character in p1.otherCharacters)
+            {
+                character.setPosition((player_1_Point.x - (character.width / 2)) + character.positioningOffset[0], (player_1_Point.y - character.height) + character.positioningOffset[1]);
+            }
+        }
+
+        if(gf.otherCharacters != null)
+        {
+            for(character in gf.otherCharacters)
+            {
+                character.setPosition((gf_Point.x - (character.width / 2)) + character.positioningOffset[0], (gf_Point.y - character.height) + character.positioningOffset[1]);
+            }
+        }
+
+        if(p2.otherCharacters != null)
+        {
+            for(character in p2.otherCharacters)
+            {
+                character.setPosition((player_2_Point.x - (character.width / 2)) + character.positioningOffset[0], (player_2_Point.y - character.height) + character.positioningOffset[1]);
+            }
+        }
     }
 
     override public function new(?stageName:String) {

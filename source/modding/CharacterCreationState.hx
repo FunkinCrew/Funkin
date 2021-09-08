@@ -251,7 +251,8 @@ class CharacterCreationState extends FlxState
             graphicsSize: Graphics_Size,
             barColor: Bar_Color,
             positionOffset: [0,0],
-            cameraOffset: [0,0]
+            cameraOffset: [0,0],
+            characters: []
         };
     }
 

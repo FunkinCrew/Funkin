@@ -32,7 +32,7 @@ class Character extends FlxSprite
 	public var positioningOffset:Array<Float> = [0, 0];
 	public var cameraOffset:Array<Float> = [0, 0];
 
-	public var otherCharacters:Array<Character> = [];
+	public var otherCharacters:Array<Character>;
 
 	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false)
 	{
@@ -49,6 +49,7 @@ class Character extends FlxSprite
 			loadOffsetFile(curCharacter);
 
 		dancesLeftAndRight = false;
+
 		switch (curCharacter)
 		{
 			case 'gf':
@@ -374,7 +375,7 @@ class Character extends FlxSprite
 		if (isPlayer)
 			flipX = !flipX;
 
-		if(curCharacter != '' && otherCharacters == [])
+		if(curCharacter != '' && otherCharacters == null)
 		{
 			updateHitbox();
 
@@ -424,7 +425,7 @@ class Character extends FlxSprite
 
 	public function loadCharacterConfiguration(config:CharacterConfig)
 	{
-		if(config.characters == null || config.characters == [])
+		if(config.characters == null)
 		{
 			flipX = config.defaultFlipX;
 			dancesLeftAndRight = config.dancesLeftAndRight;
@@ -501,6 +502,19 @@ class Character extends FlxSprite
 			if(config.positionOffset != null)
 				positioningOffset = config.positionOffset;
 		}
+		else
+		{
+			otherCharacters = [];
+
+			for(characterData in config.characters)
+			{
+				var character = new Character(x, y, characterData.name, isPlayer);
+				character.positioningOffset[0] += characterData.positionOffset[0];
+				character.positioningOffset[1] += characterData.positionOffset[1];
+				
+				otherCharacters.push(character);
+			}
+		}
 
 		if(config.cameraOffset != null)
 			cameraOffset = config.cameraOffset;
@@ -548,6 +562,7 @@ class Character extends FlxSprite
 
 				if (curCharacter == 'dad')
 					dadVar = 6.1;
+				
 				if (holdTimer >= Conductor.stepCrochet * dadVar * 0.001)
 				{
 					dance();
@@ -652,10 +667,10 @@ typedef CharacterConfig =
 	var cameraOffset:Array<Float>;
 
 	// multiple characters stuff
-	var characters:Array<CharacterNameData>;
+	var characters:Array<CharacterData>;
 }
 
-typedef CharacterNameData =
+typedef CharacterData =
 {
 	var name:String;
 	var positionOffset:Array<Float>;
