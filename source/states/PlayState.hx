@@ -1407,7 +1407,7 @@ class PlayState extends MusicBeatState
 			
 			if (camFollow.x != dad.getMidpoint().x + 150 && !PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection)
 			{
-				camFollow.setPosition(dad.getMidpoint().x + 150, dad.getMidpoint().y - 100);
+				camFollow.setPosition(dad.getMidpoint().x + 150 + dad.cameraOffset[0], dad.getMidpoint().y - 100 + dad.cameraOffset[1]);
 
 				switch (dad.curCharacter)
 				{
@@ -1421,12 +1421,6 @@ class PlayState extends MusicBeatState
 						camFollow.x = dad.getMidpoint().x - 100;
 				}
 
-				if(dad.cameraOffset != [0,0])
-				{
-					camFollow.x += dad.cameraOffset[0];
-					camFollow.y += dad.cameraOffset[1];
-				}
-
 				#if linc_luajit
 				if (luaModchart != null)
 					luaModchart.executeState('playerTwoTurn', []);
@@ -1435,7 +1429,7 @@ class PlayState extends MusicBeatState
 
 			if (PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection && camFollow.x != boyfriend.getMidpoint().x - 100)
 			{
-				camFollow.setPosition(boyfriend.getMidpoint().x - 100, boyfriend.getMidpoint().y - 100);
+				camFollow.setPosition(boyfriend.getMidpoint().x - 100  + boyfriend.cameraOffset[0], boyfriend.getMidpoint().y - 100+ boyfriend.cameraOffset[1]);
 
 				switch (curStage)
 				{
@@ -1449,12 +1443,6 @@ class PlayState extends MusicBeatState
 					case 'evil-school':
 						camFollow.x = boyfriend.getMidpoint().x - 200;
 						camFollow.y = boyfriend.getMidpoint().y - 200;
-				}
-
-				if(boyfriend.cameraOffset != [0,0])
-				{
-					camFollow.x += boyfriend.cameraOffset[0];
-					camFollow.y += boyfriend.cameraOffset[1];
 				}
 
 				#if linc_luajit
