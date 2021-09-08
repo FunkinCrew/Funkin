@@ -2339,19 +2339,19 @@ class PlayState extends MusicBeatState
 
 		var isSick:Bool = true;
 
-		if (noteDiff > Conductor.safeZoneOffset * 0.9)
+		if (noteDiff > Note.HIT_WINDOW * Note.BAD_THRESHOLD)
 		{
 			daRating = 'shit';
 			score = 50;
 			isSick = false; // shitty copypaste on this literally just because im lazy and tired lol!
 		}
-		else if (noteDiff > Conductor.safeZoneOffset * 0.75)
+		else if (noteDiff > Note.HIT_WINDOW * Note.GOOD_THRESHOLD)
 		{
 			daRating = 'bad';
 			score = 100;
 			isSick = false;
 		}
-		else if (noteDiff > Conductor.safeZoneOffset * 0.2)
+		else if (noteDiff > Note.HIT_WINDOW * Note.SICK_THRESHOLD)
 		{
 			daRating = 'good';
 			score = 200;

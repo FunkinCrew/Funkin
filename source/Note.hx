@@ -34,13 +34,21 @@ class Note extends FlxSprite
 	public var isSustainNote:Bool = false;
 
 	public var colorSwap:ColorSwap;
-	public var noteScore:Float = 1;
 
 	public static var swagWidth:Float = 160 * 0.7;
 	public static var PURP_NOTE:Int = 0;
 	public static var GREEN_NOTE:Int = 2;
 	public static var BLUE_NOTE:Int = 1;
 	public static var RED_NOTE:Int = 3;
+
+	// SCORING STUFF
+	public static var safeFrames:Int = 10;
+	public static var HIT_WINDOW:Float = (safeFrames / 60) * 1000; // 166.67 ms hit window
+	// anything above bad threshold is shit
+	public static var BAD_THRESHOLD:Float = 0.8; // 	125ms	, 8 frames
+	public static var GOOD_THRESHOLD:Float = 0.55; // 	91.67ms	, 5.5 frames
+	public static var SICK_THRESHOLD:Float = 0.2; // 	33.33ms	, 2 frames
+	// anything below sick threshold is sick
 
 	public static var arrowColors:Array<Float> = [1, 1, 1, 1];
 
@@ -145,7 +153,6 @@ class Note extends FlxSprite
 
 		if (isSustainNote && prevNote != null)
 		{
-			noteScore * 0.2;
 			alpha = 0.6;
 
 			if (PreferencesMenu.getPref('downscroll'))
@@ -224,9 +231,9 @@ class Note extends FlxSprite
 			}
 			else
 			{
-				if (strumTime > Conductor.songPosition - Conductor.safeZoneOffset)
-				{ // The * 0.5 is so that it's easier to hit them too late, instead of too early
-					if (strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * 0.5))
+				if (strumTime > Conductor.songPosition - HIT_WINDOW)
+				{ // * 0.2 if sustain note, so u have to keep holding it closer to all the way thru!
+					if (strumTime < Conductor.songPosition + (HIT_WINDOW * (isSustainNote ? 0.2 : 1)))
 						canBeHit = true;
 				}
 				else
