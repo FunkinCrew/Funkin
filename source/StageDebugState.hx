@@ -61,7 +61,9 @@ class StageDebugState extends FlxState
 		gf = PlayState.gf;
 		boyfriend = PlayState.boyfriend;
 		dad = PlayState.dad;
-		curChars = [gf, boyfriend, dad];
+		curChars = [dad, boyfriend, gf];
+		if (!gf.visible) // for when gf is an opponent
+			curChars.pop();
 		curChar = curChars[curCharIndex];
 
 		for (i in Stage.toAdd)
@@ -264,11 +266,11 @@ class StageDebugState extends FlxState
 		switch (curCharIndex)
 		{
 			case 0:
-				curCharString = daGf;
+				curCharString = opponent;
 			case 1:
 				curCharString = daBf;
 			case 2:
-				curCharString = opponent;
+				curCharString = daGf;
 		}
 	}
 
