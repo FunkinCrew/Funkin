@@ -494,11 +494,6 @@ class Character extends FlxSprite
 
 			updateHitbox();
 
-			if(config.barColor == null)
-				config.barColor = [255,0,0];
-
-			barColor = FlxColor.fromRGB(config.barColor[0], config.barColor[1], config.barColor[2]);
-
 			if(config.positionOffset != null)
 				positioningOffset = config.positionOffset;
 		}
@@ -515,6 +510,11 @@ class Character extends FlxSprite
 				otherCharacters.push(character);
 			}
 		}
+
+		if(config.barColor == null)
+			config.barColor = [255,0,0];
+
+		barColor = FlxColor.fromRGB(config.barColor[0], config.barColor[1], config.barColor[2]);
 
 		if(config.cameraOffset != null)
 			cameraOffset = config.cameraOffset;
