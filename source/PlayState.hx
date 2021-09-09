@@ -435,7 +435,28 @@ class PlayState extends MusicBeatState
 				bgGirls.updateHitbox();
 				add(bgGirls);
 			case 'thorns':
-				loadStage('schoolEvil');
+				// loadStage('schoolEvil');
+				curStage = 'schoolEvil';
+
+				var schoolBG:FlxSprite = new FlxSprite(-200, 0).loadGraphic(Paths.image('weeb/evilSchoolBG'));
+				wiggleShit.waveAmplitude = 0.02;
+				wiggleShit.waveSpeed = 2;
+				wiggleShit.waveFrequency = 4;
+				schoolBG.shader = wiggleShit.shader;
+				schoolBG.setGraphicSize(Std.int(schoolBG.width * 6));
+				schoolBG.updateHitbox();
+				// schoolBG.scale.set(6, 6);
+				add(schoolBG);
+
+				schoolBG.scrollFactor.set(0.7, 1);
+
+				var schoolFront:FlxSprite = new FlxSprite(-250, schoolBG.y + 20).loadGraphic(Paths.image('weeb/evilSchoolFG'));
+
+				schoolFront.shader = wiggleShit.shader;
+
+				schoolFront.setGraphicSize(Std.int(schoolFront.width * 6));
+				schoolFront.updateHitbox();
+				add(schoolFront);
 
 			case 'guns' | 'stress' | 'ugh':
 				loadStage('tank');
@@ -485,7 +506,7 @@ class PlayState extends MusicBeatState
 				var fgTank3:BGSprite = new BGSprite('tank3', 1300, 1200, 3.5, 2.5, ['fg']);
 				foregroundSprites.add(fgTank3);
 
-			case "darnell":
+			case "week8Lol":
 				loadStage('phillyStreets');
 
 			default:
@@ -1855,6 +1876,8 @@ class PlayState extends MusicBeatState
 
 		super.update(elapsed);
 
+		wiggleShit.update(elapsed);
+
 		scoreTxt.text = "Score:" + songScore;
 
 		var androidPause:Bool = false;
@@ -2969,7 +2992,6 @@ class PlayState extends MusicBeatState
 			// Conductor.changeBPM(SONG.bpm);
 		}
 		// FlxG.log.add('change bpm' + SONG.notes[Std.int(curStep / 16)].changeBPM);
-		wiggleShit.update(Conductor.crochet);
 
 		// HARDCODING FOR MILF ZOOMS!
 
@@ -3001,7 +3023,7 @@ class PlayState extends MusicBeatState
 		{
 			var animShit:ComboCounter = new ComboCounter(-100, 300, combo);
 			animShit.scrollFactor.set(0.6, 0.6);
-			add(animShit);
+			// add(animShit);
 
 			var frameShit:Float = (1 / 24) * 2; // equals 2 frames in the animation
 
