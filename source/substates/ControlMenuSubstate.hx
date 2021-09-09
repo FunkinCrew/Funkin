@@ -30,6 +30,8 @@ class ControlMenuSubstate extends MusicBeatSubstate
 
     public function new()
     {
+        FlxG.mouse.visible = true;
+
         super();
         
         var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
@@ -61,6 +63,9 @@ class ControlMenuSubstate extends MusicBeatSubstate
             FlxG.save.data.rightBind = controlsLmao[3];
 
             FlxG.save.flush();
+
+            FlxG.mouse.visible = false;
+
             FlxG.state.closeSubState();
         }
 
