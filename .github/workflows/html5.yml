@@ -22,9 +22,9 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: script run line haha
         run: |
-          add-apt-repository ppa:haxe/releases -y
-          apt-get update
-          apt-get install haxe -y
+          sudo add-apt-repository ppa:haxe/releases -y
+          sudo apt-get update
+          sudo apt-get install haxe -y
           RefreshEnv
           mkdir "%HAXELIB_ROOT%"
           haxelib setup "%HAXELIB_ROOT%"
