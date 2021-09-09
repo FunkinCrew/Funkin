@@ -51,15 +51,15 @@ class SongOffsetMenu extends MusicBeatSubstate
             FlxG.state.closeSubState();
         }
 
-        if(leftP)
-            offset -= 1;
-        if(rightP)
-            offset += 1;
+        if(left && !FlxG.keys.pressed.SHIFT)
+            offset -= 0.1;
+        if(right && !FlxG.keys.pressed.SHIFT)
+            offset += 0.1;
 
-        if(left && FlxG.keys.pressed.SHIFT)
-            offset -= 0.01;
-        if(right && FlxG.keys.pressed.SHIFT)
-            offset += 0.01;
+        if(leftP && FlxG.keys.pressed.SHIFT)
+            offset -= 0.1;
+        if(rightP && FlxG.keys.pressed.SHIFT)
+            offset += 0.1;
 
         offset = offset * Math.pow(10, 2);
         offset = Math.round(offset) / Math.pow(10, 2);

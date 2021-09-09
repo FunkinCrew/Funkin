@@ -42,7 +42,9 @@ class SaveData {
         if(FlxG.save.data.nightMusic == null)
 			FlxG.save.data.nightMusic = false;
 
-        FlxG.save.data.songOffset = 0;
+        if(FlxG.save.data.songOffset == null)
+            FlxG.save.data.songOffset = 0;
+        
         Conductor.offset = FlxG.save.data.songOffset;
 
         PlayerSettings.init();

@@ -914,7 +914,7 @@ class PlayState extends MusicBeatState
 
 			for (songNotes in section.sectionNotes)
 			{
-				var daStrumTime:Float = songNotes[0];
+				var daStrumTime:Float = songNotes[0] + Conductor.offset;
 				var daNoteData:Int = Std.int(songNotes[1] % SONG.keyCount);
 
 				var gottaHitNote:Bool = section.mustHitSection;
@@ -1548,9 +1548,9 @@ class PlayState extends MusicBeatState
 				if(FlxG.save.data.downscroll)
 				{
 					if (daNote.mustPress)
-						daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y + 0.45 * ((Conductor.songPosition - daNote.strumTime) + Conductor.offset) * FlxMath.roundDecimal(SONG.speed, 2));
+						daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y + 0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(SONG.speed, 2));
 					else
-						daNote.y = (enemyStrums.members[Math.floor(Math.abs(daNote.noteData))].y + 0.45 * ((Conductor.songPosition - daNote.strumTime) + Conductor.offset) * FlxMath.roundDecimal(SONG.speed, 2));
+						daNote.y = (enemyStrums.members[Math.floor(Math.abs(daNote.noteData))].y + 0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(SONG.speed, 2));
 
 					if(daNote.isSustainNote)
 					{
@@ -1574,9 +1574,9 @@ class PlayState extends MusicBeatState
 				else
 				{
 					if (daNote.mustPress)
-						daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y - 0.45 * ((Conductor.songPosition - daNote.strumTime) + Conductor.offset) * FlxMath.roundDecimal(SONG.speed, 2));
+						daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y - 0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(SONG.speed, 2));
 					else
-						daNote.y = (enemyStrums.members[Math.floor(Math.abs(daNote.noteData))].y - 0.45 * ((Conductor.songPosition - daNote.strumTime) + Conductor.offset) * FlxMath.roundDecimal(SONG.speed, 2));
+						daNote.y = (enemyStrums.members[Math.floor(Math.abs(daNote.noteData))].y - 0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(SONG.speed, 2));
 
 					if(daNote.isSustainNote)
 					{
@@ -1594,7 +1594,7 @@ class PlayState extends MusicBeatState
 					}
 				}
 
-				if (!daNote.mustPress && daNote.strumTime + Conductor.offset <= Conductor.songPosition + Conductor.offset)
+				if (!daNote.mustPress && daNote.strumTime <= Conductor.songPosition)
 				{
 					if (SONG.song != 'Tutorial')
 						camZooming = true;
@@ -1714,7 +1714,7 @@ class PlayState extends MusicBeatState
 				// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
 
 				//(daNote.y < -daNote.height && !FlxG.save.data.downscroll || daNote.y >= strumLine.y + 106 && FlxG.save.data.downscroll))
-				if ((Conductor.songPosition - Conductor.safeZoneOffset) + Conductor.offset > daNote.strumTime + Conductor.offset)
+				if (Conductor.songPosition - Conductor.safeZoneOffset  > daNote.strumTime)
 				{
 					if(daNote.mustPress)
 					{
@@ -1881,7 +1881,7 @@ class PlayState extends MusicBeatState
 
 	private function popUpScore(strumtime:Float, noteData:Int):Void
 	{
-		var noteDiff:Float = (strumtime - Conductor.songPosition) - Conductor.offset;
+		var noteDiff:Float = (strumtime - Conductor.songPosition);
 		vocals.volume = 1;
 
 		var daRating:String = Ratings.getRating(Math.abs(noteDiff));
@@ -2179,8 +2179,8 @@ class PlayState extends MusicBeatState
 				
 				notes.forEachAlive(function(daNote:Note)
 				{
-					if ((daNote.strumTime + Conductor.offset > (Conductor.songPosition - (Conductor.safeZoneOffset * 1.5) + Conductor.offset)
-						&& daNote.strumTime + Conductor.offset < (Conductor.songPosition + (Conductor.safeZoneOffset * 0.5)) + Conductor.offset)
+					if ((daNote.strumTime > (Conductor.songPosition - (Conductor.safeZoneOffset * 1.5))
+						&& daNote.strumTime < (Conductor.songPosition + (Conductor.safeZoneOffset * 0.5)))
 					&& daNote.mustPress && daNote.isSustainNote)
 						if(heldArray[daNote.noteData] && !thingsHit[daNote.noteData])
 						{
@@ -2240,7 +2240,7 @@ class PlayState extends MusicBeatState
 		else
 		{
 			notes.forEachAlive(function(note:Note) {
-				if(note.mustPress && note.strumTime + Conductor.offset <= Conductor.songPosition + Conductor.offset || note.canBeHit && note.mustPress && note.isSustainNote)
+				if(note.mustPress && note.strumTime <= Conductor.songPosition || note.canBeHit && note.mustPress && note.isSustainNote)
 				{
 					boyfriend.holdTimer = 0;
 

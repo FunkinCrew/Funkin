@@ -46,7 +46,7 @@ class OptionsMenu extends MusicBeatState
 			"Gameplay",
 			new PageOption("Back", 0, "Categories"),
 			new ControlMenuSubStateOption("Binds", 1),
-			//new SongOffsetOption("Song Offset", 2),
+			new SongOffsetOption("Song Offset", 2),
 			new BoolOption("Downscroll", "downscroll", FlxG.save.data.downscroll, 3),
 			new BoolOption("Centered Arrows", "middleScroll", FlxG.save.data.middleScroll, 4),
 			new BoolOption("No Miss", "nohit", FlxG.save.data.nohit, 5),
