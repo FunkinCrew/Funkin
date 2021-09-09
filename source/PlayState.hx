@@ -439,7 +439,7 @@ class PlayState extends MusicBeatState
 				curStage = 'schoolEvil';
 
 				var schoolBG:FlxSprite = new FlxSprite(-200, 0).loadGraphic(Paths.image('weeb/evilSchoolBG'));
-				wiggleShit.waveAmplitude = 0.02;
+				wiggleShit.waveAmplitude = 0.017;
 				wiggleShit.waveSpeed = 2;
 				wiggleShit.waveFrequency = 4;
 				schoolBG.shader = wiggleShit.shader;
