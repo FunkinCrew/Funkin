@@ -338,6 +338,57 @@ class GameStateOption extends Option
     }
 }
 
+/**
+* An Accuracy changer option.
+*/
+class AccuracyOption extends Option
+{
+	// VARIABLES //
+	var Current_Mode:String = "simple";
+
+    override public function new(_Option_Row:Int = 0)
+    {
+        super();
+
+        // SETTING VALUES //
+		this.Current_Mode = FlxG.save.data.accuracyMode;
+        this.Option_Name = "Accuracy Mode "  + Current_Mode;
+        this.Option_Row = _Option_Row;
+
+        // CREATING OTHER OBJECTS //
+        Alphabet_Text = new Alphabet(20, 20 + (Option_Row * 100), Option_Name, true);
+        Alphabet_Text.isMenuItem = true;
+        Alphabet_Text.targetY = Option_Row;
+        add(Alphabet_Text);
+    }
+
+    override function update(elapsed:Float)
+    {
+        super.update(elapsed);
+
+        if(FlxG.keys.justPressed.ENTER && Std.int(Alphabet_Text.targetY) == 0 && !OptionsMenu.inMenu)
+        {
+			if(Current_Mode == "simple")
+				Current_Mode = "strict";
+			else
+				Current_Mode = "simple";
+
+			this.Option_Name = "Accuracy Mode "  + Current_Mode;
+
+			remove(Alphabet_Text);
+			Alphabet_Text.destroy();
+
+			Alphabet_Text = new Alphabet(20, 20 + (Option_Row * 100), Option_Name, true);
+			Alphabet_Text.isMenuItem = true;
+			Alphabet_Text.targetY = Option_Row;
+			add(Alphabet_Text);
+
+			FlxG.save.data.accuracyMode = Current_Mode;
+			FlxG.save.flush();
+		}
+    }
+}
+
 #if sys
 /**
  * Option for enabling and disabling mods.
