@@ -807,6 +807,7 @@ class PlayState extends MusicBeatState
 					});
 					FlxG.sound.play(Paths.sound('introGo' + altSuffix), 0.6);
 				case 4:
+					resyncVocals();
 			}
 
 			swagCounter += 1;
