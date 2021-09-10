@@ -27,7 +27,6 @@ jobs:
           sudo apt-get install haxe -y
           mkdir "%HAXELIB_ROOT%"
           haxelib setup "%HAXELIB_ROOT%"
-          Install project dependencies
           haxelib install lime 7.9.0
           haxelib install openfl
           haxelib install flixel
