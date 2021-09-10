@@ -50,5 +50,5 @@ jobs:
           
       - uses: actions/upload-artifact@v2
         with:
-          name: Windows Build
-          path: export/release/windows/bin
+          name: HTML5 Build
+          path: export/release/html5/bin
