@@ -122,29 +122,29 @@ class Note extends FlxSprite
 			// taken from kade engine moment
 			if (isSustainNote)
 			{
-				if (strumTime + Conductor.offset > (Conductor.songPosition - (Conductor.safeZoneOffset * 1.5)) + Conductor.offset
-					&& strumTime + Conductor.offset < (Conductor.songPosition + (Conductor.safeZoneOffset * 0.5)) + Conductor.offset)
+				if (strumTime > Conductor.songPosition - (Conductor.safeZoneOffset * 1.5)
+					&& strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * 0.5))
 					canBeHit = true;
 				else
 					canBeHit = false;
 			}
 			else
 			{
-				if (strumTime + Conductor.offset > (Conductor.songPosition - Conductor.safeZoneOffset) + Conductor.offset
-					&& strumTime + Conductor.offset < (Conductor.songPosition + Conductor.safeZoneOffset) + Conductor.offset)
+				if (strumTime > Conductor.songPosition - Conductor.safeZoneOffset
+					&& strumTime < Conductor.songPosition + Conductor.safeZoneOffset)
 					canBeHit = true;
 				else
 					canBeHit = false;
 			}
 
-			if (strumTime + Conductor.offset < (Conductor.songPosition - Conductor.safeZoneOffset) + Conductor.offset && !wasGoodHit)
+			if (strumTime < Conductor.songPosition - Conductor.safeZoneOffset && !wasGoodHit)
 				tooLate = true;
 		}
 		else
 		{
 			canBeHit = false;
 
-			if (strumTime + Conductor.offset <= Conductor.songPosition + Conductor.offset)
+			if (strumTime <= Conductor.songPosition)
 				wasGoodHit = true;
 		}
 
