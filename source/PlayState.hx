@@ -1,9 +1,11 @@
 package;
 
+#if desktop
 import LuaClass.LuaCamera;
 import LuaClass.LuaCharacter;
-import lime.media.openal.AL;
 import LuaClass.LuaNote;
+#end
+import lime.media.openal.AL;
 import Song.Event;
 import openfl.media.Sound;
 #if sys
@@ -763,6 +765,7 @@ class PlayState extends MusicBeatState
 		}
 		#end
 
+    #if desktop
 		if (executeModchart)
 		{
 			new LuaCamera(camGame, "camGame").Register(ModchartState.lua);
@@ -773,6 +776,8 @@ class PlayState extends MusicBeatState
 			new LuaCharacter(gf, "gf").Register(ModchartState.lua);
 			new LuaCharacter(boyfriend, "boyfriend").Register(ModchartState.lua);
 		}
+    #end
+
 		var index = 0;
 
 		if (startTime != 0)
@@ -1445,10 +1450,11 @@ class PlayState extends MusicBeatState
 		if (useVideo)
 			GlobalVideo.get().resume();
 
+    
+		#if desktop
 		if (executeModchart)
 			luaModchart.executeState("songStart", [null]);
-
-		#if desktop
+    
 		// Updating Discord Rich Presence (with Time Left)
 		DiscordClient.changePresence(detailsText
 			+ " "
@@ -1963,9 +1969,12 @@ class PlayState extends MusicBeatState
 
 		@:privateAccess
 		{
+      #if desktop
+      // The __backend.handle attribute is only available on native.
 			lime.media.openal.AL.sourcef(FlxG.sound.music._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, songMultiplier);
 			if (vocals.playing)
 				lime.media.openal.AL.sourcef(vocals._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, songMultiplier);
+      #end
 		}
 
 		#if desktop
@@ -2019,18 +2028,22 @@ class PlayState extends MusicBeatState
 				var dunceNote:Note = unspawnNotes[0];
 				notes.add(dunceNote);
 
+        #if desktop
 				if (executeModchart)
 				{
 					new LuaNote(dunceNote, currentLuaIndex);
 					dunceNote.luaID = currentLuaIndex;
 				}
+        #end
 
 				if (executeModchart)
 				{
+          #if desktop
 					if (!dunceNote.isSustainNote)
 						dunceNote.cameras = [camNotes];
 					else
 						dunceNote.cameras = [camSustains];
+          #end
 				}
 				else
 				{

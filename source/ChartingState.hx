@@ -172,10 +172,11 @@ class ChartingState extends MusicBeatState
 
 		if (PlayState.SONG != null)
 		{
-			if (PlayState.isSM)
-				_song = Song.conversionChecks(Song.loadFromJsonRAW(File.getContent(PlayState.pathToSm + "/converted.json")));
-			else
-			{
+			if (PlayState.isSM) {
+        #if desktop
+        _song = Song.conversionChecks(Song.loadFromJsonRAW(File.getContent(PlayState.pathToSm + "/converted.json")));
+        #end
+      } else {
 				var songFormat = StringTools.replace(PlayState.SONG.song, " ", "-");
 				switch (songFormat)
 				{
@@ -1481,9 +1482,12 @@ class ChartingState extends MusicBeatState
 			FlxG.sound.playMusic(Paths.inst(daSong), 0.6);
 			#end
 
-			if (PlayState.isSM)
-				_song = Song.conversionChecks(Song.loadFromJsonRAW(File.getContent(PlayState.pathToSm + "/converted.json")));
-			else
+			if (PlayState.isSM) {
+        #if desktop
+        _song = Song.conversionChecks(Song.loadFromJsonRAW(File.getContent(PlayState.pathToSm + "/converted.json")));
+        #end
+      }
+        else
 			{
 				var songFormat = StringTools.replace(PlayState.SONG.song, " ", "-");
 				switch (songFormat)
@@ -1844,6 +1848,8 @@ class ChartingState extends MusicBeatState
 			{
 				@:privateAccess
 				{
+          #if desktop
+          // The __backend.handle attribute is only available on native.
 					lime.media.openal.AL.sourcef(FlxG.sound.music._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, speed);
 					try
 					{
@@ -1855,9 +1861,10 @@ class ChartingState extends MusicBeatState
 						}
 					}
 					catch (e)
-					{
-						// trace("failed to pitch vocals (probably cuz they don't exist)");
-					}
+          {
+            // trace("failed to pitch vocals (probably cuz they don't exist)");
+          }
+          #end
 				}
 			}
 		}

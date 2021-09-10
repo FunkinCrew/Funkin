@@ -50,5 +50,5 @@ jobs:
           
       - uses: actions/upload-artifact@v2
         with:
-          name: Windows Build
-          path: export/release/windows/bin
+          name: Linux Build
+          path: export/release/linux/bin
