@@ -1,5 +1,7 @@
 package utilities;
 
+import flixel.FlxG;
+
 class Ratings
 {
     private static var timings:Array<Dynamic> = [
@@ -61,38 +63,81 @@ class Ratings
                 missesRating = "CLEAR - ";
         }
 
-        for(condition in 0...conditions.length)
+        if(FlxG.save.data.accuracyMode == "simple")
         {
-            var rating_success = conditions[condition];
-
-            if(rating_success)
+            for(condition in 0...conditions.length)
             {
-                switch(condition)
+                var rating_success = conditions[condition];
+
+                if(rating_success)
                 {
-                    case 0:
-                        return "MFC";
-                    case 1:
-                        return missesRating + "SSS";
-                    case 2:
-                        return missesRating + "S";
-                    case 3:
-                        return missesRating + "AA";
-                    case 4:
-                        return missesRating + "A";
-                    case 5:
-                        return missesRating + "B+";
-                    case 6:
-                        return missesRating + "B";
-                    case 7:
-                        return missesRating + "C";
-                    case 8:
-                        return missesRating + "D";
-                    case 9:
-                        return missesRating + "E";
-                    case 10:
-                        return missesRating + "F";
-                    case 11:
-                        return missesRating + "G";
+                    switch(condition)
+                    {
+                        case 0:
+                            return "MFC";
+                        case 1:
+                            return missesRating + "SSS";
+                        case 2:
+                            return missesRating + "S";
+                        case 3:
+                            return missesRating + "AA";
+                        case 4:
+                            return missesRating + "A";
+                        case 5:
+                            return missesRating + "B+";
+                        case 6:
+                            return missesRating + "B";
+                        case 7:
+                            return missesRating + "C";
+                        case 8:
+                            return missesRating + "D";
+                        case 9:
+                            return missesRating + "E";
+                        case 10:
+                            return missesRating + "F";
+                        case 11:
+                            return missesRating + "G";
+                    }
+                }
+            }
+        }
+        else
+        {
+            conditions[0] = accuracy >= 99;
+            
+            for(condition in 0...conditions.length)
+            {
+                var rating_success = conditions[condition];
+
+                if(rating_success)
+                {
+                    switch(condition)
+                    {
+                        case 0:
+                            return missesRating + "SSSS";
+                        case 1:
+                            return missesRating + "SSS";
+                        case 2:
+                            return missesRating + "S";
+                        case 3:
+                            return missesRating + "AA";
+                        case 4:
+                            return missesRating + "A";
+                        case 5:
+                            return missesRating + "B+";
+                        case 6:
+                            return missesRating + "B";
+                        case 7:
+                            return missesRating + "C";
+                        case 8:
+                            return missesRating + "D";
+                        case 9:
+                            return missesRating + "E";
+                        case 10:
+                            return missesRating + "F";
+                        case 11:
+                            return missesRating + "G";
+                    }
                 }
             }
         }
@@ -143,6 +188,8 @@ class Ratings
                         return MFC;
                     case "FC":
                         return FC;
+                    case "SSSS":
+                        return SSSS;
                     case "SSS":
                         return SSS;
                     case "S":
@@ -176,6 +223,7 @@ enum SongRank
 {
     MFC;
     FC;
+    SSSS;
     SSS;
     S;
     AA;

@@ -1887,21 +1887,37 @@ class PlayState extends MusicBeatState
 		var daRating:String = Ratings.getRating(Math.abs(noteDiff));
 		var score:Int = Ratings.getScore(daRating);
 
+		var hitNoteAmount:Float = 0;
+
 		// health switch case
 		switch(daRating)
 		{
 			case 'sick':
 				health += 0.035;
-				hitNotes += 1;
 			case 'good':
 				health += 0.015;
-				hitNotes += 0.8;
 			case 'bad':
 				health += 0.005;
-				hitNotes += 0.3;
 			case 'shit':
 				health -= 0.07;
 		}
+
+		if(FlxG.save.data.accuracyMode == "simple")
+		{
+			if(daRating == "sick")
+				hitNoteAmount = 1;
+			else if(daRating == "good")
+				hitNoteAmount = 0.8;
+			else if(daRating == "bad")
+				hitNoteAmount = 0.3;
+		}
+		else
+		{
+			// accuracy math (basically how many milliseconds off you are from 0 -> safeZoneOffset is how accurate you are from 0 -> 1)
+			hitNoteAmount = Math.abs(Math.abs(noteDiff) - Conductor.safeZoneOffset) / Conductor.safeZoneOffset;
+		}
+
+		hitNotes += hitNoteAmount;
 
 		/*
 		if (daRating == "sick")
