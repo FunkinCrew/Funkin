@@ -549,7 +549,7 @@ class Character extends FlxSprite
 
 	override function update(elapsed:Float)
 	{
-		if(!debugMode)
+		if(!debugMode && curCharacter != '')
 		{
 			if (!curCharacter.startsWith('bf'))
 			{
@@ -588,7 +588,7 @@ class Character extends FlxSprite
 	 */
 	public function dance(?altAnim:String = "")
 	{
-		if (!debugMode)
+		if (!debugMode && curCharacter != '')
 		{
 			switch (curCharacter)
 			{
