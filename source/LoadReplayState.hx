@@ -3,9 +3,8 @@ package;
 import haxe.Exception;
 import lime.app.Application;
 
-#if sys
+#if FEATURE_STEPMANIA
 import smTools.SMFile;
-import sys.FileSystem;
 #end
 import Controls.KeyboardScheme;
 import Controls.Control;
@@ -19,7 +18,8 @@ import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import lime.utils.Assets;
-#if sys
+#if FEATURE_FILESYSTEM
+import sys.FileSystem;
 import sys.io.File;
 #end
 
@@ -39,7 +39,7 @@ class LoadReplayState extends MusicBeatState
 	override function create()
 	{
 		var menuBG:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
-        #if sys
+        #if FEATURE_FILESYSTEM
 		controlsStrings = sys.FileSystem.readDirectory(Sys.getCwd() + "/assets/replays/");
         #end
 		trace(controlsStrings);
@@ -179,7 +179,7 @@ class LoadReplayState extends MusicBeatState
 
 					var poop = "";
 					
-					#if sys
+					#if FEATURE_STEPMANIA
 					if (PlayState.rep.replay.sm)
 						if (!FileSystem.exists(StringTools.replace(PlayState.rep.replay.chartPath,"converted.json","")))
 						{
@@ -189,12 +189,12 @@ class LoadReplayState extends MusicBeatState
 					#end
 
 					PlayState.isSM = PlayState.rep.replay.sm;
-					#if sys
+					#if FEATURE_STEPMANIA
 					if (PlayState.isSM)
 						PlayState.pathToSm = StringTools.replace(PlayState.rep.replay.chartPath,"converted.json","");
 					#end
 
-					#if sys
+					#if FEATURE_STEPMANIA
 					if (PlayState.isSM)
 					{
 						poop = File.getContent(PlayState.rep.replay.chartPath);

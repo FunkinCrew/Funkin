@@ -1,4 +1,4 @@
-#if desktop
+#if FEATURE_LUAMODCHART
 import flixel.FlxG;
 import llua.Convert;
 import llua.Lua;
@@ -8,7 +8,7 @@ import flixel.util.FlxAxes;
 import flixel.FlxSprite;
 import lime.app.Application;
 import openfl.Lib;
-#if sys
+#if FEATURE_FILESYSTEM
 import sys.io.File;
 import sys.FileSystem;
 #end

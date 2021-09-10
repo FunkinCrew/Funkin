@@ -1,8 +1,8 @@
-#if sys
+#if FEATURE_FILESYSTEM
 package;
 
 import lime.app.Application;
-#if desktop
+#if FEATURE_DISCORD
 import Discord.DiscordClient;
 #end
 import openfl.display.BitmapData;
@@ -11,7 +11,7 @@ import flixel.ui.FlxBar;
 import haxe.Exception;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
-#if cpp
+#if FEATURE_FILESYSTEM
 import sys.FileSystem;
 import sys.io.File;
 #end
@@ -80,7 +80,7 @@ class Caching extends MusicBeatState
 
 		FlxGraphic.defaultPersist = FlxG.save.data.cacheImages;
 
-		#if cpp
+		#if FEATURE_FILESYSTEM
 		if (FlxG.save.data.cacheImages)
 		{
 			trace("caching images...");
@@ -113,7 +113,7 @@ class Caching extends MusicBeatState
 
 		trace('starting caching..');
 
-		#if cpp
+		#if FEATURE_MULTITHREADING
 		// update thread
 
 		sys.thread.Thread.create(() ->
@@ -150,7 +150,7 @@ class Caching extends MusicBeatState
 
 	function cache()
 	{
-		#if !linux
+		#if FEATURE_FILESYSTEM
 		trace("LOADING: " + toBeDone + " OBJECTS.");
 
 		for (i in images)

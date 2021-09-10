@@ -96,7 +96,7 @@ class Note extends FlxSprite
 		else
 		{
 			this.strumTime = strumTime;
-			#if sys
+			#if FEATURE_STEPMANIA
 			if (PlayState.isSM)
 			{
 				rStrumTime = strumTime;

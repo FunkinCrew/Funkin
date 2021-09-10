@@ -3,8 +3,10 @@ import lime.app.Application;
 import openfl.utils.Future;
 import openfl.media.Sound;
 import flixel.system.FlxSound;
-#if sys
+#if FEATURE_STEPMANIA
 import smTools.SMFile;
+#end
+#if FEATURE_FILESYSTEM
 import sys.FileSystem;
 import sys.io.File;
 #end
@@ -21,7 +23,7 @@ import flixel.util.FlxColor;
 import lime.utils.Assets;
 
 
-#if desktop
+#if FEATURE_DISCORD
 import Discord.DiscordClient;
 #end
 
@@ -93,7 +95,7 @@ class FreeplayState extends MusicBeatState
 			var diffsThatExist = [];
 
 
-			#if sys
+			#if FEATURE_FILESYSTEM
 			if (FileSystem.exists('assets/data/${format}/${format}-hard.json'))
 				diffsThatExist.push("Hard");
 			if (FileSystem.exists('assets/data/${format}/${format}-easy.json'))
@@ -129,7 +131,7 @@ class FreeplayState extends MusicBeatState
 
 		trace("tryin to load sm files");
 
-		#if sys
+		#if FEATURE_STEPMANIA
 		for(i in FileSystem.readDirectory("assets/sm/"))
 		{
 			trace(i);
@@ -178,7 +180,7 @@ class FreeplayState extends MusicBeatState
 			}
 		 */
 
-		 #if desktop
+		 #if FEATURE_DISCORD
 		 // Updating Discord Rich Presence
 		 DiscordClient.changePresence("In the Freeplay Menu", null);
 		 #end
@@ -448,7 +450,7 @@ class FreeplayState extends MusicBeatState
 		PlayState.storyDifficulty = curDifficulty;
 		PlayState.storyWeek = songs[curSelected].week;
 		trace('CUR WEEK' + PlayState.storyWeek);
-		#if sys
+		#if FEATURE_STEPMANIA
 		if (songs[curSelected].songCharacter == "sm")
 			{
 				PlayState.isSM = true;
@@ -606,7 +608,7 @@ class SongMetadata
 {
 	public var songName:String = "";
 	public var week:Int = 0;
-	#if sys
+	#if FEATURE_STEPMANIA
 	public var sm:SMFile;
 	public var path:String;
 	#end
@@ -614,7 +616,7 @@ class SongMetadata
 
 	public var diffs = [];
 
-	#if sys
+	#if FEATURE_STEPMANIA
 	public function new(song:String, week:Int, songCharacter:String, ?sm:SMFile = null, ?path:String = "")
 	{
 		this.songName = song;

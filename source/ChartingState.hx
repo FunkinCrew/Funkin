@@ -2,7 +2,7 @@ package;
 
 import openfl.system.System;
 import lime.app.Application;
-#if sys
+#if FEATURE_FILESYSTEM
 import sys.io.File;
 import sys.FileSystem;
 #end
@@ -45,7 +45,7 @@ import openfl.events.IOErrorEvent;
 import openfl.media.Sound;
 import openfl.net.FileReference;
 import openfl.utils.ByteArray;
-#if desktop
+#if FEATURE_DISCORD
 import Discord.DiscordClient;
 #end
 
@@ -141,7 +141,7 @@ class ChartingState extends MusicBeatState
 
 	override function create()
 	{
-		#if desktop
+		#if FEATURE_DISCORD
 		DiscordClient.changePresence("Chart Editor", null, null, true);
 		#end
 
@@ -173,7 +173,7 @@ class ChartingState extends MusicBeatState
 		if (PlayState.SONG != null)
 		{
 			if (PlayState.isSM) {
-        #if desktop
+        #if FEATURE_STEPMANIA
         _song = Song.conversionChecks(Song.loadFromJsonRAW(File.getContent(PlayState.pathToSm + "/converted.json")));
         #end
       } else {
@@ -1037,7 +1037,7 @@ class ChartingState extends MusicBeatState
 		var stepperSpeedLabel = new FlxText(74, 80, 'Scroll Speed');
 
 		var stepperVocalVol:FlxUINumericStepper = new FlxUINumericStepper(10, 95, 0.1, 1, 0.1, 10, 1);
-		#if sys
+		#if FEATURE_STEPMANIA
 		if (!PlayState.isSM)
 			stepperVocalVol.value = vocals.volume;
 		else
@@ -1467,7 +1467,7 @@ class ChartingState extends MusicBeatState
 		}
 		if (reloadFromFile)
 		{
-			#if sys
+			#if FEATURE_STEPMANIA
 			if (PlayState.isSM)
 			{
 				trace("Loading " + PlayState.pathToSm + "/" + PlayState.sm.header.MUSIC);
@@ -1483,7 +1483,7 @@ class ChartingState extends MusicBeatState
 			#end
 
 			if (PlayState.isSM) {
-        #if desktop
+        #if FEATURE_STEPMANIA
         _song = Song.conversionChecks(Song.loadFromJsonRAW(File.getContent(PlayState.pathToSm + "/converted.json")));
         #end
       }
@@ -1506,7 +1506,7 @@ class ChartingState extends MusicBeatState
 			}
 		}
 		// WONT WORK FOR TUTORIAL OR TEST SONG!!! REDO LATER
-		#if sys
+		#if FEATURE_STEPMANIA
 		if (PlayState.isSM)
 			vocals = null;
 		else
@@ -2833,7 +2833,7 @@ class ChartingState extends MusicBeatState
 	function updateHeads():Void
 	{
 		var mustHit = check_mustHitSection.checked;
-		#if sys
+		#if FEATURE_FILESYSTEM
 		var head = (mustHit ? _song.player1 : _song.player2);
 		var i = sectionRenderes.members[curSection];
 

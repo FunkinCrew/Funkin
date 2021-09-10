@@ -1,4 +1,4 @@
-#if sys
+#if FEATURE_STEPMANIA
 package smTools;
 
 class SMNote
