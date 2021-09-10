@@ -40,6 +40,26 @@
         "kind": "build",
         "isDefault": true
       }
+    },
+    {
+      "label": "Build Linux (Debug)",
+      "type": "lime",
+      "targetConfiguration": "Build Linux (Debug)",
+      "command": "build",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Build Linux (Release)",
+      "type": "lime",
+      "targetConfiguration": "Build Linux (Release)",
+      "command": "build",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
     }
 	]
 }
