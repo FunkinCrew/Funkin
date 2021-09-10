@@ -479,7 +479,7 @@ class ChartingState extends MusicBeatState
 		var tab_group_note = new FlxUI(null, UI_box);
 		tab_group_note.name = 'Art Options';
 
-		var arrayCharacters = ["bf","gf"];
+		var arrayCharacters = ["bf","gf",""];
 		var tempCharacters = characters.get(selected_mod);
 
 		for(Item in tempCharacters)
