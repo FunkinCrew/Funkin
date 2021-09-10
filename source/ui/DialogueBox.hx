@@ -56,7 +56,13 @@ class DialogueBox extends FlxSpriteGroup
 				ambientMusic = FlxG.sound.load(Paths.music('LunchboxScary', 'preload'), 0, true);
 		}
 
-		if(ambientMusic != null)
+		var isDebug:Bool = false;
+
+		#if debug
+		isDebug = true;
+		#end
+
+		if(ambientMusic != null && PlayState.isStoryMode || isDebug)
 		{
 			ambientMusic.play();
 			ambientMusic.fadeIn(1, 0, 0.8);

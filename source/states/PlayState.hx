@@ -807,7 +807,6 @@ class PlayState extends MusicBeatState
 					});
 					FlxG.sound.play(Paths.sound('introGo' + altSuffix), 0.6);
 				case 4:
-					resyncVocals();
 			}
 
 			swagCounter += 1;
@@ -2399,7 +2398,7 @@ class PlayState extends MusicBeatState
 	{
 		super.stepHit();
 		
-		if (FlxG.sound.music.time > Conductor.songPosition + 20 || FlxG.sound.music.time < Conductor.songPosition - 20)
+		if (FlxG.sound.music.time > Conductor.songPosition + 20 || FlxG.sound.music.time < Conductor.songPosition - 20 || FlxG.sound.music.time < 500 && (FlxG.sound.music.time > Conductor.songPosition + 5 || FlxG.sound.music.time < Conductor.songPosition - 5))
 		{
 			resyncVocals();
 		}
