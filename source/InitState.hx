@@ -11,6 +11,8 @@ import openfl.display.BitmapData;
 import ui.PreferencesMenu;
 import ui.stageBuildShit.StageBuilderState;
 
+using StringTools;
+
 #if colyseus
 import io.colyseus.Client;
 import io.colyseus.Room;
@@ -23,8 +25,6 @@ import sys.FileSystem;
 import sys.io.File;
 import sys.thread.Thread;
 #end
-
-using StringTools;
 
 class InitState extends FlxTransitionableState
 {
@@ -39,15 +39,18 @@ class InitState extends FlxTransitionableState
 		#if discord_rpc
 		DiscordClient.initialize();
 
-		Application.current.onExit.add(function(exitCode){
+		Application.current.onExit.add(function(exitCode)
+		{
 			DiscordClient.shutdown();
 		});
 		#end
 
-
 		// ==== flixel shit ==== //
 
-		FlxG.debugger.addButton(LEFT, new BitmapData(200, 200), function(){
+		// This big obnoxious white button is for MOBILE, so that you can press it
+		// easily with your finger when debug bullshit pops up during testing lol!
+		FlxG.debugger.addButton(LEFT, new BitmapData(200, 200), function()
+		{
 			FlxG.debugger.visible = false;
 		});
 
@@ -63,8 +66,8 @@ class InitState extends FlxTransitionableState
 
 		FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 1, new FlxPoint(0, -1), {asset: diamond, width: 32, height: 32},
 			new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
-		FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.7, new FlxPoint(0, 1),
-			{asset: diamond, width: 32, height: 32}, new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
+		FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.7, new FlxPoint(0, 1), {asset: diamond, width: 32, height: 32},
+			new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
 
 		// ===== save shit ===== //
 

@@ -506,7 +506,7 @@ class PlayState extends MusicBeatState
 				var fgTank3:BGSprite = new BGSprite('tank3', 1300, 1200, 3.5, 2.5, ['fg']);
 				foregroundSprites.add(fgTank3);
 
-			case "week8Lol":
+			case "darnell":
 				loadStage('phillyStreets');
 
 			default:
@@ -1921,6 +1921,9 @@ class PlayState extends MusicBeatState
 			DiscordClient.changePresence("Chart Editor", null, null, true);
 			#end
 		}
+
+		if (FlxG.keys.justPressed.EIGHT)
+			FlxG.switchState(new ui.animDebugShit.DebugBoundingState());
 
 		if (FlxG.keys.justPressed.NINE)
 			iconP1.swapOldIcon();

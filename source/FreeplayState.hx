@@ -98,7 +98,7 @@ class FreeplayState extends MusicBeatState
 		if (StoryMenuState.weekUnlocked[7] || isDebug)
 			addWeek(['Ugh', 'Guns', 'Stress'], 7, ['tankman']);
 
-		// addWeek(["Darnell"], 8, ['darnell']);
+		addWeek(["Darnell"], 8, ['darnell']);
 
 		// LOAD MUSIC
 
@@ -362,7 +362,18 @@ class FreeplayState extends MusicBeatState
 
 		if (accepted)
 		{
+			// if (Assets.exists())
+
 			var poop:String = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), curDifficulty);
+
+			if (!Assets.exists(Paths.json(songs[curSelected].songName + '/' + poop)))
+			{
+				// defaults to normal if HARD / EASY doesn't exist
+				// does not account if NORMAL doesn't exist!
+				FlxG.log.warn("CURRENT DIFFICULTY IS NOT CHARTED, DEFAULTING TO NORMAL!");
+				poop = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), 1);
+				curDifficulty = 1;
+			}
 			PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
 			PlayState.isStoryMode = false;
 			PlayState.storyDifficulty = curDifficulty;
