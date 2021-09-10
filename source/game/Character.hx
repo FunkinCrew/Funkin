@@ -44,10 +44,6 @@ class Character extends FlxSprite
 
 		antialiasing = true;
 
-		// YOOOOOOOOOO POG MODDING STUFF
-		if(character != "")
-			loadOffsetFile(curCharacter);
-
 		dancesLeftAndRight = false;
 
 		switch (curCharacter)
@@ -228,6 +224,7 @@ class Character extends FlxSprite
 
 				flipX = true;
 				barColor = FlxColor.fromRGB(205, 229, 112);
+
 			case 'bf-christmas':
 				frames = Paths.getSparrowAtlas('characters/bfChristmas', 'shared');
 				animation.addByPrefix('idle', 'BF idle dance', 24, false);
@@ -246,6 +243,7 @@ class Character extends FlxSprite
 
 				flipX = true;
 				barColor = FlxColor.fromRGB(81, 201, 219);
+
 			case 'bf-car':
 				frames = Paths.getSparrowAtlas('characters/bfCar', 'shared');
 				animation.addByPrefix('idle', 'BF idle dance', 24, false);
@@ -264,6 +262,7 @@ class Character extends FlxSprite
 
 				flipX = true;
 				barColor = FlxColor.fromRGB(81, 201, 219);
+
 			case 'bf-pixel':
 				frames = Paths.getSparrowAtlas('characters/bfPixel', 'shared');
 				animation.addByPrefix('idle', 'BF IDLE', 24, false);
@@ -290,6 +289,7 @@ class Character extends FlxSprite
 				flipX = true;
 
 				barColor = FlxColor.fromRGB(123, 214, 246);
+
 			case 'bf-pixel-dead':
 				frames = Paths.getSparrowAtlas('characters/bfPixelsDEAD', 'shared');
 				animation.addByPrefix('singUP', "BF Dies pixel", 24, false);
@@ -304,6 +304,7 @@ class Character extends FlxSprite
 				antialiasing = false;
 				flipX = true;
 				barColor = FlxColor.fromRGB(123, 214, 246);
+
 			case 'senpai':
 				frames = Paths.getSparrowAtlas('characters/senpai', 'shared');
 				animation.addByPrefix('idle', 'Senpai Idle', 24, false);
@@ -374,6 +375,10 @@ class Character extends FlxSprite
 
 		if (isPlayer)
 			flipX = !flipX;
+
+		// YOOOOOOOOOO POG MODDING STUFF
+		if(character != "")
+			loadOffsetFile(curCharacter);
 
 		if(curCharacter != '' && otherCharacters == null)
 		{
