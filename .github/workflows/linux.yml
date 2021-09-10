@@ -25,12 +25,10 @@ jobs:
           sudo add-apt-repository ppa:haxe/releases -y
           sudo apt-get update
           sudo apt-get install haxe -y
-          RefreshEnv
           mkdir "%HAXELIB_ROOT%"
           haxelib setup "%HAXELIB_ROOT%"
           Install project dependencies
           haxelib install lime 7.9.0
-          RefreshEnv
           haxelib install openfl
           haxelib install flixel
           haxelib run lime setup flixel
