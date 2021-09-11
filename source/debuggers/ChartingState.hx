@@ -534,7 +534,7 @@ class ChartingState extends MusicBeatState
 		{
 			selected_mod = mods[Std.parseInt(mod)];
 
-			arrayCharacters = ["bf","gf"];
+			arrayCharacters = ["bf","gf",""];
 			tempCharacters = characters.get(selected_mod);
 			
 			for(Item in tempCharacters)
