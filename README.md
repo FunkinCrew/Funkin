@@ -4,6 +4,11 @@ Hey all! This is really just my attempts as someone who likes rhythm games to ad
 
 So far I've just added a feature that creates a save/restart point for a song in Freeplay Mode, useful to drill out any of those rougher sections, for now it's 'O' to set a savepoint, and 'P' to restart from that point. (still working out some bugs and stuff)
 
+__TO DO/FIX__
+- Fix alignment of incoming notes after a restart from save point
+- Only allow feature to word in FreePlay mode.
+- ahhhhhh whhy are the start times inconsistent :(
+
 __Plans/Thins to consider__
 - Fade-in (osu!mania)
 - Variable scroll speed
