@@ -376,6 +376,7 @@ class Character extends FlxSprite
 					flipX = !flipX;
 
 				ilikeyacutg = true;
+				
 				loadNamedConfiguration(curCharacter);
 		}
 
@@ -438,7 +439,11 @@ class Character extends FlxSprite
 	{
 		if(config.characters == null)
 		{
-			flipX = config.defaultFlipX;
+			if(!isPlayer)
+				flipX = config.defaultFlipX;
+			else
+				flipX = !config.defaultFlipX;
+
 			dancesLeftAndRight = config.dancesLeftAndRight;
 
 			if(config.spritesheetType == SpritesheetType.PACKER)
