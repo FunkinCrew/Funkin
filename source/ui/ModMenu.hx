@@ -3,10 +3,8 @@ package ui;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
-#if cpp
 import polymod.Polymod;
 import sys.FileSystem;
-#end
 
 class ModMenu extends ui.OptionsState.Page
 {
