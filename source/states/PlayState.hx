@@ -1928,7 +1928,14 @@ class PlayState extends MusicBeatState
 			splash.animation.play("chosen" + Std.string(numberRandomLolIGuessHeh));
 		}*/
 
-		songScore += score;
+		if(FlxG.save.data.accuracyMode == "simple")
+		{
+			songScore += score;
+		}
+		else
+		{
+			songScore += Std.int(350 * hitNoteAmount);
+		}
 
 		rating.alpha = 1;
 		rating.loadGraphic(Paths.image("ui skins/" + SONG.ui_Skin + "/ratings/" + daRating, 'shared'));
