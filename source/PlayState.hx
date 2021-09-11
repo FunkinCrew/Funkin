@@ -1,14 +1,20 @@
 package;
 
+#if FEATURE_LUAMODCHART
 import LuaClass.LuaCamera;
 import LuaClass.LuaCharacter;
-import lime.media.openal.AL;
 import LuaClass.LuaNote;
+#end
+import lime.media.openal.AL;
 import Song.Event;
 import openfl.media.Sound;
-#if sys
-import sys.io.File;
+#if FEATURE_STEPMANIA
 import smTools.SMFile;
+#end
+#if FEATURE_FILESYSTEM
+import sys.io.File;
+import Sys;
+import sys.FileSystem;
 #end
 import openfl.ui.KeyLocation;
 import openfl.events.Event;
@@ -17,7 +23,7 @@ import openfl.ui.Keyboard;
 import openfl.events.KeyboardEvent;
 import Replay.Ana;
 import Replay.Analysis;
-#if cpp
+#if FEATURE_WEBM
 import webm.WebmPlayer;
 #end
 import flixel.input.keyboard.FlxKey;
@@ -72,12 +78,8 @@ import lime.utils.Assets;
 import openfl.display.BlendMode;
 import openfl.display.StageQuality;
 import openfl.filters.ShaderFilter;
-#if desktop
+#if FEATURE_DISCORD
 import Discord.DiscordClient;
-#end
-#if cpp
-import Sys;
-import sys.FileSystem;
 #end
 
 using StringTools;
@@ -115,7 +117,7 @@ class PlayState extends MusicBeatState
 	var songLength:Float = 0;
 	var kadeEngineWatermark:FlxText;
 
-	#if cpp
+	#if FEATURE_DISCORD
 	// Discord RPC variables
 	var storyDifficultyText:String = "";
 	var iconRPC:String = "";
@@ -126,7 +128,7 @@ class PlayState extends MusicBeatState
 	private var vocals:FlxSound;
 
 	public static var isSM:Bool = false;
-	#if sys
+	#if FEATURE_STEPMANIA
 	public static var sm:SMFile;
 	public static var pathToSm:String;
 	#end
@@ -339,7 +341,7 @@ class PlayState extends MusicBeatState
 
 		removedVideo = false;
 
-		#if cpp
+		#if FEATURE_LUAMODCHART
 		executeModchart = FileSystem.exists(Paths.lua(songLowercase + "/modchart"));
 		if (isSM)
 			executeModchart = FileSystem.exists(pathToSm + "/modchart.lua");
@@ -355,7 +357,7 @@ class PlayState extends MusicBeatState
 		if (executeModchart)
 			songMultiplier = 1;
 
-		#if desktop
+		#if FEATURE_DISCORD
 		// Making difficulty text for Discord Rich Presence.
 		storyDifficultyText = CoolUtil.difficultyFromInt(storyDifficulty);
 
@@ -744,7 +746,7 @@ class PlayState extends MusicBeatState
 
 		generateSong(SONG.song);
 
-		#if cpp
+		#if FEATURE_LUAMODCHART
 		// pre lowercasing the song name (startCountdown)
 		var songLowercase = StringTools.replace(PlayState.SONG.song, " ", "-").toLowerCase();
 		switch (songLowercase)
@@ -763,6 +765,7 @@ class PlayState extends MusicBeatState
 		}
 		#end
 
+    #if FEATURE_LUAMODCHART
 		if (executeModchart)
 		{
 			new LuaCamera(camGame, "camGame").Register(ModchartState.lua);
@@ -773,6 +776,8 @@ class PlayState extends MusicBeatState
 			new LuaCharacter(gf, "gf").Register(ModchartState.lua);
 			new LuaCharacter(boyfriend, "boyfriend").Register(ModchartState.lua);
 		}
+    #end
+
 		var index = 0;
 
 		if (startTime != 0)
@@ -1114,7 +1119,7 @@ class PlayState extends MusicBeatState
 	var perfectMode:Bool = false;
 	var luaWiggles:Array<WiggleEffect> = [];
 
-	#if cpp
+	#if FEATURE_LUAMODCHART
 	public static var luaModchart:ModchartState = null;
 	#end
 
@@ -1445,10 +1450,12 @@ class PlayState extends MusicBeatState
 		if (useVideo)
 			GlobalVideo.get().resume();
 
+    #if FEATURE_LUAMODCHART
 		if (executeModchart)
 			luaModchart.executeState("songStart", [null]);
-
-		#if desktop
+    #end
+    
+    #if FEATURE_DISCORD
 		// Updating Discord Rich Presence (with Time Left)
 		DiscordClient.changePresence(detailsText
 			+ " "
@@ -1532,7 +1539,7 @@ class PlayState extends MusicBeatState
 
 		curSong = songData.song;
 
-		#if sys
+		#if FEATURE_STEPMANIA
 		if (SONG.needsVoices && !isSM)
 			vocals = new FlxSound().loadEmbedded(Paths.voices(PlayState.SONG.song));
 		else
@@ -1550,7 +1557,7 @@ class PlayState extends MusicBeatState
 
 		if (!paused)
 		{
-			#if sys
+			#if FEATURE_STEPMANIA
 			if (!isStoryMode && isSM)
 			{
 				trace("Loading " + pathToSm + "/" + sm.header.MUSIC);
@@ -1623,7 +1630,7 @@ class PlayState extends MusicBeatState
 		var playerCounter:Int = 0;
 
 		// Per song offset check
-		#if cpp
+		#if FEATURE_FILESYSTEM
 		// pre lowercasing the song name (generateSong)
 		var songLowercase = StringTools.replace(PlayState.SONG.song, " ", "-").toLowerCase();
 		switch (songLowercase)
@@ -1638,7 +1645,7 @@ class PlayState extends MusicBeatState
 
 		var songPath = 'assets/data/' + songLowercase + '/';
 
-		#if sys
+		#if FEATURE_STEPMANIA
 		if (isSM && !isStoryMode)
 			songPath = pathToSm;
 		#end
@@ -1889,7 +1896,7 @@ class PlayState extends MusicBeatState
 						vocals.pause();
 			}
 
-			#if desktop
+			#if FEATURE_DISCORD
 			DiscordClient.changePresence("PAUSED on "
 				+ SONG.song
 				+ " ("
@@ -1923,7 +1930,7 @@ class PlayState extends MusicBeatState
 				startTimer.active = true;
 			paused = false;
 
-			#if desktop
+			#if FEATURE_DISCORD
 			if (startTimer.finished)
 			{
 				DiscordClient.changePresence(detailsText
@@ -1963,12 +1970,15 @@ class PlayState extends MusicBeatState
 
 		@:privateAccess
 		{
+      #if desktop
+      // The __backend.handle attribute is only available on native.
 			lime.media.openal.AL.sourcef(FlxG.sound.music._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, songMultiplier);
 			if (vocals.playing)
 				lime.media.openal.AL.sourcef(vocals._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, songMultiplier);
+      #end
 		}
 
-		#if desktop
+		#if FEATURE_DISCORD
 		DiscordClient.changePresence(detailsText
 			+ " "
 			+ SONG.song
@@ -2019,18 +2029,22 @@ class PlayState extends MusicBeatState
 				var dunceNote:Note = unspawnNotes[0];
 				notes.add(dunceNote);
 
+        #if FEATURE_LUAMODCHART
 				if (executeModchart)
 				{
 					new LuaNote(dunceNote, currentLuaIndex);
 					dunceNote.luaID = currentLuaIndex;
 				}
+        #end
 
 				if (executeModchart)
 				{
+          #if FEATURE_LUAMODCHART
 					if (!dunceNote.isSustainNote)
 						dunceNote.cameras = [camNotes];
 					else
 						dunceNote.cameras = [camSustains];
+          #end
 				}
 				else
 				{
@@ -2158,7 +2172,7 @@ class PlayState extends MusicBeatState
 			}
 		}
 
-		#if cpp
+		#if FEATURE_LUAMODCHART
 		if (executeModchart && luaModchart != null && songStarted)
 		{
 			luaModchart.setVar('songPos', Conductor.songPosition);
@@ -2276,10 +2290,8 @@ class PlayState extends MusicBeatState
 			{
 				GlobalVideo.get().stop();
 				remove(videoSprite);
-				#if sys
 				FlxG.stage.window.onFocusOut.remove(focusOut);
 				FlxG.stage.window.onFocusIn.remove(focusIn);
-				#end
 				removedVideo = true;
 			}
 			cannotDie = true;
@@ -2289,7 +2301,7 @@ class PlayState extends MusicBeatState
 			PlayState.stageTesting = false;
 			FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, handleInput);
 			FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP, releaseInput);
-			#if cpp
+			#if FEATURE_LUAMODCHART
 			if (luaModchart != null)
 			{
 				luaModchart.die();
@@ -2306,10 +2318,8 @@ class PlayState extends MusicBeatState
 			{
 				GlobalVideo.get().stop();
 				remove(videoSprite);
-				#if sys
 				FlxG.stage.window.onFocusOut.remove(focusOut);
 				FlxG.stage.window.onFocusIn.remove(focusIn);
-				#end
 				removedVideo = true;
 			}
 			cannotDie = true;
@@ -2319,7 +2329,7 @@ class PlayState extends MusicBeatState
 			PlayState.stageTesting = false;
 			FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, handleInput);
 			FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP, releaseInput);
-			#if cpp
+			#if FEATURE_LUAMODCHART
 			if (luaModchart != null)
 			{
 				luaModchart.die();
@@ -2374,7 +2384,7 @@ class PlayState extends MusicBeatState
 			PlayState.stageTesting = false;
 			FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, handleInput);
 			FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP, releaseInput);
-			#if cpp
+			#if FEATURE_LUAMODCHART
 			if (luaModchart != null)
 			{
 				luaModchart.die();
@@ -2418,7 +2428,7 @@ class PlayState extends MusicBeatState
 				clean();
 				FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, handleInput);
 				FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP, releaseInput);
-				#if cpp
+				#if FEATURE_LUAMODCHART
 				if (luaModchart != null)
 				{
 					luaModchart.die();
@@ -2434,7 +2444,7 @@ class PlayState extends MusicBeatState
 			PlayState.stageTesting = false;
 			FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, handleInput);
 			FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP, releaseInput);
-			#if cpp
+			#if FEATURE_LUAMODCHART
 			if (luaModchart != null)
 			{
 				luaModchart.die();
@@ -2649,7 +2659,7 @@ class PlayState extends MusicBeatState
 				}
 			}
 
-			#if cpp
+			#if FEATURE_LUAMODCHART
 			if (luaModchart != null)
 				luaModchart.setVar("mustHit", currentSection.mustHitSection);
 			#end
@@ -2658,7 +2668,7 @@ class PlayState extends MusicBeatState
 			{
 				var offsetX = 0;
 				var offsetY = 0;
-				#if cpp
+				#if FEATURE_LUAMODCHART
 				if (luaModchart != null)
 				{
 					offsetX = luaModchart.getVar("followXOffset", "float");
@@ -2666,7 +2676,7 @@ class PlayState extends MusicBeatState
 				}
 				#end
 				camFollow.setPosition(dad.getMidpoint().x + 150 + offsetX, dad.getMidpoint().y - 100 + offsetY);
-				#if cpp
+				#if FEATURE_LUAMODCHART
 				if (luaModchart != null)
 					luaModchart.executeState('playerTwoTurn', []);
 				#end
@@ -2686,7 +2696,7 @@ class PlayState extends MusicBeatState
 			{
 				var offsetX = 0;
 				var offsetY = 0;
-				#if cpp
+				#if FEATURE_LUAMODCHART
 				if (luaModchart != null)
 				{
 					offsetX = luaModchart.getVar("followXOffset", "float");
@@ -2695,7 +2705,7 @@ class PlayState extends MusicBeatState
 				#end
 				camFollow.setPosition(boyfriend.getMidpoint().x - 100 + offsetX, boyfriend.getMidpoint().y - 100 + offsetY);
 
-				#if cpp
+				#if FEATURE_LUAMODCHART
 				if (luaModchart != null)
 					luaModchart.executeState('playerOneTurn', []);
 				#end
@@ -2792,7 +2802,7 @@ class PlayState extends MusicBeatState
 					openSubState(new GameOverSubstate(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 				}
 
-				#if desktop
+				#if FEATURE_DISCORD
 				// Game Over doesn't get his own variable because it's only used here
 				DiscordClient.changePresence("GAME OVER -- "
 					+ SONG.song
@@ -2835,7 +2845,7 @@ class PlayState extends MusicBeatState
 					openSubState(new GameOverSubstate(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 				}
 
-				#if desktop
+				#if FEATURE_DISCORD
 				// Game Over doesn't get his own variable because it's only used here
 				DiscordClient.changePresence("GAME OVER -- "
 					+ SONG.song
@@ -2998,7 +3008,7 @@ class PlayState extends MusicBeatState
 								});
 							}
 
-							#if cpp
+							#if FEATURE_LUAMODCHART
 							if (luaModchart != null)
 								luaModchart.executeState('playerTwoSing', [Math.abs(daNote.noteData), Conductor.songPosition]);
 							#end
@@ -3032,7 +3042,7 @@ class PlayState extends MusicBeatState
 							});
 						}
 
-						#if cpp
+						#if FEATURE_LUAMODCHART
 						if (luaModchart != null)
 							luaModchart.executeState('playerTwoSing', [Math.abs(daNote.noteData), Conductor.songPosition]);
 						#end
@@ -3309,7 +3319,7 @@ class PlayState extends MusicBeatState
 		if (FlxG.save.data.fpsCap > 290)
 			(cast(Lib.current.getChildAt(0), Main)).setFPSCap(290);
 
-		#if cpp
+		#if FEATURE_LUAMODCHART
 		if (luaModchart != null)
 		{
 			luaModchart.die();
@@ -3408,7 +3418,7 @@ class PlayState extends MusicBeatState
 						clean();
 					}
 
-					#if cpp
+					#if FEATURE_LUAMODCHART
 					if (luaModchart != null)
 					{
 						luaModchart.die();
@@ -3846,7 +3856,7 @@ class PlayState extends MusicBeatState
 		var pressArray:Array<Bool> = [controls.LEFT_P, controls.DOWN_P, controls.UP_P, controls.RIGHT_P];
 		var releaseArray:Array<Bool> = [controls.LEFT_R, controls.DOWN_R, controls.UP_R, controls.RIGHT_R];
 		var keynameArray:Array<String> = ['left', 'down', 'up', 'right'];
-		#if cpp
+		#if FEATURE_LUAMODCHART
 		if (luaModchart != null)
 		{
 			for (i in 0...pressArray.length)
@@ -4136,7 +4146,7 @@ class PlayState extends MusicBeatState
 
 	public function backgroundVideo(source:String) // for background videos
 	{
-		#if cpp
+		#if FEATURE_WEBM
 		useVideo = true;
 
 		FlxG.stage.window.onFocusOut.add(focusOut);
@@ -4256,7 +4266,7 @@ class PlayState extends MusicBeatState
 			// Hole switch statement replaced with a single line :)
 			boyfriend.playAnim('sing' + dataSuffix[direction] + 'miss', true);
 
-			#if cpp
+			#if FEATURE_LUAMODCHART
 			if (luaModchart != null)
 				luaModchart.executeState('playerOneMiss', [direction, Conductor.songPosition]);
 			#end
@@ -4408,7 +4418,7 @@ class PlayState extends MusicBeatState
 
 			boyfriend.playAnim('sing' + dataSuffix[note.noteData] + altAnim, true);
 
-			#if cpp
+			#if FEATURE_LUAMODCHART
 			if (luaModchart != null)
 				luaModchart.executeState('playerOneSing', [note.noteData, Conductor.songPosition]);
 			#end
@@ -4471,7 +4481,7 @@ class PlayState extends MusicBeatState
 			resyncVocals();
 		}
 
-		#if cpp
+		#if FEATURE_LUAMODCHART
 		if (executeModchart && luaModchart != null)
 		{
 			luaModchart.setVar('curStep', curStep);
@@ -4489,7 +4499,7 @@ class PlayState extends MusicBeatState
 			notes.sort(FlxSort.byY, (PlayStateChangeables.useDownscroll ? FlxSort.ASCENDING : FlxSort.DESCENDING));
 		}
 
-		#if cpp
+		#if FEATURE_LUAMODCHART
 		if (executeModchart && luaModchart != null)
 		{
 			luaModchart.executeState('beatHit', [curBeat]);

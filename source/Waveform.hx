@@ -48,9 +48,6 @@ class Waveform extends FlxSprite
 
 	public function drawWaveform()
 	{
-		var currentTime:Float = Sys.time();
-		var finishedTime:Float;
-
 		var index:Int = 0;
 		var drawIndex:Int = 0;
 
@@ -59,7 +56,6 @@ class Waveform extends FlxSprite
 
 		var min:Float = 0;
 		var max:Float = 0;
-		Sys.println("Interating over " + totalSamples);
 
 		for(index in 0...Math.round(totalSamples))
 		{
@@ -94,9 +90,5 @@ class Waveform extends FlxSprite
 			min = 0;
 			max = 0;
 		}
-
-		finishedTime = Sys.time();
-
-		Sys.println("Took " + (finishedTime - currentTime) + " seconds.");
 	}
 }

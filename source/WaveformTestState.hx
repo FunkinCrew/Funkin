@@ -10,7 +10,6 @@ import lime.media.AudioBuffer;
 import lime.media.vorbis.VorbisFile;
 import openfl.geom.Rectangle;
 import openfl.media.Sound;
-import sys.thread.Thread;
 
 class WaveformTestState extends FlxState
 {
@@ -23,7 +22,9 @@ class WaveformTestState extends FlxState
 		// fuckin stupid ass bitch ass fucking waveform
 		if (PlayState.isSM)
 		{
+      #if FEATURE_FILESYSTEM
 			waveform = new Waveform(0, 0, PlayState.pathToSm + "/" + PlayState.sm.header.MUSIC, 720);
+      #end
 		}
 		else
 		{

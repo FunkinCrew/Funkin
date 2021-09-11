@@ -1,7 +1,7 @@
 package;
 
 import flixel.FlxBasic;
-#if desktop
+#if FEATURE_DISCORD
 import Discord.DiscordClient;
 #end
 import flixel.util.FlxColor;

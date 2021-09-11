@@ -1,4 +1,4 @@
-#if sys
+#if FEATURE_FILESYSTEM
 import sys.io.File;
 #end
 import Controls.Control;
@@ -90,7 +90,7 @@ class Replay
 
 	public function SaveReplay(notearray:Array<Dynamic>, judge:Array<String>, ana:Analysis)
 	{
-		#if sys
+		#if FEATURE_STEPMANIA
 		var chartPath = PlayState.isSM ? PlayState.pathToSm + "/converted.json" : "";
 		#else
 		var chartPath = "";
@@ -115,7 +115,7 @@ class Replay
 		
 		var time = Date.now().getTime();
 
-		#if sys
+		#if FEATURE_FILESYSTEM
 		File.saveContent("assets/replays/replay-" + PlayState.SONG.song + "-time" + time + ".kadeReplay", data);
 
 		path = "replay-" + PlayState.SONG.song + "-time" + time + ".kadeReplay"; // for score screen shit
@@ -128,7 +128,7 @@ class Replay
 
 	public function LoadFromJSON()
 	{
-		#if sys
+		#if FEATURE_FILESYSTEM
 		trace('loading ' + Sys.getCwd() + 'assets/replays/' + path + ' replay...');
 		try
 		{

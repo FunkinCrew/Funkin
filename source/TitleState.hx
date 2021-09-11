@@ -1,6 +1,6 @@
 package;
 
-#if sys
+#if FEATURE_STEPMANIA
 import smTools.SMFile;
 #end
 import flixel.FlxG;
@@ -26,12 +26,8 @@ import flixel.util.FlxTimer;
 import lime.app.Application;
 import openfl.Assets;
 
-#if desktop
+#if FEATURE_DISCORD
 import Discord.DiscordClient;
-#end
-
-#if cpp
-import sys.thread.Thread;
 #end
 
 using StringTools;
@@ -56,7 +52,7 @@ class TitleState extends MusicBeatState
 		polymod.Polymod.init({modRoot: "mods", dirs: ['introMod']});
 		#end
 		
-		#if sys
+		#if FEATURE_FILESYSTEM
 		if (!sys.FileSystem.exists(Sys.getCwd() + "/assets/replays"))
 			sys.FileSystem.createDirectory(Sys.getCwd() + "/assets/replays");
 		#end
