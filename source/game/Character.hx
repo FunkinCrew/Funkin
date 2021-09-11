@@ -34,6 +34,9 @@ class Character extends FlxSprite
 
 	public var otherCharacters:Array<Character>;
 
+	var offsetsFlipWhenPlayer:Bool = true;
+	var offsetsFlipWhenEnemy:Bool = false;
+
 	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false)
 	{
 		super(x, y);
@@ -122,6 +125,8 @@ class Character extends FlxSprite
 				playAnim('danceRight');
 
 				setGraphicSize(Std.int(width * 6));
+
+				positioningOffset = [100, 100];
 
 				antialiasing = false;
 				dancesLeftAndRight = true;
@@ -226,7 +231,6 @@ class Character extends FlxSprite
 
 				flipX = true;
 				barColor = FlxColor.fromRGB(205, 229, 112);
-
 			case 'bf-christmas':
 				frames = Paths.getSparrowAtlas('characters/bfChristmas', 'shared');
 				animation.addByPrefix('idle', 'BF idle dance', 24, false);
@@ -245,7 +249,8 @@ class Character extends FlxSprite
 
 				flipX = true;
 				barColor = FlxColor.fromRGB(81, 201, 219);
-
+				offsetsFlipWhenEnemy = true;
+				offsetsFlipWhenPlayer = false;
 			case 'bf-car':
 				frames = Paths.getSparrowAtlas('characters/bfCar', 'shared');
 				animation.addByPrefix('idle', 'BF idle dance', 24, false);
@@ -264,7 +269,8 @@ class Character extends FlxSprite
 
 				flipX = true;
 				barColor = FlxColor.fromRGB(81, 201, 219);
-
+				offsetsFlipWhenEnemy = true;
+				offsetsFlipWhenPlayer = false;
 			case 'bf-pixel':
 				frames = Paths.getSparrowAtlas('characters/bfPixel', 'shared');
 				animation.addByPrefix('idle', 'BF IDLE', 24, false);
@@ -286,12 +292,15 @@ class Character extends FlxSprite
 				//width -= 100;
 				//height -= 100;
 
+				cameraOffset = [-100, -200];
+
 				antialiasing = false;
 
 				flipX = true;
 
 				barColor = FlxColor.fromRGB(123, 214, 246);
-
+				offsetsFlipWhenEnemy = true;
+				offsetsFlipWhenPlayer = false;
 			case 'bf-pixel-dead':
 				frames = Paths.getSparrowAtlas('characters/bfPixelsDEAD', 'shared');
 				animation.addByPrefix('singUP', "BF Dies pixel", 24, false);
@@ -320,6 +329,9 @@ class Character extends FlxSprite
 				setGraphicSize(Std.int(width * 6));
 				updateHitbox();
 
+				cameraOffset = [15, 0];
+				positioningOffset = [0, 300];
+
 				antialiasing = false;
 				barColor = FlxColor.fromRGB(255, 170, 111);
 			case 'senpai-angry':
@@ -335,6 +347,9 @@ class Character extends FlxSprite
 				setGraphicSize(Std.int(width * 6));
 				updateHitbox();
 
+				cameraOffset = [15, 0];
+				positioningOffset = [0, 300];
+
 				antialiasing = false;
 				barColor = FlxColor.fromRGB(255, 170, 111);
 			case 'spirit':
@@ -349,6 +364,8 @@ class Character extends FlxSprite
 				updateHitbox();
 
 				playAnim('idle');
+
+				positioningOffset = [-250, -100];
 
 				antialiasing = false;
 				barColor = FlxColor.fromRGB(255, 60, 110);
@@ -443,6 +460,16 @@ class Character extends FlxSprite
 				flipX = config.defaultFlipX;
 			else
 				flipX = !config.defaultFlipX;
+
+			if(config.offsetsFlipWhenPlayer == null)
+				offsetsFlipWhenPlayer = true;
+			else
+				offsetsFlipWhenPlayer = config.offsetsFlipWhenPlayer;
+
+			if(config.offsetsFlipWhenEnemy == null)
+				offsetsFlipWhenEnemy = false;
+			else
+				offsetsFlipWhenEnemy = config.offsetsFlipWhenEnemy;
 
 			dancesLeftAndRight = config.dancesLeftAndRight;
 
@@ -675,7 +702,7 @@ class Character extends FlxSprite
 
 	public function addOffset(name:String, x:Float = 0, y:Float = 0)
 	{
-		if(flipX)
+		if((isPlayer && offsetsFlipWhenPlayer) || (!isPlayer && offsetsFlipWhenEnemy))
 			x = 0 - x;
 
 		animOffsets.set(name, [x, y]);
@@ -693,6 +720,9 @@ typedef CharacterConfig =
 	var barColor:Array<Int>;
 	var positionOffset:Array<Float>;
 	var cameraOffset:Array<Float>;
+
+	var offsetsFlipWhenPlayer:Null<Bool>;
+	var offsetsFlipWhenEnemy:Null<Bool>;
 
 	// multiple characters stuff
 	var characters:Array<CharacterData>;

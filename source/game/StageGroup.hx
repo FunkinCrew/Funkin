@@ -129,9 +129,9 @@ class StageGroup extends FlxGroup
             }
             case "philly":
             {
-                player_1_Point.x += 25;
-                gf_Point.x += 75;
-                gf_Point.y += 25;
+                player_1_Point.x += 50;
+                gf_Point.x += 150;
+                gf_Point.y -= 50;
                 player_2_Point.x += 175;
 
                 var bg:FlxSprite = new FlxSprite(-100).loadGraphic(Paths.image(stage + '/sky', 'stages'));
@@ -174,10 +174,11 @@ class StageGroup extends FlxGroup
             {
                 camZoom = 0.9;
 
-                player_1_Point.x += 100;
-                player_1_Point.y -= 100;
+                player_1_Point.x += 200;
+                player_1_Point.y -= 200;
                 gf_Point.y += 100;
                 player_2_Point.x -= 75;
+                player_2_Point.y += 75;
 
                 var skyBG:FlxSprite = new FlxSprite(-120, -50).loadGraphic(Paths.image(stage + '/limoSunset', 'stages'));
                 skyBG.scrollFactor.set(0.1, 0.1);
@@ -214,6 +215,13 @@ class StageGroup extends FlxGroup
             case "mall":
             {
                 camZoom = 0.8;
+
+                player_1_Point.x += 200;
+                player_1_Point.y += 50;
+                gf_Point.x += 200;
+                gf_Point.y += 100;
+                player_2_Point.x -= 250;
+                player_2_Point.y += 75;
 
                 var bg:FlxSprite = new FlxSprite(-1000, -500).loadGraphic(Paths.image(stage + '/bgWalls', 'stages'));
                 bg.antialiasing = true;
@@ -286,6 +294,13 @@ class StageGroup extends FlxGroup
             }
             case "school":
             {
+                player_1_Point.x += 150;
+                player_1_Point.y += 300;
+                gf_Point.x += 200;
+                gf_Point.y += 250;
+                player_2_Point.x += 325;
+                player_2_Point.y += 330;
+
                 var bgSky = new FlxSprite().loadGraphic(Paths.image(stage + '/weebSky', 'stages'));
                 bgSky.scrollFactor.set(0.1, 0.1);
                 add(bgSky);
@@ -349,6 +364,13 @@ class StageGroup extends FlxGroup
             }
             case "evil-school":
             {
+                player_1_Point.x += 150;
+                player_1_Point.y += 300;
+                gf_Point.x += 200;
+                gf_Point.y += 250;
+                player_2_Point.x += 325;
+                player_2_Point.y += 330;
+                
                 var bg:FlxSprite = new FlxSprite(400, 220);
                 bg.frames = Paths.getSparrowAtlas(stage + '/animatedEvilSchool', 'stages');
                 bg.animation.addByPrefix('idle', 'background 2', 24);

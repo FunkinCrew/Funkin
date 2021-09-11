@@ -252,7 +252,9 @@ class CharacterCreationState extends FlxState
             barColor: Bar_Color,
             positionOffset: [0,0],
             cameraOffset: [0,0],
-            characters: []
+            characters: [],
+            offsetsFlipWhenEnemy: false,
+            offsetsFlipWhenPlayer: true
         };
     }
 
