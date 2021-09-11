@@ -388,9 +388,9 @@ class FreeplayState extends MusicBeatState
 		}
 	}
 	function iconBop(?_scale:Float = 1.25, ?_time:Float = 0.2):Void {
-		iconArray[curSelected].iconScale = iconArray[curSelected].defualtIconScale * _scale;
+		iconArray[curSelected].iconScale = iconArray[curSelected].defaultIconScale * _scale;
 
-		FlxTween.tween(iconArray[curSelected], {iconScale: iconArray[curSelected].defualtIconScale}, _time, {ease: FlxEase.quintOut});
+		FlxTween.tween(iconArray[curSelected], {iconScale: iconArray[curSelected].defaultIconScale}, _time, {ease: FlxEase.quintOut});
 	}
 }
 
