@@ -37,12 +37,7 @@ class FlxSymbol extends FlxSprite
 	public function new(x:Float, y:Float)
 	{
 		super(x, y);
-
-		var spritemap:Map<String, Sprite> = ParseAnimate.genSpritemap(Assets.getText(Paths.file('images/tightestBars/spritemap1.json')));
 	}
-
-	var symbolAtlasShit:Map<String, String> = new Map();
-	var symbolMap:Map<String, Animation> = new Map();
 
 	public var daFrame:Int = 0;
 
