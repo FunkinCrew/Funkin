@@ -2,6 +2,8 @@ package animate;
 
 import haxe.format.JsonParser;
 import openfl.Assets;
+import openfl.geom.Matrix3D;
+import openfl.geom.Matrix;
 import sys.io.File;
 
 /**
@@ -109,19 +111,29 @@ class ParseAnimate
 	 */
 	public static var matrixHelp:Array<Array<Array<Float>>> = [];
 
-	public static var trpHelpIDK:Array<Array<Float>> = [];
+	public static var trpHelpIDK:Array<Array<Array<Float>>> = [];
 
 	public static var loopedFrameShit:Int = 0;
+
+	public static var funnyMatrix:Matrix = new Matrix();
+	public static var matrixFlipper:Array<Matrix> = [];
 
 	// clean up all the crazy ass arrays
 
 	public static function resetFrameList()
 	{
+		// funnyMatrix.identity();
+
 		frameList = [];
 		frameList.push([]);
 		matrixHelp = [];
 		matrixHelp.push([]);
+
+		trpHelpIDK = [];
+		trpHelpIDK.push([]);
 	}
+
+	public static var isFlipped:Bool = false;
 
 	public static function parseTimeline(TL:Timeline, tabbed:Int = 0, ?frameInput:Int)
 	{
@@ -185,27 +197,76 @@ class ParseAnimate
 				{
 					matrixHelp[matrixHelp.length - 1].push(element.ASI.M3D);
 
+					var m3D = element.ASI.M3D;
+					var lilMatrix:Matrix = new Matrix(m3D[0], m3D[1], m3D[4], m3D[5], m3D[12], m3D[13]);
+					matrixFlipper.push(lilMatrix);
+
+					// matrixFlipper.reverse();
+
+					// funnyMatrix.identity();
+
+					// for (m in matrixFlipper)
+					// funnyMatrix.concat(m);
+
+					if (isFlipped)
+					{
+						trace("MORE FLIPPED SHIT");
+						trace("MORE FLIPPED SHIT");
+						trace("MORE FLIPPED SHIT");
+						trace(funnyMatrix);
+						trace(matrixFlipper);
+					}
+
+					// trace(funnyMatrix);
+
+					funnyMatrix.concat(lilMatrix);
+					// trace(funnyMatrix);
+
 					frameList[frameList.length - 1].push({
 						frameName: element.ASI.N,
-						M3D: element.ASI.M3D,
 						depthString: depthTypeBeat,
 						matrixArray: matrixHelp[matrixHelp.length - 1],
-						trpArray: trpHelpIDK
+						trpArray: trpHelpIDK[trpHelpIDK.length - 1],
+						fullMatrix: funnyMatrix.clone()
 					});
 
 					// flips the matrix once?? I cant remember exactly why it needs to be flipped
 					// matrixHelp[matrixHelp.length - 1].reverse();
 
-					trpHelpIDK = [];
+					// trpHelpIDK = [];
+
+					// push the matrix array after each symbol?
+
+					funnyMatrix.identity();
+					matrixFlipper = [];
 
 					depthTypeBeat = "";
 					curLoopType = "";
 					loopedFrameShit = 0;
+
+					isFlipped = false;
 				}
 				else
 				{
+					var m3D = element.SI.M3D;
+					var lilMatrix:Matrix = new Matrix(m3D[0], m3D[1], m3D[4], m3D[5], m3D[12], m3D[13]);
+
+					if (lilMatrix.a == -1)
+					{
+						isFlipped = true;
+
+						trace('IS THE NEGATIVE ONE');
+					}
+
+					if (isFlipped)
+						trace(lilMatrix);
+
+					funnyMatrix.concat(lilMatrix);
+					matrixFlipper.push(lilMatrix);
+					// trace(funnyMatrix);
+
 					matrixHelp[matrixHelp.length - 1].push(element.SI.M3D);
-					trpHelpIDK.push([element.SI.TRP.x, element.SI.TRP.y]);
+					trpHelpIDK[trpHelpIDK.length - 1].push([element.SI.TRP.x, element.SI.TRP.y]); // trpHelpIDK.push();
 					depthTypeBeat += "->" + element.SI.SN;
 					curLoopType = element.SI.LP;
 
@@ -222,6 +283,11 @@ class ParseAnimate
 
 					parseTimeline(symbolMap.get(element.SI.SN).TL, tabbed + 1, inputFrame);
 				}
+
+				// idk if this should go per layer or per element / object?
+
+				matrixHelp.push([]);
+				trpHelpIDK.push([]);
 			}
 
 			if (tabbed == 0)
@@ -229,8 +295,6 @@ class ParseAnimate
 				frameList[frameList.length - 1].reverse();
 				frameList.push([]); // new layer essentially
 			}
-
-			matrixHelp.push([]);
 		}
 
 		frameList.reverse();
@@ -240,10 +304,10 @@ class ParseAnimate
 typedef VALIDFRAME =
 {
 	frameName:String,
-	M3D:Array<Float>,
 	depthString:String,
 	matrixArray:Array<Array<Float>>,
-	trpArray:Array<Array<Float>>
+	trpArray:Array<Array<Float>>,
+	fullMatrix:Matrix
 }
 
 typedef AnimJson =

@@ -154,6 +154,7 @@ class FlxSymbol extends FlxSprite
 
 					dumbassMatrix.concat(_matrix);
 					spr.matrixExposed = true;
+
 					spr.transformMatrix.concat(dumbassMatrix);
 					// spr._matrix.concat(spr.transformMatrix);
 
@@ -248,16 +249,16 @@ class FlxSymbol extends FlxSprite
 		}
 		else
 		{
-			if (bakedRotationAngle <= 0)
-			{
-				updateTrig();
-
-				if (angle != 0)
-					_matrix.rotateWithTrig(_cosAngle, _sinAngle);
-			}
-
 			updateSkewMatrix();
 			_matrix.concat(_skewMatrix);
+		}
+
+		if (bakedRotationAngle <= 0)
+		{
+			updateTrig();
+
+			if (angle != 0)
+				_matrix.rotateWithTrig(_cosAngle, _sinAngle);
 		}
 
 		_point.addPoint(origin);

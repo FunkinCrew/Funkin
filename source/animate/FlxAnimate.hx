@@ -18,6 +18,7 @@ import flixel.system.FlxAssets.FlxGraphicAsset;
 import haxe.format.JsonParser;
 import openfl.Assets;
 import openfl.display.BitmapData;
+import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 
 class FlxAnimate extends FlxSymbol
@@ -34,7 +35,9 @@ class FlxAnimate extends FlxSymbol
 
 		sprGrp = new FlxTypedGroup<FlxSymbol>();
 
-		var folder:String = "tightBarsLol";
+		var tests:Array<String> = ['tightBarsLol', 'tightestBars'];
+
+		var folder:String = tests[1];
 
 		frames = FlxAnimate.fromAnimate(Paths.file('images/' + folder + "/spritemap1.png"), Paths.file('images/$folder/spritemap1.json'));
 
@@ -75,10 +78,7 @@ class FlxAnimate extends FlxSymbol
 	**/
 	function generateSpriteShit()
 	{
-		sprGrp.kill(); // kills group, maybe dont need to do this one so broadly?
-
-		// just used for sum default shit?
-		var normalSpr:FlxSymbol = new FlxSymbol(0, 0);
+		sprGrp.kill(); // kills group, maybe dont need to do this one so broadly? ehh whatev
 
 		for (frameSorted in ParseAnimate.frameList)
 		{
@@ -88,6 +88,7 @@ class FlxAnimate extends FlxSymbol
 				var spr:FlxSymbol = sprGrp.recycle(FlxSymbol); // redo this to recycle from a list later
 				spr.frames = frames;
 				spr.frame = spr.frames.getByName(i.frameName); // this one is fine
+				spr.updateHitbox();
 
 				// move this? wont work here!
 				if (FlxG.keys.justPressed.I)
@@ -98,20 +99,53 @@ class FlxAnimate extends FlxSymbol
 				}
 
 				// cuz its in group, gets a lil fuckie when animated, need to go thru and properly reset each thing for shit like matrix!
-				spr.transformMatrix.copyFrom(normalSpr.transformMatrix);
+				// merely resets the matrix to normal ass one!
+				spr.transformMatrix.identity();
+				spr.setPosition();
 
-				for (swagMatrix in i.matrixArray)
+				/* for (swagMatrix in i.matrixArray)
+					{
+						var alsoSwag:FlxMatrix = new FlxMatrix(swagMatrix[0], swagMatrix[1], swagMatrix[4], swagMatrix[5], swagMatrix[12], swagMatrix[13]);
+						spr.matrixExposed = true;
+						spr.transformMatrix.concat(alsoSwag);
+				}*/
+
+				// i.fullMatrix.concat
+
+				spr.matrixExposed = true;
+
+				// trace(i.fullMatrix);
+
+				if (i.fullMatrix.a < 0)
 				{
-					var alsoSwag:FlxMatrix = new FlxMatrix(swagMatrix[0], swagMatrix[1], swagMatrix[4], swagMatrix[5], swagMatrix[12], swagMatrix[13]);
-					spr.matrixExposed = true;
-					spr.transformMatrix.concat(alsoSwag);
+					trace('negative?');
+					trace(i.fullMatrix);
 				}
 
-				// spr.alpha = 0.3;
+				spr.transformMatrix.concat(i.fullMatrix);
+
+				if (i.fullMatrix.a < 0)
+				{
+					trace('negative?');
+					trace(i.fullMatrix);
+					trace(spr.transformMatrix);
+				}
+
+				// trace(spr.transformMatrix);
+
 				spr.origin.set();
+
+				/* for (trpShit in i.trpArray)
+					{
+						spr.origin.x -= trpShit[0];
+						spr.origin.y -= trpShit[1];
+					}
+				 */
+				// spr.alpha = 0.3;
+
 				spr.antialiasing = true;
 				sprGrp.add(spr);
-				// spr.alpha = 0.5;
+				spr.alpha = 0.5;
 
 				/* 	if (i == "0225")
 					{
