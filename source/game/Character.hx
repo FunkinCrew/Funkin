@@ -46,6 +46,8 @@ class Character extends FlxSprite
 
 		dancesLeftAndRight = false;
 
+		var ilikeyacutg:Bool = false;
+
 		switch (curCharacter)
 		{
 			case 'gf':
@@ -370,10 +372,14 @@ class Character extends FlxSprite
 				trace("NO VALUE THINGY LOL DONT LOAD SHIT");
 
 			default:
+				if (isPlayer)
+					flipX = !flipX;
+
+				ilikeyacutg = true;
 				loadNamedConfiguration(curCharacter);
 		}
 
-		if (isPlayer)
+		if (isPlayer && !ilikeyacutg)
 			flipX = !flipX;
 
 		// YOOOOOOOOOO POG MODDING STUFF
