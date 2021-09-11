@@ -26,9 +26,6 @@ All notable changes will be documented in this file.
 ### Removed
 - Week 7 has been removed because gamebanana and stuff.
 
-PLANS (priorities important to not important):
-- Results screen
-
 ## [0.2] - 7/7/2021
 ### Added
 - A stage editor / stage viewer.
