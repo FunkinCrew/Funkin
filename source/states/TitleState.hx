@@ -139,7 +139,7 @@ class TitleState extends MusicBeatState
 			Main.toggleMem(FlxG.save.data.memoryCounter);
 		}
 
-		version = "Leather's Funkin' Engine" + " Github Development v" + Application.current.meta.get('version');
+		version = "Leather's Funkin' Engine" + " Release v" + Application.current.meta.get('version');
 
 		persistentUpdate = true;
 
