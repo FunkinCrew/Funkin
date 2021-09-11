@@ -509,6 +509,10 @@ class Character extends FlxSprite
 			for(characterData in config.characters)
 			{
 				var character = new Character(x, y, characterData.name, isPlayer);
+
+				if(flipX)
+					characterData.positionOffset[0] = 0 - characterData.positionOffset[0];
+
 				character.positioningOffset[0] += characterData.positionOffset[0];
 				character.positioningOffset[1] += characterData.positionOffset[1];
 				
@@ -522,7 +526,12 @@ class Character extends FlxSprite
 		barColor = FlxColor.fromRGB(config.barColor[0], config.barColor[1], config.barColor[2]);
 
 		if(config.cameraOffset != null)
+		{
+			if(flipX)
+				config.cameraOffset[0] = 0 - config.cameraOffset[0];
+
 			cameraOffset = config.cameraOffset;
+		}
 	}
 
 	public function loadOffsetFile(characterName:String)
@@ -657,7 +666,7 @@ class Character extends FlxSprite
 	{
 		if(flipX)
 			x = 0 - x;
-		
+
 		animOffsets.set(name, [x, y]);
 	}
 }
