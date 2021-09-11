@@ -17,6 +17,7 @@ All notable changes will be documented in this file.
 - Mod Loading System (Enabling and Disabling Mods).
 - Custom Healthbar Colors
 - Botplay
+- Strict Accuracy Mode.
 ### Changed
 - Input has been updated and is a lot better now.
 - Held notes no longer count to your accuracy.
