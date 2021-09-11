@@ -123,6 +123,9 @@ class PlayState extends MusicBeatState
 
 	var waterTxt:FlxText;
 
+	var redTint:FlxSprite;
+	var floatHealth = 0.1;
+
 	public static var campaignScore:Int = 0;
 
 	var defaultCamZoom:Float = 1.05;
@@ -163,6 +166,9 @@ class PlayState extends MusicBeatState
 			ghostTaps = 0;
 			songScore = 0;
 		}
+
+		redTint = new FlxSprite(0, 0).loadGraphic(Paths.image('redtint', 'shared'));
+		redTint.alpha = 0;
 
 		Style.loadStyle(SONG.noteStyle.trim());
 		trace('Loaded this style: ${Style.lstyle.name}');
@@ -865,6 +871,10 @@ class PlayState extends MusicBeatState
 		iconP2.x += 5;
 		add(iconP2);
 
+		if (!FlxG.save.data.redTint) {
+			add(redTint);
+		}
+
 		strumLineNotes.cameras = [camHUD];
 		notes.cameras = [camHUD];
 		healthBar.cameras = [camHUD];
@@ -874,6 +884,7 @@ class PlayState extends MusicBeatState
 		scoreTxt.cameras = [camHUD];
 		waterTxt.cameras = [camHUD];
 		doof.cameras = [camHUD];
+		redTint.cameras = [camHUD];
 
 		// if (SONG.song == 'South')
 		// FlxG.camera.alpha = 0.7;
@@ -1465,6 +1476,8 @@ class PlayState extends MusicBeatState
 
 	override public function update(elapsed:Float)
 	{
+		floatHealth = health / 10;
+
 		#if desktop
 		if (!paused) {
 			DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ") | " + '${misses} Misses | Rating ${calculateRating()}', iconRPC);
@@ -1474,6 +1487,15 @@ class PlayState extends MusicBeatState
 		#if !debug
 		perfectMode = false;
 		#end
+
+		if (floatHealth < 0.1) {
+			redTint.alpha = FlxMath.lerp(1, 0, floatHealth * 10) * 0.5;
+		} else {
+			redTint.alpha = 0;
+		}
+
+		// used for debugging lol
+		// trace('${floatHealth} (${redTint.alpha})');
 
 		if (FlxG.keys.justPressed.NINE)
 		{
@@ -2646,6 +2668,13 @@ class PlayState extends MusicBeatState
 			FlxG.camera.zoom += 0.015;
 			camHUD.zoom += 0.03;
 		}
+
+		/*
+		if (floatHealth < 0.1) {
+			redTint.alpha += 0.2;
+			FlxTween.tween(redTint, {alpha: FlxMath.lerp(1, 0, floatHealth * 10) * 0.5}, 0.2, {ease: FlxEase.expoOut});
+		}
+		*/
 
 		iconP1.setGraphicSize(Std.int(iconP1.width - 30));
 		iconP2.setGraphicSize(Std.int(iconP2.width - 30));

@@ -85,6 +85,7 @@ class ChartingState extends MusicBeatState
 	var rightIcon:HealthIcon;
 
 	var playedHit:Bool = false;
+	var enableHitsounds = false;
 
 	override function create()
 	{
@@ -358,6 +359,8 @@ class ChartingState extends MusicBeatState
 		check_altAnim = new FlxUICheckBox(10, 400, null, null, "Alt Animation", 100);
 		check_altAnim.name = 'check_altAnim';
 
+		var check_hitSounds = new FlxUICheckBox(10, check_altAnim.y + 20, null, null, "Enable Hitsounds", 100);
+
 		check_changeBPM = new FlxUICheckBox(10, 60, null, null, 'Change BPM', 100);
 		check_changeBPM.name = 'check_changeBPM';
 
@@ -366,6 +369,7 @@ class ChartingState extends MusicBeatState
 		tab_group_section.add(stepperCopy);
 		tab_group_section.add(check_mustHitSection);
 		tab_group_section.add(check_altAnim);
+		tab_group_section.add(check_hitSounds);
 		tab_group_section.add(check_changeBPM);
 		tab_group_section.add(copyButton);
 		tab_group_section.add(clearSectionButton);
@@ -457,6 +461,8 @@ class ChartingState extends MusicBeatState
 					FlxG.log.add('changed bpm shit');
 				case "Alt Animation":
 					_song.notes[curSection].altAnim = check.checked;
+				case "Enable Hitsounds":
+					enableHitsounds = check.checked;
 			}
 		}
 		else if (id == FlxUINumericStepper.CHANGE_EVENT && (sender is FlxUINumericStepper))
@@ -526,7 +532,9 @@ class ChartingState extends MusicBeatState
 			if (FlxG.overlap(note, strumLine) && FlxG.sound.music.playing) {
 				note.alpha = 0.2;
 				// playedHit = true;
-				note.playHit();
+				if (enableHitsounds) {
+					note.playHit();
+				}
 			} else {
 				note.alpha = 1;
 				// playedHit = false;

@@ -35,7 +35,7 @@ class MainMenuState extends MusicBeatState
 	var camFollow:FlxObject;
 
 	public static var version = '0.5.0';
-	public static var versionTag = 'The "Performance" Update';
+	public static var versionTag = 'The Gamejolt Update';
 	public static var prerelease = true;
 
 	override function create()

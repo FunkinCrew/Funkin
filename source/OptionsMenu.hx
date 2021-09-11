@@ -46,7 +46,7 @@ class OptionsMenu extends MusicBeatState {
 
 		camFollow = new FlxSprite(0, 0).makeGraphic(Std.int(optionText.width), Std.int(optionText.height), 0xAAFF0000);
 
-		optionDot.y = optionText.y - 125; // red dot offset, adjust when adding new setting!
+		optionDot.y = optionText.y - 145; // red dot offset, adjust when adding new setting!
 
 		topText = new FlxText(0, optionDot.y - 360, 0, "OPTIONS", 32);
 		topText.screenCenter(X);
@@ -66,6 +66,7 @@ class OptionsMenu extends MusicBeatState {
 		'Allow using R to reset ${!FlxG.save.data.ron ? 'off' : 'on'}',
 		'Hitsounds ${!FlxG.save.data.hsounds ? 'off' : 'on'}',
 		'Offset: ${FlxG.save.data.offset}ms',
+		'Enable Near Death Tint ${!FlxG.save.data.redTint ? 'on' : 'off'}',
 		'RESET SETTINGS'];
 		optionText.screenCenter();
 
@@ -113,6 +114,9 @@ class OptionsMenu extends MusicBeatState {
 			if (options[curSelected].startsWith('Hitsounds')) {
 				FlxG.save.data.hsounds = !FlxG.save.data.hsounds;
 			}
+			if (options[curSelected].startsWith('Enable Near Death Tint')) {
+				FlxG.save.data.redTint = !FlxG.save.data.redTint;
+			}
 			if (options[curSelected].startsWith('RESET SETTINGS')) {
 				FlxG.save.data.offset = null;
 				FlxG.save.data.dfjk = null;
@@ -122,6 +126,7 @@ class OptionsMenu extends MusicBeatState {
 				FlxG.save.data.cpuStrums = null;
 				FlxG.save.data.ron = null;
 				FlxG.save.data.hsounds = null;
+				FlxG.save.data.redTint = null;
 			}
 		}
 		if (controls.LEFT_P) {
