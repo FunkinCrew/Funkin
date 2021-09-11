@@ -18,6 +18,42 @@ class ParseAnimate
 	public static var symbolMap:Map<String, Symbol> = new Map();
 	public static var actualSprites:Map<String, Sprite> = new Map();
 
+	private var _atlas:Map<String, Sprite>;
+	private var _symbolData:Map<String, Symbol>;
+	private var _defaultSymbolName:String;
+
+	public function new(data:AnimJson, atlas:Spritemap)
+	{
+		// bitmap data could prob be instead
+		// this code is mostly nabbed from https://github.com/miltoncandelero/OpenFLAnimateAtlas/blob/master/Source/animateatlas/displayobject/SpriteAnimationLibrary.hx
+		parseAnimationData(data);
+		parseAtlasData(atlas);
+	}
+
+	private function parseAnimationData(data:AnimJson):Void
+	{
+		_symbolData = new Map();
+
+		var symbols = data.SD.S;
+		for (symbol in symbols)
+			_symbolData[symbol.SN] = preprocessSymbolData(symbol);
+
+		var defaultSymbol:Symbol = preprocessSymbolData(data.AN);
+		_defaultSymbolName = defaultSymbol.SN;
+		_symbolData.set(_defaultSymbolName, defaultSymbol);
+	}
+
+	// at little redundant, does exactly the same thing as genSpritemap()
+	private function parseAtlasData(atlas:Spritemap):Void
+	{
+		_atlas = new Map<String, Sprite>();
+		if (atlas.ATLAS != null && atlas.ATLAS.SPRITES != null)
+		{
+			for (s in atlas.ATLAS.SPRITES)
+				_atlas.set(s.SPRITE.name, s.SPRITE);
+		}
+	}
+
 	/**
 	 * Not used, was used for testing stuff though!	
 	 */
@@ -79,6 +115,7 @@ class ParseAnimate
 		return sprMap;
 	}
 
+	// should change dis to all private?
 	public static function generateSymbolmap(symbols:Array<Symbol>)
 	{
 		for (symbol in symbols)
@@ -88,6 +125,48 @@ class ParseAnimate
 			symbolMap.set(symbol.SN, symbol);
 			// parseTimeline(symbol.TL);
 		}
+	}
+
+	public static function preprocessSymbolData(anim:Symbol):Symbol
+	{
+		var timelineData:Timeline = anim.TL;
+		var layerData:Array<Layer> = timelineData.L;
+
+		if (!timelineData.sortedForRender)
+		{
+			timelineData.sortedForRender = true;
+			layerData.reverse();
+		}
+
+		for (layerStuff in layerData)
+		{
+			var frames:Array<Frame> = layerStuff.FR;
+
+			for (frame in frames)
+			{
+				var elements:Array<Element> = frame.E;
+				for (e in 0...elements.length)
+				{
+					var element:Element = elements[e];
+					if (element.ASI != null)
+					{
+						element = elements[e] = {
+							SI: {
+								SN: "ATLAS_SYMBOL_SPRITE",
+								LP: "LP",
+								TRP: {x: 0, y: 0},
+								M3D: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+								FF: 0,
+								ST: "G",
+								ASI: element.ASI
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return anim;
 	}
 
 	public static var curLoopType:String;
@@ -339,6 +418,7 @@ typedef Symbol =
 
 typedef Timeline =
 {
+	?sortedForRender:Bool,
 	L:Array<Layer>
 }
 
@@ -353,18 +433,20 @@ typedef Frame =
 	E:Array<Element>,
 	I:Int,
 	DU:Int
+	// maybe need to implement names if it has frame labels?
 }
 
 typedef Element =
 {
 	SI:SymbolInstance,
-	ASI:AlsoSymbolInstance
+	?ASI:AlsoSymbolInstance
 	// lmfao idk what ASI stands for lmfaoo, i dont think its "also"
 }
 
 typedef SymbolInstance =
 {
 	SN:String,
+	ASI:AlsoSymbolInstance,
 
 	/**Symbol type, prob either G (graphic), or movie clip?*/ ST:String,
 
