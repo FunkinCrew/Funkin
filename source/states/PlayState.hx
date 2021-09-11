@@ -1429,7 +1429,7 @@ class PlayState extends MusicBeatState
 
 			if (PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection && camFollow.x != boyfriend.getMidpoint().x - 100)
 			{
-				camFollow.setPosition(boyfriend.getMidpoint().x - 100  + boyfriend.cameraOffset[0], boyfriend.getMidpoint().y - 100+ boyfriend.cameraOffset[1]);
+				camFollow.setPosition((boyfriend.getMidpoint().x - 100) + boyfriend.cameraOffset[0], (boyfriend.getMidpoint().y - 100) + boyfriend.cameraOffset[1]);
 
 				switch (curStage)
 				{
@@ -2148,8 +2148,6 @@ class PlayState extends MusicBeatState
 			
 			if (justPressedArray.contains(true) && generatedMusic)
 			{
-				boyfriend.holdTimer = 0;
-	
 				// variables
 				var possibleNotes:Array<Note> = [];
 				
@@ -2183,6 +2181,11 @@ class PlayState extends MusicBeatState
 									note.destroy();
 							}
 
+							if(boyfriend.otherCharacters == null)
+								boyfriend.holdTimer = 0;
+							else
+								boyfriend.otherCharacters[possibleNotes[i].character].holdTimer = 0;
+
 							goodNoteHit(possibleNotes[i]);
 						}
 					}
@@ -2197,8 +2200,6 @@ class PlayState extends MusicBeatState
 				{
 					thingsHit.push(false);
 				}
-
-				boyfriend.holdTimer = 0;
 				
 				notes.forEachAlive(function(daNote:Note)
 				{
@@ -2207,6 +2208,11 @@ class PlayState extends MusicBeatState
 					&& daNote.mustPress && daNote.isSustainNote)
 						if(heldArray[daNote.noteData] && !thingsHit[daNote.noteData])
 						{
+							if(boyfriend.otherCharacters == null)
+								boyfriend.holdTimer = 0;
+							else
+								boyfriend.otherCharacters[daNote.character].holdTimer = 0;
+
 							goodNoteHit(daNote);
 							thingsHit[daNote.noteData] = true;
 						}
@@ -2495,15 +2501,22 @@ class PlayState extends MusicBeatState
 		if (curBeat % gfSpeed == 0 && SONG.player2.startsWith('gf') && (dad.animation.curAnim.name.startsWith("sing") && dad.animation.curAnim.finished || !dad.animation.curAnim.name.startsWith("sing")))
 			dad.dance();
 
-		if (!boyfriend.animation.curAnim.name.startsWith("sing"))
+		if (boyfriend.otherCharacters == null)
 		{
-			boyfriend.dance();
+			if(!boyfriend.animation.curAnim.name.startsWith("sing"))
+				boyfriend.dance();
+		}
+		else
+		{
+			for(character in boyfriend.otherCharacters)
+			{
+				if(!character.animation.curAnim.name.startsWith("sing"))
+					character.dance();
+			}
 		}
 
-		if (curBeat % 8 == 7 && curSong == 'Bopeebo')
-		{
+		if (curBeat % 8 == 7 && SONG.song.toLowerCase() == 'bopeebo' && boyfriend.otherCharacters == null)
 			boyfriend.playAnim('hey', true);
-		}
 
 		if (curBeat % 16 == 15 && SONG.song.toLowerCase() == 'tutorial' && dad.curCharacter == 'gf' && curBeat > 16 && curBeat < 48)
 		{
