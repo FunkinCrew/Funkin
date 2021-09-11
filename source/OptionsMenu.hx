@@ -1,5 +1,6 @@
 package;
 
+import flixel.FlxBasic;
 import flixel.math.FlxMath;
 import flixel.util.FlxColor;
 import flixel.FlxSprite;
@@ -15,6 +16,7 @@ class OptionsMenu extends MusicBeatState {
 
 	var optionText:FlxText;
 	var optionDot:FlxSprite;
+	var camFollow:FlxSprite;
 
 	var topText:FlxText;
 
@@ -24,6 +26,14 @@ class OptionsMenu extends MusicBeatState {
 
 	public override function create() {
 		background = new FlxSprite(0, 0, Paths.image('menuBGBlue'));
+
+		background.scrollFactor.x = 0;
+		background.scrollFactor.y = 0.18;
+		background.setGraphicSize(Std.int(background.width * 1.1));
+		background.updateHitbox();
+		background.screenCenter();
+		background.antialiasing = true;
+
 		add(background);
 
 		optionText = new FlxText(0, 0, 0, 'OPTIONS LOLOLO', 32);
@@ -34,11 +44,15 @@ class OptionsMenu extends MusicBeatState {
 		optionDot = new FlxSprite(0, 0).makeGraphic(10, 10, FlxColor.RED);
 		add(optionDot);
 
+		camFollow = new FlxSprite(0, 0).makeGraphic(Std.int(optionText.width), Std.int(optionText.height), 0xAAFF0000);
+
 		optionDot.y = optionText.y - 125; // red dot offset, adjust when adding new setting!
 
 		topText = new FlxText(0, optionDot.y - 360, 0, "OPTIONS", 32);
 		topText.screenCenter(X);
 		// add(topText);
+
+		FlxG.camera.follow(camFollow, null, 0.06);
 
 		super.create();
 	}
@@ -57,12 +71,14 @@ class OptionsMenu extends MusicBeatState {
 
 		optionDot.x = optionText.x - 20;
 
+		camFollow.screenCenter();
+		camFollow.y = optionDot.y - camFollow.height / 2;
+
 		topText.y = optionDot.y - 360;
 
-		FlxG.camera.y = -FlxMath.lerp(-FlxG.height * 2, optionDot.y, 0.8); // camera following the red dot
+		// OLD! -- FlxG.camera.y = -FlxMath.lerp(-FlxG.height * 2, optionDot.y, 0.8); // camera following the red dot
 
-		background.screenCenter(); // this is always funky
-		background.y = -FlxMath.lerp(-FlxG.height * 2, optionDot.y, 0.8); // do the same for the background
+		background.screenCenter();
 
 		optionText.text = '';
 		for (option in options) {

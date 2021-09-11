@@ -1,0 +1,374 @@
+{
+    "chars": [
+        {
+            "name":"bf",
+            "image":"BOYFRIEND",
+            "defaultAnim":"idle",
+            "flipX": true,
+            "animations":[
+                ["idle", "BF idle dance"],
+                ["singUP", "BF NOTE UP0"],
+                ["singLEFT", "BF NOTE LEFT0"],
+                ["singRIGHT", "BF NOTE RIGHT0"],
+                ["singDOWN", "BF NOTE DOWN0"],
+                ["singUPmiss", "BF NOTE UP MISS"],
+                ["singLEFTmiss", "BF NOTE LEFT MISS"],
+                ["singRIGHTmiss", "BF NOTE RIGHT MISS"],
+                ["singDOWNmiss", "BF NOTE DOWN MISS"],
+                ["hey", "BF HEY"],
+                ["firstDeath", "BF dies"],
+                ["deathLoop", "BF Dead Loop"],
+                ["deathConfirm", "BF Dead confirm"],
+                ["scared", "BF idle shaking"]
+            ],
+            "offsets":[
+                ["idle", -5, 0],
+                ["singUP", -29, 27],
+                ["singRIGHT", -38, -7],
+                ["singLEFT", 12, -6],
+                ["singDOWN", -10, -50],
+                ["singUPmiss", -29, 27],
+                ["singRIGHTmiss", -30, 21],
+                ["singLEFTmiss", 12, 24],
+                ["singDOWNmiss", -11, -19],
+                ["hey", 7, 4],
+                ["firstDeath", 37, 11],
+                ["deathLoop", 37, 5],
+                ["deathConfirm", 37, 69],
+                ["scared", -4, 0]
+            ]
+        },
+        {
+            "name":"dad",
+            "image":"DADDY_DEAREST",
+            "defaultAnim":"idle",
+            "flipX": false,
+            "animations":[
+                ["idle", "Dad idle dance"],
+                ["singUP", "Dad Sing Note UP"],
+                ["singRIGHT", "Dad Sing Note RIGHT"],
+                ["singDOWN", "Dad Sing Note DOWN"],
+                ["singLEFT", "Dad Sing Note LEFT"]
+            ],
+            "offsets":[
+                ["idle", 0, 0],
+                ["singUP", -6, 50],
+                ["singRIGHT", 0, 27],
+                ["singLEFT", -10, 10],
+                ["singDOWN", 0, -30]
+            ]
+        },
+        {
+            "name":"spooky",
+            "image":"spooky_kids_assets",
+            "defaultAnim":"danceRight",
+            "flipX": false,
+            "animations":[
+                ["singUP", "spooky UP NOTE"],
+                ["singRIGHT", "spooky sing right"],
+                ["singDOWN", "spooky DOWN note"],
+                ["singLEFT", "note sing left"],
+                ["danceLeft", "spooky dance idle", [0, 2, 6]],
+                ["danceRight", "spooky dance idle", [8, 10, 12, 14]]
+            ],
+            "offsets":[
+                ["singUP", -20, 26],
+                ["singRIGHT", -130, -14],
+                ["singDOWN", -50, -130],
+                ["singLEFT", 130, -10],
+                ["danceLeft", 0, 0],
+                ["danceRight", 0, 0]
+            ]
+        },
+        {
+            "name":"gf",
+            "image":"GF_assets",
+            "defaultAnim":"danceRight",
+            "flipX": false,
+            "animations":[
+                ["cheer", "GF Cheer"],
+                ["singUP", "GF Up Note"],
+                ["singRIGHT", "GF Right Note"],
+                ["singDOWN", "GF Down Note"],
+                ["singLEFT", "GF left note"],
+                ["sad", "gf sad", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]],
+                ["danceLeft", "GF Dancing Beat", [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]],
+                ["danceRight", "GF Dancing Beat", [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29]],
+                ["hairBlow", "GF Dancing Beat Hair blowing", [0, 1, 2, 3]],
+                ["hairFall", "GF Dancing Beat Hair Landing", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]],
+                ["scared", "GF FEAR"]
+            ],
+            "offsets":[
+                ["cheer", 0, 0],
+                ["singUP", 0, 4],
+                ["singRIGHT", 0, -20],
+                ["singDOWN", 0, -20],
+                ["singLEFT", 0, -19],
+                ["sad", -2, -2],
+                ["danceLeft", 0, -9],
+                ["danceRight", 0, -9],
+                ["hairBlow", 45, -8],
+                ["hairFall", 0, -9],
+                ["scared", -2, -17]
+            ]
+        },
+        {
+            "name":"pico",
+            "image":"Pico_FNF_assetss",
+            "defaultAnim":"idle",
+            "flipX": true,
+            "animations":[
+                ["idle", "Pico Idle Dance"],
+                ["singUP", "pico Up note0"],
+                ["singLEFT", "Pico Note Right0"],
+                ["singRIGHT", "Pico NOTE LEFT0"],
+                ["singDOWN", "Pico Down Note0"],
+                ["singUPmiss", "pico Up note miss"],
+                ["singLEFTmiss", "Pico Note Right Miss"],
+                ["singRIGHTmiss", "Pico NOTE LEFT miss"],
+                ["singDOWNmiss", "Pico Down Note MISS"]
+            ],
+            "offsets":[
+                ["idle", 0, 0],
+                ["singUP", -29, 27],
+                ["singRIGHT", -68, -7],
+                ["singLEFT", 65, 9],
+                ["singDOWN", 200, -70],
+                ["singUPmiss", -19, 67],
+                ["singRIGHTmiss", -60, 41],
+                ["singLEFTmiss", 62, 64],
+                ["singDOWNmiss", 210, -28]
+            ]
+        },
+        {
+            "name":"mom",
+            "image":"Mom_Assets",
+            "defaultAnim":"idle",
+            "flipX": false,
+            "animations":[
+                ["idle", "Mom Idle"],
+                ["singUP", "Mom Up Pose"],
+                ["singLEFT", "Mom Left Pose"],
+                ["singRIGHT", "Mom Pose Left"],
+                ["singDOWN", "MOM DOWN POSE"]
+            ],
+            "offsets":[
+                ["idle", 0, 0],
+                ["singUP", 14, 71],
+                ["singRIGHT", 10, -60],
+                ["singLEFT", 250, -23],
+                ["singDOWN", 20, -160]
+            ]
+        },
+        {
+            "name":"mom-car",
+            "image":"momCar",
+            "defaultAnim":"idle",
+            "flipX": false,
+            "animations":[
+                ["idle", "Mom Idle"],
+                ["singUP", "Mom Up Pose"],
+                ["singLEFT", "Mom Left Pose"],
+                ["singRIGHT", "Mom Pose Left"],
+                ["singDOWN", "MOM DOWN POSE"]
+            ],
+            "offsets":[
+                ["idle", 0, 0],
+                ["singUP", 14, 71],
+                ["singRIGHT", 10, -60],
+                ["singLEFT", 250, -23],
+                ["singDOWN", 20, -160]
+            ]
+        },
+        {
+            "name":"bf-car",
+            "image":"bfCar",
+            "defaultAnim":"idle",
+            "flipX": true,
+            "animations":[
+                ["idle", "BF idle dance"],
+                ["singUP", "BF NOTE UP0"],
+                ["singLEFT", "BF NOTE LEFT0"],
+                ["singRIGHT", "BF NOTE RIGHT0"],
+                ["singDOWN", "BF NOTE DOWN0"],
+                ["singUPmiss", "BF NOTE UP MISS"],
+                ["singLEFTmiss", "BF NOTE LEFT MISS"],
+                ["singRIGHTmiss", "BF NOTE RIGHT MISS"],
+                ["singDOWNmiss", "BF NOTE DOWN MISS"],
+                ["hey", "BF HEY"],
+                ["firstDeath", "BF dies"],
+                ["deathLoop", "BF Dead Loop"],
+                ["deathConfirm", "BF Dead confirm"],
+                ["scared", "BF idle shaking"]
+            ],
+            "offsets":[
+                ["idle", -5, 0],
+                ["singUP", -29, 27],
+                ["singRIGHT", -38, -7],
+                ["singLEFT", 12, -6],
+                ["singDOWN", -10, -50],
+                ["singUPmiss", -29, 27],
+                ["singRIGHTmiss", -30, 21],
+                ["singLEFTmiss", 12, 24],
+                ["singDOWNmiss", -11, -19],
+                ["hey", 7, 4],
+                ["firstDeath", 37, 11],
+                ["deathLoop", 37, 5],
+                ["deathConfirm", 37, 69],
+                ["scared", -4, 0]
+            ]
+        },
+        {
+            "name":"parents-christmas",
+            "image":"christmas/mom_dad_christmas_assets",
+            "defaultAnim":"idle",
+            "flipX": false,
+            "animations":[
+                ["idle", "Parent Christmas Idle"],
+                ["singUP", "Parent Up Note Dad"],
+                ["singLEFT", "Parent Left Note Dad"],
+                ["singRIGHT", "Parent Right Note Dad"],
+                ["singDOWN", "Parent Down Note Dad"],
+                ["singUP-alt", "Parent Up Note Mom"],
+                ["singLEFT-alt", "Parent Left Note Mom"],
+                ["singRIGHT-alt", "Parent Right Note Mom"],
+                ["singDOWN-alt", "Parent Down Note Mom"]
+            ],
+            "offsets":[
+                ["idle", 0, 0],
+                ["singUP", -47, 24],
+                ["singRIGHT", -1, -23],
+                ["singLEFT", -30, 16],
+                ["singDOWN", -31, -29],
+                ["singUP-alt", -47, 24],
+                ["singLEFT-alt", -30, 15],
+                ["singRIGHT-alt", -1, -24],
+                ["singDOWN-alt", -30, -27]
+            ]
+        },
+        {
+            "name":"monster-christmas",
+            "image":"christmas/monsterChristmas",
+            "defaultAnim":"idle",
+            "flipX": false,
+            "animations":[
+                ["idle", "monster idle"],
+                ["singUP", "monster up note"],
+                ["singLEFT", "Monster left note"],
+                ["singRIGHT", "Monster Right note"],
+                ["singDOWN", "monster down"]
+            ],
+            "offsets":[
+                ["idle", 0, 0],
+                ["singUP", -20, 50],
+                ["singRIGHT", -51, 0],
+                ["singLEFT", -30, 0],
+                ["singDOWN", -40, -94]
+            ]
+        },
+        {
+            "name":"bf-christmas",
+            "image":"christmas/bfChristmas",
+            "defaultAnim":"idle",
+            "flipX": true,
+            "animations":[
+                ["idle", "BF idle dance"],
+                ["singUP", "BF NOTE UP0"],
+                ["singLEFT", "BF NOTE LEFT0"],
+                ["singRIGHT", "BF NOTE RIGHT0"],
+                ["singDOWN", "BF NOTE DOWN0"],
+                ["singUPmiss", "BF NOTE UP MISS"],
+                ["singLEFTmiss", "BF NOTE LEFT MISS"],
+                ["singRIGHTmiss", "BF NOTE RIGHT MISS"],
+                ["singDOWNmiss", "BF NOTE DOWN MISS"],
+                ["hey", "BF HEY"],
+                ["firstDeath", "BF dies"],
+                ["deathLoop", "BF Dead Loop"],
+                ["deathConfirm", "BF Dead confirm"],
+                ["scared", "BF idle shaking"]
+            ],
+            "offsets":[
+                ["idle", -5, 0],
+                ["singUP", -29, 27],
+                ["singRIGHT", -38, -7],
+                ["singLEFT", 12, -6],
+                ["singDOWN", -10, -50],
+                ["singUPmiss", -29, 27],
+                ["singRIGHTmiss", -30, 21],
+                ["singLEFTmiss", 12, 24],
+                ["singDOWNmiss", -11, -19],
+                ["hey", 7, 4],
+                ["firstDeath", 37, 11],
+                ["deathLoop", 37, 5],
+                ["deathConfirm", 37, 69],
+                ["scared", -4, 0]
+            ]
+        },
+        {
+            "name":"gf-christmas",
+            "image":"christmas/gfChristmas",
+            "defaultAnim":"danceRight",
+            "flipX": false,
+            "animations":[
+                ["cheer", "GF Cheer"],
+                ["singUP", "GF Up Note"],
+                ["singRIGHT", "GF Right Note"],
+                ["singDOWN", "GF Down Note"],
+                ["singLEFT", "GF left note"],
+                ["sad", "gf sad", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]],
+                ["danceLeft", "GF Dancing Beat", [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]],
+                ["danceRight", "GF Dancing Beat", [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29]],
+                ["hairBlow", "GF Dancing Beat Hair blowing", [0, 1, 2, 3]],
+                ["hairFall", "GF Dancing Beat Hair Landing", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]],
+                ["scared", "GF FEAR"]
+            ],
+            "offsets":[
+                ["cheer", 0, 0],
+                ["singUP", 0, 4],
+                ["singRIGHT", 0, -20],
+                ["singDOWN", 0, -20],
+                ["singLEFT", 0, -19],
+                ["sad", -2, -2],
+                ["danceLeft", 0, -9],
+                ["danceRight", 0, -9],
+                ["hairBlow", 45, -8],
+                ["hairFall", 0, -9],
+                ["scared", -2, -17]
+            ]
+        },
+        {
+            "name":"monster",
+            "image":"Monster_Assets",
+            "defaultAnim":"idle",
+            "flipX": false,
+            "animations":[
+                ["idle", "monster idle"],
+                ["singUP", "monster up note"],
+                ["singLEFT", "Monster left note"],
+                ["singRIGHT", "Monster Right note"],
+                ["singDOWN", "monster down"]
+            ],
+            "offsets":[
+                ["idle", 0, 0],
+                ["singUP", -20, 50],
+                ["singRIGHT", -51, 0],
+                ["singLEFT", -30, 0],
+                ["singDOWN", -40, -94]
+            ]
+        },
+        {
+            "name":"gf-car",
+            "image":"gfCar",
+            "defaultAnim":"danceRight",
+            "flipX": false,
+            "animations":[
+                ["danceLeft", "GF Dancing Beat Hair blowing CAR", [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]],
+                ["danceRight", "GF Dancing Beat Hair blowing CAR", [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29]]
+            ],
+            "offsets":[
+                ["danceLeft", 0, 0],
+                ["danceRight", 0, 0]
+            ]
+        }
+    ]
+}
