@@ -66,11 +66,10 @@ class OptionsMenu extends MusicBeatState
 		[
 			"Tools",
 			new PageOption("Back", 0, "Categories"),
-			new Option("Coming Soon", "nofricku", 1)
-			/*new GameStateOption("Charter", 1, new ChartingState()),
+			new GameStateOption("Charter", 1, new ChartingState()),
 			new GameStateOption("Animation Debug", 2, new AnimationDebug("dad")),
-			new GameStateOption("Stage Editor", 3, new StageMakingState("stage")),
-			new GameStateOption("Character Creator", 4, new CharacterCreationState("bf"))*/
+			//new GameStateOption("Stage Editor", 3, new StageMakingState("stage")),
+			new GameStateOption("Character Creator", 3, new CharacterCreationState("bf"))
 		],
 		[
 			"Misc",
