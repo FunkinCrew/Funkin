@@ -655,6 +655,9 @@ class Character extends FlxSprite
 
 	public function addOffset(name:String, x:Float = 0, y:Float = 0)
 	{
+		if(flipX)
+			x = 0 - x;
+		
 		animOffsets.set(name, [x, y]);
 	}
 }
