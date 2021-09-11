@@ -2200,6 +2200,16 @@ class PlayState extends MusicBeatState
 				{
 					thingsHit.push(false);
 				}
+
+				if(boyfriend.otherCharacters == null)
+					boyfriend.holdTimer = 0;
+				else
+				{
+					for(character in boyfriend.otherCharacters)
+					{
+						character.holdTimer = 0;
+					}
+				}
 				
 				notes.forEachAlive(function(daNote:Note)
 				{
@@ -2208,11 +2218,6 @@ class PlayState extends MusicBeatState
 					&& daNote.mustPress && daNote.isSustainNote)
 						if(heldArray[daNote.noteData] && !thingsHit[daNote.noteData])
 						{
-							if(boyfriend.otherCharacters == null)
-								boyfriend.holdTimer = 0;
-							else
-								boyfriend.otherCharacters[daNote.character].holdTimer = 0;
-
 							goodNoteHit(daNote);
 							thingsHit[daNote.noteData] = true;
 						}
