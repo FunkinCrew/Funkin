@@ -1,4 +1,4 @@
-## Friday Night Funkin (name to be determined lol)
+## Friday Night Tryin my best to code this stuff (name to be determined lol)
 
 Hey all! This is really just my attempts as someone who likes rhythm games to add some features that I would personally enjoy having. I think they'll mainly be Quality of Life chances, but also just any features to change things up too.
 
