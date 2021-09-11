@@ -443,6 +443,16 @@ class ChartingState extends MusicBeatState
 
 		// Adding everything in
 
+		var setCharacterLeftSide:FlxButton = new FlxButton(stepperCharLength.x, stepperCharLength.y + stepperCharLength.height + 1, "Char To Left", function()
+		{
+			characterSectionSide(0, Std.int(stepperCharLength.value));
+		});
+
+		var setCharacterRightSide:FlxButton = new FlxButton(setCharacterLeftSide.x + setCharacterLeftSide.width + 2, setCharacterLeftSide.y, "Char To Right", function()
+		{
+			characterSectionSide(1, Std.int(stepperCharLength.value));
+		});
+
 		// note stuff
 		tab_group_section.add(noteText);
 
@@ -451,6 +461,9 @@ class ChartingState extends MusicBeatState
 
 		tab_group_section.add(stepperCharLength);
 		tab_group_section.add(charText);
+
+		tab_group_section.add(setCharacterLeftSide);
+		tab_group_section.add(setCharacterRightSide);
 
 		// section stuff
 		tab_group_section.add(sectionText);
@@ -745,14 +758,6 @@ class ChartingState extends MusicBeatState
 			}
 
 			changeSection(curSection + 1, false);
-		}
-		else if(curStep < (16 * curSection) - 1)
-		{
-			trace(curStep);
-			trace((_song.notes[curSection].lengthInSteps) * (curSection + 1));
-			trace('DUMBSHIT');
-
-			changeSection(curSection - 1, false);
 		}
 
 		FlxG.watch.addQuick('daBeat', curBeat);
@@ -1250,6 +1255,41 @@ class ChartingState extends MusicBeatState
 			for(x in removeThese)
 			{
 				_song.notes[curSection].sectionNotes.remove(x);
+			}
+
+			updateGrid();
+		}
+	}
+
+	function characterSectionSide(side:Int = 0, character:Int = 0):Void
+	{
+		var changeThese = [];
+
+		for(noteIndex in 0..._song.notes[curSection].sectionNotes.length)
+		{
+			var i = _song.notes[curSection].sectionNotes[noteIndex];
+
+			if(side == 0)
+			{
+				if(i[1] < _song.keyCount)
+				{
+					changeThese.push(noteIndex);
+				}
+			}
+			else if(side == 1)
+			{
+				if(i[1] >= _song.keyCount)
+				{
+					changeThese.push(noteIndex);
+				}
+			}
+		}
+
+		if(changeThese != [])
+		{
+			for(x in changeThese)
+			{
+				_song.notes[curSection].sectionNotes[x][3] = character;
 			}
 
 			updateGrid();
