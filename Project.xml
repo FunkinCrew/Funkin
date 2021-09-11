@@ -127,7 +127,7 @@
 	<haxelib name="flixel-ui" />
 	<!--haxelib name="newgrounds" unless="switch"/> -->
 	<haxelib name="faxe" if='switch'/>
-	<haxelib name="polymod"/>
+	<haxelib name="polymod" if="cpp"/>
 	
 	<!-- <haxelib name="colyseus"/> -->
 	<!-- <haxelib name="colyseus-websocket" /> -->
