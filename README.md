@@ -1,3 +1,16 @@
+## Friday Night Funkin (name to be determined lol)
+
+Hey all! This is really just my attempts as someone who likes rhythm games to add some features that I would personally enjoy having. I think they'll mainly be Quality of Life chances, but also just any features to change things up too.
+So far I've just added a feature that creates a save/restart point for a song in Freeplay Mode, useful to drill out any of those rougher sections, for now it's 'O' to set a savepoint, and 'P' to restart from that point. (still working out some bugs and stuff)
+
+__Plans/Thins to consider__
+*Fade-in (osu!mania)
+*Variable scroll speed
+*Redo in Kade-Engine???
+*Suggestions are welcome!
+
+
+
 # Friday Night Funkin
 
 This is the repository for Friday Night Funkin, a game originally made for Ludum Dare 47 "Stuck In a Loop".
