@@ -16,6 +16,8 @@ import flixel.ui.FlxButton;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import lime.app.Application;
+import openfl.filters.ShaderFilter;
+import shaderslmfao.ScreenWipeShader;
 import ui.AtlasMenuList;
 import ui.MenuList;
 import ui.OptionsState;
@@ -250,6 +252,19 @@ class MainMenuState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
+		if (FlxG.keys.justPressed.N)
+		{
+			var screenShit:FlxSprite = new FlxSprite().loadGraphic(Paths.image("shaderTransitionStuff/coolDots"));
+
+			var screenWipeShit:ScreenWipeShader = new ScreenWipeShader();
+
+			screenWipeShit.funnyShit.input = screenShit.pixels;
+
+			FlxTween.tween(screenWipeShit, {daAlphaShit: 1}, 2, {ease: FlxEase.quadInOut});
+
+			FlxG.camera.setFilters([new ShaderFilter(screenWipeShit)]);
+		}
+
 		if (FlxG.onMobile)
 		{
 			var touch:FlxTouch = FlxG.touches.getFirst();
