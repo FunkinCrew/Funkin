@@ -2478,7 +2478,7 @@ class PlayState extends MusicBeatState
 	{
 		if (!note.wasGoodHit)
 		{
-			if (FlxG.save.data.hsounds) {
+			if (FlxG.save.data.hsounds && !note.isSustainNote) {
 				FlxG.sound.play(Paths.sound('hit', 'shared'));
 			}
 			
