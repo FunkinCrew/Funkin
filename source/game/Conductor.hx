@@ -73,13 +73,8 @@ class Conductor
 		trace("new BPM map BUDDY " + bpmChangeMap);
 	}
 
-	public static function changeBPM(newBpm:Float)
+	public static function changeBPM(newBpm:Float, ?multi:Float = 1)
 	{
-		var multi:Float = 1;
-
-		if(FlxG.state == PlayState.instance)
-			multi = PlayState.songMultiplier;
-
 		bpm = newBpm;
 
 		crochet = ((60 / bpm) * 1000) / multi;

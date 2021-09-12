@@ -39,9 +39,11 @@ class FreeplayState extends MusicBeatState
 	var selector:FlxText;
 	static var curSelected:Int = 0;
 	static var curDifficulty:Int = 1;
+	static var curSpeed:Float = 1;
 
 	var scoreText:FlxText;
 	var diffText:FlxText;
+	var speedText:FlxText;
 	var lerpScore:Int = 0;
 	var intendedScore:Int = 0;
 
@@ -143,6 +145,11 @@ class FreeplayState extends MusicBeatState
 		diffText.alignment = CENTER;
 		add(diffText);
 
+		speedText = new FlxText(scoreText.x + 50, diffText.y + 36, 0, "", 24);
+		speedText.font = scoreText.font;
+		speedText.alignment = CENTER;
+		add(speedText);
+
 		for (i in 0...songs.length)
 		{
 			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, songs[i].songName, true, false);
@@ -226,6 +233,21 @@ class FreeplayState extends MusicBeatState
 
 		diffText.x = scoreText.x + (scoreText.width / 2) - (diffText.width / 2);
 
+		curSpeed = FlxMath.roundDecimal(curSpeed, 2);
+
+		if(curSpeed > 2)
+			curSpeed = 2;
+
+		if(curSpeed < 1)
+			curSpeed = 1;
+
+		speedText.text = "Speed: " + curSpeed;
+		speedText.x = scoreText.x + (scoreText.width / 2) - (speedText.width / 2);
+
+		var leftP = controls.LEFT_P;
+		var rightP = controls.RIGHT_P;
+		var shift = FlxG.keys.pressed.SHIFT;
+
 		var upP = controls.UP_P;
 		var downP = controls.DOWN_P;
 		var accepted = controls.ACCEPT;
@@ -241,10 +263,15 @@ class FreeplayState extends MusicBeatState
 				changeSelection(1);
 			}
 	
-			if (controls.LEFT_P)
+			if (leftP && !shift)
 				changeDiff(-1);
-			if (controls.RIGHT_P)
+			else if (leftP && shift)
+				curSpeed -= 0.05;
+
+			if (rightP && !shift)
 				changeDiff(1);
+			else if (rightP && shift)
+				curSpeed += 0.05;
 	
 			if (controls.BACK)
 			{
@@ -262,6 +289,7 @@ class FreeplayState extends MusicBeatState
 				PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
 				PlayState.isStoryMode = false;
 				PlayState.storyDifficulty = curDifficulty;
+				PlayState.songMultiplier = curSpeed;
 	
 				PlayState.storyWeek = songs[curSelected].week;
 				trace('CUR WEEK' + PlayState.storyWeek);

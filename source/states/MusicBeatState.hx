@@ -63,6 +63,14 @@ class MusicBeatState extends FlxUIState
 				lastChange = Conductor.bpmChangeMap[i];
 		}
 
+		var multi:Float = 1;
+
+		if(FlxG.state == PlayState.instance)
+			multi = PlayState.songMultiplier;
+
+		Conductor.crochet = ((60 / Conductor.bpm) * 1000) * multi;
+		Conductor.stepCrochet = Conductor.crochet / 4;
+
 		curStep = lastChange.stepTime + Math.floor((Conductor.songPosition - lastChange.songTime) / Conductor.stepCrochet);
 	}
 

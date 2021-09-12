@@ -221,7 +221,7 @@ class PlayState extends MusicBeatState
 			SONG = Song.loadFromJson('tutorial');
 
 		Conductor.mapBPMChanges(SONG, songMultiplier);
-		Conductor.changeBPM(SONG.bpm * songMultiplier);
+		Conductor.changeBPM(SONG.bpm * songMultiplier, songMultiplier);
 
 		if(songMultiplier < 1)
 			songMultiplier = 1;
@@ -871,7 +871,7 @@ class PlayState extends MusicBeatState
 		// FlxG.log.add(ChartParser.parse());
 
 		var songData = SONG;
-		Conductor.changeBPM(songData.bpm * songMultiplier);
+		Conductor.changeBPM(songData.bpm * songMultiplier, songMultiplier);
 
 		curSong = songData.song;
 
@@ -904,9 +904,6 @@ class PlayState extends MusicBeatState
 
 		vocals.persist = false;
 		FlxG.sound.list.add(vocals);
-
-		Conductor.crochet = ((60 / (SONG.bpm) * 1000)) / songMultiplier;
-		Conductor.stepCrochet = Conductor.crochet / 4;
 
 		notes = new FlxTypedGroup<Note>();
 		add(notes);
@@ -950,13 +947,14 @@ class PlayState extends MusicBeatState
 				var susLength:Float = swagNote.sustainLength;
 
 				susLength = susLength / Conductor.stepCrochet;
+				susLength /= songMultiplier;
 				unspawnNotes.push(swagNote);
 
 				for (susNote in 0...Math.floor(susLength))
 				{
 					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
 
-					var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + Conductor.stepCrochet, daNoteData, oldNote, true, songNotes[3]);
+					var sustainNote:Note = new Note(daStrumTime + (((Conductor.stepCrochet * susNote) + Conductor.stepCrochet) * songMultiplier), daNoteData, oldNote, true, songNotes[3]);
 					sustainNote.scrollFactor.set();
 					unspawnNotes.push(sustainNote);
 
@@ -2503,7 +2501,7 @@ class PlayState extends MusicBeatState
 		{
 			if (SONG.notes[Math.floor(curStep / 16)].changeBPM)
 			{
-				Conductor.changeBPM(SONG.notes[Math.floor(curStep / 16)].bpm * songMultiplier);
+				Conductor.changeBPM(SONG.notes[Math.floor(curStep / 16)].bpm * songMultiplier, songMultiplier);
 				FlxG.log.add('CHANGED BPM!');
 			}
 
