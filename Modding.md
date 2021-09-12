@@ -33,3 +33,6 @@ If you want to add your song to the freeplay menu (you probably do) then start o
 In _append add a folder named `data` and in that folder add a .txt file named `freeplaySonglist`.
 
 Then in that text file, just add a line for your song (or songs) that is in the format: `[SONG NAME HERE]:[CHARACTER NAME]:[WEEK NUMBER]`.
+
+## Adding in a Character
+
