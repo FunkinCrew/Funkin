@@ -1,7 +1,7 @@
 # Changelog
 All notable changes will be documented in this file.
 
-## [0.3] - ?/?/????
+## [0.3] - 9/12/2021
 ### Added
 - Revamped options menu with checkboxes and other things.
 - A rank while playing.
