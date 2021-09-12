@@ -36,7 +36,7 @@ class MainMenuState extends MusicBeatState
 
 	public static var version = '0.5.0';
 	public static var versionTag = 'The Gamejolt Update';
-	public static var prerelease = true;
+	public static var prerelease = false;
 
 	override function create()
 	{
