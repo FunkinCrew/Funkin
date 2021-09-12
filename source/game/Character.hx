@@ -1,5 +1,6 @@
 package game;
 
+import flixel.addons.effects.FlxTrail;
 import flixel.util.FlxColor;
 import modding.CharacterCreationState.SpritesheetType;
 import lime.utils.Assets;
@@ -36,6 +37,8 @@ class Character extends FlxSprite
 
 	var offsetsFlipWhenPlayer:Bool = true;
 	var offsetsFlipWhenEnemy:Bool = false;
+
+	public var coolTrail:FlxTrail;
 
 	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false)
 	{
@@ -369,6 +372,8 @@ class Character extends FlxSprite
 
 				antialiasing = false;
 				barColor = FlxColor.fromRGB(255, 60, 110);
+
+				coolTrail = new FlxTrail(this, null, 4, 24, 0.3, 0.069);
 			case 'parents-christmas':
 				frames = Paths.getSparrowAtlas('characters/mom_dad_christmas_assets', 'shared');
 				animation.addByPrefix('idle', 'Parent Christmas Idle', 24, false);
@@ -539,6 +544,9 @@ class Character extends FlxSprite
 
 			if(config.positionOffset != null)
 				positioningOffset = config.positionOffset;
+
+			if(config.coolThornsTrail == true)
+				coolTrail = new FlxTrail(this, null, 4, 24, 0.3, 0.069);
 		}
 		else
 		{
@@ -723,6 +731,8 @@ typedef CharacterConfig =
 
 	var offsetsFlipWhenPlayer:Null<Bool>;
 	var offsetsFlipWhenEnemy:Null<Bool>;
+
+	var coolThornsTrail:Null<Bool>;
 
 	// multiple characters stuff
 	var characters:Array<CharacterData>;

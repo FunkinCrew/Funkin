@@ -419,11 +419,19 @@ class PlayState extends MusicBeatState
 		stage.setCharOffsets();
 
 		if(gf.otherCharacters == null)
+		{
+			if(gf.coolTrail != null)
+				add(gf.coolTrail);
+
 			add(gf);
+		}
 		else
 		{
 			for(character in gf.otherCharacters)
 			{
+				if(character.coolTrail != null)
+					add(character.coolTrail);
+				
 				add(character);
 			}
 		}
@@ -435,6 +443,10 @@ class PlayState extends MusicBeatState
 		if(dad.otherCharacters == null)
 		{
 			camPos.set(dad.getGraphicMidpoint().x, dad.getGraphicMidpoint().y);
+
+			if(dad.coolTrail != null)
+				add(dad.coolTrail);
+
 			add(dad);
 		}
 		else
@@ -443,16 +455,27 @@ class PlayState extends MusicBeatState
 
 			for(character in dad.otherCharacters)
 			{
+				if(character.coolTrail != null)
+					add(character.coolTrail);
+
 				add(character);
 			}
 		}
 
 		if(boyfriend.otherCharacters == null)
+		{
+			if(boyfriend.coolTrail != null)
+				add(boyfriend.coolTrail);
+			
 			add(boyfriend);
+		}
 		else
 		{
 			for(character in boyfriend.otherCharacters)
 			{
+				if(character.coolTrail != null)
+					add(character.coolTrail);
+
 				add(character);
 			}
 		}
