@@ -1,5 +1,7 @@
 package game;
 
+import flixel.graphics.frames.FlxFramesCollection;
+import utilities.CoolUtil;
 import utilities.NoteVariables;
 import states.PlayState;
 import flixel.FlxG;
@@ -39,6 +41,8 @@ class Note extends FlxSprite
 
 	public var character:Int = 0;
 
+	public static var arrow_Texture:FlxFramesCollection;
+
 	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?character:Int = 0)
 	{
 		super();
@@ -56,7 +60,12 @@ class Note extends FlxSprite
 		// MAKE SURE ITS DEFINITELY OFF SCREEN?
 		y = -2000;
 
-		frames = PlayState.arrow_Texture;
+		if(PlayState.arrow_Texture == null && arrow_Texture == null)
+			arrow_Texture = Paths.getSparrowAtlas('ui skins/default/arrows/default', 'shared');
+		else
+			arrow_Texture = PlayState.arrow_Texture;
+
+		frames = arrow_Texture;
 
 		animation.addByPrefix("default", NoteVariables.Other_Note_Anim_Stuff[PlayState.SONG.keyCount - 1][noteData] + "0");
 		animation.addByPrefix("hold", NoteVariables.Other_Note_Anim_Stuff[PlayState.SONG.keyCount - 1][noteData] + " hold0");

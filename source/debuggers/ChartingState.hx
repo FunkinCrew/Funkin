@@ -1,5 +1,6 @@
 package debuggers;
 
+import lime.tools.AssetType;
 #if sys
 import modding.ModdingSound;
 import sys.FileSystem;
@@ -607,14 +608,15 @@ class ChartingState extends MusicBeatState
 
 		#if sys
 		if(Assets.exists(Paths.inst(daSong)))
-			FlxG.sound.playMusic(Paths.inst(daSong), 1);
+			FlxG.sound.music = new FlxSound().loadEmbedded(Paths.inst(daSong));
 		else
-		{
 			FlxG.sound.music = new ModdingSound().loadByteArray(PolymodAssets.getBytes(Paths.instSYS(daSong)));
-			FlxG.sound.music.persist = true;
-		}
+
+		FlxG.sound.music.persist = true;
+
 		#else
-		FlxG.sound.playMusic(Paths.inst(daSong), 1);
+		FlxG.sound.music = new FlxSound().loadEmbedded(Paths.inst(daSong));
+		FlxG.sound.music.persist = true;
 		#end
 		
 		if (_song.needsVoices)
@@ -1094,6 +1096,9 @@ class ChartingState extends MusicBeatState
 	function updateGrid():Void
 	{
 		remove(gridBG);
+		gridBG.kill();
+		gridBG.destroy();
+
 		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * _song.keyCount * 2, GRID_SIZE * _song.notes[curSection].lengthInSteps);
         add(gridBG);
 
@@ -1155,10 +1160,13 @@ class ChartingState extends MusicBeatState
 
 			var note:Note = new Note(daStrumTime, daNoteInfo % _song.keyCount);
 			note.sustainLength = daSus;
+
 			note.setGraphicSize(GRID_SIZE, GRID_SIZE);
 			note.updateHitbox();
+
 			note.x = Math.floor(daNoteInfo * GRID_SIZE);
 			note.y = Math.floor(getYfromStrum((daStrumTime - sectionStartTime()) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps)));
+
 			note.rawNoteData = daNoteInfo;
 
 			curRenderedNotes.add(note);
