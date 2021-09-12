@@ -254,7 +254,8 @@ class CharacterCreationState extends FlxState
             cameraOffset: [0,0],
             characters: [],
             offsetsFlipWhenEnemy: false,
-            offsetsFlipWhenPlayer: true
+            offsetsFlipWhenPlayer: true,
+            coolThornsTrail: false
         };
     }
 
