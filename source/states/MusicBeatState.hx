@@ -56,6 +56,7 @@ class MusicBeatState extends FlxUIState
 			songTime: 0,
 			bpm: 0
 		}
+		
 		for (i in 0...Conductor.bpmChangeMap.length)
 		{
 			if (Conductor.songPosition >= Conductor.bpmChangeMap[i].songTime)

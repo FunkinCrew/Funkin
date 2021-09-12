@@ -1,5 +1,7 @@
 package game;
 
+import flixel.FlxG;
+import states.PlayState;
 import game.Song.SwagSong;
 
 /**
@@ -32,7 +34,7 @@ class Conductor
 	{
 	}
 
-	public static function mapBPMChanges(song:SwagSong)
+	public static function mapBPMChanges(song:SwagSong, ?songMultiplier:Float = 1.0)
 	{
 		bpmChangeMap = [];
 
@@ -45,11 +47,15 @@ class Conductor
 			if(song.notes[i].changeBPM && song.notes[i].bpm != curBPM)
 			{
 				curBPM = song.notes[i].bpm;
+
 				var event:BPMChangeEvent = {
 					stepTime: totalSteps,
 					songTime: totalPos,
-					bpm: curBPM
+					bpm: curBPM * songMultiplier
 				};
+
+				trace(totalPos);
+
 				bpmChangeMap.push(event);
 			}
 
@@ -69,9 +75,14 @@ class Conductor
 
 	public static function changeBPM(newBpm:Float)
 	{
+		var multi:Float = 1;
+
+		if(FlxG.state == PlayState.instance)
+			multi = PlayState.songMultiplier;
+
 		bpm = newBpm;
 
-		crochet = ((60 / bpm) * 1000);
+		crochet = ((60 / bpm) * 1000) / multi;
 		stepCrochet = crochet / 4;
 	}
 }

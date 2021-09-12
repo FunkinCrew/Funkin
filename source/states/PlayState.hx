@@ -179,6 +179,8 @@ class PlayState extends MusicBeatState
 
 	public static var arrow_Type_Sprites:Map<String, FlxFramesCollection> = new Map<String, FlxFramesCollection>();
 
+	public static var songMultiplier:Float = 1;
+
 	override public function create()
 	{
 		for(i in 0...2)
@@ -218,8 +220,16 @@ class PlayState extends MusicBeatState
 		if (SONG == null)
 			SONG = Song.loadFromJson('tutorial');
 
-		Conductor.mapBPMChanges(SONG);
-		Conductor.changeBPM(SONG.bpm);
+		Conductor.mapBPMChanges(SONG, songMultiplier);
+		Conductor.changeBPM(SONG.bpm * songMultiplier);
+
+		if(songMultiplier < 1)
+			songMultiplier = 1;
+
+		SONG.speed /= songMultiplier;
+
+		if(SONG.speed < 1)
+			SONG.speed = 1;
 
 		switch (SONG.song.toLowerCase())
 		{
@@ -841,12 +851,11 @@ class PlayState extends MusicBeatState
 			#end
 		}
 
-		FlxG.sound.music.onComplete = endSong;
 		vocals.play();
 
 		#if desktop
 		// Song duration in a float, useful for the time left feature
-		songLength = FlxG.sound.music.length;
+		songLength = FlxG.sound.music.length / songMultiplier;
 
 		// Updating Discord Rich Presence (with Time Left)
 		DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC, true, songLength);
@@ -862,7 +871,7 @@ class PlayState extends MusicBeatState
 		// FlxG.log.add(ChartParser.parse());
 
 		var songData = SONG;
-		Conductor.changeBPM(songData.bpm);
+		Conductor.changeBPM(songData.bpm * songMultiplier);
 
 		curSong = songData.song;
 
@@ -895,6 +904,9 @@ class PlayState extends MusicBeatState
 
 		vocals.persist = false;
 		FlxG.sound.list.add(vocals);
+
+		Conductor.crochet = ((60 / (SONG.bpm) * 1000)) / songMultiplier;
+		Conductor.stepCrochet = Conductor.crochet / 4;
 
 		notes = new FlxTypedGroup<Note>();
 		add(notes);
@@ -1195,6 +1207,17 @@ class PlayState extends MusicBeatState
 		Conductor.songPosition = FlxG.sound.music.time;
 		vocals.time = Conductor.songPosition;
 		vocals.play();
+
+		#if cpp
+		@:privateAccess
+		{
+			lime.media.openal.AL.sourcef(FlxG.sound.music._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, songMultiplier);
+
+			if (vocals.playing)
+				lime.media.openal.AL.sourcef(vocals._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, songMultiplier);
+
+		}
+		#end
 	}
 
 	private var paused:Bool = false;
@@ -1214,6 +1237,20 @@ class PlayState extends MusicBeatState
 		}
 
 		super.update(elapsed);
+
+		if (generatedMusic)
+		{
+			if (startedCountdown && canPause && !endingSong)
+			{
+				// Song ends abruptly on slow rate even with second condition being deleted, 
+				// and if it's deleted on songs like cocoa then it would end without finishing instrumental fully,
+				// so no reason to delete it at all
+				if (unspawnNotes.length == 0 && FlxG.sound.music.length - Conductor.songPosition <= 100)
+				{
+					endSong();
+				}
+			}
+		}
 
 		if(totalNotes != 0)
 		{
@@ -1310,8 +1347,8 @@ class PlayState extends MusicBeatState
 
 		var icon_Zoom_Lerp = 0.09;
 
-		iconP1.setGraphicSize(Std.int(FlxMath.lerp(iconP1.width, 150, icon_Zoom_Lerp / (Main.fpsCounter.currentFPS / 60))));
-		iconP2.setGraphicSize(Std.int(FlxMath.lerp(iconP2.width, 150, icon_Zoom_Lerp / (Main.fpsCounter.currentFPS / 60))));
+		iconP1.setGraphicSize(Std.int(FlxMath.lerp(iconP1.width, 150, (icon_Zoom_Lerp / (Main.fpsCounter.currentFPS / 60)) * songMultiplier)));
+		iconP2.setGraphicSize(Std.int(FlxMath.lerp(iconP2.width, 150, (icon_Zoom_Lerp / (Main.fpsCounter.currentFPS / 60)) * songMultiplier)));
 
 		iconP1.updateHitbox();
 		iconP2.updateHitbox();
@@ -1367,7 +1404,7 @@ class PlayState extends MusicBeatState
 		{
 			if (startedCountdown)
 			{
-				Conductor.songPosition += FlxG.elapsed * 1000;
+				Conductor.songPosition += (FlxG.elapsed * 1000) * songMultiplier;
 
 				if (Conductor.songPosition >= 0)
 					startSong();
@@ -1375,11 +1412,11 @@ class PlayState extends MusicBeatState
 		}
 		else
 		{
-			Conductor.songPosition += FlxG.elapsed * 1000;
+			Conductor.songPosition += (FlxG.elapsed * 1000) * songMultiplier;
 
 			if (!paused)
 			{
-				songTime += FlxG.game.ticks - previousFrameTime;
+				songTime += (FlxG.game.ticks - previousFrameTime) * songMultiplier;
 				previousFrameTime = FlxG.game.ticks;
 
 				// Interpolation type beat
@@ -1855,7 +1892,6 @@ class PlayState extends MusicBeatState
 				FlxG.switchState(new FreeplayState());
 
 				// POG FREEPLAY MUSIC????!?!?!??!?!?!?
-				FlxG.sound.music.onComplete = null; // also this is so game doesnt f*ing crash when song ends in freeplay lmao
 				FlxG.sound.music.volume = 1;
 
 				#if linc_luajit
@@ -2433,7 +2469,7 @@ class PlayState extends MusicBeatState
 	{
 		super.stepHit();
 		
-		if (FlxG.sound.music.time > Conductor.songPosition + 20 || FlxG.sound.music.time < Conductor.songPosition - 20 || FlxG.sound.music.time < 500 && (FlxG.sound.music.time > Conductor.songPosition + 5 || FlxG.sound.music.time < Conductor.songPosition - 5))
+		if (FlxG.sound.music.time > Conductor.songPosition + (20 * songMultiplier) || FlxG.sound.music.time < Conductor.songPosition - (20 * songMultiplier) || FlxG.sound.music.time < 500 && (FlxG.sound.music.time > Conductor.songPosition + 5 || FlxG.sound.music.time < Conductor.songPosition - 5))
 		{
 			resyncVocals();
 		}
@@ -2467,7 +2503,7 @@ class PlayState extends MusicBeatState
 		{
 			if (SONG.notes[Math.floor(curStep / 16)].changeBPM)
 			{
-				Conductor.changeBPM(SONG.notes[Math.floor(curStep / 16)].bpm);
+				Conductor.changeBPM(SONG.notes[Math.floor(curStep / 16)].bpm * songMultiplier);
 				FlxG.log.add('CHANGED BPM!');
 			}
 
@@ -2495,8 +2531,8 @@ class PlayState extends MusicBeatState
 			camHUD.zoom += 0.03;
 		}
 
-		iconP1.setGraphicSize(Std.int(iconP1.width + 30));
-		iconP2.setGraphicSize(Std.int(iconP2.width + 30));
+		iconP1.setGraphicSize(Std.int(iconP1.width + (30 / songMultiplier)));
+		iconP2.setGraphicSize(Std.int(iconP2.width + (30 / songMultiplier)));
 
 		iconP1.updateHitbox();
 		iconP2.updateHitbox();
