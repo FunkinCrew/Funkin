@@ -19,6 +19,7 @@ All notable changes will be documented in this file.
 - Botplay
 - Strict Accuracy Mode.
 - Song Speed Changes
+- Thorns Trail Setting for Characters (in a cool way).
 ### Changed
 - Input has been updated and is a lot better now.
 - Held notes no longer count to your accuracy.
