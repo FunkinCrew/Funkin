@@ -328,7 +328,9 @@ class FreeplayState extends MusicBeatState
 		var upP = FlxG.keys.justPressed.UP;
 		var downP = FlxG.keys.justPressed.DOWN;
 		var accepted = FlxG.keys.justPressed.ENTER;
+    var dadDebug = FlxG.keys.justPressed.SIX;
 		var charting = FlxG.keys.justPressed.SEVEN;
+    var bfDebug = FlxG.keys.justPressed.ZERO;
 
 		var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
 
@@ -420,7 +422,36 @@ class FreeplayState extends MusicBeatState
 			loadSong();
 		else if (charting)
 			loadSong(true);
+
+    // AnimationDebug and StageDebug are only enabled in debug builds.
+    #if debug
+    if (dadDebug) {
+      loadAnimDebug(true);
+    }
+    if (bfDebug) {
+      loadAnimDebug(false);
+    }
+    #end
 	}
+
+  function loadAnimDebug(dad:Bool = true) {
+    // First, get the song data.
+    var hmm;
+		try {
+			hmm = songData.get(songs[curSelected].songName)[curDifficulty];
+			if (hmm == null)
+				return;
+		} catch(ex) {
+			return;
+		}
+		PlayState.SONG = Song.conversionChecks(hmm);
+
+    var character = dad
+      ? PlayState.SONG.player2
+      : PlayState.SONG.player1;
+
+    LoadingState.loadAndSwitchState(new AnimationDebug(character));
+  }
 
 	function loadSong(isCharting:Bool = false)
 	{

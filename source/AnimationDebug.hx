@@ -81,6 +81,8 @@ class AnimationDebug extends FlxState
 
 		genBoyOffsets();
 
+    addHelpText();
+
 		camFollow = new FlxObject(0, 0, 2, 2);
 		camFollow.screenCenter();
 		add(camFollow);
@@ -172,6 +174,16 @@ class AnimationDebug extends FlxState
 		});
 	}
 
+  var helpText:FlxText;
+  function addHelpText():Void {
+    var helpTextValue = "Help:\nQ/E : Zoom in and out\nF : Flip\nI/J/K/L : Pan Camera\nW/S : Cycle Animation\nArrows : Offset Animation\nShift-Arrows : Offset Animation x10\nSpace : Replay Animation\nCTRL-S : Save Offsets to File\nEnter/ESC : Exit\nPress F1 to hide/show this!\n";
+    helpText = new FlxText(940, 20, 0, helpTextValue, 15);
+    helpText.scrollFactor.set();
+    helpText.color = FlxColor.BLUE;
+
+    add(helpText);
+  }
+
 	override function update(elapsed:Float)
 	{
 		textAnim.text = char.animation.curAnim.name;
@@ -261,6 +273,11 @@ class AnimationDebug extends FlxState
 
 		if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.S)
 			saveBoyOffsets();
+
+    if (FlxG.keys.justPressed.F1)
+			FlxG.save.data.showHelp = !FlxG.save.data.showHelp;
+
+    helpText.visible = FlxG.save.data.showHelp;
 
 		super.update(elapsed);
 	}
