@@ -62,6 +62,12 @@ class PlayState extends MusicBeatState
 	private var gf:Character;
 	private var boyfriend:Boyfriend;
 
+	public static var songPosBar:FlxBar;
+	public static var songPosBG:FlxSprite;
+	var songName:FlxText;
+
+	var songLength:Float = 0;
+
 	private var notes:FlxTypedGroup<Note>;
 	private var unspawnNotes:Array<Note> = [];
 
@@ -87,6 +93,7 @@ class PlayState extends MusicBeatState
 	private var healthBar:FlxBar;
 
 	private var songBarBG:FlxSprite;
+	private var songPositionBar:Float = 0;
 	private var songBar:FlxBar;
 
 	private var generatedMusic:Bool = false;
@@ -148,7 +155,7 @@ class PlayState extends MusicBeatState
 	// Discord RPC variables
 	var storyDifficultyText:String = "";
 	var iconRPC:String = "";
-	var songLength:Float = 0;
+	// var songLength:Float = 0;
 	var detailsText:String = "";
 	var detailsPausedText:String = "";
 	#end
@@ -774,13 +781,15 @@ class PlayState extends MusicBeatState
 		// Char colors
 
 		for (color in CoolUtil.coolTextFile(Paths.txt('healthcolors'))) {
-			var eugh = color.split(':');
+			if (!color.startsWith('#')) {
+				var eugh = color.split(':');
 
-			if (dad.curCharacter.toLowerCase().startsWith(eugh[0])) {
-				barColor = new FlxColor(Std.parseInt(eugh[1]));
-			}
-			if (boyfriend.curCharacter.toLowerCase().startsWith(eugh[0])) {
-				barColor2 = new FlxColor(Std.parseInt(eugh[1]));
+				if (dad.curCharacter.toLowerCase().startsWith(eugh[0])) {
+					barColor = new FlxColor(Std.parseInt(eugh[1]));
+				}
+				if (boyfriend.curCharacter.toLowerCase().startsWith(eugh[0])) {
+					barColor2 = new FlxColor(Std.parseInt(eugh[1]));
+				}
 			}
 		}
 
@@ -841,7 +850,7 @@ class PlayState extends MusicBeatState
 		add(healthBar);
 
 		scoreTxt = new FlxText(healthBarBG.x + healthBarBG.width - 190, healthBarBG.y + 30, 0, "", 20);
-		scoreTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT);
+		scoreTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		scoreTxt.antialiasing = true;
 		scoreTxt.scrollFactor.set();
 		add(scoreTxt);
@@ -855,8 +864,8 @@ class PlayState extends MusicBeatState
 				difString = "HARD";
 		}
 
-		waterTxt = new FlxText(0, FlxG.height - 20, 0, '${SONG.song}:${difString} - UFNF Engine ${MainMenuState.prerelease ? 'PRERELEASE' : ''}');
-		waterTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE);
+		waterTxt = new FlxText(0, FlxG.height - 20, 0, '${SONG.song.toUpperCase()}:${difString} - UFNF Engine ${MainMenuState.prerelease ? 'PRERELEASE' : ''}');
+		waterTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		waterTxt.antialiasing = true;
 		waterTxt.scrollFactor.set();
 		add(waterTxt);
@@ -1184,6 +1193,12 @@ class PlayState extends MusicBeatState
 
 		FlxG.sound.list.add(vocals);
 
+		// Song duration in a float, useful for the time left feature
+		songLength = FlxG.sound.music.length / 1000;
+
+		Conductor.crochet = ((60 / (SONG.bpm) * 1000));
+		Conductor.stepCrochet = Conductor.crochet / 4;
+
 		notes = new FlxTypedGroup<Note>();
 		add(notes);
 
@@ -1193,6 +1208,8 @@ class PlayState extends MusicBeatState
 		noteData = songData.notes;
 
 		var playerCounter:Int = 0;
+
+		songLength = FlxG.sound.music.length / 1000;
 
 		var daBeats:Int = 0; // Not exactly representative of 'daBeats' lol, just how much it has looped
 		for (section in noteData)
@@ -1604,6 +1621,8 @@ class PlayState extends MusicBeatState
 		{
 			// Conductor.songPosition = FlxG.sound.music.time;
 			Conductor.songPosition += FlxG.elapsed * 1000;
+
+			songPositionBar = (Conductor.songPosition - songLength) / 1000;
 
 			if (!paused)
 			{

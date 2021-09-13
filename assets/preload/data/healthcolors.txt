@@ -1,3 +1,4 @@
+# format: character:0xAARRGGBB
 bf:0xFF23F0FF
 dad:0xFF821A47
 gf:0xFFB7050E

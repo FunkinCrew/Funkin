@@ -70,6 +70,11 @@ class Paths
 		return getPath('data/$key.json', TEXT, library);
 	}
 
+	inline static public function modchart(key:String, ?library:String)
+	{
+		return getPath('data/$key/modchart.lua', TEXT, library);
+	}
+
 	inline static public function artStyle(key:String, ?library:String)
 	{
 		return getPath('$key.json', TEXT, library);

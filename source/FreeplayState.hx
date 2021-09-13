@@ -319,10 +319,12 @@ class FreeplayState extends MusicBeatState
 	}
 	function updateColor() {
 		for (bruh in CoolUtil.coolTextFile(Paths.txt('healthcolors'))) {
-			var eugh = bruh.split(':');
+			if (!bruh.startsWith('#')) {
+				var eugh = bruh.split(':');
 
-			if (songs[curSelected].songCharacter.toLowerCase().startsWith(eugh[0])) {
-				tcolor = new FlxColor(Std.parseInt(eugh[1]));
+				if (songs[curSelected].songCharacter.toLowerCase().startsWith(eugh[0])) {
+					tcolor = new FlxColor(Std.parseInt(eugh[1]));
+				}
 			}
 		}
 

@@ -2,6 +2,8 @@ package;
 
 import flixel.FlxSprite;
 
+using StringTools;
+
 class HealthIcon extends FlxSprite
 {
 	/**
@@ -15,9 +17,11 @@ class HealthIcon extends FlxSprite
 		loadGraphic(Paths.image('iconGrid'), true, 150, 150);
 
 		for (tchar in CoolUtil.coolTextFile(Paths.txt('healthicons'))) {
-			var eugh = tchar.split(':');
+			if (!tchar.startsWith('#')) {
+				var eugh = tchar.split(':');
 
-			animation.add(eugh[0], [Std.parseInt(eugh[1]), Std.parseInt(eugh[2])], 0, false, isPlayer);
+				animation.add(eugh[0], [Std.parseInt(eugh[1]), Std.parseInt(eugh[2])], 0, false, isPlayer);
+			}
 		}
 
 		antialiasing = true;

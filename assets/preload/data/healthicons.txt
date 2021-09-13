@@ -1,7 +1,8 @@
+# format: character:normal:death:win (STILL WIP!!)
 bf:0:1
 bf-car:0:1
 bf-christmas:0:1
-bf-pixel:21:21
+bf-pixel:21:25
 spooky:2:3
 pico:4:5
 mom:6:7
@@ -9,11 +10,11 @@ mom-car:6:7
 tankman:8:9
 face:10:11
 dad:12:13
-senpai:22:22
-senpai-angry:22:22
-spirit:23:23
+senpai:22:26
+senpai-angry:26:26
+spirit:23:27
 bf-old:14:15
-gf:16:16
-parents-christmas:17:17
+gf:16:24
+parents-christmas:17:18
 monster:19:20
 monster-christmas:19:20
