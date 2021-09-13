@@ -2029,7 +2029,7 @@ class PlayState extends MusicBeatState
 			score = 100;
 			bads++;
 		}
-		else if (noteDiff > Conductor.safeZoneOffset * 0.2)
+		else if (noteDiff > Conductor.safeZoneOffset * 0.25)
 		{
 			daRating = 'good';
 			score = 200;
