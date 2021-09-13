@@ -4,7 +4,7 @@
 THIS IS A **MOD** AND SHOULD BE TREATED AS SUCH; THIS IS AND PROBABLY WON'T EVER BE OFFICIAL!
 
 ### Download on Gamebanana
-[![](https://gamebanana.com/mods/embeddables/317719?type=large)](https://gamebanana.com/mods/317719)
+https://gamejolt.com/games/ufnf/644096
 
 ## Shoutouts
 #### UFNF Engine
