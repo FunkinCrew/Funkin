@@ -1,3 +1,4 @@
 export/
 .vscode/
 source/APIkeys.hx
+*.offset
