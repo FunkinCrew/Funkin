@@ -1426,7 +1426,7 @@ class PlayState extends MusicBeatState
 			#end
 		}
 
-		if (FlxG.keys.justPressed.O && startedCountdown) // sets save state
+		if (!isStoryMode &&FlxG.keys.justPressed.O && startedCountdown) // sets save state
 		{
 			saveStateTime = FlxG.sound.music.time;
 			saveStateNoteIndex = nextUnspawnedNote;
@@ -1435,7 +1435,7 @@ class PlayState extends MusicBeatState
 
 		}
 
-		if (FlxG.keys.justPressed.P && startedCountdown && saveStateFlag)
+		if (!isStoryMode && FlxG.keys.justPressed.P && startedCountdown && saveStateFlag)
 		{
 			restartFromSaveState();
 		}
