@@ -1055,13 +1055,13 @@ class ChartingState extends MusicBeatState
 
 		var stepperSongVolLabel = new FlxText(74, 110, 'Instrumental Volume');
 
-		var shiftNoteDialLabel = new FlxText(10, 245, 'Shift Note FWD by (Section)');
+		var shiftNoteDialLabel = new FlxText(10, 245, 'Shift All Notes by # Sections');
 		var stepperShiftNoteDial:FlxUINumericStepper = new FlxUINumericStepper(10, 260, 1, 0, -1000, 1000, 0);
 		stepperShiftNoteDial.name = 'song_shiftnote';
-		var shiftNoteDialLabel2 = new FlxText(10, 275, 'Shift Note FWD by (Step)');
+		var shiftNoteDialLabel2 = new FlxText(10, 275, 'Shift All Notes by # Steps');
 		var stepperShiftNoteDialstep:FlxUINumericStepper = new FlxUINumericStepper(10, 290, 1, 0, -1000, 1000, 0);
 		stepperShiftNoteDialstep.name = 'song_shiftnotems';
-		var shiftNoteDialLabel3 = new FlxText(10, 305, 'Shift Note FWD by (ms)');
+		var shiftNoteDialLabel3 = new FlxText(10, 305, 'Shift All Notes by # ms');
 		var stepperShiftNoteDialms:FlxUINumericStepper = new FlxUINumericStepper(10, 320, 1, 0, -1000, 1000, 2);
 		stepperShiftNoteDialms.name = 'song_shiftnotems';
 
@@ -1458,6 +1458,70 @@ class ChartingState extends MusicBeatState
 		}
 	}
 
+  function offsetSelectedNotes(offset:Float) {
+    var toDelete:Array<Note> = [];
+    var toAdd:Array<ChartingBox> = [];
+
+    // For each selected note...
+    for (i in 0...selectedBoxes.members.length) {
+      var originalNote = selectedBoxes.members[i].connectedNote;
+      // Delete after the fact to avoid tomfuckery.
+      toDelete.push(originalNote);
+
+      var strum = originalNote.strumTime + offset;
+      // Remove the old note.
+      // Find the position in the song to put the new note.
+      for (ii in _song.notes) {
+        if (ii.startTime <= strum && ii.endTime > strum) {
+          // alright we're in this section lets paste the note here.
+          var newData:Array<Dynamic> = [strum, originalNote.rawNoteData, originalNote.sustainLength, originalNote.isAlt, originalNote.beat];
+          ii.sectionNotes.push(newData);
+
+          var thing = ii.sectionNotes[ii.sectionNotes.length - 1];
+
+          var note:Note = new Note(strum, originalNote.noteData, originalNote.prevNote, originalNote.isSustainNote,
+            true, originalNote.isAlt, originalNote.beat);
+          note.rawNoteData = originalNote.rawNoteData;
+          note.sustainLength = originalNote.sustainLength;
+          note.setGraphicSize(Math.floor(GRID_SIZE), Math.floor(GRID_SIZE));
+          note.updateHitbox();
+          note.x = Math.floor(originalNote.rawNoteData * GRID_SIZE);
+
+          note.charterSelected = true;
+
+          note.y = Math.floor(getYfromStrum(strum) * zoomFactor);
+
+          var box = new ChartingBox(note.x, note.y, note);
+          box.connectedNoteData = thing;
+          // Add to selection after the fact to avoid tomfuckery.
+          toAdd.push(box);
+
+          curRenderedNotes.add(note);
+
+          pastedNotes.push(note);
+
+          if (note.sustainLength > 0)
+          {
+            var sustainVis:FlxSprite = new FlxSprite(note.x + (GRID_SIZE / 2),
+              note.y + GRID_SIZE).makeGraphic(8, Math.floor((getYfromStrum(note.strumTime + note.sustainLength) * zoomFactor) - note.y));
+          
+            note.noteCharterObject = sustainVis;
+          
+            curRenderedSustains.add(sustainVis);
+          }
+          trace("section new length: " + ii.sectionNotes.length);
+          continue;
+        }
+      }
+    }
+    for (note in toDelete) {
+      deleteNote(note);
+    }
+    for (box in toAdd) {
+      selectedBoxes.add(box);
+    }
+  }
+
 	function loadSong(daSong:String, reloadFromFile:Bool = true):Void
 	{
 		if (FlxG.sound.music != null)
@@ -1783,6 +1847,8 @@ class ChartingState extends MusicBeatState
 
 		for(i in curRenderedNotes.members)
 		{
+      if (i == null)
+        continue;
 			i.y = getYfromStrum(i.strumTime) * zoomFactor;
 			if (i.noteCharterObject != null)
 			{
@@ -2110,6 +2176,19 @@ class ChartingState extends MusicBeatState
 				}
 			}
 
+      if (FlxG.keys.justPressed.UP || FlxG.keys.justPressed.DOWN) {       
+        var offsetSteps = FlxG.keys.pressed.CONTROL ? 16 : 1;
+        var offsetSeconds = Conductor.stepCrochet * offsetSteps;
+
+        var offset:Float = 0;
+        if (FlxG.keys.justPressed.UP)
+          offset -= offsetSeconds;
+        if (FlxG.keys.justPressed.DOWN)
+          offset += offsetSeconds;
+
+        offsetSelectedNotes(offset);
+      }
+
 			if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.C)
 			{
 				if (selectedBoxes.members.length != 0)
@@ -2330,8 +2409,8 @@ class ChartingState extends MusicBeatState
 			+ HelperFunctions.truncateFloat(speed, 1)
 			+ "\n\nSnap: " 
 			+ snap
-			+ "\nCTRL-Left/Right Change snap\n" + (doSnapShit ? "SHIFT to disable" : "Snap disabled")
-			+ (FlxG.save.data.showHelp ? "\n\nHelp:\nCtrl-MWheel\nZoom in and out\n\nShift-Left/Right\nSpeed up/slow down the song\n\nCtrl-Drag Click\nSelect notes\n\nCtrl-C\nCopy the selected notes\n\nCtrl-V\nPaste the selected notes\n\nCtrl-Z\nUndo the last action\n\nDelete\nDelete selected notes\n\nPress F1 to hide/show this!" : "");
+			+ "\n" + (doSnapShit ? "Snap enabled" : "Snap disabled")
+			+ (FlxG.save.data.showHelp ? "\n\nHelp:\nCtrl-MWheel : Zoom in/out\nShift-Left/Right :\nChange playback speed\nCtrl-Drag Click : Select notes\nCtrl-C : Copy notes\nCtrl-V : Paste notes\nCtrl-Z : Undo\nDelete : Delete selection\nCTRL-Left/Right :\n  Change Snap\nHold Shift : Disable Snap\nClick or 1/2/3/4/5/6/7/8 :\n  Place notes\nUp/Down :\n  Move selected notes 1 step\nShift-Up/Down :\n  Move selected notes 1 beat\nSpace: Play Music\nEnter : Preview\nPress F1 to hide/show this!" : "");
 
 		var left = FlxG.keys.justPressed.ONE;
 		var down = FlxG.keys.justPressed.TWO;
@@ -2703,10 +2782,6 @@ class ChartingState extends MusicBeatState
 		}
 		_song.bpm = tempBpm;
 
-		/* if (FlxG.keys.justPressed.UP)
-				Conductor.changeBPM(Conductor.bpm + 1);
-			if (FlxG.keys.justPressed.DOWN)
-				Conductor.changeBPM(Conductor.bpm - 1); */
 		super.update(elapsed);
 	}
 
