@@ -1340,6 +1340,7 @@ class PlayState extends MusicBeatState
 	// notes get pretty buggy after restarting from this? prob just my bluetooth earbuds/ changing audio devices/ pausing for a long time
 	// TODO  - unset save location by holding O, visual cues for set/unset
 	//       - weird stuff w/ vocals? sometimes
+	//       - should I reset health and score? not a big deal rn
 	function restartFromSaveState():Void
 	{
 		unspawnNotes = [];
