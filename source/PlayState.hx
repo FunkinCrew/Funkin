@@ -1337,9 +1337,9 @@ class PlayState extends MusicBeatState
 	}
 
 
-	// notes get pretty buggy after restarting from this? prob just my bluetooth earbuds
-	// TODO, also have to reset arrows back to the set position
-	//       unset save location by holding O
+	// notes get pretty buggy after restarting from this? prob just my bluetooth earbuds/ changing audio devices/ pausing for a long time
+	// TODO  - unset save location by holding O, visual cues for set/unset
+	//       - weird stuff w/ vocals? sometimes
 	function restartFromSaveState():Void
 	{
 		unspawnNotes = [];
@@ -1347,7 +1347,8 @@ class PlayState extends MusicBeatState
 		notes.destroy();
 		FlxG.sound.music.pause();
 		vocals.pause();
-		generateSong(SONG.song);
+		generateSong(SONG.song);  // i guess this works!!
+		notes.cameras = [camHUD]; // this too!
 		FlxG.sound.music.play(true, saveStateTime);
 		vocals.play(true, saveStateTime);
 		nextUnspawnedNote = saveStateNoteIndex;
