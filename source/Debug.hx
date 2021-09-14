@@ -1,12 +1,11 @@
-import sys.io.File;
-import flixel.util.FlxStringUtil;
-import Song.SwagSong;
-import flixel.FlxSprite;
-import flixel.system.debug.watch.Tracker.TrackerProfile;
-import haxe.PosInfos;
-import haxe.Log;
-import flixel.system.debug.log.LogStyle;
 import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.system.debug.log.LogStyle;
+import flixel.system.debug.watch.Tracker.TrackerProfile;
+import flixel.util.FlxStringUtil;
+import haxe.Log;
+import haxe.PosInfos;
+import Song.SwagSong;
 
 using StringTools;
 
