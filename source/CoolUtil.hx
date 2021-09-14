@@ -1,15 +1,21 @@
 package;
 
+import flixel.FlxSprite;
+import flixel.FlxState;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import flixel.system.FlxAssets.FlxGraphicAsset;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 import haxe.Json;
 import haxe.format.JsonParser;
 import lime.math.Rectangle;
 import lime.utils.Assets;
+import openfl.filters.ShaderFilter;
+import shaderslmfao.ScreenWipeShader;
 
 using StringTools;
 
@@ -87,6 +93,23 @@ class CoolUtil
 	public static function camLerpShit(lerp:Float):Float
 	{
 		return lerp * (FlxG.elapsed / (1 / 60));
+	}
+
+	public static function coolSwitchState(state:FlxState, transitionTex:String = "shaderTransitionStuff/coolDots", time:Float = 2)
+	{
+		var screenShit:FlxSprite = new FlxSprite().loadGraphic(Paths.image("shaderTransitionStuff/coolDots"));
+		var screenWipeShit:ScreenWipeShader = new ScreenWipeShader();
+
+		screenWipeShit.funnyShit.input = screenShit.pixels;
+		FlxTween.tween(screenWipeShit, {daAlphaShit: 1}, time, {
+			ease: FlxEase.quadInOut,
+			onComplete: function(twn)
+			{
+				screenShit.destroy();
+				FlxG.switchState(new MainMenuState());
+			}
+		});
+		FlxG.camera.setFilters([new ShaderFilter(screenWipeShit)]);
 	}
 
 	/**
