@@ -13,7 +13,6 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import lime.net.curl.CURLCode;
-
 #if FEATURE_DISCORD
 import Discord.DiscordClient;
 #end
@@ -36,6 +35,7 @@ class StoryMenuState extends MusicBeatState
 			['Senpai', 'Roses', 'Thorns']
 		];
 	}
+
 	var curDifficulty:Int = 1;
 
 	public static var weekUnlocked:Array<Bool> = [];
@@ -72,17 +72,17 @@ class StoryMenuState extends MusicBeatState
 	{
 		var weeks:Array<Bool> = [];
 		#if debug
-		for(i in 0...weekNames.length)
+		for (i in 0...weekNames.length)
 			weeks.push(true);
 		return weeks;
 		#end
-		
+
 		weeks.push(true);
 
-		for(i in 0...FlxG.save.data.weekUnlocked)
-			{
-				weeks.push(true);
-			}
+		for (i in 0...FlxG.save.data.weekUnlocked)
+		{
+			weeks.push(true);
+		}
 		return weeks;
 	}
 
@@ -216,7 +216,6 @@ class StoryMenuState extends MusicBeatState
 		add(txtWeekTitle);
 
 		updateText();
-
 
 		var bullShit:Int = 0;
 
@@ -363,10 +362,14 @@ class StoryMenuState extends MusicBeatState
 
 			// adjusting the song name to be compatible
 			var songFormat = StringTools.replace(PlayState.storyPlaylist[0], " ", "-");
-			switch (songFormat) {
-				case 'Dad-Battle': songFormat = 'Dadbattle';
-				case 'Philly-Nice': songFormat = 'Philly';
-				case 'M.I.L.F': songFormat = 'Milf';
+			switch (songFormat)
+			{
+				case 'Dad-Battle':
+					songFormat = 'Dadbattle';
+				case 'Philly-Nice':
+					songFormat = 'Philly';
+				case 'M.I.L.F':
+					songFormat = 'Milf';
 			}
 
 			var poop:String = Highscore.formatSong(songFormat, curDifficulty);
@@ -477,7 +480,7 @@ class StoryMenuState extends MusicBeatState
 
 	public static function unlockNextWeek(week:Int):Void
 	{
-		if(week <= weekData().length - 1 /*&& FlxG.save.data.weekUnlocked == week*/) // fuck you, unlocks all weeks
+		if (week <= weekData().length - 1 /*&& FlxG.save.data.weekUnlocked == week*/) // fuck you, unlocks all weeks
 		{
 			weekUnlocked.push(true);
 			trace('Week ' + week + ' beat (Week ' + (week + 1) + ' unlocked)');
@@ -501,6 +504,5 @@ class StoryMenuState extends MusicBeatState
 
 		if (weekCharacters[curWeek][2] == 'spooky' || weekCharacters[curWeek][2] == 'gf')
 			grpWeekCharacters.members[2].bopHead();
-
 	}
 }

@@ -37,13 +37,12 @@ class Waveform extends FlxSprite
 		var totalSamples = (data.length / (buffer.bitsPerSample / 8) / buffer.channels);
 
 		h = Math.round(totalSamples / pixelsPerCollumn);
-	
+
 		trace(h + " - calculated height");
 
 		length = h;
 
 		makeGraphic(h, 720, FlxColor.TRANSPARENT);
-
 	}
 
 	public function drawWaveform()
@@ -51,13 +50,12 @@ class Waveform extends FlxSprite
 		var index:Int = 0;
 		var drawIndex:Int = 0;
 
-
 		var totalSamples = (data.length / (buffer.bitsPerSample / 8) / buffer.channels);
 
 		var min:Float = 0;
 		var max:Float = 0;
 
-		for(index in 0...Math.round(totalSamples))
+		for (index in 0...Math.round(totalSamples))
 		{
 			var byte:Int = data.getUInt16(index);
 

@@ -18,51 +18,51 @@ class Debug
 	 * Log an warning message to the game's console.
 	 * Plays a beep to the user and forces the console open.
 	 * @param input The message to display.
-	    * @param pos This magic type is auto-populated, and includes the line number and class it was called from.
+	 		* @param pos This magic type is auto-populated, and includes the line number and class it was called from.
 	 */
 	public static function logWarn(input:Dynamic, ?pos:haxe.PosInfos):Void
 	{
 		var output = formatOutput(input, pos);
 		FlxG.log.advanced(output, LogStyle.WARNING);
-		performTrace(output, 'WARN ', pos);
+		performTrace(output, 'WARN ');
 	}
 
 	/**
 	 * Log an error message to the game's console.
 	 * Plays a beep to the user and forces the console open.
 	 * @param input The message to display.
-	    * @param pos This magic type is auto-populated, and includes the line number and class it was called from.
+	 		* @param pos This magic type is auto-populated, and includes the line number and class it was called from.
 	 */
 	public static function logError(input:Dynamic, ?pos:haxe.PosInfos):Void
 	{
 		var output = formatOutput(input, pos);
 		FlxG.log.advanced(output, LogStyle.ERROR);
-		performTrace(output, 'ERROR', pos);
+		performTrace(output, 'ERROR');
 	}
 
 	/**
 	 * Log an info message to the game's console.
 	 * @param input The message to display.
-	    * @param pos This magic type is auto-populated, and includes the line number and class it was called from.
+	 		* @param pos This magic type is auto-populated, and includes the line number and class it was called from.
 	 */
 	public static function logInfo(input:Dynamic, ?pos:haxe.PosInfos):Void
 	{
 		var output = formatOutput(input, pos);
 		FlxG.log.advanced(output, LogStyle.CONSOLE);
-		performTrace(output, 'INFO ', pos);
+		performTrace(output, 'INFO ');
 	}
 
 	/**
 	 * Log a debug message to the game's console.
-	    * NOTE: We redirect all `trace()` calls to this function.
+	 		* NOTE: We redirect all `trace()` calls to this function.
 	 * @param input The message to display.
-	    * @param pos This magic type is auto-populated, and includes the line number and class it was called from.
+	 		* @param pos This magic type is auto-populated, and includes the line number and class it was called from.
 	 */
 	public static function logTrace(input:Dynamic, ?pos:haxe.PosInfos):Void
 	{
 		var output = formatOutput(input, pos);
 		FlxG.log.advanced(output, LOG_STYLE_TRACE);
-		performTrace(output, 'TRACE', pos);
+		performTrace(output, 'TRACE');
 	}
 
 	/**
@@ -117,9 +117,9 @@ class Debug
 	 * in the Debug watch window, labelled with the specified name.
 	 * @param object The object to watch.
 	 * @param field The string name of a field of the above object.
-	 * @param name
+	 * @param name Name to display in the debug view.
 	 */
-	public static function watchVariable(object:Dynamic, field:String, name):Void
+	public static function watchVariable(object:Dynamic, field:String, name:String):Void
 	{
 		#if debug
 		if (name == null)

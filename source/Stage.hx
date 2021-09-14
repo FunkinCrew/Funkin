@@ -19,46 +19,31 @@ class Stage extends MusicBeatState
 	public var tweenDuration:Float = 2; // How long will it tween hiding/showing BGs, variable above must be set to True for tween to activate
 	public var toAdd:Array<Dynamic> = []; // Add BGs on stage startup, load BG in by using "toAdd.push(bgVar);"
 	// Layering algorithm for noobs: Everything loads by the method of "On Top", example: You load wall first(Every other added BG layers on it), then you load road(comes on top of wall and doesn't clip through it), then loading street lights(comes on top of wall and road)
-	public var swagBacks:Map<String, Dynamic> = []; // Store BGs here to use them later (for example with slowBacks, using your custom stage event or to adjust position in stage debug menu(press 8 while in PlayState with debug build of the game))
+	public var swagBacks:Map<String,
+		Dynamic> = []; // Store BGs here to use them later (for example with slowBacks, using your custom stage event or to adjust position in stage debug menu(press 8 while in PlayState with debug build of the game))
 	public var swagGroup:Map<String, FlxTypedGroup<Dynamic>> = []; // Store Groups
 	public var animatedBacks:Array<FlxSprite> = []; // Store animated backgrounds and make them play animation(Animation must be named Idle!! Else use swagGroup/swagBacks and script it in stepHit/beatHit function of this file!!)
 	public var layInFront:Array<Array<FlxSprite>> = [[], [], []]; // BG layering, format: first [0] - in front of GF, second [1] - in front of opponent, third [2] - in front of boyfriend(and technically also opponent since Haxe layering moment)
-	public var slowBacks:Map<Int, Array<FlxSprite>> = []; // Change/add/remove backgrounds mid song! Format: "slowBacks[StepToBeActivated] = [Sprites,To,Be,Changed,Or,Added];"
-	// BGs still must be added by using toAdd Array for them to show in game after slowBacks take effect!!
+	public var slowBacks:Map<Int,
+		Array<FlxSprite>> = []; // Change/add/remove backgrounds mid song! Format: "slowBacks[StepToBeActivated] = [Sprites,To,Be,Changed,Or,Added];"
 
+	// BGs still must be added by using toAdd Array for them to show in game after slowBacks take effect!!
 	// BGs still must be added by using toAdd Array for them to show in game after slowBacks take effect!!
 	// All of the above must be set or used in your stage case code block!!
-
-	public var positions:Map<String, Map<String, Array<Int>>> = [ // Assign your characters positions on stage here!
-		'halloween' => [
-			'spooky' => [100, 300],
-			'monster' => [100, 200]
-		],
-		'philly' => [
-			'pico' => [100, 400]
-		],
-		'limo' => [
-			'bf-car' => [1030, 230]
-		],
-		'mall' => [
-			'bf-christmas' => [970, 450],
-			'parents-christmas' => [-400, 100]
-		],
-		'mallEvil' => [
-			'bf-christmas' => [1090, 450],
-			'monster-christmas' => [100, 150]
-		],
+	public var positions:Map<String, Map<String, Array<Int>>> = [
+		// Assign your characters positions on stage here!
+		'halloween' => ['spooky' => [100, 300], 'monster' => [100, 200]],
+		'philly' => ['pico' => [100, 400]],
+		'limo' => ['bf-car' => [1030, 230]],
+		'mall' => ['bf-christmas' => [970, 450], 'parents-christmas' => [-400, 100]],
+		'mallEvil' => ['bf-christmas' => [1090, 450], 'monster-christmas' => [100, 150]],
 		'school' => [
 			'gf-pixel' => [580, 430],
 			'bf-pixel' => [970, 670],
 			'senpai' => [250, 460],
 			'senpai-angry' => [250, 460]
 		],
-		'schoolEvil' => [
-			'gf-pixel' => [580, 430],
-			'bf-pixel' => [970, 670],
-			'spirit' => [-50, 200]
-		]
+		'schoolEvil' => ['gf-pixel' => [580, 430], 'bf-pixel' => [970, 670], 'spirit' => [-50, 200]]
 	];
 
 	public function new(daStage:String)
@@ -200,21 +185,21 @@ class Stage extends MusicBeatState
 
 					/* For Testing 
 
-					if (PlayState.SONG.song.toLowerCase() == "m.i.l.f")
-					{
-						hideLastBG = true;
-						slowBacks[40] = [limo];
-						slowBacks[240] = [
-							limo,
-							bgLimo,
-							skyBG,
-							fastCar,
-							swagBacks['dancer0'],
-							swagBacks['dancer1'],
-							swagBacks['dancer2'],
-							swagBacks['dancer3'],
-							swagBacks['dancer4']
-						];
+						if (PlayState.SONG.song.toLowerCase() == "m.i.l.f")
+						{
+							hideLastBG = true;
+							slowBacks[40] = [limo];
+							slowBacks[240] = [
+								limo,
+								bgLimo,
+								skyBG,
+								fastCar,
+								swagBacks['dancer0'],
+								swagBacks['dancer1'],
+								swagBacks['dancer2'],
+								swagBacks['dancer3'],
+								swagBacks['dancer4']
+							];
 					}*/
 				}
 			case 'mall':
@@ -500,7 +485,6 @@ class Stage extends MusicBeatState
 					// phillyCityLights.members[curLight].alpha -= (Conductor.crochet / 1000) * FlxG.elapsed;
 			}
 		}
-
 	}
 
 	override function stepHit()
@@ -538,8 +522,6 @@ class Stage extends MusicBeatState
 						bg.visible = !bg.visible;
 				}
 			}
-
-
 		}
 	}
 
@@ -612,11 +594,8 @@ class Stage extends MusicBeatState
 							trace('train');
 						}
 					}
-				
 			}
-			
 		}
-
 	}
 
 	// Variables and Functions for Stages
@@ -728,5 +707,4 @@ class Stage extends MusicBeatState
 			});
 		}
 	}
-
 }

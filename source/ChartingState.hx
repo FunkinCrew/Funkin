@@ -137,6 +137,7 @@ class ChartingState extends MusicBeatState
 	var camFollow:FlxObject;
 
 	public var waveform:Waveform;
+
 	public static var latestChartVersion = "2";
 
 	override function create()
@@ -172,11 +173,14 @@ class ChartingState extends MusicBeatState
 
 		if (PlayState.SONG != null)
 		{
-			if (PlayState.isSM) {
-        #if FEATURE_STEPMANIA
-        _song = Song.conversionChecks(Song.loadFromJsonRAW(File.getContent(PlayState.pathToSm + "/converted.json")));
-        #end
-      } else {
+			if (PlayState.isSM)
+			{
+				#if FEATURE_STEPMANIA
+				_song = Song.conversionChecks(Song.loadFromJsonRAW(File.getContent(PlayState.pathToSm + "/converted.json")));
+				#end
+			}
+			else
+			{
 				var songFormat = StringTools.replace(PlayState.SONG.song, " ", "-");
 				switch (songFormat)
 				{
@@ -422,19 +426,19 @@ class ChartingState extends MusicBeatState
 
 		// fuckin stupid ass bitch ass fucking waveform
 		/*if (PlayState.isSM)
-		{
-			waveform = new Waveform(0,0,PlayState.pathToSm + "/" + PlayState.sm.header.MUSIC,height);
-		}
-		else
-		{
-			if (_song.needsVoices)
-				waveform = new Waveform(0,0,Paths.voices(_song.song),height);
+			{
+				waveform = new Waveform(0,0,PlayState.pathToSm + "/" + PlayState.sm.header.MUSIC,height);
+			}
 			else
-				waveform = new Waveform(0,0,Paths.inst(_song.song),height);
-		}
+			{
+				if (_song.needsVoices)
+					waveform = new Waveform(0,0,Paths.voices(_song.song),height);
+				else
+					waveform = new Waveform(0,0,Paths.inst(_song.song),height);
+			}
 
-		waveform.drawWaveform();
-		add(waveform);*/
+			waveform.drawWaveform();
+			add(waveform); */
 
 		add(dummyArrow);
 		add(strumLine);
@@ -1458,69 +1462,81 @@ class ChartingState extends MusicBeatState
 		}
 	}
 
-  function offsetSelectedNotes(offset:Float) {
-    var toDelete:Array<Note> = [];
-    var toAdd:Array<ChartingBox> = [];
+	function offsetSelectedNotes(offset:Float)
+	{
+		var toDelete:Array<Note> = [];
+		var toAdd:Array<ChartingBox> = [];
 
-    // For each selected note...
-    for (i in 0...selectedBoxes.members.length) {
-      var originalNote = selectedBoxes.members[i].connectedNote;
-      // Delete after the fact to avoid tomfuckery.
-      toDelete.push(originalNote);
+		// For each selected note...
+		for (i in 0...selectedBoxes.members.length)
+		{
+			var originalNote = selectedBoxes.members[i].connectedNote;
+			// Delete after the fact to avoid tomfuckery.
+			toDelete.push(originalNote);
 
-      var strum = originalNote.strumTime + offset;
-      // Remove the old note.
-      // Find the position in the song to put the new note.
-      for (ii in _song.notes) {
-        if (ii.startTime <= strum && ii.endTime > strum) {
-          // alright we're in this section lets paste the note here.
-          var newData:Array<Dynamic> = [strum, originalNote.rawNoteData, originalNote.sustainLength, originalNote.isAlt, originalNote.beat];
-          ii.sectionNotes.push(newData);
+			var strum = originalNote.strumTime + offset;
+			// Remove the old note.
+			// Find the position in the song to put the new note.
+			for (ii in _song.notes)
+			{
+				if (ii.startTime <= strum && ii.endTime > strum)
+				{
+					// alright we're in this section lets paste the note here.
+					var newData:Array<Dynamic> = [
+						strum,
+						originalNote.rawNoteData,
+						originalNote.sustainLength,
+						originalNote.isAlt,
+						originalNote.beat
+					];
+					ii.sectionNotes.push(newData);
 
-          var thing = ii.sectionNotes[ii.sectionNotes.length - 1];
+					var thing = ii.sectionNotes[ii.sectionNotes.length - 1];
 
-          var note:Note = new Note(strum, originalNote.noteData, originalNote.prevNote, originalNote.isSustainNote,
-            true, originalNote.isAlt, originalNote.beat);
-          note.rawNoteData = originalNote.rawNoteData;
-          note.sustainLength = originalNote.sustainLength;
-          note.setGraphicSize(Math.floor(GRID_SIZE), Math.floor(GRID_SIZE));
-          note.updateHitbox();
-          note.x = Math.floor(originalNote.rawNoteData * GRID_SIZE);
+					var note:Note = new Note(strum, originalNote.noteData, originalNote.prevNote, originalNote.isSustainNote, true, originalNote.isAlt,
+						originalNote.beat);
+					note.rawNoteData = originalNote.rawNoteData;
+					note.sustainLength = originalNote.sustainLength;
+					note.setGraphicSize(Math.floor(GRID_SIZE), Math.floor(GRID_SIZE));
+					note.updateHitbox();
+					note.x = Math.floor(originalNote.rawNoteData * GRID_SIZE);
 
-          note.charterSelected = true;
+					note.charterSelected = true;
 
-          note.y = Math.floor(getYfromStrum(strum) * zoomFactor);
+					note.y = Math.floor(getYfromStrum(strum) * zoomFactor);
 
-          var box = new ChartingBox(note.x, note.y, note);
-          box.connectedNoteData = thing;
-          // Add to selection after the fact to avoid tomfuckery.
-          toAdd.push(box);
+					var box = new ChartingBox(note.x, note.y, note);
+					box.connectedNoteData = thing;
+					// Add to selection after the fact to avoid tomfuckery.
+					toAdd.push(box);
 
-          curRenderedNotes.add(note);
+					curRenderedNotes.add(note);
 
-          pastedNotes.push(note);
+					pastedNotes.push(note);
 
-          if (note.sustainLength > 0)
-          {
-            var sustainVis:FlxSprite = new FlxSprite(note.x + (GRID_SIZE / 2),
-              note.y + GRID_SIZE).makeGraphic(8, Math.floor((getYfromStrum(note.strumTime + note.sustainLength) * zoomFactor) - note.y));
-          
-            note.noteCharterObject = sustainVis;
-          
-            curRenderedSustains.add(sustainVis);
-          }
-          trace("section new length: " + ii.sectionNotes.length);
-          continue;
-        }
-      }
-    }
-    for (note in toDelete) {
-      deleteNote(note);
-    }
-    for (box in toAdd) {
-      selectedBoxes.add(box);
-    }
-  }
+					if (note.sustainLength > 0)
+					{
+						var sustainVis:FlxSprite = new FlxSprite(note.x + (GRID_SIZE / 2),
+							note.y + GRID_SIZE).makeGraphic(8, Math.floor((getYfromStrum(note.strumTime + note.sustainLength) * zoomFactor) - note.y));
+
+						note.noteCharterObject = sustainVis;
+
+						curRenderedSustains.add(sustainVis);
+					}
+					trace("section new length: " + ii.sectionNotes.length);
+					continue;
+				}
+			}
+		}
+		for (note in toDelete)
+		{
+			deleteNote(note);
+		}
+		for (box in toAdd)
+		{
+			selectedBoxes.add(box);
+		}
+	}
 
 	function loadSong(daSong:String, reloadFromFile:Bool = true):Void
 	{
@@ -1546,12 +1562,13 @@ class ChartingState extends MusicBeatState
 			FlxG.sound.playMusic(Paths.inst(daSong), 0.6);
 			#end
 
-			if (PlayState.isSM) {
-        #if FEATURE_STEPMANIA
-        _song = Song.conversionChecks(Song.loadFromJsonRAW(File.getContent(PlayState.pathToSm + "/converted.json")));
-        #end
-      }
-        else
+			if (PlayState.isSM)
+			{
+				#if FEATURE_STEPMANIA
+				_song = Song.conversionChecks(Song.loadFromJsonRAW(File.getContent(PlayState.pathToSm + "/converted.json")));
+				#end
+			}
+			else
 			{
 				var songFormat = StringTools.replace(PlayState.SONG.song, " ", "-");
 				switch (songFormat)
@@ -1845,16 +1862,16 @@ class ChartingState extends MusicBeatState
 	{
 		regenerateLines();
 
-		for(i in curRenderedNotes.members)
+		for (i in curRenderedNotes.members)
 		{
-      if (i == null)
-        continue;
+			if (i == null)
+				continue;
 			i.y = getYfromStrum(i.strumTime) * zoomFactor;
 			if (i.noteCharterObject != null)
 			{
 				curRenderedSustains.remove(i.noteCharterObject);
 				var sustainVis:FlxSprite = new FlxSprite(i.x + (GRID_SIZE / 2),
-				i.y + GRID_SIZE).makeGraphic(8, Math.floor((getYfromStrum(i.strumTime + i.sustainLength) * zoomFactor) - i.y),FlxColor.WHITE);
+					i.y + GRID_SIZE).makeGraphic(8, Math.floor((getYfromStrum(i.strumTime + i.sustainLength) * zoomFactor) - i.y), FlxColor.WHITE);
 
 				i.noteCharterObject = sustainVis;
 				curRenderedSustains.add(i.noteCharterObject);
@@ -1886,9 +1903,9 @@ class ChartingState extends MusicBeatState
 			FlxG.sound.music.time = FlxG.sound.music.length;
 
 		#if debug
-		FlxG.watch.addQuick("Renderers",sectionRenderes.length);
-		FlxG.watch.addQuick("Notes",curRenderedNotes.length);
-		FlxG.watch.addQuick("Rendered Notes ",shownNotes.length);
+		FlxG.watch.addQuick("Renderers", sectionRenderes.length);
+		FlxG.watch.addQuick("Notes", curRenderedNotes.length);
+		FlxG.watch.addQuick("Rendered Notes ", shownNotes.length);
 		#end
 
 		for (i in sectionRenderes)
@@ -1914,8 +1931,8 @@ class ChartingState extends MusicBeatState
 			{
 				@:privateAccess
 				{
-          #if desktop
-          // The __backend.handle attribute is only available on native.
+					#if desktop
+					// The __backend.handle attribute is only available on native.
 					lime.media.openal.AL.sourcef(FlxG.sound.music._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, speed);
 					try
 					{
@@ -1927,10 +1944,10 @@ class ChartingState extends MusicBeatState
 						}
 					}
 					catch (e)
-          {
-            // trace("failed to pitch vocals (probably cuz they don't exist)");
-          }
-          #end
+					{
+						// trace("failed to pitch vocals (probably cuz they don't exist)");
+					}
+					#end
 				}
 			}
 		}
@@ -1943,7 +1960,6 @@ class ChartingState extends MusicBeatState
 				shownNotes.push(note);
 				if (note.sustainLength > 0)
 				{
-
 					note.noteCharterObject.active = true;
 					note.noteCharterObject.visible = true;
 				}
@@ -2176,18 +2192,19 @@ class ChartingState extends MusicBeatState
 				}
 			}
 
-      if (FlxG.keys.justPressed.UP || FlxG.keys.justPressed.DOWN) {       
-        var offsetSteps = FlxG.keys.pressed.CONTROL ? 16 : 1;
-        var offsetSeconds = Conductor.stepCrochet * offsetSteps;
+			if (FlxG.keys.justPressed.UP || FlxG.keys.justPressed.DOWN)
+			{
+				var offsetSteps = FlxG.keys.pressed.CONTROL ? 16 : 1;
+				var offsetSeconds = Conductor.stepCrochet * offsetSteps;
 
-        var offset:Float = 0;
-        if (FlxG.keys.justPressed.UP)
-          offset -= offsetSeconds;
-        if (FlxG.keys.justPressed.DOWN)
-          offset += offsetSeconds;
+				var offset:Float = 0;
+				if (FlxG.keys.justPressed.UP)
+					offset -= offsetSeconds;
+				if (FlxG.keys.justPressed.DOWN)
+					offset += offsetSeconds;
 
-        offsetSelectedNotes(offset);
-      }
+				offsetSelectedNotes(offset);
+			}
 
 			if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.C)
 			{
@@ -2407,10 +2424,12 @@ class ChartingState extends MusicBeatState
 			+ HelperFunctions.truncateFloat(zoomFactor, 2)
 			+ "\nSpeed: "
 			+ HelperFunctions.truncateFloat(speed, 1)
-			+ "\n\nSnap: " 
+			+ "\n\nSnap: "
 			+ snap
-			+ "\n" + (doSnapShit ? "Snap enabled" : "Snap disabled")
-			+ (FlxG.save.data.showHelp ? "\n\nHelp:\nCtrl-MWheel : Zoom in/out\nShift-Left/Right :\nChange playback speed\nCtrl-Drag Click : Select notes\nCtrl-C : Copy notes\nCtrl-V : Paste notes\nCtrl-Z : Undo\nDelete : Delete selection\nCTRL-Left/Right :\n  Change Snap\nHold Shift : Disable Snap\nClick or 1/2/3/4/5/6/7/8 :\n  Place notes\nUp/Down :\n  Move selected notes 1 step\nShift-Up/Down :\n  Move selected notes 1 beat\nSpace: Play Music\nEnter : Preview\nPress F1 to hide/show this!" : "");
+			+ "\n"
+			+ (doSnapShit ? "Snap enabled" : "Snap disabled")
+			+
+			(FlxG.save.data.showHelp ? "\n\nHelp:\nCtrl-MWheel : Zoom in/out\nShift-Left/Right :\nChange playback speed\nCtrl-Drag Click : Select notes\nCtrl-C : Copy notes\nCtrl-V : Paste notes\nCtrl-Z : Undo\nDelete : Delete selection\nCTRL-Left/Right :\n  Change Snap\nHold Shift : Disable Snap\nClick or 1/2/3/4/5/6/7/8 :\n  Place notes\nUp/Down :\n  Move selected notes 1 step\nShift-Up/Down :\n  Move selected notes 1 beat\nSpace: Play Music\nEnter : Preview\nPress F1 to hide/show this!" : "");
 
 		var left = FlxG.keys.justPressed.ONE;
 		var down = FlxG.keys.justPressed.TWO;
