@@ -509,6 +509,17 @@ class Character extends FlxSprite
 						playAnim(animShit, true, false, animation.getByName(animShit).frames.length - 8);
 					}
 				}
+			case 'nene':
+				// GIRLFRIEND CODE
+				tex = Paths.getSparrowAtlas('characters/Nene_assets');
+				frames = tex;
+
+				animation.addByIndices('danceLeft', 'nenebeforeyougetawoopin', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
+				animation.addByIndices('danceRight', 'nenebeforeyougetawoopin', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
+
+				loadOffsetFile(curCharacter);
+
+				playAnim('danceRight');
 		}
 
 		dance();
@@ -650,7 +661,7 @@ class Character extends FlxSprite
 		{
 			switch (curCharacter)
 			{
-				case 'gf' | 'gf-christmas' | 'gf-car' | 'gf-pixel' | 'gf-tankmen':
+				case 'gf' | 'gf-christmas' | 'gf-car' | 'gf-pixel' | 'gf-tankmen' | "nene":
 					if (!animation.curAnim.name.startsWith('hair'))
 					{
 						danced = !danced;

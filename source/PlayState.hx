@@ -513,6 +513,7 @@ class PlayState extends MusicBeatState
 				loadStage('stage');
 		}
 
+		// all dis is shitty, redo later for stage shit
 		var gfVersion:String = 'gf';
 
 		switch (curStage)
@@ -525,6 +526,11 @@ class PlayState extends MusicBeatState
 				gfVersion = 'gf-pixel';
 			case 'tank':
 				gfVersion = 'gf-tankmen';
+		}
+
+		if (SONG.player1 == "pico")
+		{
+			gfVersion = "nene";
 		}
 
 		if (SONG.song.toLowerCase() == 'stress')
