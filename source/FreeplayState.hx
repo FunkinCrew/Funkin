@@ -420,7 +420,7 @@ class FreeplayState extends MusicBeatState
 
 	function loadSong(isCharting:Bool = false)
 	{
-		loadSongInFreePlay(songs[curSelected].songName, isCharting);
+		loadSongInFreePlay(songs[curSelected].songName, curDifficulty, isCharting);
 
 		clean();
 	}
@@ -431,10 +431,10 @@ class FreeplayState extends MusicBeatState
 	 * @param songName The name of the song to load. Use the human readable name, with spaces.
 	 * @param isCharting If true, load into the Chart Editor instead.
 	 */
-	public static function loadSongInFreePlay(songName:String, isCharting:Bool = false)
+	public static function loadSongInFreePlay(songName:String, difficulty:Int, isCharting:Bool, reloadSong:Bool = false)
 	{
 		// Make sure song data is initialized first.
-		if (songData == null || songData == [])
+		if (songData == null || Lambda.count(songData) == 0)
 			populateSongData();
 
 		// adjusting the song name to be compatible
@@ -448,11 +448,13 @@ class FreeplayState extends MusicBeatState
 			case 'M.I.L.F':
 				songFormat = 'Milf';
 		}
-		var hmm;
+		var currentSongData;
 		try
 		{
-			hmm = songData.get(songName)[curDifficulty];
-			if (hmm == null)
+			if (songData.get(songName) == null)
+				return;
+			currentSongData = songData.get(songName)[difficulty];
+			if (songData.get(songName)[difficulty] == null)
 				return;
 		}
 		catch (ex)
@@ -460,9 +462,9 @@ class FreeplayState extends MusicBeatState
 			return;
 		}
 
-		PlayState.SONG = Song.conversionChecks(hmm);
+		PlayState.SONG = Song.conversionChecks(currentSongData);
 		PlayState.isStoryMode = false;
-		PlayState.storyDifficulty = curDifficulty;
+		PlayState.storyDifficulty = difficulty;
 		PlayState.storyWeek = songs[curSelected].week;
 		Debug.logInfo('Loading song ${PlayState.SONG.song} from week ${PlayState.storyWeek} into Free Play...');
 		#if FEATURE_STEPMANIA
@@ -482,7 +484,7 @@ class FreeplayState extends MusicBeatState
 		PlayState.songMultiplier = rate;
 
 		if (isCharting)
-			LoadingState.loadAndSwitchState(new ChartingState());
+			LoadingState.loadAndSwitchState(new ChartingState(reloadSong));
 		else
 			LoadingState.loadAndSwitchState(new PlayState());
 	}

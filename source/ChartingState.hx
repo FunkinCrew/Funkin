@@ -140,6 +140,16 @@ class ChartingState extends MusicBeatState
 
 	public static var latestChartVersion = "2";
 
+	public function new(reloadOnInit:Bool = false)
+	{
+		super();
+		// If we're loading the charter from an arbitrary state, we need to reload the song on init,
+		// but if we're not, then reloading the song is a performance drop.
+		this.reloadOnInit = reloadOnInit;
+	}
+
+	var reloadOnInit = false;
+
 	override function create()
 	{
 		#if FEATURE_DISCORD
@@ -240,7 +250,7 @@ class ChartingState extends MusicBeatState
 
 		// sections = _song.notes;
 
-		loadSong(_song.song, false);
+		loadSong(_song.song, reloadOnInit);
 		Conductor.changeBPM(_song.bpm);
 		Conductor.mapBPMChanges(_song);
 

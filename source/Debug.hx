@@ -271,15 +271,15 @@ class Debug
 		});
 
 		// Console commands let you do WHATEVER you want.
-		addConsoleCommand("playSong", function(songName:String)
+		addConsoleCommand("playSong", function(songName:String, ?difficulty:Int = 1)
 		{
-			Debug.logInfo('CONSOLE: Opening song $songName in Free Play...');
-			FreeplayState.loadSongInFreePlay(songName, false);
+			Debug.logInfo('CONSOLE: Opening song $songName ($difficulty) in Free Play...');
+			FreeplayState.loadSongInFreePlay(songName, difficulty, false);
 		});
-		addConsoleCommand("chartSong", function(songName:String)
+		addConsoleCommand("chartSong", function(songName:String, ?difficulty:Int = 1)
 		{
-			Debug.logInfo('CONSOLE: Opening song $songName in Chart Editor...');
-			FreeplayState.loadSongInFreePlay(songName, true);
+			Debug.logInfo('CONSOLE: Opening song $songName ($difficulty) in Chart Editor...');
+			FreeplayState.loadSongInFreePlay(songName, difficulty, true, true);
 		});
 	}
 
