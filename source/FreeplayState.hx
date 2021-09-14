@@ -72,63 +72,8 @@ class FreeplayState extends MusicBeatState
 	override function create()
 	{
 		clean();
-		var initSonglist = CoolUtil.coolTextFile(Paths.txt('data/freeplaySonglist'));
 
-		// var diffList = "";
-
-		songData = [];
-		songs = [];
-
-		for (i in 0...initSonglist.length)
-		{
-			var data:Array<String> = initSonglist[i].split(':');
-			var meta = new SongMetadata(data[0], Std.parseInt(data[2]), data[1]);
-			var format = StringTools.replace(meta.songName, " ", "-");
-			switch (format)
-			{
-				case 'Dad-Battle':
-					format = 'Dadbattle';
-				case 'Philly-Nice':
-					format = 'Philly';
-				case 'M.I.L.F':
-					format = 'Milf';
-			}
-
-			var diffs = [];
-			var diffsThatExist = [];
-
-			#if FEATURE_FILESYSTEM
-			if (FileSystem.exists('assets/data/${format}/${format}-hard.json'))
-				diffsThatExist.push("Hard");
-			if (FileSystem.exists('assets/data/${format}/${format}-easy.json'))
-				diffsThatExist.push("Easy");
-			if (FileSystem.exists('assets/data/${format}/${format}.json'))
-				diffsThatExist.push("Normal");
-
-			if (diffsThatExist.length == 0)
-			{
-				Application.current.window.alert("No difficulties found for chart, skipping.", meta.songName + " Chart");
-				continue;
-			}
-			#else
-			diffsThatExist = ["Easy", "Normal", "Hard"];
-			#end
-			if (diffsThatExist.contains("Easy"))
-				FreeplayState.loadDiff(0, format, meta.songName, diffs);
-			if (diffsThatExist.contains("Normal"))
-				FreeplayState.loadDiff(1, format, meta.songName, diffs);
-			if (diffsThatExist.contains("Hard"))
-				FreeplayState.loadDiff(2, format, meta.songName, diffs);
-
-			meta.diffs = diffsThatExist;
-
-			if (diffsThatExist.length != 3)
-				trace("I ONLY FOUND " + diffsThatExist);
-
-			FreeplayState.songData.set(meta.songName, diffs);
-			trace('loaded diffs for ' + meta.songName);
-			songs.push(meta);
-		}
+		populateSongData();
 
 		trace("tryin to load sm files");
 
@@ -170,16 +115,6 @@ class FreeplayState extends MusicBeatState
 			}
 		}
 		#end
-
-		// trace("\n" + diffList);
-
-		/* 
-			if (FlxG.sound.music != null)
-			{
-				if (!FlxG.sound.music.playing)
-					FlxG.sound.playMusic(Paths.music('freakyMenu'));
-			}
-		 */
 
 		#if FEATURE_DISCORD
 		// Updating Discord Rich Presence
@@ -282,6 +217,68 @@ class FreeplayState extends MusicBeatState
 		 */
 
 		super.create();
+	}
+
+	/**
+	 * Load song data from the data files.
+	 */
+	static function populateSongData()
+	{
+		var initSonglist = CoolUtil.coolTextFile(Paths.txt('data/freeplaySonglist'));
+
+		songData = [];
+		songs = [];
+
+		for (i in 0...initSonglist.length)
+		{
+			var data:Array<String> = initSonglist[i].split(':');
+			var meta = new SongMetadata(data[0], Std.parseInt(data[2]), data[1]);
+			var format = StringTools.replace(meta.songName, " ", "-");
+			switch (format)
+			{
+				case 'Dad-Battle':
+					format = 'Dadbattle';
+				case 'Philly-Nice':
+					format = 'Philly';
+				case 'M.I.L.F':
+					format = 'Milf';
+			}
+
+			var diffs = [];
+			var diffsThatExist = [];
+
+			#if FEATURE_FILESYSTEM
+			if (FileSystem.exists('assets/data/${format}/${format}-hard.json'))
+				diffsThatExist.push("Hard");
+			if (FileSystem.exists('assets/data/${format}/${format}-easy.json'))
+				diffsThatExist.push("Easy");
+			if (FileSystem.exists('assets/data/${format}/${format}.json'))
+				diffsThatExist.push("Normal");
+
+			if (diffsThatExist.length == 0)
+			{
+				Application.current.window.alert("No difficulties found for chart, skipping.", meta.songName + " Chart");
+				continue;
+			}
+			#else
+			diffsThatExist = ["Easy", "Normal", "Hard"];
+			#end
+			if (diffsThatExist.contains("Easy"))
+				FreeplayState.loadDiff(0, format, meta.songName, diffs);
+			if (diffsThatExist.contains("Normal"))
+				FreeplayState.loadDiff(1, format, meta.songName, diffs);
+			if (diffsThatExist.contains("Hard"))
+				FreeplayState.loadDiff(2, format, meta.songName, diffs);
+
+			meta.diffs = diffsThatExist;
+
+			if (diffsThatExist.length != 3)
+				trace("I ONLY FOUND " + diffsThatExist);
+
+			FreeplayState.songData.set(meta.songName, diffs);
+			trace('loaded diffs for ' + meta.songName);
+			FreeplayState.songs.push(meta);
+		}
 	}
 
 	public function addSong(songName:String, weekNum:Int, songCharacter:String)
@@ -423,8 +420,25 @@ class FreeplayState extends MusicBeatState
 
 	function loadSong(isCharting:Bool = false)
 	{
+		loadSongInFreePlay(songs[curSelected].songName, isCharting);
+
+		clean();
+	}
+
+	/**
+	 * Load into a song in free play, by name.
+	 * This is a static function, so you can call it anywhere.
+	 * @param songName The name of the song to load. Use the human readable name, with spaces.
+	 * @param isCharting If true, load into the Chart Editor instead.
+	 */
+	public static function loadSongInFreePlay(songName:String, isCharting:Bool = false)
+	{
+		// Make sure song data is initialized first.
+		if (songData == null || songData == [])
+			populateSongData();
+
 		// adjusting the song name to be compatible
-		var songFormat = StringTools.replace(songs[curSelected].songName, " ", "-");
+		var songFormat = StringTools.replace(songName, " ", "-");
 		switch (songFormat)
 		{
 			case 'Dad-Battle':
@@ -437,7 +451,7 @@ class FreeplayState extends MusicBeatState
 		var hmm;
 		try
 		{
-			hmm = songData.get(songs[curSelected].songName)[curDifficulty];
+			hmm = songData.get(songName)[curDifficulty];
 			if (hmm == null)
 				return;
 		}
@@ -450,10 +464,11 @@ class FreeplayState extends MusicBeatState
 		PlayState.isStoryMode = false;
 		PlayState.storyDifficulty = curDifficulty;
 		PlayState.storyWeek = songs[curSelected].week;
-		trace('CUR WEEK' + PlayState.storyWeek);
+		Debug.logInfo('Loading song ${PlayState.SONG.song} from week ${PlayState.storyWeek} into Free Play...');
 		#if FEATURE_STEPMANIA
 		if (songs[curSelected].songCharacter == "sm")
 		{
+			Debug.logInfo('Song is a StepMania song!');
 			PlayState.isSM = true;
 			PlayState.sm = songs[curSelected].sm;
 			PlayState.pathToSm = songs[curSelected].path;
@@ -470,8 +485,6 @@ class FreeplayState extends MusicBeatState
 			LoadingState.loadAndSwitchState(new ChartingState());
 		else
 			LoadingState.loadAndSwitchState(new PlayState());
-
-		clean();
 	}
 
 	function changeDiff(change:Int = 0)

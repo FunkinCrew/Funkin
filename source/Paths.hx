@@ -108,7 +108,9 @@ class Paths
 			case 'm.i.l.f':
 				songLowercase = 'milf';
 		}
-		return 'songs:assets/songs/${songLowercase}/Voices.$SOUND_EXT';
+    var result = 'songs:assets/songs/${songLowercase}/Voices.$SOUND_EXT';
+    // Return null if the file does not exist.
+		return doesSoundAssetExist(result) ? result : null;
 	}
 
 	inline static public function inst(song:String)
@@ -123,8 +125,13 @@ class Paths
 			case 'm.i.l.f':
 				songLowercase = 'milf';
 		}
-		return 'songs:assets/songs/${songLowercase}/Inst.$SOUND_EXT';
+    return 'songs:assets/songs/${songLowercase}/Inst.$SOUND_EXT';
 	}
+
+  inline static public function doesSoundAssetExist(EmbeddedSound:String) {
+    return OpenFlAssets.exists(EmbeddedSound, AssetType.SOUND)
+      || OpenFlAssets.exists(EmbeddedSound, AssetType.MUSIC);
+  }
 
 	inline static public function image(key:String, ?library:String)
 	{

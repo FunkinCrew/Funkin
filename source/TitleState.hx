@@ -235,7 +235,6 @@ class TitleState extends MusicBeatState
 	{
 		if (FlxG.sound.music != null)
 			Conductor.songPosition = FlxG.sound.music.time;
-		// FlxG.watch.addQuick('amp', FlxG.sound.music.amplitude);
 
 		if (FlxG.keys.justPressed.F)
 		{
@@ -426,6 +425,8 @@ class TitleState extends MusicBeatState
 	{
 		if (!skippedIntro)
 		{
+			Debug.logInfo("Skipping intro...");
+
 			remove(ngSpr);
 
 			FlxG.camera.flash(FlxColor.WHITE, 4);
