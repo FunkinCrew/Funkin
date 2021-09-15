@@ -47,10 +47,6 @@ class TitleState extends MusicBeatState
 
 	override public function create():Void
 	{
-		#if polymod
-		polymod.Polymod.init({modRoot: "mods", dirs: ['introMod']});
-		#end
-
 		#if FEATURE_FILESYSTEM
 		if (!sys.FileSystem.exists(Sys.getCwd() + "/assets/replays"))
 			sys.FileSystem.createDirectory(Sys.getCwd() + "/assets/replays");
@@ -146,7 +142,7 @@ class TitleState extends MusicBeatState
 		// titleText.screenCenter(X);
 		add(titleText);
 
-		var logo:FlxSprite = new FlxSprite().loadGraphic(Paths.image('logo'));
+		var logo:FlxSprite = new FlxSprite().loadGraphic(Paths.loadImage('logo'));
 		logo.screenCenter();
 		logo.antialiasing = FlxG.save.data.antialiasing;
 		// add(logo);
@@ -168,7 +164,7 @@ class TitleState extends MusicBeatState
 
 		credTextShit.visible = false;
 
-		ngSpr = new FlxSprite(0, FlxG.height * 0.52).loadGraphic(Paths.image('newgrounds_logo'));
+		ngSpr = new FlxSprite(0, FlxG.height * 0.52).loadGraphic(Paths.loadImage('newgrounds_logo'));
 		add(ngSpr);
 		ngSpr.visible = false;
 		ngSpr.setGraphicSize(Std.int(ngSpr.width * 0.8));
@@ -442,9 +438,9 @@ class TitleState extends MusicBeatState
 					FlxTween.angle(logoBl, logoBl.angle, -4, 4, {ease: FlxEase.quartInOut});
 			}, 0);
 
-      // It always bugged me that it didn't do this before.
-      // Skip ahead in the song to the drop.
-      FlxG.sound.music.time = 9400; // 9.4 seconds
+			// It always bugged me that it didn't do this before.
+			// Skip ahead in the song to the drop.
+			FlxG.sound.music.time = 9400; // 9.4 seconds
 
 			skippedIntro = true;
 		}

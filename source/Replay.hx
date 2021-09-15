@@ -6,7 +6,6 @@ import flixel.FlxG;
 import openfl.events.IOErrorEvent;
 import openfl.events.Event;
 import openfl.net.FileReference;
-import lime.utils.Assets;
 import haxe.Json;
 import flixel.input.keyboard.FlxKey;
 import openfl.utils.Dictionary;

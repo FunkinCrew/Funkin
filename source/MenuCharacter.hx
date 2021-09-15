@@ -100,6 +100,11 @@ class MenuCharacter extends FlxSprite
 			else
 				animation.play(character + "-right", true);
 		}
+		else if (character == '')
+		{
+			// Don't try to play an animation on an invisible character.
+			return;
+		}
 		else
 		{
 			// no spooky nor girlfriend so we do da normal animation

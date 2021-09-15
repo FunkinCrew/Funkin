@@ -154,9 +154,9 @@ class Note extends FlxSprite
 			switch (noteTypeCheck)
 			{
 				case 'pixel':
-					loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels', 'week6'), true, 17, 17);
+					loadGraphic(Paths.loadImage('weeb/pixelUI/arrows-pixels', 'week6'), true, 17, 17);
 					if (isSustainNote)
-						loadGraphic(Paths.image('weeb/pixelUI/arrowEnds', 'week6'), true, 7, 6);
+						loadGraphic(Paths.loadImage('weeb/pixelUI/arrowEnds', 'week6'), true, 7, 6);
 
 					for (i in 0...4)
 					{

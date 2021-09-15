@@ -23,14 +23,14 @@ class OutdatedSubState extends MusicBeatState
 	override function create()
 	{
 		super.create();
-		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('week54prototype', 'shared'));
+		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.loadImage('week54prototype', 'shared'));
 		bg.scale.x *= 1.55;
 		bg.scale.y *= 1.55;
 		bg.screenCenter();
 		bg.antialiasing = FlxG.save.data.antialiasing;
 		add(bg);
 
-		var kadeLogo:FlxSprite = new FlxSprite(FlxG.width, 0).loadGraphic(Paths.image('KadeEngineLogo'));
+		var kadeLogo:FlxSprite = new FlxSprite(FlxG.width, 0).loadGraphic(Paths.loadImage('KadeEngineLogo'));
 		kadeLogo.scale.y = 0.3;
 		kadeLogo.scale.x = 0.3;
 		kadeLogo.x -= kadeLogo.frameHeight;

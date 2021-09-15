@@ -35,7 +35,6 @@ import lime.graphics.Image;
 import flixel.graphics.FlxGraphic;
 import openfl.utils.AssetManifest;
 import openfl.utils.AssetLibrary;
-import flixel.system.FlxAssets;
 import lime.app.Application;
 import lime.media.AudioContext;
 import lime.media.AudioManager;
@@ -74,7 +73,6 @@ import flixel.util.FlxSort;
 import flixel.util.FlxStringUtil;
 import flixel.util.FlxTimer;
 import haxe.Json;
-import lime.utils.Assets;
 import openfl.display.BlendMode;
 import openfl.display.StageQuality;
 import openfl.filters.ShaderFilter;
@@ -342,7 +340,7 @@ class PlayState extends MusicBeatState
 		removedVideo = false;
 
 		#if FEATURE_LUAMODCHART
-		executeModchart = FileSystem.exists(Paths.lua(songLowercase + "/modchart"));
+		executeModchart = FileSystem.exists(Paths.lua('songs/$songLowercase/modchart'));
 		if (isSM)
 			executeModchart = FileSystem.exists(pathToSm + "/modchart.lua");
 		if (executeModchart)
@@ -352,7 +350,7 @@ class PlayState extends MusicBeatState
 		executeModchart = false; // FORCE disable for non cpp targets
 		#end
 
-		trace('Mod chart: ' + executeModchart + " - " + Paths.lua(songLowercase + "/modchart"));
+		trace('Mod chart: ' + executeModchart + " - " + Paths.lua('songs/$songLowercase/modchart'));
 
 		if (executeModchart)
 			songMultiplier = 1;
@@ -469,11 +467,10 @@ class PlayState extends MusicBeatState
 		trace('INFORMATION ABOUT WHAT U PLAYIN WIT:\nFRAMES: ' + PlayStateChangeables.safeFrames + '\nZONE: ' + Conductor.safeZoneOffset + '\nTS: '
 			+ Conductor.timeScale + '\nBotPlay : ' + PlayStateChangeables.botPlay);
 
-		switch (songLowercase)
+		// if the song has dialogue, so we don't accidentally try to load a nonexistant file and crash the game
+		if (Paths.doesTextAssetExist(Paths.txt('data/songs/$songLowercase/dialogue')))
 		{
-			// if the song has dialogue, so we don't accidentally try to load a nonexistant file and crash the game
-			case 'senpai' | 'roses' | 'thorns':
-				dialogue = CoolUtil.coolTextFile(Paths.txt('data/$songLowercase/dialogue'));
+			dialogue = CoolUtil.coolTextFile(Paths.txt('data/songs/$songLowercase/dialogue'));
 		}
 
 		// defaults if no stage was found in chart
@@ -847,7 +844,7 @@ class PlayState extends MusicBeatState
 
 		if (FlxG.save.data.songPosition) // I dont wanna talk about this code :(
 		{
-			songPosBG = new FlxSprite(0, 10).loadGraphic(Paths.image('healthBar'));
+			songPosBG = new FlxSprite(0, 10).loadGraphic(Paths.loadImage('healthBar'));
 			if (PlayStateChangeables.useDownscroll)
 				songPosBG.y = FlxG.height * 0.9 + 45;
 			songPosBG.screenCenter(X);
@@ -869,7 +866,7 @@ class PlayState extends MusicBeatState
 			songName.cameras = [camHUD];
 		}
 
-		healthBarBG = new FlxSprite(0, FlxG.height * 0.9).loadGraphic(Paths.image('healthBar'));
+		healthBarBG = new FlxSprite(0, FlxG.height * 0.9).loadGraphic(Paths.loadImage('healthBar'));
 		if (PlayStateChangeables.useDownscroll)
 			healthBarBG.y = 50;
 		healthBarBG.screenCenter(X);
@@ -1178,7 +1175,7 @@ class PlayState extends MusicBeatState
 				case 0:
 					FlxG.sound.play(Paths.sound('intro3' + altSuffix), 0.6);
 				case 1:
-					var ready:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[0], week6Bullshit));
+					var ready:FlxSprite = new FlxSprite().loadGraphic(Paths.loadImage(introAlts[0], week6Bullshit));
 					ready.scrollFactor.set();
 					ready.updateHitbox();
 
@@ -1196,7 +1193,7 @@ class PlayState extends MusicBeatState
 					});
 					FlxG.sound.play(Paths.sound('intro2' + altSuffix), 0.6);
 				case 2:
-					var set:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[1], week6Bullshit));
+					var set:FlxSprite = new FlxSprite().loadGraphic(Paths.loadImage(introAlts[1], week6Bullshit));
 					set.scrollFactor.set();
 
 					if (SONG.noteStyle == 'pixel')
@@ -1213,7 +1210,7 @@ class PlayState extends MusicBeatState
 					});
 					FlxG.sound.play(Paths.sound('intro1' + altSuffix), 0.6);
 				case 3:
-					var go:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[2], week6Bullshit));
+					var go:FlxSprite = new FlxSprite().loadGraphic(Paths.loadImage(introAlts[2], week6Bullshit));
 					go.scrollFactor.set();
 
 					if (SONG.noteStyle == 'pixel')
@@ -1592,7 +1589,7 @@ class PlayState extends MusicBeatState
 			remove(songPosBar);
 			remove(songName);
 
-			songPosBG = new FlxSprite(0, 10).loadGraphic(Paths.image('healthBar'));
+			songPosBG = new FlxSprite(0, 10).loadGraphic(Paths.loadImage('healthBar'));
 			if (PlayStateChangeables.useDownscroll)
 				songPosBG.y = FlxG.height * 0.9 + 45;
 			songPosBG.screenCenter(X);
@@ -1642,7 +1639,7 @@ class PlayState extends MusicBeatState
 				songLowercase = 'milf';
 		}
 
-		var songPath = 'assets/data/' + songLowercase + '/';
+		var songPath = 'assets/data/songs/$songLowercase/';
 
 		#if FEATURE_STEPMANIA
 		if (isSM && !isStoryMode)
@@ -1792,7 +1789,7 @@ class PlayState extends MusicBeatState
 			switch (noteTypeCheck)
 			{
 				case 'pixel':
-					babyArrow.loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels', 'week6'), true, 17, 17);
+					babyArrow.loadGraphic(Paths.loadImage('weeb/pixelUI/arrows-pixels', 'week6'), true, 17, 17);
 					babyArrow.animation.add('green', [6]);
 					babyArrow.animation.add('red', [7]);
 					babyArrow.animation.add('blue', [5]);
@@ -2502,10 +2499,12 @@ class PlayState extends MusicBeatState
 
 			vocals.time = Conductor.songPosition;
 			vocals.play();
-			FlxTween.tween(skipText, {alpha: 0}, 0.2, {onComplete: function(tw)
-			{
-				remove(skipText);
-			}});
+			FlxTween.tween(skipText, {alpha: 0}, 0.2, {
+				onComplete: function(tw)
+				{
+					remove(skipText);
+				}
+			});
 			skipActive = false;
 		}
 
@@ -3619,7 +3618,7 @@ class PlayState extends MusicBeatState
 				pixelShitPart3 = 'week6';
 			}
 
-			rating.loadGraphic(Paths.image(pixelShitPart1 + daRating + pixelShitPart2, pixelShitPart3));
+			rating.loadGraphic(Paths.loadImage(pixelShitPart1 + daRating + pixelShitPart2, pixelShitPart3));
 			rating.screenCenter();
 			rating.y -= 50;
 			rating.x = coolText.x - 125;
@@ -3685,7 +3684,7 @@ class PlayState extends MusicBeatState
 			if (!PlayStateChangeables.botPlay || loadRep)
 				add(currentTimingShown);
 
-			var comboSpr:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'combo' + pixelShitPart2, pixelShitPart3));
+			var comboSpr:FlxSprite = new FlxSprite().loadGraphic(Paths.loadImage(pixelShitPart1 + 'combo' + pixelShitPart2, pixelShitPart3));
 			comboSpr.screenCenter();
 			comboSpr.x = rating.x;
 			comboSpr.y = rating.y + 100;
@@ -3749,7 +3748,7 @@ class PlayState extends MusicBeatState
 			var daLoop:Int = 0;
 			for (i in seperatedScore)
 			{
-				var numScore:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'num' + Std.int(i) + pixelShitPart2, pixelShitPart3));
+				var numScore:FlxSprite = new FlxSprite().loadGraphic(Paths.loadImage(pixelShitPart1 + 'num' + Std.int(i) + pixelShitPart2, pixelShitPart3));
 				numScore.screenCenter();
 				numScore.x = rating.x + (43 * daLoop) - 50;
 				numScore.y = rating.y + 100;

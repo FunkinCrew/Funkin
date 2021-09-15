@@ -1,3 +1,4 @@
+import polymod.Polymod.PolymodError;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.system.debug.log.LogStyle;
@@ -32,12 +33,12 @@ class Debug
 	 * @param input The message to display.
 	 * @param pos This magic type is auto-populated, and includes the line number and class it was called from.
 	 */
-	public static function logError(input:Dynamic, ?pos:haxe.PosInfos):Void
+	public static inline function logError(input:Dynamic, ?pos:haxe.PosInfos):Void
 	{
 		if (input == null)
 			return;
 		var output = formatOutput(input, pos);
-		FlxG.log.advanced(output, LogStyle.ERROR);
+		writeToFlxGLog(output, LOG_STYLE_ERROR);
 		writeToLogFile(output, 'ERROR');
 	}
 
@@ -47,12 +48,12 @@ class Debug
 	 * @param input The message to display.
 	 * @param pos This magic type is auto-populated, and includes the line number and class it was called from.
 	 */
-	public static function logWarn(input:Dynamic, ?pos:haxe.PosInfos):Void
+	public static inline function logWarn(input:Dynamic, ?pos:haxe.PosInfos):Void
 	{
 		if (input == null)
 			return;
 		var output = formatOutput(input, pos);
-		FlxG.log.advanced(output, LogStyle.WARNING);
+		writeToFlxGLog(output, LOG_STYLE_WARN);
 		writeToLogFile(output, 'WARN');
 	}
 
@@ -61,12 +62,12 @@ class Debug
 	 * @param input The message to display.
 	 * @param pos This magic type is auto-populated, and includes the line number and class it was called from.
 	 */
-	public static function logInfo(input:Dynamic, ?pos:haxe.PosInfos):Void
+	public static inline function logInfo(input:Dynamic, ?pos:haxe.PosInfos):Void
 	{
 		if (input == null)
 			return;
 		var output = formatOutput(input, pos);
-		FlxG.log.advanced(output, LogStyle.CONSOLE);
+		writeToFlxGLog(output, LOG_STYLE_INFO);
 		writeToLogFile(output, 'INFO');
 	}
 
@@ -81,7 +82,7 @@ class Debug
 		if (input == null)
 			return;
 		var output = formatOutput(input, pos);
-		FlxG.log.advanced(output, LOG_STYLE_TRACE);
+		writeToFlxGLog(output, LOG_STYLE_TRACE);
 		writeToLogFile(output, 'TRACE');
 	}
 
@@ -156,10 +157,12 @@ class Debug
 	}
 
 	/**
-	 * The game runs this function when it starts. Use it to initialize debug stuff.
+	 * The game runs this function immediately when it starts.
+	 		* Use onGameStart() if it can wait until a little later.
 	 */
-	public inline static function onGameStart()
+	public static function onInitProgram()
 	{
+		// Initialize logging tools.
 		trace('Initializing Debug tools...');
 
 		// Override Haxe's vanilla trace() calls to use the Flixel console.
@@ -178,18 +181,9 @@ class Debug
 			logTrace(paramArray, info);
 		};
 
-		// Add the mouse position to the debug Watch window.
-		FlxG.watch.addMouse();
-
-		defineTrackerProfiles();
-		defineConsoleCommands();
-
-		// Remember the log level.
-		if (FlxG.save.data.debugLogLevel == null)
-			FlxG.save.data.debugLogLevel = "TRACE";
-
 		// Start the log file writer.
-		logFileWriter = new DebugLogWriter(FlxG.save.data.debugLogLevel);
+		// We have to set it to TRACE for now.
+		logFileWriter = new DebugLogWriter("TRACE");
 
 		logInfo("Debug logging initialized. Hello, developer.");
 
@@ -203,6 +197,32 @@ class Debug
 		logInfo('KadeEngine version: ${MainMenuState.kadeEngineVer}');
 	}
 
+	/**
+	 * The game runs this function when it starts, but after Flixel is initialized.
+	 */
+	public static function onGameStart()
+	{
+		// Add the mouse position to the debug Watch window.
+		FlxG.watch.addMouse();
+
+		defineTrackerProfiles();
+		defineConsoleCommands();
+
+		// Now we can remember the log level.
+		if (FlxG.save.data.debugLogLevel == null)
+			FlxG.save.data.debugLogLevel = "TRACE";
+
+		logFileWriter.setLogLevel(FlxG.save.data.debugLogLevel);
+	}
+
+	static function writeToFlxGLog(data:Array<Dynamic>, logStyle:LogStyle)
+	{
+		if (FlxG != null && FlxG.game != null && FlxG.log != null)
+		{
+			FlxG.log.advanced(data, logStyle);
+		}
+	}
+
 	static function writeToLogFile(data:Array<Dynamic>, logLevel:String = "TRACE")
 	{
 		if (logFileWriter != null && logFileWriter.isActive())
@@ -214,7 +234,7 @@ class Debug
 	/**
 	 * Defines what properties will be displayed in tracker windows for all these classes.
 	 */
-	inline static function defineTrackerProfiles()
+	static function defineTrackerProfiles()
 	{
 		// Example: This will display all the properties that FlxSprite does, along with curCharacter and barColor.
 		FlxG.debugger.addTrackerProfile(new TrackerProfile(Character, ["curCharacter", "isPlayer", "barColor"], [FlxSprite]));
@@ -284,9 +304,6 @@ class Debug
 
 	static function formatOutput(input:Dynamic, pos:haxe.PosInfos):Array<Dynamic>
 	{
-		// Format the position ourselves.
-		var output:Array<Dynamic> = ['(${pos.className}/${pos.methodName}#${pos.lineNumber}): '];
-
 		// This code is junk but I kept getting Null Function References.
 		var inArray:Array<Dynamic> = null;
 		if (input == null)
@@ -301,6 +318,12 @@ class Debug
 		{
 			inArray = input;
 		}
+
+		if (pos == null)
+			return inArray;
+
+		// Format the position ourselves.
+		var output:Array<Dynamic> = ['(${pos.className}/${pos.methodName}#${pos.lineNumber}): '];
 
 		return output.concat(inArray);
 	}

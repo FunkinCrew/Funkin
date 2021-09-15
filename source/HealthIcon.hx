@@ -2,7 +2,7 @@ package;
 
 import flixel.FlxG;
 import flixel.FlxSprite;
-import lime.utils.Assets;
+import openfl.utils.Assets as OpenFlAssets;
 
 using StringTools;
 
@@ -40,10 +40,10 @@ class HealthIcon extends FlxSprite
 		if (char != 'bf-pixel' && char != 'bf-old')
 			char = char.split("-")[0];
 
-		if (!Assets.exists(Paths.image('icons/icon-' + char)))
+		if (!OpenFlAssets.exists(Paths.image('icons/icon-' + char)))
 			char = 'face';
 
-		loadGraphic(Paths.image('icons/icon-' + char), true, 150, 150);
+		loadGraphic(Paths.loadImage('icons/icon-' + char), true, 150, 150);
 
 		if (char.endsWith('-pixel') || char.startsWith('senpai') || char.startsWith('spirit'))
 			antialiasing = false
