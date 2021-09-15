@@ -15,7 +15,7 @@ haxelib git extension-webm https://github.com/KadeDev/extension-webm
 lime rebuild extension-webm windows
 ```
 
-### GetThreadContext failed!
+## GetThreadContext failed!
 
 As best I can tell, this issue is caused by an out-of-memory error when trying to build the game. If this error occurs, you're probably multi-tasking by running something computationally expensive in the background.
 
