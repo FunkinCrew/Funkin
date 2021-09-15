@@ -1,5 +1,6 @@
 package modding;
 
+import states.MusicBeatState;
 import flixel.util.FlxColor;
 import states.MainMenuState;
 import flixel.util.FlxTimer.FlxTimerManager;
@@ -35,7 +36,7 @@ import flixel.FlxState;
 
 using StringTools;
 
-class CharacterCreationState extends FlxState
+class CharacterCreationState extends MusicBeatState
 {
     // OTHER STUFF IDK LMAO //
     public static var instance:CharacterCreationState;
@@ -82,22 +83,38 @@ class CharacterCreationState extends FlxState
         instance = this;
 
         Character_Name = New_Character;
-
-        if(Assets.getLibrary("shared") == null)
-			Assets.loadLibrary("shared").onComplete(function (_) {});
     }
 
     override function create()
     {
-        Load_Character_File_JSON_Data();
+        FlxG.mouse.visible = true;
 
-        Create_UI();
-        add(UI_Group);
-        add(Character);
+        if(Assets.getLibrary("shared") == null)
+        {
+			Assets.loadLibrary("shared").onComplete(function (_) {
+                Load_Character_File_JSON_Data();
 
-        #if discord_rpc
-        DiscordClient.changePresence("Creating A Character", null, null);
-        #end
+                Create_UI();
+                add(UI_Group);
+                add(Character);
+        
+                #if discord_rpc
+                DiscordClient.changePresence("Creating A Character", null, null);
+                #end
+            });
+        }
+        else
+        {
+            Load_Character_File_JSON_Data();
+
+            Create_UI();
+            add(UI_Group);
+            add(Character);
+    
+            #if discord_rpc
+            DiscordClient.changePresence("Creating A Character", null, null);
+            #end
+        }
     }
 
     public function Read_JSON_Data(?JSON_Data:Null<String>)
@@ -247,7 +264,6 @@ class CharacterCreationState extends FlxState
             animations: Animations,
             defaultFlipX: Default_FlipX,
             dancesLeftAndRight: LeftAndRight_Idle,
-            spritesheetType: Spritesheet_Type,
             graphicsSize: Graphics_Size,
             barColor: Bar_Color,
             positionOffset: [0,0],
@@ -272,7 +288,7 @@ class CharacterCreationState extends FlxState
         Read_JSON_Data();
     }
 
-    function Create_Character(?New_Char:String = "bf")
+    function Create_Character(?New_Char:String)
     {
         if(New_Char != null)
             Character_Name = New_Char;
@@ -284,6 +300,7 @@ class CharacterCreationState extends FlxState
         Character.loadCharacterConfiguration(CC_Data);
         Character.loadOffsetFile(Character_Name);
         Character.screenCenter();
+        Character.visible = true;
     }
 
     function Load_Animations()
@@ -339,23 +356,17 @@ class CharacterCreationState extends FlxState
             Character.screenCenter();
 
         if(FlxG.keys.justPressed.ESCAPE)
+        {
+            FlxG.mouse.visible = false;
             FlxG.switchState(new MainMenuState());
+        }
     }
 
     var _file:FileReference;
 
     private function save_JSON()
     {
-        var json = {
-            "imagePath": Image_Path,
-            "animations": Animations,
-            "defaultFlipX": Default_FlipX,
-            "dancesLeftAndRight": LeftAndRight_Idle,
-            "spritesheetType": Std.string(Spritesheet_Type),
-            "graphicsSize": Graphics_Size
-        };
-
-        var data:String = Json.stringify(json, null, "\t");
+        var data:String = Json.stringify(CC_Data, null, "\t");
 
         if ((data != null) && (data.length > 0))
         {

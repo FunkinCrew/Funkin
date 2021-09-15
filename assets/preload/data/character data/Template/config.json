@@ -1,0 +1,31 @@
+{
+	"animations": [
+		{
+			"animation_name": "XML Anim Name Here",
+			"looped": false,
+			"fps": 24,
+			"name": "Actual Ingame Anim Name Here (idle, singLEFT, hey, scared, etc...)"
+		}
+	],
+	"dancesLeftAndRight": false,
+	"positionOffset": [
+		0,
+		0
+	],
+	"defaultFlipX": true,
+	"coolThornsTrail": false,
+	"barColor": [
+		255,
+		0,
+		0
+	],
+	"cameraOffset": [
+		0,
+		0
+	],
+	"imagePath": "Spritesheet Name Here",
+	"offsetsFlipWhenEnemy": false,
+	"graphicsSize": 1,
+	"characters": [],
+	"offsetsFlipWhenPlayer": true
+}

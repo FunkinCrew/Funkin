@@ -459,7 +459,7 @@ class Character extends FlxSprite
 
 	public function loadCharacterConfiguration(config:CharacterConfig)
 	{
-		if(config.characters == null)
+		if(config.characters == null || config.characters.length <= 1)
 		{
 			if(!isPlayer)
 				flipX = config.defaultFlipX;
@@ -478,28 +478,14 @@ class Character extends FlxSprite
 
 			dancesLeftAndRight = config.dancesLeftAndRight;
 
-			if(config.spritesheetType == SpritesheetType.PACKER)
-			{
-				#if sys
-				if(Assets.exists(Paths.image('characters/' + config.imagePath, 'shared')))
-					frames = Paths.getPackerAtlas('characters/' + config.imagePath, 'shared');
-				else
-					frames = Paths.getPackerAtlasSYS("characters/" + config.imagePath, "shared");
-				#else
-				frames = Paths.getPackerAtlas('characters/' + config.imagePath, 'shared');
-				#end
-			}
-			else
-			{
-				#if sys
-				if(Assets.exists(Paths.image('characters/' + config.imagePath, 'shared')))
-					frames = Paths.getSparrowAtlas('characters/' + config.imagePath, 'shared');
-				else
-					frames = Paths.getSparrowAtlasSYS("characters/" + config.imagePath, "shared");
-				#else
+			#if sys
+			if(Assets.exists(Paths.image('characters/' + config.imagePath, 'shared')))
 				frames = Paths.getSparrowAtlas('characters/' + config.imagePath, 'shared');
-				#end
-			}
+			else
+				frames = Paths.getSparrowAtlasSYS("characters/" + config.imagePath, "shared");
+			#else
+			frames = Paths.getSparrowAtlas('characters/' + config.imagePath, 'shared');
+			#end
 
 			if(config.graphicsSize != null)
 			{
@@ -535,10 +521,7 @@ class Character extends FlxSprite
 				playAnim("idle");
 
 			if(debugMode)
-			{
-				if (isPlayer)
-					flipX = !flipX;
-			}
+				flipX = config.defaultFlipX;
 
 			updateHitbox();
 
@@ -723,7 +706,6 @@ typedef CharacterConfig =
 	var animations:Array<CharacterAnimation>;
 	var defaultFlipX:Bool;
 	var dancesLeftAndRight:Bool;
-	var spritesheetType:SpritesheetType;
 	var graphicsSize:Null<Float>;
 	var barColor:Array<Int>;
 	var positionOffset:Array<Float>;

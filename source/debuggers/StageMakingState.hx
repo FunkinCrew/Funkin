@@ -25,13 +25,8 @@ import flixel.FlxState;
         }
 */
 
-class StageMakingState extends FlxState
+class StageMakingState extends MusicBeatState
 {
-    private var controls(get, never):Controls;
-
-    inline function get_controls():Controls
-		return PlayerSettings.player1.controls;
-
     /* STAGE STUFF */
     public var stages:Array<String>;
 
