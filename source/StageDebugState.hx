@@ -120,7 +120,7 @@ class StageDebugState extends FlxState
 			if (camGame.zoom > 0.11) // me when floating point error
 				camGame.zoom -= 0.1;
 		}
-        FlxG.watch.addQuick('Camera Zoom', camGame.zoom);
+		FlxG.watch.addQuick('Camera Zoom', camGame.zoom);
 
 		if (FlxG.keys.justPressed.SHIFT)
 		{
@@ -165,7 +165,9 @@ class StageDebugState extends FlxState
 			}
 		}
 
-		if (FlxG.mouse.pressed && FlxCollision.pixelPerfectPointCheck(Math.floor(FlxG.mouse.x), Math.floor(FlxG.mouse.y), curChar) && !dragging)
+		if (FlxG.mouse.pressed
+			&& FlxCollision.pixelPerfectPointCheck(Math.floor(FlxG.mouse.x), Math.floor(FlxG.mouse.y), curChar)
+			&& !dragging)
 		{
 			dragging = true;
 			updateMousePos();
@@ -173,7 +175,6 @@ class StageDebugState extends FlxState
 
 		if (dragging && FlxG.mouse.justMoved)
 		{
-
 			curChar.setPosition(-(oldMousePosX - FlxG.mouse.x) + curChar.x, -(oldMousePosY - FlxG.mouse.y) + curChar.y);
 			updateMousePos();
 		}
@@ -187,7 +188,6 @@ class StageDebugState extends FlxState
 			curChar.angle += 1 * Math.ceil(elapsed);
 		else if (FlxG.keys.pressed.R)
 			curChar.angle = 0;
-
 
 		posText.text = (curCharString + " X: " + curChar.x + " Y: " + curChar.y + " Rotation: " + curChar.angle);
 
@@ -302,45 +302,43 @@ class StageDebugState extends FlxState
 
 		if ((result != null) && (result.length > 0))
 		{
-				_file = new FileReference();
-				_file.addEventListener(Event.COMPLETE, onSaveComplete);
-				_file.addEventListener(Event.CANCEL, onSaveCancel);
-				_file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
-				_file.save(result.trim(), daStage + "Positions.txt");
+			_file = new FileReference();
+			_file.addEventListener(Event.COMPLETE, onSaveComplete);
+			_file.addEventListener(Event.CANCEL, onSaveCancel);
+			_file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
+			_file.save(result.trim(), daStage + "Positions.txt");
 		}
 	}
 
 	/**
 	 * Called when the save file dialog is completed.
 	 */
-	 function onSaveComplete(_):Void
-		{
-			_file.removeEventListener(Event.COMPLETE, onSaveComplete);
-			_file.removeEventListener(Event.CANCEL, onSaveCancel);
-			_file.removeEventListener(IOErrorEvent.IO_ERROR, onSaveError);
-			_file = null;
-			FlxG.log.notice("Successfully saved Positions DATA.");
-		}
+	function onSaveComplete(_):Void
+	{
+		_file.removeEventListener(Event.COMPLETE, onSaveComplete);
+		_file.removeEventListener(Event.CANCEL, onSaveCancel);
+		_file.removeEventListener(IOErrorEvent.IO_ERROR, onSaveError);
+		_file = null;
+		FlxG.log.notice("Successfully saved Positions DATA.");
+	}
 
 	/**
 	 * Called when the save file dialog is cancelled.
 	 */
-	 function onSaveCancel(_):Void
-		{
-			_file.removeEventListener(Event.COMPLETE, onSaveComplete);
-			_file.removeEventListener(Event.CANCEL, onSaveCancel);
-			_file.removeEventListener(IOErrorEvent.IO_ERROR, onSaveError);
-			_file = null;
-		}
+	function onSaveCancel(_):Void
+	{
+		_file.removeEventListener(Event.COMPLETE, onSaveComplete);
+		_file.removeEventListener(Event.CANCEL, onSaveCancel);
+		_file.removeEventListener(IOErrorEvent.IO_ERROR, onSaveError);
+		_file = null;
+	}
 
 	function onSaveError(_):Void
-		{
-			_file.removeEventListener(Event.COMPLETE, onSaveComplete);
-			_file.removeEventListener(Event.CANCEL, onSaveCancel);
-			_file.removeEventListener(IOErrorEvent.IO_ERROR, onSaveError);
-			_file = null;
-			FlxG.log.error("Problem saving Positions data");
-		}
-
-	
+	{
+		_file.removeEventListener(Event.COMPLETE, onSaveComplete);
+		_file.removeEventListener(Event.CANCEL, onSaveCancel);
+		_file.removeEventListener(IOErrorEvent.IO_ERROR, onSaveError);
+		_file = null;
+		FlxG.log.error("Problem saving Positions data");
+	}
 }

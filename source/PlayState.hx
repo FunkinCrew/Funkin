@@ -765,7 +765,7 @@ class PlayState extends MusicBeatState
 		}
 		#end
 
-    #if FEATURE_LUAMODCHART
+		#if FEATURE_LUAMODCHART
 		if (executeModchart)
 		{
 			new LuaCamera(camGame, "camGame").Register(ModchartState.lua);
@@ -776,7 +776,7 @@ class PlayState extends MusicBeatState
 			new LuaCharacter(gf, "gf").Register(ModchartState.lua);
 			new LuaCharacter(boyfriend, "boyfriend").Register(ModchartState.lua);
 		}
-    #end
+		#end
 
 		var index = 0;
 
@@ -879,11 +879,11 @@ class PlayState extends MusicBeatState
 		healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
 			'health', 0, 2);
 		healthBar.scrollFactor.set();
-		if(FlxG.save.data.colour)
+		if (FlxG.save.data.colour)
 			healthBar.createFilledBar(dad.barColor, boyfriend.barColor);
-        else
-         	healthBar.createFilledBar(0xFFFF0000, 0xFF66FF33);
-        // healthBar
+		else
+			healthBar.createFilledBar(0xFFFF0000, 0xFF66FF33);
+		// healthBar
 		add(healthBar);
 
 		// Add Kade Engine watermark
@@ -1140,7 +1140,6 @@ class PlayState extends MusicBeatState
 			FlxG.sound.music.stop();
 		if (vocals != null)
 			vocals.stop();
-
 
 		var swagCounter:Int = 0;
 
@@ -1450,12 +1449,12 @@ class PlayState extends MusicBeatState
 		if (useVideo)
 			GlobalVideo.get().resume();
 
-    #if FEATURE_LUAMODCHART
+		#if FEATURE_LUAMODCHART
 		if (executeModchart)
 			luaModchart.executeState("songStart", [null]);
-    #end
-    
-    #if FEATURE_DISCORD
+		#end
+
+		#if FEATURE_DISCORD
 		// Updating Discord Rich Presence (with Time Left)
 		DiscordClient.changePresence(detailsText
 			+ " "
@@ -1523,7 +1522,7 @@ class PlayState extends MusicBeatState
 			skipText.color = 0xFFADD8E6;
 			skipText.cameras = [camHUD];
 			skipText.alpha = 0;
-			FlxTween.tween(skipText,{alpha: 1},0.2);
+			FlxTween.tween(skipText, {alpha: 1}, 0.2);
 			add(skipText);
 		}
 	}
@@ -1970,12 +1969,12 @@ class PlayState extends MusicBeatState
 
 		@:privateAccess
 		{
-      #if desktop
-      // The __backend.handle attribute is only available on native.
+			#if desktop
+			// The __backend.handle attribute is only available on native.
 			lime.media.openal.AL.sourcef(FlxG.sound.music._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, songMultiplier);
 			if (vocals.playing)
 				lime.media.openal.AL.sourcef(vocals._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, songMultiplier);
-      #end
+			#end
 		}
 
 		#if FEATURE_DISCORD
@@ -2029,22 +2028,22 @@ class PlayState extends MusicBeatState
 				var dunceNote:Note = unspawnNotes[0];
 				notes.add(dunceNote);
 
-        #if FEATURE_LUAMODCHART
+				#if FEATURE_LUAMODCHART
 				if (executeModchart)
 				{
 					new LuaNote(dunceNote, currentLuaIndex);
 					dunceNote.luaID = currentLuaIndex;
 				}
-        #end
+				#end
 
 				if (executeModchart)
 				{
-          #if FEATURE_LUAMODCHART
+					#if FEATURE_LUAMODCHART
 					if (!dunceNote.isSustainNote)
 						dunceNote.cameras = [camNotes];
 					else
 						dunceNote.cameras = [camSustains];
-          #end
+					#end
 				}
 				else
 				{
@@ -2260,7 +2259,7 @@ class PlayState extends MusicBeatState
 		}
 
 		if (FlxG.keys.justPressed.NINE)
-				iconP1.swapOldIcon();
+			iconP1.swapOldIcon();
 
 		var lengthInPx = scoreTxt.textField.length * scoreTxt.frameHeight; // bad way but does more or less a better job
 
@@ -2309,7 +2308,6 @@ class PlayState extends MusicBeatState
 			}
 			#end
 		}
-
 
 		if (FlxG.keys.justPressed.SEVEN && songStarted)
 		{
@@ -2504,7 +2502,10 @@ class PlayState extends MusicBeatState
 
 			vocals.time = Conductor.songPosition;
 			vocals.play();
-			FlxTween.tween(skipText,{alpha: 0},0.2,{onComplete: function(tw){remove(skipText);}});
+			FlxTween.tween(skipText, {alpha: 0}, 0.2, {onComplete: function(tw)
+			{
+				remove(skipText);
+			}});
 			skipActive = false;
 		}
 

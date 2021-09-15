@@ -56,7 +56,7 @@ class Paths
 		return getPath(file, type, library);
 	}
 
-	inline static public function lua(key:String,?library:String)
+	inline static public function lua(key:String, ?library:String)
 	{
 		return getPath('data/$key.lua', TEXT, library);
 	}
@@ -99,24 +99,39 @@ class Paths
 	inline static public function voices(song:String)
 	{
 		var songLowercase = StringTools.replace(song, " ", "-").toLowerCase();
-			switch (songLowercase) {
-				case 'dad-battle': songLowercase = 'dadbattle';
-				case 'philly-nice': songLowercase = 'philly';
-				case 'm.i.l.f': songLowercase = 'milf';
-			}
-		return 'songs:assets/songs/${songLowercase}/Voices.$SOUND_EXT';
+		switch (songLowercase)
+		{
+			case 'dad-battle':
+				songLowercase = 'dadbattle';
+			case 'philly-nice':
+				songLowercase = 'philly';
+			case 'm.i.l.f':
+				songLowercase = 'milf';
+		}
+    var result = 'songs:assets/songs/${songLowercase}/Voices.$SOUND_EXT';
+    // Return null if the file does not exist.
+		return doesSoundAssetExist(result) ? result : null;
 	}
 
 	inline static public function inst(song:String)
 	{
 		var songLowercase = StringTools.replace(song, " ", "-").toLowerCase();
-			switch (songLowercase) {
-				case 'dad-battle': songLowercase = 'dadbattle';
-				case 'philly-nice': songLowercase = 'philly';
-				case 'm.i.l.f': songLowercase = 'milf';
-			}
-		return 'songs:assets/songs/${songLowercase}/Inst.$SOUND_EXT';
+		switch (songLowercase)
+		{
+			case 'dad-battle':
+				songLowercase = 'dadbattle';
+			case 'philly-nice':
+				songLowercase = 'philly';
+			case 'm.i.l.f':
+				songLowercase = 'milf';
+		}
+    return 'songs:assets/songs/${songLowercase}/Inst.$SOUND_EXT';
 	}
+
+  inline static public function doesSoundAssetExist(EmbeddedSound:String) {
+    return OpenFlAssets.exists(EmbeddedSound, AssetType.SOUND)
+      || OpenFlAssets.exists(EmbeddedSound, AssetType.MUSIC);
+  }
 
 	inline static public function image(key:String, ?library:String)
 	{
@@ -154,7 +169,7 @@ class Paths
 		return data;
 	}
 	#end
-	
+
 	inline static public function getPackerAtlas(key:String, ?library:String, ?isCharacter:Bool = false)
 	{
 		var usecahce = FlxG.save.data.cacheImages;

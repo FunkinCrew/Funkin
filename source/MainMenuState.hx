@@ -14,7 +14,6 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import lime.app.Application;
-
 #if FEATURE_DISCORD
 import Discord.DiscordClient;
 #end
@@ -35,6 +34,7 @@ class MainMenuState extends MusicBeatState
 
 	var newGaming:FlxText;
 	var newGaming2:FlxText;
+
 	public static var firstStart:Bool = true;
 
 	public static var nightly:String = "-prerelease";
@@ -44,6 +44,7 @@ class MainMenuState extends MusicBeatState
 
 	var magenta:FlxSprite;
 	var camFollow:FlxObject;
+
 	public static var finishedFunnyMove:Bool = false;
 
 	override function create()
@@ -104,11 +105,14 @@ class MainMenuState extends MusicBeatState
 			menuItem.scrollFactor.set();
 			menuItem.antialiasing = FlxG.save.data.antialiasing;
 			if (firstStart)
-				FlxTween.tween(menuItem,{y: 60 + (i * 160)},1 + (i * 0.25) ,{ease: FlxEase.expoInOut, onComplete: function(flxTween:FlxTween) 
-					{ 
-						finishedFunnyMove = true; 
+				FlxTween.tween(menuItem, {y: 60 + (i * 160)}, 1 + (i * 0.25), {
+					ease: FlxEase.expoInOut,
+					onComplete: function(flxTween:FlxTween)
+					{
+						finishedFunnyMove = true;
 						changeItem();
-					}});
+					}
+				});
 			else
 				menuItem.y = 60 + (i * 160);
 		}
@@ -117,13 +121,12 @@ class MainMenuState extends MusicBeatState
 
 		FlxG.camera.follow(camFollow, null, 0.60 * (60 / FlxG.save.data.fpsCap));
 
-		var versionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, gameVer +  (Main.watermarks ? " FNF - " + kadeEngineVer + " Kade Engine" : ""), 12);
+		var versionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, gameVer + (Main.watermarks ? " FNF - " + kadeEngineVer + " Kade Engine" : ""), 12);
 		versionShit.scrollFactor.set();
 		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(versionShit);
 
 		// NG.core.calls.event.logEvent('swag').send();
-
 
 		if (FlxG.save.data.dfjk)
 			controls.setKeyboardScheme(KeyboardScheme.Solo, true);
@@ -189,7 +192,7 @@ class MainMenuState extends MusicBeatState
 				{
 					selectedSomethin = true;
 					FlxG.sound.play(Paths.sound('confirmMenu'));
-					
+
 					if (FlxG.save.data.flashing)
 						FlxFlicker.flicker(magenta, 1.1, 0.15, false);
 
@@ -234,7 +237,7 @@ class MainMenuState extends MusicBeatState
 			spr.screenCenter(X);
 		});
 	}
-	
+
 	function goToState()
 	{
 		var daChoice:String = optionShit[curSelected];
