@@ -4,6 +4,7 @@ import Conductor.BPMChangeEvent;
 import Section.SwagSection;
 import Song.SwagSong;
 import flixel.FlxSprite;
+import flixel.FlxStrip;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.ui.FlxInputText;
 import flixel.addons.ui.FlxUI9SliceSprite;
@@ -14,6 +15,7 @@ import flixel.addons.ui.FlxUIInputText;
 import flixel.addons.ui.FlxUINumericStepper;
 import flixel.addons.ui.FlxUITabMenu;
 import flixel.addons.ui.FlxUITooltip.FlxUITooltipStyle;
+import flixel.graphics.tile.FlxDrawTrianglesItem.DrawData;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxGroup;
 import flixel.math.FlxMath;
@@ -101,26 +103,62 @@ class ChartingState extends MusicBeatState
 		playheadTest.scrollFactor.set();
 		add(playheadTest);
 
-		for (thing in 0...444)
+		for (thing in 0...FlxG.width)
 		{
 			var weed:Int = thing % 4;
 
 			// BITS
 			// first 2 ints are left channel, 2nd 2 ints are right
 			// left channel
-			if (weed == 0)
+			if (weed == 1)
 			{
 				trace(audioBuf.data[thing]);
 			}
 		}
 
+		var strp:FlxStrip = new FlxStrip(0, 0);
+		strp.vertices = new DrawData();
+		strp.indices = new DrawData();
+		strp.scrollFactor.set();
+
+		strp.vertices.push(0);
+		strp.vertices.push(100);
+
+		strp.vertices.push(190);
+		strp.vertices.push(80);
+
+		strp.vertices.push(0);
+		strp.vertices.push(0);
+
+		strp.indices.push(0);
+		strp.indices.push(1);
+		strp.indices.push(2);
+
+		strp.colors = new DrawData();
+		strp.colors.push(0xFFFFFFFF);
+
+		strp.makeGraphic(1, 1);
+
+		add(strp);
+
 		for (shit in 0...FlxG.width)
 		{
-			var remap:Int = Math.floor(FlxMath.remapToRange(shit, 0, FlxG.width * 4, 0, audioBuf.data.length));
+			// var remap:Int = Math.round(FlxMath.remapToRange(shit, 0, FlxG.width, 0, audioBuf.data.length));
+
+			var remap:Int = audioBuf.data[shit];
 
 			if (remap % 4 == 1)
 			{
-				var barThing:FlxSprite = new FlxSprite(shit / 4, audioBuf.data[remap]).makeGraphic(2, 2, FlxColor.PURPLE);
+				// var redoneY:Int = audioBuf.data[remap];
+				var redoneY:Int = remap;
+
+				if (redoneY >= 254 / 2)
+					redoneY -= 255;
+
+				redoneY += 300;
+
+				// if (redoneY > 255 / 2)
+				var barThing:FlxSprite = new FlxSprite(shit, redoneY).makeGraphic(2, 2, FlxColor.PURPLE);
 				barThing.scrollFactor.set();
 				add(barThing);
 			}
