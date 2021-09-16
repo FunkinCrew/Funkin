@@ -1018,6 +1018,15 @@ class ChartingState extends MusicBeatState
 		{
 			if (i[0] == note.strumTime && i[1] % 4 == note.noteData)
 			{
+				var placeIDK:Int = Std.int(((Math.floor(dummyArrow.y / GRID_SIZE) * GRID_SIZE)) / 40);
+
+				placeIDK = Std.int(Math.min(placeIDK, 15));
+				placeIDK = Std.int(Math.max(placeIDK, 1));
+
+				trace(placeIDK);
+
+				FlxG.sound.play(Paths.sound('funnyNoise/funnyNoise-0' + placeIDK));
+
 				FlxG.log.add('FOUND EVIL NUMBER');
 				_song.notes[curSection].sectionNotes.remove(i);
 			}
