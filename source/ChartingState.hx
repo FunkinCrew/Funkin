@@ -96,7 +96,7 @@ class ChartingState extends MusicBeatState
 
 		// sys.io.File.saveContent('./bitShit.txt', "swag");
 
-		trace(audioBuf.sampleRate);
+		// trace(audioBuf.sampleRate);
 
 		var spec:SpectogramSprite = new SpectogramSprite();
 		spec.scrollFactor.set();
