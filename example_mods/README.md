@@ -95,6 +95,8 @@ Merging locates a given key in a file and replaces it with the intended value.
 
 ## Modpacks
 
+If you have a mod with several parts that you want people to be able to install separately, the best way to do that is to make them separate mods, then make a modpack. This is an empty mod containing only a file defining the other mods that the game should load.
+
 To create a modpack, make a mod containing a `_polymod_pack.txt` file with the following text:
 
 ```
