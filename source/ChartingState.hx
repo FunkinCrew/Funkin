@@ -28,6 +28,7 @@ import flixel.util.FlxColor;
 import haxe.Json;
 import lime.media.AudioBuffer;
 import lime.utils.Assets;
+import lime.utils.Int16Array;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
 import openfl.media.Sound;
@@ -35,6 +36,7 @@ import openfl.net.FileReference;
 import openfl.utils.ByteArray;
 
 using StringTools;
+using flixel.util.FlxSpriteUtil;
 
 // add in "compiler save" that saves the JSON directly to the debug json using File.write() stuff on windows / sys
 class ChartingState extends MusicBeatState
@@ -91,85 +93,6 @@ class ChartingState extends MusicBeatState
 	override function create()
 	{
 		curSection = lastSection;
-
-		// trace(audioBuf.data.length);
-		audioBuf = AudioBuffer.fromFile(Paths.file('music/Voices.ogg'));
-
-		trace(audioBuf.data.length);
-
-		var bits:String = "";
-
-		playheadTest = new FlxSprite(0, 0).makeGraphic(2, 255, FlxColor.RED);
-		playheadTest.scrollFactor.set();
-		add(playheadTest);
-
-		for (thing in 0...FlxG.width)
-		{
-			var weed:Int = thing % 4;
-
-			// BITS
-			// first 2 ints are left channel, 2nd 2 ints are right
-			// left channel
-			if (weed == 1)
-			{
-				trace(audioBuf.data[thing]);
-			}
-		}
-
-		var strp:FlxStrip = new FlxStrip(0, 0);
-		strp.vertices = new DrawData();
-		strp.indices = new DrawData();
-		strp.scrollFactor.set();
-
-		strp.vertices.push(0);
-		strp.vertices.push(100);
-
-		strp.vertices.push(190);
-		strp.vertices.push(80);
-
-		strp.vertices.push(0);
-		strp.vertices.push(0);
-
-		strp.indices.push(0);
-		strp.indices.push(1);
-		strp.indices.push(2);
-
-		strp.colors = new DrawData();
-		strp.colors.push(0xFFFFFFFF);
-
-		strp.makeGraphic(1, 1);
-
-		add(strp);
-
-		for (shit in 0...FlxG.width)
-		{
-			// var remap:Int = Math.round(FlxMath.remapToRange(shit, 0, FlxG.width, 0, audioBuf.data.length));
-
-			var remap:Int = audioBuf.data[shit];
-
-			if (remap % 4 == 1)
-			{
-				// var redoneY:Int = audioBuf.data[remap];
-				var redoneY:Int = remap;
-
-				if (redoneY >= 254 / 2)
-					redoneY -= 255;
-
-				redoneY += 300;
-
-				// if (redoneY > 255 / 2)
-				var barThing:FlxSprite = new FlxSprite(shit, redoneY).makeGraphic(2, 2, FlxColor.PURPLE);
-				barThing.scrollFactor.set();
-				add(barThing);
-			}
-
-			if (remap % 4 == 0)
-			{
-				var barThing:FlxSprite = new FlxSprite(shit / 4, audioBuf.data[remap]).makeGraphic(2, 2, FlxColor.YELLOW);
-				barThing.scrollFactor.set();
-				add(barThing);
-			}
-		}
 
 		// sys.io.File.saveContent('./bitShit.txt', "swag");
 
@@ -466,6 +389,39 @@ class ChartingState extends MusicBeatState
 
 		FlxG.sound.playMusic(Paths.inst(daSong), 0.6);
 
+		@:privateAccess
+		var audioData:Int16Array = FlxG.sound.music._channel.__source.buffer.data;
+
+		// trace(audioBuf.data.length);
+		playheadTest = new FlxSprite(0, 0).makeGraphic(2, 255, FlxColor.RED);
+		playheadTest.scrollFactor.set();
+		add(playheadTest);
+
+		var sampleLength:Int = Std.int(audioData.length / 2);
+		var i = 0;
+
+		var wavHeight:Int = FlxG.height;
+		var funnyShit:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, wavHeight, FlxColor.TRANSPARENT);
+		funnyShit.scrollFactor.set();
+		// add(funnyShit);
+
+		var prevLine:FlxPoint = new FlxPoint();
+
+		for (sampleShit in 0...FlxG.width)
+		{
+			// thnx mike welsh fo dis
+			var left = audioData[i] / 32767; // 16-bit audio samples are from -32767 to 32767, convert to -1.0 to 1.0
+			var right = audioData[i + 1] / 32767;
+
+			var adjusted:Int = Std.int(sampleLength / FlxG.width);
+
+			i += 2 * adjusted;
+
+			funnyShit.drawLine(prevLine.x, prevLine.y, FlxG.width * sampleShit / FlxG.width, left * wavHeight / 2 + wavHeight / 2);
+			prevLine.x = FlxG.width * sampleShit / FlxG.width;
+			prevLine.y = left * wavHeight / 2 + wavHeight / 2;
+		}
+
 		// WONT WORK FOR TUTORIAL OR TEST SONG!!! REDO LATER
 		vocals = new FlxSound().loadEmbedded(Paths.voices(daSong));
 		FlxG.sound.list.add(vocals);
@@ -593,12 +549,12 @@ class ChartingState extends MusicBeatState
 
 		strumLine.y = getYfromStrum((Conductor.songPosition - sectionStartTime()) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps));
 
-		if (FlxG.sound.music.playing)
-		{
-			var normalizedShitIDK:Int = Std.int(FlxMath.remapToRange(Conductor.songPosition, 0, FlxG.sound.music.length, 0, audioBuf.data.length));
-			FlxG.watch.addQuick('WEIRD AUDIO SHIT LOL', audioBuf.data[normalizedShitIDK]);
-			// leftIcon.scale.x = FlxMath.remapToRange(audioBuf.data[normalizedShitIDK], 0, 255, 1, 2);
-		}
+		/* if (FlxG.sound.music.playing)
+			{
+				var normalizedShitIDK:Int = Std.int(FlxMath.remapToRange(Conductor.songPosition, 0, FlxG.sound.music.length, 0, audioBuf.data.length));
+				FlxG.watch.addQuick('WEIRD AUDIO SHIT LOL', audioBuf.data[normalizedShitIDK]);
+				// leftIcon.scale.x = FlxMath.remapToRange(audioBuf.data[normalizedShitIDK], 0, 255, 1, 2);
+		}*/
 
 		if (FlxG.keys.justPressed.X)
 			toggleAltAnimNote();
@@ -1093,6 +1049,33 @@ class ChartingState extends MusicBeatState
 		var noteData = Math.floor(FlxG.mouse.x / GRID_SIZE);
 		var noteSus = 0;
 		var noteAlt = false;
+
+		// FlxG.sound.play(Paths.sound('pianoStuff/piano-00' + FlxG.random.int(1, 9)), FlxG.random.float(0.01, 0.3));
+
+		switch (noteData)
+		{
+			case 0:
+				FlxG.sound.play(Paths.sound('pianoStuff/piano-015'), FlxG.random.float(0.1, 0.3));
+				FlxG.sound.play(Paths.sound('pianoStuff/piano-013'), FlxG.random.float(0.1, 0.3));
+				FlxG.sound.play(Paths.sound('pianoStuff/piano-009'), FlxG.random.float(0.1, 0.3));
+			case 1:
+				FlxG.sound.play(Paths.sound('pianoStuff/piano-015'), FlxG.random.float(0.1, 0.3));
+				FlxG.sound.play(Paths.sound('pianoStuff/piano-012'), FlxG.random.float(0.1, 0.3));
+				FlxG.sound.play(Paths.sound('pianoStuff/piano-009'), FlxG.random.float(0.1, 0.3));
+			case 2:
+				FlxG.sound.play(Paths.sound('pianoStuff/piano-015'), FlxG.random.float(0.1, 0.3));
+				FlxG.sound.play(Paths.sound('pianoStuff/piano-011'), FlxG.random.float(0.1, 0.3));
+				FlxG.sound.play(Paths.sound('pianoStuff/piano-009'), FlxG.random.float(0.1, 0.3));
+			case 3:
+				FlxG.sound.play(Paths.sound('pianoStuff/piano-014'), FlxG.random.float(0.1, 0.3));
+				FlxG.sound.play(Paths.sound('pianoStuff/piano-011'), FlxG.random.float(0.1, 0.3));
+				FlxG.sound.play(Paths.sound('pianoStuff/piano-010'), FlxG.random.float(0.1, 0.3));
+		}
+
+		var bullshit:Int = Std.int((Math.floor(dummyArrow.y / GRID_SIZE) * GRID_SIZE) / 40);
+
+		FlxG.sound.play(Paths.sound('pianoStuff/piano-00' + Std.string((bullshit % 8) + 1)), FlxG.random.float(0.3, 0.6));
+		// trace('bullshit $bullshit'); // trace(Math.floor(dummyArrow.y / GRID_SIZE) * GRID_SIZE);
 
 		_song.notes[curSection].sectionNotes.push([noteStrum, noteData, noteSus, noteAlt]);
 
