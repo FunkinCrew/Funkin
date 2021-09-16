@@ -29,7 +29,7 @@ class Character extends FlxSprite
 		this.isPlayer = isPlayer;
 
 		var tex:FlxAtlasFrames;
-		antialiasing = true;
+		antialiasing = FlxG.save.data.antialiasing;
 
 		switch (curCharacter)
 		{
@@ -125,6 +125,32 @@ class Character extends FlxSprite
 				updateHitbox();
 				antialiasing = false;
 
+			case 'gf-tankmen':
+				tex = Paths.getSparrowAtlas('tank/gfTankmen');
+				frames = tex;
+				animation.addByIndices('danceLeft', 'GF Dancing at Gunpoint', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
+				animation.addByIndices('danceRight', 'GF Dancing at Gunpoint', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24,
+					false);
+				animation.addByPrefix('sad', 'GF Crying at Gunpoint ', 24, false);
+
+				addOffset('danceLeft', 0);
+				addOffset('danceRight', 0);
+				addOffset('sad', 0);
+
+				playAnim('danceRight');
+
+			case 'pico-speaker':
+				tex = Paths.getSparrowAtlas('tank/picoSpeaker');
+				frames = tex;
+				animation.addByPrefix('shoot1', 'Pico shoot 1',  24, false);
+				animation.addByPrefix('shoot2', 'Pico shoot 2',  24, false);
+				animation.addByPrefix('shoot3', 'Pico shoot 3', 24, false);
+				animation.addByPrefix('shoot4', 'Pico shoot 4', 24, false);
+			
+				addOffset('shoot1', 0);
+				addOffset('shoot2', -1, -128);
+				addOffset('shoot3', 412, -64);
+				addOffset('shoot4', 439, -19);
 			case 'dad':
 				// DAD ANIMATION LOADING CODE
 				tex = Paths.getSparrowAtlas('DADDY_DEAREST');
@@ -308,6 +334,45 @@ class Character extends FlxSprite
 
 				flipX = true;
 
+			case 'bf-holding-gf':
+				var tex = Paths.getSparrowAtlas('tank/bfAndGF');
+				frames = tex;
+				animation.addByPrefix('singLEFT','BF NOTE LEFT0', 24, false);
+				animation.addByPrefix('singRIGHT', 'BF NOTE RIGHT0', 24, false);
+				animation.addByPrefix('singLEFTmiss', 'BF NOTE LEFT MISS',24, false);
+				animation.addByPrefix('singRIGHTmiss', 'BF NOTE RIGHT MISS',24,false);
+				animation.addByPrefix('idle', 'BF idle dance w gf', 24, false);
+				animation.addByPrefix('singUP', 'BF NOTE UP0', 24, false);
+				animation.addByPrefix('singDOWN', 'BF NOTE DOWN0', 24, false);
+				animation.addByPrefix('singUPmiss', 'BF NOTE UP MISS', 24, false);
+				animation.addByPrefix('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
+		
+		
+				addOffset('idle', 0, 0);
+				addOffset('singUP', -29,10);
+				addOffset('singRIGHT', -41, 23);
+				addOffset('singLEFT', 12, 7);
+				addOffset('singDOWN', -10, -10);
+				addOffset('singUPmiss', -29, 10);
+				addOffset('singRIGHTmiss', -41, 23);
+				addOffset('singLEFTmiss', 12, 7);
+				addOffset('singDOWNmiss', -10, -10);
+		
+				playAnim('idle');
+
+				flipX = true;
+			case 'bf-holding-gfDEAD':
+				tex = Paths.getSparrowAtlas('tank/bfAndGF-DEAD');
+				frames = tex;
+				animation.addByPrefix('firstDeath', 'BF Dies with GF', 24, false);
+				animation.addByPrefix('deathLoop','BF Dead with GF Loop', 24, true);
+				animation.addByPrefix('deathConfirm', 'RETRY confirm holding gf', 24, false);
+		
+				addOffset('firstDeath', 37, 14);
+				addOffset('deathLoop', 37, -3);
+				addOffset('deathConfirm', 37, 28);
+
+				flipX = true;
 			case 'bf-christmas':
 				var tex = Paths.getSparrowAtlas('christmas/bfChristmas');
 				frames = tex;
@@ -601,6 +666,31 @@ class Character extends FlxSprite
 							playAnim('danceRight');
 						else
 							playAnim('danceLeft');
+					}
+					
+				case 'gf-tankmen':
+					danced = !danced;
+
+					if (danced)
+						playAnim('danceRight');
+					else
+						playAnim('danceLeft');
+				case 'pico-speaker':
+					danced = !danced;
+
+					if(FlxG.random.bool(50))
+					{
+						if (danced)
+							playAnim('shoot1');
+						else
+							playAnim('shoot2');
+					}
+					else
+					{
+						if (danced)
+							playAnim('shoot3');
+						else
+							playAnim('shoot4');
 					}
 
 				case 'gf-christmas':

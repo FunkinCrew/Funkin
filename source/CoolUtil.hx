@@ -8,6 +8,12 @@ class CoolUtil
 {
 	public static var difficultyArray:Array<String> = ['EASY', "NORMAL", "HARD"];
 
+	public static var difficultyStuff:Array<Dynamic> = [
+		['Easy'],
+		['Normal'],
+		['Hard']
+	];
+
 	public static function difficultyString():String
 	{
 		return difficultyArray[PlayState.storyDifficulty];
@@ -23,6 +29,11 @@ class CoolUtil
 		}
 
 		return daList;
+	}
+
+	public static function difficultyFromInt(diff:Int)
+	{
+		return difficultyArray[diff];
 	}
 
 	public static function numberArray(max:Int, ?min = 0):Array<Int>

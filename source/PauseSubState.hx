@@ -16,8 +16,12 @@ import flixel.util.FlxColor;
 class PauseSubState extends MusicBeatSubstate
 {
 	var grpMenuShit:FlxTypedGroup<Alphabet>;
+	var menuItemsOG:Array<String> = ['Resume', 'Restart Song', 'Change Difficulty', 'Toggle Practice Mode', 'Exit to menu'];
+	var menuItems:Array<String> = [];
+	var practiceText:FlxText;
 
-	var menuItems:Array<String> = ['Resume', 'Restart Song', 'Exit to menu'];
+	var difficultyChoices = [];
+
 	var curSelected:Int = 0;
 
 	var pauseMusic:FlxSound;
@@ -26,9 +30,21 @@ class PauseSubState extends MusicBeatSubstate
 	{
 		super();
 
+		menuItems = menuItemsOG;
+
 		pauseMusic = new FlxSound().loadEmbedded(Paths.music('breakfast'), true, true);
 		pauseMusic.volume = 0;
 		pauseMusic.play(false, FlxG.random.int(0, Std.int(pauseMusic.length / 2)));
+
+		for (i in 0...CoolUtil.difficultyStuff.length) {
+			var diff:String = '' + CoolUtil.difficultyStuff[i][0];
+			difficultyChoices.push(diff);
+		}
+		difficultyChoices.push('BACK');
+
+		if (PlayState.storyPlaylist.length > 1 && PlayState.isStoryMode){
+			menuItems.insert(2, "Skip Song");
+		}
 
 		FlxG.sound.list.add(pauseMusic);
 
@@ -50,6 +66,14 @@ class PauseSubState extends MusicBeatSubstate
 		levelDifficulty.setFormat(Paths.font('vcr.ttf'), 32);
 		levelDifficulty.updateHitbox();
 		add(levelDifficulty);
+
+		practiceText = new FlxText(20, 15 + 64, 0, "PRACTICE MODE", 32);
+		practiceText.scrollFactor.set();
+		practiceText.setFormat(Paths.font('vcr.ttf'), 32);
+		practiceText.x = FlxG.width - (practiceText.width + 20);
+		practiceText.updateHitbox();
+		checkPractice();
+		add(practiceText);
 
 		levelDifficulty.alpha = 0;
 		levelInfo.alpha = 0;
@@ -107,8 +131,23 @@ class PauseSubState extends MusicBeatSubstate
 					close();
 				case "Restart Song":
 					FlxG.resetState();
+				case 'Change Difficulty':
+					menuItems = difficultyChoices;
+					regenMenu();
 				case "Exit to menu":
 					FlxG.switchState(new MainMenuState());
+				case "Toggle Practice Mode":
+					FlxG.save.data.practice = !FlxG.save.data.practice;
+					checkPractice();
+				case "Hard":
+					changeDiff('-hard', 2);
+				case "Normal":
+					changeDiff('');
+				case "Easy":
+					changeDiff('-easy', 0);
+				case 'BACK':
+					menuItems = menuItemsOG;
+					regenMenu();
 			}
 		}
 
@@ -124,6 +163,18 @@ class PauseSubState extends MusicBeatSubstate
 		pauseMusic.destroy();
 
 		super.destroy();
+	}
+
+	function checkPractice()
+	{
+		practiceText.visible = FlxG.save.data.practice;
+	}
+
+	function changeDiff(needChange:String, ?curDiff:Int = 1)
+	{
+		FlxG.resetState();
+		PlayState.SONG = Song.loadFromJson(PlayState.SONG.song.toLowerCase() + needChange, PlayState.SONG.song.toLowerCase());
+		PlayState.storyDifficulty = curDiff;
 	}
 
 	function changeSelection(change:Int = 0):Void
@@ -151,5 +202,19 @@ class PauseSubState extends MusicBeatSubstate
 				// item.setGraphicSize(Std.int(item.width));
 			}
 		}
+	}
+
+	function regenMenu():Void {
+		for (i in 0...grpMenuShit.members.length) {
+			this.grpMenuShit.remove(this.grpMenuShit.members[0], true);
+		}
+		for (i in 0...menuItems.length) {
+			var item = new Alphabet(0, 70 * i + 30, menuItems[i], true, false);
+			item.isMenuItem = true;
+			item.targetY = i;
+			grpMenuShit.add(item);
+		}
+		curSelected = 0;
+		changeSelection();
 	}
 }

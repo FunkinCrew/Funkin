@@ -12,6 +12,8 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
 import lime.utils.Assets;
 
 using StringTools;
@@ -28,8 +30,11 @@ class FreeplayState extends MusicBeatState
 	var diffText:FlxText;
 	var lerpScore:Int = 0;
 	var intendedScore:Int = 0;
+	var curColor:FlxColor;
 
 	public static var songData:Map<String,Array<SwagSong>> = [];
+
+	var bg:FlxSprite;
 
 	private var grpSongs:FlxTypedGroup<Alphabet>;
 	private var curPlaying:Bool = false;
@@ -44,6 +49,7 @@ class FreeplayState extends MusicBeatState
 		{
 			var data:Array<String> = initSonglist[i].split(':');
 			songs.push(new SongMetadata(data[0], Std.parseInt(data[2]), data[1]));
+			curColor = Std.parseInt(data[3]);
 		}
 
 		/* 
@@ -69,7 +75,7 @@ class FreeplayState extends MusicBeatState
 
 		// LOAD CHARACTERS
 
-		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuBGBlue'));
+		bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 		add(bg);
 
 		grpSongs = new FlxTypedGroup<Alphabet>();
@@ -77,9 +83,8 @@ class FreeplayState extends MusicBeatState
 
 		for (i in 0...songs.length)
 		{
-			var songText:Alphabet = new Alphabet(0 + (curSelected * 10), (70 * i) + 30, songs[i].songName, true, false);
+			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, songs[i].songName, true, false);
 			songText.isMenuItem = true;
-			songText.targetY = i;
 			grpSongs.add(songText);
 
 			var icon:HealthIcon = new HealthIcon(songs[i].songCharacter);
@@ -89,9 +94,7 @@ class FreeplayState extends MusicBeatState
 			iconArray.push(icon);
 			add(icon);
 
-			songText.x += 40;
 			// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
-			// songText.screenCenter(X);
 		}
 
 		scoreText = new FlxText(FlxG.width * 0.7, 5, 0, "", 32);
@@ -120,7 +123,7 @@ class FreeplayState extends MusicBeatState
 		selector.text = ">";
 		selector.screenCenter(Y);
 		selector.y += 15;
-		add(selector);
+		//add(selector);
 
 		var swag:Alphabet = new Alphabet(1, 0, "swag");
 
@@ -223,15 +226,25 @@ class FreeplayState extends MusicBeatState
 	{
 		curDifficulty += change;
 
-		if (curDifficulty < 0)
-			curDifficulty = 2;
-		if (curDifficulty > 2)
-			curDifficulty = 0;
+		if(curSelected >= 21 && curSelected < 23)
+		{
+			if (curDifficulty < 0)
+				curDifficulty = 3;
+			if (curDifficulty > 3)
+				curDifficulty = 0;
+		}
+		else
+		{
+			if (curDifficulty < 0)
+				curDifficulty = 2;
+			if (curDifficulty > 2)
+				curDifficulty = 0;
+		}
 
 		#if !switch
 		intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
 		#end
-
+		
 		switch (curDifficulty)
 		{
 			case 0:
@@ -240,6 +253,8 @@ class FreeplayState extends MusicBeatState
 				diffText.text = 'NORMAL';
 			case 2:
 				diffText.text = "HARD";
+			case 3:
+				diffText.text = "MEAN";
 		}
 	}
 
@@ -253,6 +268,8 @@ class FreeplayState extends MusicBeatState
 		FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 
 		curSelected += change;
+
+		FlxTween.tween(bg, {color: curColor}, 2, {ease: FlxEase.expoInOut});
 
 		if (curSelected < 0)
 			curSelected = songs.length - 1;
@@ -279,6 +296,7 @@ class FreeplayState extends MusicBeatState
 		}
 
 		iconArray[curSelected].alpha = 1;
+		if(curSelected != 0 || curSelected != (6 * 3))
 		iconArray[curSelected].animation.curAnim.curFrame = 2;
 
 		for (item in grpSongs.members)
