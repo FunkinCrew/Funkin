@@ -88,6 +88,17 @@ class Debug
 	}
 
 	/**
+	 * Displays a popup with the provided text.
+	 * This interrupts the game, so make sure it's REALLY important.
+	 * @param title The title of the popup.
+	 * @param description The description of the popup.
+	 */
+	public static function displayAlert(title:String, description:String):Void
+	{
+		Application.current.window.alert(description, title);
+	}
+
+	/**
 	 * Display the value of a particular field of a given object
 	 * in the Debug watch window, labelled with the specified name.
 	 		* Updates continuously.

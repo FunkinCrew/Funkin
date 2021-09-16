@@ -1,6 +1,5 @@
 package;
 
-import lime.app.Application;
 import openfl.utils.Future;
 import openfl.media.Sound;
 import flixel.system.FlxSound;
@@ -232,7 +231,7 @@ class FreeplayState extends MusicBeatState
 
 			if (diffsThatExist.length == 0)
 			{
-				Application.current.window.alert("No difficulties found for chart, skipping.", meta.songName + " Chart");
+				Debug.displayAlert(meta.songName + " Chart", "No difficulties found for chart, skipping.");
 				continue;
 			}
 			#else
