@@ -47,6 +47,7 @@ class TitleState extends MusicBeatState
 
 	override public function create():Void
 	{
+		// TODO: Refactor this to use OpenFlAssets.
 		#if FEATURE_FILESYSTEM
 		if (!sys.FileSystem.exists(Sys.getCwd() + "/assets/replays"))
 			sys.FileSystem.createDirectory(Sys.getCwd() + "/assets/replays");

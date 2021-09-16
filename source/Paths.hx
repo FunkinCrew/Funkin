@@ -5,6 +5,9 @@ import flixel.FlxG;
 import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.utils.AssetType;
 import openfl.utils.Assets as OpenFlAssets;
+import haxe.Json;
+
+using StringTools;
 
 class Paths
 {
@@ -67,6 +70,31 @@ class Paths
 		else
 		{
 			Debug.logWarn('Could not find image at path $path');
+			return null;
+		}
+	}
+
+	static public function loadJSON(key:String, ?library:String):Dynamic
+	{
+		var rawJson = OpenFlAssets.getText(Paths.json(key, library)).trim();
+
+		// Perform cleanup on files that have bad data at the end.
+		while (!rawJson.endsWith("}"))
+		{
+			rawJson = rawJson.substr(0, rawJson.length - 1);
+		}
+
+		try
+		{
+			// Attempt to parse and return the JSON data.
+			return Json.parse(rawJson);
+		}
+		catch (e)
+		{
+			Debug.logError("AN ERROR OCCURRED parsing a JSON file.");
+			Debug.logError(e.message);
+
+			// Return null.
 			return null;
 		}
 	}
@@ -173,15 +201,15 @@ class Paths
 
 		for (sound in soundAssets)
 		{
+			// Parse end-to-beginning to support mods.
 			var path = sound.split('/');
-			// assets/songs/name/file.ext
-			if (path.length < 4)
-				continue;
+			path.reverse();
 
-			if (path[1] != 'songs')
-				continue;
+			var fileName = path[0];
+			var songName = path[1];
 
-			var songName = path[2];
+			if (path[2] != 'songs')
+				continue;
 
 			// Remove duplicates.
 			if (songNames.indexOf(songName) != -1)

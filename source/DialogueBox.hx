@@ -42,7 +42,7 @@ class DialogueBox extends FlxSpriteGroup
 	{
 		super();
 
-		switch (PlayState.SONG.song.toLowerCase())
+		switch (PlayState.SONG.songId.toLowerCase())
 		{
 			case 'senpai':
 				sound = new FlxSound().loadEmbedded(Paths.music('Lunchbox'), true);
@@ -71,7 +71,7 @@ class DialogueBox extends FlxSpriteGroup
 		box = new FlxSprite(-20, 45);
 
 		var hasDialog = false;
-		switch (PlayState.SONG.song.toLowerCase())
+		switch (PlayState.SONG.songId.toLowerCase())
 		{
 			case 'senpai':
 				hasDialog = true;
@@ -162,9 +162,9 @@ class DialogueBox extends FlxSpriteGroup
 	override function update(elapsed:Float)
 	{
 		// HARD CODING CUZ IM STUPDI
-		if (PlayState.SONG.song.toLowerCase() == 'roses')
+		if (PlayState.SONG.songId.toLowerCase() == 'roses')
 			portraitLeft.visible = false;
-		if (PlayState.SONG.song.toLowerCase() == 'thorns')
+		if (PlayState.SONG.songId.toLowerCase() == 'thorns')
 		{
 			portraitLeft.visible = false;
 			swagDialogue.color = FlxColor.WHITE;
@@ -191,7 +191,7 @@ class DialogueBox extends FlxSpriteGroup
 		{
 			remove(dialogue);
 			isEnding = true;
-			switch (PlayState.SONG.song.toLowerCase())
+			switch (PlayState.SONG.songId.toLowerCase())
 			{
 				case "senpai" | "thorns":
 					sound.fadeOut(2.2, 0);
@@ -228,7 +228,7 @@ class DialogueBox extends FlxSpriteGroup
 				{
 					isEnding = true;
 
-					if (PlayState.SONG.song.toLowerCase() == 'senpai' || PlayState.SONG.song.toLowerCase() == 'thorns')
+					if (PlayState.SONG.songId.toLowerCase() == 'senpai' || PlayState.SONG.songId.toLowerCase() == 'thorns')
 						sound.fadeOut(2.2, 0);
 					new FlxTimer().start(0.2, function(tmr:FlxTimer)
 					{

@@ -53,7 +53,7 @@ class PauseSubState extends MusicBeatSubstate
 		add(bg);
 
 		var levelInfo:FlxText = new FlxText(20, 15, 0, "", 32);
-		levelInfo.text += PlayState.SONG.song;
+		levelInfo.text += PlayState.SONG.songName;
 		levelInfo.scrollFactor.set();
 		levelInfo.setFormat(Paths.font("vcr.ttf"), 32);
 		levelInfo.updateHitbox();
@@ -130,18 +130,7 @@ class PauseSubState extends MusicBeatSubstate
 			rightPcontroller = gamepad.justPressed.DPAD_RIGHT;
 		}
 
-		// pre lowercasing the song name (update)
-		var songLowercase = StringTools.replace(PlayState.SONG.song, " ", "-").toLowerCase();
-		switch (songLowercase)
-		{
-			case 'dad-battle':
-				songLowercase = 'dadbattle';
-			case 'philly-nice':
-				songLowercase = 'philly';
-			case 'm.i.l.f':
-				songLowercase = 'milf';
-		}
-		var songPath = 'assets/data/songs/$songLowercase/';
+		var songPath = 'assets/data/songs/${PlayState.SONG.songId}/';
 
 		#if FEATURE_STEPMANIA
 		if (PlayState.isSM && !PlayState.isStoryMode)
@@ -162,6 +151,7 @@ class PauseSubState extends MusicBeatSubstate
 		{
 			oldOffset = PlayState.songOffset;
 			PlayState.songOffset -= 1;
+			// TODO: Refactor this to use OpenFlAssets.
 			sys.FileSystem.rename(songPath + oldOffset + '.offset', songPath + PlayState.songOffset + '.offset');
 			perSongOffset.text = "Additive Offset (Left, Right): "
 				+ PlayState.songOffset

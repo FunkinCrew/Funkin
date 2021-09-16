@@ -26,7 +26,7 @@ class LoadReplayState extends MusicBeatState
 	var selector:FlxText;
 	var curSelected:Int = 0;
 
-	var songs:Array<FreeplayState.SongMetadata> = [];
+	var songs:Array<FreeplayState.FreeplaySongMetadata> = [];
 
 	var controlsStrings:Array<String> = [];
 	var actualNames:Array<String> = [];
@@ -38,6 +38,7 @@ class LoadReplayState extends MusicBeatState
 	override function create()
 	{
 		var menuBG:FlxSprite = new FlxSprite().loadGraphic(Paths.loadImage('menuDesat'));
+		// TODO: Refactor this to use OpenFlAssets.
 		#if FEATURE_FILESYSTEM
 		controlsStrings = sys.FileSystem.readDirectory(Sys.getCwd() + "/assets/replays/");
 		#end
@@ -114,7 +115,7 @@ class LoadReplayState extends MusicBeatState
 		var week:Int = 0;
 		for (i in 0...songs.length)
 		{
-			var pog:FreeplayState.SongMetadata = songs[i];
+			var pog:FreeplayState.FreeplaySongMetadata = songs[i];
 			if (pog.songName == songName)
 				week = pog.week;
 		}
@@ -123,7 +124,7 @@ class LoadReplayState extends MusicBeatState
 
 	public function addSong(songName:String, weekNum:Int, songCharacter:String)
 	{
-		songs.push(new FreeplayState.SongMetadata(songName, weekNum, songCharacter));
+		songs.push(new FreeplayState.FreeplaySongMetadata(songName, weekNum, songCharacter));
 	}
 
 	public function addWeek(songs:Array<String>, weekNum:Int, ?songCharacters:Array<String>)
@@ -166,21 +167,21 @@ class LoadReplayState extends MusicBeatState
 				switch (songFormat)
 				{
 					case 'Dad-Battle':
-						songFormat = 'Dadbattle';
+						songFormat = 'dadbattle';
 					case 'Philly-Nice':
-						songFormat = 'Philly';
+						songFormat = 'philly';
 					case 'M.I.L.F':
-						songFormat = 'Milf';
+						songFormat = 'milf';
 					// Replay v1.0 support
 					case 'dad-battle':
-						songFormat = 'Dadbattle';
+						songFormat = 'dadbattle';
 					case 'philly-nice':
-						songFormat = 'Philly';
+						songFormat = 'philly';
 					case 'm.i.l.f':
-						songFormat = 'Milf';
+						songFormat = 'milf';
 				}
 
-				var poop = "";
+				var songPath = "";
 
 				#if FEATURE_STEPMANIA
 				if (PlayState.rep.replay.sm)
@@ -200,7 +201,7 @@ class LoadReplayState extends MusicBeatState
 				#if FEATURE_STEPMANIA
 				if (PlayState.isSM)
 				{
-					poop = File.getContent(PlayState.rep.replay.chartPath);
+					songPath = File.getContent(PlayState.rep.replay.chartPath);
 					try
 					{
 						PlayState.sm = SMFile.loadFile(PlayState.pathToSm + "/" + StringTools.replace(PlayState.rep.replay.songName, " ", "_") + ".sm");
@@ -216,18 +217,19 @@ class LoadReplayState extends MusicBeatState
 						return;
 					}
 				}
-				else
-					poop = Highscore.formatSong(songFormat, PlayState.rep.replay.songDiff);
-				#else
-				poop = Highscore.formatSong(songFormat, PlayState.rep.replay.songDiff);
 				#end
 
 				try
 				{
 					if (PlayState.isSM)
-						PlayState.SONG = Song.loadFromJsonRAW(poop);
+					{
+						PlayState.SONG = Song.loadFromJsonRAW(songPath);
+					}
 					else
-						PlayState.SONG = Song.loadFromJson(poop, PlayState.rep.replay.songName);
+					{
+						var diff:String = ["-easy", "", "-hard"][PlayState.rep.replay.songDiff];
+						PlayState.SONG = Song.loadFromJson(PlayState.rep.replay.songName, diff);
+					}
 				}
 				catch (e:Exception)
 				{

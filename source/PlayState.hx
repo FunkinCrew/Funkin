@@ -40,7 +40,7 @@ import lime.media.AudioContext;
 import lime.media.AudioManager;
 import openfl.Lib;
 import Section.SwagSection;
-import Song.SwagSong;
+import Song.SongData;
 import WiggleEffect.WiggleEffectType;
 import flixel.FlxBasic;
 import flixel.FlxCamera;
@@ -86,7 +86,7 @@ class PlayState extends MusicBeatState
 {
 	public static var instance:PlayState = null;
 
-	public static var SONG:SwagSong;
+	public static var SONG:SongData;
 	public static var isStoryMode:Bool = false;
 	public static var storyWeek:Int = 0;
 	public static var storyPlaylist:Array<String> = [];
@@ -325,22 +325,11 @@ class PlayState extends MusicBeatState
 		PlayStateChangeables.Optimize = FlxG.save.data.optimize;
 		PlayStateChangeables.zoom = FlxG.save.data.zoom;
 
-		// pre lowercasing the song name (create)
-		var songLowercase = StringTools.replace(PlayState.SONG.song, " ", "-").toLowerCase();
-		switch (songLowercase)
-		{
-			case 'dad-battle':
-				songLowercase = 'dadbattle';
-			case 'philly-nice':
-				songLowercase = 'philly';
-			case 'm.i.l.f':
-				songLowercase = 'milf';
-		}
-
 		removedVideo = false;
 
 		#if FEATURE_LUAMODCHART
-		executeModchart = FileSystem.exists(Paths.lua('songs/$songLowercase/modchart'));
+		// TODO: Refactor this to use OpenFlAssets.
+		executeModchart = FileSystem.exists(Paths.lua('songs/${PlayState.SONG.songId}/modchart'));
 		if (isSM)
 			executeModchart = FileSystem.exists(pathToSm + "/modchart.lua");
 		if (executeModchart)
@@ -350,7 +339,7 @@ class PlayState extends MusicBeatState
 		executeModchart = false; // FORCE disable for non cpp targets
 		#end
 
-		trace('Mod chart: ' + executeModchart + " - " + Paths.lua('songs/$songLowercase/modchart'));
+		Debug.logInfo('Searching for mod chart? ($executeModchart) at ${Paths.lua('songs/${PlayState.SONG.songId}/modchart')}');
 
 		if (executeModchart)
 			songMultiplier = 1;
@@ -388,7 +377,7 @@ class PlayState extends MusicBeatState
 		// Updating Discord Rich Presence.
 		DiscordClient.changePresence(detailsText
 			+ " "
-			+ SONG.song
+			+ SONG.songName
 			+ " ("
 			+ storyDifficultyText
 			+ ") "
@@ -423,7 +412,7 @@ class PlayState extends MusicBeatState
 		persistentDraw = true;
 
 		if (SONG == null)
-			SONG = Song.loadFromJson('tutorial', 'tutorial');
+			SONG = Song.loadFromJson('tutorial', '');
 
 		Conductor.mapBPMChanges(SONG);
 		Conductor.changeBPM(SONG.bpm);
@@ -468,14 +457,15 @@ class PlayState extends MusicBeatState
 			+ Conductor.timeScale + '\nBotPlay : ' + PlayStateChangeables.botPlay);
 
 		// if the song has dialogue, so we don't accidentally try to load a nonexistant file and crash the game
-		if (Paths.doesTextAssetExist(Paths.txt('data/songs/$songLowercase/dialogue')))
+		if (Paths.doesTextAssetExist(Paths.txt('data/songs/${PlayState.SONG.songId}/dialogue')))
 		{
-			dialogue = CoolUtil.coolTextFile(Paths.txt('data/songs/$songLowercase/dialogue'));
+			dialogue = CoolUtil.coolTextFile(Paths.txt('data/songs/${PlayState.SONG.songId}/dialogue'));
 		}
 
 		// defaults if no stage was found in chart
 		var stageCheck:String = 'stage';
 
+		// If the stage isn't specified in the chart, we use the story week value.
 		if (SONG.stage == null)
 		{
 			switch (storyWeek)
@@ -487,7 +477,7 @@ class PlayState extends MusicBeatState
 				case 4:
 					stageCheck = 'limo';
 				case 5:
-					if (songLowercase == 'winter-horrorland')
+					if (SONG.songId == 'winter-horrorland')
 					{
 						stageCheck = 'mallEvil';
 					}
@@ -496,7 +486,7 @@ class PlayState extends MusicBeatState
 						stageCheck = 'mall';
 					}
 				case 6:
-					if (songLowercase == 'thorns')
+					if (SONG.songId = == 'thorns')
 					{
 						stageCheck = 'schoolEvil';
 					}
@@ -736,29 +726,18 @@ class PlayState extends MusicBeatState
 
 		// startCountdown();
 
-		if (SONG.song == null)
+		if (SONG.songId == null)
 			trace('song is null???');
 		else
 			trace('song looks gucci');
 
-		generateSong(SONG.song);
+		generateSong(SONG.songId);
 
 		#if FEATURE_LUAMODCHART
-		// pre lowercasing the song name (startCountdown)
-		var songLowercase = StringTools.replace(PlayState.SONG.song, " ", "-").toLowerCase();
-		switch (songLowercase)
-		{
-			case 'dad-battle':
-				songLowercase = 'dadbattle';
-			case 'philly-nice':
-				songLowercase = 'philly';
-			case 'm.i.l.f':
-				songLowercase = 'milf';
-		}
 		if (executeModchart)
 		{
 			luaModchart = ModchartState.createModchartState(isStoryMode);
-			luaModchart.executeState('start', [songLowercase]);
+			luaModchart.executeState('start', [PlayState.SONG.songId]);
 		}
 		#end
 
@@ -857,7 +836,7 @@ class PlayState extends MusicBeatState
 			songPosBar.createFilledBar(FlxColor.GRAY, FlxColor.LIME);
 			add(songPosBar);
 
-			var songName = new FlxText(songPosBG.x + (songPosBG.width / 2) - (SONG.song.length * 5), songPosBG.y, 0, SONG.song, 16);
+			var songName = new FlxText(songPosBG.x + (songPosBG.width / 2) - (SONG.songId.length * 5), songPosBG.y, 0, SONG.songId, 16);
 			if (PlayStateChangeables.useDownscroll)
 				songName.y -= 3;
 			songName.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
@@ -886,7 +865,7 @@ class PlayState extends MusicBeatState
 		// Add Kade Engine watermark
 		kadeEngineWatermark = new FlxText(4, healthBarBG.y
 			+ 50, 0,
-			SONG.song
+			SONG.songId
 			+ (FlxMath.roundDecimal(songMultiplier, 2) != 1.00 ? " (" + FlxMath.roundDecimal(songMultiplier, 2) + "x)" : "")
 			+ " - "
 			+ CoolUtil.difficultyFromInt(storyDifficulty),
@@ -956,11 +935,6 @@ class PlayState extends MusicBeatState
 		if (loadRep)
 			replayTxt.cameras = [camHUD];
 
-		// if (SONG.song == 'South')
-		// FlxG.camera.alpha = 0.7;
-		// UI_camera.zoom = 1;
-
-		// cameras = [FlxG.cameras.list[1]];
 		startingSong = true;
 
 		trace('starting');
@@ -1044,12 +1018,11 @@ class PlayState extends MusicBeatState
 		senpaiEvil.updateHitbox();
 		senpaiEvil.screenCenter();
 
-		if (StringTools.replace(PlayState.SONG.song, " ", "-").toLowerCase() == 'roses'
-			|| StringTools.replace(PlayState.SONG.song, " ", "-").toLowerCase() == 'thorns')
+		if (PlayState.SONG.songId == 'roses' || PlayState.SONG.songId == 'thorns')
 		{
 			remove(black);
 
-			if (StringTools.replace(PlayState.SONG.song, " ", "-").toLowerCase() == 'thorns')
+			if (PlayState.SONG.songId == 'thorns')
 			{
 				add(red);
 			}
@@ -1069,7 +1042,7 @@ class PlayState extends MusicBeatState
 				{
 					inCutscene = true;
 
-					if (StringTools.replace(PlayState.SONG.song, " ", "-").toLowerCase() == 'thorns')
+					if (PlayState.SONG.songId == 'thorns')
 					{
 						add(senpaiEvil);
 						senpaiEvil.alpha = 0;
@@ -1533,16 +1506,16 @@ class PlayState extends MusicBeatState
 		var songData = SONG;
 		Conductor.changeBPM(songData.bpm);
 
-		curSong = songData.song;
+		curSong = songData.songId;
 
 		#if FEATURE_STEPMANIA
 		if (SONG.needsVoices && !isSM)
-			vocals = new FlxSound().loadEmbedded(Paths.voices(PlayState.SONG.song));
+			vocals = new FlxSound().loadEmbedded(Paths.voices(PlayState.SONG.songId));
 		else
 			vocals = new FlxSound();
 		#else
 		if (SONG.needsVoices)
-			vocals = new FlxSound().loadEmbedded(Paths.voices(PlayState.SONG.song));
+			vocals = new FlxSound().loadEmbedded(Paths.voices(PlayState.SONG.songId));
 		else
 			vocals = new FlxSound();
 		#end
@@ -1563,9 +1536,9 @@ class PlayState extends MusicBeatState
 				FlxG.sound.playMusic(sound);
 			}
 			else
-				FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 1, false);
+				FlxG.sound.playMusic(Paths.inst(PlayState.SONG.songId), 1, false);
 			#else
-			FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 1, false);
+			FlxG.sound.playMusic(Paths.inst(PlayState.SONG.songId), 1, false);
 			#end
 		}
 
@@ -1573,9 +1546,9 @@ class PlayState extends MusicBeatState
 		FlxG.sound.music.pause();
 
 		if (SONG.needsVoices)
-			FlxG.sound.cache(Paths.voices(PlayState.SONG.song));
+			FlxG.sound.cache(Paths.voices(PlayState.SONG.songId));
 		if (!PlayState.isSM)
-			FlxG.sound.cache(Paths.inst(PlayState.SONG.song));
+			FlxG.sound.cache(Paths.inst(PlayState.SONG.songId));
 
 		// Song duration in a float, useful for the time left feature
 		songLength = FlxG.sound.music.length / 1000;
@@ -1603,7 +1576,7 @@ class PlayState extends MusicBeatState
 			songPosBar.createFilledBar(FlxColor.GRAY, FlxColor.LIME);
 			add(songPosBar);
 
-			var songName = new FlxText(songPosBG.x + (songPosBG.width / 2) - (SONG.song.length * 5), songPosBG.y, 0, SONG.song, 16);
+			var songName = new FlxText(songPosBG.x + (songPosBG.width / 2) - (SONG.songName.length * 5), songPosBG.y, 0, SONG.songName, 16);
 			if (PlayStateChangeables.useDownscroll)
 				songName.y -= 3;
 			songName.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
@@ -1627,19 +1600,7 @@ class PlayState extends MusicBeatState
 
 		// Per song offset check
 		#if FEATURE_FILESYSTEM
-		// pre lowercasing the song name (generateSong)
-		var songLowercase = StringTools.replace(PlayState.SONG.song, " ", "-").toLowerCase();
-		switch (songLowercase)
-		{
-			case 'dad-battle':
-				songLowercase = 'dadbattle';
-			case 'philly-nice':
-				songLowercase = 'philly';
-			case 'm.i.l.f':
-				songLowercase = 'milf';
-		}
-
-		var songPath = 'assets/data/songs/$songLowercase/';
+		var songPath = 'assets/data/songs/${PlayState.SONG.songId}/';
 
 		#if FEATURE_STEPMANIA
 		if (isSM && !isStoryMode)
@@ -1947,7 +1908,7 @@ class PlayState extends MusicBeatState
 			}
 			else
 			{
-				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ") " + Ratings.GenerateLetterRank(accuracy), iconRPC);
+				DiscordClient.changePresence(detailsText, SONG.songName + " (" + storyDifficultyText + ") " + Ratings.GenerateLetterRank(accuracy), iconRPC);
 			}
 			#end
 		}
@@ -2971,7 +2932,7 @@ class PlayState extends MusicBeatState
 
 				if (!daNote.mustPress && Conductor.songPosition >= daNote.strumTime)
 				{
-					if (SONG.song != 'Tutorial')
+					if (SONG.songId != 'tutorial')
 						camZooming = true;
 
 					var altAnim:String = "";
@@ -3334,22 +3295,9 @@ class PlayState extends MusicBeatState
 		vocals.stop();
 		if (SONG.validScore)
 		{
-			// adjusting the highscore song name to be compatible
-			// would read original scores if we didn't change packages
-			var songHighscore = StringTools.replace(PlayState.SONG.song, " ", "-");
-			switch (songHighscore)
-			{
-				case 'Dad-Battle':
-					songHighscore = 'Dadbattle';
-				case 'Philly-Nice':
-					songHighscore = 'Philly';
-				case 'M.I.L.F':
-					songHighscore = 'Milf';
-			}
-
 			#if !switch
-			Highscore.saveScore(songHighscore, Math.round(songScore), storyDifficulty);
-			Highscore.saveCombo(songHighscore, Ratings.GenerateLetterRank(accuracy), storyDifficulty);
+			Highscore.saveScore(PlayState.SONG.songId, Math.round(songScore), storyDifficulty);
+			Highscore.saveCombo(PlayState.SONG.songId, Ratings.GenerateLetterRank(accuracy), storyDifficulty);
 			#end
 		}
 
@@ -3435,22 +3383,9 @@ class PlayState extends MusicBeatState
 				}
 				else
 				{
-					// adjusting the song name to be compatible
-					var songFormat = StringTools.replace(PlayState.storyPlaylist[0], " ", "-");
-					switch (songFormat)
-					{
-						case 'Dad-Battle':
-							songFormat = 'Dadbattle';
-						case 'Philly-Nice':
-							songFormat = 'Philly';
-						case 'M.I.L.F':
-							songFormat = 'Milf';
-					}
+					var diff:String = ["-easy", "", "-hard"][storyDifficulty];
 
-					var poop:String = Highscore.formatSong(songFormat, storyDifficulty);
-
-					trace('LOADING NEXT SONG');
-					trace(poop);
+					Debug.logInfo('PlayState: Loading next story song ${PlayState.storyPlaylist[0]}-${diff}');
 
 					if (StringTools.replace(PlayState.storyPlaylist[0], " ", "-").toLowerCase() == 'eggnog')
 					{
@@ -3467,7 +3402,7 @@ class PlayState extends MusicBeatState
 					FlxTransitionableState.skipNextTransOut = true;
 					prevCamFollow = camFollow;
 
-					PlayState.SONG = Song.loadFromJson(poop, PlayState.storyPlaylist[0]);
+					PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0], diff);
 					FlxG.sound.music.stop();
 
 					LoadingState.loadAndSwitchState(new PlayState());
@@ -4521,21 +4456,10 @@ class PlayState extends MusicBeatState
 		// FlxG.log.add('change bpm' + SONG.notes[Std.int(curStep / 16)].changeBPM);
 		wiggleShit.update(Conductor.crochet);
 
-		var songLowercase = StringTools.replace(PlayState.SONG.song, " ", "-").toLowerCase();
-		switch (songLowercase)
-		{
-			case 'dad-battle':
-				songLowercase = 'dadbattle';
-			case 'philly-nice':
-				songLowercase = 'philly';
-			case 'm.i.l.f':
-				songLowercase = 'milf';
-		}
-
 		if (FlxG.save.data.camzoom && Conductor.bpm < 340)
 		{
 			// HARDCODING FOR MILF ZOOMS!
-			if (songLowercase == 'milf' && curBeat >= 168 && curBeat < 200 && camZooming && FlxG.camera.zoom < 1.35)
+			if (PlayState.SONG.songId == 'milf' && curBeat >= 168 && curBeat < 200 && camZooming && FlxG.camera.zoom < 1.35)
 			{
 				FlxG.camera.zoom += 0.015 / songMultiplier;
 				camHUD.zoom += 0.03 / songMultiplier;
@@ -4576,7 +4500,7 @@ class PlayState extends MusicBeatState
 				boyfriend.playAnim('hey', true);
 			}
 
-			if (curBeat % 16 == 15 && SONG.song == 'Tutorial' && dad.curCharacter == 'gf' && curBeat > 16 && curBeat < 48)
+			if (curBeat % 16 == 15 && SONG.songId == 'tutorial' && dad.curCharacter == 'gf' && curBeat > 16 && curBeat < 48)
 			{
 				boyfriend.playAnim('hey', true);
 				dad.playAnim('cheer', true);
@@ -4588,7 +4512,7 @@ class PlayState extends MusicBeatState
 		}
 	}
 
-	public var cleanedSong:SwagSong;
+	public var cleanedSong:SongData;
 
 	function poggers(?cleanTheSong = false)
 	{

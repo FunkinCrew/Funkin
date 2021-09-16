@@ -3,7 +3,7 @@ package;
 import Conductor.BPMChangeEvent;
 import flixel.FlxCamera;
 import flixel.math.FlxRect;
-import Song.SwagSong;
+import Song.SongData;
 import Section.SwagSection;
 import flixel.system.FlxSound;
 import flixel.input.gamepad.FlxGamepad;
@@ -39,7 +39,7 @@ class DiffOverview extends FlxSubState
 
 	var giantText:FlxText;
 
-	var SONG:SwagSong;
+	var SONG:SongData;
 	var strumLine:FlxSprite;
 	var camHUD:FlxCamera;
 
@@ -391,7 +391,7 @@ class DiffOverview extends FlxSubState
 		Conductor.changeBPM(songData.bpm);
 
 		if (SONG.needsVoices)
-			vocals = new FlxSound().loadEmbedded(Paths.voices(SONG.song));
+			vocals = new FlxSound().loadEmbedded(Paths.voices(SONG.songId));
 		else
 			vocals = new FlxSound();
 
@@ -486,7 +486,7 @@ class DiffOverview extends FlxSubState
 		Conductor.mapBPMChanges(SONG);
 		Conductor.changeBPM(SONG.bpm);
 
-		FlxG.sound.playMusic(Paths.inst(SONG.song), 1, false);
+		FlxG.sound.playMusic(Paths.inst(SONG.songId), 1, false);
 		FlxG.sound.music.onComplete = endSong;
 		vocals.play();
 	}

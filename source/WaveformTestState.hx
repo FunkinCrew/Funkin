@@ -29,9 +29,9 @@ class WaveformTestState extends FlxState
 		else
 		{
 			if (PlayState.SONG.needsVoices)
-				waveform = new Waveform(0, 0, Paths.voices(PlayState.SONG.song), 720);
+				waveform = new Waveform(0, 0, Paths.voices(PlayState.SONG.songId), 720);
 			else
-				waveform = new Waveform(0, 0, Paths.inst(PlayState.SONG.song), 720);
+				waveform = new Waveform(0, 0, Paths.inst(PlayState.SONG.songId), 720);
 		}
 		waveform.drawWaveform();
 		add(waveform);

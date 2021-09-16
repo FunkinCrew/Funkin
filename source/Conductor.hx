@@ -1,6 +1,6 @@
 package;
 
-import Song.SwagSong;
+import Song.SongData;
 import flixel.FlxG;
 
 /**
@@ -42,7 +42,7 @@ class Conductor
 		Conductor.timeScale = Conductor.safeZoneOffset / 166;
 	}
 
-	public static function mapBPMChanges(song:SwagSong)
+	public static function mapBPMChanges(song:SongData)
 	{
 		bpmChangeMap = [];
 
@@ -69,7 +69,7 @@ class Conductor
 		trace("new BPM map BUDDY " + bpmChangeMap);
 	}
 
-	public static function recalculateTimingStruct(SONG:Song)
+	public static function recalculateTimingStruct(SONG:SongData)
 	{
 		for (i in SONG.eventObjects)
 		{

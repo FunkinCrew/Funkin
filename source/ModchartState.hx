@@ -295,19 +295,8 @@ class ModchartState
 	function makeAnimatedLuaSprite(spritePath:String, names:Array<String>, prefixes:Array<String>, startAnim:String, id:String)
 	{
 		#if FEATURE_FILESYSTEM
-		// pre lowercasing the song name (makeAnimatedLuaSprite)
-		var songLowercase = StringTools.replace(PlayState.SONG.song, " ", "-").toLowerCase();
-		switch (songLowercase)
-		{
-			case 'dad-battle':
-				songLowercase = 'dadbattle';
-			case 'philly-nice':
-				songLowercase = 'philly';
-			case 'm.i.l.f':
-				songLowercase = 'milf';
-		}
-
-		var data:BitmapData = BitmapData.fromFile(Sys.getCwd() + "assets/data/songs/" + songLowercase + '/' + spritePath + ".png");
+		// TODO: Make this use OpenFlAssets.
+		var data:BitmapData = BitmapData.fromFile(Sys.getCwd() + "assets/data/songs/" + PlayState.SONG.songId + '/' + spritePath + ".png");
 
 		var sprite:FlxSprite = new FlxSprite(0, 0);
 
@@ -336,7 +325,7 @@ class ModchartState
 	{
 		#if FEATURE_FILESYSTEM
 		// pre lowercasing the song name (makeLuaSprite)
-		var songLowercase = StringTools.replace(PlayState.SONG.song, " ", "-").toLowerCase();
+		var songLowercase = StringTools.replace(PlayState.SONG.songId, " ", "-").toLowerCase();
 		switch (songLowercase)
 		{
 			case 'dad-battle':
@@ -347,7 +336,7 @@ class ModchartState
 				songLowercase = 'milf';
 		}
 
-		var path = Sys.getCwd() + "assets/data/songs/" + songLowercase + '/';
+		var path = Sys.getCwd() + "assets/data/songs/" + PlayState.SONG.songId + '/';
 
 		if (PlayState.isSM)
 			path = PlayState.pathToSm + "/";
@@ -421,7 +410,7 @@ class ModchartState
 		// shaders = new Array<LuaShader>();
 
 		// pre lowercasing the song name (new)
-		var songLowercase = StringTools.replace(PlayState.SONG.song, " ", "-").toLowerCase();
+		var songLowercase = StringTools.replace(PlayState.SONG.songId, " ", "-").toLowerCase();
 		switch (songLowercase)
 		{
 			case 'dad-battle':
@@ -432,7 +421,7 @@ class ModchartState
 				songLowercase = 'milf';
 		}
 
-		var path = Paths.lua('songs/$songLowercase/modchart');
+		var path = Paths.lua('songs/${PlayState.SONG.songId}/modchart');
 		if (PlayState.isSM)
 			path = PlayState.pathToSm + "/modchart.lua";
 

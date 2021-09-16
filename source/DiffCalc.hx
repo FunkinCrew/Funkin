@@ -1,6 +1,6 @@
 import openfl.system.System;
 import flixel.math.FlxMath;
-import Song.SwagSong;
+import Song.SongData;
 
 class SmallNote // basically Note.hx but small as fuck
 {
@@ -21,7 +21,7 @@ class DiffCalc
 	public static var lastDiffHandOne:Array<Float> = [];
 	public static var lastDiffHandTwo:Array<Float> = [];
 
-	public static function CalculateDiff(song:SwagSong, ?accuracy:Float = .93)
+	public static function CalculateDiff(song:SongData, ?accuracy:Float = .93)
 	{
 		// cleaned notes
 		var cleanedNotes:Array<SmallNote> = [];

@@ -11,7 +11,7 @@ import smTools.SMFile;
 import sys.FileSystem;
 import sys.io.File;
 #end
-import Song.SwagSong;
+import Song.SongData;
 import flixel.input.gamepad.FlxGamepad;
 import flash.text.TextField;
 import flixel.FlxG;
@@ -29,7 +29,7 @@ using StringTools;
 
 class FreeplayState extends MusicBeatState
 {
-	public static var songs:Array<SongMetadata> = [];
+	public static var songs:Array<FreeplaySongMetadata> = [];
 
 	var selector:FlxText;
 
@@ -54,13 +54,14 @@ class FreeplayState extends MusicBeatState
 
 	public static var openedPreview = false;
 
-	public static var songData:Map<String, Array<SwagSong>> = [];
+	public static var songData:Map<String, Array<SongData>> = [];
 
-	public static function loadDiff(diff:Int, format:String, name:String, array:Array<SwagSong>)
+	public static function loadDiff(diff:Int, songId:String, array:Array<SongData>)
 	{
 		try
 		{
-			array.push(Song.loadFromJson(Highscore.formatSong(format, diff), name));
+			var diffName:String = ["-easy", "", "-hard"][PlayState.storyDifficulty];
+			array.push(Song.loadFromJson(songId, diffName));
 		}
 		catch (ex)
 		{
@@ -77,6 +78,7 @@ class FreeplayState extends MusicBeatState
 		trace("tryin to load sm files");
 
 		#if FEATURE_STEPMANIA
+		// TODO: Refactor this to use OpenFlAssets.
 		for (i in FileSystem.readDirectory("assets/sm/"))
 		{
 			trace(i);
@@ -93,7 +95,7 @@ class FreeplayState extends MusicBeatState
 						var file:SMFile = SMFile.loadFile("assets/sm/" + i + "/" + file.replace(" ", "_"));
 						trace("Converting " + file.header.TITLE);
 						var data = file.convertToFNF("assets/sm/" + i + "/converted.json");
-						var meta = new SongMetadata(file.header.TITLE, 0, "sm", file, "assets/sm/" + i);
+						var meta = new FreeplaySongMetadata(file.header.TITLE, 0, "sm", file, "assets/sm/" + i);
 						songs.push(meta);
 						var song = Song.loadFromJsonRAW(data);
 						songData.set(file.header.TITLE, [song, song, song]);
@@ -104,7 +106,7 @@ class FreeplayState extends MusicBeatState
 						var file:SMFile = SMFile.loadFile("assets/sm/" + i + "/" + file.replace(" ", "_"));
 						trace("Converting " + file.header.TITLE);
 						var data = file.convertToFNF("assets/sm/" + i + "/converted.json");
-						var meta = new SongMetadata(file.header.TITLE, 0, "sm", file, "assets/sm/" + i);
+						var meta = new FreeplaySongMetadata(file.header.TITLE, 0, "sm", file, "assets/sm/" + i);
 						songs.push(meta);
 						var song = Song.loadFromJsonRAW(File.getContent("assets/sm/" + i + "/converted.json"));
 						trace("got content lol");
@@ -214,27 +216,18 @@ class FreeplayState extends MusicBeatState
 		for (i in 0...initSonglist.length)
 		{
 			var data:Array<String> = initSonglist[i].split(':');
-			var meta = new SongMetadata(data[0], Std.parseInt(data[2]), data[1]);
-			var format = StringTools.replace(meta.songName, " ", "-");
-			switch (format)
-			{
-				case 'Dad-Battle':
-					format = 'Dadbattle';
-				case 'Philly-Nice':
-					format = 'Philly';
-				case 'M.I.L.F':
-					format = 'Milf';
-			}
+			var songId = data[0];
+			var meta = new FreeplaySongMetadata(songId, Std.parseInt(data[2]), data[1]);
 
 			var diffs = [];
 			var diffsThatExist = [];
 
 			#if FEATURE_FILESYSTEM
-			if (FileSystem.exists('assets/data/songs/${format}/${format}-hard.json'))
+			if (Paths.doesTextAssetExist(Paths.json('songs/$songId/$songId-hard')))
 				diffsThatExist.push("Hard");
-			if (FileSystem.exists('assets/data/songs/${format}/${format}-easy.json'))
+			if (Paths.doesTextAssetExist(Paths.json('songs/$songId/$songId-easy')))
 				diffsThatExist.push("Easy");
-			if (FileSystem.exists('assets/data/songs/${format}/${format}.json'))
+			if (Paths.doesTextAssetExist(Paths.json('songs/$songId/$songId')))
 				diffsThatExist.push("Normal");
 
 			if (diffsThatExist.length == 0)
@@ -246,26 +239,26 @@ class FreeplayState extends MusicBeatState
 			diffsThatExist = ["Easy", "Normal", "Hard"];
 			#end
 			if (diffsThatExist.contains("Easy"))
-				FreeplayState.loadDiff(0, format, meta.songName, diffs);
+				FreeplayState.loadDiff(0, songId, diffs);
 			if (diffsThatExist.contains("Normal"))
-				FreeplayState.loadDiff(1, format, meta.songName, diffs);
+				FreeplayState.loadDiff(1, songId, diffs);
 			if (diffsThatExist.contains("Hard"))
-				FreeplayState.loadDiff(2, format, meta.songName, diffs);
+				FreeplayState.loadDiff(2, songId, diffs);
 
 			meta.diffs = diffsThatExist;
 
 			if (diffsThatExist.length != 3)
 				trace("I ONLY FOUND " + diffsThatExist);
 
-			FreeplayState.songData.set(meta.songName, diffs);
-			trace('loaded diffs for ' + meta.songName);
+			FreeplayState.songData.set(songId, diffs);
+			trace('loaded diffs for ' + songId);
 			FreeplayState.songs.push(meta);
 		}
 	}
 
 	public function addSong(songName:String, weekNum:Int, songCharacter:String)
 	{
-		songs.push(new SongMetadata(songName, weekNum, songCharacter));
+		songs.push(new FreeplaySongMetadata(songName, weekNum, songCharacter));
 	}
 
 	public function addWeek(songs:Array<String>, weekNum:Int, ?songCharacters:Array<String>)
@@ -419,17 +412,6 @@ class FreeplayState extends MusicBeatState
 		if (songData == null || Lambda.count(songData) == 0)
 			populateSongData();
 
-		// adjusting the song name to be compatible
-		var songFormat = StringTools.replace(songName, " ", "-");
-		switch (songFormat)
-		{
-			case 'Dad-Battle':
-				songFormat = 'Dadbattle';
-			case 'Philly-Nice':
-				songFormat = 'Philly';
-			case 'M.I.L.F':
-				songFormat = 'Milf';
-		}
 		var currentSongData;
 		try
 		{
@@ -448,7 +430,7 @@ class FreeplayState extends MusicBeatState
 		PlayState.isStoryMode = false;
 		PlayState.storyDifficulty = difficulty;
 		PlayState.storyWeek = songs[curSelected].week;
-		Debug.logInfo('Loading song ${PlayState.SONG.song} from week ${PlayState.storyWeek} into Free Play...');
+		Debug.logInfo('Loading song ${PlayState.SONG.songName} from week ${PlayState.storyWeek} into Free Play...');
 		#if FEATURE_STEPMANIA
 		if (songs[curSelected].songCharacter == "sm")
 		{
@@ -608,7 +590,7 @@ class FreeplayState extends MusicBeatState
 	}
 }
 
-class SongMetadata
+class FreeplaySongMetadata
 {
 	public var songName:String = "";
 	public var week:Int = 0;

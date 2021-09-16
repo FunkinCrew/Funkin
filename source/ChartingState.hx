@@ -1,5 +1,6 @@
 package;
 
+import Song.SongMeta;
 import openfl.system.System;
 import lime.app.Application;
 #if FEATURE_FILESYSTEM
@@ -14,7 +15,7 @@ import flixel.addons.ui.FlxUIText;
 import haxe.zip.Writer;
 import Conductor.BPMChangeEvent;
 import Section.SwagSection;
-import Song.SwagSong;
+import Song.SongData;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.addons.display.FlxGridOverlay;
@@ -104,7 +105,7 @@ class ChartingState extends MusicBeatState
 
 	public var sectionRenderes:FlxTypedGroup<SectionRender>;
 
-	public static var _song:SwagSong;
+	public static var _song:SongData;
 
 	var typingShit:FlxInputText;
 	/*
@@ -190,27 +191,16 @@ class ChartingState extends MusicBeatState
 			}
 			else
 			{
-				var songFormat = StringTools.replace(PlayState.SONG.song, " ", "-");
-				switch (songFormat)
-				{
-					case 'Dad-Battle':
-						songFormat = 'Dadbattle';
-					case 'Philly-Nice':
-						songFormat = 'Philly';
-					case 'M.I.L.F':
-						songFormat = 'Milf';
-				}
-
-				var poop:String = Highscore.formatSong(songFormat, PlayState.storyDifficulty);
-
-				_song = Song.conversionChecks(Song.loadFromJson(poop, PlayState.SONG.song));
+				var diff:String = ["-easy", "", "-hard"][PlayState.storyDifficulty];
+				_song = Song.conversionChecks(Song.loadFromJson(PlayState.SONG.songId, diff));
 			}
 		}
 		else
 		{
 			_song = {
 				chartVersion: latestChartVersion,
-				song: 'Test',
+				songId: 'test',
+				songName: 'Test',
 				notes: [],
 				eventObjects: [],
 				bpm: 150,
@@ -249,7 +239,7 @@ class ChartingState extends MusicBeatState
 
 		// sections = _song.notes;
 
-		loadSong(_song.song, reloadOnInit);
+		loadSong(_song.songId, reloadOnInit);
 		Conductor.changeBPM(_song.bpm);
 		Conductor.mapBPMChanges(_song);
 
@@ -432,23 +422,6 @@ class ChartingState extends MusicBeatState
 		trace("bruh");
 
 		add(sectionRenderes);
-
-		// fuckin stupid ass bitch ass fucking waveform
-		/*if (PlayState.isSM)
-			{
-				waveform = new Waveform(0,0,PlayState.pathToSm + "/" + PlayState.sm.header.MUSIC,height);
-			}
-			else
-			{
-				if (_song.needsVoices)
-					waveform = new Waveform(0,0,Paths.voices(_song.song),height);
-				else
-					waveform = new Waveform(0,0,Paths.inst(_song.song),height);
-			}
-
-			waveform.drawWaveform();
-			add(waveform); */
-
 		add(dummyArrow);
 		add(strumLine);
 		add(lines);
@@ -997,7 +970,7 @@ class ChartingState extends MusicBeatState
 
 	function addSongUI():Void
 	{
-		var UI_songTitle = new FlxUIInputText(10, 10, 70, _song.song, 8);
+		var UI_songTitle = new FlxUIInputText(10, 10, 70, _song.songId, 8);
 		typingShit = UI_songTitle;
 
 		var check_voices = new FlxUICheckBox(10, 25, null, null, "Has voice track", 100);
@@ -1016,12 +989,12 @@ class ChartingState extends MusicBeatState
 
 		var reloadSong:FlxButton = new FlxButton(saveButton.x + saveButton.width + 10, saveButton.y, "Reload Audio", function()
 		{
-			loadSong(_song.song);
+			loadSong(_song.songId);
 		});
 
 		var reloadSongJson:FlxButton = new FlxButton(reloadSong.x, saveButton.y + 30, "Reload JSON", function()
 		{
-			loadJson(_song.song.toLowerCase());
+			loadJson(_song.songId.toLowerCase());
 		});
 
 		var restart = new FlxButton(10, 140, "Reset Chart", function()
@@ -1579,20 +1552,8 @@ class ChartingState extends MusicBeatState
 			}
 			else
 			{
-				var songFormat = StringTools.replace(PlayState.SONG.song, " ", "-");
-				switch (songFormat)
-				{
-					case 'Dad-Battle':
-						songFormat = 'Dadbattle';
-					case 'Philly-Nice':
-						songFormat = 'Philly';
-					case 'M.I.L.F':
-						songFormat = 'Milf';
-				}
-
-				var poop:String = Highscore.formatSong(songFormat, PlayState.storyDifficulty);
-
-				_song = Song.conversionChecks(Song.loadFromJson(poop, PlayState.SONG.song));
+				var diff:String = ["-easy", "", "-hard"][PlayState.storyDifficulty];
+				_song = Song.conversionChecks(Song.loadFromJson(PlayState.SONG.songId, diff));
 			}
 		}
 		// WONT WORK FOR TUTORIAL OR TEST SONG!!! REDO LATER
@@ -2380,7 +2341,7 @@ class ChartingState extends MusicBeatState
 		check_snap.checked = doSnapShit;
 
 		Conductor.songPosition = FlxG.sound.music.time;
-		_song.song = typingShit.text;
+		_song.songId = typingShit.text;
 
 		var timingSeg = TimingStruct.getTimingAtTimestamp(Conductor.songPosition);
 
@@ -2957,6 +2918,7 @@ class ChartingState extends MusicBeatState
 		}
 
 		// fail-safe
+		// TODO: Refactor this to use OpenFlAssets.
 		if (!FileSystem.exists(Paths.image('icons/icon-' + head.split("-")[0])) && !FileSystem.exists(Paths.image('icons/icon-' + head)))
 		{
 			if (i.icon.animation.curAnim == null)
@@ -3494,20 +3456,11 @@ class ChartingState extends MusicBeatState
 		return noteData;
 	}
 
-	function loadJson(song:String):Void
+	function loadJson(songId:String):Void
 	{
 		var difficultyArray:Array<String> = ["-easy", "", "-hard"];
-		var format = StringTools.replace(PlayState.SONG.song.toLowerCase(), " ", "-");
-		switch (format)
-		{
-			case 'Dad-Battle':
-				format = 'Dadbattle';
-			case 'Philly-Nice':
-				format = 'Philly';
-			case 'M.I.L.F':
-				format = 'Milf';
-		}
-		PlayState.SONG = Song.loadFromJson(format + difficultyArray[PlayState.storyDifficulty], format);
+
+		PlayState.SONG = Song.loadFromJson(songId, difficultyArray[PlayState.storyDifficulty]);
 
 		while (curRenderedNotes.members.length > 0)
 		{
@@ -3555,7 +3508,22 @@ class ChartingState extends MusicBeatState
 			curRenderedSustains.remove(curRenderedSustains.members[0], true);
 		}
 
-		PlayState.SONG = Song.parseJSONshit(FlxG.save.data.autosave);
+		var autoSaveData = Json.parse(FlxG.save.data.autosave);
+
+		var data:SongData = cast autoSaveData.song;
+		var meta:SongMeta;
+		var name:String;
+		if (autoSaveData.song != null)
+		{
+			meta = autoSaveData.songMeta != null ? cast autoSaveData.songMeta : null;
+			name = meta.name;
+		}
+		if (name == null)
+		{
+			name = data.songId;
+		}
+		PlayState.SONG = Song.parseJSONshit(name, data, meta);
+
 		while (curRenderedNotes.members.length > 0)
 		{
 			curRenderedNotes.remove(curRenderedNotes.members[0], true);
@@ -3588,7 +3556,11 @@ class ChartingState extends MusicBeatState
 	function autosaveSong():Void
 	{
 		FlxG.save.data.autosave = Json.stringify({
-			"song": _song
+			"song": _song,
+			"songMeta": {
+				"name": _song.songId,
+				"offset": 0,
+			}
 		});
 		FlxG.save.flush();
 	}
@@ -3622,7 +3594,7 @@ class ChartingState extends MusicBeatState
 			_file.addEventListener(Event.COMPLETE, onSaveComplete);
 			_file.addEventListener(Event.CANCEL, onSaveCancel);
 			_file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
-			_file.save(data.trim(), _song.song.toLowerCase() + difficultyArray[PlayState.storyDifficulty] + ".json");
+			_file.save(data.trim(), _song.songId.toLowerCase() + difficultyArray[PlayState.storyDifficulty] + ".json");
 		}
 	}
 

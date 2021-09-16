@@ -1,3 +1,4 @@
+import lime.app.Application;
 import polymod.Polymod.PolymodError;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -6,7 +7,7 @@ import flixel.system.debug.watch.Tracker.TrackerProfile;
 import flixel.util.FlxStringUtil;
 import haxe.Log;
 import haxe.PosInfos;
-import Song.SwagSong;
+import Song.SongData;
 
 using StringTools;
 
