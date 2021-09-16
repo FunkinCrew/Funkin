@@ -98,10 +98,6 @@ class ChartingState extends MusicBeatState
 
 		// trace(audioBuf.sampleRate);
 
-		var spec:SpectogramSprite = new SpectogramSprite();
-		spec.scrollFactor.set();
-		add(spec);
-
 		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * 8, GRID_SIZE * 16);
 		add(gridBG);
 
@@ -393,42 +389,22 @@ class ChartingState extends MusicBeatState
 
 		FlxG.sound.playMusic(Paths.inst(daSong), 0.6);
 
-		@:privateAccess
-		var audioData:Int16Array = FlxG.sound.music._channel.__source.buffer.data;
+		var musSpec:SpectogramSprite = new SpectogramSprite(FlxG.sound.music, FlxColor.RED);
+		musSpec.scrollFactor.set();
+		add(musSpec);
 
 		// trace(audioBuf.data.length);
 		playheadTest = new FlxSprite(0, 0).makeGraphic(2, 255, FlxColor.RED);
 		playheadTest.scrollFactor.set();
 		add(playheadTest);
 
-		var sampleLength:Int = Std.int(audioData.length / 2);
-		var i = 0;
-
-		var wavHeight:Int = FlxG.height;
-		var funnyShit:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, wavHeight, FlxColor.TRANSPARENT);
-		funnyShit.scrollFactor.set();
-		// add(funnyShit);
-
-		var prevLine:FlxPoint = new FlxPoint();
-
-		for (sampleShit in 0...FlxG.width)
-		{
-			// thnx mike welsh fo dis
-			var left = audioData[i] / 32767; // 16-bit audio samples are from -32767 to 32767, convert to -1.0 to 1.0
-			var right = audioData[i + 1] / 32767;
-
-			var adjusted:Int = Std.int(sampleLength / FlxG.width);
-
-			i += 2 * adjusted;
-
-			funnyShit.drawLine(prevLine.x, prevLine.y, FlxG.width * sampleShit / FlxG.width, left * wavHeight / 2 + wavHeight / 2);
-			prevLine.x = FlxG.width * sampleShit / FlxG.width;
-			prevLine.y = left * wavHeight / 2 + wavHeight / 2;
-		}
-
 		// WONT WORK FOR TUTORIAL OR TEST SONG!!! REDO LATER
 		vocals = new FlxSound().loadEmbedded(Paths.voices(daSong));
 		FlxG.sound.list.add(vocals);
+
+		var spec:SpectogramSprite = new SpectogramSprite(vocals);
+		spec.scrollFactor.set();
+		add(spec);
 
 		FlxG.sound.music.pause();
 		vocals.pause();
@@ -706,6 +682,9 @@ class ChartingState extends MusicBeatState
 					vocals.pause();
 
 					var daTime:Float = 700 * FlxG.elapsed;
+
+					if (FlxG.keys.pressed.CONTROL)
+						daTime *= 0.2;
 
 					if (FlxG.keys.pressed.W)
 					{
