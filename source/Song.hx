@@ -78,7 +78,7 @@ class Song
 
 	public static function loadFromJson(songId:String, difficulty:String):SongData
 	{
-		var songFile = '$songId/$songId$songId';
+		var songFile = '$songId/$songId$difficulty';
 
 		Debug.logInfo('Loading song JSON: $songFile');
 

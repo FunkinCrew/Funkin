@@ -3511,16 +3511,12 @@ class ChartingState extends MusicBeatState
 		var autoSaveData = Json.parse(FlxG.save.data.autosave);
 
 		var data:SongData = cast autoSaveData.song;
-		var meta:SongMeta;
-		var name:String;
+		var meta:SongMeta = {};
+		var name:String = data.songId;
 		if (autoSaveData.song != null)
 		{
-			meta = autoSaveData.songMeta != null ? cast autoSaveData.songMeta : null;
+			meta = autoSaveData.songMeta != null ? cast autoSaveData.songMeta : {};
 			name = meta.name;
-		}
-		if (name == null)
-		{
-			name = data.songId;
 		}
 		PlayState.SONG = Song.parseJSONshit(name, data, meta);
 

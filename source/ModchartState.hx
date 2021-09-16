@@ -301,7 +301,7 @@ class ModchartState
 		var sprite:FlxSprite = new FlxSprite(0, 0);
 
 		sprite.frames = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(data),
-			Sys.getCwd() + "assets/data/songs/" + songLowercase + "/" + spritePath + ".xml");
+			Sys.getCwd() + "assets/data/songs/" + PlayState.SONG.songId + "/" + spritePath + ".xml");
 
 		trace(sprite.frames.frames.length);
 
