@@ -435,8 +435,8 @@ class Character extends FlxSprite
 		{
 			var frameRate = anim.frameRate == null ? 24 : anim.frameRate;
 			var looped = anim.looped == null ? false : anim.looped;
-			var flipX = anim.flipX == null ? false : anim.looped;
-			var flipY = anim.flipY == null ? false : anim.looped;
+			var flipX = anim.flipX == null ? false : anim.flipX;
+			var flipY = anim.flipY == null ? false : anim.flipY;
 
 			if (anim.frameIndices != null)
 			{
