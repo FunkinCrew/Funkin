@@ -98,6 +98,10 @@ class ChartingState extends MusicBeatState
 
 		trace(audioBuf.sampleRate);
 
+		var spec:SpectogramSprite = new SpectogramSprite();
+		spec.scrollFactor.set();
+		add(spec);
+
 		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * 8, GRID_SIZE * 16);
 		add(gridBG);
 
