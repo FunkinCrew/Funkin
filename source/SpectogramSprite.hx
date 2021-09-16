@@ -14,7 +14,7 @@ class SpectogramSprite extends FlxSprite
 	{
 		super();
 
-		makeGraphic(200, 200, FlxColor.BLUE);
+		makeGraphic(200, 200, FlxColor.BLACK);
 	}
 
 	override function update(elapsed:Float)
@@ -23,7 +23,7 @@ class SpectogramSprite extends FlxSprite
 		{
 			if (FlxG.sound.music.playing)
 			{
-				FlxSpriteUtil.drawRect(this, 0, 0, width, height, FlxColor.BLUE);
+				FlxSpriteUtil.drawRect(this, 0, 0, width, height, 0x45000000);
 
 				@:privateAccess
 				var audioData:Int16Array = FlxG.sound.music._channel.__source.buffer.data; // jank and hacky lol!
