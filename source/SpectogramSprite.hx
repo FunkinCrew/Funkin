@@ -13,24 +13,37 @@ using flixel.util.FlxSpriteUtil;
 
 class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 {
-	var lengthOfShit:Int = 500;
+	var sampleRate:Int;
 
+	var lengthOfShit:Int = 500;
 	var daSound:FlxSound;
 
-	public function new(daSound:FlxSound, ?col:FlxColor = FlxColor.WHITE)
+	public var visType:VISTYPE = UPDATED;
+
+	public var col:Int = FlxColor.WHITE;
+	public var daHeight:Float = FlxG.height;
+
+	public function new(daSound:FlxSound, ?col:FlxColor = FlxColor.WHITE, ?height:Float = 720)
 	{
 		super();
 
 		this.daSound = daSound;
+		this.col = col;
+		this.daHeight = height;
 
+		regenLineShit();
+
+		// makeGraphic(200, 200, FlxColor.BLACK);
+	}
+
+	public function regenLineShit():Void
+	{
 		for (i in 0...lengthOfShit)
 		{
-			var lineShit:FlxSprite = new FlxSprite(100, i / lengthOfShit * FlxG.height).makeGraphic(1, 1, col);
+			var lineShit:FlxSprite = new FlxSprite(100, i / lengthOfShit * daHeight).makeGraphic(1, 1, col);
 			lineShit.active = false;
 			add(lineShit);
 		}
-
-		// makeGraphic(200, 200, FlxColor.BLACK);
 	}
 
 	var setBuffer:Bool = false;
@@ -39,32 +52,90 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 
 	override function update(elapsed:Float)
 	{
+		if (visType == UPDATED)
+		{
+			updateVisulizer();
+		}
+
+		// if visType is static, call updateVisulizer() manually whenever you want to update it!
+
+		super.update(elapsed);
+	}
+
+	/**
+	 * @param start is the start in milliseconds?
+	 */
+	public function generateSection(start:Float = 0, seconds:Float = 1):Void
+	{
+		checkAndSetBuffer();
+
+		if (setBuffer)
+		{
+			var samplesToGen:Int = Std.int(sampleRate * seconds);
+			var startingSample:Int = Std.int(FlxMath.remapToRange(start, 0, daSound.length, 0, numSamples));
+
+			for (i in 0...group.members.length)
+			{
+				var sampleApprox:Int = Std.int(FlxMath.remapToRange(i, 0, group.members.length, startingSample, startingSample + samplesToGen));
+
+				var left = audioData[sampleApprox] / 32767;
+				var right = audioData[sampleApprox + 1] / 32767;
+
+				var swagheight:Int = 200;
+				var balanced = (left + right) / 2;
+
+				group.members[i].x = (balanced * swagheight / 2 + swagheight / 2) + x;
+
+				group.members[i].y = (i / group.members.length * daHeight) + y;
+				// group.members[0].y = prevLine.y;
+
+				// FlxSpriteUtil.drawLine(this, prevLine.x, prevLine.y, width * remappedSample, left * height / 2 + height / 2);
+				// prevLine.x = (balanced * swagheight / 2 + swagheight / 2) + x;
+				// width * (remappedSample / 255);
+				// prevLine.y = (i / group.members.length * daHeight) + y;
+			}
+		}
+	}
+
+	public function checkAndSetBuffer()
+	{
+		if (daSound.playing)
+		{
+			if (!setBuffer)
+			{
+				// Math.pow3
+				@:privateAccess
+				var buf = daSound._channel.__source.buffer;
+
+				// @:privateAccess
+				audioData = cast buf.data; // jank and hacky lol! kinda busted on HTML5 also!!
+				sampleRate = buf.sampleRate;
+
+				trace('got audio buffer shit');
+				trace(sampleRate);
+				trace(buf.bitsPerSample);
+
+				setBuffer = true;
+				numSamples = Std.int(audioData.length / 2);
+			}
+		}
+	}
+
+	public function updateVisulizer():Void
+	{
 		if (daSound != null)
 		{
 			var remappedShit:Int = 0;
 
-			if (daSound.playing)
-			{
-				if (!setBuffer)
-				{
-					@:privateAccess
-					audioData = cast daSound._channel.__source.buffer.data; // jank and hacky lol!
-					setBuffer = true;
-					numSamples = Std.int(audioData.length / 2);
-				}
-				else
-				{
-					remappedShit = Std.int(FlxMath.remapToRange(daSound.time, 0, daSound.length, 0, numSamples));
-				}
-			}
-			else
-			{
-				if (setBuffer)
-					remappedShit = Std.int(FlxMath.remapToRange(Conductor.songPosition, 0, daSound.length, 0, numSamples));
-			}
+			checkAndSetBuffer();
 
 			if (setBuffer)
 			{
+				if (daSound.playing)
+					remappedShit = Std.int(FlxMath.remapToRange(daSound.time, 0, daSound.length, 0, numSamples));
+				else
+					remappedShit = Std.int(FlxMath.remapToRange(Conductor.songPosition, 0, daSound.length, 0, numSamples));
+
 				var i = remappedShit;
 				var prevLine:FlxPoint = new FlxPoint();
 
@@ -82,16 +153,21 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 					var remappedSample:Float = FlxMath.remapToRange(sample, remappedShit, remappedShit + lengthOfShit, 0, lengthOfShit - 1);
 
 					group.members[Std.int(remappedSample)].x = prevLine.x;
+					group.members[Std.int(remappedSample)].y = prevLine.y;
 					// group.members[0].y = prevLine.y;
 
 					// FlxSpriteUtil.drawLine(this, prevLine.x, prevLine.y, width * remappedSample, left * height / 2 + height / 2);
-					prevLine.x = balanced * swagheight / 2 + swagheight / 2;
+					prevLine.x = (balanced * swagheight / 2 + swagheight / 2) + x;
 					// width * (remappedSample / 255);
-					// prevLine.y = left * swagheight / 2 + swagheight / 2;
+					prevLine.y = (Std.int(remappedSample) / lengthOfShit * daHeight) + y;
 				}
 			}
 		}
-
-		super.update(elapsed);
 	}
+}
+
+enum VISTYPE
+{
+	STATIC;
+	UPDATED;
 }

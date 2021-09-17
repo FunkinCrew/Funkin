@@ -493,6 +493,10 @@ class TitleState extends MusicBeatState
 		cheatActive = true;
 
 		FlxG.sound.playMusic(Paths.music('tutorialTitle'), 1);
+
+		var spec:SpectogramSprite = new SpectogramSprite(FlxG.sound.music);
+		add(spec);
+
 		Conductor.changeBPM(190);
 		FlxG.camera.flash(FlxColor.WHITE, 1);
 		FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);

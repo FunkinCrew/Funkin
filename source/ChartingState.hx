@@ -25,6 +25,7 @@ import flixel.text.FlxText;
 import flixel.ui.FlxButton;
 import flixel.ui.FlxSpriteButton;
 import flixel.util.FlxColor;
+import haxe.CallStack.StackItem;
 import haxe.Json;
 import lime.media.AudioBuffer;
 import lime.utils.Assets;
@@ -362,6 +363,8 @@ class ChartingState extends MusicBeatState
 		UI_box.addGroup(tab_group_note);
 	}
 
+	var spec:SpectogramSprite;
+
 	function loadSong(daSong:String):Void
 	{
 		if (FlxG.sound.music != null)
@@ -390,6 +393,8 @@ class ChartingState extends MusicBeatState
 		FlxG.sound.playMusic(Paths.inst(daSong), 0.6);
 
 		var musSpec:SpectogramSprite = new SpectogramSprite(FlxG.sound.music, FlxColor.RED);
+		musSpec.x += 70;
+		musSpec.daHeight = FlxG.height / 2;
 		musSpec.scrollFactor.set();
 		add(musSpec);
 
@@ -402,11 +407,21 @@ class ChartingState extends MusicBeatState
 		vocals = new FlxSound().loadEmbedded(Paths.voices(daSong));
 		FlxG.sound.list.add(vocals);
 
-		var spec:SpectogramSprite = new SpectogramSprite(vocals);
-		spec.scrollFactor.set();
+		var vocalSpec:SpectogramSprite = new SpectogramSprite(vocals);
+		vocalSpec.x += 70;
+		vocalSpec.daHeight = musSpec.daHeight;
+		vocalSpec.y = vocalSpec.daHeight;
+		vocalSpec.scrollFactor.set();
+		add(vocalSpec);
+
+		spec = new SpectogramSprite(vocals);
+		spec.x -= 150;
+		spec.daHeight = GRID_SIZE * 16;
+		spec.visType = STATIC;
 		add(spec);
 
 		FlxG.sound.music.pause();
+
 		vocals.pause();
 
 		FlxG.sound.music.onComplete = function()
@@ -520,6 +535,12 @@ class ChartingState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
+		if (FlxG.keys.justPressed.B)
+		{
+			spec.visType = STATIC;
+			spec.generateSection(sectionStartTime(), (Conductor.stepCrochet * 32) / 1000);
+		}
+
 		curStep = recalculateSteps();
 
 		Conductor.songPosition = FlxG.sound.music.time;
@@ -897,6 +918,9 @@ class ChartingState extends MusicBeatState
 
 	function updateGrid():Void
 	{
+		if (spec != null)
+			spec.generateSection(sectionStartTime(), (Conductor.stepCrochet * 32) / 1000);
+
 		while (curRenderedNotes.members.length > 0)
 		{
 			curRenderedNotes.remove(curRenderedNotes.members[0], true);
