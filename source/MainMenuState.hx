@@ -135,7 +135,10 @@ class MainMenuState extends MusicBeatState
 			{
 				FlxG.switchState(new TitleState());
 			}
-
+			if(FlxG.keys.justPressed.L)
+			{
+				FlxG.switchState(new LatencyState());
+			}
 			if (controls.ACCEPT)
 			{
 				if (optionShit[curSelected] == 'donate')
