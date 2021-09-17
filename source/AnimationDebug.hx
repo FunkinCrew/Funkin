@@ -161,7 +161,7 @@ class AnimationDebug extends FlxState
 			genBoyOffsets(false);
 		}
 
-		if (Controls.ACCEPT)
+		if (controls.ACCEPT)
 		{
 			FlxG.switchState(new MainMenuState());
 		}
