@@ -671,7 +671,7 @@ class ChartingState extends MusicBeatState
 				case 'Camera points at P1':
 					_song.notes[curSection].mustHitSection = check.checked;
 					updateHeads();
-				case 'Change BPM':
+				case 'Change BPM?':
 					_song.notes[curSection].changeBPM = check.checked;
 					FlxG.log.add('changed bpm shit');
 				case "Enemy Alt Animation":
