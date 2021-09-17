@@ -5,6 +5,7 @@ import flixel.group.FlxGroup;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
+import flixel.math.FlxVector;
 import flixel.system.FlxSound;
 import flixel.util.FlxColor;
 import lime.utils.Int16Array;
@@ -74,6 +75,8 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 			var samplesToGen:Int = Std.int(sampleRate * seconds);
 			var startingSample:Int = Std.int(FlxMath.remapToRange(start, 0, daSound.length, 0, numSamples));
 
+			var prevLine:FlxPoint = new FlxPoint();
+
 			for (i in 0...group.members.length)
 			{
 				var sampleApprox:Int = Std.int(FlxMath.remapToRange(i, 0, group.members.length, startingSample, startingSample + samplesToGen));
@@ -84,15 +87,16 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 				var swagheight:Int = 200;
 				var balanced = (left + right) / 2;
 
-				group.members[i].x = (balanced * swagheight / 2 + swagheight / 2) + x;
+				group.members[i].x = prevLine.x;
+				group.members[i].y = prevLine.y;
 
-				group.members[i].y = (i / group.members.length * daHeight) + y;
-				// group.members[0].y = prevLine.y;
+				prevLine.x = (balanced * swagheight / 2 + swagheight / 2) + x;
+				prevLine.y = (i / group.members.length * daHeight) + y;
 
-				// FlxSpriteUtil.drawLine(this, prevLine.x, prevLine.y, width * remappedSample, left * height / 2 + height / 2);
-				// prevLine.x = (balanced * swagheight / 2 + swagheight / 2) + x;
-				// width * (remappedSample / 255);
-				// prevLine.y = (i / group.members.length * daHeight) + y;
+				var line = FlxVector.get(prevLine.x - group.members[i].x, prevLine.y - group.members[i].y);
+
+				group.members[i].setGraphicSize(Std.int(Math.max(line.length, 1)), Std.int(1));
+				group.members[i].angle = line.degrees;
 			}
 		}
 	}
@@ -158,8 +162,12 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 
 					// FlxSpriteUtil.drawLine(this, prevLine.x, prevLine.y, width * remappedSample, left * height / 2 + height / 2);
 					prevLine.x = (balanced * swagheight / 2 + swagheight / 2) + x;
-					// width * (remappedSample / 255);
 					prevLine.y = (Std.int(remappedSample) / lengthOfShit * daHeight) + y;
+
+					var line = FlxVector.get(prevLine.x - group.members[Std.int(remappedSample)].x, prevLine.y - group.members[Std.int(remappedSample)].y);
+
+					group.members[Std.int(remappedSample)].setGraphicSize(Std.int(Math.max(line.length, 1)), Std.int(1));
+					group.members[Std.int(remappedSample)].angle = line.degrees;
 				}
 			}
 		}
