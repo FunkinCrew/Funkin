@@ -50,7 +50,6 @@ class AnimationDebug extends FlxState
 			add(dad);
 
 			char = dad;
-			dad.flipX = false;
 		}
 		else
 		{
@@ -60,12 +59,11 @@ class AnimationDebug extends FlxState
 			add(bf);
 
 			char = bf;
-			bf.flipX = false;
 		}
 
 		dumbTexts = new FlxTypedGroup<FlxText>();
 		add(dumbTexts);
-
+		
 		textAnim = new FlxText(300, 16);
 		textAnim.size = 26;
 		textAnim.scrollFactor.set();
@@ -163,6 +161,11 @@ class AnimationDebug extends FlxState
 			genBoyOffsets(false);
 		}
 
+		if (Controls.ACCEPT)
+		{
+			FlxG.switchState(new MainMenuState());
+		}
+		
 		var upP = FlxG.keys.anyJustPressed([UP]);
 		var rightP = FlxG.keys.anyJustPressed([RIGHT]);
 		var downP = FlxG.keys.anyJustPressed([DOWN]);
