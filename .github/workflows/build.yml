@@ -1,5 +1,5 @@
 name: Build
-on: release
+on: [release, workflow_dispatch]
 jobs:
   build-macos:
     runs-on: macos-latest
