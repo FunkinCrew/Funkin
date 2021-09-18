@@ -36,7 +36,7 @@ class Stage
 
 						var hallowTex = Paths.getSparrowAtlas('halloween_bg', 'week2');
 
-						var halloweenBG = new FlxSprite(-200, -100);
+						var halloweenBG = new FlxSprite(-200, -80);
 						halloweenBG.frames = hallowTex;
 						halloweenBG.animation.addByPrefix('idle', 'halloweem bg0');
 						halloweenBG.animation.addByPrefix('lightning', 'halloweem bg lightning strike', 24, false);
