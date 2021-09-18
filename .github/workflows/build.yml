@@ -1,0 +1,26 @@
+name: Build
+on: release
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+      - name: Install scoop (windows package manager)
+        run: |
+          Set-ExecutionPolicy RemoteSigned -scope CurrentUser
+          iwr -useb get.scoop.sh | iex
+      - name: Install Haxe
+        run: scoop install haxe@4.1.5
+      - name: Install Dependencies
+        run: haxelib install lime hxcpp flixel flixel-addons flixel-ui hscript newgrounds
+      - name: Install Dependencies (git)
+        run: haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc;haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
+      - name: Build with Lime
+        run: haxelib run lime test windows
+      - name: Upload release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: export/release/windows
+          tag: ${{ github.ref }}
