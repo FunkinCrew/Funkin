@@ -926,7 +926,7 @@ class ChartingState extends MusicBeatState
 			}
 		}
 
-		//_song.bpm = tempBpm;
+		_song.bpm = tempBpm;
 
 		/* if (FlxG.keys.justPressed.UP)
 				Conductor.changeBPM(Conductor.bpm + 1);
