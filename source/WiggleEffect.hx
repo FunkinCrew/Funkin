@@ -6,7 +6,9 @@ import flixel.system.FlxAssets.FlxShader;
 enum WiggleEffectType
 {
 	DREAMY;
+	PIXEL_DREAMY;
 	WAVY;
+	PIXEL_WAVY;
 	HEAT_WAVE_HORIZONTAL;
 	HEAT_WAVE_VERTICAL;
 	FLAG;
@@ -67,10 +69,12 @@ class WiggleShader extends FlxShader
 		uniform float uTime;
 		
 		const int EFFECT_TYPE_DREAMY = 0;
-		const int EFFECT_TYPE_WAVY = 1;
-		const int EFFECT_TYPE_HEAT_WAVE_HORIZONTAL = 2;
-		const int EFFECT_TYPE_HEAT_WAVE_VERTICAL = 3;
-		const int EFFECT_TYPE_FLAG = 4;
+		const int EFFECT_TYPE_PIXEL_DREAMY = 1;
+		const int EFFECT_TYPE_WAVY = 2;
+		const int EFFECT_TYPE_PIXEL_WAVY = 3;
+		const int EFFECT_TYPE_HEAT_WAVE_HORIZONTAL = 4;
+		const int EFFECT_TYPE_HEAT_WAVE_VERTICAL = 5;
+		const int EFFECT_TYPE_FLAG = 6;
 		
 		uniform int effectType;
 		
@@ -99,10 +103,29 @@ class WiggleShader extends FlxShader
 				float offsetX = sin(pt.y * uFrequency + uTime * uSpeed) * uWaveAmplitude;
                 pt.x += offsetX; // * (pt.y - 1.0); // <- Uncomment to stop bottom part of the screen from moving
 			}
+			else if (effectType == EFFECT_TYPE_PIXEL_DREAMY) 
+			{
+				float w = 1 / openfl_TextureSize.x;
+				float h = 1 / openfl_TextureSize.y;
+
+				pt.y = floor(pt.y / h) * h;
+
+				float offsetX = sin(pt.y * uFrequency + uTime * uSpeed) * uWaveAmplitude;
+				pt.x += floor(offsetX / w) * w; // * (pt.y - 1.0); // <- Uncomment to stop bottom part of the screen from moving
+			}
 			else if (effectType == EFFECT_TYPE_WAVY) 
 			{
 				float offsetY = sin(pt.x * uFrequency + uTime * uSpeed) * uWaveAmplitude;
 				pt.y += offsetY; // * (pt.y - 1.0); // <- Uncomment to stop bottom part of the screen from moving
+			}
+			else if (effectType == EFFECT_TYPE_PIXEL_WAVY) 
+			{
+				float w = 1 / openfl_TextureSize.x;
+				float h = 1 / openfl_TextureSize.y;
+
+				pt.x = floor(pt.x / w) * w;
+				float offsetY = sin(pt.x * uFrequency + uTime * uSpeed) * uWaveAmplitude;
+				pt.y += floor(offsetY / h) * h; // * (pt.y - 1.0); // <- Uncomment to stop bottom part of the screen from moving
 			}
 			else if (effectType == EFFECT_TYPE_HEAT_WAVE_HORIZONTAL)
 			{
