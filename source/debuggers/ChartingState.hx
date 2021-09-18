@@ -174,6 +174,8 @@ class ChartingState extends MusicBeatState
 		else
 			_song = Song.loadFromJson("test", "test");
 
+		_song.speed = PlayState.previousScrollSpeedLmao;
+
 		FlxG.mouse.visible = true;
 
 		tempBpm = _song.bpm;
@@ -666,6 +668,7 @@ class ChartingState extends MusicBeatState
 		{
 			var check:FlxUICheckBox = cast sender;
 			var label = check.getLabel().text;
+
 			switch (label)
 			{
 				case 'Camera points at P1':
@@ -674,6 +677,8 @@ class ChartingState extends MusicBeatState
 				case 'Change BPM?':
 					_song.notes[curSection].changeBPM = check.checked;
 					FlxG.log.add('changed bpm shit');
+
+					//if(check.checked == true)
 				case "Enemy Alt Animation":
 					_song.notes[curSection].altAnim = check.checked;
 			}
@@ -726,14 +731,17 @@ class ChartingState extends MusicBeatState
 	{
 		var daBPM:Float = _song.bpm;
 		var daPos:Float = 0;
+
 		for (i in 0...curSection)
 		{
 			if (_song.notes[i].changeBPM)
 			{
 				daBPM = _song.notes[i].bpm;
 			}
-			daPos += 4 * (1000 * 60 / daBPM);
+
+			daPos += 4 * (1000 * (60 / daBPM));
 		}
+
 		return daPos;
 	}
 
@@ -918,7 +926,7 @@ class ChartingState extends MusicBeatState
 			}
 		}
 
-		_song.bpm = tempBpm;
+		//_song.bpm = tempBpm;
 
 		/* if (FlxG.keys.justPressed.UP)
 				Conductor.changeBPM(Conductor.bpm + 1);
@@ -941,7 +949,7 @@ class ChartingState extends MusicBeatState
 			+ "\nSection: "
 			+ curSection
 			+ "\nBPM: "
-			+ tempBpm
+			+ Conductor.bpm
 			+ "\nCurStep: "
 			+ curStep
 			+ "\nCurBeat: "
@@ -976,6 +984,7 @@ class ChartingState extends MusicBeatState
 			songTime: 0,
 			bpm: 0
 		}
+
 		for (i in 0...Conductor.bpmChangeMap.length)
 		{
 			if (FlxG.sound.music.time > Conductor.bpmChangeMap[i].songTime)

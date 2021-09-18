@@ -1,5 +1,6 @@
 package utilities;
 
+import states.PlayState;
 import flixel.FlxG;
 
 class Ratings
@@ -7,8 +8,7 @@ class Ratings
     private static var timings:Array<Dynamic> = [
         [50, 'sick'],
         [70, 'good'],
-        [100, 'bad'],
-        [10000, 'shit'],
+        [100, 'bad']
     ];
 
     private static var scores:Array<Dynamic> = [
@@ -24,11 +24,14 @@ class Ratings
 
         for(x in timings)
         {
-            if(time <= x[0] && rating == 'bruh')
+            if(time <= x[0] * PlayState.songMultiplier && rating == 'bruh')
             {
                 rating = x[1];
             }
         }
+
+        if(rating == 'bruh')
+            rating = "shit";
 
         return rating;
     }

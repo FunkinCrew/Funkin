@@ -121,6 +121,8 @@ class BoolOption extends Option
 				Value = FlxG.save.data.bot;
 			case "middleScroll":
 				Value = FlxG.save.data.middleScroll;
+			case "noteSplashes":
+				Value = FlxG.save.data.noteSplashes;
 		}
 
 		return Value;
@@ -175,6 +177,8 @@ class BoolOption extends Option
 				FlxG.save.data.bot = !Option_Checked;
 			case "middleScroll":
 				FlxG.save.data.middleScroll = !Option_Checked;
+			case "noteSplashes":
+				FlxG.save.data.noteSplashes  = !Option_Checked;
 		}
 
         if(Option_Value != "muted")

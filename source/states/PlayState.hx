@@ -1,5 +1,6 @@
 package states;
 
+import game.NoteSplash;
 import flixel.graphics.frames.FlxFramesCollection;
 import flixel.tweens.misc.VarTween;
 import modding.ModchartUtilities;
@@ -176,10 +177,12 @@ class PlayState extends MusicBeatState
 	var missSounds:Array<FlxSound> = [];
 
 	public static var arrow_Texture:FlxFramesCollection;
+	public static var splash_Texture:FlxFramesCollection;
 
 	public static var arrow_Type_Sprites:Map<String, FlxFramesCollection> = new Map<String, FlxFramesCollection>();
 
 	public static var songMultiplier:Float = 1;
+	public static var previousScrollSpeedLmao:Float = 0;
 
 	override public function create()
 	{
@@ -226,10 +229,15 @@ class PlayState extends MusicBeatState
 		if(songMultiplier < 1)
 			songMultiplier = 1;
 
+		previousScrollSpeedLmao = SONG.speed;
+
 		SONG.speed /= songMultiplier;
 
-		if(SONG.speed < 1)
+		if(SONG.speed < 1 && songMultiplier > 1)
 			SONG.speed = 1;
+
+		Conductor.safeZoneOffset = Math.floor((Conductor.safeFrames / 60) * 1000);
+		Conductor.safeZoneOffset *= songMultiplier;
 
 		switch (SONG.song.toLowerCase())
 		{
@@ -330,7 +338,21 @@ class PlayState extends MusicBeatState
 
 		Note.swagWidth = 160 * (Std.parseFloat(ui_Settings[5]) - ((SONG.keyCount - 4) * 0.06));
 
-		arrow_Texture = Paths.getSparrowAtlas('ui skins/' + SONG.ui_Skin + "/arrows/default", 'shared');
+		if(Assets.exists(Paths.image('ui skins/' + SONG.ui_Skin + "/arrows/default", 'shared'), IMAGE))
+			arrow_Texture = Paths.getSparrowAtlas('ui skins/' + SONG.ui_Skin + "/arrows/default", 'shared');
+		else
+			arrow_Texture = Paths.getSparrowAtlasSYS('ui skins/' + SONG.ui_Skin + "/arrows/default", 'shared');
+
+		if(Std.parseInt(ui_Settings[6]) == 1)
+		{
+			if(Assets.exists(Paths.image('ui skins/' + SONG.ui_Skin + "/arrows/Note_Splashes", 'shared'), IMAGE))
+				splash_Texture = Paths.getSparrowAtlas('ui skins/' + SONG.ui_Skin + "/arrows/Note_Splashes", 'shared');
+			else
+				splash_Texture = Paths.getSparrowAtlasSYS('ui skins/' + SONG.ui_Skin + "/arrows/Note_Splashes", 'shared');
+		}
+		else
+			splash_Texture = Paths.getSparrowAtlas("ui skins/default/arrows/Note_Splashes", 'shared');
+
 		arrow_Type_Sprites.set('default', arrow_Texture);
 
 		if(SONG.gf == null)
@@ -1681,15 +1703,12 @@ class PlayState extends MusicBeatState
 							{
 								spr.animation.play('confirm', true);
 
-								/* SPLASH THING */
-								if(!daNote.isSustainNote)
+								if(!daNote.isSustainNote && FlxG.save.data.noteSplashes)
 								{
-									//var splash = splashes.members[daNote.noteData % 4];
-									//var numberRandomLolIGuessHeh = FlxG.random.int(1, 2);
-									//add(splash);
-									//splash.animation.play("chosen" + Std.string(numberRandomLolIGuessHeh));
+									var splash:NoteSplash = new NoteSplash(spr.x - (spr.width / 2), spr.y - (spr.height / 2), spr.ID);
+									splash.cameras = [camHUD];
+									add(splash);
 								}
-								/* END OF SPLASH */
 
 								spr.centerOffsets();
 
@@ -1977,14 +1996,17 @@ class PlayState extends MusicBeatState
 
 		hitNotes += hitNoteAmount;
 
-		/*
-		if (daRating == "sick")
+		if (daRating == "sick" && FlxG.save.data.noteSplashes)
 		{
-			var splash = splashes.members[noteData + SONG.keyCount];
-			var numberRandomLolIGuessHeh = FlxG.random.int(1, 2);
-			add(splash);
-			splash.animation.play("chosen" + Std.string(numberRandomLolIGuessHeh));
-		}*/
+			playerStrums.forEachAlive(function(spr:FlxSprite) {
+				if(spr.ID == Math.abs(noteData))
+				{
+					var splash:NoteSplash = new NoteSplash(spr.x - (spr.width / 2), spr.y - (spr.height / 2), noteData);
+					splash.cameras = [camHUD];
+					add(splash);
+				}
+			});
+		}
 
 		if(FlxG.save.data.accuracyMode == "simple")
 		{
@@ -2261,8 +2283,7 @@ class PlayState extends MusicBeatState
 				
 				notes.forEachAlive(function(daNote:Note)
 				{
-					if ((daNote.strumTime > (Conductor.songPosition - (Conductor.safeZoneOffset * 1.5))
-						&& daNote.strumTime < (Conductor.songPosition + (Conductor.safeZoneOffset * 0.5)))
+					if (daNote.strumTime <= Conductor.songPosition
 					&& daNote.mustPress && daNote.isSustainNote)
 						if(heldArray[daNote.noteData] && !thingsHit[daNote.noteData])
 						{
@@ -2327,7 +2348,7 @@ class PlayState extends MusicBeatState
 		else
 		{
 			notes.forEachAlive(function(note:Note) {
-				if(note.mustPress && note.strumTime <= Conductor.songPosition || note.canBeHit && note.mustPress && note.isSustainNote)
+				if(note.mustPress && note.strumTime <= Conductor.songPosition || note.strumTime <= Conductor.songPosition && note.canBeHit && note.mustPress && note.isSustainNote)
 				{
 					boyfriend.holdTimer = 0;
 

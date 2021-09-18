@@ -113,6 +113,7 @@ class PauseSubState extends MusicBeatSubstate
 				case "Resume":
 					close();
 				case "Restart Song":
+					PlayState.SONG.speed = PlayState.previousScrollSpeedLmao;
 					FlxG.resetState();
 				case "Exit to menu":
 					#if linc_luajit

@@ -47,6 +47,9 @@ class SaveData {
 
         if(FlxG.save.data.accuracyMode == null)
             FlxG.save.data.accuracyMode = "simple";
+
+        if(FlxG.save.data.noteSplashes == null)
+            FlxG.save.data.noteSplashes = true;
         
         Conductor.offset = FlxG.save.data.songOffset;
 
