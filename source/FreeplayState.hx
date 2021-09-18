@@ -35,11 +35,14 @@ class FreeplayState extends MusicBeatState
 	public static var songData:Map<String,Array<SwagSong>> = [];
 
 	var bg:FlxSprite;
+	var intendedColor:Int;
+	var colorTween:FlxTween;
 
 	private var grpSongs:FlxTypedGroup<Alphabet>;
 	private var curPlaying:Bool = false;
 
 	private var iconArray:Array<HealthIcon> = [];
+	public static var coolColors:Array<Int> = [];
 
 	override function create()
 	{
@@ -49,7 +52,11 @@ class FreeplayState extends MusicBeatState
 		{
 			var data:Array<String> = initSonglist[i].split(':');
 			songs.push(new SongMetadata(data[0], Std.parseInt(data[2]), data[1]));
-			curColor = Std.parseInt(data[3]);
+		}
+		var colorsList = CoolUtil.coolTextFile(Paths.txt('freeplayColors'));
+		for (i in 0...colorsList.length)
+		{
+			coolColors.push(Std.parseInt(colorsList[i]));
 		}
 
 		/* 
@@ -112,6 +119,8 @@ class FreeplayState extends MusicBeatState
 
 		add(scoreText);
 
+		bg.color = songs[curSelected].color;
+		intendedColor = bg.color;
 		changeSelection();
 		changeDiff();
 
@@ -264,12 +273,20 @@ class FreeplayState extends MusicBeatState
 		NGio.logEvent('Fresh');
 		#end
 
+		var newColor:Int = songs[curSelected].color;
+		if(newColor != intendedColor) {
+			intendedColor = newColor;
+			FlxTween.color(bg, 1, bg.color, intendedColor, {
+				onComplete: function(twn:FlxTween) {
+					colorTween = null;
+				}
+			});
+		}
+
 		// NGio.logEvent('Fresh');
 		FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 
 		curSelected += change;
-
-		FlxTween.tween(bg, {color: curColor}, 2, {ease: FlxEase.expoInOut});
 
 		if (curSelected < 0)
 			curSelected = songs.length - 1;
@@ -321,11 +338,15 @@ class SongMetadata
 	public var songName:String = "";
 	public var week:Int = 0;
 	public var songCharacter:String = "";
+	public var color:Int = -7179779;
 
 	public function new(song:String, week:Int, songCharacter:String)
 	{
 		this.songName = song;
 		this.week = week;
 		this.songCharacter = songCharacter;
+		if(week < FreeplayState.coolColors.length) {
+			this.color = FreeplayState.coolColors[week];
+		}
 	}
 }

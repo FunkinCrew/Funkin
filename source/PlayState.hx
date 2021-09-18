@@ -287,7 +287,7 @@ class PlayState extends MusicBeatState
 
 		                  isHalloween = true;
 		          }
-		          case 'pico' | 'blammed' | 'philly': 
+		          case 'pico' | 'blammed' | 'philly nice': 
                         {
 		                  curStage = 'philly';
 
@@ -329,7 +329,7 @@ class PlayState extends MusicBeatState
 		                  var street:FlxSprite = new FlxSprite(-40, streetBehind.y).loadGraphic(Paths.image('philly/street'));
 	                          add(street);
 		          }
-		          case 'milf' | 'satin-panties' | 'high':
+		          case 'm.i.l.f' | 'satin panties' | 'high':
 		          {
 		                  curStage = 'limo';
 		                  defaultCamZoom = 0.90;
@@ -432,7 +432,7 @@ class PlayState extends MusicBeatState
 		                  santa.antialiasing = true;
 		                  add(santa);
 		          }
-		          case 'winter-horrorland':
+		          case 'winter horrorland':
 		          {
 		                  curStage = 'mallEvil';
 		                  var bg:FlxSprite = new FlxSprite(-400, -500).loadGraphic(Paths.image('christmas/evilBG'));
@@ -581,7 +581,7 @@ class PlayState extends MusicBeatState
 		                            add(waveSpriteFG);
 		                    */
 		          }
-				case 'ugh' | 'guns' | 'stress':
+				case 'ugh' | 'guns' | 'stress' | 'endless':
 				{
 						curStage = 'tank';
 						defaultCamZoom = 0.9;
@@ -1272,6 +1272,8 @@ class PlayState extends MusicBeatState
 
 		if (!paused)
 			FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 1, false);
+		if(SONG.song.toLowerCase() == 'endless')
+			FlxG.sound.music.volume = 0.5;
 		FlxG.sound.music.onComplete = endSong;
 		vocals.play();
 
@@ -1412,7 +1414,7 @@ class PlayState extends MusicBeatState
 		for (i in 0...4)
 		{
 			// FlxG.log.add(i);
-			var babyArrow:FlxSprite = new FlxSprite(0, strumLine.y);
+			var babyArrow:FlxSprite = new FlxSprite(32, strumLine.y);
 
 			switch (curStage)
 			{
@@ -1509,6 +1511,7 @@ class PlayState extends MusicBeatState
 			babyArrow.animation.play('static');
 			babyArrow.x += 50;
 			babyArrow.x += ((FlxG.width / 2) * player);
+			FlxTween.tween(babyArrow, {angle: 360}, 0.5, {ease: FlxEase.expoInOut});
 
 			cpuStrums.forEach(function(spr:FlxSprite) {
 				spr.centerOffsets();
