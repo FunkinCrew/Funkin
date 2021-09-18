@@ -970,6 +970,9 @@ class ChartingState extends MusicBeatState
 			{
 				curSelectedNote[2] += value;
 				curSelectedNote[2] = Math.max(curSelectedNote[2], 0);
+
+				// lol so one e press works as a held note lmao
+				curSelectedNote[2] = Math.ceil(curSelectedNote[2]);
 			}
 		}
 
