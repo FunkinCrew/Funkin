@@ -1,0 +1,56 @@
+var doFunny = false;
+function start(song) {
+    if (OptionsHandler.options.stressTankmen || debug) {
+        doFunny = true;
+    }
+}
+
+
+function beatHit(beat)
+{
+
+}
+
+function update(elapsed)
+{
+    if (doFunny) {
+        if (curStep > 896 && curStep < 1024) {
+        dad.y -= 50 * elapsed;
+         }
+    // lmao he ascends get it guys
+    if (curStep > 1024 && curStep < 1152) {
+        boyfriend.y -= 50 * elapsed;
+    }
+    }
+    
+}
+
+function stepHit(step)
+{
+}
+
+function playerTwoTurn()
+{
+    
+}
+
+function playerTwoMiss()
+{
+    
+}
+
+function playerTwoSing()
+{
+}
+
+function playerOneTurn()
+{
+}
+
+function playerOneMiss()
+{
+}
+
+function playerOneSing()
+{
+}
