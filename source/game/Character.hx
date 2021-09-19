@@ -1,5 +1,6 @@
 package game;
 
+import flixel.FlxG;
 import flixel.addons.effects.FlxTrail;
 import flixel.util.FlxColor;
 import modding.CharacterCreationState.SpritesheetType;
