@@ -184,8 +184,13 @@ class PlayState extends MusicBeatState
 	public static var songMultiplier:Float = 1;
 	public static var previousScrollSpeedLmao:Float = 0;
 
+	var hasUsedBot:Bool = false;
+
 	override public function create()
 	{
+		if(FlxG.save.data.bot)
+			hasUsedBot = true;
+
 		for(i in 0...2)
 		{
 			var sound = FlxG.sound.load(Paths.sound('missnote' + Std.string((i + 1))), 0.2);
@@ -1843,7 +1848,7 @@ class PlayState extends MusicBeatState
 			if (SONG.validScore)
 			{
 				#if !switch
-				if(!FlxG.save.data.bot)
+				if(!hasUsedBot)
 				{
 					Highscore.saveScore(SONG.song, songScore, storyDifficulty);
 					Highscore.saveRank(SONG.song, Ratings.getRank(accuracy), storyDifficulty);
@@ -1877,7 +1882,7 @@ class PlayState extends MusicBeatState
 	
 					if (SONG.validScore)
 					{
-						if(!FlxG.save.data.bot)
+						if(!hasUsedBot)
 						{
 							Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficulty, (groupWeek != "" ? groupWeek + "Week" : "week"));
 						}
