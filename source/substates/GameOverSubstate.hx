@@ -22,11 +22,8 @@ class GameOverSubstate extends MusicBeatSubstate
 
 	public function new(x:Float, y:Float)
 	{
-		if(!FlxG.save.data.bot)
-		{
-			FlxG.save.data.deaths += 1;
-			FlxG.save.flush();
-		}
+		FlxG.save.data.deaths += 1;
+		FlxG.save.flush();
 
 		var daBf:String = '';
 		var playBF = PlayState.SONG.player1;
