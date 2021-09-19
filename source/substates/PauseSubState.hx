@@ -1,5 +1,6 @@
 package substates;
 
+import utilities.Difficulties;
 import states.FreeplayState;
 import states.StoryMenuState;
 import states.LoadingState;
@@ -24,7 +25,7 @@ class PauseSubState extends MusicBeatSubstate
 {
 	var grpMenuShit:FlxTypedGroup<Alphabet>;
 
-	var menuItems:Array<String> = ['Resume', 'Restart Song', 'Exit to menu'];
+	var menuItems:Array<String> = ['Resume', 'Restart Song', 'Bot', 'Exit to menu'];
 	var curSelected:Int = 0;
 
 	var pauseMusic:FlxSound;
@@ -47,14 +48,15 @@ class PauseSubState extends MusicBeatSubstate
 		var levelInfo:FlxText = new FlxText(20, 15, 0, "", 32);
 		levelInfo.text += PlayState.SONG.song;
 		levelInfo.scrollFactor.set();
-		levelInfo.setFormat(Paths.font("vcr.ttf"), 32);
+		levelInfo.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, RIGHT);
 		levelInfo.updateHitbox();
 		add(levelInfo);
 
 		var levelDifficulty:FlxText = new FlxText(20, 15 + 32, 0, "", 32);
 		levelDifficulty.text += CoolUtil.difficultyString();
+		levelDifficulty.text += "\nDeaths: " + FlxG.save.data.deaths + "\n";
 		levelDifficulty.scrollFactor.set();
-		levelDifficulty.setFormat(Paths.font('vcr.ttf'), 32);
+		levelDifficulty.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, RIGHT);
 		levelDifficulty.updateHitbox();
 		add(levelDifficulty);
 
@@ -115,6 +117,16 @@ class PauseSubState extends MusicBeatSubstate
 				case "Restart Song":
 					PlayState.SONG.speed = PlayState.previousScrollSpeedLmao;
 					FlxG.resetState();
+				case "Bot":
+					FlxG.save.data.bot = !FlxG.save.data.bot;
+					FlxG.save.flush();
+
+					@:privateAccess
+					{
+						PlayState.instance.infoTxt.text = PlayState.SONG.song + " - " + Std.string(Difficulties.numToDiff(PlayState.storyDifficulty)) + (FlxG.save.data.bot ? " (BOT)" : "");
+						PlayState.instance.infoTxt.screenCenter(X);
+						PlayState.instance.hasUsedBot = true;
+					}
 				case "Exit to menu":
 					#if linc_luajit
 					if (PlayState.luaModchart != null)

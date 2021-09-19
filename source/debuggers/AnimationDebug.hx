@@ -25,8 +25,7 @@ class AnimationDebug extends MusicBeatState
 	var bf:Boyfriend;
 	var dad:Character;
 	var char:Character;
-	var textAnim:FlxText;
-	var dumbTexts:FlxTypedGroup<FlxText>;
+	var animText:FlxText;
 	var animList:Array<String> = [];
 	var curAnim:Int = 0;
 	var isDad:Bool = true;
@@ -39,6 +38,16 @@ class AnimationDebug extends MusicBeatState
 		this.daAnim = daAnim;
 	}
 
+	var characters:Map<String, Array<String>> = [
+		"default" => ["bf", "gf"]
+	];
+
+	var modListLmao:Array<String> = ["default"];
+	var curCharList:Array<String>;
+
+	var charDropDown:FlxUIDropDownMenu;
+	var modDropDown:FlxUIDropDownMenu;
+
 	override function create()
 	{
 		FlxG.mouse.visible = true;
@@ -47,7 +56,7 @@ class AnimationDebug extends MusicBeatState
 			FlxG.sound.music.stop();
 
 		var gridBG:FlxSprite = FlxGridOverlay.create(10, 10);
-		gridBG.scrollFactor.set(0.5, 0.5);
+		gridBG.scrollFactor.set(0, 0);
 		add(gridBG);
 
 		if (daAnim == 'bf')
@@ -72,13 +81,16 @@ class AnimationDebug extends MusicBeatState
 			bf.flipX = false;
 		}
 
-		dumbTexts = new FlxTypedGroup<FlxText>();
-		add(dumbTexts);
+		animText = new FlxText(2, 2, 0, "BRUH BRUH BRUH: [0,0]", 20);
+		animText.scrollFactor.set();
+		animText.color = FlxColor.BLUE;
+		add(animText);
 
-		textAnim = new FlxText(300, 16);
-		textAnim.size = 26;
-		textAnim.scrollFactor.set();
-		add(textAnim);
+		var moveText = new FlxText(2, 2, 0, "Use IJKL to move the camera", 20);
+		moveText.x = FlxG.width - moveText.width;
+		moveText.scrollFactor.set();
+		moveText.color = FlxColor.BLUE;
+		add(moveText);
 
 		genBoyOffsets();
 
@@ -98,45 +110,85 @@ class AnimationDebug extends MusicBeatState
 
 		char.screenCenter();
 
-		var characters:Array<String> = ["bf", "gf"];
-
 		for(item in characterData)
 		{
-			characters.push(item.split(":")[0]);
+			var characterDataVal:Array<String> = item.split(":");
+
+			var charName:String = characterDataVal[0];
+			var charMod:String = characterDataVal[1];
+
+			var charsLmao:Array<String> = [];
+
+			if(characters.exists(charMod))
+				charsLmao = characters.get(charMod);
+			else
+				modListLmao.push(charMod);
+
+			charsLmao.push(charName);
+			characters.set(charMod, charsLmao);
 		}
 
-		var charDropDown = new FlxUIDropDownMenu(10, 500, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
+		curCharList = characters.get("default");
+
+		charDropDown = new FlxUIDropDownMenu(10, 500, FlxUIDropDownMenu.makeStrIdLabelArray(curCharList, true), function(character:String)
 		{
 			remove(char);
 			char.kill();
 			char.destroy();
 
-			daAnim = characters[Std.parseInt(character)];
+			daAnim = curCharList[Std.parseInt(character)];
 			char = new Character(0, 0, daAnim);
 			char.debugMode = true;
 			add(char);
 			char.screenCenter();
-			updateTexts();
 			animList = [];
 			genBoyOffsets(true);
 		});
 
 		charDropDown.selectedLabel = daAnim;
+		charDropDown.scrollFactor.set();
 		add(charDropDown);
+
+		modDropDown = new FlxUIDropDownMenu(charDropDown.x + charDropDown.width + 1, charDropDown.y, FlxUIDropDownMenu.makeStrIdLabelArray(modListLmao, true), function(modID:String)
+		{
+			var mod:String = modListLmao[Std.parseInt(modID)];
+
+			if(characters.exists(mod))
+			{
+				curCharList = characters.get(mod);
+				charDropDown.setData(FlxUIDropDownMenu.makeStrIdLabelArray(curCharList, true));
+				charDropDown.selectedLabel = curCharList[0];
+
+				remove(char);
+				char.kill();
+				char.destroy();
+
+				daAnim = curCharList[0];
+				char = new Character(0, 0, daAnim);
+				char.debugMode = true;
+				add(char);
+				char.screenCenter();
+				animList = [];
+				genBoyOffsets(true);
+			}
+		});
+
+		modDropDown.selectedLabel = "default";
+		modDropDown.scrollFactor.set();
+		add(modDropDown);
 
 		super.create();
 	}
 
 	function genBoyOffsets(pushList:Bool = true):Void
 	{
+		animText.text = "";
+
 		var daLoop:Int = 0;
 
 		for (anim => offsets in char.animOffsets)
 		{
-			var text:FlxText = new FlxText(10, 20 + (18 * daLoop), 0, anim + ": " + offsets, 15);
-			text.scrollFactor.set();
-			text.color = FlxColor.BLUE;
-			dumbTexts.add(text);
+			animText.text += anim + (anim == animList[curAnim] ? " (current) " : "") + ": " + offsets + "\n";
 
 			if (pushList)
 				animList.push(anim);
@@ -145,19 +197,8 @@ class AnimationDebug extends MusicBeatState
 		}
 	}
 
-	function updateTexts():Void
-	{
-		dumbTexts.forEach(function(text:FlxText)
-		{
-			text.kill();
-			dumbTexts.remove(text, true);
-		});
-	}
-
 	override function update(elapsed:Float)
 	{
-		textAnim.text = char.animation.curAnim.name;
-
 		if (FlxG.keys.justPressed.E)
 			FlxG.camera.zoom += 0.25;
 		if (FlxG.keys.justPressed.Q)
@@ -208,7 +249,6 @@ class AnimationDebug extends MusicBeatState
 			char.playAnim(animList[curAnim]);
 			char.screenCenter();
 
-			updateTexts();
 			genBoyOffsets(false);
 		}
 
@@ -224,7 +264,6 @@ class AnimationDebug extends MusicBeatState
 
 		if (upP || rightP || downP || leftP)
 		{
-			updateTexts();
 			if (upP)
 				char.animOffsets.get(animList[curAnim])[1] += 1 * multiplier;
 			if (downP)
@@ -234,7 +273,6 @@ class AnimationDebug extends MusicBeatState
 			if (rightP)
 				char.animOffsets.get(animList[curAnim])[0] -= 1 * multiplier;
 
-			updateTexts();
 			genBoyOffsets(false);
 			char.playAnim(animList[curAnim]);
 		}

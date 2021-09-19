@@ -50,6 +50,9 @@ class SaveData {
 
         if(FlxG.save.data.noteSplashes == null)
             FlxG.save.data.noteSplashes = true;
+
+        if(FlxG.save.data.deaths == null)
+            FlxG.save.data.deaths = 0;
         
         Conductor.offset = FlxG.save.data.songOffset;
 
