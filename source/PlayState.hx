@@ -49,7 +49,7 @@ class PlayState extends MusicBeatState
 
 	var halloweenLevel:Bool = false;
 
-	private var vocals:FlxSound;
+	private var vocals:VoicesGroup;
 	private var vocalsFinished:Bool = false;
 
 	private var dad:Character;
@@ -1524,15 +1524,16 @@ class PlayState extends MusicBeatState
 		curSong = songData.song;
 
 		if (SONG.needsVoices)
-			vocals = new FlxSound().loadEmbedded(Paths.voices(SONG.song));
+		{
+			vocals = new VoicesGroup(SONG.song);
+		}
 		else
-			vocals = new FlxSound();
+			vocals = new VoicesGroup(SONG.song, null, false);
 
-		vocals.onComplete = function()
+		vocals.members[0].onComplete = function()
 		{
 			vocalsFinished = true;
 		};
-		FlxG.sound.list.add(vocals);
 
 		notes = new FlxTypedGroup<Note>();
 		add(notes);

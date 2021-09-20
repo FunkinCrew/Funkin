@@ -7,10 +7,21 @@ class VoicesGroup extends FlxTypedGroup<FlxSound>
 {
 	public var time(default, set):Float = 0;
 
+	public var volume(default, set):Float = 1;
+
 	// make it a group that you add to?
-	public function new(song:String, ?files:Array<String>)
+	public function new(song:String, ?files:Array<String>, ?needsVoices:Bool = true)
 	{
 		super();
+
+		if (!needsVoices)
+		{
+			// simply adds an empty sound? fills it in moreso for easier backwards compatibility
+			add(new FlxSound());
+			// FlxG.sound.list.add(snd);
+
+			return;
+		}
 
 		if (files == null)
 			files = [""]; // loads with no file name assumption, to load "Voices.ogg" or whatev normally
@@ -57,5 +68,16 @@ class VoicesGroup extends FlxTypedGroup<FlxSound>
 		});
 
 		return time;
+	}
+
+	// in PlayState, adjust the code so that it only mutes the player1 vocal tracks?
+	function set_volume(volume:Float):Float
+	{
+		forEachAlive(function(snd)
+		{
+			snd.volume = volume;
+		});
+
+		return volume;
 	}
 }
