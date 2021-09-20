@@ -82,7 +82,7 @@ class ChartingState extends MusicBeatState
 
 	var tempBpm:Float = 0;
 
-	var vocals:FlxSound;
+	var vocals:VoicesGroup;
 
 	var leftIcon:HealthIcon;
 	var rightIcon:HealthIcon;
@@ -404,17 +404,18 @@ class ChartingState extends MusicBeatState
 		add(playheadTest);
 
 		// WONT WORK FOR TUTORIAL OR TEST SONG!!! REDO LATER
-		vocals = new FlxSound().loadEmbedded(Paths.voices(daSong));
-		FlxG.sound.list.add(vocals);
+		vocals = new VoicesGroup(daSong);
+		// vocals = new FlxSound().loadEmbedded(Paths.voices(daSong));
+		// FlxG.sound.list.add(vocals);
 
-		var vocalSpec:SpectogramSprite = new SpectogramSprite(vocals);
+		var vocalSpec:SpectogramSprite = new SpectogramSprite(vocals.members[0]);
 		vocalSpec.x += 70;
 		vocalSpec.daHeight = musSpec.daHeight;
 		vocalSpec.y = vocalSpec.daHeight;
 		vocalSpec.scrollFactor.set();
 		add(vocalSpec);
 
-		spec = new SpectogramSprite(vocals);
+		spec = new SpectogramSprite(vocals.members[0]);
 		spec.x -= 150;
 		spec.daHeight = GRID_SIZE * 16;
 		spec.visType = STATIC;

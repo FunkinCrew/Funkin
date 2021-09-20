@@ -103,7 +103,7 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 
 	public function checkAndSetBuffer()
 	{
-		if (daSound.playing)
+		if (daSound != null && daSound.playing)
 		{
 			if (!setBuffer)
 			{
