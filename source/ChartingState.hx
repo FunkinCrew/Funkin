@@ -91,6 +91,8 @@ class ChartingState extends MusicBeatState
 
 	var playheadTest:FlxSprite;
 
+	var staticSpecGrp:FlxTypedGroup<SpectogramSprite>;
+
 	override function create()
 	{
 		curSection = lastSection;
@@ -134,7 +136,8 @@ class ChartingState extends MusicBeatState
 				player1: 'bf',
 				player2: 'dad',
 				speed: 1,
-				validScore: false
+				validScore: false,
+				voiceList: ["BF", "BF-pixel"]
 			};
 		}
 
@@ -157,7 +160,7 @@ class ChartingState extends MusicBeatState
 		bpmTxt.scrollFactor.set();
 		add(bpmTxt);
 
-		strumLine = new FlxSprite(0, 50).makeGraphic(Std.int(FlxG.width / 2), 4);
+		strumLine = new FlxSprite(0, 50).makeGraphic(Std.int(GRID_SIZE * 8), 4);
 		add(strumLine);
 
 		dummyArrow = new FlxSprite().makeGraphic(GRID_SIZE, GRID_SIZE);
@@ -172,8 +175,8 @@ class ChartingState extends MusicBeatState
 		UI_box = new FlxUITabMenu(null, tabs, true);
 
 		UI_box.resize(300, 400);
-		UI_box.x = FlxG.width / 2;
-		UI_box.y = 20;
+		UI_box.x = (FlxG.width / 4) * 3;
+		UI_box.y = 120;
 		add(UI_box);
 
 		addSongUI();
@@ -278,7 +281,7 @@ class ChartingState extends MusicBeatState
 		UI_box.addGroup(tab_group_song);
 		UI_box.scrollFactor.set();
 
-		FlxG.camera.follow(strumLine);
+		FlxG.camera.focusOn(gridBG.getGraphicMidpoint());
 	}
 
 	var stepperLength:FlxUINumericStepper;
@@ -363,7 +366,7 @@ class ChartingState extends MusicBeatState
 		UI_box.addGroup(tab_group_note);
 	}
 
-	var spec:SpectogramSprite;
+	// var spec:SpectogramSprite;
 
 	function loadSong(daSong:String):Void
 	{
@@ -404,22 +407,33 @@ class ChartingState extends MusicBeatState
 		add(playheadTest);
 
 		// WONT WORK FOR TUTORIAL OR TEST SONG!!! REDO LATER
-		vocals = new VoicesGroup(daSong);
+		vocals = new VoicesGroup(daSong, _song.voiceList);
 		// vocals = new FlxSound().loadEmbedded(Paths.voices(daSong));
 		// FlxG.sound.list.add(vocals);
 
-		var vocalSpec:SpectogramSprite = new SpectogramSprite(vocals.members[0]);
-		vocalSpec.x += 70;
-		vocalSpec.daHeight = musSpec.daHeight;
-		vocalSpec.y = vocalSpec.daHeight;
-		vocalSpec.scrollFactor.set();
-		add(vocalSpec);
+		staticSpecGrp = new FlxTypedGroup<SpectogramSprite>();
+		add(staticSpecGrp);
 
-		spec = new SpectogramSprite(vocals.members[0]);
-		spec.x -= 150;
-		spec.daHeight = GRID_SIZE * 16;
-		spec.visType = STATIC;
-		add(spec);
+		for (index => voc in vocals.members)
+		{
+			var vocalSpec:SpectogramSprite = new SpectogramSprite(voc, FlxG.random.color(0xFFAAAAAA, FlxColor.WHITE, 100));
+			vocalSpec.x = 70 - (50 * index);
+			vocalSpec.daHeight = musSpec.daHeight;
+			vocalSpec.y = vocalSpec.daHeight;
+			vocalSpec.scrollFactor.set();
+			add(vocalSpec);
+
+			var staticVocal:SpectogramSprite = new SpectogramSprite(voc, FlxG.random.color(0xFFAAAAAA, FlxColor.WHITE, 100));
+			if (index == 0)
+				staticVocal.x -= 150;
+
+			if (index == 1)
+				staticVocal.x = gridBG.width;
+
+			staticVocal.daHeight = GRID_SIZE * 16;
+			staticVocal.visType = STATIC;
+			staticSpecGrp.add(staticVocal);
+		}
 
 		FlxG.sound.music.pause();
 
@@ -536,11 +550,7 @@ class ChartingState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
-		if (FlxG.keys.justPressed.B)
-		{
-			spec.visType = STATIC;
-			spec.generateSection(sectionStartTime(), (Conductor.stepCrochet * 32) / 1000);
-		}
+		// FlxG.camera.followLerp = CoolUtil.camLerpShit(0.05);
 
 		curStep = recalculateSteps();
 
@@ -692,7 +702,10 @@ class ChartingState extends MusicBeatState
 				FlxG.sound.music.pause();
 				vocals.pause();
 
-				FlxG.sound.music.time -= (FlxG.mouse.wheel * Conductor.stepCrochet * 0.4);
+				var ctrlMod:Float = FlxG.keys.pressed.CONTROL ? 0.1 : 1;
+				var shiftMod:Float = FlxG.keys.pressed.SHIFT ? 2 : 1;
+
+				FlxG.sound.music.time -= (FlxG.mouse.wheel * Conductor.stepCrochet * 0.4 * ctrlMod * shiftMod);
 				vocals.time = FlxG.sound.music.time;
 			}
 
@@ -754,9 +767,9 @@ class ChartingState extends MusicBeatState
 		if (FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.A)
 			changeSection(curSection - shiftThing);
 
-		bpmTxt.text = bpmTxt.text = Std.string(FlxMath.roundDecimal(Conductor.songPosition / 1000, 2))
+		bpmTxt.text = bpmTxt.text = Std.string(FlxMath.roundDecimal(Conductor.songPosition / 1000, 3))
 			+ " / "
-			+ Std.string(FlxMath.roundDecimal(FlxG.sound.music.length / 1000, 2))
+			+ Std.string(FlxMath.roundDecimal(FlxG.sound.music.length / 1000, 3))
 			+ "\nSection: "
 			+ curSection;
 		super.update(elapsed);
@@ -919,8 +932,15 @@ class ChartingState extends MusicBeatState
 
 	function updateGrid():Void
 	{
-		if (spec != null)
-			spec.generateSection(sectionStartTime(), (Conductor.stepCrochet * 32) / 1000);
+		// null if checks jus cuz i put updateGrid() in some weird places!
+		if (staticSpecGrp != null)
+		{
+			staticSpecGrp.forEach(function(spec)
+			{
+				if (spec != null)
+					spec.generateSection(sectionStartTime(), (Conductor.stepCrochet * 32) / 1000);
+			});
+		}
 
 		while (curRenderedNotes.members.length > 0)
 		{
