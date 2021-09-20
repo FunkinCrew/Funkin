@@ -5,8 +5,9 @@ import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
+import flixel.addons.display.FlxGridOverlay;
 
-class LatencyState extends FlxState
+class LatencyState extends MusicBeatState
 {
 	var offsetText:FlxText;
 	var noteGrp:FlxTypedGroup<Note>;
