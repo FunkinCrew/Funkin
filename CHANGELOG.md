@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Cool waveform stuff for chart editor
 - Noises in chart editor lol!
 - 3 AWESOME PICO VS. DARNELL SONGS!!
+- Character offset editor / spritesheet viewer
 ## Changed
 - The wave-y effect on Thorns for the school is now a shader, instead of a pre-baked animation!
 
@@ -19,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Can now change song difficulty mid-game.
 - Shows some song info on pause screen.
 - Cute little icons onto freeplay menu
+- Offset files for easier modification of characters
 ### Changed
 - ASSET LOADING OVERHAUL, WAY FASTER LOAD TIMES ON WEB!!! (THANKS TO GEOKURELI WOKE KING)
 - Made difficulty selector on freeplay menu more apparent
