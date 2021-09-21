@@ -548,6 +548,9 @@ class ChartingState extends MusicBeatState
 		return daPos;
 	}
 
+	var p1Muted:Bool = false;
+	var p2Muted:Bool = false;
+
 	override function update(elapsed:Float)
 	{
 		// FlxG.camera.followLerp = CoolUtil.camLerpShit(0.05);
@@ -588,35 +591,94 @@ class ChartingState extends MusicBeatState
 		FlxG.watch.addQuick('daBeat', curBeat);
 		FlxG.watch.addQuick('daStep', curStep);
 
-		if (FlxG.mouse.justPressed)
+		if (FlxG.mouse.pressed)
 		{
-			if (FlxG.mouse.overlaps(curRenderedNotes))
+			if (FlxG.keys.pressed.ALT)
 			{
-				curRenderedNotes.forEach(function(note:Note)
+				if (FlxG.sound.music.playing)
 				{
-					if (FlxG.mouse.overlaps(note))
-					{
-						if (FlxG.keys.pressed.CONTROL)
-						{
-							selectNote(note);
-						}
-						else
-						{
-							trace('tryin to delete note...');
-							deleteNote(note);
-						}
-					}
-				});
+					FlxG.sound.music.pause();
+					vocals.pause();
+				}
+
+				FlxG.sound.music.time = getStrumTime(FlxG.mouse.y) + sectionStartTime();
+				vocals.time = FlxG.sound.music.time;
 			}
 			else
 			{
-				if (FlxG.mouse.x > gridBG.x
-					&& FlxG.mouse.x < gridBG.x + gridBG.width
-					&& FlxG.mouse.y > gridBG.y
-					&& FlxG.mouse.y < gridBG.y + (GRID_SIZE * _song.notes[curSection].lengthInSteps))
+				if (FlxG.mouse.justPressed)
 				{
-					FlxG.log.add('added note');
-					addNote();
+					if (FlxG.mouse.overlaps(leftIcon))
+					{
+						if (leftIcon.char == _song.player1)
+						{
+							p1Muted = !p1Muted;
+							leftIcon.animation.curAnim.curFrame = p1Muted ? 1 : 0;
+						}
+						else
+						{
+							p2Muted = !p2Muted;
+
+							leftIcon.animation.curAnim.curFrame = p2Muted ? 1 : 0;
+						}
+
+						vocals.members[0].volume = p1Muted ? 0 : 1;
+
+						// null check jus in case using old shit?
+						if (vocals.members[1] != null)
+							vocals.members[1].volume = p2Muted ? 0 : 1;
+					}
+
+					// sloppy copypaste lol deal with it!
+					if (FlxG.mouse.overlaps(rightIcon))
+					{
+						if (rightIcon.char == _song.player1)
+						{
+							p1Muted = !p1Muted;
+							rightIcon.animation.curAnim.curFrame = p1Muted ? 1 : 0;
+						}
+						else
+						{
+							rightIcon.animation.curAnim.curFrame = p2Muted ? 1 : 0;
+							p2Muted = !p2Muted;
+						}
+
+						vocals.members[0].volume = p1Muted ? 0 : 1;
+
+						// null check jus in case using old shit?
+						if (vocals.members[1] != null)
+							vocals.members[1].volume = p2Muted ? 0 : 1;
+					}
+
+					if (FlxG.mouse.overlaps(curRenderedNotes))
+					{
+						curRenderedNotes.forEach(function(note:Note)
+						{
+							if (FlxG.mouse.overlaps(note))
+							{
+								if (FlxG.keys.pressed.CONTROL)
+								{
+									selectNote(note);
+								}
+								else
+								{
+									trace('tryin to delete note...');
+									deleteNote(note);
+								}
+							}
+						});
+					}
+					else
+					{
+						if (FlxG.mouse.x > gridBG.x
+							&& FlxG.mouse.x < gridBG.x + gridBG.width
+							&& FlxG.mouse.y > gridBG.y
+							&& FlxG.mouse.y < gridBG.y + (GRID_SIZE * _song.notes[curSection].lengthInSteps))
+						{
+							FlxG.log.add('added note');
+							addNote();
+						}
+					}
 				}
 			}
 		}
@@ -914,11 +976,17 @@ class ChartingState extends MusicBeatState
 		{
 			leftIcon.changeIcon(_song.player1);
 			rightIcon.changeIcon(_song.player2);
+
+			leftIcon.animation.curAnim.curFrame = p1Muted ? 1 : 0;
+			rightIcon.animation.curAnim.curFrame = p2Muted ? 1 : 0;
 		}
 		else
 		{
 			leftIcon.changeIcon(_song.player2);
 			rightIcon.changeIcon(_song.player1);
+
+			leftIcon.animation.curAnim.curFrame = p2Muted ? 1 : 0;
+			rightIcon.animation.curAnim.curFrame = p1Muted ? 1 : 0;
 		}
 		leftIcon.setGraphicSize(0, 45);
 		rightIcon.setGraphicSize(0, 45);

@@ -1525,7 +1525,7 @@ class PlayState extends MusicBeatState
 
 		if (SONG.needsVoices)
 		{
-			vocals = new VoicesGroup(SONG.song);
+			vocals = new VoicesGroup(SONG.song, SONG.voiceList);
 		}
 		else
 			vocals = new VoicesGroup(SONG.song, null, false);

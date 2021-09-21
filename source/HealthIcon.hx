@@ -12,7 +12,8 @@ class HealthIcon extends FlxSprite
 	 */
 	public var sprTracker:FlxSprite;
 
-	var char:String = '';
+	public var char:String = '';
+
 	var isPlayer:Bool = false;
 
 	public function new(char:String = 'bf', isPlayer:Bool = false)
