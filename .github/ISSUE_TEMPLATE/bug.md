@@ -4,6 +4,7 @@ about: Report a bug or critical performance issue
 title: 'Bug Report: [DESCRIBE YOUR BUG IN DETAIL HERE]'
 labels: bug
 ---
+#### PLEASE TYPE ON THE BODY AND NOT THE TITLE
 
 [weed]: <> (FILL THIS ISSUE THING OUT AS MUCH AS POSSIBLE)
 [weed]: <> (OR ELSE YOUR ISSUE WILL BE LESS LIKELY TO BE SOLVED!)
@@ -41,4 +42,4 @@ labels: bug
 
 
 
-## If you're game is FROZEN and you're playing a web version, press F12 to open up browser dev window, and go to console, and copy-paste whatever red error you're getting
+## If your game is FROZEN and you're playing a web version, press F12 (or CRTL+SHIFT+I) to open up browser dev window, and go to console, and copy-paste whatever red error you're getting
