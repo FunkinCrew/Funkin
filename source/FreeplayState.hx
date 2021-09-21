@@ -366,14 +366,16 @@ class FreeplayState extends MusicBeatState
 
 			var poop:String = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), curDifficulty);
 
-			if (!Assets.exists(Paths.json(songs[curSelected].songName + '/' + poop)))
-			{
-				// defaults to normal if HARD / EASY doesn't exist
-				// does not account if NORMAL doesn't exist!
-				FlxG.log.warn("CURRENT DIFFICULTY IS NOT CHARTED, DEFAULTING TO NORMAL!");
-				poop = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), 1);
-				curDifficulty = 1;
-			}
+			// does not work properly, always just accidentally sets it to normal anyways!
+			/* if (!Assets.exists(Paths.json(songs[curSelected].songName + '/' + poop)))
+				{
+					// defaults to normal if HARD / EASY doesn't exist
+					// does not account if NORMAL doesn't exist!
+					FlxG.log.warn("CURRENT DIFFICULTY IS NOT CHARTED, DEFAULTING TO NORMAL!");
+					poop = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), 1);
+					curDifficulty = 1;
+			}*/
+
 			PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
 			PlayState.isStoryMode = false;
 			PlayState.storyDifficulty = curDifficulty;

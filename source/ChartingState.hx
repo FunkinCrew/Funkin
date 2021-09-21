@@ -591,6 +591,18 @@ class ChartingState extends MusicBeatState
 		FlxG.watch.addQuick('daBeat', curBeat);
 		FlxG.watch.addQuick('daStep', curStep);
 
+		if (FlxG.mouse.pressedMiddle)
+		{
+			if (FlxG.sound.music.playing)
+			{
+				FlxG.sound.music.pause();
+				vocals.pause();
+			}
+
+			FlxG.sound.music.time = getStrumTime(FlxG.mouse.y) + sectionStartTime();
+			vocals.time = FlxG.sound.music.time;
+		}
+
 		if (FlxG.mouse.pressed)
 		{
 			if (FlxG.keys.pressed.ALT)
