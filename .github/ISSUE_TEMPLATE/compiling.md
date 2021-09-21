@@ -4,6 +4,7 @@ about: If you need help compiling the game, and you're running into issues. (Loo
 title: 'Compiling help: [BRIEF DESCRIPTION / ERROR MESSAGE OUTPUT]'
 labels: compiling help
 ---
+#### PLEASE TYPE ON THE BODY AND NOT THE TITLE
 
 [weed]: <> (FILL THIS ISSUE THING OUT AS MUCH AS POSSIBLE)
 [weed]: <> (OR ELSE YOUR ISSUE WILL BE LESS LIKELY TO BE SOLVED!)
