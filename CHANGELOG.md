@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 3 AWESOME PICO VS. DARNELL SONGS!!
 - Character offset editor / spritesheet viewer
 ## Changed
+- Health gain is different depending on how accurate you hit notes!
+- slight less health gained on sustain notes
 - The wave-y effect on Thorns for the school is now a shader, instead of a pre-baked animation!
 
 ## [0.2.8] - 2021-04-18 (note, this one is iffy cuz we slacked wit it lol!)

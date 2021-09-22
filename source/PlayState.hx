@@ -2342,24 +2342,38 @@ class PlayState extends MusicBeatState
 
 		var isSick:Bool = true;
 
+		var healthMulti:Float = 1;
+
+		if (daNote.noteData >= 0)
+			healthMulti *= 0.023;
+		else
+			healthMulti *= 0.002;
+
 		if (noteDiff > Note.HIT_WINDOW * Note.BAD_THRESHOLD)
 		{
+			healthMulti *= 0; // no health on shit note
 			daRating = 'shit';
 			score = 50;
 			isSick = false; // shitty copypaste on this literally just because im lazy and tired lol!
 		}
 		else if (noteDiff > Note.HIT_WINDOW * Note.GOOD_THRESHOLD)
 		{
+			healthMulti *= 0.5;
+
 			daRating = 'bad';
 			score = 100;
 			isSick = false;
 		}
 		else if (noteDiff > Note.HIT_WINDOW * Note.SICK_THRESHOLD)
 		{
+			healthMulti *= 0.70;
+
 			daRating = 'good';
 			score = 200;
 			isSick = false;
 		}
+
+		health += healthMulti;
 
 		if (isSick)
 		{
@@ -2814,11 +2828,6 @@ class PlayState extends MusicBeatState
 				combo += 1;
 				popUpScore(note.strumTime, note);
 			}
-
-			if (note.noteData >= 0)
-				health += 0.023;
-			else
-				health += 0.004;
 
 			switch (note.noteData)
 			{
