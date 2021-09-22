@@ -2159,7 +2159,7 @@ class PlayState extends MusicBeatState
 				{
 					if (daNote.tooLate)
 					{
-						health -= 0.0475;
+						health -= 0.0775;
 						vocals.volume = 0;
 						killCombo();
 					}
@@ -2345,7 +2345,7 @@ class PlayState extends MusicBeatState
 		var healthMulti:Float = 1;
 
 		if (daNote.noteData >= 0)
-			healthMulti *= 0.023;
+			healthMulti *= 0.033;
 		else
 			healthMulti *= 0.002;
 
@@ -2366,7 +2366,7 @@ class PlayState extends MusicBeatState
 		}
 		else if (noteDiff > Note.HIT_WINDOW * Note.SICK_THRESHOLD)
 		{
-			healthMulti *= 0.70;
+			healthMulti *= 0.78;
 
 			daRating = 'good';
 			score = 200;
@@ -2769,7 +2769,7 @@ class PlayState extends MusicBeatState
 	function noteMiss(direction:Int = 1):Void
 	{
 		// whole function used to be encased in if (!boyfriend.stunned)
-		health -= 0.04;
+		health -= 0.07;
 		killCombo();
 
 		if (!practiceMode)
