@@ -2358,7 +2358,7 @@ class PlayState extends MusicBeatState
 		}
 		else if (noteDiff > Note.HIT_WINDOW * Note.GOOD_THRESHOLD)
 		{
-			healthMulti *= 0.5;
+			healthMulti *= 0.2;
 
 			daRating = 'bad';
 			score = 100;

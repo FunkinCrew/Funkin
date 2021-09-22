@@ -709,6 +709,8 @@ class ChartingState extends MusicBeatState
 
 		if (FlxG.keys.justPressed.ENTER)
 		{
+			autosaveSong();
+
 			lastSection = curSection;
 
 			PlayState.SONG = _song;
