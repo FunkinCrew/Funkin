@@ -183,25 +183,6 @@ class Stage extends MusicBeatState
 					limo.antialiasing = FlxG.save.data.antialiasing;
 					layInFront[0].push(limo);
 					swagBacks['limo'] = limo;
-
-					/* For Testing 
-
-						if (PlayState.SONG.song.toLowerCase() == "m.i.l.f")
-						{
-							hideLastBG = true;
-							slowBacks[40] = [limo];
-							slowBacks[240] = [
-								limo,
-								bgLimo,
-								skyBG,
-								fastCar,
-								swagBacks['dancer0'],
-								swagBacks['dancer1'],
-								swagBacks['dancer2'],
-								swagBacks['dancer3'],
-								swagBacks['dancer4']
-							];
-					}*/
 				}
 			case 'mall':
 				{
@@ -360,7 +341,7 @@ class Stage extends MusicBeatState
 					var bgGirls = new BackgroundGirls(-100, 190);
 					bgGirls.scrollFactor.set(0.9, 0.9);
 
-					if (PlayState.SONG.song.toLowerCase() == 'roses')
+					if (PlayState.SONG.songId.toLowerCase() == 'roses')
 					{
 						if (FlxG.save.data.distractions)
 						{

@@ -69,15 +69,25 @@ class ModCore
 		for (mod in loadedModList)
 			Debug.logTrace('  * ${mod.title} v${mod.modVersion} [${mod.id}]');
 
-		var imageList = Polymod.listModFiles("IMAGE");
-		Debug.logInfo('Installed mods have replaced ${imageList.length} images.');
-		for (image in imageList)
-			Debug.logTrace('  * $image');
+		var fileList = Polymod.listModFiles("IMAGE");
+		Debug.logInfo('Installed mods have replaced ${fileList.length} images.');
+		for (item in fileList)
+			Debug.logTrace('  * $item');
 
-		var textList = Polymod.listModFiles("TEXT");
-		Debug.logInfo('Installed mods have replaced ${textList.length} text files.');
-		for (text in textList)
-			Debug.logTrace('  * $text');
+		fileList = Polymod.listModFiles("TEXT");
+		Debug.logInfo('Installed mods have replaced ${fileList.length} text files.');
+		for (item in fileList)
+			Debug.logTrace('  * $item');
+
+		fileList = Polymod.listModFiles("MUSIC");
+		Debug.logInfo('Installed mods have replaced ${fileList.length} music files.');
+		for (item in fileList)
+			Debug.logTrace('  * $item');
+
+		fileList = Polymod.listModFiles("SOUND");
+		Debug.logInfo('Installed mods have replaced ${fileList.length} sound files.');
+		for (item in fileList)
+			Debug.logTrace('  * $item');
 	}
 
 	static function getModIds():Array<String>

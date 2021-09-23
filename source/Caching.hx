@@ -85,6 +85,7 @@ class Caching extends MusicBeatState
 		{
 			trace("caching images...");
 
+			// TODO: Refactor this to use OpenFlAssets.
 			for (i in FileSystem.readDirectory(FileSystem.absolutePath("assets/shared/images/characters")))
 			{
 				if (!i.endsWith(".png"))
@@ -155,8 +156,9 @@ class Caching extends MusicBeatState
 			var replaced = i.replace(".png", "");
 
 			// var data:BitmapData = BitmapData.fromFile("assets/shared/images/characters/" + i);
-			var data = OpenFlAssets.getBitmapData(Paths.image('characters/$i', 'shared'));
-			trace('id ' + replaced + ' file - assets/shared/images/characters/' + i + ' ${data.width}');
+			var imagePath = Paths.image('characters/$i', 'shared');
+			Debug.logTrace('Caching character graphic $i ($imagePath)...');
+			var data = OpenFlAssets.getBitmapData(imagePath);
 			var graph = FlxGraphic.fromBitmapData(data);
 			graph.persist = true;
 			graph.destroyOnNoUse = false;
@@ -166,15 +168,21 @@ class Caching extends MusicBeatState
 
 		for (i in music)
 		{
+			Debug.logTrace('Caching song "$i"...');
 			var inst = Paths.inst(i);
 			if (Paths.doesSoundAssetExist(inst))
+			{
 				FlxG.sound.cache(inst);
+				Debug.logTrace('  Cached inst for song "$i"');
+			}
 
 			var voices = Paths.voices(i);
 			if (Paths.doesSoundAssetExist(voices))
+			{
 				FlxG.sound.cache(voices);
+				Debug.logTrace('  Cached voices for song "$i"');
+			}
 
-			trace("cached " + i);
 			done++;
 		}
 

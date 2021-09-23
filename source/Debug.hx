@@ -1,3 +1,4 @@
+import lime.app.Application;
 import polymod.Polymod.PolymodError;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -6,7 +7,7 @@ import flixel.system.debug.watch.Tracker.TrackerProfile;
 import flixel.util.FlxStringUtil;
 import haxe.Log;
 import haxe.PosInfos;
-import Song.SwagSong;
+import Song.SongData;
 
 using StringTools;
 
@@ -84,6 +85,17 @@ class Debug
 		var output = formatOutput(input, pos);
 		writeToFlxGLog(output, LOG_STYLE_TRACE);
 		writeToLogFile(output, 'TRACE');
+	}
+
+	/**
+	 * Displays a popup with the provided text.
+	 * This interrupts the game, so make sure it's REALLY important.
+	 * @param title The title of the popup.
+	 * @param description The description of the popup.
+	 */
+	public static function displayAlert(title:String, description:String):Void
+	{
+		Application.current.window.alert(description, title);
 	}
 
 	/**
