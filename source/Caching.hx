@@ -6,7 +6,7 @@ import lime.app.Application;
 import Discord.DiscordClient;
 #end
 import openfl.display.BitmapData;
-import openfl.utils.Assets;
+import openfl.utils.Assets as OpenFlAssets;
 import flixel.ui.FlxBar;
 import haxe.Exception;
 import flixel.tweens.FlxEase;
@@ -65,7 +65,7 @@ class Caching extends MusicBeatState
 		text.alignment = FlxTextAlign.CENTER;
 		text.alpha = 0;
 
-		kadeLogo = new FlxSprite(FlxG.width / 2, FlxG.height / 2).loadGraphic(Paths.image('KadeEngineLogo'));
+		kadeLogo = new FlxSprite(FlxG.width / 2, FlxG.height / 2).loadGraphic(Paths.loadImage('KadeEngineLogo'));
 		kadeLogo.x -= kadeLogo.width / 2;
 		kadeLogo.y -= kadeLogo.height / 2 + 100;
 		text.y -= kadeLogo.height / 2 - 125;
@@ -95,10 +95,8 @@ class Caching extends MusicBeatState
 
 		trace("caching music...");
 
-		for (i in FileSystem.readDirectory(FileSystem.absolutePath("assets/songs")))
-		{
-			music.push(i);
-		}
+		// TODO: Get the song list from OpenFlAssets.
+		music = Paths.listSongsToCache();
 		#end
 
 		toBeDone = Lambda.count(images) + Lambda.count(music);
@@ -131,7 +129,6 @@ class Caching extends MusicBeatState
 		});
 
 		// cache thread
-
 		sys.thread.Thread.create(() ->
 		{
 			cache();
@@ -156,7 +153,9 @@ class Caching extends MusicBeatState
 		for (i in images)
 		{
 			var replaced = i.replace(".png", "");
-			var data:BitmapData = BitmapData.fromFile("assets/shared/images/characters/" + i);
+
+			// var data:BitmapData = BitmapData.fromFile("assets/shared/images/characters/" + i);
+			var data = OpenFlAssets.getBitmapData(Paths.image('characters/$i', 'shared'));
 			trace('id ' + replaced + ' file - assets/shared/images/characters/' + i + ' ${data.width}');
 			var graph = FlxGraphic.fromBitmapData(data);
 			graph.persist = true;
@@ -168,13 +167,13 @@ class Caching extends MusicBeatState
 		for (i in music)
 		{
 			var inst = Paths.inst(i);
-      if (Paths.doesSoundAssetExist(inst))  
-        FlxG.sound.cache(inst);
+			if (Paths.doesSoundAssetExist(inst))
+				FlxG.sound.cache(inst);
 
 			var voices = Paths.voices(i);
-      if (Paths.doesSoundAssetExist(voices))  
-        FlxG.sound.cache(voices);
-      
+			if (Paths.doesSoundAssetExist(voices))
+				FlxG.sound.cache(voices);
+
 			trace("cached " + i);
 			done++;
 		}
@@ -183,7 +182,7 @@ class Caching extends MusicBeatState
 
 		loaded = true;
 
-		trace(Assets.cache.hasBitmapData('GF_assets'));
+		trace(OpenFlAssets.cache.hasBitmapData('GF_assets'));
 		#end
 		FlxG.switchState(new TitleState());
 	}

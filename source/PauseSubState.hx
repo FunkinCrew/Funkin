@@ -141,7 +141,7 @@ class PauseSubState extends MusicBeatSubstate
 			case 'm.i.l.f':
 				songLowercase = 'milf';
 		}
-		var songPath = 'assets/data/' + songLowercase + '/';
+		var songPath = 'assets/data/songs/$songLowercase/';
 
 		#if FEATURE_STEPMANIA
 		if (PlayState.isSM && !PlayState.isStoryMode)

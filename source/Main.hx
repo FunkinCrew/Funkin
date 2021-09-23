@@ -81,6 +81,12 @@ class Main extends Sprite
 		framerate = 60;
 		#end
 
+		// Run this first so we can see logs.
+		Debug.onInitProgram();
+
+		// Gotta run this before any assets get loaded.
+		ModCore.initialize();
+
 		#if FEATURE_FILESYSTEM
 		initialState = Caching;
 		game = new FlxGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen);
@@ -97,13 +103,14 @@ class Main extends Sprite
 		});
 		#end
 
-    Debug.onGameStart();
-
 		#if !mobile
 		fpsCounter = new FPS(10, 3, 0xFFFFFF);
 		addChild(fpsCounter);
 		toggleFPS(FlxG.save.data.fps);
 		#end
+
+		// Finish up loading debug tools.
+		Debug.onGameStart();
 	}
 
 	var game:FlxGame;

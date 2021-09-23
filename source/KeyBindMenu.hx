@@ -19,7 +19,6 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import lime.app.Application;
-import lime.utils.Assets;
 import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.input.FlxKeyManager;
@@ -71,8 +70,6 @@ class KeyBindMenu extends FlxSubState
 			if (k == null)
 				gpKeys[i] = defaultGpKeys[i];
 		}
-
-		// FlxG.sound.playMusic('assets/music/configurator' + TitleState.soundExt);
 
 		persistentUpdate = true;
 
@@ -320,10 +317,13 @@ class KeyBindMenu extends FlxSubState
 		OptionsMenu.instance.acceptInput = true;
 
 		FlxTween.tween(keyTextDisplay, {alpha: 0}, 1, {ease: FlxEase.expoInOut});
-		FlxTween.tween(blackBox, {alpha: 0}, 1.1, {ease: FlxEase.expoInOut, onComplete: function(flx:FlxTween)
-		{
-			close();
-		}});
+		FlxTween.tween(blackBox, {alpha: 0}, 1.1, {
+			ease: FlxEase.expoInOut,
+			onComplete: function(flx:FlxTween)
+			{
+				close();
+			}
+		});
 		FlxTween.tween(infoText, {alpha: 0}, 1, {ease: FlxEase.expoInOut});
 	}
 

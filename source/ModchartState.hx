@@ -307,11 +307,12 @@ class ModchartState
 				songLowercase = 'milf';
 		}
 
-		var data:BitmapData = BitmapData.fromFile(Sys.getCwd() + "assets/data/" + songLowercase + '/' + spritePath + ".png");
+		var data:BitmapData = BitmapData.fromFile(Sys.getCwd() + "assets/data/songs/" + songLowercase + '/' + spritePath + ".png");
 
 		var sprite:FlxSprite = new FlxSprite(0, 0);
 
-		sprite.frames = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(data), Sys.getCwd() + "assets/data/" + songLowercase + "/" + spritePath + ".xml");
+		sprite.frames = FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(data),
+			Sys.getCwd() + "assets/data/songs/" + songLowercase + "/" + spritePath + ".xml");
 
 		trace(sprite.frames.frames.length);
 
@@ -346,7 +347,7 @@ class ModchartState
 				songLowercase = 'milf';
 		}
 
-		var path = Sys.getCwd() + "assets/data/" + songLowercase + '/';
+		var path = Sys.getCwd() + "assets/data/songs/" + songLowercase + '/';
 
 		if (PlayState.isSM)
 			path = PlayState.pathToSm + "/";
@@ -431,7 +432,7 @@ class ModchartState
 				songLowercase = 'milf';
 		}
 
-		var path = Paths.lua(songLowercase + "/modchart");
+		var path = Paths.lua('songs/$songLowercase/modchart');
 		if (PlayState.isSM)
 			path = PlayState.pathToSm + "/modchart.lua";
 

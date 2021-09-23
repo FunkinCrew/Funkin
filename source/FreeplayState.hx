@@ -21,7 +21,6 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
-import lime.utils.Assets;
 #if FEATURE_DISCORD
 import Discord.DiscordClient;
 #end
@@ -133,7 +132,7 @@ class FreeplayState extends MusicBeatState
 
 		// LOAD CHARACTERS
 
-		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuBGBlue'));
+		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.loadImage('menuBGBlue'));
 		bg.antialiasing = FlxG.save.data.antialiasing;
 		add(bg);
 
@@ -199,23 +198,6 @@ class FreeplayState extends MusicBeatState
 
 		var swag:Alphabet = new Alphabet(1, 0, "swag");
 
-		// JUST DOIN THIS SHIT FOR TESTING!!!
-		/* 
-			var md:String = Markdown.markdownToHtml(Assets.getText('CHANGELOG.md'));
-
-			var texFel:TextField = new TextField();
-			texFel.width = FlxG.width;
-			texFel.height = FlxG.height;
-			// texFel.
-			texFel.htmlText = md;
-
-			FlxG.stage.addChild(texFel);
-
-			// scoreText.textField.htmlText = md;
-
-			trace(md);
-		 */
-
 		super.create();
 	}
 
@@ -248,11 +230,11 @@ class FreeplayState extends MusicBeatState
 			var diffsThatExist = [];
 
 			#if FEATURE_FILESYSTEM
-			if (FileSystem.exists('assets/data/${format}/${format}-hard.json'))
+			if (FileSystem.exists('assets/data/songs/${format}/${format}-hard.json'))
 				diffsThatExist.push("Hard");
-			if (FileSystem.exists('assets/data/${format}/${format}-easy.json'))
+			if (FileSystem.exists('assets/data/songs/${format}/${format}-easy.json'))
 				diffsThatExist.push("Easy");
-			if (FileSystem.exists('assets/data/${format}/${format}.json'))
+			if (FileSystem.exists('assets/data/songs/${format}/${format}.json'))
 				diffsThatExist.push("Normal");
 
 			if (diffsThatExist.length == 0)

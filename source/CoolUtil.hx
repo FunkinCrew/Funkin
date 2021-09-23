@@ -1,6 +1,6 @@
 package;
 
-import lime.utils.Assets;
+import openfl.utils.Assets as OpenFlAssets;
 
 using StringTools;
 
@@ -15,7 +15,7 @@ class CoolUtil
 
 	public static function coolTextFile(path:String):Array<String>
 	{
-		var daList:Array<String> = Assets.getText(path).trim().split('\n');
+		var daList:Array<String> = OpenFlAssets.getText(path).trim().split('\n');
 
 		for (i in 0...daList.length)
 		{

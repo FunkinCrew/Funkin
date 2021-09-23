@@ -3,7 +3,7 @@ package;
 import Section.SwagSection;
 import haxe.Json;
 import haxe.format.JsonParser;
-import lime.utils.Assets;
+import openfl.utils.Assets as OpenFlAssets;
 
 using StringTools;
 
@@ -93,7 +93,7 @@ class Song
 
 		trace('loading ' + folderLowercase + '/' + jsonInput.toLowerCase());
 
-		var rawJson = Assets.getText(Paths.json(folderLowercase + '/' + jsonInput.toLowerCase())).trim();
+		var rawJson = OpenFlAssets.getText(Paths.json('songs/$folderLowercase/${jsonInput.toLowerCase()}')).trim();
 
 		while (!rawJson.endsWith("}"))
 		{

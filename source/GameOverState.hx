@@ -38,7 +38,7 @@ class GameOverState extends FlxTransitionableState
 
 		FlxG.camera.follow(bf, LOCKON, 0.001);
 
-		var restart:FlxSprite = new FlxSprite(500, 50).loadGraphic(Paths.image('restart'));
+		var restart:FlxSprite = new FlxSprite(500, 50).loadGraphic(Paths.loadImage('restart'));
 		restart.setGraphicSize(Std.int(restart.width * 0.6));
 		restart.updateHitbox();
 		restart.alpha = 0;
