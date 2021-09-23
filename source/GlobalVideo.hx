@@ -15,33 +15,35 @@ class GlobalVideo
 	{
 		video = vid;
 	}
-	
+
 	public static function getVid():VideoHandler
 	{
 		return video;
 	}
-	
+
 	public static function setWebm(vid:WebmHandler):Void
 	{
 		webm = vid;
 		isWebm = true;
 	}
-	
+
 	public static function getWebm():WebmHandler
 	{
 		return webm;
 	}
-	
+
 	public static function get():Dynamic
 	{
 		if (isWebm)
 		{
 			return getWebm();
-		} else {
+		}
+		else
+		{
 			return getVid();
 		}
 	}
-	
+
 	public static function calc(ind:Int):Dynamic
 	{
 		var stageWidth:Int = Lib.current.stage.stageWidth;
@@ -49,36 +51,36 @@ class GlobalVideo
 
 		var width:Float = GameDimensions.width;
 		var height:Float = GameDimensions.height;
-		
-		//trace("AH: " + stageWidth);
-		//trace(width);
-		
+
+		// trace("AH: " + stageWidth);
+		// trace(width);
+
 		var ratioX:Float = height / width;
 		var ratioY:Float = width / height;
 		var appliedWidth:Float = stageHeight * ratioY;
 		var appliedHeight:Float = stageWidth * ratioX;
-		//trace(appliedWidth);
+		// trace(appliedWidth);
 		var remainingX:Float = stageWidth - appliedWidth;
 		var remainingY:Float = stageHeight - appliedHeight;
 		remainingX = remainingX / 2;
 		remainingY = remainingY / 2;
-		
+
 		appliedWidth = Std.int(appliedWidth);
 		appliedHeight = Std.int(appliedHeight);
-		
+
 		if (appliedHeight > stageHeight)
 		{
 			remainingY = 0;
 			appliedHeight = stageHeight;
 		}
-		
+
 		if (appliedWidth > stageWidth)
 		{
 			remainingX = 0;
 			appliedWidth = stageWidth;
 		}
-		
-		switch(ind)
+
+		switch (ind)
 		{
 			case 0:
 				return remainingX;
@@ -89,7 +91,7 @@ class GlobalVideo
 			case 3:
 				return appliedHeight;
 		}
-		
+
 		return null;
 	}
 }

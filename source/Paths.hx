@@ -56,7 +56,7 @@ class Paths
 		return getPath(file, type, library);
 	}
 
-	inline static public function lua(key:String,?library:String)
+	inline static public function lua(key:String, ?library:String)
 	{
 		return getPath('data/$key.lua', TEXT, library);
 	}
@@ -99,22 +99,39 @@ class Paths
 	inline static public function voices(song:String)
 	{
 		var songLowercase = StringTools.replace(song, " ", "-").toLowerCase();
-			switch (songLowercase) {
-				case 'dad-battle': songLowercase = 'dadbattle';
-				case 'philly-nice': songLowercase = 'philly';
-			}
-		return 'songs:assets/songs/${songLowercase}/Voices.$SOUND_EXT';
+		switch (songLowercase)
+		{
+			case 'dad-battle':
+				songLowercase = 'dadbattle';
+			case 'philly-nice':
+				songLowercase = 'philly';
+			case 'm.i.l.f':
+				songLowercase = 'milf';
+		}
+    var result = 'songs:assets/songs/${songLowercase}/Voices.$SOUND_EXT';
+    // Return null if the file does not exist.
+		return doesSoundAssetExist(result) ? result : null;
 	}
 
 	inline static public function inst(song:String)
 	{
 		var songLowercase = StringTools.replace(song, " ", "-").toLowerCase();
-			switch (songLowercase) {
-				case 'dad-battle': songLowercase = 'dadbattle';
-				case 'philly-nice': songLowercase = 'philly';
-			}
-		return 'songs:assets/songs/${songLowercase}/Inst.$SOUND_EXT';
+		switch (songLowercase)
+		{
+			case 'dad-battle':
+				songLowercase = 'dadbattle';
+			case 'philly-nice':
+				songLowercase = 'philly';
+			case 'm.i.l.f':
+				songLowercase = 'milf';
+		}
+    return 'songs:assets/songs/${songLowercase}/Inst.$SOUND_EXT';
 	}
+
+  inline static public function doesSoundAssetExist(EmbeddedSound:String) {
+    return OpenFlAssets.exists(EmbeddedSound, AssetType.SOUND)
+      || OpenFlAssets.exists(EmbeddedSound, AssetType.MUSIC);
+  }
 
 	inline static public function image(key:String, ?library:String)
 	{
@@ -129,12 +146,12 @@ class Paths
 	inline static public function getSparrowAtlas(key:String, ?library:String, ?isCharacter:Bool = false)
 	{
 		var usecahce = FlxG.save.data.cacheImages;
-		#if !cpp
+		#if !FEATURE_FILESYSTEM
 		usecahce = false;
 		#end
 		if (isCharacter)
 			if (usecahce)
-				#if cpp
+				#if FEATURE_FILESYSTEM
 				return FlxAtlasFrames.fromSparrow(imageCached(key), file('images/characters/$key.xml', library));
 				#else
 				return null;
@@ -144,7 +161,7 @@ class Paths
 		return FlxAtlasFrames.fromSparrow(image(key, library), file('images/$key.xml', library));
 	}
 
-	#if cpp
+	#if FEATURE_FILESYSTEM
 	inline static public function imageCached(key:String):FlxGraphic
 	{
 		var data = Caching.bitmapData.get(key);
@@ -152,16 +169,16 @@ class Paths
 		return data;
 	}
 	#end
-	
+
 	inline static public function getPackerAtlas(key:String, ?library:String, ?isCharacter:Bool = false)
 	{
 		var usecahce = FlxG.save.data.cacheImages;
-		#if !cpp
+		#if !FEATURE_FILESYSTEM
 		usecahce = false;
 		#end
 		if (isCharacter)
 			if (usecahce)
-				#if cpp
+				#if FEATURE_FILESYSTEM
 				return FlxAtlasFrames.fromSpriteSheetPacker(imageCached(key), file('images/characters/$key.txt', library));
 				#else
 				return null;

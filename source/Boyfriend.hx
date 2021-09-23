@@ -32,6 +32,9 @@ class Boyfriend extends Character
 				playAnim('idle', true, false, 10);
 			}
 
+			if (curCharacter.endsWith('-car') && !animation.curAnim.name.startsWith('sing') && animation.curAnim.finished)
+				playAnim('idleHair');
+
 			if (animation.curAnim.name == 'firstDeath' && animation.curAnim.finished)
 			{
 				playAnim('deathLoop');

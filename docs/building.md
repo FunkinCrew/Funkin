@@ -23,7 +23,6 @@
 	 - `haxelib install flixel-addons`
 	 - `haxelib install flixel-ui`
 	 - `haxelib install hscript`
-	 - `haxelib install newgrounds`
 	 - `haxelib git linc_luajit https://github.com/nebulazorua/linc_luajit.git`
 	 - `haxelib git hxvm-luajit https://github.com/nebulazorua/hxvm-luajit`
 	 - `haxelib git faxe https://github.com/uhrobots/faxe`
@@ -64,23 +63,4 @@ Finally, we are ready to build.
 - Only the `bin` folder is necessary to run the game. The other ones in `export/release/<target>` are not.
 
 ## Troubleshooting
-If you are experiencing one of the common problems below, you can use the provided steps to fix the issue.
-
-### Type not found : StatePointer
-
-If you experience this problem, you may see lines like 
-
-```
-source/LuaClass.hx:33: characters 46-58 : Type not found : StatePointer
-```
-
-This problem occurs when running an old version of the libraries that power the Lua-based modcharting system. These libraries were replaced in Kade Engine v1.7.
-
-To fix this issue, run the following commands to reinstall the proper versions:
-
-```
-haxelib remove linc_luajit
-haxelib remove hxvm-luajit
-haxelib git linc_luajit https://github.com/nebulazorua/linc_luajit.git
-haxelib git hxvm-luajit https://github.com/nebulazorua/hxvm-luajit
-```
+Check the **Troubleshooting documentation** if you have problems with these instructions.

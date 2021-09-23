@@ -4,9 +4,9 @@ import flixel.FlxG;
 
 class KadeEngineData
 {
-    public static function initSave()
-    {
-        if (FlxG.save.data.weekUnlocked == null)
+	public static function initSave()
+	{
+		if (FlxG.save.data.weekUnlocked == null)
 			FlxG.save.data.weekUnlocked = 7;
 
 		if (FlxG.save.data.newInput == null)
@@ -23,7 +23,7 @@ class KadeEngineData
 
 		if (FlxG.save.data.dfjk == null)
 			FlxG.save.data.dfjk = false;
-			
+
 		if (FlxG.save.data.accuracyDisplay == null)
 			FlxG.save.data.accuracyDisplay = true;
 
@@ -49,9 +49,9 @@ class KadeEngineData
 		if (FlxG.save.data.fpsCap == null)
 			FlxG.save.data.fpsCap = 120;
 
-		if (FlxG.save.data.fpsCap > 285 || FlxG.save.data.fpsCap < 60)
+		if (FlxG.save.data.fpsCap > 340 || FlxG.save.data.fpsCap < 60)
 			FlxG.save.data.fpsCap = 120; // baby proof so you can't hard lock ur copy of kade engine
-		
+
 		if (FlxG.save.data.scrollSpeed == null)
 			FlxG.save.data.scrollSpeed = 1;
 
@@ -72,11 +72,11 @@ class KadeEngineData
 
 		if (FlxG.save.data.distractions == null)
 			FlxG.save.data.distractions = true;
-		
-	    	if (FlxG.save.data.colour == null)
+
+		if (FlxG.save.data.colour == null)
 			FlxG.save.data.colour = true;
-		
-	        if (FlxG.save.data.stepMania == null)
+
+		if (FlxG.save.data.stepMania == null)
 			FlxG.save.data.stepMania = false;
 
 		if (FlxG.save.data.flashing == null)
@@ -87,7 +87,7 @@ class KadeEngineData
 
 		if (FlxG.save.data.InstantRespawn == null)
 			FlxG.save.data.InstantRespawn = false;
-		
+
 		if (FlxG.save.data.botplay == null)
 			FlxG.save.data.botplay = false;
 
@@ -96,7 +96,7 @@ class KadeEngineData
 
 		if (FlxG.save.data.strumline == null)
 			FlxG.save.data.strumline = false;
-		
+
 		if (FlxG.save.data.customStrumLine == null)
 			FlxG.save.data.customStrumLine = 0;
 
@@ -111,18 +111,18 @@ class KadeEngineData
 
 		if (FlxG.save.data.optimize == null)
 			FlxG.save.data.optimize = false;
-		
+
 		if (FlxG.save.data.cacheImages == null)
 			FlxG.save.data.cacheImages = false;
 
 		if (FlxG.save.data.editorBG == null)
 			FlxG.save.data.editor = false;
-		
+
 		if (FlxG.save.data.zoom == null)
 			FlxG.save.data.zoom = 1;
 
 		var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
-		
+
 		KeyBinds.gamepad = gamepad != null;
 
 		Conductor.recalculateTimings();
@@ -131,6 +131,6 @@ class KadeEngineData
 
 		Main.watermarks = FlxG.save.data.watermark;
 
-		(cast (Lib.current.getChildAt(0), Main)).setFPSCap(FlxG.save.data.fpsCap);
+		(cast(Lib.current.getChildAt(0), Main)).setFPSCap(FlxG.save.data.fpsCap);
 	}
 }

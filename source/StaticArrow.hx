@@ -25,7 +25,7 @@ class StaticArrow extends FlxSprite
 	{
 		if (!modifiedByLua)
 			angle = localAngle + modAngle;
-		else 
+		else
 			angle = modAngle;
 		super.update(elapsed);
 

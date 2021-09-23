@@ -1,7 +1,7 @@
 package;
 
 import flixel.FlxBasic;
-#if desktop
+#if FEATURE_DISCORD
 import Discord.DiscordClient;
 #end
 import flixel.util.FlxColor;
@@ -36,7 +36,7 @@ class MusicBeatState extends FlxUIState
 	{
 		if (FlxG.save.data.optimize)
 		{
-			for(i in assets)
+			for (i in assets)
 			{
 				remove(i);
 			}
@@ -46,14 +46,13 @@ class MusicBeatState extends FlxUIState
 	override function create()
 	{
 		TimingStruct.clearTimings();
-		(cast (Lib.current.getChildAt(0), Main)).setFPSCap(FlxG.save.data.fpsCap);
+		(cast(Lib.current.getChildAt(0), Main)).setFPSCap(FlxG.save.data.fpsCap);
 
 		if (transIn != null)
 			trace('reg ' + transIn.region);
 
 		super.create();
 	}
-
 
 	var array:Array<FlxColor> = [
 		FlxColor.fromRGB(148, 0, 211),
@@ -62,34 +61,34 @@ class MusicBeatState extends FlxUIState
 		FlxColor.fromRGB(0, 255, 0),
 		FlxColor.fromRGB(255, 255, 0),
 		FlxColor.fromRGB(255, 127, 0),
-		FlxColor.fromRGB(255, 0 , 0)
+		FlxColor.fromRGB(255, 0, 0)
 	];
 
 	var skippedFrames = 0;
 
 	override function update(elapsed:Float)
 	{
-		//everyStep();
+		// everyStep();
 		/*var nextStep:Int = updateCurStep();
 
-		if (nextStep >= 0)
-		{
-			if (nextStep > curStep)
+			if (nextStep >= 0)
 			{
-				for (i in curStep...nextStep)
+				if (nextStep > curStep)
 				{
-					curStep++;
+					for (i in curStep...nextStep)
+					{
+						curStep++;
+						updateBeat();
+						stepHit();
+					}
+				}
+				else if (nextStep < curStep)
+				{
+					//Song reset?
+					curStep = nextStep;
 					updateBeat();
 					stepHit();
 				}
-			}
-			else if (nextStep < curStep)
-			{
-				//Song reset?
-				curStep = nextStep;
-				updateBeat();
-				stepHit();
-			}
 		}*/
 
 		if (Conductor.songPosition < 0)
@@ -107,8 +106,8 @@ class MusicBeatState extends FlxUIState
 				var step = ((60 / data.bpm) * 1000) / 4;
 				var startInMS = (data.startTime * 1000);
 
-				curDecimalBeat = data.startBeat + ((((Conductor.songPosition / 1000) ) - data.startTime) * (data.bpm / 60));
-				var ste:Int = Math.floor(data.startStep + ((Conductor.songPosition ) - startInMS) / step);
+				curDecimalBeat = data.startBeat + ((((Conductor.songPosition / 1000)) - data.startTime) * (data.bpm / 60));
+				var ste:Int = Math.floor(data.startStep + ((Conductor.songPosition) - startInMS) / step);
 				if (ste >= 0)
 				{
 					if (ste > curStep)
@@ -123,7 +122,7 @@ class MusicBeatState extends FlxUIState
 					else if (ste < curStep)
 					{
 						trace("reset steps for some reason?? at " + Conductor.songPosition);
-						//Song reset?
+						// Song reset?
 						curStep = ste;
 						updateBeat();
 						stepHit();
@@ -132,7 +131,7 @@ class MusicBeatState extends FlxUIState
 			}
 			else
 			{
-				curDecimalBeat = (((Conductor.songPosition / 1000))) * (Conductor.bpm/60);
+				curDecimalBeat = (((Conductor.songPosition / 1000))) * (Conductor.bpm / 60);
 				var nextStep:Int = Math.floor((Conductor.songPosition) / Conductor.stepCrochet);
 				if (nextStep >= 0)
 				{
@@ -147,7 +146,7 @@ class MusicBeatState extends FlxUIState
 					}
 					else if (nextStep < curStep)
 					{
-						//Song reset?
+						// Song reset?
 						trace("(no bpm change) reset steps for some reason?? at " + Conductor.songPosition);
 						curStep = nextStep;
 						updateBeat();
@@ -158,20 +157,19 @@ class MusicBeatState extends FlxUIState
 			}
 		}
 
-
 		if (FlxG.save.data.fpsRain && skippedFrames >= 6)
-			{
-				if (currentColor >= array.length)
-					currentColor = 0;
-				(cast (Lib.current.getChildAt(0), Main)).changeFPSColor(array[currentColor]);
-				currentColor++;
-				skippedFrames = 0;
-			}
-			else
-				skippedFrames++;
+		{
+			if (currentColor >= array.length)
+				currentColor = 0;
+			(cast(Lib.current.getChildAt(0), Main)).changeFPSColor(array[currentColor]);
+			currentColor++;
+			skippedFrames = 0;
+		}
+		else
+			skippedFrames++;
 
-		if ((cast (Lib.current.getChildAt(0), Main)).getFPSCap != FlxG.save.data.fpsCap && FlxG.save.data.fpsCap <= 290)
-			(cast (Lib.current.getChildAt(0), Main)).setFPSCap(FlxG.save.data.fpsCap);
+		if ((cast(Lib.current.getChildAt(0), Main)).getFPSCap != FlxG.save.data.fpsCap && FlxG.save.data.fpsCap <= 340)
+			(cast(Lib.current.getChildAt(0), Main)).setFPSCap(FlxG.save.data.fpsCap);
 
 		super.update(elapsed);
 	}
@@ -208,9 +206,9 @@ class MusicBeatState extends FlxUIState
 
 	public function beatHit():Void
 	{
-		//do literally nothing dumbass
+		// do literally nothing dumbass
 	}
-	
+
 	public function fancyOpenURL(schmancy:String)
 	{
 		#if linux
