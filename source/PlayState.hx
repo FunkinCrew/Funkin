@@ -1829,6 +1829,9 @@ class PlayState extends MusicBeatState
 		}
 		else
 		{
+			if (Paths.SOUND_EXT == 'mp3')
+				Conductor.offset = -13; // DO NOT FORGET TO REMOVE THE HARDCODE! WHEN I MAKE BETTER OFFSET SYSTEM!
+
 			Conductor.songPosition = FlxG.sound.music.time + Conductor.offset; // 20 is THE MILLISECONDS??
 			// Conductor.songPosition += FlxG.elapsed * 1000;
 

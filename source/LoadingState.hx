@@ -57,7 +57,18 @@ class LoadingState extends MusicBeatState
 			var introComplete = callbacks.add("introComplete");
 			checkLoadSong(getSongPath());
 			if (PlayState.SONG.needsVoices)
-				checkLoadSong(getVocalPath());
+			{
+				var files = PlayState.SONG.voiceList;
+
+				if (files == null)
+					files = [""]; // loads with no file name assumption, to load "Voices.ogg" or whatev normally
+
+				for (sndFile in files)
+				{
+					checkLoadSong(getVocalPath(sndFile));
+				}
+			}
+
 			checkLibrary("shared");
 			if (PlayState.storyWeek > 0)
 				checkLibrary("week" + PlayState.storyWeek);
@@ -164,9 +175,9 @@ class LoadingState extends MusicBeatState
 		return Paths.inst(PlayState.SONG.song);
 	}
 
-	static function getVocalPath()
+	static function getVocalPath(?suffix:String)
 	{
-		return Paths.voices(PlayState.SONG.song);
+		return Paths.voices(PlayState.SONG.song, suffix);
 	}
 
 	inline static public function loadAndSwitchState(target:FlxState, stopMusic = false)

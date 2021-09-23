@@ -99,6 +99,7 @@ class FreeplayState extends MusicBeatState
 			addWeek(['Ugh', 'Guns', 'Stress'], 7, ['tankman']);
 
 		addWeek(["Darnell", "lit-up", "2hot"], 8, ['darnell']);
+		addWeek(["bro"], 1, ['gf']);
 
 		// LOAD MUSIC
 
