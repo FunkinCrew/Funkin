@@ -58,16 +58,16 @@ class Stage extends MusicBeatState
 		{
 			case 'halloween':
 				{
-					var hallowTex = Paths.getSparrowAtlas('halloween_bg', 'week2');
+						var hallowTex = Paths.getSparrowAtlas('halloween_bg', 'week2');
 
-					var halloweenBG = new FlxSprite(-200, -100);
-					halloweenBG.frames = hallowTex;
-					halloweenBG.animation.addByPrefix('idle', 'halloweem bg0');
-					halloweenBG.animation.addByPrefix('lightning', 'halloweem bg lightning strike', 24, false);
-					halloweenBG.animation.play('idle');
-					halloweenBG.antialiasing = FlxG.save.data.antialiasing;
-					swagBacks['halloweenBG'] = halloweenBG;
-					toAdd.push(halloweenBG);
+						var halloweenBG = new FlxSprite(-200, -80);
+						halloweenBG.frames = hallowTex;
+						halloweenBG.animation.addByPrefix('idle', 'halloweem bg0');
+						halloweenBG.animation.addByPrefix('lightning', 'halloweem bg lightning strike', 24, false);
+						halloweenBG.animation.play('idle');
+						halloweenBG.antialiasing = FlxG.save.data.antialiasing;
+						swagBacks['halloweenBG'] = halloweenBG;
+					  toAdd.push(halloweenBG);
 				}
 			case 'philly':
 				{
@@ -88,6 +88,7 @@ class Stage extends MusicBeatState
 					{
 						swagGroup['phillyCityLights'] = phillyCityLights;
 						toAdd.push(phillyCityLights);
+  
 					}
 
 					for (i in 0...5)
