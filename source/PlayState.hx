@@ -56,7 +56,11 @@ class PlayState extends MusicBeatState
 	private var gf:Character;
 	private var boyfriend:Boyfriend;
 
+	/**
+	 * Notes that should be ON SCREEN and have UPDATES running on them!
+	 */
 	private var notes:FlxTypedGroup<Note>;
+
 	private var unspawnNotes:Array<Note> = [];
 
 	private var strumLine:FlxSprite;
@@ -659,8 +663,6 @@ class PlayState extends MusicBeatState
 		if (dialogue != null)
 		{
 			doof = new DialogueBox(false, dialogue);
-			// doof.x += 70;
-			// doof.y = FlxG.height * 0.5;
 			doof.scrollFactor.set();
 			doof.finishThing = startCountdown;
 			doof.cameras = [camHUD];
@@ -674,7 +676,6 @@ class PlayState extends MusicBeatState
 			strumLine.y = FlxG.height - 150; // 150 just random ass number lol
 
 		strumLine.scrollFactor.set();
-
 		strumLineNotes = new FlxTypedGroup<FlxSprite>();
 		add(strumLineNotes);
 
@@ -1403,7 +1404,14 @@ class PlayState extends MusicBeatState
 		generateStaticArrows(1);
 
 		talking = false;
+
+		restartCountdownTimer();
+	}
+
+	function restartCountdownTimer():Void
+	{
 		startedCountdown = true;
+
 		Conductor.songPosition = 0;
 		Conductor.songPosition -= Conductor.crochet * 5;
 
@@ -1490,7 +1498,13 @@ class PlayState extends MusicBeatState
 		previousFrameTime = FlxG.game.ticks;
 
 		if (!paused)
-			FlxG.sound.playMusic(Paths.inst(SONG.song), 1, false);
+		{
+			if (FlxG.sound.music != null)
+				FlxG.sound.music.play(true);
+			else
+				FlxG.sound.playMusic(Paths.inst(SONG.song), 1, false);
+		}
+
 		FlxG.sound.music.onComplete = endSong;
 		vocals.play();
 
@@ -1507,15 +1521,12 @@ class PlayState extends MusicBeatState
 	{
 		// FlxG.log.add(ChartParser.parse());
 
-		var songData = SONG;
-		Conductor.changeBPM(songData.bpm);
+		Conductor.changeBPM(SONG.bpm);
 
-		curSong = songData.song;
+		curSong = SONG.song;
 
 		if (SONG.needsVoices)
-		{
 			vocals = new VoicesGroup(SONG.song, SONG.voiceList);
-		}
 		else
 			vocals = new VoicesGroup(SONG.song, null, false);
 
@@ -1527,10 +1538,27 @@ class PlayState extends MusicBeatState
 		notes = new FlxTypedGroup<Note>();
 		add(notes);
 
+		regenNoteData();
+
+		generatedMusic = true;
+	}
+
+	function regenNoteData():Void
+	{
+		// make unspawn notes shit def empty
+		unspawnNotes = [];
+
+		notes.forEach(function(nt)
+		{
+			nt.kill();
+			notes.remove(nt, true);
+			nt.destroy();
+		});
+
 		var noteData:Array<SwagSection>;
 
 		// NEW SHIT
-		noteData = songData.notes;
+		noteData = SONG.notes;
 
 		for (section in noteData)
 		{
@@ -1582,8 +1610,6 @@ class PlayState extends MusicBeatState
 		}
 
 		unspawnNotes.sort(sortByShit);
-
-		generatedMusic = true;
 	}
 
 	// Now you are probably wondering why I made 2 of these very similar functions
@@ -1804,6 +1830,17 @@ class PlayState extends MusicBeatState
 			camHUD.visible = !camHUD.visible;
 		if (FlxG.keys.justPressed.K)
 		{
+			startingSong = true;
+
+			FlxG.sound.music.pause();
+			FlxG.sound.music.time = 0;
+			regenNoteData();
+			// resyncVocals();
+
+			// FlxG.sound.music.play();
+
+			restartCountdownTimer();
+
 			// FlxScreenGrab.grab(null, true, true);
 
 			/* 
@@ -2044,7 +2081,6 @@ class PlayState extends MusicBeatState
 			var dunceNote:Note = unspawnNotes[0];
 			notes.add(dunceNote);
 
-			var index:Int = unspawnNotes.indexOf(dunceNote);
 			unspawnNotes.shift();
 		}
 
