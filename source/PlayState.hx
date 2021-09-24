@@ -77,6 +77,7 @@ class PlayState extends MusicBeatState
 
 	private var gfSpeed:Int = 1;
 	private var health:Float = 1;
+	private var healthDisplay:Float = 1;
 	private var combo:Int = 0;
 
 	private var healthBarBG:FlxSprite;
@@ -725,7 +726,7 @@ class PlayState extends MusicBeatState
 			healthBarBG.y = FlxG.height * 0.1;
 
 		healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
-			'health', 0, 2);
+			'healthDisplay', 0, 2);
 		healthBar.scrollFactor.set();
 		healthBar.createFilledBar(0xFFFF0000, 0xFF66FF33);
 		// healthBar
@@ -1823,6 +1824,8 @@ class PlayState extends MusicBeatState
 
 	override public function update(elapsed:Float)
 	{
+		healthDisplay = FlxMath.lerp(healthDisplay, health, 0.15);
+
 		#if !debug
 		perfectMode = false;
 		#else
@@ -1835,6 +1838,8 @@ class PlayState extends MusicBeatState
 			FlxG.sound.music.pause();
 			FlxG.sound.music.time = 0;
 			regenNoteData();
+			health = 1;
+
 			// resyncVocals();
 
 			// FlxG.sound.music.play();
@@ -1972,8 +1977,8 @@ class PlayState extends MusicBeatState
 
 		var iconOffset:Int = 26;
 
-		iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset);
-		iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset);
+		iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.value, 0, 2, 100, 0) * 0.01) - iconOffset);
+		iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 2, 100, 0) * 0.01)) - (iconP2.width - iconOffset);
 
 		if (health > 2)
 			health = 2;
