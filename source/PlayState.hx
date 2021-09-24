@@ -46,6 +46,7 @@ class PlayState extends MusicBeatState
 	public static var storyDifficulty:Int = 1;
 	public static var deathCounter:Int = 0;
 	public static var practiceMode:Bool = false;
+	public static var needsReset:Bool = false;
 
 	var halloweenLevel:Bool = false;
 
@@ -708,10 +709,7 @@ class PlayState extends MusicBeatState
 
 		add(camFollow);
 
-		FlxG.camera.follow(camFollow, LOCKON, 0.04);
-		// FlxG.camera.setScrollBounds(0, FlxG.width, 0, FlxG.height);
-		FlxG.camera.zoom = defaultCamZoom;
-		FlxG.camera.focusOn(camFollow.getPosition());
+		resetCamFollow();
 
 		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
 
@@ -1831,11 +1829,19 @@ class PlayState extends MusicBeatState
 		#else
 		if (FlxG.keys.justPressed.H)
 			camHUD.visible = !camHUD.visible;
-		if (FlxG.keys.justPressed.K)
+		if (needsReset)
 		{
+			resetCamFollow();
+
+			paused = false;
+			persistentUpdate = true;
+			persistentDraw = true;
+
 			startingSong = true;
 
 			FlxG.sound.music.pause();
+			vocals.pause();
+
 			FlxG.sound.music.time = 0;
 			regenNoteData();
 			health = 1;
@@ -1845,6 +1851,8 @@ class PlayState extends MusicBeatState
 			// FlxG.sound.music.play();
 
 			restartCountdownTimer();
+
+			needsReset = false;
 
 			// FlxScreenGrab.grab(null, true, true);
 
@@ -1978,7 +1986,7 @@ class PlayState extends MusicBeatState
 		var iconOffset:Int = 26;
 
 		iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.value, 0, 2, 100, 0) * 0.01) - iconOffset);
-		iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 2, 100, 0) * 0.01)) - (iconP2.width - iconOffset);
+		iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.value, 0, 2, 100, 0) * 0.01)) - (iconP2.width - iconOffset);
 
 		if (health > 2)
 			health = 2;
@@ -2063,8 +2071,8 @@ class PlayState extends MusicBeatState
 				persistentDraw = false;
 				paused = true;
 
-				vocals.stop();
-				FlxG.sound.music.stop();
+				vocals.pause();
+				FlxG.sound.music.pause();
 
 				// unloadAssets();
 
@@ -2901,6 +2909,14 @@ class PlayState extends MusicBeatState
 				note.destroy();
 			}
 		}
+	}
+
+	function resetCamFollow():Void
+	{
+		FlxG.camera.follow(camFollow, LOCKON, 0.04);
+		// FlxG.camera.setScrollBounds(0, FlxG.width, 0, FlxG.height);
+		FlxG.camera.zoom = defaultCamZoom;
+		FlxG.camera.focusOn(camFollow.getPosition());
 	}
 
 	var fastCarCanDrive:Bool = true;

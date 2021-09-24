@@ -174,7 +174,10 @@ class PauseSubState extends MusicBeatSubstate
 					menuItems = pauseOG;
 					regenMenu();
 				case "Restart Song":
-					FlxG.resetState();
+					PlayState.needsReset = true;
+
+					close();
+				// FlxG.resetState();
 				case "Exit to menu":
 					PlayState.seenCutscene = false;
 					PlayState.deathCounter = 0;
