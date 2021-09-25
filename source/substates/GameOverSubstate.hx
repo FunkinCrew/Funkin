@@ -1,5 +1,7 @@
 package substates;
 
+import haxe.Exception;
+import game.Character;
 import states.FreeplayState;
 import states.StoryMenuState;
 import game.Conductor;
@@ -15,7 +17,7 @@ import states.LoadingState;
 
 class GameOverSubstate extends MusicBeatSubstate
 {
-	var bf:Boyfriend;
+	var bf:Character;
 	var camFollow:FlxObject;
 
 	var stageSuffix:String = "";
@@ -25,31 +27,14 @@ class GameOverSubstate extends MusicBeatSubstate
 		FlxG.save.data.deaths += 1;
 		FlxG.save.flush();
 
-		var daBf:String = '';
-		var playBF = PlayState.SONG.player1;
-
-		switch(playBF)
-		{
-			case 'bf-car' | 'bf-christmas':
-				playBF = 'bf';
-		}
-
-		switch(playBF)
-		{
-			case 'bf-holding-gf':
-				daBf = 'bf-holding-gf-dead';
-			case 'bf-pixel':
-				daBf = 'bf-pixel-dead';
-				stageSuffix = '-pixel';
-			default:
-				daBf = 'bf-dead';
-		}
+		if(PlayState.SONG.player1 == "bf-pixel")
+			stageSuffix = '-pixel';
 
 		super();
 
 		Conductor.songPosition = 0;
 
-		bf = new Boyfriend(x, y, daBf);
+		bf = new Boyfriend(x, y, PlayState.boyfriend.deathCharacter, true);
 		add(bf);
 
 		camFollow = new FlxObject(bf.getGraphicMidpoint().x, bf.getGraphicMidpoint().y, 1, 1);

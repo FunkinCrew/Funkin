@@ -47,6 +47,7 @@ import utilities.CoolUtil;
 import substates.PauseSubState;
 import substates.GameOverSubstate;
 import game.Highscore;
+import modding.CharacterConfig;
 
 #if desktop
 import utilities.Discord.DiscordClient;
@@ -163,11 +164,7 @@ class PlayState extends MusicBeatState
 
 	var binds:Array<String>;
 
-	#if sys
 	public var ui_Settings:Array<String>;
-	#else
-	public var ui_Settings:Array<String>;
-	#end
 
 	public function removeObject(object:FlxBasic)
 	{
@@ -185,6 +182,9 @@ class PlayState extends MusicBeatState
 	public static var previousScrollSpeedLmao:Float = 0;
 
 	var hasUsedBot:Bool = false;
+	var splashesSkin:String = "default";
+
+	public var splashesSettings:Array<String>;
 
 	override public function create()
 	{
@@ -354,9 +354,19 @@ class PlayState extends MusicBeatState
 				splash_Texture = Paths.getSparrowAtlas('ui skins/' + SONG.ui_Skin + "/arrows/Note_Splashes", 'shared');
 			else
 				splash_Texture = Paths.getSparrowAtlasSYS('ui skins/' + SONG.ui_Skin + "/arrows/Note_Splashes", 'shared');
+
+			splashesSettings = ui_Settings;
 		}
 		else
+		{
 			splash_Texture = Paths.getSparrowAtlas("ui skins/default/arrows/Note_Splashes", 'shared');
+
+			#if sys
+			splashesSettings = CoolUtil.coolTextFilePolymod(Paths.txt("ui skins/default/config"));
+			#else
+			splashesSettings = CoolUtil.coolTextFile(Paths.txt("ui skins/default/config"));
+			#end
+		}
 
 		arrow_Type_Sprites.set('default', arrow_Texture);
 
@@ -790,11 +800,11 @@ class PlayState extends MusicBeatState
 		talking = false;
 		startedCountdown = true;
 		Conductor.songPosition = 0;
-		Conductor.songPosition -= Conductor.crochet * 5;
+		Conductor.songPosition -= (Conductor.crochet * 5) * songMultiplier;
 
 		var swagCounter:Int = 0;
 
-		startTimer = new FlxTimer().start(Conductor.crochet / 1000, function(tmr:FlxTimer)
+		startTimer = new FlxTimer().start((Conductor.crochet / 1000) * songMultiplier, function(tmr:FlxTimer)
 		{
 			dad.dance(altAnim);
 			gf.dance();
@@ -1293,7 +1303,7 @@ class PlayState extends MusicBeatState
 				// Song ends abruptly on slow rate even with second condition being deleted, 
 				// and if it's deleted on songs like cocoa then it would end without finishing instrumental fully,
 				// so no reason to delete it at all
-				if (unspawnNotes.length == 0 && FlxG.sound.music.length - Conductor.songPosition <= 100)
+				if (FlxG.sound.music.length - Conductor.songPosition <= 100)
 				{
 					endSong();
 				}
@@ -1575,7 +1585,10 @@ class PlayState extends MusicBeatState
 			vocals.stop();
 			FlxG.sound.music.stop();
 
-			openSubState(new GameOverSubstate(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
+			if(boyfriend.otherCharacters == null)
+				openSubState(new GameOverSubstate(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
+			else
+				openSubState(new GameOverSubstate(boyfriend.otherCharacters[0].getScreenPosition().x, boyfriend.otherCharacters[0].getScreenPosition().y));
 			
 			#if desktop
 			// Game Over doesn't get his own variable because it's only used here
@@ -1966,6 +1979,7 @@ class PlayState extends MusicBeatState
 				health += 0.005;
 			case 'shit':
 				health -= 0.07;
+				misses += 1;
 		}
 
 		if(FlxG.save.data.accuracyMode == "simple")
@@ -2292,7 +2306,7 @@ class PlayState extends MusicBeatState
 			{
 				if (boyfriend.holdTimer > Conductor.stepCrochet * 4 * 0.001 && !heldArray.contains(true))
 					if (boyfriend.animation.curAnim.name.startsWith('sing') && !boyfriend.animation.curAnim.name.endsWith('miss'))
-						boyfriend.playAnim('idle');
+						boyfriend.dance();
 			}
 			else
 			{
@@ -2300,7 +2314,7 @@ class PlayState extends MusicBeatState
 				{
 					if (character.holdTimer > Conductor.stepCrochet * 4 * 0.001 && !heldArray.contains(true))
 						if (character.animation.curAnim.name.startsWith('sing') && !character.animation.curAnim.name.endsWith('miss'))
-							character.playAnim('idle');
+							character.dance();
 				}
 			}
 	
@@ -2378,7 +2392,7 @@ class PlayState extends MusicBeatState
 			{
 				if (boyfriend.holdTimer > Conductor.stepCrochet * 4 * 0.001)
 					if (boyfriend.animation.curAnim.name.startsWith('sing') && !boyfriend.animation.curAnim.name.endsWith('miss'))
-						boyfriend.playAnim('idle');
+						boyfriend.dance();
 			}
 			else
 			{
@@ -2386,7 +2400,7 @@ class PlayState extends MusicBeatState
 				{
 					if (character.holdTimer > Conductor.stepCrochet * 4 * 0.001)
 						if (character.animation.curAnim.name.startsWith('sing') && !character.animation.curAnim.name.endsWith('miss'))
-							character.playAnim('idle');
+							character.dance();
 				}
 			}
 		}

@@ -30,8 +30,7 @@ import sys.io.File;
 import sys.FileSystem;
 import polymod.backends.PolymodAssets;
 #end
-import game.Character.CharacterConfig;
-import game.Character.CharacterAnimation;
+import modding.CharacterConfig;
 import flixel.FlxState;
 
 using StringTools;
@@ -271,7 +270,8 @@ class CharacterCreationState extends MusicBeatState
             characters: [],
             offsetsFlipWhenEnemy: false,
             offsetsFlipWhenPlayer: true,
-            coolThornsTrail: false
+            coolThornsTrail: false,
+            deathCharacterName: "bf-dead"
         };
     }
 

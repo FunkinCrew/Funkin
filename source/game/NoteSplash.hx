@@ -18,7 +18,7 @@ class NoteSplash extends FlxSprite
         animation.addByPrefix("default", "note splash " + NoteVariables.Other_Note_Anim_Stuff[PlayState.SONG.keyCount - 1][noteData] + " " + coolAnimRando, 24 + FlxG.random.int(-2, 2), false);
         animation.play("default", true);
 
-        setGraphicSize(Std.int((width * Std.parseFloat(PlayState.instance.ui_Settings[0])) * (Std.parseFloat(PlayState.instance.ui_Settings[2]) - ((PlayState.SONG.keyCount - 4) * 0.06))));
+        setGraphicSize(Std.int((width * Std.parseFloat(PlayState.instance.splashesSettings[0])) * (Std.parseFloat(PlayState.instance.splashesSettings[2]) - ((PlayState.SONG.keyCount - 4) * 0.06))));
         updateHitbox();
     }
 

@@ -3,6 +3,7 @@ package utilities;
 #if desktop
 import Sys.sleep;
 import discord_rpc.DiscordRpc;
+import flixel.FlxG;
 
 using StringTools;
 
@@ -10,7 +11,14 @@ class DiscordClient
 {
 	public static var started:Bool = false;
 
+	public static var active:Bool = false;
+
 	public function new()
+	{
+		startLmao();
+	}
+
+	public static function startLmao()
 	{
 		trace("Discord Client starting...");
 		DiscordRpc.start({
@@ -21,19 +29,25 @@ class DiscordClient
 		});
 		trace("Discord Client started.");
 
-		while (true)
+		active = true;
+
+		while (active)
 		{
 			DiscordRpc.process();
 			sleep(2);
-			//trace("Discord Client Update");
 		}
 
-		DiscordRpc.shutdown();
+		if(active)
+			DiscordRpc.shutdown();
+
+		active = false;
 	}
 
 	public static function shutdown()
 	{
 		DiscordRpc.shutdown();
+
+		active = false;
 	}
 	
 	static function onReady()

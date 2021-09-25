@@ -24,7 +24,7 @@ Support for custom songs, characters, stages, weeks, (in the future, basic cutsc
 
 ## Credits
 
-* KadeDev - Code for downscroll
+* KadeDev - Code for downscroll & Modcharts
 
 * Keoiki - Note Splash Animations (I originally got them from [Psych-Engine](https://github.com/ShadowMario/FNF-PsychEngine))
 

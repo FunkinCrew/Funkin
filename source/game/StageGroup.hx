@@ -9,7 +9,6 @@ import openfl.display.BitmapData;
 #if polymod
 import polymod.backends.PolymodAssets;
 #end
-import game.Character.CharacterAnimation;
 import flixel.util.FlxColor;
 import flixel.math.FlxPoint;
 import openfl.filters.BlurFilter;
@@ -22,6 +21,7 @@ import flixel.system.FlxSound;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup;
+import modding.CharacterConfig;
 
 using StringTools;
 

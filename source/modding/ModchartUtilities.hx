@@ -132,7 +132,7 @@ class ModchartUtilities
 
         if(result != 0)
         {
-            var mods = CoolUtil.coolTextFile(Paths.txt("modList"));
+            var mods = PolymodHandler.metadataArrays;
 
             for(x in mods)
             {
@@ -774,6 +774,30 @@ class ModchartUtilities
                 lua_Sprites.set(object[0], object[1]);
             else
                 trace("THERE IS ALREADY AN OBJECT WITH THE NAME " + object[0]);
+        }
+
+        if(PlayState.dad.otherCharacters != null)
+        {
+            for(char in 0...PlayState.dad.otherCharacters.length)
+            {
+                lua_Sprites.set("dadCharacter" + char, PlayState.dad.otherCharacters[char]);
+            }
+        }
+
+        if(PlayState.boyfriend.otherCharacters != null)
+        {
+            for(char in 0...PlayState.boyfriend.otherCharacters.length)
+            {
+                lua_Sprites.set("bfCharacter" + char, PlayState.boyfriend.otherCharacters[char]);
+            }
+        }
+
+        if(PlayState.gf.otherCharacters != null)
+        {
+            for(char in 0...PlayState.gf.otherCharacters.length)
+            {
+                lua_Sprites.set("gfCharacter" + char, PlayState.gf.otherCharacters[char]);
+            }
         }
     }
 

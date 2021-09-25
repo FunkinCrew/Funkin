@@ -71,7 +71,7 @@ class TitleState extends MusicBeatState
 		});
 
 		#if desktop
-		if(!DiscordClient.started)
+		if(!DiscordClient.started && FlxG.save.data.discordRPC)
 		{
 			DiscordClient.initialize();
 		

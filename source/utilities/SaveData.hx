@@ -53,6 +53,9 @@ class SaveData {
 
         if(FlxG.save.data.deaths == null)
             FlxG.save.data.deaths = 0;
+
+        if(FlxG.save.data.discordRPC == null)
+            FlxG.save.data.discordRPC = true;
         
         Conductor.offset = FlxG.save.data.songOffset;
 

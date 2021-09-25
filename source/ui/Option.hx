@@ -1,5 +1,6 @@
 package ui;
 
+import utilities.Discord.DiscordClient;
 import polymod.Polymod.ModMetadata;
 import modding.ModList;
 import substates.SongOffsetMenu;
@@ -123,6 +124,8 @@ class BoolOption extends Option
 				Value = FlxG.save.data.middleScroll;
 			case "noteSplashes":
 				Value = FlxG.save.data.noteSplashes;
+			case "discordRPC":
+				Value = FlxG.save.data.discordRPC;
 		}
 
 		return Value;
@@ -179,6 +182,13 @@ class BoolOption extends Option
 				FlxG.save.data.middleScroll = !Option_Checked;
 			case "noteSplashes":
 				FlxG.save.data.noteSplashes  = !Option_Checked;
+			case "discordRPC":
+				FlxG.save.data.discordRPC = !Option_Checked;
+
+				if(FlxG.save.data.discordRPC && !DiscordClient.active)
+					DiscordClient.initialize();
+				else if(!FlxG.save.data.discordRPC && DiscordClient.active)
+					DiscordClient.shutdown();
 		}
 
         if(Option_Value != "muted")

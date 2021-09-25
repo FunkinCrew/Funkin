@@ -14,6 +14,7 @@ import polymod.backends.PolymodAssets;
 import utilities.CoolUtil;
 import states.PlayState;
 import flixel.FlxSprite;
+import modding.CharacterConfig;
 
 using StringTools;
 
@@ -41,7 +42,9 @@ class Character extends FlxSprite
 
 	public var coolTrail:FlxTrail;
 
-	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false)
+	public var deathCharacter:String = "bf-dead";
+
+	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false, ?isDeathCharacter:Bool = false)
 	{
 		super(x, y);
 
@@ -305,6 +308,8 @@ class Character extends FlxSprite
 				barColor = FlxColor.fromRGB(123, 214, 246);
 				offsetsFlipWhenEnemy = true;
 				offsetsFlipWhenPlayer = false;
+
+				deathCharacter = "bf-pixel-dead";
 			case 'bf-pixel-dead':
 				frames = Paths.getSparrowAtlas('characters/bfPixelsDEAD', 'shared');
 				animation.addByPrefix('singUP', "BF Dies pixel", 24, false);
@@ -393,6 +398,7 @@ class Character extends FlxSprite
 				barColor = FlxColor.fromRGB(199, 111, 211);
 			case '':
 				trace("NO VALUE THINGY LOL DONT LOAD SHIT");
+				deathCharacter = "";
 
 			default:
 				if (isPlayer)
@@ -418,10 +424,10 @@ class Character extends FlxSprite
 			{
 				dance();
 	
-				if (isPlayer)
+				if(isPlayer)
 				{
 					// Doesn't flip for BF, since his are already in the right place???
-					if (!curCharacter.startsWith('bf'))
+					if(!curCharacter.startsWith("bf") && !isDeathCharacter)
 					{
 						// var animArray
 						var oldRight = animation.getByName('singRIGHT').frames;
@@ -489,9 +495,7 @@ class Character extends FlxSprite
 			#end
 
 			if(config.graphicsSize != null)
-			{
 				setGraphicSize(Std.int(width * config.graphicsSize));
-			}
 
 			for(selected_animation in config.animations)
 			{
@@ -562,6 +566,11 @@ class Character extends FlxSprite
 
 			cameraOffset = config.cameraOffset;
 		}
+
+		if(config.deathCharacterName != null)
+			deathCharacter = config.deathCharacterName;
+		else
+			deathCharacter = "bf-dead";
 	}
 
 	public function loadOffsetFile(characterName:String)
@@ -595,7 +604,7 @@ class Character extends FlxSprite
 	{
 		if(!debugMode && curCharacter != '')
 		{
-			if (!curCharacter.startsWith('bf'))
+			if (!isPlayer)
 			{
 				if (animation.curAnim.name.startsWith('sing'))
 				{
@@ -699,39 +708,4 @@ class Character extends FlxSprite
 
 		animOffsets.set(name, [x, y]);
 	}
-}
-
-typedef CharacterConfig =
-{
-	var imagePath:String;
-	var animations:Array<CharacterAnimation>;
-	var defaultFlipX:Bool;
-	var dancesLeftAndRight:Bool;
-	var graphicsSize:Null<Float>;
-	var barColor:Array<Int>;
-	var positionOffset:Array<Float>;
-	var cameraOffset:Array<Float>;
-
-	var offsetsFlipWhenPlayer:Null<Bool>;
-	var offsetsFlipWhenEnemy:Null<Bool>;
-
-	var coolThornsTrail:Null<Bool>;
-
-	// multiple characters stuff
-	var characters:Array<CharacterData>;
-}
-
-typedef CharacterData =
-{
-	var name:String;
-	var positionOffset:Array<Float>;
-}
-
-typedef CharacterAnimation =
-{
-	var name:String;
-	var animation_name:String;
-	var indices:Null<Array<Int>>;
-	var fps:Int;
-	var looped:Bool;
 }
