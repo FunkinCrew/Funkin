@@ -1,7 +1,7 @@
 ---
 name: Bug Report
 about: Report a bug or critical performance issue
-title: 'Bug Report: [DESCRIBE YOUR BUG IN DETAIL HERE]'
+title: 'Bug Report: [BRIEF BUG DESCRIPTION HERE]'
 labels: bug
 ---
 #### PLEASE TYPE ON THE BODY AND NOT THE TITLE
