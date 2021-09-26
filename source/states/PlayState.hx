@@ -244,6 +244,7 @@ class PlayState extends MusicBeatState
 		Conductor.safeZoneOffset = Math.floor((Conductor.safeFrames / 60) * 1000);
 		Conductor.safeZoneOffset *= songMultiplier;
 
+		/*
 		switch (SONG.song.toLowerCase())
 		{
 			case 'tutorial':
@@ -263,9 +264,9 @@ class PlayState extends MusicBeatState
 					"If you can beat me here...",
 					"Only then I will even CONSIDER letting you\ndate my daughter!"
 				];
-		}
+		}*/
 
-		#if desktop
+		#if discord_rpc
 		// Making difficulty text for Discord Rich Presence.
 		switch (storyDifficulty)
 		{
