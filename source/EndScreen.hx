@@ -13,6 +13,14 @@ class EndScreen extends MusicBeatState {
     var mainTxt:FlxText;
     var pressEnter:FlxText;
 
+    public static var sicks:Int;
+    public static var goods:Int;
+    public static var bads:Int;
+    public static var shits:Int;
+    public static var misses:Int;
+    public static var score:Int;
+    public static var rating:String;
+
     public override function create() {
 
         FlxG.sound.music.stop();
@@ -25,14 +33,14 @@ class EndScreen extends MusicBeatState {
         mainTxt = new FlxText(5, 5, 0, '', 32);
         mainTxt.text = '${PlayState.isStoryMode ? 'WEEK' : 'SONG'} CLEARED!\n\n'
         + 'JUGEMENTS:\n'
-        + 'Sicks: ${PlayState.sicks}\n'
-        + 'Goods: ${PlayState.goods}\n'
-        + 'Bads: ${PlayState.bads}\n'
-        + 'Shits: ${PlayState.shits}\n'
-        + 'Misses: ${PlayState.misses}\n'
-        + 'SCORE: ${PlayState.isStoryMode ? PlayState.songScore : PlayState.campaignScore}\n'
-        + 'Rating: ${PlayState.calculateRating()}\n\n'
-        + 'Hit ${PlayState.sicks + PlayState.goods + PlayState.bads + PlayState.shits}/${PlayState.misses + PlayState.sicks + PlayState.goods + PlayState.bads + PlayState.shits}\n\n'
+        + 'Sicks: ${sicks}\n'
+        + 'Goods: ${goods}\n'
+        + 'Bads: ${bads}\n'
+        + 'Shits: ${shits}\n'
+        + 'Misses: ${misses}\n'
+        + 'SCORE: ${score}\n'
+        + 'Rating: ${rating}\n\n'
+        + 'Hit ${sicks + goods + bads + shits}/${misses + sicks + goods + bads + shits}\n\n'
         + '${whereGo != 0 ? '${PlayState.SONG.song}:${PlayState.difString}' : 'Week ${PlayState.storyWeek}:${PlayState.difString}'}';
 
         pressEnter = new FlxText(0, FlxG.height - 50, 0, 'Press ENTER to Continue', 32);
@@ -63,18 +71,17 @@ class EndScreen extends MusicBeatState {
             }
         }
 
-        FlxGameJolt.addScore('${PlayState.isStoryMode ? '${PlayState.campaignScore} Week Points' : '${PlayState.songScore} Points'}', PlayState.isStoryMode ? PlayState.campaignScore : PlayState.songScore, 652366, true, "GUEST");
+        FlxGameJolt.addScore('${PlayState.isStoryMode ? '${PlayState.campaignScore} Week Points' : '${score} Points'}', PlayState.isStoryMode ? PlayState.campaignScore : score, 652366, true, "GUEST");
     }
 
     public override function update(elapsed:Float) {
         if (FlxG.keys.justPressed.ENTER) {
-            PlayState.sicks = 0;
-            PlayState.goods = 0;
-            PlayState.bads = 0;
-            PlayState.shits = 0;
-            PlayState.misses = 0;
-            PlayState.campaignScore = 0;
-            PlayState.songScore = 0;
+            sicks = 0;
+            goods = 0;
+            bads = 0;
+            shits = 0;
+            misses = 0;
+            score = 0;
 
             switch (whereGo) {
                 case 0:

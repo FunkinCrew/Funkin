@@ -125,7 +125,7 @@ class PlayState extends MusicBeatState
 	var wiggleShit:WiggleEffect = new WiggleEffect();
 
 	var talking:Bool = true;
-	public static var songScore:Int = 0;
+	public var songScore:Int = 0;
 	var scoreTxt:FlxText;
 
 	var waterTxt:FlxText;
@@ -142,12 +142,12 @@ class PlayState extends MusicBeatState
 
 	var inCutscene:Bool = false;
 
-	public static var sicks:Int;
-	public static var goods:Int;
-	public static var bads:Int;
-	public static var shits:Int;
-	public static var misses:Int;
-	public static var ghostTaps:Int;
+	public var sicks:Int;
+	public var goods:Int;
+	public var bads:Int;
+	public var shits:Int;
+	public var misses:Int;
+	public var ghostTaps:Int;
 
 	public static var difString = "";
 
@@ -1958,6 +1958,13 @@ class PlayState extends MusicBeatState
 				transOut = FlxTransitionableState.defaultTransOut;
 
 				EndScreen.whereGo = 0;
+				EndScreen.sicks += sicks;
+				EndScreen.goods += goods;
+				EndScreen.bads += bads;
+				EndScreen.shits += shits;
+				EndScreen.misses += misses;
+				EndScreen.score += songScore;
+				EndScreen.rating = calculateRating();
 				FlxG.switchState(new EndScreen());
 
 				// if ()
@@ -1983,6 +1990,15 @@ class PlayState extends MusicBeatState
 					difficulty = '-hard';
 
 				trace('LOADING NEXT SONG');
+
+				EndScreen.sicks += sicks;
+				EndScreen.goods += goods;
+				EndScreen.bads += bads;
+				EndScreen.shits += shits;
+				EndScreen.misses += misses;
+				EndScreen.score += songScore;
+				EndScreen.rating = calculateRating();
+
 				trace(PlayState.storyPlaylist[0].toLowerCase() + difficulty);
 
 				if (SONG.song.toLowerCase() == 'eggnog')
@@ -2010,6 +2026,13 @@ class PlayState extends MusicBeatState
 		{
 			trace('WENT BACK TO FREEPLAY??');
 			EndScreen.whereGo = 1;
+			EndScreen.sicks += sicks;
+			EndScreen.goods += goods;
+			EndScreen.bads += bads;
+			EndScreen.shits += shits;
+			EndScreen.misses += misses;
+			EndScreen.score += songScore;
+			EndScreen.rating = calculateRating();
 			FlxG.switchState(new EndScreen());
 		}
 	}
@@ -2790,7 +2813,7 @@ class PlayState extends MusicBeatState
 
 	var curLight:Int = 0;
 
-	public static function calculateRating() {
+	public function calculateRating() {
 		if (misses == 0) {
 			return 'FC!! (${calculateLetter()} | ${calcAcc()})';
 		}
@@ -2802,14 +2825,14 @@ class PlayState extends MusicBeatState
 		}
 	}
 
-	static function calculateLetter() {
+	function calculateLetter() {
 		if (sicks > 0 || goods > 0 || bads > 0 || shits > 0 || misses > 0)
 			return '${sicks > goods ? 'A' : ''}${sicks > bads ? 'A' : ''}${sicks > shits ? 'A': ''}${sicks > misses ? 'A' : ''}';
 		else
 			return '?';
 	}
 
-	static function calcAcc() {
+	function calcAcc() {
 		if (sicks > 0 || goods > 0 || bads > 0 || shits > 0 || misses > 0)
 			return '${Math.floor((((sicks + goods + bads + shits) / 100) / ((misses + sicks + goods + bads + shits) / 100)) * 100)}%';
 		else
