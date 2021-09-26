@@ -1255,7 +1255,8 @@ class PlayState extends MusicBeatState
 
 					if (sustainNote.mustPress)
 					{
-						sustainNote.x += FlxG.width / 2; // general offset
+						if (!FlxG.save.data.mscroll)
+							sustainNote.x += FlxG.width / 2; // general offset
 					}
 				}
 
@@ -1263,7 +1264,8 @@ class PlayState extends MusicBeatState
 
 				if (swagNote.mustPress)
 				{
-					swagNote.x += FlxG.width / 2; // general offset
+					if (!FlxG.save.data.mscroll)
+						swagNote.x += FlxG.width / 2; // general offset
 				}
 				else {}
 			}
@@ -1384,8 +1386,23 @@ class PlayState extends MusicBeatState
 			}
 
 			babyArrow.animation.play('static');
-			babyArrow.x += 50;
-			babyArrow.x += ((FlxG.width / 2) * player);
+			if (!FlxG.save.data.mscroll) {
+				babyArrow.x += 50;
+				babyArrow.x += ((FlxG.width / 2) * player);
+			} else {
+				babyArrow.screenCenter(X);
+				switch (Math.abs(i))
+				{
+					case 0:
+						babyArrow.x -= Note.swagWidth * 1.5;
+					case 1:
+						babyArrow.x -= Note.swagWidth * 0.5;
+					case 2:
+						babyArrow.x += Note.swagWidth * 0.5;
+					case 3:
+						babyArrow.x += Note.swagWidth * 1.5;
+				}
+			}
 
 			cpuStrums.forEach(function(spr:FlxSprite)
 			{
@@ -1540,7 +1557,7 @@ class PlayState extends MusicBeatState
 
 		super.update(elapsed);
 
-		scoreTxt.text = 'Score: ${songScore}${!FlxG.save.data.sbar ? ' | Misses: ${misses} [${calculateRating()}] | s|g|b|s: $sicks|$goods|$bads|$shits${FlxG.save.data.pmode ? ' | PRACTICE MODE' : ''}${!FlxG.save.data.gtapping ? ' | GHOST TAPPING' : ''}' : ''}';
+		scoreTxt.text = 'Score: ${songScore}${!FlxG.save.data.sbar ? ' | Misses: ${misses} | ${calculateRating()} | s|g|b|s: $sicks|$goods|$bads|$shits${FlxG.save.data.pmode ? ' | PRACTICE MODE' : ''}${!FlxG.save.data.gtapping ? ' | GHOST TAPPING' : ''}' : ''}';
 		scoreTxt.screenCenter(X);
 
 		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause)
@@ -1802,7 +1819,7 @@ class PlayState extends MusicBeatState
 					daNote.active = true;
 				}
 
-				daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(SONG.speed, 2)));
+				daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(FlxG.save.data.sspeed != 0 ? SONG.speed : FlxG.save.data.sspeed, 2)));
 
 				// i am so fucking sorry for this if condition
 				if (daNote.isSustainNote
@@ -2037,6 +2054,7 @@ class PlayState extends MusicBeatState
 		}
 		else {
 			sicks++;
+			// FlxG.cameras.flash(0x11FFFFFF, 0.2); kinda a bad idea
 		}
 
 		songScore += score;
@@ -2774,23 +2792,27 @@ class PlayState extends MusicBeatState
 
 	public static function calculateRating() {
 		if (misses == 0) {
-			return 'FC!!${calculateLetter()}';
+			return 'FC!! (${calculateLetter()} | ${calcAcc()})';
 		}
 		else if (misses > 0 && misses <= 10) {
-			return 'Great!${calculateLetter()}';
-		}
-		else if (misses > 10 && misses <= 20) {
-			return 'Good${calculateLetter()}';
-		}
-		else if (misses > 20 && misses <= 50) {
-			return 'eh${calculateLetter()}';
+			return 'SDM (${calculateLetter()} | ${calcAcc()})';
 		}
 		else {
-			return 'bad${calculateLetter()}';
+			return 'Clear (${calculateLetter()} | ${calcAcc()})';
 		}
 	}
 
 	static function calculateLetter() {
-		return ' ${sicks > goods ? 'A' : ''}${sicks > bads ? 'A' : ''}${sicks > shits ? 'A': ''}${sicks > misses ? 'A' : ''}';
+		if (sicks > 0 || goods > 0 || bads > 0 || shits > 0 || misses > 0)
+			return '${sicks > goods ? 'A' : ''}${sicks > bads ? 'A' : ''}${sicks > shits ? 'A': ''}${sicks > misses ? 'A' : ''}';
+		else
+			return '?';
+	}
+
+	static function calcAcc() {
+		if (sicks > 0 || goods > 0 || bads > 0 || shits > 0 || misses > 0)
+			return '${Math.floor((((sicks + goods + bads + shits) / 100) / ((misses + sicks + goods + bads + shits) / 100)) * 100)}%';
+		else
+			return '?';
 	}
 }

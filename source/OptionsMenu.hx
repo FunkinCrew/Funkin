@@ -46,7 +46,7 @@ class OptionsMenu extends MusicBeatState {
 
 		camFollow = new FlxSprite(0, 0).makeGraphic(Std.int(optionText.width), Std.int(optionText.height), 0xAAFF0000);
 
-		optionDot.y = optionText.y - 145; // red dot offset, adjust when adding new setting!
+		optionDot.y = optionText.y - 185; // red dot offset, adjust when adding new setting!
 
 		topText = new FlxText(0, optionDot.y - 360, 0, "OPTIONS", 32);
 		topText.screenCenter(X);
@@ -66,7 +66,9 @@ class OptionsMenu extends MusicBeatState {
 		'Allow using R to reset ${!FlxG.save.data.ron ? 'off' : 'on'}',
 		'Hitsounds ${!FlxG.save.data.hsounds ? 'off' : 'on'}',
 		'Offset: ${FlxG.save.data.offset}ms',
+		'Constant scrollspeed: ${FlxG.save.data.sspeed == 0 ? 'off' : FlxG.save.data.sspeed}',
 		'Enable Near Death Tint ${!FlxG.save.data.redTint ? 'on' : 'off'}',
+		'Middle Scroll ${!FlxG.save.data.mscroll ? 'off' : 'on'}',
 		'RESET SETTINGS'];
 		optionText.screenCenter();
 
@@ -88,8 +90,14 @@ class OptionsMenu extends MusicBeatState {
 
 		if (FlxG.save.data.offset == null) FlxG.save.data.offset = 0;
 
-		if (FlxG.save.data.offset < 10 && FlxG.save.data.offset > -10) {
+		if (FlxG.save.data.offset < 0.1 && FlxG.save.data.offset > -10) {
 			FlxG.save.data.offset = 0;
+		}
+
+		if (FlxG.save.data.sspeed == null) FlxG.save.data.sspeed = 0;
+
+		if (FlxG.save.data.sspeed < 0.1) {
+			FlxG.save.data.sspeed = 0;
 		}
 
 		if (controls.ACCEPT) {
@@ -117,6 +125,9 @@ class OptionsMenu extends MusicBeatState {
 			if (options[curSelected].startsWith('Enable Near Death Tint')) {
 				FlxG.save.data.redTint = !FlxG.save.data.redTint;
 			}
+			if (options[curSelected].startsWith('Middle Scroll')) {
+				FlxG.save.data.mscroll = !FlxG.save.data.mscroll;
+			}
 			if (options[curSelected].startsWith('RESET SETTINGS')) {
 				FlxG.save.data.offset = null;
 				FlxG.save.data.dfjk = null;
@@ -127,16 +138,24 @@ class OptionsMenu extends MusicBeatState {
 				FlxG.save.data.ron = null;
 				FlxG.save.data.hsounds = null;
 				FlxG.save.data.redTint = null;
+				FlxG.save.data.sspeed = null;
+				FlxG.save.data.mscroll = null;
 			}
 		}
 		if (controls.LEFT_P) {
 			if (options[curSelected].startsWith('Offset: ')) {
 				FlxG.save.data.offset -= 10;
 			}
+			if (options[curSelected].startsWith('Constant scrollspeed:')) {
+				FlxG.save.data.sspeed -= 0.1;
+			}
 		}
 		if (controls.RIGHT_P) {
 			if (options[curSelected].startsWith('Offset: ')) {
 				FlxG.save.data.offset += 10;
+			}
+			if (options[curSelected].startsWith('Constant scrollspeed:')) {
+				FlxG.save.data.sspeed += 0.1;
 			}
 		}
 

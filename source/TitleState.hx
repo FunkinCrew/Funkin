@@ -65,9 +65,11 @@ class TitleState extends MusicBeatState
 			trace('can\'t connect to GJ make sure you have an APIkeys.hx file!');
 		}
 		
+		/* polymod unneeded atm
 		#if polymod
 		polymod.Polymod.init({modRoot: "mods", dirs: ['introMod']});
 		#end
+		*/
 
 		PlayerSettings.init();
 

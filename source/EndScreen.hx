@@ -32,8 +32,7 @@ class EndScreen extends MusicBeatState {
         + 'Misses: ${PlayState.misses}\n'
         + 'SCORE: ${PlayState.isStoryMode ? PlayState.songScore : PlayState.campaignScore}\n'
         + 'Rating: ${PlayState.calculateRating()}\n\n'
-        + 'Hit ${PlayState.sicks + PlayState.goods + PlayState.bads + PlayState.shits}/${PlayState.misses + PlayState.sicks + PlayState.goods + PlayState.bads + PlayState.shits}'
-        + ' (That\'s ${Math.floor((((PlayState.sicks + PlayState.goods + PlayState.bads + PlayState.shits) / 100) / ((PlayState.misses + PlayState.sicks + PlayState.goods + PlayState.bads + PlayState.shits) / 100)) * 100)}%)\n\n'
+        + 'Hit ${PlayState.sicks + PlayState.goods + PlayState.bads + PlayState.shits}/${PlayState.misses + PlayState.sicks + PlayState.goods + PlayState.bads + PlayState.shits}\n\n'
         + '${whereGo != 0 ? '${PlayState.SONG.song}:${PlayState.difString}' : 'Week ${PlayState.storyWeek}:${PlayState.difString}'}';
 
         pressEnter = new FlxText(0, FlxG.height - 50, 0, 'Press ENTER to Continue', 32);

@@ -45,7 +45,12 @@ class Note extends FlxSprite
 		this.prevNote = prevNote;
 		isSustainNote = sustainNote;
 
-		x += 50;
+		if (!FlxG.save.data.mscroll) {
+			x += 50;
+		} else {
+			screenCenter(X);
+			x -= width;
+		}
 		// MAKE SURE ITS DEFINITELY OFF SCREEN?
 		y -= 2000;
 		this.strumTime = strumTime;
@@ -234,20 +239,38 @@ class Note extends FlxSprite
 				antialiasing = Style.lstyle.antialiasing;
 		}
 
-		switch (noteData)
-		{
-			case 0:
-				x += swagWidth * 0;
-				animation.play('purpleScroll');
-			case 1:
-				x += swagWidth * 1;
-				animation.play('blueScroll');
-			case 2:
-				x += swagWidth * 2;
-				animation.play('greenScroll');
-			case 3:
-				x += swagWidth * 3;
-				animation.play('redScroll');
+		if (!FlxG.save.data.mscroll) {
+			switch (noteData)
+			{
+				case 0:
+					x += swagWidth * 0;
+					animation.play('purpleScroll');
+				case 1:
+					x += swagWidth * 1;
+					animation.play('blueScroll');
+				case 2:
+					x += swagWidth * 2;
+					animation.play('greenScroll');
+				case 3:
+					x += swagWidth * 3;
+					animation.play('redScroll');
+			}
+		} else {
+			switch (noteData)
+			{
+				case 0:
+					x -= (swagWidth * 1.5) + width / 2;
+					animation.play('purpleScroll');
+				case 1:
+					x -= (swagWidth * 0.5) + width / 2;
+					animation.play('blueScroll');
+				case 2:
+					x += (swagWidth * 0.5) - width / 2;
+					animation.play('greenScroll');
+				case 3:
+					x += (swagWidth * 1.5) - width / 2;
+					animation.play('redScroll');
+			}
 		}
 
 		// trace(prevNote);
@@ -321,6 +344,10 @@ class Note extends FlxSprite
 
 			if (strumTime <= Conductor.songPosition)
 				wasGoodHit = true;
+		}
+
+		if (FlxG.save.data.mscroll && !mustPress) {
+			alpha = 0.05;
 		}
 
 		if (tooLate)
