@@ -380,9 +380,6 @@ class PlayState extends MusicBeatState
 					SONG.gf = 'gf-christmas';
 				case 6:
 					SONG.gf = 'gf-pixel';
-				/*
-				case 7:
-					SONG.gf = 'gf-tankmen';*/
 				default:
 					SONG.gf = 'gf';
 			}
@@ -442,17 +439,7 @@ class PlayState extends MusicBeatState
 			case 'spirit':
 				dad.x -= 150;
 				dad.y += 100;
-				
-			//case "tankman":
-			//	dad.y += 180;
 		}
-
-		/*
-		if(gf.curCharacter == "pico-speaker")
-		{
-			gf.x -= 50;
-			gf.y -= 200;
-		}*/
 
 		// REPOSITIONING PER STAGE
 		stage.setCharOffsets();
