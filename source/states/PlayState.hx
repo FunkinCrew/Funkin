@@ -380,8 +380,9 @@ class PlayState extends MusicBeatState
 					SONG.gf = 'gf-christmas';
 				case 6:
 					SONG.gf = 'gf-pixel';
+				/*
 				case 7:
-					SONG.gf = 'gf-tankmen';
+					SONG.gf = 'gf-tankmen';*/
 				default:
 					SONG.gf = 'gf';
 			}
