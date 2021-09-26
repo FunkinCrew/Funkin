@@ -562,14 +562,14 @@ class PlayState extends MusicBeatState
 		healthBarBG = new FlxSprite(0, healthBarPosY).loadGraphic(Paths.image('ui skins/' + SONG.ui_Skin + '/other/healthBar', 'shared'));
 		healthBarBG.screenCenter(X);
 		healthBarBG.scrollFactor.set();
-		healthBarBG.pixelPerfectRender = true;
+		healthBarBG.pixelPerfectPosition = true;
 		add(healthBarBG);
 		
-		healthBar = new FlxBar(Std.int(healthBarBG.x) + (4 - 1), Std.int(healthBarBG.y) + (4 - 1), RIGHT_TO_LEFT, Std.int(healthBarBG.width - (8 - 1)), Std.int(healthBarBG.height - (8 - 1)), this,
+		healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
 			'health', 0, 2);
 		healthBar.scrollFactor.set();
-		healthBar.createFilledBar(dad.barColor, boyfriend.barColor, true, FlxColor.BLACK);
-		healthBar.pixelPerfectRender = true;
+		healthBar.createFilledBar(dad.barColor, boyfriend.barColor);
+		healthBar.pixelPerfectPosition = true;
 		add(healthBar);
 
 		scoreTxt = new FlxText(0, healthBarBG.y + 45, 0, "", 20);
