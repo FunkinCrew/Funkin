@@ -146,7 +146,7 @@ class ModchartUtilities
 
         if (result != 0)
         {
-            Application.current.window.alert("lua COMPILE ERROR:\n" + Lua.tostring(lua,result),"Leather's Funkin' Engine Modcharts");
+            Application.current.window.alert("lua COMPILE ERROR:\n" + Lua.tostring(lua,result),"Leather Engine Modcharts");
             //FlxG.switchState(new MainMenuState());
         }
 
@@ -195,12 +195,47 @@ class ModchartUtilities
 
         // sprites
 
-        //Lua_helper.add_callback(lua,"makeSprite", makeLuaSprite);
+        Lua_helper.add_callback(lua,"makeSprite", function(id:String, filename:String, x:Float, y:Float, size:Float) {
+            if(!lua_Sprites.exists(id))
+            {
+                var Sprite:FlxSprite = new FlxSprite(x, y);
+
+                if(Assets.exists(Paths.image(PlayState.SONG.stage + "/" + filename, "stages"), IMAGE))
+                    Sprite.loadGraphic(Paths.image(PlayState.SONG.stage + "/" + filename, "stages"));
+                else
+                    Sprite.loadGraphic(Paths.imageSYS(PlayState.SONG.stage + "/" + filename, "stages"), false, 0, 0, false, PlayState.SONG.stage + "/" + filename);
+
+                Sprite.setGraphicSize(Std.int(Sprite.width * size));
+    
+                lua_Sprites.set(id, Sprite);
+    
+                PlayState.instance.add(Sprite);
+            }
+            else
+                Application.current.window.alert("Sprite " + id + " already exists! Choose a different name!", "Leather Engine Modcharts");
+        });
 
         Lua_helper.add_callback(lua, "getProperty", getPropertyByName);
 
-        // Lua_helper.add_callback(lua,"makeAnimatedSprite", makeAnimatedLuaSprite);
-        // this one is still in development
+        Lua_helper.add_callback(lua,"makeAnimatedSprite", function(id:String, filename:String, x:Float, y:Float, size:Float) {
+            if(!lua_Sprites.exists(id))
+            {
+                var Sprite:FlxSprite = new FlxSprite(x, y);
+
+                if(Assets.exists(Paths.image(PlayState.SONG.stage + "/" + filename, "stages"), IMAGE))
+                    Sprite.frames = Paths.getSparrowAtlas(PlayState.SONG.stage + "/" + filename, "stages");
+                else
+                    Sprite.frames = Paths.getSparrowAtlasSYS(PlayState.SONG.stage + "/" + filename, "stages");
+
+                Sprite.setGraphicSize(Std.int(Sprite.width * size));
+    
+                lua_Sprites.set(id, Sprite);
+    
+                PlayState.instance.add(Sprite);
+            }
+            else
+                Application.current.window.alert("Sprite " + id + " already exists! Choose a different name!", "Leather Engine Modcharts");
+        });
 
         Lua_helper.add_callback(lua, "destroySprite", function(id:String) {
             var sprite = lua_Sprites.get(id);
@@ -208,7 +243,11 @@ class ModchartUtilities
             if (sprite == null)
                 return false;
 
+            lua_Sprites.remove(id);
+
             PlayState.instance.removeObject(sprite);
+            sprite.kill();
+            sprite.destroy();
 
             return true;
         });
@@ -309,7 +348,6 @@ class ModchartUtilities
         Lua_helper.add_callback(lua,"isParentSustain", function(id:Int) {
             return PlayState.instance.notes.members[id].prevNote.isSustainNote;
         });
-
         
         Lua_helper.add_callback(lua,"getRenderedNoteParentX", function(id:Int) {
             return PlayState.instance.notes.members[id].prevNote.x;
@@ -731,28 +769,6 @@ class ModchartUtilities
                 }
             );
         });
-
-        //forgot and accidentally commit to master branch
-        // shader
-        
-        /*Lua_helper.add_callback(lua,"createShader", function(frag:String,vert:String) {
-            var shader:LuaShader = new LuaShader(frag,vert);
-
-            trace(shader.glFragmentSource);
-
-            shaders.push(shader);
-            // if theres 1 shader we want to say theres 0 since 0 index and length returns a 1 index.
-            return shaders.length == 1 ? 0 : shaders.length;
-        });
-
-        
-        Lua_helper.add_callback(lua,"setFilterHud", function(shaderIndex:Int) {
-            PlayState.instance.camHUD.setFilters([new ShaderFilter(shaders[shaderIndex])]);
-        });
-
-        Lua_helper.add_callback(lua,"setFilterCam", function(shaderIndex:Int) {
-            FlxG.camera.setFilters([new ShaderFilter(shaders[shaderIndex])]);
-        });*/
 
         // default strums
 
