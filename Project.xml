@@ -126,25 +126,15 @@
 	<haxelib name="flixel" />
 	<haxedev set='webgl' />
 
-	<!--In case you want to use the addons package-->
+	<!--Packages-->
 	<haxelib name="flixel-addons" />
 	<haxelib name="hscript" />
 
-	<!--In case you want to use the ui package-->
 	<haxelib name="flixel-ui" />
 	<haxelib name="polymod"/>
 	
 	<haxelib name="discord_rpc" if="desktop"/>
 	<haxelib name="linc_luajit" if="windows"/>
-
-	<haxelib name="extension-webm" if="windows"/>
-	<!-- <haxelib name="hxcpp-debug-server" if="desktop"/> -->
-
-	<!-- <haxelib name="markdown" /> -->
-	<!-- <haxelib name="HtmlParser" /> -->
-
-	<!--In case you want to use nape with flixel-->
-	<!--<haxelib name="nape-haxe4" />-->
 
 	<!-- ______________________________ Haxedefines _____________________________ -->
 
