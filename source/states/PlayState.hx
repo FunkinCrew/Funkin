@@ -319,8 +319,6 @@ class PlayState extends MusicBeatState
 					SONG.stage = 'mall';
 				case 6:
 					SONG.stage = 'school';
-				case 7:
-					SONG.stage = 'wasteland';
 				default:
 					SONG.stage = 'chromatic-stage';
 			}
