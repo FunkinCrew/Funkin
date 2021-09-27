@@ -12,10 +12,6 @@ body:
       options:
       - label: I request this pre-release for the purpose of reporting bugs early.
         required: true
-  - type: markdown
-    attributes:
-      value: |
-        Thanks for taking the time to fill out this bug report!
   - type: input
     id: contact
     attributes:
