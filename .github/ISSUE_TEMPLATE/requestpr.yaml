@@ -36,5 +36,5 @@ body:
     attributes:
       label: Agreements
       options:
-        - label: I will not give this build out without permission
-        required: true
+      - label: I will not give this build out without permission
+      required: true
