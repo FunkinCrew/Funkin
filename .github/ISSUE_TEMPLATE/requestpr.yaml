@@ -37,4 +37,4 @@ body:
       label: Agreements
       options:
       - label: I will not give this build out without permission
-      required: true
+        required: true
