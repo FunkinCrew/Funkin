@@ -1,0 +1,40 @@
+name: Request Pre-Release
+description: Request a pre-release for reporting bugs.
+title: "[Pre-Release Request]: "
+labels: ["prerelease request"]
+assignees:
+  - thepercentageguy
+body:
+  - type: checkboxes
+    attributes:
+      label: Do you request this pre-release for the purpose of reporting bugs?
+      description: Private Pre-Releases are given out so people can report bugs early. 
+      options:
+      - label: I request this pre-release for the purpose of reporting bugs early.
+        required: true
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: input
+    id: contact
+    attributes:
+      label: Contact Details
+      description: How can we get in touch with you so we can send the pre-releases?
+      placeholder: ex. email@example.com
+    validations:
+      required: false
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: Why do you want the pre-release?
+      description: Also tell us, what you intend to do with it.
+    validations:
+      required: true
+  - type: checkboxes
+    id: agreements
+    attributes:
+      label: Agreements
+      options:
+        - label: I will not give this build out without permission
+        required: true
