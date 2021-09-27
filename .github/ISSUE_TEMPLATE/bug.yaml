@@ -39,6 +39,7 @@ body:
       label: Version
       description: What version of our software are you running?
       options:
+        - 0.6 (Unreleased Pre-release)
         - 0.5 (latest)
         - 0.4
         - 0.3
