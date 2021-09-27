@@ -34,3 +34,7 @@ body:
       options:
       - label: I will not give this build out without permission
         required: true
+      - label: I acknowledge that this pre-release may be in a very broken state, and shouldnt be used for modding
+        required: true
+      - label: I acknowledge that this pre-release is of the most recent state of the source code, no matter if broken or not
+        required: true
