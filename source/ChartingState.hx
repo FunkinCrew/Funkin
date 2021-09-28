@@ -3,6 +3,7 @@ package;
 import Conductor.BPMChangeEvent;
 import Section.SwagSection;
 import Song.SwagSong;
+import dsp.FFT;
 import flixel.FlxSprite;
 import flixel.FlxStrip;
 import flixel.addons.display.FlxGridOverlay;
@@ -36,6 +37,7 @@ import openfl.media.Sound;
 import openfl.net.FileReference;
 import openfl.utils.ByteArray;
 
+using Lambda;
 using StringTools;
 using flixel.util.FlxSpriteUtil;
 
@@ -399,6 +401,7 @@ class ChartingState extends MusicBeatState
 		musSpec.x += 70;
 		musSpec.daHeight = FlxG.height / 2;
 		musSpec.scrollFactor.set();
+		musSpec.visType = FREQUENCIES;
 		add(musSpec);
 
 		// trace(audioBuf.data.length);
@@ -418,6 +421,7 @@ class ChartingState extends MusicBeatState
 		{
 			var vocalSpec:SpectogramSprite = new SpectogramSprite(voc, FlxG.random.color(0xFFAAAAAA, FlxColor.WHITE, 100));
 			vocalSpec.x = 70 - (50 * index);
+			vocalSpec.visType = FREQUENCIES;
 			vocalSpec.daHeight = musSpec.daHeight;
 			vocalSpec.y = vocalSpec.daHeight;
 			vocalSpec.scrollFactor.set();

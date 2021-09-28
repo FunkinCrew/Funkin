@@ -1824,11 +1824,6 @@ class PlayState extends MusicBeatState
 	{
 		healthDisplay = FlxMath.lerp(healthDisplay, health, 0.15);
 
-		#if !debug
-		perfectMode = false;
-		#else
-		if (FlxG.keys.justPressed.H)
-			camHUD.visible = !camHUD.visible;
 		if (needsReset)
 		{
 			resetCamFollow();
@@ -1843,13 +1838,8 @@ class PlayState extends MusicBeatState
 			vocals.pause();
 
 			FlxG.sound.music.time = 0;
-			regenNoteData();
+			regenNoteData(); // loads the note data from start
 			health = 1;
-
-			// resyncVocals();
-
-			// FlxG.sound.music.play();
-
 			restartCountdownTimer();
 
 			needsReset = false;
@@ -1864,6 +1854,22 @@ class PlayState extends MusicBeatState
 				f.close();
 			 */
 			// sys.io.File.saveContent('./swag.png', png.readUTFBytes(png.length));
+		}
+
+		#if !debug
+		perfectMode = false;
+		#else
+		if (FlxG.keys.justPressed.H)
+			camHUD.visible = !camHUD.visible;
+		if (FlxG.keys.justPressed.K)
+		{
+			@:privateAccess
+			var funnyData:Array<Int> = cast FlxG.sound.music._channel.__source.buffer.data;
+
+			funnyData.reverse();
+
+			@:privateAccess
+			FlxG.sound.music._channel.__source.buffer.data = cast funnyData;
 		}
 		#end
 

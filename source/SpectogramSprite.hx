@@ -1,5 +1,6 @@
 package;
 
+import dsp.FFT;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
@@ -10,6 +11,7 @@ import flixel.system.FlxSound;
 import flixel.util.FlxColor;
 import lime.utils.Int16Array;
 
+using Lambda;
 using flixel.util.FlxSpriteUtil;
 
 class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
@@ -48,14 +50,21 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 	}
 
 	var setBuffer:Bool = false;
-	var audioData:Int16Array;
+
+	public var audioData:Int16Array;
+
 	var numSamples:Int = 0;
 
 	override function update(elapsed:Float)
 	{
-		if (visType == UPDATED)
+		switch (visType)
 		{
-			updateVisulizer();
+			case UPDATED:
+				updateVisulizer();
+
+			case FREQUENCIES:
+				updateFFT();
+			default:
 		}
 
 		// if visType is static, call updateVisulizer() manually whenever you want to update it!
@@ -125,6 +134,78 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 		}
 	}
 
+	public function updateFFT()
+	{
+		if (daSound != null)
+		{
+			var remappedShit:Int = 0;
+
+			checkAndSetBuffer();
+
+			if (setBuffer)
+			{
+				if (daSound.playing)
+					remappedShit = Std.int(FlxMath.remapToRange(daSound.time, 0, daSound.length, 0, numSamples));
+				else
+					remappedShit = Std.int(FlxMath.remapToRange(Conductor.songPosition, 0, daSound.length, 0, numSamples));
+
+				var i = remappedShit;
+				var prevLine:FlxPoint = new FlxPoint();
+
+				var swagheight:Int = 200;
+
+				var fftSamples:Array<Float> = [];
+
+				for (sample in remappedShit...remappedShit + lengthOfShit)
+				{
+					var left = audioData[i] / 32767;
+					var right = audioData[i + 1] / 32767;
+
+					var balanced = (left + right) / 2;
+
+					i += 2;
+
+					// var remappedSample:Float = FlxMath.remapToRange(sample, remappedShit, remappedShit + lengthOfShit, 0, lengthOfShit - 1);
+					fftSamples.push(balanced);
+				}
+
+				var freqShit = funnyFFT(fftSamples);
+
+				for (i in 0...group.members.length)
+				{
+					// var sampleApprox:Int = Std.int(FlxMath.remapToRange(i, 0, group.members.length, startingSample, startingSample + samplesToGen));
+					var remappedFreq:Int = Std.int(FlxMath.remapToRange(i, 0, group.members.length, 0, freqShit.length - 1));
+
+					group.members[i].x = prevLine.x;
+					group.members[i].y = prevLine.y;
+
+					var freqIDK:Float = FlxMath.remapToRange(freqShit[remappedFreq], 0, 0.002, 0, 20);
+
+					prevLine.x = (freqIDK * swagheight / 2 + swagheight / 2) + x;
+					prevLine.y = (i / group.members.length * daHeight) + y;
+
+					// var line = FlxVector.get(prevLine.x - group.members[i].x, prevLine.y - group.members[i].y);
+
+					// group.members[i].setGraphicSize(Std.int(Math.max(line.length, 1)), Std.int(1));
+					// group.members[i].angle = line.degrees;
+				}
+				/* 
+					for (freq in 0...freqShit.length)
+					{
+						var remappedFreq:Float = FlxMath.remapToRange(freq, 0, freqShit.length, 0, lengthOfShit - 1);
+
+						group.members[Std.int(remappedFreq)].x = prevLine.x;
+						group.members[Std.int(remappedFreq)].y = prevLine.y;
+
+						var freqShit:Float = FlxMath.remapToRange(freqShit[freq], 0, 0.002, 0, 20);
+
+						prevLine.x = (freqShit * swagheight / 2 + swagheight / 2) + x;
+						prevLine.y = (Math.ceil(remappedFreq) / lengthOfShit * daHeight) + y;
+				}*/
+			}
+		}
+	}
+
 	public function updateVisulizer():Void
 	{
 		if (daSound != null)
@@ -172,10 +253,75 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 			}
 		}
 	}
+
+	function funnyFFT(samples:Array<Float>):Array<Float>
+	{
+		var fs:Float = 44100; // sample rate shit?
+
+		final fftN = 2048;
+		final halfN = Std.int(fftN / 2);
+		final overlap = 0.5;
+		final hop = Std.int(fftN * (1 - overlap));
+
+		// window function to compensate for overlapping
+		final a0 = 0.50; // => Hann(ing) window
+		final window = (n:Int) -> a0 - (1 - a0) * Math.cos(2 * Math.PI * n / fftN);
+
+		// helpers, note that spectrum indexes suppose non-negative frequencies
+		final binSize = fs / fftN;
+		final indexToFreq = (k:Int) -> 1.0 * k * binSize; // we need the `1.0` to avoid overflows
+
+		// "melodic" band-pass filter
+		final minFreq = 32.70;
+		final maxFreq = 4186.01;
+		final melodicBandPass = function(k:Int, s:Float)
+		{
+			final freq = indexToFreq(k);
+			final filter = freq > minFreq - binSize && freq < maxFreq + binSize ? 1 : 0;
+			return s * filter;
+		};
+
+		var freqOutput:Array<Float> = [];
+
+		var c = 0; // index where each chunk begins
+		while (c < samples.length)
+		{
+			// take a chunk (zero-padded if needed) and apply the window
+			final chunk = [
+				for (n in 0...fftN)
+					(c + n < samples.length ? samples[c + n] : 0.0) * window(n)
+			];
+
+			// compute positive spectrum with sampling correction and BP filter
+			final freqs = FFT.rfft(chunk).map(z -> z.scale(1 / fs).magnitude).mapi(melodicBandPass);
+
+			// find spectral peaks and their instantaneous frequencies
+			for (k => s in freqs)
+			{
+				final time = c / fs;
+				final freq = indexToFreq(k);
+				final power = s;
+				if (FlxG.keys.justPressed.N)
+				{
+					haxe.Log.trace('${time};${freq};${power}', null);
+				}
+				if (freq < 4200)
+					freqOutput.push(power);
+				//
+			}
+			// haxe.Log.trace("", null);
+
+			// move to next (overlapping) chunk
+			c += hop;
+		}
+
+		return freqOutput;
+	}
 }
 
 enum VISTYPE
 {
 	STATIC;
 	UPDATED;
+	FREQUENCIES;
 }

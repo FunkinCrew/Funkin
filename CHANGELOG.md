@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 3 AWESOME PICO VS. DARNELL SONGS!!
 - Character offset editor / spritesheet viewer
 ## Changed
+- Lerp'd the healthbar
 - Resetting from game over and "restart song" should be faster
 - Health gain is different depending on how accurate you hit notes!
 - slight less health gained on sustain notes
