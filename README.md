@@ -82,7 +82,7 @@ To run it from your desktop (Windows, Mac, Linux) it can be a bit more involved.
 * Windows SDK (10.0.17763.0)
 
 Once that is done you can open up a command line in the project's directory and run `lime test windows -debug`. Once that command finishes (it takes forever even on a higher end PC), you can run FNF from the .exe file under export\release\windows\bin
-As for Mac, 'lime test mac -debug' should work, if not the internet surely has a guide on how to compile Haxe stuff for Mac.
+As for Mac, `lime test mac -debug` should work, if not the internet surely has a guide on how to compile Haxe stuff for Mac.
 
 ### Additional guides
 
