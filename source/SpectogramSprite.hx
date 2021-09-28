@@ -156,7 +156,7 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 
 				var fftSamples:Array<Float> = [];
 
-				for (sample in remappedShit...remappedShit + lengthOfShit)
+				for (sample in remappedShit...remappedShit + (lengthOfShit))
 				{
 					var left = audioData[i] / 32767;
 					var right = audioData[i + 1] / 32767;
@@ -179,12 +179,12 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 					group.members[i].x = prevLine.x;
 					group.members[i].y = prevLine.y;
 
-					var freqIDK:Float = FlxMath.remapToRange(freqShit[remappedFreq], 0, 0.002, 0, 20);
+					var freqIDK:Float = FlxMath.remapToRange(freqShit[remappedFreq], 0, 0.000005, 0, 50);
 
 					prevLine.x = (freqIDK * swagheight / 2 + swagheight / 2) + x;
 					prevLine.y = (i / group.members.length * daHeight) + y;
 
-					// var line = FlxVector.get(prevLine.x - group.members[i].x, prevLine.y - group.members[i].y);
+					var line = FlxVector.get(prevLine.x - group.members[i].x, prevLine.y - group.members[i].y);
 
 					// group.members[i].setGraphicSize(Std.int(Math.max(line.length, 1)), Std.int(1));
 					// group.members[i].angle = line.degrees;
@@ -272,8 +272,8 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 		final indexToFreq = (k:Int) -> 1.0 * k * binSize; // we need the `1.0` to avoid overflows
 
 		// "melodic" band-pass filter
-		final minFreq = 32.70;
-		final maxFreq = 4186.01;
+		final minFreq = 20.70;
+		final maxFreq = 1200.01;
 		final melodicBandPass = function(k:Int, s:Float)
 		{
 			final freq = indexToFreq(k);
@@ -300,12 +300,12 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 			{
 				final time = c / fs;
 				final freq = indexToFreq(k);
-				final power = s;
+				final power = s * s;
 				if (FlxG.keys.justPressed.N)
 				{
 					haxe.Log.trace('${time};${freq};${power}', null);
 				}
-				if (freq < 4200)
+				if (freq < maxFreq)
 					freqOutput.push(power);
 				//
 			}
