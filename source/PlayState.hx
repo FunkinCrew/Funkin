@@ -163,7 +163,6 @@ class PlayState extends MusicBeatState
 	var mcontrols:Mobilecontrols; 
 	#end
 
-	var rank:Rank;
 	var midScroll:Bool;
 
 	var misses:Int = 0;
@@ -1123,7 +1122,7 @@ class PlayState extends MusicBeatState
 		
 		doof.cameras = [camHUD];
 
-		rank = new Rank();
+		Rank.clear();
 
 		#if mobileC
 			mcontrols = new Mobilecontrols();
@@ -1886,10 +1885,10 @@ class PlayState extends MusicBeatState
 		missesTxt.text = 'Misses: $misses';
 		perfectTxt.text = 'Perfect: $perfect';
 
-		rank.goodhit = hits;
-		rank.misses = misses;
+		Rank.goodhit = hits;
+		Rank.misses = misses;
 
-		rankTxt.text = 'Rank: ${rank.calcRank()}';
+		rankTxt.text = 'Rank: ${Rank.calcRank()}';
 
 		if (FlxG.keys.justPressed.ENTER #if android || FlxG.android.justReleased.BACK #end && (startedCountdown && canPause))
 		{

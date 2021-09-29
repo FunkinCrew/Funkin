@@ -2,25 +2,24 @@ package utils;
 
 class Rank
 {
-	var percentHit:Float;
+	public static var misses:Int = 0;
 
-	public var misses:Int;
+	public static var goodhit:Int = 0;
 
-	public var goodhit:Int;
+	public static var perfect:Int = 0;
 
-	public var perfect:Int;
-
-	public function new()
-	{
+	public static function clear() {
 		misses = 0;
 		goodhit = 0;
 		perfect = 0;
-		percentHit = 100;
 	}
 
-	public function calcRank():String
+	public static function calcRank():String
 	{
-		percentHit = (goodhit / (misses + goodhit)) * 100;
+		if ((goodhit + misses + perfect) == 0)
+			return "N/A";
+
+		var percentHit = (goodhit / (misses + goodhit)) * 100;
 
 		// trace('$percentHit% goodhit: $goodhit misses: $misses');
 
