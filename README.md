@@ -10,7 +10,7 @@ https://gamejolt.com/games/ufnf/644096
 #### UFNF Engine
 |Developer|Playtesting|
 |---------|-----------|
-|thepercentageguy|FunkinCloth & IAteOldPasta|
+|thepercentageguy|SpinnableBlue & IAteOldPasta|
 
 #### Friday Night Funkin
 |Developer|Artist|Music|
