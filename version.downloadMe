@@ -1,5 +1,3 @@
-0.6.0;
-- Added the updated charts from FNF v0.2.8
-- fixed judgement timings (kinda)
-- songs can't have a scrollspeed over 3 anymore
-- added Week 7
+0.6.1;
+- Fixed gamebreaking bugs
+- Fixed some wording in the options menu
