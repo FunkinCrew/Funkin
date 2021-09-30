@@ -6,9 +6,11 @@
         ["Pico", "Philly", "Blammed"],
         ["Satin-Panties", "High", "Milf"],
         ["Cocoa", "Eggnog", "Winter-Horrorland"],
-        ["Senpai", "Roses", "Thorns"]
+        ["Senpai", "Roses", "Thorns"],
+        ["Ugh", "Guns", "Stress"]
     ],
     "startsUnlocked": [
+        true,
         true,
         true,
         true,
@@ -24,7 +26,8 @@
         ["pico", "bf", "gf"],
         ["mom", "bf", "gf"],
         ["parents-christmas", "bf", "gf"],
-        ["senpai", "bf", "gf"]
+        ["senpai", "bf", "gf"],
+        ["tankman", "bf", "gf"]
     ],
     "names": [
         "How to Funk",
@@ -33,6 +36,7 @@
         "PICO",
         "MOMMY MUST MURDER",
         "RED SNOW",
-        "hating simulator ft. moawling"
+        "hating simulator ft. moawling",
+        "TANKMAN"
     ]
 }

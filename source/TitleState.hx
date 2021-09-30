@@ -1,5 +1,6 @@
 package;
 
+import polymod.Polymod;
 #if desktop
 import Discord.DiscordClient;
 import sys.thread.Thread;
@@ -34,6 +35,8 @@ using StringTools;
 import sys.thread.Thread;
 #end
 
+
+using StringTools;
 class TitleState extends MusicBeatState
 {
 	static var initialized:Bool = false;
@@ -62,12 +65,20 @@ class TitleState extends MusicBeatState
 			openSubState(new LoginSubState(0xAA000000));
 		}
 		else {
-			trace('can\'t connect to GJ make sure you have an APIkeys.hx file!');
+			FlxG.log.error('can\'t connect to GJ!');
 		}
 		
-		/* polymod unneeded atm
-		#if polymod
-		polymod.Polymod.init({modRoot: "mods", dirs: ['introMod']});
+		/*
+		#if cpp
+		var activeMods = Polymod.init({modRoot: "mods", dirs: CoolUtil.coolTextFile("mods/modList.txt"), ignoredFiles: [
+		"_polymod_meta.json",
+		"_polymod_icon.png",
+		"_polymod_pack.txt",
+		"ASSET_LICENSE.txt",
+		"CODE_LICENSE.txt",
+		"LICENSE.txt"]});
+
+		trace(activeMods);
 		#end
 		*/
 

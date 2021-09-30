@@ -90,6 +90,12 @@ class Paths
 		return sound(key + FlxG.random.int(min, max), library);
 	}
 
+	inline static public function video(key:String, ?library:String)
+	{
+		trace('assets/videos/$key.mp4');
+		return getPath('videos/$key.mp4', BINARY, library);
+	}
+
 	inline static public function music(key:String, ?library:String)
 	{
 		return getPath('music/$key.$SOUND_EXT', MUSIC, library);

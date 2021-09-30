@@ -315,13 +315,16 @@ class StoryMenuState extends MusicBeatState
 			}
 
 			PlayState.storyDifficulty = curDifficulty;
-
-			PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + diffic, PlayState.storyPlaylist[0].toLowerCase());
 			PlayState.storyWeek = curWeek;
 			PlayState.campaignScore = 0;
 			new FlxTimer().start(1, function(tmr:FlxTimer)
 			{
-				LoadingState.loadAndSwitchState(new PlayState(), true);
+				if (curWeek != 7) {
+					PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + diffic, PlayState.storyPlaylist[0].toLowerCase());
+					LoadingState.loadAndSwitchState(new PlayState(), true);
+				} else {
+					FlxG.switchState(new RickRollState());
+				}
 			});
 		}
 	}
