@@ -1,5 +1,8 @@
 package modding;
 
+import flixel.util.FlxTimer;
+import ui.HealthIcon;
+import game.Character;
 import flixel.util.FlxColor;
 #if linc_luajit
 import llua.Convert;
@@ -560,6 +563,59 @@ class ModchartUtilities
 
         Lua_helper.add_callback(lua,"setCanFullscreen",function(can_Fullscreen:Bool) {
             PlayState.instance.canFullscreen = can_Fullscreen;
+        });
+
+        Lua_helper.add_callback(lua,"changeDadCharacter", function (character:String) {
+            var oldDad = PlayState.dad;
+            PlayState.instance.removeObject(oldDad);
+            
+            var dad = new Character(100, 100, character);
+            PlayState.dad = dad;
+
+            if(dad.otherCharacters == null)
+            {
+                if(dad.coolTrail != null)
+                    PlayState.instance.add(dad.coolTrail);
+    
+                PlayState.instance.add(dad);
+            }
+            else
+            {
+                for(character in dad.otherCharacters)
+                {
+                    if(character.coolTrail != null)
+                        PlayState.instance.add(character.coolTrail);
+    
+                    PlayState.instance.add(character);
+                }
+            }
+
+            lua_Sprites.remove("dad");
+
+            oldDad.kill();
+            oldDad.destroy();
+
+            lua_Sprites.set("dad", dad);
+
+            @:privateAccess
+            {
+                var oldIcon = PlayState.instance.iconP2;
+                var bar = PlayState.instance.healthBar;
+                
+                PlayState.instance.removeObject(oldIcon);
+                oldIcon.kill();
+                oldIcon.destroy();
+
+                PlayState.instance.iconP2 = new HealthIcon(character, false);
+                PlayState.instance.iconP2.y = PlayState.instance.healthBar.y - (PlayState.instance.iconP2.height / 2);
+                PlayState.instance.iconP2.cameras = [PlayState.instance.camHUD];
+                PlayState.instance.add(PlayState.instance.iconP2);
+
+                bar.createFilledBar(dad.barColor, PlayState.boyfriend.barColor);
+                bar.updateFilledBar();
+
+                PlayState.instance.stage.setCharOffsets();
+            }
         });
 
         // scroll speed

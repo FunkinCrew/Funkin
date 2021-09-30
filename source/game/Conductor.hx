@@ -1,5 +1,6 @@
 package game;
 
+import flixel.math.FlxMath;
 import flixel.FlxG;
 import states.PlayState;
 import game.Song.SwagSong;
@@ -30,8 +31,18 @@ class Conductor
 
 	public static var bpmChangeMap:Array<BPMChangeEvent> = [];
 
+	public static var timeScale:Array<Int> = [4, 4];
+
 	public function new()
 	{
+	}
+
+	public static function recalculateStuff(?multi:Float = 1)
+	{
+		safeZoneOffset = Math.floor((safeFrames / 60) * 1000);
+
+		crochet = ((60 / bpm) * 1000) / multi;
+		stepCrochet = crochet / (16 / timeScale[1]);
 	}
 
 	public static function mapBPMChanges(song:SwagSong, ?songMultiplier:Float = 1.0)
@@ -62,12 +73,7 @@ class Conductor
 			var deltaSteps:Int = song.notes[i].lengthInSteps;
 			totalSteps += deltaSteps;
 
-			// bro thx kade for the functions :D
-			var mathPos = ((60 / curBPM) * 1000 / 4) * deltaSteps;
-			mathPos = mathPos * Math.pow(10, 4);
-			mathPos = Math.round(mathPos) / Math.pow(10, 4);
-
-			totalPos += mathPos;
+			totalPos += FlxMath.roundDecimal(((60 / curBPM) * 1000 / 4) * deltaSteps, 4);
 		}
 
 		trace("new BPM map BUDDY " + bpmChangeMap);
@@ -77,7 +83,6 @@ class Conductor
 	{
 		bpm = newBpm;
 
-		crochet = ((60 / bpm) * 1000) / multi;
-		stepCrochet = crochet / 4;
+		recalculateStuff(multi);
 	}
 }

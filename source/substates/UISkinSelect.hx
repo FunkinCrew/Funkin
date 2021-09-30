@@ -1,5 +1,6 @@
 package substates;
 
+import flixel.graphics.frames.FlxAtlasFrames;
 import lime.utils.Assets;
 import flixel.text.FlxText;
 import utilities.CoolUtil;
@@ -130,13 +131,15 @@ class UISkinSelect extends MusicBeatSubstate
 
         Note.swagWidth = 160 * 0.7;
 
-        #if sys
-        var arrow_Tex:flixel.graphics.frames.FlxAtlasFrames;
+        var arrow_Tex:FlxAtlasFrames;
 
+        #if sys
         if(!Assets.exists(Paths.image('ui skins/' + ui_Skin + "/arrows/default", 'shared')))
             arrow_Tex = Paths.getSparrowAtlasSYS('ui skins/' + ui_Skin + "/arrows/default", 'shared');
         else
             arrow_Tex = Paths.getSparrowAtlas('ui skins/' + ui_Skin + "/arrows/default", 'shared');
+        #else
+        arrow_Tex = Paths.getSparrowAtlas('ui skins/' + ui_Skin + "/arrows/default", 'shared');
         #end
 
 		for (i in 0...key_Count)
@@ -146,7 +149,7 @@ class UISkinSelect extends MusicBeatSubstate
             #if sys
             babyArrow.frames = arrow_Tex;
             #else
-            babyArrow.frames = Paths.getSparrowAtlas('ui skins/' + ui_Skin + "/arrows/default", 'shared');
+            babyArrow.frames = arrow_Tex;
             #end
 
             babyArrow.antialiasing = ui_Settings[3] == "true";
