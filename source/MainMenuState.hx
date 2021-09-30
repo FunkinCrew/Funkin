@@ -36,7 +36,7 @@ class MainMenuState extends MusicBeatState
 
 	public static var version = '0.6.0';
 	public static var versionTag = 'The Week 7 update';
-	public static var prerelease = true;
+	public static var prerelease = false;
 
 	override function create()
 	{
