@@ -1819,7 +1819,7 @@ class PlayState extends MusicBeatState
 					daNote.active = true;
 				}
 
-				daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(FlxG.save.data.sspeed != 0 ? SONG.speed : FlxG.save.data.sspeed, 2)));
+				daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(FlxG.save.data.sspeed == 0 ? SONG.speed : FlxG.save.data.sspeed, 2)));
 
 				// i am so fucking sorry for this if condition
 				if (daNote.isSustainNote
