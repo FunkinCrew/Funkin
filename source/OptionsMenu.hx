@@ -66,7 +66,7 @@ class OptionsMenu extends MusicBeatState {
 		'Allow using R to reset ${!FlxG.save.data.ron ? 'off' : 'on'}',
 		'Hitsounds ${!FlxG.save.data.hsounds ? 'off' : 'on'}',
 		'Offset: ${FlxG.save.data.offset}ms',
-		'Constant scrollspeed: ${FlxG.save.data.sspeed == 0 ? 'off' : FlxG.save.data.sspeed}',
+		'Constant scrollspeed: ${FlxG.save.data.sspeed == 0 ? 'Chart Dependant' : FlxG.save.data.sspeed}',
 		'Enable Near Death Tint ${!FlxG.save.data.redTint ? 'on' : 'off'}',
 		'Middle Scroll ${!FlxG.save.data.mscroll ? 'off' : 'on'}',
 		'RESET SETTINGS'];
