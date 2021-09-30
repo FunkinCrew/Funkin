@@ -37,7 +37,6 @@ class GameplayCustomizeState extends MusicBeatState
 	var playerStrums:FlxTypedGroup<FlxSprite>;
 	private var camHUD:FlxCamera;
 	private var camGame:FlxCamera;
-	private var camNotes:FlxCamera;
 
 	public override function create()
 	{
