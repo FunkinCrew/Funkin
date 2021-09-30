@@ -50,7 +50,7 @@ import openfl.utils.ByteArray;
 
 using StringTools;
 
-class ChartingStateOld extends MusicBeatState
+class ChartingState extends MusicBeatState
 {
 	var _file:FileReference;
 
