@@ -39,12 +39,9 @@ body:
       label: Version
       description: What version of our software are you running?
       options:
-        - 0.6 (Unreleased Pre-release)
-        - 0.5 (latest)
+        - 0.6 (latest)
+        - 0.5
         - 0.4
-        - 0.3
-        - 0.2 (support ended)
-        - 0.1 (support ended)
     validations:
       required: true
   - type: textarea
