@@ -20,7 +20,7 @@ jobs:
         run: haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc;haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
 
       - name: Build with Lime
-        run: haxelib run lime test mac
+        run: haxelib run lime build mac
 
       - name: Upload release
         uses: svenstaro/upload-release-action@v2
@@ -47,7 +47,7 @@ jobs:
         run: haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc;haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
 
       - name: Build with Lime
-        run: haxelib run lime test linux
+        run: haxelib run lime build linux
 
       - name: Upload release
         uses: svenstaro/upload-release-action@v2
@@ -78,7 +78,7 @@ jobs:
         run: haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc; haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
 
       - name: Build with Lime
-        run: haxelib run lime test windows
+        run: haxelib run lime build windows
 
       - name: Upload release
         uses: svenstaro/upload-release-action@v2
