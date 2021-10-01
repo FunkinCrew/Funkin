@@ -1,4 +1,4 @@
-package;
+package animateatlas;
 
 import animateatlas.JSONData.AtlasData;
 import openfl.display.BitmapData;
