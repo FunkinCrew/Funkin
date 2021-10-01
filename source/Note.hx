@@ -42,7 +42,7 @@ class Note extends FlxSprite
 		this.prevNote = prevNote;
 		isSustainNote = sustainNote;
 
-		x += 50 + 32;
+		x += 50;
 		// MAKE SURE ITS DEFINITELY OFF SCREEN?
 		y -= 2000;
 		this.strumTime = strumTime;
@@ -125,7 +125,7 @@ class Note extends FlxSprite
 			noteScore * 0.2;
 			alpha = 0.6;
 
-			x += width / 2 + 32;
+			x += width / 2;
 
 			switch (noteData)
 			{
@@ -141,7 +141,7 @@ class Note extends FlxSprite
 
 			updateHitbox();
 
-			x -= width / 2 + 32;
+			x -= width / 2;
 
 			if (PlayState.curStage.startsWith('school'))
 				x += 30;
