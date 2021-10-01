@@ -1414,7 +1414,7 @@ class PlayState extends MusicBeatState
 		for (i in 0...4)
 		{
 			// FlxG.log.add(i);
-			var babyArrow:FlxSprite = new FlxSprite(32, strumLine.y);
+			var babyArrow:FlxSprite = new FlxSprite(34, strumLine.y);
 
 			switch (curStage)
 			{
