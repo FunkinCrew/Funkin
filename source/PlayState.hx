@@ -2755,6 +2755,9 @@ class PlayState extends MusicBeatState
 			totalPlayed += 1;
 			accuracy = Math.max(0, HelperFunctions.truncateFloat(totalNotesHit / totalPlayed * 100, 2));
 			//trace(totalNotesHit + '/' + totalPlayed + '* 100 = ' + accuracy);
+
+			if(accuracy > 100)
+			    accuracy = 100;
 		}
 
 	function badNoteCheck()
