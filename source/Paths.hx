@@ -95,14 +95,19 @@ class Paths
 		return 'songs:assets/songs/${song.toLowerCase()}/Inst.$SOUND_EXT';
 	}
 
+	inline static public function color(color:String, library:String)
+	{
+		return getPath('colors/$color.clr', TEXT, library);
+	}
+
 	inline static public function image(key:String, ?library:String)
 	{
 		return getPath('images/$key.png', IMAGE, library);
 	}
 
-	inline static public function video(key:String)
+	inline static public function video(key:String, ?ext:String = 'mp4')
 	{
-		return 'assets/videos/$key.webm';
+		return 'assets/videos/$key.$ext';
 	}
 
 	inline static public function font(key:String)

@@ -52,6 +52,11 @@ class MusicBeatSubstate extends FlxSubState
 		curStep = lastChange.stepTime + Math.floor((Conductor.songPosition - lastChange.songTime) / Conductor.stepCrochet);
 	}
 
+	public static function switchState(state:flixel.FlxState)
+	{
+		LoadingState.loadAndSwitchState(state);
+	}
+
 	public function stepHit():Void
 	{
 		if (curStep % 4 == 0)

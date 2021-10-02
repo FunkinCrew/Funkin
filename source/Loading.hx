@@ -56,8 +56,6 @@ class Loading extends MusicBeatState
 
 		PlayerSettings.init();
 
-		Data.init();
-
 		FlxG.mouse.visible = false;
 
 		FlxG.worldBounds.set(0,0);

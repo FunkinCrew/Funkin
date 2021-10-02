@@ -1,30 +1,59 @@
 package;
 
-import Controls.Control;
-import flash.text.TextField;
+import flixel.FlxBasic;
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.addons.display.FlxGridOverlay;
+import flixel.FlxObject;
 import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.input.keyboard.FlxKey;
-import flixel.math.FlxMath;
-import flixel.text.FlxText;
 import flixel.util.FlxColor;
-import lime.utils.Assets;
+import flixel.text.FlxText;
 
 class OptionsMenu extends MusicBeatState
 {
-	var selector:FlxText;
+	var textMenuItems:Array<String> = 
+	[
+	'Controls',
+	'Downscroll',
+	'Ghost Tapping',
+	'Note Splashes',
+	'Light CPU Strums',
+	'Watermarks',
+	'Anti-Aliasing',
+	'Show FPS',
+	'BotPlay',
+	'Color Party',
+	'Hide HUD'
+	];
+	var description:String;
+
+	var descriptions:Array<String> =
+	[
+	'Change controls',
+	'Change strumline position',
+	"If you press the arrow you don't get miss",
+	'SPLOOSH',
+	'Lights strums and splash if enemy hit it',
+	'Turn on/off WB watermarks',
+	'Turn on/off anti-aliasing',
+	'dumb option',
+	'Showcase your charts and mods with auto play(Thanks Kadedev for the code)',
+	'Sync healthbar colors with icons',
+	"Hide some HUD elements"
+	];
+
+	var selector:FlxSprite;
 	var curSelected:Int = 0;
+	var versionShit:FlxText;
+	var camFollow:FlxObject;
+	var startedFuckinState:Bool = false;
 
-	var controlsStrings:Array<String> = [];
+	var grpOptionsTexts:FlxTypedGroup<Alphabet>;
 
-	private var grpControls:FlxTypedGroup<Alphabet>;
-
-	override function create()
+	public function new()
 	{
+		super();
+		
 		var menuBG:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
-		controlsStrings = CoolUtil.coolTextFile(Paths.txt('controls'));
 		menuBG.color = 0xFFea71fd;
 		menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
 		menuBG.updateHitbox();
@@ -32,103 +61,170 @@ class OptionsMenu extends MusicBeatState
 		menuBG.antialiasing = true;
 		add(menuBG);
 
-		/* 
-			grpControls = new FlxTypedGroup<Alphabet>();
-			add(grpControls);
+		new flixel.util.FlxTimer().start(1, function(tmr:flixel.util.FlxTimer)
+		{
+			startedFuckinState = true;
+		});
 
-			for (i in 0...controlsStrings.length)
-			{
-				if (controlsStrings[i].indexOf('set') != -1)
-				{
-					var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, controlsStrings[i].substring(3) + ': ' + controlsStrings[i + 1], true, false);
-					controlLabel.isMenuItem = true;
-					controlLabel.targetY = i;
-					grpControls.add(controlLabel);
-				}
-				// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
-			}
-		 */
-
+		changeItem(0);
+		description = descriptions[0];
 		super.create();
 
-		openSubState(new OptionsSubState());
+		camFollow = new FlxObject(0, 0, 1, 1);
+		add(camFollow);
+
+		grpOptionsTexts = new FlxTypedGroup<Alphabet>();
+		add(grpOptionsTexts);
+
+		for (i in 0...textMenuItems.length)
+		{
+			var optionText:Alphabet = new Alphabet(0, 30 + (curSelected * 10), textMenuItems[i], true);
+			optionText.ID = i;
+			optionText.targetY = i;
+			grpOptionsTexts.add(optionText);
+			optionText.screenCenter(XY);
+		}
+
+		versionShit = new FlxText(5, FlxG.height - 18, 0);
+		versionShit.size = 12;
+		versionShit.scrollFactor.set();
+		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		add(versionShit);
 	}
 
+	var bullShit:Int = 0;
+
+	function changeItem(huh:Int = 0)
+	{
+		curSelected += huh;
+		description = descriptions[curSelected];
+
+		if (curSelected < 0)
+		{
+			curSelected = textMenuItems.length - 1;
+			description = descriptions[textMenuItems.length - 1];
+		}
+
+		if (curSelected >= textMenuItems.length)
+		{
+			curSelected = 0;
+			description = descriptions[0];
+		}
+	}
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
 
-		/* 
-			if (controls.ACCEPT)
-			{
-				changeBinding();
-			}
+		if (controls.UP_P)
+			changeItem(-1);
 
-			if (isSettingControl)
-				waitingInput();
-			else
-			{
-				if (controls.BACK)
-					FlxG.switchState(new MainMenuState());
-				if (controls.UP_P)
-					changeSelection(-1);
-				if (controls.DOWN_P)
-					changeSelection(1);
-			}
-		 */
-	}
+		if (controls.DOWN_P)
+			changeItem(1);
 
-	function waitingInput():Void
-	{
-		if (FlxG.keys.getIsDown().length > 0)
+		if(FlxG.keys.pressed.SHIFT)
 		{
-			PlayerSettings.player1.controls.replaceBinding(Control.LEFT, Keys, FlxG.keys.getIsDown()[0].ID, null);
+			if(FlxG.keys.pressed.LEFT)
+				FlxG.save.data.offset -= 1;
+			else if (FlxG.keys.pressed.RIGHT)
+				FlxG.save.data.offset += 1;
 		}
-		// PlayerSettings.player1.controls.replaceBinding(Control)
-	}
-
-	var isSettingControl:Bool = false;
-
-	function changeBinding():Void
-	{
-		if (!isSettingControl)
+		else
 		{
-			isSettingControl = true;
+			if(FlxG.keys.justPressed.LEFT)
+				FlxG.save.data.offset -= 1;
+			else if (FlxG.keys.justPressed.RIGHT)
+				FlxG.save.data.offset += 1;			
 		}
-	}
 
-	function changeSelection(change:Int = 0)
-	{
-		#if !switch
-		NGio.logEvent('Fresh');
-		#end
-
-		FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
-
-		curSelected += change;
-
-		if (curSelected < 0)
-			curSelected = grpControls.length - 1;
-		if (curSelected >= grpControls.length)
-			curSelected = 0;
-
-		// selector.y = (70 * curSelected) + 30;
-
-		var bullShit:Int = 0;
-
-		for (item in grpControls.members)
+		grpOptionsTexts.forEach(function(txt:Alphabet)
 		{
-			item.targetY = bullShit - curSelected;
-			bullShit++;
+			txt.color = FlxColor.WHITE;
+			txt.alpha = 0;
 
-			item.alpha = 0.6;
-			// item.setGraphicSize(Std.int(item.width * 0.8));
+			if (txt.ID == curSelected)
+				txt.alpha = 1;
+		});
 
-			if (item.targetY == 0)
+		if(FlxG.save.data.offset < -150)
+			FlxG.save.data.offset = -150;
+		else if(FlxG.save.data.offset > 150)
+			FlxG.save.data.offset = 150;
+
+		versionShit.text = "(" + description + ") Offset: " + FlxG.save.data.offset + ' (Max 150, Min -150, Press SHIFT to go faster)';
+
+		if (controls.ACCEPT)
+		{
+			switch (textMenuItems[curSelected])
 			{
-				item.alpha = 1;
-				// item.setGraphicSize(Std.int(item.width));
+				case "Controls":
+					FlxG.state.openSubState(new KeyBindMenu());
+				case "Downscroll":
+					FlxG.save.data.downscroll = !FlxG.save.data.downscroll;
+					if(FlxG.save.data.downscroll)
+						FlxG.sound.play(Paths.sound('confirmMenu'));
+					else
+						FlxG.sound.play(Paths.sound('cancelMenu'));
+				case "Ghost Tapping":
+					FlxG.save.data.ghost = !FlxG.save.data.ghost;
+					if(FlxG.save.data.ghost)
+						FlxG.sound.play(Paths.sound('confirmMenu'));
+					else
+						FlxG.sound.play(Paths.sound('cancelMenu'));
+				case "Note Splashes":
+					FlxG.save.data.sploosh = !FlxG.save.data.sploosh;
+					if(FlxG.save.data.sploosh)
+						FlxG.sound.play(Paths.sound('confirmMenu'));
+					else
+						FlxG.sound.play(Paths.sound('cancelMenu'));
+				case "Light CPU Strums":
+					FlxG.save.data.cpuStrums = !FlxG.save.data.cpuStrums;
+					if(FlxG.save.data.cpuStrums)
+						FlxG.sound.play(Paths.sound('confirmMenu'));
+					else
+						FlxG.sound.play(Paths.sound('cancelMenu'));
+				case "Watermarks":
+					FlxG.save.data.watermarks = !FlxG.save.data.watermarks;
+					if(FlxG.save.data.watermarks)
+						FlxG.sound.play(Paths.sound('confirmMenu'));
+					else
+						FlxG.sound.play(Paths.sound('cancelMenu'));	
+				case "Anti-Aliasing":
+					FlxG.save.data.antialiasing = !FlxG.save.data.antialiasing;
+					if(FlxG.save.data.antialiasing)
+						FlxG.sound.play(Paths.sound('confirmMenu'));
+					else
+						FlxG.sound.play(Paths.sound('cancelMenu'));		
+				case 'Show FPS':
+					FlxG.save.data.fps = !FlxG.save.data.fps;
+					if(FlxG.save.data.fps)	
+						FlxG.sound.play(Paths.sound('confirmMenu'));
+					else
+						FlxG.sound.play(Paths.sound('cancelMenu'));		
+				case 'BotPlay':
+					FlxG.save.data.botplay = !FlxG.save.data.botplay;
+					if(FlxG.save.data.botplay)	
+						FlxG.sound.play(Paths.sound('confirmMenu'));
+					else
+						FlxG.sound.play(Paths.sound('cancelMenu'));
+				case 'Color Party':
+					FlxG.save.data.colour = !FlxG.save.data.colour;
+					if(FlxG.save.data.colour)
+						FlxG.sound.play(Paths.sound('confirmMenu'));
+					else
+						FlxG.sound.play(Paths.sound('cancelMenu'));
+				case 'Hide HUD':
+				{
+					FlxG.save.data.hud = !FlxG.save.data.hud;
+					if(FlxG.save.data.hud)
+						FlxG.sound.play(Paths.sound('confirmMenu'));
+					else
+						FlxG.sound.play(Paths.sound('cancelMenu'));
+				}
 			}
+		}
+		if(controls.BACK)
+		{
+			LoadingState.loadAndSwitchState(new MainMenuState());
 		}
 	}
 }

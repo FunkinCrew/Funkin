@@ -105,6 +105,8 @@ class MainMenuState extends MusicBeatState
 			menuItem.animation.play('idle');
 			menuItem.ID = i;
 			menuItem.screenCenter(X);
+			if(curSelected != 0)
+				menuItem.x += menuItem.width;
 			menuItems.add(menuItem);
 			menuItem.scrollFactor.set();
 			menuItem.antialiasing = FlxG.save.data.antialiasing;
@@ -217,8 +219,7 @@ class MainMenuState extends MusicBeatState
 
 		super.update(elapsed);
 
-		menuItems.forEach(function(spr:FlxSprite)
-		{
+		menuItems.forEach(function(spr:FlxSprite){
 			spr.screenCenter(X);
 		});
 	}
@@ -227,10 +228,10 @@ class MainMenuState extends MusicBeatState
 	{
 		PlayState.SONG = Song.loadFromJson('endless-hard', 'endless');
 		PlayState.isStoryMode = false;
+		PlayState.endledSONG = true;
 		PlayState.storyDifficulty = 2;
-		PlayState.storyWeek = 1;
-		flixel.addons.transition.FlxTransitionableState.skipNextTransIn = true;
-		flixel.addons.transition.FlxTransitionableState.skipNextTransOut = true;
+		PlayState.storyWeek = 7;
+		trace("how are you find this? ok it's fine IT'S VERY FUCKING FINE");
 		LoadingState.loadAndSwitchState(new PlayState());
 	}
 
@@ -251,8 +252,8 @@ class MainMenuState extends MusicBeatState
 			case 'donate':
 				secretShit();
 			case 'options':
-				flixel.addons.transition.FlxTransitionableState.skipNextTransIn = true;
-				flixel.addons.transition.FlxTransitionableState.skipNextTransOut = true;
+				//flixel.addons.transition.FlxTransitionableState.skipNextTransIn = true;
+				//flixel.addons.transition.FlxTransitionableState.skipNextTransOut = true;
 				FlxG.switchState(new OptionsMenu());
 		}
 	}

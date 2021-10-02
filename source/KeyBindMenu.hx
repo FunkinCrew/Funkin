@@ -1,7 +1,7 @@
 package;
 
 /// Code created by Rozebud for FPS Plus (thanks rozebud)
-// modified by KadeDev for use in Kade Engine/Tricky
+// modified by KadeDev and GEDON6676 
 
 import flixel.util.FlxAxes;
 import flixel.FlxSubState;
@@ -165,12 +165,13 @@ class KeyBindMenu extends FlxSubState
 
     function textUpdate(){
 
-        keyTextDisplay.text = "\n\n";
+        keyTextDisplay.text = "";
 
         for(i in 0...4){
 
-            var textStart = (i == curSelected) ? "> " : "  ";
-            keyTextDisplay.text += textStart + keyText[i] + ": " + ((keys[i] != keyText[i]) ? (keys[i] + " / ") : "" ) + keyText[i] + " ARROW\n";
+            var textStart = (i == curSelected) ? "→ " : "  ";
+            var textEnd = (i == curSelected) ? " ←" : "  ";
+            keyTextDisplay.text += textStart + keyText[i] + ": " + ((keys[i] != keyText[i]) ? (keys[i] + " ↔ ") : "" ) + keyText[i] + " ARROW" + textEnd + "\n\n";
 
         }
 
@@ -207,7 +208,6 @@ class KeyBindMenu extends FlxSubState
         save();
 
         FlxG.state.closeSubState();
-        FlxG.state.openSubState(new OptionsSubState());
         FlxG.save.bind('funkin', 'ninjamuffin99');
 
         FlxTween.tween(keyTextDisplay, {alpha: 0}, 1, {ease: FlxEase.expoInOut});
@@ -223,8 +223,6 @@ class KeyBindMenu extends FlxSubState
         var notAllowed:Array<String> = [];
 
         for(x in blacklist){notAllowed.push(x);}
-
-        trace(notAllowed);
 
         for(x in 0...keys.length)
             {
@@ -246,6 +244,8 @@ class KeyBindMenu extends FlxSubState
             warningTween.cancel();
             warningTween = FlxTween.tween(keyWarning, {alpha: 0}, 0.5, {ease: FlxEase.circOut, startDelay: 2});
         }
+
+        for (y in 0...keys.length) trace(keys[y]);
 
 	}
 

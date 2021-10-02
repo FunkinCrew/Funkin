@@ -139,6 +139,8 @@ class PauseSubState extends MusicBeatSubstate
 				case "Toggle Practice Mode":
 					FlxG.save.data.practice = !FlxG.save.data.practice;
 					checkPractice();
+				case 'Skin Song':
+					PlayState.instance.endSong();
 				case "Hard":
 					changeDiff('-hard', 2);
 				case "Normal":
