@@ -2745,6 +2745,7 @@ class PlayState extends MusicBeatState
 			boyfriend.playAnim('sing' + singData[direction] + 'miss', true);
 		}
 
+		totalNotesHit -= 2;
 		updateAccuracy();
 	}
 
@@ -2752,13 +2753,8 @@ class PlayState extends MusicBeatState
 		{
 
 			totalPlayed += 1;
-			accuracy = HelperFunctions.truncateFloat(totalNotesHit / totalPlayed * 100, 2);
+			accuracy = Math.max(0, HelperFunctions.truncateFloat(totalNotesHit / totalPlayed * 100, 2));
 			//trace(totalNotesHit + '/' + totalPlayed + '* 100 = ' + accuracy);
-			if (accuracy >= 100.00)
-			{
-					accuracy = 100;
-			}
-		
 		}
 
 	function badNoteCheck()

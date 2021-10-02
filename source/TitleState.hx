@@ -258,7 +258,7 @@ class TitleState extends MusicBeatState
 
 			titleText.animation.play('press');
 
-			FlxG.camera.flash(FlxColor.WHITE, 1);
+			FlxG.camera.flash(FlxColor.WHITE, 2);
 			new FlxTimer().start(2, function(tmr:FlxTimer)
 			{
 				FlxG.switchState(new MainMenuState());	
@@ -388,7 +388,7 @@ class TitleState extends MusicBeatState
 		{
 			remove(ngSpr);
 
-			FlxG.camera.fade(FlxColor.WHITE, 4);
+			FlxG.camera.flash(FlxColor.WHITE, 4);
 			remove(credGroup);
 
 			FlxTween.tween(logoBl,{y: -100}, 1.4, {ease: FlxEase.expoInOut});
