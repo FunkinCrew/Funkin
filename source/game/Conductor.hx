@@ -33,6 +33,9 @@ class Conductor
 
 	public static var timeScale:Array<Int> = [4, 4];
 
+	public static var nonmultilmao_crochet:Float = ((60 / bpm) * 1000); // beats in milliseconds
+	public static var nonmultilmao_stepCrochet:Float = nonmultilmao_crochet / 4; // steps in milliseconds
+
 	public function new()
 	{
 	}
@@ -43,6 +46,9 @@ class Conductor
 
 		crochet = ((60 / bpm) * 1000) / multi;
 		stepCrochet = crochet / (16 / timeScale[1]);
+
+		nonmultilmao_crochet = ((60 / (bpm / multi)) * 1000);
+		nonmultilmao_stepCrochet = nonmultilmao_crochet / (16 / timeScale[1]);
 	}
 
 	public static function mapBPMChanges(song:SwagSong, ?songMultiplier:Float = 1.0)

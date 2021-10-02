@@ -235,13 +235,10 @@ class FreeplayState extends MusicBeatState
 
 		curSpeed = FlxMath.roundDecimal(curSpeed, 2);
 
-		if(curSpeed > 2)
-			curSpeed = 2;
+		if(curSpeed < 0.5)
+			curSpeed = 0.5;
 
-		if(curSpeed < 1)
-			curSpeed = 1;
-
-		speedText.text = "Speed: " + curSpeed;
+		speedText.text = "Speed: " + curSpeed + " (R)";
 		speedText.x = scoreText.x + (scoreText.width / 2) - (speedText.width / 2);
 
 		var leftP = controls.LEFT_P;
@@ -272,6 +269,9 @@ class FreeplayState extends MusicBeatState
 				changeDiff(1);
 			else if (rightP && shift)
 				curSpeed += 0.05;
+
+			if(FlxG.keys.justPressed.R)
+				curSpeed = 1;
 	
 			if (controls.BACK)
 			{
