@@ -2,7 +2,7 @@
 <project>
 	<!-- _________________________ Application Settings _________________________ -->
 
-	<app title="Friday Night Funkin': WB Engine" file="WBEngine" packageName="com.gedon6676.wbengine" package="com.gedon6676.wbengine" main="Main" version="1.6" company="GEDON6676" />
+	<app title="Friday Night Funkin': WB Engine" file="WBEngine" packageName="com.gedon6676.wbengine" package="com.gedon6676.wbengine" main="Main" version="1.7" company="GEDON6676" />
 
 	<!--Switch Export with Unique ApplicationID and Icon-->
 	<set name="APP_ID" value="0x0100f6c013bbc000" />
@@ -42,6 +42,7 @@
 
 	<assets path="assets/preload" rename="assets" exclude="*.ogg" if="web"/>
 	<assets path="assets/preload" rename="assets" exclude="*.mp3" unless="web"/>
+
 	
 	<!-- <define name="PRELOAD_ALL" /> -->
 	<define name="PRELOAD_ALL" unless="web" />
@@ -71,8 +72,8 @@
 		<library name="week6"    preload="false" />
 	</section>
 	
-	<assets path="assets/songs"    library="songs"    exclude="*.ogg" if="web"/>
-	<assets path="assets/songs"    library="songs"    exclude="*.mp3" unless="web"/>
+	<assets path="assets/preload/songs" rename="assets/songs"  library="songs" embed="true" exclude="*.ogg" if="web"/>
+	<assets path="assets/preload/songs" rename="assets/songs"  library="songs" embed="true" exclude="*.mp3" unless="web"/>
 	<assets path="assets/shared"   library="shared"   exclude="*.ogg" if="web"/>
 	<assets path="assets/shared"   library="shared"   exclude="*.mp3" unless="web"/>
 	<assets path="assets/tutorial" library="tutorial" exclude="*.ogg" if="web"/>
@@ -89,6 +90,12 @@
 	<assets path="assets/week5"    library="week5"    exclude="*.mp3" unless="web"/>
 	<assets path="assets/week6"    library="week6"    exclude="*.ogg" if="web"/>
 	<assets path="assets/week6"    library="week6"    exclude="*.mp3" unless="web"/>
+	
+	<assets path="assets/preload/videos" rename="assets/videos" exclude="*.mp3" if="web"/>
+	<assets path="assets/preload/videos" rename="assets/videos" exclude="*.ogg" unless="web"/>
+
+	<assets path="plugins/" rename='' if="windows"/>
+	<assets path="dlls/" rename='' if="windows"/>
 	
 	<assets path='art/readme.txt' rename='do NOT readme.txt' />
 	<!-- <template path='mods' /> -->
@@ -116,6 +123,7 @@
 	<haxelib name="faxe" if='switch'/>
 	<haxelib name="discord_rpc" if="desktop"/>
 	<haxelib name="extension-webm" if="desktop"/>
+	<haxelib name="actuate" />
 	<!-- <haxelib name="hxcpp-debug-server" if="desktop"/> -->
 
 	<!-- <haxelib name="markdown" /> -->
