@@ -128,6 +128,8 @@ class PlayState extends MusicBeatState
 	public var songScore:Int = 0;
 	var scoreTxt:FlxText;
 
+	var timeLeft:FlxText;
+
 	var waterTxt:FlxText;
 
 	var redTint:FlxSprite;
@@ -855,6 +857,12 @@ class PlayState extends MusicBeatState
 		scoreTxt.scrollFactor.set();
 		add(scoreTxt);
 
+		timeLeft = new FlxText(0, 10, 0, "", 16);
+		timeLeft.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		timeLeft.antialiasing = true;
+		timeLeft.screenCenter(X);
+		add(timeLeft);
+
 		switch (storyDifficulty) {
 			case 0:
 				difString = "EASY";
@@ -891,6 +899,7 @@ class PlayState extends MusicBeatState
 		iconP1.cameras = [camHUD];
 		iconP2.cameras = [camHUD];
 		scoreTxt.cameras = [camHUD];
+		timeLeft.cameras = [camHUD];
 		waterTxt.cameras = [camHUD];
 		doof.cameras = [camHUD];
 		redTint.cameras = [camHUD];
@@ -1560,6 +1569,11 @@ class PlayState extends MusicBeatState
 		scoreTxt.text = 'Score: ${songScore}${!FlxG.save.data.sbar ? ' | Misses: ${misses} | ${calculateRating()} | s|g|b|s: $sicks|$goods|$bads|$shits${FlxG.save.data.pmode ? ' | PRACTICE MODE' : ''}${!FlxG.save.data.gtapping ? ' | GHOST TAPPING' : ''}' : ''}';
 		scoreTxt.screenCenter(X);
 
+		if (FlxG.sound.music != null) {
+			timeLeft.text = 'Time left: ${FlxMath.roundDecimal((FlxG.sound.music.length / 1000) - (FlxG.sound.music.time / 1000), 2)}s';
+			timeLeft.screenCenter(X);
+		}
+
 		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause)
 		{
 			persistentUpdate = false;
@@ -1570,6 +1584,7 @@ class PlayState extends MusicBeatState
 			if (FlxG.random.bool(0.1))
 			{
 				// gitaroo man easter egg
+				// i think i'll move that to the gameover screen for convinience reasons - tpg
 				FlxG.switchState(new GitarooPause());
 			}
 			else
@@ -2530,7 +2545,7 @@ class PlayState extends MusicBeatState
 			goodNoteHit(note);
 		else
 		{
-			badNoteCheck();
+			// badNoteCheck();
 		}
 	}
 
