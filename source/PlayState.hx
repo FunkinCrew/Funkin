@@ -2946,7 +2946,7 @@ class PlayState extends MusicBeatState
 			if(curStep == 928)
 			{
 				SONG.noteStyle = 'majin';
-				strumLineNotes.kill();
+				// strumLineNotes.kill(); - oops
 				generateStaticArrows(0);
 				generateStaticArrows(1);
 			}
