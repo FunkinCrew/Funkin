@@ -1,5 +1,6 @@
 package;
 
+import polymod.hscript.HScriptConfig;
 import polymod.Polymod;
 #if desktop
 import Discord.DiscordClient;
@@ -68,19 +69,11 @@ class TitleState extends MusicBeatState
 			FlxG.log.error('can\'t connect to GJ!');
 		}
 		
-		/*
-		#if cpp
-		var activeMods = Polymod.init({modRoot: "mods", dirs: CoolUtil.coolTextFile("mods/modList.txt"), ignoredFiles: [
-		"_polymod_meta.json",
-		"_polymod_icon.png",
-		"_polymod_pack.txt",
-		"ASSET_LICENSE.txt",
-		"CODE_LICENSE.txt",
-		"LICENSE.txt"]});
-
+		// initialize polymod (and with that ModChart API)
+		var mods = CoolUtil.coolTextFile("mods/modList.txt");
+		var activeMods = Polymod.init({modRoot: "mods", dirs: mods, ignoredFiles: Polymod.getDefaultIgnoreList()});
+		HScriptConfig.rootPath = "assets/modcharts";
 		trace(activeMods);
-		#end
-		*/
 
 		PlayerSettings.init();
 

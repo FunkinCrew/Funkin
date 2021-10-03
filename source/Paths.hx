@@ -5,6 +5,13 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.utils.AssetType;
 import openfl.utils.Assets as OpenFlAssets;
 
+enum ModchartType {
+	START;
+	UPDATE;
+	BEAT;
+	STEP;
+}
+
 class Paths
 {
 	inline public static var SOUND_EXT = #if web "mp3" #else "ogg" #end;
@@ -70,9 +77,18 @@ class Paths
 		return getPath('data/$key.json', TEXT, library);
 	}
 
-	inline static public function modchart(key:String, ?library:String)
+	inline static public function modchart(key:String, type:ModchartType, ?library:String)
 	{
-		return getPath('data/$key/modchart.lua', TEXT, library);
+		switch (type) {
+			case START:
+				return getPath('data/$key/modchart.hscript', TEXT, library);
+			case UPDATE:
+				return getPath('data/$key/modchart-update.hscript', TEXT, library);
+			case BEAT:
+				return getPath('data/$key/modchart-beatHit.hscript', TEXT, library);
+			case STEP:
+				return getPath('data/$key/modchart-stepHit.hscript', TEXT, library);
+		}
 	}
 
 	inline static public function artStyle(key:String, ?library:String)

@@ -1,5 +1,10 @@
 package;
 
+import polymod.hscript.HScriptConfig;
+#if !js
+import Sys;
+import sys.FileSystem;
+#end
 import haxe.macro.Expr.Catch;
 #if desktop
 import Discord.DiscordClient;
@@ -163,6 +168,8 @@ class PlayState extends MusicBeatState
 	#end
 
 	var flyingRadio:FlxSprite;
+
+	var mChart:Modchart;
 
 	override public function create()
 	{	
@@ -1182,6 +1189,12 @@ class PlayState extends MusicBeatState
 		// Updating Discord Rich Presence (with Time Left)
 		DiscordClient.changePresence(detailsText, SONG.song + SONG.song + " (" + storyDifficultyText + ") | " + '${misses} Misses | Rating ${calculateRating()}', iconRPC, true, songLength);
 		#end
+
+		if (Assets.exists("assets/data/" + SONG.song.toLowerCase() + "/start.txt")) {
+			HScriptConfig.rootPath = "assets/data/" + SONG.song.toLowerCase() + "/";
+			mChart = new Modchart(SONG, boyfriend, dad, gf, camHUD, camGame);
+			add(mChart);
+		}
 	}
 
 	var debugNum:Int = 0;
@@ -1519,6 +1532,15 @@ class PlayState extends MusicBeatState
 
 	override public function update(elapsed:Float)
 	{
+		if (mChart != null) {
+			SONG = mChart.SONG;
+			boyfriend = mChart.bf;
+			dad = mChart.dad;
+			gf = mChart.gf;
+			camHUD = mChart.camHUD;
+			camGame = mChart.camGame;
+		}
+
 		floatHealth = health / 10;
 
 		#if desktop
@@ -2690,6 +2712,9 @@ class PlayState extends MusicBeatState
 
 	override function stepHit()
 	{
+		if (mChart != null)
+			mChart.stepHit(curStep);
+
 		super.stepHit();
 		if (FlxG.sound.music.time > Conductor.songPosition + 20 || FlxG.sound.music.time < Conductor.songPosition - 20)
 		{
@@ -2708,6 +2733,9 @@ class PlayState extends MusicBeatState
 	override function beatHit()
 	{
 		super.beatHit();
+
+		if (mChart != null)
+			mChart.beatHit(curBeat);
 
 		if (generatedMusic)
 		{

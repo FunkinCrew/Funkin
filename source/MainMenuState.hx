@@ -34,9 +34,9 @@ class MainMenuState extends MusicBeatState
 	var magenta:FlxSprite;
 	var camFollow:FlxObject;
 
-	public static var version = '0.6.1';
-	public static var versionTag = 'The Week 7 update -- PATCH 1';
-	public static var prerelease = false;
+	public static var version = '0.7.0';
+	public static var versionTag = 'The Modchart update!';
+	public static var prerelease = true;
 
 	override function create()
 	{
