@@ -256,7 +256,7 @@ class ChartingStateOld extends MusicBeatState
 		stepperSpeed.value = _song.speed;
 		stepperSpeed.name = 'song_speed';
 
-		var stepperKeyCount:FlxUINumericStepper = new FlxUINumericStepper(10, stepperSpeed.y + stepperSpeed.height, 1, 4, 1, 10);
+		var stepperKeyCount:FlxUINumericStepper = new FlxUINumericStepper(10, stepperSpeed.y + stepperSpeed.height, 1, 4, 1, 18);
 		stepperKeyCount.value = _song.keyCount;
 		stepperKeyCount.name = 'song_keycount';
 

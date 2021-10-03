@@ -56,7 +56,7 @@ class Note extends FlxSprite
 		this.noteData = noteData;
 		isSustainNote = sustainNote;
 
-		x += 100 - ((PlayState.SONG.keyCount - 4) * 16);
+		x += 100;
 		// MAKE SURE ITS DEFINITELY OFF SCREEN?
 		y = -2000;
 
@@ -71,7 +71,7 @@ class Note extends FlxSprite
 		animation.addByPrefix("hold", NoteVariables.Other_Note_Anim_Stuff[PlayState.SONG.keyCount - 1][noteData] + " hold0");
 		animation.addByPrefix("holdend", NoteVariables.Other_Note_Anim_Stuff[PlayState.SONG.keyCount - 1][noteData] + " hold end0");
 
-		setGraphicSize(Std.int((width * Std.parseFloat(PlayState.instance.ui_Settings[0])) * (Std.parseFloat(PlayState.instance.ui_Settings[2]) - ((PlayState.SONG.keyCount - 4) * 0.06))));
+		setGraphicSize(Std.int((width * Std.parseFloat(PlayState.instance.ui_Settings[0])) * (Std.parseFloat(PlayState.instance.ui_Settings[2]) - (Std.parseFloat(PlayState.instance.mania_size[PlayState.SONG.keyCount-1])))));
 		updateHitbox();
 		
 		antialiasing = PlayState.instance.ui_Settings[3] == "true";

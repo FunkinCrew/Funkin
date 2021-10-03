@@ -165,6 +165,7 @@ class PlayState extends MusicBeatState
 	var binds:Array<String>;
 
 	public var ui_Settings:Array<String>;
+	public var mania_size:Array<String>;
 
 	public function removeObject(object:FlxBasic)
 	{
@@ -307,6 +308,7 @@ class PlayState extends MusicBeatState
 
 		#if sys
 		ui_Settings = CoolUtil.coolTextFilePolymod(Paths.txt("ui skins/" + SONG.ui_Skin + "/config"));
+		mania_size = CoolUtil.coolTextFilePolymod(Paths.txt("ui skins/" + SONG.ui_Skin + "/maniasize"));
 		#else
 		ui_Settings = CoolUtil.coolTextFile(Paths.txt("ui skins/" + SONG.ui_Skin + "/config"));
 		#end
@@ -1023,7 +1025,7 @@ class PlayState extends MusicBeatState
 
 			babyArrow.antialiasing = ui_Settings[3] == "true";
 
-			babyArrow.setGraphicSize(Std.int((babyArrow.width * Std.parseFloat(ui_Settings[0])) * (Std.parseFloat(ui_Settings[2]) - ((SONG.keyCount - 4) * 0.06))));
+			babyArrow.setGraphicSize(Std.int((babyArrow.width * Std.parseFloat(ui_Settings[0])) * (Std.parseFloat(ui_Settings[2]) - (Std.parseFloat(mania_size[SONG.keyCount-1])))));
 			babyArrow.updateHitbox();
 
 			babyArrow.x += (babyArrow.width + 2) * Math.abs(i);

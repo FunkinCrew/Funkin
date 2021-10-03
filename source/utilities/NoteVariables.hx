@@ -23,9 +23,11 @@ class NoteVariables
         [LEFT, DOWN, UP, RIGHT, RUP, PLUS, RDOWN, LEFT, DOWN, UP, RIGHT], // 11
         [LEFT, DOWN, UP, RIGHT, RLEFT, RDOWN, RUP, RRIGHT, LEFT, DOWN, UP, RIGHT], // 12
         [LEFT, DOWN, UP, RIGHT, RLEFT, RRIGHT, SQUARE, RLEFT, RRIGHT,LEFT, DOWN, UP, RIGHT], // 13
-        [LEFT, DOWN, UP, RIGHT, SQUARE, SQUARE, SQUARE, SQUARE, SQUARE, SQUARE, LEFT, DOWN, UP, RIGHT], // 14
-        [LEFT, DOWN, UP, RIGHT, SQUARE, SQUARE, SQUARE, SQUARE, SQUARE, SQUARE, SQUARE, LEFT, DOWN, UP, RIGHT], // 15
-        [LEFT, DOWN, UP, RIGHT, SQUARE, SQUARE, SQUARE, SQUARE, SQUARE, SQUARE, SQUARE, SQUARE, LEFT, DOWN, UP, RIGHT] // 16
+        [LEFT, DOWN, UP, RIGHT, RLEFT, RRIGHT, SQUARE, PLUS, RLEFT, RRIGHT, LEFT, DOWN, UP, RIGHT], // 14
+        [LEFT, DOWN, UP, RIGHT, RLEFT, RRIGHT, RUP, PLUS, RUP, RLEFT, RRIGHT, LEFT, DOWN, UP, RIGHT], // 15
+        [LEFT, DOWN, UP, RIGHT, RLEFT, RRIGHT, RLEFT, RRIGHT, RUP, RDOWN, RUP, RDOWN, LEFT, DOWN, UP, RIGHT], // 16
+        [LEFT, DOWN, UP, RIGHT, PLUS, RLEFT, SQUARE, RDOWN, PLUS, RUP, SQUARE, RRIGHT, PLUS, LEFT, DOWN, UP, RIGHT], // 17
+        [LEFT, DOWN, UP, RIGHT, LEFT, DOWN, UP, RIGHT, SQUARE, PLUS, RLEFT, RDOWN, RUP, RRIGHT, RLEFT, RDOWN, RUP, RRIGHT] // 18
     ];
 
     public static var Note_Count_Keybinds:Array<Array<String>> = [
@@ -44,7 +46,9 @@ class NoteVariables
         ["Q","W","E","R","D","F",Square_Key,"J","K","U","I","O","P"], // 13
         ["Q","W","E","R","S","D","F","J","K","L","U","I","O","P"], // 14
         ["Q","W","E","R","S","D","F",Square_Key,"J","K","L","U","I","O","P"], // 15
-        ["Q","W","E","R","A","S","D","F","H","J","K","L","U","I","O","P"] // 16
+        ["Q","W","E","R","A","S","D","F","H","J","K","L","U","I","O","P"], // 16
+        ["Q","W","E","R","A","S","D","F",Square_Key,"H","J","K","L","U","I","O","P"], // 17
+        ["Q","W","E","R","A","S","D","F","V","N","H","J","K","L","U","I","O","P"] // doh tree ding doh tree ultimate (18)
     ];
 
     public static var Other_Note_Anim_Stuff:Array<Array<String>> = [
@@ -61,9 +65,11 @@ class NoteVariables
         ["left", "down", "up", "right", "rup", "plus", "rdown", "left2", "down2", "up2", "right2"], // 11 
         ["left", "down", "up", "right", "rleft", "rdown", "rup", "rright", "left2", "down2", "up2", "right2"], // 12
         ["left", "down", "up", "right", "rleft", "rright", "square", "rleft2", "rright2", "left2", "down2", "up2", "right2"], // 13
-        ["left", "down", "up", "right", "square", "square", "square", "square", "square", "square", "left2", "down2", "up2", "right2"], // 14
-        ["left", "down", "up", "right", "square", "square", "square", "square", "square", "square", "square", "left2", "down2", "up2", "right2"], // 15
-        ["left", "down", "up", "right", "square", "square", "square", "square", "square", "square", "square", "square", "left2", "down2", "up2", "right2"] // 16
+        ["left", "down", "up", "right", "rleft", "rright", "square", "plus", "rleft2", "rright2", "left2", "down2", "up2", "right2"], // 14
+        ["left", "down", "up", "right", "rleft", "rright", "rup", "plus", "rup2", "rleft2", "rright2", "left2", "down2", "up2", "right2"], // 15
+        ["left", "down", "up", "right", "rleft", "rright2", "rleft2", "rright", "rup", "rdown2", "rup2", "rdown", "left2", "down2", "up2", "right2"], // 16
+        ["left", "down", "up", "right", "plus", "rleft", "square", "rdown", "plus", "rup", "square", "rright", "plus", "left2", "down2", "up2", "right2"], // 17
+        ["left", "down", "up", "right", "left2", "down2", "up2", "right2", "square", "plus", "rleft", "rdown", "rup", "rright", "rleft2", "rdown2", "rup2", "rright2"] // uhh 18
     ];
 
     public static var Character_Animation_Arrays:Array<Array<String>> = [
@@ -82,7 +88,9 @@ class NoteVariables
         ["singLEFT", "singDOWN", "singUP", "singRIGHT", "singUP", "singDOWN", "singLEFT", "singDOWN", "singUP", "singRIGHT","singLEFT", "singDOWN", "singUP"], // 13
         ["singLEFT", "singDOWN", "singUP", "singRIGHT", "singUP", "singDOWN", "singLEFT", "singDOWN", "singUP", "singRIGHT","singLEFT", "singDOWN", "singUP", "singRIGHT"], // 14
         ["singLEFT", "singDOWN", "singUP", "singRIGHT", "singUP", "singDOWN", "singLEFT", "singDOWN", "singUP", "singRIGHT","singLEFT", "singDOWN", "singUP", "singRIGHT","singLEFT"], // 15
-        ["singLEFT", "singDOWN", "singUP", "singRIGHT", "singUP", "singDOWN", "singLEFT", "singDOWN", "singUP", "singRIGHT","singLEFT", "singDOWN", "singUP", "singRIGHT","singLEFT", "singDOWN"] // 16
+        ["singLEFT", "singDOWN", "singUP", "singRIGHT", "singUP", "singDOWN", "singLEFT", "singDOWN", "singUP", "singRIGHT","singLEFT", "singDOWN", "singUP", "singRIGHT","singLEFT", "singDOWN"], // 16
+        ["singLEFT", "singDOWN", "singUP", "singRIGHT", "singUP", "singDOWN", "singLEFT", "singDOWN", "singUP", "singRIGHT","singLEFT", "singDOWN", "singUP", "singRIGHT","singLEFT", "singDOWN","singUP"], // 17
+        ["singLEFT", "singDOWN", "singUP", "singRIGHT", "singLEFT", "singDOWN", "singUP", "singRIGHT", "singUP", "singDOWN", "singLEFT", "singDOWN", "singUP", "singRIGHT", "singLEFT", "singDOWN", "singUP", "singRIGHT"] // 18
     ];
 
     public static function updateStuffs()
