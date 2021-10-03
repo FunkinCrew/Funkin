@@ -7,8 +7,12 @@ import flixel.FlxSprite;
 
 class NoteSplash extends FlxSprite
 {
-    public function new(x:Float = 0, y:Float = 0, noteData:Int) {
+    var target:FlxSprite;
+
+    public function new(x:Float = 0, y:Float = 0, noteData:Int, target:FlxSprite) {
         super(x, y);
+
+        this.target = target;
 
         alpha = 0.8;
         frames = PlayState.splash_Texture;
@@ -28,6 +32,9 @@ class NoteSplash extends FlxSprite
             kill();
             alpha = 0;
         }
+
+        x = target.x - (target.width / 2);
+        y = target.y - (target.height / 2);
 
         super.update(elapsed);
     }

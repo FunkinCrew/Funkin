@@ -581,11 +581,6 @@ class PlayState extends MusicBeatState
 		infoTxt.cameras = [camHUD];
 		doof.cameras = [camHUD];
 
-		// if (SONG.song == 'South')
-		// FlxG.camera.alpha = 0.7;
-		// UI_camera.zoom = 1;
-
-		// cameras = [FlxG.cameras.list[1]];
 		startingSong = true;
 
 		var isDebug = false;
@@ -1061,83 +1056,30 @@ class PlayState extends MusicBeatState
 
 			if(SONG.keyCount != 4 && isPlayer)
 			{
-				var textSizeThing = 40 - (SONG.keyCount - 4) * 4;
+				var keyThingLolShadow = new FlxText((babyArrow.x + (babyArrow.width / 2)) - 20, babyArrow.y - 20, 40, binds[i], 40);
+				keyThingLolShadow.cameras = [camHUD];
+				keyThingLolShadow.color = FlxColor.BLACK;
+				keyThingLolShadow.scrollFactor.set();
+				add(keyThingLolShadow);
 
-				var keyThingLol = new FlxText((babyArrow.x + (babyArrow.width / 2)) - (textSizeThing / 2), babyArrow.y, 1, binds[i], textSizeThing);
+				var keyThingLol = new FlxText(keyThingLolShadow.x - 6, keyThingLolShadow.y - 6, 40, binds[i], 40);
 				keyThingLol.cameras = [camHUD];
+				keyThingLol.scrollFactor.set();
 				add(keyThingLol);
 
-				FlxTween.tween(keyThingLol, {y: keyThingLol.y + 10, alpha: 0}, 2.5, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i), onComplete: function(_){
+				FlxTween.tween(keyThingLolShadow, {y: keyThingLolShadow.y + 10, alpha: 0}, 1.5, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i), onComplete: function(_){
+					remove(keyThingLolShadow);
+					keyThingLolShadow.kill();
+					keyThingLolShadow.destroy();
+				}});
+
+				FlxTween.tween(keyThingLol, {y: keyThingLol.y + 10, alpha: 0}, 1.5, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i), onComplete: function(_){
 					remove(keyThingLol);
 					keyThingLol.kill();
 					keyThingLol.destroy();
 				}});
 			}
 		}
-
-		/*
-		for(babyArrow in playerStrums)
-		{
-			var splash:FlxSprite = new FlxSprite(babyArrow.x - 80, babyArrow.y - 80);
-			splash.frames = Paths.getSparrowAtlas("ui/noteSplashes", "shared");
-			splash.cameras = [camHUD];
-			splash.alpha = 0.6;
-
-			var nameThing = "orange";
-
-			switch(Math.abs(babyArrow.ID))
-			{
-				case 0:
-					nameThing = "purple";
-				case 1:
-					nameThing = "blue";
-				case 2:
-					nameThing = "green";
-				case 3:
-					nameThing = "red";
-			}
-
-			splash.animation.addByPrefix("chosen1", "note impact 1 " + nameThing, 24, false);
-			splash.animation.addByPrefix("chosen2", "note impact 2 " + nameThing, 24, false);
-
-			//splashes.add(splash);
-			
-			//splash.animation.finishCallback = function(name:String) {
-			//	remove(splash);
-			//};
-		}
-
-		for(babyArrow in enemyStrums)
-		{
-			var splash:FlxSprite = new FlxSprite(babyArrow.x - 80, babyArrow.y - 80);
-			splash.frames = Paths.getSparrowAtlas("ui/noteSplashes", "shared");
-			splash.cameras = [camHUD];
-			splash.alpha = 0.6;
-
-			var nameThing = "orange";
-
-			switch(Math.abs(babyArrow.ID))
-			{
-				case 0:
-					nameThing = "purple";
-				case 1:
-					nameThing = "blue";
-				case 2:
-					nameThing = "green";
-				case 3:
-					nameThing = "red";
-			}
-
-			splash.animation.addByPrefix("chosen1", "note impact 1 " + nameThing, 24, false);
-			splash.animation.addByPrefix("chosen2", "note impact 2 " + nameThing, 24, false);
-
-			//splashes.add(splash);
-
-			//splash.animation.finishCallback = function(name:String) {
-			//	remove(splash);
-			//};
-		}
-		*/
 	}
 
 	function tweenCamIn():Void
@@ -1682,7 +1624,7 @@ class PlayState extends MusicBeatState
 
 								if(!daNote.isSustainNote && FlxG.save.data.noteSplashes)
 								{
-									var splash:NoteSplash = new NoteSplash(spr.x - (spr.width / 2), spr.y - (spr.height / 2), spr.ID);
+									var splash:NoteSplash = new NoteSplash(spr.x - (spr.width / 2), spr.y - (spr.height / 2), spr.ID, spr);
 									splash.cameras = [camHUD];
 									add(splash);
 								}
@@ -1982,7 +1924,7 @@ class PlayState extends MusicBeatState
 			playerStrums.forEachAlive(function(spr:FlxSprite) {
 				if(spr.ID == Math.abs(noteData))
 				{
-					var splash:NoteSplash = new NoteSplash(spr.x - (spr.width / 2), spr.y - (spr.height / 2), noteData);
+					var splash:NoteSplash = new NoteSplash(spr.x - (spr.width / 2), spr.y - (spr.height / 2), noteData, spr);
 					splash.cameras = [camHUD];
 					add(splash);
 				}

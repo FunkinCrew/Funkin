@@ -20,6 +20,7 @@ All notable changes will be documented in this file.
 - Strict Accuracy Mode.
 - Song Speed Changes
 - Thorns Trail Setting for Characters (in a cool way).
+- Text for keybinds of non-4 key arrow sets.
 ### Changed
 - Input has been updated and is a lot better now.
 - Held notes no longer count to your accuracy.
