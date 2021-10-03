@@ -18,4 +18,4 @@ RUN haxelib git polymod https://github.com/larsiusprime/polymod.git \
 
 COPY APIStuff.hx source
 
-CMD [ "haxelib", "run", "lime", "build", "linux" ]
+CMD [ "haxelib", "run", "lime", "test"z, "linux" ]
