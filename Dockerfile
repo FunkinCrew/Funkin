@@ -16,7 +16,6 @@ RUN haxelib install lime \
 RUN haxelib git polymod https://github.com/larsiusprime/polymod.git \
     && haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc.git
 
-RUN echo package; > source/APISTUFF.hx \
-    && echo class APISTUFF {public static var API:String = ""; public static var EncKey:String = "";} >> source/APISTUFF.hx 
+COPY APIStuff.hx source
 
 CMD [ "haxelib", "run", "lime", "build", "linux" ]
