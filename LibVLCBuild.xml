@@ -1,0 +1,15 @@
+<xml>
+	<set name="PROJECT_DIR" value="${this_dir}" />
+	<set name="CPP_DIR" value="${PROJECT_DIR}/cpp" />
+	
+	<files id='haxe'>
+		<compilervalue name="-I" value="${CPP_DIR}/include/" />
+		<compilervalue name="-I" value="${CPP_DIR}/src/" />
+	</files>
+	
+	<target id='haxe' tool='linker' toolid='exe'>
+		<lib name='${CPP_DIR}/lib/libvlc.lib' if='windows'/>
+		<lib name='${CPP_DIR}/lib/libvlccore.lib' if='windows'/>
+	</target>
+	
+</xml>
