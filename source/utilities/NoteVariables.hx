@@ -40,15 +40,15 @@ class NoteVariables
         ["S","D","F", Square_Key, "J","K","L"], // 7
         ["A","S","D","F", "H","J","K","L"], // 8
         ["A","S","D","F", Square_Key, "H","J","K","L"], // Tryhard Shag
-        ["Q","W","E","R","V", "N","U","I","O","P"], // 10
-        ["Q","W","E","R","V","B","N","U","I","O","P"], // 11
+        ["Q","W","E","R","V","N","U","I","O","P"], // 10
+        ["Q","W","E","R","V",Square_Key,"N","U","I","O","P"], // 11
         ["Q","W","E","R","D","F","J","K","U","I","O","P"], // 12
         ["Q","W","E","R","D","F",Square_Key,"J","K","U","I","O","P"], // 13
         ["Q","W","E","R","S","D","F","J","K","L","U","I","O","P"], // 14
         ["Q","W","E","R","S","D","F",Square_Key,"J","K","L","U","I","O","P"], // 15
         ["Q","W","E","R","A","S","D","F","H","J","K","L","U","I","O","P"], // 16
         ["Q","W","E","R","A","S","D","F",Square_Key,"H","J","K","L","U","I","O","P"], // 17
-        ["Q","W","E","R","A","S","D","F","V","N","H","J","K","L","U","I","O","P"] // doh tree ding doh tree ultimate (18)
+        ["Q","W","E","R","A","S","D","F","V","B","H","J","K","L","U","I","O","P"] // doh tree ding doh tree ultimate (18)
     ];
 
     public static var Other_Note_Anim_Stuff:Array<Array<String>> = [

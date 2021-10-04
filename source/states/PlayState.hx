@@ -166,6 +166,7 @@ class PlayState extends MusicBeatState
 
 	public var ui_Settings:Array<String>;
 	public var mania_size:Array<String>;
+	public var mania_offset:Array<String>;
 
 	public function removeObject(object:FlxBasic)
 	{
@@ -309,6 +310,7 @@ class PlayState extends MusicBeatState
 		#if sys
 		ui_Settings = CoolUtil.coolTextFilePolymod(Paths.txt("ui skins/" + SONG.ui_Skin + "/config"));
 		mania_size = CoolUtil.coolTextFilePolymod(Paths.txt("ui skins/" + SONG.ui_Skin + "/maniasize"));
+		mania_offset = CoolUtil.coolTextFilePolymod(Paths.txt("ui skins/" + SONG.ui_Skin + "/maniaoffset"));
 		#else
 		ui_Settings = CoolUtil.coolTextFile(Paths.txt("ui skins/" + SONG.ui_Skin + "/config"));
 		#end
@@ -1023,7 +1025,7 @@ class PlayState extends MusicBeatState
 			babyArrow.setGraphicSize(Std.int((babyArrow.width * Std.parseFloat(ui_Settings[0])) * (Std.parseFloat(ui_Settings[2]) - (Std.parseFloat(mania_size[SONG.keyCount-1])))));
 			babyArrow.updateHitbox();
 
-			babyArrow.x += (babyArrow.width + 2) * Math.abs(i);
+			babyArrow.x += (babyArrow.width + 2) * Math.abs(i) + Std.parseFloat(mania_offset[SONG.keyCount-1]);
 			babyArrow.y = strumLine.y - (babyArrow.height / 2);
 
 			var animation_Base_Name = NoteVariables.Note_Count_Directions[SONG.keyCount - 1][Std.int(Math.abs(i))].getName().toLowerCase();
