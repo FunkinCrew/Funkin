@@ -5,6 +5,7 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.math.FlxMath;
 import flixel.util.FlxColor;
 import flixel.FlxG;
+import sys.FileSystem;
 
 using StringTools;
 
@@ -23,6 +24,8 @@ class Note extends FlxSprite
 
 	public var rating:String;
 
+	public var isAlt:Int = 0;
+
 	public var sustainLength:Float = 0;
 	public var isSustainNote:Bool = false;
 
@@ -34,6 +37,8 @@ class Note extends FlxSprite
 	public static var BLUE_NOTE:Int = 1;
 	public static var RED_NOTE:Int = 3;
 
+	var char:Character;
+
 	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false)
 	{
 		super();
@@ -44,10 +49,12 @@ class Note extends FlxSprite
 		this.prevNote = prevNote;
 		isSustainNote = sustainNote;
 
-		x += 50 + 32;
+		x += 50 + 42;
 		// MAKE SURE ITS DEFINITELY OFF SCREEN?
 		y -= 2000;
 		this.strumTime = strumTime;
+
+		instance = this;
 
 		this.noteData = noteData;
 
@@ -149,7 +156,7 @@ class Note extends FlxSprite
 			noteScore * 0.2;
 			alpha = 0.6;
 
-			x += width / 2 + 32;
+			x += width / 2;
 
 			switch (noteData)
 			{
@@ -165,7 +172,7 @@ class Note extends FlxSprite
 
 			updateHitbox();
 
-			x -= width / 2 + 32;
+			x -= width / 2;
 
 			if (PlayState.curStage.startsWith('school'))
 				x += 30;

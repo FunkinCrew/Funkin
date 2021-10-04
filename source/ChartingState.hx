@@ -87,6 +87,7 @@ class ChartingState extends MusicBeatState
 	 	var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 		bg.scrollFactor.set();
 		bg.screenCenter();
+		bg.color = 0xFF222222;
 		add(bg);
 
 		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * 8, GRID_SIZE * 16);
@@ -340,6 +341,10 @@ class ChartingState extends MusicBeatState
 
 	var stepperSusLength:FlxUINumericStepper;
 
+	var currType:Int;
+
+	var stepperType:FlxUINumericStepper;
+
 	function addNoteUI():Void
 	{
 		var tab_group_note = new FlxUI(null, UI_box);
@@ -349,10 +354,21 @@ class ChartingState extends MusicBeatState
 		stepperSusLength.value = 0;
 		stepperSusLength.name = 'note_susLength';
 
+		stepperType = new FlxUINumericStepper(0, 400, 1, currType, 0, 1, 0);
+		stepperType.value = currType;
+		stepperType.name = 'note_type';
+		stepperType.scrollFactor.set();
+
+		var typeNameTxt:FlxText = new FlxText(0, 400 + 20, 0, 'Alt Note Check (0 - normal 1 - alt)', 12);
+		typeNameTxt.scrollFactor.set();
+		typeNameTxt.color = 0xFFFFFFFF;
+
 		var applyLength:FlxButton = new FlxButton(100, 10, 'Apply');
 
 		tab_group_note.add(stepperSusLength);
 		tab_group_note.add(applyLength);
+		tab_group_note.add(stepperType);
+		tab_group_note.add(typeNameTxt);
 
 		UI_box.addGroup(tab_group_note);
 	}
@@ -826,6 +842,8 @@ class ChartingState extends MusicBeatState
 		var song = _song.notes[curStep];
 		if (curSelectedNote != null)
 			stepperSusLength.value = curSelectedNote[2];
+
+		stepperType.value = currType;
 	}
 
 	function updateGrid():Void
@@ -881,6 +899,7 @@ class ChartingState extends MusicBeatState
 			note.sustainLength = daSus;
 			note.setGraphicSize(GRID_SIZE, GRID_SIZE);
 			note.updateHitbox();
+			note.isAlt = currType;
 			note.x = Math.floor(daNoteInfo * GRID_SIZE);
 			note.y = Math.floor(getYfromStrum((daStrumTime - sectionStartTime()) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps)));
 
@@ -966,6 +985,13 @@ class ChartingState extends MusicBeatState
 		var noteSus = 0;
 
 		_song.notes[curSection].sectionNotes.push([noteStrum, noteData, noteSus]);
+
+		do
+		{
+			var i = currType;
+			Note.instance.isAlt = i;
+		} while (true);
+		
 
 		curSelectedNote = _song.notes[curSection].sectionNotes[_song.notes[curSection].sectionNotes.length - 1];
 

@@ -8,6 +8,8 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.util.FlxColor;
 import flixel.text.FlxText;
 
+using StringTools;
+
 class OptionsMenu extends MusicBeatState
 {
 	var textMenuItems:Array<String> = 
@@ -22,7 +24,9 @@ class OptionsMenu extends MusicBeatState
 	'Show FPS',
 	'BotPlay',
 	'Color Party',
-	'Hide HUD'
+	'Hide HUD',
+	'Framerate',
+	"HaxeFlixel splash"
 	];
 	var description:String;
 
@@ -35,10 +39,12 @@ class OptionsMenu extends MusicBeatState
 	'Lights strums and splash if enemy hit it',
 	'Turn on/off WB watermarks',
 	'Turn on/off anti-aliasing',
-	'dumb option',
+	'Turn on/off fps cap',
 	'Showcase your charts and mods with auto play(Thanks Kadedev for the code)',
 	'Sync healthbar colors with icons',
-	"Hide some HUD elements"
+	"Hide some HUD elements",
+	"Change framerate",
+	"Just a splash in start of the game"
 	];
 
 	var selector:FlxSprite;
@@ -154,65 +160,61 @@ class OptionsMenu extends MusicBeatState
 
 		if (controls.ACCEPT)
 		{
-			switch (textMenuItems[curSelected])
+			switch (textMenuItems[curSelected].toLowerCase())
 			{
-				case "Controls":
+				case "controls":
 					FlxG.state.openSubState(new KeyBindMenu());
-				case "Downscroll":
+				case "downscroll":
 					FlxG.save.data.downscroll = !FlxG.save.data.downscroll;
 					if(FlxG.save.data.downscroll)
 						FlxG.sound.play(Paths.sound('confirmMenu'));
 					else
 						FlxG.sound.play(Paths.sound('cancelMenu'));
-				case "Ghost Tapping":
+				case "ghost tapping":
 					FlxG.save.data.ghost = !FlxG.save.data.ghost;
 					if(FlxG.save.data.ghost)
 						FlxG.sound.play(Paths.sound('confirmMenu'));
 					else
 						FlxG.sound.play(Paths.sound('cancelMenu'));
-				case "Note Splashes":
+				case "note splashes":
 					FlxG.save.data.sploosh = !FlxG.save.data.sploosh;
 					if(FlxG.save.data.sploosh)
 						FlxG.sound.play(Paths.sound('confirmMenu'));
 					else
 						FlxG.sound.play(Paths.sound('cancelMenu'));
-				case "Light CPU Strums":
+				case "light cpu strums":
 					FlxG.save.data.cpuStrums = !FlxG.save.data.cpuStrums;
 					if(FlxG.save.data.cpuStrums)
 						FlxG.sound.play(Paths.sound('confirmMenu'));
 					else
 						FlxG.sound.play(Paths.sound('cancelMenu'));
-				case "Watermarks":
+				case "watermarks":
 					FlxG.save.data.watermarks = !FlxG.save.data.watermarks;
 					if(FlxG.save.data.watermarks)
 						FlxG.sound.play(Paths.sound('confirmMenu'));
 					else
 						FlxG.sound.play(Paths.sound('cancelMenu'));	
-				case "Anti-Aliasing":
+				case "anti-aliasing":
 					FlxG.save.data.antialiasing = !FlxG.save.data.antialiasing;
 					if(FlxG.save.data.antialiasing)
 						FlxG.sound.play(Paths.sound('confirmMenu'));
 					else
 						FlxG.sound.play(Paths.sound('cancelMenu'));		
-				case 'Show FPS':
-					FlxG.save.data.fps = !FlxG.save.data.fps;
-					if(FlxG.save.data.fps)	
-						FlxG.sound.play(Paths.sound('confirmMenu'));
-					else
-						FlxG.sound.play(Paths.sound('cancelMenu'));		
-				case 'BotPlay':
+				case 'show fps':
+					Main.instance.changeFPS();
+				case 'botplay':
 					FlxG.save.data.botplay = !FlxG.save.data.botplay;
 					if(FlxG.save.data.botplay)	
 						FlxG.sound.play(Paths.sound('confirmMenu'));
 					else
 						FlxG.sound.play(Paths.sound('cancelMenu'));
-				case 'Color Party':
+				case 'color party':
 					FlxG.save.data.colour = !FlxG.save.data.colour;
 					if(FlxG.save.data.colour)
 						FlxG.sound.play(Paths.sound('confirmMenu'));
 					else
 						FlxG.sound.play(Paths.sound('cancelMenu'));
-				case 'Hide HUD':
+				case 'hide hud':
 				{
 					FlxG.save.data.hud = !FlxG.save.data.hud;
 					if(FlxG.save.data.hud)
@@ -220,6 +222,12 @@ class OptionsMenu extends MusicBeatState
 					else
 						FlxG.sound.play(Paths.sound('cancelMenu'));
 				}
+				case 'haxeflixel splash':
+					FlxG.save.data.splash = !FlxG.save.data.splash;
+					if(FlxG.save.data.splash)
+						FlxG.sound.play(Paths.sound('confirmMenu'));
+					else
+						FlxG.sound.play(Paths.sound('cancelMenu'));
 			}
 		}
 		if(controls.BACK)
