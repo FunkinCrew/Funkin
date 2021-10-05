@@ -20,8 +20,12 @@ RUN haxelib install lime \
 RUN haxelib git polymod https://github.com/larsiusprime/polymod.git \
     && haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc.git
 
-# Copy the APIStuff file so the game can work properly
+# Copy all files to the working directory
+# TODO: make this smaller
 COPY APIStuff.hx source
-
+COPY project.xml CHANGELOG.md ./
+COPY assets ./assets
+COPY example_mods ./example_mods
+COPY art ./art
 # Generate the built game for linux
 CMD [ "haxelib", "run", "lime", "test", "linux" ]
