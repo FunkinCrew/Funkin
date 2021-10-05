@@ -13,7 +13,7 @@ class HealthIcon extends FlxSprite
 
 	public var iconScale:Float = 1;
 	public var iconSize:Float;
-	public var defualtIconScale:Float = 1;
+	public var defaultIconScale:Float = 1;
 
 	var pixelIcons:Array<String> = ["bf-pixel", "senpai", "senpai-angry", "spirit"];
 
@@ -61,7 +61,7 @@ class HealthIcon extends FlxSprite
 		animation.play(char);
 		scrollFactor.set();
 		
-		iconScale = defualtIconScale;
+		iconScale = defaultIconScale;
 		iconSize = width;
 	}
 

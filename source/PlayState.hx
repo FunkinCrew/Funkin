@@ -291,6 +291,7 @@ class PlayState extends MusicBeatState
 		DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
 		#end
 
+		if (!osuScroll)
 		switch (SONG.song.toLowerCase())
 		{
 			case 'spookeez' | 'monster' | 'south': 
@@ -1570,8 +1571,8 @@ class PlayState extends MusicBeatState
 				swagNote.sustainLength = songNotes[2];
 				swagNote.scrollFactor.set(0, 0);
 
-				if (!gottaHitNote && osuScroll || midScroll)
-					continue;
+				// if (!gottaHitNote && osuScroll || midScroll)
+				// 	continue;
 
 				var susLength:Float = swagNote.sustainLength;
 
@@ -1625,8 +1626,8 @@ class PlayState extends MusicBeatState
 			// FlxG.log.add(i);
 			var babyArrow:FlxSprite = new FlxSprite(0, strumLine.y);
 
-			if (osuScroll || midScroll && player == 0)
-				continue;
+			// if (osuScroll || midScroll && player == 0)
+			// 	continue;
 
 			switch (curStage)
 			{
@@ -1728,8 +1729,10 @@ class PlayState extends MusicBeatState
 
 			babyArrow.x += ((FlxG.width / 2) * player);
 
-			if (osuScroll || midScroll)
+			if (midScroll){
 				babyArrow.x -= 275;
+				strumLineNotes.forEach(s -> if (strumLineNotes.members.indexOf(s) < 4) s.visible = false);
+			}
 
 			if (noteGlow){
 			cpuStrums.forEach(function(spr:FlxSprite)
@@ -2770,7 +2773,8 @@ class PlayState extends MusicBeatState
 			}
 			else
 			{
-				badNoteCheck();
+				if (!config.ghost)
+					badNoteCheck();
 			}
 		}
 
@@ -3321,11 +3325,11 @@ class PlayState extends MusicBeatState
 		}
 	}
 	function iconBop(?_scale:Float = 1.25, ?_time:Float = 0.2):Void {
-		iconP1.iconScale = iconP1.defualtIconScale * _scale;
-		iconP2.iconScale = iconP2.defualtIconScale * _scale;
+		iconP1.iconScale = iconP1.defaultIconScale * _scale;
+		iconP2.iconScale = iconP2.defaultIconScale * _scale;
 
-		FlxTween.tween(iconP1, {iconScale: iconP1.defualtIconScale}, _time, {ease: FlxEase.quintOut});
-		FlxTween.tween(iconP2, {iconScale: iconP2.defualtIconScale}, _time, {ease: FlxEase.quintOut});
+		FlxTween.tween(iconP1, {iconScale: iconP1.defaultIconScale}, _time, {ease: FlxEase.quintOut});
+		FlxTween.tween(iconP2, {iconScale: iconP2.defaultIconScale}, _time, {ease: FlxEase.quintOut});
 	}
 	var tankX = 400;
 	var tankAngle:Float = FlxG.random.int(-90, 45);

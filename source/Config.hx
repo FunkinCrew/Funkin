@@ -19,6 +19,19 @@ class Config {
 
 	**/
 
+	// ghost tapping
+
+	public var ghost(get, set):Bool;
+
+	function get_ghost()
+		return if (save.data.ghost != null) save.data.ghost else false;
+
+	function set_ghost(bool:Bool){
+		save.data.ghost = bool;
+		save.flush();
+		return save.data.ghost;
+	}
+
 	// downscroll
 	public var downscroll(get, set):Bool;
 	

@@ -17,7 +17,7 @@ class PreferencesState extends MusicBeatState
 
 	var curSelected:Int = 0;
 
-	var menuItems:Array<String> = ['downscroll', 'middlescroll', 'cutscenes', 'note splash', 'note glow', 'optimization', 'dfjk', 'change icons'];
+	var menuItems:Array<String> = ['downscroll', 'ghost tapping', 'middlescroll', 'cutscenes', 'note splash', 'note glow', 'optimization', 'dfjk', 'change icons'];
 
 	var notice:FlxText;
 	var data:AndroidData = new AndroidData();
@@ -64,6 +64,8 @@ class PreferencesState extends MusicBeatState
 					ch.change(data.getOsu());
 				case "dfjk":
 					ch.change(data.getDfjk());
+				case "ghost tapping":
+					ch.change(config.ghost);
 				case "change icons":
 					//do nothing.
 			}
@@ -138,6 +140,8 @@ class PreferencesState extends MusicBeatState
 				case "change icons":
 					FlxG.switchState(new options.IconState());
 					data.flushData();
+				case "ghost tapping":
+					config.ghost = checkboxGroup.members[curSelected].change();
 			}
 		}
 

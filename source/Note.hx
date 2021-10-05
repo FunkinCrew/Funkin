@@ -129,8 +129,8 @@ class Note extends FlxSprite
 
 		// trace(prevNote);
 
-		if (isDownScroll || sustainNote)
-		    flipY = true;//idk
+		// if (isDownScroll || sustainNote)
+		//     flipY = true;//idk
 
 		if (isSustainNote && prevNote != null)
 		{
