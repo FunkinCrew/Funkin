@@ -182,11 +182,14 @@ class Debug
 		{
 			var paramArray:Array<Dynamic> = [data];
 
-			if (info.customParams != null)
+			if (info != null)
 			{
-				for (i in info.customParams)
+				if (info.customParams != null)
 				{
-					paramArray.push(i);
+					for (i in info.customParams)
+					{
+						paramArray.push(i);
+					}
 				}
 			}
 
