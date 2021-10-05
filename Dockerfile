@@ -2,7 +2,7 @@
 
 FROM haxe:4.1-buster
 
-ENV LANG en_US.UTF-8 
+ENV LANG C.UTF-8
 ENV DEBIAN_FRONTEND noninteractive
 
 # Surprisingly, we only need git for this build
