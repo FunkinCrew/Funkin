@@ -74,10 +74,11 @@ class FreeplayState extends MusicBeatState
 
 		populateSongData();
 
-		trace("tryin to load sm files");
-
-		#if FEATURE_STEPMANIA
+		#if !FEATURE_STEPMANIA
+                trace("FEATURE_STEPMANIA was not specified during build, sm file loading is disabled.");
+		#elseif FEATURE_STEPMANIA
 		// TODO: Refactor this to use OpenFlAssets.
+		trace("tryin to load sm files");
 		for (i in FileSystem.readDirectory("assets/sm/"))
 		{
 			trace(i);
