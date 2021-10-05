@@ -14,7 +14,11 @@ typedef CharacterConfig =
 	var offsetsFlipWhenPlayer:Null<Bool>;
 	var offsetsFlipWhenEnemy:Null<Bool>;
 
-	var coolThornsTrail:Null<Bool>;
+	var trail:Null<Bool>;
+	var trailLength:Null<Int>;
+	var trailDelay:Null<Int>;
+	var trailStalpha:Null<Float>;
+	var trailDiff:Null<Float>;
 
 	var deathCharacterName:Null<String>;
 

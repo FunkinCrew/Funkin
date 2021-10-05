@@ -270,7 +270,11 @@ class CharacterCreationState extends MusicBeatState
             characters: [],
             offsetsFlipWhenEnemy: false,
             offsetsFlipWhenPlayer: true,
-            coolThornsTrail: false,
+            trail: false,
+            trailLength: 4,
+            trailDelay: 24,
+            trailStalpha: 0.3,
+            trailDiff: 0.069,
             deathCharacterName: "bf-dead"
         };
     }

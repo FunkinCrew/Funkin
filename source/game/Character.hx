@@ -533,8 +533,10 @@ class Character extends FlxSprite
 			if(config.positionOffset != null)
 				positioningOffset = config.positionOffset;
 
-			if(config.coolThornsTrail == true)
-				coolTrail = new FlxTrail(this, null, 4, 24, 0.3, 0.069);
+			if(config.trail == true)
+				coolTrail = new FlxTrail(this, null, config.trailLength, config.trailDelay, config.trailStalpha, config.trailDiff);
+	//			coolTrail = new FlxTrail(this, null, 4, 24, 0.3, 0.069);
+
 		}
 		else
 		{
