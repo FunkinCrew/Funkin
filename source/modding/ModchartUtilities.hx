@@ -496,6 +496,30 @@ class ModchartUtilities
             getActorByName(id).flipY = flip;
         });
 
+        Lua_helper.add_callback(lua,"setActorTrailVisible", function(id:String,visibleVal:Bool) {
+            var char:Character;
+
+            switch(id)
+            {
+                case "boyfriend":
+                    char = PlayState.boyfriend;
+                case "girlfriend":
+                    char = PlayState.gf;
+                case "dad":
+                    char = PlayState.dad;
+                default:
+                    return false;
+            }
+
+            if(char.coolTrail != null)
+            {
+                char.coolTrail.visible = visibleVal;
+                return true;
+            }
+            else
+                return false;
+        });
+
         Lua_helper.add_callback(lua,"getActorWidth", function (id:String) {
             return getActorByName(id).width;
         });
