@@ -520,6 +520,27 @@ class ModchartUtilities
                 return false;
         });
 
+        Lua_helper.add_callback(lua,"getActorTrailVisible", function(id:String) {
+            var char:Character;
+
+            switch(id)
+            {
+                case "boyfriend":
+                    char = PlayState.boyfriend;
+                case "girlfriend":
+                    char = PlayState.gf;
+                case "dad":
+                    char = PlayState.dad;
+                default:
+                    return false;
+            }
+
+            if(char.coolTrail != null)
+                return char.coolTrail.visible;
+            else
+                return false;
+        });
+
         Lua_helper.add_callback(lua,"getActorWidth", function (id:String) {
             return getActorByName(id).width;
         });
