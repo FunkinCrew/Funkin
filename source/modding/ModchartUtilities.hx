@@ -37,6 +37,12 @@ class ModchartUtilities
         'dad' => PlayState.dad,
     ];
 
+    public static var lua_Characters:Map<String, Character> = [
+        'boyfriend' => PlayState.boyfriend,
+        'girlfriend' => PlayState.gf,
+        'dad' => PlayState.dad,
+    ];
+
     public static var lua_Sounds:Map<String, FlxSound> = [];
 
 	function getActorByName(id:String):Dynamic
@@ -52,6 +58,15 @@ class ModchartUtilities
         }
 
         return lua_Sprites.get(id);
+    }
+
+    function getCharacterByName(id:String):Dynamic
+    {
+        // lua objects or what ever
+        if(lua_Characters.exists(id))
+            return lua_Characters.get(id);
+        else
+            return null;
     }
 
     function getPropertyByName(id:String)
@@ -114,6 +129,12 @@ class ModchartUtilities
     function new()
     {
         lua_Sprites = [
+            'boyfriend' => PlayState.boyfriend,
+            'girlfriend' => PlayState.gf,
+            'dad' => PlayState.dad,
+        ];
+
+        lua_Characters = [
             'boyfriend' => PlayState.boyfriend,
             'girlfriend' => PlayState.gf,
             'dad' => PlayState.dad,
@@ -497,46 +518,32 @@ class ModchartUtilities
         });
 
         Lua_helper.add_callback(lua,"setActorTrailVisible", function(id:String,visibleVal:Bool) {
-            var char:Character;
+            var char = getCharacterByName(id);
 
-            switch(id)
+            if(char != null)
             {
-                case "boyfriend":
-                    char = PlayState.boyfriend;
-                case "girlfriend":
-                    char = PlayState.gf;
-                case "dad":
-                    char = PlayState.dad;
-                default:
+                if(char.coolTrail != null)
+                {
+                    char.coolTrail.visible = visibleVal;
+                    return true;
+                }
+                else
                     return false;
-            }
-
-            if(char.coolTrail != null)
-            {
-                char.coolTrail.visible = visibleVal;
-                return true;
             }
             else
                 return false;
         });
 
         Lua_helper.add_callback(lua,"getActorTrailVisible", function(id:String) {
-            var char:Character;
+            var char = getCharacterByName(id);
 
-            switch(id)
+            if(char != null)
             {
-                case "boyfriend":
-                    char = PlayState.boyfriend;
-                case "girlfriend":
-                    char = PlayState.gf;
-                case "dad":
-                    char = PlayState.dad;
-                default:
+                if(char.coolTrail != null)
+                    return char.coolTrail.visible;
+                else
                     return false;
             }
-
-            if(char.coolTrail != null)
-                return char.coolTrail.visible;
             else
                 return false;
         });
@@ -898,6 +905,7 @@ class ModchartUtilities
             for(char in 0...PlayState.dad.otherCharacters.length)
             {
                 lua_Sprites.set("dadCharacter" + char, PlayState.dad.otherCharacters[char]);
+                lua_Characters.set("dadCharacter" + char, PlayState.dad.otherCharacters[char]);
             }
         }
 
@@ -906,6 +914,7 @@ class ModchartUtilities
             for(char in 0...PlayState.boyfriend.otherCharacters.length)
             {
                 lua_Sprites.set("bfCharacter" + char, PlayState.boyfriend.otherCharacters[char]);
+                lua_Characters.set("bfCharacter" + char, PlayState.boyfriend.otherCharacters[char]);
             }
         }
 
@@ -914,6 +923,7 @@ class ModchartUtilities
             for(char in 0...PlayState.gf.otherCharacters.length)
             {
                 lua_Sprites.set("gfCharacter" + char, PlayState.gf.otherCharacters[char]);
+                lua_Characters.set("gfCharacter" + char, PlayState.gf.otherCharacters[char]);
             }
         }
     }
