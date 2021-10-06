@@ -1,5 +1,10 @@
 package states;
 
+import sys.thread.Thread;
+import cpp.FILE;
+import sys.io.FileInput;
+import sys.FileSystem;
+import sys.io.File;
 import lime.app.Application;
 import utilities.Ratings.SongRank;
 import openfl.utils.ByteArray;
@@ -212,12 +217,6 @@ class FreeplayState extends MusicBeatState
 		super.update(elapsed);
 
 		bg.color = FlxColor.interpolate(bg.color, selectedColor, interpolation);
-
-		if (FlxG.sound.music.volume < 0.7)
-		{
-			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
-		}
-
 		lerpScore = Math.floor(FlxMath.lerp(lerpScore, intendedScore, 0.4));
 
 		if (Math.abs(lerpScore - intendedScore) <= 10)
@@ -344,21 +343,37 @@ class FreeplayState extends MusicBeatState
 			if(Assets.exists(Paths.inst(songs[curSelected].songName)))
 			{
 				FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName));
+				FlxG.sound.music.fadeIn(1, 0, 0.7);
 			}
 			else
 			{
-				var array = PolymodAssets.getBytes(Paths.instSYS(songs[curSelected].songName));
-
-				if(FlxG.sound.music.active)
-					FlxG.sound.music.stop();
-
-				FlxG.sound.music = new ModdingSound().loadByteArray(array);
-
-				FlxG.sound.music.persist = true;
-				FlxG.sound.music.play();
+				Thread.create(() -> {
+					if(FlxG.sound.music.active)
+						FlxG.sound.music.stop();
+	
+					var path = PolymodAssets.getPath(Paths.instSYS(songs[curSelected].songName));
+	
+					if(path != null)
+					{
+						var prevSel = curSelected;
+	
+						ByteArray.loadFromFile(Sys.getCwd() + path).onComplete(function(array:ByteArray) {
+							if(prevSel == curSelected)
+							{
+								FlxG.sound.music = new ModdingSound().loadByteArray(array);
+		
+								FlxG.sound.music.persist = true;
+								FlxG.sound.music.play();
+	
+								FlxG.sound.music.fadeIn(1, 0, 0.7);
+							}
+						});
+					}
+				});
 			}
 			#else
 			FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName));
+			FlxG.sound.music.fadeIn(1, 0, 0.7);
 			#end
 		}
 
