@@ -548,6 +548,8 @@ class Character extends FlxSprite
 
 			if(config.swapDirectionSingWhenPlayer != null)
 				swapLeftAndRightSingPlayer = config.swapDirectionSingWhenPlayer;
+			else if(curCharacter.startsWith("bf"))
+				swapLeftAndRightSingPlayer = false;
 		}
 		else
 		{
@@ -556,7 +558,7 @@ class Character extends FlxSprite
 			for(characterData in config.characters)
 			{
 				var character:Character;
-				
+
 				if(!isPlayer)
 					character = new Character(x, y, characterData.name, isPlayer);
 				else
