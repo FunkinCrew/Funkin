@@ -573,8 +573,7 @@ class ModchartUtilities
         });
 
         Lua_helper.add_callback(lua,"setWindowPos",function(x:Int,y:Int) {
-            Application.current.window.x = x;
-            Application.current.window.y = y;
+            Application.current.window.move(x, y);
         });
 
         Lua_helper.add_callback(lua,"getWindowX",function() {

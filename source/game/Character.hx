@@ -44,6 +44,8 @@ class Character extends FlxSprite
 
 	public var deathCharacter:String = "bf-dead";
 
+	public var swapLeftAndRightSingPlayer:Bool = true;
+
 	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false, ?isDeathCharacter:Bool = false)
 	{
 		super(x, y);
@@ -239,6 +241,8 @@ class Character extends FlxSprite
 				flipX = true;
 				barColor = FlxColor.fromRGB(205, 229, 112);
 			case 'bf-christmas':
+				swapLeftAndRightSingPlayer = false;
+
 				frames = Paths.getSparrowAtlas('characters/bfChristmas', 'shared');
 				animation.addByPrefix('idle', 'BF idle dance', 24, false);
 				animation.addByPrefix('singUP', 'BF NOTE UP0', 24, false);
@@ -259,6 +263,8 @@ class Character extends FlxSprite
 				offsetsFlipWhenEnemy = true;
 				offsetsFlipWhenPlayer = false;
 			case 'bf-car':
+				swapLeftAndRightSingPlayer = false;
+
 				frames = Paths.getSparrowAtlas('characters/bfCar', 'shared');
 				animation.addByPrefix('idle', 'BF idle dance', 24, false);
 				animation.addByPrefix('singUP', 'BF NOTE UP0', 24, false);
@@ -279,6 +285,8 @@ class Character extends FlxSprite
 				offsetsFlipWhenEnemy = true;
 				offsetsFlipWhenPlayer = false;
 			case 'bf-pixel':
+				swapLeftAndRightSingPlayer = false;
+
 				frames = Paths.getSparrowAtlas('characters/bfPixel', 'shared');
 				animation.addByPrefix('idle', 'BF IDLE', 24, false);
 				animation.addByPrefix('singUP', 'BF UP NOTE', 24, false);
@@ -311,6 +319,8 @@ class Character extends FlxSprite
 
 				deathCharacter = "bf-pixel-dead";
 			case 'bf-pixel-dead':
+				swapLeftAndRightSingPlayer = false;
+
 				frames = Paths.getSparrowAtlas('characters/bfPixelsDEAD', 'shared');
 				animation.addByPrefix('singUP', "BF Dies pixel", 24, false);
 				animation.addByPrefix('firstDeath', "BF Dies pixel", 24, false);
@@ -427,7 +437,7 @@ class Character extends FlxSprite
 				if(isPlayer)
 				{
 					// Doesn't flip for BF, since his are already in the right place???
-					if(!curCharacter.startsWith("bf") && !isDeathCharacter)
+					if(swapLeftAndRightSingPlayer && !isDeathCharacter)
 					{
 						// var animArray
 						var oldRight = animation.getByName('singRIGHT').frames;
@@ -535,8 +545,9 @@ class Character extends FlxSprite
 
 			if(config.trail == true)
 				coolTrail = new FlxTrail(this, null, config.trailLength, config.trailDelay, config.trailStalpha, config.trailDiff);
-	//			coolTrail = new FlxTrail(this, null, 4, 24, 0.3, 0.069);
 
+			if(config.swapDirectionSingWhenPlayer != null)
+				swapLeftAndRightSingPlayer = config.swapDirectionSingWhenPlayer;
 		}
 		else
 		{

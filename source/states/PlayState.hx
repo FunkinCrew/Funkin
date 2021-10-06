@@ -518,7 +518,7 @@ class PlayState extends MusicBeatState
 
 		add(camFollow);
 
-		FlxG.camera.follow(camFollow, LOCKON, 0.04 * (60 / Main.fpsCounter.currentFPS));
+		FlxG.camera.follow(camFollow, LOCKON, 0.04 * (60 / Main.display.currentFPS));
 		FlxG.camera.zoom = defaultCamZoom;
 		FlxG.camera.focusOn(camFollow.getPosition());
 
@@ -1249,7 +1249,7 @@ class PlayState extends MusicBeatState
 			}
 		}
 
-		FlxG.camera.followLerp = 0.04 * (60 / Main.fpsCounter.currentFPS);
+		FlxG.camera.followLerp = 0.04 * (60 / Main.display.currentFPS);
 
 		if(totalNotes != 0)
 		{
@@ -1348,8 +1348,8 @@ class PlayState extends MusicBeatState
 
 		var icon_Zoom_Lerp = 0.09;
 
-		iconP1.setGraphicSize(Std.int(FlxMath.lerp(iconP1.width, 150, (icon_Zoom_Lerp / (Main.fpsCounter.currentFPS / 60)) * songMultiplier)));
-		iconP2.setGraphicSize(Std.int(FlxMath.lerp(iconP2.width, 150, (icon_Zoom_Lerp / (Main.fpsCounter.currentFPS / 60)) * songMultiplier)));
+		iconP1.setGraphicSize(Std.int(FlxMath.lerp(iconP1.width, 150, (icon_Zoom_Lerp / (Main.display.currentFPS / 60)) * songMultiplier)));
+		iconP2.setGraphicSize(Std.int(FlxMath.lerp(iconP2.width, 150, (icon_Zoom_Lerp / (Main.display.currentFPS / 60)) * songMultiplier)));
 
 		iconP1.updateHitbox();
 		iconP2.updateHitbox();
