@@ -150,7 +150,17 @@ class TitleState extends MusicBeatState
 			// music.loadStream(Paths.music('freakyMenu'));
 			// FlxG.sound.list.add(music);
 			// music.play();
+			#if PRELOAD_ALL
+			var songlist = Assets.getLibrary('songs').list("MUSIC").filter(song -> song.endsWith("Inst.ogg"));
+			for (i in 0...songlist.length)
+				songlist[i] = 'songs:${songlist[i]}';
+			songlist.push(Paths.music('freakyMenu'));
+			songlist.push(Paths.music('freshchill'));
+			songlist.remove("songs:assets/songs/tutorial/Inst.ogg");
+			FlxG.sound.playMusic(FlxG.random.getObject(songlist), 0);
+			#else
 			FlxG.sound.playMusic(Paths.music('freakyMenu'), 0);
+			#end
 
 			FlxG.sound.music.fadeIn(4, 0, 0.7);
 		}
@@ -327,11 +337,38 @@ class TitleState extends MusicBeatState
 					FlxG.switchState(new MainMenuState());
 				}
 				#else
-				var json = Json.parse(Http.requestUrl(''));
-				if (json.build == 2)
-					FlxG.switchState(new MainMenuState());
+				// FlxG.resizeGame(1280, 720);
+
+		// @:privateAccess
+		// {
+		// 	for (i in 0...FlxCamera._defaultCameras.length) {
+		// 		FlxCamera._defaultCameras[i].width = 1280;
+		// 		FlxCamera._defaultCameras[i].width = 720;
+
+		// 	};
+		// }
+		// FlxG.camera.width = 1280;
+		// FlxG.camera.height = 720;
+				var http = new Http('https://raw.githubusercontent.com/luckydog7/Funkin-android/master/version.json');
+
+				http.onError = _ -> FlxG.switchState(new MainMenuState());
+				http.onData = (data:String) ->
+				{
+					var build:Null<Float> = Json.parse(data).build;
+
+					if (build != null)
+						if (build == utils.Version.get().build)
+							FlxG.switchState(new MainMenuState());
+						else
+							FlxG.switchState(new OutdatedSubState(build));
+				}
+				if (FlxG.save.data.dontaskupdate != null)
+					if (FlxG.save.data.dontaskupdate)
+						http.onError('')
+					else
+						http.request();
 				else
-					FlxG.switchState(new OutdatedSubState());
+					http.request();
 				#end
 			});
 			// FlxG.sound.play(Paths.music('titleShoot'), 0.7);
