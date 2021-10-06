@@ -368,7 +368,6 @@ class Character extends FlxSprite
 				addOffset('firstDeath');
 				addOffset('deathLoop', -37);
 				addOffset('deathConfirm', -37);
-				playAnim('firstDeath');
 				// pixel bullshit
 				setGraphicSize(Std.int(width * 6));
 				updateHitbox();
@@ -406,7 +405,6 @@ class Character extends FlxSprite
 				addOffset("singRIGHT");
 				addOffset("singLEFT", 40);
 				addOffset("singDOWN", 14);
-				playAnim('idle');
 
 				setGraphicSize(Std.int(width * 6));
 				updateHitbox();
@@ -429,8 +427,6 @@ class Character extends FlxSprite
 
 				setGraphicSize(Std.int(width * 6));
 				updateHitbox();
-
-				playAnim('idle');
 
 				antialiasing = false;
 
