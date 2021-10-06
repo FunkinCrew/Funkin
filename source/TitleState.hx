@@ -1,5 +1,7 @@
 package;
 
+import haxe.Json;
+import haxe.Http;
 #if desktop
 import Discord.DiscordClient;
 import sys.thread.Thread;
@@ -325,7 +327,11 @@ class TitleState extends MusicBeatState
 					FlxG.switchState(new MainMenuState());
 				}
 				#else
-				FlxG.switchState(new MainMenuState());
+				var json = Json.parse(Http.requestUrl(''));
+				if (json.build == 2)
+					FlxG.switchState(new MainMenuState());
+				else
+					FlxG.switchState(new OutdatedSubState());
 				#end
 			});
 			// FlxG.sound.play(Paths.music('titleShoot'), 0.7);

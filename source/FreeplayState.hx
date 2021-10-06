@@ -1,5 +1,6 @@
 package;
 
+import flixel.FlxCamera;
 #if desktop
 import Discord.DiscordClient;
 #end
