@@ -1,9 +1,6 @@
 package modding;
 
 #if polymod
-#if sys
-import sys.FileSystem;
-#end
 import polymod.Polymod;
 
 class PolymodHandler
