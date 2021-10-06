@@ -135,8 +135,6 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 		{
 			var remappedShit:Int = 0;
 
-			// vis.checkAndSetBuffer();
-
 			checkAndSetBuffer();
 
 			if (!doAnim)
@@ -182,7 +180,7 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 					// trace(audioData.subarray(remappedShit, remappedShit + lengthOfShit).buffer);
 				}
 
-				for (sample in remappedShit...remappedShit + (Std.int((44100 * 0.120) / 4)))
+				for (sample in remappedShit...remappedShit + (Std.int((44100 * (10 / 60)) / 4)))
 				{
 					var left = audioData[i] / 32767;
 					var right = audioData[i + 1] / 32767;
@@ -195,7 +193,7 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 					fftSamples.push(balanced);
 				}
 
-				var freqShit = funnyFFT(fftSamples);
+				var freqShit = funnyFFT(fftSamples, 4);
 
 				for (i in 0...group.members.length)
 				{
@@ -204,8 +202,13 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 					// not every frequency is built the same!
 					// 20hz to 40z is a LOT of subtle low ends, but somethin like 20,000hz to 20,020hz, the difference is NOT the same!
 
+					var powedShit:Float = FlxMath.remapToRange(i, 0, group.members.length, 0, 4);
+
+					// a value between 10hz and 100Khz
+					var hzPicker:Float = Math.pow(10, powedShit);
+
 					// var sampleApprox:Int = Std.int(FlxMath.remapToRange(i, 0, group.members.length, startingSample, startingSample + samplesToGen));
-					var remappedFreq:Int = Std.int(FlxMath.remapToRange(i, 0, group.members.length, 0, freqShit[0].length - 1));
+					var remappedFreq:Int = Std.int(FlxMath.remapToRange(hzPicker + 50, 0, 10000, 0, freqShit[0].length - 1));
 
 					group.members[i].x = prevLine.x;
 					group.members[i].y = prevLine.y;
@@ -292,11 +295,11 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 		}
 	}
 
-	function funnyFFT(samples:Array<Float>):Array<Array<Float>>
+	function funnyFFT(samples:Array<Float>, ?skipped:Int = 1):Array<Array<Float>>
 	{
 		// nab multiple samples at once in while / for loops?
 
-		var fs:Float = 44100; // sample rate shit?
+		var fs:Float = 44100 / skipped; // sample rate shit?
 
 		final fftN = 2048;
 		final halfN = Std.int(fftN / 2);
