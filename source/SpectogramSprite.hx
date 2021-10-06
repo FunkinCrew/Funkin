@@ -19,18 +19,19 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 	var sampleRate:Int;
 
 	var lengthOfShit:Int = 500;
-	var daSound:FlxSound;
 
 	public var visType:VISTYPE = UPDATED;
 
 	public var col:Int = FlxColor.WHITE;
 	public var daHeight:Float = FlxG.height;
 
+	public var vis:VisShit;
+
 	public function new(daSound:FlxSound, ?col:FlxColor = FlxColor.WHITE, ?height:Float = 720)
 	{
 		super();
 
-		this.daSound = daSound;
+		vis = new VisShit(daSound);
 		this.col = col;
 		this.daHeight = height;
 
@@ -79,10 +80,12 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 	{
 		checkAndSetBuffer();
 
+		// vis.checkAndSetBuffer();
+
 		if (setBuffer)
 		{
 			var samplesToGen:Int = Std.int(sampleRate * seconds);
-			var startingSample:Int = Std.int(FlxMath.remapToRange(start, 0, daSound.length, 0, numSamples));
+			var startingSample:Int = Std.int(FlxMath.remapToRange(start, 0, vis.snd.length, 0, numSamples));
 
 			var prevLine:FlxPoint = new FlxPoint();
 
@@ -112,42 +115,49 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 
 	public function checkAndSetBuffer()
 	{
-		if (daSound != null && daSound.playing)
+		vis.checkAndSetBuffer();
+
+		if (vis.setBuffer)
 		{
-			if (!setBuffer)
-			{
-				// Math.pow3
-				@:privateAccess
-				var buf = daSound._channel.__source.buffer;
-
-				// @:privateAccess
-				audioData = cast buf.data; // jank and hacky lol! kinda busted on HTML5 also!!
-				sampleRate = buf.sampleRate;
-
-				trace('got audio buffer shit');
-				trace(sampleRate);
-				trace(buf.bitsPerSample);
-
-				setBuffer = true;
-				numSamples = Std.int(audioData.length / 2);
-			}
+			audioData = vis.audioData;
+			sampleRate = vis.sampleRate;
+			setBuffer = vis.setBuffer;
+			numSamples = Std.int(audioData.length / 2);
 		}
 	}
 
+	var doAnim:Bool = false;
+	var frameCounter:Int = 0;
+
 	public function updateFFT()
 	{
-		if (daSound != null)
+		if (vis.snd != null)
 		{
 			var remappedShit:Int = 0;
 
+			// vis.checkAndSetBuffer();
+
 			checkAndSetBuffer();
 
-			if (setBuffer)
+			if (!doAnim)
 			{
-				if (daSound.playing)
-					remappedShit = Std.int(FlxMath.remapToRange(daSound.time, 0, daSound.length, 0, numSamples));
+				frameCounter++;
+
+				if (frameCounter >= 3)
+				{
+					frameCounter = 0;
+					doAnim = true;
+				}
+			}
+
+			if (setBuffer && doAnim)
+			{
+				doAnim = false;
+
+				if (vis.snd.playing)
+					remappedShit = Std.int(FlxMath.remapToRange(vis.snd.time, 0, vis.snd.length, 0, numSamples));
 				else
-					remappedShit = Std.int(FlxMath.remapToRange(Conductor.songPosition, 0, daSound.length, 0, numSamples));
+					remappedShit = Std.int(FlxMath.remapToRange(Conductor.songPosition, 0, vis.snd.length, 0, numSamples));
 
 				var i = remappedShit;
 				var prevLine:FlxPoint = new FlxPoint();
@@ -156,14 +166,30 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 
 				var fftSamples:Array<Float> = [];
 
-				for (sample in remappedShit...remappedShit + (lengthOfShit))
+				// var array:Array<Float> = cast audioData.subarray(remappedShit, remappedShit + lengthOfShit);
+
+				if (FlxG.keys.justPressed.M)
+				{
+					trace('POOP LOL');
+					var funnyAud = audioData.subarray(remappedShit, remappedShit + lengthOfShit);
+
+					for (poop in funnyAud)
+					{
+						// trace("actual audio: " + poop);
+						trace("win: " + poop);
+					}
+
+					// trace(audioData.subarray(remappedShit, remappedShit + lengthOfShit).buffer);
+				}
+
+				for (sample in remappedShit...remappedShit + (Std.int((44100 * 0.120) / 4)))
 				{
 					var left = audioData[i] / 32767;
 					var right = audioData[i + 1] / 32767;
 
 					var balanced = (left + right) / 2;
 
-					i += 2;
+					i += 8;
 
 					// var remappedSample:Float = FlxMath.remapToRange(sample, remappedShit, remappedShit + lengthOfShit, 0, lengthOfShit - 1);
 					fftSamples.push(balanced);
@@ -173,13 +199,25 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 
 				for (i in 0...group.members.length)
 				{
+					// needs to be exponential growth / scaling
+					// still need to optmize the FFT to run better, gets only samples needed?
+					// not every frequency is built the same!
+					// 20hz to 40z is a LOT of subtle low ends, but somethin like 20,000hz to 20,020hz, the difference is NOT the same!
+
 					// var sampleApprox:Int = Std.int(FlxMath.remapToRange(i, 0, group.members.length, startingSample, startingSample + samplesToGen));
-					var remappedFreq:Int = Std.int(FlxMath.remapToRange(i, 0, group.members.length, 0, freqShit.length - 1));
+					var remappedFreq:Int = Std.int(FlxMath.remapToRange(i, 0, group.members.length, 0, freqShit[0].length - 1));
 
 					group.members[i].x = prevLine.x;
 					group.members[i].y = prevLine.y;
 
-					var freqIDK:Float = FlxMath.remapToRange(freqShit[remappedFreq], 0, 0.000005, 0, 50);
+					var freqPower:Float = 0;
+
+					for (pow in 0...freqShit.length)
+						freqPower += freqShit[pow][remappedFreq];
+
+					freqPower /= freqShit.length;
+					// freqShit[remappedFreq]
+					var freqIDK:Float = FlxMath.remapToRange(freqPower, 0, 0.000005, 0, 50);
 
 					prevLine.x = (freqIDK * swagheight / 2 + swagheight / 2) + x;
 					prevLine.y = (i / group.members.length * daHeight) + y;
@@ -208,7 +246,7 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 
 	public function updateVisulizer():Void
 	{
-		if (daSound != null)
+		if (vis.snd != null)
 		{
 			var remappedShit:Int = 0;
 
@@ -216,10 +254,10 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 
 			if (setBuffer)
 			{
-				if (daSound.playing)
-					remappedShit = Std.int(FlxMath.remapToRange(daSound.time, 0, daSound.length, 0, numSamples));
+				if (vis.snd.playing)
+					remappedShit = Std.int(FlxMath.remapToRange(vis.snd.time, 0, vis.snd.length, 0, numSamples));
 				else
-					remappedShit = Std.int(FlxMath.remapToRange(Conductor.songPosition, 0, daSound.length, 0, numSamples));
+					remappedShit = Std.int(FlxMath.remapToRange(Conductor.songPosition, 0, vis.snd.length, 0, numSamples));
 
 				var i = remappedShit;
 				var prevLine:FlxPoint = new FlxPoint();
@@ -254,8 +292,10 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 		}
 	}
 
-	function funnyFFT(samples:Array<Float>):Array<Float>
+	function funnyFFT(samples:Array<Float>):Array<Array<Float>>
 	{
+		// nab multiple samples at once in while / for loops?
+
 		var fs:Float = 44100; // sample rate shit?
 
 		final fftN = 2048;
@@ -264,7 +304,7 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 		final hop = Std.int(fftN * (1 - overlap));
 
 		// window function to compensate for overlapping
-		final a0 = 0.50; // => Hann(ing) window
+		final a0 = 0.5; // => Hann(ing) window
 		final window = (n:Int) -> a0 - (1 - a0) * Math.cos(2 * Math.PI * n / fftN);
 
 		// helpers, note that spectrum indexes suppose non-negative frequencies
@@ -273,17 +313,18 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 
 		// "melodic" band-pass filter
 		final minFreq = 20.70;
-		final maxFreq = 1200.01;
+		final maxFreq = 4000.01;
 		final melodicBandPass = function(k:Int, s:Float)
 		{
-			final freq = indexToFreq(k);
-			final filter = freq > minFreq - binSize && freq < maxFreq + binSize ? 1 : 0;
-			return s * filter;
+			// final freq = indexToFreq(k);
+			// final filter = freq > minFreq - binSize && freq < maxFreq + binSize ? 1 : 0;
+			return s;
 		};
 
-		var freqOutput:Array<Float> = [];
+		var freqOutput:Array<Array<Float>> = [];
 
 		var c = 0; // index where each chunk begins
+		var indexOfArray:Int = 0;
 		while (c < samples.length)
 		{
 			// take a chunk (zero-padded if needed) and apply the window
@@ -294,6 +335,8 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 
 			// compute positive spectrum with sampling correction and BP filter
 			final freqs = FFT.rfft(chunk).map(z -> z.scale(1 / fs).magnitude).mapi(melodicBandPass);
+
+			freqOutput.push([]);
 
 			// find spectral peaks and their instantaneous frequencies
 			for (k => s in freqs)
@@ -306,14 +349,18 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 					haxe.Log.trace('${time};${freq};${power}', null);
 				}
 				if (freq < maxFreq)
-					freqOutput.push(power);
+					freqOutput[indexOfArray].push(power);
 				//
 			}
 			// haxe.Log.trace("", null);
 
+			indexOfArray++;
 			// move to next (overlapping) chunk
 			c += hop;
 		}
+
+		if (FlxG.keys.justPressed.C)
+			trace(freqOutput.length);
 
 		return freqOutput;
 	}
