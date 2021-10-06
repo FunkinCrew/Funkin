@@ -275,7 +275,8 @@ class CharacterCreationState extends MusicBeatState
             trailDelay: 24,
             trailStalpha: 0.3,
             trailDiff: 0.069,
-            deathCharacterName: "bf-dead"
+            deathCharacterName: "bf-dead",
+            swapDirectionSingWhenPlayer: true
         };
     }
 
