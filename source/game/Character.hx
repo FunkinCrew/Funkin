@@ -555,7 +555,12 @@ class Character extends FlxSprite
 
 			for(characterData in config.characters)
 			{
-				var character = new Character(x, y, characterData.name, isPlayer);
+				var character:Character;
+				
+				if(!isPlayer)
+					character = new Character(x, y, characterData.name, isPlayer);
+				else
+					character = new Boyfriend(x, y, characterData.name, isPlayer);
 
 				if(flipX)
 					characterData.positionOffset[0] = 0 - characterData.positionOffset[0];

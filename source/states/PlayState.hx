@@ -2284,6 +2284,11 @@ class PlayState extends MusicBeatState
 			notes.forEachAlive(function(note:Note) {
 				if(note.mustPress && note.strumTime <= Conductor.songPosition || note.strumTime <= Conductor.songPosition && note.canBeHit && note.mustPress && note.isSustainNote)
 				{
+					if(boyfriend.otherCharacters == null)
+						boyfriend.holdTimer = 0;
+					else
+						boyfriend.otherCharacters[note.character].holdTimer = 0;
+
 					boyfriend.holdTimer = 0;
 
 					goodNoteHit(note);
