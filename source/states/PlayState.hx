@@ -518,7 +518,7 @@ class PlayState extends MusicBeatState
 
 		add(camFollow);
 
-		FlxG.camera.follow(camFollow, LOCKON, 0.04);
+		FlxG.camera.follow(camFollow, LOCKON, 0.04 * (60 / Main.fpsCounter.currentFPS));
 		FlxG.camera.zoom = defaultCamZoom;
 		FlxG.camera.focusOn(camFollow.getPosition());
 
@@ -1170,33 +1170,15 @@ class PlayState extends MusicBeatState
 	{
 		trace("SONG POS: " + Conductor.songPosition + " | Musice: " + FlxG.sound.music.time + " / " + FlxG.sound.music.length);
 
-		if(!(Conductor.songPosition > 20 && FlxG.sound.music.time < 20))
+		if(!switchedStates)
 		{
-			vocals.pause();
-			FlxG.sound.music.pause();
-	
-			Conductor.songPosition = FlxG.sound.music.time;
-			vocals.time = Conductor.songPosition;
-			FlxG.sound.music.play();
-			vocals.play();
-	
-			#if cpp
-			@:privateAccess
+			if(!(Conductor.songPosition > 20 && FlxG.sound.music.time < 20))
 			{
-				lime.media.openal.AL.sourcef(FlxG.sound.music._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, songMultiplier);
-	
-				if (vocals.playing)
-					lime.media.openal.AL.sourcef(vocals._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, songMultiplier);
-			}
-			#end
-		}
-		else
-		{
-			while(Conductor.songPosition > 20 && FlxG.sound.music.time < 20)
-			{
-				FlxG.sound.music.time = Conductor.songPosition;
+				vocals.pause();
+				FlxG.sound.music.pause();
+		
+				Conductor.songPosition = FlxG.sound.music.time;
 				vocals.time = Conductor.songPosition;
-	
 				FlxG.sound.music.play();
 				vocals.play();
 		
@@ -1209,6 +1191,27 @@ class PlayState extends MusicBeatState
 						lime.media.openal.AL.sourcef(vocals._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, songMultiplier);
 				}
 				#end
+			}
+			else
+			{
+				while(Conductor.songPosition > 20 && FlxG.sound.music.time < 20)
+				{
+					FlxG.sound.music.time = Conductor.songPosition;
+					vocals.time = Conductor.songPosition;
+		
+					FlxG.sound.music.play();
+					vocals.play();
+			
+					#if cpp
+					@:privateAccess
+					{
+						lime.media.openal.AL.sourcef(FlxG.sound.music._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, songMultiplier);
+			
+						if (vocals.playing)
+							lime.media.openal.AL.sourcef(vocals._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, songMultiplier);
+					}
+					#end
+				}
 			}
 		}
 	}
@@ -1245,6 +1248,8 @@ class PlayState extends MusicBeatState
 				}
 			}
 		}
+
+		FlxG.camera.followLerp = 0.04 * (60 / Main.fpsCounter.currentFPS);
 
 		if(totalNotes != 0)
 		{
