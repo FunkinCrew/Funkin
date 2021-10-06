@@ -484,12 +484,22 @@ class Character extends FlxSprite
 				flipX = !config.defaultFlipX;
 
 			if(config.offsetsFlipWhenPlayer == null)
-				offsetsFlipWhenPlayer = true;
+			{
+				if(curCharacter.startsWith("bf"))
+					offsetsFlipWhenPlayer = false;
+				else
+					offsetsFlipWhenPlayer = true;
+			}
 			else
 				offsetsFlipWhenPlayer = config.offsetsFlipWhenPlayer;
 
 			if(config.offsetsFlipWhenEnemy == null)
-				offsetsFlipWhenEnemy = false;
+			{
+				if(curCharacter.startsWith("bf"))
+					offsetsFlipWhenEnemy = true;
+				else
+					offsetsFlipWhenEnemy = false;
+			}
 			else
 				offsetsFlipWhenEnemy = config.offsetsFlipWhenEnemy;
 
