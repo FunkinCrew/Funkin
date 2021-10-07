@@ -150,23 +150,9 @@ class ModchartUtilities
 
         Lua.init_callbacks(lua);
 
-        var path = Paths.lua("modcharts/" + PlayState.SONG.modchartPath);
+        var path = PolymodAssets.getPath(Paths.lua("modcharts/" + PlayState.SONG.modchartPath));
 
         var result = LuaL.dofile(lua, path); // execute le file
-
-        if(result != 0)
-        {
-            var mods = PolymodHandler.metadataArrays;
-
-            for(x in mods)
-            {
-                if(result != 0)
-                {
-                    path = "mods/" + x + "/" + "data/modcharts/" + PlayState.SONG.modchartPath + ".lua";
-                    result = LuaL.dofile(lua, path); // execute le file
-                }
-            }
-        }
 
         if (result != 0)
         {
