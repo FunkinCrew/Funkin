@@ -1,5 +1,6 @@
 package states;
 
+import utilities.Difficulties;
 import flixel.graphics.frames.FlxFramesCollection;
 import lime.app.Application;
 import utilities.CoolUtil;
@@ -329,7 +330,7 @@ class StoryMenuState extends MusicBeatState
 
 		// USING THESE WEIRD VALUES SO THAT IT DOESNT FLOAT UP
 		difficultySprite.y = leftArrow.y - 15;
-		intendedScore = Highscore.getWeekScore(curWeek, curDifficulty, currentGroup.pathName + "Week");
+		intendedScore = Highscore.getWeekScore(curWeek, Difficulties.numToDiff(curDifficulty).getName(), currentGroup.pathName + "Week");
 
 		FlxTween.tween(difficultySprite, {y: leftArrow.y + 15, alpha: 1}, 0.07);
 	}
@@ -361,7 +362,7 @@ class StoryMenuState extends MusicBeatState
 		}
 
 		FlxG.sound.play(Paths.sound('scrollMenu'));
-		intendedScore = Highscore.getWeekScore(curWeek, curDifficulty, currentGroup.pathName + "Week");
+		intendedScore = Highscore.getWeekScore(curWeek, Difficulties.numToDiff(curDifficulty).getName(), currentGroup.pathName + "Week");
 
 		updateText();
 	}

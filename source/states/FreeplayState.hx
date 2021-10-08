@@ -67,6 +67,9 @@ class FreeplayState extends MusicBeatState
 
 	private var curRank:String = "N/A";
 
+	private var curDiffString:String = "normal";
+	private var curDiffArray:Array<String> = ["easy", "normal", "hard"];
+
 	override function create()
 	{
 		Application.current.window.title = Application.current.meta.get('name');
@@ -117,16 +120,21 @@ class FreeplayState extends MusicBeatState
 			var week = Std.parseInt(listArray[2]);
 			var icon = listArray[1];
 			var song = listArray[0];
+			var diffsStr = listArray[3];
+			var diffs = ["easy", "normal", "hard"];
+
+			if(diffsStr != null)
+				diffs = diffsStr.split(",");
 
 			// If you've unlocked the week after this one, then yes
 			if (listArray[3] == null)
 			{
 				// Creates new song data accordingly
-				songs.push(new SongMetadata(song, week, icon));
+				songs.push(new SongMetadata(song, week, icon, diffs));
 			} else if(listArray[3] != null && FlxG.save.data.debugSongs == true)
 			{
 				// Creates new song data accordingly
-				songs.push(new SongMetadata(song, week, icon));
+				songs.push(new SongMetadata(song, week, icon, diffs));
 			}
 		}
 
@@ -281,7 +289,7 @@ class FreeplayState extends MusicBeatState
 
 			if (accepted)
 			{
-				var poop:String = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), curDifficulty);
+				var poop:String = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), curDiffString);
 	
 				trace(poop);
 	
@@ -289,6 +297,7 @@ class FreeplayState extends MusicBeatState
 				PlayState.isStoryMode = false;
 				PlayState.storyDifficulty = curDifficulty;
 				PlayState.songMultiplier = curSpeed;
+				PlayState.storyDifficultyStr = curDiffString.toUpperCase();
 	
 				PlayState.storyWeek = songs[curSelected].week;
 				trace('CUR WEEK' + PlayState.storyWeek);
@@ -301,25 +310,31 @@ class FreeplayState extends MusicBeatState
 	{
 		curDifficulty += change;
 
-		if (curDifficulty < 0)
-			curDifficulty = 2;
-		if (curDifficulty > 2)
-			curDifficulty = 0;
+		if(change > 1)
+		{
+			if (curDifficulty < 0)
+				curDifficulty = curDiffArray.length - 1;
+	
+			if (curDifficulty > curDiffArray.length - 1)
+				curDifficulty = 0;
+		}
+		else
+		{
+			if (curDifficulty < 0)
+				curDifficulty = curDiffArray.length - 1;
+	
+			if (curDifficulty > curDiffArray.length - 1)
+				curDifficulty = curDiffArray.length - 1;
+		}
+
+		curDiffString = curDiffArray[curDifficulty].toUpperCase();
 
 		#if !switch
-		intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
-		curRank = Highscore.getSongRank(songs[curSelected].songName, curDifficulty);
+		intendedScore = Highscore.getScore(songs[curSelected].songName, curDiffString);
+		curRank = Highscore.getSongRank(songs[curSelected].songName, curDiffString);
 		#end
 
-		switch (curDifficulty)
-		{
-			case 0:
-				diffText.text = "<  EASY - " + curRank + " >";
-			case 1:
-				diffText.text = "< NORMAL - " + curRank + " >";
-			case 2:
-				diffText.text = "<  HARD - " + curRank + " >";
-		}
+		diffText.text = "< " + curDiffString + " - " + curRank + " >";
 	}
 
 	function changeSelection(change:Int = 0)
@@ -378,9 +393,11 @@ class FreeplayState extends MusicBeatState
 		}
 
 		#if !switch
-		intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
-		curRank = Highscore.getSongRank(songs[curSelected].songName, curDifficulty);
+		intendedScore = Highscore.getScore(songs[curSelected].songName, curDiffString);
+		curRank = Highscore.getSongRank(songs[curSelected].songName, curDiffString);
 		#end
+
+		curDiffArray = songs[curSelected].difficulties;
 
 		changeDiff();
 
@@ -423,11 +440,15 @@ class SongMetadata
 	public var songName:String = "";
 	public var week:Int = 0;
 	public var songCharacter:String = "";
+	public var difficulties:Array<String> = ["easy", "normal", "hard"];
 
-	public function new(song:String, week:Int, songCharacter:String)
+	public function new(song:String, week:Int, songCharacter:String, ?difficulties:Array<String>)
 	{
 		this.songName = song;
 		this.week = week;
 		this.songCharacter = songCharacter;
+
+		if(difficulties != null)
+			this.difficulties = difficulties;
 	}
 }

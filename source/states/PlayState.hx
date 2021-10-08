@@ -66,6 +66,7 @@ class PlayState extends MusicBeatState
 	public static var storyWeek:Int = 0;
 	public static var storyPlaylist:Array<String> = [];
 	public static var storyDifficulty:Int = 1;
+	public static var storyDifficultyStr:String = "NORMAL";
 
 	var halloweenLevel:Bool = false;
 
@@ -240,17 +241,7 @@ class PlayState extends MusicBeatState
 		Conductor.safeZoneOffset *= songMultiplier;
 
 		#if discord_rpc
-		// Making difficulty text for Discord Rich Presence.
-		switch (storyDifficulty)
-		{
-			case 0:
-				storyDifficultyText = "Easy";
-			case 1:
-				storyDifficultyText = "Normal";
-			case 2:
-				storyDifficultyText = "Hard";
-		}
-
+		storyDifficultyText = storyDifficultyStr;
 		iconRPC = SONG.player2;
 
 		// To avoid having duplicate images in Discord assets
@@ -553,7 +544,7 @@ class PlayState extends MusicBeatState
 		scoreTxt.scrollFactor.set();
 		add(scoreTxt);
 
-		infoTxt = new FlxText(0, 0, 0, SONG.song + " - " + Std.string(Difficulties.numToDiff(storyDifficulty)) + (FlxG.save.data.bot ? " (BOT)" : ""), 20);
+		infoTxt = new FlxText(0, 0, 0, SONG.song + " - " + storyDifficultyStr + (FlxG.save.data.bot ? " (BOT)" : ""), 20);
 		infoTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		infoTxt.screenCenter(X);
 		
@@ -1774,8 +1765,8 @@ class PlayState extends MusicBeatState
 				#if !switch
 				if(!hasUsedBot && songMultiplier >= 1)
 				{
-					Highscore.saveScore(SONG.song, songScore, storyDifficulty);
-					Highscore.saveRank(SONG.song, Ratings.getRank(accuracy), storyDifficulty);
+					Highscore.saveScore(SONG.song, songScore, storyDifficultyStr);
+					Highscore.saveRank(SONG.song, Ratings.getRank(accuracy), storyDifficultyStr);
 				}
 				#end
 			}
@@ -1809,19 +1800,16 @@ class PlayState extends MusicBeatState
 					{
 						if(!hasUsedBot && songMultiplier >= 1)
 						{
-							Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficulty, (groupWeek != "" ? groupWeek + "Week" : "week"));
+							Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficultyStr, (groupWeek != "" ? groupWeek + "Week" : "week"));
 						}
 					}
 				}
 				else
 				{
 					var difficulty:String = "";
-	
-					if (storyDifficulty == 0)
-						difficulty = '-easy';
-	
-					if (storyDifficulty == 2)
-						difficulty = '-hard';
+
+					if (storyDifficultyStr.toLowerCase() != "normal")
+						difficulty = '-' + storyDifficultyStr.toLowerCase();
 	
 					trace('LOADING NEXT SONG');
 					trace(PlayState.storyPlaylist[0].toLowerCase() + difficulty);
