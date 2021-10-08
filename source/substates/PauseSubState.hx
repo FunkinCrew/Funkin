@@ -25,7 +25,7 @@ class PauseSubState extends MusicBeatSubstate
 {
 	var grpMenuShit:FlxTypedGroup<Alphabet>;
 
-	var menuItems:Array<String> = ['Resume', 'Restart Song', 'Bot', 'Exit to menu'];
+	var menuItems:Array<String> = ['Resume', 'Restart Song', 'Bot', 'Quick Restart', 'Exit to menu'];
 	var curSelected:Int = 0;
 
 	var pauseMusic:FlxSound;
@@ -127,6 +127,9 @@ class PauseSubState extends MusicBeatSubstate
 						PlayState.instance.infoTxt.screenCenter(X);
 						PlayState.instance.hasUsedBot = true;
 					}
+				case "Quick Restart":
+					FlxG.save.data.quickRestart = !FlxG.save.data.quickRestart;
+					FlxG.save.flush();
 				case "Exit to menu":
 					#if linc_luajit
 					if (PlayState.luaModchart != null)
