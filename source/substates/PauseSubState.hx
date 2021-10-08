@@ -123,7 +123,7 @@ class PauseSubState extends MusicBeatSubstate
 
 					@:privateAccess
 					{
-						PlayState.instance.infoTxt.text = PlayState.SONG.song + " - " + Std.string(Difficulties.numToDiff(PlayState.storyDifficulty)) + (FlxG.save.data.bot ? " (BOT)" : "");
+						PlayState.instance.infoTxt.text = PlayState.SONG.song + " - " + PlayState.storyDifficultyStr.toUpperCase() + (FlxG.save.data.bot ? " (BOT)" : "");
 						PlayState.instance.infoTxt.screenCenter(X);
 						PlayState.instance.hasUsedBot = true;
 					}
