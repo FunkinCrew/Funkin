@@ -54,6 +54,12 @@ class GameOverSubstate extends MusicBeatSubstate
 		FlxG.camera.target = null;
 
 		bf.playAnim('firstDeath');
+
+		if(FlxG.save.data.quickRestart)
+		{
+			PlayState.SONG.speed = PlayState.previousScrollSpeedLmao;
+			FlxG.resetState();
+		}
 	}
 
 	override function update(elapsed:Float)
