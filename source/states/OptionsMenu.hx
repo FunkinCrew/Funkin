@@ -52,7 +52,8 @@ class OptionsMenu extends MusicBeatState
 			new BoolOption("Centered Arrows", "middleScroll", FlxG.save.data.middleScroll, 5),
 			new BoolOption("No Miss", "nohit", FlxG.save.data.nohit, 6),
 			new BoolOption("Reset Button", "resetButtonOn", FlxG.save.data.resetButtonOn, 7),
-			new BoolOption("Bot", "bot", FlxG.save.data.bot, 8)
+			new BoolOption("Bot", "bot", FlxG.save.data.bot, 8),
+			new BoolOption("Quick Restart", "quickRestart", FlxG.save.data.quickRestart, 9)
 		],
 		[
 			"Graphics",
