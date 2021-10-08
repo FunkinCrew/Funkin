@@ -24,38 +24,38 @@ class GameOverSubstate extends MusicBeatSubstate
 
 	public function new(x:Float, y:Float)
 	{
+		super();
+
 		FlxG.save.data.deaths += 1;
 		FlxG.save.flush();
 
-		if(PlayState.SONG.player1 == "bf-pixel")
-			stageSuffix = '-pixel';
-
-		super();
-
-		Conductor.songPosition = 0;
-
-		bf = new Boyfriend(x, y, PlayState.boyfriend.deathCharacter, true);
-		add(bf);
-
-		camFollow = new FlxObject(bf.getGraphicMidpoint().x, bf.getGraphicMidpoint().y, 1, 1);
-		add(camFollow);
-
-		if(FlxG.sound.music.active)
-			FlxG.sound.music.stop();
-
-		var soundThing = FlxG.sound.play(Paths.sound('fnf_loss_sfx' + stageSuffix));
-		soundThing.play();
-
-		Conductor.changeBPM(100);
-
-		// FlxG.camera.followLerp = 1;
-		// FlxG.camera.focusOn(FlxPoint.get(FlxG.width / 2, FlxG.height / 2));
 		FlxG.camera.scroll.set();
 		FlxG.camera.target = null;
 
-		bf.playAnim('firstDeath');
+		if(!FlxG.save.data.quickRestart)
+		{
+			if(PlayState.SONG.player1 == "bf-pixel")
+				stageSuffix = '-pixel';
 
-		if(FlxG.save.data.quickRestart)
+			Conductor.songPosition = 0;
+
+			bf = new Boyfriend(x, y, PlayState.boyfriend.deathCharacter, true);
+			add(bf);
+	
+			camFollow = new FlxObject(bf.getGraphicMidpoint().x, bf.getGraphicMidpoint().y, 1, 1);
+			add(camFollow);
+	
+			if(FlxG.sound.music.active)
+				FlxG.sound.music.stop();
+	
+			var soundThing = FlxG.sound.play(Paths.sound('fnf_loss_sfx' + stageSuffix));
+			soundThing.play();
+	
+			Conductor.changeBPM(100);
+	
+			bf.playAnim('firstDeath');
+		}
+		else
 		{
 			PlayState.SONG.speed = PlayState.previousScrollSpeedLmao;
 			FlxG.resetState();
@@ -66,34 +66,37 @@ class GameOverSubstate extends MusicBeatSubstate
 	{
 		super.update(elapsed);
 
-		if (controls.ACCEPT)
+		if(!FlxG.save.data.quickRestart)
 		{
-			endBullshit();
-		}
+			if (controls.ACCEPT)
+			{
+				endBullshit();
+			}
 
-		if (controls.BACK)
-		{
-			FlxG.sound.music.stop();
+			if (controls.BACK)
+			{
+				FlxG.sound.music.stop();
 
-			if (PlayState.isStoryMode)
-				FlxG.switchState(new StoryMenuState());
-			else
-				FlxG.switchState(new FreeplayState());
-		}
+				if (PlayState.isStoryMode)
+					FlxG.switchState(new StoryMenuState());
+				else
+					FlxG.switchState(new FreeplayState());
+			}
 
-		if (bf.animation.curAnim.name == 'firstDeath' && bf.animation.curAnim.curFrame == 12)
-		{
-			FlxG.camera.follow(camFollow, LOCKON, 0.01);
-		}
+			if (bf.animation.curAnim.name == 'firstDeath' && bf.animation.curAnim.curFrame == 12)
+			{
+				FlxG.camera.follow(camFollow, LOCKON, 0.01);
+			}
 
-		if (bf.animation.curAnim.name == 'firstDeath' && bf.animation.curAnim.finished)
-		{
-			FlxG.sound.playMusic(Paths.music('gameOver' + stageSuffix));
-		}
+			if (bf.animation.curAnim.name == 'firstDeath' && bf.animation.curAnim.finished)
+			{
+				FlxG.sound.playMusic(Paths.music('gameOver' + stageSuffix));
+			}
 
-		if (FlxG.sound.music.playing)
-		{
-			Conductor.songPosition = FlxG.sound.music.time;
+			if (FlxG.sound.music.playing)
+			{
+				Conductor.songPosition = FlxG.sound.music.time;
+			}
 		}
 	}
 
