@@ -189,6 +189,8 @@ class BoolOption extends Option
 					DiscordClient.initialize();
 				else if(!FlxG.save.data.discordRPC && DiscordClient.active)
 					DiscordClient.shutdown();
+			case "quickRestart":
+				FlxG.save.data.quickRestart = !Option_Checked;
 		}
 
         if(Option_Value != "muted")
