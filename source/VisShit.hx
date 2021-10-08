@@ -1,7 +1,11 @@
 package;
 
+import dsp.FFT;
+import flixel.math.FlxMath;
 import flixel.system.FlxSound;
 import lime.utils.Int16Array;
+
+using Lambda;
 
 class VisShit
 {
@@ -14,6 +18,91 @@ class VisShit
 	public function new(snd:FlxSound)
 	{
 		this.snd = snd;
+	}
+
+	public function funnyFFT(samples:Array<Float>, ?skipped:Int = 1):Array<Array<Float>>
+	{
+		// nab multiple samples at once in while / for loops?
+
+		var fs:Float = 44100 / skipped; // sample rate shit?
+
+		final fftN = 1024;
+		final halfN = Std.int(fftN / 2);
+		final overlap = 0.5;
+		final hop = Std.int(fftN * (1 - overlap));
+
+		// window function to compensate for overlapping
+		final a0 = 0.5; // => Hann(ing) window
+		final window = (n:Int) -> a0 - (1 - a0) * Math.cos(2 * Math.PI * n / fftN);
+
+		// NOTE TO SELF FOR WHEN I WAKE UP
+
+		// helpers, note that spectrum indexes suppose non-negative frequencies
+		final binSize = fs / fftN;
+		final indexToFreq = function(k:Int)
+		{
+			var powShit:Float = FlxMath.remapToRange(k, 0, halfN, 0, 4.3); // 4.3 is almost 20khz
+
+			return 1.0 * (Math.pow(10, powShit)); // we need the `1.0` to avoid overflows
+		};
+
+		// "melodic" band-pass filter
+		final minFreq = 20.70;
+		final maxFreq = 4000.01;
+		final melodicBandPass = function(k:Int, s:Float)
+		{
+			// final freq = indexToFreq(k);
+			// final filter = freq > minFreq - binSize && freq < maxFreq + binSize ? 1 : 0;
+			return s;
+		};
+
+		var freqOutput:Array<Array<Float>> = [];
+
+		var c = 0; // index where each chunk begins
+		var indexOfArray:Int = 0;
+		while (c < samples.length)
+		{
+			// take a chunk (zero-padded if needed) and apply the window
+			final chunk = [
+				for (n in 0...fftN)
+					(c + n < samples.length ? samples[c + n] : 0.0) * window(n)
+			];
+
+			// compute positive spectrum with sampling correction and BP filter
+			final freqs = FFT.rfft(chunk).map(z -> z.scale(1 / fftN).magnitude).mapi(melodicBandPass);
+
+			freqOutput.push([]);
+
+			// if (FlxG.keys.justPressed.M)
+			// trace(FFT.rfft(chunk).map(z -> z.scale(1 / fs).magnitude));
+
+			// find spectral peaks and their instantaneous frequencies
+			for (k => s in freqs)
+			{
+				final time = c / fs;
+				final freq = indexToFreq(k);
+				final power = s * s;
+				if (FlxG.keys.justPressed.I)
+				{
+					trace(k);
+
+					haxe.Log.trace('${time};${freq};${power}', null);
+				}
+				if (freq < maxFreq)
+					freqOutput[indexOfArray].push(power);
+				//
+			}
+			// haxe.Log.trace("", null);
+
+			indexOfArray++;
+			// move to next (overlapping) chunk
+			c += hop;
+		}
+
+		if (FlxG.keys.justPressed.C)
+			trace(freqOutput.length);
+
+		return freqOutput;
 	}
 
 	public function checkAndSetBuffer()
