@@ -67,6 +67,10 @@ class Main extends Sprite
 			gameHeight = Math.ceil(stageHeight / zoom);
 		}
 
+		#if !cpp
+		framerate = 60;
+		#end
+
 		#if !debug
 		initialState = TitleState;
 		#end
@@ -77,8 +81,6 @@ class Main extends Sprite
 		display = new SimpleInfoDisplay(10, 3, 0xFFFFFF);
 		addChild(display);
 		#end
-
-		FlxG.drawFramerate = 120;
 	}
 
 	public static var display:SimpleInfoDisplay;
@@ -91,5 +93,16 @@ class Main extends Sprite
 	public static function toggleMem(memEnabled:Bool):Void
 	{
 		display.infoDisplayed[1] = memEnabled;
+	}
+
+	/* cool kade functions D) */
+	public function setFPSCap(cap:Float)
+	{
+		openfl.Lib.current.stage.frameRate = cap;
+	}
+
+	public function getFPSCap():Float
+	{
+		return openfl.Lib.current.stage.frameRate;
 	}
 }

@@ -1,5 +1,6 @@
 package states;
 
+import openfl.Lib;
 import modding.PolymodHandler;
 import modding.ModList;
 import utilities.SaveData;
@@ -57,6 +58,9 @@ class TitleState extends MusicBeatState
 	override public function create():Void
 	{
 		SaveData.init();
+
+		/* cool fps shit thx kade */
+		(cast (Lib.current.getChildAt(0), Main)).setFPSCap(FlxG.save.data.fpsCap);
 
 		#if desktop
 		PolymodHandler.loadMods();

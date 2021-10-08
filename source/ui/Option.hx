@@ -1,5 +1,6 @@
 package ui;
 
+import substates.MaxFPSMenu;
 import utilities.Discord.DiscordClient;
 import polymod.Polymod.ModMetadata;
 import modding.ModList;
@@ -261,7 +262,7 @@ class ControlMenuSubStateOption extends Option
         super.update(elapsed);
 
         if(FlxG.keys.justPressed.ENTER && Alphabet_Text.targetY == 0)
-			OptionsMenu.instance.openSubState(new ControlMenuSubstate());
+			FlxG.state.openSubState(new ControlMenuSubstate());
     }
 }
 
@@ -290,7 +291,7 @@ class UISkinSelectOption extends Option
         super.update(elapsed);
 
         if(FlxG.keys.justPressed.ENTER && Alphabet_Text.targetY == 0)
-			OptionsMenu.instance.openSubState(new UISkinSelect());
+			FlxG.state.openSubState(new UISkinSelect());
     }
 }
 
@@ -319,7 +320,7 @@ class SongOffsetOption extends Option
         super.update(elapsed);
 
         if(FlxG.keys.justPressed.ENTER && Alphabet_Text.targetY == 0)
-			OptionsMenu.instance.openSubState(new SongOffsetMenu());
+			FlxG.state.openSubState(new SongOffsetMenu());
     }
 }
 
@@ -470,3 +471,32 @@ class AccuracyOption extends Option
 	}
 }
 #end
+
+/**
+* Option that opens the song offset menu when selected.
+*/
+class MaxFPSOption extends Option
+{
+    public function new(_Option_Name:String = "-", _Option_Row:Int = 0)
+    {
+        super();
+
+        // SETTING VALUES //
+        this.Option_Name = _Option_Name;
+        this.Option_Row = _Option_Row;
+
+        // CREATING OTHER OBJECTS //
+        Alphabet_Text = new Alphabet(20, 20 + (Option_Row * 100), Option_Name, true);
+        Alphabet_Text.isMenuItem = true;
+        Alphabet_Text.targetY = Option_Row;
+        add(Alphabet_Text);
+    }
+
+    override function update(elapsed:Float)
+    {
+        super.update(elapsed);
+
+        if(FlxG.keys.justPressed.ENTER && Alphabet_Text.targetY == 0)
+			FlxG.state.openSubState(new MaxFPSMenu());
+    }
+}

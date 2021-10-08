@@ -1,5 +1,7 @@
 package states;
 
+import openfl.Lib;
+import lime.app.Application;
 import game.Conductor;
 import utilities.PlayerSettings;
 import game.Conductor.BPMChangeEvent;
@@ -30,6 +32,11 @@ class MusicBeatState extends FlxUIState
 		super.create();
 	}
 
+	override public function onFocus():Void
+	{
+		super.onFocus();
+	}
+
 	override function update(elapsed:Float)
 	{
 		//everyStep();
@@ -42,6 +49,9 @@ class MusicBeatState extends FlxUIState
 			stepHit();
 
 		super.update(elapsed);
+
+		/* cool fps shit thx kade */
+		(cast (Lib.current.getChildAt(0), Main)).setFPSCap(FlxG.save.data.fpsCap);
 	}
 
 	private function updateBeat():Void
