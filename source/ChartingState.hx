@@ -417,6 +417,9 @@ class ChartingState extends MusicBeatState
 		staticSpecGrp = new FlxTypedGroup<SpectogramSprite>();
 		add(staticSpecGrp);
 
+		var aBoy:ABotVis = new ABotVis(FlxG.sound.music);
+		add(aBoy);
+
 		for (index => voc in vocals.members)
 		{
 			var vocalSpec:SpectogramSprite = new SpectogramSprite(voc, FlxG.random.color(0xFFAAAAAA, FlxColor.WHITE, 100));

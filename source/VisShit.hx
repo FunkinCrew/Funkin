@@ -9,6 +9,7 @@ class VisShit
 	public var setBuffer:Bool = false;
 	public var audioData:Int16Array;
 	public var sampleRate:Int = 44100; // default, ez?
+	public var numSamples:Int = 0;
 
 	public function new(snd:FlxSound)
 	{
@@ -34,7 +35,7 @@ class VisShit
 				trace(buf.bitsPerSample);
 
 				setBuffer = true;
-				// numSamples = Std.int(audioData.length / 2);
+				numSamples = Std.int(audioData.length / 2);
 			}
 		}
 	}
