@@ -126,6 +126,8 @@ class BoolOption extends Option
 				Value = FlxG.save.data.noteSplashes;
 			case "discordRPC":
 				Value = FlxG.save.data.discordRPC;
+			case "quickRestart":
+				Value = FlxG.save.data.quickRestart;
 		}
 
 		return Value;
