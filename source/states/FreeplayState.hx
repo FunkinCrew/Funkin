@@ -310,22 +310,11 @@ class FreeplayState extends MusicBeatState
 	{
 		curDifficulty += change;
 
-		if(change > 1)
-		{
-			if (curDifficulty < 0)
-				curDifficulty = curDiffArray.length - 1;
-	
-			if (curDifficulty > curDiffArray.length - 1)
-				curDifficulty = 0;
-		}
-		else
-		{
-			if (curDifficulty < 0)
-				curDifficulty = curDiffArray.length - 1;
-	
-			if (curDifficulty > curDiffArray.length - 1)
-				curDifficulty = curDiffArray.length - 1;
-		}
+		if (curDifficulty < 0)
+			curDifficulty = curDiffArray.length - 1;
+
+		if (curDifficulty > curDiffArray.length - 1)
+			curDifficulty = 0;
 
 		curDiffString = curDiffArray[curDifficulty].toUpperCase();
 
