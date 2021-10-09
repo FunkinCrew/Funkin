@@ -1,5 +1,6 @@
 package ui;
 
+import utilities.CoolUtil;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
@@ -43,6 +44,8 @@ class Alphabet extends FlxSpriteGroup
 	public function new(x:Float, y:Float, text:String = "", ?bold:Bool = false, typed:Bool = false)
 	{
 		super(x, y);
+
+		forceX = Math.NEGATIVE_INFINITY;
 
 		_finalText = text;
 		this.text = text;
@@ -217,14 +220,26 @@ class Alphabet extends FlxSpriteGroup
 		}, splitWords.length);
 	}
 
+	public var forceX:Float = Math.NEGATIVE_INFINITY;
+	public var yMult:Float = 120;
+	public var xAdd:Float = 0;
+	public var yAdd:Float = 0;
+
 	override function update(elapsed:Float)
 	{
 		if (isMenuItem)
 		{
 			var scaledY = FlxMath.remapToRange(targetY, 0, 1, 0, 1.3);
 
-			y = FlxMath.lerp(y, (scaledY * 120) + (FlxG.height * 0.48), 0.30);
-			x = FlxMath.lerp(x, (targetY * 20) + 90, 0.30);
+			var lerpVal:Float = CoolUtil.boundTo(elapsed * 9.6, 0, 1);
+			
+			y = FlxMath.lerp(y, (scaledY * yMult) + (FlxG.height * 0.48) + yAdd, lerpVal);
+
+			if(forceX != Math.NEGATIVE_INFINITY) {
+				x = forceX;
+			} else {
+				x = FlxMath.lerp(x, (targetY * 20) + 90 + xAdd, lerpVal);
+			}
 		}
 
 		super.update(elapsed);

@@ -19,6 +19,17 @@ class CoolUtil
 		return difficultyArray[PlayState.storyDifficulty];
 	}
 
+	public static function boundTo(value:Float, min:Float, max:Float):Float {
+		var newValue:Float = value;
+
+		if(newValue < min)
+			newValue = min;
+		else if(newValue > max)
+			newValue = max;
+		
+		return newValue;
+	}
+
 	public static function coolTextFile(path:String):Array<String>
 	{
 		var daList:Array<String> = Assets.getText(path).trim().split('\n');
