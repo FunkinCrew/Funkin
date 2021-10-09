@@ -121,6 +121,15 @@ class KadeEngineData
 		if (FlxG.save.data.zoom == null)
 			FlxG.save.data.zoom = 1;
 
+		if (FlxG.save.data.judgementCounter == null)
+			FlxG.save.data.judgementCounter = true;
+
+		if (FlxG.save.data.laneUnderlay == null)
+			FlxG.save.data.laneUnderlay = false;
+
+		if (FlxG.save.data.laneTransparency == null)
+			FlxG.save.data.laneTransparency = 0;
+
 		var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
 
 		KeyBinds.gamepad = gamepad != null;

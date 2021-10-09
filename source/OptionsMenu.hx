@@ -44,6 +44,7 @@ class OptionsMenu extends MusicBeatState
 			new CamZoomOption("Toggle the camera zoom in-game."),
 			new StepManiaOption("Sets the colors of the arrows depending on quantization instead of direction."),
 			new AccuracyOption("Display accuracy information on the info bar."),
+			new JudgementCounter("Shows your current judgements on the left side of the screen."), new LaneUnderlayOption("Toggles lane underlay"),
 			new SongPositionOption("Show the song's current position as a scrolling bar."),
 			new Colour("The color behind icons now fit with their theme. (e.g. Pico = green)"),
 			new NPSDisplayOption("Shows your current Notes Per Second on the info bar."),
