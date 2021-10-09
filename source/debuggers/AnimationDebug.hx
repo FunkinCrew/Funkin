@@ -1,5 +1,6 @@
 package debuggers;
 
+import ui.FlxUIDropDownMenuCustom;
 import states.MusicBeatState;
 import states.MainMenuState;
 import states.PlayState;
@@ -45,8 +46,8 @@ class AnimationDebug extends MusicBeatState
 	var modListLmao:Array<String> = ["default"];
 	var curCharList:Array<String>;
 
-	var charDropDown:FlxUIDropDownMenu;
-	var modDropDown:FlxUIDropDownMenu;
+	var charDropDown:FlxUIDropDownMenuCustom;
+	var modDropDown:FlxUIDropDownMenuCustom;
 
 	override function create()
 	{
@@ -130,7 +131,7 @@ class AnimationDebug extends MusicBeatState
 
 		curCharList = characters.get("default");
 
-		charDropDown = new FlxUIDropDownMenu(10, 500, FlxUIDropDownMenu.makeStrIdLabelArray(curCharList, true), function(character:String)
+		charDropDown = new FlxUIDropDownMenuCustom(10, 500, FlxUIDropDownMenu.makeStrIdLabelArray(curCharList, true), function(character:String)
 		{
 			remove(char);
 			char.kill();
@@ -149,7 +150,7 @@ class AnimationDebug extends MusicBeatState
 		charDropDown.scrollFactor.set();
 		add(charDropDown);
 
-		modDropDown = new FlxUIDropDownMenu(charDropDown.x + charDropDown.width + 1, charDropDown.y, FlxUIDropDownMenu.makeStrIdLabelArray(modListLmao, true), function(modID:String)
+		modDropDown = new FlxUIDropDownMenuCustom(charDropDown.x + charDropDown.width + 1, charDropDown.y, FlxUIDropDownMenu.makeStrIdLabelArray(modListLmao, true), function(modID:String)
 		{
 			var mod:String = modListLmao[Std.parseInt(modID)];
 

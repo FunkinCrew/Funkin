@@ -439,17 +439,29 @@ class Character extends FlxSprite
 					// Doesn't flip for BF, since his are already in the right place???
 					if(swapLeftAndRightSingPlayer && !isDeathCharacter)
 					{
+						var oldOffRight = animOffsets.get("singRIGHT");
+						var oldOffLeft = animOffsets.get("singLEFT");
+
 						// var animArray
 						var oldRight = animation.getByName('singRIGHT').frames;
 						animation.getByName('singRIGHT').frames = animation.getByName('singLEFT').frames;
 						animation.getByName('singLEFT').frames = oldRight;
+
+						animOffsets.set("singRIGHT", oldOffLeft);
+						animOffsets.set("singLEFT", oldOffRight);
 		
 						// IF THEY HAVE MISS ANIMATIONS??
 						if (animation.getByName('singRIGHTmiss') != null)
 						{
+							var oldOffRightMiss = animOffsets.get("singRIGHTmiss");
+							var oldOffLeftMiss = animOffsets.get("singLEFTmiss");
+
 							var oldMiss = animation.getByName('singRIGHTmiss').frames;
 							animation.getByName('singRIGHTmiss').frames = animation.getByName('singLEFTmiss').frames;
 							animation.getByName('singLEFTmiss').frames = oldMiss;
+
+							animOffsets.set("singRIGHTmiss", oldOffLeftMiss);
+							animOffsets.set("singLEFTmiss", oldOffRightMiss);
 						}
 					}
 				}

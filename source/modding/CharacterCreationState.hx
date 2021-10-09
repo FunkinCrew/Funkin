@@ -1,5 +1,6 @@
 package modding;
 
+import ui.FlxUIDropDownMenuCustom;
 import states.MusicBeatState;
 import flixel.util.FlxColor;
 import states.MainMenuState;
@@ -10,7 +11,6 @@ import openfl.net.FileReference;
 #if discord_rpc
 import utilities.Discord.DiscordClient;
 #end
-import flixel.addons.ui.FlxUIDropDownMenu;
 import flixel.ui.FlxButton;
 import openfl.display.BitmapData;
 import lime.utils.Assets;
@@ -73,7 +73,7 @@ class CharacterCreationState extends MusicBeatState
 
     private var UI_Base:FlxUI;
     
-    private var Animation_List_Menu:FlxUIDropDownMenu;
+    private var Animation_List_Menu:FlxUIDropDownMenuCustom;
 
     public function new(?New_Character:String = "bf")
     {
@@ -328,7 +328,7 @@ class CharacterCreationState extends MusicBeatState
             newList = false;
         }
 
-        Animation_List_Menu = new FlxUIDropDownMenu(100, 300, FlxUIDropDownMenu.makeStrIdLabelArray(Animation_List, true), function(id:String){
+        Animation_List_Menu = new FlxUIDropDownMenuCustom(100, 300, FlxUIDropDownMenuCustom.makeStrIdLabelArray(Animation_List, true), function(id:String){
             Selected_Animation = Animation_List[Std.parseInt(id)];
             Character.playAnim(Selected_Animation, true);
             Character.screenCenter();

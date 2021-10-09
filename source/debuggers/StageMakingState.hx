@@ -1,5 +1,6 @@
 package debuggers;
 
+import ui.FlxUIDropDownMenuCustom;
 import utilities.PlayerSettings;
 import states.MainMenuState;
 import utilities.Controls;
@@ -35,7 +36,7 @@ class StageMakingState extends MusicBeatState
 
     /* UI */
     private var beat_Button:FlxButton;
-    private var stage_Dropdown:FlxUIDropDownMenu;
+    private var stage_Dropdown:FlxUIDropDownMenuCustom;
     private var cam_Zoom:FlxText;
 
     private var startY:Int = 50;
@@ -76,7 +77,7 @@ class StageMakingState extends MusicBeatState
         stage = new StageGroup(stage_Name);
         add(stage);
 
-        stage_Dropdown = new FlxUIDropDownMenu(10, startY + 50, FlxUIDropDownMenu.makeStrIdLabelArray(stages, true), function(stageName:String)
+        stage_Dropdown = new FlxUIDropDownMenuCustom(10, startY + 50, FlxUIDropDownMenu.makeStrIdLabelArray(stages, true), function(stageName:String)
         {
             trace(stageName);
             stage_Name = stages[Std.parseInt(stageName)];

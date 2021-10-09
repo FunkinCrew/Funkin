@@ -1,5 +1,6 @@
 package debuggers;
 
+import ui.FlxUIDropDownMenuCustom;
 import lime.tools.AssetType;
 #if sys
 import modding.ModdingSound;
@@ -26,7 +27,6 @@ import flixel.addons.ui.FlxInputText;
 import flixel.addons.ui.FlxUI9SliceSprite;
 import flixel.addons.ui.FlxUI;
 import flixel.addons.ui.FlxUICheckBox;
-import flixel.addons.ui.FlxUIDropDownMenu;
 import flixel.addons.ui.FlxUIInputText;
 import flixel.addons.ui.FlxUINumericStepper;
 import flixel.addons.ui.FlxUITabMenu;
@@ -504,7 +504,7 @@ class ChartingState extends MusicBeatState
 		}
 
 		// CHARS
-		var player1DropDown = new FlxUIDropDownMenu(10, 30, FlxUIDropDownMenu.makeStrIdLabelArray(arrayCharacters, true), function(character:String)
+		var player1DropDown = new FlxUIDropDownMenuCustom(10, 30, FlxUIDropDownMenuCustom.makeStrIdLabelArray(arrayCharacters, true), function(character:String)
 		{
 			_song.player1 = arrayCharacters[Std.parseInt(character)];
 			updateHeads();
@@ -512,14 +512,14 @@ class ChartingState extends MusicBeatState
 
 		player1DropDown.selectedLabel = _song.player1;
 
-		var gfDropDown = new FlxUIDropDownMenu(10, 50, FlxUIDropDownMenu.makeStrIdLabelArray(arrayCharacters, true), function(character:String)
+		var gfDropDown = new FlxUIDropDownMenuCustom(10, 50, FlxUIDropDownMenuCustom.makeStrIdLabelArray(arrayCharacters, true), function(character:String)
 		{
 			_song.gf = arrayCharacters[Std.parseInt(character)];
 		});
 
 		gfDropDown.selectedLabel = _song.gf;
 
-		var player2DropDown = new FlxUIDropDownMenu(10, 70, FlxUIDropDownMenu.makeStrIdLabelArray(arrayCharacters, true), function(character:String)
+		var player2DropDown = new FlxUIDropDownMenuCustom(10, 70, FlxUIDropDownMenuCustom.makeStrIdLabelArray(arrayCharacters, true), function(character:String)
 		{
 			_song.player2 = arrayCharacters[Std.parseInt(character)];
 			updateHeads();
@@ -530,7 +530,7 @@ class ChartingState extends MusicBeatState
 		// OTHER
 		var stages:Array<String> = CoolUtil.coolTextFile(Paths.txt('stageList'));
 
-		var stageDropDown = new FlxUIDropDownMenu(10, 120, FlxUIDropDownMenu.makeStrIdLabelArray(stages, true), function(stage:String)
+		var stageDropDown = new FlxUIDropDownMenuCustom(10, 120, FlxUIDropDownMenuCustom.makeStrIdLabelArray(stages, true), function(stage:String)
 		{
 			_song.stage = stages[Std.parseInt(stage)];
 		});
@@ -546,7 +546,7 @@ class ChartingState extends MusicBeatState
 			mods.push(iterator.next());
 		}
 
-		var modDropDown = new FlxUIDropDownMenu(10, 140, FlxUIDropDownMenu.makeStrIdLabelArray(mods, true), function(mod:String)
+		var modDropDown = new FlxUIDropDownMenuCustom(10, 140, FlxUIDropDownMenuCustom.makeStrIdLabelArray(mods, true), function(mod:String)
 		{
 			selected_mod = mods[Std.parseInt(mod)];
 
@@ -558,7 +558,7 @@ class ChartingState extends MusicBeatState
 				arrayCharacters.push(Item);
 			}
 
-			var character_Data_List = FlxUIDropDownMenu.makeStrIdLabelArray(arrayCharacters, true);
+			var character_Data_List = FlxUIDropDownMenuCustom.makeStrIdLabelArray(arrayCharacters, true);
 			
 			player1DropDown.setData(character_Data_List);
 			gfDropDown.setData(character_Data_List);
