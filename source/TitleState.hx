@@ -1,6 +1,6 @@
 package;
 
-#if desktop
+#if cpp
 import Discord.DiscordClient;
 import sys.thread.Thread;
 #end
@@ -24,7 +24,6 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
-import io.newgrounds.NG;
 import lime.app.Application;
 import openfl.Assets;
 
@@ -58,7 +57,9 @@ class TitleState extends MusicBeatState
 
 		super.create();
 
-		NGio.noLogin(APIStuff.API);
+		#if newgrounds
+			NGio.noLogin(APIStuff.API);
+		#end
 
 		#if ng
 		var ng:NGio = new NGio(APIStuff.API, APIStuff.EncKey);
@@ -94,7 +95,7 @@ class TitleState extends MusicBeatState
 		});
 		#end
 
-		#if desktop
+		#if cpp
 		DiscordClient.initialize();
 		
 		Application.current.onExit.add (function (exitCode) {
@@ -270,7 +271,7 @@ class TitleState extends MusicBeatState
 
 		if (pressedEnter && !transitioning && skippedIntro)
 		{
-			#if !switch
+			#if (!switch || newgrounds)
 			NGio.unlockMedal(60960);
 
 			// If it's Friday according to da clock
@@ -290,7 +291,11 @@ class TitleState extends MusicBeatState
 			{
 				// Check if version is outdated
 
+				#if newgrounds
 				var version:String = "v" + Application.current.meta.get('version');
+				#else
+				var version:String = "";
+				#end
 
 				if (version.trim() != NGio.GAME_VER_NUMS.trim() && !OutdatedSubState.leftState)
 				{

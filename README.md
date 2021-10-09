@@ -81,7 +81,7 @@ To run it from your desktop (Windows, Mac, Linux) it can be a bit more involved.
 * Windows SDK (10.0.17763.0)
 
 Once that is done you can open up a command line in the project's directory and run `lime test windows -debug`. Once that command finishes (it takes forever even on a higher end PC), you can run FNF from the .exe file under export\release\windows\bin
-As for Mac, 'lime test mac -debug' should work, if not the internet surely has a guide on how to compile Haxe stuff for Mac.
+As for Mac, `lime test mac -debug` should work, if not the internet surely has a guide on how to compile Haxe stuff for Mac. OR If you don't want to compile to C++ and you don't care about Discord RPC then you can try compiling to HashLink, download the current binary from [this link](https://github.com/HaxeFoundation/hashlink/releases), extract the binary to a folder, then run `lime setup hl`, if you downloaded the HaskLink binary already, then you can enter <kbd>N</kbd>, then enter the path to the HashLink binary and done! Just compile using the command `lime build hl -debug`.
 
 ### Additional guides
 

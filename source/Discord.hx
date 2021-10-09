@@ -7,6 +7,7 @@ using StringTools;
 
 class DiscordClient
 {
+	#if cpp
 	public function new()
 	{
 		trace("Discord Client starting...");
@@ -84,4 +85,9 @@ class DiscordClient
 
 		//trace('Discord RPC Updated. Arguments: $details, $state, $smallImageKey, $hasStartTimestamp, $endTimestamp');
 	}
+	#else
+	public function new() {
+		trace("Discord Client isn't going to start because this is a cpp client, go home.");
+	}
+	#end
 }
