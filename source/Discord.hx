@@ -87,7 +87,7 @@ class DiscordClient
 	}
 	#else
 	public function new() {
-		trace("Discord Client isn't going to start because this is a cpp client, go home.");
+		trace("Discord Client isn't going to start because this is not a cpp client, go home.");
 	}
 	#end
 }
