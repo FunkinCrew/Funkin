@@ -1,5 +1,6 @@
 package substates;
 
+import openfl.Lib;
 import game.Conductor;
 import utilities.PlayerSettings;
 import utilities.Controls;
@@ -36,6 +37,9 @@ class MusicBeatSubstate extends FlxSubState
 			stepHit();
 
 		super.update(elapsed);
+
+		/* cool fps shit thx kade */
+		(cast (Lib.current.getChildAt(0), Main)).setFPSCap(FlxG.save.data.fpsCap);
 	}
 
 	private function updateCurStep():Void
