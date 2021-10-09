@@ -28,6 +28,11 @@ class CoolUtil
 		return difficultyArray[PlayState.storyDifficulty];
 	}
 
+	public static function coolBaseLog(base:Float, fin:Float):Float
+	{
+		return Math.log(fin) / Math.log(base);
+	}
+
 	public static function coolTextFile(path:String):Array<String>
 	{
 		var daList:Array<String> = [];

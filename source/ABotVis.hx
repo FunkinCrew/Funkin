@@ -86,9 +86,18 @@ class ABotVis extends FlxTypedSpriteGroup<FlxSprite>
 
 				for (i in 0...group.members.length)
 				{
+					var getSliceShit = function(s:Int)
+					{
+						var powShit = FlxMath.remapToRange(s, 0, group.members.length, 0, CoolUtil.coolBaseLog(10, freqShit[0].length));
+						return Math.round(Math.pow(10, powShit));
+					};
+
+					// var powShit:Float = getSliceShit(i);
+					var hzSliced:Int = getSliceShit(i);
+
 					var sliceLength:Int = Std.int(freqShit[0].length / group.members.length);
 
-					var volSlice = freqShit[0].slice(Std.int(sliceLength * i), Std.int(sliceLength * i) + sliceLength);
+					var volSlice = freqShit[0].slice(hzSliced, getSliceShit(i + 1));
 
 					var avgVel:Float = 0;
 

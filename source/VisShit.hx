@@ -41,7 +41,7 @@ class VisShit
 		final binSize = fs / fftN;
 		final indexToFreq = function(k:Int)
 		{
-			var powShit:Float = FlxMath.remapToRange(k, 0, halfN, 0, 4.3); // 4.3 is almost 20khz
+			var powShit:Float = FlxMath.remapToRange(k, 0, halfN, 0, CoolUtil.coolBaseLog(10, halfN)); // 4.3 is almost the log of 20Khz or so. Close enuf lol
 
 			return 1.0 * (Math.pow(10, powShit)); // we need the `1.0` to avoid overflows
 		};
