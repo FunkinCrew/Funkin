@@ -960,14 +960,14 @@ class PlayState extends MusicBeatState
 
 				var susLength:Float = swagNote.sustainLength;
 
-				susLength /= Conductor.nonmultilmao_stepCrochet;
+				susLength = susLength / Std.int(Conductor.nonmultilmao_stepCrochet);
 				unspawnNotes.push(swagNote);
 
 				for (susNote in 0...Math.floor(susLength))
 				{
 					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
 
-					var sustainNote:Note = new Note(daStrumTime + ((Conductor.nonmultilmao_stepCrochet * susNote) + Conductor.nonmultilmao_stepCrochet), daNoteData, oldNote, true, songNotes[3], songNotes[4]);
+					var sustainNote:Note = new Note(daStrumTime + (Std.int(Conductor.nonmultilmao_stepCrochet) * susNote) + Std.int(Conductor.nonmultilmao_stepCrochet), daNoteData, oldNote, true, songNotes[3], songNotes[4]);
 					sustainNote.scrollFactor.set();
 					unspawnNotes.push(sustainNote);
 
@@ -1215,6 +1215,10 @@ class PlayState extends MusicBeatState
 
 	public var canFullscreen:Bool = true;
 	var switchedStates:Bool = false;
+
+	// give: [noteDataThingy, noteType]
+	// get : [xOffsetToUse]
+	public var prevXVals:Map<String, Float> = [];
 
 	override public function update(elapsed:Float)
 	{
@@ -1553,10 +1557,9 @@ class PlayState extends MusicBeatState
 
 				if(FlxG.save.data.downscroll)
 				{
-					if (daNote.mustPress)
-						daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y + 0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(SONG.speed, 2));
-					else
-						daNote.y = (enemyStrums.members[Math.floor(Math.abs(daNote.noteData))].y + 0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(SONG.speed, 2));
+					var coolStrum = (daNote.mustPress ? playerStrums.members[Math.floor(Math.abs(daNote.noteData))] : enemyStrums.members[Math.floor(Math.abs(daNote.noteData))]);
+					
+					daNote.y = coolStrum.y + (0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(SONG.speed, 2));
 
 					if(daNote.isSustainNote)
 					{
@@ -1579,10 +1582,9 @@ class PlayState extends MusicBeatState
 				}
 				else
 				{
-					if (daNote.mustPress)
-						daNote.y = (playerStrums.members[Math.floor(Math.abs(daNote.noteData))].y - 0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(SONG.speed, 2));
-					else
-						daNote.y = (enemyStrums.members[Math.floor(Math.abs(daNote.noteData))].y - 0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(SONG.speed, 2));
+					var coolStrum = (daNote.mustPress ? playerStrums.members[Math.floor(Math.abs(daNote.noteData))] : enemyStrums.members[Math.floor(Math.abs(daNote.noteData))]);
+
+					daNote.y = coolStrum.y - (0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(SONG.speed, 2));
 
 					if(daNote.isSustainNote)
 					{
@@ -1684,36 +1686,74 @@ class PlayState extends MusicBeatState
 				{
 					if (daNote.mustPress && !daNote.modifiedByLua)
 					{
-						daNote.visible = playerStrums.members[Math.floor(Math.abs(daNote.noteData))].visible;
-						daNote.x = playerStrums.members[Math.floor(Math.abs(daNote.noteData))].x;
+						var coolStrum = playerStrums.members[Math.floor(Math.abs(daNote.noteData))];
+						var arrayVal = Std.string([daNote.noteData, daNote.arrow_Type, daNote.isSustainNote]);
+						
+						daNote.visible = coolStrum.visible;
+
+						if(!prevXVals.exists(arrayVal))
+						{
+							var tempShit:Float = 0.0;
+	
+							daNote.x = coolStrum.x;
+
+							while(Std.int(daNote.x + (daNote.width / 2)) != Std.int(coolStrum.x + (coolStrum.width / 2)))
+							{
+								daNote.x += (daNote.x + daNote.width > coolStrum.x + coolStrum.width ? -0.1 : 0.1);
+								tempShit += (daNote.x + daNote.width > coolStrum.x + coolStrum.width ? -0.1 : 0.1);
+							}
+
+							prevXVals.set(arrayVal, tempShit);
+						}
+						else
+							daNote.x = coolStrum.x + prevXVals.get(arrayVal);
 	
 						if (!daNote.isSustainNote)
-							daNote.modAngle = playerStrums.members[Math.floor(Math.abs(daNote.noteData))].angle;
+							daNote.modAngle = coolStrum.angle;
 						
-						daNote.alpha = playerStrums.members[Math.floor(Math.abs(daNote.noteData))].alpha;
+						daNote.alpha = coolStrum.alpha;
 	
-						daNote.modAngle = playerStrums.members[Math.floor(Math.abs(daNote.noteData))].angle;
+						daNote.modAngle = coolStrum.angle;
 					}
 					else if (!daNote.wasGoodHit && !daNote.modifiedByLua)
 					{
-						daNote.visible = strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].visible;
-						daNote.x = strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].x;
+						var coolStrum = strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))];
+						var arrayVal = Std.string([daNote.noteData, daNote.arrow_Type, daNote.isSustainNote]);
+
+						daNote.visible = coolStrum.visible;
+
+						if(!prevXVals.exists(arrayVal))
+						{
+							var tempShit:Float = 0.0;
+	
+							daNote.x = coolStrum.x;
+
+							while(Std.int(daNote.x + (daNote.width / 2)) != Std.int(coolStrum.x + (coolStrum.width / 2)))
+							{
+								daNote.x += (daNote.x + daNote.width > coolStrum.x + coolStrum.width ? -0.1 : 0.1);
+								tempShit += (daNote.x + daNote.width > coolStrum.x + coolStrum.width ? -0.1 : 0.1);
+							}
+
+							prevXVals.set(arrayVal, tempShit);
+						}
+						else
+							daNote.x = coolStrum.x + prevXVals.get(arrayVal);
 	
 						if (!daNote.isSustainNote)
-							daNote.modAngle = strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].angle;
+							daNote.modAngle = coolStrum.angle;
 						
-						daNote.alpha = strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].alpha;
+						daNote.alpha = coolStrum.alpha;
 	
-						daNote.modAngle = strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].angle;
+						daNote.modAngle = coolStrum.angle;
 					}
 				}
 
 				if (daNote.isSustainNote)
 				{
-					daNote.x += daNote.width / 2 + (20 - (1.2 * (SONG.keyCount - 4)));
+					//daNote.x += daNote.width / 2 + (20 - (1.2 * (SONG.keyCount - 4)));
 
-					if (PlayState.SONG.stage.contains('school'))
-						daNote.x -= (11 - (1 * (SONG.keyCount - 4)));
+					//if (PlayState.SONG.stage.contains('school'))
+					//	daNote.x -= (11 - (1 * (SONG.keyCount - 4)));
 				}
 
 				// WIP interpolation shit? Need to fix the pause issue

@@ -47,8 +47,16 @@ class Conductor
 		crochet = ((60 / bpm) * 1000) / multi;
 		stepCrochet = crochet / (16 / timeScale[1]);
 
-		nonmultilmao_crochet = ((60 / (bpm / multi)) * 1000);
-		nonmultilmao_stepCrochet = nonmultilmao_crochet / (16 / timeScale[1]);
+		if(multi != 1)
+		{
+			nonmultilmao_crochet = ((60 / (bpm / multi)) * 1000);
+			nonmultilmao_stepCrochet = nonmultilmao_crochet / (16 / timeScale[1]);
+		}
+		else
+		{
+			nonmultilmao_crochet = crochet;
+			nonmultilmao_stepCrochet = stepCrochet;
+		}
 	}
 
 	public static function mapBPMChanges(song:SwagSong, ?songMultiplier:Float = 1.0)
