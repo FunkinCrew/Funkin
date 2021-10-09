@@ -1,5 +1,6 @@
 package substates;
 
+import game.Note;
 import utilities.Difficulties;
 import states.FreeplayState;
 import states.StoryMenuState;
@@ -143,6 +144,9 @@ class PauseSubState extends MusicBeatSubstate
 						FlxG.switchState(new StoryMenuState());
 					else
 						FlxG.switchState(new FreeplayState());
+
+					PlayState.arrow_Type_Sprites.clear();
+					PlayState.arrow_Type_Sprites = [];
 			}
 		}
 	}

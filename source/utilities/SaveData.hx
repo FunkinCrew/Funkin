@@ -57,6 +57,9 @@ class SaveData {
         if(FlxG.save.data.discordRPC == null)
             FlxG.save.data.discordRPC = true;
 
+        if(FlxG.save.data.quickRestart == null)
+            FlxG.save.data.quickRestart = false;
+
         if(FlxG.save.data.fpsCap == null)
             FlxG.save.data.fpsCap = 120;
 

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="caution.png">
+	<!-- SET 1 -->
+
+	<SubTexture name="left0000" x="0" y="0" width="17" height="17"/>
+	<SubTexture name="down0000" x="0" y="0" width="17" height="17"/>
+	<SubTexture name="up0000" x="0" y="0" width="17" height="17"/>
+	<SubTexture name="right0000" x="0" y="0" width="17" height="17"/>
+
+	<SubTexture name="square0000" x="0" y="0" width="17" height="17"/>
+
+	<!-- SET 2 -->
+
+	<SubTexture name="left20000" x="0" y="0" width="17" height="17"/>
+	<SubTexture name="down20000" x="0" y="0" width="17" height="17"/>
+	<SubTexture name="up20000" x="0" y="0" width="17" height="17"/>
+	<SubTexture name="right20000" x="0" y="0" width="17" height="17"/>
+
+	<SubTexture name="plus0000" x="0" y="0" width="17" height="17"/>
+
+	<!-- SET 3 -->
+
+	<SubTexture name="rleft0000" x="0" y="0" width="17" height="17"/>
+	<SubTexture name="rdown0000" x="0" y="0" width="17" height="17"/>
+	<SubTexture name="rup0000" x="0" y="0" width="17" height="17"/>
+	<SubTexture name="rright0000" x="0" y="0" width="17" height="17"/>
+
+	<SubTexture name="rleft20000" x="0" y="0" width="17" height="17"/>
+	<SubTexture name="rdown20000" x="0" y="0" width="17" height="17"/>
+	<SubTexture name="rup20000" x="0" y="0" width="17" height="17"/>
+	<SubTexture name="rright20000" x="0" y="0" width="17" height="17"/>
+</TextureAtlas>

@@ -121,7 +121,14 @@ class Paths
 
 	inline static public function getSparrowAtlas(key:String, ?library:String)
 	{
+		#if sys
+		if(Assets.exists(image(key, library)))
+			return FlxAtlasFrames.fromSparrow(image(key, library), file('images/$key.xml', library));
+		else
+			return getSparrowAtlasSYS(key, library);
+		#else
 		return FlxAtlasFrames.fromSparrow(image(key, library), file('images/$key.xml', library));
+		#end
 	}
 
 	inline static public function getPackerAtlas(key:String, ?library:String)

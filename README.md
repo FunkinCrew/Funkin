@@ -29,3 +29,5 @@ Support for custom songs, characters, stages, weeks, (in the future, basic cutsc
 * Keoiki - Note Splash Animations (I originally got them from [Psych-Engine](https://github.com/ShadowMario/FNF-PsychEngine))
 
 * SrPerez - Original 9 Key and 6 Key Designs
+
+* Tricky Mod Devs - Death Notes

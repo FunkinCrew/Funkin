@@ -40,10 +40,14 @@ class Note extends FlxSprite
 	public var localAngle:Float = 0;
 
 	public var character:Int = 0;
+	
+	public var arrow_Type:String;
+	public var shouldHit:Bool;
 
-	public static var arrow_Texture:FlxFramesCollection;
+	public var hitDamage:Float;
+	public var missDamage:Float;
 
-	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?character:Int = 0)
+	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?character:Int = 0, ?arrowType:String = "default")
 	{
 		super();
 
@@ -54,18 +58,17 @@ class Note extends FlxSprite
 		this.character = character;
 		this.strumTime = strumTime;
 		this.noteData = noteData;
+		this.arrow_Type = arrowType;
 		isSustainNote = sustainNote;
 
 		x += 100;
 		// MAKE SURE ITS DEFINITELY OFF SCREEN?
 		y = -2000;
 
-		if(PlayState.arrow_Texture == null && arrow_Texture == null)
-			arrow_Texture = Paths.getSparrowAtlas('ui skins/default/arrows/default', 'shared');
-		else
-			arrow_Texture = PlayState.arrow_Texture;
+		if(!PlayState.arrow_Type_Sprites.exists(arrow_Type))
+			PlayState.arrow_Type_Sprites.set(arrow_Type, Paths.getSparrowAtlas('ui skins/' + PlayState.SONG.ui_Skin + "/arrows/" + arrow_Type, 'shared'));
 
-		frames = arrow_Texture;
+		frames = PlayState.arrow_Type_Sprites.get(arrow_Type);
 
 		animation.addByPrefix("default", NoteVariables.Other_Note_Anim_Stuff[PlayState.SONG.keyCount - 1][noteData] + "0");
 		animation.addByPrefix("hold", NoteVariables.Other_Note_Anim_Stuff[PlayState.SONG.keyCount - 1][noteData] + " hold0");
@@ -78,6 +81,9 @@ class Note extends FlxSprite
 
 		x += swagWidth * noteData;
 		animation.play("default");
+
+		centerOffsets();
+		centerOrigin();
 
 		if (FlxG.save.data.downscroll && sustainNote) 
 			flipY = true;
@@ -107,6 +113,9 @@ class Note extends FlxSprite
 				prevNote.updateHitbox();
 				// prevNote.setGraphicSize();
 			}
+
+			centerOffsets();
+			centerOrigin();
 		}
 	}
 
@@ -164,3 +173,10 @@ class Note extends FlxSprite
 		}
 	}
 }
+
+typedef NoteType = {
+	var shouldHit:Bool;
+
+	var hitDamage:Float;
+	var missDamage:Float;
+} 
