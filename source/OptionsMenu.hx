@@ -45,7 +45,7 @@ class OptionsMenu extends MusicBeatState
 			new StepManiaOption("Sets the colors of the arrows depending on quantization instead of direction."),
 			new AccuracyOption("Display accuracy information on the info bar."),
 			new JudgementCounter("Shows your current judgements on the left side of the screen."), new LaneUnderlayOption("Toggles lane underlay"),
-			new MiddleScrollOption("Put your lane in the center or on the right."),
+			new MiddleScrollOption("Put your lane in the center or on the right."), new HealthBarOption("Toggles health bar visibility"),
 			new SongPositionOption("Show the song's current position as a scrolling bar."),
 			new Colour("The color behind icons now fit with their theme. (e.g. Pico = green)"),
 			new NPSDisplayOption("Shows your current Notes Per Second on the info bar."),
