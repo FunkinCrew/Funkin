@@ -1,4 +1,3 @@
-0.7.0;
-- Added gamemodes
-- Added base for modcharts (non functional)
-- fixed input bugs
+0.7.1;
+- fixed middlescroll
+- fixed offsets for gamemode menu

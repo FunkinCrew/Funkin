@@ -49,7 +49,7 @@ class GamemodeSelectorState extends MusicBeatState {
 
         add(camFollow);
 
-        optionDot.y = optionText.y - 45; // red dot offset, adjust when adding new setting!
+        optionDot.y = optionText.y - 55; // red dot offset, adjust when adding new setting!
 
         curSelected = 0;
 

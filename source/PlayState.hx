@@ -1421,22 +1421,13 @@ class PlayState extends MusicBeatState
 				switch (Math.abs(i))
 				{
 					case 0:
-						if (curGM != '1key') {
-							babyArrow.x -= Note.swagWidth * 1.5;
-							babyArrow.visible = false;
-						}
+						babyArrow.x -= Note.swagWidth * 1.5;
 					case 1:
-						if (curGM != '1key') {
-							babyArrow.x -= Note.swagWidth * 0.5;
-							babyArrow.visible = false;
-						}
+						babyArrow.x -= Note.swagWidth * 0.5;
 					case 2:
 						babyArrow.x += Note.swagWidth * 0.5;
 					case 3:
-						if (curGM != '1key') {
-							babyArrow.x += Note.swagWidth * 1.5;
-							babyArrow.visible = false;
-						}
+						babyArrow.x += Note.swagWidth * 1.5;
 				}
 			}
 
@@ -2524,7 +2515,7 @@ class PlayState extends MusicBeatState
 					health -= 0.04;
 				else
 					health = 0;
-				
+
 				if (combo > 5 && gf.animOffsets.exists('sad'))
 				{
 					gf.playAnim('sad');
