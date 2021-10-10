@@ -1,3 +1,4 @@
-0.6.1;
-- Fixed gamebreaking bugs
-- Fixed some wording in the options menu
+0.7.0;
+- Added gamemodes
+- Added base for modcharts (non functional)
+- fixed input bugs

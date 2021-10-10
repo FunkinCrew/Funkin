@@ -1,5 +1,6 @@
 package;
 
+import flixel.math.FlxRandom;
 import polymod.hscript.HScriptConfig;
 #if !js
 import Sys;
@@ -52,6 +53,8 @@ using StringTools;
 
 class PlayState extends MusicBeatState
 {
+	var sinA = 0.1;
+
 	public static var curStage:String = '';
 	public static var SONG:SwagSong;
 	public static var isStoryMode:Bool = false;
@@ -155,6 +158,8 @@ class PlayState extends MusicBeatState
 	public var shits:Int;
 	public var misses:Int;
 	public var ghostTaps:Int;
+
+	public static var curGM:String;
 
 	public static var difString = "";
 
@@ -879,7 +884,7 @@ class PlayState extends MusicBeatState
 				difString = "HARD";
 		}
 
-		waterTxt = new FlxText(0, FlxG.height - 20, 0, '${SONG.song.toUpperCase()}:${difString} - UFNF Engine ${MainMenuState.prerelease ? 'PRERELEASE' : ''}');
+		waterTxt = new FlxText(0, FlxG.height - 20, 0, '${SONG.song.toUpperCase()}:${difString} (${curGM.toUpperCase()}) - UFNF Engine ${MainMenuState.prerelease ? 'PRERELEASE' : ''}');
 		waterTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		waterTxt.antialiasing = true;
 		waterTxt.scrollFactor.set();
@@ -1241,7 +1246,7 @@ class PlayState extends MusicBeatState
 			for (songNotes in section.sectionNotes)
 			{
 				var daStrumTime:Float = songNotes[0] + FlxG.save.data.offset;
-				var daNoteData:Int = Std.int(songNotes[1] % 4);
+				var daNoteData:Int = curGM != 'chaos' ? curGM != '1key' ? Std.int(songNotes[1] % 4) : 2 : new FlxRandom().int(0, 3);
 
 				var gottaHitNote:Bool = section.mustHitSection;
 
@@ -1416,13 +1421,22 @@ class PlayState extends MusicBeatState
 				switch (Math.abs(i))
 				{
 					case 0:
-						babyArrow.x -= Note.swagWidth * 1.5;
+						if (curGM != '1key') {
+							babyArrow.x -= Note.swagWidth * 1.5;
+							babyArrow.visible = false;
+						}
 					case 1:
-						babyArrow.x -= Note.swagWidth * 0.5;
+						if (curGM != '1key') {
+							babyArrow.x -= Note.swagWidth * 0.5;
+							babyArrow.visible = false;
+						}
 					case 2:
 						babyArrow.x += Note.swagWidth * 0.5;
 					case 3:
-						babyArrow.x += Note.swagWidth * 1.5;
+						if (curGM != '1key') {
+							babyArrow.x += Note.swagWidth * 1.5;
+							babyArrow.visible = false;
+						}
 				}
 			}
 
@@ -1532,6 +1546,17 @@ class PlayState extends MusicBeatState
 
 	override public function update(elapsed:Float)
 	{
+		if (curGM == 'sinescroll') {
+			SONG.speed += Math.sin(sinA) * 0.05;
+			sinA += 0.05;
+		}
+
+		if (curGM == 'sinehud') {
+			camHUD.angle += Math.sin(sinA) * 2;
+			sinA += 0.05;
+		}
+
+		
 		if (mChart != null) {
 			SONG = mChart.SONG;
 			boyfriend = mChart.bf;
@@ -1944,7 +1969,10 @@ class PlayState extends MusicBeatState
 				{
 					if (daNote.tooLate || !daNote.wasGoodHit)
 					{
-						health -= 0.0475;
+						if (curGM != "instadeath")
+							health -= 0.0475;
+						else
+							health = 0;
 						vocals.volume = 0;
 						misses++;
 						FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
@@ -2492,7 +2520,11 @@ class PlayState extends MusicBeatState
 			// Ghost tapping still triggers miss animations for input reasons
 			if (FlxG.save.data.gtapping) {
 				misses++;
-				health -= 0.04;
+				if (curGM != "instadeath")
+					health -= 0.04;
+				else
+					health = 0;
+				
 				if (combo > 5 && gf.animOffsets.exists('sad'))
 				{
 					gf.playAnim('sad');

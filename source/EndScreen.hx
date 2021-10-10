@@ -41,7 +41,7 @@ class EndScreen extends MusicBeatState {
         + 'SCORE: ${score}\n'
         + 'Rating: ${rating}\n\n'
         + 'Hit ${sicks + goods + bads + shits}/${misses + sicks + goods + bads + shits}\n\n'
-        + '${whereGo != 0 ? '${PlayState.SONG.song}:${PlayState.difString}' : 'Week ${PlayState.storyWeek}:${PlayState.difString}'}';
+        + '${whereGo != 0 ? '${PlayState.SONG.song}:${PlayState.difString}' : 'Week ${PlayState.storyWeek}:${PlayState.difString}'} (${PlayState.curGM.toUpperCase()})';
 
         pressEnter = new FlxText(0, FlxG.height - 50, 0, 'Press ENTER to Continue', 32);
         pressEnter.screenCenter(X);

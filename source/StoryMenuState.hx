@@ -321,7 +321,7 @@ class StoryMenuState extends MusicBeatState
 			{
 				if (curWeek != 7) {
 					PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + diffic, PlayState.storyPlaylist[0].toLowerCase());
-					LoadingState.loadAndSwitchState(new PlayState(), true);
+					FlxG.switchState(new GamemodeSelectorState());
 				} else {
 					FlxG.switchState(new RickRollState());
 				}
