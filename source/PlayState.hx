@@ -854,11 +854,14 @@ class PlayState extends MusicBeatState
 			songPosBG.scrollFactor.set();
 			add(songPosBG);
 
-			songPosBar = new FlxBar(songPosBG.x + 4, songPosBG.y + 4, LEFT_TO_RIGHT, Std.int(songPosBG.width - 8), Std.int(songPosBG.height - 8), this,
+			songPosBar = new FlxBar(songPosBG.x + 10, songPosBG.y + 4, LEFT_TO_RIGHT, Std.int(songPosBG.width - 100), Std.int(songPosBG.height + 10), this,
 				'songPositionBar', 0, songLength);
 			songPosBar.scrollFactor.set();
-			songPosBar.createFilledBar(FlxColor.GRAY, FlxColor.LIME);
+			songPosBar.createFilledBar(FlxColor.GRAY, FlxColor.PURPLE);
 			add(songPosBar);
+
+			songPosBG.height = songPosBar.height;
+			songPosBG.width = songPosBar.width;
 
 			var songName = new FlxText(songPosBG.x + (songPosBG.width / 2) - (SONG.songId.length * 5), songPosBG.y, 0, SONG.songId, 16);
 			if (PlayStateChangeables.useDownscroll)
@@ -1604,14 +1607,15 @@ class PlayState extends MusicBeatState
 				songPosBG.y = FlxG.height * 0.9 + 45;
 			songPosBG.screenCenter(X);
 			songPosBG.scrollFactor.set();
-			add(songPosBG);
 
-			songPosBar = new FlxBar(songPosBG.x + 4, songPosBG.y + 4, LEFT_TO_RIGHT, Std.int(songPosBG.width - 8), Std.int(songPosBG.height - 8), this,
-				'songPositionBar', 0, 100);
-			songPosBar.numDivisions = 1000;
+			songPosBar = new FlxBar(songPosBG.x + 40, songPosBG.y + 4, LEFT_TO_RIGHT, Std.int(songPosBG.width - 100), Std.int(songPosBG.height + 10), this,
+				'songPositionBar', 0, songLength);
 			songPosBar.scrollFactor.set();
-			songPosBar.createFilledBar(FlxColor.GRAY, FlxColor.LIME);
+			songPosBar.createFilledBar(FlxColor.GRAY, FlxColor.PURPLE);
 			add(songPosBar);
+
+			songPosBG.height = songPosBar.height;
+			songPosBG.width = songPosBar.width;
 
 			var songName = new FlxText(songPosBG.x + (songPosBG.width / 2) - (SONG.songName.length * 5), songPosBG.y, 0, SONG.songName, 16);
 			if (PlayStateChangeables.useDownscroll)
