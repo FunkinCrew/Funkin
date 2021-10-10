@@ -1,5 +1,6 @@
 package game;
 
+import game.Song.SwagSong;
 import flixel.graphics.frames.FlxFramesCollection;
 import utilities.CoolUtil;
 import utilities.NoteVariables;
@@ -42,12 +43,12 @@ class Note extends FlxSprite
 	public var character:Int = 0;
 	
 	public var arrow_Type:String;
-	public var shouldHit:Bool;
 
-	public var hitDamage:Float;
-	public var missDamage:Float;
+	public var shouldHit:Bool = true;
+	public var hitDamage:Float = 0.0;
+	public var missDamage:Float = 0.07;
 
-	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?character:Int = 0, ?arrowType:String = "default")
+	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?character:Int = 0, ?arrowType:String = "default", ?song:SwagSong)
 	{
 		super();
 
@@ -61,20 +62,25 @@ class Note extends FlxSprite
 		this.arrow_Type = arrowType;
 		isSustainNote = sustainNote;
 
+		if(song == null)
+			song = PlayState.SONG;
+
 		x += 100;
 		// MAKE SURE ITS DEFINITELY OFF SCREEN?
 		y = -2000;
 
-		if(!PlayState.arrow_Type_Sprites.exists(arrow_Type))
-			PlayState.arrow_Type_Sprites.set(arrow_Type, Paths.getSparrowAtlas('ui skins/' + PlayState.SONG.ui_Skin + "/arrows/" + arrow_Type, 'shared'));
+		if(!PlayState.instance.arrow_Type_Sprites.exists(arrow_Type))
+			PlayState.instance.arrow_Type_Sprites.set(arrow_Type, Paths.getSparrowAtlas('ui skins/' + song.ui_Skin + "/arrows/" + arrow_Type, 'shared'));
 
-		frames = PlayState.arrow_Type_Sprites.get(arrow_Type);
+		frames = PlayState.instance.arrow_Type_Sprites.get(arrow_Type);
 
-		animation.addByPrefix("default", NoteVariables.Other_Note_Anim_Stuff[PlayState.SONG.keyCount - 1][noteData] + "0");
-		animation.addByPrefix("hold", NoteVariables.Other_Note_Anim_Stuff[PlayState.SONG.keyCount - 1][noteData] + " hold0");
-		animation.addByPrefix("holdend", NoteVariables.Other_Note_Anim_Stuff[PlayState.SONG.keyCount - 1][noteData] + " hold end0");
+		animation.addByPrefix("default", NoteVariables.Other_Note_Anim_Stuff[song.keyCount - 1][noteData] + "0");
+		animation.addByPrefix("hold", NoteVariables.Other_Note_Anim_Stuff[song.keyCount - 1][noteData] + " hold0");
+		animation.addByPrefix("holdend", NoteVariables.Other_Note_Anim_Stuff[song.keyCount - 1][noteData] + " hold end0");
 
-		setGraphicSize(Std.int((width * Std.parseFloat(PlayState.instance.ui_Settings[0])) * (Std.parseFloat(PlayState.instance.ui_Settings[2]) - (Std.parseFloat(PlayState.instance.mania_size[PlayState.SONG.keyCount-1])))));
+		var lmaoStuff = Std.parseFloat(PlayState.instance.ui_Settings[0]) * (Std.parseFloat(PlayState.instance.ui_Settings[2]) - (Std.parseFloat(PlayState.instance.mania_size[song.keyCount-1])));
+
+		setGraphicSize(Std.int(width * lmaoStuff));
 		updateHitbox();
 		
 		antialiasing = PlayState.instance.ui_Settings[3] == "true";
@@ -82,8 +88,21 @@ class Note extends FlxSprite
 		x += swagWidth * noteData;
 		animation.play("default");
 
-		centerOffsets();
-		centerOrigin();
+		if(!PlayState.instance.arrow_Configs.exists(arrow_Type))
+		{
+			if(PlayState.instance.types.contains(arrow_Type))
+				PlayState.instance.arrow_Configs.set(arrow_Type, CoolUtil.coolTextFilePolymod(Paths.txt("ui skins/" + song.ui_Skin + "/" + arrow_Type)));
+			else
+				PlayState.instance.arrow_Configs.set(arrow_Type, CoolUtil.coolTextFilePolymod(Paths.txt("ui skins/default/" + arrow_Type)));
+
+			PlayState.instance.type_Configs.set(arrow_Type, CoolUtil.coolTextFilePolymod(Paths.txt("arrow types/" + arrow_Type)));
+		}
+
+		offset.y += Std.parseFloat(PlayState.instance.arrow_Configs.get(arrow_Type)[0]) * lmaoStuff;
+
+		shouldHit = PlayState.instance.type_Configs.get(arrow_Type)[0] == "true";
+		hitDamage = Std.parseFloat(PlayState.instance.type_Configs.get(arrow_Type)[1]);
+		missDamage = Std.parseFloat(PlayState.instance.type_Configs.get(arrow_Type)[2]);
 
 		if (FlxG.save.data.downscroll && sustainNote) 
 			flipY = true;
@@ -93,23 +112,23 @@ class Note extends FlxSprite
 			noteScore * 0.2;
 			alpha = 0.6;
 
-			if(PlayState.SONG.ui_Skin != 'pixel')
+			if(song.ui_Skin != 'pixel')
 				x += width / 2;
 
 			animation.play("holdend");
 			updateHitbox();
 
-			if(PlayState.SONG.ui_Skin != 'pixel')
+			if(song.ui_Skin != 'pixel')
 				x -= width / 2;
 
-			if (PlayState.SONG.ui_Skin == 'pixel')
+			if (song.ui_Skin == 'pixel')
 				x += 30;
 
 			if (prevNote.isSustainNote)
 			{
 				prevNote.animation.play("hold");
 
-				prevNote.scale.y *= (Conductor.nonmultilmao_stepCrochet / 100) * 1.5 * PlayState.SONG.speed;
+				prevNote.scale.y *= (Conductor.nonmultilmao_stepCrochet / 100) * 1.5 * song.speed;
 				prevNote.updateHitbox();
 				// prevNote.setGraphicSize();
 			}

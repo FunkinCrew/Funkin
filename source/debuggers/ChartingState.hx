@@ -357,6 +357,8 @@ class ChartingState extends MusicBeatState
 	var stepperSectionBPM:FlxUINumericStepper;
 	var check_altAnim:FlxUICheckBox;
 
+	var cur_Note_Type:String = "default";
+
 	function addSectionUI():Void
 	{
 		// SECTION CREATION
@@ -404,9 +406,9 @@ class ChartingState extends MusicBeatState
 		{
 			for (i in 0..._song.notes[curSection].sectionNotes.length)
 			{
-				var note = _song.notes[curSection].sectionNotes[i];
-				note[1] = (note[1] + _song.keyCount) % (_song.keyCount * 2);
-				_song.notes[curSection].sectionNotes[i] = note;
+				_song.notes[curSection].sectionNotes[i][1] += _song.keyCount;
+				_song.notes[curSection].sectionNotes[i][1] %= _song.keyCount * 2;
+
 				updateGrid();
 			}
 		});
@@ -456,6 +458,16 @@ class ChartingState extends MusicBeatState
 			characterSectionSide(1, Std.int(stepperCharLength.value));
 		});
 
+		// dropdown lmao
+		var arrow_Types = CoolUtil.coolTextFilePolymod(Paths.txt("arrowTypes"));
+
+		var typeDropDown = new FlxUIDropDownMenuCustom(setCharacterLeftSide.x, setCharacterLeftSide.y + setCharacterLeftSide.height, FlxUIDropDownMenuCustom.makeStrIdLabelArray(arrow_Types, true), function(type:String)
+		{
+			cur_Note_Type = arrow_Types[Std.parseInt(type)];
+		});
+
+		typeDropDown.selectedLabel = cur_Note_Type;
+
 		// note stuff
 		tab_group_section.add(noteText);
 
@@ -464,6 +476,8 @@ class ChartingState extends MusicBeatState
 
 		tab_group_section.add(stepperCharLength);
 		tab_group_section.add(charText);
+
+		tab_group_section.add(typeDropDown);
 
 		tab_group_section.add(setCharacterLeftSide);
 		tab_group_section.add(setCharacterRightSide);
@@ -775,12 +789,16 @@ class ChartingState extends MusicBeatState
 
 		if (FlxG.mouse.justPressed)
 		{
+			var coolNess = true;
+
 			if (FlxG.mouse.overlaps(curRenderedNotes))
 			{
 				curRenderedNotes.forEach(function(note:Note)
 				{
-					if (FlxG.mouse.overlaps(note))
+					if (FlxG.mouse.overlaps(note) && Math.floor(FlxG.mouse.x / GRID_SIZE) == note.rawNoteData)
 					{
+						coolNess = false;
+
 						if (FlxG.keys.pressed.CONTROL)
 						{
 							selectNote(note);
@@ -793,7 +811,8 @@ class ChartingState extends MusicBeatState
 					}
 				});
 			}
-			else
+
+			if(coolNess)
 			{
 				if (FlxG.mouse.x > gridBG.x
 					&& FlxG.mouse.x < gridBG.x + gridBG.width
@@ -1064,8 +1083,7 @@ class ChartingState extends MusicBeatState
 		{
 			var strum = note[0] + Conductor.stepCrochet * (_song.notes[daSec].lengthInSteps * sectionNum);
 
-			trace(note[3]);
-			var copiedNote:Array<Dynamic> = [strum, note[1], note[2], note[3]];
+			var copiedNote:Array<Dynamic> = [strum, note[1], note[2], note[3], note[4]];
 			_song.notes[daSec].sectionNotes.push(copiedNote);
 		}
 
@@ -1150,34 +1168,25 @@ class ChartingState extends MusicBeatState
 			Conductor.changeBPM(daBPM);
 		}
 
-		/* // PORT BULLSHIT, INCASE THERE'S NO SUSTAIN DATA FOR A NOTE
-			for (sec in 0..._song.notes.length)
-			{
-				for (notesse in 0..._song.notes[sec].sectionNotes.length)
-				{
-					if (_song.notes[sec].sectionNotes[notesse][2] == null)
-					{
-						trace('SUS NULL');
-						_song.notes[sec].sectionNotes[notesse][2] = 0;
-					}
-				}
-			}
-		 */
-
 		for (i in sectionInfo)
 		{
 			var daNoteInfo = i[1];
 			var daStrumTime = i[0];
 			var daSus = i[2];
 
-			var note:Note = new Note(daStrumTime, daNoteInfo % _song.keyCount);
+			var daType = i[4];
+
+			if(daType == null)
+				daType = "default";
+
+			var note:Note = new Note(daStrumTime, daNoteInfo % _song.keyCount, null, false, 0, daType, _song);
 			note.sustainLength = daSus;
 
-			note.setGraphicSize(GRID_SIZE, GRID_SIZE);
+			note.setGraphicSize(0, Std.parseInt(PlayState.instance.arrow_Configs.get(daType)[2]));
 			note.updateHitbox();
 
-			note.x = Math.floor(daNoteInfo * GRID_SIZE);
-			note.y = Math.floor(getYfromStrum((daStrumTime - sectionStartTime()) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps)));
+			note.x = Math.floor(daNoteInfo * GRID_SIZE) + Std.parseFloat(PlayState.instance.arrow_Configs.get(daType)[1]);
+			note.y = Math.floor(getYfromStrum((daStrumTime - sectionStartTime()) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps))) + Std.parseFloat(PlayState.instance.arrow_Configs.get(daType)[3]);
 
 			note.rawNoteData = daNoteInfo;
 
@@ -1287,18 +1296,18 @@ class ChartingState extends MusicBeatState
 
 		for(noteIndex in 0..._song.notes[curSection].sectionNotes.length)
 		{
-			var i = _song.notes[curSection].sectionNotes[noteIndex];
+			var noteData = _song.notes[curSection].sectionNotes[noteIndex][1];
 
 			if(side == 0)
 			{
-				if(i[1] < _song.keyCount)
+				if(noteData < _song.keyCount)
 				{
 					changeThese.push(noteIndex);
 				}
 			}
 			else if(side == 1)
 			{
-				if(i[1] >= _song.keyCount)
+				if(noteData >= _song.keyCount)
 				{
 					changeThese.push(noteIndex);
 				}
@@ -1332,13 +1341,19 @@ class ChartingState extends MusicBeatState
 		var noteData = Math.floor(FlxG.mouse.x / GRID_SIZE);
 		var noteSus = 0;
 
-		_song.notes[curSection].sectionNotes.push([noteStrum, noteData, noteSus, current_Note_Character]);
+		if(cur_Note_Type != "default")
+			_song.notes[curSection].sectionNotes.push([noteStrum, noteData, noteSus, current_Note_Character, cur_Note_Type]);
+		else
+			_song.notes[curSection].sectionNotes.push([noteStrum, noteData, noteSus, current_Note_Character]);
 
 		curSelectedNote = _song.notes[curSection].sectionNotes[_song.notes[curSection].sectionNotes.length - 1];
 
 		if (FlxG.keys.pressed.CONTROL)
 		{
-			_song.notes[curSection].sectionNotes.push([noteStrum, (noteData + 4) % 8, noteSus, current_Note_Character]);
+			if(cur_Note_Type != "default")
+				_song.notes[curSection].sectionNotes.push([noteStrum, (noteData + _song.keyCount) % (_song.keyCount * 2), noteSus, current_Note_Character, cur_Note_Type]);
+			else
+				_song.notes[curSection].sectionNotes.push([noteStrum, (noteData + _song.keyCount) % (_song.keyCount * 2), noteSus, current_Note_Character]);
 		}
 
 		trace(noteStrum);

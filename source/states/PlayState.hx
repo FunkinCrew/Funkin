@@ -168,6 +168,10 @@ class PlayState extends MusicBeatState
 	public var ui_Settings:Array<String>;
 	public var mania_size:Array<String>;
 	public var mania_offset:Array<String>;
+	public var types:Array<String>;
+
+	public var arrow_Configs:Map<String, Array<String>> = new Map<String, Array<String>>();
+	public var type_Configs:Map<String, Array<String>> = new Map<String, Array<String>>();
 
 	public function removeObject(object:FlxBasic)
 	{
@@ -178,7 +182,7 @@ class PlayState extends MusicBeatState
 
 	public static var splash_Texture:FlxFramesCollection;
 
-	public static var arrow_Type_Sprites:Map<String, FlxFramesCollection> = [];
+	public var arrow_Type_Sprites:Map<String, FlxFramesCollection> = [];
 
 	public static var songMultiplier:Float = 1;
 	public static var previousScrollSpeedLmao:Float = 0;
@@ -190,9 +194,6 @@ class PlayState extends MusicBeatState
 
 	override public function create()
 	{
-		arrow_Type_Sprites.clear();
-		arrow_Type_Sprites = [];
-
 		if(FlxG.save.data.bot)
 			hasUsedBot = true;
 
@@ -304,8 +305,18 @@ class PlayState extends MusicBeatState
 		ui_Settings = CoolUtil.coolTextFilePolymod(Paths.txt("ui skins/" + SONG.ui_Skin + "/config"));
 		mania_size = CoolUtil.coolTextFilePolymod(Paths.txt("ui skins/" + SONG.ui_Skin + "/maniasize"));
 		mania_offset = CoolUtil.coolTextFilePolymod(Paths.txt("ui skins/" + SONG.ui_Skin + "/maniaoffset"));
+		types = CoolUtil.coolTextFilePolymod(Paths.txt("ui skins/" + SONG.ui_Skin + "/types"));
+
+		arrow_Configs.set("default", CoolUtil.coolTextFilePolymod(Paths.txt("ui skins/" + SONG.ui_Skin + "/default")));
+		type_Configs.set("default", CoolUtil.coolTextFilePolymod(Paths.txt("arrow types/default")));
 		#else
 		ui_Settings = CoolUtil.coolTextFile(Paths.txt("ui skins/" + SONG.ui_Skin + "/config"));
+		mania_size = CoolUtil.coolTextFile(Paths.txt("ui skins/" + SONG.ui_Skin + "/maniasize"));
+		mania_offset = CoolUtil.coolTextFile(Paths.txt("ui skins/" + SONG.ui_Skin + "/maniaoffset"));
+		types = CoolUtil.coolTextFile(Paths.txt("ui skins/" + SONG.ui_Skin + "/types"));
+
+		arrow_Configs.set("default", CoolUtil.coolTextFile(Paths.txt("ui skins/" + SONG.ui_Skin + "/default")));
+		type_Configs.set("default", CoolUtil.coolTextFile(Paths.txt("arrow types/default")));
 		#end
 
 		Note.swagWidth = 160 * (Std.parseFloat(ui_Settings[5]) - ((SONG.keyCount - 4) * 0.06));
@@ -1015,10 +1026,7 @@ class PlayState extends MusicBeatState
 
 			babyArrow.setGraphicSize(Std.int((babyArrow.width * Std.parseFloat(ui_Settings[0])) * (Std.parseFloat(ui_Settings[2]) - (Std.parseFloat(mania_size[SONG.keyCount-1])))));
 			babyArrow.updateHitbox();
-
-			babyArrow.x += (babyArrow.width + 2) * Math.abs(i) + Std.parseFloat(mania_offset[SONG.keyCount-1]);
-			babyArrow.y = strumLine.y - (babyArrow.height / 2);
-
+			
 			var animation_Base_Name = NoteVariables.Note_Count_Directions[SONG.keyCount - 1][Std.int(Math.abs(i))].getName().toLowerCase();
 
 			babyArrow.animation.addByPrefix('static', animation_Base_Name + " static");
@@ -1026,6 +1034,11 @@ class PlayState extends MusicBeatState
 			babyArrow.animation.addByPrefix('confirm', NoteVariables.Other_Note_Anim_Stuff[SONG.keyCount - 1][i] + ' confirm', 24, false);
 
 			babyArrow.scrollFactor.set();
+			
+			babyArrow.animation.play('static');
+
+			babyArrow.x += (babyArrow.width + 2) * Math.abs(i) + Std.parseFloat(mania_offset[SONG.keyCount-1]);
+			babyArrow.y = strumLine.y - (babyArrow.height / 2);
 
 			if (isStoryMode)
 			{
@@ -1602,7 +1615,7 @@ class PlayState extends MusicBeatState
 					}
 				}
 
-				if (!daNote.mustPress && daNote.strumTime <= Conductor.songPosition)
+				if (!daNote.mustPress && daNote.strumTime <= Conductor.songPosition && daNote.shouldHit)
 				{
 					if (SONG.song != 'Tutorial')
 						camZooming = true;
@@ -1748,21 +1761,9 @@ class PlayState extends MusicBeatState
 					}
 				}
 
-				if (daNote.isSustainNote)
-				{
-					//daNote.x += daNote.width / 2 + (20 - (1.2 * (SONG.keyCount - 4)));
-
-					//if (PlayState.SONG.stage.contains('school'))
-					//	daNote.x -= (11 - (1 * (SONG.keyCount - 4)));
-				}
-
-				// WIP interpolation shit? Need to fix the pause issue
-				// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
-
-				//(daNote.y < -daNote.height && !FlxG.save.data.downscroll || daNote.y >= strumLine.y + 106 && FlxG.save.data.downscroll))
 				if (Conductor.songPosition - Conductor.safeZoneOffset  > daNote.strumTime)
 				{
-					if(daNote.mustPress)
+					if(daNote.mustPress && daNote.shouldHit)
 					{
 						vocals.volume = 0;
 						noteMiss(daNote.noteData, daNote);
@@ -1836,7 +1837,6 @@ class PlayState extends MusicBeatState
 					vocals.stop();
 					FlxG.switchState(new StoryMenuState());
 
-					PlayState.arrow_Type_Sprites.clear();
 					arrow_Type_Sprites = [];
 
 					#if linc_luajit
@@ -1902,7 +1902,6 @@ class PlayState extends MusicBeatState
 				vocals.stop();
 				FlxG.switchState(new FreeplayState());
 
-				PlayState.arrow_Type_Sprites.clear();
 				arrow_Type_Sprites = [];
 
 				// POG FREEPLAY MUSIC????!?!?!??!?!?!?
@@ -2241,7 +2240,16 @@ class PlayState extends MusicBeatState
 							else
 								boyfriend.otherCharacters[possibleNotes[i].character].holdTimer = 0;
 
-							goodNoteHit(possibleNotes[i]);
+							if(possibleNotes[i].shouldHit)
+								goodNoteHit(possibleNotes[i]);
+							else
+							{
+								noteMiss(possibleNotes[i].noteData, possibleNotes[i]);
+
+								notes.remove(possibleNotes[i], true);
+								possibleNotes[i].kill();
+								possibleNotes[i].destroy();
+							}
 						}
 					}
 				}
@@ -2324,16 +2332,19 @@ class PlayState extends MusicBeatState
 		else
 		{
 			notes.forEachAlive(function(note:Note) {
-				if(note.mustPress && note.strumTime <= Conductor.songPosition || note.strumTime <= Conductor.songPosition && note.canBeHit && note.mustPress && note.isSustainNote)
+				if(note.shouldHit)
 				{
-					if(boyfriend.otherCharacters == null)
+					if(note.mustPress && note.strumTime <= Conductor.songPosition || note.strumTime <= Conductor.songPosition && note.canBeHit && note.mustPress && note.isSustainNote)
+					{
+						if(boyfriend.otherCharacters == null)
+							boyfriend.holdTimer = 0;
+						else
+							boyfriend.otherCharacters[note.character].holdTimer = 0;
+	
 						boyfriend.holdTimer = 0;
-					else
-						boyfriend.otherCharacters[note.character].holdTimer = 0;
-
-					boyfriend.holdTimer = 0;
-
-					goodNoteHit(note);
+	
+						goodNoteHit(note);
+					}
 				}
 			});
 
@@ -2398,7 +2409,7 @@ class PlayState extends MusicBeatState
 		if(canMiss)
 		{
 			if(!note.isSustainNote)
-				health -= 0.07;
+				health -= note.missDamage;
 			else
 				health -= 0.035;
 
@@ -2412,9 +2423,10 @@ class PlayState extends MusicBeatState
 				misses++;
 				totalNotes++;
 
-				songScore -= 10;
 				missSounds[FlxG.random.int(0, missSounds.length - 1)].play(true);
 			}
+
+			songScore -= 10;
 	
 			boyfriend.stunned = true;
 	
@@ -2442,10 +2454,20 @@ class PlayState extends MusicBeatState
 		{
 			if (!note.isSustainNote)
 			{
-				popUpScore(note.strumTime, note.noteData % SONG.keyCount);
-				combo += 1;
+				if(note.shouldHit)
+				{
+					popUpScore(note.strumTime, note.noteData % SONG.keyCount);
+					combo += 1;
+				}
+				else
+				{
+					health -= note.hitDamage;
+					misses++;
+					missSounds[FlxG.random.int(0, missSounds.length - 1)].play(true);
+				}
+
 				totalNotes++;
-			} else
+			} else if(note.shouldHit)
 				health += 0.035;
 
 			if(boyfriend.otherCharacters != null)

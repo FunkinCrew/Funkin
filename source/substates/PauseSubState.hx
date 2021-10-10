@@ -144,9 +144,6 @@ class PauseSubState extends MusicBeatSubstate
 						FlxG.switchState(new StoryMenuState());
 					else
 						FlxG.switchState(new FreeplayState());
-
-					PlayState.arrow_Type_Sprites.clear();
-					PlayState.arrow_Type_Sprites = [];
 			}
 		}
 	}
