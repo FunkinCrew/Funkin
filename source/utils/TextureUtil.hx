@@ -81,6 +81,7 @@ class TextureUtil
     // todo
     // optimization (maybe)
     // cache
+    // why gf tex is so broken??
     public static function downsize2(source:FlxGraphicAsset, Description:String, ?prefix:Array<String>, option:Increaseoptions = EVERYEVEN):FlxAtlasFrames {
         var atlas = FlxAtlasFrames.fromSparrow(source, Description);
         var images:Map<String, Dynamic> = new Map();
