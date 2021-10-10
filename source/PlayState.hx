@@ -720,7 +720,7 @@ class PlayState extends MusicBeatState
 			strumLine.y = FlxG.height - 165;
 
 		laneunderlayOpponent = new FlxSprite(0, 0).makeGraphic(500, FlxG.height * 2);
-		laneunderlayOpponent.x += 85;
+		laneunderlayOpponent.x += 95;
 		laneunderlayOpponent.x += ((FlxG.width / 2) * 0);
 		laneunderlayOpponent.alpha = 1 - FlxG.save.data.laneTransparency;
 		laneunderlayOpponent.color = FlxColor.BLACK;
@@ -728,7 +728,7 @@ class PlayState extends MusicBeatState
 		laneunderlayOpponent.screenCenter(Y);
 
 		laneunderlay = new FlxSprite(0, 0).makeGraphic(500, FlxG.height * 2);
-		laneunderlay.x += 85;
+		laneunderlay.x += 75;
 		laneunderlay.x += ((FlxG.width / 2) * 1);
 		laneunderlay.alpha = 1 - FlxG.save.data.laneTransparency;
 		laneunderlay.color = FlxColor.BLACK;
@@ -858,17 +858,11 @@ class PlayState extends MusicBeatState
 			healthBarBG.y = 50;
 		healthBarBG.screenCenter(X);
 		healthBarBG.scrollFactor.set();
-		add(healthBarBG);
 
 		healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
 			'health', 0, 2);
 		healthBar.scrollFactor.set();
-		if (FlxG.save.data.colour)
-			healthBar.createFilledBar(dad.barColor, boyfriend.barColor);
-		else
-			healthBar.createFilledBar(0xFFFF0000, 0xFF66FF33);
 		// healthBar
-		add(healthBar);
 
 		// Add Kade Engine watermark
 		kadeEngineWatermark = new FlxText(4, healthBarBG.y
@@ -890,6 +884,9 @@ class PlayState extends MusicBeatState
 		scoreTxt.scrollFactor.set();
 		scoreTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, FlxTextAlign.CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		scoreTxt.text = Ratings.CalculateRanking(songScore, songScoreDef, nps, maxNPS, accuracy);
+		if (!FlxG.save.data.healthBar)
+			scoreTxt.y = healthBarBG.y;
+
 		add(scoreTxt);
 
 		judgementCounter = new FlxText(20, 0, 0, "", 20);
@@ -929,11 +926,22 @@ class PlayState extends MusicBeatState
 
 		iconP1 = new HealthIcon(boyfriend.curCharacter, true);
 		iconP1.y = healthBar.y - (iconP1.height / 2);
-		add(iconP1);
 
 		iconP2 = new HealthIcon(dad.curCharacter, false);
 		iconP2.y = healthBar.y - (iconP2.height / 2);
-		add(iconP2);
+
+		if (FlxG.save.data.healthBar)
+		{
+			add(healthBarBG);
+			add(healthBar);
+			add(iconP1);
+			add(iconP2);
+
+			if (FlxG.save.data.colour)
+				healthBar.createFilledBar(dad.barColor, boyfriend.barColor);
+			else
+				healthBar.createFilledBar(0xFFFF0000, 0xFF66FF33);
+		}
 
 		strumLineNotes.cameras = [camHUD];
 		notes.cameras = [camHUD];
