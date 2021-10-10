@@ -168,19 +168,16 @@ class Caching extends MusicBeatState
 
 		for (i in music)
 		{
-			Debug.logTrace('Caching song "$i"...');
 			var inst = Paths.inst(i);
 			if (Paths.doesSoundAssetExist(inst))
 			{
 				FlxG.sound.cache(inst);
-				Debug.logTrace('  Cached inst for song "$i"');
 			}
 
 			var voices = Paths.voices(i);
 			if (Paths.doesSoundAssetExist(voices))
 			{
 				FlxG.sound.cache(voices);
-				Debug.logTrace('  Cached voices for song "$i"');
 			}
 
 			done++;

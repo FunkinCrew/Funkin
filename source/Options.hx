@@ -134,7 +134,7 @@ class CpuStrums extends Option
 
 	private override function updateDisplay():String
 	{
-		return FlxG.save.data.cpuStrums ? "Light CPU Strums" : "CPU Strums stay static";
+		return FlxG.save.data.cpuStrums ? "Light CPU Strums" : "CPU Strums static";
 	}
 }
 
@@ -304,7 +304,7 @@ class Colour extends Option
 
 	private override function updateDisplay():String
 	{
-		return FlxG.save.data.colour ? "Character Colored HP Bars" : "Normal HP Bars";
+		return FlxG.save.data.colour ? "Colored HP Bars" : "Normal HP Bars";
 	}
 }
 
@@ -325,7 +325,7 @@ class StepManiaOption extends Option
 
 	private override function updateDisplay():String
 	{
-		return "Colors by quantization " + (!FlxG.save.data.stepMania ? "off" : "on");
+		return "Color Quantization " + (!FlxG.save.data.stepMania ? "off" : "on");
 	}
 }
 

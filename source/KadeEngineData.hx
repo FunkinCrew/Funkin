@@ -112,8 +112,7 @@ class KadeEngineData
 		if (FlxG.save.data.optimize == null)
 			FlxG.save.data.optimize = false;
 
-		if (FlxG.save.data.cacheImages == null)
-			FlxG.save.data.cacheImages = false;
+		FlxG.save.data.cacheImages = false;
 
 		if (FlxG.save.data.editorBG == null)
 			FlxG.save.data.editor = false;
@@ -128,7 +127,7 @@ class KadeEngineData
 			FlxG.save.data.laneUnderlay = false;
 
 		if (FlxG.save.data.laneTransparency == null)
-			FlxG.save.data.laneTransparency = 0;
+			FlxG.save.data.laneTransparency = 0.5;
 
 		var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
 

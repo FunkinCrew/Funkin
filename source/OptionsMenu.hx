@@ -52,14 +52,16 @@ class OptionsMenu extends MusicBeatState
 			new CpuStrums("Toggle the CPU's strumline lighting up when it hits a note."),
 		]),
 		new OptionCategory("Misc", [
-			new FPSOption("Toggle the FPS Counter"), new FlashingLightsOption("Toggle flashing lights that can cause epileptic seizures and strain."),
+			new FPSOption("Toggle the FPS Counter"),
+			new FlashingLightsOption("Toggle flashing lights that can cause epileptic seizures and strain."),
 			new WatermarkOption("Enable and disable all watermarks from the engine."),
 			new AntialiasingOption("Toggle antialiasing, improving graphics quality at a slight performance penalty."),
-			new MissSoundsOption("Toggle miss sounds playing when you don't hit a note."), new ScoreScreen("Show the score screen after the end of a song"),
+			new MissSoundsOption("Toggle miss sounds playing when you don't hit a note."),
+			new ScoreScreen("Show the score screen after the end of a song"),
 			new ShowInput("Display every single input on the score screen."),
 			new Optimization("No characters or backgrounds. Just a usual rhythm game layout."),
-			new GraphicLoading("On startup, cache every character. Significantly decrease load times. (HIGH MEMORY)"),
-			new BotPlay("Showcase your charts and mods with autoplay.")]),
+			new BotPlay("Showcase your charts and mods with autoplay.")
+		]),
 		new OptionCategory("Saves and Data", [
 			#if desktop // new ReplayOption("View saved song replays."),
 			#end
