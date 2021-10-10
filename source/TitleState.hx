@@ -1,6 +1,6 @@
 package;
 
-#if cpp
+#if discord_rpc
 import Discord.DiscordClient;
 import sys.thread.Thread;
 #end
@@ -95,7 +95,7 @@ class TitleState extends MusicBeatState
 		});
 		#end
 
-		#if cpp
+		#if discord_rpc
 		DiscordClient.initialize();
 		
 		Application.current.onExit.add (function (exitCode) {

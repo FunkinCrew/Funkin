@@ -1,6 +1,6 @@
 package;
 
-#if cpp
+#if discord_rpc
 import Discord.DiscordClient;
 #end
 import flash.text.TextField;
@@ -50,7 +50,7 @@ class FreeplayState extends MusicBeatState
 			}
 		 */
 
-		#if cpp
+		#if discord_rpc
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("In the Menus", null);
 		#end

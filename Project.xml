@@ -169,6 +169,6 @@
 
 	<!-- <haxedef name="SKIP_TO_PLAYSTATE" if="debug" /> -->
 	<haxedef name="NG_LOGIN" if="newgrounds" />
-	<haxedef name="newgrounds" if="newgrounds" />
+
 	
 </project>

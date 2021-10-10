@@ -7,7 +7,7 @@ using StringTools;
 
 class DiscordClient
 {
-	#if cpp
+	#if discord_rpc
 	public function new()
 	{
 		trace("Discord Client starting...");
