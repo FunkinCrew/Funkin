@@ -32,7 +32,6 @@ class OptionsMenu extends MusicBeatState
 			#if desktop new FPSCapOption("Change your FPS Cap."),
 			#end
 			new ScrollSpeedOption("Change your scroll speed. (1 = Chart dependent)"),
-			new MiddleScrollOption("Put your lane in the center or on the right."),
 			new AccuracyDOption("Change how accuracy is calculated. (Accurate = Simple, Complex = Milisecond Based)"),
 			new ResetButtonOption("Toggle pressing R to gameover."),
 			new InstantRespawn("Toggle if you instantly respawn after dying."),
@@ -46,6 +45,7 @@ class OptionsMenu extends MusicBeatState
 			new StepManiaOption("Sets the colors of the arrows depending on quantization instead of direction."),
 			new AccuracyOption("Display accuracy information on the info bar."),
 			new JudgementCounter("Shows your current judgements on the left side of the screen."), new LaneUnderlayOption("Toggles lane underlay"),
+			new MiddleScrollOption("Put your lane in the center or on the right."),
 			new SongPositionOption("Show the song's current position as a scrolling bar."),
 			new Colour("The color behind icons now fit with their theme. (e.g. Pico = green)"),
 			new NPSDisplayOption("Shows your current Notes Per Second on the info bar."),
