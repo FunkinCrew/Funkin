@@ -901,6 +901,27 @@ class JudgementCounter extends Option
 	}
 }
 
+class MiddleScrollOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+
+	public override function press():Bool
+	{
+		FlxG.save.data.middleScroll = !FlxG.save.data.middleScroll;
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return (FlxG.save.data.middleScroll ? "Middle Scroll" : "Right Side Scroll");
+	}
+}
+
 class LaneUnderlayOption extends Option
 {
 	public function new(desc:String)

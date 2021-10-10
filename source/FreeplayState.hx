@@ -57,15 +57,17 @@ class FreeplayState extends MusicBeatState
 
 	public static function loadDiff(diff:Int, songId:String, array:Array<SongData>)
 	{
-		try
+		var diffName:String = "";
+
+		switch (diff)
 		{
-			var diffName:String = ["-easy", "", "-hard"][PlayState.storyDifficulty];
-			array.push(Song.loadFromJson(songId, diffName));
+			case 0:
+				diffName = "-easy";
+			case 2:
+				diffName = "-hard";
 		}
-		catch (ex)
-		{
-			// do nada
-		}
+
+		array.push(Song.loadFromJson(songId, diffName));
 	}
 
 	override function create()

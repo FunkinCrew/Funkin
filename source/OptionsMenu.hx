@@ -32,6 +32,7 @@ class OptionsMenu extends MusicBeatState
 			#if desktop new FPSCapOption("Change your FPS Cap."),
 			#end
 			new ScrollSpeedOption("Change your scroll speed. (1 = Chart dependent)"),
+			new MiddleScrollOption("Put your lane in the center or on the right."),
 			new AccuracyDOption("Change how accuracy is calculated. (Accurate = Simple, Complex = Milisecond Based)"),
 			new ResetButtonOption("Toggle pressing R to gameover."),
 			new InstantRespawn("Toggle if you instantly respawn after dying."),
