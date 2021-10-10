@@ -2342,11 +2342,6 @@ class PlayState extends MusicBeatState
 							else
 								spr.centerOffsets();
 						});
-	
-						#if windows
-						if (luaModchart != null)
-							luaModchart.executeState('playerTwoSing', [Math.abs(daNote.noteData), Conductor.songPosition]);
-						#end
 
 						dad.holdTimer = 0;
 	

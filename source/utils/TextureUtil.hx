@@ -1,5 +1,7 @@
 package utils;
 
+import openfl.geom.Point;
+import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.FlxSprite;
 import openfl.geom.Rectangle;
 import openfl.utils.ByteArray;
@@ -41,7 +43,7 @@ class TextureUtil
         image.resize(Math.floor(width / div), Math.floor(height / div));
         source = BitmapData.fromImage(source.image);
 
-        var preview = source.encode(source.rect, new PNGEncoderOptions());
+        //var preview = source.encode(source.rect, new PNGEncoderOptions());
         //FlxG.stage.addChild(new Bitmap(source));
 
         for (texture in data.nodes.SubTexture)
@@ -66,6 +68,74 @@ class TextureUtil
 
         }
     }
+
+    #if !js
+    public static function downsize2(source:FlxGraphicAsset, Description:String, prefix:Array<String>, option:Increaseoptions = EVERYEVEN):FlxAtlasFrames {
+        if (prefix.length == 0)
+            return null;
+
+        var atlas = FlxAtlasFrames.fromSparrow(source, Description);
+        var images:Map<String, Dynamic> = new Map();
+        var anims:Array<String> = []; // aaaaaaaaa
+
+        var dafinalb:BitmapData = new BitmapData(4096, 4096, true);
+
+        for(frame in atlas.frames)
+        {
+            var bm = new BitmapData(Std.int(frame.frame.width), Std.int(frame.frame.height));
+            bm.copyPixels(frame.parent.bitmap, new Rectangle(frame.frame.x, frame.frame.y, frame.frame.width, frame.frame.height), new Point());
+            images.set(frame.name, bm);
+            anims.push(frame.name);
+        }
+
+        var todrawnames:Array<String> = [];
+
+        // every even
+        // [gfDance0000,gfDance0002,gfDance0004,gfDance0006,gfDance0008,...]
+        for (s in prefix) {
+            var names = anims.filter(v -> v.indexOf(s) != -1);
+            if (names.length == 0)
+                return null;
+
+            var fnum:Array<Int> = [];
+            for (name in names)
+                fnum.push(parsePrefix(name));
+
+            var p:Array<Int> = [];
+            if (!(fnum.length < 2))
+                p = fnum.filter(even);
+
+            for (a in p)
+                todrawnames.push(names[fnum.indexOf(a)]);
+        }
+
+        // check later
+        // for (name in todrawnames)
+        // {
+        //     var bitmap:BitmapData = images.get(name);
+
+        //     dafinalb.copyPixels(bitmap, bitmap.rect, new Point(0, 0));
+        // }
+
+        return null;
+    }
+    static function even(num:Int):Bool {
+        if (num % 2 == 0)
+            return true;
+        return false;
+    }
+
+    static function parsePrefix(str:String) {
+        for (i in 0...str.length)
+        {
+            if (str.charAt(i) == '0' && str.indexOf(str.charAt(i)) != str.length)
+            {
+                str = str.substring(str.indexOf(str.charAt(i)), str.length);
+            }
+        }
+        return Std.parseInt(str);
+    }
+    #end
 
 
     /*public static function downsize2(source:BitmapData, Description:String, div:Int = 2):FlxAtlasFrames {
@@ -94,4 +164,9 @@ typedef Output =
 {
     var source:BitmapData;
     var Desc:String;
+}
+
+enum Increaseoptions {
+    EVERYEVEN;
+    FIRST;
 }

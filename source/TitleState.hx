@@ -1,5 +1,6 @@
 package;
 
+import utils.TextureUtil;
 import haxe.Json;
 import haxe.Http;
 #if desktop
@@ -119,6 +120,8 @@ class TitleState extends MusicBeatState
 			DiscordClient.shutdown();
 		 });
 		#end
+
+		// TextureUtil.downsize2(Paths.image('gfDanceTitle'), Paths.file('images/gfDanceTitle.xml'), ['gfDance']);
 	}
 
 	var logoBl:FlxSprite;
@@ -321,34 +324,22 @@ class TitleState extends MusicBeatState
 			{
 				// Check if version is outdated
 				#if newgrounds
-				var version:String = "v" + Application.current.meta.get('version');
+				// var version:String = "v" + Application.current.meta.get('version');
 
-				if (version.trim() != NGio.GAME_VER_NUMS.trim() && !OutdatedSubState.leftState && APIStuff.API != "")
-				{
-					FlxG.switchState(new OutdatedSubState());
-					trace('OLD VERSION!');
-					trace('old ver');
-					trace(version.trim());
-					trace('cur ver');
-					trace(NGio.GAME_VER_NUMS.trim());
-				}
-				else
-				{
-					FlxG.switchState(new MainMenuState());
-				}
-				#else
-				// FlxG.resizeGame(1280, 720);
-
-		// @:privateAccess
-		// {
-		// 	for (i in 0...FlxCamera._defaultCameras.length) {
-		// 		FlxCamera._defaultCameras[i].width = 1280;
-		// 		FlxCamera._defaultCameras[i].width = 720;
-
-		// 	};
-		// }
-		// FlxG.camera.width = 1280;
-		// FlxG.camera.height = 720;
+				// if (version.trim() != NGio.GAME_VER_NUMS.trim() && !OutdatedSubState.leftState && APIStuff.API != "")
+				// {
+				// 	FlxG.switchState(new OutdatedSubState());
+				// 	trace('OLD VERSION!');
+				// 	trace('old ver');
+				// 	trace(version.trim());
+				// 	trace('cur ver');
+				// 	trace(NGio.GAME_VER_NUMS.trim());
+				// }
+				// else
+				// {
+				// 	FlxG.switchState(new MainMenuState());
+				// }
+				// #else
 				var http = new Http('https://raw.githubusercontent.com/luckydog7/Funkin-android/master/version.json');
 
 				http.onError = _ -> FlxG.switchState(new MainMenuState());
