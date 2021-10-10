@@ -2240,16 +2240,7 @@ class PlayState extends MusicBeatState
 							else
 								boyfriend.otherCharacters[possibleNotes[i].character].holdTimer = 0;
 
-							if(possibleNotes[i].shouldHit)
-								goodNoteHit(possibleNotes[i]);
-							else
-							{
-								noteMiss(possibleNotes[i].noteData, possibleNotes[i]);
-
-								notes.remove(possibleNotes[i], true);
-								possibleNotes[i].kill();
-								possibleNotes[i].destroy();
-							}
+							goodNoteHit(possibleNotes[i]);
 						}
 					}
 				}
