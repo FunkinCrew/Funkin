@@ -1,5 +1,10 @@
 package utils;
 
+import flixel.math.FlxPoint;
+import flixel.math.FlxRect;
+import sys.io.File;
+import flixel.graphics.frames.FlxFrame;
+import flixel.graphics.frames.FlxFramesCollection;
 import openfl.geom.Point;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.FlxSprite;
@@ -13,6 +18,7 @@ import lime.graphics.Image;
 import haxe.xml.Access;
 import openfl.utils.Assets;
 import openfl.display.BitmapData;
+import utils.MaxRectsBinPack;
 
 // inline static public function getSparrowAtlas(key:String, ?library:String)
 // 	{
@@ -70,15 +76,25 @@ class TextureUtil
     }
 
     #if !js
-    public static function downsize2(source:FlxGraphicAsset, Description:String, prefix:Array<String>, option:Increaseoptions = EVERYEVEN):FlxAtlasFrames {
-        if (prefix.length == 0)
-            return null;
+    // not working
 
+    // todo
+    // optimization (maybe)
+    // cache
+    public static function downsize2(source:FlxGraphicAsset, Description:String, ?prefix:Array<String>, option:Increaseoptions = EVERYEVEN):FlxAtlasFrames {
         var atlas = FlxAtlasFrames.fromSparrow(source, Description);
         var images:Map<String, Dynamic> = new Map();
         var anims:Array<String> = []; // aaaaaaaaa
+        var somesh:Array<{// more aaaaaaaaaaaa
+            xy:Array<Float>,
+            flipX:Bool,
+	        flipY:Bool,
+            angle:FlxFrameAngle
+        }> = [];
+        // maybe unite somesh and anims??
 
-        var dafinalb:BitmapData = new BitmapData(4096, 4096, true);
+        if (prefix == null)
+            prefix = getprefix(atlas);
 
         for(frame in atlas.frames)
         {
@@ -86,12 +102,88 @@ class TextureUtil
             bm.copyPixels(frame.parent.bitmap, new Rectangle(frame.frame.x, frame.frame.y, frame.frame.width, frame.frame.height), new Point());
             images.set(frame.name, bm);
             anims.push(frame.name);
+            somesh.push({
+                xy: [frame.offset.x, frame.offset.y],
+                flipY: frame.flipY,
+                flipX: frame.flipX,
+                angle: frame.angle
+                
+            });
         }
 
-        var todrawnames:Array<String> = [];
+        var todrawnames:Array<String> = everyeven(prefix, anims);
+        var todrawimages:Array<{
+            image:BitmapData,
+            rect:Rectangle
+        }>= [];
 
-        // every even
-        // [gfDance0000,gfDance0002,gfDance0004,gfDance0006,gfDance0008,...]
+        var maxrect = new MaxRectsBinPack(16384, 16384);// dumb
+        maxrect.init(16384, 16384);
+        
+        for (name in todrawnames)
+        {
+            var image:BitmapData = images.get(name);
+            var rect = maxrect.quickInsert(image.width, image.height);
+            todrawimages.push({image: image, rect: rect});
+        }
+        
+        var maxhw:{width:Float, height:Float} = { width: 0, height: 0 };
+        for (obj in todrawimages)
+        {
+            if (maxhw.width < obj.rect.x + obj.rect.width)
+                maxhw.width = obj.rect.x + obj.rect.width;
+
+            if (maxhw.height < obj.rect.y + obj.rect.height)
+                maxhw.height = obj.rect.y + obj.rect.height;
+        }
+
+        var dafinalb:BitmapData = new BitmapData(Std.int(maxhw.width), Std.int(maxhw.height), true);
+
+        for (image in todrawimages)
+        {
+            dafinalb.copyPixels(image.image, image.image.rect, new Point(image.rect.x, image.rect.y));
+        }
+
+        var graphic = FlxG.bitmap.add(dafinalb);
+        var frames = new FlxAtlasFrames(graphic);
+        // fix this plsplsplspslps
+        // for (image in todrawimages)
+        // {
+        //     var rect = FlxRect.get(image.rect.x, image.rect.y, image.image.rect.width, image.image.rect.height);
+        //     frames.addAtlasFrame(rect, FlxPoint.get(maxhw.width, maxhw.height), FlxPoint.get(0, 0), todrawnames[todrawimages.indexOf(image)]);
+        // }
+
+        for (anim in anims)
+        {
+            // 'GF Down Note' == animPrefix
+            var animPrefix = prefix.filter(s -> anim.indexOf(s) != -1)[0];// maybe this can do error
+            var animNum = parsePrefix(anim.substring(anim.indexOf(animPrefix), anim.length));
+            // 'GF Down Note0001'
+            var curdn:Array<String> = todrawnames.filter(s -> prefix.filter(a -> s.indexOf(a) != -1)[0] == animPrefix);
+            curdn = curdn.filter(s -> {
+                var pref = parsePrefix(s.substring(s.indexOf(animPrefix), s.length));
+                if (animNum > parsePrefix(curdn[curdn.length - 1].substring(curdn[curdn.length - 1].indexOf(animPrefix), curdn[curdn.length - 1].length)))// uhhh, ok
+                    return true;
+                return pref >= animNum;
+            });
+            var animdraw = curdn[0];
+            var image = todrawimages[todrawnames.indexOf(animdraw)];
+
+            var rect = FlxRect.get(image.rect.x, image.rect.y, image.image.rect.width, image.image.rect.height);
+            trace(atlas.frames.filter(f -> f.name == anim)[0].offset);
+            trace('${atlas.frames.filter(f -> f.name == anim)[0].name} $anim'); // FlxPoint.get(somesh[anims.indexOf(anim)].xy[0], somesh[anims.indexOf(anim)].xy[1])
+            frames.addAtlasFrame(rect, FlxPoint.get(maxhw.width, maxhw.height), FlxPoint.get(), anim, somesh[anims.indexOf(anim)].angle, somesh[anims.indexOf(anim)].flipX, somesh[anims.indexOf(anim)].flipY);
+        }
+
+        TextureCahce.set(dafinalb);
+
+        return frames;
+    }
+
+    // every even
+    // [gfDance0000,gfDance0002,gfDance0004,gfDance0006,gfDance0008,...]
+    static function everyeven(prefix:Array<String>, anims:Array<String>) {
+        var todrawnames:Array<String> = [];
         for (s in prefix) {
             var names = anims.filter(v -> v.indexOf(s) != -1);
             if (names.length == 0)
@@ -103,26 +195,33 @@ class TextureUtil
 
             var p:Array<Int> = [];
             if (!(fnum.length < 2))
-                p = fnum.filter(even);
+                p = fnum.filter(num -> num % 2 == 0);
 
             for (a in p)
                 todrawnames.push(names[fnum.indexOf(a)]);
         }
 
-        // check later
-        // for (name in todrawnames)
-        // {
-        //     var bitmap:BitmapData = images.get(name);
-
-        //     dafinalb.copyPixels(bitmap, bitmap.rect, new Point(0, 0));
-        // }
-
-        return null;
+        return todrawnames;
     }
-    static function even(num:Int):Bool {
-        if (num % 2 == 0)
-            return true;
-        return false;
+
+    static function getprefix(atlas:FlxAtlasFrames):Array<String> {
+        var prefixarray:Array<String> = [];
+        for (frame in atlas.frames)
+        {
+            var nums:Array<Int> = [];
+            for (i in [0,1,2,3,4,5,6,7,8,9])
+            {
+                var index = frame.name.indexOf(Std.string(i));
+                if (index != -1)
+                    nums.push(index);
+            }
+            nums.sort(Reflect.compare);
+            var dafinal = frame.name.substring(0, nums[0]);
+
+            if (!prefixarray.contains(dafinal))
+                prefixarray.push(dafinal);
+        }
+        return prefixarray;
     }
 
     static function parsePrefix(str:String) {
@@ -158,6 +257,15 @@ class TextureUtil
 
 
     }*/
+}
+
+class TextureCahce {
+    public static function get(bitmap:BitmapData) {
+        File.saveBytes(Sys.getCwd() + 'im.png', bitmap.encode(bitmap.rect, new PNGEncoderOptions()));
+    }
+    public static function set(bitmap:BitmapData) {
+        
+    }
 }
 
 typedef Output = 

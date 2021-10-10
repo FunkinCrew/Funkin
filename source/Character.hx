@@ -1,5 +1,6 @@
 package;
 
+import utils.TextureUtil;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.animation.FlxBaseAnimation;
@@ -33,6 +34,7 @@ class Character extends FlxSprite
 			case 'gf':
 				// GIRLFRIEND CODE
 				tex = Paths.getSparrowAtlas('GF_assets');
+				// tex = TextureUtil.downsize2(Paths.image('GF_assets'), Paths.file('images/GF_assets.xml'));
 				frames = tex;
 				animation.addByPrefix('cheer', 'GF Cheer', 24, false);
 				animation.addByPrefix('thatshowyoudoit', 'GF thats how you do it', 24, false);//by Mark.

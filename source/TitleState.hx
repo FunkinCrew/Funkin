@@ -1,28 +1,20 @@
 package;
 
-import utils.TextureUtil;
-import haxe.Json;
-import haxe.Http;
+import lime.app.Application;
 #if desktop
 import Discord.DiscordClient;
 import sys.thread.Thread;
 #end
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.FlxState;
-import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileDiamond;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.transition.TransitionData;
 import flixel.graphics.FlxGraphic;
-import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxGroup;
 import flixel.input.gamepad.FlxGamepad;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
-import flixel.system.FlxSound;
-import flixel.system.ui.FlxSoundTray;
-import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
@@ -30,10 +22,11 @@ import flixel.util.FlxTimer;
 #if newgrounds
 import io.newgrounds.NG;
 #end
-import lime.app.Application;
 import openfl.Assets;
 import utils.AndroidData;
 import flixel.math.FlxMath;
+import haxe.Http;
+import haxe.Json;
 
 using StringTools;
 
@@ -121,7 +114,6 @@ class TitleState extends MusicBeatState
 		 });
 		#end
 
-		// TextureUtil.downsize2(Paths.image('gfDanceTitle'), Paths.file('images/gfDanceTitle.xml'), ['gfDance']);
 	}
 
 	var logoBl:FlxSprite;
