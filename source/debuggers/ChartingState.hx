@@ -89,6 +89,7 @@ class ChartingState extends MusicBeatState
 	var typingShit:FlxInputText;
 	var swagShit:FlxInputText;
 	var modchart_Input:FlxInputText;
+	var cutscene_Input:FlxInputText;
 	/*
 	 * WILL BE THE CURRENT / LAST PLACED NOTE
 	**/
@@ -274,6 +275,8 @@ class ChartingState extends MusicBeatState
 
 		modchart_Input = new FlxUIInputText(10, check_mute_inst.y + check_mute_inst.height + 2, 70, _song.modchartPath, 8);
 
+		cutscene_Input = new FlxUIInputText(modchart_Input.x, modchart_Input.y + modchart_Input.height + 2, 70, _song.cutscene, 8);
+
 		var saveButton:FlxButton = new FlxButton(10, 220, "Save", function()
 		{
 			saveLevel();
@@ -313,7 +316,8 @@ class ChartingState extends MusicBeatState
 		var speedLabel = new FlxText(stepperSpeed.x + stepperSpeed.width + 1, stepperSpeed.y, 0, "Scroll Speed", 9);
 		var keyCountLabel = new FlxText(stepperKeyCount.x + stepperKeyCount.width + 1, stepperKeyCount.y, 0, "Key Count", 9);
 
-		var keyCountLabel = new FlxText(modchart_Input.x + modchart_Input.width + 1, modchart_Input.y, 0, "Modchart Path", 9);
+		var modChartLabel = new FlxText(modchart_Input.x + modchart_Input.width + 1, modchart_Input.y, 0, "Modchart Path", 9);
+		var cutsceneLabel = new FlxText(cutscene_Input.x + cutscene_Input.width + 1, cutscene_Input.y, 0, "Cutscene JSON Name", 9);
 
 		var settingsLabel = new FlxText(10, 10, 0, "Setings", 9);
 		var actionsLabel = new FlxText(10, 200, 0, "Actions", 9);
@@ -326,6 +330,9 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(speedLabel);
 		tab_group_song.add(keyCountLabel);
 
+		tab_group_song.add(modChartLabel);
+		tab_group_song.add(cutsceneLabel);
+
 		tab_group_song.add(settingsLabel);
 		tab_group_song.add(actionsLabel);
 
@@ -334,6 +341,7 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(check_voices);
 		tab_group_song.add(check_mute_inst);
 		tab_group_song.add(modchart_Input);
+		tab_group_song.add(cutscene_Input);
 		tab_group_song.add(saveButton);
 		tab_group_song.add(reloadSong);
 		tab_group_song.add(reloadSongJson);
@@ -767,6 +775,7 @@ class ChartingState extends MusicBeatState
 		_song.song = typingShit.text;
 		difficulty = swagShit.text.toLowerCase();
 		_song.modchartPath = modchart_Input.text;
+		_song.cutscene = cutscene_Input.text;
 
 		strumLine.y = getYfromStrum((Conductor.songPosition - sectionStartTime()) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps));
 
