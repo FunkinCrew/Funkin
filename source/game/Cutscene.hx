@@ -11,6 +11,7 @@ typedef Cutscene = {
     var type:String;
 
     var videoPath:String;
+    var videoExt:String;
 }
 
 class CutsceneUtil

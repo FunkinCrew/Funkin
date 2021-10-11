@@ -652,7 +652,7 @@ class PlayState extends MusicBeatState
 					switch(cutscene.type.toLowerCase())
 					{
 						case "video":
-							startVideo(cutscene.videoPath);
+							startVideo(cutscene.videoPath, cutscene.videoExt);
 
 						default:
 							startCountdown();
@@ -771,10 +771,10 @@ class PlayState extends MusicBeatState
 		});
 	}
 
-	public function startVideo(name:String):Void {
+	public function startVideo(name:String, ?ext:String):Void {
 		#if VIDEOS_ALLOWED
 		var foundFile:Bool = false;
-		var fileName:String = Sys.getCwd() + PolymodAssets.getPath(Paths.video(name));
+		var fileName:String = Sys.getCwd() + PolymodAssets.getPath(Paths.video(name, ext));
 
 		#if sys
 		if(FileSystem.exists(fileName)) {
