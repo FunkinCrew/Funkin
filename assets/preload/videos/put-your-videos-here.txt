@@ -1,0 +1,1 @@
+They have to be in .mp4 and 1280x720 resolution!!!

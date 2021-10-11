@@ -36,6 +36,8 @@ typedef SwagSong =
 	var mania:Int;
 
 	var ui_Skin:String;
+
+	var cutscene:String;
 }
 
 class Song

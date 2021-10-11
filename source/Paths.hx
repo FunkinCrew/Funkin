@@ -17,6 +17,7 @@ import openfl.utils.Assets as OpenFlAssets;
 class Paths
 {
 	inline public static var SOUND_EXT = #if web "mp3" #else "ogg" #end;
+	inline public static var VIDEO_EXT = "mp4";
 
 	static var currentLevel:String;
 
@@ -33,10 +34,12 @@ class Paths
 		if (currentLevel != null)
 		{
 			var levelPath = getLibraryPathForce(file, currentLevel);
+
 			if (OpenFlAssets.exists(levelPath, type))
 				return levelPath;
 
 			levelPath = getLibraryPathForce(file, "shared");
+
 			if (OpenFlAssets.exists(levelPath, type))
 				return levelPath;
 		}
@@ -82,6 +85,11 @@ class Paths
 	inline static public function json(key:String, ?library:String)
 	{
 		return getPath('data/$key.json', TEXT, library);
+	}
+
+	static public function video(key:String, ?ext:String = VIDEO_EXT)
+	{
+		return 'assets/videos/$key.$ext';
 	}
 
 	static public function sound(key:String, ?library:String)

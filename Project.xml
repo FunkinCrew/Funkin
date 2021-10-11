@@ -43,6 +43,9 @@
 	<assets path="assets/preload" rename="assets" exclude="*.ogg" if="web"/>
 	<assets path="assets/preload" rename="assets" exclude="*.mp3" unless="web"/>
 
+	<!-- LEATHER ENGINE CUSTOMIZATION -->
+	<define name="VIDEOS_ALLOWED" if="web || windows" unless="32"/>
+
 	<assets path="mods" embed="false"/>
 	
 	<!-- <define name="PRELOAD_ALL" /> -->
@@ -74,18 +77,21 @@
 		<library name="week5"    preload="false" />
 		<library name="week6"    preload="false" />
 	</section>
+
+	<assets path="plugins/"             rename=''               if="VIDEOS_ALLOWED windows" />
+	<assets path="dlls/"                rename=''               if="VIDEOS_ALLOWED windows" />
 	
 	<assets path="assets/songs"    library="songs"    exclude="*.ogg" if="web"/>
 	<assets path="assets/songs"    library="songs"    exclude="*.mp3" unless="web"/> 
 
-	<assets path="assets/stages"    library="stages"    exclude="*.ogg" if="web"/>
-	<assets path="assets/stages"    library="stages"    exclude="*.mp3" unless="web"/>
+	<assets path="assets/stages"   library="stages"   exclude="*.ogg" if="web"/>
+	<assets path="assets/stages"   library="stages"   exclude="*.mp3" unless="web"/>
 
 	<assets path="assets/shared"   library="shared"   exclude="*.ogg" if="web"/>
 	<assets path="assets/shared"   library="shared"   exclude="*.mp3" unless="web"/>
 
-	<assets path="assets/week0" library="week0" exclude="*.ogg" if="web"/>
-	<assets path="assets/week0" library="week0" exclude="*.mp3" unless="web"/>
+	<assets path="assets/week0"    library="week0"    exclude="*.ogg" if="web"/>
+	<assets path="assets/week0"    library="week0"    exclude="*.mp3" unless="web"/>
 
 	<assets path="assets/week1"    library="week1"    exclude="*.ogg" if="web"/>
 	<assets path="assets/week1"    library="week1"    exclude="*.mp3" unless="web"/>
