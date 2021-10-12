@@ -30,6 +30,10 @@ Support for custom songs, characters, stages, weeks, (in the future, basic cutsc
 
 * larsiusprime - Scrollable Drop Down Menu
 
+* PolybiusProxy - .mp4 Video Loader Extension (I got this from [Psych-Engine](https://github.com/ShadowMario/FNF-PsychEngine))
+
+* Video LAN Team - People who made VLC Media Player (the thing the game uses to play videos)
+
 * SrPerez - Original 9 Key and 6 Key Designs
 
 * Tricky Mod Devs - Death Notes
