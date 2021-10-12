@@ -508,9 +508,6 @@ class StageGroup extends FlxGroup
             {
                 if(stage_Data != null)
                 {
-                    var temp_Regular_Cache:Map<String, FlxGraphicAsset> = new Map<String, FlxGraphicAsset>();
-                    var temp_Animation_Cache:Map<String, FlxFramesCollection> = new Map<String, FlxFramesCollection>();
-
                     camZoom = stage_Data.camera_Zoom;
     
                     player_1_Point.set(stage_Data.character_Positions[0][0], stage_Data.character_Positions[0][1]);
@@ -539,25 +536,7 @@ class StageGroup extends FlxGroup
 
                         if(Object.is_Animated)
                         {
-                            #if sys
-                            if(temp_Animation_Cache.exists(Object.file_Name))
-                                Sprite.frames = temp_Animation_Cache.get(Object.file_Name);
-                            else
-                            {
-                                var frames:FlxFramesCollection;
-
-                                if(Assets.exists(Paths.image(stage + "/" + Object.file_Name, "stages"), IMAGE))
-                                    frames = Paths.getSparrowAtlas(stage + "/" + Object.file_Name, "stages");
-                                else
-                                    frames = Paths.getSparrowAtlasSYS(stage + "/" + Object.file_Name, "stages");
-
-                                temp_Animation_Cache.set(Object.file_Name, frames);
-
-                                Sprite.frames = frames;
-                            }
-                            #else
                             Sprite.frames = Paths.getSparrowAtlas(stage + "/" + Object.file_Name, "stages");
-                            #end
     
                             for(Animation in Object.animations)
                             {
@@ -578,25 +557,7 @@ class StageGroup extends FlxGroup
                                 Sprite.animation.play(Object.start_Animation);
                         }
                         else
-                        {
-                            #if sys
-                            var graphic:FlxGraphicAsset;
-
-                            if(temp_Regular_Cache.exists(Object.file_Name))
-                                graphic = temp_Regular_Cache.get(Object.file_Name);
-                            else
-                            {
-                                if(Assets.exists(Paths.image(stage + "/" + Object.file_Name, "stages")))
-                                    graphic = Paths.image(stage + "/" + Object.file_Name, "stages");
-                                else
-                                    graphic = Paths.imageSYS(stage + "/" + Object.file_Name, "stages");
-                            }
-
-                            Sprite.loadGraphic(graphic);
-                            #else
                             Sprite.loadGraphic(Paths.image(stage + "/" + Object.file_Name, "stages"));
-                            #end
-                        }
     
                         if(Object.uses_Frame_Width)
                             Sprite.setGraphicSize(Std.int(Sprite.frameWidth * Object.scale));

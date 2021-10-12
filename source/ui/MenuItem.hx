@@ -22,14 +22,7 @@ class MenuItem extends FlxSpriteGroup
 	{
 		super(x, y);
 
-		#if sys
-		if(Assets.exists(Paths.image('campaign menu/weeks/' + weekFolder + "/" + weekName), IMAGE))
-			week = new FlxSprite().loadGraphic(Paths.image('campaign menu/weeks/' + weekFolder + "/" + weekName));
-		else
-			week = new FlxSprite().loadGraphic(Paths.imageSYS('campaign menu/weeks/' + weekFolder + "/" + weekName));
-		#else
 		week = new FlxSprite().loadGraphic(Paths.image('campaign menu/weeks/' + weekFolder + "/" + weekName));
-		#end
 
 		add(week);
 	}
@@ -50,6 +43,9 @@ class MenuItem extends FlxSpriteGroup
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+
+		fakeFramerate = Math.round((1 / FlxG.elapsed) / 10);
+
 		y = FlxMath.lerp(y, (targetY * 120) + 480, 0.17);
 
 		if (isFlashing)

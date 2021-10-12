@@ -170,7 +170,7 @@ class TitleState extends MusicBeatState
 			old_logo.screenCenter();
 			old_logo.antialiasing = true;
 
-			old_logo_black = new FlxSprite().loadGraphic(Paths.image("title/logo"));
+			old_logo_black = new FlxSprite().loadGraphicFromSprite(old_logo);
 			old_logo_black.screenCenter();
 			old_logo_black.color = FlxColor.BLACK;
 		}
@@ -178,17 +178,10 @@ class TitleState extends MusicBeatState
 		{
 			logoBl = new FlxSprite(-150, -100);
 			
-			#if sys
-			if(FlxG.save.data.watermarks)
-				logoBl.frames = Paths.getSparrowAtlasSYS('title/leatherLogoBumpin');
-			else
-				logoBl.frames = Paths.getSparrowAtlasSYS('title/logoBumpin');
-			#else
 			if(FlxG.save.data.watermarks)
 				logoBl.frames = Paths.getSparrowAtlas('title/leatherLogoBumpin');
 			else
 				logoBl.frames = Paths.getSparrowAtlas('title/logoBumpin');
-			#end
 
 			logoBl.antialiasing = true;
 			logoBl.animation.addByPrefix('bump', 'logo bumpin', 24);

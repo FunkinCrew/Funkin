@@ -129,14 +129,7 @@ class Paths
 
 	inline static public function getSparrowAtlas(key:String, ?library:String)
 	{
-		#if sys
-		if(Assets.exists(image(key, library)))
-			return FlxAtlasFrames.fromSparrow(image(key, library), file('images/$key.xml', library));
-		else
-			return getSparrowAtlasSYS(key, library);
-		#else
 		return FlxAtlasFrames.fromSparrow(image(key, library), file('images/$key.xml', library));
-		#end
 	}
 
 	inline static public function getPackerAtlas(key:String, ?library:String)
@@ -147,36 +140,17 @@ class Paths
 	#if sys
 	inline static public function getSparrowAtlasSYS(key:String, ?library:String)
 	{
-		var path = pathStyleSYS(key, library);
-
-		var imageDataRaw = PolymodAssets.getBytes(path + ".png");
-		var imageData = BitmapData.fromBytes(imageDataRaw);
-
-		var xmlData = PolymodAssets.getText(path + ".xml");
-
-		return FlxAtlasFrames.fromSparrow(imageData, xmlData);
+		return getSparrowAtlas(key, library);
 	}
 
 	inline static public function imageSYS(key:String, ?library:String)
 	{
-		var path = pathStyleSYS(key, library);
-
-		var imageDataRaw = PolymodAssets.getBytes(path + ".png");
-		var imageData = BitmapData.fromBytes(imageDataRaw);
-
-		return imageData;
+		return image(key, library);
 	}
 
 	inline static public function getPackerAtlasSYS(key:String, ?library:String)
 	{
-		var path = pathStyleSYS(key, library);
-
-		var imageDataRaw = PolymodAssets.getBytes(path + ".png");
-		var imageData = BitmapData.fromBytes(imageDataRaw);
-
-		var txtData = File.getContent(path + ".txt");
-
-		return FlxAtlasFrames.fromSpriteSheetPacker(imageData, txtData);
+		return getPackerAtlas(key, library);
 	}
 
 	inline static public function jsonSYS(key:String, ?library:String)

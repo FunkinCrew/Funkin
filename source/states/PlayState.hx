@@ -966,16 +966,7 @@ class PlayState extends MusicBeatState
 		curSong = songData.song;
 
 		if (SONG.needsVoices)
-		{
-			#if sys
-			if(Assets.exists(Paths.voices(PlayState.SONG.song)))
-				vocals = new FlxSound().loadEmbedded(Paths.voices(PlayState.SONG.song));
-			else
-				vocals = new ModdingSound().loadByteArray(PolymodAssets.getBytes(Paths.voicesSYS(PlayState.SONG.song)));
-			#else
 			vocals = new FlxSound().loadEmbedded(Paths.voices(PlayState.SONG.song));
-			#end
-		}
 		else
 			vocals = new FlxSound();
 
@@ -984,11 +975,7 @@ class PlayState extends MusicBeatState
 		if(FlxG.sound.music.active)
 			FlxG.sound.music.stop();
 
-		if(Assets.exists(Paths.inst(SONG.song)))
-			FlxG.sound.music = new FlxSound().loadEmbedded(Paths.inst(SONG.song));
-		else
-			FlxG.sound.music = new ModdingSound().loadByteArray(PolymodAssets.getBytes(Paths.instSYS(SONG.song)));
-
+		FlxG.sound.music = new FlxSound().loadEmbedded(Paths.inst(SONG.song));
 		FlxG.sound.music.persist = true;
 		#end
 

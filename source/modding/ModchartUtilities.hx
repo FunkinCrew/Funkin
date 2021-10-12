@@ -730,14 +730,7 @@ class ModchartUtilities
         Lua_helper.add_callback(lua, "createSound", function(id:String, file_Path:String, library:String, ?looped:Bool = false) {
             if(lua_Sounds.get(id) == null)
             {
-                if(Assets.exists(Paths.sound(file_Path, library)))
-                    lua_Sounds.set(id, new FlxSound().loadEmbedded(Paths.sound(file_Path, library), looped));
-                else
-                {
-                    lua_Sounds.set(id, new ModdingSound().loadByteArray(
-                        PolymodAssets.getBytes("assets/" + (library == "" ? "sounds/" : library + "/" + "sounds/") + file_Path + ".ogg"), looped
-                    ));
-                }
+                lua_Sounds.set(id, new FlxSound().loadEmbedded(Paths.sound(file_Path, library), looped));
 
                 FlxG.sound.list.add(lua_Sounds.get(id));
             }

@@ -76,6 +76,7 @@ class FreeplayState extends MusicBeatState
 		
 		var black = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 
+		#if NO_PRELOAD_ALL
 		if(!songsReady)
 		{
 			Assets.loadLibrary("songs").onComplete(function (_) {
@@ -92,6 +93,9 @@ class FreeplayState extends MusicBeatState
 				songsReady = true;
 			});
 		}
+		#else
+		songsReady = true;
+		#end
 
 		#if sys
 		var initSonglist = CoolUtil.coolTextFilePolymod(Paths.txt('freeplaySonglist'));
@@ -343,42 +347,8 @@ class FreeplayState extends MusicBeatState
 		// Song Inst
 		if(FlxG.save.data.freeplayMusic)
 		{
-			#if sys
-			if(Assets.exists(Paths.inst(songs[curSelected].songName)))
-			{
-				FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName));
-				FlxG.sound.music.fadeIn(1, 0, 0.7);
-			}
-			else
-			{
-				Thread.create(() -> {
-					if(FlxG.sound.music.active)
-						FlxG.sound.music.stop();
-	
-					var path = PolymodAssets.getPath(Paths.instSYS(songs[curSelected].songName));
-	
-					if(path != null)
-					{
-						var prevSel = curSelected;
-	
-						ByteArray.loadFromFile(Sys.getCwd() + path).onComplete(function(array:ByteArray) {
-							if(prevSel == curSelected)
-							{
-								FlxG.sound.music = new ModdingSound().loadByteArray(array);
-		
-								FlxG.sound.music.persist = true;
-								FlxG.sound.music.play();
-	
-								FlxG.sound.music.fadeIn(1, 0, 0.7);
-							}
-						});
-					}
-				});
-			}
-			#else
 			FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName));
 			FlxG.sound.music.fadeIn(1, 0, 0.7);
-			#end
 		}
 
 		#if !switch

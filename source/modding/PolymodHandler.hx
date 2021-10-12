@@ -17,7 +17,21 @@ class PolymodHandler
 			errorCallback: function(error:PolymodError)
 			{
 				trace(error.message);
-			}
+			},
+            frameworkParams: {
+                assetLibraryPaths: [
+                    "songs" => "songs",
+                    "stages" => "stages",
+                    "shared" => "shared",
+                    "week0" => "week0",
+                    "week1" => "week1",
+                    "week2" => "week2",
+                    "week3" => "week3",
+                    "week4" => "week4",
+                    "week5" => "week5",
+                    "week6" => "week6"
+                ]
+            }
 		});
     }
 

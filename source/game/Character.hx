@@ -488,12 +488,8 @@ class Character extends FlxSprite
 	function loadNamedConfiguration(characterName:String)
 	{
 		var rawJson:String;
-
-		#if sys
-		rawJson = PolymodAssets.getText(Paths.json("character data/" + characterName + "/config")).trim();
-		#else
+		
 		rawJson = Assets.getText(Paths.json("character data/" + characterName + "/config")).trim();
-		#end
 
 		var config:CharacterConfig = cast Json.parse(rawJson);
 
@@ -531,14 +527,7 @@ class Character extends FlxSprite
 
 			dancesLeftAndRight = config.dancesLeftAndRight;
 
-			#if sys
-			if(Assets.exists(Paths.image('characters/' + config.imagePath, 'shared')))
-				frames = Paths.getSparrowAtlas('characters/' + config.imagePath, 'shared');
-			else
-				frames = Paths.getSparrowAtlasSYS("characters/" + config.imagePath, "shared");
-			#else
 			frames = Paths.getSparrowAtlas('characters/' + config.imagePath, 'shared');
-			#end
 
 			if(config.graphicsSize != null)
 				setGraphicSize(Std.int(width * config.graphicsSize));

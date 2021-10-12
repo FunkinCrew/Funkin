@@ -35,21 +35,11 @@ class HealthIcon extends FlxSprite
 	public function changeIconSet(char:String = 'bf')
 	{
 		antialiasing = true;
-		
-		#if sys
-		var imageDataRaw = PolymodAssets.getBytes("assets/images/icons/" + char + "-icons.png");
-		var graphicData = BitmapData.fromBytes(imageDataRaw);
 
-		loadGraphic(graphicData, true, 150, 150, false, char);
-
-		animation.add(char, [0, 1, 2], 0, false, isPlayer);
-		animation.play(char);
-		#else
 		loadGraphic(Paths.image('icons/' + char + '-icons'), true, 150, 150);
 
 		animation.add(char, [0, 1, 2], 0, false, isPlayer);
 		animation.play(char);
-		#end
 
 		// antialiasing override
 		switch(char)

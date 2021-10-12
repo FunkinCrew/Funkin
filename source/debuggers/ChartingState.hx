@@ -1,5 +1,7 @@
 package debuggers;
 
+import game.Character;
+import modding.CharacterConfig;
 import ui.FlxUIDropDownMenuCustom;
 import lime.tools.AssetType;
 #if sys
@@ -237,7 +239,7 @@ class ChartingState extends MusicBeatState
 		var UI_songTitle = new FlxUIInputText(10, 30, 70, _song.song, 8);
 		typingShit = UI_songTitle;
 
-		var UI_songDiff = new FlxUIInputText(10, UI_songTitle.y + UI_songTitle.height + 2, 70, Std.string(Difficulties.numToDiff(PlayState.storyDifficulty)), 8);
+		var UI_songDiff = new FlxUIInputText(10, UI_songTitle.y + UI_songTitle.height + 2, 70, PlayState.storyDifficultyStr, 8);
 		swagShit = UI_songDiff;
 
 		var check_voices = new FlxUICheckBox(10, UI_songDiff.y + UI_songDiff.height + 1, null, null, "Has voice track", 100);
@@ -735,20 +737,10 @@ class ChartingState extends MusicBeatState
 					updateGrid();
 			}
 		}
-
-		// FlxG.log.add(id + " WEED " + sender + " WEED " + data + " WEED " + params);
 	}
 
 	var updatedSection:Bool = false;
 
-	/* this function got owned LOL
-		function lengthBpmBullshit():Float
-		{
-			if (_song.notes[curSection].changeBPM)
-				return _song.notes[curSection].lengthInSteps * (_song.notes[curSection].bpm / _song.bpm);
-			else
-				return _song.notes[curSection].lengthInSteps;
-	}*/
 	function sectionStartTime():Float
 	{
 		var daBPM:Float = _song.bpm;
@@ -774,6 +766,7 @@ class ChartingState extends MusicBeatState
 		Conductor.songPosition = FlxG.sound.music.time;
 		_song.song = typingShit.text;
 		difficulty = swagShit.text.toLowerCase();
+		PlayState.storyDifficultyStr = difficulty.toUpperCase();
 		_song.modchartPath = modchart_Input.text;
 		_song.cutscene = cutscene_Input.text;
 
@@ -1114,16 +1107,46 @@ class ChartingState extends MusicBeatState
 
 	function updateHeads():Void
 	{
-		if (check_mustHitSection.checked)
+		var healthIconP1:String = loadHealthIconFromCharacter(_song.player1);
+		var healthIconP2:String = loadHealthIconFromCharacter(_song.player2);
+
+		if (_song.notes[curSection].mustHitSection)
 		{
-			leftIcon.playSwagAnim(_song.player1);
-			rightIcon.playSwagAnim(_song.player2);
+			leftIcon.playSwagAnim(healthIconP1);
+			rightIcon.playSwagAnim(healthIconP2);
 		}
 		else
 		{
-			leftIcon.playSwagAnim(_song.player2);
-			rightIcon.playSwagAnim(_song.player1);
+			leftIcon.playSwagAnim(healthIconP2);
+			rightIcon.playSwagAnim(healthIconP1);
 		}
+	}
+
+	function loadHealthIconFromCharacter(char:String) {
+		var characterPath:String = 'character data/' + char + '/config';
+
+		#if polymod
+		var path:String = Paths.json(characterPath);
+
+		if (!PolymodAssets.exists(path)) {
+			path = Paths.json('character data/bf/config');
+		}
+
+		if (!FileSystem.exists(path))
+		#else
+		var path:String = Paths.json(characterPath);
+
+		if (!Assets.exists(path))
+		#end
+		{
+			path = Paths.json('character data/bf/config');
+		}
+
+		var rawJson = Assets.getText(path).trim();
+
+		var json:CharacterConfig = cast Json.parse(rawJson);
+
+		return json.healthIcon;
 	}
 
 	function updateNoteUI():Void
@@ -1434,6 +1457,7 @@ class ChartingState extends MusicBeatState
 			songT = songT + '-' + diff.toLowerCase();
 
 		PlayState.storyDifficulty = Difficulties.stringToNum(diff.toLowerCase());
+		PlayState.storyDifficultyStr = diff;
 		PlayState.SONG = Song.loadFromJson(songT.toLowerCase(), song.toLowerCase());
 
 		LoadingState.instance.checkLoadSong(LoadingState.getSongPath());
