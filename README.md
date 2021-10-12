@@ -18,7 +18,7 @@ What does this mean? Well, now if you want, you can choose a different amount of
 
 > Full mod support with Polymod!
 
-Support for custom songs, characters, stages, weeks, (in the future, basic cutscenes (videos and dialogue)), all without modifying the source code! All you have to do is follow a guide that I will be making in the future and then you can make as many mods as you want!
+Support for custom songs, characters, stages, weeks, cutscenes (dialogue, and video!!!! (lots of formats)), all without modifying the source code! All you have to do is follow a guide that I will be making in the future and then you can make as many mods as you want!
 
 > More to come...
 
