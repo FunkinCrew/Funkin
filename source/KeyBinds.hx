@@ -19,11 +19,26 @@ class KeyBinds
 		FlxG.save.data.downBind = "S";
 		FlxG.save.data.leftBind = "A";
 		FlxG.save.data.rightBind = "D";
-		FlxG.save.data.killBind = "R";
+		FlxG.save.data.muteBind = "NUMPADZERO";
+		FlxG.save.data.volUpBind = "NUMPADPLUS";
+		FlxG.save.data.volDownBind = "NUMPADMINUS";
+		FlxG.save.data.fullscreenBind = "F";
 		FlxG.save.data.gpupBind = "DPAD_UP";
 		FlxG.save.data.gpdownBind = "DPAD_DOWN";
 		FlxG.save.data.gpleftBind = "DPAD_LEFT";
 		FlxG.save.data.gprightBind = "DPAD_RIGHT";
+		FlxG.save.data.pauseBind = "ENTER";
+		FlxG.save.data.gppauseBind = "START";
+		FlxG.save.data.resetBind = "R";
+		FlxG.save.data.gpresetBind = "SELECT";
+		FlxG.save.data.muteBind = "NUMPADZERO";
+		FlxG.save.data.volDownBind = "NUMPADMINUS";
+		FlxG.save.data.volUpBind = "NUMPADPLUS";
+		FlxG.save.data.fullscreenBind = "F";
+
+		FlxG.sound.muteKeys = ["ZERO", "NUMPADZERO"];
+		FlxG.sound.volumeDownKeys = ["MINUS", "NUMPADMINUS"];
+		FlxG.sound.volumeUpKeys = ["PLUS", "NUMPADPLUS"];
 		PlayerSettings.player1.controls.loadKeyBinds();
 	}
 
@@ -70,10 +85,46 @@ class KeyBinds
 			FlxG.save.data.gprightBind = "DPAD_RIGHT";
 			trace("No GRIGHT");
 		}
-		if (FlxG.save.data.killBind == null)
+		if (FlxG.save.data.pauseBind == null)
 		{
-			FlxG.save.data.killBind = "R";
-			trace("No KILL");
+			FlxG.save.data.pauseBind = "ENTER";
+			trace("No ENTER");
+		}
+		if (FlxG.save.data.gppauseBind == null)
+		{
+			FlxG.save.data.gppauseBind = "START";
+			trace("No ENTER");
+		}
+		if (FlxG.save.data.resetBind == null)
+		{
+			FlxG.save.data.resetBind = "R";
+			trace("No RESET");
+		}
+		if (FlxG.save.data.gpresetBind == null)
+		{
+			FlxG.save.data.gpresetBind = "SELECT";
+			trace("No RESET");
+		}
+		// VOLUME CONTROLS !!!!
+		if (FlxG.save.data.muteBind == null)
+		{
+			FlxG.save.data.muteBind = "NUMPADZERO";
+			trace("No MUTE");
+		}
+		if (FlxG.save.data.volUpBind == null)
+		{
+			FlxG.save.data.volUpBind = "NUMPADPLUS";
+			trace("No VOLUP");
+		}
+		if (FlxG.save.data.volDownBind == null)
+		{
+			FlxG.save.data.volDownBind = "NUMPADMINUS";
+			trace("No VOLDOWN");
+		}
+		if (FlxG.save.data.fullscreenBind == null)
+		{
+			FlxG.save.data.fullscreenBind = "F";
+			trace("No FULLSCREEN");
 		}
 
 		trace('${FlxG.save.data.leftBind}-${FlxG.save.data.downBind}-${FlxG.save.data.upBind}-${FlxG.save.data.rightBind}');
