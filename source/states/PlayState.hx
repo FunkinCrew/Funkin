@@ -248,34 +248,6 @@ class PlayState extends MusicBeatState
 		Conductor.safeZoneOffset = Math.floor((Conductor.safeFrames / 60) * 1000);
 		Conductor.safeZoneOffset *= songMultiplier;
 
-		#if discord_rpc
-		storyDifficultyText = storyDifficultyStr;
-		iconRPC = SONG.player2;
-
-		// To avoid having duplicate images in Discord assets
-		switch (iconRPC)
-		{
-			case 'senpai-angry':
-				iconRPC = 'senpai';
-			case 'monster-christmas':
-				iconRPC = 'monster';
-			case 'mom-car':
-				iconRPC = 'mom';
-		}
-
-		// String that contains the mode defined here so it isn't necessary to call changePresence for each mode
-		if (isStoryMode)
-			detailsText = "Story Mode: Week " + storyWeek;
-		else
-			detailsText = "Freeplay";
-
-		// String for when the game is paused
-		detailsPausedText = "Paused - " + detailsText;
-		
-		// Updating Discord Rich Presence.
-		DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
-		#end
-
 		if(SONG.stage == null)
 		{
 			switch(storyWeek)
@@ -375,6 +347,23 @@ class PlayState extends MusicBeatState
 		dad = new Character(100, 100, SONG.player2);
 		boyfriend = new Boyfriend(770, 450, SONG.player1);
 		/* end of character time */
+
+		#if discord_rpc
+		storyDifficultyText = storyDifficultyStr;
+		iconRPC = dad.icon;
+
+		// String that contains the mode defined here so it isn't necessary to call changePresence for each mode
+		if (isStoryMode)
+			detailsText = "Story Mode: Week " + storyWeek;
+		else
+			detailsText = "Freeplay";
+
+		// String for when the game is paused
+		detailsPausedText = "Paused - " + detailsText;
+		
+		// Updating Discord Rich Presence.
+		DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
+		#end
 
 		curStage = SONG.stage;
 
