@@ -35,8 +35,8 @@ class MainMenuState extends MusicBeatState
 	var camFollow:FlxObject;
 
 	public static var fnfVersion = '0.2.7.1';
-	public static var version = '0.7.0';
-	public static var versionTag = 'The Gamemode update!';
+	public static var version = '0.7.2';
+	public static var versionTag = 'The Gamemode update! -- Part 3';
 	public static var prerelease = false;
 
 	override function create()

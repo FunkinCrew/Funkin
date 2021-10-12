@@ -1,3 +1,4 @@
-0.7.0;
-- fixed middlescroll
-- fixed offsets for gamemode menu
+0.7.2;
+- You can now use multiple gamemodes at the same time
+- added SideSwap gamemode
+- new crash dialog
