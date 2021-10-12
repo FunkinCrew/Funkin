@@ -159,7 +159,7 @@ class PlayState extends MusicBeatState
 	public var misses:Int;
 	public var ghostTaps:Int;
 
-	public static var curGM:String;
+	public static var curGM:Array<String> = [];
 
 	public static var difString = "";
 
@@ -884,7 +884,7 @@ class PlayState extends MusicBeatState
 				difString = "HARD";
 		}
 
-		waterTxt = new FlxText(0, FlxG.height - 20, 0, '${SONG.song.toUpperCase()}:${difString} (${curGM.toUpperCase()}) - UFNF Engine ${MainMenuState.prerelease ? 'PRERELEASE' : ''}');
+		waterTxt = new FlxText(0, FlxG.height - 20, 0, '${SONG.song.toUpperCase()}:${difString} (${curGM}) - UFNF Engine ${MainMenuState.prerelease ? 'PRERELEASE' : ''}');
 		waterTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		waterTxt.antialiasing = true;
 		waterTxt.scrollFactor.set();
@@ -1246,13 +1246,13 @@ class PlayState extends MusicBeatState
 			for (songNotes in section.sectionNotes)
 			{
 				var daStrumTime:Float = songNotes[0] + FlxG.save.data.offset;
-				var daNoteData:Int = curGM != 'chaos' ? curGM != '1key' ? Std.int(songNotes[1] % 4) : 2 : new FlxRandom().int(0, 3);
+				var daNoteData:Int = !checkGMArray('chaos') ? !checkGMArray('1key') ? Std.int(songNotes[1] % 4) : 2 : new FlxRandom().int(0, 3);
 
-				var gottaHitNote:Bool = section.mustHitSection;
+				var gottaHitNote:Bool = !checkGMArray('sideswap') ? section.mustHitSection : !section.mustHitSection;
 
 				if (songNotes[1] > 3)
 				{
-					gottaHitNote = !section.mustHitSection;
+					gottaHitNote = !checkGMArray('sideswap') ? !section.mustHitSection : section.mustHitSection;
 				}
 
 				var oldNote:Note;
@@ -1537,12 +1537,12 @@ class PlayState extends MusicBeatState
 
 	override public function update(elapsed:Float)
 	{
-		if (curGM == 'sinescroll') {
+		if (checkGMArray('sinescroll')) {
 			SONG.speed += Math.sin(sinA) * 0.05;
 			sinA += 0.05;
 		}
 
-		if (curGM == 'sinehud') {
+		if (checkGMArray('sinehud')) {
 			camHUD.angle += Math.sin(sinA) * 2;
 			sinA += 0.05;
 		}
@@ -1960,7 +1960,7 @@ class PlayState extends MusicBeatState
 				{
 					if (daNote.tooLate || !daNote.wasGoodHit)
 					{
-						if (curGM != "instadeath")
+						if (!checkGMArray("instadeath"))
 							health -= 0.0475;
 						else
 							health = 0;
@@ -2511,7 +2511,7 @@ class PlayState extends MusicBeatState
 			// Ghost tapping still triggers miss animations for input reasons
 			if (FlxG.save.data.gtapping) {
 				misses++;
-				if (curGM != "instadeath")
+				if (!checkGMArray("instadeath"))
 					health -= 0.04;
 				else
 					health = 0;
@@ -2903,5 +2903,10 @@ class PlayState extends MusicBeatState
 			return '${Math.floor((((sicks + goods + bads + shits) / 100) / ((misses + sicks + goods + bads + shits) / 100)) * 100)}%';
 		else
 			return '?';
+	}
+
+	function checkGMArray(whatToCheckFor:String) {
+		trace(whatToCheckFor + " " + curGM.contains(whatToCheckFor.toLowerCase().trim()));
+		return curGM.contains(whatToCheckFor.toLowerCase().trim());
 	}
 }

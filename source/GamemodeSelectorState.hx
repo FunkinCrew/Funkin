@@ -27,7 +27,7 @@ class GamemodeSelectorState extends MusicBeatState {
         bg.antialiasing = true;
         add(bg);
 
-        var titleText = new FlxText(0, 20, 0, "Select Gamemode", 32);
+        var titleText = new FlxText(0, 20, 0, "Select Gamemodes", 32);
         titleText.setFormat(Paths.font("handwriting.ttf"), 64, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
         titleText.screenCenter(X);
         titleText.scrollFactor.set(0, 0);
@@ -49,7 +49,7 @@ class GamemodeSelectorState extends MusicBeatState {
 
         add(camFollow);
 
-        optionDot.y = optionText.y - 55; // red dot offset, adjust when adding new setting!
+        optionDot.y = optionText.y - 65; // red dot offset, adjust when adding new setting!
 
         curSelected = 0;
 
@@ -61,7 +61,7 @@ class GamemodeSelectorState extends MusicBeatState {
 
         // camFollow.width = optionText.width;
 
-        options = ['Standard - the normal game', '1Key - Everything is up-arrow', 'Chaos - Notes are still on time just randomly placed', 'SineScroll - The scrollspeed speeds up or slows down based on a sine wave', 'SineHUD - The HUD spins based on a sine', 'InstaDeath - A single miss kills you instantly'];
+        options = ['Ready', '1Key - Everything is up-arrow${PlayState.curGM.contains("1key") ? ' (X)' : ''}', 'Chaos - Notes are still on time just randomly placed${PlayState.curGM.contains("chaos") ? ' (X)' : ''}', 'SineScroll - The scrollspeed speeds up or slows down based on a sine wave${PlayState.curGM.contains("sinescroll") ? ' (X)' : ''}', 'SineHUD - The HUD spins based on a sine${PlayState.curGM.contains("sinehud") ? ' (X)' : ''}', 'InstaDeath - A single miss kills you instantly${PlayState.curGM.contains("instadeath") ? ' (X)' : ''}', 'SideSwap - you play your opponent\'s notes and your opponent plays your notes${PlayState.curGM.contains("sideswap") ? ' (X)' : ''}'];
 
         optionText.screenCenter();
 
@@ -92,9 +92,18 @@ class GamemodeSelectorState extends MusicBeatState {
 		}
 
 		if (controls.ACCEPT) {
-			var arr = options[curSelected].split('-');
-            PlayState.curGM = arr[0].trim().toLowerCase();
-            LoadingState.loadAndSwitchState(new PlayState(), true);
+
+            if (options[curSelected] != "Ready") {
+                if (PlayState.curGM.contains(options[curSelected].split('-')[0].trim().toLowerCase())) {
+                    trace("state 1");
+                    PlayState.curGM.remove(options[curSelected].split('-')[0].trim().toLowerCase());
+                } else {
+                    trace("state 2");
+                    PlayState.curGM.push(options[curSelected].split('-')[0].trim().toLowerCase());
+                }
+            } else {
+                LoadingState.loadAndSwitchState(new PlayState(), true);
+            }
 		}
 
 		if (controls.BACK) {
