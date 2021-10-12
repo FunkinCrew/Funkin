@@ -1146,7 +1146,7 @@ class ChartingState extends MusicBeatState
 
 		var json:CharacterConfig = cast Json.parse(rawJson);
 
-		return json.healthIcon;
+		return (json.healthIcon != null && json.healthIcon != "" ? json.healthIcon : char);
 	}
 
 	function updateNoteUI():Void
