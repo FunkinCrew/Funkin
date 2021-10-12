@@ -68,6 +68,9 @@ class SaveData {
 
         if(FlxG.save.data.fpsCap < 10)
             FlxG.save.data.fpsCap = 10;
+
+        if(FlxG.save.data.cutscenePlays == null)
+            FlxG.save.data.cutscenePlays = "story";
         
         Conductor.offset = FlxG.save.data.songOffset;
 

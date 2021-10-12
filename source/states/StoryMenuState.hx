@@ -378,7 +378,8 @@ class StoryMenuState extends MusicBeatState
 		if(groupIndex < 0)
 			groupIndex = groups.length - 1;
 
-		curWeek = 0;
+		if(change != 0)
+			curWeek = 0;
 
 		currentGroup = groups[groupIndex];
 

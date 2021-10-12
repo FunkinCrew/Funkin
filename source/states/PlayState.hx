@@ -478,12 +478,6 @@ class PlayState extends MusicBeatState
 
 		add(foregroundSprites);
 
-		var doof:DialogueBox = new DialogueBox(false);
-		// doof.x += 70;
-		// doof.y = FlxG.height * 0.5;
-		doof.scrollFactor.set();
-		doof.finishThing = startCountdown;
-
 		Conductor.songPosition = -5000;
 
 		strumLine = new FlxSprite(0, 100).makeGraphic(FlxG.width, 10);
@@ -577,7 +571,6 @@ class PlayState extends MusicBeatState
 		iconP2.cameras = [camHUD];
 		scoreTxt.cameras = [camHUD];
 		infoTxt.cameras = [camHUD];
-		doof.cameras = [camHUD];
 
 		startingSong = true;
 
@@ -587,7 +580,9 @@ class PlayState extends MusicBeatState
 		isDebug = true;
 		#end
 
-		if (isStoryMode || isDebug)
+		playCutsceneLmao = (isStoryMode && FlxG.save.data.cutscenePlays == "story") || (!isStoryMode && FlxG.save.data.cutscenePlays == "freeplay") || FlxG.save.data.cutscenePlays == "both";
+
+		if (playCutsceneLmao)
 		{
 			if(SONG.cutscene == null || SONG.cutscene == "")
 			{
@@ -622,11 +617,26 @@ class PlayState extends MusicBeatState
 							});
 						});
 					case 'senpai':
+						var doof:DialogueBox = new DialogueBox(false);
+						doof.scrollFactor.set();
+						doof.finishThing = startCountdown;
+						doof.cameras = [camHUD];
+
 						schoolIntro(doof);
 					case 'roses':
+						var doof:DialogueBox = new DialogueBox(false);
+						doof.scrollFactor.set();
+						doof.finishThing = startCountdown;
+						doof.cameras = [camHUD];
+						
 						FlxG.sound.play(Paths.sound('ANGRY'));
 						schoolIntro(doof);
 					case 'thorns':
+						var doof:DialogueBox = new DialogueBox(false);
+						doof.scrollFactor.set();
+						doof.finishThing = startCountdown;
+						doof.cameras = [camHUD];
+						
 						schoolIntro(doof);
 					default:
 						startCountdown();
@@ -675,6 +685,8 @@ class PlayState extends MusicBeatState
 
 		super.create();
 	}
+
+	public static var playCutsceneLmao:Bool = false;
 
 	function schoolIntro(?dialogueBox:DialogueBox):Void
 	{

@@ -62,7 +62,7 @@ class DialogueBox extends FlxSpriteGroup
 		isDebug = true;
 		#end
 
-		if(ambientMusic != null && PlayState.isStoryMode || isDebug)
+		if(ambientMusic != null && PlayState.playCutsceneLmao)
 		{
 			ambientMusic.play();
 			ambientMusic.fadeIn(1, 0, 0.8);
