@@ -1,7 +1,7 @@
 name: Crash Report
 description: Report Crashes here
 title: "[CRASH]: "
-labels: ["ufnf crash"]
+labels: ["UFNF Crash"]
 assignees:
   - thepercentageguy
 body:
