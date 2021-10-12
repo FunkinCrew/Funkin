@@ -27,6 +27,7 @@ import flixel.math.FlxRect;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import flixel.text.FlxText;
+import flixel.input.keyboard.FlxKey;
 
 using StringTools;
 
@@ -53,6 +54,10 @@ class Caching extends MusicBeatState
 		PlayerSettings.init();
 
 		KadeEngineData.initSave();
+
+		FlxG.sound.muteKeys = [FlxKey.fromString(FlxG.save.data.muteBind)];
+		FlxG.sound.volumeDownKeys = [FlxKey.fromString(FlxG.save.data.volDownBind)];
+		FlxG.sound.volumeUpKeys = [FlxKey.fromString(FlxG.save.data.volUpBind)];
 
 		FlxG.mouse.visible = false;
 

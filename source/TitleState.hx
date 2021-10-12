@@ -25,6 +25,7 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import lime.app.Application;
 import openfl.Assets;
+import flixel.input.keyboard.FlxKey;
 #if FEATURE_DISCORD
 import Discord.DiscordClient;
 #end
@@ -227,13 +228,14 @@ class TitleState extends MusicBeatState
 	}
 
 	var transitioning:Bool = false;
+	var fullscreenBind = FlxKey.fromString(FlxG.save.data.fullscreenBind);
 
 	override function update(elapsed:Float)
 	{
 		if (FlxG.sound.music != null)
 			Conductor.songPosition = FlxG.sound.music.time;
 
-		if (FlxG.keys.justPressed.F)
+		if (FlxG.keys.anyJustPressed([fullscreenBind]))
 		{
 			FlxG.fullscreen = !FlxG.fullscreen;
 		}

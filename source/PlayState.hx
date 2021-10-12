@@ -719,25 +719,22 @@ class PlayState extends MusicBeatState
 		if (PlayStateChangeables.useDownscroll)
 			strumLine.y = FlxG.height - 165;
 
-		laneunderlayOpponent = new FlxSprite(0, 0).makeGraphic(500, FlxG.height * 2);
-		laneunderlayOpponent.x += 95;
-		laneunderlayOpponent.x += ((FlxG.width / 2) * 0);
+		laneunderlayOpponent = new FlxSprite(0, 0).makeGraphic(110 * 4 + 50, FlxG.height * 2);
 		laneunderlayOpponent.alpha = 1 - FlxG.save.data.laneTransparency;
 		laneunderlayOpponent.color = FlxColor.BLACK;
 		laneunderlayOpponent.scrollFactor.set();
-		laneunderlayOpponent.screenCenter(Y);
 
-		laneunderlay = new FlxSprite(0, 0).makeGraphic(500, FlxG.height * 2);
-		laneunderlay.x += 75;
-		laneunderlay.x += ((FlxG.width / 2) * 1);
+		laneunderlay = new FlxSprite(0, 0).makeGraphic(110 * 4 + 50, FlxG.height * 2);
 		laneunderlay.alpha = 1 - FlxG.save.data.laneTransparency;
 		laneunderlay.color = FlxColor.BLACK;
 		laneunderlay.scrollFactor.set();
-		laneunderlay.screenCenter(Y);
 
 		if (FlxG.save.data.laneUnderlay && !PlayStateChangeables.Optimize)
 		{
-			add(laneunderlayOpponent);
+			if (!FlxG.save.data.middleScroll)
+			{
+				add(laneunderlayOpponent);
+			}
 			add(laneunderlay);
 		}
 
@@ -750,11 +747,13 @@ class PlayState extends MusicBeatState
 		generateStaticArrows(0);
 		generateStaticArrows(1);
 
-		if (FlxG.save.data.middleScroll)
-		{
-			laneunderlayOpponent.alpha = 0;
-			laneunderlay.x = playerStrums.members[0].x - 25;
-		}
+		// Update lane underlay positions AFTER static arrows :)
+
+		laneunderlay.x = playerStrums.members[0].x - 25;
+		laneunderlayOpponent.x = cpuStrums.members[0].x - 25;
+
+		laneunderlay.screenCenter(Y);
+		laneunderlayOpponent.screenCenter(Y);
 
 		// startCountdown();
 
@@ -1587,7 +1586,7 @@ class PlayState extends MusicBeatState
 		{
 			songPosBG = new FlxSprite(0, 10).loadGraphic(Paths.loadImage('healthBar'));
 			if (PlayStateChangeables.useDownscroll)
-				songPosBG.y = FlxG.height * 0.9 + 45;
+				songPosBG.y = FlxG.height * 0.9 + 35;
 			songPosBG.screenCenter(X);
 			songPosBG.scrollFactor.set();
 
@@ -2227,7 +2226,13 @@ class PlayState extends MusicBeatState
 
 		scoreTxt.screenCenter(X);
 
-		if (controls.PAUSE && startedCountdown && canPause && !cannotDie)
+		var pauseBind = FlxKey.fromString(FlxG.save.data.pauseBind);
+		var gppauseBind = FlxKey.fromString(FlxG.save.data.gppauseBind);
+
+		if ((FlxG.keys.anyJustPressed([pauseBind]) || KeyBinds.gamepad && FlxG.keys.anyJustPressed([gppauseBind]))
+			&& startedCountdown
+			&& canPause
+			&& !cannotDie)
 		{
 			persistentUpdate = false;
 			persistentDraw = true;
@@ -2790,7 +2795,9 @@ class PlayState extends MusicBeatState
 		}
 		if (!inCutscene && FlxG.save.data.resetButton)
 		{
-			if (FlxG.keys.justPressed.R)
+			var resetBind = FlxKey.fromString(FlxG.save.data.resetBind);
+			var gpresetBind = FlxKey.fromString(FlxG.save.data.gpresetBind);
+			if ((FlxG.keys.anyJustPressed([resetBind]) || KeyBinds.gamepad && FlxG.keys.anyJustPressed([gpresetBind])))
 			{
 				boyfriend.stunned = true;
 
