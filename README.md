@@ -10,11 +10,11 @@ For build intructions go to [Build.md](https://github.com/Leather128/LeathersFun
 
 > Proper Options Menu
 
-This includes things like custom controls, downscroll, opponent note glow, note splashes, etc.
+This includes things like custom controls, downscroll, middle scroll, opponent note glow, note splashes, etc.
 
-> 1-10 Key Support
+> 1-18 Key Support
 
-What does this mean? Well, now if you want, you can choose a different amount of arrows / keys! (Aka different from 4), this feature only goes up to 10 however, because anything more than that would probably be too intensive and would use a lot of resources (also yes 1 key is a thing lol).
+What does this mean? Well, now if you want, you can choose a different amount of arrows / keys! (Aka different from 4), this feature only goes up to 18 however, because anything more than that would probably be too intensive and would use a lot of resources (also yes 1 key is a thing lol).
 
 > Full mod support with Polymod!
 
