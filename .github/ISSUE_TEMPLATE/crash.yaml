@@ -29,6 +29,6 @@ body:
     id: logs
     attributes:
       label: Error
-      description: Please either; A: attach the crash log. B: Upload a screenshot of the error box OR C: paste the contents of the crash log here.
+      description: Please either; A attach the crash log. B Upload a screenshot of the error box OR C paste the contents of the crash log here.
     validations:
       required: true
