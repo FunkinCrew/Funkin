@@ -29,27 +29,7 @@ class HealthIcon extends FlxSprite
 
 	public function playSwagAnim(?char:String = 'bf')
 	{		
-		changeIconSet(charToAnimName(char));
-	}
-
-	public static function charToAnimName(char:String = 'bf'):String
-	{
-		// CONVERTING CERTAIN CHARS
-		switch(char)
-		{
-			case 'mom-car':
-				char = 'mom';
-			case 'gf-car' | 'gf-christmas' | 'gf-old' | 'gf-pixel' | 'gf-tankmen':
-				char = 'gf';
-			case 'bf-car' | 'bf-christmas' | 'bf-holding-gf':
-				char = 'bf';
-			case 'monster-christmas':
-				char = 'monster';
-			case 'pico-speaker':
-				char = 'pico';
-		}
-
-		return char;
+		changeIconSet(char);
 	}
 
 	public function changeIconSet(char:String = 'bf')

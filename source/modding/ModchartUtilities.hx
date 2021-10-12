@@ -1,5 +1,6 @@
 package modding;
 
+import game.Boyfriend;
 import flixel.util.FlxTimer;
 import ui.HealthIcon;
 import game.Character;
@@ -643,12 +644,65 @@ class ModchartUtilities
                 oldIcon.kill();
                 oldIcon.destroy();
 
-                PlayState.instance.iconP2 = new HealthIcon(character, false);
+                PlayState.instance.iconP2 = new HealthIcon(dad.icon, false);
                 PlayState.instance.iconP2.y = PlayState.instance.healthBar.y - (PlayState.instance.iconP2.height / 2);
                 PlayState.instance.iconP2.cameras = [PlayState.instance.camHUD];
                 PlayState.instance.add(PlayState.instance.iconP2);
 
                 bar.createFilledBar(dad.barColor, PlayState.boyfriend.barColor);
+                bar.updateFilledBar();
+
+                PlayState.instance.stage.setCharOffsets();
+            }
+        });
+
+        Lua_helper.add_callback(lua,"changeBoyfriendCharacter", function (character:String) {
+            var oldBF = PlayState.boyfriend;
+            PlayState.instance.removeObject(oldBF);
+            
+            var boyfriend = new Boyfriend(770, 450, character);
+            PlayState.boyfriend = boyfriend;
+
+            if(boyfriend.otherCharacters == null)
+            {
+                if(boyfriend.coolTrail != null)
+                    PlayState.instance.add(boyfriend.coolTrail);
+    
+                PlayState.instance.add(boyfriend);
+            }
+            else
+            {
+                for(character in boyfriend.otherCharacters)
+                {
+                    if(character.coolTrail != null)
+                        PlayState.instance.add(character.coolTrail);
+    
+                    PlayState.instance.add(character);
+                }
+            }
+
+            lua_Sprites.remove("boyfriend");
+
+            oldBF.kill();
+            oldBF.destroy();
+
+            lua_Sprites.set("boyfriend", boyfriend);
+
+            @:privateAccess
+            {
+                var oldIcon = PlayState.instance.iconP1;
+                var bar = PlayState.instance.healthBar;
+                
+                PlayState.instance.removeObject(oldIcon);
+                oldIcon.kill();
+                oldIcon.destroy();
+
+                PlayState.instance.iconP1 = new HealthIcon(boyfriend.icon, false);
+                PlayState.instance.iconP1.y = PlayState.instance.healthBar.y - (PlayState.instance.iconP1.height / 2);
+                PlayState.instance.iconP1.cameras = [PlayState.instance.camHUD];
+                PlayState.instance.add(PlayState.instance.iconP1);
+
+                bar.createFilledBar(PlayState.dad.barColor, boyfriend.barColor);
                 bar.updateFilledBar();
 
                 PlayState.instance.stage.setCharOffsets();

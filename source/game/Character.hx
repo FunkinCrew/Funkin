@@ -46,6 +46,8 @@ class Character extends FlxSprite
 
 	public var swapLeftAndRightSingPlayer:Bool = true;
 
+	public var icon:String;
+
 	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false, ?isDeathCharacter:Bool = false)
 	{
 		super(x, y);
@@ -95,6 +97,7 @@ class Character extends FlxSprite
 				dancesLeftAndRight = true;
 				playAnim('danceRight');
 				barColor = FlxColor.fromRGB(186, 49, 104);
+				icon = "gf";
 			case 'gf-christmas':
 				frames = Paths.getSparrowAtlas('characters/gfChristmas', 'shared');
 
@@ -115,6 +118,7 @@ class Character extends FlxSprite
 				dancesLeftAndRight = true;
 				playAnim('danceRight');
 				barColor = FlxColor.fromRGB(186, 49, 104);
+				icon = "gf";
 			case 'gf-car':
 				frames = Paths.getSparrowAtlas('characters/gfCar', 'shared');
 
@@ -125,6 +129,7 @@ class Character extends FlxSprite
 				playAnim('danceRight');
 				dancesLeftAndRight = true;
 				barColor = FlxColor.fromRGB(186, 49, 104);
+				icon = "gf";
 			case 'gf-pixel':
 				frames = Paths.getSparrowAtlas('characters/gfPixel', 'shared');
 				animation.addByIndices('singUP', 'GF IDLE', [2], "", 24, false);
@@ -140,6 +145,7 @@ class Character extends FlxSprite
 				antialiasing = false;
 				dancesLeftAndRight = true;
 				barColor = FlxColor.fromRGB(186, 49, 104);
+				icon = "gf";
 			case 'dad':
 				// DAD ANIMATION LOADING CODE
 				frames = Paths.getSparrowAtlas('characters/DADDY_DEAREST', 'shared');
@@ -189,6 +195,7 @@ class Character extends FlxSprite
 
 				playAnim('idle');
 				barColor = FlxColor.fromRGB(231, 109, 166);
+				icon = "mom";
 			case 'monster':
 				frames = Paths.getSparrowAtlas('characters/Monster_Assets', 'shared');
 				animation.addByPrefix('idle', 'monster idle', 24, false);
@@ -211,6 +218,7 @@ class Character extends FlxSprite
 
 				playAnim('idle');
 				barColor = FlxColor.fromRGB(245, 255, 105);
+				icon = "monster";
 			case 'pico':
 				frames = Paths.getSparrowAtlas('characters/Pico_FNF_assetss', 'shared');
 				animation.addByPrefix('idle', "Pico Idle Dance", 24);
@@ -262,6 +270,7 @@ class Character extends FlxSprite
 				barColor = FlxColor.fromRGB(81, 201, 219);
 				offsetsFlipWhenEnemy = true;
 				offsetsFlipWhenPlayer = false;
+				icon = "bf";
 			case 'bf-car':
 				swapLeftAndRightSingPlayer = false;
 
@@ -284,6 +293,7 @@ class Character extends FlxSprite
 				barColor = FlxColor.fromRGB(81, 201, 219);
 				offsetsFlipWhenEnemy = true;
 				offsetsFlipWhenPlayer = false;
+				icon = "bf";
 			case 'bf-pixel':
 				swapLeftAndRightSingPlayer = false;
 
@@ -409,6 +419,7 @@ class Character extends FlxSprite
 			case '':
 				trace("NO VALUE THINGY LOL DONT LOAD SHIT");
 				deathCharacter = "";
+				icon = "bf-old";
 
 			default:
 				if (isPlayer)
@@ -421,6 +432,9 @@ class Character extends FlxSprite
 
 		if (isPlayer && !ilikeyacutg)
 			flipX = !flipX;
+
+		if (icon == null)
+			icon = curCharacter;
 
 		// YOOOOOOOOOO POG MODDING STUFF
 		if(character != "")
@@ -613,6 +627,9 @@ class Character extends FlxSprite
 			deathCharacter = config.deathCharacterName;
 		else
 			deathCharacter = "bf-dead";
+
+		if(config.healthIcon != null)
+			icon = config.healthIcon;
 	}
 
 	public function loadOffsetFile(characterName:String)

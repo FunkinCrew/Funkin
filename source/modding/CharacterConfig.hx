@@ -26,6 +26,8 @@ typedef CharacterConfig =
 
 	// multiple characters stuff
 	var characters:Array<CharacterData>;
+
+	var healthIcon:String;
 }
 
 typedef CharacterData =
