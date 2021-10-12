@@ -46,8 +46,8 @@ class StoryMenuState extends MusicBeatState
 	var currentGroup:StoryGroup;
 
 	/* WEEK VARIABLES */
-	var curWeek:Int = 0;
-	var curDifficulty:Int = 1;
+	static var curWeek:Int = 0;
+	static var curDifficulty:Int = 1;
 
 	/* TEXTS */
 	var weekScoreText:FlxText;
@@ -291,6 +291,7 @@ class StoryMenuState extends MusicBeatState
 	
 			PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + diffic, PlayState.storyPlaylist[0].toLowerCase());
 			PlayState.storyWeek = curWeek;
+			PlayState.storyDifficultyStr = Difficulties.numToDiff(curDifficulty).getName().toUpperCase();
 			PlayState.campaignScore = 0;
 			PlayState.groupWeek = currentGroup.pathName;
 			PlayState.songMultiplier = 1;
@@ -342,8 +343,9 @@ class StoryMenuState extends MusicBeatState
 	{
 		curWeek += change;
 
-		if (curWeek >= currentGroup.weeks.length)
+		if (curWeek > currentGroup.weeks.length - 1)
 			curWeek = 0;
+
 		if (curWeek < 0)
 			curWeek = currentGroup.weeks.length - 1;
 
@@ -431,11 +433,7 @@ class StoryMenuState extends MusicBeatState
 
 	function loadJSON(name:String)
 	{
-		#if sys
-		groups.push(cast Json.parse(PolymodAssets.getText(Paths.json("week data/" + name))));
-		#else
 		groups.push(cast Json.parse(Assets.getText(Paths.json("week data/" + name))));
-		#end
 	}
 
 	function loadGroups()

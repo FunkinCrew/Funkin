@@ -277,7 +277,8 @@ class CharacterCreationState extends MusicBeatState
             trailDiff: 0.069,
             deathCharacterName: "bf-dead",
             swapDirectionSingWhenPlayer: true,
-            healthIcon: Character_Name
+            healthIcon: Character_Name,
+            antialiased: true
         };
     }
 

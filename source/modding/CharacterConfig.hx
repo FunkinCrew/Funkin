@@ -28,6 +28,7 @@ typedef CharacterConfig =
 	var characters:Array<CharacterData>;
 
 	var healthIcon:String;
+	var antialiased:Null<Bool>;
 }
 
 typedef CharacterData =

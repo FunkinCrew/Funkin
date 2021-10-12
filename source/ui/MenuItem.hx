@@ -46,6 +46,9 @@ class MenuItem extends FlxSpriteGroup
 
 		fakeFramerate = Math.round((1 / FlxG.elapsed) / 10);
 
+		if(fakeFramerate <= 1)
+			fakeFramerate = 1;
+
 		y = FlxMath.lerp(y, (targetY * 120) + 480, 0.17);
 
 		if (isFlashing)

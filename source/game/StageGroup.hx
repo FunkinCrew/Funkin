@@ -129,10 +129,10 @@ class StageGroup extends FlxGroup
             }
             case "philly":
             {
-                player_1_Point.x += 50;
-                gf_Point.x += 150;
+                player_1_Point.x -= 50;
+                gf_Point.x += 100;
                 gf_Point.y -= 50;
-                player_2_Point.x += 175;
+                player_2_Point.x += 125;
 
                 var bg:FlxSprite = new FlxSprite(-100).loadGraphic(Paths.image(stage + '/sky', 'stages'));
                 bg.scrollFactor.set(0.1, 0.1);

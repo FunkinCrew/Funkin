@@ -64,88 +64,6 @@ class Character extends FlxSprite
 
 		switch (curCharacter)
 		{
-			case 'gf':
-				// GIRLFRIEND CODE
-				frames = Paths.getSparrowAtlas('characters/GF_assets', 'shared');
-
-				quickAnimAdd('cheer', "GF Cheer");
-				quickAnimAdd('singLEFT', "GF left note");
-				quickAnimAdd('singRIGHT', "GF Right Note");
-				quickAnimAdd('singUP', "GF Up Note");
-				quickAnimAdd('singDOWN', "GF Down Note");
-
-				animation.addByIndices('sad', 'gf sad', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], "", 24, false);
-				animation.addByIndices('danceLeft', 'GF Dancing Beat', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
-				animation.addByIndices('danceRight', 'GF Dancing Beat', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
-				animation.addByIndices('hairBlow', "GF Dancing Beat Hair blowing", [0, 1, 2, 3], "", 24);
-				animation.addByIndices('hairFall', "GF Dancing Beat Hair Landing", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], "", 24, false);
-
-				animation.addByPrefix('scared', 'GF FEAR', 24, false);
-
-				dancesLeftAndRight = true;
-				playAnim('danceRight');
-				barColor = FlxColor.fromRGB(186, 49, 104);
-			case 'gf-old':
-				frames = Paths.getSparrowAtlas('characters/GF_OLD_assets', 'shared');
-
-				quickAnimAdd('cheer', "GF Cheer");
-				quickAnimAdd('sad', "gf sad");
-
-				animation.addByIndices('danceLeft', 'GF Dancing Beat', [29, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
-				animation.addByIndices('danceRight', 'GF Dancing Beat', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
-
-				dancesLeftAndRight = true;
-				playAnim('danceRight');
-				barColor = FlxColor.fromRGB(186, 49, 104);
-				icon = "gf";
-			case 'gf-christmas':
-				frames = Paths.getSparrowAtlas('characters/gfChristmas', 'shared');
-
-				quickAnimAdd('cheer', "GF Cheer");
-				quickAnimAdd('singLEFT', "GF left note");
-				quickAnimAdd('singRIGHT', "GF Right Note");
-				quickAnimAdd('singUP', "GF Up Note");
-				quickAnimAdd('singDOWN', "GF Down Note");
-
-				animation.addByIndices('sad', 'gf sad', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], "", 24, false);
-				animation.addByIndices('danceLeft', 'GF Dancing Beat', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
-				animation.addByIndices('danceRight', 'GF Dancing Beat', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
-				animation.addByIndices('hairBlow', "GF Dancing Beat Hair blowing", [0, 1, 2, 3], "", 24);
-				animation.addByIndices('hairFall', "GF Dancing Beat Hair Landing", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], "", 24, false);
-
-				animation.addByPrefix('scared', 'GF FEAR', 24, false);
-
-				dancesLeftAndRight = true;
-				playAnim('danceRight');
-				barColor = FlxColor.fromRGB(186, 49, 104);
-				icon = "gf";
-			case 'gf-car':
-				frames = Paths.getSparrowAtlas('characters/gfCar', 'shared');
-
-				animation.addByIndices('danceLeft', 'GF Dancing Beat Hair blowing CAR', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
-				animation.addByIndices('danceRight', 'GF Dancing Beat Hair blowing CAR', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24,
-					false);
-
-				playAnim('danceRight');
-				dancesLeftAndRight = true;
-				barColor = FlxColor.fromRGB(186, 49, 104);
-				icon = "gf";
-			case 'gf-pixel':
-				frames = Paths.getSparrowAtlas('characters/gfPixel', 'shared');
-				animation.addByIndices('singUP', 'GF IDLE', [2], "", 24, false);
-				animation.addByIndices('danceLeft', 'GF IDLE', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
-				animation.addByIndices('danceRight', 'GF IDLE', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
-
-				playAnim('danceRight');
-
-				setGraphicSize(Std.int(width * 6));
-
-				positioningOffset = [100, 100];
-
-				antialiasing = false;
-				dancesLeftAndRight = true;
-				barColor = FlxColor.fromRGB(186, 49, 104);
-				icon = "gf";
 			case 'dad':
 				// DAD ANIMATION LOADING CODE
 				frames = Paths.getSparrowAtlas('characters/DADDY_DEAREST', 'shared');
@@ -248,6 +166,7 @@ class Character extends FlxSprite
 
 				flipX = true;
 				barColor = FlxColor.fromRGB(205, 229, 112);
+				cameraOffset = [50,0];
 			case 'bf-christmas':
 				swapLeftAndRightSingPlayer = false;
 
@@ -488,7 +407,7 @@ class Character extends FlxSprite
 	function loadNamedConfiguration(characterName:String)
 	{
 		var rawJson:String;
-		
+
 		rawJson = Assets.getText(Paths.json("character data/" + characterName + "/config")).trim();
 
 		var config:CharacterConfig = cast Json.parse(rawJson);
@@ -562,6 +481,9 @@ class Character extends FlxSprite
 
 			if(debugMode)
 				flipX = config.defaultFlipX;
+		
+			if(config.antialiased != null)
+				antialiasing = config.antialiased;
 
 			updateHitbox();
 
@@ -671,11 +593,11 @@ class Character extends FlxSprite
 				}
 			}
 
-			switch (curCharacter)
+			// fix for multi character stuff lmao
+			if(animation.curAnim != null)
 			{
-				case 'gf':
-					if (animation.curAnim.name == 'hairFall' && animation.curAnim.finished)
-						playAnim('danceRight');
+				if(animation.curAnim.name == 'hairFall' && animation.curAnim.finished)
+					playAnim('danceRight');
 			}
 		}
 
@@ -693,28 +615,24 @@ class Character extends FlxSprite
 		{
 			switch (curCharacter)
 			{
-				case 'gf' | 'gf-christmas' | 'gf-car' | 'gf-pixel' | 'gf-old' | 'gf-tankmen':
-					if (!animation.curAnim.name.startsWith('hair'))
-					{
-						danced = !danced;
-
-						if (danced)
-							playAnim('danceRight' + altAnim);
-						else
-							playAnim('danceLeft' + altAnim);
-					}
-
 				default:
-					if(!dancesLeftAndRight)
-						playAnim('idle' + altAnim);
-					else
+					// fix for multi character stuff lmao
+					if(animation.curAnim != null)
 					{
-						danced = !danced;
-
-						if (danced)
-							playAnim('danceRight' + altAnim);
-						else
-							playAnim('danceLeft' + altAnim);
+						if (!animation.curAnim.name.startsWith('hair'))
+						{
+							if(!dancesLeftAndRight)
+								playAnim('idle' + altAnim);
+							else
+							{
+								danced = !danced;
+		
+								if (danced)
+									playAnim('danceRight' + altAnim);
+								else
+									playAnim('danceLeft' + altAnim);
+							}
+						}
 					}
 			}
 		}
@@ -731,6 +649,7 @@ class Character extends FlxSprite
 		else
 			offset.set(0, 0);
 
+		/*
 		if (curCharacter.startsWith('gf'))
 		{
 			if (AnimName == 'singLEFT')
@@ -746,7 +665,7 @@ class Character extends FlxSprite
 			{
 				danced = !danced;
 			}
-		}
+		}*/
 	}
 
 	public function addOffset(name:String, x:Float = 0, y:Float = 0)

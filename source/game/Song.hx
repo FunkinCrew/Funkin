@@ -71,11 +71,7 @@ class Song
 
 		var rawJson:String = "";
 
-		#if sys
-		rawJson = PolymodAssets.getText(Paths.json(folder.toLowerCase() + jsonInput.toLowerCase())).trim();
-		#else
 		rawJson = Assets.getText(Paths.json(folder.toLowerCase() + jsonInput.toLowerCase())).trim();
-		#end
 
 		if(rawJson != "")
 		{
