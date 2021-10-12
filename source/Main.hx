@@ -32,6 +32,7 @@ class Main extends Sprite
 	var skipSplash:Bool = true; // Whether to skip the flixel splash screen that appears in release mode.
 	var startFullscreen:Bool = false; // Whether to start the game in fullscreen on desktop targets
 
+	// Feel free to make a PR to add onto this list, or, if you're too lazy just make an issue and i'll add them
 	var quotes:Array<String> = ["OH SHIT! UFNF JUST DIED!", "Skill Issue.", "You were so bad even the game left!", "Ahahaha! Well, that's a shame. -Monika", "And I was just about to beat it too!", "Almost as dead as Garcello.", "When the crash sus!?!!??!? (Why SpinnableBlue??)"];
 
 	// You can pretty much ignore everything from here on - your code should go in your states.
