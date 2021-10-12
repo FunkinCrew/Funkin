@@ -10,7 +10,6 @@ All notable changes will be documented in this file.
 - Custom health icon support.
 - Updated hit-window.
 - Decimal BPM support.
-- Reworked anti-mash system.
 - 1 - 10 Key Support (aka POG NEW KEY SYSTEM TYPE THING).
 - Custom Stage System!
 - BACKEND MODDING SUPPORT WITH POLYMOD FULLY IMPLEMENTED!
@@ -21,6 +20,10 @@ All notable changes will be documented in this file.
 - Song Speed Changes
 - Thorns Trail Setting for Characters (in a cool way).
 - Text for keybinds of non-4 key arrow sets.
+- Cutscene JSON System (videos, dialogue, etc).
+- Video Files can now be played using cutscenes!
+- 11 - 18 Key Support (yo this is crazy!)
+- Custom Arrow Types! (Death Notes, Caution, etc).
 ### Changed
 - Input has been updated and is a lot better now.
 - Held notes no longer count to your accuracy.
