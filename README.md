@@ -5,6 +5,8 @@ THIS IS A **MOD** AND SHOULD BE TREATED AS SUCH; THIS IS AND PROBABLY WON'T EVER
 
 ### Download on Gamebanana
 https://gamejolt.com/games/ufnf/644096
+### DISCORD!
+https://discord.gg/chFbczhPdf
 
 ## Shoutouts
 #### UFNF Engine
