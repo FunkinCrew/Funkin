@@ -18,4 +18,5 @@ https://gamejolt.com/games/ufnf/644096
 |ninjamuffin99|PhantomArcade3K & Evilsk8er|Kawaisprite|
 
 ## Sidenotes
+I do not host a HTML build, and I will not solve bugs with the HTML builds specifically, there are many things incompatable with HTML inside UFNF. <br>
 You can find some documentation [here](https://github.com/thepercentageguy/Unnamed-FNF-Engine/tree/master/documentation)
