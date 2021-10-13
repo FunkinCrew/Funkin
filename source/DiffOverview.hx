@@ -45,6 +45,9 @@ class DiffOverview extends FlxSubState
 
 	var offset:FlxText;
 
+	private var dataSuffix:Array<String> = ['LEFT', 'DOWN', 'UP', 'RIGHT'];
+	private var dataColor:Array<String> = ['purple', 'blue', 'green', 'red'];
+
 	public static var playerStrums:FlxTypedGroup<FlxSprite> = null;
 
 	override function create()
@@ -77,57 +80,8 @@ class DiffOverview extends FlxSubState
 
 		handOne = DiffCalc.lastDiffHandOne;
 		handTwo = DiffCalc.lastDiffHandTwo;
-		for (i in 0...4)
-		{
-			// FlxG.log.add(i);
-			var babyArrow:FlxSprite = new FlxSprite(0, strumLine.y);
 
-			babyArrow.frames = Paths.getSparrowAtlas('NOTE_assets', 'shared');
-			babyArrow.animation.addByPrefix('green', 'arrowUP');
-			babyArrow.animation.addByPrefix('blue', 'arrowDOWN');
-			babyArrow.animation.addByPrefix('purple', 'arrowLEFT');
-			babyArrow.animation.addByPrefix('red', 'arrowRIGHT');
-			babyArrow.antialiasing = FlxG.save.data.antialiasing;
-			babyArrow.setGraphicSize(Std.int(babyArrow.width * 0.7));
-
-			switch (Math.abs(i))
-			{
-				case 2:
-					babyArrow.x += Note.swagWidth * 2;
-					babyArrow.animation.addByPrefix('static', 'arrowUP');
-					babyArrow.animation.addByPrefix('pressed', 'up press', 24, false);
-					babyArrow.animation.addByPrefix('confirm', 'up confirm', 24, false);
-				case 3:
-					babyArrow.x += Note.swagWidth * 3;
-					babyArrow.animation.addByPrefix('static', 'arrowRIGHT');
-					babyArrow.animation.addByPrefix('pressed', 'right press', 24, false);
-					babyArrow.animation.addByPrefix('confirm', 'right confirm', 24, false);
-				case 1:
-					babyArrow.x += Note.swagWidth * 1;
-					babyArrow.animation.addByPrefix('static', 'arrowDOWN');
-					babyArrow.animation.addByPrefix('pressed', 'down press', 24, false);
-					babyArrow.animation.addByPrefix('confirm', 'down confirm', 24, false);
-				case 0:
-					babyArrow.x += Note.swagWidth * 0;
-					babyArrow.animation.addByPrefix('static', 'arrowLEFT');
-					babyArrow.animation.addByPrefix('pressed', 'left press', 24, false);
-					babyArrow.animation.addByPrefix('confirm', 'left confirm', 24, false);
-			}
-
-			babyArrow.updateHitbox();
-			babyArrow.scrollFactor.set();
-
-			babyArrow.y -= 10;
-			babyArrow.alpha = 1;
-
-			babyArrow.ID = i;
-
-			playerStrums.add(babyArrow);
-
-			babyArrow.animation.play('static');
-			babyArrow.x += 50;
-			babyArrow.x += ((FlxG.width / 2));
-		}
+		generateStaticArrows();
 
 		add(playerStrums);
 
@@ -167,6 +121,46 @@ class DiffOverview extends FlxSubState
 		trace('pog');
 
 		super.create();
+	}
+
+	function generateStaticArrows()
+	{
+		for (i in 0...4)
+		{
+			// FlxG.log.add(i);
+			var babyArrow:StaticArrow = new StaticArrow(-10, strumLine.y);
+			babyArrow.frames = Paths.getSparrowAtlas('noteskins/' + FlxG.save.data.noteskin);
+			for (j in 0...4)
+			{
+				babyArrow.animation.addByPrefix(dataColor[j], 'arrow' + dataSuffix[j]);
+				babyArrow.animation.addByPrefix('dirCon' + j, dataSuffix[j].toLowerCase() + ' confirm', 24, false);
+			}
+
+			var lowerDir:String = dataSuffix[i].toLowerCase();
+
+			babyArrow.animation.addByPrefix('static', 'arrow' + dataSuffix[i]);
+			babyArrow.animation.addByPrefix('pressed', lowerDir + ' press', 24, false);
+			babyArrow.animation.addByPrefix('confirm', lowerDir + ' confirm', 24, false);
+
+			babyArrow.x += Note.swagWidth * i;
+
+			babyArrow.antialiasing = FlxG.save.data.antialiasing;
+			babyArrow.setGraphicSize(Std.int(babyArrow.width * 0.7));
+
+			babyArrow.updateHitbox();
+			babyArrow.scrollFactor.set();
+
+			babyArrow.y -= 10;
+			babyArrow.alpha = 1;
+
+			babyArrow.ID = i;
+
+			playerStrums.add(babyArrow);
+
+			babyArrow.animation.play('static');
+			babyArrow.x += 50;
+			babyArrow.x += ((FlxG.width / 2));
+		}
 	}
 
 	function endSong()

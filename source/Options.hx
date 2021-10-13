@@ -995,6 +995,26 @@ class LaneUnderlayOption extends Option
 	}
 }
 
+class DebugMode extends Option
+{
+	public function new(desc:String)
+	{
+		description = desc;
+		super();
+	}
+
+	public override function press():Bool
+	{
+		FlxG.switchState(new AnimationDebug());
+		return false;
+	}
+
+	private override function updateDisplay():String
+	{
+		return "Animation Debug";
+	}
+}
+
 class LockWeeksOption extends Option
 {
 	var confirm:Bool = false;
