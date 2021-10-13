@@ -123,7 +123,7 @@ class Note extends FlxSprite
 
 		if (inCharter)
 		{
-			frames = Paths.getSparrowAtlas('NOTE_assets');
+			frames = Paths.getSparrowAtlas('noteskins/' + FlxG.save.data.noteskin);
 
 			for (i in 0...4)
 			{
@@ -168,7 +168,7 @@ class Note extends FlxSprite
 					setGraphicSize(Std.int(width * PlayState.daPixelZoom));
 					updateHitbox();
 				default:
-					frames = Paths.getSparrowAtlas('NOTE_assets');
+					frames = Paths.getSparrowAtlas('noteskins/' + FlxG.save.data.noteskin);
 
 					for (i in 0...4)
 					{

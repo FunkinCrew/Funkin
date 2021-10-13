@@ -1604,11 +1604,14 @@ class PlayState extends MusicBeatState
 
 			songPosBG.width = songPosBar.width;
 
-			var songName = new FlxText(songPosBG.x + (songPosBG.width / 2) - (SONG.songName.length * 5), songPosBG.y + 6, 0, SONG.songName, 16);
+			songName = new FlxText(songPosBG.x + (songPosBG.width / 2) - (SONG.songName.length * 5), songPosBG.y, 0, SONG.songName, 16);
 			if (PlayStateChangeables.useDownscroll)
-				songName.y -= 3;
-			songName.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+				songName.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 			songName.scrollFactor.set();
+
+			songName.text = SONG.songName + ' (' + FlxStringUtil.formatTime(songLength, false) + ')';
+			songName.y = songPosBG.y + (songPosBG.height / 3);
+
 			add(songName);
 
 			songName.screenCenter(X);
@@ -1774,7 +1777,7 @@ class PlayState extends MusicBeatState
 					}
 
 				default:
-					babyArrow.frames = Paths.getSparrowAtlas('NOTE_assets');
+					babyArrow.frames = Paths.getSparrowAtlas('noteskins/' + FlxG.save.data.noteskin);
 					for (j in 0...4)
 					{
 						babyArrow.animation.addByPrefix(dataColor[j], 'arrow' + dataSuffix[j]);
@@ -2514,6 +2517,16 @@ class PlayState extends MusicBeatState
 					// Conductor.songPosition += FlxG.elapsed * 1000;
 					// trace('MISSED FRAME');
 				}
+
+				var curTime:Float = Conductor.songPosition;
+				if (curTime < 0)
+					curTime = 0;
+
+				var secondsTotal:Int = Math.floor((curTime - songLength) / 1000);
+				if (secondsTotal < 0)
+					secondsTotal = 0;
+
+				songName.text = SONG.songName + ' (' + FlxStringUtil.formatTime(songLength - secondsTotal, false) + ')';
 			}
 
 			// Conductor.lastSongPos = FlxG.sound.music.time;

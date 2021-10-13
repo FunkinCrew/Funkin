@@ -50,7 +50,9 @@ class AnimationDebug extends MusicBeatState
 	var offsetX:FlxUINumericStepper;
 	var offsetY:FlxUINumericStepper;
 
-	public function new(daAnim:String = 'spooky')
+	var characters:Array<String>;
+
+	public function new(daAnim:String = 'bf')
 	{
 		super();
 		this.daAnim = daAnim;
@@ -88,29 +90,13 @@ class AnimationDebug extends MusicBeatState
 		add(front);
 		add(curt);
 
-		if (daAnim == 'bf')
-			isDad = false;
+		dad = new Character(0, 0, daAnim);
+		dad.screenCenter();
+		dad.debugMode = true;
+		add(dad);
 
-		if (isDad)
-		{
-			dad = new Character(0, 0, daAnim);
-			dad.screenCenter();
-			dad.debugMode = true;
-			add(dad);
-
-			char = dad;
-			dad.flipX = false;
-		}
-		else
-		{
-			bf = new Boyfriend(0, 0);
-			bf.screenCenter();
-			bf.debugMode = true;
-			add(bf);
-
-			char = bf;
-			bf.flipX = false;
-		}
+		char = dad;
+		dad.flipX = false;
 
 		dumbTexts = new FlxTypedGroup<FlxText>();
 		add(dumbTexts);
@@ -124,6 +110,8 @@ class AnimationDebug extends MusicBeatState
 		genBoyOffsets();
 
 		addHelpText();
+
+		characters = CoolUtil.coolTextFile(Paths.txt('data/characterList'));
 
 		var tabs = [{name: "Offsets", label: 'Offset menu'},];
 
@@ -160,7 +148,26 @@ class AnimationDebug extends MusicBeatState
 
 	function addOffsetUI():Void
 	{
-		var offsetX_label = new FlxText(10, 10, 'X Offset');
+		var player1DropDown = new FlxUIDropDownMenu(10, 10, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
+		{
+			remove(dad);
+			dad = new Character(0, 0, characters[Std.parseInt(character)]);
+			dad.screenCenter();
+			dad.debugMode = true;
+			dad.flipX = false;
+			add(dad);
+
+			replace(char, dad);
+			char = dad;
+
+			dumbTexts.clear();
+			genBoyOffsets(true, true);
+			updateTexts();
+		});
+
+		player1DropDown.selectedLabel = char.curCharacter;
+
+		var offsetX_label = new FlxText(10, 50, 'X Offset');
 
 		var UI_offsetX:FlxUINumericStepper = new FlxUINumericStepper(10, offsetX_label.y + offsetX_label.height + 10, 1,
 			char.animOffsets.get(animList[curAnim])[0], -500.0, 500.0, 0);
@@ -183,12 +190,16 @@ class AnimationDebug extends MusicBeatState
 		tab_group_offsets.add(offsetY_label);
 		tab_group_offsets.add(UI_offsetX);
 		tab_group_offsets.add(UI_offsetY);
+		tab_group_offsets.add(player1DropDown);
 
 		UI_box.addGroup(tab_group_offsets);
 	}
 
-	function genBoyOffsets(pushList:Bool = true):Void
+	function genBoyOffsets(pushList:Bool = true, ?cleanArray:Bool = false):Void
 	{
+		if (cleanArray)
+			animList.splice(0, animList.length);
+
 		var daLoop:Int = 0;
 
 		for (anim => offsets in char.animOffsets)
@@ -316,8 +327,8 @@ class AnimationDebug extends MusicBeatState
 		if (FlxG.mouse.overlaps(char) && FlxG.mouse.pressed)
 		{
 			// HOW THE FUCK DO I CONVERT THIS
-			char.animOffsets.get(animList[curAnim])[0] = Math.round(-FlxG.mouse.screenX + (char.width * 1.5));
-			char.animOffsets.get(animList[curAnim])[1] = Math.round(-FlxG.mouse.screenY + (char.height / 1.5));
+			char.animOffsets.get(animList[curAnim])[0] = -Math.round(FlxG.mouse.x - char.frameWidth * 1.5);
+			char.animOffsets.get(animList[curAnim])[1] = -Math.round(FlxG.mouse.y - char.frameHeight / 2);
 
 			updateTexts();
 			genBoyOffsets(false);

@@ -135,6 +135,9 @@ class KadeEngineData
 		if (FlxG.save.data.laneTransparency == null)
 			FlxG.save.data.laneTransparency = 0.5;
 
+		if (FlxG.save.data.noteskin == null)
+			FlxG.save.data.noteskin = "Arrows";
+
 		var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
 
 		KeyBinds.gamepad = gamepad != null;

@@ -88,7 +88,7 @@ class Caching extends MusicBeatState
 		#if FEATURE_FILESYSTEM
 		if (FlxG.save.data.cacheImages)
 		{
-			trace("caching images...");
+			Debug.logTrace("caching images...");
 
 			// TODO: Refactor this to use OpenFlAssets.
 			for (i in FileSystem.readDirectory(FileSystem.absolutePath("assets/shared/images/characters")))
@@ -97,9 +97,16 @@ class Caching extends MusicBeatState
 					continue;
 				images.push(i);
 			}
+
+			for (i in FileSystem.readDirectory(FileSystem.absolutePath("assets/shared/images/noteskins")))
+			{
+				if (!i.endsWith(".png"))
+					continue;
+				images.push(i);
+			}
 		}
 
-		trace("caching music...");
+		Debug.logTrace("caching music...");
 
 		// TODO: Get the song list from OpenFlAssets.
 		music = Paths.listSongsToCache();
@@ -188,7 +195,7 @@ class Caching extends MusicBeatState
 			done++;
 		}
 
-		trace("Finished caching...");
+		Debug.logTrace("Finished caching...");
 
 		loaded = true;
 
