@@ -218,7 +218,7 @@ class StoryMenuState extends MusicBeatState
 		groupSwitchText.borderSize = 1;
 		add(groupSwitchText);
 
-		updateText();
+		changeWeek();
 	}
 
 	function addWeekCharacters()
@@ -447,7 +447,12 @@ class StoryMenuState extends MusicBeatState
 			loadJSON(WeekName);
 		}
 		#else
-		loadJSON("original_weeks");
+		var weeks = CoolUtil.coolTextFile(Paths.txt("storyWeekList"));
+
+		for(WeekName in weeks)
+		{
+			loadJSON(WeekName);
+		}
 		#end
 
 		currentGroup = groups[0];

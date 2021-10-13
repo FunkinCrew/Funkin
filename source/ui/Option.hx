@@ -357,57 +357,6 @@ class GameStateOption extends Option
     }
 }
 
-/**
-* An Accuracy changer option.
-*/
-class AccuracyOption extends Option
-{
-	// VARIABLES //
-	var Current_Mode:String = "simple";
-
-    override public function new(_Option_Row:Int = 0)
-    {
-        super();
-
-        // SETTING VALUES //
-		this.Current_Mode = FlxG.save.data.accuracyMode;
-        this.Option_Name = "Accuracy Mode "  + Current_Mode;
-        this.Option_Row = _Option_Row;
-
-        // CREATING OTHER OBJECTS //
-        Alphabet_Text = new Alphabet(20, 20 + (Option_Row * 100), Option_Name, true);
-        Alphabet_Text.isMenuItem = true;
-        Alphabet_Text.targetY = Option_Row;
-        add(Alphabet_Text);
-    }
-
-    override function update(elapsed:Float)
-    {
-        super.update(elapsed);
-
-        if(FlxG.keys.justPressed.ENTER && Std.int(Alphabet_Text.targetY) == 0 && !OptionsMenu.inMenu)
-        {
-			if(Current_Mode == "simple")
-				Current_Mode = "strict";
-			else
-				Current_Mode = "simple";
-
-			this.Option_Name = "Accuracy Mode "  + Current_Mode;
-
-			remove(Alphabet_Text);
-			Alphabet_Text.destroy();
-
-			Alphabet_Text = new Alphabet(20, 20 + (Option_Row * 100), Option_Name, true);
-			Alphabet_Text.isMenuItem = true;
-			Alphabet_Text.targetY = Option_Row;
-			add(Alphabet_Text);
-
-			FlxG.save.data.accuracyMode = Current_Mode;
-			FlxG.save.flush();
-		}
-    }
-}
-
 #if sys
 /**
  * Option for enabling and disabling mods.
@@ -500,3 +449,75 @@ class MaxFPSOption extends Option
 			FlxG.state.openSubState(new MaxFPSMenu());
     }
 }
+
+/**
+* A Option for save data that is saved a string with multiple pre-defined states (aka like accuracy option or cutscene option)
+*/
+class StringSaveOption extends Option
+{
+	// VARIABLES //
+	var Current_Mode:String = "option 2";
+	var Modes:Array<String> = ["option 1", "option 2", "option 3"];
+	var Data:Dynamic;
+	var Cool_Name:String;
+
+	function SetDataIGuess() { FlxG.save.flush(); }
+
+    override public function new(_Option_Name:String = "String Switcher", _Modes:Array<String>, _Data:Dynamic, _Option_Row:Int = 0)
+    {
+        super();
+
+        // SETTING VALUES //
+        this.Option_Row = _Option_Row;
+		this.Modes = _Modes;
+		this.Data = _Data;
+		this.Current_Mode = Data;
+		this.Cool_Name = _Option_Name;
+		this.Option_Name = Cool_Name + " " + Current_Mode;
+
+        // CREATING OTHER OBJECTS //
+        Alphabet_Text = new Alphabet(20, 20 + (Option_Row * 100), Option_Name, true);
+        Alphabet_Text.isMenuItem = true;
+        Alphabet_Text.targetY = Option_Row;
+        add(Alphabet_Text);
+    }
+
+    override function update(elapsed:Float)
+    {
+        super.update(elapsed);
+
+        if(FlxG.keys.justPressed.ENTER && Std.int(Alphabet_Text.targetY) == 0 && !OptionsMenu.inMenu)
+        {
+			var prevIndex = Modes.indexOf(Current_Mode);
+
+			if(prevIndex != -1)
+			{
+				if(prevIndex + 1 > Modes.length - 1)
+					prevIndex = 0;
+				else
+					prevIndex++;
+			}
+			else
+				prevIndex = 0;
+
+			Current_Mode = Modes[prevIndex];
+
+			this.Option_Name = Cool_Name + " " + Current_Mode;
+
+			remove(Alphabet_Text);
+			Alphabet_Text.destroy();
+
+			Alphabet_Text = new Alphabet(20, 20 + (Option_Row * 100), Option_Name, true);
+			Alphabet_Text.isMenuItem = true;
+			Alphabet_Text.targetY = Option_Row;
+			add(Alphabet_Text);
+
+			Data = Current_Mode;
+
+			SetDataIGuess();
+		}
+    }
+}
+
+class AccuracyOption extends StringSaveOption { override function SetDataIGuess() { FlxG.save.data.accuracyMode = Data; super.SetDataIGuess(); } }
+class CutsceneOption extends StringSaveOption { override function SetDataIGuess() { FlxG.save.data.cutscenePlays = Data; super.SetDataIGuess(); } }

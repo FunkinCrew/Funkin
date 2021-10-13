@@ -47,7 +47,7 @@ class OptionsMenu extends MusicBeatState
 			new PageOption("Back", 0, "Categories"),
 			new ControlMenuSubStateOption("Binds", 1),
 			new SongOffsetOption("Song Offset", 2),
-			new AccuracyOption(3),
+			new AccuracyOption("Accuracy Mode", ["simple","strict"], FlxG.save.data.accuracyMode, 3),
 			new BoolOption("Downscroll", "downscroll", FlxG.save.data.downscroll, 4),
 			new BoolOption("Centered Arrows", "middleScroll", FlxG.save.data.middleScroll, 5),
 			new BoolOption("No Miss", "nohit", FlxG.save.data.nohit, 6),
@@ -62,8 +62,8 @@ class OptionsMenu extends MusicBeatState
 			new BoolOption("Note Splashes", "noteSplashes", FlxG.save.data.noteSplashes, 1),
 			new BoolOption("Note Accuracy Text", "msText", FlxG.save.data.msText, 2),
 			new BoolOption("FPS Counter", "fpsCounter", FlxG.save.data.fpsCounter, 3),
-			new MaxFPSOption("Max FPS", 4),
-			new BoolOption("Memory Counter", "memoryCounter", FlxG.save.data.memoryCounter, 5),
+			new BoolOption("Memory Counter", "memoryCounter", FlxG.save.data.memoryCounter, 4),
+			new MaxFPSOption("Max FPS", 5),
 			new UISkinSelectOption("UI Skin", 6)
 		],
 		[
@@ -81,7 +81,8 @@ class OptionsMenu extends MusicBeatState
 			new BoolOption("Friday-Night Title Music", "nightMusic", FlxG.save.data.nightMusic, 2),
 			new BoolOption("Watermarks", "watermarks", FlxG.save.data.watermarks, 3),
 			new BoolOption("Freeplay Music", "freeplayMusic", FlxG.save.data.freeplayMusic, 4),
-			new BoolOption("Discord RPC", "discordRPC", FlxG.save.data.discordRPC, 5)
+			new BoolOption("Discord RPC", "discordRPC", FlxG.save.data.discordRPC, 5),
+			new CutsceneOption("Cutscenes Play On", ["story","freeplay","both"], FlxG.save.data.cutscenePlays, 6)
 		]
 	];
 

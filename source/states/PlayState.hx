@@ -580,7 +580,7 @@ class PlayState extends MusicBeatState
 		isDebug = true;
 		#end
 
-		playCutsceneLmao = (isStoryMode && FlxG.save.data.cutscenePlays == "story") || (!isStoryMode && FlxG.save.data.cutscenePlays == "freeplay") || FlxG.save.data.cutscenePlays == "both";
+		playCutsceneLmao = (isStoryMode && FlxG.save.data.cutscenePlays == "story") || (!isStoryMode && FlxG.save.data.cutscenePlays == "freeplay") || (FlxG.save.data.cutscenePlays == "both");
 
 		if (playCutsceneLmao)
 		{
@@ -636,7 +636,7 @@ class PlayState extends MusicBeatState
 						doof.scrollFactor.set();
 						doof.finishThing = startCountdown;
 						doof.cameras = [camHUD];
-						
+
 						schoolIntro(doof);
 					default:
 						startCountdown();
@@ -1030,6 +1030,12 @@ class PlayState extends MusicBeatState
 					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
 				else
 					oldNote = null;
+
+				if(!Std.isOfType(songNotes[4], String))
+					songNotes[4] = null;
+
+				if(!Std.isOfType(songNotes[3], Int))
+					songNotes[3] = null;
 
 				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote, false, songNotes[3], songNotes[4]);
 				swagNote.sustainLength = songNotes[2];
