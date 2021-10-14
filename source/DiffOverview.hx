@@ -129,7 +129,7 @@ class DiffOverview extends FlxSubState
 		{
 			// FlxG.log.add(i);
 			var babyArrow:StaticArrow = new StaticArrow(-10, strumLine.y);
-			babyArrow.frames = Paths.getSparrowAtlas('noteskins/' + FlxG.save.data.noteskin);
+			babyArrow.frames = NoteskinHelpers.generateNoteskinSprite(FlxG.save.data.noteskin);
 			for (j in 0...4)
 			{
 				babyArrow.animation.addByPrefix(dataColor[j], 'arrow' + dataSuffix[j]);

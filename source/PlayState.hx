@@ -1740,7 +1740,7 @@ class PlayState extends MusicBeatState
 			if (PlayStateChangeables.Optimize && player == 0)
 				continue;
 
-			if (SONG.noteStyle == null)
+			if (SONG.noteStyle == null && FlxG.save.data.overrideNoteskins)
 			{
 				switch (storyWeek)
 				{
@@ -1777,7 +1777,7 @@ class PlayState extends MusicBeatState
 					}
 
 				default:
-					babyArrow.frames = Paths.getSparrowAtlas('noteskins/' + FlxG.save.data.noteskin);
+					babyArrow.frames = NoteskinHelpers.generateNoteskinSprite(FlxG.save.data.noteskin);
 					for (j in 0...4)
 					{
 						babyArrow.animation.addByPrefix(dataColor[j], 'arrow' + dataSuffix[j]);
