@@ -922,6 +922,29 @@ class MiddleScrollOption extends Option
 	}
 }
 
+class NoteskinOption extends Option
+{
+	public function new(desc:String)
+	{
+		super();
+		description = desc;
+	}
+
+	public override function press():Bool
+	{
+		FlxG.save.data.noteskin++;
+		if (FlxG.save.data.noteskin > NoteskinHelpers.getNoteskins().length - 1)
+			FlxG.save.data.noteskin = 0;
+		display = updateDisplay();
+		return true;
+	}
+
+	private override function updateDisplay():String
+	{
+		return NoteskinHelpers.getNoteskinByID(FlxG.save.data.noteskin) + " noteskin";
+	}
+}
+
 class HealthBarOption extends Option
 {
 	public function new(desc:String)
