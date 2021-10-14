@@ -30,14 +30,11 @@ IF YOU WANT TO COMPILE THE GAME YOURSELF, CONTINUE READING!!!
 
 First, you need to install Haxe and HaxeFlixel. I'm too lazy to write and keep updated with that setup (which is pretty simple). 
 1. [Install Haxe 4.1.5](https://haxe.org/download/version/4.1.5/) (Download 4.1.5 instead of 4.2.0 because 4.2.0 is broken and is not working with gits properly...)
-2.  You can [Install HaxeFlixel](https://haxeflixel.com/documentation/install-haxeflixel/) after downloading Haxe or you can download separately openfl, lime and hxcpp
+2.  You can [Install HaxeFlixel](https://haxeflixel.com/documentation/install-haxeflixel/)
 
 Other installations you'd need are the additional libraries, a fully updated list will be in `Project.xml` in the project root. Currently, these are all of the things you need to install:
 ```
 flixel
-openfl 9.0.2
-lime 7.7.0
-hxcpp 4.1.15
 vshaxe
 flixel-addons
 flixel-ui
@@ -45,7 +42,6 @@ hscript
 newgrounds
 ```
 So for each of those type `haxelib install [library]` so shit like `haxelib install newgrounds`
-(Downloading the openfl, lime and hxcpp libraries with each specific version and vshaxe can make you use the Haxe [language server](https://marketplace.visualstudio.com/items?itemName=nadako.vshaxe) in Visual Studio Code, You can't use another type of versions without failing your cache, making it very slow and tedious.)
 
 You'll also need to install a couple things that involve Gits. To do this, you need to do a few things first.
 1. Download [git-scm](https://git-scm.com/downloads). Works for Windows, Mac, and Linux, just select your build.
@@ -92,3 +88,27 @@ As for Mac, 'lime test mac -debug' should work, if not the internet surely has a
 ### Additional guides
 
 - [Command line basics](https://ninjamuffin99.newgrounds.com/news/post/1090480)
+
+### VSCode
+
+In case that you use VSCode, You might need to check the Haxe Server Language thing, It's mostly for having a sweet menu for all the libraries and don't having to copy paste code?
+
+Download the [Haxe language support](https://marketplace.visualstudio.com/items?itemName=nadako.vshaxe) and the [Lime](https://marketplace.visualstudio.com/items?itemName=openfl.lime-vscode-extension) extension And you should go like normal. 
+
+If you hate the `"Unable to build cache - completion features may be slower than expected. Try fixing the error(s) and restarting the language server."` error
+You might need to downgrading the openfl, lime and hxcpp to these specific versions
+
+```
+
+lime 7.7.0
+openfl 9.0.2
+hxcpp 4.1.15
+
+```
+These are currently the most compatible with each other and with the Haxe Server, idk why
+
+
+(At this point you should know how to install libraries)
+
+
+And if you have a current version and you need to set it to another, just use `haxelib set [library] [library-version]`.
