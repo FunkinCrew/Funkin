@@ -91,7 +91,9 @@ As for Mac, 'lime test mac -debug' should work, if not the internet surely has a
 
 ### VSCode
 
-In case that you use VSCode, You might need to check the Haxe Server Language thing, It's mostly for having a sweet menu for all the libraries and don't having to copy paste code?
+In case that you use VSCode, You might need to check the Haxe Server Language thing, It's mostly for having a sweet mini menu for all the library and haxe functions
+
+(and don't have to check 27 billion times how a library works lol)
 
 Download the [Haxe language support](https://marketplace.visualstudio.com/items?itemName=nadako.vshaxe) and the [Lime](https://marketplace.visualstudio.com/items?itemName=openfl.lime-vscode-extension) extension And you should go like normal. 
 
