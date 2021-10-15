@@ -219,6 +219,17 @@ class GameplayCustomizeState extends MusicBeatState
 
 		camFollow.setPosition(camPos.x, camPos.y);
 
+		switch (stageCheck)
+		{
+			case 'limo':
+				camFollow.x = boyfriend.getMidpoint().x - 300;
+			case 'mall':
+				camFollow.y = boyfriend.getMidpoint().y - 200;
+			case 'school' | 'schoolEvil':
+				camFollow.x = boyfriend.getMidpoint().x - 200;
+				camFollow.y = boyfriend.getMidpoint().y - 200;
+		}
+
 		add(camFollow);
 
 		FlxG.camera.follow(camFollow, LOCKON, 0.01);
