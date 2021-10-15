@@ -9,9 +9,54 @@ using StringTools;
 
 typedef Cutscene = {
     var type:String;
+    var bgFade:Bool;
 
+    /* VIDEO */
     var videoPath:String;
     var videoExt:String;
+
+    /* DIALOGUE */
+    var dialogueSections:Array<DialogueSection>;
+    var dialogueMusic:String;
+}
+
+typedef DialogueSection = {
+    var side:String;
+
+    var showOtherPortrait:Bool;
+
+    var leftPortrait:DialogueObject;
+    var rightPortrait:DialogueObject;
+
+    var dialogue:DialogueText;
+
+    var box:DialogueObject;
+
+    var has_Hand:Bool;
+    var hand_Sprite:DialogueObject;
+}
+
+typedef DialogueObject = {
+    var sprite:String;
+
+    var x:Float;
+    var y:Float;
+
+    var scale:Float;
+    var antialiased:Bool;
+}
+
+typedef DialogueText = {
+    var text:String;
+    var font:String;
+    var sound:String;
+
+    // hex codes lol
+    var color:String;
+    var shadowColor:String;
+
+    var hasShadow:Bool;
+    var shadowOffset:Float;
 }
 
 class CutsceneUtil

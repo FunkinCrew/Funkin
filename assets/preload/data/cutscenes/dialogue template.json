@@ -1,0 +1,48 @@
+{
+    "type": "dialogue",
+    "dialogueSections": [
+        {
+            "side": "right",
+            "showOtherPortrait": true,
+            "leftPortrait": {
+                "sprite": "week6/senpai_Port",
+                "x": 0,
+                "y": 0,
+                "scale": 5.4,
+                "antialiased": false
+            },
+            "rightPortrait": {
+                "sprite": "week6/bf_Port",
+                "x": 0,
+                "y": 0,
+                "scale": 5.4,
+                "antialiased": false
+            },
+            "box": {
+                "sprite": "week6/defaultBox",
+                "x": 0,
+                "y": 0,
+                "scale": 5.4,
+                "antialiased": false
+            },
+            "has_Hand": true,
+            "hand_Sprite": {
+                "sprite": "week6/hand_textbox",
+                "x": 0,
+                "y": 0,
+                "scale": 6,
+                "antialiased": false
+            },
+            "dialogue": {
+                "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+                "font": "pixel",
+                "sound": "cutscene/pixelText",
+                "color": "#3F2021",
+                "hasShadow": true,
+                "shadowColor": "#D89494",
+                "shadowOffset": 2
+            }
+        }
+    ],
+    "dialogueMusic": "cutscene/Lunchbox"
+}

@@ -278,6 +278,10 @@ class PlayState extends MusicBeatState
 		if(Std.string(SONG.ui_Skin) == "null")
 			SONG.ui_Skin = SONG.stage == "school" || SONG.stage == "evil-school" ? "pixel" : "default";
 
+		// yo poggars
+		if(SONG.ui_Skin == "default")
+			SONG.ui_Skin = FlxG.save.data.uiSkin;
+
 		#if sys
 		ui_Settings = CoolUtil.coolTextFilePolymod(Paths.txt("ui skins/" + SONG.ui_Skin + "/config"));
 		mania_size = CoolUtil.coolTextFilePolymod(Paths.txt("ui skins/" + SONG.ui_Skin + "/maniasize"));
@@ -298,17 +302,11 @@ class PlayState extends MusicBeatState
 
 		Note.swagWidth = 160 * (Std.parseFloat(ui_Settings[5]) - ((SONG.keyCount - 4) * 0.06));
 
-		if(Assets.exists(Paths.image('ui skins/' + SONG.ui_Skin + "/arrows/default", 'shared'), IMAGE))
-			arrow_Type_Sprites.set("default", Paths.getSparrowAtlas('ui skins/' + SONG.ui_Skin + "/arrows/default", 'shared'));
-		else
-			arrow_Type_Sprites.set("default", Paths.getSparrowAtlasSYS('ui skins/' + SONG.ui_Skin + "/arrows/default", 'shared'));
+		arrow_Type_Sprites.set("default", Paths.getSparrowAtlas('ui skins/' + SONG.ui_Skin + "/arrows/default", 'shared'));
 
 		if(Std.parseInt(ui_Settings[6]) == 1)
 		{
-			if(Assets.exists(Paths.image('ui skins/' + SONG.ui_Skin + "/arrows/Note_Splashes", 'shared'), IMAGE))
-				splash_Texture = Paths.getSparrowAtlas('ui skins/' + SONG.ui_Skin + "/arrows/Note_Splashes", 'shared');
-			else
-				splash_Texture = Paths.getSparrowAtlasSYS('ui skins/' + SONG.ui_Skin + "/arrows/Note_Splashes", 'shared');
+			splash_Texture = Paths.getSparrowAtlas('ui skins/' + SONG.ui_Skin + "/arrows/Note_Splashes", 'shared');
 
 			splashesSettings = ui_Settings;
 		}
@@ -584,6 +582,7 @@ class PlayState extends MusicBeatState
 
 		if (playCutsceneLmao)
 		{
+			/*
 			if(SONG.cutscene == null || SONG.cutscene == "")
 			{
 				switch (curSong.toLowerCase())
@@ -643,7 +642,7 @@ class PlayState extends MusicBeatState
 				}
 			}
 			else
-			{
+			{*/
 				cutscene = CutsceneUtil.loadFromJson(SONG.cutscene);
 
 				if(cutscene != null)
@@ -659,7 +658,7 @@ class PlayState extends MusicBeatState
 				}
 				else
 					startCountdown();
-			}
+			//}
 		}
 		else
 		{
@@ -871,8 +870,8 @@ class PlayState extends MusicBeatState
 					ready.scrollFactor.set();
 					ready.updateHitbox();
 
-					if (curStage.contains('school'))
-						ready.setGraphicSize(Std.int(ready.width * daPixelZoom));
+					ready.setGraphicSize(Std.int(ready.width * Std.parseFloat(ui_Settings[0]) * Std.parseFloat(ui_Settings[7])));
+					ready.updateHitbox();
 
 					ready.screenCenter();
 					add(ready);
@@ -887,9 +886,10 @@ class PlayState extends MusicBeatState
 				case 2:
 					var set:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAssets[1], 'shared'));
 					set.scrollFactor.set();
+					set.updateHitbox();
 
-					if (curStage.contains('school'))
-						set.setGraphicSize(Std.int(set.width * daPixelZoom));
+					set.setGraphicSize(Std.int(set.width * Std.parseFloat(ui_Settings[0]) * Std.parseFloat(ui_Settings[7])));
+					set.updateHitbox();
 
 					set.screenCenter();
 					add(set);
@@ -904,10 +904,9 @@ class PlayState extends MusicBeatState
 				case 3:
 					var go:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAssets[2], 'shared'));
 					go.scrollFactor.set();
+					go.updateHitbox();
 
-					if (curStage.contains('school'))
-						go.setGraphicSize(Std.int(go.width * daPixelZoom));
-
+					go.setGraphicSize(Std.int(go.width * Std.parseFloat(ui_Settings[0]) * Std.parseFloat(ui_Settings[7])));
 					go.updateHitbox();
 
 					go.screenCenter();

@@ -14,6 +14,22 @@ import lime.utils.Assets;
 
 using StringTools;
 
+class Event
+{
+	public var name:String;
+	public var position:Float;
+	public var value:Float;
+	public var type:String;
+
+	public function new(name:String,pos:Float,value:Float,type:String)
+	{
+		this.name = name;
+		this.position = pos;
+		this.value = value;
+		this.type = type;
+	}
+}
+
 typedef SwagSong =
 {
 	var song:String;
@@ -38,6 +54,8 @@ typedef SwagSong =
 	var ui_Skin:String;
 
 	var cutscene:String;
+
+	var eventObjects:Array<Event>;
 }
 
 class Song

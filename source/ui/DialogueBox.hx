@@ -1,5 +1,6 @@
 package ui;
 
+import game.Cutscene.DialogueSection;
 import flixel.system.FlxSound;
 #if sys
 import sys.FileSystem;
@@ -42,25 +43,18 @@ class DialogueBox extends FlxSpriteGroup
 	var bgFade:FlxSprite;
 	var ambientMusic:FlxSound = null;
 
-	public function new(talkingRight:Bool = true, ?dialogueList:Array<String>)
+	var sections:Array<DialogueSection>;
+
+	public function new(sections:Array<DialogueSection>, ?music:String)
 	{
 		super();
 
+		this.sections = sections;
+
 		// Ambient Music //
 
-		switch (PlayState.SONG.song.toLowerCase())
-		{
-			case 'senpai':
-				ambientMusic = FlxG.sound.load(Paths.music('Lunchbox', 'preload'), 0, true);
-			case 'thorns':
-				ambientMusic = FlxG.sound.load(Paths.music('LunchboxScary', 'preload'), 0, true);
-		}
-
-		var isDebug:Bool = false;
-
-		#if debug
-		isDebug = true;
-		#end
+		if(music != null)
+			ambientMusic = FlxG.sound.load(Paths.music(music, 'shared'), 0, true);
 
 		if(ambientMusic != null && PlayState.playCutsceneLmao)
 		{
@@ -167,7 +161,7 @@ class DialogueBox extends FlxSpriteGroup
 		swagDialogue = new FlxTypeText(240, 450, Std.int(FlxG.width * 0.6), "", 32);
 		swagDialogue.font = 'Pixel Arial 11 Bold';
 		swagDialogue.color = 0xFF3F2021;
-		swagDialogue.sounds = [FlxG.sound.load(Paths.sound('pixelText'), 0.6)];
+		swagDialogue.sounds = [FlxG.sound.load(Paths.sound('cutscene/pixelText', 'shared'), 0.6)];
 		add(swagDialogue);
 
 		dialogue = new Alphabet(0, 80, "", false, true);

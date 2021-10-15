@@ -71,11 +71,6 @@ class LoadingState extends MusicBeatState
 				checkLibrary("shared");
 				checkLibrary("stages");
 				checkLibrary("songs");
-
-				if(PlayState.storyWeek < 0)
-					PlayState.storyWeek = 0;
-
-				checkLibrary("week" + PlayState.storyWeek);
 				
 				var fadeTime = 0.5;
 				FlxG.camera.fade(FlxG.camera.bgColor, fadeTime, true);

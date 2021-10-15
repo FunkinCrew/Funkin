@@ -57,6 +57,8 @@ class CoolUtil
 
 	public static function coolTextFilePolymod(path:String):Array<String>
 	{
+		return coolTextFile(path);
+		/*
 		var daList:Array<String> = PolymodAssets.getText(path).trim().split('\n');
 
 		for (i in 0...daList.length)
@@ -64,7 +66,7 @@ class CoolUtil
 			daList[i] = daList[i].trim();
 		}
 
-		return daList;
+		return daList;*/
 	}
 	#end
 

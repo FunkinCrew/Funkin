@@ -1,9 +1,12 @@
 package game;
 
+import game.Song.Event;
 import flixel.math.FlxMath;
 import flixel.FlxG;
 import states.PlayState;
 import game.Song.SwagSong;
+
+using StringTools;
 
 /**
  * ...
@@ -90,7 +93,48 @@ class Conductor
 			totalPos += FlxMath.roundDecimal(((60 / curBPM) * 1000 / 4) * deltaSteps, 4);
 		}
 
+		/*
+		if(song.eventObjects != null)
+		{
+			var convertedStuff:Array<Event> = [];
+
+			for(i in song.eventObjects)
+			{
+				var name = Reflect.field(i,"name");
+				var type = Reflect.field(i,"type");
+				var pos = Reflect.field(i,"position");
+				var value = Reflect.field(i,"value");
+	
+				convertedStuff.push(new Song.Event(name,pos,value,type));
+			}
+
+			song.eventObjects = convertedStuff;
+			
+			for (i in 0...song.eventObjects.length)
+			{
+				var cool_event = song.eventObjects[i];
+
+				if(cool_event.type.toLowerCase() == "bpm change")
+				{
+					curBPM = cool_event.value * songMultiplier;
+
+					crochet = ((60 / curBPM) * 1000) / songMultiplier;
+					stepCrochet = crochet / (16 / timeScale[1]);
+
+					var event:BPMChangeEvent = {
+						stepTime: Math.ceil(cool_event.position * (16 / timeScale[1])),
+						songTime: cool_event.position * crochet,
+						bpm: curBPM
+					};
+	
+					bpmChangeMap.push(event);
+				}
+			}
+		}*/
+
 		trace("new BPM map BUDDY " + bpmChangeMap);
+
+		recalculateStuff(songMultiplier);
 	}
 
 	public static function changeBPM(newBpm:Float, ?multi:Float = 1)

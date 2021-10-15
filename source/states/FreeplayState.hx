@@ -59,7 +59,7 @@ class FreeplayState extends MusicBeatState
 
 	public static var songsReady:Bool = false;
 
-	private var coolColors:Array<Int> = [0xFF7F1833, 0xFF7C689E, -14535868, 0xFFA8E060, 0xFFFF87FF, 0xFF8EE8FF, 0xFFFF8CCD, 0xFFFF9900];
+	public static var coolColors:Array<Int> = [0xFF7F1833, 0xFF7C689E, -14535868, 0xFFA8E060, 0xFFFF87FF, 0xFF8EE8FF, 0xFFFF8CCD, 0xFFFF9900];
 	private var bg:FlxSprite;
 	private var selectedColor:Int = 0xFF7F1833;
 	private var interpolation:Float = 0.0;
@@ -108,12 +108,6 @@ class FreeplayState extends MusicBeatState
 		DiscordClient.changePresence("In the Menus", null);
 		#end
 
-		var isDebug:Bool = false;
-
-		#if debug
-		isDebug = true;
-		#end
-
 		// Loops through all songs in freeplaySonglist.txt
 		for (i in 0...initSonglist.length)
 		{
@@ -124,22 +118,21 @@ class FreeplayState extends MusicBeatState
 			var week = Std.parseInt(listArray[2]);
 			var icon = listArray[1];
 			var song = listArray[0];
+			
 			var diffsStr = listArray[3];
 			var diffs = ["easy", "normal", "hard"];
+
+			var color = listArray[4];
+			var actualColor:Null<FlxColor> = null;
+
+			if(color != null)
+				actualColor = FlxColor.fromString(color);
 
 			if(diffsStr != null)
 				diffs = diffsStr.split(",");
 
-			// If you've unlocked the week after this one, then yes
-			if (listArray[3] == null)
-			{
-				// Creates new song data accordingly
-				songs.push(new SongMetadata(song, week, icon, diffs));
-			} else if(listArray[3] != null && FlxG.save.data.debugSongs == true)
-			{
-				// Creates new song data accordingly
-				songs.push(new SongMetadata(song, week, icon, diffs));
-			}
+			// Creates new song data accordingly
+			songs.push(new SongMetadata(song, week, icon, diffs, actualColor));
 		}
 
 		bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
@@ -198,7 +191,7 @@ class FreeplayState extends MusicBeatState
 			black.destroy();
 		}
 
-		selectedColor = coolColors[songs[curSelected].week];
+		selectedColor = songs[curSelected].color;
 		bg.color = selectedColor;
 
 		super.create();
@@ -215,6 +208,7 @@ class FreeplayState extends MusicBeatState
 			songCharacters = ['bf'];
 
 		var num:Int = 0;
+
 		for (song in songs)
 		{
 			addSong(song, weekNum, songCharacters[num]);
@@ -383,7 +377,7 @@ class FreeplayState extends MusicBeatState
 		}
 
 		interpolation = 0.0;
-		selectedColor = coolColors[songs[curSelected].week];
+		selectedColor = songs[curSelected].color;
 
 		for(i in 0...100)
 		{
@@ -400,8 +394,9 @@ class SongMetadata
 	public var week:Int = 0;
 	public var songCharacter:String = "";
 	public var difficulties:Array<String> = ["easy", "normal", "hard"];
+	public var color:FlxColor = FlxColor.GREEN;
 
-	public function new(song:String, week:Int, songCharacter:String, ?difficulties:Array<String>)
+	public function new(song:String, week:Int, songCharacter:String, ?difficulties:Array<String>, ?color:FlxColor)
 	{
 		this.songName = song;
 		this.week = week;
@@ -409,5 +404,15 @@ class SongMetadata
 
 		if(difficulties != null)
 			this.difficulties = difficulties;
+
+		if(color != null)
+			this.color = color;
+		else
+		{
+			if(FreeplayState.coolColors.length - 1 >= this.week)
+				this.color = FreeplayState.coolColors[this.week];
+			else
+				this.color = FreeplayState.coolColors[0];
+		}
 	}
 }

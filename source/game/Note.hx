@@ -70,7 +70,12 @@ class Note extends FlxSprite
 		y = -2000;
 
 		if(!PlayState.instance.arrow_Type_Sprites.exists(arrow_Type))
-			PlayState.instance.arrow_Type_Sprites.set(arrow_Type, Paths.getSparrowAtlas('ui skins/' + song.ui_Skin + "/arrows/" + arrow_Type, 'shared'));
+		{
+			if(PlayState.instance.types.contains(arrow_Type))
+				PlayState.instance.arrow_Type_Sprites.set(arrow_Type, Paths.getSparrowAtlas('ui skins/' + song.ui_Skin + "/arrows/" + arrow_Type, 'shared'));
+			else
+				PlayState.instance.arrow_Type_Sprites.set(arrow_Type, Paths.getSparrowAtlas("ui skins/default/arrows/" + arrow_Type, 'shared'));
+		}
 
 		frames = PlayState.instance.arrow_Type_Sprites.get(arrow_Type);
 
