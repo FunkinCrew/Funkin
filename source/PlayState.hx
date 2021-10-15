@@ -236,8 +236,6 @@ class PlayState extends MusicBeatState
 
 	public static var campaignScore:Int = 0;
 
-	public static var daPixelZoom:Float = 6;
-
 	public static var theFunne:Bool = true;
 
 	var funneEffect:FlxSprite;
@@ -1176,7 +1174,7 @@ class PlayState extends MusicBeatState
 					ready.updateHitbox();
 
 					if (SONG.noteStyle == 'pixel')
-						ready.setGraphicSize(Std.int(ready.width * daPixelZoom));
+						ready.setGraphicSize(Std.int(ready.width * CoolUtil.daPixelZoom));
 
 					ready.screenCenter();
 					add(ready);
@@ -1193,7 +1191,7 @@ class PlayState extends MusicBeatState
 					set.scrollFactor.set();
 
 					if (SONG.noteStyle == 'pixel')
-						set.setGraphicSize(Std.int(set.width * daPixelZoom));
+						set.setGraphicSize(Std.int(set.width * CoolUtil.daPixelZoom));
 
 					set.screenCenter();
 					add(set);
@@ -1210,7 +1208,7 @@ class PlayState extends MusicBeatState
 					go.scrollFactor.set();
 
 					if (SONG.noteStyle == 'pixel')
-						go.setGraphicSize(Std.int(go.width * daPixelZoom));
+						go.setGraphicSize(Std.int(go.width * CoolUtil.daPixelZoom));
 
 					go.updateHitbox();
 
@@ -1762,7 +1760,7 @@ class PlayState extends MusicBeatState
 					babyArrow.animation.add('blue', [5]);
 					babyArrow.animation.add('purplel', [4]);
 
-					babyArrow.setGraphicSize(Std.int(babyArrow.width * daPixelZoom));
+					babyArrow.setGraphicSize(Std.int(babyArrow.width * CoolUtil.daPixelZoom));
 					babyArrow.updateHitbox();
 					babyArrow.antialiasing = false;
 
@@ -2526,7 +2524,8 @@ class PlayState extends MusicBeatState
 				if (secondsTotal < 0)
 					secondsTotal = 0;
 
-				songName.text = SONG.songName + ' (' + FlxStringUtil.formatTime(songLength - secondsTotal, false) + ')';
+				if (FlxG.save.data.songPosition)
+					songName.text = SONG.songName + ' (' + FlxStringUtil.formatTime(songLength - secondsTotal, false) + ')';
 			}
 
 			// Conductor.lastSongPos = FlxG.sound.music.time;
@@ -3645,8 +3644,8 @@ class PlayState extends MusicBeatState
 			}
 			else
 			{
-				rating.setGraphicSize(Std.int(rating.width * daPixelZoom * 0.7));
-				comboSpr.setGraphicSize(Std.int(comboSpr.width * daPixelZoom * 0.7));
+				rating.setGraphicSize(Std.int(rating.width * CoolUtil.daPixelZoom * 0.7));
+				comboSpr.setGraphicSize(Std.int(comboSpr.width * CoolUtil.daPixelZoom * 0.7));
 			}
 
 			currentTimingShown.updateHitbox();
@@ -3695,7 +3694,7 @@ class PlayState extends MusicBeatState
 				}
 				else
 				{
-					numScore.setGraphicSize(Std.int(numScore.width * daPixelZoom));
+					numScore.setGraphicSize(Std.int(numScore.width * CoolUtil.daPixelZoom));
 				}
 				numScore.updateHitbox();
 
@@ -4418,7 +4417,7 @@ class PlayState extends MusicBeatState
 				if (idleToBeat && !boyfriend.animation.curAnim.name.startsWith('sing'))
 					boyfriend.dance(forcedToIdle, currentSection.playerAltAnim);
 			}
-			else if (dad.curCharacter == 'spooky' || dad.curCharacter == 'gf')
+			else if (dad.curCharacter == 'spooky' || dad.curCharacter == 'gf' && !dad.animation.curAnim.name.startsWith('sing'))
 				dad.dance(forcedToIdle, currentSection.CPUAltAnim);
 		}
 		// FlxG.log.add('change bpm' + SONG.notes[Std.int(curStep / 16)].changeBPM);
