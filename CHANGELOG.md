@@ -25,6 +25,7 @@ All notable changes will be documented in this file.
 - 11 - 18 Key Support (yo this is crazy!)
 - Custom Arrow Types! (Death Notes, Caution, etc).
 - Health Icons can be chosen seperately from character names now (aka by default its the char name, but a custom name can be used to prevent duplicate images in the files).
+- Dialogue Cutscenes now work!
 ### Changed
 - Input has been updated and is a lot better now.
 - Held notes no longer count to your accuracy.
