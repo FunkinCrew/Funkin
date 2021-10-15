@@ -22,10 +22,6 @@ class GameplayCustomizeState extends MusicBeatState
 	var defaultX:Float = FlxG.width * 0.55 - 135;
 	var defaultY:Float = FlxG.height / 2 - 50;
 
-	var background:FlxSprite;
-	var curt:FlxSprite;
-	var front:FlxSprite;
-
 	var sick:FlxSprite;
 
 	var text:FlxText;
