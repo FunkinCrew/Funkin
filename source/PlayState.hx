@@ -4417,7 +4417,7 @@ class PlayState extends MusicBeatState
 				if (idleToBeat && !boyfriend.animation.curAnim.name.startsWith('sing'))
 					boyfriend.dance(forcedToIdle, currentSection.playerAltAnim);
 			}
-			else if (dad.curCharacter == 'spooky' || dad.curCharacter == 'gf' && !dad.animation.curAnim.name.startsWith('sing'))
+			else if ((dad.curCharacter == 'spooky' || dad.curCharacter == 'gf') && !dad.animation.curAnim.name.startsWith('sing'))
 				dad.dance(forcedToIdle, currentSection.CPUAltAnim);
 		}
 		// FlxG.log.add('change bpm' + SONG.notes[Std.int(curStep / 16)].changeBPM);
