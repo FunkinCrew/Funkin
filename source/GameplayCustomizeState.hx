@@ -27,10 +27,6 @@ class GameplayCustomizeState extends MusicBeatState
 	var text:FlxText;
 	var blackBorder:FlxSprite;
 
-	var boyfriend:Boyfriend;
-	var dad:Character;
-	var gf:Character;
-
 	var laneunderlay:FlxSprite;
 	var laneunderlayOpponent:FlxSprite;
 
@@ -49,10 +45,13 @@ class GameplayCustomizeState extends MusicBeatState
 	private var camHUD:FlxCamera;
 	private var camGame:FlxCamera;
 	private var camFollow:FlxObject;
-
 	private var dataSuffix:Array<String> = ['LEFT', 'DOWN', 'UP', 'RIGHT'];
 	private var dataColor:Array<String> = ['purple', 'blue', 'green', 'red'];
 
+	public static var dad:Character;
+	public static var gf:Character;
+	public static var boyfriend:Boyfriend;
+	public static var Stage:Stage;
 	public static var freeplayBf:String = 'bf';
 	public static var freeplayDad:String = 'dad';
 	public static var freeplayGf:String = 'gf';
@@ -61,11 +60,11 @@ class GameplayCustomizeState extends MusicBeatState
 	public static var freeplaySong:String = 'Bopeebo';
 	public static var freeplayWeek:Int = 1;
 
-	public static var Stage:Stage;
-
 	public override function create()
 	{
 		super.create();
+
+		PlayStateChangeables.Optimize = false;
 
 		#if FEATURE_DISCORD
 		// Updating Discord Rich Presence
@@ -338,10 +337,12 @@ class GameplayCustomizeState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
+		super.update(elapsed);
+
+		Stage.update(elapsed);
+
 		if (FlxG.sound.music != null)
 			Conductor.songPosition = FlxG.sound.music.time;
-
-		super.update(elapsed);
 
 		if (FlxG.save.data.zoom < 0.8)
 			FlxG.save.data.zoom = 0.8;

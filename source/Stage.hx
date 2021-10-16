@@ -112,7 +112,7 @@ class Stage extends MusicBeatState
 						toAdd.push(phillyTrain);
 					}
 
-					trainSound = new FlxSound().loadEmbedded(Paths.sound('train_passes', 'week3'));
+					trainSound = new FlxSound().loadEmbedded(Paths.sound('train_passes', 'shared'));
 					FlxG.sound.list.add(trainSound);
 
 					// var cityLights:FlxSprite = new FlxSprite().loadGraphic(AssetPaths.win0.png);
@@ -585,14 +585,22 @@ class Stage extends MusicBeatState
 
 	function lightningStrikeShit():Void
 	{
-		FlxG.sound.play(Paths.soundRandom('thunder_', 1, 2));
+		FlxG.sound.play(Paths.soundRandom('thunder_', 1, 2, 'shared'));
 		swagBacks['halloweenBG'].animation.play('lightning');
 
 		lightningStrikeBeat = curBeat;
 		lightningOffset = FlxG.random.int(8, 24);
 
-		PlayState.boyfriend.playAnim('scared', true);
-		PlayState.gf.playAnim('scared', true);
+		if (PlayState.boyfriend != null)
+		{
+			PlayState.boyfriend.playAnim('scared', true);
+			PlayState.gf.playAnim('scared', true);
+		}
+		else
+		{
+			GameplayCustomizeState.boyfriend.playAnim('scared', true);
+			GameplayCustomizeState.gf.playAnim('scared', true);
+		}
 	}
 
 	var trainMoving:Bool = false;
@@ -621,7 +629,11 @@ class Stage extends MusicBeatState
 			if (trainSound.time >= 4700)
 			{
 				startedMoving = true;
-				PlayState.gf.playAnim('hairBlow');
+
+				if (PlayState.gf != null)
+					PlayState.gf.playAnim('hairBlow');
+				else
+					GameplayCustomizeState.gf.playAnim('hairBlow');
 			}
 
 			if (startedMoving)
@@ -648,7 +660,11 @@ class Stage extends MusicBeatState
 	{
 		if (FlxG.save.data.distractions)
 		{
-			PlayState.gf.playAnim('hairFall');
+			if (PlayState.gf != null)
+				PlayState.gf.playAnim('hairFall');
+			else
+				GameplayCustomizeState.gf.playAnim('hairFall');
+
 			swagBacks['phillyTrain'].x = FlxG.width + 200;
 			trainMoving = false;
 			// trainSound.stop();
@@ -678,7 +694,7 @@ class Stage extends MusicBeatState
 	{
 		if (FlxG.save.data.distractions)
 		{
-			FlxG.sound.play(Paths.soundRandom('carPass', 0, 1), 0.7);
+			FlxG.sound.play(Paths.soundRandom('carPass', 0, 1, 'shared'), 0.7);
 
 			swagBacks['fastCar'].visible = true;
 			swagBacks['fastCar'].velocity.x = (FlxG.random.int(170, 220) / FlxG.elapsed) * 3;
