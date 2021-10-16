@@ -372,6 +372,7 @@ class PlayState extends MusicBeatState
 
 		var camPos:FlxPoint = new FlxPoint(dad.getGraphicMidpoint().x, dad.getGraphicMidpoint().y);
 
+		/*
 		switch (SONG.player2)
 		{
 			case 'gf' | 'gf-car' | 'gf-christmas' | 'gf-pixel':
@@ -407,7 +408,7 @@ class PlayState extends MusicBeatState
 			case 'spirit':
 				dad.x -= 150;
 				dad.y += 100;
-		}
+		}*/
 
 		// REPOSITIONING PER STAGE
 		stage.setCharOffsets();
@@ -572,12 +573,6 @@ class PlayState extends MusicBeatState
 
 		startingSong = true;
 
-		var isDebug = false;
-
-		#if debug
-		isDebug = true;
-		#end
-
 		playCutsceneLmao = (isStoryMode && FlxG.save.data.cutscenePlays == "story") || (!isStoryMode && FlxG.save.data.cutscenePlays == "freeplay") || (FlxG.save.data.cutscenePlays == "both");
 
 		if (playCutsceneLmao)
@@ -643,14 +638,23 @@ class PlayState extends MusicBeatState
 			}
 			else
 			{*/
-				cutscene = CutsceneUtil.loadFromJson(SONG.cutscene);
-
-				if(cutscene != null)
+				if(SONG.cutscene != null && SONG.cutscene != "")
 				{
+					cutscene = CutsceneUtil.loadFromJson(SONG.cutscene);
+
 					switch(cutscene.type.toLowerCase())
 					{
 						case "video":
 							startVideo(cutscene.videoPath, cutscene.videoExt);
+
+						case "dialogue":
+							/*
+							var doof:DialogueBox = new DialogueBox(cutscene);
+							doof.scrollFactor.set();
+							doof.finishThing = startCountdown;
+							doof.cameras = [camHUD];
+	
+							startDialogue(doof);*/
 
 						default:
 							startCountdown();
@@ -768,6 +772,20 @@ class PlayState extends MusicBeatState
 
 				remove(black);
 			}
+		});
+	}
+
+	function startDialogue(?dialogueBox:DialogueBox):Void
+	{
+		new FlxTimer().start(0.3, function(tmr:FlxTimer)
+		{
+			if (dialogueBox != null)
+			{
+				inCutscene = true;
+				add(dialogueBox);
+			}
+			else
+				startCountdown();
 		});
 	}
 

@@ -133,6 +133,8 @@ class Song
 				case 1:
 					swagShit.keyCount = 6;
 				case 2:
+					swagShit.keyCount = 7;
+				case 3:
 					swagShit.keyCount = 9;
 			}
 		}

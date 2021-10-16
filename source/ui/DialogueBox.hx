@@ -1,5 +1,7 @@
 package ui;
 
+import flixel.input.actions.FlxAction;
+import game.Cutscene;
 import game.Cutscene.DialogueSection;
 import flixel.system.FlxSound;
 #if sys
@@ -24,15 +26,8 @@ class DialogueBox extends FlxSpriteGroup
 {
 	var box:FlxSprite;
 
-	var curCharacter:String = '';
-
-	var dialogue:Alphabet;
-	var dialogueList:Array<String> = [];
-
-	// SECOND DIALOGUE FOR THE PIXEL SHIT INSTEAD???
-	var swagDialogue:FlxTypeText;
-
-	var dropText:FlxText;
+	var dialogue:FlxTypeText;
+	var dialogueShadow:FlxText;
 
 	public var finishThing:Void->Void;
 
@@ -44,17 +39,20 @@ class DialogueBox extends FlxSpriteGroup
 	var ambientMusic:FlxSound = null;
 
 	var sections:Array<DialogueSection>;
+	var cutscene:Cutscene;
 
-	public function new(sections:Array<DialogueSection>, ?music:String)
+	public function new(cutscene:Cutscene)
 	{
 		super();
 
-		this.sections = sections;
+		/*
+		this.cutscene = cutscene;
+		this.sections = this.cutscene.dialogueSections;
 
 		// Ambient Music //
 
-		if(music != null)
-			ambientMusic = FlxG.sound.load(Paths.music(music, 'shared'), 0, true);
+		if(cutscene.dialogueMusic != null)
+			ambientMusic = FlxG.sound.load(Paths.music(cutscene.dialogueMusic, 'shared'), 0, true);
 
 		if(ambientMusic != null && PlayState.playCutsceneLmao)
 		{
@@ -64,29 +62,34 @@ class DialogueBox extends FlxSpriteGroup
 
 		// Background Fade //
 
-		bgFade = new FlxSprite(-200, -200).makeGraphic(Std.int(FlxG.width * 1.3), Std.int(FlxG.height * 1.3), 0xFFB3DFd8);
-		bgFade.scrollFactor.set();
-		bgFade.alpha = 0;
-		add(bgFade);
-
-		new FlxTimer().start(0.83, function(tmr:FlxTimer)
+		if(cutscene.bgFade)
 		{
-			bgFade.alpha += (1 / 5) * 0.7;
-			if (bgFade.alpha > 0.7)
-				bgFade.alpha = 0.7;
-		}, 5);
+			bgFade = new FlxSprite(-200, -200).makeGraphic(Std.int(FlxG.width * 1.3), Std.int(FlxG.height * 1.3), 0xFFB3DFd8);
+			bgFade.scrollFactor.set();
+			bgFade.alpha = 0;
+			add(bgFade);
 
-		box = new FlxSprite(120, 450);
+			new FlxTimer().start(0.83, function(tmr:FlxTimer)
+			{
+				bgFade.alpha += (1 / 5) * 0.7;
+	
+				if (bgFade.alpha > 0.7)
+					bgFade.alpha = 0.7;
+			}, 5);
+		}
 
-		var face:FlxSprite = new FlxSprite(-1000);
-		
-		var hasDialog = false;
+		box = new FlxSprite(0, 0);
+
+		if(cutscene.dialogueSound != null)
+			FlxG.sound.play(Paths.sound(cutscene.dialogueSound, 'shared'));
+
+		//if(sections[0].box)
+
 		switch (PlayState.SONG.song.toLowerCase())
 		{
 			case 'senpai':
 				box.loadGraphic(Paths.image('weeb/pixelUI/dialogueBox-pixel', 'week6'));
 			case 'roses':
-				FlxG.sound.play(Paths.sound('ANGRY_TEXT_BOX'));
 				box.loadGraphic(Paths.image('weeb/pixelUI/dialogueBox-pixel', 'week6'));
 
 			case 'thorns':
@@ -97,17 +100,140 @@ class DialogueBox extends FlxSpriteGroup
 				add(face);
 		}
 
-		#if sys
-		hasDialog = FileSystem.exists(Sys.getCwd() + "assets/data/song data/" + PlayState.SONG.song.toLowerCase() + "/dialogue.txt");
-		#else
-		hasDialog = PlayState.SONG.song.toLowerCase() == 'senpai' || PlayState.SONG.song.toLowerCase() == "roses" || PlayState.SONG.song.toLowerCase() == "thorns";
-		#end
+		dialogueOpened = true;
+		*/
+	}
 
-		if (!hasDialog)
-			return;
+	var dialogueOpened:Bool = false;
+	var dialogueStarted:Bool = false;
 
-		this.dialogueList = CoolUtil.coolTextFile(Paths.txt("song data/" + PlayState.SONG.song.toLowerCase() + "/dialogue"));
-		
+	override function update(elapsed:Float)
+	{
+		/*
+		// HARD CODING CUZ IM STUPDI
+		if (PlayState.SONG.song.toLowerCase() == 'thorns')
+		{
+			portraitLeft.visible = false;
+			swagDialogue.color = FlxColor.WHITE;
+			dropText.color = FlxColor.BLACK;
+		}
+
+		dropText.text = swagDialogue.text;
+
+		if (dialogueOpened && !dialogueStarted)
+		{
+			startDialogue();
+			dialogueStarted = true;
+		}
+
+		if (FlxG.keys.justPressed.ANY  && dialogueStarted == true)
+		{
+			FlxG.sound.play(Paths.sound('clickText'), 0.8);
+
+			if (sections[1] == null && sections[0] != null)
+			{
+				if (!isEnding)
+				{
+					isEnding = true;
+
+					if (PlayState.SONG.song.toLowerCase() == 'senpai' || PlayState.SONG.song.toLowerCase() == 'thorns')
+						ambientMusic.fadeOut(2.2, 0);
+
+					new FlxTimer().start(0.2, function(tmr:FlxTimer)
+					{
+						box.alpha -= 1 / 5;
+						bgFade.alpha -= 1 / 5 * 0.7;
+						portraitLeft.visible = false;
+						portraitRight.visible = false;
+						swagDialogue.alpha = 1 / 5;
+						dropText.alpha = swagDialogue.alpha;
+						handSelect.alpha = swagDialogue.alpha;
+					}, 5);
+
+					new FlxTimer().start(1.2, function(tmr:FlxTimer)
+					{
+						if(ambientMusic != null)
+							ambientMusic.stop();
+						
+						finishThing();
+						kill();
+					});
+				}
+			}
+			else
+			{
+				sections.remove(sections[0]);
+				startDialogue();
+			}
+		}
+		*/
+		super.update(elapsed);
+	}
+
+	var isEnding:Bool = false;
+
+	function startDialogue():Void
+	{
+		/*
+		swagDialogue.resetText(sections[0].dialogue.text);
+		swagDialogue.start(0.04, true);
+
+		switch (curCharacter)
+		{
+			case 'dad':
+				portraitRight.visible = false;
+				if (!portraitLeft.visible)
+				{
+					portraitLeft.visible = true;
+				}
+			case 'bf':
+				portraitLeft.visible = false;
+				if (!portraitRight.visible)
+				{
+					portraitRight.visible = true;
+				}
+		}*/
+	}
+
+	function reloadAssets()
+	{
+		/*
+		var cutsceneData = sections[0];
+
+		if(box != null)
+		{
+			remove(box);
+			box.kill();
+			box.destroy();
+		}
+
+		box = new FlxSprite(0, 0);
+
+		var boxData = cutsceneData.box;
+
+		if(boxData.animated)
+		{
+			box.frames = Paths.getSparrowAtlas("cutscenes/" + boxData.sprite);
+			box.animation.addByPrefix("default", boxData.anim_Name, (boxData.fps != null ? boxData.fps : 24));
+			box.animation.play("default");
+		}
+
+		if(boxData.antialiased != null)
+			box.antialiasing = boxData.antialiased;
+
+		if(boxData.scale != null)
+			boxData.scale = 1;
+
+		box.setGraphicSize(Std.int(box.width * boxData.scale));
+		box.updateHitbox();
+
+		box.screenCenter(X);
+
+		box.y = FlxG.height - box.height;
+
+		box.x += boxData.x;
+		box.y += boxData.y;
+
 		portraitLeft = new FlxSprite(255, 120);
 
 		// hard coding cuz im not making proper system yet, just fixing bug
@@ -162,118 +288,6 @@ class DialogueBox extends FlxSpriteGroup
 		swagDialogue.font = 'Pixel Arial 11 Bold';
 		swagDialogue.color = 0xFF3F2021;
 		swagDialogue.sounds = [FlxG.sound.load(Paths.sound('cutscene/pixelText', 'shared'), 0.6)];
-		add(swagDialogue);
-
-		dialogue = new Alphabet(0, 80, "", false, true);
-
-		dialogueOpened = true;
-	}
-
-	var dialogueOpened:Bool = false;
-	var dialogueStarted:Bool = false;
-
-	override function update(elapsed:Float)
-	{
-		// HARD CODING CUZ IM STUPDI
-		if (PlayState.SONG.song.toLowerCase() == 'thorns')
-		{
-			portraitLeft.visible = false;
-			swagDialogue.color = FlxColor.WHITE;
-			dropText.color = FlxColor.BLACK;
-		}
-
-		dropText.text = swagDialogue.text;
-
-		if (dialogueOpened && !dialogueStarted)
-		{
-			startDialogue();
-			dialogueStarted = true;
-		}
-
-		if (FlxG.keys.justPressed.ANY  && dialogueStarted == true)
-		{
-			remove(dialogue);
-				
-			FlxG.sound.play(Paths.sound('clickText'), 0.8);
-
-			if (dialogueList[1] == null && dialogueList[0] != null)
-			{
-				if (!isEnding)
-				{
-					isEnding = true;
-
-					if (PlayState.SONG.song.toLowerCase() == 'senpai' || PlayState.SONG.song.toLowerCase() == 'thorns')
-						ambientMusic.fadeOut(2.2, 0);
-
-					new FlxTimer().start(0.2, function(tmr:FlxTimer)
-					{
-						box.alpha -= 1 / 5;
-						bgFade.alpha -= 1 / 5 * 0.7;
-						portraitLeft.visible = false;
-						portraitRight.visible = false;
-						swagDialogue.alpha = 1 / 5;
-						dropText.alpha = swagDialogue.alpha;
-						handSelect.alpha = swagDialogue.alpha;
-					}, 5);
-
-					new FlxTimer().start(1.2, function(tmr:FlxTimer)
-					{
-						if(ambientMusic != null)
-							ambientMusic.stop();
-						
-						finishThing();
-						kill();
-					});
-				}
-			}
-			else
-			{
-				dialogueList.remove(dialogueList[0]);
-				startDialogue();
-			}
-		}
-		
-		super.update(elapsed);
-	}
-
-	var isEnding:Bool = false;
-
-	function startDialogue():Void
-	{
-		cleanDialog();
-
-		var gaming = dialogueList[0].replace("-lb-", "\n");
-
-		var theDialog:Alphabet = new Alphabet(0, 70, gaming, false, true);
-		dialogue = theDialog;
-		//add(theDialog);
-
-		var pixelDialogue = dialogueList[0].replace("-lb-", " ");
-
-		swagDialogue.resetText(pixelDialogue);
-		swagDialogue.start(0.04, true);
-
-		switch (curCharacter)
-		{
-			case 'dad':
-				portraitRight.visible = false;
-				if (!portraitLeft.visible)
-				{
-					portraitLeft.visible = true;
-				}
-			case 'bf':
-				portraitLeft.visible = false;
-				if (!portraitRight.visible)
-				{
-					portraitRight.visible = true;
-				}
-		}
-	}
-
-	function cleanDialog():Void
-	{
-		var splitName:Array<String> = dialogueList[0].split(":");
-		curCharacter = splitName[1];
-		dialogueList[0] = dialogueList[0].substr(splitName[1].length + 2).trim();
+		add(swagDialogue);*/
 	}
 }

@@ -153,12 +153,6 @@ class StoryMenuState extends MusicBeatState
 
 		yellowBG = new FlxSprite(0, 56).makeGraphic(FlxG.width, 400, FlxColor.WHITE);
 
-		weekGraphics = new FlxTypedGroup<MenuItem>();
-		add(weekGraphics);
-
-		var blackBarThingie:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, 56, FlxColor.BLACK);
-		add(blackBarThingie);
-
 		menuCharacters = new FlxTypedGroup<MenuCharacter>();
 		
 		#if desktop
@@ -166,8 +160,22 @@ class StoryMenuState extends MusicBeatState
 		DiscordClient.changePresence("In the Story Menus", null);
 		#end
 
-		createWeekGraphics();
 		addWeekCharacters();
+
+		var coverUp:FlxSprite = new FlxSprite(0, 456).makeGraphic(400, 1280, FlxColor.BLACK);
+
+		weekGraphics = new FlxTypedGroup<MenuItem>();
+
+		add(weekGraphics);
+		add(yellowBG);
+
+		add(menuCharacters);
+		add(coverUp);
+
+		var blackBarThingie:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, 56, FlxColor.BLACK);
+		add(blackBarThingie);
+
+		createWeekGraphics();
 
 		difficultySelectorGroup = new FlxGroup();
 		add(difficultySelectorGroup);
@@ -197,9 +205,6 @@ class StoryMenuState extends MusicBeatState
 		difficultySelectorGroup.add(leftArrow);
 		difficultySelectorGroup.add(difficultySprite);
 		difficultySelectorGroup.add(rightArrow);
-
-		add(yellowBG);
-		add(menuCharacters);
 
 		weekSongListText = new FlxText(FlxG.width * 0.05, yellowBG.x + yellowBG.height + 100, 0, "Tracks", 32);
 		weekSongListText.alignment = CENTER;
