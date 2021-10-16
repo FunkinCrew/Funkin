@@ -358,6 +358,12 @@ class FreeplayState extends MusicBeatState
 				diffCalcText.text = 'RATING: ${DiffCalc.CalculateDiff(songData.get(songs[curSelected].songName)[curDifficulty])}';
 			}
 
+			if (FlxG.keys.justPressed.R)
+			{
+				rate = 1;
+				diffCalcText.text = 'RATING: ${DiffCalc.CalculateDiff(songData.get(songs[curSelected].songName)[curDifficulty])}';
+			}
+
 			if (rate > 3)
 			{
 				rate = 3;
