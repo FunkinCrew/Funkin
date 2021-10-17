@@ -1883,10 +1883,15 @@ class ChartingState extends MusicBeatState
 		try
 		{
 			if (FlxG.sound.music != null)
-				if (FlxG.sound.music.time > FlxG.sound.music.length - 100)
+				if (FlxG.sound.music.time > FlxG.sound.music.length - 10)
 				{
 					FlxG.sound.music.pause();
-					FlxG.sound.music.time = FlxG.sound.music.length - 100;
+					FlxG.sound.music.time = FlxG.sound.music.length - 10;
+					if (!PlayState.isSM)
+					{
+						vocals.pause();
+						vocals.sound.music.time = FlxG.sound.music.length - 10;
+					}
 				}
 
 			#if debug
