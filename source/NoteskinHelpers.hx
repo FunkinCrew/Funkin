@@ -78,9 +78,10 @@ class NoteskinHelpers
 		Debug.logTrace("bruh momento");
 
 		var path = FileSystem.absolutePath("assets/shared/images/noteskins") + "/" + getNoteskinByID(id) + "-pixel" + (ends ? "-ends" : "");
-		if (!FileSystem.exists(path))
+		if (!FileSystem.exists(path + ".png"))
 		{
-			return BitmapData.fromFile(Paths.image('noteskins/Arrows-pixel', "shared"));
+			Debug.logTrace("getting default pixel skin");
+			return BitmapData.fromFile(FileSystem.absolutePath("assets/shared/images/noteskins") + "/Arrows-pixel" + (ends ? "-ends" : "") + ".png");
 		}
 		return BitmapData.fromFile(path + ".png");
 
