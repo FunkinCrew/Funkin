@@ -3231,7 +3231,6 @@ class ChartingState extends MusicBeatState
 
 		var millisecadd = (((measure * 4) + step / 4) * (60000 / currentBPM)) + ms;
 		var totaladdsection = Std.int((millisecadd / (60000 / currentBPM) / 4));
-		Debug.logTrace(millisecadd, totaladdsection);
 		if (millisecadd > 0)
 		{
 			for (i in 0...totaladdsection)
