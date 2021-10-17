@@ -1,11 +1,20 @@
-name: Close compiling Issues
-on: [workflow_dispatch]
-
+name: Autocloser
+on:
+  issues:
+    types: [opened, edited, reopened]
 jobs:
-  close-compiling-issues:
+  autoclose:
     runs-on: ubuntu-latest
     steps:
-      - uses: lee-dohm/close-matching-issues@v2
-        with:
-          query: 'in:title compile'
-          token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Autoclose issues
+      uses: arkon/issue-closer-action@v3.4
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        rules: |
+          [
+            {
+              "type": "title",
+              "regex": ".*compile*",
+              "message": "@${issue.user.login} this issue was automatically closed because we do not offer support for compiling Kade Engine! Please read the https://kadedev.github.io/Kade-Engine/building page"
+            }
+          ]
