@@ -123,7 +123,7 @@ class Note extends FlxSprite
 
 		if (inCharter)
 		{
-			frames = NoteskinHelpers.generateNoteskinSprite(FlxG.save.data.noteskin);
+			frames = PlayState.noteskinSprite;
 
 			for (i in 0...4)
 			{
@@ -168,7 +168,7 @@ class Note extends FlxSprite
 					setGraphicSize(Std.int(width * PlayState.daPixelZoom));
 					updateHitbox();
 				default:
-					frames = NoteskinHelpers.generateNoteskinSprite(FlxG.save.data.noteskin);
+					frames = PlayState.noteskinSprite;
 
 					for (i in 0...4)
 					{

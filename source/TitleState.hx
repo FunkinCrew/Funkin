@@ -26,9 +26,6 @@ import flixel.util.FlxTimer;
 import lime.app.Application;
 import openfl.Assets;
 import flixel.input.keyboard.FlxKey;
-#if FEATURE_DISCORD
-import Discord.DiscordClient;
-#end
 
 using StringTools;
 

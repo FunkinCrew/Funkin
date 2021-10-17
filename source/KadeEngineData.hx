@@ -136,7 +136,7 @@ class KadeEngineData
 			FlxG.save.data.laneTransparency = 0.5;
 
 		if (FlxG.save.data.noteskin == null)
-			FlxG.save.data.noteskin = 0;
+			FlxG.save.data.noteskin = "Arrows";
 
 		// Gonna make this an option on another PR
 		if (FlxG.save.data.overrideNoteskins == null)

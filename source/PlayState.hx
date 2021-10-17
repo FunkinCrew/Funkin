@@ -107,6 +107,8 @@ class PlayState extends MusicBeatState
 
 	public static var songPosBar:FlxBar;
 
+	public static var noteskinSprite:FlxAtlasFrames;
+
 	public static var rep:Replay;
 	public static var loadRep:Bool = false;
 	public static var inResults:Bool = false;
@@ -743,6 +745,8 @@ class PlayState extends MusicBeatState
 
 		playerStrums = new FlxTypedGroup<StaticArrow>();
 		cpuStrums = new FlxTypedGroup<StaticArrow>();
+
+		noteskinSprite = NoteskinHelpers.generateNoteskinSprite(FlxG.save.data.noteskin);
 
 		generateStaticArrows(0);
 		generateStaticArrows(1);
@@ -1604,9 +1608,8 @@ class PlayState extends MusicBeatState
 
 			songPosBG.width = songPosBar.width;
 
-			songName = new FlxText(songPosBG.x + (songPosBG.width / 2) - (SONG.songName.length * 5), songPosBG.y, 0, SONG.songName, 16);
-			if (PlayStateChangeables.useDownscroll)
-				songName.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			songName = new FlxText(songPosBG.x + (songPosBG.width / 2) - (SONG.songName.length * 5), songPosBG.y - 15, 0, SONG.songName, 16);
+			songName.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 			songName.scrollFactor.set();
 
 			songName.text = SONG.songName + ' (' + FlxStringUtil.formatTime(songLength, false) + ')';
@@ -1720,6 +1723,7 @@ class PlayState extends MusicBeatState
 		unspawnNotes.sort(sortByShit);
 
 		generatedMusic = true;
+		Debug.logTrace("whats the fuckin shit");
 	}
 
 	function sortByShit(Obj1:Note, Obj2:Note):Int
@@ -1777,7 +1781,8 @@ class PlayState extends MusicBeatState
 					}
 
 				default:
-					babyArrow.frames = NoteskinHelpers.generateNoteskinSprite(FlxG.save.data.noteskin);
+					babyArrow.frames = noteskinSprite;
+					Debug.logTrace(babyArrow.frames);
 					for (j in 0...4)
 					{
 						babyArrow.animation.addByPrefix(dataColor[j], 'arrow' + dataSuffix[j]);

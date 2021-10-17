@@ -54,8 +54,13 @@ class NoteskinHelpers
 	{
 		#if FEATURE_FILESYSTEM
 		// TODO: Make this use OpenFlAssets.
+
+		Debug.logTrace("bruh momento");
+
 		var path = FileSystem.absolutePath("assets/shared/images/noteskins") + "/" + getNoteskinByID(id);
+		Debug.logTrace("bruh momento");
 		var data:BitmapData = BitmapData.fromFile(path + ".png");
+		Debug.logTrace("bruh momento");
 
 		return FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(data), xmlData[id]);
 		// return Paths.getSparrowAtlas('noteskins/' + NoteskinHelpers.getNoteskinByID(FlxG.save.data.noteskin), "shared");
