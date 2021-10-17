@@ -9,50 +9,67 @@ import flixel.FlxObject;
 #if FEATURE_DISCORD
 import Discord.DiscordClient;
 #end
+import flixel.addons.effects.FlxTrail;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import openfl.ui.Keyboard;
 import flixel.FlxSprite;
 import flixel.FlxG;
+
+using StringTools;
 
 class GameplayCustomizeState extends MusicBeatState
 {
 	var defaultX:Float = FlxG.width * 0.55 - 135;
 	var defaultY:Float = FlxG.height / 2 - 50;
 
-	var background:FlxSprite;
-	var curt:FlxSprite;
-	var front:FlxSprite;
-
 	var sick:FlxSprite;
 
 	var text:FlxText;
 	var blackBorder:FlxSprite;
 
-	var boyfriend:Boyfriend;
-	var dad:Character;
-	var gf:Character;
+	var laneunderlay:FlxSprite;
+	var laneunderlayOpponent:FlxSprite;
 
 	var strumLine:FlxSprite;
 	var strumLineNotes:FlxTypedGroup<FlxSprite>;
 	var playerStrums:FlxTypedGroup<FlxSprite>;
+	var cpuStrums:FlxTypedGroup<StaticArrow>;
+
+	var camPos:FlxPoint;
+
+	var pixelShitPart1:String = '';
+	var pixelShitPart2:String = '';
+	var pixelShitPart3:String = 'shared';
+	var pixelShitPart4:String = null;
+
 	private var camHUD:FlxCamera;
 	private var camGame:FlxCamera;
+	private var camFollow:FlxObject;
+	private var dataSuffix:Array<String> = ['LEFT', 'DOWN', 'UP', 'RIGHT'];
+	private var dataColor:Array<String> = ['purple', 'blue', 'green', 'red'];
+
+	public static var dad:Character;
+	public static var gf:Character;
+	public static var boyfriend:Boyfriend;
+	public static var Stage:Stage;
+	public static var freeplayBf:String = 'bf';
+	public static var freeplayDad:String = 'dad';
+	public static var freeplayGf:String = 'gf';
+	public static var freeplayNoteStyle:String = 'normal';
+	public static var freeplayStage:String = 'stage';
+	public static var freeplaySong:String = 'Bopeebo';
+	public static var freeplayWeek:Int = 1;
 
 	public override function create()
 	{
+		super.create();
+
+		PlayStateChangeables.Optimize = false;
+
 		#if FEATURE_DISCORD
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("Customizing Gameplay Modules", null);
 		#end
-
-		background = new FlxSprite(-600, -200).loadGraphic(Paths.loadImage('stageback', 'shared'));
-		front = new FlxSprite(-650, 600).loadGraphic(Paths.loadImage('stagefront', 'shared'));
-		curt = new FlxSprite(-500, -300).loadGraphic(Paths.loadImage('stagecurtains', 'shared'));
-		background.antialiasing = FlxG.save.data.antialiasing;
-		front.antialiasing = FlxG.save.data.antialiasing;
-		curt.antialiasing = FlxG.save.data.antialiasing;
-
-		super.create();
 
 		camGame = new FlxCamera();
 		camHUD = new FlxCamera();
@@ -67,36 +84,154 @@ class GameplayCustomizeState extends MusicBeatState
 
 		persistentUpdate = persistentDraw = true;
 
-		background.scrollFactor.set(0.9, 0.9);
-		curt.scrollFactor.set(0.9, 0.9);
-		front.scrollFactor.set(0.9, 0.9);
+		// defaults if no stage was found in chart
+		var stageCheck:String = 'stage';
 
-		add(background);
-		add(front);
-		add(curt);
+		// If the stage isn't specified in the chart, we use the story week value.
+		if (freeplayStage == null)
+		{
+			switch (freeplayWeek)
+			{
+				case 2:
+					stageCheck = 'halloween';
+				case 3:
+					stageCheck = 'philly';
+				case 4:
+					stageCheck = 'limo';
+				case 5:
+					if (freeplaySong == 'winter-horrorland')
+						stageCheck = 'mallEvil';
+					else
+						stageCheck = 'mall';
+				case 6:
+					if (freeplaySong == 'thorns')
+						stageCheck = 'schoolEvil';
+					else
+						stageCheck = 'school';
+			}
+		}
+		else
+			stageCheck = freeplayStage;
 
-		var camFollow = new FlxObject(0, 0, 1, 1);
+		// defaults if no gf was found in chart
+		var gfCheck:String = 'gf';
 
-		dad = new Character(100, 100, 'dad');
+		if (freeplayGf == null)
+		{
+			switch (freeplayWeek)
+			{
+				case 4:
+					gfCheck = 'gf-car';
+				case 5:
+					gfCheck = 'gf-christmas';
+				case 6:
+					gfCheck = 'gf-pixel';
+			}
+		}
+		else
+			gfCheck = freeplayGf;
 
-		boyfriend = new Boyfriend(770, 450, 'bf');
+		gf = new Character(400, 130, gfCheck);
 
-		gf = new Character(400, 130, 'gf');
-		gf.scrollFactor.set(0.95, 0.95);
+		if (gf.frames == null)
+		{
+			#if debug
+			FlxG.log.warn(["Couldn't load gf: " + freeplayGf + ". Loading default gf"]);
+			#end
+			gf = new Character(400, 130, 'gf');
+		}
 
-		var camPos:FlxPoint = new FlxPoint(dad.getGraphicMidpoint().x + 400, dad.getGraphicMidpoint().y);
+		boyfriend = new Boyfriend(770, 450, freeplayBf);
+
+		if (boyfriend.frames == null)
+		{
+			#if debug
+			FlxG.log.warn(["Couldn't load boyfriend: " + freeplayBf + ". Loading default boyfriend"]);
+			#end
+			boyfriend = new Boyfriend(770, 450, 'bf');
+		}
+
+		dad = new Character(100, 100, freeplayDad);
+
+		if (dad.frames == null)
+		{
+			#if debug
+			FlxG.log.warn(["Couldn't load opponent: " + freeplayDad + ". Loading default opponent"]);
+			#end
+			dad = new Character(100, 100, 'dad');
+		}
+
+		Stage = new Stage(stageCheck);
+
+		var positions = Stage.positions[Stage.curStage];
+		if (positions != null)
+		{
+			for (char => pos in positions)
+				for (person in [boyfriend, gf, dad])
+					if (person.curCharacter == char)
+						person.setPosition(pos[0], pos[1]);
+		}
+		for (i in Stage.toAdd)
+		{
+			add(i);
+		}
+		for (index => array in Stage.layInFront)
+		{
+			switch (index)
+			{
+				case 0:
+					add(gf);
+					gf.scrollFactor.set(0.95, 0.95);
+					for (bg in array)
+						add(bg);
+				case 1:
+					add(dad);
+					for (bg in array)
+						add(bg);
+				case 2:
+					add(boyfriend);
+					for (bg in array)
+						add(bg);
+			}
+		}
+
+		camPos = new FlxPoint(boyfriend.getMidpoint().x - 100, boyfriend.getMidpoint().y - 100);
+
+		switch (dad.curCharacter)
+		{
+			case 'gf':
+				dad.setPosition(gf.x, gf.y);
+				gf.visible = false;
+			case 'spirit':
+				if (FlxG.save.data.distractions)
+				{
+					var evilTrail = new FlxTrail(dad, null, 4, 24, 0.3, 0.069);
+					add(evilTrail);
+				}
+		}
+
+		camFollow = new FlxObject(0, 0, 1, 1);
 
 		camFollow.setPosition(camPos.x, camPos.y);
 
-		add(gf);
-		add(boyfriend);
-		add(dad);
+		switch (stageCheck)
+		{
+			case 'limo':
+				camFollow.x = boyfriend.getMidpoint().x - 300;
+			case 'mall':
+				camFollow.y = boyfriend.getMidpoint().y - 200;
+			case 'school' | 'schoolEvil':
+				camFollow.x = boyfriend.getMidpoint().x - 200;
+				camFollow.y = boyfriend.getMidpoint().y - 200;
+		}
 
 		add(camFollow);
 
 		FlxG.camera.follow(camFollow, LOCKON, 0.01);
-		FlxG.camera.zoom = 0.9;
+		FlxG.camera.zoom = Stage.camZoom;
 		FlxG.camera.focusOn(camFollow.getPosition());
+
+		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
 
 		strumLine = new FlxSprite(0, FlxG.save.data.strumline).makeGraphic(FlxG.width, 14);
 		strumLine.scrollFactor.set();
@@ -107,15 +242,53 @@ class GameplayCustomizeState extends MusicBeatState
 		if (FlxG.save.data.downscroll)
 			strumLine.y = FlxG.height - 165;
 
+		laneunderlayOpponent = new FlxSprite(0, 0).makeGraphic(110 * 4 + 50, FlxG.height * 2);
+		laneunderlayOpponent.alpha = 1 - FlxG.save.data.laneTransparency;
+		laneunderlayOpponent.color = FlxColor.BLACK;
+		laneunderlayOpponent.scrollFactor.set();
+		laneunderlayOpponent.cameras = [camHUD];
+
+		laneunderlay = new FlxSprite(0, 0).makeGraphic(110 * 4 + 50, FlxG.height * 2);
+		laneunderlay.alpha = 1 - FlxG.save.data.laneTransparency;
+		laneunderlay.color = FlxColor.BLACK;
+		laneunderlay.scrollFactor.set();
+		laneunderlay.cameras = [camHUD];
+
+		if (FlxG.save.data.laneUnderlay)
+		{
+			if (!FlxG.save.data.middleScroll)
+			{
+				add(laneunderlayOpponent);
+			}
+			add(laneunderlay);
+		}
+
 		strumLineNotes = new FlxTypedGroup<FlxSprite>();
 		add(strumLineNotes);
 
 		playerStrums = new FlxTypedGroup<FlxSprite>();
+		cpuStrums = new FlxTypedGroup<StaticArrow>();
 
-		sick = new FlxSprite().loadGraphic(Paths.loadImage('sick', 'shared'));
+		if (freeplayNoteStyle == 'pixel')
+		{
+			pixelShitPart1 = 'weeb/pixelUI/';
+			pixelShitPart2 = '-pixel';
+			pixelShitPart3 = 'week6';
+			pixelShitPart4 = 'week6';
+		}
+
+		sick = new FlxSprite().loadGraphic(Paths.loadImage(pixelShitPart1 + 'sick' + pixelShitPart2, pixelShitPart3));
 		sick.setGraphicSize(Std.int(sick.width * 0.7));
-		sick.antialiasing = FlxG.save.data.antialiasing;
 		sick.scrollFactor.set();
+
+		if (freeplayNoteStyle != 'pixel')
+		{
+			sick.setGraphicSize(Std.int(sick.width * 0.7));
+			sick.antialiasing = FlxG.save.data.antialiasing;
+		}
+		else
+			sick.setGraphicSize(Std.int(sick.width * CoolUtil.daPixelZoom * 0.7));
+
 		sick.updateHitbox();
 		add(sick);
 
@@ -125,6 +298,12 @@ class GameplayCustomizeState extends MusicBeatState
 
 		generateStaticArrows(0);
 		generateStaticArrows(1);
+
+		laneunderlay.x = playerStrums.members[0].x - 25;
+		laneunderlayOpponent.x = cpuStrums.members[0].x - 25;
+
+		laneunderlay.screenCenter(Y);
+		laneunderlayOpponent.screenCenter(Y);
 
 		text = new FlxText(5, FlxG.height + 40, 0,
 			"Click and drag around gameplay elements to customize their positions. Press R to reset. Q/E to change zoom. C to show combo. Escape to exit.",
@@ -137,9 +316,6 @@ class GameplayCustomizeState extends MusicBeatState
 
 		blackBorder.cameras = [camHUD];
 		text.cameras = [camHUD];
-
-		text.scrollFactor.set();
-		background.scrollFactor.set();
 
 		add(blackBorder);
 		add(text);
@@ -161,10 +337,12 @@ class GameplayCustomizeState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
+		super.update(elapsed);
+
+		Stage.update(elapsed);
+
 		if (FlxG.sound.music != null)
 			Conductor.songPosition = FlxG.sound.music.time;
-
-		super.update(elapsed);
 
 		if (FlxG.save.data.zoom < 0.8)
 			FlxG.save.data.zoom = 0.8;
@@ -172,7 +350,7 @@ class GameplayCustomizeState extends MusicBeatState
 		if (FlxG.save.data.zoom > 1.2)
 			FlxG.save.data.zoom = 1.2;
 
-		FlxG.camera.zoom = FlxMath.lerp(0.9, FlxG.camera.zoom, 0.95);
+		FlxG.camera.zoom = FlxMath.lerp(Stage.camZoom, FlxG.camera.zoom, 0.95);
 		camHUD.zoom = FlxMath.lerp(FlxG.save.data.zoom, camHUD.zoom, 0.95);
 
 		if (FlxG.mouse.overlaps(sick) && FlxG.mouse.pressed)
@@ -211,7 +389,7 @@ class GameplayCustomizeState extends MusicBeatState
 
 			var seperatedScore:Array<Int> = [];
 
-			var comboSplit:Array<String> = (FlxG.random.int(0, 420) + "").split('');
+			var comboSplit:Array<String> = (FlxG.random.int(10, 420) + "").split('');
 
 			// make sure we have 3 digits to display (looks weird otherwise lol)
 			if (comboSplit.length == 1)
@@ -231,13 +409,20 @@ class GameplayCustomizeState extends MusicBeatState
 			var daLoop:Int = 0;
 			for (i in seperatedScore)
 			{
-				var numScore:FlxSprite = new FlxSprite().loadGraphic(Paths.loadImage('num' + Std.int(i)));
+				var numScore:FlxSprite = new FlxSprite().loadGraphic(Paths.loadImage(pixelShitPart1 + 'num' + Std.int(i) + pixelShitPart2, pixelShitPart4));
 				numScore.screenCenter();
 				numScore.x = sick.x + (43 * daLoop) - 50;
 				numScore.y = sick.y + 100;
 				numScore.cameras = [camHUD];
-				numScore.antialiasing = FlxG.save.data.antialiasing;
-				numScore.setGraphicSize(Std.int(numScore.width * 0.5));
+
+				if (freeplayNoteStyle != 'pixel')
+				{
+					numScore.antialiasing = FlxG.save.data.antialiasing;
+					numScore.setGraphicSize(Std.int(numScore.width * 0.5));
+				}
+				else
+					numScore.setGraphicSize(Std.int(numScore.width * CoolUtil.daPixelZoom));
+
 				numScore.updateHitbox();
 
 				numScore.acceleration.y = FlxG.random.int(200, 300);
@@ -319,55 +504,96 @@ class GameplayCustomizeState extends MusicBeatState
 		trace('beat');
 	}
 
-	// ripped from play state cuz im lazy
-
+	// ripped from playstate cuz lol
 	private function generateStaticArrows(player:Int):Void
 	{
 		for (i in 0...4)
 		{
-			// FlxG.log.add(i);
-			var babyArrow:FlxSprite = new FlxSprite(0, strumLine.y);
-			babyArrow.frames = NoteskinHelpers.generateNoteskinSprite(FlxG.save.data.noteskin);
-			babyArrow.animation.addByPrefix('green', 'arrowUP');
-			babyArrow.animation.addByPrefix('blue', 'arrowDOWN');
-			babyArrow.animation.addByPrefix('purple', 'arrowLEFT');
-			babyArrow.animation.addByPrefix('red', 'arrowRIGHT');
-			babyArrow.antialiasing = FlxG.save.data.antialiasing;
-			babyArrow.setGraphicSize(Std.int(babyArrow.width * 0.7));
-			switch (Math.abs(i))
+			var babyArrow:StaticArrow = new StaticArrow(-10, strumLine.y);
+
+			// defaults if no noteStyle was found in chart
+			var noteTypeCheck:String = 'normal';
+
+			if (freeplayNoteStyle == null && FlxG.save.data.overrideNoteskins)
 			{
-				case 0:
-					babyArrow.x += Note.swagWidth * 0;
-					babyArrow.animation.addByPrefix('static', 'arrowLEFT');
-					babyArrow.animation.addByPrefix('pressed', 'left press', 24, false);
-					babyArrow.animation.addByPrefix('confirm', 'left confirm', 24, false);
-				case 1:
-					babyArrow.x += Note.swagWidth * 1;
-					babyArrow.animation.addByPrefix('static', 'arrowDOWN');
-					babyArrow.animation.addByPrefix('pressed', 'down press', 24, false);
-					babyArrow.animation.addByPrefix('confirm', 'down confirm', 24, false);
-				case 2:
-					babyArrow.x += Note.swagWidth * 2;
-					babyArrow.animation.addByPrefix('static', 'arrowUP');
-					babyArrow.animation.addByPrefix('pressed', 'up press', 24, false);
-					babyArrow.animation.addByPrefix('confirm', 'up confirm', 24, false);
-				case 3:
-					babyArrow.x += Note.swagWidth * 3;
-					babyArrow.animation.addByPrefix('static', 'arrowRIGHT');
-					babyArrow.animation.addByPrefix('pressed', 'right press', 24, false);
-					babyArrow.animation.addByPrefix('confirm', 'right confirm', 24, false);
+				switch (freeplayWeek)
+				{
+					case 6:
+						noteTypeCheck = 'pixel';
+				}
 			}
+			else
+				noteTypeCheck = freeplayNoteStyle;
+
+			switch (noteTypeCheck)
+			{
+				case 'pixel':
+					babyArrow.loadGraphic(Paths.loadImage('weeb/pixelUI/arrows-pixels', 'week6'), true, 17, 17);
+					babyArrow.animation.add('green', [6]);
+					babyArrow.animation.add('red', [7]);
+					babyArrow.animation.add('blue', [5]);
+					babyArrow.animation.add('purplel', [4]);
+
+					babyArrow.setGraphicSize(Std.int(babyArrow.width * CoolUtil.daPixelZoom));
+					babyArrow.updateHitbox();
+					babyArrow.antialiasing = false;
+
+					babyArrow.x += Note.swagWidth * i;
+					babyArrow.animation.add('static', [i]);
+					babyArrow.animation.add('pressed', [4 + i, 8 + i], 12, false);
+					babyArrow.animation.add('confirm', [12 + i, 16 + i], 24, false);
+
+					for (j in 0...4)
+					{
+						babyArrow.animation.add('dirCon' + j, [12 + j, 16 + j], 24, false);
+					}
+
+				default:
+					babyArrow.frames = NoteskinHelpers.generateNoteskinSprite(FlxG.save.data.noteskin);
+					for (j in 0...4)
+					{
+						babyArrow.animation.addByPrefix(dataColor[j], 'arrow' + dataSuffix[j]);
+						babyArrow.animation.addByPrefix('dirCon' + j, dataSuffix[j].toLowerCase() + ' confirm', 24, false);
+					}
+
+					var lowerDir:String = dataSuffix[i].toLowerCase();
+
+					babyArrow.animation.addByPrefix('static', 'arrow' + dataSuffix[i]);
+					babyArrow.animation.addByPrefix('pressed', lowerDir + ' press', 24, false);
+					babyArrow.animation.addByPrefix('confirm', lowerDir + ' confirm', 24, false);
+
+					babyArrow.x += Note.swagWidth * i;
+
+					babyArrow.antialiasing = FlxG.save.data.antialiasing;
+					babyArrow.setGraphicSize(Std.int(babyArrow.width * 0.7));
+			}
+
 			babyArrow.updateHitbox();
 			babyArrow.scrollFactor.set();
 
 			babyArrow.ID = i;
 
-			if (player == 1)
-				playerStrums.add(babyArrow);
+			switch (player)
+			{
+				case 0:
+					babyArrow.visible = !FlxG.save.data.middleScroll;
+					babyArrow.x += 20;
+					cpuStrums.add(babyArrow);
+				case 1:
+					playerStrums.add(babyArrow);
+			}
 
-			babyArrow.animation.play('static');
-			babyArrow.x += 50;
+			babyArrow.playAnim('static');
+			babyArrow.x += 110;
 			babyArrow.x += ((FlxG.width / 2) * player);
+
+			if (FlxG.save.data.middleScroll)
+				babyArrow.x -= 320;
+
+			cpuStrums.forEach(function(spr:FlxSprite)
+			{
+				spr.centerOffsets(); // CPU arrows start out slightly off-center
+			});
 
 			strumLineNotes.add(babyArrow);
 		}
