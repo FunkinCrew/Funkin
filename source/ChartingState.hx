@@ -1182,31 +1182,11 @@ class ChartingState extends MusicBeatState
 
 			if (secit != null)
 			{
-				var newSwaps:Array<Array<Dynamic>> = [];
-				Debug.logTrace(_song.notes[curSection]);
-				for (i in 0...secit.sectionNotes.length)
+				var secit = _song.notes[curSection];
+
+				if (secit != null)
 				{
-					var note = secit.sectionNotes[i];
-					if (note[1] < 4)
-						note[1] += 4;
-					else
-						note[1] -= 4;
-					newSwaps.push(note);
-				}
-
-				secit.sectionNotes = newSwaps;
-
-				for (i in shownNotes)
-				{
-					for (ii in newSwaps)
-						if (i.strumTime == ii[0] && i.noteData == ii[1] % 4)
-						{
-							i.x = Math.floor(ii[1] * GRID_SIZE);
-
-							i.y = Math.floor(getYfromStrum(ii[0]) * zoomFactor);
-							if (i.sustainLength > 0 && i.noteCharterObject != null)
-								i.noteCharterObject.x = i.x + (GRID_SIZE / 2);
-						}
+					swapSection(secit);
 				}
 			}
 		});
@@ -1828,6 +1808,45 @@ class ChartingState extends MusicBeatState
 
 	var writingNotes:Bool = false;
 	var doSnapShit:Bool = false;
+
+	function swapSection(secit:SwagSection)
+	{
+		var newSwaps:Array<Array<Dynamic>> = [];
+		Debug.logTrace(_song.notes[curSection]);
+
+		haxe.ds.ArraySort.sort(secit.sectionNotes, function(a, b)
+		{
+			if (a[0] < b[0])
+				return -1;
+			else if (a[0] > b[0])
+				return 1;
+			else
+				return 0;
+		});
+
+		for (i in 0...secit.sectionNotes.length)
+		{
+			var note = secit.sectionNotes[i];
+			var n = [note[0], Std.int(note[1]), note[2], note[3], note[4]];
+			n[1] = (note[1] + 4) % 8;
+			newSwaps.push(n);
+		}
+
+		secit.sectionNotes = newSwaps;
+
+		for (i in shownNotes)
+		{
+			for (ii in secit.sectionNotes)
+				if (i.strumTime == ii[0] && i.noteData == ii[1] % 4)
+				{
+					i.x = Math.floor(ii[1] * GRID_SIZE);
+
+					i.y = Math.floor(getYfromStrum(ii[0]) * zoomFactor);
+					if (i.sustainLength > 0 && i.noteCharterObject != null)
+						i.noteCharterObject.x = i.x + (GRID_SIZE / 2);
+				}
+		}
+	}
 
 	public var diff:Float = 0;
 
@@ -2673,32 +2692,7 @@ class ChartingState extends MusicBeatState
 
 					if (secit != null)
 					{
-						var newSwaps:Array<Array<Dynamic>> = [];
-						Debug.logTrace(_song.notes[curSection]);
-						for (i in 0...secit.sectionNotes.length)
-						{
-							var note = secit.sectionNotes[i];
-							if (note[1] < 4)
-								note[1] += 4;
-							else
-								note[1] -= 4;
-							newSwaps.push(note);
-						}
-
-						secit.sectionNotes = newSwaps;
-
-						for (i in shownNotes)
-						{
-							for (ii in newSwaps)
-								if (i.strumTime == ii[0] && i.noteData == ii[1] % 4)
-								{
-									i.x = Math.floor(ii[1] * GRID_SIZE);
-
-									i.y = Math.floor(getYfromStrum(ii[0]) * zoomFactor);
-									if (i.sustainLength > 0 && i.noteCharterObject != null)
-										i.noteCharterObject.x = i.x + (GRID_SIZE / 2);
-								}
-						}
+						swapSection(secit);
 					}
 				}
 
@@ -3329,18 +3323,18 @@ class ChartingState extends MusicBeatState
 	{
 		var strum = getStrumTime(dummyArrow.y) / zoomFactor;
 
-		Debug.logTrace(strum + " from " + dummyArrow.y);
-
-		Debug.logTrace("adding note with " + strum + " from dummyArrow");
-
 		var section = getSectionByTime(strum);
 
 		if (section == null)
 			return;
 
+		Debug.logTrace(strum + " from " + dummyArrow.y);
+
 		var noteStrum = strum;
 		var noteData = Math.floor(FlxG.mouse.x / GRID_SIZE);
 		var noteSus = 0;
+
+		Debug.logTrace("adding note with " + strum + " from dummyArrow with data " + noteData);
 
 		if (n != null)
 			section.sectionNotes.push([
