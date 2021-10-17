@@ -16,4 +16,3 @@ jobs:
           days-before-pr-close: -1
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           exempt-issue-labels: false
-          any-of-issue-labels: true
