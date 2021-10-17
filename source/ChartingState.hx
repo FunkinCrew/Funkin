@@ -1889,8 +1889,6 @@ class ChartingState extends MusicBeatState
 					FlxG.sound.music.time = FlxG.sound.music.length - 100;
 				}
 
-			Debug.logTrace(FlxG.sound.music + " - " + FlxG.sound.music.time);
-
 			#if debug
 			FlxG.watch.addQuick("Renderers", sectionRenderes.length);
 			FlxG.watch.addQuick("Notes", curRenderedNotes.length);
