@@ -1,0 +1,11 @@
+name: Close compiling Issues
+on: [workflow_dispatch]
+
+jobs:
+  close-compiling-issues:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: lee-dohm/close-matching-issues@v2
+        with:
+          query: 'in:title compile'
+          token: ${{ secrets.GITHUB_TOKEN }}
