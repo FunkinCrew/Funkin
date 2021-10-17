@@ -1037,23 +1037,19 @@ class PlayState extends MusicBeatState
 				susLength = susLength / Std.int(Conductor.nonmultilmao_stepCrochet);
 				unspawnNotes.push(swagNote);
 
-				var floorSus:Int = Math.floor(susLength);
+				for (susNote in 0...Math.floor(susLength))
+				{
+					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
 
-				if(floorSus > 0) {
-					for (susNote in 0...floorSus+1)
+					var sustainNote:Note = new Note(daStrumTime + (Std.int(Conductor.nonmultilmao_stepCrochet) * susNote) + Std.int(Conductor.nonmultilmao_stepCrochet), daNoteData, oldNote, true, songNotes[3], songNotes[4]);
+					sustainNote.scrollFactor.set();
+					unspawnNotes.push(sustainNote);
+
+					sustainNote.mustPress = gottaHitNote;
+
+					if (sustainNote.mustPress)
 					{
-						oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
-
-						var sustainNote:Note = new Note(daStrumTime + (Conductor.nonmultilmao_stepCrochet * susNote) + (Conductor.nonmultilmao_stepCrochet / FlxMath.roundDecimal(SONG.speed, 2)), daNoteData, oldNote, true, songNotes[3], songNotes[4]);
-						sustainNote.scrollFactor.set();
-						unspawnNotes.push(sustainNote);
-
-						sustainNote.mustPress = gottaHitNote;
-
-						if (sustainNote.mustPress)
-						{
-							sustainNote.x += FlxG.width / 2; // general offset
-						}
+						sustainNote.x += FlxG.width / 2; // general offset
 					}
 				}
 
