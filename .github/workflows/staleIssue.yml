@@ -1,20 +1,19 @@
-name: Autocloser
-on:
-  issues:
-    types: [opened, edited, reopened]
+name: Close inactive issues
+on: [workflow_dispatch]
+
 jobs:
-  autoclose:
+  close-issues:
     runs-on: ubuntu-latest
     steps:
-    - name: Autoclose issues
-      uses: arkon/issue-closer-action@v3.4
-      with:
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
-        rules: |
-          [
-            {
-              "type": "title",
-              "regex": ".*compile*",
-              "message": "@${issue.user.login} this issue was automatically closed because we do not offer support for compiling Kade Engine! Please read the https://kadedev.github.io/Kade-Engine/building page"
-            }
-          ]
+      - uses: actions/stale@v3
+        with:
+          days-before-issue-stale: 7
+          days-before-issue-close: 0
+          stale-issue-label: "stale"
+          stale-issue-message: "This issue is stale because it has been open for 7 days with no activity."
+          close-issue-message: "This issue was closed because it has become stale"
+          days-before-pr-stale: -1
+          days-before-pr-close: -1
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          exempt-issue-labels: false
+          any-of-issue-labels: true
