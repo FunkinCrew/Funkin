@@ -1582,9 +1582,12 @@ class ChartingState extends MusicBeatState
 		FlxG.sound.music.onComplete = function()
 		{
 			if (!PlayState.isSM)
+			{
 				vocals.pause();
+				vocals.time = 0;
+			}
 			FlxG.sound.music.pause();
-			goToSection(0);
+			FlxG.sound.music.time = 0;
 		};
 	}
 
@@ -1877,908 +1880,917 @@ class ChartingState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
-		if (FlxG.sound.music.time > FlxG.sound.music.length)
-			FlxG.sound.music.time = FlxG.sound.music.length;
-
-		#if debug
-		FlxG.watch.addQuick("Renderers", sectionRenderes.length);
-		FlxG.watch.addQuick("Notes", curRenderedNotes.length);
-		FlxG.watch.addQuick("Rendered Notes ", shownNotes.length);
-		#end
-
-		for (i in sectionRenderes)
+		try
 		{
-			var diff = i.y - strumLine.y;
-			if (diff < 2000 && diff >= -2000)
-			{
-				i.active = true;
-				i.visible = true;
-			}
-			else
-			{
-				i.active = false;
-				i.visible = false;
-			}
-		}
-
-		shownNotes = [];
-
-		if (FlxG.sound.music != null)
-		{
-			if (FlxG.sound.music.playing)
-			{
-				@:privateAccess
+			if (FlxG.sound.music != null)
+				if (FlxG.sound.music.time > FlxG.sound.music.length - 100)
 				{
-					#if desktop
-					// The __backend.handle attribute is only available on native.
-					lime.media.openal.AL.sourcef(FlxG.sound.music._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, speed);
-					try
-					{
-						// We need to make CERTAIN vocals exist and are non-empty
-						// before we try to play them. Otherwise the game crashes.
-						if (vocals != null && vocals.length > 0)
-						{
-							lime.media.openal.AL.sourcef(vocals._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, speed);
-						}
-					}
-					catch (e)
-					{
-						// Debug.logTrace("failed to pitch vocals (probably cuz they don't exist)");
-					}
-					#end
+					FlxG.sound.music.pause();
+					FlxG.sound.music.time = FlxG.sound.music.length - 100;
 				}
-			}
-		}
 
-		for (note in curRenderedNotes)
-		{
-			var diff = note.strumTime - Conductor.songPosition;
-			if (diff < 8000 && diff >= -8000)
+			Debug.logTrace(FlxG.sound.music + " - " + FlxG.sound.music.time);
+
+			#if debug
+			FlxG.watch.addQuick("Renderers", sectionRenderes.length);
+			FlxG.watch.addQuick("Notes", curRenderedNotes.length);
+			FlxG.watch.addQuick("Rendered Notes ", shownNotes.length);
+			#end
+
+			for (i in sectionRenderes)
 			{
-				shownNotes.push(note);
-				if (note.sustainLength > 0)
+				var diff = i.y - strumLine.y;
+				if (diff < 2000 && diff >= -2000)
 				{
-					note.noteCharterObject.active = true;
-					note.noteCharterObject.visible = true;
-				}
-				note.active = true;
-				note.visible = true;
-			}
-			else
-			{
-				note.active = false;
-				note.visible = false;
-				if (note.sustainLength > 0)
-				{
-					if (note.noteCharterObject != null)
-						if (note.noteCharterObject.y != note.y + GRID_SIZE)
-						{
-							note.noteCharterObject.active = false;
-							note.noteCharterObject.visible = false;
-						}
-				}
-			}
-		}
-
-		for (ii in selectedBoxes.members)
-		{
-			ii.x = ii.connectedNote.x;
-			ii.y = ii.connectedNote.y;
-		}
-
-		var doInput = true;
-
-		for (i in Typeables)
-		{
-			if (i.hasFocus)
-				doInput = false;
-		}
-
-		if (doInput)
-		{
-			if (FlxG.mouse.wheel != 0)
-			{
-				FlxG.sound.music.pause();
-
-				if (!PlayState.isSM)
-					vocals.pause();
-				claps.splice(0, claps.length);
-
-				if (FlxG.keys.pressed.CONTROL && !waitingForRelease)
-				{
-					var amount = FlxG.mouse.wheel;
-
-					if (amount > 0)
-						amount = 0;
-
-					var increase:Float = 0;
-
-					if (amount < 0)
-						increase = -0.02;
-					else
-						increase = 0.02;
-
-					zoomFactor += increase;
-
-					if (zoomFactor > 2)
-						zoomFactor = 2;
-
-					if (zoomFactor < 0.1)
-						zoomFactor = 0.1;
-
-					resizeEverything();
+					i.active = true;
+					i.visible = true;
 				}
 				else
 				{
-					var amount = FlxG.mouse.wheel;
+					i.active = false;
+					i.visible = false;
+				}
+			}
 
-					if (amount > 0 && strumLine.y < 0)
-						amount = 0;
+			shownNotes = [];
 
-					if (doSnapShit)
+			if (FlxG.sound.music != null)
+			{
+				if (FlxG.sound.music.playing)
+				{
+					@:privateAccess
 					{
-						var increase:Float = 0;
-						var beats:Float = 0;
-
-						if (amount < 0)
+						#if desktop
+						// The __backend.handle attribute is only available on native.
+						lime.media.openal.AL.sourcef(FlxG.sound.music._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, speed);
+						try
 						{
-							increase = 1 / deezNuts.get(snap);
-							beats = (Math.floor((curDecimalBeat * deezNuts.get(snap)) + 0.001) / deezNuts.get(snap)) + increase;
+							// We need to make CERTAIN vocals exist and are non-empty
+							// before we try to play them. Otherwise the game crashes.
+							if (vocals != null && vocals.length > 0)
+							{
+								lime.media.openal.AL.sourcef(vocals._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, speed);
+							}
 						}
-						else
+						catch (e)
 						{
-							increase = -1 / deezNuts.get(snap);
-							beats = ((Math.ceil(curDecimalBeat * deezNuts.get(snap)) - 0.001) / deezNuts.get(snap)) + increase;
+							// Debug.logTrace("failed to pitch vocals (probably cuz they don't exist)");
 						}
-
-						Debug.logTrace("SNAP - " + snap + " INCREASE - " + increase + " - GO TO BEAT " + beats);
-
-						var data = TimingStruct.getTimingAtBeat(beats);
-
-						if (beats <= 0)
-							FlxG.sound.music.time = 0;
-
-						var bpm = data != null ? data.bpm : _song.bpm;
-
-						if (data != null)
-						{
-							FlxG.sound.music.time = (data.startTime + ((beats - data.startBeat) / (bpm / 60))) * 1000;
-						}
+						#end
 					}
-					else
-						FlxG.sound.music.time -= (FlxG.mouse.wheel * Conductor.stepCrochet * 0.4);
+				}
+			}
 
-					if (FlxG.sound.music.time > FlxG.sound.music.length)
-						FlxG.sound.music.time = FlxG.sound.music.length;
+			for (note in curRenderedNotes)
+			{
+				var diff = note.strumTime - Conductor.songPosition;
+				if (diff < 8000 && diff >= -8000)
+				{
+					shownNotes.push(note);
+					if (note.sustainLength > 0)
+					{
+						note.noteCharterObject.active = true;
+						note.noteCharterObject.visible = true;
+					}
+					note.active = true;
+					note.visible = true;
+				}
+				else
+				{
+					note.active = false;
+					note.visible = false;
+					if (note.sustainLength > 0)
+					{
+						if (note.noteCharterObject != null)
+							if (note.noteCharterObject.y != note.y + GRID_SIZE)
+							{
+								note.noteCharterObject.active = false;
+								note.noteCharterObject.visible = false;
+							}
+					}
+				}
+			}
+
+			for (ii in selectedBoxes.members)
+			{
+				ii.x = ii.connectedNote.x;
+				ii.y = ii.connectedNote.y;
+			}
+
+			var doInput = true;
+
+			for (i in Typeables)
+			{
+				if (i.hasFocus)
+					doInput = false;
+			}
+
+			if (doInput)
+			{
+				if (FlxG.mouse.wheel != 0)
+				{
+					FlxG.sound.music.pause();
 
 					if (!PlayState.isSM)
-						vocals.time = FlxG.sound.music.time;
+						vocals.pause();
+					claps.splice(0, claps.length);
+
+					if (FlxG.keys.pressed.CONTROL && !waitingForRelease)
+					{
+						var amount = FlxG.mouse.wheel;
+
+						if (amount > 0)
+							amount = 0;
+
+						var increase:Float = 0;
+
+						if (amount < 0)
+							increase = -0.02;
+						else
+							increase = 0.02;
+
+						zoomFactor += increase;
+
+						if (zoomFactor > 2)
+							zoomFactor = 2;
+
+						if (zoomFactor < 0.1)
+							zoomFactor = 0.1;
+
+						resizeEverything();
+					}
+					else
+					{
+						var amount = FlxG.mouse.wheel;
+
+						if (amount > 0 && strumLine.y < 0)
+							amount = 0;
+
+						if (doSnapShit)
+						{
+							var increase:Float = 0;
+							var beats:Float = 0;
+
+							if (amount < 0)
+							{
+								increase = 1 / deezNuts.get(snap);
+								beats = (Math.floor((curDecimalBeat * deezNuts.get(snap)) + 0.001) / deezNuts.get(snap)) + increase;
+							}
+							else
+							{
+								increase = -1 / deezNuts.get(snap);
+								beats = ((Math.ceil(curDecimalBeat * deezNuts.get(snap)) - 0.001) / deezNuts.get(snap)) + increase;
+							}
+
+							Debug.logTrace("SNAP - " + snap + " INCREASE - " + increase + " - GO TO BEAT " + beats);
+
+							var data = TimingStruct.getTimingAtBeat(beats);
+
+							if (beats <= 0)
+								FlxG.sound.music.time = 0;
+
+							var bpm = data != null ? data.bpm : _song.bpm;
+
+							if (data != null)
+							{
+								FlxG.sound.music.time = (data.startTime + ((beats - data.startBeat) / (bpm / 60))) * 1000;
+							}
+						}
+						else
+							FlxG.sound.music.time -= (FlxG.mouse.wheel * Conductor.stepCrochet * 0.4);
+
+						if (!PlayState.isSM)
+							vocals.time = FlxG.sound.music.time;
+					}
 				}
-			}
 
-			if (FlxG.keys.pressed.SHIFT)
-			{
-				if (FlxG.keys.justPressed.RIGHT)
-					speed += 0.1;
-				else if (FlxG.keys.justPressed.LEFT)
-					speed -= 0.1;
-
-				if (speed > 3)
-					speed = 3;
-				if (speed <= 0.01)
-					speed = 0.1;
-			}
-			else
-			{
-				if (FlxG.keys.justPressed.RIGHT && !FlxG.keys.pressed.CONTROL)
-					goToSection(curSection + 1);
-				else if (FlxG.keys.justPressed.LEFT && !FlxG.keys.pressed.CONTROL)
-					goToSection(curSection - 1);
-			}
-
-			if (FlxG.mouse.pressed && FlxG.keys.pressed.CONTROL)
-			{
-				if (!waitingForRelease)
+				if (FlxG.keys.pressed.SHIFT)
 				{
-					Debug.logTrace("creating select box");
-					waitingForRelease = true;
-					selectBox = new FlxSprite(FlxG.mouse.x, FlxG.mouse.y);
-					selectBox.makeGraphic(0, 0, FlxColor.fromRGB(173, 216, 230));
-					selectBox.alpha = 0.4;
+					if (FlxG.keys.justPressed.RIGHT)
+						speed += 0.1;
+					else if (FlxG.keys.justPressed.LEFT)
+						speed -= 0.1;
 
-					selectInitialX = selectBox.x;
-					selectInitialY = selectBox.y;
-
-					add(selectBox);
+					if (speed > 3)
+						speed = 3;
+					if (speed <= 0.01)
+						speed = 0.1;
 				}
 				else
 				{
-					if (waitingForRelease)
-					{
-						Debug.logTrace(selectBox.width + " | " + selectBox.height);
-						selectBox.x = Math.min(FlxG.mouse.x, selectInitialX);
-						selectBox.y = Math.min(FlxG.mouse.y, selectInitialY);
+					if (FlxG.keys.justPressed.RIGHT && !FlxG.keys.pressed.CONTROL)
+						goToSection(curSection + 1);
+					else if (FlxG.keys.justPressed.LEFT && !FlxG.keys.pressed.CONTROL)
+						goToSection(curSection - 1);
+				}
 
-						selectBox.makeGraphic(Math.floor(Math.abs(FlxG.mouse.x - selectInitialX)), Math.floor(Math.abs(FlxG.mouse.y - selectInitialY)),
-							FlxColor.fromRGB(173, 216, 230));
+				if (FlxG.mouse.pressed && FlxG.keys.pressed.CONTROL)
+				{
+					if (!waitingForRelease)
+					{
+						Debug.logTrace("creating select box");
+						waitingForRelease = true;
+						selectBox = new FlxSprite(FlxG.mouse.x, FlxG.mouse.y);
+						selectBox.makeGraphic(0, 0, FlxColor.fromRGB(173, 216, 230));
+						selectBox.alpha = 0.4;
+
+						selectInitialX = selectBox.x;
+						selectInitialY = selectBox.y;
+
+						add(selectBox);
+					}
+					else
+					{
+						if (waitingForRelease)
+						{
+							Debug.logTrace(selectBox.width + " | " + selectBox.height);
+							selectBox.x = Math.min(FlxG.mouse.x, selectInitialX);
+							selectBox.y = Math.min(FlxG.mouse.y, selectInitialY);
+
+							selectBox.makeGraphic(Math.floor(Math.abs(FlxG.mouse.x - selectInitialX)), Math.floor(Math.abs(FlxG.mouse.y - selectInitialY)),
+								FlxColor.fromRGB(173, 216, 230));
+						}
 					}
 				}
-			}
-			if (FlxG.mouse.justReleased && waitingForRelease)
-			{
-				Debug.logTrace("released!");
-				waitingForRelease = false;
-
-				while (selectedBoxes.members.length != 0 && selectBox.width > 10 && selectBox.height > 10)
+				if (FlxG.mouse.justReleased && waitingForRelease)
 				{
-					selectedBoxes.members[0].connectedNote.charterSelected = false;
-					selectedBoxes.members[0].destroy();
-					selectedBoxes.members.remove(selectedBoxes.members[0]);
-				}
+					Debug.logTrace("released!");
+					waitingForRelease = false;
 
-				for (i in curRenderedNotes)
-				{
-					if (i.overlaps(selectBox) && !i.charterSelected)
-					{
-						Debug.logTrace("seleting " + i.strumTime);
-						selectNote(i, false);
-					}
-				}
-				selectBox.destroy();
-				remove(selectBox);
-			}
-
-			if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.D)
-			{
-				lastAction = "delete";
-				var notesToBeDeleted = [];
-				deletedNotes = [];
-				for (i in 0...selectedBoxes.members.length)
-				{
-					deletedNotes.push([
-						selectedBoxes.members[i].connectedNote.strumTime,
-						selectedBoxes.members[i].connectedNote.rawNoteData,
-						selectedBoxes.members[i].connectedNote.sustainLength
-					]);
-					notesToBeDeleted.push(selectedBoxes.members[i].connectedNote);
-				}
-
-				for (i in notesToBeDeleted)
-				{
-					deleteNote(i);
-				}
-			}
-
-			if (FlxG.keys.justPressed.DELETE)
-			{
-				lastAction = "delete";
-				var notesToBeDeleted = [];
-				deletedNotes = [];
-				for (i in 0...selectedBoxes.members.length)
-				{
-					deletedNotes.push([
-						selectedBoxes.members[i].connectedNote.strumTime,
-						selectedBoxes.members[i].connectedNote.rawNoteData,
-						selectedBoxes.members[i].connectedNote.sustainLength
-					]);
-					notesToBeDeleted.push(selectedBoxes.members[i].connectedNote);
-				}
-
-				for (i in notesToBeDeleted)
-				{
-					deleteNote(i);
-				}
-			}
-
-			if (FlxG.keys.justPressed.UP || FlxG.keys.justPressed.DOWN)
-			{
-				var offsetSteps = FlxG.keys.pressed.CONTROL ? 16 : 1;
-				var offsetSeconds = Conductor.stepCrochet * offsetSteps;
-
-				var offset:Float = 0;
-				if (FlxG.keys.justPressed.UP)
-					offset -= offsetSeconds;
-				if (FlxG.keys.justPressed.DOWN)
-					offset += offsetSeconds;
-
-				offsetSelectedNotes(offset);
-			}
-
-			if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.C)
-			{
-				if (selectedBoxes.members.length != 0)
-				{
-					copiedNotes = [];
-					for (i in selectedBoxes.members)
-						copiedNotes.push([
-							i.connectedNote.strumTime,
-							i.connectedNote.rawNoteData,
-							i.connectedNote.sustainLength,
-							i.connectedNote.isAlt,
-							i.connectedNote.beat
-						]);
-
-					var firstNote = copiedNotes[0][0];
-
-					for (i in copiedNotes) // normalize the notes
-					{
-						i[0] = i[0] - firstNote;
-						Debug.logTrace("Normalized time: " + i[0] + " | " + i[1]);
-					}
-
-					Debug.logTrace(copiedNotes.length);
-				}
-			}
-
-			if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.V)
-			{
-				if (copiedNotes.length != 0)
-				{
-					while (selectedBoxes.members.length != 0)
+					while (selectedBoxes.members.length != 0 && selectBox.width > 10 && selectBox.height > 10)
 					{
 						selectedBoxes.members[0].connectedNote.charterSelected = false;
 						selectedBoxes.members[0].destroy();
 						selectedBoxes.members.remove(selectedBoxes.members[0]);
 					}
 
-					Debug.logTrace("Pasting " + copiedNotes.length);
-
-					pasteNotesFromArray(copiedNotes);
-
-					lastAction = "paste";
-				}
-			}
-
-			if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.Z)
-			{
-				switch (lastAction)
-				{
-					case "paste":
-						Debug.logTrace("undo paste");
-						if (pastedNotes.length != 0)
+					for (i in curRenderedNotes)
+					{
+						if (i.overlaps(selectBox) && !i.charterSelected)
 						{
-							for (i in pastedNotes)
-							{
-								if (curRenderedNotes.members.contains(i))
-									deleteNote(i);
-							}
-
-							pastedNotes = [];
+							Debug.logTrace("seleting " + i.strumTime);
+							selectNote(i, false);
 						}
-					case "delete":
-						Debug.logTrace("undoing delete");
-						if (deletedNotes.length != 0)
+					}
+					selectBox.destroy();
+					remove(selectBox);
+				}
+
+				if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.D)
+				{
+					lastAction = "delete";
+					var notesToBeDeleted = [];
+					deletedNotes = [];
+					for (i in 0...selectedBoxes.members.length)
+					{
+						deletedNotes.push([
+							selectedBoxes.members[i].connectedNote.strumTime,
+							selectedBoxes.members[i].connectedNote.rawNoteData,
+							selectedBoxes.members[i].connectedNote.sustainLength
+						]);
+						notesToBeDeleted.push(selectedBoxes.members[i].connectedNote);
+					}
+
+					for (i in notesToBeDeleted)
+					{
+						deleteNote(i);
+					}
+				}
+
+				if (FlxG.keys.justPressed.DELETE)
+				{
+					lastAction = "delete";
+					var notesToBeDeleted = [];
+					deletedNotes = [];
+					for (i in 0...selectedBoxes.members.length)
+					{
+						deletedNotes.push([
+							selectedBoxes.members[i].connectedNote.strumTime,
+							selectedBoxes.members[i].connectedNote.rawNoteData,
+							selectedBoxes.members[i].connectedNote.sustainLength
+						]);
+						notesToBeDeleted.push(selectedBoxes.members[i].connectedNote);
+					}
+
+					for (i in notesToBeDeleted)
+					{
+						deleteNote(i);
+					}
+				}
+
+				if (FlxG.keys.justPressed.UP || FlxG.keys.justPressed.DOWN)
+				{
+					var offsetSteps = FlxG.keys.pressed.CONTROL ? 16 : 1;
+					var offsetSeconds = Conductor.stepCrochet * offsetSteps;
+
+					var offset:Float = 0;
+					if (FlxG.keys.justPressed.UP)
+						offset -= offsetSeconds;
+					if (FlxG.keys.justPressed.DOWN)
+						offset += offsetSeconds;
+
+					offsetSelectedNotes(offset);
+				}
+
+				if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.C)
+				{
+					if (selectedBoxes.members.length != 0)
+					{
+						copiedNotes = [];
+						for (i in selectedBoxes.members)
+							copiedNotes.push([
+								i.connectedNote.strumTime,
+								i.connectedNote.rawNoteData,
+								i.connectedNote.sustainLength,
+								i.connectedNote.isAlt,
+								i.connectedNote.beat
+							]);
+
+						var firstNote = copiedNotes[0][0];
+
+						for (i in copiedNotes) // normalize the notes
 						{
+							i[0] = i[0] - firstNote;
+							Debug.logTrace("Normalized time: " + i[0] + " | " + i[1]);
+						}
+
+						Debug.logTrace(copiedNotes.length);
+					}
+				}
+
+				if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.V)
+				{
+					if (copiedNotes.length != 0)
+					{
+						while (selectedBoxes.members.length != 0)
+						{
+							selectedBoxes.members[0].connectedNote.charterSelected = false;
+							selectedBoxes.members[0].destroy();
+							selectedBoxes.members.remove(selectedBoxes.members[0]);
+						}
+
+						Debug.logTrace("Pasting " + copiedNotes.length);
+
+						pasteNotesFromArray(copiedNotes);
+
+						lastAction = "paste";
+					}
+				}
+
+				if (FlxG.keys.pressed.CONTROL && FlxG.keys.justPressed.Z)
+				{
+					switch (lastAction)
+					{
+						case "paste":
+							Debug.logTrace("undo paste");
+							if (pastedNotes.length != 0)
+							{
+								for (i in pastedNotes)
+								{
+									if (curRenderedNotes.members.contains(i))
+										deleteNote(i);
+								}
+
+								pastedNotes = [];
+							}
+						case "delete":
 							Debug.logTrace("undoing delete");
-							pasteNotesFromArray(deletedNotes, false);
-							deletedNotes = [];
-						}
-				}
-			}
-		}
-
-		if (updateFrame == 4)
-		{
-			TimingStruct.clearTimings();
-
-			var currentIndex = 0;
-			for (i in _song.eventObjects)
-			{
-				if (i.type == "BPM Change")
-				{
-					var beat:Float = i.position;
-
-					var endBeat:Float = Math.POSITIVE_INFINITY;
-
-					TimingStruct.addTiming(beat, i.value, endBeat, 0); // offset in this case = start time since we don't have a offset
-
-					if (currentIndex != 0)
-					{
-						var data = TimingStruct.AllTimings[currentIndex - 1];
-						data.endBeat = beat;
-						data.length = (data.endBeat - data.startBeat) / (data.bpm / 60);
-						var step = ((60 / data.bpm) * 1000) / 4;
-						TimingStruct.AllTimings[currentIndex].startStep = Math.floor(((data.endBeat / (data.bpm / 60)) * 1000) / step);
-						TimingStruct.AllTimings[currentIndex].startTime = data.startTime + data.length;
+							if (deletedNotes.length != 0)
+							{
+								Debug.logTrace("undoing delete");
+								pasteNotesFromArray(deletedNotes, false);
+								deletedNotes = [];
+							}
 					}
-
-					currentIndex++;
 				}
 			}
 
-			recalculateAllSectionTimes();
-
-			regenerateLines();
-			updateFrame++;
-		}
-		else if (updateFrame != 5)
-			updateFrame++;
-
-		snapText.text = "";
-
-		if (FlxG.keys.justPressed.RIGHT && FlxG.keys.pressed.CONTROL)
-		{
-			snapSelection++;
-			var index = 6;
-			if (snapSelection > 6)
-				snapSelection = 6;
-			if (snapSelection < 0)
-				snapSelection = 0;
-			for (v in deezNuts.keys())
+			if (updateFrame == 4)
 			{
-				Debug.logTrace(v);
-				if (index == snapSelection)
+				TimingStruct.clearTimings();
+
+				var currentIndex = 0;
+				for (i in _song.eventObjects)
 				{
-					Debug.logTrace("found " + v + " at " + index);
-					snap = v;
-				}
-				index--;
-			}
-			Debug.logTrace("new snap " + snap + " | " + snapSelection);
-		}
-		if (FlxG.keys.justPressed.LEFT && FlxG.keys.pressed.CONTROL)
-		{
-			snapSelection--;
-			if (snapSelection > 6)
-				snapSelection = 6;
-			if (snapSelection < 0)
-				snapSelection = 0;
-			var index = 6;
-			for (v in deezNuts.keys())
-			{
-				Debug.logTrace(v);
-				if (index == snapSelection)
-				{
-					Debug.logTrace("found " + v + " at " + index);
-					snap = v;
-				}
-				index--;
-			}
-			Debug.logTrace("new snap " + snap + " | " + snapSelection);
-		}
-
-		if (FlxG.keys.justPressed.SHIFT)
-			doSnapShit = !doSnapShit;
-
-		doSnapShit = defaultSnap;
-		if (FlxG.keys.pressed.SHIFT)
-		{
-			doSnapShit = !defaultSnap;
-		}
-
-		check_snap.checked = doSnapShit;
-
-		Conductor.songPosition = FlxG.sound.music.time;
-		_song.songId = typingShit.text;
-
-		var timingSeg = TimingStruct.getTimingAtTimestamp(Conductor.songPosition);
-
-		var start = Conductor.songPosition;
-
-		if (timingSeg != null)
-		{
-			var timingSegBpm = timingSeg.bpm;
-			currentBPM = timingSegBpm;
-
-			if (currentBPM != Conductor.bpm)
-			{
-				Debug.logTrace("BPM CHANGE to " + currentBPM);
-				Conductor.changeBPM(currentBPM, false);
-			}
-
-			var pog:Float = (curDecimalBeat - timingSeg.startBeat) / (Conductor.bpm / 60);
-
-			start = (timingSeg.startTime + pog) * 1000;
-		}
-
-		var weird = getSectionByTime(start, true);
-
-		FlxG.watch.addQuick("Section", weird);
-
-		if (weird != null)
-		{
-			if (lastUpdatedSection != getSectionByTime(start, true))
-			{
-				lastUpdatedSection = weird;
-				check_mustHitSection.checked = weird.mustHitSection;
-				check_CPUAltAnim.checked = weird.CPUAltAnim;
-				check_playerAltAnim.checked = weird.playerAltAnim;
-			}
-		}
-
-		strumLine.y = getYfromStrum(start) * zoomFactor;
-		camFollow.y = strumLine.y;
-
-		bpmTxt.text = Std.string(FlxMath.roundDecimal(Conductor.songPosition / 1000, 2))
-			+ " / "
-			+ Std.string(FlxMath.roundDecimal(FlxG.sound.music.length / 1000, 2))
-			+ "\nCur Section: "
-			+ curSection
-			+ "\nCurBeat: "
-			+ HelperFunctions.truncateFloat(curDecimalBeat, 3)
-			+ "\nCurStep: "
-			+ curStep
-			+ "\nZoom: "
-			+ HelperFunctions.truncateFloat(zoomFactor, 2)
-			+ "\nSpeed: "
-			+ HelperFunctions.truncateFloat(speed, 1)
-			+ "\n\nSnap: "
-			+ snap
-			+ "\n"
-			+ (doSnapShit ? "Snap enabled" : "Snap disabled")
-			+
-			(FlxG.save.data.showHelp ? "\n\nHelp:\nCtrl-MWheel : Zoom in/out\nShift-Left/Right :\nChange playback speed\nCtrl-Drag Click : Select notes\nCtrl-C : Copy notes\nCtrl-V : Paste notes\nCtrl-Z : Undo\nDelete : Delete selection\nCTRL-Left/Right :\n  Change Snap\nHold Shift : Disable Snap\nClick or 1/2/3/4/5/6/7/8 :\n  Place notes\nUp/Down :\n  Move selected notes 1 step\nShift-Up/Down :\n  Move selected notes 1 beat\nSpace: Play Music\nEnter : Preview\nPress F1 to hide/show this!" : "");
-
-		var left = FlxG.keys.justPressed.ONE;
-		var down = FlxG.keys.justPressed.TWO;
-		var up = FlxG.keys.justPressed.THREE;
-		var right = FlxG.keys.justPressed.FOUR;
-		var leftO = FlxG.keys.justPressed.FIVE;
-		var downO = FlxG.keys.justPressed.SIX;
-		var upO = FlxG.keys.justPressed.SEVEN;
-		var rightO = FlxG.keys.justPressed.EIGHT;
-
-		if (FlxG.keys.justPressed.F1)
-			FlxG.save.data.showHelp = !FlxG.save.data.showHelp;
-
-		var pressArray = [left, down, up, right, leftO, downO, upO, rightO];
-		var delete = false;
-		if (doInput)
-		{
-			curRenderedNotes.forEach(function(note:Note)
-			{
-				if (strumLine.overlaps(note) && pressArray[Math.floor(Math.abs(note.rawNoteData))])
-				{
-					deleteNote(note);
-					delete = true;
-					Debug.logTrace('deelte note');
-				}
-			});
-			for (p in 0...pressArray.length)
-			{
-				var i = pressArray[p];
-				if (i && !delete)
-				{
-					addNote(new Note(Conductor.songPosition, p));
-				}
-			}
-		}
-
-		if (playClaps)
-		{
-			for (note in shownNotes)
-			{
-				if (note.strumTime <= Conductor.songPosition && !claps.contains(note) && FlxG.sound.music.playing)
-				{
-					claps.push(note);
-					FlxG.sound.play(Paths.sound('SNAP'));
-				}
-			}
-		}
-		/*curRenderedNotes.forEach(function(note:Note) {
-			if (strumLine.overlaps(note) && strumLine.y == note.y) // yandere dev type shit
-			{
-				if (getSectionByTime(Conductor.songPosition).mustHitSection)
+					if (i.type == "BPM Change")
 					{
-						Debug.logTrace('must hit ' + Math.abs(note.noteData));
-						if (note.noteData < 4)
+						var beat:Float = i.position;
+
+						var endBeat:Float = Math.POSITIVE_INFINITY;
+
+						TimingStruct.addTiming(beat, i.value, endBeat, 0); // offset in this case = start time since we don't have a offset
+
+						if (currentIndex != 0)
 						{
-							switch (Math.abs(note.noteData))
-							{
-								case 2:
-									player1.playAnim('singUP', true);
-								case 3:
-									player1.playAnim('singRIGHT', true);
-								case 1:
-									player1.playAnim('singDOWN', true);
-								case 0:
-									player1.playAnim('singLEFT', true);
-							}
+							var data = TimingStruct.AllTimings[currentIndex - 1];
+							data.endBeat = beat;
+							data.length = (data.endBeat - data.startBeat) / (data.bpm / 60);
+							var step = ((60 / data.bpm) * 1000) / 4;
+							TimingStruct.AllTimings[currentIndex].startStep = Math.floor(((data.endBeat / (data.bpm / 60)) * 1000) / step);
+							TimingStruct.AllTimings[currentIndex].startTime = data.startTime + data.length;
 						}
-						if (note.noteData >= 4)
-						{
-							switch (note.noteData)
-							{
-								case 6:
-									player2.playAnim('singUP', true);
-								case 7:
-									player2.playAnim('singRIGHT', true);
-								case 5:
-									player2.playAnim('singDOWN', true);
-								case 4:
-									player2.playAnim('singLEFT', true);
-							}
-						}
+
+						currentIndex++;
 					}
-					else
-					{
-						Debug.logTrace('hit ' + Math.abs(note.noteData));
-						if (note.noteData < 4)
-						{
-							switch (Math.abs(note.noteData))
-							{
-								case 2:
-									player2.playAnim('singUP', true);
-								case 3:
-									player2.playAnim('singRIGHT', true);
-								case 1:
-									player2.playAnim('singDOWN', true);
-								case 0:
-									player2.playAnim('singLEFT', true);
-							}
-						}
-						if (note.noteData >= 4)
-						{
-							switch (note.noteData)
-							{
-								case 6:
-									player1.playAnim('singUP', true);
-								case 7:
-									player1.playAnim('singRIGHT', true);
-								case 5:
-									player1.playAnim('singDOWN', true);
-								case 4:
-									player1.playAnim('singLEFT', true);
-							}
-						}
-					}
+				}
+
+				recalculateAllSectionTimes();
+
+				regenerateLines();
+				updateFrame++;
 			}
-		});*/
+			else if (updateFrame != 5)
+				updateFrame++;
 
-		FlxG.watch.addQuick('daBeat', curDecimalBeat);
+			snapText.text = "";
 
-		if (FlxG.mouse.justPressed && !waitingForRelease)
-		{
-			if (FlxG.mouse.overlaps(curRenderedNotes))
+			if (FlxG.keys.justPressed.RIGHT && FlxG.keys.pressed.CONTROL)
+			{
+				snapSelection++;
+				var index = 6;
+				if (snapSelection > 6)
+					snapSelection = 6;
+				if (snapSelection < 0)
+					snapSelection = 0;
+				for (v in deezNuts.keys())
+				{
+					Debug.logTrace(v);
+					if (index == snapSelection)
+					{
+						Debug.logTrace("found " + v + " at " + index);
+						snap = v;
+					}
+					index--;
+				}
+				Debug.logTrace("new snap " + snap + " | " + snapSelection);
+			}
+			if (FlxG.keys.justPressed.LEFT && FlxG.keys.pressed.CONTROL)
+			{
+				snapSelection--;
+				if (snapSelection > 6)
+					snapSelection = 6;
+				if (snapSelection < 0)
+					snapSelection = 0;
+				var index = 6;
+				for (v in deezNuts.keys())
+				{
+					Debug.logTrace(v);
+					if (index == snapSelection)
+					{
+						Debug.logTrace("found " + v + " at " + index);
+						snap = v;
+					}
+					index--;
+				}
+				Debug.logTrace("new snap " + snap + " | " + snapSelection);
+			}
+
+			if (FlxG.keys.justPressed.SHIFT)
+				doSnapShit = !doSnapShit;
+
+			doSnapShit = defaultSnap;
+			if (FlxG.keys.pressed.SHIFT)
+			{
+				doSnapShit = !defaultSnap;
+			}
+
+			check_snap.checked = doSnapShit;
+
+			Conductor.songPosition = FlxG.sound.music.time;
+			_song.songId = typingShit.text;
+
+			var timingSeg = TimingStruct.getTimingAtTimestamp(Conductor.songPosition);
+
+			var start = Conductor.songPosition;
+
+			if (timingSeg != null)
+			{
+				var timingSegBpm = timingSeg.bpm;
+				currentBPM = timingSegBpm;
+
+				if (currentBPM != Conductor.bpm)
+				{
+					Debug.logTrace("BPM CHANGE to " + currentBPM);
+					Conductor.changeBPM(currentBPM, false);
+				}
+
+				var pog:Float = (curDecimalBeat - timingSeg.startBeat) / (Conductor.bpm / 60);
+
+				start = (timingSeg.startTime + pog) * 1000;
+			}
+
+			var weird = getSectionByTime(start, true);
+
+			FlxG.watch.addQuick("Section", weird);
+
+			if (weird != null)
+			{
+				if (lastUpdatedSection != getSectionByTime(start, true))
+				{
+					lastUpdatedSection = weird;
+					check_mustHitSection.checked = weird.mustHitSection;
+					check_CPUAltAnim.checked = weird.CPUAltAnim;
+					check_playerAltAnim.checked = weird.playerAltAnim;
+				}
+			}
+
+			strumLine.y = getYfromStrum(start) * zoomFactor;
+			camFollow.y = strumLine.y;
+
+			bpmTxt.text = Std.string(FlxMath.roundDecimal(Conductor.songPosition / 1000, 2))
+				+ " / "
+				+ Std.string(FlxMath.roundDecimal(FlxG.sound.music.length / 1000, 2))
+				+ "\nCur Section: "
+				+ curSection
+				+ "\nCurBeat: "
+				+ HelperFunctions.truncateFloat(curDecimalBeat, 3)
+				+ "\nCurStep: "
+				+ curStep
+				+ "\nZoom: "
+				+ HelperFunctions.truncateFloat(zoomFactor, 2)
+				+ "\nSpeed: "
+				+ HelperFunctions.truncateFloat(speed, 1)
+				+ "\n\nSnap: "
+				+ snap
+				+ "\n"
+				+ (doSnapShit ? "Snap enabled" : "Snap disabled")
+				+
+				(FlxG.save.data.showHelp ? "\n\nHelp:\nCtrl-MWheel : Zoom in/out\nShift-Left/Right :\nChange playback speed\nCtrl-Drag Click : Select notes\nCtrl-C : Copy notes\nCtrl-V : Paste notes\nCtrl-Z : Undo\nDelete : Delete selection\nCTRL-Left/Right :\n  Change Snap\nHold Shift : Disable Snap\nClick or 1/2/3/4/5/6/7/8 :\n  Place notes\nUp/Down :\n  Move selected notes 1 step\nShift-Up/Down :\n  Move selected notes 1 beat\nSpace: Play Music\nEnter : Preview\nPress F1 to hide/show this!" : "");
+
+			var left = FlxG.keys.justPressed.ONE;
+			var down = FlxG.keys.justPressed.TWO;
+			var up = FlxG.keys.justPressed.THREE;
+			var right = FlxG.keys.justPressed.FOUR;
+			var leftO = FlxG.keys.justPressed.FIVE;
+			var downO = FlxG.keys.justPressed.SIX;
+			var upO = FlxG.keys.justPressed.SEVEN;
+			var rightO = FlxG.keys.justPressed.EIGHT;
+
+			if (FlxG.keys.justPressed.F1)
+				FlxG.save.data.showHelp = !FlxG.save.data.showHelp;
+
+			var pressArray = [left, down, up, right, leftO, downO, upO, rightO];
+			var delete = false;
+			if (doInput)
 			{
 				curRenderedNotes.forEach(function(note:Note)
 				{
-					if (FlxG.mouse.overlaps(note))
+					if (strumLine.overlaps(note) && pressArray[Math.floor(Math.abs(note.rawNoteData))])
 					{
-						if (FlxG.keys.pressed.CONTROL)
-						{
-							selectNote(note, false);
-						}
-						else
-						{
-							deleteNote(note);
-						}
+						deleteNote(note);
+						delete = true;
+						Debug.logTrace('deelte note');
 					}
 				});
-			}
-			else
-			{
-				if (FlxG.mouse.x > 0 && FlxG.mouse.x < 0 + gridBG.width && FlxG.mouse.y > 0 && FlxG.mouse.y < 0 + height)
+				for (p in 0...pressArray.length)
 				{
-					FlxG.log.add('added note');
-					addNote();
-				}
-			}
-		}
-
-		if (FlxG.mouse.x > 0 && FlxG.mouse.x < gridBG.width && FlxG.mouse.y > 0 && FlxG.mouse.y < height)
-		{
-			dummyArrow.visible = true;
-
-			dummyArrow.x = Math.floor(FlxG.mouse.x / GRID_SIZE) * GRID_SIZE;
-
-			if (doSnapShit)
-			{
-				var time = getStrumTime(FlxG.mouse.y / zoomFactor);
-
-				var beat = TimingStruct.getBeatFromTime(time);
-				var snapped = Math.round(beat * deezNuts.get(snap)) / deezNuts.get(snap);
-
-				dummyArrow.y = getYfromStrum(TimingStruct.getTimeFromBeat(snapped)) * zoomFactor;
-			}
-			else
-			{
-				dummyArrow.y = FlxG.mouse.y;
-			}
-		}
-		else
-		{
-			dummyArrow.visible = false;
-		}
-
-		if (doInput)
-		{
-			if (FlxG.keys.justPressed.ENTER)
-			{
-				lastSection = curSection;
-
-				PlayState.SONG = _song;
-				FlxG.sound.music.stop();
-				if (!PlayState.isSM)
-					vocals.stop();
-
-				while (curRenderedNotes.members.length > 0)
-				{
-					curRenderedNotes.remove(curRenderedNotes.members[0], true);
-				}
-
-				while (curRenderedSustains.members.length > 0)
-				{
-					curRenderedSustains.remove(curRenderedSustains.members[0], true);
-				}
-
-				while (sectionRenderes.members.length > 0)
-				{
-					sectionRenderes.remove(sectionRenderes.members[0], true);
-				}
-
-				var toRemove = [];
-
-				for (i in _song.notes)
-				{
-					if (i.startTime > FlxG.sound.music.length)
-						toRemove.push(i);
-				}
-
-				for (i in toRemove)
-					_song.notes.remove(i);
-
-				toRemove = []; // clear memory
-
-				LoadingState.loadAndSwitchState(new PlayState());
-			}
-
-			if (FlxG.keys.justPressed.E)
-			{
-				changeNoteSustain(((60 / (timingSeg != null ? timingSeg.bpm : _song.bpm)) * 1000) / 4);
-			}
-			if (FlxG.keys.justPressed.Q)
-			{
-				changeNoteSustain(-(((60 / (timingSeg != null ? timingSeg.bpm : _song.bpm)) * 1000) / 4));
-			}
-
-			if (FlxG.keys.justPressed.C && !FlxG.keys.pressed.CONTROL)
-			{
-				var sect = _song.notes[curSection];
-
-				Debug.logTrace(sect);
-
-				sect.mustHitSection = !sect.mustHitSection;
-				updateHeads();
-				check_mustHitSection.checked = sect.mustHitSection;
-				var i = sectionRenderes.members[curSection];
-				var cachedY = i.icon.y;
-				remove(i.icon);
-				var sectionicon = sect.mustHitSection ? new HealthIcon(_song.player1).clone() : new HealthIcon(_song.player2).clone();
-				sectionicon.x = -95;
-				sectionicon.y = cachedY;
-				sectionicon.setGraphicSize(0, 45);
-
-				i.icon = sectionicon;
-				i.lastUpdated = sect.mustHitSection;
-
-				add(sectionicon);
-				Debug.logTrace("must hit " + sect.mustHitSection);
-			}
-			if (FlxG.keys.justPressed.V && !FlxG.keys.pressed.CONTROL)
-			{
-				Debug.logTrace("swap");
-				var secit = _song.notes[curSection];
-
-				if (secit != null)
-				{
-					var newSwaps:Array<Array<Dynamic>> = [];
-					Debug.logTrace(_song.notes[curSection]);
-					for (i in 0...secit.sectionNotes.length)
+					var i = pressArray[p];
+					if (i && !delete)
 					{
-						var note = secit.sectionNotes[i];
-						if (note[1] < 4)
-							note[1] += 4;
-						else
-							note[1] -= 4;
-						newSwaps.push(note);
+						addNote(new Note(Conductor.songPosition, p));
 					}
+				}
+			}
 
-					secit.sectionNotes = newSwaps;
-
-					for (i in shownNotes)
+			if (playClaps)
+			{
+				for (note in shownNotes)
+				{
+					if (note.strumTime <= Conductor.songPosition && !claps.contains(note) && FlxG.sound.music.playing)
 					{
-						for (ii in newSwaps)
-							if (i.strumTime == ii[0] && i.noteData == ii[1] % 4)
+						claps.push(note);
+						FlxG.sound.play(Paths.sound('SNAP'));
+					}
+				}
+			}
+			/*curRenderedNotes.forEach(function(note:Note) {
+				if (strumLine.overlaps(note) && strumLine.y == note.y) // yandere dev type shit
+				{
+					if (getSectionByTime(Conductor.songPosition).mustHitSection)
+						{
+							Debug.logTrace('must hit ' + Math.abs(note.noteData));
+							if (note.noteData < 4)
 							{
-								i.x = Math.floor(ii[1] * GRID_SIZE);
-
-								i.y = Math.floor(getYfromStrum(ii[0]) * zoomFactor);
-								if (i.sustainLength > 0 && i.noteCharterObject != null)
-									i.noteCharterObject.x = i.x + (GRID_SIZE / 2);
+								switch (Math.abs(note.noteData))
+								{
+									case 2:
+										player1.playAnim('singUP', true);
+									case 3:
+										player1.playAnim('singRIGHT', true);
+									case 1:
+										player1.playAnim('singDOWN', true);
+									case 0:
+										player1.playAnim('singLEFT', true);
+								}
 							}
-					}
+							if (note.noteData >= 4)
+							{
+								switch (note.noteData)
+								{
+									case 6:
+										player2.playAnim('singUP', true);
+									case 7:
+										player2.playAnim('singRIGHT', true);
+									case 5:
+										player2.playAnim('singDOWN', true);
+									case 4:
+										player2.playAnim('singLEFT', true);
+								}
+							}
+						}
+						else
+						{
+							Debug.logTrace('hit ' + Math.abs(note.noteData));
+							if (note.noteData < 4)
+							{
+								switch (Math.abs(note.noteData))
+								{
+									case 2:
+										player2.playAnim('singUP', true);
+									case 3:
+										player2.playAnim('singRIGHT', true);
+									case 1:
+										player2.playAnim('singDOWN', true);
+									case 0:
+										player2.playAnim('singLEFT', true);
+								}
+							}
+							if (note.noteData >= 4)
+							{
+								switch (note.noteData)
+								{
+									case 6:
+										player1.playAnim('singUP', true);
+									case 7:
+										player1.playAnim('singRIGHT', true);
+									case 5:
+										player1.playAnim('singDOWN', true);
+									case 4:
+										player1.playAnim('singLEFT', true);
+								}
+							}
+						}
 				}
-			}
+			});*/
 
-			if (FlxG.keys.justPressed.TAB)
+			FlxG.watch.addQuick('daBeat', curDecimalBeat);
+
+			if (FlxG.mouse.justPressed && !waitingForRelease)
 			{
-				if (FlxG.keys.pressed.SHIFT)
+				if (FlxG.mouse.overlaps(curRenderedNotes))
 				{
-					UI_box.selected_tab -= 1;
-					if (UI_box.selected_tab < 0)
-						UI_box.selected_tab = 2;
+					curRenderedNotes.forEach(function(note:Note)
+					{
+						if (FlxG.mouse.overlaps(note))
+						{
+							if (FlxG.keys.pressed.CONTROL)
+							{
+								selectNote(note, false);
+							}
+							else
+							{
+								deleteNote(note);
+							}
+						}
+					});
 				}
 				else
 				{
-					UI_box.selected_tab += 1;
-					if (UI_box.selected_tab >= 3)
-						UI_box.selected_tab = 0;
+					if (FlxG.mouse.x > 0 && FlxG.mouse.x < 0 + gridBG.width && FlxG.mouse.y > 0 && FlxG.mouse.y < 0 + height)
+					{
+						FlxG.log.add('added note');
+						addNote();
+					}
 				}
 			}
 
-			if (!typingShit.hasFocus)
+			if (FlxG.mouse.x > 0 && FlxG.mouse.x < gridBG.width && FlxG.mouse.y > 0 && FlxG.mouse.y < height)
 			{
-				var shiftThing:Int = 1;
-				if (FlxG.keys.pressed.SHIFT)
-					shiftThing = 4;
-				if (FlxG.keys.justPressed.SPACE)
+				dummyArrow.visible = true;
+
+				dummyArrow.x = Math.floor(FlxG.mouse.x / GRID_SIZE) * GRID_SIZE;
+
+				if (doSnapShit)
 				{
-					if (FlxG.sound.music.playing)
+					var time = getStrumTime(FlxG.mouse.y / zoomFactor);
+
+					var beat = TimingStruct.getBeatFromTime(time);
+					var snapped = Math.round(beat * deezNuts.get(snap)) / deezNuts.get(snap);
+
+					dummyArrow.y = getYfromStrum(TimingStruct.getTimeFromBeat(snapped)) * zoomFactor;
+				}
+				else
+				{
+					dummyArrow.y = FlxG.mouse.y;
+				}
+			}
+			else
+			{
+				dummyArrow.visible = false;
+			}
+
+			if (doInput)
+			{
+				if (FlxG.keys.justPressed.ENTER)
+				{
+					lastSection = curSection;
+
+					PlayState.SONG = _song;
+					FlxG.sound.music.stop();
+					if (!PlayState.isSM)
+						vocals.stop();
+
+					while (curRenderedNotes.members.length > 0)
 					{
-						FlxG.sound.music.pause();
-						if (!PlayState.isSM)
-							vocals.pause();
-						claps.splice(0, claps.length);
+						curRenderedNotes.remove(curRenderedNotes.members[0], true);
+					}
+
+					while (curRenderedSustains.members.length > 0)
+					{
+						curRenderedSustains.remove(curRenderedSustains.members[0], true);
+					}
+
+					while (sectionRenderes.members.length > 0)
+					{
+						sectionRenderes.remove(sectionRenderes.members[0], true);
+					}
+
+					var toRemove = [];
+
+					for (i in _song.notes)
+					{
+						if (i.startTime > FlxG.sound.music.length)
+							toRemove.push(i);
+					}
+
+					for (i in toRemove)
+						_song.notes.remove(i);
+
+					toRemove = []; // clear memory
+
+					LoadingState.loadAndSwitchState(new PlayState());
+				}
+
+				if (FlxG.keys.justPressed.E)
+				{
+					changeNoteSustain(((60 / (timingSeg != null ? timingSeg.bpm : _song.bpm)) * 1000) / 4);
+				}
+				if (FlxG.keys.justPressed.Q)
+				{
+					changeNoteSustain(-(((60 / (timingSeg != null ? timingSeg.bpm : _song.bpm)) * 1000) / 4));
+				}
+
+				if (FlxG.keys.justPressed.C && !FlxG.keys.pressed.CONTROL)
+				{
+					var sect = _song.notes[curSection];
+
+					Debug.logTrace(sect);
+
+					sect.mustHitSection = !sect.mustHitSection;
+					updateHeads();
+					check_mustHitSection.checked = sect.mustHitSection;
+					var i = sectionRenderes.members[curSection];
+					var cachedY = i.icon.y;
+					remove(i.icon);
+					var sectionicon = sect.mustHitSection ? new HealthIcon(_song.player1).clone() : new HealthIcon(_song.player2).clone();
+					sectionicon.x = -95;
+					sectionicon.y = cachedY;
+					sectionicon.setGraphicSize(0, 45);
+
+					i.icon = sectionicon;
+					i.lastUpdated = sect.mustHitSection;
+
+					add(sectionicon);
+					Debug.logTrace("must hit " + sect.mustHitSection);
+				}
+				if (FlxG.keys.justPressed.V && !FlxG.keys.pressed.CONTROL)
+				{
+					Debug.logTrace("swap");
+					var secit = _song.notes[curSection];
+
+					if (secit != null)
+					{
+						var newSwaps:Array<Array<Dynamic>> = [];
+						Debug.logTrace(_song.notes[curSection]);
+						for (i in 0...secit.sectionNotes.length)
+						{
+							var note = secit.sectionNotes[i];
+							if (note[1] < 4)
+								note[1] += 4;
+							else
+								note[1] -= 4;
+							newSwaps.push(note);
+						}
+
+						secit.sectionNotes = newSwaps;
+
+						for (i in shownNotes)
+						{
+							for (ii in newSwaps)
+								if (i.strumTime == ii[0] && i.noteData == ii[1] % 4)
+								{
+									i.x = Math.floor(ii[1] * GRID_SIZE);
+
+									i.y = Math.floor(getYfromStrum(ii[0]) * zoomFactor);
+									if (i.sustainLength > 0 && i.noteCharterObject != null)
+										i.noteCharterObject.x = i.x + (GRID_SIZE / 2);
+								}
+						}
+					}
+				}
+
+				if (FlxG.keys.justPressed.TAB)
+				{
+					if (FlxG.keys.pressed.SHIFT)
+					{
+						UI_box.selected_tab -= 1;
+						if (UI_box.selected_tab < 0)
+							UI_box.selected_tab = 2;
 					}
 					else
 					{
-						if (!PlayState.isSM)
-							vocals.play();
-						FlxG.sound.music.play();
+						UI_box.selected_tab += 1;
+						if (UI_box.selected_tab >= 3)
+							UI_box.selected_tab = 0;
 					}
 				}
 
-				if (FlxG.sound.music.time < 0 || curDecimalBeat < 0)
-					FlxG.sound.music.time = 0;
-
-				if (!FlxG.keys.pressed.SHIFT)
+				if (!typingShit.hasFocus)
 				{
-					if (FlxG.keys.pressed.W || FlxG.keys.pressed.S)
+					var shiftThing:Int = 1;
+					if (FlxG.keys.pressed.SHIFT)
+						shiftThing = 4;
+					if (FlxG.keys.justPressed.SPACE)
 					{
-						FlxG.sound.music.pause();
-						if (!PlayState.isSM)
-							vocals.pause();
-						claps.splice(0, claps.length);
-
-						var daTime:Float = 700 * FlxG.elapsed;
-
-						if (FlxG.keys.pressed.W)
+						if (FlxG.sound.music.playing)
 						{
-							FlxG.sound.music.time -= daTime;
+							FlxG.sound.music.pause();
+							if (!PlayState.isSM)
+								vocals.pause();
+							claps.splice(0, claps.length);
 						}
 						else
-							FlxG.sound.music.time += daTime;
-
-						if (!PlayState.isSM)
-							vocals.time = FlxG.sound.music.time;
+						{
+							if (!PlayState.isSM)
+								vocals.play();
+							FlxG.sound.music.play();
+						}
 					}
-				}
-				else
-				{
-					if (FlxG.keys.justPressed.W || FlxG.keys.justPressed.S)
+
+					if (FlxG.sound.music.time < 0 || curDecimalBeat < 0)
+						FlxG.sound.music.time = 0;
+
+					if (!FlxG.keys.pressed.SHIFT)
 					{
-						FlxG.sound.music.pause();
-						if (!PlayState.isSM)
-							vocals.pause();
-
-						var daTime:Float = Conductor.stepCrochet * 2;
-
-						if (FlxG.keys.justPressed.W)
+						if (FlxG.keys.pressed.W || FlxG.keys.pressed.S)
 						{
-							FlxG.sound.music.time -= daTime;
-						}
-						else
-							FlxG.sound.music.time += daTime;
+							FlxG.sound.music.pause();
+							if (!PlayState.isSM)
+								vocals.pause();
+							claps.splice(0, claps.length);
 
-						if (!PlayState.isSM)
-							vocals.time = FlxG.sound.music.time;
+							var daTime:Float = 700 * FlxG.elapsed;
+
+							if (FlxG.keys.pressed.W)
+							{
+								FlxG.sound.music.time -= daTime;
+							}
+							else
+								FlxG.sound.music.time += daTime;
+
+							if (!PlayState.isSM)
+								vocals.time = FlxG.sound.music.time;
+						}
+					}
+					else
+					{
+						if (FlxG.keys.justPressed.W || FlxG.keys.justPressed.S)
+						{
+							FlxG.sound.music.pause();
+							if (!PlayState.isSM)
+								vocals.pause();
+
+							var daTime:Float = Conductor.stepCrochet * 2;
+
+							if (FlxG.keys.justPressed.W)
+							{
+								FlxG.sound.music.time -= daTime;
+							}
+							else
+								FlxG.sound.music.time += daTime;
+
+							if (!PlayState.isSM)
+								vocals.time = FlxG.sound.music.time;
+						}
 					}
 				}
 			}
+			_song.bpm = tempBpm;
 		}
-		_song.bpm = tempBpm;
-
+		catch (e)
+		{
+			Debug.logError("Error on this shit???\n" + e);
+		}
 		super.update(elapsed);
 	}
 
