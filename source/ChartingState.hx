@@ -1890,7 +1890,7 @@ class ChartingState extends MusicBeatState
 					if (!PlayState.isSM)
 					{
 						vocals.pause();
-						vocals.sound.music.time = FlxG.sound.music.length - 10;
+						vocals.time = FlxG.sound.music.length - 10;
 					}
 				}
 
