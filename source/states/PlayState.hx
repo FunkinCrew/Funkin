@@ -1645,24 +1645,17 @@ class PlayState extends MusicBeatState
 
 					if(daNote.isSustainNote)
 					{
-						//thx psych engine devs cuz idk how to program :))))))))))))))))))))))))))))))
-						if (daNote.animation.curAnim.name.endsWith('end')) {
-							daNote.y += 10.5 * (fakeCrochet / 400) * 1.5 * SONG.speed + (46 * (SONG.speed - 1));
-							daNote.y -= 46 * (1 - (fakeCrochet / 600)) * SONG.speed;
+						// Remember = minus makes notes go up, plus makes them go down
+						if(daNote.animation.curAnim.name.endsWith('end') && daNote.prevNote != null)
+							daNote.y += daNote.prevNote.height;
+						else
+							daNote.y += daNote.height / SONG.speed;
 
-							if(SONG.ui_Skin == "pixel") {
-								daNote.y += 8;
-							}
-						}
-
-						daNote.y += (swagWidth / 2) - (60.5 * (SONG.speed - 1));
-						daNote.y += 27.5 * ((SONG.bpm / 100) - 1) * (SONG.speed - 1);
-
-						if(daNote.y - daNote.offset.y * daNote.scale.y + daNote.height >= center
-							&& (!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit))))
+						if((!daNote.mustPress || daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit) && daNote.y - daNote.offset.y * daNote.scale.y + daNote.height >= (strumLine.y + Note.swagWidth / 2))
 						{
-							var swagRect = new FlxRect(0, 0, daNote.frameWidth, daNote.frameHeight);
-							swagRect.height = (center - daNote.y) / daNote.scale.y;
+							// Clip to strumline
+							var swagRect = new FlxRect(0, 0, daNote.frameWidth * 2, daNote.frameHeight * 2);
+							swagRect.height = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y + Note.swagWidth / 2 - daNote.y) / daNote.scale.y;
 							swagRect.y = daNote.frameHeight - swagRect.height;
 
 							daNote.clipRect = swagRect;
