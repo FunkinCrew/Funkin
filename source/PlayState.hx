@@ -641,6 +641,8 @@ class PlayState extends MusicBeatState
 				camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
 		}
 
+		Stage.update(0);
+
 		if (loadRep)
 		{
 			FlxG.watch.addQuick('rep rpesses', repPresses);
@@ -971,6 +973,10 @@ class PlayState extends MusicBeatState
 		startingSong = true;
 
 		trace('starting');
+
+		dad.dance();
+		boyfriend.dance();
+		gf.dance();
 
 		if (isStoryMode)
 		{

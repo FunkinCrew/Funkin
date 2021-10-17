@@ -993,7 +993,7 @@ class ChartingState extends MusicBeatState
 
 		var reloadSong:FlxButton = new FlxButton(saveButton.x + saveButton.width + 10, saveButton.y, "Reload Audio", function()
 		{
-			loadSong(_song.songId);
+			loadSong(_song.songId, true);
 		});
 
 		var reloadSongJson:FlxButton = new FlxButton(reloadSong.x, saveButton.y + 30, "Reload JSON", function()
@@ -1524,7 +1524,7 @@ class ChartingState extends MusicBeatState
 		}
 	}
 
-	function loadSong(daSong:String, reloadFromFile:Bool = true):Void
+	function loadSong(daSong:String, reloadFromFile:Bool = false):Void
 	{
 		if (FlxG.sound.music != null)
 		{
@@ -1559,6 +1559,10 @@ class ChartingState extends MusicBeatState
 				var diff:String = ["-easy", "", "-hard"][PlayState.storyDifficulty];
 				_song = Song.conversionChecks(Song.loadFromJson(PlayState.SONG.songId, diff));
 			}
+		}
+		else
+		{
+			_song = PlayState.SONG;
 		}
 		// WONT WORK FOR TUTORIAL OR TEST SONG!!! REDO LATER
 		#if FEATURE_STEPMANIA
