@@ -158,7 +158,11 @@ class ChartingState extends MusicBeatState
 
 		curSection = lastSection;
 
-		trace(1 > Math.POSITIVE_INFINITY);
+		Debug.logTrace(1 > Math.POSITIVE_INFINITY);
+
+		Debug.logTrace(PlayState.noteskinSprite);
+
+		PlayState.noteskinSprite = NoteskinHelpers.generateNoteskinSprite(FlxG.save.data.noteskin);
 
 		FlxG.mouse.visible = true;
 
@@ -254,7 +258,7 @@ class ChartingState extends MusicBeatState
 		if (_song.eventObjects.length == 0)
 			_song.eventObjects = [new Song.Event("Init BPM", 0, _song.bpm, "BPM Change")];
 
-		trace("goin");
+		Debug.logTrace("goin");
 
 		var currentIndex = 0;
 		for (i in _song.eventObjects)
@@ -295,13 +299,13 @@ class ChartingState extends MusicBeatState
 				lastSeg = seg;
 		}
 
-		trace("STRUCTS: " + TimingStruct.AllTimings.length);
+		Debug.logTrace("STRUCTS: " + TimingStruct.AllTimings.length);
 
 		recalculateAllSectionTimes();
 
 		poggers();
 
-		trace("Song length in MS: " + FlxG.sound.music.length);
+		Debug.logTrace("Song length in MS: " + FlxG.sound.music.length);
 
 		for (i in 0...9000000) // REALLY HIGH BEATS just cuz like ig this is the upper limit, I mean ur chart is probably going to run like ass anyways
 		{
@@ -319,7 +323,7 @@ class ChartingState extends MusicBeatState
 
 		lengthInSteps = lengthInBeats * 4;
 
-		trace('LENGTH IN STEPS '
+		Debug.logTrace('LENGTH IN STEPS '
 			+ lengthInSteps
 			+ ' | LENGTH IN BEATS '
 			+ lengthInBeats
@@ -330,7 +334,7 @@ class ChartingState extends MusicBeatState
 
 		var targetY = getYfromStrum(FlxG.sound.music.length);
 
-		trace("TARGET " + targetY);
+		Debug.logTrace("TARGET " + targetY);
 
 		for (awfgaw in 0...Math.round(targetY / 640)) // grids/steps
 		{
@@ -356,7 +360,7 @@ class ChartingState extends MusicBeatState
 			height = Math.floor(renderer.y);
 		}
 
-		trace(height);
+		Debug.logTrace(height);
 
 		gridBlackLine = new FlxSprite(gridBG.width / 2).makeGraphic(2, height, FlxColor.BLACK);
 
@@ -419,7 +423,7 @@ class ChartingState extends MusicBeatState
 
 		updateGrid();
 
-		trace("bruh");
+		Debug.logTrace("bruh");
 
 		add(sectionRenderes);
 		add(dummyArrow);
@@ -433,14 +437,14 @@ class ChartingState extends MusicBeatState
 
 		add(selectedBoxes);
 
-		trace("bruh");
+		Debug.logTrace("bruh");
 
 		// add(blackBorder);
 		add(snapText);
 
-		trace("bruh");
+		Debug.logTrace("bruh");
 
-		trace("create");
+		Debug.logTrace("create");
 
 		super.create();
 	}
@@ -460,7 +464,7 @@ class ChartingState extends MusicBeatState
 			texts.members[0].destroy();
 			texts.members.remove(texts.members[0]);
 		}
-		trace("removed lines and texts");
+		Debug.logTrace("removed lines and texts");
 
 		if (_song.eventObjects != null)
 			for (i in _song.eventObjects)
@@ -515,15 +519,15 @@ class ChartingState extends MusicBeatState
 
 		remove(gridBG);
 		gridBG = FlxGridOverlay.create(GRID_SIZE, Std.int(h), GRID_SIZE * 8, GRID_SIZE * 16);
-		trace(gridBG.height);
+		Debug.logTrace(gridBG.height);
 		// gridBG.scrollFactor.set();
 		// gridBG.x += 358;
 		// gridBG.y += 390;
-		trace("height of " + (Math.floor(lengthInSteps)));
+		Debug.logTrace("height of " + (Math.floor(lengthInSteps)));
 
 		/*for(i in 0...Math.floor(lengthInSteps))
 			{
-				trace("Creating sprite " + i);
+				Debug.logTrace("Creating sprite " + i);
 				var grid = FlxGridOverlay.create(GRID_SIZE, Std.int(h), GRID_SIZE * 8, GRID_SIZE * 16);
 				add(grid);
 				if (i > lengthInSteps)
@@ -589,20 +593,20 @@ class ChartingState extends MusicBeatState
 			var pog:Song.Event = new Song.Event(currentSelectedEventName, currentEventPosition, HelperFunctions.truncateFloat(Std.parseFloat(savedValue), 3),
 				savedType);
 
-			trace("trying to save " + currentSelectedEventName);
+			Debug.logTrace("trying to save " + currentSelectedEventName);
 
 			var obj = containsName(pog.name, _song.eventObjects);
 
 			if (pog.name == "")
 				return;
 
-			trace("yeah we can save it");
+			Debug.logTrace("yeah we can save it");
 
 			if (obj != null)
 				_song.eventObjects.remove(obj);
 			_song.eventObjects.push(pog);
 
-			trace(_song.eventObjects.length);
+			Debug.logTrace(_song.eventObjects.length);
 
 			TimingStruct.clearTimings();
 
@@ -614,7 +618,7 @@ class ChartingState extends MusicBeatState
 				var pos = Reflect.field(i, "position");
 				var value = Reflect.field(i, "value");
 
-				trace(i.type);
+				Debug.logTrace(i.type);
 				if (type == "BPM Change")
 				{
 					var beat:Float = pos;
@@ -656,7 +660,7 @@ class ChartingState extends MusicBeatState
 
 			listOfEvents.selectedLabel = pog.name;
 
-			trace('end');
+			Debug.logTrace('end');
 		});
 		var posLabel = new FlxText(150, 85, 'Event Position');
 		var eventPos = new FlxUIInputText(150, 100, 80, "");
@@ -665,14 +669,14 @@ class ChartingState extends MusicBeatState
 			var pog:Song.Event = new Song.Event("New Event " + HelperFunctions.truncateFloat(curDecimalBeat, 3),
 				HelperFunctions.truncateFloat(curDecimalBeat, 3), _song.bpm, "BPM Change");
 
-			trace("adding " + pog.name);
+			Debug.logTrace("adding " + pog.name);
 
 			var obj = containsName(pog.name, _song.eventObjects);
 
 			if (obj != null)
 				return;
 
-			trace("yeah we can add it");
+			Debug.logTrace("yeah we can add it");
 
 			_song.eventObjects.push(pog);
 
@@ -707,7 +711,7 @@ class ChartingState extends MusicBeatState
 				var pos = Reflect.field(i, "position");
 				var value = Reflect.field(i, "value");
 
-				trace(i.type);
+				Debug.logTrace(i.type);
 				if (type == "BPM Change")
 				{
 					var beat:Float = pos;
@@ -729,10 +733,10 @@ class ChartingState extends MusicBeatState
 					currentIndex++;
 				}
 			}
-			trace("BPM CHANGES:");
+			Debug.logTrace("BPM CHANGES:");
 
 			for (i in TimingStruct.AllTimings)
-				trace(i.bpm + " - START: " + i.startBeat + " - END: " + i.endBeat + " - START-TIME: " + i.startTime);
+				Debug.logTrace(i.bpm + " - START: " + i.startBeat + " - END: " + i.endBeat + " - START-TIME: " + i.startTime);
 
 			recalculateAllSectionTimes();
 			poggers();
@@ -741,16 +745,16 @@ class ChartingState extends MusicBeatState
 		});
 		var eventRemove = new FlxButton(180, 155, "Remove Event", function()
 		{
-			trace("lets see if we can remove " + listOfEvents.selectedLabel);
+			Debug.logTrace("lets see if we can remove " + listOfEvents.selectedLabel);
 
 			var obj = containsName(listOfEvents.selectedLabel, _song.eventObjects);
 
-			trace(obj);
+			Debug.logTrace(obj);
 
 			if (obj == null)
 				return;
 
-			trace("yeah we can remove it it");
+			Debug.logTrace("yeah we can remove it it");
 
 			_song.eventObjects.remove(obj);
 
@@ -793,7 +797,7 @@ class ChartingState extends MusicBeatState
 				var pos = Reflect.field(i, "position");
 				var value = Reflect.field(i, "value");
 
-				trace(i.type);
+				Debug.logTrace(i.type);
 				if (type == "BPM Change")
 				{
 					var beat:Float = pos;
@@ -842,7 +846,7 @@ class ChartingState extends MusicBeatState
 			var pos = Reflect.field(event, "position");
 			var value = Reflect.field(event, "value");
 
-			trace(value);
+			Debug.logTrace(value);
 
 			var eventt = new Song.Event(name, pos, value, type);
 
@@ -857,23 +861,23 @@ class ChartingState extends MusicBeatState
 
 		if (_song.eventObjects.length != 0)
 			firstEventObject = _song.eventObjects[0];
-		trace("bruh");
+		Debug.logTrace("bruh");
 
 		if (firstEvent != "")
 		{
-			trace(firstEventObject);
+			Debug.logTrace(firstEventObject);
 			eventName.text = firstEventObject.name;
-			trace("bruh");
+			Debug.logTrace("bruh");
 			eventType.selectedLabel = firstEventObject.type;
-			trace("bruh");
+			Debug.logTrace("bruh");
 			eventValue.text = firstEventObject.value + "";
-			trace("bruh");
+			Debug.logTrace("bruh");
 			currentSelectedEventName = firstEventObject.name;
-			trace("bruh");
+			Debug.logTrace("bruh");
 			currentEventPosition = firstEventObject.position;
-			trace("bruh");
+			Debug.logTrace("bruh");
 			eventPos.text = currentEventPosition + "";
-			trace("bruh");
+			Debug.logTrace("bruh");
 		}
 
 		listOfEvents = new FlxUIDropDownMenu(10, 20, FlxUIDropDownMenu.makeStrIdLabelArray(listofnames, true), function(name:String)
@@ -883,7 +887,7 @@ class ChartingState extends MusicBeatState
 			if (event == null)
 				return;
 
-			trace('selecting ' + name + ' found: ' + event);
+			Debug.logTrace('selecting ' + name + ' found: ' + event);
 
 			eventName.text = event.name;
 			eventValue.text = event.value + "";
@@ -895,7 +899,7 @@ class ChartingState extends MusicBeatState
 
 		eventValue.callback = function(string:String, string2:String)
 		{
-			trace(string + " - value");
+			Debug.logTrace(string + " - value");
 			savedValue = string;
 		};
 
@@ -919,7 +923,7 @@ class ChartingState extends MusicBeatState
 			obj.name = string;
 			currentSelectedEventName = string;
 		};
-		trace("bruh");
+		Debug.logTrace("bruh");
 
 		Typeables.push(eventPos);
 		Typeables.push(eventValue);
@@ -959,7 +963,7 @@ class ChartingState extends MusicBeatState
 		check_snap.callback = function()
 		{
 			defaultSnap = check_snap.checked;
-			trace('CHECKED!');
+			Debug.logTrace('CHECKED!');
 		};
 
 		var tab_options = new FlxUI(null, UI_options);
@@ -979,7 +983,7 @@ class ChartingState extends MusicBeatState
 		check_voices.callback = function()
 		{
 			_song.needsVoices = check_voices.checked;
-			trace('CHECKED!');
+			Debug.logTrace('CHECKED!');
 		};
 
 		var saveButton:FlxButton = new FlxButton(110, 8, "Save", function()
@@ -1179,7 +1183,7 @@ class ChartingState extends MusicBeatState
 			if (secit != null)
 			{
 				var newSwaps:Array<Array<Dynamic>> = [];
-				trace(_song.notes[curSection]);
+				Debug.logTrace(_song.notes[curSection]);
 				for (i in 0...secit.sectionNotes.length)
 				{
 					var note = secit.sectionNotes[i];
@@ -1210,7 +1214,7 @@ class ChartingState extends MusicBeatState
 		{
 			var sect = lastUpdatedSection;
 
-			trace(sect);
+			Debug.logTrace(sect);
 
 			if (sect == null)
 				return;
@@ -1323,7 +1327,7 @@ class ChartingState extends MusicBeatState
 		if (!PlayState.isSM)
 			vocals.time = FlxG.sound.music.time;
 		curSection = section;
-		trace("Going too " + FlxG.sound.music.time + " | " + section + " | Which is at " + beat);
+		Debug.logTrace("Going too " + FlxG.sound.music.time + " | " + section + " | Which is at " + beat);
 
 		if (FlxG.sound.music.time < 0)
 			FlxG.sound.music.time = 0;
@@ -1401,7 +1405,7 @@ class ChartingState extends MusicBeatState
 			{
 				if (ii.startTime <= strum && ii.endTime > strum)
 				{
-					trace("new strum " + strum + " - at section " + section);
+					Debug.logTrace("new strum " + strum + " - at section " + section);
 					// alright we're in this section lets paste the note here.
 					var newData = [strum, i[1], i[2], i[3], i[4]];
 					ii.sectionNotes.push(newData);
@@ -1436,7 +1440,7 @@ class ChartingState extends MusicBeatState
 
 						curRenderedSustains.add(sustainVis);
 					}
-					trace("section new length: " + ii.sectionNotes.length);
+					Debug.logTrace("section new length: " + ii.sectionNotes.length);
 					continue;
 				}
 				section++;
@@ -1505,7 +1509,7 @@ class ChartingState extends MusicBeatState
 
 						curRenderedSustains.add(sustainVis);
 					}
-					trace("section new length: " + ii.sectionNotes.length);
+					Debug.logTrace("section new length: " + ii.sectionNotes.length);
 					continue;
 				}
 			}
@@ -1532,7 +1536,7 @@ class ChartingState extends MusicBeatState
 			#if FEATURE_STEPMANIA
 			if (PlayState.isSM)
 			{
-				trace("Loading " + PlayState.pathToSm + "/" + PlayState.sm.header.MUSIC);
+				Debug.logTrace("Loading " + PlayState.pathToSm + "/" + PlayState.sm.header.MUSIC);
 				var bytes = File.getBytes(PlayState.pathToSm + "/" + PlayState.sm.header.MUSIC);
 				var sound = new Sound();
 				sound.loadCompressedDataFromByteArray(bytes.getData(), bytes.length);
@@ -1655,7 +1659,7 @@ class ChartingState extends MusicBeatState
 						var pos = Reflect.field(i, "position");
 						var value = Reflect.field(i, "value");
 
-						trace(i.type);
+						Debug.logTrace(i.type);
 						if (type == "BPM Change")
 						{
 							var beat:Float = pos;
@@ -1677,10 +1681,10 @@ class ChartingState extends MusicBeatState
 							currentIndex++;
 						}
 					}
-					trace("BPM CHANGES:");
+					Debug.logTrace("BPM CHANGES:");
 
 					for (i in TimingStruct.AllTimings)
-						trace(i.bpm + " - START: " + i.startBeat + " - END: " + i.endBeat + " - START-TIME: " + i.startTime);
+						Debug.logTrace(i.bpm + " - START: " + i.startBeat + " - END: " + i.endBeat + " - START-TIME: " + i.startTime);
 
 					recalculateAllSectionTimes();
 
@@ -1794,7 +1798,7 @@ class ChartingState extends MusicBeatState
 			}
 		}
 
-		trace("FUCK YOU BITCH FUCKER CUCK SUCK BITCH " + _song.notes.length);
+		Debug.logTrace("FUCK YOU BITCH FUCKER CUCK SUCK BITCH " + _song.notes.length);
 	}
 
 	function stepStartTime(step):Float
@@ -1915,7 +1919,7 @@ class ChartingState extends MusicBeatState
 					}
 					catch (e)
 					{
-						// trace("failed to pitch vocals (probably cuz they don't exist)");
+						// Debug.logTrace("failed to pitch vocals (probably cuz they don't exist)");
 					}
 					#end
 				}
@@ -2023,7 +2027,7 @@ class ChartingState extends MusicBeatState
 							beats = ((Math.ceil(curDecimalBeat * deezNuts.get(snap)) - 0.001) / deezNuts.get(snap)) + increase;
 						}
 
-						trace("SNAP - " + snap + " INCREASE - " + increase + " - GO TO BEAT " + beats);
+						Debug.logTrace("SNAP - " + snap + " INCREASE - " + increase + " - GO TO BEAT " + beats);
 
 						var data = TimingStruct.getTimingAtBeat(beats);
 
@@ -2072,7 +2076,7 @@ class ChartingState extends MusicBeatState
 			{
 				if (!waitingForRelease)
 				{
-					trace("creating select box");
+					Debug.logTrace("creating select box");
 					waitingForRelease = true;
 					selectBox = new FlxSprite(FlxG.mouse.x, FlxG.mouse.y);
 					selectBox.makeGraphic(0, 0, FlxColor.fromRGB(173, 216, 230));
@@ -2087,7 +2091,7 @@ class ChartingState extends MusicBeatState
 				{
 					if (waitingForRelease)
 					{
-						trace(selectBox.width + " | " + selectBox.height);
+						Debug.logTrace(selectBox.width + " | " + selectBox.height);
 						selectBox.x = Math.min(FlxG.mouse.x, selectInitialX);
 						selectBox.y = Math.min(FlxG.mouse.y, selectInitialY);
 
@@ -2098,7 +2102,7 @@ class ChartingState extends MusicBeatState
 			}
 			if (FlxG.mouse.justReleased && waitingForRelease)
 			{
-				trace("released!");
+				Debug.logTrace("released!");
 				waitingForRelease = false;
 
 				while (selectedBoxes.members.length != 0 && selectBox.width > 10 && selectBox.height > 10)
@@ -2112,7 +2116,7 @@ class ChartingState extends MusicBeatState
 				{
 					if (i.overlaps(selectBox) && !i.charterSelected)
 					{
-						trace("seleting " + i.strumTime);
+						Debug.logTrace("seleting " + i.strumTime);
 						selectNote(i, false);
 					}
 				}
@@ -2195,10 +2199,10 @@ class ChartingState extends MusicBeatState
 					for (i in copiedNotes) // normalize the notes
 					{
 						i[0] = i[0] - firstNote;
-						trace("Normalized time: " + i[0] + " | " + i[1]);
+						Debug.logTrace("Normalized time: " + i[0] + " | " + i[1]);
 					}
 
-					trace(copiedNotes.length);
+					Debug.logTrace(copiedNotes.length);
 				}
 			}
 
@@ -2213,7 +2217,7 @@ class ChartingState extends MusicBeatState
 						selectedBoxes.members.remove(selectedBoxes.members[0]);
 					}
 
-					trace("Pasting " + copiedNotes.length);
+					Debug.logTrace("Pasting " + copiedNotes.length);
 
 					pasteNotesFromArray(copiedNotes);
 
@@ -2226,7 +2230,7 @@ class ChartingState extends MusicBeatState
 				switch (lastAction)
 				{
 					case "paste":
-						trace("undo paste");
+						Debug.logTrace("undo paste");
 						if (pastedNotes.length != 0)
 						{
 							for (i in pastedNotes)
@@ -2238,10 +2242,10 @@ class ChartingState extends MusicBeatState
 							pastedNotes = [];
 						}
 					case "delete":
-						trace("undoing delete");
+						Debug.logTrace("undoing delete");
 						if (deletedNotes.length != 0)
 						{
-							trace("undoing delete");
+							Debug.logTrace("undoing delete");
 							pasteNotesFromArray(deletedNotes, false);
 							deletedNotes = [];
 						}
@@ -2298,15 +2302,15 @@ class ChartingState extends MusicBeatState
 				snapSelection = 0;
 			for (v in deezNuts.keys())
 			{
-				trace(v);
+				Debug.logTrace(v);
 				if (index == snapSelection)
 				{
-					trace("found " + v + " at " + index);
+					Debug.logTrace("found " + v + " at " + index);
 					snap = v;
 				}
 				index--;
 			}
-			trace("new snap " + snap + " | " + snapSelection);
+			Debug.logTrace("new snap " + snap + " | " + snapSelection);
 		}
 		if (FlxG.keys.justPressed.LEFT && FlxG.keys.pressed.CONTROL)
 		{
@@ -2318,15 +2322,15 @@ class ChartingState extends MusicBeatState
 			var index = 6;
 			for (v in deezNuts.keys())
 			{
-				trace(v);
+				Debug.logTrace(v);
 				if (index == snapSelection)
 				{
-					trace("found " + v + " at " + index);
+					Debug.logTrace("found " + v + " at " + index);
 					snap = v;
 				}
 				index--;
 			}
-			trace("new snap " + snap + " | " + snapSelection);
+			Debug.logTrace("new snap " + snap + " | " + snapSelection);
 		}
 
 		if (FlxG.keys.justPressed.SHIFT)
@@ -2354,7 +2358,7 @@ class ChartingState extends MusicBeatState
 
 			if (currentBPM != Conductor.bpm)
 			{
-				trace("BPM CHANGE to " + currentBPM);
+				Debug.logTrace("BPM CHANGE to " + currentBPM);
 				Conductor.changeBPM(currentBPM, false);
 			}
 
@@ -2423,7 +2427,7 @@ class ChartingState extends MusicBeatState
 				{
 					deleteNote(note);
 					delete = true;
-					trace('deelte note');
+					Debug.logTrace('deelte note');
 				}
 			});
 			for (p in 0...pressArray.length)
@@ -2452,7 +2456,7 @@ class ChartingState extends MusicBeatState
 			{
 				if (getSectionByTime(Conductor.songPosition).mustHitSection)
 					{
-						trace('must hit ' + Math.abs(note.noteData));
+						Debug.logTrace('must hit ' + Math.abs(note.noteData));
 						if (note.noteData < 4)
 						{
 							switch (Math.abs(note.noteData))
@@ -2484,7 +2488,7 @@ class ChartingState extends MusicBeatState
 					}
 					else
 					{
-						trace('hit ' + Math.abs(note.noteData));
+						Debug.logTrace('hit ' + Math.abs(note.noteData));
 						if (note.noteData < 4)
 						{
 							switch (Math.abs(note.noteData))
@@ -2628,7 +2632,7 @@ class ChartingState extends MusicBeatState
 			{
 				var sect = _song.notes[curSection];
 
-				trace(sect);
+				Debug.logTrace(sect);
 
 				sect.mustHitSection = !sect.mustHitSection;
 				updateHeads();
@@ -2645,17 +2649,17 @@ class ChartingState extends MusicBeatState
 				i.lastUpdated = sect.mustHitSection;
 
 				add(sectionicon);
-				trace("must hit " + sect.mustHitSection);
+				Debug.logTrace("must hit " + sect.mustHitSection);
 			}
 			if (FlxG.keys.justPressed.V && !FlxG.keys.pressed.CONTROL)
 			{
-				trace("swap");
+				Debug.logTrace("swap");
 				var secit = _song.notes[curSection];
 
 				if (secit != null)
 				{
 					var newSwaps:Array<Array<Dynamic>> = [];
-					trace(_song.notes[curSection]);
+					Debug.logTrace(_song.notes[curSection]);
 					for (i in 0...secit.sectionNotes.length)
 					{
 						var note = secit.sectionNotes[i];
@@ -2792,7 +2796,7 @@ class ChartingState extends MusicBeatState
 					curSelectedNoteObject.y + GRID_SIZE).makeGraphic(8,
 					Math.floor((getYfromStrum(curSelectedNoteObject.strumTime + curSelectedNote[2]) * zoomFactor) - curSelectedNoteObject.y));
 				curSelectedNoteObject.sustainLength = curSelectedNote[2];
-				trace("new sustain " + curSelectedNoteObject.sustainLength);
+				Debug.logTrace("new sustain " + curSelectedNoteObject.sustainLength);
 				curSelectedNoteObject.noteCharterObject = sustainVis;
 
 				curRenderedSustains.add(sustainVis);
@@ -2821,11 +2825,11 @@ class ChartingState extends MusicBeatState
 
 	function changeSection(sec:Int = 0, ?updateMusic:Bool = true):Void
 	{
-		trace('changing section' + sec);
+		Debug.logTrace('changing section' + sec);
 
 		if (_song.notes[sec] != null)
 		{
-			trace('naw im not null');
+			Debug.logTrace('naw im not null');
 			curSection = sec;
 
 			updateGrid();
@@ -2854,7 +2858,7 @@ class ChartingState extends MusicBeatState
 			updateSectionUI();
 		}
 		else
-			trace('bro wtf I AM NULL');
+			Debug.logTrace('bro wtf I AM NULL');
 	}
 
 	function copySection(?sectionNum:Int = 1)
@@ -2975,7 +2979,7 @@ class ChartingState extends MusicBeatState
 				{
 					if (_song.notes[sec].sectionNotes[notesse][2] == null)
 					{
-						trace('SUS NULL');
+						Debug.logTrace('SUS NULL');
 						_song.notes[sec].sectionNotes[notesse][2] = 0;
 					}
 				}
@@ -3196,7 +3200,7 @@ class ChartingState extends MusicBeatState
 
 	function recalculateAllSectionTimes()
 	{
-		trace("RECALCULATING SECTION TIMES");
+		Debug.logTrace("RECALCULATING SECTION TIMES");
 
 		var savedNotes:Array<Dynamic> = [];
 
@@ -3227,7 +3231,7 @@ class ChartingState extends MusicBeatState
 
 		var millisecadd = (((measure * 4) + step / 4) * (60000 / currentBPM)) + ms;
 		var totaladdsection = Std.int((millisecadd / (60000 / currentBPM) / 4));
-		trace(millisecadd, totaladdsection);
+		Debug.logTrace(millisecadd, totaladdsection);
 		if (millisecadd > 0)
 		{
 			for (i in 0...totaladdsection)
@@ -3249,7 +3253,7 @@ class ChartingState extends MusicBeatState
 			updateHeads();
 			newSong[aimtosetsection].CPUAltAnim = _song.notes[daSection].CPUAltAnim;
 			newSong[aimtosetsection].playerAltAnim = _song.notes[daSection].playerAltAnim;
-			// trace("section "+daSection);
+			// Debug.logTrace("section "+daSection);
 			for (daNote in 0...(_song.notes[daSection].sectionNotes.length))
 			{
 				var newtiming = _song.notes[daSection].sectionNotes[daNote][0] + millisecadd;
@@ -3264,7 +3268,7 @@ class ChartingState extends MusicBeatState
 				// newSong.notes[daSection].sectionNotes.remove(_song.notes[daSection].sectionNotes[daNote]);
 			}
 		}
-		// trace("DONE BITCH");
+		// Debug.logTrace("DONE BITCH");
 		_song.notes = newSong;
 		recalculateAllSectionTimes();
 		updateGrid();
@@ -3307,9 +3311,9 @@ class ChartingState extends MusicBeatState
 	{
 		var strum = getStrumTime(dummyArrow.y) / zoomFactor;
 
-		trace(strum + " from " + dummyArrow.y);
+		Debug.logTrace(strum + " from " + dummyArrow.y);
 
-		trace("adding note with " + strum + " from dummyArrow");
+		Debug.logTrace("adding note with " + strum + " from dummyArrow");
 
 		var section = getSectionByTime(strum);
 
@@ -3430,7 +3434,7 @@ class ChartingState extends MusicBeatState
 
 				if (sec != null && sec == i)
 				{
-					trace('swag loop??');
+					Debug.logTrace('swag loop??');
 					break;
 				}
 			}
@@ -3441,7 +3445,7 @@ class ChartingState extends MusicBeatState
 
 	function loadLevel():Void
 	{
-		trace(_song.notes);
+		Debug.logTrace(_song.notes);
 	}
 
 	function getNotes():Array<Dynamic>
