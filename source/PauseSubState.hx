@@ -181,7 +181,6 @@ class PauseSubState extends MusicBeatSubstate
 					FlxG.resetState();
 					PlayState.stageTesting = false;
 				case "Options":
-					pauseMusic.volume = 0.5;
 					goToOptions = true;
 					close();
 				case "Exit to menu":

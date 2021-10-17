@@ -23,6 +23,8 @@ class NoteskinHelpers
 		var count:Int = 0;
 		for (i in FileSystem.readDirectory(FileSystem.absolutePath("assets/shared/images/noteskins")))
 		{
+			if (i.contains("-pixel"))
+				continue;
 			if (i.endsWith(".xml"))
 			{
 				xmlData.push(sys.io.File.getContent(FileSystem.absolutePath("assets/shared/images/noteskins") + "/" + i));
@@ -58,14 +60,33 @@ class NoteskinHelpers
 		Debug.logTrace("bruh momento");
 
 		var path = FileSystem.absolutePath("assets/shared/images/noteskins") + "/" + getNoteskinByID(id);
-		Debug.logTrace("bruh momento");
 		var data:BitmapData = BitmapData.fromFile(path + ".png");
-		Debug.logTrace("bruh momento");
 
 		return FlxAtlasFrames.fromSparrow(FlxGraphic.fromBitmapData(data), xmlData[id]);
+
 		// return Paths.getSparrowAtlas('noteskins/' + NoteskinHelpers.getNoteskinByID(FlxG.save.data.noteskin), "shared");
 		#else
-		return Paths.getSparrowAtlas('noteskins/' + NoteskinHelpers.getNoteskinByID(FlxG.save.data.noteskin), "shared");
+		return Paths.getSparrowAtlas('noteskins/Arrows', "shared");
+		#end
+	}
+
+	static public function generatePixelSprite(id:Int, ends:Bool = false)
+	{
+		#if FEATURE_FILESYSTEM
+		// TODO: Make this use OpenFlAssets.
+
+		Debug.logTrace("bruh momento");
+
+		var path = FileSystem.absolutePath("assets/shared/images/noteskins") + "/" + getNoteskinByID(id) + "-pixel" + (ends ? "-ends" : "");
+		if (!FileSystem.exists(path))
+		{
+			return BitmapData.fromFile(Paths.image('noteskins/Arrows-pixel', "shared"));
+		}
+		return BitmapData.fromFile(path + ".png");
+
+		// return Paths.getSparrowAtlas('noteskins/' + NoteskinHelpers.getNoteskinByID(FlxG.save.data.noteskin), "shared");
+		#else
+		return BitmapData.fromFile(Paths.image('noteskins/Arrows-pixel', "shared"));
 		#end
 	}
 }

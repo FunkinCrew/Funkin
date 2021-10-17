@@ -103,11 +103,15 @@ class PlayState extends MusicBeatState
 
 	public var visibleCombos:Array<FlxSprite> = [];
 
+	public var addedBotplay:Bool = false;
+
 	public var visibleNotes:Array<Note> = [];
 
 	public static var songPosBar:FlxBar;
 
 	public static var noteskinSprite:FlxAtlasFrames;
+	public static var noteskinPixelSprite:BitmapData;
+	public static var noteskinPixelSpriteEnds:BitmapData;
 
 	public static var rep:Replay;
 	public static var loadRep:Bool = false;
@@ -746,7 +750,9 @@ class PlayState extends MusicBeatState
 		playerStrums = new FlxTypedGroup<StaticArrow>();
 		cpuStrums = new FlxTypedGroup<StaticArrow>();
 
+		noteskinPixelSprite = NoteskinHelpers.generatePixelSprite(FlxG.save.data.noteskin);
 		noteskinSprite = NoteskinHelpers.generateNoteskinSprite(FlxG.save.data.noteskin);
+		noteskinPixelSpriteEnds = NoteskinHelpers.generatePixelSprite(FlxG.save.data.noteskin, true);
 
 		generateStaticArrows(0);
 		generateStaticArrows(1);
@@ -926,6 +932,8 @@ class PlayState extends MusicBeatState
 		botPlayState.cameras = [camHUD];
 		if (PlayStateChangeables.botPlay && !loadRep)
 			add(botPlayState);
+
+		addedBotplay = PlayStateChangeables.botPlay;
 
 		iconP1 = new HealthIcon(boyfriend.curCharacter, true);
 		iconP1.y = healthBar.y - (iconP1.height / 2);
@@ -1760,7 +1768,7 @@ class PlayState extends MusicBeatState
 			switch (noteTypeCheck)
 			{
 				case 'pixel':
-					babyArrow.loadGraphic(Paths.loadImage('weeb/pixelUI/arrows-pixels', 'week6'), true, 17, 17);
+					babyArrow.loadGraphic(noteskinPixelSprite, true, 17, 17);
 					babyArrow.animation.add('green', [6]);
 					babyArrow.animation.add('red', [7]);
 					babyArrow.animation.add('blue', [5]);
@@ -2004,6 +2012,13 @@ class PlayState extends MusicBeatState
 		#end
 		if (!PlayStateChangeables.Optimize)
 			Stage.update(elapsed);
+
+		if (!addedBotplay && FlxG.save.data.botplay)
+		{
+			PlayStateChangeables.botPlay = true;
+			addedBotplay = true;
+			add(botPlayState);
+		}
 
 		if (unspawnNotes[0] != null)
 		{
