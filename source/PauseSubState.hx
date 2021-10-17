@@ -48,6 +48,15 @@ class PauseSubState extends MusicBeatSubstate
 				GlobalVideo.get().pause();
 		}
 
+		if (FlxG.sound.music.playing)
+			FlxG.sound.music.pause();
+
+		for (i in FlxG.sound.list)
+		{
+			if (i.playing && i.ID != 9000)
+				i.pause();
+		}
+
 		if (!playingPause)
 		{
 			playingPause = true;
