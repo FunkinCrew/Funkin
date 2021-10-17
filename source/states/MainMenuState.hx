@@ -26,13 +26,18 @@ class MainMenuState extends MusicBeatState
 
 	var menuItems:FlxTypedGroup<FlxSprite>;
 
-	var optionShit:Array<String> = ['story mode', 'freeplay', 'mods', 'options'];
+	var optionShit:Array<String> = ['story mode', 'freeplay'];
 
 	var magenta:FlxSprite;
 	var camFollow:FlxObject;
 
 	override function create()
 	{
+		if(PolymodHandler.metadataArrays.length > 0)
+			optionShit.push('mods');
+		
+		optionShit.push('options');
+		
 		Application.current.window.title = Application.current.meta.get('name');
 		
 		#if desktop
