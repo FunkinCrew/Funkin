@@ -1,7 +1,5 @@
 name: Autocloser
-on:
-  issues:
-    types: [opened, edited, reopened]
+on: [workflow_dispatch]
 jobs:
   autoclose:
     runs-on: ubuntu-latest
