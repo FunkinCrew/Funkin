@@ -1,5 +1,6 @@
 package game;
 
+import utilities.NoteHandler;
 import game.Song.SwagSong;
 import flixel.graphics.frames.FlxFramesCollection;
 import utilities.CoolUtil;
@@ -135,7 +136,6 @@ class Note extends FlxSprite
 
 				prevNote.scale.y *= (Conductor.nonmultilmao_stepCrochet / 100) * 1.5 * song.speed;
 				prevNote.updateHitbox();
-				// prevNote.setGraphicSize();
 			}
 
 			centerOffsets();

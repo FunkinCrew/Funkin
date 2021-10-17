@@ -372,43 +372,17 @@ class PlayState extends MusicBeatState
 
 		var camPos:FlxPoint = new FlxPoint(dad.getGraphicMidpoint().x, dad.getGraphicMidpoint().y);
 
-		/*
-		switch (SONG.player2)
+		if(SONG.player2.startsWith("gf"))
 		{
-			case 'gf' | 'gf-car' | 'gf-christmas' | 'gf-pixel':
-				dad.setPosition(gf.x, gf.y);
-				gf.visible = false;
-				if (isStoryMode)
-				{
-					camPos.x += 600;
-					tweenCamIn();
-				}
-
-			case "spooky":
-				dad.y += 200;
-			case "monster":
-				dad.y += 100;
-			case 'monster-christmas':
-				dad.y += 130;
-			case 'dad':
-				camPos.x += 400;
-			case 'pico':
+			dad.setPosition(gf.x, gf.y);
+			gf.visible = false;
+			
+			if (isStoryMode)
+			{
 				camPos.x += 600;
-				dad.y += 300;
-			case 'parents-christmas':
-				dad.x -= 500;
-			case 'senpai':
-				dad.x += 150;
-				dad.y += 360;
-				camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
-			case 'senpai-angry':
-				dad.x += 150;
-				dad.y += 360;
-				camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
-			case 'spirit':
-				dad.x -= 150;
-				dad.y += 100;
-		}*/
+				tweenCamIn();
+			}
+		}
 
 		// REPOSITIONING PER STAGE
 		stage.setCharOffsets();
@@ -1063,19 +1037,23 @@ class PlayState extends MusicBeatState
 				susLength = susLength / Std.int(Conductor.nonmultilmao_stepCrochet);
 				unspawnNotes.push(swagNote);
 
-				for (susNote in 0...Math.floor(susLength))
-				{
-					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
+				var floorSus:Int = Math.floor(susLength);
 
-					var sustainNote:Note = new Note(daStrumTime + (Std.int(Conductor.nonmultilmao_stepCrochet) * susNote) + Std.int(Conductor.nonmultilmao_stepCrochet), daNoteData, oldNote, true, songNotes[3], songNotes[4]);
-					sustainNote.scrollFactor.set();
-					unspawnNotes.push(sustainNote);
-
-					sustainNote.mustPress = gottaHitNote;
-
-					if (sustainNote.mustPress)
+				if(floorSus > 0) {
+					for (susNote in 0...floorSus+1)
 					{
-						sustainNote.x += FlxG.width / 2; // general offset
+						oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
+
+						var sustainNote:Note = new Note(daStrumTime + (Conductor.nonmultilmao_stepCrochet * susNote) + (Conductor.nonmultilmao_stepCrochet / FlxMath.roundDecimal(SONG.speed, 2)), daNoteData, oldNote, true, songNotes[3], songNotes[4]);
+						sustainNote.scrollFactor.set();
+						unspawnNotes.push(sustainNote);
+
+						sustainNote.mustPress = gottaHitNote;
+
+						if (sustainNote.mustPress)
+						{
+							sustainNote.x += FlxG.width / 2; // general offset
+						}
 					}
 				}
 
@@ -1644,8 +1622,13 @@ class PlayState extends MusicBeatState
 
 		if (generatedMusic)
 		{
+			var fakeCrochet:Float = ((60 / SONG.bpm) * 1000) / songMultiplier;
+
 			notes.forEachAlive(function(daNote:Note)
 			{
+				var coolStrum = (daNote.mustPress ? playerStrums.members[Math.floor(Math.abs(daNote.noteData))] : enemyStrums.members[Math.floor(Math.abs(daNote.noteData))]);
+				var strumY = coolStrum.y;
+
 				if ((daNote.y > FlxG.height || daNote.y < daNote.height) || (daNote.x > FlxG.width || daNote.x < daNote.width))
 				{
 					daNote.active = false;
@@ -1657,25 +1640,33 @@ class PlayState extends MusicBeatState
 					daNote.active = true;
 				}
 
+				var swagWidth = daNote.width;
+				var center:Float = strumY + swagWidth / 2;
+
 				if(FlxG.save.data.downscroll)
 				{
-					var coolStrum = (daNote.mustPress ? playerStrums.members[Math.floor(Math.abs(daNote.noteData))] : enemyStrums.members[Math.floor(Math.abs(daNote.noteData))]);
-					
-					daNote.y = coolStrum.y + (0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(SONG.speed, 2));
+					daNote.y = strumY + (0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(SONG.speed, 2));
 
 					if(daNote.isSustainNote)
 					{
-						// Remember = minus makes notes go up, plus makes them go down
-						if(daNote.animation.curAnim.name.endsWith('end') && daNote.prevNote != null)
-							daNote.y += daNote.prevNote.height;
-						else
-							daNote.y += daNote.height / SONG.speed;
+						//thx psych engine devs cuz idk how to program :))))))))))))))))))))))))))))))
+						if (daNote.animation.curAnim.name.endsWith('end')) {
+							daNote.y += 10.5 * (fakeCrochet / 400) * 1.5 * SONG.speed + (46 * (SONG.speed - 1));
+							daNote.y -= 46 * (1 - (fakeCrochet / 600)) * SONG.speed;
 
-						if((!daNote.mustPress || daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit) && daNote.y - daNote.offset.y * daNote.scale.y + daNote.height >= (strumLine.y + Note.swagWidth / 2))
+							if(SONG.ui_Skin == "pixel") {
+								daNote.y += 8;
+							}
+						}
+
+						daNote.y += (swagWidth / 2) - (60.5 * (SONG.speed - 1));
+						daNote.y += 27.5 * ((SONG.bpm / 100) - 1) * (SONG.speed - 1);
+
+						if(daNote.y - daNote.offset.y * daNote.scale.y + daNote.height >= center
+							&& (!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit))))
 						{
-							// Clip to strumline
-							var swagRect = new FlxRect(0, 0, daNote.frameWidth * 2, daNote.frameHeight * 2);
-							swagRect.height = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y + Note.swagWidth / 2 - daNote.y) / daNote.scale.y;
+							var swagRect = new FlxRect(0, 0, daNote.frameWidth, daNote.frameHeight);
+							swagRect.height = (center - daNote.y) / daNote.scale.y;
 							swagRect.y = daNote.frameHeight - swagRect.height;
 
 							daNote.clipRect = swagRect;
@@ -1684,9 +1675,7 @@ class PlayState extends MusicBeatState
 				}
 				else
 				{
-					var coolStrum = (daNote.mustPress ? playerStrums.members[Math.floor(Math.abs(daNote.noteData))] : enemyStrums.members[Math.floor(Math.abs(daNote.noteData))]);
-
-					daNote.y = coolStrum.y - (0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(SONG.speed, 2));
+					daNote.y = strumY - (0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(SONG.speed, 2));
 
 					if(daNote.isSustainNote)
 					{
@@ -1813,7 +1802,8 @@ class PlayState extends MusicBeatState
 						if (!daNote.isSustainNote)
 							daNote.modAngle = coolStrum.angle;
 						
-						daNote.alpha = coolStrum.alpha;
+						if(coolStrum.alpha != 1)
+							daNote.alpha = coolStrum.alpha;
 	
 						daNote.modAngle = coolStrum.angle;
 					}
@@ -1844,7 +1834,8 @@ class PlayState extends MusicBeatState
 						if (!daNote.isSustainNote)
 							daNote.modAngle = coolStrum.angle;
 						
-						daNote.alpha = coolStrum.alpha;
+						if(coolStrum.alpha != 1)
+							daNote.alpha = coolStrum.alpha;
 	
 						daNote.modAngle = coolStrum.angle;
 					}
