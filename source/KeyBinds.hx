@@ -19,9 +19,9 @@ class KeyBinds
 		FlxG.save.data.downBind = "S";
 		FlxG.save.data.leftBind = "A";
 		FlxG.save.data.rightBind = "D";
-		FlxG.save.data.muteBind = "NUMPADZERO";
-		FlxG.save.data.volUpBind = "NUMPADPLUS";
-		FlxG.save.data.volDownBind = "NUMPADMINUS";
+		FlxG.save.data.muteBind = "ZERO";
+		FlxG.save.data.volUpBind = "PLUS";
+		FlxG.save.data.volDownBind = "MINUS";
 		FlxG.save.data.fullscreenBind = "F";
 		FlxG.save.data.gpupBind = "DPAD_UP";
 		FlxG.save.data.gpdownBind = "DPAD_DOWN";
@@ -31,10 +31,6 @@ class KeyBinds
 		FlxG.save.data.gppauseBind = "START";
 		FlxG.save.data.resetBind = "R";
 		FlxG.save.data.gpresetBind = "SELECT";
-		FlxG.save.data.muteBind = "NUMPADZERO";
-		FlxG.save.data.volDownBind = "NUMPADMINUS";
-		FlxG.save.data.volUpBind = "NUMPADPLUS";
-		FlxG.save.data.fullscreenBind = "F";
 
 		FlxG.sound.muteKeys = ["ZERO", "NUMPADZERO"];
 		FlxG.sound.volumeDownKeys = ["MINUS", "NUMPADMINUS"];

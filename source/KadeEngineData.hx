@@ -127,13 +127,13 @@ class KadeEngineData
 			FlxG.save.data.judgementCounter = true;
 
 		if (FlxG.save.data.laneUnderlay == null)
-			FlxG.save.data.laneUnderlay = false;
+			FlxG.save.data.laneUnderlay = true;
 
 		if (FlxG.save.data.healthBar == null)
 			FlxG.save.data.healthBar = true;
 
 		if (FlxG.save.data.laneTransparency == null)
-			FlxG.save.data.laneTransparency = 0.5;
+			FlxG.save.data.laneTransparency = 0;
 
 		if (FlxG.save.data.noteskin == null)
 			FlxG.save.data.noteskin = "Arrows";

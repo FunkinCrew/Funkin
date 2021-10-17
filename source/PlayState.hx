@@ -1889,7 +1889,20 @@ class PlayState extends MusicBeatState
 
 	override function closeSubState()
 	{
-		if (paused)
+		if (PauseSubState.goToOptions)
+		{
+			Debug.logTrace("pause thingyt");
+			if (PauseSubState.goBack)
+			{
+				Debug.logTrace("pause thingyt");
+				PauseSubState.goToOptions = false;
+				PauseSubState.goBack = false;
+				openSubState(new PauseSubState());
+			}
+			else
+				openSubState(new OptionsMenu(true));
+		}
+		else if (paused)
 		{
 			if (FlxG.sound.music != null && !startingSong)
 			{
@@ -2254,7 +2267,7 @@ class PlayState extends MusicBeatState
 				clean();
 			}
 			else
-				openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
+				openSubState(new PauseSubState());
 		}
 
 		if (FlxG.keys.justPressed.FIVE && songStarted)
@@ -4043,7 +4056,7 @@ class PlayState extends MusicBeatState
 			vocals.pause();
 		}
 
-		openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
+		openSubState(new PauseSubState());
 	}
 
 	public function focusIn()

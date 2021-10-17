@@ -1,5 +1,6 @@
 package;
 
+import flixel.FlxSubState;
 import flixel.input.gamepad.FlxGamepad;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -16,52 +17,106 @@ import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 
-class OptionsMenu extends MusicBeatState
+class OptionCata extends FlxSprite
+{
+	public var title:String;
+	public var options:Array<Option>;
+
+	public var optionObjects:FlxTypedGroup<FlxText>;
+
+	public var titleObject:FlxText;
+
+	public function new(x:Float, y:Float, _title:String, _options:Array<Option>)
+	{
+		super(x, y);
+		title = _title;
+		makeGraphic(295, 64, FlxColor.BLACK);
+		alpha = 0.4;
+
+		options = _options;
+
+		optionObjects = new FlxTypedGroup();
+
+		titleObject = new FlxText(x, y + 16, 0, title);
+		titleObject.setFormat(Paths.font("vcr.ttf"), 35, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		titleObject.borderSize = 3;
+
+		titleObject.x += (width / 2) - (titleObject.fieldWidth / 2);
+
+		titleObject.scrollFactor.set();
+
+		scrollFactor.set();
+
+		for (i in 0...options.length)
+		{
+			var opt = options[i];
+			var text:FlxText = new FlxText(72, 112 + (46 * i), 0, opt.getDisplay());
+			text.setFormat(Paths.font("vcr.ttf"), 35, FlxColor.WHITE, FlxTextAlign.LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			text.borderSize = 3;
+			text.borderQuality = 1;
+			text.scrollFactor.set();
+			optionObjects.add(text);
+		}
+	}
+
+	public function changeColor(color:FlxColor)
+	{
+		makeGraphic(295, 64, color);
+	}
+}
+
+class OptionsMenu extends FlxSubState
 {
 	public static var instance:OptionsMenu;
 
-	var selector:FlxText;
-	var curSelected:Int = 0;
+	public var background:FlxSprite;
 
-	var options:Array<OptionCategory> = [
-		new OptionCategory("Gameplay", [
-			new DFJKOption(controls),
-			new DownscrollOption("Toggle making the notes scroll down rather than up."),
-			new GhostTapOption("Toggle counting pressing a directional input when no arrow is there as a miss."),
-			new Judgement("Customize your Hit Timings. (LEFT or RIGHT)"),
-			#if desktop new FPSCapOption("Change your FPS Cap."),
-			#end
+	public var selectedCat:OptionCata;
+
+	public var selectedOption:Option;
+
+	public var selectedCatIndex = 0;
+	public var selectedOptionIndex = 0;
+
+	public var isInCat:Bool = false;
+
+	var options:Array<OptionCata> = [
+		new OptionCata(50, 40, "Gameplay", [
 			new ScrollSpeedOption("Change your scroll speed. (1 = Chart dependent)"),
 			new AccuracyDOption("Change how accuracy is calculated. (Accurate = Simple, Complex = Milisecond Based)"),
+			new GhostTapOption("Toggle counting pressing a directional input when no arrow is there as a miss."),
+			new DownscrollOption("Toggle making the notes scroll down rather than up."),
+			#if desktop new FPSCapOption("Change your FPS Cap."),
+			#end
 			new ResetButtonOption("Toggle pressing R to gameover."),
 			new InstantRespawn("Toggle if you instantly respawn after dying."),
+			new CamZoomOption("Toggle the camera zoom in-game."),
 			// new OffsetMenu("Get a note offset based off of your inputs!"),
+			new DFJKOption(),
 			new CustomizeGameplay("Drag and drop gameplay modules to your prefered positions!")
 		]),
-		new OptionCategory("Appearance", [
+		new OptionCata(345, 40, "Appearance", [
 			new NoteskinOption("Change your current noteskin"), new EditorRes("Not showing the editor grid will greatly increase editor performance"),
 			new DistractionsAndEffectsOption("Toggle stage distractions that can hinder your gameplay."),
-			new CamZoomOption("Toggle the camera zoom in-game."),
+			new MiddleScrollOption("Put your lane in the center or on the right."), new HealthBarOption("Toggles health bar visibility"),
 			new StepManiaOption("Sets the colors of the arrows depending on quantization instead of direction."),
 			new AccuracyOption("Display accuracy information on the info bar."),
-			new JudgementCounter("Shows your current judgements on the left side of the screen."), new LaneUnderlayOption("Toggles lane underlay"),
-			new MiddleScrollOption("Put your lane in the center or on the right."), new HealthBarOption("Toggles health bar visibility"),
 			new SongPositionOption("Show the song's current position as a scrolling bar."),
 			new Colour("The color behind icons now fit with their theme. (e.g. Pico = green)"),
 			new NPSDisplayOption("Shows your current Notes Per Second on the info bar."),
 			new RainbowFPSOption("Make the FPS Counter flicker through rainbow colors."),
 			new CpuStrums("Toggle the CPU's strumline lighting up when it hits a note."),
 		]),
-		new OptionCategory("Misc", [
-			new FPSOption("Toggle the FPS Counter"), new FlashingLightsOption("Toggle flashing lights that can cause epileptic seizures and strain."),
+		new OptionCata(640, 40, "Misc", [
+			new FPSOption("Toggle the FPS Counter"),
+			new FlashingLightsOption("Toggle flashing lights that can cause epileptic seizures and strain."),
 			new WatermarkOption("Enable and disable all watermarks from the engine."),
 			new AntialiasingOption("Toggle antialiasing, improving graphics quality at a slight performance penalty."),
-			new MissSoundsOption("Toggle miss sounds playing when you don't hit a note."), new ScoreScreen("Show the score screen after the end of a song"),
+			new MissSoundsOption("Toggle miss sounds playing when you don't hit a note."),
+			new ScoreScreen("Show the score screen after the end of a song"),
 			new ShowInput("Display every single input on the score screen."),
-			new Optimization("No characters or backgrounds. Just a usual rhythm game layout."), new BotPlay("Showcase your charts and mods with autoplay."),
-			#if debug new DebugMode("Go to the animation debug menu.") #end
 		]),
-		new OptionCategory("Saves and Data", [
+		new OptionCata(935, 40, "Saves", [
 			#if desktop // new ReplayOption("View saved song replays."),
 			#end
 			new ResetScoreOption("Reset your score on all songs and weeks. This is irreversible!"),
@@ -70,260 +125,194 @@ class OptionsMenu extends MusicBeatState
 		])
 	];
 
-	public var acceptInput:Bool = true;
+	public var isInPause = false;
 
-	private var currentDescription:String = "";
-	private var grpControls:FlxTypedGroup<Alphabet>;
+	public function new(pauseMenu:Bool = false)
+	{
+		super();
 
-	public static var versionShit:FlxText;
-
-	var currentSelectedCat:OptionCategory;
-	var blackBorder:FlxSprite;
+		isInPause = pauseMenu;
+	}
 
 	override function create()
 	{
-		clean();
 		instance = this;
-		var menuBG:FlxSprite = new FlxSprite().loadGraphic(Paths.loadImage("menuDesat"));
 
-		menuBG.color = 0xFFea71fd;
-		menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
-		menuBG.updateHitbox();
-		menuBG.screenCenter();
-		menuBG.antialiasing = FlxG.save.data.antialiasing;
-		add(menuBG);
+		background = new FlxSprite(50, 40).makeGraphic(1180, 640, FlxColor.BLACK);
+		background.alpha = 0.5;
+		background.scrollFactor.set();
+		add(background);
 
-		grpControls = new FlxTypedGroup<Alphabet>();
-		add(grpControls);
-
-		for (i in 0...options.length)
+		if (isInPause)
 		{
-			var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, options[i].getName(), true, false, true);
-			controlLabel.isMenuItem = true;
-			controlLabel.targetY = i;
-			grpControls.add(controlLabel);
-			// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
+			var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+			bg.alpha = 0;
+			bg.scrollFactor.set();
+			add(bg);
+
+			background.alpha = 0.3;
+			bg.alpha = 0.6;
+
+			cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
 		}
 
-		currentDescription = "none";
+		selectedCat = options[0];
 
-		versionShit = new FlxText(5, FlxG.height
-			+ 40, 0,
-			"Offset (Left, Right, Shift for slow): "
-			+ HelperFunctions.truncateFloat(FlxG.save.data.offset, 2)
-			+ " - Description - "
-			+ currentDescription, 12);
-		versionShit.scrollFactor.set();
-		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		selectedOption = selectedCat.options[0];
 
-		blackBorder = new FlxSprite(-30, FlxG.height + 40).makeGraphic((Std.int(versionShit.width + 900)), Std.int(versionShit.height + 600), FlxColor.BLACK);
-		blackBorder.alpha = 0.5;
+		for (cat in options)
+		{
+			add(cat);
+			add(cat.titleObject);
+		}
 
-		add(blackBorder);
+		switchCat(selectedCat);
 
-		add(versionShit);
+		selectedOption = selectedCat.options[0];
 
-		FlxTween.tween(versionShit, {y: FlxG.height - 18}, 2, {ease: FlxEase.elasticInOut});
-		FlxTween.tween(blackBorder, {y: FlxG.height - 18}, 2, {ease: FlxEase.elasticInOut});
-
-		changeSelection();
+		isInCat = true;
 
 		super.create();
 	}
 
-	var isCat:Bool = false;
+	public function switchCat(cat:OptionCata)
+	{
+		selectedCat.changeColor(FlxColor.BLACK);
+		selectedCat.alpha = 0.5;
+		remove(selectedCat.optionObjects);
+		selectedCat = cat;
+		selectedCat.alpha = 0.2;
+		selectedCat.changeColor(FlxColor.WHITE);
+		add(selectedCat.optionObjects);
+
+		selectedOption = selectedCat.options[0];
+
+		Debug.logTrace("Changed cat: " + selectedCatIndex);
+	}
+
+	public function selectOption(option:Option)
+	{
+		var object = selectedCat.optionObjects.members[selectedOptionIndex];
+
+		selectedOption = option;
+
+		object.text = "> " + option.getDisplay();
+
+		Debug.logTrace("Changed opt: " + selectedOptionIndex);
+	}
 
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
 
-		if (acceptInput)
+		if (isInCat)
 		{
-			if (controls.BACK && !isCat)
+			if (FlxG.keys.justPressed.RIGHT)
 			{
-				FlxG.switchState(new MainMenuState());
+				selectedCat.optionObjects.members[selectedOptionIndex].text = selectedOption.getDisplay();
+				selectedCatIndex++;
+
+				if (selectedCatIndex > options.length - 1)
+					selectedCatIndex = 0;
+				if (selectedCatIndex < 0)
+					selectedCatIndex = options.length - 1;
+
+				switchCat(options[selectedCatIndex]);
 			}
-			else if (controls.BACK)
+			else if (FlxG.keys.justPressed.LEFT)
 			{
-				isCat = false;
-				grpControls.clear();
-				for (i in 0...options.length)
-				{
-					var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, options[i].getName(), true, false);
-					controlLabel.isMenuItem = true;
-					controlLabel.targetY = i;
-					grpControls.add(controlLabel);
-					// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
-				}
+				selectedCat.optionObjects.members[selectedOptionIndex].text = selectedOption.getDisplay();
+				selectedCatIndex--;
 
-				curSelected = 0;
+				if (selectedCatIndex > options.length - 1)
+					selectedCatIndex = 0;
+				if (selectedCatIndex < 0)
+					selectedCatIndex = options.length - 1;
 
-				changeSelection(curSelected);
-			}
-
-			var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
-
-			if (gamepad != null)
-			{
-				if (gamepad.justPressed.DPAD_UP)
-				{
-					FlxG.sound.play(Paths.sound('scrollMenu'));
-					changeSelection(-1);
-				}
-				if (gamepad.justPressed.DPAD_DOWN)
-				{
-					FlxG.sound.play(Paths.sound('scrollMenu'));
-					changeSelection(1);
-				}
+				switchCat(options[selectedCatIndex]);
 			}
 
-			if (FlxG.keys.justPressed.UP)
-				changeSelection(-1);
+			if (FlxG.keys.justPressed.ENTER)
+			{
+				selectedOptionIndex = 0;
+				isInCat = false;
+				selectedCat.optionObjects.members[0].text = "> " + selectedOption.getDisplay();
+			}
+
+			if (FlxG.keys.justPressed.ESCAPE)
+			{
+				if (!isInPause)
+					FlxG.switchState(new MainMenuState());
+				else
+				{
+					PauseSubState.goBack = true;
+					close();
+				}
+			}
+		}
+		else
+		{
 			if (FlxG.keys.justPressed.DOWN)
-				changeSelection(1);
-
-			if (isCat)
 			{
-				if (currentSelectedCat.getOptions()[curSelected].getAccept())
-				{
-					if (FlxG.keys.pressed.SHIFT)
-					{
-						if (FlxG.keys.pressed.RIGHT)
-							currentSelectedCat.getOptions()[curSelected].right();
-						if (FlxG.keys.pressed.LEFT)
-							currentSelectedCat.getOptions()[curSelected].left();
-					}
-					else
-					{
-						if (FlxG.keys.justPressed.RIGHT)
-							currentSelectedCat.getOptions()[curSelected].right();
-						if (FlxG.keys.justPressed.LEFT)
-							currentSelectedCat.getOptions()[curSelected].left();
-					}
-				}
-				else
-				{
-					if (FlxG.keys.pressed.SHIFT)
-					{
-						if (FlxG.keys.justPressed.RIGHT)
-							FlxG.save.data.offset += 0.1;
-						else if (FlxG.keys.justPressed.LEFT)
-							FlxG.save.data.offset -= 0.1;
-					}
-					else if (FlxG.keys.pressed.RIGHT)
-						FlxG.save.data.offset += 0.1;
-					else if (FlxG.keys.pressed.LEFT)
-						FlxG.save.data.offset -= 0.1;
+				selectedCat.optionObjects.members[selectedOptionIndex].text = selectedOption.getDisplay();
+				selectedOptionIndex++;
 
-					versionShit.text = "Offset (Left, Right, Shift for slow): " + HelperFunctions.truncateFloat(FlxG.save.data.offset, 2)
-						+ " - Description - " + currentDescription;
-				}
-				if (currentSelectedCat.getOptions()[curSelected].getAccept())
-					versionShit.text = currentSelectedCat.getOptions()[curSelected].getValue() + " - Description - " + currentDescription;
-				else
-					versionShit.text = "Offset (Left, Right, Shift for slow): " + HelperFunctions.truncateFloat(FlxG.save.data.offset, 2)
-						+ " - Description - " + currentDescription;
+				if (selectedOptionIndex > options[selectedCatIndex].options.length - 1)
+					selectedOptionIndex = 0;
+				if (selectedOptionIndex < 0)
+					selectedOptionIndex = options[selectedCatIndex].options.length - 1;
+
+				selectOption(options[selectedCatIndex].options[selectedOptionIndex]);
 			}
-			else
+			else if (FlxG.keys.justPressed.UP)
 			{
-				if (FlxG.keys.pressed.SHIFT)
-				{
-					if (FlxG.keys.justPressed.RIGHT)
-						FlxG.save.data.offset += 0.1;
-					else if (FlxG.keys.justPressed.LEFT)
-						FlxG.save.data.offset -= 0.1;
-				}
-				else if (FlxG.keys.pressed.RIGHT)
-					FlxG.save.data.offset += 0.1;
-				else if (FlxG.keys.pressed.LEFT)
-					FlxG.save.data.offset -= 0.1;
+				selectedCat.optionObjects.members[selectedOptionIndex].text = selectedOption.getDisplay();
+				selectedOptionIndex--;
 
-				versionShit.text = "Offset (Left, Right, Shift for slow): " + HelperFunctions.truncateFloat(FlxG.save.data.offset, 2) + " - Description - "
-					+ currentDescription;
+				if (selectedOptionIndex > options[selectedCatIndex].options.length - 1)
+					selectedOptionIndex = 0;
+				if (selectedOptionIndex < 0)
+					selectedOptionIndex = options[selectedCatIndex].options.length - 1;
+
+				selectOption(options[selectedCatIndex].options[selectedOptionIndex]);
 			}
 
-			if (controls.RESET)
-				FlxG.save.data.offset = 0;
-
-			if (controls.ACCEPT)
+			if (FlxG.keys.justPressed.RIGHT)
 			{
-				if (isCat)
-				{
-					if (currentSelectedCat.getOptions()[curSelected].press())
-					{
-						grpControls.members[curSelected].reType(currentSelectedCat.getOptions()[curSelected].getDisplay());
-						trace(currentSelectedCat.getOptions()[curSelected].getDisplay());
-					}
-				}
-				else
-				{
-					currentSelectedCat = options[curSelected];
-					isCat = true;
-					grpControls.clear();
-					for (i in 0...currentSelectedCat.getOptions().length)
-					{
-						var controlLabel:Alphabet = new Alphabet(0, (70 * i) + 30, currentSelectedCat.getOptions()[i].getDisplay(), true, false);
-						controlLabel.isMenuItem = true;
-						controlLabel.targetY = i;
-						grpControls.add(controlLabel);
-						// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
-					}
-					curSelected = 0;
-				}
+				var object = selectedCat.optionObjects.members[selectedOptionIndex];
+				selectedOption.right();
 
-				changeSelection();
+				FlxG.save.flush();
+
+				object.text = "> " + selectedOption.getValue();
+				Debug.logTrace("New text: " + object.text + " " + FlxG.save.data.scrollSpeed);
 			}
-		}
-	}
-
-	var isSettingControl:Bool = false;
-
-	function changeSelection(change:Int = 0)
-	{
-		#if !switch
-		// NGio.logEvent("Fresh");
-		#end
-
-		FlxG.sound.play(Paths.sound("scrollMenu"), 0.4);
-
-		curSelected += change;
-
-		if (curSelected < 0)
-			curSelected = grpControls.length - 1;
-		if (curSelected >= grpControls.length)
-			curSelected = 0;
-
-		if (isCat)
-			currentDescription = currentSelectedCat.getOptions()[curSelected].getDescription();
-		else
-			currentDescription = "Please select a category";
-		if (isCat)
-		{
-			if (currentSelectedCat.getOptions()[curSelected].getAccept())
-				versionShit.text = currentSelectedCat.getOptions()[curSelected].getValue() + " - Description - " + currentDescription;
-			else
-				versionShit.text = "Offset (Left, Right, Shift for slow): " + HelperFunctions.truncateFloat(FlxG.save.data.offset, 2) + " - Description - "
-					+ currentDescription;
-		}
-		else
-			versionShit.text = "Offset (Left, Right, Shift for slow): " + HelperFunctions.truncateFloat(FlxG.save.data.offset, 2) + " - Description - "
-				+ currentDescription;
-		// selector.y = (70 * curSelected) + 30;
-
-		var bullShit:Int = 0;
-
-		for (item in grpControls.members)
-		{
-			item.targetY = bullShit - curSelected;
-			bullShit++;
-
-			item.alpha = 0.6;
-			// item.setGraphicSize(Std.int(item.width * 0.8));
-
-			if (item.targetY == 0)
+			else if (FlxG.keys.justPressed.LEFT)
 			{
-				item.alpha = 1;
-				// item.setGraphicSize(Std.int(item.width));
+				var object = selectedCat.optionObjects.members[selectedOptionIndex];
+				selectedOption.left();
+
+				FlxG.save.flush();
+
+				object.text = "> " + selectedOption.getValue();
+				Debug.logTrace("New text: " + object.text);
+			}
+
+			if (FlxG.keys.justPressed.ENTER)
+			{
+				var object = selectedCat.optionObjects.members[selectedOptionIndex];
+				selectedOption.press();
+
+				FlxG.save.flush();
+
+				object.text = "> " + selectedOption.getValue();
+				isInCat = true;
+			}
+
+			if (FlxG.keys.justPressed.ESCAPE)
+			{
+				selectedCat.optionObjects.members[selectedOptionIndex].text = selectedOption.getDisplay();
+				isInCat = true;
 			}
 		}
 	}
