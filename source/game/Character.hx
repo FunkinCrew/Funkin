@@ -337,7 +337,7 @@ class Character extends FlxSprite
 				barColor = FlxColor.fromRGB(199, 111, 211);
 			case '':
 				trace("NO VALUE THINGY LOL DONT LOAD SHIT");
-				deathCharacter = "";
+				deathCharacter = "bf-dead";
 				icon = "bf-old";
 
 			default:
