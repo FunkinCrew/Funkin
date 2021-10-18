@@ -43,9 +43,6 @@
 	<assets path="assets/preload" rename="assets" exclude="*.ogg" if="web"/>
 	<assets path="assets/preload" rename="assets" exclude="*.mp3" unless="web"/>
 
-	<!-- LEATHER ENGINE CUSTOMIZATION -->
-	<define name="VIDEOS_ALLOWED" if="web || windows" unless="32"/>
-
 	<assets path="mods" embed="false"/>
 	
 	<!-- <define name="PRELOAD_ALL" /> -->
@@ -63,9 +60,6 @@
 		<library name="songs"    preload="false" />
 		<library name="shared"   preload="false" />
 	</section>
-
-	<assets path="plugins/"             rename=''               if="VIDEOS_ALLOWED windows" />
-	<assets path="dlls/"                rename=''               if="VIDEOS_ALLOWED windows" />
 	
 	<assets path="assets/songs"    library="songs"    exclude="*.ogg" if="web"/>
 	<assets path="assets/songs"    library="songs"    exclude="*.mp3" unless="web"/> 
