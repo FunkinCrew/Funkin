@@ -63,8 +63,9 @@ class OptionsMenu extends MusicBeatState
 			new BoolOption("Note Accuracy Text", "msText", FlxG.save.data.msText, 2),
 			new BoolOption("FPS Counter", "fpsCounter", FlxG.save.data.fpsCounter, 3),
 			new BoolOption("Memory Counter", "memoryCounter", FlxG.save.data.memoryCounter, 4),
-			new MaxFPSOption("Max FPS", 5),
-			new UISkinSelectOption("UI Skin", 6)
+			new BoolOption("Optimizations", "optimizations", FlxG.save.data.optimizations, 5),
+			new MaxFPSOption("Max FPS", 6),
+			new UISkinSelectOption("UI Skin", 7)
 		],
 		[
 			"Tools",
@@ -94,7 +95,13 @@ class OptionsMenu extends MusicBeatState
 	{
 		instance = this;
 
-		var menuBG:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+		var menuBG:FlxSprite;
+
+		if(!FlxG.save.data.optimizations)
+			menuBG = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+		else
+			menuBG = new FlxSprite().makeGraphic(1286, 730, FlxColor.fromString("#E1E1E1"), false, "optimizedMenuDesat");
+
 		menuBG.color = 0xFFea71fd;
 		menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
 		menuBG.updateHitbox();

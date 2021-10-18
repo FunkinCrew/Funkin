@@ -135,7 +135,11 @@ class FreeplayState extends MusicBeatState
 			songs.push(new SongMetadata(song, week, icon, diffs, actualColor));
 		}
 
-		bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+		if(!FlxG.save.data.optimizations)
+			bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+		else
+			bg = new FlxSprite().makeGraphic(1286, 730, FlxColor.fromString("#E1E1E1"), false, "optimizedMenuDesat");
+		
 		add(bg);
 
 		grpSongs = new FlxTypedGroup<Alphabet>();
@@ -167,11 +171,14 @@ class FreeplayState extends MusicBeatState
 			songText.targetY = i;
 			grpSongs.add(songText);
 
-			var icon:HealthIcon = new HealthIcon(songs[i].songCharacter);
-			icon.sprTracker = songText;
-
-			iconArray.push(icon);
-			add(icon);
+			if(!FlxG.save.data.optimizations)
+			{
+				var icon:HealthIcon = new HealthIcon(songs[i].songCharacter);
+				icon.sprTracker = songText;
+	
+				iconArray.push(icon);
+				add(icon);
+			}
 		}
 
 		changeSelection();
@@ -356,12 +363,15 @@ class FreeplayState extends MusicBeatState
 
 		var bullShit:Int = 0;
 
-		for (i in 0...iconArray.length)
+		if(iconArray.length > 0)
 		{
-			iconArray[i].alpha = 0.6;
+			for (i in 0...iconArray.length)
+			{
+				iconArray[i].alpha = 0.6;
+			}
+	
+			iconArray[curSelected].alpha = 1;
 		}
-
-		iconArray[curSelected].alpha = 1;
 
 		for (item in grpSongs.members)
 		{

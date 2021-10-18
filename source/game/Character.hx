@@ -359,7 +359,7 @@ class Character extends FlxSprite
 		if(character != "")
 			loadOffsetFile(curCharacter);
 
-		if(curCharacter != '' && otherCharacters == null)
+		if(curCharacter != '' && otherCharacters == null && animation.curAnim != null)
 		{
 			updateHitbox();
 
@@ -572,7 +572,7 @@ class Character extends FlxSprite
 
 	override function update(elapsed:Float)
 	{
-		if(!debugMode && curCharacter != '')
+		if(!debugMode && curCharacter != '' && animation.curAnim != null)
 		{
 			if (!isPlayer)
 			{
@@ -611,7 +611,7 @@ class Character extends FlxSprite
 	 */
 	public function dance(?altAnim:String = "")
 	{
-		if (!debugMode && curCharacter != '')
+		if (!debugMode && curCharacter != '' && animation.curAnim != null)
 		{
 			switch (curCharacter)
 			{

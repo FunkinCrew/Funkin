@@ -1,5 +1,7 @@
 package game;
 
+import flixel.group.FlxSpriteGroup;
+import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.graphics.frames.FlxFramesCollection;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import utilities.CoolUtil;

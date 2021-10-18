@@ -1,5 +1,7 @@
 package substates;
 
+import flixel.FlxSprite;
+import flixel.FlxBasic;
 import openfl.Lib;
 import game.Conductor;
 import utilities.PlayerSettings;
@@ -40,6 +42,11 @@ class MusicBeatSubstate extends FlxSubState
 
 		/* cool fps shit thx kade */
 		(cast (Lib.current.getChildAt(0), Main)).setFPSCap(FlxG.save.data.fpsCap);
+
+		forEach(function(basic:FlxBasic) {
+			if(Std.isOfType(basic, FlxSprite))
+				Reflect.setProperty(basic, "antialiasing", false);
+		}, true);
 	}
 
 	private function updateCurStep():Void

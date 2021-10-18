@@ -44,7 +44,13 @@ class ModsMenu extends MusicBeatState
 	{
 		instance = this;
 
-		var menuBG:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+		var menuBG:FlxSprite;
+
+		if(!FlxG.save.data.optimizations)
+			menuBG = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+		else
+			menuBG = new FlxSprite().makeGraphic(1286, 730, FlxColor.fromString("#E1E1E1"), false, "optimizedMenuDesat");
+
 		menuBG.color = 0xFFea71fd;
 		menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
 		menuBG.updateHitbox();

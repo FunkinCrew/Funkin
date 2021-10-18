@@ -71,6 +71,9 @@ class SaveData {
 
         if(FlxG.save.data.cutscenePlays == null)
             FlxG.save.data.cutscenePlays = "story";
+
+        if(FlxG.save.data.optimizations == null)
+            FlxG.save.data.optimizations = false;
         
         Conductor.offset = FlxG.save.data.songOffset;
 

@@ -339,11 +339,22 @@ class PlayState extends MusicBeatState
 		/* character time :) */
 		gfVersion = SONG.gf;
 
-		gf = new Character(400, 130, gfVersion);
-		gf.scrollFactor.set(0.95, 0.95);
-
-		dad = new Character(100, 100, SONG.player2);
-		boyfriend = new Boyfriend(770, 450, SONG.player1);
+		if(FlxG.save.data.optimizations)
+		{
+			gf = new Character(400, 130, "");
+			gf.scrollFactor.set(0.95, 0.95);
+	
+			dad = new Character(100, 100, "");
+			boyfriend = new Boyfriend(770, 450, "");
+		}
+		else
+		{
+			gf = new Character(400, 130, gfVersion);
+			gf.scrollFactor.set(0.95, 0.95);
+	
+			dad = new Character(100, 100, SONG.player2);
+			boyfriend = new Boyfriend(770, 450, SONG.player1);
+		}
 		/* end of character time */
 
 		#if discord_rpc
@@ -365,7 +376,11 @@ class PlayState extends MusicBeatState
 
 		curStage = SONG.stage;
 
-		stage = new StageGroup(curStage);
+		if(FlxG.save.data.optimizations)
+			stage = new StageGroup("");
+		else
+			stage = new StageGroup(curStage);
+
 		add(stage);
 
 		defaultCamZoom = stage.camZoom;
@@ -385,7 +400,8 @@ class PlayState extends MusicBeatState
 		}
 
 		// REPOSITIONING PER STAGE
-		stage.setCharOffsets();
+		if(!FlxG.save.data.optimizations)
+			stage.setCharOffsets();
 
 		if(gf.otherCharacters == null)
 		{
@@ -406,7 +422,7 @@ class PlayState extends MusicBeatState
 		}
 
 		// fuck haxeflixel and their no z ordering or somnething AAAAAAAAAAAAA
-		if(curStage == 'limo')
+		if(curStage == 'limo' && !FlxG.save.data.optimizations)
 			add(stage.limo);
 
 		if(dad.otherCharacters == null)
@@ -481,9 +497,12 @@ class PlayState extends MusicBeatState
 
 		add(camFollow);
 
-		FlxG.camera.follow(camFollow, LOCKON, 0.04 * (60 / Main.display.currentFPS));
-		FlxG.camera.zoom = defaultCamZoom;
-		FlxG.camera.focusOn(camFollow.getPosition());
+		if(!FlxG.save.data.optimizations)
+		{
+			FlxG.camera.follow(camFollow, LOCKON, 0.04 * (60 / Main.display.currentFPS));
+			FlxG.camera.zoom = defaultCamZoom;
+			FlxG.camera.focusOn(camFollow.getPosition());
+		}
 
 		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
 
@@ -2345,17 +2364,19 @@ class PlayState extends MusicBeatState
 	
 			if(boyfriend.otherCharacters == null)
 			{
-				if (boyfriend.holdTimer > Conductor.stepCrochet * 4 * 0.001 && !heldArray.contains(true))
-					if (boyfriend.animation.curAnim.name.startsWith('sing') && !boyfriend.animation.curAnim.name.endsWith('miss'))
-						boyfriend.dance();
+				if(boyfriend.animation.curAnim != null)
+					if (boyfriend.holdTimer > Conductor.stepCrochet * 4 * 0.001 && !heldArray.contains(true))
+						if (boyfriend.animation.curAnim.name.startsWith('sing') && !boyfriend.animation.curAnim.name.endsWith('miss'))
+							boyfriend.dance();
 			}
 			else
 			{
 				for(character in boyfriend.otherCharacters)
 				{
-					if (character.holdTimer > Conductor.stepCrochet * 4 * 0.001 && !heldArray.contains(true))
-						if (character.animation.curAnim.name.startsWith('sing') && !character.animation.curAnim.name.endsWith('miss'))
-							character.dance();
+					if(character.animation.curAnim != null)
+						if (character.holdTimer > Conductor.stepCrochet * 4 * 0.001 && !heldArray.contains(true))
+							if (character.animation.curAnim.name.startsWith('sing') && !character.animation.curAnim.name.endsWith('miss'))
+								character.dance();
 				}
 			}
 	
@@ -2439,17 +2460,19 @@ class PlayState extends MusicBeatState
 
 			if(boyfriend.otherCharacters == null)
 			{
-				if (boyfriend.holdTimer > Conductor.stepCrochet * 4 * 0.001)
-					if (boyfriend.animation.curAnim.name.startsWith('sing') && !boyfriend.animation.curAnim.name.endsWith('miss'))
-						boyfriend.dance();
+				if(boyfriend.animation.curAnim != null)
+					if (boyfriend.holdTimer > Conductor.stepCrochet * 4 * 0.001)
+						if (boyfriend.animation.curAnim.name.startsWith('sing') && !boyfriend.animation.curAnim.name.endsWith('miss'))
+							boyfriend.dance();
 			}
 			else
 			{
 				for(character in boyfriend.otherCharacters)
 				{
-					if (character.holdTimer > Conductor.stepCrochet * 4 * 0.001)
-						if (character.animation.curAnim.name.startsWith('sing') && !character.animation.curAnim.name.endsWith('miss'))
-							character.dance();
+					if(character.animation.curAnim != null)
+						if (character.holdTimer > Conductor.stepCrochet * 4 * 0.001)
+							if (character.animation.curAnim.name.startsWith('sing') && !character.animation.curAnim.name.endsWith('miss'))
+								character.dance();
 				}
 			}
 		}
@@ -2608,15 +2631,17 @@ class PlayState extends MusicBeatState
 			// Dad doesnt interupt his own notes
 			if(dad.otherCharacters == null)
 			{
-				if ((dad.animation.curAnim.name.startsWith("sing") && dad.animation.curAnim.finished || !dad.animation.curAnim.name.startsWith("sing")) && !dad.curCharacter.startsWith('gf'))
-					dad.dance();
+				if(dad.animation.curAnim != null)
+					if ((dad.animation.curAnim.name.startsWith("sing") && dad.animation.curAnim.finished || !dad.animation.curAnim.name.startsWith("sing")) && !dad.curCharacter.startsWith('gf'))
+						dad.dance();
 			}
 			else
 			{
 				for(character in dad.otherCharacters)
 				{
-					if ((character.animation.curAnim.name.startsWith("sing") && character.animation.curAnim.finished || !character.animation.curAnim.name.startsWith("sing")) && !character.curCharacter.startsWith('gf'))
-						character.dance();
+					if(character.animation.curAnim != null)
+						if ((character.animation.curAnim.name.startsWith("sing") && character.animation.curAnim.finished || !character.animation.curAnim.name.startsWith("sing")) && !character.curCharacter.startsWith('gf'))
+							character.dance();
 				}
 			}
 		}
@@ -2641,20 +2666,23 @@ class PlayState extends MusicBeatState
 		if (curBeat % gfSpeed == 0 && !SONG.player2.startsWith('gf'))
 			gf.dance();
 		
-		if (curBeat % gfSpeed == 0 && SONG.player2.startsWith('gf') && (dad.animation.curAnim.name.startsWith("sing") && dad.animation.curAnim.finished || !dad.animation.curAnim.name.startsWith("sing")))
-			dad.dance();
+		if(dad.animation.curAnim != null)
+			if (curBeat % gfSpeed == 0 && SONG.player2.startsWith('gf') && (dad.animation.curAnim.name.startsWith("sing") && dad.animation.curAnim.finished || !dad.animation.curAnim.name.startsWith("sing")))
+				dad.dance();
 
 		if (boyfriend.otherCharacters == null)
 		{
-			if(!boyfriend.animation.curAnim.name.startsWith("sing"))
-				boyfriend.dance();
+			if(boyfriend.animation.curAnim != null)
+				if(!boyfriend.animation.curAnim.name.startsWith("sing"))
+					boyfriend.dance();
 		}
 		else
 		{
 			for(character in boyfriend.otherCharacters)
 			{
-				if(!character.animation.curAnim.name.startsWith("sing"))
-					character.dance();
+				if(character.animation.curAnim != null)
+					if(!character.animation.curAnim.name.startsWith("sing"))
+						character.dance();
 			}
 		}
 
