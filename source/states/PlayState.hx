@@ -765,6 +765,58 @@ class PlayState extends MusicBeatState
 		});
 	}
 
+	public function startVideo(name:String, ?ext:String):Void {
+		#if VIDEOS_ALLOWED
+		var foundFile:Bool = false;
+		var fileName:String = Sys.getCwd() + PolymodAssets.getPath(Paths.video(name, ext));
+
+		#if sys
+		if(FileSystem.exists(fileName)) {
+			foundFile = true;
+		}
+		#end
+
+		if(!foundFile) {
+			fileName = Paths.video(name);
+
+			#if sys
+			if(FileSystem.exists(fileName)) {
+			#else
+			if(OpenFlAssets.exists(fileName)) {
+			#end
+				foundFile = true;
+			}
+		}
+
+		if(foundFile) {
+			inCutscene = true;
+			var bg = new FlxSprite(-FlxG.width, -FlxG.height).makeGraphic(FlxG.width * 3, FlxG.height * 3, FlxColor.BLACK);
+			bg.scrollFactor.set();
+			bg.cameras = [camHUD];
+			add(bg);
+
+			(new FlxVideo(fileName)).finishCallback = function() {
+				remove(bg);
+
+				if(endingSong) {
+					endSong();
+				} else {
+					startCountdown();
+				}
+			}
+			return;
+		} else {
+			FlxG.log.warn('Couldnt find video file: ' + fileName);
+		}
+		#end
+
+		if(endingSong) {
+			endSong();
+		} else {
+			startCountdown();
+		}
+	}
+
 	var startTimer:FlxTimer;
 
 	function startCountdown():Void
