@@ -2021,7 +2021,6 @@ class PlayState extends MusicBeatState
 				health += 0.005;
 			case 'shit':
 				health -= 0.07;
-				misses += 1;
 		}
 
 		if(FlxG.save.data.accuracyMode == "simple")
