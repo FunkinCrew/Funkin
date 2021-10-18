@@ -29,6 +29,7 @@ All notable changes will be documented in this file.
 ### Changed
 - Input has been updated and is a lot better now.
 - Held notes no longer count to your accuracy.
+- Debug Songs are now a built-in mod instead of a setting.
 ### Fixed
 - Bug where music wouldn't play when opening the dialogue in Senpai and Thorns.
 - Bug where Roses would crash at end of dialogue (because of the fix I made for the issue above this one).
