@@ -1,5 +1,6 @@
 package utilities;
 
+import flixel.FlxG;
 import openfl.utils.ByteArray;
 #if sys
 import sys.io.File;
@@ -78,5 +79,14 @@ class CoolUtil
 			dumbArray.push(i);
 		}
 		return dumbArray;
+	}
+
+	public static function openURL(url:String)
+	{
+		#if linux
+		Sys.command('/usr/bin/xdg-open', [url, "&"]);
+		#else
+		FlxG.openURL(url);
+		#end
 	}
 }
