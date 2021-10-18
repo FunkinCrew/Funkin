@@ -58,10 +58,13 @@ class MusicBeatState extends FlxUIState
 		/* cool fps shit thx kade */
 		(cast (Lib.current.getChildAt(0), Main)).setFPSCap(FlxG.save.data.fpsCap);
 
-		forEach(function(basic:FlxBasic) {
-			if(Std.isOfType(basic, FlxSprite))
-				Reflect.setProperty(basic, "antialiasing", false);
-		}, true);
+		if(FlxG.save.data.optimizations)
+		{
+			forEachAlive(function(basic:FlxBasic) {
+				if(Std.isOfType(basic, FlxSprite))
+					Reflect.setProperty(basic, "antialiasing", false);
+			}, true);
+		}
 	}
 
 	private function updateBeat():Void
