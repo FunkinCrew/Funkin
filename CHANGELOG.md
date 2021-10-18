@@ -34,6 +34,7 @@ All notable changes will be documented in this file.
 - Bug where music wouldn't play when opening the dialogue in Senpai and Thorns.
 - Bug where Roses would crash at end of dialogue (because of the fix I made for the issue above this one).
 - Default Stages having weird character positions.
+- 83475349875389579843589743 other random bugs that occured while developing this update.
 ### Removed
 - Week 7 has been removed because gamebanana and stuff.
 
