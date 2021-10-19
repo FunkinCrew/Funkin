@@ -624,8 +624,13 @@ class StageGroup extends FlxGroup
         gf.setPosition((gf_Point.x - (gf.width / 2)) + gf.positioningOffset[0], (gf_Point.y - gf.height) + gf.positioningOffset[1]);
         p2.setPosition((player_2_Point.x - (p2.width / 2)) + p2.positioningOffset[0], (player_2_Point.y - p2.height) + p2.positioningOffset[1]);
 
-        if(PlayState.SONG.player2.startsWith("gf") && PlayState.SONG.gf.startsWith("gf"))
+        if(p2.curCharacter.startsWith("gf") && gf.curCharacter.startsWith("gf"))
+        {
             p2.setPosition(gf.x, gf.y);
+
+            if(p2.visible)
+                gf.visible = false;
+        }
 
         if(p1.otherCharacters != null)
         {
@@ -650,6 +655,25 @@ class StageGroup extends FlxGroup
                 character.setPosition((player_2_Point.x - (character.width / 2)) + character.positioningOffset[0], (player_2_Point.y - character.height) + character.positioningOffset[1]);
             }
         }
+    }
+
+    public function getCharacterPos(character:Int):Dynamic
+    {
+        var p1 = PlayState.boyfriend;
+        var gf = PlayState.gf;
+        var p2 = PlayState.dad;
+
+        switch(character)
+        {
+            case 0: // bf
+                return [(player_1_Point.x - (p1.width / 2)) + p1.positioningOffset[0], (player_1_Point.y - p1.height) + p1.positioningOffset[1]];
+            case 1: // dad
+                return [(player_2_Point.x - (p2.width / 2)) + p2.positioningOffset[0], (player_2_Point.y - p2.height) + p2.positioningOffset[1]];
+            case 2: // gf
+                return [(gf_Point.x - (gf.width / 2)) + gf.positioningOffset[0], (gf_Point.y - gf.height) + gf.positioningOffset[1]];
+        }
+
+        return [0,0];
     }
 
     override public function new(?stageName:String) {

@@ -437,6 +437,16 @@ class ModchartUtilities
             actor.y = y;
         });
         
+        Lua_helper.add_callback(lua,"getOriginalCharX", function(character:Int) {
+            @:privateAccess
+            return PlayState.instance.stage.getCharacterPos(character)[0];
+        });
+
+        Lua_helper.add_callback(lua,"getOriginalCharY", function(character:Int) {
+            @:privateAccess
+            return PlayState.instance.stage.getCharacterPos(character)[1];
+        });
+        
         Lua_helper.add_callback(lua,"setActorAccelerationX", function(x:Int,id:String) {
             getActorByName(id).acceleration.x = x;
         });
