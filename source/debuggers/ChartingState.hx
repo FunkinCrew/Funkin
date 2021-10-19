@@ -114,6 +114,8 @@ class ChartingState extends MusicBeatState
 
 	var current_Note_Character:Int = 0;
 
+	public static var loadedAutosave:Bool = false;
+
 	override function create()
 	{
 		// FOR WHEN COMING IN FROM THE TOOLS PAGE LOL
@@ -177,7 +179,8 @@ class ChartingState extends MusicBeatState
 		else
 			_song = Song.loadFromJson("test", "test");
 
-		_song.speed = PlayState.previousScrollSpeedLmao;
+		if(PlayState.songMultiplier != 1 && !loadedAutosave)
+			_song.speed = PlayState.previousScrollSpeedLmao;
 
 		FlxG.mouse.visible = true;
 
@@ -225,6 +228,8 @@ class ChartingState extends MusicBeatState
 		updateGrid();
 
 		super.create();
+
+		loadedAutosave = false;
 	}
 
 	function addSongUI():Void
@@ -1471,6 +1476,7 @@ class ChartingState extends MusicBeatState
 
 	function loadAutosave():Void
 	{
+		loadedAutosave = true;
 		PlayState.SONG = Song.parseJSONshit(FlxG.save.data.autosave);
 		FlxG.resetState();
 	}
@@ -1480,6 +1486,7 @@ class ChartingState extends MusicBeatState
 		FlxG.save.data.autosave = Json.stringify({
 			"song": _song
 		});
+
 		FlxG.save.flush();
 	}
 
