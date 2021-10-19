@@ -1293,20 +1293,18 @@ class ChartingState extends MusicBeatState
 
 		for(noteIndex in 0..._song.notes[curSection].sectionNotes.length)
 		{
-			var i = _song.notes[curSection].sectionNotes[noteIndex];
-
 			if(side == 0)
 			{
-				if(i[1] < _song.keyCount)
+				if(_song.notes[curSection].sectionNotes[noteIndex][1] < _song.keyCount)
 				{
-					removeThese.push(i);
+					removeThese.push(_song.notes[curSection].sectionNotes[noteIndex]);
 				}
 			}
 			else if(side == 1)
 			{
-				if(i[1] >= _song.keyCount)
+				if(_song.notes[curSection].sectionNotes[noteIndex][1] >= _song.keyCount)
 				{
-					removeThese.push(i);
+					removeThese.push(_song.notes[curSection].sectionNotes[noteIndex]);
 				}
 			}
 		}
