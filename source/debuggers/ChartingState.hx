@@ -122,11 +122,7 @@ class ChartingState extends MusicBeatState
 		if (Assets.getLibrary("shared") == null)
 			Assets.loadLibrary("shared").onComplete(function (_) { });
 
-		#if sys
-		var characterList = CoolUtil.coolTextFilePolymod(Paths.txt('characterList'));
-		#else
 		var characterList = CoolUtil.coolTextFile(Paths.txt('characterList'));
-		#end
 
 		for(Text in characterList)
 		{
@@ -137,7 +133,7 @@ class ChartingState extends MusicBeatState
 
 			var base_array;
 
-			if(characters.get(mod) != null)
+			if(characters.exists(mod))
 				base_array = characters.get(mod);
 			else
 				base_array = [];
@@ -152,7 +148,7 @@ class ChartingState extends MusicBeatState
 		add(gridBG);
 
 		leftIcon = new HealthIcon('bf');
-		rightIcon = new HealthIcon('dad');
+		rightIcon = new HealthIcon('bf');
 		leftIcon.scrollFactor.set(1, 1);
 		rightIcon.scrollFactor.set(1, 1);
 
@@ -191,6 +187,7 @@ class ChartingState extends MusicBeatState
 		updateGrid();
 
 		loadSong(_song.song);
+
 		Conductor.changeBPM(_song.bpm);
 		Conductor.mapBPMChanges(_song);
 
@@ -304,14 +301,14 @@ class ChartingState extends MusicBeatState
 		var restart = new FlxButton(loadAutosaveBtn.x, loadAutosaveBtn.y + loadAutosaveBtn.height + 20,"Reset Chart", function()
 		{
 			for (ii in 0..._song.notes.length)
+			{
+				for (i in 0..._song.notes[ii].sectionNotes.length)
 				{
-					for (i in 0..._song.notes[ii].sectionNotes.length)
-					{
-						_song.notes[ii].sectionNotes = [];
-					}
+					_song.notes[ii].sectionNotes = [];
 				}
-	
-				resetSection(true);
+			}
+
+			resetSection(true);
 		});
 
 		// labels
@@ -525,11 +522,14 @@ class ChartingState extends MusicBeatState
 		tab_group_note.name = 'Art Options';
 
 		var arrayCharacters = ["bf","gf",""];
-		var tempCharacters = characters.get(selected_mod);
+		var tempCharacters = characters.get("default");
 
-		for(Item in tempCharacters)
+		if(tempCharacters != null)
 		{
-			arrayCharacters.push(Item);
+			for(Item in tempCharacters)
+			{
+				arrayCharacters.push(Item);
+			}
 		}
 
 		// CHARS
@@ -570,9 +570,9 @@ class ChartingState extends MusicBeatState
 
 		var iterator = characters.keys();
 
-		while(iterator.hasNext())
+		for(i in iterator)
 		{
-			mods.push(iterator.next());
+			mods.push(i);
 		}
 
 		var modDropDown = new FlxUIDropDownMenuCustom(10, 140, FlxUIDropDownMenuCustom.makeStrIdLabelArray(mods, true), function(mod:String)
@@ -637,30 +637,11 @@ class ChartingState extends MusicBeatState
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
 
-		#if sys
-		if(Assets.exists(Paths.inst(daSong)))
-			FlxG.sound.music = new FlxSound().loadEmbedded(Paths.inst(daSong));
-		else
-			FlxG.sound.music = new ModdingSound().loadByteArray(PolymodAssets.getBytes(Paths.instSYS(daSong)));
-
-		FlxG.sound.music.persist = true;
-
-		#else
 		FlxG.sound.music = new FlxSound().loadEmbedded(Paths.inst(daSong));
 		FlxG.sound.music.persist = true;
-		#end
 		
 		if (_song.needsVoices)
-		{
-			#if sys
-			if(Assets.exists(Paths.voices(daSong)))
-				vocals = new FlxSound().loadEmbedded(Paths.voices(daSong));
-			else
-				vocals = new ModdingSound().loadByteArray(PolymodAssets.getBytes(Paths.voicesSYS(daSong)));
-			#else
 			vocals = new FlxSound().loadEmbedded(Paths.voices(daSong));
-			#end
-		}
 		else
 			vocals = new FlxSound();
 
@@ -1130,19 +1111,9 @@ class ChartingState extends MusicBeatState
 	function loadHealthIconFromCharacter(char:String) {
 		var characterPath:String = 'character data/' + char + '/config';
 
-		#if polymod
-		var path:String = Paths.json(characterPath);
-
-		if (!PolymodAssets.exists(path)) {
-			path = Paths.json('character data/bf/config');
-		}
-
-		if (!FileSystem.exists(path))
-		#else
 		var path:String = Paths.json(characterPath);
 
 		if (!Assets.exists(path))
-		#end
 		{
 			path = Paths.json('character data/bf/config');
 		}
@@ -1463,10 +1434,12 @@ class ChartingState extends MusicBeatState
 		PlayState.storyDifficultyStr = diff;
 		PlayState.SONG = Song.loadFromJson(songT.toLowerCase(), song.toLowerCase());
 
+		#if NO_PRELOAD_ALL
 		LoadingState.instance.checkLoadSong(LoadingState.getSongPath());
 
 		if (PlayState.SONG.needsVoices)
 			LoadingState.instance.checkLoadSong(LoadingState.getVocalPath());
+		#end
 
 		FlxG.sound.music.stop();
 		vocals.stop();
