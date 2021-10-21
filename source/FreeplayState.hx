@@ -14,6 +14,7 @@ import flixel.math.FlxPoint;
 import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
+import freeplayStuff.DJBoyfriend;
 import lime.app.Future;
 import lime.utils.Assets;
 
@@ -154,6 +155,9 @@ class FreeplayState extends MusicBeatState
 
 		changeSelection();
 		changeDiff();
+
+		var dj:DJBoyfriend = new DJBoyfriend(0, -100);
+		add(dj);
 
 		// FlxG.sound.playMusic(Paths.music('title'), 0);
 		// FlxG.sound.music.fadeIn(2, 0, 0.8);
