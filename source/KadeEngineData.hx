@@ -135,6 +135,25 @@ class KadeEngineData
 		if (FlxG.save.data.laneTransparency == null)
 			FlxG.save.data.laneTransparency = 0;
 
+		if (FlxG.save.data.shitMs == null)
+			FlxG.save.data.shitMs = 160.0;
+
+		if (FlxG.save.data.badMs == null)
+			FlxG.save.data.badMs = 135.0;
+
+		if (FlxG.save.data.goodMs == null)
+			FlxG.save.data.goodMs = 90.0;
+
+		if (FlxG.save.data.sickMs == null)
+			FlxG.save.data.sickMs = 45.0;
+
+		Ratings.timingWindows = [
+			FlxG.save.data.shitMs,
+			FlxG.save.data.badMs,
+			FlxG.save.data.goodMs,
+			FlxG.save.data.sickMs
+		];
+
 		if (FlxG.save.data.noteskin == null)
 			FlxG.save.data.noteskin = 0;
 

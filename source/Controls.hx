@@ -576,15 +576,18 @@ class Controls extends FlxActionSet
 
 		var buttons = new Map<Control, Array<FlxGamepadInputID>>();
 
-		buttons.set(Control.UP, [FlxGamepadInputID.fromString(FlxG.save.data.gpupBind)]);
-		buttons.set(Control.LEFT, [FlxGamepadInputID.fromString(FlxG.save.data.gpleftBind)]);
-		buttons.set(Control.DOWN, [FlxGamepadInputID.fromString(FlxG.save.data.gpdownBind)]);
-		buttons.set(Control.RIGHT, [FlxGamepadInputID.fromString(FlxG.save.data.gprightBind)]);
-		buttons.set(Control.ACCEPT, [FlxGamepadInputID.A]);
-		buttons.set(Control.BACK, [FlxGamepadInputID.B]);
-		buttons.set(Control.PAUSE, [FlxGamepadInputID.fromString(FlxG.save.data.gppauseBind)]);
+		if (KeyBinds.gamepad)
+		{
+			buttons.set(Control.UP, [FlxGamepadInputID.fromString(FlxG.save.data.upBind)]);
+			buttons.set(Control.LEFT, [FlxGamepadInputID.fromString(FlxG.save.data.leftBind)]);
+			buttons.set(Control.DOWN, [FlxGamepadInputID.fromString(FlxG.save.data.downBind)]);
+			buttons.set(Control.RIGHT, [FlxGamepadInputID.fromString(FlxG.save.data.rightBind)]);
+			buttons.set(Control.ACCEPT, [FlxGamepadInputID.A]);
+			buttons.set(Control.BACK, [FlxGamepadInputID.B]);
+			buttons.set(Control.PAUSE, [FlxGamepadInputID.fromString(FlxG.save.data.pauseBind)]);
 
-		addGamepad(0, buttons);
+			addGamepad(0, buttons);
+		}
 
 		inline bindKeys(Control.UP, [FlxKey.fromString(FlxG.save.data.upBind), FlxKey.UP]);
 		inline bindKeys(Control.DOWN, [FlxKey.fromString(FlxG.save.data.downBind), FlxKey.DOWN]);

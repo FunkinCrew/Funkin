@@ -1,5 +1,6 @@
 package;
 
+import flixel.input.gamepad.FlxGamepad;
 import Conductor.BPMChangeEvent;
 import flixel.FlxG;
 import flixel.FlxSubState;
@@ -45,6 +46,12 @@ class MusicBeatSubstate extends FlxSubState
 				stepHit();
 			}
 		}
+
+		var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
+		if (gamepad != null)
+			KeyBinds.gamepad = true;
+		else
+			KeyBinds.gamepad = false;
 
 		super.update(elapsed);
 	}

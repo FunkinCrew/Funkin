@@ -355,8 +355,8 @@ class GameplayCustomizeState extends MusicBeatState
 
 		if (FlxG.mouse.overlaps(sick) && FlxG.mouse.pressed)
 		{
-			sick.x = (FlxG.mouse.x - sick.width / 2) - 60;
-			sick.y = (FlxG.mouse.y - sick.height) - 60;
+			sick.x = (FlxG.mouse.x + sick.width / 2) - 150;
+			sick.y = (FlxG.mouse.y + sick.height) - 20;
 		}
 
 		for (i in playerStrums)
@@ -477,7 +477,7 @@ class GameplayCustomizeState extends MusicBeatState
 		{
 			FlxG.mouse.visible = false;
 			FlxG.sound.play(Paths.sound('cancelMenu'));
-			FlxG.switchState(new OptionsMenu());
+			FlxG.switchState(new OptionsDirect());
 		}
 	}
 

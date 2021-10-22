@@ -104,17 +104,17 @@ class KeyBinds
 		// VOLUME CONTROLS !!!!
 		if (FlxG.save.data.muteBind == null)
 		{
-			FlxG.save.data.muteBind = "NUMPADZERO";
+			FlxG.save.data.muteBind = "ZERO";
 			trace("No MUTE");
 		}
 		if (FlxG.save.data.volUpBind == null)
 		{
-			FlxG.save.data.volUpBind = "NUMPADPLUS";
+			FlxG.save.data.volUpBind = "PLUS";
 			trace("No VOLUP");
 		}
 		if (FlxG.save.data.volDownBind == null)
 		{
-			FlxG.save.data.volDownBind = "NUMPADMINUS";
+			FlxG.save.data.volDownBind = "MINUS";
 			trace("No VOLDOWN");
 		}
 		if (FlxG.save.data.fullscreenBind == null)
