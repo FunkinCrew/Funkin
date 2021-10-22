@@ -1606,8 +1606,8 @@ class PlayState extends MusicBeatState
 			songPosBG.screenCenter(X);
 			songPosBG.scrollFactor.set();
 
-			songPosBar = new FlxBar(songPosBG.x + 55, songPosBG.y + 4, LEFT_TO_RIGHT, Std.int(songPosBG.width - 100), Std.int(songPosBG.height + 6), this,
-				'songPositionBar', 0, songLength);
+			songPosBar = new FlxBar(640 - (Std.int(songPosBG.width - 100) / 2), songPosBG.y + 4, LEFT_TO_RIGHT, Std.int(songPosBG.width - 100),
+				Std.int(songPosBG.height + 6), this, 'songPositionBar', 0, songLength);
 			songPosBar.scrollFactor.set();
 			songPosBar.createFilledBar(FlxColor.BLACK, FlxColor.fromRGB(0, 255, 128));
 			add(songPosBar);

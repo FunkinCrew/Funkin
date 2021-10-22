@@ -1394,7 +1394,12 @@ class OffsetThing extends Option
 
 	private override function updateDisplay():String
 	{
-		return "Note offset: < " + FlxG.save.data.offset + " >";
+		return "Note offset: < " + HelperFunctions.truncateFloat(FlxG.save.data.offset, 0) + " >";
+	}
+
+	private override function getValue():String
+	{
+		return "Note offset: < " + HelperFunctions.truncateFloat(FlxG.save.data.offset, 0) + " >";
 	}
 }
 
