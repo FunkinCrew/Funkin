@@ -1,5 +1,6 @@
 package;
 
+import lime.app.Application;
 import flixel.FlxBasic;
 #if FEATURE_DISCORD
 import Discord.DiscordClient;
@@ -25,6 +26,12 @@ class MusicBeatState extends FlxUIState
 
 	private var assets:Array<FlxBasic> = [];
 
+	override function destroy()
+	{
+		Application.current.window.onFocusIn.remove(onWindowFocusIn);
+		super.destroy();
+	}
+
 	override function add(Object:flixel.FlxBasic):flixel.FlxBasic
 	{
 		if (FlxG.save.data.optimize)
@@ -45,6 +52,8 @@ class MusicBeatState extends FlxUIState
 
 	override function create()
 	{
+		Application.current.window.onFocusIn.add(onWindowFocusIn);
+
 		TimingStruct.clearTimings();
 
 		if (transIn != null)
@@ -212,5 +221,10 @@ class MusicBeatState extends FlxUIState
 		#else
 		FlxG.openURL(schmancy);
 		#end
+	}
+
+	function onWindowFocusIn():Void
+	{
+		(cast(Lib.current.getChildAt(0), Main)).setFPSCap(FlxG.save.data.fpsCap);
 	}
 }

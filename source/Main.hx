@@ -97,6 +97,8 @@ class Main extends Sprite
 
 		#if !mobile
 		fpsCounter = new FPS(10, 3, 0xFFFFFF);
+		fpsCounter.border = true;
+		fpsCounter.borderColor = 0x000000;
 		addChild(fpsCounter);
 		toggleFPS(FlxG.save.data.fps);
 		#end
