@@ -1549,6 +1549,8 @@ class NoteskinOption extends Option
 
 	public override function right():Bool
 	{
+		if (OptionsMenu.isInPause)
+			return false;
 		FlxG.save.data.noteskin++;
 		if (FlxG.save.data.noteskin > NoteskinHelpers.getNoteskins().length - 1)
 			FlxG.save.data.noteskin = 0;
