@@ -6,19 +6,25 @@ import flixel.FlxGame;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.addons.display.FlxGridOverlay;
+import flixel.addons.transition.FlxTransitionableState;
 import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.group.FlxGroup;
 import flixel.input.touch.FlxTouch;
 import flixel.math.FlxAngle;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.text.FlxText;
+import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
+import flixel.util.FlxSpriteUtil;
 import flixel.util.FlxTimer;
+import freeplayStuff.BGScrollingText;
 import freeplayStuff.DJBoyfriend;
 import freeplayStuff.SongMenuItem;
 import lime.app.Future;
 import lime.utils.Assets;
+import shaderslmfao.AngleMask;
 
 using StringTools;
 
@@ -55,6 +61,8 @@ class FreeplayState extends MusicBeatState
 
 	override function create()
 	{
+		FlxTransitionableState.skipNextTransIn = true;
+
 		#if discord_rpc
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("In the Menus", null);
@@ -114,11 +122,94 @@ class FreeplayState extends MusicBeatState
 		trace(FlxCamera.defaultZoom);
 		trace(FlxG.initialZoom);
 
+		var pinkBack:FlxSprite = new FlxSprite().loadGraphic(Paths.image('freeplay/pinkBack'));
+		pinkBack.color = 0xFFffd4e9; // sets it to pink!
+		pinkBack.x -= pinkBack.width;
+
+		FlxTween.tween(pinkBack, {x: 0}, 0.6, {ease: FlxEase.quartOut});
+		add(pinkBack);
+
+		var orangeBackShit:FlxSprite = new FlxSprite(84, FlxG.height * 0.68).makeGraphic(Std.int(pinkBack.width), 50, 0xFFffd400);
+		add(orangeBackShit);
+
+		var alsoOrangeLOL:FlxSprite = new FlxSprite(0, orangeBackShit.y).makeGraphic(100, Std.int(orangeBackShit.height), 0xFFffd400);
+		add(alsoOrangeLOL);
+
+		FlxSpriteUtil.alphaMaskFlxSprite(orangeBackShit, pinkBack, orangeBackShit);
+		orangeBackShit.visible = false;
+		alsoOrangeLOL.visible = false;
+
+		var grpTxtScrolls:FlxGroup = new FlxGroup();
+		add(grpTxtScrolls);
+		grpTxtScrolls.visible = false;
+
+		var moreWays:BGScrollingText = new BGScrollingText(0, 200, "HOT BLOODED IN MORE WAYS THAN ONE", FlxG.width);
+		moreWays.funnyColor = 0xFFfff383;
+		moreWays.speed = 2;
+		grpTxtScrolls.add(moreWays);
+
+		var funnyScroll:BGScrollingText = new BGScrollingText(0, 250, "BOYFRIEND", FlxG.width / 2);
+		funnyScroll.funnyColor = 0xFFff9963;
+		funnyScroll.speed = -0.5;
+		grpTxtScrolls.add(funnyScroll);
+
+		var txtNuts:BGScrollingText = new BGScrollingText(0, 300, "PROTECT YO NUTS", FlxG.width / 2);
+		grpTxtScrolls.add(txtNuts);
+
+		var funnyScroll2:BGScrollingText = new BGScrollingText(0, 340, "BOYFRIEND", FlxG.width / 2);
+		funnyScroll2.funnyColor = 0xFFff9963;
+		funnyScroll2.speed = -0.6;
+		grpTxtScrolls.add(funnyScroll2);
+
+		var moreWays2:BGScrollingText = new BGScrollingText(0, 400, "HOT BLOODED IN MORE WAYS THAN ONE", FlxG.width);
+		moreWays2.funnyColor = 0xFFfff383;
+		moreWays2.speed = 2.2;
+		grpTxtScrolls.add(moreWays2);
+
+		var funnyScroll3:BGScrollingText = new BGScrollingText(0, orangeBackShit.y, "BOYFRIEND", FlxG.width / 2);
+		funnyScroll3.funnyColor = 0xFFff9963;
+		funnyScroll3.speed = -0.4;
+		grpTxtScrolls.add(funnyScroll3);
+
+		var dj:DJBoyfriend = new DJBoyfriend(0, -100);
+		add(dj);
+
+		var bgDad:FlxSprite = new FlxSprite(FlxG.width, 0).loadGraphic(Paths.image('freeplay/freeplayBGdad'));
+		bgDad.setGraphicSize(0, FlxG.height);
+		bgDad.updateHitbox();
+		bgDad.shader = new AngleMask();
+
+		var blackOverlayBullshitLOLXD:FlxSprite = new FlxSprite(pinkBack.width * 0.75).makeGraphic(Std.int(bgDad.width), Std.int(bgDad.height),
+			FlxColor.BLACK);
+		add(blackOverlayBullshitLOLXD); // used to mask the text lol!
+		add(bgDad);
+
+		blackOverlayBullshitLOLXD.shader = bgDad.shader;
+
 		grpSongs = new FlxTypedGroup<Alphabet>();
 		add(grpSongs);
 
 		grpCapsules = new FlxTypedGroup<SongMenuItem>();
 		add(grpCapsules);
+
+		var overhangStuff:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, 64, FlxColor.BLACK);
+		overhangStuff.y -= overhangStuff.height;
+		add(overhangStuff);
+
+		var fnfFreeplay:FlxText = new FlxText(0, -64, 0, "Freeplay", 48);
+		fnfFreeplay.font = "VCR OSD Mono";
+		add(fnfFreeplay);
+
+		dj.animHITsignal.add(function()
+		{
+			pinkBack.color = 0xFFffd863;
+			FlxTween.tween(overhangStuff, {y: 0}, 0.3, {ease: FlxEase.quartOut});
+			FlxTween.tween(fnfFreeplay, {y: 12}, 0.3, {ease: FlxEase.quartOut, startDelay: 0.5});
+			FlxTween.tween(bgDad, {x: pinkBack.width * 0.75}, 1, {ease: FlxEase.quintOut});
+			orangeBackShit.visible = true;
+			alsoOrangeLOL.visible = true;
+			grpTxtScrolls.visible = true;
+		});
 
 		for (i in 0...songs.length)
 		{
@@ -169,9 +260,6 @@ class FreeplayState extends MusicBeatState
 
 		changeSelection();
 		changeDiff();
-
-		var dj:DJBoyfriend = new DJBoyfriend(0, -100);
-		add(dj);
 
 		// FlxG.sound.playMusic(Paths.music('title'), 0);
 		// FlxG.sound.music.fadeIn(2, 0, 0.8);

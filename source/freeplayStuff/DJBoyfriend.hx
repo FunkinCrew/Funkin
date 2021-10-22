@@ -1,12 +1,17 @@
 package freeplayStuff;
 
 import flixel.FlxSprite;
+import flixel.util.FlxSignal;
 
 class DJBoyfriend extends FlxSprite
 {
+	public var animHITsignal:FlxSignal;
+
 	public function new(x:Float, y:Float)
 	{
 		super(x, y);
+
+		animHITsignal = new FlxSignal();
 
 		animOffsets = new Map<String, Array<Dynamic>>();
 
@@ -24,6 +29,7 @@ class DJBoyfriend extends FlxSprite
 			switch (anim)
 			{
 				case "intro":
+					animHITsignal.dispatch();
 					playAnim('idle'); // plays idle anim after playing intro
 			}
 		};
