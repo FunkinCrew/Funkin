@@ -163,7 +163,7 @@ class OptionsMenu extends FlxSubState
 				new ResetSettings("Reset ALL your settings. This is irreversible!")
 			]),
 			new OptionCata(-1, 125, "Editing Keybinds", [
-				new LeftKeybind("The left note's keybind"), new UpKeybind("The up note's keybind"), new DownKeybind("The down note's keybind"),
+				new LeftKeybind("The left note's keybind"), new DownKeybind("The down note's keybind"), new UpKeybind("The up note's keybind"),
 				new RightKeybind("The right note's keybind"), new PauseKeybind("The keybind used to pause the game"),
 				new ResetBind("The keybind used to die instantly"), new MuteBind("The keybind used to mute game audio"),
 				new VolUpBind("The keybind used to turn the volume up"), new VolDownBind("The keybind used to turn the volume down"),
