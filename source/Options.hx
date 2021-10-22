@@ -604,7 +604,7 @@ class EditorRes extends Option
 
 	private override function updateDisplay():String
 	{
-		return "Editor Grid: < " + (FlxG.save.data.editorBG ? "Hidden" : "Shown") + " >";
+		return "Editor Grid: < " + (FlxG.save.data.editorBG ? "Shown" : "Hidden") + " >";
 	}
 }
 
