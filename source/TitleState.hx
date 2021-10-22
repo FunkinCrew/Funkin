@@ -59,8 +59,6 @@ class TitleState extends MusicBeatState
 		#if !cpp
 		FlxG.save.bind('funkin', 'ninjamuffin99');
 
-		(cast(Lib.current.getChildAt(0), Main)).toggleFPS(FlxG.save.data.fps);
-
 		PlayerSettings.init();
 
 		KadeEngineData.initSave();
