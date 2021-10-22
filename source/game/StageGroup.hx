@@ -85,6 +85,8 @@ class StageGroup extends FlxGroup
 
     private var onBeatHit_Group:FlxTypedGroup<FlxSprite> = new FlxTypedGroup<FlxSprite>();
 
+    public var foregroundSprites:FlxGroup = new FlxGroup();
+
     public function updateStage(?newStage:String)
     {
         if(newStage != null)
@@ -568,7 +570,10 @@ class StageGroup extends FlxGroup
 
                         Sprite.updateHitbox();
     
-                        add(Sprite);
+                        if(Object.layer != "foreground")
+                            add(Sprite);
+                        else
+                            foregroundSprites.add(Sprite);
                     }
                 }
             }
@@ -897,6 +902,8 @@ typedef StageObject =
     var uses_Frame_Width:Bool;
 
     var object_Name:String;
+
+    var layer:Null<String>; // default is bg, but fg is possible
     
     // Image Info //
     var file_Name:String;

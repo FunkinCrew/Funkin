@@ -465,7 +465,7 @@ class PlayState extends MusicBeatState
 			}
 		}
 
-		add(foregroundSprites);
+		add(stage.foregroundSprites);
 
 		Conductor.songPosition = -5000;
 
