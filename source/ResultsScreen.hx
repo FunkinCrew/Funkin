@@ -97,7 +97,8 @@ class ResultsScreen extends FlxSubState
 		comboText.scrollFactor.set();
 		add(comboText);
 
-		contText = new FlxText(FlxG.width - 475, FlxG.height + 50, 0, 'Press ${KeyBinds.gamepad ? 'A' : 'ENTER'} to continue.');
+		contText = new FlxText(FlxG.width - 475, FlxG.height + 50, 0,
+			'Press ${KeyBinds.gamepad ? 'A' : 'ENTER'} to continue. (SICK:${Ratings.timingWindows[3]}ms,GOOD:${Ratings.timingWindows[2]}ms,BAD:${Ratings.timingWindows[1]}ms,SHIT:${Ratings.timingWindows[0]}ms)');
 		contText.size = 28;
 		contText.setBorderStyle(FlxTextBorderStyle.OUTLINE, FlxColor.BLACK, 4, 1);
 		contText.color = FlxColor.WHITE;
