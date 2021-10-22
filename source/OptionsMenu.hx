@@ -229,11 +229,11 @@ class OptionsMenu extends FlxSubState
 		add(descBack);
 		add(descText);
 
+		isInCat = true;
+
 		switchCat(selectedCat);
 
 		selectedOption = selectedCat.options[0];
-
-		isInCat = true;
 
 		super.create();
 	}
