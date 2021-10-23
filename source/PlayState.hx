@@ -1587,7 +1587,7 @@ class PlayState extends MusicBeatState
 		FlxG.sound.music.onComplete = endSong;
 		FlxG.sound.music.pause();
 
-		if (SONG.needsVoices)
+		if (SONG.needsVoices && !PlayState.isSM)
 			FlxG.sound.cache(Paths.voices(PlayState.SONG.songId));
 		if (!PlayState.isSM)
 			FlxG.sound.cache(Paths.inst(PlayState.SONG.songId));
