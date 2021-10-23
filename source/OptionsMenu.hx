@@ -441,7 +441,6 @@ class OptionsMenu extends FlxSubState
 					{
 						if (any)
 						{
-							FlxG.sound.play(Paths.sound('scrollMenu'));
 							var object = selectedCat.optionObjects.members[selectedOptionIndex];
 							selectedOption.onType(gamepad == null ? FlxG.keys.getIsDown()[0].ID.toString() : gamepad.firstJustPressedID());
 							object.text = "> " + selectedOption.getValue();
