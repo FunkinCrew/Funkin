@@ -138,6 +138,12 @@ class PauseSubState extends MusicBeatSubstate
 		if (PlayState.instance.useVideo)
 			menuItems.remove('Resume');
 
+		for (i in FlxG.sound.list)
+		{
+			if (i.playing && i.ID != 9000)
+				i.pause();
+		}
+
 		var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
 
 		var upPcontroller:Bool = false;
