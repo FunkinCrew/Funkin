@@ -57,6 +57,15 @@ class MusicBeatState extends FlxUIState
 
 	override function create()
 	{
+		if (initSave)
+		{
+			if (FlxG.save.data.laneTransparency < 0)
+				FlxG.save.data.laneTransparency = 0;
+
+			if (FlxG.save.data.laneTransparency > 1)
+				FlxG.save.data.laneTransparency = 1;
+		}
+
 		Application.current.window.onFocusIn.add(onWindowFocusIn);
 
 		TimingStruct.clearTimings();

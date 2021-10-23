@@ -1541,7 +1541,7 @@ class NoteskinOption extends Option
 		if (OptionsMenu.isInPause)
 			return false;
 		FlxG.save.data.noteskin--;
-		if (FlxG.save.data.noteskin > 0)
+		if (FlxG.save.data.noteskin < 0)
 			FlxG.save.data.noteskin = NoteskinHelpers.getNoteskins().length - 1;
 		display = updateDisplay();
 		return true;
@@ -1558,7 +1558,7 @@ class NoteskinOption extends Option
 		return true;
 	}
 
-	private override function updateDisplay():String
+	public override function getValue():String
 	{
 		return "Current Noteskin: < " + NoteskinHelpers.getNoteskinByID(FlxG.save.data.noteskin) + " >";
 	}
