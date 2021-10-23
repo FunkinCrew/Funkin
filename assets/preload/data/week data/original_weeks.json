@@ -13,7 +13,12 @@
                 "gf"
             ],
             "weekTitle": "",
-            "backgroundColor":[249, 207, 81]
+            "backgroundColor":[249, 207, 81],
+            "difficulties": [
+                ["easy", "default/easy"],
+                ["normal", "default/normal"],
+                ["hard", "default/hard"]
+            ]
         },
         {
             "imagePath": "week1",
@@ -28,7 +33,12 @@
                 "gf"
             ],
             "weekTitle": "Daddy Dearest",
-            "backgroundColor":[249, 207, 81]
+            "backgroundColor":[249, 207, 81],
+            "difficulties": [
+                ["easy", "default/easy"],
+                ["normal", "default/normal"],
+                ["hard", "default/hard"]
+            ]
         },
         {
             "imagePath": "week2",
@@ -43,7 +53,12 @@
                 "gf"
             ],
             "weekTitle": "Spooky Month",
-            "backgroundColor":[249, 207, 81]
+            "backgroundColor":[249, 207, 81],
+            "difficulties": [
+                ["easy", "default/easy"],
+                ["normal", "default/normal"],
+                ["hard", "default/hard"]
+            ]
         },
         {
             "imagePath": "week3",
@@ -58,7 +73,12 @@
                 "gf"
             ],
             "weekTitle": "Pico",
-            "backgroundColor":[249, 207, 81]
+            "backgroundColor":[249, 207, 81],
+            "difficulties": [
+                ["easy", "default/easy"],
+                ["normal", "default/normal"],
+                ["hard", "default/hard"]
+            ]
         },
         {
             "imagePath": "week4",
@@ -73,7 +93,12 @@
                 "gf"
             ],
             "weekTitle": "Mommy Must Murder",
-            "backgroundColor":[249, 207, 81]
+            "backgroundColor":[249, 207, 81],
+            "difficulties": [
+                ["easy", "default/easy"],
+                ["normal", "default/normal"],
+                ["hard", "default/hard"]
+            ]
         },
         {
             "imagePath": "week5",
@@ -88,7 +113,12 @@
                 "gf"
             ],
             "weekTitle": "Red Snow",
-            "backgroundColor":[249, 207, 81]
+            "backgroundColor":[249, 207, 81],
+            "difficulties": [
+                ["easy", "default/easy"],
+                ["normal", "default/normal"],
+                ["hard", "default/hard"]
+            ]
         },
         {
             "imagePath": "week6",
@@ -103,7 +133,12 @@
                 "gf"
             ],
             "weekTitle": "Hating Simulator Ft. Moawling",
-            "backgroundColor":[249, 207, 81]
+            "backgroundColor":[249, 207, 81],
+            "difficulties": [
+                ["easy", "default/easy"],
+                ["normal", "default/normal"],
+                ["hard", "default/hard"]
+            ]
         }
     ]
 }
