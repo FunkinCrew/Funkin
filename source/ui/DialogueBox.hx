@@ -1,13 +1,11 @@
 package ui;
 
+import flixel.addons.display.shapes.FlxShapeType;
+import haxe.io.Path;
 import flixel.input.actions.FlxAction;
 import game.Cutscene;
 import game.Cutscene.DialogueSection;
 import flixel.system.FlxSound;
-#if sys
-import sys.FileSystem;
-import sys.io.File;
-#end
 import states.PlayState;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -24,270 +22,245 @@ using StringTools;
 
 class DialogueBox extends FlxSpriteGroup
 {
+	var cutscene_Data:Cutscene;
+	var current_Section:DialogueSection;
+	var section_Index:Int = 0;
+
 	var box:FlxSprite;
 
+	var portraitRight:DialoguePortrait;
+	var portraitLeft:DialoguePortrait;
+
 	var dialogue:FlxTypeText;
-	var dialogueShadow:FlxText;
+	var dialogue_Shadow:FlxText;
 
-	public var finishThing:Void->Void;
+	var alphabet:Alphabet;
 
-	var portraitLeft:FlxSprite;
-	var portraitRight:FlxSprite;
-
-	var handSelect:FlxSprite;
-	var bgFade:FlxSprite;
-	var ambientMusic:FlxSound = null;
-
-	var sections:Array<DialogueSection>;
-	var cutscene:Cutscene;
+	var exiting:Bool = false;
+	var starting:Bool = true;
 
 	public function new(cutscene:Cutscene)
 	{
+		cutscene_Data = cutscene;
+
 		super();
 
-		/*
-		this.cutscene = cutscene;
-		this.sections = this.cutscene.dialogueSections;
-
-		// Ambient Music //
-
-		if(cutscene.dialogueMusic != null)
-			ambientMusic = FlxG.sound.load(Paths.music(cutscene.dialogueMusic, 'shared'), 0, true);
-
-		if(ambientMusic != null && PlayState.playCutsceneLmao)
-		{
-			ambientMusic.play();
-			ambientMusic.fadeIn(1, 0, 0.8);
-		}
-
-		// Background Fade //
-
-		if(cutscene.bgFade)
-		{
-			bgFade = new FlxSprite(-200, -200).makeGraphic(Std.int(FlxG.width * 1.3), Std.int(FlxG.height * 1.3), 0xFFB3DFd8);
-			bgFade.scrollFactor.set();
-			bgFade.alpha = 0;
-			add(bgFade);
-
-			new FlxTimer().start(0.83, function(tmr:FlxTimer)
-			{
-				bgFade.alpha += (1 / 5) * 0.7;
-	
-				if (bgFade.alpha > 0.7)
-					bgFade.alpha = 0.7;
-			}, 5);
-		}
-
-		box = new FlxSprite(0, 0);
-
-		if(cutscene.dialogueSound != null)
-			FlxG.sound.play(Paths.sound(cutscene.dialogueSound, 'shared'));
-
-		//if(sections[0].box)
-
-		switch (PlayState.SONG.song.toLowerCase())
-		{
-			case 'senpai':
-				box.loadGraphic(Paths.image('weeb/pixelUI/dialogueBox-pixel', 'week6'));
-			case 'roses':
-				box.loadGraphic(Paths.image('weeb/pixelUI/dialogueBox-pixel', 'week6'));
-
-			case 'thorns':
-				box.loadGraphic(Paths.image('weeb/pixelUI/dialogueBox-evil', 'week6'));
-
-				face = new FlxSprite(320, 170).loadGraphic(Paths.image('weeb/spiritFaceForward'));
-				face.setGraphicSize(Std.int(face.width * 6));
-				add(face);
-		}
-
-		dialogueOpened = true;
-		*/
+		loadAssets();
 	}
-
-	var dialogueOpened:Bool = false;
-	var dialogueStarted:Bool = false;
 
 	override function update(elapsed:Float)
 	{
-		/*
-		// HARD CODING CUZ IM STUPDI
-		if (PlayState.SONG.song.toLowerCase() == 'thorns')
-		{
-			portraitLeft.visible = false;
-			swagDialogue.color = FlxColor.WHITE;
-			dropText.color = FlxColor.BLACK;
-		}
+		if(dialogue_Shadow != null)
+			dialogue_Shadow.text = dialogue.text;
 
-		dropText.text = swagDialogue.text;
-
-		if (dialogueOpened && !dialogueStarted)
-		{
-			startDialogue();
-			dialogueStarted = true;
-		}
-
-		if (FlxG.keys.justPressed.ANY  && dialogueStarted == true)
+		if(FlxG.keys.justPressed.ENTER)
 		{
 			FlxG.sound.play(Paths.sound('clickText'), 0.8);
 
-			if (sections[1] == null && sections[0] != null)
-			{
-				if (!isEnding)
-				{
-					isEnding = true;
+			section_Index++;
 
-					if (PlayState.SONG.song.toLowerCase() == 'senpai' || PlayState.SONG.song.toLowerCase() == 'thorns')
-						ambientMusic.fadeOut(2.2, 0);
+			if(section_Index < cutscene_Data.dialogueSections.length)
+				loadAssets();
+			else
+			{
+				if(!exiting)
+				{
+					exiting = true;
 
 					new FlxTimer().start(0.2, function(tmr:FlxTimer)
 					{
-						box.alpha -= 1 / 5;
-						bgFade.alpha -= 1 / 5 * 0.7;
 						portraitLeft.visible = false;
 						portraitRight.visible = false;
-						swagDialogue.alpha = 1 / 5;
-						dropText.alpha = swagDialogue.alpha;
-						handSelect.alpha = swagDialogue.alpha;
+	
+						box.alpha -= 1 / 5;
+	
+						if(dialogue != null)
+							dialogue.alpha -= 1 / 5;
+	
+						if(dialogue_Shadow != null)
+							dialogue_Shadow.alpha = dialogue.alpha;
+	
+						if(alphabet != null)
+							alphabet.alpha -= 1 / 5;
 					}, 5);
-
+	
 					new FlxTimer().start(1.2, function(tmr:FlxTimer)
 					{
-						if(ambientMusic != null)
-							ambientMusic.stop();
-						
-						finishThing();
+						finish_Function();
 						kill();
 					});
 				}
 			}
-			else
-			{
-				sections.remove(sections[0]);
-				startDialogue();
-			}
 		}
-		*/
+
 		super.update(elapsed);
 	}
 
-	var isEnding:Bool = false;
+	public function loadAssets(?new_Cutscene:Cutscene) {
+		// incase this is ever used lmao (i dont think it will be, but whatevs)
+		if(new_Cutscene != null)
+			cutscene_Data = new_Cutscene;
 
-	function startDialogue():Void
-	{
-		/*
-		swagDialogue.resetText(sections[0].dialogue.text);
-		swagDialogue.start(0.04, true);
+		current_Section = cutscene_Data.dialogueSections[section_Index];
 
-		switch (curCharacter)
+		if(box == null)
 		{
-			case 'dad':
-				portraitRight.visible = false;
-				if (!portraitLeft.visible)
-				{
-					portraitLeft.visible = true;
-				}
-			case 'bf':
-				portraitLeft.visible = false;
-				if (!portraitRight.visible)
-				{
-					portraitRight.visible = true;
-				}
-		}*/
-	}
-
-	function reloadAssets()
-	{
-		/*
-		var cutsceneData = sections[0];
-
-		if(box != null)
-		{
-			remove(box);
-			box.kill();
-			box.destroy();
+			box = new FlxSprite();
+			box.frames = Paths.getSparrowAtlas("cutscenes/" + cutscene_Data.dialogueBox, "shared");
+			box.scrollFactor.set(0,0);
 		}
 
-		box = new FlxSprite(0, 0);
+		if(current_Section.box_Open != null && current_Section.box_Open != "")
+			box.animation.addByPrefix("open", current_Section.box_Open, current_Section.box_FPS, false);
 
-		var boxData = cutsceneData.box;
+		if(current_Section.box_Anim != null && current_Section.box_Anim != "")
+			box.animation.addByPrefix("loop", current_Section.box_Anim, current_Section.box_FPS, true);
 
-		if(boxData.animated)
-		{
-			box.frames = Paths.getSparrowAtlas("cutscenes/" + boxData.sprite);
-			box.animation.addByPrefix("default", boxData.anim_Name, (boxData.fps != null ? boxData.fps : 24));
-			box.animation.play("default");
+		box.animation.finishCallback = function(animName:String) {
+			if(animName == "open")
+				box.animation.play("loop");
 		}
+			
+		box.animation.play("loop", true);
 
-		if(boxData.antialiased != null)
-			box.antialiasing = boxData.antialiased;
+		if(current_Section.box_Antialiased != null)
+			box.antialiasing = current_Section.box_Antialiased != false;
 
-		if(boxData.scale != null)
-			boxData.scale = 1;
-
-		box.setGraphicSize(Std.int(box.width * boxData.scale));
 		box.updateHitbox();
 
 		box.screenCenter(X);
-
 		box.y = FlxG.height - box.height;
 
-		box.x += boxData.x;
-		box.y += boxData.y;
+		if(portraitRight == null)
+			portraitRight = new DialoguePortrait();
 
-		portraitLeft = new FlxSprite(255, 120);
+		if(current_Section.rightPortrait.scale == null)
+			current_Section.rightPortrait.scale = 1;
 
-		// hard coding cuz im not making proper system yet, just fixing bug
-		if(PlayState.SONG.song.toLowerCase() != 'roses')
-			portraitLeft.loadGraphic(Paths.image('weeb/senpai_Port', 'week6'));
-		else
-			portraitLeft.loadGraphic(Paths.image('weeb/senpaiAngry_Port', 'week6'));
-
-		portraitLeft.setGraphicSize(Std.int(portraitLeft.width * PlayState.daPixelZoom * 0.9));
-		portraitLeft.updateHitbox();
-		portraitLeft.scrollFactor.set();
-
-		var boxOffset = 0.0;
-
-		if(PlayState.SONG.song.toLowerCase() != 'thorns')
-			boxOffset = 3.7;
-
-		box.setGraphicSize(Std.int(box.width * PlayState.daPixelZoom * 0.9));
-		box.updateHitbox();
-		box.screenCenter(X);
-
-		portraitLeft.x = (box.x + (portraitLeft.width / 2)) + 10;
-		portraitLeft.y = (box.y - (portraitLeft.height + (boxOffset * PlayState.daPixelZoom * 0.9)));
-
-		if(PlayState.SONG.song.toLowerCase() != 'thorns')
-			add(portraitLeft);
-		
-		portraitLeft.visible = false;
-
-		portraitRight = new FlxSprite(700, 187);
-		portraitRight.loadGraphic(Paths.image('weeb/bf_Port', 'week6'));
-		portraitRight.setGraphicSize(Std.int(portraitRight.width * PlayState.daPixelZoom * 0.9));
+		portraitRight.loadPortrait(current_Section.rightPortrait.sprite);
+		portraitRight.setGraphicSize(Std.int(portraitRight.width * current_Section.rightPortrait.scale));
 		portraitRight.updateHitbox();
-		portraitRight.scrollFactor.set();
-		add(portraitRight);
-		portraitRight.visible = false;
 
-		box.y = (FlxG.height - box.height) - 15;
+		portraitRight.setPosition(
+			((box.x + box.width) - portraitRight.width) + current_Section.rightPortrait.x,
+			(box.y - portraitRight.height) + current_Section.rightPortrait.y
+		);
+
+		if(current_Section.rightPortrait.antialiased == null)
+			portraitRight.antialiasing = current_Section.rightPortrait.antialiased;
+
+		if(portraitLeft == null)
+			portraitLeft = new DialoguePortrait();
+
+		if(current_Section.leftPortrait.scale == null)
+			current_Section.leftPortrait.scale = 1;
+
+		portraitLeft.loadPortrait(current_Section.leftPortrait.sprite);
+		portraitLeft.setGraphicSize(Std.int(portraitLeft.width * current_Section.leftPortrait.scale));
+		portraitLeft.updateHitbox();
+
+		portraitLeft.setPosition(
+			box.x + current_Section.leftPortrait.x,
+			(box.y - portraitLeft.height) + current_Section.leftPortrait.y
+		);
+
+		if(current_Section.leftPortrait.antialiased == null)
+			portraitLeft.antialiasing = current_Section.leftPortrait.antialiased;
+
+		switch(current_Section.side)
+		{
+			case "left":
+				portraitLeft.visible = true;
+				box.flipX = true;
+			case "right":
+				portraitRight.visible = true;
+				box.flipX = false;
+		}
+
+		if(current_Section.showOtherPortrait)
+		{
+			portraitLeft.visible = true;
+			portraitRight.visible = true;
+		}
+
+		if(current_Section.open_Box)
+			box.animation.play("open", true);
+
+		add(portraitRight);
+		add(portraitLeft);
 		add(box);
 
-		handSelect = new FlxSprite(FlxG.width * 0.84, FlxG.height * 0.84).loadGraphic(Paths.image('weeb/pixelUI/hand_textbox'));
-		handSelect.setGraphicSize(Std.int(handSelect.width * PlayState.daPixelZoom));
-		if(PlayState.SONG.song.toLowerCase() != 'thorns')
-			add(handSelect);
+		if(dialogue_Shadow != null)
+			remove(dialogue_Shadow);
 
-		dropText = new FlxText(242, 452, Std.int(FlxG.width * 0.6), "", 32);
-		dropText.font = 'Pixel Arial 11 Bold';
-		dropText.color = 0xFFD89494;
-		add(dropText);
+		if(dialogue != null)
+			remove(dialogue);
 
-		swagDialogue = new FlxTypeText(240, 450, Std.int(FlxG.width * 0.6), "", 32);
-		swagDialogue.font = 'Pixel Arial 11 Bold';
-		swagDialogue.color = 0xFF3F2021;
-		swagDialogue.sounds = [FlxG.sound.load(Paths.sound('cutscene/pixelText', 'shared'), 0.6)];
-		add(swagDialogue);*/
+		if(alphabet != null)
+			remove(alphabet);
+
+		if(!current_Section.dialogue.alphabet)
+		{
+			if(current_Section.dialogue.hasShadow)
+			{
+				dialogue_Shadow = new FlxText(
+					box.x + current_Section.dialogue.box_Offset[0] + current_Section.dialogue.shadowOffset,
+					box.y + current_Section.dialogue.box_Offset[1] + current_Section.dialogue.shadowOffset,
+					Std.int(FlxG.width * 0.6), "",
+					current_Section.dialogue.size
+				);
+	
+				dialogue_Shadow.font = Paths.font(current_Section.dialogue.font);
+				dialogue_Shadow.color = 0xFFD89494;
+				add(dialogue_Shadow);
+			}
+	
+			dialogue = new FlxTypeText(
+				box.x + current_Section.dialogue.box_Offset[0],
+				box.y + current_Section.dialogue.box_Offset[1],
+				Std.int(FlxG.width * 0.6), "",
+				current_Section.dialogue.size
+			);
+	
+			dialogue.font = Paths.font(current_Section.dialogue.font);
+			dialogue.color = FlxColor.fromString(current_Section.dialogue.color);
+	
+			if(current_Section.dialogue.sound != null)
+				dialogue.sounds = [FlxG.sound.load(Paths.sound(current_Section.dialogue.sound, "shared"), 0.6)];
+	
+			dialogue.resetText(current_Section.dialogue.text);
+			dialogue.start((current_Section.dialogue.text_Delay != null ? current_Section.dialogue.text_Delay : 0.04), true);
+	
+			add(dialogue);
+		}
+		else
+		{
+			alphabet = new Alphabet(
+				box.x + current_Section.dialogue.box_Offset[0],
+				box.y + current_Section.dialogue.box_Offset[1],
+				current_Section.dialogue.text,
+				current_Section.dialogue.bold,
+				true
+			);
+
+			add(alphabet);
+		}
+	}
+
+	dynamic public function finish_Function() {}
+}
+
+class DialoguePortrait extends FlxSprite
+{
+	public function new(x:Float = 0.0, y:Float = 0.0) {
+		super(x,y);
+		
+		scrollFactor.set(0,0); // cuz its ui lmao
+	}
+
+	public function loadPortrait(path:String)
+	{
+		// possibly add if statement for animated dialogue sprites in future (this is y its in a function lol)
+		loadGraphic(Paths.image("cutscenes/" + path, "shared"));
 	}
 }

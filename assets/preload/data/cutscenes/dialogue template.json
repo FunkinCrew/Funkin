@@ -1,48 +1,63 @@
 {
     "type": "dialogue",
+    "dialogueBox": "speech_bubble_talking",
     "dialogueSections": [
+        {
+            "side": "left",
+            "showOtherPortrait": true,
+            "leftPortrait": {
+                "sprite": "spooky bois",
+                "x": 30,
+                "y": 100,
+                "antialiased": true
+            },
+            "rightPortrait": {
+                "sprite": "bf",
+                "x": 0,
+                "y": 100,
+                "antialiased": true
+            },
+            "has_Hand": false,
+            "dialogue": {
+                "text": "coolswag",
+                "sound": "cutscene/pixelText",
+                "color": "#000000",
+                "hasShadow": false,
+                "size": 64,
+                "box_Offset": [30,120],
+                "alphabet": true
+            },
+            "box_FPS": 24,
+            "open_Box": true,
+            "box_Antialiased": true,
+            "box_Anim": "speech bubble normal0",
+            "box_Open": "Speech Bubble Normal Open0"
+        },
         {
             "side": "right",
             "showOtherPortrait": true,
             "leftPortrait": {
-                "sprite": "week6/senpai_Port",
-                "x": 0,
-                "y": 0,
-                "scale": 5.4,
-                "antialiased": false
+                "sprite": "spooky bois",
+                "x": 30,
+                "y": 100,
+                "antialiased": true
             },
             "rightPortrait": {
-                "sprite": "week6/bf_Port",
+                "sprite": "bf",
                 "x": 0,
-                "y": 0,
-                "scale": 5.4,
-                "antialiased": false
+                "y": 100,
+                "antialiased": true
             },
-            "box": {
-                "sprite": "week6/defaultBox",
-                "x": 0,
-                "y": 0,
-                "scale": 5.4,
-                "antialiased": false
-            },
-            "has_Hand": true,
-            "hand_Sprite": {
-                "sprite": "week6/hand_textbox",
-                "x": 0,
-                "y": 0,
-                "scale": 6,
-                "antialiased": false
-            },
+            "has_Hand": false,
             "dialogue": {
-                "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-                "font": "pixel",
+                "text": "D) yes",
                 "sound": "cutscene/pixelText",
-                "color": "#3F2021",
-                "hasShadow": true,
-                "shadowColor": "#D89494",
-                "shadowOffset": 2
+                "color": "#000000",
+                "hasShadow": false,
+                "size": 64,
+                "box_Offset": [30,120],
+                "alphabet": true
             }
         }
-    ],
-    "dialogueMusic": "cutscene/Lunchbox"
+    ]
 }
