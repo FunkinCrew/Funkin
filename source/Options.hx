@@ -721,7 +721,7 @@ class SongPositionOption extends Option
 
 	public override function right():Bool
 	{
-		right();
+		left();
 		return true;
 	}
 
@@ -1619,9 +1619,6 @@ class LaneUnderlayOption extends Option
 			return false;
 		FlxG.save.data.laneTransparency += 0.1;
 
-		if (FlxG.save.data.laneTransparency < 0)
-			FlxG.save.data.laneTransparency = 0;
-
 		if (FlxG.save.data.laneTransparency > 1)
 			FlxG.save.data.laneTransparency = 1;
 		return true;
@@ -1635,9 +1632,6 @@ class LaneUnderlayOption extends Option
 
 		if (FlxG.save.data.laneTransparency < 0)
 			FlxG.save.data.laneTransparency = 0;
-
-		if (FlxG.save.data.laneTransparency > 1)
-			FlxG.save.data.laneTransparency = 1;
 
 		return true;
 	}

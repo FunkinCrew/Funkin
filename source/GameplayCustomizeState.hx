@@ -355,8 +355,8 @@ class GameplayCustomizeState extends MusicBeatState
 
 		if (FlxG.mouse.overlaps(sick) && FlxG.mouse.pressed)
 		{
-			sick.x = (FlxG.mouse.x + sick.width / 2);
-			sick.y = (FlxG.mouse.y + sick.height);
+			sick.x = (FlxG.mouse.x - (sick.width + 145));
+			sick.y = (FlxG.mouse.y - (sick.height + 145));
 		}
 
 		for (i in playerStrums)
