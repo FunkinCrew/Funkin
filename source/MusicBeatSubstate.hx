@@ -1,5 +1,6 @@
 package;
 
+import flixel.text.FlxText;
 import flixel.input.gamepad.FlxGamepad;
 import Conductor.BPMChangeEvent;
 import flixel.FlxG;
