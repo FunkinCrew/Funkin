@@ -50,7 +50,7 @@ class Option
 	// Returns whether the label is to be updated.
 	public function press():Bool
 	{
-		return false;
+		return true;
 	}
 
 	private function updateDisplay():String
@@ -725,7 +725,7 @@ class SongPositionOption extends Option
 		return true;
 	}
 
-	private override function updateDisplay():String
+	public override function getValue():String
 	{
 		return "Song Position Bar: < " + (!FlxG.save.data.songPosition ? "off" : "on") + " >";
 	}
