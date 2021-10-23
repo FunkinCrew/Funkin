@@ -319,6 +319,8 @@ class TitleState extends MusicBeatState
 				
 				http.onData = function(data:String)
 				{
+					trace(data);
+					
 					var new_Vers:Float = Std.parseFloat(data);
 					var old_Vers:Float = Std.parseFloat(Application.current.meta.get('version'));
 
