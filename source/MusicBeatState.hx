@@ -179,7 +179,7 @@ class MusicBeatState extends FlxUIState
 			}
 		}
 
-		if (FlxG.save.data.fpsRain && skippedFrames >= 6)
+		if (FlxG.save.data.fpsRain && skippedFrames >= FlxG.save.data.fpsCap / 12)
 		{
 			if (currentColor >= array.length)
 				currentColor = 0;

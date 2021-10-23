@@ -150,7 +150,7 @@ class DownKeybind extends Option
 
 	private override function updateDisplay():String
 	{
-		return "DOWN:  " + (waitingType ? "> " + FlxG.save.data.downBind + " <" : FlxG.save.data.downBind) + "";
+		return "DOWN: " + (waitingType ? "> " + FlxG.save.data.downBind + " <" : FlxG.save.data.downBind) + "";
 	}
 }
 
@@ -182,7 +182,7 @@ class RightKeybind extends Option
 
 	private override function updateDisplay():String
 	{
-		return "RIGHT:  " + (waitingType ? "> " + FlxG.save.data.rightBind + " <" : FlxG.save.data.rightBind) + "";
+		return "RIGHT: " + (waitingType ? "> " + FlxG.save.data.rightBind + " <" : FlxG.save.data.rightBind) + "";
 	}
 }
 
@@ -214,7 +214,7 @@ class LeftKeybind extends Option
 
 	private override function updateDisplay():String
 	{
-		return "LEFT:  " + (waitingType ? "> " + FlxG.save.data.leftBind + " <" : FlxG.save.data.leftBind) + "";
+		return "LEFT: " + (waitingType ? "> " + FlxG.save.data.leftBind + " <" : FlxG.save.data.leftBind) + "";
 	}
 }
 
@@ -246,7 +246,7 @@ class PauseKeybind extends Option
 
 	private override function updateDisplay():String
 	{
-		return "PAUSE:  " + (waitingType ? "> " + FlxG.save.data.pauseBind + " <" : FlxG.save.data.pauseBind) + "";
+		return "PAUSE: " + (waitingType ? "> " + FlxG.save.data.pauseBind + " <" : FlxG.save.data.pauseBind) + "";
 	}
 }
 
@@ -278,7 +278,7 @@ class ResetBind extends Option
 
 	private override function updateDisplay():String
 	{
-		return "RESET:  " + (waitingType ? "> " + FlxG.save.data.resetBind + " <" : FlxG.save.data.resetBind) + "";
+		return "RESET: " + (waitingType ? "> " + FlxG.save.data.resetBind + " <" : FlxG.save.data.resetBind) + "";
 	}
 }
 
@@ -310,7 +310,7 @@ class MuteBind extends Option
 
 	private override function updateDisplay():String
 	{
-		return "VOLUME MUTE:  " + (waitingType ? "> " + FlxG.save.data.muteBind + " <" : FlxG.save.data.muteBind) + "";
+		return "VOLUME MUTE: " + (waitingType ? "> " + FlxG.save.data.muteBind + " <" : FlxG.save.data.muteBind) + "";
 	}
 }
 
@@ -342,7 +342,7 @@ class VolUpBind extends Option
 
 	private override function updateDisplay():String
 	{
-		return "VOLUME UP:  " + (waitingType ? "> " + FlxG.save.data.volUpBind + " <" : FlxG.save.data.volUpBind) + "";
+		return "VOLUME UP: " + (waitingType ? "> " + FlxG.save.data.volUpBind + " <" : FlxG.save.data.volUpBind) + "";
 	}
 }
 
@@ -374,7 +374,7 @@ class VolDownBind extends Option
 
 	private override function updateDisplay():String
 	{
-		return "VOLUME DOWN:  " + (waitingType ? "> " + FlxG.save.data.volDownBind + " <" : FlxG.save.data.volDownBind) + "";
+		return "VOLUME DOWN: " + (waitingType ? "> " + FlxG.save.data.volDownBind + " <" : FlxG.save.data.volDownBind) + "";
 	}
 }
 

@@ -188,8 +188,9 @@ class ResultsScreen extends FlxSubState
 
 	override function update(elapsed:Float)
 	{
-		if (music != null && music.volume < 0.5)
-			music.volume += 0.01 * elapsed;
+		if (music != null)
+			if (music.volume < 0.5)
+				music.volume += 0.01 * elapsed;
 
 		// keybinds
 
