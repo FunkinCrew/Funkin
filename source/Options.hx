@@ -416,6 +416,7 @@ class SickMSOption extends Option
 	{
 		super();
 		description = desc;
+		acceptType = true;
 	}
 
 	public override function left():Bool
@@ -434,9 +435,15 @@ class SickMSOption extends Option
 		return true;
 	}
 
+	public override function onType(char:String)
+	{
+		if (char.toLowerCase() == "r")
+			FlxG.save.data.sickMs = 45;
+	}
+
 	private override function updateDisplay():String
 	{
-		return "SICK: < " + FlxG.save.data.sickMs + " ms >";
+		return "SICK: < " + FlxG.save.data.sickMs + " ms > (Press R to reset)";
 	}
 }
 
@@ -446,6 +453,7 @@ class GoodMsOption extends Option
 	{
 		super();
 		description = desc;
+		acceptType = true;
 	}
 
 	public override function left():Bool
@@ -464,9 +472,15 @@ class GoodMsOption extends Option
 		return true;
 	}
 
+	public override function onType(char:String)
+	{
+		if (char.toLowerCase() == "r")
+			FlxG.save.data.goodMs = 90;
+	}
+
 	private override function updateDisplay():String
 	{
-		return "GOOD: < " + FlxG.save.data.goodMs + " ms >";
+		return "GOOD: < " + FlxG.save.data.goodMs + " ms > (Press R to reset)";
 	}
 }
 
@@ -476,6 +490,7 @@ class BadMsOption extends Option
 	{
 		super();
 		description = desc;
+		acceptType = true;
 	}
 
 	public override function left():Bool
@@ -494,9 +509,15 @@ class BadMsOption extends Option
 		return true;
 	}
 
+	public override function onType(char:String)
+	{
+		if (char.toLowerCase() == "r")
+			FlxG.save.data.badMs = 135;
+	}
+
 	private override function updateDisplay():String
 	{
-		return "BAD: < " + FlxG.save.data.badMs + " ms >";
+		return "BAD: < " + FlxG.save.data.badMs + " ms > (Press R to reset)";
 	}
 }
 
@@ -506,6 +527,7 @@ class ShitMsOption extends Option
 	{
 		super();
 		description = desc;
+		acceptType = true;
 	}
 
 	public override function left():Bool
@@ -517,6 +539,12 @@ class ShitMsOption extends Option
 		return true;
 	}
 
+	public override function onType(char:String)
+	{
+		if (char.toLowerCase() == "r")
+			FlxG.save.data.shitMs = 160;
+	}
+
 	public override function right():Bool
 	{
 		FlxG.save.data.shitMs++;
@@ -526,7 +554,7 @@ class ShitMsOption extends Option
 
 	private override function updateDisplay():String
 	{
-		return "SHIT: < " + FlxG.save.data.shitMs + " ms >";
+		return "SHIT: < " + FlxG.save.data.shitMs + " ms > (Press R to reset)";
 	}
 }
 
