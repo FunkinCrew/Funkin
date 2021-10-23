@@ -576,6 +576,13 @@ class OptionsMenu extends FlxSubState
 
 						PlayerSettings.player1.controls.loadKeyBinds();
 
+						Ratings.timingWindows = [
+							FlxG.save.data.shitMs,
+							FlxG.save.data.badMs,
+							FlxG.save.data.goodMs,
+							FlxG.save.data.sickMs
+						];
+
 						for (i in 0...selectedCat.options.length)
 						{
 							var opt = selectedCat.optionObjects.members[i];

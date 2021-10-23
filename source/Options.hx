@@ -1610,7 +1610,7 @@ class LaneUnderlayOption extends Option
 
 	private override function updateDisplay():String
 	{
-		return "Lane Transparceny: < " + FlxG.save.data.laneTransparency + " >";
+		return "Lane Transparceny: < " + HelperFunctions.truncateFloat(FlxG.save.data.laneTransparency, 1) + " >";
 	}
 
 	override function right():Bool
@@ -1628,7 +1628,7 @@ class LaneUnderlayOption extends Option
 	{
 		if (OptionsMenu.isInPause)
 			return false;
-		FlxG.save.data.laneTransparency -= Math.floor(0.1);
+		FlxG.save.data.laneTransparency -= 0.1;
 
 		if (FlxG.save.data.laneTransparency < 0)
 			FlxG.save.data.laneTransparency = 0;
