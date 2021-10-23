@@ -1570,7 +1570,7 @@ class PlayState extends MusicBeatState
 			FlxG.sound.cache(Paths.inst(PlayState.SONG.songId));
 
 		// Song duration in a float, useful for the time left feature
-		songLength = (FlxG.sound.music.length / 1000) * songRate;
+		songLength = (FlxG.sound.music.length / 1000);
 
 		Conductor.crochet = ((60 / (SONG.bpm) * 1000)) / songMultiplier;
 		Conductor.stepCrochet = Conductor.crochet / 4;
