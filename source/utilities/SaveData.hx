@@ -86,6 +86,9 @@ class SaveData {
 
         if(FlxG.save.data.menuBGs == null)
             FlxG.save.data.menuBGs = true;
+
+        if(FlxG.save.data.nohit == null)
+            FlxG.save.data.nohit = false;
         
         Conductor.offset = FlxG.save.data.songOffset;
 

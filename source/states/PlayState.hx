@@ -1603,9 +1603,6 @@ class PlayState extends MusicBeatState
 		if (FlxG.save.data.nohit && misses > 0)
 			health = 0;
 
-		if (FlxG.save.data.nohit && misses > 0)
-			health = 0;
-
 		if (health <= 0 && !switchedStates)
 		{
 			boyfriend.stunned = true;
@@ -2025,6 +2022,7 @@ class PlayState extends MusicBeatState
 				health += 0.005;
 			case 'shit':
 				health -= 0.07;
+				misses += 1;
 		}
 
 		if(FlxG.save.data.accuracyMode == "simple")
