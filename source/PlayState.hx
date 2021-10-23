@@ -1834,9 +1834,8 @@ class PlayState extends MusicBeatState
 	{
 		strumLineNotes.forEach(function(babyArrow:FlxSprite)
 		{
-			if (isStoryMode)
-				if (!FlxG.save.data.middleScroll || executeModchart || player == 1)
-					babyArrow.alpha = 1;
+			if (isStoryMode && !FlxG.save.data.middleScroll || executeModchart)
+				babyArrow.alpha = 1;
 		});
 	}
 
