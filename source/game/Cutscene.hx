@@ -10,6 +10,7 @@ using StringTools;
 
 typedef Cutscene = {
     var type:String;
+    var cutsceneAfter:Null<String>;
 
     /* VIDEO */
     var videoPath:String;

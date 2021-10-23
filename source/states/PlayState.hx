@@ -710,7 +710,59 @@ class PlayState extends MusicBeatState
 				add(dialogueBox);
 			}
 			else
-				startCountdown();
+			{
+				if(cutscene.cutsceneAfter == null)
+					startCountdown();
+				else
+				{
+					var oldcutscene = cutscene;
+
+					cutscene = CutsceneUtil.loadFromJson(oldcutscene.cutsceneAfter);
+
+					switch(cutscene.type.toLowerCase())
+					{
+						case "video":
+							startVideo(cutscene.videoPath, cutscene.videoExt);
+	
+						case "dialogue":
+							var box:DialogueBox = new DialogueBox(cutscene);
+							box.scrollFactor.set();
+							box.finish_Function = function() {
+								if(cutscene.cutsceneAfter == null)
+									startCountdown();
+								else
+								{
+									var oldcutscene = cutscene;
+			
+									cutscene = CutsceneUtil.loadFromJson(oldcutscene.cutsceneAfter);
+			
+									switch(cutscene.type.toLowerCase())
+									{
+										case "video":
+											startVideo(cutscene.videoPath, cutscene.videoExt);
+					
+										case "dialogue":
+											var box:DialogueBox = new DialogueBox(cutscene);
+											box.scrollFactor.set();
+											box.finish_Function = startCountdown;
+											box.cameras = [camHUD];
+					
+											startDialogue(box);
+					
+										default:
+											startCountdown();
+									}
+								}
+							};
+							box.cameras = [camHUD];
+	
+							startDialogue(box);
+	
+						default:
+							startCountdown();
+					}
+				}
+			}
 		});
 	}
 
@@ -750,7 +802,57 @@ class PlayState extends MusicBeatState
 				if(endingSong) {
 					endSong();
 				} else {
-					startCountdown();
+					if(cutscene.cutsceneAfter == null)
+						startCountdown();
+					else
+					{
+						var oldcutscene = cutscene;
+
+						cutscene = CutsceneUtil.loadFromJson(oldcutscene.cutsceneAfter);
+
+						switch(cutscene.type.toLowerCase())
+						{
+							case "video":
+								startVideo(cutscene.videoPath, cutscene.videoExt);
+		
+							case "dialogue":
+								var box:DialogueBox = new DialogueBox(cutscene);
+								box.scrollFactor.set();
+								box.finish_Function = function() {
+									if(cutscene.cutsceneAfter == null)
+										startCountdown();
+									else
+									{
+										var oldcutscene = cutscene;
+				
+										cutscene = CutsceneUtil.loadFromJson(oldcutscene.cutsceneAfter);
+				
+										switch(cutscene.type.toLowerCase())
+										{
+											case "video":
+												startVideo(cutscene.videoPath, cutscene.videoExt);
+						
+											case "dialogue":
+												var box:DialogueBox = new DialogueBox(cutscene);
+												box.scrollFactor.set();
+												box.finish_Function = startCountdown;
+												box.cameras = [camHUD];
+						
+												startDialogue(box);
+						
+											default:
+												startCountdown();
+										}
+									}
+								};
+								box.cameras = [camHUD];
+		
+								startDialogue(box);
+		
+							default:
+								startCountdown();
+						}
+					}
 				}
 			}
 			return;
