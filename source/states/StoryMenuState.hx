@@ -268,6 +268,8 @@ class StoryMenuState extends MusicBeatState
 			difficultySprite.x = leftArrow.x + leftArrow.width + 4;
 			rightArrow.x = difficultySprite.x + difficultySprite.width + 4;
 		}
+
+		changeWeek();
 	}
 
 	var movedBack:Bool = false;
