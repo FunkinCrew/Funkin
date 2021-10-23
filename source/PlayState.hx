@@ -809,7 +809,7 @@ class PlayState extends MusicBeatState
 			}
 
 			for (i in toBeRemoved)
-				notes.members.remove(i);
+				unspawnNotes.remove(i);
 
 			Debug.logTrace("Removed " + toBeRemoved.length + " cuz of start time");
 		}
