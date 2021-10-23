@@ -1,5 +1,7 @@
 package states;
 
+import flixel.addons.display.shapes.FlxShapeDoubleCircle;
+import flixel.system.FlxSound;
 import sys.thread.Thread;
 import cpp.FILE;
 import sys.io.FileInput;
@@ -70,6 +72,8 @@ class FreeplayState extends MusicBeatState
 	private var curDiffString:String = "normal";
 	private var curDiffArray:Array<String> = ["easy", "normal", "hard"];
 
+	var vocals:FlxSound = new FlxSound();
+
 	override function create()
 	{
 		Application.current.window.title = Application.current.meta.get('name');
@@ -97,11 +101,7 @@ class FreeplayState extends MusicBeatState
 		songsReady = true;
 		#end
 
-		#if sys
-		var initSonglist = CoolUtil.coolTextFilePolymod(Paths.txt('freeplaySonglist'));
-		#else
 		var initSonglist = CoolUtil.coolTextFile(Paths.txt('freeplaySonglist'));
-		#end
 
 		#if desktop
 		// Updating Discord Rich Presence
@@ -201,6 +201,19 @@ class FreeplayState extends MusicBeatState
 		selectedColor = songs[curSelected].color;
 		bg.color = selectedColor;
 
+		#if PRELOAD_ALL
+		var textBG:FlxSprite = new FlxSprite(0, FlxG.height - 26).makeGraphic(FlxG.width, 26, 0xFF000000);
+		textBG.alpha = 0.6;
+		add(textBG);
+
+		var leText:String = "Press SPACE to listen to this Song";
+
+		var text:FlxText = new FlxText(textBG.x, textBG.y + 4, FlxG.width, leText, 18);
+		text.setFormat(Paths.font("vcr.ttf"), 18, FlxColor.WHITE, RIGHT);
+		text.scrollFactor.set();
+		add(text);
+		#end
+
 		super.create();
 	}
 
@@ -288,9 +301,8 @@ class FreeplayState extends MusicBeatState
 			if (controls.BACK)
 				FlxG.switchState(new MainMenuState());
 
-			if (accepted)
+			if (FlxG.keys.justPressed.ENTER)
 			{
-				
 				var poop:String = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), curDiffString);
 	
 				trace(poop);
@@ -308,6 +320,32 @@ class FreeplayState extends MusicBeatState
 					LoadingState.loadAndSwitchState(new PlayState());
 				}
 			}
+
+			#if PRELOAD_ALL
+			if (FlxG.keys.justPressed.SPACE)
+			{
+				if(FlxG.sound.music.active)
+					FlxG.sound.music.stop();
+
+				FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName));
+
+				if(vocals.active)
+				{
+					vocals.stop();
+					vocals.kill();
+					vocals.destroy();
+				}
+
+				vocals = FlxG.sound.load(Paths.voices(songs[curSelected].songName), 1, true);
+
+				FlxG.sound.music.stop();
+				FlxG.sound.music.time = 0;
+				vocals.time = 0;
+
+				vocals.play(true);
+				FlxG.sound.music.play(true);
+			}
+			#end
 		}
 	}
 
