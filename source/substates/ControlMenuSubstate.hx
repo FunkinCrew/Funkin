@@ -17,22 +17,29 @@ class ControlMenuSubstate extends MusicBeatSubstate
     var arrow_Group:FlxTypedGroup<FlxSprite> = new FlxTypedGroup<FlxSprite>();
     var text_Group:FlxTypedGroup<FlxText> = new FlxTypedGroup<FlxText>();
 
-    #if sys
-	public var ui_Settings:Array<String> = CoolUtil.coolTextFilePolymod(Paths.txt("ui skins/" + FlxG.save.data.uiSkin + "/config"));
-	#else
-	public var ui_Settings:Array<String> = CoolUtil.coolTextFile(Paths.txt("ui skins/" + FlxG.save.data.uiSkin + "/config"));
-	#end
+    public var ui_Settings:Array<String> = CoolUtil.coolTextFile(Paths.txt("ui skins/default/config"));
+    public var mania_Size:Array<String> = CoolUtil.coolTextFile(Paths.txt("ui skins/default/maniasize"));
+    public var mania_offset:Array<String> = CoolUtil.coolTextFile(Paths.txt("ui skins/default/maniaoffset"));
 
-    var controlsLmao:Array<String> = [FlxG.save.data.leftBind, FlxG.save.data.downBind, FlxG.save.data.upBind, FlxG.save.data.rightBind];
+    public var arrow_Configs:Map<String, Array<String>> = new Map<String, Array<String>>();
+
+    var binds:Array<Array<String>> = FlxG.save.data.binds;
 
     var selectedControl:Int = 0;
     var selectingStuff:Bool = false;
+
+    var coolText:FlxText = new FlxText(0,25,0,"Use LEFT and RIGHT to change number of keys\nESCAPE to save binds and exit menu\n", 32);
 
     public function new()
     {
         FlxG.mouse.visible = true;
 
+        arrow_Configs.set("default", CoolUtil.coolTextFile(Paths.txt("ui skins/default/default")));
+
         super();
+
+        coolText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, CENTER, OUTLINE, FlxColor.BLACK);
+        coolText.screenCenter(X);
         
         var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
         bg.alpha = 0;
@@ -45,26 +52,26 @@ class ControlMenuSubstate extends MusicBeatSubstate
 
         add(arrow_Group);
         add(text_Group);
+        add(coolText);
     }
 
     override function update(elapsed:Float) {
         super.update(elapsed);
 
-        var upP = controls.UP_P;
-		var downP = controls.DOWN_P;
-		var accepted = controls.ACCEPT;
+        var leftP = controls.LEFT_P;
+		var rightP = controls.RIGHT_P;
+        var reset = controls.RESET;
         var back = controls.BACK;
+
+        if(reset)
+            binds = NoteVariables.Default_Binds;
 
         if(back)
         {
-            FlxG.save.data.leftBind = controlsLmao[0];
-            FlxG.save.data.downBind = controlsLmao[1];
-            FlxG.save.data.upBind = controlsLmao[2];
-            FlxG.save.data.rightBind = controlsLmao[3];
-
-            FlxG.save.flush();
-
             FlxG.mouse.visible = false;
+
+            FlxG.save.data.binds = binds;
+            FlxG.save.flush();
 
             FlxG.state.closeSubState();
         }
@@ -84,10 +91,27 @@ class ControlMenuSubstate extends MusicBeatSubstate
         }
 
         if(selectingStuff && FlxG.keys.justPressed.ANY)
+            binds[key_Count - 1][selectedControl] = FlxG.keys.getIsDown()[0].ID.toString();
+
+        if(!selectingStuff && (leftP || rightP))
         {
-            controlsLmao[selectedControl] = FlxG.keys.getIsDown()[0].ID.toString();
-            selectingStuff = false;
+            if(leftP)
+                key_Count -= 1;
+
+            if(rightP)
+                key_Count += 1;
+
+            if(key_Count < 1)
+                key_Count = 1;
+
+            if(key_Count > 18)
+                key_Count = 18;
+
+            create_Arrows();
         }
+
+        if(selectingStuff && FlxG.keys.justPressed.ANY)
+            selectingStuff = false;
 
         update_Text();
     }
@@ -96,30 +120,32 @@ class ControlMenuSubstate extends MusicBeatSubstate
     {
         for(i in 0...text_Group.length)
         {
-            text_Group.members[i].text = controlsLmao[i];
+            text_Group.members[i].text = binds[key_Count - 1][i];
         }
     }
 
-    function create_Arrows(?new_Key_Count = 4)
+    function create_Arrows(?new_Key_Count)
     {
         if(new_Key_Count != null)
             key_Count = new_Key_Count;
 
         arrow_Group.clear();
+        text_Group.clear();
 
         Note.swagWidth = 160 * (0.7 - ((key_Count - 4) * 0.06));
 
+        var lmaoStuff = Std.parseFloat(ui_Settings[0]) * (Std.parseFloat(ui_Settings[2]) - (Std.parseFloat(mania_Size[key_Count - 1])));
+
 		for (i in 0...key_Count)
         {
-            var babyArrow:FlxSprite = new FlxSprite(0, FlxG.height / 2);
+            var babyArrow:FlxSprite = new FlxSprite(FlxG.width / 2, FlxG.height / 2);
 
-            babyArrow.frames = Paths.getSparrowAtlas('ui skins/' + FlxG.save.data.uiSkin + "/arrows/default", 'shared');
+            babyArrow.frames = Paths.getSparrowAtlas("ui skins/default/arrows/default", 'shared');
 
             babyArrow.antialiasing = ui_Settings[3] == "true";
 
-            babyArrow.setGraphicSize(Std.int((babyArrow.width * Std.parseFloat(ui_Settings[0])) * (Std.parseFloat(ui_Settings[2]) - ((key_Count - 4) * 0.06))));
+            babyArrow.setGraphicSize(Std.int(babyArrow.width * lmaoStuff));
             babyArrow.screenCenter(X);
-            babyArrow.x += Note.swagWidth * Math.abs(i);
 
             var animation_Base_Name = NoteVariables.Note_Count_Directions[key_Count - 1][Std.int(Math.abs(i))].getName().toLowerCase();
 
@@ -130,16 +156,39 @@ class ControlMenuSubstate extends MusicBeatSubstate
             babyArrow.updateHitbox();
             babyArrow.scrollFactor.set();
 
-            babyArrow.setPosition(babyArrow.x - (babyArrow.width * 1.4), babyArrow.y - (10 + (babyArrow.height / 2)));
+            if(i == 0)
+            {
+                babyArrow.x -= babyArrow.width;
+                babyArrow.x += ((babyArrow.width + 2) * Math.abs(i));
+            }
+            else
+            {
+                babyArrow.x = arrow_Group.members[0].x;
+
+                arrow_Group.forEach(function(arrow:FlxSprite) {
+                    babyArrow.x += arrow.width;
+                });
+
+                babyArrow.x += 2;
+            }
+
+            babyArrow.y -= (babyArrow.height / 2);
+
             babyArrow.alpha = 0;
 
             FlxTween.tween(babyArrow, {y: babyArrow.y + 10, alpha: 1}, 1, {ease: FlxEase.circOut, startDelay: 0.2 + (0.2 * i)});
 
             babyArrow.ID = i;
 
+            babyArrow.offset.y += Std.parseFloat(arrow_Configs.get("default")[0]) * lmaoStuff;
+
             babyArrow.animation.play('static');
+
             arrow_Group.add(babyArrow);
-            text_Group.add(new FlxText(babyArrow.x + 40, babyArrow.y + 40, babyArrow.width, controlsLmao[i],36));
+
+            var coolWidth = Std.int(40 - ((key_Count - 5) * 2));
+
+            text_Group.add(new FlxText(babyArrow.x + (babyArrow.width / 2), babyArrow.y + coolWidth, coolWidth, binds[key_Count - 1][i], coolWidth));
         }
     }
 }

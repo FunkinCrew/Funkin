@@ -56,7 +56,7 @@ class MainMenuState extends MusicBeatState
 
 		var bg:FlxSprite;
 
-		if(!FlxG.save.data.optimizations)
+		if(FlxG.save.data.menuBGs)
 			bg = new FlxSprite(-80).loadGraphic(Paths.image('menuBG'));
 		else
 			bg = new FlxSprite(-80).makeGraphic(1286, 730, FlxColor.fromString("#FDE871"), false, "optimizedMenuBG");
@@ -72,7 +72,7 @@ class MainMenuState extends MusicBeatState
 		camFollow = new FlxObject(0, 0, 1, 1);
 		add(camFollow);
 
-		if(!FlxG.save.data.optimizations)
+		if(FlxG.save.data.menuBGs)
 			magenta = new FlxSprite(-80).loadGraphic(Paths.image('menuDesat'));
 		else
 			magenta = new FlxSprite(-80).makeGraphic(1286, 730, FlxColor.fromString("#E1E1E1"), false, "optimizedMenuDesat");

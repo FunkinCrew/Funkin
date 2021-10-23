@@ -58,14 +58,22 @@ class OptionsMenu extends MusicBeatState
 		[
 			"Graphics",
 			new PageOption("Back", 0, "Categories"),
-			new BoolOption("Enemy Arrow Glow", "enemyGlow", FlxG.save.data.enemyGlow, 1),
+			new BoolOption("Enemy Note Glow", "enemyGlow", FlxG.save.data.enemyGlow, 1),
 			new BoolOption("Note Splashes", "noteSplashes", FlxG.save.data.noteSplashes, 1),
 			new BoolOption("Note Accuracy Text", "msText", FlxG.save.data.msText, 2),
 			new BoolOption("FPS Counter", "fpsCounter", FlxG.save.data.fpsCounter, 3),
 			new BoolOption("Memory Counter", "memoryCounter", FlxG.save.data.memoryCounter, 4),
-			new BoolOption("Optimizations", "optimizations", FlxG.save.data.optimizations, 5),
+			new PageOption("Optimizations", 5, "Optimizations"),
 			new MaxFPSOption("Max FPS", 6),
 			new UISkinSelectOption("UI Skin", 7)
+		],
+		[
+			"Optimizations",
+			new PageOption("Back", 0, "Graphics"),
+			new BoolOption("Antialiasing", "antialiasing", FlxG.save.data.antialiasing, 1),
+			new BoolOption("Health Icons", "healthIcons", FlxG.save.data.healthIcons, 2),
+			new BoolOption("Chars And BGs", "chrsAndBGs", FlxG.save.data.chrsAndBGs, 3),
+			new BoolOption("Menu Backgrounds", "menuBGs", FlxG.save.data.menuBGs, 4)
 		],
 		[
 			"Tools",
@@ -97,7 +105,7 @@ class OptionsMenu extends MusicBeatState
 
 		var menuBG:FlxSprite;
 
-		if(!FlxG.save.data.optimizations)
+		if(FlxG.save.data.menuBGs)
 			menuBG = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 		else
 			menuBG = new FlxSprite().makeGraphic(1286, 730, FlxColor.fromString("#E1E1E1"), false, "optimizedMenuDesat");

@@ -131,6 +131,14 @@ class BoolOption extends Option
 				Value = FlxG.save.data.quickRestart;
 			case "optimizations":
 				Value = FlxG.save.data.optimizations;
+			case "antialiasing":
+				Value = FlxG.save.data.antialiasing;
+			case "healthIcons":
+				Value = FlxG.save.data.healthIcons;
+			case "chrsAndBGs":
+				Value = FlxG.save.data.chrsAndBGs;
+			case "menuBGs":
+				Value = FlxG.save.data.menuBGs;
 		}
 
 		return Value;
@@ -198,6 +206,14 @@ class BoolOption extends Option
 				FlxG.save.data.quickRestart = !Option_Checked;
 			case "optimizations":
 				FlxG.save.data.optimizations = !Option_Checked;
+			case "antialiasing":
+				FlxG.save.data.antialiasing = !Option_Checked;
+			case "healthIcons":
+				FlxG.save.data.healthIcons = !Option_Checked;
+			case "chrsAndBGs":
+				FlxG.save.data.chrsAndBGs = !Option_Checked;
+			case "menuBGs":
+				FlxG.save.data.menuBGs = !Option_Checked;
 		}
 
         if(Option_Value != "muted")

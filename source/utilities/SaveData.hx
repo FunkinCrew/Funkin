@@ -72,8 +72,20 @@ class SaveData {
         if(FlxG.save.data.cutscenePlays == null)
             FlxG.save.data.cutscenePlays = "story";
 
-        if(FlxG.save.data.optimizations == null)
-            FlxG.save.data.optimizations = false;
+        if(FlxG.save.data.binds == null)
+            FlxG.save.data.binds = NoteVariables.Default_Binds;
+
+        if(FlxG.save.data.antialiasing == null)
+            FlxG.save.data.antialiasing = true;
+
+        if(FlxG.save.data.healthIcons == null)
+            FlxG.save.data.healthIcons = true;
+
+        if(FlxG.save.data.chrsAndBGs == null)
+            FlxG.save.data.chrsAndBGs = true;
+
+        if(FlxG.save.data.menuBGs == null)
+            FlxG.save.data.menuBGs = true;
         
         Conductor.offset = FlxG.save.data.songOffset;
 

@@ -282,15 +282,6 @@ class PlayState extends MusicBeatState
 		if(SONG.ui_Skin == "default")
 			SONG.ui_Skin = FlxG.save.data.uiSkin;
 
-		#if sys
-		ui_Settings = CoolUtil.coolTextFilePolymod(Paths.txt("ui skins/" + SONG.ui_Skin + "/config"));
-		mania_size = CoolUtil.coolTextFilePolymod(Paths.txt("ui skins/" + SONG.ui_Skin + "/maniasize"));
-		mania_offset = CoolUtil.coolTextFilePolymod(Paths.txt("ui skins/" + SONG.ui_Skin + "/maniaoffset"));
-		types = CoolUtil.coolTextFilePolymod(Paths.txt("ui skins/" + SONG.ui_Skin + "/types"));
-
-		arrow_Configs.set("default", CoolUtil.coolTextFilePolymod(Paths.txt("ui skins/" + SONG.ui_Skin + "/default")));
-		type_Configs.set("default", CoolUtil.coolTextFilePolymod(Paths.txt("arrow types/default")));
-		#else
 		ui_Settings = CoolUtil.coolTextFile(Paths.txt("ui skins/" + SONG.ui_Skin + "/config"));
 		mania_size = CoolUtil.coolTextFile(Paths.txt("ui skins/" + SONG.ui_Skin + "/maniasize"));
 		mania_offset = CoolUtil.coolTextFile(Paths.txt("ui skins/" + SONG.ui_Skin + "/maniaoffset"));
@@ -298,7 +289,6 @@ class PlayState extends MusicBeatState
 
 		arrow_Configs.set("default", CoolUtil.coolTextFile(Paths.txt("ui skins/" + SONG.ui_Skin + "/default")));
 		type_Configs.set("default", CoolUtil.coolTextFile(Paths.txt("arrow types/default")));
-		#end
 
 		Note.swagWidth = 160 * (Std.parseFloat(ui_Settings[5]) - ((SONG.keyCount - 4) * 0.06));
 
@@ -339,7 +329,7 @@ class PlayState extends MusicBeatState
 		/* character time :) */
 		gfVersion = SONG.gf;
 
-		if(FlxG.save.data.optimizations)
+		if(!FlxG.save.data.chrsAndBGs)
 		{
 			gf = new Character(400, 130, "");
 			gf.scrollFactor.set(0.95, 0.95);
@@ -376,7 +366,7 @@ class PlayState extends MusicBeatState
 
 		curStage = SONG.stage;
 
-		if(FlxG.save.data.optimizations)
+		if(!FlxG.save.data.chrsAndBGs)
 			stage = new StageGroup("");
 		else
 			stage = new StageGroup(curStage);
@@ -1139,7 +1129,7 @@ class PlayState extends MusicBeatState
 				enemyStrums.add(babyArrow);
 
 			babyArrow.animation.play('static');
-			babyArrow.x += 100 - ((SONG.keyCount - 4) * 16) + (SONG.keyCount == 10 ? 30 : 0);
+			babyArrow.x += 100 - ((SONG.keyCount - 4) * 16) + (SONG.keyCount >= 10 ? 30 : 0);
 			babyArrow.x += ((FlxG.width / 2) * player);
 
 			strumLineNotes.add(babyArrow);

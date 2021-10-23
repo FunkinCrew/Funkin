@@ -1,11 +1,12 @@
 package utilities;
 
+import flixel.FlxG;
+
 class NoteHandler
 {
     public static function getBinds(keyCount:Int):Array<String>
     {
-        NoteVariables.updateStuffs();
-        return NoteVariables.Note_Count_Keybinds[keyCount - 1];
+        return FlxG.save.data.binds[keyCount - 1];
     }
 }
 

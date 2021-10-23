@@ -135,7 +135,7 @@ class FreeplayState extends MusicBeatState
 			songs.push(new SongMetadata(song, week, icon, diffs, actualColor));
 		}
 
-		if(!FlxG.save.data.optimizations)
+		if(FlxG.save.data.menuBGs)
 			bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 		else
 			bg = new FlxSprite().makeGraphic(1286, 730, FlxColor.fromString("#E1E1E1"), false, "optimizedMenuDesat");
@@ -171,7 +171,7 @@ class FreeplayState extends MusicBeatState
 			songText.targetY = i;
 			grpSongs.add(songText);
 
-			if(!FlxG.save.data.optimizations)
+			if(FlxG.save.data.healthIcons)
 			{
 				var icon:HealthIcon = new HealthIcon(songs[i].songCharacter);
 				icon.sprTracker = songText;

@@ -43,7 +43,7 @@ class MusicBeatSubstate extends FlxSubState
 		/* cool fps shit thx kade */
 		(cast (Lib.current.getChildAt(0), Main)).setFPSCap(FlxG.save.data.fpsCap);
 
-		if(FlxG.save.data.optimizations)
+		if(!FlxG.save.data.antialiasing)
 		{
 			forEachAlive(function(basic:FlxBasic) {
 				if(Std.isOfType(basic, FlxSprite))

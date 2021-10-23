@@ -30,12 +30,12 @@ class NoteVariables
         [LEFT, DOWN, UP, RIGHT, LEFT, DOWN, UP, RIGHT, SQUARE, PLUS, RLEFT, RDOWN, RUP, RRIGHT, RLEFT, RDOWN, RUP, RRIGHT] // 18
     ];
 
-    public static var Note_Count_Keybinds:Array<Array<String>> = [
+    public static var Default_Binds:Array<Array<String>> = [
         [Square_Key], // Geometry Dash
-        [Player_Binds[0], Player_Binds[3]], // Geometry Dash 2P
-        [Player_Binds[0], Square_Key, Player_Binds[3]], // 3
-        [Player_Binds[0], Player_Binds[1], Player_Binds[2], Player_Binds[3]], // 4
-        [Player_Binds[0], Player_Binds[1], Square_Key, Player_Binds[2], Player_Binds[3]], // Guitar Hero
+        ["A", "D"], // Geometry Dash 2P
+        ["A", Square_Key, "D"], // 3
+        ["A", "S", "W", "D"], // 4
+        ["A", "S", Square_Key, "W", "D"], // Guitar Hero
         ["S","D","F","J","K","L"], // Shag
         ["S","D","F", Square_Key, "J","K","L"], // 7
         ["A","S","D","F", "H","J","K","L"], // 8
@@ -96,29 +96,5 @@ class NoteVariables
     public static function updateStuffs()
     {
         Player_Binds = [FlxG.save.data.leftBind,FlxG.save.data.downBind,FlxG.save.data.upBind,FlxG.save.data.rightBind];
-
-        Note_Count_Keybinds = [
-            [Square_Key], // Geometry Dash
-            [Player_Binds[0], Player_Binds[3]], // Geometry Dash 2P
-            [Player_Binds[0], Square_Key, Player_Binds[3]], // 3
-            [Player_Binds[0], Player_Binds[1], Player_Binds[2], Player_Binds[3]], // 4
-            [Player_Binds[0], Player_Binds[1], Square_Key, Player_Binds[2], Player_Binds[3]], // Guitar Hero
-            ["S","D","F","J","K","L"], // Shag
-            ["S","D","F", Square_Key, "J","K","L"], // 7
-            ["A","S","D","F", "H","J","K","L"], // 8
-            ["A","S","D","F", Square_Key, "H","J","K","L"], // Tryhard Shag
-            ["Q","W","E","R","V", "N","U","I","O","P"], // 10
-            ["Q","W","E","R","V","B","N","U","I","O","P"], // 11
-            ["Q","W","E","R","D","F","J","K","U","I","O","P"], // 12
-            ["Q","W","E","R","D","F",Square_Key,"J","K","U","I","O","P"], // 13
-            ["Q","W","E","R","S","D","F","J","K","L","U","I","O","P"], // 14
-            ["Q","W","E","R","S","D","F",Square_Key,"J","K","L","U","I","O","P"], // 15
-            ["Q","W","E","R","A","S","D","F","H","J","K","L","U","I","O","P"], // 16
-            ["Q","W","E","R","A","S","D","F",Square_Key,"H","J","K","L","U","I","O","P"], // 17
-            ["Q","W","E","R","A","S","D","F","V","N","H","J","K","L","U","I","O","P"], // 18
-            ["Q","W","E","R","A","S","D","F","V","B","N","H","J","K","L","U","I","O","P"], // 19
-            ["Q","W","E","R","A","S","D","F","C","V","N","M","H","J","K","L","U","I","O","P"], // 20
-            ["Q","W","E","R","A","S","D","F","C","V",Square_Key,"N","M","H","J","K","L","U","I","O","P"] // 21, Holy shit..
-        ];
     }
 }
