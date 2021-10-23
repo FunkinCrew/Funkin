@@ -1,6 +1,6 @@
 ![Logo](Logo.png)
 
-This is the repository for Leather's Funkin' Engine, an engine created for making and playing mods for Friday Night Funkin'.
+This is the repository for Leather Engine, an engine created for making and playing mods for Friday Night Funkin'.
 
 ## Build Instructions
 
