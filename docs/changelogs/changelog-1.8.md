@@ -23,6 +23,7 @@ Changes marked with 💖 will be listed in the short version of the changelog in
 - Controllers can now bind more keys that were previously blacklisted
 - Removed version identifier in gameplay
 - Removed some stuff from the results screen
+- Made the FPS text nicer
 
 ### Bugfixes
 - Fix linux and mac compiling and running

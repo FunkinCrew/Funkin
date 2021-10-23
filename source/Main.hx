@@ -1,5 +1,6 @@
 package;
 
+import openfl.display.Bitmap;
 import lime.app.Application;
 #if FEATURE_DISCORD
 import Discord.DiscordClient;
@@ -26,6 +27,10 @@ class Main extends Sprite
 	var skipSplash:Bool = true; // Whether to skip the flixel splash screen that appears in release mode.
 	var startFullscreen:Bool = false; // Whether to start the game in fullscreen on desktop targets
 
+	public static var bitmapFPS:Bitmap;
+
+	public static var instance:Main;
+
 	public static var watermarks = true; // Whether to put Kade Engine literally anywhere
 
 	// You can pretty much ignore everything from here on - your code should go in your states.
@@ -39,6 +44,8 @@ class Main extends Sprite
 
 	public function new()
 	{
+		instance = this;
+
 		super();
 
 		if (stage != null)
@@ -96,9 +103,9 @@ class Main extends Sprite
 		addChild(game);
 
 		#if !mobile
-		fpsCounter = new FPS(10, 3, 0xFFFFFF);
-		fpsCounter.border = true;
-		fpsCounter.borderColor = 0x000000;
+		fpsCounter = new KadeEngineFPS(10, 3, 0xFFFFFF);
+		bitmapFPS = ImageOutline.renderImage(fpsCounter, 1, 0x000000, true);
+		bitmapFPS.smoothing = true;
 		addChild(fpsCounter);
 		toggleFPS(FlxG.save.data.fps);
 		#end
@@ -109,11 +116,10 @@ class Main extends Sprite
 
 	var game:FlxGame;
 
-	var fpsCounter:FPS;
+	var fpsCounter:KadeEngineFPS;
 
 	public function toggleFPS(fpsEnabled:Bool):Void
 	{
-		fpsCounter.visible = fpsEnabled;
 	}
 
 	public function changeFPSColor(color:FlxColor)

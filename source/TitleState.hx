@@ -64,6 +64,8 @@ class TitleState extends MusicBeatState
 		KadeEngineData.initSave();
 		#end
 
+		MusicBeatState.initSave = true;
+
 		Highscore.load();
 
 		curWacky = FlxG.random.getObject(getIntroTextShit());

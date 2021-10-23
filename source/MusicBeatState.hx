@@ -1,5 +1,7 @@
 package;
 
+import flixel.FlxCamera;
+import flixel.text.FlxText;
 import lime.app.Application;
 import flixel.FlxBasic;
 #if FEATURE_DISCORD
@@ -24,6 +26,8 @@ class MusicBeatState extends FlxUIState
 	inline function get_controls():Controls
 		return PlayerSettings.player1.controls;
 
+	public static var initSave:Bool = false;
+
 	private var assets:Array<FlxBasic> = [];
 
 	override function destroy()
@@ -36,7 +40,8 @@ class MusicBeatState extends FlxUIState
 	{
 		if (FlxG.save.data.optimize)
 			assets.push(Object);
-		return super.add(Object);
+		var result = super.add(Object);
+		return result;
 	}
 
 	public function clean()
@@ -175,6 +180,8 @@ class MusicBeatState extends FlxUIState
 		}
 		else
 			skippedFrames++;
+
+		(cast(Lib.current.getChildAt(0), Main)).setFPSCap(FlxG.save.data.fpsCap);
 
 		super.update(elapsed);
 	}
