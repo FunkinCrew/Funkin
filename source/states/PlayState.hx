@@ -2321,7 +2321,10 @@ class PlayState extends MusicBeatState
 
 			playerStrums.forEach(function(spr:StrumNote)
 			{
-				spr.playAnim('static');
+				if(spr.animation.finished)
+				{
+					spr.playAnim("static");
+				}
 			});
 
 			if(boyfriend.otherCharacters == null)
