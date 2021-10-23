@@ -444,7 +444,7 @@ class SickMSOption extends Option
 
 	private override function updateDisplay():String
 	{
-		return "SICK: < " + FlxG.save.data.sickMs + " ms > (Press R to reset)";
+		return "SICK: < " + FlxG.save.data.sickMs + " ms >)";
 	}
 }
 
@@ -482,7 +482,7 @@ class GoodMsOption extends Option
 
 	private override function updateDisplay():String
 	{
-		return "GOOD: < " + FlxG.save.data.goodMs + " ms > (Press R to reset)";
+		return "GOOD: < " + FlxG.save.data.goodMs + " ms >";
 	}
 }
 
