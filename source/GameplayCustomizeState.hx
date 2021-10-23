@@ -57,7 +57,7 @@ class GameplayCustomizeState extends MusicBeatState
 	public static var freeplayGf:String = 'gf';
 	public static var freeplayNoteStyle:String = 'normal';
 	public static var freeplayStage:String = 'stage';
-	public static var freeplaySong:String = 'Bopeebo';
+	public static var freeplaySong:String = 'bopeebo';
 	public static var freeplayWeek:Int = 1;
 
 	public override function create()

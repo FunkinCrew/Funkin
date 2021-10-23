@@ -341,7 +341,8 @@ class Stage extends MusicBeatState
 					var bgGirls = new BackgroundGirls(-100, 190);
 					bgGirls.scrollFactor.set(0.9, 0.9);
 
-					if (PlayState.SONG.songId.toLowerCase() == 'roses')
+					// if (PlayState.SONG.songId.toLowerCase() == 'roses')
+					if (GameplayCustomizeState.freeplaySong == 'roses')
 					{
 						if (FlxG.save.data.distractions)
 							bgGirls.getScared();
