@@ -82,7 +82,9 @@ class KadeEngineFPS extends TextField
 
 		if (currentCount != cacheCount /*&& visible*/)
 		{
-			text = (FlxG.save.data.fps ? "FPS: " + currentFPS : "");
+			text = (FlxG.save.data.fps ? "FPS: "
+				+ currentFPS
+				+ (Main.watermarks ? "\nKE " + "v" + MainMenuState.kadeEngineVer : "") : (Main.watermarks ? "KE " + "v" + MainMenuState.kadeEngineVer : ""));
 
 			#if (gl_stats && !disable_cffi && (!html5 || !canvas))
 			text += "\ntotalDC: " + Context3DStats.totalDrawCalls();
