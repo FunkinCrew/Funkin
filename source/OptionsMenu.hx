@@ -439,17 +439,21 @@ class OptionsMenu extends FlxSubState
 				if (selectedOption != null)
 					if (selectedOption.acceptType)
 					{
-						if (any)
+						if (escape && selectedOption.waitingType)
+						{
+							FlxG.sound.play(Paths.sound('scrollMenu'));
+							selectedOption.waitingType = false;
+							var object = selectedCat.optionObjects.members[selectedOptionIndex];
+							object.text = "> " + selectedOption.getValue();
+							Debug.logTrace("New text: " + object.text);
+							return;
+						}
+						else if (any)
 						{
 							var object = selectedCat.optionObjects.members[selectedOptionIndex];
 							selectedOption.onType(gamepad == null ? FlxG.keys.getIsDown()[0].ID.toString() : gamepad.firstJustPressedID());
 							object.text = "> " + selectedOption.getValue();
 							Debug.logTrace("New text: " + object.text);
-						}
-						if (escape)
-						{
-							FlxG.sound.play(Paths.sound('scrollMenu'));
-							selectedOption.waitingType = false;
 						}
 					}
 				if (selectedOption.acceptType || !selectedOption.acceptType)
