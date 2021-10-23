@@ -800,41 +800,18 @@ class PlayState extends MusicBeatState
 		if (startTime != 0)
 		{
 			var toBeRemoved = [];
-			for (i in 0...notes.members.length)
+			for (i in 0...unspawnNotes.length)
 			{
-				var dunceNote:Note = notes.members[i];
+				var dunceNote:Note = unspawnNotes[i];
 
-				if (dunceNote.strumTime - startTime <= 0)
+				if (dunceNote.strumTime <= startTime)
 					toBeRemoved.push(dunceNote);
-				else
-				{
-					if (PlayStateChangeables.useDownscroll)
-					{
-						if (dunceNote.mustPress)
-							dunceNote.y = (playerStrums.members[Math.floor(Math.abs(dunceNote.noteData))].y * (startTime - dunceNote.strumTime) * FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
-								2))
-								- dunceNote.noteYOff;
-						else
-							dunceNote.y = (strumLineNotes.members[Math.floor(Math.abs(dunceNote.noteData))].y * (startTime - dunceNote.strumTime) * FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
-								2))
-								- dunceNote.noteYOff;
-					}
-					else
-					{
-						if (dunceNote.mustPress)
-							dunceNote.y = (playerStrums.members[Math.floor(Math.abs(dunceNote.noteData))].y * (startTime - dunceNote.strumTime) * FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
-								2))
-								+ dunceNote.noteYOff;
-						else
-							dunceNote.y = (strumLineNotes.members[Math.floor(Math.abs(dunceNote.noteData))].y * (startTime - dunceNote.strumTime) * FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? SONG.speed : PlayStateChangeables.scrollSpeed,
-								2))
-								+ dunceNote.noteYOff;
-					}
-				}
 			}
 
 			for (i in toBeRemoved)
 				notes.members.remove(i);
+
+			Debug.logTrace("Removed " + toBeRemoved.length + " cuz of start time");
 		}
 
 		trace('generated');
