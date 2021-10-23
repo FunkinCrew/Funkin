@@ -1632,7 +1632,7 @@ class PlayState extends MusicBeatState
 
 			for (songNotes in section.sectionNotes)
 			{
-				var daStrumTime:Float = songNotes[0] - FlxG.save.data.offset - SONG.offset;
+				var daStrumTime:Float = songNotes[0];
 				if (daStrumTime < 0)
 					daStrumTime = 0;
 				var daNoteData:Int = Std.int(songNotes[1] % 4);
@@ -1712,8 +1712,6 @@ class PlayState extends MusicBeatState
 		unspawnNotes.sort(sortByShit);
 
 		generatedMusic = true;
-
-		poggers(true);
 
 		Debug.logTrace("whats the fuckin shit");
 	}
