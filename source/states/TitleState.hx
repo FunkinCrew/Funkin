@@ -1,5 +1,6 @@
 package states;
 
+import substates.OutdatedSubState;
 import openfl.Lib;
 import modding.PolymodHandler;
 import modding.ModList;
@@ -94,7 +95,9 @@ class TitleState extends MusicBeatState
 	var danceLeft:Bool = false;
 	var titleText:FlxSprite;
 
-	public static var version:String = "v0.0";
+	public static var version:String = "v0.3";
+
+	public static var version_New:String = "v0.3";
 
 	public static function playTitleMusic()
 	{
@@ -312,10 +315,32 @@ class TitleState extends MusicBeatState
 
 			new FlxTimer().start(2, function(tmr:FlxTimer)
 			{
-				// Check if version is outdated
-				trace("Current version of the game is: " + version + "!");
+				var http = new haxe.Http("https://raw.githubusercontent.com/Leather128/LeatherEngine/master/version.txt");
+				
+				http.onData = function(data:String)
+				{
+					var new_Vers:Float = Std.parseFloat(data);
+					var old_Vers:Float = Std.parseFloat(Application.current.meta.get('version'));
 
-				FlxG.switchState(new MainMenuState());
+				  	if(new_Vers > old_Vers)
+					{
+						trace('outdated lmao! ' + new_Vers + ' != ' + old_Vers);
+
+						version_New = "v" + data;
+						FlxG.switchState(new OutdatedSubState());
+					}
+					else
+					{
+						FlxG.switchState(new MainMenuState());
+					}
+				}
+				
+				http.onError = function (error) {
+					trace('error: $error');
+					FlxG.switchState(new MainMenuState()); // fail so we go anyway
+				}
+				
+				http.request();
 			});
 
 			// FlxG.sound.play(Paths.music('titleShoot'), 0.7);
