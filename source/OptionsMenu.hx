@@ -437,7 +437,7 @@ class OptionsMenu extends FlxSubState
 			else
 			{
 				if (selectedOption != null)
-					if (selectedOption.acceptType && selectedOption.waitingType)
+					if (selectedOption.acceptType)
 					{
 						if (any)
 						{
@@ -453,7 +453,7 @@ class OptionsMenu extends FlxSubState
 							selectedOption.waitingType = false;
 						}
 					}
-				if (selectedOption.acceptType && !selectedOption.waitingType || !selectedOption.acceptType)
+				if (selectedOption.acceptType || !selectedOption.acceptType)
 				{
 					if (accept)
 					{

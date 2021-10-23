@@ -417,7 +417,6 @@ class SickMSOption extends Option
 		super();
 		description = desc + " (Press R to reset)";
 		acceptType = true;
-		waitingType = true;
 	}
 
 	public override function left():Bool
@@ -444,7 +443,7 @@ class SickMSOption extends Option
 
 	private override function updateDisplay():String
 	{
-		return "SICK: < " + FlxG.save.data.sickMs + " ms >)";
+		return "SICK: < " + FlxG.save.data.sickMs + " ms >";
 	}
 }
 
@@ -455,7 +454,6 @@ class GoodMsOption extends Option
 		super();
 		description = desc + " (Press R to reset)";
 		acceptType = true;
-		waitingType = true;
 	}
 
 	public override function left():Bool
@@ -493,7 +491,6 @@ class BadMsOption extends Option
 		super();
 		description = desc + " (Press R to reset)";
 		acceptType = true;
-		waitingType = true;
 	}
 
 	public override function left():Bool
@@ -531,7 +528,6 @@ class ShitMsOption extends Option
 		super();
 		description = desc + " (Press R to reset)";
 		acceptType = true;
-		waitingType = true;
 	}
 
 	public override function left():Bool
@@ -558,7 +554,7 @@ class ShitMsOption extends Option
 
 	private override function updateDisplay():String
 	{
-		return "SHIT: < " + FlxG.save.data.shitMs + " ms > (Press R to reset)";
+		return "SHIT: < " + FlxG.save.data.shitMs + " ms >";
 	}
 }
 
