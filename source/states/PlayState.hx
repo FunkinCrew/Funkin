@@ -1594,7 +1594,7 @@ class PlayState extends MusicBeatState
 		if (FlxG.save.data.resetButtonOn)
 		{
 			if (controls.RESET)
-			{
+			{ 
 				health = 0;
 				trace("RESET = True");
 			}
