@@ -474,10 +474,9 @@ class Character extends FlxSprite
 				}
 			}
 
-			if(dancesLeftAndRight)
-				playAnim("danceRight");
-			else
-				playAnim("idle");
+			playAnim("firstDeath");
+			playAnim("danceRight");
+			playAnim("idle");
 
 			if(debugMode)
 				flipX = config.defaultFlipX;

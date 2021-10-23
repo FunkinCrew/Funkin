@@ -26,7 +26,7 @@ class PauseSubState extends MusicBeatSubstate
 {
 	var grpMenuShit:FlxTypedGroup<Alphabet>;
 
-	var menuItems:Array<String> = ['Resume', 'Restart Song', 'Restart Song With Cutscenes', 'Bot', 'Quick Restart', 'Exit to menu'];
+	var menuItems:Array<String> = ['Resume', 'Restart Song', 'Restart Song With Cutscenes', 'Bot', 'Auto Restart', 'No Miss', 'Exit to menu'];
 	var curSelected:Int = 0;
 
 	var pauseMusic:FlxSound;
@@ -55,7 +55,6 @@ class PauseSubState extends MusicBeatSubstate
 
 		var levelDifficulty:FlxText = new FlxText(20, 15 + 32, 0, "", 32);
 		levelDifficulty.text += PlayState.storyDifficultyStr.toUpperCase();
-		levelDifficulty.text += "\nDeaths: " + FlxG.save.data.deaths + "\n";
 		levelDifficulty.scrollFactor.set();
 		levelDifficulty.setFormat(Paths.font('vcr.ttf'), 32, FlxColor.WHITE, RIGHT);
 		levelDifficulty.updateHitbox();
@@ -132,8 +131,11 @@ class PauseSubState extends MusicBeatSubstate
 						PlayState.instance.infoTxt.screenCenter(X);
 						PlayState.instance.hasUsedBot = true;
 					}
-				case "Quick Restart":
+				case "Auto Restart":
 					FlxG.save.data.quickRestart = !FlxG.save.data.quickRestart;
+					FlxG.save.flush();
+				case "No Miss":
+					FlxG.save.data.nohit = !FlxG.save.data.nohit;
 					FlxG.save.flush();
 				case "Exit to menu":
 					#if linc_luajit
