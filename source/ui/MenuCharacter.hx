@@ -48,9 +48,7 @@ class MenuCharacter extends FlxSprite
 			flipX = characterData.Flipped;
 		}
 		else
-		{
 			visible = false;
-		}
 	}
 }
 

@@ -1,6 +1,11 @@
 # Changelog
 All notable changes will be documented in this file.
 
+## [0.3.1] - 10/23/2021
+### Added
+- Version System (aka if newer version out, game tell u :DDDDDDDD)!
+- Custom Storymode Difficulties
+
 ## [0.3] - 10/23/2021
 ### Added
 - Revamped options menu with checkboxes and other things.

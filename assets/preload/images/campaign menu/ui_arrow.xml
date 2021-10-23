@@ -1,0 +1,4 @@
+<TextureAtlas imagePath="ui_arrow.png">
+    <SubTexture name="arrow0000" x="0" y="0" width="48" height="85"/>
+    <SubTexture name="arrow push0000" x="49" y="0" width="42" height="75"/>
+</TextureAtlas>
