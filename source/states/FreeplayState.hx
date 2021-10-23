@@ -327,7 +327,10 @@ class FreeplayState extends MusicBeatState
 				if(FlxG.sound.music.active)
 					FlxG.sound.music.stop();
 
-				FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName));
+				FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName, curDiffString.toLowerCase()));
+
+				FlxG.sound.music.stop();
+				FlxG.sound.music.time = 0;
 
 				if(vocals.active)
 				{
@@ -336,10 +339,7 @@ class FreeplayState extends MusicBeatState
 					vocals.destroy();
 				}
 
-				vocals = FlxG.sound.load(Paths.voices(songs[curSelected].songName), 1, true);
-
-				FlxG.sound.music.stop();
-				FlxG.sound.music.time = 0;
+				vocals = FlxG.sound.load(Paths.voices(songs[curSelected].songName, curDiffString.toLowerCase()), 1, true);
 				vocals.time = 0;
 
 				vocals.play(true);
@@ -386,7 +386,7 @@ class FreeplayState extends MusicBeatState
 		// Song Inst
 		if(FlxG.save.data.freeplayMusic)
 		{
-			FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName));
+			FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName, curDiffString.toLowerCase()));
 			FlxG.sound.music.fadeIn(1, 0, 0.7);
 		}
 

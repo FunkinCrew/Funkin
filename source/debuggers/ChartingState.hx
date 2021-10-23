@@ -118,9 +118,11 @@ class ChartingState extends MusicBeatState
 
 	override function create()
 	{
+		#if NO_PRELOAD_ALL
 		// FOR WHEN COMING IN FROM THE TOOLS PAGE LOL
 		if (Assets.getLibrary("shared") == null)
 			Assets.loadLibrary("shared").onComplete(function (_) { });
+		#end
 
 		var characterList = CoolUtil.coolTextFile(Paths.txt('characterList'));
 
@@ -204,7 +206,8 @@ class ChartingState extends MusicBeatState
 		var tabs = [
 			{name: "Song Options", label: 'Song Options'},
 			{name: "Chart Options", label: 'Chart Options'},
-			{name: "Art Options", label: 'Art Options'}
+			{name: "Art Options", label: 'Art Options'},
+			{name: "Compatibility", label: 'Compatibility'}
 		];
 
 		UI_box = new FlxUITabMenu(null, tabs, true);
@@ -217,6 +220,7 @@ class ChartingState extends MusicBeatState
 		addSongUI();
 		addSectionUI();
 		addNoteUI();
+		addCompatibilityUI();
 
 		add(curRenderedNotes);
 		add(curRenderedSustains);
@@ -632,16 +636,57 @@ class ChartingState extends MusicBeatState
 		UI_box.addGroup(tab_group_note);
 	}
 
+	function addCompatibilityUI():Void
+	{
+		var tab_group_note = new FlxUI(null, UI_box);
+		tab_group_note.name = 'Compatibility';
+
+		var finalDestinationButton:FlxButton = new FlxButton(10, 20, "All Shag Final", function()
+		{
+			for(i in 0..._song.notes.length)
+			{
+				convertSectionToShaggy(i);
+			}
+
+			updateGrid();
+		});
+
+		tab_group_note.add(finalDestinationButton);
+
+		// final add
+		UI_box.addGroup(tab_group_note);
+	}
+
+	function convertSectionToShaggy(section:Int)
+	{
+		for(noteIndex in 0..._song.notes[section].sectionNotes.length)
+		{
+			var coolVal = _song.notes[section].sectionNotes[noteIndex][1] / (_song.keyCount * 2);
+
+			if(_song.notes[section].sectionNotes[noteIndex][3] == null)
+				_song.notes[section].sectionNotes[noteIndex][3] = 0;
+
+			if(Std.int(coolVal) == 1)
+				_song.notes[section].sectionNotes[noteIndex][4] = "death";
+
+			if(Std.int(coolVal) == 2)
+				_song.notes[section].sectionNotes[noteIndex][4] = "caution";
+
+			if(Std.int(coolVal) != 0)
+				_song.notes[section].sectionNotes[noteIndex][1] %= (_song.keyCount * 2);
+		}
+	}
+
 	function loadSong(daSong:String):Void
 	{
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
 
-		FlxG.sound.music = new FlxSound().loadEmbedded(Paths.inst(daSong));
+		FlxG.sound.music = new FlxSound().loadEmbedded(Paths.inst(daSong, difficulty.toLowerCase()));
 		FlxG.sound.music.persist = true;
 		
 		if (_song.needsVoices)
-			vocals = new FlxSound().loadEmbedded(Paths.voices(daSong));
+			vocals = new FlxSound().loadEmbedded(Paths.voices(daSong, difficulty.toLowerCase()));
 		else
 			vocals = new FlxSound();
 
