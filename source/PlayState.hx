@@ -1735,6 +1735,9 @@ class PlayState extends MusicBeatState
 		unspawnNotes.sort(sortByShit);
 
 		generatedMusic = true;
+
+		poggers(true);
+
 		Debug.logTrace("whats the fuckin shit");
 	}
 
@@ -3156,7 +3159,10 @@ class PlayState extends MusicBeatState
 											i.sustainActive = false;
 										}
 										if (daNote.parent.wasGoodHit)
+										{
 											misses++;
+											totalNotesHit -= 1;
+										}
 										updateAccuracy();
 									}
 									else if (!daNote.wasGoodHit && !daNote.isSustainNote)
@@ -3205,7 +3211,10 @@ class PlayState extends MusicBeatState
 										i.sustainActive = false;
 									}
 									if (daNote.parent.wasGoodHit)
+									{
 										misses++;
+										totalNotesHit -= 1;
+									}
 									updateAccuracy();
 								}
 								else if (!daNote.wasGoodHit && !daNote.isSustainNote)
