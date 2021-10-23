@@ -1593,7 +1593,7 @@ class PlayState extends MusicBeatState
 			FlxG.sound.cache(Paths.inst(PlayState.SONG.songId));
 
 		// Song duration in a float, useful for the time left feature
-		songLength = FlxG.sound.music.length / 1000;
+		songLength = (FlxG.sound.music.length / 1000) * songRate;
 
 		Conductor.crochet = ((60 / (SONG.bpm) * 1000)) / songMultiplier;
 		Conductor.stepCrochet = Conductor.crochet / 4;
@@ -1624,7 +1624,7 @@ class PlayState extends MusicBeatState
 			songName.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 			songName.scrollFactor.set();
 
-			songName.text = SONG.songName + ' (' + FlxStringUtil.formatTime(songLength, false) + ')';
+			songName.text = SONG.songName + ' (' + FlxStringUtil.formatTime(songLength * songRate, false) + ')';
 			songName.y = songPosBG.y + (songPosBG.height / 3);
 
 			add(songName);
@@ -2076,7 +2076,7 @@ class PlayState extends MusicBeatState
 				// Song ends abruptly on slow rate even with second condition being deleted,
 				// and if it's deleted on songs like cocoa then it would end without finishing instrumental fully,
 				// so no reason to delete it at all
-				if (unspawnNotes.length == 0 && notes.length == 0)
+				if (unspawnNotes.length == 0 && notes.length == 0 && FlxG.sound.music.time > FlxG.sound.music.length - 100)
 				{
 					endingSong = true;
 					new FlxTimer().start(2, function(timer)
@@ -3388,6 +3388,7 @@ class PlayState extends MusicBeatState
 						{
 							FlxTween.tween(songPosBar, {alpha: 0}, 1);
 							FlxTween.tween(bar, {alpha: 0}, 1);
+							FlxTween.tween(songName, {alpha: 0}, 1);
 						}
 						openSubState(new ResultsScreen());
 						new FlxTimer().start(1, function(tmr:FlxTimer)
