@@ -195,7 +195,8 @@ class ResultsScreen extends FlxSubState
 
 		if (PlayerSettings.player1.controls.ACCEPT)
 		{
-			music.fadeOut(0.3);
+			if (music != null)
+				music.fadeOut(0.3);
 
 			PlayState.loadRep = false;
 			PlayState.stageTesting = false;
