@@ -1,5 +1,6 @@
 package states;
 
+import game.StrumNote;
 import game.Cutscene;
 import modding.FlxVideo;
 import sys.FileSystem;
@@ -91,10 +92,10 @@ class PlayState extends MusicBeatState
 
 	private var stage:StageGroup;
 
-	public static var strumLineNotes:FlxTypedGroup<FlxSprite>;
-	public static var playerStrums:FlxTypedGroup<FlxSprite>;
-	public static var enemyStrums:FlxTypedGroup<FlxSprite>;
-	private var splashes:FlxTypedGroup<FlxSprite>;
+	public static var strumLineNotes:FlxTypedGroup<StrumNote>;
+	public static var playerStrums:FlxTypedGroup<StrumNote>;
+	public static var enemyStrums:FlxTypedGroup<StrumNote>;
+	private var splashes:FlxTypedGroup<NoteSplash>;
 
 	private var camZooming:Bool = false;
 	private var curSong:String = "";
@@ -468,12 +469,12 @@ class PlayState extends MusicBeatState
 
 		strumLine.scrollFactor.set();
 
-		strumLineNotes = new FlxTypedGroup<FlxSprite>();
+		strumLineNotes = new FlxTypedGroup<StrumNote>();
 		add(strumLineNotes);
 
-		playerStrums = new FlxTypedGroup<FlxSprite>();
-		enemyStrums = new FlxTypedGroup<FlxSprite>();
-		splashes = new FlxTypedGroup<FlxSprite>();
+		playerStrums = new FlxTypedGroup<StrumNote>();
+		enemyStrums = new FlxTypedGroup<StrumNote>();
+		splashes = new FlxTypedGroup<NoteSplash>();
 
 		generateSong(SONG.song);
 
@@ -1031,7 +1032,7 @@ class PlayState extends MusicBeatState
 	{
 		for (i in 0...SONG.keyCount)
 		{
-			var babyArrow:FlxSprite = new FlxSprite(0, strumLine.y);
+			var babyArrow:StrumNote = new StrumNote(0, strumLine.y, i);
 
 			babyArrow.frames = arrow_Type_Sprites.get("default");
 
@@ -1048,7 +1049,7 @@ class PlayState extends MusicBeatState
 
 			babyArrow.scrollFactor.set();
 			
-			babyArrow.animation.play('static');
+			babyArrow.playAnim('static');
 
 			babyArrow.x += (babyArrow.width + 2) * Math.abs(i) + Std.parseFloat(mania_offset[SONG.keyCount-1]);
 			babyArrow.y = strumLine.y - (babyArrow.height / 2);
@@ -1067,7 +1068,6 @@ class PlayState extends MusicBeatState
 			else
 				enemyStrums.add(babyArrow);
 
-			babyArrow.animation.play('static');
 			babyArrow.x += 100 - ((SONG.keyCount - 4) * 16) + (SONG.keyCount >= 10 ? 30 : 0);
 			babyArrow.x += ((FlxG.width / 2) * player);
 
@@ -1654,11 +1654,12 @@ class PlayState extends MusicBeatState
 
 					if (FlxG.save.data.enemyGlow && enemyStrums.members.length - 1 == SONG.keyCount - 1)
 					{
-						enemyStrums.forEach(function(spr:FlxSprite)
+						enemyStrums.forEach(function(spr:StrumNote)
 						{
 							if (Math.abs(daNote.noteData) == spr.ID)
 							{
-								spr.animation.play('confirm', true);
+								spr.playAnim('confirm', true);
+								spr.resetAnim = 0;
 
 								if(!daNote.isSustainNote && FlxG.save.data.noteSplashes)
 								{
@@ -1667,33 +1668,9 @@ class PlayState extends MusicBeatState
 									add(splash);
 								}
 
-								spr.centerOffsets();
-
-								if(SONG.ui_Skin != 'pixel')
+								spr.animation.finishCallback = function(_)
 								{
-									spr.offset.x -= 13 + ((SONG.keyCount - 4) * 1.7);
-									spr.offset.y -= 13 + ((SONG.keyCount - 4) * 1.7);
-								}
-			
-								if(NoteVariables.Other_Note_Anim_Stuff[SONG.keyCount - 1][spr.ID] == "square" && SONG.ui_Skin != 'pixel')
-								{
-									spr.offset.x -= 4 + ((SONG.keyCount - 4) * 1.7);
-									spr.offset.y -= 4 + ((SONG.keyCount - 4) * 1.7);
-								}
-
-								spr.animation.finishCallback = function(name:String) {
-									if(name != 'static')
-									{
-										spr.animation.play('static', true);
-
-										spr.centerOffsets();
-					
-										if(NoteVariables.Other_Note_Anim_Stuff[SONG.keyCount - 1][spr.ID] == "square" && SONG.ui_Skin != 'pixel')
-										{
-											spr.offset.x -= 1 + ((SONG.keyCount - 4) * 0.9);
-											spr.offset.y -= 1 + ((SONG.keyCount - 4) * 0.9);
-										}
-									}
+									spr.playAnim("static");
 								}
 							}
 						});
@@ -2309,34 +2286,17 @@ class PlayState extends MusicBeatState
 				}
 			}
 	
-			playerStrums.forEach(function(spr:FlxSprite)
+			playerStrums.forEach(function(spr:StrumNote)
 			{
 				if (justPressedArray[spr.ID] && spr.animation.curAnim.name != 'confirm')
-					spr.animation.play('pressed');
-				if (releasedArray[spr.ID])
-					spr.animation.play('static');
-	
-				if (spr.animation.curAnim.name == 'confirm' && SONG.ui_Skin != 'pixel')
 				{
-					spr.centerOffsets();
-					spr.offset.x -= 13 + ((SONG.keyCount - 4) * 1.7);
-					spr.offset.y -= 13 + ((SONG.keyCount - 4) * 1.7);
-
-					if(NoteVariables.Other_Note_Anim_Stuff[SONG.keyCount - 1][spr.ID] == "square" && SONG.ui_Skin != 'pixel')
-					{
-						spr.offset.x -= 4 + ((SONG.keyCount - 4) * 1.7);
-						spr.offset.y -= 4 + ((SONG.keyCount - 4) * 1.7);
-					}
+					spr.playAnim('pressed');
+					spr.resetAnim = 0;
 				}
-				else
+				if (releasedArray[spr.ID])
 				{
-					spr.centerOffsets();
-
-					if(NoteVariables.Other_Note_Anim_Stuff[SONG.keyCount - 1][spr.ID] == "square" && SONG.ui_Skin != 'pixel')
-					{
-						spr.offset.x -= 1 + ((SONG.keyCount - 4) * 0.9);
-						spr.offset.y -= 1 + ((SONG.keyCount - 4) * 0.9);
-					}
+					spr.playAnim('static');
+					spr.resetAnim = 0;
 				}
 			});
 		}
@@ -2359,32 +2319,9 @@ class PlayState extends MusicBeatState
 				}
 			});
 
-			playerStrums.forEach(function(spr:FlxSprite)
+			playerStrums.forEach(function(spr:StrumNote)
 			{
-				spr.animation.play('static');
-	
-				if (spr.animation.curAnim.name == 'confirm' && SONG.ui_Skin != 'pixel')
-				{
-					spr.centerOffsets();
-					spr.offset.x -= 13 + ((SONG.keyCount - 4) * 1.7);
-					spr.offset.y -= 13 + ((SONG.keyCount - 4) * 1.7);
-
-					if(NoteVariables.Other_Note_Anim_Stuff[SONG.keyCount - 1][spr.ID] == "square" && SONG.ui_Skin != 'pixel')
-					{
-						spr.offset.x -= 4 + ((SONG.keyCount - 4) * 1.7);
-						spr.offset.y -= 4 + ((SONG.keyCount - 4) * 1.7);
-					}
-				}
-				else
-				{
-					spr.centerOffsets();
-
-					if(NoteVariables.Other_Note_Anim_Stuff[SONG.keyCount - 1][spr.ID] == "square" && SONG.ui_Skin != 'pixel')
-					{
-						spr.offset.x -= 1 + ((SONG.keyCount - 4) * 0.9);
-						spr.offset.y -= 1 + ((SONG.keyCount - 4) * 0.9);
-					}
-				}
+				spr.playAnim('static');
 			});
 
 			if(boyfriend.otherCharacters == null)
@@ -2498,11 +2435,11 @@ class PlayState extends MusicBeatState
 			}
 			#end
 
-			playerStrums.forEach(function(spr:FlxSprite)
+			playerStrums.forEach(function(spr:StrumNote)
 			{
 				if (Math.abs(note.noteData) == spr.ID)
 				{
-					spr.animation.play('confirm', true);
+					spr.playAnim('confirm', true);
 				}
 			});
 

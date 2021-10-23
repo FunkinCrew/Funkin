@@ -39,11 +39,34 @@ class DialogueBox extends FlxSpriteGroup
 	var exiting:Bool = false;
 	var starting:Bool = true;
 
+	var bgFade:FlxSprite;
+
 	public function new(cutscene:Cutscene)
 	{
 		cutscene_Data = cutscene;
 
 		super();
+
+		if(cutscene_Data.bgFade != false)
+		{
+			var color:FlxColor = FlxColor.WHITE;
+
+			if(cutscene_Data.bgColor != null)
+				color = FlxColor.fromString(cutscene_Data.bgColor);
+
+			bgFade = new FlxSprite(-200, -200).makeGraphic(Std.int(FlxG.width * 1.3), Std.int(FlxG.height * 1.3), color);
+			bgFade.scrollFactor.set();
+			bgFade.alpha = 0;
+			add(bgFade);	
+
+			new FlxTimer().start(0.83, function(tmr:FlxTimer)
+			{
+				bgFade.alpha += (1 / 5) * 0.7;
+
+				if (bgFade.alpha > 0.7)
+					bgFade.alpha = 0.7;
+			}, 5);
+		}
 
 		loadAssets();
 	}
@@ -73,6 +96,9 @@ class DialogueBox extends FlxSpriteGroup
 						portraitRight.visible = false;
 	
 						box.alpha -= 1 / 5;
+
+						if(bgFade != null)
+							bgFade.alpha -= 1 / 5 * 0.7;
 	
 						if(dialogue != null)
 							dialogue.alpha -= 1 / 5;

@@ -10,13 +10,15 @@ using StringTools;
 
 typedef Cutscene = {
     var type:String;
-    var bgFade:Bool;
 
     /* VIDEO */
     var videoPath:String;
     var videoExt:String;
 
     /* DIALOGUE */
+    var bgFade:Null<Bool>;
+    var bgColor:Null<String>;
+
     var dialogueSections:Array<DialogueSection>;
     var dialogueMusic:String;
     var dialogueBox:String;
