@@ -161,6 +161,9 @@ class Note extends FlxSprite
 			}
 			else
 			{
+				/*
+				TODO: make this shit use something from the arrow config .txt file
+				*/
 				if(shouldHit)
 				{
 					if (strumTime > Conductor.songPosition - Conductor.safeZoneOffset
