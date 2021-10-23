@@ -36,12 +36,17 @@ class StrumNote extends FlxSprite
 		//updateHitbox();
         centerOrigin();
 
-		offset.x = frameWidth / 2;
-		offset.y = frameHeight / 2;
-
-        var scale = Std.parseFloat(PlayState.instance.ui_Settings[0]) * (Std.parseFloat(PlayState.instance.ui_Settings[2]) - (Std.parseFloat(PlayState.instance.mania_size[PlayState.SONG.keyCount - 1])));
-
-		offset.x -= 156 * scale / 2;
-		offset.y -= 156 * scale / 2;
+		if(PlayState.SONG.ui_Skin != "pixel")
+		{
+			offset.x = frameWidth / 2;
+			offset.y = frameHeight / 2;
+	
+			var scale = Std.parseFloat(PlayState.instance.ui_Settings[0]) * (Std.parseFloat(PlayState.instance.ui_Settings[2]) - (Std.parseFloat(PlayState.instance.mania_size[PlayState.SONG.keyCount - 1])));
+	
+			offset.x -= 156 * scale / 2;
+			offset.y -= 156 * scale / 2;
+		}
+		else
+			centerOffsets();
 	}
 }
