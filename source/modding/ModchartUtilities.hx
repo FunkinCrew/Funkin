@@ -464,7 +464,7 @@ class ModchartUtilities
         });
         
         Lua_helper.add_callback(lua,"playActorAnimation", function(id:String,anim:String,force:Bool = false,reverse:Bool = false) {
-            getActorByName(id).playAnim(anim, force, reverse);
+            getActorByName(id).animation.play(anim, force, reverse);
         });
 
         Lua_helper.add_callback(lua,"setActorAlpha", function(alpha:Float,id:String) {
@@ -472,7 +472,7 @@ class ModchartUtilities
         });
 
         Lua_helper.add_callback(lua,"setActorColor", function(id:String,r:Int,g:Int,b:Int,alpha:Int = 255) {
-            getActorByName(id).color = FlxColor.fromRGB(r, g, b, alpha);
+            Reflect.setProperty(getActorByName(id), "color", FlxColor.fromRGB(r, g, b, alpha));
         });
 
         Lua_helper.add_callback(lua,"setActorY", function(y:Int,id:String) {
