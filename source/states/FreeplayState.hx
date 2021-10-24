@@ -327,11 +327,10 @@ class FreeplayState extends MusicBeatState
 				if(FlxG.sound.music.active)
 					FlxG.sound.music.stop();
 
-				FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName, curDiffString.toLowerCase()), 1, false);
+				FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName, curDiffString.toLowerCase()), 1, true);
 
 				FlxG.sound.music.stop();
 				FlxG.sound.music.time = 0;
-				FlxG.sound.music.autoDestroy = false;
 
 				if(vocals.active)
 				{
@@ -340,22 +339,23 @@ class FreeplayState extends MusicBeatState
 					vocals.destroy();
 				}
 
-				vocals = FlxG.sound.load(Paths.voices(songs[curSelected].songName, curDiffString.toLowerCase()), 1, false);
+				vocals = FlxG.sound.load(Paths.voices(songs[curSelected].songName, curDiffString.toLowerCase()), 1, true);
 				vocals.time = 0;
 
 				vocals.play(true);
 				FlxG.sound.music.play(true);
+			}
 
-				FlxG.sound.music.onComplete = function()
+			if(vocals.active && vocals.time >= FlxG.sound.music.endTime)
+				vocals.pause();
+
+			if(vocals.active)
+			{
+				if(vocals.time > FlxG.sound.music.time + 20)
 				{
-					if(vocals.active)
-						vocals.stop();
-
-					vocals.time = 0;
-					FlxG.sound.music.time = 0;
-					
-					vocals.play(true);
-					FlxG.sound.music.play(true);
+					vocals.pause();
+					vocals.time = FlxG.sound.music.time;
+					vocals.play();
 				}
 			}
 			#end
