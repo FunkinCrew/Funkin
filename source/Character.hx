@@ -61,6 +61,7 @@ class Character extends FlxSprite
 				animation.addByIndices('danceLeft', 'GF Dancing Beat Hair blowing CAR', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
 				animation.addByIndices('danceRight', 'GF Dancing Beat Hair blowing CAR', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24,
 					false);
+				animation.addByIndices('idleHair', 'GF Dancing Beat Hair blowing CAR', [10, 11, 12, 25, 26, 27], "", 24, true);
 
 				loadOffsetFile(curCharacter);
 
@@ -90,6 +91,7 @@ class Character extends FlxSprite
 				animation.addByPrefix('singRIGHT', 'Dad Sing Note RIGHT', 24, false);
 				animation.addByPrefix('singDOWN', 'Dad Sing Note DOWN', 24, false);
 				animation.addByPrefix('singLEFT', 'Dad Sing Note LEFT', 24, false);
+				animation.addByIndices('idleLoop', "Dad idle dance", [11, 12], "", 12, true);
 
 				loadOffsetFile(curCharacter);
 				barColor = 0xFFaf66ce;
@@ -120,6 +122,7 @@ class Character extends FlxSprite
 				// ANIMATION IS CALLED MOM LEFT POSE BUT ITS FOR THE RIGHT
 				// CUZ DAVE IS DUMB!
 				animation.addByPrefix('singRIGHT', 'Mom Pose Left', 24, false);
+				animation.addByIndices('idleLoop', "Mom Idle", [11, 12], "", 12, true);
 
 				loadOffsetFile(curCharacter);
 				barColor = 0xFFd8558e;
@@ -375,10 +378,10 @@ class Character extends FlxSprite
 				animation.addByPrefix('singRIGHT', 'Parent Right Note Dad', 24, false);
 
 				animation.addByPrefix('singUP-alt', 'Parent Up Note Mom', 24, false);
-
 				animation.addByPrefix('singDOWN-alt', 'Parent Down Note Mom', 24, false);
 				animation.addByPrefix('singLEFT-alt', 'Parent Left Note Mom', 24, false);
 				animation.addByPrefix('singRIGHT-alt', 'Parent Right Note Mom', 24, false);
+				animation.addByIndices('idleLoop', "Parent Christmas Idle", [11, 12], "", 12, true);
 
 				loadOffsetFile(curCharacter);
 				barColor = 0xFF9a00f8;
@@ -480,6 +483,12 @@ class Character extends FlxSprite
 				&& animation.curAnim.finished
 				&& animation.getByName('idleHair') != null)
 				playAnim('idleHair');
+
+			if (animation.getByName('idleLoop') != null)
+			{
+				if (!animation.curAnim.name.startsWith('sing') && animation.curAnim.finished)
+					playAnim('idleLoop');
+			}
 
 			var dadVar:Float = 4;
 

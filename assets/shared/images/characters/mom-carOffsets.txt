@@ -1,4 +1,5 @@
 idle 0 0
+idleHair 0 0
 singUP 14 71
 singRIGHT 10 -60
 singLEFT 250 -23
