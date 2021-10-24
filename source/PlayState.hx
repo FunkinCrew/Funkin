@@ -2976,10 +2976,7 @@ class PlayState extends MusicBeatState
 						if (daNote.spotInLine != daNote.parent.children.length - 1)
 						{
 							var singData:Int = Std.int(Math.abs(daNote.noteData));
-							if (dad.animation.getByName('sing' + dataSuffix[singData] + altAnim) != null)
-								dad.playAnim('sing' + dataSuffix[singData] + altAnim, true);
-							else
-								dad.playAnim('sing' + dataSuffix[singData], true);
+							dad.playAnim('sing' + dataSuffix[singData] + altAnim, true);
 
 							if (FlxG.save.data.cpuStrums)
 							{
@@ -3013,10 +3010,7 @@ class PlayState extends MusicBeatState
 					else
 					{
 						var singData:Int = Std.int(Math.abs(daNote.noteData));
-						if (dad.animation.getByName('sing' + dataSuffix[singData] + altAnim) != null)
-							dad.playAnim('sing' + dataSuffix[singData] + altAnim, true);
-						else
-							dad.playAnim('sing' + dataSuffix[singData], true);
+						dad.playAnim('sing' + dataSuffix[singData] + altAnim, true);
 
 						if (FlxG.save.data.cpuStrums)
 						{
@@ -4363,10 +4357,7 @@ class PlayState extends MusicBeatState
 				trace("Alt note on BF");
 			}
 
-			if (boyfriend.animation.getByName('sing' + dataSuffix[note.noteData] + altAnim) != null)
-				boyfriend.playAnim('sing' + dataSuffix[note.noteData] + altAnim, true);
-			else
-				boyfriend.playAnim('sing' + dataSuffix[note.noteData], true);
+			boyfriend.playAnim('sing' + dataSuffix[note.noteData] + altAnim, true);
 
 			#if FEATURE_LUAMODCHART
 			if (luaModchart != null)
