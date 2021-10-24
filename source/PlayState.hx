@@ -4515,8 +4515,8 @@ class PlayState extends MusicBeatState
 				}
 				else
 				{
-					boyfriend.playAnim('scared', true);
 					dad.playAnim('sad', true);
+					FlxG.sound.play(Paths.soundRandom('GF_', 1, 4, 'shared'), 0.3);
 				}
 			}
 
