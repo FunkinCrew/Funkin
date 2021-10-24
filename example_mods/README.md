@@ -4,7 +4,7 @@ ModCore makes it easy to append, replace, or merge files without editing the gam
 
 Kade Engine's ModCore is powered by [Polymod](https://github.com/larsiusprime/polymod). Polymod is what handles loading the relevant assets, ensuring they are injected properly. It also handles ensuring mods are loaded in the proper order.
 
-Example mod created by [Master Eric](https://twitter.com/EliteMasterEric) [here](https://github.com/EnigmaEngine/ModCore-Tricky-Mod)
+Example mod created by [Master Eric](https://twitter.com/EliteMasterEric) > [here](https://github.com/EnigmaEngine/ModCore-Tricky-Mod) <
 
 ## Using mods
 
