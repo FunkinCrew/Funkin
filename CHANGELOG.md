@@ -4,13 +4,27 @@ All notable changes will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [UNRELEASED]
+### Added
+- Cool waveform stuff for chart editor
+- Noises in chart editor lol!
+- 3 AWESOME PICO VS. DARNELL SONGS!!
+- Character offset editor / spritesheet viewer
+## Changed
+- Lerp'd the healthbar
+- Resetting from game over and "restart song" should be faster
+- Health gain is different depending on how accurate you hit notes!
+- slight less health gained on sustain notes
+- The wave-y effect on Thorns for the school is now a shader, instead of a pre-baked animation!
+
+## [0.2.8] - 2021-04-18 (note, this one is iffy cuz we slacked wit it lol!)
 ### Added
 - TANKMAN! 3 NEW SONGS BY KAWAISPRITE (UGH, GUNS, STRESS)! Charting help by MtH!
 - Monster added into week 2, FINALLY (Charting help by MtH and ChaoticGamer!)
 - Can now change song difficulty mid-game.
 - Shows some song info on pause screen.
 - Cute little icons onto freeplay menu
+- Offset files for easier modification of characters
 ### Changed
 - ASSET LOADING OVERHAUL, WAY FASTER LOAD TIMES ON WEB!!! (THANKS TO GEOKURELI WOKE KING)
 - Made difficulty selector on freeplay menu more apparent

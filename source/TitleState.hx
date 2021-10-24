@@ -1,12 +1,8 @@
 package;
 
-import flixel.FlxGame;
 import flixel.FlxObject;
 import flixel.FlxSprite;
-import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileDiamond;
-import flixel.addons.transition.FlxTransitionableState;
-import flixel.addons.transition.TransitionData;
-import flixel.graphics.FlxGraphic;
+import flixel.FlxState;
 import flixel.group.FlxGroup;
 import flixel.input.android.FlxAndroidKey;
 import flixel.input.android.FlxAndroidKeys;
@@ -14,8 +10,6 @@ import flixel.input.gamepad.FlxGamepad;
 import flixel.input.gamepad.id.SwitchJoyconLeftID;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
-import flixel.system.FlxAssets.FlxGraphicAsset;
-import flixel.system.FlxAssets;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -26,9 +20,7 @@ import lime.graphics.Image;
 import lime.media.AudioContext;
 import lime.ui.Window;
 import openfl.Assets;
-import openfl.display.BitmapData;
 import openfl.display.Sprite;
-import openfl.events.AsyncErrorEvent;
 import openfl.events.AsyncErrorEvent;
 import openfl.events.Event;
 import openfl.events.MouseEvent;
@@ -36,22 +28,13 @@ import openfl.events.NetStatusEvent;
 import openfl.media.Video;
 import openfl.net.NetConnection;
 import openfl.net.NetStream;
-import shaderslmfao.BuildingShaders.BuildingShader;
 import shaderslmfao.BuildingShaders;
 import shaderslmfao.ColorSwap;
 import shaderslmfao.TitleOutline;
 import ui.PreferencesMenu;
-import ui.stageBuildShit.StageBuilderState;
 
 using StringTools;
 
-#if colyseus
-import io.colyseus.Client;
-import io.colyseus.Room;
-#end
-#if discord_rpc
-import Discord.DiscordClient;
-#end
 #if desktop
 import sys.FileSystem;
 import sys.io.File;
@@ -62,20 +45,15 @@ class TitleState extends MusicBeatState
 {
 	public static var initialized:Bool = false;
 
-	var startedIntro:Bool;
-
 	var blackScreen:FlxSprite;
 	var credGroup:FlxGroup;
-	var credTextShit:Alphabet;
 	var textGroup:FlxGroup;
 	var ngSpr:FlxSprite;
 
 	var curWacky:Array<String> = [];
-	var wackyImage:FlxSprite;
 	var lastBeat:Int = 0;
 	var swagShader:ColorSwap;
 	var alphaShader:BuildingShaders;
-	var thingie:FlxSprite;
 
 	var video:Video;
 	var netStream:NetStream;
@@ -83,23 +61,8 @@ class TitleState extends MusicBeatState
 
 	override public function create():Void
 	{
-		#if android
-		FlxG.android.preventDefaultKeys = [FlxAndroidKey.BACK];
-		#end
-
-		FlxG.debugger.addButton(LEFT, new BitmapData(200, 200), function()
-		{
-			FlxG.debugger.visible = false;
-		});
-
-		startedIntro = false;
-
-		FlxG.game.focusLostFramerate = 60;
-
 		swagShader = new ColorSwap();
 		alphaShader = new BuildingShaders();
-
-		FlxG.sound.muteKeys = [ZERO];
 
 		curWacky = FlxG.random.getObject(getIntroTextShit());
 		FlxG.sound.cache(Paths.music('freakyMenu'));
@@ -108,57 +71,6 @@ class TitleState extends MusicBeatState
 
 		super.create();
 
-		FlxG.save.bind('funkin', 'ninjamuffin99');
-
-		// https://github.com/HaxeFlixel/flixel/pull/2396
-		// IF/WHEN MY PR GOES THRU AND IT GETS INTO MAIN FLIXEL, DELETE THIS CHUNKOF CODE, AND THEN UNCOMMENT THE LINE BELOW
-		// FlxG.sound.loadSavedPrefs();
-
-		if (FlxG.save.data.volume != null)
-		{
-			FlxG.sound.volume = FlxG.save.data.volume;
-		}
-
-		if (FlxG.save.data.mute != null)
-		{
-			FlxG.sound.muted = FlxG.save.data.mute;
-		}
-
-		// FlxG.save.close();
-		// FlxG.sound.loadSavedPrefs();
-		PreferencesMenu.initPrefs();
-		PlayerSettings.init();
-		Highscore.load();
-
-		#if newgrounds
-		NGio.init();
-		#end
-
-		if (FlxG.save.data.weekUnlocked != null)
-		{
-			// FIX LATER!!!
-			// WEEK UNLOCK PROGRESSION!!
-			// StoryMenuState.weekUnlocked = FlxG.save.data.weekUnlocked;
-
-			if (StoryMenuState.weekUnlocked.length < 4)
-				StoryMenuState.weekUnlocked.insert(0, true);
-
-			// QUICK PATCH OOPS!
-			if (!StoryMenuState.weekUnlocked[0])
-				StoryMenuState.weekUnlocked[0] = true;
-		}
-
-		if (FlxG.save.data.seenVideo != null)
-		{
-			VideoState.seenVideo = FlxG.save.data.seenVideo;
-		}
-
-		#if FREEPLAY
-		FlxG.switchState(new FreeplayState());
-		#elseif ANIMATE
-		FlxG.switchState(new animate.AnimTestStage());
-		#elseif CHARTING
-		FlxG.switchState(new ChartingState());
 		/* 
 			#elseif web
 
@@ -190,30 +102,10 @@ class TitleState extends MusicBeatState
 		 */
 
 		// netConnection.addEventListener(MouseEvent.MOUSE_DOWN, overlay_onMouseDown);
-		#elseif STAGEBUILD
-		FlxG.switchState(new StageBuilderState());
-		#elseif ANIMDEBUG
-		FlxG.switchState(new ui.animDebugShit.DebugBoundingState());
-		#elseif NETTEST
-		FlxG.switchState(new netTest.NetTest());
-		#else
 		new FlxTimer().start(1, function(tmr:FlxTimer)
 		{
 			startIntro();
 		});
-		#end
-
-		#if discord_rpc
-		DiscordClient.initialize();
-
-		Application.current.onExit.add(function(exitCode)
-		{
-			DiscordClient.shutdown();
-		});
-		#end
-
-		// FlxG.stage.window.borderless = true;
-		// FlxG.stage.window.mouseLock = true;
 	}
 
 	private function client_onMetaData(metaData:Dynamic)
@@ -261,18 +153,6 @@ class TitleState extends MusicBeatState
 
 	function startIntro()
 	{
-		if (!initialized)
-		{
-			var diamond:FlxGraphic = FlxGraphic.fromClass(GraphicTransTileDiamond);
-			diamond.persist = true;
-			diamond.destroyOnNoUse = false;
-
-			FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 1, new FlxPoint(0, -1), {asset: diamond, width: 32, height: 32},
-				new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
-			FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.7, new FlxPoint(0, 1),
-				{asset: diamond, width: 32, height: 32}, new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
-		}
-
 		if (FlxG.sound.music == null || !FlxG.sound.music.playing)
 		{
 			FlxG.sound.playMusic(Paths.music('freakyMenu'), 0);
@@ -283,10 +163,6 @@ class TitleState extends MusicBeatState
 		persistentUpdate = true;
 
 		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
-		// bg.antialiasing = true;
-		// bg.setGraphicSize(Std.int(bg.width * 0.6));
-		// bg.updateHitbox();
-
 		add(bg);
 
 		logoBl = new FlxSprite(-150, -100);
@@ -334,33 +210,17 @@ class TitleState extends MusicBeatState
 		// titleText.screenCenter(X);
 		add(titleText);
 
-		var logo:FlxSprite = new FlxSprite().loadGraphic(Paths.image('logo'));
-		logo.screenCenter();
-		logo.antialiasing = true;
-		// add(logo);
-
-		// FlxTween.tween(logoBl, {y: logoBl.y + 50}, 0.6, {ease: FlxEase.quadInOut, type: PINGPONG});
-		// FlxTween.tween(logo, {y: logoBl.y + 50}, 0.6, {ease: FlxEase.quadInOut, type: PINGPONG, startDelay: 0.1});
-		var animShit:ComboCounter = new ComboCounter(200, 200, 1423);
-		// add(animShit);
 		credGroup = new FlxGroup();
 		add(credGroup);
 
 		textGroup = new FlxGroup();
 
-		blackScreen = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+		blackScreen = bg.clone();
 		credGroup.add(blackScreen);
 
 		// var atlasBullShit:FlxSprite = new FlxSprite();
 		// atlasBullShit.frames = CoolUtil.fromAnimate(Paths.image('money'), Paths.file('images/money.json'));
 		// credGroup.add(atlasBullShit);
-
-		credTextShit = new Alphabet(0, 0, "ninjamuffin99\nPhantomArcade\nkawaisprite\nevilsk8er", true);
-		credTextShit.screenCenter();
-
-		// credTextShit.alignment = CENTER;
-
-		credTextShit.visible = false;
 
 		ngSpr = new FlxSprite(0, FlxG.height * 0.52);
 
@@ -388,8 +248,6 @@ class TitleState extends MusicBeatState
 		ngSpr.screenCenter(X);
 		ngSpr.antialiasing = true;
 
-		FlxTween.tween(credTextShit, {y: credTextShit.y + 20}, 2.9, {ease: FlxEase.quadInOut, type: PINGPONG});
-
 		FlxG.mouse.visible = false;
 
 		if (initialized)
@@ -399,9 +257,6 @@ class TitleState extends MusicBeatState
 
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.onComplete = function() FlxG.switchState(new VideoState());
-
-		startedIntro = true;
-		// credGroup.add(credTextShit);
 	}
 
 	function getIntroTextShit():Array<Array<String>>
@@ -420,9 +275,6 @@ class TitleState extends MusicBeatState
 	}
 
 	var transitioning:Bool = false;
-
-	var fnfShit:String = "Friday Night Funkin'";
-	var thingOffset:Int = 0;
 
 	override function update(elapsed:Float)
 	{
@@ -501,9 +353,10 @@ class TitleState extends MusicBeatState
 
 		if (FlxG.sound.music != null)
 			Conductor.songPosition = FlxG.sound.music.time;
-		// FlxG.watch.addQuick('amp', FlxG.sound.music.amplitude);
 		if (FlxG.keys.justPressed.F)
 			FlxG.fullscreen = !FlxG.fullscreen;
+
+		// do controls.PAUSE | controls.ACCEPT instead?
 		var pressedEnter:Bool = FlxG.keys.justPressed.ENTER;
 
 		if (FlxG.onMobile)
@@ -542,13 +395,8 @@ class TitleState extends MusicBeatState
 			FlxG.camera.flash(FlxColor.WHITE, 1);
 			FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
 			transitioning = true;
-			// FlxG.sound.music.stop();
 
-			// These assets are very unlikely to be used for the rest of gameplay, so it unloads them from cache/memory
-			// Saves about 50mb of RAM or so???
-			Assets.cache.clear(Paths.image('gfDanceTitle'));
-			Assets.cache.clear(Paths.image('logoBumpin'));
-			Assets.cache.clear(Paths.image('titleEnter'));
+			var targetState:FlxState = new MainMenuState();
 
 			#if newgrounds
 			if (!OutdatedSubState.leftState)
@@ -561,19 +409,26 @@ class TitleState extends MusicBeatState
 					if (version.trim() != onlineVersion)
 					{
 						trace('OLD VERSION!');
-						// FlxG.switchState(new OutdatedSubState());
+						// targetState = new OutdatedSubState();
 					}
 					else
 					{
-						// FlxG.switchState(new MainMenuState());
+						// targetState = new MainMenuState();
 					}
 					// REDO FOR ITCH/FINAL SHIT
-					FlxG.switchState(new MainMenuState());
 				});
 			}
-			#else
-			FlxG.switchState(new MainMenuState());
 			#end
+			new FlxTimer().start(2, function(tmr:FlxTimer)
+			{
+				// These assets are very unlikely to be used for the rest of gameplay, so it unloads them from cache/memory
+				// Saves about 50mb of RAM or so???
+				Assets.cache.clear(Paths.image('gfDanceTitle'));
+				Assets.cache.clear(Paths.image('logoBumpin'));
+				Assets.cache.clear(Paths.image('titleEnter'));
+				// ngSpr??
+				FlxG.switchState(targetState);
+			});
 			// FlxG.sound.play(Paths.music('titleShoot'), 0.7);
 		}
 		if (pressedEnter && !skippedIntro && initialized)
@@ -591,8 +446,6 @@ class TitleState extends MusicBeatState
 			#end
 		 */
 
-		// if (FlxG.keys.justPressed.SPACE)
-		// swagShader.hasOutline = !swagShader.hasOutline;
 		if (controls.UI_LEFT)
 			swagShader.update(-elapsed * 0.1);
 		if (controls.UI_RIGHT)
@@ -640,6 +493,10 @@ class TitleState extends MusicBeatState
 		cheatActive = true;
 
 		FlxG.sound.playMusic(Paths.music('tutorialTitle'), 1);
+
+		var spec:SpectogramSprite = new SpectogramSprite(FlxG.sound.music);
+		add(spec);
+
 		Conductor.changeBPM(190);
 		FlxG.camera.flash(FlxColor.WHITE, 1);
 		FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
@@ -678,11 +535,56 @@ class TitleState extends MusicBeatState
 	}
 
 	var isRainbow:Bool = false;
+	var skippedIntro:Bool = false;
 
 	override function beatHit()
 	{
 		super.beatHit();
 
+		if (!skippedIntro)
+		{
+			FlxG.log.add(curBeat);
+			// if the user is draggin the window some beats will
+			// be missed so this is just to compensate
+			if (curBeat > lastBeat)
+			{
+				for (i in lastBeat...curBeat)
+				{
+					switch (i + 1)
+					{
+						case 1:
+							createCoolText(['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er']);
+						case 3:
+							addMoreText('present');
+						case 4:
+							deleteCoolText();
+						case 5:
+							createCoolText(['In association', 'with']);
+						case 7:
+							addMoreText('newgrounds');
+							ngSpr.visible = true;
+						case 8:
+							deleteCoolText();
+							ngSpr.visible = false;
+						case 9:
+							createCoolText([curWacky[0]]);
+						case 11:
+							addMoreText(curWacky[1]);
+						case 12:
+							deleteCoolText();
+						case 13:
+							addMoreText('Friday');
+						case 14:
+							addMoreText('Night');
+						case 15:
+							addMoreText('Funkin');
+						case 16:
+							skipIntro();
+					}
+				}
+			}
+			lastBeat = curBeat;
+		}
 		if (skippedIntro)
 		{
 			if (cheatActive && curBeat % 2 == 0)
@@ -697,72 +599,7 @@ class TitleState extends MusicBeatState
 			else
 				gfDance.animation.play('danceLeft');
 		}
-		else
-		{
-			FlxG.log.add(curBeat);
-			// if the user is draggin the window some beats will
-			// be missed so this is just to compensate
-			if (curBeat > lastBeat)
-			{
-				for (i in lastBeat...curBeat)
-				{
-					switch (i + 1)
-					{
-						case 1:
-							createCoolText(['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8er']);
-						// credTextShit.visible = true;
-						case 3:
-							addMoreText('present');
-						// credTextShit.text += '\npresent...';
-						// credTextShit.addText();
-						case 4:
-							deleteCoolText();
-						// credTextShit.visible = false;
-						// credTextShit.text = 'In association \nwith';
-						// credTextShit.screenCenter();
-						case 5:
-							createCoolText(['In association', 'with']);
-						case 7:
-							addMoreText('newgrounds');
-							ngSpr.visible = true;
-						// credTextShit.text += '\nNewgrounds';
-						case 8:
-							deleteCoolText();
-							ngSpr.visible = false;
-						// credTextShit.visible = false;
-
-						// credTextShit.text = 'Shoutouts Tom Fulp';
-						// credTextShit.screenCenter();
-						case 9:
-							createCoolText([curWacky[0]]);
-						// credTextShit.visible = true;
-						case 11:
-							addMoreText(curWacky[1]);
-						// credTextShit.text += '\nlmao';
-						case 12:
-							deleteCoolText();
-						// credTextShit.visible = false;
-						// credTextShit.text = "Friday";
-						// credTextShit.screenCenter();
-						case 13:
-							addMoreText('Friday');
-						// credTextShit.visible = true;
-						case 14:
-							addMoreText('Night');
-						// credTextShit.text += '\nNight';
-						case 15:
-							addMoreText('Funkin'); // credTextShit.text += '\nFunkin';
-
-						case 16:
-							skipIntro();
-					}
-				}
-			}
-			lastBeat = curBeat;
-		}
 	}
-
-	var skippedIntro:Bool = false;
 
 	function skipIntro():Void
 	{

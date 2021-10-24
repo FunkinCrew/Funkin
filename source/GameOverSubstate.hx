@@ -3,6 +3,7 @@ package;
 import flixel.FlxObject;
 import flixel.FlxSubState;
 import flixel.math.FlxPoint;
+import flixel.system.FlxSound;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import haxe.display.Display.Package;
@@ -16,8 +17,13 @@ class GameOverSubstate extends MusicBeatSubstate
 	var stageSuffix:String = "";
 	var randomGameover:Int = 1;
 
+	var gameOverMusic:FlxSound;
+
 	public function new(x:Float, y:Float)
 	{
+		gameOverMusic = new FlxSound();
+		FlxG.sound.list.add(gameOverMusic);
+
 		var daStage = PlayState.curStage;
 		var daBf:String = '';
 		switch (daStage)
@@ -48,10 +54,18 @@ class GameOverSubstate extends MusicBeatSubstate
 		add(camFollow);
 
 		FlxG.sound.play(Paths.sound('fnf_loss_sfx' + stageSuffix));
-		Conductor.changeBPM(100);
+		// Conductor.changeBPM(100);
+
+		switch (PlayState.SONG.player1)
+		{
+			case 'pico':
+				stageSuffix = 'Pico';
+		}
 
 		// FlxG.camera.followLerp = 1;
 		// FlxG.camera.focusOn(FlxPoint.get(FlxG.width / 2, FlxG.height / 2));
+
+		// commented out for now
 		FlxG.camera.scroll.set();
 		FlxG.camera.target = null;
 
@@ -93,7 +107,8 @@ class GameOverSubstate extends MusicBeatSubstate
 		{
 			PlayState.deathCounter = 0;
 			PlayState.seenCutscene = false;
-			FlxG.sound.music.stop();
+			// FlxG.sound.music.stop();
+			gameOverMusic.stop();
 
 			if (PlayState.isStoryMode)
 				FlxG.switchState(new StoryMenuState());
@@ -119,7 +134,10 @@ class GameOverSubstate extends MusicBeatSubstate
 					FlxG.sound.play(Paths.sound('jeffGameover/jeffGameover-' + randomGameover), 1, false, null, true, function()
 					{
 						if (!isEnding)
-							FlxG.sound.music.fadeIn(4, 0.2, 1);
+						{
+							gameOverMusic.fadeIn(4, 0.2, 1);
+						}
+						// FlxG.sound.music.fadeIn(4, 0.2, 1);
 					});
 				}
 			default:
@@ -130,23 +148,21 @@ class GameOverSubstate extends MusicBeatSubstate
 				}
 		}
 
-		if (FlxG.sound.music.playing)
+		if (gameOverMusic.playing)
 		{
-			Conductor.songPosition = FlxG.sound.music.time;
+			Conductor.songPosition = gameOverMusic.time;
 		}
 	}
 
 	private function coolStartDeath(?vol:Float = 1):Void
 	{
 		if (!isEnding)
-			FlxG.sound.playMusic(Paths.music('gameOver' + stageSuffix), vol);
-	}
-
-	override function beatHit()
-	{
-		super.beatHit();
-
-		FlxG.log.add('beat');
+		{
+			gameOverMusic.loadEmbedded(Paths.music('gameOver' + stageSuffix));
+			gameOverMusic.volume = vol;
+			gameOverMusic.play();
+		}
+		// FlxG.sound.playMusic();
 	}
 
 	var isEnding:Bool = false;
@@ -157,13 +173,17 @@ class GameOverSubstate extends MusicBeatSubstate
 		{
 			isEnding = true;
 			bf.playAnim('deathConfirm', true);
-			FlxG.sound.music.stop();
+			gameOverMusic.stop();
+			// FlxG.sound.music.stop();
 			FlxG.sound.play(Paths.music('gameOverEnd' + stageSuffix));
 			new FlxTimer().start(0.7, function(tmr:FlxTimer)
 			{
 				FlxG.camera.fade(FlxColor.BLACK, 2, false, function()
 				{
-					LoadingState.loadAndSwitchState(new PlayState());
+					FlxG.camera.fade(FlxColor.BLACK, 1, true, null, true);
+					PlayState.needsReset = true;
+					close();
+					// LoadingState.loadAndSwitchState(new PlayState());
 				});
 			});
 		}

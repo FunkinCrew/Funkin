@@ -96,8 +96,25 @@ class WiggleShader extends FlxShader
 			
 			if (effectType == EFFECT_TYPE_DREAMY) 
 			{
-				float offsetX = sin(pt.y * uFrequency + uTime * uSpeed) * uWaveAmplitude;
-                pt.x += offsetX; // * (pt.y - 1.0); // <- Uncomment to stop bottom part of the screen from moving
+
+				float w = 1 / openfl_TextureSize.y;
+                float h = 1 / openfl_TextureSize.x;
+
+				// look mom, I know how to write shaders now
+
+				pt.x = floor(pt.x / h) * h;
+
+				float offsetX = sin(pt.x * uFrequency + uTime * uSpeed) * uWaveAmplitude;
+                pt.y += floor(offsetX / w) * w; // * (pt.y - 1.0); // <- Uncomment to stop bottom part of the screen from moving
+
+				
+				pt.y = floor(pt.y / w) * w;
+
+				float offsetY = sin(pt.y * (uFrequency / 2.0) + uTime * (uSpeed / 2.0)) * (uWaveAmplitude / 2.0);
+                pt.x += floor(offsetY / h) * h; // * (pt.y - 1.0); // <- Uncomment to stop bottom part of the screen from moving
+
+				
+
 			}
 			else if (effectType == EFFECT_TYPE_WAVY) 
 			{

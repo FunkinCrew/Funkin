@@ -16,6 +16,8 @@ import flixel.ui.FlxButton;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import lime.app.Application;
+import openfl.filters.ShaderFilter;
+import shaderslmfao.ScreenWipeShader;
 import ui.AtlasMenuList;
 import ui.MenuList;
 import ui.OptionsState;

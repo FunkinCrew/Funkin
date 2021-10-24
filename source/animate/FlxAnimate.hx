@@ -2,69 +2,182 @@ package animate;
 
 // import animateAtlasPlayer.assets.AssetManager;
 // import animateAtlasPlayer.core.Animation;
-import animate.FlxSymbol.Parsed;
+import animate.ParseAnimate.AnimJson;
+import animate.ParseAnimate.Sprite;
+import animate.ParseAnimate.Spritemap;
+import flixel.FlxCamera;
 import flixel.FlxSprite;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxAtlasFrames;
+import flixel.graphics.frames.FlxFrame.FlxFrameAngle;
+import flixel.group.FlxGroup;
+import flixel.math.FlxMatrix;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import flixel.system.FlxAssets.FlxGraphicAsset;
-import haxe.Json;
-import haxe.Utf8;
 import haxe.format.JsonParser;
-import lime.text.UTF8String;
 import openfl.Assets;
 import openfl.display.BitmapData;
+import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 
 class FlxAnimate extends FlxSymbol
 {
 	// var myAnim:Animation;
 	// var animBitmap:BitmapData;
-	var loadedQueue:Bool = false;
+	var jsonAnim:AnimJson;
 
-	var swagFrames:Array<BitmapData> = [];
+	var sprGrp:FlxTypedGroup<FlxSymbol>;
 
 	public function new(x:Float, y:Float)
 	{
-		var folder:String = 'tightBarsLol';
-		coolParse = cast Json.parse(Assets.getText(Paths.file('images/' + folder + '/Animation.json')));
+		super(x, y);
 
-		// reverses the layers, for proper rendering!
-		coolParse.AN.TL.L.reverse();
-		super(x, y, coolParse);
+		sprGrp = new FlxTypedGroup<FlxSymbol>();
 
-		frames = FlxAnimate.fromAnimate(Paths.file('images/' + folder + '/spritemap1.png'), Paths.file('images/' + folder + '/spritemap1.json'));
+		var tests:Array<String> = ['tightBarsLol', 'tightestBars'];
+
+		var folder:String = tests[1];
+
+		frames = FlxAnimate.fromAnimate(Paths.file('images/' + folder + "/spritemap1.png"), Paths.file('images/$folder/spritemap1.json'));
+
+		jsonAnim = cast CoolUtil.coolJSON(Assets.getText(Paths.file('images/$folder/Animation.json')));
+		ParseAnimate.generateSymbolmap(jsonAnim.SD.S);
+		ParseAnimate.resetFrameList();
+
+		ParseAnimate.parseTimeline(jsonAnim.AN.TL, 0, 0);
+
+		generateSpriteShit();
+
+		/* var folder:String = 'tightestBars';
+			coolParse = cast Json.parse(Assets.getText(Paths.file('images/' + folder + '/Animation.json')));
+
+			// reverses the layers, for proper rendering!
+			coolParse.AN.TL.L.reverse();
+			super(x, y, coolParse);
+
+			frames = FlxAnimate.fromAnimate(Paths.file('images/' + folder + '/spritemap1.png'), Paths.file('images/' + folder + '/spritemap1.json'));
+		 */
+
 		// frames
 	}
 
 	override function draw()
 	{
 		// having this commented out fixes some wacky scaling bullshit?
+		// or fixes drawing it twice?
 		// super.draw();
 
-		if (FlxG.keys.justPressed.ONE)
-		{
-			trace("-------------------------------------");
-			trace('CUR FRAME: ' + daFrame);
-			trace('--------------');
-		}
+		// renderFrame(coolParse.AN.TL, coolParse, true);
 
-		renderFrame(coolParse.AN.TL, coolParse, true);
+		actualFrameRender();
+	}
 
-		if (FlxG.keys.justPressed.E)
+	/**
+	 * Puts all the needed sprites into a FlxTypedGroup, and properly recycles them?
+	**/
+	function generateSpriteShit()
+	{
+		sprGrp.kill(); // kills group, maybe dont need to do this one so broadly? ehh whatev
+
+		for (frameSorted in ParseAnimate.frameList)
 		{
-			for (shit in FlxSymbol.nestedShit.keys())
+			for (i in frameSorted)
 			{
-				for (spr in FlxSymbol.nestedShit.get(shit))
-				{
-					trace(shit);
-					spr.draw();
-				}
-			}
+				// instead of making them every frame, regenerate when needed?
+				var spr:FlxSymbol = sprGrp.recycle(FlxSymbol); // redo this to recycle from a list later
+				spr.frames = frames;
+				spr.frame = spr.frames.getByName(i.frameName); // this one is fine
+				spr.updateHitbox();
 
-			FlxSymbol.nestedShit.clear();
+				// move this? wont work here!
+				if (FlxG.keys.justPressed.I)
+				{
+					trace(i.frameName);
+					trace(i.depthString);
+					// trace("random lol: " + i.randomLol);
+				}
+
+				// cuz its in group, gets a lil fuckie when animated, need to go thru and properly reset each thing for shit like matrix!
+				// merely resets the matrix to normal ass one!
+				spr.transformMatrix.identity();
+				spr.setPosition();
+
+				/* for (swagMatrix in i.matrixArray)
+					{
+						var alsoSwag:FlxMatrix = new FlxMatrix(swagMatrix[0], swagMatrix[1], swagMatrix[4], swagMatrix[5], swagMatrix[12], swagMatrix[13]);
+						spr.matrixExposed = true;
+						spr.transformMatrix.concat(alsoSwag);
+				}*/
+
+				// i.fullMatrix.concat
+
+				spr.matrixExposed = true;
+
+				// trace(i.fullMatrix);
+
+				if (i.fullMatrix.a < 0)
+				{
+					trace('negative?');
+					trace(i.fullMatrix);
+				}
+
+				spr.transformMatrix.concat(i.fullMatrix);
+
+				if (i.fullMatrix.a < 0)
+				{
+					trace('negative?');
+					trace(i.fullMatrix);
+					trace(spr.transformMatrix);
+				}
+
+				// trace(spr.transformMatrix);
+
+				spr.origin.set();
+
+				/* for (trpShit in i.trpArray)
+					{
+						spr.origin.x -= trpShit[0];
+						spr.origin.y -= trpShit[1];
+					}
+				 */
+				// spr.alpha = 0.3;
+
+				spr.antialiasing = true;
+				sprGrp.add(spr);
+				spr.alpha = 0.5;
+
+				/* 	if (i == "0225")
+					{
+						trace('FUNNY MATRIX!');
+						trace(spr._matrix);
+						trace("\n\n MATRIX MAP");
+						for (m in ParseAnimate.matrixMap.get("0225"))
+						{
+							trace(m);
+						}
+
+						trace('\n\n');
+				}*/
+			}
 		}
+
+		// trace(sprGrp.length);
+	}
+
+	// fix render order of ALL layers!
+	// seperate frameList into layers
+	// go thru animate file to see how it should all be ordered
+	// per frame symbol stuff to fix lip sync (in ParseAnimate?)
+	// definitely need to dig through Animate.json stuff
+	// something with TRP stuff, look through tighterBars (GF scene)
+	// redo map stuff incase there's multiple assets
+	// ONE CENTRAL THING FOR THIS DUMBASS BULLSHIT
+	// sorted framelist put it all in there, then make i actually mean something
+
+	function actualFrameRender()
+	{
+		sprGrp.draw();
 	}
 
 	// notes to self
@@ -72,6 +185,8 @@ class FlxAnimate extends FlxSymbol
 	var playingAnim:Bool = false;
 	var frameTickTypeShit:Float = 0;
 	var animFrameRate:Int = 24;
+
+	// redo all the matrix animation stuff
 
 	override function update(elapsed:Float)
 	{
@@ -89,16 +204,29 @@ class FlxAnimate extends FlxSymbol
 			{
 				changeFrame(1);
 				frameTickTypeShit = 0;
+				ParseAnimate.resetFrameList();
+				ParseAnimate.parseTimeline(jsonAnim.AN.TL, 0, daFrame);
+
+				generateSpriteShit();
 			}
 		}
 
 		if (FlxG.keys.justPressed.RIGHT)
+		{
 			changeFrame(1);
+
+			ParseAnimate.resetFrameList();
+			ParseAnimate.parseTimeline(jsonAnim.AN.TL, 0, daFrame);
+
+			generateSpriteShit();
+		}
 		if (FlxG.keys.justPressed.LEFT)
 			changeFrame(-1);
 	}
 
-	// This stuff is u
+	/**
+	 * PARSES THE 'spritemap1.png' or whatever into a FlxAtlasFrames!!!
+	 */
 	public static function fromAnimate(Source:FlxGraphicAsset, Description:String):FlxAtlasFrames
 	{
 		var graphic:FlxGraphic = FlxG.bitmap.add(Source);
@@ -114,11 +242,11 @@ class FlxAnimate extends FlxSymbol
 
 		frames = new FlxAtlasFrames(graphic);
 
-		var data:AnimateObject;
+		var data:Spritemap;
 
 		var json:String = Description;
 
-		trace(json);
+		// trace(json);
 
 		var funnyJson:Dynamic = {};
 		if (Assets.exists(json))
@@ -126,12 +254,14 @@ class FlxAnimate extends FlxSymbol
 
 		// trace(json);
 
-		data = cast funnyJson.ATLAS;
+		// data = c
 
-		for (sprite in data.SPRITES)
+		data = cast funnyJson;
+
+		for (sprite in data.ATLAS.SPRITES)
 		{
 			// probably nicer way to do this? Oh well
-			var swagSprite:AnimateSprite = sprite.SPRITE;
+			var swagSprite:Sprite = sprite.SPRITE;
 
 			var rect = FlxRect.get(swagSprite.x, swagSprite.y, swagSprite.w, swagSprite.h);
 
@@ -147,10 +277,7 @@ class FlxAnimate extends FlxSymbol
 	}
 }
 
-/**
- * HL json encoding fix for some wacky bullshit
- * https://github.com/HaxeFoundation/haxe/issues/6930#issuecomment-384570392
- */
+// handy json function that has some hashlink fix, see the thing in CoolUtils file to see the link / where i stole it from
 class JaySon
 {
 	public static function parseFile(name:String)
@@ -163,19 +290,4 @@ class JaySon
 			3 else /// all other targets, that prepare the UTF string correctly
 			0));
 	}
-}
-
-typedef AnimateObject =
-{
-	SPRITES:Array<Dynamic>
-}
-
-typedef AnimateSprite =
-{
-	var name:String;
-	var x:Int;
-	var y:Int;
-	var w:Int;
-	var h:Int;
-	var rotated:Bool;
 }

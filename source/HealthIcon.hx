@@ -1,6 +1,7 @@
 package;
 
 import flixel.FlxSprite;
+import openfl.utils.Assets;
 
 using StringTools;
 
@@ -11,7 +12,8 @@ class HealthIcon extends FlxSprite
 	 */
 	public var sprTracker:FlxSprite;
 
-	var char:String = '';
+	public var char:String = '';
+
 	var isPlayer:Bool = false;
 
 	public function new(char:String = 'bf', isPlayer:Bool = false)
@@ -43,6 +45,12 @@ class HealthIcon extends FlxSprite
 	{
 		if (newChar != 'bf-pixel' && newChar != 'bf-old')
 			newChar = newChar.split('-')[0].trim();
+
+		if (!Assets.exists(Paths.image('icons/icon-' + newChar)))
+		{
+			FlxG.log.warn('No icon with data: $newChar : using default placeholder face instead!');
+			newChar = "face";
+		}
 
 		if (newChar != char)
 		{

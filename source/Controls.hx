@@ -872,7 +872,7 @@ class FlxActionInputDigitalMobileSwipeGameplay extends FlxActionInputDigital
 
 	public function new(swipeDir:Int = FlxObject.ANY, Trigger:FlxInputState, ?swipeLength:Float = 90)
 	{
-		super(ANDROID, swipeDir, Trigger);
+		super(OTHER, swipeDir, Trigger);
 
 		activateLength = swipeLength;
 	}

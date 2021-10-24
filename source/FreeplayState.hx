@@ -14,6 +14,9 @@ import flixel.math.FlxPoint;
 import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
+import freeplayStuff.DJBoyfriend;
+import freeplayStuff.SongMenuItem;
 import lime.app.Future;
 import lime.utils.Assets;
 
@@ -44,10 +47,10 @@ class FreeplayState extends MusicBeatState
 	];
 
 	private var grpSongs:FlxTypedGroup<Alphabet>;
+	private var grpCapsules:FlxTypedGroup<SongMenuItem>;
 	private var curPlaying:Bool = false;
 
 	private var iconArray:Array<HealthIcon> = [];
-	var bg:FlxSprite;
 	var scoreBG:FlxSprite;
 
 	override function create()
@@ -98,36 +101,51 @@ class FreeplayState extends MusicBeatState
 		if (StoryMenuState.weekUnlocked[7] || isDebug)
 			addWeek(['Ugh', 'Guns', 'Stress'], 7, ['tankman']);
 
+		addWeek(["Darnell", "lit-up", "2hot"], 8, ['darnell']);
+		addWeek(["bro"], 1, ['gf']);
+
 		// LOAD MUSIC
 
 		// LOAD CHARACTERS
 
-		bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
-		bg.setGraphicSize(Std.int(FlxG.width));
-		bg.updateHitbox();
 		trace(FlxG.width);
 		trace(FlxG.camera.zoom);
 		trace(FlxG.camera.initialZoom);
 		trace(FlxCamera.defaultZoom);
 		trace(FlxG.initialZoom);
-		add(bg);
 
 		grpSongs = new FlxTypedGroup<Alphabet>();
 		add(grpSongs);
 
+		grpCapsules = new FlxTypedGroup<SongMenuItem>();
+		add(grpCapsules);
+
 		for (i in 0...songs.length)
 		{
+			var funnyMenu:SongMenuItem = new SongMenuItem(FlxG.width, (i * 150) + 160, songs[i].songName);
+			funnyMenu.targetPos.x = funnyMenu.x;
+			funnyMenu.ID = i;
+
+			new FlxTimer().start((0.06 * i) + 0.8, function(lerpTmr)
+			{
+				funnyMenu.doLerp = true;
+			});
+
+			grpCapsules.add(funnyMenu);
+
 			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, songs[i].songName, true, false);
+			songText.x += 100;
 			songText.isMenuItem = true;
 			songText.targetY = i;
-			grpSongs.add(songText);
+
+			// grpSongs.add(songText);
 
 			var icon:HealthIcon = new HealthIcon(songs[i].songCharacter);
 			icon.sprTracker = songText;
 
 			// using a FlxGroup is too much fuss!
 			iconArray.push(icon);
-			add(icon);
+			// add(icon);
 
 			// songText.x += 40;
 			// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
@@ -151,6 +169,9 @@ class FreeplayState extends MusicBeatState
 
 		changeSelection();
 		changeDiff();
+
+		var dj:DJBoyfriend = new DJBoyfriend(0, -100);
+		add(dj);
 
 		// FlxG.sound.playMusic(Paths.music('title'), 0);
 		// FlxG.sound.music.fadeIn(2, 0, 0.8);
@@ -226,7 +247,6 @@ class FreeplayState extends MusicBeatState
 		}
 
 		lerpScore = CoolUtil.coolLerp(lerpScore, intendedScore, 0.4);
-		bg.color = FlxColor.interpolate(bg.color, coolColors[songs[curSelected].week % coolColors.length], CoolUtil.camLerpShit(0.045));
 
 		scoreText.text = "PERSONAL BEST:" + Math.round(lerpScore);
 
@@ -360,7 +380,20 @@ class FreeplayState extends MusicBeatState
 
 		if (accepted)
 		{
+			// if (Assets.exists())
+
 			var poop:String = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), curDifficulty);
+
+			// does not work properly, always just accidentally sets it to normal anyways!
+			/* if (!Assets.exists(Paths.json(songs[curSelected].songName + '/' + poop)))
+				{
+					// defaults to normal if HARD / EASY doesn't exist
+					// does not account if NORMAL doesn't exist!
+					FlxG.log.warn("CURRENT DIFFICULTY IS NOT CHARTED, DEFAULTING TO NORMAL!");
+					poop = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), 1);
+					curDifficulty = 1;
+			}*/
+
 			PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
 			PlayState.isStoryMode = false;
 			PlayState.storyDifficulty = curDifficulty;
@@ -441,20 +474,15 @@ class FreeplayState extends MusicBeatState
 
 		iconArray[curSelected].alpha = 1;
 
-		for (item in grpSongs.members)
+		for (index => capsule in grpCapsules.members)
 		{
-			item.targetY = bullShit - curSelected;
-			bullShit++;
+			capsule.selected = false;
 
-			item.alpha = 0.6;
-			// item.setGraphicSize(Std.int(item.width * 0.8));
-
-			if (item.targetY == 0)
-			{
-				item.alpha = 1;
-				// item.setGraphicSize(Std.int(item.width));
-			}
+			capsule.targetPos.y = ((index - curSelected) * 150) + 160;
+			capsule.targetPos.x = 270 + (60 * (Math.sin(index - curSelected)));
 		}
+
+		grpCapsules.members[curSelected].selected = true;
 	}
 
 	function positionHighscore()

@@ -1,14 +1,21 @@
 package;
 
+import flixel.FlxSprite;
+import flixel.FlxState;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import flixel.system.FlxAssets.FlxGraphicAsset;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 import haxe.Json;
+import haxe.format.JsonParser;
 import lime.math.Rectangle;
 import lime.utils.Assets;
+import openfl.filters.ShaderFilter;
+import shaderslmfao.ScreenWipeShader;
 
 using StringTools;
 
@@ -19,6 +26,11 @@ class CoolUtil
 	public static function difficultyString():String
 	{
 		return difficultyArray[PlayState.storyDifficulty];
+	}
+
+	public static function coolBaseLog(base:Float, fin:Float):Float
+	{
+		return Math.log(fin) / Math.log(base);
 	}
 
 	public static function coolTextFile(path:String):Array<String>
@@ -86,6 +98,38 @@ class CoolUtil
 	public static function camLerpShit(lerp:Float):Float
 	{
 		return lerp * (FlxG.elapsed / (1 / 60));
+	}
+
+	public static function coolSwitchState(state:FlxState, transitionTex:String = "shaderTransitionStuff/coolDots", time:Float = 2)
+	{
+		var screenShit:FlxSprite = new FlxSprite().loadGraphic(Paths.image("shaderTransitionStuff/coolDots"));
+		var screenWipeShit:ScreenWipeShader = new ScreenWipeShader();
+
+		screenWipeShit.funnyShit.input = screenShit.pixels;
+		FlxTween.tween(screenWipeShit, {daAlphaShit: 1}, time, {
+			ease: FlxEase.quadInOut,
+			onComplete: function(twn)
+			{
+				screenShit.destroy();
+				FlxG.switchState(new MainMenuState());
+			}
+		});
+		FlxG.camera.setFilters([new ShaderFilter(screenWipeShit)]);
+	}
+
+	/**
+	 * Hashlink json encoding fix for some wacky bullshit
+	 * https://github.com/HaxeFoundation/haxe/issues/6930#issuecomment-384570392
+	 */
+	public static function coolJSON(fileData:String)
+	{
+		var cont = fileData;
+		function is(n:Int, what:Int)
+			return cont.charCodeAt(n) == what;
+		return JsonParser.parse(cont.substr(if (is(0, 65279)) /// looks like a HL target, skipping only first character here:
+			1 else if (is(0, 239) && is(1, 187) && is(2, 191)) /// it seems to be Neko or PHP, start from position 3:
+			3 else /// all other targets, that prepare the UTF string correctly
+			0));
 	}
 
 	/*

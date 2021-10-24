@@ -217,26 +217,25 @@ class Character extends FlxSprite
 				quickAnimAdd('idle', "Pico Idle Dance");
 				quickAnimAdd('singUP', 'pico Up note0');
 				quickAnimAdd('singDOWN', 'Pico Down Note0');
-				if (isPlayer)
-				{
-					quickAnimAdd('singLEFT', 'Pico NOTE LEFT0');
-					quickAnimAdd('singRIGHT', 'Pico Note Right0');
-					quickAnimAdd('singRIGHTmiss', 'Pico Note Right Miss');
-					quickAnimAdd('singLEFTmiss', 'Pico NOTE LEFT miss');
-				}
-				else
-				{
-					// Need to be flipped! REDO THIS LATER!
-					quickAnimAdd('singLEFT', 'Pico Note Right0');
-					quickAnimAdd('singRIGHT', 'Pico NOTE LEFT0');
-					quickAnimAdd('singRIGHTmiss', 'Pico NOTE LEFT miss');
-					quickAnimAdd('singLEFTmiss', 'Pico Note Right Miss');
-				}
+
+				// isPlayer = true;
+
+				// Need to be flipped! REDO THIS LATER!
+				quickAnimAdd('singLEFT', 'Pico Note Right0');
+				quickAnimAdd('singRIGHT', 'Pico NOTE LEFT0');
+				quickAnimAdd('singRIGHTmiss', 'Pico NOTE LEFT miss');
+				quickAnimAdd('singLEFTmiss', 'Pico Note Right Miss');
 
 				quickAnimAdd('singUPmiss', 'pico Up note miss');
 				quickAnimAdd('singDOWNmiss', 'Pico Down Note MISS');
 
-				loadOffsetFile(curCharacter);
+				// right now it loads a seperate offset file for pico, would be cool if could generalize it!
+				var playerShit:String = "";
+
+				if (isPlayer)
+					playerShit += "Player";
+
+				loadOffsetFile(curCharacter + playerShit);
 
 				playAnim('idle');
 
@@ -486,6 +485,41 @@ class Character extends FlxSprite
 				playAnim('idle');
 
 				flipX = true;
+			case 'darnell':
+				frames = Paths.getSparrowAtlas('characters/darnell');
+
+				quickAnimAdd('idle', 'Darnell Idle');
+				quickAnimAdd('singUP', "Darnell pose up");
+				quickAnimAdd('singDOWN', 'Darnell Pose Down');
+				quickAnimAdd('singRIGHT', 'darnell pose left');
+				quickAnimAdd('singLEFT', 'Darnell pose right'); // naming is reversed for left/right for darnell!
+				quickAnimAdd('laugh', 'darnell laugh');
+
+				// temp
+				loadOffsetFile(curCharacter);
+
+				playAnim('idle');
+
+				animation.finishCallback = function(animShit:String)
+				{
+					if (animShit.startsWith('sing'))
+					{
+						// loop the anim
+						// this way is a little verbose, but basically sets it to the same animation, but 8 frames before finish
+						playAnim(animShit, true, false, animation.getByName(animShit).frames.length - 8);
+					}
+				}
+			case 'nene':
+				// GIRLFRIEND CODE
+				tex = Paths.getSparrowAtlas('characters/Nene_assets');
+				frames = tex;
+
+				animation.addByIndices('danceLeft', 'nenebeforeyougetawoopin', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
+				animation.addByIndices('danceRight', 'nenebeforeyougetawoopin', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
+
+				loadOffsetFile(curCharacter);
+
+				playAnim('danceRight');
 		}
 
 		dance();
@@ -627,7 +661,7 @@ class Character extends FlxSprite
 		{
 			switch (curCharacter)
 			{
-				case 'gf' | 'gf-christmas' | 'gf-car' | 'gf-pixel' | 'gf-tankmen':
+				case 'gf' | 'gf-christmas' | 'gf-car' | 'gf-pixel' | 'gf-tankmen' | "nene":
 					if (!animation.curAnim.name.startsWith('hair'))
 					{
 						danced = !danced;
@@ -637,10 +671,6 @@ class Character extends FlxSprite
 						else
 							playAnim('danceLeft');
 					}
-
-				case 'pico-speaker':
-				// lol weed
-				// playAnim('shoot' + FlxG.random.int(1, 4), true);
 
 				case 'tankman':
 					if (!animation.curAnim.name.endsWith('DOWN-alt'))

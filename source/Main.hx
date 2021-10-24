@@ -19,7 +19,7 @@ class Main extends Sprite
 {
 	var gameWidth:Int = 1280; // Width of the game in pixels (might be less / more in actual pixels depending on your zoom).
 	var gameHeight:Int = 720; // Height of the game in pixels (might be less / more in actual pixels depending on your zoom).
-	var initialState:Class<FlxState> = TitleState; // The FlxState the game starts with.
+	var initialState:Class<FlxState> = InitState; // The FlxState the game starts with.
 	var zoom:Float = -1; // If -1, zoom is automatically calculated to fit the window dimensions.
 	#if web
 	var framerate:Int = 60; // How many frames per second the game should run at.
@@ -48,7 +48,7 @@ class Main extends Sprite
 			frameworkParams: {
 				assetLibraryPaths: [
 					"songs" => "songs", "shared" => "shared", "tutorial" => "tutorial", "week1" => "week1", "week2" => "week2", "week3" => "week3",
-					"week4" => "week4",   "week5" => "week5",       "week6" => "week6", "week7" => "week7", "tanky" => "tanky", "tankBG" => "tankBG"
+					"week4" => "week4", "week5" => "week5", "week6" => "week6", "week7" => "week7", "week8" => "week8"
 				]
 			},
 			framework: OPENFL,
