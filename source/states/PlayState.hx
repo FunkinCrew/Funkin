@@ -599,16 +599,6 @@ class PlayState extends MusicBeatState
 		// WINDOW TITLE POG
 		Application.current.window.title = Application.current.meta.get('name') + " - " + SONG.song + " " + (isStoryMode ? "(Story Mode)" : "(Freeplay)");
 
-		#if linc_luajit
-		executeModchart = !(PlayState.SONG.modchartPath == '' || PlayState.SONG.modchartPath == null);
-
-		if (executeModchart)
-		{
-			luaModchart = ModchartUtilities.createModchartUtilities();
-			luaModchart.executeState('start', [PlayState.SONG.song.toLowerCase()]);
-		}
-		#end
-
 		fromPauseMenu = false;
 
 		super.create();
@@ -868,6 +858,16 @@ class PlayState extends MusicBeatState
 		Conductor.songPosition -= (Conductor.crochet * 5) * songMultiplier;
 
 		var swagCounter:Int = 0;
+
+		#if linc_luajit
+		executeModchart = !(PlayState.SONG.modchartPath == '' || PlayState.SONG.modchartPath == null);
+
+		if (executeModchart)
+		{
+			luaModchart = ModchartUtilities.createModchartUtilities();
+			luaModchart.executeState('start', [PlayState.SONG.song.toLowerCase()]);
+		}
+		#end
 
 		startTimer = new FlxTimer().start((Conductor.crochet / 1000) * songMultiplier, function(tmr:FlxTimer)
 		{
