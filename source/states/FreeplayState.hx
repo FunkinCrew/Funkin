@@ -331,6 +331,7 @@ class FreeplayState extends MusicBeatState
 
 				FlxG.sound.music.stop();
 				FlxG.sound.music.time = 0;
+				FlxG.sound.music.autoDestroy = false;
 
 				if(vocals.active)
 				{
