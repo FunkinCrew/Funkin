@@ -24,6 +24,7 @@ Changes marked with 💖 will be listed in the short version of the changelog in
 - Removed version identifier in gameplay
 - Removed some stuff from the results screen
 - Made the FPS text nicer
+- The game no longer freezes when it has lost focus
 
 ### Bugfixes
 - Fix linux and mac compiling and running
@@ -35,3 +36,6 @@ Changes marked with 💖 will be listed in the short version of the changelog in
 - Fixed a bug where a song would end earlier than the end of the song if the rate was higher than 1
 - Fixed the results screen being skewed on higher or lower rates
 - Fixed FPS Cap resetting itself on focusing out of the window
+- Fixed sustain rendering so it doesn't break itself on rates
+- Fixed input on rates 💖
+- Fixed rates on longer maps so they are more stable 💖
