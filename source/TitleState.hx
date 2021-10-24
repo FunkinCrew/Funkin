@@ -64,8 +64,15 @@ class TitleState extends MusicBeatState
 
 		KadeEngineData.initSave();
 
+		KeyBinds.keyCheck();
 		// It doesn't reupdate the list before u restart rn lmao
+
 		NoteskinHelpers.updateNoteskins();
+
+		if (FlxG.save.data.volDownBind == null)
+			FlxG.save.data.volDownBind = "MINUS";
+		if (FlxG.save.data.volUpBind == null)
+			FlxG.save.data.volUpBind = "PLUS";
 
 		FlxG.sound.muteKeys = [FlxKey.fromString(FlxG.save.data.muteBind)];
 		FlxG.sound.volumeDownKeys = [FlxKey.fromString(FlxG.save.data.volDownBind)];
