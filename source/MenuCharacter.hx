@@ -34,7 +34,7 @@ class MenuCharacter extends FlxSprite
 	];
 
 	private var flipped:Bool = false;
-	//questionable variable name lmfao
+	// questionable variable name lmfao
 	private var goesLeftNRight:Bool = false;
 	private var danceLeft:Bool = false;
 	private var character:String = '';
@@ -78,7 +78,8 @@ class MenuCharacter extends FlxSprite
 			visible = true;
 		}
 
-		if (!sameCharacter) {
+		if (!sameCharacter)
+		{
 			bopHead(true);
 		}
 
@@ -90,20 +91,29 @@ class MenuCharacter extends FlxSprite
 
 	public function bopHead(LastFrame:Bool = false):Void
 	{
-		if (character == 'gf' || character == 'spooky') {
+		if (character == 'gf' || character == 'spooky')
+		{
 			danceLeft = !danceLeft;
 
 			if (danceLeft)
 				animation.play(character + "-left", true);
 			else
 				animation.play(character + "-right", true);
-		} else {
-			//no spooky nor girlfriend so we do da normal animation
+		}
+		else if (character == '')
+		{
+			// Don't try to play an animation on an invisible character.
+			return;
+		}
+		else
+		{
+			// no spooky nor girlfriend so we do da normal animation
 			if (animation.name == "bfConfirm")
 				return;
 			animation.play(character, true);
 		}
-		if (LastFrame) {
+		if (LastFrame)
+		{
 			animation.finish();
 		}
 	}

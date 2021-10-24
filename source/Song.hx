@@ -3,7 +3,7 @@ package;
 import Section.SwagSection;
 import haxe.Json;
 import haxe.format.JsonParser;
-import lime.utils.Assets;
+import openfl.utils.Assets as OpenFlAssets;
 
 using StringTools;
 
@@ -14,7 +14,7 @@ class Event
 	public var value:Float;
 	public var type:String;
 
-	public function new(name:String,pos:Float,value:Float,type:String)
+	public function new(name:String, pos:Float, value:Float, type:String)
 	{
 		this.name = name;
 		this.position = pos;
@@ -23,48 +23,46 @@ class Event
 	}
 }
 
-typedef SwagSong =
+typedef SongData =
 {
+	@:deprecated
+	var ?song:String;
+
+	/**
+	 * The readable name of the song, as displayed to the user.
+	 		* Can be any string.
+	 */
+	var songName:String;
+
+	/**
+	 * The internal name of the song, as used in the file system.
+	 */
+	var songId:String;
+
 	var chartVersion:String;
-	var song:String;
 	var notes:Array<SwagSection>;
 	var eventObjects:Array<Event>;
 	var bpm:Float;
 	var needsVoices:Bool;
 	var speed:Float;
-
 	var player1:String;
 	var player2:String;
 	var gfVersion:String;
 	var noteStyle:String;
 	var stage:String;
-	var validScore:Bool;
+	var ?validScore:Bool;
+	var ?offset:Int;
+}
+
+typedef SongMeta =
+{
+	var ?offset:Int;
+	var ?name:String;
 }
 
 class Song
 {
 	public static var latestChart:String = "KE1";
-	public var chartVersion:String;
-	public var song:String;
-	public var notes:Array<SwagSection>;
-	public var bpm:Float;
-	public var needsVoices:Bool = true;
-	public var eventObjects:Array<Event>;
-	public var speed:Float = 1;
-
-	public var player1:String = 'bf';
-	public var player2:String = 'dad';
-	public var gfVersion:String = '';
-	public var noteStyle:String = '';
-	public var stage:String = '';
-
-	public function new(song, notes, bpm)
-	{
-		this.song = song;
-		this.notes = notes;
-		this.bpm = bpm;
-	}
-	
 
 	public static function loadFromJsonRAW(rawJson:String)
 	{
@@ -73,69 +71,42 @@ class Song
 			rawJson = rawJson.substr(0, rawJson.length - 1);
 			// LOL GOING THROUGH THE BULLSHIT TO CLEAN IDK WHATS STRANGE
 		}
-	
-		return parseJSONshit(rawJson);
-	}
-	
+		var jsonData = Json.parse(rawJson);
 
-	public static function loadFromJson(jsonInput:String, ?folder:String):SwagSong
+		return parseJSONshit("rawsong", jsonData, ["name" => jsonData.name]);
+	}
+
+	public static function loadFromJson(songId:String, difficulty:String):SongData
 	{
-		// pre lowercasing the folder name
-		var folderLowercase = StringTools.replace(folder, " ", "-").toLowerCase();
-		switch (folderLowercase) {
-			case 'dad-battle': folderLowercase = 'dadbattle';
-			case 'philly-nice': folderLowercase = 'philly';
-		}
-		
-		trace('loading ' + folderLowercase + '/' + jsonInput.toLowerCase());
+		var songFile = '$songId/$songId$difficulty';
 
-		var rawJson = Assets.getText(Paths.json(folderLowercase + '/' + jsonInput.toLowerCase())).trim();
+		Debug.logInfo('Loading song JSON: $songFile');
 
-		while (!rawJson.endsWith("}"))
-		{
-			rawJson = rawJson.substr(0, rawJson.length - 1);
-			// LOL GOING THROUGH THE BULLSHIT TO CLEAN IDK WHATS STRANGE
-		}
+		var rawJson = Paths.loadJSON('songs/$songFile');
+		var rawMetaJson = Paths.loadJSON('songs/$songId/_meta');
 
-		// FIX THE CASTING ON WINDOWS/NATIVE
-		// Windows???
-		// trace(songData);
-
-		// trace('LOADED FROM JSON: ' + songData.notes);
-		/* 
-			for (i in 0...songData.notes.length)
-			{
-				trace('LOADED FROM JSON: ' + songData.notes[i].sectionNotes);
-				// songData.notes[i].sectionNotes = songData.notes[i].sectionNotes
-			}
-
-				daNotes = songData.notes;
-				daSong = songData.song;
-				daBpm = songData.bpm; */
-
-		return parseJSONshit(rawJson);
+		return parseJSONshit(songId, rawJson, rawMetaJson);
 	}
 
-	public static function conversionChecks(song:SwagSong):SwagSong
+	public static function conversionChecks(song:SongData):SongData
 	{
 		var ba = song.bpm;
 
 		var index = 0;
-		trace("conversion stuff " + song.song + " " + song.notes.length);
+		trace("conversion stuff " + song.songId + " " + song.notes.length);
 		var convertedStuff:Array<Song.Event> = [];
 
-
 		if (song.eventObjects == null)
-			song.eventObjects = [new Song.Event("Init BPM",0,song.bpm,"BPM Change")];
+			song.eventObjects = [new Song.Event("Init BPM", 0, song.bpm, "BPM Change")];
 
-		for(i in song.eventObjects)
+		for (i in song.eventObjects)
 		{
-			var name = Reflect.field(i,"name");
-			var type = Reflect.field(i,"type");
-			var pos = Reflect.field(i,"position");
-			var value = Reflect.field(i,"value");
+			var name = Reflect.field(i, "name");
+			var type = Reflect.field(i, "type");
+			var pos = Reflect.field(i, "position");
+			var value = Reflect.field(i, "value");
 
-			convertedStuff.push(new Song.Event(name,pos,value,type));
+			convertedStuff.push(new Song.Event(name, pos, value, type));
 		}
 
 		song.eventObjects = convertedStuff;
@@ -145,10 +116,9 @@ class Song
 
 		if (song.gfVersion == null)
 			song.gfVersion = "gf";
-		
 
 		TimingStruct.clearTimings();
-        
+
 		var currentIndex = 0;
 		for (i in song.eventObjects)
 		{
@@ -158,8 +128,8 @@ class Song
 
 				var endBeat:Float = Math.POSITIVE_INFINITY;
 
-				TimingStruct.addTiming(beat,i.value,endBeat, 0); // offset in this case = start time since we don't have a offset
-				
+				TimingStruct.addTiming(beat, i.value, endBeat, 0); // offset in this case = start time since we don't have a offset
+
 				if (currentIndex != 0)
 				{
 					var data = TimingStruct.AllTimings[currentIndex - 1];
@@ -174,9 +144,11 @@ class Song
 			}
 		}
 
-
-		for(i in song.notes)
+		for (i in song.notes)
 		{
+			if (i.altAnim)
+				i.CPUAltAnim = i.altAnim;
+
 			var currentBeat = 4 * index;
 
 			var currentSeg = TimingStruct.getTimingAtBeat(currentBeat);
@@ -190,10 +162,10 @@ class Song
 			{
 				trace("converting changebpm for section " + index);
 				ba = i.bpm;
-				song.eventObjects.push(new Song.Event("FNF BPM Change " + index,beat,i.bpm,"BPM Change"));
+				song.eventObjects.push(new Song.Event("FNF BPM Change " + index, beat, i.bpm, "BPM Change"));
 			}
 
-			for(ii in i.sectionNotes)
+			for (ii in i.sectionNotes)
 			{
 				if (song.chartVersion == null)
 				{
@@ -211,22 +183,31 @@ class Song
 		song.chartVersion = latestChart;
 
 		return song;
-
 	}
 
-	public static function parseJSONshit(rawJson:String):SwagSong
+	public static function parseJSONshit(songId:String, jsonData:Dynamic, jsonMetaData:Dynamic):SongData
 	{
-		var swagShit:SwagSong = cast Json.parse(rawJson).song;
-		swagShit.validScore = true;
+		var songData:SongData = cast jsonData.song;
 
+		songData.songId = songId;
 
-		// conversion stuff
-		for (section in swagShit.notes) 
+		// Enforce default values for optional fields.
+		if (songData.validScore == null)
+			songData.validScore = true;
+
+		// Inject info from _meta.json.
+		var songMetaData:SongMeta = cast jsonMetaData;
+		if (songMetaData.name != null)
 		{
-			if (section.altAnim)
-				section.CPUAltAnim = section.altAnim;
+			songData.songName = songMetaData.name;
+		}
+		else
+		{
+			songData.songName = songId.split('-').join(' ');
 		}
 
-		return swagShit;
+		songData.offset = songMetaData.offset != null ? songMetaData.offset : 0;
+
+		return Song.conversionChecks(songData);
 	}
 }

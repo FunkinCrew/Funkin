@@ -123,11 +123,10 @@
 
 	<!--In case you want to use the ui package-->
 	<haxelib name="flixel-ui" />
-	<haxelib name="newgrounds"/>
 	<haxelib name="faxe" if='switch'/>
 	<haxelib name="polymod"/>
 	<haxelib name="discord_rpc" if="desktop"/>
-	<haxelib name="linc_luajit"/>
+	<haxelib name="linc_luajit" if="desktop"/>
 	<haxelib name="hxvm-luajit" if="desktop"/>
 	<!-- <haxelib name="hxcpp-debug-server" if="desktop"/> -->
 
@@ -187,7 +186,23 @@
 	<haxeflag name="--no-traces" unless="debug" />
 	<haxeflag name="--dce full" if="release" />
 
-	<!-- <haxedef name="SKIP_TO_PLAYSTATE" if="debug" /> -->
-	<haxedef name="NG_LOGIN" if="newgrounds" />
-	
+  <!-- Use defines to ensure compile-time definitions have readable context. -->
+  <!-- Allowed inputs are mobile,desktop,web,ios,android,windows,mac,linux,switch,html5,cpp,neko,flash,js -->
+
+  <!-- Defines whether the Discord client should be enabled. Only works on desktop. -->
+  <haxedef name="FEATURE_DISCORD" if="desktop" />
+  <!-- Defines whether the file system can be read/written directly. Does not work in browser. -->
+  <haxedef name="FEATURE_FILESYSTEM" if="desktop" />
+  <!-- Defines whether Lua Modcharts should be enabled. Only works on Windows. -->
+  <haxedef name="FEATURE_LUAMODCHART" if="windows" />
+  <!-- Defines whether WebM videos should be enabled. Currently only enabled on Windows. -->
+  <haxedef name="FEATURE_WEBM" if="windows" />
+  <!-- Defines whether StepMania files can be loaded. -->
+  <haxedef name="FEATURE_STEPMANIA" if="desktop" />
+  <!-- Defines whether the Thread class can be used. -->
+  <haxedef name="FEATURE_MULTITHREADING" if="cpp" />
+
+  <!-- Defines whether the Mods menu will display before launching. -->
+  <haxedef name="FEATURE_MODCORE" if="desktop" />
+
 </project>

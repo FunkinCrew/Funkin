@@ -2,7 +2,7 @@ import flixel.system.FlxAssets;
 
 class ShaderShader extends FlxShader
 {
-    @:glFragmentSource('
+	@:glFragmentSource('
     #pragma header
     uniform float fade;
     
@@ -33,9 +33,8 @@ class ShaderShader extends FlxShader
         gl_FragColor = vec4( newcol*(fade)+col*(1.0-fade), 1.0 ) * color;
     }
     ')
-
-    public function new()
-    {
-        super();
-    }
+	public function new()
+	{
+		super();
+	}
 }

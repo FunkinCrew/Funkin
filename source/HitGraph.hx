@@ -55,7 +55,7 @@ class HitGraph extends Sprite
 		_width = Width;
 		_height = Height;
 
-		var bm = new BitmapData(Width,Height);
+		var bm = new BitmapData(Width, Height);
 		bm.draw(this);
 		bitmap = new Bitmap(bm);
 
@@ -64,8 +64,8 @@ class HitGraph extends Sprite
 
 		ts = Math.floor((PlayState.rep.replay.sf / 60) * 1000) / 166;
 
-		var early = createTextField(10,10,FlxColor.WHITE,12);
-		var late = createTextField(10,_height - 20,FlxColor.WHITE,12);
+		var early = createTextField(10, 10, FlxColor.WHITE, 12);
+		var late = createTextField(10, _height - 20, FlxColor.WHITE, 12);
 
 		early.text = "Early (" + -166 * ts + "ms)";
 		late.text = "Late (" + 166 * ts + "ms)";
@@ -97,7 +97,6 @@ class HitGraph extends Sprite
 
 		gfx.moveTo(0, _height / 2);
 		gfx.lineTo(_width, _height / 2);
-		
 	}
 
 	public static function createTextField(X:Float = 0, Y:Float = 0, Color:FlxColor = FlxColor.WHITE, Size:Int = 12):TextField
@@ -125,7 +124,6 @@ class HitGraph extends Sprite
 
 	function drawJudgementLine(ms:Float):Void
 	{
-
 		var gfx:Graphics = graphics;
 
 		gfx.lineStyle(1, graphColor, 0.3);
@@ -144,7 +142,7 @@ class HitGraph extends Sprite
 
 		var graphX = _axis.x + 1;
 
-		gfx.drawRect(graphX,pointY, _width,1);
+		gfx.drawRect(graphX, pointY, _width, 1);
 
 		gfx.lineStyle(1, graphColor, 1);
 	}
@@ -159,35 +157,35 @@ class HitGraph extends Sprite
 		gfx.lineStyle(1, graphColor, 1);
 
 		gfx.beginFill(0x00FF00);
-		drawJudgementLine(45 );
+		drawJudgementLine(45);
 		gfx.endFill();
 
 		gfx.beginFill(0xFF0000);
-		drawJudgementLine(90 );
+		drawJudgementLine(90);
 		gfx.endFill();
 
 		gfx.beginFill(0x8b0000);
-		drawJudgementLine(135 );
+		drawJudgementLine(135);
 		gfx.endFill();
 
 		gfx.beginFill(0x580000);
-		drawJudgementLine(166 );
+		drawJudgementLine(166);
 		gfx.endFill();
 
 		gfx.beginFill(0x00FF00);
-		drawJudgementLine(-45 );
+		drawJudgementLine(-45);
 		gfx.endFill();
 
 		gfx.beginFill(0xFF0000);
-		drawJudgementLine(-90 );
+		drawJudgementLine(-90);
 		gfx.endFill();
 
 		gfx.beginFill(0x8b0000);
-		drawJudgementLine(-135 );
+		drawJudgementLine(-135);
 		gfx.endFill();
 
 		gfx.beginFill(0x580000);
-		drawJudgementLine(-166 );
+		drawJudgementLine(-166);
 		gfx.endFill();
 
 		var range:Float = Math.max(maxValue - minValue, maxValue * 0.1);
@@ -203,14 +201,14 @@ class HitGraph extends Sprite
 
 				if (ana.hit)
 					gfx.beginFill(0xFFFF00);
-				else 
+				else
 					gfx.beginFill(0xC2B280);
 
 				if (ana.hitTime < 0)
 					continue;
 
 				var pointY = (-value * _height - 1) + _height;
-				gfx.drawRect(graphX + fitX(ana.hitTime), pointY,2,2);
+				gfx.drawRect(graphX + fitX(ana.hitTime), pointY, 2, 2);
 				gfx.endFill();
 			}
 		}
@@ -220,7 +218,7 @@ class HitGraph extends Sprite
 			var value = (history[i][0] - minValue) / range;
 			var judge = history[i][1];
 
-			switch(judge)
+			switch (judge)
 			{
 				case "sick":
 					gfx.beginFill(0x00FFFF);
@@ -238,26 +236,25 @@ class HitGraph extends Sprite
 			var pointY = ((-value * _height - 1) + _height);
 
 			/*if (i == 0)
-				gfx.moveTo(graphX, _axis.y + pointY);*/
-			gfx.drawRect(fitX(history[i][2]), pointY,4,4);
+				gfx.moveTo(graphX, _axis.y + pointY); */
+			gfx.drawRect(fitX(history[i][2]), pointY, 4, 4);
 
 			gfx.endFill();
 		}
 
-
-		var bm = new BitmapData(_width,_height);
+		var bm = new BitmapData(_width, _height);
 		bm.draw(this);
 		bitmap = new Bitmap(bm);
 	}
 
 	public function fitX(x:Float)
 	{
-		return (x / FlxG.sound.music.length) * width;
+		return ((x / (FlxG.sound.music.length / PlayState.songMultiplier)) * width) * PlayState.songMultiplier;
 	}
-	
+
 	public function addToHistory(diff:Float, judge:String, time:Float)
 	{
-		history.push([diff,judge, time]);
+		history.push([diff, judge, time]);
 	}
 
 	public function update():Void

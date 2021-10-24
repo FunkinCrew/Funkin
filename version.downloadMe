@@ -1,8 +1,8 @@
-1.7;
-- A speed modifier
-- Completely redid all of the modcharting api
-- Optimized a lot of code to run better
-- Allowed numpad to be binded as a key
-- Changed the editor to work entirely on beats
-- Fix multiplie crashes with story mode and other weeks in story mode
-- Fix desyncs with bpm changes and section notes in the charter
+1.8;
+- New options menu
+- New animation debug screen
+- Middle scroll
+- Lane transparency
+- Added noteskin support + new circle skin
+- Fixed input on rates
+- Fixed rates on longer maps so they are more stable

@@ -17,7 +17,7 @@ class Note extends FlxSprite
 {
 	public var strumTime:Float = 0;
 	public var baseStrum:Float = 0;
-	
+
 	public var charterSelected:Bool = false;
 
 	public var rStrumTime:Float = 0;
@@ -96,7 +96,7 @@ class Note extends FlxSprite
 		else
 		{
 			this.strumTime = strumTime;
-			#if sys
+			#if FEATURE_STEPMANIA
 			if (PlayState.isSM)
 			{
 				rStrumTime = strumTime;
@@ -108,8 +108,7 @@ class Note extends FlxSprite
 			#end
 		}
 
-
-		if (this.strumTime < 0 )
+		if (this.strumTime < 0)
 			this.strumTime = 0;
 
 		if (!inCharter)
@@ -117,14 +116,14 @@ class Note extends FlxSprite
 
 		this.noteData = noteData;
 
-		var daStage:String = PlayState.Stage.curStage;
+		var daStage:String = ((PlayState.instance != null && !PlayStateChangeables.Optimize) ? PlayState.Stage.curStage : 'stage');
 
-		//defaults if no noteStyle was found in chart
+		// defaults if no noteStyle was found in chart
 		var noteTypeCheck:String = 'normal';
 
 		if (inCharter)
 		{
-			frames = Paths.getSparrowAtlas('NOTE_assets');
+			frames = PlayState.noteskinSprite;
 
 			for (i in 0...4)
 			{
@@ -139,16 +138,25 @@ class Note extends FlxSprite
 		}
 		else
 		{
-			if (PlayState.SONG.noteStyle == null) {
-				switch(PlayState.storyWeek) {case 6: noteTypeCheck = 'pixel';}
-			} else {noteTypeCheck = PlayState.SONG.noteStyle;}
-			
+			if (PlayState.SONG.noteStyle == null)
+			{
+				switch (PlayState.storyWeek)
+				{
+					case 6:
+						noteTypeCheck = 'pixel';
+				}
+			}
+			else
+			{
+				noteTypeCheck = PlayState.SONG.noteStyle;
+			}
+
 			switch (noteTypeCheck)
 			{
 				case 'pixel':
-					loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels', 'week6'), true, 17, 17);
+					loadGraphic(PlayState.noteskinPixelSprite, true, 17, 17);
 					if (isSustainNote)
-						loadGraphic(Paths.image('weeb/pixelUI/arrowEnds', 'week6'), true, 7, 6);
+						loadGraphic(PlayState.noteskinPixelSpriteEnds, true, 7, 6);
 
 					for (i in 0...4)
 					{
@@ -157,10 +165,10 @@ class Note extends FlxSprite
 						animation.add(dataColor[i] + 'holdend', [i + 4]); // Tails
 					}
 
-					setGraphicSize(Std.int(width * PlayState.daPixelZoom));
+					setGraphicSize(Std.int(width * CoolUtil.daPixelZoom));
 					updateHitbox();
 				default:
-					frames = Paths.getSparrowAtlas('NOTE_assets');
+					frames = PlayState.noteskinSprite;
 
 					for (i in 0...4)
 					{
@@ -171,7 +179,7 @@ class Note extends FlxSprite
 
 					setGraphicSize(Std.int(width * 0.7));
 					updateHitbox();
-					
+
 					antialiasing = FlxG.save.data.antialiasing;
 			}
 		}
@@ -201,35 +209,34 @@ class Note extends FlxSprite
 			else if (beatRow % (192 / 32) == 0)
 				col = quantityColor[4];
 
-
 			animation.play(dataColor[col] + 'Scroll');
 			localAngle -= arrowAngles[col];
 			localAngle += arrowAngles[noteData];
 			originAngle = localAngle;
 			originColor = col;
 		}
-		
+
 		// we make sure its downscroll and its a SUSTAIN NOTE (aka a trail, not a note)
 		// and flip it so it doesn't look weird.
 		// THIS DOESN'T FUCKING FLIP THE NOTE, CONTRIBUTERS DON'T JUST COMMENT THIS OUT JESUS
 		// then what is this lol
 		// BRO IT LITERALLY SAYS IT FLIPS IF ITS A TRAIL AND ITS DOWNSCROLL
-		if (FlxG.save.data.downscroll && sustainNote) 
+		if (FlxG.save.data.downscroll && sustainNote)
 			flipY = true;
 
-		
-		var stepHeight = (((0.45 * Conductor.stepCrochet)) * FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? PlayState.SONG.speed : PlayStateChangeables.scrollSpeed, 2));
-
-		// we can't divide step height cuz if we do uh it'll fucking lag the shit out of the game
+		var stepHeight = (((0.45 * Conductor.stepCrochet)) * FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? PlayState.SONG.speed : PlayStateChangeables.scrollSpeed,
+			2)) / PlayState.songMultiplier;
 
 		if (isSustainNote && prevNote != null)
 		{
+			noteYOff = Math.round(-stepHeight + swagWidth * 0.5);
+
 			noteScore * 0.2;
 			alpha = 0.6;
 
 			x += width / 2;
 
-			originColor = prevNote.originColor; 
+			originColor = prevNote.originColor;
 			originAngle = prevNote.originAngle;
 
 			animation.play(dataColor[originColor] + 'holdend'); // This works both for normal colors and quantization colors
@@ -237,7 +244,7 @@ class Note extends FlxSprite
 
 			x -= width / 2;
 
-			//if (noteTypeCheck == 'pixel')
+			// if (noteTypeCheck == 'pixel')
 			//	x += 30;
 			if (inCharter)
 				x += 30;
@@ -247,14 +254,11 @@ class Note extends FlxSprite
 				prevNote.animation.play(dataColor[prevNote.originColor] + 'hold');
 				prevNote.updateHitbox();
 
-
-				prevNote.scale.y *= (stepHeight + 1) / prevNote.height; // + 1 so that there's no odd gaps as the notes scroll
+				prevNote.scale.y *= stepHeight / prevNote.height;
 				prevNote.updateHitbox();
-				prevNote.noteYOff = Math.round(-prevNote.offset.y);
 
-				// prevNote.setGraphicSize();
-
-				noteYOff = Math.round(-offset.y);
+				if (antialiasing)
+					prevNote.scale.y *= 1.0 + (1.0 / prevNote.frameHeight);
 			}
 		}
 	}
@@ -279,29 +283,28 @@ class Note extends FlxSprite
 		{
 			if (isSustainNote)
 			{
-				if (strumTime - Conductor.songPosition  <= (((166 * Conductor.timeScale) / (PlayState.songMultiplier < 1 ? PlayState.songMultiplier : 1) * 0.5))
-					&& strumTime - Conductor.songPosition  >= (((-166 * Conductor.timeScale) / (PlayState.songMultiplier < 1 ? PlayState.songMultiplier : 1))))
+				if (strumTime - Conductor.songPosition <= (((166 * Conductor.timeScale) / (PlayState.songMultiplier < 1 ? PlayState.songMultiplier : 1) * 0.5))
+					&& strumTime - Conductor.songPosition >= (((-166 * Conductor.timeScale) / (PlayState.songMultiplier < 1 ? PlayState.songMultiplier : 1))))
 					canBeHit = true;
 				else
 					canBeHit = false;
 			}
 			else
 			{
-				if (strumTime - Conductor.songPosition  <= (((166 * Conductor.timeScale) / (PlayState.songMultiplier < 1 ? PlayState.songMultiplier : 1)))
+				if (strumTime - Conductor.songPosition <= (((166 * Conductor.timeScale) / (PlayState.songMultiplier < 1 ? PlayState.songMultiplier : 1)))
 					&& strumTime - Conductor.songPosition >= (((-166 * Conductor.timeScale) / (PlayState.songMultiplier < 1 ? PlayState.songMultiplier : 1))))
 					canBeHit = true;
 				else
 					canBeHit = false;
 			}
 			/*if (strumTime - Conductor.songPosition < (-166 * Conductor.timeScale) && !wasGoodHit)
-				tooLate = true;*/
+				tooLate = true; */
 		}
 		else
 		{
 			canBeHit = false;
-
-			if (strumTime <= Conductor.songPosition)
-				wasGoodHit = true;
+			// if (strumTime <= Conductor.songPosition)
+			//	wasGoodHit = true;
 		}
 
 		if (tooLate && !wasGoodHit)

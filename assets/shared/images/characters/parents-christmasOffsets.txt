@@ -1,4 +1,5 @@
 idle 0 0
+idleLoop 0 0
 singUP -47 24
 singRIGHT -1 -23
 singLEFT -30 16

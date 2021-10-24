@@ -1,373 +1,369 @@
 import openfl.system.System;
 import flixel.math.FlxMath;
-import Song.SwagSong;
+import Song.SongData;
 
 class SmallNote // basically Note.hx but small as fuck
 {
-    public var strumTime:Float;
-    public var noteData:Int;
+	public var strumTime:Float;
+	public var noteData:Int;
 
-    public function new(strum,data)
-    {
-        strumTime = strum;
-        noteData = data;
-    }
+	public function new(strum, data)
+	{
+		strumTime = strum;
+		noteData = data;
+	}
 }
 
 class DiffCalc
 {
-    public static var scale = 3 * 1.8;
+	public static var scale = 3 * 1.8;
 
-    public static var lastDiffHandOne:Array<Float> = [];
-    public static var lastDiffHandTwo:Array<Float> = [];
+	public static var lastDiffHandOne:Array<Float> = [];
+	public static var lastDiffHandTwo:Array<Float> = [];
 
-    public static function CalculateDiff(song:SwagSong, ?accuracy:Float = .93)
-    {
-        // cleaned notes
-        var cleanedNotes:Array<SmallNote> = [];
+	public static function CalculateDiff(song:SongData, ?accuracy:Float = .93)
+	{
+		// cleaned notes
+		var cleanedNotes:Array<SmallNote> = [];
 
-        if (song.notes == null)
-            return 0.0;
+		if (song.notes == null)
+			return 0.0;
 
-        if (song.notes.length == 0)
-            return 0.0;
+		if (song.notes.length == 0)
+			return 0.0;
 
-        // find all of the notes
-        for(i in song.notes) // sections
-        {
-            for (ii in i.sectionNotes) // notes
-            {
-                var gottaHitNote:Bool = i.mustHitSection;
+		// find all of the notes
+		for (i in song.notes) // sections
+		{
+			for (ii in i.sectionNotes) // notes
+			{
+				var gottaHitNote:Bool = i.mustHitSection;
 
 				if (ii[1] >= 3 && gottaHitNote)
-					cleanedNotes.push(new SmallNote(ii[0] / FreeplayState.rate,Math.floor(Math.abs(ii[1]))));
-                if (ii[1] <= 4 && !gottaHitNote) 
-                    cleanedNotes.push(new SmallNote(ii[0] / FreeplayState.rate,Math.floor(Math.abs(ii[1]))));
-            }
-        }
+					cleanedNotes.push(new SmallNote(ii[0] / FreeplayState.rate, Math.floor(Math.abs(ii[1]))));
+				if (ii[1] <= 4 && !gottaHitNote)
+					cleanedNotes.push(new SmallNote(ii[0] / FreeplayState.rate, Math.floor(Math.abs(ii[1]))));
+			}
+		}
 
-        trace('calcuilafjwaf ' + cleanedNotes.length);
+		trace('calcuilafjwaf ' + cleanedNotes.length);
 
-        var handOne:Array<SmallNote> = [];
-        var handTwo:Array<SmallNote> = [];
-        
-        cleanedNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
+		var handOne:Array<SmallNote> = [];
+		var handTwo:Array<SmallNote> = [];
 
+		cleanedNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
 
-        
-        var firstNoteTime = cleanedNotes[0].strumTime;
-        
-        // normalize the notes
+		if (cleanedNotes.length == 0)
+			return 90000000000000000;
 
-        for(i in cleanedNotes)
-        {
-            i.strumTime = (i.strumTime - firstNoteTime) * 2;
-        }
+		var firstNoteTime = cleanedNotes[0].strumTime;
 
-        for (i in cleanedNotes)
-        {
-            switch(i.noteData)
-            {
-                case 0:
-                    handOne.push(i);
-                case 1:
-                    handOne.push(i);
-                case 2:
-                    handTwo.push(i);
-                case 3:
-                    handTwo.push(i);
-            }
-        }
+		// normalize the notes
 
-        // collect all of the notes in each col
+		for (i in cleanedNotes)
+		{
+			i.strumTime = (i.strumTime - firstNoteTime) * 2;
+		}
 
-        var leftHandCol:Array<Float> = []; // d 0
-        var leftMHandCol:Array<Float> = []; // f 1
-        var rightMHandCol:Array<Float> = []; // j 2
-        var rightHandCol:Array<Float> = []; // k 3
+		for (i in cleanedNotes)
+		{
+			switch (i.noteData)
+			{
+				case 0:
+					handOne.push(i);
+				case 1:
+					handOne.push(i);
+				case 2:
+					handTwo.push(i);
+				case 3:
+					handTwo.push(i);
+			}
+		}
 
-        for(i in 0...handOne.length - 1)
-        {
-            if (handOne[i].noteData == 0)
-                leftHandCol.push(handOne[i].strumTime);
-            else
-                leftMHandCol.push(handOne[i].strumTime);
-        }
-        for(i in 0...handTwo.length - 1)
-        {
-            if (handTwo[i].noteData == 3)
-                rightHandCol.push(handTwo[i].strumTime);
-            else
-                rightMHandCol.push(handTwo[i].strumTime);
-        }
+		// collect all of the notes in each col
 
+		var leftHandCol:Array<Float> = []; // d 0
+		var leftMHandCol:Array<Float> = []; // f 1
+		var rightMHandCol:Array<Float> = []; // j 2
+		var rightHandCol:Array<Float> = []; // k 3
 
-        // length in segments of the song
-        var length = ((cleanedNotes[cleanedNotes.length - 1].strumTime / 1000) / 0.5);
+		for (i in 0...handOne.length - 1)
+		{
+			if (handOne[i].noteData == 0)
+				leftHandCol.push(handOne[i].strumTime);
+			else
+				leftMHandCol.push(handOne[i].strumTime);
+		}
+		for (i in 0...handTwo.length - 1)
+		{
+			if (handTwo[i].noteData == 3)
+				rightHandCol.push(handTwo[i].strumTime);
+			else
+				rightMHandCol.push(handTwo[i].strumTime);
+		}
 
-        // hackey way of creating a array with a length
-        var segmentsOne = new haxe.ds.Vector(Math.floor(length));
+		// length in segments of the song
+		var length = ((cleanedNotes[cleanedNotes.length - 1].strumTime / 1000) / 0.5);
 
-        var segmentsTwo = new haxe.ds.Vector(Math.floor(length));
+		// hackey way of creating a array with a length
+		var segmentsOne = new haxe.ds.Vector(Math.floor(length));
 
-        // set em all to array's (so no null's)
+		var segmentsTwo = new haxe.ds.Vector(Math.floor(length));
 
-        for(i in 0...segmentsOne.length)
-            segmentsOne[i] = new Array<SmallNote>();
-        for(i in 0...segmentsTwo.length)
-            segmentsTwo[i] = new Array<SmallNote>();
+		// set em all to array's (so no null's)
 
-        // algo loop
-        for(i in handOne)
-        {
-            var index = Std.int((((i.strumTime * 2) / 1000)));
-            if (index + 1 > length)
-                continue;
-            segmentsOne[index].push(i);
-        }
+		for (i in 0...segmentsOne.length)
+			segmentsOne[i] = new Array<SmallNote>();
+		for (i in 0...segmentsTwo.length)
+			segmentsTwo[i] = new Array<SmallNote>();
 
-        for(i in handTwo)
-        {
-            var index = Std.int((((i.strumTime * 2) / 1000)));
-            if (index + 1 > length)
-                continue;
-            segmentsTwo[index].push(i);
-        }
+		// algo loop
+		for (i in handOne)
+		{
+			var index = Std.int((((i.strumTime * 2) / 1000)));
+			if (index + 1 > length)
+				continue;
+			segmentsOne[index].push(i);
+		}
 
-        // Remove 0 intervals
-        /*for(i in 0...segmentsOne.length)
-        {
-            if (segmentsOne[i].length == 0)
-                segmentsOne[i] = null;
-        }
+		for (i in handTwo)
+		{
+			var index = Std.int((((i.strumTime * 2) / 1000)));
+			if (index + 1 > length)
+				continue;
+			segmentsTwo[index].push(i);
+		}
 
-        for(i in 0...segmentsTwo.length)
-        {
-            if (segmentsTwo[i].length == 0)
-                segmentsTwo[i] = null;
-        }*/
+		// Remove 0 intervals
+		/*for(i in 0...segmentsOne.length)
+			{
+				if (segmentsOne[i].length == 0)
+					segmentsOne[i] = null;
+			}
 
-        // get nps for both hands
+			for(i in 0...segmentsTwo.length)
+			{
+				if (segmentsTwo[i].length == 0)
+					segmentsTwo[i] = null;
+		}*/
 
-        var hand_npsOne:Array<Float> = new Array<Float>();
-        var hand_npsTwo:Array<Float> = new Array<Float>();
+		// get nps for both hands
 
-        for(i in segmentsOne)
-        {
-            if (i == null)
-                continue;
-            hand_npsOne.push(i.length * scale * 1.6);
-        }
-        for(i in segmentsTwo)
-        {
-            if (i == null)
-                continue;
-            hand_npsTwo.push(i.length * scale * 1.6);
-        }
+		var hand_npsOne:Array<Float> = new Array<Float>();
+		var hand_npsTwo:Array<Float> = new Array<Float>();
 
-        // get the diff vector's for all of the hands
+		for (i in segmentsOne)
+		{
+			if (i == null)
+				continue;
+			hand_npsOne.push(i.length * scale * 1.6);
+		}
+		for (i in segmentsTwo)
+		{
+			if (i == null)
+				continue;
+			hand_npsTwo.push(i.length * scale * 1.6);
+		}
 
-        var hand_diffOne:Array<Float> = new Array<Float>();
-        var hand_diffTwo:Array<Float> = new Array<Float>();
+		// get the diff vector's for all of the hands
 
-        for(i in 0...segmentsOne.length)
-        {
-            var ve = segmentsOne[i];
-            if (ve == null)
-                continue;
-            var fuckYouOne:Array<SmallNote> = [];
-            var fuckYouTwo:Array<SmallNote> = [];
-            for(note in ve)
-            {
-                switch(note.noteData)
-                {
-                    case 0: // fingie 1
-                        fuckYouOne.push(note);
-                    case 1: // fingie 2
-                        fuckYouTwo.push(note);
-                }
-            }
+		var hand_diffOne:Array<Float> = new Array<Float>();
+		var hand_diffTwo:Array<Float> = new Array<Float>();
 
-            var one = fingieCalc(fuckYouOne,leftHandCol);
-            var two = fingieCalc(fuckYouTwo,leftMHandCol);
+		for (i in 0...segmentsOne.length)
+		{
+			var ve = segmentsOne[i];
+			if (ve == null)
+				continue;
+			var fuckYouOne:Array<SmallNote> = [];
+			var fuckYouTwo:Array<SmallNote> = [];
+			for (note in ve)
+			{
+				switch (note.noteData)
+				{
+					case 0: // fingie 1
+						fuckYouOne.push(note);
+					case 1: // fingie 2
+						fuckYouTwo.push(note);
+				}
+			}
 
-            
-            var bigFuck = ((((one > two ? one : two) * 8) + (hand_npsOne[i] / scale) * 5) / 13) * scale;
+			var one = fingieCalc(fuckYouOne, leftHandCol);
+			var two = fingieCalc(fuckYouTwo, leftMHandCol);
 
-            //trace(bigFuck + " - hand one [" + i + "]");
+			var bigFuck = ((((one > two ? one : two) * 8) + (hand_npsOne[i] / scale) * 5) / 13) * scale;
 
-            
-            hand_diffOne.push(bigFuck);
-        }
+			// trace(bigFuck + " - hand one [" + i + "]");
 
-        for(i in 0...segmentsTwo.length)
-        {
-            var ve = segmentsTwo[i];
-            if (ve == null)
-                continue;
-            var fuckYouOne:Array<SmallNote> = [];
-            var fuckYouTwo:Array<SmallNote> = [];
-            for(note in ve)
-            {
-                switch(note.noteData)
-                {
-                    case 2: // fingie 1
-                        fuckYouOne.push(note);
-                    case 3: // fingie 2
-                        fuckYouTwo.push(note);
-                }
-            }
+			hand_diffOne.push(bigFuck);
+		}
 
-            var one = fingieCalc(fuckYouOne,rightMHandCol);
-            var two = fingieCalc(fuckYouTwo,rightHandCol);
+		for (i in 0...segmentsTwo.length)
+		{
+			var ve = segmentsTwo[i];
+			if (ve == null)
+				continue;
+			var fuckYouOne:Array<SmallNote> = [];
+			var fuckYouTwo:Array<SmallNote> = [];
+			for (note in ve)
+			{
+				switch (note.noteData)
+				{
+					case 2: // fingie 1
+						fuckYouOne.push(note);
+					case 3: // fingie 2
+						fuckYouTwo.push(note);
+				}
+			}
 
-            var bigFuck = ((((one > two ? one : two) * 8) + (hand_npsTwo[i] / scale) * 5) / 13) * scale;
+			var one = fingieCalc(fuckYouOne, rightMHandCol);
+			var two = fingieCalc(fuckYouTwo, rightHandCol);
 
-            hand_diffTwo.push(bigFuck);
+			var bigFuck = ((((one > two ? one : two) * 8) + (hand_npsTwo[i] / scale) * 5) / 13) * scale;
 
-            // trace(bigFuck + " - hand two [" + i + "]");
-        }
+			hand_diffTwo.push(bigFuck);
 
-        for (i in 0...4)
-        {
-            smoothBrain(hand_npsOne,0);
-            smoothBrain(hand_npsTwo,0);
+			// trace(bigFuck + " - hand two [" + i + "]");
+		}
 
-            smoothBrainTwo(hand_diffOne);
-            smoothBrainTwo(hand_diffTwo);
-        }
+		for (i in 0...4)
+		{
+			smoothBrain(hand_npsOne, 0);
+			smoothBrain(hand_npsTwo, 0);
 
-        //trace(hand_diffOne);
-        //trace(hand_diffTwo);
+			smoothBrainTwo(hand_diffOne);
+			smoothBrainTwo(hand_diffTwo);
+		}
 
-        //trace(hand_npsOne);
-        //trace(hand_npsTwo);
+		// trace(hand_diffOne);
+		// trace(hand_diffTwo);
 
-        var point_npsOne:Array<Float> = new Array<Float>();
-        var point_npsTwo:Array<Float> = new Array<Float>();
+		// trace(hand_npsOne);
+		// trace(hand_npsTwo);
 
-        for(i in segmentsOne)
-        {
-            if (i == null)
-                continue;
-            point_npsOne.push(i.length);
-        }
-        for(i in segmentsTwo)
-        {
-            if (i == null)
-                continue;
-            point_npsTwo.push(i.length);
-        }
+		var point_npsOne:Array<Float> = new Array<Float>();
+		var point_npsTwo:Array<Float> = new Array<Float>();
 
-        var maxPoints:Float = 0;
+		for (i in segmentsOne)
+		{
+			if (i == null)
+				continue;
+			point_npsOne.push(i.length);
+		}
+		for (i in segmentsTwo)
+		{
+			if (i == null)
+				continue;
+			point_npsTwo.push(i.length);
+		}
 
-        for(i in point_npsOne)
-            maxPoints += i;
-        for(i in point_npsTwo)
-            maxPoints += i;
-        
-        if (accuracy > .965)
-            accuracy = .965;
+		var maxPoints:Float = 0;
 
-        lastDiffHandOne = hand_diffOne;
-        lastDiffHandTwo = hand_diffTwo;
+		for (i in point_npsOne)
+			maxPoints += i;
+		for (i in point_npsTwo)
+			maxPoints += i;
 
+		if (accuracy > .965)
+			accuracy = .965;
 
-        return HelperFunctions.truncateFloat(chisel(accuracy,hand_diffOne,hand_diffTwo,point_npsOne,point_npsTwo,maxPoints),2);
-    }
+		lastDiffHandOne = hand_diffOne;
+		lastDiffHandTwo = hand_diffTwo;
 
-    public static function chisel(scoreGoal:Float,diffOne:Array<Float>,diffTwo:Array<Float>,pointsOne:Array<Float>,pointsTwo:Array<Float>,maxPoints:Float)
-    {
-        var lowerBound:Float = 0;
-        var upperBound:Float = 100;
+		return HelperFunctions.truncateFloat(chisel(accuracy, hand_diffOne, hand_diffTwo, point_npsOne, point_npsTwo, maxPoints), 2);
+	}
 
-        while(upperBound - lowerBound > 0.01)
-        {
-            var average:Float = (upperBound + lowerBound) / 2;
-            var amtOfPoints:Float = calcuate(average,diffOne,pointsOne) + calcuate(average,diffTwo,pointsTwo);
-            if (amtOfPoints / maxPoints < scoreGoal)
-                lowerBound = average;
-            else
-                upperBound = average;
-            
-        }
-        return upperBound;
-    }
+	public static function chisel(scoreGoal:Float, diffOne:Array<Float>, diffTwo:Array<Float>, pointsOne:Array<Float>, pointsTwo:Array<Float>, maxPoints:Float)
+	{
+		var lowerBound:Float = 0;
+		var upperBound:Float = 100;
 
-    public static function calcuate(midPoint:Float,diff:Array<Float>,points:Array<Float>)
-    {
-        var output:Float = 0;
-        
-        for (i in 0...diff.length)
-        {
-            var res = diff[i];
-            if (midPoint > res)
-                output += points[i];
-            else
-                output += points[i] * Math.pow(midPoint / res,1.2);
-        }
-        return output;
-    }
+		while (upperBound - lowerBound > 0.01)
+		{
+			var average:Float = (upperBound + lowerBound) / 2;
+			var amtOfPoints:Float = calcuate(average, diffOne, pointsOne) + calcuate(average, diffTwo, pointsTwo);
+			if (amtOfPoints / maxPoints < scoreGoal)
+				lowerBound = average;
+			else
+				upperBound = average;
+		}
+		return upperBound;
+	}
 
-    public static function findStupid(strumTime:Float, array:Array<Float>)
-    {
-        for(i in 0...array.length)
-            if (array[i] == strumTime)
-                return i;
-        return -1;
-    }
+	public static function calcuate(midPoint:Float, diff:Array<Float>, points:Array<Float>)
+	{
+		var output:Float = 0;
 
-    public static function fingieCalc(floats:Array<SmallNote>, columArray:Array<Float>):Float
-    {
-        var sum:Float = 0;
-        if (floats.length == 0)
-            return 0;
-        var startIndex = findStupid(floats[0].strumTime,columArray);
-        if (startIndex == -1)
-            return 0;
-        for(i in floats) 
-        {
-            sum += columArray[startIndex + 1] - columArray[startIndex];
-            startIndex++;
-        }
-        
-        if (sum == 0)
-            return 0;
+		for (i in 0...diff.length)
+		{
+			var res = diff[i];
+			if (midPoint > res)
+				output += points[i];
+			else
+				output += points[i] * Math.pow(midPoint / res, 1.2);
+		}
+		return output;
+	}
 
-        return (1375 * (floats.length)) / sum;
-    }
+	public static function findStupid(strumTime:Float, array:Array<Float>)
+	{
+		for (i in 0...array.length)
+			if (array[i] == strumTime)
+				return i;
+		return -1;
+	}
 
-    // based arrayer
-    // basicily smmoth the shit 
-    public static function smoothBrain(npsVector:Array<Float>, weirdchamp:Float)
-    {
-        var floatOne = weirdchamp;
-        var floatTwo = weirdchamp;
+	public static function fingieCalc(floats:Array<SmallNote>, columArray:Array<Float>):Float
+	{
+		var sum:Float = 0;
+		if (floats.length == 0)
+			return 0;
+		var startIndex = findStupid(floats[0].strumTime, columArray);
+		if (startIndex == -1)
+			return 0;
+		for (i in floats)
+		{
+			sum += columArray[startIndex + 1] - columArray[startIndex];
+			startIndex++;
+		}
 
-        for (i in 0...npsVector.length)
-        {
-            var result = npsVector[i];
+		if (sum == 0)
+			return 0;
 
-            var chunker = floatOne;
-            floatOne = floatTwo;
-            floatTwo = result;
+		return (1375 * (floats.length)) / sum;
+	}
 
-            npsVector[i] = (chunker + floatOne + floatTwo) / 3;
-        }
-    }
+	// based arrayer
+	// basicily smmoth the shit
+	public static function smoothBrain(npsVector:Array<Float>, weirdchamp:Float)
+	{
+		var floatOne = weirdchamp;
+		var floatTwo = weirdchamp;
 
-    // Smooth the shit but less
-    public static function smoothBrainTwo(diffVector:Array<Float>)
-    {
-        var floatZero:Float = 0;
+		for (i in 0...npsVector.length)
+		{
+			var result = npsVector[i];
 
-        for(i in 0...diffVector.length)
-        {
-            var result = diffVector[i];
+			var chunker = floatOne;
+			floatOne = floatTwo;
+			floatTwo = result;
 
-            var fuck = floatZero;
-            floatZero = result;
-            diffVector[i] = (fuck + floatZero) / 2;
-        }
-    }
+			npsVector[i] = (chunker + floatOne + floatTwo) / 3;
+		}
+	}
+
+	// Smooth the shit but less
+	public static function smoothBrainTwo(diffVector:Array<Float>)
+	{
+		var floatZero:Float = 0;
+
+		for (i in 0...diffVector.length)
+		{
+			var result = diffVector[i];
+
+			var fuck = floatZero;
+			floatZero = result;
+			diffVector[i] = (fuck + floatZero) / 2;
+		}
+	}
 }

@@ -59,7 +59,7 @@ class GameOverSubstate extends MusicBeatSubstate
 			endBullshit();
 		}
 
-		if(FlxG.save.data.InstantRespawn)
+		if (FlxG.save.data.InstantRespawn)
 		{
 			LoadingState.loadAndSwitchState(new PlayState());
 		}
@@ -69,10 +69,20 @@ class GameOverSubstate extends MusicBeatSubstate
 			FlxG.sound.music.stop();
 
 			if (PlayState.isStoryMode)
+			{
+				GameplayCustomizeState.freeplayBf = 'bf';
+				GameplayCustomizeState.freeplayDad = 'dad';
+				GameplayCustomizeState.freeplayGf = 'gf';
+				GameplayCustomizeState.freeplayNoteStyle = 'normal';
+				GameplayCustomizeState.freeplayStage = 'stage';
+				GameplayCustomizeState.freeplaySong = 'bopeebo';
+				GameplayCustomizeState.freeplayWeek = 1;
 				FlxG.switchState(new StoryMenuState());
+			}
 			else
 				FlxG.switchState(new FreeplayState());
 			PlayState.loadRep = false;
+			PlayState.stageTesting = false;
 		}
 
 		if (bf.animation.curAnim.name == 'firstDeath' && bf.animation.curAnim.curFrame == 12)
@@ -119,6 +129,7 @@ class GameOverSubstate extends MusicBeatSubstate
 				FlxG.camera.fade(FlxColor.BLACK, 2, false, function()
 				{
 					LoadingState.loadAndSwitchState(new PlayState());
+					PlayState.stageTesting = false;
 				});
 			});
 		}
