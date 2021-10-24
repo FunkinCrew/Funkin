@@ -266,7 +266,7 @@
     ],
     "bpm": 100,
     "sections": 0,
-    "needsVoices": false,
+    "needsVoices": true,
     "player1": "bf",
     "player2": "gf",
     "sectionLengths": [],
