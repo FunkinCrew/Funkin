@@ -430,25 +430,25 @@ class Character extends FlxSprite
 
 		var tex:FlxAtlasFrames = Paths.getSparrowAtlas(data.asset, 'shared');
 		frames = tex;
-
-		for (anim in data.animations)
-		{
-			var frameRate = anim.frameRate == null ? 24 : anim.frameRate;
-			var looped = anim.looped == null ? false : anim.looped;
-			var flipX = anim.flipX == null ? false : anim.flipX;
-			var flipY = anim.flipY == null ? false : anim.flipY;
-
-			if (anim.frameIndices != null)
+		if (frames != null)
+			for (anim in data.animations)
 			{
-				animation.addByIndices(anim.name, anim.prefix, anim.frameIndices, "", frameRate, looped, flipX, flipY);
-			}
-			else
-			{
-				animation.addByPrefix(anim.name, anim.prefix, frameRate, looped, flipX, flipY);
-			}
+				var frameRate = anim.frameRate == null ? 24 : anim.frameRate;
+				var looped = anim.looped == null ? false : anim.looped;
+				var flipX = anim.flipX == null ? false : anim.flipX;
+				var flipY = anim.flipY == null ? false : anim.flipY;
 
-			animOffsets[anim.name] = anim.offsets == null ? [0, 0] : anim.offsets;
-		}
+				if (anim.frameIndices != null)
+				{
+					animation.addByIndices(anim.name, anim.prefix, anim.frameIndices, "", frameRate, looped, flipX, flipY);
+				}
+				else
+				{
+					animation.addByPrefix(anim.name, anim.prefix, frameRate, looped, flipX, flipY);
+				}
+
+				animOffsets[anim.name] = anim.offsets == null ? [0, 0] : anim.offsets;
+			}
 
 		barColor = FlxColor.fromString(data.barColor);
 

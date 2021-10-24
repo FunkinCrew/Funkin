@@ -90,6 +90,8 @@ class StoryMenuState extends MusicBeatState
 	{
 		weekUnlocked = unlockWeeks();
 
+		PlayState.currentSong = "bruh";
+		PlayState.inDaPlay = false;
 		#if FEATURE_DISCORD
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("In the Story Mode Menu", null);

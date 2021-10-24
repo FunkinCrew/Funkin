@@ -56,15 +56,30 @@ class TitleState extends MusicBeatState
 			Debug.logTrace("We loaded " + openfl.Assets.getLibrary("default").assetsLoaded + " assets into the default library");
 		}
 
-		#if !cpp
+		FlxG.autoPause = false;
+
 		FlxG.save.bind('funkin', 'ninjamuffin99');
 
 		PlayerSettings.init();
 
 		KadeEngineData.initSave();
-		#end
+
+		// It doesn't reupdate the list before u restart rn lmao
+		NoteskinHelpers.updateNoteskins();
+
+		FlxG.sound.muteKeys = [FlxKey.fromString(FlxG.save.data.muteBind)];
+		FlxG.sound.volumeDownKeys = [FlxKey.fromString(FlxG.save.data.volDownBind)];
+		FlxG.sound.volumeUpKeys = [FlxKey.fromString(FlxG.save.data.volUpBind)];
+
+		FlxG.mouse.visible = false;
+
+		FlxG.worldBounds.set(0, 0);
+
+		FlxGraphic.defaultPersist = FlxG.save.data.cacheImages;
 
 		MusicBeatState.initSave = true;
+
+		fullscreenBind = FlxKey.fromString(FlxG.save.data.fullscreenBind);
 
 		Highscore.load();
 
@@ -227,7 +242,7 @@ class TitleState extends MusicBeatState
 	}
 
 	var transitioning:Bool = false;
-	var fullscreenBind = FlxKey.fromString(FlxG.save.data.fullscreenBind);
+	var fullscreenBind:FlxKey;
 
 	override function update(elapsed:Float)
 	{

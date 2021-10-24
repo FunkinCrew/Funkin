@@ -51,6 +51,7 @@ class MainMenuState extends MusicBeatState
 	{
 		trace(0 / 2);
 		clean();
+		PlayState.inDaPlay = false;
 		#if FEATURE_DISCORD
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("In the Menus", null);

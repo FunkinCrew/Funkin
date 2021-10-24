@@ -224,8 +224,8 @@ class Note extends FlxSprite
 		if (FlxG.save.data.downscroll && sustainNote)
 			flipY = true;
 
-		var stepHeight = (((0.45 * Conductor.stepCrochet) / (PlayState.songMultiplier < 1 ? PlayState.songMultiplier : 1)) * FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? PlayState.SONG.speed : PlayStateChangeables.scrollSpeed,
-			2));
+		var stepHeight = (((0.45 * Conductor.stepCrochet)) * FlxMath.roundDecimal(PlayStateChangeables.scrollSpeed == 1 ? PlayState.SONG.speed : PlayStateChangeables.scrollSpeed,
+			2)) / PlayState.songMultiplier;
 
 		if (isSustainNote && prevNote != null)
 		{

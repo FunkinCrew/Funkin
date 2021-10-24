@@ -138,6 +138,7 @@ class OptionsMenu extends FlxSubState
 				new NoteskinOption("Change your current noteskin"), new EditorRes("Not showing the editor grid will greatly increase editor performance"),
 				new DistractionsAndEffectsOption("Toggle stage distractions that can hinder your gameplay."),
 				new MiddleScrollOption("Put your lane in the center or on the right."), new HealthBarOption("Toggles health bar visibility"),
+				new JudgementCounter("Show your judgements that you've gotten in the song"),
 				new LaneUnderlayOption("How transparent your lane is, higher = more visible."),
 				new StepManiaOption("Sets the colors of the arrows depending on quantization instead of direction."),
 				new AccuracyOption("Display accuracy information on the info bar."),
@@ -429,7 +430,7 @@ class OptionsMenu extends FlxSubState
 					else
 					{
 						PauseSubState.goBack = true;
-						PlayStateChangeables.scrollSpeed = FlxG.save.data.scrollSpeed;
+						PlayStateChangeables.scrollSpeed = FlxG.save.data.scrollSpeed * PlayState.songMultiplier;
 						close();
 					}
 				}

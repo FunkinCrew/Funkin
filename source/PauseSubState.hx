@@ -37,6 +37,8 @@ class PauseSubState extends MusicBeatSubstate
 	var offsetChanged:Bool = false;
 	var startOffset:Float = PlayState.songOffset;
 
+	var bg:FlxSprite;
+
 	public function new()
 	{
 		super();
@@ -76,7 +78,7 @@ class PauseSubState extends MusicBeatSubstate
 			}
 		}
 
-		var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+		bg = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 		bg.alpha = 0;
 		bg.scrollFactor.set();
 		add(bg);
@@ -143,6 +145,9 @@ class PauseSubState extends MusicBeatSubstate
 			if (i.playing && i.ID != 9000)
 				i.pause();
 		}
+
+		if (bg.alpha > 0.6)
+			bg.alpha = 0.6;
 
 		var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
 

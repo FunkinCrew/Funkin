@@ -94,18 +94,16 @@ class Main extends Sprite
 		// Gotta run this before any assets get loaded.
 		ModCore.initialize();
 
-		#if FEATURE_FILESYSTEM
-		initialState = Caching;
-		game = new FlxGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen);
-		#else
-		game = new FlxGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen);
-		#end
-		addChild(game);
-
 		#if !mobile
 		fpsCounter = new KadeEngineFPS(10, 3, 0xFFFFFF);
 		bitmapFPS = ImageOutline.renderImage(fpsCounter, 1, 0x000000, true);
 		bitmapFPS.smoothing = true;
+		#end
+
+		game = new FlxGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen);
+		addChild(game);
+
+		#if !mobile
 		addChild(fpsCounter);
 		toggleFPS(FlxG.save.data.fps);
 		#end
@@ -117,6 +115,26 @@ class Main extends Sprite
 	var game:FlxGame;
 
 	var fpsCounter:KadeEngineFPS;
+
+	// taken from forever engine, cuz optimization very pog.
+	// thank you shubs :)
+	public static function dumpCache()
+	{
+		///* SPECIAL THANKS TO HAYA
+		@:privateAccess
+		for (key in FlxG.bitmap._cache.keys())
+		{
+			var obj = FlxG.bitmap._cache.get(key);
+			if (obj != null)
+			{
+				Assets.cache.removeBitmapData(key);
+				FlxG.bitmap._cache.remove(key);
+				obj.destroy();
+			}
+		}
+		Assets.cache.clear("songs");
+		// */
+	}
 
 	public function toggleFPS(fpsEnabled:Bool):Void
 	{

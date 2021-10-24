@@ -67,14 +67,21 @@ class FreeplayState extends MusicBeatState
 				diffName = "-hard";
 		}
 
-		array.push(Song.loadFromJson(songId, diffName));
+		array.push(Song.conversionChecks(Song.loadFromJson(songId, diffName)));
 	}
+
+	public static var list:Array<String> = [];
 
 	override function create()
 	{
 		clean();
+		list = CoolUtil.coolTextFile(Paths.txt('data/freeplaySonglist'));
+
+		cached = false;
 
 		populateSongData();
+		PlayState.inDaPlay = false;
+		PlayState.currentSong = "bruh";
 
 		#if !FEATURE_STEPMANIA
 		trace("FEATURE_STEPMANIA was not specified during build, sm file loading is disabled.");
@@ -205,25 +212,27 @@ class FreeplayState extends MusicBeatState
 		super.create();
 	}
 
+	public static var cached:Bool = false;
+
 	/**
 	 * Load song data from the data files.
 	 */
 	static function populateSongData()
 	{
-		var initSonglist = CoolUtil.coolTextFile(Paths.txt('data/freeplaySonglist'));
+		cached = false;
+		list = CoolUtil.coolTextFile(Paths.txt('data/freeplaySonglist'));
 
 		songData = [];
 		songs = [];
 
-		for (i in 0...initSonglist.length)
+		for (i in 0...list.length)
 		{
-			var data:Array<String> = initSonglist[i].split(':');
+			var data:Array<String> = list[i].split(':');
 			var songId = data[0];
 			var meta = new FreeplaySongMetadata(songId, Std.parseInt(data[2]), data[1]);
 
 			var diffs = [];
 			var diffsThatExist = [];
-
 			#if FEATURE_FILESYSTEM
 			if (Paths.doesTextAssetExist(Paths.json('songs/$songId/$songId-hard')))
 				diffsThatExist.push("Hard");
@@ -235,28 +244,34 @@ class FreeplayState extends MusicBeatState
 			if (diffsThatExist.length == 0)
 			{
 				Debug.displayAlert(meta.songName + " Chart", "No difficulties found for chart, skipping.");
-				continue;
 			}
+			else
+			{
 			#else
 			diffsThatExist = ["Easy", "Normal", "Hard"];
 			#end
-			if (diffsThatExist.contains("Easy"))
-				FreeplayState.loadDiff(0, songId, diffs);
-			if (diffsThatExist.contains("Normal"))
-				FreeplayState.loadDiff(1, songId, diffs);
-			if (diffsThatExist.contains("Hard"))
-				FreeplayState.loadDiff(2, songId, diffs);
+				if (diffsThatExist.contains("Easy"))
+					FreeplayState.loadDiff(0, songId, diffs);
+				if (diffsThatExist.contains("Normal"))
+					FreeplayState.loadDiff(1, songId, diffs);
+				if (diffsThatExist.contains("Hard"))
+					FreeplayState.loadDiff(2, songId, diffs);
 
-			meta.diffs = diffsThatExist;
+				meta.diffs = diffsThatExist;
 
-			if (diffsThatExist.length != 3)
-				trace("I ONLY FOUND " + diffsThatExist);
+				if (diffsThatExist.length != 3)
+					trace("I ONLY FOUND " + diffsThatExist);
 
-			FreeplayState.songData.set(songId, diffs);
-			trace('loaded diffs for ' + songId);
-			FreeplayState.songs.push(meta);
+				FreeplayState.songData.set(songId, diffs);
+				trace('loaded diffs for ' + songId);
+				FreeplayState.songs.push(meta);
+
+				sys.thread.Thread.create(() ->
+				{
+					FlxG.sound.cache(Paths.inst(songId));
+				});
+			}
 		}
-		trace('Loaded diffs for ${FreeplayState.songs.length} songs.');
 	}
 
 	public function addSong(songName:String, weekNum:Int, songCharacter:String)
@@ -430,7 +445,7 @@ class FreeplayState extends MusicBeatState
 		{
 			return;
 		}
-		PlayState.SONG = Song.conversionChecks(hmm);
+		PlayState.SONG = hmm;
 
 		var character = dad ? PlayState.SONG.player2 : PlayState.SONG.player1;
 
@@ -445,11 +460,11 @@ class FreeplayState extends MusicBeatState
 	}
 
 	/**
-	 * Load into a song in free play, by name.
-	 * This is a static function, so you can call it anywhere.
-	 * @param songName The name of the song to load. Use the human readable name, with spaces.
-	 * @param isCharting If true, load into the Chart Editor instead.
-	 */
+ * Load into a song in free play, by name.
+ * This is a static function, so you can call it anywhere.
+ * @param songName The name of the song to load. Use the human readable name, with spaces.
+ * @param isCharting If true, load into the Chart Editor instead.
+ */
 	public static function loadSongInFreePlay(songName:String, difficulty:Int, isCharting:Bool, reloadSong:Bool = false)
 	{
 		// Make sure song data is initialized first.
@@ -470,7 +485,7 @@ class FreeplayState extends MusicBeatState
 			return;
 		}
 
-		PlayState.SONG = Song.conversionChecks(currentSongData);
+		PlayState.SONG = currentSongData;
 		PlayState.isStoryMode = false;
 		PlayState.storyDifficulty = difficulty;
 		PlayState.storyWeek = songs[curSelected].week;
@@ -641,9 +656,7 @@ class FreeplayState extends MusicBeatState
 			}
 		}
 	}
-}
-
-class FreeplaySongMetadata
+} class FreeplaySongMetadata
 {
 	public var songName:String = "";
 	public var week:Int = 0;

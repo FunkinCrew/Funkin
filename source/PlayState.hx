@@ -117,6 +117,8 @@ class PlayState extends MusicBeatState
 	public static var loadRep:Bool = false;
 	public static var inResults:Bool = false;
 
+	public static var inDaPlay:Bool = false;
+
 	public static var noteBools:Array<Bool> = [false, false, false, false];
 
 	var songLength:Float = 0;
@@ -130,7 +132,7 @@ class PlayState extends MusicBeatState
 	var detailsPausedText:String = "";
 	#end
 
-	private var vocals:FlxSound;
+	public var vocals:FlxSound;
 
 	public static var isSM:Bool = false;
 	#if FEATURE_STEPMANIA
@@ -228,6 +230,8 @@ class PlayState extends MusicBeatState
 
 	var talking:Bool = true;
 
+	public static var currentSong = "noneYet";
+
 	public var songScore:Int = 0;
 
 	var songScoreDef:Int = 0;
@@ -313,7 +317,14 @@ class PlayState extends MusicBeatState
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
 
-		sicks = 0;
+		inDaPlay = true;
+
+		if (currentSong != SONG.songName)
+		{
+			currentSong = SONG.songName;
+			Main.dumpCache();
+		}
+
 		bads = 0;
 		shits = 0;
 		goods = 0;
@@ -327,7 +338,7 @@ class PlayState extends MusicBeatState
 
 		PlayStateChangeables.useDownscroll = FlxG.save.data.downscroll;
 		PlayStateChangeables.safeFrames = FlxG.save.data.frames;
-		PlayStateChangeables.scrollSpeed = FlxG.save.data.scrollSpeed;
+		PlayStateChangeables.scrollSpeed = FlxG.save.data.scrollSpeed * songMultiplier;
 		PlayStateChangeables.botPlay = FlxG.save.data.botplay;
 		PlayStateChangeables.Optimize = FlxG.save.data.optimize;
 		PlayStateChangeables.zoom = FlxG.save.data.zoom;
@@ -442,7 +453,7 @@ class PlayState extends MusicBeatState
 
 				var endBeat:Float = Math.POSITIVE_INFINITY;
 
-				var bpm = i.value;
+				var bpm = i.value * songMultiplier;
 
 				TimingStruct.addTiming(beat, bpm, endBeat, 0); // offset in this case = start time since we don't have a offset
 
@@ -450,8 +461,10 @@ class PlayState extends MusicBeatState
 				{
 					var data = TimingStruct.AllTimings[currentIndex - 1];
 					data.endBeat = beat;
-					data.length = (data.endBeat - data.startBeat) / (data.bpm / 60);
-					TimingStruct.AllTimings[currentIndex].startTime = data.startTime + data.length;
+					data.length = ((data.endBeat - data.startBeat) / (data.bpm / 60)) / songMultiplier;
+					var step = ((60 / data.bpm) * 1000) / 4;
+					TimingStruct.AllTimings[currentIndex].startStep = Math.floor((((data.endBeat / (data.bpm / 60)) * 1000) / step) / songMultiplier);
+					TimingStruct.AllTimings[currentIndex].startTime = data.startTime + data.length / songMultiplier;
 				}
 
 				currentIndex++;
@@ -667,7 +680,7 @@ class PlayState extends MusicBeatState
 			doof.finishThing = startCountdown;
 		}
 
-		if (!isStoryMode)
+		if (!isStoryMode && songMultiplier == 1)
 		{
 			var firstNoteTime = Math.POSITIVE_INFINITY;
 			var playerTurn = false;
@@ -726,18 +739,18 @@ class PlayState extends MusicBeatState
 			strumLine.y = FlxG.height - 165;
 
 		laneunderlayOpponent = new FlxSprite(0, 0).makeGraphic(110 * 4 + 50, FlxG.height * 2);
-		laneunderlayOpponent.alpha = 1 - FlxG.save.data.laneTransparency;
+		laneunderlayOpponent.alpha = FlxG.save.data.laneTransparency;
 		laneunderlayOpponent.color = FlxColor.BLACK;
 		laneunderlayOpponent.scrollFactor.set();
 
 		laneunderlay = new FlxSprite(0, 0).makeGraphic(110 * 4 + 50, FlxG.height * 2);
-		laneunderlay.alpha = 1 - FlxG.save.data.laneTransparency;
+		laneunderlay.alpha = FlxG.save.data.laneTransparency;
 		laneunderlay.color = FlxColor.BLACK;
 		laneunderlay.scrollFactor.set();
 
 		if (FlxG.save.data.laneUnderlay && !PlayStateChangeables.Optimize)
 		{
-			if (!FlxG.save.data.middleScroll)
+			if (!FlxG.save.data.middleScroll || executeModchart)
 			{
 				add(laneunderlayOpponent);
 			}
@@ -1397,7 +1410,7 @@ class PlayState extends MusicBeatState
 		}
 	}
 
-	var songStarted = false;
+	public var songStarted = false;
 
 	public var doAnything = false;
 
@@ -1561,7 +1574,6 @@ class PlayState extends MusicBeatState
 			#end
 		}
 
-		FlxG.sound.music.onComplete = endSong;
 		FlxG.sound.music.pause();
 
 		if (SONG.needsVoices && !PlayState.isSM)
@@ -1570,9 +1582,9 @@ class PlayState extends MusicBeatState
 			FlxG.sound.cache(Paths.inst(PlayState.SONG.songId));
 
 		// Song duration in a float, useful for the time left feature
-		songLength = (FlxG.sound.music.length / 1000);
+		songLength = ((FlxG.sound.music.length / songMultiplier) / 1000);
 
-		Conductor.crochet = ((60 / (SONG.bpm) * 1000)) / songMultiplier;
+		Conductor.crochet = ((60 / (SONG.bpm) * 1000));
 		Conductor.stepCrochet = Conductor.crochet / 4;
 
 		if (FlxG.save.data.songPosition)
@@ -1601,7 +1613,7 @@ class PlayState extends MusicBeatState
 			songName.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 			songName.scrollFactor.set();
 
-			songName.text = SONG.songName + ' (' + FlxStringUtil.formatTime(songLength * songRate, false) + ')';
+			songName.text = SONG.songName + ' (' + FlxStringUtil.formatTime(songLength, false) + ')';
 			songName.y = songPosBG.y + (songPosBG.height / 3);
 
 			add(songName);
@@ -1632,7 +1644,7 @@ class PlayState extends MusicBeatState
 
 			for (songNotes in section.sectionNotes)
 			{
-				var daStrumTime:Float = songNotes[0];
+				var daStrumTime:Float = songNotes[0] / songMultiplier;
 				if (daStrumTime < 0)
 					daStrumTime = 0;
 				var daNoteData:Int = Std.int(songNotes[1] % 4);
@@ -1655,7 +1667,7 @@ class PlayState extends MusicBeatState
 				if (!gottaHitNote && PlayStateChangeables.Optimize)
 					continue;
 
-				swagNote.sustainLength = TimingStruct.getTimeFromBeat((TimingStruct.getBeatFromTime(songNotes[2])));
+				swagNote.sustainLength = TimingStruct.getTimeFromBeat((TimingStruct.getBeatFromTime(songNotes[2] / songMultiplier)));
 				swagNote.scrollFactor.set(0, 0);
 
 				var susLength:Float = swagNote.sustainLength;
@@ -1934,12 +1946,13 @@ class PlayState extends MusicBeatState
 
 	function resyncVocals():Void
 	{
-		vocals.pause();
+		vocals.stop();
+		FlxG.sound.music.stop();
 
 		FlxG.sound.music.play();
-		Conductor.songPosition = FlxG.sound.music.time;
-		vocals.time = FlxG.sound.music.time;
 		vocals.play();
+		FlxG.sound.music.time = Conductor.songPosition * songMultiplier;
+		vocals.time = FlxG.sound.music.time;
 
 		@:privateAccess
 		{
@@ -1968,13 +1981,12 @@ class PlayState extends MusicBeatState
 		#end
 	}
 
-	private var paused:Bool = false;
+	public var paused:Bool = false;
+
 	var startedCountdown:Bool = false;
 	var canPause:Bool = true;
 	var nps:Int = 0;
 	var maxNPS:Int = 0;
-
-	public static var songRate = 1.5;
 
 	public var stopUpdate = false;
 	public var removedVideo = false;
@@ -2054,8 +2066,10 @@ class PlayState extends MusicBeatState
 				// Song ends abruptly on slow rate even with second condition being deleted,
 				// and if it's deleted on songs like cocoa then it would end without finishing instrumental fully,
 				// so no reason to delete it at all
-				if (unspawnNotes.length == 0 && notes.length == 0 && FlxG.sound.music.time > FlxG.sound.music.length - 100)
+				if (unspawnNotes.length == 0 && notes.length == 0 && FlxG.sound.music.time / songMultiplier > (songLength - 100))
 				{
+					Debug.logTrace("we're fuckin ending the song ");
+
 					endingSong = true;
 					new FlxTimer().start(2, function(timer)
 					{
@@ -2078,7 +2092,7 @@ class PlayState extends MusicBeatState
 
 					var endBeat:Float = Math.POSITIVE_INFINITY;
 
-					var bpm = i.value;
+					var bpm = i.value * songMultiplier;
 
 					TimingStruct.addTiming(beat, bpm, endBeat, 0); // offset in this case = start time since we don't have a offset
 
@@ -2086,10 +2100,10 @@ class PlayState extends MusicBeatState
 					{
 						var data = TimingStruct.AllTimings[currentIndex - 1];
 						data.endBeat = beat;
-						data.length = (data.endBeat - data.startBeat) / (data.bpm / 60);
+						data.length = ((data.endBeat - data.startBeat) / (data.bpm / 60)) / songMultiplier;
 						var step = ((60 / data.bpm) * 1000) / 4;
-						TimingStruct.AllTimings[currentIndex].startStep = Math.floor(((data.endBeat / (data.bpm / 60)) * 1000) / step);
-						TimingStruct.AllTimings[currentIndex].startTime = data.startTime + data.length;
+						TimingStruct.AllTimings[currentIndex].startStep = Math.floor((((data.endBeat / (data.bpm / 60)) * 1000) / step) / songMultiplier);
+						TimingStruct.AllTimings[currentIndex].startTime = data.startTime + data.length / songMultiplier;
 					}
 
 					currentIndex++;
@@ -2146,8 +2160,6 @@ class PlayState extends MusicBeatState
 			if (GlobalVideo.get().ended && !removedVideo)
 			{
 				remove(videoSprite);
-				FlxG.stage.window.onFocusOut.remove(focusOut);
-				FlxG.stage.window.onFocusIn.remove(focusIn);
 				removedVideo = true;
 			}
 		}
@@ -2274,8 +2286,6 @@ class PlayState extends MusicBeatState
 			{
 				GlobalVideo.get().stop();
 				remove(videoSprite);
-				FlxG.stage.window.onFocusOut.remove(focusOut);
-				FlxG.stage.window.onFocusIn.remove(focusIn);
 				removedVideo = true;
 			}
 			cannotDie = true;
@@ -2301,8 +2311,6 @@ class PlayState extends MusicBeatState
 			{
 				GlobalVideo.get().stop();
 				remove(videoSprite);
-				FlxG.stage.window.onFocusOut.remove(focusOut);
-				FlxG.stage.window.onFocusIn.remove(focusIn);
 				removedVideo = true;
 			}
 			cannotDie = true;
@@ -2357,8 +2365,6 @@ class PlayState extends MusicBeatState
 			{
 				GlobalVideo.get().stop();
 				remove(videoSprite);
-				FlxG.stage.window.onFocusOut.remove(focusOut);
-				FlxG.stage.window.onFocusIn.remove(focusIn);
 				removedVideo = true;
 			}
 
@@ -2384,8 +2390,6 @@ class PlayState extends MusicBeatState
 				{
 					GlobalVideo.get().stop();
 					remove(videoSprite);
-					FlxG.stage.window.onFocusOut.remove(focusOut);
-					FlxG.stage.window.onFocusIn.remove(focusIn);
 					removedVideo = true;
 				}
 				new FlxTimer().start(0.3, function(tmr:FlxTimer)
@@ -2481,6 +2485,7 @@ class PlayState extends MusicBeatState
 			FlxG.sound.music.pause();
 			vocals.pause();
 			Conductor.songPosition = skipTo;
+			Conductor.rawPosition = skipTo;
 
 			FlxG.sound.music.time = Conductor.songPosition;
 			FlxG.sound.music.play();
@@ -2509,7 +2514,7 @@ class PlayState extends MusicBeatState
 		else
 		{
 			// Conductor.songPosition = FlxG.sound.music.time;
-			Conductor.songPosition += FlxG.elapsed * (1000 * songMultiplier);
+			Conductor.songPosition += FlxG.elapsed * 1000;
 			Conductor.rawPosition = FlxG.sound.music.time;
 			/*@:privateAccess
 				{
@@ -2533,16 +2538,16 @@ class PlayState extends MusicBeatState
 					// trace('MISSED FRAME');
 				}
 
-				var curTime:Float = Conductor.songPosition;
+				var curTime:Float = FlxG.sound.music.time / songMultiplier;
 				if (curTime < 0)
 					curTime = 0;
 
-				var secondsTotal:Int = Math.floor((curTime - songLength) / 1000);
+				var secondsTotal:Int = Math.floor(((curTime - songLength) / 1000));
 				if (secondsTotal < 0)
 					secondsTotal = 0;
 
 				if (FlxG.save.data.songPosition)
-					songName.text = SONG.songName + ' (' + FlxStringUtil.formatTime(songLength - secondsTotal, false) + ')';
+					songName.text = SONG.songName + ' (' + FlxStringUtil.formatTime((songLength - secondsTotal), false) + ')';
 			}
 
 			// Conductor.lastSongPos = FlxG.sound.music.time;
@@ -2894,7 +2899,6 @@ class PlayState extends MusicBeatState
 								- daNote.noteYOff;
 						if (daNote.isSustainNote)
 						{
-							// Correct downscroll positioning
 							daNote.y -= daNote.height - stepHeight;
 
 							// If not in botplay, only clip sustain notes when properly hit, botplay gets to clip it everytime
@@ -2912,6 +2916,15 @@ class PlayState extends MusicBeatState
 								swagRect.y = daNote.frameHeight - swagRect.height;
 
 								daNote.clipRect = swagRect;
+							}
+						}
+
+						if (daNote.isParent)
+						{
+							for (i in 0...daNote.children.length)
+							{
+								var slide = daNote.children[i];
+								slide.y = daNote.y - slide.height;
 							}
 						}
 					}
@@ -3279,8 +3292,6 @@ class PlayState extends MusicBeatState
 		if (useVideo)
 		{
 			GlobalVideo.get().stop();
-			FlxG.stage.window.onFocusOut.remove(focusOut);
-			FlxG.stage.window.onFocusIn.remove(focusIn);
 			PlayState.instance.remove(PlayState.instance.videoSprite);
 		}
 
@@ -3289,7 +3300,7 @@ class PlayState extends MusicBeatState
 		else
 		{
 			PlayStateChangeables.botPlay = false;
-			PlayStateChangeables.scrollSpeed = 1;
+			PlayStateChangeables.scrollSpeed = 1 / songMultiplier;
 			PlayStateChangeables.useDownscroll = false;
 		}
 
@@ -3457,7 +3468,7 @@ class PlayState extends MusicBeatState
 		}
 	}
 
-	var endingSong:Bool = false;
+	public var endingSong:Bool = false;
 
 	var hits:Array<Float> = [];
 	var offsetTest:Float = 0;
@@ -4047,35 +4058,10 @@ class PlayState extends MusicBeatState
 
 	public var videoSprite:FlxSprite;
 
-	public function focusOut()
-	{
-		if (paused)
-			return;
-		persistentUpdate = false;
-		persistentDraw = true;
-		paused = true;
-
-		if (FlxG.sound.music != null)
-		{
-			FlxG.sound.music.pause();
-			vocals.pause();
-		}
-
-		openSubState(new PauseSubState());
-	}
-
-	public function focusIn()
-	{
-		// nada
-	}
-
 	public function backgroundVideo(source:String) // for background videos
 	{
 		#if FEATURE_WEBM
 		useVideo = true;
-
-		FlxG.stage.window.onFocusOut.add(focusOut);
-		FlxG.stage.window.onFocusIn.add(focusIn);
 
 		var ourSource:String = "assets/videos/daWeirdVid/dontDelete.webm";
 		// WebmPlayer.SKIP_STEP_LIMIT = 90;
@@ -4401,7 +4387,7 @@ class PlayState extends MusicBeatState
 	override function stepHit()
 	{
 		super.stepHit();
-		if (FlxG.sound.music.time > Conductor.songPosition + 20 || FlxG.sound.music.time < Conductor.songPosition - 20)
+		if (FlxG.sound.music.time > Conductor.rawPosition + 20 || FlxG.sound.music.time < Conductor.rawPosition - 20)
 		{
 			resyncVocals();
 		}
@@ -4480,7 +4466,7 @@ class PlayState extends MusicBeatState
 
 		if (!endingSong && currentSection != null)
 		{
-			if (allowedToHeadbang && curBeat % gfSpeed == 0)
+			if (allowedToHeadbang)
 			{
 				gf.dance();
 			}

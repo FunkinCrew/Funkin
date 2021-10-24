@@ -1,3 +1,5 @@
+import flixel.math.FlxMath;
+import flixel.util.FlxColor;
 import openfl.Lib;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
@@ -65,10 +67,37 @@ class KadeEngineFPS extends TextField
 		(cast(Lib.current.getChildAt(0), Main)).addChild(bitmap);
 	}
 
+	var array:Array<FlxColor> = [
+		FlxColor.fromRGB(148, 0, 211),
+		FlxColor.fromRGB(75, 0, 130),
+		FlxColor.fromRGB(0, 0, 255),
+		FlxColor.fromRGB(0, 255, 0),
+		FlxColor.fromRGB(255, 255, 0),
+		FlxColor.fromRGB(255, 127, 0),
+		FlxColor.fromRGB(255, 0, 0)
+	];
+
+	var skippedFrames = 0;
+
+	public static var currentColor = 0;
+
 	// Event Handlers
 	@:noCompletion
 	private #if !flash override #end function __enterFrame(deltaTime:Float):Void
 	{
+		if (MusicBeatState.initSave)
+			if (FlxG.save.data.fpsRain)
+			{
+				if (currentColor >= array.length)
+					currentColor = 0;
+				currentColor = Math.round(FlxMath.lerp(0, array.length, skippedFrames / (FlxG.save.data.fpsCap / 3)));
+				(cast(Lib.current.getChildAt(0), Main)).changeFPSColor(array[currentColor]);
+				currentColor++;
+				skippedFrames++;
+				if (skippedFrames > (FlxG.save.data.fpsCap / 3))
+					skippedFrames = 0;
+			}
+
 		currentTime += deltaTime;
 		times.push(currentTime);
 

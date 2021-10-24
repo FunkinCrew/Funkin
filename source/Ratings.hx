@@ -96,12 +96,12 @@ class Ratings
 
 	public static function judgeNote(noteDiff:Float)
 	{
-		var diff = Math.abs(noteDiff) / (PlayState.songMultiplier >= 1 ? PlayState.songMultiplier : 1);
+		var diff = Math.abs(noteDiff);
 		for (index in 0...timingWindows.length) // based on 4 timing windows, will break with anything else
 		{
-			var time = timingWindows[index] * Conductor.timeScale;
+			var time = timingWindows[index];
 			var nextTime = index + 1 > timingWindows.length - 1 ? 0 : timingWindows[index + 1];
-			if (diff < time && diff >= nextTime * Conductor.timeScale)
+			if (diff < time && diff >= nextTime)
 			{
 				switch (index)
 				{
