@@ -227,7 +227,16 @@ class PauseSubState extends MusicBeatSubstate
 					PlayState.instance.clean();
 
 					if (PlayState.isStoryMode)
+					{
+						GameplayCustomizeState.freeplayBf = 'bf';
+						GameplayCustomizeState.freeplayDad = 'dad';
+						GameplayCustomizeState.freeplayGf = 'gf';
+						GameplayCustomizeState.freeplayNoteStyle = 'normal';
+						GameplayCustomizeState.freeplayStage = 'stage';
+						GameplayCustomizeState.freeplaySong = 'bopeebo';
+						GameplayCustomizeState.freeplayWeek = 1;
 						FlxG.switchState(new StoryMenuState());
+					}
 					else
 						FlxG.switchState(new FreeplayState());
 			}

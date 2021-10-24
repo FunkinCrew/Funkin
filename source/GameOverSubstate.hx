@@ -69,7 +69,16 @@ class GameOverSubstate extends MusicBeatSubstate
 			FlxG.sound.music.stop();
 
 			if (PlayState.isStoryMode)
+			{
+				GameplayCustomizeState.freeplayBf = 'bf';
+				GameplayCustomizeState.freeplayDad = 'dad';
+				GameplayCustomizeState.freeplayGf = 'gf';
+				GameplayCustomizeState.freeplayNoteStyle = 'normal';
+				GameplayCustomizeState.freeplayStage = 'stage';
+				GameplayCustomizeState.freeplaySong = 'bopeebo';
+				GameplayCustomizeState.freeplayWeek = 1;
 				FlxG.switchState(new StoryMenuState());
+			}
 			else
 				FlxG.switchState(new FreeplayState());
 			PlayState.loadRep = false;
