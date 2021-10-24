@@ -4508,8 +4508,16 @@ class PlayState extends MusicBeatState
 
 			if (curBeat % 16 == 15 && SONG.songId == 'tutorial' && dad.curCharacter == 'gf' && curBeat > 16 && curBeat < 48)
 			{
-				boyfriend.playAnim('hey', true);
-				dad.playAnim('cheer', true);
+				if (vocals.volume != 0)
+				{
+					boyfriend.playAnim('hey', true);
+					dad.playAnim('cheer', true);
+				}
+				else
+				{
+					boyfriend.playAnim('scared', true);
+					dad.playAnim('sad', true);
+				}
 			}
 
 			if (PlayStateChangeables.Optimize)
