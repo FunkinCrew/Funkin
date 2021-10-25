@@ -1854,10 +1854,14 @@ class PlayState extends MusicBeatState
 
 	private function appearStaticArrows():Void
 	{
+		var index = 0;
 		strumLineNotes.forEach(function(babyArrow:FlxSprite)
 		{
 			if (isStoryMode && !FlxG.save.data.middleScroll || executeModchart)
 				babyArrow.alpha = 1;
+			if (index > 3 && FlxG.save.data.middleScroll)
+				babyArrow.alpha = 1;
+			index++;
 		});
 	}
 
