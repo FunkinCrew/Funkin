@@ -30,6 +30,8 @@ Support for custom songs, characters, stages, weeks, cutscenes (dialogue, and vi
 
 * Tricky Mod Devs - Death Notes
 
+* The FNF HD Mod Team - Caution Notes
+
 * Keoiki - Note Splash Animations (I originally got them from [Psych-Engine](https://github.com/ShadowMario/FNF-PsychEngine))
 
 * larsiusprime - Scrollable Drop Down Menu
