@@ -179,7 +179,7 @@ class TitleState extends MusicBeatState
 		}
 		else
 		{
-			logoBl = new FlxSprite(-150, -100);
+			logoBl = new FlxSprite(0, 0);
 			
 			if(FlxG.save.data.watermarks)
 				logoBl.frames = Paths.getSparrowAtlas('title/leatherLogoBumpin');

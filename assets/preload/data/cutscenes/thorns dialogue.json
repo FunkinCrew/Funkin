@@ -1,0 +1,169 @@
+{
+    "type": "dialogue",
+    "dialogueBox": "week6/evilBox",
+    "dialogueBoxSize": 5.4,
+    "dialogueBoxFlips": false,
+    "dialogueMusic": "cutscene/LunchboxScary",
+    "dialogueSections": [
+        {
+            "side": "left",
+            "showOtherPortrait": false,
+            "leftPortrait": {
+                "sprite": "week6/spirit_Port",
+                "x": 130,
+                "y": 100,
+                "antialiased": false,
+                "scale": 6
+            },
+            "rightPortrait": {
+                "sprite": "week6/bf_Port",
+                "x": -150,
+                "y": 45,
+                "antialiased": false,
+                "scale": 5.4
+            },
+            "dialogue": {
+                "text": "Direct contact with real humans, after being trapped in here for so long...",
+                "sound": "cutscene/pixelText",
+                "color": "#FFFFFF",
+                "font": "pixel.otf",
+                "size": 32,
+                "box_Offset": [160,60],
+                "text_Delay": 0.04
+            },
+            "box_FPS": 24,
+            "open_Box": false,
+            "box_Antialiased": false,
+            "box_Anim": "box",
+            "box_Open": "box"
+        },
+        {
+            "side": "left",
+            "showOtherPortrait": false,
+            "leftPortrait": {
+                "sprite": "week6/spirit_Port",
+                "x": 130,
+                "y": 100,
+                "antialiased": false,
+                "scale": 6
+            },
+            "rightPortrait": {
+                "sprite": "week6/bf_Port",
+                "x": -150,
+                "y": 45,
+                "antialiased": false,
+                "scale": 5.4
+            },
+            "dialogue": {
+                "text": "and HER of all people.",
+                "sound": "cutscene/pixelText",
+                "color": "#FFFFFF",
+                "font": "pixel.otf",
+                "size": 32,
+                "box_Offset": [160,60],
+                "text_Delay": 0.04
+            },
+            "box_FPS": 24,
+            "open_Box": false,
+            "box_Antialiased": false,
+            "box_Anim": "box",
+            "box_Open": "box"
+        },
+        {
+            "side": "left",
+            "showOtherPortrait": false,
+            "leftPortrait": {
+                "sprite": "week6/spirit_Port",
+                "x": 130,
+                "y": 100,
+                "antialiased": false,
+                "scale": 6
+            },
+            "rightPortrait": {
+                "sprite": "week6/bf_Port",
+                "x": -150,
+                "y": 45,
+                "antialiased": false,
+                "scale": 5.4
+            },
+            "dialogue": {
+                "text": "I'll make her father pay for what he's done to me and all the others....",
+                "sound": "cutscene/pixelText",
+                "color": "#FFFFFF",
+                "font": "pixel.otf",
+                "size": 32,
+                "box_Offset": [160,60],
+                "text_Delay": 0.04
+            },
+            "box_FPS": 24,
+            "open_Box": false,
+            "box_Antialiased": false,
+            "box_Anim": "box",
+            "box_Open": "box"
+        },
+        {
+            "side": "left",
+            "showOtherPortrait": false,
+            "leftPortrait": {
+                "sprite": "week6/spirit_Port",
+                "x": 130,
+                "y": 100,
+                "antialiased": false,
+                "scale": 6
+            },
+            "rightPortrait": {
+                "sprite": "week6/bf_Port",
+                "x": -150,
+                "y": 45,
+                "antialiased": false,
+                "scale": 5.4
+            },
+            "dialogue": {
+                "text": "I'll beat you and make you take my place.",
+                "sound": "cutscene/pixelText",
+                "color": "#FFFFFF",
+                "font": "pixel.otf",
+                "size": 32,
+                "box_Offset": [160,60],
+                "text_Delay": 0.04
+            },
+            "box_FPS": 24,
+            "open_Box": false,
+            "box_Antialiased": false,
+            "box_Anim": "box",
+            "box_Open": "box"
+        },
+        {
+            "side": "left",
+            "showOtherPortrait": false,
+            "leftPortrait": {
+                "sprite": "week6/spirit_Port",
+                "x": 130,
+                "y": 100,
+                "antialiased": false,
+                "scale": 6
+            },
+            "rightPortrait": {
+                "sprite": "week6/bf_Port",
+                "x": -150,
+                "y": 45,
+                "antialiased": false,
+                "scale": 5.4
+            },
+            "dialogue": {
+                "text": "You don't mind your bodies being borrowed right? It's only fair...",
+                "sound": "cutscene/pixelText",
+                "color": "#FFFFFF",
+                "font": "pixel.otf",
+                "size": 32,
+                "box_Offset": [160,60],
+                "text_Delay": 0.04
+            },
+            "box_FPS": 24,
+            "open_Box": false,
+            "box_Antialiased": false,
+            "box_Anim": "box",
+            "box_Open": "box"
+        }
+    ]
+}

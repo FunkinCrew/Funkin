@@ -1,0 +1,127 @@
+{
+    "type": "dialogue",
+    "dialogueBox": "week6/defaultBox",
+    "dialogueBoxSize": 6,
+    "dialogueBoxFlips": false,
+    "dialogueSections": [
+        {
+            "side": "left",
+            "showOtherPortrait": false,
+            "leftPortrait": {
+                "sprite": "week6/senpaiAngry_Port",
+                "x": 200,
+                "y": 45,
+                "antialiased": false,
+                "scale": 5.4
+            },
+            "rightPortrait": {
+                "sprite": "week6/bf_Port",
+                "x": -150,
+                "y": 45,
+                "antialiased": false,
+                "scale": 5.4
+            },
+            "has_Hand": true,
+            "hand_Sprite": {
+                "sprite": "week6/hand_textbox",
+                "x": -90,
+                "y": -90,
+                "antialiased": false,
+                "scale": 5.4
+            },
+            "dialogue": {
+                "text": "Not bad for an ugly worm.",
+                "sound": "cutscene/pixelText",
+                "color": "#3F2021",
+                "shadowColor": "#D89494",
+                "font": "pixel.otf",
+                "hasShadow": true,
+                "size": 32,
+                "box_Offset": [160,120],
+                "text_Delay": 0.04,
+                "shadowOffset": 2
+            },
+            "box_FPS": 24,
+            "open_Box": false,
+            "box_Antialiased": false,
+            "box_Anim": "box",
+            "box_Open": "box"
+        },
+        {
+            "side": "left",
+            "showOtherPortrait": false,
+            "leftPortrait": {
+                "sprite": "week6/senpaiAngry_Port",
+                "x": 200,
+                "y": 45,
+                "antialiased": false,
+                "scale": 5.4
+            },
+            "rightPortrait": {
+                "sprite": "week6/bf_Port",
+                "x": -150,
+                "y": 45,
+                "antialiased": false,
+                "scale": 5.4
+            },
+            "has_Hand": true,
+            "hand_Sprite": {
+                "sprite": "week6/hand_textbox",
+                "x": -90,
+                "y": -90,
+                "antialiased": false,
+                "scale": 5.4
+            },
+            "dialogue": {
+                "text": "But this time I'll rip your nuts off right after your girlfriend finishes gargling mine.",
+                "sound": "cutscene/pixelText",
+                "color": "#3F2021",
+                "shadowColor": "#D89494",
+                "font": "pixel.otf",
+                "hasShadow": true,
+                "size": 32,
+                "box_Offset": [160,120],
+                "text_Delay": 0.04,
+                "shadowOffset": 2
+            }
+        },
+        {
+            "side": "right",
+            "showOtherPortrait": true,
+            "leftPortrait": {
+                "sprite": "week6/senpaiAngry_Port",
+                "x": 200,
+                "y": 45,
+                "antialiased": false,
+                "scale": 5.4
+            },
+            "rightPortrait": {
+                "sprite": "week6/bf_Port",
+                "x": -150,
+                "y": 45,
+                "antialiased": false,
+                "scale": 5.4
+            },
+            "has_Hand": true,
+            "hand_Sprite": {
+                "sprite": "week6/hand_textbox",
+                "x": -90,
+                "y": -90,
+                "antialiased": false,
+                "scale": 5.4
+            },
+            "dialogue": {
+                "text": "Bop beep be be skdoo bep",
+                "sound": "cutscene/pixelText",
+                "color": "#3F2021",
+                "shadowColor": "#D89494",
+                "font": "pixel.otf",
+                "hasShadow": true,
+                "size": 32,
+                "box_Offset": [160,120],
+                "text_Delay": 0.04,
+                "shadowOffset": 2
+            }
+        }
+    ]
+}

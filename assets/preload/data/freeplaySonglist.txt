@@ -1,19 +1,19 @@
-Tutorial:gf:0
-Bopeebo:dad:1
-Fresh:dad:1
-Dad Battle:dad:1
-Spookeez:spooky:2
-South:spooky:2
-Monster:monster:2
-Pico:pico:3
-Philly Nice:pico:3
-Blammed:pico:3
-Satin Panties:mom:4
-High:mom:4
-M.I.L.F:mom:4
-Cocoa:parents-christmas:5
-Eggnog:parents-christmas:5
-Winter Horrorland:monster:5
-Senpai:senpai:6
-Roses:senpai-angry:6
-Thorns:spirit:6
+Tutorial:gf:0:Easy,Normal,Hard:#B72863
+Bopeebo:dad:1:Easy,Normal,Hard:#C96ED4
+Fresh:dad:1:Easy,Normal,Hard:#C96ED4
+Dad Battle:dad:1:Easy,Normal,Hard:#C96ED4
+Spookeez:spooky:2:Easy,Normal,Hard:#DD8B13
+South:spooky:2:Easy,Normal,Hard:#DD8B13
+Monster:monster:2:Easy,Normal,Hard:#F5FF6B
+Pico:pico:3:Easy,Normal,Hard:#CAE46C
+Philly Nice:pico:3:Easy,Normal,Hard:#CAE46C
+Blammed:pico:3:Easy,Normal,Hard:#CAE46C
+Satin Panties:mom:4:Easy,Normal,Hard:#E46AA1
+High:mom:4:Easy,Normal,Hard:#E46AA1
+M.I.L.F:mom:4:Easy,Normal,Hard:#E46AA1
+Cocoa:parents-christmas:5:Easy,Normal,Hard:#E46AA1
+Eggnog:parents-christmas:5:Easy,Normal,Hard:#E46AA1
+Winter Horrorland:monster:5:Easy,Normal,Hard:#F5FF6B
+Senpai:senpai:6:Easy,Normal,Hard:#FFAA6F
+Roses:senpai-angry:6:Easy,Normal,Hard:#FFAA6F
+Thorns:spirit:6:Easy,Normal,Hard:#FF3C6E

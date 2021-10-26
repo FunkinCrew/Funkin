@@ -1,0 +1,128 @@
+{
+    "type": "dialogue",
+    "dialogueBox": "week6/defaultBox",
+    "dialogueBoxSize": 6,
+    "dialogueMusic": "cutscene/Lunchbox",
+    "dialogueBoxFlips": false,
+    "dialogueSections": [
+        {
+            "side": "left",
+            "showOtherPortrait": false,
+            "leftPortrait": {
+                "sprite": "week6/senpai_Port",
+                "x": 150,
+                "y": 45,
+                "antialiased": false,
+                "scale": 5.4
+            },
+            "rightPortrait": {
+                "sprite": "week6/bf_Port",
+                "x": -150,
+                "y": 45,
+                "antialiased": false,
+                "scale": 5.4
+            },
+            "has_Hand": true,
+            "hand_Sprite": {
+                "sprite": "week6/hand_textbox",
+                "x": -90,
+                "y": -90,
+                "antialiased": false,
+                "scale": 5.4
+            },
+            "dialogue": {
+                "text": "Ah, a new fair maiden has come in search of true love!",
+                "sound": "cutscene/pixelText",
+                "color": "#3F2021",
+                "shadowColor": "#D89494",
+                "font": "pixel.otf",
+                "hasShadow": true,
+                "size": 32,
+                "box_Offset": [160,120],
+                "text_Delay": 0.04,
+                "shadowOffset": 2
+            },
+            "box_FPS": 24,
+            "open_Box": false,
+            "box_Antialiased": false,
+            "box_Anim": "box",
+            "box_Open": "box"
+        },
+        {
+            "side": "left",
+            "showOtherPortrait": false,
+            "leftPortrait": {
+                "sprite": "week6/senpai_Port",
+                "x": 150,
+                "y": 45,
+                "antialiased": false,
+                "scale": 5.4
+            },
+            "rightPortrait": {
+                "sprite": "week6/bf_Port",
+                "x": -150,
+                "y": 45,
+                "antialiased": false,
+                "scale": 5.4
+            },
+            "has_Hand": true,
+            "hand_Sprite": {
+                "sprite": "week6/hand_textbox",
+                "x": -90,
+                "y": -90,
+                "antialiased": false,
+                "scale": 5.4
+            },
+            "dialogue": {
+                "text": "A serenade between gentlemen shall decide where her beautiful heart shall reside.",
+                "sound": "cutscene/pixelText",
+                "color": "#3F2021",
+                "shadowColor": "#D89494",
+                "font": "pixel.otf",
+                "hasShadow": true,
+                "size": 32,
+                "box_Offset": [160,120],
+                "text_Delay": 0.04,
+                "shadowOffset": 2
+            }
+        },
+        {
+            "side": "right",
+            "showOtherPortrait": false,
+            "leftPortrait": {
+                "sprite": "week6/senpai_Port",
+                "x": 150,
+                "y": 45,
+                "antialiased": false,
+                "scale": 5.4
+            },
+            "rightPortrait": {
+                "sprite": "week6/bf_Port",
+                "x": -150,
+                "y": 45,
+                "antialiased": false,
+                "scale": 5.4
+            },
+            "has_Hand": true,
+            "hand_Sprite": {
+                "sprite": "week6/hand_textbox",
+                "x": -90,
+                "y": -90,
+                "antialiased": false,
+                "scale": 5.4
+            },
+            "dialogue": {
+                "text": "Beep bo bop",
+                "sound": "cutscene/pixelText",
+                "color": "#3F2021",
+                "shadowColor": "#D89494",
+                "font": "pixel.otf",
+                "hasShadow": true,
+                "size": 32,
+                "box_Offset": [160,120],
+                "text_Delay": 0.04,
+                "shadowOffset": 2
+            }
+        }
+    ]
+}

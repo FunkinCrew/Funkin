@@ -206,7 +206,7 @@ class FreeplayState extends MusicBeatState
 		textBG.alpha = 0.6;
 		add(textBG);
 
-		var leText:String = "Press SPACE to listen to this Song";
+		var leText:String = "Press SPACE to listen to this Song // Shift + LEFT and RIGHT to change song speed";
 
 		var text:FlxText = new FlxText(textBG.x, textBG.y + 4, FlxG.width, leText, 18);
 		text.setFormat(Paths.font("vcr.ttf"), 18, FlxColor.WHITE, RIGHT);

@@ -39,3 +39,5 @@ Support for custom songs, characters, stages, weeks, cutscenes (dialogue, and vi
 * PolybiusProxy - .mp4 Video Loader Extension (I got this from [Psych-Engine](https://github.com/ShadowMario/FNF-PsychEngine))
 
 * Video LAN Team - People who made VLC Media Player (the thing the game uses to play videos)
+
+* Ronezkj15 - Some Ideas + New Leather Engine Logo

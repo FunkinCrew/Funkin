@@ -41,6 +41,10 @@ class DialogueBox extends FlxSpriteGroup
 
 	var bgFade:FlxSprite;
 
+	var hand:FlxSprite;
+
+	var music:FlxSound;
+
 	public function new(cutscene:Cutscene)
 	{
 		cutscene_Data = cutscene;
@@ -69,6 +73,13 @@ class DialogueBox extends FlxSpriteGroup
 		}
 
 		loadAssets();
+
+		if(cutscene_Data.dialogueMusic != null)
+		{
+			music = FlxG.sound.load(Paths.music(cutscene_Data.dialogueMusic, "shared"), 1, true);
+			music.play();
+			music.fadeIn(1, 0, 0.8);
+		}
 	}
 
 	override function update(elapsed:Float)
@@ -90,6 +101,12 @@ class DialogueBox extends FlxSpriteGroup
 				{
 					exiting = true;
 
+					if(music != null)
+						music.fadeOut(2.2, 0, function(_) {
+							if(music != null)
+								music.stop();
+						});
+
 					new FlxTimer().start(0.2, function(tmr:FlxTimer)
 					{
 						portraitLeft.visible = false;
@@ -108,6 +125,9 @@ class DialogueBox extends FlxSpriteGroup
 	
 						if(alphabet != null)
 							alphabet.alpha -= 1 / 5;
+
+						if(hand != null)
+							hand.alpha -= 1 / 5;
 					}, 5);
 	
 					new FlxTimer().start(1.2, function(tmr:FlxTimer)
@@ -134,6 +154,10 @@ class DialogueBox extends FlxSpriteGroup
 			box = new FlxSprite();
 			box.frames = Paths.getSparrowAtlas("cutscenes/" + cutscene_Data.dialogueBox, "shared");
 			box.scrollFactor.set(0,0);
+			box.updateHitbox();
+
+			box.setGraphicSize(Std.int(box.width * cutscene_Data.dialogueBoxSize));
+			box.updateHitbox();
 		}
 
 		if(current_Section.box_Open != null && current_Section.box_Open != "")
@@ -151,6 +175,9 @@ class DialogueBox extends FlxSpriteGroup
 
 		if(current_Section.box_Antialiased != null)
 			box.antialiasing = current_Section.box_Antialiased != false;
+
+		if(cutscene_Data.dialogueBoxSize == null)
+			cutscene_Data.dialogueBoxSize = 1;
 
 		box.updateHitbox();
 
@@ -197,10 +224,16 @@ class DialogueBox extends FlxSpriteGroup
 		{
 			case "left":
 				portraitLeft.visible = true;
-				box.flipX = true;
+				portraitRight.visible = false;
+
+				if(cutscene_Data.dialogueBoxFlips)
+					box.flipX = true;
 			case "right":
 				portraitRight.visible = true;
-				box.flipX = false;
+				portraitLeft.visible = false;
+
+				if(cutscene_Data.dialogueBoxFlips)
+					box.flipX = false;
 		}
 
 		if(current_Section.showOtherPortrait)
@@ -215,6 +248,29 @@ class DialogueBox extends FlxSpriteGroup
 		add(portraitRight);
 		add(portraitLeft);
 		add(box);
+
+		if(hand != null)
+			remove(hand);
+
+		if(current_Section.has_Hand)
+		{
+			hand = new FlxSprite().loadGraphic(Paths.image("cutscenes/" + current_Section.hand_Sprite.sprite, "shared"));
+			hand.antialiasing = current_Section.hand_Sprite.antialiased;
+
+			if(current_Section.hand_Sprite.scale == null)
+				current_Section.hand_Sprite.scale = 1;
+			
+			hand.setGraphicSize(Std.int(hand.width * current_Section.hand_Sprite.scale));
+			hand.updateHitbox();
+
+			hand.x = (box.x + box.width) - hand.width;
+			hand.y = (box.y + box.height) - hand.height;
+
+			hand.x += current_Section.hand_Sprite.x;
+			hand.y += current_Section.hand_Sprite.y;
+
+			add(hand);
+		}
 
 		if(dialogue_Shadow != null)
 			remove(dialogue_Shadow);
@@ -237,7 +293,7 @@ class DialogueBox extends FlxSpriteGroup
 				);
 	
 				dialogue_Shadow.font = Paths.font(current_Section.dialogue.font);
-				dialogue_Shadow.color = 0xFFD89494;
+				dialogue_Shadow.color = FlxColor.fromString(current_Section.dialogue.shadowColor);
 				add(dialogue_Shadow);
 			}
 	

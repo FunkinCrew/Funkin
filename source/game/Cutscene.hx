@@ -23,6 +23,8 @@ typedef Cutscene = {
     var dialogueSections:Array<DialogueSection>;
     var dialogueMusic:String;
     var dialogueBox:String;
+    var dialogueBoxSize:Null<Float>;
+    var dialogueBoxFlips:Null<Bool>;
 }
 
 typedef DialogueSection = {
