@@ -1,6 +1,10 @@
 # Changelog
 All notable changes will be documented in this file.
 
+## [0.3.3] - 10/25/2021
+### Fixed
+- Version system.
+
 ## [0.3.2] - 10/25/2021
 ### Added
 - Proper Freeplay Colors for default songs.
