@@ -145,6 +145,9 @@ class TitleState extends MusicBeatState
 
 			Main.toggleFPS(FlxG.save.data.fpsCounter);
 			Main.toggleMem(FlxG.save.data.memoryCounter);
+			Main.toggleVers(FlxG.save.data.versionDisplay);
+
+			Main.changeFont(FlxG.save.data.displayFont);
 		}
 
 		version = "Leather Engine" + " Release v" + Application.current.meta.get('version');

@@ -89,6 +89,12 @@ class SaveData {
 
         if(FlxG.save.data.nohit == null)
             FlxG.save.data.nohit = false;
+
+        if(FlxG.save.data.versionDisplay == null)
+            FlxG.save.data.versionDisplay = true;
+
+        if(FlxG.save.data.displayFont == null)
+            FlxG.save.data.displayFont = "_sans";
         
         Conductor.offset = FlxG.save.data.songOffset;
 

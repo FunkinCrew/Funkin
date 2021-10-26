@@ -139,6 +139,8 @@ class BoolOption extends Option
 				Value = FlxG.save.data.chrsAndBGs;
 			case "menuBGs":
 				Value = FlxG.save.data.menuBGs;
+			case "versionDisplay":
+				Value = FlxG.save.data.versionDisplay;
 		}
 
 		return Value;
@@ -214,6 +216,9 @@ class BoolOption extends Option
 				FlxG.save.data.chrsAndBGs = !Option_Checked;
 			case "menuBGs":
 				FlxG.save.data.menuBGs = !Option_Checked;
+			case "versionDisplay":
+				FlxG.save.data.versionDisplay = !Option_Checked;
+				Main.toggleVers(FlxG.save.data.versionDisplay);
 		}
 
         if(Option_Value != "muted")
@@ -541,3 +546,4 @@ class StringSaveOption extends Option
 
 class AccuracyOption extends StringSaveOption { override function SetDataIGuess() { FlxG.save.data.accuracyMode = Data; super.SetDataIGuess(); } }
 class CutsceneOption extends StringSaveOption { override function SetDataIGuess() { FlxG.save.data.cutscenePlays = Data; super.SetDataIGuess(); } }
+class DisplayFontOption extends StringSaveOption { override function SetDataIGuess() { FlxG.save.data.displayFont = Data; super.SetDataIGuess(); Main.changeFont(FlxG.save.data.displayFont); } }

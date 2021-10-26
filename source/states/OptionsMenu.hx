@@ -27,6 +27,7 @@ import ui.ControlsBox;
 import game.Song;
 import debuggers.StageMakingState;
 import game.Highscore;
+import openfl.utils.Assets as OpenFLAssets;
 
 class OptionsMenu extends MusicBeatState
 {
@@ -61,19 +62,10 @@ class OptionsMenu extends MusicBeatState
 			new BoolOption("Enemy Note Glow", "enemyGlow", FlxG.save.data.enemyGlow, 1),
 			new BoolOption("Note Splashes", "noteSplashes", FlxG.save.data.noteSplashes, 1),
 			new BoolOption("Note Accuracy Text", "msText", FlxG.save.data.msText, 2),
-			new BoolOption("FPS Counter", "fpsCounter", FlxG.save.data.fpsCounter, 3),
-			new BoolOption("Memory Counter", "memoryCounter", FlxG.save.data.memoryCounter, 4),
+			new PageOption("Info Display", 5, "Info Display"),
 			new PageOption("Optimizations", 5, "Optimizations"),
 			new MaxFPSOption("Max FPS", 6),
 			new UISkinSelectOption("UI Skin", 7)
-		],
-		[
-			"Optimizations",
-			new PageOption("Back", 0, "Graphics"),
-			new BoolOption("Antialiasing", "antialiasing", FlxG.save.data.antialiasing, 1),
-			new BoolOption("Health Icons", "healthIcons", FlxG.save.data.healthIcons, 2),
-			new BoolOption("Chars And BGs", "chrsAndBGs", FlxG.save.data.chrsAndBGs, 3),
-			new BoolOption("Menu Backgrounds", "menuBGs", FlxG.save.data.menuBGs, 4)
 		],
 		[
 			"Tools",
@@ -92,6 +84,22 @@ class OptionsMenu extends MusicBeatState
 			new BoolOption("Freeplay Music", "freeplayMusic", FlxG.save.data.freeplayMusic, 4),
 			new BoolOption("Discord RPC", "discordRPC", FlxG.save.data.discordRPC, 5),
 			new CutsceneOption("Cutscenes Play On", ["story","freeplay","both"], FlxG.save.data.cutscenePlays, 6)
+		],
+		[
+			"Optimizations",
+			new PageOption("Back", 0, "Graphics"),
+			new BoolOption("Antialiasing", "antialiasing", FlxG.save.data.antialiasing, 1),
+			new BoolOption("Health Icons", "healthIcons", FlxG.save.data.healthIcons, 2),
+			new BoolOption("Chars And BGs", "chrsAndBGs", FlxG.save.data.chrsAndBGs, 3),
+			new BoolOption("Menu Backgrounds", "menuBGs", FlxG.save.data.menuBGs, 4)
+		],
+		[
+			"Info Display",
+			new PageOption("Back", 0, "Graphics"),
+			new DisplayFontOption("Display Font", ["_sans", OpenFLAssets.getFont(Paths.font("vcr.ttf")).fontName, OpenFLAssets.getFont(Paths.font("pixel.otf")).fontName], FlxG.save.data.displayFont, 6),
+			new BoolOption("FPS Counter", "fpsCounter", FlxG.save.data.fpsCounter, 3),
+			new BoolOption("Memory Counter", "memoryCounter", FlxG.save.data.memoryCounter, 4),
+			new BoolOption("Version Display", "versionDisplay", FlxG.save.data.versionDisplay, 4)
 		]
 	];
 

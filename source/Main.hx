@@ -1,5 +1,6 @@
 package;
 
+import openfl.text.TextFormat;
 import flixel.FlxG;
 import ui.SimpleInfoDisplay;
 import ui.MemoryCounter;
@@ -78,7 +79,7 @@ class Main extends Sprite
 		addChild(new FlxGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen));
 
 		#if !mobile
-		display = new SimpleInfoDisplay(10, 3, 0xFFFFFF);
+		display = new SimpleInfoDisplay(10, 3, 0xFFFFFF, FlxG.save.data.displayFont);
 		addChild(display);
 		#end
 	}
@@ -93,6 +94,16 @@ class Main extends Sprite
 	public static function toggleMem(memEnabled:Bool):Void
 	{
 		display.infoDisplayed[1] = memEnabled;
+	}
+	
+	public static function toggleVers(versEnabled:Bool):Void
+	{
+		display.infoDisplayed[2] = versEnabled;
+	}
+
+	public static function changeFont(font:String):Void
+	{
+		display.defaultTextFormat = new TextFormat(font, (font == "_sans" ? 12 : 14), display.textColor);
 	}
 
 	/* cool kade functions D) */

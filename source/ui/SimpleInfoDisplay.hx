@@ -16,30 +16,30 @@ import openfl.text.TextFormat;
 
 class SimpleInfoDisplay extends TextField
 {
-    //                                      fps   memory
-    public var infoDisplayed:Array<Bool> = [true, true];
+    //                                      fps   mem   version
+    public var infoDisplayed:Array<Bool> = [true, true, true];
 
 	public var memPeak:Float = 0;
     public var currentFPS:Int = 0;
 
     var fpsCounter:FPS;
 
-	public function new(inX:Float = 10.0, inY:Float = 10.0, inCol:Int = 0x000000) 
+	public function new(inX:Float = 10.0, inY:Float = 10.0, inCol:Int = 0x000000, ?font:String) 
 	{
 		super();
 
 		x = inX;
 		y = inY;
 		selectable = false;
-		defaultTextFormat = new TextFormat("_sans", 12, inCol);
+		defaultTextFormat = new TextFormat(font != null ? font : openfl.utils.Assets.getFont(Paths.font("vcr.ttf")).fontName, (font == "_sans" ? 12 : 14), inCol);
 
         fpsCounter = new FPS(10000, 10000, inCol);
         fpsCounter.visible = false;
         Lib.current.addChild(fpsCounter);
 
 		addEventListener(Event.ENTER_FRAME, onEnter);
-		width = 150;
-		height = 70;
+		width = FlxG.width;
+		height = FlxG.height;
 	}
 
 	private function onEnter(event:Event)
@@ -62,6 +62,9 @@ class SimpleInfoDisplay extends TextField
                         case 1:
                             // Memory
                             memory_Function();
+                        case 2:
+                            // Version
+                            version_Function();
                     }
 
                     text += "\n";
@@ -84,5 +87,10 @@ class SimpleInfoDisplay extends TextField
 		if(mem > memPeak) memPeak = mem;
 
 		text += "MEM: " + mem + " MB\n" + "MEM peak: " + memPeak + " MB";
+    }
+
+    function version_Function()
+    {
+        text += "Version: " + Application.current.meta.get('version');
     }
 }
