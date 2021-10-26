@@ -202,37 +202,6 @@ class Character extends FlxSprite
 
 				flipX = true;
 
-			case 'bf':
-				var tex = Paths.getSparrowAtlas('BOYFRIEND', 'shared', true);
-				frames = tex;
-
-				trace(tex.frames.length);
-
-				animation.addByPrefix('idle', 'BF idle dance', 24, false);
-				animation.addByPrefix('singUP', 'BF NOTE UP0', 24, false);
-				animation.addByPrefix('singLEFT', 'BF NOTE LEFT0', 24, false);
-				animation.addByPrefix('singRIGHT', 'BF NOTE RIGHT0', 24, false);
-				animation.addByPrefix('singDOWN', 'BF NOTE DOWN0', 24, false);
-				animation.addByPrefix('singUPmiss', 'BF NOTE UP MISS', 24, false);
-				animation.addByPrefix('singLEFTmiss', 'BF NOTE LEFT MISS', 24, false);
-				animation.addByPrefix('singRIGHTmiss', 'BF NOTE RIGHT MISS', 24, false);
-				animation.addByPrefix('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
-				animation.addByPrefix('hey', 'BF HEY', 24, false);
-
-				animation.addByPrefix('firstDeath', "BF dies", 24, false);
-				animation.addByPrefix('deathLoop', "BF Dead Loop", 24, false);
-				animation.addByPrefix('deathConfirm', "BF Dead confirm", 24, false);
-
-				animation.addByPrefix('scared', 'BF idle shaking', 24);
-
-				loadOffsetFile(curCharacter);
-
-				playAnim('idle');
-
-				barColor = 0xFF31b0d1;
-
-				flipX = true;
-
 			case 'bf-christmas':
 				var tex = Paths.getSparrowAtlas('bfChristmas', 'shared', true);
 				frames = tex;
@@ -316,40 +285,6 @@ class Character extends FlxSprite
 				flipX = true;
 
 				barColor = 0xFF31b0d1;
-
-			case 'senpai':
-				frames = Paths.getSparrowAtlas('senpai', 'shared', true);
-				animation.addByPrefix('idle', 'Senpai Idle', 24, false);
-				animation.addByPrefix('singUP', 'SENPAI UP NOTE', 24, false);
-				animation.addByPrefix('singLEFT', 'SENPAI LEFT NOTE', 24, false);
-				animation.addByPrefix('singRIGHT', 'SENPAI RIGHT NOTE', 24, false);
-				animation.addByPrefix('singDOWN', 'SENPAI DOWN NOTE', 24, false);
-
-				loadOffsetFile(curCharacter);
-				barColor = 0xFFffaa6f;
-
-				playAnim('idle');
-
-				setGraphicSize(Std.int(width * 6));
-				updateHitbox();
-
-				antialiasing = false;
-			case 'senpai-angry':
-				frames = Paths.getSparrowAtlas('senpai', 'shared', true);
-				animation.addByPrefix('idle', 'Angry Senpai Idle', 24, false);
-				animation.addByPrefix('singUP', 'Angry Senpai UP NOTE', 24, false);
-				animation.addByPrefix('singLEFT', 'Angry Senpai LEFT NOTE', 24, false);
-				animation.addByPrefix('singRIGHT', 'Angry Senpai RIGHT NOTE', 24, false);
-				animation.addByPrefix('singDOWN', 'Angry Senpai DOWN NOTE', 24, false);
-
-				loadOffsetFile(curCharacter);
-				barColor = 0xFFffaa6f;
-				playAnim('idle');
-
-				setGraphicSize(Std.int(width * 6));
-				updateHitbox();
-
-				antialiasing = false;
 
 			case 'spirit':
 				frames = Paths.getPackerAtlas('spirit', 'shared', true);
@@ -452,6 +387,14 @@ class Character extends FlxSprite
 
 				animOffsets[anim.name] = anim.offsets == null ? [0, 0] : anim.offsets;
 			}
+
+		flipX = data.flipX == null ? false : data.flipX;
+
+		setGraphicSize(Std.int(width * (data.scale == null ? 1 : data.scale)));
+
+		updateHitbox();
+
+		antialiasing = data.antialiasing == null ? FlxG.save.data.antialiasing : data.antialiasing;
 
 		barColor = FlxColor.fromString(data.barColor);
 
@@ -621,6 +564,24 @@ typedef CharacterData =
 	var barColor:String;
 
 	var animations:Array<AnimationData>;
+
+	/**
+	 * Whether this character is flipped horizontally.
+	 * @default false
+	 */
+	var ?flipX:Bool;
+
+	/**
+	 * The scale of this character.
+	 		* @default 1
+	 */
+	var ?scale:Int;
+
+	/**
+	 * Whether this character has antialiasing.
+	 * @default true
+	 */
+	var ?antialiasing:Bool;
 }
 
 typedef AnimationData =
