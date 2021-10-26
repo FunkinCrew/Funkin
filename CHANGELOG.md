@@ -1,6 +1,14 @@
 # Changelog
 All notable changes will be documented in this file.
 
+## [0.3.2] - 10/25/2021
+### Added
+- Proper Freeplay Colors for default songs.
+- New Logo
+- Dialogue for Senpai, Roses, and Thorns
+### Fixed
+- A lot of bugs pretaining to dialogue (aka not all features were coded in yet.)
+
 ## [0.3.1] - 10/23/2021
 ### Added
 - Version System (aka if newer version out, game tell u :DDDDDDDD)!
