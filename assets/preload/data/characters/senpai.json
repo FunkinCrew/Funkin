@@ -8,7 +8,8 @@
   "animations": [
     {
       "name": "idle",
-      "prefix": "Senpai Idle"
+      "prefix": "Senpai Idle",
+      "offsets": [0, 0]
     },
     {
       "name": "singUP",
@@ -22,7 +23,8 @@
     },
     {
       "name": "singRIGHT",
-      "prefix": "SENPAI RIGHT NOTE"
+      "prefix": "SENPAI RIGHT NOTE",
+      "offsets": [0, 0]
     },
     {
       "name": "singDOWN",

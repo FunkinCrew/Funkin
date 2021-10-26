@@ -1,0 +1,61 @@
+{
+  "name": "Parents (Christmas)",
+  "asset": "characters/mom_dad_christmas_assets",
+  "barColor": "#9A00F8",
+  "startingAnim": "idle",
+  "animations": [
+    {
+      "name": "idle",
+      "prefix": "Parent Christmas Idle",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "idleLoop",
+      "prefix": "Parent Christmas Idle",
+      "offsets": [0, 0],
+      "frameIndices": [11, 12],
+      "frameRate": 12,
+      "looped": true
+    },
+    {
+      "name": "singUP",
+      "prefix": "Parent Up Note Dad",
+      "offsets": [-47, 24]
+    },
+    {
+      "name": "singLEFT",
+      "prefix": "Parent Left Note Dad",
+      "offsets": [-30, 16]
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "Parent Right Note Dad",
+      "offsets": [-1, -23]
+    },
+    {
+      "name": "singDOWN",
+      "prefix": "Parent Down Note Dad",
+      "offsets": [-31, -29]
+    },
+    {
+      "name": "singUP-alt",
+      "prefix": "Parent Up Note Mom",
+      "offsets": [-47, 24]
+    },
+    {
+      "name": "singLEFT-alt",
+      "prefix": "Parent Left Note Mom",
+      "offsets": [-30, 15]
+    },
+    {
+      "name": "singRIGHT-alt",
+      "prefix": "Parent Right Note Mom",
+      "offsets": [-1, -24]
+    },
+    {
+      "name": "singDOWN-alt",
+      "prefix": "Parent Down Note Mom",
+      "offsets": [-30, -27]
+    }
+  ]
+}

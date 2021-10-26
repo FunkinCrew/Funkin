@@ -1,0 +1,33 @@
+{
+  "name": "Monster",
+  "asset": "characters/Monster_Assets",
+  "barColor": "#F3FF6E",
+  "startingAnim": "idle",
+  "animations": [
+    {
+      "name": "idle",
+      "prefix": "monster idle",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "singUP",
+      "prefix": "monster up note",
+      "offsets": [-20, 94]
+    },
+    {
+      "name": "singLEFT",
+      "prefix": "Monster left note",
+      "offsets": [-30, 20]
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "Monster Right note",
+      "offsets": [-51, 30]
+    },
+    {
+      "name": "singDOWN",
+      "prefix": "monster down",
+      "offsets": [-50, -80]
+    }
+  ]
+}
