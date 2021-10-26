@@ -1,5 +1,6 @@
 package states;
 
+import flixel.system.FlxVersion;
 import substates.OutdatedSubState;
 import openfl.Lib;
 import modding.PolymodHandler;
@@ -321,10 +322,22 @@ class TitleState extends MusicBeatState
 				{
 					trace(data);
 					
-					var new_Vers:Float = Std.parseFloat(data);
-					var old_Vers:Float = Std.parseFloat(Application.current.meta.get('version'));
+					var new_Vers:Array<String> = data.split(".");
+					var old_Vers:Array<String> = Application.current.meta.get('version').split(".");
 
-				  	if(new_Vers > old_Vers)
+					var new_Ver:FlxVersion = new FlxVersion(Std.parseInt(new_Vers[0]), Std.parseInt(new_Vers[1]), Std.parseInt(new_Vers[2]));
+					var old_Ver:FlxVersion = new FlxVersion(Std.parseInt(old_Vers[0]), Std.parseInt(old_Vers[1]), Std.parseInt(old_Vers[2]));
+
+					var older:Bool = false;
+
+					if(
+						new_Ver.patch > old_Ver.patch && new_Ver.minor >= old_Ver.minor && new_Ver.major >= old_Ver.major || 
+						new_Ver.minor > old_Ver.minor && new_Ver.major >= old_Ver.major || 
+						new_Ver.major > old_Ver.major
+					)
+						older = true;
+
+				  	if(older)
 					{
 						trace('outdated lmao! ' + new_Vers + ' != ' + old_Vers);
 
