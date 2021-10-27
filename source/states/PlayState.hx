@@ -1051,8 +1051,6 @@ class PlayState extends MusicBeatState
 					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
 				else
 					oldNote = null;
-
-				var shouldSpawn:Bool = true;
 				
 				if(!Std.isOfType(songNotes[0], Float) && !Std.isOfType(songNotes[0], Int))
 					songNotes[0] = 0;
@@ -1089,18 +1087,13 @@ class PlayState extends MusicBeatState
 					sustainNote.mustPress = gottaHitNote;
 
 					if (sustainNote.mustPress)
-					{
 						sustainNote.x += FlxG.width / 2; // general offset
-					}
 				}
 
 				swagNote.mustPress = gottaHitNote;
 
 				if (swagNote.mustPress)
-				{
 					swagNote.x += FlxG.width / 2; // general offset
-				}
-				else {}
 			}
 			daBeats += 1;
 		}
