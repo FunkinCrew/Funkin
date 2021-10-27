@@ -13,16 +13,15 @@
 	</target>
 
 	<target id="haxe" tool="linker" if="macos">
-            <flag value="-framework"/>
-            <flag value="OpenGL"/>
-            <flag value="-framework"/>
-            <flag value="CoreVideo"/>
-            <flag value="-framework"/>
-            <flag value="IOKit"/>
-            <flag value="-framework"/>
-            <flag value="Cocoa"/>
-            <flag value="-framework"/>      
-            <flag value="Glut"/>
-        </target>
-	
+        <flag value="-framework"/>
+        <flag value="OpenGL"/>
+        <flag value="-framework"/>
+        <flag value="CoreVideo"/>
+        <flag value="-framework"/>
+        <flag value="IOKit"/>
+        <flag value="-framework"/>
+        <flag value="Cocoa"/>
+        <flag value="-framework"/>      
+        <flag value="Glut"/>
+    </target>
 </xml>

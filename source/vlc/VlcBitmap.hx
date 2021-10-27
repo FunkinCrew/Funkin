@@ -1,8 +1,8 @@
 package vlc;
 
+#if (cpp && !mobile && BIT_64)
 import flixel.FlxG;
 import openfl.system.Capabilities;
-#if (cpp && !mobile)
 import cpp.NativeArray;
 import cpp.UInt8;
 import haxe.ValueException;
