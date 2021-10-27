@@ -142,6 +142,7 @@ class OptionsMenu extends FlxSubState
 				new LaneUnderlayOption("How transparent your lane is, higher = more visible."),
 				new StepManiaOption("Sets the colors of the arrows depending on quantization instead of direction."),
 				new AccuracyOption("Display accuracy information on the info bar."),
+				new RoundAccuracy("Round your accuracy to the nearest whole number for the score text (cosmetic only)."),
 				new SongPositionOption("Show the song's current position as a scrolling bar."),
 				new Colour("The color behind icons now fit with their theme. (e.g. Pico = green)"),
 				new NPSDisplayOption("Shows your current Notes Per Second on the info bar."),

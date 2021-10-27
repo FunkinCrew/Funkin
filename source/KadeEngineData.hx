@@ -112,6 +112,9 @@ class KadeEngineData
 		if (FlxG.save.data.optimize == null)
 			FlxG.save.data.optimize = false;
 
+		if (FlxG.save.data.roundAcc == null)
+			FlxG.save.data.roundAcc = false;
+
 		FlxG.save.data.cacheImages = false;
 
 		if (FlxG.save.data.middleScroll == null)
