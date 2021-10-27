@@ -1270,18 +1270,23 @@ class PlayState extends MusicBeatState
 
 	function resyncVocals():Void
 	{
-		trace("SONG POS: " + Conductor.songPosition + " | Musice: " + FlxG.sound.music.time + " / " + FlxG.sound.music.length);
-
 		if(!switchedStates)
 		{
 			if(!(Conductor.songPosition > 20 && FlxG.sound.music.time < 20))
 			{
+				trace("SONG POS: " + Conductor.songPosition + " | Musice: " + FlxG.sound.music.time + " / " + FlxG.sound.music.length);
+
 				vocals.pause();
-				FlxG.sound.music.pause();
+
+				if(songMultiplier < 1)
+					FlxG.sound.music.pause();
 		
 				Conductor.songPosition = FlxG.sound.music.time;
 				vocals.time = Conductor.songPosition;
-				FlxG.sound.music.play();
+				
+				if(songMultiplier < 1)
+					FlxG.sound.music.play();
+
 				vocals.play();
 		
 				#if cpp
@@ -1298,6 +1303,8 @@ class PlayState extends MusicBeatState
 			{
 				while(Conductor.songPosition > 20 && FlxG.sound.music.time < 20)
 				{
+					trace("SONG POS: " + Conductor.songPosition + " | Musice: " + FlxG.sound.music.time + " / " + FlxG.sound.music.length);
+					
 					FlxG.sound.music.time = Conductor.songPosition;
 					vocals.time = Conductor.songPosition;
 		
