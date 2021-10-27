@@ -6,9 +6,12 @@ All notable changes will be documented in this file.
 - Version display for the thing in top left.
 - Different fonts for display in top left.
 - Option for bigger note splashes (like in Week 7 Update and Psych Engine).
+- Freeplay Colors to Debug Songs.
 ### Fixed
 - Crashes from loading charts with Psych Engine Events in them (basically notes with weird string values and stuff).
 - Info Display (text in top left) appears before settings are loaded, making it show things the player might not want to see.
+### Changed
+- Debug Songs no longer have difficulties other than NORMAL (because originally they were just one difficulty).
 
 ## [0.3.3] - 10/25/2021
 ### Fixed
