@@ -8,6 +8,7 @@ All notable changes will be documented in this file.
 - Option for bigger note splashes (like in Week 7 Update and Psych Engine).
 ### Fixed
 - Crashes from loading charts with Psych Engine Events in them (basically notes with weird string values and stuff).
+- Info Display (text in top left) appears before settings are loaded, making it show things the player might not want to see.
 
 ## [0.3.3] - 10/25/2021
 ### Fixed
