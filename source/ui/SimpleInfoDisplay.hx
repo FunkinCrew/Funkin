@@ -16,8 +16,8 @@ import openfl.text.TextFormat;
 
 class SimpleInfoDisplay extends TextField
 {
-    //                                      fps   mem   version
-    public var infoDisplayed:Array<Bool> = [true, true, true];
+    //                                      fps    mem    version
+    public var infoDisplayed:Array<Bool> = [false, false, false];
 
 	public var memPeak:Float = 0;
     public var currentFPS:Int = 0;
