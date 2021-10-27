@@ -1051,54 +1051,56 @@ class PlayState extends MusicBeatState
 					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
 				else
 					oldNote = null;
+
+				var shouldSpawn:Bool = true;
 				
-				if(!Std.isOfType(songNotes[0], Float) && !Std.isOfType(songNotes[0], Int))
-					songNotes[0] = 0;
+				if(!Std.isOfType(songNotes[0], Float) && !Std.isOfType(songNotes[0], Int) && songNotes[0] != null)
+					shouldSpawn = false;
 
-				if(!Std.isOfType(songNotes[1], Int))
-					songNotes[1] = 0;
+				if(!Std.isOfType(songNotes[1], Int) && songNotes[1] != null)
+					shouldSpawn = false;
 
-				if(!Std.isOfType(songNotes[2], Int))
-					songNotes[2] = 0;
+				if(!Std.isOfType(songNotes[2], Int) && songNotes[2] != null)
+					shouldSpawn = false;
 
-				if(!Std.isOfType(songNotes[3], Int))
-					songNotes[3] = 0;
+				if(!Std.isOfType(songNotes[3], Int) && songNotes[3] != null)
+					shouldSpawn = false;
 
-				if(!Std.isOfType(songNotes[4], String))
-					songNotes[4] = "default";
+				if(!Std.isOfType(songNotes[4], String) && songNotes[4] != null)
+					shouldSpawn = false;
 
-				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote, false, songNotes[3], songNotes[4]);
-				swagNote.sustainLength = songNotes[2];
-				swagNote.scrollFactor.set(0, 0);
-
-				var susLength:Float = swagNote.sustainLength;
-
-				susLength = susLength / Std.int(Conductor.nonmultilmao_stepCrochet);
-				unspawnNotes.push(swagNote);
-
-				for (susNote in 0...Math.floor(susLength))
+				if(shouldSpawn)
 				{
-					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
+					var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote, false, songNotes[3], songNotes[4]);
+					swagNote.sustainLength = songNotes[2];
+					swagNote.scrollFactor.set(0, 0);
 
-					var sustainNote:Note = new Note(daStrumTime + (Std.int(Conductor.nonmultilmao_stepCrochet) * susNote) + Std.int(Conductor.nonmultilmao_stepCrochet), daNoteData, oldNote, true, songNotes[3], songNotes[4]);
-					sustainNote.scrollFactor.set();
-					unspawnNotes.push(sustainNote);
+					var susLength:Float = swagNote.sustainLength;
 
-					sustainNote.mustPress = gottaHitNote;
+					susLength = susLength / Std.int(Conductor.nonmultilmao_stepCrochet);
+					unspawnNotes.push(swagNote);
 
-					if (sustainNote.mustPress)
+					for (susNote in 0...Math.floor(susLength))
 					{
-						sustainNote.x += FlxG.width / 2; // general offset
+						oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
+
+						var sustainNote:Note = new Note(daStrumTime + (Std.int(Conductor.nonmultilmao_stepCrochet) * susNote) + Std.int(Conductor.nonmultilmao_stepCrochet), daNoteData, oldNote, true, songNotes[3], songNotes[4]);
+						sustainNote.scrollFactor.set();
+						unspawnNotes.push(sustainNote);
+
+						sustainNote.mustPress = gottaHitNote;
+
+						if (sustainNote.mustPress)
+						{
+							sustainNote.x += FlxG.width / 2; // general offset
+						}
 					}
-				}
 
-				swagNote.mustPress = gottaHitNote;
+					swagNote.mustPress = gottaHitNote;
 
-				if (swagNote.mustPress)
-				{
-					swagNote.x += FlxG.width / 2; // general offset
+					if (swagNote.mustPress)
+						swagNote.x += FlxG.width / 2; // general offset
 				}
-				else {}
 			}
 			daBeats += 1;
 		}
