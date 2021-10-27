@@ -1,4 +1,4 @@
-![Logo](Logo.png)
+![Logo](art/Logo.png)
 
 This is the repository for Leather Engine, an engine created for making and playing mods for Friday Night Funkin'.
 
