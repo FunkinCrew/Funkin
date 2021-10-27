@@ -68,6 +68,17 @@ class ModsMenu extends MusicBeatState
 		PolymodHandler.loadModMetadata();
 
 		loadMods();
+
+		var textBG:FlxSprite = new FlxSprite(0, FlxG.height - 26).makeGraphic(FlxG.width, 26, 0xFF000000);
+		textBG.alpha = 0.6;
+		add(textBG);
+
+		var leText:String = "Press ENTER to enable / disable the currently selected mod.";
+
+		var text:FlxText = new FlxText(textBG.x, textBG.y + 4, FlxG.width, leText, 18);
+		text.setFormat(Paths.font("vcr.ttf"), 18, FlxColor.WHITE, RIGHT);
+		text.scrollFactor.set();
+		add(text);
 	}
 
 	function loadMods()
