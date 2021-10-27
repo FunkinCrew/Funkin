@@ -1,5 +1,6 @@
 package modding;
 
+#if BIT_64
 #if web
 import openfl.net.NetConnection;
 import openfl.net.NetStream;
@@ -133,3 +134,4 @@ class FlxVideo extends FlxBasic {
 	#end
 	#end
 }
+#end

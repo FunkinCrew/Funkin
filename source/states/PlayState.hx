@@ -2,7 +2,9 @@ package states;
 
 import game.StrumNote;
 import game.Cutscene;
+#if BIT_64
 import modding.FlxVideo;
+#end
 import sys.FileSystem;
 import game.NoteSplash;
 import flixel.graphics.frames.FlxFramesCollection;
@@ -731,6 +733,7 @@ class PlayState extends MusicBeatState
 	}
 
 	public function startVideo(name:String, ?ext:String):Void {
+		#if BIT_64
 		#if VIDEOS_ALLOWED
 		var foundFile:Bool = false;
 		var fileName:String = Sys.getCwd() + PolymodAssets.getPath(Paths.video(name, ext));
@@ -801,9 +804,11 @@ class PlayState extends MusicBeatState
 
 		if(endingSong) {
 			endSong();
-		} else {
+		} else { #end
 			startCountdown();
+		#if BIT_64
 		}
+		#end
 	}
 
 	function bruhDialogue():Void
