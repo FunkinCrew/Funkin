@@ -1051,12 +1051,21 @@ class PlayState extends MusicBeatState
 					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
 				else
 					oldNote = null;
+				
+				if(!Std.isOfType(songNotes[0], Float) && !Std.isOfType(songNotes[0], Int))
+					songNotes[0] = 0;
 
-				if(!Std.isOfType(songNotes[4], String))
-					songNotes[4] = null;
+				if(!Std.isOfType(songNotes[1], Int))
+					songNotes[1] = 0;
+
+				if(!Std.isOfType(songNotes[2], Int))
+					songNotes[2] = 0;
 
 				if(!Std.isOfType(songNotes[3], Int))
-					songNotes[3] = null;
+					songNotes[3] = 0;
+
+				if(!Std.isOfType(songNotes[4], String))
+					songNotes[4] = "default";
 
 				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote, false, songNotes[3], songNotes[4]);
 				swagNote.sustainLength = songNotes[2];

@@ -5,6 +5,8 @@ All notable changes will be documented in this file.
 ### Added
 - Version display for the thing in top left.
 - Different fonts for display in top left.
+### Fixed
+- Crashes from loading charts with Psych Engine Events in them (basically notes with weird string values and stuff).
 
 ## [0.3.3] - 10/25/2021
 ### Fixed
