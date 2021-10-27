@@ -22,7 +22,7 @@ class NoteSplash extends FlxSprite
         animation.addByPrefix("default", "note splash " + NoteVariables.Other_Note_Anim_Stuff[PlayState.SONG.keyCount - 1][noteData] + " " + coolAnimRando, 24 + FlxG.random.int(-2, 2), false);
         animation.play("default", true);
 
-        setGraphicSize(Std.int(target.width * 2));
+        setGraphicSize(Std.int(target.width * (FlxG.save.data.bigNoteSplashes ? 3 : 2)));
         updateHitbox();
     }
 
@@ -33,8 +33,8 @@ class NoteSplash extends FlxSprite
             alpha = 0;
         }
 
-        x = target.x - (target.width / 2);
-        y = target.y - (target.height / 2);
+        x = target.x - (target.width / (FlxG.save.data.bigNoteSplashes ? 1 : 2));
+        y = target.y - (target.height / (FlxG.save.data.bigNoteSplashes ? 1 : 2));
 
         super.update(elapsed);
     }

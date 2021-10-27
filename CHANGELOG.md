@@ -5,6 +5,7 @@ All notable changes will be documented in this file.
 ### Added
 - Version display for the thing in top left.
 - Different fonts for display in top left.
+- Option for bigger note splashes (like in Week 7 Update and Psych Engine).
 ### Fixed
 - Crashes from loading charts with Psych Engine Events in them (basically notes with weird string values and stuff).
 

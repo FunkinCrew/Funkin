@@ -80,6 +80,9 @@ class SaveData {
 
         if(FlxG.save.data.displayFont == null)
             FlxG.save.data.displayFont = "_sans";
+
+        if(FlxG.save.data.bigNoteSplashes == null)
+            FlxG.save.data.bigNoteSplashes = false;
         
         Conductor.offset = FlxG.save.data.songOffset;
 
