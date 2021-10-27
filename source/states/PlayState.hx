@@ -2032,20 +2032,12 @@ class PlayState extends MusicBeatState
 				misses += 1;
 		}
 
-		if(FlxG.save.data.accuracyMode == "simple")
-		{
-			if(daRating == "sick")
-				hitNoteAmount = 1;
-			else if(daRating == "good")
-				hitNoteAmount = 0.8;
-			else if(daRating == "bad")
-				hitNoteAmount = 0.3;
-		}
-		else
-		{
-			// accuracy math (basically how many milliseconds off you are from 0 -> safeZoneOffset is how accurate you are from 0 -> 1)
-			hitNoteAmount = Math.abs(Math.abs(noteDiff) - Conductor.safeZoneOffset) / Conductor.safeZoneOffset;
-		}
+		if(daRating == "sick")
+			hitNoteAmount = 1;
+		else if(daRating == "good")
+			hitNoteAmount = 0.8;
+		else if(daRating == "bad")
+			hitNoteAmount = 0.3;
 
 		hitNotes += hitNoteAmount;
 
@@ -2061,14 +2053,7 @@ class PlayState extends MusicBeatState
 			});
 		}
 
-		if(FlxG.save.data.accuracyMode == "simple")
-		{
-			songScore += score;
-		}
-		else
-		{
-			songScore += Std.int(350 * hitNoteAmount);
-		}
+		songScore += score;
 
 		rating.alpha = 1;
 		rating.loadGraphic(Paths.image("ui skins/" + SONG.ui_Skin + "/ratings/" + daRating, 'shared'));

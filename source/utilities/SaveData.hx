@@ -18,18 +18,6 @@ class SaveData {
         if(FlxG.save.data.memoryCounter == null)
             FlxG.save.data.memoryCounter = true;
 
-        if(FlxG.save.data.leftBind == null)
-            FlxG.save.data.leftBind = "A";
-
-        if(FlxG.save.data.downBind == null)
-            FlxG.save.data.downBind = "S";
-
-        if(FlxG.save.data.upBind == null)
-            FlxG.save.data.upBind = "W";
-
-        if(FlxG.save.data.rightBind == null)
-            FlxG.save.data.rightBind = "D";
-
         if(FlxG.save.data.killBind == null)
             FlxG.save.data.killBind = "R";
 
@@ -44,9 +32,6 @@ class SaveData {
 
         if(FlxG.save.data.songOffset == null)
             FlxG.save.data.songOffset = 0;
-
-        if(FlxG.save.data.accuracyMode == null)
-            FlxG.save.data.accuracyMode = "simple";
 
         if(FlxG.save.data.noteSplashes == null)
             FlxG.save.data.noteSplashes = true;
