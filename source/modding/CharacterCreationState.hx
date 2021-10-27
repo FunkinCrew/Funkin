@@ -88,6 +88,7 @@ class CharacterCreationState extends MusicBeatState
     {
         FlxG.mouse.visible = true;
 
+        #if NO_PRELOAD_ALL
         if(Assets.getLibrary("shared") == null)
         {
 			Assets.loadLibrary("shared").onComplete(function (_) {
@@ -103,7 +104,7 @@ class CharacterCreationState extends MusicBeatState
             });
         }
         else
-        {
+        {#end
             Load_Character_File_JSON_Data();
 
             Create_UI();
@@ -113,7 +114,7 @@ class CharacterCreationState extends MusicBeatState
             #if discord_rpc
             DiscordClient.changePresence("Creating A Character", null, null);
             #end
-        }
+        #if NO_PRELOAD_ALL } #end
     }
 
     public function Read_JSON_Data(?JSON_Data:Null<String>)
@@ -152,7 +153,7 @@ class CharacterCreationState extends MusicBeatState
 
         // TEXT LABELS //
         var Name_Label:FlxText = new FlxText(20, 70, 0, "Character Name");
-        var Path_Label:FlxText = new FlxText(20, 100, 0, "Image Path (after shared/characters/)");
+        var Path_Label:FlxText = new FlxText(20, 100, 0, "Image Path (after shared/images/characters/)");
 
         var Actions_Label:FlxText = new FlxText(20, 300, 0, "Actions");
 
