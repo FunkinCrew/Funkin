@@ -44,7 +44,7 @@
 	<assets path="assets/preload" rename="assets" exclude="*.mp3" unless="web"/>
 
 	<!-- LEATHER ENGINE CUSTOMIZATION -->
-	<define name="VIDEOS_ALLOWED" if="web || windows" unless="32"/>
+	<define name="VIDEOS_ALLOWED" if="web || windows" unless="32bit"/>
 
 	<assets path="mods" embed="false" exclude="*.ogg" if="web"/>
 	<assets path="mods" embed="false" exclude="*.mp3" unless="web"/>
@@ -53,7 +53,7 @@
 	<define name="PRELOAD_ALL" unless="web" />
 	<define name="NO_PRELOAD_ALL" unless="PRELOAD_ALL"/>
 
-	<define name="BIT_64" unless="32bit"/>
+	<!-- <define name="BIT_64" unless="32bit"/> -->
 	
 	<section if="PRELOAD_ALL">
 		<library name="stages"   preload="true" />
