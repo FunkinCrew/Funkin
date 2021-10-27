@@ -41,6 +41,8 @@ To run it from your desktop (Windows, Mac, Linux) it can be a bit more involved.
 This will install about 22GB of crap, but once that is done you can open up a command line in the project's directory and run `lime test windows -debug`. Once that command finishes (it takes forever even on a higher end PC), you can run FNF from the .exe file under export\release\windows\bin
 As for Mac, 'lime test mac -debug' should work, if not the internet surely has a guide on how to compile Haxe stuff for Mac.
 
+Also, if you're building 32 bit, then you have to remove a specific line in the Project.xml file in the source code. It says where it is, just know that to build it 32 bit, you have to remove that line and then do `lime test windows -debug -32`.
+
 ### Additional guides
 
 - [Command line basics](https://ninjamuffin99.newgrounds.com/news/post/1090480)
