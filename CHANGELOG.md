@@ -7,6 +7,7 @@ All notable changes will be documented in this file.
 - Different fonts for display in top left.
 - Option for bigger note splashes (like in Week 7 Update and Psych Engine).
 - Freeplay Colors to Debug Songs.
+- Text at the bottom of the mods menu, telling you how to enable and disable mods.
 ### Fixed
 - Crashes from loading charts with Psych Engine Events in them (basically notes with weird string values and stuff).
 - Info Display (text in top left) appears before settings are loaded, making it show things the player might not want to see.
