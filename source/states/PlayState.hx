@@ -1058,7 +1058,7 @@ class PlayState extends MusicBeatState
 				if(!Std.isOfType(songNotes[1], Int))
 					songNotes[1] = 0;
 
-				if(!Std.isOfType(songNotes[2], Int))
+				if(!Std.isOfType(songNotes[2], Int) && !Std.isOfType(songNotes[2], Float))
 					songNotes[2] = 0;
 
 				if(!Std.isOfType(songNotes[3], Int))
