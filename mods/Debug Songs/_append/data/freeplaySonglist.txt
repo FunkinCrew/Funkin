@@ -1,2 +1,2 @@
-Test:bf-pixel:0
-Ridge:dad:0
+Test:bf-pixel:0:Normal:#7BD6F6
+Ridge:dad:0:Normal:#C96ED4
