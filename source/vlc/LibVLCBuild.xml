@@ -8,11 +8,11 @@
 	</files>
 	
 	<target id='haxe' tool='linker' toolid='exe'>
-		<lib name='${CPP_DIR}/lib/libvlc.lib' if='windows'/>
-		<lib name='${CPP_DIR}/lib/libvlccore.lib' if='windows'/>
+		<lib name='${CPP_DIR}/lib/libvlc.lib' if='windows' unless="32bit"/>
+		<lib name='${CPP_DIR}/lib/libvlccore.lib' if='windows' unless="32bit"/>
 	</target>
 
-	<target id="haxe" tool="linker" if="macos">
+	<target id="haxe" tool="linker" if="macos" unless="32bit">
         <flag value="-framework"/>
         <flag value="OpenGL"/>
         <flag value="-framework"/>
