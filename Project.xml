@@ -53,7 +53,8 @@
 	<define name="PRELOAD_ALL" unless="web" />
 	<define name="NO_PRELOAD_ALL" unless="PRELOAD_ALL"/>
 
-	<!-- <define name="BIT_64" unless="32bit"/> -->
+	<!-- Remove this line if you want to build 32 bit, since the 32bit thingy doesn't automatically work (oof) -->
+	<define name="BIT_64" unless="32bit"/>
 	
 	<section if="PRELOAD_ALL">
 		<library name="stages"   preload="true" />
