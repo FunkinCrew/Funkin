@@ -901,7 +901,7 @@ typedef StageObject =
 
     var uses_Frame_Width:Bool;
 
-    var object_Name:String;
+    var object_Name:Null<String>;
 
     var layer:Null<String>; // default is bg, but fg is possible
     
@@ -911,9 +911,6 @@ typedef StageObject =
 
     // Animations //
     var animations:Array<CharacterAnimation>;
-
-    var on_Beat_Hit_Animation:String;
-    var on_Step_Hit_Animation:String;
 
     var start_Animation:String;
 }
