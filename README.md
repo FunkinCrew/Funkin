@@ -2,7 +2,7 @@
 
 This is the repository for Leather Engine, an engine created for making and playing mods for Friday Night Funkin'.
 
-## Build Instructions 
+## Build Instructions
 
 For build intructions go to [Build.md](https://github.com/Leather128/LeathersFunkinEngine/blob/master/Build.md)
 
