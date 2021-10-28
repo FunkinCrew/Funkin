@@ -14,6 +14,8 @@ All notable changes will be documented in this file.
 - Not being able to build 32 bit.
 ### Changed
 - Debug Songs no longer have difficulties other than NORMAL (because originally they were just one difficulty).
+### Removed
+- The folder named `ui` from shared/images/ (because it was unused)
 
 ## [0.3.3] - 10/25/2021
 ### Fixed
