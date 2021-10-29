@@ -2035,6 +2035,7 @@ class PlayState extends MusicBeatState
 			case 'shit':
 				health -= 0.07;
 				misses += 1;
+				combo = 0;
 		}
 
 		if(daRating == "sick")
