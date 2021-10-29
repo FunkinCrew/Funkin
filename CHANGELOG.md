@@ -13,6 +13,7 @@ All notable changes will be documented in this file.
 - Info Display (text in top left) appears before settings are loaded, making it show things the player might not want to see.
 - Not being able to build 32 bit.
 - Health Bar randomly having white pixels on it (because it was incorrect sized compared to health bar bg).
+- SHIT Rating not breaking your combo.
 ### Changed
 - Debug Songs no longer have difficulties other than NORMAL (because originally they were just one difficulty).
 ### Removed
