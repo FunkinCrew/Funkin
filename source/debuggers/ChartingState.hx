@@ -843,6 +843,9 @@ class ChartingState extends MusicBeatState
 			changeSection(curSection + 1, false);
 		}
 
+		if (_song.notes[curSection] == null)
+			addSection();
+
 		FlxG.watch.addQuick('daBeat', curBeat);
 		FlxG.watch.addQuick('daStep', curStep);
 
