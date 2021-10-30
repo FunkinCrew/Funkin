@@ -1988,9 +1988,6 @@ class PlayState extends MusicBeatState
 
 				arrow_Type_Sprites = [];
 
-				// POG FREEPLAY MUSIC????!?!?!??!?!?!?
-				FlxG.sound.music.volume = 1;
-
 				#if linc_luajit
 				if(luaModchart != null)
 				{
