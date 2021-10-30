@@ -7,13 +7,13 @@
 **Also also note**: To build for *Windows*, you need to be on *Windows*. To build for *Linux*, you need to be on *Linux*. Same goes for macOS. You can build for html5/browsers on any platform.
 
 ## Dependencies
- 1. [Install Haxe 4.1.5](https://haxe.org/download/version/4.1.5/). You should use 4.1.5 instead of the latest version because the latest version has some problems with Friday Night Funkin': Kade Engine.
+ 1. [Install Haxe](https://haxe.org/download/). You should use the latest version.
  2. After installing Haxe, [Install HaxeFlixel](https://haxeflixel.com/documentation/install-haxeflixel/).
  3. Install `git`.
 	 - Windows: install from the [git-scm](https://git-scm.com/downloads) website.
 	 - Linux: install the `git` package: `sudo apt install git` (ubuntu), `sudo pacman -S git` (arch), etc... (you probably already have it)
  4. Install and set up the necessary libraries:
-	 - `haxelib install lime 7.9.0`
+	 - `haxelib install lime`
 	 - `haxelib install openfl`
 	 - `haxelib install flixel`
 	 - `haxelib install flixel-tools`
