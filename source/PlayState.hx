@@ -2931,15 +2931,6 @@ class PlayState extends MusicBeatState
 								daNote.clipRect = swagRect;
 							}
 						}
-
-						if (daNote.isParent)
-						{
-							for (i in 0...daNote.children.length)
-							{
-								var slide = daNote.children[i];
-								slide.y = daNote.y - slide.height;
-							}
-						}
 					}
 					else
 					{
