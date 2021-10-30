@@ -1,5 +1,6 @@
 package states;
 
+import flixel.input.FlxInput.FlxInputState;
 import flixel.group.FlxSpriteGroup;
 import flixel.group.FlxGroup;
 import flixel.FlxSprite;
@@ -65,6 +66,9 @@ class MusicBeatState extends FlxUIState
 					Reflect.setProperty(basic, "antialiasing", false);
 			}, true);
 		}
+
+		if(FlxG.keys.checkStatus(FlxKey.fromString(FlxG.save.data.fullscreenBind), FlxInputState.JUST_PRESSED))
+			FlxG.fullscreen = !FlxG.fullscreen;
 	}
 
 	private function updateBeat():Void

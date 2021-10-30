@@ -1,5 +1,7 @@
 package substates;
 
+import utilities.PlayerSettings;
+import openfl.events.FullScreenEvent;
 import flixel.text.FlxText;
 import utilities.CoolUtil;
 import game.Note;
@@ -28,7 +30,15 @@ class ControlMenuSubstate extends MusicBeatSubstate
     var selectedControl:Int = 0;
     var selectingStuff:Bool = false;
 
-    var coolText:FlxText = new FlxText(0,25,0,"Use LEFT and RIGHT to change number of keys\nESCAPE to save binds and exit menu\n", 32);
+    var coolText:FlxText = new FlxText(0,25,0,"Use LEFT and RIGHT to change number of keys\nESCAPE to save binds and exit menu\nRESET+SHIFT to Reset Binds to default\n", 32);
+
+    var killKey:FlxSprite = new FlxSprite();
+    var killBind:String = FlxG.save.data.killBind;
+    var killText:FlxText = new FlxText();
+
+    var fullscreenKey:FlxSprite = new FlxSprite();
+    var fullscreenBind:String = FlxG.save.data.fullscreenBind;
+    var fullscreenText:FlxText = new FlxText();
 
     public function new()
     {
@@ -53,6 +63,50 @@ class ControlMenuSubstate extends MusicBeatSubstate
         add(arrow_Group);
         add(text_Group);
         add(coolText);
+
+        setupKeySprite(fullscreenKey, -95);
+
+        var fullscreenIcon:FlxSprite = new FlxSprite();
+        fullscreenIcon.frames = Paths.getSparrowAtlas("Bind_Menu_Assets", "preload");
+        fullscreenIcon.animation.addByPrefix("idle", "Fullscreen Symbol", 24);
+        fullscreenIcon.animation.play("idle");
+        fullscreenIcon.updateHitbox();
+
+        fullscreenIcon.x = fullscreenKey.x + (fullscreenKey.width / 2) - (fullscreenIcon.width / 2);
+        fullscreenIcon.y = fullscreenKey.y - fullscreenIcon.height - 11;
+
+        setupKeySprite(killKey, 95);
+
+        var killIcon:FlxSprite = new FlxSprite();
+        killIcon.frames = Paths.getSparrowAtlas("Bind_Menu_Assets", "preload");
+        killIcon.animation.addByPrefix("idle", "Death Icon", 24);
+        killIcon.animation.play("idle");
+        killIcon.updateHitbox();
+
+        killIcon.x = killKey.x + (killKey.width / 2) - (killIcon.width / 2);
+        killIcon.y = killKey.y - killIcon.height - 16;
+
+        add(fullscreenKey);
+        add(fullscreenIcon);
+
+        fullscreenText.setFormat(Paths.font("vcr.ttf"), 38, FlxColor.WHITE, LEFT, OUTLINE, FlxColor.BLACK);
+
+        fullscreenText.text = fullscreenBind;
+        fullscreenText.x = fullscreenKey.x + (fullscreenKey.width / 2) - (fullscreenText.width / 2);
+        fullscreenText.y = fullscreenKey.y;
+
+        add(fullscreenText);
+
+        add(killKey);
+        add(killIcon);
+
+        killText.setFormat(Paths.font("vcr.ttf"), 38, FlxColor.WHITE, LEFT, OUTLINE, FlxColor.BLACK);
+
+        killText.text = killBind;
+        killText.x = killKey.x + (killKey.width / 2) - (killText.width / 2);
+        killText.y = killKey.y;
+
+        add(killText);
     }
 
     override function update(elapsed:Float) {
@@ -62,23 +116,53 @@ class ControlMenuSubstate extends MusicBeatSubstate
 		var rightP = controls.RIGHT_P;
         var reset = controls.RESET;
         var back = controls.BACK;
+        var shift = FlxG.keys.pressed.SHIFT;
 
-        if(reset)
+        if(reset && shift)
+        {
             binds = NoteVariables.Default_Binds;
-
+            fullscreenBind = "F11";
+            killBind = "R";
+        }
+        
         if(back)
         {
-            FlxG.mouse.visible = false;
+            FlxG.save.data.binds = this.binds;
+            FlxG.save.data.fullscreenBind = fullscreenBind;
+            FlxG.save.data.killBind = killBind;
 
-            FlxG.save.data.binds = binds;
             FlxG.save.flush();
+            PlayerSettings.player1.controls.loadKeyBinds();
 
+            this.binds = FlxG.save.data.binds;
+
+            FlxG.mouse.visible = false;
             FlxG.state.closeSubState();
         }
 
+        if(FlxG.mouse.overlaps(fullscreenKey) && FlxG.mouse.justPressed && !selectingStuff)
+        {
+            selectedControl = -1;
+            selectingStuff = true;
+        }
+        else if(FlxG.mouse.overlaps(fullscreenKey))
+            fullscreenKey.color = FlxColor.GRAY;
+        else
+            fullscreenKey.color = FlxColor.WHITE;
+
+        if(FlxG.mouse.overlaps(killKey) && FlxG.mouse.justPressed && !selectingStuff)
+        {
+            selectedControl = -2;
+            selectingStuff = true;
+        }
+        else if(FlxG.mouse.overlaps(killKey))
+            killKey.color = FlxColor.GRAY;
+        else
+            killKey.color = FlxColor.WHITE;
+
         for(x in arrow_Group)
         {
-            if(FlxG.mouse.overlaps(x) &&  FlxG.mouse.justPressed && !selectingStuff)
+            if(FlxG.mouse.overlaps(x) && FlxG.mouse.justPressed && !selectingStuff)
             {
                 selectedControl = x.ID;
                 selectingStuff = true;
@@ -91,7 +175,22 @@ class ControlMenuSubstate extends MusicBeatSubstate
         }
 
         if(selectingStuff && FlxG.keys.justPressed.ANY)
-            binds[key_Count - 1][selectedControl] = FlxG.keys.getIsDown()[0].ID.toString();
+        {
+            var curKey = FlxG.keys.getIsDown()[0].ID.toString();
+
+            if(selectedControl > -1)
+                this.binds[key_Count - 1][selectedControl] = curKey;
+            else
+            {
+                switch(selectedControl)
+                {
+                    case -1:
+                        fullscreenBind = curKey;
+                    case -2:
+                        killBind = curKey;
+                }
+            }
+        }
 
         if(!selectingStuff && (leftP || rightP))
         {
@@ -122,6 +221,14 @@ class ControlMenuSubstate extends MusicBeatSubstate
         {
             text_Group.members[i].text = binds[key_Count - 1][i];
         }
+
+        fullscreenText.text = fullscreenBind;
+        fullscreenText.x = fullscreenKey.x + (fullscreenKey.width / 2) - (fullscreenText.width / 2);
+        fullscreenText.y = fullscreenKey.y + (fullscreenKey.height / 2) - (fullscreenText.height / 2);
+
+        killText.text = killBind;
+        killText.x = killKey.x + (killKey.width / 2) - (killText.width / 2);
+        killText.y = killKey.y + (killKey.height / 2) - (killText.height / 2);
     }
 
     function create_Arrows(?new_Key_Count)
@@ -188,7 +295,23 @@ class ControlMenuSubstate extends MusicBeatSubstate
 
             var coolWidth = Std.int(40 - ((key_Count - 5) * 2));
 
-            text_Group.add(new FlxText(babyArrow.x + (babyArrow.width / 2), babyArrow.y + coolWidth, coolWidth, binds[key_Count - 1][i], coolWidth));
+            var coolText = new FlxText(babyArrow.x + (babyArrow.width / 2), babyArrow.y + coolWidth, coolWidth, binds[key_Count - 1][i], coolWidth);
+            coolText.setFormat(Paths.font("vcr.ttf"), coolWidth, FlxColor.WHITE, LEFT, OUTLINE, FlxColor.BLACK);
+
+            text_Group.add(coolText);
         }
+    }
+
+    function setupKeySprite(key:FlxSprite, ?x:Float = 0.0)
+    {
+        key.frames = Paths.getSparrowAtlas("Bind_Menu_Assets", "preload");
+        key.animation.addByPrefix("idle", "Button", 24);
+        key.animation.play("idle");
+        key.updateHitbox();
+
+        key.screenCenter(X);
+        key.y = FlxG.height - key.height - 8;
+
+        key.x += x;
     }
 }

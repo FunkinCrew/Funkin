@@ -86,7 +86,12 @@ class SaveData {
 
         if(FlxG.save.data.ghostTapping == null)
             FlxG.save.data.ghostTapping = true;
+
+        if(FlxG.save.data.fullscreenBind == null)
+            FlxG.save.data.fullscreenBind = "F11";
         
+        FlxG.save.flush();
+
         Conductor.offset = FlxG.save.data.songOffset;
 
         PlayerSettings.init();
@@ -94,7 +99,5 @@ class SaveData {
         
         Highscore.load();
         ModList.load();
-
-        FlxG.save.flush();
     }
 }

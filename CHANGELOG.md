@@ -10,6 +10,7 @@ All notable changes will be documented in this file.
 - Text at the bottom of the mods menu, telling you how to enable and disable mods.
 - Ghost tapping option in settings.
 - Options Section to the pause menu.
+- Option to change fullscreen and reset keybinds in the control menu substate.
 ### Fixed
 - Crashes from loading charts with Psych Engine Events in them (basically notes with weird string values and stuff).
 - Info Display (text in top left) appears before settings are loaded, making it show things the player might not want to see.

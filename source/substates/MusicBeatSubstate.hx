@@ -1,5 +1,6 @@
 package substates;
 
+import flixel.input.FlxInput.FlxInputState;
 import flixel.FlxSprite;
 import flixel.FlxBasic;
 import openfl.Lib;
@@ -50,6 +51,9 @@ class MusicBeatSubstate extends FlxSubState
 					Reflect.setProperty(basic, "antialiasing", false);
 			}, true);
 		}
+
+		if(FlxG.keys.checkStatus(FlxKey.fromString(FlxG.save.data.fullscreenBind), FlxInputState.JUST_PRESSED))
+			FlxG.fullscreen = !FlxG.fullscreen;
 	}
 
 	private function updateCurStep():Void
