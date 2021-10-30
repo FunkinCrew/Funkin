@@ -19,6 +19,7 @@ All notable changes will be documented in this file.
 - Health Bar randomly having white pixels on it (because it was incorrect sized compared to health bar bg).
 - SHIT Rating not breaking your combo.
 - Freeplay Background Color change depending on the framerate.
+- Game Over Camera Movement being frame dependent.
 ### Changed
 - Debug Songs no longer have difficulties other than NORMAL (because originally they were just one difficulty).
 - SHIT Rating now gives 0.1 damage (out of 2 max) instead of 0.07 damage (miss damage amount).
