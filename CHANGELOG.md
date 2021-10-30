@@ -1,6 +1,8 @@
 # Changelog
 All notable changes will be documented in this file.
 
+## [0.4.0] - ?/?/????
+
 ## [0.3.4] - 10/30/2021
 ### Added
 - Version display for the thing in top left.
