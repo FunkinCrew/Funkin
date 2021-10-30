@@ -1222,15 +1222,19 @@ class ChartingState extends MusicBeatState
 		gridBlackLine = new FlxSprite(gridBG.x + gridBG.width / 2).makeGraphic(2, Std.int(gridBG.height), FlxColor.BLACK);
 		add(gridBlackLine);
 
-		while (curRenderedNotes.members.length > 0)
-		{
-			curRenderedNotes.remove(curRenderedNotes.members[0], true);
-		}
+		curRenderedNotes.clear();
 
-		while (curRenderedSustains.members.length > 0)
-		{
-			curRenderedSustains.remove(curRenderedSustains.members[0], true);
-		}
+		curRenderedNotes.forEach(function(sprite:Note) {
+			sprite.kill();
+			sprite.destroy();
+		}, true);
+
+		curRenderedSustains.clear();
+
+		curRenderedSustains.forEach(function(sprite:FlxSprite) {
+			sprite.kill();
+			sprite.destroy();
+		}, true);
 
 		var sectionInfo:Array<Dynamic> = _song.notes[curSection].sectionNotes;
 
