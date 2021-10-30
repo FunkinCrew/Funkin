@@ -1,0 +1,35 @@
+{
+  "name": "Senpai",
+  "asset": "characters/senpai",
+  "barColor": "#FFAA6F",
+  "scale": 6,
+  "antialiasing": false,
+  "startingAnim": "idle",
+  "animations": [
+    {
+      "name": "idle",
+      "prefix": "Senpai Idle",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "singUP",
+      "prefix": "SENPAI UP NOTE",
+      "offsets": [5, 37]
+    },
+    {
+      "name": "singLEFT",
+      "prefix": "SENPAI LEFT NOTE",
+      "offsets": [40, 0]
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "SENPAI RIGHT NOTE",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "singDOWN",
+      "prefix": "SENPAI DOWN NOTE",
+      "offsets": [14, 0]
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "name": "Skid and Pump",
+  "asset": "characters/spooky_kids_assets",
+  "barColor": "#D57E00",
+  "startingAnim": "danceRight",
+  "animations": [
+    {
+      "name": "danceLeft",
+      "prefix": "spooky dance idle",
+      "offsets": [0, 0],
+      "frameIndices": [0, 2, 6],
+      "frameRate": 12
+    },
+    {
+      "name": "danceRight",
+      "prefix": "spooky dance idle",
+      "offsets": [0, 0],
+      "frameIndices": [8, 10, 12, 14],
+      "frameRate": 12
+    },
+    {
+      "name": "singUP",
+      "prefix": "spooky UP NOTE",
+      "offsets": [-20, 26]
+    },
+    {
+      "name": "singLEFT",
+      "prefix": "note sing left",
+      "offsets": [130, -10]
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "spooky sing right",
+      "offsets": [-130, -14]
+    },
+    {
+      "name": "singDOWN",
+      "prefix": "spooky DOWN note",
+      "offsets": [-50, -130]
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "name": "Mommy Mearest (Car)",
+  "asset": "characters/momCar",
+  "barColor": "#D8558E",
+  "startingAnim": "idle",
+  "animations": [
+    {
+      "name": "idle",
+      "prefix": "Mom Idle",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "idleHair",
+      "prefix": "Mom Idle",
+      "offsets": [0, 0],
+      "frameIndices": [10, 11, 12, 13],
+      "looped": true
+    },
+    {
+      "name": "singUP",
+      "prefix": "Mom Up Pose",
+      "offsets": [14, 71]
+    },
+    {
+      "name": "singLEFT",
+      "prefix": "Mom Left Pose",
+      "offsets": [250, -23]
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "Mom Pose Left",
+      "offsets": [10, -60]
+    },
+    {
+      "name": "singDOWN",
+      "prefix": "MOM DOWN POSE",
+      "offsets": [20, -160]
+    }
+  ]
+}
