@@ -1756,23 +1756,6 @@ class ChartingState extends MusicBeatState
 			}
 		}
 
-		for (section in _song.notes)
-		{
-			var saveRemove = [];
-
-			for (i in notes)
-			{
-				if (i[0] >= section.startTime && i[0] < section.endTime)
-				{
-					saveRemove.push(i);
-					section.sectionNotes.push(i);
-				}
-			}
-
-			for (i in saveRemove)
-				notes.remove(i);
-		}
-
 		for (i in curRenderedNotes)
 		{
 			i.strumTime = TimingStruct.getTimeFromBeat(i.beat);
