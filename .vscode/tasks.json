@@ -22,6 +22,26 @@
       }
     },
     {
+      "label": "Build Linux (Debug)",
+      "type": "lime",
+      "targetConfiguration": "Build Linux (Debug)",
+      "command": "build",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Build Linux (Release)",
+      "type": "lime",
+      "targetConfiguration": "Build Linux (Release)",
+      "command": "build",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
       "label": "Build HTML5 (Debug)",
       "type": "lime",
       "targetConfiguration": "Build HTML5 (Debug)",
@@ -42,9 +62,9 @@
       }
     },
     {
-      "label": "Build Linux (Debug)",
+      "label": "Build Windows (Neko Debug)",
       "type": "lime",
-      "targetConfiguration": "Build Linux (Debug)",
+      "targetConfiguration": "Build Neko (Debug)",
       "command": "build",
       "group": {
         "kind": "build",
@@ -52,9 +72,29 @@
       }
     },
     {
-      "label": "Build Linux (Release)",
+      "label": "Build Windows (Neko Release)",
       "type": "lime",
-      "targetConfiguration": "Build Linux (Release)",
+      "targetConfiguration": "Build Windows (Neko Release)",
+      "command": "build",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Build Windows (Hashlink Debug)",
+      "type": "lime",
+      "targetConfiguration": "Build Hashlink (Debug)",
+      "command": "build",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Build Windows (Hashlink Release)",
+      "type": "lime",
+      "targetConfiguration": "Build Hashlink (Release)",
       "command": "build",
       "group": {
         "kind": "build",

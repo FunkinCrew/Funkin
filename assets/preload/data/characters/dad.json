@@ -1,0 +1,41 @@
+{
+  "name": "Daddy Dearest",
+  "asset": "characters/DADDY_DEAREST",
+  "barColor": "#AF66CE",
+  "startingAnim": "idle",
+  "animations": [
+    {
+      "name": "idle",
+      "prefix": "Dad idle dance",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "idleLoop",
+      "prefix": "Dad idle dance",
+      "offsets": [0, 0],
+      "frameIndices": [11, 12],
+      "frameRate": 12,
+      "looped": true
+    },
+    {
+      "name": "singUP",
+      "prefix": "Dad Sing Note UP",
+      "offsets": [-6, 50]
+    },
+    {
+      "name": "singLEFT",
+      "prefix": "Dad Sing Note LEFT",
+      "offsets": [-10, 10]
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "Dad Sing Note RIGHT",
+      "offsets": [0, 27]
+    },
+    {
+      "name": "singDOWN",
+      "prefix": "Dad Sing Note DOWN",
+      "offsets": [0, -30]
+    }
+  ]
+}
