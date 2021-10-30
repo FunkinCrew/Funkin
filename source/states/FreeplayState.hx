@@ -64,7 +64,6 @@ class FreeplayState extends MusicBeatState
 	public static var coolColors:Array<Int> = [0xFF7F1833, 0xFF7C689E, -14535868, 0xFFA8E060, 0xFFFF87FF, 0xFF8EE8FF, 0xFFFF8CCD, 0xFFFF9900];
 	private var bg:FlxSprite;
 	private var selectedColor:Int = 0xFF7F1833;
-	private var interpolation:Float = 0.0;
 	private var scoreBG:FlxSprite;
 
 	private var curRank:String = "N/A";
@@ -73,6 +72,9 @@ class FreeplayState extends MusicBeatState
 	private var curDiffArray:Array<String> = ["easy", "normal", "hard"];
 
 	var vocals:FlxSound = new FlxSound();
+
+	// thx psych engine devs
+	var colorTween:FlxTween;
 
 	override function create()
 	{
@@ -242,7 +244,6 @@ class FreeplayState extends MusicBeatState
 	{
 		super.update(elapsed);
 
-		bg.color = FlxColor.interpolate(bg.color, selectedColor, interpolation);
 		lerpScore = Math.floor(FlxMath.lerp(lerpScore, intendedScore, 0.4));
 
 		if (Math.abs(lerpScore - intendedScore) <= 10)
@@ -299,7 +300,13 @@ class FreeplayState extends MusicBeatState
 				curSpeed = 1;
 	
 			if (controls.BACK)
+			{
+				if(colorTween != null) {
+					colorTween.cancel();
+				}
+
 				FlxG.switchState(new MainMenuState());
+			}
 
 			if (FlxG.keys.justPressed.ENTER)
 			{
@@ -317,6 +324,11 @@ class FreeplayState extends MusicBeatState
 		
 					PlayState.storyWeek = songs[curSelected].week;
 					trace('CUR WEEK' + PlayState.storyWeek);
+
+					if(colorTween != null) {
+						colorTween.cancel();
+					}
+
 					LoadingState.loadAndSwitchState(new PlayState());
 				}
 			}
@@ -437,15 +449,26 @@ class FreeplayState extends MusicBeatState
 			}
 		}
 
-		interpolation = 0.0;
-		selectedColor = songs[curSelected].color;
-
-		for(i in 0...100)
+		if(change != 0)
 		{
-			new FlxTimer().start(i / 100, function(t:FlxTimer){
-				interpolation += 0.01;
-			});
+			var newColor:FlxColor = songs[curSelected].color;
+
+			if(newColor != selectedColor) {
+				if(colorTween != null) {
+					colorTween.cancel();
+				}
+	
+				selectedColor = newColor;
+	
+				colorTween = FlxTween.color(bg, 0.25, bg.color, selectedColor, {
+					onComplete: function(twn:FlxTween) {
+						colorTween = null;
+					}
+				});
+			}
 		}
+		else
+			bg.color = songs[curSelected].color;
 	}
 }
 

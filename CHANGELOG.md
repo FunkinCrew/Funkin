@@ -16,6 +16,7 @@ All notable changes will be documented in this file.
 - Not being able to build 32 bit.
 - Health Bar randomly having white pixels on it (because it was incorrect sized compared to health bar bg).
 - SHIT Rating not breaking your combo.
+- Freeplay Background Color change depending on the framerate.
 ### Changed
 - Debug Songs no longer have difficulties other than NORMAL (because originally they were just one difficulty).
 ### Removed
