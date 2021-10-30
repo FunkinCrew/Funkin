@@ -26,8 +26,14 @@ class PauseSubState extends MusicBeatSubstate
 {
 	var grpMenuShit:FlxTypedGroup<Alphabet>;
 
-	var menuItems:Array<String> = ['Resume', 'Restart Song', 'Restart Song With Cutscenes', 'Bot', 'Auto Restart', 'No Miss', 'Exit to menu'];
 	var curSelected:Int = 0;
+
+	var menus:Map<String, Array<String>> = [
+		"default" => ['Resume', 'Restart Song', 'Restart Song With Cutscenes', 'Options', 'Exit to menu'],
+		"options" => ['Back', 'Bot', 'Auto Restart', 'No Miss', 'Ghost Tapping'],
+	];
+
+	var menu:String = "default";
 
 	var pauseMusic:FlxSound;
 
@@ -73,15 +79,7 @@ class PauseSubState extends MusicBeatSubstate
 		grpMenuShit = new FlxTypedGroup<Alphabet>();
 		add(grpMenuShit);
 
-		for (i in 0...menuItems.length)
-		{
-			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, menuItems[i], true, false);
-			songText.isMenuItem = true;
-			songText.targetY = i;
-			grpMenuShit.add(songText);
-		}
-
-		changeSelection();
+		updateAlphabets();
 
 		cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
 	}
@@ -98,17 +96,13 @@ class PauseSubState extends MusicBeatSubstate
 		var accepted = controls.ACCEPT;
 
 		if (upP)
-		{
 			changeSelection(-1);
-		}
 		if (downP)
-		{
 			changeSelection(1);
-		}
 
 		if (accepted)
 		{
-			var daSelected:String = menuItems[curSelected];
+			var daSelected:String = menus.get(menu)[curSelected];
 
 			switch (daSelected)
 			{
@@ -137,6 +131,19 @@ class PauseSubState extends MusicBeatSubstate
 				case "No Miss":
 					FlxG.save.data.nohit = !FlxG.save.data.nohit;
 					FlxG.save.flush();
+				case "Ghost Tapping":
+					FlxG.save.data.ghostTapping = !FlxG.save.data.ghostTapping;
+					FlxG.save.flush();
+
+					@:privateAccess
+					if(FlxG.save.data.ghostTapping) // basically making it easier lmao
+						PlayState.instance.hasUsedBot = true;
+				case "Options":
+					menu = "options";
+					updateAlphabets();
+				case "Back":
+					menu = "default";
+					updateAlphabets();
 				case "Exit to menu":
 					#if linc_luajit
 					if (PlayState.luaModchart != null)
@@ -154,6 +161,22 @@ class PauseSubState extends MusicBeatSubstate
 		}
 	}
 
+	function updateAlphabets()
+	{
+		grpMenuShit.clear();
+
+		for (i in 0...menus.get(menu).length)
+		{
+			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, menus.get(menu)[i], true, false);
+			songText.isMenuItem = true;
+			songText.targetY = i;
+			grpMenuShit.add(songText);
+		}
+
+		curSelected = 0;
+		changeSelection();
+	}
+
 	override function destroy()
 	{
 		pauseMusic.destroy();
@@ -168,8 +191,8 @@ class PauseSubState extends MusicBeatSubstate
 		curSelected += change;
 
 		if (curSelected < 0)
-			curSelected = menuItems.length - 1;
-		if (curSelected >= menuItems.length)
+			curSelected = menus.get(menu).length - 1;
+		if (curSelected >= menus.get(menu).length)
 			curSelected = 0;
 
 		var bullShit:Int = 0;
@@ -180,13 +203,9 @@ class PauseSubState extends MusicBeatSubstate
 			bullShit++;
 
 			item.alpha = 0.6;
-			// item.setGraphicSize(Std.int(item.width * 0.8));
 
 			if (item.targetY == 0)
-			{
 				item.alpha = 1;
-				// item.setGraphicSize(Std.int(item.width));
-			}
 		}
 	}
 }
