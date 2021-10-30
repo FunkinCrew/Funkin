@@ -11,6 +11,7 @@ All notable changes will be documented in this file.
 - Ghost tapping option in settings.
 - Options Section to the pause menu.
 - Option to change fullscreen and reset keybinds in the control menu substate.
+- You can select the UI Skin in the game's charter.
 ### Fixed
 - Crashes from loading charts with Psych Engine Events in them (basically notes with weird string values and stuff).
 - Info Display (text in top left) appears before settings are loaded, making it show things the player might not want to see.
@@ -20,6 +21,7 @@ All notable changes will be documented in this file.
 - Freeplay Background Color change depending on the framerate.
 ### Changed
 - Debug Songs no longer have difficulties other than NORMAL (because originally they were just one difficulty).
+- SHIT Rating now gives 0.1 damage (out of 2 max) instead of 0.07 damage (miss damage amount).
 ### Removed
 - The folder named `ui` from shared/images/ (because it was unused)
 
