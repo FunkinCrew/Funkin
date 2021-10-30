@@ -2314,11 +2314,12 @@ class PlayState extends MusicBeatState
 						}
 					}
 				}
-				else if(!FlxG.save.data.ghostTapping)
+
+				if(!FlxG.save.data.ghostTapping)
 				{
 					for(i in 0...justPressedArray.length)
 					{
-						if(justPressedArray[i])
+						if(justPressedArray[i] && !noteDataPossibles[i])
 							noteMiss(i, null);
 					}
 				}
