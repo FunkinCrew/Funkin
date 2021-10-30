@@ -72,6 +72,8 @@ class MusicBeatState extends FlxUIState
 		Application.current.window.onFocusOut.add(onWindowFocusOut);
 		TimingStruct.clearTimings();
 
+		KeyBinds.keyCheck();
+
 		if (transIn != null)
 			trace('reg ' + transIn.region);
 
