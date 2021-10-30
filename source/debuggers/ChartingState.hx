@@ -570,6 +570,29 @@ class ChartingState extends MusicBeatState
 
 		stageDropDown.selectedLabel = _song.stage;
 
+		var uiSkins:Array<String> = CoolUtil.coolTextFile(Paths.txt('uiSkinList'));
+
+		var uiSkinDropDown = new FlxUIDropDownMenuCustom(10, stageDropDown.y + 20, FlxUIDropDownMenuCustom.makeStrIdLabelArray(uiSkins, true), function(uiSkin:String)
+		{
+			_song.ui_Skin = uiSkins[Std.parseInt(uiSkin)];
+
+			while (curRenderedNotes.members.length > 0)
+			{
+				curRenderedNotes.remove(curRenderedNotes.members[0], true);
+			}
+	
+			while (curRenderedSustains.members.length > 0)
+			{
+				curRenderedSustains.remove(curRenderedSustains.members[0], true);
+			}
+
+			PlayState.instance.arrow_Type_Sprites.clear();
+
+			updateGrid();
+		});
+
+		uiSkinDropDown.selectedLabel = _song.ui_Skin;
+
 		var mods:Array<String> = [];
 
 		var iterator = characters.keys();
@@ -579,7 +602,7 @@ class ChartingState extends MusicBeatState
 			mods.push(i);
 		}
 
-		var modDropDown = new FlxUIDropDownMenuCustom(10, 140, FlxUIDropDownMenuCustom.makeStrIdLabelArray(mods, true), function(mod:String)
+		var modDropDown = new FlxUIDropDownMenuCustom(uiSkinDropDown.x, uiSkinDropDown.y + 20, FlxUIDropDownMenuCustom.makeStrIdLabelArray(mods, true), function(mod:String)
 		{
 			selected_mod = mods[Std.parseInt(mod)];
 
@@ -612,15 +635,9 @@ class ChartingState extends MusicBeatState
 		var gfLabel = new FlxText(12 + gfDropDown.width, gfDropDown.y, 0, "Girlfriend", 9);
 		var p2Label = new FlxText(12 + player2DropDown.width, player2DropDown.y, 0, "Player 2", 9);
 		var stageLabel = new FlxText(12 + stageDropDown.width, stageDropDown.y, 0, "Stage", 9);
+		var uiSkinLabel = new FlxText(12 + uiSkinDropDown.width, uiSkinDropDown.y, 0, "UI Skin", 9);
 
 		var modLabel = new FlxText(12 + modDropDown.width, modDropDown.y, 0, "Current Mod", 9);
-
-		// adding main dropdowns
-		tab_group_note.add(modDropDown);
-		tab_group_note.add(stageDropDown);
-		tab_group_note.add(player2DropDown);
-		tab_group_note.add(gfDropDown);
-		tab_group_note.add(player1DropDown);
 
 		// adding labels
 		tab_group_note.add(characterLabel);
@@ -630,7 +647,16 @@ class ChartingState extends MusicBeatState
 		tab_group_note.add(gfLabel);
 		tab_group_note.add(p2Label);
 		tab_group_note.add(stageLabel);
+		tab_group_note.add(uiSkinLabel);
 		tab_group_note.add(modLabel);
+
+		// adding main dropdowns
+		tab_group_note.add(modDropDown);
+		tab_group_note.add(uiSkinDropDown);
+		tab_group_note.add(stageDropDown);
+		tab_group_note.add(player2DropDown);
+		tab_group_note.add(gfDropDown);
+		tab_group_note.add(player1DropDown);
 
 		// final add
 		UI_box.addGroup(tab_group_note);
