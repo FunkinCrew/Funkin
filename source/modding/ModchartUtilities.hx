@@ -141,7 +141,11 @@ class ModchartUtilities
             'dad' => PlayState.dad,
         ];
     
-        lua_Sounds = [];
+        @:privateAccess
+        lua_Sounds = [
+            'Inst' => FlxG.sound.music,
+            'Voices' => PlayState.instance.vocals
+        ];
 
         lua = LuaL.newstate();
         LuaL.openlibs(lua);
@@ -768,6 +772,11 @@ class ModchartUtilities
         Lua_helper.add_callback(lua, "stopSound",function(id:String) {
             if(lua_Sounds.get(id) != null)
                 lua_Sounds.get(id).stop();
+        });
+
+        Lua_helper.add_callback(lua,"setSoundVolume", function(id:String, volume:Float) {
+            if(lua_Sounds.get(id) != null)
+                lua_Sounds.get(id).volume = volume;
         });
 
         // tweens
