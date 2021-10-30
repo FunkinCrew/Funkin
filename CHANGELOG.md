@@ -1,7 +1,7 @@
 # Changelog
 All notable changes will be documented in this file.
 
-## [0.4.0] - 10/25/2021
+## [0.3.4] - 10/25/2021
 ### Added
 - Version display for the thing in top left.
 - Different fonts for display in top left.
