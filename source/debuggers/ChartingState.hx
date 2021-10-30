@@ -1285,7 +1285,7 @@ class ChartingState extends MusicBeatState
 		}
 	}
 
-	private function addSection(lengthInSteps:Int = 16):Void
+	private function addSection(?lengthInSteps:Int = 16):Void
 	{
 		var sec:SwagSection = {
 			lengthInSteps: lengthInSteps,
@@ -1421,7 +1421,7 @@ class ChartingState extends MusicBeatState
 	{
 		if(_song.notes[curSection] == null)
 			addSection();
-		
+
 		var noteStrum = getStrumTime(dummyArrow.y) + sectionStartTime();
 		var noteData = Math.floor(FlxG.mouse.x / GRID_SIZE);
 		var noteSus = 0;
