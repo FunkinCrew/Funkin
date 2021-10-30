@@ -180,18 +180,6 @@ class Character extends FlxSprite
 				holdTimer += elapsed;
 			}
 
-			if (curCharacter.endsWith('-car')
-				&& !animation.curAnim.name.startsWith('sing')
-				&& animation.curAnim.finished
-				&& animation.getByName('idleHair') != null)
-				playAnim('idleHair');
-
-			if (animation.getByName('idleLoop') != null)
-			{
-				if (!animation.curAnim.name.startsWith('sing') && animation.curAnim.finished)
-					playAnim('idleLoop');
-			}
-
 			var dadVar:Float = 4;
 
 			if (curCharacter == 'dad')
@@ -207,14 +195,23 @@ class Character extends FlxSprite
 			}
 		}
 
-		switch (curCharacter)
+		if (!debugMode)
 		{
-			case 'gf':
-				if (animation.curAnim.name == 'hairFall' && animation.curAnim.finished)
-				{
-					danced = true;
-					playAnim('danceRight');
-				}
+			if (animation.getByName('idleLoop') != null)
+			{
+				if (!animation.curAnim.name.startsWith('sing') && animation.curAnim.finished)
+					playAnim('idleLoop');
+			}
+
+			switch (curCharacter)
+			{
+				case 'gf':
+					if (animation.curAnim.name == 'hairFall' && animation.curAnim.finished)
+					{
+						danced = true;
+						playAnim('danceRight');
+					}
+			}
 		}
 
 		super.update(elapsed);

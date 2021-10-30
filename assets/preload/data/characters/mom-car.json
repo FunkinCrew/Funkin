@@ -10,7 +10,7 @@
       "offsets": [0, 0]
     },
     {
-      "name": "idleHair",
+      "name": "idleLoop",
       "prefix": "Mom Idle",
       "offsets": [0, 0],
       "frameIndices": [10, 11, 12, 13],

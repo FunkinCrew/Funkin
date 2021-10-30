@@ -17,7 +17,7 @@
       "frameIndices": [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29]
     },
     {
-      "name": "idleHair",
+      "name": "idleLoop",
       "prefix": "GF Dancing Beat Hair blowing CAR",
       "offsets": [0, 0],
       "frameIndices": [10, 11, 12, 25, 26, 27]

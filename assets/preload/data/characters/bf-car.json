@@ -11,7 +11,7 @@
       "offsets": [-5, 0]
     },
     {
-      "name": "idleHair",
+      "name": "idleLoop",
       "prefix": "BF idle dance",
       "offsets": [-5, 0],
       "frameIndices": [10, 11, 12, 13],
