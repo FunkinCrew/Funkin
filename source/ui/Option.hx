@@ -143,6 +143,8 @@ class BoolOption extends Option
 				Value = FlxG.save.data.versionDisplay;
 			case "bigNoteSplashes":
 				Value = FlxG.save.data.bigNoteSplashes;
+			case "ghostTapping":
+				Value = FlxG.save.data.ghostTapping;
 		}
 
 		return Value;
@@ -223,6 +225,8 @@ class BoolOption extends Option
 				Main.toggleVers(FlxG.save.data.versionDisplay);
 			case "bigNoteSplashes":
 				FlxG.save.data.bigNoteSplashes = !Option_Checked;
+			case "ghostTapping":
+				FlxG.save.data.ghostTapping = !Option_Checked;
 		}
 
         if(Option_Value != "muted")

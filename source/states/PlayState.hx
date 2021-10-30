@@ -2314,6 +2314,14 @@ class PlayState extends MusicBeatState
 						}
 					}
 				}
+				else if(!FlxG.save.data.ghostTapping)
+				{
+					for(i in 0...justPressedArray.length)
+					{
+						if(justPressedArray[i])
+							noteMiss(i, null);
+					}
+				}
 			}
 	
 			if (heldArray.contains(true) && generatedMusic)
@@ -2436,17 +2444,32 @@ class PlayState extends MusicBeatState
 
 		if(canMiss)
 		{
-			if(!note.isSustainNote)
-				health -= note.missDamage;
+			if(note != null)
+			{
+				if(!note.isSustainNote)
+					health -= note.missDamage;
+				else
+					health -= 0.035;
+			}
 			else
-				health -= 0.035;
+				health -= Std.parseFloat(type_Configs.get("default")[2]);
 
 			if (combo > 5 && gf.animOffsets.exists('sad'))
 				gf.playAnim('sad');
 
 			combo = 0;
 
-			if(!note.isSustainNote)
+			if(note != null)
+			{
+				if(!note.isSustainNote)
+				{
+					misses++;
+					totalNotes++;
+	
+					missSounds[FlxG.random.int(0, missSounds.length - 1)].play(true);
+				}
+			}
+			else
 			{
 				misses++;
 				totalNotes++;
