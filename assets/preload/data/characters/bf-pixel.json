@@ -5,7 +5,7 @@
   "flipX": true,
   "scale": 6,
   "antialiasing": false,
-  "startingAnim": "firstDeath",
+  "startingAnim": "idle",
   "animations": [
     {
       "name": "idle",
