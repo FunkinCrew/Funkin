@@ -4,6 +4,7 @@ All notable changes will be documented in this file.
 ## [0.4.0] - ?/?/????
 ### Fixed
 - Crash when ghost tapping is off (and you miss) and a modchart is active.
+- Custom Difficulty Inst / Vocals not loading correctly when loading charter (because difficulty wasn't set before the audio was loaded).
 
 ## [0.3.4] - 10/30/2021
 ### Added
