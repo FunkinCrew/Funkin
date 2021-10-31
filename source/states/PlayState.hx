@@ -2566,11 +2566,6 @@ class PlayState extends MusicBeatState
 	{
 		super.beatHit();
 
-		#if linc_luajit
-		if (executeModchart && luaModchart != null)
-			luaModchart.executeState('beatHit', [curBeat]);
-		#end
-
 		if (generatedMusic)
 		{
 			notes.sort(FlxSort.byY, (FlxG.save.data.downscroll ? FlxSort.ASCENDING : FlxSort.DESCENDING));
@@ -2657,6 +2652,11 @@ class PlayState extends MusicBeatState
 		}
 
 		stage.beatHit();
+
+		#if linc_luajit
+		if (executeModchart && luaModchart != null)
+			luaModchart.executeState('beatHit', [curBeat]);
+		#end
 	}
 
 	var curLight:Int = 0;

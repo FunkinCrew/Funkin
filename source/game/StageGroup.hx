@@ -94,22 +94,13 @@ class StageGroup extends FlxGroup
 
         var bruhStages = ['spooky','philly','limo','mall','evil-mall','school','evil-school','wasteland'];
 
-        #if sys
-        var stagesNormally = CoolUtil.coolTextFilePolymod(Paths.txt('stageList'));
-        #else
         var stagesNormally = CoolUtil.coolTextFile(Paths.txt('stageList'));
-        #end
 
         if(!bruhStages.contains(stage) && stagesNormally.contains(stage))
         {
             var JSON_Data:String = "";
 
-            #if sys
-            JSON_Data = PolymodAssets.getText(Paths.json("stage data/" + stage)).trim();
-            #else
             JSON_Data = Assets.getText(Paths.json("stage data/" + stage)).trim();
-            #end
-
             stage_Data = cast Json.parse(JSON_Data);
         }
 
@@ -824,6 +815,7 @@ class StageGroup extends FlxGroup
     function trainReset()
     {
         PlayState.gf.playAnim('hairFall');
+        
 		phillyTrain.x = FlxG.width + 200;
 		trainMoving = false;
 		trainCars = 8;
@@ -854,6 +846,7 @@ class StageGroup extends FlxGroup
 
 		fastCar.velocity.x = (FlxG.random.int(170, 220) / FlxG.elapsed) * 3;
 		fastCarCanDrive = false;
+
 		new FlxTimer().start(2, function(tmr:FlxTimer)
 		{
 			resetFastCar();
@@ -864,20 +857,17 @@ class StageGroup extends FlxGroup
 
     function lightningStrikeShit():Void
     {
-        PlayState.boyfriend.playAnim('scared', true);
-        PlayState.gf.playAnim('scared', true);
+        if(PlayState.boyfriend.animOffsets.exists("scared"))
+            PlayState.boyfriend.playAnim('scared', true);
+
+        if(PlayState.gf.animOffsets.exists("scared"))
+            PlayState.gf.playAnim('scared', true);
         
         FlxG.sound.play(Paths.soundRandom('thunder_', 1, 2));
         halloweenBG.animation.play('lightning');
 
         lightningStrikeBeat = PlayState.currentBeat;
         lightningOffset = FlxG.random.int(8, 24);
-
-        new FlxTimer().start(0.5, function(tmr:FlxTimer)
-        {
-            PlayState.boyfriend.playAnim('idle', true);
-            PlayState.gf.playAnim('danceRight', true);
-        });
     }
 }
 
