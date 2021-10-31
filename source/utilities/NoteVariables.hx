@@ -83,14 +83,14 @@ class NoteVariables
         ["singLEFT", "singDOWN", "singUP", "singRIGHT", "singLEFT", "singDOWN", "singUP", "singRIGHT"],
         ["singLEFT", "singDOWN", "singUP", "singRIGHT", "singUP", "singLEFT", "singDOWN", "singUP", "singRIGHT"],
         ["singLEFT", "singDOWN", "singUP", "singRIGHT", "singUP", "singDOWN", "singLEFT", "singDOWN", "singUP", "singRIGHT"], // 10
-        ["singLEFT", "singDOWN", "singUP", "singRIGHT", "singUP", "singDOWN", "singLEFT", "singDOWN", "singUP", "singRIGHT","singLEFT"], // 11
-        ["singLEFT", "singDOWN", "singUP", "singRIGHT", "singUP", "singDOWN", "singLEFT", "singDOWN", "singUP", "singRIGHT","singLEFT", "singDOWN"], // 12
-        ["singLEFT", "singDOWN", "singUP", "singRIGHT", "singUP", "singDOWN", "singLEFT", "singDOWN", "singUP", "singRIGHT","singLEFT", "singDOWN", "singUP"], // 13
-        ["singLEFT", "singDOWN", "singUP", "singRIGHT", "singUP", "singDOWN", "singLEFT", "singDOWN", "singUP", "singRIGHT","singLEFT", "singDOWN", "singUP", "singRIGHT"], // 14
-        ["singLEFT", "singDOWN", "singUP", "singRIGHT", "singUP", "singDOWN", "singLEFT", "singDOWN", "singUP", "singRIGHT","singLEFT", "singDOWN", "singUP", "singRIGHT","singLEFT"], // 15
-        ["singLEFT", "singDOWN", "singUP", "singRIGHT", "singUP", "singDOWN", "singLEFT", "singDOWN", "singUP", "singRIGHT","singLEFT", "singDOWN", "singUP", "singRIGHT","singLEFT", "singDOWN"], // 16
-        ["singLEFT", "singDOWN", "singUP", "singRIGHT", "singUP", "singDOWN", "singLEFT", "singDOWN", "singUP", "singRIGHT","singLEFT", "singDOWN", "singUP", "singRIGHT","singLEFT", "singDOWN","singUP"], // 17
-        ["singLEFT", "singDOWN", "singUP", "singRIGHT", "singLEFT", "singDOWN", "singUP", "singRIGHT", "singUP", "singDOWN", "singLEFT", "singDOWN", "singUP", "singRIGHT", "singLEFT", "singDOWN", "singUP", "singRIGHT"] // 18
+        ["singLEFT", "singDOWN", "singUP", "singRIGHT", "singUP", "singUP", "singDOWN", "singLEFT", "singDOWN", "singUP","singRIGHT"], // 11
+        ["singLEFT", "singDOWN", "singUP", "singRIGHT", "singLEFT", "singDOWN", "singUP", "singRIGHT", "singLEFT", "singDOWN", "singUP", "singRIGHT"], // 12
+        ["singLEFT", "singDOWN", "singUP", "singRIGHT", "singLEFT", "singRIGHT", "singUP", "singLEFT", "singRIGHT", "singLEFT", "singDOWN", "singUP", "singRIGHT"], // 13
+        ["singLEFT", "singDOWN", "singUP", "singRIGHT", "singLEFT", "singRIGHT", "singUP", "singUP", "singLEFT", "singRIGHT", "singLEFT", "singDOWN", "singUP", "singRIGHT"], // 14
+        ["singLEFT", "singDOWN", "singUP", "singRIGHT", "singLEFT", "singRIGHT", "singUP", "singUP", "singUP", "singLEFT", "singRIGHT", "singLEFT", "singDOWN", "singUP", "singRIGHT"], // 15
+        ["singLEFT", "singDOWN", "singUP", "singRIGHT", "singLEFT", "singRIGHT", "singLEFT", "singRIGHT", "singUP", "singDOWN", "singUP", "singDOWN", "singLEFT", "singDOWN", "singUP", "singRIGHT"], // 16
+        ["singLEFT", "singDOWN", "singUP", "singRIGHT", "singUP", "singLEFT", "singUP", "singDOWN", "singUP", "singUP", "singUP", "singRIGHT", "singUP", "singLEFT", "singDOWN", "singUP", "singRIGHT"], // 17
+        ["singLEFT", "singDOWN", "singUP", "singRIGHT", "singLEFT", "singDOWN", "singUP", "singRIGHT", "singUP", "singUP", "singLEFT", "singDOWN", "singUP", "singRIGHT", "singLEFT", "singDOWN", "singUP", "singRIGHT"] // 18
     ];
 
     public static function updateStuffs()
