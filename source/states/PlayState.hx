@@ -2566,8 +2566,6 @@ class PlayState extends MusicBeatState
 	{
 		super.beatHit();
 
-		stage.beatHit();
-
 		#if linc_luajit
 		if (executeModchart && luaModchart != null)
 			luaModchart.executeState('beatHit', [curBeat]);
@@ -2657,6 +2655,8 @@ class PlayState extends MusicBeatState
 			boyfriend.playAnim('hey', true);
 			gf.playAnim('cheer', true);
 		}
+
+		stage.beatHit();
 	}
 
 	var curLight:Int = 0;
