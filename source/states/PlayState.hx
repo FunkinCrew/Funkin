@@ -2461,8 +2461,10 @@ class PlayState extends MusicBeatState
 			var missValues = false;
 
 			if(note != null)
+			{
 				if(!note.isSustainNote)
 					missValues = true;
+			}
 			else
 				missValues = true;
 
