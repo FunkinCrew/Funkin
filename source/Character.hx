@@ -63,24 +63,6 @@ class Character extends FlxSprite
 
 				flipX = true;
 
-			case 'spirit':
-				frames = Paths.getPackerAtlas('spirit', 'shared', true);
-				animation.addByPrefix('idle', "idle spirit_", 24, false);
-				animation.addByPrefix('singUP', "up_", 24, false);
-				animation.addByPrefix('singRIGHT', "right_", 24, false);
-				animation.addByPrefix('singLEFT', "left_", 24, false);
-				animation.addByPrefix('singDOWN', "spirit down_", 24, false);
-
-				loadOffsetFile(curCharacter);
-				barColor = 0xFFff3c6e;
-
-				setGraphicSize(Std.int(width * 6));
-				updateHitbox();
-
-				playAnim('idle');
-
-				antialiasing = false;
-
 			default:
 				parseDataFile();
 		}
@@ -124,8 +106,13 @@ class Character extends FlxSprite
 		}
 
 		var data:CharacterData = cast jsonData;
+		var tex:FlxAtlasFrames;
 
-		var tex:FlxAtlasFrames = Paths.getSparrowAtlas(data.asset, 'shared');
+		if (data.usePackerAtlas)
+			tex = Paths.getPackerAtlas(data.asset, 'shared');
+		else
+			tex = Paths.getSparrowAtlas(data.asset, 'shared');
+
 		frames = tex;
 		if (frames != null)
 			for (anim in data.animations)
@@ -338,6 +325,12 @@ typedef CharacterData =
 	 * @default true
 	 */
 	var ?antialiasing:Bool;
+
+	/**
+	 * Whether this character uses PackerAtlas.
+	 * @default false
+	 */
+	var ?usePackerAtlas:Bool;
 }
 
 typedef AnimationData =
