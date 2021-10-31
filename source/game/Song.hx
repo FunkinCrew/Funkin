@@ -50,7 +50,7 @@ typedef SwagSong =
 
 	var timescale:Array<Int>;
 
-	var chartOffset:Int; // in milliseconds
+	var chartOffset:Null<Int>; // in milliseconds
 
 	// shaggy pog
 	var mania:Null<Int>;
