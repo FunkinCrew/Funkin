@@ -50,6 +50,8 @@ typedef SwagSong =
 
 	var timescale:Array<Int>;
 
+	var chartOffset:Int; // in milliseconds
+
 	// shaggy pog
 	var mania:Null<Int>;
 
@@ -149,6 +151,9 @@ class Song
 
 		if(swagShit.timescale == null)
 			swagShit.timescale = [4,4];
+
+		if(swagShit.chartOffset == null)
+			swagShit.chartOffset = 0;
 
 		swagShit.mania = null;
 

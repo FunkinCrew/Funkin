@@ -1036,11 +1036,9 @@ class PlayState extends MusicBeatState
 		{
 			Conductor.recalculateStuff(songMultiplier);
 
-			var coolSection:Int = Std.int(section.lengthInSteps / 4);
-
 			for (songNotes in section.sectionNotes)
 			{
-				var daStrumTime:Float = songNotes[0] + Conductor.offset;
+				var daStrumTime:Float = songNotes[0] + Conductor.offset + SONG.chartOffset;
 				var daNoteData:Int = Std.int(songNotes[1] % SONG.keyCount);
 
 				var gottaHitNote:Bool = section.mustHitSection;
