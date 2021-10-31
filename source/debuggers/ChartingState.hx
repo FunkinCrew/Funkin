@@ -190,6 +190,7 @@ class ChartingState extends MusicBeatState
 
 		loadSong(_song.song);
 
+		Conductor.timeScale = _song.timescale;
 		Conductor.changeBPM(_song.bpm);
 		Conductor.mapBPMChanges(_song);
 
@@ -818,6 +819,8 @@ class ChartingState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
+		Conductor.timeScale = _song.timescale;
+
 		curStep = recalculateSteps();
 
 		Conductor.songPosition = FlxG.sound.music.time;
@@ -827,9 +830,9 @@ class ChartingState extends MusicBeatState
 		_song.modchartPath = modchart_Input.text;
 		_song.cutscene = cutscene_Input.text;
 
-		strumLine.y = getYfromStrum((Conductor.songPosition - sectionStartTime()) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps));
+		strumLine.y = getYfromStrum((Conductor.songPosition - sectionStartTime()) % (Conductor.stepCrochet * ((16 / _song.timescale[1]) * 4)));
 
-		if (curBeat % 4 == 0 && curStep >= 16 * (curSection + 1))
+		if (curBeat % _song.timescale[0] == 0 && curStep >= ((16 / _song.timescale[1]) * 4) * (curSection + 1))
 		{
 			trace(curStep);
 			trace((_song.notes[curSection].lengthInSteps) * (curSection + 1));
@@ -879,7 +882,7 @@ class ChartingState extends MusicBeatState
 				if (FlxG.mouse.x > gridBG.x
 					&& FlxG.mouse.x < gridBG.x + gridBG.width
 					&& FlxG.mouse.y > gridBG.y
-					&& FlxG.mouse.y < gridBG.y + (GRID_SIZE * _song.notes[curSection].lengthInSteps))
+					&& FlxG.mouse.y < gridBG.y + (GRID_SIZE * ((16 / _song.timescale[1]) * 4)))
 				{
 					FlxG.log.add('added note');
 					addNote();
@@ -890,7 +893,7 @@ class ChartingState extends MusicBeatState
 		if (FlxG.mouse.x > gridBG.x
 			&& FlxG.mouse.x < gridBG.x + gridBG.width
 			&& FlxG.mouse.y > gridBG.y
-			&& FlxG.mouse.y < gridBG.y + (GRID_SIZE * _song.notes[curSection].lengthInSteps))
+			&& FlxG.mouse.y < gridBG.y + (GRID_SIZE * ((16 / _song.timescale[1]) * 4)))
 		{
 			dummyArrow.x = Math.floor(FlxG.mouse.x / GRID_SIZE) * GRID_SIZE;
 			if (FlxG.keys.pressed.SHIFT)
@@ -1144,7 +1147,7 @@ class ChartingState extends MusicBeatState
 
 		for (note in _song.notes[daSec - sectionNum].sectionNotes)
 		{
-			var strum = note[0] + Conductor.stepCrochet * (_song.notes[daSec].lengthInSteps * sectionNum);
+			var strum = note[0] + Conductor.stepCrochet * (((16 / _song.timescale[1]) * 4) * sectionNum);
 
 			var copiedNote:Array<Dynamic> = [strum, note[1], note[2], note[3], note[4]];
 			_song.notes[daSec].sectionNotes.push(copiedNote);
@@ -1212,7 +1215,7 @@ class ChartingState extends MusicBeatState
 		gridBG.kill();
 		gridBG.destroy();
 
-		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * _song.keyCount * 2, GRID_SIZE * _song.notes[curSection].lengthInSteps);
+		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * _song.keyCount * 2, GRID_SIZE * Std.int(((16 / _song.timescale[1]) * 4)));
         add(gridBG);
 
 		remove(gridBlackLine);
@@ -1273,7 +1276,7 @@ class ChartingState extends MusicBeatState
 			note.updateHitbox();
 
 			note.x = Math.floor(daNoteInfo * GRID_SIZE) + Std.parseFloat(PlayState.instance.arrow_Configs.get(daType)[1]);
-			note.y = Math.floor(getYfromStrum((daStrumTime - sectionStartTime()) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps))) + Std.parseFloat(PlayState.instance.arrow_Configs.get(daType)[3]);
+			note.y = Math.floor(getYfromStrum((daStrumTime - sectionStartTime()) % (Conductor.stepCrochet * Std.int(((16 / _song.timescale[1]) * 4))))) + Std.parseFloat(PlayState.instance.arrow_Configs.get(daType)[3]);
 
 			note.rawNoteData = daNoteInfo;
 
@@ -1289,10 +1292,15 @@ class ChartingState extends MusicBeatState
 		}
 	}
 
-	private function addSection(?lengthInSteps:Int = 16):Void
+	private function addSection(?coolLength:Int = 0):Void
 	{
+		var col:Int = 16;
+
+		if(coolLength == 0)
+			col = Std.int((16 / _song.timescale[1]) * 4);
+
 		var sec:SwagSection = {
-			lengthInSteps: lengthInSteps,
+			lengthInSteps: col,
 			bpm: _song.bpm,
 			changeBPM: false,
 			mustHitSection: true,

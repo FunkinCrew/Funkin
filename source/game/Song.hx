@@ -48,6 +48,8 @@ typedef SwagSong =
 
 	var keyCount:Int;
 
+	var timescale:Array<Int>;
+
 	// shaggy pog
 	var mania:Int;
 
@@ -144,6 +146,9 @@ class Song
 
 		if(Std.string(swagShit.ui_Skin) == "null")
 			swagShit.ui_Skin = swagShit.song == "Senpai" || swagShit.song == "Roses" || swagShit.song == "Thorns" ? "pixel" : "default";
+
+		if(swagShit.timescale == null)
+			swagShit.timescale = [4,4];
 
 		return swagShit;
 	}
