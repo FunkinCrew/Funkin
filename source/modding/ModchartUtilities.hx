@@ -714,6 +714,7 @@ class ModchartUtilities
                 PlayState.instance.iconP1 = new HealthIcon(boyfriend.icon, false);
                 PlayState.instance.iconP1.y = PlayState.instance.healthBar.y - (PlayState.instance.iconP1.height / 2);
                 PlayState.instance.iconP1.cameras = [PlayState.instance.camHUD];
+                PlayState.instance.iconP1.flipX = true;
                 PlayState.instance.add(PlayState.instance.iconP1);
 
                 bar.createFilledBar(PlayState.dad.barColor, boyfriend.barColor);
