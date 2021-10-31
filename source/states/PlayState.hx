@@ -1919,9 +1919,6 @@ class PlayState extends MusicBeatState
 	
 					switchedStates = true;
 					vocals.stop();
-					FlxG.switchState(new StoryMenuState());
-
-					arrow_Type_Sprites = [];
 
 					#if linc_luajit
 					if(luaModchart != null)
@@ -1930,6 +1927,10 @@ class PlayState extends MusicBeatState
 						luaModchart = null;
 					}
 					#end
+
+					FlxG.switchState(new StoryMenuState());
+
+					arrow_Type_Sprites = [];
 	
 					if (SONG.validScore)
 					{
@@ -1981,13 +1982,6 @@ class PlayState extends MusicBeatState
 			}
 			else
 			{
-				trace('WENT BACK TO FREEPLAY??');
-				switchedStates = true;
-				vocals.stop();
-				FlxG.switchState(new FreeplayState());
-
-				arrow_Type_Sprites = [];
-
 				#if linc_luajit
 				if(luaModchart != null)
 				{
@@ -1995,6 +1989,13 @@ class PlayState extends MusicBeatState
 					luaModchart = null;
 				}
 				#end
+
+				trace('WENT BACK TO FREEPLAY??');
+				switchedStates = true;
+				vocals.stop();
+				FlxG.switchState(new FreeplayState());
+
+				arrow_Type_Sprites = [];
 			}
 		}
 	}
