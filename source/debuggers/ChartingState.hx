@@ -188,6 +188,8 @@ class ChartingState extends MusicBeatState
 
 		updateGrid();
 
+		difficulty = PlayState.storyDifficultyStr.toLowerCase();
+		
 		loadSong(_song.song);
 
 		Conductor.timeScale = _song.timescale;
