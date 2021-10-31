@@ -102,6 +102,8 @@
 	<haxelib name="discord_rpc" if="desktop"/>
 	<haxelib name="linc_luajit" if="windows"/>
 
+	<haxelib name="extension-networking" />
+
 	<!-- ______________________________ Haxedefines _____________________________ -->
 
 	<!--Enable the Flixel core recording system-->
