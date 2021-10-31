@@ -116,6 +116,8 @@ class ChartingState extends MusicBeatState
 
 	public static var loadedAutosave:Bool = false;
 
+	var hitsounds:Bool = false;
+
 	override function create()
 	{
 		#if NO_PRELOAD_ALL
@@ -260,6 +262,14 @@ class ChartingState extends MusicBeatState
 			trace('CHECKED!');
 		};
 
+		var hitsoundsBox = new FlxUICheckBox(check_voices.x + check_voices.width, check_voices.y, null, null, "Play hitsounds", 100);
+		hitsoundsBox.checked = false;
+
+		hitsoundsBox.callback = function()
+		{
+			hitsounds = hitsoundsBox.checked;
+		};
+
 		var stepperBPM:FlxUINumericStepper = new FlxUINumericStepper(10, check_voices.y + check_voices.height + 5, 0.1, 1, 0.1, 999, 1);
 		stepperBPM.value = Conductor.bpm;
 		stepperBPM.name = 'song_bpm';
@@ -350,6 +360,7 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(UI_songTitle);
 		tab_group_song.add(UI_songDiff);
 		tab_group_song.add(check_voices);
+		tab_group_song.add(hitsoundsBox);
 		tab_group_song.add(check_mute_inst);
 		tab_group_song.add(modchart_Input);
 		tab_group_song.add(cutscene_Input);
@@ -834,6 +845,28 @@ class ChartingState extends MusicBeatState
 
 		strumLine.y = getYfromStrum((Conductor.songPosition - sectionStartTime()) % (Conductor.stepCrochet * ((16 / _song.timescale[1]) * 4)));
 
+		if(hitsounds)
+		{
+			curRenderedNotes.forEach(function(note:Note)
+			{
+				if (FlxG.sound.music.playing)
+				{
+					FlxG.overlap(strumLine, note, function(_, _)
+					{
+						if(!claps.contains(note))
+						{
+							claps.push(note);
+							
+							if(note.rawNoteData <= _song.keyCount && _song.notes[curSection].mustHitSection || note.rawNoteData > _song.keyCount && !_song.notes[curSection].mustHitSection)
+								FlxG.sound.play(Paths.sound('CLAP', 'preload'));
+							else
+								FlxG.sound.play(Paths.sound('SNAP', 'preload'));
+						}
+					});
+				}
+			});
+		}
+
 		if (curBeat % _song.timescale[0] == 0 && curStep >= ((16 / _song.timescale[1]) * 4) * (curSection + 1))
 		{
 			trace(curStep);
@@ -1048,6 +1081,8 @@ class ChartingState extends MusicBeatState
 
 		super.update(elapsed);
 	}
+
+	var claps:Array<Note> = [];
 
 	function changeNoteSustain(value:Float):Void
 	{
@@ -1547,6 +1582,7 @@ class ChartingState extends MusicBeatState
 			_file.addEventListener(Event.COMPLETE, onSaveComplete);
 			_file.addEventListener(Event.CANCEL, onSaveCancel);
 			_file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
+
 			var gamingName = _song.song.toLowerCase();
 
 			if(difficulty.toLowerCase() != 'normal')

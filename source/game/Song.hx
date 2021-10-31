@@ -51,7 +51,7 @@ typedef SwagSong =
 	var timescale:Array<Int>;
 
 	// shaggy pog
-	var mania:Int;
+	var mania:Null<Int>;
 
 	var ui_Skin:String;
 
@@ -149,6 +149,8 @@ class Song
 
 		if(swagShit.timescale == null)
 			swagShit.timescale = [4,4];
+
+		swagShit.mania = null;
 
 		return swagShit;
 	}
