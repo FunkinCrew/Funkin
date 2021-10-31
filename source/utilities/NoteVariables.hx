@@ -42,8 +42,8 @@ class NoteVariables
         ["A","S","D","F", Square_Key, "H","J","K","L"], // Tryhard Shag
         ["Q","W","E","R","V","N","U","I","O","P"], // 10
         ["Q","W","E","R","V",Square_Key,"N","U","I","O","P"], // 11
-        ["Q","W","E","R","D","F","J","K","U","I","O","P"], // 12
-        ["Q","W","E","R","D","F",Square_Key,"J","K","U","I","O","P"], // 13
+        ["A","S","D","F","C","V","N","M","J","K","L","SEMICOLON"], // 12
+        ["A","S","D","F","C","V",Square_Key,"N","M","J","K","L","SEMICOLON"], // 13 //asdf cv space nm jkl;
         ["Q","W","E","R","S","D","F","J","K","L","U","I","O","P"], // 14
         ["Q","W","E","R","S","D","F",Square_Key,"J","K","L","U","I","O","P"], // 15
         ["Q","W","E","R","A","S","D","F","H","J","K","L","U","I","O","P"], // 16
