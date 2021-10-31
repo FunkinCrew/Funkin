@@ -95,8 +95,7 @@ class MusicBeatState extends FlxUIState
 		if(FlxG.state == PlayState.instance)
 			multi = PlayState.songMultiplier;
 
-		Conductor.crochet = ((60 / Conductor.bpm) * 1000) * multi;
-		Conductor.stepCrochet = Conductor.crochet / 4;
+		Conductor.recalculateStuff(multi);
 
 		curStep = lastChange.stepTime + Math.floor((Conductor.songPosition - lastChange.songTime) / Conductor.stepCrochet);
 
@@ -105,7 +104,7 @@ class MusicBeatState extends FlxUIState
 
 	public function stepHit():Void
 	{
-		if (curStep % 4 == 0)
+		if (curStep % Conductor.timeScale[0] == 0)
 			beatHit();
 	}
 

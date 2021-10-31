@@ -247,10 +247,10 @@ class PlayState extends MusicBeatState
 
 		SONG.speed /= songMultiplier;
 
-		if(SONG.speed < 1 && songMultiplier > 1)
-			SONG.speed = 1;
+		if(SONG.speed <= 0)
+			SONG.speed = 0.1;
 
-		Conductor.safeZoneOffset = Math.floor((Conductor.safeFrames / 60) * 1000);
+		Conductor.recalculateStuff(songMultiplier);
 		Conductor.safeZoneOffset *= songMultiplier;
 
 		if(SONG.stage == null)
@@ -1193,7 +1193,7 @@ class PlayState extends MusicBeatState
 
 	function tweenCamIn():Void
 	{
-		FlxTween.tween(FlxG.camera, {zoom: 1.3}, (Conductor.stepCrochet * 4 / 1000), {ease: FlxEase.elasticInOut});
+		FlxTween.tween(FlxG.camera, {zoom: 1.3}, (Conductor.stepCrochet * SONG.timescale[0] / 1000), {ease: FlxEase.elasticInOut});
 	}
 
 	override function openSubState(SubState:FlxSubState)
@@ -2318,7 +2318,7 @@ class PlayState extends MusicBeatState
 					for(i in 0...justPressedArray.length)
 					{
 						if(justPressedArray[i] && !noteDataPossibles[i])
-							noteMiss(i, null);
+							noteMiss(i);
 					}
 				}
 			}
@@ -2458,33 +2458,23 @@ class PlayState extends MusicBeatState
 
 			combo = 0;
 
+			var missValues = false;
+
 			if(note != null)
-			{
 				if(!note.isSustainNote)
-				{
-					misses++;
-					totalNotes++;
-	
-					missSounds[FlxG.random.int(0, missSounds.length - 1)].play(true);
-				}
-			}
+					missValues = true;
 			else
+				missValues = true;
+
+			if(missValues)
 			{
 				misses++;
 				totalNotes++;
-
-				missSounds[FlxG.random.int(0, missSounds.length - 1)].play(true);
 			}
 
+			missSounds[FlxG.random.int(0, missSounds.length - 1)].play(true);
+
 			songScore -= 10;
-	
-			boyfriend.stunned = true;
-	
-			// get stunned for 5 seconds
-			new FlxTimer().start(5 / 60, function(tmr:FlxTimer)
-			{
-				boyfriend.stunned = false;
-			});
 
 			if(note != null && boyfriend.otherCharacters != null)
 				boyfriend.otherCharacters[note.character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][direction] + "miss", true);
@@ -2493,7 +2483,7 @@ class PlayState extends MusicBeatState
 
 			#if linc_luajit
 			if (luaModchart != null)
-				luaModchart.executeState('playerOneMiss', [direction, Conductor.songPosition, note.arrow_Type]);
+				luaModchart.executeState('playerOneMiss', [direction, Conductor.songPosition, (note != null ? note.arrow_Type : "default")]);
 			#end
 		}
 	}
