@@ -127,7 +127,8 @@ class KadeEngineFPS extends TextField
 
 		Main.instance.removeChild(bitmap);
 
-		bitmap = ImageOutline.renderImage(this, 2, 0x000000, 1);
+		if (FlxG.save.data.antiAliasing)
+			bitmap = ImageOutline.renderImage(this, 1, 0x000000, 1);
 
 		Main.instance.addChild(bitmap);
 
