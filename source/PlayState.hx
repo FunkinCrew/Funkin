@@ -837,6 +837,16 @@ class PlayState extends MusicBeatState
 			Debug.logTrace("Removed " + toBeRemoved.length + " cuz of start time");
 		}
 
+		for (i in 0...unspawnNotes.length)
+			if (unspawnNotes[i].strumTime < startTime)
+				unspawnNotes.remove(unspawnNotes[i]);
+
+		// make all of the notes
+		for (i in unspawnNotes)
+		{
+			notes.add(i);
+		}
+
 		trace('generated');
 
 		// add(strumLine);
@@ -1521,10 +1531,6 @@ class PlayState extends MusicBeatState
 		trace("pitched inst and vocals to " + songMultiplier);
 		#end
 
-		for (i in 0...unspawnNotes.length)
-			if (unspawnNotes[i].strumTime < startTime)
-				unspawnNotes.remove(unspawnNotes[i]);
-
 		if (needSkip)
 		{
 			skipActive = true;
@@ -1961,6 +1967,8 @@ class PlayState extends MusicBeatState
 
 	function resyncVocals():Void
 	{
+		if (endingSong)
+			return;
 		vocals.stop();
 		FlxG.sound.music.stop();
 
@@ -2034,7 +2042,6 @@ class PlayState extends MusicBeatState
 			if (unspawnNotes[0].strumTime - Conductor.songPosition < 14000 * songMultiplier)
 			{
 				var dunceNote:Note = unspawnNotes[0];
-				notes.add(dunceNote);
 
 				#if FEATURE_LUAMODCHART
 				if (executeModchart)
