@@ -1987,6 +1987,8 @@ class PlayState extends MusicBeatState
 			#end
 		}
 
+		// ballsex - etterna
+
 		#if FEATURE_DISCORD
 		DiscordClient.changePresence(detailsText
 			+ " "
