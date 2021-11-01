@@ -245,32 +245,34 @@ class FreeplayState extends MusicBeatState
 			{
 				Debug.displayAlert(meta.songName + " Chart", "No difficulties found for chart, skipping.");
 			}
-			else
-			{
 			#else
 			diffsThatExist = ["Easy", "Normal", "Hard"];
 			#end
-				if (diffsThatExist.contains("Easy"))
-					FreeplayState.loadDiff(0, songId, diffs);
-				if (diffsThatExist.contains("Normal"))
-					FreeplayState.loadDiff(1, songId, diffs);
-				if (diffsThatExist.contains("Hard"))
-					FreeplayState.loadDiff(2, songId, diffs);
 
-				meta.diffs = diffsThatExist;
+			if (diffsThatExist.contains("Easy"))
+				FreeplayState.loadDiff(0, songId, diffs);
+			if (diffsThatExist.contains("Normal"))
+				FreeplayState.loadDiff(1, songId, diffs);
+			if (diffsThatExist.contains("Hard"))
+				FreeplayState.loadDiff(2, songId, diffs);
 
-				if (diffsThatExist.length != 3)
-					trace("I ONLY FOUND " + diffsThatExist);
+			meta.diffs = diffsThatExist;
 
-				FreeplayState.songData.set(songId, diffs);
-				trace('loaded diffs for ' + songId);
-				FreeplayState.songs.push(meta);
+			if (diffsThatExist.length != 3)
+				trace("I ONLY FOUND " + diffsThatExist);
 
-				sys.thread.Thread.create(() ->
-				{
-					FlxG.sound.cache(Paths.inst(songId));
-				});
-			}
+			FreeplayState.songData.set(songId, diffs);
+			trace('loaded diffs for ' + songId);
+			FreeplayState.songs.push(meta);
+
+			#if FFEATURE_FILESYSTEM
+			sys.thread.Thread.create(() ->
+			{
+				FlxG.sound.cache(Paths.inst(songId));
+			});
+			#else
+			FlxG.sound.cache(Paths.inst(songId));
+			#end
 		}
 	}
 
@@ -460,11 +462,11 @@ class FreeplayState extends MusicBeatState
 	}
 
 	/**
- * Load into a song in free play, by name.
- * This is a static function, so you can call it anywhere.
- * @param songName The name of the song to load. Use the human readable name, with spaces.
- * @param isCharting If true, load into the Chart Editor instead.
- */
+	 * Load into a song in free play, by name.
+	 * This is a static function, so you can call it anywhere.
+	 * @param songName The name of the song to load. Use the human readable name, with spaces.
+	 * @param isCharting If true, load into the Chart Editor instead.
+	 */
 	public static function loadSongInFreePlay(songName:String, difficulty:Int, isCharting:Bool, reloadSong:Bool = false)
 	{
 		// Make sure song data is initialized first.
@@ -656,7 +658,9 @@ class FreeplayState extends MusicBeatState
 			}
 		}
 	}
-} class FreeplaySongMetadata
+}
+
+class FreeplaySongMetadata
 {
 	public var songName:String = "";
 	public var week:Int = 0;

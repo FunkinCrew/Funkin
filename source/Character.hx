@@ -30,60 +30,7 @@ class Character extends FlxSprite
 		curCharacter = character;
 		this.isPlayer = isPlayer;
 
-		var tex:FlxAtlasFrames;
-		antialiasing = FlxG.save.data.antialiasing;
-
-		switch (curCharacter)
-		{
-			case 'bf-pixel':
-				frames = Paths.getSparrowAtlas('bfPixel', 'shared', true);
-				animation.addByPrefix('idle', 'BF IDLE', 24, false);
-				animation.addByPrefix('singUP', 'BF UP NOTE', 24, false);
-				animation.addByPrefix('singLEFT', 'BF LEFT NOTE', 24, false);
-				animation.addByPrefix('singRIGHT', 'BF RIGHT NOTE', 24, false);
-				animation.addByPrefix('singDOWN', 'BF DOWN NOTE', 24, false);
-				animation.addByPrefix('singUPmiss', 'BF UP MISS', 24, false);
-				animation.addByPrefix('singLEFTmiss', 'BF LEFT MISS', 24, false);
-				animation.addByPrefix('singRIGHTmiss', 'BF RIGHT MISS', 24, false);
-				animation.addByPrefix('singDOWNmiss', 'BF DOWN MISS', 24, false);
-
-				loadOffsetFile(curCharacter);
-
-				setGraphicSize(Std.int(width * 6));
-				updateHitbox();
-
-				playAnim('idle');
-
-				width -= 100;
-				height -= 100;
-
-				antialiasing = false;
-
-				barColor = 0xFF31b0d1;
-
-				flipX = true;
-
-			case 'spirit':
-				frames = Paths.getPackerAtlas('spirit', 'shared', true);
-				animation.addByPrefix('idle', "idle spirit_", 24, false);
-				animation.addByPrefix('singUP', "up_", 24, false);
-				animation.addByPrefix('singRIGHT', "right_", 24, false);
-				animation.addByPrefix('singLEFT', "left_", 24, false);
-				animation.addByPrefix('singDOWN', "spirit down_", 24, false);
-
-				loadOffsetFile(curCharacter);
-				barColor = 0xFFff3c6e;
-
-				setGraphicSize(Std.int(width * 6));
-				updateHitbox();
-
-				playAnim('idle');
-
-				antialiasing = false;
-
-			default:
-				parseDataFile();
-		}
+		parseDataFile();
 
 		if (curCharacter.startsWith('bf'))
 			dance();
@@ -124,8 +71,13 @@ class Character extends FlxSprite
 		}
 
 		var data:CharacterData = cast jsonData;
+		var tex:FlxAtlasFrames;
 
-		var tex:FlxAtlasFrames = Paths.getSparrowAtlas(data.asset, 'shared');
+		if (data.usePackerAtlas)
+			tex = Paths.getPackerAtlas(data.asset, 'shared');
+		else
+			tex = Paths.getSparrowAtlas(data.asset, 'shared');
+
 		frames = tex;
 		if (frames != null)
 			for (anim in data.animations)
@@ -180,18 +132,6 @@ class Character extends FlxSprite
 				holdTimer += elapsed;
 			}
 
-			if (curCharacter.endsWith('-car')
-				&& !animation.curAnim.name.startsWith('sing')
-				&& animation.curAnim.finished
-				&& animation.getByName('idleHair') != null)
-				playAnim('idleHair');
-
-			if (animation.getByName('idleLoop') != null)
-			{
-				if (!animation.curAnim.name.startsWith('sing') && animation.curAnim.finished)
-					playAnim('idleLoop');
-			}
-
 			var dadVar:Float = 4;
 
 			if (curCharacter == 'dad')
@@ -207,14 +147,23 @@ class Character extends FlxSprite
 			}
 		}
 
-		switch (curCharacter)
+		if (!debugMode)
 		{
-			case 'gf':
-				if (animation.curAnim.name == 'hairFall' && animation.curAnim.finished)
-				{
-					danced = true;
-					playAnim('danceRight');
-				}
+			if (animation.getByName('idleLoop') != null)
+			{
+				if (!animation.curAnim.name.startsWith('sing') && animation.curAnim.finished)
+					playAnim('idleLoop');
+			}
+
+			switch (curCharacter)
+			{
+				case 'gf':
+					if (animation.curAnim.name == 'hairFall' && animation.curAnim.finished)
+					{
+						danced = true;
+						playAnim('danceRight');
+					}
+			}
 		}
 
 		super.update(elapsed);
@@ -341,6 +290,12 @@ typedef CharacterData =
 	 * @default true
 	 */
 	var ?antialiasing:Bool;
+
+	/**
+	 * Whether this character uses PackerAtlas.
+	 * @default false
+	 */
+	var ?usePackerAtlas:Bool;
 }
 
 typedef AnimationData =

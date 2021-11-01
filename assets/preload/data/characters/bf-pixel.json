@@ -1,0 +1,56 @@
+{
+  "name": "Boyfriend (Pixel Day)",
+  "asset": "characters/bfPixel",
+  "barColor": "#31B0D1",
+  "flipX": true,
+  "scale": 6,
+  "antialiasing": false,
+  "startingAnim": "idle",
+  "animations": [
+    {
+      "name": "idle",
+      "prefix": "BF IDLE",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "singUP",
+      "prefix": "BF UP NOTE",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "singLEFT",
+      "prefix": "BF LEFT NOTE",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "BF RIGHT NOTE",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "singDOWN",
+      "prefix": "BF DOWN NOTE",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "singUPmiss",
+      "prefix": "BF UP MISS",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "singLEFTmiss",
+      "prefix": "BF LEFT MISS",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "singRIGHTmiss",
+      "prefix": "BF RIGHT MISS",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "singDOWNmiss",
+      "prefix": "BF DOWN MISS",
+      "offsets": [0, 0]
+    }
+  ]
+}

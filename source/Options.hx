@@ -558,7 +558,6 @@ class ShitMsOption extends Option
 	}
 }
 
-
 class RoundAccuracy extends Option
 {
 	public function new(desc:String)
@@ -614,8 +613,6 @@ class CpuStrums extends Option
 		return "CPU Strums: < " + (FlxG.save.data.cpuStrums ? "Light up" : "Stay static") + " >";
 	}
 }
-
-
 
 class GraphicLoading extends Option
 {

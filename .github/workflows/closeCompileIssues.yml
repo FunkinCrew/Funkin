@@ -1,0 +1,20 @@
+name: Autocloser
+on:
+  issues:
+    types: [opened, edited, reopened]
+jobs:
+  autoclose:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Autoclose issues
+      uses: arkon/issue-closer-action@v3.4
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        rules: |
+          [
+            {
+              "type": "title",
+              "regex": ".*compile*",
+              "message": "@${issue.user.login} this issue was automatically closed because we do not offer support for compiling Kade Engine! Please read the https://kadedev.github.io/Kade-Engine/building page"
+            }
+          ]

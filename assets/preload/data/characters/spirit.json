@@ -1,0 +1,36 @@
+{
+  "name": "Spirit",
+  "asset": "characters/spirit",
+  "barColor": "#FF3C6E",
+  "scale": 6,
+  "antialiasing": false,
+  "usePackerAtlas": true,
+  "startingAnim": "idle",
+  "animations": [
+    {
+      "name": "idle",
+      "prefix": "idle spirit_",
+      "offsets": [-220, -280]
+    },
+    {
+      "name": "singUP",
+      "prefix": "up_",
+      "offsets": [-220, -240]
+    },
+    {
+      "name": "singLEFT",
+      "prefix": "left_",
+      "offsets": [-200, -280]
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "right_",
+      "offsets": [-220, -280]
+    },
+    {
+      "name": "singDOWN",
+      "prefix": "spirit down_",
+      "offsets": [170, 110]
+    }
+  ]
+}

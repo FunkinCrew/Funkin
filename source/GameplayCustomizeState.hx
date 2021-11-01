@@ -221,8 +221,8 @@ class GameplayCustomizeState extends MusicBeatState
 			case 'mall':
 				camFollow.y = boyfriend.getMidpoint().y - 200;
 			case 'school' | 'schoolEvil':
-				camFollow.x = boyfriend.getMidpoint().x - 200;
-				camFollow.y = boyfriend.getMidpoint().y - 200;
+				camFollow.x = boyfriend.getMidpoint().x - 300;
+				camFollow.y = boyfriend.getMidpoint().y - 300;
 		}
 
 		add(camFollow);
