@@ -14,6 +14,8 @@ Windows (`x86`), Windows (`x86_64`), Linux, or macOS? Specify below.
 
 ## What version of the game are you using? Look in the bottom left corner of the main menu.
 
-## Have you identified any steps to reproduce the bug? If so, please describe them below. Use images if possible.
-
 ## Please describe your issue. Provide extensive detail and images if possible.
+
+## Please check the `logs` folder within your game directory, and upload the most recent game logs if you can.
+
+## Have you identified any steps to reproduce the bug? If so, please describe them below. Use images if possible.
