@@ -1,3 +1,4 @@
+import openfl.system.System;
 import flixel.math.FlxMath;
 import flixel.util.FlxColor;
 import openfl.Lib;
@@ -31,6 +32,8 @@ class KadeEngineFPS extends TextField
 	**/
 	public var currentFPS(default, null):Int;
 
+	public var memoryUsage:Float;
+
 	public var bitmap:Bitmap;
 
 	@:noCompletion private var cacheCount:Int;
@@ -62,9 +65,6 @@ class KadeEngineFPS extends TextField
 			__enterFrame(time - currentTime);
 		});
 		#end
-
-		bitmap = ImageOutline.renderImage(this, 1, 0x000000, 1, true);
-		(cast(Lib.current.getChildAt(0), Main)).addChild(bitmap);
 	}
 
 	var array:Array<FlxColor> = [
@@ -123,16 +123,22 @@ class KadeEngineFPS extends TextField
 			#end
 		}
 
-		visible = true;
+		if (FlxG.save.data.fpsBorder)
+		{
+			visible = true;
+			Main.instance.removeChild(bitmap);
 
-		Main.instance.removeChild(bitmap);
+			bitmap = ImageOutline.renderImage(this, 2, 0x000000, 1);
 
-		if (FlxG.save.data.antiAliasing)
-			bitmap = ImageOutline.renderImage(this, 1, 0x000000, 1);
-
-		Main.instance.addChild(bitmap);
-
-		visible = false;
+			Main.instance.addChild(bitmap);
+			visible = false;
+		}
+		else
+		{
+			visible = true;
+			if (Main.instance.contains(bitmap))
+				Main.instance.removeChild(bitmap);
+		}
 
 		cacheCount = currentCount;
 	}
