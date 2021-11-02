@@ -10,6 +10,8 @@ All notable changes will be documented in this file.
 - `mania` value in charts still existing after chaning things (basically it overrides `keyCount` and would glitch stuff).
 - Rate / Song Speed being too fast (ie, if you were at 2x the health icon and camera zoom was higher than 2x).
 - Discord RPC Song Time being glitchy.
+- Freeplay Music now speeds up / slows down when changing speed.
+- Vocals from other song no longer seep into other Inst in Freeplay.
 
 ## [0.3.4] - 10/30/2021
 ### Added
