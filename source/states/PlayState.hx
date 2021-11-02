@@ -247,8 +247,8 @@ class PlayState extends MusicBeatState
 
 		SONG.speed /= songMultiplier;
 
-		if(SONG.speed <= 0)
-			SONG.speed = 0.1;
+		if(SONG.speed < 1)
+			SONG.speed = 1;
 
 		Conductor.recalculateStuff(songMultiplier);
 		Conductor.safeZoneOffset *= songMultiplier;
@@ -860,7 +860,7 @@ class PlayState extends MusicBeatState
 		talking = false;
 		startedCountdown = true;
 		Conductor.songPosition = 0;
-		Conductor.songPosition -= (Conductor.crochet * 5) * songMultiplier;
+		Conductor.songPosition -= Conductor.crochet * 5;
 
 		var swagCounter:Int = 0;
 
@@ -874,7 +874,7 @@ class PlayState extends MusicBeatState
 		}
 		#end
 
-		startTimer = new FlxTimer().start((Conductor.crochet / 1000) * songMultiplier, function(tmr:FlxTimer)
+		startTimer = new FlxTimer().start(Conductor.crochet / 1000, function(tmr:FlxTimer)
 		{
 			dad.dance(altAnim);
 			gf.dance();
@@ -2603,8 +2603,8 @@ class PlayState extends MusicBeatState
 			camHUD.zoom += 0.03;
 		}
 
-		iconP1.setGraphicSize(Std.int(iconP1.width + (30 / songMultiplier)));
-		iconP2.setGraphicSize(Std.int(iconP2.width + (30 / songMultiplier)));
+		iconP1.setGraphicSize(Std.int(iconP1.width + (30 / (songMultiplier < 1 ? 1 : songMultiplier))));
+		iconP2.setGraphicSize(Std.int(iconP2.width + (30 / (songMultiplier < 1 ? 1 : songMultiplier))));
 
 		iconP1.updateHitbox();
 		iconP2.updateHitbox();

@@ -47,12 +47,12 @@ class Conductor
 	{
 		safeZoneOffset = Math.floor((safeFrames / 60) * 1000);
 
-		crochet = ((60 / bpm) * 1000) / multi;
+		crochet = ((60 / bpm) * 1000);
 		stepCrochet = crochet / (16 / timeScale[1]);
 
 		if(multi != 1)
 		{
-			nonmultilmao_crochet = ((60 / (bpm / multi)) * 1000);
+			nonmultilmao_crochet = ((60 / bpm) * 1000);
 			nonmultilmao_stepCrochet = nonmultilmao_crochet / (16 / timeScale[1]);
 		}
 		else

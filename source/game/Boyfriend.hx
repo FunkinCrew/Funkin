@@ -1,5 +1,7 @@
 package game;
 
+import states.PlayState;
+import flixel.FlxG;
 using StringTools;
 
 class Boyfriend extends Character
@@ -16,7 +18,7 @@ class Boyfriend extends Character
 		if (!debugMode && animation.curAnim != null)
 		{
 			if (animation.curAnim.name.startsWith('sing'))
-				holdTimer += elapsed;
+				holdTimer += elapsed * (FlxG.state == PlayState.instance ? PlayState.songMultiplier : 1);
 			else
 				holdTimer = 0;
 
