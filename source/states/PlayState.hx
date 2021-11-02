@@ -966,16 +966,7 @@ class PlayState extends MusicBeatState
 		lastReportedPlayheadPosition = 0;
 
 		if (!paused)
-		{
-			#if sys
-			if(Assets.exists(Paths.inst(PlayState.SONG.song)))
-				FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 1, false);
-			else
-				FlxG.sound.music.play();
-			#else
-			FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 1, false);
-			#end
-		}
+			FlxG.sound.music.play();
 
 		vocals.play();
 
@@ -1009,13 +1000,11 @@ class PlayState extends MusicBeatState
 			vocals = new FlxSound();
 
 		// LOADING MUSIC FOR CUSTOM SONGS
-		#if sys
 		if(FlxG.sound.music.active)
 			FlxG.sound.music.stop();
 
 		FlxG.sound.music = new FlxSound().loadEmbedded(Paths.inst(SONG.song, storyDifficultyStr.toLowerCase()));
 		FlxG.sound.music.persist = true;
-		#end
 
 		vocals.persist = false;
 		FlxG.sound.list.add(vocals);
