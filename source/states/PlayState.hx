@@ -1396,14 +1396,6 @@ class PlayState extends MusicBeatState
 
 		if (FlxG.keys.justPressed.SEVEN)
 		{
-			switchedStates = true;
-
-			vocals.stop();
-			FlxG.switchState(new ChartingState());
-
-			#if desktop
-			DiscordClient.changePresence("Chart Editor", null, null, true);
-
 			#if linc_luajit
 			if(luaModchart != null)
 			{
@@ -1411,6 +1403,14 @@ class PlayState extends MusicBeatState
 				luaModchart = null;
 			}
 			#end
+			
+			switchedStates = true;
+
+			vocals.stop();
+			FlxG.switchState(new ChartingState());
+
+			#if desktop
+			DiscordClient.changePresence("Chart Editor", null, null, true);
 			#end
 		}
 
