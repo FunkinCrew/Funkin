@@ -8,6 +8,7 @@ All notable changes will be documented in this file.
 - Crash when ghost tapping is off (and you miss) and a modchart is active.
 - Custom Difficulty Inst / Vocals not loading correctly when loading charter (because difficulty wasn't set before the audio was loaded).
 - `mania` value in charts still existing after chaning things (basically it overrides `keyCount` and would glitch stuff).
+- Rate / Song Speed being too fast (ie, if you were at 2x the health icon and camera zoom was higher than 2x).
 
 ## [0.3.4] - 10/30/2021
 ### Added
