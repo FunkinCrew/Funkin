@@ -981,7 +981,7 @@ class PlayState extends MusicBeatState
 
 		#if desktop
 		// Song duration in a float, useful for the time left feature
-		songLength = FlxG.sound.music.length / songMultiplier;
+		songLength = FlxG.sound.music.length;
 
 		Conductor.recalculateStuff(songMultiplier);
 
@@ -1228,7 +1228,7 @@ class PlayState extends MusicBeatState
 			#if desktop
 			if (startTimer.finished)
 			{
-				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC, true, (songLength - Conductor.songPosition >= 1 ? songLength - Conductor.songPosition : 1));
+				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC, true, (songLength - Conductor.songPosition / songMultiplier >= 1 ? songLength - Conductor.songPosition / songMultiplier : 1));
 			}
 			else
 			{
@@ -1247,7 +1247,7 @@ class PlayState extends MusicBeatState
 		{
 			if (Conductor.songPosition > 0.0)
 			{
-				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC, true, (songLength - Conductor.songPosition >= 1 ? songLength - Conductor.songPosition : 1));
+				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC, true, (songLength - Conductor.songPosition / songMultiplier >= 1 ? songLength - Conductor.songPosition / songMultiplier : 1));
 			}
 			else
 			{
