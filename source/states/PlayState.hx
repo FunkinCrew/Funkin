@@ -986,7 +986,7 @@ class PlayState extends MusicBeatState
 		Conductor.recalculateStuff(songMultiplier);
 
 		// Updating Discord Rich Presence (with Time Left)
-		DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC, true, songLength);
+		DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC, true, songLength / songMultiplier);
 		#end
 
 		resyncVocals();
