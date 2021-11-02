@@ -382,12 +382,18 @@ class FreeplayState extends MusicBeatState
 					vocals.destroy();
 				}
 
-				FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName, curDiffString.toLowerCase()), 1, true);
+				if(Assets.exists(Paths.inst(songs[curSelected].songName, curDiffString.toLowerCase())))
+				{
+					FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName, curDiffString.toLowerCase()), 1, true);
+					FlxG.sound.music.stop();
+					FlxG.sound.music.time = 0;
+				}
 
-				FlxG.sound.music.stop();
-				FlxG.sound.music.time = 0;
+				if(Assets.exists(Paths.voices(songs[curSelected].songName, curDiffString.toLowerCase())))
+					vocals = FlxG.sound.load(Paths.voices(songs[curSelected].songName, curDiffString.toLowerCase()), 1, true);
+				else
+					vocals = new FlxSound();
 
-				vocals = FlxG.sound.load(Paths.voices(songs[curSelected].songName, curDiffString.toLowerCase()), 1, true);
 				vocals.time = 0;
 
 				vocals.play(true);
