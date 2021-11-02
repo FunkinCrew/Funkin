@@ -79,7 +79,7 @@ class Conductor
 				var event:BPMChangeEvent = {
 					stepTime: totalSteps,
 					songTime: totalPos,
-					bpm: curBPM * songMultiplier
+					bpm: curBPM
 				};
 
 				trace(totalPos);

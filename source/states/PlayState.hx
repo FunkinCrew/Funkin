@@ -238,7 +238,7 @@ class PlayState extends MusicBeatState
 			SONG = Song.loadFromJson('tutorial');
 
 		Conductor.mapBPMChanges(SONG, songMultiplier);
-		Conductor.changeBPM(SONG.bpm * songMultiplier, songMultiplier);
+		Conductor.changeBPM(SONG.bpm, songMultiplier);
 
 		if(songMultiplier < 0.5)
 			songMultiplier = 0.5;
@@ -999,7 +999,7 @@ class PlayState extends MusicBeatState
 		// FlxG.log.add(ChartParser.parse());
 
 		var songData = SONG;
-		Conductor.changeBPM(songData.bpm * songMultiplier, songMultiplier);
+		Conductor.changeBPM(songData.bpm, songMultiplier);
 
 		curSong = songData.song;
 
@@ -2573,7 +2573,7 @@ class PlayState extends MusicBeatState
 		{
 			if (SONG.notes[Math.floor(curStep / 16)].changeBPM)
 			{
-				Conductor.changeBPM(SONG.notes[Math.floor(curStep / 16)].bpm * songMultiplier, songMultiplier);
+				Conductor.changeBPM(SONG.notes[Math.floor(curStep / 16)].bpm, songMultiplier);
 				FlxG.log.add('CHANGED BPM!');
 			}
 
