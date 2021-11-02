@@ -1498,10 +1498,10 @@ class PlayState extends MusicBeatState
 
 		if (!paused)
 		{
-			if (FlxG.sound.music != null)
-				FlxG.sound.music.play(true);
-			else
-				FlxG.sound.playMusic(Paths.inst(SONG.song), 1, false);
+			// if (FlxG.sound.music != null)
+			// FlxG.sound.music.play(true);
+			// else
+			FlxG.sound.playMusic(Paths.inst(SONG.song), 1, false);
 		}
 
 		FlxG.sound.music.onComplete = endSong;
