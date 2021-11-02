@@ -289,15 +289,51 @@ class FreeplayState extends MusicBeatState
 			if (leftP && !shift)
 				changeDiff(-1);
 			else if (leftP && shift)
+			{
 				curSpeed -= 0.05;
+
+				#if cpp
+				@:privateAccess
+				{
+					lime.media.openal.AL.sourcef(FlxG.sound.music._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, curSpeed);
+		
+					if (vocals.playing)
+						lime.media.openal.AL.sourcef(vocals._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, curSpeed);
+				}
+				#end
+			}
 
 			if (rightP && !shift)
 				changeDiff(1);
 			else if (rightP && shift)
+			{
 				curSpeed += 0.05;
 
+				#if cpp
+				@:privateAccess
+				{
+					lime.media.openal.AL.sourcef(FlxG.sound.music._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, curSpeed);
+		
+					if (vocals.playing)
+						lime.media.openal.AL.sourcef(vocals._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, curSpeed);
+				}
+				#end
+			}
+
 			if(FlxG.keys.justPressed.R)
+			{
 				curSpeed = 1;
+
+				#if cpp
+				@:privateAccess
+				{
+					lime.media.openal.AL.sourcef(FlxG.sound.music._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, curSpeed);
+		
+					if (vocals.playing)
+						lime.media.openal.AL.sourcef(vocals._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, curSpeed);
+				}
+				#end
+			}
 	
 			if (controls.BACK)
 			{
@@ -339,17 +375,17 @@ class FreeplayState extends MusicBeatState
 				if(FlxG.sound.music.active)
 					FlxG.sound.music.stop();
 
-				FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName, curDiffString.toLowerCase()), 1, true);
-
-				FlxG.sound.music.stop();
-				FlxG.sound.music.time = 0;
-
 				if(vocals.active)
 				{
 					vocals.stop();
 					vocals.kill();
 					vocals.destroy();
 				}
+
+				FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName, curDiffString.toLowerCase()), 1, true);
+
+				FlxG.sound.music.stop();
+				FlxG.sound.music.time = 0;
 
 				vocals = FlxG.sound.load(Paths.voices(songs[curSelected].songName, curDiffString.toLowerCase()), 1, true);
 				vocals.time = 0;
@@ -370,6 +406,16 @@ class FreeplayState extends MusicBeatState
 					vocals.play();
 				}
 			}
+
+			#if cpp
+			@:privateAccess
+			{
+				lime.media.openal.AL.sourcef(FlxG.sound.music._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, curSpeed);
+	
+				if (vocals.playing)
+					lime.media.openal.AL.sourcef(vocals._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, curSpeed);
+			}
+			#end
 			#end
 		}
 	}
@@ -413,6 +459,19 @@ class FreeplayState extends MusicBeatState
 		{
 			FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName, curDiffString.toLowerCase()));
 			FlxG.sound.music.fadeIn(1, 0, 0.7);
+
+			if(vocals.playing)
+				vocals.stop();
+
+			#if cpp
+			@:privateAccess
+			{
+				lime.media.openal.AL.sourcef(FlxG.sound.music._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, curSpeed);
+	
+				if (vocals.playing)
+					lime.media.openal.AL.sourcef(vocals._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, curSpeed);
+			}
+			#end
 		}
 
 		#if !switch
