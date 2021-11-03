@@ -841,12 +841,6 @@ class PlayState extends MusicBeatState
 			if (unspawnNotes[i].strumTime < startTime)
 				unspawnNotes.remove(unspawnNotes[i]);
 
-		// make all of the notes
-		for (i in unspawnNotes)
-		{
-			notes.add(i);
-		}
-
 		trace('generated');
 
 		// add(strumLine);
@@ -2049,7 +2043,7 @@ class PlayState extends MusicBeatState
 			if (unspawnNotes[0].strumTime - Conductor.songPosition < 14000)
 			{
 				var dunceNote:Note = unspawnNotes[0];
-
+				notes.add(dunceNote);
 				#if FEATURE_LUAMODCHART
 				if (executeModchart)
 				{
