@@ -68,7 +68,6 @@ class APIStuff
 	public static var API:String = "";
 	public static var EncKey:String = "";
 }
-
 ```
 
 and you should be good to go there.
@@ -83,6 +82,32 @@ To run it from your desktop (Windows, Mac, Linux) it can be a bit more involved.
 
 Once that is done you can open up a command line in the project's directory and run `lime test windows -debug`. Once that command finishes (it takes forever even on a higher end PC), you can run FNF from the .exe file under export\release\windows\bin
 As for Mac, 'lime test mac -debug' should work, if not the internet surely has a guide on how to compile Haxe stuff for Mac.
+
+### Compiling HTML5 version using Docker
+
+Run this commands:
+
+```bash
+docker build . -t fnf:mine
+docker run --name compile_fnf --rm -v <FULL PATH TO YOUR FNF REPO>:/fnf fnf:mine
+```
+
+If you want to build a HTML5 debug version add `-debug` at the end of docker command
+
+```bash
+docker run --name compile_fnf --rm -v <FULL PATH TO YOUR FNF REPO>:/fnf fnf:mine -debug
+```
+
+To run the thing that you just compiled, you need to serve `export/[debug|release]/bin` with an HTTP server, being `python` the easiest
+
+```bash
+# Python version is 3.X
+python -m http.server 8080
+# Python version is 2.X
+python -m SimpleHTTPServer 8080
+```
+
+Then
 
 ### Additional guides
 
