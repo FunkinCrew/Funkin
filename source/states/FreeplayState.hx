@@ -273,18 +273,13 @@ class FreeplayState extends MusicBeatState
 
 		var upP = controls.UP_P;
 		var downP = controls.DOWN_P;
-		var accepted = controls.ACCEPT;
 
 		if(songsReady)
 		{
 			if (upP)
-			{
 				changeSelection(-1);
-			}
 			if (downP)
-			{
 				changeSelection(1);
-			}
 	
 			if (leftP && !shift)
 				changeDiff(-1);
@@ -344,7 +339,7 @@ class FreeplayState extends MusicBeatState
 				FlxG.switchState(new MainMenuState());
 			}
 
-			if (FlxG.keys.justPressed.ENTER)
+			if(FlxG.keys.justPressed.ENTER)
 			{
 				var poop:String = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), curDiffString);
 	
@@ -400,25 +395,32 @@ class FreeplayState extends MusicBeatState
 				FlxG.sound.music.play(true);
 			}
 
-			if(vocals.active && vocals.time >= FlxG.sound.music.endTime)
-				vocals.pause();
-
-			if(vocals.active)
+			if(vocals != null && FlxG.sound.music != null)
 			{
-				if(vocals.time > FlxG.sound.music.time + 20)
+				if(vocals.active && FlxG.sound.music.active)
 				{
-					vocals.pause();
-					vocals.time = FlxG.sound.music.time;
-					vocals.play();
+					if(vocals.time >= FlxG.sound.music.endTime)
+						vocals.pause();
+				}
+	
+				if(vocals.active && FlxG.sound.music.active)
+				{
+					if(vocals.time > FlxG.sound.music.time + 20)
+					{
+						vocals.pause();
+						vocals.time = FlxG.sound.music.time;
+						vocals.play();
+					}
 				}
 			}
 
 			#if cpp
 			@:privateAccess
 			{
-				lime.media.openal.AL.sourcef(FlxG.sound.music._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, curSpeed);
+				if(FlxG.sound.music.active && FlxG.sound.music.playing)
+					lime.media.openal.AL.sourcef(FlxG.sound.music._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, curSpeed);
 	
-				if (vocals.playing)
+				if(vocals.active && vocals.playing)
 					lime.media.openal.AL.sourcef(vocals._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, curSpeed);
 			}
 			#end
