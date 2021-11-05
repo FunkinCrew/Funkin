@@ -4,6 +4,7 @@
   "barColor": "#A5004D",
   "startingAnim": "danceRight",
   "isDancing": true,
+  "dadVar": 4.1,
   "animations": [
     {
       "name": "singLEFT",

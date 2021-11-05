@@ -16,13 +16,17 @@ class Character extends FlxSprite
 	public var animInterrupt:Map<String, Bool>;
 	public var animNext:Map<String, String>;
 	public var debugMode:Bool = false;
-	public var isDancing:Bool = false;
 
 	public var isPlayer:Bool = false;
 	public var curCharacter:String = 'bf';
 	public var barColor:FlxColor;
 
 	public var holdTimer:Float = 0;
+
+	public var isDancing:Bool;
+	public var dadVar:Float;
+	public var charPos:Array<Int>;
+	public var camPos:Array<Int>;
 
 	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false)
 	{
@@ -106,6 +110,9 @@ class Character extends FlxSprite
 			}
 
 		this.isDancing = data.isDancing == null ? false : data.isDancing;
+		this.charPos = data.charPos == null ? [0, 0] : data.charPos;
+		this.camPos = data.camPos == null ? [0, 0] : data.camPos;
+		this.dadVar = data.dadVar == null ? 4 : data.dadVar;
 
 		flipX = data.flipX == null ? false : data.flipX;
 
@@ -122,35 +129,16 @@ class Character extends FlxSprite
 		playAnim(data.startingAnim);
 	}
 
-	public function loadOffsetFile(character:String, library:String = 'shared')
-	{
-		var offset:Array<String> = CoolUtil.coolTextFile(Paths.txt('images/characters/' + character + "Offsets", library));
-
-		for (i in 0...offset.length)
-		{
-			var data:Array<String> = offset[i].split(' ');
-			addOffset(data[0], Std.parseInt(data[1]), Std.parseInt(data[2]));
-		}
-	}
-
 	override function update(elapsed:Float)
 	{
 		if (!isPlayer)
 		{
 			if (animation.curAnim.name.startsWith('sing'))
-			{
 				holdTimer += elapsed;
-			}
 
-			var dadVar:Float = 4;
-
-			if (curCharacter == 'dad')
-				dadVar = 6.1;
-			else if (curCharacter == 'gf' || curCharacter == 'spooky')
-				dadVar = 4.1; // fix double dances
-			if (holdTimer >= Conductor.stepCrochet * dadVar * 0.001)
+			if (holdTimer >= Conductor.stepCrochet * this.dadVar * 0.001)
 			{
-				if (curCharacter == 'gf' || curCharacter == 'spooky')
+				if (this.isDancing)
 					playAnim('danceLeft'); // overridden by dance correctly later
 				dance();
 				holdTimer = 0;
@@ -253,6 +241,10 @@ typedef CharacterData =
 	var name:String;
 	var asset:String;
 	var startingAnim:String;
+
+	var ?charPos:Array<Int>;
+	var ?camPos:Array<Int>;
+	var ?dadVar:Float;
 
 	/**
 	 * The color of this character's health bar.

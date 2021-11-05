@@ -3,6 +3,7 @@
   "asset": "characters/DADDY_DEAREST",
   "barColor": "#AF66CE",
   "startingAnim": "idle",
+  "dadVar": 6.1,
   "animations": [
     {
       "name": "idle",
