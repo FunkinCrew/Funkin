@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="options.png">
+	<!-- Created with Adobe Animate version 22.0.0.93 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="options basic0000" x="1" y="480" width="487" height="111"/>
+	<SubTexture name="options basic0001" x="1" y="480" width="487" height="111"/>
+	<SubTexture name="options basic0002" x="1" y="480" width="487" height="111"/>
+	<SubTexture name="options basic0003" x="1" y="592" width="487" height="111"/>
+	<SubTexture name="options basic0004" x="1" y="592" width="487" height="111"/>
+	<SubTexture name="options basic0005" x="1" y="592" width="487" height="111"/>
+	<SubTexture name="options basic0006" x="489" y="480" width="487" height="111"/>
+	<SubTexture name="options basic0007" x="489" y="480" width="487" height="111"/>
+	<SubTexture name="options basic0008" x="489" y="480" width="487" height="111"/>
+	<SubTexture name="options white0000" x="1" y="324" width="606" height="155" frameX="-2" frameY="-1" frameWidth="610" frameHeight="163"/>
+	<SubTexture name="options white0001" x="1" y="165" width="607" height="158" frameX="-3" frameY="-1" frameWidth="610" frameHeight="163"/>
+	<SubTexture name="options white0002" x="1" y="1" width="610" height="163"/>
+</TextureAtlas>
