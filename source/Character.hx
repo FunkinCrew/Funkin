@@ -15,6 +15,7 @@ class Character extends FlxSprite
 	public var animOffsets:Map<String, Array<Dynamic>>;
 	public var animInterrupt:Map<String, Bool>;
 	public var animNext:Map<String, String>;
+	public var animDanced:Map<String, Bool>;
 	public var debugMode:Bool = false;
 
 	public var isPlayer:Bool = false;
@@ -39,6 +40,7 @@ class Character extends FlxSprite
 		animOffsets = new Map<String, Array<Dynamic>>();
 		animInterrupt = new Map<String, Bool>();
 		animNext = new Map<String, String>();
+		animDanced = new Map<String, Bool>();
 		curCharacter = character;
 		this.isPlayer = isPlayer;
 
@@ -108,6 +110,9 @@ class Character extends FlxSprite
 				animOffsets[anim.name] = anim.offsets == null ? [0, 0] : anim.offsets;
 				animInterrupt[anim.name] = anim.interrupt == null ? true : anim.interrupt;
 
+				if (data.isDancing && anim.isDanced != null)
+					animDanced[anim.name] = anim.isDanced;
+
 				if (anim.nextAnim != null)
 					animNext[anim.name] = anim.nextAnim;
 			}
@@ -154,10 +159,14 @@ class Character extends FlxSprite
 		if (!debugMode)
 		{
 			var nextAnim = animNext.get(animation.curAnim.name);
+			var forceDanced = animDanced.get(animation.curAnim.name);
 
-			// TODO: Go back to the right anim after hairFall in Week 3 (danced = true)
 			if (nextAnim != null && animation.curAnim.finished)
+			{
+				if (this.isDancing)
+					danced = forceDanced;
 				playAnim(nextAnim);
+			}
 		}
 
 		super.update(elapsed);
@@ -338,4 +347,10 @@ typedef AnimationData =
 	 * The animation that this animation will go to after it is finished.
 	 */
 	var ?nextAnim:String;
+
+	/**
+	 * Whether this animation sets danced to true or false.
+	 * Only works for characters with isDancing enabled.
+	 */
+	var ?isDanced:Bool;
 }
