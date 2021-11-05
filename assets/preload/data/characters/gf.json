@@ -3,6 +3,7 @@
   "asset": "characters/GF_assets",
   "barColor": "#A5004D",
   "startingAnim": "danceRight",
+  "isDancing": true,
   "animations": [
     {
       "name": "singLEFT",
@@ -44,6 +45,7 @@
     {
       "name": "hairBlow",
       "prefix": "GF Dancing Beat Hair blowing",
+      "interrupt": false,
       "offsets": [45, -8],
       "frameIndices": [0, 1, 2, 3],
       "looped": true
@@ -51,6 +53,8 @@
     {
       "name": "hairFall",
       "prefix": "GF Dancing Beat Hair Landing",
+      "nextAnim": "danceRight",
+      "interrupt": false,
       "offsets": [0, -9],
       "frameIndices": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
     },

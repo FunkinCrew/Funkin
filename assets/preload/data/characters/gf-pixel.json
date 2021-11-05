@@ -5,6 +5,7 @@
   "scale": 6,
   "antialiasing": false,
   "startingAnim": "danceRight",
+  "isDancing": true,
   "animations": [
     {
       "name": "danceLeft",

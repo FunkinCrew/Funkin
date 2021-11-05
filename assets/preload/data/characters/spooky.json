@@ -3,6 +3,7 @@
   "asset": "characters/spooky_kids_assets",
   "barColor": "#D57E00",
   "startingAnim": "danceRight",
+  "isDancing": true,
   "animations": [
     {
       "name": "danceLeft",
