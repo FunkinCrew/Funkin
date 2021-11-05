@@ -2267,7 +2267,10 @@ class PlayState extends MusicBeatState
 						possibleNotes.push(note);
 				});
 
-				possibleNotes.sort((b, a) -> Std.int(Conductor.songPosition - a.strumTime));
+				if(FlxG.save.data.inputMode == "rhythm")
+					possibleNotes.sort((b, a) -> Std.int(Conductor.songPosition - a.strumTime));
+				else
+					possibleNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
 
 				if(FlxG.save.data.inputMode == "rhythm")
 				{
