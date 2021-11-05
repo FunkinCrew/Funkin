@@ -2267,6 +2267,15 @@ class PlayState extends MusicBeatState
 						possibleNotes.push(note);
 				});
 
+				for(i in 0...possibleNotes.length)
+				{
+					for(note in possibleNotes)
+					{
+						if(note.noteData == possibleNotes[i].noteData && note.strumTime == possibleNotes[i].strumTime && note != possibleNotes[i])
+							note.destroy();
+					}
+				}
+
 				if(FlxG.save.data.inputMode == "rhythm")
 					possibleNotes.sort((b, a) -> Std.int(Conductor.songPosition - a.strumTime));
 				else
@@ -2302,12 +2311,6 @@ class PlayState extends MusicBeatState
 						if(justPressedArray[possibleNotes[i].noteData] && !noteDataPossibles[possibleNotes[i].noteData])
 						{
 							noteDataPossibles[possibleNotes[i].noteData] = true;
-
-							for(note in possibleNotes)
-							{
-								if(note.noteData == possibleNotes[i].noteData && note.strumTime == possibleNotes[i].strumTime && note != possibleNotes[i])
-									note.destroy();
-							}
 
 							if(boyfriend.otherCharacters == null)
 								boyfriend.holdTimer = 0;
