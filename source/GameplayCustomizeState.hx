@@ -503,10 +503,13 @@ class GameplayCustomizeState extends MusicBeatState
 			boyfriend.dance();
 			dad.dance();
 		}
-		else if (boyfriend.isDancing)
-			boyfriend.dance();
-		else if (dad.isDancing)
-			dad.dance();
+		else if (curBeat % 2 != 0)
+		{
+			if (boyfriend.isDancing)
+				boyfriend.dance();
+			if (dad.isDancing)
+				dad.dance();
+		}
 
 		gf.dance();
 

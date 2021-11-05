@@ -1168,10 +1168,13 @@ class PlayState extends MusicBeatState
 				if (idleToBeat)
 					dad.dance(forcedToIdle);
 			}
-			else if (boyfriend.isDancing && !boyfriend.animation.curAnim.name.endsWith("miss"))
-				boyfriend.dance();
-			else if (dad.isDancing)
-				dad.dance();
+			else if (swagCounter % idleBeat != 0)
+			{
+				if (boyfriend.isDancing && !boyfriend.animation.curAnim.name.endsWith("miss"))
+					boyfriend.dance();
+				if (dad.isDancing)
+					dad.dance();
+			}
 
 			var introAssets:Map<String, Array<String>> = new Map<String, Array<String>>();
 			introAssets.set('default', ['ready', "set", "go"]);
@@ -4445,10 +4448,13 @@ class PlayState extends MusicBeatState
 				if (idleToBeat && !boyfriend.animation.curAnim.name.startsWith('sing'))
 					boyfriend.dance(forcedToIdle, currentSection.playerAltAnim);
 			}
-			else if (boyfriend.isDancing && !boyfriend.animation.curAnim.name.startsWith('sing'))
-				boyfriend.dance(forcedToIdle, currentSection.CPUAltAnim);
-			else if (dad.isDancing && !dad.animation.curAnim.name.startsWith('sing'))
-				dad.dance(forcedToIdle, currentSection.CPUAltAnim);
+			else if (curBeat % idleBeat != 0)
+			{
+				if (boyfriend.isDancing && !boyfriend.animation.curAnim.name.startsWith('sing'))
+					boyfriend.dance(forcedToIdle, currentSection.CPUAltAnim);
+				if (dad.isDancing && !dad.animation.curAnim.name.startsWith('sing'))
+					dad.dance(forcedToIdle, currentSection.CPUAltAnim);
+			}
 		}
 		// FlxG.log.add('change bpm' + SONG.notes[Std.int(curStep / 16)].changeBPM);
 		wiggleShit.update(Conductor.crochet);
