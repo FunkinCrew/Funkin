@@ -503,7 +503,9 @@ class GameplayCustomizeState extends MusicBeatState
 			boyfriend.dance();
 			dad.dance();
 		}
-		else if (dad.curCharacter == 'spooky' || dad.curCharacter == 'gf')
+		else if (boyfriend.isDancing)
+			boyfriend.dance();
+		else if (dad.isDancing)
 			dad.dance();
 
 		gf.dance();

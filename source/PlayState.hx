@@ -1168,6 +1168,8 @@ class PlayState extends MusicBeatState
 				if (idleToBeat)
 					dad.dance(forcedToIdle);
 			}
+			else if (boyfriend.isDancing && !boyfriend.animation.curAnim.name.endsWith("miss"))
+				boyfriend.dance();
 			else if (dad.isDancing)
 				dad.dance();
 
@@ -4443,6 +4445,8 @@ class PlayState extends MusicBeatState
 				if (idleToBeat && !boyfriend.animation.curAnim.name.startsWith('sing'))
 					boyfriend.dance(forcedToIdle, currentSection.playerAltAnim);
 			}
+			else if (boyfriend.isDancing && !boyfriend.animation.curAnim.name.startsWith('sing'))
+				boyfriend.dance(forcedToIdle, currentSection.CPUAltAnim);
 			else if (dad.isDancing && !dad.animation.curAnim.name.startsWith('sing'))
 				dad.dance(forcedToIdle, currentSection.CPUAltAnim);
 		}
