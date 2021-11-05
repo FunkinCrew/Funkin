@@ -2317,10 +2317,10 @@ class PlayState extends MusicBeatState
 							else
 								boyfriend.otherCharacters[possibleNotes[i].character].holdTimer = 0;
 
+							goodNoteHit(possibleNotes[i]);
+
 							if(dontHit.contains(possibleNotes[i])) // rythm mode only ?????
 								noteMiss(possibleNotes[i].noteData, possibleNotes[i]);
-							else
-								goodNoteHit(possibleNotes[i]);
 						}
 					}
 				}
