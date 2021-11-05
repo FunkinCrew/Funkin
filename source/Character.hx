@@ -163,7 +163,7 @@ class Character extends FlxSprite
 
 			if (nextAnim != null && animation.curAnim.finished)
 			{
-				if (this.isDancing)
+				if (this.isDancing && forceDanced != null)
 					danced = forceDanced;
 				playAnim(nextAnim);
 			}
