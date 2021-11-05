@@ -38,7 +38,7 @@ class MainMenuState extends MusicBeatState
 			optionShit.push('mods');
 		
 		#if !web
-		optionShit.push('multiplayer');
+		//optionShit.push('multiplayer');
 		#end
 		
 		Application.current.window.title = Application.current.meta.get('name');
