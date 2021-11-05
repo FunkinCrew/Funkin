@@ -195,19 +195,32 @@ class GameplayCustomizeState extends MusicBeatState
 			}
 		}
 
-		camPos = new FlxPoint(boyfriend.getMidpoint().x - 100, boyfriend.getMidpoint().y - 100);
+		gf.x += gf.charPos[0];
+		gf.y += gf.charPos[1];
+		dad.x += dad.charPos[0];
+		dad.y += dad.charPos[1];
+		boyfriend.x += boyfriend.charPos[0];
+		boyfriend.y += boyfriend.charPos[1];
 
-		switch (dad.curCharacter)
+		camPos = new FlxPoint(dad.getGraphicMidpoint().x + dad.camPos[0], dad.getGraphicMidpoint().y + dad.camPos[1]);
+
+		if (dad.isGF)
 		{
-			case 'gf':
-				dad.setPosition(gf.x, gf.y);
-				gf.visible = false;
-			case 'spirit':
-				if (FlxG.save.data.distractions)
-				{
-					var evilTrail = new FlxTrail(dad, null, 4, 24, 0.3, 0.069);
-					add(evilTrail);
-				}
+			dad.setPosition(gf.x, gf.y);
+			gf.visible = false;
+		}
+
+		if (dad.hasTrail)
+		{
+			if (FlxG.save.data.distractions)
+			{
+				// trailArea.scrollFactor.set();
+				var evilTrail = new FlxTrail(dad, null, 4, 24, 0.3, 0.069);
+				// evilTrail.changeValuesEnabled(false, false, false, false);
+				// evilTrail.changeGraphic()
+				add(evilTrail);
+				// evilTrail.scrollFactor.set(1.1, 1.1);
+			}
 		}
 
 		camFollow = new FlxObject(0, 0, 1, 1);
