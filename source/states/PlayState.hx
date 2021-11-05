@@ -865,7 +865,7 @@ class PlayState extends MusicBeatState
 		var swagCounter:Int = 0;
 
 		#if linc_luajit
-		executeModchart = !(PlayState.SONG.modchartPath == '' || PlayState.SONG.modchartPath == null);
+		executeModchart = !(PlayState.SONG.modchartPath == '' || PlayState.SONG.modchartPath == null) && FlxG.save.data.chrsAndBGs;
 
 		if (executeModchart)
 		{
@@ -2259,14 +2259,30 @@ class PlayState extends MusicBeatState
 			{
 				// variables
 				var possibleNotes:Array<Note> = [];
+				var dontHit:Array<Note> = [];
 				
 				// notes you can hit lol
 				notes.forEachAlive(function(note:Note) {
-					if (note.canBeHit && note.mustPress && !note.tooLate && !note.isSustainNote)
+					if(note.canBeHit && note.mustPress && !note.tooLate && !note.isSustainNote)
 						possibleNotes.push(note);
 				});
 
-				possibleNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
+				possibleNotes.sort((b, a) -> Std.int(Conductor.songPosition - a.strumTime));
+
+				if(FlxG.save.data.inputMode == "rhythm")
+				{
+					var coolNote:Note = null;
+
+					for(note in possibleNotes) {
+						if(coolNote != null)
+						{
+							if(note.strumTime > coolNote.strumTime)
+								dontHit.push(note);
+						}
+						else
+							coolNote = note;
+					}
+				}
 	
 				var noteDataPossibles:Array<Bool> = [];
 
@@ -2295,7 +2311,10 @@ class PlayState extends MusicBeatState
 							else
 								boyfriend.otherCharacters[possibleNotes[i].character].holdTimer = 0;
 
-							goodNoteHit(possibleNotes[i]);
+							if(dontHit.contains(possibleNotes[i])) // rythm mode only ?????
+								noteMiss(possibleNotes[i].noteData, possibleNotes[i]);
+							else
+								goodNoteHit(possibleNotes[i]);
 						}
 					}
 				}

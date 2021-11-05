@@ -89,6 +89,9 @@ class SaveData {
 
         if(FlxG.save.data.fullscreenBind == null)
             FlxG.save.data.fullscreenBind = "F11";
+
+        if(FlxG.save.data.inputMode == null)
+            FlxG.save.data.inputMode = "standard";
         
         FlxG.save.flush();
 

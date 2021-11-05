@@ -554,3 +554,4 @@ class StringSaveOption extends Option
 
 class CutsceneOption extends StringSaveOption { override function SetDataIGuess() { FlxG.save.data.cutscenePlays = Data; super.SetDataIGuess(); } }
 class DisplayFontOption extends StringSaveOption { override function SetDataIGuess() { FlxG.save.data.displayFont = Data; super.SetDataIGuess(); Main.changeFont(FlxG.save.data.displayFont); } }
+class InputModeOption extends StringSaveOption { override function SetDataIGuess() { FlxG.save.data.inputMode = Data; super.SetDataIGuess(); } }
