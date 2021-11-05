@@ -624,42 +624,41 @@ class PlayState extends MusicBeatState
 				}
 			}
 
-		camPos = new FlxPoint(dad.getGraphicMidpoint().x, dad.getGraphicMidpoint().y);
+		gf.x += gf.charPos[0];
+		gf.y += gf.charPos[1];
+		dad.x += dad.charPos[0];
+		dad.y += dad.charPos[1];
+		boyfriend.x += boyfriend.charPos[0];
+		boyfriend.y += boyfriend.charPos[1];
 
-		switch (dad.curCharacter)
+		camPos = new FlxPoint(dad.getGraphicMidpoint().x + dad.camPos[0], dad.getGraphicMidpoint().y + dad.camPos[1]);
+
+		if (dad.isGF)
 		{
-			case 'gf':
-				if (!stageTesting)
-					dad.setPosition(gf.x, gf.y);
-				gf.visible = false;
-				if (isStoryMode)
-				{
-					camPos.x += 600;
-					tweenCamIn();
-				}
-			case 'dad':
-				camPos.x += 400;
-			case 'pico':
+			if (!stageTesting)
+				dad.setPosition(gf.x, gf.y);
+			gf.visible = false;
+			if (isStoryMode)
+			{
 				camPos.x += 600;
-			case 'senpai':
-				camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
-			case 'senpai-angry':
-				camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
-			case 'spirit':
-				if (FlxG.save.data.distractions)
-				{
-					// trailArea.scrollFactor.set();
-					if (!PlayStateChangeables.Optimize)
-					{
-						var evilTrail = new FlxTrail(dad, null, 4, 24, 0.3, 0.069);
-						// evilTrail.changeValuesEnabled(false, false, false, false);
-						// evilTrail.changeGraphic()
-						add(evilTrail);
-					}
-					// evilTrail.scrollFactor.set(1.1, 1.1);
-				}
+				tweenCamIn();
+			}
+		}
 
-				camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
+		if (dad.hasTrail)
+		{
+			if (FlxG.save.data.distractions)
+			{
+				// trailArea.scrollFactor.set();
+				if (!PlayStateChangeables.Optimize)
+				{
+					var evilTrail = new FlxTrail(dad, null, 4, 24, 0.3, 0.069);
+					// evilTrail.changeValuesEnabled(false, false, false, false);
+					// evilTrail.changeGraphic()
+					add(evilTrail);
+				}
+				// evilTrail.scrollFactor.set(1.1, 1.1);
+			}
 		}
 
 		Stage.update(0);
@@ -1169,7 +1168,7 @@ class PlayState extends MusicBeatState
 				if (idleToBeat)
 					dad.dance(forcedToIdle);
 			}
-			else if (dad.curCharacter == 'spooky' || dad.curCharacter == 'gf')
+			else if (dad.isDancing)
 				dad.dance();
 
 			var introAssets:Map<String, Array<String>> = new Map<String, Array<String>>();
@@ -2711,14 +2710,8 @@ class PlayState extends MusicBeatState
 				#end
 				// camFollow.setPosition(lucky.getMidpoint().x - 120, lucky.getMidpoint().y + 210);
 
-				switch (dad.curCharacter)
-				{
-					case 'mom' | 'mom-car':
-						camFollow.y = dad.getMidpoint().y;
-					case 'senpai' | 'senpai-angry':
-						camFollow.y = dad.getMidpoint().y - 430;
-						camFollow.x = dad.getMidpoint().x - 100;
-				}
+				camFollow.x += dad.camFollow[0];
+				camFollow.y += dad.camFollow[1];
 			}
 
 			if (currentSection.mustHitSection && camFollow.x != boyfriend.getMidpoint().x - 100)
@@ -2749,6 +2742,9 @@ class PlayState extends MusicBeatState
 							camFollow.x = boyfriend.getMidpoint().x - 300;
 							camFollow.y = boyfriend.getMidpoint().y - 300;
 					}
+
+				camFollow.x += boyfriend.camFollow[0];
+				camFollow.y += boyfriend.camFollow[1];
 			}
 		}
 
@@ -4447,7 +4443,7 @@ class PlayState extends MusicBeatState
 				if (idleToBeat && !boyfriend.animation.curAnim.name.startsWith('sing'))
 					boyfriend.dance(forcedToIdle, currentSection.playerAltAnim);
 			}
-			else if ((dad.curCharacter == 'spooky' || dad.curCharacter == 'gf') && !dad.animation.curAnim.name.startsWith('sing'))
+			else if (dad.isDancing && !dad.animation.curAnim.name.startsWith('sing'))
 				dad.dance(forcedToIdle, currentSection.CPUAltAnim);
 		}
 		// FlxG.log.add('change bpm' + SONG.notes[Std.int(curStep / 16)].changeBPM);

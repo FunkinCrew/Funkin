@@ -23,10 +23,13 @@ class Character extends FlxSprite
 
 	public var holdTimer:Float = 0;
 
+	public var isGF:Bool;
+	public var hasTrail:Bool;
 	public var isDancing:Bool;
 	public var dadVar:Float;
 	public var charPos:Array<Int>;
 	public var camPos:Array<Int>;
+	public var camFollow:Array<Int>;
 
 	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false)
 	{
@@ -109,9 +112,12 @@ class Character extends FlxSprite
 					animNext[anim.name] = anim.nextAnim;
 			}
 
+		this.isGF = data.isGF == null ? false : data.isGF;
+		this.hasTrail = data.hasTrail == null ? false : data.hasTrail;
 		this.isDancing = data.isDancing == null ? false : data.isDancing;
 		this.charPos = data.charPos == null ? [0, 0] : data.charPos;
 		this.camPos = data.camPos == null ? [0, 0] : data.camPos;
+		this.camFollow = data.camFollow == null ? [0, 0] : data.camFollow;
 		this.dadVar = data.dadVar == null ? 4 : data.dadVar;
 
 		flipX = data.flipX == null ? false : data.flipX;
@@ -244,6 +250,7 @@ typedef CharacterData =
 
 	var ?charPos:Array<Int>;
 	var ?camPos:Array<Int>;
+	var ?camFollow:Array<Int>;
 	var ?dadVar:Float;
 
 	/**
@@ -284,6 +291,18 @@ typedef CharacterData =
 	 * @default false
 	 */
 	var ?isDancing:Bool;
+
+	/**
+	 * Whether this character has a trail behind them.
+	 * @default false
+	 */
+	var ?hasTrail:Bool;
+
+	/**
+	 * Whether this character is based off Girlfriend.
+	 * @default false
+	 */
+	var ?isGF:Bool;
 }
 
 typedef AnimationData =
