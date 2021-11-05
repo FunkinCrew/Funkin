@@ -147,9 +147,9 @@ class Character extends FlxSprite
 			if (animation.curAnim.name.startsWith('sing'))
 				holdTimer += elapsed;
 
-			if (holdTimer >= Conductor.stepCrochet * this.dadVar * 0.001)
+			if (holdTimer >= Conductor.stepCrochet * dadVar * 0.001)
 			{
-				if (this.isDancing)
+				if (isDancing)
 					playAnim('danceLeft'); // overridden by dance correctly later
 				dance();
 				holdTimer = 0;
@@ -163,7 +163,7 @@ class Character extends FlxSprite
 
 			if (nextAnim != null && animation.curAnim.finished)
 			{
-				if (this.isDancing && forceDanced != null)
+				if (isDancing && forceDanced != null)
 					danced = forceDanced;
 				playAnim(nextAnim);
 			}
