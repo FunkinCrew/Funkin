@@ -177,7 +177,7 @@ class ChartingState extends MusicBeatState
 		if (PlayState.SONG != null)
 			_song = PlayState.SONG;
 		else
-			_song = Song.loadFromJson("test", "test");
+			_song = Song.loadFromJson("tutorial", "tutorial");
 
 		if(PlayState.songMultiplier != 1 && !loadedAutosave)
 			_song.speed = PlayState.previousScrollSpeedLmao;
