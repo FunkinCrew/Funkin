@@ -5,7 +5,7 @@
   "startingAnim": "danceRight",
   "isDancing": true,
   "dadVar": 4.1,
-  "isGF": true,
+  "replacesGF": true,
   "animations": [
     {
       "name": "singLEFT",

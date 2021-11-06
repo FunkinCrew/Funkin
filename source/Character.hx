@@ -24,7 +24,7 @@ class Character extends FlxSprite
 
 	public var holdTimer:Float = 0;
 
-	public var isGF:Bool;
+	public var replacesGF:Bool;
 	public var hasTrail:Bool;
 	public var isDancing:Bool;
 	public var dadVar:Float;
@@ -117,7 +117,7 @@ class Character extends FlxSprite
 					animNext[anim.name] = anim.nextAnim;
 			}
 
-		this.isGF = data.isGF == null ? false : data.isGF;
+		this.replacesGF = data.replacesGF == null ? false : data.replacesGF;
 		this.hasTrail = data.hasTrail == null ? false : data.hasTrail;
 		this.isDancing = data.isDancing == null ? false : data.isDancing;
 		this.charPos = data.charPos == null ? [0, 0] : data.charPos;
@@ -308,10 +308,10 @@ typedef CharacterData =
 	var ?hasTrail:Bool;
 
 	/**
-	 * Whether this character is based off Girlfriend.
+	 * Whether this character replaces gf if they are set as dad.
 	 * @default false
 	 */
-	var ?isGF:Bool;
+	var ?replacesGF:Bool;
 }
 
 typedef AnimationData =

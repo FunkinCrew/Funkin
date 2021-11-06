@@ -4,7 +4,7 @@
   "barColor": "#A5004D",
   "startingAnim": "danceRight",
   "isDancing": true,
-  "isGF": true,
+  "replacesGF": true,
   "animations": [
     {
       "name": "danceLeft",

@@ -6,7 +6,7 @@
   "antialiasing": false,
   "startingAnim": "danceRight",
   "isDancing": true,
-  "isGF": true,
+  "replacesGF": true,
   "animations": [
     {
       "name": "danceLeft",
