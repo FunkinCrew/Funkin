@@ -1800,7 +1800,7 @@ class PlayState extends MusicBeatState
 					}
 					else if (!daNote.wasGoodHit && !daNote.modifiedByLua)
 					{
-						var coolStrum = strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))];
+						var coolStrum = enemyStrums.members[Math.floor(Math.abs(daNote.noteData))];
 						var arrayVal = Std.string([daNote.noteData, daNote.arrow_Type, daNote.isSustainNote]);
 
 						daNote.visible = coolStrum.visible;
