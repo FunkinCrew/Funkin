@@ -1,6 +1,10 @@
 # Changelog
 All notable changes will be documented in this file.
 
+## [0.3.6] - 11/6/2021
+### Fixed
+- Freeplay crashing when changing speed after closing song in freeplay or beating song and going back to freeplay (aka there was no bg music).
+
 ## [0.3.5] - 11/6/2021
 ### Added
 - Hitsounds in the charter
