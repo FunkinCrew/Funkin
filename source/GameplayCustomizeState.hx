@@ -204,7 +204,7 @@ class GameplayCustomizeState extends MusicBeatState
 
 		camPos = new FlxPoint(dad.getGraphicMidpoint().x + dad.camPos[0], dad.getGraphicMidpoint().y + dad.camPos[1]);
 
-		if (dad.isGF)
+		if (dad.replacesGF)
 		{
 			dad.setPosition(gf.x, gf.y);
 			gf.visible = false;
