@@ -27,7 +27,7 @@ class Character extends FlxSprite
 	public var replacesGF:Bool;
 	public var hasTrail:Bool;
 	public var isDancing:Bool;
-	public var dadVar:Float;
+	public var holdLength:Float;
 	public var charPos:Array<Int>;
 	public var camPos:Array<Int>;
 	public var camFollow:Array<Int>;
@@ -123,7 +123,7 @@ class Character extends FlxSprite
 		this.charPos = data.charPos == null ? [0, 0] : data.charPos;
 		this.camPos = data.camPos == null ? [0, 0] : data.camPos;
 		this.camFollow = data.camFollow == null ? [0, 0] : data.camFollow;
-		this.dadVar = data.dadVar == null ? 4 : data.dadVar;
+		this.holdLength = data.holdLength == null ? 4 : data.holdLength;
 
 		flipX = data.flipX == null ? false : data.flipX;
 
@@ -147,7 +147,7 @@ class Character extends FlxSprite
 			if (animation.curAnim.name.startsWith('sing'))
 				holdTimer += elapsed;
 
-			if (holdTimer >= Conductor.stepCrochet * dadVar * 0.001)
+			if (holdTimer >= Conductor.stepCrochet * holdLength * 0.001)
 			{
 				if (isDancing)
 					playAnim('danceLeft'); // overridden by dance correctly later
@@ -260,7 +260,7 @@ typedef CharacterData =
 	var ?charPos:Array<Int>;
 	var ?camPos:Array<Int>;
 	var ?camFollow:Array<Int>;
-	var ?dadVar:Float;
+	var ?holdLength:Float;
 
 	/**
 	 * The color of this character's health bar.

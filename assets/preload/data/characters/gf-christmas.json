@@ -4,7 +4,7 @@
   "barColor": "#A5004D",
   "startingAnim": "danceRight",
   "isDancing": true,
-  "dadVar": 4.1,
+  "holdLength": 4.1,
   "replacesGF": true,
   "animations": [
     {
