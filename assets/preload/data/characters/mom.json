@@ -3,10 +3,12 @@
   "asset": "characters/Mom_Assets",
   "barColor": "#D8558E",
   "startingAnim": "idle",
+  "camFollow": [0, 100],
   "animations": [
     {
       "name": "idle",
       "prefix": "Mom Idle",
+      "nextAnim": "idleLoop",
       "offsets": [0, 0]
     },
     {

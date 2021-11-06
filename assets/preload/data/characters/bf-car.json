@@ -8,6 +8,7 @@
     {
       "name": "idle",
       "prefix": "BF idle dance",
+      "nextAnim": "idleLoop",
       "offsets": [-5, 0]
     },
     {

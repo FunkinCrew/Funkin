@@ -6,6 +6,8 @@
   "antialiasing": false,
   "usePackerAtlas": true,
   "startingAnim": "idle",
+  "camPos": [300, 0],
+  "hasTrail": true,
   "animations": [
     {
       "name": "idle",

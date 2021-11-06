@@ -3,10 +3,13 @@
   "asset": "characters/DADDY_DEAREST",
   "barColor": "#AF66CE",
   "startingAnim": "idle",
+  "holdLength": 6.1,
+  "camPos": [400, 0],
   "animations": [
     {
       "name": "idle",
       "prefix": "Dad idle dance",
+      "nextAnim": "idleLoop",
       "offsets": [0, 0]
     },
     {

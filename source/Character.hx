@@ -13,6 +13,9 @@ using StringTools;
 class Character extends FlxSprite
 {
 	public var animOffsets:Map<String, Array<Dynamic>>;
+	public var animInterrupt:Map<String, Bool>;
+	public var animNext:Map<String, String>;
+	public var animDanced:Map<String, Bool>;
 	public var debugMode:Bool = false;
 
 	public var isPlayer:Bool = false;
@@ -21,19 +24,27 @@ class Character extends FlxSprite
 
 	public var holdTimer:Float = 0;
 
+	public var replacesGF:Bool;
+	public var hasTrail:Bool;
+	public var isDancing:Bool;
+	public var holdLength:Float;
+	public var charPos:Array<Int>;
+	public var camPos:Array<Int>;
+	public var camFollow:Array<Int>;
+
 	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false)
 	{
 		super(x, y);
 
 		barColor = isPlayer ? 0xFF66FF33 : 0xFFFF0000;
 		animOffsets = new Map<String, Array<Dynamic>>();
+		animInterrupt = new Map<String, Bool>();
+		animNext = new Map<String, String>();
+		animDanced = new Map<String, Bool>();
 		curCharacter = character;
 		this.isPlayer = isPlayer;
 
 		parseDataFile();
-
-		if (curCharacter.startsWith('bf'))
-			dance();
 
 		if (isPlayer && frames != null)
 		{
@@ -97,13 +108,30 @@ class Character extends FlxSprite
 				}
 
 				animOffsets[anim.name] = anim.offsets == null ? [0, 0] : anim.offsets;
+				animInterrupt[anim.name] = anim.interrupt == null ? true : anim.interrupt;
+
+				if (data.isDancing && anim.isDanced != null)
+					animDanced[anim.name] = anim.isDanced;
+
+				if (anim.nextAnim != null)
+					animNext[anim.name] = anim.nextAnim;
 			}
+
+		this.replacesGF = data.replacesGF == null ? false : data.replacesGF;
+		this.hasTrail = data.hasTrail == null ? false : data.hasTrail;
+		this.isDancing = data.isDancing == null ? false : data.isDancing;
+		this.charPos = data.charPos == null ? [0, 0] : data.charPos;
+		this.camPos = data.camPos == null ? [0, 0] : data.camPos;
+		this.camFollow = data.camFollow == null ? [0, 0] : data.camFollow;
+		this.holdLength = data.holdLength == null ? 4 : data.holdLength;
 
 		flipX = data.flipX == null ? false : data.flipX;
 
-		setGraphicSize(Std.int(width * (data.scale == null ? 1 : data.scale)));
-
-		updateHitbox();
+		if (data.scale != null)
+		{
+			setGraphicSize(Std.int(width * data.scale));
+			updateHitbox();
+		}
 
 		antialiasing = data.antialiasing == null ? FlxG.save.data.antialiasing : data.antialiasing;
 
@@ -112,35 +140,16 @@ class Character extends FlxSprite
 		playAnim(data.startingAnim);
 	}
 
-	public function loadOffsetFile(character:String, library:String = 'shared')
-	{
-		var offset:Array<String> = CoolUtil.coolTextFile(Paths.txt('images/characters/' + character + "Offsets", library));
-
-		for (i in 0...offset.length)
-		{
-			var data:Array<String> = offset[i].split(' ');
-			addOffset(data[0], Std.parseInt(data[1]), Std.parseInt(data[2]));
-		}
-	}
-
 	override function update(elapsed:Float)
 	{
 		if (!isPlayer)
 		{
 			if (animation.curAnim.name.startsWith('sing'))
-			{
 				holdTimer += elapsed;
-			}
 
-			var dadVar:Float = 4;
-
-			if (curCharacter == 'dad')
-				dadVar = 6.1;
-			else if (curCharacter == 'gf' || curCharacter == 'spooky')
-				dadVar = 4.1; // fix double dances
-			if (holdTimer >= Conductor.stepCrochet * dadVar * 0.001)
+			if (holdTimer >= Conductor.stepCrochet * holdLength * 0.001)
 			{
-				if (curCharacter == 'gf' || curCharacter == 'spooky')
+				if (isDancing)
 					playAnim('danceLeft'); // overridden by dance correctly later
 				dance();
 				holdTimer = 0;
@@ -149,20 +158,14 @@ class Character extends FlxSprite
 
 		if (!debugMode)
 		{
-			if (animation.getByName('idleLoop') != null)
-			{
-				if (!animation.curAnim.name.startsWith('sing') && animation.curAnim.finished)
-					playAnim('idleLoop');
-			}
+			var nextAnim = animNext.get(animation.curAnim.name);
+			var forceDanced = animDanced.get(animation.curAnim.name);
 
-			switch (curCharacter)
+			if (nextAnim != null && animation.curAnim.finished)
 			{
-				case 'gf':
-					if (animation.curAnim.name == 'hairFall' && animation.curAnim.finished)
-					{
-						danced = true;
-						playAnim('danceRight');
-					}
+				if (isDancing && forceDanced != null)
+					danced = forceDanced;
+				playAnim(nextAnim);
 			}
 		}
 
@@ -178,40 +181,36 @@ class Character extends FlxSprite
 	{
 		if (!debugMode)
 		{
-			switch (curCharacter)
+			var canInterrupt = animInterrupt.get(animation.curAnim.name);
+
+			if (canInterrupt)
 			{
-				case 'gf' | 'gf-christmas' | 'gf-car' | 'gf-pixel':
-					if (!animation.curAnim.name.startsWith('hair') && !animation.curAnim.name.startsWith('sing'))
-					{
-						danced = !danced;
+				if (isDancing)
+				{
+					danced = !danced;
 
+					if (altAnim && animation.getByName('danceRight-alt') != null && animation.getByName('danceLeft-alt') != null)
+					{
+						if (danced)
+							playAnim('danceRight-alt');
+						else
+							playAnim('danceLeft-alt');
+					}
+					else
+					{
 						if (danced)
 							playAnim('danceRight');
 						else
 							playAnim('danceLeft');
 					}
-				case 'spooky':
-					if (!animation.curAnim.name.startsWith('sing'))
-					{
-						danced = !danced;
-
-						if (danced)
-							playAnim('danceRight');
-						else
-							playAnim('danceLeft');
-					}
-				/*
-					// new dance code is gonna end up cutting off animation with the idle
-					// so here's example code that'll fix it. just adjust it to ya character 'n shit
-					case 'custom character':
-						if (!animation.curAnim.name.endsWith('custom animation'))
-							playAnim('idle', forced);
-				 */
-				default:
+				}
+				else
+				{
 					if (altAnim && animation.getByName('idle-alt') != null)
 						playAnim('idle-alt', forced);
 					else
 						playAnim('idle', forced);
+				}
 			}
 		}
 	}
@@ -266,6 +265,11 @@ typedef CharacterData =
 	var asset:String;
 	var startingAnim:String;
 
+	var ?charPos:Array<Int>;
+	var ?camPos:Array<Int>;
+	var ?camFollow:Array<Int>;
+	var ?holdLength:Float;
+
 	/**
 	 * The color of this character's health bar.
 	 */
@@ -281,7 +285,8 @@ typedef CharacterData =
 
 	/**
 	 * The scale of this character.
-	 		* @default 1
+	 * Pixel characters typically use 6.
+	 * @default 1
 	 */
 	var ?scale:Int;
 
@@ -296,6 +301,25 @@ typedef CharacterData =
 	 * @default false
 	 */
 	var ?usePackerAtlas:Bool;
+
+	/**
+	 * Whether this character uses a dancing idle instead of a regular idle.
+	 * (ex. gf, spooky)
+	 * @default false
+	 */
+	var ?isDancing:Bool;
+
+	/**
+	 * Whether this character has a trail behind them.
+	 * @default false
+	 */
+	var ?hasTrail:Bool;
+
+	/**
+	 * Whether this character replaces gf if they are set as dad.
+	 * @default false
+	 */
+	var ?replacesGF:Bool;
 }
 
 typedef AnimationData =
@@ -320,4 +344,21 @@ typedef AnimationData =
 	var ?frameRate:Int;
 
 	var ?frameIndices:Array<Int>;
+
+	/**
+	 * Whether this animation can be interrupted by the dance function.
+	 * @default true
+	 */
+	var ?interrupt:Bool;
+
+	/**
+	 * The animation that this animation will go to after it is finished.
+	 */
+	var ?nextAnim:String;
+
+	/**
+	 * Whether this animation sets danced to true or false.
+	 * Only works for characters with isDancing enabled.
+	 */
+	var ?isDanced:Bool;
 }
