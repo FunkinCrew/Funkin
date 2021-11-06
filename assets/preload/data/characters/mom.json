@@ -8,6 +8,7 @@
     {
       "name": "idle",
       "prefix": "Mom Idle",
+      "nextAnim": "idleLoop",
       "offsets": [0, 0]
     },
     {

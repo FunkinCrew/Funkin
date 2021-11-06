@@ -9,6 +9,7 @@
     {
       "name": "idle",
       "prefix": "Dad idle dance",
+      "nextAnim": "idleLoop",
       "offsets": [0, 0]
     },
     {
