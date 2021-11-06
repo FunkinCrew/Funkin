@@ -191,10 +191,20 @@ class Character extends FlxSprite
 				{
 					danced = !danced;
 
-					if (danced)
-						playAnim('danceRight');
+					if (altAnim && animation.getByName('danceRight-alt') != null && animation.getByName('danceLeft-alt') != null)
+					{
+						if (danced)
+							playAnim('danceRight-alt');
+						else
+							playAnim('danceLeft-alt');
+					}
 					else
-						playAnim('danceLeft');
+					{
+						if (danced)
+							playAnim('danceRight');
+						else
+							playAnim('danceLeft');
+					}
 				}
 				else
 				{
