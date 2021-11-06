@@ -183,8 +183,6 @@ class Character extends FlxSprite
 		{
 			var canInterrupt = animInterrupt.get(animation.curAnim.name);
 
-			Debug.logTrace('Can "${animation.curAnim.name}" from ${curCharacter} be interrupted?: ${canInterrupt}');
-
 			if (canInterrupt)
 			{
 				if (isDancing)
