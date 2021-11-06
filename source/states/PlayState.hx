@@ -2018,7 +2018,7 @@ class PlayState extends MusicBeatState
 			case 'bad':
 				health += 0.005;
 			case 'shit':
-				health -= 0.1; // yes its more than a miss so that spamming with ghost tapping on is bad
+				health -= 0.06; // yes its more than a miss so that spamming with ghost tapping on is bad
 				misses += 1;
 				combo = 0;
 		}
