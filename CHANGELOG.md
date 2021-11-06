@@ -1,7 +1,7 @@
 # Changelog
 All notable changes will be documented in this file.
 
-## [0.4.0] - ?/?/????
+## [0.3.5] - 11/6/2021
 ### Added
 - Hitsounds in the charter
 - Rythm Input Mode (basically have to hit notes in order).
