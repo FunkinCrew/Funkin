@@ -1,5 +1,6 @@
 package ui;
 
+import substates.JudgementMenu;
 import substates.MaxFPSMenu;
 import utilities.Discord.DiscordClient;
 import polymod.Polymod.ModMetadata;
@@ -480,6 +481,35 @@ class MaxFPSOption extends Option
 
         if(FlxG.keys.justPressed.ENTER && Alphabet_Text.targetY == 0)
 			FlxG.state.openSubState(new MaxFPSMenu());
+    }
+}
+
+/**
+* Option that opens the song offset menu when selected.
+*/
+class JudgementMenuOption extends Option
+{
+    public function new(_Option_Name:String = "-", _Option_Row:Int = 0)
+    {
+        super();
+
+        // SETTING VALUES //
+        this.Option_Name = _Option_Name;
+        this.Option_Row = _Option_Row;
+
+        // CREATING OTHER OBJECTS //
+        Alphabet_Text = new Alphabet(20, 20 + (Option_Row * 100), Option_Name, true);
+        Alphabet_Text.isMenuItem = true;
+        Alphabet_Text.targetY = Option_Row;
+        add(Alphabet_Text);
+    }
+
+    override function update(elapsed:Float)
+    {
+        super.update(elapsed);
+
+        if(FlxG.keys.justPressed.ENTER && Alphabet_Text.targetY == 0)
+			FlxG.state.openSubState(new JudgementMenu());
     }
 }
 

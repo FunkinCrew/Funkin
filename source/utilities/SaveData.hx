@@ -92,6 +92,9 @@ class SaveData {
 
         if(FlxG.save.data.inputMode == null)
             FlxG.save.data.inputMode = "standard";
+
+        if(FlxG.save.data.judgementTimings == null)
+            FlxG.save.data.judgementTimings = [50, 70, 100];
         
         FlxG.save.flush();
 

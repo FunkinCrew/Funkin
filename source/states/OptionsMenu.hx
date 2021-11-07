@@ -48,6 +48,7 @@ class OptionsMenu extends MusicBeatState
 			new PageOption("Back", 0, "Categories"),
 			new ControlMenuSubStateOption("Binds", 1),
 			new SongOffsetOption("Song Offset", 2),
+			new JudgementMenuOption("Judgement Timings", 2),
 			new InputModeOption("Input Mode", ["standard", "rhythm"], FlxG.save.data.inputMode, 3),
 			new BoolOption("Ghost Tapping", "ghostTapping", FlxG.save.data.ghostTapping, 9),
 			new BoolOption("Downscroll", "downscroll", FlxG.save.data.downscroll, 4),

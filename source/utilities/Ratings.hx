@@ -1,16 +1,11 @@
 package utilities;
 
+import game.Conductor;
 import states.PlayState;
 import flixel.FlxG;
 
 class Ratings
 {
-    private static var timings:Array<Dynamic> = [
-        [50, 'sick'],
-        [70, 'good'],
-        [100, 'bad']
-    ];
-
     private static var scores:Array<Dynamic> = [
         ['sick', 350],
         ['good', 200],
@@ -20,6 +15,14 @@ class Ratings
 
     public static function getRating(time:Float)
     {
+        var judges = FlxG.save.data.judgementTimings;
+
+        var timings:Array<Array<Dynamic>> = [
+            [judges[0], "sick"],
+            [judges[1], "good"],
+            [judges[2], "bad"]
+        ];
+
         var rating:String = 'bruh';
 
         for(x in timings)
@@ -34,6 +37,23 @@ class Ratings
             rating = "shit";
 
         return rating;
+    }
+
+    public static function returnPreset(name:String = "leather engine"):Array<Int>
+    {
+        switch(name.toLowerCase())
+        {
+            case "leather engine":
+                return [50, 70, 100];
+            case "psych engine":
+                return [Std.int(Conductor.safeZoneOffset * 0.25), Std.int(Conductor.safeZoneOffset * 0.5), Std.int(Conductor.safeZoneOffset * 0.75)];
+            case "kade engine":
+                return [45, 90, 135];
+            case "friday night funkin'":
+                return [Std.int(Conductor.safeZoneOffset * 0.2), Std.int(Conductor.safeZoneOffset * 0.75), Std.int(Conductor.safeZoneOffset * 0.9)];
+        }
+
+        return [50, 70, 100];
     }
 
     public static function getRank(accuracy:Float, ?misses:Int)
@@ -66,81 +86,38 @@ class Ratings
                 missesRating = "CLEAR - ";
         }
 
-        if(FlxG.save.data.accuracyMode == "simple")
+        for(condition in 0...conditions.length)
         {
-            for(condition in 0...conditions.length)
-            {
-                var rating_success = conditions[condition];
+            var rating_success = conditions[condition];
 
-                if(rating_success)
-                {
-                    switch(condition)
-                    {
-                        case 0:
-                            return "MFC";
-                        case 1:
-                            return missesRating + "SSS";
-                        case 2:
-                            return missesRating + "S";
-                        case 3:
-                            return missesRating + "AA";
-                        case 4:
-                            return missesRating + "A";
-                        case 5:
-                            return missesRating + "B+";
-                        case 6:
-                            return missesRating + "B";
-                        case 7:
-                            return missesRating + "C";
-                        case 8:
-                            return missesRating + "D";
-                        case 9:
-                            return missesRating + "E";
-                        case 10:
-                            return missesRating + "F";
-                        case 11:
-                            return missesRating + "G";
-                    }
-                }
-            }
-        }
-        else
-        {
-            conditions[0] = accuracy >= 99;
-            
-            for(condition in 0...conditions.length)
+            if(rating_success)
             {
-                var rating_success = conditions[condition];
-
-                if(rating_success)
+                switch(condition)
                 {
-                    switch(condition)
-                    {
-                        case 0:
-                            return missesRating + "SSSS";
-                        case 1:
-                            return missesRating + "SSS";
-                        case 2:
-                            return missesRating + "S";
-                        case 3:
-                            return missesRating + "AA";
-                        case 4:
-                            return missesRating + "A";
-                        case 5:
-                            return missesRating + "B+";
-                        case 6:
-                            return missesRating + "B";
-                        case 7:
-                            return missesRating + "C";
-                        case 8:
-                            return missesRating + "D";
-                        case 9:
-                            return missesRating + "E";
-                        case 10:
-                            return missesRating + "F";
-                        case 11:
-                            return missesRating + "G";
-                    }
+                    case 0:
+                        return "MFC";
+                    case 1:
+                        return missesRating + "SSS";
+                    case 2:
+                        return missesRating + "S";
+                    case 3:
+                        return missesRating + "AA";
+                    case 4:
+                        return missesRating + "A";
+                    case 5:
+                        return missesRating + "B+";
+                    case 6:
+                        return missesRating + "B";
+                    case 7:
+                        return missesRating + "C";
+                    case 8:
+                        return missesRating + "D";
+                    case 9:
+                        return missesRating + "E";
+                    case 10:
+                        return missesRating + "F";
+                    case 11:
+                        return missesRating + "G";
                 }
             }
         }
