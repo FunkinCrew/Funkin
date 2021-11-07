@@ -1,41 +1,24 @@
 package states;
 
-import flixel.addons.display.shapes.FlxShapeDoubleCircle;
+#if discord_rpc
+import utilities.Discord.DiscordClient;
+#end
+
 import flixel.system.FlxSound;
-import sys.thread.Thread;
-import cpp.FILE;
-import sys.io.FileInput;
-import sys.FileSystem;
-import sys.io.File;
 import lime.app.Application;
-import utilities.Ratings.SongRank;
-import openfl.utils.ByteArray;
-import modding.ModdingSound;
-import flixel.util.FlxTimer;
-import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import game.Song;
 import game.Highscore;
 import utilities.CoolUtil;
 import ui.HealthIcon;
 import ui.Alphabet;
-#if discord_rpc
-import utilities.Discord.DiscordClient;
-#end
-#if sys
-import polymod.Polymod;
-import polymod.backends.PolymodAssets;
-#end
-import flash.text.TextField;
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.addons.display.FlxGridOverlay;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import lime.utils.Assets;
-import openfl.utils.Assets as OpenFLAssets;
 
 using StringTools;
 
@@ -339,6 +322,17 @@ class FreeplayState extends MusicBeatState
 					colorTween.cancel();
 				}
 
+				#if cpp
+				@:privateAccess
+				{
+					if(FlxG.sound.music.active && FlxG.sound.music.playing)
+						lime.media.openal.AL.sourcef(FlxG.sound.music._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, 1);
+		
+					if (vocals.playing)
+						vocals.stop();
+				}
+				#end
+
 				FlxG.switchState(new MainMenuState());
 			}
 
@@ -362,6 +356,17 @@ class FreeplayState extends MusicBeatState
 					if(colorTween != null) {
 						colorTween.cancel();
 					}
+
+					#if cpp
+					@:privateAccess
+					{
+						if(FlxG.sound.music.active && FlxG.sound.music.playing)
+							FlxG.sound.music.stop();
+			
+						if (vocals.playing)
+							vocals.stop();
+					}
+					#end
 
 					LoadingState.loadAndSwitchState(new PlayState());
 				}

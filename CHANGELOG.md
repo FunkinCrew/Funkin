@@ -1,6 +1,10 @@
 # Changelog
 All notable changes will be documented in this file.
 
+## [0.3.7] - ?/?/????
+### Fixed
+- Freeplay crashing when loading a bunch of songs (with space bar) and then changing speed of song, and loading one.
+
 ## [0.3.6] - 11/6/2021
 ### Fixed
 - Freeplay crashing when changing speed after closing song in freeplay or beating song and going back to freeplay (aka there was no bg music).
