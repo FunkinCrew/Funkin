@@ -328,7 +328,7 @@ class FreeplayState extends MusicBeatState
 					if(FlxG.sound.music.active && FlxG.sound.music.playing)
 						lime.media.openal.AL.sourcef(FlxG.sound.music._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, 1);
 		
-					if (vocals.playing)
+					if (vocals.active && vocals.playing)
 						vocals.stop();
 				}
 				#end
