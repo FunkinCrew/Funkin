@@ -95,6 +95,9 @@ class SaveData {
 
         if(FlxG.save.data.judgementTimings == null)
             FlxG.save.data.judgementTimings = [50, 70, 100];
+
+        if(FlxG.save.data.antiMash == null)
+            FlxG.save.data.antiMash = true;
         
         FlxG.save.flush();
 
