@@ -376,7 +376,11 @@ class FreeplayState extends MusicBeatState
 			if (FlxG.keys.justPressed.SPACE)
 			{
 				if(FlxG.sound.music.active)
+				{
 					FlxG.sound.music.stop();
+					FlxG.sound.music.kill();
+					FlxG.sound.music.destroy();
+				}
 
 				if(vocals.active)
 				{
