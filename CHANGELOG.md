@@ -6,8 +6,7 @@ All notable changes will be documented in this file.
 - Ability to change judgement timings.
 ### Fixed
 - Freeplay crashing when loading a bunch of songs (with space bar) and then changing speed of song, and loading one.
-- Fixed some errors idk
-- Fixed mania mode and death notes doing funny miss stuff? (copy, sorry Leather)
+- Fixed mania mode and death notes doing funny miss stuff?
 ### Changed
 - Update Pico offsets
 
