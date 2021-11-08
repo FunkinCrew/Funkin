@@ -7,6 +7,9 @@ All notable changes will be documented in this file.
 - Option to turn off / on the damage taken from hitting a *SHIT!* rating on a note. (Labeled as: "Anti Mash")
 ### Fixed
 - Freeplay crashing when loading a bunch of songs (with space bar) and then changing speed of song, and loading one.
+- Fixed mania mode and death notes doing funny miss stuff?
+### Changed
+- Update Pico offsets
 
 ## [0.3.6] - 11/6/2021
 ### Fixed
