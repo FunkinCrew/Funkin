@@ -49,7 +49,7 @@ class MenuItem extends FlxSpriteGroup
 		if(fakeFramerate <= 1)
 			fakeFramerate = 1;
 
-		y = FlxMath.lerp(y, (targetY * 120) + 480, 0.17);
+		y = FlxMath.lerp(y, (targetY * 120) + 480, 0.17 * (60 / Main.display.currentFPS));
 
 		if (isFlashing)
 			flashingInt += 1;

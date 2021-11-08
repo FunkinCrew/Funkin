@@ -106,7 +106,7 @@ class MainMenuState extends MusicBeatState
 			menuItem.antialiasing = true;
 		}
 
-		FlxG.camera.follow(camFollow, null, 0.06);
+		FlxG.camera.follow(camFollow, null, 0.06 * (60 / Main.display.currentFPS));
 
 		var versionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, (FlxG.save.data.watermarks ? TitleState.version : "v0.2.7.1"), 16);
 		versionShit.scrollFactor.set();
@@ -122,6 +122,8 @@ class MainMenuState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
+		FlxG.camera.followLerp = 0.06 * (60 / Main.display.currentFPS);
+		
 		if (FlxG.sound.music.volume < 0.8)
 		{
 			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;

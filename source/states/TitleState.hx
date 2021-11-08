@@ -59,6 +59,11 @@ class TitleState extends MusicBeatState
 
 	override public function create():Void
 	{
+		persistentUpdate = true;
+		persistentDraw = true;
+
+		FlxG.fixedTimestep = false;
+
 		SaveData.init();
 
 		/* cool fps shit thx kade */
