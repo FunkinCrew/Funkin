@@ -2288,10 +2288,10 @@ class PlayState extends MusicBeatState
 					for(note in possibleNotes) {
 						if(coolNote != null)
 						{
-							if(note.strumTime > coolNote.strumTime)
+							if(note.strumTime > coolNote.strumTime && note.shouldHit)
 								dontHit.push(note);
 						}
-						else
+						else if(note.shouldHit)
 							coolNote = note;
 					}
 				}
