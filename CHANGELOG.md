@@ -4,6 +4,7 @@ All notable changes will be documented in this file.
 ## [0.3.7] - ?/?/????
 ### Added
 - Ability to change judgement timings.
+- Option to turn off / on the damage taken from hitting a *SHIT!* rating on a note. (Labeled as: "Anti Mash")
 ### Fixed
 - Freeplay crashing when loading a bunch of songs (with space bar) and then changing speed of song, and loading one.
 
