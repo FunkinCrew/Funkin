@@ -9,6 +9,7 @@ All notable changes will be documented in this file.
 - Freeplay crashing when loading a bunch of songs (with space bar) and then changing speed of song, and loading one.
 - Fixed mania mode and death notes doing funny miss stuff?
 - Charter could be 0 bpm (basically breaking everything, oops!).
+- Health Icon for characters without a .json (built in characters only), now have their icons appear in the Charter (unless it's a case like `mom-car` where it uses `mom`'s icons, but that will be all fixed when built in characters *all* use .json files).
 ### Changed
 - Update Pico offsets
 - The School Background (Week 6) with the crying bg people (in Roses) is now a seperate stage, rather than being song specific.
