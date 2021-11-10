@@ -92,7 +92,7 @@ class StageGroup extends FlxGroup
         if(newStage != null)
             stage = newStage;
 
-        var bruhStages = ['spooky','philly','limo','mall','evil-mall','school','evil-school','wasteland'];
+        var bruhStages = ['spooky','philly','limo','mall','evil-mall','school','school-mad','evil-school','wasteland'];
 
         var stagesNormally = CoolUtil.coolTextFile(Paths.txt('stageList'));
 
@@ -348,14 +348,80 @@ class StageGroup extends FlxGroup
                 bgGirls = new BackgroundGirls(-100, 190);
                 bgGirls.scrollFactor.set(0.9, 0.9);
 
-                if (PlayState.SONG.song.toLowerCase() == 'roses')
-                {
-                    bgGirls.getScared();
-                }
+                bgGirls.setGraphicSize(Std.int(bgGirls.width * PlayState.daPixelZoom));
+                bgGirls.updateHitbox();
+                add(bgGirls);
+            }
+            case "school-mad":
+            {
+                stage = "school";
+
+                player_1_Point.x += 150;
+                player_1_Point.y += 300;
+                gf_Point.x += 200;
+                gf_Point.y += 250;
+                player_2_Point.x += 325;
+                player_2_Point.y += 330;
+
+                var bgSky = new FlxSprite().loadGraphic(Paths.image(stage + '/weebSky', 'stages'));
+                bgSky.scrollFactor.set(0.1, 0.1);
+                add(bgSky);
+
+                var repositionShit = -200;
+
+                var bgSchool:FlxSprite = new FlxSprite(repositionShit, 0).loadGraphic(Paths.image(stage + '/weebSchool', 'stages'));
+                bgSchool.scrollFactor.set(0.6, 0.90);
+                add(bgSchool);
+
+                var bgStreet:FlxSprite = new FlxSprite(repositionShit).loadGraphic(Paths.image(stage + '/weebStreet', 'stages'));
+                bgStreet.scrollFactor.set(0.95, 0.95);
+                add(bgStreet);
+
+                var fgTrees:FlxSprite = new FlxSprite(repositionShit + 170, 130).loadGraphic(Paths.image(stage + '/weebTreesBack', 'stages'));
+                fgTrees.scrollFactor.set(0.9, 0.9);
+                add(fgTrees);
+
+                var bgTrees:FlxSprite = new FlxSprite(repositionShit - 380, -800);
+                var treetex = Paths.getPackerAtlas(stage + '/weebTrees', 'stages');
+                bgTrees.frames = treetex;
+                bgTrees.animation.add('treeLoop', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18], 12);
+                bgTrees.animation.play('treeLoop');
+                bgTrees.scrollFactor.set(0.85, 0.85);
+                add(bgTrees);
+
+                var treeLeaves:FlxSprite = new FlxSprite(repositionShit, -40);
+                treeLeaves.frames = Paths.getSparrowAtlas(stage + '/petals', 'stages');
+                treeLeaves.animation.addByPrefix('leaves', 'PETALS ALL', 24, true);
+                treeLeaves.animation.play('leaves');
+                treeLeaves.scrollFactor.set(0.85, 0.85);
+                add(treeLeaves);
+
+                var widShit = Std.int(bgSky.width * 6);
+
+                bgSky.setGraphicSize(widShit);
+                bgSchool.setGraphicSize(widShit);
+                bgStreet.setGraphicSize(widShit);
+                bgTrees.setGraphicSize(Std.int(widShit * 1.4));
+                fgTrees.setGraphicSize(Std.int(widShit * 0.8));
+                treeLeaves.setGraphicSize(widShit);
+
+                fgTrees.updateHitbox();
+                bgSky.updateHitbox();
+                bgSchool.updateHitbox();
+                bgStreet.updateHitbox();
+                bgTrees.updateHitbox();
+                treeLeaves.updateHitbox();
+
+                bgGirls = new BackgroundGirls(-100, 190);
+                bgGirls.scrollFactor.set(0.9, 0.9);
+
+                bgGirls.getScared();
 
                 bgGirls.setGraphicSize(Std.int(bgGirls.width * PlayState.daPixelZoom));
                 bgGirls.updateHitbox();
                 add(bgGirls);
+
+                stage = "school-mad";
             }
             case "evil-school":
             {
@@ -712,7 +778,7 @@ class StageGroup extends FlxGroup
 					trainStart();
 				}
             }
-            case 'school':
+            case 'school' | 'school-mad':
             {
                 bgGirls.dance();
             }

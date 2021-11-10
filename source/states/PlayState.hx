@@ -1,11 +1,13 @@
 package states;
 
+#if sys
+import sys.FileSystem;
+#end
 import game.StrumNote;
 import game.Cutscene;
 #if BIT_64
 import modding.FlxVideo;
 #end
-import sys.FileSystem;
 import game.NoteSplash;
 import flixel.graphics.frames.FlxFramesCollection;
 import flixel.tweens.misc.VarTween;
@@ -276,12 +278,15 @@ class PlayState extends MusicBeatState
 			if(SONG.song.toLowerCase() == "winter horrorland")
 				SONG.stage = 'evil-mall';
 
+			if(SONG.song.toLowerCase() == "roses")
+				SONG.stage = 'school-mad';
+
 			if(SONG.song.toLowerCase() == "thorns")
 				SONG.stage = 'evil-school';
 		}
 
 		if(Std.string(SONG.ui_Skin) == "null")
-			SONG.ui_Skin = SONG.stage == "school" || SONG.stage == "evil-school" ? "pixel" : "default";
+			SONG.ui_Skin = SONG.stage == "school" || SONG.stage == "school-mad" || SONG.stage == "evil-school" ? "pixel" : "default";
 
 		// yo poggars
 		if(SONG.ui_Skin == "default")
@@ -308,12 +313,7 @@ class PlayState extends MusicBeatState
 		else
 		{
 			splash_Texture = Paths.getSparrowAtlas("ui skins/default/arrows/Note_Splashes", 'shared');
-
-			#if sys
-			splashesSettings = CoolUtil.coolTextFilePolymod(Paths.txt("ui skins/default/config"));
-			#else
 			splashesSettings = CoolUtil.coolTextFile(Paths.txt("ui skins/default/config"));
-			#end
 		}
 
 		if(SONG.gf == null)
@@ -2299,10 +2299,12 @@ class PlayState extends MusicBeatState
 				}
 	
 				var noteDataPossibles:Array<Bool> = [];
+				var rythmArray:Array<Bool> = [];
 
 				for(i in 0...SONG.keyCount)
 				{
 					noteDataPossibles.push(false);
+					rythmArray.push(false);
 				}
 	
 				// if there is actual notes to hit
@@ -2322,7 +2324,10 @@ class PlayState extends MusicBeatState
 							goodNoteHit(possibleNotes[i]);
 
 							if(dontHit.contains(possibleNotes[i])) // rythm mode only ?????
+							{
 								noteMiss(possibleNotes[i].noteData, possibleNotes[i]);
+								rythmArray[i] = true;
+							}
 						}
 					}
 				}
@@ -2331,7 +2336,7 @@ class PlayState extends MusicBeatState
 				{
 					for(i in 0...justPressedArray.length)
 					{
-						if(justPressedArray[i] && !noteDataPossibles[i])
+						if(justPressedArray[i] && !noteDataPossibles[i] && !rythmArray[i])
 							noteMiss(i);
 					}
 				}

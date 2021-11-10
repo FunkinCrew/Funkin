@@ -10,6 +10,7 @@ All notable changes will be documented in this file.
 - Fixed mania mode and death notes doing funny miss stuff?
 ### Changed
 - Update Pico offsets
+- The School Background (Week 6) with the crying bg people (in Roses) is now a seperate stage, rather than being song specific.
 
 ## [0.3.6] - 11/6/2021
 ### Fixed
