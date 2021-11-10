@@ -1,10 +1,5 @@
 package debuggers;
 
-#if sys
-import polymod.backends.PolymodAssets;
-import modding.ModdingSound;
-#end
-
 #if discord_rpc
 import utilities.Discord.DiscordClient;
 #end
@@ -527,30 +522,11 @@ class ChartingStateDev extends MusicBeatState
         if (FlxG.sound.music != null)
             FlxG.sound.music.stop();
 
-        #if sys
-        if(Assets.exists(Paths.inst(daSong)))
-            FlxG.sound.music = new FlxSound().loadEmbedded(Paths.inst(daSong));
-        else
-            FlxG.sound.music = new ModdingSound().loadByteArray(PolymodAssets.getBytes(Paths.instSYS(daSong)));
-
-        FlxG.sound.music.persist = true;
-
-        #else
         FlxG.sound.music = new FlxSound().loadEmbedded(Paths.inst(daSong));
         FlxG.sound.music.persist = true;
-        #end
         
         if (SONG.needsVoices)
-        {
-            #if sys
-            if(Assets.exists(Paths.voices(daSong)))
-                Vocal_Track = new FlxSound().loadEmbedded(Paths.voices(daSong));
-            else
-                Vocal_Track = new ModdingSound().loadByteArray(PolymodAssets.getBytes(Paths.voicesSYS(daSong)));
-            #else
             Vocal_Track = new FlxSound().loadEmbedded(Paths.voices(daSong));
-            #end
-        }
         else
             Vocal_Track = new FlxSound();
 
@@ -569,7 +545,6 @@ class ChartingStateDev extends MusicBeatState
 
             FlxG.sound.music.pause();
             FlxG.sound.music.time = 0;
-            //changeSection();
         };
 
         Inst_Track = FlxG.sound.music;
