@@ -1,7 +1,7 @@
 # Changelog
 All notable changes will be documented in this file.
 
-## [0.3.7] - ?/?/????
+## [0.3.7] - 11/10/2021
 ### Added
 - Ability to change judgement timings.
 - Option to turn off / on the damage taken from hitting a *SHIT!* rating on a note. (Labeled as: "Anti Mash")
@@ -13,6 +13,8 @@ All notable changes will be documented in this file.
 ### Changed
 - Update Pico offsets
 - The School Background (Week 6) with the crying bg people (in Roses) is now a seperate stage, rather than being song specific.
+### Removed
+- Week 7 Songs from files (oops forgot to remove these!).
 
 ## [0.3.6] - 11/6/2021
 ### Fixed
