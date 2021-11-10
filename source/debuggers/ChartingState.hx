@@ -4,12 +4,6 @@ import game.Character;
 import modding.CharacterConfig;
 import ui.FlxUIDropDownMenuCustom;
 import lime.tools.AssetType;
-#if sys
-import modding.ModdingSound;
-import sys.FileSystem;
-import polymod.fs.PolymodFileSystem;
-import polymod.backends.PolymodAssets;
-#end
 import utilities.Difficulties;
 import game.Song;
 import states.LoadingState;
@@ -46,9 +40,7 @@ import haxe.Json;
 import lime.utils.Assets;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
-import openfl.media.Sound;
 import openfl.net.FileReference;
-import openfl.utils.ByteArray;
 
 using StringTools;
 
