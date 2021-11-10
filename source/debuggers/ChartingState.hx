@@ -400,7 +400,7 @@ class ChartingState extends MusicBeatState
 		stepperLength.value = _song.notes[curSection].lengthInSteps;
 		stepperLength.name = "section_length";
 
-		stepperSectionBPM = new FlxUINumericStepper(10, 100, 0.1, Conductor.bpm, 0, 999, 1);
+		stepperSectionBPM = new FlxUINumericStepper(10, 100, 0.1, Conductor.bpm, 0.1, 999, 1);
 		stepperSectionBPM.value = Conductor.bpm;
 		stepperSectionBPM.name = 'section_bpm';
 
@@ -762,10 +762,19 @@ class ChartingState extends MusicBeatState
 					_song.notes[curSection].mustHitSection = check.checked;
 					updateHeads();
 				case 'Change BPM?':
-					_song.notes[curSection].changeBPM = check.checked;
-					FlxG.log.add('changed bpm shit');
+					if(_song.notes[curSection].bpm < 0.1)
+						_song.notes[curSection].bpm = 0.1;
 
-					//if(check.checked == true)
+					_song.notes[curSection].changeBPM = check.checked;
+
+					Conductor.mapBPMChanges(_song);
+
+					if(_song.notes[curSection].changeBPM)
+						Conductor.changeBPM(_song.notes[curSection].bpm);
+
+					updateGrid();
+
+					FlxG.log.add('changed bpm shit');
 				case "Enemy Alt Animation":
 					_song.notes[curSection].altAnim = check.checked;
 			}
@@ -787,16 +796,26 @@ class ChartingState extends MusicBeatState
 					_song.keyCount = Std.int(nums.value);
 					updateGrid();
 				case 'song_bpm':
+					if(nums.value < 0.1)
+						nums.value = 0.1;
+
 					tempBpm = nums.value;
 					Conductor.mapBPMChanges(_song);
-					Conductor.changeBPM(Std.int(nums.value));
+					Conductor.changeBPM(nums.value);
 				case 'note_susLength':
 					curSelectedNote[2] = nums.value;
 					updateGrid();
 				case 'note_char':
 					current_Note_Character = Std.int(nums.value);
 				case 'section_bpm':
-					_song.notes[curSection].bpm = Std.int(nums.value);
+					if(nums.value < 0.1)
+						nums.value = 0.1;
+
+					_song.notes[curSection].bpm = nums.value;
+
+					Conductor.mapBPMChanges(_song);
+					Conductor.changeBPM(nums.value);
+
 					updateGrid();
 			}
 		}
@@ -824,6 +843,18 @@ class ChartingState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
+		if(FlxMath.roundDecimal(tempBpm, 1) < 0.1)
+			tempBpm = 0.1;
+
+		if(FlxMath.roundDecimal(Conductor.bpm, 1) < 0.1)
+			Conductor.bpm = 0.1;
+
+		if(FlxMath.roundDecimal(_song.notes[curSection].bpm, 1) < 0.1)
+		{
+			_song.notes[curSection].bpm = 0.1;
+			Conductor.mapBPMChanges(_song);
+		}
+
 		Conductor.timeScale = _song.timescale;
 
 		curStep = recalculateSteps();
@@ -1046,12 +1077,16 @@ class ChartingState extends MusicBeatState
 				Conductor.changeBPM(Conductor.bpm - 1); */
 
 		var shiftThing:Int = 1;
+
 		if (FlxG.keys.pressed.SHIFT)
 			shiftThing = 4;
 		if (FlxG.keys.justPressed.RIGHT || FlxG.keys.justPressed.D)
 			changeSection(curSection + shiftThing);
 		if (FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.A)
 			changeSection(curSection - shiftThing);
+
+		if(_song.notes[curSection].bpm <= 0)
+			_song.notes[curSection].bpm = 0.1;
 
 		bpmTxt.text = (
 			"Time: "
@@ -1220,10 +1255,10 @@ class ChartingState extends MusicBeatState
 
 		var path:String = Paths.json(characterPath);
 
-		if (!Assets.exists(path))
-		{
+		if(!Assets.exists(path) && !Assets.exists(Paths.image("icons/" + char, "preload")))
 			path = Paths.json('character data/bf/config');
-		}
+		else if(!Assets.exists(path) && Assets.exists(Paths.image("icons/" + char, "preload")))
+			return char;
 
 		var rawJson = Assets.getText(path).trim();
 

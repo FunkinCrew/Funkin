@@ -8,6 +8,7 @@ All notable changes will be documented in this file.
 ### Fixed
 - Freeplay crashing when loading a bunch of songs (with space bar) and then changing speed of song, and loading one.
 - Fixed mania mode and death notes doing funny miss stuff?
+- Charter could be 0 bpm (basically breaking everything, oops!).
 ### Changed
 - Update Pico offsets
 - The School Background (Week 6) with the crying bg people (in Roses) is now a seperate stage, rather than being song specific.
