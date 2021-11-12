@@ -1,6 +1,10 @@
 # Changelog
 All notable changes will be documented in this file.
 
+## [0.3.8] - 11/12/2021
+### Fixed
+- No Longer uses art (for Death Notes, Caution Notes, and Note Splashes) from other artists without permission (aka they are now created by me and not stolen from somewhere else).
+
 ## [0.3.7] - 11/10/2021
 ### Added
 - Ability to change judgement timings.
