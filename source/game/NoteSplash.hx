@@ -12,10 +12,14 @@ class NoteSplash extends FlxSprite
     public function new(x:Float = 0, y:Float = 0, noteData:Int, target:FlxSprite) {
         super(x, y);
 
+        kill();
+        destroy();
+
+        /*
         this.target = target;
 
         alpha = 0.8;
-        frames = PlayState.splash_Texture;
+        //frames = PlayState.splash_Texture;
 
         var coolAnimRando:Int = FlxG.random.int(1,2);
 
@@ -23,10 +27,11 @@ class NoteSplash extends FlxSprite
         animation.play("default", true);
 
         setGraphicSize(Std.int(target.width * (FlxG.save.data.bigNoteSplashes ? 3 : 2)));
-        updateHitbox();
+        updateHitbox();*/
     }
 
     override function update(elapsed:Float) {
+        /*
         if(animation.curAnim.finished)
         {
             kill();
@@ -36,6 +41,7 @@ class NoteSplash extends FlxSprite
         x = target.x - (target.width / (FlxG.save.data.bigNoteSplashes ? 1 : 2));
         y = target.y - (target.height / (FlxG.save.data.bigNoteSplashes ? 1 : 2));
 
+        */
         super.update(elapsed);
     }
 }
