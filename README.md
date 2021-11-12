@@ -44,8 +44,6 @@ You can have different note types that give different amounts of health or give 
 
 * The FNF HD Mod Team - Caution Notes
 
-* Keoiki - Note Splash Animations (I originally got them from [Psych-Engine](https://github.com/ShadowMario/FNF-PsychEngine))
-
 * larsiusprime - Scrollable Drop Down Menu
 
 * PolybiusProxy - .mp4 Video Loader Extension (I got this from [Psych-Engine](https://github.com/ShadowMario/FNF-PsychEngine))
