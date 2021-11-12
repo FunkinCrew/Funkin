@@ -32,8 +32,8 @@ class NoteSplash extends FlxSprite
             alpha = 0;
         }
         
-        x = target.x - (target.width / 1.5);
-        y = target.y - (target.height / 1.5);
+        x = target.x - (target.width / 1.35);
+        y = target.y - (target.height / 1.35);
 
         super.update(elapsed);
     }
