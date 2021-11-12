@@ -20,20 +20,20 @@ class NoteSplash extends FlxSprite
         animation.addByPrefix("default", "note splash " + NoteVariables.Other_Note_Anim_Stuff[PlayState.SONG.keyCount - 1][noteData] + "0", 24 + FlxG.random.int(-2, 2), false);
         animation.play("default", true);
 
-        setGraphicSize(Std.int(target.width * (FlxG.save.data.bigNoteSplashes ? 3 : 2)));
+        setGraphicSize(Std.int(target.width * 2.5));
         updateHitbox();
     }
 
-    override function update(elapsed:Float) {
-        
+    override function update(elapsed:Float)
+    {
         if(animation.curAnim.finished)
         {
             kill();
             alpha = 0;
         }
-
-        x = target.x - (target.width / (FlxG.save.data.bigNoteSplashes ? 1 : 2));
-        y = target.y - (target.height / (FlxG.save.data.bigNoteSplashes ? 1 : 2));
+        
+        x = target.x - (target.width / 1.5);
+        y = target.y - (target.height / 1.5);
 
         super.update(elapsed);
     }
