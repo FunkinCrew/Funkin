@@ -40,10 +40,6 @@ You can have different note types that give different amounts of health or give 
 
 * SrPerez - Original 9 Key and 6 Key Designs
 
-* Tricky Mod Devs - Death Notes
-
-* The FNF HD Mod Team - Caution Notes
-
 * larsiusprime - Scrollable Drop Down Menu
 
 * PolybiusProxy - .mp4 Video Loader Extension (I got this from [Psych-Engine](https://github.com/ShadowMario/FNF-PsychEngine))
