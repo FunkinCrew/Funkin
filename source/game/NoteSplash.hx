@@ -12,9 +12,6 @@ class NoteSplash extends FlxSprite
     public function new(x:Float = 0, y:Float = 0, noteData:Int, target:FlxSprite) {
         super(x, y);
 
-        kill();
-        destroy();
-
         this.target = target;
 
         alpha = 0.8;
