@@ -18,7 +18,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: krdlab/setup-haxe@v1
         with:
-          haxe-version: 4.1.5
+          haxe-version: 4.2.3
           
       - name: Setup Android SDK Tools
         uses: android-actions/setup-android@v2.0.2
@@ -56,7 +56,7 @@ jobs:
           haxelib git polymod https://github.com/MasterEric/polymod.git
           haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
           haxelib git extension-webm https://github.com/KadeDev/extension-webm
-          haxelib run lime rebuild extension-webm linux
+          haxelib run lime rebuild extension-webm android
           haxelib git linc_luajit https://github.com/MasterEric/linc_luajit.git
           haxelib git hxvm-luajit https://github.com/nebulazorua/hxvm-luajit.git
           haxelib install actuate 
@@ -65,5 +65,5 @@ jobs:
           
       - uses: actions/upload-artifact@v2
         with:
-          name: Linux Build
-          path: export/release/linux/bin
+          name: Android Build
+          path: export/release/android/bin/app/build/outputs/apk/debug
