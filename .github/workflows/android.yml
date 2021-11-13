@@ -22,9 +22,7 @@ jobs:
 
       - uses: actions/cache@v2
         with:
-          path: |
-            ~/export
-            ${{ env.HAXELIB_ROOT }}
+          path: ~/export
           key: ${{ runner.os }}-android
           
       - name: Setup Android SDK Tools
@@ -43,7 +41,6 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: script run line haha
         run: |
-          echo "${{ env.HAXELIB_ROOT }}"
           mkdir "%HAXELIB_ROOT%"
           haxelib setup "%HAXELIB_ROOT%"
           haxelib install lime 7.9.0 --quiet
