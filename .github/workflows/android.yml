@@ -19,6 +19,13 @@ jobs:
       - uses: krdlab/setup-haxe@v1
         with:
           haxe-version: 4.2.3
+
+      - uses: actions/cache@v2
+        with:
+          path: |
+            export
+            ${{ %HAXELIB_ROOT% }}
+          key: ${{ runner.os }}-android
           
       - name: Setup Android SDK Tools
         uses: android-actions/setup-android@v2.0.2
@@ -60,7 +67,7 @@ jobs:
           haxelib git hxvm-luajit https://github.com/nebulazorua/hxvm-luajit.git --quiet
           haxelib install actuate 
           haxelib list
-          haxelib run lime build android
+          haxelib run lime build android -Dci
           
       - uses: actions/upload-artifact@v2
         with:
