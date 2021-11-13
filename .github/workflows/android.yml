@@ -30,15 +30,17 @@ jobs:
           java-version: '17'
         
       - uses: nttld/setup-ndk@v1
+        id: setup-ndk
         with:
           ndk-version: r15c
 
       # Runs a set of commands using the runners shell
       - name: script run line haha
         run: |
-          sudo add-apt-repository ppa:haxe/releases -y
-          sudo apt-get update
-          sudo apt-get install gcc-multilib g++-multilib haxe -y
+          lime config ANDROID_SDK value
+          lime config ANDROID_NDK_ROOT ${{ steps.setup-ndk.outputs.ndk-path }}
+          lime config JAVA_HOME value
+          lime config ANDROID_SETUP valuetrue
           mkdir "%HAXELIB_ROOT%"
           haxelib setup "%HAXELIB_ROOT%"
           haxelib install lime 7.9.0
@@ -60,7 +62,7 @@ jobs:
           haxelib git hxvm-luajit https://github.com/nebulazorua/hxvm-luajit.git
           haxelib install actuate 
           haxelib list
-          haxelib run lime build linux
+          haxelib run lime build android
           
       - uses: actions/upload-artifact@v2
         with:
