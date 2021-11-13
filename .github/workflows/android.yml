@@ -37,10 +37,6 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: script run line haha
         run: |
-          lime config ANDROID_SDK value
-          lime config ANDROID_NDK_ROOT ${{ steps.setup-ndk.outputs.ndk-path }}
-          lime config JAVA_HOME value
-          lime config ANDROID_SETUP valuetrue
           mkdir "%HAXELIB_ROOT%"
           haxelib setup "%HAXELIB_ROOT%"
           haxelib install lime 7.9.0
