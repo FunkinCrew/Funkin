@@ -19,6 +19,17 @@ jobs:
       - uses: krdlab/setup-haxe@v1
         with:
           haxe-version: 4.1.5
+          
+      - name: Setup Android SDK Tools
+        uses: android-actions/setup-android@v2.0.2
+        
+      - name: Setup Java JDK
+        uses: actions/setup-java@v2.3.1
+        
+      - uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r15c
+
       # Runs a set of commands using the runners shell
       - name: script run line haha
         run: |
