@@ -138,8 +138,6 @@
 
 	<!-- ______________________________ Haxedefines _____________________________ -->
 
-	<architecture name="arm64" exclude="armv7" if="ci" />
-	
 	<!--Enable the Flixel core recording system-->
 	<!--<haxedef name="FLX_RECORD" />-->
 
