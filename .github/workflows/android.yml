@@ -24,7 +24,7 @@ jobs:
         with:
           path: |
             export
-            ${{ %HAXELIB_ROOT% }}
+            ${{ HAXELIB_ROOT }}
           key: ${{ runner.os }}-android
           
       - name: Setup Android SDK Tools
