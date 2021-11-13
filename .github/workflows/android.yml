@@ -22,7 +22,7 @@ jobs:
 
       - uses: actions/cache@v2
         with:
-          path: ~/export
+          path: export
           key: ${{ runner.os }}-android
           
       - name: Setup Android SDK Tools
