@@ -19,11 +19,6 @@ jobs:
       - uses: krdlab/setup-haxe@v1
         with:
           haxe-version: 4.2.3
-
-      - uses: actions/cache@v2
-        with:
-          path: export
-          key: ${{ runner.os }}-android
           
       - name: Setup Android SDK Tools
         uses: android-actions/setup-android@v2.0.2
