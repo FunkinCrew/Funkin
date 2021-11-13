@@ -36,10 +36,10 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: script run line haha
         run: |
-          lime config ANDROID_SDK %ANDROID_SDK_ROOT%
-          lime config ANDROID_NDK_ROOT %ANDROID_NDK_ROOT%
-          lime config JAVA_HOME %JAVA_HOME%
-          lime config ANDROID_SETUP true
+          haxelib run lime config ANDROID_SDK %ANDROID_SDK_ROOT%
+          haxelib run lime config ANDROID_NDK_ROOT %ANDROID_NDK_ROOT%
+          haxelib run lime config JAVA_HOME %JAVA_HOME%
+          haxelib run lime config ANDROID_SETUP true
           mkdir "%HAXELIB_ROOT%"
           haxelib setup "%HAXELIB_ROOT%"
           haxelib install lime 7.9.0
