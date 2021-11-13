@@ -14,10 +14,10 @@ class NoteSplash extends FlxSprite
 
         this.target = target;
 
-        alpha = 0.8;
+        alpha = 0.7;
         frames = PlayState.splash_Texture;
 
-        animation.addByPrefix("default", "note splash " + NoteVariables.Other_Note_Anim_Stuff[PlayState.SONG.keyCount - 1][noteData] + "0", 24, false);
+        animation.addByPrefix("default", "note splash " + NoteVariables.Other_Note_Anim_Stuff[PlayState.SONG.keyCount - 1][noteData] + "0", 28, false);
         animation.play("default", true);
 
         setGraphicSize(Std.int(target.width * 2.5));
