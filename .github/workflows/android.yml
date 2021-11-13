@@ -23,7 +23,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: |
-            export
+            ~/export
             ${{ env.HAXELIB_ROOT }}
           key: ${{ runner.os }}-android
           
@@ -43,6 +43,7 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: script run line haha
         run: |
+          echo "${{ env.HAXELIB_ROOT }}"
           mkdir "%HAXELIB_ROOT%"
           haxelib setup "%HAXELIB_ROOT%"
           haxelib install lime 7.9.0 --quiet
