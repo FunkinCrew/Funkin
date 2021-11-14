@@ -23,7 +23,7 @@ jobs:
       - name: Cache haxelib path
         uses: actions/cache@v2
         with:
-          path: $HAXELIB_ROOT
+          path: ~/%HAXELIB_ROOT%
           key: ${{ runner.os }}-android
           
 #       - name: Setup Android SDK Tools
@@ -43,6 +43,11 @@ jobs:
       - name: script run line haha
         run: |
           mkdir "%HAXELIB_ROOT%"
+          dir
+          echo "bbbbbbbbbbbbbbbbbbbbbb"
+          dir /
+          echo "aaaaaaaaaaaaaaaaaaaaaa"
+          dir ~/
           haxelib setup "%HAXELIB_ROOT%"
           haxelib install lime 7.9.0 --quiet
           haxelib install openfl --quiet
