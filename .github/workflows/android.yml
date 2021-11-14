@@ -3,7 +3,7 @@
 name: Android Build CI
 
 # Controls when the workflow will run
-on: [push, pull_request, workflow_dispatch]
+on: [workflow_dispatch]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -48,17 +48,18 @@ jobs:
           haxelib install lime 7.9.0 --quiet
           haxelib install openfl --quiet
           haxelib install flixel 4.9.0 --quiet
+          haxelib install hxcpp --quiet
           haxelib run lime setup flixel
+          haxelib remove flixel-addons --quiet
           haxelib run lime setup
           haxelib run lime config ANDROID_SDK $ANDROID_SDK_ROOT
           haxelib run lime config ANDROID_NDK_ROOT $ANDROID_NDK_ROOT
           haxelib run lime config JAVA_HOME $JAVA_HOME
           haxelib run lime config ANDROID_SETUP true
           haxelib install flixel-tools --quiet
-          haxelib install flixel-addons --quiet
           haxelib install flixel-ui --quiet
+          haxelib install flixel-addons 2.10.0 --quiet
           haxelib install hscript --quiet
-          haxelib install flixel-addons 2.10.0
           haxelib git faxe https://github.com/uhrobots/faxe --quiet
           haxelib git polymod https://github.com/MasterEric/polymod.git --quiet
           haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc --quiet
@@ -67,7 +68,9 @@ jobs:
           haxelib git hxvm-luajit https://github.com/nebulazorua/hxvm-luajit.git --quiet
           haxelib install actuate 
           haxelib list
-          haxelib run lime build android
+          
+      - name: funni build logs
+        run: haxelib run lime build android
           
       - uses: actions/upload-artifact@v2
         with:
