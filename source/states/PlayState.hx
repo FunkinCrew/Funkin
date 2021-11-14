@@ -188,7 +188,7 @@ class PlayState extends MusicBeatState
 
 	var missSounds:Array<FlxSound> = [];
 
-	public static var splash_Texture:FlxFramesCollection;
+	public var splash_Texture:FlxFramesCollection;
 
 	public var arrow_Type_Sprites:Map<String, FlxFramesCollection> = [];
 
