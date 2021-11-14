@@ -68,7 +68,7 @@ jobs:
           haxelib install actuate 
           haxelib list
           
-      - uses: actions/upload-artifact@v2
-        with:
-          name: Android Build
-          path: export/release/android/bin/app/build/outputs/apk/debug
+#       - uses: actions/upload-artifact@v2
+#         with:
+#           name: Android Build
+#           path: export/release/android/bin/app/build/outputs/apk/debug
