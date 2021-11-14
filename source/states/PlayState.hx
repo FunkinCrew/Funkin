@@ -2269,12 +2269,15 @@ class PlayState extends MusicBeatState
 						possibleNotes.push(note);
 				});
 
-				for(i in 0...possibleNotes.length)
+				for(note in possibleNotes)
 				{
-					for(note in possibleNotes)
+					for(new_Note in possibleNotes)
 					{
-						if(note.noteData == possibleNotes[i].noteData && note.strumTime == possibleNotes[i].strumTime && note != possibleNotes[i])
-							note.destroy();
+						if(new_Note.rawNoteData == note.rawNoteData && new_Note.strumTime == note.strumTime && new_Note != note)
+						{
+							possibleNotes.remove(new_Note);
+							new_Note.destroy();
+						}
 					}
 				}
 

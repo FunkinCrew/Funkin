@@ -80,9 +80,9 @@ class Note extends FlxSprite
 
 		frames = PlayState.instance.arrow_Type_Sprites.get(arrow_Type);
 
-		animation.addByPrefix("default", NoteVariables.Other_Note_Anim_Stuff[song.keyCount - 1][noteData] + "0");
-		animation.addByPrefix("hold", NoteVariables.Other_Note_Anim_Stuff[song.keyCount - 1][noteData] + " hold0");
-		animation.addByPrefix("holdend", NoteVariables.Other_Note_Anim_Stuff[song.keyCount - 1][noteData] + " hold end0");
+		animation.addByPrefix("default", NoteVariables.Other_Note_Anim_Stuff[song.keyCount - 1][noteData] + "0", 24);
+		animation.addByPrefix("hold", NoteVariables.Other_Note_Anim_Stuff[song.keyCount - 1][noteData] + " hold0", 24);
+		animation.addByPrefix("holdend", NoteVariables.Other_Note_Anim_Stuff[song.keyCount - 1][noteData] + " hold end0", 24);
 
 		var lmaoStuff = Std.parseFloat(PlayState.instance.ui_Settings[0]) * (Std.parseFloat(PlayState.instance.ui_Settings[2]) - (Std.parseFloat(PlayState.instance.mania_size[song.keyCount-1])));
 
