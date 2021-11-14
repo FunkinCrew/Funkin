@@ -27,18 +27,18 @@ jobs:
             %HAXELIB_ROOT%
           key: ${{ runner.os }}-android
           
-#       - name: Setup Android SDK Tools
-#         uses: android-actions/setup-android@v2.0.2
+      - name: Setup Android SDK Tools
+        uses: android-actions/setup-android@v2.0.2
         
-#       - name: Setup Java JDK
-#         uses: actions/setup-java@v2.3.1
-#         with:
-#           distribution: 'zulu' # See 'Supported distributions' for available options
-#           java-version: '11'
+      - name: Setup Java JDK
+        uses: actions/setup-java@v2.3.1
+        with:
+          distribution: 'zulu' # See 'Supported distributions' for available options
+          java-version: '11'
         
-#       - uses: nttld/setup-ndk@v1
-#         with:
-#           ndk-version: r15c
+      - uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r15c
 
       # Runs a set of commands using the runners shell
       - name: script run line haha
@@ -58,7 +58,7 @@ jobs:
           haxelib install flixel-addons --quiet
           haxelib install flixel-ui --quiet
           haxelib install hscript --quiet
-          haxelib install flixel-addons 2.10.0 --quiet
+          haxelib install flixel-addons 2.10.0
           haxelib git faxe https://github.com/uhrobots/faxe --quiet
           haxelib git polymod https://github.com/MasterEric/polymod.git --quiet
           haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc --quiet
@@ -67,8 +67,9 @@ jobs:
           haxelib git hxvm-luajit https://github.com/nebulazorua/hxvm-luajit.git --quiet
           haxelib install actuate 
           haxelib list
+          haxelib run lime build android
           
-#       - uses: actions/upload-artifact@v2
-#         with:
-#           name: Android Build
-#           path: export/release/android/bin/app/build/outputs/apk/debug
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Android Build
+          path: export/release/android/bin/app/build/outputs/apk/debug
