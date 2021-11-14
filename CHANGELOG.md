@@ -2,6 +2,8 @@
 All notable changes will be documented in this file.
 
 ## [0.3.9] - ?/?/????
+### Fixed
+- Fixed input glitch where stacked notes would make the notes ahead of them just dissappear.
 ### Changed
 - Better visibilty for Note Splashes.
 
