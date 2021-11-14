@@ -23,21 +23,21 @@ jobs:
       - name: Cache haxelib path
         uses: actions/cache@v2
         with:
-          path: /home/runner/work/funkin-virus/funkin-virus/%HAXELIB_ROOT%
+          path: /%HAXELIB_ROOT%
           key: ${{ runner.os }}-android
           
-      - name: Setup Android SDK Tools
-        uses: android-actions/setup-android@v2.0.2
+#       - name: Setup Android SDK Tools
+#         uses: android-actions/setup-android@v2.0.2
         
-      - name: Setup Java JDK
-        uses: actions/setup-java@v2.3.1
-        with:
-          distribution: 'zulu' # See 'Supported distributions' for available options
-          java-version: '11'
+#       - name: Setup Java JDK
+#         uses: actions/setup-java@v2.3.1
+#         with:
+#           distribution: 'zulu' # See 'Supported distributions' for available options
+#           java-version: '11'
         
-      - uses: nttld/setup-ndk@v1
-        with:
-          ndk-version: r15c
+#       - uses: nttld/setup-ndk@v1
+#         with:
+#           ndk-version: r15c
 
       # Runs a set of commands using the runners shell
       - name: script run line haha
@@ -57,7 +57,7 @@ jobs:
           haxelib install flixel-addons --quiet
           haxelib install flixel-ui --quiet
           haxelib install hscript --quiet
-          haxelib install flixel-addons 2.10.0
+          haxelib install flixel-addons 2.10.0 --quiet
           haxelib git faxe https://github.com/uhrobots/faxe --quiet
           haxelib git polymod https://github.com/MasterEric/polymod.git --quiet
           haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc --quiet
