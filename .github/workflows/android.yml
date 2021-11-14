@@ -20,6 +20,12 @@ jobs:
         with:
           haxe-version: 4.2.3
           
+      - name: Cache haxelib path
+        uses: actions/cache@v2
+        with:
+          path: /home/runner/work/funkin-virus/funkin-virus/%HAXELIB_ROOT%
+          key: ${{ runner.os }}-android
+          
       - name: Setup Android SDK Tools
         uses: android-actions/setup-android@v2.0.2
         
