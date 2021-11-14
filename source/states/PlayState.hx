@@ -2269,18 +2269,6 @@ class PlayState extends MusicBeatState
 						possibleNotes.push(note);
 				});
 
-				for(note in possibleNotes)
-				{
-					for(new_Note in possibleNotes)
-					{
-						if(new_Note.rawNoteData == note.rawNoteData && new_Note.strumTime == note.strumTime && new_Note != note)
-						{
-							possibleNotes.remove(new_Note);
-							new_Note.destroy();
-						}
-					}
-				}
-
 				if(FlxG.save.data.inputMode == "rhythm")
 					possibleNotes.sort((b, a) -> Std.int(Conductor.songPosition - a.strumTime));
 				else
