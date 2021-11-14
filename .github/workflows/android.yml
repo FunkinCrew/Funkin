@@ -23,7 +23,7 @@ jobs:
       - name: Cache haxelib path
         uses: actions/cache@v2
         with:
-          path: /%HAXELIB_ROOT%
+          path: $HAXELIB_ROOT
           key: ${{ runner.os }}-android
           
 #       - name: Setup Android SDK Tools
