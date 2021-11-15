@@ -138,6 +138,10 @@
 
 	<!-- ______________________________ Haxedefines _____________________________ -->
 
+        <set name="HXCPP_COMPILE_CACHE" value="/hxcpp/cache" />
+        <set name="HXCPP_CACHE_MB" value="4000" />
+        <cache value="true" project="funkin" asLibrary="true" />
+
 	<!--Enable the Flixel core recording system-->
 	<!--<haxedef name="FLX_RECORD" />-->
 
