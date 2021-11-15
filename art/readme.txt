@@ -15,6 +15,11 @@
 |   |  | (_| (_| \/   | ) | (_) | ) |_   \/ (- (_| | ) 
                  /          _/           /             
 
+FRIDAY NIGHT FUNKIN IS A GAME AND IT IS MID-DEVELOPMENT!!!
+PLAY AT YOUR OWN RISK LOL!
+WE ARE UPDATING SOMEWHAT REGULARLY!!
+BUT THE GAME IS ACTIVELY BEING DEVELOPED!
+
 HEY
 Thanks for downloadin Friday Night FUNKIN'
 If you downloaded this from any other place than ninja-muffin24.itch.io/FUNKIN
@@ -74,7 +79,7 @@ Final important thing, this is made with the support and love to and from Newgro
 Go to newgrounds, we love newgrounds. newgrounds good. How many times do I gotta damn say it. Newgrounds newgrounds newgrounds newgrounds
 I love Tom Fulp.
 
-- Cameron ♪(´▽｀)
+- Cameron â™ª(Â´â–½ï½€)
 
 ##################################################################################
                                                                                   
