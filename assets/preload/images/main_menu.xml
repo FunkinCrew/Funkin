@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="FNF_main_menu_assets.png">
+	<!-- Created with Adobe Animate version 21.0.0.35450 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="kickstarter selected0000" x="0" y="0" width="838" height="216" frameX="-3" frameY="0" frameWidth="841" frameHeight="216"/>
+	<SubTexture name="kickstarter selected0001" x="0" y="220" width="836" height="216" frameX="0" frameY="0" frameWidth="841" frameHeight="216"/>
+	<SubTexture name="kickstarter selected0002" x="0" y="440" width="833" height="207" frameX="-2" frameY="-6" frameWidth="841" frameHeight="216"/>
+	<SubTexture name="donate idle 0000" x="1596" y="540" width="444" height="117"/>
+	<SubTexture name="donate idle 0001" x="1596" y="540" width="444" height="117"/>
+	<SubTexture name="donate idle 0002" x="1596" y="540" width="444" height="117"/>
+	<SubTexture name="donate idle 0003" x="1596" y="661" width="444" height="117"/>
+	<SubTexture name="donate idle 0004" x="1596" y="661" width="444" height="117"/>
+	<SubTexture name="donate idle 0005" x="1596" y="661" width="444" height="117"/>
+	<SubTexture name="donate idle 0006" x="0" y="1575" width="444" height="117"/>
+	<SubTexture name="donate idle 0007" x="0" y="1575" width="444" height="117"/>
+	<SubTexture name="donate idle 0008" x="0" y="1575" width="444" height="117"/>
+	<SubTexture name="donate selected 0000" x="0" y="1162" width="590" height="157" frameX="0" frameY="-2" frameWidth="590" frameHeight="159"/>
+	<SubTexture name="donate selected 0001" x="1183" y="1164" width="587" height="154" frameX="-1" frameY="-5" frameWidth="590" frameHeight="159"/>
+	<SubTexture name="donate selected 0002" x="594" y="1164" width="585" height="155" frameX="-3" frameY="0" frameWidth="590" frameHeight="159"/>
+	<SubTexture name="freeplay idle 0000" x="619" y="1323" width="484" height="122"/>
+	<SubTexture name="freeplay idle 0001" x="619" y="1323" width="484" height="122"/>
+	<SubTexture name="freeplay idle 0002" x="619" y="1323" width="484" height="122"/>
+	<SubTexture name="freeplay idle 0003" x="1107" y="1448" width="484" height="122"/>
+	<SubTexture name="freeplay idle 0004" x="1107" y="1448" width="484" height="122"/>
+	<SubTexture name="freeplay idle 0005" x="1107" y="1448" width="484" height="122"/>
+	<SubTexture name="freeplay idle 0006" x="0" y="1449" width="484" height="122"/>
+	<SubTexture name="freeplay idle 0007" x="0" y="1449" width="484" height="122"/>
+	<SubTexture name="freeplay idle0008" x="0" y="1449" width="484" height="122"/>
+	<SubTexture name="freeplay selected 0000" x="798" y="829" width="627" height="169" frameX="0" frameY="0" frameWidth="635" frameHeight="174"/>
+	<SubTexture name="freeplay selected 0001" x="840" y="397" width="632" height="170" frameX="-3" frameY="-1" frameWidth="635" frameHeight="174"/>
+	<SubTexture name="freeplay selected 0002" x="842" y="0" width="629" height="173" frameX="-4" frameY="-1" frameWidth="635" frameHeight="174"/>
+	<SubTexture name="kickstarter idle 0000" x="1475" y="0" width="558" height="139"/>
+	<SubTexture name="kickstarter idle 0001" x="1475" y="0" width="558" height="139"/>
+	<SubTexture name="kickstarter idle 0002" x="1475" y="0" width="558" height="139"/>
+	<SubTexture name="kickstarter idle 0003" x="1476" y="397" width="558" height="139"/>
+	<SubTexture name="kickstarter idle 0004" x="1476" y="397" width="558" height="139"/>
+	<SubTexture name="kickstarter idle 0005" x="1476" y="397" width="558" height="139"/>
+	<SubTexture name="kickstarter idle 0006" x="1429" y="829" width="558" height="139"/>
+	<SubTexture name="kickstarter idle 0007" x="1429" y="829" width="558" height="139"/>
+	<SubTexture name="kickstarter idle 0008" x="1429" y="829" width="558" height="139"/>
+	<SubTexture name="options idle0000" x="488" y="1449" width="487" height="111"/>
+	<SubTexture name="options idle0001" x="488" y="1449" width="487" height="111"/>
+	<SubTexture name="options idle0002" x="488" y="1449" width="487" height="111"/>
+	<SubTexture name="options idle0003" x="488" y="1564" width="487" height="111"/>
+	<SubTexture name="options idle0004" x="488" y="1564" width="487" height="111"/>
+	<SubTexture name="options idle0005" x="488" y="1564" width="487" height="111"/>
+	<SubTexture name="options idle0006" x="979" y="1574" width="487" height="111"/>
+	<SubTexture name="options idle0007" x="979" y="1574" width="487" height="111"/>
+	<SubTexture name="options idle0008" x="979" y="1574" width="487" height="111"/>
+	<SubTexture name="options selected 0000" x="0" y="1003" width="606" height="155" frameX="-2" frameY="-1" frameWidth="610" frameHeight="163"/>
+	<SubTexture name="options selected 0001" x="614" y="1002" width="607" height="158" frameX="-3" frameY="-1" frameWidth="610" frameHeight="163"/>
+	<SubTexture name="options selected 0002" x="0" y="836" width="610" height="163"/>
+	<SubTexture name="story mode idle0000" x="1429" y="972" width="615" height="122"/>
+	<SubTexture name="story mode idle0001" x="1429" y="972" width="615" height="122"/>
+	<SubTexture name="story mode idle0002" x="1429" y="972" width="615" height="122"/>
+	<SubTexture name="story mode idle0003" x="1183" y="1322" width="615" height="122"/>
+	<SubTexture name="story mode idle0004" x="1183" y="1322" width="615" height="122"/>
+	<SubTexture name="story mode idle0005" x="1183" y="1322" width="615" height="122"/>
+	<SubTexture name="story mode idle0006" x="0" y="1323" width="615" height="122"/>
+	<SubTexture name="story mode idle0007" x="0" y="1323" width="615" height="122"/>
+	<SubTexture name="story mode idle0008" x="0" y="1323" width="615" height="122"/>
+	<SubTexture name="story mode selected0000" x="840" y="220" width="796" height="173" frameX="0" frameY="-3" frameWidth="796" frameHeight="181"/>
+	<SubTexture name="story mode selected0001" x="798" y="651" width="794" height="174" frameX="-2" frameY="-2" frameWidth="796" frameHeight="181"/>
+	<SubTexture name="story mode selected0002" x="0" y="651" width="794" height="181" frameX="0" frameY="0" frameWidth="796" frameHeight="181"/>
+</TextureAtlas>
