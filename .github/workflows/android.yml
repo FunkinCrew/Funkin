@@ -25,7 +25,6 @@ jobs:
         with:
           path: |
             %HAXELIB_ROOT%
-            /hxcpp/cache
           key: ${{ runner.os }}-android
           
       - name: Setup Android SDK Tools
