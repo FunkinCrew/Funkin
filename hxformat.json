@@ -8,6 +8,7 @@
 		}
 	},
 	"sameLine": {
+		"ifBody": "same",
 		"ifElse": "next",
 		"doWhile": "next",
 		"tryBody": "next",
