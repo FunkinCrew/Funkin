@@ -1,3 +1,5 @@
+<p align="center">⚠️ WARNING: WIP! ⚠️<br>This project is still a work in progress.<br>You may look around and build the code yourself if you want, but don't expect anything to be finished or polished yet!</p>
+
 # Friday Night Funkin
 
 This is the repository for Friday Night Funkin, a game originally made for Ludum Dare 47 "Stuck In a Loop".
