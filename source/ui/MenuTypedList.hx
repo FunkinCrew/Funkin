@@ -26,10 +26,6 @@ class MenuTypedList extends FlxTypedGroup<MainMenuItem>
 	public var onChange:Dynamic;
 	public var onAcceptPress:Dynamic;
 
-	private var controls(get, never):Controls;
-	inline function get_controls():Controls
-		return PlayerSettings.player1.controls;
-
 	public function new(dir:MenuListDirection = null, wrapDir:MenuListDirection = null)
 	{
 		if (dir == null) dir = Vertical;
@@ -95,28 +91,28 @@ class MenuTypedList extends FlxTypedGroup<MainMenuItem>
 		switch (d)
 		{
 			case Horizontal:
-				e = controls.UI_LEFT_P;
-				f = controls.UI_RIGHT_P;
+				e = PlayerSettings.player1.controls.UI_LEFT_P;
+				f = PlayerSettings.player1.controls.UI_RIGHT_P;
 				g = navAxis(selectedIndex, length, e, f, b);
 			case Vertical:
-				e = controls.UI_UP_P;
-				f = controls.UI_DOWN_P;
+				e = PlayerSettings.player1.controls.UI_UP_P;
+				f = PlayerSettings.player1.controls.UI_DOWN_P;
 				g = navAxis(selectedIndex, length, e, f, c);
 			case Both:
-				e = controls.UI_LEFT_P || controls.UI_UP_P;
-				f = controls.UI_RIGHT_P || controls.UI_DOWN_P;
+				e = PlayerSettings.player1.controls.UI_LEFT_P || PlayerSettings.player1.controls.UI_UP_P;
+				f = PlayerSettings.player1.controls.UI_RIGHT_P || PlayerSettings.player1.controls.UI_DOWN_P;
 				g = navAxis(selectedIndex, length, e, f, wrapMode != None);
 			case None:
-				g = navGrid(3, controls.UI_LEFT_P, controls.UI_RIGHT_P, b, controls.UI_UP_P, controls.UI_DOWN_P, c);
+				g = navGrid(3, PlayerSettings.player1.controls.UI_LEFT_P, PlayerSettings.player1.controls.UI_RIGHT_P, b, PlayerSettings.player1.controls.UI_UP_P, PlayerSettings.player1.controls.UI_DOWN_P, c);
 			default:
-				g = navGrid(4, controls.UI_UP_P, controls.UI_DOWN_P, c, controls.UI_LEFT_P, controls.UI_RIGHT_P, b);
+				g = navGrid(4, PlayerSettings.player1.controls.UI_UP_P, PlayerSettings.player1.controls.UI_DOWN_P, c, PlayerSettings.player1.controls.UI_LEFT_P, PlayerSettings.player1.controls.UI_RIGHT_P, b);
 		}
 		if (g != selectedIndex)
 		{
 			FlxG.sound.play(Paths.sound("scrollMenu"));
 			selectItem(g);
 		}
-		if (controls.ACCEPT) accept();
+		if (PlayerSettings.player1.controls.ACCEPT) accept();
 	}
 
 	function navAxis(a, b, c, d, e)

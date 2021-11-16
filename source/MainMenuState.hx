@@ -69,7 +69,7 @@ class MainMenuState extends MusicBeatState
 		magenta = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 		magenta.scrollFactor.x = bg.scrollFactor.x;
 		magenta.scrollFactor.y = bg.scrollFactor.y;
-		magenta.setGraphicSize(bg.width);
+		magenta.setGraphicSize(Std.int(bg.width));
 		magenta.updateHitbox();
 		magenta.x = bg.x;
 		magenta.y = bg.y;
