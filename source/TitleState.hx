@@ -1,5 +1,7 @@
 package;
 
+import shaderslmfao.BuildingShaders;
+import shaderslmfao.ColorSwap;
 #if desktop
 import Discord.DiscordClient;
 import sys.thread.Thread;
@@ -43,22 +45,31 @@ class TitleState extends MusicBeatState
 
 	var wackyImage:FlxSprite;
 
+	var isRainbow = false;
+	var swagShader:ColorSwap;
+	var alphaShader:BuildingShaders;
+
 	override public function create():Void
 	{
 		#if polymod
 		polymod.Polymod.init({modRoot: "mods", dirs: ['introMod']});
 		#end
 
-		PlayerSettings.init();
+		FlxG.game.focusLostFramerate = 60;
+
+		swagShader = new ColorSwap();
+		alphaShader = new BuildingShaders();
+
+		FlxG.sound.muteKeys = [ZERO];
 
 		curWacky = FlxG.random.getObject(getIntroTextShit());
-
-		// DEBUG BULLSHIT
 
 		super.create();
 
 		FlxG.save.bind('funkin', 'ninjamuffin99');
 
+		PreferencesMenu.initPrefs();
+		PlayerSettings.init();
 		Highscore.load();
 
 		if (FlxG.save.data.weekUnlocked != null)
@@ -73,6 +84,11 @@ class TitleState extends MusicBeatState
 			// QUICK PATCH OOPS!
 			if (!StoryMenuState.weekUnlocked[0])
 				StoryMenuState.weekUnlocked[0] = true;
+		}
+
+		if (FlxG.save.data.seenVideo != null)
+		{
+			VideoState.seenVideo = FlxG.save.data.seenVideo;
 		}
 
 		#if FREEPLAY
@@ -93,6 +109,34 @@ class TitleState extends MusicBeatState
 			DiscordClient.shutdown();
 		 });
 		#end
+	}
+
+	function client_onMetaData(a)
+	{
+		video.attachNetStream(netStream);
+		video.set_width(video.get_videoWidth());
+		video.set_height(video.get_videoHeight());
+	}
+
+	function netStream_onAsyncError(a)
+	{
+		trace("Error loading video");
+	}
+
+	function netConnection_onNetStatus(a)
+	{
+		if (a.info.code == 'NetStream.Play.Complete')
+		{
+			startIntro();
+		}
+		trace(a.toString());
+	}
+
+	function overlay_onMouseDown(a)
+	{
+		netStream.get_soundTransform().volume = .2;
+		netStream.get_soundTransform().pan = -1;
+		FlxG.stage.removeChild(overlay);
 	}
 
 	var logoBl:FlxSprite;
@@ -146,6 +190,7 @@ class TitleState extends MusicBeatState
 		logoBl.updateHitbox();
 		// logoBl.screenCenter();
 		// logoBl.color = FlxColor.BLACK;
+		logoBl.shader = swagShader.shader;
 
 		gfDance = new FlxSprite(FlxG.width * 0.4, FlxG.height * 0.07);
 		gfDance.frames = Paths.getSparrowAtlas('gfDanceTitle');
@@ -153,6 +198,7 @@ class TitleState extends MusicBeatState
 		gfDance.animation.addByIndices('danceRight', 'gfDance', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
 		gfDance.antialiasing = true;
 		add(gfDance);
+		gfDance.shader = swagShader.shader;
 		add(logoBl);
 
 		titleText = new FlxSprite(100, FlxG.height * 0.8);
@@ -205,6 +251,14 @@ class TitleState extends MusicBeatState
 			initialized = true;
 
 		// credGroup.add(credTextShit);
+
+		if (FlxG.sound.music != null)
+		{
+			FlxG.sound.music.onComplete = function()
+			{
+				FlxG.switchState(new VideoState());
+			}
+		}
 	}
 
 	function getIntroTextShit():Array<Array<String>>
@@ -226,6 +280,11 @@ class TitleState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
+		if (FlxG.keys.justPressed.EIGHT)
+		{
+			FlxG.switchState(new CutsceneAnimTestState());
+		}
+
 		if (FlxG.sound.music != null)
 			Conductor.songPosition = FlxG.sound.music.time;
 		// FlxG.watch.addQuick('amp', FlxG.sound.music.amplitude);
@@ -236,6 +295,10 @@ class TitleState extends MusicBeatState
 		}
 
 		var pressedEnter:Bool = FlxG.keys.justPressed.ENTER;
+		if (FlxG.keys.justPressed.FIVE)
+		{
+			FlxG.switchState(new CutsceneAnimTestState());
+		}
 
 		#if mobile
 		for (touch in FlxG.touches.list)
@@ -262,6 +325,11 @@ class TitleState extends MusicBeatState
 
 		if (pressedEnter && !transitioning && skippedIntro)
 		{
+			if (FlxG.sound.music != null)
+			{
+				FlxG.sound.music.onComplete = null;
+			}
+
 			#if !switch
 			// If it's Friday according to da clock
 			if (Date.now().getDay() == 5)
@@ -278,32 +346,28 @@ class TitleState extends MusicBeatState
 			transitioning = true;
 			// FlxG.sound.music.stop();
 
-			new FlxTimer().start(2, function(tmr:FlxTimer)
+			// Check if version is outdated
+			if (!OutdatedSubState.leftState)
 			{
-				// Check if version is outdated
+				// TODO: Make a check here or delete this since no NGAPI
+				FlxG.switchState(new MainMenuState());
+			}
 
-				var version:String = "v" + Application.current.meta.get('version');
-
-				if (version.trim() != "v0.2.8".trim() && !OutdatedSubState.leftState)
-				{
-					FlxG.switchState(new OutdatedSubState());
-					trace('OLD VERSION!');
-					trace('old ver');
-					trace(version.trim());
-					trace('cur ver');
-					trace("v0.2.8".trim());
-				}
-				else
-				{
-					FlxG.switchState(new MainMenuState());
-				}
-			});
 			// FlxG.sound.play(Paths.music('titleShoot'), 0.7);
 		}
 
-		if (pressedEnter && !skippedIntro)
+		if (pressedEnter && !skippedIntro && initialized)
 		{
 			skipIntro();
+		}
+
+		if (PlayerSettings.player1.controls.UI_LEFT)
+		{
+			swagShader.update(.1 * -elapsed);
+		}
+		if (PlayerSettings.player1.controls.UI_RIGHT)
+		{
+			swagShader.update(.1 * elapsed);
 		}
 
 		super.update(elapsed);
