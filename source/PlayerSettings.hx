@@ -1,5 +1,6 @@
 package;
 
+import haxe.Json;
 import Controls;
 import flixel.FlxCamera;
 import flixel.FlxG;
@@ -33,122 +34,124 @@ class PlayerSettings
 	// public var avatar:Player;
 	// public var camera(get, never):PlayCamera;
 
-	function new(id, scheme)
+	function new(id)
 	{
 		this.id = id;
-		this.controls = new Controls('player$id', scheme);
+		this.controls = new Controls('player$id', KeyboardScheme.None);
+		var setScheme:Bool = true;
+		var saveControls = FlxG.save.data.controls;
+		if (saveControls != null)
+		{
+			var keys = null;
+			if (id == 0 && saveControls.p1 != null)
+			{
+				keys = saveControls.p1.keys;
+			}
+			else if (id == 1 && saveControls.p2 != null && saveControls.p2.keys != null)
+			{
+				keys = saveControls.p2.keys;
+			}
+			if (keys != null)
+			{
+				setScheme = false;
+				trace("loaded key data: " + Json.stringify(keys));
+				this.controls.fromSaveData(keys, Device.Keys);
+			}
+		}
+		if (setScheme)
+		{
+			this.controls.setKeyboardScheme(KeyboardScheme.Solo);
+		}
 	}
 
-	public function setKeyboardScheme(scheme)
+	function addGamepad(data)
 	{
-		controls.setKeyboardScheme(scheme);
+		var setDefault:Bool = true;
+		var saveControls = FlxG.save.data.controls;
+		if (saveControls != null)
+		{
+			var keys = null;
+			if (id == 0 && saveControls.p1 != null && saveControls.p1.pad != null)
+			{
+				keys = saveControls.p1.pad;
+			}
+			else if (id == 1 && saveControls.p2 != null && saveControls.p2.pad != null)
+			{
+				keys = saveControls.p2.pad;
+			}
+			if (keys != null)
+			{
+				setDefault = false;
+				trace("loaded pad data: " + Json.stringify(keys));
+				this.controls.addGamepadWithSaveData(id, keys);
+			}
+		}
+		if (setDefault)
+		{
+			this.controls.addDefaultGamepad(data.id);
+		}
 	}
 
-	/* 
-		static public function addAvatar(avatar:Player):PlayerSettings
+	function saveControls()
+	{
+		if (FlxG.save.data.controls == null)
 		{
-			var settings:PlayerSettings;
-
-			if (player1 == null)
-			{
-				player1 = new PlayerSettings(0, Solo);
-				++numPlayers;
-			}
-
-			if (player1.avatar == null)
-				settings = player1;
-			else
-			{
-				if (player2 == null)
-				{
-					if (player1.controls.keyboardScheme.match(Duo(true)))
-						player2 = new PlayerSettings(1, Duo(false));
-					else
-						player2 = new PlayerSettings(1, None);
-					++numPlayers;
-				}
-
-				if (player2.avatar == null)
-					settings = player2;
-				else
-					throw throw 'Invalid number of players: ${numPlayers + 1}';
-			}
-			++numAvatars;
-			settings.avatar = avatar;
-			avatar.settings = settings;
-
-			splitCameras();
-
-			onAvatarAdd.dispatch(settings);
-
-			return settings;
+			FlxG.save.data.controls = {};
 		}
-
-		static public function removeAvatar(avatar:Player):Void
+		var keydata = null;
+		if (id == 0)
 		{
-			var settings:PlayerSettings;
-
-			if (player1 != null && player1.avatar == avatar)
-				settings = player1;
-			else if (player2 != null && player2.avatar == avatar)
+			if (FlxG.save.data.controls.p1 == null)
 			{
-				settings = player2;
-				if (player1.controls.keyboardScheme.match(Duo(_)))
-					player1.setKeyboardScheme(Solo);
+				FlxG.save.data.controls.p1 = {};
 			}
-			else
-				throw "Cannot remove avatar that is not for a player";
-
-			settings.avatar = null;
-			while (settings.controls.gamepadsAdded.length > 0)
-			{
-				final id = settings.controls.gamepadsAdded.shift();
-				settings.controls.removeGamepad(id);
-				DeviceManager.releaseGamepad(FlxG.gamepads.getByID(id));
-			}
-
-			--numAvatars;
-
-			splitCameras();
-
-			onAvatarRemove.dispatch(avatar.settings);
+			keydata = FlxG.save.data.p1;
 		}
+		else if (FlxG.save.data.controls.p2 == null)
+		{
+			FlxG.save.data.controls.p2 = {};
+			keydata = FlxG.save.data.p2;
+		}
+		var savedata = this.controls.createSaveData(Device.Keys);
+		if (savedata != null)
+		{
+			keydata.keys = savedata;
+			trace("saving key data: " + Json.stringify(savedata));
+		}
+		if (controls.gamepadsAdded.length > 0)
+		{
+			savedata = this.controls.createSaveData(Device.Gamepad(this.controls.gamepadsAdded[0]));
+			if (savedata != null)
+			{
+				trace("saving pad data: " + Json.stringify(savedata));
+				keydata.pad = savedata;
+			}
+		}
+		FlxG.save.flush();
+	}
 
-	 */
 	static public function init():Void
 	{
 		if (player1 == null)
 		{
-			player1 = new PlayerSettings(0, Solo);
+			player1 = new PlayerSettings(0);
 			++numPlayers;
 		}
 
-		var numGamepads = FlxG.gamepads.numActiveGamepads;
-		if (numGamepads > 0)
+		FlxG.gamepads.deviceConnected.add(onGamepadAdded);
+		for (i in 0...FlxG.gamepads.numActiveGamepads)
 		{
-			var gamepad = FlxG.gamepads.getByID(0);
-			if (gamepad == null)
-				throw 'Unexpected null gamepad. id:0';
-
-			player1.controls.addDefaultGamepad(0);
-		}
-
-		if (numGamepads > 1)
-		{
-			if (player2 == null)
+			var pad = FlxG.gamepads.getActiveGamepads()[i];
+			if (pad != null)
 			{
-				player2 = new PlayerSettings(1, None);
-				++numPlayers;
+				onGamepadAdded(pad);
 			}
-
-			var gamepad = FlxG.gamepads.getByID(1);
-			if (gamepad == null)
-				throw 'Unexpected null gamepad. id:0';
-
-			player2.controls.addDefaultGamepad(1);
 		}
+	}
 
-		// DeviceManager.init();
+	static public function onGamepadAdded(pad):Void
+	{
+		player1.addGamepad(pad);
 	}
 
 	static public function reset()
