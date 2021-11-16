@@ -88,19 +88,19 @@ class MainMenuState extends MusicBeatState
 			FlxFlicker.flicker(magenta, 1.1, 0.15, false, true);
 		}
 		menuItems.enabled = false;
-		menuItems.createItem(null, null, "story mode", function()
+		menuItems.createItem(0, 0, "story mode", function()
 		{
 			startExitState(new StoryMenuState());
 		});
-		menuItems.createItem(null, null, "freeplay", function()
+		menuItems.createItem(0, 0, "freeplay", function()
 		{
 			startExitState(new FreeplayState());
 		});
 		if (VideoState.seenVideo)
-			menuItems.createItem(null, null, "kickstarter", selectDonate, true);
+			menuItems.createItem(0, 0, "kickstarter", selectDonate, true);
 		else
-			menuItems.createItem(null, null, "donate", selectDonate, true);
-		menuItems.createItem(null, null, "options", function()
+			menuItems.createItem(0, 0, "donate", selectDonate, true);
+		menuItems.createItem(0, 0, "options", function()
 		{
 			startExitState(new OptionsState());
 		});
