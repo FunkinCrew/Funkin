@@ -219,7 +219,7 @@ class FreeplayState extends MusicBeatState
 
 		var upP = controls.UI_UP_P;
 		var downP = controls.UI_DOWN_P;
-		var accepted = controls.UI_ACCEPT;
+		var accepted = controls.ACCEPT;
 
 		if (upP)
 		{
