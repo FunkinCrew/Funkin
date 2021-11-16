@@ -186,18 +186,21 @@ class FreeplayState extends MusicBeatState
 		selectedColor = songs[curSelected].color;
 		bg.color = selectedColor;
 
-		#if PRELOAD_ALL
+		
 		var textBG:FlxSprite = new FlxSprite(0, FlxG.height - 26).makeGraphic(FlxG.width, 26, 0xFF000000);
 		textBG.alpha = 0.6;
 		add(textBG);
 
-		var leText:String = "Press SPACE to listen to this Song // Shift + LEFT and RIGHT to change song speed";
+		#if PRELOAD_ALL
+		var leText:String = "Press RESET to reset song score and rank | Press SPACE to play Song Audio | Shift + LEFT and RIGHT to change song speed";
+		#else
+		var leText:String = "Press RESET to reset song score";
+		#end
 
 		var text:FlxText = new FlxText(textBG.x, textBG.y + 4, FlxG.width, leText, 18);
 		text.setFormat(Paths.font("vcr.ttf"), 18, FlxColor.WHITE, RIGHT);
 		text.scrollFactor.set();
 		add(text);
-		#end
 
 		super.create();
 	}
@@ -437,6 +440,12 @@ class FreeplayState extends MusicBeatState
 			}
 			#end
 			#end
+
+			if(controls.RESET)
+			{
+				Highscore.resetSong(songs[curSelected].songName, curDiffString);
+				intendedScore = 0;
+			}
 		}
 	}
 

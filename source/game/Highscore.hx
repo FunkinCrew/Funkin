@@ -5,13 +5,23 @@ import flixel.FlxG;
 
 class Highscore
 {
-	#if (haxe >= "4.0.0")
-	public static var songScores:Map<String, Int> = new Map();
-	public static var songRanks:Map<String, String> = new Map();
-	#else
 	public static var songScores:Map<String, Int> = new Map<String, Int>();
 	public static var songRanks:Map<String, String> = new Map<String, String>();
-	#end
+
+	public static function resetSong(song:String, ?diff:String = "easy"):Void
+	{
+		var daSong:String = formatSong(song, diff);
+
+		setScore(daSong, 0);
+		setRank(daSong, "N/A");
+	}
+
+	public static function resetWeek(week:Int = 1, ?diff:String = "easy", ?weekName:String = 'week'):Void
+	{
+		var daWeek:String = formatSong(weekName + week, diff);
+
+		setScore(daWeek, 0);
+	}
 
 	public static function saveScore(song:String, score:Int = 0, ?diff:String = "easy"):Void
 	{
@@ -59,6 +69,7 @@ class Highscore
 	{
 		// Reminder that I don't need to format this song, it should come formatted!
 		songScores.set(song, score);
+
 		FlxG.save.data.songScores = songScores;
 		FlxG.save.flush();
 	}
@@ -67,6 +78,7 @@ class Highscore
 	{
 		// Reminder that I don't need to format this song, it should come formatted!
 		songRanks.set(song, rank);
+
 		FlxG.save.data.songRanks = songRanks;
 		FlxG.save.flush();
 	}

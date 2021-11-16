@@ -127,6 +127,12 @@ class StoryMenuState extends MusicBeatState
 					changeGroup(1);
 				if(FlxG.keys.justPressed.Q)
 					changeGroup(-1);
+
+				if(controls.RESET)
+				{
+					Highscore.resetWeek(curWeek, curDifficulties[curDifficulty][0], currentGroup.pathName + "Week");
+					intendedScore = 0;
+				}
 			}
 
 			if (controls.ACCEPT)
@@ -223,6 +229,15 @@ class StoryMenuState extends MusicBeatState
 		groupSwitchText.borderColor = FlxColor.BLACK;
 		groupSwitchText.borderSize = 1;
 		add(groupSwitchText);
+
+		var groupInfoText = new FlxText(leftArrow.x, difficultySprite.y + difficultySprite.height + 96, 0, "Q + E to change groups\nRESET to reset week score\n", 24);
+		groupInfoText.alignment = LEFT;
+		groupInfoText.font = weekSongListText.font;
+		groupInfoText.color = FlxColor.WHITE;
+		groupInfoText.borderStyle = OUTLINE;
+		groupInfoText.borderColor = FlxColor.BLACK;
+		groupInfoText.borderSize = 1;
+		add(groupInfoText);
 
 		changeWeek();
 		changeGroup();
