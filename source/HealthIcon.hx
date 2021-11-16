@@ -16,7 +16,6 @@ class HealthIcon extends FlxSprite
 	public function new(char:String = 'bf', isPlayer:Bool = false)
 	{
 		super();
-		this.char = char;
 		this.isPlayer = isPlayer;
 		changeIcon(char);
 		antialiasing = true;
