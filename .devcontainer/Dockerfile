@@ -24,4 +24,3 @@ WORKDIR /fnf
 VOLUME /fnf
 
 ENTRYPOINT ["lime", "build", "html5"]
-

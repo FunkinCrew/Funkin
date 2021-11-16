@@ -1,0 +1,38 @@
+{
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build Debug HTML5",
+      "type": "shell",
+      "command": "lime build html5 -debug",
+      "group": "build"
+    },
+    {
+      "label": "Build Release HTML5",
+      "type": "shell",
+      "command": "lime build html5",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Start Release HTML5",
+      "type": "shell",
+      "command": "python -m SimpleHTTPServer 8080",
+      "options": {
+        "cwd": "${workspaceFolder}/export/release/html5/bin"
+      }
+    },
+    {
+      "label": "Start Debug HTML5",
+      "type": "shell",
+      "command": "python -m SimpleHTTPServer 8080",
+      "options": {
+        "cwd": "${workspaceFolder}/export/debug/html5/bin"
+      }
+    }
+  ]
+}

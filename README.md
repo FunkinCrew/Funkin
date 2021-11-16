@@ -83,12 +83,16 @@ To run it from your desktop (Windows, Mac, Linux) it can be a bit more involved.
 Once that is done you can open up a command line in the project's directory and run `lime test windows -debug`. Once that command finishes (it takes forever even on a higher end PC), you can run FNF from the .exe file under export\release\windows\bin
 As for Mac, 'lime test mac -debug' should work, if not the internet surely has a guide on how to compile Haxe stuff for Mac.
 
+### FNF now supports [VSCode Devcontainers](https://code.visualstudio.com/docs/remote/containers)
+
+There are some VSCode task created for compiling and running HTML5 versions of FNF inside a devcontainer
+
 ### Compiling HTML5 version using Docker
 
 Run this commands:
 
 ```bash
-docker build . -t fnf:mine
+docker build -f .devcontainer/Dockerfile -t fnf:mine .
 docker run --name compile_fnf --rm -v <FULL PATH TO YOUR FNF REPO>:/fnf fnf:mine
 ```
 
@@ -107,7 +111,7 @@ python -m http.server 8080
 python -m SimpleHTTPServer 8080
 ```
 
-Then
+Then go to localhost:8080 in your browser to play FNF!!!
 
 ### Additional guides
 
