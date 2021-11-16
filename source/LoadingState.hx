@@ -53,7 +53,7 @@ class LoadingState extends MusicBeatState
 		funkay.scrollFactor.set();
 		funkay.screenCenter();
 
-		loadBar = new FlxSprite().makeGraphic(FlxG.height, 10, 0xFFFF16D2);
+		loadBar = new FlxSprite(0, FlxG.height - 20).makeGraphic(FlxG.width, 10, 0xFFFF16D2);
 		loadBar.screenCenter(X);
 		add(loadBar);
 		
@@ -124,14 +124,14 @@ class LoadingState extends MusicBeatState
 		{
 			funkay.setGraphicSize(Std.int(funkay.width + 60));
 			funkay.updateHitbox();
-			if (callbacks != null)
-			{
-				targetShit = FlxMath.remapToRange(callbacks.numRemaining / callbacks.length, 1, 0, 0, 1);
-				loadBar.scale.x = loadBar.scale.x + 0.5 * (targetShit - loadBar.scale.x);
-				#if debug
-				trace('fired: ' + callbacks.getFired() + " unfired:" + callbacks.getUnfired());
-				#end
-			}
+			#if debug
+			if (callbacks != null) trace('fired: ' + callbacks.getFired() + " unfired:" + callbacks.getUnfired());
+			#end
+		}
+		if (callbacks != null)
+		{
+			targetShit = FlxMath.remapToRange(callbacks.numRemaining / callbacks.length, 1, 0, 0, 1);
+			loadBar.scale.x += 0.5 * (targetShit - loadBar.scale.x);
 		}
 	}
 	
