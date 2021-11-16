@@ -255,7 +255,7 @@ class FreeplayState extends MusicBeatState
 
 			PlayState.storyWeek = songs[curSelected].week;
 			trace('CUR WEEK' + PlayState.storyWeek);
-			FlxG.switchState(LoadingState.getNextState(new PlayState()));
+			LoadingState.loadAndSwitchState(new PlayState());
 		}
 	}
 
