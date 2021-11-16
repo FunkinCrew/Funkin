@@ -23,10 +23,14 @@ class FreeplayState extends MusicBeatState
 	var curSelected:Int = 0;
 	var curDifficulty:Int = 1;
 
+	var bg:FlxSprite;
+	var scoreBG:FlxSprite;
 	var scoreText:FlxText;
 	var diffText:FlxText;
 	var lerpScore:Int = 0;
 	var intendedScore:Int = 0;
+
+	private var coolColors = [0xFF9271FD, 0xFF9271FD, 0xFF223344, 0xFF941653, 0xFFFC96D7, 0xFFA0D1FF, 0xFFFF78BF, 0xFFF6B604];
 
 	private var grpSongs:FlxTypedGroup<Alphabet>;
 	private var curPlaying:Bool = false;
@@ -55,35 +59,37 @@ class FreeplayState extends MusicBeatState
 		DiscordClient.changePresence("In the Menus", null);
 		#end
 
-		var isDebug:Bool = false;
+		if (!FlxG.sound.music.playing)
+		{
+			FlxG.sound.playMusic(Paths.music('freakyMenu'));
+		}
 
-		#if debug
-		isDebug = true;
-		#end
-
-		if (StoryMenuState.weekUnlocked[2] || isDebug)
+		if (StoryMenuState.weekUnlocked[2])
 			addWeek(['Bopeebo', 'Fresh', 'Dadbattle'], 1, ['dad']);
 
-		if (StoryMenuState.weekUnlocked[2] || isDebug)
+		if (StoryMenuState.weekUnlocked[2])
 			addWeek(['Spookeez', 'South', 'Monster'], 2, ['spooky']);
 
-		if (StoryMenuState.weekUnlocked[3] || isDebug)
+		if (StoryMenuState.weekUnlocked[3])
 			addWeek(['Pico', 'Philly', 'Blammed'], 3, ['pico']);
 
-		if (StoryMenuState.weekUnlocked[4] || isDebug)
+		if (StoryMenuState.weekUnlocked[4])
 			addWeek(['Satin-Panties', 'High', 'Milf'], 4, ['mom']);
 
-		if (StoryMenuState.weekUnlocked[5] || isDebug)
+		if (StoryMenuState.weekUnlocked[5])
 			addWeek(['Cocoa', 'Eggnog', 'Winter-Horrorland'], 5, ['parents-christmas', 'parents-christmas', 'monster-christmas']);
 
-		if (StoryMenuState.weekUnlocked[6] || isDebug)
+		if (StoryMenuState.weekUnlocked[6])
 			addWeek(['Senpai', 'Roses', 'Thorns'], 6, ['senpai', 'senpai', 'spirit']);
+
+		if (StoryMenuState.weekUnlocked[7])
+			addWeek(['Ugh', 'Guns', 'Stress'], 7, ['tankman']);
 
 		// LOAD MUSIC
 
 		// LOAD CHARACTERS
 
-		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuBGBlue'));
+		bg = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 		add(bg);
 
 		grpSongs = new FlxTypedGroup<Alphabet>();
@@ -113,7 +119,8 @@ class FreeplayState extends MusicBeatState
 		scoreText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, RIGHT);
 		// scoreText.alignment = RIGHT;
 
-		var scoreBG:FlxSprite = new FlxSprite(scoreText.x - 6, 0).makeGraphic(Std.int(FlxG.width * 0.35), 66, 0xFF000000);
+		scoreBG = new FlxSprite(scoreText.x - 6, 0).makeGraphic(1, 66, 0xFF000000);
+		scoreBG.antialiasing = false;
 		scoreBG.alpha = 0.6;
 		add(scoreBG);
 
@@ -180,21 +187,39 @@ class FreeplayState extends MusicBeatState
 	{
 		super.update(elapsed);
 
-		if (FlxG.sound.music.volume < 0.7)
+		if (FlxG.sound.music != null && FlxG.sound.music.volume < 0.7)
 		{
 			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
 		}
 
-		lerpScore = Math.floor(FlxMath.lerp(lerpScore, intendedScore, 0.4));
-
-		if (Math.abs(lerpScore - intendedScore) <= 10)
-			lerpScore = intendedScore;
+		lerpScore = Std.int(CoolUtil.coolLerp(lerpScore, intendedScore, 0.4));
+		
+		// Sorry about this, but I'm basically copying and pasting the compiled code here. If someone could simplify this but keep the exact same function, please do.
+		var b = Std.parseInt(bg.color.toHexString()),
+		c:Null<Int> = coolColors[songs[curSelected].week % coolColors.length],
+		d:Null<Float> = CoolUtil.camLerpShit(0.045);
+		if (d == null) d = 0.5;
+		var e = Std.int(((c >> 16 & 255) - (b >> 16 & 255)) * d + (b >> 16 & 255)) | 0,
+			f = Std.int(((c >> 8 & 255) - (b >> 8 & 255)) * d + (b >> 8 & 255)) | 0,
+			h = Std.int(((c & 255) - (b & 255)) * d + (b & 255)) | 0;
+			c = Std.int(((c >> 24 & 255) - (b >> 24 & 255)) * d + (b >> 24 & 255)) | 0;
+		if (c == null) c = 255;
+		b = new FlxColor();
+		if (c == null) c = 255;
+		b = (b & -16711681 | (255 < e ? 255 : 0 > e ? 0 : e) << 16) & -65281 | (255 < f ? 255 : 0 > f ? 0 : f) << 8;
+		b &= -256;
+		b |= 255 < h ? 255 : 0 > h ? 0 : h;
+		b &= 16777215;
+		b |= (255 < c ? 255 : 0 > c ? 0 : c) << 24;
+		bg.color = b;
+		// Alright, shit's over. Sincere apologies yet again, but at least it works.
 
 		scoreText.text = "PERSONAL BEST:" + lerpScore;
+		positionHighscore();
 
-		var upP = controls.UP_P;
-		var downP = controls.DOWN_P;
-		var accepted = controls.ACCEPT;
+		var upP = controls.UI_UP_P;
+		var downP = controls.UI_DOWN_P;
+		var accepted = controls.UI_ACCEPT;
 
 		if (upP)
 		{
@@ -204,14 +229,19 @@ class FreeplayState extends MusicBeatState
 		{
 			changeSelection(1);
 		}
+		if (FlxG.mouse.wheel != 0)
+		{
+			changeSelection(-Std.int(FlxG.mouse.wheel / 4));
+		}
 
-		if (controls.LEFT_P)
+		if (controls.UI_LEFT_P)
 			changeDiff(-1);
-		if (controls.RIGHT_P)
+		if (controls.UI_RIGHT_P)
 			changeDiff(1);
 
 		if (controls.BACK)
 		{
+			FlxG.sound.play(Paths.sound("cancelMenu"));
 			FlxG.switchState(new MainMenuState());
 		}
 
@@ -219,15 +249,13 @@ class FreeplayState extends MusicBeatState
 		{
 			var poop:String = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), curDifficulty);
 
-			trace(poop);
-
 			PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
 			PlayState.isStoryMode = false;
 			PlayState.storyDifficulty = curDifficulty;
 
 			PlayState.storyWeek = songs[curSelected].week;
 			trace('CUR WEEK' + PlayState.storyWeek);
-			LoadingState.loadAndSwitchState(new PlayState());
+			FlxG.switchState(LoadingState.getNextState(new PlayState()));
 		}
 	}
 
@@ -244,15 +272,9 @@ class FreeplayState extends MusicBeatState
 		intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
 		#end
 
-		switch (curDifficulty)
-		{
-			case 0:
-				diffText.text = "EASY";
-			case 1:
-				diffText.text = 'NORMAL';
-			case 2:
-				diffText.text = "HARD";
-		}
+		PlayState.storyDifficulty = curDifficulty;
+		diffText.text = '< ' + CoolUtil.difficultyString() + ' >';
+		positionHighscore();
 	}
 
 	function changeSelection(change:Int = 0)
@@ -300,6 +322,15 @@ class FreeplayState extends MusicBeatState
 				// item.setGraphicSize(Std.int(item.width));
 			}
 		}
+	}
+
+	function positionHighscore()
+	{
+		scoreText.x = FlxG.width - scoreText.width - 6;
+		scoreBG.scale.x = FlxG.width - scoreText.x + 6;
+		scoreBG.x = FlxG.width - scoreBG.scale.x / 2;
+		diffText.x = scoreBG.x + scoreBG.width / 2;
+		diffText.x -= diffText.width / 2;
 	}
 }
 
