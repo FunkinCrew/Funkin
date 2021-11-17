@@ -74,6 +74,7 @@ class PlayState extends MusicBeatState
 
 	private var strumLineNotes:FlxTypedGroup<FlxSprite>;
 	private var playerStrums:FlxTypedGroup<FlxSprite>;
+	private var grpNoteSplashes:FlxTypedGroup<NoteSplash>;
 
 	private var camZooming:Bool = false;
 	private var curSong:String = "";
@@ -146,9 +147,12 @@ class PlayState extends MusicBeatState
 		camHUD.bgColor.alpha = 0;
 
 		FlxG.cameras.reset(camGame);
-		FlxG.cameras.add(camHUD);
+		FlxG.cameras.add(camHUD, false);
 
-		FlxCamera.defaultCameras = [camGame];
+		grpNoteSplashes = new FlxTypedGroup<NoteSplash>();
+		var splash:NoteSplash = new NoteSplash(100, 100, 0);
+		grpNoteSplashes.add(splash);
+		splash.alpha = 0.1;
 
 		persistentUpdate = true;
 		persistentDraw = true;
@@ -1787,7 +1791,7 @@ class PlayState extends MusicBeatState
 
 	var endingSong:Bool = false;
 
-	private function popUpScore(strumtime:Float):Void
+	private function popUpScore(strumtime:Float, daNote:Note):Void
 	{
 		var noteDiff:Float = Math.abs(strumtime - Conductor.songPosition);
 		// boyfriend.playAnim('hey');
@@ -1804,21 +1808,32 @@ class PlayState extends MusicBeatState
 		var score:Int = 350;
 
 		var daRating:String = "sick";
+		var setupSplash:Bool = true;
 
 		if (noteDiff > Conductor.safeZoneOffset * 0.9)
 		{
 			daRating = 'shit';
 			score = 50;
+			setupSplash = false;
 		}
 		else if (noteDiff > Conductor.safeZoneOffset * 0.75)
 		{
 			daRating = 'bad';
 			score = 100;
+			setupSplash = false;
 		}
 		else if (noteDiff > Conductor.safeZoneOffset * 0.2)
 		{
 			daRating = 'good';
 			score = 200;
+			setupSplash = false;
+		}
+
+		if (setupSplash)
+		{
+			var splash:NoteSplash = grpNoteSplashes.recycle(NoteSplash);
+			splash.setupNoteSplash(daNote.x, daNote.y, daNote.noteData);
+			grpNoteSplashes.add(splash);
 		}
 
 		songScore += score;
