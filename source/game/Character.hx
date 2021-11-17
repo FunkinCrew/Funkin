@@ -548,11 +548,7 @@ class Character extends FlxSprite
 		
 		var offsets:Array<String>;
 
-		#if sys
-		offsets = CoolUtil.coolTextFilePolymod(Paths.txt("character data/" + characterName + "/" + "offsets"));
-		#else
 		offsets = CoolUtil.coolTextFile(Paths.txt("character data/" + characterName + "/" + "offsets"));
-		#end
 
 		for(x in 0...offsets.length)
 		{
