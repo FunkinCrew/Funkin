@@ -1,5 +1,6 @@
 package;
 
+import shaderslmfao.ColorSwap;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.math.FlxMath;
@@ -18,15 +19,17 @@ class Note extends FlxSprite
 	public var noteData:Int = 0;
 	public var canBeHit:Bool = false;
 	public var tooLate:Bool = false;
+	public var willMiss:Bool = false;
 	public var wasGoodHit:Bool = false;
 	public var prevNote:Note;
 
 	public var sustainLength:Float = 0;
 	public var isSustainNote:Bool = false;
 
-	public var noteScore:Float = 1;
-
+	var colorSwap:ColorSwap;
+	
 	public static var swagWidth:Float = 160 * 0.7;
+	public static var arrowColors = [1, 1, 1, 1];
 	public static var PURP_NOTE:Int = 0;
 	public static var GREEN_NOTE:Int = 2;
 	public static var BLUE_NOTE:Int = 1;
@@ -49,9 +52,7 @@ class Note extends FlxSprite
 
 		this.noteData = noteData;
 
-		var daStage:String = PlayState.curStage;
-
-		switch (daStage)
+		switch (PlayState.curStage)
 		{
 			case 'school' | 'schoolEvil':
 				loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels'), true, 17, 17);
@@ -82,10 +83,10 @@ class Note extends FlxSprite
 			default:
 				frames = Paths.getSparrowAtlas('NOTE_assets');
 
-				animation.addByPrefix('greenScroll', 'green0');
-				animation.addByPrefix('redScroll', 'red0');
-				animation.addByPrefix('blueScroll', 'blue0');
-				animation.addByPrefix('purpleScroll', 'purple0');
+				animation.addByPrefix('greenScroll', 'green instance');
+				animation.addByPrefix('redScroll', 'red instance');
+				animation.addByPrefix('blueScroll', 'blue instance');
+				animation.addByPrefix('purpleScroll', 'purple instance');
 
 				animation.addByPrefix('purpleholdend', 'pruple end hold');
 				animation.addByPrefix('greenholdend', 'green hold end');
@@ -101,6 +102,10 @@ class Note extends FlxSprite
 				updateHitbox();
 				antialiasing = true;
 		}
+
+		colorSwap = new ColorSwap();
+		shader = colorSwap.shader;
+		updateColors();
 
 		switch (noteData)
 		{
@@ -122,21 +127,25 @@ class Note extends FlxSprite
 
 		if (isSustainNote && prevNote != null)
 		{
-			noteScore * 0.2;
 			alpha = 0.6;
+
+			if (PreferencesMenu.getPref('downscroll'))
+			{
+				angle = 180;
+			}
 
 			x += width / 2;
 
 			switch (noteData)
 			{
+				case 0:
+					animation.play('purpleholdend');
+				case 1:
+					animation.play('blueholdend');
 				case 2:
 					animation.play('greenholdend');
 				case 3:
 					animation.play('redholdend');
-				case 1:
-					animation.play('blueholdend');
-				case 0:
-					animation.play('purpleholdend');
 			}
 
 			updateHitbox();
@@ -167,21 +176,34 @@ class Note extends FlxSprite
 		}
 	}
 
+	function updateColors()
+	{
+		colorSwap.update(arrowColors[noteData]);
+	}
+
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
 
 		if (mustPress)
 		{
-			// The * 0.5 is so that it's easier to hit them too late, instead of too early
-			if (strumTime > Conductor.songPosition - Conductor.safeZoneOffset
-				&& strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * 0.5))
-				canBeHit = true;
-			else
-				canBeHit = false;
-
-			if (strumTime < Conductor.songPosition - Conductor.safeZoneOffset && !wasGoodHit)
+			if (willMiss && !wasGoodHit)
+			{
 				tooLate = true;
+				canBeHit = false;
+			}
+			else
+			{
+				if (strumTime > Conductor.songPosition - Conductor.safeZoneOffset)
+				{
+					canBeHit = true;
+				}
+				else
+				{
+					willMiss = true;
+					canBeHit = true;
+				}
+			}
 		}
 		else
 		{
