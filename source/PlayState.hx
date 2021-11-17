@@ -697,6 +697,8 @@ class PlayState extends MusicBeatState
 		strumLineNotes = new FlxTypedGroup<FlxSprite>();
 		add(strumLineNotes);
 
+		add(grpNoteSplashes);
+
 		playerStrums = new FlxTypedGroup<FlxSprite>();
 
 		// startCountdown();
@@ -751,6 +753,7 @@ class PlayState extends MusicBeatState
 		iconP2.y = healthBar.y - (iconP2.height / 2);
 		add(iconP2);
 
+		grpNoteSplashes.cameras = [camHUD];
 		strumLineNotes.cameras = [camHUD];
 		notes.cameras = [camHUD];
 		healthBar.cameras = [camHUD];
@@ -1958,24 +1961,8 @@ class PlayState extends MusicBeatState
 
 	private function keyShit():Void
 	{
-		// HOLDING
-		var up = controls.NOTE_UP;
-		var right = controls.NOTE_RIGHT;
-		var down = controls.NOTE_DOWN;
-		var left = controls.NOTE_LEFT;
-
-		var upP = controls.NOTE_UP_P;
-		var rightP = controls.NOTE_RIGHT_P;
-		var downP = controls.NOTE_DOWN_P;
-		var leftP = controls.NOTE_LEFT_P;
-
-		var upR = controls.NOTE_UP_R;
-		var rightR = controls.NOTE_RIGHT_R;
-		var downR = controls.NOTE_DOWN_R;
-		var leftR = controls.NOTE_LEFT_R;
-
-		var controlArrayHolding:Array<Bool> = [left, down, up, right];
-		var controlArray:Array<Bool> = [leftP, downP, upP, rightP];
+		var controlArrayHolding:Array<Bool> = [controls.NOTE_LEFT, controls.NOTE_DOWN, controls.NOTE_UP, controls.NOTE_RIGHT];
+		var controlArray:Array<Bool> = [controls.NOTE_LEFT_P, controls.NOTE_DOWN_P, controls.NOTE_UP_P, controls.NOTE_RIGHT_P];
 
 		// FlxG.watch.addQuick('asdfa', upP);
 		if (controlArrayHolding.indexOf(true) != -1 && generatedMusic)
@@ -1985,7 +1972,9 @@ class PlayState extends MusicBeatState
 				if (daNote.isSustainNote && daNote.canBeHit && daNote.mustPress && controlArrayHolding[daNote.noteData])
 					goodNoteHit(daNote);
 			});
-
+		}
+		if (controlArray.indexOf(true) != -1 && generatedMusic)
+		{
 			boyfriend.holdTimer = 0;
 
 			var possibleNotes:Array<Note> = [];
@@ -2043,7 +2032,7 @@ class PlayState extends MusicBeatState
 			{
 				for (i in 0...controlArray.length)
 				{
-					if (controlArray[i] && ignoreList.indexOf(i) != -1)
+					if (controlArray[i] && ignoreList.indexOf(i) == -1)
 					{
 						badNoteHit();
 					}
