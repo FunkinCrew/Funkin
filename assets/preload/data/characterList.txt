@@ -16,7 +16,3 @@ gf-pixel:default
 senpai:default
 senpai-angry:default
 spirit:default
-tankman:week7
-gf-tankmen:week7
-pico-speaker:week7
-bf-holding-gf:week7
