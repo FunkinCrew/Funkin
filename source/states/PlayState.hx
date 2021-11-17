@@ -2479,10 +2479,9 @@ class PlayState extends MusicBeatState
 				missValues = true;
 
 			if(missValues)
-			{
 				misses++;
-				totalNotes++;
-			}
+
+			totalNotes++;
 
 			missSounds[FlxG.random.int(0, missSounds.length - 1)].play(true);
 
