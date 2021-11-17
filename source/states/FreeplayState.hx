@@ -445,6 +445,9 @@ class FreeplayState extends MusicBeatState
 			{
 				Highscore.resetSong(songs[curSelected].songName, curDiffString);
 				intendedScore = 0;
+
+				curRank = "N/A";
+				diffText.text = "< " + curDiffString + " - " + curRank + " >";
 			}
 		}
 	}
