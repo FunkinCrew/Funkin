@@ -72,47 +72,50 @@ class MenuTypedList extends FlxTypedGroup<MainMenuItem>
 	public override function update(elapsed:Float)
 	{
 		super.update(elapsed);
-		var b, c, d, e, f, g;
-		switch (wrapMode)
+		if (enabled && !busy)
 		{
-			case Horizontal | Both:
-				b = true;
-			default:
-				b = false;
+			var b, c, d, e, f, g;
+			switch (wrapMode)
+			{
+				case Horizontal | Both:
+					b = true;
+				default:
+					b = false;
+			}
+			switch (wrapMode)
+			{
+				case Vertical | Both:
+					c = true;
+				default:
+					c = false;
+			}
+			d = navControls;
+			switch (d)
+			{
+				case Horizontal:
+					e = PlayerSettings.player1.controls.UI_LEFT_P;
+					f = PlayerSettings.player1.controls.UI_RIGHT_P;
+					g = navAxis(selectedIndex, length, e, f, b);
+				case Vertical:
+					e = PlayerSettings.player1.controls.UI_UP_P;
+					f = PlayerSettings.player1.controls.UI_DOWN_P;
+					g = navAxis(selectedIndex, length, e, f, c);
+				case Both:
+					e = PlayerSettings.player1.controls.UI_LEFT_P || PlayerSettings.player1.controls.UI_UP_P;
+					f = PlayerSettings.player1.controls.UI_RIGHT_P || PlayerSettings.player1.controls.UI_DOWN_P;
+					g = navAxis(selectedIndex, length, e, f, wrapMode != None);
+				case None:
+					g = navGrid(3, PlayerSettings.player1.controls.UI_LEFT_P, PlayerSettings.player1.controls.UI_RIGHT_P, b, PlayerSettings.player1.controls.UI_UP_P, PlayerSettings.player1.controls.UI_DOWN_P, c);
+				default:
+					g = navGrid(4, PlayerSettings.player1.controls.UI_UP_P, PlayerSettings.player1.controls.UI_DOWN_P, c, PlayerSettings.player1.controls.UI_LEFT_P, PlayerSettings.player1.controls.UI_RIGHT_P, b);
+			}
+			if (g != selectedIndex)
+			{
+				FlxG.sound.play(Paths.sound("scrollMenu"));
+				selectItem(g);
+			}
+			if (PlayerSettings.player1.controls.ACCEPT) accept();
 		}
-		switch (wrapMode)
-		{
-			case Vertical | Both:
-				c = true;
-			default:
-				c = false;
-		}
-		d = navControls;
-		switch (d)
-		{
-			case Horizontal:
-				e = PlayerSettings.player1.controls.UI_LEFT_P;
-				f = PlayerSettings.player1.controls.UI_RIGHT_P;
-				g = navAxis(selectedIndex, length, e, f, b);
-			case Vertical:
-				e = PlayerSettings.player1.controls.UI_UP_P;
-				f = PlayerSettings.player1.controls.UI_DOWN_P;
-				g = navAxis(selectedIndex, length, e, f, c);
-			case Both:
-				e = PlayerSettings.player1.controls.UI_LEFT_P || PlayerSettings.player1.controls.UI_UP_P;
-				f = PlayerSettings.player1.controls.UI_RIGHT_P || PlayerSettings.player1.controls.UI_DOWN_P;
-				g = navAxis(selectedIndex, length, e, f, wrapMode != None);
-			case None:
-				g = navGrid(3, PlayerSettings.player1.controls.UI_LEFT_P, PlayerSettings.player1.controls.UI_RIGHT_P, b, PlayerSettings.player1.controls.UI_UP_P, PlayerSettings.player1.controls.UI_DOWN_P, c);
-			default:
-				g = navGrid(4, PlayerSettings.player1.controls.UI_UP_P, PlayerSettings.player1.controls.UI_DOWN_P, c, PlayerSettings.player1.controls.UI_LEFT_P, PlayerSettings.player1.controls.UI_RIGHT_P, b);
-		}
-		if (g != selectedIndex)
-		{
-			FlxG.sound.play(Paths.sound("scrollMenu"));
-			selectItem(g);
-		}
-		if (PlayerSettings.player1.controls.ACCEPT) accept();
 	}
 
 	function navAxis(a, b, c, d, e)
