@@ -2,11 +2,15 @@
 All notable changes will be documented in this file.
 
 ## [0.3.9] - ?/?/????
+### Added
+- RESET to reset score on freeplay and story weeks
 ### Fixed
 - Note Animations displaying at 30 FPS instead of 24 FPS.
 - Fixed input glitch where stacked notes would make the notes ahead of them just dissappear.
+- Fixed charting bug where hit sounds for P1 would play on P2 side.
 ### Changed
 - Better visibilty for Note Splashes.
+- Sustain notes now count towards accuracy (not the misses counter).
 
 ## [0.3.8] - 11/12/2021
 ### Fixed
