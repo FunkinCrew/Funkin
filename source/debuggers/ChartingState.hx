@@ -880,7 +880,7 @@ class ChartingState extends MusicBeatState
 						{
 							claps.push(note);
 							
-							if(note.rawNoteData <= _song.keyCount && _song.notes[curSection].mustHitSection || note.rawNoteData >= _song.keyCount && !_song.notes[curSection].mustHitSection)
+							if(note.rawNoteData % (_song.keyCount * 2) < _song.keyCount && _song.notes[curSection].mustHitSection || note.rawNoteData % (_song.keyCount * 2) >= _song.keyCount && !_song.notes[curSection].mustHitSection)
 								FlxG.sound.play(Paths.sound('CLAP', 'preload'));
 							else
 								FlxG.sound.play(Paths.sound('SNAP', 'preload'));
