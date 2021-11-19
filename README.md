@@ -83,35 +83,40 @@ To run it from your desktop (Windows, Mac, Linux) it can be a bit more involved.
 Once that is done you can open up a command line in the project's directory and run `lime test windows -debug`. Once that command finishes (it takes forever even on a higher end PC), you can run FNF from the .exe file under export\release\windows\bin
 As for Mac, 'lime test mac -debug' should work, if not the internet surely has a guide on how to compile Haxe stuff for Mac.
 
-### FNF now supports [VSCode Devcontainers](https://code.visualstudio.com/docs/remote/containers)
+### Using [VSCode Dev Containers](https://code.visualstudio.com/docs/remote/containers)
 
-There are some VSCode task created for compiling and running HTML5 versions of FNF inside a devcontainer
+Provided inside of the repository are some VS Code tasks created for compiling and running HTML5 builds inside of a development container.
 
 ### Compiling HTML5 version using Docker
 
-Run this commands:
+Run these commands:
 
 ```bash
 docker build -f .devcontainer/Dockerfile -t fnf:mine .
 docker run --name compile_fnf --rm -v <FULL PATH TO YOUR FNF REPO>:/fnf fnf:mine
 ```
 
-If you want to build a HTML5 debug version add `-debug` at the end of docker command
+To compile a debug HTML5 build, append `-debug` to the end of the `docker run` command.
 
-```bash
-docker run --name compile_fnf --rm -v <FULL PATH TO YOUR FNF REPO>:/fnf fnf:mine -debug
-```
-
-To run the thing that you just compiled, you need to serve `export/[debug|release]/bin` with an HTTP server, being `python` the easiest
-
+In order to play the HTML5 version that you compiled, is needed a HTTP Server capable to serve the files of the game.
+Those files are located on the `export/[debug|release]/bin` directory.
+One option is to use `python`, which includes an HTTP Server.
+Here is an example to run a release version using Python 3 (don't forget to replace <port>, e.g 8080):
 ```bash
 # Python version is 3.X
-python -m http.server 8080
-# Python version is 2.X
-python -m SimpleHTTPServer 8080
+cd export/release/bin
+python -m http.server <port>
 ```
 
-Then go to localhost:8080 in your browser to play FNF!!!
+Here is an example to run a release version using Python 2 (don't forget to replace <port>, e.g 8080):
+
+```bash
+# Python version is 2.X
+cd export/release/bin
+python -m SimpleHTTPServer <port>
+```
+
+Visit localhost:<port> (or 127.0.0.1:<port>) in your browser to run the game hosted locally on your machine.
 
 ### Additional guides
 

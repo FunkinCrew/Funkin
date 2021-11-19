@@ -1,11 +1,13 @@
 {
-"build": { "dockerfile": "Dockerfile" },
-"forwardPorts": [
-	8080
-],
-"extensions": [
-	"nadako.vshaxe",
-	"ms-azuretools.vscode-docker",
-	"openfl.lime-vscode-extension"
-]
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "forwardPorts": [
+    8080
+  ],
+  "extensions": [
+    "nadako.vshaxe",
+    "ms-azuretools.vscode-docker",
+    "openfl.lime-vscode-extension"
+  ]
 }
