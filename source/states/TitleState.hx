@@ -1,5 +1,9 @@
 package states;
 
+#if discord_rpc
+import utilities.Discord.DiscordClient;
+#end
+
 import flixel.system.FlxVersion;
 import substates.OutdatedSubState;
 import openfl.Lib;
@@ -12,12 +16,6 @@ import game.Conductor;
 import game.Highscore;
 import utilities.PlayerSettings;
 import ui.Alphabet;
-#if desktop
-import utilities.Discord.DiscordClient;
-import sys.thread.Thread;
-import polymod.Polymod;
-import sys.FileSystem;
-#end
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
