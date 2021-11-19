@@ -12,7 +12,7 @@ This is the repository for Leather Engine, an engine created for making and play
 
 ### IMPORTANT:
 
-IF YOU GET ANY ERRORS THAT SEEM TO RELATE TO `POLYMOD` (or `NULL OBJECT REFERENCE` / `VALUE EXCEPTION`) RUN `haxelib git polymod https://github.com/larsiusprime/polymod.git` OR `haxelib update polymod` TO UPDATE POLYMOD (ERRORS USUALLY CAUSED BY OLDER VERSIONS).
+IF YOU GET ANY ERRORS THAT SEEM TO RELATE TO `POLYMOD` (or `NULL OBJECT REFERENCE` / `VALUE EXCEPTION`) RUN `haxelib install polymod` OR `haxelib update polymod` TO UPDATE POLYMOD (ERRORS USUALLY CAUSED BY OLDER VERSIONS).
 
 For build intructions go to [Build.md](https://github.com/Leather128/LeathersFunkinEngine/blob/master/Build.md)
 
