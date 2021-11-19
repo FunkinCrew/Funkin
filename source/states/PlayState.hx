@@ -2011,7 +2011,7 @@ class PlayState extends MusicBeatState
 		// health switch case
 		switch(daRating)
 		{
-			case 'sick':
+			case 'sick' | 'marvelous':
 				health += 0.035;
 			case 'good':
 				health += 0.015;
@@ -2025,7 +2025,7 @@ class PlayState extends MusicBeatState
 				combo = 0;
 		}
 
-		if(daRating == "sick")
+		if(daRating == "sick" || daRating == "marvelous")
 			hitNoteAmount = 1;
 		else if(daRating == "good")
 			hitNoteAmount = 0.8;
@@ -2034,7 +2034,7 @@ class PlayState extends MusicBeatState
 
 		hitNotes += hitNoteAmount;
 
-		if (daRating == "sick" && FlxG.save.data.noteSplashes)
+		if (daRating == "sick" || daRating == "marvelous" && FlxG.save.data.noteSplashes)
 		{
 			playerStrums.forEachAlive(function(spr:FlxSprite) {
 				if(spr.ID == Math.abs(noteData))

@@ -4,6 +4,7 @@ All notable changes will be documented in this file.
 ## [0.3.9] - ?/?/????
 ### Added
 - RESET to reset score on freeplay and story weeks
+- Marvelous Rating (currently just a rainbow sick).
 ### Fixed
 - Note Animations displaying at 30 FPS instead of 24 FPS.
 - Fixed input glitch where stacked notes would make the notes ahead of them just dissappear.

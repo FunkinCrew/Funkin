@@ -48,7 +48,7 @@ class OptionsMenu extends MusicBeatState
 			new PageOption("Back", 0, "Categories"),
 			new ControlMenuSubStateOption("Binds", 1),
 			new SongOffsetOption("Song Offset", 2),
-			new JudgementMenuOption("Judgement Timings", 2),
+			new PageOption("Judgements", 3, "Judgements"),
 			new InputModeOption("Input Mode", ["standard", "rhythm"], FlxG.save.data.inputMode, 3),
 			new BoolOption("Anti Mash", "antiMash", FlxG.save.data.antiMash, 4),
 			new BoolOption("Ghost Tapping", "ghostTapping", FlxG.save.data.ghostTapping, 9),
@@ -104,6 +104,12 @@ class OptionsMenu extends MusicBeatState
 			new BoolOption("FPS Counter", "fpsCounter", FlxG.save.data.fpsCounter, 3),
 			new BoolOption("Memory Counter", "memoryCounter", FlxG.save.data.memoryCounter, 4),
 			new BoolOption("Version Display", "versionDisplay", FlxG.save.data.versionDisplay, 4)
+		],
+		[
+			"Judgements",
+			new PageOption("Back", 0, "Gameplay"),
+			new JudgementMenuOption("Timings", 1),
+			new BoolOption("Marvelous Ratings", "marvelousRatings", FlxG.save.data.marvelousRatings, 2)
 		]
 	];
 

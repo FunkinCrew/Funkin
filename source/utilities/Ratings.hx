@@ -7,6 +7,7 @@ import flixel.FlxG;
 class Ratings
 {
     private static var scores:Array<Dynamic> = [
+        ['marvelous', 400],
         ['sick', 350],
         ['good', 200],
         ['bad', 50],
@@ -18,18 +19,22 @@ class Ratings
         var judges = FlxG.save.data.judgementTimings;
 
         var timings:Array<Array<Dynamic>> = [
-            [judges[0], "sick"],
-            [judges[1], "good"],
-            [judges[2], "bad"]
+            [judges[0], "marvelous"],
+            [judges[1], "sick"],
+            [judges[2], "good"],
+            [judges[3], "bad"]
         ];
 
         var rating:String = 'bruh';
 
         for(x in timings)
         {
-            if(time <= x[0] * PlayState.songMultiplier && rating == 'bruh')
+            if(x[1] == "marvelous" && FlxG.save.data.marvelousRatings || x[1] != "marvelous")
             {
-                rating = x[1];
+                if(time <= x[0] * PlayState.songMultiplier && rating == 'bruh')
+                {
+                    rating = x[1];
+                }
             }
         }
 
@@ -44,16 +49,17 @@ class Ratings
         switch(name.toLowerCase())
         {
             case "leather engine":
-                return [50, 70, 100];
+                return [25, 50, 70, 100];
             case "psych engine":
-                return [Std.int(Conductor.safeZoneOffset * 0.25), Std.int(Conductor.safeZoneOffset * 0.5), Std.int(Conductor.safeZoneOffset * 0.75)];
+                return [Std.int(Conductor.safeZoneOffset * 0.125), Std.int(Conductor.safeZoneOffset * 0.25), Std.int(Conductor.safeZoneOffset * 0.5), Std.int(Conductor.safeZoneOffset * 0.75)];
             case "kade engine":
-                return [45, 90, 135];
+                /* 22.5 but rounded */
+                return [23, 45, 90, 135];
             case "friday night funkin'":
-                return [Std.int(Conductor.safeZoneOffset * 0.2), Std.int(Conductor.safeZoneOffset * 0.75), Std.int(Conductor.safeZoneOffset * 0.9)];
+                return [Std.int(Conductor.safeZoneOffset * 0.1), Std.int(Conductor.safeZoneOffset * 0.2), Std.int(Conductor.safeZoneOffset * 0.75), Std.int(Conductor.safeZoneOffset * 0.9)];
         }
 
-        return [50, 70, 100];
+        return [25, 50, 70, 100];
     }
 
     public static function getRank(accuracy:Float, ?misses:Int)

@@ -93,11 +93,14 @@ class SaveData {
         if(FlxG.save.data.inputMode == null)
             FlxG.save.data.inputMode = "standard";
 
-        if(FlxG.save.data.judgementTimings == null)
-            FlxG.save.data.judgementTimings = [50, 70, 100];
+        if(FlxG.save.data.judgementTimings == null || FlxG.save.data.judgementTimings.length < 4)
+            FlxG.save.data.judgementTimings = [25, 50, 70, 100];
 
         if(FlxG.save.data.antiMash == null)
             FlxG.save.data.antiMash = true;
+
+        if(FlxG.save.data.marvelousRatings == null)
+            FlxG.save.data.marvelousRatings = true;
         
         FlxG.save.flush();
 

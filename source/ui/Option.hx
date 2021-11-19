@@ -146,6 +146,8 @@ class BoolOption extends Option
 				Value = FlxG.save.data.bigNoteSplashes;
 			case "ghostTapping":
 				Value = FlxG.save.data.ghostTapping;
+			case "marvelousRatings":
+				Value = FlxG.save.data.marvelousRatings;
 		}
 
 		return Value;
@@ -228,6 +230,8 @@ class BoolOption extends Option
 				FlxG.save.data.bigNoteSplashes = !Option_Checked;
 			case "ghostTapping":
 				FlxG.save.data.ghostTapping = !Option_Checked;
+			case "marvelousRatings":
+				FlxG.save.data.marvelousRatings = !Option_Checked;
 		}
 
         if(Option_Value != "muted")

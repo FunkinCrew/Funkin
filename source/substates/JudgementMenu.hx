@@ -25,7 +25,7 @@ class JudgementMenu extends MusicBeatSubstate
 
     var preset_Selected:Int = 0;
 
-    var judgementText:FlxText = new FlxText(0,0,0,"Preset: Leather Engine\nSICK: 50ms\nGOOD: 70ms\nBAD: 100ms\n",48).setFormat(Paths.font("vcr.ttf"), 48, FlxColor.WHITE, CENTER, OUTLINE, FlxColor.BLACK);
+    var judgementText:FlxText = new FlxText(0,0,0,"Preset: Leather Engine\nMARVELOUS: 25ms\nSICK: 50ms\nGOOD: 70ms\nBAD: 100ms\n",48).setFormat(Paths.font("vcr.ttf"), 48, FlxColor.WHITE, CENTER, OUTLINE, FlxColor.BLACK);
 
     var selected:Int = 0;
 
@@ -73,7 +73,7 @@ class JudgementMenu extends MusicBeatSubstate
 
             if(selected < 0)
                 selected = 3;
-            if(selected > 3)
+            if(selected > (FlxG.save.data.marvelousRatings ? 4 : 3))
                 selected = 0;
         }
 
@@ -135,9 +135,10 @@ class JudgementMenu extends MusicBeatSubstate
     {
         judgementText.text = (
             "Preset: " + preset + (selected == 0 ? " <\n" : "\n") +
-            "SICK: " + Std.string(judgements[0]) + "ms" + (selected == 1 ? " <\n" : "\n") +
-            "GOOD: " + Std.string(judgements[1]) + "ms" + (selected == 2 ? " <\n" : "\n") +
-            "BAD: " + Std.string(judgements[2]) + "ms" + (selected == 3 ? " <\n" : "\n") +
+            (FlxG.save.data.marvelousRatings ? "MARVELOUS: " + Std.string(judgements[0]) + "ms" + (selected == 1 ? " <\n" : "\n") : "") +
+            "SICK: " + Std.string(judgements[1]) + "ms" + (selected == (FlxG.save.data.marvelousRatings ? 2 : 1) ? " <\n" : "\n") +
+            "GOOD: " + Std.string(judgements[2]) + "ms" + (selected == (FlxG.save.data.marvelousRatings ? 3 : 2) ? " <\n" : "\n") +
+            "BAD: " + Std.string(judgements[3]) + "ms" + (selected == (FlxG.save.data.marvelousRatings ? 4 : 3) ? " <\n" : "\n") +
             "\n"
         );
 
