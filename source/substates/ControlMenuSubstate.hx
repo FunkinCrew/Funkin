@@ -1,5 +1,6 @@
 package substates;
 
+import lime.utils.Assets;
 import utilities.PlayerSettings;
 import openfl.events.FullScreenEvent;
 import flixel.text.FlxText;
@@ -58,9 +59,16 @@ class ControlMenuSubstate extends MusicBeatSubstate
 
         FlxTween.tween(bg, {alpha: 0.5}, 1, {ease: FlxEase.circOut, startDelay: 0});
 
+        #if sys
         create_Arrows();
-
         add(arrow_Group);
+        #else
+        Assets.loadLibrary("shared").onComplete(function (_) {
+            create_Arrows();
+            add(arrow_Group);
+        });
+        #end
+        
         add(text_Group);
         add(coolText);
 
@@ -118,101 +126,104 @@ class ControlMenuSubstate extends MusicBeatSubstate
         var back = controls.BACK;
         var shift = FlxG.keys.pressed.SHIFT;
 
-        if(reset && shift)
+        if(arrow_Group != null)
         {
-            binds = NoteVariables.Default_Binds;
-            fullscreenBind = "F11";
-            killBind = "R";
-        }
-        
-        if(back)
-        {
-            FlxG.save.data.binds = this.binds;
-            FlxG.save.data.fullscreenBind = fullscreenBind;
-            FlxG.save.data.killBind = killBind;
-
-            FlxG.save.flush();
-            PlayerSettings.player1.controls.loadKeyBinds();
-
-            this.binds = FlxG.save.data.binds;
-
-            FlxG.mouse.visible = false;
-            FlxG.state.closeSubState();
-        }
-
-        if(FlxG.mouse.overlaps(fullscreenKey) && FlxG.mouse.justPressed && !selectingStuff)
-        {
-            selectedControl = -1;
-            selectingStuff = true;
-        }
-        else if(FlxG.mouse.overlaps(fullscreenKey))
-            fullscreenKey.color = FlxColor.GRAY;
-        else
-            fullscreenKey.color = FlxColor.WHITE;
-
-        if(FlxG.mouse.overlaps(killKey) && FlxG.mouse.justPressed && !selectingStuff)
-        {
-            selectedControl = -2;
-            selectingStuff = true;
-        }
-        else if(FlxG.mouse.overlaps(killKey))
-            killKey.color = FlxColor.GRAY;
-        else
-            killKey.color = FlxColor.WHITE;
-
-        for(x in arrow_Group)
-        {
-            if(FlxG.mouse.overlaps(x) && FlxG.mouse.justPressed && !selectingStuff)
+            if(reset && shift)
             {
-                selectedControl = x.ID;
+                binds = NoteVariables.Default_Binds;
+                fullscreenBind = "F11";
+                killBind = "R";
+            }
+            
+            if(back)
+            {
+                FlxG.save.data.binds = this.binds;
+                FlxG.save.data.fullscreenBind = fullscreenBind;
+                FlxG.save.data.killBind = killBind;
+    
+                FlxG.save.flush();
+                PlayerSettings.player1.controls.loadKeyBinds();
+    
+                this.binds = FlxG.save.data.binds;
+    
+                FlxG.mouse.visible = false;
+                FlxG.state.closeSubState();
+            }
+    
+            if(FlxG.mouse.overlaps(fullscreenKey) && FlxG.mouse.justPressed && !selectingStuff)
+            {
+                selectedControl = -1;
                 selectingStuff = true;
             }
-
-            if(FlxG.mouse.overlaps(x) || x.ID == selectedControl && selectingStuff)
-                x.color = FlxColor.GRAY;
+            else if(FlxG.mouse.overlaps(fullscreenKey))
+                fullscreenKey.color = FlxColor.GRAY;
             else
-                x.color = FlxColor.WHITE;
-        }
-
-        if(selectingStuff && FlxG.keys.justPressed.ANY)
-        {
-            var curKey = FlxG.keys.getIsDown()[0].ID.toString();
-
-            if(selectedControl > -1)
-                this.binds[key_Count - 1][selectedControl] = curKey;
-            else
+                fullscreenKey.color = FlxColor.WHITE;
+    
+            if(FlxG.mouse.overlaps(killKey) && FlxG.mouse.justPressed && !selectingStuff)
             {
-                switch(selectedControl)
+                selectedControl = -2;
+                selectingStuff = true;
+            }
+            else if(FlxG.mouse.overlaps(killKey))
+                killKey.color = FlxColor.GRAY;
+            else
+                killKey.color = FlxColor.WHITE;
+    
+            for(x in arrow_Group)
+            {
+                if(FlxG.mouse.overlaps(x) && FlxG.mouse.justPressed && !selectingStuff)
                 {
-                    case -1:
-                        fullscreenBind = curKey;
-                    case -2:
-                        killBind = curKey;
+                    selectedControl = x.ID;
+                    selectingStuff = true;
+                }
+    
+                if(FlxG.mouse.overlaps(x) || x.ID == selectedControl && selectingStuff)
+                    x.color = FlxColor.GRAY;
+                else
+                    x.color = FlxColor.WHITE;
+            }
+    
+            if(selectingStuff && FlxG.keys.justPressed.ANY)
+            {
+                var curKey = FlxG.keys.getIsDown()[0].ID.toString();
+    
+                if(selectedControl > -1)
+                    this.binds[key_Count - 1][selectedControl] = curKey;
+                else
+                {
+                    switch(selectedControl)
+                    {
+                        case -1:
+                            fullscreenBind = curKey;
+                        case -2:
+                            killBind = curKey;
+                    }
                 }
             }
+    
+            if(!selectingStuff && (leftP || rightP))
+            {
+                if(leftP)
+                    key_Count -= 1;
+    
+                if(rightP)
+                    key_Count += 1;
+    
+                if(key_Count < 1)
+                    key_Count = 1;
+    
+                if(key_Count > 18)
+                    key_Count = 18;
+    
+                create_Arrows();
+            }
+    
+            if(selectingStuff && FlxG.keys.justPressed.ANY)
+                selectingStuff = false;
+    
+            update_Text();
         }
-
-        if(!selectingStuff && (leftP || rightP))
-        {
-            if(leftP)
-                key_Count -= 1;
-
-            if(rightP)
-                key_Count += 1;
-
-            if(key_Count < 1)
-                key_Count = 1;
-
-            if(key_Count > 18)
-                key_Count = 18;
-
-            create_Arrows();
-        }
-
-        if(selectingStuff && FlxG.keys.justPressed.ANY)
-            selectingStuff = false;
-
-        update_Text();
     }
 
     function update_Text()

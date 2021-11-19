@@ -1,5 +1,6 @@
 package substates;
 
+import states.LoadingState;
 import flixel.graphics.frames.FlxAtlasFrames;
 import lime.utils.Assets;
 import flixel.text.FlxText;
@@ -19,13 +20,8 @@ class UISkinSelect extends MusicBeatSubstate
     var arrow_Group:FlxTypedGroup<FlxSprite> = new FlxTypedGroup<FlxSprite>();
     var ui_Skin:String = FlxG.save.data.uiSkin;
 
-    #if sys
-	public var ui_Settings:Array<String> = CoolUtil.coolTextFilePolymod(Paths.txt("ui skins/" + FlxG.save.data.uiSkin + "/config"));
-    public var ui_Skins:Array<String> = CoolUtil.coolTextFilePolymod(Paths.txt("uiSkinList"));
-	#else
-	public var ui_Settings:Array<String> = CoolUtil.coolTextFile(Paths.txt("ui skins/" + FlxG.save.data.uiSkin + "/config"));
+    public var ui_Settings:Array<String> = CoolUtil.coolTextFile(Paths.txt("ui skins/" + FlxG.save.data.uiSkin + "/config"));
     public var ui_Skins:Array<String> = CoolUtil.coolTextFile(Paths.txt("uiSkinList"));
-	#end
 
     var current_UI_Skin:FlxText;
     var bg:FlxSprite;
@@ -50,11 +46,23 @@ class UISkinSelect extends MusicBeatSubstate
 
         FlxTween.tween(bg, {alpha: 0.5}, 1, {ease: FlxEase.circOut, startDelay: 0});
 
+        #if sys
         create_Arrows();
 
         add(arrow_Group);
 
         curSelected = ui_Skins.indexOf(ui_Skin);
+        #else
+        leaving = true;
+
+        Assets.loadLibrary("shared").onComplete(function (_) {
+            leaving = false;
+
+            create_Arrows();
+            add(arrow_Group);
+            curSelected = ui_Skins.indexOf(ui_Skin);
+        });
+        #end
     }
 
     override function update(elapsed:Float) {
@@ -86,7 +94,7 @@ class UISkinSelect extends MusicBeatSubstate
             });
         }
 
-        if(left || right)
+        if(left || right && !leaving)
         {
             if(left)
                 curSelected--;
@@ -106,17 +114,13 @@ class UISkinSelect extends MusicBeatSubstate
             current_UI_Skin.text = "Selected Skin: > " + ui_Skin + " <";
         }
 
-        if(accepted)
+        if(accepted && !leaving)
             FlxG.save.data.uiSkin = ui_Skin;
     }
 
     function create_Arrows(?new_Key_Count = 4)
     {
-        #if sys
-        ui_Settings = CoolUtil.coolTextFilePolymod(Paths.txt("ui skins/" + ui_Skin + "/config"));
-        #else
         ui_Settings = CoolUtil.coolTextFile(Paths.txt("ui skins/" + ui_Skin + "/config"));
-        #end
 
         if(new_Key_Count != null)
             key_Count = new_Key_Count;

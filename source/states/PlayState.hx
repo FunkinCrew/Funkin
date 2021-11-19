@@ -53,6 +53,7 @@ import utilities.CoolUtil;
 import substates.PauseSubState;
 import substates.GameOverSubstate;
 import game.Highscore;
+import openfl.utils.Assets as OpenFlAssets;
 
 #if desktop
 import utilities.Discord.DiscordClient;
@@ -233,6 +234,10 @@ class PlayState extends MusicBeatState
 
 		if (SONG == null)
 			SONG = Song.loadFromJson('tutorial');
+
+		#if !sys
+		songMultiplier = 1;
+		#end
 
 		Conductor.mapBPMChanges(SONG, songMultiplier);
 		Conductor.changeBPM(SONG.bpm, songMultiplier);
@@ -731,7 +736,7 @@ class PlayState extends MusicBeatState
 		#if BIT_64
 		#if VIDEOS_ALLOWED
 		var foundFile:Bool = false;
-		var fileName:String = Sys.getCwd() + PolymodAssets.getPath(Paths.video(name, ext));
+		var fileName:String = #if sys Sys.getCwd() + PolymodAssets.getPath(Paths.video(name, ext)) #else Paths.video(name, ext) #end;
 
 		#if sys
 		if(FileSystem.exists(fileName)) {

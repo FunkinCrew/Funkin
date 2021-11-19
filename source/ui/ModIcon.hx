@@ -1,6 +1,6 @@
 package ui;
 
-#if polymod
+#if sys
 import sys.io.File;
 import openfl.display.BitmapData;
 import flixel.FlxSprite;

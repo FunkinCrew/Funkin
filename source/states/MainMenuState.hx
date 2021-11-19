@@ -188,8 +188,10 @@ class MainMenuState extends MusicBeatState
 									FlxTransitionableState.skipNextTransOut = true;
 									FlxG.switchState(new OptionsMenu());
 
+								#if sys
 								case 'mods':
 									FlxG.switchState(new ModsMenu());
+								#end
 							}
 						});
 					}

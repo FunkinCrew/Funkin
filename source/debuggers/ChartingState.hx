@@ -480,7 +480,7 @@ class ChartingState extends MusicBeatState
 		});
 
 		// dropdown lmao
-		var arrow_Types = CoolUtil.coolTextFilePolymod(Paths.txt("arrowTypes"));
+		var arrow_Types = CoolUtil.coolTextFile(Paths.txt("arrowTypes"));
 
 		var typeDropDown = new FlxUIDropDownMenuCustom(setCharacterLeftSide.x, setCharacterLeftSide.y + setCharacterLeftSide.height, FlxUIDropDownMenuCustom.makeStrIdLabelArray(arrow_Types, true), function(type:String)
 		{

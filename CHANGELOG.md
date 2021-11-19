@@ -5,6 +5,7 @@ All notable changes will be documented in this file.
 ### Added
 - RESET to reset score on freeplay and story weeks
 - Marvelous Rating (currently just a rainbow sick).
+- HTML5 Support is back!
 ### Fixed
 - Note Animations displaying at 30 FPS instead of 24 FPS.
 - Fixed input glitch where stacked notes would make the notes ahead of them just dissappear.

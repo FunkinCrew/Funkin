@@ -19,6 +19,7 @@ import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import lime.utils.Assets;
+import flixel.tweens.FlxEase; 
 
 using StringTools;
 
@@ -247,10 +248,19 @@ class FreeplayState extends MusicBeatState
 
 		curSpeed = FlxMath.roundDecimal(curSpeed, 2);
 
+		#if !sys
+		curSpeed = 1;
+		#end
+
 		if(curSpeed < 0.5)
 			curSpeed = 0.5;
 
+		#if sys
 		speedText.text = "Speed: " + curSpeed + " (R)";
+		#else
+		speedText.text = "";
+		#end
+
 		speedText.x = scoreText.x + (scoreText.width / 2) - (speedText.width / 2);
 
 		var leftP = controls.LEFT_P;

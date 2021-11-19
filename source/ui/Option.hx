@@ -1,8 +1,11 @@
 package ui;
 
+#if discord_rpc
+import utilities.Discord.DiscordClient;
+#end
+
 import substates.JudgementMenu;
 import substates.MaxFPSMenu;
-import utilities.Discord.DiscordClient;
 import polymod.Polymod.ModMetadata;
 import modding.ModList;
 import substates.SongOffsetMenu;
@@ -204,6 +207,7 @@ class BoolOption extends Option
 				FlxG.save.data.middleScroll = !Option_Checked;
 			case "noteSplashes":
 				FlxG.save.data.noteSplashes  = !Option_Checked;
+			#if discord_rpc
 			case "discordRPC":
 				FlxG.save.data.discordRPC = !Option_Checked;
 
@@ -211,6 +215,7 @@ class BoolOption extends Option
 					DiscordClient.initialize();
 				else if(!FlxG.save.data.discordRPC && DiscordClient.active)
 					DiscordClient.shutdown();
+			#end
 			case "quickRestart":
 				FlxG.save.data.quickRestart = !Option_Checked;
 			case "optimizations":

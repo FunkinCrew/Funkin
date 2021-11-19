@@ -97,11 +97,11 @@ class Note extends FlxSprite
 		if(!PlayState.instance.arrow_Configs.exists(arrow_Type))
 		{
 			if(PlayState.instance.types.contains(arrow_Type))
-				PlayState.instance.arrow_Configs.set(arrow_Type, CoolUtil.coolTextFilePolymod(Paths.txt("ui skins/" + song.ui_Skin + "/" + arrow_Type)));
+				PlayState.instance.arrow_Configs.set(arrow_Type, CoolUtil.coolTextFile(Paths.txt("ui skins/" + song.ui_Skin + "/" + arrow_Type)));
 			else
-				PlayState.instance.arrow_Configs.set(arrow_Type, CoolUtil.coolTextFilePolymod(Paths.txt("ui skins/default/" + arrow_Type)));
+				PlayState.instance.arrow_Configs.set(arrow_Type, CoolUtil.coolTextFile(Paths.txt("ui skins/default/" + arrow_Type)));
 
-			PlayState.instance.type_Configs.set(arrow_Type, CoolUtil.coolTextFilePolymod(Paths.txt("arrow types/" + arrow_Type)));
+			PlayState.instance.type_Configs.set(arrow_Type, CoolUtil.coolTextFile(Paths.txt("arrow types/" + arrow_Type)));
 		}
 
 		offset.y += Std.parseFloat(PlayState.instance.arrow_Configs.get(arrow_Type)[0]) * lmaoStuff;

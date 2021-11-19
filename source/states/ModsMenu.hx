@@ -1,7 +1,7 @@
 package states;
 
+#if sys
 import ui.ModIcon;
-#if polymod
 import modding.ModList;
 import modding.PolymodHandler;
 import substates.UISkinSelect;

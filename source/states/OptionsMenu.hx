@@ -85,7 +85,9 @@ class OptionsMenu extends MusicBeatState
 			new BoolOption("Friday-Night Title Music", "nightMusic", FlxG.save.data.nightMusic, 2),
 			new BoolOption("Watermarks", "watermarks", FlxG.save.data.watermarks, 3),
 			new BoolOption("Freeplay Music", "freeplayMusic", FlxG.save.data.freeplayMusic, 4),
+			#if discord_rpc
 			new BoolOption("Discord RPC", "discordRPC", FlxG.save.data.discordRPC, 5),
+			#end
 			new CutsceneOption("Cutscenes Play On", ["story","freeplay","both"], FlxG.save.data.cutscenePlays, 6)
 		],
 		[
