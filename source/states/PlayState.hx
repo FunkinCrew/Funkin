@@ -3,11 +3,13 @@ package states;
 #if sys
 import sys.FileSystem;
 #end
-import game.StrumNote;
-import game.Cutscene;
+
 #if BIT_64
 import modding.FlxVideo;
 #end
+
+import game.StrumNote;
+import game.Cutscene;
 import game.NoteSplash;
 import flixel.graphics.frames.FlxFramesCollection;
 import flixel.tweens.misc.VarTween;
@@ -16,9 +18,7 @@ import lime.app.Application;
 import utilities.NoteVariables;
 import flixel.input.FlxInput.FlxInputState;
 import utilities.NoteHandler;
-import modding.ModdingSound;
 import flixel.group.FlxGroup;
-import utilities.Difficulties;
 import utilities.Ratings;
 import debuggers.ChartingState;
 import game.Section.SwagSection;
@@ -41,10 +41,8 @@ import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 import flixel.util.FlxSort;
 import flixel.util.FlxTimer;
-import lime.utils.Assets;
 import game.Note;
 import ui.HealthIcon;
-import effects.WiggleEffect;
 import ui.DialogueBox;
 import game.Character;
 import game.Boyfriend;
@@ -55,7 +53,6 @@ import utilities.CoolUtil;
 import substates.PauseSubState;
 import substates.GameOverSubstate;
 import game.Highscore;
-import modding.CharacterConfig;
 
 #if desktop
 import utilities.Discord.DiscordClient;
@@ -128,8 +125,6 @@ class PlayState extends MusicBeatState
 	public var gfVersion:String = 'gf';
 
 	var dialogue:Array<String> = ['blah blah blah', 'coolswag'];
-
-	var wiggleShit:WiggleEffect = new WiggleEffect();
 
 	var talking:Bool = true;
 	var songScore:Int = 0;
@@ -2605,8 +2600,6 @@ class PlayState extends MusicBeatState
 				}
 			}
 		}
-		// FlxG.log.add('change bpm' + SONG.notes[Std.int(curStep / 16)].changeBPM);
-		wiggleShit.update(Conductor.crochet);
 
 		if (camZooming && FlxG.camera.zoom < 1.35 && curBeat % 4 == 0)
 		{

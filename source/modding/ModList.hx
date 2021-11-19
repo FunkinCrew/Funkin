@@ -6,11 +6,7 @@ import flixel.FlxG;
 
 class ModList
 {
-	#if (haxe >= "4.0.0")
-	public static var modList:Map<String, Bool> = new Map();
-	#else
 	public static var modList:Map<String, Bool> = new Map<String, Bool>();
-	#end
 
     public static var modMetadatas:Map<String, ModMetadata> = new Map();
 

@@ -1,30 +1,17 @@
 package states;
 
-import utilities.Difficulties;
-import flixel.graphics.frames.FlxFramesCollection;
-import lime.app.Application;
-import utilities.CoolUtil;
-import haxe.macro.Expr.Var;
-import lime.utils.Assets;
-
-#if sys
-import sys.FileSystem;
-import sys.io.File;
-import polymod.backends.PolymodAssets;
-#end
-
 #if discord_rpc
 import utilities.Discord.DiscordClient;
 #end
 
+import lime.app.Application;
+import utilities.CoolUtil;
+import lime.utils.Assets;
 import haxe.Json;
 import ui.MenuCharacter;
 import ui.MenuItem;
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.addons.transition.FlxTransitionableState;
-import flixel.graphics.frames.FlxAtlasFrames;
-import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxGroup;
 import flixel.math.FlxMath;
 import flixel.text.FlxText;

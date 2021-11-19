@@ -4,7 +4,6 @@ import game.Character;
 import modding.CharacterConfig;
 import ui.FlxUIDropDownMenuCustom;
 import lime.tools.AssetType;
-import utilities.Difficulties;
 import game.Song;
 import states.LoadingState;
 import utilities.CoolUtil;
@@ -1562,7 +1561,6 @@ class ChartingState extends MusicBeatState
 		if(diff != 'normal')
 			songT = songT + '-' + diff.toLowerCase();
 
-		PlayState.storyDifficulty = Difficulties.stringToNum(diff.toLowerCase());
 		PlayState.storyDifficultyStr = diff;
 		PlayState.SONG = Song.loadFromJson(songT.toLowerCase(), song.toLowerCase());
 

@@ -27,7 +27,6 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import lime.utils.Assets;
 import ui.Alphabet;
-import ui.ControlsBox;
 import game.Song;
 import debuggers.StageMakingState;
 import game.Highscore;

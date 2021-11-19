@@ -1,7 +1,6 @@
 package substates;
 
 import game.Note;
-import utilities.Difficulties;
 import states.FreeplayState;
 import states.StoryMenuState;
 import states.LoadingState;
