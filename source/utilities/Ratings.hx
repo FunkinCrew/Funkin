@@ -68,6 +68,7 @@ class Ratings
         var conditions:Array<Bool> = [
             accuracy == 100, // FC
             accuracy >= 98, // SSS
+            accuracy >= 95, // SS
             accuracy >= 92, // S
             accuracy >= 89, // AA
             accuracy >= 85, // A
@@ -105,24 +106,26 @@ class Ratings
                     case 1:
                         return missesRating + "SSS";
                     case 2:
-                        return missesRating + "S";
+                        return missesRating + "SS";
                     case 3:
-                        return missesRating + "AA";
+                        return missesRating + "S";
                     case 4:
-                        return missesRating + "A";
+                        return missesRating + "AA";
                     case 5:
-                        return missesRating + "B+";
+                        return missesRating + "A";
                     case 6:
-                        return missesRating + "B";
+                        return missesRating + "B+";
                     case 7:
-                        return missesRating + "C";
+                        return missesRating + "B";
                     case 8:
-                        return missesRating + "D";
+                        return missesRating + "C";
                     case 9:
-                        return missesRating + "E";
+                        return missesRating + "D";
                     case 10:
-                        return missesRating + "F";
+                        return missesRating + "E";
                     case 11:
+                        return missesRating + "F";
+                    case 12:
                         return missesRating + "G";
                 }
             }
@@ -178,6 +181,8 @@ class Ratings
                         return SSSS;
                     case "SSS":
                         return SSS;
+                    case "SS":
+                        return SS;
                     case "S":
                         return S;
                     case "AA":
@@ -211,6 +216,7 @@ enum SongRank
     FC;
     SSSS;
     SSS;
+    SS;
     S;
     AA;
     A;
