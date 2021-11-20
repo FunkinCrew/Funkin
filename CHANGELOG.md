@@ -8,6 +8,7 @@ All notable changes will be documented in this file.
 - HTML5 Support is back!
 - Value to change damage of held notes in arrow types.
 - Held Notes for Death and Caution Notes.
+- Song Time Bar.
 ### Fixed
 - Note Animations displaying at 30 FPS instead of 24 FPS.
 - Fixed input glitch where stacked notes would make the notes ahead of them just dissappear.
