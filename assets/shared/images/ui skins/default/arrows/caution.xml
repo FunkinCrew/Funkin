@@ -29,4 +29,66 @@
 		<SubTexture name="rdown20000" x="0" y="0" width="154" height="154"/>
 		<SubTexture name="rup20000" x="0" y="0" width="154" height="154"/>
 		<SubTexture name="rright20000" x="0" y="0" width="154" height="154"/>
+
+		<!-- REG HELD-->
+		<!-- SET 1 -->
+
+		<SubTexture name="left hold0000" x="52" y="155" width="50" height="44"/>
+		<SubTexture name="down hold0000" x="52" y="155" width="50" height="44"/>
+		<SubTexture name="up hold0000" x="52" y="155" width="50" height="44"/>
+		<SubTexture name="right hold0000" x="52" y="155" width="50" height="44"/>
+	
+		<SubTexture name="square hold0000" x="52" y="155" width="50" height="44"/>
+	
+		<!-- SET 2 -->
+	
+		<SubTexture name="left2 hold0000" x="52" y="155" width="50" height="44"/>
+		<SubTexture name="down2 hold0000" x="52" y="155" width="50" height="44"/>
+		<SubTexture name="up2 hold0000" x="52" y="155" width="50" height="44"/>
+		<SubTexture name="right2 hold0000" x="52" y="155" width="50" height="44"/>
+	
+		<SubTexture name="plus hold0000" x="52" y="155" width="50" height="44"/>
+	
+		<!-- SET 3 -->
+	
+		<SubTexture name="rleft hold0000" x="52" y="155" width="50" height="44"/>
+		<SubTexture name="rdown hold0000" x="52" y="155" width="50" height="44"/>
+		<SubTexture name="rup hold0000" x="52" y="155" width="50" height="44"/>
+		<SubTexture name="rright hold0000" x="52" y="155" width="50" height="44"/>
+	
+		<SubTexture name="rleft2 hold0000" x="52" y="155" width="50" height="44"/>
+		<SubTexture name="rdown2 hold0000" x="52" y="155" width="50" height="44"/>
+		<SubTexture name="rup2 hold0000" x="52" y="155" width="50" height="44"/>
+		<SubTexture name="rright2 hold0000" x="52" y="155" width="50" height="44"/>
+
+		<!-- HELD ENDS-->
+		<!-- SET 1 -->
+
+		<SubTexture name="left hold end0000" x="1" y="155" width="50" height="64"/>
+		<SubTexture name="down hold end0000" x="1" y="155" width="50" height="64"/>
+		<SubTexture name="up hold end0000" x="1" y="155" width="50" height="64"/>
+		<SubTexture name="right hold end0000" x="1" y="155" width="50" height="64"/>
+	
+		<SubTexture name="square hold end0000" x="1" y="155" width="50" height="64"/>
+	
+		<!-- SET 2 -->
+	
+		<SubTexture name="left2 hold end0000" x="1" y="155" width="50" height="64"/>
+		<SubTexture name="down2 hold end0000" x="1" y="155" width="50" height="64"/>
+		<SubTexture name="up2 hold end0000" x="1" y="155" width="50" height="64"/>
+		<SubTexture name="right2 hold end0000" x="1" y="155" width="50" height="64"/>
+	
+		<SubTexture name="plus hold end0000" x="1" y="155" width="50" height="64"/>
+	
+		<!-- SET 3 -->
+	
+		<SubTexture name="rleft hold end0000" x="1" y="155" width="50" height="64"/>
+		<SubTexture name="rdown hold end0000" x="1" y="155" width="50" height="64"/>
+		<SubTexture name="rup hold end0000" x="1" y="155" width="50" height="64"/>
+		<SubTexture name="rright hold end0000" x="1" y="155" width="50" height="64"/>
+	
+		<SubTexture name="rleft2 hold end0000" x="1" y="155" width="50" height="64"/>
+		<SubTexture name="rdown2 hold end0000" x="1" y="155" width="50" height="64"/>
+		<SubTexture name="rup2 hold end0000" x="1" y="155" width="50" height="64"/>
+		<SubTexture name="rright2 hold end0000" x="1" y="155" width="50" height="64"/>
 </TextureAtlas>

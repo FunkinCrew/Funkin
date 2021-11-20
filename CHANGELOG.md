@@ -6,6 +6,8 @@ All notable changes will be documented in this file.
 - RESET to reset score on freeplay and story weeks
 - Marvelous Rating (currently just a rainbow sick).
 - HTML5 Support is back!
+- Value to change damage of held notes in arrow types.
+- Held Notes for Death and Caution Notes.
 ### Fixed
 - Note Animations displaying at 30 FPS instead of 24 FPS.
 - Fixed input glitch where stacked notes would make the notes ahead of them just dissappear.
@@ -13,6 +15,7 @@ All notable changes will be documented in this file.
 ### Changed
 - Better visibilty for Note Splashes.
 - Sustain notes now count towards accuracy (not the misses counter).
+- Caution Notes now insta-kill player.
 
 ## [0.3.8] - 11/12/2021
 ### Fixed

@@ -48,6 +48,7 @@ class Note extends FlxSprite
 	public var shouldHit:Bool = true;
 	public var hitDamage:Float = 0.0;
 	public var missDamage:Float = 0.07;
+	public var heldMissDamage:Float = 0.035;
 
 	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?character:Int = 0, ?arrowType:String = "default", ?song:SwagSong)
 	{
@@ -109,6 +110,9 @@ class Note extends FlxSprite
 		shouldHit = PlayState.instance.type_Configs.get(arrow_Type)[0] == "true";
 		hitDamage = Std.parseFloat(PlayState.instance.type_Configs.get(arrow_Type)[1]);
 		missDamage = Std.parseFloat(PlayState.instance.type_Configs.get(arrow_Type)[2]);
+		
+		if(PlayState.instance.type_Configs.get(arrow_Type)[3] != null)
+			heldMissDamage = Std.parseFloat(PlayState.instance.type_Configs.get(arrow_Type)[3]);
 
 		if (FlxG.save.data.downscroll && sustainNote) 
 			flipY = true;

@@ -2458,7 +2458,7 @@ class PlayState extends MusicBeatState
 				if(!note.isSustainNote)
 					health -= note.missDamage;
 				else
-					health -= 0.035;
+					health -= note.heldMissDamage;
 			}
 			else
 				health -= Std.parseFloat(type_Configs.get("default")[2]);
@@ -2503,23 +2503,20 @@ class PlayState extends MusicBeatState
 	{
 		if (!note.wasGoodHit)
 		{
-			if (!note.isSustainNote)
+			if(note.shouldHit && !note.isSustainNote)
 			{
-				if(note.shouldHit)
-				{
-					popUpScore(note.strumTime, note.noteData % SONG.keyCount);
-					combo += 1;
-				}
-				else
-				{
-					health -= note.hitDamage;
-					misses++;
-					missSounds[FlxG.random.int(0, missSounds.length - 1)].play(true);
-				}
+				popUpScore(note.strumTime, note.noteData % SONG.keyCount);
+				combo += 1;
+			}
+			else if(!note.shouldHit)
+			{
+				health -= note.hitDamage;
+				misses++;
+				missSounds[FlxG.random.int(0, missSounds.length - 1)].play(true);
+			}
 
+			if(!note.isSustainNote)
 				totalNotes++;
-			} else if(note.shouldHit)
-				health += 0.035;
 
 			if(boyfriend.otherCharacters != null)
 				boyfriend.otherCharacters[note.character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][Std.int(Math.abs(note.noteData))], true);
