@@ -45,7 +45,7 @@ class Conductor
 
 	public static function recalculateStuff(?multi:Float = 1)
 	{
-		safeZoneOffset = Math.floor((safeFrames / 60) * 1000);
+		safeZoneOffset = Math.floor((safeFrames / 60) * 1000) * multi;
 
 		crochet = ((60 / bpm) * 1000);
 		stepCrochet = crochet / (16 / timeScale[1]);

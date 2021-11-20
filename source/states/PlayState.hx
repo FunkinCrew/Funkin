@@ -244,11 +244,11 @@ class PlayState extends MusicBeatState
 		songMultiplier = 1;
 		#end
 
-		Conductor.mapBPMChanges(SONG, songMultiplier);
-		Conductor.changeBPM(SONG.bpm, songMultiplier);
-
 		if(songMultiplier < 0.5)
 			songMultiplier = 0.5;
+
+		Conductor.mapBPMChanges(SONG, songMultiplier);
+		Conductor.changeBPM(SONG.bpm, songMultiplier);
 
 		previousScrollSpeedLmao = SONG.speed;
 
@@ -1043,8 +1043,6 @@ class PlayState extends MusicBeatState
 
 		// NEW SHIT
 		noteData = songData.notes;
-
-		var playerCounter:Int = 0;
 
 		var daBeats:Int = 0; // Not exactly representative of 'daBeats' lol, just how much it has looped
 
@@ -2377,9 +2375,7 @@ class PlayState extends MusicBeatState
 				
 				notes.forEachAlive(function(daNote:Note)
 				{
-					if ((daNote.strumTime > (Conductor.songPosition - (Conductor.safeZoneOffset * 1.5))
-						&& daNote.strumTime < (Conductor.songPosition + (Conductor.safeZoneOffset * 0.5)))
-					&& daNote.mustPress && daNote.isSustainNote)
+					if(daNote.strumTime <= Conductor.songPosition && daNote.mustPress && daNote.isSustainNote)
 						if(heldArray[daNote.noteData] && !thingsHit[daNote.noteData])
 						{
 							if(boyfriend.otherCharacters == null)
