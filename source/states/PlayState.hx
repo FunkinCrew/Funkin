@@ -113,6 +113,9 @@ class PlayState extends MusicBeatState
 	private var healthBarBG:FlxSprite;
 	private var healthBar:FlxBar;
 
+	private var timeBarBG:FlxSprite;
+	private var timeBar:FlxBar;
+
 	private var generatedMusic:Bool = false;
 	private var startingSong:Bool = false;
 
@@ -199,6 +202,8 @@ class PlayState extends MusicBeatState
 	var cutscene:Cutscene;
 
 	public static var fromPauseMenu:Bool = false;
+
+	var time:Float = 0.0;
 
 	override public function create()
 	{
@@ -530,12 +535,31 @@ class PlayState extends MusicBeatState
 		scoreTxt.scrollFactor.set();
 		add(scoreTxt);
 
+		timeBarBG = new FlxSprite(0, healthBarPosY).loadGraphic(Paths.image('ui skins/' + SONG.ui_Skin + '/other/healthBar', 'shared'));
+		timeBarBG.screenCenter(X);
+		timeBarBG.scrollFactor.set();
+		timeBarBG.pixelPerfectPosition = true;
+		
+		if(FlxG.save.data.downscroll)
+			timeBarBG.y = FlxG.height - (timeBarBG.height + 1);
+		else
+			timeBarBG.y = 0;
+		
+		add(timeBarBG);
+		
+		timeBar = new FlxBar(timeBarBG.x + 4, timeBarBG.y + 4, LEFT_TO_RIGHT, Std.int(timeBarBG.width - 8), Std.int(timeBarBG.height - 8), this,
+			'time', 0, FlxG.sound.music.length);
+		timeBar.scrollFactor.set();
+		timeBar.createFilledBar(FlxColor.BLACK, FlxColor.CYAN);
+		timeBar.pixelPerfectPosition = true;
+		add(timeBar);
+
 		infoTxt = new FlxText(0, 0, 0, SONG.song + " - " + storyDifficultyStr + (FlxG.save.data.bot ? " (BOT)" : ""), 20);
 		infoTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		infoTxt.screenCenter(X);
 		
 		if(FlxG.save.data.downscroll)
-			infoTxt.y = FlxG.height - (infoTxt.height + 1);
+			infoTxt.y = timeBarBG.y - timeBarBG.height - 1;
 		else
 			infoTxt.y = 0;
 		
@@ -558,6 +582,9 @@ class PlayState extends MusicBeatState
 		iconP2.cameras = [camHUD];
 		scoreTxt.cameras = [camHUD];
 		infoTxt.cameras = [camHUD];
+
+		timeBar.cameras = [camHUD];
+		timeBarBG.cameras = [camHUD];
 
 		startingSong = true;
 
@@ -1343,12 +1370,18 @@ class PlayState extends MusicBeatState
 				// Song ends abruptly on slow rate even with second condition being deleted, 
 				// and if it's deleted on songs like cocoa then it would end without finishing instrumental fully,
 				// so no reason to delete it at all
-				if (FlxG.sound.music.length - Conductor.songPosition <= 100)
+				if (FlxG.sound.music.length - Conductor.songPosition <= 20)
 				{
+					time = FlxG.sound.music.length;
 					endSong();
 				}
 			}
 		}
+
+		if(!endingSong)
+			time = FlxG.sound.music.time;
+		else
+			time = FlxG.sound.music.length;
 
 		FlxG.camera.followLerp = 0.04 * (60 / Main.display.currentFPS);
 
