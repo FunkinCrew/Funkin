@@ -256,7 +256,7 @@ class FreeplayState extends MusicBeatState
 			curSpeed = 0.5;
 
 		#if sys
-		speedText.text = "Speed: " + curSpeed + " (R)";
+		speedText.text = "Speed: " + curSpeed + " (R+SHIFT)";
 		#else
 		speedText.text = "";
 		#end
@@ -313,7 +313,7 @@ class FreeplayState extends MusicBeatState
 				#end
 			}
 
-			if(FlxG.keys.justPressed.R)
+			if(FlxG.keys.justPressed.R  && shift)
 			{
 				curSpeed = 1;
 
@@ -451,7 +451,7 @@ class FreeplayState extends MusicBeatState
 			#end
 			#end
 
-			if(controls.RESET)
+			if(controls.RESET && !shift)
 			{
 				Highscore.resetSong(songs[curSelected].songName, curDiffString);
 				intendedScore = 0;
