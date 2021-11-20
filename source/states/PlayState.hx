@@ -543,7 +543,7 @@ class PlayState extends MusicBeatState
 		if(FlxG.save.data.downscroll)
 			timeBarBG.y = FlxG.height - (timeBarBG.height + 1);
 		else
-			timeBarBG.y = 0;
+			timeBarBG.y = 1;
 		
 		add(timeBarBG);
 		
@@ -561,7 +561,7 @@ class PlayState extends MusicBeatState
 		if(FlxG.save.data.downscroll)
 			infoTxt.y = timeBarBG.y - timeBarBG.height - 1;
 		else
-			infoTxt.y = 0;
+			infoTxt.y = timeBarBG.y + timeBarBG.height + 1;
 		
 		infoTxt.scrollFactor.set();
 		add(infoTxt);
@@ -1711,7 +1711,7 @@ class PlayState extends MusicBeatState
 						{
 							// Clip to strumline
 							var swagRect = new FlxRect(0, 0, daNote.frameWidth * 2, daNote.frameHeight * 2);
-							swagRect.height = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y + Note.swagWidth / 2 - daNote.y) / daNote.scale.y;
+							swagRect.height = (coolStrum.y + (coolStrum.width / 2) - daNote.y) / daNote.scale.y;
 							swagRect.y = daNote.frameHeight - swagRect.height;
 
 							daNote.clipRect = swagRect;
