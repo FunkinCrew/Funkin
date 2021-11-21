@@ -2375,9 +2375,11 @@ class PlayState extends MusicBeatState
 				
 				notes.forEachAlive(function(daNote:Note)
 				{
-					if ((daNote.strumTime > (Conductor.songPosition - (Conductor.safeZoneOffset * 1.5))
-						&& daNote.strumTime < (Conductor.songPosition + (Conductor.safeZoneOffset * 0.5)))
-					&& daNote.mustPress && daNote.isSustainNote)
+					if(heldArray[daNote.noteData])
+					{
+						if ((daNote.strumTime > (Conductor.songPosition - (Conductor.safeZoneOffset * 1.5))
+							&& daNote.strumTime < (Conductor.songPosition + (Conductor.safeZoneOffset * 0.5)))
+						&& daNote.mustPress && daNote.isSustainNote && !thingsHit[daNote.noteData])
 						{
 							if(boyfriend.otherCharacters == null)
 								boyfriend.holdTimer = 0;
@@ -2387,6 +2389,7 @@ class PlayState extends MusicBeatState
 							goodNoteHit(daNote);
 							thingsHit[daNote.noteData] = true;
 						}
+					}
 				});
 			}
 	
