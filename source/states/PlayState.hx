@@ -2375,10 +2375,9 @@ class PlayState extends MusicBeatState
 				
 				notes.forEachAlive(function(daNote:Note)
 				{
-					if(daNote.strumTime <= Conductor.songPosition && daNote.mustPress && daNote.isSustainNote)
-						if ((daNote.strumTime > (Conductor.songPosition - (Conductor.safeZoneOffset * 1.5))
-							&& daNote.strumTime < (Conductor.songPosition + (Conductor.safeZoneOffset * 0.5)))
-						&& daNote.mustPress && daNote.isSustainNote)
+					if ((daNote.strumTime > (Conductor.songPosition - (Conductor.safeZoneOffset * 1.5))
+						&& daNote.strumTime < (Conductor.songPosition + (Conductor.safeZoneOffset * 0.5)))
+					&& daNote.mustPress && daNote.isSustainNote)
 						{
 							if(boyfriend.otherCharacters == null)
 								boyfriend.holdTimer = 0;
