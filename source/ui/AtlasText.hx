@@ -1,5 +1,6 @@
 package ui;
 
+import haxe.ds.EnumValueMap;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 
@@ -20,15 +21,94 @@ enum Case
 
 class AtlasText extends FlxTypedSpriteGroup<Dynamic>
 {
-	public var text:String = '';
+	public static var fonts:EnumValueMap<AtlasFont, AtlasFontData>;
 
-	override public function new(a = 0, b = 0, c, d = Default)
+	public var text:String = '';
+	public var font:AtlasFontData;
+
+	override public function new(x:Float = 0, y:Float = 0, text:String, fontType:AtlasFont = Default)
 	{
-		if (fonts.exists(d))
-			fonts.set(d, new AtlasFontData(Case.createByIndex(d.getIndex())));
-		font = fonts.get(d);
-		super(a, b);
-		set_text(c);
+		if (fonts.exists(fontType))
+			fonts.set(fontType, new AtlasFontData(Case.createByIndex(fontType.getIndex())));
+		font = fonts.get(fontType);
+		super(x, y);
+		set_text(text);
+	}
+
+	public function set_text(text:String = '')
+	{
+		var b:String = restrictCase(text);
+		var c:String = restrictCase(this.text);
+		this.text = text;
+		if (b == c) return text;
+		if (b.indexOf(c) == 0)
+		{
+			appendTextCased(b.substr(c.length));
+			return this.text;
+		}
+		if (b == '') return this.text;
+		appendTextCased(b);
+		return this.text;
+	}
+
+	public function restrictCase(text:String)
+	{
+		switch (font.caseAllowed)
+		{
+			case Both:
+				return text;
+			case Upper:
+				return text.toUpperCase();
+			case Lower:
+				return text.toLowerCase(); 
+		}
+	}
+
+	public function appendTextCased(text:String)
+	{
+		var b = group.countLiving();
+		var c:Float = 0;
+		var d:Dynamic = 0;
+		if (b == -1)
+		{
+			b = 0;
+		}
+		else if (b > 0)
+		{
+			d = group.members[b - 1];
+			c = d.x + d.width - x;
+			d = d.y + d.height - font.maxHeight - y;
+		}
+		var split = text.split('');
+		var k;
+		for (char in 0...split.length)
+		{
+			switch (split[char])
+			{
+				case '\n':
+					c = 0;
+					d += font.maxHeight;
+				case ' ':
+					c += 40;
+				default:
+					if (group.members.length <= b)
+					{
+						k = new AtlasChar(null, null, font.atlas, split[char]);
+					}
+					else
+					{
+						k = group.members[b];
+						k.revive();
+						k.set_char(split[char]);
+						k.set_alpha(1);
+					}
+					k.set_x(c);
+					k.set_y(d + font.maxHeight - k.height);
+					add(k);
+					c += k.width;
+					++b;
+			}
+		}
 	}
 }
 
