@@ -39,7 +39,6 @@ Other installations you'd need are the additional libraries, a fully updated lis
 haxelib install hscript
 haxelib install newgrounds
 haxelib install polymod
-
 ```
 
 You'll also need to install a couple things that involve Gits. To do this, you need to do a few things first.
