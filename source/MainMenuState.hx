@@ -5,6 +5,7 @@ import flixel.FlxState;
 import ui.MenuTypedList;
 import ui.AtlasMenuItem;
 import ui.OptionsState;
+import ui.PreferencesMenu;
 #if desktop
 import Discord.DiscordClient;
 #end

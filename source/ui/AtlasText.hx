@@ -13,9 +13,9 @@ enum AtlasFont
 
 enum Case
 {
-	Both
-	Upper
-	Lower
+	Both;
+	Upper;
+	Lower;
 }
 
 class AtlasText extends FlxTypedSpriteGroup<Dynamic>

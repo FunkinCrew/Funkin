@@ -1,5 +1,6 @@
 package;
 
+import ui.PreferencesMenu;
 import shaderslmfao.BuildingShaders;
 import shaderslmfao.ColorSwap;
 #if desktop
