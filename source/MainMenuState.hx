@@ -4,6 +4,7 @@ import flixel.util.FlxTimer;
 import flixel.FlxState;
 import ui.MenuTypedList;
 import ui.AtlasMenuItem;
+import ui.OptionsState;
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -82,11 +83,11 @@ class MainMenuState extends MusicBeatState
 
 		menuItems = new MainMenuList();
 		add(menuItems);
-		menuItems.onChange = onMenuItemChange;
-		menuItems.onAcceptPress = function()
+		menuItems.onChange.add(onMenuItemChange);
+		menuItems.onAcceptPress.add(function(item:MainMenuItem)
 		{
 			FlxFlicker.flicker(magenta, 1.1, 0.15, false, true);
-		}
+		});
 		menuItems.enabled = false;
 		menuItems.createItem(0, 0, "story mode", function()
 		{

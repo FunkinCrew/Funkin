@@ -1,10 +1,11 @@
 package ui;
 
-import flixel.effects.FlxFlicker;
-import MainMenuState.MainMenuItem;
 import flixel.FlxG;
-import haxe.ds.StringMap;
+import flixel.effects.FlxFlicker;
 import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.util.FlxSignal;
+import haxe.ds.StringMap;
+import MainMenuState.MainMenuItem;
 
 enum MenuListDirection
 {
@@ -23,8 +24,8 @@ class MenuTypedList extends FlxTypedGroup<MainMenuItem>
 	public var selectedIndex:Int;
 	public var navControls:MenuListDirection;
 
-	public var onChange:Dynamic;
-	public var onAcceptPress:Dynamic;
+	public var onAcceptPress:FlxTypedSignal<MainMenuItem->Void>;
+	public var onChange:FlxTypedSignal<MainMenuItem->Void>;
 
 	public function new(dir:MenuListDirection = null, wrapDir:MenuListDirection = null)
 	{
@@ -33,6 +34,8 @@ class MenuTypedList extends FlxTypedGroup<MainMenuItem>
 		byName = new StringMap<MainMenuItem>();
 		wrapMode = Both;
 		enabled = true;
+		onAcceptPress = new FlxTypedSignal<MainMenuItem->Void>();
+		onChange = new FlxTypedSignal<MainMenuItem->Void>();
 		selectedIndex = 0;
 		navControls = dir;
 		if (wrapDir != null) wrapMode = wrapDir;
@@ -138,7 +141,7 @@ class MenuTypedList extends FlxTypedGroup<MainMenuItem>
 	public function accept()
 	{
 		var selected = members[selectedIndex];
-		if (onAcceptPress != null) onAcceptPress(selected);
+		onAcceptPress.dispatch(selected);
 		if (selected.fireInstantly)
 		{
 			selected.callback();
@@ -160,7 +163,7 @@ class MenuTypedList extends FlxTypedGroup<MainMenuItem>
 		members[selectedIndex].idle();
 		selectedIndex = index;
 		members[selectedIndex].select();
-		if (onChange != null) onChange(members[selectedIndex]);
+		onChange.dispatch(members[selectedIndex]);
 	}
 
 	public function has(name:String)
