@@ -3,6 +3,7 @@ package ui;
 import flixel.FlxG;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.util.FlxSignal;
+import flixel.util.FlxSignal.FlxTypedSignal;
 
 using StringTools;
 
@@ -11,12 +12,12 @@ class Page extends FlxTypedGroup<Dynamic>
 	var enabled:Bool = true;
 	var canExit:Bool = true;
 	public var onExit:FlxSignal;
-	public var onSwitch:FlxSignal;
+	public var onSwitch:FlxTypedSignal<PageName->Void>;
 
 	override public function new(MaxSize:Int = 0)
 	{
 		onExit = new FlxSignal();
-		onSwitch = new FlxSignal();
+		onSwitch = new FlxTypedSignal<PageName->Void>();
 		super(MaxSize);
 	}
 

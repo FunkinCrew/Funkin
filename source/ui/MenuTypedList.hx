@@ -5,57 +5,46 @@ import flixel.effects.FlxFlicker;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.util.FlxSignal;
 import haxe.ds.StringMap;
-import MainMenuState.MainMenuItem;
 
-enum MenuListDirection
-{
-	Horizontal;
-	Vertical;
-	Both;
-	None;
-}
-
-class MenuTypedList extends FlxTypedGroup<MainMenuItem>
+class MenuTypedList extends FlxTypedGroup<MenuItem>
 {
 	public var busy:Bool;
-	public var byName:StringMap<MainMenuItem>;
-	public var wrapMode:MenuListDirection;
+	public var byName:StringMap<MenuItem>;
+	public var wrapMode:WrapMode;
 	public var enabled:Bool;
 	public var selectedIndex:Int;
-	public var navControls:MenuListDirection;
+	public var navControls:NavControls;
 
-	public var onAcceptPress:FlxTypedSignal<MainMenuItem->Void>;
-	public var onChange:FlxTypedSignal<MainMenuItem->Void>;
+	public var onAcceptPress:FlxTypedSignal<MenuItem->Void>;
+	public var onChange:FlxTypedSignal<MenuItem->Void>;
 
-	public function new(dir:MenuListDirection = null, wrapDir:MenuListDirection = null)
+	public function new(dir:NavControls = Vertical, ?wrapDir:WrapMode)
 	{
-		if (dir == null) dir = Vertical;
 		busy = false;
-		byName = new StringMap<MainMenuItem>();
+		byName = new StringMap<MenuItem>();
 		wrapMode = Both;
 		enabled = true;
-		onAcceptPress = new FlxTypedSignal<MainMenuItem->Void>();
-		onChange = new FlxTypedSignal<MainMenuItem->Void>();
+		onAcceptPress = new FlxTypedSignal<MenuItem->Void>();
+		onChange = new FlxTypedSignal<MenuItem->Void>();
 		selectedIndex = 0;
 		navControls = dir;
 		if (wrapDir != null) wrapMode = wrapDir;
 		else
 		{
-			switch (dir)
+			switch (dir.getIndex())
 			{
-				case Horizontal:
-					dir = Horizontal;
-				case Vertical:
-					dir = Vertical;
+				case 0:
+					wrapMode = Horizontal;
+				case 1:
+					wrapMode = Vertical;
 				default:
-					dir = Both;
+					wrapMode = Both;
 			}
-			wrapMode = dir;
 		}
 		super();
 	}
 
-	public function addItem(name:String, item:MainMenuItem)
+	public function addItem(name:String, item:MenuItem)
 	{
 		if (length == selectedIndex) item.select();
 		byName.set(name, item);
@@ -107,10 +96,10 @@ class MenuTypedList extends FlxTypedGroup<MainMenuItem>
 					e = PlayerSettings.player1.controls.UI_LEFT_P || PlayerSettings.player1.controls.UI_UP_P;
 					f = PlayerSettings.player1.controls.UI_RIGHT_P || PlayerSettings.player1.controls.UI_DOWN_P;
 					g = navAxis(selectedIndex, length, e, f, wrapMode != None);
-				case None:
-					g = navGrid(3, PlayerSettings.player1.controls.UI_LEFT_P, PlayerSettings.player1.controls.UI_RIGHT_P, b, PlayerSettings.player1.controls.UI_UP_P, PlayerSettings.player1.controls.UI_DOWN_P, c);
-				default:
-					g = navGrid(4, PlayerSettings.player1.controls.UI_UP_P, PlayerSettings.player1.controls.UI_DOWN_P, c, PlayerSettings.player1.controls.UI_LEFT_P, PlayerSettings.player1.controls.UI_RIGHT_P, b);
+				case Columns:
+					g = navGrid(d.getIndex(), PlayerSettings.player1.controls.UI_LEFT_P, PlayerSettings.player1.controls.UI_RIGHT_P, b, PlayerSettings.player1.controls.UI_UP_P, PlayerSettings.player1.controls.UI_DOWN_P, c);
+				case Rows:
+					g = navGrid(d.getIndex(), PlayerSettings.player1.controls.UI_UP_P, PlayerSettings.player1.controls.UI_DOWN_P, c, PlayerSettings.player1.controls.UI_LEFT_P, PlayerSettings.player1.controls.UI_RIGHT_P, b);
 			}
 			if (g != selectedIndex)
 			{

@@ -4,9 +4,9 @@ using StringTools;
 
 class TextTypedMenuItem extends MenuTypedItem
 {
-	override public function new(a = 0, b = 0, c, d, e)
+	override public function new(x:Float = 0, y:Float = 0, c, d, e)
 	{
-		super(a, b, c, d, e);
+		super(x, y, c, d, e);
 	}
 
 	override public function setItem(a:String, b:Dynamic = null)

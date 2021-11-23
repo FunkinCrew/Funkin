@@ -6,15 +6,6 @@ import haxe.ds.EnumValueMap;
 
 using StringTools;
 
-enum PageName
-{
-	Options;
-	Controls;
-	Colors;
-	Mods;
-	Preferences;
-}
-
 class OptionsState extends MusicBeatState
 {
 	var currentName:PageName = Options;
@@ -58,12 +49,9 @@ class OptionsState extends MusicBeatState
 		super.create();
 	}
 
-	function addPage(name:PageName, menu:Page)
+	function addPage(name:PageName, menu:Dynamic)
 	{
-		menu.onSwitch.add(function ()
-		{
-			switchPage(name);
-		});
+		menu.onSwitch.add(switchPage);
 		pages.set(name, menu);
 		add(menu);
 		menu.exists = currentName == name;

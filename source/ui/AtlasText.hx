@@ -6,12 +6,6 @@ import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 
 using StringTools;
 
-enum AtlasFont
-{
-	Default;
-	Bold;
-}
-
 enum Case
 {
 	Both;
@@ -21,15 +15,15 @@ enum Case
 
 class AtlasText extends FlxTypedSpriteGroup<Dynamic>
 {
-	public static var fonts:EnumValueMap<AtlasFont, AtlasFontData>;
+	public static var fonts:EnumValueMap<AtlasFont, AtlasFontData> = new EnumValueMap<AtlasFont, AtlasFontData>();
 
 	public var text:String = '';
 	public var font:AtlasFontData;
 
 	override public function new(x:Float = 0, y:Float = 0, text:String, fontType:AtlasFont = Default)
 	{
-		if (fonts.exists(fontType))
-			fonts.set(fontType, new AtlasFontData(Case.createByIndex(fontType.getIndex())));
+		if (!fonts.exists(fontType))
+			fonts.set(fontType, new AtlasFontData(fontType));
 		font = fonts.get(fontType);
 		super(x, y);
 		set_text(text);
@@ -93,7 +87,7 @@ class AtlasText extends FlxTypedSpriteGroup<Dynamic>
 				default:
 					if (group.members.length <= b)
 					{
-						k = new AtlasChar(null, null, font.atlas, split[char]);
+						k = new AtlasChar(0, 0, font.atlas, split[char]);
 					}
 					else
 					{
@@ -117,12 +111,13 @@ class AtlasFontData
 	public var caseAllowed = Both;
 	public var maxHeight = 0;
 	public var atlas:FlxAtlasFrames;
-	public static var upperChar:Dynamic;
-	public static var lowerChar:Dynamic;
+	public static var upperChar = new EReg("^[A-Z]\\d+$","");
+	public static var lowerChar = new EReg("^[a-z]\\d+$","");
 	
-	public function new(a:Case)
+	public function new(font:AtlasFont)
 	{
-		atlas = Paths.getSparrowAtlas(a.getParameters()[0].toLowerCase());
+		var path = 'fonts/'+font.getName().toLowerCase();
+		atlas = Paths.getSparrowAtlas(path);
 		atlas.parent.destroyOnNoUse = false;
 		atlas.parent.persist = true;
 

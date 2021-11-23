@@ -2,6 +2,7 @@ package;
 
 import flixel.util.FlxTimer;
 import flixel.FlxState;
+import ui.MenuItem;
 import ui.MenuTypedList;
 import ui.AtlasMenuItem;
 import ui.OptionsState;
@@ -85,7 +86,7 @@ class MainMenuState extends MusicBeatState
 		menuItems = new MainMenuList();
 		add(menuItems);
 		menuItems.onChange.add(onMenuItemChange);
-		menuItems.onAcceptPress.add(function(item:MainMenuItem)
+		menuItems.onAcceptPress.add(function(item:MenuItem)
 		{
 			FlxFlicker.flicker(magenta, 1.1, 0.15, false, true);
 		});
@@ -135,7 +136,7 @@ class MainMenuState extends MusicBeatState
 		menuItems.enabled = true;
 	}
 
-	function onMenuItemChange(item:MainMenuItem)
+	function onMenuItemChange(item:MenuItem)
 	{
 		camFollow.setPosition(item.getGraphicMidpoint().x, item.getGraphicMidpoint().y);
 	}

@@ -4,26 +4,17 @@ import ui.MenuTypedList;
 
 using StringTools;
 
-enum AtlasFont
-{
-	Default;
-	Bold;
-}
-
 class TextMenuList extends MenuTypedList
 {
-	override public function new(a, b)
+	override public function new(dir:NavControls = Vertical, ?wrapDir:WrapMode)
 	{
-		if (a == null)
-			a = MenuListDirection.Vertical;
-		
-		super(a, b);
+		super(dir, wrapDir);
 	}
 
-	public function createItem(a = 0, b = 0, c, d = Bold, e, f = false)
+	public function createItem(x:Float = 0, y:Float = 0, text:String, font:AtlasFont = Bold, callback:Dynamic, fireInstantly = false)
 	{
-		var item = new TextMenuItem(a, b, c, d, e);
-		item.fireInstantly = f;
-		return this.addItem(c, item);
+		var item = new TextMenuItem(x, y, text, font, callback);
+		item.fireInstantly = fireInstantly;
+		return addItem(text, item);
 	}
 }
