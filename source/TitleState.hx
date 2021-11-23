@@ -29,6 +29,7 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import lime.app.Application;
 import openfl.Assets;
+import openfl.Lib;
 
 using StringTools;
 
@@ -137,7 +138,7 @@ class TitleState extends MusicBeatState
 	{
 		netStream.get_soundTransform().volume = .2;
 		netStream.get_soundTransform().pan = -1;
-		FlxG.stage.removeChild(overlay);
+		Lib.current.stage.removeChild(overlay);
 	}
 
 	var logoBl:FlxSprite;
