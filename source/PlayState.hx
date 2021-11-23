@@ -154,6 +154,205 @@ class PlayState extends MusicBeatState
 
 	override public function create()
 	{
+		initCameras();
+
+		persistentUpdate = true;
+		persistentDraw = true;
+
+		if (SONG == null)
+			SONG = Song.loadFromJson('tutorial');
+
+		Conductor.mapBPMChanges(SONG);
+		Conductor.changeBPM(SONG.bpm);
+
+		foregroundSprites = new FlxTypedGroup<BGSprite>();
+
+		// dialogue init shit, just for week 5 really (for now...?)
+		switch (SONG.song.toLowerCase())
+		{
+			case 'senpai':
+				dialogue = CoolUtil.coolTextFile(Paths.txt('senpai/senpaiDialogue'));
+			case 'roses':
+				dialogue = CoolUtil.coolTextFile(Paths.txt('roses/rosesDialogue'));
+			case 'thorns':
+				dialogue = CoolUtil.coolTextFile(Paths.txt('thorns/thornsDialogue'));
+		}
+
+		#if discord_rpc
+		initDiscord();
+		#end
+
+		initStageBullshit();
+		initCharacters();
+
+		add(foregroundSprites);
+
+		if (dialogue != null)
+		{
+			doof = new DialogueBox(false, dialogue);
+			doof.scrollFactor.set();
+			doof.finishThing = startCountdown;
+			doof.cameras = [camHUD];
+		}
+
+		Conductor.songPosition = -5000;
+
+		strumLine = new FlxSprite(0, 50).makeGraphic(FlxG.width, 10);
+
+		if (PreferencesMenu.getPref('downscroll'))
+			strumLine.y = FlxG.height - 150; // 150 just random ass number lol
+
+		strumLine.scrollFactor.set();
+		strumLineNotes = new FlxTypedGroup<FlxSprite>();
+		add(strumLineNotes);
+
+		// fake notesplash cache type deal so that it loads in the graphic?
+
+		grpNoteSplashes = new FlxTypedGroup<NoteSplash>();
+
+		var noteSplash:NoteSplash = new NoteSplash(100, 100, 0);
+		grpNoteSplashes.add(noteSplash);
+		noteSplash.alpha = 0.1;
+
+		add(grpNoteSplashes);
+
+		playerStrums = new FlxTypedGroup<FlxSprite>();
+
+		generateSong();
+
+		// add(strumLine);
+
+		camFollow = new FlxObject(0, 0, 1, 1);
+
+		camFollow.setPosition(camPos.x, camPos.y);
+
+		if (prevCamFollow != null)
+		{
+			camFollow = prevCamFollow;
+			prevCamFollow = null;
+		}
+
+		add(camFollow);
+
+		resetCamFollow();
+
+		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
+
+		FlxG.fixedTimestep = false;
+
+		healthBarBG = new FlxSprite(0, FlxG.height * 0.9).loadGraphic(Paths.image('healthBar'));
+		healthBarBG.screenCenter(X);
+		healthBarBG.scrollFactor.set();
+		add(healthBarBG);
+
+		if (PreferencesMenu.getPref('downscroll'))
+			healthBarBG.y = FlxG.height * 0.1;
+
+		healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
+			'healthDisplay', 0, 2);
+		healthBar.scrollFactor.set();
+		healthBar.createFilledBar(0xFFFF0000, 0xFF66FF33);
+		// healthBar
+		add(healthBar);
+
+		scoreTxt = new FlxText(healthBarBG.x + healthBarBG.width - 190, healthBarBG.y + 30, 0, "", 20);
+		scoreTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		scoreTxt.scrollFactor.set();
+		add(scoreTxt);
+
+		iconP1 = new HealthIcon(SONG.player1, true);
+		iconP1.y = healthBar.y - (iconP1.height / 2);
+		add(iconP1);
+
+		iconP2 = new HealthIcon(SONG.player2, false);
+		iconP2.y = healthBar.y - (iconP2.height / 2);
+		add(iconP2);
+
+		grpNoteSplashes.cameras = [camHUD];
+		strumLineNotes.cameras = [camHUD];
+		notes.cameras = [camHUD];
+		healthBar.cameras = [camHUD];
+		healthBarBG.cameras = [camHUD];
+		iconP1.cameras = [camHUD];
+		iconP2.cameras = [camHUD];
+		scoreTxt.cameras = [camHUD];
+
+		// if (SONG.song == 'South')
+		// FlxG.camera.alpha = 0.7;
+		// UI_camera.zoom = 1;
+
+		// cameras = [FlxG.cameras.list[1]];
+		startingSong = true;
+
+		if (isStoryMode && !seenCutscene)
+		{
+			seenCutscene = true;
+
+			switch (curSong.toLowerCase())
+			{
+				case "winter-horrorland":
+					var blackScreen:FlxSprite = new FlxSprite(0, 0).makeGraphic(Std.int(FlxG.width * 2), Std.int(FlxG.height * 2), FlxColor.BLACK);
+					add(blackScreen);
+					blackScreen.scrollFactor.set();
+					camHUD.visible = false;
+
+					new FlxTimer().start(0.1, function(tmr:FlxTimer)
+					{
+						remove(blackScreen);
+						FlxG.sound.play(Paths.sound('Lights_Turn_On'));
+						camFollow.y = -2050;
+						camFollow.x += 200;
+						FlxG.camera.focusOn(camFollow.getPosition());
+						FlxG.camera.zoom = 1.5;
+
+						new FlxTimer().start(0.8, function(tmr:FlxTimer)
+						{
+							camHUD.visible = true;
+							remove(blackScreen);
+							FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, 2.5, {
+								ease: FlxEase.quadInOut,
+								onComplete: function(twn:FlxTween)
+								{
+									startCountdown();
+								}
+							});
+						});
+					});
+				case 'senpai' | 'roses' | 'thorns':
+					schoolIntro(doof); // doof is assumed to be non-null, lol!
+				case 'ugh':
+					ughIntro();
+				case 'stress':
+					stressIntro();
+				case 'guns':
+					gunsIntro();
+
+				default:
+					startCountdown();
+			}
+		}
+		else
+		{
+			switch (curSong.toLowerCase())
+			{
+				// REMOVE THIS LATER
+				// case 'ugh':
+				// 	ughIntro();
+				// case 'stress':
+				// 	stressIntro();
+				// case 'guns':
+				// 	gunsIntro();
+
+				default:
+					startCountdown();
+			}
+		}
+
+		super.create();
+	}
+
+	function initCameras()
+	{
 		defaultCamZoom = FlxCamera.defaultZoom;
 
 		defaultCamZoom *= 1.05;
@@ -171,32 +370,10 @@ class PlayState extends MusicBeatState
 
 		FlxG.cameras.reset(camGame);
 		FlxG.cameras.add(camHUD, false);
+	}
 
-		persistentUpdate = true;
-		persistentDraw = true;
-
-		if (SONG == null)
-			SONG = Song.loadFromJson('tutorial');
-
-		Conductor.mapBPMChanges(SONG);
-		Conductor.changeBPM(SONG.bpm);
-
-		foregroundSprites = new FlxTypedGroup<BGSprite>();
-
-		switch (SONG.song.toLowerCase())
-		{
-			case 'senpai':
-				dialogue = CoolUtil.coolTextFile(Paths.txt('senpai/senpaiDialogue'));
-			case 'roses':
-				dialogue = CoolUtil.coolTextFile(Paths.txt('roses/rosesDialogue'));
-			case 'thorns':
-				dialogue = CoolUtil.coolTextFile(Paths.txt('thorns/thornsDialogue'));
-		}
-
-		#if discord_rpc
-		initDiscord();
-		#end
-
+	function initStageBullshit()
+	{
 		switch (SONG.song.toLowerCase())
 		{
 			case 'spookeez' | 'monster' | 'south':
@@ -504,7 +681,10 @@ class PlayState extends MusicBeatState
 			default:
 				loadStage('stage');
 		}
+	}
 
+	function initCharacters()
+	{
 		// all dis is shitty, redo later for stage shit
 		var gfVersion:String = 'gf';
 
@@ -659,171 +839,6 @@ class PlayState extends MusicBeatState
 
 		add(dad);
 		add(boyfriend);
-
-		add(foregroundSprites);
-
-		if (dialogue != null)
-		{
-			doof = new DialogueBox(false, dialogue);
-			doof.scrollFactor.set();
-			doof.finishThing = startCountdown;
-			doof.cameras = [camHUD];
-		}
-
-		Conductor.songPosition = -5000;
-
-		strumLine = new FlxSprite(0, 50).makeGraphic(FlxG.width, 10);
-
-		if (PreferencesMenu.getPref('downscroll'))
-			strumLine.y = FlxG.height - 150; // 150 just random ass number lol
-
-		strumLine.scrollFactor.set();
-		strumLineNotes = new FlxTypedGroup<FlxSprite>();
-		add(strumLineNotes);
-
-		// fake notesplash cache type deal so that it loads in the graphic?
-
-		grpNoteSplashes = new FlxTypedGroup<NoteSplash>();
-
-		var noteSplash:NoteSplash = new NoteSplash(100, 100, 0);
-		grpNoteSplashes.add(noteSplash);
-		noteSplash.alpha = 0.1;
-
-		add(grpNoteSplashes);
-
-		playerStrums = new FlxTypedGroup<FlxSprite>();
-
-		generateSong();
-
-		// add(strumLine);
-
-		camFollow = new FlxObject(0, 0, 1, 1);
-
-		camFollow.setPosition(camPos.x, camPos.y);
-
-		if (prevCamFollow != null)
-		{
-			camFollow = prevCamFollow;
-			prevCamFollow = null;
-		}
-
-		add(camFollow);
-
-		resetCamFollow();
-
-		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
-
-		FlxG.fixedTimestep = false;
-
-		healthBarBG = new FlxSprite(0, FlxG.height * 0.9).loadGraphic(Paths.image('healthBar'));
-		healthBarBG.screenCenter(X);
-		healthBarBG.scrollFactor.set();
-		add(healthBarBG);
-
-		if (PreferencesMenu.getPref('downscroll'))
-			healthBarBG.y = FlxG.height * 0.1;
-
-		healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
-			'healthDisplay', 0, 2);
-		healthBar.scrollFactor.set();
-		healthBar.createFilledBar(0xFFFF0000, 0xFF66FF33);
-		// healthBar
-		add(healthBar);
-
-		scoreTxt = new FlxText(healthBarBG.x + healthBarBG.width - 190, healthBarBG.y + 30, 0, "", 20);
-		scoreTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		scoreTxt.scrollFactor.set();
-		add(scoreTxt);
-
-		iconP1 = new HealthIcon(SONG.player1, true);
-		iconP1.y = healthBar.y - (iconP1.height / 2);
-		add(iconP1);
-
-		iconP2 = new HealthIcon(SONG.player2, false);
-		iconP2.y = healthBar.y - (iconP2.height / 2);
-		add(iconP2);
-
-		grpNoteSplashes.cameras = [camHUD];
-		strumLineNotes.cameras = [camHUD];
-		notes.cameras = [camHUD];
-		healthBar.cameras = [camHUD];
-		healthBarBG.cameras = [camHUD];
-		iconP1.cameras = [camHUD];
-		iconP2.cameras = [camHUD];
-		scoreTxt.cameras = [camHUD];
-
-		// if (SONG.song == 'South')
-		// FlxG.camera.alpha = 0.7;
-		// UI_camera.zoom = 1;
-
-		// cameras = [FlxG.cameras.list[1]];
-		startingSong = true;
-
-		if (isStoryMode && !seenCutscene)
-		{
-			seenCutscene = true;
-
-			switch (curSong.toLowerCase())
-			{
-				case "winter-horrorland":
-					var blackScreen:FlxSprite = new FlxSprite(0, 0).makeGraphic(Std.int(FlxG.width * 2), Std.int(FlxG.height * 2), FlxColor.BLACK);
-					add(blackScreen);
-					blackScreen.scrollFactor.set();
-					camHUD.visible = false;
-
-					new FlxTimer().start(0.1, function(tmr:FlxTimer)
-					{
-						remove(blackScreen);
-						FlxG.sound.play(Paths.sound('Lights_Turn_On'));
-						camFollow.y = -2050;
-						camFollow.x += 200;
-						FlxG.camera.focusOn(camFollow.getPosition());
-						FlxG.camera.zoom = 1.5;
-
-						new FlxTimer().start(0.8, function(tmr:FlxTimer)
-						{
-							camHUD.visible = true;
-							remove(blackScreen);
-							FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, 2.5, {
-								ease: FlxEase.quadInOut,
-								onComplete: function(twn:FlxTween)
-								{
-									startCountdown();
-								}
-							});
-						});
-					});
-				case 'senpai' | 'roses' | 'thorns':
-					schoolIntro(doof); // doof is assumed to be non-null, lol!
-				case 'ugh':
-					ughIntro();
-				case 'stress':
-					stressIntro();
-				case 'guns':
-					gunsIntro();
-
-				default:
-					startCountdown();
-			}
-		}
-		else
-		{
-			switch (curSong.toLowerCase())
-			{
-				// REMOVE THIS LATER
-				// case 'ugh':
-				// 	ughIntro();
-				// case 'stress':
-				// 	stressIntro();
-				// case 'guns':
-				// 	gunsIntro();
-
-				default:
-					startCountdown();
-			}
-		}
-
-		super.create();
 	}
 
 	function ughIntro()
