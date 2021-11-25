@@ -43,7 +43,7 @@ class PlayerSettings
 		if (saveControls != null)
 		{
 			var keys = null;
-			if (id == 0 && saveControls.p1 != null)
+			if (id == 0 && saveControls.p1 != null && saveControls.p1.keys != null)
 			{
 				keys = saveControls.p1.keys;
 			}
@@ -92,7 +92,7 @@ class PlayerSettings
 		}
 	}
 
-	function saveControls()
+	public function saveControls()
 	{
 		if (FlxG.save.data.controls == null)
 		{
@@ -105,12 +105,12 @@ class PlayerSettings
 			{
 				FlxG.save.data.controls.p1 = {};
 			}
-			keydata = FlxG.save.data.p1;
+			keydata = FlxG.save.data.controls.p1;
 		}
 		else if (FlxG.save.data.controls.p2 == null)
 		{
 			FlxG.save.data.controls.p2 = {};
-			keydata = FlxG.save.data.p2;
+			keydata = FlxG.save.data.controls.p2;
 		}
 		var savedata = this.controls.createSaveData(Device.Keys);
 		if (savedata != null)

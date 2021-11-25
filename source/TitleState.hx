@@ -363,11 +363,11 @@ class TitleState extends MusicBeatState
 			skipIntro();
 		}
 
-		if (PlayerSettings.player1.controls.UI_LEFT)
+		if (controls.UI_LEFT)
 		{
 			swagShader.update(.1 * -elapsed);
 		}
-		if (PlayerSettings.player1.controls.UI_RIGHT)
+		if (controls.UI_RIGHT)
 		{
 			swagShader.update(.1 * elapsed);
 		}
