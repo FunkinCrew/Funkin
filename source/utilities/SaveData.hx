@@ -101,6 +101,12 @@ class SaveData {
 
         if(FlxG.save.data.marvelousRatings == null)
             FlxG.save.data.marvelousRatings = true;
+
+        if(FlxG.save.data.ratingMode == null)
+            FlxG.save.data.ratingMode = "complex";
+
+        if(FlxG.save.data.showRatingsOnSide == null)
+            FlxG.save.data.showRatingsOnSide = true;
         
         FlxG.save.flush();
 

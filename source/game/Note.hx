@@ -157,17 +157,28 @@ class Note extends FlxSprite
 		{
 			if (isSustainNote)
 			{
-				if (strumTime > Conductor.songPosition - (Conductor.safeZoneOffset * 1.5)
-					&& strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * 0.5))
-					canBeHit = true;
+				if(shouldHit)
+				{
+					if (strumTime > Conductor.songPosition - (Conductor.safeZoneOffset * 1.5)
+						&& strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * 0.5))
+						canBeHit = true;
+					else
+						canBeHit = false;
+				}
 				else
-					canBeHit = false;
+				{
+					if (strumTime > Conductor.songPosition - Conductor.safeZoneOffset * 0.3
+						&& strumTime < Conductor.songPosition + Conductor.safeZoneOffset * 0.2)
+						canBeHit = true;
+					else
+						canBeHit = false;
+				}
 			}
 			else
 			{
 				/*
 				TODO: make this shit use something from the arrow config .txt file
-				*/
+				*/ 
 				if(shouldHit)
 				{
 					if (strumTime > Conductor.songPosition - Conductor.safeZoneOffset

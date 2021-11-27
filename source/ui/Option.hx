@@ -6,19 +6,12 @@ import utilities.Discord.DiscordClient;
 
 import substates.JudgementMenu;
 import substates.MaxFPSMenu;
-import polymod.Polymod.ModMetadata;
 import modding.ModList;
 import substates.SongOffsetMenu;
 import flixel.FlxSprite;
 import substates.UISkinSelect;
 import substates.ControlMenuSubstate;
-import substates.MusicBeatSubstate;
-import states.MusicBeatState;
-import flixel.FlxSubState;
-import states.LoadingState;
-import states.PlayState;
 import flixel.FlxState;
-import debuggers.AnimationDebug;
 import states.OptionsMenu;
 import flixel.FlxG;
 import flixel.group.FlxGroup;
@@ -151,6 +144,8 @@ class BoolOption extends Option
 				Value = FlxG.save.data.ghostTapping;
 			case "marvelousRatings":
 				Value = FlxG.save.data.marvelousRatings;
+			case "showRatingsOnSide":
+				Value = FlxG.save.data.showRatingsOnSide;
 		}
 
 		return Value;
@@ -237,6 +232,8 @@ class BoolOption extends Option
 				FlxG.save.data.ghostTapping = !Option_Checked;
 			case "marvelousRatings":
 				FlxG.save.data.marvelousRatings = !Option_Checked;
+			case "showRatingsOnSide":
+				FlxG.save.data.showRatingsOnSide = !Option_Checked;
 		}
 
         if(Option_Value != "muted")
@@ -594,3 +591,4 @@ class StringSaveOption extends Option
 class CutsceneOption extends StringSaveOption { override function SetDataIGuess() { FlxG.save.data.cutscenePlays = Data; super.SetDataIGuess(); } }
 class DisplayFontOption extends StringSaveOption { override function SetDataIGuess() { FlxG.save.data.displayFont = Data; super.SetDataIGuess(); Main.changeFont(FlxG.save.data.displayFont); } }
 class InputModeOption extends StringSaveOption { override function SetDataIGuess() { FlxG.save.data.inputMode = Data; super.SetDataIGuess(); } }
+class RatingModeOption extends StringSaveOption { override function SetDataIGuess() { FlxG.save.data.ratingMode = Data; super.SetDataIGuess(); } }

@@ -48,13 +48,9 @@ class OptionsMenu extends MusicBeatState
 			new ControlMenuSubStateOption("Binds", 1),
 			new SongOffsetOption("Song Offset", 2),
 			new PageOption("Judgements", 3, "Judgements"),
-			new InputModeOption("Input Mode", ["standard", "rhythm"], FlxG.save.data.inputMode, 3),
-			new BoolOption("Anti Mash", "antiMash", FlxG.save.data.antiMash, 4),
-			new BoolOption("Ghost Tapping", "ghostTapping", FlxG.save.data.ghostTapping, 9),
+			new PageOption("Input Options", 4, "Input Options"),
 			new BoolOption("Downscroll", "downscroll", FlxG.save.data.downscroll, 4),
-			new BoolOption("Centered Arrows", "middleScroll", FlxG.save.data.middleScroll, 5),
-			new BoolOption("No Miss", "nohit", FlxG.save.data.nohit, 6),
-			new BoolOption("Reset Button", "resetButtonOn", FlxG.save.data.resetButtonOn, 7),
+			new BoolOption("Middlescroll", "middleScroll", FlxG.save.data.middleScroll, 5),
 			new BoolOption("Bot", "bot", FlxG.save.data.bot, 8),
 			new BoolOption("Quick Restart", "quickRestart", FlxG.save.data.quickRestart, 9)
 		],
@@ -110,7 +106,18 @@ class OptionsMenu extends MusicBeatState
 			"Judgements",
 			new PageOption("Back", 0, "Gameplay"),
 			new JudgementMenuOption("Timings", 1),
-			new BoolOption("Marvelous Ratings", "marvelousRatings", FlxG.save.data.marvelousRatings, 2)
+			new RatingModeOption("Rating Mode", ["simple", "complex"], FlxG.save.data.ratingMode, 2),
+			new BoolOption("Marvelous Ratings", "marvelousRatings", FlxG.save.data.marvelousRatings, 3),
+			new BoolOption("Show Rating Count", "showRatingsOnSide", FlxG.save.data.showRatingsOnSide, 4)
+		],
+		[
+			"Input Options",
+			new PageOption("Back", 0, "Gameplay"),
+			new InputModeOption("Input Mode", ["standard", "rhythm"], FlxG.save.data.inputMode, 3),
+			new BoolOption("Anti Mash", "antiMash", FlxG.save.data.antiMash, 4),
+			new BoolOption("Ghost Tapping", "ghostTapping", FlxG.save.data.ghostTapping, 9),
+			new BoolOption("No Miss", "nohit", FlxG.save.data.nohit, 6),
+			new BoolOption("Reset Button", "resetButtonOn", FlxG.save.data.resetButtonOn, 7)
 		]
 	];
 

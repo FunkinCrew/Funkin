@@ -65,21 +65,39 @@ class Ratings
     public static function getRank(accuracy:Float, ?misses:Int)
     {
         // yeah this is kinda taken from kade engine but i didnt use the etterna 'wife3' ranking system (instead just my own custom values)
-        var conditions:Array<Bool> = [
-            accuracy == 100, // FC
-            accuracy >= 98, // SSS
-            accuracy >= 95, // SS
-            accuracy >= 92, // S
-            accuracy >= 89, // AA
-            accuracy >= 85, // A
-            accuracy >= 80, // B+
-            accuracy >= 70, // B
-            accuracy >= 65, // C
-            accuracy >= 50, // D
-            accuracy >= 10, // E
-            accuracy >= 5, // F
-            accuracy < 4, // G
-        ];
+        var conditions:Array<Bool>;
+
+        if(FlxG.save.data.ratingMode == "complex")
+        {
+            conditions = [
+                accuracy == 100, // MFC
+                accuracy >= 98, // SSS
+                accuracy >= 95, // SS
+                accuracy >= 92, // S
+                accuracy >= 89, // AA
+                accuracy >= 85, // A
+                accuracy >= 80, // B+
+                accuracy >= 70, // B
+                accuracy >= 65, // C
+                accuracy >= 50, // D
+                accuracy >= 10, // E
+                accuracy >= 5, // F
+                accuracy < 4, // G
+            ];
+        }
+        else // simple
+        {
+            conditions = [
+                accuracy == 100, // PERFECT
+                accuracy >= 85, // SICK
+                accuracy >= 60, // GOOD
+                accuracy >= 50, // OK
+                accuracy >= 35, // BAD
+                accuracy >= 10, // REALLY BAD
+                accuracy >= 2, // OOF
+                accuracy >= 0 // wow you really suck
+            ];
+        }
 
         var missesRating:String = "";
 
@@ -99,34 +117,58 @@ class Ratings
 
             if(rating_success)
             {
-                switch(condition)
+                switch(FlxG.save.data.ratingMode)
                 {
-                    case 0:
-                        return "MFC";
-                    case 1:
-                        return missesRating + "SSS";
-                    case 2:
-                        return missesRating + "SS";
-                    case 3:
-                        return missesRating + "S";
-                    case 4:
-                        return missesRating + "AA";
-                    case 5:
-                        return missesRating + "A";
-                    case 6:
-                        return missesRating + "B+";
-                    case 7:
-                        return missesRating + "B";
-                    case 8:
-                        return missesRating + "C";
-                    case 9:
-                        return missesRating + "D";
-                    case 10:
-                        return missesRating + "E";
-                    case 11:
-                        return missesRating + "F";
-                    case 12:
-                        return missesRating + "G";
+                    case "complex":
+                        switch(condition)
+                        {
+                            case 0:
+                                return "MFC";
+                            case 1:
+                                return missesRating + "SSS";
+                            case 2:
+                                return missesRating + "SS";
+                            case 3:
+                                return missesRating + "S";
+                            case 4:
+                                return missesRating + "AA";
+                            case 5:
+                                return missesRating + "A";
+                            case 6:
+                                return missesRating + "B+";
+                            case 7:
+                                return missesRating + "B";
+                            case 8:
+                                return missesRating + "C";
+                            case 9:
+                                return missesRating + "D";
+                            case 10:
+                                return missesRating + "E";
+                            case 11:
+                                return missesRating + "F";
+                            case 12:
+                                return missesRating + "G";
+                        }
+                    default:
+                        switch(condition)
+                        {
+                            case 0:
+                                return missesRating + "Perfect";
+                            case 1:
+                                return missesRating + "Sick";
+                            case 2:
+                                return missesRating + "Good";
+                            case 3:
+                                return missesRating + "Ok";
+                            case 4:
+                                return missesRating + "Bad";
+                            case 5:
+                                return missesRating + "Really Bad";
+                            case 6:
+                                return missesRating + "OOF";
+                            case 7:
+                                return missesRating + "how tf u this bad";
+                        }
                 }
             }
         }
@@ -148,84 +190,4 @@ class Ratings
 
         return score;
     }
-
-    public static function rankToString(rank:SongRank)
-    {
-        if(rank != B_PLUS)
-            return Std.string(rank);
-        else
-            return "B+";
-    }
-
-    public static function rankToInt(rank:SongRank)
-    {
-        return rank.getIndex();
-    }
-
-    public static function stringToRank(string_Rank:String)
-    {
-        var ranks = SongRank.getConstructors();
-
-        for(rank_Index in 0...ranks.length)
-        {
-            var rank = ranks[rank_Index];
-
-            if(rank.toLowerCase() == string_Rank.toLowerCase() || string_Rank == "B+" && rank == "B_PLUS")
-                switch(rank.toUpperCase())
-                {
-                    case "MFC":
-                        return MFC;
-                    case "FC":
-                        return FC;
-                    case "SSSS":
-                        return SSSS;
-                    case "SSS":
-                        return SSS;
-                    case "SS":
-                        return SS;
-                    case "S":
-                        return S;
-                    case "AA":
-                        return AA;
-                    case "A":
-                        return A;
-                    case "B_PLUS":
-                        return B_PLUS;
-                    case "B":
-                        return B;
-                    case "C":
-                        return C;
-                    case "D":
-                        return D;
-                    case "E":
-                        return E;
-                    case "F":
-                        return F;
-                    case "G":
-                        return G;
-                }
-        }
-
-        return UNKNOWN;
-    }
-}
-
-enum SongRank
-{
-    MFC;
-    FC;
-    SSSS;
-    SSS;
-    SS;
-    S;
-    AA;
-    A;
-    B_PLUS;
-    B;
-    C;
-    D;
-    E;
-    F;
-    G;
-    UNKNOWN;
 }

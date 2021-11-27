@@ -1,5 +1,6 @@
 package game;
 
+import flixel.math.FlxMath;
 import utilities.Ratings;
 import flixel.FlxG;
 
@@ -7,6 +8,7 @@ class Highscore
 {
 	public static var songScores:Map<String, Int> = new Map<String, Int>();
 	public static var songRanks:Map<String, String> = new Map<String, String>();
+	public static var songAccuracies:Map<String, Float> = new Map<String, Float>();
 
 	public static function resetSong(song:String, ?diff:String = "easy"):Void
 	{
@@ -14,6 +16,7 @@ class Highscore
 
 		setScore(daSong, 0);
 		setRank(daSong, "N/A");
+		setAccuracy(daSong, 0);
 	}
 
 	public static function resetWeek(week:Int = 1, ?diff:String = "easy", ?weekName:String = 'week'):Void
@@ -36,17 +39,23 @@ class Highscore
 			setScore(daSong, score);
 	}
 
-	public static function saveRank(song:String, rank:String = "N/A", ?diff:String = "easy"):Void
+	public static function saveRank(song:String, rank:String = "N/A", diff:String = "easy", accuracy:Float = 0):Void
 	{
 		var daSong:String = formatSong(song, diff);
 
-		if (songRanks.exists(daSong))
+		if(songRanks.exists(daSong))
 		{
-			if (Ratings.rankToInt(Ratings.stringToRank(songRanks.get(daSong))) > Ratings.rankToInt(Ratings.stringToRank(rank)))
+			if(accuracy > getSongAccuracy(song, diff))
+			{
 				setRank(daSong, rank);
+				setAccuracy(daSong, accuracy);
+			}
 		}
 		else
+		{
 			setRank(daSong, rank);
+			setAccuracy(daSong, accuracy);
+		}
 	}
 
 	public static function saveWeekScore(week:Int = 1, score:Int = 0, ?diff:String = "easy", ?weekName:String = 'week'):Void
@@ -80,6 +89,15 @@ class Highscore
 		songRanks.set(song, rank);
 
 		FlxG.save.data.songRanks = songRanks;
+		FlxG.save.flush();
+	}
+
+	static function setAccuracy(song:String, accuracy:Float):Void
+	{
+		// Reminder that I don't need to format this song, it should come formatted!
+		songAccuracies.set(song, accuracy);
+
+		FlxG.save.data.songAccuracies = songAccuracies;
 		FlxG.save.flush();
 	}
 
@@ -117,12 +135,23 @@ class Highscore
 		return songRanks.get(formatSong(song, diff));
 	}
 
+	public static function getSongAccuracy(song:String, diff:String):Float
+	{
+		if(!songAccuracies.exists(formatSong(song, diff)))
+			setAccuracy(formatSong(song, diff), 0);
+
+		return FlxMath.roundDecimal(songAccuracies.get(formatSong(song, diff)), 2);
+	}
+
 	public static function load():Void
 	{
-		if (FlxG.save.data.songScores != null)
+		if(FlxG.save.data.songScores != null)
 			songScores = FlxG.save.data.songScores;
 		
-		if (FlxG.save.data.songRanks != null)
+		if(FlxG.save.data.songRanks != null)
 			songRanks = FlxG.save.data.songRanks;
+
+		if(FlxG.save.data.songAccuracies != null)
+			songAccuracies = FlxG.save.data.songAccuracies;
 	}
 }

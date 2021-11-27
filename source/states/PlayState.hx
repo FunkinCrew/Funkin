@@ -205,6 +205,16 @@ class PlayState extends MusicBeatState
 
 	var time:Float = 0.0;
 
+	public var ratings:Map<String, Int> = [
+		"marvelous" => 0,
+		"sick" => 0,
+		"good" => 0,
+		"bad" => 0,
+		"shit" => 0
+	];
+
+	var ratingText:FlxText;
+
 	override public function create()
 	{
 		if(FlxG.save.data.bot)
@@ -566,6 +576,16 @@ class PlayState extends MusicBeatState
 		infoTxt.scrollFactor.set();
 		add(infoTxt);
 
+		if(FlxG.save.data.showRatingsOnSide)
+		{
+			ratingText = new FlxText(0,0,0,"bruh");
+			ratingText.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			ratingText.screenCenter(Y);
+	
+			ratingText.scrollFactor.set();
+			add(ratingText);
+		}
+
 		iconP1 = new HealthIcon(boyfriend.icon, true);
 		iconP1.y = healthBar.y - (iconP1.height / 2);
 		add(iconP1);
@@ -582,6 +602,9 @@ class PlayState extends MusicBeatState
 		iconP2.cameras = [camHUD];
 		scoreTxt.cameras = [camHUD];
 		infoTxt.cameras = [camHUD];
+
+		if(FlxG.save.data.showRatingsOnSide)
+			ratingText.cameras = [camHUD];
 
 		timeBar.cameras = [camHUD];
 		timeBarBG.cameras = [camHUD];
@@ -629,6 +652,9 @@ class PlayState extends MusicBeatState
 		Application.current.window.title = Application.current.meta.get('name') + " - " + SONG.song + " " + (isStoryMode ? "(Story Mode)" : "(Freeplay)");
 
 		fromPauseMenu = false;
+
+		if(FlxG.save.data.showRatingsOnSide)
+			updateRatingText();
 
 		super.create();
 	}
@@ -1395,7 +1421,7 @@ class PlayState extends MusicBeatState
 
 		scoreTxt.text = (
 			"Misses: " + misses + " | " +
-			"Accuracy: " + accuracy + "% | " +
+			"Accuracy: " + (FlxG.save.data.ratingMode == "simple" ? Std.int(accuracy) : accuracy) + "% | " +
 			"Score: " + songScore + " | " +
 			Ratings.getRank(accuracy, misses)
 		);
@@ -1917,7 +1943,7 @@ class PlayState extends MusicBeatState
 				if(!hasUsedBot && songMultiplier >= 1)
 				{
 					Highscore.saveScore(SONG.song, songScore, storyDifficultyStr);
-					Highscore.saveRank(SONG.song, Ratings.getRank(accuracy), storyDifficultyStr);
+					Highscore.saveRank(SONG.song, Ratings.getRank(accuracy), storyDifficultyStr, accuracy);
 				}
 				#end
 			}
@@ -2055,6 +2081,11 @@ class PlayState extends MusicBeatState
 				misses += 1;
 				combo = 0;
 		}
+
+		if(ratings.exists(daRating))
+			ratings.set(daRating, ratings.get(daRating) + 1);
+
+		updateRatingText();
 
 		if(daRating == "sick" || daRating == "marvelous")
 			hitNoteAmount = 1;
@@ -2431,9 +2462,8 @@ class PlayState extends MusicBeatState
 				if(note.shouldHit)
 				{
 					if(
-						note.mustPress && note.strumTime <= Conductor.songPosition && !note.isSustainNote || 
-						note.strumTime > (Conductor.songPosition - (Conductor.safeZoneOffset * 1.5))
-						&& note.strumTime < (Conductor.songPosition + (Conductor.safeZoneOffset * 0.5)) && note.mustPress && note.isSustainNote
+						note.mustPress && (note.strumTime <= Conductor.songPosition && !note.isSustainNote) || 
+						(note.canBeHit && note.isSustainNote)
 					)
 					{
 						if(boyfriend.otherCharacters == null)
@@ -2516,7 +2546,10 @@ class PlayState extends MusicBeatState
 				missValues = true;
 
 			if(missValues)
+			{
 				misses++;
+				updateRatingText();
+			}
 
 			totalNotes++;
 
@@ -2550,6 +2583,7 @@ class PlayState extends MusicBeatState
 				health -= note.hitDamage;
 				misses++;
 				missSounds[FlxG.random.int(0, missSounds.length - 1)].play(true);
+				updateRatingText();
 			}
 
 			if(!note.isSustainNote)
@@ -2698,6 +2732,23 @@ class PlayState extends MusicBeatState
 		if (executeModchart && luaModchart != null)
 			luaModchart.executeState('beatHit', [curBeat]);
 		#end
+	}
+
+	function updateRatingText()
+	{
+		if(FlxG.save.data.showRatingsOnSide)
+		{
+			ratingText.text = (
+				(FlxG.save.data.marvelousRatings ? "MARVELOUS: " + Std.string(ratings.get("marvelous")) + "\n" : "") +
+				"SICK: " + Std.string(ratings.get("sick")) + "\n" +
+				"GOOD: " + Std.string(ratings.get("good")) + "\n" +
+				"BAD: " + Std.string(ratings.get("bad")) + "\n" +
+				"SHIT: " + Std.string(ratings.get("shit")) + "\n" +
+				"MISSES: " + Std.string(misses) + "\n"
+			);
+
+			ratingText.screenCenter(Y);
+		}
 	}
 
 	var curLight:Int = 0;
