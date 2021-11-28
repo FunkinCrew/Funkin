@@ -221,7 +221,7 @@ class ModchartUtilities
                 FlxG.sound.music.volume = 0;
                 PlayState.instance.vocals.volume = 0;
                 
-                PlayState.songMultiplier = 0;
+                PlayState.songMultiplier = 0.01;
 
                 Conductor.recalculateStuff(PlayState.songMultiplier);
 
