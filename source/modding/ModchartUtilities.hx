@@ -218,16 +218,39 @@ class ModchartUtilities
         Lua_helper.add_callback(lua,"stopSong", function() {
             @:privateAccess
             {
-                FlxG.sound.music.volume = 0;
+                PlayState.instance.paused = true;
 
-                if(PlayState.instance.vocals.active && PlayState.instance.vocals.playing)
-                    PlayState.instance.vocals.volume = 0;
+                FlxG.sound.music.volume = 0;
+                PlayState.instance.vocals.volume = 0;
+    
+                PlayState.instance.notes.clear();
+                PlayState.instance.remove(PlayState.instance.notes);
+
+                FlxG.sound.music.time = 0;
+                PlayState.instance.vocals.time = 0;
+    
+                Conductor.songPosition = 0;
+
+                PlayState.songMultiplier = 0;
+
+                Conductor.recalculateStuff(PlayState.songMultiplier);
+
+                #if cpp
+                lime.media.openal.AL.sourcef(FlxG.sound.music._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, PlayState.songMultiplier);
+
+                if(PlayState.instance.vocals.playing)
+                    lime.media.openal.AL.sourcef(PlayState.instance.vocals._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, PlayState.songMultiplier);
+				#end
             }
+
+            return true;
         });
 
         Lua_helper.add_callback(lua,"endSong", function() {
             @:privateAccess
             PlayState.instance.endSong();
+
+            return true;
         });
 
         // sprites
