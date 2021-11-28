@@ -445,6 +445,12 @@ class ModchartUtilities
             actor.x = x;
             actor.y = y;
         });
+
+        Lua_helper.add_callback(lua,"setActorScroll", function(x:Float,y:Float,id:String) {
+            var actor = getActorByName(id);
+            
+            actor.scrollFactor.set(x,y);
+        });
         
         Lua_helper.add_callback(lua,"getOriginalCharX", function(character:Int) {
             @:privateAccess
