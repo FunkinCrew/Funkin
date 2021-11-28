@@ -5,14 +5,17 @@ All notable changes will be documented in this file.
 ### Added
 - RESET to reset score on freeplay and story weeks
 - Marvelous Rating (currently just a rainbow sick).
-- HTML5 Support is back!
+- HTML5 Support is back (very buggy, but it's being worked on)!
 - Value to change damage of held notes in arrow types.
 - Held Notes for Death and Caution Notes.
 - Song Time Bar.
+- Ratings on the side of the screen.
+- An option for simpler ratings (Sick, Good, Ok rather than S, A, B).
 ### Fixed
 - Note Animations displaying at 30 FPS instead of 24 FPS.
 - Fixed input glitch where stacked notes would make the notes ahead of them just dissappear.
 - Fixed charting bug where hit sounds for P1 would play on P2 side.
+- Parts of the charter activating when pressing certain keys while typing a song name.
 ### Changed
 - Better visibilty for Note Splashes.
 - Sustain notes now count towards accuracy (not the misses counter).
