@@ -216,7 +216,17 @@ class ModchartUtilities
         });
 
         Lua_helper.add_callback(lua,"stopSong", function() {
-            PlayState.instance.stopSong = true;
+            @:privateAccess
+            {
+                PlayState.instance.canPause = false;
+			
+                FlxG.sound.music.volume = 0;
+                PlayState.instance.vocals.volume = 0;
+    
+                FlxG.sound.music.time = 0;
+                PlayState.instance.vocals.time = 0;
+                Conductor.songPosition = 0;
+            }
         });
 
         Lua_helper.add_callback(lua,"endSong", function() {

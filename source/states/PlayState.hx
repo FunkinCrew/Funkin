@@ -1379,17 +1379,6 @@ class PlayState extends MusicBeatState
 
 	override public function update(elapsed:Float)
 	{
-		if(stopSong)
-		{
-			FlxG.sound.music.volume = 0;
-			vocals.volume = 0;
-
-			FlxG.sound.music.time = 0;
-			vocals.time = 0;
-
-			Conductor.songPosition = 0;
-		}
-
 		if (SONG.notes[Math.floor(curStep / 16)] != null)
 		{
 			if (SONG.notes[Math.floor(curStep / 16)].altAnim)
