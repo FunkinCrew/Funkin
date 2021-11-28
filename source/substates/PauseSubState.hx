@@ -110,9 +110,27 @@ class PauseSubState extends MusicBeatSubstate
 				case "Restart Song":
 					PlayState.SONG.speed = PlayState.previousScrollSpeedLmao;
 					PlayState.fromPauseMenu = true;
+
+					#if linc_luajit
+					if (PlayState.luaModchart != null)
+					{
+						PlayState.luaModchart.die();
+						PlayState.luaModchart = null;
+					}
+					#end
+
 					FlxG.resetState();
 				case "Restart Song With Cutscenes":
 					PlayState.SONG.speed = PlayState.previousScrollSpeedLmao;
+
+					#if linc_luajit
+					if (PlayState.luaModchart != null)
+					{
+						PlayState.luaModchart.die();
+						PlayState.luaModchart = null;
+					}
+					#end
+
 					FlxG.resetState();
 				case "Bot":
 					FlxG.save.data.bot = !FlxG.save.data.bot;
