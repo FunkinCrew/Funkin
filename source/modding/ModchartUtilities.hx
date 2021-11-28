@@ -77,6 +77,7 @@ class ModchartUtilities
 
     public function die()
     {
+        PlayState.songMultiplier = oldMultiplier;
         Lua.close(lua);
         lua = null;
     }
@@ -126,6 +127,8 @@ class ModchartUtilities
 		Lua.pushnumber(lua, object);
 		Lua.setglobal(lua, var_name);
 	}
+
+    var oldMultiplier:Float = PlayState.songMultiplier;
 
     function new()
     {
@@ -231,6 +234,7 @@ class ModchartUtilities
     
                 Conductor.songPosition = 0;
 
+                oldMultiplier = PlayState.songMultiplier;
                 PlayState.songMultiplier = 0;
 
                 Conductor.recalculateStuff(PlayState.songMultiplier);
