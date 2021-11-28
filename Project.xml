@@ -71,8 +71,8 @@
 		<library name="shared"   preload="false" />
 	</section>
 
-	<assets path="plugins/"        rename=''          if="VIDEOS_ALLOWED windows" />
-	<assets path="dlls/"           rename=''          if="VIDEOS_ALLOWED windows" />
+	<assets path="plugins/" if="VIDEOS_ALLOWED windows" />
+	<assets path="dlls/" rename='' if="VIDEOS_ALLOWED windows" />
 	
 	<assets path="assets/songs"    library="songs"    exclude="*.ogg" if="web"/>
 	<assets path="assets/songs"    library="songs"    exclude="*.mp3" unless="web"/> 
