@@ -218,12 +218,19 @@ class ModchartUtilities
         Lua_helper.add_callback(lua,"stopSong", function() {
             @:privateAccess
             {
-                PlayState.instance.canPause = false;
-			
                 FlxG.sound.music.volume = 0;
                 PlayState.instance.vocals.volume = 0;
                 
                 PlayState.songMultiplier = 0;
+
+                Conductor.recalculateStuff(PlayState.songMultiplier);
+
+                #if cpp
+                lime.media.openal.AL.sourcef(FlxG.sound.music._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, PlayState.songMultiplier);
+		
+                if(PlayState.instance.vocals.playing)
+                    lime.media.openal.AL.sourcef(PlayState.instance.vocals._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, PlayState.songMultiplier);
+				#end
             }
         });
 
