@@ -46,6 +46,8 @@ You can have different note types that give different amounts of health or give 
 
 * PolybiusProxy - .mp4 Video Loader Extension (I got this from [Psych-Engine](https://github.com/ShadowMario/FNF-PsychEngine))
 
+* datee - Developing HaxeVLC (all the contents in the 'vlc' folder belongs to datee).
+
 * Video LAN Team - People who made VLC Media Player (the thing the game uses to play videos)
 
 * Ronezkj15 - Some Ideas + New Leather Engine Logo
