@@ -59,7 +59,6 @@ class OptionsMenu extends MusicBeatState
 			new PageOption("Back", 0, "Categories"),
 			new BoolOption("Enemy Note Glow", "enemyGlow", FlxG.save.data.enemyGlow, 1),
 			new BoolOption("Note Splashes", "noteSplashes", FlxG.save.data.noteSplashes, 1),
-			new BoolOption("Big Note Splashes", "bigNoteSplashes", FlxG.save.data.bigNoteSplashes, 1),
 			new BoolOption("Note Accuracy Text", "msText", FlxG.save.data.msText, 2),
 			new PageOption("Info Display", 5, "Info Display"),
 			new PageOption("Optimizations", 5, "Optimizations"),

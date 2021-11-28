@@ -81,9 +81,6 @@ class SaveData {
         if(FlxG.save.data.displayFont == null)
             FlxG.save.data.displayFont = "_sans";
 
-        if(FlxG.save.data.bigNoteSplashes == null)
-            FlxG.save.data.bigNoteSplashes = false;
-
         if(FlxG.save.data.ghostTapping == null)
             FlxG.save.data.ghostTapping = true;
 
