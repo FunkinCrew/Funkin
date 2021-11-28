@@ -262,17 +262,15 @@ class ModchartUtilities
 
         // sprites
 
-        Lua_helper.add_callback(lua,"makeSprite", function(id:String, filename:String, x:Float, y:Float, size:Float) {
+        Lua_helper.add_callback(lua,"makeSprite", function(id:String, filename:String, x:Float, y:Float, size:Float, ?library:String = "stages") {
             if(!lua_Sprites.exists(id))
             {
                 var Sprite:FlxSprite = new FlxSprite(x, y);
 
-                if(Assets.exists(Paths.image(PlayState.SONG.stage + "/" + filename, "stages"), IMAGE))
-                    Sprite.loadGraphic(Paths.image(PlayState.SONG.stage + "/" + filename, "stages"));
-                else
-                    Sprite.loadGraphic(Paths.imageSYS(PlayState.SONG.stage + "/" + filename, "stages"), false, 0, 0, false, PlayState.SONG.stage + "/" + filename);
+                Sprite.loadGraphic(Paths.image((library == "stages" ? PlayState.SONG.stage + "/" : "") + filename, library));
 
                 Sprite.setGraphicSize(Std.int(Sprite.width * size));
+                Sprite.updateHitbox();
     
                 lua_Sprites.set(id, Sprite);
     
