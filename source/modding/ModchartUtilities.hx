@@ -208,6 +208,22 @@ class ModchartUtilities
         
         // callbacks
 
+        // song stuff
+
+        Lua_helper.add_callback(lua,"setSongPosition", function(position:Float) {
+            Conductor.songPosition = position;
+            setVar('songPos', Conductor.songPosition);
+        });
+
+        Lua_helper.add_callback(lua,"stopSong", function() {
+            PlayState.instance.stopSong = true;
+        });
+
+        Lua_helper.add_callback(lua,"endSong", function() {
+            @:privateAccess
+            PlayState.instance.endSong();
+        });
+
         // sprites
 
         Lua_helper.add_callback(lua,"makeSprite", function(id:String, filename:String, x:Float, y:Float, size:Float) {
@@ -448,7 +464,7 @@ class ModchartUtilities
 
         Lua_helper.add_callback(lua,"setActorScroll", function(x:Float,y:Float,id:String) {
             var actor = getActorByName(id);
-            
+
             actor.scrollFactor.set(x,y);
         });
         

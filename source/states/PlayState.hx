@@ -215,6 +215,8 @@ class PlayState extends MusicBeatState
 
 	var ratingText:FlxText;
 
+	public var stopSong:Bool = false;
+
 	override public function create()
 	{
 		if(FlxG.save.data.bot)
@@ -1377,6 +1379,17 @@ class PlayState extends MusicBeatState
 
 	override public function update(elapsed:Float)
 	{
+		if(stopSong)
+		{
+			FlxG.sound.music.volume = 0;
+			vocals.volume = 0;
+			
+			notes.clear();
+			remove(notes);
+
+			Conductor.songPosition = 0;
+		}
+
 		if (SONG.notes[Math.floor(curStep / 16)] != null)
 		{
 			if (SONG.notes[Math.floor(curStep / 16)].altAnim)
