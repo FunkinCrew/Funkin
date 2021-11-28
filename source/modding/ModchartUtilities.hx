@@ -222,10 +222,8 @@ class ModchartUtilities
 			
                 FlxG.sound.music.volume = 0;
                 PlayState.instance.vocals.volume = 0;
-    
-                FlxG.sound.music.time = 0;
-                PlayState.instance.vocals.time = 0;
-                Conductor.songPosition = 0;
+                
+                PlayState.songMultiplier = 0;
             }
         });
 
