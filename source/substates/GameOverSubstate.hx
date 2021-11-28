@@ -34,6 +34,14 @@ class GameOverSubstate extends MusicBeatSubstate
 
 		if(FlxG.save.data.quickRestart)
 		{
+			#if linc_luajit
+			if (PlayState.luaModchart != null)
+			{
+				PlayState.luaModchart.die();
+				PlayState.luaModchart = null;
+			}
+			#end
+			
 			PlayState.SONG.speed = PlayState.previousScrollSpeedLmao;
 			FlxG.resetState();
 		}
@@ -74,6 +82,14 @@ class GameOverSubstate extends MusicBeatSubstate
 		if (controls.BACK)
 		{
 			FlxG.sound.music.stop();
+
+			#if linc_luajit
+			if (PlayState.luaModchart != null)
+			{
+				PlayState.luaModchart.die();
+				PlayState.luaModchart = null;
+			}
+			#end
 
 			if (PlayState.isStoryMode)
 				FlxG.switchState(new StoryMenuState());
@@ -120,6 +136,14 @@ class GameOverSubstate extends MusicBeatSubstate
 			{
 				FlxG.camera.fade(FlxColor.BLACK, 2, false, function()
 				{
+					#if linc_luajit
+					if (PlayState.luaModchart != null)
+					{
+						PlayState.luaModchart.die();
+						PlayState.luaModchart = null;
+					}
+					#end
+
 					PlayState.SONG.speed = PlayState.previousScrollSpeedLmao;
 					FlxG.resetState();
 				});

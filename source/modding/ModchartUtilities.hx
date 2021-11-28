@@ -78,6 +78,7 @@ class ModchartUtilities
     public function die()
     {
         PlayState.songMultiplier = oldMultiplier;
+
         Lua.close(lua);
         lua = null;
     }
@@ -132,6 +133,8 @@ class ModchartUtilities
 
     function new()
     {
+        oldMultiplier = PlayState.songMultiplier;
+        
         lua_Sprites = [
             'boyfriend' => PlayState.boyfriend,
             'girlfriend' => PlayState.gf,
@@ -245,6 +248,8 @@ class ModchartUtilities
                 if(PlayState.instance.vocals.playing)
                     lime.media.openal.AL.sourcef(PlayState.instance.vocals._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, PlayState.songMultiplier);
 				#end
+
+                PlayState.instance.stopSong = true;
             }
 
             return true;
