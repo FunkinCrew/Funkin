@@ -134,7 +134,7 @@ class ModchartUtilities
     function new()
     {
         oldMultiplier = PlayState.songMultiplier;
-        
+
         lua_Sprites = [
             'boyfriend' => PlayState.boyfriend,
             'girlfriend' => PlayState.gf,
@@ -236,8 +236,6 @@ class ModchartUtilities
                 PlayState.instance.vocals.time = 0;
     
                 Conductor.songPosition = 0;
-
-                oldMultiplier = PlayState.songMultiplier;
                 PlayState.songMultiplier = 0;
 
                 Conductor.recalculateStuff(PlayState.songMultiplier);
