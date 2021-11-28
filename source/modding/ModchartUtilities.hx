@@ -295,16 +295,21 @@ class ModchartUtilities
         });
         
         Lua_helper.add_callback(lua,"setCamPosition", function (x:Int, y:Int) {
-            FlxG.camera.x = x;
-            FlxG.camera.y = y;
+            @:privateAccess
+            {
+                PlayState.instance.camFollow.x = x;
+                PlayState.instance.camFollow.y = y;
+            }
         });
 
         Lua_helper.add_callback(lua,"getCameraX", function () {
-            return FlxG.camera.x;
+            @:privateAccess
+            return PlayState.instance.camFollow.x;
         });
 
         Lua_helper.add_callback(lua,"getCameraY", function () {
-            return FlxG.camera.y;
+            @:privateAccess
+            return PlayState.instance.camFollow.y;
         });
 
         Lua_helper.add_callback(lua,"getCamZoom", function() {
