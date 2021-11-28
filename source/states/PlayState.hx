@@ -1383,9 +1383,9 @@ class PlayState extends MusicBeatState
 		{
 			FlxG.sound.music.volume = 0;
 			vocals.volume = 0;
-			
-			notes.clear();
-			remove(notes);
+
+			FlxG.sound.music.time = 0;
+			vocals.time = 0;
 
 			Conductor.songPosition = 0;
 		}
