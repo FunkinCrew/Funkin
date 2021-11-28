@@ -219,7 +219,9 @@ class ModchartUtilities
             @:privateAccess
             {
                 FlxG.sound.music.volume = 0;
-                PlayState.instance.vocals.volume = 0;
+
+                if(PlayState.instance.vocals.active && PlayState.instance.vocals.playing)
+                    PlayState.instance.vocals.volume = 0;
             }
         });
 
