@@ -486,6 +486,7 @@ class ModchartUtilities
 
         Lua_helper.add_callback(lua,"setActorAlpha", function(alpha:Float,id:String) {
             getActorByName(id).alpha = alpha;
+            getActorByName(id).updateColorTransform();
         });
 
         Lua_helper.add_callback(lua,"setActorColor", function(id:String,r:Int,g:Int,b:Int,alpha:Int = 255) {
