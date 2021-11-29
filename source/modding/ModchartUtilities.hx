@@ -476,6 +476,10 @@ class ModchartUtilities
             getActorByName(id).velocity.x = x;
         });
 
+        Lua_helper.add_callback(lua,"setActorAntialiasing", function(antialiasing:Bool,id:String) {
+            getActorByName(id).antialiasing = antialiasing;
+        });
+
         Lua_helper.add_callback(lua,"addActorAnimation", function(id:String,prefix:String,anim:String,fps:Int = 30, looped:Bool = true) {
             getActorByName(id).animation.addByPrefix(prefix, anim, fps, looped);
         });
