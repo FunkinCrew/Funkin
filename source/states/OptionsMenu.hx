@@ -57,13 +57,10 @@ class OptionsMenu extends MusicBeatState
 		[
 			"Graphics",
 			new PageOption("Back", 0, "Categories"),
-			new BoolOption("Enemy Note Glow", "enemyGlow", FlxG.save.data.enemyGlow, 1),
-			new BoolOption("Note Splashes", "noteSplashes", FlxG.save.data.noteSplashes, 1),
-			new BoolOption("Note Accuracy Text", "msText", FlxG.save.data.msText, 2),
-			new PageOption("Info Display", 5, "Info Display"),
-			new PageOption("Optimizations", 5, "Optimizations"),
-			new MaxFPSOption("Max FPS", 6),
-			new UISkinSelectOption("UI Skin", 7)
+			new PageOption("Note Options", 1, "Note Options"),
+			new PageOption("Info Display", 2, "Info Display"),
+			new PageOption("Optimizations", 3, "Optimizations"),
+			new MaxFPSOption("Max FPS", 4)
 		],
 		[
 			"Tools",
@@ -117,6 +114,15 @@ class OptionsMenu extends MusicBeatState
 			new BoolOption("Ghost Tapping", "ghostTapping", FlxG.save.data.ghostTapping, 9),
 			new BoolOption("No Miss", "nohit", FlxG.save.data.nohit, 6),
 			new BoolOption("Reset Button", "resetButtonOn", FlxG.save.data.resetButtonOn, 7)
+		],
+		[
+			"Note Options",
+			new PageOption("Back", 0, "Graphics"),
+			new NoteBGAlphaMenuOption("Note BG Alpha", 1),
+			new BoolOption("Enemy Note Glow", "enemyGlow", FlxG.save.data.enemyGlow, 2),
+			new BoolOption("Note Splashes", "noteSplashes", FlxG.save.data.noteSplashes, 3),
+			new BoolOption("Note Accuracy Text", "msText", FlxG.save.data.msText, 4),
+			new UISkinSelectOption("UI Skin", 5)
 		]
 	];
 

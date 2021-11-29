@@ -104,6 +104,9 @@ class SaveData {
 
         if(FlxG.save.data.showRatingsOnSide == null)
             FlxG.save.data.showRatingsOnSide = true;
+
+        if(FlxG.save.data.noteBGAlpha == null)
+            FlxG.save.data.noteBGAlpha = 0;
         
         FlxG.save.flush();
 

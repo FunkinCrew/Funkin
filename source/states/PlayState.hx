@@ -272,6 +272,12 @@ class PlayState extends MusicBeatState
 		Conductor.recalculateStuff(songMultiplier);
 		Conductor.safeZoneOffset *= songMultiplier;
 
+		noteBG = new FlxSprite(0,0);
+		noteBG.cameras = [camHUD];
+		noteBG.makeGraphic(1,1000,FlxColor.BLACK);
+
+		add(noteBG);
+
 		if(SONG.stage == null)
 		{
 			switch(storyWeek)
@@ -1156,6 +1162,8 @@ class PlayState extends MusicBeatState
 		return FlxSort.byValues(FlxSort.ASCENDING, Obj1.strumTime, Obj2.strumTime);
 	}
 
+	var noteBG:FlxSprite;
+
 	private function generateStaticArrows(player:Float, ?isPlayer:Bool = false):Void
 	{
 		for (i in 0...SONG.keyCount)
@@ -1229,6 +1237,27 @@ class PlayState extends MusicBeatState
 				}});
 			}
 		}
+
+		if(isPlayer && FlxG.save.data.noteBGAlpha != 0)
+		{
+			updateNoteBGPos();
+			noteBG.alpha = FlxG.save.data.noteBGAlpha;
+		}
+	}
+
+	function updateNoteBGPos()
+	{
+		var bruhVal:Float = 0.0;
+
+		for(note in playerStrums)
+		{
+			bruhVal += note.swagWidth + 2;
+		}
+
+		noteBG.setGraphicSize(Std.int(bruhVal), FlxG.height * 2);
+		noteBG.updateHitbox();
+
+		noteBG.x = playerStrums.members[0].x;
 	}
 
 	function tweenCamIn():Void
@@ -1919,6 +1948,9 @@ class PlayState extends MusicBeatState
 					daNote.destroy();
 				}
 			});
+
+			if(FlxG.save.data.noteBGAlpha != 0)
+				updateNoteBGPos();
 		}
 
 		if (!inCutscene)

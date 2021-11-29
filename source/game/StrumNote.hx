@@ -13,6 +13,8 @@ class StrumNote extends FlxSprite
 	public var resetAnim:Float = 0;
 	private var noteData:Int = 0;
 
+	public var swagWidth:Float = 0;
+
 	public function new(x:Float, y:Float, leData:Int) {
 		noteData = leData;
 		super(x, y);
@@ -35,6 +37,9 @@ class StrumNote extends FlxSprite
 		animation.play(anim, force);
 		//updateHitbox();
         centerOrigin();
+
+		if(anim == "static")
+			swagWidth = width;
 
 		if(PlayState.SONG.ui_Skin != "pixel")
 		{
