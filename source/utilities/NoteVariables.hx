@@ -1,6 +1,5 @@
 package utilities;
 
-import flixel.FlxG;
 import utilities.NoteHandler;
 
 class NoteVariables
@@ -25,7 +24,7 @@ class NoteVariables
         [LEFT, DOWN, UP, RIGHT, RLEFT, RRIGHT, SQUARE, RLEFT, RRIGHT,LEFT, DOWN, UP, RIGHT], // 13
         [LEFT, DOWN, UP, RIGHT, RLEFT, RRIGHT, SQUARE, PLUS, RLEFT, RRIGHT, LEFT, DOWN, UP, RIGHT], // 14
         [LEFT, DOWN, UP, RIGHT, RLEFT, RRIGHT, RUP, PLUS, RUP, RLEFT, RRIGHT, LEFT, DOWN, UP, RIGHT], // 15
-        [LEFT, DOWN, UP, RIGHT, RLEFT, RRIGHT, RLEFT, RRIGHT, RUP, RDOWN, RUP, RDOWN, LEFT, DOWN, UP, RIGHT], // 16
+        [LEFT, DOWN, UP, RIGHT, RLEFT, RDOWN, RUP, RRIGHT, RLEFT, RDOWN, RUP, RRIGHT, LEFT, DOWN, UP, RIGHT], // 16
         [LEFT, DOWN, UP, RIGHT, PLUS, RLEFT, SQUARE, RDOWN, PLUS, RUP, SQUARE, RRIGHT, PLUS, LEFT, DOWN, UP, RIGHT], // 17
         [LEFT, DOWN, UP, RIGHT, LEFT, DOWN, UP, RIGHT, SQUARE, PLUS, RLEFT, RDOWN, RUP, RRIGHT, RLEFT, RDOWN, RUP, RRIGHT] // 18
     ];
@@ -67,7 +66,7 @@ class NoteVariables
         ["left", "down", "up", "right", "rleft", "rright", "square", "rleft2", "rright2", "left2", "down2", "up2", "right2"], // 13
         ["left", "down", "up", "right", "rleft", "rright", "square", "plus", "rleft2", "rright2", "left2", "down2", "up2", "right2"], // 14
         ["left", "down", "up", "right", "rleft", "rright", "rup", "plus", "rup2", "rleft2", "rright2", "left2", "down2", "up2", "right2"], // 15
-        ["left", "down", "up", "right", "rleft", "rright2", "rleft2", "rright", "rup", "rdown2", "rup2", "rdown", "left2", "down2", "up2", "right2"], // 16
+        ["left", "down", "up", "right", "rleft", "rdown", "rup", "rright", "rleft2", "rdown2", "rup2", "rright2", "left2", "down2", "up2", "right2"], // 16
         ["left", "down", "up", "right", "plus", "rleft", "square", "rdown", "plus", "rup", "square", "rright", "plus", "left2", "down2", "up2", "right2"], // 17
         ["left", "down", "up", "right", "left2", "down2", "up2", "right2", "square", "plus", "rleft", "rdown", "rup", "rright", "rleft2", "rdown2", "rup2", "rright2"] // uhh 18
     ];
@@ -88,13 +87,8 @@ class NoteVariables
         ["singLEFT", "singDOWN", "singUP", "singRIGHT", "singLEFT", "singRIGHT", "singUP", "singLEFT", "singRIGHT", "singLEFT", "singDOWN", "singUP", "singRIGHT"], // 13
         ["singLEFT", "singDOWN", "singUP", "singRIGHT", "singLEFT", "singRIGHT", "singUP", "singUP", "singLEFT", "singRIGHT", "singLEFT", "singDOWN", "singUP", "singRIGHT"], // 14
         ["singLEFT", "singDOWN", "singUP", "singRIGHT", "singLEFT", "singRIGHT", "singUP", "singUP", "singUP", "singLEFT", "singRIGHT", "singLEFT", "singDOWN", "singUP", "singRIGHT"], // 15
-        ["singLEFT", "singDOWN", "singUP", "singRIGHT", "singLEFT", "singRIGHT", "singLEFT", "singRIGHT", "singUP", "singDOWN", "singUP", "singDOWN", "singLEFT", "singDOWN", "singUP", "singRIGHT"], // 16
+        ["singLEFT", "singDOWN", "singUP", "singRIGHT", "singLEFT", "singDOWN", "singUP", "singRIGHT", "singLEFT", "singDOWN", "singUP", "singRIGHT", "singLEFT", "singDOWN", "singUP", "singRIGHT"], // 16
         ["singLEFT", "singDOWN", "singUP", "singRIGHT", "singUP", "singLEFT", "singUP", "singDOWN", "singUP", "singUP", "singUP", "singRIGHT", "singUP", "singLEFT", "singDOWN", "singUP", "singRIGHT"], // 17
         ["singLEFT", "singDOWN", "singUP", "singRIGHT", "singLEFT", "singDOWN", "singUP", "singRIGHT", "singUP", "singUP", "singLEFT", "singDOWN", "singUP", "singRIGHT", "singLEFT", "singDOWN", "singUP", "singRIGHT"] // 18
     ];
-
-    public static function updateStuffs()
-    {
-        Player_Binds = [FlxG.save.data.leftBind,FlxG.save.data.downBind,FlxG.save.data.upBind,FlxG.save.data.rightBind];
-    }
 }
