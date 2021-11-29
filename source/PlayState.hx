@@ -372,6 +372,7 @@ class PlayState extends MusicBeatState
 		FlxG.cameras.add(camHUD, false);
 	}
 
+	// a lot of this stage code will be cleaned up more when the stage load shit is more fleshed out! For now it's still a lot of hardcoded shit!!
 	function initStageBullshit()
 	{
 		switch (SONG.song.toLowerCase())
@@ -1944,11 +1945,9 @@ class PlayState extends MusicBeatState
 				moveTank();
 		}
 
-		super.update(elapsed);
+		super.update(elapsed); // idk if there's a particular reason why some code is before super.update(), and some is after. Prob nothing too much to worry about.
 
 		wiggleShit.update(elapsed);
-
-		scoreTxt.text = "Score:" + songScore;
 
 		var androidPause:Bool = false;
 
@@ -1991,6 +1990,9 @@ class PlayState extends MusicBeatState
 			DiscordClient.changePresence("Chart Editor", null, null, true);
 			#end
 		}
+
+		// UI UPDATES
+		scoreTxt.text = "Score:" + songScore;
 
 		if (FlxG.keys.justPressed.EIGHT)
 			FlxG.switchState(new ui.animDebugShit.DebugBoundingState());
