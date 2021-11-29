@@ -2110,7 +2110,7 @@ class PlayState extends MusicBeatState
 
 		hitNotes += hitNoteAmount;
 
-		if (daRating == "sick" || daRating == "marvelous" && FlxG.save.data.noteSplashes)
+		if ((daRating == "sick" || daRating == "marvelous") && FlxG.save.data.noteSplashes)
 		{
 			playerStrums.forEachAlive(function(spr:FlxSprite) {
 				if(spr.ID == Math.abs(noteData))
