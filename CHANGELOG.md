@@ -11,6 +11,7 @@ All notable changes will be documented in this file.
 - Song Time Bar.
 - Ratings on the side of the screen.
 - An option for simpler ratings (Sick, Good, Ok rather than S, A, B).
+- Added a confirmation screen for resetting song score and week score.
 ### Fixed
 - Note Animations displaying at 30 FPS instead of 24 FPS.
 - Fixed input glitch where stacked notes would make the notes ahead of them just dissappear.

@@ -1,5 +1,6 @@
 package states;
 
+import substates.ResetScoreSubstate;
 #if discord_rpc
 import utilities.Discord.DiscordClient;
 #end
@@ -116,8 +117,8 @@ class StoryMenuState extends MusicBeatState
 
 				if(controls.RESET)
 				{
-					Highscore.resetWeek(curWeek, curDifficulties[curDifficulty][0], currentGroup.pathName + "Week");
-					intendedScore = 0;
+					openSubState(new ResetScoreSubstate("nonelolthisisweekslmao", curDifficulties[curDifficulty][0], curWeek, currentGroup.pathName + "Week", true));
+					changeWeek();
 				}
 			}
 
@@ -135,6 +136,15 @@ class StoryMenuState extends MusicBeatState
 		}
 
 		super.update(elapsed);
+	}
+
+	override function closeSubState()
+	{
+		changeWeek();
+		
+		FlxG.mouse.visible = false;
+
+		super.closeSubState();
 	}
 
 	function createStoryUI()

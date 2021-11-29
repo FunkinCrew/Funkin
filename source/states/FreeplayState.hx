@@ -1,5 +1,6 @@
 package states;
 
+import substates.ResetScoreSubstate;
 #if discord_rpc
 import utilities.Discord.DiscordClient;
 #end
@@ -453,13 +454,19 @@ class FreeplayState extends MusicBeatState
 
 			if(controls.RESET && !shift)
 			{
-				Highscore.resetSong(songs[curSelected].songName, curDiffString);
-				intendedScore = 0;
-
-				curRank = "N/A";
-				diffText.text = "< " + curDiffString + " - " + curRank + " >";
+				openSubState(new ResetScoreSubstate(songs[curSelected].songName, curDiffString));
+				changeSelection();
 			}
 		}
+	}
+
+	override function closeSubState()
+	{
+		changeSelection();
+		
+		FlxG.mouse.visible = false;
+
+		super.closeSubState();
 	}
 
 	function changeDiff(change:Int = 0)
