@@ -262,12 +262,12 @@ class ModchartUtilities
 
         // sprites
 
-        Lua_helper.add_callback(lua,"makeSprite", function(id:String, filename:String, x:Float, y:Float, size:Float, ?library:String = "stages") {
+        Lua_helper.add_callback(lua,"makeSprite", function(id:String, filename:String, x:Float, y:Float, size:Float, ?library:String) {
             if(!lua_Sprites.exists(id))
             {
                 var Sprite:FlxSprite = new FlxSprite(x, y);
 
-                Sprite.loadGraphic(Paths.image(library == "stages" ? PlayState.SONG.stage + "/" + filename : filename, library));
+                Sprite.loadGraphic(Paths.image(library == null ? PlayState.SONG.stage + "/" + filename : filename, library == null ? "stages" : library));
 
                 Sprite.setGraphicSize(Std.int(Sprite.width * size));
                 Sprite.updateHitbox();
@@ -282,12 +282,12 @@ class ModchartUtilities
 
         Lua_helper.add_callback(lua, "getProperty", getPropertyByName);
 
-        Lua_helper.add_callback(lua,"makeAnimatedSprite", function(id:String, filename:String, x:Float, y:Float, size:Float, ?library:String = "stages") {
+        Lua_helper.add_callback(lua,"makeAnimatedSprite", function(id:String, filename:String, x:Float, y:Float, size:Float, ?library:String) {
             if(!lua_Sprites.exists(id))
             {
                 var Sprite:FlxSprite = new FlxSprite(x, y);
 
-                Sprite.frames = Paths.getSparrowAtlas(library == "stages" ? PlayState.SONG.stage + "/" + filename : filename, library);
+                Sprite.frames = Paths.getSparrowAtlas(library == null ? PlayState.SONG.stage + "/" + filename : filename, library == null ? "stages" : library);
 
                 Sprite.setGraphicSize(Std.int(Sprite.width * size));
                 Sprite.updateHitbox();
