@@ -214,62 +214,17 @@ class ModchartUtilities
         
         // callbacks
 
-        // song stuff
-
-        Lua_helper.add_callback(lua,"setSongPosition", function(position:Float) {
-            Conductor.songPosition = position;
-            setVar('songPos', Conductor.songPosition);
-        });
-
-        Lua_helper.add_callback(lua,"stopSong", function() {
-            @:privateAccess
-            {
-                PlayState.instance.paused = true;
-
-                FlxG.sound.music.volume = 0;
-                PlayState.instance.vocals.volume = 0;
-    
-                PlayState.instance.notes.clear();
-                PlayState.instance.remove(PlayState.instance.notes);
-
-                FlxG.sound.music.time = 0;
-                PlayState.instance.vocals.time = 0;
-    
-                Conductor.songPosition = 0;
-                PlayState.songMultiplier = 0;
-
-                Conductor.recalculateStuff(PlayState.songMultiplier);
-
-                #if cpp
-                lime.media.openal.AL.sourcef(FlxG.sound.music._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, PlayState.songMultiplier);
-
-                if(PlayState.instance.vocals.playing)
-                    lime.media.openal.AL.sourcef(PlayState.instance.vocals._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, PlayState.songMultiplier);
-				#end
-
-                PlayState.instance.stopSong = true;
-            }
-
-            return true;
-        });
-
-        Lua_helper.add_callback(lua,"endSong", function() {
-            @:privateAccess
-            PlayState.instance.endSong();
-
-            return true;
-        });
-
         // sprites
 
-        Lua_helper.add_callback(lua,"makeSprite", function(id:String, filename:String, x:Float, y:Float, size:Float, library:String) {
+        Lua_helper.add_callback(lua,"makeSprite", function(id:String, filename:String, x:Float, y:Float, size:Float) {
             if(!lua_Sprites.exists(id))
             {
                 var Sprite:FlxSprite = new FlxSprite(x, y);
 
-                Sprite.loadGraphic(Paths.image(filename, library));
+                Sprite.loadGraphic(Paths.image(PlayState.SONG.stage + "/" + filename, "stages"));
 
                 Sprite.setGraphicSize(Std.int(Sprite.width * size));
+                Sprite.updateHitbox();
     
                 lua_Sprites.set(id, Sprite);
     
@@ -281,14 +236,15 @@ class ModchartUtilities
 
         Lua_helper.add_callback(lua, "getProperty", getPropertyByName);
 
-        Lua_helper.add_callback(lua,"makeAnimatedSprite", function(id:String, filename:String, x:Float, y:Float, size:Float, library:String) {
+        Lua_helper.add_callback(lua,"makeAnimatedSprite", function(id:String, filename:String, x:Float, y:Float, size:Float) {
             if(!lua_Sprites.exists(id))
             {
                 var Sprite:FlxSprite = new FlxSprite(x, y);
 
-                Sprite.frames = Paths.getSparrowAtlas(filename, library);
+                Sprite.frames = Paths.getSparrowAtlas(PlayState.SONG.stage + "/" + filename, "stages");
 
                 Sprite.setGraphicSize(Std.int(Sprite.width * size));
+                Sprite.updateHitbox();
     
                 lua_Sprites.set(id, Sprite);
     
@@ -1035,6 +991,52 @@ class ModchartUtilities
                 lua_Characters.set("gfCharacter" + char, PlayState.gf.otherCharacters[char]);
             }
         }
+
+        // song stuff
+
+        Lua_helper.add_callback(lua,"setSongPosition", function(position:Float) {
+            Conductor.songPosition = position;
+            setVar('songPos', Conductor.songPosition);
+        });
+
+        Lua_helper.add_callback(lua,"stopSong", function() {
+            @:privateAccess
+            {
+                PlayState.instance.paused = true;
+
+                FlxG.sound.music.volume = 0;
+                PlayState.instance.vocals.volume = 0;
+    
+                PlayState.instance.notes.clear();
+                PlayState.instance.remove(PlayState.instance.notes);
+
+                FlxG.sound.music.time = 0;
+                PlayState.instance.vocals.time = 0;
+    
+                Conductor.songPosition = 0;
+                PlayState.songMultiplier = 0;
+
+                Conductor.recalculateStuff(PlayState.songMultiplier);
+
+                #if cpp
+                lime.media.openal.AL.sourcef(FlxG.sound.music._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, PlayState.songMultiplier);
+
+                if(PlayState.instance.vocals.playing)
+                    lime.media.openal.AL.sourcef(PlayState.instance.vocals._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, PlayState.songMultiplier);
+                #end
+
+                PlayState.instance.stopSong = true;
+            }
+
+            return true;
+        });
+
+        Lua_helper.add_callback(lua,"endSong", function() {
+            @:privateAccess
+            PlayState.instance.endSong();
+
+            return true;
+        });
     }
 
     private function convert(v : Any, type : String) : Dynamic { // I didn't write this lol
