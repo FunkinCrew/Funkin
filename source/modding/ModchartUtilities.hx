@@ -484,6 +484,14 @@ class ModchartUtilities
             getActorByName(id).animation.play(anim, force, reverse);
         });
 
+        Lua_helper.add_callback(lua,"playCharacterAnimation", function(id:String,anim:String,force:Bool = false,reverse:Bool = false) {
+            getActorByName(id).playAnim(anim, force, reverse);
+        });
+
+        Lua_helper.add_callback(lua,"playCharacterDance", function(id:String,?altAnim:String) {
+            getActorByName(id).dance(altAnim);
+        });
+
         Lua_helper.add_callback(lua,"setActorAlpha", function(alpha:Float,id:String) {
             getActorByName(id).alpha = alpha;
             getActorByName(id).updateColorTransform();
