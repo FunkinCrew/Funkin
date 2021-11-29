@@ -462,7 +462,7 @@ class GameStateOption extends Option
 #end
 
 /**
-* Option that opens the song offset menu when selected.
+* Option that opens the max fps menu when selected.
 */
 class MaxFPSOption extends Option
 {
@@ -491,7 +491,7 @@ class MaxFPSOption extends Option
 }
 
 /**
-* Option that opens the song offset menu when selected.
+* Option that opens the judgement menu when selected.
 */
 class JudgementMenuOption extends Option
 {
