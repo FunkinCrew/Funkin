@@ -60,7 +60,7 @@ class SongMenuItem extends FlxSpriteGroup
 
 	function set_selected(value:Bool):Bool
 	{
-		trace(value);
+		// trace(value);
 
 		// cute one liners, lol!
 		songText.alpha = value ? 1 : 0.6;
