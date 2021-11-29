@@ -2597,6 +2597,9 @@ class PlayState extends MusicBeatState
 				updateRatingText();
 			}
 
+			if(note.shouldHit && note.isSustainNote)
+				health += 0.02;
+
 			if(!note.isSustainNote)
 				totalNotes++;
 
