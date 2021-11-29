@@ -273,7 +273,6 @@ class ModchartUtilities
                     Sprite.loadGraphic(Paths.image(filename, library));
 
                 Sprite.setGraphicSize(Std.int(Sprite.width * size));
-                Sprite.updateHitbox();
     
                 lua_Sprites.set(id, Sprite);
     
@@ -296,7 +295,6 @@ class ModchartUtilities
                     Sprite.frames = Paths.getSparrowAtlas(filename, library);
 
                 Sprite.setGraphicSize(Std.int(Sprite.width * size));
-                Sprite.updateHitbox();
     
                 lua_Sprites.set(id, Sprite);
     
