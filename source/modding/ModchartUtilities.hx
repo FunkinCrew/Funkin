@@ -221,7 +221,7 @@ class ModchartUtilities
             {
                 var Sprite:FlxSprite = new FlxSprite(x, y);
 
-                Sprite.loadGraphic(Paths.image(PlayState.SONG.stage + "/" + filename, "stages"));
+                Sprite.loadGraphic(Paths.image(filename, "preload"));
 
                 Sprite.setGraphicSize(Std.int(Sprite.width * size));
                 Sprite.updateHitbox();
@@ -241,7 +241,7 @@ class ModchartUtilities
             {
                 var Sprite:FlxSprite = new FlxSprite(x, y);
 
-                Sprite.frames = Paths.getSparrowAtlas(PlayState.SONG.stage + "/" + filename, "stages");
+                Sprite.frames = Paths.getSparrowAtlas(filename, "preload");
 
                 Sprite.setGraphicSize(Std.int(Sprite.width * size));
                 Sprite.updateHitbox();
