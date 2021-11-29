@@ -59,7 +59,7 @@ class ControlMenuSubstate extends MusicBeatSubstate
 
         FlxTween.tween(bg, {alpha: 0.5}, 1, {ease: FlxEase.circOut, startDelay: 0});
 
-        #if sys
+        #if PRELOAD_ALL
         create_Arrows();
         add(arrow_Group);
         #else
