@@ -10,11 +10,11 @@ using StringTools;
 typedef SwagSong =
 {
 	var song:String;
-	var notes:Array<SwagSection>;
+	var notes:Array<Array<SwagSection>>;
 	var bpm:Float;
 	var needsVoices:Bool;
 	var voiceList:Array<String>;
-	var speed:Float;
+	var speed:Array<Float>;
 
 	var player1:String;
 	var player2:String;
@@ -24,7 +24,7 @@ typedef SwagSong =
 class Song
 {
 	public var song:String;
-	public var notes:Array<SwagSection>;
+	public var notes:Array<Array<SwagSection>>;
 	public var bpm:Float;
 	public var needsVoices:Bool = true;
 	public var speed:Float = 1;
@@ -72,6 +72,8 @@ class Song
 	{
 		var swagShit:SwagSong = cast Json.parse(rawJson).song;
 		swagShit.validScore = true;
+		trace(swagShit.notes[Conductor.curNotes]);
+		// swagShit.notes[0] = cast Json.parse(rawJson).song.notes[Conductor.curNotes]; // by default uses
 		return swagShit;
 	}
 }

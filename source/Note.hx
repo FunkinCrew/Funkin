@@ -48,8 +48,8 @@ class Note extends FlxSprite
 	public static var BAD_THRESHOLD:Float = 0.8; // 	125ms	, 8 frames
 	public static var GOOD_THRESHOLD:Float = 0.55; // 	91.67ms	, 5.5 frames
 	public static var SICK_THRESHOLD:Float = 0.2; // 	33.33ms	, 2 frames
-	// anything below sick threshold is sick
 
+	// anything below sick threshold is sick
 	public static var arrowColors:Array<Float> = [1, 1, 1, 1];
 
 	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false)
@@ -195,7 +195,7 @@ class Note extends FlxSprite
 
 				prevNote.updateHitbox();
 
-				var scaleThing:Float = Math.round((Conductor.stepCrochet) * (0.45 * FlxMath.roundDecimal(PlayState.SONG.speed, 2)));
+				var scaleThing:Float = Math.round((Conductor.stepCrochet) * (0.45 * FlxMath.roundDecimal(PlayState.SONG.speed[Conductor.curNotes], 2)));
 				// get them a LIL closer together cuz the antialiasing blurs the edges
 				if (antialiasing)
 					scaleThing *= 1.0 + (1.0 / prevNote.frameHeight);

@@ -482,7 +482,7 @@ class FreeplayState extends MusicBeatState
 					curDifficulty = 1;
 			}*/
 
-			PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
+			PlayState.SONG = Song.loadFromJson(poop + '-new', songs[curSelected].songName.toLowerCase());
 			PlayState.isStoryMode = false;
 			PlayState.storyDifficulty = curDifficulty;
 

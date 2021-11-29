@@ -552,7 +552,7 @@ class Character extends FlxSprite
 	{
 		var swagshit = Song.loadFromJson('picospeaker', 'stress');
 
-		var notes = swagshit.notes;
+		var notes = swagshit.notes[0];
 
 		for (section in notes)
 		{

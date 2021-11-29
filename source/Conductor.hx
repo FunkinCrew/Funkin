@@ -6,7 +6,6 @@ import Song.SwagSong;
  * ...
  * @author
  */
-
 typedef BPMChangeEvent =
 {
 	var stepTime:Int;
@@ -23,11 +22,11 @@ class Conductor
 	public static var lastSongPos:Float;
 	public static var offset:Float = 0;
 
+	public static var curNotes:Int = 0;
+
 	public static var bpmChangeMap:Array<BPMChangeEvent> = [];
 
-	public function new()
-	{
-	}
+	public function new() {}
 
 	public static function mapBPMChanges(song:SwagSong)
 	{
@@ -38,9 +37,9 @@ class Conductor
 		var totalPos:Float = 0;
 		for (i in 0...song.notes.length)
 		{
-			if(song.notes[i].changeBPM && song.notes[i].bpm != curBPM)
+			if (song.notes[Conductor.curNotes][i].changeBPM && song.notes[Conductor.curNotes][i].bpm != curBPM)
 			{
-				curBPM = song.notes[i].bpm;
+				curBPM = song.notes[Conductor.curNotes][i].bpm;
 				var event:BPMChangeEvent = {
 					stepTime: totalSteps,
 					songTime: totalPos,
@@ -49,7 +48,7 @@ class Conductor
 				bpmChangeMap.push(event);
 			}
 
-			var deltaSteps:Int = song.notes[i].lengthInSteps;
+			var deltaSteps:Int = song.notes[Conductor.curNotes][i].lengthInSteps;
 			totalSteps += deltaSteps;
 			totalPos += ((60 / curBPM) * 1000 / 4) * deltaSteps;
 		}
