@@ -195,7 +195,7 @@ class Note extends FlxSprite
 
 				prevNote.updateHitbox();
 
-				var scaleThing:Float = Math.round((Conductor.stepCrochet) * (0.45 * FlxMath.roundDecimal(PlayState.SONG.speed[Conductor.curNotes], 2)));
+				var scaleThing:Float = Math.round((Conductor.stepCrochet) * (0.45 * FlxMath.roundDecimal(PlayState.SONG.speed[SongLoad.curDiff], 2)));
 				// get them a LIL closer together cuz the antialiasing blurs the edges
 				if (antialiasing)
 					scaleThing *= 1.0 + (1.0 / prevNote.frameHeight);

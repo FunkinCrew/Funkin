@@ -1573,7 +1573,7 @@ class PlayState extends MusicBeatState
 		var noteData:Array<SwagSection>;
 
 		// NEW SHIT
-		noteData = SONG.notes[Conductor.curNotes];
+		noteData = SONG.notes[SongLoad.curDiff];
 
 		for (section in noteData)
 		{
@@ -2037,9 +2037,9 @@ class PlayState extends MusicBeatState
 			changeSection(-1);
 		#end
 
-		if (generatedMusic && SONG.notes[Conductor.curNotes][Std.int(curStep / 16)] != null)
+		if (generatedMusic && SONG.notes[SongLoad.curDiff][Std.int(curStep / 16)] != null)
 		{
-			cameraRightSide = SONG.notes[Conductor.curNotes][Std.int(curStep / 16)].mustHitSection;
+			cameraRightSide = SONG.notes[SongLoad.curDiff][Std.int(curStep / 16)].mustHitSection;
 
 			cameraMovement();
 		}
@@ -2110,7 +2110,7 @@ class PlayState extends MusicBeatState
 			}
 		}
 
-		while (unspawnNotes[0] != null && unspawnNotes[0].strumTime - Conductor.songPosition < 1800 / SONG.speed[Conductor.curNotes])
+		while (unspawnNotes[0] != null && unspawnNotes[0].strumTime - Conductor.songPosition < 1800 / SONG.speed[SongLoad.curDiff])
 		{
 			var dunceNote:Note = unspawnNotes[0];
 			notes.add(dunceNote);
@@ -2135,7 +2135,7 @@ class PlayState extends MusicBeatState
 				}
 
 				var strumLineMid = strumLine.y + Note.swagWidth / 2;
-				daNote.y = (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(SONG.speed[Conductor.curNotes], 2));
+				daNote.y = (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(SONG.speed[SongLoad.curDiff], 2));
 
 				if (PreferencesMenu.getPref('downscroll'))
 				{
@@ -2172,9 +2172,9 @@ class PlayState extends MusicBeatState
 
 					var altAnim:String = "";
 
-					if (SONG.notes[Conductor.curNotes][Math.floor(curStep / 16)] != null)
+					if (SONG.notes[SongLoad.curDiff][Math.floor(curStep / 16)] != null)
 					{
-						if (SONG.notes[Conductor.curNotes][Math.floor(curStep / 16)].altAnim)
+						if (SONG.notes[SongLoad.curDiff][Math.floor(curStep / 16)].altAnim)
 							altAnim = '-alt';
 					}
 
@@ -2207,7 +2207,7 @@ class PlayState extends MusicBeatState
 				}
 
 				// WIP interpolation shit? Need to fix the pause issue
-				// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * SONG.speed[Conductor.curNotes]));
+				// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * SONG.speed[SongLoad.curDiff]));
 
 				// removing this so whether the note misses or not is entirely up to Note class
 				// var noteMiss:Bool = daNote.y < -daNote.height;
@@ -2291,9 +2291,9 @@ class PlayState extends MusicBeatState
 		var daPos:Float = 0;
 		for (i in 0...(Std.int(curStep / 16 + sec)))
 		{
-			if (SONG.notes[Conductor.curNotes][i].changeBPM)
+			if (SONG.notes[SongLoad.curDiff][i].changeBPM)
 			{
-				daBPM = SONG.notes[Conductor.curNotes][i].bpm;
+				daBPM = SONG.notes[SongLoad.curDiff][i].bpm;
 			}
 			daPos += 4 * (1000 * 60 / daBPM);
 		}
@@ -3070,17 +3070,17 @@ class PlayState extends MusicBeatState
 			notes.sort(sortNotes, FlxSort.DESCENDING);
 		}
 
-		if (SONG.notes[Conductor.curNotes][Math.floor(curStep / 16)] != null)
+		if (SONG.notes[SongLoad.curDiff][Math.floor(curStep / 16)] != null)
 		{
-			if (SONG.notes[Conductor.curNotes][Math.floor(curStep / 16)].changeBPM)
+			if (SONG.notes[SongLoad.curDiff][Math.floor(curStep / 16)].changeBPM)
 			{
-				Conductor.changeBPM(SONG.notes[Conductor.curNotes][Math.floor(curStep / 16)].bpm);
+				Conductor.changeBPM(SONG.notes[SongLoad.curDiff][Math.floor(curStep / 16)].bpm);
 				FlxG.log.add('CHANGED BPM!');
 			}
 			// else
 			// Conductor.changeBPM(SONG.bpm);
 		}
-		// FlxG.log.add('change bpm' + SONG.notes[Conductor.curNotes][Std.int(curStep / 16)].changeBPM);
+		// FlxG.log.add('change bpm' + SONG.notes[SongLoad.curDiff][Std.int(curStep / 16)].changeBPM);
 
 		// HARDCODING FOR MILF ZOOMS!
 
@@ -3106,9 +3106,9 @@ class PlayState extends MusicBeatState
 		iconP2.updateHitbox();
 
 		if (curBeat % 8 == 7
-			&& SONG.notes[Conductor.curNotes][Math.floor(curStep / 16)].mustHitSection
+			&& SONG.notes[SongLoad.curDiff][Math.floor(curStep / 16)].mustHitSection
 			&& combo > 5
-			&& !SONG.notes[Conductor.curNotes][Math.floor(curStep / 16) + 1].mustHitSection)
+			&& !SONG.notes[SongLoad.curDiff][Math.floor(curStep / 16) + 1].mustHitSection)
 		{
 			var animShit:ComboCounter = new ComboCounter(-100, 300, combo);
 			animShit.scrollFactor.set(0.6, 0.6);

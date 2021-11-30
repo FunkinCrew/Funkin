@@ -23,6 +23,16 @@ typedef SwagSong =
 
 class SongLoad
 {
+	public static var curDiff(default, set):Int = 0;
+	public static var curNotes:Array<SwagSection>;
+	public static var songData:SwagSong;
+
+	static function set_curDiff(val:Int):Int
+	{
+		// automatically changes the selected NOTES?
+		return val;
+	}
+
 	public static function loadFromJson(jsonInput:String, ?folder:String):SwagSong
 	{
 		var rawJson = Assets.getText(Paths.json(folder.toLowerCase() + '/' + jsonInput.toLowerCase())).trim();
@@ -56,7 +66,10 @@ class SongLoad
 	{
 		var swagShit:SwagSong = cast Json.parse(rawJson).song;
 		swagShit.validScore = true;
-		// swagShit.notes[0] = cast Json.parse(rawJson).song.notes[Conductor.curNotes]; // by default uses
+		// swagShit.notes[0] = cast Json.parse(rawJson).song.notes[SongLoad.curDiff]; // by default uses
+
+		songData = swagShit;
+
 		return swagShit;
 	}
 }
