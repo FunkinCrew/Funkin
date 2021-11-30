@@ -1,5 +1,6 @@
 package modding;
 
+import game.Note;
 import game.Boyfriend;
 import flixel.util.FlxTimer;
 import ui.HealthIcon;
@@ -1047,14 +1048,14 @@ class ModchartUtilities
         Lua_helper.add_callback(lua,"endSong", function() {
             @:privateAccess
             {
-                PlayState.instance.stopSong = false;
-                PlayState.instance.paused = false;
-                PlayState.songMultiplier = oldMultiplier;
-                
-                PlayState.instance.endSong();
-    
-                return true;
+                FlxG.sound.music.time = FlxG.sound.music.length;
+                PlayState.instance.vocals.time = FlxG.sound.music.length;
+
+                PlayState.instance.health = 500000;
+                PlayState.instance.invincible = true;
             }
+
+            return true;
         });
     }
 

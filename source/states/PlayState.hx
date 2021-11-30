@@ -1019,6 +1019,8 @@ class PlayState extends MusicBeatState
 	var lastReportedPlayheadPosition:Int = 0;
 	var songTime:Float = 0;
 
+	var invincible:Bool = false;
+
 	function startSong():Void
 	{
 		startingSong = false;
@@ -1353,7 +1355,11 @@ class PlayState extends MusicBeatState
 				vocals.pause();
 				FlxG.sound.music.pause();
 		
-				Conductor.songPosition = FlxG.sound.music.time;
+				if(FlxG.sound.music.time >= FlxG.sound.music.length)
+					Conductor.songPosition = FlxG.sound.music.length;
+				else
+					Conductor.songPosition = FlxG.sound.music.time;
+
 				vocals.time = Conductor.songPosition;
 				
 				FlxG.sound.music.play();
@@ -1408,7 +1414,7 @@ class PlayState extends MusicBeatState
 
 	override public function update(elapsed:Float)
 	{
-		if(stopSong)
+		if(stopSong && !switchedStates)
 		{
 			PlayState.instance.paused = true;
 
@@ -1420,19 +1426,22 @@ class PlayState extends MusicBeatState
 			Conductor.songPosition = 0;
 		}
 
-		if (SONG.notes[Math.floor(curStep / 16)] != null)
+		if(!switchedStates)
 		{
-			if (SONG.notes[Math.floor(curStep / 16)].altAnim)
-				altAnim = '-alt';
-			else
-				altAnim = "";
+			if (SONG.notes[Math.floor(curStep / 16)] != null)
+			{
+				if (SONG.notes[Math.floor(curStep / 16)].altAnim)
+					altAnim = '-alt';
+				else
+					altAnim = "";
+			}
 		}
 
 		super.update(elapsed);
 
 		if (generatedMusic)
 		{
-			if (startedCountdown && canPause && !endingSong)
+			if (startedCountdown && canPause && !endingSong && !switchedStates)
 			{
 				// Song ends abruptly on slow rate even with second condition being deleted, 
 				// and if it's deleted on songs like cocoa then it would end without finishing instrumental fully,
@@ -1452,7 +1461,7 @@ class PlayState extends MusicBeatState
 
 		FlxG.camera.followLerp = 0.04 * (60 / Main.display.currentFPS);
 
-		if(totalNotes != 0)
+		if(totalNotes != 0 && !switchedStates)
 		{
 			accuracy = 100 / (totalNotes / hitNotes);
 			// math
@@ -1483,7 +1492,7 @@ class PlayState extends MusicBeatState
 			#end
 		}
 
-		if (FlxG.keys.justPressed.SEVEN)
+		if (FlxG.keys.justPressed.SEVEN && !switchedStates)
 		{
 			#if linc_luajit
 			if(luaModchart != null)
@@ -1504,7 +1513,7 @@ class PlayState extends MusicBeatState
 		}
 
 		#if linc_luajit
-		if (executeModchart && luaModchart != null && generatedMusic)
+		if (executeModchart && luaModchart != null && generatedMusic && !switchedStates)
 		{
 			luaModchart.setVar('songPos', Conductor.songPosition);
 			luaModchart.setVar('hudZoom', camHUD.zoom);
@@ -1586,20 +1595,23 @@ class PlayState extends MusicBeatState
 				iconP1.animation.curAnim.curFrame = 0;
 		}
 
-		if (startingSong)
+		if(!switchedStates)
 		{
-			if (startedCountdown)
+			if (startingSong)
 			{
-				Conductor.songPosition += (FlxG.elapsed * 1000);
-
-				if (Conductor.songPosition >= 0)
-					startSong();
+				if (startedCountdown)
+				{
+					Conductor.songPosition += (FlxG.elapsed * 1000);
+	
+					if (Conductor.songPosition >= 0)
+						startSong();
+				}
 			}
+			else
+				Conductor.songPosition += (FlxG.elapsed * 1000) * songMultiplier;
 		}
-		else
-			Conductor.songPosition += (FlxG.elapsed * 1000) * songMultiplier;
 
-		if (generatedMusic && PlayState.SONG.notes[Std.int(curStep / 16)] != null)
+		if (generatedMusic && PlayState.SONG.notes[Std.int(curStep / 16)] != null && !switchedStates)
 		{
 			//offsetX = luaModchart.getVar("followXOffset", "float");
 			//offsetY = luaModchart.getVar("followYOffset", "float");
@@ -1657,7 +1669,7 @@ class PlayState extends MusicBeatState
 			}
 		}
 
-		if (camZooming)
+		if (camZooming && !switchedStates)
 		{
 			FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, 0.95);
 			camHUD.zoom = FlxMath.lerp(1, camHUD.zoom, 0.95);
@@ -1690,7 +1702,7 @@ class PlayState extends MusicBeatState
 		}
 
 		// RESET = Quick Game Over Screen
-		if (FlxG.save.data.resetButtonOn)
+		if (FlxG.save.data.resetButtonOn && !switchedStates)
 		{
 			if (controls.RESET)
 			{ 
@@ -1702,7 +1714,7 @@ class PlayState extends MusicBeatState
 		if (FlxG.save.data.nohit && misses > 0)
 			health = 0;
 
-		if (health <= 0 && !switchedStates)
+		if (health <= 0 && !switchedStates && !invincible)
 		{
 			boyfriend.stunned = true;
 
@@ -1729,7 +1741,7 @@ class PlayState extends MusicBeatState
 			#end
 		}
 
-		if (unspawnNotes[0] != null)
+		if (unspawnNotes[0] != null && !switchedStates)
 		{
 			if (unspawnNotes[0].strumTime - Conductor.songPosition < 1500)
 			{
@@ -1741,7 +1753,7 @@ class PlayState extends MusicBeatState
 			}
 		}
 
-		if (generatedMusic)
+		if (generatedMusic && !switchedStates)
 		{
 			var fakeCrochet:Float = ((60 / SONG.bpm) * 1000) / songMultiplier;
 
@@ -1949,11 +1961,11 @@ class PlayState extends MusicBeatState
 				}
 			});
 
-			if(FlxG.save.data.noteBGAlpha != 0)
+			if(FlxG.save.data.noteBGAlpha != 0 && !switchedStates)
 				updateNoteBGPos();
 		}
 
-		if (!inCutscene)
+		if (!inCutscene && !switchedStates)
 			keyShit(elapsed);
 
 		currentBeat = curBeat;
@@ -2010,14 +2022,6 @@ class PlayState extends MusicBeatState
 					switchedStates = true;
 					vocals.stop();
 
-					#if linc_luajit
-					if(luaModchart != null)
-					{
-						luaModchart.die();
-						luaModchart = null;
-					}
-					#end
-
 					FlxG.switchState(new StoryMenuState());
 
 					arrow_Type_Sprites = [];
@@ -2057,14 +2061,6 @@ class PlayState extends MusicBeatState
 	
 					PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + difficulty, PlayState.storyPlaylist[0]);
 					FlxG.sound.music.stop();
-
-					#if linc_luajit
-					if(luaModchart != null)
-					{
-						luaModchart.die();
-						luaModchart = null;
-					}
-					#end
 	
 					switchedStates = true;
 					LoadingState.loadAndSwitchState(new PlayState());
@@ -2072,17 +2068,12 @@ class PlayState extends MusicBeatState
 			}
 			else
 			{
-				#if linc_luajit
-				if(luaModchart != null)
-				{
-					luaModchart.die();
-					luaModchart = null;
-				}
-				#end
-
 				trace('WENT BACK TO FREEPLAY??');
 				switchedStates = true;
-				vocals.stop();
+
+				if(vocals.active)
+					vocals.stop();
+
 				FlxG.switchState(new FreeplayState());
 
 				arrow_Type_Sprites = [];
@@ -2561,7 +2552,7 @@ class PlayState extends MusicBeatState
 				canMiss = true;
 		}
 
-		if(canMiss)
+		if(canMiss && !invincible)
 		{
 			if(note != null)
 			{
