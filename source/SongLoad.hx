@@ -23,7 +23,7 @@ typedef SwagSong =
 
 class SongLoad
 {
-	public static var curDiff(default, set):Int = 0;
+	public static var curDiff(default, set):Int;
 	public static var curNotes:Array<SwagSection>;
 	public static var songData:SwagSong;
 
