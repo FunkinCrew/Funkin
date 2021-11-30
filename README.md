@@ -82,7 +82,11 @@ To run it from your desktop (Windows, Mac, Linux) it can be a bit more involved.
 
 Once that is done you can open up a command line in the project's directory and run `lime test windows -debug`. Once that command finishes (it takes forever even on a higher end PC), you can run FNF from the .exe file under export\release\windows\bin
 
-As for Mac, `lime test mac -debug` should work, if not the internet surely has a guide on how to compile Haxe stuff for Mac.
+As for Mac, you need to install Xcode, you can either install it from the App Store or from the [Apple Developer Website](https://developer.apple.com/download/)
+
+If you get an error saying that you need a newer macOS version, [you need to install an older version of Xcode](https://developer.apple.com/download/more/) ([Wikipedia comparison table can be found here](https://en.wikipedia.org/wiki/Xcode#Version_comparison_table))
+
+Once Xcode is installed, you are free to enter the project directory and run `lime test mac -debug` to build the mac version.
 
 ### Additional guides
 
