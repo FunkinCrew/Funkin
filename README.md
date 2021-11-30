@@ -84,7 +84,7 @@ Once that is done you can open up a command line in the project's directory and 
 
 As for Mac, you need to install Xcode, you can either install it from the App Store or from the [Apple Developer Website](https://developer.apple.com/download/)
 
-If you get an error saying that you need a newer macOS version, [you need to install an older version of Xcode](https://developer.apple.com/download/more/) (Wikipedia comparison table can be found [here](https://en.wikipedia.org/wiki/Xcode#Version_comparison_table))
+If you get an error saying that you need a newer macOS version, [you need to install an older version of Xcode](https://developer.apple.com/download/more/) (Wikipedia comparison table can be found [here](https://en.wikipedia.org/wiki/Xcode#Version_comparison_table), check the "min macOS" columm.)
 
 Once Xcode is installed, you are free to enter the project directory and run `lime test mac -debug` to build the mac version.
 
