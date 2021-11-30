@@ -21,24 +21,8 @@ typedef SwagSong =
 	var validScore:Bool;
 }
 
-class Song
+class SongLoad
 {
-	public var song:String;
-	public var notes:Array<Array<SwagSection>>;
-	public var bpm:Float;
-	public var needsVoices:Bool = true;
-	public var speed:Float = 1;
-
-	public var player1:String = 'bf';
-	public var player2:String = 'dad';
-
-	public function new(song, notes, bpm)
-	{
-		this.song = song;
-		this.notes = notes;
-		this.bpm = bpm;
-	}
-
 	public static function loadFromJson(jsonInput:String, ?folder:String):SwagSong
 	{
 		var rawJson = Assets.getText(Paths.json(folder.toLowerCase() + '/' + jsonInput.toLowerCase())).trim();
@@ -72,7 +56,6 @@ class Song
 	{
 		var swagShit:SwagSong = cast Json.parse(rawJson).song;
 		swagShit.validScore = true;
-		trace(swagShit.notes[Conductor.curNotes]);
 		// swagShit.notes[0] = cast Json.parse(rawJson).song.notes[Conductor.curNotes]; // by default uses
 		return swagShit;
 	}

@@ -2,7 +2,7 @@ package;
 
 import Conductor.BPMChangeEvent;
 import Section.SwagSection;
-import Song.SwagSong;
+import SongLoad.SwagSong;
 import dsp.FFT;
 import flixel.FlxSprite;
 import flixel.FlxStrip;
@@ -1275,13 +1275,13 @@ class ChartingState extends MusicBeatState
 
 	function loadJson(song:String):Void
 	{
-		PlayState.SONG = Song.loadFromJson(song.toLowerCase(), song.toLowerCase());
+		PlayState.SONG = SongLoad.loadFromJson(song.toLowerCase(), song.toLowerCase());
 		LoadingState.loadAndSwitchState(new ChartingState());
 	}
 
 	function loadAutosave():Void
 	{
-		PlayState.SONG = Song.parseJSONshit(FlxG.save.data.autosave);
+		PlayState.SONG = SongLoad.parseJSONshit(FlxG.save.data.autosave);
 		FlxG.resetState();
 	}
 

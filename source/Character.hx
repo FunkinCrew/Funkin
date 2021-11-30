@@ -550,7 +550,7 @@ class Character extends FlxSprite
 
 	public function loadMappedAnims()
 	{
-		var swagshit = Song.loadFromJson('picospeaker', 'stress');
+		var swagshit = SongLoad.loadFromJson('picospeaker', 'stress');
 
 		var notes = swagshit.notes[0];
 
