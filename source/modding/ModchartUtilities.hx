@@ -1046,9 +1046,15 @@ class ModchartUtilities
 
         Lua_helper.add_callback(lua,"endSong", function() {
             @:privateAccess
-            PlayState.instance.endSong();
-
-            return true;
+            {
+                PlayState.instance.stopSong = false;
+                PlayState.instance.paused = false;
+                PlayState.songMultiplier = oldMultiplier;
+                
+                PlayState.instance.endSong();
+    
+                return true;
+            }
         });
     }
 
