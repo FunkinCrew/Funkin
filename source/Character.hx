@@ -232,14 +232,15 @@ class Character extends FlxSprite
 				frames = tex;
 				animation.addByPrefix('idle', "Pico Idle Dance", 24);
 				animation.addByPrefix('singUP', 'pico Up note0', 24, false);
+			        animation.addByPrefix('singRIGHT', 'Pico NOTE LEFT0', 24, false);
+				animation.addByPrefix('singLEFT', 'Pico Note Right0', 24, false);
 				animation.addByPrefix('singDOWN', 'Pico Down Note0', 24, false);
-			        animation.addByPrefix('singLEFT', 'Pico Note Right0', 24, false);
-				animation.addByPrefix('singRIGHT', 'Pico NOTE LEFT0', 24, false);
+				
+				animation.addByPrefix('singUPmiss', 'pico Up note miss', 24, false);
 				animation.addByPrefix('singRIGHTmiss', 'Pico NOTE LEFT miss', 24, false);
 				animation.addByPrefix('singLEFTmiss', 'Pico Note Right Miss', 24, false);
-				animation.addByPrefix('singUPmiss', 'pico Up note miss', 24);
-				animation.addByPrefix('singDOWNmiss', 'Pico Down Note MISS', 24);
-
+				animation.addByPrefix('singDOWNmiss', 'Pico Down Note MISS', 24, false);
+				
 				addOffset('idle');
 				addOffset("singUP", -29, 27);
 				addOffset("singRIGHT", -68, -7);
