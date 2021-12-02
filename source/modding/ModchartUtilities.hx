@@ -1053,6 +1053,8 @@ class ModchartUtilities
 
                 PlayState.instance.health = 500000;
                 PlayState.instance.invincible = true;
+
+                PlayState.instance.stopSong = false;
             }
 
             return true;
