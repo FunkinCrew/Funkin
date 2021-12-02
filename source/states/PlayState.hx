@@ -1,5 +1,6 @@
 package states;
 
+import lime.utils.Assets;
 #if sys
 import sys.FileSystem;
 #end
@@ -928,10 +929,13 @@ class PlayState extends MusicBeatState
 		#if linc_luajit
 		executeModchart = !(PlayState.SONG.modchartPath == '' || PlayState.SONG.modchartPath == null) && FlxG.save.data.chrsAndBGs;
 
-		if (executeModchart)
+		if(executeModchart)
 		{
-			luaModchart = ModchartUtilities.createModchartUtilities();
-			luaModchart.executeState('start', [PlayState.SONG.song.toLowerCase()]);
+			if(Assets.exists(Paths.lua("modcharts/" + PlayState.SONG.modchartPath)))
+			{
+				luaModchart = ModchartUtilities.createModchartUtilities();
+				luaModchart.executeState('start', [PlayState.SONG.song.toLowerCase()]);
+			}
 		}
 		#end
 
