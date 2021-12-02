@@ -18,6 +18,7 @@ All notable changes will be documented in this file.
 - Fixed input glitch where stacked notes would make the notes ahead of them just dissappear.
 - Fixed charting bug where hit sounds for P1 would play on P2 side.
 - Parts of the charter activating when pressing certain keys while typing a song name.
+- Game Freezing when opening a modchart that doesn't exist.
 ### Changed
 - Better visibilty for Note Splashes.
 - Sustain notes now count towards accuracy (not the misses counter).
