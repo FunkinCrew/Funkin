@@ -1055,6 +1055,8 @@ class ModchartUtilities
                 PlayState.instance.invincible = true;
 
                 PlayState.instance.stopSong = false;
+
+                PlayState.instance.resyncVocals();
             }
 
             return true;
