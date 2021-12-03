@@ -1,5 +1,6 @@
 package modding;
 
+import backgrounds.DancingSprite;
 import game.Note;
 import game.Boyfriend;
 import flixel.util.FlxTimer;
@@ -241,6 +242,24 @@ class ModchartUtilities
             if(!lua_Sprites.exists(id))
             {
                 var Sprite:FlxSprite = new FlxSprite(x, y);
+
+                Sprite.frames = Paths.getSparrowAtlas(filename, "preload");
+
+                Sprite.setGraphicSize(Std.int(Sprite.width * size));
+                Sprite.updateHitbox();
+    
+                lua_Sprites.set(id, Sprite);
+    
+                PlayState.instance.add(Sprite);
+            }
+            else
+                Application.current.window.alert("Sprite " + id + " already exists! Choose a different name!", "Leather Engine Modcharts");
+        });
+
+        Lua_helper.add_callback(lua,"makeDancingSprite", function(id:String, filename:String, x:Float, y:Float, size:Float, ?oneDanceAnimation:Bool, ?antialiasing:Bool) {
+            if(!lua_Sprites.exists(id))
+            {
+                var Sprite:DancingSprite = new DancingSprite(x, y, oneDanceAnimation, antialiasing);
 
                 Sprite.frames = Paths.getSparrowAtlas(filename, "preload");
 
