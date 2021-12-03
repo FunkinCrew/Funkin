@@ -132,14 +132,15 @@ class ChartingState extends MusicBeatState
 		{
 			_song = {
 				song: 'Test',
-				notes: [[]],
+				notes: [],
 				bpm: 150,
 				needsVoices: true,
 				player1: 'bf',
 				player2: 'dad',
-				speed: [1],
+				speed: [],
 				validScore: false,
-				voiceList: ["BF", "BF-pixel"]
+				voiceList: ["BF", "BF-pixel"],
+				extraNotes: []
 			};
 		}
 

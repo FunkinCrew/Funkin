@@ -33,7 +33,7 @@ class Conductor
 		var curBPM:Float = song.bpm;
 		var totalSteps:Int = 0;
 		var totalPos:Float = 0;
-		for (i in 0...song.notes.length)
+		for (i in 0...song.notes[SongLoad.curDiff].length)
 		{
 			if (song.notes[SongLoad.curDiff][i].changeBPM && song.notes[SongLoad.curDiff][i].bpm != curBPM)
 			{

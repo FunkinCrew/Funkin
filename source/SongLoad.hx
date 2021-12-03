@@ -10,28 +10,23 @@ using StringTools;
 typedef SwagSong =
 {
 	var song:String;
-	var notes:Array<Array<SwagSection>>;
+	var notes:Map<String, Array<SwagSection>>;
 	var bpm:Float;
 	var needsVoices:Bool;
 	var voiceList:Array<String>;
-	var speed:Array<Float>;
+	var speed:Map<String, Float>;
 
 	var player1:String;
 	var player2:String;
 	var validScore:Bool;
+	var extraNotes:Map<String, Array<SwagSection>>;
 }
 
 class SongLoad
 {
-	public static var curDiff(default, set):Int;
+	public static var curDiff:String = 'normal';
 	public static var curNotes:Array<SwagSection>;
 	public static var songData:SwagSong;
-
-	static function set_curDiff(val:Int):Int
-	{
-		// automatically changes the selected NOTES?
-		return val;
-	}
 
 	public static function loadFromJson(jsonInput:String, ?folder:String):SwagSong
 	{
@@ -68,7 +63,10 @@ class SongLoad
 		swagShit.validScore = true;
 		// swagShit.notes[0] = cast Json.parse(rawJson).song.notes[SongLoad.curDiff]; // by default uses
 
+		trace(swagShit);
+
 		songData = swagShit;
+		// curNotes = songData.notes.get('normal');
 
 		return swagShit;
 	}
