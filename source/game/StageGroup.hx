@@ -1,23 +1,12 @@
 package game;
 
-import flixel.group.FlxSpriteGroup;
-import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
-import flixel.graphics.frames.FlxFramesCollection;
-import flixel.system.FlxAssets.FlxGraphicAsset;
 import utilities.CoolUtil;
 import lime.utils.Assets;
 import haxe.Json;
-import openfl.display.BitmapData;
-#if polymod
-import polymod.backends.PolymodAssets;
-#end
 import flixel.util.FlxColor;
 import flixel.math.FlxPoint;
-import openfl.filters.BlurFilter;
 import states.PlayState;
-import backgrounds.BackgroundGirls;
-import backgrounds.BackgroundDancer;
-import flixel.addons.effects.FlxTrail;
+import backgrounds.DancingSprite;
 import flixel.util.FlxTimer;
 import flixel.system.FlxSound;
 import flixel.FlxG;
