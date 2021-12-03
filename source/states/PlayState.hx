@@ -2123,6 +2123,8 @@ class PlayState extends MusicBeatState
 				combo = 0;
 		}
 
+		luaModchart.executeState('popUpScore', [daRating, combo]);
+
 		if(ratings.exists(daRating))
 			ratings.set(daRating, ratings.get(daRating) + 1);
 
