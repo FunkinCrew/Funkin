@@ -2404,7 +2404,7 @@ class PlayState extends MusicBeatState
 				for(i in 0...SONG.keyCount)
 				{
 					noteDataPossibles.push(false);
-					noteDataTimes.push(0);
+					noteDataTimes.push(-1);
 
 					rythmArray.push(false);
 				}
