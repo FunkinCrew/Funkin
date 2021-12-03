@@ -2123,7 +2123,10 @@ class PlayState extends MusicBeatState
 				combo = 0;
 		}
 
-		luaModchart.executeState('popUpScore', [daRating, combo]);
+		#if linc_luajit
+		if(luaModchart != null && executeModchart)
+			luaModchart.executeState('popUpScore', [daRating, combo]);
+		#end
 
 		if(ratings.exists(daRating))
 			ratings.set(daRating, ratings.get(daRating) + 1);
@@ -2396,10 +2399,13 @@ class PlayState extends MusicBeatState
 	
 				var noteDataPossibles:Array<Bool> = [];
 				var rythmArray:Array<Bool> = [];
+				var noteDataTimes:Array<Float> = [];
 
 				for(i in 0...SONG.keyCount)
 				{
 					noteDataPossibles.push(false);
+					noteDataTimes.push(0);
+
 					rythmArray.push(false);
 				}
 	
@@ -2411,6 +2417,7 @@ class PlayState extends MusicBeatState
 						if(justPressedArray[possibleNotes[i].noteData] && !noteDataPossibles[possibleNotes[i].noteData])
 						{
 							noteDataPossibles[possibleNotes[i].noteData] = true;
+							noteDataTimes[possibleNotes[i].noteData] = possibleNotes[i].strumTime;
 
 							if(boyfriend.otherCharacters == null)
 								boyfriend.holdTimer = 0;
@@ -2425,6 +2432,15 @@ class PlayState extends MusicBeatState
 								rythmArray[i] = true;
 							}
 						}
+					}
+				}
+
+				if(possibleNotes.length > 0)
+				{
+					for(i in 0...possibleNotes.length)
+					{
+						if(possibleNotes[i].strumTime == noteDataTimes[possibleNotes[i].noteData])
+							goodNoteHit(possibleNotes[i]);
 					}
 				}
 
