@@ -2353,13 +2353,13 @@ class PlayState extends MusicBeatState
 			{
 				for (i in 0...justPressedArray.length) {
 					if (justPressedArray[i] == true) {
-						luaModchart.executeState('keyPressed', [binds[i]]);
+						luaModchart.executeState('keyPressed', [i]);
 					}
 				};
 				
 				for (i in 0...releasedArray.length) {
 					if (releasedArray[i] == true) {
-						luaModchart.executeState('keyReleased', [binds[i]]);
+						luaModchart.executeState('keyReleased', [i]);
 					}
 				};
 			};
