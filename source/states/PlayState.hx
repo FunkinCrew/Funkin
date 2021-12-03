@@ -223,6 +223,9 @@ class PlayState extends MusicBeatState
 		if(FlxG.save.data.bot)
 			hasUsedBot = true;
 
+		if(FlxG.save.data.noDeath)
+			hasUsedBot = true;
+
 		for(i in 0...2)
 		{
 			var sound = FlxG.sound.load(Paths.sound('missnote' + Std.string((i + 1))), 0.2);
@@ -1718,7 +1721,7 @@ class PlayState extends MusicBeatState
 		if (FlxG.save.data.nohit && misses > 0)
 			health = 0;
 
-		if (health <= 0 && !switchedStates && !invincible)
+		if (health <= 0 && !switchedStates && !invincible && !FlxG.save.data.noDeath)
 		{
 			boyfriend.stunned = true;
 

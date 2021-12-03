@@ -1,11 +1,6 @@
 package utilities;
 
 import flixel.FlxG;
-import openfl.utils.ByteArray;
-#if sys
-import sys.io.File;
-import polymod.backends.PolymodAssets;
-#end
 import states.PlayState;
 import lime.utils.Assets;
 
@@ -46,6 +41,8 @@ class CoolUtil
 	#if sys
 	public static function coolTextFileFromSystem(path:String):Array<String>
 	{
+		return coolTextFile(path);
+		/*
 		var daList:Array<String> = File.getContent(Sys.getCwd() + "assets/" + path + ".txt").trim().split('\n');
 
 		for (i in 0...daList.length)
@@ -53,7 +50,7 @@ class CoolUtil
 			daList[i] = daList[i].trim();
 		}
 
-		return daList;
+		return daList;*/
 	}
 
 	public static function coolTextFilePolymod(path:String):Array<String>
@@ -88,5 +85,28 @@ class CoolUtil
 		#else
 		FlxG.openURL(url);
 		#end
+	}
+
+	public static function coolTextCase(text:String):String
+	{
+		var returnText:String = "";
+
+		var textArray:Array<String> = text.split(" ");
+
+		for(text in textArray) {
+			var textStuffs = text.split("");
+
+			for(i in 0...textStuffs.length)
+			{
+				if(i != 0)
+					returnText += textStuffs[i].toLowerCase();
+				else
+					returnText += textStuffs[i].toUpperCase();
+			}
+
+			returnText += " ";
+		}
+
+		return returnText;
 	}
 }

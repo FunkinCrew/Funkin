@@ -13,6 +13,8 @@ All notable changes will be documented in this file.
 - An option for simpler ratings (Sick, Good, Ok rather than S, A, B).
 - Added a confirmation screen for resetting song score and week score.
 - Option to have a black background behind the notes.
+- Custom Title Text when Watermarks is turned on.
+- No Death Option (prevents dieing in songs).
 ### Fixed
 - Note Animations displaying at 30 FPS instead of 24 FPS.
 - Fixed input glitch where stacked notes would make the notes ahead of them just dissappear.

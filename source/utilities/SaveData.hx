@@ -107,6 +107,9 @@ class SaveData {
 
         if(FlxG.save.data.noteBGAlpha == null)
             FlxG.save.data.noteBGAlpha = 0;
+
+        if(FlxG.save.data.noDeath == null)
+            FlxG.save.data.noDeath = false;
         
         FlxG.save.flush();
 

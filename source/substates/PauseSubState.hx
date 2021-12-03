@@ -28,8 +28,8 @@ class PauseSubState extends MusicBeatSubstate
 	var curSelected:Int = 0;
 
 	var menus:Map<String, Array<String>> = [
-		"default" => ['Resume', 'Restart Song', 'Restart Song With Cutscenes', 'Options', 'Exit to menu'],
-		"options" => ['Back', 'Bot', 'Auto Restart', 'No Miss', 'Ghost Tapping'],
+		"default" => ['Resume', 'Restart Song', 'Restart Song With Cutscenes', 'Options', 'Exit To Menu'],
+		"options" => ['Back', 'Bot', 'Auto Restart', 'No Miss', 'Ghost Tapping', 'No Death'],
 	];
 
 	var menu:String = "default";
@@ -103,11 +103,11 @@ class PauseSubState extends MusicBeatSubstate
 		{
 			var daSelected:String = menus.get(menu)[curSelected];
 
-			switch (daSelected)
+			switch(daSelected.toLowerCase())
 			{
-				case "Resume":
+				case "resume":
 					close();
-				case "Restart Song":
+				case "restart song":
 					PlayState.SONG.speed = PlayState.previousScrollSpeedLmao;
 					PlayState.fromPauseMenu = true;
 
@@ -120,7 +120,7 @@ class PauseSubState extends MusicBeatSubstate
 					#end
 
 					FlxG.resetState();
-				case "Restart Song With Cutscenes":
+				case "restart song with cutscenes":
 					PlayState.SONG.speed = PlayState.previousScrollSpeedLmao;
 
 					#if linc_luajit
@@ -132,7 +132,7 @@ class PauseSubState extends MusicBeatSubstate
 					#end
 
 					FlxG.resetState();
-				case "Bot":
+				case "bot":
 					FlxG.save.data.bot = !FlxG.save.data.bot;
 					FlxG.save.flush();
 
@@ -142,26 +142,26 @@ class PauseSubState extends MusicBeatSubstate
 						PlayState.instance.infoTxt.screenCenter(X);
 						PlayState.instance.hasUsedBot = true;
 					}
-				case "Auto Restart":
+				case "auto restart":
 					FlxG.save.data.quickRestart = !FlxG.save.data.quickRestart;
 					FlxG.save.flush();
-				case "No Miss":
+				case "no miss":
 					FlxG.save.data.nohit = !FlxG.save.data.nohit;
 					FlxG.save.flush();
-				case "Ghost Tapping":
+				case "ghost tapping":
 					FlxG.save.data.ghostTapping = !FlxG.save.data.ghostTapping;
 					FlxG.save.flush();
 
 					@:privateAccess
 					if(FlxG.save.data.ghostTapping) // basically making it easier lmao
 						PlayState.instance.hasUsedBot = true;
-				case "Options":
+				case "options":
 					menu = "options";
 					updateAlphabets();
-				case "Back":
+				case "back":
 					menu = "default";
 					updateAlphabets();
-				case "Exit to menu":
+				case "exit to menu":
 					#if linc_luajit
 					if (PlayState.luaModchart != null)
 					{
@@ -174,6 +174,13 @@ class PauseSubState extends MusicBeatSubstate
 						FlxG.switchState(new StoryMenuState());
 					else
 						FlxG.switchState(new FreeplayState());
+				case "no death":
+					FlxG.save.data.noDeath = !FlxG.save.data.noDeath;
+					FlxG.save.flush();
+
+					@:privateAccess
+					if(FlxG.save.data.noDeath)
+						PlayState.instance.hasUsedBot = true;
 			}
 		}
 	}
