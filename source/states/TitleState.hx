@@ -246,6 +246,11 @@ class TitleState extends MusicBeatState
 
 		FlxG.mouse.visible = false;
 
+		if(FlxG.save.data.watermarks)
+			titleTextData = CoolUtil.coolTextFile(Paths.txt("watermarkTitleText", "preload"));
+		else
+			titleTextData = CoolUtil.coolTextFile(Paths.txt("titleText", "preload"));
+
 		if (initialized)
 			skipIntro();
 		else
@@ -379,11 +384,7 @@ class TitleState extends MusicBeatState
 	{
 		for (i in 0...textArray.length)
 		{
-			var money:Alphabet = new Alphabet(0, 0, textArray[i].toUpperCase(), true, false);
-			money.screenCenter(X);
-			money.y += (i * 60) + 200;
-			credGroup.add(money);
-			textGroup.add(money);
+			addMoreText(textArray[i]);
 		}
 	}
 
@@ -405,6 +406,24 @@ class TitleState extends MusicBeatState
 		}
 	}
 
+	function textDataText(line:Int)
+	{
+		var lineText:Null<String> = titleTextData[line];
+
+		if(lineText != null)
+		{
+			if(lineText.contains("~"))
+			{
+				var coolText = lineText.split("~");
+				createCoolText(coolText);
+			}
+			else
+				addMoreText(lineText);
+		}
+	}
+
+	public var titleTextData:Array<String>;
+
 	override function beatHit()
 	{
 		super.beatHit();
@@ -422,15 +441,15 @@ class TitleState extends MusicBeatState
 			switch (curBeat)
 			{
 				case 1:
-					createCoolText(['ninjamuffin99', 'phantomArcade', 'kawaisprite', 'evilsk8r']);
+					textDataText(0);
 				case 3:
-					addMoreText('present');
+					textDataText(1);
 				case 4:
 					deleteCoolText();
 				case 5:
-					createCoolText(['In association', 'with']);
+					textDataText(2);
 				case 7:
-					addMoreText('newgrounds');
+					textDataText(3);
 					ngSpr.visible = true;
 				case 8:
 					deleteCoolText();
@@ -442,11 +461,11 @@ class TitleState extends MusicBeatState
 				case 12:
 					deleteCoolText();
 				case 13:
-					addMoreText('Friday');
+					textDataText(4);
 				case 14:
-					addMoreText('Night');
+					textDataText(5);
 				case 15:
-					addMoreText('Funkin');
+					textDataText(6);
 				case 16:
 					skipIntro();
 			}
