@@ -1879,13 +1879,13 @@ class PlayState extends MusicBeatState
 			camHUD.visible = !camHUD.visible;
 		if (FlxG.keys.justPressed.K)
 		{
-			@:privateAccess
-			var funnyData:Array<Int> = cast FlxG.sound.music._channel.__source.buffer.data;
+			// @:privateAccess
+			// var funnyData:Array<Int> = cast FlxG.sound.music._channel.__source.buffer.data;
 
-			funnyData.reverse();
+			// funnyData.reverse();
 
-			@:privateAccess
-			FlxG.sound.music._channel.__source.buffer.data = cast funnyData;
+			// @:privateAccess
+			// FlxG.sound.music._channel.__source.buffer.data = cast funnyData;
 		}
 		#end
 
