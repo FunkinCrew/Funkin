@@ -614,7 +614,8 @@ class StageGroup extends FlxGroup
                         else
                             Sprite.setGraphicSize(Std.int(Sprite.width * Object.scale));
 
-                        Sprite.updateHitbox();
+                        if(Object.updateHitbox || Object.updateHitbox == null)
+                            Sprite.updateHitbox();
 
                         if(Object.alpha != null)
                             Sprite.alpha = Object.alpha;
@@ -954,6 +955,8 @@ typedef StageObject =
     var layer:Null<String>; // default is bg, but fg is possible
 
     var alpha:Null<Float>;
+
+    var updateHitbox:Null<Bool>;
     
     // Image Info //
     var file_Name:String;
