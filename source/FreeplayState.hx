@@ -182,6 +182,7 @@ class FreeplayState extends MusicBeatState
 		var blackOverlayBullshitLOLXD:FlxSprite = new FlxSprite(pinkBack.width * 0.75).makeGraphic(Std.int(bgDad.width), Std.int(bgDad.height),
 			FlxColor.BLACK);
 		add(blackOverlayBullshitLOLXD); // used to mask the text lol!
+
 		add(bgDad);
 
 		blackOverlayBullshitLOLXD.shader = bgDad.shader;
@@ -195,16 +196,17 @@ class FreeplayState extends MusicBeatState
 		var overhangStuff:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, 64, FlxColor.BLACK);
 		overhangStuff.y -= overhangStuff.height;
 		add(overhangStuff);
+		FlxTween.tween(overhangStuff, {y: 0}, 0.3, {ease: FlxEase.quartOut});
 
-		var fnfFreeplay:FlxText = new FlxText(0, -64, 0, "Freeplay", 48);
+		var fnfFreeplay:FlxText = new FlxText(0, 12, 0, "FREEPLAY", 48);
 		fnfFreeplay.font = "VCR OSD Mono";
+		fnfFreeplay.visible = false;
 		add(fnfFreeplay);
 
 		dj.animHITsignal.add(function()
 		{
 			pinkBack.color = 0xFFffd863;
-			FlxTween.tween(overhangStuff, {y: 0}, 0.3, {ease: FlxEase.quartOut});
-			FlxTween.tween(fnfFreeplay, {y: 12}, 0.3, {ease: FlxEase.quartOut, startDelay: 0.5});
+			fnfFreeplay.visible = true;
 			FlxTween.tween(bgDad, {x: pinkBack.width * 0.75}, 1, {ease: FlxEase.quintOut});
 			orangeBackShit.visible = true;
 			alsoOrangeLOL.visible = true;
@@ -216,10 +218,18 @@ class FreeplayState extends MusicBeatState
 			var funnyMenu:SongMenuItem = new SongMenuItem(FlxG.width, (i * 150) + 160, songs[i].songName);
 			funnyMenu.targetPos.x = funnyMenu.x;
 			funnyMenu.ID = i;
+			funnyMenu.alpha = 0.5;
+			funnyMenu.songText.visible = false;
 
-			new FlxTimer().start((0.06 * i) + 0.8, function(lerpTmr)
+			new FlxTimer().start((0.06 * i) + 0, function(lerpTmr)
 			{
 				funnyMenu.doLerp = true;
+			});
+
+			new FlxTimer().start(((0.20 * i) / (1 + i)) + 0.75, function(swagShi)
+			{
+				funnyMenu.songText.visible = true;
+				funnyMenu.alpha = 1;
 			});
 
 			grpCapsules.add(funnyMenu);

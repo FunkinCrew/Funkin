@@ -16,7 +16,7 @@ class SongMenuItem extends FlxSpriteGroup
 
 	public var songTitle:String = "Test";
 
-	var songText:FlxText;
+	public var songText:FlxText;
 
 	public var targetPos:FlxPoint = new FlxPoint();
 	public var doLerp:Bool = false;
