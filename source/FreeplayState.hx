@@ -203,10 +203,27 @@ class FreeplayState extends MusicBeatState
 		fnfFreeplay.visible = false;
 		add(fnfFreeplay);
 
+		var fnfFreeplayBOLD:FlxSprite = new FlxSprite(0, 12).loadGraphic(Paths.image('freeplayBOLD'));
+		add(fnfFreeplayBOLD);
+		fnfFreeplayBOLD.visible = false;
+		fnfFreeplayBOLD.setGraphicSize(0, 56);
+		fnfFreeplayBOLD.updateHitbox();
+
 		dj.animHITsignal.add(function()
 		{
+			new FlxTimer().start(1 / 24, function(handShit)
+			{
+				fnfFreeplayBOLD.visible = true;
+
+				new FlxTimer().start(1.5 / 24, function(bold)
+				{
+					fnfFreeplay.visible = true;
+					fnfFreeplayBOLD.visible = false;
+				});
+			});
+
 			pinkBack.color = 0xFFffd863;
-			fnfFreeplay.visible = true;
+			// fnfFreeplay.visible = true;
 			FlxTween.tween(bgDad, {x: pinkBack.width * 0.75}, 1, {ease: FlxEase.quintOut});
 			orangeBackShit.visible = true;
 			alsoOrangeLOL.visible = true;
