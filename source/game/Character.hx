@@ -565,6 +565,8 @@ class Character extends FlxSprite
 		animation.addByPrefix(animName, animPrefix, 24, false);
 	}
 
+	public var shouldDance:Bool = true;
+
 	override function update(elapsed:Float)
 	{
 		if(!debugMode && curCharacter != '' && animation.curAnim != null)
@@ -606,29 +608,28 @@ class Character extends FlxSprite
 	 */
 	public function dance(?altAnim:String = "")
 	{
-		if (!debugMode && curCharacter != '' && animation.curAnim != null)
+		if(shouldDance)
 		{
-			switch (curCharacter)
+			if (!debugMode && curCharacter != '' && animation.curAnim != null)
 			{
-				default:
-					// fix for multi character stuff lmao
-					if(animation.curAnim != null)
+				// fix for multi character stuff lmao
+				if(animation.curAnim != null)
+				{
+					if (!animation.curAnim.name.startsWith('hair'))
 					{
-						if (!animation.curAnim.name.startsWith('hair'))
+						if(!dancesLeftAndRight)
+							playAnim('idle' + altAnim);
+						else
 						{
-							if(!dancesLeftAndRight)
-								playAnim('idle' + altAnim);
+							danced = !danced;
+
+							if (danced)
+								playAnim('danceRight' + altAnim);
 							else
-							{
-								danced = !danced;
-		
-								if (danced)
-									playAnim('danceRight' + altAnim);
-								else
-									playAnim('danceLeft' + altAnim);
-							}
+								playAnim('danceLeft' + altAnim);
 						}
 					}
+				}
 			}
 		}
 	}
