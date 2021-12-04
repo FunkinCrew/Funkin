@@ -1721,9 +1721,6 @@ class PlayState extends MusicBeatState
 		if (FlxG.save.data.nohit && misses > 0)
 			health = 0;
 
-		if(health < 0)
-			health = 0;
-
 		if (health <= 0 && !switchedStates && !invincible && !FlxG.save.data.noDeath)
 		{
 			boyfriend.stunned = true;
@@ -1750,6 +1747,9 @@ class PlayState extends MusicBeatState
 				luaModchart.executeState('onDeath', [Conductor.songPosition]);
 			#end
 		}
+
+		if(health < 0)
+			health = 0;
 
 		if (unspawnNotes[0] != null && !switchedStates)
 		{
