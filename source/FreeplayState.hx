@@ -238,7 +238,7 @@ class FreeplayState extends MusicBeatState
 			funnyMenu.alpha = 0.5;
 			funnyMenu.songText.visible = false;
 
-			new FlxTimer().start((0.06 * i) + 0, function(lerpTmr)
+			new FlxTimer().start((0.06 * i) + 1.05, function(lerpTmr)
 			{
 				funnyMenu.doLerp = true;
 			});
@@ -596,7 +596,8 @@ class FreeplayState extends MusicBeatState
 			capsule.selected = false;
 
 			capsule.targetPos.y = ((index - curSelected) * 150) + 160;
-			capsule.targetPos.x = 270 + (60 * (Math.sin(index - curSelected)));
+			// capsule.targetPos.x = 270 + (60 * (Math.sin(index - curSelected)));
+			capsule.targetPos.x = 320 + (40 * (index - curSelected));
 		}
 
 		grpCapsules.members[curSelected].selected = true;

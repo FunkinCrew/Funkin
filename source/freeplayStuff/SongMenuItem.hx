@@ -45,27 +45,27 @@ class SongMenuItem extends FlxSpriteGroup
 	var frameTicker:Float = 0;
 	var frameTypeBeat:Int = 0;
 
-	var xFrames:Array<Float> = [1.6, 1.8, 0.85, 0.85, 0.97, 0.97, 1];
-	var xPosLerpLol:Array<Float> = [0.8, 0.4, 0.16, 0.16, 0.22, 0.22, 0.245]; // NUMBERS ARE JANK CUZ THE SCALING OR WHATEVER
+	var xFrames:Array<Float> = [1.7, 1.8, 0.85, 0.85, 0.97, 0.97, 1];
+	var xPosLerpLol:Array<Float> = [0.9, 0.4, 0.16, 0.16, 0.22, 0.22, 0.245]; // NUMBERS ARE JANK CUZ THE SCALING OR WHATEVER
 
 	override function update(elapsed:Float)
 	{
+		frameTicker += elapsed;
+
+		if (frameTicker >= 1 / 24 && frameTypeBeat < xFrames.length)
+		{
+			frameTicker = 0;
+
+			scale.x = xFrames[frameTypeBeat];
+			scale.y = 1 / xFrames[frameTypeBeat];
+			x = FlxG.width * xPosLerpLol[Std.int(Math.min(frameTypeBeat, xPosLerpLol.length - 1))];
+
+			frameTypeBeat += 1;
+		}
+
 		if (doLerp)
 		{
-			frameTicker += elapsed;
-
-			if (frameTicker >= 1 / 24 && frameTypeBeat < xFrames.length)
-			{
-				frameTicker = 0;
-
-				scale.x = xFrames[frameTypeBeat];
-				scale.y = 1 / xFrames[frameTypeBeat];
-				x = FlxG.width * xPosLerpLol[Std.int(Math.min(frameTypeBeat, xPosLerpLol.length - 1))];
-
-				frameTypeBeat += 1;
-			}
-
-			// x = CoolUtil.coolLerp(x, targetPos.x, 0.3);
+			x = CoolUtil.coolLerp(x, targetPos.x, 0.3);
 			y = CoolUtil.coolLerp(y, targetPos.y, 0.4);
 		}
 
