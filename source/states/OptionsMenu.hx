@@ -49,6 +49,7 @@ class OptionsMenu extends MusicBeatState
 			new SongOffsetOption("Song Offset", 2),
 			new PageOption("Judgements", 3, "Judgements"),
 			new PageOption("Input Options", 4, "Input Options"),
+			new BoolOption("Save Song Replays", "saveReplays", FlxG.save.data.saveReplays, 4),
 			new BoolOption("Downscroll", "downscroll", FlxG.save.data.downscroll, 4),
 			new BoolOption("Middlescroll", "middleScroll", FlxG.save.data.middleScroll, 5),
 			new BoolOption("Bot", "bot", FlxG.save.data.bot, 8),

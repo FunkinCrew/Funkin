@@ -151,6 +151,8 @@ class BoolOption extends Option
 				Value = FlxG.save.data.noDeath;
 			case "missOnHeldNotes":
 				Value = FlxG.save.data.missOnHeldNotes;
+			case "saveReplays":
+				Value = FlxG.save.data.saveReplays;
 		}
 
 		return Value;
@@ -243,6 +245,8 @@ class BoolOption extends Option
 				FlxG.save.data.noDeath = !Option_Checked;
 			case "missOnHeldNotes":
 				FlxG.save.data.missOnHeldNotes = !Option_Checked;
+			case "saveReplays":
+				FlxG.save.data.saveReplays = !Option_Checked;
 		}
 
         if(Option_Value != "muted")

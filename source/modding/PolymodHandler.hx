@@ -22,7 +22,8 @@ class PolymodHandler
                 assetLibraryPaths: [
                     "songs" => "songs",
                     "stages" => "stages",
-                    "shared" => "shared"
+                    "shared" => "shared",
+                    "replays" => "replays"
                 ]
             }
 		});

@@ -1,6 +1,5 @@
 package states;
 
-import lime.utils.Assets;
 #if sys
 import sys.FileSystem;
 #end
@@ -9,6 +8,17 @@ import sys.FileSystem;
 import modding.FlxVideo;
 #end
 
+#if discord_rpc
+import utilities.Discord.DiscordClient;
+#end
+
+#if polymod
+import polymod.backends.PolymodAssets;
+#end
+
+import haxe.Json;
+import game.Replay;
+import lime.utils.Assets;
 import game.StrumNote;
 import game.Cutscene;
 import game.NoteSplash;
@@ -55,11 +65,6 @@ import substates.PauseSubState;
 import substates.GameOverSubstate;
 import game.Highscore;
 import openfl.utils.Assets as OpenFlAssets;
-
-#if desktop
-import utilities.Discord.DiscordClient;
-import polymod.backends.PolymodAssets;
-#end
 
 using StringTools;
 
@@ -219,6 +224,20 @@ class PlayState extends MusicBeatState
 
 	public var stopSong:Bool = false;
 
+	public var replay:Replay = new Replay();
+	public static var playingReplay:Bool = false;
+
+	public function new(?replay:Replay)
+	{
+		super();
+
+		if(replay != null)
+		{
+			this.replay = replay;
+			playingReplay = true;
+		}
+	}
+
 	override public function create()
 	{
 		if(FlxG.save.data.bot)
@@ -226,6 +245,14 @@ class PlayState extends MusicBeatState
 
 		if(FlxG.save.data.noDeath)
 			hasUsedBot = true;
+
+		if(playingReplay)
+		{
+			hasUsedBot = true;
+
+			Conductor.offset = replay.offset;
+			FlxG.save.data.judgementTimings = replay.judgementTimings;
+		}
 
 		for(i in 0...2)
 		{
@@ -1649,6 +1676,21 @@ class PlayState extends MusicBeatState
 			}
 			else
 				Conductor.songPosition += (FlxG.elapsed * 1000) * songMultiplier;
+
+			if(!playingReplay)
+			{
+				for (i in 0...justPressedArray.length) {
+					if (justPressedArray[i] == true) {
+						replay.recordInput(i, "pressed");
+					}
+				};
+
+				for (i in 0...justReleasedArray.length) {
+					if (previousReleased[i] == false && releasedArray[i] == true || justReleasedArray[i] == true) {
+						replay.recordInput(i, "released");
+					}
+				};
+			}
 		}
 
 		if (generatedMusic && PlayState.SONG.notes[Std.int(curStep / 16)] != null && !switchedStates)
@@ -2081,9 +2123,26 @@ class PlayState extends MusicBeatState
 		}
 	}
 
+	var ogJudgementTimings:Array<Float> = FlxG.save.data.judgementTimings;
+
 	function finishSongStuffs()
 	{
-		if (isStoryMode)
+		FlxG.save.data.judgementTimings = ogJudgementTimings;
+		Conductor.offset = FlxG.save.data.songOffset;
+
+		if(!playingReplay && FlxG.save.data.saveReplays)
+		{
+			var time = Date.now().getTime();
+			var json:String = Json.stringify(replay.convertToSwag());
+
+			#if sys
+			sys.io.File.saveContent("assets/replays/replay-" + SONG.song.toLowerCase() + "-" + storyDifficultyStr.toLowerCase() + "-" + time + ".json", json);
+			#end
+		}
+
+		playingReplay = false;
+
+		if(isStoryMode)
 		{
 			campaignScore += songScore;
 
@@ -2396,239 +2455,289 @@ class PlayState extends MusicBeatState
 		return note2;
 	}
 
+	var justPressedArray:Array<Bool> = [];
+	var releasedArray:Array<Bool> = [];
+	var justReleasedArray:Array<Bool> = [];
+	var heldArray:Array<Bool> = [];
+	var previousReleased:Array<Bool> = [];
+
 	private function keyShit(elapsed:Float):Void
 	{
-		if(!FlxG.save.data.bot)
+		if(generatedMusic)
 		{
-			var justPressedArray:Array<Bool> = [];
-			var releasedArray:Array<Bool> = [];
-			var heldArray:Array<Bool> = [];
-
-			var bruhBinds:Array<String> = ["LEFT","DOWN","UP","RIGHT"];
-	
-			for(i in 0...binds.length)
+			if(!FlxG.save.data.bot)
 			{
-				justPressedArray[i] = FlxG.keys.checkStatus(FlxKey.fromString(binds[i]), FlxInputState.JUST_PRESSED);
-				releasedArray[i] = FlxG.keys.checkStatus(FlxKey.fromString(binds[i]), FlxInputState.RELEASED);
-				heldArray[i] = FlxG.keys.checkStatus(FlxKey.fromString(binds[i]), FlxInputState.PRESSED);
+				var bruhBinds:Array<String> = ["LEFT","DOWN","UP","RIGHT"];
 
-				if(releasedArray[i] == true && SONG.keyCount == 4)
+				justPressedArray = [];
+				justReleasedArray = [];
+		
+				if(!playingReplay)
 				{
-					justPressedArray[i] = FlxG.keys.checkStatus(FlxKey.fromString(bruhBinds[i]), FlxInputState.JUST_PRESSED);
-					releasedArray[i] = FlxG.keys.checkStatus(FlxKey.fromString(bruhBinds[i]), FlxInputState.RELEASED);
-					heldArray[i] = FlxG.keys.checkStatus(FlxKey.fromString(bruhBinds[i]), FlxInputState.PRESSED);
-				}
-			}
-
-			#if linc_luajit
-			if (luaModchart != null)
-			{
-				for (i in 0...justPressedArray.length) {
-					if (justPressedArray[i] == true) {
-						luaModchart.executeState('keyPressed', [i]);
-					}
-				};
-				
-				for (i in 0...releasedArray.length) {
-					if (releasedArray[i] == true) {
-						luaModchart.executeState('keyReleased', [i]);
-					}
-				};
-			};
-			#end
-			
-			if (justPressedArray.contains(true) && generatedMusic)
-			{
-				// variables
-				var possibleNotes:Array<Note> = [];
-				var dontHit:Array<Note> = [];
-				
-				// notes you can hit lol
-				notes.forEachAlive(function(note:Note) {
-					if(note.canBeHit && note.mustPress && !note.tooLate && !note.isSustainNote)
-						possibleNotes.push(note);
-				});
-
-				if(FlxG.save.data.inputMode == "rhythm")
-					possibleNotes.sort((b, a) -> Std.int(Conductor.songPosition - a.strumTime));
-				else
-					possibleNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
-
-				if(FlxG.save.data.inputMode == "rhythm")
-				{
-					var coolNote:Note = null;
-
-					for(note in possibleNotes) {
-						if(coolNote != null)
-						{
-							if(note.strumTime > coolNote.strumTime && note.shouldHit)
-								dontHit.push(note);
-						}
-						else if(note.shouldHit)
-							coolNote = note;
-					}
-				}
+					previousReleased = releasedArray;
 	
-				var noteDataPossibles:Array<Bool> = [];
-				var rythmArray:Array<Bool> = [];
-				var noteDataTimes:Array<Float> = [];
-
-				for(i in 0...SONG.keyCount)
-				{
-					noteDataPossibles.push(false);
-					noteDataTimes.push(-1);
-
-					rythmArray.push(false);
-				}
+					releasedArray = [];
+					heldArray = [];
 	
-				// if there is actual notes to hit
-				if (possibleNotes.length > 0)
-				{
-					for(i in 0...possibleNotes.length)
+					for(i in 0...binds.length)
 					{
-						if(justPressedArray[possibleNotes[i].noteData] && !noteDataPossibles[possibleNotes[i].noteData])
+						justPressedArray[i] = FlxG.keys.checkStatus(FlxKey.fromString(binds[i]), FlxInputState.JUST_PRESSED);
+						releasedArray[i] = FlxG.keys.checkStatus(FlxKey.fromString(binds[i]), FlxInputState.RELEASED);
+						justReleasedArray[i] = FlxG.keys.checkStatus(FlxKey.fromString(binds[i]), FlxInputState.JUST_RELEASED);
+						heldArray[i] = FlxG.keys.checkStatus(FlxKey.fromString(binds[i]), FlxInputState.PRESSED);
+		
+						if(releasedArray[i] == true && SONG.keyCount == 4)
 						{
-							noteDataPossibles[possibleNotes[i].noteData] = true;
-							noteDataTimes[possibleNotes[i].noteData] = possibleNotes[i].strumTime;
+							justPressedArray[i] = FlxG.keys.checkStatus(FlxKey.fromString(bruhBinds[i]), FlxInputState.JUST_PRESSED);
+							releasedArray[i] = FlxG.keys.checkStatus(FlxKey.fromString(bruhBinds[i]), FlxInputState.RELEASED);
+							justReleasedArray[i] = FlxG.keys.checkStatus(FlxKey.fromString(bruhBinds[i]), FlxInputState.JUST_RELEASED);
+							heldArray[i] = FlxG.keys.checkStatus(FlxKey.fromString(bruhBinds[i]), FlxInputState.PRESSED);
+						}
+					}
+				}
+				else
+				{
+					for(inputIndex in 0...replay.inputs.length)
+					{
+						var input = replay.inputs[inputIndex];
 
-							if(boyfriend.otherCharacters == null)
-								boyfriend.holdTimer = 0;
-							else
-								boyfriend.otherCharacters[possibleNotes[i].character].holdTimer = 0;
-
-							goodNoteHit(possibleNotes[i]);
-
-							if(dontHit.contains(possibleNotes[i])) // rythm mode only ?????
+						if(input != null)
+						{
+							if(Conductor.songPosition >= input[1])
 							{
-								noteMiss(possibleNotes[i].noteData, possibleNotes[i]);
-								rythmArray[i] = true;
+								if(input[2] == 1)
+								{
+									justReleasedArray[input[0]] = true;
+									releasedArray[input[0]] = true;
+
+									justPressedArray[input[0]] = false;
+									heldArray[input[0]] = false;
+								}
+								else
+								{
+									justPressedArray[input[0]] = true;
+									heldArray[input[0]] = true;
+
+									justReleasedArray[input[0]] = false;
+									releasedArray[input[0]] = false;
+								}
+		
+								replay.inputs.remove(input);
 							}
 						}
 					}
 				}
-
-				if(possibleNotes.length > 0)
-				{
-					for(i in 0...possibleNotes.length)
-					{
-						if(possibleNotes[i].strumTime == noteDataTimes[possibleNotes[i].noteData])
-							goodNoteHit(possibleNotes[i]);
-					}
-				}
-
-				if(!FlxG.save.data.ghostTapping)
-				{
-					for(i in 0...justPressedArray.length)
-					{
-						if(justPressedArray[i] && !noteDataPossibles[i] && !rythmArray[i])
-							noteMiss(i);
-					}
-				}
-			}
 	
-			if (heldArray.contains(true) && generatedMusic)
-			{
-				var thingsHit:Array<Bool> = [];
-
-				for(i in 0...SONG.keyCount)
+				#if linc_luajit
+				if (luaModchart != null)
 				{
-					thingsHit.push(false);
-				}
+					for (i in 0...justPressedArray.length) {
+						if (justPressedArray[i] == true) {
+							luaModchart.executeState('keyPressed', [i]);
+						}
+					};
+					
+					for (i in 0...releasedArray.length) {
+						if (releasedArray[i] == true) {
+							luaModchart.executeState('keyReleased', [i]);
+						}
+					};
+				};
+				#end
 				
-				notes.forEachAlive(function(daNote:Note)
+				if(justPressedArray.contains(true) && generatedMusic)
 				{
-					if(heldArray[daNote.noteData])
+					// variables
+					var possibleNotes:Array<Note> = [];
+					var dontHit:Array<Note> = [];
+					
+					// notes you can hit lol
+					notes.forEachAlive(function(note:Note) {
+						if(note.canBeHit && note.mustPress && !note.tooLate && !note.isSustainNote)
+							possibleNotes.push(note);
+					});
+	
+					if(FlxG.save.data.inputMode == "rhythm")
+						possibleNotes.sort((b, a) -> Std.int(Conductor.songPosition - a.strumTime));
+					else
+						possibleNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
+	
+					if(FlxG.save.data.inputMode == "rhythm")
 					{
-						if ((daNote.strumTime > (Conductor.songPosition - (Conductor.safeZoneOffset * 1.5))
-							&& daNote.strumTime < (Conductor.songPosition + (Conductor.safeZoneOffset * 0.5)))
-						&& daNote.mustPress && daNote.isSustainNote && !thingsHit[daNote.noteData])
+						var coolNote:Note = null;
+	
+						for(note in possibleNotes) {
+							if(coolNote != null)
+							{
+								if(note.strumTime > coolNote.strumTime && note.shouldHit)
+									dontHit.push(note);
+							}
+							else if(note.shouldHit)
+								coolNote = note;
+						}
+					}
+		
+					var noteDataPossibles:Array<Bool> = [];
+					var rythmArray:Array<Bool> = [];
+					var noteDataTimes:Array<Float> = [];
+	
+					for(i in 0...SONG.keyCount)
+					{
+						noteDataPossibles.push(false);
+						noteDataTimes.push(-1);
+	
+						rythmArray.push(false);
+					}
+		
+					// if there is actual notes to hit
+					if (possibleNotes.length > 0)
+					{
+						for(i in 0...possibleNotes.length)
+						{
+							if(justPressedArray[possibleNotes[i].noteData] && !noteDataPossibles[possibleNotes[i].noteData])
+							{
+								noteDataPossibles[possibleNotes[i].noteData] = true;
+								noteDataTimes[possibleNotes[i].noteData] = possibleNotes[i].strumTime;
+	
+								if(boyfriend.otherCharacters == null)
+									boyfriend.holdTimer = 0;
+								else
+									boyfriend.otherCharacters[possibleNotes[i].character].holdTimer = 0;
+	
+								goodNoteHit(possibleNotes[i]);
+	
+								if(dontHit.contains(possibleNotes[i])) // rythm mode only ?????
+								{
+									noteMiss(possibleNotes[i].noteData, possibleNotes[i]);
+									rythmArray[i] = true;
+								}
+							}
+						}
+					}
+	
+					if(possibleNotes.length > 0)
+					{
+						for(i in 0...possibleNotes.length)
+						{
+							if(possibleNotes[i].strumTime == noteDataTimes[possibleNotes[i].noteData])
+								goodNoteHit(possibleNotes[i]);
+						}
+					}
+	
+					if(!FlxG.save.data.ghostTapping)
+					{
+						for(i in 0...justPressedArray.length)
+						{
+							if(justPressedArray[i] && !noteDataPossibles[i] && !rythmArray[i])
+								noteMiss(i);
+						}
+					}
+				}
+		
+				if (heldArray.contains(true) && generatedMusic)
+				{
+					var thingsHit:Array<Bool> = [];
+	
+					for(i in 0...SONG.keyCount)
+					{
+						thingsHit.push(false);
+					}
+					
+					notes.forEachAlive(function(daNote:Note)
+					{
+						if(heldArray[daNote.noteData])
+						{
+							if ((daNote.strumTime > (Conductor.songPosition - (Conductor.safeZoneOffset * 1.5))
+								&& daNote.strumTime < (Conductor.songPosition + (Conductor.safeZoneOffset * 0.5)))
+							&& daNote.mustPress && daNote.isSustainNote && !thingsHit[daNote.noteData])
+							{
+								if(boyfriend.otherCharacters == null)
+									boyfriend.holdTimer = 0;
+								else
+									boyfriend.otherCharacters[daNote.character].holdTimer = 0;
+	
+								goodNoteHit(daNote);
+								thingsHit[daNote.noteData] = true;
+							}
+						}
+					});
+				}
+		
+				if(boyfriend.otherCharacters == null)
+				{
+					if(boyfriend.animation.curAnim != null)
+						if (boyfriend.holdTimer > Conductor.stepCrochet * 4 * 0.001 && !heldArray.contains(true))
+							if (boyfriend.animation.curAnim.name.startsWith('sing') && !boyfriend.animation.curAnim.name.endsWith('miss'))
+								boyfriend.dance();
+				}
+				else
+				{
+					for(character in boyfriend.otherCharacters)
+					{
+						if(character.animation.curAnim != null)
+							if (character.holdTimer > Conductor.stepCrochet * 4 * 0.001 && !heldArray.contains(true))
+								if (character.animation.curAnim.name.startsWith('sing') && !character.animation.curAnim.name.endsWith('miss'))
+									character.dance();
+					}
+				}
+		
+				playerStrums.forEach(function(spr:StrumNote)
+				{
+					if (justPressedArray[spr.ID] && spr.animation.curAnim.name != 'confirm')
+					{
+						spr.playAnim('pressed');
+						spr.resetAnim = 0;
+					}
+					if (releasedArray[spr.ID])
+					{
+						spr.playAnim('static');
+						spr.resetAnim = 0;
+					}
+				});
+			}
+			else
+			{
+				notes.forEachAlive(function(note:Note) {
+					if(note.shouldHit)
+					{
+						if(note.mustPress && note.strumTime <= Conductor.songPosition)
 						{
 							if(boyfriend.otherCharacters == null)
 								boyfriend.holdTimer = 0;
 							else
-								boyfriend.otherCharacters[daNote.character].holdTimer = 0;
-
-							goodNoteHit(daNote);
-							thingsHit[daNote.noteData] = true;
+								boyfriend.otherCharacters[note.character].holdTimer = 0;
+		
+							boyfriend.holdTimer = 0;
+		
+							goodNoteHit(note);
 						}
 					}
 				});
-			}
 	
-			if(boyfriend.otherCharacters == null)
-			{
-				if(boyfriend.animation.curAnim != null)
-					if (boyfriend.holdTimer > Conductor.stepCrochet * 4 * 0.001 && !heldArray.contains(true))
-						if (boyfriend.animation.curAnim.name.startsWith('sing') && !boyfriend.animation.curAnim.name.endsWith('miss'))
-							boyfriend.dance();
-			}
-			else
-			{
-				for(character in boyfriend.otherCharacters)
+				playerStrums.forEach(function(spr:StrumNote)
 				{
-					if(character.animation.curAnim != null)
-						if (character.holdTimer > Conductor.stepCrochet * 4 * 0.001 && !heldArray.contains(true))
-							if (character.animation.curAnim.name.startsWith('sing') && !character.animation.curAnim.name.endsWith('miss'))
-								character.dance();
-				}
-			}
-	
-			playerStrums.forEach(function(spr:StrumNote)
-			{
-				if (justPressedArray[spr.ID] && spr.animation.curAnim.name != 'confirm')
-				{
-					spr.playAnim('pressed');
-					spr.resetAnim = 0;
-				}
-				if (releasedArray[spr.ID])
-				{
-					spr.playAnim('static');
-					spr.resetAnim = 0;
-				}
-			});
-		}
-		else
-		{
-			notes.forEachAlive(function(note:Note) {
-				if(note.shouldHit)
-				{
-					if(note.mustPress && note.strumTime <= Conductor.songPosition)
+					if(spr.animation.finished)
 					{
-						if(boyfriend.otherCharacters == null)
-							boyfriend.holdTimer = 0;
-						else
-							boyfriend.otherCharacters[note.character].holdTimer = 0;
-	
-						boyfriend.holdTimer = 0;
-	
-						goodNoteHit(note);
+						spr.playAnim("static");
 					}
-				}
-			});
-
-			playerStrums.forEach(function(spr:StrumNote)
-			{
-				if(spr.animation.finished)
+				});
+	
+				if(boyfriend.otherCharacters == null)
 				{
-					spr.playAnim("static");
+					if(boyfriend.animation.curAnim != null)
+						if (boyfriend.holdTimer > Conductor.stepCrochet * 4 * 0.001)
+							if (boyfriend.animation.curAnim.name.startsWith('sing') && !boyfriend.animation.curAnim.name.endsWith('miss'))
+								boyfriend.dance();
 				}
-			});
-
-			if(boyfriend.otherCharacters == null)
-			{
-				if(boyfriend.animation.curAnim != null)
-					if (boyfriend.holdTimer > Conductor.stepCrochet * 4 * 0.001)
-						if (boyfriend.animation.curAnim.name.startsWith('sing') && !boyfriend.animation.curAnim.name.endsWith('miss'))
-							boyfriend.dance();
-			}
-			else
-			{
-				for(character in boyfriend.otherCharacters)
+				else
 				{
-					if(character.animation.curAnim != null)
-						if (character.holdTimer > Conductor.stepCrochet * 4 * 0.001)
-							if (character.animation.curAnim.name.startsWith('sing') && !character.animation.curAnim.name.endsWith('miss'))
-								character.dance();
+					for(character in boyfriend.otherCharacters)
+					{
+						if(character.animation.curAnim != null)
+							if (character.holdTimer > Conductor.stepCrochet * 4 * 0.001)
+								if (character.animation.curAnim.name.startsWith('sing') && !character.animation.curAnim.name.endsWith('miss'))
+									character.dance();
+					}
 				}
 			}
 		}

@@ -1,5 +1,7 @@
 package substates;
 
+import game.Replay;
+import states.ReplaySelectorState;
 import game.Note;
 import states.FreeplayState;
 import states.StoryMenuState;
@@ -169,11 +171,18 @@ class PauseSubState extends MusicBeatSubstate
 						PlayState.luaModchart = null;
 					}
 					#end
-					
-					if (PlayState.isStoryMode)
-						FlxG.switchState(new StoryMenuState());
+
+					if(PlayState.playingReplay && Replay.getReplayList().length > 0)
+						FlxG.switchState(new ReplaySelectorState());
 					else
-						FlxG.switchState(new FreeplayState());
+					{
+						if (PlayState.isStoryMode)
+							FlxG.switchState(new StoryMenuState());
+						else
+							FlxG.switchState(new FreeplayState());
+					}
+
+					PlayState.playingReplay = false;
 				case "no death":
 					FlxG.save.data.noDeath = !FlxG.save.data.noDeath;
 					FlxG.save.flush();

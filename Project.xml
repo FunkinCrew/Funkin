@@ -63,12 +63,14 @@
 		<library name="stages"   preload="true" />
 		<library name="songs"    preload="true" />
 		<library name="shared"   preload="true" />
+		<library name="replays"  preload="true" />
 	</section>
 	
 	<section if="NO_PRELOAD_ALL">
 		<library name="stages"   preload="false" />
 		<library name="songs"    preload="false" />
 		<library name="shared"   preload="false" />
+		<library name="replays"  preload="false" />
 	</section>
 
 	<assets path="plugins/" if="VIDEOS_ALLOWED windows" />
@@ -82,6 +84,9 @@
 
 	<assets path="assets/shared"   library="shared"   exclude="*.ogg" if="web"/>
 	<assets path="assets/shared"   library="shared"   exclude="*.mp3" unless="web"/>
+
+	<assets path="assets/replays"  library="replays"  exclude="*.ogg" if="web"/>
+	<assets path="assets/replays"  library="replays"  exclude="*.mp3" unless="web"/>
 	
 	<assets path='art/readme.txt' rename='do NOT readme.txt' />
 	

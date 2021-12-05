@@ -1,5 +1,6 @@
 package states;
 
+import game.Replay;
 import utilities.MusicUtilities;
 import lime.utils.Assets;
 #if desktop
@@ -34,6 +35,9 @@ class MainMenuState extends MusicBeatState
 
 	override function create()
 	{
+		if(Replay.getReplayList().length > 0)
+			optionShit.push('replays');
+		
 		if(PolymodHandler.metadataArrays.length > 0)
 			optionShit.push('mods');
 		
@@ -178,6 +182,7 @@ class MainMenuState extends MusicBeatState
 								case 'story mode':
 									FlxG.switchState(new StoryMenuState());
 									trace("Story Menu Selected");
+
 								case 'freeplay':
 									FlxG.switchState(new FreeplayState());
 
@@ -191,6 +196,9 @@ class MainMenuState extends MusicBeatState
 								#if sys
 								case 'mods':
 									FlxG.switchState(new ModsMenu());
+
+								case 'replays':
+									FlxG.switchState(new ReplaySelectorState());
 								#end
 							}
 						});

@@ -1,5 +1,7 @@
 package substates;
 
+import game.Replay;
+import states.ReplaySelectorState;
 import haxe.Exception;
 import game.Character;
 import states.FreeplayState;
@@ -91,10 +93,17 @@ class GameOverSubstate extends MusicBeatSubstate
 			}
 			#end
 
-			if (PlayState.isStoryMode)
-				FlxG.switchState(new StoryMenuState());
+			if(PlayState.playingReplay && Replay.getReplayList().length > 0)
+				FlxG.switchState(new ReplaySelectorState());
 			else
-				FlxG.switchState(new FreeplayState());
+			{
+				if (PlayState.isStoryMode)
+					FlxG.switchState(new StoryMenuState());
+				else
+					FlxG.switchState(new FreeplayState());
+			}
+
+			PlayState.playingReplay = false;
 		}
 
 		if (bf.animation.curAnim.name == 'firstDeath' && bf.animation.curAnim.curFrame == 12)
@@ -145,7 +154,20 @@ class GameOverSubstate extends MusicBeatSubstate
 					#end
 
 					PlayState.SONG.speed = PlayState.previousScrollSpeedLmao;
-					FlxG.resetState();
+
+					if(PlayState.playingReplay && Replay.getReplayList().length > 0)
+						FlxG.switchState(new ReplaySelectorState());
+					else if(PlayState.playingReplay)
+					{
+						if (PlayState.isStoryMode)
+							FlxG.switchState(new StoryMenuState());
+						else
+							FlxG.switchState(new FreeplayState());
+					}
+					else
+						FlxG.resetState();
+		
+					PlayState.playingReplay = false;
 				});
 			});
 		}
