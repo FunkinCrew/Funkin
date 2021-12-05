@@ -18,6 +18,8 @@ All notable changes will be documented in this file.
 - Note Snap Option in Charter (4-192 lol).
 - End Cutscene Value (plays a cutscene at the end of the song).
 - Scrolling Left to Right in charter (Control + Mouse Wheel).
+- Unhardcoded mania arrangements.
+- Potential infinite mania! (You would have to add it yourself however...)
 ### Fixed
 - Note Animations displaying at 30 FPS instead of 24 FPS.
 - Fixed input glitch where stacked notes would make the notes ahead of them just dissappear.
