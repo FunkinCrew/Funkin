@@ -1,7 +1,7 @@
 # Changelog
 All notable changes will be documented in this file.
 
-## [0.3.9] - ?/?/????
+## [0.4.0] - ?/?/????
 ### Added
 - RESET to reset score on freeplay and story weeks
 - Marvelous Rating (currently just a rainbow sick).
