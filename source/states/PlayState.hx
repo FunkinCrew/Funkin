@@ -1482,6 +1482,9 @@ class PlayState extends MusicBeatState
 
 	override public function update(elapsed:Float)
 	{
+		infoTxt.text = SONG.song + " - " + storyDifficultyStr + (FlxG.save.data.bot ? " (BOT)" : "") + (playingReplay ? " (REPLAY)" : "");
+		infoTxt.screenCenter(X);
+
 		if(stopSong && !switchedStates)
 		{
 			PlayState.instance.paused = true;
