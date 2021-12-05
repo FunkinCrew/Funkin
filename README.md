@@ -34,6 +34,10 @@ Dialogue and video cutscenes can now be used without coding them in! (Although, 
 
 You can have different note types that give different amounts of health or give damage on hit. They can be more advanced if you want however, since modcharts can access what note type the last note hit was.
 
+> Replay System
+
+You can load, share, and play replays of songs you've played! They can even be included in mods in the mods folder to make them easier to share!
+
 > More to come...
 
 ## Credits
