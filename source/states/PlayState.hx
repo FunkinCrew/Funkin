@@ -252,6 +252,7 @@ class PlayState extends MusicBeatState
 
 			Conductor.offset = replay.offset;
 			FlxG.save.data.judgementTimings = replay.judgementTimings;
+			FlxG.save.data.ghostTapping = replay.ghostTapping;
 		}
 
 		for(i in 0...2)
@@ -1676,21 +1677,6 @@ class PlayState extends MusicBeatState
 			}
 			else
 				Conductor.songPosition += (FlxG.elapsed * 1000) * songMultiplier;
-
-			if(!playingReplay)
-			{
-				for (i in 0...justPressedArray.length) {
-					if (justPressedArray[i] == true) {
-						replay.recordInput(i, "pressed");
-					}
-				};
-
-				for (i in 0...justReleasedArray.length) {
-					if (previousReleased[i] == false && releasedArray[i] == true || justReleasedArray[i] == true) {
-						replay.recordInput(i, "released");
-					}
-				};
-			}
 		}
 
 		if (generatedMusic && PlayState.SONG.notes[Std.int(curStep / 16)] != null && !switchedStates)
@@ -2124,11 +2110,13 @@ class PlayState extends MusicBeatState
 	}
 
 	var ogJudgementTimings:Array<Float> = FlxG.save.data.judgementTimings;
+	var ogGhostTapping:Bool = FlxG.save.data.ghostTapping;
 
 	function finishSongStuffs()
 	{
 		FlxG.save.data.judgementTimings = ogJudgementTimings;
 		Conductor.offset = FlxG.save.data.songOffset;
+		FlxG.save.data.ghostTapping = ogGhostTapping;
 
 		if(!playingReplay && FlxG.save.data.saveReplays)
 		{
@@ -2227,9 +2215,16 @@ class PlayState extends MusicBeatState
 	var numbers:Array<FlxSprite> = [];
 	var number_Tweens:Array<VarTween> = [];
 
-	private function popUpScore(strumtime:Float, noteData:Int):Void
+	private function popUpScore(strumtime:Float, noteData:Int, ?setNoteDiff:Float):Void
 	{
 		var noteDiff:Float = (strumtime - Conductor.songPosition);
+
+		if(setNoteDiff != null)
+			noteDiff = setNoteDiff;
+
+		if(!playingReplay)
+			replay.recordKeyHit(noteData, strumtime, noteDiff);
+
 		vocals.volume = 1;
 
 		var daRating:String = Ratings.getRating(Math.abs(noteDiff));
@@ -2494,6 +2489,18 @@ class PlayState extends MusicBeatState
 							heldArray[i] = FlxG.keys.checkStatus(FlxKey.fromString(bruhBinds[i]), FlxInputState.PRESSED);
 						}
 					}
+
+					for (i in 0...justPressedArray.length) {
+						if (justPressedArray[i] == true) {
+							replay.recordInput(i, "pressed");
+						}
+					};
+	
+					for (i in 0...justReleasedArray.length) {
+						if (previousReleased[i] == false && releasedArray[i] == true || justReleasedArray[i] == true) {
+							replay.recordInput(i, "released");
+						}
+					};
 				}
 				else
 				{
@@ -2503,7 +2510,7 @@ class PlayState extends MusicBeatState
 
 						if(input != null)
 						{
-							if(Conductor.songPosition >= input[1])
+							if(input[2] != 2 && Conductor.songPosition >= input[1])
 							{
 								if(input[2] == 1)
 								{
@@ -2513,15 +2520,36 @@ class PlayState extends MusicBeatState
 									justPressedArray[input[0]] = false;
 									heldArray[input[0]] = false;
 								}
-								else
+								else if(input[2] == 0)
 								{
 									justPressedArray[input[0]] = true;
 									heldArray[input[0]] = true;
 
 									justReleasedArray[input[0]] = false;
 									releasedArray[input[0]] = false;
+
+									if(!FlxG.save.data.ghostTapping)
+										noteMiss(input[0]);
 								}
 		
+								replay.inputs.remove(input);
+							}
+							else if(input[2] == 2 && Conductor.songPosition >= input[1] + input[3])
+							{
+								for(note in notes)
+								{
+									if(note.mustPress && FlxMath.roundDecimal(note.strumTime, 2) == FlxMath.roundDecimal(input[1], 2) && note.noteData == input[0])
+									{
+										justPressedArray[input[0]] = true;
+										heldArray[input[0]] = true;
+	
+										justReleasedArray[input[0]] = false;
+										releasedArray[input[0]] = false;
+
+										goodNoteHit(note, input[3]);
+									}
+								}
+
 								replay.inputs.remove(input);
 							}
 						}
@@ -2545,7 +2573,7 @@ class PlayState extends MusicBeatState
 				};
 				#end
 				
-				if(justPressedArray.contains(true) && generatedMusic)
+				if(justPressedArray.contains(true) && generatedMusic && !playingReplay)
 				{
 					// variables
 					var possibleNotes:Array<Note> = [];
@@ -2817,13 +2845,13 @@ class PlayState extends MusicBeatState
 		}
 	}
 
-	function goodNoteHit(note:Note):Void
+	function goodNoteHit(note:Note, ?setNoteDiff:Float):Void
 	{
 		if (!note.wasGoodHit)
 		{
 			if(note.shouldHit && !note.isSustainNote)
 			{
-				popUpScore(note.strumTime, note.noteData % SONG.keyCount);
+				popUpScore(note.strumTime, note.noteData % SONG.keyCount, setNoteDiff);
 				combo += 1;
 			}
 			else if(!note.shouldHit)

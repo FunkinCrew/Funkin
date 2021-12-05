@@ -18,6 +18,8 @@ typedef SwagReplay =
 
     var offset:Float;
     var judgementTimings:Array<Float>;
+
+    var ghostTapping:Bool;
 }
 
 class Replay
@@ -32,6 +34,8 @@ class Replay
     public var offset:Float;
     public var judgementTimings:Array<Float>;
 
+    public var ghostTapping:Bool;
+
     public var swag:SwagReplay;
 
     public function new(?usePlayStateVars:Bool = true)
@@ -44,6 +48,7 @@ class Replay
             difficulty = PlayState.storyDifficultyStr.toLowerCase();
         }
 
+        ghostTapping = FlxG.save.data.ghostTapping;
         offset = Conductor.offset;
         judgementTimings = FlxG.save.data.judgementTimings;
 
@@ -58,7 +63,8 @@ class Replay
             difficulty: this.difficulty,
             inputs: this.inputs,
             offset: this.offset,
-            judgementTimings: this.judgementTimings
+            judgementTimings: this.judgementTimings,
+            ghostTapping: this.ghostTapping
         };
 
         return swag;
@@ -67,6 +73,11 @@ class Replay
     public function recordInput(key:Int, type:String = "pressed")
     {
         inputs.push([key, Conductor.songPosition, (type == "pressed" ? 0 : 1)]);
+    }
+
+    public function recordKeyHit(direction:Int, strumTime:Float, noteDifference:Float)
+    {
+        inputs.push([direction, strumTime, 2, noteDifference]);
     }
 
     public static function loadFromJson(replayFile:String):Replay
