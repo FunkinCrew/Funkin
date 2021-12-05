@@ -141,14 +141,14 @@ class FreeplayState extends MusicBeatState
 		scoreText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, RIGHT);
 		add(scoreText);
 
-		diffText = new FlxText(scoreText.x + 100, scoreText.y + 36, 0, "", 24);
+		diffText = new FlxText(FlxG.width, scoreText.y + 36, 0, "", 24);
 		diffText.font = scoreText.font;
-		diffText.alignment = CENTER;
+		diffText.alignment = RIGHT;
 		add(diffText);
 
-		speedText = new FlxText(scoreText.x + 50, diffText.y + 36, 0, "", 24);
+		speedText = new FlxText(FlxG.width, diffText.y + 36, 0, "", 24);
 		speedText.font = scoreText.font;
-		speedText.alignment = CENTER;
+		speedText.alignment = RIGHT;
 		add(speedText);
 
 		for (i in 0...songs.length)
@@ -237,15 +237,23 @@ class FreeplayState extends MusicBeatState
 		if (Math.abs(lerpScore - intendedScore) <= 10)
 			lerpScore = intendedScore;
 
-		scoreBG.x = scoreText.x - 6;
+		var funnyObject:FlxText = scoreText;
 
-		if(Std.int(scoreBG.width) != Std.int(scoreText.width + 6))
-			scoreBG.makeGraphic(Std.int(scoreText.width + 6), 102, FlxColor.BLACK);
+		if(speedText.width >= scoreText.width && speedText.width >= diffText.width)
+			funnyObject = speedText;
+
+		if(diffText.width >= scoreText.width && diffText.width >= speedText.width)
+			funnyObject = diffText;
+
+		scoreBG.x = funnyObject.x - 6;
+
+		if(Std.int(scoreBG.width) != Std.int(funnyObject.width + 6))
+			scoreBG.makeGraphic(Std.int(funnyObject.width + 6), 108, FlxColor.BLACK);
 
 		scoreText.x = FlxG.width - scoreText.width;
 		scoreText.text = "PERSONAL BEST:" + lerpScore;
 
-		diffText.x = scoreText.x + (scoreText.width / 2) - (diffText.width / 2);
+		diffText.x = FlxG.width - diffText.width;
 
 		curSpeed = FlxMath.roundDecimal(curSpeed, 2);
 
@@ -262,7 +270,7 @@ class FreeplayState extends MusicBeatState
 		speedText.text = "";
 		#end
 
-		speedText.x = scoreText.x + (scoreText.width / 2) - (speedText.width / 2);
+		speedText.x = FlxG.width - speedText.width;
 
 		var leftP = controls.LEFT_P;
 		var rightP = controls.RIGHT_P;
