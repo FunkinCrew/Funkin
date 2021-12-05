@@ -757,7 +757,7 @@ class PlayState extends MusicBeatState
 		});
 	}
 
-	function startDialogue(?dialogueBox:DialogueBox):Void
+	function startDialogue(?dialogueBox:DialogueBox, ?endSongVar:Bool = false):Void
 	{
 		new FlxTimer().start(0.3, function(tmr:FlxTimer)
 		{
@@ -769,7 +769,12 @@ class PlayState extends MusicBeatState
 			else
 			{
 				if(cutscene.cutsceneAfter == null)
-					startCountdown();
+				{
+					if(!endSongVar)
+						startCountdown();
+					else
+						finishSongStuffs();
+				}
 				else
 				{
 					var oldcutscene = cutscene;
@@ -779,7 +784,7 @@ class PlayState extends MusicBeatState
 					switch(cutscene.type.toLowerCase())
 					{
 						case "video":
-							startVideo(cutscene.videoPath, cutscene.videoExt);
+							startVideo(cutscene.videoPath, cutscene.videoExt, endSongVar);
 	
 						case "dialogue":
 							var box:DialogueBox = new DialogueBox(cutscene);
@@ -787,17 +792,20 @@ class PlayState extends MusicBeatState
 							box.finish_Function = bruhDialogue;
 							box.cameras = [camHUD];
 	
-							startDialogue(box);
+							startDialogue(box, endSongVar);
 	
 						default:
-							startCountdown();
+							if(!endSongVar)
+								startCountdown();
+							else
+								finishSongStuffs();
 					}
 				}
 			}
 		});
 	}
 
-	public function startVideo(name:String, ?ext:String):Void {
+	public function startVideo(name:String, ?ext:String, ?endSongVar:Bool = false):Void {
 		#if BIT_64
 		#if VIDEOS_ALLOWED
 		var foundFile:Bool = false;
@@ -835,7 +843,12 @@ class PlayState extends MusicBeatState
 					endSong();
 				} else {
 					if(cutscene.cutsceneAfter == null)
-						startCountdown();
+					{
+						if(!endSongVar)
+							startCountdown();
+						else
+							finishSongStuffs();
+					}
 					else
 					{
 						var oldcutscene = cutscene;
@@ -845,7 +858,7 @@ class PlayState extends MusicBeatState
 						switch(cutscene.type.toLowerCase())
 						{
 							case "video":
-								startVideo(cutscene.videoPath, cutscene.videoExt);
+								startVideo(cutscene.videoPath, cutscene.videoExt, endSongVar);
 		
 							case "dialogue":
 								var box:DialogueBox = new DialogueBox(cutscene);
@@ -853,10 +866,13 @@ class PlayState extends MusicBeatState
 								box.finish_Function = bruhDialogue;
 								box.cameras = [camHUD];
 		
-								startDialogue(box);
+								startDialogue(box, endSongVar);
 		
 							default:
-								startCountdown();
+								if(!endSongVar)
+									startCountdown();
+								else
+									finishSongStuffs();
 						}
 					}
 				}
@@ -870,7 +886,10 @@ class PlayState extends MusicBeatState
 		if(endingSong) {
 			endSong();
 		} else { #end
-			startCountdown();
+			if(!endSongVar)
+				startCountdown();
+			else
+				finishSongStuffs();
 		#if BIT_64
 		}
 		#end
@@ -2016,78 +2035,111 @@ class PlayState extends MusicBeatState
 				#end
 			}
 	
-			if (isStoryMode)
+			if(playCutsceneLmao)
 			{
-				campaignScore += songScore;
-	
-				storyPlaylist.remove(storyPlaylist[0]);
-	
-				if (storyPlaylist.length <= 0)
+				if(SONG.endCutscene != null && SONG.endCutscene != "")
 				{
-					FlxG.sound.playMusic(Paths.music('freakyMenu'));
+					cutscene = CutsceneUtil.loadFromJson(SONG.endCutscene);
 	
-					transIn = FlxTransitionableState.defaultTransIn;
-					transOut = FlxTransitionableState.defaultTransOut;
-	
-					switchedStates = true;
-					vocals.stop();
-
-					FlxG.switchState(new StoryMenuState());
-
-					arrow_Type_Sprites = [];
-	
-					if (SONG.validScore)
+					switch(cutscene.type.toLowerCase())
 					{
-						if(!hasUsedBot && songMultiplier >= 1)
-						{
-							Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficultyStr, (groupWeek != "" ? groupWeek + "Week" : "week"));
-						}
+						case "video":
+							startVideo(cutscene.videoPath, cutscene.videoExt, true);
+	
+						case "dialogue":
+							var box:DialogueBox = new DialogueBox(cutscene);
+							box.scrollFactor.set();
+							box.finish_Function = bruhDialogue;
+							box.cameras = [camHUD];
+	
+							startDialogue(box, true);
+	
+						default:
+							finishSongStuffs();
 					}
 				}
 				else
-				{
-					var difficulty:String = "";
+					finishSongStuffs();
+			}
+			else
+				finishSongStuffs();
+			
+		}
+	}
 
-					if (storyDifficultyStr.toLowerCase() != "normal")
-						difficulty = '-' + storyDifficultyStr.toLowerCase();
-	
-					trace('LOADING NEXT SONG');
-					trace(PlayState.storyPlaylist[0].toLowerCase() + difficulty);
-	
-					if (SONG.song.toLowerCase() == 'eggnog')
+	function finishSongStuffs()
+	{
+		if (isStoryMode)
+		{
+			campaignScore += songScore;
+
+			storyPlaylist.remove(storyPlaylist[0]);
+
+			if (storyPlaylist.length <= 0)
+			{
+				FlxG.sound.playMusic(Paths.music('freakyMenu'));
+
+				transIn = FlxTransitionableState.defaultTransIn;
+				transOut = FlxTransitionableState.defaultTransOut;
+
+				switchedStates = true;
+				vocals.stop();
+
+				FlxG.switchState(new StoryMenuState());
+
+				arrow_Type_Sprites = [];
+
+				if (SONG.validScore)
+				{
+					if(!hasUsedBot && songMultiplier >= 1)
 					{
-						var blackShit:FlxSprite = new FlxSprite(-FlxG.width * FlxG.camera.zoom,
-							-FlxG.height * FlxG.camera.zoom).makeGraphic(FlxG.width * 3, FlxG.height * 3, FlxColor.BLACK);
-						blackShit.scrollFactor.set();
-						add(blackShit);
-						camHUD.visible = false;
-	
-						FlxG.sound.play(Paths.sound('Lights_Shut_off'));
+						Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficultyStr, (groupWeek != "" ? groupWeek + "Week" : "week"));
 					}
-	
-					FlxTransitionableState.skipNextTransIn = true;
-					FlxTransitionableState.skipNextTransOut = true;
-					prevCamFollow = camFollow;
-	
-					PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + difficulty, PlayState.storyPlaylist[0]);
-					FlxG.sound.music.stop();
-	
-					switchedStates = true;
-					LoadingState.loadAndSwitchState(new PlayState());
 				}
 			}
 			else
 			{
-				trace('WENT BACK TO FREEPLAY??');
+				var difficulty:String = "";
+
+				if (storyDifficultyStr.toLowerCase() != "normal")
+					difficulty = '-' + storyDifficultyStr.toLowerCase();
+
+				trace('LOADING NEXT SONG');
+				trace(PlayState.storyPlaylist[0].toLowerCase() + difficulty);
+
+				if (SONG.song.toLowerCase() == 'eggnog')
+				{
+					var blackShit:FlxSprite = new FlxSprite(-FlxG.width * FlxG.camera.zoom,
+						-FlxG.height * FlxG.camera.zoom).makeGraphic(FlxG.width * 3, FlxG.height * 3, FlxColor.BLACK);
+					blackShit.scrollFactor.set();
+					add(blackShit);
+					camHUD.visible = false;
+
+					FlxG.sound.play(Paths.sound('Lights_Shut_off'));
+				}
+
+				FlxTransitionableState.skipNextTransIn = true;
+				FlxTransitionableState.skipNextTransOut = true;
+				prevCamFollow = camFollow;
+
+				PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + difficulty, PlayState.storyPlaylist[0]);
+				FlxG.sound.music.stop();
+
 				switchedStates = true;
-
-				if(vocals.active)
-					vocals.stop();
-
-				FlxG.switchState(new FreeplayState());
-
-				arrow_Type_Sprites = [];
+				LoadingState.loadAndSwitchState(new PlayState());
 			}
+		}
+		else
+		{
+			trace('WENT BACK TO FREEPLAY??');
+			switchedStates = true;
+
+			if(vocals.active)
+				vocals.stop();
+
+			FlxG.switchState(new FreeplayState());
+
+			arrow_Type_Sprites = [];
 		}
 	}
 

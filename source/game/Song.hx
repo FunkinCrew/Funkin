@@ -58,6 +58,7 @@ typedef SwagSong =
 	var ui_Skin:String;
 
 	var cutscene:String;
+	var endCutscene:String;
 
 	var eventObjects:Array<Event>;
 }

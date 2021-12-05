@@ -83,6 +83,7 @@ class ChartingState extends MusicBeatState
 	var swagShit:FlxInputText;
 	var modchart_Input:FlxInputText;
 	var cutscene_Input:FlxInputText;
+	var endCutscene_Input:FlxInputText;
 	/*
 	 * WILL BE THE CURRENT / LAST PLACED NOTE
 	**/
@@ -288,8 +289,9 @@ class ChartingState extends MusicBeatState
 		modchart_Input = new FlxUIInputText(10, check_mute_inst.y + check_mute_inst.height + 2, 70, _song.modchartPath, 8);
 
 		cutscene_Input = new FlxUIInputText(modchart_Input.x, modchart_Input.y + modchart_Input.height + 2, 70, _song.cutscene, 8);
+		endCutscene_Input = new FlxUIInputText(cutscene_Input.x, cutscene_Input.y + cutscene_Input.height + 2, 70, _song.endCutscene, 8);
 
-		var saveButton:FlxButton = new FlxButton(10, 220, "Save", function()
+		var saveButton:FlxButton = new FlxButton(10, 240, "Save", function()
 		{
 			saveLevel();
 		});
@@ -330,9 +332,10 @@ class ChartingState extends MusicBeatState
 
 		var modChartLabel = new FlxText(modchart_Input.x + modchart_Input.width + 1, modchart_Input.y, 0, "Modchart Path", 9);
 		var cutsceneLabel = new FlxText(cutscene_Input.x + cutscene_Input.width + 1, cutscene_Input.y, 0, "Cutscene JSON Name", 9);
+		var endCutsceneLabel = new FlxText(endCutscene_Input.x + endCutscene_Input.width + 1, endCutscene_Input.y, 0, "End Cutscene JSON Name", 9);
 
 		var settingsLabel = new FlxText(10, 10, 0, "Setings", 9);
-		var actionsLabel = new FlxText(10, 200, 0, "Actions", 9);
+		var actionsLabel = new FlxText(10, 220, 0, "Actions", 9);
 
 		// adding things
 		tab_group_song.add(songNameLabel);
@@ -344,6 +347,7 @@ class ChartingState extends MusicBeatState
 
 		tab_group_song.add(modChartLabel);
 		tab_group_song.add(cutsceneLabel);
+		tab_group_song.add(endCutsceneLabel);
 
 		tab_group_song.add(settingsLabel);
 		tab_group_song.add(actionsLabel);
@@ -355,6 +359,7 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(check_mute_inst);
 		tab_group_song.add(modchart_Input);
 		tab_group_song.add(cutscene_Input);
+		tab_group_song.add(endCutscene_Input);
 		tab_group_song.add(saveButton);
 		tab_group_song.add(reloadSong);
 		tab_group_song.add(reloadSongJson);
@@ -866,6 +871,7 @@ class ChartingState extends MusicBeatState
 		PlayState.storyDifficultyStr = difficulty.toUpperCase();
 		_song.modchartPath = modchart_Input.text;
 		_song.cutscene = cutscene_Input.text;
+		_song.endCutscene = endCutscene_Input.text;
 
 		strumLine.y = getYfromStrum((Conductor.songPosition - sectionStartTime()) % (Conductor.stepCrochet * ((16 / _song.timescale[1]) * 4)));
 
