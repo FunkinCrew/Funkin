@@ -134,9 +134,6 @@ class PlayState extends MusicBeatState
 
 	public var gfVersion:String = 'gf';
 
-	var dialogue:Array<String> = ['blah blah blah', 'coolswag'];
-
-	var talking:Bool = true;
 	var songScore:Int = 0;
 
 	var scoreTxt:FlxText;
@@ -658,7 +655,7 @@ class PlayState extends MusicBeatState
 
 		startingSong = true;
 
-		playCutsceneLmao = ((isStoryMode && FlxG.save.data.cutscenePlays == "story") || (!isStoryMode && FlxG.save.data.cutscenePlays == "freeplay") || (FlxG.save.data.cutscenePlays == "both")) && !fromPauseMenu;
+		playCutsceneLmao = (!playingReplay && ((isStoryMode && FlxG.save.data.cutscenePlays == "story") || (!isStoryMode && FlxG.save.data.cutscenePlays == "freeplay") || (FlxG.save.data.cutscenePlays == "both")) && !fromPauseMenu);
 
 		if (playCutsceneLmao)
 		{
@@ -674,10 +671,10 @@ class PlayState extends MusicBeatState
 					case "dialogue":
 						var box:DialogueBox = new DialogueBox(cutscene);
 						box.scrollFactor.set();
-						box.finish_Function = bruhDialogue;
+						box.finish_Function = function() { bruhDialogue(false); };
 						box.cameras = [camHUD];
 
-						startDialogue(box);
+						startDialogue(box, false);
 
 					default:
 						startCountdown();
@@ -793,14 +790,13 @@ class PlayState extends MusicBeatState
 	}
 
 	function startDialogue(?dialogueBox:DialogueBox, ?endSongVar:Bool = false):Void
-	{
+	{	
 		new FlxTimer().start(0.3, function(tmr:FlxTimer)
 		{
+			trace("Start Dialogue");
+
 			if (dialogueBox != null)
-			{
-				inCutscene = true;
 				add(dialogueBox);
-			}
 			else
 			{
 				if(cutscene.cutsceneAfter == null)
@@ -824,7 +820,7 @@ class PlayState extends MusicBeatState
 						case "dialogue":
 							var box:DialogueBox = new DialogueBox(cutscene);
 							box.scrollFactor.set();
-							box.finish_Function = bruhDialogue;
+							box.finish_Function = function() { bruhDialogue(endSongVar); };
 							box.cameras = [camHUD];
 	
 							startDialogue(box, endSongVar);
@@ -865,7 +861,6 @@ class PlayState extends MusicBeatState
 		}
 
 		if(foundFile) {
-			inCutscene = true;
 			var bg = new FlxSprite(-FlxG.width, -FlxG.height).makeGraphic(FlxG.width * 3, FlxG.height * 3, FlxColor.BLACK);
 			bg.scrollFactor.set();
 			bg.cameras = [camHUD];
@@ -898,7 +893,7 @@ class PlayState extends MusicBeatState
 							case "dialogue":
 								var box:DialogueBox = new DialogueBox(cutscene);
 								box.scrollFactor.set();
-								box.finish_Function = bruhDialogue;
+								box.finish_Function = function() { bruhDialogue(endSongVar); };
 								box.cameras = [camHUD];
 		
 								startDialogue(box, endSongVar);
@@ -930,10 +925,15 @@ class PlayState extends MusicBeatState
 		#end
 	}
 
-	function bruhDialogue():Void
+	function bruhDialogue(?endSongVar:Bool = false):Void
 	{
 		if(cutscene.cutsceneAfter == null)
-			startCountdown();
+		{
+			if(!endSongVar)
+				startCountdown();
+			else
+				finishSongStuffs();
+		}
 		else
 		{
 			var oldcutscene = cutscene;
@@ -948,10 +948,10 @@ class PlayState extends MusicBeatState
 				case "dialogue":
 					var box:DialogueBox = new DialogueBox(cutscene);
 					box.scrollFactor.set();
-					box.finish_Function = bruhDialogue;
+					box.finish_Function = function() { bruhDialogue(endSongVar); };
 					box.cameras = [camHUD];
 
-					startDialogue(box);
+					startDialogue(box, endSongVar);
 
 				default:
 					startCountdown();
@@ -964,6 +964,7 @@ class PlayState extends MusicBeatState
 	function startCountdown():Void
 	{
 		inCutscene = false;
+		paused = false;
 
 		if(FlxG.save.data.middleScroll)
 		{
@@ -976,7 +977,6 @@ class PlayState extends MusicBeatState
 			generateStaticArrows(1, true);
 		}
 
-		talking = false;
 		startedCountdown = true;
 		Conductor.songPosition = 0;
 		Conductor.songPosition -= Conductor.crochet * 5;
@@ -1317,17 +1317,20 @@ class PlayState extends MusicBeatState
 
 	function updateNoteBGPos()
 	{
-		var bruhVal:Float = 0.0;
-
-		for(note in playerStrums)
+		if(startedCountdown)
 		{
-			bruhVal += note.swagWidth + (2 + Std.parseFloat(mania_gap[SONG.keyCount - 1]));
+			var bruhVal:Float = 0.0;
+
+			for(note in playerStrums)
+			{
+				bruhVal += note.swagWidth + (2 + Std.parseFloat(mania_gap[SONG.keyCount - 1]));
+			}
+	
+			noteBG.setGraphicSize(Std.int(bruhVal), FlxG.height * 2);
+			noteBG.updateHitbox();
+	
+			noteBG.x = playerStrums.members[0].x;
 		}
-
-		noteBG.setGraphicSize(Std.int(bruhVal), FlxG.height * 2);
-		noteBG.updateHitbox();
-
-		noteBG.x = playerStrums.members[0].x;
 	}
 
 	function tweenCamIn():Void
@@ -1548,7 +1551,6 @@ class PlayState extends MusicBeatState
 			"Score: " + songScore + " | " +
 			Ratings.getRank(accuracy, misses)
 		);
-		//scoreTxt.text = "Score:" + songScore;
 
 		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause && !switchedStates)
 		{
@@ -1584,7 +1586,7 @@ class PlayState extends MusicBeatState
 		}
 
 		#if linc_luajit
-		if (executeModchart && luaModchart != null && generatedMusic && !switchedStates)
+		if (executeModchart && luaModchart != null && generatedMusic && !switchedStates && startedCountdown)
 		{
 			luaModchart.setVar('songPos', Conductor.songPosition);
 			luaModchart.setVar('hudZoom', camHUD.zoom);
@@ -1682,7 +1684,7 @@ class PlayState extends MusicBeatState
 				Conductor.songPosition += (FlxG.elapsed * 1000) * songMultiplier;
 		}
 
-		if (generatedMusic && PlayState.SONG.notes[Std.int(curStep / 16)] != null && !switchedStates)
+		if(generatedMusic && PlayState.SONG.notes[Std.int(curStep / 16)] != null && !switchedStates && startedCountdown)
 		{
 			//offsetX = luaModchart.getVar("followXOffset", "float");
 			//offsetY = luaModchart.getVar("followYOffset", "float");
@@ -1827,10 +1829,8 @@ class PlayState extends MusicBeatState
 			}
 		}
 
-		if (generatedMusic && !switchedStates)
+		if(generatedMusic && !switchedStates && startedCountdown)
 		{
-			var fakeCrochet:Float = ((60 / SONG.bpm) * 1000) / songMultiplier;
-
 			notes.forEachAlive(function(daNote:Note)
 			{
 				var coolStrum = (daNote.mustPress ? playerStrums.members[Math.floor(Math.abs(daNote.noteData))] : enemyStrums.members[Math.floor(Math.abs(daNote.noteData))]);
@@ -2094,7 +2094,7 @@ class PlayState extends MusicBeatState
 						case "dialogue":
 							var box:DialogueBox = new DialogueBox(cutscene);
 							box.scrollFactor.set();
-							box.finish_Function = bruhDialogue;
+							box.finish_Function = function() { bruhDialogue(true); };
 							box.cameras = [camHUD];
 	
 							startDialogue(box, true);
@@ -2130,8 +2130,6 @@ class PlayState extends MusicBeatState
 			sys.io.File.saveContent("assets/replays/replay-" + SONG.song.toLowerCase() + "-" + storyDifficultyStr.toLowerCase() + "-" + time + ".json", json);
 			#end
 		}
-
-		playingReplay = false;
 
 		if(isStoryMode)
 		{
@@ -2193,7 +2191,7 @@ class PlayState extends MusicBeatState
 				LoadingState.loadAndSwitchState(new PlayState());
 			}
 		}
-		else
+		else if(!playingReplay)
 		{
 			trace('WENT BACK TO FREEPLAY??');
 			switchedStates = true;
@@ -2205,6 +2203,20 @@ class PlayState extends MusicBeatState
 
 			arrow_Type_Sprites = [];
 		}
+		else
+		{
+			trace('WENT BACK TO REPLAY SELECTOR??');
+			switchedStates = true;
+
+			if(vocals.active)
+				vocals.stop();
+
+			FlxG.switchState(new ReplaySelectorState());
+
+			arrow_Type_Sprites = [];
+		}
+
+		playingReplay = false;
 	}
 
 	var endingSong:Bool = false;
@@ -2459,9 +2471,11 @@ class PlayState extends MusicBeatState
 	var heldArray:Array<Bool> = [];
 	var previousReleased:Array<Bool> = [];
 
+	var previousAnims:Array<String> = [];
+
 	private function keyShit(elapsed:Float):Void
 	{
-		if(generatedMusic)
+		if(generatedMusic && startedCountdown)
 		{
 			if(!FlxG.save.data.bot)
 			{
@@ -2500,9 +2514,11 @@ class PlayState extends MusicBeatState
 					};
 	
 					for (i in 0...justReleasedArray.length) {
-						if (previousReleased[i] == false && releasedArray[i] == true || justReleasedArray[i] == true) {
+						if (previousAnims[i] != "static" && playerStrums.members[i].animation.curAnim.name == "static") {
 							replay.recordInput(i, "released");
 						}
+
+						previousAnims[i] = playerStrums.members[i].animation.curAnim.name;
 					};
 				}
 				else
@@ -2891,13 +2907,16 @@ class PlayState extends MusicBeatState
 			}
 			#end
 
-			playerStrums.forEach(function(spr:StrumNote)
+			if(startedCountdown)
 			{
-				if (Math.abs(note.noteData) == spr.ID)
+				playerStrums.forEach(function(spr:StrumNote)
 				{
-					spr.playAnim('confirm', true);
-				}
-			});
+					if (Math.abs(note.noteData) == spr.ID)
+					{
+						spr.playAnim('confirm', true);
+					}
+				});
+			}
 
 			note.wasGoodHit = true;
 			vocals.volume = 1;
@@ -2930,10 +2949,8 @@ class PlayState extends MusicBeatState
 	{
 		super.beatHit();
 
-		if (generatedMusic)
-		{
+		if (generatedMusic && startedCountdown)
 			notes.sort(FlxSort.byY, (FlxG.save.data.downscroll ? FlxSort.ASCENDING : FlxSort.DESCENDING));
-		}
 
 		if (SONG.notes[Math.floor(curStep / 16)] != null)
 		{

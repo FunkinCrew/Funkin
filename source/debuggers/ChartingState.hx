@@ -1371,7 +1371,7 @@ class ChartingState extends MusicBeatState
 			var note:Note = new Note(daStrumTime, daNoteInfo % _song.keyCount, null, false, 0, daType, _song);
 			note.sustainLength = daSus;
 
-			note.setGraphicSize(0, Std.parseInt(PlayState.instance.arrow_Configs.get(daType)[2]));
+			note.setGraphicSize((Std.parseInt(PlayState.instance.arrow_Configs.get(daType)[4]) != null ? Std.parseInt(PlayState.instance.arrow_Configs.get(daType)[4]) : 0), Std.parseInt(PlayState.instance.arrow_Configs.get(daType)[2]));
 			note.updateHitbox();
 
 			note.x = Math.floor(daNoteInfo * GRID_SIZE) + Std.parseFloat(PlayState.instance.arrow_Configs.get(daType)[1]);

@@ -1,22 +1,15 @@
 package ui;
 
-import flixel.addons.display.shapes.FlxShapeType;
-import haxe.io.Path;
-import flixel.input.actions.FlxAction;
 import game.Cutscene;
 import game.Cutscene.DialogueSection;
 import flixel.system.FlxSound;
-import states.PlayState;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.addons.text.FlxTypeText;
-import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxSpriteGroup;
-import flixel.input.FlxKeyManager;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
-import utilities.CoolUtil;
 
 using StringTools;
 
@@ -84,6 +77,8 @@ class DialogueBox extends FlxSpriteGroup
 
 	override function update(elapsed:Float)
 	{
+		super.update(elapsed);
+
 		if(dialogue_Shadow != null)
 			dialogue_Shadow.text = dialogue.text;
 
@@ -138,8 +133,6 @@ class DialogueBox extends FlxSpriteGroup
 				}
 			}
 		}
-
-		super.update(elapsed);
 	}
 
 	public function loadAssets(?new_Cutscene:Cutscene) {

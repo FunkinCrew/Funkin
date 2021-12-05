@@ -12,7 +12,7 @@ import flixel.FlxSprite;
 class ReplaySelectorState extends MusicBeatState
 {
     var replays:Array<String>;
-    var selected:Int = 0;
+    static var selected:Int = 0;
 
     private var grpReplays:FlxTypedGroup<Alphabet>;
 
