@@ -1,0 +1,33 @@
+name: Build Leather Engine
+
+on:
+  push: {}
+  pull_request: {}
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: krdlab/setup-haxe@v1
+        with:
+          haxe-version: 4.2.3
+      - run: |
+          haxe -version
+          haxelib install lime
+          haxelib install openfl
+          haxelib install flixel
+          haxelib run lime setup flixel
+          haxelib run lime setup
+          haxelib install flixel-tools
+          haxelib run flixel-tools setup
+          haxelib install hscript
+          haxelib install polymod
+          haxelib install linc_luajit
+          haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
+          lime build windows
+          
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Windows Build
+          path: export/release/windows/bin
