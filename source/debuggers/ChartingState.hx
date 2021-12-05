@@ -1125,7 +1125,7 @@ class ChartingState extends MusicBeatState
 		super.update(elapsed);
 	}
 
-	var beatSnaps:Array<Int> = [2, 4, 6, 8, 12, 16, 24, 32, 48, 64, 128, 192];
+	var beatSnaps:Array<Int> = [4, 6, 8, 12, 16, 24, 32, 48, 64, 128, 192];
 
 	var claps:Array<Note> = [];
 
