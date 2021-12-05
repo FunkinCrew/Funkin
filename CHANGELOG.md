@@ -21,6 +21,7 @@ All notable changes will be documented in this file.
 - Unhardcoded mania arrangements.
 - Potential infinite mania! (You would have to add it yourself however...)
 - Option to turn off gaining misses from sustain / held notes.
+- Customizeable Note Gaps! (Basically squished together notes).
 ### Fixed
 - Note Animations displaying at 30 FPS instead of 24 FPS.
 - Fixed input glitch where stacked notes would make the notes ahead of them just dissappear.
