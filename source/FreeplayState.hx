@@ -28,7 +28,7 @@ import shaderslmfao.AngleMask;
 
 using StringTools;
 
-class FreeplayState extends MusicBeatState
+class FreeplayState extends MusicBeatSubstate
 {
 	var songs:Array<SongMetadata> = [];
 
@@ -181,7 +181,7 @@ class FreeplayState extends MusicBeatState
 
 		var blackOverlayBullshitLOLXD:FlxSprite = new FlxSprite(pinkBack.width * 0.75).makeGraphic(Std.int(bgDad.width), Std.int(bgDad.height),
 			FlxColor.BLACK);
-		add(blackOverlayBullshitLOLXD); // used to mask the text lol!
+		// add(blackOverlayBullshitLOLXD); // used to mask the text lol!
 
 		add(bgDad);
 
@@ -211,6 +211,9 @@ class FreeplayState extends MusicBeatState
 
 		dj.animHITsignal.add(function()
 		{
+			var animShit:ComboCounter = new ComboCounter(100, 300, 1000000);
+			// add(animShit);
+
 			new FlxTimer().start(1 / 24, function(handShit)
 			{
 				fnfFreeplayBOLD.visible = true;
@@ -238,7 +241,7 @@ class FreeplayState extends MusicBeatState
 			funnyMenu.alpha = 0.5;
 			funnyMenu.songText.visible = false;
 
-			new FlxTimer().start((0.06 * i) + 1.05, function(lerpTmr)
+			new FlxTimer().start((0.09 * i) + 0.85, function(lerpTmr)
 			{
 				funnyMenu.doLerp = true;
 			});
@@ -314,6 +317,15 @@ class FreeplayState extends MusicBeatState
 
 			trace(md);
 		 */
+
+		var funnyCam = new FlxCamera(0, 0, FlxG.width, FlxG.height);
+		funnyCam.bgColor = FlxColor.TRANSPARENT;
+		FlxG.cameras.add(funnyCam);
+
+		forEach(function(bs)
+		{
+			bs.cameras = [funnyCam];
+		});
 
 		super.create();
 	}
@@ -490,7 +502,10 @@ class FreeplayState extends MusicBeatState
 		if (controls.BACK)
 		{
 			FlxG.sound.play(Paths.sound('cancelMenu'));
-			FlxG.switchState(new MainMenuState());
+
+			close();
+
+			// FlxG.switchState(new MainMenuState());
 		}
 
 		if (accepted)
@@ -596,8 +611,8 @@ class FreeplayState extends MusicBeatState
 			capsule.selected = false;
 
 			capsule.targetPos.y = ((index - curSelected) * 150) + 160;
-			// capsule.targetPos.x = 270 + (60 * (Math.sin(index - curSelected)));
-			capsule.targetPos.x = 320 + (40 * (index - curSelected));
+			capsule.targetPos.x = 270 + (60 * (Math.sin(index - curSelected)));
+			// capsule.targetPos.x = 320 + (40 * (index - curSelected));
 		}
 
 		grpCapsules.members[curSelected].selected = true;

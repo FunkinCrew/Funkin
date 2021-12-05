@@ -94,7 +94,12 @@ class MainMenuState extends MusicBeatState
 
 		menuItems.enabled = false; // disable for intro
 		menuItems.createItem('story mode', function() startExitState(new StoryMenuState()));
-		menuItems.createItem('freeplay', function() startExitState(new FreeplayState()));
+		menuItems.createItem('freeplay', function()
+		{
+			persistentDraw = true;
+			persistentUpdate = false;
+			openSubState(new FreeplayState());
+		});
 		// addMenuItem('options', function () startExitState(new OptionMenu()));
 		#if CAN_OPEN_LINKS
 		var hasPopupBlocker = #if web true #else false #end;
