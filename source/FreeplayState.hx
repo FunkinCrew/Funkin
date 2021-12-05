@@ -238,6 +238,11 @@ class FreeplayState extends MusicBeatSubstate
 			funnyMenu.alpha = 0.5;
 			funnyMenu.songText.visible = false;
 
+			new FlxTimer().start((1 / 24) * i, function(doShit)
+			{
+				funnyMenu.doJumpIn = true;
+			});
+
 			new FlxTimer().start((0.09 * i) + 0.85, function(lerpTmr)
 			{
 				funnyMenu.doLerp = true;

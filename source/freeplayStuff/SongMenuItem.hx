@@ -20,6 +20,7 @@ class SongMenuItem extends FlxSpriteGroup
 
 	public var targetPos:FlxPoint = new FlxPoint();
 	public var doLerp:Bool = false;
+	public var doJumpIn:Bool = false;
 
 	public function new(x:Float, y:Float, song:String)
 	{
@@ -50,17 +51,20 @@ class SongMenuItem extends FlxSpriteGroup
 
 	override function update(elapsed:Float)
 	{
-		frameTicker += elapsed;
-
-		if (frameTicker >= 1 / 24 && frameTypeBeat < xFrames.length)
+		if (doJumpIn)
 		{
-			frameTicker = 0;
+			frameTicker += elapsed;
 
-			scale.x = xFrames[frameTypeBeat];
-			scale.y = 1 / xFrames[frameTypeBeat];
-			x = FlxG.width * xPosLerpLol[Std.int(Math.min(frameTypeBeat, xPosLerpLol.length - 1))];
+			if (frameTicker >= 1 / 24 && frameTypeBeat < xFrames.length)
+			{
+				frameTicker = 0;
 
-			frameTypeBeat += 1;
+				scale.x = xFrames[frameTypeBeat];
+				scale.y = 1 / xFrames[frameTypeBeat];
+				x = FlxG.width * xPosLerpLol[Std.int(Math.min(frameTypeBeat, xPosLerpLol.length - 1))];
+
+				frameTypeBeat += 1;
+			}
 		}
 
 		if (doLerp)
