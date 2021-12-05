@@ -36,9 +36,6 @@ class SaveData {
         if(FlxG.save.data.noteSplashes == null)
             FlxG.save.data.noteSplashes = true;
 
-        if(FlxG.save.data.deaths == null)
-            FlxG.save.data.deaths = 0;
-
         if(FlxG.save.data.discordRPC == null)
             FlxG.save.data.discordRPC = true;
 
