@@ -35,11 +35,11 @@ class MainMenuState extends MusicBeatState
 
 	override function create()
 	{
-		if(Replay.getReplayList().length > 0)
-			optionShit.push('replays');
-		
 		if(PolymodHandler.metadataArrays.length > 0)
 			optionShit.push('mods');
+
+		if(Replay.getReplayList().length > 0)
+			optionShit.push('replays');
 		
 		#if !web
 		//optionShit.push('multiplayer');
