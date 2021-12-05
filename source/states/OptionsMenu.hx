@@ -113,6 +113,7 @@ class OptionsMenu extends MusicBeatState
 			new InputModeOption("Input Mode", ["standard", "rhythm"], FlxG.save.data.inputMode, 3),
 			new BoolOption("Anti Mash", "antiMash", FlxG.save.data.antiMash, 4),
 			new BoolOption("Ghost Tapping", "ghostTapping", FlxG.save.data.ghostTapping, 9),
+			new BoolOption("Gain Misses on Sustains", "missOnHeldNotes", FlxG.save.data.missOnHeldNotes, 10),
 			new BoolOption("No Miss", "nohit", FlxG.save.data.nohit, 6),
 			new BoolOption("Reset Button", "resetButtonOn", FlxG.save.data.resetButtonOn, 7)
 		],

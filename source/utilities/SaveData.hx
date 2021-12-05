@@ -107,6 +107,9 @@ class SaveData {
 
         if(FlxG.save.data.noDeath == null)
             FlxG.save.data.noDeath = false;
+
+        if(FlxG.save.data.missOnHeldNotes == null)
+            FlxG.save.data.missOnHeldNotes = true;
         
         FlxG.save.flush();
 

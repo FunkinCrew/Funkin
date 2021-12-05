@@ -1155,6 +1155,8 @@ class PlayState extends MusicBeatState
 				susLength = susLength / Std.int(Conductor.nonmultilmao_stepCrochet);
 				unspawnNotes.push(swagNote);
 
+				var sustainGroup:Array<Note> = [];
+
 				for (susNote in 0...Math.floor(susLength))
 				{
 					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
@@ -1167,7 +1169,12 @@ class PlayState extends MusicBeatState
 
 					if (sustainNote.mustPress)
 						sustainNote.x += FlxG.width / 2; // general offset
+
+					sustainGroup.push(sustainNote);
+					sustainNote.sustains = sustainGroup;
 				}
+
+				swagNote.sustains = sustainGroup;
 
 				swagNote.mustPress = gottaHitNote;
 
@@ -2653,7 +2660,7 @@ class PlayState extends MusicBeatState
 
 			if(note != null)
 			{
-				if(!note.isSustainNote)
+				if(!note.isSustainNote || (FlxG.save.data.missOnHeldNotes && !note.missesSustains))
 					missValues = true;
 			}
 			else
@@ -2661,6 +2668,17 @@ class PlayState extends MusicBeatState
 
 			if(missValues)
 			{
+				if(FlxG.save.data.missOnHeldNotes && !note.missesSustains)
+				{
+					note.missesSustains = true;
+
+					for(sustain in note.sustains)
+					{
+						if(sustain != null)
+							sustain.missesSustains = true;
+					}
+				}
+
 				misses++;
 				updateRatingText();
 			}
