@@ -2989,13 +2989,26 @@ class PlayState extends MusicBeatState
 	{
 		if(FlxG.save.data.showRatingsOnSide)
 		{
+			var ratingArray = [
+				ratings.get("marvelous"),
+				ratings.get("sick"),
+				ratings.get("good"),
+				ratings.get("bad"),
+				ratings.get("shit")
+			];
+
+			var MA = ratingArray[1] + ratingArray[2] + ratingArray[3] + ratingArray[4];
+			var PA = ratingArray[2] + ratingArray[3] + ratingArray[4];
+
 			ratingText.text = (
-				(FlxG.save.data.marvelousRatings ? "MARVELOUS: " + Std.string(ratings.get("marvelous")) + "\n" : "") +
-				"SICK: " + Std.string(ratings.get("sick")) + "\n" +
-				"GOOD: " + Std.string(ratings.get("good")) + "\n" +
-				"BAD: " + Std.string(ratings.get("bad")) + "\n" +
-				"SHIT: " + Std.string(ratings.get("shit")) + "\n" +
-				"MISSES: " + Std.string(misses) + "\n"
+				(FlxG.save.data.marvelousRatings ? "MARVELOUS: " + Std.string(ratingArray[0]) + "\n" : "") +
+				"SICK: " + Std.string(ratingArray[1]) + "\n" +
+				"GOOD: " + Std.string(ratingArray[2]) + "\n" +
+				"BAD: " + Std.string(ratingArray[3]) + "\n" +
+				"SHIT: " + Std.string(ratingArray[4]) + "\n" +
+				"MISSES: " + Std.string(misses) + "\n" +
+				(FlxG.save.data.marvelousRatings && ratingArray[0] > 0 && MA > 0 ? "MA: " + Std.string(FlxMath.roundDecimal(ratingArray[0] / MA, 2)) + "\n" : "") +
+				(ratingArray[1] > 0 && PA > 0 ? "PA: " + Std.string(FlxMath.roundDecimal(ratingArray[1] / PA, 2)) + "\n" : "")
 			);
 
 			ratingText.screenCenter(Y);
