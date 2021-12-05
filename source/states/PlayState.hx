@@ -2549,6 +2549,11 @@ class PlayState extends MusicBeatState
 										justReleasedArray[input[0]] = false;
 										releasedArray[input[0]] = false;
 
+										if(boyfriend.otherCharacters == null)
+											boyfriend.holdTimer = 0;
+										else
+											boyfriend.otherCharacters[note.character].holdTimer = 0;
+
 										goodNoteHit(note, input[3]);
 									}
 								}
