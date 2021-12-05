@@ -31,7 +31,7 @@ jobs:
           haxelib install polymod
           haxelib install linc_luajit
           haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
-          lime build windows
+          haxelib run lime build windows
           
       - uses: actions/upload-artifact@v2
         with:
