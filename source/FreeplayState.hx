@@ -206,12 +206,6 @@ class FreeplayState extends MusicBeatSubstate
 		fnfFreeplay.shader = sillyStroke;
 		add(fnfFreeplay);
 
-		var fnfFreeplayBOLD:FlxSprite = new FlxSprite(0, 12).loadGraphic(Paths.image('freeplayBOLD'));
-		// add(fnfFreeplayBOLD);
-		// fnfFreeplayBOLD.visible = false;
-		// fnfFreeplayBOLD.setGraphicSize(0, 56);
-		// fnfFreeplayBOLD.updateHitbox();
-
 		dj.animHITsignal.add(function()
 		{
 			var animShit:ComboCounter = new ComboCounter(100, 300, 1000000);
