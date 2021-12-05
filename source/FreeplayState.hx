@@ -25,6 +25,7 @@ import freeplayStuff.SongMenuItem;
 import lime.app.Future;
 import lime.utils.Assets;
 import shaderslmfao.AngleMask;
+import shaderslmfao.StrokeShader;
 
 using StringTools;
 
@@ -201,13 +202,15 @@ class FreeplayState extends MusicBeatSubstate
 		var fnfFreeplay:FlxText = new FlxText(0, 12, 0, "FREEPLAY", 48);
 		fnfFreeplay.font = "VCR OSD Mono";
 		fnfFreeplay.visible = false;
+		var sillyStroke = new StrokeShader(0xFFFFFFFF, 2, 2);
+		fnfFreeplay.shader = sillyStroke;
 		add(fnfFreeplay);
 
 		var fnfFreeplayBOLD:FlxSprite = new FlxSprite(0, 12).loadGraphic(Paths.image('freeplayBOLD'));
-		add(fnfFreeplayBOLD);
-		fnfFreeplayBOLD.visible = false;
-		fnfFreeplayBOLD.setGraphicSize(0, 56);
-		fnfFreeplayBOLD.updateHitbox();
+		// add(fnfFreeplayBOLD);
+		// fnfFreeplayBOLD.visible = false;
+		// fnfFreeplayBOLD.setGraphicSize(0, 56);
+		// fnfFreeplayBOLD.updateHitbox();
 
 		dj.animHITsignal.add(function()
 		{
@@ -216,12 +219,12 @@ class FreeplayState extends MusicBeatSubstate
 
 			new FlxTimer().start(1 / 24, function(handShit)
 			{
-				fnfFreeplayBOLD.visible = true;
+				fnfFreeplay.visible = true;
 
 				new FlxTimer().start(1.5 / 24, function(bold)
 				{
-					fnfFreeplay.visible = true;
-					fnfFreeplayBOLD.visible = false;
+					sillyStroke.width = 0;
+					sillyStroke.height = 0;
 				});
 			});
 
