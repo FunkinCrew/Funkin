@@ -46,6 +46,7 @@ class OptionsMenu extends MusicBeatState
 			"Gameplay",
 			new PageOption("Back", 0, "Categories"),
 			new ControlMenuSubStateOption("Binds", 1),
+			new BoolOption("Key Bind Reminders", "extraKeyReminders", FlxG.save.data.extraKeyReminders, 2),
 			new SongOffsetOption("Song Offset", 2),
 			new PageOption("Judgements", 3, "Judgements"),
 			new PageOption("Input Options", 4, "Input Options"),

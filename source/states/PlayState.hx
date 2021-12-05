@@ -1279,7 +1279,7 @@ class PlayState extends MusicBeatState
 
 			strumLineNotes.add(babyArrow);
 
-			if(SONG.keyCount != 4 && isPlayer)
+			if(SONG.keyCount != 4 && isPlayer && FlxG.save.data.extraKeyReminders)
 			{
 				var coolWidth = Std.int(40 - ((SONG.keyCount - 5) * 2) + (SONG.keyCount == 10 ? 30 : 0));
 

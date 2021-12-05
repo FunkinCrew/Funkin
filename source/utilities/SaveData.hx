@@ -116,6 +116,9 @@ class SaveData {
 
         if(FlxG.save.data.saveReplays == null)
             FlxG.save.data.saveReplays = true;
+
+        if(FlxG.save.data.extraKeyReminders == null)
+            FlxG.save.data.extraKeyReminders = true;
         
         FlxG.save.flush();
 
