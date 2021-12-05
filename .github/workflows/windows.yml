@@ -14,7 +14,13 @@ jobs:
           haxe-version: 4.2.3
       - run: |
           haxe -version
+          
+          cinst haxe --version 4.2.3 -y
+          RefreshEnv
+          mkdir "%HAXELIB_ROOT%"
+          haxelib setup "%HAXELIB_ROOT%"
           haxelib install lime
+          RefreshEnv
           haxelib install openfl
           haxelib install flixel
           haxelib run lime setup flixel
