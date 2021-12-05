@@ -1205,7 +1205,7 @@ class PlayState extends MusicBeatState
 			babyArrow.setGraphicSize(Std.int((babyArrow.width * Std.parseFloat(ui_Settings[0])) * (Std.parseFloat(ui_Settings[2]) - (Std.parseFloat(mania_size[SONG.keyCount-1])))));
 			babyArrow.updateHitbox();
 			
-			var animation_Base_Name = NoteVariables.Note_Count_Directions[SONG.keyCount - 1][Std.int(Math.abs(i))].getName().toLowerCase();
+			var animation_Base_Name = NoteVariables.Note_Count_Directions[SONG.keyCount - 1][Std.int(Math.abs(i))].toLowerCase();
 
 			babyArrow.animation.addByPrefix('static', animation_Base_Name + " static");
 			babyArrow.animation.addByPrefix('pressed', NoteVariables.Other_Note_Anim_Stuff[SONG.keyCount - 1][i] + ' press', 24, false);

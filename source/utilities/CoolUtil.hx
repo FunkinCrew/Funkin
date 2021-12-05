@@ -38,6 +38,20 @@ class CoolUtil
 		return daList;
 	}
 
+	public static function coolTextFileOfArrays(path:String, ?delimeter:String = " "):Array<Array<String>>
+	{
+		var daListOg = coolTextFile(path);
+
+		var daList:Array<Array<String>> = [];
+
+		for(line in daListOg)
+		{
+			daList.push(line.split(delimeter));
+		}
+
+		return daList;
+	}
+
 	#if sys
 	public static function coolTextFileFromSystem(path:String):Array<String>
 	{

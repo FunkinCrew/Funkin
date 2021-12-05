@@ -46,7 +46,7 @@ class UISkinSelect extends MusicBeatSubstate
 
         FlxTween.tween(bg, {alpha: 0.5}, 1, {ease: FlxEase.circOut, startDelay: 0});
 
-        #if sys
+        #if PRELOAD_ALL
         create_Arrows();
 
         add(arrow_Group);
@@ -137,24 +137,13 @@ class UISkinSelect extends MusicBeatSubstate
 
         var arrow_Tex:FlxAtlasFrames;
 
-        #if sys
-        if(!Assets.exists(Paths.image('ui skins/' + ui_Skin + "/arrows/default", 'shared')))
-            arrow_Tex = Paths.getSparrowAtlasSYS('ui skins/' + ui_Skin + "/arrows/default", 'shared');
-        else
-            arrow_Tex = Paths.getSparrowAtlas('ui skins/' + ui_Skin + "/arrows/default", 'shared');
-        #else
         arrow_Tex = Paths.getSparrowAtlas('ui skins/' + ui_Skin + "/arrows/default", 'shared');
-        #end
 
 		for (i in 0...key_Count)
         {
             var babyArrow:FlxSprite = new FlxSprite(0, FlxG.height / 2);
 
-            #if sys
             babyArrow.frames = arrow_Tex;
-            #else
-            babyArrow.frames = arrow_Tex;
-            #end
 
             babyArrow.antialiasing = ui_Settings[3] == "true";
 
@@ -164,7 +153,7 @@ class UISkinSelect extends MusicBeatSubstate
             babyArrow.screenCenter(X);
             babyArrow.x += Note.swagWidth * Math.abs(i);
 
-            var animation_Base_Name = NoteVariables.Note_Count_Directions[key_Count - 1][Std.int(Math.abs(i))].getName().toLowerCase();
+            var animation_Base_Name = NoteVariables.Note_Count_Directions[key_Count - 1][Std.int(Math.abs(i))].toLowerCase();
 
             babyArrow.animation.addByPrefix('static', animation_Base_Name + " static");
             babyArrow.animation.addByPrefix('pressed', NoteVariables.Other_Note_Anim_Stuff[key_Count - 1][i] + ' press', 24, false);
@@ -189,14 +178,7 @@ class UISkinSelect extends MusicBeatSubstate
         {
             var rating = new FlxSprite(50, 180 + (i * 100));
 
-            #if sys
-            if(!Assets.exists(Paths.image("ui skins/" + ui_Skin + "/ratings/" + rating_List[i], 'shared')))
-                rating.loadGraphic(Paths.imageSYS("ui skins/" + ui_Skin + "/ratings/" + rating_List[i], 'shared'));
-            else
-                rating.loadGraphic(Paths.image("ui skins/" + ui_Skin + "/ratings/" + rating_List[i], 'shared'));
-            #else
             rating.loadGraphic(Paths.image("ui skins/" + ui_Skin + "/ratings/" + rating_List[i], 'shared'));
-            #end
 
             rating.y -= 10;
             rating.alpha = 0;
@@ -211,14 +193,7 @@ class UISkinSelect extends MusicBeatSubstate
 
         var combo = new FlxSprite(900, 180);
 
-        #if sys
-        if(!Assets.exists(Paths.image("ui skins/" + ui_Skin + "/ratings/combo", 'shared')))
-            combo.loadGraphic(Paths.imageSYS("ui skins/" + ui_Skin + "/ratings/combo", 'shared'));
-        else
-            combo.loadGraphic(Paths.image("ui skins/" + ui_Skin + "/ratings/combo", 'shared'));
-        #else
         combo.loadGraphic(Paths.image("ui skins/" + ui_Skin + "/ratings/combo", 'shared'));
-        #end
 
         combo.y -= 10;
         combo.alpha = 0;
@@ -234,14 +209,7 @@ class UISkinSelect extends MusicBeatSubstate
         {
             var number = new FlxSprite(930 + ((i % 3) * 60), 330 + ((Math.floor(i / 3)) * 75));
 
-            #if sys
-            if(!Assets.exists(Paths.image("ui skins/" + ui_Skin + "/numbers/num" + i, 'shared')))
-                number.loadGraphic(Paths.imageSYS("ui skins/" + ui_Skin + "/numbers/num" + i, 'shared'));
-            else
-                number.loadGraphic(Paths.image("ui skins/" + ui_Skin + "/numbers/num" + i, 'shared'));
-            #else
             number.loadGraphic(Paths.image("ui skins/" + ui_Skin + "/numbers/num" + i, 'shared'));
-            #end
 
             number.setGraphicSize(Std.int(number.width * Std.parseFloat(ui_Settings[1])));
 			number.antialiasing = ui_Settings[3] == "true";

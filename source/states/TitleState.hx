@@ -1,5 +1,6 @@
 package states;
 
+import utilities.NoteVariables;
 #if discord_rpc
 import utilities.Discord.DiscordClient;
 #end
@@ -61,6 +62,8 @@ class TitleState extends MusicBeatState
 		persistentDraw = true;
 
 		FlxG.fixedTimestep = false;
+
+		NoteVariables.init();
 
 		SaveData.init();
 

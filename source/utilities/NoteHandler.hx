@@ -9,17 +9,3 @@ class NoteHandler
         return FlxG.save.data.binds[keyCount - 1];
     }
 }
-
-enum NoteDirection
-{
-    UP;
-    DOWN;
-    LEFT;
-    RIGHT;
-    SQUARE;
-    RUP;
-    RDOWN;
-    RLEFT;
-    RRIGHT;
-    PLUS;
-}

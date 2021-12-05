@@ -213,8 +213,8 @@ class ControlMenuSubstate extends MusicBeatSubstate
                 if(key_Count < 1)
                     key_Count = 1;
     
-                if(key_Count > 18)
-                    key_Count = 18;
+                if(key_Count > NoteVariables.Note_Count_Directions.length)
+                    key_Count = NoteVariables.Note_Count_Directions.length;
     
                 create_Arrows();
             }
@@ -265,7 +265,7 @@ class ControlMenuSubstate extends MusicBeatSubstate
             babyArrow.setGraphicSize(Std.int(babyArrow.width * lmaoStuff));
             babyArrow.screenCenter(X);
 
-            var animation_Base_Name = NoteVariables.Note_Count_Directions[key_Count - 1][Std.int(Math.abs(i))].getName().toLowerCase();
+            var animation_Base_Name = NoteVariables.Note_Count_Directions[key_Count - 1][Std.int(Math.abs(i))].toLowerCase();
 
             babyArrow.animation.addByPrefix('static', animation_Base_Name + " static");
             babyArrow.animation.addByPrefix('pressed', NoteVariables.Other_Note_Anim_Stuff[key_Count - 1][i] + ' press', 24, false);

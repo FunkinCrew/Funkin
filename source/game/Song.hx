@@ -1,5 +1,6 @@
 package game;
 
+import utilities.NoteVariables;
 #if sys
 import sys.FileSystem;
 import sys.io.File;
@@ -157,6 +158,9 @@ class Song
 			swagShit.chartOffset = 0;
 
 		swagShit.mania = null;
+
+		if(swagShit.keyCount > NoteVariables.Note_Count_Directions.length)
+			swagShit.keyCount = NoteVariables.Note_Count_Directions.length; // guarenteed safe value?
 
 		return swagShit;
 	}

@@ -1,5 +1,6 @@
 package debuggers;
 
+import utilities.NoteVariables;
 import game.Character;
 import modding.CharacterConfig;
 import ui.FlxUIDropDownMenuCustom;
@@ -270,7 +271,7 @@ class ChartingState extends MusicBeatState
 		stepperSpeed.value = _song.speed;
 		stepperSpeed.name = 'song_speed';
 
-		var stepperKeyCount:FlxUINumericStepper = new FlxUINumericStepper(10, stepperSpeed.y + stepperSpeed.height, 1, 4, 1, 18);
+		var stepperKeyCount:FlxUINumericStepper = new FlxUINumericStepper(10, stepperSpeed.y + stepperSpeed.height, 1, 4, 1, NoteVariables.Note_Count_Directions.length);
 		stepperKeyCount.value = _song.keyCount;
 		stepperKeyCount.name = 'song_keycount';
 
