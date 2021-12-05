@@ -2044,7 +2044,7 @@ class PlayState extends MusicBeatState
 				if(!hasUsedBot && songMultiplier >= 1)
 				{
 					Highscore.saveScore(SONG.song, songScore, storyDifficultyStr);
-					Highscore.saveRank(SONG.song, Ratings.getRank(accuracy), storyDifficultyStr, accuracy);
+					Highscore.saveRank(SONG.song, Ratings.getRank(accuracy, misses), storyDifficultyStr, accuracy);
 				}
 				#end
 			}

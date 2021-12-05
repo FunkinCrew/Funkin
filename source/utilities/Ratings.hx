@@ -103,10 +103,40 @@ class Ratings
 
         if(misses != null)
         {
+            var ratingsArray:Array<Int> = [
+                PlayState.instance.ratings.get("marvelous"),
+                PlayState.instance.ratings.get("sick"),
+                PlayState.instance.ratings.get("good"),
+                PlayState.instance.ratings.get("bad"),
+                PlayState.instance.ratings.get("shit")
+            ];
+
             if(misses == 0)
+            {
                 missesRating = "FC - ";
+
+                if(ratingsArray[3] < 10 && ratingsArray[4] == 0)
+                    missesRating = "SDB - ";
+
+                if(ratingsArray[3] == 0 && ratingsArray[4] == 0)
+                    missesRating = "GFC - ";
+
+                if(ratingsArray[2] < 10 && ratingsArray[3] == 0 && ratingsArray[4] == 0)
+                    missesRating = "SDG - ";
+
+                if(ratingsArray[2] == 0 && ratingsArray[3] == 0 && ratingsArray[4] == 0)
+                    missesRating = "PFC - ";
+
+                if(ratingsArray[1] < 10 && ratingsArray[2] == 0 && ratingsArray[3] == 0 && ratingsArray[4] == 0)
+                    missesRating = "SDP - ";
+
+                if(ratingsArray[1] == 0 && ratingsArray[2] == 0 && ratingsArray[3] == 0 && ratingsArray[4] == 0)
+                    missesRating = "MFC - ";
+            }
+
             if(misses > 0 && misses < 10)
                 missesRating = "SDCB - ";
+
             if(misses >= 10)
                 missesRating = "CLEAR - ";
         }
@@ -123,7 +153,7 @@ class Ratings
                         switch(condition)
                         {
                             case 0:
-                                return "MFC";
+                                return missesRating + "SSSS";
                             case 1:
                                 return missesRating + "SSS";
                             case 2:
