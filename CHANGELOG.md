@@ -24,6 +24,7 @@ All notable changes will be documented in this file.
 - Customizeable Note Gaps! (Basically squished together notes).
 - Added Extra Ratings! (PFC, GFC, SDP, SDG, etc).
 - REPLAY SYSTEM!
+- Marvelous Attack and Perfect (Sick) Attack.
 ### Fixed
 - Note Animations displaying at 30 FPS instead of 24 FPS.
 - Fixed input glitch where stacked notes would make the notes ahead of them just dissappear.
