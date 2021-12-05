@@ -200,6 +200,9 @@ class ChartingState extends MusicBeatState
 		dummyArrow = new FlxSprite().makeGraphic(GRID_SIZE, GRID_SIZE);
 		add(dummyArrow);
 
+		add(curRenderedNotes);
+		add(curRenderedSustains);
+
 		var tabs = [
 			{name: "Song Options", label: 'Song Options'},
 			{name: "Chart Options", label: 'Chart Options'},
@@ -218,9 +221,6 @@ class ChartingState extends MusicBeatState
 		addSectionUI();
 		addNoteUI();
 		addCompatibilityUI();
-
-		add(curRenderedNotes);
-		add(curRenderedSustains);
 
 		updateHeads();
 		updateGrid();
@@ -1008,6 +1008,8 @@ class ChartingState extends MusicBeatState
 				}
 			}
 
+			var control = FlxG.keys.pressed.CONTROL;
+
 			if (FlxG.keys.justPressed.SPACE)
 			{
 				if (FlxG.sound.music.playing)
@@ -1030,13 +1032,23 @@ class ChartingState extends MusicBeatState
 					resetSection();
 			}
 
-			if (FlxG.mouse.wheel != 0)
+			if(FlxG.mouse.wheel != 0 && !control)
 			{
 				FlxG.sound.music.pause();
 				vocals.pause();
 
 				FlxG.sound.music.time -= (FlxG.mouse.wheel * Conductor.stepCrochet * 0.4);
 				vocals.time = FlxG.sound.music.time;
+			}
+			else if(FlxG.mouse.wheel != 0)
+			{
+				strumLine.x += FlxG.mouse.wheel * 5;
+
+				if(strumLine.x > gridBG.x + gridBG.width)
+					strumLine.x = gridBG.x + gridBG.width;
+
+				if(strumLine.x < 0)
+					strumLine.x = 0;
 			}
 
 			if (!FlxG.keys.pressed.SHIFT)
@@ -1080,13 +1092,11 @@ class ChartingState extends MusicBeatState
 
 			var shiftThing:Int = 1;
 
-			var control = FlxG.keys.pressed.CONTROL;
-
 			if (FlxG.keys.pressed.SHIFT)
 				shiftThing = 4;
-			if ((controls.LEFT_P) && !control)
-				changeSection(curSection + shiftThing);
 			if ((controls.RIGHT_P) && !control)
+				changeSection(curSection + shiftThing);
+			if ((controls.LEFT_P) && !control)
 				changeSection(curSection - shiftThing);
 
 			if(controls.RIGHT_P && control)

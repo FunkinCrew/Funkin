@@ -17,6 +17,7 @@ All notable changes will be documented in this file.
 - No Death Option (prevents dieing in songs).
 - Note Snap Option in Charter (4-192 lol).
 - End Cutscene Value (plays a cutscene at the end of the song).
+- Scrolling Left to Right in charter (Control + Mouse Wheel).
 ### Fixed
 - Note Animations displaying at 30 FPS instead of 24 FPS.
 - Fixed input glitch where stacked notes would make the notes ahead of them just dissappear.
