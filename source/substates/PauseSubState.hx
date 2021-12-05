@@ -1,5 +1,6 @@
 package substates;
 
+import game.Conductor;
 import game.Replay;
 import states.ReplaySelectorState;
 import game.Note;
@@ -173,7 +174,13 @@ class PauseSubState extends MusicBeatSubstate
 					#end
 
 					if(PlayState.playingReplay && Replay.getReplayList().length > 0)
+					{
+						@:privateAccess
+						FlxG.save.data.judgementTimings = PlayState.instance.ogJudgementTimings;
+						Conductor.offset = FlxG.save.data.songOffset;
+
 						FlxG.switchState(new ReplaySelectorState());
+					}
 					else
 					{
 						if (PlayState.isStoryMode)
