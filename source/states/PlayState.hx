@@ -625,7 +625,7 @@ class PlayState extends MusicBeatState
 		if(FlxG.save.data.showRatingsOnSide)
 		{
 			ratingText = new FlxText(0,0,0,"bruh");
-			ratingText.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			ratingText.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 			ratingText.screenCenter(Y);
 	
 			ratingText.scrollFactor.set();
@@ -3001,12 +3001,12 @@ class PlayState extends MusicBeatState
 			var PA = ratingArray[2] + ratingArray[3] + ratingArray[4];
 
 			ratingText.text = (
-				(FlxG.save.data.marvelousRatings ? "MARVELOUS: " + Std.string(ratingArray[0]) + "\n" : "") +
-				"SICK: " + Std.string(ratingArray[1]) + "\n" +
-				"GOOD: " + Std.string(ratingArray[2]) + "\n" +
-				"BAD: " + Std.string(ratingArray[3]) + "\n" +
-				"SHIT: " + Std.string(ratingArray[4]) + "\n" +
-				"MISSES: " + Std.string(misses) + "\n" +
+				(FlxG.save.data.marvelousRatings ? "Marvelous: " + Std.string(ratingArray[0]) + "\n" : "") +
+				"Sick: " + Std.string(ratingArray[1]) + "\n" +
+				"Good: " + Std.string(ratingArray[2]) + "\n" +
+				"Bad: " + Std.string(ratingArray[3]) + "\n" +
+				"Shit: " + Std.string(ratingArray[4]) + "\n" +
+				"Misses: " + Std.string(misses) + "\n" +
 				(FlxG.save.data.marvelousRatings && ratingArray[0] > 0 && MA > 0 ? "MA: " + Std.string(FlxMath.roundDecimal(ratingArray[0] / MA, 2)) + "\n" : "") +
 				(ratingArray[1] > 0 && PA > 0 ? "PA: " + Std.string(FlxMath.roundDecimal(ratingArray[1] / PA, 2)) + "\n" : "")
 			);
