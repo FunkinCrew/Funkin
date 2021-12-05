@@ -840,6 +840,8 @@ class ChartingState extends MusicBeatState
 		return daPos;
 	}
 
+	var beatSnap:Int = 16;
+
 	override function update(elapsed:Float)
 	{
 		if(FlxMath.roundDecimal(tempBpm, 1) < 0.1)
@@ -952,11 +954,14 @@ class ChartingState extends MusicBeatState
 			&& FlxG.mouse.y > gridBG.y
 			&& FlxG.mouse.y < gridBG.y + (GRID_SIZE * ((16 / _song.timescale[1]) * 4)))
 		{
+			var snappedGridSize = (GRID_SIZE / (beatSnap / 16));
+
 			dummyArrow.x = Math.floor(FlxG.mouse.x / GRID_SIZE) * GRID_SIZE;
-			if (FlxG.keys.pressed.SHIFT)
+
+			if(FlxG.keys.pressed.SHIFT)
 				dummyArrow.y = FlxG.mouse.y;
 			else
-				dummyArrow.y = Math.floor(FlxG.mouse.y / GRID_SIZE) * GRID_SIZE;
+				dummyArrow.y = Math.floor(FlxG.mouse.y / snappedGridSize) * snappedGridSize;
 		}
 
 		if(!typingShit.hasFocus)
@@ -1069,12 +1074,26 @@ class ChartingState extends MusicBeatState
 
 			var shiftThing:Int = 1;
 
+			var control = FlxG.keys.pressed.CONTROL;
+
 			if (FlxG.keys.pressed.SHIFT)
 				shiftThing = 4;
-			if (FlxG.keys.justPressed.RIGHT || FlxG.keys.justPressed.D)
+			if ((controls.LEFT_P) && !control)
 				changeSection(curSection + shiftThing);
-			if (FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.A)
+			if ((controls.RIGHT_P) && !control)
 				changeSection(curSection - shiftThing);
+
+			if(controls.RIGHT_P && control)
+			{
+				if(beatSnaps.indexOf(beatSnap) + 1 <= beatSnaps.length - 1)
+					beatSnap = beatSnaps[beatSnaps.indexOf(beatSnap) + 1];
+			}
+
+			if(controls.LEFT_P && control)
+			{
+				if(beatSnaps.indexOf(beatSnap) - 1 >= 0)
+					beatSnap = beatSnaps[beatSnaps.indexOf(beatSnap) - 1];
+			}
 		}
 
 		_song.bpm = tempBpm;
@@ -1095,6 +1114,9 @@ class ChartingState extends MusicBeatState
 			+ curStep
 			+ "\nCurBeat: "
 			+ curBeat
+			+ "\nNote Snap: "
+			+ beatSnap + (FlxG.keys.pressed.SHIFT ? "\n(DISABLED)" : "\n(CONTROL + ARROWS)")
+			+ "\n"
 		);
 
 		leftIcon.x = gridBG.x;
@@ -1102,6 +1124,8 @@ class ChartingState extends MusicBeatState
 
 		super.update(elapsed);
 	}
+
+	var beatSnaps:Array<Int> = [2, 4, 6, 8, 12, 16, 24, 32, 48, 64, 128, 192];
 
 	var claps:Array<Note> = [];
 
