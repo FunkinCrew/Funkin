@@ -14,7 +14,13 @@ jobs:
           haxe-version: 4.2.3
       - run: |
           haxe -version
+          
+          cinst haxe --version 4.2.3 -y
+          RefreshEnv
+          mkdir "%HAXELIB_ROOT%"
+          haxelib setup "%HAXELIB_ROOT%"
           haxelib install lime
+          RefreshEnv
           haxelib install openfl
           haxelib install flixel
           haxelib run lime setup flixel
@@ -25,7 +31,7 @@ jobs:
           haxelib install polymod
           haxelib install linc_luajit
           haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
-          lime build windows
+          haxelib run lime build windows
           
       - uses: actions/upload-artifact@v2
         with:
