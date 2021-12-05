@@ -1,5 +1,7 @@
 package substates;
 
+import flixel.FlxObject;
+import game.StrumNote;
 import lime.utils.Assets;
 import utilities.PlayerSettings;
 import openfl.events.FullScreenEvent;
@@ -20,9 +22,9 @@ class ControlMenuSubstate extends MusicBeatSubstate
     var arrow_Group:FlxTypedGroup<FlxSprite> = new FlxTypedGroup<FlxSprite>();
     var text_Group:FlxTypedGroup<FlxText> = new FlxTypedGroup<FlxText>();
 
-    public var ui_Settings:Array<String> = CoolUtil.coolTextFile(Paths.txt("ui skins/default/config"));
-    public var mania_Size:Array<String> = CoolUtil.coolTextFile(Paths.txt("ui skins/default/maniasize"));
-    public var mania_offset:Array<String> = CoolUtil.coolTextFile(Paths.txt("ui skins/default/maniaoffset"));
+    public var ui_Settings:Array<String>;
+    public var mania_size:Array<String>;
+    public var mania_offset:Array<String>;
 
     public var arrow_Configs:Map<String, Array<String>> = new Map<String, Array<String>>();
 
@@ -41,9 +43,16 @@ class ControlMenuSubstate extends MusicBeatSubstate
     var fullscreenBind:String = FlxG.save.data.fullscreenBind;
     var fullscreenText:FlxText = new FlxText();
 
+    var mania_gap:Array<String>;
+
     public function new()
     {
         FlxG.mouse.visible = true;
+
+        ui_Settings = CoolUtil.coolTextFile(Paths.txt("ui skins/default/config"));
+        mania_size = CoolUtil.coolTextFile(Paths.txt("ui skins/default/maniasize"));
+        mania_offset = CoolUtil.coolTextFile(Paths.txt("ui skins/default/maniaoffset"));
+        mania_gap = CoolUtil.coolTextFile(Paths.txt("ui skins/default/maniagap"));
 
         arrow_Configs.set("default", CoolUtil.coolTextFile(Paths.txt("ui skins/default/default")));
 
@@ -248,66 +257,54 @@ class ControlMenuSubstate extends MusicBeatSubstate
             key_Count = new_Key_Count;
 
         arrow_Group.clear();
+        
+        text_Group.forEach(function(text:FlxText) {
+            text_Group.remove(text);
+            text.kill();
+            text.destroy();
+        });
+
         text_Group.clear();
 
-        Note.swagWidth = 160 * (0.7 - ((key_Count - 4) * 0.06));
-
-        var lmaoStuff = Std.parseFloat(ui_Settings[0]) * (Std.parseFloat(ui_Settings[2]) - (Std.parseFloat(mania_Size[key_Count - 1])));
+        var strumLine:FlxSprite = new FlxSprite(0, FlxG.height / 2);
 
 		for (i in 0...key_Count)
         {
-            var babyArrow:FlxSprite = new FlxSprite(FlxG.width / 2, FlxG.height / 2);
+            var babyArrow:StrumNote = new StrumNote(0, strumLine.y, i, "default", ui_Settings, mania_size, key_Count);
 
             babyArrow.frames = Paths.getSparrowAtlas("ui skins/default/arrows/default", 'shared');
 
-            babyArrow.antialiasing = ui_Settings[3] == "true";
+			babyArrow.antialiasing = ui_Settings[3] == "true";
 
-            babyArrow.setGraphicSize(Std.int(babyArrow.width * lmaoStuff));
-            babyArrow.screenCenter(X);
+			babyArrow.setGraphicSize(Std.int((babyArrow.width * Std.parseFloat(ui_Settings[0])) * (Std.parseFloat(ui_Settings[2]) - (Std.parseFloat(mania_size[key_Count-1])))));
+			babyArrow.updateHitbox();
+			
+			var animation_Base_Name = NoteVariables.Note_Count_Directions[key_Count - 1][Std.int(Math.abs(i))].toLowerCase();
 
-            var animation_Base_Name = NoteVariables.Note_Count_Directions[key_Count - 1][Std.int(Math.abs(i))].toLowerCase();
+			babyArrow.animation.addByPrefix('static', animation_Base_Name + " static");
+			babyArrow.animation.addByPrefix('pressed', NoteVariables.Other_Note_Anim_Stuff[key_Count - 1][i] + ' press', 24, false);
+			babyArrow.animation.addByPrefix('confirm', NoteVariables.Other_Note_Anim_Stuff[key_Count - 1][i] + ' confirm', 24, false);
+			
+			babyArrow.playAnim('static');
 
-            babyArrow.animation.addByPrefix('static', animation_Base_Name + " static");
-            babyArrow.animation.addByPrefix('pressed', NoteVariables.Other_Note_Anim_Stuff[key_Count - 1][i] + ' press', 24, false);
-            babyArrow.animation.addByPrefix('confirm', NoteVariables.Other_Note_Anim_Stuff[key_Count - 1][i] + ' confirm', 24, false);
+			babyArrow.x += (babyArrow.width + (2 + Std.parseFloat(mania_gap[key_Count - 1]))) * Math.abs(i) + Std.parseFloat(mania_offset[key_Count - 1]);
+			babyArrow.y = strumLine.y - (babyArrow.height / 2);
 
-            babyArrow.updateHitbox();
-            babyArrow.scrollFactor.set();
-
-            if(i == 0)
-            {
-                babyArrow.x -= babyArrow.width;
-                babyArrow.x += ((babyArrow.width + 2) * Math.abs(i));
-            }
-            else
-            {
-                babyArrow.x = arrow_Group.members[0].x;
-
-                arrow_Group.forEach(function(arrow:FlxSprite) {
-                    babyArrow.x += arrow.width;
-                });
-
-                babyArrow.x += 2;
-            }
-
-            babyArrow.y -= (babyArrow.height / 2);
-
+            babyArrow.y -= 10;
             babyArrow.alpha = 0;
+            FlxTween.tween(babyArrow, {y: babyArrow.y + 10, alpha: 1}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
 
-            FlxTween.tween(babyArrow, {y: babyArrow.y + 10, alpha: 1}, 1, {ease: FlxEase.circOut, startDelay: 0.2 + (0.2 * i)});
+			babyArrow.ID = i;
 
-            babyArrow.ID = i;
-
-            babyArrow.offset.y += Std.parseFloat(arrow_Configs.get("default")[0]) * lmaoStuff;
-
-            babyArrow.animation.play('static');
+			babyArrow.x += 100 - ((key_Count - 4) * 16) + (key_Count >= 10 ? 30 : 0);
+			babyArrow.x += ((FlxG.width / 2) * 0.5);
 
             arrow_Group.add(babyArrow);
 
-            var coolWidth = Std.int(40 - ((key_Count - 5) * 2));
+            var coolWidth = Std.int(40 - ((key_Count - 5) * 2) + (key_Count == 10 ? 30 : 0));
 
-            var coolText = new FlxText(babyArrow.x + (babyArrow.width / 2), babyArrow.y + coolWidth, coolWidth, binds[key_Count - 1][i], coolWidth);
-            coolText.setFormat(Paths.font("vcr.ttf"), coolWidth, FlxColor.WHITE, LEFT, OUTLINE, FlxColor.BLACK);
+            var coolText = new FlxText((babyArrow.x + (babyArrow.width / 2)) - (coolWidth / 2), babyArrow.y - (coolWidth / 2), coolWidth, binds[key_Count - 1][i], coolWidth);
+            add(coolText);
 
             text_Group.add(coolText);
         }

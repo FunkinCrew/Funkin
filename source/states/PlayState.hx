@@ -176,6 +176,7 @@ class PlayState extends MusicBeatState
 	public var ui_Settings:Array<String>;
 	public var mania_size:Array<String>;
 	public var mania_offset:Array<String>;
+	public var mania_gap:Array<String>;
 	public var types:Array<String>;
 
 	public var arrow_Configs:Map<String, Array<String>> = new Map<String, Array<String>>();
@@ -322,6 +323,12 @@ class PlayState extends MusicBeatState
 		ui_Settings = CoolUtil.coolTextFile(Paths.txt("ui skins/" + SONG.ui_Skin + "/config"));
 		mania_size = CoolUtil.coolTextFile(Paths.txt("ui skins/" + SONG.ui_Skin + "/maniasize"));
 		mania_offset = CoolUtil.coolTextFile(Paths.txt("ui skins/" + SONG.ui_Skin + "/maniaoffset"));
+
+		if(Assets.exists(Paths.txt("ui skins/" + SONG.ui_Skin + "/maniagap")))
+			mania_gap = CoolUtil.coolTextFile(Paths.txt("ui skins/" + SONG.ui_Skin + "/maniagap"));
+		else
+			mania_gap = CoolUtil.coolTextFile(Paths.txt("ui skins/default/maniagap"));
+
 		types = CoolUtil.coolTextFile(Paths.txt("ui skins/" + SONG.ui_Skin + "/types"));
 
 		arrow_Configs.set("default", CoolUtil.coolTextFile(Paths.txt("ui skins/" + SONG.ui_Skin + "/default")));
@@ -1222,7 +1229,7 @@ class PlayState extends MusicBeatState
 			
 			babyArrow.playAnim('static');
 
-			babyArrow.x += (babyArrow.width + 2) * Math.abs(i) + Std.parseFloat(mania_offset[SONG.keyCount-1]);
+			babyArrow.x += (babyArrow.width + (2 + Std.parseFloat(mania_gap[SONG.keyCount - 1]))) * Math.abs(i) + Std.parseFloat(mania_offset[SONG.keyCount - 1]);
 			babyArrow.y = strumLine.y - (babyArrow.height / 2);
 
 			if (isStoryMode)
@@ -1286,7 +1293,7 @@ class PlayState extends MusicBeatState
 
 		for(note in playerStrums)
 		{
-			bruhVal += note.swagWidth + 2;
+			bruhVal += note.swagWidth + (2 + Std.parseFloat(mania_gap[SONG.keyCount - 1]));
 		}
 
 		noteBG.setGraphicSize(Std.int(bruhVal), FlxG.height * 2);

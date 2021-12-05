@@ -110,6 +110,9 @@ class SaveData {
 
         if(FlxG.save.data.missOnHeldNotes == null)
             FlxG.save.data.missOnHeldNotes = true;
+
+        if(FlxG.save.data.noteGap == null)
+            FlxG.save.data.noteGap = -4;
         
         FlxG.save.flush();
 

@@ -23,6 +23,10 @@ class UISkinSelect extends MusicBeatSubstate
     public var ui_Settings:Array<String> = CoolUtil.coolTextFile(Paths.txt("ui skins/" + FlxG.save.data.uiSkin + "/config"));
     public var ui_Skins:Array<String> = CoolUtil.coolTextFile(Paths.txt("uiSkinList"));
 
+    public var mania_gap:Array<String>;
+    public var mania_size:Array<String>;
+    public var mania_offset:Array<String>;
+
     var current_UI_Skin:FlxText;
     var bg:FlxSprite;
 
@@ -121,6 +125,13 @@ class UISkinSelect extends MusicBeatSubstate
     function create_Arrows(?new_Key_Count = 4)
     {
         ui_Settings = CoolUtil.coolTextFile(Paths.txt("ui skins/" + ui_Skin + "/config"));
+        mania_size = CoolUtil.coolTextFile(Paths.txt("ui skins/" + ui_Skin + "/maniasize"));
+		mania_offset = CoolUtil.coolTextFile(Paths.txt("ui skins/" + ui_Skin + "/maniaoffset"));
+
+        if(Assets.exists(Paths.txt("ui skins/" + ui_Skin + "/maniagap")))
+			mania_gap = CoolUtil.coolTextFile(Paths.txt("ui skins/" + ui_Skin + "/maniagap"));
+		else
+			mania_gap = CoolUtil.coolTextFile(Paths.txt("ui skins/default/maniagap"));
 
         if(new_Key_Count != null)
             key_Count = new_Key_Count;
@@ -147,11 +158,11 @@ class UISkinSelect extends MusicBeatSubstate
 
             babyArrow.antialiasing = ui_Settings[3] == "true";
 
-            babyArrow.setGraphicSize(Std.int((babyArrow.width * Std.parseFloat(ui_Settings[0])) * (Std.parseFloat(ui_Settings[2]) - ((key_Count - 4) * 0.06))));
-            babyArrow.updateHitbox();
+			babyArrow.setGraphicSize(Std.int((babyArrow.width * Std.parseFloat(ui_Settings[0])) * (Std.parseFloat(ui_Settings[2]) - (Std.parseFloat(mania_size[4 - 1])))));
+			babyArrow.updateHitbox();
 
             babyArrow.screenCenter(X);
-            babyArrow.x += Note.swagWidth * Math.abs(i);
+            babyArrow.x += (babyArrow.width + (2 + Std.parseFloat(mania_gap[4 - 1]))) * Math.abs(i) + Std.parseFloat(mania_offset[4 - 1]);
 
             var animation_Base_Name = NoteVariables.Note_Count_Directions[key_Count - 1][Std.int(Math.abs(i))].toLowerCase();
 
@@ -172,7 +183,7 @@ class UISkinSelect extends MusicBeatSubstate
             arrow_Group.add(babyArrow);
         }
 
-        var rating_List:Array<String> = ['sick', 'good', 'bad', 'shit'];
+        var rating_List:Array<String> = ['marvelous', 'sick', 'good', 'bad', 'shit'];
 
         for(i in 0...rating_List.length)
         {
