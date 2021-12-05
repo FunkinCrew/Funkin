@@ -101,44 +101,55 @@ class Ratings
 
         var missesRating:String = "";
 
-        if(misses != null)
+        if(FlxG.save.data.ratingMode == "complex")
         {
-            var ratingsArray:Array<Int> = [
-                PlayState.instance.ratings.get("marvelous"),
-                PlayState.instance.ratings.get("sick"),
-                PlayState.instance.ratings.get("good"),
-                PlayState.instance.ratings.get("bad"),
-                PlayState.instance.ratings.get("shit")
-            ];
-
-            if(misses == 0)
+            if(misses != null)
             {
-                missesRating = "FC - ";
-
-                if(ratingsArray[3] < 10 && ratingsArray[4] == 0)
-                    missesRating = "SDB - ";
-
-                if(ratingsArray[3] == 0 && ratingsArray[4] == 0)
-                    missesRating = "GFC - ";
-
-                if(ratingsArray[2] < 10 && ratingsArray[3] == 0 && ratingsArray[4] == 0)
-                    missesRating = "SDG - ";
-
-                if(ratingsArray[2] == 0 && ratingsArray[3] == 0 && ratingsArray[4] == 0)
-                    missesRating = "PFC - ";
-
-                if(ratingsArray[1] < 10 && ratingsArray[2] == 0 && ratingsArray[3] == 0 && ratingsArray[4] == 0)
-                    missesRating = "SDP - ";
-
-                if(ratingsArray[1] == 0 && ratingsArray[2] == 0 && ratingsArray[3] == 0 && ratingsArray[4] == 0)
-                    missesRating = "MFC - ";
+                var ratingsArray:Array<Int> = [
+                    PlayState.instance.ratings.get("marvelous"),
+                    PlayState.instance.ratings.get("sick"),
+                    PlayState.instance.ratings.get("good"),
+                    PlayState.instance.ratings.get("bad"),
+                    PlayState.instance.ratings.get("shit")
+                ];
+    
+                if(misses == 0)
+                {
+                    missesRating = "FC - ";
+    
+                    if(ratingsArray[3] < 10 && ratingsArray[4] == 0)
+                        missesRating = "SDB - ";
+    
+                    if(ratingsArray[3] == 0 && ratingsArray[4] == 0)
+                        missesRating = "GFC - ";
+    
+                    if(ratingsArray[2] < 10 && ratingsArray[3] == 0 && ratingsArray[4] == 0)
+                        missesRating = "SDG - ";
+    
+                    if(ratingsArray[2] == 0 && ratingsArray[3] == 0 && ratingsArray[4] == 0)
+                        missesRating = "PFC - ";
+    
+                    if(ratingsArray[1] < 10 && ratingsArray[2] == 0 && ratingsArray[3] == 0 && ratingsArray[4] == 0)
+                        missesRating = "SDP - ";
+    
+                    if(ratingsArray[1] == 0 && ratingsArray[2] == 0 && ratingsArray[3] == 0 && ratingsArray[4] == 0)
+                        missesRating = "MFC - ";
+                }
+    
+                if(misses > 0 && misses < 10)
+                    missesRating = "SDCB - ";
+    
+                if(misses >= 10)
+                    missesRating = "CLEAR - ";
             }
-
-            if(misses > 0 && misses < 10)
-                missesRating = "SDCB - ";
-
-            if(misses >= 10)
-                missesRating = "CLEAR - ";
+        }
+        else
+        {
+            if(misses != null)
+            {
+                if(misses == 0)
+                    missesRating = "FC - ";
+            }
         }
 
         for(condition in 0...conditions.length)
