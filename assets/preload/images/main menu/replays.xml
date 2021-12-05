@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="replays.png">
+	<!-- Created with Adobe Animate version 22.0.0.93 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="replays basic0000" x="1" y="646" width="493" height="178"/>
+	<SubTexture name="replays basic0001" x="1" y="646" width="493" height="178"/>
+	<SubTexture name="replays basic0002" x="1" y="646" width="493" height="178"/>
+	<SubTexture name="replays basic0003" x="1" y="825" width="493" height="178"/>
+	<SubTexture name="replays basic0004" x="1" y="825" width="493" height="178"/>
+	<SubTexture name="replays basic0005" x="1" y="825" width="493" height="178"/>
+	<SubTexture name="replays basic0006" x="495" y="646" width="493" height="178"/>
+	<SubTexture name="replays basic0007" x="495" y="646" width="493" height="178"/>
+	<SubTexture name="replays basic0008" x="495" y="646" width="493" height="178"/>
+	<SubTexture name="replays white0000" x="1" y="1" width="590" height="214"/>
+	<SubTexture name="replays white0001" x="1" y="216" width="590" height="214"/>
+	<SubTexture name="replays white0002" x="1" y="431" width="590" height="214"/>
+</TextureAtlas>
