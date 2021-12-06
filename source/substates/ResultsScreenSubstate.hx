@@ -40,8 +40,9 @@ class ResultsScreenSubstate extends MusicBeatSubstate
         ratings.scrollFactor.set();
         add(ratings);
 
+        @:privateAccess
         var bottomText:FlxText = new FlxText(FlxG.width, FlxG.height, 0, 
-            "Press ENTER to close this menu\n" + (!PlayState.playingReplay ? "Press SPACE to save this replay\nPress ESCAPE to view this replay\n" : "" )
+            "Press ENTER to close this menu\n" + (!PlayState.playingReplay && !PlayState.instance.hasUsedBot ? "Press SPACE to save this replay\nPress ESCAPE to view this replay\n" : "" )
         );
         bottomText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, RIGHT, OUTLINE, FlxColor.BLACK);
         bottomText.setPosition(FlxG.width - bottomText.width - 2, FlxG.height - (!PlayState.playingReplay ? 96 : 32));
@@ -63,10 +64,12 @@ class ResultsScreenSubstate extends MusicBeatSubstate
             FlxG.state.closeSubState();
         }
 
-        if(FlxG.keys.justPressed.SPACE && !PlayState.playingReplay)
+        @:privateAccess
+        if(FlxG.keys.justPressed.SPACE && !PlayState.playingReplay && !PlayState.instance.hasUsedBot)
             PlayState.instance.saveReplay();
 
-        if(FlxG.keys.justPressed.ESCAPE && !PlayState.playingReplay)
+        @:privateAccess
+        if(FlxG.keys.justPressed.ESCAPE && !PlayState.playingReplay && !PlayState.instance.hasUsedBot)
         {
             PlayState.instance.saveReplay();
             PlayState.instance.fixSettings();
