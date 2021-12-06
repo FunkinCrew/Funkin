@@ -89,7 +89,14 @@ class MainMenuState extends MusicBeatState
 		menuItems.onChange.add(onMenuItemChange);
 		menuItems.onAcceptPress.add(function(_)
 		{
-			FlxFlicker.flicker(magenta, 1.1, 0.15, false, true);
+			if (_.name == 'freeplay')
+			{
+				magenta.visible = true;
+			}
+			else
+			{
+				FlxFlicker.flicker(magenta, 1.1, 0.15, false, true);
+			}
 		});
 
 		menuItems.enabled = false; // disable for intro
@@ -141,6 +148,13 @@ class MainMenuState extends MusicBeatState
 		// NG.core.calls.event.logEvent('swag').send();
 
 		super.create();
+	}
+
+	override function closeSubState()
+	{
+		magenta.visible = false;
+
+		super.closeSubState();
 	}
 
 	override function finishTransIn()
