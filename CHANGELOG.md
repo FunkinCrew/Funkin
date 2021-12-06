@@ -37,7 +37,6 @@ All notable changes will be documented in this file.
 ### Changed
 - Better visibilty for Note Splashes.
 - Sustain notes now count towards accuracy (not the misses counter).
-- Caution Notes now insta-kill player.
 - 16 Key now matches 18 Key.
 
 ## [0.3.8] - 11/12/2021
