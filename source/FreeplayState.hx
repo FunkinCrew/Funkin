@@ -21,6 +21,7 @@ import flixel.util.FlxSpriteUtil;
 import flixel.util.FlxTimer;
 import freeplayStuff.BGScrollingText;
 import freeplayStuff.DJBoyfriend;
+import freeplayStuff.FreeplayScore;
 import freeplayStuff.SongMenuItem;
 import lime.app.Future;
 import lime.utils.Assets;
@@ -38,6 +39,7 @@ class FreeplayState extends MusicBeatSubstate
 	var curDifficulty:Int = 1;
 
 	var scoreText:FlxText;
+	var fp:FreeplayScore;
 	var diffText:FlxText;
 	var lerpScore:Float = 0;
 	var intendedScore:Int = 0;
@@ -146,12 +148,12 @@ class FreeplayState extends MusicBeatSubstate
 
 		var moreWays:BGScrollingText = new BGScrollingText(0, 200, "HOT BLOODED IN MORE WAYS THAN ONE", FlxG.width);
 		moreWays.funnyColor = 0xFFfff383;
-		moreWays.speed = 2;
+		moreWays.speed = 4;
 		grpTxtScrolls.add(moreWays);
 
 		var funnyScroll:BGScrollingText = new BGScrollingText(0, 250, "BOYFRIEND", FlxG.width / 2);
 		funnyScroll.funnyColor = 0xFFff9963;
-		funnyScroll.speed = -0.5;
+		funnyScroll.speed = -1;
 		grpTxtScrolls.add(funnyScroll);
 
 		var txtNuts:BGScrollingText = new BGScrollingText(0, 300, "PROTECT YO NUTS", FlxG.width / 2);
@@ -159,32 +161,33 @@ class FreeplayState extends MusicBeatSubstate
 
 		var funnyScroll2:BGScrollingText = new BGScrollingText(0, 340, "BOYFRIEND", FlxG.width / 2);
 		funnyScroll2.funnyColor = 0xFFff9963;
-		funnyScroll2.speed = -0.6;
+		funnyScroll2.speed = -1.2;
 		grpTxtScrolls.add(funnyScroll2);
 
 		var moreWays2:BGScrollingText = new BGScrollingText(0, 400, "HOT BLOODED IN MORE WAYS THAN ONE", FlxG.width);
 		moreWays2.funnyColor = 0xFFfff383;
-		moreWays2.speed = 2.2;
+		moreWays2.speed = 4.4;
 		grpTxtScrolls.add(moreWays2);
 
 		var funnyScroll3:BGScrollingText = new BGScrollingText(0, orangeBackShit.y, "BOYFRIEND", FlxG.width / 2);
 		funnyScroll3.funnyColor = 0xFFff9963;
-		funnyScroll3.speed = -0.4;
+		funnyScroll3.speed = -0.8;
 		grpTxtScrolls.add(funnyScroll3);
 
 		var dj:DJBoyfriend = new DJBoyfriend(0, -100);
 		add(dj);
 
-		var bgDad:FlxSprite = new FlxSprite(FlxG.width, 0).loadGraphic(Paths.image('freeplay/freeplayBGdad'));
+		var bgDad:FlxSprite = new FlxSprite(pinkBack.width * 0.75, 0).loadGraphic(Paths.image('freeplay/freeplayBGdad'));
 		bgDad.setGraphicSize(0, FlxG.height);
 		bgDad.updateHitbox();
 		bgDad.shader = new AngleMask();
+		bgDad.visible = false;
 
-		var blackOverlayBullshitLOLXD:FlxSprite = new FlxSprite(pinkBack.width * 0.75).makeGraphic(Std.int(bgDad.width), Std.int(bgDad.height),
-			FlxColor.BLACK);
-		// add(blackOverlayBullshitLOLXD); // used to mask the text lol!
+		var blackOverlayBullshitLOLXD:FlxSprite = new FlxSprite(FlxG.width).makeGraphic(Std.int(bgDad.width), Std.int(bgDad.height), FlxColor.BLACK);
+		add(blackOverlayBullshitLOLXD); // used to mask the text lol!
 
 		add(bgDad);
+		FlxTween.tween(blackOverlayBullshitLOLXD, {x: pinkBack.width * 0.75}, 1, {ease: FlxEase.quintOut});
 
 		blackOverlayBullshitLOLXD.shader = bgDad.shader;
 
@@ -206,6 +209,10 @@ class FreeplayState extends MusicBeatSubstate
 		fnfFreeplay.shader = sillyStroke;
 		add(fnfFreeplay);
 
+		fp = new FreeplayScore(420, 40, 100);
+		fp.visible = false;
+		add(fp);
+
 		dj.animHITsignal.add(function()
 		{
 			var animShit:ComboCounter = new ComboCounter(100, 300, 1000000);
@@ -214,6 +221,8 @@ class FreeplayState extends MusicBeatSubstate
 			new FlxTimer().start(1 / 24, function(handShit)
 			{
 				fnfFreeplay.visible = true;
+				fp.visible = true;
+				fp.updateScore(0);
 
 				new FlxTimer().start(1.5 / 24, function(bold)
 				{
@@ -224,7 +233,7 @@ class FreeplayState extends MusicBeatSubstate
 
 			pinkBack.color = 0xFFffd863;
 			// fnfFreeplay.visible = true;
-			FlxTween.tween(bgDad, {x: pinkBack.width * 0.75}, 1, {ease: FlxEase.quintOut});
+			bgDad.visible = true;
 			orangeBackShit.visible = true;
 			alsoOrangeLOL.visible = true;
 			grpTxtScrolls.visible = true;
@@ -237,6 +246,8 @@ class FreeplayState extends MusicBeatSubstate
 			funnyMenu.ID = i;
 			funnyMenu.alpha = 0.5;
 			funnyMenu.songText.visible = false;
+
+			fp.updateScore(0);
 
 			new FlxTimer().start((1 / 24) * i, function(doShit)
 			{
@@ -578,6 +589,8 @@ class FreeplayState extends MusicBeatSubstate
 
 	function changeSelection(change:Int = 0)
 	{
+		fp.updateScore(0);
+
 		NGio.logEvent('Fresh');
 
 		// NGio.logEvent('Fresh');
