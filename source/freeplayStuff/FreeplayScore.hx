@@ -3,28 +3,52 @@ package freeplayStuff;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 
+using StringTools;
+
 class FreeplayScore extends FlxTypedSpriteGroup<ScoreNum>
 {
-	public var scoreShit:Int = 0;
+	public var scoreShit(default, set):Int = 0;
+
+	function set_scoreShit(val):Int
+	{
+		var loopNum:Int = group.members.length - 1;
+		var dumbNumb = Std.parseInt(Std.string(val));
+
+		while (dumbNumb > 0)
+		{
+			trace(dumbNumb);
+			group.members[loopNum].digit = dumbNumb % 10;
+
+			dumbNumb = Math.floor(dumbNumb / 10);
+			loopNum--;
+		}
+
+		while (loopNum > 0)
+		{
+			group.members[loopNum].digit = 0;
+			loopNum--;
+		}
+
+		trace(val);
+
+		return val;
+	}
 
 	public function new(x:Float, y:Float, scoreShit:Int = 100)
 	{
 		super(x, y);
 
-		this.scoreShit = scoreShit;
-
 		for (i in 0...7)
 		{
 			add(new ScoreNum(x + (45 * i), y, 0));
 		}
+
+		this.scoreShit = scoreShit;
 	}
 
 	public function updateScore(scoreNew:Int)
 	{
-		forEach(function(numScore)
-		{
-			numScore.digit = 8;
-		});
+		scoreShit = scoreNew;
 	}
 }
 
@@ -34,7 +58,10 @@ class ScoreNum extends FlxSprite
 
 	function set_digit(val):Int
 	{
-		animation.play(Std.string(FlxG.random.int(0, 9)), true, false, 0);
+		if (animation.curAnim != null && animation.curAnim.name != Std.string(val))
+		{
+			animation.play(Std.string(val), true, false, 0);
+		}
 
 		return val;
 	}

@@ -222,7 +222,7 @@ class FreeplayState extends MusicBeatSubstate
 			{
 				fnfFreeplay.visible = true;
 				fp.visible = true;
-				fp.updateScore(0);
+				fp.updateScore(FlxG.random.int(0, 1000));
 
 				new FlxTimer().start(1.5 / 24, function(bold)
 				{
@@ -387,6 +387,8 @@ class FreeplayState extends MusicBeatSubstate
 		}
 
 		lerpScore = CoolUtil.coolLerp(lerpScore, intendedScore, 0.4);
+
+		fp.scoreShit = Std.int(lerpScore);
 
 		scoreText.text = "PERSONAL BEST:" + Math.round(lerpScore);
 
@@ -566,7 +568,8 @@ class FreeplayState extends MusicBeatSubstate
 		if (curDifficulty > 2)
 			curDifficulty = 0;
 
-		intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
+		// intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
+		intendedScore = FlxG.random.int(0, 100000);
 
 		PlayState.storyDifficulty = curDifficulty;
 
@@ -589,7 +592,7 @@ class FreeplayState extends MusicBeatSubstate
 
 	function changeSelection(change:Int = 0)
 	{
-		fp.updateScore(0);
+		// fp.updateScore(12345);
 
 		NGio.logEvent('Fresh');
 
@@ -605,7 +608,8 @@ class FreeplayState extends MusicBeatSubstate
 
 		// selector.y = (70 * curSelected) + 30;
 
-		intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
+		// intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
+		intendedScore = FlxG.random.int(0, 1000000);
 		// lerpScore = 0;
 
 		#if PRELOAD_ALL
