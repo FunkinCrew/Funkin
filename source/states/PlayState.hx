@@ -3102,7 +3102,7 @@ class PlayState extends MusicBeatState
 				"Shit: " + Std.string(ratingArray[4]) + "\n" +
 				"Misses: " + Std.string(misses) + "\n" +
 				(FlxG.save.data.marvelousRatings && ratingArray[0] > 0 && MA > 0 ? "MA: " + Std.string(FlxMath.roundDecimal(ratingArray[0] / MA, 2)) + "\n" : "") +
-				(ratingArray[1] > 0 && PA > 0 ? "PA: " + Std.string(FlxMath.roundDecimal(ratingArray[1] / PA, 2)) + "\n" : "")
+				(ratingArray[1] > 0 && PA > 0 ? "PA: " + Std.string(FlxMath.roundDecimal((ratingArray[1] + ratingArray[0]) / PA, 2)) + "\n" : "")
 			);
 
 			ratingText.screenCenter(Y);
