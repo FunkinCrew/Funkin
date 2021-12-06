@@ -232,8 +232,8 @@ class Note extends FlxSprite
 			else
 			{
 				if (strumTime > Conductor.songPosition - HIT_WINDOW)
-				{ // * 0.2 if sustain note, so u have to keep holding it closer to all the way thru!
-					if (strumTime < Conductor.songPosition + (HIT_WINDOW * (isSustainNote ? 0.2 : 1)))
+				{ // * 0.5 if sustain note, so u have to keep holding it closer to all the way thru!
+					if (strumTime < Conductor.songPosition + (HIT_WINDOW * (isSustainNote ? 0.5 : 1)))
 						canBeHit = true;
 				}
 				else
