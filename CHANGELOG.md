@@ -26,6 +26,7 @@ All notable changes will be documented in this file.
 - REPLAY SYSTEM!
 - Marvelous Attack and Perfect (Sick) Attack.
 - Option to disable the keybind reminders that show up on anything other than 4 key.
+- Results Screen.
 ### Fixed
 - Note Animations displaying at 30 FPS instead of 24 FPS.
 - Fixed input glitch where stacked notes would make the notes ahead of them just dissappear.
