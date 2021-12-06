@@ -2877,14 +2877,17 @@ class PlayState extends MusicBeatState
 
 			if(missValues)
 			{
-				if(FlxG.save.data.missOnHeldNotes && !note.missesSustains)
+				if(note != null)
 				{
-					note.missesSustains = true;
-
-					for(sustain in note.sustains)
+					if(FlxG.save.data.missOnHeldNotes && !note.missesSustains)
 					{
-						if(sustain != null)
-							sustain.missesSustains = true;
+						note.missesSustains = true;
+	
+						for(sustain in note.sustains)
+						{
+							if(sustain != null)
+								sustain.missesSustains = true;
+						}
 					}
 				}
 
