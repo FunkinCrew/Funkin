@@ -2,10 +2,6 @@ package utilities;
 
 class NoteVariables
 {
-    public static var Square_Key:String = "SPACE";
-
-    public static var Player_Binds:Array<String> = ["1","2","3","4"];
-
     public static var Note_Count_Directions:Array<Array<String>>;
 
     public static var Default_Binds:Array<Array<String>>;

@@ -119,6 +119,14 @@ class SaveData {
 
         if(FlxG.save.data.extraKeyReminders == null)
             FlxG.save.data.extraKeyReminders = true;
+
+        if(FlxG.save.data.binds.length < NoteVariables.Default_Binds.length)
+        {
+            for(i in Std.int(FlxG.save.data.binds.length - 1)...NoteVariables.Default_Binds.length)
+            {
+                FlxG.save.data.binds[i] = NoteVariables.Default_Binds[i];
+            }
+        }
         
         FlxG.save.flush();
 
