@@ -71,8 +71,6 @@ class ScoreNum extends FlxSprite
 		{
 			animation.play(Std.string(val), true, false, 0);
 			updateHitbox();
-
-			y = (baseY - (height / 2)) + 45;
 		}
 
 		return val;

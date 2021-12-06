@@ -386,7 +386,7 @@ class FreeplayState extends MusicBeatSubstate
 			}
 		}
 
-		lerpScore = CoolUtil.coolLerp(lerpScore, intendedScore, 0.4);
+		lerpScore = CoolUtil.coolLerp(lerpScore, intendedScore, 0.2);
 
 		fp.scoreShit = Std.int(lerpScore);
 
