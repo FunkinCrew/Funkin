@@ -1,5 +1,6 @@
 package states;
 
+import substates.ResultsScreenSubstate;
 #if sys
 import sys.FileSystem;
 #end
@@ -217,26 +218,32 @@ class PlayState extends MusicBeatState
 		"shit" => 0
 	];
 
-	var ratingText:FlxText;
+	public var ratingText:FlxText;
 
 	public var stopSong:Bool = false;
 
-	public var replay:Replay = new Replay();
+	public var replay:Replay;
+	public var inputs:Array<Array<Dynamic>> = [];
+
 	public static var playingReplay:Bool = false;
 
-	public function new(?replay:Replay)
+	public function new(?_replay:Replay)
 	{
 		super();
 
-		if(replay != null)
+		if(_replay != null)
 		{
-			this.replay = replay;
+			replay = _replay;
 			playingReplay = true;
 		}
+		else
+			replay = new Replay();
 	}
 
 	override public function create()
 	{
+		instance = this;
+
 		if(FlxG.save.data.bot)
 			hasUsedBot = true;
 
@@ -250,6 +257,16 @@ class PlayState extends MusicBeatState
 			Conductor.offset = replay.offset;
 			FlxG.save.data.judgementTimings = replay.judgementTimings;
 			FlxG.save.data.ghostTapping = replay.ghostTapping;
+
+			for(i in 0...replay.inputs.length)
+			{
+				var input = replay.inputs[i];
+
+				if(input.length > 3)
+					inputs.push([Std.int(input[0]), FlxMath.roundDecimal(input[1], 2), Std.int(input[2]), FlxMath.roundDecimal(input[3], 2)]);
+				else
+					inputs.push([Std.int(input[0]), FlxMath.roundDecimal(input[1], 2), Std.int(input[2])]);
+			}
 		}
 
 		for(i in 0...2)
@@ -258,7 +275,6 @@ class PlayState extends MusicBeatState
 			missSounds.push(sound);
 		}
 
-		instance = this;
 		binds = NoteHandler.getBinds(SONG.keyCount);
 
 		if (FlxG.sound.music != null)
@@ -2100,14 +2116,30 @@ class PlayState extends MusicBeatState
 							startDialogue(box, true);
 	
 						default:
-							finishSongStuffs();
+							persistentUpdate = false;
+							persistentDraw = true;
+							paused = true;
+
+							openSubState(new ResultsScreenSubstate());
 					}
 				}
 				else
-					finishSongStuffs();
+				{
+					persistentUpdate = false;
+					persistentDraw = true;
+					paused = true;
+
+					openSubState(new ResultsScreenSubstate());
+				}
 			}
 			else
-				finishSongStuffs();
+			{
+				persistentUpdate = false;
+				persistentDraw = true;
+				paused = true;
+
+				openSubState(new ResultsScreenSubstate());
+			}
 			
 		}
 	}
@@ -2115,14 +2147,12 @@ class PlayState extends MusicBeatState
 	var ogJudgementTimings:Array<Float> = FlxG.save.data.judgementTimings;
 	var ogGhostTapping:Bool = FlxG.save.data.ghostTapping;
 
-	function finishSongStuffs()
+	public function saveReplay()
 	{
-		FlxG.save.data.judgementTimings = ogJudgementTimings;
-		Conductor.offset = FlxG.save.data.songOffset;
-		FlxG.save.data.ghostTapping = ogGhostTapping;
-
-		if(!playingReplay && FlxG.save.data.saveReplays)
+		if(!playingReplay && !savedReplay)
 		{
+			savedReplay = true;
+
 			var time = Date.now().getTime();
 			var json:String = Json.stringify(replay.convertToSwag());
 
@@ -2130,6 +2160,20 @@ class PlayState extends MusicBeatState
 			sys.io.File.saveContent("assets/replays/replay-" + SONG.song.toLowerCase() + "-" + storyDifficultyStr.toLowerCase() + "-" + time + ".json", json);
 			#end
 		}
+	}
+
+	var savedReplay:Bool = false;
+
+	public function fixSettings()
+	{
+		FlxG.save.data.judgementTimings = ogJudgementTimings;
+		Conductor.offset = FlxG.save.data.songOffset;
+		FlxG.save.data.ghostTapping = ogGhostTapping;
+	}
+
+	public function finishSongStuffs()
+	{
+		fixSettings();
 
 		if(isStoryMode)
 		{
@@ -2471,8 +2515,6 @@ class PlayState extends MusicBeatState
 	var heldArray:Array<Bool> = [];
 	var previousReleased:Array<Bool> = [];
 
-	var previousAnims:Array<String> = [];
-
 	private function keyShit(elapsed:Float):Void
 	{
 		if(generatedMusic && startedCountdown)
@@ -2512,20 +2554,12 @@ class PlayState extends MusicBeatState
 							replay.recordInput(i, "pressed");
 						}
 					};
-	
-					for (i in 0...justReleasedArray.length) {
-						if (previousAnims[i] != "static" && playerStrums.members[i].animation.curAnim.name == "static") {
-							replay.recordInput(i, "released");
-						}
-
-						previousAnims[i] = playerStrums.members[i].animation.curAnim.name;
-					};
 				}
 				else
 				{
-					for(inputIndex in 0...replay.inputs.length)
+					for(inputIndex in 0...inputs.length)
 					{
-						var input = replay.inputs[inputIndex];
+						var input = inputs[inputIndex];
 
 						if(input != null)
 						{
@@ -2538,6 +2572,9 @@ class PlayState extends MusicBeatState
 
 									justPressedArray[input[0]] = false;
 									heldArray[input[0]] = false;
+
+									playerStrums.members[input[0]].playAnim('static');
+									playerStrums.members[input[0]].resetAnim = 0;
 								}
 								else if(input[2] == 0)
 								{
@@ -2551,7 +2588,7 @@ class PlayState extends MusicBeatState
 										noteMiss(input[0]);
 								}
 		
-								replay.inputs.remove(input);
+								inputs.remove(input);
 							}
 							else if(input[2] == 2 && Conductor.songPosition >= input[1] + input[3])
 							{
@@ -2574,7 +2611,7 @@ class PlayState extends MusicBeatState
 									}
 								}
 
-								replay.inputs.remove(input);
+								inputs.remove(input);
 							}
 						}
 					}
@@ -2740,8 +2777,12 @@ class PlayState extends MusicBeatState
 						spr.playAnim('pressed');
 						spr.resetAnim = 0;
 					}
+
 					if (releasedArray[spr.ID])
 					{
+						if(spr.animation.curAnim.name != "static")
+							replay.recordInput(spr.ID, "released");
+
 						spr.playAnim('static');
 						spr.resetAnim = 0;
 					}
