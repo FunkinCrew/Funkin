@@ -1573,7 +1573,7 @@ class PlayState extends MusicBeatState
 		var noteData:Array<SwagSection>;
 
 		// NEW SHIT
-		noteData = SONG.notes[SongLoad.curDiff];
+		noteData = SongLoad.getSong();
 
 		for (section in noteData)
 		{
@@ -2037,9 +2037,9 @@ class PlayState extends MusicBeatState
 			changeSection(-1);
 		#end
 
-		if (generatedMusic && SONG.notes[SongLoad.curDiff][Std.int(curStep / 16)] != null)
+		if (generatedMusic && SongLoad.getSong()[Std.int(curStep / 16)] != null)
 		{
-			cameraRightSide = SONG.notes[SongLoad.curDiff][Std.int(curStep / 16)].mustHitSection;
+			cameraRightSide = SongLoad.getSong()[Std.int(curStep / 16)].mustHitSection;
 
 			cameraMovement();
 		}
@@ -2110,7 +2110,7 @@ class PlayState extends MusicBeatState
 			}
 		}
 
-		while (unspawnNotes[0] != null && unspawnNotes[0].strumTime - Conductor.songPosition < 1800 / SONG.speed[SongLoad.curDiff])
+		while (unspawnNotes[0] != null && unspawnNotes[0].strumTime - Conductor.songPosition < 1800 / SongLoad.getSpeed())
 		{
 			var dunceNote:Note = unspawnNotes[0];
 			notes.add(dunceNote);
@@ -2135,7 +2135,7 @@ class PlayState extends MusicBeatState
 				}
 
 				var strumLineMid = strumLine.y + Note.swagWidth / 2;
-				daNote.y = (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(SONG.speed[SongLoad.curDiff], 2));
+				daNote.y = (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(SongLoad.getSpeed(), 2));
 
 				if (PreferencesMenu.getPref('downscroll'))
 				{
@@ -2172,9 +2172,9 @@ class PlayState extends MusicBeatState
 
 					var altAnim:String = "";
 
-					if (SONG.notes[SongLoad.curDiff][Math.floor(curStep / 16)] != null)
+					if (SongLoad.getSong()[Math.floor(curStep / 16)] != null)
 					{
-						if (SONG.notes[SongLoad.curDiff][Math.floor(curStep / 16)].altAnim)
+						if (SongLoad.getSong()[Math.floor(curStep / 16)].altAnim)
 							altAnim = '-alt';
 					}
 
@@ -2291,9 +2291,9 @@ class PlayState extends MusicBeatState
 		var daPos:Float = 0;
 		for (i in 0...(Std.int(curStep / 16 + sec)))
 		{
-			if (SONG.notes[SongLoad.curDiff][i].changeBPM)
+			if (SongLoad.getSong()[i].changeBPM)
 			{
-				daBPM = SONG.notes[SongLoad.curDiff][i].bpm;
+				daBPM = SongLoad.getSong()[i].bpm;
 			}
 			daPos += 4 * (1000 * 60 / daBPM);
 		}
@@ -3070,11 +3070,11 @@ class PlayState extends MusicBeatState
 			notes.sort(sortNotes, FlxSort.DESCENDING);
 		}
 
-		if (SONG.notes[SongLoad.curDiff][Math.floor(curStep / 16)] != null)
+		if (SongLoad.getSong()[Math.floor(curStep / 16)] != null)
 		{
-			if (SONG.notes[SongLoad.curDiff][Math.floor(curStep / 16)].changeBPM)
+			if (SongLoad.getSong()[Math.floor(curStep / 16)].changeBPM)
 			{
-				Conductor.changeBPM(SONG.notes[SongLoad.curDiff][Math.floor(curStep / 16)].bpm);
+				Conductor.changeBPM(SongLoad.getSong()[Math.floor(curStep / 16)].bpm);
 				FlxG.log.add('CHANGED BPM!');
 			}
 			// else
@@ -3106,9 +3106,9 @@ class PlayState extends MusicBeatState
 		iconP2.updateHitbox();
 
 		if (curBeat % 8 == 7
-			&& SONG.notes[SongLoad.curDiff][Math.floor(curStep / 16)].mustHitSection
+			&& SongLoad.getSong()[Math.floor(curStep / 16)].mustHitSection
 			&& combo > 5
-			&& !SONG.notes[SongLoad.curDiff][Math.floor(curStep / 16) + 1].mustHitSection)
+			&& !SongLoad.getSong()[Math.floor(curStep / 16) + 1].mustHitSection)
 		{
 			var animShit:ComboCounter = new ComboCounter(-100, 300, combo);
 			animShit.scrollFactor.set(0.6, 0.6);

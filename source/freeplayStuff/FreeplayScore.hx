@@ -71,6 +71,23 @@ class ScoreNum extends FlxSprite
 		{
 			animation.play(Std.string(val), true, false, 0);
 			updateHitbox();
+
+			switch (val)
+			{
+				case 5:
+				// set offsets
+				// offset.x += 0;
+				// offset.y += 10;
+
+				case 7:
+				// offset.y += 6;
+				case 4:
+				// offset.y += 5;
+				case 9:
+				// offset.y += 5;
+				default:
+					centerOffsets(false);
+			}
 		}
 
 		return val;
