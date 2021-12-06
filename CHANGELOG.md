@@ -3,6 +3,7 @@ All notable changes will be documented in this file.
 
 ## [?.?.?] - ?/?/????
 ### Fixed
+- Saving Replays when the bot has been used.
 - Infinite Mania now doesn't crash game (because before, it would crash due to missing keybinds).
 
 ## [0.4.0] - 12/5/2021
