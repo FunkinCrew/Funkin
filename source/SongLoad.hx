@@ -112,7 +112,6 @@ class SongLoad
 	public static function parseJSONshit(rawJson:String):SwagSong
 	{
 		var swagShit:SwagSong = cast Json.parse(rawJson).song;
-		trace(swagShit);
 		swagShit.validScore = true;
 
 		trace("SONG SHIT ABOUTTA WEEK AGOOO");

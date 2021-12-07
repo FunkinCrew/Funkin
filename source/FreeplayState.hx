@@ -527,7 +527,7 @@ class FreeplayState extends MusicBeatSubstate
 		{
 			// if (Assets.exists())
 
-			var poop:String = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), curDifficulty);
+			var poop:String = songs[curSelected].songName.toLowerCase();
 
 			// does not work properly, always just accidentally sets it to normal anyways!
 			/* if (!Assets.exists(Paths.json(songs[curSelected].songName + '/' + poop)))
@@ -543,10 +543,20 @@ class FreeplayState extends MusicBeatSubstate
 			PlayState.isStoryMode = false;
 			PlayState.storyDifficulty = curDifficulty;
 			// SongLoad.curDiff = Highscore.formatSong()
-			SongLoad.curDiff = 'normal';
+
+			SongLoad.curDiff = switch (curDifficulty)
+			{
+				case 0:
+					'easy';
+				case 1:
+					'normal';
+				case 2:
+					'hard';
+				default: 'normal';
+			};
 
 			PlayState.storyWeek = songs[curSelected].week;
-			trace('CUR WEEK' + PlayState.storyWeek);
+			trace(' CUR WEEK ' + PlayState.storyWeek);
 			LoadingState.loadAndSwitchState(new PlayState());
 		}
 	}
@@ -577,7 +587,7 @@ class FreeplayState extends MusicBeatSubstate
 		positionHighscore();
 	}
 
-	// Clears the cache of songs, frees up memory, they'll have to be loaded in later tho
+	// Clears the cache of songs, frees up memory, they' ll have to be loaded in later tho function clearDaCache(actualSongTho:String)
 	function clearDaCache(actualSongTho:String)
 	{
 		for (song in songs)
