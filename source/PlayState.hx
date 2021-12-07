@@ -1566,7 +1566,7 @@ class PlayState extends MusicBeatState
 		notes.forEach(function(nt)
 		{
 			nt.followsTime = false;
-			FlxTween.tween(nt, {y: FlxG.height + nt.y}, 0.4, {
+			FlxTween.tween(nt, {y: FlxG.height + nt.y}, 0.5, {
 				ease: FlxEase.expoIn,
 				onComplete: function(twn)
 				{
