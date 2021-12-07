@@ -9,6 +9,7 @@ import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxGroup;
+import flixel.group.FlxSpriteGroup;
 import flixel.input.touch.FlxTouch;
 import flixel.math.FlxAngle;
 import flixel.math.FlxMath;
@@ -43,6 +44,8 @@ class FreeplayState extends MusicBeatSubstate
 	var diffText:FlxText;
 	var lerpScore:Float = 0;
 	var intendedScore:Int = 0;
+
+	var grpDifficulties:FlxSpriteGroup;
 
 	var coolColors:Array<Int> = [
 		0xff9271fd,
@@ -196,6 +199,22 @@ class FreeplayState extends MusicBeatSubstate
 
 		grpCapsules = new FlxTypedGroup<SongMenuItem>();
 		add(grpCapsules);
+
+		grpDifficulties = new FlxSpriteGroup(-300, 100);
+		add(grpDifficulties);
+
+		grpDifficulties.add(new FlxSprite().loadGraphic(Paths.image('freeplay/freeplayEasy')));
+		grpDifficulties.add(new FlxSprite().loadGraphic(Paths.image('freeplay/freeplayNorm')));
+		grpDifficulties.add(new FlxSprite().loadGraphic(Paths.image('freeplay/freeplayHard')));
+
+		grpDifficulties.group.forEach(function(spr)
+		{
+			spr.visible = false;
+		});
+
+		grpDifficulties.group.members[curDifficulty].visible = true;
+
+		FlxTween.tween(grpDifficulties, {x: 50}, 0.6, {ease: FlxEase.quartOut, startDelay: 0.1});
 
 		var overhangStuff:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, 64, FlxColor.BLACK);
 		overhangStuff.y -= overhangStuff.height;
@@ -584,6 +603,14 @@ class FreeplayState extends MusicBeatSubstate
 		PlayState.storyDifficulty = curDifficulty;
 
 		diffText.text = "< " + CoolUtil.difficultyString() + " >";
+
+		grpDifficulties.group.forEach(function(spr)
+		{
+			spr.visible = false;
+		});
+
+		grpDifficulties.group.members[curDifficulty].visible = true;
+
 		positionHighscore();
 	}
 
