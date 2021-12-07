@@ -114,9 +114,6 @@ class SaveData {
         if(FlxG.save.data.noteGap == null)
             FlxG.save.data.noteGap = -4;
 
-        if(FlxG.save.data.saveReplays == null)
-            FlxG.save.data.saveReplays = true;
-
         if(FlxG.save.data.extraKeyReminders == null)
             FlxG.save.data.extraKeyReminders = true;
 
