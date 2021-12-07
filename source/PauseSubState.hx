@@ -156,8 +156,8 @@ class PauseSubState extends MusicBeatSubstate
 				case "Resume":
 					close();
 				case "EASY" | 'NORMAL' | "HARD":
-					PlayState.SONG = SongLoad.loadFromJson(Highscore.formatSong(PlayState.SONG.song.toLowerCase(), curSelected),
-						PlayState.SONG.song.toLowerCase());
+					PlayState.SONG = SongLoad.loadFromJson(PlayState.SONG.song.toLowerCase(), PlayState.SONG.song.toLowerCase());
+					SongLoad.curDiff = daSelected.toLowerCase();
 
 					PlayState.storyDifficulty = curSelected;
 
