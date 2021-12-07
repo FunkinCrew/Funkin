@@ -1565,9 +1565,16 @@ class PlayState extends MusicBeatState
 
 		notes.forEach(function(nt)
 		{
-			nt.kill();
-			notes.remove(nt, true);
-			nt.destroy();
+			nt.followsTime = false;
+			FlxTween.tween(nt, {y: FlxG.height + nt.y}, 0.4, {
+				ease: FlxEase.expoIn,
+				onComplete: function(twn)
+				{
+					nt.kill();
+					notes.remove(nt, true);
+					nt.destroy();
+				}
+			});
 		});
 
 		var noteData:Array<SwagSection>;
@@ -2135,7 +2142,9 @@ class PlayState extends MusicBeatState
 				}
 
 				var strumLineMid = strumLine.y + Note.swagWidth / 2;
-				daNote.y = (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(SongLoad.getSpeed(), 2));
+
+				if (daNote.followsTime)
+					daNote.y = (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(SongLoad.getSpeed(), 2));
 
 				if (PreferencesMenu.getPref('downscroll'))
 				{
@@ -2156,7 +2165,8 @@ class PlayState extends MusicBeatState
 				}
 				else
 				{
-					daNote.y = strumLine.y - daNote.y;
+					if (daNote.followsTime)
+						daNote.y = strumLine.y - daNote.y;
 					if (daNote.isSustainNote
 						&& (!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit)))
 						&& daNote.y + daNote.offset.y * daNote.scale.y <= strumLineMid)
