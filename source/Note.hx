@@ -31,7 +31,9 @@ class Note extends FlxSprite
 	public static var GREEN_NOTE:Int = 2;
 	public static var BLUE_NOTE:Int = 1;
 	public static var RED_NOTE:Int = 3;
-
+	public var arrowName:String = "";
+	public var arrowPixelNum:Int = 0;
+	
 	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false)
 	{
 		super();
@@ -48,7 +50,21 @@ class Note extends FlxSprite
 		this.strumTime = strumTime;
 
 		this.noteData = noteData;
-
+		switch(noteData)
+		{
+			case 0:
+				arrowName = "purple";
+				arrowPixelNum = 4;
+			case 1:
+				arrowName = "blue";
+				arrowPixelNum = 5;
+			case 2:
+				arrowName = "green";
+				arrowPixelNum = 6;
+			case 3:
+				arrowName = "red";
+				arrowPixelNum = 7;
+		}
 		var daStage:String = PlayState.curStage;
 
 		switch (daStage)
@@ -56,24 +72,15 @@ class Note extends FlxSprite
 			case 'school' | 'schoolEvil':
 				loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels'), true, 17, 17);
 
-				animation.add('greenScroll', [6]);
-				animation.add('redScroll', [7]);
-				animation.add('blueScroll', [5]);
-				animation.add('purpleScroll', [4]);
+				animation.add(arrowName + 'Scroll', [arrowPixelNum]);
 
 				if (isSustainNote)
 				{
 					loadGraphic(Paths.image('weeb/pixelUI/arrowEnds'), true, 7, 6);
-
-					animation.add('purpleholdend', [4]);
-					animation.add('greenholdend', [6]);
-					animation.add('redholdend', [7]);
-					animation.add('blueholdend', [5]);
-
-					animation.add('purplehold', [0]);
-					animation.add('greenhold', [2]);
-					animation.add('redhold', [3]);
-					animation.add('bluehold', [1]);
+					
+					animation.add(arrowName + 'holdend', [arrowPixelNum]);
+				
+					animation.add(arrowName + 'hold', [arrowPixelNum - 4]);
 				}
 
 				setGraphicSize(Std.int(width * PlayState.daPixelZoom));
@@ -82,42 +89,23 @@ class Note extends FlxSprite
 			default:
 				frames = Paths.getSparrowAtlas('NOTE_assets');
 
-				animation.addByPrefix('greenScroll', 'green0');
-				animation.addByPrefix('redScroll', 'red0');
-				animation.addByPrefix('blueScroll', 'blue0');
-				animation.addByPrefix('purpleScroll', 'purple0');
+				animation.addByPrefix(arrowName + 'Scroll', arrowName);
+				
+				if (noteData == 0)
+					animation.addByPrefix('purpleholdend', 'pruple end hold');
+				else
+					animation.addByPrefix(arrowName + 'holdend',  arrowName + ' hold end');
 
-				animation.addByPrefix('purpleholdend', 'pruple end hold');
-				animation.addByPrefix('greenholdend', 'green hold end');
-				animation.addByPrefix('redholdend', 'red hold end');
-				animation.addByPrefix('blueholdend', 'blue hold end');
-
-				animation.addByPrefix('purplehold', 'purple hold piece');
-				animation.addByPrefix('greenhold', 'green hold piece');
-				animation.addByPrefix('redhold', 'red hold piece');
-				animation.addByPrefix('bluehold', 'blue hold piece');
+				animation.addByPrefix(arrowName + 'hold', ' hold piece');
 
 				setGraphicSize(Std.int(width * 0.7));
 				updateHitbox();
 				antialiasing = true;
 		}
-
-		switch (noteData)
-		{
-			case 0:
-				x += swagWidth * 0;
-				animation.play('purpleScroll');
-			case 1:
-				x += swagWidth * 1;
-				animation.play('blueScroll');
-			case 2:
-				x += swagWidth * 2;
-				animation.play('greenScroll');
-			case 3:
-				x += swagWidth * 3;
-				animation.play('redScroll');
-		}
-
+		
+		x += swagWidth * noteData;
+		animation.play(arrowName + 'Scroll');
+		
 		// trace(prevNote);
 
 		if (isSustainNote && prevNote != null)
@@ -126,19 +114,9 @@ class Note extends FlxSprite
 			alpha = 0.6;
 
 			x += width / 2;
-
-			switch (noteData)
-			{
-				case 2:
-					animation.play('greenholdend');
-				case 3:
-					animation.play('redholdend');
-				case 1:
-					animation.play('blueholdend');
-				case 0:
-					animation.play('purpleholdend');
-			}
-
+			
+			animation.play(arrowName + 'holdend');
+			
 			updateHitbox();
 
 			x -= width / 2;
@@ -148,17 +126,7 @@ class Note extends FlxSprite
 
 			if (prevNote.isSustainNote)
 			{
-				switch (prevNote.noteData)
-				{
-					case 0:
-						prevNote.animation.play('purplehold');
-					case 1:
-						prevNote.animation.play('bluehold');
-					case 2:
-						prevNote.animation.play('greenhold');
-					case 3:
-						prevNote.animation.play('redhold');
-				}
+				prevNote.animation.play(arrowName + 'hold');
 
 				prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.5 * PlayState.SONG.speed;
 				prevNote.updateHitbox();
