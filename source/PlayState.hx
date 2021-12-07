@@ -1141,15 +1141,15 @@ class PlayState extends MusicBeatState
 			var babyArrow:FlxSprite = new FlxSprite(0, strumLine.y);
 			var arrowIndicator:String = "";
 			
-			switch(Note.arrowName.toLowerCase())
+			switch(Math.abs(i))
 			{
-				case "purple":
+				case 0:
 					arrowIndicator = "LEFT";
-				case "blue":
+				case 1:
 					arrowIndicator = "DOWN";
-				case "green":
+				case 2:
 					arrowIndicator = "UP";
-				case "red":
+				case 3:
 					arrowIndicator = "RIGHT";
 			}
 			
