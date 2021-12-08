@@ -1,5 +1,6 @@
 package;
 
+import Controls.Control;
 import flash.text.TextField;
 import flixel.FlxCamera;
 import flixel.FlxGame;
@@ -39,9 +40,7 @@ class FreeplayState extends MusicBeatSubstate
 	var curSelected:Int = 0;
 	var curDifficulty:Int = 1;
 
-	var scoreText:FlxText;
 	var fp:FreeplayScore;
-	var diffText:FlxText;
 	var lerpScore:Float = 0;
 	var intendedScore:Int = 0;
 
@@ -63,7 +62,6 @@ class FreeplayState extends MusicBeatSubstate
 	private var curPlaying:Bool = false;
 
 	private var iconArray:Array<HealthIcon> = [];
-	var scoreBG:FlxSprite;
 
 	override function create()
 	{
@@ -214,8 +212,6 @@ class FreeplayState extends MusicBeatSubstate
 
 		grpDifficulties.group.members[curDifficulty].visible = true;
 
-		FlxTween.tween(grpDifficulties, {x: 50}, 0.6, {ease: FlxEase.quartOut, startDelay: 0.1});
-
 		var overhangStuff:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, 64, FlxColor.BLACK);
 		overhangStuff.y -= overhangStuff.height;
 		add(overhangStuff);
@@ -234,6 +230,11 @@ class FreeplayState extends MusicBeatSubstate
 
 		dj.animHITsignal.add(function()
 		{
+			FlxTween.tween(grpDifficulties, {x: 90}, 0.6, {ease: FlxEase.quartOut});
+
+			add(new DifficultySelector(20, grpDifficulties.y, false, controls));
+			add(new DifficultySelector(325, grpDifficulties.y, true, controls));
+
 			var animShit:ComboCounter = new ComboCounter(100, 300, 1000000);
 			// add(animShit);
 
@@ -305,21 +306,6 @@ class FreeplayState extends MusicBeatSubstate
 			// songText.screenCenter(X);
 		}
 
-		scoreText = new FlxText(FlxG.width * 0.7, 5, 0, "", 32);
-		// scoreText.autoSize = false;
-		scoreText.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, RIGHT);
-		// scoreText.alignment = RIGHT;
-
-		scoreBG = new FlxSprite(scoreText.x - 6, 0).makeGraphic(1, 66, 0x99000000);
-		scoreBG.antialiasing = false;
-		add(scoreBG);
-
-		diffText = new FlxText(scoreText.x, scoreText.y + 36, 0, "", 24);
-		diffText.font = scoreText.font;
-		add(diffText);
-
-		add(scoreText);
-
 		changeSelection();
 		changeDiff();
 
@@ -344,8 +330,6 @@ class FreeplayState extends MusicBeatSubstate
 			texFel.htmlText = md;
 
 			FlxG.stage.addChild(texFel);
-
-			// scoreText.textField.htmlText = md;
 
 			trace(md);
 		 */
@@ -408,10 +392,6 @@ class FreeplayState extends MusicBeatSubstate
 		lerpScore = CoolUtil.coolLerp(lerpScore, intendedScore, 0.2);
 
 		fp.scoreShit = Std.int(lerpScore);
-
-		scoreText.text = "PERSONAL BEST:" + Math.round(lerpScore);
-
-		positionHighscore();
 
 		var upP = controls.UI_UP_P;
 		var downP = controls.UI_DOWN_P;
@@ -602,16 +582,19 @@ class FreeplayState extends MusicBeatSubstate
 
 		PlayState.storyDifficulty = curDifficulty;
 
-		diffText.text = "< " + CoolUtil.difficultyString() + " >";
-
 		grpDifficulties.group.forEach(function(spr)
 		{
 			spr.visible = false;
 		});
 
-		grpDifficulties.group.members[curDifficulty].visible = true;
+		var curShit:FlxSprite = grpDifficulties.group.members[curDifficulty];
 
-		positionHighscore();
+		curShit.visible = true;
+		curShit.offset.y += 5;
+		new FlxTimer().start(1 / 24, function(swag)
+		{
+			curShit.updateHitbox();
+		});
 	}
 
 	// Clears the cache of songs, frees up memory, they' ll have to be loaded in later tho function clearDaCache(actualSongTho:String)
@@ -669,19 +652,50 @@ class FreeplayState extends MusicBeatSubstate
 			capsule.targetPos.y = ((index - curSelected) * 150) + 160;
 			capsule.targetPos.x = 270 + (60 * (Math.sin(index - curSelected)));
 			// capsule.targetPos.x = 320 + (40 * (index - curSelected));
+
+			if (index < curSelected)
+				capsule.targetPos.y -= 100; // another 100 for good measure
 		}
 
 		grpCapsules.members[curSelected].selected = true;
 	}
+}
 
-	function positionHighscore()
+class DifficultySelector extends FlxSprite
+{
+	var controls:Controls;
+
+	public function new(x:Float, y:Float, flipped:Bool, controls:Controls)
 	{
-		scoreText.x = FlxG.width - scoreText.width - 6;
-		scoreBG.scale.x = FlxG.width - scoreText.x + 6;
-		scoreBG.x = FlxG.width - scoreBG.scale.x / 2;
+		super(x, y);
 
-		diffText.x = Std.int(scoreBG.x + scoreBG.width / 2);
-		diffText.x -= (diffText.width / 2);
+		this.controls = controls;
+
+		frames = Paths.getSparrowAtlas('freeplay/freeplaySelector');
+		animation.addByPrefix('shine', "arrow pointer loop", 24);
+		animation.play('shine');
+
+		flipX = flipped;
+	}
+
+	override function update(elapsed:Float)
+	{
+		if (flipX && controls.UI_RIGHT_P)
+			moveShitDown();
+		if (!flipX && controls.UI_LEFT_P)
+			moveShitDown();
+
+		super.update(elapsed);
+	}
+
+	function moveShitDown()
+	{
+		offset.y -= 5;
+
+		new FlxTimer().start(2 / 24, function(tmr)
+		{
+			updateHitbox();
+		});
 	}
 }
 
