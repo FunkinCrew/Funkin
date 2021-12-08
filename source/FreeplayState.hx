@@ -28,6 +28,7 @@ import freeplayStuff.SongMenuItem;
 import lime.app.Future;
 import lime.utils.Assets;
 import shaderslmfao.AngleMask;
+import shaderslmfao.PureColor;
 import shaderslmfao.StrokeShader;
 
 using StringTools;
@@ -198,7 +199,7 @@ class FreeplayState extends MusicBeatSubstate
 		grpCapsules = new FlxTypedGroup<SongMenuItem>();
 		add(grpCapsules);
 
-		grpDifficulties = new FlxSpriteGroup(-300, 100);
+		grpDifficulties = new FlxSpriteGroup(-300, 80);
 		add(grpDifficulties);
 
 		grpDifficulties.add(new FlxSprite().loadGraphic(Paths.image('freeplay/freeplayEasy')));
@@ -232,8 +233,8 @@ class FreeplayState extends MusicBeatSubstate
 		{
 			FlxTween.tween(grpDifficulties, {x: 90}, 0.6, {ease: FlxEase.quartOut});
 
-			add(new DifficultySelector(20, grpDifficulties.y, false, controls));
-			add(new DifficultySelector(325, grpDifficulties.y, true, controls));
+			add(new DifficultySelector(20, grpDifficulties.y - 10, false, controls));
+			add(new DifficultySelector(325, grpDifficulties.y - 10, true, controls));
 
 			var animShit:ComboCounter = new ComboCounter(100, 300, 1000000);
 			// add(animShit);
@@ -591,8 +592,10 @@ class FreeplayState extends MusicBeatSubstate
 
 		curShit.visible = true;
 		curShit.offset.y += 5;
+		curShit.alpha = 0.5;
 		new FlxTimer().start(1 / 24, function(swag)
 		{
+			curShit.alpha = 1;
 			curShit.updateHitbox();
 		});
 	}
@@ -664,6 +667,7 @@ class FreeplayState extends MusicBeatSubstate
 class DifficultySelector extends FlxSprite
 {
 	var controls:Controls;
+	var whiteShader:PureColor;
 
 	public function new(x:Float, y:Float, flipped:Bool, controls:Controls)
 	{
@@ -674,6 +678,10 @@ class DifficultySelector extends FlxSprite
 		frames = Paths.getSparrowAtlas('freeplay/freeplaySelector');
 		animation.addByPrefix('shine', "arrow pointer loop", 24);
 		animation.play('shine');
+
+		whiteShader = new PureColor(FlxColor.WHITE);
+
+		shader = whiteShader;
 
 		flipX = flipped;
 	}
@@ -692,8 +700,11 @@ class DifficultySelector extends FlxSprite
 	{
 		offset.y -= 5;
 
+		whiteShader.colorSet = true;
+
 		new FlxTimer().start(2 / 24, function(tmr)
 		{
+			whiteShader.colorSet = false;
 			updateHitbox();
 		});
 	}
