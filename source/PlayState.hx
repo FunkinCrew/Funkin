@@ -1144,13 +1144,13 @@ class PlayState extends MusicBeatState
 			switch(Math.abs(i))
 			{
 				case 0:
-					arrowIndicator = "LEFT";
+					arrowIndicator = "left";
 				case 1:
-					arrowIndicator = "DOWN";
+					arrowIndicator = "down";
 				case 2:
-					arrowIndicator = "UP";
+					arrowIndicator = "up";
 				case 3:
-					arrowIndicator = "RIGHT";
+					arrowIndicator = "right";
 			}
 			
 			babyArrow.x += Note.swagWidth * i;
@@ -1172,7 +1172,7 @@ class PlayState extends MusicBeatState
 					babyArrow.animation.add('confirm', [12 + i, 16 + i], 24, false);
 				default:
 					babyArrow.frames = Paths.getSparrowAtlas('NOTE_assets');
-					babyArrow.animation.addByPrefix(Note.arrowName, 'arrow' arrowIndicator);
+					babyArrow.animation.addByPrefix(Note.arrowName, 'arrow' + arrowIndicator.toUpperCase());
 
 					babyArrow.antialiasing = true;
 					babyArrow.setGraphicSize(Std.int(babyArrow.width * 0.7));
