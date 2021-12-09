@@ -386,6 +386,8 @@ class ChartingState extends MusicBeatState
 
 	var cur_Note_Type:String = "default";
 
+	var copiedSection:Int = 0;
+
 	function addSectionUI():Void
 	{
 		// SECTION CREATION
@@ -450,6 +452,17 @@ class ChartingState extends MusicBeatState
 
 		check_changeBPM = new FlxUICheckBox(10, 80, null, null, 'Change BPM?', 100);
 		check_changeBPM.name = 'check_changeBPM';
+
+		var copySectionButton:FlxButton = new FlxButton(check_altAnim.x, check_altAnim.y, "Copy Section", function()
+		{
+			copiedSection = curSection;
+			updateGrid();
+		});
+
+		var pasteSectionButton:FlxButton = new FlxButton(copySectionButton.x + copySectionButton.width + 2, copySectionButton.y, "Paste Section", function()
+		{
+			pasteSection();
+		});
 
 		// Labels for Interactive Stuff
 		var stepperSizeText = new FlxText(stepperLength.x + stepperLength.width + 2, stepperLength.y, 0, "Section size", 9);
@@ -526,6 +539,9 @@ class ChartingState extends MusicBeatState
 		tab_group_section.add(clearLeftSectionButton);
 		tab_group_section.add(clearRightSectionButton);
 		tab_group_section.add(swapSectionButton);
+
+		tab_group_section.add(copySectionButton);
+		tab_group_section.add(pasteSectionButton);
 
 		// final addition
 		UI_box.addGroup(tab_group_section);
@@ -1249,7 +1265,25 @@ class ChartingState extends MusicBeatState
 			var strum = note[0] + Conductor.stepCrochet * (((16 / _song.timescale[1]) * 4) * sectionNum);
 
 			var copiedNote:Array<Dynamic> = [strum, note[1], note[2], note[3], note[4]];
-			_song.notes[daSec].sectionNotes.push(copiedNote);
+			_song.notes[curSection].sectionNotes.push(copiedNote);
+		}
+
+		updateGrid();
+	}
+
+	function pasteSection()
+	{
+		var daSec = copiedSection;
+
+		if(daSec != curSection)
+		{
+			for (note in _song.notes[daSec].sectionNotes)
+			{
+				var strum = note[0] + Conductor.stepCrochet * (((16 / _song.timescale[1]) * 4) * curSection);
+	
+				var copiedNote:Array<Dynamic> = [strum, note[1], note[2], note[3], note[4]];
+				_song.notes[curSection].sectionNotes.push(copiedNote);
+			}
 		}
 
 		updateGrid();
