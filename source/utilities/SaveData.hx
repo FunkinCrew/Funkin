@@ -124,6 +124,9 @@ class SaveData {
                 FlxG.save.data.binds[i] = NoteVariables.Default_Binds[i];
             }
         }
+
+        if(FlxG.save.data.playAs == null)
+            FlxG.save.data.playAs = "bf";
         
         FlxG.save.flush();
 

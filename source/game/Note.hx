@@ -67,6 +67,8 @@ class Note extends FlxSprite
 		if(song == null)
 			song = PlayState.SONG;
 
+		this.noteData %= song.keyCount;
+
 		x += 100;
 		// MAKE SURE ITS DEFINITELY OFF SCREEN?
 		y = -2000;
@@ -152,7 +154,18 @@ class Note extends FlxSprite
 
 		angle = modAngle + localAngle;
 
-		if (mustPress)
+		calculateCanBeHit();
+
+		if (tooLate)
+		{
+			if (alpha > 0.3)
+				alpha = 0.3;
+		}
+	}
+
+	public function calculateCanBeHit()
+	{
+		if(mustPress)
 		{
 			if (isSustainNote)
 			{
@@ -205,12 +218,6 @@ class Note extends FlxSprite
 
 			if (strumTime <= Conductor.songPosition)
 				wasGoodHit = true;
-		}
-
-		if (tooLate)
-		{
-			if (alpha > 0.3)
-				alpha = 0.3;
 		}
 	}
 }

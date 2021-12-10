@@ -56,42 +56,50 @@ class TitleState extends MusicBeatState
 
 	var wackyImage:FlxSprite;
 
+	static var firstTimeStarting:Bool = false;
+
 	override public function create():Void
 	{
-		persistentUpdate = true;
-		persistentDraw = true;
+		if(!firstTimeStarting)
+		{
+			persistentUpdate = true;
+			persistentDraw = true;
+	
+			FlxG.fixedTimestep = false;
+	
+			NoteVariables.init();
+	
+			SaveData.init();
+	
+			/* cool fps shit thx kade */
+			(cast (Lib.current.getChildAt(0), Main)).setFPSCap(FlxG.save.data.fpsCap);
+	
+			#if desktop
+			PolymodHandler.loadMods();
+			#end
+	
+			curWacky = FlxG.random.getObject(getIntroTextShit());
 
-		FlxG.fixedTimestep = false;
+			super.create();
+	
+			#if desktop
+			if(!DiscordClient.started && FlxG.save.data.discordRPC)
+			{
+				DiscordClient.initialize();
+			
+				Application.current.onExit.add(function (exitCode) {
+					DiscordClient.shutdown();
+				});
+			}
+			#end
 
-		NoteVariables.init();
-
-		SaveData.init();
-
-		/* cool fps shit thx kade */
-		(cast (Lib.current.getChildAt(0), Main)).setFPSCap(FlxG.save.data.fpsCap);
-
-		#if desktop
-		PolymodHandler.loadMods();
-		#end
-
-		curWacky = FlxG.random.getObject(getIntroTextShit());
-		super.create();
+			firstTimeStarting = true;
+		}
 
 		new FlxTimer().start(1, function(tmr:FlxTimer)
 		{
 			startIntro();
 		});
-
-		#if desktop
-		if(!DiscordClient.started && FlxG.save.data.discordRPC)
-		{
-			DiscordClient.initialize();
-		
-			Application.current.onExit.add(function (exitCode) {
-				DiscordClient.shutdown();
-			});
-		}
-		#end
 	}
 
 	var old_logo:FlxSprite;
@@ -171,9 +179,7 @@ class TitleState extends MusicBeatState
 			bg.screenCenter();
 		}
 		else
-		{
 			bg.makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
-		}
 
 		add(bg);
 

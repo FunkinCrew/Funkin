@@ -82,7 +82,8 @@ class OptionsMenu extends MusicBeatState
 			#if discord_rpc
 			new BoolOption("Discord RPC", "discordRPC", FlxG.save.data.discordRPC, 5),
 			#end
-			new CutsceneOption("Cutscenes Play On", ["story","freeplay","both"], FlxG.save.data.cutscenePlays, 6)
+			new CutsceneOption("Cutscenes Play On", ["story","freeplay","both"], FlxG.save.data.cutscenePlays, 6),
+			new PlayAsOption("Play As", ["bf", "opponent"], FlxG.save.data.playAs, 7)
 		],
 		[
 			"Optimizations",

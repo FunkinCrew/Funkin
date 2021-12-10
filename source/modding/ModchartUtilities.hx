@@ -549,6 +549,10 @@ class ModchartUtilities
             getActorByName(id).angle = angle;
         });
 
+        Lua_helper.add_callback(lua,"setActorModAngle", function(angle:Int,id:String) {
+            getActorByName(id).modAngle = angle;
+        });
+
         Lua_helper.add_callback(lua,"setActorScale", function(scale:Float,id:String) {
             getActorByName(id).setGraphicSize(Std.int(getActorByName(id).width * scale));
         });
@@ -978,6 +982,24 @@ class ModchartUtilities
                     }
                 }
             );
+        });
+
+        // properties
+    
+        Lua_helper.add_callback(lua,"setProperty", function(object:String, property:String, value:Dynamic) {
+            @:privateAccess
+            if(Reflect.getProperty(PlayState.instance, object) != null)
+                Reflect.setProperty(Reflect.getProperty(PlayState.instance, object), property, value);
+            else
+                Reflect.setProperty(Reflect.getProperty(PlayState, object), property, value);
+        });
+
+        Lua_helper.add_callback(lua,"getProperty", function(object:String, property:String) {
+            @:privateAccess
+            if(Reflect.getProperty(PlayState.instance, object) != null)
+                return Reflect.getProperty(Reflect.getProperty(PlayState.instance, object), property);
+            else
+                return Reflect.getProperty(Reflect.getProperty(PlayState, object), property);
         });
 
         // default strums

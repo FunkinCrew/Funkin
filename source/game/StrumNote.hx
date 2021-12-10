@@ -20,6 +20,8 @@ class StrumNote extends FlxSprite
 	public var mania_size:Array<String>;
 	public var keyCount:Int;
 
+	public var modAngle:Float = 0;
+
 	public function new(x:Float, y:Float, leData:Int, ?ui_Skin:String, ?ui_Settings:Array<String>, ?mania_size:Array<String>, ?keyCount:Int) {
 		if(ui_Skin == null)
 			ui_Skin = PlayState.SONG.ui_Skin;
@@ -44,6 +46,8 @@ class StrumNote extends FlxSprite
 	}
 
 	override function update(elapsed:Float) {
+		angle = modAngle;
+		
 		if(resetAnim > 0) {
 			resetAnim -= elapsed;
 

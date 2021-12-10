@@ -638,3 +638,4 @@ class CutsceneOption extends StringSaveOption { override function SetDataIGuess(
 class DisplayFontOption extends StringSaveOption { override function SetDataIGuess() { FlxG.save.data.displayFont = Data; super.SetDataIGuess(); Main.changeFont(FlxG.save.data.displayFont); } }
 class InputModeOption extends StringSaveOption { override function SetDataIGuess() { FlxG.save.data.inputMode = Data; super.SetDataIGuess(); } }
 class RatingModeOption extends StringSaveOption { override function SetDataIGuess() { FlxG.save.data.ratingMode = Data; super.SetDataIGuess(); } }
+class PlayAsOption extends StringSaveOption { override function SetDataIGuess() { FlxG.save.data.playAs = Data; super.SetDataIGuess(); } }
