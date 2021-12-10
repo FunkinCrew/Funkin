@@ -2055,7 +2055,8 @@ class PlayState extends MusicBeatState
 	
 						daNote.modAngle = coolStrum.angle;
 						daNote.flipX = coolStrum.flipX;
-						daNote.flipY = coolStrum.flipY;
+						if (!daNote.isSustainNote)
+							daNote.flipY = coolStrum.flipY;
 						daNote.color = coolStrum.color;
 					}
 					else if (!daNote.wasGoodHit && !daNote.modifiedByLua)
@@ -2090,7 +2091,8 @@ class PlayState extends MusicBeatState
 	
 						daNote.modAngle = coolStrum.angle;
 						daNote.flipX = coolStrum.flipX;
-						daNote.flipY = coolStrum.flipY;
+						if (!daNote.isSustainNote)
+							daNote.flipY = coolStrum.flipY;
 						daNote.color = coolStrum.color;
 					}
 				}
