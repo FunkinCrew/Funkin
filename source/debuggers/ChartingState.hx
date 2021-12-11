@@ -85,6 +85,7 @@ class ChartingState extends MusicBeatState
 	var modchart_Input:FlxInputText;
 	var cutscene_Input:FlxInputText;
 	var endCutscene_Input:FlxInputText;
+	var characterGroup_Input:FlxInputText;
 	/*
 	 * WILL BE THE CURRENT / LAST PLACED NOTE
 	**/
@@ -482,10 +483,6 @@ class ChartingState extends MusicBeatState
 		stepperCharLength.value = 0;
 		stepperCharLength.name = 'note_char';
 
-		// labels
-		var susText = new FlxText(stepperSusLength.x + stepperSusLength.width + 1, stepperSusLength.y, 0, "Sustain note length", 9);
-		var charText = new FlxText(stepperCharLength.x + stepperCharLength.width + 1, stepperCharLength.y, 0, "Character", 9);
-
 		// Adding everything in
 
 		var setCharacterLeftSide:FlxButton = new FlxButton(stepperCharLength.x, stepperCharLength.y + stepperCharLength.height + 1, "Char To Left", function()
@@ -508,6 +505,16 @@ class ChartingState extends MusicBeatState
 
 		typeDropDown.selectedLabel = cur_Note_Type;
 
+		// funny input box
+
+		characterGroup_Input = new FlxUIInputText(typeDropDown.x, typeDropDown.y + 20, 70, "", 8);
+
+		// labels
+		var susText = new FlxText(stepperSusLength.x + stepperSusLength.width + 1, stepperSusLength.y, 0, "Sustain note length", 9);
+		var charText = new FlxText(stepperCharLength.x + stepperCharLength.width + 1, stepperCharLength.y, 0, "Character", 9);
+
+		var charGroupText = new FlxText(characterGroup_Input.x + characterGroup_Input.width + 1, characterGroup_Input.y, 0, "Character Group (chars seperated by ',')", 9);
+
 		// note stuff
 		tab_group_section.add(noteText);
 
@@ -521,6 +528,9 @@ class ChartingState extends MusicBeatState
 
 		tab_group_section.add(setCharacterLeftSide);
 		tab_group_section.add(setCharacterRightSide);
+
+		tab_group_section.add(characterGroup_Input);
+		tab_group_section.add(charGroupText);
 
 		// section stuff
 		tab_group_section.add(sectionText);
@@ -734,6 +744,13 @@ class ChartingState extends MusicBeatState
 	{
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
+
+		/*
+		if(Assets.cache.audio.exists(Paths.inst(daSong, difficulty.toLowerCase())))
+			Assets.cache.audio.remove(Paths.inst(daSong, difficulty.toLowerCase()));
+
+		if(Assets.cache.audio.exists(Paths.voices(daSong, difficulty.toLowerCase())))
+			Assets.cache.audio.remove(Paths.voices(daSong, difficulty.toLowerCase()));*/
 
 		FlxG.sound.music = new FlxSound().loadEmbedded(Paths.inst(daSong, difficulty.toLowerCase()));
 		FlxG.sound.music.persist = true;
@@ -1571,10 +1588,22 @@ class ChartingState extends MusicBeatState
 		var noteData = Math.floor(FlxG.mouse.x / GRID_SIZE);
 		var noteSus = 0;
 
-		if(cur_Note_Type != "default")
-			_song.notes[curSection].sectionNotes.push([noteStrum, noteData, noteSus, current_Note_Character, cur_Note_Type]);
+		var characters:Array<Int> = [];
+
+		if(characterGroup_Input.text != "" && characterGroup_Input.text != " ")
+		{
+			var yes = characterGroup_Input.text.split(",");
+
+			for(char in yes)
+			{
+				characters.push(Std.parseInt(char));
+			}
+		}
+
+		if(cur_Note_Type != "default" && cur_Note_Type != null)
+			_song.notes[curSection].sectionNotes.push([noteStrum, noteData, noteSus, (characters.length <= 0 ? current_Note_Character : characters), cur_Note_Type]);
 		else
-			_song.notes[curSection].sectionNotes.push([noteStrum, noteData, noteSus, current_Note_Character]);
+			_song.notes[curSection].sectionNotes.push([noteStrum, noteData, noteSus, (characters.length <= 0 ? current_Note_Character : characters)]);
 
 		curSelectedNote = _song.notes[curSection].sectionNotes[_song.notes[curSection].sectionNotes.length - 1];
 

@@ -4,6 +4,7 @@ All notable changes will be documented in this file.
 ## [0.4.1] - ?/?/????
 ### Added
 - Copy and Paste Section.
+- Option in Charter to have 1 note use multiple characters.
 ### Fixed
 - Saving Replays when the bot has been used.
 - Infinite Mania now doesn't crash game (because before, it would crash due to missing keybinds).

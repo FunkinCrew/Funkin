@@ -42,6 +42,8 @@ class Note extends FlxSprite
 	public var localAngle:Float = 0;
 
 	public var character:Int = 0;
+
+	public var characters:Array<Int> = [];
 	
 	public var arrow_Type:String;
 
@@ -50,11 +52,11 @@ class Note extends FlxSprite
 	public var missDamage:Float = 0.07;
 	public var heldMissDamage:Float = 0.035;
 
-	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?character:Int = 0, ?arrowType:String = "default", ?song:SwagSong)
+	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?character:Int = 0, ?arrowType:String = "default", ?song:SwagSong, ?characters:Array<Int>)
 	{
 		super();
 
-		if (prevNote == null)
+		if(prevNote == null)
 			prevNote = this;
 
 		this.prevNote = prevNote;
@@ -62,6 +64,8 @@ class Note extends FlxSprite
 		this.strumTime = strumTime;
 		this.noteData = noteData;
 		this.arrow_Type = arrowType;
+		this.characters = characters;
+
 		isSustainNote = sustainNote;
 
 		if(song == null)
@@ -165,59 +169,62 @@ class Note extends FlxSprite
 
 	public function calculateCanBeHit()
 	{
-		if(mustPress)
+		if(this != null)
 		{
-			if (isSustainNote)
+			if(mustPress)
 			{
-				if(shouldHit)
+				if (isSustainNote)
 				{
-					if (strumTime > Conductor.songPosition - (Conductor.safeZoneOffset * 1.5)
-						&& strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * 0.5))
-						canBeHit = true;
+					if(shouldHit)
+					{
+						if (strumTime > Conductor.songPosition - (Conductor.safeZoneOffset * 1.5)
+							&& strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * 0.5))
+							canBeHit = true;
+						else
+							canBeHit = false;
+					}
 					else
-						canBeHit = false;
+					{
+						if (strumTime > Conductor.songPosition - Conductor.safeZoneOffset * 0.3
+							&& strumTime < Conductor.songPosition + Conductor.safeZoneOffset * 0.2)
+							canBeHit = true;
+						else
+							canBeHit = false;
+					}
 				}
 				else
 				{
-					if (strumTime > Conductor.songPosition - Conductor.safeZoneOffset * 0.3
-						&& strumTime < Conductor.songPosition + Conductor.safeZoneOffset * 0.2)
-						canBeHit = true;
+					/*
+					TODO: make this shit use something from the arrow config .txt file
+					*/ 
+					if(shouldHit)
+					{
+						if (strumTime > Conductor.songPosition - Conductor.safeZoneOffset
+							&& strumTime < Conductor.songPosition + Conductor.safeZoneOffset)
+							canBeHit = true;
+						else
+							canBeHit = false;
+					}
 					else
-						canBeHit = false;
+					{
+						if (strumTime > Conductor.songPosition - Conductor.safeZoneOffset * 0.3
+							&& strumTime < Conductor.songPosition + Conductor.safeZoneOffset * 0.2)
+							canBeHit = true;
+						else
+							canBeHit = false;
+					}
 				}
+	
+				if (strumTime < Conductor.songPosition - Conductor.safeZoneOffset && !wasGoodHit)
+					tooLate = true;
 			}
 			else
 			{
-				/*
-				TODO: make this shit use something from the arrow config .txt file
-				*/ 
-				if(shouldHit)
-				{
-					if (strumTime > Conductor.songPosition - Conductor.safeZoneOffset
-						&& strumTime < Conductor.songPosition + Conductor.safeZoneOffset)
-						canBeHit = true;
-					else
-						canBeHit = false;
-				}
-				else
-				{
-					if (strumTime > Conductor.songPosition - Conductor.safeZoneOffset * 0.3
-						&& strumTime < Conductor.songPosition + Conductor.safeZoneOffset * 0.2)
-						canBeHit = true;
-					else
-						canBeHit = false;
-				}
+				canBeHit = false;
+	
+				if (strumTime <= Conductor.songPosition)
+					wasGoodHit = true;
 			}
-
-			if (strumTime < Conductor.songPosition - Conductor.safeZoneOffset && !wasGoodHit)
-				tooLate = true;
-		}
-		else
-		{
-			canBeHit = false;
-
-			if (strumTime <= Conductor.songPosition)
-				wasGoodHit = true;
 		}
 	}
 }

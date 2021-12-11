@@ -1,5 +1,6 @@
 package states;
 
+import cpp.NativeProcess;
 import flixel.system.FlxAssets.FlxShader;
 import flixel.addons.display.FlxShaderMaskCamera;
 import substates.ResultsScreenSubstate;
@@ -1222,13 +1223,23 @@ class PlayState extends MusicBeatState
 				if(!Std.isOfType(songNotes[2], Int) && !Std.isOfType(songNotes[2], Float))
 					songNotes[2] = 0;
 
-				if(!Std.isOfType(songNotes[3], Int))
+				if(!Std.isOfType(songNotes[3], Int) && !Std.isOfType(songNotes[3], Array))
 					songNotes[3] = 0;
 
 				if(!Std.isOfType(songNotes[4], String))
 					songNotes[4] = "default";
 
-				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote, false, songNotes[3], songNotes[4]);
+				var char:Dynamic = songNotes[3];
+
+				var chars:Array<Int> = [];
+
+				if(Std.isOfType(char, Array))
+				{
+					chars = char;
+					char = chars[0];
+				}
+
+				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote, false, char, songNotes[4], null, chars);
 				swagNote.sustainLength = songNotes[2];
 				swagNote.scrollFactor.set(0, 0);
 
@@ -1243,7 +1254,7 @@ class PlayState extends MusicBeatState
 				{
 					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
 
-					var sustainNote:Note = new Note(daStrumTime + (Std.int(Conductor.nonmultilmao_stepCrochet) * susNote) + Std.int(Conductor.nonmultilmao_stepCrochet), daNoteData, oldNote, true, songNotes[3], songNotes[4]);
+					var sustainNote:Note = new Note(daStrumTime + (Std.int(Conductor.nonmultilmao_stepCrochet) * susNote) + Std.int(Conductor.nonmultilmao_stepCrochet), daNoteData, oldNote, true, char, songNotes[4], null, chars);
 					sustainNote.scrollFactor.set();
 					unspawnNotes.push(sustainNote);
 
@@ -1944,6 +1955,8 @@ class PlayState extends MusicBeatState
 					}
 				}
 
+				daNote.calculateCanBeHit();
+
 				if (!daNote.mustPress && daNote.strumTime <= Conductor.songPosition && daNote.shouldHit)
 				{
 					if (SONG.song != 'Tutorial')
@@ -1954,14 +1967,32 @@ class PlayState extends MusicBeatState
 						if(dad.otherCharacters == null)
 							dad.playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][Std.int(Math.abs(daNote.noteData))] + altAnim, true);
 						else
-							dad.otherCharacters[daNote.character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][Std.int(Math.abs(daNote.noteData))] + altAnim, true);
+						{
+							if(daNote.characters.length <= 1)
+								dad.otherCharacters[daNote.character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][Std.int(Math.abs(daNote.noteData))], true);
+							else
+							{
+								for(character in daNote.characters)
+								{
+									dad.otherCharacters[character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][Std.int(Math.abs(daNote.noteData))], true);
+								}
+							}
+						}
 					}
 					else
 					{
 						if(boyfriend.otherCharacters == null)
 							boyfriend.playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][Std.int(Math.abs(daNote.noteData))] + altAnim, true);
 						else
-							boyfriend.otherCharacters[daNote.character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][Std.int(Math.abs(daNote.noteData))] + altAnim, true);
+							if(daNote.characters.length <= 1)
+								boyfriend.otherCharacters[daNote.character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][Std.int(Math.abs(daNote.noteData))], true);
+							else
+							{
+								for(character in daNote.characters)
+								{
+									boyfriend.otherCharacters[character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][Std.int(Math.abs(daNote.noteData))], true);
+								}
+							}
 					}
 
 					#if linc_luajit
@@ -2003,18 +2034,39 @@ class PlayState extends MusicBeatState
 						if(dad.otherCharacters == null)
 							dad.holdTimer = 0;
 						else
-							dad.otherCharacters[daNote.character].holdTimer = 0;
+						{
+							if(daNote.characters.length <= 1)
+								dad.otherCharacters[daNote.character].holdTimer = 0;
+							else
+							{
+								for(char in daNote.characters)
+								{
+									dad.otherCharacters[char].holdTimer = 0;
+								}
+							}
+						}
 					}
 					else
 					{
 						if(boyfriend.otherCharacters == null)
 							boyfriend.holdTimer = 0;
 						else
-							boyfriend.otherCharacters[daNote.character].holdTimer = 0;
+							if(daNote.characters.length <= 1)
+								boyfriend.otherCharacters[daNote.character].holdTimer = 0;
+							else
+							{
+								for(char in daNote.characters)
+								{
+									boyfriend.otherCharacters[char].holdTimer = 0;
+								}
+							}
 					}
 
 					if (SONG.needsVoices)
 						vocals.volume = 1;
+
+					daNote.active = false;
+					daNote.visible = false;
 
 					daNote.kill();
 					notes.remove(daNote, true);
@@ -2055,8 +2107,10 @@ class PlayState extends MusicBeatState
 	
 						daNote.modAngle = coolStrum.angle;
 						daNote.flipX = coolStrum.flipX;
+
 						if (!daNote.isSustainNote)
 							daNote.flipY = coolStrum.flipY;
+
 						daNote.color = coolStrum.color;
 					}
 					else if (!daNote.wasGoodHit && !daNote.modifiedByLua)
@@ -2091,13 +2145,15 @@ class PlayState extends MusicBeatState
 	
 						daNote.modAngle = coolStrum.angle;
 						daNote.flipX = coolStrum.flipX;
+
 						if (!daNote.isSustainNote)
 							daNote.flipY = coolStrum.flipY;
+
 						daNote.color = coolStrum.color;
 					}
 				}
 
-				if (Conductor.songPosition - Conductor.safeZoneOffset  > daNote.strumTime)
+				if(Conductor.songPosition - Conductor.safeZoneOffset > daNote.strumTime)
 				{
 					if(daNote.mustPress && daNote.shouldHit)
 					{
@@ -2670,14 +2726,30 @@ class PlayState extends MusicBeatState
 											if(boyfriend.otherCharacters == null)
 												boyfriend.holdTimer = 0;
 											else
-												boyfriend.otherCharacters[note.character].holdTimer = 0;
+												if(note.characters.length <= 1)
+													boyfriend.otherCharacters[note.character].holdTimer = 0;
+												else
+												{
+													for(char in note.characters)
+													{
+														boyfriend.otherCharacters[char].holdTimer = 0;
+													}
+												}
 										}
 										else
 										{
 											if(dad.otherCharacters == null)
 												dad.holdTimer = 0;
 											else
-												dad.otherCharacters[note.character].holdTimer = 0;
+												if(note.characters.length <= 1)
+													dad.otherCharacters[note.character].holdTimer = 0;
+												else
+												{
+													for(char in note.characters)
+													{
+														dad.otherCharacters[char].holdTimer = 0;
+													}
+												}
 										}
 
 										goodNoteHit(note, input[3]);
@@ -2768,14 +2840,30 @@ class PlayState extends MusicBeatState
 									if(boyfriend.otherCharacters == null)
 										boyfriend.holdTimer = 0;
 									else
-										boyfriend.otherCharacters[possibleNotes[i].character].holdTimer = 0;
+										if(possibleNotes[i].characters.length <= 1)
+											boyfriend.otherCharacters[possibleNotes[i].character].holdTimer = 0;
+										else
+										{
+											for(char in possibleNotes[i].characters)
+											{
+												boyfriend.otherCharacters[char].holdTimer = 0;
+											}
+										}
 								}
 								else
 								{
 									if(dad.otherCharacters == null)
 										dad.holdTimer = 0;
 									else
-										dad.otherCharacters[possibleNotes[i].character].holdTimer = 0;
+										if(possibleNotes[i].characters.length <= 1)
+											dad.otherCharacters[possibleNotes[i].character].holdTimer = 0;
+										else
+										{
+											for(char in possibleNotes[i].characters)
+											{
+												dad.otherCharacters[char].holdTimer = 0;
+											}
+										}
 								}
 	
 								goodNoteHit(possibleNotes[i]);
@@ -2830,14 +2918,30 @@ class PlayState extends MusicBeatState
 									if(boyfriend.otherCharacters == null)
 										boyfriend.holdTimer = 0;
 									else
-										boyfriend.otherCharacters[daNote.character].holdTimer = 0;
+										if(daNote.characters.length <= 1)
+											boyfriend.otherCharacters[daNote.character].holdTimer = 0;
+										else
+										{
+											for(char in daNote.characters)
+											{
+												boyfriend.otherCharacters[char].holdTimer = 0;
+											}
+										}
 								}
 								else
 								{
 									if(dad.otherCharacters == null)
 										dad.holdTimer = 0;
 									else
-										dad.otherCharacters[daNote.character].holdTimer = 0;
+										if(daNote.characters.length <= 1)
+											dad.otherCharacters[daNote.character].holdTimer = 0;
+										else
+										{
+											for(char in daNote.characters)
+											{
+												dad.otherCharacters[char].holdTimer = 0;
+											}
+										}
 								}
 	
 								goodNoteHit(daNote);
@@ -2918,14 +3022,30 @@ class PlayState extends MusicBeatState
 								if(boyfriend.otherCharacters == null)
 									boyfriend.holdTimer = 0;
 								else
-									boyfriend.otherCharacters[note.character].holdTimer = 0;
+									if(note.characters.length <= 1)
+										boyfriend.otherCharacters[note.character].holdTimer = 0;
+									else
+									{
+										for(char in note.characters)
+										{
+											boyfriend.otherCharacters[char].holdTimer = 0;
+										}
+									}
 							}
 							else
 							{
 								if(dad.otherCharacters == null)
 									dad.holdTimer = 0;
 								else
-									dad.otherCharacters[note.character].holdTimer = 0;
+									if(note.characters.length <= 1)
+										dad.otherCharacters[note.character].holdTimer = 0;
+									else
+									{
+										for(char in note.characters)
+										{
+											dad.otherCharacters[char].holdTimer = 0;
+										}
+									}
 							}
 		
 							goodNoteHit(note);
@@ -3055,14 +3175,32 @@ class PlayState extends MusicBeatState
 				if(characterPlayingAs == 0)
 				{
 					if(boyfriend.otherCharacters != null)
-						boyfriend.otherCharacters[note.character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][direction] + "miss", true);
+					{
+						if(note.characters.length <= 1)
+							boyfriend.otherCharacters[note.character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][direction] + "miss", true);
+						else
+						{
+							for(character in note.characters)
+							{
+								boyfriend.otherCharacters[character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][direction] + "miss", true);
+							}
+						}
+					}
 					else
 						boyfriend.playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][direction] + "miss", true);
 				}
 				else
 				{
 					if(dad.otherCharacters != null)
-						dad.otherCharacters[note.character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][direction] + "miss", true);
+						if(note.characters.length <= 1)
+							dad.otherCharacters[note.character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][direction] + "miss", true);
+						else
+						{
+							for(character in note.characters)
+							{
+								dad.otherCharacters[character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][direction] + "miss", true);
+							}
+						}
 					else
 						dad.playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][direction] + "miss", true);
 				}
@@ -3101,14 +3239,30 @@ class PlayState extends MusicBeatState
 			if(characterPlayingAs == 0)
 			{
 				if(boyfriend.otherCharacters != null)
-					boyfriend.otherCharacters[note.character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][Std.int(Math.abs(note.noteData))], true);
+					if(note.characters.length <= 1)
+						boyfriend.otherCharacters[note.character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][Std.int(Math.abs(note.noteData))], true);
+					else
+					{
+						for(character in note.characters)
+						{
+							boyfriend.otherCharacters[character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][Std.int(Math.abs(note.noteData))], true);
+						}
+					}
 				else
 					boyfriend.playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][Std.int(Math.abs(note.noteData))], true);
 			}
 			else
 			{
 				if(dad.otherCharacters != null)
-					dad.otherCharacters[note.character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][Std.int(Math.abs(note.noteData))], true);
+					if(note.characters.length <= 1)
+						dad.otherCharacters[note.character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][Std.int(Math.abs(note.noteData))], true);
+					else
+					{
+						for(character in note.characters)
+						{
+							dad.otherCharacters[character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][Std.int(Math.abs(note.noteData))], true);
+						}
+					}
 				else
 					dad.playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][Std.int(Math.abs(note.noteData))], true);
 			}
