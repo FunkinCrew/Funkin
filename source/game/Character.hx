@@ -3,14 +3,8 @@ package game;
 import flixel.FlxG;
 import flixel.addons.effects.FlxTrail;
 import flixel.util.FlxColor;
-import modding.CharacterCreationState.SpritesheetType;
 import lime.utils.Assets;
-import flixel.graphics.frames.FlxFramesCollection;
 import haxe.Json;
-#if sys
-import sys.io.File;
-import polymod.backends.PolymodAssets;
-#end
 import utilities.CoolUtil;
 import states.PlayState;
 import flixel.FlxSprite;
@@ -48,6 +42,8 @@ class Character extends FlxSprite
 
 	public var icon:String;
 
+	var isDeathCharacter:Bool = false;
+
 	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false, ?isDeathCharacter:Bool = false)
 	{
 		super(x, y);
@@ -55,6 +51,7 @@ class Character extends FlxSprite
 		animOffsets = new Map<String, Array<Dynamic>>();
 		curCharacter = character;
 		this.isPlayer = isPlayer;
+		this.isDeathCharacter = isDeathCharacter;
 
 		antialiasing = true;
 
@@ -408,7 +405,15 @@ class Character extends FlxSprite
 	{
 		var rawJson:String;
 
-		rawJson = Assets.getText(Paths.json("character data/" + characterName + "/config")).trim();
+		if(Assets.exists(Paths.json("character data/" + characterName + "/config")))
+			rawJson = Assets.getText(Paths.json("character data/" + characterName + "/config")).trim();
+		else
+		{
+			rawJson = Assets.getText(Paths.json("character data/bf/config")).trim();
+			
+			curCharacter = "bf";
+			characterName = "bf";
+		}
 
 		var config:CharacterConfig = cast Json.parse(rawJson);
 
@@ -446,7 +451,10 @@ class Character extends FlxSprite
 
 			dancesLeftAndRight = config.dancesLeftAndRight;
 
-			frames = Paths.getSparrowAtlas('characters/' + config.imagePath, 'shared');
+			if(Assets.exists(Paths.file("images/characters/" + config.imagePath + ".txt", TEXT, "shared")))
+				frames = Paths.getPackerAtlas('characters/' + config.imagePath, 'shared');
+			else
+				frames = Paths.getSparrowAtlas('characters/' + config.imagePath, 'shared');
 
 			if(config.graphicsSize != null)
 				setGraphicSize(Std.int(width * config.graphicsSize));
@@ -474,9 +482,15 @@ class Character extends FlxSprite
 				}
 			}
 
-			playAnim("firstDeath");
-			playAnim("danceRight");
-			playAnim("idle");
+			if(isDeathCharacter)
+				playAnim("firstDeath");
+			else
+			{
+				if(dancesLeftAndRight)
+					playAnim("danceRight");
+				else
+					playAnim("idle");
+			}
 
 			if(debugMode)
 				flipX = config.defaultFlipX;
@@ -506,9 +520,9 @@ class Character extends FlxSprite
 				var character:Character;
 
 				if(!isPlayer)
-					character = new Character(x, y, characterData.name, isPlayer);
+					character = new Character(x, y, characterData.name, isPlayer, isDeathCharacter);
 				else
-					character = new Boyfriend(x, y, characterData.name, isPlayer);
+					character = new Boyfriend(x, y, characterData.name, isDeathCharacter);
 
 				if(flipX)
 					characterData.positionOffset[0] = 0 - characterData.positionOffset[0];

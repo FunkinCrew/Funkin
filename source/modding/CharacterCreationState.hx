@@ -1,18 +1,16 @@
 package modding;
 
-import ui.FlxUIDropDownMenuCustom;
-import states.MusicBeatState;
-import flixel.util.FlxColor;
-import states.MainMenuState;
-import flixel.util.FlxTimer.FlxTimerManager;
-import openfl.events.IOErrorEvent;
-import openfl.events.Event;
-import openfl.net.FileReference;
 #if discord_rpc
 import utilities.Discord.DiscordClient;
 #end
+
+import ui.FlxUIDropDownMenuCustom;
+import states.MusicBeatState;
+import states.MainMenuState;
+import openfl.events.IOErrorEvent;
+import openfl.events.Event;
+import openfl.net.FileReference;
 import flixel.ui.FlxButton;
-import openfl.display.BitmapData;
 import lime.utils.Assets;
 import flixel.addons.ui.FlxUICheckBox;
 import flixel.text.FlxText;
@@ -25,13 +23,7 @@ import flixel.addons.ui.FlxUI;
 import flixel.group.FlxGroup;
 import game.Character;
 import haxe.Json;
-#if sys
-import sys.io.File;
-import sys.FileSystem;
-import polymod.backends.PolymodAssets;
-#end
 import modding.CharacterConfig;
-import flixel.FlxState;
 
 using StringTools;
 
@@ -46,8 +38,6 @@ class CharacterCreationState extends MusicBeatState
 
     public var Default_FlipX:Bool = true;
     public var LeftAndRight_Idle:Bool = false;
-
-    public var Spritesheet_Type:SpritesheetType = SPARROW;
 
     public var Animations:Array<CharacterAnimation> = [];
 
@@ -127,7 +117,6 @@ class CharacterCreationState extends MusicBeatState
         Image_Path = CC_Data.imagePath;
         Default_FlipX = CC_Data.defaultFlipX;
         LeftAndRight_Idle = CC_Data.dancesLeftAndRight;
-        Spritesheet_Type = SPARROW;
         Animations = CC_Data.animations;
 
         if(CC_Data.graphicsSize != null)
@@ -287,11 +276,7 @@ class CharacterCreationState extends MusicBeatState
     {
         Raw_JSON_Data = "";
 
-		#if sys
-		Raw_JSON_Data = PolymodAssets.getText(Paths.jsonSYS("character data/" + Character_Name + "/config")).trim();
-		#else
 		Raw_JSON_Data = Assets.getText(Paths.json("character data/" + Character_Name + "/config")).trim();
-		#end
 
         Read_JSON_Data();
     }
@@ -418,10 +403,4 @@ class CharacterCreationState extends MusicBeatState
         _file = null;
         FlxG.log.error("Problem saving Level data");
     }
-}
-
-enum SpritesheetType
-{
-    SPARROW;
-    PACKER;
 }
