@@ -451,10 +451,10 @@ class Character extends FlxSprite
 
 			dancesLeftAndRight = config.dancesLeftAndRight;
 
-			if(Assets.exists(Paths.file("images/characters/" + config.imagePath + ".txt", TEXT, "shared")))
-				frames = Paths.getPackerAtlas('characters/' + config.imagePath, 'shared');
-			else
+			if(Assets.exists(Paths.file("images/characters/" + config.imagePath + ".xml", TEXT, "shared")))
 				frames = Paths.getSparrowAtlas('characters/' + config.imagePath, 'shared');
+			else if(Assets.exists(Paths.file("images/characters/" + config.imagePath + ".txt", TEXT, "shared")))
+				frames = Paths.getPackerAtlas('characters/' + config.imagePath, 'shared');
 
 			if(config.graphicsSize != null)
 				setGraphicSize(Std.int(width * config.graphicsSize));
