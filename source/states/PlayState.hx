@@ -490,7 +490,7 @@ class PlayState extends MusicBeatState
 		}
 
 		// REPOSITIONING PER STAGE
-		if(!FlxG.save.data.optimizations)
+		if(!FlxG.save.data.chrsAndBGs)
 			stage.setCharOffsets();
 
 		if(gf.otherCharacters == null)
@@ -512,7 +512,7 @@ class PlayState extends MusicBeatState
 		}
 
 		// fuck haxeflixel and their no z ordering or somnething AAAAAAAAAAAAA
-		if(curStage == 'limo' && !FlxG.save.data.optimizations)
+		if(curStage == 'limo' && !FlxG.save.data.chrsAndBGs)
 			add(stage.limo);
 
 		if(dad.otherCharacters == null)
@@ -826,7 +826,14 @@ class PlayState extends MusicBeatState
 	}
 
 	function startDialogue(?dialogueBox:DialogueBox, ?endSongVar:Bool = false):Void
-	{	
+	{
+		if(endSongVar)
+		{
+			paused = true;
+			canPause = false;
+			switchedStates = true;
+		}
+
 		new FlxTimer().start(0.3, function(tmr:FlxTimer)
 		{
 			trace("Start Dialogue");
@@ -840,7 +847,7 @@ class PlayState extends MusicBeatState
 					if(!endSongVar)
 						startCountdown();
 					else
-						finishSongStuffs();
+						openSubState(new ResultsScreenSubstate());
 				}
 				else
 				{
@@ -865,7 +872,7 @@ class PlayState extends MusicBeatState
 							if(!endSongVar)
 								startCountdown();
 							else
-								finishSongStuffs();
+								openSubState(new ResultsScreenSubstate());
 					}
 				}
 			}
@@ -873,6 +880,13 @@ class PlayState extends MusicBeatState
 	}
 
 	public function startVideo(name:String, ?ext:String, ?endSongVar:Bool = false):Void {
+		if(endSongVar)
+		{
+			paused = true;
+			canPause = false;
+			switchedStates = true;
+		}
+		
 		#if BIT_64
 		#if VIDEOS_ALLOWED
 		var foundFile:Bool = false;
@@ -938,7 +952,7 @@ class PlayState extends MusicBeatState
 								if(!endSongVar)
 									startCountdown();
 								else
-									finishSongStuffs();
+									openSubState(new ResultsScreenSubstate());
 						}
 					}
 				}
@@ -990,7 +1004,10 @@ class PlayState extends MusicBeatState
 					startDialogue(box, endSongVar);
 
 				default:
-					startCountdown();
+					if(!endSongVar)
+						startCountdown();
+					else
+						openSubState(new ResultsScreenSubstate());
 			}
 		}
 	}

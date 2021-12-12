@@ -1,6 +1,7 @@
 {
     "type": "dialogue",
     "dialogueBox": "speech_bubble_talking",
+    "dialogueBoxFlips": true,
     "dialogueSections": [
         {
             "side": "left",
