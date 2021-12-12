@@ -927,7 +927,7 @@ class PlayState extends MusicBeatState
 						if(!endSongVar)
 							startCountdown();
 						else
-							finishSongStuffs();
+							openSubState(new ResultsScreenSubstate());
 					}
 					else
 					{
@@ -969,7 +969,7 @@ class PlayState extends MusicBeatState
 			if(!endSongVar)
 				startCountdown();
 			else
-				finishSongStuffs();
+				openSubState(new ResultsScreenSubstate());
 		#if BIT_64
 		}
 		#end
@@ -982,7 +982,7 @@ class PlayState extends MusicBeatState
 			if(!endSongVar)
 				startCountdown();
 			else
-				finishSongStuffs();
+				openSubState(new ResultsScreenSubstate());
 		}
 		else
 		{
