@@ -1538,6 +1538,18 @@ class ChartingState extends MusicBeatState
 	{
 		var changeThese = [];
 
+		var charactersArray:Array<Int> = [];
+
+		if(characterGroup_Input.text != "" && characterGroup_Input.text != " ")
+		{
+			var yes = characterGroup_Input.text.split(",");
+
+			for(char in yes)
+			{
+				charactersArray.push(Std.parseInt(char));
+			}
+		}
+
 		for(noteIndex in 0..._song.notes[curSection].sectionNotes.length)
 		{
 			var noteData = _song.notes[curSection].sectionNotes[noteIndex][1];
@@ -1562,7 +1574,10 @@ class ChartingState extends MusicBeatState
 		{
 			for(x in changeThese)
 			{
-				_song.notes[curSection].sectionNotes[x][3] = character;
+				if(charactersArray.length < 1)
+					_song.notes[curSection].sectionNotes[x][3] = character;
+				else
+					_song.notes[curSection].sectionNotes[x][3] = charactersArray;
 			}
 
 			updateGrid();
