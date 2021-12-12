@@ -512,7 +512,7 @@ class PlayState extends MusicBeatState
 		}
 
 		// fuck haxeflixel and their no z ordering or somnething AAAAAAAAAAAAA
-		if(curStage == 'limo' && !FlxG.save.data.chrsAndBGs)
+		if(curStage == 'limo' && FlxG.save.data.chrsAndBGs)
 			add(stage.limo);
 
 		if(dad.otherCharacters == null)
