@@ -490,7 +490,7 @@ class PlayState extends MusicBeatState
 		}
 
 		// REPOSITIONING PER STAGE
-		if(!FlxG.save.data.chrsAndBGs)
+		if(FlxG.save.data.chrsAndBGs)
 			stage.setCharOffsets();
 
 		if(gf.otherCharacters == null)
