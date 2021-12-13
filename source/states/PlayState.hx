@@ -702,7 +702,7 @@ class PlayState extends MusicBeatState
 				switch(cutscene.type.toLowerCase())
 				{
 					case "video":
-						startVideo(cutscene.videoPath, cutscene.videoExt);
+						startVideo(cutscene.videoPath, cutscene.videoExt, false);
 
 					case "dialogue":
 						var box:DialogueBox = new DialogueBox(cutscene);
@@ -880,13 +880,6 @@ class PlayState extends MusicBeatState
 	}
 
 	public function startVideo(name:String, ?ext:String, ?endSongVar:Bool = false):Void {
-		if(endSongVar)
-		{
-			paused = true;
-			canPause = false;
-			switchedStates = true;
-		}
-		
 		#if BIT_64
 		#if VIDEOS_ALLOWED
 		var foundFile:Bool = false;
@@ -920,7 +913,7 @@ class PlayState extends MusicBeatState
 				remove(bg);
 
 				if(endingSong) {
-					endSong();
+					openSubState(new ResultsScreenSubstate());
 				} else {
 					if(cutscene.cutsceneAfter == null)
 					{
@@ -964,7 +957,7 @@ class PlayState extends MusicBeatState
 		#end
 
 		if(endingSong) {
-			endSong();
+			openSubState(new ResultsScreenSubstate());
 		} else { #end
 			if(!endSongVar)
 				startCountdown();
