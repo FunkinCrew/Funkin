@@ -882,6 +882,13 @@ class PlayState extends MusicBeatState
 	public function startVideo(name:String, ?ext:String, ?endSongVar:Bool = false):Void {
 		#if BIT_64
 		#if VIDEOS_ALLOWED
+		if(endSongVar)
+		{
+			paused = true;
+			canPause = false;
+			switchedStates = true;
+		}
+		
 		var foundFile:Bool = false;
 		var fileName:String = #if sys Sys.getCwd() + PolymodAssets.getPath(Paths.video(name, ext)) #else Paths.video(name, ext) #end;
 
