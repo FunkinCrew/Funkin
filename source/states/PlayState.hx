@@ -993,7 +993,7 @@ class PlayState extends MusicBeatState
 			switch(cutscene.type.toLowerCase())
 			{
 				case "video":
-					startVideo(cutscene.videoPath, cutscene.videoExt);
+					startVideo(cutscene.videoPath, cutscene.videoExt, endSongVar);
 
 				case "dialogue":
 					var box:DialogueBox = new DialogueBox(cutscene);
