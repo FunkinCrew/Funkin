@@ -832,6 +832,7 @@ class PlayState extends MusicBeatState
 			paused = true;
 			canPause = false;
 			switchedStates = true;
+			endingSong = true;
 		}
 
 		new FlxTimer().start(0.3, function(tmr:FlxTimer)
@@ -887,6 +888,7 @@ class PlayState extends MusicBeatState
 			paused = true;
 			canPause = false;
 			switchedStates = true;
+			endingSong = true;
 		}
 		
 		var foundFile:Bool = false;
