@@ -18,9 +18,9 @@ For build intructions go to [Build.md](https://github.com/Leather128/LeathersFun
 
 ## Features
 
-> 1-18 Key Support
+> 1-INF Key Support
 
-What does this mean? Well, now if you want, you can choose a different amount of arrows / keys! (Aka different from 4), this feature only goes up to 18 however, because anything more than that would probably be too intensive and would use a lot of resources (also yes 1 key is a thing lol).
+What does this mean? Well, now if you want, you can choose a different amount of arrows / keys! (Aka different from 4), this feature goes up to infinity because you can add your own sets of keys (also yes 1 key is a thing lol).
 
 > Full mod support with Polymod (with a mod loader)!
 
