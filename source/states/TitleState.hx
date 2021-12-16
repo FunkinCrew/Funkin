@@ -66,6 +66,10 @@ class TitleState extends MusicBeatState
 			persistentDraw = true;
 	
 			FlxG.fixedTimestep = false;
+
+			#if desktop
+			PolymodHandler.loadMods();
+			#end
 	
 			NoteVariables.init();
 	
@@ -73,10 +77,6 @@ class TitleState extends MusicBeatState
 	
 			/* cool fps shit thx kade */
 			(cast (Lib.current.getChildAt(0), Main)).setFPSCap(FlxG.save.data.fpsCap);
-	
-			#if desktop
-			PolymodHandler.loadMods();
-			#end
 	
 			curWacky = FlxG.random.getObject(getIntroTextShit());
 
