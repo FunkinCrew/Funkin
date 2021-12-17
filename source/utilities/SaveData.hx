@@ -111,19 +111,8 @@ class SaveData {
         if(FlxG.save.data.missOnHeldNotes == null)
             FlxG.save.data.missOnHeldNotes = true;
 
-        if(FlxG.save.data.noteGap == null)
-            FlxG.save.data.noteGap = -4;
-
         if(FlxG.save.data.extraKeyReminders == null)
             FlxG.save.data.extraKeyReminders = true;
-
-        if(FlxG.save.data.binds.length < NoteVariables.Default_Binds.length)
-        {
-            for(i in Std.int(FlxG.save.data.binds.length - 1)...NoteVariables.Default_Binds.length)
-            {
-                FlxG.save.data.binds[i] = NoteVariables.Default_Binds[i];
-            }
-        }
 
         if(FlxG.save.data.playAs == null)
             FlxG.save.data.playAs = "bf";
@@ -137,5 +126,16 @@ class SaveData {
         
         Highscore.load();
         ModList.load();
+    }
+
+    public static function fixBinds()
+    {
+        if(FlxG.save.data.binds.length < NoteVariables.Default_Binds.length)
+        {
+            for(i in Std.int(FlxG.save.data.binds.length - 1)...NoteVariables.Default_Binds.length)
+            {
+                FlxG.save.data.binds[i] = NoteVariables.Default_Binds[i];
+            }
+        }
     }
 }

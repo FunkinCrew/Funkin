@@ -67,16 +67,18 @@ class TitleState extends MusicBeatState
 	
 			FlxG.fixedTimestep = false;
 	
-			NoteVariables.init();
-	
 			SaveData.init();
-	
-			/* cool fps shit thx kade */
-			(cast (Lib.current.getChildAt(0), Main)).setFPSCap(FlxG.save.data.fpsCap);
 
 			#if desktop
 			PolymodHandler.loadMods();
 			#end
+
+			NoteVariables.init();
+	
+			/* cool fps shit thx kade */
+			(cast (Lib.current.getChildAt(0), Main)).setFPSCap(FlxG.save.data.fpsCap);
+
+			SaveData.fixBinds();
 	
 			curWacky = FlxG.random.getObject(getIntroTextShit());
 
