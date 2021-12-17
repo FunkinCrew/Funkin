@@ -51,13 +51,20 @@ jobs:
           haxelib list
       - name: Create Version Tag
         run: echo "${{github.run_id}}" > VERSION
-      - name: Compile
+      - name: Compile Linux
         run: haxelib run lime build Project.xml linux --app-version="4.0.0-${{ github.run_id}}"
-      - name: Publish Artifact
+      - name: Compile HTML5
+        run: haxelib run lime build Project.xml html5 --app-version="4.0.0-${{ github.run_id}}"
+      - name: Publish Linux Artifact
         uses: actions/upload-artifact@v2.2.4
         with:
           name: linuxBuild
           path: 'export/release/linux/bin' 
+      - name: Publish HTMl5 Artifact
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: html5Build
+          path: 'export/release/html5/bin' 
   buildWindows:
     runs-on: windows-latest
     
