@@ -89,6 +89,7 @@
 	<assets path="assets/replays"  library="replays"  exclude="*.mp3" unless="web"/>
 	
 	<assets path='art/readme.txt' rename='do NOT readme.txt' />
+	<assets path='art/manual.txt' rename='manual.txt' />
 	
 	<assets path="CHANGELOG.md" rename='changelog.txt'/>
 
