@@ -1,11 +1,11 @@
 package states;
 
-import cpp.NativeProcess;
-import flixel.system.FlxAssets.FlxShader;
-import flixel.addons.display.FlxShaderMaskCamera;
-import substates.ResultsScreenSubstate;
 #if sys
 import sys.FileSystem;
+#end
+
+#if cpp
+import cpp.NativeProcess;
 #end
 
 #if BIT_64
@@ -20,6 +20,9 @@ import utilities.Discord.DiscordClient;
 import polymod.backends.PolymodAssets;
 #end
 
+import flixel.system.FlxAssets.FlxShader;
+import flixel.addons.display.FlxShaderMaskCamera;
+import substates.ResultsScreenSubstate;
 import haxe.Json;
 import game.Replay;
 import lime.utils.Assets;
