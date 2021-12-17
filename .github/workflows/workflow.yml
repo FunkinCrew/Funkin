@@ -41,11 +41,9 @@ jobs:
           haxelib install flixel-tools
           haxelib install flixel-ui
           haxelib install flixel-addons
-          haxelib install tjson
-          haxelib install hxjsonast
           haxelib install linc_luajit
           haxelib install hscript
-          haxelib git hscript-ex https://github.com/ianharrigan/hscript-ex
+          haxelib install polymod
           haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
           haxelib install hxcpp-debug-server
           haxelib list
@@ -88,11 +86,9 @@ jobs:
           haxelib install flixel-tools
           haxelib install flixel-ui
           haxelib install flixel-addons
-          haxelib install tjson
-          haxelib install hxjsonast
           haxelib install linc_luajit
           haxelib install hscript
-          haxelib git hscript-ex https://github.com/ianharrigan/hscript-ex
+          haxelib install polymod
           haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
           haxelib install hxcpp-debug-server
           haxelib list
@@ -129,11 +125,9 @@ jobs:
           haxelib install flixel-tools
           haxelib install flixel-ui
           haxelib install flixel-addons
-          haxelib install tjson
-          haxelib install hxjsonast
           haxelib install linc_luajit
           haxelib install hscript
-          haxelib git hscript-ex https://github.com/ianharrigan/hscript-ex
+          haxelib install polymod
           haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
           haxelib install hxcpp-debug-server
           haxelib list
