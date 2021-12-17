@@ -4,10 +4,6 @@ package states;
 import sys.FileSystem;
 #end
 
-#if cpp
-import cpp.NativeProcess;
-#end
-
 #if BIT_64
 import modding.FlxVideo;
 #end
