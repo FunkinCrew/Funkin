@@ -1,6 +1,6 @@
 package vlc;
 
-#if (cpp && !mobile && BIT_64)
+#if (cpp && !mobile && BIT_64 && windows)
 import flixel.FlxG;
 import openfl.system.Capabilities;
 import cpp.NativeArray;
