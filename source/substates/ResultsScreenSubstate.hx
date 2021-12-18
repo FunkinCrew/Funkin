@@ -73,6 +73,7 @@ class ResultsScreenSubstate extends MusicBeatSubstate
         {
             PlayState.instance.saveReplay();
             PlayState.instance.fixSettings();
+            PlayState.instance.finishSongStuffs();
 
             var replay = PlayState.instance.replay;
 
