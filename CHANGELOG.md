@@ -1,7 +1,7 @@
 # Changelog
 All notable changes will be documented in this file.
 
-## [0.4.1] - ?/?/????
+## [0.5.0] - ?/?/????
 ### Added
 - Copy and Paste Section.
 - Option in Charter to have 1 note use multiple characters.
@@ -10,6 +10,7 @@ All notable changes will be documented in this file.
 ### Fixed
 - Saving Replays when the bot has been used.
 - Infinite Mania now doesn't crash game (because before, it would crash due to missing keybinds).
+- BF having his sing animation reset while holding a note.
 
 ## [0.4.0] - 12/5/2021
 ### Added
