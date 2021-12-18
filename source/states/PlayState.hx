@@ -2974,7 +2974,7 @@ class PlayState extends MusicBeatState
 					if(boyfriend.otherCharacters == null)
 					{
 						if(boyfriend.animation.curAnim != null)
-							if (boyfriend.holdTimer > Conductor.stepCrochet * 4 * 0.001)
+							if (boyfriend.holdTimer > Conductor.stepCrochet * 4 * 0.001 && !heldArray.contains(true))
 								if (boyfriend.animation.curAnim.name.startsWith('sing') && !boyfriend.animation.curAnim.name.endsWith('miss'))
 									boyfriend.dance();
 					}
@@ -2983,7 +2983,7 @@ class PlayState extends MusicBeatState
 						for(character in boyfriend.otherCharacters)
 						{
 							if(character.animation.curAnim != null)
-								if (character.holdTimer > Conductor.stepCrochet * 4 * 0.001)
+								if (character.holdTimer > Conductor.stepCrochet * 4 * 0.001 && !heldArray.contains(true))
 									if (character.animation.curAnim.name.startsWith('sing') && !character.animation.curAnim.name.endsWith('miss'))
 										character.dance();
 						}
@@ -2994,7 +2994,7 @@ class PlayState extends MusicBeatState
 					if(dad.otherCharacters == null)
 					{
 						if(dad.animation.curAnim != null)
-							if (dad.holdTimer > Conductor.stepCrochet * 4 * 0.001)
+							if (dad.holdTimer > Conductor.stepCrochet * 4 * 0.001 && !heldArray.contains(true))
 								if (dad.animation.curAnim.name.startsWith('sing') && !dad.animation.curAnim.name.endsWith('miss'))
 									dad.dance();
 					}
@@ -3003,7 +3003,7 @@ class PlayState extends MusicBeatState
 						for(character in dad.otherCharacters)
 						{
 							if(character.animation.curAnim != null)
-								if (character.holdTimer > Conductor.stepCrochet * 4 * 0.001)
+								if (character.holdTimer > Conductor.stepCrochet * 4 * 0.001 && !heldArray.contains(true))
 									if (character.animation.curAnim.name.startsWith('sing') && !character.animation.curAnim.name.endsWith('miss'))
 										character.dance();
 						}
