@@ -459,19 +459,29 @@ class ModchartUtilities
         });
 
         Lua_helper.add_callback(lua,"setActorX", function(x:Int,id:String) {
-            getActorByName(id).x = x;
+            if(getActorByName(id) != null)
+            {
+                getActorByName(id).x = x;
+            }
         });
 
         Lua_helper.add_callback(lua,"setActorPos", function(x:Int,y:Int,id:String) {
             var actor = getActorByName(id);
-            actor.x = x;
-            actor.y = y;
+
+            if(actor != null)
+            {
+                actor.x = x;
+                actor.y = y;
+            }
         });
 
         Lua_helper.add_callback(lua,"setActorScroll", function(x:Float,y:Float,id:String) {
             var actor = getActorByName(id);
 
-            actor.scrollFactor.set(x,y);
+            if(getActorByName(id) != null)
+            {
+                actor.scrollFactor.set(x,y);
+            }
         });
         
         Lua_helper.add_callback(lua,"getOriginalCharX", function(character:Int) {
@@ -485,91 +495,142 @@ class ModchartUtilities
         });
         
         Lua_helper.add_callback(lua,"setActorAccelerationX", function(x:Int,id:String) {
-            getActorByName(id).acceleration.x = x;
+            if(getActorByName(id) != null)
+            {
+                getActorByName(id).acceleration.x = x;
+            }
         });
         
         Lua_helper.add_callback(lua,"setActorDragX", function(x:Int,id:String) {
-            getActorByName(id).drag.x = x;
+            if(getActorByName(id) != null)
+            {
+                getActorByName(id).drag.x = x;
+            }
         });
         
         Lua_helper.add_callback(lua,"setActorVelocityX", function(x:Int,id:String) {
-            getActorByName(id).velocity.x = x;
+            if(getActorByName(id) != null)
+            {
+                getActorByName(id).velocity.x = x;
+            }
         });
 
         Lua_helper.add_callback(lua,"setActorAntialiasing", function(antialiasing:Bool,id:String) {
-            getActorByName(id).antialiasing = antialiasing;
+            if(getActorByName(id) != null)
+            {
+                getActorByName(id).antialiasing = antialiasing;
+            }
         });
 
         Lua_helper.add_callback(lua,"addActorAnimation", function(id:String,prefix:String,anim:String,fps:Int = 30, looped:Bool = true) {
-            getActorByName(id).animation.addByPrefix(prefix, anim, fps, looped);
+            if(getActorByName(id) != null)
+            {
+                getActorByName(id).animation.addByPrefix(prefix, anim, fps, looped);
+            }
         });
         
         Lua_helper.add_callback(lua,"playActorAnimation", function(id:String,anim:String,force:Bool = false,reverse:Bool = false) {
-            getActorByName(id).animation.play(anim, force, reverse);
+            if(getActorByName(id) != null)
+            {
+                getActorByName(id).animation.play(anim, force, reverse);
+            }
         });
 
         Lua_helper.add_callback(lua,"playCharacterAnimation", function(id:String,anim:String,force:Bool = false,reverse:Bool = false) {
-            getActorByName(id).playAnim(anim, force, reverse);
+            if(getActorByName(id) != null)
+            {
+                getActorByName(id).playAnim(anim, force, reverse);
+            }
         });
 
         Lua_helper.add_callback(lua,"setCharacterShouldDance", function(id:String, shouldDance:Bool = true) {
-            getActorByName(id).shouldDance = shouldDance;
+            if(getActorByName(id) != null)
+            {
+                getActorByName(id).shouldDance = shouldDance;
+            }
         });
 
         Lua_helper.add_callback(lua,"playCharacterDance", function(id:String,?altAnim:String) {
-            getActorByName(id).dance(altAnim);
+            if(getActorByName(id) != null)
+            {
+                getActorByName(id).dance(altAnim);
+            }
         });
 
         Lua_helper.add_callback(lua,"setActorAlpha", function(alpha:Float,id:String) {
-            getActorByName(id).alpha = alpha;
-            getActorByName(id).updateColorTransform();
+            if(getActorByName(id) != null)
+            {
+                getActorByName(id).alpha = alpha;
+                getActorByName(id).updateColorTransform();
+            }
         });
 
         Lua_helper.add_callback(lua,"setActorColor", function(id:String,r:Int,g:Int,b:Int,alpha:Int = 255) {
-            Reflect.setProperty(getActorByName(id), "color", FlxColor.fromRGB(r, g, b, alpha));
+            if(getActorByName(id) != null)
+            {
+                Reflect.setProperty(getActorByName(id), "color", FlxColor.fromRGB(r, g, b, alpha));
+            }
         });
 
         Lua_helper.add_callback(lua,"setActorY", function(y:Int,id:String) {
-            getActorByName(id).y = y;
+            if(getActorByName(id) != null)
+            {
+                getActorByName(id).y = y;
+            }
         });
 
         Lua_helper.add_callback(lua,"setActorAccelerationY", function(y:Int,id:String) {
-            getActorByName(id).acceleration.y = y;
+            if(getActorByName(id) != null)
+            {
+                getActorByName(id).acceleration.y = y;
+            }
         });
         
         Lua_helper.add_callback(lua,"setActorDragY", function(y:Int,id:String) {
-            getActorByName(id).drag.y = y;
+            if(getActorByName(id) != null)
+            {
+                getActorByName(id).drag.y = y;
+            }
         });
         
         Lua_helper.add_callback(lua,"setActorVelocityY", function(y:Int,id:String) {
-            getActorByName(id).velocity.y = y;
+            if(getActorByName(id) != null)
+            {
+                getActorByName(id).velocity.y = y;
+            }
         });
         
         Lua_helper.add_callback(lua,"setActorAngle", function(angle:Int,id:String) {
-            getActorByName(id).angle = angle;
+            if(getActorByName(id) != null)
+                getActorByName(id).angle = angle;
         });
 
         Lua_helper.add_callback(lua,"setActorModAngle", function(angle:Int,id:String) {
-            getActorByName(id).modAngle = angle;
+            if(getActorByName(id) != null)
+                getActorByName(id).modAngle = angle;
         });
 
         Lua_helper.add_callback(lua,"setActorScale", function(scale:Float,id:String) {
-            getActorByName(id).setGraphicSize(Std.int(getActorByName(id).width * scale));
+            if(getActorByName(id) != null)
+                getActorByName(id).setGraphicSize(Std.int(getActorByName(id).width * scale));
         });
         
         Lua_helper.add_callback(lua, "setActorScaleXY", function(scaleX:Float, scaleY:Float, id:String)
         {
-            getActorByName(id).setGraphicSize(Std.int(getActorByName(id).width * scaleX), Std.int(getActorByName(id).height * scaleY));
+            if(getActorByName(id) != null)
+                getActorByName(id).setGraphicSize(Std.int(getActorByName(id).width * scaleX), Std.int(getActorByName(id).height * scaleY));
         });
 
         Lua_helper.add_callback(lua, "setActorFlipX", function(flip:Bool, id:String)
         {
-            getActorByName(id).flipX = flip;
+            if(getActorByName(id) != null)
+                getActorByName(id).flipX = flip;
         });
 
         Lua_helper.add_callback(lua, "setActorFlipY", function(flip:Bool, id:String)
         {
-            getActorByName(id).flipY = flip;
+            if(getActorByName(id) != null)
+                getActorByName(id).flipY = flip;
         });
 
         Lua_helper.add_callback(lua,"setActorTrailVisible", function(id:String,visibleVal:Bool) {
@@ -604,27 +665,45 @@ class ModchartUtilities
         });
 
         Lua_helper.add_callback(lua,"getActorWidth", function (id:String) {
-            return getActorByName(id).width;
+            if(getActorByName(id) != null)
+                return getActorByName(id).width;
+            else 
+                return 0;
         });
 
         Lua_helper.add_callback(lua,"getActorHeight", function (id:String) {
-            return getActorByName(id).height;
+            if(getActorByName(id) != null)
+                return getActorByName(id).height;
+            else
+                return 0;
         });
 
         Lua_helper.add_callback(lua,"getActorAlpha", function(id:String) {
-            return getActorByName(id).alpha;
+            if(getActorByName(id) != null)
+                return getActorByName(id).alpha;
+            else
+                return 0;
         });
 
         Lua_helper.add_callback(lua,"getActorAngle", function(id:String) {
-            return getActorByName(id).angle;
+            if(getActorByName(id) != null)
+                return getActorByName(id).angle;
+            else
+                return 0;
         });
 
         Lua_helper.add_callback(lua,"getActorX", function (id:String) {
-            return getActorByName(id).x;
+            if(getActorByName(id) != null)
+                return getActorByName(id).x;
+            else
+                return 0;
         });
 
         Lua_helper.add_callback(lua,"getActorY", function (id:String) {
-            return getActorByName(id).y;
+            if(getActorByName(id) != null)
+                return getActorByName(id).y;
+            else
+                return 0;
         });
 
         Lua_helper.add_callback(lua,"setWindowPos",function(x:Int,y:Int) {
@@ -861,19 +940,23 @@ class ModchartUtilities
         });
 
         Lua_helper.add_callback(lua,"tweenPos", function(id:String, toX:Int, toY:Int, time:Float, onComplete:String) {
-            FlxTween.tween(getActorByName(id), {x: toX, y: toY}, time, {ease: FlxEase.linear, onComplete: function(flxTween:FlxTween) { if (onComplete != '' && onComplete != null) {callLua(onComplete,[id]);}}});
+            if(getActorByName(id) != null)
+                FlxTween.tween(getActorByName(id), {x: toX, y: toY}, time, {ease: FlxEase.linear, onComplete: function(flxTween:FlxTween) { if (onComplete != '' && onComplete != null) {callLua(onComplete,[id]);}}});
         });
 
         Lua_helper.add_callback(lua,"tweenPosXAngle", function(id:String, toX:Int, toAngle:Float, time:Float, onComplete:String) {
-            FlxTween.tween(getActorByName(id), {x: toX, angle: toAngle}, time, {ease: FlxEase.linear, onComplete: function(flxTween:FlxTween) { if (onComplete != '' && onComplete != null) {callLua(onComplete,[id]);}}});
+            if(getActorByName(id) != null)
+                FlxTween.tween(getActorByName(id), {x: toX, angle: toAngle}, time, {ease: FlxEase.linear, onComplete: function(flxTween:FlxTween) { if (onComplete != '' && onComplete != null) {callLua(onComplete,[id]);}}});
         });
 
         Lua_helper.add_callback(lua,"tweenPosYAngle", function(id:String, toY:Int, toAngle:Float, time:Float, onComplete:String) {
-            FlxTween.tween(getActorByName(id), {y: toY, angle: toAngle}, time, {ease: FlxEase.linear, onComplete: function(flxTween:FlxTween) { if (onComplete != '' && onComplete != null) {callLua(onComplete,[id]);}}});
+            if(getActorByName(id) != null)
+                FlxTween.tween(getActorByName(id), {y: toY, angle: toAngle}, time, {ease: FlxEase.linear, onComplete: function(flxTween:FlxTween) { if (onComplete != '' && onComplete != null) {callLua(onComplete,[id]);}}});
         });
 
         Lua_helper.add_callback(lua,"tweenAngle", function(id:String, toAngle:Int, time:Float, onComplete:String) {
-            FlxTween.tween(getActorByName(id), {angle: toAngle}, time, {ease: FlxEase.quintInOut, onComplete: function(flxTween:FlxTween) { if (onComplete != '' && onComplete != null) {callLua(onComplete,[id]);}}});
+            if(getActorByName(id) != null)
+                FlxTween.tween(getActorByName(id), {angle: toAngle}, time, {ease: FlxEase.quintInOut, onComplete: function(flxTween:FlxTween) { if (onComplete != '' && onComplete != null) {callLua(onComplete,[id]);}}});
         });
 
         Lua_helper.add_callback(lua,"tweenCameraPosOut", function(toX:Int, toY:Int, time:Float, onComplete:String) {
@@ -901,19 +984,23 @@ class ModchartUtilities
         });
 
         Lua_helper.add_callback(lua,"tweenPosOut", function(id:String, toX:Int, toY:Int, time:Float, onComplete:String) {
-            FlxTween.tween(getActorByName(id), {x: toX, y: toY}, time, {ease: FlxEase.cubeOut, onComplete: function(flxTween:FlxTween) { if (onComplete != '' && onComplete != null) {callLua(onComplete,[id]);}}});
+            if(getActorByName(id) != null)
+                FlxTween.tween(getActorByName(id), {x: toX, y: toY}, time, {ease: FlxEase.cubeOut, onComplete: function(flxTween:FlxTween) { if (onComplete != '' && onComplete != null) {callLua(onComplete,[id]);}}});
         });
 
         Lua_helper.add_callback(lua,"tweenPosXAngleOut", function(id:String, toX:Int, toAngle:Float, time:Float, onComplete:String) {
-            FlxTween.tween(getActorByName(id), {x: toX, angle: toAngle}, time, {ease: FlxEase.cubeOut, onComplete: function(flxTween:FlxTween) { if (onComplete != '' && onComplete != null) {callLua(onComplete,[id]);}}});
+            if(getActorByName(id) != null)
+                FlxTween.tween(getActorByName(id), {x: toX, angle: toAngle}, time, {ease: FlxEase.cubeOut, onComplete: function(flxTween:FlxTween) { if (onComplete != '' && onComplete != null) {callLua(onComplete,[id]);}}});
         });
 
         Lua_helper.add_callback(lua,"tweenPosYAngleOut", function(id:String, toY:Int, toAngle:Float, time:Float, onComplete:String) {
-            FlxTween.tween(getActorByName(id), {y: toY, angle: toAngle}, time, {ease: FlxEase.cubeOut, onComplete: function(flxTween:FlxTween) { if (onComplete != '' && onComplete != null) {callLua(onComplete,[id]);}}});
+            if(getActorByName(id) != null)
+                FlxTween.tween(getActorByName(id), {y: toY, angle: toAngle}, time, {ease: FlxEase.cubeOut, onComplete: function(flxTween:FlxTween) { if (onComplete != '' && onComplete != null) {callLua(onComplete,[id]);}}});
         });
 
         Lua_helper.add_callback(lua,"tweenAngleOut", function(id:String, toAngle:Int, time:Float, onComplete:String) {
-            FlxTween.tween(getActorByName(id), {angle: toAngle}, time, {ease: FlxEase.cubeOut, onComplete: function(flxTween:FlxTween) { if (onComplete != '' && onComplete != null) {callLua(onComplete,[id]);}}});
+            if(getActorByName(id) != null)
+                FlxTween.tween(getActorByName(id), {angle: toAngle}, time, {ease: FlxEase.cubeOut, onComplete: function(flxTween:FlxTween) { if (onComplete != '' && onComplete != null) {callLua(onComplete,[id]);}}});
         });
 
         Lua_helper.add_callback(lua,"tweenCameraPosIn", function(toX:Int, toY:Int, time:Float, onComplete:String) {
@@ -941,47 +1028,56 @@ class ModchartUtilities
         });
 
         Lua_helper.add_callback(lua,"tweenPosIn", function(id:String, toX:Int, toY:Int, time:Float, onComplete:String) {
-            FlxTween.tween(getActorByName(id), {x: toX, y: toY}, time, {ease: FlxEase.cubeIn, onComplete: function(flxTween:FlxTween) { if (onComplete != '' && onComplete != null) {callLua(onComplete,[id]);}}});
+            if(getActorByName(id) != null)
+                FlxTween.tween(getActorByName(id), {x: toX, y: toY}, time, {ease: FlxEase.cubeIn, onComplete: function(flxTween:FlxTween) { if (onComplete != '' && onComplete != null) {callLua(onComplete,[id]);}}});
         });
 
         Lua_helper.add_callback(lua,"tweenPosXAngleIn", function(id:String, toX:Int, toAngle:Float, time:Float, onComplete:String) {
-            FlxTween.tween(getActorByName(id), {x: toX, angle: toAngle}, time, {ease: FlxEase.cubeIn, onComplete: function(flxTween:FlxTween) { if (onComplete != '' && onComplete != null) {callLua(onComplete,[id]);}}});
+            if(getActorByName(id) != null)
+                FlxTween.tween(getActorByName(id), {x: toX, angle: toAngle}, time, {ease: FlxEase.cubeIn, onComplete: function(flxTween:FlxTween) { if (onComplete != '' && onComplete != null) {callLua(onComplete,[id]);}}});
         });
 
         Lua_helper.add_callback(lua,"tweenPosYAngleIn", function(id:String, toY:Int, toAngle:Float, time:Float, onComplete:String) {
-            FlxTween.tween(getActorByName(id), {y: toY, angle: toAngle}, time, {ease: FlxEase.cubeIn, onComplete: function(flxTween:FlxTween) { if (onComplete != '' && onComplete != null) {callLua(onComplete,[id]);}}});
+            if(getActorByName(id) != null)
+                FlxTween.tween(getActorByName(id), {y: toY, angle: toAngle}, time, {ease: FlxEase.cubeIn, onComplete: function(flxTween:FlxTween) { if (onComplete != '' && onComplete != null) {callLua(onComplete,[id]);}}});
         });
 
         Lua_helper.add_callback(lua,"tweenAngleIn", function(id:String, toAngle:Int, time:Float, onComplete:String) {
-            FlxTween.tween(getActorByName(id), {angle: toAngle}, time, {ease: FlxEase.cubeIn, onComplete: function(flxTween:FlxTween) { if (onComplete != '' && onComplete != null) {callLua(onComplete,[id]);}}});
+            if(getActorByName(id) != null)
+                FlxTween.tween(getActorByName(id), {angle: toAngle}, time, {ease: FlxEase.cubeIn, onComplete: function(flxTween:FlxTween) { if (onComplete != '' && onComplete != null) {callLua(onComplete,[id]);}}});
         });
 
         Lua_helper.add_callback(lua,"tweenFadeIn", function(id:String, toAlpha:Float, time:Float, onComplete:String) {
-            FlxTween.tween(getActorByName(id), {alpha: toAlpha}, time, {ease: FlxEase.circIn, onComplete: function(flxTween:FlxTween) { if (onComplete != '' && onComplete != null) {callLua(onComplete,[id]);}}});
+            if(getActorByName(id) != null)
+                FlxTween.tween(getActorByName(id), {alpha: toAlpha}, time, {ease: FlxEase.circIn, onComplete: function(flxTween:FlxTween) { if (onComplete != '' && onComplete != null) {callLua(onComplete,[id]);}}});
         });
 
         Lua_helper.add_callback(lua,"tweenFadeOut", function(id:String, toAlpha:Float, time:Float, onComplete:String) {
-            FlxTween.tween(getActorByName(id), {alpha: toAlpha}, time, {ease: FlxEase.circOut, onComplete: function(flxTween:FlxTween) { if (onComplete != '' && onComplete != null) {callLua(onComplete,[id]);}}});
+            if(getActorByName(id) != null)
+                FlxTween.tween(getActorByName(id), {alpha: toAlpha}, time, {ease: FlxEase.circOut, onComplete: function(flxTween:FlxTween) { if (onComplete != '' && onComplete != null) {callLua(onComplete,[id]);}}});
         });
 
         Lua_helper.add_callback(lua,"tweenActorColor", function(id:String, r1:Int, g1:Int, b1:Int, r2:Int, g2:Int, b2:Int, time:Float, onComplete:String) {
             var actor = getActorByName(id);
 
-            FlxTween.color(
-                actor,
-                time,
-                FlxColor.fromRGB(r1, g1, b1, 255),
-                FlxColor.fromRGB(r2, g2, b2, 255),
-                {
-                    ease: FlxEase.circIn,
-                    onComplete: function(flxTween:FlxTween) {
-                        if (onComplete != '' && onComplete != null)
-                        {
-                            callLua(onComplete,[id]);
+            if(getActorByName(id) != null)
+            {
+                FlxTween.color(
+                    actor,
+                    time,
+                    FlxColor.fromRGB(r1, g1, b1, 255),
+                    FlxColor.fromRGB(r2, g2, b2, 255),
+                    {
+                        ease: FlxEase.circIn,
+                        onComplete: function(flxTween:FlxTween) {
+                            if (onComplete != '' && onComplete != null)
+                            {
+                                callLua(onComplete,[id]);
+                            }
                         }
                     }
-                }
-            );
+                );
+            }
         });
 
         // properties

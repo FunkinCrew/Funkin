@@ -1048,7 +1048,7 @@ class PlayState extends MusicBeatState
 		var swagCounter:Int = 0;
 
 		#if linc_luajit
-		executeModchart = !(PlayState.SONG.modchartPath == '' || PlayState.SONG.modchartPath == null) && FlxG.save.data.chrsAndBGs;
+		executeModchart = !(PlayState.SONG.modchartPath == '' || PlayState.SONG.modchartPath == null);
 
 		if(executeModchart)
 		{
