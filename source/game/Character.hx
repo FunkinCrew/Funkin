@@ -49,6 +49,7 @@ class Character extends FlxSprite
 		super(x, y);
 
 		animOffsets = new Map<String, Array<Dynamic>>();
+		
 		curCharacter = character;
 		this.isPlayer = isPlayer;
 		this.isDeathCharacter = isDeathCharacter;
@@ -403,17 +404,13 @@ class Character extends FlxSprite
 
 	function loadNamedConfiguration(characterName:String)
 	{
-		var rawJson:String;
-
-		if(Assets.exists(Paths.json("character data/" + characterName + "/config")))
-			rawJson = Assets.getText(Paths.json("character data/" + characterName + "/config")).trim();
-		else
+		if(!Assets.exists(Paths.json("character data/" + characterName + "/config")))
 		{
-			rawJson = Assets.getText(Paths.json("character data/bf/config")).trim();
-			
-			curCharacter = "bf";
 			characterName = "bf";
+			curCharacter = characterName;
 		}
+
+		var rawJson = Assets.getText(Paths.json("character data/" + characterName + "/config")).trim();
 
 		var config:CharacterConfig = cast Json.parse(rawJson);
 
