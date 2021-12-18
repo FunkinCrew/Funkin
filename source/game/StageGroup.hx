@@ -1,5 +1,6 @@
 package game;
 
+import openfl.display.Preloader.DefaultPreloader;
 import utilities.CoolUtil;
 import lime.utils.Assets;
 import haxe.Json;
@@ -75,6 +76,7 @@ class StageGroup extends FlxGroup
     private var onBeatHit_Group:FlxTypedGroup<FlxSprite> = new FlxTypedGroup<FlxSprite>();
 
     public var foregroundSprites:FlxGroup = new FlxGroup();
+    public var infrontOfGFSprites:FlxGroup = new FlxGroup();
 
     public function updateStage(?newStage:String)
     {
@@ -620,10 +622,15 @@ class StageGroup extends FlxGroup
                         if(Object.alpha != null)
                             Sprite.alpha = Object.alpha;
     
-                        if(Object.layer != "foreground")
-                            add(Sprite);
-                        else
-                            foregroundSprites.add(Sprite);
+                        switch(Object.layer.toLowerCase())
+                        {
+                            case "foreground":
+                                foregroundSprites.add(Sprite);
+                            case "gf":
+                                infrontOfGFSprites.add(Sprite);
+                            default:
+                                add(Sprite);
+                        }
                     }
                 }
             }

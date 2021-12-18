@@ -5,6 +5,7 @@ All notable changes will be documented in this file.
 ### Added
 - Copy and Paste Section.
 - Option in Charter to have 1 note use multiple characters.
+- Option for sprites to go above GF but not other characters.
 ### Changed
 - New Note Splash Sprites!
 ### Fixed
