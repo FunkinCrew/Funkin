@@ -15,6 +15,7 @@ All notable changes will be documented in this file.
 - BF having his sing animation reset while holding a note.
 - playerTwoSing() and playerTwoSingHeld() pass the arrow type parameter into the function.
 - Modcharts can run with chars and bgs off.
+- Crash when turning off Chars and BGs and playing a song.
 
 ## [0.4.0] - 12/5/2021
 ### Added
