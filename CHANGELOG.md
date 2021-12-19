@@ -8,6 +8,7 @@ All notable changes will be documented in this file.
 - Option for sprites to go above GF but not other characters.
 - Hurt Note.
 - Note Colors! (HSV for each note direction)
+- Option for custom scroll speed.
 ### Changed
 - New Note Splash Sprites!
 ### Fixed

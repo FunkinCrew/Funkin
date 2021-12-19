@@ -1,16 +1,8 @@
 package game;
 
 import utilities.NoteVariables;
-#if sys
-import sys.FileSystem;
-import sys.io.File;
-import polymod.backends.PolymodAssets;
-#end
-import utilities.CoolUtil;
-import states.PlayState;
 import game.Section.SwagSection;
 import haxe.Json;
-import haxe.format.JsonParser;
 import lime.utils.Assets;
 
 using StringTools;

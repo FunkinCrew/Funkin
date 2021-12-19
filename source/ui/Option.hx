@@ -1,5 +1,6 @@
 package ui;
 
+import substates.ScrollSpeedMenu;
 import substates.NoteColorSubstate;
 import substates.NoteBGAlphaMenu;
 #if discord_rpc
@@ -156,6 +157,8 @@ class BoolOption extends Option
 				Value = FlxG.save.data.saveReplays;
 			case "extraKeyReminders":
 				Value = FlxG.save.data.extraKeyReminders;
+			case "useCustomScrollSpeed":
+				Value = FlxG.save.data.useCustomScrollSpeed;
 		}
 
 		return Value;
@@ -252,6 +255,8 @@ class BoolOption extends Option
 				FlxG.save.data.saveReplays = !Option_Checked;
 			case "extraKeyReminders":
 				FlxG.save.data.extraKeyReminders = !Option_Checked;
+			case "useCustomScrollSpeed":
+				FlxG.save.data.useCustomScrollSpeed = !Option_Checked;
 		}
 
         if(Option_Value != "muted")
@@ -592,6 +597,35 @@ class NoteColorMenuOption extends Option
 
         if(FlxG.keys.justPressed.ENTER && Alphabet_Text.targetY == 0)
 			FlxG.state.openSubState(new NoteColorSubstate());
+    }
+}
+
+/**
+* Option that opens the scroll speed menu when selected.
+*/
+class ScrollSpeedMenuOption extends Option
+{
+    public function new(_Option_Name:String = "-", _Option_Row:Int = 0)
+    {
+        super();
+
+        // SETTING VALUES //
+        this.Option_Name = _Option_Name;
+        this.Option_Row = _Option_Row;
+
+        // CREATING OTHER OBJECTS //
+        Alphabet_Text = new Alphabet(20, 20 + (Option_Row * 100), Option_Name, true);
+        Alphabet_Text.isMenuItem = true;
+        Alphabet_Text.targetY = Option_Row;
+        add(Alphabet_Text);
+    }
+
+    override function update(elapsed:Float)
+    {
+        super.update(elapsed);
+
+        if(FlxG.keys.justPressed.ENTER && Alphabet_Text.targetY == 0)
+			FlxG.state.openSubState(new ScrollSpeedMenu());
     }
 }
 

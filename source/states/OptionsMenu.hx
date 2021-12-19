@@ -54,7 +54,9 @@ class OptionsMenu extends MusicBeatState
 			new BoolOption("Middlescroll", "middleScroll", FlxG.save.data.middleScroll, 5),
 			new BoolOption("Bot", "bot", FlxG.save.data.bot, 8),
 			new BoolOption("Quick Restart", "quickRestart", FlxG.save.data.quickRestart, 9),
-			new BoolOption("No Death", "noDeath", FlxG.save.data.noDeath, 10)
+			new BoolOption("No Death", "noDeath", FlxG.save.data.noDeath, 10),
+			new BoolOption("Use Custom Scrollspeed", "useCustomScrollSpeed", FlxG.save.data.useCustomScrollSpeed, 11),
+			new ScrollSpeedMenuOption("Custom Scroll Speed", 12)
 		],
 		[
 			"Graphics",

@@ -117,6 +117,12 @@ class SaveData {
 
         if(FlxG.save.data.playAs == null)
             FlxG.save.data.playAs = "bf";
+
+        if(FlxG.save.data.useCustomScrollSpeed == null)
+            FlxG.save.data.useCustomScrollSpeed = false;
+
+        if(FlxG.save.data.scrollSpeed == null)
+            FlxG.save.data.scrollSpeed = 1;
         
         FlxG.save.flush();
 

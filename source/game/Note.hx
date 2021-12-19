@@ -147,7 +147,12 @@ class Note extends FlxSprite
 			{
 				prevNote.animation.play("hold");
 
-				prevNote.scale.y *= (Conductor.nonmultilmao_stepCrochet / 100) * 1.5 * song.speed;
+				var speed = song.speed;
+
+				if(FlxG.save.data.useCustomScrollSpeed)
+					speed = FlxG.save.data.scrollSpeed;
+
+				prevNote.scale.y *= (Conductor.nonmultilmao_stepCrochet / 100) * 1.5 * speed;
 				prevNote.updateHitbox();
 			}
 

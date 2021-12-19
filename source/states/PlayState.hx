@@ -331,8 +331,8 @@ class PlayState extends MusicBeatState
 
 		SONG.speed /= songMultiplier;
 
-		if(SONG.speed < 1)
-			SONG.speed = 1;
+		if(SONG.speed < 0.1 && songMultiplier > 1)
+			SONG.speed = 0.1;
 
 		Conductor.recalculateStuff(songMultiplier);
 		Conductor.safeZoneOffset *= songMultiplier;
@@ -1937,9 +1937,14 @@ class PlayState extends MusicBeatState
 				var swagWidth = daNote.width;
 				var center:Float = strumY + swagWidth / 2;
 
+				var speed = SONG.speed;
+
+				if(FlxG.save.data.useCustomScrollSpeed)
+					speed = FlxG.save.data.scrollSpeed;
+
 				if(FlxG.save.data.downscroll)
 				{
-					daNote.y = strumY + (0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(SONG.speed, 2));
+					daNote.y = strumY + (0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(speed, 2));
 
 					if(daNote.isSustainNote)
 					{
@@ -1947,7 +1952,7 @@ class PlayState extends MusicBeatState
 						if(daNote.animation.curAnim.name.endsWith('end') && daNote.prevNote != null)
 							daNote.y += daNote.prevNote.height;
 						else
-							daNote.y += daNote.height / SONG.speed;
+							daNote.y += daNote.height / speed;
 
 						if((!daNote.mustPress || daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit) && daNote.y - daNote.offset.y * daNote.scale.y + daNote.height >= (strumLine.y + Note.swagWidth / 2))
 						{
@@ -1962,7 +1967,7 @@ class PlayState extends MusicBeatState
 				}
 				else
 				{
-					daNote.y = strumY - (0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(SONG.speed, 2));
+					daNote.y = strumY - (0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(speed, 2));
 
 					if(daNote.isSustainNote)
 					{
