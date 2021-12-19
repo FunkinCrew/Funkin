@@ -1244,7 +1244,12 @@ class PlayState extends MusicBeatState
 					songNotes[2] = 0;
 
 				if(!Std.isOfType(songNotes[3], Int) && !Std.isOfType(songNotes[3], Array))
+				{
+					if(Std.string(songNotes[3]).toLowerCase() == "hurt note")
+						songNotes[4] = "hurt";
+					
 					songNotes[3] = 0;
+				}
 
 				if(!Std.isOfType(songNotes[4], String))
 					songNotes[4] = "default";

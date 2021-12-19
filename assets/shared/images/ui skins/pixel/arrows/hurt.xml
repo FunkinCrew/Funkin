@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="hurt.png">
+	<!-- SET 1 -->
+
+	<SubTexture name="left0000" x="0" y="0" width="17" height="17"/>
+	<SubTexture name="down0000" x="17" y="0" width="17" height="17"/>
+	<SubTexture name="up0000" x="34" y="0" width="17" height="17"/>
+	<SubTexture name="right0000" x="51" y="0" width="17" height="17"/>
+
+	<SubTexture name="square0000" x="68" y="0" width="17" height="17"/>
+
+	<!-- SET 2 -->
+
+	<SubTexture name="left20000" x="0" y="0" width="17" height="17"/>
+	<SubTexture name="down20000" x="17" y="0" width="17" height="17"/>
+	<SubTexture name="up20000" x="34" y="0" width="17" height="17"/>
+	<SubTexture name="right20000" x="51" y="0" width="17" height="17"/>
+
+	<SubTexture name="plus0000" x="85" y="0" width="17" height="17"/>
+
+	<!-- SET 3 -->
+
+	<SubTexture name="rleft0000" x="102" y="0" width="17" height="17"/>
+	<SubTexture name="rdown0000" x="119" y="0" width="17" height="17"/>
+	<SubTexture name="rup0000" x="136" y="0" width="17" height="17"/>
+	<SubTexture name="rright0000" x="153" y="0" width="17" height="17"/>
+
+	<SubTexture name="rleft20000" x="102" y="0" width="17" height="17"/>
+	<SubTexture name="rdown20000" x="119" y="0" width="17" height="17"/>
+	<SubTexture name="rup20000" x="136" y="0" width="17" height="17"/>
+	<SubTexture name="rright20000" x="153" y="0" width="17" height="17"/>
+
+	<!--bruhs-->
+
+	<SubTexture name="left hold0000" x="171" y="0" width="7" height="6"/>
+	<SubTexture name="left hold end0000" x="171" y="6" width="7" height="6"/>
+
+	<SubTexture name="down hold0000" x="171" y="0" width="7" height="6"/>
+	<SubTexture name="down hold end0000" x="171" y="6" width="7" height="6"/>
+
+	<SubTexture name="up hold0000" x="171" y="0" width="7" height="6"/>
+	<SubTexture name="up hold end0000" x="171" y="6" width="7" height="6"/>
+
+	<SubTexture name="right hold0000" x="171" y="0" width="7" height="6"/>
+	<SubTexture name="right hold end0000" x="171" y="6" width="7" height="6"/>
+
+	<SubTexture name="square hold0000" x="171" y="0" width="7" height="6"/>
+	<SubTexture name="square hold end0000" x="171" y="6" width="7" height="6"/>
+
+	<SubTexture name="left2 hold0000" x="171" y="0" width="7" height="6"/>
+	<SubTexture name="left2 hold end0000" x="171" y="6" width="7" height="6"/>
+
+	<SubTexture name="down2 hold0000" x="171" y="0" width="7" height="6"/>
+	<SubTexture name="down2 hold end0000" x="171" y="6" width="7" height="6"/>
+
+	<SubTexture name="up2 hold0000" x="171" y="0" width="7" height="6"/>
+	<SubTexture name="up2 hold end0000" x="171" y="6" width="7" height="6"/>
+
+	<SubTexture name="right2 hold0000" x="171" y="0" width="7" height="6"/>
+	<SubTexture name="right2 hold end0000" x="171" y="6" width="7" height="6"/>
+
+	<SubTexture name="plus hold0000" x="171" y="0" width="7" height="6"/>
+	<SubTexture name="plus hold end0000" x="171" y="6" width="7" height="6"/>
+
+	<SubTexture name="rleft hold0000" x="171" y="0" width="7" height="6"/>
+	<SubTexture name="rleft hold end0000" x="171" y="6" width="7" height="6"/>
+
+	<SubTexture name="rdown hold0000" x="171" y="0" width="7" height="6"/>
+	<SubTexture name="rdown hold end0000" x="171" y="6" width="7" height="6"/>
+
+	<SubTexture name="rup hold0000" x="171" y="0" width="7" height="6"/>
+	<SubTexture name="rup hold end0000" x="171" y="6" width="7" height="6"/>
+
+	<SubTexture name="rright hold0000" x="171" y="0" width="7" height="6"/>
+	<SubTexture name="rright hold end0000" x="171" y="6" width="7" height="6"/>
+
+	<SubTexture name="rleft2 hold0000" x="171" y="0" width="7" height="6"/>
+	<SubTexture name="rleft2 hold end0000" x="171" y="6" width="7" height="6"/>
+
+	<SubTexture name="rdown2 hold0000" x="171" y="0" width="7" height="6"/>
+	<SubTexture name="rdown2 hold end0000" x="171" y="6" width="7" height="6"/>
+
+	<SubTexture name="rup2 hold0000" x="171" y="0" width="7" height="6"/>
+	<SubTexture name="rup2 hold end0000" x="171" y="6" width="7" height="6"/>
+
+	<SubTexture name="rright2 hold0000" x="171" y="0" width="7" height="6"/>
+	<SubTexture name="rright2 hold end0000" x="171" y="6" width="7" height="6"/>
+</TextureAtlas>
