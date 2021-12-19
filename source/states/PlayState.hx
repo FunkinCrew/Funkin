@@ -1940,7 +1940,7 @@ class PlayState extends MusicBeatState
 				var speed = SONG.speed;
 
 				if(FlxG.save.data.useCustomScrollSpeed)
-					speed = FlxG.save.data.scrollSpeed;
+					speed = FlxG.save.data.scrollSpeed / songMultiplier;
 
 				if(FlxG.save.data.downscroll)
 				{

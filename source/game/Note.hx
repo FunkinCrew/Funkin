@@ -150,7 +150,7 @@ class Note extends FlxSprite
 				var speed = song.speed;
 
 				if(FlxG.save.data.useCustomScrollSpeed)
-					speed = FlxG.save.data.scrollSpeed;
+					speed = FlxG.save.data.scrollSpeed / PlayState.songMultiplier;
 
 				prevNote.scale.y *= (Conductor.nonmultilmao_stepCrochet / 100) * 1.5 * speed;
 				prevNote.updateHitbox();
