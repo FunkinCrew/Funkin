@@ -12,6 +12,7 @@ import flixel.group.FlxGroup;
 import flixel.util.FlxColor;
 import flixel.FlxG;
 import flixel.FlxSprite;
+import lime.utils.Assets;
 
 class NoteColorSubstate extends MusicBeatSubstate
 {
