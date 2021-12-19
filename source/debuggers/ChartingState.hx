@@ -745,12 +745,14 @@ class ChartingState extends MusicBeatState
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
 
-		/*
-		if(Assets.cache.audio.exists(Paths.inst(daSong, difficulty.toLowerCase())))
-			Assets.cache.audio.remove(Paths.inst(daSong, difficulty.toLowerCase()));
+		if (vocals != null)
+			vocals.stop();
 
-		if(Assets.cache.audio.exists(Paths.voices(daSong, difficulty.toLowerCase())))
-			Assets.cache.audio.remove(Paths.voices(daSong, difficulty.toLowerCase()));*/
+		if(openfl.Assets.cache.hasSound(Paths.inst(daSong, difficulty.toLowerCase())))
+			openfl.Assets.cache.removeSound(Paths.inst(daSong, difficulty.toLowerCase()));
+
+		if(openfl.Assets.cache.hasSound(Paths.voices(daSong, difficulty.toLowerCase())))
+			openfl.Assets.cache.removeSound(Paths.voices(daSong, difficulty.toLowerCase()));
 
 		FlxG.sound.music = new FlxSound().loadEmbedded(Paths.inst(daSong, difficulty.toLowerCase()));
 		FlxG.sound.music.persist = true;
