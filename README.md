@@ -55,3 +55,5 @@ You can load, share, and play replays of songs you've played! They can even be i
 * Video LAN Team - People who made VLC Media Player (the thing the game uses to play videos)
 
 * Ronezkj15 - Some Ideas + New Leather Engine Logo
+
+* ShadowMario - Color Swap Shader (for notes and stuffs)

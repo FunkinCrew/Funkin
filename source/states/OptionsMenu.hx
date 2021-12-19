@@ -126,7 +126,8 @@ class OptionsMenu extends MusicBeatState
 			new BoolOption("Enemy Note Glow", "enemyGlow", FlxG.save.data.enemyGlow, 2),
 			new BoolOption("Note Splashes", "noteSplashes", FlxG.save.data.noteSplashes, 3),
 			new BoolOption("Note Accuracy Text", "msText", FlxG.save.data.msText, 4),
-			new UISkinSelectOption("UI Skin", 5)
+			new NoteColorMenuOption("Note Colors", 5),
+			new UISkinSelectOption("UI Skin", 6)
 		]
 	];
 

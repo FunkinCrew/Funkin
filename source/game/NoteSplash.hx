@@ -1,5 +1,7 @@
 package game;
 
+import shaders.NoteColors;
+import shaders.ColorSwap;
 import utilities.NoteVariables;
 import flixel.FlxG;
 import states.PlayState;
@@ -8,6 +10,8 @@ import flixel.FlxSprite;
 class NoteSplash extends FlxSprite
 {
     var target:FlxSprite;
+
+    public var colorSwap:ColorSwap;
 
     public function new(x:Float = 0, y:Float = 0, noteData:Int, target:FlxSprite) {
         super(x, y);
@@ -25,6 +29,15 @@ class NoteSplash extends FlxSprite
         updateHitbox();
         centerOrigin();
         centerOffsets();
+
+        colorSwap = new ColorSwap();
+		shader = colorSwap.shader;
+
+		var noteColor = NoteColors.getNoteColor(NoteVariables.Other_Note_Anim_Stuff[PlayState.SONG.keyCount - 1][noteData]);
+
+		colorSwap.hue = noteColor[0] / 360;
+		colorSwap.saturation = noteColor[1] / 100;
+		colorSwap.brightness = noteColor[2] / 100;
     }
 
     override function update(elapsed:Float)

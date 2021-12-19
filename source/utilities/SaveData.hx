@@ -1,5 +1,6 @@
 package utilities;
 
+import shaders.NoteColors;
 import modding.ModList;
 import game.Conductor;
 import flixel.FlxG;
@@ -126,6 +127,7 @@ class SaveData {
         
         Highscore.load();
         ModList.load();
+        NoteColors.load();
     }
 
     public static function fixBinds()

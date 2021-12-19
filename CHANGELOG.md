@@ -7,6 +7,7 @@ All notable changes will be documented in this file.
 - Option in Charter to have 1 note use multiple characters.
 - Option for sprites to go above GF but not other characters.
 - Hurt Note.
+- Note Colors! (HSV for each note direction)
 ### Changed
 - New Note Splash Sprites!
 ### Fixed

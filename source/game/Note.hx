@@ -1,5 +1,7 @@
 package game;
 
+import shaders.NoteColors;
+import shaders.ColorSwap;
 import utilities.NoteHandler;
 import game.Song.SwagSong;
 import flixel.graphics.frames.FlxFramesCollection;
@@ -51,6 +53,8 @@ class Note extends FlxSprite
 	public var hitDamage:Float = 0.0;
 	public var missDamage:Float = 0.07;
 	public var heldMissDamage:Float = 0.035;
+
+	public var colorSwap:ColorSwap;
 
 	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?character:Int = 0, ?arrowType:String = "default", ?song:SwagSong, ?characters:Array<Int>)
 	{
@@ -149,6 +153,26 @@ class Note extends FlxSprite
 
 			centerOffsets();
 			centerOrigin();
+		}
+
+		var affectedbycolor:Bool = false;
+
+		if(PlayState.instance.arrow_Configs.get(arrow_Type)[5] != null)
+		{
+			if(PlayState.instance.arrow_Configs.get(arrow_Type)[5] == "true")
+				affectedbycolor = true;
+		}
+
+		if(affectedbycolor)
+		{
+			colorSwap = new ColorSwap();
+			shader = colorSwap.shader;
+	
+			var noteColor = NoteColors.getNoteColor(NoteVariables.Other_Note_Anim_Stuff[song.keyCount - 1][noteData]);
+	
+			colorSwap.hue = noteColor[0] / 360;
+			colorSwap.saturation = noteColor[1] / 100;
+			colorSwap.brightness = noteColor[2] / 100;
 		}
 	}
 

@@ -1,5 +1,8 @@
 package game;
 
+import utilities.NoteVariables;
+import shaders.ColorSwap;
+import shaders.NoteColors;
 import states.PlayState;
 import flixel.FlxSprite;
 
@@ -22,6 +25,10 @@ class StrumNote extends FlxSprite
 
 	public var modAngle:Float = 0;
 
+	public var colorSwap:ColorSwap;
+
+	var noteColor:Array<Int> = [0,0,0];
+
 	public function new(x:Float, y:Float, leData:Int, ?ui_Skin:String, ?ui_Settings:Array<String>, ?mania_size:Array<String>, ?keyCount:Int) {
 		if(ui_Skin == null)
 			ui_Skin = PlayState.SONG.ui_Skin;
@@ -43,6 +50,15 @@ class StrumNote extends FlxSprite
 		this.keyCount = keyCount;
 
 		super(x, y);
+
+		noteColor = NoteColors.getNoteColor(NoteVariables.Other_Note_Anim_Stuff[keyCount - 1][noteData]);
+
+		colorSwap = new ColorSwap();
+		shader = colorSwap.shader;
+
+		colorSwap.hue = noteColor[0] / 360;
+		colorSwap.saturation = noteColor[1] / 100;
+		colorSwap.brightness = noteColor[2] / 100;
 	}
 
 	override function update(elapsed:Float) {
@@ -66,7 +82,19 @@ class StrumNote extends FlxSprite
         centerOrigin();
 
 		if(anim == "static")
+		{
+			colorSwap.hue = 0;
+			colorSwap.saturation = 0;
+			colorSwap.brightness = 0;
+
 			swagWidth = width;
+		}
+		else
+		{
+			colorSwap.hue = noteColor[0] / 360;
+			colorSwap.saturation = noteColor[1] / 100;
+			colorSwap.brightness = noteColor[2] / 100;
+		}
 
 		if(ui_Skin != "pixel")
 		{
