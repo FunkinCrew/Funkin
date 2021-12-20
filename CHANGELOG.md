@@ -9,6 +9,7 @@ All notable changes will be documented in this file.
 - Hurt Note.
 - Note Colors! (HSV for each note direction)
 - Option for custom scroll speed.
+- Stage Editor.
 ### Changed
 - New Note Splash Sprites!
 ### Fixed
