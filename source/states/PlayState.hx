@@ -130,8 +130,8 @@ class PlayState extends MusicBeatState
 
 	public var iconP1:HealthIcon;
 	public var iconP2:HealthIcon;
-	public var camHUD:FlxShaderMaskCamera;
-	public var camGame:FlxShaderMaskCamera;
+	public var camHUD:FlxCamera;
+	public var camGame:FlxCamera;
 
 	public static var currentBeat = 0;
 
@@ -299,8 +299,8 @@ class PlayState extends MusicBeatState
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
 
-		camGame = new FlxShaderMaskCamera(new FlxShader());
-		camHUD = new FlxShaderMaskCamera(new FlxShader());
+		camGame = new FlxCamera();
+		camHUD = new FlxCamera();
 		camHUD.bgColor.alpha = 0;
 
 		FlxG.cameras.reset();
@@ -588,7 +588,7 @@ class PlayState extends MusicBeatState
 
 		add(camFollow);
 
-		if(!FlxG.save.data.optimizations)
+		if(FlxG.save.data.chrsAndBGs)
 		{
 			FlxG.camera.follow(camFollow, LOCKON, 0.04 * (60 / Main.display.currentFPS));
 			FlxG.camera.zoom = defaultCamZoom;

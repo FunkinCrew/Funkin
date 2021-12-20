@@ -103,11 +103,7 @@ class AnimationDebug extends MusicBeatState
 		
 		FlxG.camera.follow(camFollow);
 
-		#if sys
-		var characterData:Array<String> = CoolUtil.coolTextFilePolymod(Paths.txt('characterList'));
-		#else
 		var characterData:Array<String> = CoolUtil.coolTextFile(Paths.txt('characterList'));
-		#end
 
 		char.screenCenter();
 

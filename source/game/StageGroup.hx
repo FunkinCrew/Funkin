@@ -1,5 +1,6 @@
 package game;
 
+import flixel.group.FlxSpriteGroup;
 import openfl.display.Preloader.DefaultPreloader;
 import utilities.CoolUtil;
 import lime.utils.Assets;
@@ -515,42 +516,42 @@ class StageGroup extends FlxGroup
                     tankMan0.frames = Paths.getSparrowAtlas(stage + '/tank0', 'stages');
                     tankMan0.animation.addByPrefix("idle", "fg", 24, false);
                     tankMan0.animation.play("idle");
-                    PlayState.instance.foregroundSprites.add(tankMan0);
+                    foregroundSprites.add(tankMan0);
 
                     var tankMan1 = new FlxSprite(-300, 750);
                     tankMan1.scrollFactor.set(2, 0.2);
                     tankMan1.frames = Paths.getSparrowAtlas(stage + '/tank1', 'stages');
                     tankMan1.animation.addByPrefix("idle", "fg", 24, false);
                     tankMan1.animation.play("idle");
-                    PlayState.instance.foregroundSprites.add(tankMan1);
+                    foregroundSprites.add(tankMan1);
 
                     var tankMan2 = new FlxSprite(450, 940);
                     tankMan2.scrollFactor.set(1.5, 1.5);
                     tankMan2.frames = Paths.getSparrowAtlas(stage + '/tank2', 'stages');
                     tankMan2.animation.addByPrefix("idle", "foreground", 24, false);
                     tankMan2.animation.play("idle");
-                    PlayState.instance.foregroundSprites.add(tankMan2);
+                    foregroundSprites.add(tankMan2);
 
                     var tankMan3 = new FlxSprite(1300, 900);
                     tankMan3.scrollFactor.set(1.5, 1.5);
                     tankMan3.frames = Paths.getSparrowAtlas(stage + '/tank4', 'stages');
                     tankMan3.animation.addByPrefix("idle", "fg", 24, false);
                     tankMan3.animation.play("idle");
-                    PlayState.instance.foregroundSprites.add(tankMan3);
+                    foregroundSprites.add(tankMan3);
 
                     var tankMan4 = new FlxSprite(1300, 1200);
                     tankMan4.scrollFactor.set(3.5, 2.5);
                     tankMan4.frames = Paths.getSparrowAtlas(stage + '/tank3', 'stages');
                     tankMan4.animation.addByPrefix("idle", "fg", 24, false);
                     tankMan4.animation.play("idle");
-                    PlayState.instance.foregroundSprites.add(tankMan4);
+                    foregroundSprites.add(tankMan4);
 
                     var tankMan5 = new FlxSprite(1620, 700);
                     tankMan5.scrollFactor.set(1.5, 1.5);
                     tankMan5.frames = Paths.getSparrowAtlas(stage + '/tank5', 'stages');
                     tankMan5.animation.addByPrefix("idle", "fg", 24, false);
                     tankMan5.animation.play("idle");
-                    PlayState.instance.foregroundSprites.add(tankMan5);
+                    foregroundSprites.add(tankMan5);
 
                     tankMen.push(tankMan0);
                     tankMen.push(tankMan1);
@@ -584,10 +585,10 @@ class StageGroup extends FlxGroup
                             Sprite.scrollFactor.set(Object.scroll_Factor[0], Object.scroll_Factor[1]);
 
                             if(Object.object_Name != null && Object.object_Name != "")
-                                stage_Objects.push([Object.object_Name, Sprite]);
+                                stage_Objects.push([Object.object_Name, Sprite, Object]);
                             else
                             {
-                                stage_Objects.push(["undefinedSprite" + null_Object_Name_Loop, Sprite]);
+                                stage_Objects.push(["undefinedSprite" + null_Object_Name_Loop, Sprite, Object]);
                                 null_Object_Name_Loop++;
                             }
 
@@ -643,50 +644,16 @@ class StageGroup extends FlxGroup
         }
     }
 
-    public function setCharOffsets():Void
+    public function setCharOffsets(?p1:Character, ?gf:Character, ?p2:Character):Void
     {
-        switch(stage)
-        {
-            case 'limo':
-				PlayState.boyfriend.y -= 220;
-				PlayState.boyfriend.x += 260;
+        if(p1 == null)
+            p1 = PlayState.boyfriend;
 
-				resetFastCar();
-				add(fastCar);
-			case 'mall':
-				PlayState.boyfriend.x += 200;
-			case 'evil-mall':
-				PlayState.boyfriend.x += 320;
-				PlayState.dad.y -= 80;
-			case 'school':
-				PlayState.boyfriend.x += 200;
-				PlayState.boyfriend.y += 220;
-				PlayState.gf.x += 180;
-				PlayState.gf.y += 300;
-			case 'evil-school':
-				PlayState.boyfriend.x += 200;
-				PlayState.boyfriend.y += 220;
-				PlayState.gf.x += 180;
-				PlayState.gf.y += 300;
-            case 'wasteland':
-                PlayState.gf.y += 10;
-                PlayState.gf.x -= 60;
+        if(gf == null)
+            gf = PlayState.gf;
 
-                PlayState.boyfriend.x += 40;
-
-                PlayState.dad.y += 60;
-                PlayState.dad.x -= 80;
-
-                if(PlayState.gf.curCharacter == 'pico-speaker')
-                {
-                    PlayState.gf.x -= 170;
-                    PlayState.gf.y -= 45;
-                }
-        }
-
-        var p1 = PlayState.boyfriend;
-        var gf = PlayState.gf;
-        var p2 = PlayState.dad;
+        if(p2 == null)
+            p2 = PlayState.dad;
 
         p1.setPosition((player_1_Point.x - (p1.width / 2)) + p1.positioningOffset[0], (player_1_Point.y - p1.height) + p1.positioningOffset[1]);
         gf.setPosition((gf_Point.x - (gf.width / 2)) + gf.positioningOffset[0], (gf_Point.y - gf.height) + gf.positioningOffset[1]);
@@ -762,27 +729,30 @@ class StageGroup extends FlxGroup
         {
             case 'philly':
             {
-                if (!trainMoving)
-					trainCooldown += 1;
+                if(FlxG.state == PlayState.instance)
+                {
+                    if (!trainMoving)
+                        trainCooldown += 1;
 
-				if (PlayState.currentBeat % 4 == 0)
-				{
-					phillyCityLights.forEach(function(light:FlxSprite)
-					{
-						light.visible = false;
-					});
+                    if (PlayState.currentBeat % 4 == 0)
+                    {
+                        phillyCityLights.forEach(function(light:FlxSprite)
+                        {
+                            light.visible = false;
+                        });
 
-					curLight = FlxG.random.int(0, phillyCityLights.length - 1);
+                        curLight = FlxG.random.int(0, phillyCityLights.length - 1);
 
-					phillyCityLights.members[curLight].visible = true;
-					// phillyCityLights.members[curLight].alpha = 1;
-				}
+                        phillyCityLights.members[curLight].visible = true;
+                        // phillyCityLights.members[curLight].alpha = 1;
+                    }
 
-				if (PlayState.currentBeat % 8 == 4 && FlxG.random.bool(30) && !trainMoving && trainCooldown > 8)
-				{
-					trainCooldown = FlxG.random.int(-4, 0);
-					trainStart();
-				}
+                    if (PlayState.currentBeat % 8 == 4 && FlxG.random.bool(30) && !trainMoving && trainCooldown > 8)
+                    {
+                        trainCooldown = FlxG.random.int(-4, 0);
+                        trainStart();
+                    }
+                }
             }
             case 'school' | 'school-mad':
             {
@@ -801,14 +771,20 @@ class StageGroup extends FlxGroup
                     dancer.dance();
                 });
 
-                if (FlxG.random.bool(10) && fastCarCanDrive)
-                    fastCarDrive();
+                if(FlxG.state == PlayState.instance)
+                {
+                    if (FlxG.random.bool(10) && fastCarCanDrive)
+                        fastCarDrive();
+                }
             }
             case 'spooky':
             {
-                if (FlxG.random.bool(10) && PlayState.currentBeat > lightningStrikeBeat + lightningOffset)
+                if(FlxG.state == PlayState.instance)
                 {
-                    lightningStrikeShit();
+                    if (FlxG.random.bool(10) && PlayState.currentBeat > lightningStrikeBeat + lightningOffset)
+                    {
+                        lightningStrikeShit();
+                    }
                 }
             }
             case 'wasteland':
@@ -929,23 +905,26 @@ class StageGroup extends FlxGroup
 
     function lightningStrikeShit():Void
     {
-        if(PlayState.boyfriend.animOffsets.exists("scared"))
-            PlayState.boyfriend.playAnim('scared', true);
-
-        if(PlayState.gf.animOffsets.exists("scared"))
-            PlayState.gf.playAnim('scared', true);
-        
-        FlxG.sound.play(Paths.soundRandom('thunder_', 1, 2));
-        halloweenBG.animation.play('lightning');
-
-        lightningStrikeBeat = PlayState.currentBeat;
-        lightningOffset = FlxG.random.int(8, 24);
+        if(FlxG.state == PlayState.instance)
+        {
+            if(PlayState.boyfriend.animOffsets.exists("scared"))
+                PlayState.boyfriend.playAnim('scared', true);
+    
+            if(PlayState.gf.animOffsets.exists("scared"))
+                PlayState.gf.playAnim('scared', true);
+            
+            FlxG.sound.play(Paths.soundRandom('thunder_', 1, 2));
+            halloweenBG.animation.play('lightning');
+    
+            lightningStrikeBeat = PlayState.currentBeat;
+            lightningOffset = FlxG.random.int(8, 24);
+        }
     }
 }
 
 typedef StageData =
 {
-    var character_Positions:Array<Array<Int>>;
+    var character_Positions:Array<Array<Float>>;
     var camera_Zoom:Float;
 
     var objects:Array<StageObject>;
