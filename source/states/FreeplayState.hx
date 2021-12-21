@@ -58,6 +58,8 @@ class FreeplayState extends MusicBeatState
 
 	var vocals:FlxSound = new FlxSound();
 
+	var canEnterSong:Bool = true;
+
 	// thx psych engine devs
 	var colorTween:FlxTween;
 
@@ -358,45 +360,11 @@ class FreeplayState extends MusicBeatState
 				FlxG.switchState(new MainMenuState());
 			}
 
-			if(FlxG.keys.justPressed.ENTER)
-			{
-				var poop:String = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), curDiffString);
-	
-				trace(poop);
-
-				if(Assets.exists(Paths.json("song data/" + songs[curSelected].songName.toLowerCase() + "/" + poop)))
-				{
-					PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
-					PlayState.isStoryMode = false;
-					PlayState.storyDifficulty = curDifficulty;
-					PlayState.songMultiplier = curSpeed;
-					PlayState.storyDifficultyStr = curDiffString.toUpperCase();
-		
-					PlayState.storyWeek = songs[curSelected].week;
-					trace('CUR WEEK' + PlayState.storyWeek);
-
-					if(colorTween != null) {
-						colorTween.cancel();
-					}
-
-					#if cpp
-					@:privateAccess
-					{
-						if(FlxG.sound.music.active && FlxG.sound.music.playing)
-							FlxG.sound.music.stop();
-			
-						if (vocals.active && vocals.playing)
-							vocals.stop();
-					}
-					#end
-
-					LoadingState.loadAndSwitchState(new PlayState());
-				}
-			}
-
 			#if PRELOAD_ALL
 			if (FlxG.keys.justPressed.SPACE)
 			{
+				canEnterSong = false;
+
 				if(FlxG.sound.music.active)
 				{
 					FlxG.sound.music.stop();
@@ -427,6 +395,8 @@ class FreeplayState extends MusicBeatState
 
 				vocals.play(true);
 				FlxG.sound.music.play(true);
+
+				canEnterSong = true;
 			}
 
 			if(vocals != null && FlxG.sound.music != null)
@@ -464,6 +434,42 @@ class FreeplayState extends MusicBeatState
 			{
 				openSubState(new ResetScoreSubstate(songs[curSelected].songName, curDiffString));
 				changeSelection();
+			}
+
+			if(FlxG.keys.justPressed.ENTER && canEnterSong)
+			{
+				var poop:String = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), curDiffString);
+	
+				trace(poop);
+
+				if(Assets.exists(Paths.json("song data/" + songs[curSelected].songName.toLowerCase() + "/" + poop)))
+				{
+					PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
+					PlayState.isStoryMode = false;
+					PlayState.storyDifficulty = curDifficulty;
+					PlayState.songMultiplier = curSpeed;
+					PlayState.storyDifficultyStr = curDiffString.toUpperCase();
+		
+					PlayState.storyWeek = songs[curSelected].week;
+					trace('CUR WEEK' + PlayState.storyWeek);
+
+					if(colorTween != null) {
+						colorTween.cancel();
+					}
+
+					#if cpp
+					@:privateAccess
+					{
+						if(FlxG.sound.music.active && FlxG.sound.music.playing)
+							FlxG.sound.music.stop();
+			
+						if (vocals.active && vocals.playing)
+							vocals.stop();
+					}
+					#end
+
+					LoadingState.loadAndSwitchState(new PlayState());
+				}
 			}
 		}
 	}

@@ -1633,39 +1633,6 @@ class PlayState extends MusicBeatState
 			Ratings.getRank(accuracy, misses)
 		);
 
-		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause && !switchedStates)
-		{
-			persistentUpdate = false;
-			persistentDraw = true;
-			paused = true;
-
-			openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
-		
-			#if desktop
-			DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
-			#end
-		}
-
-		if (FlxG.keys.justPressed.SEVEN && !switchedStates)
-		{
-			#if linc_luajit
-			if(luaModchart != null)
-			{
-				luaModchart.die();
-				luaModchart = null;
-			}
-			#end
-			
-			switchedStates = true;
-
-			vocals.stop();
-			FlxG.switchState(new ChartingState());
-
-			#if desktop
-			DiscordClient.changePresence("Chart Editor", null, null, true);
-			#end
-		}
-
 		var icon_Zoom_Lerp = 0.09;
 
 		iconP1.setGraphicSize(Std.int(FlxMath.lerp(iconP1.width, 150, (icon_Zoom_Lerp / (Main.display.currentFPS / 60)) * songMultiplier)));
@@ -2208,6 +2175,39 @@ class PlayState extends MusicBeatState
 			keyShit(elapsed);
 
 		currentBeat = curBeat;
+
+		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause && !switchedStates)
+		{
+			persistentUpdate = false;
+			persistentDraw = true;
+			paused = true;
+
+			openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
+		
+			#if desktop
+			DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
+			#end
+		}
+
+		if (FlxG.keys.justPressed.SEVEN && !switchedStates)
+		{
+			#if linc_luajit
+			if(luaModchart != null)
+			{
+				luaModchart.die();
+				luaModchart = null;
+			}
+			#end
+			
+			switchedStates = true;
+
+			vocals.stop();
+			FlxG.switchState(new ChartingState());
+
+			#if desktop
+			DiscordClient.changePresence("Chart Editor", null, null, true);
+			#end
+		}
 	}
 
 	function endSong():Void
