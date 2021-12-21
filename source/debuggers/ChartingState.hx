@@ -56,8 +56,6 @@ class ChartingState extends MusicBeatState
 	 */
 	var curSection:Int = 0;
 
-	public static var lastSection:Int = 0;
-
 	var bpmTxt:FlxText;
 
 	var strumLine:FlxSprite;
@@ -139,8 +137,6 @@ class ChartingState extends MusicBeatState
 			base_array.push(name);
 			characters.set(mod, base_array);
 		}
-
-		curSection = lastSection;
 
 		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * 8, GRID_SIZE * 16);
 		add(gridBG);
@@ -1010,8 +1006,6 @@ class ChartingState extends MusicBeatState
 		{
 			if (FlxG.keys.justPressed.ENTER)
 			{
-				lastSection = curSection;
-
 				PlayState.SONG = _song;
 				FlxG.sound.music.stop();
 				vocals.stop();
