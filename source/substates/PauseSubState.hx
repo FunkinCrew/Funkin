@@ -41,6 +41,24 @@ class PauseSubState extends MusicBeatSubstate
 
 	public function new(x:Float, y:Float)
 	{
+		var optionsArray = menus.get("options");
+
+		switch(FlxG.save.data.playAs)
+		{
+			case "bf":
+				optionsArray.push("Play As BF");
+				menus.set("options", optionsArray);
+			case "opponent":
+				optionsArray.push("Play As Opponent");
+				menus.set("options", optionsArray);
+			case "both":
+				optionsArray.push("Play As Both");
+				menus.set("options", optionsArray);
+			default:
+				optionsArray.push("Play As BF");
+				menus.set("options", optionsArray);
+		}
+
 		super();
 
 		pauseMusic = new FlxSound().loadEmbedded(Paths.music('breakfast'), true, true);
@@ -197,6 +215,56 @@ class PauseSubState extends MusicBeatSubstate
 					@:privateAccess
 					if(FlxG.save.data.noDeath)
 						PlayState.instance.hasUsedBot = true;
+				case "play as bf":
+					FlxG.save.data.playAs = "opponent";
+					FlxG.save.flush();
+
+					var optionsArray = menus.get("options");
+
+					optionsArray.remove(daSelected);
+
+					switch(FlxG.save.data.playAs)
+					{
+						case "bf":
+							optionsArray.push("Play As BF");
+							menus.set("options", optionsArray);
+						case "opponent":
+							optionsArray.push("Play As Opponent");
+							menus.set("options", optionsArray);
+						case "both":
+							optionsArray.push("Play As Both");
+							menus.set("options", optionsArray);
+						default:
+							optionsArray.push("Play As BF");
+							menus.set("options", optionsArray);
+					}
+
+					updateAlphabets();
+				case "play as opponent":
+					FlxG.save.data.playAs = "bf";
+					FlxG.save.flush();
+
+					var optionsArray = menus.get("options");
+
+					optionsArray.remove(daSelected);
+
+					switch(FlxG.save.data.playAs)
+					{
+						case "bf":
+							optionsArray.push("Play As BF");
+							menus.set("options", optionsArray);
+						case "opponent":
+							optionsArray.push("Play As Opponent");
+							menus.set("options", optionsArray);
+						case "both":
+							optionsArray.push("Play As Both");
+							menus.set("options", optionsArray);
+						default:
+							optionsArray.push("Play As BF");
+							menus.set("options", optionsArray);
+					}
+
+					updateAlphabets();
 			}
 		}
 	}
