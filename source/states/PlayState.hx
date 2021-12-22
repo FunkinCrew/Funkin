@@ -730,7 +730,7 @@ class PlayState extends MusicBeatState
 		}
 
 		// WINDOW TITLE POG
-		Application.current.window.title = Application.current.meta.get('name') + " - " + SONG.song + " " + (isStoryMode ? "(Story Mode)" : "(Freeplay)");
+		MusicBeatState.windowNameSuffix = " - " + SONG.song + " " + (isStoryMode ? "(Story Mode)" : "(Freeplay)");
 
 		fromPauseMenu = false;
 

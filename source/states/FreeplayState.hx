@@ -65,7 +65,7 @@ class FreeplayState extends MusicBeatState
 
 	override function create()
 	{
-		Application.current.window.title = Application.current.meta.get('name');
+		MusicBeatState.windowNameSuffix = " Freeplay";
 		
 		var black = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 

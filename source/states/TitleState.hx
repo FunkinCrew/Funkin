@@ -60,6 +60,8 @@ class TitleState extends MusicBeatState
 
 	override public function create():Void
 	{
+		MusicBeatState.windowNameSuffix = "";
+
 		if(!firstTimeStarting)
 		{
 			persistentUpdate = true;
@@ -72,6 +74,8 @@ class TitleState extends MusicBeatState
 			#if desktop
 			PolymodHandler.loadMods();
 			#end
+
+			MusicBeatState.windowNamePrefix = Assets.getText(Paths.txt("windowTitleBase", "preload"));
 
 			NoteVariables.init();
 	
@@ -453,30 +457,78 @@ class TitleState extends MusicBeatState
 			{
 				case 1:
 					textDataText(0);
+					if(!skippedIntro)
+						MusicBeatState.windowNameSuffix = " 12";
+					else
+						MusicBeatState.windowNameSuffix = "";
 				case 3:
 					textDataText(1);
+					if(!skippedIntro)
+						MusicBeatState.windowNameSuffix = " 11";
+					else
+						MusicBeatState.windowNameSuffix = "";
 				case 4:
 					deleteCoolText();
+					if(!skippedIntro)
+						MusicBeatState.windowNameSuffix = " 10";
+					else
+						MusicBeatState.windowNameSuffix = "";
 				case 5:
 					textDataText(2);
+					if(!skippedIntro)
+						MusicBeatState.windowNameSuffix = " 9";
+					else
+						MusicBeatState.windowNameSuffix = "";
 				case 7:
 					textDataText(3);
 					ngSpr.visible = true;
+					if(!skippedIntro)
+						MusicBeatState.windowNameSuffix = " 8";
+					else
+						MusicBeatState.windowNameSuffix = "";
 				case 8:
 					deleteCoolText();
 					ngSpr.visible = false;
+					if(!skippedIntro)
+						MusicBeatState.windowNameSuffix = " 7";
+					else
+						MusicBeatState.windowNameSuffix = "";
 				case 9:
 					createCoolText([curWacky[0]]);
+					if(!skippedIntro)	
+						MusicBeatState.windowNameSuffix = " 6";
+					else
+						MusicBeatState.windowNameSuffix = "";
 				case 11:
 					addMoreText(curWacky[1]);
+					if(!skippedIntro)
+						MusicBeatState.windowNameSuffix = " 5";
+					else
+						MusicBeatState.windowNameSuffix = "";
 				case 12:
 					deleteCoolText();
+					if(!skippedIntro)
+						MusicBeatState.windowNameSuffix = " 4";
+					else
+						MusicBeatState.windowNameSuffix = "";
 				case 13:
 					textDataText(4);
+					if(!skippedIntro)
+						MusicBeatState.windowNameSuffix = " 3";
+					else
+						MusicBeatState.windowNameSuffix = "";
 				case 14:
 					textDataText(5);
+					if(!skippedIntro)
+						MusicBeatState.windowNameSuffix = " 2";
+					else
+						MusicBeatState.windowNameSuffix = "";
 				case 15:
 					textDataText(6);
+					if(!skippedIntro)
+						MusicBeatState.windowNameSuffix = " 1";
+					else
+						MusicBeatState.windowNameSuffix = "";
 				case 16:
 					skipIntro();
 			}
@@ -484,6 +536,7 @@ class TitleState extends MusicBeatState
 			remove(ngSpr);
 			remove(credGroup);
 			skippedIntro = true;
+			MusicBeatState.windowNameSuffix = "";
 		}
 	}
 
@@ -493,6 +546,8 @@ class TitleState extends MusicBeatState
 	{
 		if (!skippedIntro)
 		{
+			MusicBeatState.windowNameSuffix = "";
+			
 			FlxG.camera.flash(FlxColor.WHITE, 4);
 			remove(ngSpr);
 			remove(credGroup);

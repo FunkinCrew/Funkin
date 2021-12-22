@@ -41,6 +41,8 @@ class ModsMenu extends MusicBeatState
 
 	override function create()
 	{
+		MusicBeatState.windowNameSuffix = " Mods Menu";
+
 		instance = this;
 
 		var menuBG:FlxSprite;

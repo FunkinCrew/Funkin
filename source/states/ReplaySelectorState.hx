@@ -18,6 +18,8 @@ class ReplaySelectorState extends MusicBeatState
 
     public function new()
     {
+        MusicBeatState.windowNameSuffix = " Replays";
+
         super();
         
         var menuBG:FlxSprite;

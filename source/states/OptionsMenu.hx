@@ -139,6 +139,8 @@ class OptionsMenu extends MusicBeatState
 
 	override function create()
 	{
+		MusicBeatState.windowNameSuffix = "";
+		
 		instance = this;
 
 		var menuBG:FlxSprite;

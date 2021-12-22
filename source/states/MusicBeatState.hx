@@ -1,11 +1,8 @@
 package states;
 
 import flixel.input.FlxInput.FlxInputState;
-import flixel.group.FlxSpriteGroup;
-import flixel.group.FlxGroup;
 import flixel.FlxSprite;
 import flixel.FlxBasic;
-import flixel.FlxObject;
 import openfl.Lib;
 import lime.app.Application;
 import game.Conductor;
@@ -13,10 +10,7 @@ import utilities.PlayerSettings;
 import game.Conductor.BPMChangeEvent;
 import utilities.Controls;
 import flixel.FlxG;
-import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.ui.FlxUIState;
-import flixel.math.FlxRect;
-import flixel.util.FlxTimer;
 
 class MusicBeatState extends FlxUIState
 {
@@ -26,6 +20,9 @@ class MusicBeatState extends FlxUIState
 	public var curStep:Int = 0;
 	public var curBeat:Int = 0;
 	private var controls(get, never):Controls;
+
+	public static var windowNameSuffix:String = "";
+	public static var windowNamePrefix:String = "Leather Engine";
 
 	inline function get_controls():Controls
 		return PlayerSettings.player1.controls;
@@ -69,6 +66,8 @@ class MusicBeatState extends FlxUIState
 
 		if(FlxG.keys.checkStatus(FlxKey.fromString(FlxG.save.data.fullscreenBind), FlxInputState.JUST_PRESSED))
 			FlxG.fullscreen = !FlxG.fullscreen;
+
+		Application.current.window.title = windowNamePrefix + windowNameSuffix;
 	}
 
 	private function updateBeat():Void

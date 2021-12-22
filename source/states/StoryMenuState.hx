@@ -62,7 +62,7 @@ class StoryMenuState extends MusicBeatState
 	override function create()
 	{
 		// UPDATE TITLE WINDOW JUST IN CASE LOL //
-		Application.current.window.title = Application.current.meta.get('name');
+		MusicBeatState.windowNameSuffix = " Story Menu";
 
 		// SETUP THE GROUPS //
 		loadGroups();

@@ -38,6 +38,8 @@ class LoadingState extends MusicBeatState
 	
 	override function create()
 	{
+		MusicBeatState.windowNameSuffix = " is loading...";
+
 		instance = this;
 
 		logo = new FlxSprite(-150, -100);

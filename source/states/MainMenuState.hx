@@ -45,7 +45,7 @@ class MainMenuState extends MusicBeatState
 		//optionShit.push('multiplayer');
 		#end
 		
-		Application.current.window.title = Application.current.meta.get('name');
+		MusicBeatState.windowNameSuffix = "";
 		
 		#if desktop
 		// Updating Discord Rich Presence
