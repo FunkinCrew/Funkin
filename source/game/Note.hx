@@ -53,6 +53,7 @@ class Note extends FlxSprite
 	public var hitDamage:Float = 0.0;
 	public var missDamage:Float = 0.07;
 	public var heldMissDamage:Float = 0.035;
+	public var playMissOnMiss:Bool = true;
 
 	public var colorSwap:ColorSwap;
 
@@ -120,6 +121,16 @@ class Note extends FlxSprite
 		shouldHit = PlayState.instance.type_Configs.get(arrow_Type)[0] == "true";
 		hitDamage = Std.parseFloat(PlayState.instance.type_Configs.get(arrow_Type)[1]);
 		missDamage = Std.parseFloat(PlayState.instance.type_Configs.get(arrow_Type)[2]);
+ 
+		if(PlayState.instance.type_Configs.get(arrow_Type)[4] != null)
+			playMissOnMiss = PlayState.instance.type_Configs.get(arrow_Type)[4] == "true";
+		else
+		{
+			if(shouldHit)
+				playMissOnMiss = true;
+			else
+				playMissOnMiss = false;
+		}
 		
 		if(PlayState.instance.type_Configs.get(arrow_Type)[3] != null)
 			heldMissDamage = Std.parseFloat(PlayState.instance.type_Configs.get(arrow_Type)[3]);
