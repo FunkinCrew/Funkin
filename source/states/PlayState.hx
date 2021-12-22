@@ -2427,6 +2427,9 @@ class PlayState extends MusicBeatState
 	{
 		var noteDiff:Float = (strumtime - Conductor.songPosition);
 
+		if(FlxG.save.data.bot)
+			noteDiff = 0;
+
 		if(setNoteDiff != null)
 			noteDiff = setNoteDiff;
 
@@ -3147,7 +3150,7 @@ class PlayState extends MusicBeatState
 				canMiss = true;
 		}
 
-		if(canMiss && !invincible)
+		if(canMiss && !invincible && !FlxG.save.data.bot)
 		{
 			if(note != null)
 			{
