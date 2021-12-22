@@ -138,6 +138,9 @@ class SaveData {
 
     public static function fixBinds()
     {
+        if(FlxG.save.data.binds == null)
+            FlxG.save.data.binds = NoteVariables.Default_Binds;
+        
         if(FlxG.save.data.binds.length < NoteVariables.Default_Binds.length)
         {
             for(i in Std.int(FlxG.save.data.binds.length - 1)...NoteVariables.Default_Binds.length)
