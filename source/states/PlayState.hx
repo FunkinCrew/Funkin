@@ -2567,7 +2567,7 @@ class PlayState extends MusicBeatState
 			numScore.alpha = 1;
 			numScore.loadGraphic(Paths.image("ui skins/" + SONG.ui_Skin + "/numbers/num" + Std.int(i), 'shared'));
 			numScore.screenCenter();
-			numScore.x -= (FlxG.save.data.middleScroll ? 350 : 0);
+			numScore.x -= (FlxG.save.data.middleScroll ? 350 : (characterPlayingAs == 0 ? 0 : -150));
 
 			numScore.x += (43 * daLoop) - 90;
 			numScore.y += 80;
