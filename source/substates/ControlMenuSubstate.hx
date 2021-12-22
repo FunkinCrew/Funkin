@@ -1,13 +1,9 @@
 package substates;
 
-import flixel.FlxObject;
 import game.StrumNote;
-import lime.utils.Assets;
 import utilities.PlayerSettings;
-import openfl.events.FullScreenEvent;
 import flixel.text.FlxText;
 import utilities.CoolUtil;
-import game.Note;
 import flixel.tweens.FlxEase;
 import utilities.NoteVariables;
 import flixel.tweens.FlxTween;
@@ -301,7 +297,9 @@ class ControlMenuSubstate extends MusicBeatSubstate
 
             arrow_Group.add(babyArrow);
 
-            var coolWidth = Std.int(40 - ((key_Count - 5) * 2) + (key_Count == 10 ? 30 : 0));
+            //var coolWidth = Std.int(40 - ((key_Count - 5) * 2) + (key_Count == 10 ? 30 : 0));
+                                                    // funny 4 key math i guess, full num is 2.836842105263158 (width / previous key width thingy which was 38)
+            var coolWidth = Math.ceil(babyArrow.width / 2.83684);
 
             var coolText = new FlxText((babyArrow.x + (babyArrow.width / 2)) - (coolWidth / 2), babyArrow.y - (coolWidth / 2), coolWidth, binds[key_Count - 1][i], coolWidth);
             add(coolText);

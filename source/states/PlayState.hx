@@ -1362,7 +1362,9 @@ class PlayState extends MusicBeatState
 
 			if(SONG.keyCount != 4 && isPlayer && FlxG.save.data.extraKeyReminders)
 			{
-				var coolWidth = Std.int(40 - ((SONG.keyCount - 5) * 2) + (SONG.keyCount == 10 ? 30 : 0));
+				//var coolWidth = Std.int(40 - ((key_Count - 5) * 2) + (key_Count == 10 ? 30 : 0));
+										// funny 4 key math i guess, full num is 2.836842105263158 (width / previous key width thingy which was 38)
+				var coolWidth = Math.ceil(babyArrow.width / 2.83684);
 
 				var keyThingLolShadow = new FlxText((babyArrow.x + (babyArrow.width / 2)) - (coolWidth / 2), babyArrow.y - (coolWidth / 2), coolWidth, binds[i], coolWidth);
 				keyThingLolShadow.cameras = [camHUD];
