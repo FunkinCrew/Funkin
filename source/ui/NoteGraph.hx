@@ -1,5 +1,6 @@
 package ui;
 
+import states.PlayState;
 import flixel.text.FlxText;
 import flixel.FlxG;
 import flixel.util.FlxColor;
@@ -33,7 +34,7 @@ class NoteGraph extends FlxGroup
                 var dif = input[3];
                 var strumTime = input[1];
 
-                var hitDot = new FlxSprite(startX + (500 * (strumTime / FlxG.sound.music.length)), (startY + 166) + dif);
+                var hitDot = new FlxSprite(startX + (500 * (strumTime / FlxG.sound.music.length)), (startY + 166) + (dif / PlayState.songMultiplier));
                 hitDot.makeGraphic(6,6,FlxColor.fromRGB(Math.floor(255 * (Math.abs(dif) / 166)), 255, 0));
 
                 add(hitDot);
