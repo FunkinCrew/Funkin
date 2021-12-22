@@ -39,7 +39,6 @@ jobs:
           haxelib run lime setup flixel
           haxelib run lime setup
           haxelib install flixel-tools
-          haxelib run flixel-tools setup
           haxelib install flixel-ui
           haxelib install flixel-addons
           haxelib install linc_luajit
