@@ -2496,7 +2496,7 @@ class PlayState extends MusicBeatState
 		rating.alpha = 1;
 		rating.loadGraphic(Paths.image("ui skins/" + SONG.ui_Skin + "/ratings/" + daRating, 'shared'));
 		rating.screenCenter();
-		rating.x -= (FlxG.save.data.middleScroll ? 350 : 0);
+		rating.x -= (FlxG.save.data.middleScroll ? 350 : (characterPlayingAs == 0 ? 0 : -150));
 		rating.y -= 60;
 		rating.velocity.y = FlxG.random.int(30, 60);
 		rating.velocity.x = FlxG.random.int(-10, 10);
