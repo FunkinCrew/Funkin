@@ -10,6 +10,7 @@ All notable changes will be documented in this file.
 - Note Colors! (HSV for each note direction)
 - Option for custom scroll speed.
 - Stage Editor.
+- Customizeable Hitsounds.
 ### Changed
 - New Note Splash Sprites!
 ### Fixed
