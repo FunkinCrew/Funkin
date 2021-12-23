@@ -1695,6 +1695,35 @@ class PlayState extends MusicBeatState
 
 			if(!canFullscreen && FlxG.fullscreen)
 				FlxG.fullscreen = false;
+
+			if(controls.LEFT)
+				luaModchart.executeState('baseKeyPressed', ["left"]);
+			if(controls.LEFT_P)
+				luaModchart.executeState('baseKeyJustPressed', ["left"]);
+
+			if(controls.DOWN)
+				luaModchart.executeState('baseKeyPressed', ["down"]);
+			if(controls.DOWN_P)
+				luaModchart.executeState('baseKeyJustPressed', ["down"]);
+
+			if(controls.UP)
+				luaModchart.executeState('baseKeyPressed', ["up"]);
+			if(controls.UP_P)
+				luaModchart.executeState('baseKeyJustPressed', ["up"]);
+
+			if(controls.RIGHT)
+				luaModchart.executeState('baseKeyPressed', ["right"]);
+			if(controls.RIGHT_P)
+				luaModchart.executeState('baseKeyJustPressed', ["right"]);
+
+			if(controls.RESET)
+				luaModchart.executeState('baseKeyPressed', ["reset"]);
+
+			if(controls.ACCEPT)
+				luaModchart.executeState('baseKeyPressed', ["accept"]);
+
+			if(controls.BACK)
+				luaModchart.executeState('baseKeyPressed', ["back"]);
 		}
 		#end
 

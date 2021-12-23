@@ -1,5 +1,7 @@
 package modding;
 
+import flixel.input.keyboard.FlxKey;
+import utilities.Controls;
 import backgrounds.DancingSprite;
 import game.Note;
 import game.Boyfriend;
@@ -288,6 +290,20 @@ class ModchartUtilities
             sprite.destroy();
 
             return true;
+        });
+
+        Lua_helper.add_callback(lua,"getIsColliding", function(sprite1Name:String, sprite2Name:String) {
+            var sprite1 = getActorByName(sprite1Name);
+
+            if(sprite1 != null)
+            {
+                var sprite2 = getActorByName(sprite2Name);
+
+                if(sprite2 != null)
+                    return sprite1.overlaps(sprite2);
+            }
+
+            return false;
         });
 
         // hud/camera
@@ -1097,6 +1113,61 @@ class ModchartUtilities
                 return Reflect.getProperty(Reflect.getProperty(PlayState.instance, object), property);
             else
                 return Reflect.getProperty(Reflect.getProperty(PlayState, object), property);
+        });
+
+        // keys
+
+        Lua_helper.add_callback(lua,"anyKeyPressed", function() {
+            return FlxG.keys.anyPressed([
+                FlxKey.W, FlxKey.A, FlxKey.S, FlxKey.D,
+                FlxKey.UP, FlxKey.LEFT, FlxKey.DOWN, FlxKey.RIGHT,
+                FlxKey.fromString(FlxG.save.data.killBind),
+                Z, SPACE, ENTER,
+                BACKSPACE, ESCAPE,
+                P
+            ]);
+        });
+
+        Lua_helper.add_callback(lua,"keyPressed", function(key:String) {
+            @:privateAccess
+            switch(key.toLowerCase())
+            {
+                case "left":
+                    return PlayState.instance.controls.LEFT;
+                case "down":
+                    return PlayState.instance.controls.DOWN;
+                case "up":
+                    return PlayState.instance.controls.UP;
+                case "right":
+                    return PlayState.instance.controls.RIGHT;
+                case "space":
+                    return PlayState.instance.controls.ACCEPT;
+                case "back":
+                    return PlayState.instance.controls.BACK;
+            }
+
+            return false;
+        });
+
+        Lua_helper.add_callback(lua,"keyJustPressed", function(key:String) {
+            @:privateAccess
+            switch(key.toLowerCase())
+            {
+                case "left":
+                    return PlayState.instance.controls.LEFT_P;
+                case "down":
+                    return PlayState.instance.controls.DOWN_P;
+                case "up":
+                    return PlayState.instance.controls.UP_P;
+                case "right":
+                    return PlayState.instance.controls.RIGHT_P;
+                case "space":
+                    return PlayState.instance.controls.ACCEPT;
+                case "back":
+                    return PlayState.instance.controls.BACK;
+            }
+
+            return false;
         });
 
         // default strums
