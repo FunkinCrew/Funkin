@@ -240,6 +240,9 @@ class PauseSubState extends MusicBeatSubstate
 					}
 
 					updateAlphabets();
+
+					@:privateAccess
+					PlayState.instance.hasUsedBot = true;
 				case "play as opponent":
 					FlxG.save.data.playAs = "bf";
 					FlxG.save.flush();
@@ -265,6 +268,9 @@ class PauseSubState extends MusicBeatSubstate
 					}
 
 					updateAlphabets();
+
+					@:privateAccess
+					PlayState.instance.hasUsedBot = true;
 			}
 		}
 	}
