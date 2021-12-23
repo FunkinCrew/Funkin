@@ -39,6 +39,9 @@ class PauseSubState extends MusicBeatSubstate
 
 	var pauseMusic:FlxSound;
 
+	var scoreWarning:FlxText;
+	var warningAmountLols:Int = 0;
+
 	public function new(x:Float, y:Float)
 	{
 		var optionsArray = menus.get("options");
@@ -86,8 +89,16 @@ class PauseSubState extends MusicBeatSubstate
 		levelDifficulty.updateHitbox();
 		add(levelDifficulty);
 
+		scoreWarning = new FlxText(20, 15 + 64, 0, "Remember, changing options invalidates your score!", 32);
+		scoreWarning.scrollFactor.set();
+		scoreWarning.setFormat(Paths.font("vcr.ttf"), 32, FlxColor.WHITE, RIGHT);
+		scoreWarning.updateHitbox();
+		scoreWarning.screenCenter(X);
+		add(scoreWarning);
+
 		levelDifficulty.alpha = 0;
 		levelInfo.alpha = 0;
+		scoreWarning.alpha = 0;
 
 		levelInfo.x = FlxG.width - (levelInfo.width + 20);
 		levelDifficulty.x = FlxG.width - (levelDifficulty.width + 20);
@@ -95,6 +106,9 @@ class PauseSubState extends MusicBeatSubstate
 		FlxTween.tween(bg, {alpha: 0.6}, 0.4, {ease: FlxEase.quartInOut});
 		FlxTween.tween(levelInfo, {alpha: 1, y: 20}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.3});
 		FlxTween.tween(levelDifficulty, {alpha: 1, y: levelDifficulty.y + 5}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.5});
+		FlxTween.tween(scoreWarning, {alpha: 1, y: scoreWarning.y + 10}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.7});
+
+		FlxTween.tween(scoreWarning, {alpha: 0, y: scoreWarning.y - 10}, 0.4, {ease: FlxEase.quartInOut, startDelay: 4});
 
 		grpMenuShit = new FlxTypedGroup<Alphabet>();
 		add(grpMenuShit);
@@ -114,6 +128,22 @@ class PauseSubState extends MusicBeatSubstate
 		var upP = controls.UP_P;
 		var downP = controls.DOWN_P;
 		var accepted = controls.ACCEPT;
+
+		switch(warningAmountLols)
+		{
+			case 50:
+				scoreWarning.text = "What are you doing?";
+			case 69:
+				scoreWarning.text = "Haha funny number.";
+			case 100:
+				scoreWarning.text = "abcdefghjklmnopqrstuvwxyz";
+			case 420:
+				scoreWarning.text = "br";
+			case 1000:
+				scoreWarning.text = "collect your cookie you've earned it\n for getting carpal tunnel!!!!!!!\n";
+			default:
+				scoreWarning.text = "Remember, changing options invalidates your score!";
+		}
 
 		if (upP)
 			changeSelection(-1);
@@ -163,12 +193,27 @@ class PauseSubState extends MusicBeatSubstate
 						PlayState.instance.infoTxt.screenCenter(X);
 						PlayState.instance.hasUsedBot = true;
 					}
+
+					FlxTween.tween(scoreWarning, {alpha: 1, y: scoreWarning.y + 10}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.7});
+					FlxTween.tween(scoreWarning, {alpha: 0, y: scoreWarning.y - 10}, 0.4, {ease: FlxEase.quartInOut, startDelay: 4});
+
+					warningAmountLols += 1;
 				case "auto restart":
 					FlxG.save.data.quickRestart = !FlxG.save.data.quickRestart;
 					FlxG.save.flush();
+
+					FlxTween.tween(scoreWarning, {alpha: 1, y: scoreWarning.y + 10}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.7});
+					FlxTween.tween(scoreWarning, {alpha: 0, y: scoreWarning.y - 10}, 0.4, {ease: FlxEase.quartInOut, startDelay: 4});
+
+					warningAmountLols += 1;
 				case "no miss":
 					FlxG.save.data.nohit = !FlxG.save.data.nohit;
 					FlxG.save.flush();
+
+					FlxTween.tween(scoreWarning, {alpha: 1, y: scoreWarning.y + 10}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.7});
+					FlxTween.tween(scoreWarning, {alpha: 0, y: scoreWarning.y - 10}, 0.4, {ease: FlxEase.quartInOut, startDelay: 4});
+
+					warningAmountLols += 1;
 				case "ghost tapping":
 					FlxG.save.data.ghostTapping = !FlxG.save.data.ghostTapping;
 					FlxG.save.flush();
@@ -176,6 +221,11 @@ class PauseSubState extends MusicBeatSubstate
 					@:privateAccess
 					if(FlxG.save.data.ghostTapping) // basically making it easier lmao
 						PlayState.instance.hasUsedBot = true;
+
+					FlxTween.tween(scoreWarning, {alpha: 1, y: scoreWarning.y + 10}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.7});
+					FlxTween.tween(scoreWarning, {alpha: 0, y: scoreWarning.y - 10}, 0.4, {ease: FlxEase.quartInOut, startDelay: 4});
+
+					warningAmountLols += 1;
 				case "options":
 					menu = "options";
 					updateAlphabets();
@@ -215,6 +265,11 @@ class PauseSubState extends MusicBeatSubstate
 					@:privateAccess
 					if(FlxG.save.data.noDeath)
 						PlayState.instance.hasUsedBot = true;
+
+					FlxTween.tween(scoreWarning, {alpha: 1, y: scoreWarning.y + 10}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.7});
+					FlxTween.tween(scoreWarning, {alpha: 0, y: scoreWarning.y - 10}, 0.4, {ease: FlxEase.quartInOut, startDelay: 4});
+
+					warningAmountLols += 1;
 				case "play as bf":
 					FlxG.save.data.playAs = "opponent";
 					FlxG.save.flush();
@@ -243,6 +298,11 @@ class PauseSubState extends MusicBeatSubstate
 
 					@:privateAccess
 					PlayState.instance.hasUsedBot = true;
+
+					FlxTween.tween(scoreWarning, {alpha: 1, y: scoreWarning.y + 10}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.7});
+					FlxTween.tween(scoreWarning, {alpha: 0, y: scoreWarning.y - 10}, 0.4, {ease: FlxEase.quartInOut, startDelay: 4});
+
+					warningAmountLols += 1;
 				case "play as opponent":
 					FlxG.save.data.playAs = "bf";
 					FlxG.save.flush();
@@ -271,6 +331,11 @@ class PauseSubState extends MusicBeatSubstate
 
 					@:privateAccess
 					PlayState.instance.hasUsedBot = true;
+
+					FlxTween.tween(scoreWarning, {alpha: 1, y: scoreWarning.y + 10}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.7});
+					FlxTween.tween(scoreWarning, {alpha: 0, y: scoreWarning.y - 10}, 0.4, {ease: FlxEase.quartInOut, startDelay: 4});
+
+					warningAmountLols += 1;
 			}
 		}
 	}
