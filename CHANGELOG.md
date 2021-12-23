@@ -11,6 +11,7 @@ All notable changes will be documented in this file.
 - Option for custom scroll speed.
 - Stage Editor.
 - Customizeable Hitsounds.
+- Camera Bounce and Camera Tracks Direction Settings.
 ### Changed
 - New Note Splash Sprites!
 ### Fixed
