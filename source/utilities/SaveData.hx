@@ -126,6 +126,12 @@ class SaveData {
 
         if(FlxG.save.data.hitsound == null)
             FlxG.save.data.hitsound = "none";
+
+        if(FlxG.save.data.cameraTracksDirections == null)
+            FlxG.save.data.cameraTracksDirections = false;
+
+        if(FlxG.save.data.cameraZooms == null)
+            FlxG.save.data.cameraZooms = true;
         
         FlxG.save.flush();
 

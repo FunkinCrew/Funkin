@@ -1750,58 +1750,73 @@ class PlayState extends MusicBeatState
 				luaModchart.setVar("mustHit", PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection);
 			#end
 			
-			if (camFollow.x != dad.getMidpoint().x + 150 && !PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection)
+			if(!PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection)
 			{
-				camFollow.setPosition(dad.getMidpoint().x + 150 + dad.cameraOffset[0], dad.getMidpoint().y - 100 + dad.cameraOffset[1]);
+				var midPos = (FlxG.save.data.cameraTracksDirections ? dad.getGraphicMidpoint() : dad.getMidpoint());
 
-				switch (dad.curCharacter)
+				if (camFollow.x != midPos.x + 150 + dad.cameraOffset[0])
 				{
-					case 'mom':
-						camFollow.y = dad.getMidpoint().y;
-					case 'senpai':
-						camFollow.y = dad.getMidpoint().y - 430;
-						camFollow.x = dad.getMidpoint().x - 100;
-					case 'senpai-angry':
-						camFollow.y = dad.getMidpoint().y - 430;
-						camFollow.x = dad.getMidpoint().x - 100;
+					camFollow.setPosition(midPos.x + 150 + dad.cameraOffset[0], midPos.y - 100 + dad.cameraOffset[1]);
+	
+					switch (dad.curCharacter)
+					{
+						case 'mom':
+							camFollow.y = midPos.y;
+						case 'senpai':
+							camFollow.y = midPos.y - 430;
+							camFollow.x = midPos.x - 100;
+						case 'senpai-angry':
+							camFollow.y = midPos.y - 430;
+							camFollow.x = midPos.x - 100;
+					}
+	
+					#if linc_luajit
+					if (luaModchart != null)
+						luaModchart.executeState('playerTwoTurn', []);
+					#end
 				}
-
-				#if linc_luajit
-				if (luaModchart != null)
-					luaModchart.executeState('playerTwoTurn', []);
-				#end
 			}
 
-			if (PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection && camFollow.x != boyfriend.getMidpoint().x - 100)
+			if(PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection)
 			{
-				camFollow.setPosition((boyfriend.getMidpoint().x - 100) + boyfriend.cameraOffset[0], (boyfriend.getMidpoint().y - 100) + boyfriend.cameraOffset[1]);
+				var midPos = (FlxG.save.data.cameraTracksDirections ? boyfriend.getGraphicMidpoint() : boyfriend.getMidpoint());
 
-				switch (curStage)
+				if(camFollow.x != midPos.x - 100 + boyfriend.cameraOffset[0])
 				{
-					case 'limo':
-						camFollow.x = boyfriend.getMidpoint().x - 300;
-					case 'mall':
-						camFollow.y = boyfriend.getMidpoint().y - 200;
-						/*
-					case 'school':
-						camFollow.x = boyfriend.getMidpoint().x - 200;
-						camFollow.y = boyfriend.getMidpoint().y - 200;
-					case 'evil-school':
-						camFollow.x = boyfriend.getMidpoint().x - 200;
-						camFollow.y = boyfriend.getMidpoint().y - 200;*/
+					camFollow.setPosition(midPos.x - 100 + boyfriend.cameraOffset[0], midPos.y - 100 + boyfriend.cameraOffset[1]);
+	
+					switch (curStage)
+					{
+						case 'limo':
+							camFollow.x = midPos.x - 300;
+						case 'mall':
+							camFollow.y = midPos.y - 200;
+							/*
+						case 'school':
+							camFollow.x = boyfriend.getMidpoint().x - 200;
+							camFollow.y = boyfriend.getMidpoint().y - 200;
+						case 'evil-school':
+							camFollow.x = boyfriend.getMidpoint().x - 200;
+							camFollow.y = boyfriend.getMidpoint().y - 200;*/
+					}
+	
+					#if linc_luajit
+					if (luaModchart != null)
+						luaModchart.executeState('playerOneTurn', []);
+					#end
 				}
-
-				#if linc_luajit
-				if (luaModchart != null)
-					luaModchart.executeState('playerOneTurn', []);
-				#end
 			}
 		}
 
-		if (camZooming && !switchedStates)
+		if(FlxG.save.data.cameraZooms && camZooming && !switchedStates)
 		{
 			FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, 0.95);
 			camHUD.zoom = FlxMath.lerp(1, camHUD.zoom, 0.95);
+		}
+		else if(!FlxG.save.data.cameraZooms)
+		{
+			FlxG.camera.zoom = defaultCamZoom;
+			camHUD.zoom = 1;
 		}
 
 		FlxG.watch.addQuick("beatShit", curBeat);

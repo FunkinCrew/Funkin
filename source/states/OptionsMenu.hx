@@ -87,7 +87,9 @@ class OptionsMenu extends MusicBeatState
 			new BoolOption("Discord RPC", "discordRPC", FlxG.save.data.discordRPC, 5),
 			#end
 			new CutsceneOption("Cutscenes Play On", ["story","freeplay","both"], FlxG.save.data.cutscenePlays, 6),
-			new PlayAsOption("Play As", ["bf", "opponent"], FlxG.save.data.playAs, 7)
+			new PlayAsOption("Play As", ["bf", "opponent"], FlxG.save.data.playAs, 7),
+			new BoolOption("Camera Tracks Direction", "cameraTracksDirections", FlxG.save.data.cameraTracksDirections, 8),
+			new BoolOption("Camera Bounce", "cameraZooms", FlxG.save.data.cameraZooms, 9),
 		],
 		[
 			"Optimizations",

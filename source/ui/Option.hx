@@ -159,6 +159,10 @@ class BoolOption extends Option
 				Value = FlxG.save.data.extraKeyReminders;
 			case "useCustomScrollSpeed":
 				Value = FlxG.save.data.useCustomScrollSpeed;
+			case "cameraTracksDirections":
+				Value = FlxG.save.data.cameraTracksDirections;
+			case "cameraZooms":
+				Value = FlxG.save.data.cameraZooms;
 		}
 
 		return Value;
@@ -257,6 +261,10 @@ class BoolOption extends Option
 				FlxG.save.data.extraKeyReminders = !Option_Checked;
 			case "useCustomScrollSpeed":
 				FlxG.save.data.useCustomScrollSpeed = !Option_Checked;
+			case "cameraTracksDirections":
+				FlxG.save.data.cameraTracksDirections = !Option_Checked;
+			case "cameraZooms":
+				FlxG.save.data.cameraZooms = !Option_Checked;
 		}
 
         if(Option_Value != "muted")
