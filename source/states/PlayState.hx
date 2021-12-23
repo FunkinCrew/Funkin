@@ -3256,6 +3256,9 @@ class PlayState extends MusicBeatState
 			{
 				popUpScore(note.strumTime, note.noteData % SONG.keyCount, setNoteDiff);
 				combo += 1;
+
+				if(FlxG.save.data.hitsound != "none")
+					FlxG.sound.play(Paths.sound("hitsounds/" + Std.string(FlxG.save.data.hitsound).toLowerCase(), "shared"));
 			}
 			else if(!note.shouldHit)
 			{

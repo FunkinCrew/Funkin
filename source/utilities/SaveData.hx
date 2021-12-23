@@ -123,6 +123,9 @@ class SaveData {
 
         if(FlxG.save.data.scrollSpeed == null)
             FlxG.save.data.scrollSpeed = 1;
+
+        if(FlxG.save.data.hitsound == null)
+            FlxG.save.data.hitsound = "none";
         
         FlxG.save.flush();
 

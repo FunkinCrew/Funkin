@@ -1,5 +1,6 @@
 package states;
 
+import utilities.CoolUtil;
 import substates.UISkinSelect;
 import substates.ControlMenuSubstate;
 import modding.CharacterCreationState;
@@ -56,7 +57,8 @@ class OptionsMenu extends MusicBeatState
 			new BoolOption("Quick Restart", "quickRestart", FlxG.save.data.quickRestart, 9),
 			new BoolOption("No Death", "noDeath", FlxG.save.data.noDeath, 10),
 			new BoolOption("Use Custom Scrollspeed", "useCustomScrollSpeed", FlxG.save.data.useCustomScrollSpeed, 11),
-			new ScrollSpeedMenuOption("Custom Scroll Speed", 12)
+			new ScrollSpeedMenuOption("Custom Scroll Speed", 12),
+			new HitsoundOption("Hitsound", CoolUtil.coolTextFile(Paths.txt("hitsoundList")), FlxG.save.data.hitsound, 13)
 		],
 		[
 			"Graphics",

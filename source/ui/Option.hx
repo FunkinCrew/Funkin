@@ -703,3 +703,4 @@ class DisplayFontOption extends StringSaveOption { override function SetDataIGue
 class InputModeOption extends StringSaveOption { override function SetDataIGuess() { FlxG.save.data.inputMode = Data; super.SetDataIGuess(); } }
 class RatingModeOption extends StringSaveOption { override function SetDataIGuess() { FlxG.save.data.ratingMode = Data; super.SetDataIGuess(); } }
 class PlayAsOption extends StringSaveOption { override function SetDataIGuess() { FlxG.save.data.playAs = Data; super.SetDataIGuess(); } }
+class HitsoundOption extends StringSaveOption { override function SetDataIGuess() { FlxG.save.data.hitsound = Data; super.SetDataIGuess(); } }
