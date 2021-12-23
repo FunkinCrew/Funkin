@@ -87,7 +87,7 @@ class AnimationDebug extends MusicBeatState
 		animText.color = FlxColor.BLUE;
 		add(animText);
 
-		var moveText = new FlxText(2, 2, 0, "Use IJKL to move the camera", 20);
+		var moveText = new FlxText(2, 2, 0, "Use IJKL to move the camera\nE and Q to zoom the camera (ui zooms too tho oof)\n", 20);
 		moveText.x = FlxG.width - moveText.width;
 		moveText.scrollFactor.set();
 		moveText.color = FlxColor.BLUE;
