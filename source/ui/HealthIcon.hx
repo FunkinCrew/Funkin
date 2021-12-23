@@ -1,19 +1,14 @@
 package ui;
 
 import lime.utils.Assets;
-import flixel.FlxSprite;
 
-class HealthIcon extends FlxSprite
+class HealthIcon extends TrackerSprite
 {
-	/**
-	 * Used for FreeplayState! If you use it elsewhere, prob gonna annoying
-	 */
-	public var sprTracker:FlxSprite;
 	public var isPlayer:Bool = false;
 
 	public function new(char:String = 'bf', isPlayer:Bool = false)
 	{
-		super();
+		super(null, 10, -30, RIGHT);
 
 		this.isPlayer = isPlayer;
 
@@ -35,6 +30,8 @@ class HealthIcon extends FlxSprite
 			loadGraphic(Paths.image('icons/' + char + '-icons'), true, 150, 150);
 		else if(Assets.exists(Paths.image('icons/' + 'icon-' + char))) // PSYCH ICONS
 			loadGraphic(Paths.image('icons/' + 'icon-' + char), true, 150, 150);
+		else if(Assets.exists(Paths.image('icons/' + char))) // lmao image file names i guess if you're really lazy
+			loadGraphic(Paths.image('icons/' + 'icon-' + char), true, 150, 150);
 		else // UNKNOWN ICON
 			loadGraphic(Paths.image('icons/placeholder-icon'), true, 150, 150);
 
@@ -52,8 +49,5 @@ class HealthIcon extends FlxSprite
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
-
-		if (sprTracker != null)
-			setPosition(sprTracker.x + sprTracker.width + 10, sprTracker.y - 30);
 	}
 }
