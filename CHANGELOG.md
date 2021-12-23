@@ -12,6 +12,7 @@ All notable changes will be documented in this file.
 - Stage Editor.
 - Customizeable Hitsounds.
 - Camera Bounce and Camera Tracks Direction Settings.
+- Added missing when getting a shit rating as a setting.
 ### Changed
 - New Note Splash Sprites!
 ### Fixed

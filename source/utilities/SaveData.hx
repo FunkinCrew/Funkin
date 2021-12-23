@@ -132,6 +132,9 @@ class SaveData {
 
         if(FlxG.save.data.cameraZooms == null)
             FlxG.save.data.cameraZooms = true;
+
+        if(FlxG.save.data.missOnShit == null)
+            FlxG.save.data.missOnShit = true;
         
         FlxG.save.flush();
 

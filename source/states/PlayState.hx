@@ -2473,7 +2473,8 @@ class PlayState extends MusicBeatState
 				if(FlxG.save.data.antiMash)
 					health -= 0.075; // yes its more than a miss so that spamming with ghost tapping on is bad
 
-				misses += 1;
+				if(FlxG.save.data.missOnShit)
+					misses += 1;
 				combo = 0;
 		}
 

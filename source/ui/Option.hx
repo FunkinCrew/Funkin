@@ -163,6 +163,8 @@ class BoolOption extends Option
 				Value = FlxG.save.data.cameraTracksDirections;
 			case "cameraZooms":
 				Value = FlxG.save.data.cameraZooms;
+			case "missOnShit":
+				Value = FlxG.save.data.missOnShit;
 		}
 
 		return Value;
@@ -265,6 +267,8 @@ class BoolOption extends Option
 				FlxG.save.data.cameraTracksDirections = !Option_Checked;
 			case "cameraZooms":
 				FlxG.save.data.cameraZooms = !Option_Checked;
+			case "missOnShit":
+				FlxG.save.data.missOnShit = !Option_Checked;
 		}
 
         if(Option_Value != "muted")
