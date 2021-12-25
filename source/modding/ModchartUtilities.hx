@@ -1115,60 +1115,41 @@ class ModchartUtilities
                 return Reflect.getProperty(Reflect.getProperty(PlayState, object), property);
         });
 
-        // keys
+        Lua_helper.add_callback(lua, "getPropertyFromClass", function(className:String, variable:String) {
+			var variablePaths = variable.split(".");
 
-        Lua_helper.add_callback(lua,"anyKeyPressed", function() {
-            return FlxG.keys.anyPressed([
-                FlxKey.W, FlxKey.A, FlxKey.S, FlxKey.D,
-                FlxKey.UP, FlxKey.LEFT, FlxKey.DOWN, FlxKey.RIGHT,
-                FlxKey.fromString(FlxG.save.data.killBind),
-                Z, SPACE, ENTER,
-                BACKSPACE, ESCAPE,
-                P
-            ]);
-        });
-
-        Lua_helper.add_callback(lua,"keyPressed", function(key:String) {
-            @:privateAccess
-            switch(key.toLowerCase())
+            if(variablePaths.length > 1)
             {
-                case "left":
-                    return PlayState.instance.controls.LEFT;
-                case "down":
-                    return PlayState.instance.controls.DOWN;
-                case "up":
-                    return PlayState.instance.controls.UP;
-                case "right":
-                    return PlayState.instance.controls.RIGHT;
-                case "space":
-                    return PlayState.instance.controls.ACCEPT;
-                case "back":
-                    return PlayState.instance.controls.BACK;
+                var selectedVariable:Dynamic = Reflect.getProperty(Type.resolveClass(className), variablePaths[0]);
+
+                for (i in 1...variablePaths.length-1)
+                {
+					selectedVariable = Reflect.getProperty(selectedVariable, variablePaths[i]);
+				}
+
+				return Reflect.getProperty(selectedVariable, variablePaths[variablePaths.length - 1]);
             }
 
-            return false;
-        });
+            return Reflect.getProperty(Type.resolveClass(className), variable);
+		});
 
-        Lua_helper.add_callback(lua,"keyJustPressed", function(key:String) {
-            @:privateAccess
-            switch(key.toLowerCase())
+		Lua_helper.add_callback(lua, "setPropertyFromClass", function(className:String, variable:String, value:Dynamic) {
+            var variablePaths:Array<String> = variable.split('.');
+
+			if(variablePaths.length > 1)
             {
-                case "left":
-                    return PlayState.instance.controls.LEFT_P;
-                case "down":
-                    return PlayState.instance.controls.DOWN_P;
-                case "up":
-                    return PlayState.instance.controls.UP_P;
-                case "right":
-                    return PlayState.instance.controls.RIGHT_P;
-                case "space":
-                    return PlayState.instance.controls.ACCEPT;
-                case "back":
-                    return PlayState.instance.controls.BACK;
-            }
+				var selectedVariable:Dynamic = Reflect.getProperty(Type.resolveClass(className), variablePaths[0]);
 
-            return false;
-        });
+				for (i in 1...variablePaths.length-1)
+                {
+					selectedVariable = Reflect.getProperty(selectedVariable, variablePaths[i]);
+				}
+
+				return Reflect.setProperty(selectedVariable, variablePaths[variablePaths.length - 1], value);
+			}
+
+			return Reflect.setProperty(Type.resolveClass(className), variable, value);
+		});
 
         // default strums
 
