@@ -38,6 +38,8 @@ class StageMakingState extends MusicBeatState
     public var stage_Name:String = 'chromatic-stage';
     private var stage:StageGroup;
 
+    private var stageObjectPos:Array<FlxSprite> = [];
+
     public var stageData:StageData;
 
     private var bfChar:String = "bf";
@@ -152,7 +154,7 @@ class StageMakingState extends MusicBeatState
         stage_Dropdown.scrollFactor.set();
         stage_Dropdown.cameras = [camHUD];
 
-        cam_Zoom = new FlxText(10, 0, 0, "Camera Zoom: " + stageCam.zoom + "\nSelected Object: " + objects[selectedObject] + "\n", 24);
+        cam_Zoom = new FlxText(10, 0, 0, "Camera Zoom: " + stageCam.zoom, 24);
         cam_Zoom.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
         cam_Zoom.scrollFactor.set();
         cam_Zoom.cameras = [camHUD];
@@ -444,7 +446,7 @@ class StageMakingState extends MusicBeatState
                     if(selectedObject != 0 && !(selected == bf_Pos || selected == dad_Pos || selected == gf_Pos))
                     {
                         var Object = stageData.objects[selectedObject - 1];
-                        var Sprite = selected;
+                        var Sprite:Dynamic = stage.members[selectedObject - 1];
 
                         if(Object.updateHitbox || Object.updateHitbox == null)
                         {
@@ -471,7 +473,7 @@ class StageMakingState extends MusicBeatState
                     if(selectedObject != 0 || selected == bf_Pos || selected == dad_Pos || selected == gf_Pos)
                     {
                         if(!(selected == bf_Pos || selected == dad_Pos || selected == gf_Pos))
-                            Reflect.setProperty(selected, "alpha", nums.value);
+                            Reflect.setProperty(stage.stage_Objects[selectedObject - 1][1], "alpha", nums.value);
                         else
                         {
                             if(selected == bf_Pos)
@@ -494,111 +496,92 @@ class StageMakingState extends MusicBeatState
     override public function update(elapsed:Float) {
         super.update(elapsed);
 
-        var prevSelected = selectedObject;
-
-        if(!fileInput.hasFocus)
+        if(selectedObject != 0)
         {
-            if(controls.RIGHT_P)
-                selectedObject += 1;
-            if(controls.LEFT_P)
-                selectedObject -= 1;
-            if(controls.RESET)
-                selectedObject = 0;
-        }
+            var objectName:String = objects[selectedObject];
 
-        if(selectedObject < 0)
-            selectedObject = objects.length - 1;
-        if(selectedObject > objects.length - 1)
-            selectedObject = 0;
-
-        if(prevSelected != selectedObject)
-        {
-            if(selectedObject == 0)
-                selectedThing = false;
-            else
+            for(objectArray in stage.stage_Objects)
             {
-                var objectName:String = objects[selectedObject];
-
-                for(objectArray in stage.stage_Objects)
+                if(objectArray[0] == objectName)
                 {
-                    if(objectArray[0] == objectName)
-                    {
-                        selectedThing = true;
-                        selected = objectArray[1];
+                    selectedThing = true;
+                    selected = objectArray[1];
 
-                        xStepper.value = selected.x;
-                        yStepper.value = selected.y;
+                    xStepper.value = selected.x;
+                    yStepper.value = selected.y;
 
-                        scaleStepper.value = stageData.objects[selectedObject - 1].scale;
+                    scaleStepper.value = stageData.objects[selectedObject - 1].scale;
 
-                        if(stageData.objects[selectedObject - 1].alpha == null)
-                            stageData.objects[selectedObject - 1].alpha = 1;
+                    if(stageData.objects[selectedObject - 1].alpha == null)
+                        stageData.objects[selectedObject - 1].alpha = 1;
 
-                        alphaStepper.value = stageData.objects[selectedObject - 1].alpha;
+                    alphaStepper.value = stageData.objects[selectedObject - 1].alpha;
 
-                        fileInput.text = stageData.objects[selectedObject - 1].file_Name;
-                        prevFileName = fileInput.text;
-                    }
+                    fileInput.text = stageData.objects[selectedObject - 1].file_Name;
+                    prevFileName = fileInput.text;
                 }
             }
         }
 
-        if(prevFileName != fileInput.text)
+        if(selectedObject != 0)
         {
-            stageData.objects[selectedObject - 1].file_Name = fileInput.text;
-
-            if(selectedObject != 0 && !(selected == bf_Pos || selected == dad_Pos || selected == gf_Pos))
+            if(prevFileName != fileInput.text)
             {
-                var Object:StageObject = stageData.objects[selectedObject - 1];
-                var Sprite:Dynamic = selected;
-
-                if(Object.updateHitbox || Object.updateHitbox == null)
+                stageData.objects[selectedObject - 1].file_Name = fileInput.text;
+    
+                if(selectedObject != 0 && !(selected == bf_Pos || selected == dad_Pos || selected == gf_Pos))
                 {
-                    if(Object.uses_Frame_Width)
-                        Sprite.setGraphicSize(Std.int(Sprite.frameWidth / Object.scale));
-                    else
-                        Sprite.setGraphicSize(Std.int(Sprite.width / Object.scale));
-                }
-
-                if(Object.updateHitbox || Object.updateHitbox == null)
-                    Sprite.updateHitbox();
-
-                if(Object.is_Animated)
-                {
-                    Sprite.frames = Paths.getSparrowAtlas(stage_Name + "/" + fileInput.text, "stages");
-
-                    for(Animation in Object.animations)
+                    var Object:StageObject = stageData.objects[selectedObject - 1];
+                    var Sprite:Dynamic = selected;
+    
+                    if(Object.updateHitbox || Object.updateHitbox == null)
                     {
-                        var Anim_Name = Animation.name;
-
-                        @:privateAccess
-                        if(Animation.name == "beatHit")
-                            stage.onBeatHit_Group.add(Sprite);
-
-                        Sprite.animation.addByPrefix(
-                            Anim_Name,
-                            Animation.animation_name,
-                            Animation.fps,
-                            Animation.looped
-                        );
+                        if(Object.uses_Frame_Width)
+                            Sprite.setGraphicSize(Std.int(Sprite.frameWidth / Object.scale));
+                        else
+                            Sprite.setGraphicSize(Std.int(Sprite.width / Object.scale));
                     }
-
-                    if(Object.start_Animation != "" && Object.start_Animation != null && Object.start_Animation != "null")
-                        Sprite.animation.play(Object.start_Animation);
+    
+                    if(Object.updateHitbox || Object.updateHitbox == null)
+                        Sprite.updateHitbox();
+    
+                    if(Object.is_Animated)
+                    {
+                        Sprite.frames = Paths.getSparrowAtlas(stage_Name + "/" + fileInput.text, "stages");
+    
+                        for(Animation in Object.animations)
+                        {
+                            var Anim_Name = Animation.name;
+    
+                            @:privateAccess
+                            if(Animation.name == "beatHit")
+                                stage.onBeatHit_Group.add(Sprite);
+    
+                            Sprite.animation.addByPrefix(
+                                Anim_Name,
+                                Animation.animation_name,
+                                Animation.fps,
+                                Animation.looped
+                            );
+                        }
+    
+                        if(Object.start_Animation != "" && Object.start_Animation != null && Object.start_Animation != "null")
+                            Sprite.animation.play(Object.start_Animation);
+                    }
+                    else
+                        Sprite.loadGraphic(Paths.image(stage_Name + "/" + fileInput.text, "stages"));
+    
+                    if(Object.updateHitbox || Object.updateHitbox == null)
+                        Sprite.updateHitbox();
+    
+                    if(Object.uses_Frame_Width)
+                        Sprite.setGraphicSize(Std.int(Sprite.frameWidth * Object.scale));
+                    else
+                        Sprite.setGraphicSize(Std.int(Sprite.width * Object.scale));
+    
+                    if(Object.updateHitbox || Object.updateHitbox == null)
+                        Sprite.updateHitbox();
                 }
-                else
-                    Sprite.loadGraphic(Paths.image(stage_Name + "/" + fileInput.text, "stages"));
-
-                if(Object.updateHitbox || Object.updateHitbox == null)
-                    Sprite.updateHitbox();
-
-                if(Object.uses_Frame_Width)
-                    Sprite.setGraphicSize(Std.int(Sprite.frameWidth * Object.scale));
-                else
-                    Sprite.setGraphicSize(Std.int(Sprite.width * Object.scale));
-
-                if(Object.updateHitbox || Object.updateHitbox == null)
-                    Sprite.updateHitbox();
             }
         }
 
@@ -612,6 +595,8 @@ class StageMakingState extends MusicBeatState
             xStepper.value = selected.x;
             yStepper.value = selected.y;
             alphaStepper.value = bf.alpha;
+
+            selectedObject = 0;
         }
         else if(FlxG.mouse.overlaps(gf_Pos) && FlxG.mouse.pressed && !selectedThing)
         {
@@ -621,6 +606,8 @@ class StageMakingState extends MusicBeatState
             xStepper.value = selected.x;
             yStepper.value = selected.y;
             alphaStepper.value = gf.alpha;
+
+            selectedObject = 0;
         }
         else if(FlxG.mouse.overlaps(dad_Pos) && FlxG.mouse.pressed && !selectedThing)
         {
@@ -630,6 +617,27 @@ class StageMakingState extends MusicBeatState
             xStepper.value = selected.x;
             yStepper.value = selected.y;
             alphaStepper.value = dad.alpha;
+
+            selectedObject = 0;
+        }
+        else if(FlxG.mouse.pressed && !selectedThing)
+        {
+            for(spriteIndex in 0...stageObjectPos.length) {
+                var sprite = stageObjectPos[spriteIndex];
+
+                if(FlxG.mouse.overlaps(sprite))
+                {
+                    selectedObject = spriteIndex + 1;
+
+                    selectedThing = true;
+                    selected = sprite;
+                    
+                    xStepper.value = selected.x;
+                    yStepper.value = selected.y;
+                    
+                    alphaStepper.value = Reflect.getProperty(stage.members[selectedObject - 1], "alpha");
+                }
+            }
         }
 
         if(!FlxG.mouse.pressed)
@@ -680,9 +688,22 @@ class StageMakingState extends MusicBeatState
                 if(stageData != null)
                 {
                     stageData.objects[selectedObject - 1].position = [selected.x, selected.y];
+
+                    Reflect.setProperty(stage.members[selectedObject - 1], "x", selected.x);
+                    Reflect.setProperty(stage.members[selectedObject - 1], "y", selected.y);
+
+                    alphaStepper.value = Reflect.getProperty(stage.members[selectedObject - 1], "alpha");
+
                     scaleStepper.value = stageData.objects[selectedObject - 1].scale;
                 }
             }
+        }
+
+        for(spriteIndex in 0...stageObjectPos.length) {
+            var sprite = stageObjectPos[spriteIndex];
+
+            if(stageData.objects[spriteIndex].scroll_Factor != null)
+                sprite.scrollFactor.set(stageData.objects[spriteIndex].scroll_Factor[0], stageData.objects[spriteIndex].scroll_Factor[1]);
         }
 
         bf_Pos.setPosition(stage.player_1_Point.x, stage.player_1_Point.y);
@@ -738,7 +759,7 @@ class StageMakingState extends MusicBeatState
         // da math
         zoom = FlxMath.roundDecimal(stageCam.zoom, 1);
 
-        cam_Zoom.text = "Camera Zoom: " + zoom + "\nSelected Object: " + objects[selectedObject] + "\nLEFT and RIGHT to switch Objects\nR to reset selected object to none\nIJKL to move camera\nE and Q to zoom\nSHIFT for faster camera\n";
+        cam_Zoom.text = "Camera Zoom: " + zoom + "\nLEFT and RIGHT to switch Objects\nIJKL to move camera\nE and Q to zoom\nSHIFT for faster camera\n";
         cam_Zoom.x = FlxG.width - cam_Zoom.width - 2;
     }
 
@@ -825,6 +846,19 @@ class StageMakingState extends MusicBeatState
         add(gf_Pos);
         add(dad_Pos);
 
+        for(objectArray in stage.stage_Objects)
+        {
+            objects.push(objectArray[0]);
+
+            var sprite = objectArray[1];
+
+            var pos = new FlxSprite(sprite.x, sprite.y);
+            pos.makeGraphic(32, 32, FlxColor.RED);
+            add(pos);
+
+            stageObjectPos.push(pos);
+        }
+
         add(UI_box);
 
         add(stage_Label);
@@ -851,11 +885,6 @@ class StageMakingState extends MusicBeatState
 
         add(fileInput);
         add(file_Label);
-
-        for(objectArray in stage.stage_Objects)
-        {
-            objects.push(objectArray[0]);
-        }
     }
 
     override function beatHit()

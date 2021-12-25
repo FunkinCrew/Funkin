@@ -74,6 +74,8 @@ class TrackerSprite extends FlxSprite
                     setPosition((sprTracker.x + (sprTracker.width / 2) - (width / 2)), sprTracker.y - sprTracker.height + yOffset);
                 case DOWN:
                     setPosition((sprTracker.x + (sprTracker.width / 2) - (width / 2)), sprTracker.y + sprTracker.height - yOffset);
+                case NONE:
+                    setPosition(x,y); // do nothing lol
             }
         }
     }
@@ -87,4 +89,5 @@ enum TrackerDirection {
     LEFT;
     UP;
     DOWN;
+    NONE;
 }

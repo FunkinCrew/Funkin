@@ -1021,6 +1021,7 @@ class PlayState extends MusicBeatState
 	{
 		inCutscene = false;
 		paused = false;
+		canPause = true;
 
 		if(FlxG.save.data.middleScroll)
 		{
