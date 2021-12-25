@@ -118,6 +118,8 @@ class PauseSubState extends MusicBeatSubstate
 		cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
 	}
 
+	var justPressedAcceptLol:Bool = true;
+
 	override function update(elapsed:Float)
 	{
 		if (pauseMusic.volume < 0.5)
@@ -128,6 +130,9 @@ class PauseSubState extends MusicBeatSubstate
 		var upP = controls.UP_P;
 		var downP = controls.DOWN_P;
 		var accepted = controls.ACCEPT;
+
+		if(!accepted)
+			justPressedAcceptLol = false;
 
 		switch(warningAmountLols)
 		{
@@ -150,8 +155,10 @@ class PauseSubState extends MusicBeatSubstate
 		if (downP)
 			changeSelection(1);
 
-		if (accepted)
+		if(accepted && !justPressedAcceptLol)
 		{
+			justPressedAcceptLol = true;
+
 			var daSelected:String = menus.get(menu)[curSelected];
 
 			switch(daSelected.toLowerCase())
