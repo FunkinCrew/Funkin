@@ -595,8 +595,6 @@ class PlayState extends MusicBeatState
 			FlxG.camera.focusOn(camFollow.getPosition());
 		}
 
-		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
-
 		FlxG.fixedTimestep = false;
 
 		var healthBarPosY = FlxG.height * 0.9;
