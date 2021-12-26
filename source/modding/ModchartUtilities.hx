@@ -216,6 +216,8 @@ class ModchartUtilities
 
         setVar("mustHit", false);
         setVar("strumLineY", PlayState.instance.strumLine.y);
+
+        setVar("inReplay", PlayState.playingReplay);
         
         // callbacks
 
