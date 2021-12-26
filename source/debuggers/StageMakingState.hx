@@ -86,6 +86,9 @@ class StageMakingState extends MusicBeatState
     private var fileInput:FlxUIInputText;
     private var file_Label:FlxText;
 
+    private var scrollStepper:FlxUINumericStepper;
+    private var scroll_Label:FlxText;
+
     private var UI_box:FlxUITabMenu;
 
     private var startY:Int = 50;
@@ -218,6 +221,16 @@ class StageMakingState extends MusicBeatState
         file_Label = new FlxText(fileInput.x + fileInput.width + 2, fileInput.y - 2, 0, "File Name", 10);
         file_Label.scrollFactor.set();
         file_Label.cameras = [camHUD];
+
+        scrollStepper = new FlxUINumericStepper(fileInput.x, fileInput.y + fileInput.height + 2, 0.05, 0, 0, 10, 2);
+		scrollStepper.value = 0;
+        scrollStepper.name = "scroll_stepper";
+        scrollStepper.scrollFactor.set();
+        scrollStepper.cameras = [camHUD];
+
+        scroll_Label = new FlxText(scrollStepper.x + scrollStepper.width + 2, scrollStepper.y - 2, 0, "Scroll Factor", 10);
+        scroll_Label.scrollFactor.set();
+        scroll_Label.cameras = [camHUD];
 
         var characterData:Array<String> = CoolUtil.coolTextFile(Paths.txt('characterList'));
 
@@ -489,6 +502,15 @@ class StageMakingState extends MusicBeatState
                         if(!(selected == bf_Pos || selected == dad_Pos || selected == gf_Pos))
                             stageData.objects[selectedObject - 1].alpha = nums.value;
                     }
+                case 'scroll_stepper':
+                    if(selectedObject != 0 && !(selected == bf_Pos || selected == dad_Pos || selected == gf_Pos))
+                    {
+                        var cool:Dynamic = stage.stage_Objects[selectedObject - 1][1];
+
+                        cool.scrollFactor.set(nums.value, nums.value);
+
+                        stageData.objects[selectedObject - 1].scroll_Factor = [nums.value, nums.value];
+                    }
 			}
         }
     }
@@ -507,7 +529,7 @@ class StageMakingState extends MusicBeatState
                 if(selectedObject != 0 && !(selected == bf_Pos || selected == dad_Pos || selected == gf_Pos))
                 {
                     var Object:StageObject = stageData.objects[selectedObject - 1];
-                    var Sprite:Dynamic = selected;
+                    var Sprite:Dynamic = stage.members[selectedObject - 1];
     
                     if(Object.updateHitbox || Object.updateHitbox == null)
                     {
@@ -570,6 +592,7 @@ class StageMakingState extends MusicBeatState
             xStepper.value = selected.x;
             yStepper.value = selected.y;
             alphaStepper.value = bf.alpha;
+            scrollStepper.value = bf.scrollFactor.x;
 
             selectedObject = 0;
         }
@@ -581,6 +604,7 @@ class StageMakingState extends MusicBeatState
             xStepper.value = selected.x;
             yStepper.value = selected.y;
             alphaStepper.value = gf.alpha;
+            scrollStepper.value = gf.scrollFactor.x;
 
             selectedObject = 0;
         }
@@ -592,6 +616,7 @@ class StageMakingState extends MusicBeatState
             xStepper.value = selected.x;
             yStepper.value = selected.y;
             alphaStepper.value = dad.alpha;
+            scrollStepper.value = dad.scrollFactor.x;
 
             selectedObject = 0;
         }
@@ -610,8 +635,11 @@ class StageMakingState extends MusicBeatState
                     
                     xStepper.value = selected.x;
                     yStepper.value = selected.y;
+
+                    var cool:Dynamic = stage.members[selectedObject - 1];
                     
-                    alphaStepper.value = Reflect.getProperty(stage.members[selectedObject - 1], "alpha");
+                    alphaStepper.value = cool.alpha;
+                    scrollStepper.value = cool.scrollFactor.x;
                 }
             }
         }
@@ -627,6 +655,7 @@ class StageMakingState extends MusicBeatState
             yStepper.value = selected.y;
 
             alphaStepper.value = selected.alpha;
+            scrollStepper.value = selected.scrollFactor.x;
 
             if(selected == bf_Pos)
             {
@@ -671,6 +700,10 @@ class StageMakingState extends MusicBeatState
                     alphaStepper.value = coolMan.alpha;
 
                     scaleStepper.value = stageData.objects[selectedObject - 1].scale;
+
+                    scrollStepper.value = coolMan.scrollFactor.x;
+
+                    fileInput.text = stageData.objects[selectedObject - 1].file_Name;
                 }
             }
         }
@@ -685,6 +718,15 @@ class StageMakingState extends MusicBeatState
         bf_Pos.setPosition(stage.player_1_Point.x, stage.player_1_Point.y);
         gf_Pos.setPosition(stage.gf_Point.x, stage.gf_Point.y);
         dad_Pos.setPosition(stage.player_2_Point.x, stage.player_2_Point.y);
+
+        if(bf != null)
+            bf_Pos.scrollFactor.set(bf.scrollFactor.x, bf.scrollFactor.y);
+
+        if(gf != null)
+            gf_Pos.scrollFactor.set(gf.scrollFactor.x, gf.scrollFactor.y);
+
+        if(dad != null)
+            dad_Pos.scrollFactor.set(dad.scrollFactor.x, dad.scrollFactor.y);
 
         var shiftThing:Int = FlxG.keys.pressed.SHIFT ? 5 : 1;
 
@@ -862,6 +904,9 @@ class StageMakingState extends MusicBeatState
 
         add(fileInput);
         add(file_Label);
+
+        add(scrollStepper);
+        add(scroll_Label);
     }
 
     override function beatHit()
