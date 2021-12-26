@@ -113,6 +113,8 @@ class StageMakingState extends MusicBeatState
 
     override public function create()
     {
+        FlxG.mouse.visible = true;
+
         stageCam = new FlxCamera();
         camHUD = new FlxCamera();
         camHUD.bgColor.alpha = 0;
@@ -498,33 +500,6 @@ class StageMakingState extends MusicBeatState
 
         if(selectedObject != 0)
         {
-            var objectName:String = objects[selectedObject];
-
-            for(objectArray in stage.stage_Objects)
-            {
-                if(objectArray[0] == objectName)
-                {
-                    selectedThing = true;
-                    selected = objectArray[1];
-
-                    xStepper.value = selected.x;
-                    yStepper.value = selected.y;
-
-                    scaleStepper.value = stageData.objects[selectedObject - 1].scale;
-
-                    if(stageData.objects[selectedObject - 1].alpha == null)
-                        stageData.objects[selectedObject - 1].alpha = 1;
-
-                    alphaStepper.value = stageData.objects[selectedObject - 1].alpha;
-
-                    fileInput.text = stageData.objects[selectedObject - 1].file_Name;
-                    prevFileName = fileInput.text;
-                }
-            }
-        }
-
-        if(selectedObject != 0)
-        {
             if(prevFileName != fileInput.text)
             {
                 stageData.objects[selectedObject - 1].file_Name = fileInput.text;
@@ -622,13 +597,14 @@ class StageMakingState extends MusicBeatState
         }
         else if(FlxG.mouse.pressed && !selectedThing)
         {
-            for(spriteIndex in 0...stageObjectPos.length) {
+            for(spriteIndex in 0...stageObjectPos.length)
+            {
                 var sprite = stageObjectPos[spriteIndex];
 
-                if(FlxG.mouse.overlaps(sprite))
+                if(FlxG.mouse.overlaps(sprite) && FlxG.mouse.pressed && !selectedThing)
                 {
                     selectedObject = spriteIndex + 1;
-
+                    
                     selectedThing = true;
                     selected = sprite;
                     
@@ -639,11 +615,10 @@ class StageMakingState extends MusicBeatState
                 }
             }
         }
-
-        if(!FlxG.mouse.pressed)
+        else if(!FlxG.mouse.pressed)
             selectedThing = false;
 
-        if(selectedThing)
+        if(FlxG.mouse.pressed && selectedThing)
         {
             selected.x = FlxG.mouse.x - selected.frameWidth / 2;
             selected.y = FlxG.mouse.y - selected.frameHeight / 2;
@@ -689,10 +664,11 @@ class StageMakingState extends MusicBeatState
                 {
                     stageData.objects[selectedObject - 1].position = [selected.x, selected.y];
 
-                    Reflect.setProperty(stage.members[selectedObject - 1], "x", selected.x);
-                    Reflect.setProperty(stage.members[selectedObject - 1], "y", selected.y);
+                    var coolMan:Dynamic = stage.members[selectedObject - 1];
 
-                    alphaStepper.value = Reflect.getProperty(stage.members[selectedObject - 1], "alpha");
+                    coolMan.setPosition(selected.x, selected.y);
+
+                    alphaStepper.value = coolMan.alpha;
 
                     scaleStepper.value = stageData.objects[selectedObject - 1].scale;
                 }
@@ -766,6 +742,7 @@ class StageMakingState extends MusicBeatState
     function reloadStage()
     {
         objects = [""];
+        stageObjectPos = [];
         selectedObject = 0;
 
         clear();
