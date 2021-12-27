@@ -1,5 +1,7 @@
 package states;
 
+import openfl.display.BitmapData;
+import flixel.graphics.FlxGraphic;
 #if sys
 import sys.FileSystem;
 #end
@@ -244,8 +246,13 @@ class PlayState extends MusicBeatState
 
 	public var characterPlayingAs:Int = 0;
 
+	var hitSoundString:String = FlxG.save.data.hitsound;
+
 	override public function create()
 	{
+		if(hitSoundString != "none")
+			hitsound = FlxG.sound.load(Paths.sound("hitsounds/" + Std.string(hitSoundString).toLowerCase(), "shared"));
+
 		switch(FlxG.save.data.playAs)
 		{
 			case "bf":
@@ -260,7 +267,7 @@ class PlayState extends MusicBeatState
 
 		instance = this;
 
-		if(FlxG.save.data.bot)
+		if(bot)
 			hasUsedBot = true;
 
 		if(FlxG.save.data.noDeath)
@@ -408,6 +415,17 @@ class PlayState extends MusicBeatState
 		{
 			splash_Texture = Paths.getSparrowAtlas("ui skins/default/arrows/Note_Splashes", 'shared');
 			splashesSettings = CoolUtil.coolTextFile(Paths.txt("ui skins/default/config"));
+		}
+
+		uiMap.set("marvelous", BitmapData.fromFile(PolymodAssets.getPath(Paths.image("ui skins/" + SONG.ui_Skin + "/ratings/" + "marvelous"))));
+		uiMap.set("sick", BitmapData.fromFile(PolymodAssets.getPath(Paths.image("ui skins/" + SONG.ui_Skin + "/ratings/" + "sick"))));
+		uiMap.set("good", BitmapData.fromFile(PolymodAssets.getPath(Paths.image("ui skins/" + SONG.ui_Skin + "/ratings/" + "good"))));
+		uiMap.set("bad", BitmapData.fromFile(PolymodAssets.getPath(Paths.image("ui skins/" + SONG.ui_Skin + "/ratings/" + "bad"))));
+		uiMap.set("shit", BitmapData.fromFile(PolymodAssets.getPath(Paths.image("ui skins/" + SONG.ui_Skin + "/ratings/" + "shit"))));
+
+		for(i in 0...10)
+		{
+			uiMap.set(Std.string(i), BitmapData.fromFile(PolymodAssets.getPath(Paths.image("ui skins/" + SONG.ui_Skin + "/numbers/num" + Std.string(i)))));	
 		}
 
 		if(SONG.gf == null)
@@ -643,7 +661,7 @@ class PlayState extends MusicBeatState
 		timeBar.pixelPerfectPosition = true;
 		add(timeBar);
 
-		infoTxt = new FlxText(0, 0, 0, SONG.song + " - " + storyDifficultyStr + (FlxG.save.data.bot ? " (BOT)" : ""), 20);
+		infoTxt = new FlxText(0, 0, 0, SONG.song + " - " + storyDifficultyStr + (bot ? " (BOT)" : ""), 20);
 		infoTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		infoTxt.screenCenter(X);
 		
@@ -1567,7 +1585,7 @@ class PlayState extends MusicBeatState
 
 	override public function update(elapsed:Float)
 	{
-		infoTxt.text = SONG.song + " - " + storyDifficultyStr + (FlxG.save.data.bot ? " (BOT)" : "") + (playingReplay ? " (REPLAY)" : "");
+		infoTxt.text = SONG.song + " - " + storyDifficultyStr + (bot ? " (BOT)" : "") + (playingReplay ? " (REPLAY)" : "");
 		infoTxt.screenCenter(X);
 
 		if(stopSong && !switchedStates)
@@ -2468,11 +2486,15 @@ class PlayState extends MusicBeatState
 	var numbers:Array<FlxSprite> = [];
 	var number_Tweens:Array<VarTween> = [];
 
+	var bot:Bool = FlxG.save.data.bot;
+
+	var uiMap:Map<String, BitmapData> = [];
+
 	private function popUpScore(strumtime:Float, noteData:Int, ?setNoteDiff:Float):Void
 	{
 		var noteDiff:Float = (strumtime - Conductor.songPosition);
 
-		if(FlxG.save.data.bot)
+		if(bot)
 			noteDiff = 0;
 
 		if(setNoteDiff != null)
@@ -2540,7 +2562,9 @@ class PlayState extends MusicBeatState
 		songScore += score;
 
 		rating.alpha = 1;
-		rating.loadGraphic(Paths.image("ui skins/" + SONG.ui_Skin + "/ratings/" + daRating, 'shared'));
+
+		rating.loadGraphic(uiMap.get(daRating), false, 0, 0, true, daRating);
+
 		rating.screenCenter();
 		rating.x -= (FlxG.save.data.middleScroll ? 350 : (characterPlayingAs == 0 ? 0 : -150));
 		rating.y -= 60;
@@ -2556,7 +2580,7 @@ class PlayState extends MusicBeatState
 		if(FlxG.save.data.msText)
 		{
 			accuracyText.setPosition(rating.x, rating.y + 100);
-			accuracyText.text = noteMath + " ms" + (FlxG.save.data.bot ? " (BOT)" : "");
+			accuracyText.text = noteMath + " ms" + (bot ? " (BOT)" : "");
 
 			accuracyText.cameras = [camHUD];
 
@@ -2574,7 +2598,7 @@ class PlayState extends MusicBeatState
 
 		rating.cameras = [camHUD];
 
-		var comboSpr:FlxSprite = new FlxSprite().loadGraphic(Paths.image("ui skins/" + SONG.ui_Skin + "/ratings/combo", 'shared'));
+		var comboSpr:FlxSprite = new FlxSprite()/*.loadGraphic(Paths.image("ui skins/" + SONG.ui_Skin + "/ratings/combo", 'shared'))*/;
 		comboSpr.screenCenter();
 		comboSpr.acceleration.y = 600;
 		comboSpr.velocity.y -= 150;
@@ -2609,7 +2633,9 @@ class PlayState extends MusicBeatState
 			var numScore = numbers[daLoop];
 
 			numScore.alpha = 1;
-			numScore.loadGraphic(Paths.image("ui skins/" + SONG.ui_Skin + "/numbers/num" + Std.int(i), 'shared'));
+
+			numScore.loadGraphic(uiMap.get(Std.string(i)), false, 0, 0, true, Std.string(i));
+			
 			numScore.screenCenter();
 			numScore.x -= (FlxG.save.data.middleScroll ? 350 : (characterPlayingAs == 0 ? 0 : -150));
 
@@ -2717,7 +2743,7 @@ class PlayState extends MusicBeatState
 	{
 		if(generatedMusic && startedCountdown)
 		{
-			if(!FlxG.save.data.bot)
+			if(!bot)
 			{
 				var bruhBinds:Array<String> = ["LEFT","DOWN","UP","RIGHT"];
 
@@ -3196,7 +3222,7 @@ class PlayState extends MusicBeatState
 				canMiss = true;
 		}
 
-		if(canMiss && !invincible && !FlxG.save.data.bot)
+		if(canMiss && !invincible && !bot)
 		{
 			if(note != null)
 			{
@@ -3292,6 +3318,8 @@ class PlayState extends MusicBeatState
 		}
 	}
 
+	var hitsound:FlxSound;
+
 	function goodNoteHit(note:Note, ?setNoteDiff:Float):Void
 	{
 		if (!note.wasGoodHit)
@@ -3301,8 +3329,8 @@ class PlayState extends MusicBeatState
 				popUpScore(note.strumTime, note.noteData % SONG.keyCount, setNoteDiff);
 				combo += 1;
 
-				if(FlxG.save.data.hitsound != "none")
-					FlxG.sound.play(Paths.sound("hitsounds/" + Std.string(FlxG.save.data.hitsound).toLowerCase(), "shared"));
+				if(hitSoundString != "none")
+					hitsound.play(true);
 			}
 			else if(!note.shouldHit)
 			{
