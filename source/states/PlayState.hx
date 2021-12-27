@@ -2498,7 +2498,7 @@ class PlayState extends MusicBeatState
 			noteDiff = 0;
 
 		if(setNoteDiff != null)
-			noteDiff = setNoteDiff;//
+			noteDiff = setNoteDiff;
 
 		if(!playingReplay)
 			replay.recordKeyHit(noteData, strumtime, noteDiff);
