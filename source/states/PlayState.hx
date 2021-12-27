@@ -259,7 +259,7 @@ class PlayState extends MusicBeatState
 				characterPlayingAs = 0;
 			case "opponent":
 				characterPlayingAs = 1;
-			case "both":
+			case "FlxG.save.data.both":
 				characterPlayingAs = -1;
 			default:
 				characterPlayingAs = 0;
@@ -267,7 +267,7 @@ class PlayState extends MusicBeatState
 
 		instance = this;
 
-		if(bot)
+		if(FlxG.save.data.bot)
 			hasUsedBot = true;
 
 		if(FlxG.save.data.noDeath)
@@ -661,7 +661,7 @@ class PlayState extends MusicBeatState
 		timeBar.pixelPerfectPosition = true;
 		add(timeBar);
 
-		infoTxt = new FlxText(0, 0, 0, SONG.song + " - " + storyDifficultyStr + (bot ? " (BOT)" : ""), 20);
+		infoTxt = new FlxText(0, 0, 0, SONG.song + " - " + storyDifficultyStr + (FlxG.save.data.bot ? " (FlxG.save.data.bot)" : ""), 20);
 		infoTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		infoTxt.screenCenter(X);
 		
@@ -708,7 +708,7 @@ class PlayState extends MusicBeatState
 
 		startingSong = true;
 
-		playCutsceneLmao = (!playingReplay && ((isStoryMode && FlxG.save.data.cutscenePlays == "story") || (!isStoryMode && FlxG.save.data.cutscenePlays == "freeplay") || (FlxG.save.data.cutscenePlays == "both")) && !fromPauseMenu);
+		playCutsceneLmao = (!playingReplay && ((isStoryMode && FlxG.save.data.cutscenePlays == "story") || (!isStoryMode && FlxG.save.data.cutscenePlays == "freeplay") || (FlxG.save.data.cutscenePlays == "FlxG.save.data.both")) && !fromPauseMenu);
 
 		if (playCutsceneLmao)
 		{
@@ -1585,7 +1585,7 @@ class PlayState extends MusicBeatState
 
 	override public function update(elapsed:Float)
 	{
-		infoTxt.text = SONG.song + " - " + storyDifficultyStr + (bot ? " (BOT)" : "") + (playingReplay ? " (REPLAY)" : "");
+		infoTxt.text = SONG.song + " - " + storyDifficultyStr + (FlxG.save.data.bot ? " (FlxG.save.data.bot)" : "") + (playingReplay ? " (REPLAY)" : "");
 		infoTxt.screenCenter(X);
 
 		if(stopSong && !switchedStates)
@@ -2486,15 +2486,13 @@ class PlayState extends MusicBeatState
 	var numbers:Array<FlxSprite> = [];
 	var number_Tweens:Array<VarTween> = [];
 
-	var bot:Bool = FlxG.save.data.bot;
-
 	var uiMap:Map<String, BitmapData> = [];
 
 	private function popUpScore(strumtime:Float, noteData:Int, ?setNoteDiff:Float):Void
 	{
 		var noteDiff:Float = (strumtime - Conductor.songPosition);
 
-		if(bot)
+		if(FlxG.save.data.bot)
 			noteDiff = 0;
 
 		if(setNoteDiff != null)
@@ -2580,7 +2578,7 @@ class PlayState extends MusicBeatState
 		if(FlxG.save.data.msText)
 		{
 			accuracyText.setPosition(rating.x, rating.y + 100);
-			accuracyText.text = noteMath + " ms" + (bot ? " (BOT)" : "");
+			accuracyText.text = noteMath + " ms" + (FlxG.save.data.bot ? " (FlxG.save.data.bot)" : "");
 
 			accuracyText.cameras = [camHUD];
 
@@ -2743,7 +2741,7 @@ class PlayState extends MusicBeatState
 	{
 		if(generatedMusic && startedCountdown)
 		{
-			if(!bot)
+			if(!FlxG.save.data.bot)
 			{
 				var bruhBinds:Array<String> = ["LEFT","DOWN","UP","RIGHT"];
 
@@ -3222,7 +3220,7 @@ class PlayState extends MusicBeatState
 				canMiss = true;
 		}
 
-		if(canMiss && !invincible && !bot)
+		if(canMiss && !invincible && !FlxG.save.data.bot)
 		{
 			if(note != null)
 			{
