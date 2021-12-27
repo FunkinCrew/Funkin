@@ -98,9 +98,13 @@ class DialogueBox extends FlxSpriteGroup
 		portraitLeft.setGraphicSize(Std.int(portraitLeft.width * PlayState.daPixelZoom * 0.9));
 		portraitLeft.updateHitbox();
 		portraitLeft.scrollFactor.set();
-		add(portraitLeft);
-		portraitLeft.visible = false;
-
+              	if (PlayState.SONG.song.toLowerCase() != 'roses')
+                {
+		    add(portraitLeft);
+                    portraitLeft.visible = false;
+                    if (PlayState.SONG.song.toLowerCase() == 'thorns')
+                        portraitLeft.color = FlxColor.BLACK;
+                }
 		portraitRight = new FlxSprite(0, 40);
 		portraitRight.frames = Paths.getSparrowAtlas('weeb/bfPortrait');
 		portraitRight.animation.addByPrefix('enter', 'Boyfriend portrait enter', 24, false);
@@ -129,9 +133,17 @@ class DialogueBox extends FlxSpriteGroup
 
 		swagDialogue = new FlxTypeText(240, 500, Std.int(FlxG.width * 0.6), "", 32);
 		swagDialogue.font = 'Pixel Arial 11 Bold';
-		swagDialogue.color = 0xFF3F2021;
 		swagDialogue.borderStyle = SHADOW;
-		swagDialogue.borderColor = 0xFFD89494;
+                if (PlayState.SONG.song.toLowerCase() != "thorns")
+                {
+                    swagDialogue.color = 0xFF3F2021;
+		    swagDialogue.borderColor = 0xFFD89494;
+                }
+                else
+                {
+                    swagDialogue.color = FlxColor.WHITE;
+                    swagDialogue.borderColor = FlxColor.BLACK;
+                }
 		swagDialogue.borderSize = 2;
 		swagDialogue.sounds = [FlxG.sound.load(Paths.sound('pixelText'), 0.6)];
 		add(swagDialogue);
@@ -147,14 +159,6 @@ class DialogueBox extends FlxSpriteGroup
 	override function update(elapsed:Float)
 	{
 		// HARD CODING CUZ IM STUPDI
-		if (PlayState.SONG.song.toLowerCase() == 'roses')
-			portraitLeft.visible = false;
-		if (PlayState.SONG.song.toLowerCase() == 'thorns')
-		{
-			portraitLeft.color = FlxColor.BLACK;
-			swagDialogue.color = FlxColor.WHITE;
-			swagDialogue.borderColor = FlxColor.BLACK;
-		}
 
 		if (box.animation.curAnim != null)
 		{
