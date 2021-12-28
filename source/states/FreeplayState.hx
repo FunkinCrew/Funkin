@@ -283,6 +283,9 @@ class FreeplayState extends MusicBeatState
 
 		if(songsReady)
 		{
+			if(-1 * Math.floor(FlxG.mouse.wheel) != 0)
+				changeSelection(-1 * Math.floor(FlxG.mouse.wheel));
+
 			if (upP)
 				changeSelection(-1);
 			if (downP)
