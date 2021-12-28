@@ -259,7 +259,7 @@ class PlayState extends MusicBeatState
 				characterPlayingAs = 0;
 			case "opponent":
 				characterPlayingAs = 1;
-			case "FlxG.save.data.both":
+			case "both":
 				characterPlayingAs = -1;
 			default:
 				characterPlayingAs = 0;
@@ -661,7 +661,7 @@ class PlayState extends MusicBeatState
 		timeBar.pixelPerfectPosition = true;
 		add(timeBar);
 
-		infoTxt = new FlxText(0, 0, 0, SONG.song + " - " + storyDifficultyStr + (FlxG.save.data.bot ? " (FlxG.save.data.bot)" : ""), 20);
+		infoTxt = new FlxText(0, 0, 0, SONG.song + " - " + storyDifficultyStr + (FlxG.save.data.bot ? " (Bot)" : ""), 20);
 		infoTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		infoTxt.screenCenter(X);
 		
@@ -708,7 +708,7 @@ class PlayState extends MusicBeatState
 
 		startingSong = true;
 
-		playCutsceneLmao = (!playingReplay && ((isStoryMode && FlxG.save.data.cutscenePlays == "story") || (!isStoryMode && FlxG.save.data.cutscenePlays == "freeplay") || (FlxG.save.data.cutscenePlays == "FlxG.save.data.both")) && !fromPauseMenu);
+		playCutsceneLmao = (!playingReplay && ((isStoryMode && FlxG.save.data.cutscenePlays == "story") || (!isStoryMode && FlxG.save.data.cutscenePlays == "freeplay") || (FlxG.save.data.cutscenePlays == "both")) && !fromPauseMenu);
 
 		if (playCutsceneLmao)
 		{
@@ -1585,7 +1585,7 @@ class PlayState extends MusicBeatState
 
 	override public function update(elapsed:Float)
 	{
-		infoTxt.text = SONG.song + " - " + storyDifficultyStr + (FlxG.save.data.bot ? " (FlxG.save.data.bot)" : "") + (playingReplay ? " (REPLAY)" : "");
+		infoTxt.text = SONG.song + " - " + storyDifficultyStr + (FlxG.save.data.bot ? " (Bot)" : "") + (playingReplay ? " (REPLAY)" : "");
 		infoTxt.screenCenter(X);
 
 		if(stopSong && !switchedStates)
@@ -2578,7 +2578,7 @@ class PlayState extends MusicBeatState
 		if(FlxG.save.data.msText)
 		{
 			accuracyText.setPosition(rating.x, rating.y + 100);
-			accuracyText.text = noteMath + " ms" + (FlxG.save.data.bot ? " (FlxG.save.data.bot)" : "");
+			accuracyText.text = noteMath + " ms" + (FlxG.save.data.bot ? " (Bot)" : "");
 
 			accuracyText.cameras = [camHUD];
 
