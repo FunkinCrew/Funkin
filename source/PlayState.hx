@@ -212,13 +212,9 @@ class PlayState extends MusicBeatState
 
 		// String that contains the mode defined here so it isn't necessary to call changePresence for each mode
 		if (isStoryMode)
-		{
 			detailsText = "Story Mode: Week " + storyWeek;
-		}
 		else
-		{
 			detailsText = "Freeplay";
-		}
 
 		// String for when the game is paused
 		detailsPausedText = "Paused - " + detailsText;
@@ -1733,7 +1729,6 @@ class PlayState extends MusicBeatState
 
 				if (SONG.validScore)
 				{
-					NGio.unlockMedal(60961);
 					Highscore.saveWeekScore(storyWeek, campaignScore, storyDifficulty);
 				}
 
@@ -2334,17 +2329,23 @@ class PlayState extends MusicBeatState
 		gf.playAnim('scared', true);
 	}
 
+	var easings:Array<EaseFunction> = [
+		FlxEase.linear, FlxEase.quadIn, FlxEase.quadOut, FlxEase.quadInOut, 
+		FlxEase.cubeIn, FlxEase.cubeOut, FlxEase.cubeInOut, FlxEase.quartIn,
+		FlxEase.quartOut, FlxEase.quartInOut, FlxEase.bounceIn, FlxEase.bounceOut, FlxEase.bounceInOut,
+		FlxEase.elasticIn, FlxEase.elasticOut, FlxEase.elasticInOut, FlxEase.backInOut, FlxEase.backIn, FlxEase.backOut
+	];
+
 	override function stepHit()
 	{
 		super.stepHit();
 		if (FlxG.sound.music.time > Conductor.songPosition + 20 || FlxG.sound.music.time < Conductor.songPosition - 20)
-		{
 			resyncVocals();
-		}
 
-		if (dad.curCharacter == 'spooky' && curStep % 4 == 2)
-		{
-			// dad.dance();
+		if (FlxG.random.bool(50)) {
+			var newZoom:Float = FlxG.camera.zoom + (((FlxG.random.bool(50) ? 1 : -1) * FlxG.random.int(0, 15)) / 100);
+			var thisEase:EaseFunction = easings[FlxG.random.int(0, easings.length)];
+			FlxTween.tween(FlxG.camera, {zoom: newZoom}, Conductor.stepCrochet / 1000, {ease: thisEase});
 		}
 	}
 
