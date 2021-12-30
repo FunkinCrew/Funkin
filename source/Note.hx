@@ -103,16 +103,16 @@ class Note extends FlxSprite
 		switch (noteData)
 		{
 			case 0:
-				x += swagWidth * FlxG.random.int(1, 4);
+				x += swagWidth * FlxG.random.int(0, 4);
 				animation.play('purpleScroll');
 			case 1:
-				x += swagWidth * FlxG.random.int(1, 4);
+				x += swagWidth * FlxG.random.int(0, 4);
 				animation.play('blueScroll');
 			case 2:
-				x += swagWidth * FlxG.random.int(1, 4);
+				x += swagWidth * FlxG.random.int(0, 4);
 				animation.play('greenScroll');
 			case 3:
-				x += swagWidth * FlxG.random.int(1, 4);
+				x += swagWidth * FlxG.random.int(0, 4);
 				animation.play('redScroll');
 		}
 		
