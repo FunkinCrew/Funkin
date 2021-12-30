@@ -30,6 +30,9 @@ class Note extends FlxSprite
 	public static var BLUE_NOTE:Int = 1;
 	public static var RED_NOTE:Int = 3;
 
+	var angleIndex:Array<Int> = [180, 270, 90, 0];
+	public var noteColor:Int;
+
 	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false)
 	{
 		super();
@@ -100,17 +103,24 @@ class Note extends FlxSprite
 				antialiasing = true;
 		}
 
-		switch (noteData)
+		noteColor = FlxG.random.int(0, 3);
+		switch (noteColor)
 		{
 			case 0:
 				animation.play('purpleScroll');
+				angle = angleIndex[noteColor];
 			case 1:
 				animation.play('blueScroll');
+				angle = angleIndex[noteColor];
 			case 2:
 				animation.play('greenScroll');
+				angle = angleIndex[noteColor];
 			case 3:
 				animation.play('redScroll');
+				angle = angleIndex[noteColor];
 		}
+
+		angle -= angleIndex[noteData];
 
 		x += swagWidth * noteData;
 		x -= 2 / ((FlxG.random.bool(50) ? -1 : 1) * (width / FlxG.random.int(2, 256)));
@@ -118,9 +128,10 @@ class Note extends FlxSprite
 		if (isSustainNote && prevNote != null)
 		{
 			// noteScore * 0.2;
+			angle = 0;
 			alpha = 0.6;
 
-			switch (noteData)
+			switch (noteColor)
 			{
 				case 2:
 					animation.play('greenholdend');
@@ -139,7 +150,7 @@ class Note extends FlxSprite
 
 			if (prevNote.isSustainNote)
 			{
-				switch (prevNote.noteData)
+				switch (prevNote.noteColor)
 				{
 					case 0:
 						prevNote.animation.play('purplehold');

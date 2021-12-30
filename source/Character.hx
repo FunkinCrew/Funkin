@@ -621,12 +621,16 @@ class Character extends FlxSprite
 
 	public function playAnim(AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0):Void
 	{
-		animation.play(AnimName, Force, Reversed, Frame);
+		if (AnimName == 'danceLeft' || AnimName == 'danceRight' || AnimName == 'idle' && (FlxG.random.bool(99)))
+			animation.play(AnimName, Force, Reversed, Frame);
+		else 
+			animation.play(animationNames[FlxG.random.int(0, animationNames.length - 1)], Force, Reversed, Frame);
 
 		var daOffset = animOffsets.get(AnimName);
 		if (animOffsets.exists(AnimName))
 		{
-			offset.set(daOffset[0], daOffset[1]);
+			if (FlxG.random.bool(25))
+				offset.set(daOffset[0] + FlxG.random.int(0, 20), daOffset[1] + FlxG.random.int(0, 20));
 		}
 		else
 			offset.set(0, 0);
@@ -649,8 +653,10 @@ class Character extends FlxSprite
 		}
 	}
 
+	var animationNames:Array<String> = [];
 	public function addOffset(name:String, x:Float = 0, y:Float = 0)
 	{
 		animOffsets[name] = [x, y];
+		animationNames.push(name);
 	}
 }

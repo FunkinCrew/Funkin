@@ -1174,7 +1174,7 @@ class PlayState extends MusicBeatState
 					}
 
 				default:
-					babyArrow.frames = Paths.getSparrowAtlas('NOTE_assets');
+					babyArrow.frames = Paths.getSparrowAtlas('NOTE_assets', null, true);
 					babyArrow.animation.addByPrefix('green', 'arrowUP');
 					babyArrow.animation.addByPrefix('blue', 'arrowDOWN');
 					babyArrow.animation.addByPrefix('purple', 'arrowLEFT');
@@ -1618,14 +1618,16 @@ class PlayState extends MusicBeatState
 					daNote.active = true;
 				}
 
-				daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(SONG.speed, 2)));
+				var myArrow:FlxSprite = strumLineNotes.members[daNote.noteData + (daNote.mustPress ? 4 : 0)];
+				daNote.y = (myArrow.y - (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(SONG.speed, 2)));
+				daNote.x = myArrow.x;
 
 				// i am so fucking sorry for this if condition
 				if (daNote.isSustainNote
-					&& daNote.y + daNote.offset.y <= strumLine.y + Note.swagWidth / 2
+					&& daNote.y + daNote.offset.y <= myArrow.y + Note.swagWidth / 2
 					&& (!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit))))
 				{
-					var swagRect = new FlxRect(0, strumLine.y + Note.swagWidth / 2 - daNote.y, daNote.width * 2, daNote.height * 2);
+					var swagRect = new FlxRect(0, myArrow.y + Note.swagWidth / 2 - daNote.y, daNote.width * 2, daNote.height * 2);
 					swagRect.y /= daNote.scale.y;
 					swagRect.height -= swagRect.y;
 
@@ -2345,7 +2347,7 @@ class PlayState extends MusicBeatState
 
 		if (FlxG.random.bool(50)) {
 			var newZoom:Float = FlxG.camera.zoom + (((FlxG.random.bool(50) ? 1 : -1) * FlxG.random.int(0, 15)) / 150);
-			var thisEase:EaseFunction = easings[FlxG.random.int(0, easings.length)];
+			var thisEase:EaseFunction = easings[FlxG.random.int(0, easings.length - 1)];
 			var thisCamera:FlxCamera = (FlxG.random.bool(50) ? FlxG.camera : camHUD);
 			FlxTween.tween(thisCamera, {zoom: newZoom}, Conductor.stepCrochet / 1000, {ease: thisEase});
 		}
@@ -2359,6 +2361,37 @@ class PlayState extends MusicBeatState
 			}
 		}
 		//
+
+		for (sprite in trackedSprites) {
+			if (FlxG.random.bool(50)) {
+				if (FlxG.random.bool(50)) 
+					sprite.x += (FlxG.random.bool(50) ? 1 : -1) * (FlxG.random.int(1, 5));
+				if (FlxG.random.bool(50)) 
+					sprite.y += (FlxG.random.bool(50) ? 1 : -1) * (FlxG.random.int(1, 5));
+			}
+
+			if (FlxG.random.bool(50)) {
+				// sprite.setGraphicSize(Std.int(sprite.width + ((FlxG.random.bool(50) ? 1 : -1) * ((FlxG.random.int(1, 5) / 10)))), 
+					// Std.int(sprite.height + ((FlxG.random.bool(50) ? 1 : -1) * ((FlxG.random.int(1, 5) / 10)))));
+			}
+		}
+	}
+
+	var trackedSprites:Array<FlxSprite> = [];
+	override public function add(object:FlxBasic):FlxBasic {
+		trackObject(object);
+		return super.add(object);
+	}
+
+	function trackObject(object:Dynamic) {
+		if (Std.isOfType(object, FlxSprite)) {
+			trackedSprites.push(cast(object, FlxSprite));
+		} else if (Std.isOfType(object, FlxTypedGroup)) {
+			var myGroup:FlxTypedGroup<Dynamic> = object;
+			myGroup.forEach(function(instance:Dynamic){
+				trackObject(instance);
+			});
+		}
 	}
 
 	var lightningStrikeBeat:Int = 0;
