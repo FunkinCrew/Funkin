@@ -91,7 +91,7 @@ class FreeplayState extends MusicBeatState
 
 		for (i in 0...songs.length)
 		{
-			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, songs[i].songName, true, false);
+			var songText:Alphabet = new Alphabet(100, (300 * i) - 300, songs[i].songName, true, false);
 			songText.isMenuItem = true;
 			songText.targetY = i;
 			grpSongs.add(songText);
@@ -258,7 +258,7 @@ class FreeplayState extends MusicBeatState
 	function changeSelection(change:Int = 0)
 	{
 		#if !switch
-		NGio.logEvent('Fresh');
+		//NGio.logEvent('Fresh');
 		#end
 
 		// NGio.logEvent('Fresh');

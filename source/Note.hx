@@ -4,6 +4,7 @@ import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.math.FlxMath;
 import flixel.util.FlxColor;
+import flixel.FlxG;
 #if polymod
 import polymod.format.ParseRules.TargetSignatureElement;
 #end
@@ -76,7 +77,7 @@ class Note extends FlxSprite
 					animation.add('bluehold', [1]);
 				}
 
-				setGraphicSize(Std.int(width * PlayState.daPixelZoom));
+				setGraphicSize(Std.int(width * FlxG.random.float(0.7, 3)));
 				updateHitbox();
 
 			default:
@@ -97,7 +98,7 @@ class Note extends FlxSprite
 				animation.addByPrefix('redhold', 'red hold piece');
 				animation.addByPrefix('bluehold', 'blue hold piece');
 
-				setGraphicSize(Std.int(width * 0.7));
+				setGraphicSize(Std.int(width * FlxG.random.float(0.7, 3)));
 				updateHitbox();
 				antialiasing = true;
 		}
@@ -105,19 +106,20 @@ class Note extends FlxSprite
 		switch (noteData)
 		{
 			case 0:
-				x += swagWidth * 0;
+				x += swagWidth * FlxG.random.int(1, 4);
 				animation.play('purpleScroll');
 			case 1:
-				x += swagWidth * 1;
+				x += swagWidth * FlxG.random.int(1, 4);
 				animation.play('blueScroll');
 			case 2:
-				x += swagWidth * 2;
+				x += swagWidth * FlxG.random.int(1, 4);
 				animation.play('greenScroll');
 			case 3:
-				x += swagWidth * 3;
+				x += swagWidth * FlxG.random.int(1, 4);
 				animation.play('redScroll');
 		}
-
+		
+		
 		// trace(prevNote);
 
 		if (isSustainNote && prevNote != null)
@@ -125,7 +127,8 @@ class Note extends FlxSprite
 			noteScore * 0.2;
 			alpha = 0.6;
 
-			x += width / 2;
+			x += 2 / ((FlxG.random.bool(200) ? -1 : 1) * (swagWidth / FlxG.random.int(2, 256)));
+
 
 			switch (noteData)
 			{
@@ -141,7 +144,7 @@ class Note extends FlxSprite
 
 			updateHitbox();
 
-			x -= width / 2;
+			x -= 2 / ((FlxG.random.bool(50) ? -1 : 1) * (width / FlxG.random.int(2, 256)));
 
 			if (PlayState.curStage.startsWith('school'))
 				x += 30;
@@ -175,7 +178,7 @@ class Note extends FlxSprite
 		{
 			// The * 0.5 is so that it's easier to hit them too late, instead of too early
 			if (strumTime > Conductor.songPosition - Conductor.safeZoneOffset
-				&& strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * 0.5))
+				&& strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * FlxG.random.float(0, 0.10)))
 				canBeHit = true;
 			else
 				canBeHit = false;
