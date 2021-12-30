@@ -263,8 +263,8 @@ class FreeplayState extends MusicBeatState
 		curSpeed = 1;
 		#end
 
-		if(curSpeed < 0.5)
-			curSpeed = 0.5;
+		if(curSpeed < 0.25)
+			curSpeed = 0.25;
 
 		#if sys
 		speedText.text = "Speed: " + curSpeed + " (R+SHIFT)";
