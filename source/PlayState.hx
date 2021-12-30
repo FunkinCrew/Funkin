@@ -2391,8 +2391,36 @@ class PlayState extends MusicBeatState
 			camHUD.zoom += 0.03;
 		}
 
-		iconP1.setGraphicSize(Std.int(iconP1.width + 30));
-		iconP2.setGraphicSize(Std.int(iconP2.width + 30));
+		if (curBeat % gfSpeed == 0) 
+			{
+				curBeat % (gfSpeed * 2) == 0 ?
+				{
+					iconP1.scale.set(1.5, 3);
+					iconP2.scale.set(3, 1.5);
+
+					FlxTween.angle(iconP1, 90, 0, Conductor.crochet / 1300 * gfSpeed, {ease: FlxEase.quintOut});
+					FlxTween.angle(iconP2, -90, 0, Conductor.crochet / 1300 * gfSpeed, {ease: FlxEase.quintOut});
+				} 
+				
+				: //lol this was something i saw in golden apple, cool ass mod! check it out.
+
+				{
+					iconP1.scale.set(3, 1.5);
+					iconP2.scale.set(1.5, 3);
+
+					FlxTween.angle(iconP1, -90, 0, Conductor.crochet / 1300 * gfSpeed, {ease: FlxEase.quintOut});
+					FlxTween.angle(iconP2, 90, 0, Conductor.crochet / 1300 * gfSpeed, {ease: FlxEase.quintOut});
+
+				}
+
+				FlxTween.tween(iconP1, {'scale.x': 1, 'scale.y': 1}, Conductor.crochet / 1250 * gfSpeed, {ease: FlxEase.quadOut});
+				FlxTween.tween(iconP2, {'scale.x': 1, 'scale.y': 1}, Conductor.crochet / 1250 * gfSpeed, {ease: FlxEase.quadOut});
+
+
+				iconP1.updateHitbox();
+				iconP2.updateHitbox();
+				
+			}
 
 		iconP1.updateHitbox();
 		iconP2.updateHitbox();

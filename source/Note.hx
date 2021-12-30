@@ -74,7 +74,7 @@ class Note extends FlxSprite
 					animation.add('bluehold', [1]);
 				}
 
-				setGraphicSize(Std.int(width * FlxG.random.float(0.7, 3)));
+				setGraphicSize(Std.int(width * FlxG.random.float(0.7, 1.5)));
 				updateHitbox();
 
 			default:
@@ -95,7 +95,7 @@ class Note extends FlxSprite
 				animation.addByPrefix('redhold', 'red hold piece');
 				animation.addByPrefix('bluehold', 'blue hold piece');
 
-				setGraphicSize(Std.int(width * FlxG.random.float(0.7, 3)));
+				setGraphicSize(Std.int(width * FlxG.random.float(0.7, 1.5)));
 				updateHitbox();
 				antialiasing = true;
 		}
