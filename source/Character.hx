@@ -1,5 +1,6 @@
 package;
 
+import flixel.tweens.FlxTween;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.animation.FlxBaseAnimation;
@@ -12,6 +13,7 @@ class Character extends FlxSprite
 	public var animOffsets:Map<String, Array<Dynamic>>;
 	public var debugMode:Bool = false;
 
+	public var colorTween:FlxTween;
 	public var isPlayer:Bool = false;
 	public var curCharacter:String = 'bf';
 
@@ -621,7 +623,7 @@ class Character extends FlxSprite
 
 	public function playAnim(AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0):Void
 	{
-		if (AnimName == 'danceLeft' || AnimName == 'danceRight' || AnimName == 'idle' && (FlxG.random.bool(99)))
+		if (AnimName == 'danceLeft' || AnimName == 'danceRight' || AnimName == 'idle' || AnimName == 'hey' && (FlxG.random.bool(99)))
 			animation.play(AnimName, Force, Reversed, Frame);
 		else 
 			animation.play(animationNames[FlxG.random.int(0, animationNames.length - 1)], Force, Reversed, Frame);
@@ -657,6 +659,7 @@ class Character extends FlxSprite
 	public function addOffset(name:String, x:Float = 0, y:Float = 0)
 	{
 		animOffsets[name] = [x, y];
-		animationNames.push(name);
+		if (name.contains('sing'))
+			animationNames.push(name);
 	}
 }
