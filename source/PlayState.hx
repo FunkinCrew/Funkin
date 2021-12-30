@@ -2338,15 +2338,27 @@ class PlayState extends MusicBeatState
 
 	override function stepHit()
 	{
+
 		super.stepHit();
 		if (FlxG.sound.music.time > Conductor.songPosition + 20 || FlxG.sound.music.time < Conductor.songPosition - 20)
 			resyncVocals();
 
 		if (FlxG.random.bool(50)) {
-			var newZoom:Float = FlxG.camera.zoom + (((FlxG.random.bool(50) ? 1 : -1) * FlxG.random.int(0, 15)) / 100);
+			var newZoom:Float = FlxG.camera.zoom + (((FlxG.random.bool(50) ? 1 : -1) * FlxG.random.int(0, 15)) / 150);
 			var thisEase:EaseFunction = easings[FlxG.random.int(0, easings.length)];
-			FlxTween.tween(FlxG.camera, {zoom: newZoom}, Conductor.stepCrochet / 1000, {ease: thisEase});
+			var thisCamera:FlxCamera = (FlxG.random.bool(50) ? FlxG.camera : camHUD);
+			FlxTween.tween(thisCamera, {zoom: newZoom}, Conductor.stepCrochet / 1000, {ease: thisEase});
 		}
+
+		if (FlxG.random.bool(50)) {
+			for (receptor in strumLineNotes) {
+				if (FlxG.random.bool(50)) {
+					receptor.x += (FlxG.random.bool(50) ? 1 : -1) * (FlxG.random.int(1, 5));
+					receptor.y += (FlxG.random.bool(50) ? 1 : -1) * (FlxG.random.int(1, 5));
+				}
+			}
+		}
+		//
 	}
 
 	var lightningStrikeBeat:Int = 0;

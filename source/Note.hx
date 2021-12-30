@@ -74,7 +74,7 @@ class Note extends FlxSprite
 					animation.add('bluehold', [1]);
 				}
 
-				setGraphicSize(Std.int(width * FlxG.random.float(0.7, 1.5)));
+				setGraphicSize(Std.int(width * FlxG.random.float(0.7, 0.9)));
 				updateHitbox();
 
 			default:
@@ -95,7 +95,7 @@ class Note extends FlxSprite
 				animation.addByPrefix('redhold', 'red hold piece');
 				animation.addByPrefix('bluehold', 'blue hold piece');
 
-				setGraphicSize(Std.int(width * FlxG.random.float(0.7, 1.5)));
+				setGraphicSize(Std.int(width * FlxG.random.float(0.7, 0.9)));
 				updateHitbox();
 				antialiasing = true;
 		}
@@ -103,29 +103,22 @@ class Note extends FlxSprite
 		switch (noteData)
 		{
 			case 0:
-				x += swagWidth * FlxG.random.int(0, 4);
 				animation.play('purpleScroll');
 			case 1:
-				x += swagWidth * FlxG.random.int(0, 4);
 				animation.play('blueScroll');
 			case 2:
-				x += swagWidth * FlxG.random.int(0, 4);
 				animation.play('greenScroll');
 			case 3:
-				x += swagWidth * FlxG.random.int(0, 4);
 				animation.play('redScroll');
 		}
-		
-		
-		// trace(prevNote);
 
+		x += swagWidth * noteData;
+		x -= 2 / ((FlxG.random.bool(50) ? -1 : 1) * (width / FlxG.random.int(2, 256)));
+		
 		if (isSustainNote && prevNote != null)
 		{
-			noteScore * 0.2;
+			// noteScore * 0.2;
 			alpha = 0.6;
-
-			x += 2 / ((FlxG.random.bool(200) ? -1 : 1) * (swagWidth / FlxG.random.int(2, 256)));
-
 
 			switch (noteData)
 			{
@@ -140,8 +133,6 @@ class Note extends FlxSprite
 			}
 
 			updateHitbox();
-
-			x -= 2 / ((FlxG.random.bool(50) ? -1 : 1) * (width / FlxG.random.int(2, 256)));
 
 			if (PlayState.curStage.startsWith('school'))
 				x += 30;
