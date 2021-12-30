@@ -50,6 +50,9 @@ class Note extends FlxSprite
 	public static var GOOD_THRESHOLD:Float = 0.55; // 	91.67ms	, 5.5 frames
 	public static var SICK_THRESHOLD:Float = 0.2; // 	33.33ms	, 2 frames
 
+	public var noteSpeedMulti:Float = 1;
+	public var pastHalfWay:Bool = false;
+
 	// anything below sick threshold is sick
 	public static var arrowColors:Array<Float> = [1, 1, 1, 1];
 
@@ -232,6 +235,12 @@ class Note extends FlxSprite
 			}
 			else
 			{
+				if (!pastHalfWay && strumTime <= Conductor.songPosition)
+				{
+					pastHalfWay = true;
+					noteSpeedMulti *= 2;
+				}
+
 				if (strumTime > Conductor.songPosition - HIT_WINDOW)
 				{ // * 0.5 if sustain note, so u have to keep holding it closer to all the way thru!
 					if (strumTime < Conductor.songPosition + (HIT_WINDOW * (isSustainNote ? 0.5 : 1)))

@@ -2144,7 +2144,7 @@ class PlayState extends MusicBeatState
 				var strumLineMid = strumLine.y + Note.swagWidth / 2;
 
 				if (daNote.followsTime)
-					daNote.y = (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(SongLoad.getSpeed(), 2));
+					daNote.y = (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(SongLoad.getSpeed(), 2) * daNote.noteSpeedMulti);
 
 				if (PreferencesMenu.getPref('downscroll'))
 				{

@@ -9,6 +9,8 @@ class VoicesGroup extends FlxTypedGroup<FlxSound>
 
 	public var volume(default, set):Float = 1;
 
+	public var pitch(default, set):Float = 1;
+
 	// make it a group that you add to?
 	public function new(song:String, ?files:Array<String>, ?needsVoices:Bool = true)
 	{
@@ -79,5 +81,16 @@ class VoicesGroup extends FlxTypedGroup<FlxSound>
 		});
 
 		return volume;
+	}
+
+	function set_pitch(val:Float):Float
+	{
+		#if HAS_PITCH
+		forEachAlive(function(snd)
+		{
+			snd.pitch = val;
+		});
+		#end
+		return val;
 	}
 }

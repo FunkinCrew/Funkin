@@ -19,6 +19,7 @@ import flixel.addons.ui.FlxUITooltip.FlxUITooltipStyle;
 import flixel.graphics.tile.FlxDrawTrianglesItem.DrawData;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxGroup;
+import flixel.input.gamepad.id.SwitchJoyconLeftID;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.system.FlxSound;
@@ -351,6 +352,7 @@ class ChartingState extends MusicBeatState
 	}
 
 	var stepperSusLength:FlxUINumericStepper;
+	var stepperPerNoteSpeed:FlxUINumericStepper;
 
 	function addNoteUI():Void
 	{
@@ -361,9 +363,17 @@ class ChartingState extends MusicBeatState
 		stepperSusLength.value = 0;
 		stepperSusLength.name = 'note_susLength';
 
+		stepperPerNoteSpeed = new FlxUINumericStepper(10, 40, 0.1, 1, 0.01, 100, 2);
+		stepperPerNoteSpeed.value = 1;
+		stepperPerNoteSpeed.name = "note_PerNoteSpeed";
+
+		var noteSpeedName:FlxText = new FlxText(40, stepperPerNoteSpeed.y, 0, "Note Speed Multiplier");
+
 		var applyLength:FlxButton = new FlxButton(100, 10, 'Apply');
 
 		tab_group_note.add(stepperSusLength);
+		tab_group_note.add(stepperPerNoteSpeed);
+		tab_group_note.add(noteSpeedName);
 		tab_group_note.add(applyLength);
 
 		UI_box.addGroup(tab_group_note);
@@ -402,11 +412,11 @@ class ChartingState extends MusicBeatState
 		musSpec.x += 70;
 		musSpec.daHeight = FlxG.height / 2;
 		musSpec.scrollFactor.set();
-		musSpec.visType = FREQUENCIES;
+		// musSpec.visType = FREQUENCIES;
 		add(musSpec);
 
 		// trace(audioBuf.data.length);
-		playheadTest = new FlxSprite(0, 0).makeGraphic(2, 255, FlxColor.RED);
+		playheadTest = new FlxSprite(0, 0).makeGraphic(2, 60, FlxColor.RED);
 		playheadTest.scrollFactor.set();
 		add(playheadTest);
 
@@ -419,13 +429,13 @@ class ChartingState extends MusicBeatState
 		add(staticSpecGrp);
 
 		var aBoy:ABotVis = new ABotVis(FlxG.sound.music);
-		add(aBoy);
+		// add(aBoy);
 
 		for (index => voc in vocals.members)
 		{
 			var vocalSpec:SpectogramSprite = new SpectogramSprite(voc, FlxG.random.color(0xFFAAAAAA, FlxColor.WHITE, 100));
 			vocalSpec.x = 70 - (50 * index);
-			vocalSpec.visType = FREQUENCIES;
+			// vocalSpec.visType = FREQUENCIES;
 			vocalSpec.daHeight = musSpec.daHeight;
 			vocalSpec.y = vocalSpec.daHeight;
 			vocalSpec.scrollFactor.set();
@@ -794,13 +804,21 @@ class ChartingState extends MusicBeatState
 				vocals.time = FlxG.sound.music.time;
 			}
 
+			if (FlxG.keys.justReleased.S)
+			{
+				FlxG.sound.music.pause();
+				vocals.pause();
+
+				#if HAS_PITCH
+				FlxG.sound.music.pitch = 1;
+				vocals.pitch = 1;
+				#end
+			}
+
 			if (!FlxG.keys.pressed.SHIFT)
 			{
 				if (FlxG.keys.pressed.W || FlxG.keys.pressed.S)
 				{
-					FlxG.sound.music.pause();
-					vocals.pause();
-
 					var daTime:Float = 700 * FlxG.elapsed;
 
 					if (FlxG.keys.pressed.CONTROL)
@@ -808,31 +826,58 @@ class ChartingState extends MusicBeatState
 
 					if (FlxG.keys.pressed.W)
 					{
+						FlxG.sound.music.pause();
+						vocals.pause();
 						FlxG.sound.music.time -= daTime;
+						vocals.time = FlxG.sound.music.time;
 					}
 					else
-						FlxG.sound.music.time += daTime;
+					{
+						if (FlxG.keys.justPressed.S)
+						{
+							FlxG.sound.music.play();
+							vocals.play();
 
-					vocals.time = FlxG.sound.music.time;
+							#if HAS_PITCH
+							FlxG.sound.music.pitch = 0.5;
+							vocals.pitch = 0.5;
+							#end
+						}
+					}
+					// FlxG.sound.music.time += daTime;
+
+					// vocals.time = FlxG.sound.music.time;
 				}
 			}
 			else
 			{
 				if (FlxG.keys.justPressed.W || FlxG.keys.justPressed.S)
 				{
-					FlxG.sound.music.pause();
-					vocals.pause();
-
 					var daTime:Float = Conductor.stepCrochet * 2;
 
 					if (FlxG.keys.justPressed.W)
 					{
+						FlxG.sound.music.pause();
+						vocals.pause();
+
 						FlxG.sound.music.time -= daTime;
+						vocals.time = FlxG.sound.music.time;
 					}
 					else
-						FlxG.sound.music.time += daTime;
+					{
+						if (FlxG.keys.justPressed.S)
+						{
+							// FlxG.sound.music.time += daTime;
 
-					vocals.time = FlxG.sound.music.time;
+							FlxG.sound.music.play();
+							vocals.play();
+
+							#if HAS_PITCH
+							FlxG.sound.music.pitch = 0.2;
+							vocals.pitch = 0.2;
+							#end
+						}
+					}
 				}
 			}
 		}
@@ -1013,6 +1058,9 @@ class ChartingState extends MusicBeatState
 		}
 		leftIcon.setGraphicSize(0, 45);
 		rightIcon.setGraphicSize(0, 45);
+
+		leftIcon.height *= 0.6;
+		rightIcon.height *= 0.6;
 	}
 
 	function updateNoteUI():Void

@@ -278,6 +278,16 @@ class TitleState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
+		trace(FlxG.renderBlit);
+
+		#if HAS_PITCH
+		if (FlxG.keys.pressed.UP)
+			FlxG.sound.music.pitch += 0.5 * elapsed;
+
+		if (FlxG.keys.pressed.DOWN)
+			FlxG.sound.music.pitch -= 0.5 * elapsed;
+		#end
+
 		/* if (FlxG.onMobile)
 			{
 				if (gfDance != null)
