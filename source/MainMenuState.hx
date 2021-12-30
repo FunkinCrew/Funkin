@@ -89,6 +89,7 @@ class MainMenuState extends MusicBeatState
 			menuItem.animation.play('idle');
 			menuItem.ID = i;
 			menuItem.screenCenter(X);
+			FlxTween.angle(menuItem, 0, 46.8, 1, {ease: FlxEase.sineInOut});
 			menuItems.add(menuItem);
 			menuItem.scrollFactor.set();
 			menuItem.antialiasing = true;
