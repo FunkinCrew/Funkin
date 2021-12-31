@@ -2007,7 +2007,7 @@ class PlayState extends MusicBeatState
 						{
 							// Clip to strumline
 							var swagRect = new FlxRect(0, 0, daNote.width / daNote.scale.x, daNote.height / daNote.scale.y);
-							swagRect.y = (strumLineNotes.members[Math.floor(Math.abs(daNote.noteData))].y + Note.swagWidth / 2 - daNote.y) / daNote.scale.y;
+							swagRect.y = (coolStrum.y + Note.swagWidth / 2 - daNote.y) / daNote.scale.y;
 							swagRect.height -= swagRect.y;
 
 							daNote.clipRect = swagRect;
