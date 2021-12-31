@@ -22,6 +22,7 @@ All notable changes will be documented in this file.
 - playerTwoSing() and playerTwoSingHeld() pass the arrow type parameter into the function.
 - Modcharts can run with chars and bgs off.
 - Crash when turning off Chars and BGs and playing a song.
+- Health icon bounce and camera bounce being tied to the FPS.
 
 ## [0.4.0] - 12/5/2021
 ### Added
