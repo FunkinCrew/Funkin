@@ -536,8 +536,6 @@ class PlayState extends MusicBeatState
 
 		if(dad.otherCharacters == null)
 		{
-			camPos.set(dad.getMidpoint().x + 150 + dad.cameraOffset[0], dad.getMidpoint().y - 100 + dad.cameraOffset[1]);
-
 			if(dad.coolTrail != null)
 				add(dad.coolTrail);
 
@@ -545,8 +543,6 @@ class PlayState extends MusicBeatState
 		}
 		else
 		{
-			camPos.set(dad.otherCharacters[0].getMidpoint().x + 150 + dad.cameraOffset[0], dad.otherCharacters[0].getMidpoint().y - 100 + dad.cameraOffset[1]);
-
 			for(character in dad.otherCharacters)
 			{
 				if(character.coolTrail != null)
@@ -554,6 +550,23 @@ class PlayState extends MusicBeatState
 
 				add(character);
 			}
+		}
+
+		/* we do a little trolling */
+		var midPos = (FlxG.save.data.cameraTracksDirections ? dad.getGraphicMidpoint() : dad.getMidpoint());
+
+		camPos.set(midPos.x + 150 + dad.cameraOffset[0], midPos.y - 100 + dad.cameraOffset[1]);
+
+		switch (dad.curCharacter)
+		{
+			case 'mom':
+				camPos.y = midPos.y;
+			case 'senpai':
+				camPos.y = midPos.y - 430;
+				camPos.x = midPos.x - 100;
+			case 'senpai-angry':
+				camPos.y = midPos.y - 430;
+				camPos.x = midPos.x - 100;
 		}
 
 		if(boyfriend.otherCharacters == null)
