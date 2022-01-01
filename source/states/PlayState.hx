@@ -248,136 +248,141 @@ class PlayState extends MusicBeatState
 
 	var hitSoundString:String = FlxG.save.data.hitsound;
 
+	public var yoWaitThisIsCharter:Bool = false;
+
 	override public function create()
 	{
-		if(hitSoundString != "none")
-			hitsound = FlxG.sound.load(Paths.sound("hitsounds/" + Std.string(hitSoundString).toLowerCase(), "shared"));
-
-		switch(FlxG.save.data.playAs)
+		if(!yoWaitThisIsCharter)
 		{
-			case "bf":
-				characterPlayingAs = 0;
-			case "opponent":
-				characterPlayingAs = 1;
-			case "both":
-				characterPlayingAs = -1;
-			default:
-				characterPlayingAs = 0;
-		}
+			if(hitSoundString != "none")
+				hitsound = FlxG.sound.load(Paths.sound("hitsounds/" + Std.string(hitSoundString).toLowerCase(), "shared"));
 
-		instance = this;
-
-		if(FlxG.save.data.bot)
-			hasUsedBot = true;
-
-		if(FlxG.save.data.noDeath)
-			hasUsedBot = true;
-
-		if(characterPlayingAs != 0)
-			hasUsedBot = true;
-
-		if(playingReplay)
-		{
-			hasUsedBot = true;
-
-			Conductor.offset = replay.offset;
-			FlxG.save.data.judgementTimings = replay.judgementTimings;
-			FlxG.save.data.ghostTapping = replay.ghostTapping;
-
-			for(i in 0...replay.inputs.length)
+			switch(FlxG.save.data.playAs)
 			{
-				var input = replay.inputs[i];
-
-				if(input.length > 3)
-					inputs.push([Std.int(input[0]), FlxMath.roundDecimal(input[1], 2), Std.int(input[2]), FlxMath.roundDecimal(input[3], 2)]);
-				else
-					inputs.push([Std.int(input[0]), FlxMath.roundDecimal(input[1], 2), Std.int(input[2])]);
-			}
-		}
-
-		for(i in 0...2)
-		{
-			var sound = FlxG.sound.load(Paths.sound('missnote' + Std.string((i + 1))), 0.2);
-			missSounds.push(sound);
-		}
-
-		binds = NoteHandler.getBinds(SONG.keyCount);
-
-		if (FlxG.sound.music != null)
-			FlxG.sound.music.stop();
-
-		camGame = new FlxCamera();
-		camHUD = new FlxCamera();
-		camHUD.bgColor.alpha = 0;
-
-		FlxG.cameras.reset();
-		FlxG.cameras.add(camGame, true);
-		FlxG.cameras.add(camHUD, false);
-
-		FlxG.cameras.setDefaultDrawTarget(camGame, true);
-
-		FlxG.camera = camGame;
-		
-		persistentUpdate = true;
-		persistentDraw = true;
-
-		if (SONG == null)
-			SONG = Song.loadFromJson('tutorial');
-
-		#if !sys
-		songMultiplier = 1;
-		#end
-
-		if(songMultiplier < 0.25)
-			songMultiplier = 0.25;
-
-		Conductor.mapBPMChanges(SONG, songMultiplier);
-		Conductor.changeBPM(SONG.bpm, songMultiplier);
-
-		previousScrollSpeedLmao = SONG.speed;
-
-		SONG.speed /= songMultiplier;
-
-		if(SONG.speed < 0.1 && songMultiplier > 1)
-			SONG.speed = 0.1;
-
-		Conductor.recalculateStuff(songMultiplier);
-		Conductor.safeZoneOffset *= songMultiplier;
-
-		noteBG = new FlxSprite(0,0);
-		noteBG.cameras = [camHUD];
-		noteBG.makeGraphic(1,1000,FlxColor.BLACK);
-
-		add(noteBG);
-
-		if(SONG.stage == null)
-		{
-			switch(storyWeek)
-			{
-				case 0 | 1:
-					SONG.stage = 'stage';
-				case 2:
-					SONG.stage = 'spooky';
-				case 3:
-					SONG.stage = 'philly';
-				case 4:
-					SONG.stage = 'limo';
-				case 5:
-					SONG.stage = 'mall';
-				case 6:
-					SONG.stage = 'school';
+				case "bf":
+					characterPlayingAs = 0;
+				case "opponent":
+					characterPlayingAs = 1;
+				case "both":
+					characterPlayingAs = -1;
 				default:
-					SONG.stage = 'chromatic-stage';
+					characterPlayingAs = 0;
 			}
 
-			if(SONG.song.toLowerCase() == "winter horrorland")
-				SONG.stage = 'evil-mall';
+			instance = this;
 
-			if(SONG.song.toLowerCase() == "roses")
-				SONG.stage = 'school-mad';
+			if(FlxG.save.data.bot)
+				hasUsedBot = true;
 
-			if(SONG.song.toLowerCase() == "thorns")
-				SONG.stage = 'evil-school';
+			if(FlxG.save.data.noDeath)
+				hasUsedBot = true;
+
+			if(characterPlayingAs != 0)
+				hasUsedBot = true;
+
+			if(playingReplay)
+			{
+				hasUsedBot = true;
+
+				Conductor.offset = replay.offset;
+				FlxG.save.data.judgementTimings = replay.judgementTimings;
+				FlxG.save.data.ghostTapping = replay.ghostTapping;
+
+				for(i in 0...replay.inputs.length)
+				{
+					var input = replay.inputs[i];
+
+					if(input.length > 3)
+						inputs.push([Std.int(input[0]), FlxMath.roundDecimal(input[1], 2), Std.int(input[2]), FlxMath.roundDecimal(input[3], 2)]);
+					else
+						inputs.push([Std.int(input[0]), FlxMath.roundDecimal(input[1], 2), Std.int(input[2])]);
+				}
+			}
+
+			for(i in 0...2)
+			{
+				var sound = FlxG.sound.load(Paths.sound('missnote' + Std.string((i + 1))), 0.2);
+				missSounds.push(sound);
+			}
+
+			binds = NoteHandler.getBinds(SONG.keyCount);
+
+			if (FlxG.sound.music != null)
+				FlxG.sound.music.stop();
+
+			camGame = new FlxCamera();
+			camHUD = new FlxCamera();
+			camHUD.bgColor.alpha = 0;
+
+			FlxG.cameras.reset();
+			FlxG.cameras.add(camGame, true);
+			FlxG.cameras.add(camHUD, false);
+
+			FlxG.cameras.setDefaultDrawTarget(camGame, true);
+
+			FlxG.camera = camGame;
+			
+			persistentUpdate = true;
+			persistentDraw = true;
+
+			if (SONG == null)
+				SONG = Song.loadFromJson('tutorial');
+
+			#if !sys
+			songMultiplier = 1;
+			#end
+
+			if(songMultiplier < 0.25)
+				songMultiplier = 0.25;
+
+			Conductor.mapBPMChanges(SONG, songMultiplier);
+			Conductor.changeBPM(SONG.bpm, songMultiplier);
+
+			previousScrollSpeedLmao = SONG.speed;
+
+			SONG.speed /= songMultiplier;
+
+			if(SONG.speed < 0.1 && songMultiplier > 1)
+				SONG.speed = 0.1;
+
+			Conductor.recalculateStuff(songMultiplier);
+			Conductor.safeZoneOffset *= songMultiplier;
+
+			noteBG = new FlxSprite(0,0);
+			noteBG.cameras = [camHUD];
+			noteBG.makeGraphic(1,1000,FlxColor.BLACK);
+
+			add(noteBG);
+
+			if(SONG.stage == null)
+			{
+				switch(storyWeek)
+				{
+					case 0 | 1:
+						SONG.stage = 'stage';
+					case 2:
+						SONG.stage = 'spooky';
+					case 3:
+						SONG.stage = 'philly';
+					case 4:
+						SONG.stage = 'limo';
+					case 5:
+						SONG.stage = 'mall';
+					case 6:
+						SONG.stage = 'school';
+					default:
+						SONG.stage = 'chromatic-stage';
+				}
+
+				if(SONG.song.toLowerCase() == "winter horrorland")
+					SONG.stage = 'evil-mall';
+
+				if(SONG.song.toLowerCase() == "roses")
+					SONG.stage = 'school-mad';
+
+				if(SONG.song.toLowerCase() == "thorns")
+					SONG.stage = 'evil-school';
+			}
 		}
 
 		if(Std.string(SONG.ui_Skin) == "null")
@@ -428,354 +433,357 @@ class PlayState extends MusicBeatState
 			uiMap.set(Std.string(i), BitmapData.fromFile(PolymodAssets.getPath(Paths.image("ui skins/" + SONG.ui_Skin + "/numbers/num" + Std.string(i)))));	
 		}
 
-		if(SONG.gf == null)
+		if(!yoWaitThisIsCharter)
 		{
-			switch(storyWeek)
+			if(SONG.gf == null)
 			{
-				case 4:
-					SONG.gf = 'gf-car';
-				case 5:
-					SONG.gf = 'gf-christmas';
-				case 6:
-					SONG.gf = 'gf-pixel';
-				default:
-					SONG.gf = 'gf';
-			}
-		}
-
-		/* character time :) */
-		gfVersion = SONG.gf;
-
-		if(!FlxG.save.data.chrsAndBGs)
-		{
-			gf = new Character(400, 130, "");
-			gf.scrollFactor.set(0.95, 0.95);
-	
-			dad = new Character(100, 100, "");
-			boyfriend = new Boyfriend(770, 450, "");
-		}
-		else
-		{
-			gf = new Character(400, 130, gfVersion);
-			gf.scrollFactor.set(0.95, 0.95);
-	
-			dad = new Character(100, 100, SONG.player2);
-			boyfriend = new Boyfriend(770, 450, SONG.player1);
-		}
-		/* end of character time */
-
-		#if discord_rpc
-		storyDifficultyText = storyDifficultyStr;
-		iconRPC = dad.icon;
-
-		// String that contains the mode defined here so it isn't necessary to call changePresence for each mode
-		if (isStoryMode)
-			detailsText = "Story Mode: Week " + storyWeek;
-		else
-			detailsText = "Freeplay";
-
-		// String for when the game is paused
-		detailsPausedText = "Paused - " + detailsText;
-		
-		// Updating Discord Rich Presence.
-		DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
-		#end
-
-		curStage = SONG.stage;
-
-		if(!FlxG.save.data.chrsAndBGs)
-			stage = new StageGroup("");
-		else
-			stage = new StageGroup(curStage);
-
-		add(stage);
-
-		defaultCamZoom = stage.camZoom;
-
-		var camPos:FlxPoint = new FlxPoint(dad.getGraphicMidpoint().x, dad.getGraphicMidpoint().y);
-
-		if(SONG.player2.startsWith("gf"))
-		{
-			dad.setPosition(gf.x, gf.y);
-			gf.visible = false;
-			
-			if (isStoryMode)
-			{
-				camPos.x += 600;
-				tweenCamIn();
-			}
-		}
-
-		// REPOSITIONING PER STAGE
-		if(FlxG.save.data.chrsAndBGs)
-			stage.setCharOffsets();
-
-		if(gf.otherCharacters == null)
-		{
-			if(gf.coolTrail != null)
-				add(gf.coolTrail);
-
-			add(gf);
-		}
-		else
-		{
-			for(character in gf.otherCharacters)
-			{
-				if(character.coolTrail != null)
-					add(character.coolTrail);
-				
-				add(character);
-			}
-		}
-
-		add(stage.infrontOfGFSprites);
-
-		// fuck haxeflixel and their no z ordering or somnething AAAAAAAAAAAAA
-		if(curStage == 'limo' && FlxG.save.data.chrsAndBGs)
-			add(stage.limo);
-
-		if(dad.otherCharacters == null)
-		{
-			if(dad.coolTrail != null)
-				add(dad.coolTrail);
-
-			add(dad);
-		}
-		else
-		{
-			for(character in dad.otherCharacters)
-			{
-				if(character.coolTrail != null)
-					add(character.coolTrail);
-
-				add(character);
-			}
-		}
-
-		/* we do a little trolling */
-		var midPos = (FlxG.save.data.cameraTracksDirections ? dad.getGraphicMidpoint() : dad.getMidpoint());
-
-		camPos.set(midPos.x + 150 + dad.cameraOffset[0], midPos.y - 100 + dad.cameraOffset[1]);
-
-		switch (dad.curCharacter)
-		{
-			case 'mom':
-				camPos.y = midPos.y;
-			case 'senpai':
-				camPos.y = midPos.y - 430;
-				camPos.x = midPos.x - 100;
-			case 'senpai-angry':
-				camPos.y = midPos.y - 430;
-				camPos.x = midPos.x - 100;
-		}
-
-		if(boyfriend.otherCharacters == null)
-		{
-			if(boyfriend.coolTrail != null)
-				add(boyfriend.coolTrail);
-			
-			add(boyfriend);
-		}
-		else
-		{
-			for(character in boyfriend.otherCharacters)
-			{
-				if(character.coolTrail != null)
-					add(character.coolTrail);
-
-				add(character);
-			}
-		}
-
-		add(stage.foregroundSprites);
-
-		Conductor.songPosition = -5000;
-
-		strumLine = new FlxSprite(0, 100).makeGraphic(FlxG.width, 10);
-
-		if (FlxG.save.data.downscroll)
-			strumLine.y = FlxG.height - 100;
-
-		strumLine.scrollFactor.set();
-
-		strumLineNotes = new FlxTypedGroup<StrumNote>();
-		add(strumLineNotes);
-
-		playerStrums = new FlxTypedGroup<StrumNote>();
-		enemyStrums = new FlxTypedGroup<StrumNote>();
-		splashes = new FlxTypedGroup<NoteSplash>();
-
-		generateSong(SONG.song);
-
-		camFollow = new FlxObject(0, 0, 1, 1);
-
-		camFollow.setPosition(camPos.x, camPos.y);
-
-		if (prevCamFollow != null)
-		{
-			camFollow = prevCamFollow;
-			prevCamFollow = null;
-		}
-
-		add(camFollow);
-
-		if(FlxG.save.data.chrsAndBGs)
-		{
-			FlxG.camera.follow(camFollow, LOCKON, 0.04 * (60 / Main.display.currentFPS));
-			FlxG.camera.zoom = defaultCamZoom;
-			FlxG.camera.focusOn(camFollow.getPosition());
-		}
-
-		FlxG.fixedTimestep = false;
-
-		var healthBarPosY = FlxG.height * 0.9;
-
-		if(FlxG.save.data.downscroll)
-			healthBarPosY = 60;
-
-		/*
-		better solution for future: make this process a freaking shader lmao
-		*/
-		healthBarBG = new FlxSprite(0, healthBarPosY).loadGraphic(Paths.image('ui skins/' + SONG.ui_Skin + '/other/healthBar', 'shared'));
-		healthBarBG.screenCenter(X);
-		healthBarBG.scrollFactor.set();
-		healthBarBG.pixelPerfectPosition = true;
-		add(healthBarBG);
-		
-		healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
-			'health', 0, 2);
-		healthBar.scrollFactor.set();
-		healthBar.createFilledBar(dad.barColor, boyfriend.barColor);
-		healthBar.pixelPerfectPosition = true;
-		add(healthBar);
-
-		var scoreTxtSize:Int = 16;
-		var funnyBarOffset:Int = 45;
-
-		if(FlxG.save.data.biggerScoreInfo == true)
-			scoreTxtSize = 22;
-
-		scoreTxt = new FlxText(0, healthBarBG.y + funnyBarOffset, 0, "", 20);
-		scoreTxt.screenCenter(X);
-		scoreTxt.setFormat(Paths.font("vcr.ttf"), scoreTxtSize, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		scoreTxt.scrollFactor.set();
-		add(scoreTxt);
-
-		timeBarBG = new FlxSprite(0, healthBarPosY).loadGraphic(Paths.image('ui skins/' + SONG.ui_Skin + '/other/healthBar', 'shared'));
-		timeBarBG.screenCenter(X);
-		timeBarBG.scrollFactor.set();
-		timeBarBG.pixelPerfectPosition = true;
-		
-		if(FlxG.save.data.downscroll)
-			timeBarBG.y = FlxG.height - (timeBarBG.height + 1);
-		else
-			timeBarBG.y = 1;
-		
-		add(timeBarBG);
-		
-		timeBar = new FlxBar(timeBarBG.x + 4, timeBarBG.y + 4, LEFT_TO_RIGHT, Std.int(timeBarBG.width - 8), Std.int(timeBarBG.height - 8), this,
-			'time', 0, FlxG.sound.music.length);
-		timeBar.scrollFactor.set();
-		timeBar.createFilledBar(FlxColor.BLACK, FlxColor.CYAN);
-		timeBar.pixelPerfectPosition = true;
-		add(timeBar);
-
-		var infoTxtSize:Int = 16;
-
-		if(FlxG.save.data.biggerInfoText == true)
-			infoTxtSize = 22;
-
-		infoTxt = new FlxText(0, 0, 0, SONG.song + " - " + storyDifficultyStr + (FlxG.save.data.bot ? " (BOT)" : ""), 20);
-		infoTxt.setFormat(Paths.font("vcr.ttf"), infoTxtSize, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		infoTxt.screenCenter(X);
-		
-		if(FlxG.save.data.downscroll)
-			infoTxt.y = timeBarBG.y - timeBarBG.height - 1;
-		else
-			infoTxt.y = timeBarBG.y + timeBarBG.height + 1;
-		
-		infoTxt.scrollFactor.set();
-		add(infoTxt);
-
-		if(FlxG.save.data.showRatingsOnSide)
-		{
-			ratingText = new FlxText(0,0,0,"bruh");
-			ratingText.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-			ratingText.screenCenter(Y);
-	
-			ratingText.scrollFactor.set();
-			add(ratingText);
-		}
-
-		iconP1 = new HealthIcon(boyfriend.icon, true);
-		iconP1.y = healthBar.y - (iconP1.height / 2);
-		add(iconP1);
-
-		iconP2 = new HealthIcon(dad.icon, false);
-		iconP2.y = healthBar.y - (iconP2.height / 2);
-		add(iconP2);
-
-		strumLineNotes.cameras = [camHUD];
-		notes.cameras = [camHUD];
-		healthBar.cameras = [camHUD];
-		healthBarBG.cameras = [camHUD];
-		iconP1.cameras = [camHUD];
-		iconP2.cameras = [camHUD];
-		scoreTxt.cameras = [camHUD];
-		infoTxt.cameras = [camHUD];
-
-		if(FlxG.save.data.showRatingsOnSide)
-			ratingText.cameras = [camHUD];
-
-		timeBar.cameras = [camHUD];
-		timeBarBG.cameras = [camHUD];
-
-		startingSong = true;
-
-		playCutsceneLmao = (!playingReplay && ((isStoryMode && FlxG.save.data.cutscenePlays == "story") || (!isStoryMode && FlxG.save.data.cutscenePlays == "freeplay") || (FlxG.save.data.cutscenePlays == "both")) && !fromPauseMenu);
-
-		if (playCutsceneLmao)
-		{
-			if(SONG.cutscene != null && SONG.cutscene != "")
-			{
-				cutscene = CutsceneUtil.loadFromJson(SONG.cutscene);
-
-				switch(cutscene.type.toLowerCase())
+				switch(storyWeek)
 				{
-					case "video":
-						startVideo(cutscene.videoPath, cutscene.videoExt, false);
+					case 4:
+						SONG.gf = 'gf-car';
+					case 5:
+						SONG.gf = 'gf-christmas';
+					case 6:
+						SONG.gf = 'gf-pixel';
+					default:
+						SONG.gf = 'gf';
+				}
+			}
 
-					case "dialogue":
-						var box:DialogueBox = new DialogueBox(cutscene);
-						box.scrollFactor.set();
-						box.finish_Function = function() { bruhDialogue(false); };
-						box.cameras = [camHUD];
+			/* character time :) */
+			gfVersion = SONG.gf;
 
-						startDialogue(box, false);
+			if(!FlxG.save.data.chrsAndBGs)
+			{
+				gf = new Character(400, 130, "");
+				gf.scrollFactor.set(0.95, 0.95);
+		
+				dad = new Character(100, 100, "");
+				boyfriend = new Boyfriend(770, 450, "");
+			}
+			else
+			{
+				gf = new Character(400, 130, gfVersion);
+				gf.scrollFactor.set(0.95, 0.95);
+		
+				dad = new Character(100, 100, SONG.player2);
+				boyfriend = new Boyfriend(770, 450, SONG.player1);
+			}
+			/* end of character time */
 
+			#if discord_rpc
+			storyDifficultyText = storyDifficultyStr;
+			iconRPC = dad.icon;
+
+			// String that contains the mode defined here so it isn't necessary to call changePresence for each mode
+			if (isStoryMode)
+				detailsText = "Story Mode: Week " + storyWeek;
+			else
+				detailsText = "Freeplay";
+
+			// String for when the game is paused
+			detailsPausedText = "Paused - " + detailsText;
+			
+			// Updating Discord Rich Presence.
+			DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
+			#end
+
+			curStage = SONG.stage;
+
+			if(!FlxG.save.data.chrsAndBGs)
+				stage = new StageGroup("");
+			else
+				stage = new StageGroup(curStage);
+
+			add(stage);
+
+			defaultCamZoom = stage.camZoom;
+
+			var camPos:FlxPoint = new FlxPoint(dad.getGraphicMidpoint().x, dad.getGraphicMidpoint().y);
+
+			if(SONG.player2.startsWith("gf"))
+			{
+				dad.setPosition(gf.x, gf.y);
+				gf.visible = false;
+				
+				if (isStoryMode)
+				{
+					camPos.x += 600;
+					tweenCamIn();
+				}
+			}
+
+			// REPOSITIONING PER STAGE
+			if(FlxG.save.data.chrsAndBGs)
+				stage.setCharOffsets();
+
+			if(gf.otherCharacters == null)
+			{
+				if(gf.coolTrail != null)
+					add(gf.coolTrail);
+
+				add(gf);
+			}
+			else
+			{
+				for(character in gf.otherCharacters)
+				{
+					if(character.coolTrail != null)
+						add(character.coolTrail);
+					
+					add(character);
+				}
+			}
+
+			add(stage.infrontOfGFSprites);
+
+			// fuck haxeflixel and their no z ordering or somnething AAAAAAAAAAAAA
+			if(curStage == 'limo' && FlxG.save.data.chrsAndBGs)
+				add(stage.limo);
+
+			if(dad.otherCharacters == null)
+			{
+				if(dad.coolTrail != null)
+					add(dad.coolTrail);
+
+				add(dad);
+			}
+			else
+			{
+				for(character in dad.otherCharacters)
+				{
+					if(character.coolTrail != null)
+						add(character.coolTrail);
+
+					add(character);
+				}
+			}
+
+			/* we do a little trolling */
+			var midPos = (FlxG.save.data.cameraTracksDirections ? dad.getGraphicMidpoint() : dad.getMidpoint());
+
+			camPos.set(midPos.x + 150 + dad.cameraOffset[0], midPos.y - 100 + dad.cameraOffset[1]);
+
+			switch (dad.curCharacter)
+			{
+				case 'mom':
+					camPos.y = midPos.y;
+				case 'senpai':
+					camPos.y = midPos.y - 430;
+					camPos.x = midPos.x - 100;
+				case 'senpai-angry':
+					camPos.y = midPos.y - 430;
+					camPos.x = midPos.x - 100;
+			}
+
+			if(boyfriend.otherCharacters == null)
+			{
+				if(boyfriend.coolTrail != null)
+					add(boyfriend.coolTrail);
+				
+				add(boyfriend);
+			}
+			else
+			{
+				for(character in boyfriend.otherCharacters)
+				{
+					if(character.coolTrail != null)
+						add(character.coolTrail);
+
+					add(character);
+				}
+			}
+
+			add(stage.foregroundSprites);
+
+			Conductor.songPosition = -5000;
+
+			strumLine = new FlxSprite(0, 100).makeGraphic(FlxG.width, 10);
+
+			if (FlxG.save.data.downscroll)
+				strumLine.y = FlxG.height - 100;
+
+			strumLine.scrollFactor.set();
+
+			strumLineNotes = new FlxTypedGroup<StrumNote>();
+			add(strumLineNotes);
+
+			playerStrums = new FlxTypedGroup<StrumNote>();
+			enemyStrums = new FlxTypedGroup<StrumNote>();
+			splashes = new FlxTypedGroup<NoteSplash>();
+
+			generateSong(SONG.song);
+
+			camFollow = new FlxObject(0, 0, 1, 1);
+
+			camFollow.setPosition(camPos.x, camPos.y);
+
+			if (prevCamFollow != null)
+			{
+				camFollow = prevCamFollow;
+				prevCamFollow = null;
+			}
+
+			add(camFollow);
+
+			if(FlxG.save.data.chrsAndBGs)
+			{
+				FlxG.camera.follow(camFollow, LOCKON, 0.04 * (60 / Main.display.currentFPS));
+				FlxG.camera.zoom = defaultCamZoom;
+				FlxG.camera.focusOn(camFollow.getPosition());
+			}
+
+			FlxG.fixedTimestep = false;
+
+			var healthBarPosY = FlxG.height * 0.9;
+
+			if(FlxG.save.data.downscroll)
+				healthBarPosY = 60;
+
+			/*
+			better solution for future: make this process a freaking shader lmao
+			*/
+			healthBarBG = new FlxSprite(0, healthBarPosY).loadGraphic(Paths.image('ui skins/' + SONG.ui_Skin + '/other/healthBar', 'shared'));
+			healthBarBG.screenCenter(X);
+			healthBarBG.scrollFactor.set();
+			healthBarBG.pixelPerfectPosition = true;
+			add(healthBarBG);
+			
+			healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
+				'health', 0, 2);
+			healthBar.scrollFactor.set();
+			healthBar.createFilledBar(dad.barColor, boyfriend.barColor);
+			healthBar.pixelPerfectPosition = true;
+			add(healthBar);
+
+			var scoreTxtSize:Int = 16;
+			var funnyBarOffset:Int = 45;
+
+			if(FlxG.save.data.biggerScoreInfo == true)
+				scoreTxtSize = 22;
+
+			scoreTxt = new FlxText(0, healthBarBG.y + funnyBarOffset, 0, "", 20);
+			scoreTxt.screenCenter(X);
+			scoreTxt.setFormat(Paths.font("vcr.ttf"), scoreTxtSize, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			scoreTxt.scrollFactor.set();
+			add(scoreTxt);
+
+			timeBarBG = new FlxSprite(0, healthBarPosY).loadGraphic(Paths.image('ui skins/' + SONG.ui_Skin + '/other/healthBar', 'shared'));
+			timeBarBG.screenCenter(X);
+			timeBarBG.scrollFactor.set();
+			timeBarBG.pixelPerfectPosition = true;
+			
+			if(FlxG.save.data.downscroll)
+				timeBarBG.y = FlxG.height - (timeBarBG.height + 1);
+			else
+				timeBarBG.y = 1;
+			
+			add(timeBarBG);
+			
+			timeBar = new FlxBar(timeBarBG.x + 4, timeBarBG.y + 4, LEFT_TO_RIGHT, Std.int(timeBarBG.width - 8), Std.int(timeBarBG.height - 8), this,
+				'time', 0, FlxG.sound.music.length);
+			timeBar.scrollFactor.set();
+			timeBar.createFilledBar(FlxColor.BLACK, FlxColor.CYAN);
+			timeBar.pixelPerfectPosition = true;
+			add(timeBar);
+
+			var infoTxtSize:Int = 16;
+
+			if(FlxG.save.data.biggerInfoText == true)
+				infoTxtSize = 22;
+
+			infoTxt = new FlxText(0, 0, 0, SONG.song + " - " + storyDifficultyStr + (FlxG.save.data.bot ? " (BOT)" : ""), 20);
+			infoTxt.setFormat(Paths.font("vcr.ttf"), infoTxtSize, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+			infoTxt.screenCenter(X);
+			
+			if(FlxG.save.data.downscroll)
+				infoTxt.y = timeBarBG.y - timeBarBG.height - 1;
+			else
+				infoTxt.y = timeBarBG.y + timeBarBG.height + 1;
+			
+			infoTxt.scrollFactor.set();
+			add(infoTxt);
+
+			if(FlxG.save.data.showRatingsOnSide)
+			{
+				ratingText = new FlxText(0,0,0,"bruh");
+				ratingText.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+				ratingText.screenCenter(Y);
+		
+				ratingText.scrollFactor.set();
+				add(ratingText);
+			}
+
+			iconP1 = new HealthIcon(boyfriend.icon, true);
+			iconP1.y = healthBar.y - (iconP1.height / 2);
+			add(iconP1);
+
+			iconP2 = new HealthIcon(dad.icon, false);
+			iconP2.y = healthBar.y - (iconP2.height / 2);
+			add(iconP2);
+
+			strumLineNotes.cameras = [camHUD];
+			notes.cameras = [camHUD];
+			healthBar.cameras = [camHUD];
+			healthBarBG.cameras = [camHUD];
+			iconP1.cameras = [camHUD];
+			iconP2.cameras = [camHUD];
+			scoreTxt.cameras = [camHUD];
+			infoTxt.cameras = [camHUD];
+
+			if(FlxG.save.data.showRatingsOnSide)
+				ratingText.cameras = [camHUD];
+
+			timeBar.cameras = [camHUD];
+			timeBarBG.cameras = [camHUD];
+
+			startingSong = true;
+
+			playCutsceneLmao = (!playingReplay && ((isStoryMode && FlxG.save.data.cutscenePlays == "story") || (!isStoryMode && FlxG.save.data.cutscenePlays == "freeplay") || (FlxG.save.data.cutscenePlays == "both")) && !fromPauseMenu);
+
+			if (playCutsceneLmao)
+			{
+				if(SONG.cutscene != null && SONG.cutscene != "")
+				{
+					cutscene = CutsceneUtil.loadFromJson(SONG.cutscene);
+
+					switch(cutscene.type.toLowerCase())
+					{
+						case "video":
+							startVideo(cutscene.videoPath, cutscene.videoExt, false);
+
+						case "dialogue":
+							var box:DialogueBox = new DialogueBox(cutscene);
+							box.scrollFactor.set();
+							box.finish_Function = function() { bruhDialogue(false); };
+							box.cameras = [camHUD];
+
+							startDialogue(box, false);
+
+						default:
+							startCountdown();
+					}
+				}
+				else
+					startCountdown();
+			}
+			else
+			{
+				switch (curSong.toLowerCase())
+				{
 					default:
 						startCountdown();
 				}
 			}
-			else
-				startCountdown();
+
+			// WINDOW TITLE POG
+			MusicBeatState.windowNameSuffix = " - " + SONG.song + " " + (isStoryMode ? "(Story Mode)" : "(Freeplay)");
+
+			fromPauseMenu = false;
+
+			if(FlxG.save.data.showRatingsOnSide)
+				updateRatingText();
 		}
-		else
-		{
-			switch (curSong.toLowerCase())
-			{
-				default:
-					startCountdown();
-			}
-		}
-
-		// WINDOW TITLE POG
-		MusicBeatState.windowNameSuffix = " - " + SONG.song + " " + (isStoryMode ? "(Story Mode)" : "(Freeplay)");
-
-		fromPauseMenu = false;
-
-		if(FlxG.save.data.showRatingsOnSide)
-			updateRatingText();
 
 		super.create();
 	}

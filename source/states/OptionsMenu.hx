@@ -147,6 +147,9 @@ class OptionsMenu extends MusicBeatState
 
 	override function create()
 	{
+		if(PlayState.instance == null)
+			pages[3][2] = null;
+		
 		MusicBeatState.windowNameSuffix = "";
 		
 		instance = this;
@@ -171,8 +174,7 @@ class OptionsMenu extends MusicBeatState
 
 		LoadPage("Categories");
 
-		if(FlxG.sound.music == null)
-			FlxG.sound.playMusic(MusicUtilities.GetOptionsMenuMusic(), 0.7, true);
+		FlxG.sound.playMusic(MusicUtilities.GetOptionsMenuMusic(), 0.7, true);
 	}
 
 	public static function LoadPage(Page_Name:String)
