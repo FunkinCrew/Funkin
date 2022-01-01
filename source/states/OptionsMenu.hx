@@ -66,7 +66,9 @@ class OptionsMenu extends MusicBeatState
 			new PageOption("Note Options", 1, "Note Options"),
 			new PageOption("Info Display", 2, "Info Display"),
 			new PageOption("Optimizations", 3, "Optimizations"),
-			new MaxFPSOption("Max FPS", 4)
+			new MaxFPSOption("Max FPS", 4),
+			new BoolOption("Bigger Score Text", "biggerScoreInfo", FlxG.save.data.biggerScoreInfo, 5),
+			new BoolOption("Bigger Info Text", "biggerInfoText", FlxG.save.data.biggerInfoText, 6)
 		],
 		[
 			"Tools",

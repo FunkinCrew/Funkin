@@ -649,9 +649,15 @@ class PlayState extends MusicBeatState
 		healthBar.pixelPerfectPosition = true;
 		add(healthBar);
 
-		scoreTxt = new FlxText(0, healthBarBG.y + 45, 0, "", 20);
+		var scoreTxtSize:Int = 16;
+		var funnyBarOffset:Int = 45;
+
+		if(FlxG.save.data.biggerScoreInfo == true)
+			scoreTxtSize = 22;
+
+		scoreTxt = new FlxText(0, healthBarBG.y + funnyBarOffset, 0, "", 20);
 		scoreTxt.screenCenter(X);
-		scoreTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		scoreTxt.setFormat(Paths.font("vcr.ttf"), scoreTxtSize, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		scoreTxt.scrollFactor.set();
 		add(scoreTxt);
 
@@ -674,8 +680,13 @@ class PlayState extends MusicBeatState
 		timeBar.pixelPerfectPosition = true;
 		add(timeBar);
 
+		var infoTxtSize:Int = 16;
+
+		if(FlxG.save.data.biggerInfoText == true)
+			infoTxtSize = 22;
+
 		infoTxt = new FlxText(0, 0, 0, SONG.song + " - " + storyDifficultyStr + (FlxG.save.data.bot ? " (BOT)" : ""), 20);
-		infoTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		infoTxt.setFormat(Paths.font("vcr.ttf"), infoTxtSize, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		infoTxt.screenCenter(X);
 		
 		if(FlxG.save.data.downscroll)

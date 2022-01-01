@@ -13,6 +13,7 @@ All notable changes will be documented in this file.
 - Customizeable Hitsounds.
 - Camera Bounce and Camera Tracks Direction Settings.
 - Added missing when getting a shit rating as a setting.
+- Setting to make Info Text and Score Text Bigger.
 ### Changed
 - New Note Splash Sprites!
 ### Fixed

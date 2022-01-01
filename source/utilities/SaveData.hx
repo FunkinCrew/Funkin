@@ -162,6 +162,12 @@ class SaveData {
 
             FlxG.save.data.noteSplashes = null;
         }
+
+        if(FlxG.save.data.biggerScoreInfo == null)
+            FlxG.save.data.biggerScoreInfo = false;
+
+        if(FlxG.save.data.biggerInfoText == null)
+            FlxG.save.data.biggerInfoText = false;
         
         FlxG.save.flush();
 
