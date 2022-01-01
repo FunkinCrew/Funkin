@@ -58,7 +58,7 @@ class OptionsMenu extends MusicBeatState
 			new BoolOption("No Death", "noDeath", FlxG.save.data.noDeath, 10),
 			new BoolOption("Use Custom Scrollspeed", "useCustomScrollSpeed", FlxG.save.data.useCustomScrollSpeed, 11),
 			new ScrollSpeedMenuOption("Custom Scroll Speed", 12),
-			new HitsoundOption("Hitsound", CoolUtil.coolTextFile(Paths.txt("hitsoundList")), FlxG.save.data.hitsound, 13)
+			new StringSaveOption("Hitsound", CoolUtil.coolTextFile(Paths.txt("hitsoundList")), FlxG.save.data.hitsound, 13, "hitsound")
 		],
 		[
 			"Graphics",
@@ -86,8 +86,8 @@ class OptionsMenu extends MusicBeatState
 			#if discord_rpc
 			new BoolOption("Discord RPC", "discordRPC", FlxG.save.data.discordRPC, 5),
 			#end
-			new CutsceneOption("Cutscenes Play On", ["story","freeplay","both"], FlxG.save.data.cutscenePlays, 6),
-			new PlayAsOption("Play As", ["bf", "opponent"], FlxG.save.data.playAs, 7),
+			new StringSaveOption("Cutscenes Play On", ["story","freeplay","both"], FlxG.save.data.cutscenePlays, 6, "cutscenePlays"),
+			new StringSaveOption("Play As", ["bf", "opponent"], FlxG.save.data.playAs, 7, "playAs"),
 			new BoolOption("Camera Tracks Direction", "cameraTracksDirections", FlxG.save.data.cameraTracksDirections, 8),
 			new BoolOption("Camera Bounce", "cameraZooms", FlxG.save.data.cameraZooms, 9),
 		],
@@ -102,7 +102,7 @@ class OptionsMenu extends MusicBeatState
 		[
 			"Info Display",
 			new PageOption("Back", 0, "Graphics"),
-			new DisplayFontOption("Display Font", ["_sans", OpenFLAssets.getFont(Paths.font("vcr.ttf")).fontName, OpenFLAssets.getFont(Paths.font("pixel.otf")).fontName], FlxG.save.data.displayFont, 6),
+			new DisplayFontOption("Display Font", ["_sans", OpenFLAssets.getFont(Paths.font("vcr.ttf")).fontName, OpenFLAssets.getFont(Paths.font("pixel.otf")).fontName], FlxG.save.data.displayFont, 6, "displayFont"),
 			new BoolOption("FPS Counter", "fpsCounter", FlxG.save.data.fpsCounter, 3),
 			new BoolOption("Memory Counter", "memoryCounter", FlxG.save.data.memoryCounter, 4),
 			new BoolOption("Version Display", "versionDisplay", FlxG.save.data.versionDisplay, 4)
@@ -111,14 +111,14 @@ class OptionsMenu extends MusicBeatState
 			"Judgements",
 			new PageOption("Back", 0, "Gameplay"),
 			new JudgementMenuOption("Timings", 1),
-			new RatingModeOption("Rating Mode", ["simple", "complex"], FlxG.save.data.ratingMode, 2),
+			new StringSaveOption("Rating Mode", ["simple", "complex"], FlxG.save.data.ratingMode, 2, "ratingMode"),
 			new BoolOption("Marvelous Ratings", "marvelousRatings", FlxG.save.data.marvelousRatings, 3),
 			new BoolOption("Show Rating Count", "showRatingsOnSide", FlxG.save.data.showRatingsOnSide, 4)
 		],
 		[
 			"Input Options",
 			new PageOption("Back", 0, "Gameplay"),
-			new InputModeOption("Input Mode", ["standard", "rhythm"], FlxG.save.data.inputMode, 3),
+			new StringSaveOption("Input Mode", ["standard", "rhythm"], FlxG.save.data.inputMode, 3, "inputMode"),
 			new BoolOption("Anti Mash", "antiMash", FlxG.save.data.antiMash, 4),
 			new BoolOption("Shit gives Miss", "missOnShit", FlxG.save.data.missOnShit, 5),
 			new BoolOption("Ghost Tapping", "ghostTapping", FlxG.save.data.ghostTapping, 9),
@@ -131,7 +131,8 @@ class OptionsMenu extends MusicBeatState
 			new PageOption("Back", 0, "Graphics"),
 			new NoteBGAlphaMenuOption("Note BG Alpha", 1),
 			new BoolOption("Enemy Note Glow", "enemyGlow", FlxG.save.data.enemyGlow, 2),
-			new BoolOption("Note Splashes", "noteSplashes", FlxG.save.data.noteSplashes, 3),
+			new BoolOption("Player Note Splashes", "playerNoteSplashes", FlxG.save.data.playerNoteSplashes, 3),
+			new BoolOption("Enemy Note Splashes", "opponentNoteSplashes", FlxG.save.data.opponentNoteSplashes, 3),
 			new BoolOption("Note Accuracy Text", "msText", FlxG.save.data.msText, 4),
 			new NoteColorMenuOption("Note Colors", 5),
 			new UISkinSelectOption("UI Skin", 6)

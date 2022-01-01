@@ -1,5 +1,6 @@
 package ui;
 
+import openfl.events.FullScreenEvent;
 import substates.ScrollSpeedMenu;
 import substates.NoteColorSubstate;
 import substates.NoteBGAlphaMenu;
@@ -82,93 +83,7 @@ class BoolOption extends Option
 		add(Checkbox_Object);
 	}
 
-	public function GetObjectValue():Bool
-	{
-		var Value:Bool = false;
-
-		//    MAKE THIS A BETTER SYSTEM LATER!!!    //
-		// (MAYBE SIMILAR TO HOW WEEK SCORES WORK?) //
-		
-		switch(Option_Value)
-		{
-			case "downscroll":
-				Value = FlxG.save.data.downscroll;
-			case "antiMash":
-				Value = FlxG.save.data.antiMash;
-			case "weekProgression":
-				Value = FlxG.save.data.weekProgression;
-			case "debugSongs":
-				Value = FlxG.save.data.debugSongs;
-			case "resetButtonOn":
-				Value = FlxG.save.data.resetButtonOn;
-			case "nohit":
-				Value = FlxG.save.data.nohit;
-			case "enemyGlow":
-				Value = FlxG.save.data.enemyGlow;
-			case "oldTitle":
-				Value = FlxG.save.data.oldTitle;
-			case "msText":
-				Value = FlxG.save.data.msText;
-			case "freeplayMusic":
-				Value = FlxG.save.data.freeplayMusic;
-			case "fpsCounter":
-				Value = FlxG.save.data.fpsCounter;
-			case "memoryCounter":
-				Value = FlxG.save.data.memoryCounter;
-			case "nightMusic":
-				Value = FlxG.save.data.nightMusic;
-			case "watermarks":
-				Value = FlxG.save.data.watermarks;
-			case "bot":
-				Value = FlxG.save.data.bot;
-			case "middleScroll":
-				Value = FlxG.save.data.middleScroll;
-			case "noteSplashes":
-				Value = FlxG.save.data.noteSplashes;
-			case "discordRPC":
-				Value = FlxG.save.data.discordRPC;
-			case "quickRestart":
-				Value = FlxG.save.data.quickRestart;
-			case "optimizations":
-				Value = FlxG.save.data.optimizations;
-			case "antialiasing":
-				Value = FlxG.save.data.antialiasing;
-			case "healthIcons":
-				Value = FlxG.save.data.healthIcons;
-			case "chrsAndBGs":
-				Value = FlxG.save.data.chrsAndBGs;
-			case "menuBGs":
-				Value = FlxG.save.data.menuBGs;
-			case "versionDisplay":
-				Value = FlxG.save.data.versionDisplay;
-			case "bigNoteSplashes":
-				Value = FlxG.save.data.bigNoteSplashes;
-			case "ghostTapping":
-				Value = FlxG.save.data.ghostTapping;
-			case "marvelousRatings":
-				Value = FlxG.save.data.marvelousRatings;
-			case "showRatingsOnSide":
-				Value = FlxG.save.data.showRatingsOnSide;
-			case "noDeath":
-				Value = FlxG.save.data.noDeath;
-			case "missOnHeldNotes":
-				Value = FlxG.save.data.missOnHeldNotes;
-			case "saveReplays":
-				Value = FlxG.save.data.saveReplays;
-			case "extraKeyReminders":
-				Value = FlxG.save.data.extraKeyReminders;
-			case "useCustomScrollSpeed":
-				Value = FlxG.save.data.useCustomScrollSpeed;
-			case "cameraTracksDirections":
-				Value = FlxG.save.data.cameraTracksDirections;
-			case "cameraZooms":
-				Value = FlxG.save.data.cameraZooms;
-			case "missOnShit":
-				Value = FlxG.save.data.missOnShit;
-		}
-
-		return Value;
-	}
+	public function GetObjectValue():Bool { return Reflect.getProperty(FlxG.save.data, Option_Value); }
 
     override function update(elapsed:Float)
     {
@@ -180,99 +95,26 @@ class BoolOption extends Option
 
     public function ChangeValue()
     {
-        //    MAKE THIS A BETTER SYSTEM LATER!!!    //
-		// (MAYBE SIMILAR TO HOW WEEK SCORES WORK?) //
+		Reflect.setProperty(FlxG.save.data, Option_Value, !Option_Checked);
 		
-		switch(Option_Value)
+		switch(Option_Value) // extra special cases
 		{
-			case "downscroll":
-				FlxG.save.data.downscroll = !Option_Checked;
-			case "antiMash":
-				FlxG.save.data.antiMash = !Option_Checked;
-			case "weekProgression":
-				FlxG.save.data.weekProgression = !Option_Checked;
-			case "debugSongs":
-				FlxG.save.data.debugSongs = !Option_Checked;
-			case "resetButtonOn":
-				FlxG.save.data.resetButtonOn = !Option_Checked;
-			case "nohit":
-				FlxG.save.data.nohit = !Option_Checked;
-			case "enemyGlow":
-				FlxG.save.data.enemyGlow = !Option_Checked;
-			case "oldTitle":
-				FlxG.save.data.oldTitle = !Option_Checked;
-			case "msText":
-				FlxG.save.data.msText = !Option_Checked;
-			case "freeplayMusic":
-				FlxG.save.data.freeplayMusic = !Option_Checked;
 			case "fpsCounter":
-				FlxG.save.data.fpsCounter = !Option_Checked;
 				Main.toggleFPS(FlxG.save.data.fpsCounter);
 			case "memoryCounter":
-				FlxG.save.data.memoryCounter = !Option_Checked;
 				Main.toggleMem(FlxG.save.data.memoryCounter);
-			case "nightMusic":
-				FlxG.save.data.nightMusic = !Option_Checked;
-			case "watermarks":
-				FlxG.save.data.watermarks = !Option_Checked;
-			case "bot":
-				FlxG.save.data.bot = !Option_Checked;
-			case "middleScroll":
-				FlxG.save.data.middleScroll = !Option_Checked;
-			case "noteSplashes":
-				FlxG.save.data.noteSplashes  = !Option_Checked;
 			#if discord_rpc
 			case "discordRPC":
-				FlxG.save.data.discordRPC = !Option_Checked;
-
 				if(FlxG.save.data.discordRPC && !DiscordClient.active)
 					DiscordClient.initialize();
 				else if(!FlxG.save.data.discordRPC && DiscordClient.active)
 					DiscordClient.shutdown();
 			#end
-			case "quickRestart":
-				FlxG.save.data.quickRestart = !Option_Checked;
-			case "optimizations":
-				FlxG.save.data.optimizations = !Option_Checked;
-			case "antialiasing":
-				FlxG.save.data.antialiasing = !Option_Checked;
-			case "healthIcons":
-				FlxG.save.data.healthIcons = !Option_Checked;
-			case "chrsAndBGs":
-				FlxG.save.data.chrsAndBGs = !Option_Checked;
-			case "menuBGs":
-				FlxG.save.data.menuBGs = !Option_Checked;
 			case "versionDisplay":
-				FlxG.save.data.versionDisplay = !Option_Checked;
 				Main.toggleVers(FlxG.save.data.versionDisplay);
-			case "bigNoteSplashes":
-				FlxG.save.data.bigNoteSplashes = !Option_Checked;
-			case "ghostTapping":
-				FlxG.save.data.ghostTapping = !Option_Checked;
-			case "marvelousRatings":
-				FlxG.save.data.marvelousRatings = !Option_Checked;
-			case "showRatingsOnSide":
-				FlxG.save.data.showRatingsOnSide = !Option_Checked;
-			case "noDeath":
-				FlxG.save.data.noDeath = !Option_Checked;
-			case "missOnHeldNotes":
-				FlxG.save.data.missOnHeldNotes = !Option_Checked;
-			case "saveReplays":
-				FlxG.save.data.saveReplays = !Option_Checked;
-			case "extraKeyReminders":
-				FlxG.save.data.extraKeyReminders = !Option_Checked;
-			case "useCustomScrollSpeed":
-				FlxG.save.data.useCustomScrollSpeed = !Option_Checked;
-			case "cameraTracksDirections":
-				FlxG.save.data.cameraTracksDirections = !Option_Checked;
-			case "cameraZooms":
-				FlxG.save.data.cameraZooms = !Option_Checked;
-			case "missOnShit":
-				FlxG.save.data.missOnShit = !Option_Checked;
 		}
 
-        if(Option_Value != "muted")
-            FlxG.save.flush();
+        FlxG.save.flush();
 
         Option_Checked = !Option_Checked;
         Checkbox_Object.checked = Option_Checked;
@@ -651,10 +493,9 @@ class StringSaveOption extends Option
 	var Modes:Array<String> = ["option 1", "option 2", "option 3"];
 	var Data:Dynamic;
 	var Cool_Name:String;
+	var Save_Data_Name:String;
 
-	function SetDataIGuess() { FlxG.save.flush(); }
-
-    override public function new(_Option_Name:String = "String Switcher", _Modes:Array<String>, _Data:Dynamic, _Option_Row:Int = 0)
+    override public function new(_Option_Name:String = "String Switcher", _Modes:Array<String>, _Data:Dynamic, _Option_Row:Int = 0, _Save_Data_Name:String = "cutscenePlays")
     {
         super();
 
@@ -665,6 +506,7 @@ class StringSaveOption extends Option
 		this.Current_Mode = Data;
 		this.Cool_Name = _Option_Name;
 		this.Option_Name = Cool_Name + " " + Current_Mode;
+		this.Save_Data_Name = _Save_Data_Name;
 
         // CREATING OTHER OBJECTS //
         Alphabet_Text = new Alphabet(20, 20 + (Option_Row * 100), Option_Name, true);
@@ -708,11 +550,12 @@ class StringSaveOption extends Option
 			SetDataIGuess();
 		}
     }
+
+	function SetDataIGuess()
+	{
+		Reflect.setProperty(FlxG.save.data, Save_Data_Name, Data);
+		FlxG.save.flush();
+	}
 }
 
-class CutsceneOption extends StringSaveOption { override function SetDataIGuess() { FlxG.save.data.cutscenePlays = Data; super.SetDataIGuess(); } }
-class DisplayFontOption extends StringSaveOption { override function SetDataIGuess() { FlxG.save.data.displayFont = Data; super.SetDataIGuess(); Main.changeFont(FlxG.save.data.displayFont); } }
-class InputModeOption extends StringSaveOption { override function SetDataIGuess() { FlxG.save.data.inputMode = Data; super.SetDataIGuess(); } }
-class RatingModeOption extends StringSaveOption { override function SetDataIGuess() { FlxG.save.data.ratingMode = Data; super.SetDataIGuess(); } }
-class PlayAsOption extends StringSaveOption { override function SetDataIGuess() { FlxG.save.data.playAs = Data; super.SetDataIGuess(); } }
-class HitsoundOption extends StringSaveOption { override function SetDataIGuess() { FlxG.save.data.hitsound = Data; super.SetDataIGuess(); } }
+class DisplayFontOption extends StringSaveOption { override function SetDataIGuess() { super.SetDataIGuess(); Main.changeFont(FlxG.save.data.displayFont); } }

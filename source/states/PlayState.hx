@@ -2087,7 +2087,7 @@ class PlayState extends MusicBeatState
 								spr.playAnim('confirm', true);
 								spr.resetAnim = 0;
 
-								if(!daNote.isSustainNote && FlxG.save.data.noteSplashes)
+								if(!daNote.isSustainNote && FlxG.save.data.opponentNoteSplashes)
 								{
 									var splash:NoteSplash = new NoteSplash(spr.x - (spr.width / 2), spr.y - (spr.height / 2), spr.ID, spr);
 									splash.cameras = [camHUD];
@@ -2558,7 +2558,7 @@ class PlayState extends MusicBeatState
 
 		hitNotes += hitNoteAmount;
 
-		if ((daRating == "sick" || daRating == "marvelous") && FlxG.save.data.noteSplashes)
+		if ((daRating == "sick" || daRating == "marvelous") && FlxG.save.data.playerNoteSplashes)
 		{
 			playerStrums.forEachAlive(function(spr:FlxSprite) {
 				if(spr.ID == Math.abs(noteData))

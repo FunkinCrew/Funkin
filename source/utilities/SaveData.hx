@@ -34,9 +34,6 @@ class SaveData {
         if(FlxG.save.data.songOffset == null)
             FlxG.save.data.songOffset = 0;
 
-        if(FlxG.save.data.noteSplashes == null)
-            FlxG.save.data.noteSplashes = true;
-
         if(FlxG.save.data.discordRPC == null)
             FlxG.save.data.discordRPC = true;
 
@@ -135,6 +132,36 @@ class SaveData {
 
         if(FlxG.save.data.missOnShit == null)
             FlxG.save.data.missOnShit = true;
+
+        if(FlxG.save.data.playerNoteSplashes == null && FlxG.save.data.opponentNoteSplashes == null)
+        {
+            if(FlxG.save.data.noteSplashes == true)
+            {
+                if(FlxG.save.data.playerNoteSplashes == null)
+                    FlxG.save.data.playerNoteSplashes = true;
+        
+                if(FlxG.save.data.opponentNoteSplashes == null)
+                    FlxG.save.data.opponentNoteSplashes = true;
+            }
+            else if(FlxG.save.data.noteSplashes == false)
+            {
+                if(FlxG.save.data.playerNoteSplashes == null)
+                    FlxG.save.data.playerNoteSplashes = false;
+        
+                if(FlxG.save.data.opponentNoteSplashes == null)
+                    FlxG.save.data.opponentNoteSplashes = false;
+            }
+            else
+            {
+                if(FlxG.save.data.playerNoteSplashes == null)
+                    FlxG.save.data.playerNoteSplashes = true;
+        
+                if(FlxG.save.data.opponentNoteSplashes == null)
+                    FlxG.save.data.opponentNoteSplashes = false;
+            }
+
+            FlxG.save.data.noteSplashes = null;
+        }
         
         FlxG.save.flush();
 
