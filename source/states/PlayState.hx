@@ -1949,7 +1949,7 @@ class PlayState extends MusicBeatState
 
 		if (unspawnNotes[0] != null && !switchedStates)
 		{
-			if (unspawnNotes[0].strumTime - Conductor.songPosition < (1500 * songMultiplier))
+			while (unspawnNotes.length > 0 && unspawnNotes[0].strumTime - Conductor.songPosition < (1500 * songMultiplier))
 			{
 				var dunceNote:Note = unspawnNotes[0];
 				notes.add(dunceNote);
