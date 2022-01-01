@@ -177,7 +177,7 @@ class ModchartUtilities
 
         // get some fukin globals up in here bois
 
-        setVar("difficulty", PlayState.storyDifficulty);
+        setVar("difficulty", PlayState.storyDifficultyStr);
         setVar("bpm", Conductor.bpm);
         setVar("keyCount", PlayState.SONG.keyCount);
         setVar("scrollspeed", PlayState.SONG.speed);

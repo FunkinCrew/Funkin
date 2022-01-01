@@ -6,8 +6,10 @@ import game.Conductor;
 import flixel.FlxG;
 import game.Highscore;
 
-class SaveData {
-    public static function init() {
+class SaveData
+{
+    public static function init()
+    {
         FlxG.save.bind('leathersfunkinengine', 'leather128');
 
         if(FlxG.save.data.enemyGlow == null)
