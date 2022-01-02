@@ -882,7 +882,6 @@ class StageMakingState extends MusicBeatState
 
         add(stage_Label);
 
-        add(stage_Dropdown);
         add(cam_Zoom);
         add(json_Button);
 
@@ -893,8 +892,6 @@ class StageMakingState extends MusicBeatState
 
         add(yStepper);
         add(y_Label);
-
-        add(charDropDown);
 
         add(scaleStepper);
         add(scale_Label);
@@ -907,6 +904,9 @@ class StageMakingState extends MusicBeatState
 
         add(scrollStepper);
         add(scroll_Label);
+
+        add(charDropDown);
+        add(stage_Dropdown);
     }
 
     override function beatHit()
