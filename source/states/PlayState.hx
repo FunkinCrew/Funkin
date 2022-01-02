@@ -3343,7 +3343,7 @@ class PlayState extends MusicBeatState
 
 			#if linc_luajit
 			if (luaModchart != null)
-				luaModchart.executeState('playerOneMiss', [direction, Conductor.songPosition, (note != null ? note.arrow_Type : "default"), (note != null ? !note.isSustainNote : false)]);
+				luaModchart.executeState('playerOneMiss', [direction, Conductor.songPosition, (note != null ? note.arrow_Type : "default"), (note != null ? note.isSustainNote : false)]);
 			#end
 		}
 	}
