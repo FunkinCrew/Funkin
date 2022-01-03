@@ -3367,6 +3367,10 @@ class PlayState extends MusicBeatState
 				health -= note.hitDamage;
 				misses++;
 				missSounds[FlxG.random.int(0, missSounds.length - 1)].play(true);
+
+				if(!playingReplay)
+					replay.recordKeyHit(note.noteData % SONG.keyCount, note.strumTime, (setNoteDiff != null ? setNoteDiff : note.strumTime - Conductor.songPosition));
+
 				updateRatingText();
 			}
 
