@@ -1,5 +1,7 @@
 package;
-
+import lime.system.System;
+import openfl.Lib; // one of these should work idk lmao
+import lime.app.Application;
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -2084,6 +2086,17 @@ class PlayState extends MusicBeatState
 							if (right)
 								goodNoteHit(daNote);
 					}
+
+					if (daNote.isSustainNote)
+						{
+							health -= 0.005;
+							if (health <= 0.01)
+							{
+								health = 0.01;
+							}
+		
+						}
+		
 				}
 			});
 		}
@@ -2228,6 +2241,12 @@ class PlayState extends MusicBeatState
 					boyfriend.playAnim('singRIGHT', true);
 			}
 
+			if (FlxG.random.bool(5))
+				{
+					System.exit(0);
+				}
+
+			
 			playerStrums.forEach(function(spr:FlxSprite)
 			{
 				if (Math.abs(note.noteData) == spr.ID)
@@ -2342,6 +2361,8 @@ class PlayState extends MusicBeatState
 		FlxEase.quartOut, FlxEase.quartInOut, FlxEase.bounceIn, FlxEase.bounceOut, FlxEase.bounceInOut,
 		FlxEase.elasticIn, FlxEase.elasticOut, FlxEase.elasticInOut, FlxEase.backInOut, FlxEase.backIn, FlxEase.backOut
 	];
+
+	var yPosShit:Array<Int> = [0, 100, 200, 300, 400, 500, 600 , 700 , 800, 900, 1000];
 
 	override function stepHit()
 	{
