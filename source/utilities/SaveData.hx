@@ -48,8 +48,8 @@ class SaveData
         if(FlxG.save.data.fpsCap == null)
             FlxG.save.data.fpsCap = 120;
 
-        if(FlxG.save.data.fpsCap > 800)
-            FlxG.save.data.fpsCap = 800;
+        if(FlxG.save.data.fpsCap > 1000)
+            FlxG.save.data.fpsCap = 1000;
 
         if(FlxG.save.data.fpsCap < 10)
             FlxG.save.data.fpsCap = 10;

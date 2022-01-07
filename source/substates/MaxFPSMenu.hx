@@ -69,8 +69,8 @@ class MaxFPSMenu extends MusicBeatSubstate
         if(accept)
             fps = Application.current.window.displayMode.refreshRate;
 
-        if(fps > 800)
-            fps = 800;
+        if(fps > 1000)
+            fps = 1000;
 
         if(fps < 10)
             fps = 10;
