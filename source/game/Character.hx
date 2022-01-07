@@ -557,17 +557,18 @@ class Character extends FlxSprite
 	{
 		animOffsets = new Map<String, Array<Dynamic>>();
 		
-		var offsets:Array<String>;
-
-		offsets = CoolUtil.coolTextFile(Paths.txt("character data/" + characterName + "/" + "offsets"));
-
-		for(x in 0...offsets.length)
+		if(Assets.exists(Paths.txt("character data/" + characterName + "/" + "offsets")))
 		{
-			var selectedOffset = offsets[x];
-			var arrayOffset:Array<String>;
-			arrayOffset = selectedOffset.split(" ");
+			var offsets:Array<String> = CoolUtil.coolTextFile(Paths.txt("character data/" + characterName + "/" + "offsets"));
 
-			addOffset(arrayOffset[0], Std.parseInt(arrayOffset[1]), Std.parseInt(arrayOffset[2]));
+			for(x in 0...offsets.length)
+			{
+				var selectedOffset = offsets[x];
+				var arrayOffset:Array<String>;
+				arrayOffset = selectedOffset.split(" ");
+
+				addOffset(arrayOffset[0], Std.parseInt(arrayOffset[1]), Std.parseInt(arrayOffset[2]));
+			}
 		}
 	}
 

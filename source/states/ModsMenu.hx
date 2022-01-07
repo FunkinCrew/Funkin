@@ -105,6 +105,12 @@ class ModsMenu extends MusicBeatState
 	{
 		super.update(elapsed);
 
+		if(-1 * Math.floor(FlxG.mouse.wheel) != 0)
+		{
+			curSelected -= 1 * Math.floor(FlxG.mouse.wheel);
+			FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
+		}
+
 		if (controls.UP_P)
 		{
 			curSelected -= 1;
