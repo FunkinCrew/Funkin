@@ -2,7 +2,6 @@ package substates;
 
 import game.Replay;
 import states.ReplaySelectorState;
-import haxe.Exception;
 import game.Character;
 import states.FreeplayState;
 import states.StoryMenuState;
