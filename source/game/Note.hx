@@ -2,17 +2,12 @@ package game;
 
 import shaders.NoteColors;
 import shaders.ColorSwap;
-import utilities.NoteHandler;
 import game.Song.SwagSong;
-import flixel.graphics.frames.FlxFramesCollection;
 import utilities.CoolUtil;
 import utilities.NoteVariables;
 import states.PlayState;
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.graphics.frames.FlxAtlasFrames;
-import flixel.math.FlxMath;
-import flixel.util.FlxColor;
 
 using StringTools;
 
@@ -57,7 +52,9 @@ class Note extends FlxSprite
 
 	public var colorSwap:ColorSwap;
 
-	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?character:Int = 0, ?arrowType:String = "default", ?song:SwagSong, ?characters:Array<Int>)
+	public var inEditor:Bool = false;
+
+	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?character:Int = 0, ?arrowType:String = "default", ?song:SwagSong, ?characters:Array<Int>, ?mustPress:Bool = false, ?inEditor:Bool = false)
 	{
 		super();
 
@@ -65,18 +62,21 @@ class Note extends FlxSprite
 			prevNote = this;
 
 		this.prevNote = prevNote;
+		this.inEditor = inEditor;
 		this.character = character;
 		this.strumTime = strumTime;
-		this.noteData = noteData;
 		this.arrow_Type = arrowType;
 		this.characters = characters;
+		this.mustPress = mustPress;
 
 		isSustainNote = sustainNote;
 
 		if(song == null)
 			song = PlayState.SONG;
 
-		this.noteData %= song.keyCount;
+		var localKeyCount = mustPress ? song.playerKeyCount : song.keyCount;
+
+		this.noteData = noteData;
 
 		x += 100;
 		// MAKE SURE ITS DEFINITELY OFF SCREEN?
@@ -92,11 +92,11 @@ class Note extends FlxSprite
 
 		frames = PlayState.instance.arrow_Type_Sprites.get(arrow_Type);
 
-		animation.addByPrefix("default", NoteVariables.Other_Note_Anim_Stuff[song.keyCount - 1][noteData] + "0", 24);
-		animation.addByPrefix("hold", NoteVariables.Other_Note_Anim_Stuff[song.keyCount - 1][noteData] + " hold0", 24);
-		animation.addByPrefix("holdend", NoteVariables.Other_Note_Anim_Stuff[song.keyCount - 1][noteData] + " hold end0", 24);
+		animation.addByPrefix("default", NoteVariables.Other_Note_Anim_Stuff[localKeyCount - 1][noteData] + "0", 24);
+		animation.addByPrefix("hold", NoteVariables.Other_Note_Anim_Stuff[localKeyCount - 1][noteData] + " hold0", 24);
+		animation.addByPrefix("holdend", NoteVariables.Other_Note_Anim_Stuff[localKeyCount - 1][noteData] + " hold end0", 24);
 
-		var lmaoStuff = Std.parseFloat(PlayState.instance.ui_Settings[0]) * (Std.parseFloat(PlayState.instance.ui_Settings[2]) - (Std.parseFloat(PlayState.instance.mania_size[song.keyCount-1])));
+		var lmaoStuff = Std.parseFloat(PlayState.instance.ui_Settings[0]) * (Std.parseFloat(PlayState.instance.ui_Settings[2]) - (Std.parseFloat(PlayState.instance.mania_size[localKeyCount-1])));
 
 		setGraphicSize(Std.int(width * lmaoStuff));
 		updateHitbox();
@@ -184,7 +184,7 @@ class Note extends FlxSprite
 			colorSwap = new ColorSwap();
 			shader = colorSwap.shader;
 	
-			var noteColor = NoteColors.getNoteColor(NoteVariables.Other_Note_Anim_Stuff[song.keyCount - 1][noteData]);
+			var noteColor = NoteColors.getNoteColor(NoteVariables.Other_Note_Anim_Stuff[localKeyCount - 1][noteData]);
 	
 			colorSwap.hue = noteColor[0] / 360;
 			colorSwap.saturation = noteColor[1] / 100;
@@ -200,10 +200,13 @@ class Note extends FlxSprite
 
 		calculateCanBeHit();
 
-		if (tooLate)
+		if(!inEditor)
 		{
-			if (alpha > 0.3)
-				alpha = 0.3;
+			if(tooLate)
+			{
+				if (alpha > 0.3)
+					alpha = 0.3;
+			}
 		}
 	}
 

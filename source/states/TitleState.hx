@@ -94,6 +94,8 @@ class TitleState extends MusicBeatState
 				DiscordClient.initialize();
 			
 				Application.current.onExit.add(function (exitCode) {
+					FlxG.save.close();
+					
 					DiscordClient.shutdown();
 				});
 			}

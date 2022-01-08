@@ -33,13 +33,14 @@ typedef SwagSong =
 
 	var player1:String;
 	var player2:String;
-	var gf:String;
+	var gf:Null<String>;
 	var stage:String;
 	var validScore:Bool;
 
 	var modchartPath:String;
 
-	var keyCount:Int;
+	var keyCount:Null<Int>;
+	var playerKeyCount:Null<Int>;
 
 	var timescale:Array<Int>;
 
@@ -48,7 +49,7 @@ typedef SwagSong =
 	// shaggy pog
 	var mania:Null<Int>;
 
-	var ui_Skin:String;
+	var ui_Skin:Null<String>;
 
 	var cutscene:String;
 	var endCutscene:String;
@@ -66,11 +67,12 @@ class Song
 
 	public var player1:String = 'bf';
 	public var player2:String = 'dad';
-	public var gf:String = 'gf';
+	public var gf:Null<String> = 'gf';
 	
-	public var stage:String = 'chromatic-stage';
+	public var stage:Null<String> = 'chromatic-stage';
 
-	public var keyCount:Int = 4;
+	public var keyCount:Null<Int> = 4;
+	public var playerKeyCount:Null<Int> = 4;
 
 	public function new(song, notes, bpm)
 	{
@@ -87,30 +89,18 @@ class Song
 
 		var rawJson:String = "";
 
-		rawJson = Assets.getText(Paths.json(folder.toLowerCase() + jsonInput.toLowerCase())).trim();
-
-		if(rawJson != "")
-		{
-			while (!rawJson.endsWith("}"))
-			{
-				rawJson = rawJson.substr(0, rawJson.length - 1);
-				// LOL GOING THROUGH THE BULLSHIT TO CLEAN IDK WHATS STRANGE
-			}
-	
-			return parseJSONshit(rawJson);
-		}
+		if(Assets.exists(Paths.json(folder.toLowerCase() + jsonInput.toLowerCase())))
+			rawJson = Assets.getText(Paths.json(folder.toLowerCase() + jsonInput.toLowerCase())).trim();
 		else
-		{
 			rawJson = Assets.getText(Paths.json("song data/tutorial/tutorial")).trim();
 
-			while (!rawJson.endsWith("}"))
-			{
-				rawJson = rawJson.substr(0, rawJson.length - 1);
-				// LOL GOING THROUGH THE BULLSHIT TO CLEAN IDK WHATS STRANGE
-			}
-	
-			return parseJSONshit(rawJson, original_Folder);
+		while (!rawJson.endsWith("}"))
+		{
+			rawJson = rawJson.substr(0, rawJson.length - 1);
+			// LOL GOING THROUGH THE BULLSHIT TO CLEAN IDK WHATS STRANGE
 		}
+
+		return parseJSONshit(rawJson, original_Folder);
 	}
 
 	public static function parseJSONshit(rawJson:String, ?originalSongName:String):SwagSong
@@ -118,10 +108,13 @@ class Song
 		var swagShit:SwagSong = cast Json.parse(rawJson).song;
 		swagShit.validScore = true;
 
-		if(Std.string(swagShit.keyCount) == "null")
+		if(swagShit.keyCount == null)
 			swagShit.keyCount = 4;
+
+		if(swagShit.playerKeyCount == null)
+			swagShit.playerKeyCount = swagShit.keyCount;
 		
-		if(Std.string(swagShit.mania) != "null")
+		if(swagShit.mania != null)
 		{
 			//shaggy support pog
 			switch(swagShit.mania)
@@ -140,7 +133,7 @@ class Song
 		if(originalSongName != null)
 			swagShit.song = originalSongName;
 
-		if(Std.string(swagShit.ui_Skin) == "null")
+		if(swagShit.ui_Skin == null || swagShit.ui_Skin == "")
 			swagShit.ui_Skin = swagShit.song == "Senpai" || swagShit.song == "Roses" || swagShit.song == "Thorns" ? "pixel" : "default";
 
 		if(swagShit.timescale == null)

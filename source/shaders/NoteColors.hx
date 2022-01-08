@@ -25,5 +25,7 @@ class NoteColors
     {
         if (FlxG.save.data.noteColors != null)
             noteColors = FlxG.save.data.noteColors;
+
+        FlxG.save.flush();
     }
 }

@@ -153,5 +153,7 @@ class Highscore
 
 		if(FlxG.save.data.songAccuracies != null)
 			songAccuracies = FlxG.save.data.songAccuracies;
+
+		FlxG.save.flush();
 	}
 }

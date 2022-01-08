@@ -14,9 +14,11 @@ All notable changes will be documented in this file.
 - Camera Bounce and Camera Tracks Direction Settings.
 - Added missing when getting a shit rating as a setting.
 - Setting to make Info Text and Score Text Bigger.
+- Option in songs for having a different key count for player than opponent.
 ### Changed
 - New Note Splash Sprites!
 - FPS Cap Max is now 1000 (800 before lol).
+- Section Size actually does something in the charter again.
 ### Fixed
 - Saving Replays when the bot has been used.
 - Infinite Mania now doesn't crash game (because before, it would crash due to missing keybinds).

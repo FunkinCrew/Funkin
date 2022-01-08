@@ -272,6 +272,10 @@ class ChartingState extends MusicBeatState
 		stepperKeyCount.value = _song.keyCount;
 		stepperKeyCount.name = 'song_keycount';
 
+		var stepperPlayerKeyCount:FlxUINumericStepper = new FlxUINumericStepper(stepperKeyCount.x + (stepperKeyCount.width * 2) + 2, stepperKeyCount.y, 1, 4, 1, NoteVariables.Note_Count_Directions.length);
+		stepperPlayerKeyCount.value = _song.playerKeyCount;
+		stepperPlayerKeyCount.name = 'song_playerkeycount';
+
 		var check_mute_inst = new FlxUICheckBox(10, stepperKeyCount.y + stepperKeyCount.height + 10, null, null, "Mute Instrumental (in editor)", 100);
 		check_mute_inst.checked = false;
 		check_mute_inst.callback = function()
@@ -366,6 +370,7 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(stepperBPM);
 		tab_group_song.add(stepperSpeed);
 		tab_group_song.add(stepperKeyCount);
+		tab_group_song.add(stepperPlayerKeyCount);
 
 		// final addings
 		UI_box.addGroup(tab_group_song);
@@ -797,6 +802,7 @@ class ChartingState extends MusicBeatState
 				case 'Camera points at P1':
 					_song.notes[curSection].mustHitSection = check.checked;
 					updateHeads();
+					updateGrid();
 				case 'Change BPM?':
 					if(_song.notes[curSection].bpm < 0.1)
 						_song.notes[curSection].bpm = 0.1;
@@ -830,6 +836,9 @@ class ChartingState extends MusicBeatState
 					_song.speed = nums.value;
 				case 'song_keycount':
 					_song.keyCount = Std.int(nums.value);
+					updateGrid();
+				case 'song_playerkeycount':
+					_song.playerKeyCount = Std.int(nums.value);
 					updateGrid();
 				case 'song_bpm':
 					if(nums.value < 0.1)
@@ -1361,14 +1370,14 @@ class ChartingState extends MusicBeatState
 		gridBG.kill();
 		gridBG.destroy();
 
-		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * _song.keyCount * 2, GRID_SIZE * Std.int(((16 / _song.timescale[1]) * 4)));
+		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * (_song.keyCount + _song.playerKeyCount), GRID_SIZE * _song.notes[curSection].lengthInSteps);
         add(gridBG);
 
 		remove(gridBlackLine);
 		gridBlackLine.kill();
 		gridBlackLine.destroy();
 
-		gridBlackLine = new FlxSprite(gridBG.x + gridBG.width / 2).makeGraphic(2, Std.int(gridBG.height), FlxColor.BLACK);
+		gridBlackLine = new FlxSprite(gridBG.x + (GRID_SIZE * (!_song.notes[curSection].mustHitSection ? _song.keyCount : _song.playerKeyCount))).makeGraphic(2, Std.int(gridBG.height), FlxColor.BLACK);
 		add(gridBlackLine);
 
 		curRenderedNotes.clear();
@@ -1415,7 +1424,20 @@ class ChartingState extends MusicBeatState
 			if(daType == null)
 				daType = "default";
 
-			var note:Note = new Note(daStrumTime, daNoteInfo % _song.keyCount, null, false, 0, daType, _song);
+			var mustPress = daNoteInfo >= _song.keyCount;
+
+			if(_song.notes[curSection].mustHitSection)
+				mustPress = !(daNoteInfo >= _song.playerKeyCount);
+
+			var goodNoteInfo = daNoteInfo % (mustPress ? _song.playerKeyCount : _song.keyCount);
+
+			if(!_song.notes[curSection].mustHitSection && mustPress)
+				goodNoteInfo = daNoteInfo - _song.keyCount;
+
+			if(_song.notes[curSection].mustHitSection && !mustPress)
+				goodNoteInfo = daNoteInfo - _song.playerKeyCount;
+
+			var note:Note = new Note(daStrumTime, goodNoteInfo, null, false, 0, daType, _song, [0], mustPress, true);
 			note.sustainLength = daSus;
 
 			note.setGraphicSize((Std.parseInt(PlayState.instance.arrow_Configs.get(daType)[4]) != null ? Std.parseInt(PlayState.instance.arrow_Configs.get(daType)[4]) : 0), Std.parseInt(PlayState.instance.arrow_Configs.get(daType)[2]));
@@ -1625,9 +1647,6 @@ class ChartingState extends MusicBeatState
 			else
 				_song.notes[curSection].sectionNotes.push([noteStrum, (noteData + _song.keyCount) % (_song.keyCount * 2), noteSus, current_Note_Character]);
 		}
-
-		trace(noteStrum);
-		trace(curSection);
 
 		updateGrid();
 		updateNoteUI();
