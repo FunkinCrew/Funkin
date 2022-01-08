@@ -1,0 +1,39 @@
+{
+    "defaultFlipX": false,
+    "dancesLeftAndRight": false,
+    "imagePath": "Mom_Assets",
+    "spritesheetType": "SPARROW",
+    "barColor":  [231, 109, 166],
+    "animations": [
+        {
+            "name": "idle",
+            "animation_name": "Mom Idle",
+            "fps": 24,
+            "looped": false
+        },
+        {
+            "name": "singLEFT",
+            "animation_name": "Mom Left Pose",
+            "fps": 24,
+            "looped": false
+        },
+        {
+            "name": "singDOWN",
+            "animation_name": "MOM DOWN POSE",
+            "fps": 24,
+            "looped": false
+        },
+        {
+            "name": "singUP",
+            "animation_name": "Mom Up Pose",
+            "fps": 24,
+            "looped": false
+        },
+        {
+            "name": "singRIGHT",
+            "animation_name": "Mom Pose Left",
+            "fps": 24,
+            "looped": false
+        }
+    ]
+}

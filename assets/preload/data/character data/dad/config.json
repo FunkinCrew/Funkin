@@ -1,0 +1,39 @@
+{
+    "defaultFlipX": false,
+    "dancesLeftAndRight": false,
+    "imagePath": "DADDY_DEAREST",
+    "spritesheetType": "SPARROW",
+    "barColor":  [199, 111, 211],
+    "animations": [
+        {
+            "name": "idle",
+            "animation_name": "Dad idle dance",
+            "fps": 24,
+            "looped": false
+        },
+        {
+            "name": "singLEFT",
+            "animation_name": "Dad Sing Note LEFT",
+            "fps": 24,
+            "looped": false
+        },
+        {
+            "name": "singDOWN",
+            "animation_name": "Dad Sing Note DOWN",
+            "fps": 24,
+            "looped": false
+        },
+        {
+            "name": "singUP",
+            "animation_name": "Dad Sing note UP",
+            "fps": 24,
+            "looped": false
+        },
+        {
+            "name": "singRIGHT",
+            "animation_name": "Dad Sing Note RIGHT",
+            "fps": 24,
+            "looped": false
+        }
+    ]
+}

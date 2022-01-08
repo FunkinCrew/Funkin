@@ -62,56 +62,6 @@ class Character extends FlxSprite
 
 		switch (curCharacter)
 		{
-			case 'dad':
-				// DAD ANIMATION LOADING CODE
-				frames = Paths.getSparrowAtlas('characters/DADDY_DEAREST', 'shared');
-				animation.addByPrefix('idle', 'Dad idle dance', 24, false);
-				animation.addByPrefix('singUP', 'Dad Sing note UP', 24, false);
-				animation.addByPrefix('singRIGHT', 'Dad Sing Note RIGHT', 24, false);
-				animation.addByPrefix('singDOWN', 'Dad Sing Note DOWN', 24, false);
-				animation.addByPrefix('singLEFT', 'Dad Sing Note LEFT', 24, false);
-
-				playAnim('idle');
-				barColor = FlxColor.fromRGB(199, 111, 211);
-			case 'spooky':
-				frames = Paths.getSparrowAtlas('characters/spooky_kids_assets', 'shared');
-				animation.addByPrefix('singUP', 'spooky UP NOTE', 24, false);
-				animation.addByPrefix('singDOWN', 'spooky DOWN note', 24, false);
-				animation.addByPrefix('singLEFT', 'note sing left', 24, false);
-				animation.addByPrefix('singRIGHT', 'spooky sing right', 24, false);
-				animation.addByIndices('danceLeft', 'spooky dance idle', [0, 2, 6], "", 12, false);
-				animation.addByIndices('danceRight', 'spooky dance idle', [8, 10, 12, 14], "", 12, false);
-
-				playAnim('danceRight');
-				dancesLeftAndRight = true;
-				barColor = FlxColor.fromRGB(226, 147, 30);
-			case 'mom':
-				frames = Paths.getSparrowAtlas('characters/Mom_Assets', 'shared');
-
-				animation.addByPrefix('idle', "Mom Idle", 24, false);
-				animation.addByPrefix('singUP', "Mom Up Pose", 24, false);
-				animation.addByPrefix('singDOWN', "MOM DOWN POSE", 24, false);
-				animation.addByPrefix('singLEFT', 'Mom Left Pose', 24, false);
-				// ANIMATION IS CALLED MOM LEFT POSE BUT ITS FOR THE RIGHT
-				// CUZ DAVE IS DUMB!
-				animation.addByPrefix('singRIGHT', 'Mom Pose Left', 24, false);
-
-				playAnim('idle');
-				barColor = FlxColor.fromRGB(231, 109, 166);
-			case 'mom-car':
-				frames = Paths.getSparrowAtlas('characters/momCar', 'shared');
-
-				animation.addByPrefix('idle', "Mom Idle", 24, false);
-				animation.addByPrefix('singUP', "Mom Up Pose", 24, false);
-				animation.addByPrefix('singDOWN', "MOM DOWN POSE", 24, false);
-				animation.addByPrefix('singLEFT', 'Mom Left Pose', 24, false);
-				// ANIMATION IS CALLED MOM LEFT POSE BUT ITS FOR THE RIGHT
-				// CUZ DAVE IS DUMB!
-				animation.addByPrefix('singRIGHT', 'Mom Pose Left', 24, false);
-
-				playAnim('idle');
-				barColor = FlxColor.fromRGB(231, 109, 166);
-				icon = "mom";
 			case 'monster':
 				frames = Paths.getSparrowAtlas('characters/Monster_Assets', 'shared');
 				animation.addByPrefix('idle', 'monster idle', 24, false);
