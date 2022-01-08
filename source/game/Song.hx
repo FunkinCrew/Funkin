@@ -133,7 +133,7 @@ class Song
 		if(originalSongName != null)
 			swagShit.song = originalSongName;
 
-		if(swagShit.ui_Skin == null || swagShit.ui_Skin == "")
+		if(Std.string(swagShit.ui_Skin) == "null")
 			swagShit.ui_Skin = swagShit.song == "Senpai" || swagShit.song == "Roses" || swagShit.song == "Thorns" ? "pixel" : "default";
 
 		if(swagShit.timescale == null)
