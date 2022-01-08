@@ -201,8 +201,8 @@ class FreeplayState extends MusicBeatState
 		var leText:String = "Press RESET to reset song score";
 		#end
 
-		var text:FlxText = new FlxText(textBG.x, textBG.y + 4, FlxG.width, leText, 18);
-		text.setFormat(Paths.font("vcr.ttf"), 18, FlxColor.WHITE, RIGHT);
+		var text:FlxText = new FlxText(textBG.x - 1, textBG.y + 4, FlxG.width, leText, 18);
+		text.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT);
 		text.scrollFactor.set();
 		add(text);
 
