@@ -88,17 +88,17 @@ class TitleState extends MusicBeatState
 
 			super.create();
 	
-			#if desktop
+			#if discord_rpc
 			if(!DiscordClient.started && FlxG.save.data.discordRPC)
-			{
 				DiscordClient.initialize();
 			
-				Application.current.onExit.add(function (exitCode) {
-					FlxG.save.close();
-					
-					DiscordClient.shutdown();
-				});
-			}
+			Application.current.onExit.add(function (exitCode) {
+				FlxG.save.close();
+				
+				#if discord_rpc
+				DiscordClient.shutdown();
+				#end
+			});
 			#end
 
 			firstTimeStarting = true;

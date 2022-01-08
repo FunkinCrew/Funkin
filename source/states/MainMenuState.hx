@@ -3,7 +3,7 @@ package states;
 import game.Replay;
 import utilities.MusicUtilities;
 import lime.utils.Assets;
-#if desktop
+#if discord_rpc
 import utilities.Discord.DiscordClient;
 #end
 import flixel.FlxG;
@@ -47,7 +47,7 @@ class MainMenuState extends MusicBeatState
 		
 		MusicBeatState.windowNameSuffix = "";
 		
-		#if desktop
+		#if discord_rpc
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("In the Menus", null);
 		#end

@@ -104,7 +104,7 @@
 	<haxelib name="flixel-ui" />
 	<haxelib name="polymod"/>
 	
-	<haxelib name="discord_rpc" if="desktop"/>
+	<!--<haxelib name="discord_rpc" if="desktop"/>-->
 	<haxelib name="linc_luajit" if="windows"/>
 
 	<!-- ______________________________ Haxedefines _____________________________ -->

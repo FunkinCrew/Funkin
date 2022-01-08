@@ -1223,7 +1223,9 @@ class PlayState extends MusicBeatState
 		Conductor.recalculateStuff(songMultiplier);
 
 		// Updating Discord Rich Presence (with Time Left)
+		#if discord_rpc
 		DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC, true, songLength / songMultiplier);
+		#end
 		#end
 
 		resyncVocals();
@@ -1516,7 +1518,7 @@ class PlayState extends MusicBeatState
 
 			paused = false;
 
-			#if desktop
+			#if discord_rpc
 			if (startTimer.finished)
 			{
 				DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC, true, ((songLength - Conductor.songPosition) / songMultiplier >= 1 ? (songLength - Conductor.songPosition) / songMultiplier : 1));
@@ -1533,7 +1535,7 @@ class PlayState extends MusicBeatState
 
 	override public function onFocus():Void
 	{
-		#if desktop
+		#if discord_rpc
 		if (health > 0 && !paused)
 		{
 			if (Conductor.songPosition > 0.0)
@@ -1552,7 +1554,7 @@ class PlayState extends MusicBeatState
 	
 	override public function onFocusLost():Void
 	{
-		#if desktop
+		#if discord_rpc
 		if (health > 0 && !paused)
 		{
 			DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
@@ -2306,7 +2308,7 @@ class PlayState extends MusicBeatState
 
 			openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 		
-			#if desktop
+			#if discord_rpc
 			DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
 			#end
 		}
@@ -2326,7 +2328,7 @@ class PlayState extends MusicBeatState
 			vocals.stop();
 			FlxG.switchState(new ChartingState());
 
-			#if desktop
+			#if discord_rpc
 			DiscordClient.changePresence("Chart Editor", null, null, true);
 			#end
 		}
