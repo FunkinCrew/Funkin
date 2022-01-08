@@ -329,9 +329,9 @@ class TitleState extends MusicBeatState
 				// }
 				// else
 				// {
-				// 	FlxG.switchState(new MainMenuState());
+				 	FlxG.switchState(new MainMenuState());
 				// }
-				// #else
+				#else
 				var http = new Http('https://raw.githubusercontent.com/luckydog7/Funkin-android/master/version.json');
 
 				http.onError = _ -> FlxG.switchState(new MainMenuState());
