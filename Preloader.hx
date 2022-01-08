@@ -6,8 +6,6 @@ import flash.display.BitmapData;
 import flash.display.Sprite;
 import flash.Lib;
  
-@:bitmap("art/preloaderArt.png") class LogoImage extends BitmapData { }
- 
 class Preloader extends FlxBasePreloader
 {
     public function new(MinDisplayTime:Float=6, ?AllowedURLs:Array<String>) 
@@ -25,7 +23,7 @@ class Preloader extends FlxBasePreloader
         var ratio:Float = this._width / 2560; //This allows us to scale assets depending on the size of the screen.
          
         logo = new Sprite();
-        logo.addChild(new Bitmap(new LogoImage(0,0))); //Sets the graphic of the sprite to a Bitmap object, which uses our embedded BitmapData class.
+        logo.addChild(new Bitmap(BitmapData.fromFile(Sys.getCwd() + "assets/shared/images/preloaderArt.png"))); //Sets the graphic of the sprite to a Bitmap object, which uses our embedded BitmapData class.
         logo.scaleX = logo.scaleY = ratio / 2;
         logo.x = ((this._width) / 2) - ((logo.width) / 2);
         logo.y = (this._height / 2) - ((logo.height) / 2);
