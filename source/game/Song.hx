@@ -89,18 +89,30 @@ class Song
 
 		var rawJson:String = "";
 
-		if(Assets.exists(Paths.json(folder.toLowerCase() + jsonInput.toLowerCase())))
-			rawJson = Assets.getText(Paths.json(folder.toLowerCase() + jsonInput.toLowerCase())).trim();
+		rawJson = Assets.getText(Paths.json(folder.toLowerCase() + jsonInput.toLowerCase())).trim();
+
+		if(rawJson != "")
+		{
+			while (!rawJson.endsWith("}"))
+			{
+				rawJson = rawJson.substr(0, rawJson.length - 1);
+				// LOL GOING THROUGH THE BULLSHIT TO CLEAN IDK WHATS STRANGE
+			}
+	
+			return parseJSONshit(rawJson);
+		}
 		else
+		{
 			rawJson = Assets.getText(Paths.json("song data/tutorial/tutorial")).trim();
 
-		while (!rawJson.endsWith("}"))
-		{
-			rawJson = rawJson.substr(0, rawJson.length - 1);
-			// LOL GOING THROUGH THE BULLSHIT TO CLEAN IDK WHATS STRANGE
+			while (!rawJson.endsWith("}"))
+			{
+				rawJson = rawJson.substr(0, rawJson.length - 1);
+				// LOL GOING THROUGH THE BULLSHIT TO CLEAN IDK WHATS STRANGE
+			}
+	
+			return parseJSONshit(rawJson, original_Folder);
 		}
-
-		return parseJSONshit(rawJson, original_Folder);
 	}
 
 	public static function parseJSONshit(rawJson:String, ?originalSongName:String):SwagSong
@@ -108,13 +120,13 @@ class Song
 		var swagShit:SwagSong = cast Json.parse(rawJson).song;
 		swagShit.validScore = true;
 
-		if(swagShit.keyCount == null)
+		if(Std.string(swagShit.keyCount) == "null")
 			swagShit.keyCount = 4;
 
-		if(swagShit.playerKeyCount == null)
+		if(Std.string(swagShit.playerKeyCount) == "null")
 			swagShit.playerKeyCount = swagShit.keyCount;
 		
-		if(swagShit.mania != null)
+		if(Std.string(swagShit.mania) != "null")
 		{
 			//shaggy support pog
 			switch(swagShit.mania)
