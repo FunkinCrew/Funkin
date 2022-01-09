@@ -31,7 +31,7 @@ class HealthIcon extends TrackerSprite
 		else if(Assets.exists(Paths.image('icons/' + 'icon-' + char))) // PSYCH ICONS
 			loadGraphic(Paths.image('icons/' + 'icon-' + char), true, 150, 150);
 		else if(Assets.exists(Paths.image('icons/' + char))) // lmao image file names i guess if you're really lazy
-			loadGraphic(Paths.image('icons/' + 'icon-' + char), true, 150, 150);
+			loadGraphic(Paths.image('icons/' + char), true, 150, 150);
 		else // UNKNOWN ICON
 			loadGraphic(Paths.image('icons/placeholder-icon'), true, 150, 150);
 
