@@ -20,7 +20,9 @@ discord_rpc
 polymod
 linc_luajit
 ```
-So for each of those type `haxelib install [library]` so shit like `haxelib install polymod`
+So for each of those type `haxelib install [library]` so shit like `haxelib install polymod 1.3.0`
+
+## IMPORTANT: it seems a bug occurs with polymod 1.3.1 that resets data, right now i've been using 1.3.0 and it seems to work fine so just use that for now.
 
 You'll also need to install a couple things that involve Gits. To do this, you need to do a few things first.
 1. Download [git-scm](https://git-scm.com/downloads). Works for Windows, Mac, and Linux, just select your build.
