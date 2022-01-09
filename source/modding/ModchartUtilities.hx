@@ -180,6 +180,7 @@ class ModchartUtilities
         setVar("difficulty", PlayState.storyDifficultyStr);
         setVar("bpm", Conductor.bpm);
         setVar("keyCount", PlayState.SONG.keyCount);
+        setVar("playerKeyCount", PlayState.SONG.playerKeyCount);
         setVar("scrollspeed", PlayState.SONG.speed);
         setVar("fpsCap", FlxG.save.data.fpsCap);
         setVar("downscroll", FlxG.save.data.downscroll);
