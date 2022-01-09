@@ -4,8 +4,6 @@ THESE INSTRUCTIONS ARE FOR COMPILING THE GAME'S SOURCE CODE!!!
 
 IF YOU WANT TO COMPILE THE GAME YOURSELF, CONTINUE READING!!!
 
-## DISCLAIMER: USE POLYMOD 1.3.0 BECAUSE 1.3.1 HAS A STUPDIO BUG RN
-
 ### Installing the Required Programs
 
 First you need to install Haxe and HaxeFlixel. I'm too lazy to write and keep updated with that setup (which is pretty simple). 
@@ -22,7 +20,7 @@ discord_rpc
 polymod
 linc_luajit
 ```
-So for each of those type `haxelib install [library]` so shit like `haxelib install polymod 1.3.0`
+So for each of those type `haxelib install [library]` so shit like `haxelib install polymod`
 
 You'll also need to install a couple things that involve Gits. To do this, you need to do a few things first.
 1. Download [git-scm](https://git-scm.com/downloads). Works for Windows, Mac, and Linux, just select your build.

@@ -40,7 +40,7 @@ jobs:
           haxelib install flixel-addons
           haxelib install linc_luajit
           haxelib install hscript
-          haxelib install polymod 1.3.0
+          haxelib install polymod
           haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
           haxelib install hxcpp-debug-server
           haxelib list
@@ -85,7 +85,7 @@ jobs:
           haxelib install flixel-addons
           haxelib install linc_luajit
           haxelib install hscript
-          haxelib install polymod 1.3.0
+          haxelib install polymod
           haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
           haxelib install hxcpp-debug-server
           haxelib list
@@ -124,7 +124,7 @@ jobs:
           haxelib install flixel-addons
           haxelib install linc_luajit
           haxelib install hscript
-          haxelib install polymod 1.3.0
+          haxelib install polymod
           haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc
           haxelib install hxcpp-debug-server
           haxelib list
