@@ -123,9 +123,6 @@ class Song
 		if(Std.string(swagShit.keyCount) == "null")
 			swagShit.keyCount = 4;
 
-		if(Std.string(swagShit.playerKeyCount) == "null")
-			swagShit.playerKeyCount = swagShit.keyCount;
-		
 		if(Std.string(swagShit.mania) != "null")
 		{
 			//shaggy support pog
@@ -141,6 +138,9 @@ class Song
 					swagShit.keyCount = 9;
 			}
 		}
+
+		if(Std.string(swagShit.playerKeyCount) == "null")
+			swagShit.playerKeyCount = swagShit.keyCount;
 
 		if(originalSongName != null)
 			swagShit.song = originalSongName;
