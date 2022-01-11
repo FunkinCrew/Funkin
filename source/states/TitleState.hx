@@ -91,7 +91,9 @@ class TitleState extends MusicBeatState
 			#if discord_rpc
 			if(!DiscordClient.started && FlxG.save.data.discordRPC)
 				DiscordClient.initialize();
-			
+			#end
+
+			#if desktop
 			Application.current.onExit.add(function (exitCode) {
 				FlxG.save.close();
 				
