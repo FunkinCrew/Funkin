@@ -62,7 +62,7 @@ class MainMenuState extends MusicBeatState
 
 		var bg:FlxSprite;
 
-		if(FlxG.save.data.menuBGs)
+		if(.menuBGs)
 			bg = new FlxSprite(-80).loadGraphic(Paths.image('menuBG'));
 		else
 			bg = new FlxSprite(-80).makeGraphic(1286, 730, FlxColor.fromString("#FDE871"), false, "optimizedMenuBG");
@@ -78,7 +78,7 @@ class MainMenuState extends MusicBeatState
 		camFollow = new FlxObject(0, 0, 1, 1);
 		add(camFollow);
 
-		if(FlxG.save.data.menuBGs)
+		if(.menuBGs)
 			magenta = new FlxSprite(-80).loadGraphic(Paths.image('menuDesat'));
 		else
 			magenta = new FlxSprite(-80).makeGraphic(1286, 730, FlxColor.fromString("#E1E1E1"), false, "optimizedMenuDesat");
@@ -112,7 +112,7 @@ class MainMenuState extends MusicBeatState
 
 		FlxG.camera.follow(camFollow, null, 0.06 * (60 / Main.display.currentFPS));
 
-		var versionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, (FlxG.save.data.watermarks ? TitleState.version : "v0.2.7.1"), 16);
+		var versionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, (.watermarks ? TitleState.version : "v0.2.7.1"), 16);
 		versionShit.scrollFactor.set();
 		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(versionShit);

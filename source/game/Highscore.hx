@@ -79,7 +79,7 @@ class Highscore
 		// Reminder that I don't need to format this song, it should come formatted!
 		songScores.set(song, score);
 
-		FlxG.save.data.songScores = songScores;
+		.songScores = songScores;
 		FlxG.save.flush();
 	}
 
@@ -88,7 +88,7 @@ class Highscore
 		// Reminder that I don't need to format this song, it should come formatted!
 		songRanks.set(song, rank);
 
-		FlxG.save.data.songRanks = songRanks;
+		.songRanks = songRanks;
 		FlxG.save.flush();
 	}
 
@@ -97,7 +97,7 @@ class Highscore
 		// Reminder that I don't need to format this song, it should come formatted!
 		songAccuracies.set(song, accuracy);
 
-		FlxG.save.data.songAccuracies = songAccuracies;
+		.songAccuracies = songAccuracies;
 		FlxG.save.flush();
 	}
 
@@ -145,14 +145,14 @@ class Highscore
 
 	public static function load():Void
 	{
-		if(FlxG.save.data.songScores != null)
-			songScores = FlxG.save.data.songScores;
+		if(.songScores != null)
+			songScores = .songScores;
 		
-		if(FlxG.save.data.songRanks != null)
-			songRanks = FlxG.save.data.songRanks;
+		if(.songRanks != null)
+			songRanks = .songRanks;
 
-		if(FlxG.save.data.songAccuracies != null)
-			songAccuracies = FlxG.save.data.songAccuracies;
+		if(.songAccuracies != null)
+			songAccuracies = .songAccuracies;
 
 		FlxG.save.flush();
 	}

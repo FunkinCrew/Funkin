@@ -48,9 +48,9 @@ class Replay
             difficulty = PlayState.storyDifficultyStr.toLowerCase();
         }
 
-        ghostTapping = FlxG.save.data.ghostTapping;
+        ghostTapping = .ghostTapping;
         offset = Conductor.offset;
-        judgementTimings = FlxG.save.data.judgementTimings;
+        judgementTimings = .judgementTimings;
 
         inputs = [];
     }

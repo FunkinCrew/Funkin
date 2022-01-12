@@ -1709,13 +1709,13 @@ class ChartingState extends MusicBeatState
 	function loadAutosave():Void
 	{
 		loadedAutosave = true;
-		PlayState.SONG = Song.parseJSONshit(FlxG.save.data.autosave);
+		PlayState.SONG = Song.parseJSONshit(.autosave);
 		FlxG.resetState();
 	}
 
 	function autosaveSong():Void
 	{
-		FlxG.save.data.autosave = Json.stringify({
+		.autosave = Json.stringify({
 			"song": _song
 		});
 

@@ -12,171 +12,173 @@ class SaveData
     {
         FlxG.save.bind('leathersfunkinengine', 'leather128');
 
-        if(FlxG.save.data.enemyGlow == null)
-            FlxG.save.data.enemyGlow = true;
+        if(.enemyGlow == null)
+            .enemyGlow = true;
 
-        if(FlxG.save.data.fpsCounter == null)
-            FlxG.save.data.fpsCounter = true;
+        if(.fpsCounter == null)
+            .fpsCounter = true;
 
-        if(FlxG.save.data.memoryCounter == null)
-            FlxG.save.data.memoryCounter = true;
+        if(.memoryCounter == null)
+            .memoryCounter = true;
 
-        if(FlxG.save.data.killBind == null)
-            FlxG.save.data.killBind = "R";
+        if(.killBind == null)
+            .killBind = "R";
 
-        if(FlxG.save.data.uiSkin == null)
-            FlxG.save.data.uiSkin = "default";
+        if(.uiSkin == null)
+            .uiSkin = "default";
 
-        if(FlxG.save.data.msText == null)
-            FlxG.save.data.msText = true;
+        if(.msText == null)
+            .msText = true;
 
-        if(FlxG.save.data.downscroll == null)
-			FlxG.save.data.downscroll = false;
+        if(.downscroll == null)
+			.downscroll = false;
 
-        if(FlxG.save.data.nightMusic == null)
-			FlxG.save.data.nightMusic = false;
+        if(.nightMusic == null)
+			.nightMusic = false;
 
-        if(FlxG.save.data.songOffset == null)
-            FlxG.save.data.songOffset = 0;
+        if(.songOffset == null)
+            .songOffset = 0;
 
-        if(FlxG.save.data.discordRPC == null)
-            FlxG.save.data.discordRPC = true;
+        if(.discordRPC == null)
+            .discordRPC = true;
 
-        if(FlxG.save.data.quickRestart == null)
-            FlxG.save.data.quickRestart = false;
+        if(.quickRestart == null)
+            .quickRestart = false;
 
-        if(FlxG.save.data.fpsCap == null)
-            FlxG.save.data.fpsCap = 120;
+        if(.fpsCap == null)
+            .fpsCap = 120;
 
-        if(FlxG.save.data.fpsCap > 1000)
-            FlxG.save.data.fpsCap = 1000;
+        if(.fpsCap > 1000)
+            .fpsCap = 1000;
 
-        if(FlxG.save.data.fpsCap < 10)
-            FlxG.save.data.fpsCap = 10;
+        if(.fpsCap < 10)
+            .fpsCap = 10;
 
-        if(FlxG.save.data.cutscenePlays == null)
-            FlxG.save.data.cutscenePlays = "story";
+        if(.cutscenePlays == null)
+            .cutscenePlays = "story";
 
-        if(FlxG.save.data.binds == null)
-            FlxG.save.data.binds = NoteVariables.Default_Binds;
+        if(.binds == null)
+            .binds = NoteVariables.Default_Binds;
 
-        if(FlxG.save.data.antialiasing == null)
-            FlxG.save.data.antialiasing = true;
+        if(.antialiasing == null)
+            .antialiasing = true;
 
-        if(FlxG.save.data.healthIcons == null)
-            FlxG.save.data.healthIcons = true;
+        if(.healthIcons == null)
+            .healthIcons = true;
 
-        if(FlxG.save.data.chrsAndBGs == null)
-            FlxG.save.data.chrsAndBGs = true;
+        if(.chrsAndBGs == null)
+            .chrsAndBGs = true;
 
-        if(FlxG.save.data.menuBGs == null)
-            FlxG.save.data.menuBGs = true;
+        if(.menuBGs == null)
+            .menuBGs = true;
 
-        if(FlxG.save.data.nohit == null)
-            FlxG.save.data.nohit = false;
+        if(.nohit == null)
+            .nohit = false;
 
-        if(FlxG.save.data.versionDisplay == null)
-            FlxG.save.data.versionDisplay = true;
+        if(.versionDisplay == null)
+            .versionDisplay = true;
 
-        if(FlxG.save.data.displayFont == null)
-            FlxG.save.data.displayFont = "_sans";
+        if(.displayFont == null)
+            .displayFont = "_sans";
 
-        if(FlxG.save.data.ghostTapping == null)
-            FlxG.save.data.ghostTapping = true;
+        if(.ghostTapping == null)
+            .ghostTapping = true;
 
-        if(FlxG.save.data.fullscreenBind == null)
-            FlxG.save.data.fullscreenBind = "F11";
+        if(.fullscreenBind == null)
+            .fullscreenBind = "F11";
 
-        if(FlxG.save.data.inputMode == null)
-            FlxG.save.data.inputMode = "standard";
+        if(.inputMode == null)
+            .inputMode = "standard";
 
-        if(FlxG.save.data.judgementTimings == null || FlxG.save.data.judgementTimings.length < 4)
-            FlxG.save.data.judgementTimings = [25, 50, 70, 100];
+        if(.judgementTimings == null || .judgementTimings.length < 4)
+            .judgementTimings = [25, 50, 70, 100];
 
-        if(FlxG.save.data.antiMash == null)
-            FlxG.save.data.antiMash = true;
+        if(.antiMash == null)
+            .antiMash = true;
 
-        if(FlxG.save.data.marvelousRatings == null)
-            FlxG.save.data.marvelousRatings = true;
+        if(.marvelousRatings == null)
+            .marvelousRatings = true;
 
-        if(FlxG.save.data.ratingMode == null)
-            FlxG.save.data.ratingMode = "complex";
+        if(.ratingMode == null)
+            .ratingMode = "complex";
 
-        if(FlxG.save.data.showRatingsOnSide == null)
-            FlxG.save.data.showRatingsOnSide = true;
+        if(.showRatingsOnSide == null)
+            .showRatingsOnSide = true;
 
-        if(FlxG.save.data.noteBGAlpha == null)
-            FlxG.save.data.noteBGAlpha = 0;
+        if(.noteBGAlpha == null)
+            .noteBGAlpha = 0;
 
-        if(FlxG.save.data.noDeath == null)
-            FlxG.save.data.noDeath = false;
+        if(.noDeath == null)
+            .noDeath = false;
 
-        if(FlxG.save.data.missOnHeldNotes == null)
-            FlxG.save.data.missOnHeldNotes = true;
+        if(.missOnHeldNotes == null)
+            .missOnHeldNotes = true;
 
-        if(FlxG.save.data.extraKeyReminders == null)
-            FlxG.save.data.extraKeyReminders = true;
+        if(.extraKeyReminders == null)
+            .extraKeyReminders = true;
 
-        if(FlxG.save.data.playAs == null)
-            FlxG.save.data.playAs = "bf";
+        if(.playAs == null)
+            .playAs = "bf";
 
-        if(FlxG.save.data.useCustomScrollSpeed == null)
-            FlxG.save.data.useCustomScrollSpeed = false;
+        if(.useCustomScrollSpeed == null)
+            .useCustomScrollSpeed = false;
 
-        if(FlxG.save.data.scrollSpeed == null)
-            FlxG.save.data.scrollSpeed = 1;
+        if(.scrollSpeed == null)
+            .scrollSpeed = 1;
 
-        if(FlxG.save.data.hitsound == null)
-            FlxG.save.data.hitsound = "none";
+        if(.hitsound == null)
+            .hitsound = "none";
 
-        if(FlxG.save.data.cameraTracksDirections == null)
-            FlxG.save.data.cameraTracksDirections = false;
+        if(.cameraTracksDirections == null)
+            .cameraTracksDirections = false;
 
-        if(FlxG.save.data.cameraZooms == null)
-            FlxG.save.data.cameraZooms = true;
+        if(.cameraZooms == null)
+            .cameraZooms = true;
 
-        if(FlxG.save.data.missOnShit == null)
-            FlxG.save.data.missOnShit = true;
+        if(.missOnShit == null)
+            .missOnShit = true;
 
-        if(FlxG.save.data.playerNoteSplashes == null && FlxG.save.data.opponentNoteSplashes == null)
+        if(.playerNoteSplashes == null && .opponentNoteSplashes == null)
         {
-            if(FlxG.save.data.noteSplashes == true)
+            if(.noteSplashes == true)
             {
-                if(FlxG.save.data.playerNoteSplashes == null)
-                    FlxG.save.data.playerNoteSplashes = true;
+                if(.playerNoteSplashes == null)
+                    .playerNoteSplashes = true;
         
-                if(FlxG.save.data.opponentNoteSplashes == null)
-                    FlxG.save.data.opponentNoteSplashes = true;
+                if(.opponentNoteSplashes == null)
+                    .opponentNoteSplashes = true;
             }
-            else if(FlxG.save.data.noteSplashes == false)
+            else if(.noteSplashes == false)
             {
-                if(FlxG.save.data.playerNoteSplashes == null)
-                    FlxG.save.data.playerNoteSplashes = false;
+                if(.playerNoteSplashes == null)
+                    .playerNoteSplashes = false;
         
-                if(FlxG.save.data.opponentNoteSplashes == null)
-                    FlxG.save.data.opponentNoteSplashes = false;
+                if(.opponentNoteSplashes == null)
+                    .opponentNoteSplashes = false;
             }
             else
             {
-                if(FlxG.save.data.playerNoteSplashes == null)
-                    FlxG.save.data.playerNoteSplashes = true;
+                if(.playerNoteSplashes == null)
+                    .playerNoteSplashes = true;
         
-                if(FlxG.save.data.opponentNoteSplashes == null)
-                    FlxG.save.data.opponentNoteSplashes = false;
+                if(.opponentNoteSplashes == null)
+                    .opponentNoteSplashes = false;
             }
 
-            FlxG.save.data.noteSplashes = null;
+            .noteSplashes = null;
         }
 
-        if(FlxG.save.data.biggerScoreInfo == null)
-            FlxG.save.data.biggerScoreInfo = false;
+        if(.biggerScoreInfo == null)
+            .biggerScoreInfo = false;
 
-        if(FlxG.save.data.biggerInfoText == null)
-            FlxG.save.data.biggerInfoText = false;
+        if(.biggerInfoText == null)
+            .biggerInfoText = false;
         
         FlxG.save.flush();
 
-        Conductor.offset = FlxG.save.data.songOffset;
+        Options.init();
+
+        Conductor.offset = .songOffset;
 
         PlayerSettings.init();
         PlayerSettings.player1.controls.loadKeyBinds();
@@ -188,14 +190,14 @@ class SaveData
 
     public static function fixBinds()
     {
-        if(FlxG.save.data.binds == null)
-            FlxG.save.data.binds = NoteVariables.Default_Binds;
+        if(.binds == null)
+            .binds = NoteVariables.Default_Binds;
         
-        if(FlxG.save.data.binds.length < NoteVariables.Default_Binds.length)
+        if(.binds.length < NoteVariables.Default_Binds.length)
         {
-            for(i in Std.int(FlxG.save.data.binds.length - 1)...NoteVariables.Default_Binds.length)
+            for(i in Std.int(.binds.length - 1)...NoteVariables.Default_Binds.length)
             {
-                FlxG.save.data.binds[i] = NoteVariables.Default_Binds[i];
+                .binds[i] = NoteVariables.Default_Binds[i];
             }
         }
     }

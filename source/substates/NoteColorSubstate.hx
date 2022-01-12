@@ -25,7 +25,7 @@ class NoteColorSubstate extends MusicBeatSubstate
 
     public var arrow_Configs:Map<String, Array<String>> = new Map<String, Array<String>>();
 
-    var binds:Array<Array<String>> = FlxG.save.data.binds;
+    var binds:Array<Array<String>> = .binds;
 
     var selectedControl:Int = 0;
     var selectingStuff:Bool = false;

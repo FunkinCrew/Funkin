@@ -182,11 +182,11 @@ class ModchartUtilities
         setVar("keyCount", PlayState.SONG.keyCount);
         setVar("playerKeyCount", PlayState.SONG.playerKeyCount);
         setVar("scrollspeed", PlayState.SONG.speed);
-        setVar("fpsCap", FlxG.save.data.fpsCap);
-        setVar("downscroll", FlxG.save.data.downscroll);
-        setVar("flashing", FlxG.save.data.flashing);
-        setVar("distractions", FlxG.save.data.distractions);
-        setVar("cameraZooms", FlxG.save.data.cameraZooms);
+        setVar("fpsCap", .fpsCap);
+        setVar("downscroll", .downscroll);
+        setVar("flashing", .flashing);
+        setVar("distractions", .distractions);
+        setVar("cameraZooms", .cameraZooms);
 
         setVar("curStep", 0);
         setVar("curBeat", 0);

@@ -9,7 +9,7 @@ class NoteColors
     public static function setNoteColor(note:String, color:Array<Int>):Void
     {
         noteColors.set(note, color);
-        FlxG.save.data.noteColors = noteColors;
+        .noteColors = noteColors;
         FlxG.save.flush();
     }
 
@@ -23,8 +23,8 @@ class NoteColors
 
     public static function load():Void
     {
-        if (FlxG.save.data.noteColors != null)
-            noteColors = FlxG.save.data.noteColors;
+        if (.noteColors != null)
+            noteColors = .noteColors;
 
         FlxG.save.flush();
     }

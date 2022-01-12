@@ -24,7 +24,7 @@ class ReplaySelectorState extends MusicBeatState
         
         var menuBG:FlxSprite;
 
-		if(FlxG.save.data.menuBGs)
+		if(.menuBGs)
 			menuBG = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 		else
 			menuBG = new FlxSprite().makeGraphic(1286, 730, FlxColor.fromString("#E1E1E1"), false, "optimizedMenuDesat");

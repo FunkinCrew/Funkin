@@ -79,7 +79,7 @@ class Main extends Sprite
 		addChild(new FlxGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen));
 
 		#if !mobile
-		display = new SimpleInfoDisplay(10, 3, 0xFFFFFF, FlxG.save.data.displayFont);
+		display = new SimpleInfoDisplay(10, 3, 0xFFFFFF, .displayFont);
 		addChild(display);
 		#end
 	}

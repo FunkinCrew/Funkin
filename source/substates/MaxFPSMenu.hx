@@ -19,7 +19,7 @@ class MaxFPSMenu extends MusicBeatSubstate
     {
         super();
 
-        fps = FlxG.save.data.fpsCap;
+        fps = .fpsCap;
         
         var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
         bg.alpha = 0;
@@ -47,10 +47,10 @@ class MaxFPSMenu extends MusicBeatSubstate
 
         if(back)
         {
-            FlxG.save.data.fpsCap = fps;
+            .fpsCap = fps;
             
             /* cool fps shit thx kade */
-		    (cast (Lib.current.getChildAt(0), Main)).setFPSCap(FlxG.save.data.fpsCap);
+		    (cast (Lib.current.getChildAt(0), Main)).setFPSCap(.fpsCap);
 
             FlxG.save.flush();
             FlxG.state.closeSubState();

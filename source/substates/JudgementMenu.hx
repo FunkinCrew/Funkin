@@ -12,7 +12,7 @@ import flixel.FlxSprite;
 
 class JudgementMenu extends MusicBeatSubstate
 {
-    var judgements:Array<Int> = FlxG.save.data.judgementTimings;
+    var judgements:Array<Int> = .judgementTimings;
 
     var preset:String = "Leather Engine";
 
@@ -58,7 +58,7 @@ class JudgementMenu extends MusicBeatSubstate
 
         if(back)
         {
-            FlxG.save.data.judgementTimings = judgements;
+            .judgementTimings = judgements;
 
             FlxG.save.flush();
             FlxG.state.closeSubState();
@@ -73,7 +73,7 @@ class JudgementMenu extends MusicBeatSubstate
 
             if(selected < 0)
                 selected = 3;
-            if(selected > (FlxG.save.data.marvelousRatings ? 4 : 3))
+            if(selected > (.marvelousRatings ? 4 : 3))
                 selected = 0;
         }
 
@@ -135,10 +135,10 @@ class JudgementMenu extends MusicBeatSubstate
     {
         judgementText.text = (
             "Preset: " + preset + (selected == 0 ? " <\n" : "\n") +
-            (FlxG.save.data.marvelousRatings ? "MARVELOUS: " + Std.string(judgements[0]) + "ms" + (selected == 1 ? " <\n" : "\n") : "") +
-            "SICK: " + Std.string(judgements[1]) + "ms" + (selected == (FlxG.save.data.marvelousRatings ? 2 : 1) ? " <\n" : "\n") +
-            "GOOD: " + Std.string(judgements[2]) + "ms" + (selected == (FlxG.save.data.marvelousRatings ? 3 : 2) ? " <\n" : "\n") +
-            "BAD: " + Std.string(judgements[3]) + "ms" + (selected == (FlxG.save.data.marvelousRatings ? 4 : 3) ? " <\n" : "\n") +
+            (.marvelousRatings ? "MARVELOUS: " + Std.string(judgements[0]) + "ms" + (selected == 1 ? " <\n" : "\n") : "") +
+            "SICK: " + Std.string(judgements[1]) + "ms" + (selected == (.marvelousRatings ? 2 : 1) ? " <\n" : "\n") +
+            "GOOD: " + Std.string(judgements[2]) + "ms" + (selected == (.marvelousRatings ? 3 : 2) ? " <\n" : "\n") +
+            "BAD: " + Std.string(judgements[3]) + "ms" + (selected == (.marvelousRatings ? 4 : 3) ? " <\n" : "\n") +
             "\n"
         );
 

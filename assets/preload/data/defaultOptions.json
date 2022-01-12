@@ -1,0 +1,178 @@
+{
+    "options": [
+        {
+            "option": "enemyStrumsGlow",
+            "value": true
+        },
+        {
+            "option": "infoDisplayed",
+            "value": [true, true, true]
+        },
+        {
+            "option": "ui_skin",
+            "value": "default"
+        },
+        {
+            "option": "displayMs",
+            "value": true
+        },
+        {
+            "option": "downscroll",
+            "value": false
+        },
+        {
+            "option": "titleMusic",
+            "value": "default"
+        },
+        {
+            "option": "songOffset",
+            "value": 0
+        },
+        {
+            "option": "discordRPC",
+            "value": true
+        },
+        {
+            "option": "quickRestart",
+            "value": false
+        },
+        {
+            "option": "maxFPS",
+            "value": 120
+        },
+        {
+            "option": "maxFPS",
+            "value": 120,
+            "min": 1,
+            "max": 1000
+        },
+        {
+            "option": "cutscenePlaysOn",
+            "value": "story"
+        },
+        {
+            "option": "antialiasing",
+            "value": true
+        },
+        {
+            "option": "healthIcons",
+            "value": true
+        },
+        {
+            "option": "charsAndBGs",
+            "value": true
+        },
+        {
+            "option": "menuBGs",
+            "value": true
+        },
+        {
+            "option": "noHit",
+            "value": false
+        },
+        {
+            "option": "infoDisplayFont",
+            "value": "_sans"
+        },
+        {
+            "option": "ghostTapping",
+            "value": true
+        },
+        {
+            "option": "inputSystem",
+            "value": "standard"
+        },
+        {
+            "option": "judgementTimings",
+            "value": [25, 50, 70, 100]
+        },
+        {
+            "option": "antiMash",
+            "value": true
+        },
+        {
+            "option": "marvelousRatings",
+            "value": true
+        },
+        {
+            "option": "ratingType",
+            "value": "complex"
+        },
+        {
+            "option": "sideRatings",
+            "value": true
+        },
+        {
+            "option": "noteBGAlpha",
+            "value": 0
+        },
+        {
+            "option": "noDeath",
+            "value": false
+        },
+        {
+            "option": "missOnHeldNotes",
+            "value": true
+        },
+        {
+            "option": "extraKeyReminders",
+            "value": true
+        },
+        {
+            "option": "playAs",
+            "value": "bf"
+        },
+        {
+            "option": "useCustomScrollSpeed",
+            "value": false
+        },
+        {
+            "option": "customScrollSpeed",
+            "value": 1,
+            "min": 0.1,
+            "max": 10
+        },
+        {
+            "option": "hitsound",
+            "value": "none"
+        },
+        {
+            "option": "cameraTracksDirections",
+            "value": false
+        },
+        {
+            "option": "cameraZooms",
+            "value": true
+        },
+        {
+            "option": "missOnShit",
+            "value": true
+        },
+        {
+            "option": "playerNoteSplashes",
+            "value": true
+        },
+        {
+            "option": "opponentNoteSplashes",
+            "value": false
+        },
+        {
+            "option": "biggerScoreInfo",
+            "value": false
+        },
+        {
+            "option": "biggerInfoText",
+            "value": false
+        },
+        {
+            "option": "fullscreenBind",
+            "value": "F11",
+            "save": "binds"
+        },
+        {
+            "option": "kill",
+            "value": "R",
+            "save": "binds"
+        }
+    ]
+}

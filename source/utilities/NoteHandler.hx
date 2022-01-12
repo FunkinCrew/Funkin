@@ -6,6 +6,6 @@ class NoteHandler
 {
     public static function getBinds(keyCount:Int):Array<String>
     {
-        return FlxG.save.data.binds[keyCount - 1];
+        return .binds[keyCount - 1];
     }
 }

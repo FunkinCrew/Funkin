@@ -18,7 +18,7 @@ class NoteBGAlphaMenu extends MusicBeatSubstate
     {
         super();
 
-        alpha_Value = FlxG.save.data.noteBGAlpha;
+        alpha_Value = .noteBGAlpha;
         
         var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
         bg.alpha = 0;
@@ -42,7 +42,7 @@ class NoteBGAlphaMenu extends MusicBeatSubstate
 
         if(back)
         {
-            FlxG.save.data.noteBGAlpha = alpha_Value;
+            .noteBGAlpha = alpha_Value;
             FlxG.save.flush();
             FlxG.state.closeSubState();
         }

@@ -80,7 +80,7 @@ class TitleState extends MusicBeatState
 			NoteVariables.init();
 	
 			/* cool fps shit thx kade */
-			(cast (Lib.current.getChildAt(0), Main)).setFPSCap(FlxG.save.data.fpsCap);
+			(cast (Lib.current.getChildAt(0), Main)).setFPSCap(.fpsCap);
 
 			SaveData.fixBinds();
 	
@@ -89,7 +89,7 @@ class TitleState extends MusicBeatState
 			super.create();
 	
 			#if discord_rpc
-			if(!DiscordClient.started && FlxG.save.data.discordRPC)
+			if(!DiscordClient.started && .discordRPC)
 				DiscordClient.initialize();
 			#end
 
@@ -149,12 +149,12 @@ class TitleState extends MusicBeatState
 			// IF THIS PR IS HERE IF ITS ACCEPTED UR GOOD TO GO
 			// https://github.com/HaxeFlixel/flixel-addons/pull/348
 
-			if (FlxG.save.data.oldTitle)
+			if (.oldTitle)
 			{
 				playTitleMusic();
 			}
 			else {
-				if (Date.now().getDay() == 5 && Date.now().getHours() >= 18 || FlxG.save.data.nightMusic)
+				if (Date.now().getDay() == 5 && Date.now().getHours() >= 18 || .nightMusic)
 				{
 					playTitleMusic();
 					Conductor.changeBPM(117);
@@ -167,11 +167,11 @@ class TitleState extends MusicBeatState
 
 			FlxG.sound.music.fadeIn(4, 0, 0.7);
 
-			Main.toggleFPS(FlxG.save.data.fpsCounter);
-			Main.toggleMem(FlxG.save.data.memoryCounter);
-			Main.toggleVers(FlxG.save.data.versionDisplay);
+			Main.toggleFPS(.fpsCounter);
+			Main.toggleMem(.memoryCounter);
+			Main.toggleVers(.versionDisplay);
 
-			Main.changeFont(FlxG.save.data.displayFont);
+			Main.changeFont(.displayFont);
 		}
 
 		version = "Leather Engine" + " Release v" + Application.current.meta.get('version');
@@ -180,7 +180,7 @@ class TitleState extends MusicBeatState
 
 		var bg:FlxSprite = new FlxSprite();
 
-		if (FlxG.save.data.oldTitle)
+		if (.oldTitle)
 		{
 			bg.loadGraphic(Paths.image("title/stageback"));
 			bg.antialiasing = true;
@@ -193,7 +193,7 @@ class TitleState extends MusicBeatState
 
 		add(bg);
 
-		if (FlxG.save.data.oldTitle)
+		if (.oldTitle)
 		{
 			old_logo = new FlxSprite().loadGraphic(Paths.image('title/logo'));
 			old_logo.screenCenter();
@@ -207,7 +207,7 @@ class TitleState extends MusicBeatState
 		{
 			logoBl = new FlxSprite(0, 0);
 			
-			if(FlxG.save.data.watermarks)
+			if(.watermarks)
 				logoBl.frames = Paths.getSparrowAtlas('title/leatherLogoBumpin');
 			else
 				logoBl.frames = Paths.getSparrowAtlas('title/logoBumpin');
@@ -232,14 +232,14 @@ class TitleState extends MusicBeatState
 		titleText.animation.play('idle');
 		titleText.updateHitbox();
 
-		if (!FlxG.save.data.oldTitle)
+		if (!.oldTitle)
 		{
 			add(logoBl);
 			add(gfDance);
 			add(titleText);
 		}
 
-		if (FlxG.save.data.oldTitle)
+		if (.oldTitle)
 		{
 			add(old_logo_black);
 			add(old_logo);
@@ -265,7 +265,7 @@ class TitleState extends MusicBeatState
 
 		FlxG.mouse.visible = false;
 
-		if(FlxG.save.data.watermarks)
+		if(.watermarks)
 			titleTextData = CoolUtil.coolTextFile(Paths.txt("watermarkTitleText", "preload"));
 		else
 			titleTextData = CoolUtil.coolTextFile(Paths.txt("titleText", "preload"));
@@ -336,7 +336,7 @@ class TitleState extends MusicBeatState
 
 			FlxG.camera.flash(FlxColor.WHITE, 1);
 
-			if (FlxG.save.data.oldTitle)
+			if (.oldTitle)
 				FlxG.sound.play(Paths.music("titleShoot"), 0.7);
 			else
 				FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
@@ -447,7 +447,7 @@ class TitleState extends MusicBeatState
 	{
 		super.beatHit();
 
-		if (!FlxG.save.data.oldTitle)
+		if (!.oldTitle)
 		{
 			logoBl.animation.play('bump');
 			danceLeft = !danceLeft;

@@ -18,9 +18,9 @@ class UISkinSelect extends MusicBeatSubstate
 {
     var key_Count:Int = 4;
     var arrow_Group:FlxTypedGroup<FlxSprite> = new FlxTypedGroup<FlxSprite>();
-    var ui_Skin:String = FlxG.save.data.uiSkin;
+    var ui_Skin:String = .uiSkin;
 
-    public var ui_Settings:Array<String> = CoolUtil.coolTextFile(Paths.txt("ui skins/" + FlxG.save.data.uiSkin + "/config"));
+    public var ui_Settings:Array<String> = CoolUtil.coolTextFile(Paths.txt("ui skins/" + .uiSkin + "/config"));
     public var ui_Skins:Array<String> = CoolUtil.coolTextFile(Paths.txt("uiSkinList"));
 
     public var mania_gap:Array<String>;
@@ -119,7 +119,7 @@ class UISkinSelect extends MusicBeatSubstate
         }
 
         if(accepted && !leaving)
-            FlxG.save.data.uiSkin = ui_Skin;
+            .uiSkin = ui_Skin;
     }
 
     function create_Arrows(?new_Key_Count = 4)

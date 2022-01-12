@@ -83,7 +83,7 @@ class BoolOption extends Option
 		add(Checkbox_Object);
 	}
 
-	public function GetObjectValue():Bool { return Reflect.getProperty(FlxG.save.data, Option_Value); }
+	public function GetObjectValue():Bool { return Reflect.getProperty(, Option_Value); }
 
     override function update(elapsed:Float)
     {
@@ -95,23 +95,23 @@ class BoolOption extends Option
 
     public function ChangeValue()
     {
-		Reflect.setProperty(FlxG.save.data, Option_Value, !Option_Checked);
+		Reflect.setProperty(, Option_Value, !Option_Checked);
 		
 		switch(Option_Value) // extra special cases
 		{
 			case "fpsCounter":
-				Main.toggleFPS(FlxG.save.data.fpsCounter);
+				Main.toggleFPS(.fpsCounter);
 			case "memoryCounter":
-				Main.toggleMem(FlxG.save.data.memoryCounter);
+				Main.toggleMem(.memoryCounter);
 			#if discord_rpc
 			case "discordRPC":
-				if(FlxG.save.data.discordRPC && !DiscordClient.active)
+				if(.discordRPC && !DiscordClient.active)
 					DiscordClient.initialize();
-				else if(!FlxG.save.data.discordRPC && DiscordClient.active)
+				else if(!.discordRPC && DiscordClient.active)
 					DiscordClient.shutdown();
 			#end
 			case "versionDisplay":
-				Main.toggleVers(FlxG.save.data.versionDisplay);
+				Main.toggleVers(.versionDisplay);
 		}
 
         FlxG.save.flush();
@@ -478,9 +478,9 @@ class StringSaveOption extends Option
 
 	function SetDataIGuess()
 	{
-		Reflect.setProperty(FlxG.save.data, Save_Data_Name, Data);
+		Reflect.setProperty(, Save_Data_Name, Data);
 		FlxG.save.flush();
 	}
 }
 
-class DisplayFontOption extends StringSaveOption { override function SetDataIGuess() { super.SetDataIGuess(); Main.changeFont(FlxG.save.data.displayFont); } }
+class DisplayFontOption extends StringSaveOption { override function SetDataIGuess() { super.SetDataIGuess(); Main.changeFont(.displayFont); } }

@@ -10,10 +10,10 @@ class MusicUtilities
     */
     public static function GetTitleMusicPath():String
     {
-        if (FlxG.save.data.oldTitle)
+        if (.oldTitle)
             return Paths.music('title');
         else
-            if (Date.now().getDay() == 5 && Date.now().getHours() >= 18 || FlxG.save.data.nightMusic)
+            if (Date.now().getDay() == 5 && Date.now().getHours() >= 18 || .nightMusic)
                 return Paths.music('freakyNightMenu');
             else
                 return Paths.music('freakyMenu');

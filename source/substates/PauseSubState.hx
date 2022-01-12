@@ -46,7 +46,7 @@ class PauseSubState extends MusicBeatSubstate
 	{
 		var optionsArray = menus.get("options");
 
-		switch(FlxG.save.data.playAs)
+		switch(.playAs)
 		{
 			case "bf":
 				optionsArray.push("Play As BF");
@@ -193,12 +193,12 @@ class PauseSubState extends MusicBeatSubstate
 
 					FlxG.resetState();
 				case "bot":
-					FlxG.save.data.bot = !FlxG.save.data.bot;
+					.bot = !.bot;
 					FlxG.save.flush();
 
 					@:privateAccess
 					{
-						PlayState.instance.infoTxt.text = PlayState.SONG.song + " - " + PlayState.storyDifficultyStr.toUpperCase() + (FlxG.save.data.bot ? " (BOT)" : "");
+						PlayState.instance.infoTxt.text = PlayState.SONG.song + " - " + PlayState.storyDifficultyStr.toUpperCase() + (.bot ? " (BOT)" : "");
 						PlayState.instance.infoTxt.screenCenter(X);
 						PlayState.instance.hasUsedBot = true;
 					}
@@ -208,7 +208,7 @@ class PauseSubState extends MusicBeatSubstate
 
 					warningAmountLols += 1;
 				case "auto restart":
-					FlxG.save.data.quickRestart = !FlxG.save.data.quickRestart;
+					.quickRestart = !.quickRestart;
 					FlxG.save.flush();
 
 					FlxTween.tween(scoreWarning, {alpha: 1, y: scoreWarning.y + 10}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.7});
@@ -216,7 +216,7 @@ class PauseSubState extends MusicBeatSubstate
 
 					warningAmountLols += 1;
 				case "no miss":
-					FlxG.save.data.nohit = !FlxG.save.data.nohit;
+					.nohit = !.nohit;
 					FlxG.save.flush();
 
 					FlxTween.tween(scoreWarning, {alpha: 1, y: scoreWarning.y + 10}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.7});
@@ -224,11 +224,11 @@ class PauseSubState extends MusicBeatSubstate
 
 					warningAmountLols += 1;
 				case "ghost tapping":
-					FlxG.save.data.ghostTapping = !FlxG.save.data.ghostTapping;
+					.ghostTapping = !.ghostTapping;
 					FlxG.save.flush();
 
 					@:privateAccess
-					if(FlxG.save.data.ghostTapping) // basically making it easier lmao
+					if(.ghostTapping) // basically making it easier lmao
 						PlayState.instance.hasUsedBot = true;
 
 					FlxTween.tween(scoreWarning, {alpha: 1, y: scoreWarning.y + 10}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.7});
@@ -253,8 +253,8 @@ class PauseSubState extends MusicBeatSubstate
 					if(PlayState.playingReplay && Replay.getReplayList().length > 0)
 					{
 						@:privateAccess
-						FlxG.save.data.judgementTimings = PlayState.instance.ogJudgementTimings;
-						Conductor.offset = FlxG.save.data.songOffset;
+						.judgementTimings = PlayState.instance.ogJudgementTimings;
+						Conductor.offset = .songOffset;
 
 						FlxG.switchState(new ReplaySelectorState());
 					}
@@ -268,11 +268,11 @@ class PauseSubState extends MusicBeatSubstate
 
 					PlayState.playingReplay = false;
 				case "no death":
-					FlxG.save.data.noDeath = !FlxG.save.data.noDeath;
+					.noDeath = !.noDeath;
 					FlxG.save.flush();
 
 					@:privateAccess
-					if(FlxG.save.data.noDeath)
+					if(.noDeath)
 						PlayState.instance.hasUsedBot = true;
 
 					FlxTween.tween(scoreWarning, {alpha: 1, y: scoreWarning.y + 10}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.7});
@@ -280,14 +280,14 @@ class PauseSubState extends MusicBeatSubstate
 
 					warningAmountLols += 1;
 				case "play as bf":
-					FlxG.save.data.playAs = "opponent";
+					.playAs = "opponent";
 					FlxG.save.flush();
 
 					var optionsArray = menus.get("options");
 
 					optionsArray.remove(daSelected);
 
-					switch(FlxG.save.data.playAs)
+					switch(.playAs)
 					{
 						case "bf":
 							optionsArray.push("Play As BF");
@@ -313,14 +313,14 @@ class PauseSubState extends MusicBeatSubstate
 
 					warningAmountLols += 1;
 				case "play as opponent":
-					FlxG.save.data.playAs = "bf";
+					.playAs = "bf";
 					FlxG.save.flush();
 
 					var optionsArray = menus.get("options");
 
 					optionsArray.remove(daSelected);
 
-					switch(FlxG.save.data.playAs)
+					switch(.playAs)
 					{
 						case "bf":
 							optionsArray.push("Play As BF");

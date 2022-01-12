@@ -25,7 +25,7 @@ class ControlMenuSubstate extends MusicBeatSubstate
 
     public var arrow_Configs:Map<String, Array<String>> = new Map<String, Array<String>>();
 
-    var binds:Array<Array<String>> = FlxG.save.data.binds;
+    var binds:Array<Array<String>> = .binds;
 
     var selectedControl:Int = 0;
     var selectingStuff:Bool = false;
@@ -33,11 +33,11 @@ class ControlMenuSubstate extends MusicBeatSubstate
     var coolText:FlxText = new FlxText(0,25,0,"Use LEFT and RIGHT to change number of keys\nESCAPE to save binds and exit menu\nRESET+SHIFT to Reset Binds to default\n", 32);
 
     var killKey:FlxSprite = new FlxSprite();
-    var killBind:String = FlxG.save.data.killBind;
+    var killBind:String = .killBind;
     var killText:FlxText = new FlxText();
 
     var fullscreenKey:FlxSprite = new FlxSprite();
-    var fullscreenBind:String = FlxG.save.data.fullscreenBind;
+    var fullscreenBind:String = .fullscreenBind;
     var fullscreenText:FlxText = new FlxText();
 
     var mania_gap:Array<String>;
@@ -143,14 +143,14 @@ class ControlMenuSubstate extends MusicBeatSubstate
             
             if(back)
             {
-                FlxG.save.data.binds = this.binds;
-                FlxG.save.data.fullscreenBind = fullscreenBind;
-                FlxG.save.data.killBind = killBind;
+                .binds = this.binds;
+                .fullscreenBind = fullscreenBind;
+                .killBind = killBind;
     
                 FlxG.save.flush();
                 PlayerSettings.player1.controls.loadKeyBinds();
     
-                this.binds = FlxG.save.data.binds;
+                this.binds = .binds;
     
                 FlxG.mouse.visible = false;
                 FlxG.state.closeSubState();

@@ -16,7 +16,7 @@ class Ratings
 
     public static function getRating(time:Float)
     {
-        var judges = FlxG.save.data.judgementTimings;
+        var judges = .judgementTimings;
 
         var timings:Array<Array<Dynamic>> = [
             [judges[0], "marvelous"],
@@ -29,7 +29,7 @@ class Ratings
 
         for(x in timings)
         {
-            if(x[1] == "marvelous" && FlxG.save.data.marvelousRatings || x[1] != "marvelous")
+            if(x[1] == "marvelous" && .marvelousRatings || x[1] != "marvelous")
             {
                 if(time <= x[0] * PlayState.songMultiplier && rating == 'bruh')
                 {
@@ -67,7 +67,7 @@ class Ratings
         // yeah this is kinda taken from kade engine but i didnt use the etterna 'wife3' ranking system (instead just my own custom values)
         var conditions:Array<Bool>;
 
-        if(FlxG.save.data.ratingMode == "complex")
+        if(.ratingMode == "complex")
         {
             conditions = [
                 accuracy == 100, // MFC
@@ -101,7 +101,7 @@ class Ratings
 
         var missesRating:String = "";
 
-        if(FlxG.save.data.ratingMode == "complex")
+        if(.ratingMode == "complex")
         {
             if(misses != null)
             {
@@ -158,7 +158,7 @@ class Ratings
 
             if(rating_success)
             {
-                switch(FlxG.save.data.ratingMode)
+                switch(.ratingMode)
                 {
                     case "complex":
                         switch(condition)
