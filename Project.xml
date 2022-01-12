@@ -8,6 +8,9 @@
 	<!--Switch Export with Unique ApplicationID and Icon-->
 	<set name="APP_ID" value="0x0100f6c013bbc000" />
 
+	<!-- totally not stolen from psych engine -->
+	<haxedef name="LINC_LUA_RELATIVE_DYNAMIC_LIB"/> <!-- i think this is important -->
+
 	<!--The flixel preloader is not accurate in Chrome. You can use it regularly if you embed the swf into a html file
 		or you can set the actual size of your file manually at "FlxPreloaderBase-onUpdate-bytesTotal"-->
 	<app preloader="flixel.system.FlxPreloader" />
@@ -105,7 +108,7 @@
 	<haxelib name="polymod"/>
 	
 	<haxelib name="discord_rpc" if="desktop"/>
-	<haxelib name="linc_luajit" if="windows"/>
+	<haxelib name="linc_luajit" if="desktop"/>
 
 	<!-- ______________________________ Haxedefines _____________________________ -->
 
