@@ -1282,12 +1282,15 @@ class ChartingState extends MusicBeatState
 	{
 		var daSec = FlxMath.maxInt(curSection, sectionNum);
 
-		for (note in _song.notes[daSec - sectionNum].sectionNotes)
+		if(daSec - sectionNum != curSection)
 		{
-			var strum = note[0] + Conductor.stepCrochet * (((16 / _song.timescale[1]) * 4) * sectionNum);
+			for (note in _song.notes[daSec - sectionNum].sectionNotes)
+			{
+				var strum = note[0] + Conductor.stepCrochet * (((16 / _song.timescale[1]) * 4) * sectionNum);
 
-			var copiedNote:Array<Dynamic> = [strum, note[1], note[2], note[3], note[4]];
-			_song.notes[curSection].sectionNotes.push(copiedNote);
+				var copiedNote:Array<Dynamic> = [strum, note[1], note[2], note[3], note[4]];
+				_song.notes[curSection].sectionNotes.push(copiedNote);
+			}
 		}
 
 		updateGrid();

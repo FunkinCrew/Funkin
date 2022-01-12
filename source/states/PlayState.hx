@@ -116,7 +116,8 @@ class PlayState extends MusicBeatState
 	private var gfSpeed:Int = 1;
 	public var health:Float = 1;
 	public var healthShown:Float = 1;
-	private var maxHealth:Int = 2;
+	public var minHealth:Float = 0;
+	public var maxHealth:Float = 2;
 	private var combo:Int = 0;
 
 	public var misses:Int = 0;
@@ -141,7 +142,7 @@ class PlayState extends MusicBeatState
 
 	public var gfVersion:String = 'gf';
 
-	var songScore:Int = 0;
+	public var songScore:Int = 0;
 
 	var scoreTxt:FlxText;
 	var infoTxt:FlxText;
@@ -153,7 +154,7 @@ class PlayState extends MusicBeatState
 
 	public var foregroundSprites:FlxGroup = new FlxGroup();
 
-	var defaultCamZoom:Float = 1.05;
+	public var defaultCamZoom:Float = 1.05;
 	var altAnim:String = "";
 
 	public static var stepsTexts:Array<String>;
@@ -205,7 +206,7 @@ class PlayState extends MusicBeatState
 	public static var songMultiplier:Float = 1;
 	public static var previousScrollSpeedLmao:Float = 0;
 
-	var hasUsedBot:Bool = false;
+	public var hasUsedBot:Bool = false;
 	var splashesSkin:String = "default";
 
 	public var splashesSettings:Array<String>;
@@ -246,7 +247,7 @@ class PlayState extends MusicBeatState
 			replay = new Replay();
 	}
 
-	public var characterPlayingAs:Int = 0;
+	public static var characterPlayingAs:Int = 0;
 
 	var hitSoundString:String = FlxG.save.data.hitsound;
 
@@ -649,6 +650,19 @@ class PlayState extends MusicBeatState
 			if(FlxG.save.data.downscroll)
 				healthBarPosY = 60;
 
+			#if linc_luajit
+			executeModchart = !(PlayState.SONG.modchartPath == '' || PlayState.SONG.modchartPath == null);
+	
+			if(executeModchart)
+			{
+				if(Assets.exists(Paths.lua("modcharts/" + PlayState.SONG.modchartPath)))
+				{
+					luaModchart = ModchartUtilities.createModchartUtilities();
+					luaModchart.executeState('create', [PlayState.SONG.song.toLowerCase()]);
+				}
+			}
+			#end
+
 			/*
 			better solution for future: make this process a freaking shader lmao
 			*/
@@ -659,7 +673,7 @@ class PlayState extends MusicBeatState
 			add(healthBarBG);
 			
 			healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
-				'healthShown', 0, maxHealth);
+				'healthShown', minHealth, maxHealth);
 			healthBar.scrollFactor.set();
 			healthBar.createFilledBar(dad.barColor, boyfriend.barColor);
 			healthBar.pixelPerfectPosition = true;
@@ -795,6 +809,11 @@ class PlayState extends MusicBeatState
 		}
 
 		super.create();
+
+		#if linc_luajit
+		if(executeModchart && luaModchart != null)
+			luaModchart.executeState('createPost', []);
+		#end
 	}
 
 	public static var playCutsceneLmao:Bool = false;
@@ -1106,16 +1125,8 @@ class PlayState extends MusicBeatState
 		var swagCounter:Int = 0;
 
 		#if linc_luajit
-		executeModchart = !(PlayState.SONG.modchartPath == '' || PlayState.SONG.modchartPath == null);
-
-		if(executeModchart)
-		{
-			if(Assets.exists(Paths.lua("modcharts/" + PlayState.SONG.modchartPath)))
-			{
-				luaModchart = ModchartUtilities.createModchartUtilities();
-				luaModchart.executeState('start', [PlayState.SONG.song.toLowerCase()]);
-			}
-		}
+		if(executeModchart && luaModchart != null)
+			luaModchart.executeState('start', [PlayState.SONG.song.toLowerCase()]);
 		#end
 
 		startTimer = new FlxTimer().start(Conductor.crochet / 1000, function(tmr:FlxTimer)
@@ -1536,7 +1547,7 @@ class PlayState extends MusicBeatState
 	override public function onFocus():Void
 	{
 		#if discord_rpc
-		if (health > 0 && !paused)
+		if (health > minHealth && !paused)
 		{
 			if (Conductor.songPosition > 0.0)
 			{
@@ -1555,7 +1566,7 @@ class PlayState extends MusicBeatState
 	override public function onFocusLost():Void
 	{
 		#if discord_rpc
-		if (health > 0 && !paused)
+		if (health > minHealth && !paused)
 		{
 			DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
 		}
@@ -1957,15 +1968,15 @@ class PlayState extends MusicBeatState
 		{
 			if (controls.RESET)
 			{ 
-				health = 0;
+				health = minHealth;
 				trace("RESET = True");
 			}
 		}
 			
 		if (FlxG.save.data.nohit && misses > 0)
-			health = 0;
+			health = minHealth;
 
-		if (health <= 0 && !switchedStates && !invincible && !FlxG.save.data.noDeath)
+		if (health <= minHealth && !switchedStates && !invincible && !FlxG.save.data.noDeath)
 		{
 			boyfriend.stunned = true;
 
@@ -1987,13 +1998,13 @@ class PlayState extends MusicBeatState
 			#end
 
 			#if linc_luajit
-			if(luaModchart != null)
+			if(executeModchart && luaModchart != null)
 				luaModchart.executeState('onDeath', [Conductor.songPosition]);
 			#end
 		}
 
-		if(health < 0)
-			health = 0;
+		if(health < minHealth)
+			health = minHealth;
 
 		if (unspawnNotes[0] != null && !switchedStates)
 		{
@@ -2117,7 +2128,7 @@ class PlayState extends MusicBeatState
 					}
 
 					#if linc_luajit
-					if (luaModchart != null)
+					if (executeModchart && luaModchart != null)
 					{
 						if(daNote.isSustainNote)
 							luaModchart.executeState('playerTwoSingHeld', [Math.abs(daNote.noteData), Conductor.songPosition, daNote.arrow_Type]);
@@ -2316,7 +2327,7 @@ class PlayState extends MusicBeatState
 		if (FlxG.keys.justPressed.SEVEN && !switchedStates)
 		{
 			#if linc_luajit
-			if(luaModchart != null)
+			if(executeModchart && luaModchart != null)
 			{
 				luaModchart.die();
 				luaModchart = null;
@@ -2344,7 +2355,7 @@ class PlayState extends MusicBeatState
 		if(FlxG.state == instance)
 		{
 			#if linc_luajit
-			if (luaModchart != null)
+			if (executeModchart && luaModchart != null)
 			{
 				for(sound in ModchartUtilities.lua_Sounds)
 				{
@@ -2927,7 +2938,7 @@ class PlayState extends MusicBeatState
 				}
 	
 				#if linc_luajit
-				if (luaModchart != null)
+				if (executeModchart && luaModchart != null)
 				{
 					for (i in 0...justPressedArray.length) {
 						if (justPressedArray[i] == true) {
@@ -3371,7 +3382,7 @@ class PlayState extends MusicBeatState
 			}
 
 			#if linc_luajit
-			if (luaModchart != null)
+			if (executeModchart && luaModchart != null)
 				luaModchart.executeState('playerOneMiss', [direction, Conductor.songPosition, (note != null ? note.arrow_Type : "default"), (note != null ? note.isSustainNote : false)]);
 			#end
 		}
@@ -3441,7 +3452,7 @@ class PlayState extends MusicBeatState
 			}
 
 			#if linc_luajit
-			if (luaModchart != null)
+			if (executeModchart && luaModchart != null)
 			{
 				if(note.isSustainNote)
 					luaModchart.executeState('playerOneSingHeld', [note.noteData, Conductor.songPosition, note.arrow_Type]);
