@@ -9,8 +9,8 @@ class NoteColors
     public static function setNoteColor(note:String, color:Array<Int>):Void
     {
         noteColors.set(note, color);
-        .noteColors = noteColors;
-        FlxG.save.flush();
+
+        utilities.Options.setData(noteColors, "noteColors", "noteColors");
     }
 
     public static function getNoteColor(note:String):Array<Int>
@@ -23,9 +23,7 @@ class NoteColors
 
     public static function load():Void
     {
-        if (.noteColors != null)
-            noteColors = .noteColors;
-
-        FlxG.save.flush();
+        if(utilities.Options.getData("noteColors", "noteColors") != null)
+            noteColors = utilities.Options.getData("noteColors", "noteColors");
     }
 }

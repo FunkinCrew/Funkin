@@ -1,9 +1,9 @@
 package utilities;
 
-import flixel.FlxG;
 import haxe.Json;
 import openfl.Assets;
 import flixel.util.FlxSave;
+import game.Conductor;
 
 typedef DefaultOptions =
 {
@@ -14,9 +14,6 @@ typedef DefaultOption =
 {
     var option:String; // option name
     var value:Dynamic; // self explanatory
-
-    var min:Null<Float>; // min value for numbers
-    var max:Null<Float>; // max value for numbers
 
     var save:Null<String>; // the save (KEY NAME) to use, by default is 'main'
 }
@@ -34,16 +31,38 @@ class Options
     {
         createSave("main", "options");
         createSave("binds", "binds");
+        createSave("scores", "scores");
+        createSave("noteColors", "noteColors");
+        createSave("autosave", "autosave");
+        createSave("modlist", "modlist");
 
         defaultOptions = Json.parse(Assets.getText(Paths.json("defaultOptions")));
 
         for(option in defaultOptions.options)
         {
-            getData(option.option, option.save);
+            var saveKey = option.save != null ? option.save : "main";
+            var dataKey = option.option;
+
+            if(Reflect.getProperty(Reflect.getProperty(saves.get(saveKey), "data"), dataKey) == null)
+                setData(option.value, option.option, saveKey);
         }
 
-        if(getData("binds", "binds") == null)
-            setData(NoteVariables.Default_Binds, "binds", "binds");
+        Conductor.offset = getData("songOffset");
+
+        if(getData("modlist", "modlist") == null)
+            setData(new Map<String, Bool>(), "modlist", "modlist");
+
+        if(getData("songScores", "scores") == null)
+            setData(new Map<String, Int>(), "songScores", "scores");
+
+        if(getData("songRanks", "scores") == null)
+            setData(new Map<String, String>(), "songRanks", "scores");
+
+        if(getData("songAccuracies", "scores") == null)
+            setData(new Map<String, Float>(), "songAccuracies", "scores");
+
+        if(getData("noteColors", "noteColors") == null)
+            setData(new Map<String, Array<Int>>(), "noteColors", "noteColors");
     }
 
     public static function createSave(key:String, bindNameSuffix:String)
@@ -57,33 +76,7 @@ class Options
     public static function getData(dataKey:String, ?saveKey:String = "main"):Dynamic
     {
         if(saves.exists(saveKey))
-        {
-            if(Reflect.getProperty(Reflect.getProperty(saves.get(saveKey), "data"), dataKey) == null)
-                fixData(dataKey, saveKey);
-
-            if(Std.isOfType(Reflect.getProperty(Reflect.getProperty(saves.get(saveKey), "data"), dataKey), Float) || Std.isOfType(Reflect.getProperty(Reflect.getProperty(saves.get(saveKey), "data"), dataKey), Int))
-            {
-                for(option in defaultOptions.options)
-                { 
-                    if(option.option == dataKey && option.save == saveKey)
-                    {
-                        if(option.max != null)
-                        {
-                            if(Reflect.getProperty(Reflect.getProperty(saves.get(saveKey), "data"), dataKey) > option.max)
-                                setData(option.max, dataKey, saveKey);
-                        }
-
-                        if(option.min != null)
-                        {
-                            if(Reflect.getProperty(Reflect.getProperty(saves.get(saveKey), "data"), dataKey) < option.min)
-                                setData(option.min, dataKey, saveKey);
-                        }
-                    }
-                }
-            }
-            
             return Reflect.getProperty(Reflect.getProperty(saves.get(saveKey), "data"), dataKey);
-        }
 
         return null;
     }
@@ -98,17 +91,23 @@ class Options
         }
     }
 
-    public static function fixData(dataKey:String, ?saveKey:String = "main")
+    public static function fixBinds()
     {
-        if(saves.exists(saveKey))
+        if(getData("binds", "binds") == null)
+            setData(NoteVariables.Default_Binds, "binds", "binds");
+        else
         {
-            for(option in defaultOptions.options)
-            {
-                if(option.option == dataKey && option.save == saveKey)
-                    Reflect.setProperty(Reflect.getProperty(saves.get(saveKey), "data"), dataKey, option.value);
-            }
+            var bindArray = getData("binds", "binds");
 
-            saves.get(saveKey).flush();
+            if(bindArray.length < NoteVariables.Default_Binds.length)
+            {
+                for(i in Std.int(bindArray.length - 1)...NoteVariables.Default_Binds.length)
+                {
+                    bindArray[i] = NoteVariables.Default_Binds[i];
+                }
+
+                setData(bindArray, "binds", "binds");
+            }
         }
     }
 }

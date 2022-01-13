@@ -10,6 +10,7 @@ class SaveData
 {
     public static function init()
     {
+        /*
         FlxG.save.bind('leathersfunkinengine', 'leather128');
 
         if(.enemyGlow == null)
@@ -175,10 +176,11 @@ class SaveData
             .biggerInfoText = false;
         
         FlxG.save.flush();
+        */
 
         Options.init();
 
-        Conductor.offset = .songOffset;
+        //Conductor.offset = .songOffset;
 
         PlayerSettings.init();
         PlayerSettings.player1.controls.loadKeyBinds();
@@ -190,6 +192,7 @@ class SaveData
 
     public static function fixBinds()
     {
+        /*
         if(.binds == null)
             .binds = NoteVariables.Default_Binds;
         
@@ -199,6 +202,6 @@ class SaveData
             {
                 .binds[i] = NoteVariables.Default_Binds[i];
             }
-        }
+        }*/
     }
 }

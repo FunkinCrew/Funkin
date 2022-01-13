@@ -27,13 +27,10 @@ class GameOverSubstate extends MusicBeatSubstate
 	{
 		super();
 
-		.deaths += 1;
-		FlxG.save.flush();
-
 		FlxG.camera.scroll.set();
 		FlxG.camera.target = null;
 
-		if(.quickRestart)
+		if(utilities.Options.getData("quickRestart"))
 		{
 			#if linc_luajit
 			if (PlayState.luaModchart != null)
@@ -94,9 +91,13 @@ class GameOverSubstate extends MusicBeatSubstate
 
 			if(PlayState.playingReplay && Replay.getReplayList().length > 0)
 			{
+				Conductor.offset = utilities.Options.getData("songOffset");
+
 				@:privateAccess
-				.judgementTimings = PlayState.instance.ogJudgementTimings;
-				Conductor.offset = .songOffset;
+				{
+					utilities.Options.setData(PlayState.instance.ogJudgementTimings, "judgementTimings");
+					utilities.Options.setData(PlayState.instance.ogGhostTapping, "ghostTapping");
+				}
 
 				FlxG.switchState(new ReplaySelectorState());
 			}

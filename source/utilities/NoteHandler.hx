@@ -6,6 +6,6 @@ class NoteHandler
 {
     public static function getBinds(keyCount:Int):Array<String>
     {
-        return .binds[keyCount - 1];
+        return utilities.Options.getData("binds", "binds")[keyCount - 1];
     }
 }

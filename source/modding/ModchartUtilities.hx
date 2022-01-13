@@ -170,6 +170,9 @@ class ModchartUtilities
             //FlxG.switchState(new MainMenuState());
         }
 
+        // this might become a problem if i don't do this
+        setVar("require", false);
+
         // get some fukin globals up in here bois
 
         setVar("difficulty", PlayState.storyDifficultyStr);
@@ -178,13 +181,13 @@ class ModchartUtilities
         setVar("keyCount", PlayState.SONG.keyCount);
         setVar("playerKeyCount", PlayState.SONG.playerKeyCount);
         setVar("scrollspeed", PlayState.SONG.speed);
-        setVar("fpsCap", .fpsCap);
-        setVar("bot", .bot);
-        setVar("noDeath", .noDeath);
-        setVar("downscroll", .downscroll);
-        setVar("flashing", .flashing);
-        setVar("distractions", .distractions);
-        setVar("cameraZooms", .cameraZooms);
+        setVar("fpsCap", utilities.Options.getData("maxFPS"));
+        setVar("bot", utilities.Options.getData("botplay"));
+        setVar("noDeath", utilities.Options.getData("noDeath"));
+        setVar("downscroll", utilities.Options.getData("downscroll"));
+        //setVar("flashing", .flashing);
+        //setVar("distractions", .distractions);
+        setVar("cameraZooms", utilities.Options.getData("cameraZooms"));
 
         setVar("curStep", 0);
         setVar("curBeat", 0);

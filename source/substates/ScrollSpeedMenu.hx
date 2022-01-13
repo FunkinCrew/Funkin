@@ -17,7 +17,7 @@ class ScrollSpeedMenu extends MusicBeatSubstate
     {
         super();
 
-        alpha_Value = .scrollSpeed;
+        alpha_Value = utilities.Options.getData("customScrollSpeed");
         
         var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
         bg.alpha = 0;
@@ -41,8 +41,7 @@ class ScrollSpeedMenu extends MusicBeatSubstate
 
         if(back)
         {
-            .scrollSpeed = alpha_Value;
-            FlxG.save.flush();
+            utilities.Options.setData(alpha_Value, "customScrollSpeed");
             FlxG.state.closeSubState();
         }
 

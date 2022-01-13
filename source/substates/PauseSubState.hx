@@ -46,7 +46,7 @@ class PauseSubState extends MusicBeatSubstate
 	{
 		var optionsArray = menus.get("options");
 
-		switch(.playAs)
+		switch(utilities.Options.getData("playAs"))
 		{
 			case "bf":
 				optionsArray.push("Play As BF");
@@ -193,12 +193,11 @@ class PauseSubState extends MusicBeatSubstate
 
 					FlxG.resetState();
 				case "bot":
-					.bot = !.bot;
-					FlxG.save.flush();
+					utilities.Options.setData(!utilities.Options.getData("botplay"), "botplay");
 
 					@:privateAccess
 					{
-						PlayState.instance.infoTxt.text = PlayState.SONG.song + " - " + PlayState.storyDifficultyStr.toUpperCase() + (.bot ? " (BOT)" : "");
+						PlayState.instance.infoTxt.text = PlayState.SONG.song + " - " + PlayState.storyDifficultyStr.toUpperCase() + (utilities.Options.getData("botplay") ? " (BOT)" : "");
 						PlayState.instance.infoTxt.screenCenter(X);
 						PlayState.instance.hasUsedBot = true;
 					}
@@ -208,27 +207,24 @@ class PauseSubState extends MusicBeatSubstate
 
 					warningAmountLols += 1;
 				case "auto restart":
-					.quickRestart = !.quickRestart;
-					FlxG.save.flush();
+					utilities.Options.setData(!utilities.Options.getData("quickRestart"), "quickRestart");
 
 					FlxTween.tween(scoreWarning, {alpha: 1, y: scoreWarning.y + 10}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.7});
 					FlxTween.tween(scoreWarning, {alpha: 0, y: scoreWarning.y - 10}, 0.4, {ease: FlxEase.quartInOut, startDelay: 4});
 
 					warningAmountLols += 1;
 				case "no miss":
-					.nohit = !.nohit;
-					FlxG.save.flush();
+					utilities.Options.setData(!utilities.Options.getData("noHit"), "noHit");
 
 					FlxTween.tween(scoreWarning, {alpha: 1, y: scoreWarning.y + 10}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.7});
 					FlxTween.tween(scoreWarning, {alpha: 0, y: scoreWarning.y - 10}, 0.4, {ease: FlxEase.quartInOut, startDelay: 4});
 
 					warningAmountLols += 1;
 				case "ghost tapping":
-					.ghostTapping = !.ghostTapping;
-					FlxG.save.flush();
+					utilities.Options.setData(!utilities.Options.getData("ghostTapping"), "ghostTapping");
 
 					@:privateAccess
-					if(.ghostTapping) // basically making it easier lmao
+					if(utilities.Options.getData("ghostTapping")) // basically making it easier lmao
 						PlayState.instance.hasUsedBot = true;
 
 					FlxTween.tween(scoreWarning, {alpha: 1, y: scoreWarning.y + 10}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.7});
@@ -252,9 +248,13 @@ class PauseSubState extends MusicBeatSubstate
 
 					if(PlayState.playingReplay && Replay.getReplayList().length > 0)
 					{
+						Conductor.offset = utilities.Options.getData("songOffset");
+
 						@:privateAccess
-						.judgementTimings = PlayState.instance.ogJudgementTimings;
-						Conductor.offset = .songOffset;
+						{
+							utilities.Options.setData(PlayState.instance.ogJudgementTimings, "judgementTimings");
+							utilities.Options.setData(PlayState.instance.ogGhostTapping, "ghostTapping");
+						}
 
 						FlxG.switchState(new ReplaySelectorState());
 					}
@@ -268,11 +268,10 @@ class PauseSubState extends MusicBeatSubstate
 
 					PlayState.playingReplay = false;
 				case "no death":
-					.noDeath = !.noDeath;
-					FlxG.save.flush();
+					utilities.Options.setData(!utilities.Options.getData("noDeath"), "noDeath");
 
 					@:privateAccess
-					if(.noDeath)
+					if(utilities.Options.getData("noDeath"))
 						PlayState.instance.hasUsedBot = true;
 
 					FlxTween.tween(scoreWarning, {alpha: 1, y: scoreWarning.y + 10}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.7});
@@ -280,14 +279,13 @@ class PauseSubState extends MusicBeatSubstate
 
 					warningAmountLols += 1;
 				case "play as bf":
-					.playAs = "opponent";
-					FlxG.save.flush();
+					utilities.Options.setData("opponent", "playAs");
 
 					var optionsArray = menus.get("options");
 
 					optionsArray.remove(daSelected);
 
-					switch(.playAs)
+					switch(utilities.Options.getData("playAs"))
 					{
 						case "bf":
 							optionsArray.push("Play As BF");
@@ -313,14 +311,13 @@ class PauseSubState extends MusicBeatSubstate
 
 					warningAmountLols += 1;
 				case "play as opponent":
-					.playAs = "bf";
-					FlxG.save.flush();
+					utilities.Options.setData("bf", "playAs");
 
 					var optionsArray = menus.get("options");
 
 					optionsArray.remove(daSelected);
 
-					switch(.playAs)
+					switch(utilities.Options.getData("playAs"))
 					{
 						case "bf":
 							optionsArray.push("Play As BF");

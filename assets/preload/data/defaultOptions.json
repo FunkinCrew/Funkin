@@ -5,11 +5,19 @@
             "value": true
         },
         {
-            "option": "infoDisplayed",
-            "value": [true, true, true]
+            "option": "fpsCounter",
+            "value": true
         },
         {
-            "option": "ui_skin",
+            "option": "memoryCounter",
+            "value": true
+        },
+        {
+            "option": "versionDisplay",
+            "value": true
+        },
+        {
+            "option": "uiSkin",
             "value": "default"
         },
         {
@@ -21,8 +29,12 @@
             "value": false
         },
         {
-            "option": "titleMusic",
-            "value": "default"
+            "option": "middlescroll",
+            "value": false
+        },
+        {
+            "option": "nightMusic",
+            "value": false
         },
         {
             "option": "songOffset",
@@ -39,12 +51,6 @@
         {
             "option": "maxFPS",
             "value": 120
-        },
-        {
-            "option": "maxFPS",
-            "value": 120,
-            "min": 1,
-            "max": 1000
         },
         {
             "option": "cutscenePlaysOn",
@@ -128,9 +134,7 @@
         },
         {
             "option": "customScrollSpeed",
-            "value": 1,
-            "min": 0.1,
-            "max": 10
+            "value": 1
         },
         {
             "option": "hitsound",
@@ -165,6 +169,26 @@
             "value": false
         },
         {
+            "option": "oldTitle",
+            "value": false
+        },
+        {
+            "option": "watermarks",
+            "value": true
+        },
+        {
+            "option": "botplay",
+            "value": false
+        },
+        {
+            "option": "resetButton",
+            "value": false
+        },
+        {
+            "option": "freeplayMusic",
+            "value": false
+        },
+        {
             "option": "fullscreenBind",
             "value": "F11",
             "save": "binds"
@@ -173,6 +197,11 @@
             "option": "kill",
             "value": "R",
             "save": "binds"
+        },
+        {
+            "option": "save",
+            "value": "{}",
+            "save": "autosave"
         }
     ]
 }

@@ -62,15 +62,15 @@ class BoolOption extends Option
 	// options //
 	public var Option_Checked:Bool = false;
 
-	override public function new(_Option_Name:String = "-", _Option_Value:String = "downscroll", _Option_Checked:Bool = false, _Option_Row:Int = 0)
+	override public function new(_Option_Name:String = "-", _Option_Value:String = "downscroll", _Option_Row:Int = 0)
 	{
 		super();
 
 		// SETTING VALUES //
 		this.Option_Name = _Option_Name;
 		this.Option_Value = _Option_Value;
-		this.Option_Checked = _Option_Checked;
 		this.Option_Row = _Option_Row;
+		this.Option_Checked = GetObjectValue();
 
 		// CREATING OTHER OBJECTS //
 		Alphabet_Text = new Alphabet(20, 20 + (Option_Row * 100), Option_Name, true);
@@ -83,7 +83,7 @@ class BoolOption extends Option
 		add(Checkbox_Object);
 	}
 
-	public function GetObjectValue():Bool { return Reflect.getProperty(, Option_Value); }
+	public function GetObjectValue():Bool { return utilities.Options.getData(Option_Value); }
 
     override function update(elapsed:Float)
     {
@@ -95,29 +95,27 @@ class BoolOption extends Option
 
     public function ChangeValue()
     {
-		Reflect.setProperty(, Option_Value, !Option_Checked);
+		utilities.Options.setData(!Option_Checked, Option_Value);
+
+		Option_Checked = !Option_Checked;
+        Checkbox_Object.checked = Option_Checked;
 		
 		switch(Option_Value) // extra special cases
 		{
 			case "fpsCounter":
-				Main.toggleFPS(.fpsCounter);
+				Main.toggleFPS(Option_Checked);
 			case "memoryCounter":
-				Main.toggleMem(.memoryCounter);
+				Main.toggleMem(Option_Checked);
 			#if discord_rpc
 			case "discordRPC":
-				if(.discordRPC && !DiscordClient.active)
+				if(Option_Checked && !DiscordClient.active)
 					DiscordClient.initialize();
-				else if(!.discordRPC && DiscordClient.active)
+				else if(!Option_Checked && DiscordClient.active)
 					DiscordClient.shutdown();
 			#end
 			case "versionDisplay":
-				Main.toggleVers(.versionDisplay);
+				Main.toggleVers(Option_Checked);
 		}
-
-        FlxG.save.flush();
-
-        Option_Checked = !Option_Checked;
-        Checkbox_Object.checked = Option_Checked;
     }
 }
 
@@ -416,22 +414,20 @@ class StringSaveOption extends Option
 	// VARIABLES //
 	var Current_Mode:String = "option 2";
 	var Modes:Array<String> = ["option 1", "option 2", "option 3"];
-	var Data:Dynamic;
 	var Cool_Name:String;
 	var Save_Data_Name:String;
 
-    override public function new(_Option_Name:String = "String Switcher", _Modes:Array<String>, _Data:Dynamic, _Option_Row:Int = 0, _Save_Data_Name:String = "cutscenePlays")
+    override public function new(_Option_Name:String = "String Switcher", _Modes:Array<String>, _Option_Row:Int = 0, _Save_Data_Name:String = "hitsound")
     {
         super();
 
         // SETTING VALUES //
         this.Option_Row = _Option_Row;
 		this.Modes = _Modes;
-		this.Data = _Data;
-		this.Current_Mode = Data;
+		this.Save_Data_Name = _Save_Data_Name;
+		this.Current_Mode = utilities.Options.getData(Save_Data_Name);
 		this.Cool_Name = _Option_Name;
 		this.Option_Name = Cool_Name + " " + Current_Mode;
-		this.Save_Data_Name = _Save_Data_Name;
 
         // CREATING OTHER OBJECTS //
         Alphabet_Text = new Alphabet(20, 20 + (Option_Row * 100), Option_Name, true);
@@ -470,17 +466,14 @@ class StringSaveOption extends Option
 			Alphabet_Text.targetY = Option_Row;
 			add(Alphabet_Text);
 
-			Data = Current_Mode;
-
 			SetDataIGuess();
 		}
     }
 
 	function SetDataIGuess()
 	{
-		Reflect.setProperty(, Save_Data_Name, Data);
-		FlxG.save.flush();
+		utilities.Options.setData(Current_Mode, Save_Data_Name);
 	}
 }
 
-class DisplayFontOption extends StringSaveOption { override function SetDataIGuess() { super.SetDataIGuess(); Main.changeFont(.displayFont); } }
+class DisplayFontOption extends StringSaveOption { override function SetDataIGuess() { super.SetDataIGuess(); Main.changeFont(utilities.Options.getData("infoDisplayFont")); } }

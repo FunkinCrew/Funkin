@@ -1,8 +1,6 @@
 package game;
 
 import flixel.math.FlxMath;
-import utilities.Ratings;
-import flixel.FlxG;
 
 class Highscore
 {
@@ -79,8 +77,7 @@ class Highscore
 		// Reminder that I don't need to format this song, it should come formatted!
 		songScores.set(song, score);
 
-		.songScores = songScores;
-		FlxG.save.flush();
+		utilities.Options.setData(songScores, "songScores", "scores");
 	}
 
 	static function setRank(song:String, rank:String):Void
@@ -88,8 +85,7 @@ class Highscore
 		// Reminder that I don't need to format this song, it should come formatted!
 		songRanks.set(song, rank);
 
-		.songRanks = songRanks;
-		FlxG.save.flush();
+		utilities.Options.setData(songRanks, "songRanks", "scores");
 	}
 
 	static function setAccuracy(song:String, accuracy:Float):Void
@@ -97,8 +93,7 @@ class Highscore
 		// Reminder that I don't need to format this song, it should come formatted!
 		songAccuracies.set(song, accuracy);
 
-		.songAccuracies = songAccuracies;
-		FlxG.save.flush();
+		utilities.Options.setData(songAccuracies, "songAccuracies", "scores");
 	}
 
 	public static function formatSong(song:String, diff:String):String
@@ -145,15 +140,13 @@ class Highscore
 
 	public static function load():Void
 	{
-		if(.songScores != null)
-			songScores = .songScores;
-		
-		if(.songRanks != null)
-			songRanks = .songRanks;
+		if(utilities.Options.getData("songScores", "scores") != null)
+			songScores = utilities.Options.getData("songScores", "scores");
 
-		if(.songAccuracies != null)
-			songAccuracies = .songAccuracies;
+		if(utilities.Options.getData("songRanks", "scores") != null)
+			songRanks = utilities.Options.getData("songRanks", "scores");
 
-		FlxG.save.flush();
+		if(utilities.Options.getData("songAccuracies", "scores") != null)
+			songAccuracies = utilities.Options.getData("songAccuracies", "scores");
 	}
 }

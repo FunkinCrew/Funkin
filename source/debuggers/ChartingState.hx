@@ -476,7 +476,7 @@ class ChartingState extends MusicBeatState
 		// NOTE SECTION //
 
 		// numbers
-		stepperSusLength = new FlxUINumericStepper(10, 260, Conductor.stepCrochet / 2, 0, 0, Conductor.stepCrochet * 16);
+		stepperSusLength = new FlxUINumericStepper(10, 260, Conductor.stepCrochet / 2, 0, 0, 9999);
 		stepperSusLength.value = 0;
 		stepperSusLength.name = 'note_susLength';
 
@@ -1023,13 +1023,9 @@ class ChartingState extends MusicBeatState
 			}
 
 			if (FlxG.keys.justPressed.E)
-			{
 				changeNoteSustain(Conductor.stepCrochet);
-			}
 			if (FlxG.keys.justPressed.Q)
-			{
 				changeNoteSustain(-Conductor.stepCrochet);
-			}
 
 			if (FlxG.keys.justPressed.TAB)
 			{
@@ -1712,17 +1708,13 @@ class ChartingState extends MusicBeatState
 	function loadAutosave():Void
 	{
 		loadedAutosave = true;
-		PlayState.SONG = Song.parseJSONshit(.autosave);
+		PlayState.SONG = Song.parseJSONshit(utilities.Options.getData("save", "autosave"));
 		FlxG.resetState();
 	}
 
 	function autosaveSong():Void
 	{
-		.autosave = Json.stringify({
-			"song": _song
-		});
-
-		FlxG.save.flush();
+		utilities.Options.setData(Json.stringify({ "song": _song }), "save", "autosave");
 	}
 
 	private function saveLevel()

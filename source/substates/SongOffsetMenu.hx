@@ -17,7 +17,7 @@ class SongOffsetMenu extends MusicBeatSubstate
     {
         super();
 
-        offset = .songOffset;
+        offset = utilities.Options.getData("songOffset");
         
         var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
         bg.alpha = 0;
@@ -45,9 +45,8 @@ class SongOffsetMenu extends MusicBeatSubstate
 
         if(back)
         {
-            .songOffset = offset;
+            utilities.Options.setData(offset, "songOffset");
             Conductor.offset = offset;
-            FlxG.save.flush();
             FlxG.state.closeSubState();
         }
 

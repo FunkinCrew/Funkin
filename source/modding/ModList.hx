@@ -2,7 +2,6 @@ package modding;
 
 #if polymod
 import polymod.Polymod;
-import flixel.FlxG;
 
 class ModList
 {
@@ -13,8 +12,8 @@ class ModList
 	public static function setModEnabled(mod:String, enabled:Bool):Void
 	{
 		modList.set(mod, enabled);
-		.modList = modList;
-		FlxG.save.flush();
+
+		utilities.Options.setData(modList, "modlist", "modlist");
 	}
 
 	public static function getModEnabled(mod:String):Bool
@@ -40,8 +39,8 @@ class ModList
 
 	public static function load():Void
 	{
-		if (.modList != null)
-			modList = .modList;
+		if(utilities.Options.getData("modlist", "modlist") != null && utilities.Options.getData("modlist", "modlist") != [])
+			modList = utilities.Options.getData("modlist", "modlist");
 	}
 }
 #end

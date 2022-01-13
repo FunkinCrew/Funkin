@@ -1,5 +1,6 @@
 package states;
 
+import utilities.Options;
 import utilities.NoteVariables;
 #if discord_rpc
 import utilities.Discord.DiscordClient;
@@ -78,28 +79,19 @@ class TitleState extends MusicBeatState
 			MusicBeatState.windowNamePrefix = Assets.getText(Paths.txt("windowTitleBase", "preload"));
 
 			NoteVariables.init();
-	
-			/* cool fps shit thx kade */
-			(cast (Lib.current.getChildAt(0), Main)).setFPSCap(.fpsCap);
 
-			SaveData.fixBinds();
+			Options.fixBinds();
 	
 			curWacky = FlxG.random.getObject(getIntroTextShit());
 
 			super.create();
 	
 			#if discord_rpc
-			if(!DiscordClient.started && .discordRPC)
+			if(!DiscordClient.started && utilities.Options.getData("discordRPC"))
 				DiscordClient.initialize();
-			#end
 
-			#if desktop
 			Application.current.onExit.add(function (exitCode) {
-				FlxG.save.close();
-				
-				#if discord_rpc
 				DiscordClient.shutdown();
-				#end
 			});
 			#end
 
@@ -149,12 +141,12 @@ class TitleState extends MusicBeatState
 			// IF THIS PR IS HERE IF ITS ACCEPTED UR GOOD TO GO
 			// https://github.com/HaxeFlixel/flixel-addons/pull/348
 
-			if (.oldTitle)
+			if (utilities.Options.getData("oldTitle"))
 			{
 				playTitleMusic();
 			}
 			else {
-				if (Date.now().getDay() == 5 && Date.now().getHours() >= 18 || .nightMusic)
+				if (Date.now().getDay() == 5 && Date.now().getHours() >= 18 || utilities.Options.getData("nightMusic"))
 				{
 					playTitleMusic();
 					Conductor.changeBPM(117);
@@ -167,11 +159,11 @@ class TitleState extends MusicBeatState
 
 			FlxG.sound.music.fadeIn(4, 0, 0.7);
 
-			Main.toggleFPS(.fpsCounter);
-			Main.toggleMem(.memoryCounter);
-			Main.toggleVers(.versionDisplay);
+			Main.toggleFPS(utilities.Options.getData("fpsCounter"));
+			Main.toggleMem(utilities.Options.getData("memoryCounter"));
+			Main.toggleVers(utilities.Options.getData("versionDisplay"));
 
-			Main.changeFont(.displayFont);
+			Main.changeFont(utilities.Options.getData("infoDisplayFont"));
 		}
 
 		version = "Leather Engine" + " Release v" + Application.current.meta.get('version');
@@ -180,7 +172,7 @@ class TitleState extends MusicBeatState
 
 		var bg:FlxSprite = new FlxSprite();
 
-		if (.oldTitle)
+		if (utilities.Options.getData("oldTitle"))
 		{
 			bg.loadGraphic(Paths.image("title/stageback"));
 			bg.antialiasing = true;
@@ -193,7 +185,7 @@ class TitleState extends MusicBeatState
 
 		add(bg);
 
-		if (.oldTitle)
+		if (utilities.Options.getData("oldTitle"))
 		{
 			old_logo = new FlxSprite().loadGraphic(Paths.image('title/logo'));
 			old_logo.screenCenter();
@@ -207,7 +199,7 @@ class TitleState extends MusicBeatState
 		{
 			logoBl = new FlxSprite(0, 0);
 			
-			if(.watermarks)
+			if(utilities.Options.getData("watermarks"))
 				logoBl.frames = Paths.getSparrowAtlas('title/leatherLogoBumpin');
 			else
 				logoBl.frames = Paths.getSparrowAtlas('title/logoBumpin');
@@ -232,14 +224,14 @@ class TitleState extends MusicBeatState
 		titleText.animation.play('idle');
 		titleText.updateHitbox();
 
-		if (!.oldTitle)
+		if (!utilities.Options.getData("oldTitle"))
 		{
 			add(logoBl);
 			add(gfDance);
 			add(titleText);
 		}
 
-		if (.oldTitle)
+		if (utilities.Options.getData("oldTitle"))
 		{
 			add(old_logo_black);
 			add(old_logo);
@@ -265,7 +257,7 @@ class TitleState extends MusicBeatState
 
 		FlxG.mouse.visible = false;
 
-		if(.watermarks)
+		if(utilities.Options.getData("watermarks"))
 			titleTextData = CoolUtil.coolTextFile(Paths.txt("watermarkTitleText", "preload"));
 		else
 			titleTextData = CoolUtil.coolTextFile(Paths.txt("titleText", "preload"));
@@ -336,7 +328,7 @@ class TitleState extends MusicBeatState
 
 			FlxG.camera.flash(FlxColor.WHITE, 1);
 
-			if (.oldTitle)
+			if (utilities.Options.getData("oldTitle"))
 				FlxG.sound.play(Paths.music("titleShoot"), 0.7);
 			else
 				FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
@@ -447,7 +439,7 @@ class TitleState extends MusicBeatState
 	{
 		super.beatHit();
 
-		if (!.oldTitle)
+		if (!utilities.Options.getData("oldTitle"))
 		{
 			logoBl.animation.play('bump');
 			danceLeft = !danceLeft;

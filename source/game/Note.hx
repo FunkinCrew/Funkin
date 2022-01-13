@@ -135,7 +135,7 @@ class Note extends FlxSprite
 		if(PlayState.instance.type_Configs.get(arrow_Type)[3] != null)
 			heldMissDamage = Std.parseFloat(PlayState.instance.type_Configs.get(arrow_Type)[3]);
 
-		if (.downscroll && sustainNote) 
+		if (utilities.Options.getData("downscroll") && sustainNote) 
 			flipY = true;
 
 		if (isSustainNote && prevNote != null)
@@ -160,8 +160,8 @@ class Note extends FlxSprite
 
 				var speed = song.speed;
 
-				if(.useCustomScrollSpeed)
-					speed = .scrollSpeed / PlayState.songMultiplier;
+				if(utilities.Options.getData("useCustomScrollSpeed"))
+					speed = utilities.Options.getData("customScrollSpeed") / PlayState.songMultiplier;
 
 				prevNote.scale.y *= (Conductor.stepCrochet / 100) * 1.5 * speed;
 				prevNote.updateHitbox();

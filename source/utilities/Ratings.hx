@@ -16,7 +16,7 @@ class Ratings
 
     public static function getRating(time:Float)
     {
-        var judges = .judgementTimings;
+        var judges = utilities.Options.getData("judgementTimings");
 
         var timings:Array<Array<Dynamic>> = [
             [judges[0], "marvelous"],
@@ -29,7 +29,7 @@ class Ratings
 
         for(x in timings)
         {
-            if(x[1] == "marvelous" && .marvelousRatings || x[1] != "marvelous")
+            if(x[1] == "marvelous" && utilities.Options.getData("marvelousRatings") || x[1] != "marvelous")
             {
                 if(time <= x[0] * PlayState.songMultiplier && rating == 'bruh')
                 {
@@ -50,9 +50,7 @@ class Ratings
         {
             case "leather engine":
                 return [25, 50, 70, 100];
-            case "psych engine":
-                return [Std.int(Conductor.safeZoneOffset * 0.125), Std.int(Conductor.safeZoneOffset * 0.25), Std.int(Conductor.safeZoneOffset * 0.5), Std.int(Conductor.safeZoneOffset * 0.75)];
-            case "kade engine":
+            case "kade engine" | "psych engine":
                 /* 22.5 but rounded */
                 return [23, 45, 90, 135];
             case "friday night funkin'":
@@ -67,7 +65,7 @@ class Ratings
         // yeah this is kinda taken from kade engine but i didnt use the etterna 'wife3' ranking system (instead just my own custom values)
         var conditions:Array<Bool>;
 
-        if(.ratingMode == "complex")
+        if(utilities.Options.getData("ratingType") == "complex")
         {
             conditions = [
                 accuracy == 100, // MFC
@@ -101,7 +99,7 @@ class Ratings
 
         var missesRating:String = "";
 
-        if(.ratingMode == "complex")
+        if(utilities.Options.getData("ratingType") == "complex")
         {
             if(misses != null)
             {
@@ -158,7 +156,7 @@ class Ratings
 
             if(rating_success)
             {
-                switch(.ratingMode)
+                switch(utilities.Options.getData("ratingType"))
                 {
                     case "complex":
                         switch(condition)

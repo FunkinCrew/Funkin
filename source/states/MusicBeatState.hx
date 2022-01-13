@@ -54,9 +54,9 @@ class MusicBeatState extends FlxUIState
 		super.update(elapsed);
 
 		/* cool fps shit thx kade */
-		(cast (Lib.current.getChildAt(0), Main)).setFPSCap(.fpsCap);
+		(cast (Lib.current.getChildAt(0), Main)).setFPSCap(utilities.Options.getData("maxFPS"));
 
-		if(!.antialiasing)
+		if(!utilities.Options.getData("antialiasing"))
 		{
 			forEachAlive(function(basic:FlxBasic) {
 				if(Std.isOfType(basic, FlxSprite))
@@ -64,7 +64,7 @@ class MusicBeatState extends FlxUIState
 			}, true);
 		}
 
-		if(FlxG.keys.checkStatus(FlxKey.fromString(.fullscreenBind), FlxInputState.JUST_PRESSED))
+		if(FlxG.keys.checkStatus(FlxKey.fromString(utilities.Options.getData("fullscreenBind", "binds")), FlxInputState.JUST_PRESSED))
 			FlxG.fullscreen = !FlxG.fullscreen;
 
 		Application.current.window.title = windowNamePrefix + windowNameSuffix;

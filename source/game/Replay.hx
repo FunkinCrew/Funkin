@@ -48,9 +48,9 @@ class Replay
             difficulty = PlayState.storyDifficultyStr.toLowerCase();
         }
 
-        ghostTapping = .ghostTapping;
+        ghostTapping = utilities.Options.getData("ghostTapping");
         offset = Conductor.offset;
-        judgementTimings = .judgementTimings;
+        judgementTimings = utilities.Options.getData("judgementTimings");
 
         inputs = [];
     }
