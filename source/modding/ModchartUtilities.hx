@@ -315,6 +315,10 @@ class ModchartUtilities
             return PlayState.instance.health;
         });
 
+        Lua_helper.add_callback(lua,"setHealth", function (heal:Float) {
+            PlayState.instance.health = heal;
+        });
+
         Lua_helper.add_callback(lua,"getMinHealth",function() {
             return PlayState.instance.minHealth;
         });
@@ -337,14 +341,6 @@ class ModchartUtilities
 
         Lua_helper.add_callback(lua,"setHudAngle", function (x:Float) {
             PlayState.instance.camHUD.angle = x;
-        });
-
-        Lua_helper.add_callback(lua,"getHealth", function() {
-            return PlayState.instance.health;
-        });
-        
-        Lua_helper.add_callback(lua,"setHealth", function (heal:Float) {
-            PlayState.instance.health = heal;
         });
 
         Lua_helper.add_callback(lua,"setHudPosition", function (x:Int, y:Int) {
