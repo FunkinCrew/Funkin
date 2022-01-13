@@ -1,5 +1,6 @@
 package game;
 
+import flixel.FlxG;
 import flixel.math.FlxMath;
 
 class Highscore
@@ -148,5 +149,25 @@ class Highscore
 
 		if(utilities.Options.getData("songAccuracies", "scores") != null)
 			songAccuracies = utilities.Options.getData("songAccuracies", "scores");
+	}
+
+	public static function importOldData()
+	{
+		FlxG.save.bind('leathersfunkinengine', 'leather128');
+
+		if(FlxG.save.data.songScores != null)
+			songScores = FlxG.save.data.songScores;
+		
+		if(FlxG.save.data.songRanks != null)
+			songRanks = FlxG.save.data.songRanks;
+
+		if(FlxG.save.data.songAccuracies != null)
+			songAccuracies = FlxG.save.data.songAccuracies;
+
+		utilities.Options.setData(songScores, "songScores", "scores");
+		utilities.Options.setData(songRanks, "songRanks", "scores");
+		utilities.Options.setData(songAccuracies, "songAccuracies", "scores");
+
+		FlxG.save.close();
 	}
 }

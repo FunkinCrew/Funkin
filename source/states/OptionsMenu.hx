@@ -41,7 +41,8 @@ class OptionsMenu extends MusicBeatState
 			new PageOption("Gameplay", 0, "Gameplay"),
 			new PageOption("Graphics", 1, "Graphics"),
 			new PageOption("Tools", 2, "Tools"),
-			new PageOption("Misc", 3, "Misc")
+			new PageOption("Misc", 3, "Misc"),
+			new ImportOldHighscoresOption("Import Old Scores", 4)
 		],
 		[
 			"Gameplay",
