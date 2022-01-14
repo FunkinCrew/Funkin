@@ -1652,7 +1652,7 @@ class PlayState extends MusicBeatState
 
 	override public function update(elapsed:Float)
 	{
-		infoTxt.text = SONG.song + " - " + storyDifficultyStr + (utilities.Options.getData("botplay") ? " (BOT)" : "") + (playingReplay ? " (REPLAY)" : "");
+		infoTxt.text = SONG.song + " - " + storyDifficultyStr + (utilities.Options.getData("botplay") ? " (BOT)" : "") + (utilities.Options.getData("noDeath") ? " (NO DEATH)" : "") + (playingReplay ? " (REPLAY)" : "");
 		infoTxt.screenCenter(X);
 
 		if(stopSong && !switchedStates)
