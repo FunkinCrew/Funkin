@@ -561,7 +561,7 @@ class Character extends FlxSprite
 				if (animName == "idle")
 					playAnim(animName + "Hair", false, false);
 				else if (animName != "idleHair")
-					playAnim(animName, false, false, 10);
+					playAnim(animName, false, false, 8);
 			}
 		}
 		super.update(elapsed);
