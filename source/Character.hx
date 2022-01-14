@@ -16,6 +16,7 @@ class Character extends FlxSprite
 	public var curCharacter:String = 'bf';
 
 	public var holdTimer:Float = 0;
+	var animName:String = "";
 
 	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false)
 	{
@@ -183,6 +184,7 @@ class Character extends FlxSprite
 				frames = tex;
 
 				animation.addByPrefix('idle', "Mom Idle", 24, false);
+				animation.addByIndices("idleHair",  "Mom Idle",  [10, 11, 12, 13], "", 24, true);
 				animation.addByPrefix('singUP', "Mom Up Pose", 24, false);
 				animation.addByPrefix('singDOWN', "MOM DOWN POSE", 24, false);
 				animation.addByPrefix('singLEFT', 'Mom Left Pose', 24, false);
@@ -191,6 +193,7 @@ class Character extends FlxSprite
 				animation.addByPrefix('singRIGHT', 'Mom Pose Left', 24, false);
 
 				addOffset('idle');
+				addOffset('idleHair');
 				addOffset("singUP", 14, 71);
 				addOffset("singRIGHT", 10, -60);
 				addOffset("singLEFT", 250, -23);
@@ -345,8 +348,10 @@ class Character extends FlxSprite
 				animation.addByPrefix('singLEFTmiss', 'BF NOTE LEFT MISS', 24, false);
 				animation.addByPrefix('singRIGHTmiss', 'BF NOTE RIGHT MISS', 24, false);
 				animation.addByPrefix('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
-
+				animation.addByIndices("idleHair",  "BF idle dance",  [10, 11, 12, 13], "", 24, true);
+				
 				addOffset('idle', -5);
+				addOffset('idleHair', -5);
 				addOffset("singUP", -29, 27);
 				addOffset("singRIGHT", -38, -7);
 				addOffset("singLEFT", 12, -6);
@@ -548,7 +553,17 @@ class Character extends FlxSprite
 				if (animation.curAnim.name == 'hairFall' && animation.curAnim.finished)
 					playAnim('danceRight');
 		}
-
+				
+		if (curCharacter.endsWith("car"))
+		{
+			if (animation.curAnim.finished)
+			{
+				if (animName == "idle")
+					playAnim(animName + "Hair", false, false);
+				else if (animName != "idleHair")
+					playAnim(animName, false, false, 10);
+			}
+		}
 		super.update(elapsed);
 	}
 
@@ -621,7 +636,8 @@ class Character extends FlxSprite
 
 	public function playAnim(AnimName:String, Force:Bool = false, Reversed:Bool = false, Frame:Int = 0):Void
 	{
-		animation.play(AnimName, Force, Reversed, Frame);
+		animName = AnimName;
+		animation.play(animName, Force, Reversed, Frame);
 
 		var daOffset = animOffsets.get(AnimName);
 		if (animOffsets.exists(AnimName))
