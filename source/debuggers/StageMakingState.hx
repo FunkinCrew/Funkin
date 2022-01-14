@@ -57,7 +57,7 @@ class StageMakingState extends MusicBeatState
     private var selectedThing:Bool = false;
     private var selected:Dynamic;
 
-    private var objects:Array<String> = [""];
+    private var objects:Array<Array<Dynamic>> = [];
     private var selectedObject:Int = 0;
 
     /* UI */
@@ -461,7 +461,7 @@ class StageMakingState extends MusicBeatState
                     if(selectedObject != 0 && !(selected == bf_Pos || selected == dad_Pos || selected == gf_Pos))
                     {
                         var Object = stageData.objects[selectedObject - 1];
-                        var Sprite:Dynamic = stage.members[selectedObject - 1];
+                        var Sprite:Dynamic = objects[selectedObject - 1][1];
 
                         if(Object.updateHitbox || Object.updateHitbox == null)
                         {
@@ -529,7 +529,7 @@ class StageMakingState extends MusicBeatState
                 if(selectedObject != 0 && !(selected == bf_Pos || selected == dad_Pos || selected == gf_Pos))
                 {
                     var Object:StageObject = stageData.objects[selectedObject - 1];
-                    var Sprite:Dynamic = stage.members[selectedObject - 1];
+                    var Sprite:Dynamic = objects[selectedObject - 1][1];
     
                     if(Object.updateHitbox || Object.updateHitbox == null)
                     {
@@ -636,7 +636,7 @@ class StageMakingState extends MusicBeatState
                     xStepper.value = selected.x;
                     yStepper.value = selected.y;
 
-                    var cool:Dynamic = stage.members[selectedObject - 1];
+                    var cool:Dynamic = objects[spriteIndex][1];
                     
                     alphaStepper.value = cool.alpha;
                     scrollStepper.value = cool.scrollFactor.x;
@@ -693,7 +693,7 @@ class StageMakingState extends MusicBeatState
                 {
                     stageData.objects[selectedObject - 1].position = [selected.x, selected.y];
 
-                    var coolMan:Dynamic = stage.members[selectedObject - 1];
+                    var coolMan:Dynamic = objects[selectedObject - 1][1];
 
                     coolMan.setPosition(selected.x, selected.y);
 
@@ -777,13 +777,13 @@ class StageMakingState extends MusicBeatState
         // da math
         zoom = FlxMath.roundDecimal(stageCam.zoom, 1);
 
-        cam_Zoom.text = "Camera Zoom: " + zoom + "\nLEFT and RIGHT to switch Objects\nIJKL to move camera\nE and Q to zoom\nSHIFT for faster camera\n";
+        cam_Zoom.text = 'Camera Zoom: $zoom\nIJKL to move camera\nE and Q to zoom\nSHIFT for faster camera\n';
         cam_Zoom.x = FlxG.width - cam_Zoom.width - 2;
     }
 
     function reloadStage()
     {
-        objects = [""];
+        objects = [];
         stageObjectPos = [];
         selectedObject = 0;
 
@@ -867,7 +867,7 @@ class StageMakingState extends MusicBeatState
 
         for(objectArray in stage.stage_Objects)
         {
-            objects.push(objectArray[0]);
+            objects.push([objectArray[0], objectArray[1]]);
 
             var sprite = objectArray[1];
 

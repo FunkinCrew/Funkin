@@ -546,7 +546,8 @@ class PlayState extends MusicBeatState
 				}
 			}
 
-			add(stage.infrontOfGFSprites);
+			if(!SONG.player2.startsWith("gf"))
+				add(stage.infrontOfGFSprites);
 
 			// fuck haxeflixel and their no z ordering or somnething AAAAAAAAAAAAA
 			if(curStage == 'limo' && utilities.Options.getData("charsAndBGs"))
@@ -569,6 +570,9 @@ class PlayState extends MusicBeatState
 					add(character);
 				}
 			}
+
+			if(SONG.player2.startsWith("gf"))
+				add(stage.infrontOfGFSprites);
 
 			/* we do a little trolling */
 			var midPos = (utilities.Options.getData("cameraTracksDirections") ? dad.getGraphicMidpoint() : dad.getMidpoint());
