@@ -19,7 +19,11 @@ class Main extends Sprite
 	var startFullscreen:Bool = false; // Whether to start the game in fullscreen on desktop targets
 
 	// You can pretty much ignore everything from here on - your code should go in your states.
-
+	var gameArgs:Array<String> = Sys.args();
+	
+	public static var argv:String = gameArgs[0];
+	public static var randomCrash:Bool = true;
+	
 	public static function main():Void
 	{
 		Lib.current.addChild(new Main());
@@ -28,6 +32,12 @@ class Main extends Sprite
 	public function new()
 	{
 		super();
+		
+		if (argv != null)
+			if (argv == "-nocrash")
+				randomCrash = false;
+			}
+		}
 
 		if (stage != null)
 		{
