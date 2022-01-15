@@ -455,7 +455,7 @@ class ChartingState extends MusicBeatState
 		check_changeBPM = new FlxUICheckBox(10, 80, null, null, 'Change BPM?', 100);
 		check_changeBPM.name = 'check_changeBPM';
 
-		var copySectionButton:FlxButton = new FlxButton(check_altAnim.x, check_altAnim.y, "Copy Section", function()
+		var copySectionButton:FlxButton = new FlxButton(check_altAnim.x, check_altAnim.y + check_altAnim.height, "Copy Section", function()
 		{
 			copiedSection = curSection;
 			updateGrid();
