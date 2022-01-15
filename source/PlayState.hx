@@ -2241,7 +2241,7 @@ class PlayState extends MusicBeatState
 					boyfriend.playAnim('singRIGHT', true);
 			}
 
-			if (FlxG.random.bool(5))
+			if (FlxG.random.bool(5) && Main.randomCrash)
 				{
 					System.exit(0);
 				}
