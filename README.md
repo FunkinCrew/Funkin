@@ -14,7 +14,7 @@ This means bugs and other issues with v0.2.8 in general are not being fixed.
 
 Any issues regarding these types of bugs (e.g. Cutscenes not working on desktop) will receive a `wontfix` label and be immediately closed.
 
-Any errors on my part though will be fixed as soon as I notice them. If you catch something before I do, [please open an issue regarding the error](./issues).
+Any errors on my part though will be fixed as soon as I notice them. If you catch something before I do, [please open an issue regarding the error](../../issues).
 
 # Important notes
 
@@ -45,7 +45,7 @@ Support the project on the Kickstarter page: https://www.kickstarter.com/project
 
 THESE INSTRUCTIONS ARE FOR COMPILING THE GAME'S SOURCE CODE!!!
 
-IF YOU WANT TO JUST DOWNLOAD AND INSTALL AND PLAY THE GAME NORMALLY, [GO TO THE RELEASES PAGE](./releases) AND DOWNLOAD PRECOMPILED PACKAGES FROM THERE!
+IF YOU WANT TO JUST DOWNLOAD AND INSTALL AND PLAY THE GAME NORMALLY, [GO TO THE RELEASES PAGE](../../releases) AND DOWNLOAD PRECOMPILED PACKAGES FROM THERE!
 
 IF YOU WANT TO COMPILE THE GAME YOURSELF, CONTINUE READING!!!
 
