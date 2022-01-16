@@ -98,8 +98,6 @@ class StageMakingState extends MusicBeatState
     private var stageCam:FlxCamera;
     private var camHUD:FlxCamera;
 
-    private var camSpeed:Float = 1.0;
-
     private var camFollow:FlxObject;
 
     public function new(selectedStage:String)
