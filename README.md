@@ -1,28 +1,51 @@
-<p align="center">⚠️ WARNING: WIP! ⚠️<br>This project is still a work in progress.<br>You may look around and build the code yourself if you want, but don't expect anything to be finished or polished yet!</p>
+<p align="center">⚠️ <strong>WARNING: WIP!</strong> ⚠️<br>This project is still a work in progress.<br>You may look around and build the code yourself if you want, but don't expect anything to be finished or polished yet!</p>
 
-# Friday Night Funkin
+# Friday Night Funkin v0.2.8 (Newgrounds Exclusive)
 
-This is the repository for Friday Night Funkin, a game originally made for Ludum Dare 47 "Stuck In a Loop".
+This is the repository for Friday Night Funkin' v0.2.8, a game in which the latest version lies on a singular web page closed source.
+
+This project is the result of reverse engineering the transpiled JavaScript code into readable Haxe code, which can now be built upon with ease.
+
+# Our goals
+
+This project aims to bring v0.2.8 back into Haxe as close as possible to the original.
+
+This means bugs and other issues with v0.2.8 in general are not being fixed.
+
+Any issues regarding these types of bugs (e.g. Cutscenes not working on desktop) will receive a `wontfix` label and be immediately closed.
+
+Any errors on my part though will be fixed as soon as I notice them. If you catch something before I do, [please open an issue regarding the error](./issues).
+
+# Important notes
+
+To not mess with any of the integrations Ninjamuffin had in place, I have decided to completely remove them from the project.
+
+What's missing? Logins, awards, and a check to see if the game is outdated or not. Other than that though, the repo should be mostly accurate to how to game is shown on the website.
+
+If demand is high enough, I may make a separate branch for you to enter in your own Newgrounds API keys and bring these features back. We'll see.
+
+# Support Friday Night Funkin'
 
 Play the Ludum Dare prototype here: https://ninja-muffin24.itch.io/friday-night-funkin
+
 Play the Newgrounds one here: https://www.newgrounds.com/portal/view/770371
+
 Support the project on the itch.io page: https://ninja-muffin24.itch.io/funkin
+
+Support the project on the Kickstarter page: https://www.kickstarter.com/projects/funkin/friday-night-funkin-the-full-ass-game
 
 ## Credits / shoutouts
 
-- [ninjamuffin99 (me!)](https://twitter.com/ninja_muffin99) - Programmer
+- [ninjamuffin99](https://twitter.com/ninja_muffin99) - Programmer
 - [PhantomArcade3K](https://twitter.com/phantomarcade3k) and [Evilsk8r](https://twitter.com/evilsk8r) - Art
 - [Kawaisprite](https://twitter.com/kawaisprite) - Musician
-
-This game was made with love to Newgrounds and it's community. Extra love to Tom Fulp.
+- [AngelDTF (me!)](https://github.com/AngelDTF) - Reverse engineering
 
 ## Build instructions
 
 THESE INSTRUCTIONS ARE FOR COMPILING THE GAME'S SOURCE CODE!!!
 
-IF YOU WANT TO JUST DOWNLOAD AND INSTALL AND PLAY THE GAME NORMALLY, GO TO ITCH.IO TO DOWNLOAD THE GAME FOR PC, MAC, AND LINUX!!
-
-https://ninja-muffin24.itch.io/funkin
+IF YOU WANT TO JUST DOWNLOAD AND INSTALL AND PLAY THE GAME NORMALLY, [GO TO THE RELEASES PAGE](./releases) AND DOWNLOAD PRECOMPILED PACKAGES FROM THERE!
 
 IF YOU WANT TO COMPILE THE GAME YOURSELF, CONTINUE READING!!!
 
@@ -38,9 +61,8 @@ flixel
 flixel-addons
 flixel-ui
 hscript
-newgrounds
 ```
-So for each of those type `haxelib install [library]` so shit like `haxelib install newgrounds`
+So for each of those type `haxelib install [library]` so shit like `haxelib install flixel`
 
 You'll also need to install a couple things that involve Gits. To do this, you need to do a few things first.
 1. Download [git-scm](https://git-scm.com/downloads). Works for Windows, Mac, and Linux, just select your build.
@@ -52,26 +74,6 @@ You should have everything ready for compiling the game! Follow the guide below 
 
 At the moment, you can optionally fix the transition bug in songs with zoomed out cameras.
 - Run `haxelib git flixel-addons https://github.com/HaxeFlixel/flixel-addons` in the terminal/command-prompt.
-
-### Ignored files
-
-I gitignore the API keys for the game, so that no one can nab them and post fake highscores on the leaderboards. But because of that the game
-doesn't compile without it.
-
-Just make a file in `/source` and call it `APIStuff.hx`, and copy paste this into it
-
-```haxe
-package;
-
-class APIStuff
-{
-	public static var API:String = "";
-	public static var EncKey:String = "";
-}
-
-```
-
-and you should be good to go there.
 
 ### Compiling game
 
