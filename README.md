@@ -2,7 +2,7 @@
 
 # Friday Night Funkin v0.2.8 (Newgrounds Exclusive)
 
-This is the repository for Friday Night Funkin' v0.2.8, a game in which the latest version lies on a singular web page closed source.
+This is the repository for Friday Night Funkin' v0.2.8, a game in which lies on a singular web page on the internet with no open-source code.
 
 This project is the result of reverse engineering the transpiled JavaScript code into readable Haxe code, which can now be built upon with ease.
 
@@ -70,10 +70,13 @@ You'll also need to install a couple things that involve Gits. To do this, you n
 3. Run `haxelib git polymod https://github.com/larsiusprime/polymod.git` to install Polymod.
 4. Run `haxelib git discord_rpc https://github.com/Aidan63/linc_discord-rpc` to install Discord RPC.
 
-You should have everything ready for compiling the game! Follow the guide below to continue!
-
-At the moment, you can optionally fix the transition bug in songs with zoomed out cameras.
+At the moment, you can optionally fix some bugs regarding the engine:
+1. A transition bug in songs with zoomed out cameras
 - Run `haxelib git flixel-addons https://github.com/HaxeFlixel/flixel-addons` in the terminal/command-prompt.
+2. A text rendering bug (mainly noticeable in the story menu under tracks)
+- Run `haxelib git openfl https://github.com/openfl/openfl` in the terminal/command-prompt.
+
+You should have everything ready for compiling the game! Follow the guide below to continue!
 
 ### Compiling game
 
@@ -94,7 +97,7 @@ To run it from your desktop (Windows, Mac, Linux) it can be a bit more involved.
 * MSVC v141 - VS 2017 C++ x64/x86 build tools
 * MSVC v140 - VS 2015 C++ build tools (v14.00)
 
-This will install about 22GB of crap, but once that is done you can open up a command line in the project's directory and run `lime test windows -debug`. Once that command finishes (it takes forever even on a higher end PC), you can run FNF from the .exe file under export\release\windows\bin
+This will install about 22GB of crap, but once that is done you can open up a command line in the project's directory and run `lime test windows -debug`. Once that command finishes (it takes forever, even on a higher end PC), you can run FNF from the .exe file under export\release\windows\bin
 As for Mac, 'lime test mac -debug' should work, if not the internet surely has a guide on how to compile Haxe stuff for Mac.
 
 ### Additional guides
