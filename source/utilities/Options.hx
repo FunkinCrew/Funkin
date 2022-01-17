@@ -97,7 +97,7 @@ class Options
             setData(NoteVariables.Default_Binds, "binds", "binds");
         else
         {
-            var bindArray = getData("binds", "binds");
+            var bindArray:Array<Dynamic> = getData("binds", "binds");
 
             if(bindArray.length < NoteVariables.Default_Binds.length)
             {
