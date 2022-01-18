@@ -1,5 +1,6 @@
 package ui;
 
+import substates.ImportHighscoresSubstate;
 import game.Highscore;
 import openfl.events.FullScreenEvent;
 import substates.ScrollSpeedMenu;
@@ -408,6 +409,20 @@ class ScrollSpeedMenuOption extends Option
 }
 
 /**
+* Option that opens the ImportOldHighscore menu when selected.
+*/
+class ImportOldHighscoreOption extends Option
+{
+    override function update(elapsed:Float)
+    {
+        super.update(elapsed);
+
+        if(FlxG.keys.justPressed.ENTER && Alphabet_Text.targetY == 0)
+			FlxG.state.openSubState(new ImportHighscoresSubstate());
+    }
+}
+
+/**
 * A Option for save data that is saved a string with multiple pre-defined states (aka like accuracy option or cutscene option)
 */
 class StringSaveOption extends Option
@@ -478,32 +493,3 @@ class StringSaveOption extends Option
 }
 
 class DisplayFontOption extends StringSaveOption { override function SetDataIGuess() { super.SetDataIGuess(); Main.changeFont(utilities.Options.getData("infoDisplayFont")); } }
-
-/**
-* Very simple option that transfers you to a different page when selecting it.
-*/
-class ImportOldHighscoresOption extends Option
-{
-    override public function new(_Option_Name:String = "-", _Option_Row:Int = 0)
-    {
-        super();
-
-        // SETTING VALUES //
-        this.Option_Name = _Option_Name;
-        this.Option_Row = _Option_Row;
-
-        // CREATING OTHER OBJECTS //
-        Alphabet_Text = new Alphabet(20, 20 + (Option_Row * 100), Option_Name, true);
-        Alphabet_Text.isMenuItem = true;
-        Alphabet_Text.targetY = Option_Row;
-        add(Alphabet_Text);
-    }
-
-    override function update(elapsed:Float)
-    {
-        super.update(elapsed);
-
-        if(FlxG.keys.justPressed.ENTER && Std.int(Alphabet_Text.targetY) == 0 && !OptionsMenu.inMenu)
-			Highscore.importOldData();
-    }
-}

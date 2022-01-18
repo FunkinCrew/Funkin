@@ -732,7 +732,7 @@ class PlayState extends MusicBeatState
 			infoTxt.scrollFactor.set();
 			add(infoTxt);
 
-			if(utilities.Options.getData("sideRatings"))
+			if(utilities.Options.getData("sideRatings") == true)
 			{
 				ratingText = new FlxText(0,0,0,"bruh");
 				ratingText.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
@@ -759,7 +759,7 @@ class PlayState extends MusicBeatState
 			scoreTxt.cameras = [camHUD];
 			infoTxt.cameras = [camHUD];
 
-			if(utilities.Options.getData("sideRatings"))
+			if(utilities.Options.getData("sideRatings") == true)
 				ratingText.cameras = [camHUD];
 
 			timeBar.cameras = [camHUD];
@@ -811,7 +811,7 @@ class PlayState extends MusicBeatState
 
 			fromPauseMenu = false;
 
-			if(utilities.Options.getData("sideRatings"))
+			if(utilities.Options.getData("sideRatings") == true)
 				updateRatingText();
 		}
 
@@ -1749,7 +1749,10 @@ class PlayState extends MusicBeatState
 				iconP1.visible = false;
 				iconP2.visible = false;
 				scoreTxt.visible = false;
-				ratingText.visible = false;
+
+				if(utilities.Options.getData("sideRatings") == true)
+					ratingText.visible = false;
+
 				timeBar.visible = false;
 				timeBarBG.visible = false;
 			}
@@ -1761,7 +1764,10 @@ class PlayState extends MusicBeatState
 				iconP1.visible = true;
 				iconP2.visible = true;
 				scoreTxt.visible = true;
-				ratingText.visible = true;
+
+				if(utilities.Options.getData("sideRatings") == true)
+					ratingText.visible = true;
+
 				timeBar.visible = true;
 				timeBarBG.visible = true;
 			}
@@ -2350,6 +2356,26 @@ class PlayState extends MusicBeatState
 			DiscordClient.changePresence("Chart Editor", null, null, true);
 			#end
 		}
+
+		if (FlxG.keys.justPressed.EIGHT && !switchedStates)
+		{
+			#if linc_luajit
+			if(executeModchart && luaModchart != null)
+			{
+				luaModchart.die();
+				luaModchart = null;
+			}
+			#end
+			
+			switchedStates = true;
+
+			vocals.stop();
+			FlxG.switchState(new debuggers.ChartingStateDev());
+
+			#if discord_rpc
+			DiscordClient.changePresence("Chart Editor Development", null, null, true);
+			#end 
+		}
 	}
 
 	function endSong():Void
@@ -2615,7 +2641,8 @@ class PlayState extends MusicBeatState
 		if(ratings.exists(daRating))
 			ratings.set(daRating, ratings.get(daRating) + 1);
 
-		updateRatingText();
+		if(utilities.Options.getData("sideRatings") == true)
+			updateRatingText();
 
 		if(daRating == "sick" || daRating == "marvelous")
 			hitNoteAmount = 1;
@@ -3345,7 +3372,9 @@ class PlayState extends MusicBeatState
 				}
 
 				misses++;
-				updateRatingText();
+
+				if(utilities.Options.getData("sideRatings") == true)
+					updateRatingText();
 			}
 
 			totalNotes++;
@@ -3420,7 +3449,8 @@ class PlayState extends MusicBeatState
 				if(!playingReplay)
 					replay.recordKeyHit(note.noteData % SONG.playerKeyCount, note.strumTime, (setNoteDiff != null ? setNoteDiff : note.strumTime - Conductor.songPosition));
 
-				updateRatingText();
+				if(utilities.Options.getData("sideRatings") == true)
+					updateRatingText();
 			}
 
 			if(note.shouldHit && note.isSustainNote)
@@ -3645,7 +3675,7 @@ class PlayState extends MusicBeatState
 
 	function updateRatingText()
 	{
-		if(utilities.Options.getData("sideRatings"))
+		if(utilities.Options.getData("sideRatings") == true)
 		{
 			var ratingArray = [
 				ratings.get("marvelous"),
@@ -3659,13 +3689,13 @@ class PlayState extends MusicBeatState
 			var PA = ratingArray[2] + ratingArray[3] + ratingArray[4];
 
 			ratingText.text = (
-				(utilities.Options.getData("marvelousRatings") ? "Marvelous: " + Std.string(ratingArray[0]) + "\n" : "") +
+				(utilities.Options.getData("marvelousRatings") == true ? "Marvelous: " + Std.string(ratingArray[0]) + "\n" : "") +
 				"Sick: " + Std.string(ratingArray[1]) + "\n" +
 				"Good: " + Std.string(ratingArray[2]) + "\n" +
 				"Bad: " + Std.string(ratingArray[3]) + "\n" +
 				"Shit: " + Std.string(ratingArray[4]) + "\n" +
 				"Misses: " + Std.string(misses) + "\n" +
-				(utilities.Options.getData("marvelousRatings") && ratingArray[0] > 0 && MA > 0 ? "MA: " + Std.string(FlxMath.roundDecimal(ratingArray[0] / MA, 2)) + "\n" : "") +
+				(utilities.Options.getData("marvelousRatings") == true && ratingArray[0] > 0 && MA > 0 ? "MA: " + Std.string(FlxMath.roundDecimal(ratingArray[0] / MA, 2)) + "\n" : "") +
 				(ratingArray[1] > 0 && PA > 0 ? "PA: " + Std.string(FlxMath.roundDecimal((ratingArray[1] + ratingArray[0]) / PA, 2)) + "\n" : "")
 			);
 

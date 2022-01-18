@@ -28,6 +28,7 @@ import game.Song;
 import debuggers.StageMakingState;
 import game.Highscore;
 import openfl.utils.Assets as OpenFLAssets;
+import debuggers.ChartingStateDev;
 
 class OptionsMenu extends MusicBeatState
 {
@@ -42,7 +43,7 @@ class OptionsMenu extends MusicBeatState
 			new PageOption("Graphics", 1, "Graphics"),
 			new PageOption("Tools", 2, "Tools"),
 			new PageOption("Misc", 3, "Misc"),
-			new ImportOldHighscoresOption("Import Old Scores", 4)
+			new ImportOldHighscoreOption("Import Old Scores", "Import Old Scores", 4)
 		],
 		[
 			"Gameplay",
@@ -75,6 +76,7 @@ class OptionsMenu extends MusicBeatState
 			"Tools",
 			new PageOption("Back", 0, "Categories"),
 			new GameStateOption("Charter", 1, new ChartingState()),
+			new GameStateOption("Charter Dev", 1, new ChartingStateDev()),
 			new GameStateOption("Animation Debug", 2, new AnimationDebug("dad")),
 			new GameStateOption("Stage Editor", 3, new StageMakingState("stage")),
 			new GameStateOption("Character Creator", 4, new CharacterCreationState("bf"))
@@ -150,6 +152,9 @@ class OptionsMenu extends MusicBeatState
 	{
 		if(PlayState.instance == null)
 			pages[3][2] = null;
+
+		if(PlayState.instance == null)
+			pages[3][3] = null;
 		
 		MusicBeatState.windowNameSuffix = "";
 		
