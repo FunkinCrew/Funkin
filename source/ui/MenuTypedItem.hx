@@ -6,7 +6,7 @@ using StringTools;
 
 class MenuTypedItem extends MenuItem
 {
-	var label:Dynamic;
+	public var label:Dynamic;
 
 	override public function new(x:Float, y:Float, object:AtlasText, text:String, callback:Dynamic = null)
 	{

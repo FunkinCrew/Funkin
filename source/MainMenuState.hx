@@ -27,8 +27,6 @@ using StringTools;
 
 class MainMenuState extends MusicBeatState
 {
-	var curSelected:Int = 0;
-
 	var menuItems:MainMenuList;
 
 	#if !switch
@@ -78,9 +76,11 @@ class MainMenuState extends MusicBeatState
 		magenta.y = bg.y;
 		magenta.visible = false;
 		magenta.antialiasing = true;
-		magenta.color = 0xFFfd719b;
+		magenta.color = 0xFFFD719B;
 		if (PreferencesMenu.preferences.get('flashing-menu'))
+		{
 			add(magenta);
+		}
 		// magenta.scrollFactor.set();
 
 		menuItems = new MainMenuList();
@@ -91,30 +91,31 @@ class MainMenuState extends MusicBeatState
 			FlxFlicker.flicker(magenta, 1.1, 0.15, false, true);
 		});
 		menuItems.enabled = false;
-		menuItems.createItem(0, 0, "story mode", function()
+		menuItems.createItem(null, null, "story mode", function()
 		{
 			startExitState(new StoryMenuState());
 		});
-		menuItems.createItem(0, 0, "freeplay", function()
+		menuItems.createItem(null, null, "freeplay", function()
 		{
 			startExitState(new FreeplayState());
 		});
 		if (VideoState.seenVideo)
-			menuItems.createItem(0, 0, "kickstarter", selectDonate, true);
+		{
+			menuItems.createItem(null, null, "kickstarter", selectDonate, true);
+		}
 		else
-			menuItems.createItem(0, 0, "donate", selectDonate, true);
+		{
+			menuItems.createItem(null, null, "donate", selectDonate, true);
+		}
 		menuItems.createItem(0, 0, "options", function()
 		{
 			startExitState(new OptionsState());
 		});
 
-		// sorry for this looking so shitty, literally reverse engineering this and I have no var names
-		var curItem, daWeirdVar = (FlxG.height - 160 * (menuItems.length - 1)) / 2;
 		for (i in 0...menuItems.length)
 		{
-			curItem = menuItems.members[i];
-			curItem.x = FlxG.width / 2;
-			curItem.y = daWeirdVar + 160 * i;
+			menuItems.members[i].x = FlxG.width / 2;
+			menuItems.members[i].y = ((FlxG.height - 160 * (menuItems.length - 1)) / 2) + (160 * i);
 		}
 
 		FlxG.camera.follow(camFollow, null, 0.06);
@@ -124,8 +125,6 @@ class MainMenuState extends MusicBeatState
 		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(versionShit);
 		versionShit.text += "(Newgrounds exclusive preview)";
-
-		// NG.core.calls.event.logEvent('swag').send();
 
 		super.create();
 	}
@@ -144,9 +143,9 @@ class MainMenuState extends MusicBeatState
 	function selectDonate()
 	{
 		#if linux
-		Sys.command('/usr/bin/xdg-open', ["https://www.kickstarter.com/projects/funkin/friday-night-funkin-the-full-ass-game", "&"]);
+		Sys.command('/usr/bin/xdg-open', ["https://www.kickstarter.com/projects/funkin/friday-night-funkin-the-full-ass-game/", "&"]);
 		#else
-		FlxG.openURL('https://www.kickstarter.com/projects/funkin/friday-night-funkin-the-full-ass-game');
+		FlxG.openURL('https://www.kickstarter.com/projects/funkin/friday-night-funkin-the-full-ass-game/');
 		#end
 	}
 
@@ -172,7 +171,7 @@ class MainMenuState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
-		FlxG.camera.followLerp = CoolUtil.camLerpShit(.06);
+		FlxG.camera.followLerp = CoolUtil.camLerpShit(0.06);
 
 		if (FlxG.sound.music.volume < 0.8)
 		{
@@ -184,7 +183,7 @@ class MainMenuState extends MusicBeatState
 			menuItems.enabled = false;
 		}
 
-		if (PlayerSettings.player1.controls.BACK && menuItems.enabled && !menuItems.busy)
+		if (controls.BACK && menuItems.enabled && !menuItems.busy)
 		{
 			FlxG.switchState(new TitleState());
 		}
@@ -195,14 +194,13 @@ class MainMenuState extends MusicBeatState
 
 class MainMenuItem extends AtlasMenuItem
 {
-	public function new(X:Float = 0, Y:Float = 0, name:String, atlas:FlxAtlasFrames, callback:Dynamic)
+	public function new(?X:Float = 0, ?Y:Float = 0, name:String, atlas:FlxAtlasFrames, callback:Dynamic)
 	{
 		super(X, Y, name, atlas, callback);
 		this.scrollFactor.set();
-		fireInstantly = false;
 	}
 
-	public override function changeAnim(anim:String)
+	override public function changeAnim(anim:String)
 	{
 		super.changeAnim(anim);
 		origin.set(0.5 * frameWidth, 0.5 * frameHeight);
@@ -212,7 +210,7 @@ class MainMenuItem extends AtlasMenuItem
 	}
 }
 
-class MainMenuList extends MenuTypedList
+class MainMenuList extends MenuTypedList<MainMenuItem>
 {
 	var atlas:FlxAtlasFrames;
 
@@ -222,11 +220,11 @@ class MainMenuList extends MenuTypedList
 		super(Vertical);
 	}
 
-	public function createItem(X:Float = 0, Y:Float = 0, name:String, callback:Dynamic = null, fireInstantly:Bool = false)
+	public function createItem(?X:Float = 0, ?Y:Float = 0, name:String, callback:Dynamic = null, fireInstantly:Bool = false)
 	{
-		var a = new MainMenuItem(X, Y, name, this.atlas, callback);
+		var a = new MainMenuItem(X, Y, name, atlas, callback);
 		a.fireInstantly = fireInstantly;
-		a.ID = this.length;
-		return this.addItem(name, a);
+		a.ID = length;
+		return addItem(name, a);
 	}
 }

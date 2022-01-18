@@ -4,6 +4,7 @@ import openfl.Lib;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxCamera;
+import flixel.util.FlxColor;
 import haxe.ds.StringMap;
 
 using StringTools;
@@ -22,7 +23,7 @@ class PreferencesMenu extends Page
 		super();
 		menuCamera = new FlxCamera();
 		FlxG.cameras.add(menuCamera, false);
-		menuCamera.bgColor = 0;
+		menuCamera.bgColor = FlxColor.TRANSPARENT;
 		set_camera(menuCamera);
 		items = new TextMenuList();
 		add(items);

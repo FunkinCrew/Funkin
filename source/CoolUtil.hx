@@ -38,11 +38,11 @@ class CoolUtil
 
 	public static function camLerpShit(ratio:Float)
 	{
-		return FlxG.elapsed/0.016666666666666666*ratio;
+		return FlxG.elapsed / (1 / 60) * ratio;
 	}
 
 	public static function coolLerp(a:Float, b:Float, ratio:Float)
 	{
-		return a+camLerpShit(ratio)*(b-a);
+		return a + camLerpShit(ratio) * (b - a);
 	}
 }

@@ -4,7 +4,7 @@ import ui.MenuTypedList;
 
 using StringTools;
 
-class TextMenuList extends MenuTypedList
+class TextMenuList extends MenuTypedList<TextMenuItem>
 {
 	override public function new(dir:NavControls = Vertical, ?wrapDir:WrapMode)
 	{

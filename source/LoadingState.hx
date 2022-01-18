@@ -18,8 +18,6 @@ import haxe.io.Path;
 
 class LoadingState extends MusicBeatState
 {
-	inline static var MIN_TIME = 1.0;
-	
 	var target:FlxState;
 	var targetShit:Float = 0;
 	var stopMusic = false;
@@ -73,7 +71,7 @@ class LoadingState extends MusicBeatState
 					checkLibrary("tutorial");
 				
 				FlxG.camera.fade(FlxG.camera.bgColor, 0.5, true);
-				new FlxTimer().start(1.5 + MIN_TIME, function(_) introComplete());
+				new FlxTimer().start(1.5, function(_) introComplete());
 			}
 		);
 	}

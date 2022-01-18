@@ -1,5 +1,6 @@
 package;
 
+import flixel.input.gamepad.FlxGamepad;
 import haxe.Json;
 import Controls;
 import flixel.FlxCamera;
@@ -37,8 +38,8 @@ class PlayerSettings
 	function new(id)
 	{
 		this.id = id;
-		this.controls = new Controls('player$id', KeyboardScheme.None);
-		var setScheme:Bool = true;
+		controls = new Controls('player$id', KeyboardScheme.None);
+		var setDefault:Bool = true;
 		var saveControls = FlxG.save.data.controls;
 		if (saveControls != null)
 		{
@@ -53,18 +54,18 @@ class PlayerSettings
 			}
 			if (keys != null)
 			{
-				setScheme = false;
+				setDefault = false;
 				trace("loaded key data: " + Json.stringify(keys));
-				this.controls.fromSaveData(keys, Device.Keys);
+				controls.fromSaveData(keys, Device.Keys);
 			}
 		}
-		if (setScheme)
+		if (setDefault)
 		{
-			this.controls.setKeyboardScheme(KeyboardScheme.Solo);
+			controls.setKeyboardScheme(KeyboardScheme.Solo);
 		}
 	}
 
-	function addGamepad(data)
+	function addGamepad(pad:FlxGamepad)
 	{
 		var setDefault:Bool = true;
 		var saveControls = FlxG.save.data.controls;
@@ -83,12 +84,12 @@ class PlayerSettings
 			{
 				setDefault = false;
 				trace("loaded pad data: " + Json.stringify(keys));
-				this.controls.addGamepadWithSaveData(id, keys);
+				controls.addGamepadWithSaveData(pad.id, keys);
 			}
 		}
 		if (setDefault)
 		{
-			this.controls.addDefaultGamepad(data.id);
+			controls.addDefaultGamepad(pad.id);
 		}
 	}
 
@@ -107,9 +108,12 @@ class PlayerSettings
 			}
 			keydata = FlxG.save.data.controls.p1;
 		}
-		else if (FlxG.save.data.controls.p2 == null)
+		else
 		{
-			FlxG.save.data.controls.p2 = {};
+			if (FlxG.save.data.controls.p2 == null)
+			{
+				FlxG.save.data.controls.p2 = {};
+			}
 			keydata = FlxG.save.data.controls.p2;
 		}
 		var savedata = this.controls.createSaveData(Device.Keys);
@@ -120,7 +124,7 @@ class PlayerSettings
 		}
 		if (controls.gamepadsAdded.length > 0)
 		{
-			savedata = this.controls.createSaveData(Device.Gamepad(this.controls.gamepadsAdded[0]));
+			savedata = this.controls.createSaveData(Device.Gamepad(controls.gamepadsAdded[0]));
 			if (savedata != null)
 			{
 				trace("saving pad data: " + Json.stringify(savedata));
@@ -135,13 +139,12 @@ class PlayerSettings
 		if (player1 == null)
 		{
 			player1 = new PlayerSettings(0);
-			++numPlayers;
+			numPlayers++;
 		}
 
 		FlxG.gamepads.deviceConnected.add(onGamepadAdded);
-		for (i in 0...FlxG.gamepads.numActiveGamepads)
+		for (pad in FlxG.gamepads.getActiveGamepads())
 		{
-			var pad = FlxG.gamepads.getActiveGamepads()[i];
 			if (pad != null)
 			{
 				onGamepadAdded(pad);

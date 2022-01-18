@@ -27,12 +27,12 @@ class FreeplayState extends MusicBeatState
 	var scoreBG:FlxSprite;
 	var scoreText:FlxText;
 	var diffText:FlxText;
-	var lerpScore:Int = 0;
+	var lerpScore:Float = 0;
 	var intendedScore:Int = 0;
 
+	private var grpSongs:FlxTypedGroup<Alphabet>;
 	private var coolColors = [0xFF9271FD, 0xFF9271FD, 0xFF223344, 0xFF941653, 0xFFFC96D7, 0xFFA0D1FF, 0xFFFF78BF, 0xFFF6B604];
 
-	private var grpSongs:FlxTypedGroup<Alphabet>;
 	private var curPlaying:Bool = false;
 
 	private var iconArray:Array<HealthIcon> = [];
@@ -192,29 +192,25 @@ class FreeplayState extends MusicBeatState
 			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
 		}
 
-		lerpScore = Std.int(CoolUtil.coolLerp(lerpScore, intendedScore, 0.4));
+		lerpScore = CoolUtil.coolLerp(lerpScore, intendedScore, 0.4);
 		
 		// Sorry about this, but I'm basically copying and pasting the compiled code here. If someone could simplify this but keep the exact same function, please do.
 		var b = Std.parseInt(bg.color.toHexString()),
-		c:Null<Int> = coolColors[songs[curSelected].week % coolColors.length],
-		d:Null<Float> = CoolUtil.camLerpShit(0.045);
-		if (d == null) d = 0.5;
-		var e = Std.int(((c >> 16 & 255) - (b >> 16 & 255)) * d + (b >> 16 & 255)) | 0,
-			f = Std.int(((c >> 8 & 255) - (b >> 8 & 255)) * d + (b >> 8 & 255)) | 0,
-			h = Std.int(((c & 255) - (b & 255)) * d + (b & 255)) | 0;
-			c = Std.int(((c >> 24 & 255) - (b >> 24 & 255)) * d + (b >> 24 & 255)) | 0;
-		if (c == null) c = 255;
-		b = new FlxColor();
-		if (c == null) c = 255;
-		b = (b & -16711681 | (255 < e ? 255 : 0 > e ? 0 : e) << 16) & -65281 | (255 < f ? 255 : 0 > f ? 0 : f) << 8;
-		b &= -256;
-		b |= 255 < h ? 255 : 0 > h ? 0 : h;
-		b &= 16777215;
-		b |= (255 < c ? 255 : 0 > c ? 0 : c) << 24;
+			c = coolColors[songs[curSelected].week % coolColors.length],
+			d = CoolUtil.camLerpShit(0.045);
+		var e = Std.int(((c >> 0x10 & 0xFF) - (b >> 0x10 & 0xFF)) * d + (b >> 0x10 & 0xFF)),
+			f = Std.int(((c >> 0x8 & 0xFF) - (b >> 0x8 & 0xFF)) * d + (b >> 0x8 & 0xFF)),
+			h = Std.int(((c & 0xFF) - (b & 0xFF)) * d + (b & 0xFF)),
+			i = Std.int(((c >> 0x18 & 0xFF) - (b >> 0x18 & 0xFF)) * d + (b >> 0x18 & 0xFF));
+		b = (b & 0xFF00FFFF | (0xFF < e ? 0xFF : 0x0 > e ? 0x0 : e) << 0x10) & 0xFFFF00FF | (0xFF < f ? 0xFF : 0x0 > f ? 0x0 : f) << 0x8;
+		b &= 0xFFFFFF00;
+		b |= 0xFF < h ? 0xFF : 0x0 > h ? 0x0 : h;
+		b &= 0xFFFFFF;
+		b |= (0xFF < i ? 0xFF : 0x0 > i ? 0x0 : i) << 0x18;
 		bg.color = b;
 		// Alright, shit's over. Sincere apologies yet again, but at least it works.
 
-		scoreText.text = "PERSONAL BEST:" + lerpScore;
+		scoreText.text = "PERSONAL BEST:" + Math.round(lerpScore);
 		positionHighscore();
 
 		var upP = controls.UI_UP_P;
@@ -230,9 +226,7 @@ class FreeplayState extends MusicBeatState
 			changeSelection(1);
 		}
 		if (FlxG.mouse.wheel != 0)
-		{
-			changeSelection(-Std.int(FlxG.mouse.wheel / 4));
-		}
+			changeSelection(-Math.round(FlxG.mouse.wheel / 4));
 
 		if (controls.UI_LEFT_P)
 			changeDiff(-1);
@@ -296,7 +290,9 @@ class FreeplayState extends MusicBeatState
 		#end
 
 		#if PRELOAD_ALL
-		FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName), 0);
+		// No clue if this was removed or not, but I wanted to keep this as close as possible to the web version, and this is not in there.
+		// Yes, I know it's because the web version doesn't preload everything. If this being gone bothers you so much, then do it yourself lol.
+		//FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName), 0);
 		#end
 
 		var bullShit:Int = 0;

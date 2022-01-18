@@ -6,36 +6,32 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.util.FlxSignal;
 import haxe.ds.StringMap;
 
-class MenuTypedList extends FlxTypedGroup<MenuItem>
+class MenuTypedList<T:MenuItem> extends FlxTypedGroup<T>
 {
-	public var busy:Bool;
-	public var byName:StringMap<MenuItem>;
-	public var wrapMode:WrapMode;
-	public var enabled:Bool;
-	public var selectedIndex:Int;
+	public var busy:Bool = false;
+	public var byName:StringMap<T> = new StringMap<T>();
+	public var wrapMode:WrapMode = Both;
+	public var enabled:Bool = true;
+	public var selectedIndex:Int = 0;
 	public var navControls:NavControls;
 
-	public var onAcceptPress:FlxTypedSignal<MenuItem->Void>;
-	public var onChange:FlxTypedSignal<MenuItem->Void>;
+	public var onAcceptPress:FlxTypedSignal<T->Void> = new FlxTypedSignal<T->Void>();
+	public var onChange:FlxTypedSignal<T->Void> = new FlxTypedSignal<T->Void>();
 
 	public function new(dir:NavControls = Vertical, ?wrapDir:WrapMode)
 	{
-		busy = false;
-		byName = new StringMap<MenuItem>();
-		wrapMode = Both;
-		enabled = true;
-		onAcceptPress = new FlxTypedSignal<MenuItem->Void>();
-		onChange = new FlxTypedSignal<MenuItem->Void>();
-		selectedIndex = 0;
 		navControls = dir;
-		if (wrapDir != null) wrapMode = wrapDir;
+		if (wrapDir != null)
+		{
+			wrapMode = wrapDir;
+		}
 		else
 		{
-			switch (dir.getIndex())
+			switch (dir)
 			{
-				case 0:
+				case Horizontal:
 					wrapMode = Horizontal;
-				case 1:
+				case Vertical:
 					wrapMode = Vertical;
 				default:
 					wrapMode = Both;
@@ -44,18 +40,27 @@ class MenuTypedList extends FlxTypedGroup<MenuItem>
 		super();
 	}
 
-	public function addItem(name:String, item:MenuItem)
+	public function addItem(name:String, item:T)
 	{
-		if (length == selectedIndex) item.select();
+		if (length == selectedIndex)
+		{
+			item.select();
+		}
 		byName.set(name, item);
 		return add(item);
 	}
 
 	public function resetItem(name:String, newName:String, callback:Dynamic = null)
 	{
-		if (!byName.exists(name)) throw ("No item named:"+name);
+		if (!byName.exists(name))
+		{
+			throw ("No item named:" + name);
+		}
 		var item = byName.get(name);
-		if (byName.exists(name)) byName.remove(name);
+		if (byName.exists(name))
+		{
+			byName.remove(name);
+		}
 		byName.set(newName, item);
 		item.setItem(newName, callback);
 		return item;
@@ -66,65 +71,88 @@ class MenuTypedList extends FlxTypedGroup<MenuItem>
 		super.update(elapsed);
 		if (enabled && !busy)
 		{
-			var b, c, d, e, f, g;
+			var controls = PlayerSettings.player1.controls;
+			var wrapHorizontal:Bool;
+			var wrapVertical:Bool;
+			var nextIndex:Int;
 			switch (wrapMode)
 			{
 				case Horizontal | Both:
-					b = true;
+					wrapHorizontal = true;
 				default:
-					b = false;
+					wrapHorizontal = false;
 			}
 			switch (wrapMode)
 			{
 				case Vertical | Both:
-					c = true;
+					wrapVertical = true;
 				default:
-					c = false;
+					wrapVertical = false;
 			}
-			d = navControls;
-			switch (d)
+			switch (navControls)
 			{
 				case Horizontal:
-					e = PlayerSettings.player1.controls.UI_LEFT_P;
-					f = PlayerSettings.player1.controls.UI_RIGHT_P;
-					g = navAxis(selectedIndex, length, e, f, b);
+					var leftP = controls.UI_LEFT_P;
+					var rightP = controls.UI_RIGHT_P;
+					nextIndex = navAxis(selectedIndex, length, leftP, rightP, wrapHorizontal);
 				case Vertical:
-					e = PlayerSettings.player1.controls.UI_UP_P;
-					f = PlayerSettings.player1.controls.UI_DOWN_P;
-					g = navAxis(selectedIndex, length, e, f, c);
+					var upP = controls.UI_UP_P;
+					var downP = controls.UI_DOWN_P;
+					nextIndex = navAxis(selectedIndex, length, upP, downP, wrapVertical);
 				case Both:
-					e = PlayerSettings.player1.controls.UI_LEFT_P || PlayerSettings.player1.controls.UI_UP_P;
-					f = PlayerSettings.player1.controls.UI_RIGHT_P || PlayerSettings.player1.controls.UI_DOWN_P;
-					g = navAxis(selectedIndex, length, e, f, wrapMode != None);
-				case Columns:
-					g = navGrid(d.getIndex(), PlayerSettings.player1.controls.UI_LEFT_P, PlayerSettings.player1.controls.UI_RIGHT_P, b, PlayerSettings.player1.controls.UI_UP_P, PlayerSettings.player1.controls.UI_DOWN_P, c);
-				case Rows:
-					g = navGrid(d.getIndex(), PlayerSettings.player1.controls.UI_UP_P, PlayerSettings.player1.controls.UI_DOWN_P, c, PlayerSettings.player1.controls.UI_LEFT_P, PlayerSettings.player1.controls.UI_RIGHT_P, b);
+					var backwards = controls.UI_LEFT_P || controls.UI_UP_P;
+					var forwards = controls.UI_RIGHT_P || controls.UI_DOWN_P;
+					nextIndex = navAxis(selectedIndex, length, backwards, forwards, wrapMode != None);
+				case Columns(num):
+					nextIndex = navGrid(num, controls.UI_LEFT_P, controls.UI_RIGHT_P, wrapHorizontal, controls.UI_UP_P, controls.UI_DOWN_P, wrapVertical);
+				case Rows(num):
+					nextIndex = navGrid(num, controls.UI_UP_P, controls.UI_DOWN_P, wrapVertical, controls.UI_LEFT_P, controls.UI_RIGHT_P, wrapHorizontal);
 			}
-			if (g != selectedIndex)
+			if (nextIndex != selectedIndex)
 			{
 				FlxG.sound.play(Paths.sound("scrollMenu"));
-				selectItem(g);
+				selectItem(nextIndex);
 			}
-			if (PlayerSettings.player1.controls.ACCEPT) accept();
+			if (controls.ACCEPT)
+			{
+				accept();
+			}
 		}
 	}
 
-	function navAxis(a, b, c, d, e)
+	function navAxis(curSelected:Int, maxLength:Int, goBack:Bool, goForward:Bool, doWrap:Bool)
 	{
-		if (c == d) return a;
-		c ? 0 < a ? --a : if (e) a = b - 1 : a < b - 1 ? ++a : if (e) a = 0;
-		return a;
+		if (goBack == goForward)
+		{
+			return curSelected;
+		}
+
+		var next = curSelected;
+		if (goBack)
+		{
+			if (next > 0)
+				next--;
+			else if (doWrap)
+				next = maxLength - 1;
+		}
+		else if (goForward)
+		{
+			if (next < maxLength - 1)
+				next++;
+			else if (doWrap)
+				next = 0;
+		}
+		return next;
 	}
 
-	function navGrid(a, b, c, d, e, f, h)
+	function navGrid(gridLength:Int, hBack:Bool, hForward:Bool, hWrap:Bool, vBack:Bool, vForward:Bool, vWrap:Bool)
 	{
-		var m = Math.ceil(this.length / a),
-			n = Math.floor(this.selectedIndex / a),
-			k = this.selectedIndex % a;
-		k = this.navAxis(k, a, b, c, d);
-		n = this.navAxis(n, m, e, f, h);
-		return Std.int(Math.min(this.length - 1, n * a + k));
+		var itemLength = Math.ceil(length / gridLength);
+		var curItem = Math.floor(selectedIndex / gridLength);
+		var curGrid = selectedIndex % gridLength;
+		var selected1 = navAxis(curGrid, gridLength, hBack, hForward, hWrap);
+		var selected2 = navAxis(curItem, itemLength, vBack, vForward, vWrap);
+		return Std.int(Math.min(length - 1, selected2 * gridLength + selected1));
 	}
 
 	public function accept()

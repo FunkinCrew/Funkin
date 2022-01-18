@@ -105,6 +105,11 @@ class Paths
 		return 'assets/fonts/$key';
 	}
 
+	inline static public function video(key:String, ?library:String)
+	{
+		return getPath('music/$key.mp4', TEXT, library);
+	}
+
 	inline static public function getSparrowAtlas(key:String, ?library:String)
 	{
 		return FlxAtlasFrames.fromSparrow(image(key, library), file('images/$key.xml', library));

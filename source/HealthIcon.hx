@@ -2,6 +2,8 @@ package;
 
 import flixel.FlxSprite;
 
+using StringTools;
+
 class HealthIcon extends FlxSprite
 {
 	/**
@@ -31,7 +33,7 @@ class HealthIcon extends FlxSprite
 	public function changeIcon(char:String)
 	{
 		if (char != 'bf-pixel' && char != 'bf-old')
-			char = StringTools.trim(char.split('-')[0]);
+			char = char.split('-')[0].trim();
 
 		if (char != this.char)
 		{
