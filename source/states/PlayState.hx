@@ -234,6 +234,8 @@ class PlayState extends MusicBeatState
 
 	public static var playingReplay:Bool = false;
 
+	var events:Array<Array<Dynamic>> = [];
+
 	public function new(?_replay:Replay)
 	{
 		super();
@@ -340,6 +342,15 @@ class PlayState extends MusicBeatState
 
 			if (SONG == null)
 				SONG = Song.loadFromJson('tutorial');
+
+			if(Assets.exists(Paths.json("song data/" + SONG.song.toLowerCase() + "/events")))
+			{
+				trace(Paths.json("song data/" + SONG.song.toLowerCase() + "/events"));
+
+				events = Song.parseJSONshit(Assets.getText(Paths.json("song data/" + SONG.song.toLowerCase() + "/events"))).events;
+
+				trace(events);
+			}
 
 			#if !sys
 			songMultiplier = 1;
@@ -2375,6 +2386,175 @@ class PlayState extends MusicBeatState
 			#if discord_rpc
 			DiscordClient.changePresence("Chart Editor Development", null, null, true);
 			#end 
+		}
+
+		if(!switchedStates)
+		{
+			for(event in events)
+			{
+				if(event[1] + Conductor.offset <= Conductor.songPosition) // activate funni lol
+				{
+					switch(event[0].toLowerCase())
+					{
+						case "change character":
+							switch(event[2].toLowerCase())
+							{
+								case "girlfriend" | "gf":
+									var oldGf = PlayState.gf;
+									remove(oldGf);
+									
+									var newGf = new Character(100, 100, event[3]);
+									gf = newGf;
+
+									if(newGf.otherCharacters == null)
+									{
+										if(newGf.coolTrail != null)
+											PlayState.instance.add(newGf.coolTrail);
+							
+										PlayState.instance.add(newGf);
+									}
+									else
+									{
+										for(character in newGf.otherCharacters)
+										{
+											if(character.coolTrail != null)
+												PlayState.instance.add(character.coolTrail);
+							
+											PlayState.instance.add(character);
+										}
+									}
+
+									#if linc_luajit
+									if(executeModchart && luaModchart != null)
+										ModchartUtilities.lua_Sprites.remove("girlfriend");
+									#end
+
+									oldGf.kill();
+									oldGf.destroy();
+
+									#if linc_luajit
+									if(executeModchart && luaModchart != null)
+										ModchartUtilities.lua_Sprites.set("girlfriend", gf);
+									#end
+								case "dad" | "opponent":
+									var oldDad = PlayState.dad;
+									remove(oldDad);
+									
+									var newDad = new Character(100, 100, event[3]);
+									dad = newDad;
+
+									if(newDad.otherCharacters == null)
+									{
+										if(newDad.coolTrail != null)
+											PlayState.instance.add(newDad.coolTrail);
+							
+										PlayState.instance.add(newDad);
+									}
+									else
+									{
+										for(character in newDad.otherCharacters)
+										{
+											if(character.coolTrail != null)
+												PlayState.instance.add(character.coolTrail);
+							
+											PlayState.instance.add(character);
+										}
+									}
+
+									#if linc_luajit
+									if(executeModchart && luaModchart != null)
+										ModchartUtilities.lua_Sprites.remove("dad");
+									#end
+
+									oldDad.kill();
+									oldDad.destroy();
+
+									#if linc_luajit
+									if(executeModchart && luaModchart != null)
+										ModchartUtilities.lua_Sprites.set("dad", dad);
+									#end
+
+									@:privateAccess
+									{
+										var oldIcon = PlayState.instance.iconP2;
+										var bar = PlayState.instance.healthBar;
+										
+										PlayState.instance.removeObject(oldIcon);
+										oldIcon.kill();
+										oldIcon.destroy();
+						
+										PlayState.instance.iconP2 = new HealthIcon(dad.icon, false);
+										PlayState.instance.iconP2.y = PlayState.instance.healthBar.y - (PlayState.instance.iconP2.height / 2);
+										PlayState.instance.iconP2.cameras = [PlayState.instance.camHUD];
+										PlayState.instance.add(PlayState.instance.iconP2);
+						
+										bar.createFilledBar(dad.barColor, PlayState.boyfriend.barColor);
+										bar.updateFilledBar();
+									}
+								case "bf" | "boyfriend" | "player":
+									var oldBF = PlayState.boyfriend;
+									remove(oldBF);
+									
+									var newDad = new Boyfriend(100, 100, event[3]);
+									boyfriend = newDad;
+
+									if(newDad.otherCharacters == null)
+									{
+										if(newDad.coolTrail != null)
+											PlayState.instance.add(newDad.coolTrail);
+							
+										PlayState.instance.add(newDad);
+									}
+									else
+									{
+										for(character in newDad.otherCharacters)
+										{
+											if(character.coolTrail != null)
+												PlayState.instance.add(character.coolTrail);
+							
+											PlayState.instance.add(character);
+										}
+									}
+
+									#if linc_luajit
+									if(executeModchart && luaModchart != null)
+										ModchartUtilities.lua_Sprites.remove("boyfriend");
+									#end
+
+									oldBF.kill();
+									oldBF.destroy();
+
+									#if linc_luajit
+									if(executeModchart && luaModchart != null)
+										ModchartUtilities.lua_Sprites.set("boyfriend", boyfriend);
+									#end
+
+									@:privateAccess
+									{
+										var oldIcon = PlayState.instance.iconP1;
+										var bar = PlayState.instance.healthBar;
+										
+										PlayState.instance.removeObject(oldIcon);
+										oldIcon.kill();
+										oldIcon.destroy();
+						
+										PlayState.instance.iconP1 = new HealthIcon(boyfriend.icon, false);
+										PlayState.instance.iconP1.y = PlayState.instance.healthBar.y - (PlayState.instance.iconP1.height / 2);
+										PlayState.instance.iconP1.cameras = [PlayState.instance.camHUD];
+										PlayState.instance.iconP1.flipX = true;
+										PlayState.instance.add(PlayState.instance.iconP1);
+						
+										bar.createFilledBar(PlayState.dad.barColor, boyfriend.barColor);
+										bar.updateFilledBar();
+									}
+							}
+
+						stage.setCharOffsets();
+					}
+
+					events.remove(event);
+				}
+			}
 		}
 	}
 

@@ -55,6 +55,8 @@ typedef SwagSong =
 	var endCutscene:String;
 
 	var eventObjects:Array<Event>;
+
+	var events:Array<Array<Dynamic>>;
 }
 
 class Song
