@@ -1,0 +1,7 @@
+Change Character~Character To Change (Dad, BF, GF)~Character Name (dad, bf, gf, pico, etc)
+Hey!~BF = Only BF, GF = Only GF, anything else = Both~Nothing
+Set GF Speed~1 = Normal Speed (NOT A DECIMAL)~Nothing
+Add Camera Zoom~Game Camera Add (default = 0.015)~Hud Camera Add (default = 0.03)
+Play Character Animation~Character (Dad, BF, GF)~Animation to play
+Screen Shake~Camera Shake (duration, intensity)~Hud Shake (duration, intensity)
+Change Scroll Speed~Scroll Speed~Time To Change In Seconds (default is 0)

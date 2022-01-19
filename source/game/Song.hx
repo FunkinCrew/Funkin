@@ -56,7 +56,7 @@ typedef SwagSong =
 
 	var eventObjects:Array<Event>;
 
-	var events:Array<Array<Dynamic>>;
+	var events:Null<Array<Array<Dynamic>>>;
 }
 
 class Song
@@ -160,6 +160,9 @@ class Song
 
 		if(swagShit.keyCount > NoteVariables.Note_Count_Directions.length)
 			swagShit.keyCount = NoteVariables.Note_Count_Directions.length; // guarenteed safe value?
+
+		if(swagShit.events == null)
+			swagShit.events = [];
 
 		return swagShit;
 	}

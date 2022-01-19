@@ -255,6 +255,12 @@ class PlayState extends MusicBeatState
 
 	public var yoWaitThisIsCharter:Bool = false;
 
+	var bfMap:Map<String, Character> = [];
+	var gfMap:Map<String, Character> = [];
+	var dadMap:Map<String, Character> = [];
+
+	public static var chartingMode:Bool = false;
+
 	override public function create()
 	{
 		if(!yoWaitThisIsCharter)
@@ -343,15 +349,6 @@ class PlayState extends MusicBeatState
 			if (SONG == null)
 				SONG = Song.loadFromJson('tutorial');
 
-			if(Assets.exists(Paths.json("song data/" + SONG.song.toLowerCase() + "/events")))
-			{
-				trace(Paths.json("song data/" + SONG.song.toLowerCase() + "/events"));
-
-				events = Song.parseJSONshit(Assets.getText(Paths.json("song data/" + SONG.song.toLowerCase() + "/events"))).events;
-
-				trace(events);
-			}
-
 			#if !sys
 			songMultiplier = 1;
 			#end
@@ -368,6 +365,11 @@ class PlayState extends MusicBeatState
 
 			if(SONG.speed < 0.1 && songMultiplier > 1)
 				SONG.speed = 0.1;
+
+			speed = SONG.speed;
+
+			if(utilities.Options.getData("useCustomScrollSpeed"))
+				speed = utilities.Options.getData("customScrollSpeed") / songMultiplier;
 
 			Conductor.recalculateStuff(songMultiplier);
 			Conductor.safeZoneOffset *= songMultiplier;
@@ -490,6 +492,10 @@ class PlayState extends MusicBeatState
 		
 				dad = new Character(100, 100, SONG.player2);
 				boyfriend = new Boyfriend(770, 450, SONG.player1);
+
+				bfMap.set(SONG.player1, boyfriend);
+				dadMap.set(SONG.player2, dad);
+				gfMap.set(gfVersion, gf);
 			}
 			/* end of character time */
 
@@ -523,7 +529,7 @@ class PlayState extends MusicBeatState
 
 			var camPos:FlxPoint = new FlxPoint(dad.getGraphicMidpoint().x, dad.getGraphicMidpoint().y);
 
-			if(SONG.player2.startsWith("gf"))
+			if(dad.curCharacter.startsWith("gf"))
 			{
 				dad.setPosition(gf.x, gf.y);
 				gf.visible = false;
@@ -557,7 +563,7 @@ class PlayState extends MusicBeatState
 				}
 			}
 
-			if(!SONG.player2.startsWith("gf"))
+			if(!dad.curCharacter.startsWith("gf"))
 				add(stage.infrontOfGFSprites);
 
 			// fuck haxeflixel and their no z ordering or somnething AAAAAAAAAAAAA
@@ -582,7 +588,7 @@ class PlayState extends MusicBeatState
 				}
 			}
 
-			if(SONG.player2.startsWith("gf"))
+			if(dad.curCharacter.startsWith("gf"))
 				add(stage.infrontOfGFSprites);
 
 			/* we do a little trolling */
@@ -824,6 +830,64 @@ class PlayState extends MusicBeatState
 
 			if(utilities.Options.getData("sideRatings") == true)
 				updateRatingText();
+
+			events = [];
+
+			if(SONG.events.length > 0)
+			{
+				for(event in SONG.events)
+				{
+					events.push(event);
+				}
+			}
+
+			if(Assets.exists(Paths.json("song data/" + SONG.song.toLowerCase() + "/events")) && !chartingMode)
+			{
+				trace(Paths.json("song data/" + SONG.song.toLowerCase() + "/events"));
+
+				var eventFunnies:Array<Array<Dynamic>> = Song.parseJSONshit(Assets.getText(Paths.json("song data/" + SONG.song.toLowerCase() + "/events"))).events;
+
+				for(event in eventFunnies)
+				{
+					events.push(event);
+				}
+			}
+
+			for(event in events)
+			{
+				var map:Map<String, Character>;
+
+				switch(event[2].toLowerCase())
+				{
+					case "dad" | "opponent":
+						map = dadMap;
+					case "gf" | "girlfriend":
+						map = gfMap;
+					default:
+						map = bfMap;
+				}
+
+				// cache shit
+				if(event[0].toLowerCase() == "change character" && event[1] <= FlxG.sound.music.length && !map.exists(event[3]))
+				{
+					var funnyCharacter = new Character(100, 100, event[3]);
+					funnyCharacter.alpha = 0.00001;
+					add(funnyCharacter);
+
+					map.set(event[3], funnyCharacter);
+
+					if(funnyCharacter.otherCharacters != null)
+					{
+						for(character in funnyCharacter.otherCharacters)
+						{
+							character.alpha = 0.00001;
+							add(character);
+						}
+					}
+
+					trace(funnyCharacter.curCharacter);
+				}
+			}
 		}
 
 		super.create();
@@ -832,6 +896,8 @@ class PlayState extends MusicBeatState
 		if(executeModchart && luaModchart != null)
 			luaModchart.executeState('createPost', []);
 		#end
+
+		chartingMode = false;
 	}
 
 	public static var playCutsceneLmao:Bool = false;
@@ -1661,6 +1727,8 @@ class PlayState extends MusicBeatState
 	// get : [xOffsetToUse]
 	public var prevXVals:Map<String, Float> = [];
 
+	var speed:Float = 1.0;
+
 	override public function update(elapsed:Float)
 	{
 		infoTxt.text = SONG.song + " - " + storyDifficultyStr + (utilities.Options.getData("botplay") ? " (BOT)" : "") + (utilities.Options.getData("noDeath") ? " (NO DEATH)" : "") + (playingReplay ? " (REPLAY)" : "");
@@ -2063,11 +2131,6 @@ class PlayState extends MusicBeatState
 				var swagWidth = daNote.width;
 				var center:Float = strumY + swagWidth / 2;
 
-				var speed = SONG.speed;
-
-				if(utilities.Options.getData("useCustomScrollSpeed"))
-					speed = utilities.Options.getData("customScrollSpeed") / songMultiplier;
-
 				if(utilities.Options.getData("downscroll"))
 				{
 					daNote.y = strumY + (0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(speed, 2));
@@ -2396,160 +2459,101 @@ class PlayState extends MusicBeatState
 				{
 					switch(event[0].toLowerCase())
 					{
-						case "change character":
+						case "hey!":
+							var char:Int = 0;
+
+							if(event[2].toLowerCase() == "bf" || event[2].toLowerCase() == "boyfriend" || event[2].toLowerCase() == "player")
+								char = 1;
+
+							if(event[2].toLowerCase() == "gf" || event[2].toLowerCase() == "girlfriend")
+								char = 2;
+
+							switch(char)
+							{
+								case 0:
+									boyfriend.playAnim("hey", true);
+									gf.playAnim("hey", true);
+								case 1:
+									boyfriend.playAnim("hey", true);
+								case 2:
+									gf.playAnim("hey", true);
+							}
+						case "set gf speed":
+							if(Std.parseInt(event[2]) != null)
+								gfSpeed = Std.parseInt(event[2]);
+						case "add camera zoom":
+							if(utilities.Options.getData("cameraZooms") && FlxG.camera.zoom < 1.35)
+							{
+								var addGame:Float = Std.parseFloat(event[2]);
+								var addHUD:Float = Std.parseFloat(event[3]);
+	
+								if(addGame == Math.NaN)
+									addGame = 0.015;
+	
+								if(addHUD == Math.NaN)
+									addHUD = 0.03;
+	
+								FlxG.camera.zoom += addGame;
+								camHUD.zoom += addHUD;
+
+								camZooming = true;
+							}
+						case "play character animation":
+							var character:Character;
+
 							switch(event[2].toLowerCase())
 							{
-								case "girlfriend" | "gf":
-									var oldGf = PlayState.gf;
-									remove(oldGf);
-									
-									var newGf = new Character(100, 100, event[3]);
-									gf = newGf;
-
-									if(newGf.otherCharacters == null)
-									{
-										if(newGf.coolTrail != null)
-											PlayState.instance.add(newGf.coolTrail);
-							
-										PlayState.instance.add(newGf);
-									}
-									else
-									{
-										for(character in newGf.otherCharacters)
-										{
-											if(character.coolTrail != null)
-												PlayState.instance.add(character.coolTrail);
-							
-											PlayState.instance.add(character);
-										}
-									}
-
-									#if linc_luajit
-									if(executeModchart && luaModchart != null)
-										ModchartUtilities.lua_Sprites.remove("girlfriend");
-									#end
-
-									oldGf.kill();
-									oldGf.destroy();
-
-									#if linc_luajit
-									if(executeModchart && luaModchart != null)
-										ModchartUtilities.lua_Sprites.set("girlfriend", gf);
-									#end
-								case "dad" | "opponent":
-									var oldDad = PlayState.dad;
-									remove(oldDad);
-									
-									var newDad = new Character(100, 100, event[3]);
-									dad = newDad;
-
-									if(newDad.otherCharacters == null)
-									{
-										if(newDad.coolTrail != null)
-											PlayState.instance.add(newDad.coolTrail);
-							
-										PlayState.instance.add(newDad);
-									}
-									else
-									{
-										for(character in newDad.otherCharacters)
-										{
-											if(character.coolTrail != null)
-												PlayState.instance.add(character.coolTrail);
-							
-											PlayState.instance.add(character);
-										}
-									}
-
-									#if linc_luajit
-									if(executeModchart && luaModchart != null)
-										ModchartUtilities.lua_Sprites.remove("dad");
-									#end
-
-									oldDad.kill();
-									oldDad.destroy();
-
-									#if linc_luajit
-									if(executeModchart && luaModchart != null)
-										ModchartUtilities.lua_Sprites.set("dad", dad);
-									#end
-
-									@:privateAccess
-									{
-										var oldIcon = PlayState.instance.iconP2;
-										var bar = PlayState.instance.healthBar;
-										
-										PlayState.instance.removeObject(oldIcon);
-										oldIcon.kill();
-										oldIcon.destroy();
-						
-										PlayState.instance.iconP2 = new HealthIcon(dad.icon, false);
-										PlayState.instance.iconP2.y = PlayState.instance.healthBar.y - (PlayState.instance.iconP2.height / 2);
-										PlayState.instance.iconP2.cameras = [PlayState.instance.camHUD];
-										PlayState.instance.add(PlayState.instance.iconP2);
-						
-										bar.createFilledBar(dad.barColor, PlayState.boyfriend.barColor);
-										bar.updateFilledBar();
-									}
 								case "bf" | "boyfriend" | "player":
-									var oldBF = PlayState.boyfriend;
-									remove(oldBF);
-									
-									var newDad = new Boyfriend(100, 100, event[3]);
-									boyfriend = newDad;
-
-									if(newDad.otherCharacters == null)
-									{
-										if(newDad.coolTrail != null)
-											PlayState.instance.add(newDad.coolTrail);
-							
-										PlayState.instance.add(newDad);
-									}
-									else
-									{
-										for(character in newDad.otherCharacters)
-										{
-											if(character.coolTrail != null)
-												PlayState.instance.add(character.coolTrail);
-							
-											PlayState.instance.add(character);
-										}
-									}
-
-									#if linc_luajit
-									if(executeModchart && luaModchart != null)
-										ModchartUtilities.lua_Sprites.remove("boyfriend");
-									#end
-
-									oldBF.kill();
-									oldBF.destroy();
-
-									#if linc_luajit
-									if(executeModchart && luaModchart != null)
-										ModchartUtilities.lua_Sprites.set("boyfriend", boyfriend);
-									#end
-
-									@:privateAccess
-									{
-										var oldIcon = PlayState.instance.iconP1;
-										var bar = PlayState.instance.healthBar;
-										
-										PlayState.instance.removeObject(oldIcon);
-										oldIcon.kill();
-										oldIcon.destroy();
-						
-										PlayState.instance.iconP1 = new HealthIcon(boyfriend.icon, false);
-										PlayState.instance.iconP1.y = PlayState.instance.healthBar.y - (PlayState.instance.iconP1.height / 2);
-										PlayState.instance.iconP1.cameras = [PlayState.instance.camHUD];
-										PlayState.instance.iconP1.flipX = true;
-										PlayState.instance.add(PlayState.instance.iconP1);
-						
-										bar.createFilledBar(PlayState.dad.barColor, boyfriend.barColor);
-										bar.updateFilledBar();
-									}
+									character = boyfriend;
+								case "dad" | "opponent":
+									character = dad;
+								case "gf" | "girlfriend":
+									character = gf;
+								default:
+									character = gf;
 							}
 
-						stage.setCharOffsets();
+							var anim:String = "idle";
+
+							if(event[3] != "")
+								anim = event[3];
+
+							character.playAnim(anim);
+						case "screen shake":
+							var valuesArray:Array<String> = [event[2], event[3]];
+							var targetsArray:Array<FlxCamera> = [camGame, camHUD];
+
+							for (i in 0...targetsArray.length)
+							{
+								var split:Array<String> = valuesArray[i].split(',');
+								var duration:Float = 0;
+								var intensity:Float = 0;
+
+								if(split[0] != null) duration = Std.parseFloat(split[0].trim());
+								if(split[1] != null) intensity = Std.parseFloat(split[1].trim());
+								if(Math.isNaN(duration)) duration = 0;
+								if(Math.isNaN(intensity)) intensity = 0;
+			
+								if(duration > 0 && intensity != 0)
+									targetsArray[i].shake(intensity, duration);
+							}
+						case "change scroll speed":
+							var duration:Float = Std.parseFloat(event[3]);
+
+							if(duration == Math.NaN)
+								duration = 0;
+
+							var funnySpeed = Std.parseFloat(event[2]);
+
+							if(funnySpeed != Math.NaN)
+							{
+								if(duration > 0)
+									FlxTween.tween(this, {speed: funnySpeed}, duration);
+								else
+									speed = funnySpeed;
+							}
+						case "change character":
+							eventCharacterShit(event);
 					}
 
 					events.remove(event);
@@ -3787,11 +3791,11 @@ class PlayState extends MusicBeatState
 		if(gfSpeed < 1)
 			gfSpeed = 1;
 
-		if (curBeat % gfSpeed == 0 && !SONG.player2.startsWith('gf'))
+		if (curBeat % gfSpeed == 0 && !dad.curCharacter.startsWith('gf'))
 			gf.dance();
 		
 		if(dad.animation.curAnim != null)
-			if (curBeat % gfSpeed == 0 && SONG.player2.startsWith('gf') && (dad.animation.curAnim.name.startsWith("sing") && dad.animation.curAnim.finished || !dad.animation.curAnim.name.startsWith("sing")))
+			if (curBeat % gfSpeed == 0 && dad.curCharacter.startsWith('gf') && (dad.animation.curAnim.name.startsWith("sing") && dad.animation.curAnim.finished || !dad.animation.curAnim.name.startsWith("sing")))
 				dad.dance();
 
 		if(characterPlayingAs == 0)
@@ -3884,4 +3888,207 @@ class PlayState extends MusicBeatState
 	}
 
 	var curLight:Int = 0;
+
+	function eventCharacterShit(event:Array<Dynamic>)
+	{
+		switch(event[2].toLowerCase())
+		{
+			case "girlfriend" | "gf":
+				var oldGf = PlayState.gf;
+				oldGf.alpha = 0.00001;
+
+				if(oldGf.coolTrail != null)
+					PlayState.instance.remove(oldGf.coolTrail);
+
+				
+				if(oldGf.otherCharacters != null)
+				{
+					for(character in oldGf.otherCharacters)
+					{
+						if(character.coolTrail != null)
+							PlayState.instance.remove(character.coolTrail);
+		
+						character.alpha = 0.00001;
+					}
+				}
+				
+				var newGf = gfMap.get(event[3]);
+				newGf.alpha = 1;
+				gf = newGf;
+
+				if(newGf.otherCharacters == null)
+				{
+					if(newGf.coolTrail != null)
+						PlayState.instance.add(newGf.coolTrail);
+		
+					PlayState.instance.add(newGf);
+				}
+				else
+				{
+					for(character in newGf.otherCharacters)
+					{
+						if(character.coolTrail != null)
+							PlayState.instance.add(character.coolTrail);
+		
+						character.alpha = 1;
+					}
+				}
+
+				#if linc_luajit
+				if(executeModchart && luaModchart != null)
+					ModchartUtilities.lua_Sprites.remove("girlfriend");
+				#end
+
+				#if linc_luajit
+				if(executeModchart && luaModchart != null)
+					ModchartUtilities.lua_Sprites.set("girlfriend", gf);
+				#end
+			case "dad" | "opponent":
+				var oldDad = PlayState.dad;
+				oldDad.alpha = 0.00001;
+
+				if(oldDad.coolTrail != null)
+					PlayState.instance.remove(oldDad.coolTrail);
+
+				if(oldDad.otherCharacters != null)
+				{
+					for(character in oldDad.otherCharacters)
+					{
+						if(character.coolTrail != null)
+							PlayState.instance.remove(character.coolTrail);
+		
+						character.alpha = 0.00001;
+					}
+				}
+				
+				var newDad = dadMap.get(event[3]);
+				newDad.alpha = 1;
+				dad = newDad;
+
+				if(newDad.otherCharacters == null)
+				{
+					if(newDad.coolTrail != null)
+						PlayState.instance.add(newDad.coolTrail);
+		
+					PlayState.instance.add(newDad);
+				}
+				else
+				{
+					for(character in newDad.otherCharacters)
+					{
+						if(character.coolTrail != null)
+							PlayState.instance.add(character.coolTrail);
+		
+						character.alpha = 1;
+					}
+				}
+
+				#if linc_luajit
+				if(executeModchart && luaModchart != null)
+					ModchartUtilities.lua_Sprites.remove("dad");
+				#end
+
+				#if linc_luajit
+				if(executeModchart && luaModchart != null)
+					ModchartUtilities.lua_Sprites.set("dad", dad);
+				#end
+
+				@:privateAccess
+				{
+					var oldIcon = PlayState.instance.iconP2;
+					var bar = PlayState.instance.healthBar;
+					
+					PlayState.instance.removeObject(oldIcon);
+					oldIcon.kill();
+					oldIcon.destroy();
+	
+					PlayState.instance.iconP2 = new HealthIcon(dad.icon, false);
+					PlayState.instance.iconP2.y = PlayState.instance.healthBar.y - (PlayState.instance.iconP2.height / 2);
+					PlayState.instance.iconP2.cameras = [PlayState.instance.camHUD];
+					PlayState.instance.add(PlayState.instance.iconP2);
+	
+					bar.createFilledBar(dad.barColor, PlayState.boyfriend.barColor);
+					bar.updateFilledBar();
+				}
+
+				if(dad.curCharacter.startsWith("gf"))
+				{
+					dad.setPosition(gf.x, gf.y);
+					gf.visible = false;
+				}
+				else if(gf.visible == false)
+					gf.visible = true;
+			case "bf" | "boyfriend" | "player":
+				var oldBF = PlayState.boyfriend;
+				oldBF.alpha = 0.00001;
+
+				if(oldBF.coolTrail != null)
+					PlayState.instance.remove(oldBF.coolTrail);
+
+				if(oldBF.otherCharacters != null)
+				{
+					for(character in oldBF.otherCharacters)
+					{
+						if(character.coolTrail != null)
+							PlayState.instance.remove(character.coolTrail);
+		
+						character.alpha = 0.00001;
+					}
+				}
+				
+				var newDad = new Boyfriend(100, 100, event[3]);
+				newDad.alpha = 1;
+				boyfriend = newDad;
+
+				if(newDad.otherCharacters == null)
+				{
+					if(newDad.coolTrail != null)
+						PlayState.instance.add(newDad.coolTrail);
+		
+					PlayState.instance.add(newDad);
+				}
+				else
+				{
+					for(character in newDad.otherCharacters)
+					{
+						if(character.coolTrail != null)
+							PlayState.instance.add(character.coolTrail);
+		
+						PlayState.instance.add(character);
+						character.alpha = 1;
+					}
+				}
+
+				#if linc_luajit
+				if(executeModchart && luaModchart != null)
+					ModchartUtilities.lua_Sprites.remove("boyfriend");
+				#end
+
+				#if linc_luajit
+				if(executeModchart && luaModchart != null)
+					ModchartUtilities.lua_Sprites.set("boyfriend", boyfriend);
+				#end
+
+				@:privateAccess
+				{
+					var oldIcon = PlayState.instance.iconP1;
+					var bar = PlayState.instance.healthBar;
+					
+					PlayState.instance.removeObject(oldIcon);
+					oldIcon.kill();
+					oldIcon.destroy();
+	
+					PlayState.instance.iconP1 = new HealthIcon(boyfriend.icon, false);
+					PlayState.instance.iconP1.y = PlayState.instance.healthBar.y - (PlayState.instance.iconP1.height / 2);
+					PlayState.instance.iconP1.cameras = [PlayState.instance.camHUD];
+					PlayState.instance.iconP1.flipX = true;
+					PlayState.instance.add(PlayState.instance.iconP1);
+	
+					bar.createFilledBar(PlayState.dad.barColor, boyfriend.barColor);
+					bar.updateFilledBar();
+				}
+		}
+
+	stage.setCharOffsets();
+	}
 }

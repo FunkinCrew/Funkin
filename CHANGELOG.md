@@ -15,6 +15,7 @@ All notable changes will be documented in this file.
 - Added missing when getting a shit rating as a setting.
 - Setting to make Info Text and Score Text Bigger.
 - Option in songs for having a different key count for player than opponent.
+- Event System.
 ### Changed
 - New Note Splash Sprites!
 - FPS Cap Max is now 1000 (800 before lol).
