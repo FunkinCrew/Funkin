@@ -1003,12 +1003,15 @@ class ChartingState extends MusicBeatState
 
 	var updatedSection:Bool = false;
 
-	function sectionStartTime():Float
+	function sectionStartTime(?section:Int):Float
 	{
+		if(section == null)
+			section = curSection;
+
 		var daBPM:Float = _song.bpm;
 		var daPos:Float = 0;
 
-		for (i in 0...curSection)
+		for (i in 0...section)
 		{
 			if (_song.notes[i].changeBPM)
 			{
@@ -1681,13 +1684,11 @@ class ChartingState extends MusicBeatState
 			}
 		}
 
-		var sectionStartTime:Float = sectionStartTime();
-
 		if(events.length >= 1)
 		{
 			for(event in events)
 			{
-				if(event[1] >= sectionStartTime)
+				if(event[1] >= sectionStartTime() && event[1] <= sectionStartTime(curSection + 1))
 				{
 					var eventSprite:EventSprite = new EventSprite(event[1]);
 	
@@ -1696,7 +1697,7 @@ class ChartingState extends MusicBeatState
 					eventSprite.setGraphicSize(GRID_SIZE, GRID_SIZE);
 					eventSprite.updateHitbox();
 	
-					eventSprite.y = Math.floor(getYfromStrum((event[1] - sectionStartTime) % (Conductor.stepCrochet * Std.int(((16 / _song.timescale[1]) * 4)))));
+					eventSprite.y = Math.floor(getYfromStrum((event[1] - sectionStartTime()) % (Conductor.stepCrochet * Std.int(((16 / _song.timescale[1]) * 4)))));
 				
 					curRenderedEvents.add(eventSprite);
 				}
