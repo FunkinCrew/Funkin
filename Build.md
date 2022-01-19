@@ -10,6 +10,8 @@ First you need to install Haxe and HaxeFlixel. I'm too lazy to write and keep up
 1. [Install Haxe](https://haxe.org/download/)
 2. [Install HaxeFlixel](https://haxeflixel.com/documentation/install-haxeflixel/) after downloading Haxe
 
+You can use the library install scripts in [the building folder](https://github.com/Leather128/LeatherEngine/blob/main/building/) if you want.
+
 Other installations you'd need is the additional libraries, a fully updated list will be in `Project.xml` in the project root. Currently, these are all of the things you need to install:
 ```
 flixel
@@ -22,7 +24,7 @@ linc_luajit
 ```
 So for each of those type `haxelib install [library]` so shit like `haxelib install polymod 1.3.0`
 
-## IMPORTANT: it seems a bug occurs with polymod 1.3.1 that resets data, right now i've been using 1.3.0 and it seems to work fine so just use that for now.
+## IMPORTANT: it seems a bug occurs with polymod 1.4.0 that prevents building the game, right now i've been using 1.3.0 and it seems to work fine so just use that for now.
 
 You'll also need to install a couple things that involve Gits. To do this, you need to do a few things first.
 1. Download [git-scm](https://git-scm.com/downloads). Works for Windows, Mac, and Linux, just select your build.

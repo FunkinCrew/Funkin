@@ -224,11 +224,11 @@ class ChartingState extends MusicBeatState
 		add(curRenderedEvents);
 
 		var tabs = [
-			{name: "Song Options", label: 'Song Options'},
-			{name: "Chart Options", label: 'Chart Options'},
-			{name: "Art Options", label: 'Art Options'},
-			{name: "Events", label: "Events"}//,
-			//{name: "Compatibility", label: 'Compatibility'}
+			{name: "Song", label: 'Song'},
+			{name: "Chart", label: 'Chart'},
+			{name: "Art", label: 'Art'},
+			{name: "Events", label: "Events"},
+			{name: "Compatibility", label: 'Compatibility'}
 		];
 
 		var rawEventList = CoolUtil.coolTextFile(Paths.txt("eventList"));
@@ -252,7 +252,7 @@ class ChartingState extends MusicBeatState
 		addSectionUI();
 		addNoteUI();
 		addEventUI();
-		//addCompatibilityUI();
+		addCompatibilityUI();
 
 		updateHeads();
 		updateGrid();
@@ -266,7 +266,7 @@ class ChartingState extends MusicBeatState
 	{
 		//base ui thingy :D
 		var tab_group_song = new FlxUI(null, UI_box);
-		tab_group_song.name = "Song Options";
+		tab_group_song.name = "Song";
 
 		// interactive
 
@@ -502,7 +502,7 @@ class ChartingState extends MusicBeatState
 	{
 		// SECTION CREATION
 		var tab_group_section = new FlxUI(null, UI_box);
-		tab_group_section.name = 'Chart Options';
+		tab_group_section.name = 'Chart';
 
 		// Section Titles
 		var sectionText = new FlxText(10, 10, 0, "Section Options", 9);
@@ -680,7 +680,7 @@ class ChartingState extends MusicBeatState
 	function addNoteUI():Void
 	{
 		var tab_group_note = new FlxUI(null, UI_box);
-		tab_group_note.name = 'Art Options';
+		tab_group_note.name = 'Art';
 
 		var arrayCharacters = ["bf","gf",""];
 		var tempCharacters = characters.get("default");
