@@ -1,5 +1,6 @@
 package;
 
+import modding.PolymodHandler;
 import flixel.FlxGame;
 import flixel.FlxState;
 import flixel.util.FlxColor;
@@ -41,30 +42,14 @@ class Main extends Sprite
 	{
 		super();
 
-		#if polymod
-		polymod.Polymod.init({
-			modRoot: "mods",
-			dirs: ['testing123'],
-			frameworkParams: {
-				assetLibraryPaths: [
-					"songs" => "songs", "shared" => "shared", "tutorial" => "tutorial", "week1" => "week1", "week2" => "week2", "week3" => "week3",
-					"week4" => "week4", "week5" => "week5", "week6" => "week6", "week7" => "week7", "week8" => "week8"
-				]
-			},
-			framework: OPENFL,
-			errorCallback: function(error:polymod.Polymod.PolymodError)
-			{
-				trace("POLYMOD ERROR! code = "
-					+ error.code
-					+ " severity = "
-					+ error.severity
-					+ " origin = "
-					+ error.origin
-					+ " message = "
-					+ error.message);
-			}
-		});
-		#end
+		// TODO: Ideally this should change to utilize a user interface.
+		// 1. Call PolymodHandler.getAllMods(). This gives you an array of ModMetadata items,
+		//      each of which contains information about the mod including an icon.
+		// 2. Provide an interface to enable, disable, and reorder enabled mods.
+		//      A design similar to that of Minecraft resource packs would be intuitive.
+		// 3. The interface should save (to the save file) and output an ordered array of mod IDs.
+		// 4. Replace the call to PolymodHandler.loadAllMods() with a call to PolymodHandler.loadModsById(ids:Array<String>).
+		PolymodHandler.loadAllMods();
 
 		if (stage != null)
 		{

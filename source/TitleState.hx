@@ -278,7 +278,7 @@ class TitleState extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
-		trace(FlxG.renderBlit);
+		// trace(FlxG.renderBlit);
 
 		#if HAS_PITCH
 		if (FlxG.keys.pressed.UP)

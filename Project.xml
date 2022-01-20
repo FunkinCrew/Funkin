@@ -29,9 +29,6 @@
 	<!--Mobile-specific-->
 	<window if="mobile" orientation="landscape" fullscreen="true" width="0" height="0" resizable="false"/>
 
-	<!--Switch-specific-->
-	<window if="switch" orientation="landscape" fullscreen="true" width="0" height="0" resizable="true" />
-
 	<!-- _____________________________ Path Settings ____________________________ -->
 
 	<set name="BUILD_DIR" value="export/debug" if="debug" />
@@ -40,12 +37,9 @@
 
 	<classpath name="source" />
 
-	<!-- <assets path='assets/preload/music' include="*mp4" embed='false' /> -->
-
 	<assets path="assets/preload" rename="assets" exclude="*.ogg" if="web"/>
 	<assets path="assets/preload" rename="assets" exclude="*.mp3" unless="web"/>
 	
-	<!-- <define name="PRELOAD_ALL" /> -->
 	<define name="PRELOAD_ALL" unless="web" />
 	<define name="NO_PRELOAD_ALL" unless="PRELOAD_ALL"/>
 	
@@ -102,9 +96,8 @@
 	
 	<!-- <assets path='example_mods' rename='mods' embed='false'/> -->
 
-	<assets path='example_mods' rename='mods' embed='false'/>
+	<assets path='example_mods' rename='mods' embed='false' exclude="*.md"/>
 	<assets path='art/readme.txt' rename='do NOT readme.txt' />
-	<!-- <template path='mods' /> -->
 	
 	<assets path="CHANGELOG.md" rename='changelog.txt'/>
 
@@ -223,6 +216,28 @@
 
 	<config:ios allow-provisioning-updates="true" team-id=""/>
 	
+	<!-- Options for Polymod -->
+	<section if="polymod">
+		<!-- Turns on additional debug logging. -->
+		<haxedef name="POLYMOD_DEBUG" value="true" if="debug" />
+		<!-- The file extension to use for script files. -->
+		<haxedef name="POLYMOD_SCRIPT_EXT" value=".hscript" />
+		<!-- Which asset library to use for scripts. -->
+		<haxedef name="POLYMOD_SCRIPT_LIBRARY" value="scripts" />
+		<!-- The base path from which scripts should be accessed. -->
+		<haxedef name="POLYMOD_ROOT_PATH" value="scripts/" />
+		<!-- Determines the precision required for mods to be compatible. -->
+		<haxedef name="POLYMOD_API_VERSION_MATCH" value="MATCH_MINOR" />
+		<!-- Determines the subdirectory of the mod folder used for file appending. -->
+		<haxedef name="POLYMOD_APPEND_FOLDER" value="_append" />
+		<!-- Determines the subdirectory of the mod folder used for file merges. -->
+		<haxedef name="POLYMOD_MERGE_FOLDER" value="_merge" />
+		<!-- Determines the file in the mod folder used for metadata. -->
+		<haxedef name="POLYMOD_MOD_METADATA_FILE" value="_polymod_meta.json" />
+		<!-- Determines the file in the mod folder used for the icon. -->
+		<haxedef name="POLYMOD_MOD_ICON_FILE" value="_polymod_icon.png" />
+	</section>
+
 	<section if='TOOLS'>
 		<!-- Compiles tool for old song conversion shit -->
 		<!-- Assumes you use it on windows/desktop!!!! -->
