@@ -550,7 +550,7 @@ class ChartingState extends MusicBeatState
 			for (i in 0..._song.notes[curSection].sectionNotes.length)
 			{
 				_song.notes[curSection].sectionNotes[i][1] += _song.keyCount;
-				_song.notes[curSection].sectionNotes[i][1] %= _song.keyCount * 2;
+				_song.notes[curSection].sectionNotes[i][1] %= _song.keyCount + _song.playerKeyCount;
 
 				updateGrid();
 			}
@@ -860,7 +860,7 @@ class ChartingState extends MusicBeatState
 	{
 		for(noteIndex in 0..._song.notes[section].sectionNotes.length)
 		{
-			var coolVal = _song.notes[section].sectionNotes[noteIndex][1] / (_song.keyCount * 2);
+			var coolVal = _song.notes[section].sectionNotes[noteIndex][1] / (_song.keyCount + _song.playerKeyCount);
 
 			if(_song.notes[section].sectionNotes[noteIndex][3] == null)
 				_song.notes[section].sectionNotes[noteIndex][3] = 0;
@@ -872,7 +872,7 @@ class ChartingState extends MusicBeatState
 				_song.notes[section].sectionNotes[noteIndex][4] = "caution";
 
 			if(Std.int(coolVal) != 0)
-				_song.notes[section].sectionNotes[noteIndex][1] %= (_song.keyCount * 2);
+				_song.notes[section].sectionNotes[noteIndex][1] %= (_song.keyCount + _song.playerKeyCount);
 		}
 	}
 
@@ -1130,7 +1130,7 @@ class ChartingState extends MusicBeatState
 						{
 							claps.push(note);
 							
-							if(note.rawNoteData % (_song.keyCount * 2) < _song.keyCount && _song.notes[curSection].mustHitSection || note.rawNoteData % (_song.keyCount * 2) >= _song.keyCount && !_song.notes[curSection].mustHitSection)
+							if(note.rawNoteData % (_song.keyCount + _song.playerKeyCount) < _song.keyCount && _song.notes[curSection].mustHitSection || note.rawNoteData % (_song.keyCount + _song.playerKeyCount) >= _song.keyCount && !_song.notes[curSection].mustHitSection)
 								FlxG.sound.play(Paths.sound('CLAP', 'preload'));
 							else
 								FlxG.sound.play(Paths.sound('SNAP', 'preload'));
@@ -1937,9 +1937,9 @@ class ChartingState extends MusicBeatState
 			if (FlxG.keys.pressed.CONTROL)
 			{
 				if(cur_Note_Type != "default")
-					_song.notes[curSection].sectionNotes.push([noteStrum, (noteData + _song.keyCount) % (_song.keyCount * 2), noteSus, current_Note_Character, cur_Note_Type]);
+					_song.notes[curSection].sectionNotes.push([noteStrum, (noteData + _song.keyCount) % (_song.keyCount + _song.playerKeyCount), noteSus, current_Note_Character, cur_Note_Type]);
 				else
-					_song.notes[curSection].sectionNotes.push([noteStrum, (noteData + _song.keyCount) % (_song.keyCount * 2), noteSus, current_Note_Character]);
+					_song.notes[curSection].sectionNotes.push([noteStrum, (noteData + _song.keyCount) % (_song.keyCount + _song.playerKeyCount), noteSus, current_Note_Character]);
 			}
 		}
 		else
