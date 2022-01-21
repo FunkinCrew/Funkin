@@ -1,4 +1,4 @@
-package;
+package charting;
 
 import Conductor.BPMChangeEvent;
 import Section.SwagSection;
@@ -155,7 +155,8 @@ class ChartingState extends MusicBeatState
 		strumLine = new FlxSprite(0, 50).makeGraphic(Std.int(GRID_SIZE * 8), 4);
 		add(strumLine);
 
-		dummyArrow = new FlxSprite().makeGraphic(GRID_SIZE, GRID_SIZE);
+		dummyArrow = new FlxSprite().makeGraphic(GRID_SIZE, GRID_SIZE, 0xFFCC2288);
+		dummyArrow.alpha = 0.3;
 		add(dummyArrow);
 
 		var tabs = [
@@ -551,9 +552,23 @@ class ChartingState extends MusicBeatState
 			{
 				daBPM = SongLoad.getSong()[i].bpm;
 			}
-			daPos += 4 * (1000 * 60 / daBPM);
+			daPos += 4 * sectionCalc(daBPM);
 		}
 		return daPos;
+	}
+
+	function measureStartTime():Float
+	{
+		var daBPM:Float = _song.bpm;
+		var daPos:Float = sectionStartTime();
+
+		daPos = Math.floor(FlxG.sound.music.time / sectionCalc(daBPM)) * sectionCalc(daBPM);
+		return daPos;
+	}
+
+	function sectionCalc(bpm:Float)
+	{
+		return (1000 * 60 / bpm);
 	}
 
 	var p1Muted:Bool = false;
@@ -775,10 +790,12 @@ class ChartingState extends MusicBeatState
 
 			if (FlxG.keys.justPressed.R)
 			{
-				if (FlxG.keys.pressed.SHIFT)
-					resetSection(true);
+				if (FlxG.keys.pressed.CONTROL)
+					resetSection(BEGINNING);
+				else if (FlxG.keys.pressed.SHIFT)
+					resetSection(MEASURE);
 				else
-					resetSection();
+					resetSection(SECTION);
 			}
 
 			if (FlxG.mouse.wheel != 0)
@@ -943,20 +960,24 @@ class ChartingState extends MusicBeatState
 		return curStep;
 	}
 
-	function resetSection(songBeginning:Bool = false):Void
+	function resetSection(songBeginning:SongResetType = SECTION):Void
 	{
 		updateGrid();
 
 		FlxG.sound.music.pause();
 		vocals.pause();
 
-		// Basically old shit from changeSection???
-		FlxG.sound.music.time = sectionStartTime();
-
-		if (songBeginning)
+		switch (songBeginning)
 		{
-			FlxG.sound.music.time = 0;
-			curSection = 0;
+			case SECTION:
+				// Basically old shit from changeSection???
+				FlxG.sound.music.time = sectionStartTime();
+			case BEGINNING:
+				FlxG.sound.music.time = 0;
+				curSection = 0;
+			case MEASURE:
+				FlxG.sound.music.time = measureStartTime(); // Math.floor(FlxG.mouse.y / GRID_SIZE) * GRID_SIZE
+			default:
 		}
 
 		vocals.time = FlxG.sound.music.time;
@@ -1396,4 +1417,11 @@ class ChartingState extends MusicBeatState
 		_file = null;
 		FlxG.log.error("Problem saving Level data");
 	}
+}
+
+enum SongResetType
+{
+	BEGINNING;
+	MEASURE; // not sure if measure is 1/4 of a "SECTION" which is definitely a... bar.. right? its nerd shit whatever
+	SECTION;
 }

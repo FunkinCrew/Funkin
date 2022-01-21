@@ -2,6 +2,7 @@ package;
 
 import Section.SwagSection;
 import SongLoad.SwagSong;
+import charting.ChartingState;
 import flixel.FlxCamera;
 import flixel.FlxObject;
 import flixel.FlxSprite;
