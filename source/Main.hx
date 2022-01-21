@@ -24,7 +24,7 @@ class Main extends Sprite
 	#if web
 	var framerate:Int = 60; // How many frames per second the game should run at.
 	#else
-	var framerate:Int = 144; // How many frames per second the game should run at.
+	var framerate:Int = 300; // How many frames per second the game should run at.
 
 	#end
 	var skipSplash:Bool = true; // Whether to skip the flixel splash screen that appears in release mode.
