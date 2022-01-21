@@ -1587,12 +1587,12 @@ class PlayState extends MusicBeatState
 		{
 			for (songNotes in section.sectionNotes)
 			{
-				var daStrumTime:Float = songNotes[0];
-				var daNoteData:Int = Std.int(songNotes[1] % 4);
+				var daStrumTime:Float = songNotes.strumTime;
+				var daNoteData:Int = Std.int(songNotes.noteData % 4);
 
 				var gottaHitNote:Bool = section.mustHitSection;
 
-				if (songNotes[1] > 3)
+				if (songNotes.noteData > 3)
 					gottaHitNote = !section.mustHitSection;
 
 				var oldNote:Note;
@@ -1602,8 +1602,8 @@ class PlayState extends MusicBeatState
 					oldNote = null;
 
 				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote);
-				swagNote.sustainLength = songNotes[2];
-				swagNote.altNote = songNotes[3];
+				swagNote.sustainLength = songNotes.sustainLength;
+				swagNote.altNote = songNotes.altNote;
 				swagNote.scrollFactor.set(0, 0);
 
 				var susLength:Float = swagNote.sustainLength;
