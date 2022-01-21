@@ -130,18 +130,7 @@ class ChartingState extends MusicBeatState
 			_song = PlayState.SONG;
 		else
 		{
-			_song = {
-				song: 'Test',
-				notes: {easy: [], normal: [], hard: []},
-				bpm: 150,
-				needsVoices: true,
-				player1: 'bf',
-				player2: 'dad',
-				speed: {easy: 1, normal: 1, hard: 1},
-				validScore: false,
-				voiceList: ["BF", "BF-pixel"],
-				extraNotes: []
-			};
+			_song = SongLoad.songData = SongLoad.getDefaultSwagSong();
 		}
 
 		FlxG.mouse.visible = true;
