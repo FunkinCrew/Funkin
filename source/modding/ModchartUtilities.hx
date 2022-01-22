@@ -725,28 +725,28 @@ class ModchartUtilities
             if(getActorByName(id) != null)
                 return getActorByName(id).alpha;
             else
-                return 0;
+                return 0.0;
         });
 
         Lua_helper.add_callback(lua,"getActorAngle", function(id:String) {
             if(getActorByName(id) != null)
                 return getActorByName(id).angle;
             else
-                return 0;
+                return 0.0;
         });
 
         Lua_helper.add_callback(lua,"getActorX", function (id:String) {
             if(getActorByName(id) != null)
                 return getActorByName(id).x;
             else
-                return 0;
+                return 0.0;
         });
 
         Lua_helper.add_callback(lua,"getActorY", function (id:String) {
             if(getActorByName(id) != null)
                 return getActorByName(id).y;
             else
-                return 0;
+                return 0.0;
         });
 
         Lua_helper.add_callback(lua,"setWindowPos",function(x:Int,y:Int) {
