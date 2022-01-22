@@ -34,7 +34,6 @@ class Note extends FlxSprite
 
 	public var invisNote:Bool = false;
 
-	public var sustainLength:Float = 0;
 	public var isSustainNote:Bool = false;
 
 	public var colorSwap:ColorSwap;

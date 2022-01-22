@@ -1261,7 +1261,7 @@ class ChartingState extends MusicBeatState
 		// trace('bullshit $bullshit'); // trace(Math.floor(dummyArrow.y / GRID_SIZE) * GRID_SIZE);
 
 		var daNewNote:Note = new Note(noteStrum, noteData);
-		daNewNote.sustainLength = noteSus;
+		daNewNote.data.sustainLength = noteSus;
 		daNewNote.data.altNote = noteAlt;
 		SongLoad.getSong()[curSection].sectionNotes.push(daNewNote.data);
 
@@ -1341,7 +1341,7 @@ class ChartingState extends MusicBeatState
 
 	function loadAutosave():Void
 	{
-		PlayState.SONG = SongLoad.parseJSONshit(FlxG.save.data.autosave);
+		PlayState.SONG = FlxG.save.data.autosave;
 		FlxG.resetState();
 	}
 
