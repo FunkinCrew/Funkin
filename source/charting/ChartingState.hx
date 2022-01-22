@@ -1,6 +1,7 @@
 package charting;
 
 import Conductor.BPMChangeEvent;
+import Note.NoteData;
 import Section.SwagSection;
 import SongLoad.SwagSong;
 import dsp.FFT;
@@ -29,6 +30,7 @@ import flixel.ui.FlxSpriteButton;
 import flixel.util.FlxColor;
 import haxe.CallStack.StackItem;
 import haxe.Json;
+import haxe.Serializer;
 import lime.media.AudioBuffer;
 import lime.utils.Assets;
 import lime.utils.Int16Array;
@@ -80,7 +82,7 @@ class ChartingState extends MusicBeatState
 	/*
 	 * WILL BE THE CURRENT / LAST PLACED NOTE
 	**/
-	var curSelectedNote:Note;
+	var curSelectedNote:NoteData;
 
 	var tempBpm:Float = 0;
 
@@ -310,9 +312,10 @@ class ChartingState extends MusicBeatState
 		{
 			for (i in 0...SongLoad.getSong()[curSection].sectionNotes.length)
 			{
-				var note = SongLoad.getSong()[curSection].sectionNotes[i];
+				var note:Note = new Note(0, 0);
+				note.data = SongLoad.getSong()[curSection].sectionNotes[i];
 				note.noteData = (note.noteData + 4) % 8;
-				SongLoad.getSong()[curSection].sectionNotes[i] = note;
+				SongLoad.getSong()[curSection].sectionNotes[i] = note.data;
 				updateGrid();
 			}
 		});
@@ -1017,13 +1020,13 @@ class ChartingState extends MusicBeatState
 	{
 		var daSec = FlxMath.maxInt(curSection, sectionNum);
 
-		for (note in SongLoad.getSong()[daSec - sectionNum].sectionNotes)
+		for (noteShit in SongLoad.getSong()[daSec - sectionNum].sectionNotes)
 		{
-			var strum = note.strumTime + Conductor.stepCrochet * (SongLoad.getSong()[daSec].lengthInSteps * sectionNum);
+			var strum = noteShit.strumTime + Conductor.stepCrochet * (SongLoad.getSong()[daSec].lengthInSteps * sectionNum);
 
-			var copiedNote:Note = new Note(strum, note.noteData);
-			copiedNote.sustainLength = note.sustainLength;
-			SongLoad.getSong()[daSec].sectionNotes.push(copiedNote);
+			var copiedNote:Note = new Note(strum, noteShit.noteData);
+			copiedNote.data.sustainLength = noteShit.sustainLength;
+			SongLoad.getSong()[daSec].sectionNotes.push(copiedNote.data);
 		}
 
 		updateGrid();
@@ -1095,7 +1098,7 @@ class ChartingState extends MusicBeatState
 			curRenderedSustains.remove(curRenderedSustains.members[0], true);
 		}
 
-		var sectionInfo:Array<Note> = SongLoad.getSong()[curSection].sectionNotes;
+		var sectionInfo:Array<NoteData> = SongLoad.getSong()[curSection].sectionNotes;
 
 		if (SongLoad.getSong()[curSection].changeBPM && SongLoad.getSong()[curSection].bpm > 0)
 		{
@@ -1133,7 +1136,7 @@ class ChartingState extends MusicBeatState
 			var daSus = i.sustainLength;
 
 			var note:Note = new Note(daStrumTime, daNoteInfo % 4);
-			note.sustainLength = daSus;
+			note.data.sustainLength = daSus;
 			note.setGraphicSize(GRID_SIZE, GRID_SIZE);
 			note.updateHitbox();
 			note.x = Math.floor(daNoteInfo * GRID_SIZE);
@@ -1171,7 +1174,7 @@ class ChartingState extends MusicBeatState
 
 		for (i in SongLoad.getSong()[curSection].sectionNotes)
 		{
-			if (i.strumTime == note.strumTime && i.noteData % 4 == note.noteData)
+			if (i.strumTime == note.data.strumTime && i.noteData % 4 == note.data.noteData)
 			{
 				curSelectedNote = SongLoad.getSong()[curSection].sectionNotes[swagNum];
 			}
@@ -1187,7 +1190,7 @@ class ChartingState extends MusicBeatState
 	{
 		for (i in SongLoad.getSong()[curSection].sectionNotes)
 		{
-			if (i.strumTime == note.strumTime && i.noteData % 4 == note.noteData)
+			if (i.strumTime == note.data.strumTime && i.noteData % 4 == note.noteData)
 			{
 				var placeIDK:Int = Std.int(((Math.floor(dummyArrow.y / GRID_SIZE) * GRID_SIZE)) / 40);
 
@@ -1260,7 +1263,7 @@ class ChartingState extends MusicBeatState
 		var daNewNote:Note = new Note(noteStrum, noteData);
 		daNewNote.sustainLength = noteSus;
 		daNewNote.altNote = noteAlt;
-		SongLoad.getSong()[curSection].sectionNotes.push(daNewNote);
+		SongLoad.getSong()[curSection].sectionNotes.push(daNewNote.data);
 
 		curSelectedNote = SongLoad.getSong()[curSection].sectionNotes[SongLoad.getSong()[curSection].sectionNotes.length - 1];
 
@@ -1275,7 +1278,7 @@ class ChartingState extends MusicBeatState
 		updateGrid();
 		updateNoteUI();
 
-		// autosaveSong();
+		autosaveSong();
 	}
 
 	function getStrumTime(yPos:Float):Float
@@ -1344,9 +1347,8 @@ class ChartingState extends MusicBeatState
 
 	function autosaveSong():Void
 	{
-		FlxG.save.data.autosave = Json.stringify({
-			"song": _song
-		});
+		FlxG.save.data.autosave = _song;
+		trace(FlxG.save.data.autosave);
 		FlxG.save.flush();
 	}
 

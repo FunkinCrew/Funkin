@@ -16,7 +16,12 @@ import polymod.format.ParseRules.TargetSignatureElement;
 
 class Note extends FlxSprite
 {
-	public var strumTime:Float = 0;
+	public var data:NoteData = {
+		strumTime: 0,
+		sustainLength: 0,
+		altNote: false,
+		noteData: 0
+	};
 
 	public var mustPress:Bool = false;
 	public var followsTime:Bool = true; // used if you want the note to follow the time shit!
@@ -56,7 +61,7 @@ class Note extends FlxSprite
 	// anything below sick threshold is sick
 	public static var arrowColors:Array<Float> = [1, 1, 1, 1];
 
-	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false)
+	public function new(strumTime:Float = 0, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false)
 	{
 		super();
 
@@ -69,7 +74,7 @@ class Note extends FlxSprite
 		x += 50;
 		// MAKE SURE ITS DEFINITELY OFF SCREEN?
 		y -= 2000;
-		this.strumTime = strumTime;
+		data.strumTime = strumTime;
 
 		this.noteData = noteData;
 
@@ -235,15 +240,15 @@ class Note extends FlxSprite
 			}
 			else
 			{
-				if (!pastHalfWay && strumTime <= Conductor.songPosition)
+				if (!pastHalfWay && data.strumTime <= Conductor.songPosition)
 				{
 					pastHalfWay = true;
 					noteSpeedMulti *= 2;
 				}
 
-				if (strumTime > Conductor.songPosition - HIT_WINDOW)
+				if (data.strumTime > Conductor.songPosition - HIT_WINDOW)
 				{ // * 0.5 if sustain note, so u have to keep holding it closer to all the way thru!
-					if (strumTime < Conductor.songPosition + (HIT_WINDOW * (isSustainNote ? 0.5 : 1)))
+					if (data.strumTime < Conductor.songPosition + (HIT_WINDOW * (isSustainNote ? 0.5 : 1)))
 						canBeHit = true;
 				}
 				else
@@ -257,7 +262,7 @@ class Note extends FlxSprite
 		{
 			canBeHit = false;
 
-			if (strumTime <= Conductor.songPosition)
+			if (data.strumTime <= Conductor.songPosition)
 				wasGoodHit = true;
 		}
 
@@ -267,4 +272,12 @@ class Note extends FlxSprite
 				alpha = 0.3;
 		}
 	}
+}
+
+typedef NoteData =
+{
+	var strumTime:Float;
+	var noteData:Int;
+	var sustainLength:Float;
+	var altNote:Bool;
 }

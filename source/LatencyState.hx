@@ -61,7 +61,7 @@ class LatencyState extends FlxState
 
 		noteGrp.forEach(function(daNote:Note)
 		{
-			daNote.y = (strumLine.y - (Conductor.songPosition - daNote.strumTime) * 0.45);
+			daNote.y = (strumLine.y - (Conductor.songPosition - daNote.data.strumTime) * 0.45);
 			daNote.x = strumLine.x + 30;
 
 			if (daNote.y < strumLine.y)
