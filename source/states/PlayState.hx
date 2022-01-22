@@ -156,6 +156,7 @@ class PlayState extends MusicBeatState
 	public var foregroundSprites:FlxGroup = new FlxGroup();
 
 	public var defaultCamZoom:Float = 1.05;
+	public var defaultHudCamZoom:Float = 1.0;
 	var altAnim:String = "";
 
 	public static var stepsTexts:Array<String>;
@@ -2087,7 +2088,7 @@ class PlayState extends MusicBeatState
 		if(utilities.Options.getData("cameraZooms") && camZooming && !switchedStates)
 		{
 			FlxG.camera.zoom = FlxMath.lerp(defaultCamZoom, FlxG.camera.zoom, 0.95);
-			camHUD.zoom = FlxMath.lerp(1, camHUD.zoom, 0.95);
+			camHUD.zoom = FlxMath.lerp(defaultHudCamZoom, camHUD.zoom, 0.95);
 		}
 		else if(!utilities.Options.getData("cameraZooms"))
 		{
@@ -2618,6 +2619,18 @@ class PlayState extends MusicBeatState
 								else
 									speed = funnySpeed;
 							}
+						case "set camera zoom":
+							var defaultCamZoomThing:Float = Std.parseFloat(event[2]);
+							var hudCamZoomThing:Float = Std.parseFloat(event[3]);
+
+							if(defaultCamZoomThing == Math.NaN)
+								defaultCamZoomThing = defaultCamZoom;
+
+							if(hudCamZoomThing == Math.NaN)
+								hudCamZoomThing = 1;
+
+							defaultCamZoom = defaultCamZoomThing;
+							defaultHudCamZoom = hudCamZoomThing;
 						case "change character":
 							eventCharacterShit(event);
 					}
