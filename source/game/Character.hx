@@ -403,8 +403,13 @@ class Character extends FlxSprite
 			else
 				frames = Paths.getSparrowAtlas('characters/' + config.imagePath, 'shared');
 
-			if(config.graphicsSize != null)
-				setGraphicSize(Std.int(width * config.graphicsSize));
+			var size:Null<Float> = config.graphicSize;
+
+			if(size == null)
+				size = config.graphicsSize;
+
+			if(size != null)
+				setGraphicSize(Std.int(width * size));
 
 			for(selected_animation in config.animations)
 			{

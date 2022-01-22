@@ -254,6 +254,7 @@ class CharacterCreationState extends MusicBeatState
             defaultFlipX: Default_FlipX,
             dancesLeftAndRight: LeftAndRight_Idle,
             graphicsSize: Graphics_Size,
+            graphicSize: Graphics_Size,
             barColor: Bar_Color,
             positionOffset: [0,0],
             cameraOffset: [0,0],

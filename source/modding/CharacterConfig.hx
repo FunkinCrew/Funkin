@@ -7,6 +7,7 @@ typedef CharacterConfig =
 	var defaultFlipX:Bool;
 	var dancesLeftAndRight:Bool;
 	var graphicsSize:Null<Float>;
+	var graphicSize:Null<Float>;
 	var barColor:Array<Int>;
 	var positionOffset:Array<Float>;
 	var cameraOffset:Array<Float>;
