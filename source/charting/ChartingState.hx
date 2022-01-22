@@ -314,7 +314,7 @@ class ChartingState extends MusicBeatState
 			{
 				var note:Note = new Note(0, 0);
 				note.data = SongLoad.getSong()[curSection].sectionNotes[i];
-				note.noteData = (note.noteData + 4) % 8;
+				note.data.noteData = (note.data.noteData + 4) % 8;
 				SongLoad.getSong()[curSection].sectionNotes[i] = note.data;
 				updateGrid();
 			}
@@ -1190,7 +1190,7 @@ class ChartingState extends MusicBeatState
 	{
 		for (i in SongLoad.getSong()[curSection].sectionNotes)
 		{
-			if (i.strumTime == note.data.strumTime && i.noteData % 4 == note.noteData)
+			if (i.strumTime == note.data.strumTime && i.noteData % 4 == note.data.noteData)
 			{
 				var placeIDK:Int = Std.int(((Math.floor(dummyArrow.y / GRID_SIZE) * GRID_SIZE)) / 40);
 

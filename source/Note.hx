@@ -25,7 +25,6 @@ class Note extends FlxSprite
 
 	public var mustPress:Bool = false;
 	public var followsTime:Bool = true; // used if you want the note to follow the time shit!
-	public var noteData:Int = 0;
 	public var canBeHit:Bool = false;
 	public var tooLate:Bool = false;
 	public var wasGoodHit:Bool = false;
@@ -76,7 +75,7 @@ class Note extends FlxSprite
 		y -= 2000;
 		data.strumTime = strumTime;
 
-		this.noteData = noteData;
+		data.noteData = noteData;
 
 		var daStage:String = PlayState.curStage;
 
@@ -190,7 +189,7 @@ class Note extends FlxSprite
 
 			if (prevNote.isSustainNote)
 			{
-				switch (prevNote.noteData)
+				switch (prevNote.data.noteData)
 				{
 					case 0:
 						prevNote.animation.play('purplehold');
@@ -223,7 +222,7 @@ class Note extends FlxSprite
 
 	public function updateColors():Void
 	{
-		colorSwap.update(arrowColors[noteData]);
+		colorSwap.update(arrowColors[data.noteData]);
 	}
 
 	override function update(elapsed:Float)

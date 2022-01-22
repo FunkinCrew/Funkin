@@ -2195,7 +2195,7 @@ class PlayState extends MusicBeatState
 
 					if (!daNote.isSustainNote)
 					{
-						switch (Math.abs(daNote.noteData))
+						switch (Math.abs(daNote.data.noteData))
 						{
 							case 0:
 								dad.playAnim('singLEFT' + altAnim, true);
@@ -2429,7 +2429,7 @@ class PlayState extends MusicBeatState
 
 		var healthMulti:Float = 1;
 
-		if (daNote.noteData >= 0)
+		if (daNote.data.noteData >= 0)
 			healthMulti *= 0.033;
 		else
 			healthMulti *= 0.002;
@@ -2463,7 +2463,7 @@ class PlayState extends MusicBeatState
 		if (isSick)
 		{
 			var noteSplash:NoteSplash = grpNoteSplashes.recycle(NoteSplash);
-			noteSplash.setupNoteSplash(daNote.x, daNote.y, daNote.noteData);
+			noteSplash.setupNoteSplash(daNote.x, daNote.y, daNote.data.noteData);
 			// new NoteSplash(daNote.x, daNote.y, daNote.noteData);
 			grpNoteSplashes.add(noteSplash);
 		}
@@ -2738,7 +2738,7 @@ class PlayState extends MusicBeatState
 		{
 			notes.forEachAlive(function(daNote:Note)
 			{
-				if (daNote.isSustainNote && daNote.canBeHit && daNote.mustPress && holdArray[daNote.noteData])
+				if (daNote.isSustainNote && daNote.canBeHit && daNote.mustPress && holdArray[daNote.data.noteData])
 					goodNoteHit(daNote);
 			});
 		}
