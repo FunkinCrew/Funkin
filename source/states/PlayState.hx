@@ -1,5 +1,6 @@
 package states;
 
+import flixel.util.FlxStringUtil;
 import openfl.display.BitmapData;
 import flixel.graphics.FlxGraphic;
 #if sys
@@ -261,10 +262,14 @@ class PlayState extends MusicBeatState
 
 	public static var chartingMode:Bool = false;
 
+	var funnyTimeBarStyle:String;
+
 	override public function create()
 	{
 		if(!yoWaitThisIsCharter)
 		{
+			funnyTimeBarStyle = utilities.Options.getData("timeBarStyle");
+
 			if(hitSoundString != "none")
 				hitsound = FlxG.sound.load(Paths.sound("hitsounds/" + Std.string(hitSoundString).toLowerCase(), "shared"));
 
@@ -705,48 +710,114 @@ class PlayState extends MusicBeatState
 			var funnyBarOffset:Int = 45;
 
 			if(utilities.Options.getData("biggerScoreInfo"))
-				scoreTxtSize = 22;
+				scoreTxtSize = 20;
 
 			scoreTxt = new FlxText(0, healthBarBG.y + funnyBarOffset, 0, "", 20);
 			scoreTxt.screenCenter(X);
 			scoreTxt.setFormat(Paths.font("vcr.ttf"), scoreTxtSize, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 			scoreTxt.scrollFactor.set();
-			add(scoreTxt);
 
-			timeBarBG = new FlxSprite(0, healthBarPosY).loadGraphic(Paths.image('ui skins/' + SONG.ui_Skin + '/other/healthBar', 'shared'));
-			timeBarBG.screenCenter(X);
-			timeBarBG.scrollFactor.set();
-			timeBarBG.pixelPerfectPosition = true;
-			
-			if(utilities.Options.getData("downscroll"))
-				timeBarBG.y = FlxG.height - (timeBarBG.height + 1);
-			else
-				timeBarBG.y = 1;
-			
-			add(timeBarBG);
-			
-			timeBar = new FlxBar(timeBarBG.x + 4, timeBarBG.y + 4, LEFT_TO_RIGHT, Std.int(timeBarBG.width - 8), Std.int(timeBarBG.height - 8), this,
-				'time', 0, FlxG.sound.music.length);
-			timeBar.scrollFactor.set();
-			timeBar.createFilledBar(FlxColor.BLACK, FlxColor.CYAN);
-			timeBar.pixelPerfectPosition = true;
-			add(timeBar);
+			if(utilities.Options.getData("biggerScoreInfo"))
+				scoreTxt.borderSize = 1.25;
+
+			add(scoreTxt);
 
 			var infoTxtSize:Int = 16;
 
 			if(utilities.Options.getData("biggerInfoText") == true)
-				infoTxtSize = 22;
+				infoTxtSize = 20;
 
 			infoTxt = new FlxText(0, 0, 0, SONG.song + " - " + storyDifficultyStr + (utilities.Options.getData("botplay") ? " (BOT)" : ""), 20);
 			infoTxt.setFormat(Paths.font("vcr.ttf"), infoTxtSize, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 			infoTxt.screenCenter(X);
 			
-			if(utilities.Options.getData("downscroll"))
-				infoTxt.y = timeBarBG.y - timeBarBG.height - 1;
-			else
-				infoTxt.y = timeBarBG.y + timeBarBG.height + 1;
-			
 			infoTxt.scrollFactor.set();
+			infoTxt.cameras = [camHUD];
+
+			switch(funnyTimeBarStyle.toLowerCase())
+			{
+				default: // includes 'leather engine'
+					timeBarBG = new FlxSprite(0, healthBarPosY).loadGraphic(Paths.image('ui skins/' + SONG.ui_Skin + '/other/healthBar', 'shared'));
+					timeBarBG.screenCenter(X);
+					timeBarBG.scrollFactor.set();
+					timeBarBG.pixelPerfectPosition = true;
+					
+					if(utilities.Options.getData("downscroll"))
+						timeBarBG.y = FlxG.height - (timeBarBG.height + 1);
+					else
+						timeBarBG.y = 1;
+					
+					add(timeBarBG);
+					
+					timeBar = new FlxBar(timeBarBG.x + 4, timeBarBG.y + 4, LEFT_TO_RIGHT, Std.int(timeBarBG.width - 8), Std.int(timeBarBG.height - 8), this,
+						'time', 0, FlxG.sound.music.length);
+					timeBar.scrollFactor.set();
+					timeBar.createFilledBar(FlxColor.BLACK, FlxColor.CYAN);
+					timeBar.pixelPerfectPosition = true;
+					add(timeBar);
+
+					if(utilities.Options.getData("downscroll"))
+						infoTxt.y = timeBarBG.y - timeBarBG.height - 1;
+					else
+						infoTxt.y = timeBarBG.y + timeBarBG.height + 1;
+				case "psych engine":
+					timeBarBG = new FlxSprite(0, healthBarPosY).loadGraphic(Paths.image('psychTimeBar', 'shared'));
+					timeBarBG.screenCenter(X);
+					timeBarBG.scrollFactor.set();
+					timeBarBG.pixelPerfectPosition = true;
+					
+					if(utilities.Options.getData("downscroll"))
+						timeBarBG.y = FlxG.height - 36;
+					else
+						timeBarBG.y = 442;
+					
+					add(timeBarBG);
+					
+					timeBar = new FlxBar(timeBarBG.x + 4, timeBarBG.y + 4, LEFT_TO_RIGHT, Std.int(timeBarBG.width - 8), Std.int(timeBarBG.height - 8), this,
+						'time', 0, FlxG.sound.music.length);
+					timeBar.scrollFactor.set();
+					timeBar.createFilledBar(FlxColor.BLACK, FlxColor.WHITE);
+					timeBar.pixelPerfectPosition = true;
+					add(timeBar);
+
+					if(utilities.Options.getData("biggerInfoText") == true)
+					{
+						infoTxt.borderSize = 2;
+						infoTxt.size = 32;
+					}
+					else
+					{
+						infoTxt.borderSize = 1.5;
+						infoTxt.size = 20;
+					}
+
+					infoTxt.y = timeBarBG.y - (infoTxt.height / 4);
+				case "old kade engine":
+					timeBarBG = new FlxSprite(0, healthBarPosY).loadGraphic(Paths.image('ui skins/' + SONG.ui_Skin + '/other/healthBar', 'shared'));
+					timeBarBG.screenCenter(X);
+					timeBarBG.scrollFactor.set();
+					timeBarBG.pixelPerfectPosition = true;
+					
+					if(utilities.Options.getData("downscroll"))
+						timeBarBG.y = FlxG.height * 0.9 + 45;
+					else
+						timeBarBG.y = 10;
+					
+					add(timeBarBG);
+					
+					timeBar = new FlxBar(timeBarBG.x + 4, timeBarBG.y + 4, LEFT_TO_RIGHT, Std.int(timeBarBG.width - 8), Std.int(timeBarBG.height - 8), this,
+						'time', 0, FlxG.sound.music.length);
+					timeBar.scrollFactor.set();
+					timeBar.createFilledBar(FlxColor.GRAY, FlxColor.LIME);
+					timeBar.pixelPerfectPosition = true;
+					add(timeBar);
+
+					infoTxt.y = timeBarBG.y;
+			}
+
+			timeBar.cameras = [camHUD];
+			timeBarBG.cameras = [camHUD];
+
 			add(infoTxt);
 
 			if(utilities.Options.getData("sideRatings") == true)
@@ -774,13 +845,9 @@ class PlayState extends MusicBeatState
 			iconP1.cameras = [camHUD];
 			iconP2.cameras = [camHUD];
 			scoreTxt.cameras = [camHUD];
-			infoTxt.cameras = [camHUD];
 
 			if(utilities.Options.getData("sideRatings") == true)
 				ratingText.cameras = [camHUD];
-
-			timeBar.cameras = [camHUD];
-			timeBarBG.cameras = [camHUD];
 
 			startingSong = true;
 
@@ -1731,8 +1798,7 @@ class PlayState extends MusicBeatState
 
 	override public function update(elapsed:Float)
 	{
-		infoTxt.text = SONG.song + " - " + storyDifficultyStr + (utilities.Options.getData("botplay") ? " (BOT)" : "") + (utilities.Options.getData("noDeath") ? " (NO DEATH)" : "") + (playingReplay ? " (REPLAY)" : "");
-		infoTxt.screenCenter(X);
+		updateSongInfoText();
 
 		if(stopSong && !switchedStates)
 		{
@@ -4089,6 +4155,27 @@ class PlayState extends MusicBeatState
 				}
 		}
 
-	stage.setCharOffsets();
+		stage.setCharOffsets();
+	}
+
+	public function updateSongInfoText()
+	{
+		var songThingy = songLength - FlxG.sound.music.time;
+
+		var seconds = Math.floor(songThingy / 1000);
+		if(seconds < 0) seconds = 0;
+
+		switch(funnyTimeBarStyle.toLowerCase())
+		{
+			default: // includes 'leather engine'
+				infoTxt.text = SONG.song + " - " + storyDifficultyStr + ' (${FlxStringUtil.formatTime(seconds, false)}) ' + (utilities.Options.getData("botplay") ? " (BOT)" : "") + (utilities.Options.getData("noDeath") ? " (NO DEATH)" : "") + (playingReplay ? " (REPLAY)" : "");
+				infoTxt.screenCenter(X);
+			case "psych engine":
+				infoTxt.text = '${FlxStringUtil.formatTime(seconds, false)}' + (utilities.Options.getData("botplay") ? " (BOT)" : "") + (utilities.Options.getData("noDeath") ? " (NO DEATH)" : "") + (playingReplay ? " (REPLAY)" : "");
+				infoTxt.screenCenter(X);
+			case "old kade engine":
+				infoTxt.text = SONG.song + (utilities.Options.getData("botplay") ? " (BOT)" : "") + (utilities.Options.getData("noDeath") ? " (NO DEATH)" : "") + (playingReplay ? " (REPLAY)" : "");
+				infoTxt.screenCenter(X);
+		}
 	}
 }

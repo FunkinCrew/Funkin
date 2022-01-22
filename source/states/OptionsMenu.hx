@@ -70,7 +70,8 @@ class OptionsMenu extends MusicBeatState
 			new PageOption("Optimizations", 3, "Optimizations"),
 			new MaxFPSOption("Max FPS", 4),
 			new BoolOption("Bigger Score Text", "biggerScoreInfo", 5),
-			new BoolOption("Bigger Info Text", "biggerInfoText", 6)
+			new BoolOption("Bigger Info Text", "biggerInfoText", 6),
+			new StringSaveOption("Time Bar Style", ["leather engine", "psych engine", "new kade engine", "old kade engine"], 7, "timeBarStyle")
 		],
 		[
 			"Tools",

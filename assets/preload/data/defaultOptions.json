@@ -189,6 +189,10 @@
             "value": false
         },
         {
+            "option": "timeBarStyle",
+            "value": "leather engine"
+        },
+        {
             "option": "fullscreenBind",
             "value": "F11",
             "save": "binds"
