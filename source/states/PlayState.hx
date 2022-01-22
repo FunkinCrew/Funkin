@@ -771,7 +771,7 @@ class PlayState extends MusicBeatState
 					if(utilities.Options.getData("downscroll"))
 						timeBarBG.y = FlxG.height - 36;
 					else
-						timeBarBG.y = 442;
+						timeBarBG.y = 10;
 					
 					add(timeBarBG);
 					
