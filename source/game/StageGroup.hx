@@ -628,15 +628,20 @@ class StageGroup extends FlxGroup
                             if(Object.alpha != null)
                                 Sprite.alpha = Object.alpha;
         
-                            switch(Object.layer.toLowerCase())
+                            if(Object.layer != null)
                             {
-                                case "foreground":
-                                    foregroundSprites.add(Sprite);
-                                case "gf":
-                                    infrontOfGFSprites.add(Sprite);
-                                default:
-                                    add(Sprite);
+                                switch(Object.layer.toLowerCase())
+                                {
+                                    case "foreground":
+                                        foregroundSprites.add(Sprite);
+                                    case "gf":
+                                        infrontOfGFSprites.add(Sprite);
+                                    default:
+                                        add(Sprite);
+                                }
                             }
+                            else
+                                add(Sprite);
                         }
                     }
                 }

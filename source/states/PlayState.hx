@@ -453,15 +453,15 @@ class PlayState extends MusicBeatState
 			splashesSettings = CoolUtil.coolTextFile(Paths.txt("ui skins/default/config"));
 		}
 
-		uiMap.set("marvelous", BitmapData.fromFile(PolymodAssets.getPath(Paths.image("ui skins/" + SONG.ui_Skin + "/ratings/" + "marvelous"))));
-		uiMap.set("sick", BitmapData.fromFile(PolymodAssets.getPath(Paths.image("ui skins/" + SONG.ui_Skin + "/ratings/" + "sick"))));
-		uiMap.set("good", BitmapData.fromFile(PolymodAssets.getPath(Paths.image("ui skins/" + SONG.ui_Skin + "/ratings/" + "good"))));
-		uiMap.set("bad", BitmapData.fromFile(PolymodAssets.getPath(Paths.image("ui skins/" + SONG.ui_Skin + "/ratings/" + "bad"))));
-		uiMap.set("shit", BitmapData.fromFile(PolymodAssets.getPath(Paths.image("ui skins/" + SONG.ui_Skin + "/ratings/" + "shit"))));
+		uiMap.set("marvelous", FlxGraphic.fromAssetKey(Paths.image("ui skins/" + SONG.ui_Skin + "/ratings/" + "marvelous")));
+		uiMap.set("sick", FlxGraphic.fromAssetKey(Paths.image("ui skins/" + SONG.ui_Skin + "/ratings/" + "sick")));
+		uiMap.set("good", FlxGraphic.fromAssetKey(Paths.image("ui skins/" + SONG.ui_Skin + "/ratings/" + "good")));
+		uiMap.set("bad", FlxGraphic.fromAssetKey(Paths.image("ui skins/" + SONG.ui_Skin + "/ratings/" + "bad")));
+		uiMap.set("shit", FlxGraphic.fromAssetKey(Paths.image("ui skins/" + SONG.ui_Skin + "/ratings/" + "shit")));
 
 		for(i in 0...10)
 		{
-			uiMap.set(Std.string(i), BitmapData.fromFile(PolymodAssets.getPath(Paths.image("ui skins/" + SONG.ui_Skin + "/numbers/num" + Std.string(i)))));	
+			uiMap.set(Std.string(i), FlxGraphic.fromAssetKey(Paths.image("ui skins/" + SONG.ui_Skin + "/numbers/num" + Std.string(i))));	
 		}
 
 		if(!yoWaitThisIsCharter)
@@ -2856,7 +2856,7 @@ class PlayState extends MusicBeatState
 	var numbers:Array<FlxSprite> = [];
 	var number_Tweens:Array<VarTween> = [];
 
-	var uiMap:Map<String, BitmapData> = [];
+	var uiMap:Map<String, FlxGraphic> = [];
 
 	private function popUpScore(strumtime:Float, noteData:Int, ?setNoteDiff:Float):Void
 	{
