@@ -1262,7 +1262,7 @@ class ChartingState extends MusicBeatState
 
 		var daNewNote:Note = new Note(noteStrum, noteData);
 		daNewNote.sustainLength = noteSus;
-		daNewNote.altNote = noteAlt;
+		daNewNote.data.altNote = noteAlt;
 		SongLoad.getSong()[curSection].sectionNotes.push(daNewNote.data);
 
 		curSelectedNote = SongLoad.getSong()[curSection].sectionNotes[SongLoad.getSong()[curSection].sectionNotes.length - 1];

@@ -2190,7 +2190,7 @@ class PlayState extends MusicBeatState
 							altAnim = '-alt';
 					}
 
-					if (daNote.altNote)
+					if (daNote.data.altNote)
 						altAnim = '-alt';
 
 					if (!daNote.isSustainNote)
