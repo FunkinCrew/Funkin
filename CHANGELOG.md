@@ -16,6 +16,7 @@ All notable changes will be documented in this file.
 - Setting to make Info Text and Score Text Bigger.
 - Option in songs for having a different key count for player than opponent.
 - Event System.
+- Time Bar Style Option.
 ### Changed
 - New Note Splash Sprites!
 - FPS Cap Max is now 1000 (800 before lol).
