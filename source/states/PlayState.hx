@@ -172,7 +172,6 @@ class PlayState extends MusicBeatState
 	// Discord RPC variables
 	var storyDifficultyText:String = "";
 	var iconRPC:String = "";
-	var songLength:Float = 0;
 	var detailsText:String = "";
 	var detailsPausedText:String = "";
 
@@ -182,6 +181,8 @@ class PlayState extends MusicBeatState
 	public static var luaModchart:ModchartUtilities = null;
 	#end
 	#end
+
+	var songLength:Float = 0;
 
 	var binds:Array<String>;
 
@@ -1379,10 +1380,10 @@ class PlayState extends MusicBeatState
 
 		vocals.play();
 
-		#if desktop
 		// Song duration in a float, useful for the time left feature
 		songLength = FlxG.sound.music.length;
 
+		#if desktop
 		Conductor.recalculateStuff(songMultiplier);
 
 		// Updating Discord Rich Presence (with Time Left)
