@@ -179,6 +179,9 @@ class PauseSubState extends MusicBeatSubstate
 					}
 					#end
 
+					PlayState.SONG.keyCount = PlayState.instance.ogKeyCount;
+					PlayState.SONG.playerKeyCount = PlayState.instance.ogPlayerKeyCount;
+
 					FlxG.resetState();
 				case "restart song with cutscenes":
 					PlayState.SONG.speed = PlayState.previousScrollSpeedLmao;
@@ -190,6 +193,9 @@ class PauseSubState extends MusicBeatSubstate
 						PlayState.luaModchart = null;
 					}
 					#end
+
+					PlayState.SONG.keyCount = PlayState.instance.ogKeyCount;
+					PlayState.SONG.playerKeyCount = PlayState.instance.ogPlayerKeyCount;
 
 					FlxG.resetState();
 				case "bot":

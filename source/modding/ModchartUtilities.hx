@@ -1288,9 +1288,9 @@ class ModchartUtilities
             var member = PlayState.strumLineNotes.members[i];
             trace(PlayState.strumLineNotes.members[i].x + " " + PlayState.strumLineNotes.members[i].y + " " + PlayState.strumLineNotes.members[i].angle + " | strum" + i);
 
-            setVar("defaultStrum" + i + "X", Math.floor(member.x));
-            setVar("defaultStrum" + i + "Y", Math.floor(member.y));
-            setVar("defaultStrum" + i + "Angle", Math.floor(member.angle));
+            setVar("defaultStrum" + i + "X", member.x);
+            setVar("defaultStrum" + i + "Y", member.y);
+            setVar("defaultStrum" + i + "Angle", member.angle);
 
             trace("Adding strum" + i);
         }

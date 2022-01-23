@@ -120,8 +120,7 @@ class StageMakingState extends MusicBeatState
         camHUD = new FlxCamera();
         camHUD.bgColor.alpha = 0;
 
-		FlxG.cameras.reset();
-		FlxG.cameras.add(stageCam, true);
+		FlxG.cameras.reset(stageCam);
 		FlxG.cameras.add(camHUD, false);
 
 		FlxG.cameras.setDefaultDrawTarget(stageCam, true);

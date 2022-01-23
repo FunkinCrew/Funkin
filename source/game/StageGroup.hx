@@ -286,12 +286,12 @@ class StageGroup extends FlxGroup
                 }
                 case "school":
                 {
-                    player_1_Point.x += 150;
-                    player_1_Point.y += 300;
-                    gf_Point.x += 200;
-                    gf_Point.y += 250;
-                    player_2_Point.x += 325;
-                    player_2_Point.y += 330;
+                    player_2_Point.x = 379;
+                    player_2_Point.y = 928;
+                    gf_Point.x = 709;
+                    gf_Point.y = 856;
+                    player_1_Point.x = 993;
+                    player_1_Point.y = 944;
 
                     var bgSky = new FlxSprite().loadGraphic(Paths.image(stage + '/weebSky', 'stages'));
                     bgSky.scrollFactor.set(0.1, 0.1);
@@ -353,12 +353,12 @@ class StageGroup extends FlxGroup
                 {
                     stage = "school";
 
-                    player_1_Point.x += 150;
-                    player_1_Point.y += 300;
-                    gf_Point.x += 200;
-                    gf_Point.y += 250;
-                    player_2_Point.x += 325;
-                    player_2_Point.y += 330;
+                    player_2_Point.x = 379;
+                    player_2_Point.y = 928;
+                    gf_Point.x = 709;
+                    gf_Point.y = 856;
+                    player_1_Point.x = 993;
+                    player_1_Point.y = 944;
 
                     var bgSky = new FlxSprite().loadGraphic(Paths.image(stage + '/weebSky', 'stages'));
                     bgSky.scrollFactor.set(0.1, 0.1);
@@ -422,12 +422,12 @@ class StageGroup extends FlxGroup
                 }
                 case "evil-school":
                 {
-                    player_1_Point.x += 150;
-                    player_1_Point.y += 300;
-                    gf_Point.x += 200;
-                    gf_Point.y += 250;
-                    player_2_Point.x += 325;
-                    player_2_Point.y += 330;
+                    player_1_Point.x = 995;
+                    player_1_Point.y = 918;
+                    gf_Point.x = 645;
+                    gf_Point.y = 834;
+                    player_2_Point.x = 325;
+                    player_2_Point.y = 918;
                     
                     var bg:FlxSprite = new FlxSprite(400, 220);
                     bg.frames = Paths.getSparrowAtlas(stage + '/animatedEvilSchool', 'stages');

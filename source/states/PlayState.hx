@@ -266,156 +266,157 @@ class PlayState extends MusicBeatState
 
 	var funnyTimeBarStyle:String;
 
+	public var ogPlayerKeyCount:Int = 4;
+	public var ogKeyCount:Int = 4;
+
 	override public function create()
 	{
-		if(!yoWaitThisIsCharter)
+		funnyTimeBarStyle = utilities.Options.getData("timeBarStyle");
+
+		if(hitSoundString != "none")
+			hitsound = FlxG.sound.load(Paths.sound("hitsounds/" + Std.string(hitSoundString).toLowerCase(), "shared"));
+
+		switch(utilities.Options.getData("playAs"))
 		{
-			funnyTimeBarStyle = utilities.Options.getData("timeBarStyle");
+			case "bf":
+				characterPlayingAs = 0;
+			case "opponent":
+				characterPlayingAs = 1;
+			case "both":
+				characterPlayingAs = -1;
+			default:
+				characterPlayingAs = 0;
+		}
 
-			if(hitSoundString != "none")
-				hitsound = FlxG.sound.load(Paths.sound("hitsounds/" + Std.string(hitSoundString).toLowerCase(), "shared"));
+		ogPlayerKeyCount = SONG.playerKeyCount;
+		ogKeyCount = SONG.keyCount;
 
-			switch(utilities.Options.getData("playAs"))
-			{
-				case "bf":
-					characterPlayingAs = 0;
-				case "opponent":
-					characterPlayingAs = 1;
-				case "both":
-					characterPlayingAs = -1;
-				default:
-					characterPlayingAs = 0;
-			}
+		if(characterPlayingAs == 1)
+		{
+			var oldRegKeyCount = SONG.keyCount;
+			var oldPlrKeyCount = SONG.playerKeyCount;
 
-			if(characterPlayingAs == 1)
-			{
-				var oldRegKeyCount = SONG.keyCount;
-				var oldPlrKeyCount = SONG.playerKeyCount;
+			SONG.keyCount = oldPlrKeyCount;
+			SONG.playerKeyCount = oldRegKeyCount;
+		}
 
-				SONG.keyCount = oldPlrKeyCount;
-				SONG.playerKeyCount = oldRegKeyCount;
-			}
+		instance = this;
 
-			instance = this;
+		if(utilities.Options.getData("botplay"))
+			hasUsedBot = true;
 
-			if(utilities.Options.getData("botplay"))
-				hasUsedBot = true;
+		if(utilities.Options.getData("noDeath"))
+			hasUsedBot = true;
 
-			if(utilities.Options.getData("noDeath"))
-				hasUsedBot = true;
+		if(characterPlayingAs != 0)
+			hasUsedBot = true;
 
-			if(characterPlayingAs != 0)
-				hasUsedBot = true;
+		if(playingReplay)
+		{
+			hasUsedBot = true;
 
-			if(playingReplay)
-			{
-				hasUsedBot = true;
-
-				Conductor.offset = replay.offset;
-				
-				utilities.Options.setData(replay.judgementTimings, "judgementTimings");
-				utilities.Options.setData(replay.ghostTapping, "ghostTapping");
-
-				for(i in 0...replay.inputs.length)
-				{
-					var input = replay.inputs[i];
-
-					if(input.length > 3)
-						inputs.push([Std.int(input[0]), FlxMath.roundDecimal(input[1], 2), Std.int(input[2]), FlxMath.roundDecimal(input[3], 2)]);
-					else
-						inputs.push([Std.int(input[0]), FlxMath.roundDecimal(input[1], 2), Std.int(input[2])]);
-				}
-			}
-
-			for(i in 0...2)
-			{
-				var sound = FlxG.sound.load(Paths.sound('missnote' + Std.string((i + 1))), 0.2);
-				missSounds.push(sound);
-			}
-
-			binds = NoteHandler.getBinds(SONG.playerKeyCount);
-
-			if (FlxG.sound.music != null)
-				FlxG.sound.music.stop();
-
-			camGame = new FlxCamera();
-			camHUD = new FlxCamera();
-			camHUD.bgColor.alpha = 0;
-
-			FlxG.cameras.reset();
-			FlxG.cameras.add(camGame, true);
-			FlxG.cameras.add(camHUD, false);
-
-			FlxG.cameras.setDefaultDrawTarget(camGame, true);
-
-			FlxG.camera = camGame;
+			Conductor.offset = replay.offset;
 			
-			persistentUpdate = true;
-			persistentDraw = true;
+			utilities.Options.setData(replay.judgementTimings, "judgementTimings");
+			utilities.Options.setData(replay.ghostTapping, "ghostTapping");
 
-			if (SONG == null)
-				SONG = Song.loadFromJson('tutorial');
-
-			#if !sys
-			songMultiplier = 1;
-			#end
-
-			if(songMultiplier < 0.25)
-				songMultiplier = 0.25;
-
-			Conductor.mapBPMChanges(SONG, songMultiplier);
-			Conductor.changeBPM(SONG.bpm, songMultiplier);
-
-			previousScrollSpeedLmao = SONG.speed;
-
-			SONG.speed /= songMultiplier;
-
-			if(SONG.speed < 0.1 && songMultiplier > 1)
-				SONG.speed = 0.1;
-
-			speed = SONG.speed;
-
-			if(utilities.Options.getData("useCustomScrollSpeed"))
-				speed = utilities.Options.getData("customScrollSpeed") / songMultiplier;
-
-			Conductor.recalculateStuff(songMultiplier);
-			Conductor.safeZoneOffset *= songMultiplier;
-
-			noteBG = new FlxSprite(0,0);
-			noteBG.cameras = [camHUD];
-			noteBG.makeGraphic(1,1000,FlxColor.BLACK);
-
-			add(noteBG);
-
-			if(SONG.stage == null)
+			for(i in 0...replay.inputs.length)
 			{
-				switch(storyWeek)
-				{
-					case 0 | 1:
-						SONG.stage = 'stage';
-					case 2:
-						SONG.stage = 'spooky';
-					case 3:
-						SONG.stage = 'philly';
-					case 4:
-						SONG.stage = 'limo';
-					case 5:
-						SONG.stage = 'mall';
-					case 6:
-						SONG.stage = 'school';
-					default:
-						SONG.stage = 'chromatic-stage';
-				}
+				var input = replay.inputs[i];
 
-				if(SONG.song.toLowerCase() == "winter horrorland")
-					SONG.stage = 'evil-mall';
-
-				if(SONG.song.toLowerCase() == "roses")
-					SONG.stage = 'school-mad';
-
-				if(SONG.song.toLowerCase() == "thorns")
-					SONG.stage = 'evil-school';
+				if(input.length > 3)
+					inputs.push([Std.int(input[0]), FlxMath.roundDecimal(input[1], 2), Std.int(input[2]), FlxMath.roundDecimal(input[3], 2)]);
+				else
+					inputs.push([Std.int(input[0]), FlxMath.roundDecimal(input[1], 2), Std.int(input[2])]);
 			}
+		}
+
+		for(i in 0...2)
+		{
+			var sound = FlxG.sound.load(Paths.sound('missnote' + Std.string((i + 1))), 0.2);
+			missSounds.push(sound);
+		}
+
+		binds = NoteHandler.getBinds(SONG.playerKeyCount);
+
+		if (FlxG.sound.music != null)
+			FlxG.sound.music.stop();
+
+		camGame = new FlxCamera();
+		camHUD = new FlxCamera();
+
+		FlxG.cameras.reset(camGame);
+		FlxG.cameras.add(camHUD, false);
+
+		FlxG.cameras.setDefaultDrawTarget(camGame, true);
+
+		camHUD.bgColor.alpha = 0;
+		
+		persistentUpdate = true;
+		persistentDraw = true;
+
+		if (SONG == null)
+			SONG = Song.loadFromJson('tutorial');
+
+		#if !sys
+		songMultiplier = 1;
+		#end
+
+		if(songMultiplier < 0.25)
+			songMultiplier = 0.25;
+
+		Conductor.mapBPMChanges(SONG, songMultiplier);
+		Conductor.changeBPM(SONG.bpm, songMultiplier);
+
+		previousScrollSpeedLmao = SONG.speed;
+
+		SONG.speed /= songMultiplier;
+
+		if(SONG.speed < 0.1 && songMultiplier > 1)
+			SONG.speed = 0.1;
+
+		speed = SONG.speed;
+
+		if(utilities.Options.getData("useCustomScrollSpeed"))
+			speed = utilities.Options.getData("customScrollSpeed") / songMultiplier;
+
+		Conductor.recalculateStuff(songMultiplier);
+		Conductor.safeZoneOffset *= songMultiplier;
+
+		noteBG = new FlxSprite(0,0);
+		noteBG.cameras = [camHUD];
+		noteBG.makeGraphic(1,1000,FlxColor.BLACK);
+
+		add(noteBG);
+
+		if(SONG.stage == null)
+		{
+			switch(storyWeek)
+			{
+				case 0 | 1:
+					SONG.stage = 'stage';
+				case 2:
+					SONG.stage = 'spooky';
+				case 3:
+					SONG.stage = 'philly';
+				case 4:
+					SONG.stage = 'limo';
+				case 5:
+					SONG.stage = 'mall';
+				case 6:
+					SONG.stage = 'school';
+				default:
+					SONG.stage = 'chromatic-stage';
+			}
+
+			if(SONG.song.toLowerCase() == "winter horrorland")
+				SONG.stage = 'evil-mall';
+
+			if(SONG.song.toLowerCase() == "roses")
+				SONG.stage = 'school-mad';
+
+			if(SONG.song.toLowerCase() == "thorns")
+				SONG.stage = 'evil-school';
 		}
 
 		if(Std.string(SONG.ui_Skin) == "null")
@@ -1549,7 +1550,7 @@ class PlayState extends MusicBeatState
 
 		for (i in 0...usedKeyCount)
 		{
-			var babyArrow:StrumNote = new StrumNote(0, strumLine.y, i);
+			var babyArrow:StrumNote = new StrumNote(0, strumLine.y, i, null, null, null, usedKeyCount);
 
 			babyArrow.frames = arrow_Type_Sprites.get("default");
 
@@ -1794,7 +1795,8 @@ class PlayState extends MusicBeatState
 
 	// give: [noteDataThingy, noteType]
 	// get : [xOffsetToUse]
-	public var prevXVals:Map<String, Float> = [];
+	public var prevPlayerXVals:Map<String, Float> = [];
+	public var prevEnemyXVals:Map<String, Float> = [];
 
 	var speed:Float = 1.0;
 
@@ -2369,7 +2371,7 @@ class PlayState extends MusicBeatState
 						
 						daNote.visible = coolStrum.visible;
 
-						if(!prevXVals.exists(arrayVal))
+						if(!prevPlayerXVals.exists(arrayVal))
 						{
 							var tempShit:Float = 0.0;
 	
@@ -2381,10 +2383,10 @@ class PlayState extends MusicBeatState
 								tempShit += (daNote.x + daNote.width > coolStrum.x + coolStrum.width ? -0.1 : 0.1);
 							}
 
-							prevXVals.set(arrayVal, tempShit);
+							prevPlayerXVals.set(arrayVal, tempShit);
 						}
 						else
-							daNote.x = coolStrum.x + prevXVals.get(arrayVal);
+							daNote.x = coolStrum.x + prevPlayerXVals.get(arrayVal);
 	
 						if (!daNote.isSustainNote)
 							daNote.modAngle = coolStrum.angle;
@@ -2407,7 +2409,7 @@ class PlayState extends MusicBeatState
 
 						daNote.visible = coolStrum.visible;
 
-						if(!prevXVals.exists(arrayVal))
+						if(!prevEnemyXVals.exists(arrayVal))
 						{
 							var tempShit:Float = 0.0;
 	
@@ -2419,10 +2421,10 @@ class PlayState extends MusicBeatState
 								tempShit += (daNote.x + daNote.width > coolStrum.x + coolStrum.width ? -0.1 : 0.1);
 							}
 
-							prevXVals.set(arrayVal, tempShit);
+							prevEnemyXVals.set(arrayVal, tempShit);
 						}
 						else
-							daNote.x = coolStrum.x + prevXVals.get(arrayVal);
+							daNote.x = coolStrum.x + prevEnemyXVals.get(arrayVal);
 	
 						if (!daNote.isSustainNote)
 							daNote.modAngle = coolStrum.angle;
@@ -2492,6 +2494,10 @@ class PlayState extends MusicBeatState
 			switchedStates = true;
 
 			vocals.stop();
+
+			SONG.keyCount = ogKeyCount;
+			SONG.playerKeyCount = ogPlayerKeyCount;
+
 			FlxG.switchState(new ChartingState());
 
 			#if discord_rpc
@@ -2512,6 +2518,10 @@ class PlayState extends MusicBeatState
 			switchedStates = true;
 
 			vocals.stop();
+
+			SONG.keyCount = ogKeyCount;
+			SONG.playerKeyCount = ogPlayerKeyCount;
+
 			FlxG.switchState(new debuggers.ChartingStateDev());
 
 			#if discord_rpc
@@ -2773,6 +2783,9 @@ class PlayState extends MusicBeatState
 				switchedStates = true;
 				vocals.stop();
 
+				SONG.keyCount = ogKeyCount;
+				SONG.playerKeyCount = ogPlayerKeyCount;
+
 				FlxG.switchState(new StoryMenuState());
 
 				arrow_Type_Sprites = [];
@@ -2825,6 +2838,9 @@ class PlayState extends MusicBeatState
 			if(vocals.active)
 				vocals.stop();
 
+			SONG.keyCount = ogKeyCount;
+			SONG.playerKeyCount = ogPlayerKeyCount;
+
 			FlxG.switchState(new FreeplayState());
 
 			arrow_Type_Sprites = [];
@@ -2836,6 +2852,9 @@ class PlayState extends MusicBeatState
 
 			if(vocals.active)
 				vocals.stop();
+
+			SONG.keyCount = ogKeyCount;
+			SONG.playerKeyCount = ogPlayerKeyCount;
 
 			FlxG.switchState(new ReplaySelectorState());
 

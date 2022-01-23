@@ -1,5 +1,6 @@
 package debuggers;
 
+import flixel.FlxObject;
 import states.TitleState;
 import game.EventSprite;
 import utilities.NoteVariables;
@@ -102,6 +103,7 @@ class ChartingState extends MusicBeatState
 
 	var characters:Map<String, Array<String>> = new Map<String, Array<String>>();
 	var gridBlackLine:FlxSprite;
+	var gridEventBlackLine:FlxSprite;
 
 	var selected_mod:String = "default";
 
@@ -168,6 +170,9 @@ class ChartingState extends MusicBeatState
 		gridBlackLine = new FlxSprite(gridBG.x + gridBG.width / 2).makeGraphic(2, Std.int(gridBG.height), FlxColor.BLACK);
 		add(gridBlackLine);
 
+		gridEventBlackLine = new FlxSprite(gridBG.x + GRID_SIZE).makeGraphic(2, Std.int(gridBG.height), FlxColor.BLACK);
+		add(gridEventBlackLine);
+
 		curRenderedNotes = new FlxTypedGroup<Note>();
 		curRenderedSustains = new FlxTypedGroup<FlxSprite>();
 		curRenderedEvents = new FlxTypedGroup<EventSprite>();
@@ -213,7 +218,7 @@ class ChartingState extends MusicBeatState
 		bpmTxt.scrollFactor.set();
 		add(bpmTxt);
 
-		strumLine = new FlxSprite(0, 50).makeGraphic(Std.int(FlxG.width / 2), 4);
+		strumLine = new FlxSprite(0, 50).makeGraphic(Std.int(gridBG.width), 4);
 		add(strumLine);
 
 		dummyArrow = new FlxSprite().makeGraphic(GRID_SIZE, GRID_SIZE);
@@ -373,6 +378,13 @@ class ChartingState extends MusicBeatState
 			resetSection(true);
 		});
 
+		var resetEvents = new FlxButton(loadAutosaveBtn.x, restart.y + restart.height + 10,"Reset Events", function()
+		{
+			events = [];
+
+			updateGrid();
+		});
+
 		// labels
 
 		var songNameLabel = new FlxText(UI_songTitle.x + UI_songTitle.width + 1, UI_songTitle.y, 0, "Song Name", 9);
@@ -418,6 +430,7 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(reloadSongJson);
 		tab_group_song.add(loadAutosaveBtn);
 		tab_group_song.add(restart);
+		tab_group_song.add(resetEvents);
 		tab_group_song.add(stepperBPM);
 		tab_group_song.add(stepperSpeed);
 		tab_group_song.add(stepperKeyCount);
@@ -428,8 +441,10 @@ class ChartingState extends MusicBeatState
 		UI_box.scrollFactor.set();
 
 		// also this, idk what it does but ehhhh who cares \_(:/)_/
-		FlxG.camera.follow(strumLine);
+		FlxG.camera.follow(cameraShitThing);
 	}
+
+	var cameraShitThing:FlxObject = new FlxObject(0, 0, Std.int(FlxG.width / 2), 4);
 
 	var value1:FlxUIInputText;
 	var value2:FlxUIInputText;
@@ -1117,6 +1132,7 @@ class ChartingState extends MusicBeatState
 		_song.endCutscene = endCutscene_Input.text;
 
 		strumLine.y = getYfromStrum((Conductor.songPosition - sectionStartTime()) % (Conductor.stepCrochet * ((16 / _song.timescale[1]) * 4)));
+		cameraShitThing.y = strumLine.y;
 
 		if(hitsounds)
 		{
@@ -1296,13 +1312,13 @@ class ChartingState extends MusicBeatState
 			}
 			else if(FlxG.mouse.wheel != 0)
 			{
-				strumLine.x += FlxG.mouse.wheel * 5;
+				cameraShitThing.x += FlxG.mouse.wheel * 5;
 
-				if(strumLine.x > gridBG.x + gridBG.width)
-					strumLine.x = gridBG.x + gridBG.width;
+				if(cameraShitThing.x > gridBG.x + gridBG.width)
+					cameraShitThing.x = gridBG.x + gridBG.width;
 
-				if(strumLine.x < 0)
-					strumLine.x = 0;
+				if(cameraShitThing.x < 0)
+					cameraShitThing.x = 0;
 			}
 
 			if (!FlxG.keys.pressed.SHIFT)
@@ -1389,7 +1405,7 @@ class ChartingState extends MusicBeatState
 			+ "\n"
 		);
 
-		leftIcon.x = gridBG.x;
+		leftIcon.x = gridBG.x + GRID_SIZE;
 		rightIcon.x = gridBlackLine.x;
 
 		super.update(elapsed);
@@ -1597,6 +1613,16 @@ class ChartingState extends MusicBeatState
 
 		gridBlackLine = new FlxSprite(gridBG.x + (GRID_SIZE * ((!_song.notes[curSection].mustHitSection ? _song.keyCount : _song.playerKeyCount) + 1))).makeGraphic(2, Std.int(gridBG.height), FlxColor.BLACK);
 		add(gridBlackLine);
+
+		remove(gridEventBlackLine);
+		gridEventBlackLine.kill();
+		gridEventBlackLine.destroy();
+
+		gridEventBlackLine = new FlxSprite(gridBG.x + GRID_SIZE).makeGraphic(2, Std.int(gridBG.height), FlxColor.BLACK);
+		add(gridEventBlackLine);
+
+		if(strumLine != null)
+			strumLine.makeGraphic(Std.int(gridBG.width), 4);
 
 		curRenderedNotes.clear();
 

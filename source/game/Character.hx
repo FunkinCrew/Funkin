@@ -115,52 +115,6 @@ class Character extends FlxSprite
 				flipX = true;
 				barColor = FlxColor.fromRGB(205, 229, 112);
 				cameraOffset = [50,0];
-			case 'bf-christmas':
-				swapLeftAndRightSingPlayer = false;
-
-				frames = Paths.getSparrowAtlas('characters/bfChristmas', 'shared');
-				animation.addByPrefix('idle', 'BF idle dance', 24, false);
-				animation.addByPrefix('singUP', 'BF NOTE UP0', 24, false);
-				animation.addByPrefix('singLEFT', 'BF NOTE LEFT0', 24, false);
-				animation.addByPrefix('singRIGHT', 'BF NOTE RIGHT0', 24, false);
-				animation.addByPrefix('singDOWN', 'BF NOTE DOWN0', 24, false);
-				animation.addByPrefix('singUPmiss', 'BF NOTE UP MISS', 24, false);
-				animation.addByPrefix('singLEFTmiss', 'BF NOTE LEFT MISS', 24, false);
-				animation.addByPrefix('singRIGHTmiss', 'BF NOTE RIGHT MISS', 24, false);
-				animation.addByPrefix('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
-				animation.addByPrefix('hey', 'BF HEY', 24, false);
-				animation.addByPrefix('scared', 'BF idle shaking', 24, false);
-
-				playAnim('idle');
-
-				flipX = true;
-				barColor = FlxColor.fromRGB(81, 201, 219);
-				offsetsFlipWhenEnemy = true;
-				offsetsFlipWhenPlayer = false;
-				icon = "bf";
-			case 'bf-car':
-				swapLeftAndRightSingPlayer = false;
-
-				frames = Paths.getSparrowAtlas('characters/bfCar', 'shared');
-				animation.addByPrefix('idle', 'BF idle dance', 24, false);
-				animation.addByPrefix('singUP', 'BF NOTE UP0', 24, false);
-				animation.addByPrefix('singLEFT', 'BF NOTE LEFT0', 24, false);
-				animation.addByPrefix('singRIGHT', 'BF NOTE RIGHT0', 24, false);
-				animation.addByPrefix('singDOWN', 'BF NOTE DOWN0', 24, false);
-				animation.addByPrefix('singUPmiss', 'BF NOTE UP MISS', 24, false);
-				animation.addByPrefix('singLEFTmiss', 'BF NOTE LEFT MISS', 24, false);
-				animation.addByPrefix('singRIGHTmiss', 'BF NOTE RIGHT MISS', 24, false);
-				animation.addByPrefix('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
-				animation.addByPrefix('hey', 'BF HEY', 24, false);
-				animation.addByPrefix('scared', 'BF idle shaking', 24, false);
-
-				playAnim('idle');
-
-				flipX = true;
-				barColor = FlxColor.fromRGB(81, 201, 219);
-				offsetsFlipWhenEnemy = true;
-				offsetsFlipWhenPlayer = false;
-				icon = "bf";
 			case 'bf-pixel':
 				swapLeftAndRightSingPlayer = false;
 
@@ -185,6 +139,7 @@ class Character extends FlxSprite
 				//height -= 100;
 
 				cameraOffset = [-100, -200];
+				positioningOffset = [183, 202];
 
 				antialiasing = false;
 
@@ -211,7 +166,6 @@ class Character extends FlxSprite
 				antialiasing = false;
 				flipX = true;
 				barColor = FlxColor.fromRGB(123, 214, 246);
-
 			case 'senpai':
 				frames = Paths.getSparrowAtlas('characters/senpai', 'shared');
 				animation.addByPrefix('idle', 'Senpai Idle', 24, false);
@@ -226,7 +180,7 @@ class Character extends FlxSprite
 				updateHitbox();
 
 				cameraOffset = [15, 0];
-				positioningOffset = [0, 300];
+				positioningOffset = [317, 522];
 
 				antialiasing = false;
 				barColor = FlxColor.fromRGB(255, 170, 111);
@@ -244,7 +198,7 @@ class Character extends FlxSprite
 				updateHitbox();
 
 				cameraOffset = [15, 0];
-				positioningOffset = [0, 300];
+				positioningOffset = [317, 522];
 
 				antialiasing = false;
 				barColor = FlxColor.fromRGB(255, 170, 111);
@@ -261,7 +215,7 @@ class Character extends FlxSprite
 
 				playAnim('idle');
 
-				positioningOffset = [-250, -100];
+				positioningOffset = [67, 122];
 
 				antialiasing = false;
 				barColor = FlxColor.fromRGB(255, 60, 110);
