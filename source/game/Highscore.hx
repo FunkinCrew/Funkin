@@ -115,7 +115,7 @@ class Highscore
 		return songScores.get((!formatted ? formatSong(song, diff) : song));
 	}
 
-	public static function getWeekScore(week:Int, diff:String, ?weekName:String = 'week'):Int
+	public static function getWeekScore(week:Int, diff:String, ?weekName:String = 'week', ?formatted:Bool = false):Int
 	{
 		if (!songScores.exists(formatSong(weekName + week, diff)))
 			setScore(formatSong(weekName + week, diff), 0);
@@ -123,20 +123,20 @@ class Highscore
 		return songScores.get(formatSong(weekName + week, diff));
 	}
 
-	public static function getSongRank(song:String, diff:String):String
+	public static function getSongRank(song:String, diff:String, ?formatted:Bool = false):String
 	{
-		if(!songRanks.exists(formatSong(song, diff)))
-			setRank(formatSong(song, diff), "N/A");
+		if(!songRanks.exists((!formatted ? formatSong(song, diff) : song)))
+			setRank((!formatted ? formatSong(song, diff) : song), "N/A");
 
-		return songRanks.get(formatSong(song, diff));
+		return songRanks.get((!formatted ? formatSong(song, diff) : song));
 	}
 
-	public static function getSongAccuracy(song:String, diff:String):Float
+	public static function getSongAccuracy(song:String, diff:String, ?formatted:Bool = false):Float
 	{
-		if(!songAccuracies.exists(formatSong(song, diff)))
-			setAccuracy(formatSong(song, diff), 0);
+		if(!songAccuracies.exists((!formatted ? formatSong(song, diff) : song)))
+			setAccuracy((!formatted ? formatSong(song, diff) : song), 0);
 
-		return FlxMath.roundDecimal(songAccuracies.get(formatSong(song, diff)), 2);
+		return FlxMath.roundDecimal(songAccuracies.get((!formatted ? formatSong(song, diff) : song)), 2);
 	}
 
 	public static function load():Void
