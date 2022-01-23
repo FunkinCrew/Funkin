@@ -3413,8 +3413,8 @@ class PlayState extends MusicBeatState
 					{
 						if(heldArray[daNote.noteData])
 						{
-							if ((daNote.strumTime > (Conductor.songPosition - (Conductor.safeZoneOffset * 1.5))
-								&& daNote.strumTime < (Conductor.songPosition + (Conductor.safeZoneOffset * 0.5)))
+							if ((daNote.strumTime > (Conductor.songPosition - ((daNote.shouldHit ? Conductor.safeZoneOffset * 1.5 : Conductor.safeZoneOffset * 0.4)))
+								&& daNote.strumTime < (Conductor.songPosition + ((daNote.shouldHit ? Conductor.safeZoneOffset * 0.5 : Conductor.safeZoneOffset * 0.2))))
 							&& daNote.mustPress && daNote.isSustainNote && !thingsHit[daNote.noteData])
 							{
 								if(characterPlayingAs == 0)
@@ -4125,7 +4125,7 @@ class PlayState extends MusicBeatState
 					dad.setPosition(gf.x, gf.y);
 					gf.visible = false;
 				}
-				else if(gf.visible == false)
+				else if(gf.visible == false && gf.curCharacter != "")
 					gf.visible = true;
 			case "bf" | "boyfriend" | "player":
 				var oldBF = PlayState.boyfriend;
