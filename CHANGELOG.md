@@ -30,6 +30,7 @@ All notable changes will be documented in this file.
 - Crash when turning off Chars and BGs and playing a song.
 - Max Sustain Length of a note being dumb (now the max is always 9999).
 - Alt Animations not playing on group characters.
+- Weird Pixel Character Offsets.
 ### Removed
 - Herobrine
 
