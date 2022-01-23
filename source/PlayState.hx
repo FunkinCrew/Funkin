@@ -2,6 +2,7 @@ package;
 
 import Section.SwagSection;
 import SongLoad.SwagSong;
+import charting.ChartingState;
 import flixel.FlxCamera;
 import flixel.FlxObject;
 import flixel.FlxSprite;
@@ -1586,12 +1587,12 @@ class PlayState extends MusicBeatState
 		{
 			for (songNotes in section.sectionNotes)
 			{
-				var daStrumTime:Float = songNotes[0];
-				var daNoteData:Int = Std.int(songNotes[1] % 4);
+				var daStrumTime:Float = songNotes.strumTime;
+				var daNoteData:Int = Std.int(songNotes.noteData % 4);
 
 				var gottaHitNote:Bool = section.mustHitSection;
 
-				if (songNotes[1] > 3)
+				if (songNotes.noteData > 3)
 					gottaHitNote = !section.mustHitSection;
 
 				var oldNote:Note;
@@ -1601,11 +1602,11 @@ class PlayState extends MusicBeatState
 					oldNote = null;
 
 				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote);
-				swagNote.sustainLength = songNotes[2];
-				swagNote.altNote = songNotes[3];
+				swagNote.data.sustainLength = songNotes.sustainLength;
+				swagNote.data.altNote = songNotes.altNote;
 				swagNote.scrollFactor.set(0, 0);
 
-				var susLength:Float = swagNote.sustainLength;
+				var susLength:Float = swagNote.data.sustainLength;
 
 				susLength = susLength / Conductor.stepCrochet;
 				unspawnNotes.push(swagNote);
@@ -1646,7 +1647,7 @@ class PlayState extends MusicBeatState
 
 	function sortNotes(order:Int = FlxSort.ASCENDING, Obj1:Note, Obj2:Note)
 	{
-		return FlxSort.byValues(order, Obj1.strumTime, Obj2.strumTime);
+		return FlxSort.byValues(order, Obj1.data.strumTime, Obj2.data.strumTime);
 	}
 
 	// ^ These two sorts also look cute together ^
@@ -2117,7 +2118,7 @@ class PlayState extends MusicBeatState
 			}
 		}
 
-		while (unspawnNotes[0] != null && unspawnNotes[0].strumTime - Conductor.songPosition < 1800 / SongLoad.getSpeed())
+		while (unspawnNotes[0] != null && unspawnNotes[0].data.strumTime - Conductor.songPosition < 1800 / SongLoad.getSpeed())
 		{
 			var dunceNote:Note = unspawnNotes[0];
 			notes.add(dunceNote);
@@ -2144,7 +2145,8 @@ class PlayState extends MusicBeatState
 				var strumLineMid = strumLine.y + Note.swagWidth / 2;
 
 				if (daNote.followsTime)
-					daNote.y = (Conductor.songPosition - daNote.strumTime) * (0.45 * FlxMath.roundDecimal(SongLoad.getSpeed(), 2) * daNote.noteSpeedMulti);
+					daNote.y = (Conductor.songPosition - daNote.data.strumTime) * (0.45 * FlxMath.roundDecimal(SongLoad.getSpeed(),
+						2) * daNote.noteSpeedMulti);
 
 				if (PreferencesMenu.getPref('downscroll'))
 				{
@@ -2188,12 +2190,12 @@ class PlayState extends MusicBeatState
 							altAnim = '-alt';
 					}
 
-					if (daNote.altNote)
+					if (daNote.data.altNote)
 						altAnim = '-alt';
 
 					if (!daNote.isSustainNote)
 					{
-						switch (Math.abs(daNote.noteData))
+						switch (Math.abs(daNote.data.noteData))
 						{
 							case 0:
 								dad.playAnim('singLEFT' + altAnim, true);
@@ -2427,7 +2429,7 @@ class PlayState extends MusicBeatState
 
 		var healthMulti:Float = 1;
 
-		if (daNote.noteData >= 0)
+		if (daNote.data.noteData >= 0)
 			healthMulti *= 0.033;
 		else
 			healthMulti *= 0.002;
@@ -2461,7 +2463,7 @@ class PlayState extends MusicBeatState
 		if (isSick)
 		{
 			var noteSplash:NoteSplash = grpNoteSplashes.recycle(NoteSplash);
-			noteSplash.setupNoteSplash(daNote.x, daNote.y, daNote.noteData);
+			noteSplash.setupNoteSplash(daNote.x, daNote.y, daNote.data.noteData);
 			// new NoteSplash(daNote.x, daNote.y, daNote.noteData);
 			grpNoteSplashes.add(noteSplash);
 		}
@@ -2736,7 +2738,7 @@ class PlayState extends MusicBeatState
 		{
 			notes.forEachAlive(function(daNote:Note)
 			{
-				if (daNote.isSustainNote && daNote.canBeHit && daNote.mustPress && holdArray[daNote.noteData])
+				if (daNote.isSustainNote && daNote.canBeHit && daNote.mustPress && holdArray[daNote.data.noteData])
 					goodNoteHit(daNote);
 			});
 		}
@@ -2756,17 +2758,18 @@ class PlayState extends MusicBeatState
 			{
 				if (daNote.canBeHit && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit)
 				{
-					if (directionList.contains(daNote.noteData))
+					if (directionList.contains(daNote.data.noteData))
 					{
 						for (coolNote in possibleNotes)
 						{
-							if (coolNote.noteData == daNote.noteData && Math.abs(daNote.strumTime - coolNote.strumTime) < 10)
+							if (coolNote.data.noteData == daNote.data.noteData
+								&& Math.abs(daNote.data.strumTime - coolNote.data.strumTime) < 10)
 							{ // if it's the same note twice at < 10ms distance, just delete it
 								// EXCEPT u cant delete it in this loop cuz it fucks with the collection lol
 								dumbNotes.push(daNote);
 								break;
 							}
-							else if (coolNote.noteData == daNote.noteData && daNote.strumTime < coolNote.strumTime)
+							else if (coolNote.data.noteData == daNote.data.noteData && daNote.data.strumTime < coolNote.data.strumTime)
 							{ // if daNote is earlier than existing note (coolNote), replace
 								possibleNotes.remove(coolNote);
 								possibleNotes.push(daNote);
@@ -2777,20 +2780,20 @@ class PlayState extends MusicBeatState
 					else
 					{
 						possibleNotes.push(daNote);
-						directionList.push(daNote.noteData);
+						directionList.push(daNote.data.noteData);
 					}
 				}
 			});
 
 			for (note in dumbNotes)
 			{
-				FlxG.log.add("killing dumb ass note at " + note.strumTime);
+				FlxG.log.add("killing dumb ass note at " + note.data.strumTime);
 				note.kill();
 				notes.remove(note, true);
 				note.destroy();
 			}
 
-			possibleNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
+			possibleNotes.sort((a, b) -> Std.int(a.data.strumTime - b.data.strumTime));
 
 			if (perfectMode)
 				goodNoteHit(possibleNotes[0]);
@@ -2803,7 +2806,7 @@ class PlayState extends MusicBeatState
 				}
 				for (coolNote in possibleNotes)
 				{
-					if (pressArray[coolNote.noteData])
+					if (pressArray[coolNote.data.noteData])
 						goodNoteHit(coolNote);
 				}
 			}
@@ -2909,10 +2912,10 @@ class PlayState extends MusicBeatState
 			if (!note.isSustainNote)
 			{
 				combo += 1;
-				popUpScore(note.strumTime, note);
+				popUpScore(note.data.strumTime, note);
 			}
 
-			switch (note.noteData)
+			switch (note.data.noteData)
 			{
 				case 0:
 					boyfriend.playAnim('singLEFT', true);
@@ -2926,7 +2929,7 @@ class PlayState extends MusicBeatState
 
 			playerStrums.forEach(function(spr:FlxSprite)
 			{
-				if (Math.abs(note.noteData) == spr.ID)
+				if (Math.abs(note.data.noteData) == spr.ID)
 				{
 					spr.animation.play('confirm', true);
 				}

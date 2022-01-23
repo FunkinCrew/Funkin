@@ -77,14 +77,18 @@ class SongLoad
 			diff = SongLoad.curDiff;
 
 		var songShit:Array<SwagSection> = [];
-		switch (diff)
+
+		if (songData != null)
 		{
-			case 'easy':
-				songShit = songData.notes.easy;
-			case 'normal':
-				songShit = songData.notes.normal;
-			case 'hard':
-				songShit = songData.notes.hard;
+			switch (diff)
+			{
+				case 'easy':
+					songShit = songData.notes.easy;
+				case 'normal':
+					songShit = songData.notes.normal;
+				case 'hard':
+					songShit = songData.notes.hard;
+			}
 		}
 
 		return songShit;
@@ -107,6 +111,22 @@ class SongLoad
 		}
 
 		return speedShit;
+	}
+
+	public static function getDefaultSwagSong():SwagSong
+	{
+		return {
+			song: 'Test',
+			notes: {easy: [], normal: [], hard: []},
+			bpm: 150,
+			needsVoices: true,
+			player1: 'bf',
+			player2: 'dad',
+			speed: {easy: 1, normal: 1, hard: 1},
+			validScore: false,
+			voiceList: ["BF", "BF-pixel"],
+			extraNotes: []
+		};
 	}
 
 	public static function parseJSONshit(rawJson:String):SwagSong

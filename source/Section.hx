@@ -1,8 +1,10 @@
 package;
 
+import Note.NoteData;
+
 typedef SwagSection =
 {
-	var sectionNotes:Array<Dynamic>;
+	var sectionNotes:Array<NoteData>;
 	var lengthInSteps:Int;
 	var typeOfSection:Int;
 	var mustHitSection:Bool;
