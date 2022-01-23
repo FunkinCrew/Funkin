@@ -107,12 +107,12 @@ class Highscore
 		return daSong;
 	}
 
-	public static function getScore(song:String, diff:String):Int
+	public static function getScore(song:String, diff:String, ?formatted:Bool = false):Int
 	{
 		if (!songScores.exists(formatSong(song, diff)))
-			setScore(formatSong(song, diff), 0);
+			setScore((!formatted ? formatSong(song, diff) : song), 0);
 
-		return songScores.get(formatSong(song, diff));
+		return songScores.get((!formatted ? formatSong(song, diff) : song));
 	}
 
 	public static function getWeekScore(week:Int, diff:String, ?weekName:String = 'week'):Int
@@ -155,18 +155,35 @@ class Highscore
 	{
 		FlxG.save.bind('leathersfunkinengine', 'leather128');
 
+		var funnyScores = songScores;
+		var funnyRanks = songRanks;
+		var funnyAccuracies = songAccuracies;
+
 		if(FlxG.save.data.songScores != null)
-			songScores = FlxG.save.data.songScores;
+			funnyScores = FlxG.save.data.songScores;
 		
 		if(FlxG.save.data.songRanks != null)
-			songRanks = FlxG.save.data.songRanks;
+			funnyRanks = FlxG.save.data.songRanks;
 
 		if(FlxG.save.data.songAccuracies != null)
-			songAccuracies = FlxG.save.data.songAccuracies;
+			funnyAccuracies = FlxG.save.data.songAccuracies;
 
-		utilities.Options.setData(songScores, "songScores", "scores");
-		utilities.Options.setData(songRanks, "songRanks", "scores");
-		utilities.Options.setData(songAccuracies, "songAccuracies", "scores");
+		for(key in funnyScores.keys())
+		{
+			if(key != null)
+			{
+				if(getScore(key, "", true) < funnyScores.get(key))
+				{
+					setScore(key, funnyScores.get(key));
+
+					if(funnyAccuracies.exists(key))
+						setAccuracy(key, funnyAccuracies.get(key));
+
+					if(funnyRanks.exists(key))
+						setRank(key, funnyRanks.get(key));
+				}
+			}	
+		}
 
 		FlxG.save.close();
 	}
