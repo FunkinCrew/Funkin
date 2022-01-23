@@ -2485,52 +2485,55 @@ class PlayState extends MusicBeatState
 			#end
 		}
 
-		if (FlxG.keys.justPressed.SEVEN && !switchedStates)
+		if(!utilities.Options.getData("disableDebugMenus"))
 		{
-			#if linc_luajit
-			if(executeModchart && luaModchart != null)
+			if (FlxG.keys.justPressed.SEVEN && !switchedStates)
 			{
-				luaModchart.die();
-				luaModchart = null;
+				#if linc_luajit
+				if(executeModchart && luaModchart != null)
+				{
+					luaModchart.die();
+					luaModchart = null;
+				}
+				#end
+				
+				switchedStates = true;
+	
+				vocals.stop();
+	
+				SONG.keyCount = ogKeyCount;
+				SONG.playerKeyCount = ogPlayerKeyCount;
+	
+				FlxG.switchState(new ChartingState());
+	
+				#if discord_rpc
+				DiscordClient.changePresence("Chart Editor", null, null, true);
+				#end
 			}
-			#end
-			
-			switchedStates = true;
-
-			vocals.stop();
-
-			SONG.keyCount = ogKeyCount;
-			SONG.playerKeyCount = ogPlayerKeyCount;
-
-			FlxG.switchState(new ChartingState());
-
-			#if discord_rpc
-			DiscordClient.changePresence("Chart Editor", null, null, true);
-			#end
-		}
-
-		if (FlxG.keys.justPressed.EIGHT && !switchedStates)
-		{
-			#if linc_luajit
-			if(executeModchart && luaModchart != null)
+	
+			if (FlxG.keys.justPressed.EIGHT && !switchedStates)
 			{
-				luaModchart.die();
-				luaModchart = null;
+				#if linc_luajit
+				if(executeModchart && luaModchart != null)
+				{
+					luaModchart.die();
+					luaModchart = null;
+				}
+				#end
+				
+				switchedStates = true;
+	
+				vocals.stop();
+	
+				SONG.keyCount = ogKeyCount;
+				SONG.playerKeyCount = ogPlayerKeyCount;
+	
+				FlxG.switchState(new debuggers.ChartingStateDev());
+	
+				#if discord_rpc
+				DiscordClient.changePresence("Chart Editor Development", null, null, true);
+				#end 
 			}
-			#end
-			
-			switchedStates = true;
-
-			vocals.stop();
-
-			SONG.keyCount = ogKeyCount;
-			SONG.playerKeyCount = ogPlayerKeyCount;
-
-			FlxG.switchState(new debuggers.ChartingStateDev());
-
-			#if discord_rpc
-			DiscordClient.changePresence("Chart Editor Development", null, null, true);
-			#end 
 		}
 
 		if(!switchedStates)

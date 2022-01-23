@@ -189,6 +189,10 @@
             "value": false
         },
         {
+            "option": "disableDebugMenus",
+            "value": false
+        },
+        {
             "option": "timeBarStyle",
             "value": "leather engine"
         },
