@@ -238,6 +238,7 @@ class PlayState extends MusicBeatState
 	public static var playingReplay:Bool = false;
 
 	var events:Array<Array<Dynamic>> = [];
+	public var baseEvents:Array<Array<Dynamic>> = [];
 
 	public function new(?_replay:Replay)
 	{
@@ -901,12 +902,14 @@ class PlayState extends MusicBeatState
 			if(utilities.Options.getData("sideRatings") == true)
 				updateRatingText();
 
+			baseEvents = [];
 			events = [];
 
 			if(SONG.events.length > 0)
 			{
 				for(event in SONG.events)
 				{
+					baseEvents.push(event);
 					events.push(event);
 				}
 			}
@@ -919,6 +922,7 @@ class PlayState extends MusicBeatState
 
 				for(event in eventFunnies)
 				{
+					baseEvents.push(event);
 					events.push(event);
 				}
 			}

@@ -189,7 +189,7 @@ class ChartingState extends MusicBeatState
 
 		@:privateAccess
 		{
-			for(event in PlayState.instance.events)
+			for(event in PlayState.instance.baseEvents)
 			{
 				events.push(event);
 			}
