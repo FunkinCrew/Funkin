@@ -123,8 +123,17 @@ class ModchartUtilities
         }
     }
 
-    public function setVar(var_name : String, object : Dynamic){
-		Lua.pushnumber(lua, object);
+    public function setVar(var_name : String, object : Dynamic)
+    {
+        if(Std.isOfType(object, Int))
+            Lua.pushinteger(lua, object);
+        else if(Std.isOfType(object, Bool))
+            Lua.pushboolean(lua, object);
+        else if(Std.isOfType(object, String))
+            Lua.pushstring(lua, object);
+        else
+            Lua.pushnumber(lua, object);
+
 		Lua.setglobal(lua, var_name);
 	}
 
@@ -337,6 +346,8 @@ class ModchartUtilities
             }
         });
 
+        trace("good");
+
         // hud/camera
 
         Lua_helper.add_callback(lua,"setHudAngle", function (x:Float) {
@@ -495,6 +506,8 @@ class ModchartUtilities
         Lua_helper.add_callback(lua,"getRenderedNoteHeight", function(id:Int) {
             return PlayState.instance.notes.members[id].height;
         });
+
+        trace("a");
 
         Lua_helper.add_callback(lua,"setRenderedNoteAngle", function(angle:Float, id:Int) {
             PlayState.instance.notes.members[id].modifiedByLua = true;
@@ -1125,125 +1138,20 @@ class ModchartUtilities
 
         // properties
 
-        Lua_helper.add_callback(lua, "getProperty", function(object:String, property:String) {
-            if (property == null)
-            {
-                var variablePaths = object.split(".");
-    
-                @:privateAccess
-                {
-                    if(variablePaths.length > 1)
-                    {
-                        var selectedVariable:Dynamic = null;
-    
-                        if (Reflect.getProperty(PlayState.instance, variablePaths[0]) != null)
-                            selectedVariable = Reflect.getProperty(PlayState.instance, variablePaths[0]);
-                        else
-                            selectedVariable = Reflect.getProperty(PlayState, variablePaths[0]);
-    
-                        for (i in 1...variablePaths.length-1)
-                        {
-                            selectedVariable = Reflect.getProperty(selectedVariable, variablePaths[i]);
-                        }
-    
-                        return Reflect.getProperty(selectedVariable, variablePaths[variablePaths.length - 1]);
-                    }
-    
-                    if (Reflect.getProperty(PlayState.instance, object) != null)
-                        return Reflect.getProperty(PlayState.instance, object);
-                    else
-                        return Reflect.getProperty(PlayState, object);
-                }
-            }
+        Lua_helper.add_callback(lua,"setProperty", function(object:String, property:String, value:Dynamic) {
+            @:privateAccess
+            if(Reflect.getProperty(PlayState.instance, object) != null)
+                Reflect.setProperty(Reflect.getProperty(PlayState.instance, object), property, value);
             else
-            {
-                var variablePaths = property.split(".");
-
-                @:privateAccess
-                {
-                    if(variablePaths.length > 1)
-                    {
-                        var selectedVariable:Dynamic = null;
-
-                        if (Reflect.getProperty(Reflect.getProperty(PlayState.instance, object), variablePaths[0]) != null)
-                            selectedVariable = Reflect.getProperty(Reflect.getProperty(PlayState.instance, object), variablePaths[0]);
-                        else
-                            selectedVariable = Reflect.getProperty(Reflect.getProperty(PlayState, object), variablePaths[0]);
-
-                        for (i in 1...variablePaths.length-1)
-                        {
-                            selectedVariable = Reflect.getProperty(selectedVariable, variablePaths[i]);
-                        }
-
-                        return Reflect.getProperty(selectedVariable, variablePaths[variablePaths.length - 1]);
-                    }
-
-                    if (Reflect.getProperty(Reflect.getProperty(PlayState.instance, object), property) != null)
-                        return Reflect.getProperty(Reflect.getProperty(PlayState.instance, object), property);
-                    else
-                        return Reflect.getProperty(Reflect.getProperty(PlayState, object), property);
-                }
-            }
+                Reflect.setProperty(Reflect.getProperty(PlayState, object), property, value);
         });
-		Lua_helper.add_callback(lua, "setProperty", function(object:String, property:String, value:Dynamic) {
-            if (value == null)
-            {
-                var variablePaths:Array<String> = object.split('.');
-    
-                @:privateAccess
-                {
-                    if(variablePaths.length > 1)
-                    {
-                        var selectedVariable:Dynamic = null;
-    
-                        if (Reflect.getProperty(PlayState.instance, variablePaths[0]) != null)
-                            selectedVariable = Reflect.getProperty(PlayState.instance, variablePaths[0]);
-                        else
-                            selectedVariable = Reflect.getProperty(PlayState, variablePaths[0]);
-    
-                        for (i in 1...variablePaths.length-1)
-                        {
-                            selectedVariable = Reflect.getProperty(selectedVariable, variablePaths[i]);
-                        }
-    
-                        return Reflect.setProperty(selectedVariable, variablePaths[variablePaths.length - 1], property);
-                    }
-    
-                    if (Reflect.getProperty(PlayState.instance, object) != null)
-                        return Reflect.setProperty(PlayState.instance, object, property);
-                    else
-                        return Reflect.setProperty(PlayState, object, property);
-                }
-            }
+
+        Lua_helper.add_callback(lua,"getProperty", function(object:String, property:String) {
+            @:privateAccess
+            if(Reflect.getProperty(PlayState.instance, object) != null)
+                return Reflect.getProperty(Reflect.getProperty(PlayState.instance, object), property);
             else
-            {
-                var variablePaths = property.split(".");
-
-                @:privateAccess
-                {
-                    if(variablePaths.length > 1)
-                    {
-                        var selectedVariable:Dynamic = null;
-
-                        if (Reflect.getProperty(Reflect.getProperty(PlayState.instance, object), variablePaths[0]) != null)
-                            selectedVariable = Reflect.getProperty(Reflect.getProperty(PlayState.instance, object), variablePaths[0]);
-                        else
-                            selectedVariable = Reflect.getProperty(Reflect.getProperty(PlayState, object), variablePaths[0]);
-
-                        for (i in 1...variablePaths.length-1)
-                        {
-                            selectedVariable = Reflect.getProperty(selectedVariable, variablePaths[i]);
-                        }
-
-                        return Reflect.setProperty(selectedVariable, variablePaths[variablePaths.length - 1], value);
-                    }
-
-                    if (Reflect.getProperty(Reflect.getProperty(PlayState.instance, object), property) != null)
-                        return Reflect.setProperty(Reflect.getProperty(PlayState.instance, object), property, value);
-                    else
-                        return Reflect.setProperty(Reflect.getProperty(PlayState, object), property, value);
-                }
-            }
+                return Reflect.getProperty(Reflect.getProperty(PlayState, object), property);
         });
 
         Lua_helper.add_callback(lua, "getPropertyFromClass", function(className:String, variable:String) {
@@ -1282,54 +1190,7 @@ class ModchartUtilities
 			return Reflect.setProperty(Type.resolveClass(className), variable, value);
 		});
 
-        // default strums
-
-        for (i in 0...PlayState.strumLineNotes.length) {
-            var member = PlayState.strumLineNotes.members[i];
-            trace(PlayState.strumLineNotes.members[i].x + " " + PlayState.strumLineNotes.members[i].y + " " + PlayState.strumLineNotes.members[i].angle + " | strum" + i);
-
-            setVar("defaultStrum" + i + "X", member.x);
-            setVar("defaultStrum" + i + "Y", member.y);
-            setVar("defaultStrum" + i + "Angle", member.angle);
-
-            trace("Adding strum" + i);
-        }
-
-        @:privateAccess
-        for(object in PlayState.instance.stage.stage_Objects)
-        {
-            if(!lua_Sprites.exists(object[0]))
-                lua_Sprites.set(object[0], object[1]);
-            else
-                trace("THERE IS ALREADY AN OBJECT WITH THE NAME " + object[0]);
-        }
-
-        if(PlayState.dad.otherCharacters != null)
-        {
-            for(char in 0...PlayState.dad.otherCharacters.length)
-            {
-                lua_Sprites.set("dadCharacter" + char, PlayState.dad.otherCharacters[char]);
-                lua_Characters.set("dadCharacter" + char, PlayState.dad.otherCharacters[char]);
-            }
-        }
-
-        if(PlayState.boyfriend.otherCharacters != null)
-        {
-            for(char in 0...PlayState.boyfriend.otherCharacters.length)
-            {
-                lua_Sprites.set("bfCharacter" + char, PlayState.boyfriend.otherCharacters[char]);
-                lua_Characters.set("bfCharacter" + char, PlayState.boyfriend.otherCharacters[char]);
-            }
-        }
-
-        if(PlayState.gf.otherCharacters != null)
-        {
-            for(char in 0...PlayState.gf.otherCharacters.length)
-            {
-                lua_Sprites.set("gfCharacter" + char, PlayState.gf.otherCharacters[char]);
-                lua_Characters.set("gfCharacter" + char, PlayState.gf.otherCharacters[char]);
-            }
-        }
+        trace('ass');
 
         // song stuff
 
@@ -1386,6 +1247,58 @@ class ModchartUtilities
 
             return true;
         });
+    }
+
+    public function setupTheShitCuzPullRequestsSuck()
+    {
+        for (i in 0...PlayState.strumLineNotes.length)
+        {
+            var member = PlayState.strumLineNotes.members[i];
+
+            trace(PlayState.strumLineNotes.members[i].x + " " + PlayState.strumLineNotes.members[i].y + " " + PlayState.strumLineNotes.members[i].angle + " | strum" + i);
+
+            setVar("defaultStrum" + i + "X", member.x);
+            setVar("defaultStrum" + i + "Y", member.y);
+            setVar("defaultStrum" + i + "Angle", member.angle);
+
+            trace("Adding strum" + i);
+        }
+
+        @:privateAccess
+        for(object in PlayState.instance.stage.stage_Objects)
+        {
+            if(!lua_Sprites.exists(object[0]))
+                lua_Sprites.set(object[0], object[1]);
+            else
+                trace("THERE IS ALREADY AN OBJECT WITH THE NAME " + object[0]);
+        }
+
+        if(PlayState.dad.otherCharacters != null)
+        {
+            for(char in 0...PlayState.dad.otherCharacters.length)
+            {
+                lua_Sprites.set("dadCharacter" + char, PlayState.dad.otherCharacters[char]);
+                lua_Characters.set("dadCharacter" + char, PlayState.dad.otherCharacters[char]);
+            }
+        }
+
+        if(PlayState.boyfriend.otherCharacters != null)
+        {
+            for(char in 0...PlayState.boyfriend.otherCharacters.length)
+            {
+                lua_Sprites.set("bfCharacter" + char, PlayState.boyfriend.otherCharacters[char]);
+                lua_Characters.set("bfCharacter" + char, PlayState.boyfriend.otherCharacters[char]);
+            }
+        }
+
+        if(PlayState.gf.otherCharacters != null)
+        {
+            for(char in 0...PlayState.gf.otherCharacters.length)
+            {
+                lua_Sprites.set("gfCharacter" + char, PlayState.gf.otherCharacters[char]);
+                lua_Characters.set("gfCharacter" + char, PlayState.gf.otherCharacters[char]);
+            }
+        }
     }
 
     private function convert(v : Any, type : String) : Dynamic { // I didn't write this lol

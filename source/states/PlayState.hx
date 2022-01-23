@@ -1284,7 +1284,10 @@ class PlayState extends MusicBeatState
 
 		#if linc_luajit
 		if(executeModchart && luaModchart != null)
+		{
+			luaModchart.setupTheShitCuzPullRequestsSuck();
 			luaModchart.executeState('start', [PlayState.SONG.song.toLowerCase()]);
+		}
 		#end
 
 		startTimer = new FlxTimer().start(Conductor.crochet / 1000, function(tmr:FlxTimer)
