@@ -98,7 +98,11 @@ class Note extends FlxSprite
 
 		var lmaoStuff = Std.parseFloat(PlayState.instance.ui_Settings[0]) * (Std.parseFloat(PlayState.instance.ui_Settings[2]) - (Std.parseFloat(PlayState.instance.mania_size[localKeyCount-1])));
 
-		setGraphicSize(Std.int(width * lmaoStuff));
+		if(isSustainNote)
+			setGraphicSize(Std.int(width * lmaoStuff), Std.int(height * Std.parseFloat(PlayState.instance.ui_Settings[0]) * (Std.parseFloat(PlayState.instance.ui_Settings[2]) - (Std.parseFloat(PlayState.instance.mania_size[3])))));
+		else
+			setGraphicSize(Std.int(width * lmaoStuff));
+
 		updateHitbox();
 		
 		antialiasing = PlayState.instance.ui_Settings[3] == "true";
@@ -163,7 +167,7 @@ class Note extends FlxSprite
 				if(utilities.Options.getData("useCustomScrollSpeed"))
 					speed = utilities.Options.getData("customScrollSpeed") / PlayState.songMultiplier;
 
-				prevNote.scale.y *= (Conductor.stepCrochet / 100) * 1.5 * speed;
+				prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.5 * speed;
 				prevNote.updateHitbox();
 			}
 
