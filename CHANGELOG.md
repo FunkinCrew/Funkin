@@ -31,6 +31,10 @@ All notable changes will be documented in this file.
 - Max Sustain Length of a note being dumb (now the max is always 9999).
 - Alt Animations not playing on group characters.
 - Weird Pixel Character Offsets.
+- Alt Idle Animations Being Weird.
+- Alt Animations not playing when using `Playing As Opponent`.
+- Held Notes looking really weird.
+- Modcharts are compatibile with Linux!!! :D (idk about Mac tho since I don't own one)
 ### Removed
 - Herobrine
 
