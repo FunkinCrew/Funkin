@@ -53,8 +53,8 @@ class MusicBeatState extends FlxUIState
 
 		super.update(elapsed);
 
-		/* cool fps shit thx kade */
-		(cast (Lib.current.getChildAt(0), Main)).setFPSCap(utilities.Options.getData("maxFPS"));
+		if(FlxG.stage != null)
+			FlxG.stage.frameRate = utilities.Options.getData("maxFPS");
 
 		if(!utilities.Options.getData("antialiasing"))
 		{

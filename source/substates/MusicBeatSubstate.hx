@@ -1,5 +1,7 @@
 package substates;
 
+import states.MusicBeatState;
+import lime.app.Application;
 import flixel.input.FlxInput.FlxInputState;
 import flixel.FlxSprite;
 import flixel.FlxBasic;
@@ -41,8 +43,8 @@ class MusicBeatSubstate extends FlxSubState
 
 		super.update(elapsed);
 
-		/* cool fps shit thx kade */
-		(cast (Lib.current.getChildAt(0), Main)).setFPSCap(utilities.Options.getData("maxFPS"));
+		if(FlxG.stage != null)
+			FlxG.stage.frameRate = utilities.Options.getData("maxFPS");
 
 		if(!utilities.Options.getData("antialiasing"))
 		{
@@ -54,6 +56,8 @@ class MusicBeatSubstate extends FlxSubState
 
 		if(FlxG.keys.checkStatus(FlxKey.fromString(utilities.Options.getData("fullscreenBind", "binds")), FlxInputState.JUST_PRESSED))
 			FlxG.fullscreen = !FlxG.fullscreen;
+
+		Application.current.window.title = MusicBeatState.windowNamePrefix + MusicBeatState.windowNameSuffix;
 	}
 
 	private function updateCurStep():Void
