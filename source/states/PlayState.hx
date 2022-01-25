@@ -2278,15 +2278,15 @@ class PlayState extends MusicBeatState
 					else
 					{
 						if(boyfriend.otherCharacters == null)
-							boyfriend.playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][Std.int(Math.abs(daNote.noteData))] + altAnim, true);
+							boyfriend.playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][Std.int(Math.abs(daNote.noteData))], true);
 						else
 							if(daNote.characters.length <= 1)
-								boyfriend.otherCharacters[daNote.character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][Std.int(Math.abs(daNote.noteData))] + altAnim, true);
+								boyfriend.otherCharacters[daNote.character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][Std.int(Math.abs(daNote.noteData))], true);
 							else
 							{
 								for(character in daNote.characters)
 								{
-									boyfriend.otherCharacters[character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][Std.int(Math.abs(daNote.noteData))] + altAnim, true);
+									boyfriend.otherCharacters[character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][Std.int(Math.abs(daNote.noteData))], true);
 								}
 							}
 					}
@@ -3411,13 +3411,12 @@ class PlayState extends MusicBeatState
 					
 					notes.forEachAlive(function(daNote:Note)
 					{
-						if(heldArray[daNote.noteData])
+						if(heldArray[daNote.noteData] && daNote.isSustainNote && daNote.mustPress && !thingsHit[daNote.noteData])
 						{
 							// goodness this if statement is shit lmfao
 							if(((daNote.strumTime <= Conductor.songPosition && daNote.shouldHit) || 
 								(!daNote.shouldHit && (daNote.strumTime > (Conductor.songPosition - (Conductor.safeZoneOffset * 0.4))
-								&& daNote.strumTime < (Conductor.songPosition + Conductor.safeZoneOffset * 0.2)))
-							&& (daNote.mustPress && daNote.isSustainNote && !thingsHit[daNote.noteData])))
+								&& daNote.strumTime < (Conductor.songPosition + Conductor.safeZoneOffset * 0.2)))))
 							{
 								if(characterPlayingAs == 0)
 								{
@@ -3484,7 +3483,7 @@ class PlayState extends MusicBeatState
 						if(dad.animation.curAnim != null)
 							if (dad.holdTimer > Conductor.stepCrochet * 4 * 0.001 && !heldArray.contains(true))
 								if (dad.animation.curAnim.name.startsWith('sing') && !dad.animation.curAnim.name.endsWith('miss'))
-									dad.dance();
+									dad.dance(altAnim);
 					}
 					else
 					{
@@ -3493,7 +3492,7 @@ class PlayState extends MusicBeatState
 							if(character.animation.curAnim != null)
 								if (character.holdTimer > Conductor.stepCrochet * 4 * 0.001 && !heldArray.contains(true))
 									if (character.animation.curAnim.name.startsWith('sing') && !character.animation.curAnim.name.endsWith('miss'))
-										character.dance();
+										character.dance(altAnim);
 						}
 					}
 				}
@@ -3594,7 +3593,7 @@ class PlayState extends MusicBeatState
 						if(dad.animation.curAnim != null)
 							if (dad.holdTimer > Conductor.stepCrochet * 4 * 0.001)
 								if (dad.animation.curAnim.name.startsWith('sing') && !dad.animation.curAnim.name.endsWith('miss'))
-									dad.dance();
+									dad.dance(altAnim);
 					}
 					else
 					{
@@ -3603,7 +3602,7 @@ class PlayState extends MusicBeatState
 							if(character.animation.curAnim != null)
 								if (character.holdTimer > Conductor.stepCrochet * 4 * 0.001)
 									if (character.animation.curAnim.name.startsWith('sing') && !character.animation.curAnim.name.endsWith('miss'))
-										character.dance();
+										character.dance(altAnim);
 						}
 					}
 				}
@@ -3701,16 +3700,16 @@ class PlayState extends MusicBeatState
 				{
 					if(dad.otherCharacters != null)
 						if(note.characters.length <= 1)
-							dad.otherCharacters[note.character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.playerKeyCount - 1][direction] + "miss", true);
+							dad.otherCharacters[note.character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.playerKeyCount - 1][direction] + altAnim + "miss", true);
 						else
 						{
 							for(character in note.characters)
 							{
-								dad.otherCharacters[character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.playerKeyCount - 1][direction] + "miss", true);
+								dad.otherCharacters[character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.playerKeyCount - 1][direction] + altAnim + "miss", true);
 							}
 						}
 					else
-						dad.playAnim(NoteVariables.Character_Animation_Arrays[SONG.playerKeyCount - 1][direction] + "miss", true);
+						dad.playAnim(NoteVariables.Character_Animation_Arrays[SONG.playerKeyCount - 1][direction] + altAnim + "miss", true);
 				}
 			}
 
@@ -3773,16 +3772,16 @@ class PlayState extends MusicBeatState
 			{
 				if(dad.otherCharacters != null)
 					if(note.characters.length <= 1)
-						dad.otherCharacters[note.character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.playerKeyCount - 1][Std.int(Math.abs(note.noteData % SONG.playerKeyCount))], true);
+						dad.otherCharacters[note.character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.playerKeyCount - 1][Std.int(Math.abs(note.noteData % SONG.playerKeyCount))] + altAnim, true);
 					else
 					{
 						for(character in note.characters)
 						{
-							dad.otherCharacters[character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.playerKeyCount - 1][Std.int(Math.abs(note.noteData % SONG.playerKeyCount))], true);
+							dad.otherCharacters[character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.playerKeyCount - 1][Std.int(Math.abs(note.noteData % SONG.playerKeyCount))] + altAnim, true);
 						}
 					}
 				else
-					dad.playAnim(NoteVariables.Character_Animation_Arrays[SONG.playerKeyCount - 1][Std.int(Math.abs(note.noteData % SONG.playerKeyCount))], true);
+					dad.playAnim(NoteVariables.Character_Animation_Arrays[SONG.playerKeyCount - 1][Std.int(Math.abs(note.noteData % SONG.playerKeyCount))] + altAnim, true);
 			}
 
 			#if linc_luajit
@@ -3855,7 +3854,7 @@ class PlayState extends MusicBeatState
 				{
 					if(dad.animation.curAnim != null)
 						if ((dad.animation.curAnim.name.startsWith("sing") && dad.animation.curAnim.finished || !dad.animation.curAnim.name.startsWith("sing")) && !dad.curCharacter.startsWith('gf'))
-							dad.dance();
+							dad.dance(altAnim);
 				}
 				else
 				{
@@ -3863,7 +3862,7 @@ class PlayState extends MusicBeatState
 					{
 						if(character.animation.curAnim != null)
 							if ((character.animation.curAnim.name.startsWith("sing") && character.animation.curAnim.finished || !character.animation.curAnim.name.startsWith("sing")) && !character.curCharacter.startsWith('gf'))
-								character.dance();
+								character.dance(altAnim);
 					}
 				}
 			}
@@ -3933,7 +3932,7 @@ class PlayState extends MusicBeatState
 			{
 				if(dad.animation.curAnim != null)
 					if(!dad.animation.curAnim.name.startsWith("sing"))
-						dad.dance();
+						dad.dance(altAnim);
 			}
 			else
 			{
@@ -3941,7 +3940,7 @@ class PlayState extends MusicBeatState
 				{
 					if(character.animation.curAnim != null)
 						if(!character.animation.curAnim.name.startsWith("sing"))
-							character.dance();
+							character.dance(altAnim);
 				}
 			}
 		}

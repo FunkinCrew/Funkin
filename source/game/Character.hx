@@ -506,7 +506,7 @@ class Character extends FlxSprite
 				
 				if (holdTimer >= Conductor.stepCrochet * dadVar * 0.001)
 				{
-					dance();
+					dance(mostRecentAlt);
 					holdTimer = 0;
 				}
 			}
@@ -524,10 +524,12 @@ class Character extends FlxSprite
 
 	private var danced:Bool = false;
 
+	var mostRecentAlt:String = "";
+
 	/**
 	 * FOR GF DANCING SHIT
 	 */
-	public function dance(?altAnim:String = "")
+	public function dance(?altAnim:String = '')
 	{
 		if(shouldDance)
 		{
@@ -536,18 +538,25 @@ class Character extends FlxSprite
 				// fix for multi character stuff lmao
 				if(animation.curAnim != null)
 				{
+					var alt = "";
+
+					if((!dancesLeftAndRight && animation.getByName("idle" + altAnim) != null) || (dancesLeftAndRight && animation.getByName("danceLeft" + altAnim) != null && animation.getByName("danceRight" + altAnim) != null))
+						alt = altAnim;
+
+					mostRecentAlt = alt;
+
 					if (!animation.curAnim.name.startsWith('hair'))
 					{
 						if(!dancesLeftAndRight)
-							playAnim('idle' + altAnim);
+							playAnim('idle' + alt);
 						else
 						{
 							danced = !danced;
 
 							if (danced)
-								playAnim('danceRight' + altAnim);
+								playAnim('danceRight' + alt);
 							else
-								playAnim('danceLeft' + altAnim);
+								playAnim('danceLeft' + alt);
 						}
 					}
 				}
