@@ -1,5 +1,6 @@
 package;
 
+import Note.NoteData;
 import Section.SwagSection;
 import haxe.Json;
 import haxe.format.JsonParser;
@@ -129,9 +130,55 @@ class SongLoad
 		};
 	}
 
+	public static function getDefaultNoteData():NoteData
+	{
+		return {
+			strumTime: 0,
+			altNote: false,
+			sustainLength: 0,
+			noteData: 0
+		}
+	}
+
 	public static function parseJSONshit(rawJson:String):SwagSong
 	{
 		var swagShit:SwagSong = cast Json.parse(rawJson).song;
+
+		for (diff in Reflect.fields(Json.parse(rawJson).song.notes))
+		{
+			function funnyNoteSetter(noteStuff:Array<SwagSection>)
+			{
+				for (sectionIndex => section in noteStuff)
+				{
+					for (noteIndex => noteDataArray in section.sectionNotes)
+					{
+						trace(noteDataArray);
+
+						var arrayDipshit:Array<Dynamic> = cast noteDataArray; // crackhead
+
+						noteStuff[sectionIndex].sectionNotes[noteIndex] = cast SongLoad.getDefaultNoteData(); // turn it from an array (because of the cast), back to noteData?
+
+						noteStuff[sectionIndex].sectionNotes[noteIndex].strumTime = arrayDipshit[0];
+						noteStuff[sectionIndex].sectionNotes[noteIndex].noteData = arrayDipshit[1];
+						noteStuff[sectionIndex].sectionNotes[noteIndex].sustainLength = arrayDipshit[2];
+						noteStuff[sectionIndex].sectionNotes[noteIndex].altNote = arrayDipshit[3];
+					}
+				}
+			}
+
+			switch (diff)
+			{
+				case "easy":
+					funnyNoteSetter(swagShit.notes.hard);
+
+				case "normal":
+					funnyNoteSetter(swagShit.notes.normal);
+				case "hard":
+					funnyNoteSetter(swagShit.notes.hard);
+			}
+			trace(diff);
+		}
+
 		swagShit.validScore = true;
 
 		trace("SONG SHIT ABOUTTA WEEK AGOOO");
@@ -144,7 +191,6 @@ class SongLoad
 
 		// swagShit.notes = cast Json.parse(rawJson).song.notes[SongLoad.curDiff]; // by default uses
 
-		// trace(swagShit.notes);
 		trace('THAT SHIT WAS JUST THE NORMAL NOTES!!!');
 		songData = swagShit;
 		// curNotes = songData.notes.get('normal');

@@ -129,7 +129,10 @@ class ChartingState extends MusicBeatState
 		curRenderedSustains = new FlxTypedGroup<FlxSprite>();
 
 		if (PlayState.SONG != null)
-			_song = PlayState.SONG;
+		{
+			_song = SongLoad.songData = PlayState.SONG;
+			trace("LOADED A PLAYSTATE SONGFILE");
+		}
 		else
 		{
 			_song = SongLoad.songData = SongLoad.getDefaultSwagSong();
