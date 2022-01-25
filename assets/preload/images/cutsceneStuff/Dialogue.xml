@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="Dialogue.png">
+	<!-- Created with Adobe Animate version 21.0.2.37893 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="BfPortrait Start0000" x="893" y="1026" width="893" height="342"/>
+	<SubTexture name="BfPortrait Start0001" x="1786" y="1026" width="893" height="342"/>
+	<SubTexture name="BfPortrait Start0002" x="2679" y="1026" width="893" height="342"/>
+	<SubTexture name="BfPortrait Start0003" x="0" y="1368" width="893" height="342"/>
+	<SubTexture name="BfPortrait Start0004" x="893" y="1368" width="893" height="342"/>
+	<SubTexture name="BfPortrait Start0005" x="1786" y="1368" width="893" height="342"/>
+	<SubTexture name="BfPortrait Start0006" x="2679" y="1368" width="893" height="342"/>
+	<SubTexture name="BfPortrait Start0007" x="0" y="1710" width="893" height="342"/>
+	<SubTexture name="BfPortrait Start0008" x="893" y="1710" width="893" height="342"/>
+	<SubTexture name="BfPortrait Start0009" x="1786" y="1710" width="893" height="342"/>
+	<SubTexture name="BfPortrait Start0010" x="2679" y="1710" width="893" height="342"/>
+	<SubTexture name="BfPortrait Start0011" x="0" y="2052" width="893" height="342"/>
+	<SubTexture name="BfPortrait Start0012" x="893" y="2052" width="893" height="342"/>
+	<SubTexture name="BfPortrait Start0013" x="1786" y="2052" width="893" height="342"/>
+	<SubTexture name="Start Tankman Dialogue0000" x="0" y="0" width="893" height="342"/>
+	<SubTexture name="Start Tankman Dialogue0001" x="893" y="0" width="893" height="342"/>
+	<SubTexture name="Start Tankman Dialogue0002" x="1786" y="0" width="893" height="342"/>
+	<SubTexture name="Start Tankman Dialogue0003" x="2679" y="0" width="893" height="342"/>
+	<SubTexture name="Start Tankman Dialogue0004" x="0" y="342" width="893" height="342"/>
+	<SubTexture name="Start Tankman Dialogue0005" x="893" y="342" width="893" height="342"/>
+	<SubTexture name="Start Tankman Dialogue0006" x="1786" y="342" width="893" height="342"/>
+	<SubTexture name="Start Tankman Dialogue0007" x="2679" y="342" width="893" height="342"/>
+	<SubTexture name="Start Tankman Dialogue0008" x="0" y="684" width="893" height="342"/>
+	<SubTexture name="Start Tankman Dialogue0009" x="893" y="684" width="893" height="342"/>
+	<SubTexture name="Start Tankman Dialogue0010" x="1786" y="684" width="893" height="342"/>
+	<SubTexture name="Start Tankman Dialogue0011" x="2679" y="684" width="893" height="342"/>
+	<SubTexture name="Start Tankman Dialogue0012" x="0" y="1026" width="893" height="342"/>
+	<SubTexture name="Start Tankman Dialogue0013" x="893" y="342" width="893" height="342"/>
+</TextureAtlas>
