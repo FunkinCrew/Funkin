@@ -601,8 +601,9 @@ class PlayState extends MusicBeatState
 				add(stage.infrontOfGFSprites);
 
 			/* we do a little trolling */
-			var midPos = (utilities.Options.getData("cameraTracksDirections") ? dad.getGraphicMidpoint() : dad.getMidpoint());
+			var midPos = dad.getMidpoint();
 
+			
 			camPos.set(midPos.x + 150 + dad.cameraOffset[0], midPos.y - 100 + dad.cameraOffset[1]);
 
 			switch (dad.curCharacter)
@@ -2039,7 +2040,22 @@ class PlayState extends MusicBeatState
 			
 			if(!PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection)
 			{
-				var midPos = (utilities.Options.getData("cameraTracksDirections") ? dad.getGraphicMidpoint() : dad.getMidpoint());
+				var midPos = dad.getMidpoint();
+
+				if(utilities.Options.getData("cameraTracksDirections") && dad.animation.curAnim != null)
+				{
+					switch(dad.animation.curAnim.name)
+					{
+						case "singLEFT":
+							midPos.x -= 50;
+						case "singRIGHT":
+							midPos.x += 50;
+						case "singUP":
+							midPos.y -= 50;
+						case "singDOWN":
+							midPos.y += 50;
+					}
+				}
 
 				if (camFollow.x != midPos.x + 150 + dad.cameraOffset[0])
 				{
@@ -2066,7 +2082,22 @@ class PlayState extends MusicBeatState
 
 			if(PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection)
 			{
-				var midPos = (utilities.Options.getData("cameraTracksDirections") ? boyfriend.getGraphicMidpoint() : boyfriend.getMidpoint());
+				var midPos = boyfriend.getMidpoint();
+
+				if(utilities.Options.getData("cameraTracksDirections") && boyfriend.animation.curAnim != null)
+				{
+					switch(boyfriend.animation.curAnim.name)
+					{
+						case "singLEFT":
+							midPos.x -= 50;
+						case "singRIGHT":
+							midPos.x += 50;
+						case "singUP":
+							midPos.y -= 50;
+						case "singDOWN":
+							midPos.y += 50;
+					}
+				}
 
 				if(camFollow.x != midPos.x - 100 + boyfriend.cameraOffset[0])
 				{
