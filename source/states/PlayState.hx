@@ -2220,7 +2220,7 @@ class PlayState extends MusicBeatState
 						else
 							daNote.y += daNote.height / speed;
 
-						if((!daNote.mustPress || daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit) && daNote.y - daNote.offset.y * daNote.scale.y + daNote.height >= (strumLine.y + Note.swagWidth / 2))
+						if(((daNote.wasGoodHit || daNote.prevNote.wasGoodHit) && daNote.shouldHit) && daNote.y - daNote.offset.y * daNote.scale.y + daNote.height >= (strumLine.y + Note.swagWidth / 2))
 						{
 							// Clip to strumline
 							var swagRect = new FlxRect(0, 0, daNote.frameWidth * 2, daNote.frameHeight * 2);
@@ -2239,7 +2239,7 @@ class PlayState extends MusicBeatState
 					{
 						daNote.y -= daNote.height / 2;
 
-						if((!daNote.mustPress || daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit) && daNote.y + daNote.offset.y * daNote.scale.y <= (strumLine.y + Note.swagWidth / 2))
+						if(((daNote.wasGoodHit || daNote.prevNote.wasGoodHit) && daNote.shouldHit) && daNote.y + daNote.offset.y * daNote.scale.y <= (strumLine.y + Note.swagWidth / 2))
 						{
 							// Clip to strumline
 							var swagRect = new FlxRect(0, 0, daNote.width / daNote.scale.x, daNote.height / daNote.scale.y);
@@ -3413,9 +3413,11 @@ class PlayState extends MusicBeatState
 					{
 						if(heldArray[daNote.noteData])
 						{
-							if ((daNote.strumTime > (Conductor.songPosition - ((daNote.shouldHit ? Conductor.safeZoneOffset * 1.5 : Conductor.safeZoneOffset * 0.4)))
-								&& daNote.strumTime < (Conductor.songPosition + ((daNote.shouldHit ? Conductor.safeZoneOffset * 0.5 : Conductor.safeZoneOffset * 0.2))))
-							&& daNote.mustPress && daNote.isSustainNote && !thingsHit[daNote.noteData])
+							// goodness this if statement is shit lmfao
+							if(((daNote.strumTime <= Conductor.songPosition && daNote.shouldHit) || 
+								(!daNote.shouldHit && (daNote.strumTime > (Conductor.songPosition - (Conductor.safeZoneOffset * 0.4))
+								&& daNote.strumTime < (Conductor.songPosition + Conductor.safeZoneOffset * 0.2)))
+							&& (daNote.mustPress && daNote.isSustainNote && !thingsHit[daNote.noteData])))
 							{
 								if(characterPlayingAs == 0)
 								{
