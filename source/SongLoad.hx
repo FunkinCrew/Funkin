@@ -140,41 +140,67 @@ class SongLoad
 		}
 	}
 
+	/**
+	 *	Casts the an array to NOTE data (for LOADING shit from json usually)
+	 */
+	public static function castArrayToNoteData(noteStuff:Array<SwagSection>)
+	{
+		for (sectionIndex => section in noteStuff)
+		{
+			for (noteIndex => noteDataArray in section.sectionNotes)
+			{
+				trace(noteDataArray);
+
+				var arrayDipshit:Array<Dynamic> = cast noteDataArray; // crackhead
+
+				// at this point noteStuff[sectionIndex].sectionNotes[noteIndex] is an array because of the cast from the first line in this function
+				// so this line right here turns it back into the NoteData typedef type because of another bastard cast
+				noteStuff[sectionIndex].sectionNotes[noteIndex] = cast SongLoad.getDefaultNoteData(); // turn it from an array (because of the cast), back to noteData? yeah that works
+
+				noteStuff[sectionIndex].sectionNotes[noteIndex].strumTime = arrayDipshit[0];
+				noteStuff[sectionIndex].sectionNotes[noteIndex].noteData = arrayDipshit[1];
+				noteStuff[sectionIndex].sectionNotes[noteIndex].sustainLength = arrayDipshit[2];
+				noteStuff[sectionIndex].sectionNotes[noteIndex].altNote = arrayDipshit[3];
+			}
+		}
+	}
+
+	/**
+	 * Cast notedata to ARRAY (usually used for level SAVING)
+	 */
+	public static function castNoteDataToArray(noteStuff:Array<SwagSection>)
+	{
+		for (sectionIndex => section in noteStuff)
+		{
+			for (noteIndex => noteTypeDefShit in section.sectionNotes)
+			{
+				var dipshitArray:Array<Dynamic> = [
+					noteTypeDefShit.strumTime,
+					noteTypeDefShit.noteData,
+					noteTypeDefShit.sustainLength,
+					noteTypeDefShit.altNote
+				];
+
+				noteStuff[sectionIndex].sectionNotes[noteIndex] = cast dipshitArray;
+			}
+		}
+	}
+
 	public static function parseJSONshit(rawJson:String):SwagSong
 	{
 		var swagShit:SwagSong = cast Json.parse(rawJson).song;
 
 		for (diff in Reflect.fields(Json.parse(rawJson).song.notes))
 		{
-			function funnyNoteSetter(noteStuff:Array<SwagSection>)
-			{
-				for (sectionIndex => section in noteStuff)
-				{
-					for (noteIndex => noteDataArray in section.sectionNotes)
-					{
-						trace(noteDataArray);
-
-						var arrayDipshit:Array<Dynamic> = cast noteDataArray; // crackhead
-
-						noteStuff[sectionIndex].sectionNotes[noteIndex] = cast SongLoad.getDefaultNoteData(); // turn it from an array (because of the cast), back to noteData?
-
-						noteStuff[sectionIndex].sectionNotes[noteIndex].strumTime = arrayDipshit[0];
-						noteStuff[sectionIndex].sectionNotes[noteIndex].noteData = arrayDipshit[1];
-						noteStuff[sectionIndex].sectionNotes[noteIndex].sustainLength = arrayDipshit[2];
-						noteStuff[sectionIndex].sectionNotes[noteIndex].altNote = arrayDipshit[3];
-					}
-				}
-			}
-
 			switch (diff)
 			{
 				case "easy":
-					funnyNoteSetter(swagShit.notes.hard);
+					castArrayToNoteData(swagShit.notes.hard);
 
 				case "normal":
-					funnyNoteSetter(swagShit.notes.normal);
+					castArrayToNoteData(swagShit.notes.normal);
 				case "hard":
-					funnyNoteSetter(swagShit.notes.hard);
+					castArrayToNoteData(swagShit.notes.hard);
 			}
 			trace(diff);
 		}

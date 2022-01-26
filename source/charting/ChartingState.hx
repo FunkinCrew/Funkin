@@ -4,41 +4,26 @@ import Conductor.BPMChangeEvent;
 import Note.NoteData;
 import Section.SwagSection;
 import SongLoad.SwagSong;
-import dsp.FFT;
 import flixel.FlxSprite;
-import flixel.FlxStrip;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.ui.FlxInputText;
-import flixel.addons.ui.FlxUI9SliceSprite;
 import flixel.addons.ui.FlxUI;
 import flixel.addons.ui.FlxUICheckBox;
 import flixel.addons.ui.FlxUIDropDownMenu;
 import flixel.addons.ui.FlxUIInputText;
 import flixel.addons.ui.FlxUINumericStepper;
 import flixel.addons.ui.FlxUITabMenu;
-import flixel.addons.ui.FlxUITooltip.FlxUITooltipStyle;
-import flixel.graphics.tile.FlxDrawTrianglesItem.DrawData;
-import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxGroup;
-import flixel.input.gamepad.id.SwitchJoyconLeftID;
 import flixel.math.FlxMath;
-import flixel.math.FlxPoint;
-import flixel.system.FlxSound;
 import flixel.text.FlxText;
 import flixel.ui.FlxButton;
-import flixel.ui.FlxSpriteButton;
 import flixel.util.FlxColor;
-import haxe.CallStack.StackItem;
 import haxe.Json;
-import haxe.Serializer;
 import lime.media.AudioBuffer;
 import lime.utils.Assets;
-import lime.utils.Int16Array;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
-import openfl.media.Sound;
 import openfl.net.FileReference;
-import openfl.utils.ByteArray;
 
 using Lambda;
 using StringTools;
@@ -1357,11 +1342,16 @@ class ChartingState extends MusicBeatState
 
 	private function saveLevel(?debugSavepath:Bool = false)
 	{
+		// run this for each diff
+		SongLoad.castNoteDataToArray(_song.notes.easy);
+		SongLoad.castNoteDataToArray(_song.notes.normal);
+		SongLoad.castNoteDataToArray(_song.notes.hard);
+
 		var json = {
 			"song": _song
 		};
 
-		var data:String = Json.stringify(json);
+		var data:String = Json.stringify(json, null, "\t");
 
 		#if sys
 		// quick workaround, since it easier to load into hashlink, thus quicker/nicer to test?
@@ -1386,6 +1376,10 @@ class ChartingState extends MusicBeatState
 			_file.save(data.trim(), _song.song.toLowerCase() + ".json");
 		}
 		#end
+
+		SongLoad.castArrayToNoteData(_song.notes.easy);
+		SongLoad.castArrayToNoteData(_song.notes.normal);
+		SongLoad.castArrayToNoteData(_song.notes.hard);
 	}
 
 	function onSaveComplete(_):Void
