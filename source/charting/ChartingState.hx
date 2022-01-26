@@ -4,41 +4,28 @@ import Conductor.BPMChangeEvent;
 import Note.NoteData;
 import Section.SwagSection;
 import SongLoad.SwagSong;
-import dsp.FFT;
 import flixel.FlxSprite;
-import flixel.FlxStrip;
 import flixel.addons.display.FlxGridOverlay;
+import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.ui.FlxInputText;
-import flixel.addons.ui.FlxUI9SliceSprite;
 import flixel.addons.ui.FlxUI;
 import flixel.addons.ui.FlxUICheckBox;
 import flixel.addons.ui.FlxUIDropDownMenu;
 import flixel.addons.ui.FlxUIInputText;
 import flixel.addons.ui.FlxUINumericStepper;
 import flixel.addons.ui.FlxUITabMenu;
-import flixel.addons.ui.FlxUITooltip.FlxUITooltipStyle;
-import flixel.graphics.tile.FlxDrawTrianglesItem.DrawData;
-import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxGroup;
-import flixel.input.gamepad.id.SwitchJoyconLeftID;
 import flixel.math.FlxMath;
-import flixel.math.FlxPoint;
 import flixel.system.FlxSound;
 import flixel.text.FlxText;
 import flixel.ui.FlxButton;
-import flixel.ui.FlxSpriteButton;
 import flixel.util.FlxColor;
-import haxe.CallStack.StackItem;
 import haxe.Json;
-import haxe.Serializer;
 import lime.media.AudioBuffer;
 import lime.utils.Assets;
-import lime.utils.Int16Array;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
-import openfl.media.Sound;
 import openfl.net.FileReference;
-import openfl.utils.ByteArray;
 
 using Lambda;
 using StringTools;
@@ -129,7 +116,10 @@ class ChartingState extends MusicBeatState
 		curRenderedSustains = new FlxTypedGroup<FlxSprite>();
 
 		if (PlayState.SONG != null)
-			_song = PlayState.SONG;
+		{
+			_song = SongLoad.songData = PlayState.SONG;
+			trace("LOADED A PLAYSTATE SONGFILE");
+		}
 		else
 		{
 			_song = SongLoad.songData = SongLoad.getDefaultSwagSong();
@@ -228,6 +218,8 @@ class ChartingState extends MusicBeatState
 
 		var reloadSongJson:FlxButton = new FlxButton(reloadSong.x, saveButton.y + 30, "Reload JSON", function()
 		{
+			FlxTransitionableState.skipNextTransIn = true;
+			FlxTransitionableState.skipNextTransOut = true;
 			loadJson(_song.song.toLowerCase());
 		});
 
@@ -409,7 +401,7 @@ class ChartingState extends MusicBeatState
 		add(musSpec);
 
 		// trace(audioBuf.data.length);
-		playheadTest = new FlxSprite(0, 0).makeGraphic(2, 60, FlxColor.RED);
+		playheadTest = new FlxSprite(0, 0).makeGraphic(30, 2, FlxColor.RED);
 		playheadTest.scrollFactor.set();
 		add(playheadTest);
 
@@ -581,12 +573,14 @@ class ChartingState extends MusicBeatState
 	{
 		// FlxG.camera.followLerp = CoolUtil.camLerpShit(0.05);
 
+		FlxG.sound.music.pan = FlxMath.remapToRange(FlxG.mouse.screenX, 0, FlxG.width, -1, 1) * 10;
+
 		curStep = recalculateSteps();
 
 		Conductor.songPosition = FlxG.sound.music.time;
 		_song.song = typingShit.text;
 
-		playheadTest.x = FlxMath.remapToRange(Conductor.songPosition, 0, FlxG.sound.music.length, 0, FlxG.width);
+		playheadTest.y = FlxMath.remapToRange(Conductor.songPosition, 0, FlxG.sound.music.length, 0, FlxG.height);
 
 		strumLine.y = getYfromStrum((Conductor.songPosition - sectionStartTime()) % (Conductor.stepCrochet * SongLoad.getSong()[curSection].lengthInSteps));
 
@@ -617,7 +611,7 @@ class ChartingState extends MusicBeatState
 		FlxG.watch.addQuick('daBeat', curBeat);
 		FlxG.watch.addQuick('daStep', curStep);
 
-		if (FlxG.mouse.pressedMiddle)
+		if (FlxG.mouse.pressedMiddle && FlxG.mouse.overlaps(gridBG))
 		{
 			if (FlxG.sound.music.playing)
 			{
@@ -631,7 +625,7 @@ class ChartingState extends MusicBeatState
 
 		if (FlxG.mouse.pressed)
 		{
-			if (FlxG.keys.pressed.ALT)
+			if (FlxG.keys.pressed.ALT && FlxG.mouse.overlaps(gridBG)) // same shit as middle click / hold on grid
 			{
 				if (FlxG.sound.music.playing)
 				{
@@ -644,6 +638,17 @@ class ChartingState extends MusicBeatState
 			}
 			else
 			{
+				if (FlxG.mouse.screenX <= 30 && FlxMath.inBounds(FlxG.mouse.screenY, 0, FlxG.height))
+				{
+					if (FlxG.sound.music.playing)
+					{
+						FlxG.sound.music.pause();
+						vocals.pause();
+					}
+
+					FlxG.sound.music.time = FlxMath.remapToRange(FlxG.mouse.screenY, 0, FlxG.height, 0, FlxG.sound.music.length);
+					vocals.time = FlxG.sound.music.time;
+				}
 				if (FlxG.mouse.justPressed)
 				{
 					if (FlxG.mouse.overlaps(leftIcon))
@@ -1198,7 +1203,6 @@ class ChartingState extends MusicBeatState
 				placeIDK = Std.int(Math.max(placeIDK, 1));
 
 				trace(placeIDK);
-
 				FlxG.sound.play(Paths.sound('funnyNoise/funnyNoise-0' + placeIDK));
 
 				FlxG.log.add('FOUND EVIL NUMBER');
@@ -1235,29 +1239,37 @@ class ChartingState extends MusicBeatState
 
 		// FlxG.sound.play(Paths.sound('pianoStuff/piano-00' + FlxG.random.int(1, 9)), FlxG.random.float(0.01, 0.3));
 
+		function makeAndPlayChord(soundsToPlay:Array<String>)
+		{
+			var bullshit:Int = Std.int((Math.floor(dummyArrow.y / GRID_SIZE) * GRID_SIZE) / 40);
+			soundsToPlay.push('00' + Std.string((bullshit % 8) + 1));
+
+			for (key in soundsToPlay)
+			{
+				var snd:FlxSound = FlxG.sound.list.recycle(FlxSound).loadEmbedded(FlxG.sound.cache(Paths.sound("pianoStuff/piano-" + key)));
+				snd.autoDestroy = true;
+				FlxG.sound.list.add(snd);
+				snd.volume = FlxG.random.float(0.05, 0.7);
+				snd.pan = noteData - 2; // .... idk why tf panning doesnt work? (as of 2022/01/25) busted ass bullshit. I only went thru this fuss of creating FlxSound just for the panning!
+
+				// snd.proximity(FlxG.mouse.x, FlxG.mouse.y, gridBG, gridBG.width / 2);
+
+				snd.play();
+			}
+		}
+
 		switch (noteData)
 		{
 			case 0:
-				FlxG.sound.play(Paths.sound('pianoStuff/piano-015'), FlxG.random.float(0.1, 0.3));
-				FlxG.sound.play(Paths.sound('pianoStuff/piano-013'), FlxG.random.float(0.1, 0.3));
-				FlxG.sound.play(Paths.sound('pianoStuff/piano-009'), FlxG.random.float(0.1, 0.3));
+				makeAndPlayChord(["015", "013", "009"]);
 			case 1:
-				FlxG.sound.play(Paths.sound('pianoStuff/piano-015'), FlxG.random.float(0.1, 0.3));
-				FlxG.sound.play(Paths.sound('pianoStuff/piano-012'), FlxG.random.float(0.1, 0.3));
-				FlxG.sound.play(Paths.sound('pianoStuff/piano-009'), FlxG.random.float(0.1, 0.3));
+				makeAndPlayChord(["015", "012", "009"]);
 			case 2:
-				FlxG.sound.play(Paths.sound('pianoStuff/piano-015'), FlxG.random.float(0.1, 0.3));
-				FlxG.sound.play(Paths.sound('pianoStuff/piano-011'), FlxG.random.float(0.1, 0.3));
-				FlxG.sound.play(Paths.sound('pianoStuff/piano-009'), FlxG.random.float(0.1, 0.3));
+				makeAndPlayChord(["015", "011", "009"]);
 			case 3:
-				FlxG.sound.play(Paths.sound('pianoStuff/piano-014'), FlxG.random.float(0.1, 0.3));
-				FlxG.sound.play(Paths.sound('pianoStuff/piano-011'), FlxG.random.float(0.1, 0.3));
-				FlxG.sound.play(Paths.sound('pianoStuff/piano-010'), FlxG.random.float(0.1, 0.3));
+				makeAndPlayChord(["014", "011", "010"]);
 		}
 
-		var bullshit:Int = Std.int((Math.floor(dummyArrow.y / GRID_SIZE) * GRID_SIZE) / 40);
-
-		FlxG.sound.play(Paths.sound('pianoStuff/piano-00' + Std.string((bullshit % 8) + 1)), FlxG.random.float(0.3, 0.6));
 		// trace('bullshit $bullshit'); // trace(Math.floor(dummyArrow.y / GRID_SIZE) * GRID_SIZE);
 
 		var daNewNote:Note = new Note(noteStrum, noteData);
@@ -1354,11 +1366,14 @@ class ChartingState extends MusicBeatState
 
 	private function saveLevel(?debugSavepath:Bool = false)
 	{
-		var json = {
-			"song": _song
-		};
+		// Right now the note data is saved as a Note.NoteData typedef / object or whatev
+		// we want to format it to an ARRAY. We turn it back into the typedef / object at the end of this function hehe
+		SongLoad.castNoteDataToArray(_song.notes.easy);
+		SongLoad.castNoteDataToArray(_song.notes.normal);
+		SongLoad.castNoteDataToArray(_song.notes.hard);
 
-		var data:String = Json.stringify(json);
+		var json = {"song": _song};
+		var data:String = Json.stringify(json, null, "\t");
 
 		#if sys
 		// quick workaround, since it easier to load into hashlink, thus quicker/nicer to test?
@@ -1383,6 +1398,11 @@ class ChartingState extends MusicBeatState
 			_file.save(data.trim(), _song.song.toLowerCase() + ".json");
 		}
 		#end
+
+		// turn the array data back to Note.NoteData typedef
+		SongLoad.castArrayToNoteData(_song.notes.easy);
+		SongLoad.castArrayToNoteData(_song.notes.normal);
+		SongLoad.castArrayToNoteData(_song.notes.hard);
 	}
 
 	function onSaveComplete(_):Void
