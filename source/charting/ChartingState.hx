@@ -1342,15 +1342,13 @@ class ChartingState extends MusicBeatState
 
 	private function saveLevel(?debugSavepath:Bool = false)
 	{
-		// run this for each diff
+		// Right now the note data is saved as a Note.NoteData typedef / object or whatev
+		// we want to format it to an ARRAY. We turn it back into the typedef / object at the end of this function hehe
 		SongLoad.castNoteDataToArray(_song.notes.easy);
 		SongLoad.castNoteDataToArray(_song.notes.normal);
 		SongLoad.castNoteDataToArray(_song.notes.hard);
 
-		var json = {
-			"song": _song
-		};
-
+		var json = {"song": _song};
 		var data:String = Json.stringify(json, null, "\t");
 
 		#if sys
@@ -1377,6 +1375,7 @@ class ChartingState extends MusicBeatState
 		}
 		#end
 
+		// turn the array data back to Note.NoteData typedef
 		SongLoad.castArrayToNoteData(_song.notes.easy);
 		SongLoad.castArrayToNoteData(_song.notes.normal);
 		SongLoad.castArrayToNoteData(_song.notes.hard);
