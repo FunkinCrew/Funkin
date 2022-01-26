@@ -2,3 +2,7 @@ export/
 .vscode/
 APIStuff.hx
 .DS_STORE
+
+example_mods/enaSkin/
+
+example_mods/tricky/

@@ -5,6 +5,7 @@ import flixel.FlxSubState;
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.group.FlxGroup;
 import flixel.util.FlxSignal;
+import i18n.FireTongueHandler.t;
 
 // typedef OptionsState = OptionsMenu_old;
 // class OptionsState_new extends MusicBeatState
@@ -176,27 +177,27 @@ class OptionsMenu extends Page
 		super();
 
 		add(items = new TextMenuList());
-		createItem('preferences', function() switchPage(Preferences));
-		createItem("controls", function() switchPage(Controls));
-		// createItem('colors', function() switchPage(Colors));
+		createItem(t("PREFERENCES"), function() switchPage(Preferences));
+		createItem(t("CONTROLS"), function() switchPage(Controls));
+		// createItem(t("COLORS"), function() switchPage(Colors));
 		#if polymod
-		createItem('mods', function() switchPage(Mods));
+		createItem(t("MODS"), function() switchPage(Mods));
 		#end
 
 		#if CAN_OPEN_LINKS
 		if (showDonate)
 		{
 			var hasPopupBlocker = #if web true #else false #end;
-			createItem('donate', selectDonate, hasPopupBlocker);
+			createItem(t("DONATE"), selectDonate, hasPopupBlocker);
 		}
 		#end
 		#if newgrounds
 		if (NGio.isLoggedIn)
-			createItem("logout", selectLogout);
+			createItem(t("LOGOUT"), selectLogout);
 		else
-			createItem("login", selectLogin);
+			createItem(t("LOGIN"), selectLogin);
 		#end
-		createItem("exit", exit);
+		createItem(t("EXIT"), exit);
 	}
 
 	function createItem(name:String, callback:Void->Void, fireInstantly = false)

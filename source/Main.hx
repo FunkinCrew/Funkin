@@ -1,19 +1,12 @@
 package;
 
-import modding.PolymodHandler;
 import flixel.FlxGame;
 import flixel.FlxState;
-import flixel.util.FlxColor;
-import openfl.Assets;
 import openfl.Lib;
 import openfl.display.FPS;
 import openfl.display.Sprite;
-import openfl.events.AsyncErrorEvent;
 import openfl.events.Event;
-import openfl.events.MouseEvent;
-import openfl.events.NetStatusEvent;
 import openfl.media.Video;
-import openfl.net.NetConnection;
 import openfl.net.NetStream;
 
 class Main extends Sprite
@@ -25,8 +18,8 @@ class Main extends Sprite
 	#if web
 	var framerate:Int = 60; // How many frames per second the game should run at.
 	#else
+	// TODO: This should probably be in the options menu?
 	var framerate:Int = 300; // How many frames per second the game should run at.
-
 	#end
 	var skipSplash:Bool = true; // Whether to skip the flixel splash screen that appears in release mode.
 	var startFullscreen:Bool = false; // Whether to start the game in fullscreen on desktop targets
@@ -49,7 +42,9 @@ class Main extends Sprite
 		//      A design similar to that of Minecraft resource packs would be intuitive.
 		// 3. The interface should save (to the save file) and output an ordered array of mod IDs.
 		// 4. Replace the call to PolymodHandler.loadAllMods() with a call to PolymodHandler.loadModsById(ids:Array<String>).
-		PolymodHandler.loadAllMods();
+		modding.PolymodHandler.loadAllMods();
+
+		i18n.FireTongueHandler.init();
 
 		if (stage != null)
 		{

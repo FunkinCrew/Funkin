@@ -71,7 +71,7 @@
 		<library name="week8"    preload="false" />
 	</section>
 	
-	<assets path="assets/songs"    library="songs"    exclude="*.fla|*.ogg" if="web"/>
+	<assets path="assets/songs"    library="songs"    exclude="*.fla|*.ogg" if="web" />
 	<assets path="assets/songs"    library="songs"    exclude="*.fla|*.mp3" unless="web"/>
 	<assets path="assets/shared"   library="shared"   exclude="*.fla|*.ogg" if="web"/>
 	<assets path="assets/shared"   library="shared"   exclude="*.fla|*.mp3" unless="web"/>
@@ -121,6 +121,7 @@
 	<!--haxelib name="newgrounds" unless="switch"/> -->
 	<haxelib name="faxe" if='switch'/>
 	<haxelib name="polymod" if="cpp"/>
+	<haxelib name="firetongue" />
 	
 	<!-- <haxelib name="colyseus"/> -->
 	<!-- <haxelib name="colyseus-websocket" /> -->

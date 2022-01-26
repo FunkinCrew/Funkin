@@ -138,12 +138,13 @@ class MainMenuState extends MusicBeatState
 		FlxG.camera.follow(camFollow, null, 0.06);
 		// FlxG.camera.setScrollBounds(bg.x, bg.x + bg.width, bg.y, bg.y + bg.height * 1.2);
 
-		var versionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, "v" + Application.current.meta.get('version'), 12);
+		var versionStr = 'v${Application.current.meta.get('version')}';
+		versionStr += ' (secret week 8 build do not leak)';
+
+		var versionShit:FlxText = new FlxText(5, FlxG.height - 18, 0, versionStr, 12);
 		versionShit.scrollFactor.set();
 		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(versionShit);
-
-		versionShit.text += '(Newgrounds exclusive preview)';
 
 		// NG.core.calls.event.logEvent('swag').send();
 

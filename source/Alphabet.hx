@@ -11,6 +11,7 @@ using StringTools;
 /**
  * Loosley based on FlxTypeText lolol
  */
+@:deprecated("Use ui.AtlasText instead")
 class Alphabet extends FlxSpriteGroup
 {
 	public var delay:Float = 0.05;
