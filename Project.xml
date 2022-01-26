@@ -193,6 +193,11 @@
 	<icon path="art/icon64.png" size='64'/>
 	<icon path="art/iconOG.png" />
 
+	<!--
+		aww yeah hackerman time, run a macro on the class rather than edit it
+		took me a while to get this working but turns out the classname comes SECOND
+	-->
+	<haxeflag name="--macro" value="addMetadata('@:build(util.macro.FlxMacro.buildFlxBasic())', 'flixel.FlxBasic')" />
 
 	<!-- <haxedef name="SKIP_TO_PLAYSTATE" if="debug" /> -->
 	
