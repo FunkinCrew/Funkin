@@ -145,12 +145,13 @@ class SongLoad
 	 */
 	public static function castArrayToNoteData(noteStuff:Array<SwagSection>)
 	{
+		if (noteStuff == null)
+			return;
+
 		for (sectionIndex => section in noteStuff)
 		{
 			for (noteIndex => noteDataArray in section.sectionNotes)
 			{
-				trace(noteDataArray);
-
 				var arrayDipshit:Array<Dynamic> = cast noteDataArray; // crackhead
 
 				// at this point noteStuff[sectionIndex].sectionNotes[noteIndex] is an array because of the cast from the first line in this function
@@ -170,6 +171,9 @@ class SongLoad
 	 */
 	public static function castNoteDataToArray(noteStuff:Array<SwagSection>)
 	{
+		if (noteStuff == null)
+			return;
+
 		for (sectionIndex => section in noteStuff)
 		{
 			for (noteIndex => noteTypeDefShit in section.sectionNotes)
