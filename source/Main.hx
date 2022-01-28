@@ -71,6 +71,7 @@ class Main extends Sprite
 	private var overlay:Sprite;
 
 	public static var fpsCounter:FPS;
+	public static var memoryCounter:MemoryCounter;
 
 	private function setupGame():Void
 	{
@@ -94,10 +95,13 @@ class Main extends Sprite
 
 		addChild(new FlxGame(gameWidth, gameHeight, initialState, zoom, framerate, framerate, skipSplash, startFullscreen));
 
-		#if !mobile
+		#if debug
 		fpsCounter = new FPS(10, 3, 0xFFFFFF);
 		addChild(fpsCounter);
+		memoryCounter = new MemoryCounter(10, 13, 0xFFFFFF);
+		addChild(memoryCounter);
 		#end
+
 		/* 
 			video = new Video();
 			addChild(video);
