@@ -148,20 +148,35 @@ class SongLoad
 		if (noteStuff == null)
 			return;
 
+		trace(noteStuff);
+
 		for (sectionIndex => section in noteStuff)
 		{
 			for (noteIndex => noteDataArray in section.sectionNotes)
 			{
+				trace(noteDataArray);
+
 				var arrayDipshit:Array<Dynamic> = cast noteDataArray; // crackhead
 
-				// at this point noteStuff[sectionIndex].sectionNotes[noteIndex] is an array because of the cast from the first line in this function
-				// so this line right here turns it back into the NoteData typedef type because of another bastard cast
-				noteStuff[sectionIndex].sectionNotes[noteIndex] = cast SongLoad.getDefaultNoteData(); // turn it from an array (because of the cast), back to noteData? yeah that works
+				trace(arrayDipshit);
 
-				noteStuff[sectionIndex].sectionNotes[noteIndex].strumTime = arrayDipshit[0];
-				noteStuff[sectionIndex].sectionNotes[noteIndex].noteData = arrayDipshit[1];
-				noteStuff[sectionIndex].sectionNotes[noteIndex].sustainLength = arrayDipshit[2];
-				noteStuff[sectionIndex].sectionNotes[noteIndex].altNote = arrayDipshit[3];
+				if (arrayDipshit != null)
+				{
+					// at this point noteStuff[sectionIndex].sectionNotes[noteIndex] is an array because of the cast from the first line in this function
+					// so this line right here turns it back into the NoteData typedef type because of another bastard cast
+					noteStuff[sectionIndex].sectionNotes[noteIndex] = cast SongLoad.getDefaultNoteData(); // turn it from an array (because of the cast), back to noteData? yeah that works
+
+					noteStuff[sectionIndex].sectionNotes[noteIndex].strumTime = arrayDipshit[0];
+					noteStuff[sectionIndex].sectionNotes[noteIndex].noteData = arrayDipshit[1];
+					noteStuff[sectionIndex].sectionNotes[noteIndex].sustainLength = arrayDipshit[2];
+					noteStuff[sectionIndex].sectionNotes[noteIndex].altNote = arrayDipshit[3];
+				}
+				else if (noteDataArray != null)
+				{
+					noteStuff[sectionIndex].sectionNotes[noteIndex] = cast noteDataArray;
+				}
+				else
+					throw "shit brokey"; // i actually dont know how throw works lol
 			}
 		}
 	}
