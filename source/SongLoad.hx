@@ -160,7 +160,7 @@ class SongLoad
 
 				trace(arrayDipshit);
 
-				if (arrayDipshit != null)
+				if (arrayDipshit != null) // array isnt null, that means it loaded it as an array and needs to be manually parsed?
 				{
 					// at this point noteStuff[sectionIndex].sectionNotes[noteIndex] is an array because of the cast from the first line in this function
 					// so this line right here turns it back into the NoteData typedef type because of another bastard cast
@@ -173,6 +173,9 @@ class SongLoad
 				}
 				else if (noteDataArray != null)
 				{
+					// array is NULL, so it checks if noteDataArray (doesnt exactly NEED to be an 'array' is also null or not.)
+					// At this point it should be an OBJECT that can be easily casted!!!
+
 					noteStuff[sectionIndex].sectionNotes[noteIndex] = cast noteDataArray;
 				}
 				else
