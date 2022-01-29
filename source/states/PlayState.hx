@@ -4077,7 +4077,7 @@ class PlayState extends MusicBeatState
 
 				#if linc_luajit
 				if(executeModchart && luaModchart != null)
-					ModchartUtilities.lua_Sprites.set("girlfriend", gf);
+					luaModchart.setupTheShitCuzPullRequestsSuck();
 				#end
 			case "dad" | "opponent":
 				var oldDad = PlayState.dad;
@@ -4121,7 +4121,7 @@ class PlayState extends MusicBeatState
 
 				#if linc_luajit
 				if(executeModchart && luaModchart != null)
-					ModchartUtilities.lua_Sprites.set("dad", dad);
+					luaModchart.setupTheShitCuzPullRequestsSuck();
 				#end
 
 				@:privateAccess
@@ -4192,7 +4192,7 @@ class PlayState extends MusicBeatState
 
 				#if linc_luajit
 				if(executeModchart && luaModchart != null)
-					ModchartUtilities.lua_Sprites.set("boyfriend", boyfriend);
+					luaModchart.setupTheShitCuzPullRequestsSuck();
 				#end
 
 				@:privateAccess
