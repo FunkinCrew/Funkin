@@ -1,7 +1,5 @@
 package game;
 
-import flixel.group.FlxSpriteGroup;
-import openfl.display.Preloader.DefaultPreloader;
 import utilities.CoolUtil;
 import lime.utils.Assets;
 import haxe.Json;
@@ -27,6 +25,10 @@ class StageGroup extends FlxGroup
     public var player_1_Point:FlxPoint = new FlxPoint(1000, 800);
     public var player_2_Point:FlxPoint = new FlxPoint(300, 800);
     public var gf_Point:FlxPoint = new FlxPoint(600, 750);
+
+    public var p1_Scroll:Float = 1.0;
+    public var p2_Scroll:Float = 1.0;
+    public var gf_Scroll:Float = 0.95;
 
     private var stage_Data:StageData;
 
@@ -572,6 +574,13 @@ class StageGroup extends FlxGroup
                         player_2_Point.set(stage_Data.character_Positions[1][0], stage_Data.character_Positions[1][1]);
                         gf_Point.set(stage_Data.character_Positions[2][0], stage_Data.character_Positions[2][1]);
 
+                        if(stage_Data.character_Scrolls != null)
+                        {
+                            p1_Scroll = stage_Data.character_Scrolls[0];
+                            p2_Scroll = stage_Data.character_Scrolls[1];
+                            gf_Scroll = stage_Data.character_Scrolls[2];
+                        }
+
                         var null_Object_Name_Loop:Int = 0;
         
                         for(Object in stage_Data.objects)
@@ -664,9 +673,14 @@ class StageGroup extends FlxGroup
         gf.setPosition((gf_Point.x - (gf.width / 2)) + gf.positioningOffset[0], (gf_Point.y - gf.height) + gf.positioningOffset[1]);
         p2.setPosition((player_2_Point.x - (p2.width / 2)) + p2.positioningOffset[0], (player_2_Point.y - p2.height) + p2.positioningOffset[1]);
 
+        p1.scrollFactor.set(p1_Scroll, p1_Scroll);
+        p2.scrollFactor.set(p2_Scroll, p2_Scroll);
+        gf.scrollFactor.set(gf_Scroll, gf_Scroll);
+
         if(p2.curCharacter.startsWith("gf") && gf.curCharacter.startsWith("gf"))
         {
             p2.setPosition(gf.x, gf.y);
+            p2.scrollFactor.set(gf_Scroll, gf_Scroll);
 
             if(p2.visible)
                 gf.visible = false;
@@ -677,6 +691,7 @@ class StageGroup extends FlxGroup
             for(character in p1.otherCharacters)
             {
                 character.setPosition((player_1_Point.x - (character.width / 2)) + character.positioningOffset[0], (player_1_Point.y - character.height) + character.positioningOffset[1]);
+                character.scrollFactor.set(p1_Scroll, p1_Scroll);
             }
         }
 
@@ -685,6 +700,7 @@ class StageGroup extends FlxGroup
             for(character in gf.otherCharacters)
             {
                 character.setPosition((gf_Point.x - (character.width / 2)) + character.positioningOffset[0], (gf_Point.y - character.height) + character.positioningOffset[1]);
+                character.scrollFactor.set(gf_Scroll, gf_Scroll);
             }
         }
 
@@ -693,6 +709,7 @@ class StageGroup extends FlxGroup
             for(character in p2.otherCharacters)
             {
                 character.setPosition((player_2_Point.x - (character.width / 2)) + character.positioningOffset[0], (player_2_Point.y - character.height) + character.positioningOffset[1]);
+                character.scrollFactor.set(p2_Scroll, p2_Scroll);
             }
         }
     }
@@ -930,6 +947,8 @@ class StageGroup extends FlxGroup
 typedef StageData =
 {
     var character_Positions:Array<Array<Float>>;
+    var character_Scrolls:Array<Float>;
+
     var camera_Zoom:Float;
 
     var objects:Array<StageObject>;

@@ -2654,7 +2654,7 @@ class PlayState extends MusicBeatState
 
 							var funnySpeed = Std.parseFloat(event[2]);
 
-							if(!Math.isNaN(funnySpeed) && funnySpeed != null)
+							if(!Math.isNaN(funnySpeed))
 							{
 								if(duration > 0)
 									FlxTween.tween(this, {speed: funnySpeed}, duration);
@@ -2665,10 +2665,10 @@ class PlayState extends MusicBeatState
 							var defaultCamZoomThing:Float = Std.parseFloat(event[2]);
 							var hudCamZoomThing:Float = Std.parseFloat(event[3]);
 
-							if(Math.isNaN(defaultCamZoomThing) || defaultCamZoomThing == null)
+							if(Math.isNaN(defaultCamZoomThing))
 								defaultCamZoomThing = defaultCamZoom;
 
-							if(Math.isNaN(hudCamZoomThing) || hudCamZoomThing == null)
+							if(Math.isNaN(hudCamZoomThing))
 								hudCamZoomThing = 1;
 
 							defaultCamZoom = defaultCamZoomThing;
@@ -2678,7 +2678,7 @@ class PlayState extends MusicBeatState
 
 							var alphaVal:Float = Std.parseFloat(event[3]);
 
-							if(Math.isNaN(alphaVal) || alphaVal == null)
+							if(Math.isNaN(alphaVal))
 								alphaVal = 0.5;
 
 							char.alpha = alphaVal;

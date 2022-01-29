@@ -3,11 +3,9 @@ package debuggers;
 import flixel.addons.ui.FlxUIInputText;
 import flixel.addons.ui.FlxUINumericStepper;
 import flixel.addons.ui.FlxUITabMenu;
-import flixel.addons.ui.FlxUI;
 import openfl.events.IOErrorEvent;
 import openfl.events.Event;
 import openfl.net.FileReference;
-import hscript.Expr.FieldKind;
 import flixel.FlxSprite;
 import flixel.FlxObject;
 import game.Conductor;
@@ -507,6 +505,32 @@ class StageMakingState extends MusicBeatState
                         cool.scrollFactor.set(nums.value, nums.value);
 
                         stageData.objects[selectedObject - 1].scroll_Factor = [nums.value, nums.value];
+                    }
+                    else if((selected == bf_Pos || selected == dad_Pos || selected == gf_Pos))
+                    {
+                        if(stageData.character_Scrolls == null)
+                            stageData.character_Scrolls = [1,1,0.95];
+
+                        if(selected == bf_Pos)
+                        {
+                            stageData.character_Scrolls[0] = nums.value;
+                            stage.p1_Scroll = nums.value;
+                            bf.scrollFactor.set(nums.value, nums.value);
+                        }
+
+                        if(selected == dad_Pos)
+                        {
+                            stageData.character_Scrolls[1] = nums.value;
+                            stage.p2_Scroll = nums.value;
+                            dad.scrollFactor.set(nums.value, nums.value);
+                        }
+
+                        if(selected == gf_Pos)
+                        {
+                            stageData.character_Scrolls[2] = nums.value;
+                            stage.gf_Scroll = nums.value;
+                            gf.scrollFactor.set(nums.value, nums.value);
+                        }
                     }
 			}
         }
