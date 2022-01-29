@@ -19,6 +19,7 @@ All notable changes will be documented in this file.
 - Time Bar Style Option.
 - Invisible Notes (Stealth Mod I guess) Option.
 - Custom Game Over Sounds For Characters.
+- Lua Stages
 ### Changed
 - New Note Splash Sprites!
 - FPS Cap Max is now 1000 (800 before lol).
