@@ -131,7 +131,7 @@ class ModchartUtilities
 
     var oldMultiplier:Float = PlayState.songMultiplier;
 
-    function new()
+    function new(?path:Null<String>)
     {
         oldMultiplier = PlayState.songMultiplier;
 
@@ -161,7 +161,8 @@ class ModchartUtilities
 
         Lua.init_callbacks(lua);
 
-        var path = PolymodAssets.getPath(Paths.lua("modcharts/" + PlayState.SONG.modchartPath));
+        if(path == null)
+            path = PolymodAssets.getPath(Paths.lua("modcharts/" + PlayState.SONG.modchartPath));
 
         var result = LuaL.dofile(lua, path); // execute le file
 
@@ -1378,9 +1379,9 @@ class ModchartUtilities
         return Lua.tostring(lua, callLua(name, args));
     }
 
-    public static function createModchartUtilities():ModchartUtilities
+    public static function createModchartUtilities(?path:Null<String>):ModchartUtilities
     {
-        return new ModchartUtilities();
+        return new ModchartUtilities(path);
     }
 }
 #end
