@@ -18,6 +18,7 @@ All notable changes will be documented in this file.
 - Event System.
 - Time Bar Style Option.
 - Invisible Notes (Stealth Mod I guess) Option.
+- Custom Game Over Sounds For Characters.
 ### Changed
 - New Note Splash Sprites!
 - FPS Cap Max is now 1000 (800 before lol).
