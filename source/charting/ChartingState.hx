@@ -580,9 +580,17 @@ class ChartingState extends MusicBeatState
 		Conductor.songPosition = FlxG.sound.music.time;
 		_song.song = typingShit.text;
 
-		playheadTest.y = FlxMath.remapToRange(Conductor.songPosition, 0, FlxG.sound.music.length, 0, FlxG.height);
+		playheadTest.y = CoolUtil.coolLerp(playheadTest.y, FlxMath.remapToRange(Conductor.songPosition, 0, FlxG.sound.music.length, 0, FlxG.height), 0.5);
 
-		strumLine.y = getYfromStrum((Conductor.songPosition - sectionStartTime()) % (Conductor.stepCrochet * SongLoad.getSong()[curSection].lengthInSteps));
+		var strumLinePos:Float = getYfromStrum((Conductor.songPosition - sectionStartTime()) % (Conductor.stepCrochet * SongLoad.getSong()[curSection].lengthInSteps));
+
+		if (FlxG.sound.music != null)
+		{
+			if (FlxG.sound.music.playing)
+				strumLine.y = strumLinePos;
+			else
+				strumLine.y = CoolUtil.coolLerp(strumLine.y, strumLinePos, 0.5);
+		}
 
 		/* if (FlxG.sound.music.playing)
 			{
@@ -619,7 +627,7 @@ class ChartingState extends MusicBeatState
 				vocals.pause();
 			}
 
-			FlxG.sound.music.time = getStrumTime(FlxG.mouse.y) + sectionStartTime();
+			FlxG.sound.music.time = CoolUtil.coolLerp(FlxG.sound.music.time, getStrumTime(FlxG.mouse.y) + sectionStartTime(), 0.5);
 			vocals.time = FlxG.sound.music.time;
 		}
 
@@ -646,7 +654,8 @@ class ChartingState extends MusicBeatState
 						vocals.pause();
 					}
 
-					FlxG.sound.music.time = FlxMath.remapToRange(FlxG.mouse.screenY, 0, FlxG.height, 0, FlxG.sound.music.length);
+					FlxG.sound.music.time = CoolUtil.coolLerp(FlxG.sound.music.time,
+						FlxMath.remapToRange(FlxG.mouse.screenY, 0, FlxG.height, 0, FlxG.sound.music.length), 0.5);
 					vocals.time = FlxG.sound.music.time;
 				}
 				if (FlxG.mouse.justPressed)

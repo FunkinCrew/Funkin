@@ -1,6 +1,7 @@
 package modding;
 
-#if cpp
+#if desktop
+import polymod.Polymod.ModMetadata;
 import polymod.Polymod;
 import polymod.backends.OpenFLBackend;
 import polymod.backends.PolymodAssets.PolymodAssetType;
