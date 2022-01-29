@@ -2579,12 +2579,14 @@ class PlayState extends MusicBeatState
 					switch(event[0].toLowerCase())
 					{
 						case "hey!":
+							var charString = event[2].toLowerCase();
+
 							var char:Int = 0;
 
-							if(event[2].toLowerCase() == "bf" || event[2].toLowerCase() == "boyfriend" || event[2].toLowerCase() == "player")
+							if(charString == "bf" || charString == "boyfriend" || charString == "player" || charString == "player1")
 								char = 1;
 
-							if(event[2].toLowerCase() == "gf" || event[2].toLowerCase() == "girlfriend")
+							if(charString == "gf" || charString == "girlfriend" || charString == "player3")
 								char = 2;
 
 							switch(char)
@@ -2606,10 +2608,10 @@ class PlayState extends MusicBeatState
 								var addGame:Float = Std.parseFloat(event[2]);
 								var addHUD:Float = Std.parseFloat(event[3]);
 	
-								if(addGame == Math.NaN)
+								if(Math.isNaN(addGame))
 									addGame = 0.015;
 	
-								if(addHUD == Math.NaN)
+								if(Math.isNaN(addHUD))
 									addHUD = 0.03;
 	
 								FlxG.camera.zoom += addGame;
@@ -2618,19 +2620,7 @@ class PlayState extends MusicBeatState
 								camZooming = true;
 							}
 						case "play character animation":
-							var character:Character;
-
-							switch(event[2].toLowerCase())
-							{
-								case "bf" | "boyfriend" | "player":
-									character = boyfriend;
-								case "dad" | "opponent":
-									character = dad;
-								case "gf" | "girlfriend":
-									character = gf;
-								default:
-									character = gf;
-							}
+							var character:Character = getCharFromEvent(event[2]);
 
 							var anim:String = "idle";
 
@@ -2664,7 +2654,7 @@ class PlayState extends MusicBeatState
 
 							var funnySpeed = Std.parseFloat(event[2]);
 
-							if(funnySpeed != Math.NaN)
+							if(!Math.isNaN(funnySpeed) && funnySpeed != null)
 							{
 								if(duration > 0)
 									FlxTween.tween(this, {speed: funnySpeed}, duration);
@@ -2675,14 +2665,23 @@ class PlayState extends MusicBeatState
 							var defaultCamZoomThing:Float = Std.parseFloat(event[2]);
 							var hudCamZoomThing:Float = Std.parseFloat(event[3]);
 
-							if(defaultCamZoomThing == Math.NaN)
+							if(Math.isNaN(defaultCamZoomThing) || defaultCamZoomThing == null)
 								defaultCamZoomThing = defaultCamZoom;
 
-							if(hudCamZoomThing == Math.NaN)
+							if(Math.isNaN(hudCamZoomThing) || hudCamZoomThing == null)
 								hudCamZoomThing = 1;
 
 							defaultCamZoom = defaultCamZoomThing;
 							defaultHudCamZoom = hudCamZoomThing;
+						case "change character alpha":
+							var char = getCharFromEvent(event[2]);
+
+							var alphaVal:Float = Std.parseFloat(event[3]);
+
+							if(Math.isNaN(alphaVal) || alphaVal == null)
+								alphaVal = 0.5;
+
+							char.alpha = alphaVal;
 						case "change character":
 							eventCharacterShit(event);
 					}
@@ -4029,6 +4028,21 @@ class PlayState extends MusicBeatState
 	}
 
 	var curLight:Int = 0;
+
+	public static function getCharFromEvent(eventVal:String):Character
+	{
+		switch(eventVal.toLowerCase())
+		{
+			case "girlfriend" | "gf" | "player3":
+				return PlayState.gf;
+			case "dad" | "opponent" | "player2":
+				return PlayState.dad;
+			case "bf" | "boyfriend" | "player" | "player1":
+				return PlayState.boyfriend;
+		}
+
+		return PlayState.boyfriend;
+	}
 
 	function eventCharacterShit(event:Array<Dynamic>)
 	{
