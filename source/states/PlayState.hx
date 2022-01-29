@@ -2597,11 +2597,11 @@ class PlayState extends MusicBeatState
 							{
 								case 0:
 									boyfriend.playAnim("hey", true);
-									gf.playAnim("hey", true);
+									gf.playAnim("cheer", true);
 								case 1:
 									boyfriend.playAnim("hey", true);
 								case 2:
-									gf.playAnim("hey", true);
+									gf.playAnim("cheer", true);
 							}
 						case "set gf speed":
 							if(Std.parseInt(event[2]) != null)
