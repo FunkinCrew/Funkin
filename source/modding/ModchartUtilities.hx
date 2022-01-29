@@ -1244,24 +1244,18 @@ class ModchartUtilities
 
     public function setupTheShitCuzPullRequestsSuck()
     {
-        lua_Sprites = [
-            'boyfriend' => PlayState.boyfriend,
-            'girlfriend' => PlayState.gf,
-            'dad' => PlayState.dad,
-        ];
+        lua_Sprites.set("boyfriend", PlayState.boyfriend);
+        lua_Sprites.set("girlfriend", PlayState.gf);
+        lua_Sprites.set("dad", PlayState.dad);
 
-        lua_Characters = [
-            'boyfriend' => PlayState.boyfriend,
-            'girlfriend' => PlayState.gf,
-            'dad' => PlayState.dad,
-        ];
-    
+        lua_Characters.set("boyfriend", PlayState.boyfriend);
+        lua_Characters.set("girlfriend", PlayState.gf);
+        lua_Characters.set("dad", PlayState.dad);
+
+        lua_Sounds.set("Inst", FlxG.sound.music);
         @:privateAccess
-        lua_Sounds = [
-            'Inst' => FlxG.sound.music,
-            'Voices' => PlayState.instance.vocals
-        ];
-        
+        lua_Sounds.set("Voices", PlayState.instance.vocals);
+
         for (i in 0...PlayState.strumLineNotes.length)
         {
             var member = PlayState.strumLineNotes.members[i];
