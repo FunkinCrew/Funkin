@@ -1,5 +1,6 @@
 package substates;
 
+import lime.utils.Assets;
 import game.Replay;
 import states.ReplaySelectorState;
 import game.Character;
@@ -20,8 +21,6 @@ class GameOverSubstate extends MusicBeatSubstate
 {
 	var bf:Character;
 	var camFollow:FlxObject;
-
-	var stageSuffix:String = "";
 
 	public function new(x:Float, y:Float)
 	{
@@ -44,9 +43,6 @@ class GameOverSubstate extends MusicBeatSubstate
 			FlxG.resetState();
 		}
 
-		if(PlayState.SONG.player1 == "bf-pixel")
-			stageSuffix = '-pixel';
-
 		Conductor.songPosition = 0;
 
 		bf = new Boyfriend(x, y, PlayState.boyfriend.deathCharacter, true);
@@ -58,7 +54,12 @@ class GameOverSubstate extends MusicBeatSubstate
 		if(FlxG.sound.music.active)
 			FlxG.sound.music.stop();
 
-		var soundThing = FlxG.sound.play(Paths.sound('fnf_loss_sfx' + stageSuffix));
+		var soundPath = Paths.sound("deaths/bf-dead/death");
+
+		if(Assets.exists(Paths.sound("deaths/" + bf.curCharacter + "/death")))
+			soundPath = Paths.sound("deaths/" + bf.curCharacter + "/death");
+
+		var soundThing = FlxG.sound.play(soundPath);
 		soundThing.play();
 
 		Conductor.changeBPM(100);
@@ -119,20 +120,18 @@ class GameOverSubstate extends MusicBeatSubstate
 
 		if (bf.animation.curAnim.name == 'firstDeath' && bf.animation.curAnim.finished)
 		{
-			FlxG.sound.playMusic(Paths.music('gameOver' + stageSuffix));
+			var soundPath = Paths.music("deaths/bf-dead/loop");
+
+			if(Assets.exists(Paths.music("deaths/" + bf.curCharacter + "/loop")))
+				soundPath = Paths.music("deaths/" + bf.curCharacter + "/loop");
+
+			FlxG.sound.playMusic(soundPath);
 		}
 
 		if (FlxG.sound.music.playing)
 		{
 			Conductor.songPosition = FlxG.sound.music.time;
 		}
-	}
-
-	override function beatHit()
-	{
-		super.beatHit();
-
-		FlxG.log.add('beat');
 	}
 
 	var isEnding:Bool = false;
@@ -145,7 +144,12 @@ class GameOverSubstate extends MusicBeatSubstate
 			bf.playAnim('deathConfirm', true);
 			FlxG.sound.music.stop();
 
-			FlxG.sound.play(Paths.music('gameOverEnd' + stageSuffix));
+			var soundPath = Paths.music("deaths/bf-dead/retry");
+
+			if(Assets.exists(Paths.music("deaths/" + bf.curCharacter + "/retry")))
+				soundPath = Paths.music("deaths/" + bf.curCharacter + "/retry");
+
+			FlxG.sound.play(soundPath);
 
 			new FlxTimer().start(0.7, function(tmr:FlxTimer)
 			{
