@@ -173,6 +173,7 @@ class ModchartUtilities
 
         // this might become a problem if i don't do this
         setVar("require", false);
+        setVar("os", false);
 
         // get some fukin globals up in here bois
 
