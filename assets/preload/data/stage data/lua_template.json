@@ -1,0 +1,10 @@
+{
+    "scriptName": "template-stage",
+    "character_Positions":[
+        [1000, 800],
+        [300, 800],
+        [600, 750]
+    ],
+    "camera_Zoom": 0.9,
+    "objects": []
+}
