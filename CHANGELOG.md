@@ -17,6 +17,7 @@ All notable changes will be documented in this file.
 - Option in songs for having a different key count for player than opponent.
 - Event System.
 - Time Bar Style Option.
+- Invisible Notes (Stealth Mod I guess) Option.
 ### Changed
 - New Note Splash Sprites!
 - FPS Cap Max is now 1000 (800 before lol).
