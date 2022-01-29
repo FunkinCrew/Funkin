@@ -1,5 +1,13 @@
 package game;
 
+#if polymod
+import polymod.backends.PolymodAssets;
+#end
+
+#if linc_luajit
+import modding.ModchartUtilities;
+#end
+
 import utilities.CoolUtil;
 import lime.utils.Assets;
 import haxe.Json;
@@ -80,6 +88,10 @@ class StageGroup extends FlxGroup
 
     public var foregroundSprites:FlxGroup = new FlxGroup();
     public var infrontOfGFSprites:FlxGroup = new FlxGroup();
+
+    #if linc_luajit
+    public var stageScript:ModchartUtilities = null;
+    #end
 
     public function updateStage(?newStage:String)
     {
@@ -658,6 +670,19 @@ class StageGroup extends FlxGroup
         }
     }
 
+    public function createLuaStuff()
+    {
+        #if linc_luajit
+        #if polymod // change this in future whenever custom backend
+        if(stage_Data != null)
+        {
+            if(stage_Data.scriptName != null && Assets.exists(Paths.lua("stage data/" + stage_Data.scriptName)))
+                stageScript = ModchartUtilities.createModchartUtilities(PolymodAssets.getPath(Paths.lua("stage data/" + stage_Data.scriptName)));
+        }
+        #end
+        #end
+    }
+
     public function setCharOffsets(?p1:Character, ?gf:Character, ?p2:Character):Void
     {
         if(p1 == null)
@@ -843,6 +868,11 @@ class StageGroup extends FlxGroup
         }
 
         goodElapse = elapsed;
+
+        #if linc_luajit
+        if(stageScript != null)
+            stageScript.executeState("update", [elapsed]);
+        #end
     }
 
     //wasteland
@@ -942,6 +972,20 @@ class StageGroup extends FlxGroup
             lightningOffset = FlxG.random.int(8, 24);
         }
     }
+
+    // LUA SHIT LOL
+
+    override public function destroy() {
+        #if linc_luajit
+        if(stageScript != null)
+        {
+            stageScript.die();
+            stageScript = null;
+        }
+        #end
+
+        super.destroy();
+    }
 }
 
 typedef StageData =
@@ -952,6 +996,8 @@ typedef StageData =
     var camera_Zoom:Float;
 
     var objects:Array<StageObject>;
+
+    var scriptName:Null<String>;
 }
 
 typedef StageObject =

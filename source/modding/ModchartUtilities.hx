@@ -229,6 +229,70 @@ class ModchartUtilities
 
         // sprites
 
+        // stage
+
+        Lua_helper.add_callback(lua,"makeStageSprite", function(id:String, filename:String, x:Float, y:Float, size:Float) {
+            if(!lua_Sprites.exists(id))
+            {
+                var Sprite:FlxSprite = new FlxSprite(x, y);
+
+                @:privateAccess
+                Sprite.loadGraphic(Paths.image(PlayState.instance.stage.stage + "/" + filename, "stages"));
+
+                Sprite.setGraphicSize(Std.int(Sprite.width * size));
+                Sprite.updateHitbox();
+    
+                lua_Sprites.set(id, Sprite);
+    
+                @:privateAccess
+                PlayState.instance.stage.add(Sprite);
+            }
+            else
+                Application.current.window.alert("Sprite " + id + " already exists! Choose a different name!", "Leather Engine Modcharts");
+        });
+
+        Lua_helper.add_callback(lua,"makeStageAnimatedSprite", function(id:String, filename:String, x:Float, y:Float, size:Float) {
+            if(!lua_Sprites.exists(id))
+            {
+                var Sprite:FlxSprite = new FlxSprite(x, y);
+
+                @:privateAccess
+                Sprite.frames = Paths.getSparrowAtlas(PlayState.instance.stage.stage + "/" + filename, "stages");
+
+                Sprite.setGraphicSize(Std.int(Sprite.width * size));
+                Sprite.updateHitbox();
+    
+                lua_Sprites.set(id, Sprite);
+    
+                @:privateAccess
+                PlayState.instance.stage.add(Sprite);
+            }
+            else
+                Application.current.window.alert("Sprite " + id + " already exists! Choose a different name!", "Leather Engine Modcharts");
+        });
+
+        Lua_helper.add_callback(lua,"makeStageDancingSprite", function(id:String, filename:String, x:Float, y:Float, size:Float, ?oneDanceAnimation:Bool, ?antialiasing:Bool) {
+            if(!lua_Sprites.exists(id))
+            {
+                var Sprite:DancingSprite = new DancingSprite(x, y, oneDanceAnimation, antialiasing);
+
+                @:privateAccess
+                Sprite.frames = Paths.getSparrowAtlas(PlayState.instance.stage.stage + "/" + filename, "stages");
+
+                Sprite.setGraphicSize(Std.int(Sprite.width * size));
+                Sprite.updateHitbox();
+    
+                lua_Sprites.set(id, Sprite);
+    
+                @:privateAccess
+                PlayState.instance.stage.add(Sprite);
+            }
+            else
+                Application.current.window.alert("Sprite " + id + " already exists! Choose a different name!", "Leather Engine Modcharts");
+        });
+
+        // regular
+
         Lua_helper.add_callback(lua,"makeSprite", function(id:String, filename:String, x:Float, y:Float, size:Float) {
             if(!lua_Sprites.exists(id))
             {
@@ -1273,10 +1337,10 @@ class ModchartUtilities
         @:privateAccess
         for(object in PlayState.instance.stage.stage_Objects)
         {
-            if(!lua_Sprites.exists(object[0]))
-                lua_Sprites.set(object[0], object[1]);
-            else
-                trace("THERE IS ALREADY AN OBJECT WITH THE NAME " + object[0]);
+            if(lua_Sprites.exists(object[0]))
+                trace("THERE IS ALREADY AN OBJECT WITH THE NAME " + object[0] + " ADDING OBJECT ANYWAYS JUST IN CASE BUT YEAH");
+
+            lua_Sprites.set(object[0], object[1]);
         }
 
         if(PlayState.dad.otherCharacters != null)

@@ -603,7 +603,6 @@ class PlayState extends MusicBeatState
 
 			/* we do a little trolling */
 			var midPos = dad.getMidpoint();
-
 			
 			camPos.set(midPos.x + 150 + dad.cameraOffset[0], midPos.y - 100 + dad.cameraOffset[1]);
 
@@ -694,6 +693,8 @@ class PlayState extends MusicBeatState
 					luaModchart.executeState('create', [PlayState.SONG.song.toLowerCase()]);
 				}
 			}
+
+			stage.createLuaStuff();
 			#end
 
 			/*
@@ -1289,6 +1290,14 @@ class PlayState extends MusicBeatState
 		{
 			luaModchart.setupTheShitCuzPullRequestsSuck();
 			luaModchart.executeState('start', [PlayState.SONG.song.toLowerCase()]);
+		}
+
+		if(stage.stageScript != null)
+		{
+			stage.stageScript.setupTheShitCuzPullRequestsSuck();
+
+			stage.stageScript.executeState("create", [stage.stage]);
+			stage.stageScript.executeState("start", [stage.stage]);
 		}
 		#end
 
