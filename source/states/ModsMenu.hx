@@ -39,6 +39,9 @@ class ModsMenu extends MusicBeatState
 
 	public static var instance:ModsMenu;
 
+	var descriptionText:FlxText;
+	var descBg:FlxSprite;
+
 	override function create()
 	{
 		MusicBeatState.windowNameSuffix = " Mods Menu";
@@ -70,15 +73,27 @@ class ModsMenu extends MusicBeatState
 
 		loadMods();
 
-		var textBG:FlxSprite = new FlxSprite(0, FlxG.height - 26).makeGraphic(FlxG.width, 26, 0xFF000000);
-		textBG.alpha = 0.6;
-		add(textBG);
+		descBg = new FlxSprite(0, FlxG.height - 90).makeGraphic(FlxG.width, 90, 0xFF000000);
+		descBg.alpha = 0.6;
+		add(descBg);
+
+		descriptionText = new FlxText(descBg.x, descBg.y + 4, FlxG.width, "Template Description", 18);
+		descriptionText.setFormat(Paths.font("vcr.ttf"), 18, FlxColor.WHITE, CENTER);
+		descriptionText.borderColor = FlxColor.BLACK;
+		descriptionText.borderSize = 1;
+		descriptionText.borderStyle = OUTLINE;
+		descriptionText.scrollFactor.set();
+		descriptionText.screenCenter(X);
+		add(descriptionText);
 
 		var leText:String = "Press ENTER to enable / disable the currently selected mod.";
 
-		var text:FlxText = new FlxText(textBG.x, textBG.y + 4, FlxG.width, leText, 18);
+		var text:FlxText = new FlxText(0, FlxG.height - 22, FlxG.width, leText, 18);
 		text.setFormat(Paths.font("vcr.ttf"), 18, FlxColor.WHITE, RIGHT);
 		text.scrollFactor.set();
+		text.borderColor = FlxColor.BLACK;
+		text.borderSize = 1;
+		text.borderStyle = OUTLINE;
 		add(text);
 	}
 
@@ -140,6 +155,13 @@ class ModsMenu extends MusicBeatState
 		for (x in page.members)
 		{
 			x.Alphabet_Text.targetY = bruh - curSelected;
+
+			if(x.Alphabet_Text.targetY == 0)
+			{
+				descriptionText.screenCenter(X);
+				descriptionText.text = ModList.modMetadatas.get(x.Option_Value).description + "\nAuthor: " + ModList.modMetadatas.get(x.Option_Value).author + "\n";
+			}
+
 			bruh++;
 		}
 	}
