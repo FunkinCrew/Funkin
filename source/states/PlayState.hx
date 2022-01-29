@@ -4077,11 +4077,6 @@ class PlayState extends MusicBeatState
 
 				#if linc_luajit
 				if(executeModchart && luaModchart != null)
-					ModchartUtilities.lua_Sprites.remove("girlfriend");
-				#end
-
-				#if linc_luajit
-				if(executeModchart && luaModchart != null)
 					ModchartUtilities.lua_Sprites.set("girlfriend", gf);
 				#end
 			case "dad" | "opponent":
@@ -4123,11 +4118,6 @@ class PlayState extends MusicBeatState
 						character.alpha = 1;
 					}
 				}
-
-				#if linc_luajit
-				if(executeModchart && luaModchart != null)
-					ModchartUtilities.lua_Sprites.remove("dad");
-				#end
 
 				#if linc_luajit
 				if(executeModchart && luaModchart != null)
@@ -4199,11 +4189,6 @@ class PlayState extends MusicBeatState
 						character.alpha = 1;
 					}
 				}
-
-				#if linc_luajit
-				if(executeModchart && luaModchart != null)
-					ModchartUtilities.lua_Sprites.remove("boyfriend");
-				#end
 
 				#if linc_luajit
 				if(executeModchart && luaModchart != null)

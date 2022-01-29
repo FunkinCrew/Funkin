@@ -1244,6 +1244,24 @@ class ModchartUtilities
 
     public function setupTheShitCuzPullRequestsSuck()
     {
+        lua_Sprites = [
+            'boyfriend' => PlayState.boyfriend,
+            'girlfriend' => PlayState.gf,
+            'dad' => PlayState.dad,
+        ];
+
+        lua_Characters = [
+            'boyfriend' => PlayState.boyfriend,
+            'girlfriend' => PlayState.gf,
+            'dad' => PlayState.dad,
+        ];
+    
+        @:privateAccess
+        lua_Sounds = [
+            'Inst' => FlxG.sound.music,
+            'Voices' => PlayState.instance.vocals
+        ];
+        
         for (i in 0...PlayState.strumLineNotes.length)
         {
             var member = PlayState.strumLineNotes.members[i];
