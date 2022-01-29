@@ -58,7 +58,7 @@ typedef SwagSong =
 
 	var events:Null<Array<Array<Dynamic>>>;
 
-	var songDifficultyStuff:Null<String>;
+	var specialAudioName:Null<String>;
 }
 
 class Song

@@ -1417,7 +1417,7 @@ class PlayState extends MusicBeatState
 		curSong = songData.song;
 
 		if (SONG.needsVoices)
-			vocals = new FlxSound().loadEmbedded(Paths.voices(PlayState.SONG.song, (SONG.songDifficultyStuff == null ? storyDifficultyStr.toLowerCase() : SONG.songDifficultyStuff)));
+			vocals = new FlxSound().loadEmbedded(Paths.voices(PlayState.SONG.song, (SONG.specialAudioName == null ? storyDifficultyStr.toLowerCase() : SONG.specialAudioName)));
 		else
 			vocals = new FlxSound();
 
@@ -1425,7 +1425,7 @@ class PlayState extends MusicBeatState
 		if(FlxG.sound.music.active)
 			FlxG.sound.music.stop();
 
-		FlxG.sound.music = new FlxSound().loadEmbedded(Paths.inst(SONG.song, (SONG.songDifficultyStuff == null ? storyDifficultyStr.toLowerCase() : SONG.songDifficultyStuff)));
+		FlxG.sound.music = new FlxSound().loadEmbedded(Paths.inst(SONG.song, (SONG.specialAudioName == null ? storyDifficultyStr.toLowerCase() : SONG.specialAudioName)));
 		FlxG.sound.music.persist = true;
 
 		vocals.persist = false;
