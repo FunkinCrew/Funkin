@@ -1,5 +1,6 @@
 package states;
 
+import utilities.Options;
 import flixel.util.FlxStringUtil;
 import openfl.display.BitmapData;
 import flixel.graphics.FlxGraphic;
@@ -1432,6 +1433,9 @@ class PlayState extends MusicBeatState
 
 		notes = new FlxTypedGroup<Note>();
 		add(notes);
+
+		if(Options.getData("invisibleNotes")) // this was really simple lmfao
+			notes.visible = false;
 
 		var noteData:Array<SwagSection>;
 

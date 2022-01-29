@@ -96,7 +96,8 @@ class OptionsMenu extends MusicBeatState
 			new StringSaveOption("Play As", ["bf", "opponent"], 7, "playAs"),
 			new BoolOption("Camera Tracks Direction", "cameraTracksDirections", 8),
 			new BoolOption("Camera Bounce", "cameraZooms", 9),
-			new BoolOption("Disable Debug Menus", "disableDebugMenus", 10)
+			new BoolOption("Disable Debug Menus", "disableDebugMenus", 10),
+			new BoolOption("Invisible Notes", "invisibleNotes", 11)
 		],
 		[
 			"Optimizations",

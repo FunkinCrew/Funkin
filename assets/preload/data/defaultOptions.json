@@ -193,6 +193,10 @@
             "value": false
         },
         {
+            "option": "invisibleNotes",
+            "value": false
+        },
+        {
             "option": "timeBarStyle",
             "value": "leather engine"
         },
