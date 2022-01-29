@@ -125,15 +125,7 @@ class ModchartUtilities
 
     public function setVar(var_name : String, object : Dynamic)
     {
-        if(Std.isOfType(object, Int))
-            Lua.pushinteger(lua, object);
-        else if(Std.isOfType(object, Bool))
-            Lua.pushboolean(lua, object);
-        else if(Std.isOfType(object, String))
-            Lua.pushstring(lua, object);
-        else
-            Lua.pushnumber(lua, object);
-
+        Lua.pushnumber(lua, object);
 		Lua.setglobal(lua, var_name);
 	}
 
