@@ -4067,7 +4067,6 @@ class PlayState extends MusicBeatState
 
 				if(oldGf.coolTrail != null)
 					PlayState.instance.remove(oldGf.coolTrail);
-
 				
 				if(oldGf.otherCharacters != null)
 				{
@@ -4156,14 +4155,14 @@ class PlayState extends MusicBeatState
 					var oldIcon = PlayState.instance.iconP2;
 					var bar = PlayState.instance.healthBar;
 					
-					PlayState.instance.removeObject(oldIcon);
+					remove(oldIcon);
 					oldIcon.kill();
 					oldIcon.destroy();
 	
-					PlayState.instance.iconP2 = new HealthIcon(dad.icon, false);
-					PlayState.instance.iconP2.y = PlayState.instance.healthBar.y - (PlayState.instance.iconP2.height / 2);
-					PlayState.instance.iconP2.cameras = [PlayState.instance.camHUD];
-					PlayState.instance.add(PlayState.instance.iconP2);
+					iconP2 = new HealthIcon(dad.icon, false);
+					iconP2.y = healthBar.y - (iconP2.height / 2);
+					iconP2.cameras = [camHUD];
+					add(iconP2);
 	
 					bar.createFilledBar(dad.barColor, PlayState.boyfriend.barColor);
 					bar.updateFilledBar();
@@ -4227,15 +4226,15 @@ class PlayState extends MusicBeatState
 					var oldIcon = PlayState.instance.iconP1;
 					var bar = PlayState.instance.healthBar;
 					
-					PlayState.instance.removeObject(oldIcon);
+					remove(oldIcon);
 					oldIcon.kill();
 					oldIcon.destroy();
 	
-					PlayState.instance.iconP1 = new HealthIcon(boyfriend.icon, false);
-					PlayState.instance.iconP1.y = PlayState.instance.healthBar.y - (PlayState.instance.iconP1.height / 2);
-					PlayState.instance.iconP1.cameras = [PlayState.instance.camHUD];
-					PlayState.instance.iconP1.flipX = true;
-					PlayState.instance.add(PlayState.instance.iconP1);
+					iconP1 = new HealthIcon(boyfriend.icon, false);
+					iconP1.y = healthBar.y - (iconP1.height / 2);
+					iconP1.cameras = [PlayState.instance.camHUD];
+					iconP1.flipX = true;
+					add(PlayState.instance.iconP1);
 	
 					bar.createFilledBar(PlayState.dad.barColor, boyfriend.barColor);
 					bar.updateFilledBar();
