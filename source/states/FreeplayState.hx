@@ -372,19 +372,36 @@ class FreeplayState extends MusicBeatState
 
 				var poop:String = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), curDiffString);
 
-				PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
+				if(Assets.exists(Paths.json("song data/" + songs[curSelected].songName.toLowerCase() + "/" + poop)))
+				{
+					PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
 
-				if (PlayState.SONG.needsVoices)
-					vocals = new FlxSound().loadEmbedded(Paths.voices(PlayState.SONG.song, curDiffString));
+					if (PlayState.SONG.needsVoices)
+						vocals = new FlxSound().loadEmbedded(Paths.voices(PlayState.SONG.song, curDiffString));
+					else
+						vocals = new FlxSound();
+	
+					FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song, curDiffString), 0.7);
+	
+					vocals.play();
+					vocals.persist = false;
+					vocals.looped = true;
+					vocals.volume = 0.7;
+				}
 				else
-					vocals = new FlxSound();
-
-				FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song, curDiffString), 0.7);
-
-				vocals.play();
-				vocals.persist = false;
-				vocals.looped = true;
-				vocals.volume = 0.7;
+				{
+					if(Assets.exists(Paths.voices(PlayState.SONG.song, curDiffString)))
+						vocals = new FlxSound().loadEmbedded(Paths.voices(PlayState.SONG.song, curDiffString));
+					else
+						vocals = new FlxSound();
+	
+					FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song, curDiffString), 0.7);
+	
+					vocals.play();
+					vocals.persist = false;
+					vocals.looped = true;
+					vocals.volume = 0.7;
+				}
 			}
 
 			if(vocals != null && FlxG.sound.music != null && !FlxG.keys.justPressed.ENTER)
