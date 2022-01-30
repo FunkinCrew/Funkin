@@ -4104,6 +4104,9 @@ class PlayState extends MusicBeatState
 				#if linc_luajit
 				if(executeModchart && luaModchart != null)
 					luaModchart.setupTheShitCuzPullRequestsSuck();
+
+				if(stage.stageScript != null)
+					stage.stageScript.setupTheShitCuzPullRequestsSuck();
 				#end
 			case "dad" | "opponent":
 				var oldDad = PlayState.dad;
@@ -4148,6 +4151,9 @@ class PlayState extends MusicBeatState
 				#if linc_luajit
 				if(executeModchart && luaModchart != null)
 					luaModchart.setupTheShitCuzPullRequestsSuck();
+
+				if(stage.stageScript != null)
+					stage.stageScript.setupTheShitCuzPullRequestsSuck();
 				#end
 
 				@:privateAccess
@@ -4219,6 +4225,9 @@ class PlayState extends MusicBeatState
 				#if linc_luajit
 				if(executeModchart && luaModchart != null)
 					luaModchart.setupTheShitCuzPullRequestsSuck();
+
+				if(stage.stageScript != null)
+					stage.stageScript.setupTheShitCuzPullRequestsSuck();
 				#end
 
 				@:privateAccess
