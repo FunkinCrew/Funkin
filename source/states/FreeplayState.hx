@@ -366,43 +366,28 @@ class FreeplayState extends MusicBeatState
 			#if PRELOAD_ALL
 			if (FlxG.keys.justPressed.SPACE)
 			{
-				canEnterSong = false;
+				destroyFreeplayVocals();
 
-				if(FlxG.sound.music.active)
-				{
-					FlxG.sound.music.stop();
-					FlxG.sound.music.kill();
-					FlxG.sound.music.destroy();
-				}
+				FlxG.sound.music.volume = 0;
 
-				if(vocals.active)
-				{
-					vocals.stop();
-					vocals.kill();
-					vocals.destroy();
-				}
+				var poop:String = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), curDiffString);
 
-				if(Assets.exists(Paths.inst(songs[curSelected].songName, curDiffString.toLowerCase())))
-				{
-					FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName, curDiffString.toLowerCase()), 1, true);
-					FlxG.sound.music.stop();
-					FlxG.sound.music.time = 0;
-				}
+				PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
 
-				if(Assets.exists(Paths.voices(songs[curSelected].songName, curDiffString.toLowerCase())))
-					vocals = FlxG.sound.load(Paths.voices(songs[curSelected].songName, curDiffString.toLowerCase()), 1, true);
+				if (PlayState.SONG.needsVoices)
+					vocals = new FlxSound().loadEmbedded(Paths.voices(PlayState.SONG.song, curDiffString));
 				else
 					vocals = new FlxSound();
 
-				vocals.time = 0;
+				FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song, curDiffString), 0.7);
 
-				vocals.play(true);
-				FlxG.sound.music.play(true);
-
-				canEnterSong = true;
+				vocals.play();
+				vocals.persist = false;
+				vocals.looped = true;
+				vocals.volume = 0.7;
 			}
 
-			if(vocals != null && FlxG.sound.music != null)
+			if(vocals != null && FlxG.sound.music != null && !FlxG.keys.justPressed.ENTER)
 			{
 				if(vocals.active && FlxG.sound.music.active)
 				{
@@ -424,10 +409,10 @@ class FreeplayState extends MusicBeatState
 			#if cpp
 			@:privateAccess
 			{
-				if(FlxG.sound.music.active && FlxG.sound.music.playing)
+				if(FlxG.sound.music.active && FlxG.sound.music.playing && !FlxG.keys.justPressed.ENTER)
 					lime.media.openal.AL.sourcef(FlxG.sound.music._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, curSpeed);
 	
-				if(vocals.active && vocals.playing)
+				if(vocals.active && vocals.playing && !FlxG.keys.justPressed.ENTER)
 					lime.media.openal.AL.sourcef(vocals._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, curSpeed);
 			}
 			#end
@@ -456,22 +441,13 @@ class FreeplayState extends MusicBeatState
 					PlayState.storyWeek = songs[curSelected].week;
 					trace('CUR WEEK' + PlayState.storyWeek);
 
-					if(colorTween != null) {
+					if(colorTween != null)
 						colorTween.cancel();
-					}
-
-					#if cpp
-					@:privateAccess
-					{
-						if(FlxG.sound.music.active && FlxG.sound.music.playing)
-							FlxG.sound.music.stop();
-			
-						if (vocals.active && vocals.playing)
-							vocals.stop();
-					}
-					#end
 
 					LoadingState.loadAndSwitchState(new PlayState());
+
+					FlxG.sound.music.volume = 0;
+					destroyFreeplayVocals();
 				}
 			}
 		}
@@ -605,6 +581,18 @@ class FreeplayState extends MusicBeatState
 		}
 		else
 			bg.color = songs[curSelected].color;
+	}
+
+	
+	public function destroyFreeplayVocals()
+	{
+		if(vocals != null)
+		{
+			vocals.stop();
+			vocals.destroy();
+		}
+
+		vocals = null;
 	}
 }
 
