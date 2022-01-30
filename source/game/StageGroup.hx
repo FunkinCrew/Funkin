@@ -772,6 +772,11 @@ class StageGroup extends FlxGroup
             sprite.animation.play("beatHit", true);
         }
 
+        #if linc_luajit
+        if(stageScript != null)
+            stageScript.executeState("beatHit", [PlayState.currentBeat]);
+        #end
+
         switch(stage)
         {
             case 'philly':

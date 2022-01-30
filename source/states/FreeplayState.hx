@@ -1,5 +1,6 @@
 package states;
 
+import flixel.util.FlxTimer;
 import substates.ResetScoreSubstate;
 #if discord_rpc
 import utilities.Discord.DiscordClient;
@@ -185,6 +186,10 @@ class FreeplayState extends MusicBeatState
 			remove(black);
 			black.kill();
 			black.destroy();
+
+			songsReady = false;
+
+			new FlxTimer().start(1, function(_){songsReady = true;});
 		}
 
 		selectedColor = songs[curSelected].color;
@@ -370,38 +375,18 @@ class FreeplayState extends MusicBeatState
 
 				FlxG.sound.music.volume = 0;
 
-				var poop:String = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), curDiffString);
-
-				if(Assets.exists(Paths.json("song data/" + songs[curSelected].songName.toLowerCase() + "/" + poop)))
-				{
-					PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
-
-					if (PlayState.SONG.needsVoices)
-						vocals = new FlxSound().loadEmbedded(Paths.voices(PlayState.SONG.song, curDiffString));
-					else
-						vocals = new FlxSound();
-	
-					FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song, curDiffString), 0.7);
-	
-					vocals.play();
-					vocals.persist = false;
-					vocals.looped = true;
-					vocals.volume = 0.7;
-				}
+				if(Assets.exists(Paths.voices(songs[curSelected].songName.toLowerCase(), curDiffString)))
+					vocals = new FlxSound().loadEmbedded(Paths.voices(songs[curSelected].songName.toLowerCase(), curDiffString));
 				else
-				{
-					if(Assets.exists(Paths.voices(PlayState.SONG.song, curDiffString)))
-						vocals = new FlxSound().loadEmbedded(Paths.voices(PlayState.SONG.song, curDiffString));
-					else
-						vocals = new FlxSound();
-	
-					FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song, curDiffString), 0.7);
-	
-					vocals.play();
-					vocals.persist = false;
-					vocals.looped = true;
-					vocals.volume = 0.7;
-				}
+					vocals = new FlxSound();
+
+				FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName.toLowerCase(), curDiffString), 0.7);
+
+				FlxG.sound.list.add(vocals);
+				vocals.play();
+				vocals.persist = true;
+				vocals.looped = true;
+				vocals.volume = 0.7;
 			}
 
 			if(vocals != null && FlxG.sound.music != null && !FlxG.keys.justPressed.ENTER)

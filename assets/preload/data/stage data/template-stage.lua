@@ -1,3 +1,4 @@
+-- same time that 'start' is called for regular modcharts :flushed:
 function create(stage)
 	print(stage .. " is our stage!")
 
@@ -13,4 +14,19 @@ function create(stage)
 
 	-- set extra properties like camera zoom (can be done in json still but frick you)
 	setProperty("stage", "camZoom", 0.9)
+end
+
+-- same thing as create, just a different name
+function start(stage)
+	
+end
+
+-- called each frame with elapsed being the seconds between the last frame
+function update(elapsed)
+
+end
+
+-- everytime a beat hit is called on the song this happens
+function beatHit(curBeat)
+
 end
