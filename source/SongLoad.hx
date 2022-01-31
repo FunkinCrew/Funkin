@@ -18,6 +18,7 @@ typedef SwagSong =
 	var needsVoices:Bool;
 	var voiceList:Array<String>;
 	var speed:FunnySpeed;
+	var speedMap:Map<String, Float>;
 
 	var player1:String;
 	var player2:String;
@@ -81,6 +82,7 @@ class SongLoad
 
 		var songShit:Array<SwagSection> = [];
 
+		// THIS IS OVERWRITTEN, WILL BE DEPRECTATED AND REPLACED SOOOOON
 		if (songData != null)
 		{
 			switch (diff)
@@ -94,6 +96,8 @@ class SongLoad
 			}
 		}
 
+		songShit = songData.noteMap[diff];
+
 		return songShit;
 	}
 
@@ -103,6 +107,9 @@ class SongLoad
 			diff = SongLoad.curDiff;
 
 		var speedShit:Float = 1;
+
+		// all this shit is overridden by the thing that loads it from speedMap Map object!!!
+		// replace and delete later!
 		switch (diff)
 		{
 			case 'easy':
@@ -112,6 +119,8 @@ class SongLoad
 			case 'hard':
 				speedShit = songData.speed.hard;
 		}
+
+		speedShit = songData.speedMap[diff];
 
 		return speedShit;
 	}
@@ -123,11 +132,16 @@ class SongLoad
 			notes: {easy: [], normal: [], hard: []},
 			difficulties: ["easy", "normal", "hard"],
 			noteMap: new Map(),
+			speedMap: new Map(),
 			bpm: 150,
 			needsVoices: true,
 			player1: 'bf',
 			player2: 'dad',
-			speed: {easy: 1, normal: 1, hard: 1},
+			speed: {
+				easy: 1,
+				normal: 1,
+				hard: 1
+			},
 			validScore: false,
 			voiceList: ["BF", "BF-pixel"],
 			extraNotes: []
@@ -218,6 +232,7 @@ class SongLoad
 		var swagShit:SwagSong = cast songParsed.song;
 		swagShit.difficulties = []; // reset it to default before load
 		swagShit.noteMap = new Map();
+		swagShit.speedMap = new Map();
 		for (diff in Reflect.fields(songParsed.song.notes))
 		{
 			swagShit.difficulties.push(diff);
@@ -236,7 +251,13 @@ class SongLoad
 			}
 		}
 
+		for (diff in swagShit.difficulties)
+		{
+			swagShit.speedMap[diff] = cast Reflect.field(songParsed.song.speed, diff);
+		}
+
 		trace(swagShit.noteMap.toString());
+		trace(swagShit.speedMap.toString());
 		trace('that was just notemap string lol');
 
 		swagShit.validScore = true;
