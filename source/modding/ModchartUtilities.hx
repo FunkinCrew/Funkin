@@ -735,9 +735,9 @@ class ModchartUtilities
             }
         });
         
-        Lua_helper.add_callback(lua,"setActorAngle", function(angle:Int,id:String) {
+        Lua_helper.add_callback(lua,"setActorAngle", function(angle:Float,id:String) {
             if(getActorByName(id) != null)
-                getActorByName(id).angle = angle;
+                Reflect.setProperty(getActorByName(id), "angle", angle);
         });
 
         Lua_helper.add_callback(lua,"setActorModAngle", function(angle:Int,id:String) {

@@ -95,6 +95,8 @@
 	
 	<assets path="CHANGELOG.md" rename='changelog.txt'/>
 
+	<assets path="building/linux_dependencies.txt" rename='linux_dependencies.txt' if="linux"/>
+
 	<!-- _______________________________ Libraries ______________________________ -->
 
 	<haxelib name="flixel" />

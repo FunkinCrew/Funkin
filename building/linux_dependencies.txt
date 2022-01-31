@@ -1,0 +1,2 @@
+You need the 'luajit' package to run the game correctly (at least on Ubuntu).
+Basically if you get an error about lua stuff, try installing it with your package manager (something like 'sudo apt install luajit')
