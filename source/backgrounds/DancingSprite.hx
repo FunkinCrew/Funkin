@@ -16,19 +16,19 @@ class DancingSprite extends FlxSprite
         this.oneDanceAnimation = oneDanceAnimation;
     }
 
-    public function dance():Void
+    public function dance(?altAnim:String = ''):Void
     {
         if(!oneDanceAnimation)
         {
             dancingRight = !dancingRight;
 
             if(dancingRight)
-                animation.play('danceRight', true);
+                animation.play('danceRight' + altAnim, true);
             else
-                animation.play('danceLeft', true);
+                animation.play('danceLeft' + altAnim, true);
         }
         else
-            animation.play('dance', true);
+            animation.play('dance' + altAnim, true);
     }
 }
 

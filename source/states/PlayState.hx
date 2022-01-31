@@ -577,8 +577,8 @@ class PlayState extends MusicBeatState
 				add(stage.infrontOfGFSprites);
 
 			// fuck haxeflixel and their no z ordering or somnething AAAAAAAAAAAAA
-			if(curStage == 'limo' && utilities.Options.getData("charsAndBGs"))
-				add(stage.limo);
+			//if(curStage == 'limo' && utilities.Options.getData("charsAndBGs"))
+			//	add(stage.limo);
 
 			if(dad.otherCharacters == null)
 			{

@@ -98,7 +98,7 @@ class StageGroup extends FlxGroup
         if(newStage != null)
             stage = newStage;
 
-        var bruhStages = ['philly','limo','mall','evil-mall','school','school-mad','evil-school','wasteland'];
+        var bruhStages = ['philly','mall','evil-mall','school','school-mad','evil-school','wasteland'];
 
         var stagesNormally = CoolUtil.coolTextFile(Paths.txt('stageList'));
 
@@ -161,48 +161,6 @@ class StageGroup extends FlxGroup
 
                     var street:FlxSprite = new FlxSprite(-40, streetBehind.y).loadGraphic(Paths.image(stage + '/street', 'stages'));
                     add(street);
-                }
-                case "limo":
-                {
-                    camZoom = 0.9;
-
-                    player_1_Point.x += 200;
-                    player_1_Point.y -= 200;
-                    gf_Point.y += 100;
-                    player_2_Point.x -= 75;
-                    player_2_Point.y += 75;
-
-                    var skyBG:FlxSprite = new FlxSprite(-120, -50).loadGraphic(Paths.image(stage + '/limoSunset', 'stages'));
-                    skyBG.scrollFactor.set(0.1, 0.1);
-                    add(skyBG);
-
-                    var bgLimo:FlxSprite = new FlxSprite(-200, 480);
-                    bgLimo.frames = Paths.getSparrowAtlas(stage + '/bgLimo', 'stages');
-                    bgLimo.animation.addByPrefix('drive', "background limo pink", 24);
-                    bgLimo.animation.play('drive');
-                    bgLimo.scrollFactor.set(0.4, 0.4);
-                    add(bgLimo);
-
-                    grpLimoDancers = new FlxTypedGroup<BackgroundDancer>();
-                    add(grpLimoDancers);
-
-                    for (i in 0...5)
-                    {
-                        var dancer:BackgroundDancer = new BackgroundDancer((370 * i) + 130, bgLimo.y - 400);
-                        dancer.scrollFactor.set(0.4, 0.4);
-                        grpLimoDancers.add(dancer);
-                    }
-
-                    var limoTex = Paths.getSparrowAtlas(stage + '/limoDrive', 'stages');
-
-                    limo = new FlxSprite(-120, 550);
-                    limo.frames = limoTex;
-                    limo.animation.addByPrefix('drive', "Limo stage", 24);
-                    limo.animation.play('drive');
-                    limo.antialiasing = true;
-                    add(limo);
-
-                    fastCar = new FlxSprite(-300, 160).loadGraphic(Paths.image(stage + '/fastCarLol', 'stages'));
                 }
                 case "mall":
                 {
@@ -610,12 +568,35 @@ class StageGroup extends FlxGroup
                                     if(Animation.name == "beatHit")
                                         onBeatHit_Group.add(Sprite);
         
-                                    Sprite.animation.addByPrefix(
-                                        Anim_Name,
-                                        Animation.animation_name,
-                                        Animation.fps,
-                                        Animation.looped
-                                    );
+                                    if(Animation.indices == null)
+                                    {
+                                        Sprite.animation.addByPrefix(
+                                            Anim_Name,
+                                            Animation.animation_name,
+                                            Animation.fps,
+                                            Animation.looped
+                                        );
+                                    }
+                                    else if(Animation.indices.length == 0)
+                                    {
+                                        Sprite.animation.addByPrefix(
+                                            Anim_Name,
+                                            Animation.animation_name,
+                                            Animation.fps,
+                                            Animation.looped
+                                        );
+                                    }
+                                    else
+                                    {
+                                        Sprite.animation.addByIndices(
+                                            Anim_Name,
+                                            Animation.animation_name,
+                                            Animation.indices,
+                                            "",
+                                            Animation.fps,
+                                            Animation.looped
+                                        );
+                                    }
                                 }
         
                                 if(Object.start_Animation != "" && Object.start_Animation != null && Object.start_Animation != "null")
@@ -802,7 +783,7 @@ class StageGroup extends FlxGroup
 				bottomBoppers.animation.play('bop', true);
 				santa.animation.play('idle', true);
             }
-            case 'limo':
+            /*case 'limo':
             {
                 grpLimoDancers.forEach(function(dancer:BackgroundDancer)
                 {
@@ -814,7 +795,7 @@ class StageGroup extends FlxGroup
                     if (FlxG.random.bool(10) && fastCarCanDrive)
                         fastCarDrive();
                 }
-            }
+            }*/
             case 'wasteland':
             {
                 watchTower.animation.play("idle", true);

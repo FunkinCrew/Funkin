@@ -1,0 +1,167 @@
+{
+    "scriptName": "limo",
+    "character_Positions":[
+        [1200, 600],
+        [225, 875],
+        [600, 850]
+    ],
+    "camera_Zoom": 0.9,
+    "objects": [
+        {
+            "position":[-120, -50],
+            "scroll_Factor": [0.1, 0.1],
+            "scale": 1,
+            "antialiased": true,
+            "file_Name": "limoSunset",
+            "is_Animated": false
+        },
+        {
+            "position":[-200, 480],
+            "scroll_Factor": [0.4, 0.4],
+            "scale": 1,
+            "antialiased": true,
+            "file_Name": "bgLimo",
+            "is_Animated": true,
+            "animations": [
+                {
+                    "name": "drive",
+                    "animation_name": "background limo pink",
+                    "fps": 24,
+                    "looped": true
+                }
+            ],
+            "start_Animation": "drive"
+        },
+        {
+            "position":[130, 80],
+            "scroll_Factor": [0.4, 0.4],
+            "scale": 1,
+            "antialiased": true,
+            "file_Name": "limoDancer",
+            "is_Animated": true,
+            "animations": [
+                {
+                    "name": "danceLeft",
+                    "animation_name": "bg dancer sketch PINK",
+                    "fps": 24,
+                    "looped": false,
+                    "indices": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+                },
+                {
+                    "name": "danceRight",
+                    "animation_name": "bg dancer sketch PINK",
+                    "fps": 24,
+                    "looped": false,
+                    "indices": [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29]
+                }
+            ],
+            "start_Animation": "danceLeft",
+            "object_Name": "dancer1"
+        },
+        {
+            "position":[500, 80],
+            "scroll_Factor": [0.4, 0.4],
+            "scale": 1,
+            "antialiased": true,
+            "file_Name": "limoDancer",
+            "is_Animated": true,
+            "animations": [
+                {
+                    "name": "danceLeft",
+                    "animation_name": "bg dancer sketch PINK",
+                    "fps": 24,
+                    "looped": false,
+                    "indices": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+                },
+                {
+                    "name": "danceRight",
+                    "animation_name": "bg dancer sketch PINK",
+                    "fps": 24,
+                    "looped": false,
+                    "indices": [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29]
+                }
+            ],
+            "start_Animation": "danceLeft",
+            "object_Name": "dancer2"
+        },
+        {
+            "position":[870, 80],
+            "scroll_Factor": [0.4, 0.4],
+            "scale": 1,
+            "antialiased": true,
+            "file_Name": "limoDancer",
+            "is_Animated": true,
+            "animations": [
+                {
+                    "name": "danceLeft",
+                    "animation_name": "bg dancer sketch PINK",
+                    "fps": 24,
+                    "looped": false,
+                    "indices": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+                },
+                {
+                    "name": "danceRight",
+                    "animation_name": "bg dancer sketch PINK",
+                    "fps": 24,
+                    "looped": false,
+                    "indices": [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29]
+                }
+            ],
+            "start_Animation": "danceLeft",
+            "object_Name": "dancer3"
+        },
+        {
+            "position":[1240, 80],
+            "scroll_Factor": [0.4, 0.4],
+            "scale": 1,
+            "antialiased": true,
+            "file_Name": "limoDancer",
+            "is_Animated": true,
+            "animations": [
+                {
+                    "name": "danceLeft",
+                    "animation_name": "bg dancer sketch PINK",
+                    "fps": 24,
+                    "looped": false,
+                    "indices": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+                },
+                {
+                    "name": "danceRight",
+                    "animation_name": "bg dancer sketch PINK",
+                    "fps": 24,
+                    "looped": false,
+                    "indices": [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29]
+                }
+            ],
+            "start_Animation": "danceLeft",
+            "object_Name": "dancer4"
+        },
+        {
+            "position":[-12600, 80],
+            "scroll_Factor": [1, 1],
+            "scale": 1,
+            "antialiased": true,
+            "file_Name": "fastCarLol",
+            "is_Animated": false,
+            "object_Name": "car"
+        },
+        {
+            "position":[-120, 550],
+            "scroll_Factor": [1, 1],
+            "scale": 1,
+            "antialiased": true,
+            "file_Name": "limoDrive",
+            "is_Animated": true,
+            "animations": [
+                {
+                    "name": "drive",
+                    "animation_name": "Limo stage",
+                    "fps": 24,
+                    "looped": true
+                }
+            ],
+            "start_Animation": "drive",
+            "layer": "gf"
+        }
+    ]
+}

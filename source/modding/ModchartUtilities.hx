@@ -34,7 +34,7 @@ using StringTools;
 
 class ModchartUtilities
 {
-    public static var lua:State = null;
+    public var lua:State = null;
 
     public static var lua_Sprites:Map<String, FlxSprite> = [
         'boyfriend' => PlayState.boyfriend,
@@ -642,11 +642,32 @@ class ModchartUtilities
                 getActorByName(id).animation.addByPrefix(prefix, anim, fps, looped);
             }
         });
+
+        Lua_helper.add_callback(lua,"addActorAnimationIndices", function(id:String,prefix:String,indiceString:String,anim:String,fps:Int = 30, looped:Bool = true) {
+            if(getActorByName(id) != null)
+            {
+                var indices:Array<Dynamic> = indiceString.split(",");
+
+                for(indiceIndex in 0...indices.length)
+                {
+                    indices[indiceIndex] = Std.parseInt(indices[indiceIndex]);
+                }
+
+                getActorByName(id).animation.addByIndices(anim, prefix, indices, "", fps, looped);
+            }
+        });
         
         Lua_helper.add_callback(lua,"playActorAnimation", function(id:String,anim:String,force:Bool = false,reverse:Bool = false) {
             if(getActorByName(id) != null)
             {
                 getActorByName(id).animation.play(anim, force, reverse);
+            }
+        });
+        
+        Lua_helper.add_callback(lua,"playActorDance", function(id:String, ?altAnim:String = '') {
+            if(getActorByName(id) != null)
+            {
+                getActorByName(id).dance(altAnim);
             }
         });
 
