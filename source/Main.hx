@@ -19,7 +19,7 @@ class Main extends Sprite
 	var framerate:Int = 60; // How many frames per second the game should run at.
 	#else
 	// TODO: This should probably be in the options menu?
-	var framerate:Int = 300; // How many frames per second the game should run at.
+	var framerate:Int = 144; // How many frames per second the game should run at.
 	#end
 	var skipSplash:Bool = true; // Whether to skip the flixel splash screen that appears in release mode.
 	var startFullscreen:Bool = false; // Whether to start the game in fullscreen on desktop targets

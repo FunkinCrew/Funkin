@@ -12,6 +12,8 @@ typedef SwagSong =
 {
 	var song:String;
 	var notes:FunnyNotes;
+	var difficulties:Array<String>;
+	var noteMap:Map<String, Array<SwagSection>>;
 	var bpm:Float;
 	var needsVoices:Bool;
 	var voiceList:Array<String>;
@@ -119,6 +121,8 @@ class SongLoad
 		return {
 			song: 'Test',
 			notes: {easy: [], normal: [], hard: []},
+			difficulties: ["easy", "normal", "hard"],
+			noteMap: new Map(),
 			bpm: 150,
 			needsVoices: true,
 			player1: 'bf',
@@ -210,10 +214,16 @@ class SongLoad
 
 	public static function parseJSONshit(rawJson:String):SwagSong
 	{
-		var swagShit:SwagSong = cast Json.parse(rawJson).song;
-
-		for (diff in Reflect.fields(Json.parse(rawJson).song.notes))
+		var songParsed:Dynamic = Json.parse(rawJson);
+		var swagShit:SwagSong = cast songParsed.song;
+		swagShit.difficulties = []; // reset it to default before load
+		swagShit.noteMap = new Map();
+		for (diff in Reflect.fields(songParsed.song.notes))
 		{
+			swagShit.difficulties.push(diff);
+			swagShit.noteMap[diff] = cast Reflect.field(songParsed.song.notes, diff);
+			castArrayToNoteData(swagShit.noteMap[diff]);
+
 			switch (diff)
 			{
 				case "easy":
@@ -224,8 +234,10 @@ class SongLoad
 				case "hard":
 					castArrayToNoteData(swagShit.notes.hard);
 			}
-			trace(diff);
 		}
+
+		trace(swagShit.noteMap.toString());
+		trace('that was just notemap string lol');
 
 		swagShit.validScore = true;
 

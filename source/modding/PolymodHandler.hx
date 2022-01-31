@@ -182,7 +182,7 @@ class PolymodHandler
 	}
 	#end
 
-	public static function getAllMods():Array<ModMetadata>
+	public static function getAllMods():Array<#if cpp ModMetadata #else Dynamic #end> // this is shitty but ModMetadata isn't imported on HTML5! And I'm too lazy to actually do it properly!
 	{
 		#if cpp
 		trace('Scanning the mods folder...');
