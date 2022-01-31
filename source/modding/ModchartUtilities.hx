@@ -211,10 +211,10 @@ class ModchartUtilities
         setVar("strumLine1Visible", true);
         setVar("strumLine2Visible", true);
 
-        setVar("screenWidth",FlxG.width);
-        setVar("screenHeight",FlxG.height);
-        setVar("windowWidth",FlxG.width);
-        setVar("windowHeight",FlxG.height);
+        setVar("screenWidth", lime.app.Application.current.window.display.currentMode.width);
+        setVar("screenHeight", lime.app.Application.current.window.display.currentMode.height);
+        setVar("windowWidth", FlxG.width);
+        setVar("windowHeight", FlxG.height);
 
         setVar("hudWidth", PlayState.instance.camHUD.width);
         setVar("hudHeight", PlayState.instance.camHUD.height);

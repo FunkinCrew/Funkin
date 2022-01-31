@@ -75,7 +75,7 @@
             "name": "scared",
             "animation_name": "GF FEAR",
             "fps": 24,
-            "looped": false
+            "looped": true
         }
     ]
 }

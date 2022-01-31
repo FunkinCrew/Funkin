@@ -98,7 +98,7 @@ class StageGroup extends FlxGroup
         if(newStage != null)
             stage = newStage;
 
-        var bruhStages = ['spooky','philly','limo','mall','evil-mall','school','school-mad','evil-school','wasteland'];
+        var bruhStages = ['philly','limo','mall','evil-mall','school','school-mad','evil-school','wasteland'];
 
         var stagesNormally = CoolUtil.coolTextFile(Paths.txt('stageList'));
 
@@ -119,20 +119,6 @@ class StageGroup extends FlxGroup
         {
             switch(stage)
             {
-                case "spooky":
-                {
-                    player_2_Point.y += 35;
-
-                    var hallowTex = Paths.getSparrowAtlas(stage + '/halloween_bg', 'stages');
-
-                    halloweenBG = new FlxSprite(-200, -100);
-                    halloweenBG.frames = hallowTex;
-                    halloweenBG.animation.addByPrefix('idle', 'halloweem bg0');
-                    halloweenBG.animation.addByPrefix('lightning', 'halloweem bg lightning strike', 24, false);
-                    halloweenBG.animation.play('idle');
-                    halloweenBG.antialiasing = true;
-                    add(halloweenBG);
-                }
                 case "philly":
                 {
                     player_1_Point.x -= 50;
@@ -827,16 +813,6 @@ class StageGroup extends FlxGroup
                 {
                     if (FlxG.random.bool(10) && fastCarCanDrive)
                         fastCarDrive();
-                }
-            }
-            case 'spooky':
-            {
-                if(FlxG.state == PlayState.instance)
-                {
-                    if (FlxG.random.bool(10) && PlayState.currentBeat > lightningStrikeBeat + lightningOffset)
-                    {
-                        lightningStrikeShit();
-                    }
                 }
             }
             case 'wasteland':

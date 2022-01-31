@@ -1,0 +1,35 @@
+{
+    "scriptName": "spooky",
+    "character_Positions":[
+        [1000, 800],
+        [300, 800],
+        [600, 750]
+    ],
+    "camera_Zoom": 1.05,
+    "objects": [
+        {
+            "position":[-200, -100],
+            "scroll_Factor": [1,1],
+            "scale": 1,
+            "antialiased": true,
+            "file_Name": "halloween_bg",
+            "is_Animated": true,
+            "animations": [
+                {
+                    "name": "idle",
+                    "animation_name": "halloweem bg0",
+                    "fps": 24,
+                    "looped": true
+                },
+                {
+                    "name": "lightning",
+                    "animation_name": "halloweem bg lightning strike",
+                    "fps": 24,
+                    "looped": false
+                }
+            ],
+            "start_Animation": "idle",
+            "object_Name": "bg"
+        }
+    ]
+}
