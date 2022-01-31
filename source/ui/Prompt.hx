@@ -104,7 +104,7 @@ class Prompt extends FlxSubState
 
 	public function setText(text:String)
 	{
-		field.set_text(text);
+		field.text = text;
 		field.screenCenter(X);
 	}
 }

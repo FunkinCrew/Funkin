@@ -7,17 +7,17 @@ using StringTools;
 
 class AtlasChar extends FlxSprite
 {
-	var char:String;
+	public var char(default, set):String;
 
-	override public function new(x:Float = 0, y:Float = 0, atlas:FlxAtlasFrames, char:String)
+	override public function new(?x:Float = 0, ?y:Float = 0, atlas:FlxAtlasFrames, char:String)
 	{
 		super(x, y);
-		set_frames(atlas);
-		set_char(char);
-		set_antialiasing(true);
+		frames = atlas;
+		this.char = char;
+		antialiasing = true;
 	}
 
-	public function set_char(char:String)
+	function set_char(char:String)
 	{
 		if (this.char != char)
 		{

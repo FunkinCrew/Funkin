@@ -4,7 +4,7 @@ import flixel.graphics.tile.FlxGraphicsShader;
 
 class BuildingShader extends FlxGraphicsShader
 {
-	@:glFragmentSource("
+	@:glFragmentSource('
         varying float openfl_Alphav;
 		varying vec4 openfl_ColorMultiplierv;
 		varying vec4 openfl_ColorOffsetv;
@@ -64,9 +64,8 @@ class BuildingShader extends FlxGraphicsShader
                 color -= alphaShit;
             
             gl_FragColor = color;
-        }
-	")
-	@:glVertexSource("
+		}')
+	@:glVertexSource('
 		attribute float openfl_Alpha;
 		attribute vec4 openfl_ColorMultiplier;
 		attribute vec4 openfl_ColorOffset;
@@ -110,8 +109,7 @@ class BuildingShader extends FlxGraphicsShader
 				openfl_ColorOffsetv = colorOffset / 255.0;
 				openfl_ColorMultiplierv = colorMultiplier;
 			}
-		}")
-	
+		}')
 	public function new()
 	{
 		super();

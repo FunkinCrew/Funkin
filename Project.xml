@@ -167,5 +167,8 @@
 
 
 	<!-- <haxedef name="SKIP_TO_PLAYSTATE" if="debug" /> -->
+
+	<!--The Newgrounds version of FNF was built with 'ng' defined, and so will the port!-->
+	<haxedef name="ng" />
 	
 </project>

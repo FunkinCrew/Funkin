@@ -1,46 +1,49 @@
 package ui;
 
+import flixel.util.FlxStringUtil;
 import haxe.ds.EnumValueMap;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 
 using StringTools;
 
-enum Case
-{
-	Both;
-	Upper;
-	Lower;
-}
-
 class AtlasText extends FlxTypedSpriteGroup<Dynamic>
 {
 	public static var fonts:EnumValueMap<AtlasFont, AtlasFontData> = new EnumValueMap<AtlasFont, AtlasFontData>();
 
-	public var text:String = '';
+	public var text(default, set):String = '';
 	public var font:AtlasFontData;
 
-	override public function new(x:Float = 0, y:Float = 0, text:String, fontType:AtlasFont = Default)
+	override public function new(?x:Float = 0, ?y:Float = 0, text:String, ?fontType:AtlasFont = Default)
 	{
 		if (!fonts.exists(fontType))
+		{
 			fonts.set(fontType, new AtlasFontData(fontType));
+		}
 		font = fonts.get(fontType);
 		super(x, y);
-		set_text(text);
+		this.text = text;
 	}
 
-	public function set_text(text:String = '')
+	function set_text(text:String = '')
 	{
 		var b:String = restrictCase(text);
 		var c:String = restrictCase(this.text);
 		this.text = text;
-		if (b == c) return text;
+		if (b == c)
+		{
+			return text;
+		}
 		if (b.indexOf(c) == 0)
 		{
 			appendTextCased(b.substr(c.length));
 			return this.text;
 		}
-		if (b == '') return this.text;
+		group.kill();
+		if (b == '')
+		{
+			return this.text;
+		}
 		appendTextCased(b);
 		return this.text;
 	}
@@ -60,59 +63,68 @@ class AtlasText extends FlxTypedSpriteGroup<Dynamic>
 
 	public function appendTextCased(text:String)
 	{
-		var b = group.countLiving();
-		var c:Float = 0;
-		var d:Dynamic = 0;
-		if (b == -1)
+		var length:Int = group.countLiving();
+		var nextX:Float = 0;
+		var nextY:Float = 0;
+		if (length == -1)
 		{
-			b = 0;
+			length = 0;
 		}
-		else if (b > 0)
+		else if (length > 0)
 		{
-			d = group.members[b - 1];
-			c = d.x + d.width - x;
-			d = d.y + d.height - font.maxHeight - y;
+			var member = group.members[length - 1];
+			nextX = member.x + member.width - x;
+			nextY = member.y + member.height - font.maxHeight - y;
 		}
-		var split = text.split('');
-		var k;
-		for (char in 0...split.length)
+		var split:Array<String> = text.split('');
+		var spr:AtlasChar;
+		for (char in split)
 		{
-			switch (split[char])
+			switch (char)
 			{
 				case '\n':
-					c = 0;
-					d += font.maxHeight;
+					nextX = 0;
+					nextY += font.maxHeight;
 				case ' ':
-					c += 40;
+					nextX += 40;
 				default:
-					if (group.members.length <= b)
+					if (length >= group.members.length)
 					{
-						k = new AtlasChar(0, 0, font.atlas, split[char]);
+						spr = new AtlasChar(null, null, font.atlas, char);
 					}
 					else
 					{
-						k = group.members[b];
-						k.revive();
-						k.set_char(split[char]);
-						k.set_alpha(1);
+						spr = group.members[length];
+						spr.revive();
+						spr.char = char;
+						spr.alpha = 1;
 					}
-					k.set_x(c);
-					k.set_y(d + font.maxHeight - k.height);
-					add(k);
-					c += k.width;
-					++b;
+					spr.x = nextX;
+					spr.y = nextY + font.maxHeight - spr.height;
+					add(spr);
+					nextX += spr.width;
+					length++;
 			}
 		}
+	}
+
+	override public function toString()
+	{
+		var x = LabelValuePair.weak('x', this.x);
+		var y = LabelValuePair.weak('y', this.y);
+		var text = LabelValuePair.weak('text', this.text);
+		return "InputItem, " + FlxStringUtil.getDebugString([x, y, text]);
 	}
 }
 
 class AtlasFontData
 {
-	public var caseAllowed = Both;
-	public var maxHeight = 0;
-	public var atlas:FlxAtlasFrames;
-	public static var upperChar = new EReg("^[A-Z]\\d+$","");
 	public static var lowerChar = new EReg("^[a-z]\\d+$","");
+	public static var upperChar = new EReg("^[A-Z]\\d+$","");
+
+	public var atlas:FlxAtlasFrames;
+	public var maxHeight:Float = 0;
+	public var caseAllowed:Case = Both;
 	
 	public function new(font:AtlasFont)
 	{
@@ -121,24 +133,23 @@ class AtlasFontData
 		atlas.parent.destroyOnNoUse = false;
 		atlas.parent.persist = true;
 
-		var thingie = false;
-		var thingie2 = false;
-		for (i in 0...atlas.frames.length)
+		var hasUpper = false;
+		var hasLower = false;
+		for (framedata in atlas.frames)
 		{
-			var framedata = atlas.frames[i];
-			maxHeight = Std.int(Math.max(maxHeight, framedata.frame.height));
-			if (!thingie)
+			maxHeight = Math.max(maxHeight, framedata.frame.height);
+			if (!hasUpper)
 			{
-				thingie = upperChar.match(framedata.name);
+				hasUpper = upperChar.match(framedata.name);
 			}
-			if (!thingie2)
+			if (!hasLower)
 			{
-				thingie2 = lowerChar.match(framedata.name);
+				hasLower = lowerChar.match(framedata.name);
 			}
 		}
-		if (thingie != thingie2)
+		if (hasUpper != hasLower)
 		{
-			caseAllowed = thingie ? Upper : Lower;
+			caseAllowed = hasUpper ? Upper : Lower;
 		}
 	}
 }

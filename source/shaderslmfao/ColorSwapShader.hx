@@ -4,7 +4,7 @@ import flixel.graphics.tile.FlxGraphicsShader;
 
 class ColorSwapShader extends FlxGraphicsShader
 {
-	@:glFragmentSource("
+	@:glFragmentSource('
 		varying float openfl_Alphav;
 		varying vec4 openfl_ColorMultiplierv;
 		varying vec4 openfl_ColorOffsetv;
@@ -143,8 +143,8 @@ class ColorSwapShader extends FlxGraphicsShader
 				else
 					gl_FragColor = color;
 			} */
-		}")
-	@:glVertexSource("
+		}')
+	@:glVertexSource('
 		attribute float openfl_Alpha;
 		attribute vec4 openfl_ColorMultiplier;
 		attribute vec4 openfl_ColorOffset;
@@ -188,8 +188,7 @@ class ColorSwapShader extends FlxGraphicsShader
 				openfl_ColorOffsetv = colorOffset / 255.0;
 				openfl_ColorMultiplierv = colorMultiplier;
 			}
-		}")
-	
+		}')	
 	public function new()
 	{
 		super();
