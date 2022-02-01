@@ -1,4 +1,3 @@
-chromatic-stage
 stage
 spooky
 philly

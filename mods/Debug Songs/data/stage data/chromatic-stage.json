@@ -1,0 +1,34 @@
+{
+    "character_Positions":[
+        [1000, 800],
+        [300, 800],
+        [600, 750]
+    ],
+    "camera_Zoom": 0.9,
+    "objects": [
+        {
+            "position":[-600, -200],
+            "scroll_Factor": [0.9, 0.9],
+            "scale": 1,
+            "antialiased": true,
+            "file_Name": "chr-stageback",
+            "is_Animated": false
+        },
+        {
+            "position":[-650, 600],
+            "scroll_Factor": [0.9, 0.9],
+            "scale": 1.1,
+            "antialiased": true,
+            "file_Name": "chr-stagefront",
+            "is_Animated": false
+        },
+        {
+            "position":[-500, -300],
+            "scroll_Factor": [1.3, 1.3],
+            "scale": 0.9,
+            "antialiased": true,
+            "file_Name": "chr-stagecurtains",
+            "is_Animated": false
+        }
+    ]
+}
