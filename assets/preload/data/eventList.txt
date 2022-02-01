@@ -7,3 +7,4 @@ Screen Shake~Camera Shake (duration, intensity)~Hud Shake (duration, intensity)
 Change Scroll Speed~Scroll Speed~Time To Change In Seconds (default is 0)
 Set Camera Zoom~Game Camera Zoom (default is defaultCameraZoom)~Hud Camera Zoom (default is 1)
 Change Character Alpha~Character (BF, Dad, GF)~Alpha to change to. (default is 0.5)
+Character Will Idle?~Character (BF, Dad, GF)~"true" or "false"

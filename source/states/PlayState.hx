@@ -2695,6 +2695,12 @@ class PlayState extends MusicBeatState
 								alphaVal = 0.5;
 
 							char.alpha = alphaVal;
+						case "character will idle?":
+							var char = getCharFromEvent(event[2]);
+
+							var funny = Std.string(event[3]).toLowerCase() == "true";
+
+							char.shouldDance = funny;
 						case "change character":
 							eventCharacterShit(event);
 					}
