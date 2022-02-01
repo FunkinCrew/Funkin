@@ -26,7 +26,7 @@ using StringTools;
 
 class StageGroup extends FlxGroup
 {
-    public var stage:String = "chromatic-stage";
+    public var stage:String = "stage";
     public var camZoom:Float = 1.05;
     private var goodElapse:Float = 0;
 
@@ -42,11 +42,6 @@ class StageGroup extends FlxGroup
 
     public var stage_Objects:Array<Array<Dynamic>> = [];
 
-    // SPOOKY STUFF
-    private var halloweenBG:FlxSprite;
-    private var lightningStrikeBeat:Int = 0;
-    private var lightningOffset:Int = 8;
-
     // PHILLY STUFF
     private var phillyCityLights:FlxTypedGroup<FlxSprite>;
     private var phillyTrain:FlxSprite;
@@ -58,14 +53,6 @@ class StageGroup extends FlxGroup
     private var trainCars:Int = 8;
     private var trainCooldown:Int = 0;
     private var curLight:Int = 0;
-
-    // LIMO STUFF
-    private var grpLimoDancers:FlxTypedGroup<BackgroundDancer>;
-    private var fastCar:FlxSprite;
-    private var fastCarCanDrive:Bool = true;
-
-    // for layering because FUCK I HATE LAYERING IN HAXEFLIXEL AAAAAAAAAAAAAAAAAA
-    public var limo:FlxSprite;
 
     // MALL STUFF
     private var santa:FlxSprite;
@@ -725,49 +712,6 @@ class StageGroup extends FlxGroup
         trainMoving = true;
         if (!trainSound.playing)
             trainSound.play(true);
-    }
-
-    // limo
-
-	function resetFastCar():Void
-	{
-		fastCar.x = -12600;
-		fastCar.y = FlxG.random.int(140, 250);
-		fastCar.velocity.x = 0;
-		fastCarCanDrive = true;
-	}
-
-	function fastCarDrive()
-	{
-		FlxG.sound.play(Paths.soundRandom('carPass', 0, 1), 0.7);
-
-		fastCar.velocity.x = (FlxG.random.int(170, 220) / FlxG.elapsed) * 3;
-		fastCarCanDrive = false;
-
-		new FlxTimer().start(2, function(tmr:FlxTimer)
-		{
-			resetFastCar();
-		});
-	}
-
-    // spooky
-
-    function lightningStrikeShit():Void
-    {
-        if(FlxG.state == PlayState.instance)
-        {
-            if(PlayState.boyfriend.animOffsets.exists("scared"))
-                PlayState.boyfriend.playAnim('scared', true);
-    
-            if(PlayState.gf.animOffsets.exists("scared"))
-                PlayState.gf.playAnim('scared', true);
-            
-            FlxG.sound.play(Paths.soundRandom('thunder_', 1, 2));
-            halloweenBG.animation.play('lightning');
-    
-            lightningStrikeBeat = PlayState.currentBeat;
-            lightningOffset = FlxG.random.int(8, 24);
-        }
     }
 
     // LUA SHIT LOL

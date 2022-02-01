@@ -73,7 +73,7 @@ class Song
 	public var player2:String = 'dad';
 	public var gf:Null<String> = 'gf';
 	
-	public var stage:Null<String> = 'chromatic-stage';
+	public var stage:Null<String> = 'stage';
 
 	public var keyCount:Null<Int> = 4;
 	public var playerKeyCount:Null<Int> = 4;

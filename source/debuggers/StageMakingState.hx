@@ -33,7 +33,7 @@ class StageMakingState extends MusicBeatState
     /* STAGE STUFF */
     public var stages:Array<String>;
 
-    public var stage_Name:String = 'chromatic-stage';
+    public var stage_Name:String = 'stage';
     private var stage:StageGroup;
 
     private var stageObjectPos:Array<FlxSprite> = [];
@@ -839,10 +839,6 @@ class StageMakingState extends MusicBeatState
         }
 
         add(stage.infrontOfGFSprites);
-
-        // fuck haxeflixel and their no z ordering or somnething AAAAAAAAAAAAA
-        if(stage_Name == 'limo')
-            add(stage.limo);
 
         if(dad.otherCharacters == null)
         {

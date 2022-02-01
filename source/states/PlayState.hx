@@ -408,7 +408,7 @@ class PlayState extends MusicBeatState
 				case 6:
 					SONG.stage = 'school';
 				default:
-					SONG.stage = 'chromatic-stage';
+					SONG.stage = 'stage';
 			}
 
 			if(SONG.song.toLowerCase() == "winter horrorland")
