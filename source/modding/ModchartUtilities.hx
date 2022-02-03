@@ -1442,20 +1442,18 @@ class ModchartUtilities
     }
 
     public function getVar(var_name : String, type : String) : Dynamic {
-		var result : Any = null;
-
-		// trace('getting variable ' + var_name + ' with a type of ' + type);
+		var result:Any = null;
 
 		Lua.getglobal(lua, var_name);
 		result = Convert.fromLua(lua,-1);
 		Lua.pop(lua, 1);
 
-		if( result == null ) {
-		return null;
-		} else {
-		var result = convert(result, type);
-		//trace(var_name + ' result: ' + result);
-		return result;
+		if (result == null)
+		    return null;
+		else
+        {
+		    var new_result = convert(result, type);
+		    return new_result;
 		}
 	}
 

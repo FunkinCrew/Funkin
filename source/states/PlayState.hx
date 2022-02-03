@@ -1898,7 +1898,7 @@ class PlayState extends MusicBeatState
 		iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset);
 
 		#if linc_luajit
-		if(generatedMusic && !switchedStates && startedCountdown)
+		if((stage.stageScript != null || (luaModchart != null && executeModchart)) && generatedMusic && !switchedStates && startedCountdown)
 		{
 			setLuaVar("songPos", Conductor.songPosition);
 			setLuaVar("hudZoom", camHUD.zoom);
@@ -4241,10 +4241,20 @@ class PlayState extends MusicBeatState
 		// we prioritize modchart cuz frick you
 		
 		if(stage.stageScript != null)
-			luaVar = stage.stageScript.getVar(name, type);
+		{
+			var newLuaVar = stage.stageScript.getVar(name, type);
+
+			if(newLuaVar != null)
+				luaVar = newLuaVar;
+		}
 
 		if(executeModchart && luaModchart != null)
-			luaVar = luaModchart.getVar(name, type);
+		{
+			var newLuaVar = luaModchart.getVar(name, type);
+
+			if(newLuaVar != null)
+				luaVar = newLuaVar;
+		}
 
 		if(luaVar != null)
 			return luaVar;
