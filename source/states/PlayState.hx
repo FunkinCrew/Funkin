@@ -169,18 +169,18 @@ class PlayState extends MusicBeatState
 
 	public static var groupWeek:String = "";
 
-	#if desktop
+	#if discord_rpc
 	// Discord RPC variables
 	var storyDifficultyText:String = "";
 	var iconRPC:String = "";
 	var detailsText:String = "";
 	var detailsPausedText:String = "";
+	#end
 
 	var executeModchart:Bool = false;
 
 	#if linc_luajit
 	public static var luaModchart:ModchartUtilities = null;
-	#end
 	#end
 
 	var songLength:Float = 0;
@@ -690,7 +690,7 @@ class PlayState extends MusicBeatState
 				if(Assets.exists(Paths.lua("modcharts/" + PlayState.SONG.modchartPath)))
 				{
 					luaModchart = ModchartUtilities.createModchartUtilities();
-					luaModchart.executeState('create', [PlayState.SONG.song.toLowerCase()]);
+					executeALuaState("create", [PlayState.SONG.song.toLowerCase()], MODCHART);
 				}
 			}
 
@@ -945,34 +945,34 @@ class PlayState extends MusicBeatState
 				}
 
 				// cache shit
-				if(event[0].toLowerCase() == "change character" && event[1] <= FlxG.sound.music.length && !map.exists(event[3]))
+				if(utilities.Options.getData("charsAndBGs"))
 				{
-					var funnyCharacter = new Character(100, 100, event[3]);
-					funnyCharacter.alpha = 0.00001;
-					add(funnyCharacter);
-
-					map.set(event[3], funnyCharacter);
-
-					if(funnyCharacter.otherCharacters != null)
+					if(event[0].toLowerCase() == "change character" && event[1] <= FlxG.sound.music.length && !map.exists(event[3]))
 					{
-						for(character in funnyCharacter.otherCharacters)
+						var funnyCharacter = new Character(100, 100, event[3]);
+						funnyCharacter.alpha = 0.00001;
+						add(funnyCharacter);
+	
+						map.set(event[3], funnyCharacter);
+	
+						if(funnyCharacter.otherCharacters != null)
 						{
-							character.alpha = 0.00001;
-							add(character);
+							for(character in funnyCharacter.otherCharacters)
+							{
+								character.alpha = 0.00001;
+								add(character);
+							}
 						}
+	
+						trace(funnyCharacter.curCharacter);
 					}
-
-					trace(funnyCharacter.curCharacter);
 				}
 			}
 		}
 
 		super.create();
 
-		#if linc_luajit
-		if(executeModchart && luaModchart != null)
-			luaModchart.executeState('createPost', []);
-		#end
+		executeALuaState("createPost", []);
 
 		chartingMode = false;
 	}
@@ -1287,18 +1287,13 @@ class PlayState extends MusicBeatState
 
 		#if linc_luajit
 		if(executeModchart && luaModchart != null)
-		{
 			luaModchart.setupTheShitCuzPullRequestsSuck();
-			luaModchart.executeState('start', [PlayState.SONG.song.toLowerCase()]);
-		}
 
 		if(stage.stageScript != null)
-		{
 			stage.stageScript.setupTheShitCuzPullRequestsSuck();
 
-			stage.stageScript.executeState("create", [stage.stage]);
-			stage.stageScript.executeState("start", [stage.stage]);
-		}
+		executeALuaState("create", [stage.stage], STAGE);
+		executeALuaState("start", [SONG.song.toLowerCase()], BOTH, [stage.stage]);
 		#end
 
 		startTimer = new FlxTimer().start(Conductor.crochet / 1000, function(tmr:FlxTimer)
@@ -1903,15 +1898,15 @@ class PlayState extends MusicBeatState
 		iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset);
 
 		#if linc_luajit
-		if (executeModchart && luaModchart != null && generatedMusic && !switchedStates && startedCountdown)
+		if(generatedMusic && !switchedStates && startedCountdown)
 		{
-			luaModchart.setVar('songPos', Conductor.songPosition);
-			luaModchart.setVar('hudZoom', camHUD.zoom);
-			luaModchart.setVar('curBeat', currentBeat);
-			luaModchart.setVar('cameraZoom', FlxG.camera.zoom);
-			luaModchart.executeState('update', [elapsed]);
+			setLuaVar("songPos", Conductor.songPosition);
+			setLuaVar("hudZoom", camHUD.zoom);
+			setLuaVar("curBeat", currentBeat);
+			setLuaVar("cameraZoom", FlxG.camera.zoom);
+			executeALuaState("update", [elapsed]);
 
-			if (luaModchart.getVar("showOnlyStrums", 'bool'))
+			if(getLuaVar("showOnlyStrums", "bool"))
 			{
 				healthBarBG.visible = false;
 				infoTxt.visible = false;
@@ -1942,8 +1937,8 @@ class PlayState extends MusicBeatState
 				timeBarBG.visible = true;
 			}
 
-			var p1 = luaModchart.getVar("strumLine1Visible", 'bool');
-			var p2 = luaModchart.getVar("strumLine2Visible", 'bool');
+			var p1 = getLuaVar("strumLine1Visible", "bool");
+			var p2 = getLuaVar("strumLine2Visible", "bool");
 
 			for(i in 0...SONG.keyCount)
 			{
@@ -1958,35 +1953,6 @@ class PlayState extends MusicBeatState
 
 			if(!canFullscreen && FlxG.fullscreen)
 				FlxG.fullscreen = false;
-
-			if(controls.LEFT)
-				luaModchart.executeState('baseKeyPressed', ["left"]);
-			if(controls.LEFT_P)
-				luaModchart.executeState('baseKeyJustPressed', ["left"]);
-
-			if(controls.DOWN)
-				luaModchart.executeState('baseKeyPressed', ["down"]);
-			if(controls.DOWN_P)
-				luaModchart.executeState('baseKeyJustPressed', ["down"]);
-
-			if(controls.UP)
-				luaModchart.executeState('baseKeyPressed', ["up"]);
-			if(controls.UP_P)
-				luaModchart.executeState('baseKeyJustPressed', ["up"]);
-
-			if(controls.RIGHT)
-				luaModchart.executeState('baseKeyPressed', ["right"]);
-			if(controls.RIGHT_P)
-				luaModchart.executeState('baseKeyJustPressed', ["right"]);
-
-			if(controls.RESET)
-				luaModchart.executeState('baseKeyPressed', ["reset"]);
-
-			if(controls.ACCEPT)
-				luaModchart.executeState('baseKeyPressed', ["accept"]);
-
-			if(controls.BACK)
-				luaModchart.executeState('baseKeyPressed', ["back"]);
 		}
 		#end
 
@@ -1994,13 +1960,9 @@ class PlayState extends MusicBeatState
 			health = maxHealth;
 
 		if (characterPlayingAs == 1)
-		{
 			healthShown = maxHealth - health;
-		}
 		else
-		{
 			healthShown = health;
-		}
 
 		if (healthBar.percent < 20)
 		{
@@ -2046,10 +2008,7 @@ class PlayState extends MusicBeatState
 			//offsetX = luaModchart.getVar("followXOffset", "float");
 			//offsetY = luaModchart.getVar("followYOffset", "float");
 
-			#if linc_luajit
-			if(executeModchart && luaModchart != null)
-				luaModchart.setVar("mustHit", PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection);
-			#end
+			setLuaVar("mustHit", PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection);
 			
 			if(!PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection)
 			{
@@ -2085,11 +2044,8 @@ class PlayState extends MusicBeatState
 							camFollow.y = midPos.y - 430;
 							camFollow.x = midPos.x - 100;
 					}
-	
-					#if linc_luajit
-					if (luaModchart != null)
-						luaModchart.executeState('playerTwoTurn', []);
-					#end
+
+					executeALuaState("playerTwoTurn", []);
 				}
 			}
 
@@ -2130,11 +2086,8 @@ class PlayState extends MusicBeatState
 							camFollow.x = boyfriend.getMidpoint().x - 200;
 							camFollow.y = boyfriend.getMidpoint().y - 200;*/
 					}
-	
-					#if linc_luajit
-					if (luaModchart != null)
-						luaModchart.executeState('playerOneTurn', []);
-					#end
+
+					executeALuaState("playerOneTurn", []);
 				}
 			}
 		}
@@ -2210,10 +2163,7 @@ class PlayState extends MusicBeatState
 			DiscordClient.changePresence("Game Over - " + detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
 			#end
 
-			#if linc_luajit
-			if(executeModchart && luaModchart != null)
-				luaModchart.executeState('onDeath', [Conductor.songPosition]);
-			#end
+			executeALuaState("onDeath", [Conductor.songPosition]);
 		}
 
 		if(health < minHealth)
@@ -2335,15 +2285,10 @@ class PlayState extends MusicBeatState
 							}
 					}
 
-					#if linc_luajit
-					if (executeModchart && luaModchart != null)
-					{
-						if(daNote.isSustainNote)
-							luaModchart.executeState('playerTwoSingHeld', [Math.abs(daNote.noteData), Conductor.songPosition, daNote.arrow_Type]);
-						else
-							luaModchart.executeState('playerTwoSing', [Math.abs(daNote.noteData), Conductor.songPosition, daNote.arrow_Type]);
-					}
-					#end
+					if(daNote.isSustainNote)
+						executeALuaState('playerTwoSingHeld', [Math.abs(daNote.noteData), Conductor.songPosition, daNote.arrow_Type]);
+					else
+						executeALuaState('playerTwoSing', [Math.abs(daNote.noteData), Conductor.songPosition, daNote.arrow_Type]);
 
 					if (utilities.Options.getData("enemyStrumsGlow") && enemyStrums.members.length - 1 == SONG.keyCount - 1)
 					{
@@ -2702,8 +2647,12 @@ class PlayState extends MusicBeatState
 
 							char.shouldDance = funny;
 						case "change character":
-							eventCharacterShit(event);
+							if(utilities.Options.getData("charsAndBGs"))
+								eventCharacterShit(event);
 					}
+
+					//                            name       pos      param 1   param 2
+					executeALuaState("onEvent", [event[0], event[1], event[2], event[3]]);
 
 					events.remove(event);
 				}
@@ -2975,10 +2924,7 @@ class PlayState extends MusicBeatState
 				combo = 0;
 		}
 
-		#if linc_luajit
-		if(luaModchart != null && executeModchart)
-			luaModchart.executeState('popUpScore', [daRating, combo]);
-		#end
+		executeALuaState("popUpScore", [daRating, combo]);
 
 		if(ratings.exists(daRating))
 			ratings.set(daRating, ratings.get(daRating) + 1);
@@ -3314,23 +3260,16 @@ class PlayState extends MusicBeatState
 						}
 					}
 				}
-	
-				#if linc_luajit
-				if (executeModchart && luaModchart != null)
-				{
-					for (i in 0...justPressedArray.length) {
-						if (justPressedArray[i] == true) {
-							luaModchart.executeState('keyPressed', [i]);
-						}
-					};
-					
-					for (i in 0...releasedArray.length) {
-						if (releasedArray[i] == true) {
-							luaModchart.executeState('keyReleased', [i]);
-						}
-					};
+
+				for (i in 0...justPressedArray.length) {
+					if (justPressedArray[i] == true)
+						executeALuaState("keyPressed", [i]);
 				};
-				#end
+				
+				for (i in 0...releasedArray.length) {
+					if (releasedArray[i] == true)
+						executeALuaState("keyReleased", [i]);
+				};
 				
 				if(justPressedArray.contains(true) && generatedMusic && !playingReplay)
 				{
@@ -3762,10 +3701,7 @@ class PlayState extends MusicBeatState
 				}
 			}
 
-			#if linc_luajit
-			if (executeModchart && luaModchart != null)
-				luaModchart.executeState('playerOneMiss', [direction, Conductor.songPosition, (note != null ? note.arrow_Type : "default"), (note != null ? note.isSustainNote : false)]);
-			#end
+			executeALuaState("playerOneMiss", [direction, Conductor.songPosition, (note != null ? note.arrow_Type : "default"), (note != null ? note.isSustainNote : false)]);
 		}
 	}
 
@@ -3833,15 +3769,12 @@ class PlayState extends MusicBeatState
 					dad.playAnim(NoteVariables.Character_Animation_Arrays[SONG.playerKeyCount - 1][Std.int(Math.abs(note.noteData % SONG.playerKeyCount))] + altAnim, true);
 			}
 
-			#if linc_luajit
-			if (executeModchart && luaModchart != null)
-			{
-				if(note.isSustainNote)
-					luaModchart.executeState('playerOneSingHeld', [note.noteData, Conductor.songPosition, note.arrow_Type]);
-				else
-					luaModchart.executeState('playerOneSing', [note.noteData, Conductor.songPosition, note.arrow_Type]);
-			}
-			#end
+			var lua_Data:Array<Dynamic> = [note.noteData, Conductor.songPosition, note.arrow_Type];
+
+			if(note.isSustainNote)
+				executeALuaState("playerOneSingHeld", lua_Data);
+			else
+				executeALuaState("playerOneSing", lua_Data);
 
 			if(startedCountdown)
 			{
@@ -3872,13 +3805,8 @@ class PlayState extends MusicBeatState
 		if (FlxG.sound.music.time > Conductor.songPosition + gamerValue || FlxG.sound.music.time < Conductor.songPosition - gamerValue || FlxG.sound.music.time < 500 && (FlxG.sound.music.time > Conductor.songPosition + 5 || FlxG.sound.music.time < Conductor.songPosition - 5))
 			resyncVocals();
 
-		#if linc_luajit
-		if (executeModchart && luaModchart != null)
-		{
-			luaModchart.setVar('curStep', curStep);
-			luaModchart.executeState('stepHit', [curStep]);
-		}
-		#end
+		setLuaVar("curStep", curStep);
+		executeALuaState("stepHit", [curStep]);
 	}
 
 	override function beatHit()
@@ -4010,10 +3938,7 @@ class PlayState extends MusicBeatState
 
 		stage.beatHit();
 
-		#if linc_luajit
-		if (executeModchart && luaModchart != null)
-			luaModchart.executeState('beatHit', [curBeat]);
-		#end
+		executeALuaState("beatHit", [curBeat]);
 	}
 
 	function updateRatingText()
@@ -4279,4 +4204,59 @@ class PlayState extends MusicBeatState
 				infoTxt.screenCenter(X);
 		}
 	}
+
+	function executeALuaState(name:String, arguments:Array<Dynamic>, ?execute_on:Execute_On = BOTH, ?stage_arguments:Array<Dynamic>)
+	{
+		if(stage_arguments == null)
+			stage_arguments = arguments;
+
+		#if linc_luajit
+		if(executeModchart && luaModchart != null && execute_on != STAGE)
+			luaModchart.executeState(name, arguments);
+
+		if(stage.stageScript != null && execute_on != MODCHART)
+			stage.stageScript.executeState(name, stage_arguments);
+		#end
+	}
+
+	function setLuaVar(name:String, data:Dynamic, ?execute_on:Execute_On = BOTH, ?stage_data:Dynamic)
+	{
+		if(stage_data == null)
+			stage_data = data;
+
+		#if linc_luajit
+		if(executeModchart && luaModchart != null && execute_on != STAGE)
+			luaModchart.setVar(name, data);
+
+		if(stage.stageScript != null && execute_on != MODCHART)
+			stage.stageScript.setVar(name, stage_data);
+		#end
+	}
+
+	function getLuaVar(name:String, type:String):Dynamic
+	{
+		#if linc_luajit
+		var luaVar:Dynamic = null;
+
+		// we prioritize modchart cuz frick you
+		
+		if(stage.stageScript != null)
+			luaVar = stage.stageScript.getVar(name, type);
+
+		if(executeModchart && luaModchart != null)
+			luaVar = luaModchart.getVar(name, type);
+
+		if(luaVar != null)
+			return luaVar;
+		#end
+
+		return null;
+	}
+}
+
+enum Execute_On
+{
+	BOTH;
+	MODCHART;
+	STAGE;
 }
