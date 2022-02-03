@@ -1,5 +1,7 @@
 package modding;
 
+import openfl.display.BlendMode;
+import flixel.FlxCamera;
 import flixel.input.keyboard.FlxKey;
 import utilities.Controls;
 import backgrounds.DancingSprite;
@@ -227,11 +229,46 @@ class ModchartUtilities
         
         // callbacks
 
+        Lua_helper.add_callback(lua,"triggerEvent", function(event_name:String, argument_1:Dynamic, argument_2:Dynamic) {
+			var string_arg_1:String = Std.string(argument_1);
+			var string_arg_2:String = Std.string(argument_2);
+
+            PlayState.instance.processEvent([event_name, Conductor.songPosition, string_arg_1, string_arg_2]);
+        });
+
+        Lua_helper.add_callback(lua,"setObjectCamera", function(id:String, camera:String = "") {
+            var actor:FlxSprite = getActorByName(id);
+
+            if(actor != null)
+                Reflect.setProperty(actor, "cameras", [cameraFromString(camera)]);
+        });
+
+        Lua_helper.add_callback(lua,"setGraphicSize", function(id:String, width:Int = 0, height:Int = 0) {
+            var actor:FlxSprite = getActorByName(id);
+
+            if(actor != null)
+                actor.setGraphicSize(width, height);
+        });
+
+        Lua_helper.add_callback(lua,"updateHitbox", function(id:String) {
+            var actor:FlxSprite = getActorByName(id);
+
+            if(actor != null)
+                actor.updateHitbox();
+        });
+
+        Lua_helper.add_callback(lua, "setBlendMode", function(id:String, blend:String = '') {
+            var actor:FlxSprite = getActorByName(id);
+
+            if(actor != null)
+                actor.blend = blendModeFromString(blend);
+		});
+
         // sprites
 
         // stage
 
-        Lua_helper.add_callback(lua,"makeStageSprite", function(id:String, filename:String, x:Float, y:Float, size:Float) {
+        Lua_helper.add_callback(lua,"makeStageSprite", function(id:String, filename:String, x:Float, y:Float, size:Float = 1) {
             if(!lua_Sprites.exists(id))
             {
                 var Sprite:FlxSprite = new FlxSprite(x, y);
@@ -251,7 +288,7 @@ class ModchartUtilities
                 Application.current.window.alert("Sprite " + id + " already exists! Choose a different name!", "Leather Engine Modcharts");
         });
 
-        Lua_helper.add_callback(lua,"makeStageAnimatedSprite", function(id:String, filename:String, x:Float, y:Float, size:Float) {
+        Lua_helper.add_callback(lua,"makeStageAnimatedSprite", function(id:String, filename:String, x:Float, y:Float, size:Float = 1) {
             if(!lua_Sprites.exists(id))
             {
                 var Sprite:FlxSprite = new FlxSprite(x, y);
@@ -271,7 +308,7 @@ class ModchartUtilities
                 Application.current.window.alert("Sprite " + id + " already exists! Choose a different name!", "Leather Engine Modcharts");
         });
 
-        Lua_helper.add_callback(lua,"makeStageDancingSprite", function(id:String, filename:String, x:Float, y:Float, size:Float, ?oneDanceAnimation:Bool, ?antialiasing:Bool) {
+        Lua_helper.add_callback(lua,"makeStageDancingSprite", function(id:String, filename:String, x:Float, y:Float, size:Float = 1, ?oneDanceAnimation:Bool, ?antialiasing:Bool) {
             if(!lua_Sprites.exists(id))
             {
                 var Sprite:DancingSprite = new DancingSprite(x, y, oneDanceAnimation, antialiasing);
@@ -293,12 +330,12 @@ class ModchartUtilities
 
         // regular
 
-        Lua_helper.add_callback(lua,"makeSprite", function(id:String, filename:String, x:Float, y:Float, size:Float) {
+        Lua_helper.add_callback(lua,"makeSprite", function(id:String, filename:String, x:Float, y:Float, size:Float = 1) {
             if(!lua_Sprites.exists(id))
             {
                 var Sprite:FlxSprite = new FlxSprite(x, y);
 
-                Sprite.loadGraphic(Paths.image(filename, "preload"));
+                Sprite.loadGraphic(Paths.image(filename));
 
                 Sprite.setGraphicSize(Std.int(Sprite.width * size));
                 Sprite.updateHitbox();
@@ -311,12 +348,12 @@ class ModchartUtilities
                 Application.current.window.alert("Sprite " + id + " already exists! Choose a different name!", "Leather Engine Modcharts");
         });
 
-        Lua_helper.add_callback(lua,"makeAnimatedSprite", function(id:String, filename:String, x:Float, y:Float, size:Float) {
+        Lua_helper.add_callback(lua,"makeAnimatedSprite", function(id:String, filename:String, x:Float, y:Float, size:Float = 1) {
             if(!lua_Sprites.exists(id))
             {
                 var Sprite:FlxSprite = new FlxSprite(x, y);
 
-                Sprite.frames = Paths.getSparrowAtlas(filename, "preload");
+                Sprite.frames = Paths.getSparrowAtlas(filename);
 
                 Sprite.setGraphicSize(Std.int(Sprite.width * size));
                 Sprite.updateHitbox();
@@ -329,12 +366,12 @@ class ModchartUtilities
                 Application.current.window.alert("Sprite " + id + " already exists! Choose a different name!", "Leather Engine Modcharts");
         });
 
-        Lua_helper.add_callback(lua,"makeDancingSprite", function(id:String, filename:String, x:Float, y:Float, size:Float, ?oneDanceAnimation:Bool, ?antialiasing:Bool) {
+        Lua_helper.add_callback(lua,"makeDancingSprite", function(id:String, filename:String, x:Float, y:Float, size:Float = 1, ?oneDanceAnimation:Bool, ?antialiasing:Bool) {
             if(!lua_Sprites.exists(id))
             {
                 var Sprite:DancingSprite = new DancingSprite(x, y, oneDanceAnimation, antialiasing);
 
-                Sprite.frames = Paths.getSparrowAtlas(filename, "preload");
+                Sprite.frames = Paths.getSparrowAtlas(filename);
 
                 Sprite.setGraphicSize(Std.int(Sprite.width * size));
                 Sprite.updateHitbox();
@@ -1466,5 +1503,38 @@ class ModchartUtilities
     {
         return new ModchartUtilities(path);
     }
+
+    function cameraFromString(cam:String):FlxCamera
+    {
+		switch(cam.toLowerCase())
+        {
+			case 'camhud' | 'hud': return PlayState.instance.camHUD;
+		}
+
+		return PlayState.instance.camGame;
+	}
+
+    function blendModeFromString(blend:String):BlendMode
+    {
+		switch(blend.toLowerCase().trim())
+        {
+			case 'add': return ADD;
+			case 'alpha': return ALPHA;
+			case 'darken': return DARKEN;
+			case 'difference': return DIFFERENCE;
+			case 'erase': return ERASE;
+			case 'hardlight': return HARDLIGHT;
+			case 'invert': return INVERT;
+			case 'layer': return LAYER;
+			case 'lighten': return LIGHTEN;
+			case 'multiply': return MULTIPLY;
+			case 'overlay': return OVERLAY;
+			case 'screen': return SCREEN;
+			case 'shader': return SHADER;
+			case 'subtract': return SUBTRACT;
+		}
+
+		return NORMAL;
+	}
 }
 #end

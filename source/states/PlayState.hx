@@ -648,7 +648,6 @@ class PlayState extends MusicBeatState
 			strumLine.scrollFactor.set();
 
 			strumLineNotes = new FlxTypedGroup<StrumNote>();
-			add(strumLineNotes);
 
 			playerStrums = new FlxTypedGroup<StrumNote>();
 			enemyStrums = new FlxTypedGroup<StrumNote>();
@@ -665,8 +664,6 @@ class PlayState extends MusicBeatState
 				camFollow = prevCamFollow;
 				prevCamFollow = null;
 			}
-
-			add(camFollow);
 
 			if(utilities.Options.getData("charsAndBGs"))
 			{
@@ -695,7 +692,14 @@ class PlayState extends MusicBeatState
 			}
 
 			stage.createLuaStuff();
+
+			executeALuaState("createStage", [stage.stage], STAGE);
 			#end
+
+			add(strumLineNotes);
+			add(camFollow);
+
+			add(notes);
 
 			/*
 			better solution for future: make this process a freaking shader lmao
@@ -1436,7 +1440,6 @@ class PlayState extends MusicBeatState
 		FlxG.sound.list.add(vocals);
 
 		notes = new FlxTypedGroup<Note>();
-		add(notes);
 
 		if(Options.getData("invisibleNotes")) // this was really simple lmfao
 			notes.visible = false;
@@ -2268,6 +2271,11 @@ class PlayState extends MusicBeatState
 								}
 							}
 						}
+
+						if(daNote.isSustainNote)
+							executeALuaState('playerTwoSingHeld', [Math.abs(daNote.noteData), Conductor.songPosition, daNote.arrow_Type]);
+						else
+							executeALuaState('playerTwoSing', [Math.abs(daNote.noteData), Conductor.songPosition, daNote.arrow_Type]);
 					}
 					else
 					{
@@ -2283,12 +2291,12 @@ class PlayState extends MusicBeatState
 									boyfriend.otherCharacters[character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][Std.int(Math.abs(daNote.noteData))], true);
 								}
 							}
+						
+						if(daNote.isSustainNote)
+							executeALuaState('playerOneSingHeld', [Math.abs(daNote.noteData), Conductor.songPosition, daNote.arrow_Type]);
+						else
+							executeALuaState('playerOneSing', [Math.abs(daNote.noteData), Conductor.songPosition, daNote.arrow_Type]);
 					}
-
-					if(daNote.isSustainNote)
-						executeALuaState('playerTwoSingHeld', [Math.abs(daNote.noteData), Conductor.songPosition, daNote.arrow_Type]);
-					else
-						executeALuaState('playerTwoSing', [Math.abs(daNote.noteData), Conductor.songPosition, daNote.arrow_Type]);
 
 					if (utilities.Options.getData("enemyStrumsGlow") && enemyStrums.members.length - 1 == SONG.keyCount - 1)
 					{
@@ -2534,125 +2542,7 @@ class PlayState extends MusicBeatState
 			{
 				if(event[1] + Conductor.offset <= Conductor.songPosition) // activate funni lol
 				{
-					switch(event[0].toLowerCase())
-					{
-						case "hey!":
-							var charString = event[2].toLowerCase();
-
-							var char:Int = 0;
-
-							if(charString == "bf" || charString == "boyfriend" || charString == "player" || charString == "player1")
-								char = 1;
-
-							if(charString == "gf" || charString == "girlfriend" || charString == "player3")
-								char = 2;
-
-							switch(char)
-							{
-								case 0:
-									boyfriend.playAnim("hey", true);
-									gf.playAnim("cheer", true);
-								case 1:
-									boyfriend.playAnim("hey", true);
-								case 2:
-									gf.playAnim("cheer", true);
-							}
-						case "set gf speed":
-							if(Std.parseInt(event[2]) != null)
-								gfSpeed = Std.parseInt(event[2]);
-						case "add camera zoom":
-							if(utilities.Options.getData("cameraZooms") && FlxG.camera.zoom < 1.35)
-							{
-								var addGame:Float = Std.parseFloat(event[2]);
-								var addHUD:Float = Std.parseFloat(event[3]);
-	
-								if(Math.isNaN(addGame))
-									addGame = 0.015;
-	
-								if(Math.isNaN(addHUD))
-									addHUD = 0.03;
-	
-								FlxG.camera.zoom += addGame;
-								camHUD.zoom += addHUD;
-
-								camZooming = true;
-							}
-						case "play character animation":
-							var character:Character = getCharFromEvent(event[2]);
-
-							var anim:String = "idle";
-
-							if(event[3] != "")
-								anim = event[3];
-
-							character.playAnim(anim);
-						case "screen shake":
-							var valuesArray:Array<String> = [event[2], event[3]];
-							var targetsArray:Array<FlxCamera> = [camGame, camHUD];
-
-							for (i in 0...targetsArray.length)
-							{
-								var split:Array<String> = valuesArray[i].split(',');
-								var duration:Float = 0;
-								var intensity:Float = 0;
-
-								if(split[0] != null) duration = Std.parseFloat(split[0].trim());
-								if(split[1] != null) intensity = Std.parseFloat(split[1].trim());
-								if(Math.isNaN(duration)) duration = 0;
-								if(Math.isNaN(intensity)) intensity = 0;
-			
-								if(duration > 0 && intensity != 0)
-									targetsArray[i].shake(intensity, duration);
-							}
-						case "change scroll speed":
-							var duration:Float = Std.parseFloat(event[3]);
-
-							if(duration == Math.NaN)
-								duration = 0;
-
-							var funnySpeed = Std.parseFloat(event[2]);
-
-							if(!Math.isNaN(funnySpeed))
-							{
-								if(duration > 0)
-									FlxTween.tween(this, {speed: funnySpeed}, duration);
-								else
-									speed = funnySpeed;
-							}
-						case "set camera zoom":
-							var defaultCamZoomThing:Float = Std.parseFloat(event[2]);
-							var hudCamZoomThing:Float = Std.parseFloat(event[3]);
-
-							if(Math.isNaN(defaultCamZoomThing))
-								defaultCamZoomThing = defaultCamZoom;
-
-							if(Math.isNaN(hudCamZoomThing))
-								hudCamZoomThing = 1;
-
-							defaultCamZoom = defaultCamZoomThing;
-							defaultHudCamZoom = hudCamZoomThing;
-						case "change character alpha":
-							var char = getCharFromEvent(event[2]);
-
-							var alphaVal:Float = Std.parseFloat(event[3]);
-
-							if(Math.isNaN(alphaVal))
-								alphaVal = 0.5;
-
-							char.alpha = alphaVal;
-						case "character will idle?":
-							var char = getCharFromEvent(event[2]);
-
-							var funny = Std.string(event[3]).toLowerCase() == "true";
-
-							char.shouldDance = funny;
-						case "change character":
-							if(utilities.Options.getData("charsAndBGs"))
-								eventCharacterShit(event);
-					}
-
-					//                            name       pos      param 1   param 2
-					executeALuaState("onEvent", [event[0], event[1], event[2], event[3]]);
+					processEvent(event);
 
 					events.remove(event);
 				}
@@ -3738,6 +3628,8 @@ class PlayState extends MusicBeatState
 			if(!note.isSustainNote)
 				totalNotes++;
 
+			var lua_Data:Array<Dynamic> = [note.noteData, Conductor.songPosition, note.arrow_Type];
+
 			if(characterPlayingAs == 0)
 			{
 				if(boyfriend.otherCharacters != null)
@@ -3752,6 +3644,11 @@ class PlayState extends MusicBeatState
 					}
 				else
 					boyfriend.playAnim(NoteVariables.Character_Animation_Arrays[SONG.playerKeyCount - 1][Std.int(Math.abs(note.noteData % SONG.playerKeyCount))], true);
+			
+				if(note.isSustainNote)
+					executeALuaState("playerOneSingHeld", lua_Data);
+				else
+					executeALuaState("playerOneSing", lua_Data);
 			}
 			else
 			{
@@ -3767,14 +3664,12 @@ class PlayState extends MusicBeatState
 					}
 				else
 					dad.playAnim(NoteVariables.Character_Animation_Arrays[SONG.playerKeyCount - 1][Std.int(Math.abs(note.noteData % SONG.playerKeyCount))] + altAnim, true);
+			
+				if(note.isSustainNote)
+					executeALuaState("playerTwoSingHeld", lua_Data);
+				else
+					executeALuaState("playerTwoSing", lua_Data);
 			}
-
-			var lua_Data:Array<Dynamic> = [note.noteData, Conductor.songPosition, note.arrow_Type];
-
-			if(note.isSustainNote)
-				executeALuaState("playerOneSingHeld", lua_Data);
-			else
-				executeALuaState("playerOneSing", lua_Data);
 
 			if(startedCountdown)
 			{
@@ -4261,6 +4156,129 @@ class PlayState extends MusicBeatState
 		#end
 
 		return null;
+	}
+
+	public function processEvent(event:Array<Dynamic>)
+	{
+		switch(event[0].toLowerCase())
+		{
+			case "hey!":
+				var charString = event[2].toLowerCase();
+
+				var char:Int = 0;
+
+				if(charString == "bf" || charString == "boyfriend" || charString == "player" || charString == "player1")
+					char = 1;
+
+				if(charString == "gf" || charString == "girlfriend" || charString == "player3")
+					char = 2;
+
+				switch(char)
+				{
+					case 0:
+						boyfriend.playAnim("hey", true);
+						gf.playAnim("cheer", true);
+					case 1:
+						boyfriend.playAnim("hey", true);
+					case 2:
+						gf.playAnim("cheer", true);
+				}
+			case "set gf speed":
+				if(Std.parseInt(event[2]) != null)
+					gfSpeed = Std.parseInt(event[2]);
+			case "add camera zoom":
+				if(utilities.Options.getData("cameraZooms") && FlxG.camera.zoom < 1.35)
+				{
+					var addGame:Float = Std.parseFloat(event[2]);
+					var addHUD:Float = Std.parseFloat(event[3]);
+
+					if(Math.isNaN(addGame))
+						addGame = 0.015;
+
+					if(Math.isNaN(addHUD))
+						addHUD = 0.03;
+
+					FlxG.camera.zoom += addGame;
+					camHUD.zoom += addHUD;
+
+					camZooming = true;
+				}
+			case "play character animation":
+				var character:Character = getCharFromEvent(event[2]);
+
+				var anim:String = "idle";
+
+				if(event[3] != "")
+					anim = event[3];
+
+				character.playAnim(anim);
+			case "screen shake":
+				var valuesArray:Array<String> = [event[2], event[3]];
+				var targetsArray:Array<FlxCamera> = [camGame, camHUD];
+
+				for (i in 0...targetsArray.length)
+				{
+					var split:Array<String> = valuesArray[i].split(',');
+					var duration:Float = 0;
+					var intensity:Float = 0;
+
+					if(split[0] != null) duration = Std.parseFloat(split[0].trim());
+					if(split[1] != null) intensity = Std.parseFloat(split[1].trim());
+					if(Math.isNaN(duration)) duration = 0;
+					if(Math.isNaN(intensity)) intensity = 0;
+
+					if(duration > 0 && intensity != 0)
+						targetsArray[i].shake(intensity, duration);
+				}
+			case "change scroll speed":
+				var duration:Float = Std.parseFloat(event[3]);
+
+				if(duration == Math.NaN)
+					duration = 0;
+
+				var funnySpeed = Std.parseFloat(event[2]);
+
+				if(!Math.isNaN(funnySpeed))
+				{
+					if(duration > 0)
+						FlxTween.tween(this, {speed: funnySpeed}, duration);
+					else
+						speed = funnySpeed;
+				}
+			case "set camera zoom":
+				var defaultCamZoomThing:Float = Std.parseFloat(event[2]);
+				var hudCamZoomThing:Float = Std.parseFloat(event[3]);
+
+				if(Math.isNaN(defaultCamZoomThing))
+					defaultCamZoomThing = defaultCamZoom;
+
+				if(Math.isNaN(hudCamZoomThing))
+					hudCamZoomThing = 1;
+
+				defaultCamZoom = defaultCamZoomThing;
+				defaultHudCamZoom = hudCamZoomThing;
+			case "change character alpha":
+				var char = getCharFromEvent(event[2]);
+
+				var alphaVal:Float = Std.parseFloat(event[3]);
+
+				if(Math.isNaN(alphaVal))
+					alphaVal = 0.5;
+
+				char.alpha = alphaVal;
+			case "character will idle?":
+				var char = getCharFromEvent(event[2]);
+
+				var funny = Std.string(event[3]).toLowerCase() == "true";
+
+				char.shouldDance = funny;
+			case "change character":
+				if(utilities.Options.getData("charsAndBGs"))
+					eventCharacterShit(event);
+		}
+
+		//                            name       pos      param 1   param 2
+		executeALuaState("onEvent", [event[0], event[1], event[2], event[3]]);
 	}
 }
 

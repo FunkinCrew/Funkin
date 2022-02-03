@@ -1714,7 +1714,7 @@ class ChartingState extends MusicBeatState
 		{
 			for(event in events)
 			{
-				if(event[1] >= sectionStartTime() && event[1] <= sectionStartTime(curSection + 1))
+				if(Std.int(event[1]) >= Std.int(sectionStartTime()) && Std.int(event[1]) < Std.int(sectionStartTime(curSection + 1)))
 				{
 					var eventSprite:EventSprite = new EventSprite(event[1]);
 	
@@ -1801,9 +1801,15 @@ class ChartingState extends MusicBeatState
 				value1.text = eventValue1;
 				value2.text = eventValue2;
 
-				eventDropDown.selectedLabel = curSelectedEvent[0];
+				if(eventList.indexOf(curSelectedEvent[0]) == -1)
+					eventDropDown.selectedLabel = eventList[0];
+				else
+					eventDropDown.selectedLabel = curSelectedEvent[0];
 
-				curEvent = eventList.indexOf(curSelectedEvent[0]);
+				if(eventList.indexOf(curSelectedEvent[0]) == -1)
+					curEvent = 0;
+				else
+					curEvent = eventList.indexOf(curSelectedEvent[0]);
 
 				valueDescriptions.text = "Value 1 - " + eventListData[curEvent][1] + "\nValue 2 - " + eventListData[curEvent][2] + "\n";
 			}

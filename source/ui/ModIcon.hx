@@ -22,6 +22,8 @@ class ModIcon extends FlxSprite
 		loadGraphic(graphicData, false, 0, 0, false, modId);
 
 		setGraphicSize(150, 150);
+		updateHitbox();
+		
 		scrollFactor.set();
 		antialiasing = true;
 	}
