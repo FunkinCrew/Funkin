@@ -250,6 +250,13 @@ class ChartingState extends MusicBeatState
 		});
 		player2DropDown.selectedLabel = _song.player2;
 
+		var difficultyDropDown = new FlxUIDropDownMenu(10, 230, FlxUIDropDownMenu.makeStrIdLabelArray(_song.difficulties, true), function(diff:String)
+		{
+			SongLoad.curDiff = _song.difficulties[Std.parseInt(diff)];
+			SongLoad.checkAndCreateNotemap(SongLoad.curDiff);
+		});
+		difficultyDropDown.selectedLabel = SongLoad.curDiff;
+
 		var tab_group_song = new FlxUI(null, UI_box);
 		tab_group_song.name = "Song";
 		tab_group_song.add(UI_songTitle);
@@ -265,6 +272,7 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(stepperSpeed);
 		tab_group_song.add(player1DropDown);
 		tab_group_song.add(player2DropDown);
+		tab_group_song.add(difficultyDropDown);
 
 		UI_box.addGroup(tab_group_song);
 		UI_box.scrollFactor.set();
@@ -582,6 +590,9 @@ class ChartingState extends MusicBeatState
 
 		playheadTest.y = CoolUtil.coolLerp(playheadTest.y, FlxMath.remapToRange(Conductor.songPosition, 0, FlxG.sound.music.length, 0, FlxG.height), 0.5);
 
+		trace(_song.noteMap.toString());
+		trace(SongLoad.songData.noteMap.toString());
+		trace(SongLoad.curDiff);
 		var strumLinePos:Float = getYfromStrum((Conductor.songPosition - sectionStartTime()) % (Conductor.stepCrochet * SongLoad.getSong()[curSection].lengthInSteps));
 
 		if (FlxG.sound.music != null)

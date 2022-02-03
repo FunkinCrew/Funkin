@@ -96,9 +96,17 @@ class SongLoad
 			}
 		}
 
+		checkAndCreateNotemap(curDiff);
+
 		songShit = songData.noteMap[diff];
 
 		return songShit;
+	}
+
+	public static function checkAndCreateNotemap(diff:String):Void
+	{
+		if (songData.noteMap[diff] == null)
+			songData.noteMap[diff] = [];
 	}
 
 	public static function getSpeed(?diff:String):Float
@@ -119,6 +127,9 @@ class SongLoad
 			case 'hard':
 				speedShit = songData.speed.hard;
 		}
+
+		if (songData.speedMap[diff] == null)
+			songData.speedMap[diff] = 1;
 
 		speedShit = songData.speedMap[diff];
 
