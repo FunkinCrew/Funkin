@@ -254,6 +254,11 @@ class ChartingState extends MusicBeatState
 		{
 			SongLoad.curDiff = _song.difficulties[Std.parseInt(diff)];
 			SongLoad.checkAndCreateNotemap(SongLoad.curDiff);
+
+			while (SongLoad.getSong()[curSection] == null)
+				addSection();
+
+			updateGrid();
 		});
 		difficultyDropDown.selectedLabel = SongLoad.curDiff;
 
