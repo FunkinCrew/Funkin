@@ -1,4 +1,4 @@
--- same time that 'start' is called for regular modcharts :flushed:
+-- when the stage lua is created
 function create(stage)
 	print(stage .. " is our stage!")
 
@@ -16,7 +16,7 @@ function create(stage)
 	setProperty("stage", "camZoom", 0.9)
 end
 
--- same thing as create, just a different name
+-- same as start function in a regular modchart
 function start(stage)
 	
 end
@@ -30,3 +30,5 @@ end
 function beatHit(curBeat)
 
 end
+
+-- any other functions from regular modcharts can also be put here :DDD

@@ -447,7 +447,6 @@ class PlayState extends MusicBeatState
 		if(Std.parseInt(ui_Settings[6]) == 1)
 		{
 			splash_Texture = Paths.getSparrowAtlas('ui skins/' + SONG.ui_Skin + "/arrows/Note_Splashes", 'shared');
-
 			splashesSettings = ui_Settings;
 		}
 		else
@@ -693,7 +692,7 @@ class PlayState extends MusicBeatState
 
 			stage.createLuaStuff();
 
-			executeALuaState("createStage", [stage.stage], STAGE);
+			executeALuaState("create", [stage.stage], STAGE);
 			#end
 
 			add(strumLineNotes);
@@ -1296,7 +1295,6 @@ class PlayState extends MusicBeatState
 		if(stage.stageScript != null)
 			stage.stageScript.setupTheShitCuzPullRequestsSuck();
 
-		executeALuaState("create", [stage.stage], STAGE);
 		executeALuaState("start", [SONG.song.toLowerCase()], BOTH, [stage.stage]);
 		#end
 
