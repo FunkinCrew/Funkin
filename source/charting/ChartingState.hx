@@ -609,9 +609,6 @@ class ChartingState extends MusicBeatState
 
 		playheadTest.y = CoolUtil.coolLerp(playheadTest.y, FlxMath.remapToRange(Conductor.songPosition, 0, FlxG.sound.music.length, 0, FlxG.height), 0.5);
 
-		trace(_song.noteMap.toString());
-		trace(SongLoad.songData.noteMap.toString());
-		trace(SongLoad.curDiff);
 		var strumLinePos:Float = getYfromStrum((Conductor.songPosition - sectionStartTime()) % (Conductor.stepCrochet * SongLoad.getSong()[curSection].lengthInSteps));
 
 		if (FlxG.sound.music != null)
