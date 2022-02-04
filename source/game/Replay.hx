@@ -20,6 +20,8 @@ typedef SwagReplay =
     var judgementTimings:Array<Float>;
 
     var ghostTapping:Bool;
+
+    var antiMash:Null<Bool>;
 }
 
 class Replay
@@ -36,6 +38,8 @@ class Replay
 
     public var ghostTapping:Bool;
 
+    public var antiMash:Bool;
+
     public var swag:SwagReplay;
 
     public function new(?usePlayStateVars:Bool = true)
@@ -51,6 +55,7 @@ class Replay
         ghostTapping = utilities.Options.getData("ghostTapping");
         offset = Conductor.offset;
         judgementTimings = utilities.Options.getData("judgementTimings");
+        antiMash = utilities.Options.getData("antiMash");
 
         inputs = [];
     }
@@ -64,7 +69,8 @@ class Replay
             inputs: this.inputs,
             offset: this.offset,
             judgementTimings: this.judgementTimings,
-            ghostTapping: this.ghostTapping
+            ghostTapping: this.ghostTapping,
+            antiMash: this.antiMash
         };
 
         return swag;
@@ -113,6 +119,9 @@ class Replay
         replay.judgementTimings = replay.swag.judgementTimings;
 
         replay.inputs = replay.swag.inputs;
+
+        if(replay.swag.antiMash != null)
+            replay.antiMash = replay.swag.antiMash;
 
         trace("Converted from swag data!");
 

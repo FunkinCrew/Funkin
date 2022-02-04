@@ -321,6 +321,7 @@ class PlayState extends MusicBeatState
 			
 			utilities.Options.setData(replay.judgementTimings, "judgementTimings");
 			utilities.Options.setData(replay.ghostTapping, "ghostTapping");
+			utilities.Options.setData(replay.antiMash, "antiMash");
 
 			for(i in 0...replay.inputs.length)
 			{
@@ -2633,6 +2634,7 @@ class PlayState extends MusicBeatState
 
 	var ogJudgementTimings:Array<Float> = utilities.Options.getData("judgementTimings");
 	var ogGhostTapping:Bool = utilities.Options.getData("ghostTapping");
+	var ogAntiMash:Bool = utilities.Options.getData("antiMash");
 
 	public function saveReplay()
 	{
@@ -2657,6 +2659,7 @@ class PlayState extends MusicBeatState
 
 		utilities.Options.setData(ogJudgementTimings, "judgementTimings");
 		utilities.Options.setData(ogGhostTapping, "ghostTapping");
+		utilities.Options.setData(ogAntiMash, "antiMash");
 	}
 
 	public function finishSongStuffs()
