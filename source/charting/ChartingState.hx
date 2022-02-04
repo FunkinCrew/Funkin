@@ -263,6 +263,14 @@ class ChartingState extends MusicBeatState
 		});
 		difficultyDropDown.selectedLabel = SongLoad.curDiff;
 
+		var difficultyAdder = new FlxUIInputText(130, 230, 100, "", 12);
+
+		var addDiff:FlxButton = new FlxButton(130, 250, "Add Difficulty", function()
+		{
+			difficultyAdder.text = "";
+			// something to regenerate difficulties
+		});
+
 		var tab_group_song = new FlxUI(null, UI_box);
 		tab_group_song.name = "Song";
 		tab_group_song.add(UI_songTitle);
@@ -279,6 +287,8 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(player1DropDown);
 		tab_group_song.add(player2DropDown);
 		tab_group_song.add(difficultyDropDown);
+		tab_group_song.add(difficultyAdder);
+		tab_group_song.add(addDiff);
 
 		UI_box.addGroup(tab_group_song);
 		UI_box.scrollFactor.set();
