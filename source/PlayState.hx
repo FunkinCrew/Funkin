@@ -3118,10 +3118,13 @@ class PlayState extends MusicBeatState
 		iconP1.updateHitbox();
 		iconP2.updateHitbox();
 
+		var song = SongLoad.getSong();
+		var step = Math.floor(curStep / 16);
 		if (curBeat % 8 == 7
-			&& SongLoad.getSong()[Math.floor(curStep / 16)].mustHitSection
+			&& song[step].mustHitSection
 			&& combo > 5
-			&& !SongLoad.getSong()[Math.floor(curStep / 16) + 1].mustHitSection)
+			&& song.length > step + 1// GK: this fixes an error on week 1 where song[step + 1] was null
+			&& !song[step + 1].mustHitSection)
 		{
 			var animShit:ComboCounter = new ComboCounter(-100, 300, combo);
 			animShit.scrollFactor.set(0.6, 0.6);
