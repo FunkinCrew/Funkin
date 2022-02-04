@@ -197,6 +197,14 @@
             "value": false
         },
         {
+            "option": "optimizedChars",
+            "value": false
+        },
+        {
+            "option": "animatedBGs",
+            "value": true
+        },
+        {
             "option": "timeBarStyle",
             "value": "leather engine"
         },

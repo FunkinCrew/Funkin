@@ -1,5 +1,6 @@
 package game;
 
+import utilities.Options;
 import flixel.FlxG;
 import flixel.addons.effects.FlxTrail;
 import flixel.util.FlxColor;
@@ -86,7 +87,11 @@ class Character extends FlxSprite
 				barColor = FlxColor.fromRGB(245, 255, 105);
 				icon = "monster";
 			case 'pico':
-				frames = Paths.getSparrowAtlas('characters/Pico_FNF_assetss', 'shared');
+				if(Options.getData("optimizedChars"))
+					frames = Paths.getSparrowAtlas('characters/Optimized_Pico_FNF_assetss', 'shared');
+				else
+					frames = Paths.getSparrowAtlas('characters/Pico_FNF_assetss', 'shared');
+
 				animation.addByPrefix('idle', "Pico Idle Dance", 24);
 				animation.addByPrefix('singUP', 'pico Up note0', 24, false);
 				animation.addByPrefix('singDOWN', 'Pico Down Note0', 24, false);
@@ -313,6 +318,9 @@ class Character extends FlxSprite
 			characterName = "bf";
 			curCharacter = characterName;
 		}
+
+		if(Assets.exists(Paths.json("character data/optimized_" + characterName + "/config")) && Options.getData("optimizedChars"))
+			characterName = "optimized_" + characterName;
 
 		var rawJson = Assets.getText(Paths.json("character data/" + characterName + "/config")).trim();
 

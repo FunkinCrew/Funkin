@@ -105,7 +105,9 @@ class OptionsMenu extends MusicBeatState
 			new BoolOption("Antialiasing", "antialiasing", 1),
 			new BoolOption("Health Icons", "healthIcons", 2),
 			new BoolOption("Chars And BGs", "charsAndBGs", 3),
-			new BoolOption("Menu Backgrounds", "menuBGs", 4)
+			new BoolOption("Menu Backgrounds", "menuBGs", 4),
+			new BoolOption("Optimized Characters", "optimizedChars", 5),
+			new BoolOption("Animated Backgrounds", "animatedBGs", 6)
 		],
 		[
 			"Info Display",

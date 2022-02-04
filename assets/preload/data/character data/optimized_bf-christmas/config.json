@@ -1,0 +1,66 @@
+{
+    "defaultFlipX": true,
+    "dancesLeftAndRight": false,
+    "imagePath": "Optimized_bfChristmas",
+    "spritesheetType": "SPARROW",
+    "barColor": [81, 201, 219],
+    "offsetsFlipWhenEnemy": true,
+    "offsetsFlipWhenPlayer": false,
+    "healthIcon": "bf",
+    "animations": [
+        {
+            "name": "idle",
+            "animation_name": "BF idle dance",
+            "fps": 24,
+            "looped": false
+        },
+        {
+            "name": "singLEFT",
+            "animation_name": "BF NOTE LEFT0",
+            "fps": 24,
+            "looped": false
+        },
+        {
+            "name": "singDOWN",
+            "animation_name": "BF NOTE DOWN0",
+            "fps": 24,
+            "looped": false
+        },
+        {
+            "name": "singUP",
+            "animation_name": "BF NOTE UP0",
+            "fps": 24,
+            "looped": false
+        },
+        {
+            "name": "singRIGHT",
+            "animation_name": "BF NOTE RIGHT0",
+            "fps": 24,
+            "looped": false
+        },
+        {
+            "name": "singLEFTmiss",
+            "animation_name": "BF NOTE LEFT MISS",
+            "fps": 24,
+            "looped": false
+        },
+        {
+            "name": "singDOWNmiss",
+            "animation_name": "BF NOTE DOWN MISS",
+            "fps": 24,
+            "looped": false
+        },
+        {
+            "name": "singUPmiss",
+            "animation_name": "BF NOTE UP MISS",
+            "fps": 24,
+            "looped": false
+        },
+        {
+            "name": "singRIGHTmiss",
+            "animation_name": "BF NOTE RIGHT MISS",
+            "fps": 24,
+            "looped": false
+        }
+    ]
+}
