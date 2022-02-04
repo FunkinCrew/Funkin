@@ -1447,9 +1447,13 @@ class ChartingState extends MusicBeatState
 	{
 		// Right now the note data is saved as a Note.NoteData typedef / object or whatev
 		// we want to format it to an ARRAY. We turn it back into the typedef / object at the end of this function hehe
-		SongLoad.castNoteDataToArray(_song.notes.easy);
-		SongLoad.castNoteDataToArray(_song.notes.normal);
-		SongLoad.castNoteDataToArray(_song.notes.hard);
+
+		for (key in _song.noteMap.keys())
+			SongLoad.castNoteDataToArray(_song.noteMap[key]);
+
+		// SongLoad.castNoteDataToArray(_song.notes.easy);
+		// SongLoad.castNoteDataToArray(_song.notes.normal);
+		// SongLoad.castNoteDataToArray(_song.notes.hard);
 
 		var json = {"song": _song};
 		var data:String = Json.stringify(json, null, "\t");
@@ -1478,10 +1482,13 @@ class ChartingState extends MusicBeatState
 		}
 		#end
 
+		for (key in _song.noteMap.keys())
+			SongLoad.castArrayToNoteData(_song.noteMap[key]);
+
 		// turn the array data back to Note.NoteData typedef
-		SongLoad.castArrayToNoteData(_song.notes.easy);
-		SongLoad.castArrayToNoteData(_song.notes.normal);
-		SongLoad.castArrayToNoteData(_song.notes.hard);
+		// SongLoad.castArrayToNoteData(_song.notes.easy);
+		// SongLoad.castArrayToNoteData(_song.notes.normal);
+		// SongLoad.castArrayToNoteData(_song.notes.hard);
 	}
 
 	function onSaveComplete(_):Void
