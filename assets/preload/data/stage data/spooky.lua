@@ -1,9 +1,10 @@
--- same time that 'start' is called for regular modcharts :flushed:
 function create(stage)
 	print(stage .. " is our stage!")
 
-	createSound("thunder1", "thunder_1", "shared", false)
-	createSound("thunder2", "thunder_2", "shared", false)
+	if animatedBackgrounds then
+		createSound("thunder1", "thunder_1", "shared", false)
+		createSound("thunder2", "thunder_2", "shared", false)
+	end
 end
 
 local lastBeat = 0
@@ -14,34 +15,38 @@ local time = 0
 local justScared = false
 
 function update(elapsed)
-	time = time + elapsed
+	if animatedBackgrounds then
+		time = time + elapsed
+	end
 end
 
 -- everytime a beat hit is called on the song this happens
 function beatHit(beat)
-	randomizeStuff(beat)
+	if animatedBackgrounds then
+		randomizeStuff(beat)
 
-	if math.random(1, 10) == 3 and beat > lastBeat + beatOffset then
-		lastBeat = beat
+		if math.random(1, 10) == 3 and beat > lastBeat + beatOffset then
+			lastBeat = beat
 
-		setCharacterShouldDance("boyfriend", false)
-		setCharacterShouldDance("girlfriend", false)
+			setCharacterShouldDance("boyfriend", false)
+			setCharacterShouldDance("girlfriend", false)
 
-		playCharacterAnimation("boyfriend", "scared", true)
-		playCharacterAnimation("girlfriend", "scared", true)
+			playCharacterAnimation("boyfriend", "scared", true)
+			playCharacterAnimation("girlfriend", "scared", true)
 
-		playActorAnimation("bg", "lightning", true)
+			playActorAnimation("bg", "lightning", true)
 
-		playSound("thunder" .. tostring(math.random(1,2)))
+			playSound("thunder" .. tostring(math.random(1,2)))
 
-		beatOffset = math.random(8, 24)
+			beatOffset = math.random(8, 24)
 
-		justScared = true
-	elseif justScared then
-		setCharacterShouldDance("boyfriend", true)
-		setCharacterShouldDance("girlfriend", true)
+			justScared = true
+		elseif justScared then
+			setCharacterShouldDance("boyfriend", true)
+			setCharacterShouldDance("girlfriend", true)
 
-		justScared = false
+			justScared = false
+		end
 	end
 end
 

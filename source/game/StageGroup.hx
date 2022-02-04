@@ -590,49 +590,52 @@ class StageGroup extends FlxGroup
 
     public function beatHit()
     {
-        for(sprite in onBeatHit_Group)
+        if(utilities.Options.getData("animatedBGs"))
         {
-            sprite.animation.play("beatHit", true);
-        }
-
-        switch(stage)
-        {
-            case 'philly':
+            for(sprite in onBeatHit_Group)
             {
-                if(FlxG.state == PlayState.instance)
+                sprite.animation.play("beatHit", true);
+            }
+            
+            switch(stage)
+            {
+                case 'philly':
                 {
-                    if (!trainMoving)
-                        trainCooldown += 1;
-
-                    if (PlayState.currentBeat % 4 == 0)
+                    if(FlxG.state == PlayState.instance)
                     {
-                        phillyCityLights.forEach(function(light:FlxSprite)
+                        if (!trainMoving)
+                            trainCooldown += 1;
+    
+                        if (PlayState.currentBeat % 4 == 0)
                         {
-                            light.visible = false;
-                        });
-
-                        curLight = FlxG.random.int(0, phillyCityLights.length - 1);
-
-                        phillyCityLights.members[curLight].visible = true;
-                        // phillyCityLights.members[curLight].alpha = 1;
-                    }
-
-                    if (PlayState.currentBeat % 8 == 4 && FlxG.random.bool(30) && !trainMoving && trainCooldown > 8)
-                    {
-                        trainCooldown = FlxG.random.int(-4, 0);
-                        trainStart();
+                            phillyCityLights.forEach(function(light:FlxSprite)
+                            {
+                                light.visible = false;
+                            });
+    
+                            curLight = FlxG.random.int(0, phillyCityLights.length - 1);
+    
+                            phillyCityLights.members[curLight].visible = true;
+                            // phillyCityLights.members[curLight].alpha = 1;
+                        }
+    
+                        if (PlayState.currentBeat % 8 == 4 && FlxG.random.bool(30) && !trainMoving && trainCooldown > 8)
+                        {
+                            trainCooldown = FlxG.random.int(-4, 0);
+                            trainStart();
+                        }
                     }
                 }
-            }
-            case 'school' | 'school-mad':
-            {
-                bgGirls.dance();
-            }
-            case 'mall':
-            {
-                upperBoppers.animation.play('bop', true);
-				bottomBoppers.animation.play('bop', true);
-				santa.animation.play('idle', true);
+                case 'school' | 'school-mad':
+                {
+                    bgGirls.dance();
+                }
+                case 'mall':
+                {
+                    upperBoppers.animation.play('bop', true);
+                    bottomBoppers.animation.play('bop', true);
+                    santa.animation.play('idle', true);
+                }
             }
         }
     }

@@ -127,7 +127,13 @@ class ModchartUtilities
 
     public function setVar(var_name : String, object : Dynamic)
     {
-        Lua.pushnumber(lua, object);
+        if(Std.isOfType(object, Bool))
+            Lua.pushboolean(lua, object);
+        else if(Std.isOfType(object, String))
+            Lua.pushstring(lua, object);
+        else
+            Lua.pushnumber(lua, object);
+
 		Lua.setglobal(lua, var_name);
 	}
 
@@ -189,10 +195,13 @@ class ModchartUtilities
         setVar("fpsCap", utilities.Options.getData("maxFPS"));
         setVar("bot", utilities.Options.getData("botplay"));
         setVar("noDeath", utilities.Options.getData("noDeath"));
-        setVar("downscroll", utilities.Options.getData("downscroll"));
+        setVar("downscroll", utilities.Options.getData("downscroll") == true ? 1 : 0); // fuck you compatibility
+        setVar("downscrollBool", utilities.Options.getData("downscroll"));
         //setVar("flashing", .flashing);
         //setVar("distractions", .distractions);
         setVar("cameraZooms", utilities.Options.getData("cameraZooms"));
+
+        setVar("animatedBackgrounds", utilities.Options.getData("animatedBGs"));
 
         setVar("curStep", 0);
         setVar("curBeat", 0);
