@@ -237,6 +237,21 @@ class SongLoad
 		}
 	}
 
+	public static function castNoteDataToNoteData(noteStuff:Array<SwagSection>)
+	{
+		if (noteStuff == null)
+			return;
+
+		for (sectionIndex => section in noteStuff)
+		{
+			for (noteIndex => noteTypedefShit in section.sectionNotes)
+			{
+				trace(noteTypedefShit);
+				noteStuff[sectionIndex].sectionNotes[noteIndex] = noteTypedefShit;
+			}
+		}
+	}
+
 	public static function parseJSONshit(rawJson:String):SwagSong
 	{
 		var songParsed:Dynamic = Json.parse(rawJson);
@@ -248,18 +263,24 @@ class SongLoad
 		{
 			swagShit.difficulties.push(diff);
 			swagShit.noteMap[diff] = cast Reflect.field(songParsed.song.notes, diff);
+			trace(swagShit.noteMap[diff]);
+
 			castArrayToNoteData(swagShit.noteMap[diff]);
 
-			switch (diff)
-			{
-				case "easy":
-					castArrayToNoteData(swagShit.notes.hard);
+			// castNoteDataToNoteData(swagShit.noteMap[diff]);
 
-				case "normal":
-					castArrayToNoteData(swagShit.notes.normal);
-				case "hard":
-					castArrayToNoteData(swagShit.notes.hard);
-			}
+			/* 
+				switch (diff)
+				{
+					case "easy":
+						castArrayToNoteData(swagShit.notes.hard);
+
+					case "normal":
+						castArrayToNoteData(swagShit.notes.normal);
+					case "hard":
+						castArrayToNoteData(swagShit.notes.hard);
+				}
+			 */
 		}
 
 		for (diff in swagShit.difficulties)

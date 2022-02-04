@@ -1177,7 +1177,10 @@ class ChartingState extends MusicBeatState
 							0xFFFF0000;
 					}
 
-					sidePreview.drawRect(5 * notes.noteData, FlxMath.remapToRange(notes.strumTime, 0, FlxG.sound.music.length, 0, FlxG.height), 5, 1, col);
+					var noteFlip:Int = (sideSection.mustHitSection ? 1 : -1);
+					var noteX:Float = 5 * (((notes.noteData - 4) * noteFlip) + 4);
+
+					sidePreview.drawRect(noteX, FlxMath.remapToRange(notes.strumTime, 0, FlxG.sound.music.length, 0, FlxG.height), 5, 1, col);
 				}
 			}
 		}
