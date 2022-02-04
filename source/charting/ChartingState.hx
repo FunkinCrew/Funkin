@@ -36,6 +36,7 @@ class ChartingState extends MusicBeatState
 	var _file:FileReference;
 
 	var UI_box:FlxUITabMenu;
+	var sidePreview:FlxSprite;
 
 	/**
 	 * Array of notes showing when each section STARTS in STEPS
@@ -413,9 +414,14 @@ class ChartingState extends MusicBeatState
 		// musSpec.visType = FREQUENCIES;
 		add(musSpec);
 
+		sidePreview = new FlxSprite(0, 0).makeGraphic(40, FlxG.height, FlxColor.GRAY);
+		sidePreview.scrollFactor.set();
+		add(sidePreview);
+
 		// trace(audioBuf.data.length);
 		playheadTest = new FlxSprite(0, 0).makeGraphic(30, 2, FlxColor.RED);
 		playheadTest.scrollFactor.set();
+		playheadTest.alpha = 0.5;
 		add(playheadTest);
 
 		// WONT WORK FOR TUTORIAL OR TEST SONG!!! REDO LATER
@@ -550,11 +556,19 @@ class ChartingState extends MusicBeatState
 			else
 				return SongLoad.getSong()[curSection].lengthInSteps;
 	}*/
-	function sectionStartTime():Float
+	/**
+	 * Gets the start time of section, defaults to the curSection
+	 * @param section 
+	 * @return position of the song in... either seconds or milliseconds.... woops
+	 */
+	function sectionStartTime(?funnySection:Int):Float
 	{
+		if (funnySection == null)
+			funnySection = curSection;
+
 		var daBPM:Float = _song.bpm;
 		var daPos:Float = 0;
-		for (i in 0...curSection)
+		for (i in 0...funnySection)
 		{
 			if (SongLoad.getSong()[i].changeBPM)
 			{
@@ -1126,6 +1140,46 @@ class ChartingState extends MusicBeatState
 		while (curRenderedSustains.members.length > 0)
 		{
 			curRenderedSustains.remove(curRenderedSustains.members[0], true);
+		}
+
+		// generates the cool sidebar shit
+		if (sidePreview != null)
+		{
+			sidePreview.drawRect(0, 0, 40, FlxG.height, 0xFF444444);
+
+			/* 
+				var sectionsNeeded:Int = Std.int(FlxG.sound.music.length / (sectionCalc(_song.bpm) * 4));
+
+					while (sectionsNeeded > 0)
+					{
+						sidePreview.drawRect(0, sectionsNeeded * (FlxG.height / sectionsNeeded), 40, FlxG.height / sectionsNeeded,
+							(sectionsNeeded % 2 == 0 ? 0xFF000000 : 0xFFFFFFFF));
+
+						sectionsNeeded--;
+					}
+			 */
+
+			for (secIndex => sideSection in SongLoad.getSong())
+			{
+				for (notes in sideSection.sectionNotes)
+				{
+					var col:Int = switch (notes.noteData % 4)
+					{
+						case 0:
+							0xFFFF22AA;
+						case 1:
+							0xFF00EEFF;
+						case 2:
+							0xFF00CC00;
+						case 3:
+							0xFFCC1111;
+						default:
+							0xFFFF0000;
+					}
+
+					sidePreview.drawRect(5 * notes.noteData, FlxMath.remapToRange(notes.strumTime, 0, FlxG.sound.music.length, 0, FlxG.height), 5, 1, col);
+				}
+			}
 		}
 
 		var sectionInfo:Array<NoteData> = SongLoad.getSong()[curSection].sectionNotes;
