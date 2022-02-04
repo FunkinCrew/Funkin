@@ -1383,21 +1383,14 @@ class ModchartUtilities
         {
             var member = PlayState.strumLineNotes.members[i];
 
-            trace(PlayState.strumLineNotes.members[i].x + " " + PlayState.strumLineNotes.members[i].y + " " + PlayState.strumLineNotes.members[i].angle + " | strum" + i);
-
             setVar("defaultStrum" + i + "X", member.x);
             setVar("defaultStrum" + i + "Y", member.y);
             setVar("defaultStrum" + i + "Angle", member.angle);
-
-            trace("Adding strum" + i);
         }
 
         @:privateAccess
         for(object in PlayState.instance.stage.stage_Objects)
         {
-            if(lua_Sprites.exists(object[0]))
-                trace("THERE IS ALREADY AN OBJECT WITH THE NAME " + object[0] + " ADDING OBJECT ANYWAYS JUST IN CASE BUT YEAH");
-
             lua_Sprites.set(object[0], object[1]);
         }
 
