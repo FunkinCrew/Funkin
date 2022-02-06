@@ -78,7 +78,7 @@ class StageGroup extends FlxGroup
         if(newStage != null)
             stage = newStage;
 
-        var bruhStages = ['philly','mall','evil-mall','school','school-mad','evil-school'];
+        var bruhStages = ['philly','school','school-mad','evil-school'];
 
         var stagesNormally = CoolUtil.coolTextFile(Paths.txt('stageList'));
 
@@ -141,86 +141,6 @@ class StageGroup extends FlxGroup
 
                     var street:FlxSprite = new FlxSprite(-40, streetBehind.y).loadGraphic(Paths.image(stage + '/street', 'stages'));
                     add(street);
-                }
-                case "mall":
-                {
-                    camZoom = 0.8;
-
-                    player_1_Point.x += 200;
-                    player_1_Point.y += 50;
-                    gf_Point.x += 200;
-                    gf_Point.y += 100;
-                    player_2_Point.x -= 250;
-                    player_2_Point.y += 75;
-
-                    var bg:FlxSprite = new FlxSprite(-1000, -500).loadGraphic(Paths.image(stage + '/bgWalls', 'stages'));
-                    bg.antialiasing = true;
-                    bg.scrollFactor.set(0.2, 0.2);
-                    bg.active = false;
-                    bg.setGraphicSize(Std.int(bg.width * 0.8));
-                    bg.updateHitbox();
-                    add(bg);
-
-                    upperBoppers = new FlxSprite(-240, -90);
-                    upperBoppers.frames = Paths.getSparrowAtlas(stage + '/upperBop', 'stages');
-                    upperBoppers.animation.addByPrefix('bop', "Upper Crowd Bob", 24, false);
-                    upperBoppers.antialiasing = true;
-                    upperBoppers.scrollFactor.set(0.33, 0.33);
-                    upperBoppers.setGraphicSize(Std.int(upperBoppers.width * 0.85));
-                    upperBoppers.updateHitbox();
-                    add(upperBoppers);
-
-                    var bgEscalator:FlxSprite = new FlxSprite(-1100, -600).loadGraphic(Paths.image(stage + '/bgEscalator', 'stages'));
-                    bgEscalator.antialiasing = true;
-                    bgEscalator.scrollFactor.set(0.3, 0.3);
-                    bgEscalator.active = false;
-                    bgEscalator.setGraphicSize(Std.int(bgEscalator.width * 0.9));
-                    bgEscalator.updateHitbox();
-                    add(bgEscalator);
-
-                    var tree:FlxSprite = new FlxSprite(370, -250).loadGraphic(Paths.image(stage + '/christmasTree', 'stages'));
-                    tree.antialiasing = true;
-                    tree.scrollFactor.set(0.40, 0.40);
-                    add(tree);
-
-                    bottomBoppers = new FlxSprite(-300, 140);
-                    bottomBoppers.frames = Paths.getSparrowAtlas(stage + '/bottomBop', 'stages');
-                    bottomBoppers.animation.addByPrefix('bop', 'Bottom Level Boppers', 24, false);
-                    bottomBoppers.antialiasing = true;
-                    bottomBoppers.scrollFactor.set(0.9, 0.9);
-                    bottomBoppers.setGraphicSize(Std.int(bottomBoppers.width * 1));
-                    bottomBoppers.updateHitbox();
-                    add(bottomBoppers);
-
-                    var fgSnow:FlxSprite = new FlxSprite(-600, 700).loadGraphic(Paths.image(stage + '/fgSnow', 'stages'));
-                    fgSnow.active = false;
-                    fgSnow.antialiasing = true;
-                    add(fgSnow);
-
-                    santa = new FlxSprite(-840, 150);
-                    santa.frames = Paths.getSparrowAtlas(stage + '/santa', 'stages');
-                    santa.animation.addByPrefix('idle', 'santa idle in fear', 24, false);
-                    santa.antialiasing = true;
-                    add(santa);
-                }
-                case "evil-mall":
-                {
-                    var bg:FlxSprite = new FlxSprite(-400, -500).loadGraphic(Paths.image(stage + '/evilBG', 'stages'));
-                    bg.antialiasing = true;
-                    bg.scrollFactor.set(0.2, 0.2);
-                    bg.active = false;
-                    bg.setGraphicSize(Std.int(bg.width * 0.8));
-                    bg.updateHitbox();
-                    add(bg);
-
-                    var evilTree:FlxSprite = new FlxSprite(300, -300).loadGraphic(Paths.image(stage + '/evilTree', 'stages'));
-                    evilTree.antialiasing = true;
-                    evilTree.scrollFactor.set(0.2, 0.2);
-                    add(evilTree);
-
-                    var evilSnow:FlxSprite = new FlxSprite(-200, 700).loadGraphic(Paths.image(stage + "/evilSnow", 'stages'));
-                    evilSnow.antialiasing = true;
-                    add(evilSnow);
                 }
                 case "school":
                 {
@@ -629,12 +549,6 @@ class StageGroup extends FlxGroup
                 case 'school' | 'school-mad':
                 {
                     bgGirls.dance();
-                }
-                case 'mall':
-                {
-                    upperBoppers.animation.play('bop', true);
-                    bottomBoppers.animation.play('bop', true);
-                    santa.animation.play('idle', true);
                 }
             }
         }

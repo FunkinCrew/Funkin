@@ -1,0 +1,61 @@
+{
+	"objects": [
+		{
+			"is_Animated": false,
+			"antialiased": true,
+			"scroll_Factor": [
+				0.2,
+				0.2
+			],
+			"position": [
+				-400,
+				-500
+			],
+			"file_Name": "evilBG",
+			"scale": 0.8
+		},
+		{
+			"is_Animated": false,
+			"antialiased": true,
+			"scroll_Factor": [
+				0.2,
+				0.2
+			],
+			"position": [
+				300,
+				-300
+			],
+			"file_Name": "evilTree",
+			"scale": 1
+		},
+		{
+			"is_Animated": false,
+			"antialiased": true,
+			"scroll_Factor": [
+				1,
+				1
+			],
+			"position": [
+				-539,
+				694
+			],
+			"file_Name": "evilSnow",
+			"scale": 1
+		}
+	],
+	"character_Positions": [
+		[
+			997,
+			809
+		],
+		[
+			224,
+			809
+		],
+		[
+			599,
+			737
+		]
+	],
+	"camera_Zoom": 1.05
+}

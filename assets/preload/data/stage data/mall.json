@@ -1,0 +1,93 @@
+{
+    "character_Positions":[
+        [1200, 850],
+        [50, 875],
+        [800, 775]
+    ],
+    "camera_Zoom": 0.8,
+    "objects": [
+        {
+            "position":[-1000, -500],
+            "scroll_Factor": [0.2, 0.2],
+            "scale": 0.8,
+            "antialiased": true,
+            "file_Name": "bgWalls",
+            "is_Animated": false
+        },
+        {
+            "position":[-240, -90],
+            "scroll_Factor": [0.33, 0.33],
+            "scale": 0.85,
+            "antialiased": true,
+            "file_Name": "upperBop",
+            "is_Animated": true,
+            "animations": [
+                {
+                    "name": "beatHit",
+                    "animation_name": "Upper Crowd Bob",
+                    "fps": 24,
+                    "looped": false
+                }
+            ],
+            "start_Animation": "beatHit"
+        },
+        {
+            "position":[-1100, -600],
+            "scroll_Factor": [0.3, 0.3],
+            "scale": 0.9,
+            "antialiased": true,
+            "file_Name": "bgEscalator",
+            "is_Animated": false
+        },
+        {
+            "position":[370, -250],
+            "scroll_Factor": [0.4, 0.4],
+            "scale": 1,
+            "antialiased": true,
+            "file_Name": "christmasTree",
+            "is_Animated": false
+        },
+        {
+            "position":[-300, 140],
+            "scroll_Factor": [0.9, 0.9],
+            "scale": 1,
+            "antialiased": true,
+            "file_Name": "bottomBop",
+            "is_Animated": true,
+            "animations": [
+                {
+                    "name": "beatHit",
+                    "animation_name": "Bottom Level Boppers",
+                    "fps": 24,
+                    "looped": false
+                }
+            ],
+            "start_Animation": "beatHit"
+        },
+        {
+            "position":[-600, 700],
+            "scroll_Factor": [1, 1],
+            "scale": 1,
+            "antialiased": true,
+            "file_Name": "fgSnow",
+            "is_Animated": false
+        },
+        {
+            "position":[-840, 150],
+            "scroll_Factor": [1, 1],
+            "scale": 1,
+            "antialiased": true,
+            "file_Name": "santa",
+            "is_Animated": true,
+            "animations": [
+                {
+                    "name": "beatHit",
+                    "animation_name": "santa idle in fear",
+                    "fps": 24,
+                    "looped": false
+                }
+            ],
+            "start_Animation": "beatHit"
+        }
+    ]
+}
