@@ -776,8 +776,24 @@ class ChartingState extends MusicBeatState
 			}
 		}
 
+		if (FlxG.mouse.justReleased)
+			justPlacedNote = false;
+
 		if (FlxG.mouse.overlaps(gridBG))
 		{
+			if (justPlacedNote && FlxG.mouse.pressed && FlxG.mouse.y > getYfromStrum(curSelectedNote.strumTime))
+			{
+				var minusStuff:Float = FlxG.mouse.y - getYfromStrum(curSelectedNote.strumTime);
+				minusStuff -= GRID_SIZE;
+				minusStuff = Math.floor(minusStuff / GRID_SIZE) * GRID_SIZE;
+				minusStuff = FlxMath.remapToRange(minusStuff, 0, 40, 0, Conductor.stepCrochet);
+
+				curSelectedNote.sustainLength = minusStuff;
+
+				updateNoteUI();
+				updateGrid();
+			}
+
 			dummyArrow.x = Math.floor(FlxG.mouse.x / GRID_SIZE) * GRID_SIZE;
 			if (FlxG.keys.pressed.SHIFT)
 				dummyArrow.y = FlxG.mouse.y;
@@ -1319,12 +1335,19 @@ class ChartingState extends MusicBeatState
 		updateGrid();
 	}
 
+	/**
+	 * Is true if clicked and placed a note, set reset to false when releasing mouse button!
+	 */
+	var justPlacedNote:Bool = false;
+
 	private function addNote():Void
 	{
 		var noteStrum = getStrumTime(dummyArrow.y) + sectionStartTime();
 		var noteData = Math.floor(FlxG.mouse.x / GRID_SIZE);
 		var noteSus = 0;
 		var noteAlt = false;
+
+		justPlacedNote = true;
 
 		// FlxG.sound.play(Paths.sound('pianoStuff/piano-00' + FlxG.random.int(1, 9)), FlxG.random.float(0.01, 0.3));
 
@@ -1449,7 +1472,7 @@ class ChartingState extends MusicBeatState
 	function autosaveSong():Void
 	{
 		FlxG.save.data.autosave = _song;
-		trace(FlxG.save.data.autosave);
+		// trace(FlxG.save.data.autosave);
 		FlxG.save.flush();
 	}
 
