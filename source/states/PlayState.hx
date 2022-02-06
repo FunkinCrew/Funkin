@@ -3886,22 +3886,73 @@ class PlayState extends MusicBeatState
 
 	function eventCharacterShit(event:Array<Dynamic>)
 	{
+		remove(stage.foregroundSprites);
+		remove(stage.infrontOfGFSprites);
+
+		if(gf.otherCharacters == null)
+		{
+			if(gf.coolTrail != null)
+				remove(gf.coolTrail);
+
+			remove(gf);
+		}
+		else
+		{
+			for(character in gf.otherCharacters)
+			{
+				if(character.coolTrail != null)
+					remove(character.coolTrail);
+				
+				remove(character);
+			}
+		}
+
+		if(dad.otherCharacters == null)
+		{
+			if(dad.coolTrail != null)
+				remove(dad.coolTrail);
+
+			remove(dad);
+		}
+		else
+		{
+			for(character in dad.otherCharacters)
+			{
+				if(character.coolTrail != null)
+					remove(character.coolTrail);
+				
+				remove(character);
+			}
+		}
+
+		if(boyfriend.otherCharacters == null)
+		{
+			if(boyfriend.coolTrail != null)
+				remove(boyfriend.coolTrail);
+
+			remove(boyfriend);
+		}
+		else
+		{
+			for(character in boyfriend.otherCharacters)
+			{
+				if(character.coolTrail != null)
+					remove(character.coolTrail);
+				
+				remove(character);
+			}
+		}
+		
 		switch(event[2].toLowerCase())
 		{
 			case "girlfriend" | "gf":
-				var oldGf = PlayState.gf;
+				var oldGf = gf;
 				oldGf.alpha = 0.00001;
-
-				if(oldGf.coolTrail != null)
-					PlayState.instance.remove(oldGf.coolTrail);
 				
 				if(oldGf.otherCharacters != null)
 				{
 					for(character in oldGf.otherCharacters)
 					{
-						if(character.coolTrail != null)
-							PlayState.instance.remove(character.coolTrail);
-		
 						character.alpha = 0.00001;
 					}
 				}
@@ -3910,20 +3961,10 @@ class PlayState extends MusicBeatState
 				newGf.alpha = 1;
 				gf = newGf;
 
-				if(newGf.otherCharacters == null)
-				{
-					if(newGf.coolTrail != null)
-						PlayState.instance.add(newGf.coolTrail);
-		
-					PlayState.instance.add(newGf);
-				}
-				else
+				if(newGf.otherCharacters != null)
 				{
 					for(character in newGf.otherCharacters)
 					{
-						if(character.coolTrail != null)
-							PlayState.instance.add(character.coolTrail);
-		
 						character.alpha = 1;
 					}
 				}
@@ -3936,19 +3977,13 @@ class PlayState extends MusicBeatState
 					stage.stageScript.setupTheShitCuzPullRequestsSuck();
 				#end
 			case "dad" | "opponent":
-				var oldDad = PlayState.dad;
+				var oldDad = dad;
 				oldDad.alpha = 0.00001;
-
-				if(oldDad.coolTrail != null)
-					PlayState.instance.remove(oldDad.coolTrail);
 
 				if(oldDad.otherCharacters != null)
 				{
 					for(character in oldDad.otherCharacters)
 					{
-						if(character.coolTrail != null)
-							PlayState.instance.remove(character.coolTrail);
-		
 						character.alpha = 0.00001;
 					}
 				}
@@ -3957,20 +3992,10 @@ class PlayState extends MusicBeatState
 				newDad.alpha = 1;
 				dad = newDad;
 
-				if(newDad.otherCharacters == null)
-				{
-					if(newDad.coolTrail != null)
-						PlayState.instance.add(newDad.coolTrail);
-		
-					PlayState.instance.add(newDad);
-				}
-				else
+				if(newDad.otherCharacters != null)
 				{
 					for(character in newDad.otherCharacters)
 					{
-						if(character.coolTrail != null)
-							PlayState.instance.add(character.coolTrail);
-		
 						character.alpha = 1;
 					}
 				}
@@ -3985,43 +4010,21 @@ class PlayState extends MusicBeatState
 
 				@:privateAccess
 				{
-					var oldIcon = PlayState.instance.iconP2;
 					var bar = PlayState.instance.healthBar;
 					
-					remove(oldIcon);
-					oldIcon.kill();
-					oldIcon.destroy();
+					iconP2.changeIconSet(dad.icon);
 	
-					iconP2 = new HealthIcon(dad.icon, false);
-					iconP2.y = healthBar.y - (iconP2.height / 2);
-					iconP2.cameras = [camHUD];
-					add(iconP2);
-	
-					bar.createFilledBar(dad.barColor, PlayState.boyfriend.barColor);
+					bar.createFilledBar(dad.barColor, boyfriend.barColor);
 					bar.updateFilledBar();
 				}
-
-				if(dad.curCharacter.startsWith("gf"))
-				{
-					dad.setPosition(gf.x, gf.y);
-					gf.visible = false;
-				}
-				else if(gf.visible == false && gf.curCharacter != "")
-					gf.visible = true;
 			case "bf" | "boyfriend" | "player":
-				var oldBF = PlayState.boyfriend;
+				var oldBF = boyfriend;
 				oldBF.alpha = 0.00001;
-
-				if(oldBF.coolTrail != null)
-					PlayState.instance.remove(oldBF.coolTrail);
 
 				if(oldBF.otherCharacters != null)
 				{
 					for(character in oldBF.otherCharacters)
 					{
-						if(character.coolTrail != null)
-							PlayState.instance.remove(character.coolTrail);
-		
 						character.alpha = 0.00001;
 					}
 				}
@@ -4030,21 +4033,10 @@ class PlayState extends MusicBeatState
 				newDad.alpha = 1;
 				boyfriend = newDad;
 
-				if(newDad.otherCharacters == null)
-				{
-					if(newDad.coolTrail != null)
-						PlayState.instance.add(newDad.coolTrail);
-		
-					PlayState.instance.add(newDad);
-				}
-				else
+				if(newDad.otherCharacters != null)
 				{
 					for(character in newDad.otherCharacters)
 					{
-						if(character.coolTrail != null)
-							PlayState.instance.add(character.coolTrail);
-		
-						PlayState.instance.add(character);
 						character.alpha = 1;
 					}
 				}
@@ -4059,25 +4051,86 @@ class PlayState extends MusicBeatState
 
 				@:privateAccess
 				{
-					var oldIcon = PlayState.instance.iconP1;
 					var bar = PlayState.instance.healthBar;
-					
-					remove(oldIcon);
-					oldIcon.kill();
-					oldIcon.destroy();
 	
-					iconP1 = new HealthIcon(boyfriend.icon, false);
-					iconP1.y = healthBar.y - (iconP1.height / 2);
-					iconP1.cameras = [PlayState.instance.camHUD];
-					iconP1.flipX = true;
-					add(PlayState.instance.iconP1);
+					iconP1.changeIconSet(boyfriend.icon);
 	
-					bar.createFilledBar(PlayState.dad.barColor, boyfriend.barColor);
+					bar.createFilledBar(dad.barColor, boyfriend.barColor);
 					bar.updateFilledBar();
 				}
 		}
 
 		stage.setCharOffsets();
+
+		if(dad.curCharacter.startsWith("gf"))
+		{
+			dad.setPosition(gf.x, gf.y);
+			gf.visible = false;
+		}
+		else if(gf.visible == false && gf.curCharacter != "")
+			gf.visible = true;
+
+		if(gf.otherCharacters == null)
+		{
+			if(gf.coolTrail != null)
+				add(gf.coolTrail);
+
+			add(gf);
+		}
+		else
+		{
+			for(character in gf.otherCharacters)
+			{
+				if(character.coolTrail != null)
+					add(character.coolTrail);
+				
+				add(character);
+			}
+		}
+
+		if(!dad.curCharacter.startsWith("gf"))
+			add(stage.infrontOfGFSprites);
+
+		if(dad.otherCharacters == null)
+		{
+			if(dad.coolTrail != null)
+				add(dad.coolTrail);
+
+			add(dad);
+		}
+		else
+		{
+			for(character in dad.otherCharacters)
+			{
+				if(character.coolTrail != null)
+					add(character.coolTrail);
+
+				add(character);
+			}
+		}
+
+		if(dad.curCharacter.startsWith("gf"))
+			add(stage.infrontOfGFSprites);
+
+		if(boyfriend.otherCharacters == null)
+		{
+			if(boyfriend.coolTrail != null)
+				add(boyfriend.coolTrail);
+			
+			add(boyfriend);
+		}
+		else
+		{
+			for(character in boyfriend.otherCharacters)
+			{
+				if(character.coolTrail != null)
+					add(character.coolTrail);
+
+				add(character);
+			}
+		}
+
+		add(stage.foregroundSprites);
 	}
 
 	public function updateSongInfoText()
