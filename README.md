@@ -57,3 +57,5 @@ You can load, share, and play replays of songs you've played! They can even be i
 * Ronezkj15 - Some Ideas + New Leather Engine Logo
 
 * ShadowMario - Color Swap Shader (for notes and stuffs) + some really weird modchart stuff that im too stupid to know lol
+
+* Smokey555 - Adobe Animate Spritemap -> FlxFramesCollection Support

@@ -1,5 +1,6 @@
 package game;
 
+import animateatlas.AtlasFrameMaker;
 import utilities.Options;
 import flixel.FlxG;
 import flixel.addons.effects.FlxTrail;
@@ -362,6 +363,8 @@ class Character extends FlxSprite
 
 			if(Assets.exists(Paths.file("images/characters/" + config.imagePath + ".txt", TEXT, "shared")))
 				frames = Paths.getPackerAtlas('characters/' + config.imagePath, 'shared');
+			else if(Assets.exists(Paths.file("images/characters/" + config.imagePath + "/Animation.json", TEXT, "shared")))
+				frames = AtlasFrameMaker.construct("characters/" + config.imagePath);
 			else
 				frames = Paths.getSparrowAtlas('characters/' + config.imagePath, 'shared');
 
