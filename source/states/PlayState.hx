@@ -4076,8 +4076,12 @@ class PlayState extends MusicBeatState
 		if(gf.otherCharacters == null)
 		{
 			if(gf.coolTrail != null)
+			{
+				remove(gf.coolTrail);
 				add(gf.coolTrail);
+			}
 
+			remove(gf);
 			add(gf);
 		}
 		else
@@ -4085,8 +4089,12 @@ class PlayState extends MusicBeatState
 			for(character in gf.otherCharacters)
 			{
 				if(character.coolTrail != null)
+				{
+					remove(character.coolTrail);
 					add(character.coolTrail);
+				}
 				
+				remove(character);
 				add(character);
 			}
 		}
@@ -4097,8 +4105,12 @@ class PlayState extends MusicBeatState
 		if(dad.otherCharacters == null)
 		{
 			if(dad.coolTrail != null)
+			{
+				remove(dad.coolTrail);
 				add(dad.coolTrail);
+			}
 
+			remove(dad);
 			add(dad);
 		}
 		else
@@ -4106,8 +4118,12 @@ class PlayState extends MusicBeatState
 			for(character in dad.otherCharacters)
 			{
 				if(character.coolTrail != null)
+				{
+					remove(character.coolTrail);
 					add(character.coolTrail);
-
+				}
+				
+				remove(character);
 				add(character);
 			}
 		}
@@ -4118,8 +4134,12 @@ class PlayState extends MusicBeatState
 		if(boyfriend.otherCharacters == null)
 		{
 			if(boyfriend.coolTrail != null)
+			{
+				remove(boyfriend.coolTrail);
 				add(boyfriend.coolTrail);
+			}
 			
+			remove(boyfriend);
 			add(boyfriend);
 		}
 		else
@@ -4127,8 +4147,12 @@ class PlayState extends MusicBeatState
 			for(character in boyfriend.otherCharacters)
 			{
 				if(character.coolTrail != null)
+				{
+					remove(character.coolTrail);
 					add(character.coolTrail);
-
+				}
+				
+				remove(character);
 				add(character);
 			}
 		}
@@ -4268,7 +4292,7 @@ class PlayState extends MusicBeatState
 				if(event[3] != "")
 					anim = event[3];
 
-				character.playAnim(anim);
+				character.playAnim(anim, true);
 			case "screen shake":
 				var valuesArray:Array<String> = [event[2], event[3]];
 				var targetsArray:Array<FlxCamera> = [camGame, camHUD];
@@ -4332,6 +4356,19 @@ class PlayState extends MusicBeatState
 			case "change character":
 				if(utilities.Options.getData("charsAndBGs"))
 					eventCharacterShit(event);
+			case "open url":
+				if(!Options.getData("noOpenURL"))
+				{
+					var count = Std.parseInt(event[3]);
+
+					if(Math.isNaN(count))
+						count = 1;
+	
+					for(_ in 0...count)
+					{
+						CoolUtil.openURL(event[2]);
+					}
+				}
 		}
 
 		//                            name       pos      param 1   param 2

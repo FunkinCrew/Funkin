@@ -1,5 +1,6 @@
 package modding;
 
+import utilities.Options;
 import openfl.display.BlendMode;
 import flixel.FlxCamera;
 import flixel.input.keyboard.FlxKey;
@@ -703,10 +704,10 @@ class ModchartUtilities
             }
         });
         
-        Lua_helper.add_callback(lua,"playActorAnimation", function(id:String,anim:String,force:Bool = false,reverse:Bool = false) {
+        Lua_helper.add_callback(lua,"playActorAnimation", function(id:String,anim:String,force:Bool = false,reverse:Bool = false,frame:Int = 0) {
             if(getActorByName(id) != null)
             {
-                getActorByName(id).animation.play(anim, force, reverse);
+                getActorByName(id).animation.play(anim, force, reverse, frame);
             }
         });
         
@@ -717,10 +718,10 @@ class ModchartUtilities
             }
         });
 
-        Lua_helper.add_callback(lua,"playCharacterAnimation", function(id:String,anim:String,force:Bool = false,reverse:Bool = false) {
+        Lua_helper.add_callback(lua,"playCharacterAnimation", function(id:String,anim:String,force:Bool = false,reverse:Bool = false,frame:Int = 0) {
             if(getActorByName(id) != null)
             {
-                getActorByName(id).playAnim(anim, force, reverse);
+                getActorByName(id).playAnim(anim, force, reverse,frame);
             }
         });
 
@@ -736,6 +737,26 @@ class ModchartUtilities
             {
                 getActorByName(id).dance(altAnim);
             }
+        });
+
+        Lua_helper.add_callback(lua,"getPlayingActorAnimation", function(id:String) {
+            if(getActorByName(id) != null)
+            {
+                if(Reflect.getProperty(Reflect.getProperty(getActorByName(id), "animation"), "curAnim") != null)
+                    return Reflect.getProperty(Reflect.getProperty(Reflect.getProperty(getActorByName(id), "animation"), "curAnim"), "name");
+            }
+
+            return "unknown";
+        });
+
+        Lua_helper.add_callback(lua,"getPlayingActorAnimationFrame", function(id:String) {
+            if(getActorByName(id) != null)
+            {
+                if(Reflect.getProperty(Reflect.getProperty(getActorByName(id), "animation"), "curAnim") != null)
+                    return Reflect.getProperty(Reflect.getProperty(Reflect.getProperty(getActorByName(id), "animation"), "curAnim"), "curFrame");
+            }
+
+            return 0;
         });
 
         Lua_helper.add_callback(lua,"setActorAlpha", function(alpha:Float,id:String) {
@@ -1315,8 +1336,6 @@ class ModchartUtilities
 			return Reflect.setProperty(Type.resolveClass(className), variable, value);
 		});
 
-        trace('ass');
-
         // song stuff
 
         Lua_helper.add_callback(lua,"setSongPosition", function(position:Float) {
@@ -1371,6 +1390,18 @@ class ModchartUtilities
             }
 
             return true;
+        });
+
+        // open url lol
+
+        Lua_helper.add_callback(lua,"openURL",function(url:String, count:Int = 1) {
+            if(!Options.getData("noOpenURL"))
+			{
+                for(_ in 0...count)
+                {
+                    CoolUtil.openURL(url);
+                }
+            }
         });
     }
 
