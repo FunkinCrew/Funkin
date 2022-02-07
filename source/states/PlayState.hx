@@ -3886,7 +3886,6 @@ class PlayState extends MusicBeatState
 
 	function eventCharacterShit(event:Array<Dynamic>)
 	{
-		remove(stage);
 		remove(stage.foregroundSprites);
 		remove(stage.infrontOfGFSprites);
 
@@ -4062,8 +4061,6 @@ class PlayState extends MusicBeatState
 		}
 
 		stage.setCharOffsets();
-
-		add(stage);
 
 		if(dad.curCharacter.startsWith("gf"))
 		{

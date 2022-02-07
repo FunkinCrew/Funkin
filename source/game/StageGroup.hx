@@ -78,7 +78,7 @@ class StageGroup extends FlxGroup
         if(newStage != null)
             stage = newStage;
 
-        var bruhStages = ['philly','school','school-mad','evil-school'];
+        var bruhStages = ['school','school-mad','evil-school'];
 
         var stagesNormally = CoolUtil.coolTextFile(Paths.txt('stageList'));
 
@@ -99,7 +99,7 @@ class StageGroup extends FlxGroup
         {
             switch(stage)
             {
-                case "philly":
+                /*case "philly":
                 {
                     player_1_Point.x -= 50;
                     gf_Point.x += 100;
@@ -141,7 +141,7 @@ class StageGroup extends FlxGroup
 
                     var street:FlxSprite = new FlxSprite(-40, streetBehind.y).loadGraphic(Paths.image(stage + '/street', 'stages'));
                     add(street);
-                }
+                }*/
                 case "school":
                 {
                     player_2_Point.x = 379;
@@ -519,33 +519,6 @@ class StageGroup extends FlxGroup
             
             switch(stage)
             {
-                case 'philly':
-                {
-                    if(FlxG.state == PlayState.instance)
-                    {
-                        if (!trainMoving)
-                            trainCooldown += 1;
-    
-                        if (PlayState.currentBeat % 4 == 0)
-                        {
-                            phillyCityLights.forEach(function(light:FlxSprite)
-                            {
-                                light.visible = false;
-                            });
-    
-                            curLight = FlxG.random.int(0, phillyCityLights.length - 1);
-    
-                            phillyCityLights.members[curLight].visible = true;
-                            // phillyCityLights.members[curLight].alpha = 1;
-                        }
-    
-                        if (PlayState.currentBeat % 8 == 4 && FlxG.random.bool(30) && !trainMoving && trainCooldown > 8)
-                        {
-                            trainCooldown = FlxG.random.int(-4, 0);
-                            trainStart();
-                        }
-                    }
-                }
                 case 'school' | 'school-mad':
                 {
                     bgGirls.dance();
@@ -557,21 +530,6 @@ class StageGroup extends FlxGroup
     override function update(elapsed:Float)
     {
         super.update(elapsed);
-
-        switch(stage)
-        {
-            case 'philly':
-                if (trainMoving)
-                {
-                    trainFrameTiming += goodElapse;
-    
-                    if (trainFrameTiming >= 1 / 24)
-                    {
-                        updateTrainPos();
-                        trainFrameTiming = 0;
-                    }
-                }
-        }
 
         goodElapse = elapsed;
     }

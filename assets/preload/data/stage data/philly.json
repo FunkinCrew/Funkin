@@ -1,0 +1,97 @@
+{
+    "scriptName": "philly",
+    "character_Positions":[
+        [950, 800],
+        [425, 800],
+        [700, 700]
+    ],
+    "camera_Zoom": 1.05,
+    "objects": [
+        {
+            "position":[-100, 0],
+            "scroll_Factor": [0.1, 0.1],
+            "scale": 1,
+            "antialiased": true,
+            "file_Name": "sky",
+            "is_Animated": false
+        },
+        {
+            "position":[-10, 0],
+            "scroll_Factor": [0.3, 0.3],
+            "scale": 0.85,
+            "antialiased": true,
+            "file_Name": "city",
+            "is_Animated": false
+        },
+        {
+            "position":[-10, 0],
+            "scroll_Factor": [0.3, 0.3],
+            "scale": 0.85,
+            "antialiased": true,
+            "file_Name": "win0",
+            "is_Animated": false,
+            "object_Name": "light1"
+        },
+        {
+            "position":[-10, 0],
+            "scroll_Factor": [0.3, 0.3],
+            "scale": 0.85,
+            "antialiased": true,
+            "file_Name": "win1",
+            "is_Animated": false,
+            "object_Name": "light2"
+        },
+        {
+            "position":[-10, 0],
+            "scroll_Factor": [0.3, 0.3],
+            "scale": 0.85,
+            "antialiased": true,
+            "file_Name": "win2",
+            "is_Animated": false,
+            "object_Name": "light3"
+        },
+        {
+            "position":[-10, 0],
+            "scroll_Factor": [0.3, 0.3],
+            "scale": 0.85,
+            "antialiased": true,
+            "file_Name": "win3",
+            "is_Animated": false,
+            "object_Name": "light4"
+        },
+        {
+            "position":[-10, 0],
+            "scroll_Factor": [0.3, 0.3],
+            "scale": 0.85,
+            "antialiased": true,
+            "file_Name": "win4",
+            "is_Animated": false,
+            "object_Name": "light5"
+        },
+        {
+            "position":[-40, 50],
+            "scroll_Factor": [1, 1],
+            "scale": 1,
+            "antialiased": true,
+            "file_Name": "behindTrain",
+            "is_Animated": false
+        },
+        {
+            "position":[2000, 360],
+            "scroll_Factor": [1, 1],
+            "scale": 1,
+            "antialiased": true,
+            "file_Name": "train",
+            "is_Animated": false,
+            "object_Name": "train"
+        },
+        {
+            "position":[-40, 50],
+            "scroll_Factor": [1, 1],
+            "scale": 1,
+            "antialiased": true,
+            "file_Name": "street",
+            "is_Animated": false
+        }
+    ]
+}

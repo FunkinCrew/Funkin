@@ -451,8 +451,6 @@ class ModchartUtilities
             }
         });
 
-        trace("good");
-
         // hud/camera
 
         Lua_helper.add_callback(lua,"setHudAngle", function (x:Float) {
@@ -612,8 +610,6 @@ class ModchartUtilities
             return PlayState.instance.notes.members[id].height;
         });
 
-        trace("a");
-
         Lua_helper.add_callback(lua,"setRenderedNoteAngle", function(angle:Float, id:Int) {
             PlayState.instance.notes.members[id].modifiedByLua = true;
             PlayState.instance.notes.members[id].angle = angle;
@@ -765,6 +761,11 @@ class ModchartUtilities
                 getActorByName(id).alpha = alpha;
                 getActorByName(id).updateColorTransform();
             }
+        });
+
+        Lua_helper.add_callback(lua,"setActorVisible", function(visible:Bool,id:String) {
+            if(getActorByName(id) != null)
+                getActorByName(id).visible = visible;
         });
 
         Lua_helper.add_callback(lua,"setActorColor", function(id:String,r:Int,g:Int,b:Int,alpha:Int = 255) {
@@ -1113,6 +1114,13 @@ class ModchartUtilities
         Lua_helper.add_callback(lua,"setSoundVolume", function(id:String, volume:Float) {
             if(lua_Sounds.get(id) != null)
                 lua_Sounds.get(id).volume = volume;
+        });
+
+        Lua_helper.add_callback(lua,"getSoundTime", function(id:String) {
+            if(lua_Sounds.get(id) != null)
+                return lua_Sounds.get(id).time;
+
+            return 0;
         });
 
         // tweens

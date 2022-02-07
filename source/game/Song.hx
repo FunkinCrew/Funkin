@@ -171,13 +171,15 @@ class Song
 		for(event in swagShit.events)
 		{
 			// aka, if(event == A Psych Engine Event Lmfao)
-			if(Std.isOfType(event[0], Float) || Std.isOfType(event[0], Int))
+			if(Std.isOfType(event[0], Float) || Std.isOfType(event[0], Int) && Std.isOfType(event[1], Array))
 			{
-				var actual_event_data = event[1][0];
-				
-				var new_event = [Std.string(actual_event_data[0]), event[0], Std.string(actual_event_data[1]), Std.string(actual_event_data[2])];
+				var event_datas:Array<Array<Dynamic>> = event[1];
 
-				new_events.push(new_event);
+				for(actual_event_data in event_datas)
+				{
+					var new_event = [Std.string(actual_event_data[0]), event[0], Std.string(actual_event_data[1]), Std.string(actual_event_data[2])];
+					new_events.push(new_event);
+				}
 			}
 			else
 				new_events.push(event);
