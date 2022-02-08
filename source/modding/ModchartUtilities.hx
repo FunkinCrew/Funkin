@@ -243,6 +243,12 @@ class ModchartUtilities
 			var string_arg_1:String = Std.string(argument_1);
 			var string_arg_2:String = Std.string(argument_2);
 
+            if(!PlayState.instance.event_luas.exists(event_name.toLowerCase()) && Assets.exists(Paths.lua("event data/" + event_name.toLowerCase())))
+            {
+                PlayState.instance.event_luas.set(event_name.toLowerCase(), ModchartUtilities.createModchartUtilities(PolymodAssets.getPath(Paths.lua("event data/" + event_name.toLowerCase()))));
+                PlayState.instance.generatedSomeDumbEventLuas = true;
+            }
+
             PlayState.instance.processEvent([event_name, Conductor.songPosition, string_arg_1, string_arg_2]);
         });
 
@@ -717,7 +723,7 @@ class ModchartUtilities
         Lua_helper.add_callback(lua,"playCharacterAnimation", function(id:String,anim:String,force:Bool = false,reverse:Bool = false,frame:Int = 0) {
             if(getActorByName(id) != null)
             {
-                getActorByName(id).playAnim(anim, force, reverse,frame);
+                getActorByName(id).playAnim(anim, force, reverse, frame);
             }
         });
 
@@ -1293,11 +1299,22 @@ class ModchartUtilities
         // properties
 
         Lua_helper.add_callback(lua,"setProperty", function(object:String, property:String, value:Dynamic) {
-            @:privateAccess
-            if(Reflect.getProperty(PlayState.instance, object) != null)
-                Reflect.setProperty(Reflect.getProperty(PlayState.instance, object), property, value);
+            if(object != "")
+            {
+                @:privateAccess
+                if(Reflect.getProperty(PlayState.instance, object) != null)
+                    Reflect.setProperty(Reflect.getProperty(PlayState.instance, object), property, value);
+                else
+                    Reflect.setProperty(Reflect.getProperty(PlayState, object), property, value);
+            }
             else
-                Reflect.setProperty(Reflect.getProperty(PlayState, object), property, value);
+            {
+                @:privateAccess
+                if(Reflect.getProperty(PlayState.instance, property) != null)
+                    Reflect.setProperty(PlayState.instance, property, value);
+                else
+                    Reflect.setProperty(PlayState, property, value);
+            }
         });
 
         Lua_helper.add_callback(lua,"getProperty", function(object:String, property:String) {
@@ -1309,39 +1326,45 @@ class ModchartUtilities
         });
 
         Lua_helper.add_callback(lua, "getPropertyFromClass", function(className:String, variable:String) {
-			var variablePaths = variable.split(".");
-
-            if(variablePaths.length > 1)
+            @:privateAccess
             {
-                var selectedVariable:Dynamic = Reflect.getProperty(Type.resolveClass(className), variablePaths[0]);
+                var variablePaths = variable.split(".");
 
-                for (i in 1...variablePaths.length-1)
+                if(variablePaths.length > 1)
                 {
-					selectedVariable = Reflect.getProperty(selectedVariable, variablePaths[i]);
-				}
+                    var selectedVariable:Dynamic = Reflect.getProperty(Type.resolveClass(className), variablePaths[0]);
 
-				return Reflect.getProperty(selectedVariable, variablePaths[variablePaths.length - 1]);
+                    for (i in 1...variablePaths.length-1)
+                    {
+                        selectedVariable = Reflect.getProperty(selectedVariable, variablePaths[i]);
+                    }
+
+                    return Reflect.getProperty(selectedVariable, variablePaths[variablePaths.length - 1]);
+                }
+
+                return Reflect.getProperty(Type.resolveClass(className), variable);
             }
-
-            return Reflect.getProperty(Type.resolveClass(className), variable);
 		});
 
 		Lua_helper.add_callback(lua, "setPropertyFromClass", function(className:String, variable:String, value:Dynamic) {
-            var variablePaths:Array<String> = variable.split('.');
-
-			if(variablePaths.length > 1)
+            @:privateAccess
             {
-				var selectedVariable:Dynamic = Reflect.getProperty(Type.resolveClass(className), variablePaths[0]);
+                var variablePaths:Array<String> = variable.split('.');
 
-				for (i in 1...variablePaths.length-1)
+                if(variablePaths.length > 1)
                 {
-					selectedVariable = Reflect.getProperty(selectedVariable, variablePaths[i]);
-				}
+                    var selectedVariable:Dynamic = Reflect.getProperty(Type.resolveClass(className), variablePaths[0]);
 
-				return Reflect.setProperty(selectedVariable, variablePaths[variablePaths.length - 1], value);
-			}
+                    for (i in 1...variablePaths.length-1)
+                    {
+                        selectedVariable = Reflect.getProperty(selectedVariable, variablePaths[i]);
+                    }
 
-			return Reflect.setProperty(Type.resolveClass(className), variable, value);
+                    return Reflect.setProperty(selectedVariable, variablePaths[variablePaths.length - 1], value);
+                }
+
+                return Reflect.setProperty(Type.resolveClass(className), variable, value);
+            }
 		});
 
         // song stuff

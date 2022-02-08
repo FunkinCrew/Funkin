@@ -115,12 +115,12 @@ class PlayState extends MusicBeatState
 	private var camZooming:Bool = false;
 	private var curSong:String = "";
 
-	private var gfSpeed:Int = 1;
+	public var gfSpeed:Int = 1;
 	public var health:Float = 1;
 	public var healthShown:Float = 1;
 	public var minHealth:Float = 0;
 	public var maxHealth:Float = 2;
-	private var combo:Int = 0;
+	public var combo:Int = 0;
 
 	public var misses:Int = 0;
 	public var mashes:Int = 0;
@@ -270,6 +270,10 @@ class PlayState extends MusicBeatState
 
 	public var ogPlayerKeyCount:Int = 4;
 	public var ogKeyCount:Int = 4;
+
+	#if linc_luajit
+	public var event_luas:Map<String, ModchartUtilities> = [];
+	#end
 
 	override public function create()
 	{
@@ -971,6 +975,14 @@ class PlayState extends MusicBeatState
 						trace(funnyCharacter.curCharacter);
 					}
 				}
+
+				#if linc_luajit
+				if(!event_luas.exists(event[0].toLowerCase()) && Assets.exists(Paths.lua("event data/" + event[0].toLowerCase())))
+				{
+					event_luas.set(event[0].toLowerCase(), ModchartUtilities.createModchartUtilities(PolymodAssets.getPath(Paths.lua("event data/" + event[0].toLowerCase()))));
+					generatedSomeDumbEventLuas = true;
+				}
+				#end
 			}
 		}
 
@@ -1827,6 +1839,10 @@ class PlayState extends MusicBeatState
 
 	var speed:Float = 1.0;
 
+	#if linc_luajit
+	public var generatedSomeDumbEventLuas:Bool = false;
+	#end
+
 	override public function update(elapsed:Float)
 	{
 		updateSongInfoText();
@@ -1909,7 +1925,7 @@ class PlayState extends MusicBeatState
 		iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset);
 
 		#if linc_luajit
-		if((stage.stageScript != null || (luaModchart != null && executeModchart)) && generatedMusic && !switchedStates && startedCountdown)
+		if(((stage.stageScript != null || (luaModchart != null && executeModchart)) || generatedSomeDumbEventLuas) && generatedMusic && !switchedStates && startedCountdown)
 		{
 			setLuaVar("songPos", Conductor.songPosition);
 			setLuaVar("hudZoom", camHUD.zoom);
@@ -4201,6 +4217,15 @@ class PlayState extends MusicBeatState
 
 		if(stage.stageScript != null && execute_on != MODCHART)
 			stage.stageScript.executeState(name, stage_arguments);
+
+		if(execute_on != STAGE)
+		{
+			for(script in event_luas.keys())
+			{
+				if(event_luas.exists(script))
+					event_luas.get(script).executeState(name, arguments);	
+			}
+		}
 		#end
 	}
 
@@ -4215,6 +4240,15 @@ class PlayState extends MusicBeatState
 
 		if(stage.stageScript != null && execute_on != MODCHART)
 			stage.stageScript.setVar(name, stage_data);
+
+		if(execute_on != STAGE)
+		{
+			for(script in event_luas.keys())
+			{
+				if(event_luas.exists(script))
+					event_luas.get(script).setVar(name, data);	
+			}
+		}
 		#end
 	}
 
@@ -4231,6 +4265,17 @@ class PlayState extends MusicBeatState
 
 			if(newLuaVar != null)
 				luaVar = newLuaVar;
+		}
+
+		for(script in event_luas.keys())
+		{
+			if(event_luas.exists(script))
+			{
+				var newLuaVar = event_luas.get(script).getVar(name, type);
+
+				if(newLuaVar != null)
+					luaVar = newLuaVar;
+			}
 		}
 
 		if(executeModchart && luaModchart != null)
@@ -4252,6 +4297,7 @@ class PlayState extends MusicBeatState
 	{
 		switch(event[0].toLowerCase())
 		{
+			#if html5
 			case "hey!":
 				var charString = event[2].toLowerCase();
 
@@ -4276,6 +4322,7 @@ class PlayState extends MusicBeatState
 			case "set gf speed":
 				if(Std.parseInt(event[2]) != null)
 					gfSpeed = Std.parseInt(event[2]);
+			#end
 			case "add camera zoom":
 				if(utilities.Options.getData("cameraZooms") && FlxG.camera.zoom < 1.35)
 				{

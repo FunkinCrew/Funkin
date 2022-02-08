@@ -1799,6 +1799,8 @@ class ChartingState extends MusicBeatState
 					curEvent = eventList.indexOf(curSelectedEvent[0]);
 
 				valueDescriptions.text = "Value 1 - " + eventListData[curEvent][1] + "\nValue 2 - " + eventListData[curEvent][2] + "\n";
+
+				eventName = curSelectedEvent[0];
 			}
 
 			swagNum += 1;
