@@ -443,6 +443,8 @@ class FreeplayState extends MusicBeatState
 					PlayState.storyWeek = songs[curSelected].week;
 					trace('CUR WEEK' + PlayState.storyWeek);
 
+					if(Assets.exists(Paths.inst(PlayState.SONG.song, PlayState.storyDifficultyStr)))
+					{
 					if(colorTween != null)
 						colorTween.cancel();
 
@@ -450,7 +452,20 @@ class FreeplayState extends MusicBeatState
 
 					FlxG.sound.music.volume = 0;
 					destroyFreeplayVocals();
+					}
+					else
+					{
+						if(Assets.exists(Paths.inst(songs[curSelected].songName.toLowerCase(), curDiffString)))
+							Application.current.window.alert(PlayState.SONG.song.toLowerCase() + " (JSON) != " + songs[curSelected].songName.toLowerCase() + " (FREEPLAY)\nTry making them the same.",
+						"Leather Engine's No Crash, We Help Fix Stuff Tool");
+						else
+							Application.current.window.alert("Something is wrong with your song names, I'm not sure what, but I'm sure you can figure it out.",
+					"Leather Engine's No Crash, We Help Fix Stuff Tool");
+					}
 				}
+				else
+					Application.current.window.alert(songs[curSelected].songName.toLowerCase() + " doesn't match with any song audio files!\nTry fixing it's name in freeplaySonglist.txt",
+				"Leather Engine's No Crash, We Help Fix Stuff Tool");
 			}
 		}
 	}

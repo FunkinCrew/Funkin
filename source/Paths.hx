@@ -125,12 +125,21 @@ class Paths
 		if(difficulty != null)
 		{
 			if(Assets.exists('songs:assets/songs/${song.toLowerCase()}/Inst-$difficulty.$SOUND_EXT'))
-			{
 				return 'songs:assets/songs/${song.toLowerCase()}/Inst-$difficulty.$SOUND_EXT';
-			}
 		}
 		
 		return 'songs:assets/songs/${song.toLowerCase()}/Inst.$SOUND_EXT';
+	}
+
+	static public function songEvents(song:String, ?difficulty:String)
+	{
+		if(difficulty != null)
+		{
+			if(Assets.exists(Paths.json("song data/" + song.toLowerCase() + '/events-${difficulty.toLowerCase()}')))
+				return Paths.json("song data/" + song.toLowerCase() + '/events-${difficulty.toLowerCase()}');
+		}
+
+		return Paths.json("song data/" + song.toLowerCase() + "/events");
 	}
 
 	inline static public function image(key:String, ?library:String)

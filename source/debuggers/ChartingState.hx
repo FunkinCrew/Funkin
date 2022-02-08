@@ -577,7 +577,7 @@ class ChartingState extends MusicBeatState
 		check_changeBPM = new FlxUICheckBox(10, 80, null, null, 'Change BPM?', 100);
 		check_changeBPM.name = 'check_changeBPM';
 
-		var copySectionButton:FlxButton = new FlxButton(check_altAnim.x, check_altAnim.y + check_altAnim.height, "Copy Section", function()
+		var copySectionButton:FlxButton = new FlxButton(check_altAnim.x, check_altAnim.y + check_altAnim.height + 4, "Copy Section", function()
 		{
 			copiedSection = curSection;
 			updateGrid();
@@ -2048,11 +2048,16 @@ class ChartingState extends MusicBeatState
 
 	private function saveLevel(saveEvents:Bool = false)
 	{
-		var json = {
-			"song": {
-				"events": []
-			}
-		};
+		var json:Dynamic;
+		
+		if(saveEvents)
+			json = {
+				"song": {
+					"events": []
+				}
+			};
+		else
+			json = { "song": _song };
 
 		if(!saveEvents)
 			json.song.events = [];

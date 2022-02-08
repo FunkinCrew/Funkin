@@ -921,11 +921,11 @@ class PlayState extends MusicBeatState
 				}
 			}
 
-			if(Assets.exists(Paths.json("song data/" + SONG.song.toLowerCase() + "/events")) && !chartingMode)
+			if(Assets.exists(Paths.songEvents(SONG.song.toLowerCase())) && !chartingMode)
 			{
-				trace(Paths.json("song data/" + SONG.song.toLowerCase() + "/events"));
+				trace(Paths.songEvents(SONG.song.toLowerCase()));
 
-				var eventFunnies:Array<Array<Dynamic>> = Song.parseJSONshit(Assets.getText(Paths.json("song data/" + SONG.song.toLowerCase() + "/events"))).events;
+				var eventFunnies:Array<Array<Dynamic>> = Song.parseJSONshit(Assets.getText(Paths.songEvents(SONG.song.toLowerCase()))).events;
 
 				for(event in eventFunnies)
 				{
@@ -1295,6 +1295,15 @@ class PlayState extends MusicBeatState
 
 		if(stage.stageScript != null)
 			stage.stageScript.setupTheShitCuzPullRequestsSuck();
+
+		for(i in 0...strumLineNotes.length)
+		{
+			var member = strumLineNotes.members[i];
+
+			setLuaVar("defaultStrum" + i + "X", member.x);
+			setLuaVar("defaultStrum" + i + "Y", member.y);
+			setLuaVar("defaultStrum" + i + "Angle", member.angle);
+		}
 
 		executeALuaState("start", [SONG.song.toLowerCase()], BOTH, [stage.stage]);
 		#end

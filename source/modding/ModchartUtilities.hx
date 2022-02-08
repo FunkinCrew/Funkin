@@ -615,14 +615,14 @@ class ModchartUtilities
             PlayState.instance.notes.members[id].angle = angle;
         });
 
-        Lua_helper.add_callback(lua,"setActorX", function(x:Int,id:String) {
+        Lua_helper.add_callback(lua,"setActorX", function(x:Float,id:String) {
             if(getActorByName(id) != null)
             {
                 getActorByName(id).x = x;
             }
         });
 
-        Lua_helper.add_callback(lua,"setActorPos", function(x:Int,y:Int,id:String) {
+        Lua_helper.add_callback(lua,"setActorPos", function(x:Float,y:Float,id:String) {
             var actor = getActorByName(id);
 
             if(actor != null)
@@ -651,21 +651,21 @@ class ModchartUtilities
             return PlayState.instance.stage.getCharacterPos(character)[1];
         });
         
-        Lua_helper.add_callback(lua,"setActorAccelerationX", function(x:Int,id:String) {
+        Lua_helper.add_callback(lua,"setActorAccelerationX", function(x:Float,id:String) {
             if(getActorByName(id) != null)
             {
                 getActorByName(id).acceleration.x = x;
             }
         });
         
-        Lua_helper.add_callback(lua,"setActorDragX", function(x:Int,id:String) {
+        Lua_helper.add_callback(lua,"setActorDragX", function(x:Float,id:String) {
             if(getActorByName(id) != null)
             {
                 getActorByName(id).drag.x = x;
             }
         });
         
-        Lua_helper.add_callback(lua,"setActorVelocityX", function(x:Int,id:String) {
+        Lua_helper.add_callback(lua,"setActorVelocityX", function(x:Float,id:String) {
             if(getActorByName(id) != null)
             {
                 getActorByName(id).velocity.x = x;
@@ -775,28 +775,28 @@ class ModchartUtilities
             }
         });
 
-        Lua_helper.add_callback(lua,"setActorY", function(y:Int,id:String) {
+        Lua_helper.add_callback(lua,"setActorY", function(y:Float,id:String) {
             if(getActorByName(id) != null)
             {
                 getActorByName(id).y = y;
             }
         });
 
-        Lua_helper.add_callback(lua,"setActorAccelerationY", function(y:Int,id:String) {
+        Lua_helper.add_callback(lua,"setActorAccelerationY", function(y:Float,id:String) {
             if(getActorByName(id) != null)
             {
                 getActorByName(id).acceleration.y = y;
             }
         });
         
-        Lua_helper.add_callback(lua,"setActorDragY", function(y:Int,id:String) {
+        Lua_helper.add_callback(lua,"setActorDragY", function(y:Float,id:String) {
             if(getActorByName(id) != null)
             {
                 getActorByName(id).drag.y = y;
             }
         });
         
-        Lua_helper.add_callback(lua,"setActorVelocityY", function(y:Int,id:String) {
+        Lua_helper.add_callback(lua,"setActorVelocityY", function(y:Float,id:String) {
             if(getActorByName(id) != null)
             {
                 getActorByName(id).velocity.y = y;
@@ -808,7 +808,7 @@ class ModchartUtilities
                 Reflect.setProperty(getActorByName(id), "angle", angle);
         });
 
-        Lua_helper.add_callback(lua,"setActorModAngle", function(angle:Int,id:String) {
+        Lua_helper.add_callback(lua,"setActorModAngle", function(angle:Float,id:String) {
             if(getActorByName(id) != null)
                 getActorByName(id).modAngle = angle;
         });
@@ -1414,15 +1414,6 @@ class ModchartUtilities
         lua_Sounds.set("Inst", FlxG.sound.music);
         @:privateAccess
         lua_Sounds.set("Voices", PlayState.instance.vocals);
-
-        for (i in 0...PlayState.strumLineNotes.length)
-        {
-            var member = PlayState.strumLineNotes.members[i];
-
-            setVar("defaultStrum" + i + "X", member.x);
-            setVar("defaultStrum" + i + "Y", member.y);
-            setVar("defaultStrum" + i + "Angle", member.angle);
-        }
 
         @:privateAccess
         for(object in PlayState.instance.stage.stage_Objects)
