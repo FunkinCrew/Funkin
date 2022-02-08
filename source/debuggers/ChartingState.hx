@@ -227,8 +227,7 @@ class ChartingState extends MusicBeatState
 			{name: "Song", label: 'Song'},
 			{name: "Chart", label: 'Chart'},
 			{name: "Art", label: 'Art'},
-			{name: "Events", label: "Events"},
-			{name: "Compatibility", label: 'Compatibility'}
+			{name: "Events", label: "Events"}
 		];
 
 		var rawEventList = CoolUtil.coolTextFile(Paths.txt("eventList"));
@@ -252,7 +251,6 @@ class ChartingState extends MusicBeatState
 		addSectionUI();
 		addNoteUI();
 		addEventUI();
-		addCompatibilityUI();
 
 		updateHeads();
 		updateGrid();
@@ -380,6 +378,18 @@ class ChartingState extends MusicBeatState
 			updateGrid();
 		});
 
+		var compatibilityLabel = new FlxText(10, 540, 0, "Compatibility", 9);
+
+		var finalDestinationButton:FlxButton = new FlxButton(10, 560, "Final Dest", function()
+		{
+			for(i in 0..._song.notes.length)
+			{
+				convertSectionToShaggy(i);
+			}
+
+			updateGrid();
+		});
+
 		// labels
 
 		var songNameLabel = new FlxText(UI_songTitle.x + UI_songTitle.width + 1, UI_songTitle.y, 0, "Song Name", 9);
@@ -430,6 +440,9 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(stepperSpeed);
 		tab_group_song.add(stepperKeyCount);
 		tab_group_song.add(stepperPlayerKeyCount);
+
+		tab_group_song.add(compatibilityLabel);
+		tab_group_song.add(finalDestinationButton);
 
 		// final addings
 		UI_box.addGroup(tab_group_song);
@@ -840,27 +853,6 @@ class ChartingState extends MusicBeatState
 		tab_group_note.add(player2DropDown);
 		tab_group_note.add(gfDropDown);
 		tab_group_note.add(player1DropDown);
-
-		// final add
-		UI_box.addGroup(tab_group_note);
-	}
-
-	function addCompatibilityUI():Void
-	{
-		var tab_group_note = new FlxUI(null, UI_box);
-		tab_group_note.name = 'Compatibility';
-
-		var finalDestinationButton:FlxButton = new FlxButton(10, 20, "Death + Caution", function()
-		{
-			for(i in 0..._song.notes.length)
-			{
-				convertSectionToShaggy(i);
-			}
-
-			updateGrid();
-		});
-
-		tab_group_note.add(finalDestinationButton);
 
 		// final add
 		UI_box.addGroup(tab_group_note);
