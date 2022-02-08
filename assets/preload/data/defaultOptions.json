@@ -205,10 +205,6 @@
             "value": true
         },
         {
-            "option": "noOpenURL",
-            "value": true
-        },
-        {
             "option": "timeBarStyle",
             "value": "leather engine"
         },

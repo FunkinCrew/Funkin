@@ -3886,6 +3886,7 @@ class PlayState extends MusicBeatState
 
 	function eventCharacterShit(event:Array<Dynamic>)
 	{
+		remove(stage);
 		remove(stage.foregroundSprites);
 		remove(stage.infrontOfGFSprites);
 
@@ -4061,6 +4062,8 @@ class PlayState extends MusicBeatState
 		}
 
 		stage.setCharOffsets();
+
+		add(stage);
 
 		if(dad.curCharacter.startsWith("gf"))
 		{
@@ -4353,19 +4356,6 @@ class PlayState extends MusicBeatState
 			case "change character":
 				if(utilities.Options.getData("charsAndBGs"))
 					eventCharacterShit(event);
-			case "open url":
-				if(!Options.getData("noOpenURL"))
-				{
-					var count = Std.parseInt(event[3]);
-
-					if(Math.isNaN(count))
-						count = 1;
-	
-					for(_ in 0...count)
-					{
-						CoolUtil.openURL(event[2]);
-					}
-				}
 		}
 
 		//                            name       pos      param 1   param 2

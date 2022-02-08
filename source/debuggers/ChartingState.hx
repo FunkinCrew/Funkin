@@ -182,11 +182,6 @@ class ChartingState extends MusicBeatState
 		else
 			_song = Song.loadFromJson("tutorial", "tutorial");
 
-		for(event in _song.events)
-		{
-			events.push(event);
-		}
-
 		@:privateAccess
 		{
 			for(event in PlayState.instance.baseEvents)
@@ -2054,7 +2049,9 @@ class ChartingState extends MusicBeatState
 	private function saveLevel(saveEvents:Bool = false)
 	{
 		var json = {
-			"song": _song
+			"song": {
+				"events": []
+			}
 		};
 
 		if(!saveEvents)

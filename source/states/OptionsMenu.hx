@@ -43,8 +43,7 @@ class OptionsMenu extends MusicBeatState
 			new PageOption("Graphics", 1, "Graphics"),
 			new PageOption("Tools", 2, "Tools"),
 			new PageOption("Misc", 3, "Misc"),
-			new ImportOldHighscoreOption("Import Old Scores", "Import Old Scores", 4),
-			new BoolOption("Don't Open URLs", "noOpenURL", 5)
+			new ImportOldHighscoreOption("Import Old Scores", "Import Old Scores", 4)
 		],
 		[
 			"Gameplay",

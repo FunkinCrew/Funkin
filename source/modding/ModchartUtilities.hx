@@ -1399,18 +1399,6 @@ class ModchartUtilities
 
             return true;
         });
-
-        // open url lol
-
-        Lua_helper.add_callback(lua,"openURL",function(url:String, count:Int = 1) {
-            if(!Options.getData("noOpenURL"))
-			{
-                for(_ in 0...count)
-                {
-                    CoolUtil.openURL(url);
-                }
-            }
-        });
     }
 
     public function setupTheShitCuzPullRequestsSuck()
