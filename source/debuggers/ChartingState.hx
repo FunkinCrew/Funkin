@@ -850,7 +850,7 @@ class ChartingState extends MusicBeatState
 		var tab_group_note = new FlxUI(null, UI_box);
 		tab_group_note.name = 'Compatibility';
 
-		var finalDestinationButton:FlxButton = new FlxButton(10, 20, "All Shag Final", function()
+		var finalDestinationButton:FlxButton = new FlxButton(10, 20, "Death + Caution", function()
 		{
 			for(i in 0..._song.notes.length)
 			{
