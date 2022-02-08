@@ -921,11 +921,11 @@ class PlayState extends MusicBeatState
 				}
 			}
 
-			if(Assets.exists(Paths.songEvents(SONG.song.toLowerCase())) && !chartingMode)
+			if(Assets.exists(Paths.songEvents(SONG.song.toLowerCase(), storyDifficultyStr.toLowerCase())) && !chartingMode)
 			{
-				trace(Paths.songEvents(SONG.song.toLowerCase()));
+				trace(Paths.songEvents(SONG.song.toLowerCase(), storyDifficultyStr.toLowerCase()));
 
-				var eventFunnies:Array<Array<Dynamic>> = Song.parseJSONshit(Assets.getText(Paths.songEvents(SONG.song.toLowerCase()))).events;
+				var eventFunnies:Array<Array<Dynamic>> = Song.parseJSONshit(Assets.getText(Paths.songEvents(SONG.song.toLowerCase(), storyDifficultyStr.toLowerCase()))).events;
 
 				for(event in eventFunnies)
 				{
