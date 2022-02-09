@@ -372,6 +372,8 @@ class PlayState extends MusicBeatState
 		if(songMultiplier < 0.25)
 			songMultiplier = 0.25;
 
+		Conductor.timeScale = SONG.timescale;
+
 		Conductor.mapBPMChanges(SONG, songMultiplier);
 		Conductor.changeBPM(SONG.bpm, songMultiplier);
 

@@ -46,7 +46,7 @@ class Conductor
 		crochet = ((60 / bpm) * 1000);
 		stepCrochet = crochet / timeScale[1];
 
-		stepsPerSection = timeScale[0] * timeScale[1];
+		stepsPerSection = Math.floor((16 / timeScale[1]) * timeScale[0]);
 	}
 
 	public static function mapBPMChanges(song:SwagSong, ?songMultiplier:Float = 1.0) // also maps time signature changes cuz frick u
@@ -87,7 +87,7 @@ class Conductor
 				timeScaleChangeMap.push(event);
 			}
 
-			var deltaSteps:Int = curTimeScale[0] * curTimeScale[1];
+			var deltaSteps:Int = Math.floor((16 / curTimeScale[1]) * curTimeScale[0]);
 			totalSteps += deltaSteps;
 
 			totalPos += ((60 / curBPM) * 1000 / curTimeScale[0]) * deltaSteps;

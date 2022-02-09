@@ -596,7 +596,7 @@ class ChartingState extends MusicBeatState
 		check_changeTimeScale.x = 5000000;
 		check_changeTimeScale.y = 5000000;
 
-		var stepperSectionTimeScale1 = new FlxUINumericStepper(5000010, 5000030, 1, Conductor.timeScale[0], 1, 1000);
+		var stepperSectionTimeScale1 = new FlxUINumericStepper(10, 30, 1, Conductor.timeScale[0], 1, 1000);
 		stepperSectionTimeScale1.value = Conductor.timeScale[0];
 		stepperSectionTimeScale1.name = 'section_timescale1';
 
