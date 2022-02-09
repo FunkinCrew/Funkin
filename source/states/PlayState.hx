@@ -2281,7 +2281,7 @@ class PlayState extends MusicBeatState
 
 					if(characterPlayingAs == 0)
 					{
-						if(dad.otherCharacters == null)
+						if(dad.otherCharacters == null || dad.otherCharacters.length - 1 < daNote.character)
 							dad.playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][Std.int(Math.abs(daNote.noteData))] + altAnim, true);
 						else
 						{
@@ -2303,7 +2303,7 @@ class PlayState extends MusicBeatState
 					}
 					else
 					{
-						if(boyfriend.otherCharacters == null)
+						if(boyfriend.otherCharacters == null || boyfriend.otherCharacters.length - 1 < daNote.character)
 							boyfriend.playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][Std.int(Math.abs(daNote.noteData))], true);
 						else
 							if(daNote.characters.length <= 1)
@@ -2348,7 +2348,7 @@ class PlayState extends MusicBeatState
 
 					if(characterPlayingAs == 0)
 					{
-						if(dad.otherCharacters == null)
+						if(dad.otherCharacters == null || dad.otherCharacters.length - 1 < daNote.character)
 							dad.holdTimer = 0;
 						else
 						{
@@ -2365,7 +2365,7 @@ class PlayState extends MusicBeatState
 					}
 					else
 					{
-						if(boyfriend.otherCharacters == null)
+						if(boyfriend.otherCharacters == null || boyfriend.otherCharacters.length - 1 < daNote.character)
 							boyfriend.holdTimer = 0;
 						else
 							if(daNote.characters.length <= 1)
@@ -3138,7 +3138,7 @@ class PlayState extends MusicBeatState
 
 										if(characterPlayingAs == 0)
 										{
-											if(boyfriend.otherCharacters == null)
+											if(boyfriend.otherCharacters == null || boyfriend.otherCharacters.length - 1 < note.character)
 												boyfriend.holdTimer = 0;
 											else
 												if(note.characters.length <= 1)
@@ -3153,7 +3153,7 @@ class PlayState extends MusicBeatState
 										}
 										else
 										{
-											if(dad.otherCharacters == null)
+											if(dad.otherCharacters == null || dad.otherCharacters.length - 1 < note.character)
 												dad.holdTimer = 0;
 											else
 												if(note.characters.length <= 1)
@@ -3245,7 +3245,7 @@ class PlayState extends MusicBeatState
 	
 								if(characterPlayingAs == 0)
 								{
-									if(boyfriend.otherCharacters == null)
+									if(boyfriend.otherCharacters == null || boyfriend.otherCharacters.length - 1 < possibleNotes[i].character)
 										boyfriend.holdTimer = 0;
 									else
 										if(possibleNotes[i].characters.length <= 1)
@@ -3260,7 +3260,7 @@ class PlayState extends MusicBeatState
 								}
 								else
 								{
-									if(dad.otherCharacters == null)
+									if(dad.otherCharacters == null || dad.otherCharacters.length - 1 < possibleNotes[i].character)
 										dad.holdTimer = 0;
 									else
 										if(possibleNotes[i].characters.length <= 1)
@@ -3324,7 +3324,7 @@ class PlayState extends MusicBeatState
 							{
 								if(characterPlayingAs == 0)
 								{
-									if(boyfriend.otherCharacters == null)
+									if(boyfriend.otherCharacters == null || boyfriend.otherCharacters.length - 1 < daNote.character)
 										boyfriend.holdTimer = 0;
 									else
 										if(daNote.characters.length <= 1)
@@ -3339,7 +3339,7 @@ class PlayState extends MusicBeatState
 								}
 								else
 								{
-									if(dad.otherCharacters == null)
+									if(dad.otherCharacters == null || dad.otherCharacters.length - 1 < daNote.character)
 										dad.holdTimer = 0;
 									else
 										if(daNote.characters.length <= 1)
@@ -3428,7 +3428,7 @@ class PlayState extends MusicBeatState
 						{
 							if(characterPlayingAs == 0)
 							{
-								if(boyfriend.otherCharacters == null)
+								if(boyfriend.otherCharacters == null || boyfriend.otherCharacters.length - 1 < note.character)
 									boyfriend.holdTimer = 0;
 								else
 									if(note.characters.length <= 1)
@@ -3443,7 +3443,7 @@ class PlayState extends MusicBeatState
 							}
 							else
 							{
-								if(dad.otherCharacters == null)
+								if(dad.otherCharacters == null || dad.otherCharacters.length - 1 < note.character)
 									dad.holdTimer = 0;
 								else
 									if(note.characters.length <= 1)
@@ -3585,7 +3585,7 @@ class PlayState extends MusicBeatState
 			{
 				if(characterPlayingAs == 0)
 				{
-					if(boyfriend.otherCharacters != null)
+					if(boyfriend.otherCharacters != null && !(boyfriend.otherCharacters.length - 1 < note.character))
 					{
 						if(note.characters.length <= 1)
 							boyfriend.otherCharacters[note.character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.playerKeyCount - 1][direction] + "miss", true);
@@ -3602,7 +3602,7 @@ class PlayState extends MusicBeatState
 				}
 				else
 				{
-					if(dad.otherCharacters != null)
+					if(dad.otherCharacters != null && !(dad.otherCharacters.length - 1 < note.character))
 						if(note.characters.length <= 1)
 							dad.otherCharacters[note.character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.playerKeyCount - 1][direction] + altAnim + "miss", true);
 						else
@@ -3658,7 +3658,7 @@ class PlayState extends MusicBeatState
 
 			if(characterPlayingAs == 0)
 			{
-				if(boyfriend.otherCharacters != null)
+				if(boyfriend.otherCharacters != null && !(boyfriend.otherCharacters.length - 1 < note.character))
 					if(note.characters.length <= 1)
 						boyfriend.otherCharacters[note.character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.playerKeyCount - 1][Std.int(Math.abs(note.noteData % SONG.playerKeyCount))], true);
 					else
@@ -3678,7 +3678,7 @@ class PlayState extends MusicBeatState
 			}
 			else
 			{
-				if(dad.otherCharacters != null)
+				if(dad.otherCharacters != null && !(dad.otherCharacters.length - 1 < note.character))
 					if(note.characters.length <= 1)
 						dad.otherCharacters[note.character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.playerKeyCount - 1][Std.int(Math.abs(note.noteData % SONG.playerKeyCount))] + altAnim, true);
 					else
