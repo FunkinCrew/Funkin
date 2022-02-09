@@ -1535,7 +1535,7 @@ class PlayState extends MusicBeatState
 
 				var susLength:Float = swagNote.sustainLength;
 
-				susLength = susLength / Std.int(Conductor.nonmultilmao_stepCrochet);
+				susLength = susLength / Std.int(Conductor.stepCrochet);
 				unspawnNotes.push(swagNote);
 
 				var sustainGroup:Array<Note> = [];
@@ -1544,7 +1544,7 @@ class PlayState extends MusicBeatState
 				{
 					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
 
-					var sustainNote:Note = new Note(daStrumTime + (Std.int(Conductor.nonmultilmao_stepCrochet) * susNote) + Std.int(Conductor.nonmultilmao_stepCrochet), daNoteData, oldNote, true, char, songNotes[4], null, chars, gottaHitNote);
+					var sustainNote:Note = new Note(daStrumTime + (Std.int(Conductor.stepCrochet) * susNote) + Std.int(Conductor.stepCrochet), daNoteData, oldNote, true, char, songNotes[4], null, chars, gottaHitNote);
 					sustainNote.scrollFactor.set();
 					unspawnNotes.push(sustainNote);
 
@@ -1861,9 +1861,9 @@ class PlayState extends MusicBeatState
 
 		if(!switchedStates)
 		{
-			if (SONG.notes[Math.floor(curStep / 16)] != null)
+			if (SONG.notes[Math.floor(curStep / Conductor.stepsPerSection)] != null)
 			{
-				if (SONG.notes[Math.floor(curStep / 16)].altAnim)
+				if (SONG.notes[Math.floor(curStep / Conductor.stepsPerSection)].altAnim)
 					altAnim = '-alt';
 				else
 					altAnim = "";
@@ -2030,14 +2030,14 @@ class PlayState extends MusicBeatState
 				Conductor.songPosition += (FlxG.elapsed * 1000) * songMultiplier;
 		}
 
-		if(generatedMusic && PlayState.SONG.notes[Std.int(curStep / 16)] != null && !switchedStates && startedCountdown)
+		if(generatedMusic && PlayState.SONG.notes[Std.int(curStep / Conductor.stepsPerSection)] != null && !switchedStates && startedCountdown)
 		{
 			//offsetX = luaModchart.getVar("followXOffset", "float");
 			//offsetY = luaModchart.getVar("followYOffset", "float");
 
-			setLuaVar("mustHit", PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection);
+			setLuaVar("mustHit", PlayState.SONG.notes[Std.int(curStep / Conductor.stepsPerSection)].mustHitSection);
 			
-			if(!PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection)
+			if(!PlayState.SONG.notes[Std.int(curStep / Conductor.stepsPerSection)].mustHitSection)
 			{
 				var midPos = dad.getMidpoint();
 
@@ -2076,7 +2076,7 @@ class PlayState extends MusicBeatState
 				}
 			}
 
-			if(PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection)
+			if(PlayState.SONG.notes[Std.int(curStep / Conductor.stepsPerSection)].mustHitSection)
 			{
 				var midPos = boyfriend.getMidpoint();
 
@@ -3737,11 +3737,11 @@ class PlayState extends MusicBeatState
 		if (generatedMusic && startedCountdown)
 			notes.sort(FlxSort.byY, (utilities.Options.getData("downscroll") ? FlxSort.ASCENDING : FlxSort.DESCENDING));
 
-		if (SONG.notes[Math.floor(curStep / 16)] != null)
+		if (SONG.notes[Math.floor(curStep / Conductor.stepsPerSection)] != null)
 		{
-			if (SONG.notes[Math.floor(curStep / 16)].changeBPM)
+			if (SONG.notes[Math.floor(curStep / Conductor.stepsPerSection)].changeBPM)
 			{
-				Conductor.changeBPM(SONG.notes[Math.floor(curStep / 16)].bpm, songMultiplier);
+				Conductor.changeBPM(SONG.notes[Math.floor(curStep / Conductor.stepsPerSection)].bpm, songMultiplier);
 				FlxG.log.add('CHANGED BPM!');
 			}
 

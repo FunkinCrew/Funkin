@@ -600,7 +600,9 @@ class ChartingStateDev extends MusicBeatState
             mustHitSection: true,
             sectionNotes: [],
             typeOfSection: 0,
-            altAnim: false
+            altAnim: false,
+            changeTimeScale: false,
+            timeScale: Conductor.timeScale
         };
 
         SONG.notes.push(sec);

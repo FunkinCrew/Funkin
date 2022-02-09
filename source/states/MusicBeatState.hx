@@ -24,21 +24,10 @@ class MusicBeatState extends FlxUIState
 	public static var windowNameSuffix:String = "";
 	public static var windowNamePrefix:String = "Leather Engine";
 
+	public static var fullscreenBind:String = "F11";
+
 	inline function get_controls():Controls
 		return PlayerSettings.player1.controls;
-
-	override function create()
-	{
-		if (transIn != null)
-			trace('reg ' + transIn.region);
-
-		super.create();
-	}
-
-	override public function onFocus():Void
-	{
-		super.onFocus();
-	}
 
 	override function update(elapsed:Float)
 	{
@@ -72,7 +61,7 @@ class MusicBeatState extends FlxUIState
 
 	private function updateBeat():Void
 	{
-		curBeat = Math.floor(curStep / (16 / Conductor.timeScale[1]));
+		curBeat = Math.floor(curStep / Conductor.timeScale[1]);
 	}
 
 	private function updateCurStep():Void
@@ -83,11 +72,28 @@ class MusicBeatState extends FlxUIState
 			bpm: 0
 		}
 		
-		for (i in 0...Conductor.bpmChangeMap.length)
+		for(i in 0...Conductor.bpmChangeMap.length)
 		{
 			if (Conductor.songPosition >= Conductor.bpmChangeMap[i].songTime)
 				lastChange = Conductor.bpmChangeMap[i];
 		}
+
+		var dumb:TimeScaleChangeEvent = {
+			stepTime: 0,
+			songTime: 0,
+			timeScale: [4,4]
+		};
+
+		var lastTimeChange:TimeScaleChangeEvent = dumb;
+
+		for(i in 0...Conductor.timeScaleChangeMap.length)
+		{
+			if (Conductor.songPosition >= Conductor.timeScaleChangeMap[i].songTime)
+				lastTimeChange = Conductor.timeScaleChangeMap[i];
+		}
+
+		if(lastTimeChange != dumb)
+			Conductor.timeScale = lastTimeChange.timeScale;
 
 		var multi:Float = 1;
 
@@ -107,8 +113,5 @@ class MusicBeatState extends FlxUIState
 			beatHit();
 	}
 
-	public function beatHit():Void
-	{
-		//do literally nothing dumbass
-	}
+	public function beatHit():Void { /* do literally nothing dumbass */ }
 }
