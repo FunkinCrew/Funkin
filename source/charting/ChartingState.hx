@@ -94,6 +94,7 @@ class ChartingState extends MusicBeatState
 		// trace(audioBuf.sampleRate);
 
 		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * 8, GRID_SIZE * 16);
+		trace("GRD BG: " + gridBG.height);
 		add(gridBG);
 
 		leftIcon = new HealthIcon('bf');
@@ -417,9 +418,8 @@ class ChartingState extends MusicBeatState
 
 		FlxG.sound.playMusic(Paths.inst(daSong), 0.6);
 
-		var musSpec:SpectogramSprite = new SpectogramSprite(FlxG.sound.music, FlxColor.RED);
+		var musSpec:SpectogramSprite = new SpectogramSprite(FlxG.sound.music, FlxColor.RED, FlxG.height / 2, Math.floor(FlxG.height / 2));
 		musSpec.x += 70;
-		musSpec.daHeight = FlxG.height / 2;
 		musSpec.scrollFactor.set();
 		// musSpec.visType = FREQUENCIES;
 		add(musSpec);
@@ -447,7 +447,8 @@ class ChartingState extends MusicBeatState
 
 		for (index => voc in vocals.members)
 		{
-			var vocalSpec:SpectogramSprite = new SpectogramSprite(voc, FlxG.random.color(0xFFAAAAAA, FlxColor.WHITE, 100));
+			var vocalSpec:SpectogramSprite = new SpectogramSprite(voc, FlxG.random.color(0xFFAAAAAA, FlxColor.WHITE, 100), musSpec.daHeight,
+				Math.floor(FlxG.height / 2));
 			vocalSpec.x = 70 - (50 * index);
 			// vocalSpec.visType = FREQUENCIES;
 			vocalSpec.daHeight = musSpec.daHeight;
@@ -455,14 +456,13 @@ class ChartingState extends MusicBeatState
 			vocalSpec.scrollFactor.set();
 			add(vocalSpec);
 
-			var staticVocal:SpectogramSprite = new SpectogramSprite(voc, FlxG.random.color(0xFFAAAAAA, FlxColor.WHITE, 100));
+			var staticVocal:SpectogramSprite = new SpectogramSprite(voc, FlxG.random.color(0xFFAAAAAA, FlxColor.WHITE, 100), GRID_SIZE * 16, GRID_SIZE * 8);
 			if (index == 0)
 				staticVocal.x -= 150;
 
 			if (index == 1)
 				staticVocal.x = gridBG.width;
 
-			staticVocal.daHeight = GRID_SIZE * 16;
 			staticVocal.visType = STATIC;
 			staticSpecGrp.add(staticVocal);
 		}

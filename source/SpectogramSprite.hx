@@ -27,13 +27,14 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 
 	public var vis:VisShit;
 
-	public function new(daSound:FlxSound, ?col:FlxColor = FlxColor.WHITE, ?height:Float = 720)
+	public function new(daSound:FlxSound, ?col:FlxColor = FlxColor.WHITE, ?height:Float = 720, ?amnt:Int = 500)
 	{
 		super();
 
 		vis = new VisShit(daSound);
 		this.col = col;
 		this.daHeight = height;
+		lengthOfShit = amnt;
 
 		regenLineShit();
 
@@ -73,7 +74,7 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 
 		forEach(spr ->
 		{
-			spr.visible = FlxG.game.ticks % wavOptimiz == spr.ID % wavOptimiz;
+			spr.visible = spr.ID % wavOptimiz == 0;
 		});
 
 		// if visType is static, call updateVisulizer() manually whenever you want to update it!
