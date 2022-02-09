@@ -1166,7 +1166,7 @@ class ChartingState extends MusicBeatState
 		}
 
 		// generates the cool sidebar shit
-		if (sidePreview != null)
+		if (sidePreview != null && sidePreview.active)
 		{
 			sidePreview.drawRect(0, 0, 40, FlxG.height, 0xFF444444);
 

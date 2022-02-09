@@ -46,6 +46,7 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 		{
 			var lineShit:FlxSprite = new FlxSprite(100, i / lengthOfShit * daHeight).makeGraphic(1, 1, col);
 			lineShit.active = false;
+			lineShit.ID = i;
 			add(lineShit);
 		}
 	}
@@ -55,6 +56,8 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 	public var audioData:Int16Array;
 
 	var numSamples:Int = 0;
+
+	public var wavOptimiz:Int = 10;
 
 	override function update(elapsed:Float)
 	{
@@ -67,6 +70,11 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 				updateFFT();
 			default:
 		}
+
+		forEach(spr ->
+		{
+			spr.visible = FlxG.game.ticks % wavOptimiz == spr.ID % wavOptimiz;
+		});
 
 		// if visType is static, call updateVisulizer() manually whenever you want to update it!
 
@@ -110,6 +118,8 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 				group.members[i].setGraphicSize(Std.int(Math.max(line.length, 1)), Std.int(1));
 				group.members[i].angle = line.degrees;
 			}
+
+			wavOptimiz = 1; // hard set wavOptimiz to 1 so its a pure thing
 		}
 	}
 
@@ -234,6 +244,8 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 		}
 	}
 
+	var curTime:Float = 0;
+
 	public function updateVisulizer():Void
 	{
 		if (vis.snd != null)
@@ -247,7 +259,19 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 				if (vis.snd.playing)
 					remappedShit = Std.int(FlxMath.remapToRange(vis.snd.time, 0, vis.snd.length, 0, numSamples));
 				else
+				{
+					if (curTime == Conductor.songPosition)
+					{
+						wavOptimiz = 3;
+						return; // already did shit, so finishes function early
+					}
+
+					curTime = Conductor.songPosition;
+
 					remappedShit = Std.int(FlxMath.remapToRange(Conductor.songPosition, 0, vis.snd.length, 0, numSamples));
+				}
+
+				wavOptimiz = 8;
 
 				var i = remappedShit;
 				var prevLine:FlxPoint = new FlxPoint();
