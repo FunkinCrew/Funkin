@@ -4,6 +4,7 @@ import utilities.Options;
 import flixel.util.FlxStringUtil;
 import openfl.display.BitmapData;
 import flixel.graphics.FlxGraphic;
+
 #if sys
 import sys.FileSystem;
 #end
@@ -196,10 +197,7 @@ class PlayState extends MusicBeatState
 	public var arrow_Configs:Map<String, Array<String>> = new Map<String, Array<String>>();
 	public var type_Configs:Map<String, Array<String>> = new Map<String, Array<String>>();
 
-	public function removeObject(object:FlxBasic)
-	{
-		remove(object);
-	}
+	public function removeObject(object:FlxBasic) { remove(object); }
 
 	var missSounds:Array<FlxSound> = [];
 
