@@ -205,7 +205,7 @@
 	<haxedef name="CAN_CHEAT" if="switch debug"/>
 	
 	<!-- Skip the Intro -->
-	<section if="debug"> <!-- TODO: implement -->
+	<section if="debug">
 		<!-- Starts the game at the specified week, at the first song -->
 		<!-- <haxedef name="week" value="1" if="debug"/> -->
 		
