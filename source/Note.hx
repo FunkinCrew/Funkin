@@ -16,12 +16,7 @@ import polymod.format.ParseRules.TargetSignatureElement;
 
 class Note extends FlxSprite
 {
-	public var data:NoteData = {
-		strumTime: 0,
-		noteData: 0,
-		sustainLength: 0,
-		altNote: false
-	};
+	public var data = new NoteData();
 
 	public var mustPress:Bool = false;
 	public var followsTime:Bool = true; // used if you want the note to follow the time shit!
@@ -37,7 +32,29 @@ class Note extends FlxSprite
 	public var isSustainNote:Bool = false;
 
 	public var colorSwap:ColorSwap;
-
+	
+	/** the lowercase name of the note, for anim control, i.e. left right up down */
+	public var dirName(get, never):String;
+	inline function get_dirName() return data.dirName;
+	
+	/** the uppercase name of the note, for anim control, i.e. left right up down */
+	public var dirNameUpper(get, never):String;
+	inline function get_dirNameUpper() return data.dirNameUpper;
+	
+	/** the lowercase name of the note's color, for anim control, i.e. purple blue green red */
+	public var colorName(get, never):String;
+	inline function get_colorName() return data.colorName;
+	
+	/** the lowercase name of the note's color, for anim control, i.e. purple blue green red */
+	public var colorNameUpper(get, never):String;
+	inline function get_colorNameUpper() return data.colorNameUpper;
+	
+	public var highStakes(get, never):Bool;
+	inline function get_highStakes() return data.highStakes;
+	
+	public var lowStakes(get, never):Bool;
+	inline function get_lowStakes() return data.lowStakes;
+	
 	public static var swagWidth:Float = 160 * 0.7;
 	public static var PURP_NOTE:Int = 0;
 	public static var GREEN_NOTE:Int = 2;
@@ -58,7 +75,7 @@ class Note extends FlxSprite
 	// anything below sick threshold is sick
 	public static var arrowColors:Array<Float> = [1, 1, 1, 1];
 
-	public function new(strumTime:Float = 0, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false)
+	public function new(strumTime:Float = 0, noteData:NoteType, ?prevNote:Note, ?sustainNote:Bool = false)
 	{
 		super();
 
@@ -139,21 +156,8 @@ class Note extends FlxSprite
 		shader = colorSwap.shader;
 		updateColors();
 
-		switch (noteData)
-		{
-			case 0:
-				x += swagWidth * 0;
-				animation.play('purpleScroll');
-			case 1:
-				x += swagWidth * 1;
-				animation.play('blueScroll');
-			case 2:
-				x += swagWidth * 2;
-				animation.play('greenScroll');
-			case 3:
-				x += swagWidth * 3;
-				animation.play('redScroll');
-		}
+		x += swagWidth * data.int;
+		animation.play(data.colorName + 'Scroll');
 
 		// trace(prevNote);
 
@@ -166,17 +170,7 @@ class Note extends FlxSprite
 
 			x += width / 2;
 
-			switch (noteData)
-			{
-				case 2:
-					animation.play('greenholdend');
-				case 3:
-					animation.play('redholdend');
-				case 1:
-					animation.play('blueholdend');
-				case 0:
-					animation.play('purpleholdend');
-			}
+			animation.play(data.colorName + 'holdend');
 
 			updateHitbox();
 
@@ -187,18 +181,7 @@ class Note extends FlxSprite
 
 			if (prevNote.isSustainNote)
 			{
-				switch (prevNote.data.noteData)
-				{
-					case 0:
-						prevNote.animation.play('purplehold');
-					case 1:
-						prevNote.animation.play('bluehold');
-					case 2:
-						prevNote.animation.play('greenhold');
-					case 3:
-						prevNote.animation.play('redhold');
-				}
-
+				prevNote.animation.play(prevNote.colorName + 'hold');
 				prevNote.updateHitbox();
 
 				var scaleThing:Float = Math.round((Conductor.stepCrochet) * (0.45 * FlxMath.roundDecimal(SongLoad.getSpeed(), 2)));
@@ -269,12 +252,151 @@ class Note extends FlxSprite
 				alpha = 0.3;
 		}
 	}
+	
+	static public function fromData(data:NoteData, prevNote:Note, isSustainNote = false)
+	{
+		return new Note(data.strumTime, data.noteData, prevNote, isSustainNote);
+	}
 }
 
-typedef NoteData =
+typedef RawNoteData =
 {
 	var strumTime:Float;
-	var noteData:Int;
+	var noteData:NoteType;
 	var sustainLength:Float;
 	var altNote:Bool;
+}
+
+@:forward
+abstract NoteData(RawNoteData)
+{
+	public function new (strumTime = 0.0, noteData:NoteType = 0, sustainLength = 0.0, altNote = false)
+	{
+		this =
+		{ strumTime     : strumTime
+		, noteData      : noteData
+		, sustainLength : sustainLength
+		, altNote       : altNote
+		}
+	}
+	
+	public var note(get, never):NoteType;
+	inline function get_note() return this.noteData.value;
+	
+	public var int(get, never):Int;
+	inline function get_int() return this.noteData.int;
+	
+	public var dir(get, never):NoteDir;
+	inline function get_dir() return this.noteData.value;
+	
+	public var dirName(get, never):String;
+	inline function get_dirName() return dir.name;
+	
+	public var dirNameUpper(get, never):String;
+	inline function get_dirNameUpper() return dir.nameUpper;
+	
+	public var color(get, never):NoteColor;
+	inline function get_color() return this.noteData.value;
+	
+	public var colorName(get, never):String;
+	inline function get_colorName() return color.name;
+	
+	public var colorNameUpper(get, never):String;
+	inline function get_colorNameUpper() return color.nameUpper;
+	
+	public var highStakes(get, never):Bool;
+	inline function get_highStakes() return this.noteData.highStakes;
+	
+	public var lowStakes(get, never):Bool;
+	inline function get_lowStakes() return this.noteData.lowStakes;
+}
+
+enum abstract NoteType(Int) from Int to Int
+{
+	// public var raw(get, never):Int;
+	// inline function get_raw() return this;
+	
+	public var int(get, never):Int;
+	inline function get_int() return this < 0 ? -this : this % 4;
+	
+	public var value(get, never):NoteType;
+	inline function get_value() return int;
+	
+	public var highStakes(get, never):Bool;
+	inline function get_highStakes() return this > 3;
+	
+	public var lowStakes(get, never):Bool;
+	inline function get_lowStakes() return this < 0;
+}
+
+@:forward
+enum abstract NoteDir(NoteType) from Int to Int from NoteType
+{
+	var LEFT  = 0;
+	var DOWN  = 1;
+	var UP    = 2;
+	var RIGHT = 3;
+	
+	var value(get, never):NoteDir;
+	inline function get_value() return this.value;
+	
+	public var name(get, never):String;
+	function get_name()
+	{
+		return switch(value)
+		{
+			case LEFT : "left" ;
+			case DOWN : "down" ;
+			case UP   : "up"   ;
+			case RIGHT: "right";
+		}
+	}
+	
+	public var nameUpper(get, never):String;
+	function get_nameUpper()
+	{
+		return switch(value)
+		{
+			case LEFT : "LEFT" ;
+			case DOWN : "DOWN" ;
+			case UP   : "UP"   ;
+			case RIGHT: "RIGHT";
+		}
+	}
+}
+
+@:forward
+enum abstract NoteColor(NoteType) from Int to Int from NoteType
+{
+	var PURPLE = 0;
+	var BLUE   = 1;
+	var GREEN  = 2;
+	var RED    = 3;
+	
+	var value(get, never):NoteColor;
+	inline function get_value() return this.value;
+	
+	public var name(get, never):String;
+	function get_name()
+	{
+		return switch(value)
+		{
+			case PURPLE: "purple";
+			case BLUE  : "blue"  ;
+			case GREEN : "green" ;
+			case RED   : "red"   ;
+		}
+	}
+	
+	public var nameUpper(get, never):String;
+	function get_nameUpper()
+	{
+		return switch(value)
+		{
+			case PURPLE: "PURPLE";
+			case BLUE  : "BLUE"  ;
+			case GREEN : "GREEN" ;
+			case RED   : "RED"   ;
+		}
+	}
 }
