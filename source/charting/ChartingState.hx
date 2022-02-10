@@ -4,6 +4,8 @@ import Conductor.BPMChangeEvent;
 import Note.NoteData;
 import Section.SwagSection;
 import SongLoad.SwagSong;
+import audiovis.ABotVis;
+import audiovis.SpectogramSprite;
 import flixel.FlxSprite;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.transition.FlxTransitionableState;
@@ -26,6 +28,7 @@ import lime.utils.Assets;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
 import openfl.net.FileReference;
+import rendering.MeshRender;
 
 using Lambda;
 using StringTools;

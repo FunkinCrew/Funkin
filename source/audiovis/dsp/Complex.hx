@@ -1,4 +1,4 @@
-package dsp;
+package audiovis.dsp;
 
 /**
 	Complex number representation.

@@ -1,5 +1,6 @@
 package;
 
+import audiovis.SpectogramSprite;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;

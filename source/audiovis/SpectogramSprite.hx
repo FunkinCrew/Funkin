@@ -1,6 +1,6 @@
-package;
+package audiovis;
 
-import dsp.FFT;
+import audiovis.dsp.FFT;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;

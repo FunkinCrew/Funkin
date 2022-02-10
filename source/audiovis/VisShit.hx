@@ -1,6 +1,6 @@
-package;
+package audiovis;
 
-import dsp.FFT;
+import audiovis.dsp.FFT;
 import flixel.math.FlxMath;
 import flixel.system.FlxSound;
 import lime.utils.Int16Array;

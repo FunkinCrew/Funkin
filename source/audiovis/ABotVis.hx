@@ -1,4 +1,6 @@
-import dsp.FFT;
+package audiovis;
+
+import audiovis.dsp.FFT;
 import flixel.FlxSprite;
 import flixel.addons.plugin.taskManager.FlxTask;
 import flixel.graphics.frames.FlxAtlasFrames;
