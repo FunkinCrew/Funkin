@@ -2,24 +2,17 @@ package ui;
 
 import flixel.FlxG;
 import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.util.FlxSignal;
 import flixel.util.FlxSignal.FlxTypedSignal;
 
 using StringTools;
 
 class Page extends FlxTypedGroup<Dynamic>
 {
-	var enabled:Bool = true;
-	var canExit:Bool = true;
-	public var onExit:FlxSignal;
-	public var onSwitch:FlxTypedSignal<PageName->Void>;
+	public var onSwitch:FlxTypedSignal<PageName->Void> = new FlxTypedSignal<PageName->Void>();
+	public var onExit:FlxTypedSignal<Void->Void> = new FlxTypedSignal<Void->Void>();
 
-	override public function new(MaxSize:Int = 0)
-	{
-		onExit = new FlxSignal();
-		onSwitch = new FlxTypedSignal<PageName->Void>();
-		super(MaxSize);
-	}
+	public var enabled(default, set):Bool = true;
+	public var canExit:Bool = true;
 
 	public function exit()
 	{
@@ -29,7 +22,10 @@ class Page extends FlxTypedGroup<Dynamic>
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
-		if (enabled) updateEnabled(elapsed);
+		if (enabled)
+		{
+			updateEnabled(elapsed);
+		}
 	}
 
 	function updateEnabled(elapsed:Float)
@@ -41,14 +37,14 @@ class Page extends FlxTypedGroup<Dynamic>
 		}
 	}
 
-	public function set_enabled(state:Bool)
+	function set_enabled(state:Bool)
 	{
 		return enabled = state;
 	}
 
-	public function openPrompt(prompt, callback)
+	public function openPrompt(prompt:Prompt, callback:Dynamic)
 	{
-		set_enabled(false);
+		enabled = false;
 		prompt.closeCallback = function()
 		{
 			set_enabled(true);
@@ -60,6 +56,6 @@ class Page extends FlxTypedGroup<Dynamic>
 	override public function destroy()
 	{
 		super.destroy();
-		onSwitch.removeAll;
+		onSwitch.removeAll();
 	}
 }

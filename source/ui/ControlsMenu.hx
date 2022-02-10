@@ -16,10 +16,10 @@ class ControlsMenu extends Page
 	public static var controlList:Array<Control> = Control.createAll();
 	public static var controlGroups:Array<Array<Control>> = [[NOTE_UP, NOTE_DOWN, NOTE_LEFT, NOTE_RIGHT], [UI_UP, UI_DOWN, UI_LEFT, UI_RIGHT, ACCEPT, BACK]];
 
+	var currentDevice = Device.Keys;
 	var deviceList:TextMenuList;
 	var deviceListSelected = false;
 	var controlGrid:MenuTypedList<InputItem>;
-	var currentDevice = Device.Keys;
 	var itemGroups:Array<Array<InputItem>>;
 	var menuCamera:FlxCamera;
 	var camFollow:FlxObject;
@@ -28,38 +28,38 @@ class ControlsMenu extends Page
 
 	override public function new()
 	{
-		var a = [];
+		var array = [];
 		for (i in 0...controlGroups.length)
 		{
-			a.push([]);
+			array.push([]);
 		}
-		itemGroups = a;
+		itemGroups = array;
 		super();
 		menuCamera = new FlxCamera();
 		FlxG.cameras.add(menuCamera, false);
 		menuCamera.bgColor = FlxColor.TRANSPARENT;
-		set_camera(menuCamera);
+		camera = menuCamera;
 		labels = new FlxTypedGroup<AtlasText>();
 		var grpText = new FlxTypedGroup<AtlasText>();
 		controlGrid = new MenuTypedList(Columns(2), Vertical);
 		add(labels);
 		add(grpText);
 		add(controlGrid);
-		if (FlxG.gamepads.getActiveGamepads().length > 0)
+		if (FlxG.gamepads.numActiveGamepads > 0)
 		{
 			var spr = new FlxSprite().makeGraphic(FlxG.width, 100, 0xFFFAFD6D);
 			add(spr);
 			deviceList = new TextMenuList(Horizontal, None);
 			add(deviceList);
 			deviceListSelected = true;
-			var kbItem = deviceList.createItem(0, 0, 'Keyboard', Bold, function()
+			var kbItem = deviceList.createItem(null, null, 'Keyboard', Bold, function()
 			{
 				selectDevice(Device.Keys);
 			});
 			kbItem.x = FlxG.width / 2 - kbItem.width - 30;
 			kbItem.y = (spr.height - kbItem.height) / 2;
 			var gp = Device.Gamepad(FlxG.gamepads.firstActive.id);
-			var gpItem = deviceList.createItem(0, 0, 'Gamepad', Bold, function()
+			var gpItem = deviceList.createItem(null, null, 'Gamepad', Bold, function()
 			{
 				selectDevice(gp);
 			});
@@ -68,24 +68,21 @@ class ControlsMenu extends Page
 		}
 		var ypos = (deviceList == null) ? 30 : 120;
 		var curSection:String = null;
-		for (i in 0...controlList.length)
+		for (ctrl in controlList)
 		{
-			var ctrl = controlList[i];
 			var name = ctrl.getName();
 			if (curSection != 'UI_' && name.indexOf('UI_') == 0)
 			{
 				curSection = 'UI_';
 				var sectionText = new AtlasText(0, ypos, 'UI', Bold);
-				grpText.add(sectionText);
-				sectionText.screenCenter(X);
+				grpText.add(sectionText).screenCenter(X);
 				ypos += 70;
 			}
 			else if (curSection != 'NOTE_' && name.indexOf('NOTE_') == 0)
 			{
 				curSection = 'NOTE_';
 				var sectionText = new AtlasText(0, ypos, 'NOTES', Bold);
-				grpText.add(sectionText);
-				sectionText.screenCenter(X);
+				grpText.add(sectionText).screenCenter(X);
 				ypos += 70;
 			}
 			if (curSection != null && name.indexOf(curSection) == 0)
@@ -125,7 +122,7 @@ class ControlsMenu extends Page
 			});
 			labels.members[Std.int(controlGrid.selectedIndex / 2)].alpha = 1;
 		});
-		prompt = new Prompt('\nPress any key to rebind\n\n\n    Escape to cancel', None);
+		prompt = new Prompt('\nPress any key to rebind\n\n\n\n    Escape to cancel', None);
 		prompt.create();
 		prompt.createBgFromMargin(100, 0xFFFAFD6D);
 		prompt.back.scrollFactor.set(0, 0);
@@ -133,12 +130,12 @@ class ControlsMenu extends Page
 		add(prompt);
 	}
 
-	public function createItem(x:Float = 0, y:Float = 0, c, d)
+	public function createItem(?x:Float = 0, ?y:Float = 0, control:Control, index:Int)
 	{
-		var item = new InputItem(x, y, currentDevice, c, d, onSelect);
+		var item = new InputItem(x, y, currentDevice, control, index, onSelect);
 		for (i in 0...controlGroups.length)
 		{
-			if (controlGroups[i].indexOf(c) != -1)
+			if (controlGroups[i].contains(control))
 				itemGroups[i].push(item);
 		}
 		return controlGrid.addItem(item.name, item);
@@ -148,13 +145,13 @@ class ControlsMenu extends Page
 	{
 		canExit = false;
 		controlGrid.enabled = false;
-		prompt.set_exists(true);
+		prompt.exists = true;
 	}
 
 	public function goToDeviceList()
 	{
 		controlGrid.members[controlGrid.selectedIndex].idle();
-		labels.members[Std.int(controlGrid.selectedIndex)].alpha = 0.6;
+		labels.members[Std.int(controlGrid.selectedIndex / 2)].alpha = 0.6;
 		controlGrid.enabled = false;
 		canExit = true;
 		deviceList.enabled = true;
@@ -169,14 +166,14 @@ class ControlsMenu extends Page
 		{
 			item.updateDevice(currentDevice);
 		}
-		var b = (dev == Device.Keys) ? 'Escape' : 'Back';
+		var cancelBtn = dev == Device.Keys ? 'Escape' : 'Back';
 		if (dev == Device.Keys)
 		{
-			prompt.setText('\nPress any key to rebind\n\n\n\n    ' + b + ' to cancel');
+			prompt.setText('\nPress any key to rebind\n\n\n\n    ' + cancelBtn + ' to cancel');
 		}
 		else
 		{
-			prompt.setText('\nPress any button\n   to rebind\n\n\n ' + b + ' to cancel');
+			prompt.setText('\nPress any button\n   to rebind\n\n\n ' + cancelBtn + ' to cancel');
 		}
 		controlGrid.members[controlGrid.selectedIndex].select();
 		labels.members[Std.int(controlGrid.selectedIndex / 2)].alpha = 1;
@@ -191,7 +188,9 @@ class ControlsMenu extends Page
 		super.update(elapsed);
 		var controls = PlayerSettings.player1.controls;
 		if (controlGrid.enabled && deviceList != null && deviceListSelected == false && controls.BACK)
+		{
 			goToDeviceList();
+		}
 		if (prompt.exists)
 		{
 			switch (currentDevice)
@@ -200,7 +199,8 @@ class ControlsMenu extends Page
 					var released = FlxG.keys.firstJustReleased();
 					if (released != -1)
 					{
-						if (released != 27) onInputSelect(released);
+						if (released != 27)
+							onInputSelect(released);
 						closePrompt();
 					}
 				case Gamepad(id):
@@ -208,44 +208,45 @@ class ControlsMenu extends Page
 					var released = pad.mapping.getID(pad.firstJustReleasedRawID());
 					if (released != -1)
 					{
-						if (released != 6) onInputSelect(released);
+						if (released != 6)
+							onInputSelect(released);
 						closePrompt();
 					}
 			}
 		}
 	}
 
-	public function onInputSelect(rawInput:Int)
+	public function onInputSelect(input:Int)
 	{
-		var b = controlGrid.members[controlGrid.selectedIndex];
-		var c = 2 * Math.floor(controlGrid.selectedIndex / 2);
-		if (controlGrid.members[c].input != rawInput && controlGrid.members[c + 1].input != rawInput)
+		var selected:InputItem = controlGrid.members[controlGrid.selectedIndex];
+		var index:Int = 2 * Math.floor(controlGrid.selectedIndex / 2);
+		if (controlGrid.members[index].input != input && controlGrid.members[index + 1].input != input)
 		{
-			for (i in 0...itemGroups.length)
+			for (i in itemGroups)
 			{
-				var e:Array<InputItem> = itemGroups[i];
-				if (e.indexOf(b) != -1)
-					for (j in 0...e.length)
+				if (i.contains(selected))
+				{
+					for (j in i)
 					{
-						var h = e[j];
-						if (h != b && h.input == rawInput)
+						if (j != selected && j.input == input)
 						{
-							PlayerSettings.player1.controls.replaceBinding(h.control, currentDevice, b.input, h.input);
-							h.input = b.input;
-							h.label.set_text(b.label.text);
+							PlayerSettings.player1.controls.replaceBinding(j.control, currentDevice, selected.input, j.input);
+							j.input = selected.input;
+							j.label.text = selected.label.text;
 						}
 					}
+				}
 			}
-			PlayerSettings.player1.controls.replaceBinding(b.control, currentDevice, rawInput, b.input);
-			b.input = rawInput;
-			b.label.set_text(b.getLabel(rawInput));
+			PlayerSettings.player1.controls.replaceBinding(selected.control, currentDevice, input, selected.input);
+			selected.input = input;
+			selected.label.text = selected.getLabel(input);
 			PlayerSettings.player1.saveControls();
 		}
 	}
 
 	public function closePrompt()
 	{
-		prompt.set_exists(false);
+		prompt.exists = false;
 		controlGrid.enabled = true;
 		if (deviceList == null)
 		{
@@ -261,14 +262,14 @@ class ControlsMenu extends Page
 			FlxG.cameras.remove(menuCamera);
 	}
 
-	override public function set_enabled(state:Bool)
+	override function set_enabled(state:Bool)
 	{
 		if (state == false)
 		{
 			controlGrid.enabled = false;
 			if (deviceList != null)
 			{
-				deviceList.enabled = deviceListSelected;
+				deviceList.enabled = false;
 			}
 		}
 		else

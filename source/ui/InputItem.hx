@@ -13,22 +13,22 @@ class InputItem extends TextMenuItem
 	public var control:Control;
 	public var device:Device;
 
-	override public function new(x:Float = 0, y:Float = 0, dev:Device, ctrl:Control, index:Int, ?callback:Dynamic)
+	override public function new(?x:Float = 0, ?y:Float = 0, dev:Device, ctrl:Control, index:Int, ?callback:Dynamic)
 	{
 		device = dev;
 		control = ctrl;
 		this.index = index;
 		input = getInput();
-		super(x, y, getLabel(input), Default, callback);
+		super(x, y, getLabel(this.input), Default, callback);
 	}
 
-	public function updateDevice(a)
+	public function updateDevice(dev:Device)
 	{
-		if (device != a)
+		if (device != dev)
 		{
-			device = a;
+			device = dev;
 			input = getInput();
-			label.set_text(getLabel(input));
+			label.text = getLabel(input);
 		}
 	}
 
@@ -43,8 +43,8 @@ class InputItem extends TextMenuItem
 		return -1;
 	}
 
-	public function getLabel(a)
+	public function getLabel(inputID:Int)
 	{
-		return a == -1 ? '---' : InputFormatter.format(a, device);
+		return inputID == -1 ? '---' : InputFormatter.format(inputID, device);
 	}
 }

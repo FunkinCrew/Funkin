@@ -1,6 +1,5 @@
 package ui;
 
-import haxe.Constraints.Function;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxSubState;
@@ -16,8 +15,8 @@ class Prompt extends FlxSubState
 	var field:AtlasText;
 	public var back:FlxSprite;
 
-	public var onYes:Function = null;
-	public var onNo:Function = null;
+	public var onYes:Dynamic = null;
+	public var onNo:Dynamic = null;
 	
 	override public function new(text:String, style:ButtonStyle = Ok)
 	{
@@ -25,7 +24,7 @@ class Prompt extends FlxSubState
 		super(0x80000000);
 		buttons = new TextMenuList(Horizontal);
 		field = new AtlasText(0, 0, text, Bold);
-		field.scrollFactor.set();
+		field.scrollFactor.set(0, 0);
 	}
 
 	override function create()
@@ -46,7 +45,7 @@ class Prompt extends FlxSubState
 		members.unshift(members.pop());
 	}
 
-	public function createBgFromMargin(margin:Float = 100, color:Int = 0xFF808080)
+	public function createBgFromMargin(?margin:Float = 100, color:Int = 0xFF808080)
 	{
 		createBg(Std.int(FlxG.width - 2 * margin), Std.int(FlxG.height - 2 * margin), color);
 	}
@@ -62,7 +61,7 @@ class Prompt extends FlxSubState
 
 	public function createButtons()
 	{
-		for (i in 0...buttons.members.length)
+		while (buttons.members.length > 0)
 		{
 			buttons.remove(buttons.members[0], true).destroy();
 		}
@@ -79,26 +78,26 @@ class Prompt extends FlxSubState
 		}
 	}
 
-	public function createButtonsHelper(a, ?b)
+	public function createButtonsHelper(item1:String, ?item2:String)
 	{
 		buttons.exists = true;
-		var item = buttons.createItem(0, 0, a, Bold, function()
+		var btn1:TextMenuItem = buttons.createItem(null, null, item1, null, function()
 		{
 			onYes();
 		});
-		item.screenCenter(X);
-		item.y = FlxG.height - item.height - 100;
-		item.scrollFactor.set();
-		if (b != null)
+		btn1.screenCenter(X);
+		btn1.y = FlxG.height - btn1.height - 100;
+		btn1.scrollFactor.set(0, 0);
+		if (item2 != null)
 		{
-			item.x = FlxG.width - item.width - 100;
-			var item2 = buttons.createItem(0, 0, b, Bold, function()
+			btn1.x = FlxG.width - btn1.width - 100;
+			var btn2:TextMenuItem = buttons.createItem(null, null, item2, null, function()
 			{
 				onNo();
 			});
-			item2.x = 100;
-			item2.y = FlxG.height - item.height - 100;
-			item2.scrollFactor.set();
+			btn2.x = 100;
+			btn2.y = FlxG.height - btn1.height - 100;
+			btn2.scrollFactor.set(0, 0);
 		}
 	}
 

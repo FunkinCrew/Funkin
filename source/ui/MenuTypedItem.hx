@@ -6,12 +6,12 @@ using StringTools;
 
 class MenuTypedItem extends MenuItem
 {
-	public var label:Dynamic;
+	public var label(default, set):AtlasText;
 
-	override public function new(x:Float, y:Float, object:AtlasText, text:String, callback:Dynamic = null)
+	override public function new(?x:Float = 0, ?y:Float = 0, atlasText:AtlasText, text:String, ?callback:Dynamic)
 	{
 		super(x, y, text, callback);
-		set_label(object);
+		label = atlasText;
 	}
 
 	public function setEmptyBackground()
@@ -23,15 +23,15 @@ class MenuTypedItem extends MenuItem
 		height = prevHeight;
 	}
 
-	public function set_label(a:AtlasText)
+	function set_label(atlasText:AtlasText)
 	{
-		if (a != null)
+		if (atlasText != null)
 		{
-			a.set_x(x);
-			a.set_y(y);
-			a.set_alpha(alpha);
+			atlasText.x = x;
+			atlasText.y = y;
+			atlasText.alpha = alpha;
 		}
-		return label = a;
+		return label = atlasText;
 	}
 
 	override public function update(elapsed:Float)
@@ -46,10 +46,8 @@ class MenuTypedItem extends MenuItem
 		super.draw();
 		if (label != null)
 		{
-			label.set_cameras(get_cameras());
-			label.scrollFactor.x = scrollFactor.x;
-			label.scrollFactor.y = scrollFactor.y;
-			scrollFactor.putWeak();
+			label.cameras = cameras;
+			label.scrollFactor.copyFrom(scrollFactor);
 			label.draw();
 		}
 	}
@@ -58,7 +56,7 @@ class MenuTypedItem extends MenuItem
 	{
 		super.set_alpha(Alpha);
 		if (label != null)
-			label.set_alpha(alpha);
+			label.alpha = alpha;
 		return alpha;
 	}
 
@@ -66,7 +64,7 @@ class MenuTypedItem extends MenuItem
 	{
 		super.set_x(NewX);
 		if (label != null)
-			label.set_x(x);
+			label.x = x;
 		return x;
 	}
 
@@ -74,7 +72,7 @@ class MenuTypedItem extends MenuItem
 	{
 		super.set_y(NewY);
 		if (label != null)
-			label.set_y(y);
+			label.y = y;
 		return y;
 	}
 }

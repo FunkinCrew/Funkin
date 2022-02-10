@@ -8,7 +8,7 @@ class OptionsMenu extends Page
 {
 	var items:TextMenuList;
 
-	override public function new(a:Bool)
+	override public function new(showDonate:Bool)
 	{
 		super();
 		items = new TextMenuList();
@@ -21,7 +21,10 @@ class OptionsMenu extends Page
 		{
 			onSwitch.dispatch(PageName.Controls);
 		});
-		if (a) createItem('donate', selectDonate, true);
+		if (showDonate)
+		{
+			createItem('donate', selectDonate, true);
+		}
 		// if (NG.core != null && NG.core.loggedIn)
 		// {
 		// 	createItem('logout', selectLogout);
@@ -33,7 +36,7 @@ class OptionsMenu extends Page
 		createItem('exit', exit);
 	}
 
-	public function createItem(label:String, callback:Dynamic, fireInstantly:Bool = false)
+	public function createItem(label:String, callback:Dynamic, ?fireInstantly:Bool = false)
 	{
 		var item = items.createItem(0, 100 + 100 * items.length, label, Bold, callback);
 		item.fireInstantly = fireInstantly;
@@ -41,7 +44,7 @@ class OptionsMenu extends Page
 		return item;
 	}
 
-	override public function set_enabled(state:Bool)
+	override function set_enabled(state:Bool)
 	{
 		items.enabled = state;
 		return super.set_enabled(state);
@@ -60,4 +63,32 @@ class OptionsMenu extends Page
 		FlxG.openURL('https://ninja-muffin24.itch.io/funkin');
 		#end
 	}
+
+	// function selectLogin()
+	// {
+	// 	openNgPrompt(NgPrompt.showLogin());
+	// }
+
+	// function selectLogout()
+	// {
+	// 	openNgPrompt(NgPrompt.showLogout());
+	// }
+
+	// function openNgPrompt(prompt:Prompt, ?callback:Dynamic)
+	// {
+	// 	var func:Dynamic = checkLoginStatus;
+	// 	if (callback != null)
+	// 	{
+	// 		func = function()
+	// 		{
+	// 			checkLoginStatus();
+	// 			callback();
+	// 		};
+	// 	}
+	// 	openPrompt(prompt, func);
+	// }
+
+	// function checkLoginStatus()
+	// {
+	// }
 }

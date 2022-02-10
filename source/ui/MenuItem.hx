@@ -14,15 +14,15 @@ class MenuItem extends FlxSprite
 	function get_selected()
 		return alpha == 1;
 
-	public function new(X:Float = 0, Y:Float = 0, name:String = "", callback:Dynamic = null)
+	public function new(?x:Float = 0, ?y:Float = 0, name:String, ?callback:Dynamic)
 	{
-		super(X, Y);
+		super(x, y);
 		antialiasing = true;
 		setData(name, callback);
 		idle();
 	}
 
-	public function setData(name:String, callback:Dynamic = null)
+	public function setData(name:String, ?callback:Dynamic)
 	{
 		this.name = name;
 		if (callback != null)
@@ -31,7 +31,7 @@ class MenuItem extends FlxSprite
 		}
 	}
 
-	public function setItem(name:String, callback:Dynamic = null)
+	public function setItem(name:String, ?callback:Dynamic)
 	{
 		setData(name, callback);
 		selected ? select() : idle();

@@ -6,6 +6,8 @@ using StringTools;
 
 class CheckboxThingie extends FlxSprite
 {
+	public var daValue(default, set):Bool;
+
 	override public function new(x:Float, y:Float, state:Bool = false)
 	{
 		super(x, y);
@@ -15,7 +17,7 @@ class CheckboxThingie extends FlxSprite
 		antialiasing = true;
 		setGraphicSize(Std.int(width * 0.7));
 		updateHitbox();
-		set_daValue(state);
+		daValue = state;
 	}
 
 	override function update(elapsed:Float)
@@ -30,9 +32,12 @@ class CheckboxThingie extends FlxSprite
 		}
 	}
 
-	public function set_daValue(state:Bool)
+	function set_daValue(state:Bool)
 	{
-		animation.play(state ? 'checked' : 'static', true);
+		if (state)
+			animation.play('checked', true);
+		else
+			animation.play('static');
 		return state;
 	}
 }

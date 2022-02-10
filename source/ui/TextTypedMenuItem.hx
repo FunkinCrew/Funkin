@@ -4,26 +4,22 @@ using StringTools;
 
 class TextTypedMenuItem extends MenuTypedItem
 {
-	override public function new(x:Float = 0, y:Float = 0, c, d, e)
-	{
-		super(x, y, c, d, e);
-	}
-
-	override public function setItem(a:String, b:Dynamic = null)
+	override public function setItem(text:String, ?callback:Dynamic)
 	{
 		if (label != null)
 		{
-			label.text = a;
-			label.set_alpha(alpha);
-			set_width(label.get_width());
-			set_height(label.get_height());
+			label.text = text;
+			label.alpha = alpha;
+			width = label.width;
+			height = label.height;
 		}
-		super.setItem(a, b);
+		super.setItem(text, callback);
 	}
 
-	override public function set_label(a)
+	override function set_label(atlasText:AtlasText)
 	{
-		super.set_label(a);
+		super.set_label(atlasText);
 		setItem(name, callback);
+		return atlasText;
 	}
 }

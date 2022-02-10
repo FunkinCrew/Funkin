@@ -491,8 +491,7 @@ class Controls extends FlxActionSet
 			var input = action.inputs[i];
 			if (input.device == FlxInputDevice.GAMEPAD && id != -1 && input.deviceID == id && input.inputID == toRemove)
 			{
-				var bypasslol = cast action.inputs[i];
-				bypasslol.inputID = toAdd;
+				(cast action.inputs[i]).inputID = toAdd; // bypassing it cause I don't know how else to replace the input IDs
 			}
 		}
 	}

@@ -119,8 +119,8 @@ class AtlasText extends FlxTypedSpriteGroup<Dynamic>
 
 class AtlasFontData
 {
-	public static var lowerChar = new EReg("^[a-z]\\d+$","");
 	public static var upperChar = new EReg("^[A-Z]\\d+$","");
+	public static var lowerChar = new EReg("^[a-z]\\d+$","");
 
 	public var atlas:FlxAtlasFrames;
 	public var maxHeight:Float = 0;

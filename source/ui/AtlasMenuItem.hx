@@ -1,7 +1,6 @@
 package ui;
 
 import flixel.graphics.frames.FlxAtlasFrames;
-import flixel.FlxSprite;
 
 using StringTools;
 
@@ -9,13 +8,13 @@ class AtlasMenuItem extends MenuItem
 {	
 	var atlas:FlxAtlasFrames;
 
-	public function new(?X:Float = 0, ?Y:Float = 0, name:String, atlas:FlxAtlasFrames, callback:Dynamic)
+	public function new(?x:Float = 0, ?y:Float = 0, name:String, atlas:FlxAtlasFrames, ?callback:Dynamic)
 	{
 		this.atlas = atlas;
-		super(X, Y, name, callback);
+		super(x, y, name, callback);
 	}
 
-	override public function setData(name:String, callback:Dynamic = null)
+	override public function setData(name:String, ?callback:Dynamic)
 	{
 		frames = atlas;
 		animation.addByPrefix('idle', '$name idle', 24);
@@ -42,5 +41,11 @@ class AtlasMenuItem extends MenuItem
 	override function get_selected()
 	{
 		return animation.curAnim != null ? animation.curAnim.name == 'selected' : false;
+	}
+
+	override function destroy()
+	{
+		super.destroy();
+		atlas = null;
 	}
 }

@@ -8,13 +8,12 @@ using StringTools;
 
 class OptionsState extends MusicBeatState
 {
-	var currentName:PageName = Options;
-	var pages:EnumValueMap<PageName, Page> = new EnumValueMap();
+	public var pages:EnumValueMap<PageName, Page> = new EnumValueMap();
+	public var currentName:PageName = Options;
+	public var currentPage(get, never):Page;
 
 	function get_currentPage()
-	{
 		return pages.get(currentName);
-	}
 
 	override function create()
 	{
@@ -23,7 +22,7 @@ class OptionsState extends MusicBeatState
 		bg.setGraphicSize(Std.int(bg.width * 1.1));
 		bg.updateHitbox();
 		bg.screenCenter();
-		bg.scrollFactor.set();
+		bg.scrollFactor.set(0, 0);
 		add(bg);
 		var optionsmenu = addPage(Options, new OptionsMenu(false));
 		var preferencesmenu = addPage(Preferences, new PreferencesMenu());
@@ -45,7 +44,7 @@ class OptionsState extends MusicBeatState
 			controlsmenu.onExit.add(exitToMainMenu);
 			setPage(Controls);
 		}
-		pages.get(currentName).set_enabled(false);
+		pages.get(currentName).enabled = false;
 		super.create();
 	}
 
@@ -70,7 +69,7 @@ class OptionsState extends MusicBeatState
 	override function finishTransIn()
 	{
 		super.finishTransIn();
-		pages.get(currentName).set_enabled(true);
+		pages.get(currentName).enabled = true;
 	}
 
 	function switchPage(name:PageName)
@@ -80,7 +79,7 @@ class OptionsState extends MusicBeatState
 
 	function exitToMainMenu()
 	{
-		pages.get(currentName).set_enabled(false);
+		pages.get(currentName).enabled = false;
 		FlxG.switchState(new MainMenuState());
 	}
 }
