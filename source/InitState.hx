@@ -1,5 +1,6 @@
 package;
 
+#if !(macro)
 import charting.ChartingState;
 import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileDiamond;
 import flixel.addons.transition.FlxTransitionableState;
@@ -110,8 +111,52 @@ class InitState extends FlxTransitionableState
 
 		// FlxTransitionableState.skipNextTransOut = true;
 		FlxTransitionableState.skipNextTransIn = true;
-
-		#if FREEPLAY
+		
+		#if song
+			
+			var song = getSong();
+			
+			var weeks = 
+			[ ['bopeebo', 'fresh', 'dadbattle']
+			, ['spookeez', 'south', 'monster']
+			, ['spooky', 'spooky', 'monster']
+			, ['pico', 'philly', 'blammed']
+			, ['satin-panties', 'high', 'milf']
+			, ['cocoa', 'eggnog', 'winter-horrorland']
+			, ['senpai', 'roses', 'thorns']
+			, ['ugh', 'guns', 'stress']
+			];
+			
+			var week = 0;
+			for (i in 0...weeks.length)
+			{
+				if (weeks[i].contains(song))
+				{
+					week = i + 1;
+					break;
+				}
+			}
+			
+			if (week == 0)
+				throw 'Invalid -D song=$song';
+			
+			startSong(week, song, false);
+			
+		#elseif week
+			
+			var week = getWeek();
+			
+			var songs = 
+			[ 'bopeebo', 'spookeez', 'spooky', 'pico'
+			, 'satin-panties', 'cocoa', 'senpai', 'ugh'
+			];
+			
+			if (week <= 0 || week >= songs.length)
+				throw "invalid -D week=" + week;
+			
+			startSong(week, songs[week - 1], true);
+			
+		#elseif FREEPLAY
 		FlxG.switchState(new FreeplayState());
 		#elseif ANIMATE
 		FlxG.switchState(new animate.AnimTestStage());
@@ -128,4 +173,35 @@ class InitState extends FlxTransitionableState
 		FlxG.switchState(new TitleState());
 		#end
 	}
+	
+	function startSong(week, song, isStoryMode)
+	{
+		var dif = getDif();
+		
+		PlayState.SONG = SongLoad.loadFromJson(song, song);
+		PlayState.isStoryMode = isStoryMode;
+		PlayState.storyDifficulty = dif;
+		SongLoad.curDiff = switch (dif)
+		{
+			case 0: 'easy';
+			case 1: 'normal';
+			case 2: 'hard';
+			default: 'normal';
+		};
+		PlayState.storyWeek = week;
+		LoadingState.loadAndSwitchState(new PlayState());
+	}
+}
+#end
+
+function getWeek() return Std.parseInt(getDefine("week"));
+function getSong() return getDefine("song");
+function getDif() return Std.parseInt(getDefine("dif", "1"));
+
+macro function getDefine(key:String, defaultValue:String = null):haxe.macro.Expr
+{
+	var value = haxe.macro.Context.definedValue(key);
+	if (value == null)
+		value = defaultValue;
+	return macro $v{value};
 }
