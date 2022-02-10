@@ -5,6 +5,7 @@ import Note.NoteData;
 import Section.SwagSection;
 import SongLoad.SwagSong;
 import audiovis.ABotVis;
+import audiovis.PolygonSpectogram;
 import audiovis.SpectogramSprite;
 import flixel.FlxSprite;
 import flixel.addons.display.FlxGridOverlay;
@@ -86,7 +87,7 @@ class ChartingState extends MusicBeatState
 
 	var playheadTest:FlxSprite;
 
-	var staticSpecGrp:FlxTypedGroup<SpectogramSprite>;
+	var staticSpecGrp:FlxTypedGroup<PolygonSpectogram>;
 
 	override function create()
 	{
@@ -442,7 +443,7 @@ class ChartingState extends MusicBeatState
 		// vocals = new FlxSound().loadEmbedded(Paths.voices(daSong));
 		// FlxG.sound.list.add(vocals);
 
-		staticSpecGrp = new FlxTypedGroup<SpectogramSprite>();
+		staticSpecGrp = new FlxTypedGroup<PolygonSpectogram>();
 		add(staticSpecGrp);
 
 		var aBoy:ABotVis = new ABotVis(FlxG.sound.music);
@@ -459,14 +460,14 @@ class ChartingState extends MusicBeatState
 			vocalSpec.scrollFactor.set();
 			add(vocalSpec);
 
-			var staticVocal:SpectogramSprite = new SpectogramSprite(voc, FlxG.random.color(0xFFAAAAAA, FlxColor.WHITE, 100), GRID_SIZE * 16, GRID_SIZE * 8);
+			var staticVocal:PolygonSpectogram = new PolygonSpectogram(voc, FlxG.random.color(0xFFAAAAAA, FlxColor.WHITE, 100), GRID_SIZE * 16, 0.5);
 			if (index == 0)
 				staticVocal.x -= 150;
 
 			if (index == 1)
 				staticVocal.x = gridBG.width;
 
-			staticVocal.visType = STATIC;
+			// staticVocal.visType = STATIC;
 			staticSpecGrp.add(staticVocal);
 		}
 
@@ -788,6 +789,7 @@ class ChartingState extends MusicBeatState
 			{
 				var minusStuff:Float = FlxG.mouse.y - getYfromStrum(curSelectedNote.strumTime);
 				minusStuff -= GRID_SIZE;
+				minusStuff += GRID_SIZE / 2;
 				minusStuff = Math.floor(minusStuff / GRID_SIZE) * GRID_SIZE;
 				minusStuff = FlxMath.remapToRange(minusStuff, 0, 40, 0, Conductor.stepCrochet);
 
@@ -1189,19 +1191,7 @@ class ChartingState extends MusicBeatState
 			{
 				for (notes in sideSection.sectionNotes)
 				{
-					var col:Int = switch (notes.noteData % 4)
-					{
-						case 0:
-							0xFFFF22AA;
-						case 1:
-							0xFF00EEFF;
-						case 2:
-							0xFF00CC00;
-						case 3:
-							0xFFCC1111;
-						default:
-							0xFFFF0000;
-					}
+					var col:Int = Note.codeColors[notes.noteData % 4];
 
 					var noteFlip:Int = (sideSection.mustHitSection ? 1 : -1);
 					var noteX:Float = 5 * (((notes.noteData - 4) * noteFlip) + 4);
@@ -1261,6 +1251,8 @@ class ChartingState extends MusicBeatState
 			{
 				var sustainVis:FlxSprite = new FlxSprite(note.x + (GRID_SIZE / 2),
 					note.y + GRID_SIZE).makeGraphic(8, Math.floor(FlxMath.remapToRange(daSus, 0, Conductor.stepCrochet * 16, 0, gridBG.height)));
+				sustainVis.x -= sustainVis.width / 2;
+				sustainVis.color = Note.codeColors[note.data.noteData % 4];
 				curRenderedSustains.add(sustainVis);
 			}
 		}

@@ -105,6 +105,17 @@ class VisShit
 		return freqOutput;
 	}
 
+	public static function getCurAud(aud:Int16Array, index:Int):CurAudioInfo
+	{
+		var left = aud[index] / 32767;
+		var right = aud[index + 2] / 32767;
+		var balanced = (left + right) / 2;
+
+		var funny:CurAudioInfo = {left: left, right: right, balanced: balanced};
+
+		return funny;
+	}
+
 	public function checkAndSetBuffer()
 	{
 		if (snd != null && snd.playing)
@@ -128,4 +139,11 @@ class VisShit
 			}
 		}
 	}
+}
+
+typedef CurAudioInfo =
+{
+	var left:Float;
+	var right:Float;
+	var balanced:Float;
 }

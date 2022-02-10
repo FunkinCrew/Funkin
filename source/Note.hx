@@ -23,6 +23,17 @@ class Note extends FlxSprite
 		altNote: false
 	};
 
+	/**
+	 * code colors for.... code.... 
+	 * i think goes in order of left to right
+	 * 
+	 * left 	0
+	 * down 	1
+	 * up 		2
+	 * right 	3
+	 */
+	public static var codeColors:Array<Int> = [0xFFFF22AA, 0xFF00EEFF, 0xFF00CC00, 0xFFCC1111];
+
 	public var mustPress:Bool = false;
 	public var followsTime:Bool = true; // used if you want the note to follow the time shit!
 	public var canBeHit:Bool = false;

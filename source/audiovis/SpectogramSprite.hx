@@ -1,5 +1,6 @@
 package audiovis;
 
+import audiovis.VisShit.CurAudioInfo;
 import audiovis.dsp.FFT;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup;
@@ -101,17 +102,14 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 			for (i in 0...group.members.length)
 			{
 				var sampleApprox:Int = Std.int(FlxMath.remapToRange(i, 0, group.members.length, startingSample, startingSample + samplesToGen));
-
-				var left = audioData[sampleApprox] / 32767;
-				var right = audioData[sampleApprox + 1] / 32767;
+				var curAud:CurAudioInfo = VisShit.getCurAud(audioData, sampleApprox);
 
 				var swagheight:Int = 200;
-				var balanced = (left + right) / 2;
 
 				group.members[i].x = prevLine.x;
 				group.members[i].y = prevLine.y;
 
-				prevLine.x = (balanced * swagheight / 2 + swagheight / 2) + x;
+				prevLine.x = (curAud.balanced * swagheight / 2 + swagheight / 2) + x;
 				prevLine.y = (i / group.members.length * daHeight) + y;
 
 				var line = FlxVector.get(prevLine.x - group.members[i].x, prevLine.y - group.members[i].y);
@@ -193,15 +191,11 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 
 				for (sample in remappedShit...remappedShit + (Std.int((44100 * (1 / 144)))))
 				{
-					var left = audioData[i] / 32767;
-					var right = audioData[i + 1] / 32767;
-
-					var balanced = (left + right) / 2;
-
+					var curAud:CurAudioInfo = VisShit.getCurAud(audioData, i);
 					i += 2;
 
 					// var remappedSample:Float = FlxMath.remapToRange(sample, remappedShit, remappedShit + lengthOfShit, 0, lengthOfShit - 1);
-					fftSamples.push(balanced);
+					fftSamples.push(curAud.balanced);
 				}
 
 				var freqShit = vis.funnyFFT(fftSamples);
@@ -281,10 +275,7 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 
 				for (sample in remappedShit...remappedShit + lengthOfShit)
 				{
-					var left = audioData[i] / 32767;
-					var right = audioData[i + 1] / 32767;
-
-					var balanced = (left + right) / 2;
+					var curAud:CurAudioInfo = VisShit.getCurAud(audioData, i);
 
 					i += 2;
 
@@ -295,7 +286,7 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 					// group.members[0].y = prevLine.y;
 
 					// FlxSpriteUtil.drawLine(this, prevLine.x, prevLine.y, width * remappedSample, left * height / 2 + height / 2);
-					prevLine.x = (balanced * swagheight / 2 + swagheight / 2) + x;
+					prevLine.x = (curAud.balanced * swagheight / 2 + swagheight / 2) + x;
 					prevLine.y = (Std.int(remappedSample) / lengthOfShit * daHeight) + y;
 
 					var line = FlxVector.get(prevLine.x - group.members[Std.int(remappedSample)].x, prevLine.y - group.members[Std.int(remappedSample)].y);
