@@ -1,5 +1,6 @@
 package;
 
+import Note;
 import Section.SwagSection;
 import SongLoad.SwagSong;
 import charting.ChartingState;
@@ -1592,7 +1593,7 @@ class PlayState extends MusicBeatState
 
 				var gottaHitNote:Bool = section.mustHitSection;
 
-				if (songNotes.noteData > 3)
+				if (songNotes.highStakes)
 					gottaHitNote = !section.mustHitSection;
 
 				var oldNote:Note;
@@ -2195,17 +2196,7 @@ class PlayState extends MusicBeatState
 
 					if (!daNote.isSustainNote)
 					{
-						switch (Math.abs(daNote.data.noteData))
-						{
-							case 0:
-								dad.playAnim('singLEFT' + altAnim, true);
-							case 1:
-								dad.playAnim('singDOWN' + altAnim, true);
-							case 2:
-								dad.playAnim('singUP' + altAnim, true);
-							case 3:
-								dad.playAnim('singRIGHT' + altAnim, true);
-						}
+						dad.playAnim('sing' + daNote.dirNameUpper + altAnim, true);
 					}
 
 					dad.holdTimer = 0;
@@ -2429,10 +2420,10 @@ class PlayState extends MusicBeatState
 
 		var healthMulti:Float = 1;
 
-		if (daNote.data.noteData >= 0)
-			healthMulti *= 0.033;
-		else
+		if (daNote.lowStakes)
 			healthMulti *= 0.002;
+		else
+			healthMulti *= 0.033;
 
 		if (noteDiff > Note.HIT_WINDOW * Note.BAD_THRESHOLD)
 		{
@@ -2852,7 +2843,7 @@ class PlayState extends MusicBeatState
 		return super.switchTo(nextState);
 	}
 
-	function noteMiss(direction:Int = 1):Void
+	function noteMiss(direction:NoteDir = 1):Void
 	{
 		// whole function used to be encased in if (!boyfriend.stunned)
 		health -= 0.07;
@@ -2872,17 +2863,7 @@ class PlayState extends MusicBeatState
 				boyfriend.stunned = false;
 		});*/
 
-		switch (direction)
-		{
-			case 0:
-				boyfriend.playAnim('singLEFTmiss', true);
-			case 1:
-				boyfriend.playAnim('singDOWNmiss', true);
-			case 2:
-				boyfriend.playAnim('singUPmiss', true);
-			case 3:
-				boyfriend.playAnim('singRIGHTmiss', true);
-		}
+		boyfriend.playAnim('sing' + direction.nameUpper + 'miss', true);
 	}
 
 	/* not used anymore lol
@@ -2914,18 +2895,8 @@ class PlayState extends MusicBeatState
 				combo += 1;
 				popUpScore(note.data.strumTime, note);
 			}
-
-			switch (note.data.noteData)
-			{
-				case 0:
-					boyfriend.playAnim('singLEFT', true);
-				case 1:
-					boyfriend.playAnim('singDOWN', true);
-				case 2:
-					boyfriend.playAnim('singUP', true);
-				case 3:
-					boyfriend.playAnim('singRIGHT', true);
-			}
+			
+			boyfriend.playAnim('sing' + note.dirNameUpper, true);
 
 			playerStrums.forEach(function(spr:FlxSprite)
 			{

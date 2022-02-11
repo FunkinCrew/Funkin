@@ -204,6 +204,18 @@
 	<haxedef name="CAN_OPEN_LINKS" unless="switch"/>
 	<haxedef name="CAN_CHEAT" if="switch debug"/>
 	
+	<!-- Skip the Intro -->
+	<section if="debug">
+		<!-- Starts the game at the specified week, at the first song -->
+		<!-- <haxedef name="week" value="1" if="debug"/> -->
+		
+		<!-- Starts the game at the specified song -->
+		<!-- <haxedef name="song" value="bopeebo" if="debug"/> -->
+		
+		<!-- Difficulty, only used for week or song, defaults to 1 -->
+		<!-- <haxedef name="dif" value="2" if="debug"/> -->
+	</section>
+	
 	<!-- <haxedef name="CLEAR_INPUT_SAVE"/> -->
 	
 	<section if="newgrounds">

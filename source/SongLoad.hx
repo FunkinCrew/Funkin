@@ -161,12 +161,7 @@ class SongLoad
 
 	public static function getDefaultNoteData():NoteData
 	{
-		return {
-			strumTime: 0,
-			altNote: false,
-			sustainLength: 0,
-			noteData: 0
-		}
+		return new NoteData();
 	}
 
 	/**
