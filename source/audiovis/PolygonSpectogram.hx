@@ -13,6 +13,7 @@ class PolygonSpectogram extends MeshRender
 	var sampleRate:Int;
 
 	public var vis:VisShit;
+	public var visType:VISTYPE = UPDATED;
 	public var daHeight:Float = FlxG.height;
 
 	var numSamples:Int = 0;
@@ -23,7 +24,7 @@ class PolygonSpectogram extends MeshRender
 
 	public function new(daSound:FlxSound, ?col:FlxColor = FlxColor.WHITE, ?height:Float = 720, ?detail:Float = 1)
 	{
-		super(0, 0);
+		super(0, 0, col);
 
 		vis = new VisShit(daSound);
 
@@ -34,6 +35,20 @@ class PolygonSpectogram extends MeshRender
 
 		// col not in yet
 	}
+
+	override function update(elapsed:Float)
+	{
+		super.update(elapsed);
+
+		switch (visType)
+		{
+			case UPDATED:
+				realtimeVis();
+			default:
+		}
+	}
+
+	var prevAudioData:Int16Array;
 
 	/**
 	 * Generates and draws a section of the audio data to a visual waveform
@@ -54,21 +69,53 @@ class PolygonSpectogram extends MeshRender
 
 			var prevPoint:FlxPoint = new FlxPoint();
 
-			for (i in 0...500)
+			var funnyPixels:Int = Std.int(daHeight); // sorta redundant but just need it for different var...
+
+			if (prevAudioData == audioData.subarray(startSample, startSample + samplesToGen))
+				return; // optimize / finish funciton here, no need to re-render
+
+			prevAudioData = audioData.subarray(startSample, samplesToGen);
+
+			for (i in 0...funnyPixels)
 			{
-				var sampleApprox:Int = Std.int(FlxMath.remapToRange(i, 0, 500, startSample, startSample + samplesToGen));
+				var sampleApprox:Int = Std.int(FlxMath.remapToRange(i, 0, funnyPixels, startSample, startSample + samplesToGen));
 				var curAud:CurAudioInfo = VisShit.getCurAud(audioData, sampleApprox);
 
 				var waveAmplitude:Int = 200;
 
 				var coolPoint:FlxPoint = new FlxPoint();
 				coolPoint.x = (curAud.balanced * waveAmplitude / 2 + waveAmplitude / 2);
-				coolPoint.y = (i / 500 * daHeight);
+				coolPoint.y = (i / funnyPixels * daHeight);
 
-				add_quad(prevPoint.x, prevPoint.y, prevPoint.x + 1, prevPoint.y, coolPoint.x, coolPoint.y, coolPoint.x + 1, coolPoint.y + 1);
+				add_quad(prevPoint.x, prevPoint.y, prevPoint.x + 2, prevPoint.y, coolPoint.x, coolPoint.y, coolPoint.x + 2, coolPoint.y + 2);
 
 				prevPoint.x = coolPoint.x;
 				prevPoint.y = coolPoint.y;
+			}
+		}
+	}
+
+	var curTime:Float = 0;
+
+	function realtimeVis():Void
+	{
+		if (vis.snd != null)
+		{
+			if (curTime != vis.snd.time)
+			{
+				trace("DOIN SHIT" + FlxG.random.int(0, 200));
+
+				if (vis.snd.playing)
+					curTime = vis.snd.time;
+				else
+				{
+					if (Math.abs(curTime - vis.snd.time) > 10)
+						curTime = FlxMath.lerp(curTime, vis.snd.time, 0.5);
+				}
+
+				curTime = vis.snd.time;
+
+				generateSection(vis.snd.time, 0.2);
 			}
 		}
 	}
@@ -85,4 +132,11 @@ class PolygonSpectogram extends MeshRender
 			numSamples = Std.int(audioData.length / 2);
 		}
 	}
+}
+
+enum VISTYPE
+{
+	STATIC;
+	UPDATED;
+	FREQUENCIES;
 }

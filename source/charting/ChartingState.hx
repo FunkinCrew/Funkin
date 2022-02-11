@@ -422,7 +422,7 @@ class ChartingState extends MusicBeatState
 
 		FlxG.sound.playMusic(Paths.inst(daSong), 0.6);
 
-		var musSpec:SpectogramSprite = new SpectogramSprite(FlxG.sound.music, FlxColor.RED, FlxG.height / 2, Math.floor(FlxG.height / 2));
+		var musSpec:PolygonSpectogram = new PolygonSpectogram(FlxG.sound.music, FlxColor.RED, FlxG.height / 2, Math.floor(FlxG.height / 2));
 		musSpec.x += 70;
 		musSpec.scrollFactor.set();
 		// musSpec.visType = FREQUENCIES;
@@ -451,7 +451,7 @@ class ChartingState extends MusicBeatState
 
 		for (index => voc in vocals.members)
 		{
-			var vocalSpec:SpectogramSprite = new SpectogramSprite(voc, FlxG.random.color(0xFFAAAAAA, FlxColor.WHITE, 100), musSpec.daHeight,
+			var vocalSpec:PolygonSpectogram = new PolygonSpectogram(voc, FlxG.random.color(0xFFAAAAAA, FlxColor.WHITE, 100), musSpec.daHeight,
 				Math.floor(FlxG.height / 2));
 			vocalSpec.x = 70 - (50 * index);
 			// vocalSpec.visType = FREQUENCIES;
@@ -467,7 +467,7 @@ class ChartingState extends MusicBeatState
 			if (index == 1)
 				staticVocal.x = gridBG.width;
 
-			// staticVocal.visType = STATIC;
+			staticVocal.visType = STATIC;
 			staticSpecGrp.add(staticVocal);
 		}
 

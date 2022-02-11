@@ -1,6 +1,7 @@
 package rendering;
 
 import flixel.FlxStrip;
+import flixel.util.FlxColor;
 
 /**
  * Yoinked from AustinEast, thanks hopefully u dont mind me using some of ur good code
@@ -13,10 +14,10 @@ class MeshRender extends FlxStrip
 
 	var tri_offset:Int = 0;
 
-	public function new(x, y)
+	public function new(x, y, ?col:FlxColor = FlxColor.WHITE)
 	{
 		super(x, y);
-		makeGraphic(1, 1);
+		makeGraphic(1, 1, col);
 	}
 
 	public inline function start()

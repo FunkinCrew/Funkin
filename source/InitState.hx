@@ -111,51 +111,47 @@ class InitState extends FlxTransitionableState
 
 		// FlxTransitionableState.skipNextTransOut = true;
 		FlxTransitionableState.skipNextTransIn = true;
-		
+
 		#if song
-			
-			var song = getSong();
-			
-			var weeks = 
-			[ ['bopeebo', 'fresh', 'dadbattle']
-			, ['spookeez', 'south', 'monster']
-			, ['spooky', 'spooky', 'monster']
-			, ['pico', 'philly', 'blammed']
-			, ['satin-panties', 'high', 'milf']
-			, ['cocoa', 'eggnog', 'winter-horrorland']
-			, ['senpai', 'roses', 'thorns']
-			, ['ugh', 'guns', 'stress']
-			];
-			
-			var week = 0;
-			for (i in 0...weeks.length)
+		var song = getSong();
+
+		var weeks = [
+			['bopeebo', 'fresh', 'dadbattle'],
+			['spookeez', 'south', 'monster'],
+			['spooky', 'spooky', 'monster'],
+			['pico', 'philly', 'blammed'],
+			['satin-panties', 'high', 'milf'],
+			['cocoa', 'eggnog', 'winter-horrorland'],
+			['senpai', 'roses', 'thorns'],
+			['ugh', 'guns', 'stress']
+		];
+
+		var week = 0;
+		for (i in 0...weeks.length)
+		{
+			if (weeks[i].contains(song))
 			{
-				if (weeks[i].contains(song))
-				{
-					week = i + 1;
-					break;
-				}
+				week = i + 1;
+				break;
 			}
-			
-			if (week == 0)
-				throw 'Invalid -D song=$song';
-			
-			startSong(week, song, false);
-			
+		}
+
+		if (week == 0)
+			throw 'Invalid -D song=$song';
+
+		startSong(week, song, false);
 		#elseif week
-			
-			var week = getWeek();
-			
-			var songs = 
-			[ 'bopeebo', 'spookeez', 'spooky', 'pico'
-			, 'satin-panties', 'cocoa', 'senpai', 'ugh'
-			];
-			
-			if (week <= 0 || week >= songs.length)
-				throw "invalid -D week=" + week;
-			
-			startSong(week, songs[week - 1], true);
-			
+		var week = getWeek();
+
+		var songs = [
+			      'bopeebo', 'spookeez', 'spooky', 'pico',
+			'satin-panties',    'cocoa', 'senpai',  'ugh'
+		];
+
+		if (week <= 0 || week >= songs.length)
+			throw "invalid -D week=" + week;
+
+		startSong(week, songs[week - 1], true);
 		#elseif FREEPLAY
 		FlxG.switchState(new FreeplayState());
 		#elseif ANIMATE
@@ -173,11 +169,11 @@ class InitState extends FlxTransitionableState
 		FlxG.switchState(new TitleState());
 		#end
 	}
-	
+
 	function startSong(week, song, isStoryMode)
 	{
 		var dif = getDif();
-		
+
 		PlayState.SONG = SongLoad.loadFromJson(song, song);
 		PlayState.isStoryMode = isStoryMode;
 		PlayState.storyDifficulty = dif;
@@ -194,9 +190,14 @@ class InitState extends FlxTransitionableState
 }
 #end
 
-function getWeek() return Std.parseInt(getDefine("week"));
-function getSong() return getDefine("song");
-function getDif() return Std.parseInt(getDefine("dif", "1"));
+function getWeek()
+	return Std.parseInt(getDefine("week"));
+
+function getSong()
+	return getDefine("song");
+
+function getDif()
+	return Std.parseInt(getDefine("dif", "1"));
 
 macro function getDefine(key:String, defaultValue:String = null):haxe.macro.Expr
 {

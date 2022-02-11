@@ -1,5 +1,6 @@
 package audiovis;
 
+import audiovis.PolygonSpectogram.VISTYPE;
 import audiovis.VisShit.CurAudioInfo;
 import audiovis.dsp.FFT;
 import flixel.FlxSprite;
@@ -297,11 +298,4 @@ class SpectogramSprite extends FlxTypedSpriteGroup<FlxSprite>
 			}
 		}
 	}
-}
-
-enum VISTYPE
-{
-	STATIC;
-	UPDATED;
-	FREQUENCIES;
 }
