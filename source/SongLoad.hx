@@ -283,9 +283,9 @@ class SongLoad
 			swagShit.speedMap[diff] = cast Reflect.field(songParsed.song.speed, diff);
 		}
 
-		trace(swagShit.noteMap.toString());
-		trace(swagShit.speedMap.toString());
-		trace('that was just notemap string lol');
+		// trace(swagShit.noteMap.toString());
+		// trace(swagShit.speedMap.toString());
+		// trace('that was just notemap string lol');
 
 		swagShit.validScore = true;
 
