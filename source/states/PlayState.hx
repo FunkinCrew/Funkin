@@ -4449,6 +4449,7 @@ class PlayState extends MusicBeatState
 
 					defaultCamZoom = stage.camZoom;
 
+					#if linc_luajit
 					stage.createLuaStuff();
 
 					executeALuaState("create", [stage.stage], STAGE);
@@ -4466,6 +4467,7 @@ class PlayState extends MusicBeatState
 					}
 			
 					executeALuaState("start", [stage.stage], STAGE);
+					#end
 
 					addBgStuff();
 				}
