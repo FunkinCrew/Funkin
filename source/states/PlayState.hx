@@ -1,10 +1,5 @@
 package states;
 
-import utilities.Options;
-import flixel.util.FlxStringUtil;
-import openfl.display.BitmapData;
-import flixel.graphics.FlxGraphic;
-
 #if sys
 import sys.FileSystem;
 #end
@@ -21,6 +16,10 @@ import utilities.Discord.DiscordClient;
 import polymod.backends.PolymodAssets;
 #end
 
+import utilities.Options;
+import flixel.util.FlxStringUtil;
+import openfl.display.BitmapData;
+import flixel.graphics.FlxGraphic;
 import flixel.system.FlxAssets.FlxShader;
 import flixel.addons.display.FlxShaderMaskCamera;
 import substates.ResultsScreenSubstate;

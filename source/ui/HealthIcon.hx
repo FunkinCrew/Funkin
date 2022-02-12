@@ -26,16 +26,57 @@ class HealthIcon extends TrackerSprite
 	{
 		antialiasing = true;
 
-		if(Assets.exists(Paths.image('icons/' + char + '-icons'))) // LE ICONS
-			loadGraphic(Paths.image('icons/' + char + '-icons'), true, 150, 150);
-		else if(Assets.exists(Paths.image('icons/' + 'icon-' + char))) // PSYCH ICONS
-			loadGraphic(Paths.image('icons/' + 'icon-' + char), true, 150, 150);
-		else if(Assets.exists(Paths.image('icons/' + char))) // lmao image file names i guess if you're really lazy
-			loadGraphic(Paths.image('icons/' + char), true, 150, 150);
-		else // UNKNOWN ICON
-			loadGraphic(Paths.image('icons/placeholder-icon'), true, 150, 150);
+		if(
+			Assets.exists(Paths.image('icons/' + char + '-icons').split(".png")[0] + ".xml") ||
+			Assets.exists(Paths.image('icons/icon-' + char).split(".png")[0] + ".xml") ||
+			Assets.exists(Paths.image('icons/' + char).split(".png")[0] + ".xml")
+		)
+		{
+			var selected = "your";
 
-		animation.add(char, [0, 1, 2], 0, false, isPlayer);
+			if(Assets.exists(Paths.image('icons/' + char + '-icons').split(".png")[0] + ".xml"))
+			{
+				frames = Paths.getSparrowAtlas('icons/' + char + '-icons');
+				selected = Paths.image('icons/' + char + '-icons');
+			}
+			else if(Assets.exists(Paths.image('icons/icon-' + char).split(".png")[0] + ".xml"))
+			{
+				frames = Paths.getSparrowAtlas('icons/icon-' + char);
+				selected = Paths.image('icons/icon-' + char);
+			}
+			else if(Assets.exists(Paths.image('icons/' + char).split(".png")[0] + ".xml"))
+			{
+				frames = Paths.getSparrowAtlas('icons/' + char);
+				selected = Paths.image('icons/' + char);
+			}
+
+			animation.addByPrefix(char, char, 24, true, isPlayer);
+
+			if(Assets.exists(selected.split(".png")[0] + ".txt"))
+			{
+				var theFunny = Assets.getText(selected.split(".png")[0] + ".txt").split(" ");
+
+				offset.x = Std.parseFloat(theFunny[0]);
+				offset.y = Std.parseFloat(theFunny[1]);
+
+				setGraphicSize(Std.int(width * Std.parseFloat(theFunny[2])));
+				updateHitbox();
+			}
+		}
+		else
+		{
+			if(Assets.exists(Paths.image('icons/' + char + '-icons'))) // LE ICONS
+				loadGraphic(Paths.image('icons/' + char + '-icons'), true, 150, 150);
+			else if(Assets.exists(Paths.image('icons/' + 'icon-' + char))) // PSYCH ICONS
+				loadGraphic(Paths.image('icons/' + 'icon-' + char), true, 150, 150);
+			else if(Assets.exists(Paths.image('icons/' + char))) // lmao image file names i guess if you're really lazy
+				loadGraphic(Paths.image('icons/' + char), true, 150, 150);
+			else // UNKNOWN ICON
+				loadGraphic(Paths.image('icons/placeholder-icon'), true, 150, 150);
+
+			animation.add(char, [0, 1, 2], 0, false, isPlayer);
+		}
+
 		animation.play(char);
 
 		// antialiasing override
