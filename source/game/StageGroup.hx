@@ -99,49 +99,6 @@ class StageGroup extends FlxGroup
         {
             switch(stage)
             {
-                /*case "philly":
-                {
-                    player_1_Point.x -= 50;
-                    gf_Point.x += 100;
-                    gf_Point.y -= 50;
-                    player_2_Point.x += 125;
-
-                    var bg:FlxSprite = new FlxSprite(-100).loadGraphic(Paths.image(stage + '/sky', 'stages'));
-                    bg.scrollFactor.set(0.1, 0.1);
-                    add(bg);
-
-                    var city:FlxSprite = new FlxSprite(-10).loadGraphic(Paths.image(stage + '/city', 'stages'));
-                    city.scrollFactor.set(0.3, 0.3);
-                    city.setGraphicSize(Std.int(city.width * 0.85));
-                    city.updateHitbox();
-                    add(city);
-
-                    phillyCityLights = new FlxTypedGroup<FlxSprite>();
-                    add(phillyCityLights);
-
-                    for (i in 0...5)
-                    {
-                        var light:FlxSprite = new FlxSprite(city.x).loadGraphic(Paths.image(stage + '/win' + i, 'stages'));
-                        light.scrollFactor.set(0.3, 0.3);
-                        light.visible = false;
-                        light.setGraphicSize(Std.int(light.width * 0.85));
-                        light.updateHitbox();
-                        light.antialiasing = true;
-                        phillyCityLights.add(light);
-                    }
-
-                    var streetBehind:FlxSprite = new FlxSprite(-40, 50).loadGraphic(Paths.image(stage + '/behindTrain', 'stages'));
-                    add(streetBehind);
-
-                    phillyTrain = new FlxSprite(2000, 360).loadGraphic(Paths.image(stage + '/train', 'stages'));
-                    add(phillyTrain);
-
-                    trainSound = new FlxSound().loadEmbedded(Paths.sound('train_passes'));
-                    FlxG.sound.list.add(trainSound);
-
-                    var street:FlxSprite = new FlxSprite(-40, streetBehind.y).loadGraphic(Paths.image(stage + '/street', 'stages'));
-                    add(street);
-                }*/
                 case "school":
                 {
                     player_2_Point.x = 379;

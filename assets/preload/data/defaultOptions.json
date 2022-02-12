@@ -205,6 +205,10 @@
             "value": true
         },
         {
+            "option": "preloadChangeBGs",
+            "value": true
+        },
+        {
             "option": "timeBarStyle",
             "value": "leather engine"
         },

@@ -261,6 +261,8 @@ class PlayState extends MusicBeatState
 	var gfMap:Map<String, Character> = [];
 	var dadMap:Map<String, Character> = [];
 
+	var stageMap:Map<String, StageGroup> = [];
+
 	public static var chartingMode:Bool = false;
 
 	var funnyTimeBarStyle:String;
@@ -535,6 +537,8 @@ class PlayState extends MusicBeatState
 				stage = new StageGroup("");
 			else
 				stage = new StageGroup(curStage);
+
+			stageMap.set(stage.stage, stage);
 
 			add(stage);
 
@@ -972,6 +976,16 @@ class PlayState extends MusicBeatState
 						}
 	
 						trace(funnyCharacter.curCharacter);
+					}
+
+					if(event[0].toLowerCase() == "change stage" && event[1] <= FlxG.sound.music.length && !stageMap.exists(event[2]) && Options.getData("preloadChangeBGs"))
+					{
+						var funnyStage = new StageGroup(event[2]);
+						funnyStage.visible = false;
+
+						stageMap.set(event[2], funnyStage);
+
+						trace(funnyStage.stage);
 					}
 				}
 
@@ -2129,40 +2143,11 @@ class PlayState extends MusicBeatState
 			camHUD.zoom = 1;
 		}
 
-		FlxG.watch.addQuick("beatShit", curBeat);
-		FlxG.watch.addQuick("stepShit", curStep);
-
-		// curbeat switch per song
-		switch(curSong.toLowerCase())
-		{
-			case 'fresh':
-				switch(curBeat)
-				{
-					case 16:
-						gfSpeed = 2;
-					case 48:
-						gfSpeed = 1;
-					case 80:
-						gfSpeed = 2;
-					case 112:
-						gfSpeed = 1;
-				}
-			case 'bopeebo':
-				switch (curBeat)
-				{
-					case 128, 129, 130:
-						vocals.volume = 0;
-				}
-		}
-
 		// RESET = Quick Game Over Screen
 		if (utilities.Options.getData("resetButton") && !switchedStates)
 		{
 			if (controls.RESET)
-			{ 
 				health = minHealth;
-				trace("RESET = True");
-			}
 		}
 			
 		if (utilities.Options.getData("noHit") && misses > 0)
@@ -3915,7 +3900,7 @@ class PlayState extends MusicBeatState
 		return PlayState.boyfriend;
 	}
 
-	function eventCharacterShit(event:Array<Dynamic>)
+	function removeBgStuff()
 	{
 		remove(stage);
 		remove(stage.foregroundSprites);
@@ -3974,6 +3959,112 @@ class PlayState extends MusicBeatState
 				remove(character);
 			}
 		}
+	}
+
+	function addBgStuff()
+	{
+		stage.setCharOffsets();
+
+		add(stage);
+
+		if(dad.curCharacter.startsWith("gf"))
+		{
+			dad.setPosition(gf.x, gf.y);
+			gf.visible = false;
+		}
+		else if(gf.visible == false && gf.curCharacter != "")
+			gf.visible = true;
+
+		if(gf.otherCharacters == null)
+		{
+			if(gf.coolTrail != null)
+			{
+				remove(gf.coolTrail);
+				add(gf.coolTrail);
+			}
+
+			remove(gf);
+			add(gf);
+		}
+		else
+		{
+			for(character in gf.otherCharacters)
+			{
+				if(character.coolTrail != null)
+				{
+					remove(character.coolTrail);
+					add(character.coolTrail);
+				}
+				
+				remove(character);
+				add(character);
+			}
+		}
+
+		if(!dad.curCharacter.startsWith("gf"))
+			add(stage.infrontOfGFSprites);
+
+		if(dad.otherCharacters == null)
+		{
+			if(dad.coolTrail != null)
+			{
+				remove(dad.coolTrail);
+				add(dad.coolTrail);
+			}
+
+			remove(dad);
+			add(dad);
+		}
+		else
+		{
+			for(character in dad.otherCharacters)
+			{
+				if(character.coolTrail != null)
+				{
+					remove(character.coolTrail);
+					add(character.coolTrail);
+				}
+				
+				remove(character);
+				add(character);
+			}
+		}
+
+		if(dad.curCharacter.startsWith("gf"))
+			add(stage.infrontOfGFSprites);
+
+		if(boyfriend.otherCharacters == null)
+		{
+			if(boyfriend.coolTrail != null)
+			{
+				remove(boyfriend.coolTrail);
+				add(boyfriend.coolTrail);
+			}
+			
+			remove(boyfriend);
+			add(boyfriend);
+		}
+		else
+		{
+			for(character in boyfriend.otherCharacters)
+			{
+				if(character.coolTrail != null)
+				{
+					remove(character.coolTrail);
+					add(character.coolTrail);
+				}
+				
+				remove(character);
+				add(character);
+			}
+		}
+
+		add(stage.foregroundSprites);
+	}
+
+	function eventCharacterShit(event:Array<Dynamic>)
+	{
+		removeBgStuff();
 		
 		switch(event[2].toLowerCase())
 		{
@@ -4092,103 +4183,7 @@ class PlayState extends MusicBeatState
 				}
 		}
 
-		stage.setCharOffsets();
-
-		add(stage);
-
-		if(dad.curCharacter.startsWith("gf"))
-		{
-			dad.setPosition(gf.x, gf.y);
-			gf.visible = false;
-		}
-		else if(gf.visible == false && gf.curCharacter != "")
-			gf.visible = true;
-
-		if(gf.otherCharacters == null)
-		{
-			if(gf.coolTrail != null)
-			{
-				remove(gf.coolTrail);
-				add(gf.coolTrail);
-			}
-
-			remove(gf);
-			add(gf);
-		}
-		else
-		{
-			for(character in gf.otherCharacters)
-			{
-				if(character.coolTrail != null)
-				{
-					remove(character.coolTrail);
-					add(character.coolTrail);
-				}
-				
-				remove(character);
-				add(character);
-			}
-		}
-
-		if(!dad.curCharacter.startsWith("gf"))
-			add(stage.infrontOfGFSprites);
-
-		if(dad.otherCharacters == null)
-		{
-			if(dad.coolTrail != null)
-			{
-				remove(dad.coolTrail);
-				add(dad.coolTrail);
-			}
-
-			remove(dad);
-			add(dad);
-		}
-		else
-		{
-			for(character in dad.otherCharacters)
-			{
-				if(character.coolTrail != null)
-				{
-					remove(character.coolTrail);
-					add(character.coolTrail);
-				}
-				
-				remove(character);
-				add(character);
-			}
-		}
-
-		if(dad.curCharacter.startsWith("gf"))
-			add(stage.infrontOfGFSprites);
-
-		if(boyfriend.otherCharacters == null)
-		{
-			if(boyfriend.coolTrail != null)
-			{
-				remove(boyfriend.coolTrail);
-				add(boyfriend.coolTrail);
-			}
-			
-			remove(boyfriend);
-			add(boyfriend);
-		}
-		else
-		{
-			for(character in boyfriend.otherCharacters)
-			{
-				if(character.coolTrail != null)
-				{
-					remove(character.coolTrail);
-					add(character.coolTrail);
-				}
-				
-				remove(character);
-				add(character);
-			}
-		}
-
-		add(stage.foregroundSprites);
+		addBgStuff();
 	}
 
 	public function updateSongInfoText()
@@ -4418,6 +4413,62 @@ class PlayState extends MusicBeatState
 			case "change character":
 				if(utilities.Options.getData("charsAndBGs"))
 					eventCharacterShit(event);
+			case "change stage":
+				if(utilities.Options.getData("charsAndBGs"))
+				{
+					removeBgStuff();
+					
+					if(!Options.getData("preloadChangeBGs"))
+					{
+						stage.kill();
+						stage.foregroundSprites.kill();
+						stage.infrontOfGFSprites.kill();
+	
+						stage.foregroundSprites.destroy();
+						stage.infrontOfGFSprites.destroy();
+						stage.destroy();
+					}
+					else
+					{
+						stage.active = false;
+
+						stage.visible = false;
+						stage.foregroundSprites.visible = false;
+						stage.infrontOfGFSprites.visible = false;
+					}
+
+					if(!Options.getData("preloadChangeBGs"))
+						stage = new StageGroup(event[2]);
+					else
+						stage = stageMap.get(event[2]);
+
+					stage.visible = true;
+					stage.foregroundSprites.visible = true;
+					stage.infrontOfGFSprites.visible = true;
+					stage.active = true;
+
+					defaultCamZoom = stage.camZoom;
+
+					stage.createLuaStuff();
+
+					executeALuaState("create", [stage.stage], STAGE);
+			
+					if(stage.stageScript != null)
+						stage.stageScript.setupTheShitCuzPullRequestsSuck();
+			
+					for(i in 0...strumLineNotes.length)
+					{
+						var member = strumLineNotes.members[i];
+			
+						setLuaVar("defaultStrum" + i + "X", member.x);
+						setLuaVar("defaultStrum" + i + "Y", member.y);
+						setLuaVar("defaultStrum" + i + "Angle", member.angle);
+					}
+			
+					executeALuaState("start", [stage.stage], STAGE);
+
+					addBgStuff();
+				}
 		}
 
 		//                            name       pos      param 1   param 2
