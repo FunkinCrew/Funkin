@@ -16,8 +16,8 @@ class MenuTypedItem extends MenuItem
 
 	public function setEmptyBackground()
 	{
-		var prevWidth = width;
-		var prevHeight = height;
+		var prevWidth:Float = width;
+		var prevHeight:Float = height;
 		makeGraphic(1, 1, FlxColor.TRANSPARENT);
 		width = prevWidth;
 		height = prevHeight;

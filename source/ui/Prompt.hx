@@ -1,5 +1,6 @@
 package ui;
 
+import flixel.util.FlxColor;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxSubState;
@@ -8,7 +9,7 @@ using StringTools;
 
 class Prompt extends FlxSubState
 {
-	public static var MARGIN = 100;
+	public static var MARGIN:Float = 100;
 	
 	var style:ButtonStyle;
 	var buttons:TextMenuList;
@@ -37,7 +38,7 @@ class Prompt extends FlxSubState
 		add(buttons);
 	}
 
-	public function createBg(width:Int, height:Int, color:Int = 0xFF808080)
+	public function createBg(width:Int, height:Int, color:FlxColor = 0xFF808080)
 	{
 		back = new FlxSprite().makeGraphic(width, height, color, false, 'prompt-bg');
 		back.screenCenter(XY);
@@ -45,7 +46,7 @@ class Prompt extends FlxSubState
 		members.unshift(members.pop());
 	}
 
-	public function createBgFromMargin(?margin:Float = 100, color:Int = 0xFF808080)
+	public function createBgFromMargin(?margin:Float = 100, color:FlxColor = 0xFF808080)
 	{
 		createBg(Std.int(FlxG.width - 2 * margin), Std.int(FlxG.height - 2 * margin), color);
 	}

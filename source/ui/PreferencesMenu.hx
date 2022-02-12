@@ -11,7 +11,7 @@ using StringTools;
 
 class PreferencesMenu extends Page
 {
-	public static var preferences:StringMap<Dynamic> = new StringMap<Dynamic>();
+	public static var preferences:StringMap<Bool> = new StringMap<Bool>();
 
 	var checkboxes:Array<CheckboxThingie> = [];
 	var menuCamera:FlxCamera;
@@ -108,14 +108,14 @@ class PreferencesMenu extends Page
 
 	public function createCheckbox(identifier:String)
 	{
-		var box = new CheckboxThingie(0, 120 * (items.length - 1), preferences.get(identifier));
+		var box:CheckboxThingie = new CheckboxThingie(0, 120 * (items.length - 1), preferences.get(identifier));
 		checkboxes.push(box);
 		add(box);
 	}
 
 	public function prefToggle(identifier:String)
 	{
-		var value = preferences.get(identifier);
+		var value:Bool = preferences.get(identifier);
 		value = !value;
 		preferences.set(identifier, value);
 		checkboxes[items.selectedIndex].daValue = value;

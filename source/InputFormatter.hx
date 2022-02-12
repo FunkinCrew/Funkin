@@ -6,7 +6,7 @@ import flixel.input.keyboard.FlxKey;
 
 class InputFormatter
 {
-	static var dirReg = new EReg("^(l|r).?-(left|right|down|up)$","");
+	static var dirReg:EReg = new EReg("^(l|r).?-(left|right|down|up)$","");
 
 	public static function format(input:Int, dev:Device):String
 	{

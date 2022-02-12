@@ -9,15 +9,15 @@ class TankmenBG extends FlxSprite
 {
 	public static var animationNotes:Array<Dynamic> = [];
 
-	public var strumTime = 0;
-	public var goingRight = false;
-	public var tankSpeed = 0.7;
+	public var strumTime:Float = 0;
+	public var goingRight:Bool = false;
+	public var tankSpeed:Float = 0.7;
 
 	var endingOffset:Float;
 
-	override public function new(X:Float, Y:Float, uhh:Bool)
+	override public function new(x:Float, y:Float, uhh:Bool)
 	{
-		super(X, Y);
+		super(x, y);
 		frames = Paths.getSparrowAtlas('tankmanKilled1');
 		antialiasing = true;
 		animation.addByPrefix('run', 'tankman running', 24, true);
@@ -29,9 +29,9 @@ class TankmenBG extends FlxSprite
 		updateHitbox();
 	}
 
-	public function resetShit(X:Float, Y:Float, goRight:Bool)
+	public function resetShit(x:Float, y:Float, goRight:Bool)
 	{
-		setPosition(X, Y);
+		setPosition(x, y);
 		goingRight = goRight;
 		endingOffset = FlxG.random.float(50, 200);
 		tankSpeed = FlxG.random.float(0.6, 1);
@@ -54,7 +54,7 @@ class TankmenBG extends FlxSprite
 
 		if (animation.curAnim.name == 'run')
 		{
-			var wackyShit = FlxG.width * 0.74 + endingOffset;
+			var wackyShit:Float = FlxG.width * 0.74 + endingOffset;
 			if (goingRight)
 			{
 				wackyShit = FlxG.width * 0.02 - endingOffset;

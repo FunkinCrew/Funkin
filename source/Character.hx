@@ -1,5 +1,6 @@
 package;
 
+import Section.SwagSection;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.animation.FlxBaseAnimation;
@@ -496,7 +497,7 @@ class Character extends FlxSprite
 
 	function loadMappedAnims()
 	{
-		var sections = Song.loadFromJson('picospeaker', 'stress').notes;
+		var sections:Array<SwagSection> = Song.loadFromJson('picospeaker', 'stress').notes;
 		for (section in sections)
 		{
 			for (note in section.sectionNotes)
@@ -521,7 +522,7 @@ class Character extends FlxSprite
 
 	function loadOffsetFile(char:String)
 	{
-		var offsets = CoolUtil.coolTextFile(Paths.getPath('images/characters/' + char + 'Offsets.txt', TEXT, null));
+		var offsets:Array<String> = CoolUtil.coolTextFile(Paths.getPath('images/characters/' + char + 'Offsets.txt', TEXT, null));
 		for (i in 0...offsets.length)
 		{
 			var offset = offsets[i].split(' ');

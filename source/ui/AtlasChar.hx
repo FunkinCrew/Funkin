@@ -17,11 +17,11 @@ class AtlasChar extends FlxSprite
 		antialiasing = true;
 	}
 
-	function set_char(char:String)
+	function set_char(char:String):String
 	{
 		if (this.char != char)
 		{
-			var prefix = getAnimPrefix(char);
+			var prefix:String = getAnimPrefix(char);
 			animation.addByPrefix('anim', prefix, 24);
 			animation.play('anim');
 			updateHitbox();
@@ -29,7 +29,7 @@ class AtlasChar extends FlxSprite
 		return this.char = char;
 	}
 
-	public function getAnimPrefix(char:String)
+	public function getAnimPrefix(char:String):String
 	{
 		switch (char)
 		{

@@ -34,7 +34,7 @@ class InputItem extends TextMenuItem
 
 	public function getInput()
 	{
-		var inputs = PlayerSettings.player1.controls.getInputsFor(control, device);
+		var inputs:Array<Int> = PlayerSettings.player1.controls.getInputsFor(control, device);
 		if (inputs.length > index)
 		{
 			if (inputs[index] != 27 || inputs[index] != 6) return inputs[index];

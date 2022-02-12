@@ -24,7 +24,7 @@ class FlxVideo extends FlxBasic
 		video.y = 0;
 		FlxG.addChildBelowMouse(video);
 
-		var connection = new NetConnection();
+		var connection:NetConnection = new NetConnection();
 		connection.connect(null);
 		netStream = new NetStream(connection);
 		netStream.client = {onMetaData: client_onMetaData};

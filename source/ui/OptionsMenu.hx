@@ -38,7 +38,7 @@ class OptionsMenu extends Page
 
 	public function createItem(label:String, callback:Dynamic, ?fireInstantly:Bool = false)
 	{
-		var item = items.createItem(0, 100 + 100 * items.length, label, Bold, callback);
+		var item:TextMenuItem = items.createItem(0, 100 + 100 * items.length, label, Bold, callback);
 		item.fireInstantly = fireInstantly;
 		item.screenCenter(X);
 		return item;

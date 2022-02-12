@@ -1,5 +1,7 @@
 package ui;
 
+import flixel.input.gamepad.FlxGamepadInputID;
+import flixel.input.gamepad.FlxGamepad;
 import Controls.Control;
 import Controls.Device;
 import flixel.FlxCamera;
@@ -16,9 +18,9 @@ class ControlsMenu extends Page
 	public static var controlList:Array<Control> = Control.createAll();
 	public static var controlGroups:Array<Array<Control>> = [[NOTE_UP, NOTE_DOWN, NOTE_LEFT, NOTE_RIGHT], [UI_UP, UI_DOWN, UI_LEFT, UI_RIGHT, ACCEPT, BACK]];
 
-	var currentDevice = Device.Keys;
+	var currentDevice:Device = Device.Keys;
 	var deviceList:TextMenuList;
-	var deviceListSelected = false;
+	var deviceListSelected:Bool = false;
 	var controlGrid:MenuTypedList<InputItem>;
 	var itemGroups:Array<Array<InputItem>>;
 	var menuCamera:FlxCamera;
@@ -28,7 +30,7 @@ class ControlsMenu extends Page
 
 	override public function new()
 	{
-		var array = [];
+		var array:Array<Array<InputItem>> = [];
 		for (i in 0...controlGroups.length)
 		{
 			array.push([]);
@@ -40,48 +42,48 @@ class ControlsMenu extends Page
 		menuCamera.bgColor = FlxColor.TRANSPARENT;
 		camera = menuCamera;
 		labels = new FlxTypedGroup<AtlasText>();
-		var grpText = new FlxTypedGroup<AtlasText>();
+		var grpText:FlxTypedGroup<AtlasText> = new FlxTypedGroup<AtlasText>();
 		controlGrid = new MenuTypedList(Columns(2), Vertical);
 		add(labels);
 		add(grpText);
 		add(controlGrid);
 		if (FlxG.gamepads.numActiveGamepads > 0)
 		{
-			var spr = new FlxSprite().makeGraphic(FlxG.width, 100, 0xFFFAFD6D);
+			var spr:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, 100, 0xFFFAFD6D);
 			add(spr);
 			deviceList = new TextMenuList(Horizontal, None);
 			add(deviceList);
 			deviceListSelected = true;
-			var kbItem = deviceList.createItem(null, null, 'Keyboard', Bold, function()
+			var kbItem:TextMenuItem = deviceList.createItem(null, null, 'Keyboard', Bold, function()
 			{
 				selectDevice(Device.Keys);
 			});
 			kbItem.x = FlxG.width / 2 - kbItem.width - 30;
 			kbItem.y = (spr.height - kbItem.height) / 2;
-			var gp = Device.Gamepad(FlxG.gamepads.firstActive.id);
-			var gpItem = deviceList.createItem(null, null, 'Gamepad', Bold, function()
+			var gp:Device = Device.Gamepad(FlxG.gamepads.firstActive.id);
+			var gpItem:TextMenuItem = deviceList.createItem(null, null, 'Gamepad', Bold, function()
 			{
 				selectDevice(gp);
 			});
 			gpItem.x = FlxG.width / 2 + 30;
 			gpItem.y = (spr.height - gpItem.height) / 2;
 		}
-		var ypos = (deviceList == null) ? 30 : 120;
+		var ypos:Int = (deviceList == null) ? 30 : 120;
 		var curSection:String = null;
 		for (ctrl in controlList)
 		{
-			var name = ctrl.getName();
+			var name:String = ctrl.getName();
 			if (curSection != 'UI_' && name.indexOf('UI_') == 0)
 			{
 				curSection = 'UI_';
-				var sectionText = new AtlasText(0, ypos, 'UI', Bold);
+				var sectionText:AtlasText = new AtlasText(0, ypos, 'UI', Bold);
 				grpText.add(sectionText).screenCenter(X);
 				ypos += 70;
 			}
 			else if (curSection != 'NOTE_' && name.indexOf('NOTE_') == 0)
 			{
 				curSection = 'NOTE_';
-				var sectionText = new AtlasText(0, ypos, 'NOTES', Bold);
+				var sectionText:AtlasText = new AtlasText(0, ypos, 'NOTES', Bold);
 				grpText.add(sectionText).screenCenter(X);
 				ypos += 70;
 			}
@@ -89,7 +91,7 @@ class ControlsMenu extends Page
 			{
 				name = name.substr(curSection.length);
 			}
-			var text = new AtlasText(150, ypos, name, Bold);
+			var text:AtlasText = new AtlasText(150, ypos, name, Bold);
 			labels.add(text);
 			text.alpha = 0.6;
 			createItem(text.x + 400, ypos, ctrl, 0);
@@ -132,7 +134,7 @@ class ControlsMenu extends Page
 
 	public function createItem(?x:Float = 0, ?y:Float = 0, control:Control, index:Int)
 	{
-		var item = new InputItem(x, y, currentDevice, control, index, onSelect);
+		var item:InputItem = new InputItem(x, y, currentDevice, control, index, onSelect);
 		for (i in 0...controlGroups.length)
 		{
 			if (controlGroups[i].contains(control))
@@ -166,7 +168,7 @@ class ControlsMenu extends Page
 		{
 			item.updateDevice(currentDevice);
 		}
-		var cancelBtn = dev == Device.Keys ? 'Escape' : 'Back';
+		var cancelBtn:String = dev == Device.Keys ? 'Escape' : 'Back';
 		if (dev == Device.Keys)
 		{
 			prompt.setText('\nPress any key to rebind\n\n\n\n    ' + cancelBtn + ' to cancel');
@@ -196,7 +198,7 @@ class ControlsMenu extends Page
 			switch (currentDevice)
 			{
 				case Keys:
-					var released = FlxG.keys.firstJustReleased();
+					var released:Int = FlxG.keys.firstJustReleased();
 					if (released != -1)
 					{
 						if (released != 27)
@@ -204,8 +206,8 @@ class ControlsMenu extends Page
 						closePrompt();
 					}
 				case Gamepad(id):
-					var pad = FlxG.gamepads.getByID(id);
-					var released = pad.mapping.getID(pad.firstJustReleasedRawID());
+					var pad:FlxGamepad = FlxG.gamepads.getByID(id);
+					var released:FlxGamepadInputID = pad.mapping.getID(pad.firstJustReleasedRawID());
 					if (released != -1)
 					{
 						if (released != 6)

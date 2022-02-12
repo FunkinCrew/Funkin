@@ -10,8 +10,8 @@ using StringTools;
 class CutsceneCharacter extends FlxTypedGroup<Dynamic>
 {
 	var coolPos:FlxPoint;
-	var animShit = new StringMap<FlxPoint>();
-	var arrayLMFAOOOO = [];
+	var animShit:StringMap<FlxPoint> = new StringMap<FlxPoint>();
+	var arrayLMFAOOOO:Array<String> = [];
 	var imageShit:String;
 
 	public var onFinish:Dynamic;
@@ -28,35 +28,35 @@ class CutsceneCharacter extends FlxTypedGroup<Dynamic>
 
 	function parseOffsets()
 	{
-		var swag = CoolUtil.coolTextFile(Paths.getPath('images/cutsceneStuff/' + this.imageShit + 'CutscenOffsets.txt', TEXT, null));
+		var swag:Array<String> = CoolUtil.coolTextFile(Paths.getPath('images/cutsceneStuff/' + this.imageShit + 'CutscenOffsets.txt', TEXT, null));
 		for (stuff in swag)
 		{
-			var point = FlxPoint.get();
-			var coords = stuff.split('---')[1].trim().split(' ');
+			var point:FlxPoint = FlxPoint.get();
+			var coords:Array<String> = stuff.split('---')[1].trim().split(' ');
 			
 			trace('cool split: ' + stuff.split('---')[1]);
 			trace(coords);
 			
 			point.set(Std.parseFloat(coords[0]), Std.parseFloat(coords[1]));
 			
-			var name = stuff.split('---')[0].trim();
+			var name:String = stuff.split('---')[0].trim();
 			animShit.set(name, point);
 			
 			arrayLMFAOOOO.push(stuff.split('---')[0].trim());
 		}
 
-		trace(animShit == null ? 'null' : animShit);
+		trace(animShit == null ? 'null' : animShit.toString());
 	}
 
 	function createCutscene(num:Int = 0)
 	{
-		var spr = new FlxSprite(coolPos.x + animShit.get(arrayLMFAOOOO[num]).x, coolPos.y + animShit.get(arrayLMFAOOOO[num]).y);
-		var path = 'cutsceneStuff/' + imageShit + '-' + num;
+		var spr:FlxSprite = new FlxSprite(coolPos.x + animShit.get(arrayLMFAOOOO[num]).x, coolPos.y + animShit.get(arrayLMFAOOOO[num]).y);
+		var path:String = 'cutsceneStuff/' + imageShit + '-' + num;
 		spr.frames = Paths.getSparrowAtlas(path);
 		spr.animation.addByPrefix('weed', arrayLMFAOOOO[num], 24, false);
 		spr.animation.play('weed');
 		spr.antialiasing = true;
-		spr.animation.finishCallback = function(name)
+		spr.animation.finishCallback = function(name:String)
 		{
 			spr.kill();
 			spr.destroy();

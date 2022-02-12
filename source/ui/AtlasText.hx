@@ -7,7 +7,7 @@ import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 
 using StringTools;
 
-class AtlasText extends FlxTypedSpriteGroup<Dynamic>
+class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
 {
 	public static var fonts:EnumValueMap<AtlasFont, AtlasFontData> = new EnumValueMap<AtlasFont, AtlasFontData>();
 
@@ -27,24 +27,24 @@ class AtlasText extends FlxTypedSpriteGroup<Dynamic>
 
 	function set_text(text:String = '')
 	{
-		var b:String = restrictCase(text);
-		var c:String = restrictCase(this.text);
+		var casedTextNew:String = restrictCase(text);
+		var casedText:String = restrictCase(this.text);
 		this.text = text;
-		if (b == c)
+		if (casedTextNew == casedText)
 		{
 			return text;
 		}
-		if (b.indexOf(c) == 0)
+		if (casedTextNew.indexOf(casedText) == 0)
 		{
-			appendTextCased(b.substr(c.length));
+			appendTextCased(casedTextNew.substr(casedText.length));
 			return this.text;
 		}
 		group.kill();
-		if (b == '')
+		if (casedTextNew == '')
 		{
 			return this.text;
 		}
-		appendTextCased(b);
+		appendTextCased(casedTextNew);
 		return this.text;
 	}
 
@@ -72,7 +72,7 @@ class AtlasText extends FlxTypedSpriteGroup<Dynamic>
 		}
 		else if (length > 0)
 		{
-			var member = group.members[length - 1];
+			var member:AtlasChar = group.members[length - 1];
 			nextX = member.x + member.width - x;
 			nextY = member.y + member.height - font.maxHeight - y;
 		}
@@ -110,17 +110,17 @@ class AtlasText extends FlxTypedSpriteGroup<Dynamic>
 
 	override public function toString()
 	{
-		var x = LabelValuePair.weak('x', this.x);
-		var y = LabelValuePair.weak('y', this.y);
-		var text = LabelValuePair.weak('text', this.text);
+		var x:LabelValuePair = LabelValuePair.weak('x', this.x);
+		var y:LabelValuePair = LabelValuePair.weak('y', this.y);
+		var text:LabelValuePair = LabelValuePair.weak('text', this.text);
 		return "InputItem, " + FlxStringUtil.getDebugString([x, y, text]);
 	}
 }
 
 class AtlasFontData
 {
-	public static var upperChar = new EReg("^[A-Z]\\d+$","");
-	public static var lowerChar = new EReg("^[a-z]\\d+$","");
+	public static var upperChar:EReg = new EReg("^[A-Z]\\d+$","");
+	public static var lowerChar:EReg = new EReg("^[a-z]\\d+$","");
 
 	public var atlas:FlxAtlasFrames;
 	public var maxHeight:Float = 0;
@@ -133,8 +133,8 @@ class AtlasFontData
 		atlas.parent.destroyOnNoUse = false;
 		atlas.parent.persist = true;
 
-		var hasUpper = false;
-		var hasLower = false;
+		var hasUpper:Bool = false;
+		var hasLower:Bool = false;
 		for (framedata in atlas.frames)
 		{
 			maxHeight = Math.max(maxHeight, framedata.frame.height);

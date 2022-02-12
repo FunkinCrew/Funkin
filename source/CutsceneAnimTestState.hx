@@ -2,6 +2,7 @@ package;
 
 import animate.FlxAnimate;
 import flixel.FlxState;
+import flixel.FlxSprite;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.text.FlxText;
 
@@ -15,14 +16,14 @@ class CutsceneAnimTestState extends FlxState
 	override public function new()
 	{
 		super();
-		var a = FlxGridOverlay.create(10, 10);
-		a.scrollFactor.set(.5, .5);
-		add(a);
+		var grid:FlxSprite = FlxGridOverlay.create(10, 10);
+		grid.scrollFactor.set(.5, .5);
+		add(grid);
 		debugTxt = new FlxText(900, 20, 0, "", 20);
 		debugTxt.color = 0xFF0000FF;
 		add(debugTxt);
-		var b = new FlxAnimate(600, 200);
-		add(b);
+		var tankman:FlxAnimate = new FlxAnimate(600, 200);
+		add(tankman);
 	}
 
 	override function update(elapsed:Float)

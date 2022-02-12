@@ -57,7 +57,7 @@ class MenuTypedList<T:MenuItem> extends FlxTypedGroup<T>
 		{
 			throw "No item named:" + name;
 		}
-		var item = byName.get(name);
+		var item:T = byName.get(name);
 		if (byName.exists(name))
 		{
 			byName.remove(name);
@@ -72,7 +72,7 @@ class MenuTypedList<T:MenuItem> extends FlxTypedGroup<T>
 		super.update(elapsed);
 		if (enabled && !busy)
 		{
-			var controls = PlayerSettings.player1.controls;
+			var controls:Controls = PlayerSettings.player1.controls;
 			var wrapHorizontal:Bool;
 			var wrapVertical:Bool;
 			var nextIndex:Int;
@@ -93,16 +93,16 @@ class MenuTypedList<T:MenuItem> extends FlxTypedGroup<T>
 			switch (navControls)
 			{
 				case Horizontal:
-					var leftP = controls.UI_LEFT_P;
-					var rightP = controls.UI_RIGHT_P;
+					var leftP:Bool = controls.UI_LEFT_P;
+					var rightP:Bool = controls.UI_RIGHT_P;
 					nextIndex = navAxis(selectedIndex, length, leftP, rightP, wrapHorizontal);
 				case Vertical:
-					var upP = controls.UI_UP_P;
-					var downP = controls.UI_DOWN_P;
+					var upP:Bool = controls.UI_UP_P;
+					var downP:Bool = controls.UI_DOWN_P;
 					nextIndex = navAxis(selectedIndex, length, upP, downP, wrapVertical);
 				case Both:
-					var backwards = controls.UI_LEFT_P || controls.UI_UP_P;
-					var forwards = controls.UI_RIGHT_P || controls.UI_DOWN_P;
+					var backwards:Bool = controls.UI_LEFT_P || controls.UI_UP_P;
+					var forwards:Bool = controls.UI_RIGHT_P || controls.UI_DOWN_P;
 					nextIndex = navAxis(selectedIndex, length, backwards, forwards, wrapMode != None);
 				case Columns(num):
 					nextIndex = navGrid(num, controls.UI_LEFT_P, controls.UI_RIGHT_P, wrapHorizontal, controls.UI_UP_P, controls.UI_DOWN_P, wrapVertical);
@@ -128,7 +128,7 @@ class MenuTypedList<T:MenuItem> extends FlxTypedGroup<T>
 			return curSelected;
 		}
 
-		var next = curSelected;
+		var next:Int = curSelected;
 		if (goBack)
 		{
 			if (next > 0)
@@ -148,17 +148,17 @@ class MenuTypedList<T:MenuItem> extends FlxTypedGroup<T>
 
 	function navGrid(gridLength:Int, hBack:Bool, hForward:Bool, hWrap:Bool, vBack:Bool, vForward:Bool, vWrap:Bool)
 	{
-		var itemLength = Math.ceil(length / gridLength);
-		var curItem = Math.floor(selectedIndex / gridLength);
-		var curGrid = selectedIndex % gridLength;
-		var selected1 = navAxis(curGrid, gridLength, hBack, hForward, hWrap);
-		var selected2 = navAxis(curItem, itemLength, vBack, vForward, vWrap);
+		var itemLength:Int = Math.ceil(length / gridLength);
+		var curItem:Int = Math.floor(selectedIndex / gridLength);
+		var curGrid:Int = selectedIndex % gridLength;
+		var selected1:Int = navAxis(curGrid, gridLength, hBack, hForward, hWrap);
+		var selected2:Int = navAxis(curItem, itemLength, vBack, vForward, vWrap);
 		return Std.int(Math.min(length - 1, selected2 * gridLength + selected1));
 	}
 
 	public function accept()
 	{
-		var selected = members[selectedIndex];
+		var selected:T = members[selectedIndex];
 		onAcceptPress.dispatch(selected);
 		if (selected.fireInstantly)
 		{

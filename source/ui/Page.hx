@@ -47,7 +47,7 @@ class Page extends FlxTypedGroup<Dynamic>
 		enabled = false;
 		prompt.closeCallback = function()
 		{
-			set_enabled(true);
+			enabled = true;
 			if (callback != null)
 				callback();
 		}
