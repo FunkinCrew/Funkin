@@ -87,7 +87,7 @@ class ChartingState extends MusicBeatState
 
 	var playheadTest:FlxSprite;
 
-	var staticSpecGrp:FlxTypedGroup<PolygonSpectogram>;
+	var staticSpecGrp:FlxTypedGroup<SpectogramSprite>;
 
 	override function create()
 	{
@@ -443,7 +443,7 @@ class ChartingState extends MusicBeatState
 		// vocals = new FlxSound().loadEmbedded(Paths.voices(daSong));
 		// FlxG.sound.list.add(vocals);
 
-		staticSpecGrp = new FlxTypedGroup<PolygonSpectogram>();
+		staticSpecGrp = new FlxTypedGroup<SpectogramSprite>();
 		add(staticSpecGrp);
 
 		var aBoy:ABotVis = new ABotVis(FlxG.sound.music);
@@ -451,7 +451,7 @@ class ChartingState extends MusicBeatState
 
 		for (index => voc in vocals.members)
 		{
-			var vocalSpec:PolygonSpectogram = new PolygonSpectogram(voc, FlxG.random.color(0xFFAAAAAA, FlxColor.WHITE, 100), musSpec.daHeight,
+			var vocalSpec:SpectogramSprite = new SpectogramSprite(voc, FlxG.random.color(0xFFAAAAAA, FlxColor.WHITE, 100), musSpec.daHeight,
 				Math.floor(FlxG.height / 2));
 			vocalSpec.x = 70 - (50 * index);
 			// vocalSpec.visType = FREQUENCIES;
@@ -460,7 +460,7 @@ class ChartingState extends MusicBeatState
 			vocalSpec.scrollFactor.set();
 			add(vocalSpec);
 
-			var staticVocal:PolygonSpectogram = new PolygonSpectogram(voc, FlxG.random.color(0xFFAAAAAA, FlxColor.WHITE, 100), GRID_SIZE * 16, 0.5);
+			var staticVocal:SpectogramSprite = new SpectogramSprite(voc, FlxG.random.color(0xFFAAAAAA, FlxColor.WHITE, 100), GRID_SIZE * 16, GRID_SIZE * 8);
 			if (index == 0)
 				staticVocal.x -= 150;
 
