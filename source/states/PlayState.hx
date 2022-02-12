@@ -3615,6 +3615,13 @@ class PlayState extends MusicBeatState
 						dad.playAnim(NoteVariables.Character_Animation_Arrays[SONG.playerKeyCount - 1][direction] + altAnim + "miss", true);
 				}
 			}
+			else
+			{
+				if(characterPlayingAs == 0)
+					boyfriend.playAnim(NoteVariables.Character_Animation_Arrays[SONG.playerKeyCount - 1][direction] + "miss", true);
+				else
+					dad.playAnim(NoteVariables.Character_Animation_Arrays[SONG.playerKeyCount - 1][direction] + altAnim + "miss", true);
+			}
 
 			executeALuaState("playerOneMiss", [direction, Conductor.songPosition, (note != null ? note.arrow_Type : "default"), (note != null ? note.isSustainNote : false)]);
 		}
