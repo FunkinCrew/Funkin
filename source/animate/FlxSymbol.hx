@@ -31,13 +31,13 @@ class FlxSymbol extends FlxSprite
 	public var matrixExposed = false;
 	public var coolParse:Dynamic;
 
-	public static var nestedShit = new IntMap();
+	public static var nestedShit:IntMap<Array<FlxSymbol>> = new IntMap<Array<FlxSymbol>>();
 	
 	override public function new(x:Float, y:Float, c:Dynamic)
 	{
 		super(x, y);
 		coolParse = c;
-		if (Reflect.hasField(c, 'SD'))
+		if (Reflect.hasField(coolParse, 'SD'))
 			symbolAtlasShit = parseSymbolDictionary(coolParse);
 	}
 
@@ -50,47 +50,51 @@ class FlxSymbol extends FlxSprite
 	{
 		drawQueue = [];
 		var _a_L:Array<Dynamic> = a.L; // error preventer, sorry I don't have the typedefs
-		for (f in _a_L)
+		for (d in _a_L)
 		{
-			if (daFrame >= f.I && daFrame < f.I + f.DU)
+			var _d_FR:Array<Dynamic> = d.FR; // another error preventer
+			for (f in _d_FR)
 			{
-				var _f_E:Array<Dynamic> = f.E; // another error preventer
-				for (m in _f_E)
+				if (daFrame >= f.I && daFrame < f.I + f.DU)
 				{
-					if (Reflect.hasField(m, 'ASI'))
+					var _f_E:Array<Dynamic> = f.E; // last error preventer for this function
+					for (m in _f_E)
 					{
-						var n1 = m.ASI.M3D;
-						var k = new Matrix(n1[0], n1[1], n1[4], n1[5], n1[12], n1[13]);
-						var n2 = new FlxSymbol(0, 0, b);
-						matrixExposed = true;
-						n2.frames = frames;
-						n2.frame = n2.frames.framesHash.get(m.ASI.N);
-						k.concat(_matrix);
-						n2.matrixExposed = true;
-						n2.transformMatrix.concat(k);
-						n2.origin.set();
-						n2.origin.x += origin.x;
-						n2.origin.y += origin.y;
-						n2.antialiasing = true;
-						n2.draw();
-					}
-					else
-					{
-						var n = symbolMap.get(m.SI.SN);
-						var k = new FlxSymbol(0, 0, coolParse);
-						k.frames = frames;
-						var g = new FlxMatrix(m.SI.M3D[0], m.SI.M3D[1], m.SI.M3D[4], m.SI.M3D[5], m.SI.M3D[12], m.SI.M3D[13]);
-						g.concat(_matrix);
-						k._matrix.concat(g);
-						k.origin.set(m.SI.TRP.x, m.SI.TRP.y);
-						if (symbolAtlasShit.exists(n.SN))
+						if (Reflect.hasField(m, 'ASI'))
 						{
-							// empty if statement???
-							// perhaps it was later commented out code, idfk
+							var n1 = m.ASI.M3D;
+							var k = new Matrix(n1[0], n1[1], n1[4], n1[5], n1[12], n1[13]);
+							var n2 = new FlxSymbol(0, 0, b);
+							matrixExposed = true;
+							n2.frames = frames;
+							n2.frame = n2.frames.framesHash.get(m.ASI.N);
+							k.concat(_matrix);
+							n2.matrixExposed = true;
+							n2.transformMatrix.concat(k);
+							n2.origin.set();
+							n2.origin.x += origin.x;
+							n2.origin.y += origin.y;
+							n2.antialiasing = true;
+							n2.draw();
 						}
-						k.hasFrameByPass = true;
-						k.nestDepth = nestDepth + 1;
-						k.renderFrame(n.TL, b);
+						else
+						{
+							var n = symbolMap.get(m.SI.SN);
+							var k = new FlxSymbol(0, 0, coolParse);
+							k.frames = frames;
+							var g = new FlxMatrix(m.SI.M3D[0], m.SI.M3D[1], m.SI.M3D[4], m.SI.M3D[5], m.SI.M3D[12], m.SI.M3D[13]);
+							g.concat(_matrix);
+							k._matrix.concat(g);
+							k.origin.set(m.SI.TRP.x, m.SI.TRP.y);
+							if (symbolAtlasShit.exists(n.SN))
+							{
+								// empty if statement???
+								// perhaps it was later commented out code, idfk
+							}
+							k.hasFrameByPass = true;
+							k.nestDepth = nestDepth + 1;
+							k.renderFrame(n.TL, b);
+						}
 					}
 				}
 			}

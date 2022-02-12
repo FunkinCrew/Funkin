@@ -68,8 +68,7 @@ class FlxAnimate extends FlxSymbol
 		{
 			for (i in FlxSymbol.nestedShit.keys())
 			{
-				var _FlxSymbol_nestedShit_get_i:Array<Dynamic> = FlxSymbol.nestedShit.get(i); // error preventer
-				for (j in _FlxSymbol_nestedShit_get_i)
+				for (j in FlxSymbol.nestedShit.get(i))
 				{
 					j.draw();
 				}
