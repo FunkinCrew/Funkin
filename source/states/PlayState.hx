@@ -4323,6 +4323,42 @@ class PlayState extends MusicBeatState
 			case "set gf speed":
 				if(Std.parseInt(event[2]) != null)
 					gfSpeed = Std.parseInt(event[2]);
+			case "character will idle":
+				var char = getCharFromEvent(event[2]);
+
+				var funny = Std.string(event[3]).toLowerCase() == "true";
+
+				char.shouldDance = funny;
+			case "set camera zoom":
+				var defaultCamZoomThing:Float = Std.parseFloat(event[2]);
+				var hudCamZoomThing:Float = Std.parseFloat(event[3]);
+
+				if(Math.isNaN(defaultCamZoomThing))
+					defaultCamZoomThing = defaultCamZoom;
+
+				if(Math.isNaN(hudCamZoomThing))
+					hudCamZoomThing = 1;
+
+				defaultCamZoom = defaultCamZoomThing;
+				defaultHudCamZoom = hudCamZoomThing;
+			case "change character alpha":
+				var char = getCharFromEvent(event[2]);
+
+				var alphaVal:Float = Std.parseFloat(event[3]);
+
+				if(Math.isNaN(alphaVal))
+					alphaVal = 0.5;
+
+				char.alpha = alphaVal;
+			case "play character animation":
+				var character:Character = getCharFromEvent(event[2]);
+
+				var anim:String = "idle";
+
+				if(event[3] != "")
+					anim = event[3];
+
+				character.playAnim(anim, true);
 			#end
 			case "add camera zoom":
 				if(utilities.Options.getData("cameraZooms") && FlxG.camera.zoom < 1.35)
@@ -4341,15 +4377,6 @@ class PlayState extends MusicBeatState
 
 					camZooming = true;
 				}
-			case "play character animation":
-				var character:Character = getCharFromEvent(event[2]);
-
-				var anim:String = "idle";
-
-				if(event[3] != "")
-					anim = event[3];
-
-				character.playAnim(anim, true);
 			case "screen shake":
 				var valuesArray:Array<String> = [event[2], event[3]];
 				var targetsArray:Array<FlxCamera> = [camGame, camHUD];
@@ -4383,27 +4410,6 @@ class PlayState extends MusicBeatState
 					else
 						speed = funnySpeed;
 				}
-			case "set camera zoom":
-				var defaultCamZoomThing:Float = Std.parseFloat(event[2]);
-				var hudCamZoomThing:Float = Std.parseFloat(event[3]);
-
-				if(Math.isNaN(defaultCamZoomThing))
-					defaultCamZoomThing = defaultCamZoom;
-
-				if(Math.isNaN(hudCamZoomThing))
-					hudCamZoomThing = 1;
-
-				defaultCamZoom = defaultCamZoomThing;
-				defaultHudCamZoom = hudCamZoomThing;
-			case "change character alpha":
-				var char = getCharFromEvent(event[2]);
-
-				var alphaVal:Float = Std.parseFloat(event[3]);
-
-				if(Math.isNaN(alphaVal))
-					alphaVal = 0.5;
-
-				char.alpha = alphaVal;
 			case "character will idle?":
 				var char = getCharFromEvent(event[2]);
 

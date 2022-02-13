@@ -761,6 +761,20 @@ class ModchartUtilities
             return 0;
         });
 
+        Lua_helper.add_callback(lua,"getCharFromEvent", function(eventId:String) {
+            switch(eventId.toLowerCase())
+            {
+                case "girlfriend" | "gf" | "player3":
+                    return "girlfriend";
+                case "dad" | "opponent" | "player2":
+                    return "dad";
+                case "bf" | "boyfriend" | "player" | "player1":
+                    return "boyfriend";
+            }
+    
+            return "boyfriend";
+        });
+
         Lua_helper.add_callback(lua,"setActorAlpha", function(alpha:Float,id:String) {
             if(getActorByName(id) != null)
             {
@@ -1318,11 +1332,22 @@ class ModchartUtilities
         });
 
         Lua_helper.add_callback(lua,"getProperty", function(object:String, property:String) {
-            @:privateAccess
-            if(Reflect.getProperty(PlayState.instance, object) != null)
-                return Reflect.getProperty(Reflect.getProperty(PlayState.instance, object), property);
+            if(object != "")
+            {
+                @:privateAccess
+                if(Reflect.getProperty(PlayState.instance, object) != null)
+                    return Reflect.getProperty(Reflect.getProperty(PlayState.instance, object), property);
+                else
+                    return Reflect.getProperty(Reflect.getProperty(PlayState, object), property);
+            }
             else
-                return Reflect.getProperty(Reflect.getProperty(PlayState, object), property);
+            {
+                @:privateAccess
+                if(Reflect.getProperty(PlayState.instance, property) != null)
+                    return Reflect.getProperty(PlayState.instance, property);
+                else
+                    return Reflect.getProperty(PlayState, property);
+            }
         });
 
         Lua_helper.add_callback(lua, "getPropertyFromClass", function(className:String, variable:String) {
