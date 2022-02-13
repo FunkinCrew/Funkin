@@ -91,6 +91,9 @@ class FreeplayState extends MusicBeatState
 		songsReady = true;
 		#end
 
+		if(FlxG.sound.music == null || !FlxG.sound.music.playing)
+			TitleState.playTitleMusic();
+
 		var initSonglist = CoolUtil.coolTextFile(Paths.txt('freeplaySonglist'));
 
 		#if discord_rpc
@@ -288,8 +291,23 @@ class FreeplayState extends MusicBeatState
 
 		if(songsReady)
 		{
-			if(-1 * Math.floor(FlxG.mouse.wheel) != 0)
+			if(-1 * Math.floor(FlxG.mouse.wheel) != 0 && !shift)
 				changeSelection(-1 * Math.floor(FlxG.mouse.wheel));
+			else if(-1 * (Math.floor(FlxG.mouse.wheel) / 10) != 0 && shift)
+			{
+				curSpeed += -1 * (Math.floor(FlxG.mouse.wheel) / 10);
+
+				#if cpp
+				@:privateAccess
+				{
+					if(FlxG.sound.music.active && FlxG.sound.music.playing)
+						lime.media.openal.AL.sourcef(FlxG.sound.music._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, curSpeed);
+		
+					if (vocals.active && vocals.playing)
+						lime.media.openal.AL.sourcef(vocals._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, curSpeed);
+				}
+				#end
+			}
 
 			if (upP)
 				changeSelection(-1);

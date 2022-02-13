@@ -144,23 +144,17 @@ class ModchartUtilities
     {
         oldMultiplier = PlayState.songMultiplier;
 
-        lua_Sprites = [
-            'boyfriend' => PlayState.boyfriend,
-            'girlfriend' => PlayState.gf,
-            'dad' => PlayState.dad,
-        ];
+        lua_Sprites.set("boyfriend", PlayState.boyfriend);
+        lua_Sprites.set("girlfriend", PlayState.gf);
+        lua_Sprites.set("dad", PlayState.dad);
 
-        lua_Characters = [
-            'boyfriend' => PlayState.boyfriend,
-            'girlfriend' => PlayState.gf,
-            'dad' => PlayState.dad,
-        ];
-    
+        lua_Characters.set("boyfriend", PlayState.boyfriend);
+        lua_Characters.set("girlfriend", PlayState.gf);
+        lua_Characters.set("dad", PlayState.dad);
+
+        lua_Sounds.set("Inst", FlxG.sound.music);
         @:privateAccess
-        lua_Sounds = [
-            'Inst' => FlxG.sound.music,
-            'Voices' => PlayState.instance.vocals
-        ];
+        lua_Sounds.set("Voices", PlayState.instance.vocals);
 
         lua = LuaL.newstate();
         LuaL.openlibs(lua);
@@ -623,9 +617,7 @@ class ModchartUtilities
 
         Lua_helper.add_callback(lua,"setActorX", function(x:Float,id:String) {
             if(getActorByName(id) != null)
-            {
                 getActorByName(id).x = x;
-            }
         });
 
         Lua_helper.add_callback(lua,"setActorPos", function(x:Float,y:Float,id:String) {
@@ -759,20 +751,6 @@ class ModchartUtilities
             }
 
             return 0;
-        });
-
-        Lua_helper.add_callback(lua,"getCharFromEvent", function(eventId:String) {
-            switch(eventId.toLowerCase())
-            {
-                case "girlfriend" | "gf" | "player3":
-                    return "girlfriend";
-                case "dad" | "opponent" | "player2":
-                    return "dad";
-                case "bf" | "boyfriend" | "player" | "player1":
-                    return "boyfriend";
-            }
-    
-            return "boyfriend";
         });
 
         Lua_helper.add_callback(lua,"setActorAlpha", function(alpha:Float,id:String) {
@@ -1446,6 +1424,20 @@ class ModchartUtilities
             }
 
             return true;
+        });
+
+        Lua_helper.add_callback(lua,"getCharFromEvent", function(eventId:String) {
+            switch(eventId.toLowerCase())
+            {
+                case "girlfriend" | "gf" | "player3":
+                    return "girlfriend";
+                case "dad" | "opponent" | "player2":
+                    return "dad";
+                case "bf" | "boyfriend" | "player" | "player1":
+                    return "boyfriend";
+            }
+    
+            return "boyfriend";
         });
     }
 
