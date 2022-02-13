@@ -4479,6 +4479,14 @@ class PlayState extends MusicBeatState
 				}
 		}
 
+		#if linc_luajit
+		if(!event_luas.exists(event[0].toLowerCase()) && Assets.exists(Paths.lua("event data/" + event[0].toLowerCase())))
+		{
+			event_luas.set(event[0].toLowerCase(), ModchartUtilities.createModchartUtilities(PolymodAssets.getPath(Paths.lua("event data/" + event[0].toLowerCase()))));
+			generatedSomeDumbEventLuas = true;
+		}
+		#end
+
 		//                            name       pos      param 1   param 2
 		executeALuaState("onEvent", [event[0], event[1], event[2], event[3]]);
 	}
