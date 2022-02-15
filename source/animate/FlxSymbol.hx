@@ -7,8 +7,6 @@ import openfl.geom.Matrix;
 import haxe.ds.StringMap;
 import flixel.FlxSprite;
 
-using StringTools;
-
 // I sincerely apologize for the rather shitty variable names and the error preventers.
 // The variables are not named in the code, and I have no fucking idea what they are doing. Typedefs don't exist either.
 // If you have a general understanding of the variables and have good names, please reach out to me via an issue marked as an "enhancement", or a pull request.

@@ -6,8 +6,6 @@ import flixel.FlxSprite;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.text.FlxText;
 
-using StringTools;
-
 class CutsceneAnimTestState extends FlxState
 {
 	var curSelected:Int = 0;

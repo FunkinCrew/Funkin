@@ -1,7 +1,5 @@
 package ui;
 
-using StringTools;
-
 class TextTypedMenuItem extends MenuTypedItem
 {
 	override public function setItem(text:String, ?callback:Dynamic)

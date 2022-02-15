@@ -2,8 +2,6 @@ package;
 
 import flixel.FlxSprite;
 
-using StringTools;
-
 class BGSprite extends FlxSprite
 {
 	public var idleAnim:String = null;

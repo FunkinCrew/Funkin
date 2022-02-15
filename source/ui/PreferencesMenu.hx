@@ -7,8 +7,6 @@ import flixel.FlxCamera;
 import flixel.util.FlxColor;
 import haxe.ds.StringMap;
 
-using StringTools;
-
 class PreferencesMenu extends Page
 {
 	public static var preferences:StringMap<Bool> = new StringMap<Bool>();

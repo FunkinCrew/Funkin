@@ -7,8 +7,6 @@ import openfl.media.Video;
 import openfl.net.NetStream;
 import flixel.FlxG;
 
-using StringTools;
-
 class VideoState extends MusicBeatState
 {
 	public static var seenVideo:Bool = false;

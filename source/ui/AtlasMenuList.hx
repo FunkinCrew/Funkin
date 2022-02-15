@@ -3,8 +3,6 @@ package ui;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.util.typeLimit.OneOfTwo;
 
-using StringTools;
-
 class AtlasMenuList extends MenuTypedList<AtlasMenuItem>
 {
 	var atlas:FlxAtlasFrames;

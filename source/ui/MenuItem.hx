@@ -2,8 +2,6 @@ package ui;
 
 import flixel.FlxSprite;
 
-using StringTools;
-
 class MenuItem extends FlxSprite
 {
 	public var fireInstantly:Bool = false;

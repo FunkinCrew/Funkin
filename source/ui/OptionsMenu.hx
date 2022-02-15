@@ -2,8 +2,6 @@ package ui;
 
 import flixel.FlxG;
 
-using StringTools;
-
 class OptionsMenu extends Page
 {
 	var items:TextMenuList;

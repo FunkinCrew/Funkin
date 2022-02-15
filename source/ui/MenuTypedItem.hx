@@ -2,8 +2,6 @@ package ui;
 
 import flixel.util.FlxColor;
 
-using StringTools;
-
 class MenuTypedItem extends MenuItem
 {
 	public var label(default, set):AtlasText;

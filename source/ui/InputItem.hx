@@ -4,8 +4,6 @@ import flixel.input.keyboard.FlxKey;
 import Controls.Control;
 import Controls.Device;
 
-using StringTools;
-
 class InputItem extends TextMenuItem
 {
 	public var index:Int = -1;

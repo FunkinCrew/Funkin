@@ -5,8 +5,6 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxSubState;
 
-using StringTools;
-
 class Prompt extends FlxSubState
 {
 	public static var MARGIN:Float = 100;

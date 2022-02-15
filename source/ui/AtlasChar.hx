@@ -3,8 +3,6 @@ package ui;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 
-using StringTools;
-
 class AtlasChar extends FlxSprite
 {
 	public var char(default, set):String;

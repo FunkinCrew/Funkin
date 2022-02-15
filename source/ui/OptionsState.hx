@@ -4,8 +4,6 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import haxe.ds.EnumValueMap;
 
-using StringTools;
-
 class OptionsState extends MusicBeatState
 {
 	public var pages:EnumValueMap<PageName, Page> = new EnumValueMap();

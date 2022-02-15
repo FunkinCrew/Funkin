@@ -4,8 +4,6 @@ import flixel.FlxG;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.util.FlxSignal.FlxTypedSignal;
 
-using StringTools;
-
 class Page extends FlxTypedGroup<Dynamic>
 {
 	public var onSwitch:FlxTypedSignal<PageName->Void> = new FlxTypedSignal<PageName->Void>();

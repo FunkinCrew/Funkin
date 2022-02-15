@@ -2,8 +2,6 @@ package ui;
 
 import flixel.FlxSprite;
 
-using StringTools;
-
 class CheckboxThingie extends FlxSprite
 {
 	public var daValue(default, set):Bool;

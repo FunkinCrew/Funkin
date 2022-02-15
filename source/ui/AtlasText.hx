@@ -5,8 +5,6 @@ import haxe.ds.EnumValueMap;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 
-using StringTools;
-
 class AtlasText extends FlxTypedSpriteGroup<AtlasChar>
 {
 	public static var fonts:EnumValueMap<AtlasFont, AtlasFontData> = new EnumValueMap<AtlasFont, AtlasFontData>();

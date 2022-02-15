@@ -11,8 +11,6 @@ import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.util.FlxColor;
 
-using StringTools;
-
 class ControlsMenu extends Page
 {
 	public static var controlList:Array<Control> = Control.createAll();

@@ -2,8 +2,6 @@ package ui;
 
 import flixel.graphics.frames.FlxAtlasFrames;
 
-using StringTools;
-
 class AtlasMenuItem extends MenuItem
 {	
 	var atlas:FlxAtlasFrames;
