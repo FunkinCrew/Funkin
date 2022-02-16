@@ -63,6 +63,8 @@ class PolygonSpectogram extends MeshRender
 		{
 			clear();
 
+			start = Math.max(start, 0);
+
 			var samplesToGen:Int = Std.int(sampleRate * seconds);
 			// gets which sample to start at
 			var startSample:Int = Std.int(FlxMath.remapToRange(start, 0, vis.snd.length, 0, numSamples));

@@ -172,17 +172,11 @@ class SongLoad
 		if (noteStuff == null)
 			return;
 
-		trace(noteStuff);
-
 		for (sectionIndex => section in noteStuff)
 		{
 			for (noteIndex => noteDataArray in section.sectionNotes)
 			{
-				trace(noteDataArray);
-
 				var arrayDipshit:Array<Dynamic> = cast noteDataArray; // crackhead
-
-				trace(arrayDipshit);
 
 				if (arrayDipshit != null) // array isnt null, that means it loaded it as an array and needs to be manually parsed?
 				{
@@ -258,7 +252,6 @@ class SongLoad
 		{
 			swagShit.difficulties.push(diff);
 			swagShit.noteMap[diff] = cast Reflect.field(songParsed.song.notes, diff);
-			trace(swagShit.noteMap[diff]);
 
 			castArrayToNoteData(swagShit.noteMap[diff]);
 

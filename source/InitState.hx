@@ -10,6 +10,7 @@ import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import flixel.util.FlxColor;
 import openfl.display.BitmapData;
+import play.PicoFight;
 import ui.PreferencesMenu;
 import ui.stageBuildShit.StageBuilderState;
 
@@ -160,6 +161,8 @@ class InitState extends FlxTransitionableState
 		FlxG.switchState(new ChartingState());
 		#elseif STAGEBUILD
 		FlxG.switchState(new StageBuilderState());
+		#elseif FIGHT
+		FlxG.switchState(new PicoFight());
 		#elseif ANIMDEBUG
 		FlxG.switchState(new ui.animDebugShit.DebugBoundingState());
 		#elseif NETTEST

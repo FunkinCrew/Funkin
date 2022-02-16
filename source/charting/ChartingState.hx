@@ -951,8 +951,14 @@ class ChartingState extends MusicBeatState
 						{
 							// FlxG.sound.music.time += daTime;
 
-							FlxG.sound.music.play();
-							vocals.play();
+							FlxG.sound.music.pause();
+							vocals.pause();
+
+							FlxG.sound.music.time += daTime;
+							vocals.time = FlxG.sound.music.time;
+
+							// FlxG.sound.music.play();
+							// vocals.play();
 
 							#if HAS_PITCH
 							FlxG.sound.music.pitch = 0.2;

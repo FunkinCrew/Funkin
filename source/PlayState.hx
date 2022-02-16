@@ -30,6 +30,7 @@ import lime.utils.Assets;
 import shaderslmfao.BuildingShaders;
 import shaderslmfao.ColorSwap;
 import shaderslmfao.OverlayBlend;
+import ui.PopUpStuff;
 import ui.PreferencesMenu;
 
 using StringTools;
@@ -73,6 +74,10 @@ class PlayState extends MusicBeatState
 	private static var prevCamFollow:FlxObject;
 
 	private var strumLineNotes:FlxTypedGroup<FlxSprite>;
+
+	/**
+	 * Strumline for player
+	 */
 	private var playerStrums:FlxTypedGroup<FlxSprite>;
 
 	private var camZooming:Bool = false;
@@ -154,6 +159,8 @@ class PlayState extends MusicBeatState
 	var camPos:FlxPoint;
 	var lightFadeShader:BuildingShaders;
 
+	var comboPopUps:PopUpStuff;
+
 	override public function create()
 	{
 		initCameras();
@@ -209,6 +216,9 @@ class PlayState extends MusicBeatState
 		add(strumLineNotes);
 
 		// fake notesplash cache type deal so that it loads in the graphic?
+
+		comboPopUps = new PopUpStuff();
+		add(comboPopUps);
 
 		grpNoteSplashes = new FlxTypedGroup<NoteSplash>();
 
@@ -2278,10 +2288,10 @@ class PlayState extends MusicBeatState
 	{
 		if (combo > 5 && gf.animOffsets.exists('sad'))
 			gf.playAnim('sad');
+
 		if (combo != 0)
 		{
-			combo = 0;
-			displayCombo();
+			combo = comboPopUps.displayCombo(0);
 		}
 	}
 
@@ -2411,13 +2421,9 @@ class PlayState extends MusicBeatState
 		// boyfriend.playAnim('hey');
 		vocals.volume = 1;
 
-		var rating:FlxSprite = new FlxSprite();
 		var score:Int = 350;
-
 		var daRating:String = "sick";
-
 		var isSick:Bool = true;
-
 		var healthMulti:Float = 1;
 
 		if (daNote.lowStakes)
@@ -2463,150 +2469,10 @@ class PlayState extends MusicBeatState
 		if (!practiceMode)
 			songScore += score;
 
-		// ludum dare rating system
-		/* if (combo > 60)
-				daRating = 'sick';
-			else if (combo > 12)
-				daRating = 'good'
-			else if (combo > 4)
-				daRating = 'bad';
-		 */
+		comboPopUps.displayRating(daRating);
 
-		var ratingPath:String = daRating;
-
-		if (curStage.startsWith('school'))
-			ratingPath = "weeb/pixelUI/" + ratingPath + "-pixel";
-
-		rating.loadGraphic(Paths.image(ratingPath));
-		rating.x = FlxG.width * 0.55 - 40;
-		// make sure rating is visible lol!
-		if (rating.x < FlxG.camera.scroll.x)
-			rating.x = FlxG.camera.scroll.x;
-		else if (rating.x > FlxG.camera.scroll.x + FlxG.camera.width - rating.width)
-			rating.x = FlxG.camera.scroll.x + FlxG.camera.width - rating.width;
-
-		rating.y = FlxG.camera.scroll.y + FlxG.camera.height * 0.4 - 60;
-		rating.acceleration.y = 550;
-		rating.velocity.y -= FlxG.random.int(140, 175);
-		rating.velocity.x -= FlxG.random.int(0, 10);
-
-		add(rating);
-
-		if (curStage.startsWith('school'))
-		{
-			rating.setGraphicSize(Std.int(rating.width * daPixelZoom * 0.7));
-		}
-		else
-		{
-			rating.setGraphicSize(Std.int(rating.width * 0.7));
-			rating.antialiasing = true;
-		}
-		rating.updateHitbox();
-
-		FlxTween.tween(rating, {alpha: 0}, 0.2, {
-			onComplete: function(tween:FlxTween)
-			{
-				rating.destroy();
-			},
-			startDelay: Conductor.crochet * 0.001
-		});
 		if (combo >= 10 || combo == 0)
-			displayCombo();
-	}
-
-	function displayCombo():Void
-	{
-		var pixelShitPart1:String = "";
-		var pixelShitPart2:String = '';
-
-		if (curStage.startsWith('school'))
-		{
-			pixelShitPart1 = 'weeb/pixelUI/';
-			pixelShitPart2 = '-pixel';
-		}
-
-		var comboSpr:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'combo' + pixelShitPart2));
-		comboSpr.y = FlxG.camera.scroll.y + FlxG.camera.height * 0.4 + 80;
-		comboSpr.x = FlxG.width * 0.55;
-		// make sure combo is visible lol!
-		// 194 fits 4 combo digits
-		if (comboSpr.x < FlxG.camera.scroll.x + 194)
-			comboSpr.x = FlxG.camera.scroll.x + 194;
-		else if (comboSpr.x > FlxG.camera.scroll.x + FlxG.camera.width - comboSpr.width)
-			comboSpr.x = FlxG.camera.scroll.x + FlxG.camera.width - comboSpr.width;
-
-		comboSpr.acceleration.y = 600;
-		comboSpr.velocity.y -= 150;
-		comboSpr.velocity.x += FlxG.random.int(1, 10);
-
-		add(comboSpr);
-
-		if (curStage.startsWith('school'))
-		{
-			comboSpr.setGraphicSize(Std.int(comboSpr.width * daPixelZoom * 0.7));
-		}
-		else
-		{
-			comboSpr.setGraphicSize(Std.int(comboSpr.width * 0.7));
-			comboSpr.antialiasing = true;
-		}
-		comboSpr.updateHitbox();
-
-		FlxTween.tween(comboSpr, {alpha: 0}, 0.2, {
-			onComplete: function(tween:FlxTween)
-			{
-				comboSpr.destroy();
-			},
-			startDelay: Conductor.crochet * 0.001
-		});
-
-		var seperatedScore:Array<Int> = [];
-		var tempCombo:Int = combo;
-
-		while (tempCombo != 0)
-		{
-			seperatedScore.push(tempCombo % 10);
-			tempCombo = Std.int(tempCombo / 10);
-		}
-		while (seperatedScore.length < 3)
-			seperatedScore.push(0);
-
-		// seperatedScore.reverse();
-
-		var daLoop:Int = 1;
-		for (i in seperatedScore)
-		{
-			var numScore:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'num' + Std.int(i) + pixelShitPart2));
-			numScore.y = comboSpr.y;
-
-			if (curStage.startsWith('school'))
-			{
-				numScore.setGraphicSize(Std.int(numScore.width * daPixelZoom));
-			}
-			else
-			{
-				numScore.antialiasing = true;
-				numScore.setGraphicSize(Std.int(numScore.width * 0.5));
-			}
-			numScore.updateHitbox();
-
-			numScore.x = comboSpr.x - (43 * daLoop); //- 90;
-			numScore.acceleration.y = FlxG.random.int(200, 300);
-			numScore.velocity.y -= FlxG.random.int(140, 160);
-			numScore.velocity.x = FlxG.random.float(-5, 5);
-
-			add(numScore);
-
-			FlxTween.tween(numScore, {alpha: 0}, 0.2, {
-				onComplete: function(tween:FlxTween)
-				{
-					numScore.destroy();
-				},
-				startDelay: Conductor.crochet * 0.002
-			});
-
-			daLoop++;
-		}
+			comboPopUps.displayCombo(combo);
 	}
 
 	var cameraRightSide:Bool = false;
@@ -2895,7 +2761,7 @@ class PlayState extends MusicBeatState
 				combo += 1;
 				popUpScore(note.data.strumTime, note);
 			}
-			
+
 			boyfriend.playAnim('sing' + note.dirNameUpper, true);
 
 			playerStrums.forEach(function(spr:FlxSprite)
@@ -3094,7 +2960,7 @@ class PlayState extends MusicBeatState
 		if (curBeat % 8 == 7
 			&& song[step].mustHitSection
 			&& combo > 5
-			&& song.length > step + 1// GK: this fixes an error on week 1 where song[step + 1] was null
+			&& song.length > step + 1 // GK: this fixes an error on week 1 where song[step + 1] was null
 			&& !song[step + 1].mustHitSection)
 		{
 			var animShit:ComboCounter = new ComboCounter(-100, 300, combo);
