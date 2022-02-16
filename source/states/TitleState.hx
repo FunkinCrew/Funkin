@@ -81,6 +81,9 @@ class TitleState extends MusicBeatState
 			NoteVariables.init();
 
 			Options.fixBinds();
+
+			if(utilities.Options.getData("flashingLights") == null)
+				FlxG.switchState(new FlashingLightsMenu());
 	
 			curWacky = FlxG.random.getObject(getIntroTextShit());
 
@@ -334,7 +337,8 @@ class TitleState extends MusicBeatState
 			if(titleText != null)
 				titleText.animation.play('press');
 
-			FlxG.camera.flash(FlxColor.WHITE, 1);
+			if(utilities.Options.getData("flashingLights"))
+				FlxG.camera.flash(FlxColor.WHITE, 1);
 
 			if (utilities.Options.getData("oldTitle"))
 				FlxG.sound.play(Paths.music("titleShoot"), 0.7);
@@ -552,7 +556,9 @@ class TitleState extends MusicBeatState
 		{
 			MusicBeatState.windowNameSuffix = "";
 			
-			FlxG.camera.flash(FlxColor.WHITE, 4);
+			if(utilities.Options.getData("flashingLights"))
+				FlxG.camera.flash(FlxColor.WHITE, 4);
+
 			remove(ngSpr);
 			remove(credGroup);
 			skippedIntro = true;

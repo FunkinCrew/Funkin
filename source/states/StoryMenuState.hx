@@ -291,7 +291,8 @@ class StoryMenuState extends MusicBeatState
 		{
 			FlxG.sound.play(Paths.sound('confirmMenu'));
 
-			weekGraphics.members[curWeek].startFlashing();
+			if(utilities.Options.getData("flashingLights"))
+				weekGraphics.members[curWeek].startFlashing();
 
 			menuCharacters.members[1].character = menuCharacters.members[1].character + 'Confirm';
 			menuCharacters.members[1].loadCharacter();

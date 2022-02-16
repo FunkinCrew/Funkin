@@ -192,7 +192,8 @@ class ModchartUtilities
         setVar("noDeath", utilities.Options.getData("noDeath"));
         setVar("downscroll", utilities.Options.getData("downscroll") == true ? 1 : 0); // fuck you compatibility
         setVar("downscrollBool", utilities.Options.getData("downscroll"));
-        //setVar("flashing", .flashing);
+        setVar("flashingLights", utilities.Options.getData("flashingLights"));
+        setVar("flashing", utilities.Options.getData("flashingLights"));
         //setVar("distractions", .distractions);
         setVar("cameraZooms", utilities.Options.getData("cameraZooms"));
 
@@ -232,6 +233,11 @@ class ModchartUtilities
         setVar("inReplay", PlayState.playingReplay);
         
         // callbacks
+
+        Lua_helper.add_callback(lua,"flashCamera", function(camera:String = "", color:String = "#FFFFFF", time:Float = 1, force:Bool = false) {
+            if(utilities.Options.getData("flashingLights"))
+                cameraFromString(camera).flash(FlxColor.fromString(color), time, null, force);
+        });
 
         Lua_helper.add_callback(lua,"triggerEvent", function(event_name:String, argument_1:Dynamic, argument_2:Dynamic) {
 			var string_arg_1:String = Std.string(argument_1);

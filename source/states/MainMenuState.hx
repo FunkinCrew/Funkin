@@ -1,5 +1,6 @@
 package states;
 
+import flixel.util.FlxTimer;
 import game.Replay;
 import utilities.MusicUtilities;
 import lime.utils.Assets;
@@ -158,7 +159,8 @@ class MainMenuState extends MusicBeatState
 				selectedSomethin = true;
 				FlxG.sound.play(Paths.sound('confirmMenu'));
 
-				FlxFlicker.flicker(magenta, 1.1, 0.15, false);
+				if(utilities.Options.getData("flashingLights"))
+					FlxFlicker.flicker(magenta, 1.1, 0.15, false);
 
 				menuItems.forEach(function(spr:FlxSprite)
 				{
@@ -174,35 +176,12 @@ class MainMenuState extends MusicBeatState
 					}
 					else
 					{
-						FlxFlicker.flicker(spr, 1, 0.06, false, false, function(flick:FlxFlicker)
+						if(utilities.Options.getData("flashingLights"))
 						{
-							var daChoice:String = optionShit[curSelected];
-
-							switch (daChoice)
-							{
-								case 'story mode':
-									FlxG.switchState(new StoryMenuState());
-									trace("Story Menu Selected");
-
-								case 'freeplay':
-									FlxG.switchState(new FreeplayState());
-
-									trace("Freeplay Menu Selected");
-
-								case 'options':
-									FlxTransitionableState.skipNextTransIn = true;
-									FlxTransitionableState.skipNextTransOut = true;
-									FlxG.switchState(new OptionsMenu());
-
-								#if sys
-								case 'mods':
-									FlxG.switchState(new ModsMenu());
-
-								case 'replays':
-									FlxG.switchState(new ReplaySelectorState());
-								#end
-							}
-						});
+							FlxFlicker.flicker(spr, 1, 0.06, false, false, function(_) { fard(); });
+						}
+						else
+							new FlxTimer().start(1, function(_) { fard(); }, 1);
 					}
 				});
 			}
@@ -214,6 +193,36 @@ class MainMenuState extends MusicBeatState
 		{
 			spr.screenCenter(X);
 		});
+	}
+
+	function fard()
+	{
+		var daChoice:String = optionShit[curSelected];
+		
+		switch (daChoice)
+		{
+			case 'story mode':
+				FlxG.switchState(new StoryMenuState());
+				trace("Story Menu Selected");
+
+			case 'freeplay':
+				FlxG.switchState(new FreeplayState());
+
+				trace("Freeplay Menu Selected");
+
+			case 'options':
+				FlxTransitionableState.skipNextTransIn = true;
+				FlxTransitionableState.skipNextTransOut = true;
+				FlxG.switchState(new OptionsMenu());
+
+			#if sys
+			case 'mods':
+				FlxG.switchState(new ModsMenu());
+
+			case 'replays':
+				FlxG.switchState(new ReplaySelectorState());
+			#end
+		}
 	}
 
 	function changeItem(huh:Int = 0)

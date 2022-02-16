@@ -9,3 +9,4 @@ Set Camera Zoom~Game Camera Zoom (default is defaultCameraZoom)~Hud Camera Zoom 
 Change Character Alpha~Character (BF, Dad, GF)~Alpha to change to. (default is 0.5)
 Character Will Idle~Character (BF, Dad, GF)~"true" or "false"
 Change Stage~Stage~Nothing
+Camera Flash~Color (example: 'red')~Duration

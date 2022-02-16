@@ -4359,6 +4359,14 @@ class PlayState extends MusicBeatState
 					anim = event[3];
 
 				character.playAnim(anim, true);
+			case "camera flash":
+				var time = Std.parseFloat(event[3]);
+
+				if(Math.isNaN(time))
+					time = 1;
+
+				if(utilities.Options.getData("flashingLights"))
+					camGame.flash(FlxColor.fromString(event[2].toLowerCase()), time);
 			#end
 			case "add camera zoom":
 				if(utilities.Options.getData("cameraZooms") && FlxG.camera.zoom < 1.35)
