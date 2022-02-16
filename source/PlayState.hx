@@ -2423,37 +2423,31 @@ class PlayState extends MusicBeatState
 
 		var score:Int = 350;
 		var daRating:String = "sick";
-		var isSick:Bool = true;
+		var isSick:Bool = false;
 		var healthMulti:Float = 1;
 
-		if (daNote.lowStakes)
-			healthMulti *= 0.002;
-		else
-			healthMulti *= 0.033;
+		healthMulti *= daNote.lowStakes ? 0.002 : 0.033;
 
 		if (noteDiff > Note.HIT_WINDOW * Note.BAD_THRESHOLD)
 		{
 			healthMulti *= 0; // no health on shit note
 			daRating = 'shit';
 			score = 50;
-			isSick = false; // shitty copypaste on this literally just because im lazy and tired lol!
 		}
 		else if (noteDiff > Note.HIT_WINDOW * Note.GOOD_THRESHOLD)
 		{
 			healthMulti *= 0.2;
-
 			daRating = 'bad';
 			score = 100;
-			isSick = false;
 		}
 		else if (noteDiff > Note.HIT_WINDOW * Note.SICK_THRESHOLD)
 		{
 			healthMulti *= 0.78;
-
 			daRating = 'good';
 			score = 200;
-			isSick = false;
 		}
+		else
+			isSick = true;
 
 		health += healthMulti;
 
