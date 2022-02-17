@@ -123,7 +123,7 @@ class OptionsMenu extends MusicBeatState
 			"Judgements",
 			new PageOption("Back", 0, "Gameplay"),
 			new JudgementMenuOption("Timings", 1),
-			new StringSaveOption("Rating Mode", ["simple", "complex"], 2, "ratingType"),
+			new StringSaveOption("Rating Mode", ["psych", "simple", "complex"], 2, "ratingType"),
 			new BoolOption("Marvelous Ratings", "marvelousRatings", 3),
 			new BoolOption("Show Rating Count", "sideRatings", 4)
 		],

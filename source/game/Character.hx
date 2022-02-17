@@ -246,7 +246,6 @@ class Character extends FlxSprite
 			case '':
 				trace("NO VALUE THINGY LOL DONT LOAD SHIT");
 				deathCharacter = "bf-dead";
-				icon = "bf-old";
 
 			default:
 				if (isPlayer)

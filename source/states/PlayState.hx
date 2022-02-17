@@ -1910,17 +1910,15 @@ class PlayState extends MusicBeatState
 		if(totalNotes != 0 && !switchedStates)
 		{
 			accuracy = 100 / (totalNotes / hitNotes);
-			// math
-			accuracy = accuracy * Math.pow(10, 2);
-			accuracy = Math.round(accuracy) / Math.pow(10, 2);
+			accuracy = FlxMath.roundDecimal(accuracy, 2);
 		}
 
 		scoreTxt.x = (healthBarBG.x + (healthBarBG.width / 2)) - (scoreTxt.width / 2);
 
 		scoreTxt.text = (
-			"Misses: " + misses + " | " +
-			"Accuracy: " + (utilities.Options.getData("ratingType") == "simple" ? Std.int(accuracy) : accuracy) + "% | " +
 			"Score: " + songScore + " | " +
+			"Misses: " + misses + " | " +
+			"Accuracy: " + accuracy + "% | " +
 			Ratings.getRank(accuracy, misses)
 		);
 
@@ -4191,6 +4189,7 @@ class PlayState extends MusicBeatState
 		var songThingy = songLength - FlxG.sound.music.time;
 
 		var seconds = Math.floor(songThingy / 1000);
+		seconds = Std.int(seconds / songMultiplier);
 		if(seconds < 0) seconds = 0;
 
 		switch(funnyTimeBarStyle.toLowerCase())
