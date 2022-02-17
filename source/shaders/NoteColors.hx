@@ -1,7 +1,5 @@
 package shaders;
 
-import flixel.FlxG;
-
 class NoteColors
 {
     public static var noteColors:Map<String, Array<Int>> = new Map<String, Array<Int>>();
