@@ -177,7 +177,7 @@ class TitleState extends MusicBeatState
 			Main.changeFont(utilities.Options.getData("infoDisplayFont"));
 		}
 
-		version = "Leather Engine" + " Release v" + Application.current.meta.get('version');
+		version = MusicBeatState.windowNamePrefix + " Release v" + Assets.getText("version.txt");
 
 		persistentUpdate = true;
 
@@ -357,7 +357,7 @@ class TitleState extends MusicBeatState
 					trace(data);
 					
 					var new_Vers:Array<String> = data.split(".");
-					var old_Vers:Array<String> = Application.current.meta.get('version').split(".");
+					var old_Vers:Array<String> = Assets.getText("version.txt").split(".");
 
 					var new_Ver:FlxVersion = new FlxVersion(Std.parseInt(new_Vers[0]), Std.parseInt(new_Vers[1]), Std.parseInt(new_Vers[2]));
 					var old_Ver:FlxVersion = new FlxVersion(Std.parseInt(old_Vers[0]), Std.parseInt(old_Vers[1]), Std.parseInt(old_Vers[2]));

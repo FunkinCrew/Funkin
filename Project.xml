@@ -93,7 +93,9 @@
 	<assets path='art/readme.txt' rename='do NOT readme.txt' />
 	<assets path='art/manual.txt' rename='manual.txt' />
 	
-	<assets path="CHANGELOG.md" rename='changelog.txt'/>
+	<assets path="CHANGELOG.md" rename='changelog.txt' />
+
+	<assets path="version.txt" />
 
 	<assets path="building/linux_dependencies.txt" rename='linux_dependencies.txt' if="linux"/>
 

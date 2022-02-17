@@ -368,9 +368,8 @@ class FreeplayState extends MusicBeatState
 	
 			if (controls.BACK)
 			{
-				if(colorTween != null) {
+				if(colorTween != null)
 					colorTween.cancel();
-				}
 
 				#if cpp
 				@:privateAccess

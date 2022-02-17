@@ -1,5 +1,7 @@
 package states;
 
+import lime.app.Application;
+import openfl.Assets;
 import ui.Alphabet;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import game.Highscore;
@@ -54,13 +56,18 @@ class ReplaySelectorState extends MusicBeatState
 
             var poop:String = Highscore.formatSong(replay.song, replay.difficulty);
 
-            PlayState.SONG = Song.loadFromJson(poop, replay.song);
-            PlayState.isStoryMode = false;
-            PlayState.songMultiplier = replay.songMultiplier;
-            PlayState.storyDifficultyStr = replay.difficulty.toUpperCase();
-            PlayState.playingReplay = true;
-
-            LoadingState.loadAndSwitchState(new PlayState(replay));
+            if(Assets.exists(Paths.json("song data/" + replay.song.toLowerCase() + "/" + poop)))
+            {
+                PlayState.SONG = Song.loadFromJson(poop, replay.song);
+                PlayState.isStoryMode = false;
+                PlayState.songMultiplier = replay.songMultiplier;
+                PlayState.storyDifficultyStr = replay.difficulty.toUpperCase();
+                PlayState.playingReplay = true;
+    
+                LoadingState.loadAndSwitchState(new PlayState(replay));
+            }
+            else
+                Application.current.window.alert("It seems this replay's song doesn't exist, maybe try enabling the mod for it?", "Leather Engine's No Crash Tool");
         }
 
         if(controls.DOWN_P)
@@ -68,6 +75,9 @@ class ReplaySelectorState extends MusicBeatState
 
         if(controls.UP_P)
             changeReplay(-1);
+
+        if(-1 * Math.floor(FlxG.mouse.wheel) != 0)
+            changeReplay(-1 * Math.floor(FlxG.mouse.wheel));
 
         if(controls.BACK)
             FlxG.switchState(new MainMenuState());
