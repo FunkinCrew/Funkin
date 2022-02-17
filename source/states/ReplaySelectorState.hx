@@ -64,6 +64,7 @@ class ReplaySelectorState extends MusicBeatState
                 PlayState.storyDifficultyStr = replay.difficulty.toUpperCase();
                 PlayState.playingReplay = true;
     
+                PlayState.chartingMode = false;
                 LoadingState.loadAndSwitchState(new PlayState(replay));
             }
             else

@@ -16,7 +16,7 @@ class PolymodHandler
 			dirs: ModList.getActiveMods(metadataArrays),
 			errorCallback: function(error:PolymodError)
 			{
-				trace(error.message);
+				//trace(error.message);
 			},
             frameworkParams: {
                 assetLibraryPaths: [
@@ -34,7 +34,7 @@ class PolymodHandler
         metadataArrays = [];
 
         var tempArray = Polymod.scan("mods/","*.*.*",function(error:PolymodError) {
-			trace(error.message);
+			//trace(error.message);
 		});
 
         for(metadata in tempArray)

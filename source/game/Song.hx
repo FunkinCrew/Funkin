@@ -59,6 +59,9 @@ typedef SwagSong =
 	var events:Null<Array<Array<Dynamic>>>;
 
 	var specialAudioName:Null<String>;
+
+	var gfVersion:Null<String>;
+	var player3:Null<String>;
 }
 
 class Song
@@ -166,6 +169,12 @@ class Song
 		if(swagShit.events == null)
 			swagShit.events = [];
 
+		if(swagShit.gfVersion != null && swagShit.gf == null)
+			swagShit.gf = swagShit.gfVersion;
+
+		if(swagShit.player3 != null && swagShit.gf == null)
+			swagShit.gf = swagShit.player3;
+
 		var new_events:Array<Array<Dynamic>> = [];
 
 		for(event in swagShit.events)
@@ -183,6 +192,32 @@ class Song
 			}
 			else
 				new_events.push(event);
+		}
+
+		if(swagShit.notes != null)
+		{
+			for (secNum in 0...swagShit.notes.length)
+			{
+				var sec:SwagSection = swagShit.notes[secNum];
+	
+				var i:Int = 0;
+				var notes:Array<Dynamic> = sec.sectionNotes;
+				var len:Int = notes.length;
+	
+				while(i < len)
+				{
+					var note:Array<Dynamic> = notes[i];
+	
+					if(note[1] < 0)
+					{
+						new_events.push([note[2], note[0], note[3], note[4]]);
+						notes.remove(note);
+						len = notes.length;
+					}
+	
+					else i++;
+				}
+			}
 		}
 
 		swagShit.events = new_events;

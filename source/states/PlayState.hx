@@ -947,9 +947,9 @@ class PlayState extends MusicBeatState
 
 				switch(event[2].toLowerCase())
 				{
-					case "dad" | "opponent":
+					case "dad" | "opponent" | "player2" | "1":
 						map = dadMap;
-					case "gf" | "girlfriend":
+					case "gf" | "girlfriend" | "player3" | "2":
 						map = gfMap;
 					default:
 						map = bfMap;
@@ -976,6 +976,7 @@ class PlayState extends MusicBeatState
 						}
 	
 						trace(funnyCharacter.curCharacter);
+						trace(event[3]);
 					}
 
 					if(event[0].toLowerCase() == "change stage" && event[1] <= FlxG.sound.music.length && !stageMap.exists(event[2]) && Options.getData("preloadChangeBGs"))
@@ -1002,8 +1003,6 @@ class PlayState extends MusicBeatState
 		super.create();
 
 		executeALuaState("createPost", []);
-
-		chartingMode = false;
 	}
 
 	public static var playCutsceneLmao:Bool = false;
@@ -2733,6 +2732,7 @@ class PlayState extends MusicBeatState
 				FlxG.sound.music.stop();
 
 				switchedStates = true;
+				PlayState.chartingMode = false;
 				LoadingState.loadAndSwitchState(new PlayState());
 			}
 		}
@@ -3887,11 +3887,11 @@ class PlayState extends MusicBeatState
 	{
 		switch(eventVal.toLowerCase())
 		{
-			case "girlfriend" | "gf" | "player3":
+			case "girlfriend" | "gf" | "player3" | "2":
 				return PlayState.gf;
-			case "dad" | "opponent" | "player2":
+			case "dad" | "opponent" | "player2" | "1":
 				return PlayState.dad;
-			case "bf" | "boyfriend" | "player" | "player1":
+			case "bf" | "boyfriend" | "player" | "player1" | "0":
 				return PlayState.boyfriend;
 		}
 
@@ -4064,122 +4064,128 @@ class PlayState extends MusicBeatState
 	{
 		removeBgStuff();
 		
-		switch(event[2].toLowerCase())
+		if(gfMap.exists(event[3]) || bfMap.exists(event[3]) || dadMap.exists(event[3])) // prevent game crash
 		{
-			case "girlfriend" | "gf":
-				var oldGf = gf;
-				oldGf.alpha = 0.00001;
-				
-				if(oldGf.otherCharacters != null)
-				{
-					for(character in oldGf.otherCharacters)
-					{
-						character.alpha = 0.00001;
-					}
-				}
-				
-				var newGf = gfMap.get(event[3]);
-				newGf.alpha = 1;
-				gf = newGf;
-
-				if(newGf.otherCharacters != null)
-				{
-					for(character in newGf.otherCharacters)
-					{
-						character.alpha = 1;
-					}
-				}
-
-				#if linc_luajit
-				if(executeModchart && luaModchart != null)
-					luaModchart.setupTheShitCuzPullRequestsSuck();
-
-				if(stage.stageScript != null)
-					stage.stageScript.setupTheShitCuzPullRequestsSuck();
-				#end
-			case "dad" | "opponent":
-				var oldDad = dad;
-				oldDad.alpha = 0.00001;
-
-				if(oldDad.otherCharacters != null)
-				{
-					for(character in oldDad.otherCharacters)
-					{
-						character.alpha = 0.00001;
-					}
-				}
-				
-				var newDad = dadMap.get(event[3]);
-				newDad.alpha = 1;
-				dad = newDad;
-
-				if(newDad.otherCharacters != null)
-				{
-					for(character in newDad.otherCharacters)
-					{
-						character.alpha = 1;
-					}
-				}
-
-				#if linc_luajit
-				if(executeModchart && luaModchart != null)
-					luaModchart.setupTheShitCuzPullRequestsSuck();
-
-				if(stage.stageScript != null)
-					stage.stageScript.setupTheShitCuzPullRequestsSuck();
-				#end
-
-				@:privateAccess
-				{
-					var bar = PlayState.instance.healthBar;
+			switch(event[2].toLowerCase())
+			{
+				case "girlfriend" | "gf" | "2":
+					var oldGf = gf;
+					oldGf.alpha = 0.00001;
 					
-					iconP2.changeIconSet(dad.icon);
-	
-					bar.createFilledBar(dad.barColor, boyfriend.barColor);
-					bar.updateFilledBar();
-				}
-			case "bf" | "boyfriend" | "player":
-				var oldBF = boyfriend;
-				oldBF.alpha = 0.00001;
-
-				if(oldBF.otherCharacters != null)
-				{
-					for(character in oldBF.otherCharacters)
+					if(oldGf.otherCharacters != null)
 					{
-						character.alpha = 0.00001;
+						for(character in oldGf.otherCharacters)
+						{
+							character.alpha = 0.00001;
+						}
 					}
-				}
-				
-				var newDad = new Boyfriend(100, 100, event[3]);
-				newDad.alpha = 1;
-				boyfriend = newDad;
-
-				if(newDad.otherCharacters != null)
-				{
-					for(character in newDad.otherCharacters)
+					
+					var newGf = gfMap.get(event[3]);
+					newGf.alpha = 1;
+					gf = newGf;
+	
+					if(newGf.otherCharacters != null)
 					{
-						character.alpha = 1;
+						for(character in newGf.otherCharacters)
+						{
+							character.alpha = 1;
+						}
 					}
-				}
-
-				#if linc_luajit
-				if(executeModchart && luaModchart != null)
-					luaModchart.setupTheShitCuzPullRequestsSuck();
-
-				if(stage.stageScript != null)
-					stage.stageScript.setupTheShitCuzPullRequestsSuck();
-				#end
-
-				@:privateAccess
-				{
-					var bar = PlayState.instance.healthBar;
 	
-					iconP1.changeIconSet(boyfriend.icon);
+					#if linc_luajit
+					if(executeModchart && luaModchart != null)
+						luaModchart.setupTheShitCuzPullRequestsSuck();
 	
-					bar.createFilledBar(dad.barColor, boyfriend.barColor);
-					bar.updateFilledBar();
-				}
+					if(stage.stageScript != null)
+						stage.stageScript.setupTheShitCuzPullRequestsSuck();
+					#end
+				case "dad" | "opponent" | "1":
+					var oldDad = dad;
+					oldDad.alpha = 0.00001;
+	
+					if(oldDad.otherCharacters != null)
+					{
+						for(character in oldDad.otherCharacters)
+						{
+							character.alpha = 0.00001;
+						}
+					}
+					
+					var newDad = dadMap.get(event[3]);
+					newDad.alpha = 1;
+					dad = newDad;
+	
+					if(newDad.otherCharacters != null)
+					{
+						for(character in newDad.otherCharacters)
+						{
+							character.alpha = 1;
+						}
+					}
+	
+					#if linc_luajit
+					if(executeModchart && luaModchart != null)
+						luaModchart.setupTheShitCuzPullRequestsSuck();
+	
+					if(stage.stageScript != null)
+						stage.stageScript.setupTheShitCuzPullRequestsSuck();
+					#end
+	
+					@:privateAccess
+					{
+						var bar = PlayState.instance.healthBar;
+						
+						iconP2.changeIconSet(dad.icon);
+		
+						bar.createFilledBar(dad.barColor, boyfriend.barColor);
+						bar.updateFilledBar();
+					}
+				case "bf" | "boyfriend" | "player" | "0":
+					var oldBF = boyfriend;
+					oldBF.alpha = 0.00001;
+	
+					if(oldBF.otherCharacters != null)
+					{
+						for(character in oldBF.otherCharacters)
+						{
+							character.alpha = 0.00001;
+						}
+					}
+					
+					var newDad = new Boyfriend(100, 100, event[3]);
+					newDad.alpha = 1;
+					boyfriend = newDad;
+	
+					if(newDad.otherCharacters != null)
+					{
+						for(character in newDad.otherCharacters)
+						{
+							character.alpha = 1;
+						}
+					}
+	
+					#if linc_luajit
+					if(executeModchart && luaModchart != null)
+						luaModchart.setupTheShitCuzPullRequestsSuck();
+	
+					if(stage.stageScript != null)
+						stage.stageScript.setupTheShitCuzPullRequestsSuck();
+					#end
+	
+					@:privateAccess
+					{
+						var bar = PlayState.instance.healthBar;
+		
+						iconP1.changeIconSet(boyfriend.icon);
+		
+						bar.createFilledBar(dad.barColor, boyfriend.barColor);
+						bar.updateFilledBar();
+					}
+			}
 		}
+		else
+			Application.current.window.alert("The character " + event[3] + " isn't in any character cache!\nHow did this happen? ¯|_(ツ)_|¯",
+					"Leather Engine's No Crash, We Help Fix Stuff Tool");
 
 		addBgStuff();
 	}
@@ -4368,7 +4374,7 @@ class PlayState extends MusicBeatState
 					camGame.flash(FlxColor.fromString(event[2].toLowerCase()), time);
 			#end
 			case "add camera zoom":
-				if(utilities.Options.getData("cameraZooms") && FlxG.camera.zoom < 1.35)
+				if(utilities.Options.getData("cameraZooms") && ((FlxG.camera.zoom < 1.35 && camZooming) || !camZooming))
 				{
 					var addGame:Float = Std.parseFloat(event[2]);
 					var addHUD:Float = Std.parseFloat(event[3]);
@@ -4381,8 +4387,6 @@ class PlayState extends MusicBeatState
 
 					FlxG.camera.zoom += addGame;
 					camHUD.zoom += addHUD;
-
-					camZooming = true;
 				}
 			case "screen shake":
 				var valuesArray:Array<String> = [event[2], event[3]];

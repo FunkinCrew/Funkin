@@ -190,6 +190,8 @@ class ChartingState extends MusicBeatState
 			}
 		}
 
+		_song.events = [];
+
 		if(PlayState.songMultiplier != 1 && !loadedAutosave)
 			_song.speed = PlayState.previousScrollSpeedLmao;
 

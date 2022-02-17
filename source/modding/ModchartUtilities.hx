@@ -1156,7 +1156,7 @@ class ModchartUtilities
             FlxTween.tween(PlayState.instance, {defaultHudCamZoom:toZoom}, time, {ease: FlxEase.linear, onComplete: function(flxTween:FlxTween) { if (onComplete != '' && onComplete != null) {callLua(onComplete,["camera"]);}}});
         });
 
-        Lua_helper.add_callback(lua,"tweenPos", function(id:String, toX:Int, toY:Int, time:Float, onComplete:String) {
+        Lua_helper.add_callback(lua,"tweenPos", function(id:String, toX:Int, toY:Int, time:Float, ?onComplete:String = "") {
             if(getActorByName(id) != null)
                 FlxTween.tween(getActorByName(id), {x: toX, y: toY}, time, {ease: FlxEase.linear, onComplete: function(flxTween:FlxTween) { if (onComplete != '' && onComplete != null) {callLua(onComplete,[id]);}}});
         });
@@ -1438,11 +1438,11 @@ class ModchartUtilities
         Lua_helper.add_callback(lua,"getCharFromEvent", function(eventId:String) {
             switch(eventId.toLowerCase())
             {
-                case "girlfriend" | "gf" | "player3":
+                case "girlfriend" | "gf" | "player3" | "2":
                     return "girlfriend";
-                case "dad" | "opponent" | "player2":
+                case "dad" | "opponent" | "player2" | "1":
                     return "dad";
-                case "bf" | "boyfriend" | "player" | "player1":
+                case "bf" | "boyfriend" | "player" | "player1" | "0":
                     return "boyfriend";
             }
     

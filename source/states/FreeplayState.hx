@@ -462,13 +462,14 @@ class FreeplayState extends MusicBeatState
 
 					if(Assets.exists(Paths.inst(PlayState.SONG.song, PlayState.storyDifficultyStr)))
 					{
-					if(colorTween != null)
-						colorTween.cancel();
+						if(colorTween != null)
+							colorTween.cancel();
 
-					LoadingState.loadAndSwitchState(new PlayState());
+						PlayState.chartingMode = false;
+						LoadingState.loadAndSwitchState(new PlayState());
 
-					FlxG.sound.music.volume = 0;
-					destroyFreeplayVocals();
+						FlxG.sound.music.volume = 0;
+						destroyFreeplayVocals();
 					}
 					else
 					{
