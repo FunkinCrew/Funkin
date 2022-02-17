@@ -81,6 +81,9 @@ class ModchartUtilities
     {
         PlayState.songMultiplier = oldMultiplier;
 
+        lua_Sprites.clear();
+        lua_Characters.clear();
+
         Lua.close(lua);
         lua = null;
     }
