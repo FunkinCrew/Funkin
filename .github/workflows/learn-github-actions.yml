@@ -1,7 +1,7 @@
 name: learn-github-actions
 on: [push]
 jobs:
-  check-bats-version:
+  create-nightly-linux:
     runs-on: ubuntu-latest
     steps:
       - uses: krdlab/setup-haxe@v1.1.6
