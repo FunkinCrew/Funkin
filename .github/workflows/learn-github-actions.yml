@@ -8,14 +8,10 @@ jobs:
         with:
           haxe-version: 4.2.4
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: '14'
-      - run: npm install -g bats
-      - run: bats -v
       - run: |
           haxe -version
-          haxelib install openfl
-          haxelib install lime
-          haxelib install flixel
-          haxelib install flixel-addons
+          haxelib install openfl --quiet
+          haxelib install lime --quiet
+          haxelib install flixel --quiet
+          haxelib install flixel-addons --quiet
+          haxelib run lime setup linux
