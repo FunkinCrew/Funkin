@@ -14,8 +14,8 @@ jobs:
       - run: npm install -g bats
       - run: bats -v
       - run: |
-        haxe -version
-        haxelib install openfl
-        haxelib install lime
-        haxelib install flixel
-        haxelib install flixel-addons
+          haxe -version
+          haxelib install openfl
+          haxelib install lime
+          haxelib install flixel
+          haxelib install flixel-addons
