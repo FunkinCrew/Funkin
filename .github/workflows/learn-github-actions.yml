@@ -24,10 +24,10 @@ jobs:
           haxelib run lime setup linux
       - name: Build game?
         run: |
-          haxelib run lime build linux -debug -clean
+          haxelib run lime build html5 -debug -clean
           ls
       - uses: actions/upload-artifact@v1
         with:
           name: funkinSecret-${{ runner.os }}-${{ github.sha }}
-          path: export/debug/linux/bin
+          path: export/debug/html5/bin
 
