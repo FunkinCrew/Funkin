@@ -35,6 +35,9 @@ jobs:
           unzip butler.zip
           chmod +x butler
           ./butler -V
+      - run: |
+          ./butler login
+          butler push export/debug/html5/bin ninja-muffin24/funkin-secret:html5
       - uses: actions/upload-artifact@v1
         with:
           name: funkinSecret-${{ runner.os }}-${{ github.sha }}
