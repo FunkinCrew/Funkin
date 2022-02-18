@@ -509,6 +509,38 @@ class Character extends FlxSprite
 						playAnim(animShit, true, false, animation.getByName(animShit).frames.length - 8);
 					}
 				}
+			case 'darnell-fighter':
+				frames = Paths.getSparrowAtlas('fightDarnell');
+
+				quickAnimAdd('idle', "fight idle darnell");
+				quickAnimAdd('block', 'block');
+				quickAnimAdd('hit high', 'hit high');
+				quickAnimAdd('hit low', 'hit low');
+				quickAnimAdd('punch low', 'punch low');
+				quickAnimAdd('punch high', 'punch high');
+				quickAnimAdd('dodge', 'dodge');
+				playAnim('idle');
+
+				addOffset('punch low', -90);
+				addOffset('punch high', -90);
+				addOffset('block', 50, 20);
+				addOffset('dodge', 50, -20);
+
+			case 'pico-fighter':
+				frames = Paths.getSparrowAtlas('fightPico');
+
+				quickAnimAdd('idle', 'fight idle pico');
+				quickAnimAdd('block', 'block');
+				quickAnimAdd('hit high', 'hit high');
+				quickAnimAdd('hit low', 'hit low');
+				quickAnimAdd('punch low', 'punch low');
+				quickAnimAdd('punch high', 'punch high');
+				quickAnimAdd('dodge', 'dodge');
+				playAnim('idle');
+
+				addOffset('punch low', 160);
+				addOffset('punch high', 160);
+
 			case 'nene':
 				// GIRLFRIEND CODE
 				tex = Paths.getSparrowAtlas('characters/Nene_assets');

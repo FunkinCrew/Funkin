@@ -15,12 +15,16 @@ class PolygonSpectogram extends MeshRender
 	public var vis:VisShit;
 	public var visType:VISTYPE = UPDATED;
 	public var daHeight:Float = FlxG.height;
+	public var realtimeVisLenght:Float = 0.2;
 
 	var numSamples:Int = 0;
 	var setBuffer:Bool = false;
 
 	public var audioData:Int16Array;
 	public var detail:Float = 1;
+
+	public var thickness:Float = 2;
+	public var waveAmplitude:Int = 100;
 
 	public function new(daSound:FlxSound, ?col:FlxColor = FlxColor.WHITE, ?height:Float = 720, ?detail:Float = 1)
 	{
@@ -83,13 +87,15 @@ class PolygonSpectogram extends MeshRender
 				var sampleApprox:Int = Std.int(FlxMath.remapToRange(i, 0, funnyPixels, startSample, startSample + samplesToGen));
 				var curAud:CurAudioInfo = VisShit.getCurAud(audioData, sampleApprox);
 
-				var waveAmplitude:Int = 200;
-
 				var coolPoint:FlxPoint = new FlxPoint();
-				coolPoint.x = (curAud.balanced * waveAmplitude / 2 + waveAmplitude / 2);
+				coolPoint.x = (curAud.balanced * waveAmplitude);
 				coolPoint.y = (i / funnyPixels * daHeight);
 
-				add_quad(prevPoint.x, prevPoint.y, prevPoint.x + 2, prevPoint.y, coolPoint.x, coolPoint.y, coolPoint.x + 2, coolPoint.y + 2);
+				add_quad(prevPoint.x, prevPoint.y, prevPoint.x
+					+ thickness, prevPoint.y, coolPoint.x, coolPoint.y, coolPoint.x
+					+ thickness,
+					coolPoint.y
+					+ thickness);
 
 				prevPoint.x = coolPoint.x;
 				prevPoint.y = coolPoint.y;
@@ -105,7 +111,7 @@ class PolygonSpectogram extends MeshRender
 		{
 			if (curTime != vis.snd.time)
 			{
-				trace("DOIN SHIT" + FlxG.random.int(0, 200));
+				// trace("DOIN SHIT" + FlxG.random.int(0, 200));
 
 				if (vis.snd.playing)
 					curTime = vis.snd.time;
@@ -117,7 +123,7 @@ class PolygonSpectogram extends MeshRender
 
 				curTime = vis.snd.time;
 
-				generateSection(vis.snd.time, 0.2);
+				generateSection(vis.snd.time, realtimeVisLenght);
 			}
 		}
 	}

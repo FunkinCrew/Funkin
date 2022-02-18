@@ -423,8 +423,9 @@ class ChartingState extends MusicBeatState
 		FlxG.sound.playMusic(Paths.inst(daSong), 0.6);
 
 		var musSpec:PolygonSpectogram = new PolygonSpectogram(FlxG.sound.music, FlxColor.RED, FlxG.height / 2, Math.floor(FlxG.height / 2));
-		musSpec.x += 70;
+		musSpec.x += 170;
 		musSpec.scrollFactor.set();
+		musSpec.waveAmplitude = 50;
 		// musSpec.visType = FREQUENCIES;
 		add(musSpec);
 

@@ -12,6 +12,7 @@ class MusicBeatState extends FlxUIState
 	private var curStep:Int = 0;
 	private var curBeat:Int = 0;
 	private var controls(get, never):Controls;
+	private var lastBeatHitTime:Float = 0;
 
 	inline function get_controls():Controls
 		return PlayerSettings.player1.controls;
@@ -67,6 +68,7 @@ class MusicBeatState extends FlxUIState
 
 	public function beatHit():Void
 	{
+		lastBeatHitTime = Conductor.songPosition;
 		// do literally nothing dumbass
 	}
 }
