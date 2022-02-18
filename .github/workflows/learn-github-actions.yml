@@ -10,7 +10,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Cache Haxe Stuff
         run: |
-        haxelib config
+          haxelib config
       - name: Installing Haxe Stuff
         run: |
           haxe -version
@@ -29,6 +29,12 @@ jobs:
         run: |
           haxelib run lime build html5 -debug -clean
           ls
+      - name: Install butler and shit
+        run: |
+          curl -L -o butler.zip https://broth.itch.ovh/butler/linux-amd64/LATEST/archive/default
+          unzip butler.zip
+          chmod +x butler
+          ./butler -V
       - uses: actions/upload-artifact@v1
         with:
           name: funkinSecret-${{ runner.os }}-${{ github.sha }}
