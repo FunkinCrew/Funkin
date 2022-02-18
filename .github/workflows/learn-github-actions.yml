@@ -8,6 +8,9 @@ jobs:
         with:
           haxe-version: 4.2.4
       - uses: actions/checkout@v2
+      - name: Cache Haxe Stuff
+        run: |
+        haxelib config
       - name: Installing Haxe Stuff
         run: |
           haxe -version
