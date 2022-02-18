@@ -4,6 +4,15 @@ jobs:
   check-bats-version:
     runs-on: ubuntu-latest
     steps:
+      - uses: krdlab/setup-haxe@v1.1.6
+        with:
+          haxe-version: 4.2.4
+      - run: |
+        haxe -version
+        haxelib install openfl
+        haxelib install lime
+        haxelib install flixel
+        haxelib install flixel-addons
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
