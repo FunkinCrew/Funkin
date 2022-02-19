@@ -287,13 +287,19 @@ class ModchartUtilities
 
         // stage
 
+        Lua_helper.add_callback(lua, "makeGraphic", function(id:String, width:Int, height:Int, color:String) {
+            if(getActorByName(id) != null)
+                getActorByName(id).makeGraphic(width, height, FlxColor.fromString(color));
+		});
+
         Lua_helper.add_callback(lua,"makeStageSprite", function(id:String, filename:String, x:Float, y:Float, size:Float = 1) {
             if(!lua_Sprites.exists(id))
             {
                 var Sprite:FlxSprite = new FlxSprite(x, y);
 
                 @:privateAccess
-                Sprite.loadGraphic(Paths.image(PlayState.instance.stage.stage + "/" + filename, "stages"));
+                if(filename != null && filename.length > 0)
+                    Sprite.loadGraphic(Paths.image(PlayState.instance.stage.stage + "/" + filename, "stages"));
 
                 Sprite.setGraphicSize(Std.int(Sprite.width * size));
                 Sprite.updateHitbox();
@@ -313,7 +319,8 @@ class ModchartUtilities
                 var Sprite:FlxSprite = new FlxSprite(x, y);
 
                 @:privateAccess
-                Sprite.frames = Paths.getSparrowAtlas(PlayState.instance.stage.stage + "/" + filename, "stages");
+                if(filename != null && filename.length > 0)
+                    Sprite.frames = Paths.getSparrowAtlas(PlayState.instance.stage.stage + "/" + filename, "stages");
 
                 Sprite.setGraphicSize(Std.int(Sprite.width * size));
                 Sprite.updateHitbox();
@@ -333,7 +340,8 @@ class ModchartUtilities
                 var Sprite:DancingSprite = new DancingSprite(x, y, oneDanceAnimation, antialiasing);
 
                 @:privateAccess
-                Sprite.frames = Paths.getSparrowAtlas(PlayState.instance.stage.stage + "/" + filename, "stages");
+                if(filename != null && filename.length > 0)
+                    Sprite.frames = Paths.getSparrowAtlas(PlayState.instance.stage.stage + "/" + filename, "stages");
 
                 Sprite.setGraphicSize(Std.int(Sprite.width * size));
                 Sprite.updateHitbox();
@@ -354,7 +362,8 @@ class ModchartUtilities
             {
                 var Sprite:FlxSprite = new FlxSprite(x, y);
 
-                Sprite.loadGraphic(Paths.image(filename));
+                if(filename != null && filename.length > 0)
+                    Sprite.loadGraphic(Paths.image(filename));
 
                 Sprite.setGraphicSize(Std.int(Sprite.width * size));
                 Sprite.updateHitbox();
@@ -372,7 +381,8 @@ class ModchartUtilities
             {
                 var Sprite:FlxSprite = new FlxSprite(x, y);
 
-                Sprite.frames = Paths.getSparrowAtlas(filename);
+                if(filename != null && filename.length > 0)
+                    Sprite.frames = Paths.getSparrowAtlas(filename);
 
                 Sprite.setGraphicSize(Std.int(Sprite.width * size));
                 Sprite.updateHitbox();
@@ -390,7 +400,8 @@ class ModchartUtilities
             {
                 var Sprite:DancingSprite = new DancingSprite(x, y, oneDanceAnimation, antialiasing);
 
-                Sprite.frames = Paths.getSparrowAtlas(filename);
+                if(filename != null && filename.length > 0)
+                    Sprite.frames = Paths.getSparrowAtlas(filename);
 
                 Sprite.setGraphicSize(Std.int(Sprite.width * size));
                 Sprite.updateHitbox();
@@ -1448,6 +1459,9 @@ class ModchartUtilities
     
             return "boyfriend";
         });
+
+        executeState("onCreate", []);
+        executeState("createLua", []);
     }
 
     public function setupTheShitCuzPullRequestsSuck()
