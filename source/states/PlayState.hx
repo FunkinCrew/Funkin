@@ -276,6 +276,12 @@ class PlayState extends MusicBeatState
 
 	override public function create()
 	{
+		#if linc_luajit
+		ModchartUtilities.lua_Characters.clear();
+		ModchartUtilities.lua_Sounds.clear();
+		ModchartUtilities.lua_Sprites.clear();
+		#end
+
 		funnyTimeBarStyle = utilities.Options.getData("timeBarStyle");
 
 		if(hitSoundString != "none")
