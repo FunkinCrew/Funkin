@@ -730,6 +730,14 @@ class PlayState extends MusicBeatState
 			healthBar.pixelPerfectPosition = true;
 			add(healthBar);
 
+			iconP1 = new HealthIcon(boyfriend.icon, true);
+			iconP1.y = healthBar.y - (iconP1.height / 2) - iconP1.offsetY;
+			add(iconP1);
+
+			iconP2 = new HealthIcon(dad.icon, false);
+			iconP2.y = healthBar.y - (iconP2.height / 2) - iconP2.offsetY;
+			add(iconP2);
+
 			var scoreTxtSize:Int = 16;
 			var funnyBarOffset:Int = 45;
 
@@ -853,14 +861,6 @@ class PlayState extends MusicBeatState
 				ratingText.scrollFactor.set();
 				add(ratingText);
 			}
-
-			iconP1 = new HealthIcon(boyfriend.icon, true);
-			iconP1.y = healthBar.y - (iconP1.height / 2);
-			add(iconP1);
-
-			iconP2 = new HealthIcon(dad.icon, false);
-			iconP2.y = healthBar.y - (iconP2.height / 2);
-			add(iconP2);
 
 			strumLineNotes.cameras = [camHUD];
 			notes.cameras = [camHUD];
@@ -1929,16 +1929,16 @@ class PlayState extends MusicBeatState
 
 		var icon_Zoom_Lerp = 0.09;
 
-		iconP1.setGraphicSize(Std.int(FlxMath.lerp(iconP1.width, 150, (icon_Zoom_Lerp / (Main.display.currentFPS / 60)) * songMultiplier)));
-		iconP2.setGraphicSize(Std.int(FlxMath.lerp(iconP2.width, 150, (icon_Zoom_Lerp / (Main.display.currentFPS / 60)) * songMultiplier)));
+		iconP1.setGraphicSize(Std.int(FlxMath.lerp(iconP1.width, iconP1.startWidth, (icon_Zoom_Lerp / (Main.display.currentFPS / 60)) * songMultiplier)));
+		iconP2.setGraphicSize(Std.int(FlxMath.lerp(iconP2.width, iconP2.startWidth, (icon_Zoom_Lerp / (Main.display.currentFPS / 60)) * songMultiplier)));
 
 		iconP1.updateHitbox();
 		iconP2.updateHitbox();
 
 		var iconOffset:Int = 26;
 
-		iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset);
-		iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset);
+		iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset) - iconP1.offsetX;
+		iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset) - iconP2.offsetX;
 
 		#if linc_luajit
 		if(((stage.stageScript != null || (luaModchart != null && executeModchart)) || generatedSomeDumbEventLuas) && generatedMusic && !switchedStates && startedCountdown)
@@ -2009,24 +2009,31 @@ class PlayState extends MusicBeatState
 
 		if (healthBar.percent < 20)
 		{
-			iconP1.animation.curAnim.curFrame = 1;
-			iconP2.animation.curAnim.curFrame = 2;
+			if(!iconP1.animatedIcon)
+				iconP1.animation.curAnim.curFrame = 1;
+			if(!iconP2.animatedIcon)
+				iconP2.animation.curAnim.curFrame = 2;
 
-			if(iconP2.animation.curAnim.curFrame != 2)
+			if(iconP2.animation.curAnim.curFrame != 2 && !iconP2.animatedIcon)
 				iconP2.animation.curAnim.curFrame = 0;
 		}
 		else
 		{
-			iconP1.animation.curAnim.curFrame = 0;
-			iconP2.animation.curAnim.curFrame = 0;
+			if(!iconP1.animatedIcon)
+				iconP1.animation.curAnim.curFrame = 0;
+
+			if(!iconP2.animatedIcon)
+				iconP2.animation.curAnim.curFrame = 0;
 		}
 
 		if (healthBar.percent > 80)
 		{
-			iconP2.animation.curAnim.curFrame = 1;
-			iconP1.animation.curAnim.curFrame = 2;
+			if(!iconP2.animatedIcon)
+				iconP2.animation.curAnim.curFrame = 1;
+			if(!iconP1.animatedIcon)
+				iconP1.animation.curAnim.curFrame = 2;
 
-			if(iconP1.animation.curAnim.curFrame != 2)
+			if(iconP1.animation.curAnim.curFrame != 2 && !iconP1.animatedIcon)
 				iconP1.animation.curAnim.curFrame = 0;
 		}
 

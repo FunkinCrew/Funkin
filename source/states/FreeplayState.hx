@@ -568,13 +568,13 @@ class FreeplayState extends MusicBeatState
 			{
 				iconArray[i].alpha = 0.6;
 
-				if(iconArray[i].animation.curAnim != null)
+				if(iconArray[i].animation.curAnim != null && !iconArray[i].animatedIcon)
 					iconArray[i].animation.curAnim.curFrame = 0;
 			}
 	
 			iconArray[curSelected].alpha = 1;
 
-			if(iconArray[curSelected].animation.curAnim != null)
+			if(iconArray[curSelected].animation.curAnim != null && !iconArray[curSelected].animatedIcon)
 			{
 				iconArray[curSelected].animation.curAnim.curFrame = 2;
 

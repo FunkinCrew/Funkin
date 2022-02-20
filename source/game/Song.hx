@@ -208,8 +208,13 @@ class Song
 				{
 					var note:Array<Dynamic> = notes[i];
 	
-					if(note[1] < 0)
+					if(note[1] < 0 && Std.isOfType(note[2], String))
 					{
+						if(note[3] == null)
+							note[3] = "";
+						if(note[4] == null)
+							note[4] = "";
+
 						new_events.push([note[2], note[0], note[3], note[4]]);
 						notes.remove(note);
 						len = notes.length;

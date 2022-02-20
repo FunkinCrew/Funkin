@@ -1,5 +1,6 @@
 package modding;
 
+import flixel.text.FlxText;
 import utilities.Options;
 import openfl.display.BlendMode;
 import flixel.FlxCamera;
@@ -356,6 +357,36 @@ class ModchartUtilities
         });
 
         // regular
+
+        Lua_helper.add_callback(lua,"setActorTextColor", function(id:String, color:String) {
+            if(getActorByName(id) != null)
+                Reflect.setProperty(getActorByName(id), "color", FlxColor.fromString(color));
+        });
+
+        Lua_helper.add_callback(lua,"setActorText", function(id:String, text:String) {
+            if(getActorByName(id) != null)
+                Reflect.setProperty(getActorByName(id), "text", text);
+        });
+
+        Lua_helper.add_callback(lua,"setActorAlignment", function(id:String, align:String) {
+            if(getActorByName(id) != null)
+                Reflect.setProperty(getActorByName(id), "alignment", align);
+        });
+
+        Lua_helper.add_callback(lua,"makeText", function(id:String, text:String, x:Float, y:Float, size:Int = 32, font:String = "vcr.ttf", fieldWidth:Float = 0) {
+            if(!lua_Sprites.exists(id))
+            {
+                var Sprite:FlxText = new FlxText(x, y, fieldWidth, text, size);
+                Sprite.font = Paths.font(font);
+
+    
+                lua_Sprites.set(id, Sprite);
+    
+                PlayState.instance.add(Sprite);
+            }
+            else
+                Application.current.window.alert("Sprite " + id + " already exists! Choose a different name!", "Leather Engine Modcharts");
+        });
 
         Lua_helper.add_callback(lua,"makeSprite", function(id:String, filename:String, x:Float, y:Float, size:Float = 1) {
             if(!lua_Sprites.exists(id))

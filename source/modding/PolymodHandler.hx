@@ -23,7 +23,8 @@ class PolymodHandler
                     "songs" => "songs",
                     "stages" => "stages",
                     "shared" => "shared",
-                    "replays" => "replays"
+                    "replays" => "replays",
+                    "fonts" => "fonts"
                 ]
             }
 		});

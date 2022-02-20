@@ -6,6 +6,13 @@ class HealthIcon extends TrackerSprite
 {
 	public var isPlayer:Bool = false;
 
+	public var animatedIcon:Bool = false;
+
+	public var offsetX:Float = 0.0;
+	public var offsetY:Float = 0.0;
+
+	public var startWidth:Float = 150;
+
 	public function new(char:String = 'bf', isPlayer:Bool = false)
 	{
 		super(null, 10, -30, RIGHT);
@@ -56,12 +63,14 @@ class HealthIcon extends TrackerSprite
 			{
 				var theFunny = Assets.getText(selected.split(".png")[0] + ".txt").split(" ");
 
-				offset.x = Std.parseFloat(theFunny[0]);
-				offset.y = Std.parseFloat(theFunny[1]);
-
 				setGraphicSize(Std.int(width * Std.parseFloat(theFunny[2])));
 				updateHitbox();
+
+				offsetX = Std.parseFloat(theFunny[0]);
+				offsetY = Std.parseFloat(theFunny[1]);
 			}
+
+			animatedIcon = true;
 		}
 		else
 		{
@@ -79,16 +88,13 @@ class HealthIcon extends TrackerSprite
 
 		animation.play(char);
 
+		startWidth = width;
+
 		// antialiasing override
 		switch(char)
 		{
 			case 'bf-pixel' | 'senpai' | 'senpai-angry' | 'spirit':
 				antialiasing = false;
 		}
-	}
-
-	override function update(elapsed:Float)
-	{
-		super.update(elapsed);
 	}
 }

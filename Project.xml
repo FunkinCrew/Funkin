@@ -89,6 +89,8 @@
 
 	<assets path="assets/replays"  library="replays"  exclude="*.ogg" if="web"/>
 	<assets path="assets/replays"  library="replays"  exclude="*.mp3" unless="web"/>
+
+	<assets path="assets/preload/fonts" rename="assets/fonts" library="fonts" />
 	
 	<assets path='art/readme.txt' rename='do NOT readme.txt' />
 	<assets path='art/manual.txt' rename='manual.txt' />
