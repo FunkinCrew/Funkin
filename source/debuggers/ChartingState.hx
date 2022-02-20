@@ -1615,6 +1615,12 @@ class ChartingState extends MusicBeatState
 			leftIcon.playSwagAnim(healthIconP2);
 			rightIcon.playSwagAnim(healthIconP1);
 		}
+
+		leftIcon.setGraphicSize(0, 45);
+		rightIcon.setGraphicSize(0, 45);
+
+		leftIcon.updateHitbox();
+		rightIcon.updateHitbox();
 	}
 
 	function loadHealthIconFromCharacter(char:String) {
