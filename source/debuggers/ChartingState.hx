@@ -115,7 +115,7 @@ class ChartingState extends MusicBeatState
 
 	public static var loadedAutosave:Bool = false;
 
-	var hitsounds:Bool = false;
+	static var hitsounds:Bool = false;
 
 	var eventList:Array<String> = [];
 	var eventListData:Array<Array<String>> = [];
@@ -296,7 +296,7 @@ class ChartingState extends MusicBeatState
 		};
 
 		var hitsoundsBox = new FlxUICheckBox(check_voices.x + check_voices.width, check_voices.y, null, null, "Play hitsounds", 100);
-		hitsoundsBox.checked = false;
+		hitsoundsBox.checked = hitsounds;
 
 		hitsoundsBox.callback = function()
 		{
@@ -325,7 +325,7 @@ class ChartingState extends MusicBeatState
 		blockPressWhileTypingOnStepper.push(stepperPlayerKeyCount);
 
 		var check_mute_inst = new FlxUICheckBox(10, stepperKeyCount.y + stepperKeyCount.height + 10, null, null, "Mute Instrumental (in editor)", 100);
-		check_mute_inst.checked = false;
+		check_mute_inst.checked = muteInstShit;
 		check_mute_inst.callback = function()
 		{
 			var vol:Float = 1;
@@ -334,7 +334,10 @@ class ChartingState extends MusicBeatState
 				vol = 0;
 
 			FlxG.sound.music.volume = vol;
+
+			muteInstShit = check_mute_inst.checked;
 		};
+		check_mute_inst.callback();
 
 		var check_char_ids = new FlxUICheckBox(check_mute_inst.x + check_mute_inst.width, check_mute_inst.y - 2, null, null, "Character Ids On Notes", 100);
 		check_char_ids.checked = doFunnyNumbers;
@@ -469,6 +472,8 @@ class ChartingState extends MusicBeatState
 		// also this, idk what it does but ehhhh who cares \_(:/)_/
 		FlxG.camera.follow(cameraShitThing);
 	}
+
+	static var muteInstShit:Bool = false;
 
 	var cameraShitThing:FlxObject = new FlxObject(0, 0, Std.int(FlxG.width / 2), 4);
 
@@ -864,7 +869,7 @@ class ChartingState extends MusicBeatState
 		var stageLabel = new FlxText(12 + stageDropDown.width, stageDropDown.y, 0, "Stage", 9);
 		var uiSkinLabel = new FlxText(12 + uiSkinDropDown.width, uiSkinDropDown.y, 0, "UI Skin", 9);
 
-		var modLabel = new FlxText(12 + modDropDown.width, modDropDown.y, 0, "Current Mod", 9);
+		var modLabel = new FlxText(12 + modDropDown.width, modDropDown.y, 0, "Current Character Group", 9);
 
 		// adding labels
 		tab_group_note.add(characterLabel);
@@ -1563,7 +1568,7 @@ class ChartingState extends MusicBeatState
 		}
 	}
 
-	var doFunnyNumbers:Bool = true;
+	static var doFunnyNumbers:Bool = true;
 
 	function copySection(?sectionNum:Int = 1)
 	{

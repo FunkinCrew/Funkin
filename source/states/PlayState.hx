@@ -257,7 +257,7 @@ class PlayState extends MusicBeatState
 
 	public var yoWaitThisIsCharter:Bool = false;
 
-	var bfMap:Map<String, Character> = [];
+	var bfMap:Map<String, Boyfriend> = [];
 	var gfMap:Map<String, Character> = [];
 	var dadMap:Map<String, Character> = [];
 
@@ -949,7 +949,7 @@ class PlayState extends MusicBeatState
 
 			for(event in events)
 			{
-				var map:Map<String, Character>;
+				var map:Map<String, Dynamic>;
 
 				switch(event[2].toLowerCase())
 				{
@@ -966,7 +966,13 @@ class PlayState extends MusicBeatState
 				{
 					if(event[0].toLowerCase() == "change character" && event[1] <= FlxG.sound.music.length && !map.exists(event[3]))
 					{
-						var funnyCharacter = new Character(100, 100, event[3]);
+						var funnyCharacter:Character;
+
+						if(map == bfMap)
+							funnyCharacter = new Boyfriend(100, 100, event[3]);
+						else
+							funnyCharacter = new Character(100, 100, event[3]);
+
 						funnyCharacter.alpha = 0.00001;
 						add(funnyCharacter);
 	
@@ -4127,6 +4133,15 @@ class PlayState extends MusicBeatState
 	
 					if(stage.stageScript != null)
 						stage.stageScript.setupTheShitCuzPullRequestsSuck();
+
+					if(generatedSomeDumbEventLuas)
+					{
+						for(event in event_luas.keys())
+						{
+							if(event_luas.exists(event))
+								event_luas.get(event).setupTheShitCuzPullRequestsSuck();
+						}
+					}
 					#end
 				case "dad" | "opponent" | "1":
 					var oldDad = dad;
@@ -4158,6 +4173,15 @@ class PlayState extends MusicBeatState
 	
 					if(stage.stageScript != null)
 						stage.stageScript.setupTheShitCuzPullRequestsSuck();
+
+					if(generatedSomeDumbEventLuas)
+					{
+						for(event in event_luas.keys())
+						{
+							if(event_luas.exists(event))
+								event_luas.get(event).setupTheShitCuzPullRequestsSuck();
+						}
+					}
 					#end
 	
 					@:privateAccess
@@ -4181,13 +4205,13 @@ class PlayState extends MusicBeatState
 						}
 					}
 					
-					var newDad = new Boyfriend(100, 100, event[3]);
-					newDad.alpha = 1;
-					boyfriend = newDad;
+					var newBF = bfMap.get(event[3]);
+					newBF.alpha = 1;
+					boyfriend = newBF;
 	
-					if(newDad.otherCharacters != null)
+					if(newBF.otherCharacters != null)
 					{
-						for(character in newDad.otherCharacters)
+						for(character in newBF.otherCharacters)
 						{
 							character.alpha = 1;
 						}
@@ -4199,6 +4223,15 @@ class PlayState extends MusicBeatState
 	
 					if(stage.stageScript != null)
 						stage.stageScript.setupTheShitCuzPullRequestsSuck();
+
+					if(generatedSomeDumbEventLuas)
+					{
+						for(event in event_luas.keys())
+						{
+							if(event_luas.exists(event))
+								event_luas.get(event).setupTheShitCuzPullRequestsSuck();
+						}
+					}
 					#end
 	
 					@:privateAccess
