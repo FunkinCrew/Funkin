@@ -209,6 +209,10 @@
             "value": true
         },
         {
+            "option": "screenShakes",
+            "value": true
+        },
+        {
             "option": "timeBarStyle",
             "value": "leather engine"
         },

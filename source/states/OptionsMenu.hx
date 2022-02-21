@@ -72,7 +72,7 @@ class OptionsMenu extends MusicBeatState
 			new BoolOption("Bigger Score Text", "biggerScoreInfo", 5),
 			new BoolOption("Bigger Info Text", "biggerInfoText", 6),
 			new StringSaveOption("Time Bar Style", ["leather engine", "psych engine", "new kade engine", "old kade engine"], 7, "timeBarStyle"),
-			new BoolOption("Flashing Lights", "flashingLights", 8)
+			new PageOption("Screen Effects", 8, "Screen Effects")
 		],
 		[
 			"Tools",
@@ -95,8 +95,6 @@ class OptionsMenu extends MusicBeatState
 			#end
 			new StringSaveOption("Cutscenes Play On", ["story","freeplay","both"], 6, "cutscenePlaysOn"),
 			new StringSaveOption("Play As", ["bf", "opponent"], 7, "playAs"),
-			new BoolOption("Camera Tracks Direction", "cameraTracksDirections", 8),
-			new BoolOption("Camera Bounce", "cameraZooms", 9),
 			new BoolOption("Disable Debug Menus", "disableDebugMenus", 10),
 			new BoolOption("Invisible Notes", "invisibleNotes", 11)
 		],
@@ -148,6 +146,14 @@ class OptionsMenu extends MusicBeatState
 			new BoolOption("Note Accuracy Text", "displayMs", 4),
 			new NoteColorMenuOption("Note Colors", 5),
 			new UISkinSelectOption("UI Skin", 6)
+		],
+		[
+			"Screen Effects",
+			new PageOption("Back", 0, "Graphics"),
+			new BoolOption("Camera Tracks Direction", "cameraTracksDirections", 1),
+			new BoolOption("Camera Bounce", "cameraZooms", 2),
+			new BoolOption("Flashing Lights", "flashingLights", 3),
+			new BoolOption("Screen Shake", "screenShakes", 4)
 		]
 	];
 

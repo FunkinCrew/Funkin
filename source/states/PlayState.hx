@@ -4451,22 +4451,25 @@ class PlayState extends MusicBeatState
 					camHUD.zoom += addHUD;
 				}
 			case "screen shake":
-				var valuesArray:Array<String> = [event[2], event[3]];
-				var targetsArray:Array<FlxCamera> = [camGame, camHUD];
-
-				for (i in 0...targetsArray.length)
+				if(Options.getData("screenShakes"))
 				{
-					var split:Array<String> = valuesArray[i].split(',');
-					var duration:Float = 0;
-					var intensity:Float = 0;
-
-					if(split[0] != null) duration = Std.parseFloat(split[0].trim());
-					if(split[1] != null) intensity = Std.parseFloat(split[1].trim());
-					if(Math.isNaN(duration)) duration = 0;
-					if(Math.isNaN(intensity)) intensity = 0;
-
-					if(duration > 0 && intensity != 0)
-						targetsArray[i].shake(intensity, duration);
+					var valuesArray:Array<String> = [event[2], event[3]];
+					var targetsArray:Array<FlxCamera> = [camGame, camHUD];
+	
+					for (i in 0...targetsArray.length)
+					{
+						var split:Array<String> = valuesArray[i].split(',');
+						var duration:Float = 0;
+						var intensity:Float = 0;
+	
+						if(split[0] != null) duration = Std.parseFloat(split[0].trim());
+						if(split[1] != null) intensity = Std.parseFloat(split[1].trim());
+						if(Math.isNaN(duration)) duration = 0;
+						if(Math.isNaN(intensity)) intensity = 0;
+	
+						if(duration > 0 && intensity != 0)
+							targetsArray[i].shake(intensity, duration);
+					}
 				}
 			case "change scroll speed":
 				var duration:Float = Std.parseFloat(event[3]);
