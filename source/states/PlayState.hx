@@ -2285,7 +2285,8 @@ class PlayState extends MusicBeatState
 							{
 								for(character in daNote.characters)
 								{
-									dad.otherCharacters[character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][Std.int(Math.abs(daNote.noteData))] + altAnim, true);
+									if(dad.otherCharacters.length - 1 >= character)
+										dad.otherCharacters[character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][Std.int(Math.abs(daNote.noteData))] + altAnim, true);
 								}
 							}
 						}
@@ -2306,7 +2307,8 @@ class PlayState extends MusicBeatState
 							{
 								for(character in daNote.characters)
 								{
-									boyfriend.otherCharacters[character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][Std.int(Math.abs(daNote.noteData))], true);
+									if(boyfriend.otherCharacters.length - 1 >= character)
+										boyfriend.otherCharacters[character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.keyCount - 1][Std.int(Math.abs(daNote.noteData))], true);
 								}
 							}
 						
@@ -2352,7 +2354,8 @@ class PlayState extends MusicBeatState
 							{
 								for(char in daNote.characters)
 								{
-									dad.otherCharacters[char].holdTimer = 0;
+									if(dad.otherCharacters.length - 1 >= char)
+										dad.otherCharacters[char].holdTimer = 0;
 								}
 							}
 						}
@@ -2368,7 +2371,8 @@ class PlayState extends MusicBeatState
 							{
 								for(char in daNote.characters)
 								{
-									boyfriend.otherCharacters[char].holdTimer = 0;
+									if(boyfriend.otherCharacters.length - 1 >= char)
+										boyfriend.otherCharacters[char].holdTimer = 0;
 								}
 							}
 					}
@@ -3142,7 +3146,8 @@ class PlayState extends MusicBeatState
 												{
 													for(char in note.characters)
 													{
-														boyfriend.otherCharacters[char].holdTimer = 0;
+														if(boyfriend.otherCharacters.length - 1 >= char)
+															boyfriend.otherCharacters[char].holdTimer = 0;
 													}
 												}
 										}
@@ -3157,7 +3162,8 @@ class PlayState extends MusicBeatState
 												{
 													for(char in note.characters)
 													{
-														dad.otherCharacters[char].holdTimer = 0;
+														if(dad.otherCharacters.length - 1 >= char)
+															dad.otherCharacters[char].holdTimer = 0;
 													}
 												}
 										}
@@ -3249,7 +3255,8 @@ class PlayState extends MusicBeatState
 										{
 											for(char in possibleNotes[i].characters)
 											{
-												boyfriend.otherCharacters[char].holdTimer = 0;
+												if(boyfriend.otherCharacters.length - 1 >= char)
+													boyfriend.otherCharacters[char].holdTimer = 0;
 											}
 										}
 								}
@@ -3264,7 +3271,8 @@ class PlayState extends MusicBeatState
 										{
 											for(char in possibleNotes[i].characters)
 											{
-												dad.otherCharacters[char].holdTimer = 0;
+												if(dad.otherCharacters.length - 1 >= char)
+													dad.otherCharacters[char].holdTimer = 0;
 											}
 										}
 								}
@@ -3328,7 +3336,8 @@ class PlayState extends MusicBeatState
 										{
 											for(char in daNote.characters)
 											{
-												boyfriend.otherCharacters[char].holdTimer = 0;
+												if(boyfriend.otherCharacters.length - 1 >= char)
+													boyfriend.otherCharacters[char].holdTimer = 0;
 											}
 										}
 								}
@@ -3343,7 +3352,8 @@ class PlayState extends MusicBeatState
 										{
 											for(char in daNote.characters)
 											{
-												dad.otherCharacters[char].holdTimer = 0;
+												if(dad.otherCharacters.length - 1 >= char)
+													dad.otherCharacters[char].holdTimer = 0;
 											}
 										}
 								}
@@ -3432,7 +3442,8 @@ class PlayState extends MusicBeatState
 									{
 										for(char in note.characters)
 										{
-											boyfriend.otherCharacters[char].holdTimer = 0;
+											if(boyfriend.otherCharacters.length - 1 >= char)
+												boyfriend.otherCharacters[char].holdTimer = 0;
 										}
 									}
 							}
@@ -3447,7 +3458,8 @@ class PlayState extends MusicBeatState
 									{
 										for(char in note.characters)
 										{
-											dad.otherCharacters[char].holdTimer = 0;
+											if(dad.otherCharacters.length - 1 >= char)
+												dad.otherCharacters[char].holdTimer = 0;
 										}
 									}
 							}
@@ -3588,7 +3600,8 @@ class PlayState extends MusicBeatState
 						{
 							for(character in note.characters)
 							{
-								boyfriend.otherCharacters[character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.playerKeyCount - 1][direction] + "miss", true);
+								if(boyfriend.otherCharacters.length - 1 >= character)
+									boyfriend.otherCharacters[character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.playerKeyCount - 1][direction] + "miss", true);
 							}
 						}
 					}
@@ -3604,7 +3617,8 @@ class PlayState extends MusicBeatState
 						{
 							for(character in note.characters)
 							{
-								dad.otherCharacters[character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.playerKeyCount - 1][direction] + altAnim + "miss", true);
+								if(dad.otherCharacters.length - 1 >= character)
+									dad.otherCharacters[character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.playerKeyCount - 1][direction] + altAnim + "miss", true);
 							}
 						}
 					else
@@ -3667,7 +3681,8 @@ class PlayState extends MusicBeatState
 					{
 						for(character in note.characters)
 						{
-							boyfriend.otherCharacters[character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.playerKeyCount - 1][Std.int(Math.abs(note.noteData % SONG.playerKeyCount))], true);
+							if(boyfriend.otherCharacters.length - 1 >= character)
+								boyfriend.otherCharacters[character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.playerKeyCount - 1][Std.int(Math.abs(note.noteData % SONG.playerKeyCount))], true);
 						}
 					}
 				else
@@ -3687,7 +3702,8 @@ class PlayState extends MusicBeatState
 					{
 						for(character in note.characters)
 						{
-							dad.otherCharacters[character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.playerKeyCount - 1][Std.int(Math.abs(note.noteData % SONG.playerKeyCount))] + altAnim, true);
+							if(dad.otherCharacters.length - 1 >= character)
+								dad.otherCharacters[character].playAnim(NoteVariables.Character_Animation_Arrays[SONG.playerKeyCount - 1][Std.int(Math.abs(note.noteData % SONG.playerKeyCount))] + altAnim, true);
 						}
 					}
 				else

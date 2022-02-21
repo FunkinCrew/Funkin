@@ -20,6 +20,7 @@ All notable changes will be documented in this file.
 - Invisible Notes (Stealth Mod I guess) Option.
 - Custom Game Over Sounds For Characters.
 - Lua Stages
+- Character Ids to Charter
 ### Changed
 - New Note Splash Sprites!
 - FPS Cap Max is now 1000 (800 before lol).

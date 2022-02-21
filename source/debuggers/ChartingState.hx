@@ -74,6 +74,7 @@ class ChartingState extends MusicBeatState
 
 	var curRenderedNotes:FlxTypedGroup<Note>;
 	var curRenderedSustains:FlxTypedGroup<FlxSprite>;
+	var curRenderedIds:FlxTypedGroup<FlxSprite>;
 	var curRenderedEvents:FlxTypedGroup<EventSprite>;
 
 	var gridBG:FlxSprite;
@@ -176,6 +177,7 @@ class ChartingState extends MusicBeatState
 		curRenderedNotes = new FlxTypedGroup<Note>();
 		curRenderedSustains = new FlxTypedGroup<FlxSprite>();
 		curRenderedEvents = new FlxTypedGroup<EventSprite>();
+		curRenderedIds = new FlxTypedGroup<FlxSprite>();
 
 		if (PlayState.SONG != null)
 			_song = PlayState.SONG;
@@ -223,6 +225,7 @@ class ChartingState extends MusicBeatState
 
 		add(curRenderedNotes);
 		add(curRenderedSustains);
+		add(curRenderedIds);
 		add(curRenderedEvents);
 
 		var tabs = [
@@ -333,6 +336,14 @@ class ChartingState extends MusicBeatState
 			FlxG.sound.music.volume = vol;
 		};
 
+		var check_char_ids = new FlxUICheckBox(check_mute_inst.x + check_mute_inst.width, check_mute_inst.y - 2, null, null, "Character Ids On Notes", 100);
+		check_char_ids.checked = doFunnyNumbers;
+		check_char_ids.callback = function()
+		{
+			doFunnyNumbers = check_char_ids.checked;
+			updateGrid();
+		};
+
 		modchart_Input = new FlxUIInputText(10, check_mute_inst.y + check_mute_inst.height + 2, 70, _song.modchartPath, 8);
 
 		cutscene_Input = new FlxUIInputText(modchart_Input.x, modchart_Input.y + modchart_Input.height + 2, 70, _song.cutscene, 8);
@@ -432,6 +443,7 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(check_voices);
 		tab_group_song.add(hitsoundsBox);
 		tab_group_song.add(check_mute_inst);
+		tab_group_song.add(check_char_ids);
 		tab_group_song.add(modchart_Input);
 		tab_group_song.add(cutscene_Input);
 		tab_group_song.add(endCutscene_Input);
@@ -1551,6 +1563,8 @@ class ChartingState extends MusicBeatState
 		}
 	}
 
+	var doFunnyNumbers:Bool = true;
+
 	function copySection(?sectionNum:Int = 1)
 	{
 		var daSec = FlxMath.maxInt(curSection, sectionNum);
@@ -1693,13 +1707,17 @@ class ChartingState extends MusicBeatState
 			sprite.destroy();
 		}, true);
 
+		curRenderedIds.clear();
+
+		curRenderedIds.forEach(function(sprite:FlxSprite) {
+			sprite.kill();
+			sprite.destroy();
+		}, true);
+
 		var sectionInfo:Array<Dynamic> = _song.notes[curSection].sectionNotes;
 
 		if (_song.notes[curSection].changeBPM && _song.notes[curSection].bpm > 0)
-		{
 			Conductor.changeBPM(_song.notes[curSection].bpm);
-			FlxG.log.add('CHANGED BPM!');
-		}
 		else
 		{
 			// get last bpm
@@ -1743,11 +1761,30 @@ class ChartingState extends MusicBeatState
 			note.updateHitbox();
 
 			note.x = Math.floor((daNoteInfo + 1) * GRID_SIZE) + Std.parseFloat(PlayState.instance.arrow_Configs.get(daType)[1]);
-			note.y = Math.floor(getYfromStrum((daStrumTime - sectionStartTime()) % (Conductor.stepCrochet * Conductor.stepsPerSection)) + Std.parseFloat(PlayState.instance.arrow_Configs.get(daType)[3]));
+			note.y = Math.floor(getYfromStrum((daStrumTime - sectionStartTime())) + Std.parseFloat(PlayState.instance.arrow_Configs.get(daType)[3]));
 
 			note.rawNoteData = daNoteInfo;
 
 			curRenderedNotes.add(note);
+
+			if(doFunnyNumbers)
+			{
+				if(i[3] == null)
+					i[3] = 0;
+
+				var id:FlxText = new FlxText(Math.floor((daNoteInfo + 1) * GRID_SIZE), Math.floor(getYfromStrum((daStrumTime - sectionStartTime()))), GRID_SIZE, Std.string(i[3]).replace("[", "").replace("]", ""), 16);
+				id.setBorderStyle(OUTLINE, FlxColor.BLACK, 1.5);
+				id.font = Paths.font("vcr.ttf");
+
+				var idIcon:FlxSprite = new FlxSprite(Math.floor((daNoteInfo + 1) * GRID_SIZE) - 16, Math.floor(getYfromStrum((daStrumTime - sectionStartTime()))) - 12);
+				idIcon.loadGraphic(Paths.image("idSprite", "shared"));
+				idIcon.setGraphicSize(20, 20);
+				idIcon.updateHitbox();
+				idIcon.antialiasing = false;
+
+				curRenderedIds.add(idIcon);
+				curRenderedIds.add(id);
+			}
 
 			if (daSus > 0)
 			{
