@@ -38,6 +38,9 @@ class StageGroup extends FlxGroup
     public var p2_Scroll:Float = 1.0;
     public var gf_Scroll:Float = 0.95;
 
+    public var p1_Cam_Offset:FlxPoint = new FlxPoint(0,0);
+    public var p2_Cam_Offset:FlxPoint = new FlxPoint(0,0);
+
     private var stage_Data:StageData;
 
     public var stage_Objects:Array<Array<Dynamic>> = [];
@@ -258,6 +261,12 @@ class StageGroup extends FlxGroup
                     if(stage_Data != null)
                     {
                         camZoom = stage_Data.camera_Zoom;
+
+                        if(stage_Data.camera_Offsets != null)
+                        {
+                            p1_Cam_Offset.set(stage_Data.camera_Offsets[0][0], stage_Data.camera_Offsets[0][1]);
+                            p2_Cam_Offset.set(stage_Data.camera_Offsets[1][0], stage_Data.camera_Offsets[1][1]);
+                        }
         
                         player_1_Point.set(stage_Data.character_Positions[0][0], stage_Data.character_Positions[0][1]);
                         player_2_Point.set(stage_Data.character_Positions[1][0], stage_Data.character_Positions[1][1]);
@@ -557,6 +566,7 @@ typedef StageData =
     var character_Scrolls:Array<Float>;
 
     var camera_Zoom:Float;
+    var camera_Offsets:Array<Array<Float>>;
 
     var objects:Array<StageObject>;
 

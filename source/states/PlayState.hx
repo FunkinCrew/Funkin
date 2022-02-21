@@ -2085,6 +2085,9 @@ class PlayState extends MusicBeatState
 					}
 				}
 
+				midPos.x += stage.p2_Cam_Offset.x;
+				midPos.y += stage.p2_Cam_Offset.y;
+
 				if (camFollow.x != midPos.x + 150 + dad.cameraOffset[0])
 				{
 					camFollow.setPosition(midPos.x + 150 + dad.cameraOffset[0], midPos.y - 100 + dad.cameraOffset[1]);
@@ -2123,6 +2126,9 @@ class PlayState extends MusicBeatState
 							midPos.y += 50;
 					}
 				}
+
+				midPos.x += stage.p1_Cam_Offset.x;
+				midPos.y += stage.p1_Cam_Offset.y;
 
 				if(camFollow.x != midPos.x - 100 + boyfriend.cameraOffset[0])
 				{
