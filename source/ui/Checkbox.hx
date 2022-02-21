@@ -1,5 +1,6 @@
 package ui;
 
+import flixel.util.FlxTimer;
 import flixel.FlxSprite;
 
 class Checkbox extends FlxSprite
@@ -11,38 +12,37 @@ class Checkbox extends FlxSprite
     {
         super();
 
-        frames = Paths.getSparrowAtlas("optionsmenu/checkbox");
+        frames = Paths.getSparrowAtlas("options menu/checkbox");
 
-        animation.addByPrefix("static", "Check Box unselected", 24, false);
-        animation.addByPrefix("checked", "Check Box selecting animation", 24, false);
+        animation.addByPrefix("static", "Unchecked", 24, true);
+        animation.addByPrefix("checked", "Checked", 24, false);
 
         animation.play("static");
 
-        setGraphicSize(Std.int(width * 0.5));
         updateHitbox();
 
         this.sprTracker = tracking;
         scrollFactor.set();
+
+        antialiasing = true;
     }
 
     override function update(elapsed:Float)
     {
         super.update(elapsed);
 
-        switch (animation.curAnim.name)
+        if(sprTracker != null)
+            setPosition(sprTracker.x + sprTracker.width + 5, sprTracker.y);
+
+        if(animation.curAnim.name == "static" && checked)
         {
-            case "checked":
-                offset.set(17, 70);
-            case "static":
-                offset.set();
-        }
-
-        if (sprTracker != null)
-            setPosition(sprTracker.x + sprTracker.width  + 5, sprTracker.y);
-
-        if (animation.curAnim.name == "static" && checked)
             animation.play("checked", true);
+            updateHitbox();
+        }
         else if(animation.curAnim.name == "checked" && !checked)
-            animation.play("static");
+        {
+            animation.play("static", true);
+            updateHitbox();
+        }
     }
 }
