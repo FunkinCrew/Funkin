@@ -1,6 +1,6 @@
 package modding;
 
-#if desktop
+#if polymod
 import polymod.Polymod.ModMetadata;
 import polymod.Polymod;
 import polymod.backends.OpenFLBackend;
@@ -29,7 +29,7 @@ class PolymodHandler
 	 */
 	public static function loadAllMods()
 	{
-		#if cpp
+		#if polymod
 		trace("Initializing Polymod (using all mods)...");
 		loadModsById(getAllModIds());
 		#else
@@ -43,7 +43,7 @@ class PolymodHandler
 	public static function loadNoMods()
 	{
 		// We still need to configure the debug print calls etc.
-		#if cpp
+		#if polymod
 		trace("Initializing Polymod (using no mods)...");
 		loadModsById([]);
 		#else
@@ -53,7 +53,7 @@ class PolymodHandler
 
 	public static function loadModsById(ids:Array<String>)
 	{
-		#if cpp
+		#if polymod
 		if (ids.length == 0)
 		{
 			trace('You attempted to load zero mods.');
@@ -132,7 +132,7 @@ class PolymodHandler
 		#end
 	}
 
-	#if cpp
+	#if polymod
 	static function buildParseRules():polymod.format.ParseRules
 	{
 		var output = polymod.format.ParseRules.getDefault();
@@ -182,9 +182,9 @@ class PolymodHandler
 	}
 	#end
 
-	public static function getAllMods():Array<#if cpp ModMetadata #else Dynamic #end> // this is shitty conditional but ModMetadata isn't imported on HTML5! And I'm too lazy to actually do it properly!
+	public static function getAllMods():Array<#if polymod ModMetadata #else Dynamic #end> // this is shitty conditional but ModMetadata isn't imported on HTML5! And I'm too lazy to actually do it properly!
 	{
-		#if cpp
+		#if polymod
 		trace('Scanning the mods folder...');
 		var modMetadata = Polymod.scan(MOD_FOLDER);
 		trace('Found ${modMetadata.length} mods when scanning.');
