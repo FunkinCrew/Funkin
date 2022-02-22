@@ -54,6 +54,8 @@ class ModchartUtilities
 
     public static var lua_Sounds:Map<String, FlxSound> = [];
 
+    public static var lua_Shaders:Map<String, shaders.Shaders.ShaderEffect> = [];
+
 	function getActorByName(id:String):Dynamic
     {
         // lua objects or what ever
@@ -84,6 +86,8 @@ class ModchartUtilities
 
         lua_Sprites.clear();
         lua_Characters.clear();
+        lua_Shaders.clear();
+        lua_Sounds.clear();
 
         Lua.close(lua);
         lua = null;
@@ -1488,7 +1492,34 @@ class ModchartUtilities
                     return "boyfriend";
             }
     
-            return "boyfriend";
+            return eventId;
+        });
+
+        // shader bullshit
+
+        Lua_helper.add_callback(lua,"setActor3DShader", function(id:String, ?speed:Float = 3, ?frequency:Float = 10, ?amplitude:Float = 0.25) {
+            var actor = getActorByName(id);
+
+            if(actor != null)
+            {
+                var funnyShader:shaders.Shaders.ThreeDEffect = shaders.Shaders.newEffect("3d");
+                funnyShader.waveSpeed = speed;
+                funnyShader.waveFrequency = frequency;
+                funnyShader.waveAmplitude = amplitude;
+                lua_Shaders.set(id, funnyShader);
+                
+                actor.shader = funnyShader.shader;
+            }
+        });
+        
+        Lua_helper.add_callback(lua,"setActorNoShader", function(id:String) {
+            var actor = getActorByName(id);
+
+            if(actor != null)
+            {
+                lua_Shaders.remove(id);
+                actor.shader = null;
+            }
         });
 
         executeState("onCreate", []);

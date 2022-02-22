@@ -1949,6 +1949,14 @@ class PlayState extends MusicBeatState
 		#if linc_luajit
 		if(((stage.stageScript != null || (luaModchart != null && executeModchart)) || generatedSomeDumbEventLuas) && generatedMusic && !switchedStates && startedCountdown)
 		{
+			var shaderThing = modding.ModchartUtilities.lua_Shaders;
+
+			for(shaderKey in shaderThing.keys())
+			{
+				if(shaderThing.exists(shaderKey))
+					shaderThing.get(shaderKey).update(elapsed);
+			}
+
 			setLuaVar("songPos", Conductor.songPosition);
 			setLuaVar("hudZoom", camHUD.zoom);
 			setLuaVar("curBeat", currentBeat);

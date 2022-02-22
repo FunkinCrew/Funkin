@@ -21,6 +21,7 @@ All notable changes will be documented in this file.
 - Custom Game Over Sounds For Characters.
 - Lua Stages
 - Character Ids to Charter
+- Some Cool Shader Stuff (mainly 3d shader from dave and bambi)
 ### Changed
 - New Note Splash Sprites!
 - FPS Cap Max is now 1000 (800 before lol).
