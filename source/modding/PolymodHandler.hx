@@ -182,7 +182,7 @@ class PolymodHandler
 	}
 	#end
 
-	public static function getAllMods():Array<#if polymod ModMetadata #else Dynamic #end> // this is shitty conditional but ModMetadata isn't imported on HTML5! And I'm too lazy to actually do it properly!
+	public static function getAllMods()
 	{
 		#if polymod
 		trace('Scanning the mods folder...');
@@ -190,7 +190,7 @@ class PolymodHandler
 		trace('Found ${modMetadata.length} mods when scanning.');
 		return modMetadata;
 		#else
-		return [];
+		return new Array<Dynamic>();
 		#end
 	}
 
