@@ -3899,30 +3899,34 @@ class PlayState extends MusicBeatState
 	{
 		if(utilities.Options.getData("sideRatings") == true)
 		{
-			var ratingArray = [
-				ratings.get("marvelous"),
-				ratings.get("sick"),
-				ratings.get("good"),
-				ratings.get("bad"),
-				ratings.get("shit")
-			];
-
-			var MA = ratingArray[1] + ratingArray[2] + ratingArray[3] + ratingArray[4];
-			var PA = ratingArray[2] + ratingArray[3] + ratingArray[4];
-
-			ratingText.text = (
-				(utilities.Options.getData("marvelousRatings") == true ? "Marvelous: " + Std.string(ratingArray[0]) + "\n" : "") +
-				"Sick: " + Std.string(ratingArray[1]) + "\n" +
-				"Good: " + Std.string(ratingArray[2]) + "\n" +
-				"Bad: " + Std.string(ratingArray[3]) + "\n" +
-				"Shit: " + Std.string(ratingArray[4]) + "\n" +
-				"Misses: " + Std.string(misses) + "\n" +
-				(utilities.Options.getData("marvelousRatings") == true && ratingArray[0] > 0 && MA > 0 ? "MA: " + Std.string(FlxMath.roundDecimal(ratingArray[0] / MA, 2)) + "\n" : "") +
-				(ratingArray[1] > 0 && PA > 0 ? "PA: " + Std.string(FlxMath.roundDecimal((ratingArray[1] + ratingArray[0]) / PA, 2)) + "\n" : "")
-			);
-
+			ratingText.text = returnStupidRatingText();
 			ratingText.screenCenter(Y);
 		}
+	}
+
+	public function returnStupidRatingText():String
+	{
+		var ratingArray = [
+			ratings.get("marvelous"),
+			ratings.get("sick"),
+			ratings.get("good"),
+			ratings.get("bad"),
+			ratings.get("shit")
+		];
+
+		var MA = ratingArray[1] + ratingArray[2] + ratingArray[3] + ratingArray[4];
+		var PA = ratingArray[2] + ratingArray[3] + ratingArray[4];
+
+		return (
+			(utilities.Options.getData("marvelousRatings") == true ? "Marvelous: " + Std.string(ratingArray[0]) + "\n" : "") +
+			"Sick: " + Std.string(ratingArray[1]) + "\n" +
+			"Good: " + Std.string(ratingArray[2]) + "\n" +
+			"Bad: " + Std.string(ratingArray[3]) + "\n" +
+			"Shit: " + Std.string(ratingArray[4]) + "\n" +
+			"Misses: " + Std.string(misses) + "\n" +
+			(utilities.Options.getData("marvelousRatings") == true && ratingArray[0] > 0 && MA > 0 ? "MA: " + Std.string(FlxMath.roundDecimal(ratingArray[0] / MA, 2)) + "\n" : "") +
+			(ratingArray[1] > 0 && PA > 0 ? "PA: " + Std.string(FlxMath.roundDecimal((ratingArray[1] + ratingArray[0]) / PA, 2)) + "\n" : "")
+		);
 	}
 
 	var curLight:Int = 0;

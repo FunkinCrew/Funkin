@@ -42,6 +42,7 @@ class CharacterCreationState extends MusicBeatState
     var characters:Map<String, Array<String>> = new Map<String, Array<String>>();
 
     var charDropDown:FlxUIDropDownMenuCustom;
+    var modDropDown:FlxUIDropDownMenuCustom;
 
     override public function new(?char:String = "bf")
     {
@@ -133,6 +134,38 @@ class CharacterCreationState extends MusicBeatState
         charDropDown.x = FlxG.width - charDropDown.width;
         charDropDown.cameras = [camHUD];
 
+        var mods:Array<String> = [];
+
+		var iterator = characters.keys();
+
+		for(i in iterator)
+		{
+			mods.push(i);
+		}
+
+        var selected_mod:String = "default";
+
+		var modDropDown = new FlxUIDropDownMenuCustom(charDropDown.x - charDropDown.width, charDropDown.y, FlxUIDropDownMenuCustom.makeStrIdLabelArray(mods, true), function(mod:String)
+		{
+			selected_mod = mods[Std.parseInt(mod)];
+
+			arrayCharacters = ["bf","gf"];
+			tempCharacters = characters.get(selected_mod);
+			
+			for(Item in tempCharacters)
+			{
+				arrayCharacters.push(Item);
+			}
+
+			var character_Data_List = FlxUIDropDownMenuCustom.makeStrIdLabelArray(arrayCharacters, true);
+			
+			charDropDown.setData(character_Data_List);
+			charDropDown.selectedLabel = charStr;
+		}, null, null, null, null, camHUD);
+
+        modDropDown.selectedLabel = "default";
+
+        add(modDropDown);
         add(charDropDown);
 
         #if discord_rpc
@@ -211,6 +244,8 @@ class CharacterCreationState extends MusicBeatState
     {
         if(charDropDown != null)
             remove(charDropDown);
+        if(modDropDown != null)
+            remove(modDropDown);
 
         remove(funnyBox);
 
@@ -239,10 +274,15 @@ class CharacterCreationState extends MusicBeatState
 
         add(funnyBox);
 
+        if(modDropDown != null)
+            add(modDropDown);
         if(charDropDown != null)
             add(charDropDown);
 
         animations = character.animation.getNameList();
+
+        if(animations.length < 1)
+            animations = ["idle"];
 
         var coolPos:Array<Float> = stage.getCharacterPos(character.isPlayer ? 0 : 1, character);
 

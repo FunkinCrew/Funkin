@@ -34,7 +34,7 @@ class ResultsScreenSubstate extends MusicBeatSubstate
         topText.scrollFactor.set();
         add(topText);
 
-        var ratings:FlxText = new FlxText(0, FlxG.height, 0, utilities.Options.getData("sideRatings") == true ? PlayState.instance.ratingText.text : "[RATING TEXT NOT FOUND]");
+        var ratings:FlxText = new FlxText(0, FlxG.height, 0, PlayState.instance.returnStupidRatingText());
         ratings.setFormat(Paths.font("vcr.ttf"), 24, FlxColor.WHITE, LEFT, OUTLINE, FlxColor.BLACK);
         ratings.screenCenter(Y);
         ratings.scrollFactor.set();
