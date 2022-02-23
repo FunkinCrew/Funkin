@@ -21,7 +21,7 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
 		var rating:FlxSprite = new FlxSprite();
 		var ratingPath:String = daRating;
 
-		if (PlayState.curStage.startsWith('school'))
+		if (PlayState.curStageId.startsWith('school'))
 			ratingPath = "weeb/pixelUI/" + ratingPath + "-pixel";
 
 		rating.loadGraphic(Paths.image(ratingPath));
@@ -39,7 +39,7 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
 
 		add(rating);
 
-		if (PlayState.curStage.startsWith('school'))
+		if (PlayState.curStageId.startsWith('school'))
 		{
 			rating.setGraphicSize(Std.int(rating.width * PlayState.daPixelZoom * 0.7));
 		}
@@ -68,7 +68,7 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
 		var pixelShitPart1:String = "";
 		var pixelShitPart2:String = '';
 
-		if (PlayState.curStage.startsWith('school'))
+		if (PlayState.curStageId.startsWith('school'))
 		{
 			pixelShitPart1 = 'weeb/pixelUI/';
 			pixelShitPart2 = '-pixel';
@@ -89,7 +89,7 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
 
 		add(comboSpr);
 
-		if (PlayState.curStage.startsWith('school'))
+		if (PlayState.curStageId.startsWith('school'))
 		{
 			comboSpr.setGraphicSize(Std.int(comboSpr.width * PlayState.daPixelZoom * 0.7));
 		}
@@ -128,7 +128,7 @@ class PopUpStuff extends FlxTypedGroup<FlxSprite>
 			var numScore:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'num' + Std.int(i) + pixelShitPart2));
 			numScore.y = comboSpr.y;
 
-			if (PlayState.curStage.startsWith('school'))
+			if (PlayState.curStageId.startsWith('school'))
 			{
 				numScore.setGraphicSize(Std.int(numScore.width * PlayState.daPixelZoom));
 			}

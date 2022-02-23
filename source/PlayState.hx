@@ -1,5 +1,7 @@
 package;
 
+import play.stage.StageData;
+import play.stage.Stage;
 import Note;
 import Section.SwagSection;
 import SongLoad.SwagSong;
@@ -41,7 +43,7 @@ import Discord.DiscordClient;
 
 class PlayState extends MusicBeatState
 {
-	public static var curStage:String = '';
+	public static var curStageId:String = '';
 	public static var SONG:SwagSong;
 	public static var isStoryMode:Bool = false;
 	public static var storyWeek:Int = 0;
@@ -50,8 +52,6 @@ class PlayState extends MusicBeatState
 	public static var deathCounter:Int = 0;
 	public static var practiceMode:Bool = false;
 	public static var needsReset:Bool = false;
-
-	var halloweenLevel:Bool = false;
 
 	private var vocals:VoicesGroup;
 	private var vocalsFinished:Bool = false;
@@ -390,22 +390,13 @@ class PlayState extends MusicBeatState
 		switch (SONG.song.toLowerCase())
 		{
 			case 'spookeez' | 'monster' | 'south':
-				curStage = "spooky";
-				halloweenLevel = true;
+				curStageId = "spookyMansion";
 
-				var hallowTex = Paths.getSparrowAtlas('halloween_bg');
+				// TODO: Move lightning strike behavior to a scripted class extending Stage.
+				loadStage(curStageId);
 
-				halloweenBG = new FlxSprite(-200, -100);
-				halloweenBG.frames = hallowTex;
-				halloweenBG.animation.addByPrefix('idle', 'halloweem bg0');
-				halloweenBG.animation.addByPrefix('lightning', 'halloweem bg lightning strike', 24, false);
-				halloweenBG.animation.play('idle');
-				halloweenBG.antialiasing = true;
-				add(halloweenBG);
-
-				isHalloween = true;
 			case 'pico' | 'blammed' | 'philly':
-				curStage = 'philly';
+				curStageId = 'philly';
 
 				var bg:FlxSprite = new FlxSprite(-100).loadGraphic(Paths.image('philly/sky'));
 				bg.scrollFactor.set(0.1, 0.1);
@@ -448,7 +439,7 @@ class PlayState extends MusicBeatState
 				var street:FlxSprite = new FlxSprite(-40, streetBehind.y).loadGraphic(Paths.image('philly/street'));
 				add(street);
 			case "milf" | 'satin-panties' | 'high':
-				curStage = 'limo';
+				curStageId = 'limo';
 				defaultCamZoom *= 0.90;
 
 				var skyBG:FlxSprite = new FlxSprite(-120, -50).loadGraphic(Paths.image('limo/limoSunset'));
@@ -496,7 +487,7 @@ class PlayState extends MusicBeatState
 				fastCar = new FlxSprite(-300, 160).loadGraphic(Paths.image('limo/fastCarLol'));
 			// add(limo);
 			case "cocoa" | 'eggnog':
-				curStage = 'mall';
+				curStageId = 'mall';
 
 				defaultCamZoom *= 0.80;
 
@@ -550,9 +541,9 @@ class PlayState extends MusicBeatState
 				santa.antialiasing = true;
 				add(santa);
 			case 'winter-horrorland':
-				loadStage('mallEvil');
+				loadStageOld('mallEvil');
 			case 'senpai' | 'roses':
-				curStage = 'school';
+				curStageId = 'school';
 
 				// defaultCamZoom *= 0.9;
 
@@ -618,7 +609,7 @@ class PlayState extends MusicBeatState
 				add(bgGirls);
 			case 'thorns':
 				// loadStage('schoolEvil');
-				curStage = 'schoolEvil';
+				curStageId = 'schoolEvil';
 
 				var schoolBG:FlxSprite = new FlxSprite(-200, 0).loadGraphic(Paths.image('weeb/evilSchoolBG'));
 				wiggleShit.waveAmplitude = 0.017;
@@ -639,9 +630,8 @@ class PlayState extends MusicBeatState
 				schoolFront.setGraphicSize(Std.int(schoolFront.width * 6));
 				schoolFront.updateHitbox();
 				add(schoolFront);
-
 			case 'guns' | 'stress' | 'ugh':
-				loadStage('tank');
+				loadStageOld('tank');
 
 				// this goes after tankSky and before tankMountains in stage file
 				// need to accomodate for the velocity thing!
@@ -687,12 +677,10 @@ class PlayState extends MusicBeatState
 
 				var fgTank3:BGSprite = new BGSprite('tank3', 1300, 1200, 3.5, 2.5, ['fg']);
 				foregroundSprites.add(fgTank3);
-
 			case "darnell":
-				loadStage('phillyStreets');
-
+				loadStageOld('phillyStreets');
 			default:
-				loadStage('stage');
+				loadStageOld('stage');
 		}
 	}
 
@@ -701,7 +689,7 @@ class PlayState extends MusicBeatState
 		// all dis is shitty, redo later for stage shit
 		var gfVersion:String = 'gf';
 
-		switch (curStage)
+		switch (curStageId)
 		{
 			case 'limo':
 				gfVersion = 'gf-car';
@@ -790,7 +778,7 @@ class PlayState extends MusicBeatState
 		boyfriend = new Boyfriend(770, 450, SONG.player1);
 
 		// REPOSITIONING PER STAGE
-		switch (curStage)
+		switch (curStageId)
 		{
 			case 'limo':
 				boyfriend.y -= 220;
@@ -838,20 +826,31 @@ class PlayState extends MusicBeatState
 				dad.y = 870 - dad.height;
 		}
 
-		add(gf);
+		if (curStage != null)
+		{
+			// We're using Eric's stage handler.
+			// Characters get added to the stage, not the main scene.
+			curStage.addCharacter(boyfriend, BF);
+			curStage.addCharacter(gf, GF);
+			curStage.addCharacter(dad, DAD);
+		}
+		else
+		{
+			add(gf);
 
-		gfCutsceneLayer = new FlxGroup();
-		add(gfCutsceneLayer);
+			gfCutsceneLayer = new FlxGroup();
+			add(gfCutsceneLayer);
 
-		bfTankCutsceneLayer = new FlxGroup();
-		add(bfTankCutsceneLayer);
+			bfTankCutsceneLayer = new FlxGroup();
+			add(bfTankCutsceneLayer);
 
-		// Shitty layering but whatev it works LOL
-		if (curStage == 'limo')
-			add(limo);
+			// Shitty layering but whatev it works LOL
+			if (curStageId == 'limo')
+				add(limo);
 
-		add(dad);
-		add(boyfriend);
+			add(dad);
+			add(boyfriend);
+		}
 	}
 
 	function ughIntro()
@@ -940,11 +939,35 @@ class PlayState extends MusicBeatState
 		});*/
 	}
 
-	function loadStage(path:String)
-	{
-		curStage = path;
+	public var curStage:Stage;
 
-		var json = Assets.getText(Paths.file('data/stagedata/' + curStage + 'Stage.json'));
+	/**
+	 * Loads stage data from cache, assembles the props,
+	 * and adds it to the state.
+	 * @param id 
+	 */
+	function loadStage(id:String)
+	{
+		curStage = StageDataParser.fetchStage(id);
+
+		if (curStage != null)
+		{
+			// Actually create and position the sprites.
+			curStage.buildStage();
+
+			// Apply camera zoom.
+			defaultCamZoom *= curStage.camZoom;
+
+			// Add the stage to the scene.
+			this.add(curStage);
+		}
+	}
+
+	function loadStageOld(path:String)
+	{
+		curStageId = path;
+
+		var json = Assets.getText(Paths.file('data/stagedata/${curStageId}Stage.json'));
 
 		var parsed:StageData = cast Json.parse(json);
 
@@ -1464,7 +1487,7 @@ class PlayState extends MusicBeatState
 			var introSprPaths:Array<String> = ["ready", "set", "go"];
 			var altSuffix:String = "";
 
-			if (curStage.startsWith("school"))
+			if (curStageId.startsWith("school"))
 			{
 				altSuffix = '-pixel';
 				introSprPaths = ['weeb/pixelUI/ready-pixel', 'weeb/pixelUI/set-pixel', 'weeb/pixelUI/date-pixel'];
@@ -1500,7 +1523,7 @@ class PlayState extends MusicBeatState
 		var spr:FlxSprite = new FlxSprite().loadGraphic(Paths.image(path));
 		spr.scrollFactor.set();
 
-		if (curStage.startsWith('school'))
+		if (curStageId.startsWith('school'))
 			spr.setGraphicSize(Std.int(spr.width * daPixelZoom));
 
 		spr.updateHitbox();
@@ -1673,7 +1696,7 @@ class PlayState extends MusicBeatState
 			babyArrow.shader = colorswap.shader;
 			colorswap.update(Note.arrowColors[i]);
 
-			switch (curStage)
+			switch (curStageId)
 			{
 				case 'school' | 'schoolEvil':
 					babyArrow.loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels'), true, 17, 17);
@@ -1943,7 +1966,7 @@ class PlayState extends MusicBeatState
 			// Conductor.lastSongPos = FlxG.sound.music.time;
 		}
 
-		switch (curStage)
+		switch (curStageId)
 		{
 			case 'philly':
 				if (trainMoving)
@@ -2498,7 +2521,7 @@ class PlayState extends MusicBeatState
 		{
 			camFollow.setPosition(boyfriend.getMidpoint().x - 100, boyfriend.getMidpoint().y - 100);
 
-			switch (curStage)
+			switch (curStageId)
 			{
 				case 'limo':
 					camFollow.x = boyfriend.getMidpoint().x - 300;
@@ -2684,7 +2707,7 @@ class PlayState extends MusicBeatState
 			if (!holdArray[spr.ID])
 				spr.animation.play('static');
 
-			if (spr.animation.curAnim.name == 'confirm' && !curStage.startsWith('school'))
+			if (spr.animation.curAnim.name == 'confirm' && !curStageId.startsWith('school'))
 			{
 				spr.centerOffsets();
 				spr.offset.x -= 13;
@@ -2695,10 +2718,17 @@ class PlayState extends MusicBeatState
 		});
 	}
 
-	override function switchTo(nextState:FlxState):Bool
+	function performCleanup()
 	{
 		openfl.utils.Assets.cache.clear(Paths.inst(SONG.song));
 		openfl.utils.Assets.cache.clear(Paths.voices(SONG.song));
+		curStage.cleanup();
+		curStage = null;
+	}
+
+	override function switchTo(nextState:FlxState):Bool
+	{
+		performCleanup();
 
 		return super.switchTo(nextState);
 	}
@@ -3002,7 +3032,7 @@ class PlayState extends MusicBeatState
 		});
 
 		// boppin friends
-		switch (curStage)
+		switch (curStageId)
 		{
 			case 'school':
 				bgGirls.dance();
@@ -3048,10 +3078,10 @@ class PlayState extends MusicBeatState
 				tankWatchtower.dance();
 		}
 
-		if (isHalloween && FlxG.random.bool(10) && curBeat > lightningStrikeBeat + lightningOffset)
-		{
-			lightningStrikeShit();
-		}
+		// if (isHalloween && FlxG.random.bool(10) && curBeat > lightningStrikeBeat + lightningOffset)
+		// {
+		//	lightningStrikeShit();
+		// }
 	}
 
 	var curLight:Int = 0;

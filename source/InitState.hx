@@ -1,6 +1,6 @@
 package;
 
-#if !(macro)
+import play.stage.StageData;
 import charting.ChartingState;
 import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileDiamond;
 import flixel.addons.transition.FlxTransitionableState;
@@ -13,6 +13,7 @@ import openfl.display.BitmapData;
 import play.PicoFight;
 import ui.PreferencesMenu;
 import ui.stageBuildShit.StageBuilderState;
+import util.macro.MacroUtil;
 
 using StringTools;
 
@@ -29,10 +30,15 @@ import sys.io.File;
 import sys.thread.Thread;
 #end
 
+/**
+ * Initializes the game state using custom defines.
+ * Only used in Debug builds.
+ */
 class InitState extends FlxTransitionableState
 {
 	override public function create():Void
 	{
+		trace('This is a debug build, loading InitState...');
 		#if android
 		FlxG.android.preventDefaultKeys = [FlxAndroidKey.BACK];
 		#end
@@ -113,6 +119,8 @@ class InitState extends FlxTransitionableState
 		// FlxTransitionableState.skipNextTransOut = true;
 		FlxTransitionableState.skipNextTransIn = true;
 
+		StageDataParser.loadStageCache();
+
 		#if song
 		var song = getSong();
 
@@ -191,21 +199,12 @@ class InitState extends FlxTransitionableState
 		LoadingState.loadAndSwitchState(new PlayState());
 	}
 }
-#end
 
 function getWeek()
-	return Std.parseInt(getDefine("week"));
+	return Std.parseInt(MacroUtil.getDefine("week"));
 
 function getSong()
-	return getDefine("song");
+	return MacroUtil.getDefine("song");
 
 function getDif()
-	return Std.parseInt(getDefine("dif", "1"));
-
-macro function getDefine(key:String, defaultValue:String = null):haxe.macro.Expr
-{
-	var value = haxe.macro.Context.definedValue(key);
-	if (value == null)
-		value = defaultValue;
-	return macro $v{value};
-}
+	return Std.parseInt(MacroUtil.getDefine("dif", "1"));

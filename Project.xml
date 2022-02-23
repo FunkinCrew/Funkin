@@ -29,6 +29,10 @@
 	<!--Mobile-specific-->
 	<window if="mobile" orientation="landscape" fullscreen="true" width="0" height="0" resizable="false"/>
 
+	<!-- This macro permanently silences an annoying warning. -->
+	<option flashStrict="False" />
+	<haxeflag name="--macro" value="allowPackage('flash')" />
+
 	<!-- _____________________________ Path Settings ____________________________ -->
 
 	<set name="BUILD_DIR" value="export/debug" if="debug" />
@@ -109,6 +113,7 @@
 	<assets path="assets/fonts" embed='true'/>
 	<!-- _______________________________ Libraries ______________________________ -->
 
+	<haxelib name="openfl" />
 	<haxelib name="flixel" />
 	<haxedev set='webgl' />
 

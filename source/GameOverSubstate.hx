@@ -24,7 +24,7 @@ class GameOverSubstate extends MusicBeatSubstate
 		gameOverMusic = new FlxSound();
 		FlxG.sound.list.add(gameOverMusic);
 
-		var daStage = PlayState.curStage;
+		var daStage = PlayState.curStageId;
 		var daBf:String = '';
 		switch (daStage)
 		{
