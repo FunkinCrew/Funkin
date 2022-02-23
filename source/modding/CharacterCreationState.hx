@@ -1,5 +1,6 @@
 package modding;
 
+import flixel.FlxSprite;
 import flixel.util.FlxColor;
 import flixel.text.FlxText;
 import flixel.FlxCamera;
@@ -81,6 +82,10 @@ class CharacterCreationState extends MusicBeatState
 
         add(character);
 
+        var funnyBox:FlxSprite = new FlxSprite(0,0);
+        funnyBox.makeGraphic(32, 32, FlxColor.RED);
+        add(funnyBox);
+
         animations = character.animation.getNameList();
 
         animList = new FlxText(0,0,0,"Corn", 24);
@@ -90,12 +95,18 @@ class CharacterCreationState extends MusicBeatState
         animList.borderSize = 1;
         animList.borderStyle = OUTLINE;
         
-        animList.text = Std.string(animations).replace("[", "").replace("]", "").replace(",", "\n").replace(animations[curAnimation] + "\n", '>${animations[curAnimation]}<\n')
-        + '\nCurrent Selected: ${Std.string(curAnimation)}\n';
+        animList.text = (Std.string(animations).replace("[", "").replace("]", "").replace(",", "\n") + "\n").replace(animations[curAnimation % animations.length]
+            + "\n", '>${animations[curAnimation % animations.length]}<\n')
+            + 'Current Selected: ${Std.string(curAnimation)}\n';
         
         add(animList);
 
         var coolPos:Array<Float> = stage.getCharacterPos(character.isPlayer ? 0 : 1, character);
+
+        if(character.isPlayer)
+            funnyBox.setPosition(stage.player_1_Point.x, stage.player_1_Point.y);
+        else
+            funnyBox.setPosition(stage.player_2_Point.x, stage.player_2_Point.y);
 
         character.setPosition(coolPos[0], coolPos[1]);
 
@@ -134,8 +145,9 @@ class CharacterCreationState extends MusicBeatState
             if(curAnimation > animations.length - 1)
                 curAnimation = 0;
 
-            animList.text = Std.string(animations).replace("[", "").replace("]", "").replace(",", "\n").replace(animations[curAnimation] + "\n", '>${animations[curAnimation]}<\n')
-            + '\nCurrent Selected: ${Std.string(curAnimation)}\n';
+            animList.text = (Std.string(animations).replace("[", "").replace("]", "").replace(",", "\n") + "\n").replace(animations[curAnimation % animations.length]
+                + "\n", '>${animations[curAnimation % animations.length]}<\n')
+                + 'Current Selected: ${Std.string(curAnimation)}\n';
 
             character.playAnim(animations[curAnimation % animations.length], true);
         }
