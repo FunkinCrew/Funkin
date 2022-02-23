@@ -584,24 +584,6 @@ class Character extends FlxSprite
 			offset.set(daOffset[0], daOffset[1]);
 		else
 			offset.set(0, 0);
-
-		/*
-		if (curCharacter.startsWith('gf'))
-		{
-			if (AnimName == 'singLEFT')
-			{
-				danced = true;
-			}
-			else if (AnimName == 'singRIGHT')
-			{
-				danced = false;
-			}
-
-			if (AnimName == 'singUP' || AnimName == 'singDOWN')
-			{
-				danced = !danced;
-			}
-		}*/
 	}
 
 	public function addOffset(name:String, x:Float = 0, y:Float = 0)

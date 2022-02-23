@@ -448,20 +448,25 @@ class StageGroup extends FlxGroup
         }
     }
 
-    public function getCharacterPos(character:Int):Dynamic
+    public function getCharacterPos(character:Int, char:Character = null):Dynamic
     {
-        var p1 = PlayState.boyfriend;
-        var gf = PlayState.gf;
-        var p2 = PlayState.dad;
-
         switch(character)
         {
             case 0: // bf
-                return [(player_1_Point.x - (p1.width / 2)) + p1.positioningOffset[0], (player_1_Point.y - p1.height) + p1.positioningOffset[1]];
+                if(char == null)
+                    char = PlayState.boyfriend;
+
+                return [(player_1_Point.x - (char.width / 2)) + char.positioningOffset[0], (player_1_Point.y - char.height) + char.positioningOffset[1]];
             case 1: // dad
-                return [(player_2_Point.x - (p2.width / 2)) + p2.positioningOffset[0], (player_2_Point.y - p2.height) + p2.positioningOffset[1]];
+                if(char == null)
+                    char = PlayState.dad;
+
+                return [(player_2_Point.x - (char.width / 2)) + char.positioningOffset[0], (player_2_Point.y - char.height) + char.positioningOffset[1]];
             case 2: // gf
-                return [(gf_Point.x - (gf.width / 2)) + gf.positioningOffset[0], (gf_Point.y - gf.height) + gf.positioningOffset[1]];
+                if(char == null)
+                    char = PlayState.gf;
+
+                return [(gf_Point.x - (char.width / 2)) + char.positioningOffset[0], (gf_Point.y - char.height) + char.positioningOffset[1]];
         }
 
         return [0,0];
