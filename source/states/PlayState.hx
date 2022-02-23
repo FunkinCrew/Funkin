@@ -786,6 +786,7 @@ class PlayState extends MusicBeatState
 					timeBar.scrollFactor.set();
 					timeBar.createFilledBar(FlxColor.BLACK, FlxColor.CYAN);
 					timeBar.pixelPerfectPosition = true;
+					timeBar.numDivisions = 400;
 					add(timeBar);
 
 					if(utilities.Options.getData("downscroll"))
@@ -810,6 +811,7 @@ class PlayState extends MusicBeatState
 					timeBar.scrollFactor.set();
 					timeBar.createFilledBar(FlxColor.BLACK, FlxColor.WHITE);
 					timeBar.pixelPerfectPosition = true;
+					timeBar.numDivisions = 800;
 					add(timeBar);
 
 					if(utilities.Options.getData("biggerInfoText") == true)
@@ -842,6 +844,7 @@ class PlayState extends MusicBeatState
 					timeBar.scrollFactor.set();
 					timeBar.createFilledBar(FlxColor.GRAY, FlxColor.LIME);
 					timeBar.pixelPerfectPosition = true;
+					timeBar.numDivisions = 400;
 					add(timeBar);
 
 					infoTxt.y = timeBarBG.y;
