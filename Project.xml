@@ -158,5 +158,5 @@
 	<icon path="art/iconOG.png" />
 
 	<!-- <haxedef name="SKIP_TO_PLAYSTATE" if="debug" /> -->
-	<haxedef name="NG_LOGIN" if="newgrounds" />
+	<!-- <haxedef name="NG_LOGIN" if="newgrounds" /> -->
 </project>

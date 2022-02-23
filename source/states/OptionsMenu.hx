@@ -193,7 +193,8 @@ class OptionsMenu extends MusicBeatState
 
 		LoadPage("Categories");
 
-		FlxG.sound.playMusic(MusicUtilities.GetOptionsMenuMusic(), 0.7, true);
+		if(FlxG.sound.music == null)
+			FlxG.sound.playMusic(MusicUtilities.GetOptionsMenuMusic(), 0.7, true);
 	}
 
 	public static function LoadPage(Page_Name:String)
