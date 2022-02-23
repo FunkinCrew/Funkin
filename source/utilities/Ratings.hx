@@ -43,20 +43,31 @@ class Ratings
         return rating;
     }
 
+    public static var timingPresets:Map<String, Array<Int>> = [];
+    public static var presets:Array<String> = [];
+
     public static function returnPreset(name:String = "leather engine"):Array<Int>
     {
-        switch(name.toLowerCase())
-        {
-            case "leather engine":
-                return [25, 50, 70, 100];
-            case "kade engine" | "psych engine":
-                /* 22.5 but rounded */
-                return [23, 45, 90, 135];
-            case "friday night funkin'":
-                return [Std.int(Conductor.safeZoneOffset * 0.1), Std.int(Conductor.safeZoneOffset * 0.2), Std.int(Conductor.safeZoneOffset * 0.75), Std.int(Conductor.safeZoneOffset * 0.9)];
-        }
+        if(timingPresets.exists(name))
+            return timingPresets.get(name);
 
         return [25, 50, 70, 100];
+    }
+
+    public static function loadPresets()
+    {
+        presets = [];
+        timingPresets = [];
+
+        var timingPresetsArray = CoolUtil.coolTextFile(Paths.txt("timingPresets"));
+
+        for(array in timingPresetsArray)
+        {
+            var values = array.split(",");
+
+            timingPresets.set(values[0], [Std.parseInt(values[1]), Std.parseInt(values[2]), Std.parseInt(values[3]), Std.parseInt(values[4])]);
+            presets.push(values[0]);
+        }
     }
 
     public static function getRank(accuracy:Float, ?misses:Int)

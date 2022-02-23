@@ -16,12 +16,7 @@ class JudgementMenu extends MusicBeatSubstate
 
     var preset:String = "Leather Engine";
 
-    var presets:Array<String> = [
-        "Leather Engine",
-        "Psych Engine",
-        "Kade Engine",
-        "Friday Night Funkin'"
-    ];
+    var presets:Array<String> = [];
 
     var preset_Selected:Int = 0;
 
@@ -31,6 +26,9 @@ class JudgementMenu extends MusicBeatSubstate
 
     public function new()
     {
+        Ratings.loadPresets();
+        presets = Ratings.presets;
+        
         super();
         
         var bg:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
