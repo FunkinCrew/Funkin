@@ -776,7 +776,6 @@ class ChartingState extends MusicBeatState
 		
 		player2DropDown.selectedLabel = _song.player2;
 
-
 		blockPressWhileScrolling.push(player1DropDown);
 		blockPressWhileScrolling.push(gfDropDown);
 		blockPressWhileScrolling.push(player2DropDown);

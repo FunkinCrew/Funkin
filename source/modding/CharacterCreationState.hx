@@ -1,5 +1,7 @@
 package modding;
 
+import ui.FlxUIDropDownMenuCustom;
+import utilities.CoolUtil;
 import flixel.FlxSprite;
 import flixel.util.FlxColor;
 import flixel.text.FlxText;
@@ -35,6 +37,12 @@ class CharacterCreationState extends MusicBeatState
     var curAnimation:Int = 0;
     var animations:Array<String> = [];
 
+    var funnyBox:FlxSprite;
+
+    var characters:Map<String, Array<String>> = new Map<String, Array<String>>();
+
+    var charDropDown:FlxUIDropDownMenuCustom;
+
     override public function new(?char:String = "bf")
     {
         super();
@@ -69,24 +77,10 @@ class CharacterCreationState extends MusicBeatState
         add(stage.infrontOfGFSprites);
         add(stage.foregroundSprites);
 
-        character = new Character(0, 0, charStr);
-        character.shouldDance = false;
-
-        @:privateAccess
-        if(character.offsetsFlipWhenEnemy)
-        {
-            character.isPlayer = true;
-            character.flipX = !character.flipX;
-            character.loadOffsetFile(character.curCharacter);
-        }
-
-        add(character);
-
-        var funnyBox:FlxSprite = new FlxSprite(0,0);
+        funnyBox = new FlxSprite(0,0);
         funnyBox.makeGraphic(32, 32, FlxColor.RED);
-        add(funnyBox);
 
-        animations = character.animation.getNameList();
+        reloadCharacterStuff();
 
         animList = new FlxText(0,0,0,"Corn", 24);
         animList.color = FlxColor.CYAN;
@@ -95,20 +89,51 @@ class CharacterCreationState extends MusicBeatState
         animList.borderSize = 1;
         animList.borderStyle = OUTLINE;
         
-        animList.text = (Std.string(animations).replace("[", "").replace("]", "").replace(",", "\n") + "\n").replace(animations[curAnimation % animations.length]
-            + "\n", '>${animations[curAnimation % animations.length]}<\n')
-            + 'Current Selected: ${Std.string(curAnimation)}\n';
+        updateAnimList();
         
         add(animList);
 
-        var coolPos:Array<Float> = stage.getCharacterPos(character.isPlayer ? 0 : 1, character);
+        var characterList = CoolUtil.coolTextFile(Paths.txt('characterList'));
 
-        if(character.isPlayer)
-            funnyBox.setPosition(stage.player_1_Point.x, stage.player_1_Point.y);
-        else
-            funnyBox.setPosition(stage.player_2_Point.x, stage.player_2_Point.y);
+		for(Text in characterList)
+		{
+			var Properties = Text.split(":");
 
-        character.setPosition(coolPos[0], coolPos[1]);
+			var name = Properties[0];
+			var mod = Properties[1];
+
+			var base_array;
+
+			if(characters.exists(mod))
+				base_array = characters.get(mod);
+			else
+				base_array = [];
+
+			base_array.push(name);
+			characters.set(mod, base_array);
+		}
+
+        var arrayCharacters = ["bf","gf"];
+		var tempCharacters = characters.get("default");
+
+        if(tempCharacters != null)
+        {
+            for(Item in tempCharacters)
+            {
+                arrayCharacters.push(Item);
+            }
+        }
+
+        charDropDown = new FlxUIDropDownMenuCustom(10, 10, FlxUIDropDownMenuCustom.makeStrIdLabelArray(arrayCharacters, true), function(character:String)
+        {
+            charStr = arrayCharacters[Std.parseInt(character)];
+            reloadCharacterStuff();
+        }, null, null, null, null, camHUD);
+
+        charDropDown.x = FlxG.width - charDropDown.width;
+        charDropDown.cameras = [camHUD];
+
+        add(charDropDown);
 
         #if discord_rpc
         DiscordClient.changePresence("Creating characters.", null, null, true);
@@ -145,9 +170,7 @@ class CharacterCreationState extends MusicBeatState
             if(curAnimation > animations.length - 1)
                 curAnimation = 0;
 
-            animList.text = (Std.string(animations).replace("[", "").replace("]", "").replace(",", "\n") + "\n").replace(animations[curAnimation % animations.length]
-                + "\n", '>${animations[curAnimation % animations.length]}<\n')
-                + 'Current Selected: ${Std.string(curAnimation)}\n';
+            updateAnimList();
 
             character.playAnim(animations[curAnimation % animations.length], true);
         }
@@ -182,5 +205,61 @@ class CharacterCreationState extends MusicBeatState
             coolCam.zoom = 0.1;
         if(coolCam.zoom > 5)
             coolCam.zoom = 5;
+    }
+
+    function reloadCharacterStuff()
+    {
+        if(charDropDown != null)
+            remove(charDropDown);
+
+        remove(funnyBox);
+
+        if(character != null)
+        {
+            remove(character);
+            character.kill();
+            character.destroy();
+        }
+
+        if(charStr == "")
+            charStr = "bf";
+
+        character = new Character(0, 0, charStr);
+        character.shouldDance = false;
+
+        @:privateAccess
+        if(character.offsetsFlipWhenEnemy)
+        {
+            character.isPlayer = true;
+            character.flipX = !character.flipX;
+            character.loadOffsetFile(character.curCharacter);
+        }
+
+        add(character);
+
+        add(funnyBox);
+
+        if(charDropDown != null)
+            add(charDropDown);
+
+        animations = character.animation.getNameList();
+
+        var coolPos:Array<Float> = stage.getCharacterPos(character.isPlayer ? 0 : 1, character);
+
+        if(character.isPlayer)
+            funnyBox.setPosition(stage.player_1_Point.x, stage.player_1_Point.y);
+        else
+            funnyBox.setPosition(stage.player_2_Point.x, stage.player_2_Point.y);
+
+        character.setPosition(coolPos[0], coolPos[1]);
+
+        if(animList != null)
+            updateAnimList();
+    }
+
+    function updateAnimList()
+    {
+        animList.text = (Std.string(animations).replace("[", "").replace("]", "").replace(",", "\n") + "\n").replace(animations[curAnimation % animations.length]
+            + "\n", '>${animations[curAnimation % animations.length]}<\n');
     }
 }

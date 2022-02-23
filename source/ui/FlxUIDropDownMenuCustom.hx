@@ -1,5 +1,6 @@
 package ui;
 
+import flixel.FlxCamera;
 import flash.geom.Rectangle;
 import flixel.addons.ui.interfaces.IFlxUIClickable;
 import flixel.addons.ui.interfaces.IFlxUIWidget;
@@ -164,20 +165,29 @@ class FlxUIDropDownMenuCustom extends FlxUIGroup implements IFlxUIWidget impleme
 	 * @param	UIControlCallback	Used internally by FlxUI
 	 */
 	public function new(X:Float = 0, Y:Float = 0, DataList:Array<StrNameLabel>, ?Callback:String->Void, ?Header:FlxUIDropDownHeader,
-			?DropPanel:FlxUI9SliceSprite, ?ButtonList:Array<FlxUIButton>, ?UIControlCallback:Bool->FlxUIDropDownMenuCustom->Void)
+			?DropPanel:FlxUI9SliceSprite, ?ButtonList:Array<FlxUIButton>, ?UIControlCallback:Bool->FlxUIDropDownMenuCustom->Void, ?Camera:FlxCamera)
 	{
+		if(Camera != null)
+		{
+			this.cameras = [Camera];
+			this.camera = Camera;
+		}
+
 		super(X, Y);
 		callback = Callback;
 		header = Header;
 		dropPanel = DropPanel;
 
 		if (header == null)
-			header = new FlxUIDropDownHeader();
+			header = new FlxUIDropDownHeader(120, null, null, null, this.camera);
+
+		header.camera = this.camera;
 
 		if (dropPanel == null)
 		{
 			var rect = new Rectangle(0, 0, header.background.width, header.background.height);
 			dropPanel = new FlxUI9SliceSprite(0, 0, FlxUIAssets.IMG_BOX, rect, [1, 1, 14, 14]);
+			dropPanel.camera = this.camera;
 		}
 
 		if (DataList != null)
@@ -356,6 +366,7 @@ class FlxUIDropDownMenuCustom extends FlxUIGroup implements IFlxUIWidget impleme
 		var t:FlxUIButton = new FlxUIButton(0, 0, Label);
 		t.broadcastToFlxUI = false;
 		t.onUp.callback = onClickItem.bind(i);
+		t.camera = this.camera;
 
 		t.name = Name;
 
@@ -445,7 +456,7 @@ class FlxUIDropDownMenuCustom extends FlxUIGroup implements IFlxUIWidget impleme
 				}
 			}
 
-			if (FlxG.mouse.justPressed && !FlxG.mouse.overlaps(this))
+			if (FlxG.mouse.justPressed && !FlxG.mouse.overlaps(this, this.camera))
 			{
 				showList(false);
 			}
@@ -473,6 +484,7 @@ class FlxUIDropDownMenuCustom extends FlxUIGroup implements IFlxUIWidget impleme
 		}
 
 		dropPanel.visible = b;
+
 		if(currentScroll != 0) {
 			currentScroll = 0;
 			updateButtonPositions();
@@ -554,8 +566,11 @@ class FlxUIDropDownHeader extends FlxUIGroup
 	 * @param 	Text	Optional text that displays the current value
 	 * @param	Button	Optional button that toggles the dropdown list
 	 */
-	public function new(Width:Int = 120, ?Background:FlxSprite, ?Text:FlxUIText, ?Button:FlxUISpriteButton)
+	public function new(Width:Int = 120, ?Background:FlxSprite, ?Text:FlxUIText, ?Button:FlxUISpriteButton, ?Camera:FlxCamera)
 	{
+		if(Camera != null)
+			this.camera = Camera;
+
 		super();
 
 		background = Background;
@@ -568,6 +583,8 @@ class FlxUIDropDownHeader extends FlxUIGroup
 			background = new FlxUI9SliceSprite(0, 0, FlxUIAssets.IMG_BOX, new Rectangle(0, 0, Width, 20), [1, 1, 14, 14]);
 		}
 
+		background.camera = this.camera;
+
 		// Button
 		if (button == null)
 		{
@@ -575,6 +592,7 @@ class FlxUIDropDownHeader extends FlxUIGroup
 			button.loadGraphicSlice9([FlxUIAssets.IMG_BUTTON_THIN], 80, 20, [FlxStringUtil.toIntArray(FlxUIAssets.SLICE9_BUTTON)],
 				FlxUI9SliceSprite.TILE_NONE, -1, false, FlxUIAssets.IMG_BUTTON_SIZE, FlxUIAssets.IMG_BUTTON_SIZE);
 		}
+		button.camera = this.camera;
 		button.resize(background.height, background.height);
 		button.x = background.x + background.width - button.width;
 
@@ -589,6 +607,7 @@ class FlxUIDropDownHeader extends FlxUIGroup
 		{
 			text = new FlxUIText(0, 0, Std.int(background.width));
 		}
+		text.camera = this.camera;
 		text.setPosition(2, 4);
 		text.color = FlxColor.BLACK;
 
