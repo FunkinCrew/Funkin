@@ -2513,7 +2513,7 @@ class PlayState extends MusicBeatState
 		}
 
 		if (!inCutscene && !switchedStates)
-			keyShit(elapsed);
+			keyShit();
 
 		currentBeat = curBeat;
 
@@ -3071,7 +3071,7 @@ class PlayState extends MusicBeatState
 	var heldArray:Array<Bool> = [];
 	var previousReleased:Array<Bool> = [];
 
-	private function keyShit(elapsed:Float):Void
+	private function keyShit()
 	{
 		if(generatedMusic && startedCountdown)
 		{
@@ -3332,16 +3332,9 @@ class PlayState extends MusicBeatState
 		
 				if (heldArray.contains(true) && generatedMusic)
 				{
-					var thingsHit:Array<Bool> = [];
-	
-					for(i in 0...SONG.playerKeyCount)
-					{
-						thingsHit.push(false);
-					}
-					
 					notes.forEachAlive(function(daNote:Note)
 					{
-						if(heldArray[daNote.noteData] && daNote.isSustainNote && daNote.mustPress && !thingsHit[daNote.noteData])
+						if(heldArray[daNote.noteData] && daNote.isSustainNote && daNote.mustPress)
 						{
 							// goodness this if statement is shit lmfao
 							if(((daNote.strumTime <= Conductor.songPosition && daNote.shouldHit) || 
@@ -3382,7 +3375,6 @@ class PlayState extends MusicBeatState
 								}
 	
 								goodNoteHit(daNote);
-								thingsHit[daNote.noteData] = true;
 							}
 						}
 					});

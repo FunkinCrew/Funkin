@@ -22,6 +22,7 @@ All notable changes will be documented in this file.
 - Lua Stages
 - Character Ids to Charter
 - Some Cool Shader Stuff (mainly 3d shader from dave and bambi)
+- Some more symbols can be used in Alphabet Text.
 ### Changed
 - New Note Splash Sprites!
 - FPS Cap Max is now 1000 (800 before lol).

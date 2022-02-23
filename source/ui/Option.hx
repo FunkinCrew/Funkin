@@ -33,10 +33,10 @@ class Option extends FlxTypedGroup<FlxSprite>
 	// options //
 	public var Option_Row:Int = 0;
 
-	public var Option_Name:String = "-";
+	public var Option_Name:String = "";
 	public var Option_Value:String = "downscroll";
 	
-	public function new(_Option_Name:String = "-", _Option_Value:String = "downscroll", _Option_Row:Int = 0)
+	public function new(_Option_Name:String = "", _Option_Value:String = "downscroll", _Option_Row:Int = 0)
 	{
 		super();
 
@@ -64,22 +64,14 @@ class BoolOption extends Option
 	// options //
 	public var Option_Checked:Bool = false;
 
-	override public function new(_Option_Name:String = "-", _Option_Value:String = "downscroll", _Option_Row:Int = 0)
+	override public function new(_Option_Name:String = "", _Option_Value:String = "downscroll", _Option_Row:Int = 0)
 	{
-		super();
+		super(_Option_Name, _Option_Value, _Option_Row);
 
 		// SETTING VALUES //
-		this.Option_Name = _Option_Name;
-		this.Option_Value = _Option_Value;
-		this.Option_Row = _Option_Row;
 		this.Option_Checked = GetObjectValue();
 
 		// CREATING OTHER OBJECTS //
-		Alphabet_Text = new Alphabet(20, 20 + (Option_Row * 100), Option_Name, true);
-		Alphabet_Text.isMenuItem = true;
-		Alphabet_Text.targetY = Option_Row;
-		add(Alphabet_Text);
-
 		Checkbox_Object = new Checkbox(Alphabet_Text);
 		Checkbox_Object.checked = GetObjectValue();
 		add(Checkbox_Object);
@@ -129,20 +121,12 @@ class PageOption extends Option
     // OPTIONS //
     public var Page_Name:String = "Categories";
 
-    override public function new(_Option_Name:String = "-", _Option_Row:Int = 0, _Page_Name:String = "Categories")
+    override public function new(_Option_Name:String = "", _Option_Row:Int = 0, _Page_Name:String = "Categories")
     {
-        super();
+        super(_Option_Name, _Page_Name, _Option_Row);
 
         // SETTING VALUES //
-        this.Option_Name = _Option_Name;
-        this.Option_Row = _Option_Row;
         this.Page_Name = _Page_Name;
-
-        // CREATING OTHER OBJECTS //
-        Alphabet_Text = new Alphabet(20, 20 + (Option_Row * 100), Option_Name, true);
-        Alphabet_Text.isMenuItem = true;
-        Alphabet_Text.targetY = Option_Row;
-        add(Alphabet_Text);
     }
 
     override function update(elapsed:Float)
@@ -159,19 +143,9 @@ class PageOption extends Option
 */
 class ControlMenuSubStateOption extends Option
 {
-    public function new(_Option_Name:String = "-", _Option_Row:Int = 0)
+    public function new(_Option_Name:String = "", _Option_Row:Int = 0)
     {
-        super();
-
-        // SETTING VALUES //
-        this.Option_Name = _Option_Name;
-        this.Option_Row = _Option_Row;
-
-        // CREATING OTHER OBJECTS //
-        Alphabet_Text = new Alphabet(20, 20 + (Option_Row * 100), Option_Name, true);
-        Alphabet_Text.isMenuItem = true;
-        Alphabet_Text.targetY = Option_Row;
-        add(Alphabet_Text);
+        super(_Option_Name, null, _Option_Row);
     }
 
     override function update(elapsed:Float)
@@ -188,19 +162,9 @@ class ControlMenuSubStateOption extends Option
 */
 class UISkinSelectOption extends Option
 {
-    public function new(_Option_Name:String = "-", _Option_Row:Int = 0)
+    public function new(_Option_Name:String = "", _Option_Row:Int = 0)
     {
-        super();
-
-        // SETTING VALUES //
-        this.Option_Name = _Option_Name;
-        this.Option_Row = _Option_Row;
-
-        // CREATING OTHER OBJECTS //
-        Alphabet_Text = new Alphabet(20, 20 + (Option_Row * 100), Option_Name, true);
-        Alphabet_Text.isMenuItem = true;
-        Alphabet_Text.targetY = Option_Row;
-        add(Alphabet_Text);
+        super(_Option_Name, null, Option_Row);
     }
 
     override function update(elapsed:Float)
@@ -217,19 +181,9 @@ class UISkinSelectOption extends Option
 */
 class SongOffsetOption extends Option
 {
-    public function new(_Option_Name:String = "-", _Option_Row:Int = 0)
+    public function new(_Option_Name:String = "", _Option_Row:Int = 0)
     {
-        super();
-
-        // SETTING VALUES //
-        this.Option_Name = _Option_Name;
-        this.Option_Row = _Option_Row;
-
-        // CREATING OTHER OBJECTS //
-        Alphabet_Text = new Alphabet(20, 20 + (Option_Row * 100), Option_Name, true);
-        Alphabet_Text.isMenuItem = true;
-        Alphabet_Text.targetY = Option_Row;
-        add(Alphabet_Text);
+        super(_Option_Name, null, _Option_Row);
     }
 
     override function update(elapsed:Float)
@@ -249,20 +203,12 @@ class GameStateOption extends Option
     // OPTIONS //
     public var Game_State:FlxState;
 
-    public function new(_Option_Name:String = "-", _Option_Row:Int = 0, _Game_State:Dynamic)
+    public function new(_Option_Name:String = "", _Option_Row:Int = 0, _Game_State:Dynamic)
     {
-        super();
+        super(_Option_Name, null, _Option_Row);
 
         // SETTING VALUES //
-        this.Option_Name = _Option_Name;
-        this.Option_Row = _Option_Row;
         this.Game_State = _Game_State;
-
-        // CREATING OTHER OBJECTS //
-        Alphabet_Text = new Alphabet(20, 20 + (Option_Row * 100), Option_Name, true);
-        Alphabet_Text.isMenuItem = true;
-        Alphabet_Text.targetY = Option_Row;
-        add(Alphabet_Text);
     }
 
     override function update(elapsed:Float)
@@ -289,10 +235,10 @@ class GameStateOption extends Option
 	// options //
 	public var Option_Row:Int = 0;
 
-	public var Option_Name:String = "-";
+	public var Option_Name:String = "";
 	public var Option_Value:String = "Template Mod";
 	
-	public function new(_Option_Name:String = "-", _Option_Value:String = "Template Mod", _Option_Row:Int = 0)
+	public function new(_Option_Name:String = "", _Option_Value:String = "Template Mod", _Option_Row:Int = 0)
 	{
 		super();
 
@@ -435,10 +381,9 @@ class StringSaveOption extends Option
 
     override public function new(_Option_Name:String = "String Switcher", _Modes:Array<String>, _Option_Row:Int = 0, _Save_Data_Name:String = "hitsound")
     {
-        super();
+        super(_Option_Name, null, _Option_Row);
 
         // SETTING VALUES //
-        this.Option_Row = _Option_Row;
 		this.Modes = _Modes;
 		this.Save_Data_Name = _Save_Data_Name;
 		this.Current_Mode = utilities.Options.getData(Save_Data_Name);
@@ -446,6 +391,10 @@ class StringSaveOption extends Option
 		this.Option_Name = Cool_Name + " " + Current_Mode;
 
         // CREATING OTHER OBJECTS //
+        remove(Alphabet_Text);
+        Alphabet_Text.kill();
+        Alphabet_Text.destroy();
+
         Alphabet_Text = new Alphabet(20, 20 + (Option_Row * 100), Option_Name, true);
         Alphabet_Text.isMenuItem = true;
         Alphabet_Text.targetY = Option_Row;
@@ -475,6 +424,7 @@ class StringSaveOption extends Option
 			this.Option_Name = Cool_Name + " " + Current_Mode;
 
 			remove(Alphabet_Text);
+            Alphabet_Text.kill();
 			Alphabet_Text.destroy();
 
 			Alphabet_Text = new Alphabet(20, 20 + (Option_Row * 100), Option_Name, true);

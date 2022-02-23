@@ -75,10 +75,8 @@ class Alphabet extends FlxSpriteGroup
 			// {
 			// }
 
-			if (character == " " || character == "-")
-			{
+			if (character == " ")
 				lastWasSpace = true;
-			}
 
 			#if (haxe >= "4.0.0")
 			var canDoThingyLol:Bool = (!isBold && AlphaCharacter.alphabet.contains(character.toLowerCase()) || isBold && AlphaCharacter.boldalphabet.contains(character.toLowerCase()));
@@ -245,12 +243,13 @@ class Alphabet extends FlxSpriteGroup
 
 class AlphaCharacter extends FlxSprite
 {
-	public static var boldalphabet:String = "abcdefghijklmnopqrstuvwxyz1234567890";
+	public static var boldalphabet:String = "abcdefghijklmnopqrstuvwxyz1234567890|~#$%()*+-:;<=>@[]^_.,'!?";
 	public static var alphabet:String = "abcdefghijklmnopqrstuvwxyz";
 
 	public static var numbers:String = "1234567890";
 
 	public static var symbols:String = "|~#$%()*+-:;<=>@[]^_.,'!?";
+	public static var bottomShit:String = ".,_";
 
 	public var row:Int = 0;
 
@@ -270,9 +269,16 @@ class AlphaCharacter extends FlxSprite
 
 	public function createBold(letter:String)
 	{
+		letter.replace("<", "less than").replace("&", "and");
+
 		animation.addByPrefix(letter, letter.toUpperCase() + " bold", 24);
 		animation.play(letter);
 		updateHitbox();
+
+		if(letter == "-")
+			y += height;
+		else if(bottomShit.contains(letter))
+			y += height * 2;
 	}
 
 	public function createLetter(letter:String):Void
