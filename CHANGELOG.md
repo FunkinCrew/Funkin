@@ -27,6 +27,7 @@ All notable changes will be documented in this file.
 - New Note Splash Sprites!
 - FPS Cap Max is now 1000 (800 before lol).
 - Section Size actually does something in the charter again.
+- Unhardcoded Judgement Timing Presets.
 ### Fixed
 - Saving Replays when the bot has been used.
 - Infinite Mania now doesn't crash game (because before, it would crash due to missing keybinds).
