@@ -1018,6 +1018,8 @@ class PlayState extends MusicBeatState
 		super.create();
 
 		executeALuaState("createPost", []);
+
+		calculateAccuracy();
 	}
 
 	public static var playCutsceneLmao:Bool = false;
