@@ -99,7 +99,7 @@ class Ratings
                     accuracy >= 90, // Sick!
                     accuracy >= 80, // Great
                     accuracy >= 70, // Good
-                    accuracy == 69, // Nice
+                    accuracy >= 69, // Nice
                     accuracy >= 60, // Meh
                     accuracy >= 50, // Bruh
                     accuracy >= 40, // Bad
