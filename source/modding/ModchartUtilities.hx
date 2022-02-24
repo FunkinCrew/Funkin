@@ -1519,6 +1519,10 @@ class ModchartUtilities
             }
         });
 
+        Lua_helper.add_callback(lua,"updateRating", function() {
+            PlayState.instance.updateRating();
+        });
+
         executeState("onCreate", []);
         executeState("createLua", []);
     }

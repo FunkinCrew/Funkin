@@ -1870,6 +1870,8 @@ class PlayState extends MusicBeatState
 	public var generatedSomeDumbEventLuas:Bool = false;
 	#end
 
+	public var ratingStr:String = "";
+
 	override public function update(elapsed:Float)
 	{
 		updateSongInfoText();
@@ -1913,41 +1915,6 @@ class PlayState extends MusicBeatState
 				}
 			}
 		}
-
-		if(!endingSong)
-			time = FlxG.sound.music.time;
-		else
-			time = FlxG.sound.music.length;
-
-		FlxG.camera.followLerp = 0.04 * (60 / Main.display.currentFPS);
-
-		if(totalNotes != 0 && !switchedStates)
-		{
-			accuracy = 100 / (totalNotes / hitNotes);
-			accuracy = FlxMath.roundDecimal(accuracy, 2);
-		}
-
-		scoreTxt.x = (healthBarBG.x + (healthBarBG.width / 2)) - (scoreTxt.width / 2);
-
-		scoreTxt.text = (
-			"Score: " + songScore + " | " +
-			"Misses: " + misses + " | " +
-			"Accuracy: " + accuracy + "% | " +
-			Ratings.getRank(accuracy, misses)
-		);
-
-		var icon_Zoom_Lerp = 0.09;
-
-		iconP1.setGraphicSize(Std.int(FlxMath.lerp(iconP1.width, iconP1.startWidth, (icon_Zoom_Lerp / (Main.display.currentFPS / 60)) * songMultiplier)));
-		iconP2.setGraphicSize(Std.int(FlxMath.lerp(iconP2.width, iconP2.startWidth, (icon_Zoom_Lerp / (Main.display.currentFPS / 60)) * songMultiplier)));
-
-		iconP1.updateHitbox();
-		iconP2.updateHitbox();
-
-		var iconOffset:Int = 26;
-
-		iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset) - iconP1.offsetX;
-		iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset) - iconP2.offsetX;
 
 		#if linc_luajit
 		if(((stage.stageScript != null || (luaModchart != null && executeModchart)) || generatedSomeDumbEventLuas) && generatedMusic && !switchedStates && startedCountdown)
@@ -2015,6 +1982,35 @@ class PlayState extends MusicBeatState
 				FlxG.fullscreen = false;
 		}
 		#end
+
+		if(!endingSong)
+			time = FlxG.sound.music.time;
+		else
+			time = FlxG.sound.music.length;
+
+		FlxG.camera.followLerp = 0.04 * (60 / Main.display.currentFPS);
+
+		scoreTxt.x = (healthBarBG.x + (healthBarBG.width / 2)) - (scoreTxt.width / 2);
+
+		scoreTxt.text = (
+			"Score: " + songScore + " | " +
+			"Misses: " + misses + " | " +
+			"Accuracy: " + accuracy + "% | " +
+			ratingStr
+		);
+
+		var icon_Zoom_Lerp = 0.09;
+
+		iconP1.setGraphicSize(Std.int(FlxMath.lerp(iconP1.width, iconP1.startWidth, (icon_Zoom_Lerp / (Main.display.currentFPS / 60)) * songMultiplier)));
+		iconP2.setGraphicSize(Std.int(FlxMath.lerp(iconP2.width, iconP2.startWidth, (icon_Zoom_Lerp / (Main.display.currentFPS / 60)) * songMultiplier)));
+
+		iconP1.updateHitbox();
+		iconP2.updateHitbox();
+
+		var iconOffset:Int = 26;
+
+		iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset) - iconP1.offsetX;
+		iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset) - iconP2.offsetX;
 
 		if (health > maxHealth)
 			health = maxHealth;
@@ -2315,9 +2311,9 @@ class PlayState extends MusicBeatState
 						}
 
 						if(daNote.isSustainNote)
-							executeALuaState('playerTwoSingHeld', [Math.abs(daNote.noteData), Conductor.songPosition, daNote.arrow_Type]);
+							executeALuaState('playerTwoSingHeld', [Math.abs(daNote.noteData), Conductor.songPosition, daNote.arrow_Type, daNote.strumTime]);
 						else
-							executeALuaState('playerTwoSing', [Math.abs(daNote.noteData), Conductor.songPosition, daNote.arrow_Type]);
+							executeALuaState('playerTwoSing', [Math.abs(daNote.noteData), Conductor.songPosition, daNote.arrow_Type, daNote.strumTime]);
 					}
 					else
 					{
@@ -2336,9 +2332,9 @@ class PlayState extends MusicBeatState
 							}
 						
 						if(daNote.isSustainNote)
-							executeALuaState('playerOneSingHeld', [Math.abs(daNote.noteData), Conductor.songPosition, daNote.arrow_Type]);
+							executeALuaState('playerOneSingHeld', [Math.abs(daNote.noteData), Conductor.songPosition, daNote.arrow_Type, daNote.strumTime]);
 						else
-							executeALuaState('playerOneSing', [Math.abs(daNote.noteData), Conductor.songPosition, daNote.arrow_Type]);
+							executeALuaState('playerOneSing', [Math.abs(daNote.noteData), Conductor.songPosition, daNote.arrow_Type, daNote.strumTime]);
 					}
 
 					if (utilities.Options.getData("enemyStrumsGlow") && enemyStrums.members.length - 1 == SONG.keyCount - 1)
@@ -3050,6 +3046,8 @@ class PlayState extends MusicBeatState
 		});
 
 		curSection += 1;
+
+		calculateAccuracy();
 	}
 
 	private function closerNote(note1:Note, note2:Note):Note
@@ -3648,6 +3646,8 @@ class PlayState extends MusicBeatState
 					dad.playAnim(NoteVariables.Character_Animation_Arrays[SONG.playerKeyCount - 1][direction] + altAnim + "miss", true);
 			}
 
+			calculateAccuracy();
+
 			executeALuaState("playerOneMiss", [direction, Conductor.songPosition, (note != null ? note.arrow_Type : "default"), (note != null ? note.isSustainNote : false)]);
 		}
 	}
@@ -3685,7 +3685,9 @@ class PlayState extends MusicBeatState
 			if(!note.isSustainNote)
 				totalNotes++;
 
-			var lua_Data:Array<Dynamic> = [note.noteData, Conductor.songPosition, note.arrow_Type];
+			calculateAccuracy();
+
+			var lua_Data:Array<Dynamic> = [note.noteData, Conductor.songPosition, note.arrow_Type, note.strumTime];
 
 			if(characterPlayingAs == 0)
 			{
@@ -4578,6 +4580,22 @@ class PlayState extends MusicBeatState
 
 		//                            name       pos      param 1   param 2
 		executeALuaState("onEvent", [event[0], event[1], event[2], event[3]]);
+	}
+
+	public function calculateAccuracy()
+	{
+		if(totalNotes != 0 && !switchedStates)
+		{
+			accuracy = 100 / (totalNotes / hitNotes);
+			accuracy = FlxMath.roundDecimal(accuracy, 2);
+		}
+
+		updateRating();
+	}
+
+	public function updateRating()
+	{
+		ratingStr = Ratings.getRank(accuracy, misses);
 	}
 }
 
