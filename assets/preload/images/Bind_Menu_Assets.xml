@@ -1,8 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TextureAtlas imagePath="Bind_Menu_Assets.png">
-	<!-- Created with Adobe Animate version 21.0.9.42677 -->
+	<!-- Created with Adobe Animate version 22.0.2.168 -->
 	<!-- http://www.adobe.com/products/animate.html -->
 	<SubTexture name="Button0000" x="1" y="1" width="154" height="114"/>
-	<SubTexture name="Death Icon0000" x="156" y="54" width="47" height="49"/>
-	<SubTexture name="Fullscreen Symbol0000" x="156" y="1" width="46" height="52"/>
+	<SubTexture name="Death Icon0000" x="156" y="1" width="47" height="49"/>
+	<SubTexture name="Fullscreen Symbol0000" x="204" y="1" width="46" height="52"/>
+	<SubTexture name="Pause Icon0000" x="1" y="116" width="39" height="46"/>
 </TextureAtlas>

@@ -227,6 +227,11 @@
             "save": "binds"
         },
         {
+            "option": "pauseBind",
+            "value": "ENTER",
+            "save": "binds"
+        },
+        {
             "option": "save",
             "value": "{}",
             "save": "autosave"

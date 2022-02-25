@@ -40,6 +40,10 @@ class ControlMenuSubstate extends MusicBeatSubstate
     var fullscreenBind:String = utilities.Options.getData("fullscreenBind", "binds");
     var fullscreenText:FlxText = new FlxText();
 
+    var pauseKey:FlxSprite = new FlxSprite();
+    var pauseBind:String = utilities.Options.getData("pauseBind", "binds");
+    var pauseText:FlxText = new FlxText();
+
     var mania_gap:Array<String>;
 
     public function new()
@@ -78,7 +82,7 @@ class ControlMenuSubstate extends MusicBeatSubstate
         add(text_Group);
         add(coolText);
 
-        setupKeySprite(fullscreenKey, -95);
+        setupKeySprite(fullscreenKey, -190);
 
         var fullscreenIcon:FlxSprite = new FlxSprite();
         fullscreenIcon.frames = Paths.getSparrowAtlas("Bind_Menu_Assets", "preload");
@@ -89,7 +93,17 @@ class ControlMenuSubstate extends MusicBeatSubstate
         fullscreenIcon.x = fullscreenKey.x + (fullscreenKey.width / 2) - (fullscreenIcon.width / 2);
         fullscreenIcon.y = fullscreenKey.y - fullscreenIcon.height - 11;
 
-        setupKeySprite(killKey, 95);
+        fullscreenText.setFormat(Paths.font("vcr.ttf"), 38, FlxColor.WHITE, LEFT, OUTLINE, FlxColor.BLACK);
+
+        fullscreenText.text = fullscreenBind;
+        fullscreenText.x = fullscreenKey.x + (fullscreenKey.width / 2) - (fullscreenText.width / 2);
+        fullscreenText.y = fullscreenKey.y;
+
+        add(fullscreenKey);
+        add(fullscreenIcon);
+        add(fullscreenText);
+
+        setupKeySprite(killKey, 0);
 
         var killIcon:FlxSprite = new FlxSprite();
         killIcon.frames = Paths.getSparrowAtlas("Bind_Menu_Assets", "preload");
@@ -100,27 +114,36 @@ class ControlMenuSubstate extends MusicBeatSubstate
         killIcon.x = killKey.x + (killKey.width / 2) - (killIcon.width / 2);
         killIcon.y = killKey.y - killIcon.height - 16;
 
-        add(fullscreenKey);
-        add(fullscreenIcon);
-
-        fullscreenText.setFormat(Paths.font("vcr.ttf"), 38, FlxColor.WHITE, LEFT, OUTLINE, FlxColor.BLACK);
-
-        fullscreenText.text = fullscreenBind;
-        fullscreenText.x = fullscreenKey.x + (fullscreenKey.width / 2) - (fullscreenText.width / 2);
-        fullscreenText.y = fullscreenKey.y;
-
-        add(fullscreenText);
-
-        add(killKey);
-        add(killIcon);
-
         killText.setFormat(Paths.font("vcr.ttf"), 38, FlxColor.WHITE, LEFT, OUTLINE, FlxColor.BLACK);
 
         killText.text = killBind;
         killText.x = killKey.x + (killKey.width / 2) - (killText.width / 2);
         killText.y = killKey.y;
 
+        add(killKey);
+        add(killIcon);
         add(killText);
+
+        setupKeySprite(pauseKey, 190);
+
+        var pauseIcon:FlxSprite = new FlxSprite();
+        pauseIcon.frames = Paths.getSparrowAtlas("Bind_Menu_Assets", "preload");
+        pauseIcon.animation.addByPrefix("idle", "Pause Icon", 24);
+        pauseIcon.animation.play("idle");
+        pauseIcon.updateHitbox();
+
+        pauseIcon.x = pauseKey.x + (pauseKey.width / 2) - (pauseIcon.width / 2);
+        pauseIcon.y = pauseKey.y - pauseIcon.height - 16;
+
+        pauseText.setFormat(Paths.font("vcr.ttf"), 38, FlxColor.WHITE, LEFT, OUTLINE, FlxColor.BLACK);
+
+        pauseText.text = pauseBind;
+        pauseText.x = pauseKey.x + (pauseKey.width / 2) - (pauseText.width / 2);
+        pauseText.y = pauseKey.y;
+
+        add(pauseKey);
+        add(pauseIcon);
+        add(pauseText);
     }
 
     override function update(elapsed:Float) {
@@ -139,6 +162,7 @@ class ControlMenuSubstate extends MusicBeatSubstate
                 binds = NoteVariables.Default_Binds;
                 fullscreenBind = "F11";
                 killBind = "R";
+                pauseBind = "ENTER";
             }
             
             if(back)
@@ -146,6 +170,7 @@ class ControlMenuSubstate extends MusicBeatSubstate
                 utilities.Options.setData(this.binds, "binds", "binds");
                 utilities.Options.setData(fullscreenBind, "fullscreenBind", "binds");
                 utilities.Options.setData(killBind, "kill", "binds");
+                utilities.Options.setData(pauseBind, "pauseBind", "binds");
     
                 PlayerSettings.player1.controls.loadKeyBinds();
     
@@ -172,6 +197,16 @@ class ControlMenuSubstate extends MusicBeatSubstate
                 killKey.color = FlxColor.GRAY;
             else
                 killKey.color = FlxColor.WHITE;
+
+            if(FlxG.mouse.overlaps(pauseKey) && FlxG.mouse.justPressed && !selectingStuff)
+            {
+                selectedControl = -3;
+                selectingStuff = true;
+            }
+            else if(FlxG.mouse.overlaps(pauseKey))
+                pauseKey.color = FlxColor.GRAY;
+            else
+                pauseKey.color = FlxColor.WHITE;
     
             for(x in arrow_Group)
             {
@@ -201,6 +236,8 @@ class ControlMenuSubstate extends MusicBeatSubstate
                             fullscreenBind = curKey;
                         case -2:
                             killBind = curKey;
+                        case -3:
+                            pauseBind = curKey;
                     }
                 }
             }
@@ -243,6 +280,10 @@ class ControlMenuSubstate extends MusicBeatSubstate
         killText.text = killBind;
         killText.x = killKey.x + (killKey.width / 2) - (killText.width / 2);
         killText.y = killKey.y + (killKey.height / 2) - (killText.height / 2);
+
+        pauseText.text = pauseBind;
+        pauseText.x = pauseKey.x + (pauseKey.width / 2) - (pauseText.width / 2);
+        pauseText.y = pauseKey.y + (pauseKey.height / 2) - (pauseText.height / 2);
     }
 
     function create_Arrows(?new_Key_Count)
