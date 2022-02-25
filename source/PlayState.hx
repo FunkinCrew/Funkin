@@ -833,6 +833,9 @@ class PlayState extends MusicBeatState
 			curStage.addCharacter(boyfriend, BF);
 			curStage.addCharacter(gf, GF);
 			curStage.addCharacter(dad, DAD);
+
+			// Redo z-indexes.
+			curStage.refresh();
 		}
 		else
 		{
@@ -2910,18 +2913,6 @@ class PlayState extends MusicBeatState
 		startedMoving = false;
 	}
 
-	function lightningStrikeShit():Void
-	{
-		FlxG.sound.play(Paths.soundRandom('thunder_', 1, 2));
-		halloweenBG.animation.play('lightning');
-
-		lightningStrikeBeat = curBeat;
-		lightningOffset = FlxG.random.int(8, 24);
-
-		boyfriend.playAnim('scared', true);
-		gf.playAnim('scared', true);
-	}
-
 	override function stepHit()
 	{
 		super.stepHit();
@@ -2930,10 +2921,13 @@ class PlayState extends MusicBeatState
 		{
 			resyncVocals();
 		}
-	}
 
-	var lightningStrikeBeat:Int = 0;
-	var lightningOffset:Int = 8;
+		if (curStage != null)
+		{
+			// We're using Eric's stage handler. The stage should know that a beat has been hit.
+			curStage.onStepHit(curBeat);
+		}
+	}
 
 	override function beatHit()
 	{
@@ -3078,10 +3072,11 @@ class PlayState extends MusicBeatState
 				tankWatchtower.dance();
 		}
 
-		// if (isHalloween && FlxG.random.bool(10) && curBeat > lightningStrikeBeat + lightningOffset)
-		// {
-		//	lightningStrikeShit();
-		// }
+		if (curStage != null)
+		{
+			// We're using Eric's stage handler. The stage should know that a beat has been hit.
+			curStage.onBeatHit(curBeat);
+		}
 	}
 
 	var curLight:Int = 0;

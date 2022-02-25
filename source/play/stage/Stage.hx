@@ -1,6 +1,5 @@
 package play.stage;
 
-import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
 import flixel.util.FlxSort;
@@ -23,7 +22,7 @@ class Stage extends FlxSpriteGroup implements IHook
 
 	public var camZoom:Float = 1.0;
 
-	var namedProps:Map<String, FlxObject> = new Map<String, FlxObject>();
+	var namedProps:Map<String, FlxSprite> = new Map<String, FlxSprite>();
 	var characters:Map<String, Character> = new Map<String, Character>();
 
 	/**
@@ -55,8 +54,20 @@ class Stage extends FlxSpriteGroup implements IHook
 		for (dataProp in _data.props)
 		{
 			trace('  Placing prop: ${dataProp.name} (${dataProp.assetPath})');
-			var imagePath = Paths.image(dataProp.assetPath);
-			var propSprite = new FlxSprite().loadGraphic(imagePath);
+
+			var isAnimated = dataProp.animations.length > 0;
+			var propSprite = new FlxSprite();
+
+			if (isAnimated)
+			{
+				// Initalize sprite frames.
+				propSprite.frames = Paths.getSparrowAtlas(dataProp.assetPath);
+			}
+			else
+			{
+				// Initalize static sprite.
+				propSprite.loadGraphic(Paths.image(dataProp.assetPath));
+			}
 
 			if (Std.isOfType(dataProp.scale, Array))
 			{
@@ -107,6 +118,36 @@ class Stage extends FlxSpriteGroup implements IHook
 		sort(SortUtil.byZIndex, FlxSort.ASCENDING);
 	}
 
+	/**
+	 * A function that gets called every frame.
+	 * @param elapsed The number of 
+	 */
+	public function onUpdate(elapsed:Float):Void
+	{
+		// Override me in your scripted stage to perform custom behavior!
+	}
+
+	/**
+	 * A function that gets called once per step in the song.
+	 * @param curStep The current step number.
+	 */
+	public function onStepHit(curStep:Int):Void
+	{
+		// Override me in your scripted stage to perform custom behavior!
+	}
+
+	/**
+	 * A function that gets called once per beat in the song (once every four steps).
+	 * @param curStep The current beat number.
+	 */
+	public function onBeatHit(curBeat:Int):Void
+	{
+		// Override me in your scripted stage to perform custom behavior!
+	}
+
+	/**
+	 * Used by the PlayState to add a character to the stage.
+	 */
 	public function addCharacter(character:Character, charType:CharacterType)
 	{
 		// Apply position and z-index.
@@ -135,6 +176,11 @@ class Stage extends FlxSpriteGroup implements IHook
 		this.add(character);
 	}
 
+	/**
+	 * Retrieves a given character from the stage.
+	 * @param id 
+	 * @return Character
+	 */
 	public function getCharacter(id:String):Character
 	{
 		return this.characters.get(id);
@@ -142,17 +188,27 @@ class Stage extends FlxSpriteGroup implements IHook
 
 	public function getBoyfriend():Character
 	{
-		return this.characters.get("bf");
+		return getCharacter('bf');
 	}
 
 	public function getGirlfriend():Character
 	{
-		return this.characters.get("gf");
+		return getCharacter('gf');
 	}
 
 	public function getDad():Character
 	{
-		return this.characters.get("dad");
+		return getCharacter('dad');
+	}
+
+	/**
+	 * Retrieve a specific prop by the name assigned in the JSON file.
+	 * @param name The name of the prop to retrieve.
+	 * @return The corresponding FlxSprite.
+	 */
+	public function getNamedProp(name:String):FlxSprite
+	{
+		return this.namedProps.get(name);
 	}
 
 	public function cleanup()

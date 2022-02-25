@@ -85,6 +85,9 @@ class PolymodHandler
 
 			// Parsing rules for various data formats.
 			parseRules: buildParseRules(),
+
+			// Parse hxc files and register the scripted classes in them.
+			useScriptedClasses: true,
 		});
 
 		if (loadedModList == null)
@@ -140,6 +143,7 @@ class PolymodHandler
 		output.addType("txt", TextFileFormat.LINES);
 		// Ensure script files have merge support.
 		output.addType("hscript", TextFileFormat.PLAINTEXT);
+		output.addType("hxs", TextFileFormat.PLAINTEXT);
 
 		// You can specify the format of a specific file, with file extension.
 		// output.addFile("data/introText.txt", TextFileFormat.LINES)

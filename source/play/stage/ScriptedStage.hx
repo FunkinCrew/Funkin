@@ -10,8 +10,8 @@ import modding.IHook;
  * In the meantime though, I want to get stages working just with JSON.
  * -Eric
  */
-// @:hscriptClass
-// class ScriptedStage extends Stage implements IHook
-// {
-// 	// No body needed for this class, it's magic ;)
-// }
+@:hscriptClass
+class ScriptedStage extends Stage implements IHook
+{
+	// No body needed for this class, it's magic ;)
+}

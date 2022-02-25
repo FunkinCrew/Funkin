@@ -21,19 +21,57 @@ class StageDataParser
 
 	static final stageCache:Map<String, Stage> = new Map<String, Stage>();
 
+	static final DEFAULT_STAGE_ID = 'UNKNOWN';
+
+	/**
+	 * Parses and preloads the game's stage data and scripts when the game starts.
+	 * 
+	 * If you want to force stages to be reloaded, you can just call this function again.
+	 */
 	public static function loadStageCache():Void
 	{
+		stageCache.clear();
+
 		trace("Loading stage cache...");
+
+		//
+		// SCRIPTED STAGES
+		//
+		var scriptedStageClassNames:Array<String> = ScriptedStage.listScriptClasses();
+		trace('  Instantiating ${scriptedStageClassNames.length} scripted stages...');
+		for (stageCls in scriptedStageClassNames)
+		{
+			var stage:Stage = ScriptedStage.init(stageCls, DEFAULT_STAGE_ID);
+			if (stage != null)
+			{
+				trace('    Loaded scripted stage: ${stage.stageName}');
+				stageCache.set(stage.stageId, stage);
+			}
+			else
+			{
+				trace('    Failed to instantiate scripted stage class: ${stageCls}');
+			}
+		}
+
+		//
+		// UNSCRIPTED STAGES
+		//
 		var stageIdList:Array<String> = DataAssets.listDataFilesInPath('stages/');
-		for (stageId in stageIdList)
+		var unscriptedStageIds:Array<String> = stageIdList.filter(function(stageId:String):Bool
+		{
+			return !stageCache.exists(stageId);
+		});
+		trace('  Instantiating ${unscriptedStageIds.length} non-scripted stages...');
+		for (stageId in unscriptedStageIds)
 		{
 			var stage:Stage = new Stage(stageId);
 			if (stage != null)
 			{
-				trace('  Loaded stage data: ${stage.stageName}');
+				trace('    Loaded stage data: ${stage.stageName}');
 				stageCache.set(stageId, stage);
 			}
 		}
+
 		trace('  Successfully loaded ${Lambda.count(stageCache)} stages.');
 	}
 
