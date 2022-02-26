@@ -41,7 +41,7 @@ All notable changes will be documented in this file.
 - Alt Idle Animations Being Weird.
 - Alt Animations not playing when using `Playing As Opponent`.
 - Held Notes looking really weird.
-- Modcharts are compatibile with Linux!!! :D (idk about Mac tho since I don't own one)
+- Modcharts are compatible with Linux!!! :D (idk about Mac tho since I don't own one)
 - Invalid Character Ids Crashing The Game
 - Copy and Pasting Sections being broken.
 ### Removed
