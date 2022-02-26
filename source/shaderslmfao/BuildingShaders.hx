@@ -16,6 +16,7 @@ class BuildingShaders
 	public function update(elapsed:Float):Void
 	{
 		shader.alphaShit.value[0] += elapsed;
+		trace(shader.alphaShit.value[0]);
 	}
 
 	public function reset()
