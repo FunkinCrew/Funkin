@@ -3,26 +3,18 @@ package substates;
 import game.Conductor;
 import game.Replay;
 import states.ReplaySelectorState;
-import game.Note;
 import states.FreeplayState;
 import states.StoryMenuState;
-import states.LoadingState;
 import states.PlayState;
 import ui.Alphabet;
-import utilities.Controls.Control;
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.FlxSubState;
-import flixel.addons.transition.FlxTransitionableState;
 import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.input.keyboard.FlxKey;
 import flixel.system.FlxSound;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
-import utilities.CoolUtil;
-import states.MainMenuState;
 
 class PauseSubState extends MusicBeatSubstate
 {
@@ -115,7 +107,7 @@ class PauseSubState extends MusicBeatSubstate
 
 		updateAlphabets();
 
-		cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
+		cameras = [PlayState.instance.camHUD];
 	}
 
 	var justPressedAcceptLol:Bool = true;
