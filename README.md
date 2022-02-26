@@ -14,7 +14,7 @@ This is the repository for Leather Engine, an engine created for making and play
 
 IF YOU GET ANY ERRORS THAT SEEM TO RELATE TO `POLYMOD` (or `NULL OBJECT REFERENCE` / `VALUE EXCEPTION`) RUN `haxelib install polymod 1.3.0` OR `haxelib set polymod 1.3.0` TO SET POLYMOD TO 1.3.0 BECAUSE 1.4.0+ SEEMS BROKEN AS OF NOW.
 
-For build instructions go to [Build.md](https://github.com/Leather128/LeatherEngine/blob/master/Build.md)
+For build instructions go to [Build.md](https://github.com/Leather128/LeatherEngine/blob/main/Build.md)
 
 ## Features
 
