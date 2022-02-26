@@ -1,7 +1,7 @@
 # Changelog
 All notable changes will be documented in this file.
 
-## [0.4.1] - ?/?/????
+## [0.4.1] - 2/26/2022
 ### Added
 - Copy and Paste Section.
 - Option in Charter to have 1 note use multiple characters.
