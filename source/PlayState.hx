@@ -391,53 +391,12 @@ class PlayState extends MusicBeatState
 		{
 			case 'spookeez' | 'monster' | 'south':
 				curStageId = "spookyMansion";
-
-				// TODO: Move lightning strike behavior to a scripted class extending Stage.
 				loadStage(curStageId);
 
 			case 'pico' | 'blammed' | 'philly':
-				curStageId = 'philly';
+				curStageId = 'phillyTrain';
+				loadStage(curStageId);
 
-				var bg:FlxSprite = new FlxSprite(-100).loadGraphic(Paths.image('philly/sky'));
-				bg.scrollFactor.set(0.1, 0.1);
-				add(bg);
-
-				var city:FlxSprite = new FlxSprite(-10).loadGraphic(Paths.image('philly/city'));
-				city.scrollFactor.set(0.3, 0.3);
-				city.setGraphicSize(Std.int(city.width * 0.85));
-				city.updateHitbox();
-				add(city);
-
-				lightFadeShader = new BuildingShaders();
-				phillyCityLights = new FlxTypedGroup<FlxSprite>();
-
-				add(phillyCityLights);
-
-				for (i in 0...5)
-				{
-					var light:FlxSprite = new FlxSprite(city.x).loadGraphic(Paths.image('philly/win' + i));
-					light.scrollFactor.set(0.3, 0.3);
-					light.visible = false;
-					light.setGraphicSize(Std.int(light.width * 0.85));
-					light.updateHitbox();
-					light.antialiasing = true;
-					light.shader = lightFadeShader.shader;
-					phillyCityLights.add(light);
-				}
-
-				var streetBehind:FlxSprite = new FlxSprite(-40, 50).loadGraphic(Paths.image('philly/behindTrain'));
-				add(streetBehind);
-
-				phillyTrain = new FlxSprite(2000, 360).loadGraphic(Paths.image('philly/train'));
-				add(phillyTrain);
-
-				trainSound = new FlxSound().loadEmbedded(Paths.sound('train_passes'));
-				FlxG.sound.list.add(trainSound);
-
-				// var cityLights:FlxSprite = new FlxSprite().loadGraphic(AssetPaths.win0.png);
-
-				var street:FlxSprite = new FlxSprite(-40, streetBehind.y).loadGraphic(Paths.image('philly/street'));
-				add(street);
 			case "milf" | 'satin-panties' | 'high':
 				curStageId = 'limo';
 				defaultCamZoom *= 0.90;
@@ -680,7 +639,7 @@ class PlayState extends MusicBeatState
 			case "darnell":
 				loadStageOld('phillyStreets');
 			default:
-				loadStageOld('stage');
+				loadStage('mainStage');
 		}
 	}
 
@@ -830,8 +789,8 @@ class PlayState extends MusicBeatState
 		{
 			// We're using Eric's stage handler.
 			// Characters get added to the stage, not the main scene.
-			curStage.addCharacter(boyfriend, BF);
 			curStage.addCharacter(gf, GF);
+			curStage.addCharacter(boyfriend, BF);
 			curStage.addCharacter(dad, DAD);
 
 			// Redo z-indexes.
@@ -940,6 +899,35 @@ class PlayState extends MusicBeatState
 					});
 				});
 		});*/
+	}
+
+	/**
+	 * Removes any references to the current stage, then clears the stage cache,
+	 * then reloads all the stages.
+	 * 
+	 * This is useful for when you want to edit a stage without reloading the whole game.
+	 * Reloading works on both the JSON and the HXC, if applicable.
+	 */
+	function debug_refreshStages()
+	{
+		// Remove the current stage. If the stage gets deleted while it's still in use,
+		// it'll probably crash the game or something.
+		if (this.curStage != null)
+		{
+			remove(curStage);
+			curStage.kill();
+			curStage = null;
+		}
+
+		// Forcibly reload scripts so that scripted stages can be edited.
+		polymod.hscript.PolymodScriptClass.clearScriptClasses();
+		polymod.hscript.PolymodScriptClass.registerAllScriptClasses();
+
+		// Reload the stages in cache. This might cause a lag spike but who cares this is a debug utility.
+		StageDataParser.loadStageCache();
+
+		// Reload the level. This should use new data from the assets folder.
+		LoadingState.loadAndSwitchState(new PlayState());
 	}
 
 	public var curStage:Stage;
@@ -1983,9 +1971,6 @@ class PlayState extends MusicBeatState
 					}
 				}
 
-				lightFadeShader.update((Conductor.crochet / 1000) * FlxG.elapsed * 1.5);
-			// phillyCityLights.members[curLight].alpha -= (Conductor.crochet / 1000) * FlxG.elapsed;
-
 			case 'tank':
 				moveTank();
 		}
@@ -2006,9 +1991,7 @@ class PlayState extends MusicBeatState
 			persistentDraw = true;
 			paused = true;
 
-			// 1 / 1000 chance for Gitaroo Man easter egg
-			// can this please move to dying it's kinda fucked up that pausing has a 1/1000 chance ur forced to restart
-			if (FlxG.random.bool(0.1))
+			if (FlxG.random.bool(1 / 1000))
 			{
 				// gitaroo man easter egg
 				FlxG.switchState(new GitarooPause());
@@ -2041,6 +2024,10 @@ class PlayState extends MusicBeatState
 
 		if (FlxG.keys.justPressed.EIGHT)
 			FlxG.switchState(new ui.animDebugShit.DebugBoundingState());
+
+		// get it like refreshing a browser
+		if (FlxG.keys.justPressed.F5)
+			debug_refreshStages();
 
 		if (FlxG.keys.justPressed.NINE)
 			iconP1.swapOldIcon();
@@ -2288,6 +2275,12 @@ class PlayState extends MusicBeatState
 
 		if (!inCutscene)
 			keyShit();
+
+		if (curStage != null)
+		{
+			// We're using Eric's stage handler.
+			curStage.onUpdate(elapsed);
+		}
 	}
 
 	function applyClipRect(daNote:Note):Void
@@ -2725,10 +2718,17 @@ class PlayState extends MusicBeatState
 	{
 		openfl.utils.Assets.cache.clear(Paths.inst(SONG.song));
 		openfl.utils.Assets.cache.clear(Paths.voices(SONG.song));
-		curStage.cleanup();
-		curStage = null;
+		if (curStage != null)
+		{
+			remove(curStage);
+			curStage.kill();
+			curStage = null;
+		}
 	}
 
+	/**
+	 * This function is called before switching to a new FlxState.
+	 */
 	override function switchTo(nextState:FlxState):Bool
 	{
 		performCleanup();

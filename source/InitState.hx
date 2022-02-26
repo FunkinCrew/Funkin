@@ -40,7 +40,7 @@ class InitState extends FlxTransitionableState
 	{
 		trace('This is a debug build, loading InitState...');
 		#if android
-		FlxG.android.preventDefaultKeys = [FlxAndroidKey.BACK];
+		FlxG.android.preventDefaultKeys = [flixel.input.android.FlxAndroidKey.BACK];
 		#end
 		#if newgrounds
 		NGio.init();

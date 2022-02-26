@@ -1,5 +1,6 @@
 package play.stage;
 
+import flixel.math.FlxPoint;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
 import flixel.util.FlxSort;
@@ -50,6 +51,7 @@ class Stage extends FlxSpriteGroup implements IHook
 		trace('Building stage for display: ${this.stageId}');
 
 		this.camZoom = _data.cameraZoom;
+		// this.scrollFactor = new FlxPoint(1, 1);
 
 		for (dataProp in _data.props)
 		{
@@ -116,6 +118,7 @@ class Stage extends FlxSpriteGroup implements IHook
 	public function refresh()
 	{
 		sort(SortUtil.byZIndex, FlxSort.ASCENDING);
+		trace('Stage sorted by z-index');
 	}
 
 	/**
@@ -125,6 +128,27 @@ class Stage extends FlxSpriteGroup implements IHook
 	public function onUpdate(elapsed:Float):Void
 	{
 		// Override me in your scripted stage to perform custom behavior!
+		// trace('Stage.onUpdate(${elapsed})');
+	}
+
+	/**
+	 * Adjusts the position and other properties of the soon-to-be child of this sprite group.
+	 * Private helper to avoid duplicate code in `add()` and `insert()`.
+	 *
+	 * @param	Sprite	The sprite or sprite group that is about to be added or inserted into the group.
+	 */
+	override function preAdd(Sprite:FlxSprite):Void
+	{
+		var sprite:FlxSprite = cast Sprite;
+		sprite.x += x;
+		sprite.y += y;
+		sprite.alpha *= alpha;
+		// Don't override scroll factors.
+		// sprite.scrollFactor.copyFrom(scrollFactor);
+		sprite.cameras = _cameras; // _cameras instead of cameras because get_cameras() will not return null
+
+		if (clipRect != null)
+			clipRectTransform(sprite, clipRect);
 	}
 
 	/**
@@ -143,6 +167,7 @@ class Stage extends FlxSpriteGroup implements IHook
 	public function onBeatHit(curBeat:Int):Void
 	{
 		// Override me in your scripted stage to perform custom behavior!
+		// trace('Stage.onBeatHit(${curBeat})');
 	}
 
 	/**
@@ -211,10 +236,56 @@ class Stage extends FlxSpriteGroup implements IHook
 		return this.namedProps.get(name);
 	}
 
-	public function cleanup()
+	/**
+	 * Retrieve a list of all the asset paths required to load the stage.
+	 * Override this in a scripted class to ensure that all necessary assets are loaded!
+	 * 
+	 * @return An array of file names.
+	 */
+	public function fetchAssetPaths():Array<String>
 	{
-		this.clear();
+		var result:Array<String> = [];
+		for (dataProp in _data.props)
+		{
+			result.push(Paths.image(dataProp.assetPath));
+		}
+		return result;
+	}
+
+	/**
+	 * Perform cleanup for when you are leaving the level.
+	 */
+	public override function kill()
+	{
+		super.kill();
+
+		for (prop in this.namedProps)
+		{
+			prop.destroy();
+		}
 		namedProps.clear();
+
+		for (char in this.characters)
+		{
+			char.destroy();
+		}
 		characters.clear();
+
+		for (sprite in this.group)
+		{
+			sprite.destroy();
+		}
+		group.clear();
+	}
+
+	/**
+	 * Perform cleanup for when you are destroying the stage
+	 * and removing all its data from cache.
+	 * 
+	 * Call this ONLY when you are performing a hard cache clear.
+	 */
+	public override function destroy()
+	{
+		super.destroy();
 	}
 }

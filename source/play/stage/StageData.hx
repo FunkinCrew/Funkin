@@ -30,10 +30,11 @@ class StageDataParser
 	 */
 	public static function loadStageCache():Void
 	{
-		stageCache.clear();
-
+		// Clear any stages that are cached if there were any.
+		clearStageCache();
 		trace("Loading stage cache...");
 
+		#if polymod
 		//
 		// SCRIPTED STAGES
 		//
@@ -45,6 +46,11 @@ class StageDataParser
 			if (stage != null)
 			{
 				trace('    Loaded scripted stage: ${stage.stageName}');
+				// Disable the rendering logic for stage until it's loaded.
+				// Note that kill() =/= destroy()
+				stage.kill();
+
+				// Then store it.
 				stageCache.set(stage.stageId, stage);
 			}
 			else
@@ -52,15 +58,21 @@ class StageDataParser
 				trace('    Failed to instantiate scripted stage class: ${stageCls}');
 			}
 		}
+		#end
 
 		//
 		// UNSCRIPTED STAGES
 		//
 		var stageIdList:Array<String> = DataAssets.listDataFilesInPath('stages/');
-		var unscriptedStageIds:Array<String> = stageIdList.filter(function(stageId:String):Bool
-		{
-			return !stageCache.exists(stageId);
-		});
+		var unscriptedStageIds:Array<String> =
+			#if polymod
+			stageIdList.filter(function(stageId:String):Bool
+			{
+				return !stageCache.exists(stageId);
+			});
+			#else
+			stageIdList;
+			#end
 		trace('  Instantiating ${unscriptedStageIds.length} non-scripted stages...');
 		for (stageId in unscriptedStageIds)
 		{
@@ -80,12 +92,26 @@ class StageDataParser
 		if (stageCache.exists(stageId))
 		{
 			trace('Successfully fetch stage: ${stageId}');
-			return stageCache.get(stageId);
+			var stage:Stage = stageCache.get(stageId);
+			stage.revive();
+			return stage;
 		}
 		else
 		{
 			trace('Failed to fetch stage, not found in cache: ${stageId}');
 			return null;
+		}
+	}
+
+	static function clearStageCache():Void
+	{
+		if (stageCache != null)
+		{
+			for (stage in stageCache)
+			{
+				stage.destroy();
+			}
+			stageCache.clear();
 		}
 	}
 
