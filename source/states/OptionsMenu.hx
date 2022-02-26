@@ -41,7 +41,7 @@ class OptionsMenu extends MusicBeatState
 			"Categories",
 			new PageOption("Gameplay", 0, "Gameplay"),
 			new PageOption("Graphics", 1, "Graphics"),
-			new PageOption("Tools", 2, "Tools"),
+			new PageOption("Tools (Very WIP)", 2, "Tools"),
 			new PageOption("Misc", 3, "Misc"),
 			new ImportOldHighscoreOption("Import Old Scores", "Import Old Scores", 4)
 		],
@@ -78,7 +78,9 @@ class OptionsMenu extends MusicBeatState
 			"Tools",
 			new PageOption("Back", 0, "Categories"),
 			new GameStateOption("Charter", 1, new ChartingState()),
+			#if debug
 			new GameStateOption("Charter Dev", 1, new ChartingStateDev()),
+			#end
 			new GameStateOption("Animation Debug", 2, new AnimationDebug("dad")),
 			new GameStateOption("Stage Editor", 3, new StageMakingState("stage")),
 			new GameStateOption("Character Creator", 4, new CharacterCreationState("bf"))
@@ -166,8 +168,10 @@ class OptionsMenu extends MusicBeatState
 		if(PlayState.instance == null)
 			pages[3][2] = null;
 
+		#if debug
 		if(PlayState.instance == null)
 			pages[3][3] = null;
+		#end
 		
 		MusicBeatState.windowNameSuffix = "";
 		

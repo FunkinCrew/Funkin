@@ -2554,6 +2554,7 @@ class PlayState extends MusicBeatState
 				#end
 			}
 	
+			#if debug
 			if (FlxG.keys.justPressed.EIGHT && !switchedStates)
 			{
 				#if linc_luajit
@@ -2577,6 +2578,7 @@ class PlayState extends MusicBeatState
 				DiscordClient.changePresence("Chart Editor Development", null, null, true);
 				#end 
 			}
+			#end
 		}
 
 		if(!switchedStates)
