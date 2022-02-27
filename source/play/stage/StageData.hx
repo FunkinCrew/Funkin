@@ -32,7 +32,7 @@ class StageDataParser
 	{
 		// Clear any stages that are cached if there were any.
 		clearStageCache();
-		trace("Loading stage cache...");
+		trace("[STAGEDATA] Loading stage cache...");
 
 		#if polymod
 		//
@@ -91,14 +91,14 @@ class StageDataParser
 	{
 		if (stageCache.exists(stageId))
 		{
-			trace('Successfully fetch stage: ${stageId}');
+			trace('[STAGEDATA] Successfully fetch stage: ${stageId}');
 			var stage:Stage = stageCache.get(stageId);
 			stage.revive();
 			return stage;
 		}
 		else
 		{
-			trace('Failed to fetch stage, not found in cache: ${stageId}');
+			trace('[STAGEDATA] Failed to fetch stage, not found in cache: ${stageId}');
 			return null;
 		}
 	}
@@ -125,7 +125,7 @@ class StageDataParser
 	{
 		var rawJson:String = loadStageFile(stageId);
 
-		var stageData:StageData = migrateStageData(rawJson);
+		var stageData:StageData = migrateStageData(rawJson, stageId);
 
 		return validateStageData(stageId, stageData);
 	}
@@ -143,22 +143,32 @@ class StageDataParser
 		return rawJson;
 	}
 
-	static function migrateStageData(rawJson:String)
+	static function migrateStageData(rawJson:String, stageId:String)
 	{
 		// If you update the stage data format in a breaking way,
 		// handle migration here by checking the `version` value.
 
-		var stageData:StageData = cast Json.parse(rawJson);
-
-		return stageData;
+		try
+		{
+			var stageData:StageData = cast Json.parse(rawJson);
+			return stageData;
+		}
+		catch (e)
+		{
+			trace('  Error parsing data for stage: ${stageId}');
+			trace('    ${e}');
+			return null;
+		}
 	}
 
 	static final DEFAULT_NAME:String = "Untitled Stage";
 	static final DEFAULT_CAMERAZOOM:Float = 1.0;
 	static final DEFAULT_ZINDEX:Int = 0;
+	static final DEFAULT_DANCEEVERY:Int = 0;
 	static final DEFAULT_SCALE:Float = 1.0;
 	static final DEFAULT_POSITION:Array<Float> = [0, 0];
 	static final DEFAULT_SCROLL:Array<Float> = [0, 0];
+	static final DEFAULT_FRAMEINDICES:Array<Int> = [];
 
 	static final DEFAULT_CHARACTER_DATA:StageDataCharacter = {
 		zIndex: DEFAULT_ZINDEX,
@@ -174,6 +184,12 @@ class StageDataParser
 	 */
 	static function validateStageData(id:String, input:StageData):Null<StageData>
 	{
+		if (input == null)
+		{
+			trace('[STAGEDATA] ERROR: Could not parse stage data for "${id}".');
+			return null;
+		}
+
 		if (input.version != STAGE_DATA_VERSION)
 		{
 			trace('[STAGEDATA] ERROR: Could not load stage data for "$id": missing version');
@@ -215,6 +231,11 @@ class StageDataParser
 			if (inputProp.zIndex == null)
 			{
 				inputProp.zIndex = DEFAULT_ZINDEX;
+			}
+
+			if (inputProp.danceEvery == null)
+			{
+				inputProp.danceEvery = DEFAULT_DANCEEVERY;
 			}
 
 			if (inputProp.scale == null)
@@ -259,6 +280,11 @@ class StageDataParser
 				if (inputAnimation.frameRate == null)
 				{
 					inputAnimation.frameRate = 24;
+				}
+
+				if (inputAnimation.frameIndices == null)
+				{
+					inputAnimation.frameIndices = DEFAULT_FRAMEINDICES;
 				}
 
 				if (inputAnimation.loop == null)
@@ -362,6 +388,15 @@ typedef StageDataProp =
 	var scale:OneOfTwo<Float, Array<Float>>;
 
 	/**
+	 * If not zero, this prop will play an animation every X beats of the song.
+	 * This requires animations to be defined. If `danceLeft` and `danceRight` are defined,
+	 * they will alternated between, otherwise the `idle` animation will be used.
+	 * 
+	 * @default 0
+	 */
+	var danceEvery:Null<Int>;
+
+	/**
 	 * How much the prop scrolls relative to the camera. Used to create a parallax effect.
 	 * Represented as a float or as an [x, y] array of two floats.
 	 * [1, 1] means the prop moves 1:1 with the camera.
@@ -396,6 +431,14 @@ typedef StageDataPropAnimation =
 	 * For example, if the frames are named "test0001.png", "test0002.png", etc., use "test".
 	 */
 	var prefix:String;
+
+	/**
+	 * If you want this animation to use only certain frames of an animation with a given prefix,
+	 * select them here.
+	 * @example [0, 1, 2, 3] (use only the first four frames)
+	 * @default [] (all frames)
+	 */
+	var frameIndices:Array<Int>;
 
 	/**
 	 * The speed of the animation in frames per second.

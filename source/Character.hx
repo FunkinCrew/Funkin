@@ -689,6 +689,8 @@ class Character extends FlxSprite
 	 */
 	public function dance()
 	{
+		if (animation == null)
+			return;
 		if (!debugMode)
 		{
 			switch (curCharacter)

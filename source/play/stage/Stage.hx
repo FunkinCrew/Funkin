@@ -25,6 +25,7 @@ class Stage extends FlxSpriteGroup implements IHook
 
 	var namedProps:Map<String, FlxSprite> = new Map<String, FlxSprite>();
 	var characters:Map<String, Character> = new Map<String, Character>();
+	var boppers:Array<Bopper> = new Array<Bopper>();
 
 	/**
 	 * The Stage elements get initialized at the beginning of the game.
@@ -58,7 +59,16 @@ class Stage extends FlxSpriteGroup implements IHook
 			trace('  Placing prop: ${dataProp.name} (${dataProp.assetPath})');
 
 			var isAnimated = dataProp.animations.length > 0;
-			var propSprite = new FlxSprite();
+
+			var propSprite:FlxSprite;
+			if (dataProp.danceEvery != 0)
+			{
+				propSprite = new Bopper(dataProp.danceEvery);
+			}
+			else
+			{
+				propSprite = new FlxSprite();
+			}
 
 			if (isAnimated)
 			{
@@ -91,7 +101,15 @@ class Stage extends FlxSpriteGroup implements IHook
 
 			for (propAnim in dataProp.animations)
 			{
-				propSprite.animation.addByPrefix(propAnim.name, propAnim.prefix, propAnim.frameRate, propAnim.loop);
+				if (propAnim.frameIndices.length == 0)
+				{
+					propSprite.animation.addByPrefix(propAnim.name, propAnim.prefix, propAnim.frameRate, propAnim.loop, propAnim.flipX, propAnim.flipY);
+				}
+				else
+				{
+					propSprite.animation.addByIndices(propAnim.name, propAnim.prefix, propAnim.frameIndices, "", propAnim.frameRate, propAnim.loop,
+						propAnim.flipX, propAnim.flipY);
+				}
 			}
 
 			if (dataProp.startingAnimation != null)
@@ -99,16 +117,42 @@ class Stage extends FlxSpriteGroup implements IHook
 				propSprite.animation.play(dataProp.startingAnimation);
 			}
 
-			if (dataProp.name != null)
+			if (Std.isOfType(propSprite, Bopper))
 			{
-				namedProps.set(dataProp.name, propSprite);
+				addBopper(cast propSprite, dataProp.name);
 			}
-
+			else
+			{
+				addProp(propSprite, dataProp.name);
+			}
 			trace('    Prop placed.');
-			this.add(propSprite);
 		}
 
 		this.refresh();
+	}
+
+	/**
+	 * Add a sprite to the stage.
+	 * @param prop The sprite to add.
+	 * @param name (Optional) A unique name for the sprite.
+	 *   You can call `getNamedProp(name)` to retrieve it later.
+	 */
+	public function addProp(prop:FlxSprite, ?name:String = null)
+	{
+		if (name != null)
+		{
+			namedProps.set(name, prop);
+		}
+		this.add(prop);
+	}
+
+	/**
+	 * Add a sprite to the stage which animates to the beat of the song.
+	 */
+	public function addBopper(bopper:Bopper, ?name:String = null)
+	{
+		boppers.push(bopper);
+		this.addProp(bopper, name);
 	}
 
 	/**
@@ -167,7 +211,12 @@ class Stage extends FlxSpriteGroup implements IHook
 	public function onBeatHit(curBeat:Int):Void
 	{
 		// Override me in your scripted stage to perform custom behavior!
-		// trace('Stage.onBeatHit(${curBeat})');
+		// Make sure to call super.onBeatHit(curBeat) if you want to keep the boppers dancing.
+
+		for (bopper in boppers)
+		{
+			bopper.onBeatHit(curBeat);
+		}
 	}
 
 	/**
@@ -270,6 +319,12 @@ class Stage extends FlxSpriteGroup implements IHook
 			char.destroy();
 		}
 		characters.clear();
+
+		for (bopper in boppers)
+		{
+			bopper.destroy();
+		}
+		boppers = [];
 
 		for (sprite in this.group)
 		{
