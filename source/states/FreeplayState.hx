@@ -534,18 +534,18 @@ class FreeplayState extends MusicBeatState
 		// Song Inst
 		if(utilities.Options.getData("freeplayMusic"))
 		{
-			FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName, curDiffString.toLowerCase()));
-			FlxG.sound.music.fadeIn(1, 0, 0.7);
+			FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName, curDiffString.toLowerCase()), 0.7);
 
-			if(vocals.playing)
+			if(vocals.active && vocals.playing)
 				vocals.stop();
 
 			#if cpp
 			@:privateAccess
 			{
-				lime.media.openal.AL.sourcef(FlxG.sound.music._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, curSpeed);
+				if(FlxG.sound.music.active && FlxG.sound.music.playing)
+					lime.media.openal.AL.sourcef(FlxG.sound.music._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, curSpeed);
 	
-				if (vocals.playing)
+				if (vocals.active && vocals.playing)
 					lime.media.openal.AL.sourcef(vocals._channel.__source.__backend.handle, lime.media.openal.AL.PITCH, curSpeed);
 			}
 			#end
