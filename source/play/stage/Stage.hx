@@ -40,7 +40,14 @@ class Stage extends FlxSpriteGroup implements IHook
 
 		this.stageId = stageId;
 		_data = StageDataParser.parseStageData(this.stageId);
-		this.stageName = _data.name;
+		if (_data == null)
+		{
+			throw 'Could not find stage data for stageId: $stageId';
+		}
+		else
+		{
+			this.stageName = _data.name;
+		}
 	}
 
 	/**
@@ -79,6 +86,9 @@ class Stage extends FlxSpriteGroup implements IHook
 			{
 				// Initalize static sprite.
 				propSprite.loadGraphic(Paths.image(dataProp.assetPath));
+
+				// Disables calls to update() for a performance boost.
+				propSprite.active = false;
 			}
 
 			if (Std.isOfType(dataProp.scale, Array))
@@ -93,6 +103,9 @@ class Stage extends FlxSpriteGroup implements IHook
 
 			propSprite.x = dataProp.position[0];
 			propSprite.y = dataProp.position[1];
+
+			// If pixel, disable antialiasing.
+			propSprite.antialiasing = !dataProp.isPixel;
 
 			propSprite.scrollFactor.x = dataProp.scroll[0];
 			propSprite.scrollFactor.y = dataProp.scroll[1];

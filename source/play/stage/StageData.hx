@@ -76,11 +76,20 @@ class StageDataParser
 		trace('  Instantiating ${unscriptedStageIds.length} non-scripted stages...');
 		for (stageId in unscriptedStageIds)
 		{
-			var stage:Stage = new Stage(stageId);
-			if (stage != null)
+			var stage:Stage;
+			try
 			{
-				trace('    Loaded stage data: ${stage.stageName}');
-				stageCache.set(stageId, stage);
+				stage = new Stage(stageId);
+				if (stage != null)
+				{
+					trace('    Loaded stage data: ${stage.stageName}');
+					stageCache.set(stageId, stage);
+				}
+			}
+			catch (e)
+			{
+				// Assume error was already logged.
+				continue;
 			}
 		}
 
@@ -166,6 +175,7 @@ class StageDataParser
 	static final DEFAULT_ZINDEX:Int = 0;
 	static final DEFAULT_DANCEEVERY:Int = 0;
 	static final DEFAULT_SCALE:Float = 1.0;
+	static final DEFAULT_ISPIXEL:Bool = false;
 	static final DEFAULT_POSITION:Array<Float> = [0, 0];
 	static final DEFAULT_SCROLL:Array<Float> = [0, 0];
 	static final DEFAULT_FRAMEINDICES:Array<Int> = [];
@@ -231,6 +241,11 @@ class StageDataParser
 			if (inputProp.zIndex == null)
 			{
 				inputProp.zIndex = DEFAULT_ZINDEX;
+			}
+
+			if (inputProp.isPixel == null)
+			{
+				inputProp.isPixel = DEFAULT_ISPIXEL;
 			}
 
 			if (inputProp.danceEvery == null)
@@ -382,7 +397,15 @@ typedef StageDataProp =
 	var zIndex:Null<Int>;
 
 	/**
+	 * If set to true, anti-aliasing will be forcibly disabled on the sprite.
+	 * This prevents blurry images on pixel-art levels.
+	 * @default false
+	 */
+	var isPixel:Null<Bool>;
+
+	/**
 	 * Either the scale of the prop as a float, or the [w, h] scale as an array of two floats.
+	 * Pro tip: On pixel-art levels, save the sprite small and set this value to 6 or so to save memory.
 	 * @default 1
 	 */
 	var scale:OneOfTwo<Float, Array<Float>>;

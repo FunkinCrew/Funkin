@@ -393,61 +393,13 @@ class PlayState extends MusicBeatState
 				loadStage(curStageId);
 
 			case "cocoa" | 'eggnog':
-				curStageId = 'mall';
+				curStageId = 'mallXmas';
+				loadStage(curStageId);
 
-				defaultCamZoom *= 0.80;
-
-				var bg:FlxSprite = new FlxSprite(-1000, -500).loadGraphic(Paths.image('christmas/bgWalls'));
-				bg.antialiasing = true;
-				bg.scrollFactor.set(0.2, 0.2);
-				bg.active = false;
-				bg.setGraphicSize(Std.int(bg.width * 0.8));
-				bg.updateHitbox();
-				add(bg);
-
-				upperBoppers = new FlxSprite(-240, -90);
-				upperBoppers.frames = Paths.getSparrowAtlas('christmas/upperBop');
-				upperBoppers.animation.addByPrefix('bop', "Upper Crowd Bob", 24, false);
-				upperBoppers.antialiasing = true;
-				upperBoppers.scrollFactor.set(0.33, 0.33);
-				upperBoppers.setGraphicSize(Std.int(upperBoppers.width * 0.85));
-				upperBoppers.updateHitbox();
-				add(upperBoppers);
-
-				var bgEscalator:FlxSprite = new FlxSprite(-1100, -600).loadGraphic(Paths.image('christmas/bgEscalator'));
-				bgEscalator.antialiasing = true;
-				bgEscalator.scrollFactor.set(0.3, 0.3);
-				bgEscalator.active = false;
-				bgEscalator.setGraphicSize(Std.int(bgEscalator.width * 0.9));
-				bgEscalator.updateHitbox();
-				add(bgEscalator);
-
-				var tree:FlxSprite = new FlxSprite(370, -250).loadGraphic(Paths.image('christmas/christmasTree'));
-				tree.antialiasing = true;
-				tree.scrollFactor.set(0.40, 0.40);
-				add(tree);
-
-				bottomBoppers = new FlxSprite(-300, 140);
-				bottomBoppers.frames = Paths.getSparrowAtlas('christmas/bottomBop');
-				bottomBoppers.animation.addByPrefix('bop', 'Bottom Level Boppers', 24, false);
-				bottomBoppers.antialiasing = true;
-				bottomBoppers.scrollFactor.set(0.9, 0.9);
-				bottomBoppers.setGraphicSize(Std.int(bottomBoppers.width * 1));
-				bottomBoppers.updateHitbox();
-				add(bottomBoppers);
-
-				var fgSnow:FlxSprite = new FlxSprite(-600, 700).loadGraphic(Paths.image('christmas/fgSnow'));
-				fgSnow.active = false;
-				fgSnow.antialiasing = true;
-				add(fgSnow);
-
-				santa = new FlxSprite(-840, 150);
-				santa.frames = Paths.getSparrowAtlas('christmas/santa');
-				santa.animation.addByPrefix('idle', 'santa idle in fear', 24, false);
-				santa.antialiasing = true;
-				add(santa);
 			case 'winter-horrorland':
-				loadStageOld('mallEvil');
+				curStageId = 'mallEvil';
+				loadStage(curStageId);
+
 			case 'senpai' | 'roses':
 				curStageId = 'school';
 
@@ -584,7 +536,8 @@ class PlayState extends MusicBeatState
 				var fgTank3:BGSprite = new BGSprite('tank3', 1300, 1200, 3.5, 2.5, ['fg']);
 				foregroundSprites.add(fgTank3);
 			case "darnell":
-				loadStageOld('phillyStreets');
+				curStageId = 'phillyStreets';
+				loadStage(curStageId);
 			default:
 				loadStage('mainStage');
 		}
@@ -686,11 +639,6 @@ class PlayState extends MusicBeatState
 		// REPOSITIONING PER STAGE
 		switch (curStageId)
 		{
-			case 'mall':
-				boyfriend.x += 200;
-			case 'mallEvil':
-				boyfriend.x += 320;
-				dad.y -= 80;
 			case 'school':
 				boyfriend.x += 200;
 				boyfriend.y += 220;
@@ -722,8 +670,6 @@ class PlayState extends MusicBeatState
 					gf.x -= 170;
 					gf.y -= 75;
 				}
-			case 'phillyStreets':
-				dad.y = 870 - dad.height;
 		}
 
 		if (curStage != null)
@@ -2848,9 +2794,9 @@ class PlayState extends MusicBeatState
 
 		if (curBeat % 2 == 0)
 		{
-			if (!boyfriend.animation.curAnim.name.startsWith("sing"))
+			if (boyfriend.animation != null && !boyfriend.animation.curAnim.name.startsWith("sing"))
 				boyfriend.playAnim('idle');
-			if (!dad.animation.curAnim.name.startsWith("sing"))
+			if (dad.animation != null && !dad.animation.curAnim.name.startsWith("sing"))
 				dad.dance();
 		}
 		else if (dad.curCharacter == 'spooky')
@@ -2880,11 +2826,6 @@ class PlayState extends MusicBeatState
 		{
 			case 'school':
 				bgGirls.dance();
-
-			case 'mall':
-				upperBoppers.animation.play('bop', true);
-				bottomBoppers.animation.play('bop', true);
-				santa.animation.play('idle', true);
 
 			case 'tank':
 				tankWatchtower.dance();
