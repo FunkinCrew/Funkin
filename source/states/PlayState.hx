@@ -2081,15 +2081,15 @@ class PlayState extends MusicBeatState
 
 				if(utilities.Options.getData("cameraTracksDirections") && dad.animation.curAnim != null)
 				{
-					switch(dad.animation.curAnim.name)
+					switch(dad.animation.curAnim.name.toLowerCase())
 					{
-						case "singLEFT":
+						case "singleft":
 							midPos.x -= 50;
-						case "singRIGHT":
+						case "singright":
 							midPos.x += 50;
-						case "singUP":
+						case "singup":
 							midPos.y -= 50;
-						case "singDOWN":
+						case "singdown":
 							midPos.y += 50;
 					}
 				}
@@ -2097,7 +2097,7 @@ class PlayState extends MusicBeatState
 				midPos.x += stage.p2_Cam_Offset.x;
 				midPos.y += stage.p2_Cam_Offset.y;
 
-				if (camFollow.x != midPos.x + 150 + dad.cameraOffset[0])
+				if(camFollow.x != midPos.x + 150 + dad.cameraOffset[0] || camFollow.y != midPos.y + - 100 + dad.cameraOffset[1])
 				{
 					camFollow.setPosition(midPos.x + 150 + dad.cameraOffset[0], midPos.y - 100 + dad.cameraOffset[1]);
 	
@@ -2139,7 +2139,7 @@ class PlayState extends MusicBeatState
 				midPos.x += stage.p1_Cam_Offset.x;
 				midPos.y += stage.p1_Cam_Offset.y;
 
-				if(camFollow.x != midPos.x - 100 + boyfriend.cameraOffset[0])
+				if(camFollow.x != midPos.x - 100 + boyfriend.cameraOffset[0] || camFollow.y != midPos.y - 100 + boyfriend.cameraOffset[1])
 				{
 					camFollow.setPosition(midPos.x - 100 + boyfriend.cameraOffset[0], midPos.y - 100 + boyfriend.cameraOffset[1]);
 	
