@@ -267,6 +267,8 @@ class Character extends FlxSprite
 				quickAnimAdd('singLEFTmiss', 'BF NOTE LEFT MISS');
 				quickAnimAdd('singRIGHTmiss', 'BF NOTE RIGHT MISS');
 				quickAnimAdd('singDOWNmiss', 'BF NOTE DOWN MISS');
+				quickAnimAdd('preAttack', 'bf pre attack');
+				quickAnimAdd('attack', 'boyfriend attack');
 				quickAnimAdd('hey', 'BF HEY');
 
 				quickAnimAdd('firstDeath', "BF dies");
