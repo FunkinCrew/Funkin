@@ -84,7 +84,9 @@ class PlayState extends MusicBeatState
 	private var curSong:String = "";
 
 	private var gfSpeed:Int = 1;
-	private var health:Float = 1;
+
+	public static var health:Float = 1;
+
 	private var healthDisplay:Float = 1;
 	private var combo:Int = 0;
 
@@ -156,6 +158,9 @@ class PlayState extends MusicBeatState
 	{
 		initCameras();
 
+		// Starting health.
+		health = 1;
+
 		persistentUpdate = true;
 		persistentDraw = true;
 
@@ -171,11 +176,11 @@ class PlayState extends MusicBeatState
 		switch (SONG.song.toLowerCase())
 		{
 			case 'senpai':
-				dialogue = CoolUtil.coolTextFile(Paths.txt('senpai/senpaiDialogue'));
+				dialogue = CoolUtil.coolTextFile(Paths.txt('songs/senpai/senpaiDialogue'));
 			case 'roses':
-				dialogue = CoolUtil.coolTextFile(Paths.txt('roses/rosesDialogue'));
+				dialogue = CoolUtil.coolTextFile(Paths.txt('songs/roses/rosesDialogue'));
 			case 'thorns':
-				dialogue = CoolUtil.coolTextFile(Paths.txt('thorns/thornsDialogue'));
+				dialogue = CoolUtil.coolTextFile(Paths.txt('songs/thorns/thornsDialogue'));
 		}
 
 		#if discord_rpc
@@ -398,6 +403,10 @@ class PlayState extends MusicBeatState
 
 			case 'winter-horrorland':
 				curStageId = 'mallEvil';
+				loadStage(curStageId);
+
+			case 'pyro':
+				curStageId = 'pyro';
 				loadStage(curStageId);
 
 			case 'senpai' | 'roses':
@@ -1348,10 +1357,17 @@ class PlayState extends MusicBeatState
 				gf.dance();
 			if (swagCounter % 2 == 0)
 			{
-				if (!boyfriend.animation.curAnim.name.startsWith("sing"))
-					boyfriend.playAnim('idle');
-				if (!dad.animation.curAnim.name.startsWith("sing"))
-					dad.dance();
+				if (boyfriend.animation != null)
+				{
+					if (!boyfriend.animation.curAnim.name.startsWith("sing"))
+						boyfriend.playAnim('idle');
+				}
+
+				if (dad.animation != null)
+				{
+					if (!dad.animation.curAnim.name.startsWith("sing"))
+						dad.dance();
+				}
 			}
 			else if (dad.curCharacter == 'spooky' && !dad.animation.curAnim.name.startsWith("sing"))
 				dad.dance();
@@ -1510,8 +1526,9 @@ class PlayState extends MusicBeatState
 					oldNote = null;
 
 				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote);
-				swagNote.data.sustainLength = songNotes.sustainLength;
-				swagNote.data.altNote = songNotes.altNote;
+				swagNote.data = songNotes;
+				// swagNote.data.sustainLength = songNotes.sustainLength;
+				// swagNote.data.altNote = songNotes.altNote;
 				swagNote.scrollFactor.set(0, 0);
 
 				var susLength:Float = swagNote.data.sustainLength;
@@ -2127,8 +2144,13 @@ class PlayState extends MusicBeatState
 				}
 				else if (daNote.tooLate || daNote.wasGoodHit)
 				{
+					// TODO: Why the hell is the noteMiss logic in two different places?
 					if (daNote.tooLate)
 					{
+						if (curStage != null)
+						{
+							curStage.onNoteMiss(daNote);
+						}
 						health -= 0.0775;
 						vocals.volume = 0;
 						killCombo();
@@ -2340,6 +2362,12 @@ class PlayState extends MusicBeatState
 			isSick = true;
 
 		health += healthMulti;
+
+		// TODO: Redo note hit logic to make sure this always gets called
+		if (curStage != null)
+		{
+			curStage.onNoteHit(daNote);
+		}
 
 		if (isSick)
 		{

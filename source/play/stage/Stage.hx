@@ -189,6 +189,22 @@ class Stage extends FlxSpriteGroup implements IHook
 	}
 
 	/**
+	 * A function that gets called when the player hits a note.
+	 */
+	public function onNoteHit(note:Note):Void
+	{
+		// Override me in your scripted stage to perform custom behavior!
+	}
+
+	/**
+	 * A function that gets called when the player hits a note.
+	 */
+	public function onNoteMiss(note:Note):Void
+	{
+		// Override me in your scripted stage to perform custom behavior!
+	}
+
+	/**
 	 * Adjusts the position and other properties of the soon-to-be child of this sprite group.
 	 * Private helper to avoid duplicate code in `add()` and `insert()`.
 	 *

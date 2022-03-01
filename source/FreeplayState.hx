@@ -78,6 +78,7 @@ class FreeplayState extends MusicBeatSubstate
 		#if debug
 		isDebug = true;
 		addSong('Test', 1, 'bf-pixel');
+		addSong('Pyro', 4, 'bf');
 		#end
 
 		var initSonglist = CoolUtil.coolTextFile(Paths.txt('freeplaySonglist'));
@@ -517,10 +518,8 @@ class FreeplayState extends MusicBeatSubstate
 		if (controls.BACK)
 		{
 			FlxG.sound.play(Paths.sound('cancelMenu'));
-
-			close();
-
-			// FlxG.switchState(new MainMenuState());
+			// close();
+			FlxG.switchState(new MainMenuState());
 		}
 
 		if (accepted)

@@ -188,6 +188,10 @@ class SongLoad
 					noteStuff[sectionIndex].sectionNotes[noteIndex].noteData = arrayDipshit[1];
 					noteStuff[sectionIndex].sectionNotes[noteIndex].sustainLength = arrayDipshit[2];
 					noteStuff[sectionIndex].sectionNotes[noteIndex].altNote = arrayDipshit[3];
+					if (arrayDipshit.length >= 5)
+					{
+						noteStuff[sectionIndex].sectionNotes[noteIndex].noteKind = arrayDipshit[4];
+					}
 				}
 				else if (noteDataArray != null)
 				{

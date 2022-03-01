@@ -117,6 +117,7 @@ class Note extends FlxSprite
 
 		var daStage:String = PlayState.curStageId;
 
+		// TODO: Make this logic more generic
 		switch (daStage)
 		{
 			case 'school' | 'schoolEvil':
@@ -288,18 +289,20 @@ typedef RawNoteData =
 	var noteData:NoteType;
 	var sustainLength:Float;
 	var altNote:Bool;
+	var noteKind:NoteKind;
 }
 
 @:forward
 abstract NoteData(RawNoteData)
 {
-	public function new(strumTime = 0.0, noteData:NoteType = 0, sustainLength = 0.0, altNote = false)
+	public function new(strumTime = 0.0, noteData:NoteType = 0, sustainLength = 0.0, altNote = false, noteKind = NORMAL)
 	{
 		this = {
 			strumTime: strumTime,
 			noteData: noteData,
 			sustainLength: sustainLength,
-			altNote: altNote
+			altNote: altNote,
+			noteKind: noteKind
 		}
 	}
 
@@ -455,4 +458,14 @@ enum abstract NoteColor(NoteType) from Int to Int from NoteType
 			case RED: "RED";
 		}
 	}
+}
+
+enum abstract NoteKind(String) from String to String
+{
+	var NORMAL = "normal";
+	var PYRO_LIGHT = "pyro_light";
+	var PYRO_KICK = "pyro_kick";
+	var PYRO_TOSS = "pyro_toss";
+	var PYRO_COCK = "pyro_cock"; // lol
+	var PYRO_SHOOT = "pyro_shoot";
 }
