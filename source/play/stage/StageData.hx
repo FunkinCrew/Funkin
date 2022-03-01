@@ -179,6 +179,7 @@ class StageDataParser
 	static final DEFAULT_POSITION:Array<Float> = [0, 0];
 	static final DEFAULT_SCROLL:Array<Float> = [0, 0];
 	static final DEFAULT_FRAMEINDICES:Array<Int> = [];
+	static final DEFAULT_ANIMTYPE:String = "sparrow";
 
 	static final DEFAULT_CHARACTER_DATA:StageDataCharacter = {
 		zIndex: DEFAULT_ZINDEX,
@@ -256,6 +257,11 @@ class StageDataParser
 			if (inputProp.scale == null)
 			{
 				inputProp.scale = DEFAULT_SCALE;
+			}
+
+			if (inputProp.animType == null)
+			{
+				inputProp.animType = DEFAULT_ANIMTYPE;
 			}
 
 			if (Std.isOfType(inputProp.scale, Float))
@@ -440,6 +446,13 @@ typedef StageDataProp =
 	 * @default Don't play an animation.
 	 */
 	var startingAnimation:String;
+
+	/**
+	 * The animation type to use.
+	 * Options: "sparrow", "packer"
+	 * @default "sparrow"
+	 */
+	var animType:String;
 };
 
 typedef StageDataPropAnimation =

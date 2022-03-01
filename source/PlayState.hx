@@ -110,13 +110,6 @@ class PlayState extends MusicBeatState
 
 	var foregroundSprites:FlxTypedGroup<BGSprite>;
 
-	var upperBoppers:FlxSprite;
-	var bottomBoppers:FlxSprite;
-	var santa:FlxSprite;
-
-	var bgGirls:BackgroundGirls;
-	var wiggleShit:WiggleEffect = new WiggleEffect();
-
 	var tankmanRun:FlxTypedGroup<TankmenBG>;
 	var gfCutsceneLayer:FlxGroup;
 	var bfTankCutsceneLayer:FlxGroup;
@@ -383,6 +376,7 @@ class PlayState extends MusicBeatState
 	// a lot of this stage code will be cleaned up more when the stage load shit is more fleshed out! For now it's still a lot of hardcoded shit!!
 	function initStageBullshit()
 	{
+		// TODO: Move stageId to the song file.
 		switch (SONG.song.toLowerCase())
 		{
 			case 'spookeez' | 'monster' | 'south':
@@ -411,92 +405,16 @@ class PlayState extends MusicBeatState
 
 			case 'senpai' | 'roses':
 				curStageId = 'school';
+				loadStage(curStageId);
 
-				// defaultCamZoom *= 0.9;
+			case "darnell":
+				curStageId = 'phillyStreets';
+				loadStage(curStageId);
 
-				var bgSky = new FlxSprite().loadGraphic(Paths.image('weeb/weebSky'));
-				bgSky.scrollFactor.set(0.1, 0.1);
-				add(bgSky);
-
-				var repositionShit = -200;
-
-				var bgSchool:FlxSprite = new FlxSprite(repositionShit, 0).loadGraphic(Paths.image('weeb/weebSchool'));
-				bgSchool.scrollFactor.set(0.6, 0.90);
-				add(bgSchool);
-
-				var bgStreet:FlxSprite = new FlxSprite(repositionShit).loadGraphic(Paths.image('weeb/weebStreet'));
-				bgStreet.scrollFactor.set(0.95, 0.95);
-				add(bgStreet);
-
-				var fgTrees:FlxSprite = new FlxSprite(repositionShit + 170, 130).loadGraphic(Paths.image('weeb/weebTreesBack'));
-				fgTrees.scrollFactor.set(0.9, 0.9);
-				add(fgTrees);
-
-				var bgTrees:FlxSprite = new FlxSprite(repositionShit - 380, -800);
-				var treetex = Paths.getPackerAtlas('weeb/weebTrees');
-				bgTrees.frames = treetex;
-				bgTrees.animation.add('treeLoop', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18], 12);
-				bgTrees.animation.play('treeLoop');
-				bgTrees.scrollFactor.set(0.85, 0.85);
-				add(bgTrees);
-
-				var treeLeaves:FlxSprite = new FlxSprite(repositionShit, -40);
-				treeLeaves.frames = Paths.getSparrowAtlas('weeb/petals');
-				treeLeaves.animation.addByPrefix('leaves', 'PETALS ALL', 24, true);
-				treeLeaves.animation.play('leaves');
-				treeLeaves.scrollFactor.set(0.85, 0.85);
-				add(treeLeaves);
-
-				var widShit = Std.int(bgSky.width * 6);
-
-				bgSky.setGraphicSize(widShit);
-				bgSchool.setGraphicSize(widShit);
-				bgStreet.setGraphicSize(widShit);
-				bgTrees.setGraphicSize(Std.int(widShit * 1.4));
-				fgTrees.setGraphicSize(Std.int(widShit * 0.8));
-				treeLeaves.setGraphicSize(widShit);
-
-				fgTrees.updateHitbox();
-				bgSky.updateHitbox();
-				bgSchool.updateHitbox();
-				bgStreet.updateHitbox();
-				bgTrees.updateHitbox();
-				treeLeaves.updateHitbox();
-
-				bgGirls = new BackgroundGirls(-100, 190);
-				bgGirls.scrollFactor.set(0.9, 0.9);
-
-				if (SONG.song.toLowerCase() == 'roses')
-				{
-					bgGirls.getScared();
-				}
-
-				bgGirls.setGraphicSize(Std.int(bgGirls.width * daPixelZoom));
-				bgGirls.updateHitbox();
-				add(bgGirls);
 			case 'thorns':
-				// loadStage('schoolEvil');
 				curStageId = 'schoolEvil';
+				loadStage(curStageId);
 
-				var schoolBG:FlxSprite = new FlxSprite(-200, 0).loadGraphic(Paths.image('weeb/evilSchoolBG'));
-				wiggleShit.waveAmplitude = 0.017;
-				wiggleShit.waveSpeed = 2;
-				wiggleShit.waveFrequency = 4;
-				schoolBG.shader = wiggleShit.shader;
-				schoolBG.setGraphicSize(Std.int(schoolBG.width * 6));
-				schoolBG.updateHitbox();
-				// schoolBG.scale.set(6, 6);
-				add(schoolBG);
-
-				schoolBG.scrollFactor.set(0.7, 1);
-
-				var schoolFront:FlxSprite = new FlxSprite(-250, schoolBG.y + 20).loadGraphic(Paths.image('weeb/evilSchoolFG'));
-
-				schoolFront.shader = wiggleShit.shader;
-
-				schoolFront.setGraphicSize(Std.int(schoolFront.width * 6));
-				schoolFront.updateHitbox();
-				add(schoolFront);
 			case 'guns' | 'stress' | 'ugh':
 				loadStageOld('tank');
 
@@ -544,11 +462,9 @@ class PlayState extends MusicBeatState
 
 				var fgTank3:BGSprite = new BGSprite('tank3', 1300, 1200, 3.5, 2.5, ['fg']);
 				foregroundSprites.add(fgTank3);
-			case "darnell":
-				curStageId = 'phillyStreets';
-				loadStage(curStageId);
 			default:
-				loadStage('mainStage');
+				curStageId = "mainStage";
+				loadStage(curStageId);
 		}
 	}
 
@@ -648,11 +564,6 @@ class PlayState extends MusicBeatState
 		// REPOSITIONING PER STAGE
 		switch (curStageId)
 		{
-			case 'school':
-				boyfriend.x += 200;
-				boyfriend.y += 220;
-				gf.x += 180;
-				gf.y += 300;
 			case 'schoolEvil':
 				// trailArea.scrollFactor.set();
 
@@ -1865,8 +1776,6 @@ class PlayState extends MusicBeatState
 
 		super.update(elapsed); // idk if there's a particular reason why some code is before super.update(), and some is after. Prob nothing too much to worry about.
 
-		wiggleShit.update(elapsed);
-
 		var androidPause:Bool = false;
 
 		#if android
@@ -2852,9 +2761,6 @@ class PlayState extends MusicBeatState
 		// boppin friends
 		switch (curStageId)
 		{
-			case 'school':
-				bgGirls.dance();
-
 			case 'tank':
 				tankWatchtower.dance();
 		}

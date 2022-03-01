@@ -33,6 +33,15 @@ class Bopper extends FlxSprite
 		return value;
 	}
 
+	public var idleSuffix(default, set):String = "";
+
+	function set_idleSuffix(value:String):String
+	{
+		this.idleSuffix = value;
+		this.dance();
+		return value;
+	}
+
 	/**
 	 * Set this value to define an additional vertical offset to this sprite's position.
 	 */
@@ -94,17 +103,17 @@ class Bopper extends FlxSprite
 		{
 			if (hasDanced)
 			{
-				this.animation.play('danceRight');
+				this.animation.play('danceRight$idleSuffix');
 			}
 			else
 			{
-				this.animation.play('danceLeft');
+				this.animation.play('danceLeft$idleSuffix');
 			}
 			hasDanced = !hasDanced;
 		}
 		else
 		{
-			this.animation.play('idle');
+			this.animation.play('idle$idleSuffix');
 		}
 	}
 }

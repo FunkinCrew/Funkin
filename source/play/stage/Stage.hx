@@ -80,7 +80,13 @@ class Stage extends FlxSpriteGroup implements IHook
 			if (isAnimated)
 			{
 				// Initalize sprite frames.
-				propSprite.frames = Paths.getSparrowAtlas(dataProp.assetPath);
+				switch (dataProp.animType)
+				{
+					case "packer":
+						propSprite.frames = Paths.getPackerAtlas(dataProp.assetPath);
+					default: // "sparrow"
+						propSprite.frames = Paths.getSparrowAtlas(dataProp.assetPath);
+				}
 			}
 			else
 			{
@@ -112,17 +118,27 @@ class Stage extends FlxSpriteGroup implements IHook
 
 			propSprite.zIndex = dataProp.zIndex;
 
-			for (propAnim in dataProp.animations)
+			switch (dataProp.animType)
 			{
-				if (propAnim.frameIndices.length == 0)
-				{
-					propSprite.animation.addByPrefix(propAnim.name, propAnim.prefix, propAnim.frameRate, propAnim.loop, propAnim.flipX, propAnim.flipY);
-				}
-				else
-				{
-					propSprite.animation.addByIndices(propAnim.name, propAnim.prefix, propAnim.frameIndices, "", propAnim.frameRate, propAnim.loop,
-						propAnim.flipX, propAnim.flipY);
-				}
+				case "packer":
+					for (propAnim in dataProp.animations)
+					{
+						propSprite.animation.add(propAnim.name, propAnim.frameIndices);
+					}
+				default: // "sparrow"
+					for (propAnim in dataProp.animations)
+					{
+						if (propAnim.frameIndices.length == 0)
+						{
+							propSprite.animation.addByPrefix(propAnim.name, propAnim.prefix, propAnim.frameRate, propAnim.loop, propAnim.flipX,
+								propAnim.flipY);
+						}
+						else
+						{
+							propSprite.animation.addByIndices(propAnim.name, propAnim.prefix, propAnim.frameIndices, "", propAnim.frameRate, propAnim.loop,
+								propAnim.flipX, propAnim.flipY);
+						}
+					}
 			}
 
 			if (dataProp.startingAnimation != null)
