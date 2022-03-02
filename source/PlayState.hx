@@ -112,10 +112,6 @@ class PlayState extends MusicBeatState
 	var foregroundSprites:FlxTypedGroup<BGSprite>;
 
 	var tankmanRun:FlxTypedGroup<TankmenBG>;
-	var gfCutsceneLayer:FlxGroup;
-	var bfTankCutsceneLayer:FlxGroup;
-	var tankWatchtower:BGSprite;
-	var tankGround:BGSprite;
 
 	var talking:Bool = true;
 	var songScore:Int = 0;
@@ -417,52 +413,9 @@ class PlayState extends MusicBeatState
 				loadStage(curStageId);
 
 			case 'guns' | 'stress' | 'ugh':
-				loadStageOld('tank');
+				curStageId = 'tankmanBattlefield';
+				loadStage(curStageId);
 
-				// this goes after tankSky and before tankMountains in stage file
-				// need to accomodate for the velocity thing!
-				var tankSky:BGSprite = new BGSprite('tankClouds', FlxG.random.int(-700, -100), FlxG.random.int(-20, 20), 0.1, 0.1);
-				tankSky.active = true;
-				tankSky.velocity.x = FlxG.random.float(5, 15);
-				add(tankSky);
-
-				tankWatchtower = new BGSprite('tankWatchtower', 100, 50, 0.5, 0.5, ['watchtower gradient color']);
-				add(tankWatchtower);
-
-				tankGround = new BGSprite('tankRolling', 300, 300, 0.5, 0.5, ['BG tank w lighting'], true);
-				add(tankGround);
-				// tankGround.active = false;
-
-				tankmanRun = new FlxTypedGroup<TankmenBG>();
-				add(tankmanRun);
-
-				var tankGround:BGSprite = new BGSprite('tankGround', -420, -150);
-				tankGround.setGraphicSize(Std.int(tankGround.width * 1.15));
-				tankGround.updateHitbox();
-				add(tankGround);
-
-				moveTank();
-
-				// smokeLeft.screenCenter();
-
-				var fgTank0:BGSprite = new BGSprite('tank0', -500, 650, 1.7, 1.5, ['fg']);
-				foregroundSprites.add(fgTank0);
-
-				var fgTank1:BGSprite = new BGSprite('tank1', -300, 750, 2, 0.2, ['fg']);
-				foregroundSprites.add(fgTank1);
-
-				// just called 'foreground' just cuz small inconsistency no bbiggei
-				var fgTank2:BGSprite = new BGSprite('tank2', 450, 940, 1.5, 1.5, ['foreground']);
-				foregroundSprites.add(fgTank2);
-
-				var fgTank4:BGSprite = new BGSprite('tank4', 1300, 900, 1.5, 1.5, ['fg']);
-				foregroundSprites.add(fgTank4);
-
-				var fgTank5:BGSprite = new BGSprite('tank5', 1620, 700, 1.5, 1.5, ['fg']);
-				foregroundSprites.add(fgTank5);
-
-				var fgTank3:BGSprite = new BGSprite('tank3', 1300, 1200, 3.5, 2.5, ['fg']);
-				foregroundSprites.add(fgTank3);
 			default:
 				curStageId = "mainStage";
 				loadStage(curStageId);
@@ -602,13 +555,6 @@ class PlayState extends MusicBeatState
 		else
 		{
 			add(gf);
-
-			gfCutsceneLayer = new FlxGroup();
-			add(gfCutsceneLayer);
-
-			bfTankCutsceneLayer = new FlxGroup();
-			add(bfTankCutsceneLayer);
-
 			add(dad);
 			add(boyfriend);
 		}
@@ -622,6 +568,7 @@ class PlayState extends MusicBeatState
 		blackShit.scrollFactor.set();
 		add(blackShit);
 
+		#if html5
 		var vid:FlxVideo = new FlxVideo('music/ughCutscene.mp4');
 		vid.finishCallback = function()
 		{
@@ -630,6 +577,12 @@ class PlayState extends MusicBeatState
 			startCountdown();
 			cameraMovement();
 		};
+		#else
+		remove(blackShit);
+		FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, (Conductor.crochet / 1000) * 5, {ease: FlxEase.quadInOut});
+		startCountdown();
+		cameraMovement();
+		#end
 
 		FlxG.camera.zoom = defaultCamZoom * 1.2;
 
@@ -800,6 +753,7 @@ class PlayState extends MusicBeatState
 		blackShit.scrollFactor.set();
 		add(blackShit);
 
+		#if html5
 		var vid:FlxVideo = new FlxVideo('music/gunsCutscene.mp4');
 		vid.finishCallback = function()
 		{
@@ -809,6 +763,13 @@ class PlayState extends MusicBeatState
 			startCountdown();
 			cameraMovement();
 		};
+		#else
+		remove(blackShit);
+
+		FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, (Conductor.crochet / 1000) * 5, {ease: FlxEase.quadInOut});
+		startCountdown();
+		cameraMovement();
+		#end
 
 		/* camFollow.setPosition(camPos.x, camPos.y);
 
@@ -874,6 +835,7 @@ class PlayState extends MusicBeatState
 		blackShit.scrollFactor.set();
 		add(blackShit);
 
+		#if html5
 		var vid:FlxVideo = new FlxVideo('music/stressCutscene.mp4');
 		vid.finishCallback = function()
 		{
@@ -883,6 +845,13 @@ class PlayState extends MusicBeatState
 			startCountdown();
 			cameraMovement();
 		};
+		#else
+		remove(blackShit);
+
+		FlxTween.tween(FlxG.camera, {zoom: defaultCamZoom}, (Conductor.crochet / 1000) * 5, {ease: FlxEase.quadInOut});
+		startCountdown();
+		cameraMovement();
+		#end
 
 		/* camHUD.visible = false;
 
@@ -1764,12 +1733,6 @@ class PlayState extends MusicBeatState
 			// Conductor.lastSongPos = FlxG.sound.music.time;
 		}
 
-		switch (curStageId)
-		{
-			case 'tank':
-				moveTank();
-		}
-
 		super.update(elapsed); // idk if there's a particular reason why some code is before super.update(), and some is after. Prob nothing too much to worry about.
 
 		var androidPause:Bool = false;
@@ -2623,25 +2586,6 @@ class PlayState extends MusicBeatState
 		FlxG.camera.focusOn(camFollow.getPosition());
 	}
 
-	function moveTank():Void
-	{
-		if (!inCutscene)
-		{
-			var daAngleOffset:Float = 1;
-			tankAngle += FlxG.elapsed * tankSpeed;
-			tankGround.angle = tankAngle - 90 + 15;
-
-			tankGround.x = tankX + Math.cos(FlxAngle.asRadians((tankAngle * daAngleOffset) + 180)) * 1500;
-			tankGround.y = 1300 + Math.sin(FlxAngle.asRadians((tankAngle * daAngleOffset) + 180)) * 1100;
-		}
-	}
-
-	var tankResetShit:Bool = false;
-	var tankMoving:Bool = false;
-	var tankAngle:Float = FlxG.random.int(-90, 45);
-	var tankSpeed:Float = FlxG.random.float(5, 7);
-	var tankX:Float = 400;
-
 	override function stepHit()
 	{
 		super.stepHit();
@@ -2747,18 +2691,6 @@ class PlayState extends MusicBeatState
 		{
 			boyfriend.playAnim('hey', true);
 			dad.playAnim('cheer', true);
-		}
-
-		foregroundSprites.forEach(function(spr:BGSprite)
-		{
-			spr.dance();
-		});
-
-		// boppin friends
-		switch (curStageId)
-		{
-			case 'tank':
-				tankWatchtower.dance();
 		}
 
 		if (curStage != null)
