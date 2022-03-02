@@ -1,5 +1,6 @@
 package;
 
+import shaderslmfao.WiggleEffect;
 import play.stage.StageData;
 import play.stage.Stage;
 import Note;
@@ -571,12 +572,7 @@ class PlayState extends MusicBeatState
 				// evilTrail.changeValuesEnabled(false, false, false, false);
 				// evilTrail.changeGraphic()
 				add(evilTrail);
-				// evilTrail.scrollFactor.set(1.1, 1.1);
-
-				boyfriend.x += 200;
-				boyfriend.y += 220;
-				gf.x += 180;
-				gf.y += 300;
+			// evilTrail.scrollFactor.set(1.1, 1.1);
 			case "tank":
 				gf.y += 10;
 				gf.x -= 30;
