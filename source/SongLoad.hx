@@ -174,6 +174,8 @@ class SongLoad
 
 		for (sectionIndex => section in noteStuff)
 		{
+			if (section == null || section.sectionNotes == null)
+				continue;
 			for (noteIndex => noteDataArray in section.sectionNotes)
 			{
 				var arrayDipshit:Array<Dynamic> = cast noteDataArray; // crackhead

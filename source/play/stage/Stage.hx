@@ -97,6 +97,12 @@ class Stage extends FlxSpriteGroup implements IHook
 				propSprite.active = false;
 			}
 
+			if (propSprite.frames == null || propSprite.frames.numFrames == 0)
+			{
+				trace('    ERROR: Could not build texture for prop.');
+				continue;
+			}
+
 			if (Std.isOfType(dataProp.scale, Array))
 			{
 				propSprite.scale.set(dataProp.scale[0], dataProp.scale[1]);
