@@ -23,8 +23,9 @@ class PauseSubState extends MusicBeatSubstate
 	var curSelected:Int = 0;
 
 	var menus:Map<String, Array<String>> = [
-		"default" => ['Resume', 'Restart Song', 'Restart Song With Cutscenes', 'Options', 'Exit To Menu'],
+		"default" => ['Resume', 'Restart Song', 'Options', 'Exit To Menu'],
 		"options" => ['Back', 'Bot', 'Auto Restart', 'No Miss', 'Ghost Tapping', 'No Death'],
+		"restart" => ['Back', 'No Cutscenes', 'With Cutscenes'],
 	];
 
 	var menu:String = "default";
@@ -160,6 +161,9 @@ class PauseSubState extends MusicBeatSubstate
 				case "resume":
 					close();
 				case "restart song":
+					menu = "restart";
+					updateAlphabets();
+				case "no cutscenes":
 					PlayState.SONG.speed = PlayState.previousScrollSpeedLmao;
 					PlayState.fromPauseMenu = true;
 
@@ -175,7 +179,7 @@ class PauseSubState extends MusicBeatSubstate
 					PlayState.SONG.playerKeyCount = PlayState.instance.ogPlayerKeyCount;
 
 					FlxG.resetState();
-				case "restart song with cutscenes":
+				case "with cutscenes":
 					PlayState.SONG.speed = PlayState.previousScrollSpeedLmao;
 
 					#if linc_luajit
